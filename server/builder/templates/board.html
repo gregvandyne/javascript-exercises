@@ -1,0 +1,374 @@
+<title>Rocket Race Board Game</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap">
+<style>
+/* Layout: HUD with whose turn it is, the winding board (inline SVG built by script), then a message line,
+   the die and a big Roll button. Overlays for setup/title, pause and results. */
+:root{
+  --bg1:#fde68a; --bg2:#fb923c; --ink:#3f2a0b; --accent:#7c3aed; --accentDark:#5b21b6; --card:#fff;
+  --tile:#fffaf0; --tileEdge:#f3d9a4; --road:#f6c46a; --font:"Fredoka","Trebuchet MS",system-ui,sans-serif;
+}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{margin:0;overflow:hidden;font-family:var(--font);color:var(--ink);background:radial-gradient(circle at 30% 10%,var(--bg1),var(--bg2));touch-action:manipulation;user-select:none;-webkit-user-select:none}
+.app{position:relative;height:100%;max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:8px;padding:10px max(12px,env(safe-area-inset-left)) 12px max(12px,env(safe-area-inset-right))}
+button{font-family:inherit;color:inherit;cursor:pointer}
+button:focus-visible{outline:4px solid #fff;outline-offset:2px}
+.hud{display:flex;align-items:center;gap:8px}
+.turn{flex:1;min-width:0;display:flex;justify-content:center}
+.turn div{background:#fff;border-radius:999px;padding:7px 14px;font-weight:700;font-size:1.1rem;box-shadow:0 3px 0 rgba(0,0,0,.15);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border:3px solid var(--who,#fff)}
+.icon-btn{width:46px;height:46px;flex:none;border:0;border-radius:50%;background:#fff;font-size:1.35rem;box-shadow:0 4px 0 rgba(0,0,0,.18);display:grid;place-items:center;padding:0}
+.icon-btn:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.18)}
+.board{flex:1;min-height:0;display:grid;place-items:center}
+.board svg{width:100%;height:100%;display:block;overflow:visible}
+.msg{text-align:center;font-weight:700;font-size:1.15rem;min-height:1.5em;margin:0;text-shadow:0 1px 0 rgba(255,255,255,.6)}
+.controls{display:flex;align-items:center;justify-content:center;gap:14px}
+.die{width:74px;height:74px;flex:none;border-radius:18px;background:#fff;box-shadow:0 6px 0 rgba(0,0,0,.2),inset 0 -4px 0 #e5e7eb;display:grid;grid-template:repeat(3,1fr)/repeat(3,1fr);padding:10px;gap:2px}
+.die i{border-radius:50%;background:transparent;margin:3px}
+.die i.on{background:#3f2a0b}
+.roll{border:0;border-radius:22px;background:var(--accent);color:#fff;font-weight:700;font-size:1.6rem;padding:12px 30px;min-height:68px;min-width:170px;box-shadow:0 6px 0 var(--accentDark)}
+.roll:active:not(:disabled){transform:translateY(4px);box-shadow:0 2px 0 var(--accentDark)}
+.roll:disabled{opacity:.5;cursor:default}
+.screen{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;padding:14px;background:rgba(63,42,11,.35)}
+.panel{background:var(--card);border-radius:28px;padding:20px 18px;width:min(100%,430px);max-height:100%;overflow:auto;text-align:center;
+  box-shadow:0 10px 0 rgba(0,0,0,.18);display:flex;flex-direction:column;align-items:center;gap:12px}
+.panel h1{margin:0;font-size:clamp(1.9rem,8.5vw,2.5rem);line-height:1.05;color:var(--accent)}
+.panel p{margin:0;font-size:1.05rem;line-height:1.35}
+.count{display:flex;gap:8px}
+.count button,.seat button{border:3px solid #e9d5ff;background:#faf5ff;border-radius:16px;min-height:48px;min-width:56px;font-weight:700;font-size:1.1rem;padding:6px 12px}
+.count button[aria-pressed="true"]{background:var(--accent);border-color:var(--accentDark);color:#fff}
+.seats{display:flex;flex-direction:column;gap:8px;width:100%}
+.seat{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#fffbeb;border-radius:16px;padding:6px 8px 6px 12px;font-weight:700;font-size:1.1rem}
+.seat span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.big-btn{border:0;border-radius:20px;background:var(--accent);color:#fff;font-weight:700;font-size:1.5rem;padding:14px 34px;min-height:60px;min-width:200px;box-shadow:0 6px 0 var(--accentDark)}
+.big-btn.alt{background:#f3e8ff;color:var(--ink);box-shadow:0 6px 0 #d8b4fe;font-size:1.2rem;min-height:52px}
+.big-btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--accentDark)}
+.chips{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.chip{font-weight:700;background:#fff4cc;border-radius:999px;padding:6px 14px}
+.newbest{background:#22c55e;color:#fff;border-radius:999px;padding:4px 14px;font-weight:700}
+.podium{font-size:4rem;line-height:1}
+@media (orientation:landscape) and (max-height:500px){.app{flex-direction:row;flex-wrap:wrap}.hud{width:100%}.board{flex:1 1 60%}.side{display:flex;flex-direction:column;justify-content:center;gap:10px;width:190px}.controls{flex-direction:column;gap:12px}.roll{min-width:160px}}
+@media (prefers-reduced-motion:reduce){.panel *{animation:none!important}}
+</style>
+
+<div class="app">
+  <div class="hud">
+    <button class="icon-btn" id="pauseBtn" aria-label="Pause">⏸️</button>
+    <div class="turn"><div id="turnEl">🦊 Fox’s turn</div></div>
+    <button class="icon-btn mute" aria-label="Turn sound off">🔊</button>
+  </div>
+  <div class="board" id="board"></div>
+  <div class="side">
+    <p class="msg" id="msgEl" aria-live="polite">Roll the die!</p>
+    <div class="controls">
+      <div class="die" id="die" aria-label="Die"></div>
+      <button class="roll" id="rollBtn">🎲 Roll</button>
+    </div>
+  </div>
+</div>
+
+<section class="screen" id="titleScreen">
+  <div class="panel">
+    <h1 id="titleText">Rocket Race</h1>
+    <p id="subtitleText">Roll the die and race to the trophy! Rockets zoom you ahead, slides send you back.</p>
+    <div class="count" role="group" aria-label="How many players"><button data-n="2" aria-pressed="true">2</button><button data-n="3" aria-pressed="false">3</button><button data-n="4" aria-pressed="false">4</button></div>
+    <div class="seats" id="seats"></div>
+    <div class="chip" id="bestTitle">🏆 Best: none yet</div>
+    <button class="big-btn" id="playBtn">▶ Play</button>
+    <button class="icon-btn mute" aria-label="Turn sound off">🔊</button>
+  </div>
+</section>
+
+<section class="screen" id="pauseScreen" hidden>
+  <div class="panel">
+    <h1>Paused</h1>
+    <button class="big-btn" id="resumeBtn">▶ Keep going</button>
+    <button class="big-btn alt" id="restartBtn">↺ New game</button>
+    <button class="icon-btn mute" aria-label="Turn sound off">🔊</button>
+  </div>
+</section>
+
+<section class="screen" id="resultScreen" hidden>
+  <div class="panel">
+    <div class="podium" id="podium">🦊</div>
+    <h1 id="resultTitle">Fox wins!</h1>
+    <p id="resultLine"></p>
+    <div class="chips"><div class="chip" id="resultScore">⭐ 0</div><div class="chip" id="bestResult">🏆 Best: 0</div></div>
+    <div class="newbest" id="newBest" hidden>New best!</div>
+    <button class="big-btn" id="againBtn">↺ Play again</button>
+  </div>
+</section>
+
+<script>
+/* =====================================================================
+   CONFIG: change these to make the board game your own!
+   Squares are numbered 0 (start) to squares - 1 (finish).
+   ===================================================================== */
+const CONFIG = {
+  title: 'Rocket Race',
+  subtitle: 'Roll the die and race to the trophy! Rockets zoom you ahead, slides send you back.',
+  squares: 30,
+  finishEmoji: '🏆',
+  tokens: [
+    { name: 'Fox', emoji: '🦊', color: '#f97316' },
+    { name: 'Panda', emoji: '🐼', color: '#64748b' },
+    { name: 'Frog', emoji: '🐸', color: '#22c55e' },
+    { name: 'Unicorn', emoji: '🦄', color: '#a855f7' },
+  ],
+  // Special squares. kind: 'boost' (jump ahead to "to"), 'slide' (slide back to "to"), 'again' (roll again)
+  specials: {
+    3: { kind: 'boost', to: 11, emoji: '🚀', text: 'Rocket boost!' },
+    7: { kind: 'again', emoji: '⭐', text: 'Lucky star! Roll again!' },
+    9: { kind: 'slide', to: 4, emoji: '🛝', text: 'Wheee! Slide down!' },
+    14: { kind: 'boost', to: 20, emoji: '🌈', text: 'Rainbow bridge!' },
+    17: { kind: 'slide', to: 12, emoji: '🌊', text: 'Splash! Washed back!' },
+    19: { kind: 'again', emoji: '⭐', text: 'Lucky star! Roll again!' },
+    23: { kind: 'boost', to: 27, emoji: '🎈', text: 'Balloon ride!' },
+    26: { kind: 'slide', to: 18, emoji: '🍌', text: 'Oops, banana peel!' },
+  },
+  colors: { bg1: '#fde68a', bg2: '#fb923c', accent: '#7c3aed', accentDark: '#5b21b6' },
+  botDelay: 0.8,     // seconds the robot "thinks" before rolling
+  saveKey: 'board-best',
+};
+
+/* ===== Shell helpers ===== */
+const $ = id => document.getElementById(id);
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const wait = ms => new Promise(r => setTimeout(r, REDUCED ? Math.min(ms, 120) : ms));
+for (const k in CONFIG.colors) document.documentElement.style.setProperty('--' + k, CONFIG.colors[k]);
+document.title = CONFIG.title;
+$('titleText').textContent = CONFIG.title;
+$('subtitleText').textContent = CONFIG.subtitle;
+function showScreen(id) { document.querySelectorAll('.screen').forEach(s => { s.hidden = s.id !== id; }); }
+function updateMute() {
+  document.querySelectorAll('.mute').forEach(b => { b.textContent = BRB.sfx.muted ? '🔇' : '🔊'; b.setAttribute('aria-label', BRB.sfx.muted ? 'Turn sound on' : 'Turn sound off'); });
+}
+document.querySelectorAll('.mute').forEach(b => b.addEventListener('click', () => { BRB.sfx.mute(); updateMute(); BRB.sfx.play('click'); }));
+updateMute();
+let best = +BRB.storage.get(CONFIG.saveKey) || 0;   // fewest turns a human needed to win (0 = none yet)
+function showBest() { $('bestTitle').textContent = '🏆 Best: ' + (best ? 'won in ' + best + ' turns' : 'none yet'); }
+showBest();
+
+/* ===== Setup: number of players, and who is a robot ===== */
+let count = 2, seats = [false, true, true, true];   // true = robot
+function renderSeats() {
+  $('seats').innerHTML = '';
+  for (let i = 0; i < count; i++) {
+    const t = CONFIG.tokens[i], row = document.createElement('div'); row.className = 'seat';
+    row.innerHTML = '<span>' + t.emoji + ' ' + t.name + '</span>';
+    const b = document.createElement('button');
+    b.textContent = seats[i] ? '🤖 Robot' : '🙂 Player';
+    b.setAttribute('aria-label', t.name + ' is played by ' + (seats[i] ? 'a robot' : 'a person') + '. Tap to change.');
+    b.addEventListener('click', () => { seats[i] = !seats[i]; if (seats.slice(0, count).every(Boolean)) seats[0] = false; BRB.sfx.play('click'); renderSeats(); });
+    row.appendChild(b); $('seats').appendChild(row);
+  }
+}
+document.querySelectorAll('.count button').forEach(b => b.addEventListener('click', () => {
+  count = +b.dataset.n; document.querySelectorAll('.count button').forEach(x => x.setAttribute('aria-pressed', x === b)); BRB.sfx.play('click'); renderSeats();
+}));
+renderSeats();
+
+/* ===== Board drawing (inline SVG) ===== */
+const NS = 'http://www.w3.org/2000/svg';
+let cols = 5, rows = 6, cells = [], tokenEls = [];
+function el(tag, attrs, parent) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
+// Square i -> centre point. Rows snake back and forth starting at the bottom-left.
+function cellPos(i) { const r = Math.floor(i / cols), c = r % 2 ? cols - 1 - (i % cols) : i % cols; return { x: c * 100 + 50, y: (rows - 1 - r) * 100 + 50 }; }
+function buildBoard() {
+  const box = $('board').getBoundingClientRect();
+  const wide = box.width / Math.max(1, box.height) > 1.3;
+  cols = wide ? 10 : 5; rows = Math.ceil(CONFIG.squares / cols);
+  const svg = el('svg', { viewBox: '-10 -10 ' + (cols * 100 + 20) + ' ' + (rows * 100 + 20), 'aria-label': 'Game board', role: 'img' });
+  cells = Array.from({ length: CONFIG.squares }, (_, i) => cellPos(i));
+  // the road
+  el('path', { d: 'M' + cells.map(p => p.x + ' ' + p.y).join(' L'), fill: 'none', stroke: 'var(--road)', 'stroke-width': 46, 'stroke-linejoin': 'round', 'stroke-linecap': 'round', opacity: 0.9 }, svg);
+  el('path', { d: 'M' + cells.map(p => p.x + ' ' + p.y).join(' L'), fill: 'none', stroke: '#fff', 'stroke-width': 4, 'stroke-dasharray': '10 12', opacity: 0.8 }, svg);
+  // tiles
+  const palette = ['#fffaf0', '#fef3c7', '#fce7f3', '#e0f2fe', '#dcfce7'];
+  cells.forEach((p, i) => {
+    const sp = CONFIG.specials[i], last = i === CONFIG.squares - 1;
+    const fill = i === 0 ? '#bbf7d0' : last ? '#fde047' : sp ? (sp.kind === 'slide' ? '#fecaca' : sp.kind === 'boost' ? '#c7d2fe' : '#fef08a') : palette[i % palette.length];
+    el('rect', { x: p.x - 44, y: p.y - 44, width: 88, height: 88, rx: 18, fill, stroke: 'rgba(0,0,0,.12)', 'stroke-width': 3 }, svg);
+    el('rect', { x: p.x - 44, y: p.y + 34, width: 88, height: 10, rx: 5, fill: 'rgba(0,0,0,.07)' }, svg);
+    const label = i === 0 ? 'GO' : last ? '' : String(i);
+    const n = el('text', { x: p.x - 34, y: p.y - 20, 'font-size': 22, 'font-weight': 700, fill: '#6b4f1d', 'font-family': 'Fredoka,Trebuchet MS,sans-serif' }, svg); n.textContent = label;
+    const icon = last ? CONFIG.finishEmoji : sp ? sp.emoji : '';
+    if (icon) { const t = el('text', { x: p.x + 6, y: p.y + 22, 'font-size': last ? 54 : 40, 'text-anchor': 'middle' }, svg); t.textContent = icon; }
+  });
+  // rocket arcs and slides
+  for (const k in CONFIG.specials) {
+    const sp = CONFIG.specials[k]; if (sp.to === undefined) continue;
+    const a = cells[k], b = cells[sp.to], mx = (a.x + b.x) / 2 + (a.y === b.y ? 0 : 60), my = (a.y + b.y) / 2 - (a.y === b.y ? 70 : 0);
+    const d = 'M' + a.x + ' ' + a.y + ' Q' + mx + ' ' + my + ' ' + b.x + ' ' + b.y;
+    if (sp.kind === 'boost') {
+      el('path', { d, fill: 'none', stroke: '#6366f1', 'stroke-width': 9, 'stroke-linecap': 'round', 'stroke-dasharray': '2 16', opacity: 0.6 }, svg);
+    } else {
+      el('path', { d, fill: 'none', stroke: '#f472b6', 'stroke-width': 16, 'stroke-linecap': 'round', opacity: 0.35 }, svg);
+      el('path', { d, fill: 'none', stroke: '#fff', 'stroke-width': 4, 'stroke-linecap': 'round', opacity: 0.6 }, svg);
+    }
+    el('circle', { cx: b.x, cy: b.y + 30, r: 7, fill: sp.kind === 'boost' ? '#6366f1' : '#ec4899', opacity: 0.8 }, svg);
+  }
+  // tokens
+  tokenEls = players.map((pl, i) => {
+    const g = el('g', {}, svg);
+    el('ellipse', { cx: 0, cy: 22, rx: 22, ry: 6, fill: 'rgba(0,0,0,.2)' }, g);
+    el('circle', { cx: 0, cy: 0, r: 25, fill: pl.color, stroke: '#fff', 'stroke-width': 5 }, g);
+    const t = el('text', { x: 0, y: 11, 'font-size': 30, 'text-anchor': 'middle' }, g); t.textContent = pl.emoji;
+    return g;
+  });
+  $('board').innerHTML = ''; $('board').appendChild(svg);
+  players.forEach((pl, i) => placeToken(i, pl.pos, 0));
+}
+// little offsets so tokens on the same square do not hide each other
+const OFF = [[-16, -12], [16, -12], [-16, 14], [16, 14]];
+function tokenXY(i, pos, lift) { const p = cells[pos]; const many = players.filter(q => q.pos === pos).length > 1; return { x: p.x + (many ? OFF[i][0] : 0), y: p.y + (many ? OFF[i][1] : 0) - (lift || 0) }; }
+function placeToken(i, pos, lift, scale) {
+  const g = tokenEls[i]; if (!g) return;
+  const { x, y } = tokenXY(i, pos, lift);
+  g.setAttribute('transform', 'translate(' + x + ' ' + y + ') scale(' + (scale || (i === turn && playing ? 1.12 : 0.95)) + ')');
+  if (i === turn) g.parentNode.appendChild(g);   // current player on top
+}
+function placeAll() { players.forEach((p, i) => placeToken(i, p.pos, 0)); }
+let resizeT; addEventListener('resize', () => { clearTimeout(resizeT); resizeT = setTimeout(() => { if (players.length) buildBoard(); }, 150); });
+
+/* ===== Die ===== */
+const PIPS = { 1: [4], 2: [0, 8], 3: [0, 4, 8], 4: [0, 2, 6, 8], 5: [0, 2, 4, 6, 8], 6: [0, 2, 3, 5, 6, 8] };
+function showDie(n) { $('die').innerHTML = Array.from({ length: 9 }, (_, i) => '<i class="' + (PIPS[n].includes(i) ? 'on' : '') + '"></i>').join(''); $('die').setAttribute('aria-label', 'Die shows ' + n); }
+showDie(6);
+async function rollDie() {
+  const n = 1 + Math.floor(Math.random() * 6);
+  const steps = REDUCED ? 1 : 9;
+  for (let s = 0; s < steps; s++) {
+    showDie(1 + Math.floor(Math.random() * 6));
+    if (!REDUCED) $('die').animate([{ transform: 'rotate(' + (s * 40 - 20) + 'deg) scale(1.08)' }, { transform: 'rotate(' + (s * 40 + 20) + 'deg) scale(1)' }], { duration: 90 });
+    BRB.sfx.play('click'); await wait(90);
+  }
+  showDie(n);
+  if (!REDUCED) $('die').animate([{ transform: 'scale(1.3)' }, { transform: 'scale(1)' }], { duration: 250, easing: 'cubic-bezier(.3,1.6,.5,1)' });
+  return n;
+}
+
+/* ===== Game state and turns ===== */
+let players = [], turn = 0, playing = false, busy = false, paused = false, turns = 0, botTimer = null, gameId = 0;
+
+function startGame() {
+  players = Array.from({ length: count }, (_, i) => ({ ...CONFIG.tokens[i], pos: 0, bot: seats[i], turns: 0 }));
+  turn = 0; turns = 0; playing = true; busy = false; paused = false; gameId++; clearTimeout(botTimer);
+  showScreen(null); buildBoard(); BRB.sfx.play('powerup');
+  beginTurn();
+}
+
+function beginTurn() {
+  const pl = players[turn];
+  $('turnEl').textContent = pl.emoji + ' ' + pl.name + '’s turn' + (pl.bot ? ' 🤖' : '');
+  $('turnEl').style.setProperty('--who', pl.color);
+  $('msgEl').textContent = pl.bot ? pl.name + ' the robot is rolling…' : 'Tap Roll (or press Space)!';
+  $('rollBtn').disabled = pl.bot;
+  placeAll();
+  if (pl.bot) { clearTimeout(botTimer); botTimer = setTimeout(() => { if (!paused) takeTurn(); else beginTurnLater(); }, CONFIG.botDelay * 1000); }
+  else $('rollBtn').focus({ preventScroll: true });
+}
+function beginTurnLater() { botTimer = setTimeout(() => { if (playing && players[turn].bot && !busy) { if (paused) beginTurnLater(); else takeTurn(); } }, 400); }
+
+async function takeTurn() {
+  if (!playing || busy || paused) return;
+  busy = true; $('rollBtn').disabled = true;
+  const id = gameId, stale = () => id !== gameId;   // a new game started while we were animating
+  const pl = players[turn]; pl.turns++; if (!pl.bot) turns++;
+  const n = await rollDie();
+  if (stale()) return;
+  $('msgEl').textContent = pl.emoji + ' rolled a ' + n + '!';
+  // hop square by square
+  const goal = Math.min(CONFIG.squares - 1, pl.pos + n);
+  while (pl.pos < goal) {
+    pl.pos++;
+    BRB.sfx.play('jump');
+    await hop(turn, pl.pos);
+    if (stale()) return;
+  }
+  let again = false;
+  const sp = CONFIG.specials[pl.pos];
+  if (sp && pl.pos !== CONFIG.squares - 1) {
+    $('msgEl').textContent = sp.emoji + ' ' + sp.text;
+    if (sp.kind === 'again') { again = true; BRB.sfx.play('coin'); await wait(500); }
+    else {
+      BRB.sfx.play(sp.kind === 'boost' ? 'powerup' : 'hit');
+      if (sp.kind === 'slide') BRB.fx.shake($('board'), 5);
+      await wait(350);
+      await glide(turn, pl.pos, sp.to);
+      if (stale()) return;
+      pl.pos = sp.to; placeAll(); await wait(400);
+    }
+  }
+  if (stale()) return;
+  placeAll();
+  if (pl.pos >= CONFIG.squares - 1) return finish(turn);
+  busy = false;
+  if (!again) turn = (turn + 1) % players.length;
+  beginTurn();
+}
+function hop(i, pos) {
+  return new Promise(res => {
+    const from = tokenXY(i, pos - 1), to = cells[pos], t0 = performance.now(), dur = REDUCED ? 60 : 230;
+    (function step(t) {
+      const k = Math.min(1, (t - t0) / dur), lift = Math.sin(k * Math.PI) * 34;
+      tokenEls[i].setAttribute('transform', 'translate(' + (from.x + (to.x - from.x) * k) + ' ' + (from.y + (to.y - from.y) * k - lift) + ') scale(1.15)');
+      if (k < 1) requestAnimationFrame(step); else res();
+    })(t0);
+  });
+}
+function glide(i, a, b) {
+  const A = cells[a], B = cells[b];
+  return BRB.fx.tween(0, 1, REDUCED ? 100 : 750, k => {
+    const lift = Math.sin(k * Math.PI) * (b > a ? 80 : 20);
+    tokenEls[i].setAttribute('transform', 'translate(' + (A.x + (B.x - A.x) * k) + ' ' + (A.y + (B.y - A.y) * k - lift) + ') scale(' + (1.15 + Math.sin(k * Math.PI) * 0.25) + ') rotate(' + (b > a ? 0 : Math.sin(k * 12) * 15) + ')');
+  });
+}
+
+function finish(w) {
+  playing = false; busy = false;
+  const pl = players[w];
+  const humans = players.filter(p => !p.bot).length;
+  const won = !pl.bot;                             // a person won
+  const score = won ? Math.max(10, 400 - pl.turns * 15) : 0;
+  const isBest = won && (!best || pl.turns < best);
+  if (isBest) { best = pl.turns; BRB.storage.set(CONFIG.saveKey, best); }
+  BRB.score.submit(score, won ? 'Won in ' + pl.turns + ' turns' : 'Race');
+  BRB.gameOver({ won: won || humans === 0, score });
+  BRB.sfx.play(won ? 'win' : 'lose');
+  if (won) BRB.fx.confetti();
+  $('msgEl').textContent = pl.emoji + ' reached the ' + CONFIG.finishEmoji + '!';
+  setTimeout(() => {
+    $('podium').textContent = pl.emoji;
+    $('resultTitle').textContent = pl.name + ' wins!';
+    $('resultLine').textContent = (pl.bot ? 'The robot got there first. Rematch?' : 'Hooray! ' + pl.name + ' raced to the finish in ' + pl.turns + ' turns.');
+    $('resultScore').textContent = '⭐ ' + score;
+    $('bestResult').textContent = '🏆 Best: ' + (best ? best + ' turns' : '–');
+    $('newBest').hidden = !isBest;
+    showBest();
+    showScreen('resultScreen'); $('againBtn').focus({ preventScroll: true });
+  }, 900);
+}
+
+/* ===== Pause ===== */
+function pause() { if (!playing || paused) return; paused = true; showScreen('pauseScreen'); BRB.sfx.play('click'); }
+function resume() { paused = false; showScreen(null); BRB.sfx.play('click'); if (players[turn].bot && !busy) beginTurn(); }
+document.addEventListener('visibilitychange', () => { if (document.hidden) pause(); });
+
+/* ===== Controls ===== */
+$('playBtn').addEventListener('click', startGame);
+$('againBtn').addEventListener('click', () => { showScreen('titleScreen'); BRB.sfx.play('click'); $('playBtn').focus({ preventScroll: true }); });
+$('pauseBtn').addEventListener('click', pause);
+$('resumeBtn').addEventListener('click', resume);
+$('restartBtn').addEventListener('click', () => { clearTimeout(botTimer); playing = false; paused = false; showScreen('titleScreen'); });
+$('rollBtn').addEventListener('click', () => { if (playing && !players[turn].bot) takeTurn(); });
+addEventListener('keydown', e => {
+  if (e.repeat) return;
+  const k = e.key.toLowerCase();
+  if (!$('titleScreen').hidden) { if (k === 'enter' && document.activeElement === document.body) { e.preventDefault(); startGame(); } return; }
+  if (!$('resultScreen').hidden) return;
+  if (!$('pauseScreen').hidden) { if (k === 'escape' || k === 'p') resume(); return; }
+  if (k === 'escape' || k === 'p') return pause();
+  if ((k === ' ' || k === 'enter') && playing && !players[turn].bot) { e.preventDefault(); takeTurn(); }
+});
+</script>

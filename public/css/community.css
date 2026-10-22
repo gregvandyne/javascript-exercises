@@ -1,0 +1,133 @@
+/* Community: friends, profiles, chat, admin. Builds on the tokens in app.css. */
+ul.plain,ol.plain{list-style:none;margin:0;padding:0}
+.row.nowrap{flex-wrap:nowrap}
+.row.nowrap .input{flex:1;min-width:0}
+.who{display:flex;flex-direction:column;min-width:0;flex:1}
+.who .nm{font-weight:900;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.who .sub,.sub{font-size:.88rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ---------- Friends ---------- */
+.friends-top{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:16px}
+.friends-top .panel + .panel{margin-top:0}
+.codeinput{text-transform:uppercase;letter-spacing:.15em;font-weight:900;font-family:ui-monospace,Menlo,monospace}
+.codeinput::placeholder{letter-spacing:.15em;font-weight:700}
+.reqs{margin-top:16px}
+.reqs h2 .badge{vertical-align:middle;font-size:.85rem;height:24px;min-width:24px}
+.reqrow{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.reqrow:last-child{border-bottom:0}
+.reqrow .who{min-width:120px}
+.reqrow .acts{display:flex;gap:8px;flex-wrap:wrap}
+.friendgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr));gap:16px}
+.friendgrid .panel + .panel{margin-top:0}
+.friendcard{display:flex;flex-direction:column;gap:10px;min-width:0}
+.fc-who{display:flex;align-items:center;gap:12px;color:var(--ink);min-height:44px;min-width:0}
+.fc-who:hover{text-decoration:none}
+.fc-who:hover .nm{text-decoration:underline}
+.fc-playing{min-height:24px}
+.playing{display:inline-flex;align-items:center;gap:8px;font-weight:800;color:var(--ok);min-height:44px}
+.playing .dot{width:10px;height:10px;border-radius:50%;background:#4ade80;box-shadow:0 0 0 3px color-mix(in srgb,#4ade80 30%,transparent);flex:none}
+.fc-acts{display:flex;gap:8px;flex-wrap:wrap}
+.fc-acts .btn-ghost{margin-left:auto;color:var(--muted)}
+.fc-games h3{margin:4px 0 6px;font-size:.85rem;text-transform:uppercase;letter-spacing:.04em}
+.minigames{display:flex;gap:8px;overflow-x:auto;scrollbar-width:thin;padding-bottom:4px}
+.minigame{display:flex;align-items:center;gap:8px;min-height:44px;padding:4px 12px 4px 4px;border-radius:14px;background:var(--card-2);border:2px solid var(--line);color:var(--ink);font-weight:800;font-size:.9rem;white-space:nowrap;flex:none;max-width:220px}
+.minigame:hover{border-color:var(--blue);text-decoration:none}
+.mg-art{display:grid;place-items:center;width:36px;height:36px;border-radius:10px;font-size:1.3rem;flex:none}
+.mg-t{overflow:hidden;text-overflow:ellipsis}
+
+/* ---------- Profile ---------- */
+.profilehead{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.ph-main{flex:1;min-width:200px}
+.ph-main h1{margin:0}
+.ph-acts{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.badgelist{list-style:none;display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 0;padding:0}
+.pbadge{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:color-mix(in srgb,var(--sun) 28%,var(--card));color:var(--ink);font-weight:800;font-size:.9rem}
+.pstats{margin:18px 0 20px}
+
+/* ---------- Chat inbox ---------- */
+.chatcol{max-width:760px;margin:0 auto}
+.inbox{padding:6px}
+.inboxrow{display:flex;align-items:center;gap:12px;padding:10px;border-radius:14px;color:var(--ink);min-height:64px}
+.inboxrow:hover{background:var(--blue-50);text-decoration:none}
+.inbox li + li{border-top:1px solid var(--line)}
+.inboxrow.unread .nm{color:var(--blue)}
+.inboxrow.unread .sub{color:var(--ink);font-weight:800}
+.inboxrow .meta{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex:none}
+.inboxrow .time{font-size:.8rem;color:var(--muted);white-space:nowrap}
+.chatsafety{margin:0 0 14px}
+details.chatsafety summary{cursor:pointer;font-weight:900;min-height:28px;list-style-position:inside}
+details.chatsafety p{margin:6px 0 0}
+
+/* ---------- Chat thread ---------- */
+.chatpage{display:flex;flex-direction:column;max-width:760px;margin:0 auto;height:calc(100dvh - var(--top) - 100px);min-height:440px}
+@media (max-width:820px){
+  .chatpage{height:calc(100dvh - var(--top) - var(--tabbar) - 84px);min-height:380px}
+  body.chatmode .foot{display:none}
+  body.chatmode main.wrap{padding-top:8px;padding-bottom:8px}
+  body.chatmode .backlink{margin-bottom:0}
+}
+.threadhead{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.th-who{display:flex;align-items:center;gap:10px;color:var(--ink);flex:1;min-width:0;min-height:44px}
+.th-who:hover{text-decoration:none}
+.msgs{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding:14px 12px;background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);overscroll-behavior:contain}
+.msgs-empty{margin:auto 0}
+.msg{display:flex;align-items:flex-end;gap:6px;max-width:85%}
+.msg.mine{align-self:flex-end;flex-direction:row-reverse}
+.bubble{padding:9px 14px;border-radius:20px 20px 20px 6px;background:var(--card-2);border:1px solid var(--line);color:var(--ink);overflow-wrap:anywhere;font-size:1.02rem;line-height:1.35}
+.msg.mine .bubble{background:var(--blue);border-color:var(--blue);color:#fff;border-radius:20px 20px 6px 20px}
+.msg.quick .bubble{font-weight:800}
+.msg.emoji .bubble{font-size:2rem;background:transparent;border-color:transparent;padding:0 4px;line-height:1.1}
+.msg .when{font-size:.72rem;color:var(--muted);white-space:nowrap;margin-bottom:4px}
+.msg .rep{border:0;background:none;color:var(--muted);font-size:.78rem;font-weight:800;cursor:pointer;min-width:44px;min-height:44px;border-radius:12px;padding:0 6px;flex:none}
+.msg .rep:hover,.msg .rep:focus-visible{background:var(--blue-50);color:var(--danger)}
+.msg.pending .bubble{opacity:.6}
+.daysep{align-self:center;font-size:.78rem;color:var(--muted);font-weight:800;padding:4px 10px}
+.gameinvite{display:flex;flex-direction:column;gap:8px;width:210px;max-width:100%;padding:8px;border-radius:18px;background:var(--card-2);border:2px solid var(--line)}
+.msg.mine .gameinvite{border-color:var(--blue)}
+.gameinvite .gi-art{display:grid;place-items:center;height:72px;border-radius:12px;font-size:3rem}
+.gameinvite .gi-t{font-weight:900;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gameinvite .btn{min-height:44px}
+.gameinvite.gone{color:var(--muted);font-weight:700;padding:12px}
+.composer{padding-top:10px}
+.composer .quick{margin-bottom:8px}
+.sendrow{display:flex;gap:8px;align-items:center}
+.sendrow .input{flex:1;min-width:0;border-radius:999px;padding-left:18px}
+.sendrow .iconbtn{min-width:52px;flex:none}
+.sendrow .btn{flex:none}
+.sendinfo{display:flex;justify-content:space-between;gap:8px;min-height:22px;padding:2px 8px 0}
+.sendinfo .err{font-size:.92rem;color:var(--danger);font-weight:700}
+.cantchat{margin-top:12px}
+.gamepick{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+.gamepick button{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px;border-radius:16px;border:2px solid var(--line);background:var(--card);color:var(--ink);font:800 .9rem var(--font);cursor:pointer;min-height:44px}
+.gamepick button:hover{border-color:var(--blue)}
+.gamepick .gi-art{display:grid;place-items:center;width:64px;height:64px;border-radius:14px;font-size:2rem}
+.gamepick .t{overflow:hidden;text-overflow:ellipsis;max-width:100%;white-space:nowrap}
+
+/* ---------- Admin ---------- */
+.chip-s{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:999px;background:var(--blue-50);color:var(--ink);font-size:.82rem;font-weight:800}
+.chip-s.warn{background:color-mix(in srgb,var(--sun) 35%,var(--card))}
+.chip-s.bad{background:color-mix(in srgb,var(--danger) 18%,var(--card))}
+.reviewcard h2{margin:0 0 4px}
+.rc-head{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap}
+.rc-info{flex:1;min-width:220px}
+.rc-cover{width:90px;flex:none}
+.rc-cover.small{width:64px}
+.rc-cover .coverart{aspect-ratio:3/4;border-radius:14px;--art:2.4rem}
+.rc-body{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:16px;margin-top:14px}
+@media (max-width:900px){.rc-body{grid-template-columns:minmax(0,1fr)}}
+.rc-preview{height:440px;border-radius:14px;overflow:hidden;background:#000;box-shadow:var(--shadow)}
+.rc-preview iframe{width:100%;height:100%;border:0;display:block;background:#fff}
+.rc-checks h3{margin:4px 0 6px}
+.issues{margin:0 0 12px;padding-left:20px;font-size:.92rem}
+.issues .lvl-fail b{color:var(--danger)} .issues .lvl-flag b{color:var(--sun-600)}
+.scan-pass{color:var(--ok)} .scan-flag{color:var(--sun-600)} .scan-fail{color:var(--danger)}
+.ctx{list-style:none;margin:8px 0 12px;padding:0;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.ctx li{display:grid;grid-template-columns:110px minmax(0,1fr) auto;gap:8px;padding:8px 10px;border-bottom:1px solid var(--line);font-size:.92rem}
+.ctx li:last-child{border-bottom:0}
+.ctx li.hit{background:color-mix(in srgb,var(--danger) 14%,var(--card));font-weight:800}
+.ctx-who{font-weight:800;overflow:hidden;text-overflow:ellipsis}
+.ctx-body{overflow-wrap:anywhere}
+.ctx-time{font-size:.78rem;white-space:nowrap}
+@media (max-width:560px){.ctx li{grid-template-columns:minmax(0,1fr) auto}.ctx-body{grid-column:1/-1;grid-row:2}}
+.audit td{font-size:.9rem}
+.audit code{font-size:.82rem;background:var(--card-2);padding:2px 6px;border-radius:6px}

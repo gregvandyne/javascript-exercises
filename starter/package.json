@@ -1,0 +1,25 @@
+{
+  "name": "playloom",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Playloom: a kid-safe platform where anyone can play, build and publish web games with an AI game builder.",
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js",
+    "seed": "node scripts/seed.js",
+    "import-game": "node scripts/import-game.js",
+    "test": "node --test tests/unit/",
+    "test:e2e": "node tests/e2e/run.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.52.0",
+    "bcryptjs": "^2.4.3",
+    "better-sqlite3": "^11.9.1",
+    "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "playwright": "^1.52.0"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "slug": "shark-plank",
+  "title": "Shark Plank",
+  "icon": "🦈",
+  "cover": "ocean",
+  "category": "words",
+  "tags": "hangman,spelling,reading,early readers,shark,letters",
+  "description": "A hangman game for kids who are just learning to read. Pick a letter, hear the word read aloud, and keep your explorer off the plank. Guess wrong too many times and the shark jumps out of the water! Earn stars for every word you solve.",
+  "orientation": "any",
+  "players_max": 1,
+  "age_rating": "everyone",
+  "featured": true,
+  "notes": "Uses localStorage key 'shark-plank-stars' for the star total and speechSynthesis for read-aloud (fine inside the sandbox). Loads Google Fonts (Andika, Fredoka)."
+}

@@ -1,38 +1,80 @@
-# JavaScript Exercises
+# BRB Gaming
 
-These JavaScript exercises are intended to complement the JavaScript content on The Odin Project (TOP). They should only be done when instructed during the course of the curriculum.
+A free, kid-safe website where anyone can **play** web games and **build** their own by talking to an AI Builder (Claude).
+Think "Roblox for web games", for a 7-year-old, a 12-year-old and their parent sharing one phone.
 
-**Note:** The `generator-exercise` file is not actually an exercise; it is a script that generates exercises. It was created to help efficiently write these exercises.
+- **Play**: one-tap guest play, home rails, search (games and builders), ratings, likes, leaderboards, live "N playing" counts, cloud saves.
+- **Build**: the Studio — chat with the Builder, live sandboxed preview, version history with restore, Private / Friends / Everyone sharing, and **updates to games you already published** (players keep the old version while an update is reviewed).
+- **Friends + chat**: add friends by a 6-character code; friends-only, filtered text chat with quick-chat chips, block and report.
+- **Safety**: every game runs in an opaque-origin sandbox with a strict CSP and no network; every version is scanned; public games are reviewed; reports auto-hide games; an admin panel handles review, reports, chat reports, bans and the audit log.
+- **Money**: two quiet "Sponsored" card placements fund the platform; builders earn a share by plays of their games (creator dashboard, payout requests).
 
-## Contributing
+## Run it locally (Node 22)
 
-If you have a suggestion to improve an exercise, an idea for a new exercise, or notice an issue with an exercise, please feel free to open an issue after thoroughly reading our [contributing guide](https://github.com/TheOdinProject/.github/blob/main/CONTRIBUTING.md).
+```bash
+npm install && npm run seed && npm start
+# open http://localhost:3000
+```
 
-## How To Use These Exercises
+`npm run seed` creates the admin account (prints a random password unless you set `ADMIN_PASSWORD`), the official **BRB Gaming** builder account, and the three featured games (Shark Plank, Ring Rumble, Footy Tycoon). It is safe to re-run.
 
+No API key is needed: without `ANTHROPIC_API_KEY` the Builder uses a built-in mock that still makes real, playable games from templates, and public publishing goes to the human review queue.
 
-1. Fork and clone this repository. To learn how to fork a repository, see the GitHub documentation on how to [fork a repo](https://docs.github.com/en/get-started/quickstart/fork-a-repo).
-   - Copies of repositories on your machine are called clones. If you need help cloning to your local environment you can learn how from the GitHub documentation on [cloning a repository](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository-from-github/cloning-a-repository).
-2. Before you start working on any exercises, you should first ensure you have the following installed:
-   - **NPM**. You should have installed NPM already in our [Installing Node.js](https://www.theodinproject.com/paths/foundations/courses/foundations/lessons/installing-node-js) lesson. Just in case you need to check, type `npm --version` in your terminal. If you get back `Command 'npm' not found, but can be installed with:`, **do not follow the instructions in the terminal** to install with `apt-get` as this causes permission issues. Instead, go back to the installation lesson and install Node with NVM by following the instructions there.
-   - **Jest**. After cloning this repository to your local machine and installing NPM, go into the newly created directory (`cd javascript-exercises`) and run `npm install`. This will install Jest and set up the testing platform based on our preconfigured settings. (Note: if you get warnings that packages are out of date or contain vulnerabilities, you can safely ignore them for these exercises.)
-   
-3. Each exercise includes the following:
+## Tests
 
-   - A markdown file with a description of the task, an empty (or mostly empty) JavaScript file, and a set of tests.
-   - A `solutions` directory that contains a solution and the same test file with all of the tests unskipped.
+```bash
+npm test             # unit + safety suites (node:test, in-memory DB)
+npm run test:e2e     # Playwright end-to-end (starts its own server + temp DB, mock Builder)
+npm run screenshots  # BASE=http://localhost:3000 ADMIN_PASSWORD=... → screenshots/ at 390/1280 px, light/dark
+```
 
-   To complete an exercise, you'll need to go to the exercise directory with `cd exerciseName` in the terminal and run `npm test exerciseName.spec.js`. This should run the test file and show you the output. When you first run a test, it will fail. This is by design! You must open the exercise file and write the code needed to get the test to pass.
-4. Some of the exercises have test conditions defined in their spec file as `test.skip` compared to `test`. This is purposeful. After you pass one `test`, you will change the next `test.skip` to `test` and test your code again. You'll do this until all conditions are satisfied. **All tests must pass at the same time**, and you should not have any `test.skip` instances by the time you finish an exercise.
-5. Once you successfully finish an exercise, check the `solutions` directory within each exercise to compare it with yours.
-   - You should not be checking the solution for an exercise until you finish it!
-   - Keep in mind that TOP's solution is not the only solution. Generally as long as all of the tests pass, your solution should be fine.
-6. Do not submit your solutions to this repo, as any PRs that do so will be closed without merging.
+In environments with a pre-installed Chromium at `/opt/pw-browsers`, the e2e config uses it automatically; otherwise run `npx playwright install chromium` once.
 
-**Note**: Due to the way Jest handles failed tests, it may return an exit code of 1 if any tests fail. NPM will interpret this as an error and you may see some `npm ERR!` messages after Jest runs. You can ignore these, or run your test with `npm test exerciseName.spec.js --silent` to supress the errors.
+## Configuration (env vars)
 
-The first exercise, `helloWorld`, will walk you through the process in-depth.
+| Variable | Default | What it does |
+|---|---|---|
+| `PORT` | `3000` | HTTP port |
+| `BRB_DATA_DIR` | `./data` | Where the SQLite file (`brb.db`) and backups live. Use a persistent disk in production. |
+| `SESSION_SECRET` | random, stored in DB | Signs session cookies and game-frame tokens. Set it in production. |
+| `ANTHROPIC_API_KEY` | – | Enables the real Builder, input screening classifier and model review. |
+| `BUILDER_MODEL` / `BUILDER_PRO_MODEL` | `claude-sonnet-5-5` / `claude-opus-5-5` | Builder models (normal / "Pro quality"). |
+| `BUILDER_DAILY_TURNS` | `60` | Builder turns per user per day. |
+| `BUILDER_MAX_TOKENS` | `32000` | Max output tokens per Builder turn. |
+| `ADMIN_USERNAME` / `ADMIN_PASSWORD` | `admin` / random | Admin account created by `npm run seed`. |
+| `AD_ECPM_CENTS` | `200` | Revenue per 1000 ad impressions, in cents. |
+| `BUILDER_SHARE` | `0.7` | Builders' share of ad revenue. |
+| `PAYOUT_THRESHOLD_CENTS` | `1000` | Minimum balance for a payout request ($10). |
+| `AD_IP_DAILY_CAP` | `200` | Max counted ad impressions per IP per day. |
+| `BRB_AD_PROVIDER` | `house` | Ad provider (`house` = BRB's own promos; adapter point for a kid-safe network in `server/services/ads/`). |
+| `PAYOUT_PROVIDER` | `manual` | Payout adapter (Stripe Connect is designed but stubbed). |
+| `CHAT_DAILY_LIMIT` | `300` | Max chat messages per user per day. |
+| `REPORTS_TO_HIDE` | `3` | Open reports from different players that auto-hide a game. |
+| `POSTHOG_KEY` / `POSTHOG_HOST` | – | Optional product analytics (off unless set; never sends usernames or text). |
+| `LOG_REQUESTS` | `1` | `0` turns off the JSON request log. |
+| `TRUST_PROXY` | `1` | Set `0` if not behind a proxy. |
 
-## Debugging
+## Deploy
 
-To debug functions, you can run the tests in the Visual Studio Code debugger terminal. You can open this by clicking the "Run and Debug" icon on the left or pressing <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>D</kbd>, then clicking JavaScript Debug Terminal. You will be able to set breakpoints as you would in the Chrome DevTools debugger. You can run `npm test exerciseName.spec.js` to then execute your code up until your breakpoint and step through your code as necessary. **NOTE**: To take advantage of the debugger, you **MUST** run the script in the debugger terminal, not the bash or zsh terminal.
+**Docker**: `docker build -t brb-gaming . && docker run -p 3000:3000 -v brb-data:/data -e ADMIN_PASSWORD=... -e SESSION_SECRET=... brb-gaming`. The container seeds on boot (idempotent) and stores everything in `/data`.
+
+**Render**: push the repo and create a Blueprint from `render.yaml` (one web service + a 2 GB persistent disk at `/data`). Set `ADMIN_PASSWORD` and optionally `ANTHROPIC_API_KEY` in the dashboard.
+
+**Ops**: `GET /health`; JSON request logs on stdout; graceful shutdown on SIGTERM; `npm run backup` (online SQLite backup, keeps 14); earnings roll-up runs on a schedule and from the admin Money page (`npm run rollup [YYYY-MM-DD]` by hand).
+
+## Layout
+
+```
+server/            app factory (app.js), entry (index.js), db.js, auth.js, config.js
+  routes/          auth, discover (home/search), games (game/play/frame/APIs), studio, social, chat, admin, ads, creator, info
+  services/        games, publish, scanner, sanitize, frame, presence, textfilter, ratelimit, review, chat, friends, moderation, ads, earnings, payouts, jobs, log
+  builder/         Builder agent loop, providers (Claude + mock), screening, templates/
+  views/           layout + components (server-rendered HTML)
+public/            css/app.css (design system), js/ (one small module per page), sdk/brb-sdk.js (in-frame SDK), fonts, icons
+seed-games/        the three launch games (HTML + metadata JSON)
+scripts/           seed.js, import-game.js, backup.js, rollup.js, screenshots.js
+tests/             unit/, safety/, e2e/
+docs/              build-graph.md, decisions.md, status.md, safety.md, sdk.md, brief/
+```
+
+See `docs/status.md` for what works and known limits, and `docs/decisions.md` for choices that need the owner's confirmation.

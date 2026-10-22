@@ -1,0 +1,94 @@
+<title>Catch the Falling Things</title>
+<style>
+:root{--sky1:#8fd8ff;--sky2:#fff3d6;--ink:#152036;--btn:#2f6bff;--good:#16a34a}
+[hidden]{display:none!important}
+body{margin:0;overflow:hidden;background:linear-gradient(180deg,var(--sky1),var(--sky2));font-family:"Trebuchet MS",system-ui,sans-serif;color:var(--ink);touch-action:none;user-select:none;-webkit-user-select:none}
+canvas{display:block;margin:0 auto}
+.hud{position:fixed;top:8px;left:8px;right:8px;display:flex;gap:8px;align-items:center;justify-content:space-between;pointer-events:none;font-weight:800;font-size:20px}
+.hud .pill{background:rgba(255,255,255,.85);border-radius:999px;padding:6px 14px;box-shadow:0 3px 0 rgba(0,0,0,.12)}
+.hud button{pointer-events:auto;width:48px;height:48px;border-radius:50%;border:0;background:#fff;font-size:22px;box-shadow:0 3px 0 rgba(0,0,0,.15);cursor:pointer}
+.screen{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:14px;padding:24px;background:rgba(255,255,255,.55);backdrop-filter:blur(3px)}
+.screen h1{font-size:clamp(32px,9vw,60px);margin:0;color:#1a45b8;text-shadow:0 4px 0 #fff}
+.screen p{font-size:20px;margin:0;max-width:420px;font-weight:700}
+.big{font-size:64px;line-height:1}
+.play{min-width:200px;min-height:64px;border:0;border-radius:22px;background:var(--btn);color:#fff;font-size:28px;font-weight:900;box-shadow:0 6px 0 #1a45b8;cursor:pointer}
+.play:active{transform:translateY(3px);box-shadow:0 3px 0 #1a45b8}
+</style>
+<canvas id="cv" aria-label="Game area"></canvas>
+<div class="hud" id="hud" hidden>
+  <span class="pill" id="score">⭐ 0</span><span class="pill" id="lives">❤️❤️❤️</span><span class="pill" id="time">⏱ 60</span>
+  <span><button id="pause" aria-label="Pause">⏸</button> <button id="mute" aria-label="Sound on or off">🔊</button></span>
+</div>
+<div class="screen" id="title">
+  <div class="big">🧺</div>
+  <h1 id="name">Catch the Falling Things</h1>
+  <p>Slide to catch the 🍎. Dodge the 🪨!</p>
+  <button class="play" id="start">▶ Play</button>
+  <p style="font-size:16px;font-weight:400">Drag, tap or use ← → keys</p>
+</div>
+<div class="screen" id="paused" hidden><h1>Paused</h1><button class="play" id="resume">▶ Keep going</button></div>
+<div class="screen" id="results" hidden>
+  <div class="big" id="rbig">🏆</div><h1 id="rtitle">Great job!</h1><p id="rtext"></p>
+  <button class="play" id="again">↻ Play again</button>
+</div>
+<script>
+(function () {
+  var CONFIG = { roundSeconds: 60, lives: 3, good: '🍎', bad: '🪨', hero: '🧺', startSpeed: 160, ramp: 4 };
+  var cv = document.getElementById('cv'), ctx = cv.getContext('2d'), W = 400, H = 640;
+  var fit = BRB.fx.fit(cv, W, H);
+  var $ = function (id) { return document.getElementById(id); };
+  var state = 'title', score = 0, lives = CONFIG.lives, timeLeft = CONFIG.roundSeconds, items = [], parts = [], heroX = W / 2, keys = {}, spawn = 0, last = 0, best = +(BRB.storage.get('best') || 0);
+  function show(id) { ['title', 'paused', 'results'].forEach(function (s) { $(s).hidden = s !== id; }); $('hud').hidden = state !== 'play' && state !== 'paused'; }
+  function start() { score = 0; lives = CONFIG.lives; timeLeft = CONFIG.roundSeconds; items = []; parts = []; spawn = 0; state = 'play'; show(null); BRB.sfx.play('click'); hud(); }
+  function hud() { $('score').textContent = '⭐ ' + score; $('lives').textContent = lives > 0 ? new Array(lives + 1).join('❤️') : '💔'; $('time').textContent = '⏱ ' + Math.ceil(timeLeft); }
+  function end() {
+    state = 'over'; var won = score >= 15; if (score > best) { best = score; BRB.storage.set('best', best); }
+    $('rbig').textContent = won ? '🏆' : '🌟'; $('rtitle').textContent = won ? 'Amazing catching!' : 'Nice try!';
+    $('rtext').textContent = 'You caught ' + score + '. Best: ' + best + '.';
+    show('results'); BRB.sfx.play(won ? 'win' : 'lose'); if (won) BRB.fx.confetti(); BRB.gameOver({ won: won, score: score });
+  }
+  function burst(x, y, col) { for (var i = 0; i < 12; i++) parts.push({ x: x, y: y, vx: (Math.random() - .5) * 300, vy: -Math.random() * 300, life: .6, col: col }); }
+  function point(e) { var r = cv.getBoundingClientRect(); return (e.clientX - r.left) / r.width * W; }
+  cv.addEventListener('pointerdown', function (e) { heroX = point(e); });
+  cv.addEventListener('pointermove', function (e) { if (e.buttons || e.pointerType === 'touch' || e.pointerType === 'mouse') heroX = point(e); });
+  addEventListener('keydown', function (e) { keys[e.key] = true; if (e.key === 'p' || e.key === 'Escape') togglePause(); });
+  addEventListener('keyup', function (e) { keys[e.key] = false; });
+  function togglePause() { if (state === 'play') { state = 'paused'; show('paused'); $('hud').hidden = false; } else if (state === 'paused') { state = 'play'; show(null); } }
+  $('start').onclick = start; $('again').onclick = start; $('resume').onclick = togglePause; $('pause').onclick = togglePause;
+  $('mute').onclick = function () { var m = BRB.sfx.mute(); $('mute').textContent = m ? '🔇' : '🔊'; };
+  $('mute').textContent = BRB.sfx.muted ? '🔇' : '🔊';
+  function step(dt) {
+    if (keys.ArrowLeft || keys.a) heroX -= 420 * dt; if (keys.ArrowRight || keys.d) heroX += 420 * dt;
+    heroX = Math.max(30, Math.min(W - 30, heroX));
+    timeLeft -= dt; spawn -= dt;
+    var speed = CONFIG.startSpeed + (CONFIG.roundSeconds - timeLeft) * CONFIG.ramp;
+    if (spawn <= 0) { spawn = Math.max(.35, .9 - (CONFIG.roundSeconds - timeLeft) / 120); items.push({ x: 30 + Math.random() * (W - 60), y: -30, bad: Math.random() < .28, v: speed * (.8 + Math.random() * .5), r: Math.random() * 6 }); }
+    for (var i = items.length - 1; i >= 0; i--) {
+      var it = items[i]; it.y += it.v * dt; it.r += dt * 2;
+      if (it.y > H - 90 && it.y < H - 40 && Math.abs(it.x - heroX) < 44) {
+        items.splice(i, 1);
+        if (it.bad) { lives--; BRB.sfx.play('hit'); BRB.fx.shake(cv, 10); burst(it.x, it.y, '#7c7c7c'); }
+        else { score++; BRB.sfx.play('coin'); burst(it.x, it.y, '#ff5c5c'); }
+        hud(); continue;
+      }
+      if (it.y > H + 40) items.splice(i, 1);
+    }
+    parts.forEach(function (p) { p.vy += 600 * dt; p.x += p.vx * dt; p.y += p.vy * dt; p.life -= dt; });
+    parts = parts.filter(function (p) { return p.life > 0; });
+    if (lives <= 0 || timeLeft <= 0) { hud(); end(); }
+    else if (Math.ceil(timeLeft) !== Math.ceil(timeLeft + dt)) hud();
+  }
+  function draw(t) {
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = '#9be37a'; ctx.fillRect(0, H - 40, W, 40);
+    ctx.font = '40px serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    for (var c = 0; c < 3; c++) { ctx.globalAlpha = .7; ctx.fillText('☁️', (c * 160 + t / 40) % (W + 80) - 40, 70 + c * 60); }
+    ctx.globalAlpha = 1;
+    items.forEach(function (it) { ctx.save(); ctx.translate(it.x, it.y); ctx.rotate(Math.sin(it.r) * .3); ctx.font = '44px serif'; ctx.fillText(it.bad ? CONFIG.bad : CONFIG.good, 0, 0); ctx.restore(); });
+    parts.forEach(function (p) { ctx.globalAlpha = Math.max(0, p.life / .6); ctx.fillStyle = p.col; ctx.beginPath(); ctx.arc(p.x, p.y, 5, 0, 7); ctx.fill(); });
+    ctx.globalAlpha = 1; ctx.font = '64px serif'; ctx.fillText(CONFIG.hero, heroX, H - 70);
+  }
+  function loop(ts) { var dt = Math.min(.05, (ts - (last || ts)) / 1000); last = ts; if (state === 'play') step(dt); draw(ts); requestAnimationFrame(loop); }
+  requestAnimationFrame(loop); show('title'); void fit;
+})();
+</script>
