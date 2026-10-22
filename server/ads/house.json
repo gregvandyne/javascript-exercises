@@ -1,0 +1,22 @@
+{
+  "_about": "BRB Gaming's own promos (the 'house' ad provider). Internal links only, kid-appropriate, no tracking. 'categories': shown first on pages of those categories (contextual only); empty = fits anywhere. 'placements': where it may appear ('grid', 'game'). 'needsAccount': hide from guests/signed-out visitors because the link needs a free account.",
+  "ads": [
+    { "id": "house-build", "title": "Make your own game", "text": "Tell our Builder your idea. It makes the game!", "icon": "🛠️", "href": "/build", "categories": [], "placements": ["grid", "game"] },
+    { "id": "house-friends", "title": "Invite a friend", "text": "Share your friend code and play together.", "icon": "👫", "href": "/friends", "categories": [], "placements": ["grid", "game"], "needsAccount": true },
+    { "id": "house-new", "title": "New this week", "text": "Fresh games made by builders like you.", "icon": "✨", "href": "/search?sort=new", "categories": [], "placements": ["grid", "game"] },
+    { "id": "house-rate", "title": "Rate a game you love", "text": "Tap the stars to help other players find it.", "icon": "⭐", "href": "/search?sort=rated", "categories": [], "placements": ["grid", "game"] },
+    { "id": "house-words", "title": "Try a word game", "text": "Spell, guess and find hidden words.", "icon": "🔤", "href": "/search?cat=words", "categories": ["puzzle", "learning", "board"], "placements": ["grid", "game"] },
+    { "id": "house-build-words", "title": "Build a word game", "text": "Turn your spelling list into a game!", "icon": "✏️", "href": "/build", "categories": ["words", "learning"], "placements": ["grid", "game"] },
+    { "id": "house-puzzle", "title": "Puzzle time", "text": "Brain teasers for quick thinkers.", "icon": "🧩", "href": "/search?cat=puzzle", "categories": ["words", "board", "learning"], "placements": ["grid", "game"] },
+    { "id": "house-sports", "title": "Score a goal", "text": "Sports games for every season.", "icon": "⚽", "href": "/search?cat=sports", "categories": ["arcade", "adventure"], "placements": ["grid", "game"] },
+    { "id": "house-build-sports", "title": "Build a sports game", "text": "Pick a sport. The Builder does the rest.", "icon": "🏟️", "href": "/build", "categories": ["sports"], "placements": ["grid", "game"] },
+    { "id": "house-arcade", "title": "Arcade classics", "text": "Jump, dodge and beat your best score.", "icon": "🕹️", "href": "/search?cat=arcade", "categories": ["sports", "silly", "music"], "placements": ["grid", "game"] },
+    { "id": "house-build-arcade", "title": "Build an arcade game", "text": "Dodge, jump, collect. You pick the rules!", "icon": "👾", "href": "/build", "categories": ["arcade", "adventure"], "placements": ["grid", "game"] },
+    { "id": "house-adventure", "title": "Go on an adventure", "text": "Explore maps, find treasure, be brave.", "icon": "🗺️", "href": "/search?cat=adventure", "categories": ["arcade", "puzzle"], "placements": ["grid", "game"] },
+    { "id": "house-learning", "title": "Learn while you play", "text": "Maths, science and more, made fun.", "icon": "📚", "href": "/search?cat=learning", "categories": ["words", "puzzle"], "placements": ["grid", "game"] },
+    { "id": "house-music", "title": "Make some music", "text": "Tap the beat and play a tune.", "icon": "🎵", "href": "/search?cat=music", "categories": ["silly", "learning"], "placements": ["grid", "game"] },
+    { "id": "house-silly", "title": "Something silly", "text": "Games that will make you giggle.", "icon": "🤪", "href": "/search?cat=silly", "categories": ["music", "arcade"], "placements": ["grid", "game"] },
+    { "id": "house-board", "title": "Board game night", "text": "Classic games to play with family.", "icon": "🎲", "href": "/search?cat=board", "categories": ["puzzle", "words"], "placements": ["grid", "game"] },
+    { "id": "house-playing", "title": "Playing right now", "text": "See what everyone is playing today.", "icon": "🟢", "href": "/search?sort=playing", "categories": [], "placements": ["grid"] }
+  ]
+}

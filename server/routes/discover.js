@@ -34,7 +34,7 @@ router.get('/', (req, res) => {
         <a class="btn btn-ghost btn-big" href="/build">🛠️ Build a game</a>
       </div>
     </div>
-    ${hero ? html`<a href="/g/${hero.slug}" aria-label="About ${hero.title}" style="display:block;max-width:260px;justify-self:center;width:100%">${coverArt(hero, '')}</a>` : ''}
+    ${hero ? html`<a class="heroart" href="/g/${hero.slug}" aria-label="About ${hero.title}">${coverArt(hero, '')}</a>` : ''}
   </section>
   <div class="chips scroll" role="list" aria-label="Categories" style="margin-bottom:18px">
     ${games.CATEGORIES.map(([k, e, l]) => html`<a class="chip" role="listitem" href="/search?cat=${k}"><span aria-hidden="true">${e}</span>${l}</a>`)}

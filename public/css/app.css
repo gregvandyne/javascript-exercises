@@ -286,3 +286,7 @@ table.tbl{width:100%;border-collapse:collapse;font-size:.95rem}
 .tbl th,.tbl td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:top}
 .tbl th{font-size:.82rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
 .tblwrap{overflow-x:auto}
+.hero .coverart{aspect-ratio:3/4;border-radius:var(--r-lg);--art:clamp(5rem,9vw,7.5rem);box-shadow:0 12px 30px rgba(0,0,0,.3);transform:rotate(3deg)}
+.hero .heroart{display:block;max-width:230px;width:100%;justify-self:center}
+.hero .heroart:hover .coverart{transform:rotate(0) scale(1.03)}
+.hero .coverart{transition:transform .2s}

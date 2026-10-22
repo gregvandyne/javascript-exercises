@@ -14,9 +14,9 @@
     "import-game": "node scripts/import-game.js",
     "backup": "node scripts/backup.js",
     "rollup": "node scripts/rollup.js",
-    "test": "node --test tests/unit/ tests/safety/",
-    "test:unit": "node --test tests/unit/",
-    "test:safety": "node --test tests/safety/",
+    "test": "node --test tests/unit/*.test.js tests/safety/*.test.js",
+    "test:unit": "node --test tests/unit/*.test.js",
+    "test:safety": "node --test tests/safety/*.test.js",
     "test:e2e": "playwright test",
     "screenshots": "node scripts/screenshots.js"
   },
