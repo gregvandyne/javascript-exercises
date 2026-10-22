@@ -1,0 +1,14 @@
+{
+  "slug": "footy-tycoon",
+  "title": "Footy Tycoon",
+  "icon": "⚽",
+  "cover": "night",
+  "category": "board",
+  "tags": "soccer,football,board game,property,trading,trophies,legends,socopoly",
+  "description": "Soccer meets a property-trading board game. Roll the 3D dice, buy star players and championships, score goals with Shoot cards, make trades, dodge the red card sin bin, and be the first to three check marks. Play Normal or Legends mode with 2 to 4 people, add a bot, and spend the trophies you win in the Trophy Shop.",
+  "orientation": "any",
+  "players_max": 4,
+  "age_rating": "everyone",
+  "featured": true,
+  "notes": "Saves the game in localStorage key 'footy-tycoon-v3' and the trophy wallet in 'footy-wallet-v1'; both must round-trip through the SDK storage shim so the Trophy Shop persists per user. Player rosters are original cartoon characters. Loads Google Fonts (Bungee, Nunito)."
+}

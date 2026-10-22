@@ -1,0 +1,14 @@
+{
+  "slug": "ring-rumble",
+  "title": "Ring Rumble",
+  "icon": "🤼",
+  "cover": "lava",
+  "category": "arcade",
+  "tags": "wrestling,fighting,2 player,same screen,landscape,arcade",
+  "description": "Pick one of eight original cartoon wrestlers and battle a friend on the same screen, or take on the CPU. Punches, grabs, slams, taunts and a huge finisher, all in a packed arena. Best in landscape.",
+  "orientation": "landscape",
+  "players_max": 2,
+  "age_rating": "everyone",
+  "featured": true,
+  "notes": "Calls element.requestFullscreen() from its fullscreen button; route it through the SDK. Two players share one keyboard or the on-screen touch pads. Loads Google Fonts (Bangers, Rubik). Cartoon slapstick only, no blood."
+}
