@@ -27,11 +27,12 @@ L3                                    D  Docker, render.yaml, README, docs (lead
 | F5 seeds | lead | `scripts/seed.js`, `scripts/import-game.js`, `seed-games/*` | F1,F4 | seed runs; 3 games play in sandbox | done |
 | F6 discovery | lead | `routes/discover.js`, `services/games.js`, `services/presence.js`, `public/js/search.js`, `public/js/game.js` | F1 | e2e search by title + builder | done |
 | P publish | lead | `services/publish.js` (publish, update, approve, reject) | F1,F4 | `tests/unit/publish.test.js` | done |
-| S studio | subagent | `server/builder/*`, `server/services/review.js`, `server/routes/studio.js`, `public/js/studio.js`, `server/builder/templates/*`, `tests/safety/*`, `tests/unit/builder*.test.js` | F1–F4, P | mock-provider flow: questions → chips → game → edit → v2 → restore → publish | in progress |
-| C community | subagent | `server/routes/social.js`, `server/routes/chat.js`, `server/routes/admin.js`, `server/services/{friends,chat,moderation}.js`, `public/js/{friends,chat,profile,admin}.js`, `tests/unit/{chat,friends}.test.js` | F1,F2,P | friends-only visibility; chat filter; admin approve; reports | in progress |
-| M money | subagent | `server/services/ads.js`, `server/services/earnings.js`, `server/routes/ads.js`, `server/routes/creator.js`, `public/js/ads.js`, `public/js/creator.js`, `data/house-ads.json`→`server/ads/house.json`, `scripts/rollup.js`, `tests/unit/earnings.test.js` | F1,F6 | beacon → ledger → dashboard | in progress |
-| I integration | lead | `tests/e2e/*`, `playwright.config.js` | all | all green | todo |
-| D deploy | lead | `Dockerfile`, `render.yaml`, `README.md`, `scripts/backup.js` | I | container boots | todo |
+| S studio (+ uploads, migration 0002_studio_uploads) | subagent | `server/builder/*`, `server/services/review.js`, `server/routes/studio.js`, `public/js/studio.js`, `server/builder/templates/*`, `tests/safety/*`, `tests/unit/builder*.test.js` | F1–F4, P | mock-provider flow: questions → chips → game → edit → v2 → restore → publish | done |
+| C community | subagent | `server/routes/social.js`, `server/routes/chat.js`, `server/routes/admin.js`, `server/services/{friends,chat,moderation}.js`, `public/js/{friends,chat,profile,admin}.js`, `tests/unit/{chat,friends}.test.js` | F1,F2,P | friends-only visibility; chat filter; admin approve; reports | done |
+| M money | subagent | `server/services/ads.js`, `server/services/earnings.js`, `server/routes/ads.js`, `server/routes/creator.js`, `public/js/ads.js`, `public/js/creator.js`, `data/house-ads.json`→`server/ads/house.json`, `scripts/rollup.js`, `tests/unit/earnings.test.js` | F1,F6 | beacon → ledger → dashboard | done |
+| T templates | subagent | `server/builder/templates/*`, `tests/unit/templates.test.js` | F4 | 7 templates pass scan, played to results in sandbox | done |
+| I integration | lead + subagent | `tests/e2e/*`, `playwright.config.js` | all | full e2e suite green twice | in progress |
+| D deploy | lead | `Dockerfile`, `render.yaml`, `README.md`, `scripts/backup.js` | I | container boots | done (see status.md) |
 
 ## Contracts L1 nodes must not change
 
