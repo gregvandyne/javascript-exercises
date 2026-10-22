@@ -46,6 +46,8 @@ In environments with a pre-installed Chromium at `/opt/pw-browsers`, the e2e con
 | `BUILDER_SHARE` | `0.7` | Builders' share of ad revenue. |
 | `PAYOUT_THRESHOLD_CENTS` | `1000` | Minimum balance for a payout request ($10). |
 | `AD_IP_DAILY_CAP` | `200` | Max counted ad impressions per IP per day. |
+| `BRB_AD_PROVIDER` | `house` | Ad provider (`house` = BRB's own promos; adapter point for a kid-safe network in `server/services/ads/`). |
+| `PAYOUT_PROVIDER` | `manual` | Payout adapter (Stripe Connect is designed but stubbed). |
 | `CHAT_DAILY_LIMIT` | `300` | Max chat messages per user per day. |
 | `REPORTS_TO_HIDE` | `3` | Open reports from different players that auto-hide a game. |
 | `POSTHOG_KEY` / `POSTHOG_HOST` | – | Optional product analytics (off unless set; never sends usernames or text). |
