@@ -79,10 +79,10 @@ export function scanVersion(html) {
     if (/^http:\/\/www\.w3\.org\//i.test(full)) continue; // SVG/XHTML namespaces
     if (!ALLOWED_URL.test(full)) { issues.push({ level: 'fail', code: 'external_url', message: `Links to the outside web (${full.slice(0, 60)}).` }); break; }
   }
-  if (/<script\b[^>]*\bsrc\s*=\s*["']?(?!https:\/\/cdnjs\.cloudflare\.com\/)/i.test(src)) issues.push({ level: 'fail', code: 'external_script', message: 'Loads a script from somewhere we do not allow.' });
+  if (/<script\b[^>]*\bsrc\s*=\s*["']?(?!["']|https:\/\/cdnjs\.cloudflare\.com\/)/i.test(src)) issues.push({ level: 'fail', code: 'external_script', message: 'Loads a script from somewhere we do not allow.' });
   if (/<a\b[^>]*\bhref\s*=\s*["']?(https?:|\/\/|mailto:|tel:|javascript:)/i.test(src)) issues.push({ level: 'fail', code: 'link', message: 'Has a link that leaves the game.' });
   // Visible text and string literals: profanity and personal-info requests.
-  const text = visibleText(src); const literals = stringLiterals(src);
+  const text = visibleText(src).slice(0, 200000); const literals = stringLiterals(src).slice(0, 5000);
   const bad = [text, ...literals].find(s => hasProfanity(s));
   if (bad) issues.push({ level: 'fail', code: 'profanity', message: 'Has words that are not allowed.' });
   const askPI = [text, ...literals].find(s => PERSONAL_PROMPT.test(s));

@@ -17,7 +17,7 @@ export function normalise(s) {
 function stripSafe(t) { for (const w of SAFE) t = t.split(w).join(' '); return t; }
 /** true if the text contains blocked words, including spaced-out or leetspeak versions. */
 export function hasProfanity(s, { names = false } = {}) {
-  const base = stripSafe(normalise(s));
+  const base = stripSafe(normalise(String(s || '').slice(0, 200000)));
   const words = base.replace(/[^a-z]+/g, ' ');
   const squashed = base.replace(/[^a-z]/g, '');
   const list = names ? [...BLOCK, ...NAME_ONLY] : BLOCK;
@@ -33,9 +33,9 @@ export function hasProfanity(s, { names = false } = {}) {
 }
 /** Personal info: phone numbers, emails, street addresses, social handles, links. */
 export function personalInfo(s) {
-  const t = String(s || '');
+  const t = String(s || '').slice(0, 20000);
   if (/(^|[^\d.])(\+?\d{1,3}[\s.-]?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{3,4}(?![\d.])/.test(t) || /\d{7,}/.test(t) || /\b0\d{3,4}[\s-]?\d{6}\b/.test(t)) return 'phone';
-  if (/[a-z0-9._%+-]+\s*(@|\(at\)|\[at\])\s*[a-z0-9-]+\s*(\.|dot)\s*[a-z]{2,}/i.test(t)) return 'email';
+  if (/[a-z0-9._%+-]{1,64}\s{0,3}(@|\(at\)|\[at\])\s{0,3}[a-z0-9-]{1,63}\s{0,3}(\.|dot)\s{0,3}[a-z]{2,}/i.test(t)) return 'email';
   if (/(https?:\/\/|www\.|\b[a-z0-9-]+\.(com|net|org|io|gg|co|uk|me|tv|app|xyz|ly)\b)/i.test(t)) return 'link';
   if (/\b\d{1,5}\s+[a-z]+\s+(street|st|road|rd|avenue|ave|lane|ln|drive|dr|court|ct|way|close|crescent)\b/i.test(t)) return 'address';
   if (/\b(snap(chat)?|insta(gram)?|tiktok|discord|whatsapp|kik|telegram|facebook|fb|my number|phone number|gmail|hotmail|yahoo|outlook|icloud|where do you live|what school|home address|meet (me|up))\b/i.test(t)) return 'contact';

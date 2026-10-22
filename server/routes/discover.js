@@ -40,7 +40,7 @@ router.get('/', (req, res) => {
     ${games.CATEGORIES.map(([k, e, l]) => html`<a class="chip" role="listitem" href="/search?cat=${k}"><span aria-hidden="true">${e}</span>${l}</a>`)}
   </div>
   ${rails.some(r => r) ? rails : emptyState({ emoji: '🎮', title: 'No games yet', text: 'Be the first to build one!', action: { href: '/build', label: 'Build a game' } })}`;
-  page(req, res, { title: '', active: 'home', body });
+  page(req, res, { title: '', active: 'home', body, scripts: ['/js/ads.js'] });
 });
 
 function searchResults(req) {
@@ -75,7 +75,7 @@ router.get('/search', (req, res) => {
   <div class="row" style="margin-bottom:18px"><span class="small muted" style="font-weight:800">Sort:</span>
     <div class="seg" role="group" aria-label="Sort">${sortBtns.map(([k, l]) => html`<button type="button" data-sort="${k}" aria-pressed="${r.sort === k}">${l}</button>`)}</div></div>
   <div id="results" aria-live="polite">${r.markup}</div>`;
-  page(req, res, { title: r.text ? `“${r.text}”` : 'Search', active: 'search', body, scripts: ['/js/search.js'] });
+  page(req, res, { title: r.text ? `“${r.text}”` : 'Search', active: 'search', body, scripts: ['/js/search.js', '/js/ads.js'] });
 });
 router.get('/api/search', rateLimit('search', 120, 60e3), (req, res) => {
   const r = searchResults(req);

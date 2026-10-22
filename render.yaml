@@ -1,0 +1,30 @@
+# Render blueprint: one web service with a persistent disk for the SQLite file.
+services:
+  - type: web
+    name: brb-gaming
+    runtime: docker
+    plan: starter
+    healthCheckPath: /health
+    disk:
+      name: brb-data
+      mountPath: /data
+      sizeGB: 2
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: BRB_DATA_DIR
+        value: /data
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: ADMIN_USERNAME
+        value: admin
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: AD_ECPM_CENTS
+        value: "200"
+      - key: BUILDER_SHARE
+        value: "0.7"
+      - key: BUILDER_DAILY_TURNS
+        value: "60"
