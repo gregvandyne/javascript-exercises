@@ -7,6 +7,9 @@ import { cleanName, cleanText } from './services/textfilter.js';
 export { cleanName, cleanText };
 
 const SESSION_DAYS = 60;
+export const BCRYPT_COST = 11;
+// Compared against when a username doesn't exist, so a wrong name takes as long as a wrong password.
+const DUMMY_HASH = bcrypt.hashSync('not-a-real-password', BCRYPT_COST);
 export const COOKIE = 'brb_session';
 let SECRET = config.sessionSecret || setting('session_secret');
 if (!SECRET) { SECRET = crypto.randomBytes(32).toString('hex'); setting('session_secret', SECRET); }
@@ -42,7 +45,7 @@ function friendCode() { for (;;) { const c = Array.from({ length: 6 }, () => 'AB
 
 export function createUser({ username, password, displayName, role = 'player', isGuest = false, avatar, color }) {
   const id = uid(10);
-  const hash = password ? bcrypt.hashSync(password, 10) : null;
+  const hash = password ? bcrypt.hashSync(password, BCRYPT_COST) : null;
   q.run('INSERT INTO users(id, username, display_name, password_hash, role, is_guest, avatar, color, friend_code, created_at, last_seen) VALUES (?,?,?,?,?,?,?,?,?,?,?)',
     id, username, displayName || username, hash, role, isGuest ? 1 : 0, avatar || pick(AVATARS), color || pick(COLORS), friendCode(), now(), now());
   return getUser(id);
@@ -59,18 +62,30 @@ export function createGuest() {
 /** Guest -> account upgrade: same user row, so saves, scores, likes and ratings all carry over. */
 export function upgradeGuest(userId, { username, password }) {
   tx(() => {
-    q.run('UPDATE users SET username=?, display_name=?, password_hash=?, is_guest=0 WHERE id=? AND is_guest=1', username, username, bcrypt.hashSync(password, 10), userId);
+    q.run('UPDATE users SET username=?, display_name=?, password_hash=?, is_guest=0 WHERE id=? AND is_guest=1', username, username, bcrypt.hashSync(password, BCRYPT_COST), userId);
   });
   return getUser(userId);
 }
 export const getUser = id => (id ? q.get('SELECT * FROM users WHERE id=?', id) : null) || null;
 export const getUserByName = name => q.get('SELECT * FROM users WHERE username=? COLLATE NOCASE', String(name || '')) || null;
-export function verifyPassword(user, password) { return !!(user && user.password_hash && bcrypt.compareSync(String(password || ''), user.password_hash)); }
-export function setPassword(userId, password) { q.run('UPDATE users SET password_hash=? WHERE id=?', bcrypt.hashSync(password, 10), userId); }
-export function checkPassword(p) {
+export function verifyPassword(user, password) {
+  const ok = bcrypt.compareSync(String(password || '').slice(0, 72), (user && user.password_hash) || DUMMY_HASH);
+  return !!(user && user.password_hash && ok);
+}
+/** signOutEverywhere: a changed password ends every other session (off for the seed script's idempotent admin reset). */
+export function setPassword(userId, password, { signOutEverywhere = false } = {}) {
+  q.run('UPDATE users SET password_hash=? WHERE id=?', bcrypt.hashSync(password, BCRYPT_COST), userId);
+  if (signOutEverywhere) q.run('DELETE FROM sessions WHERE user_id=?', userId);
+}
+// The most common passwords: easy to guess, so not allowed.
+const COMMON = new Set(['123456', '1234567', '12345678', '123456789', '1234567890', '111111', '000000', '654321', '123123', '121212', '112233', 'password', 'password1', 'passw0rd', 'qwerty', 'qwerty123', 'qwertyuiop', 'abc123', 'abcdef', 'abcd1234', 'letmein', 'welcome', 'iloveyou', 'monkey', 'dragon', 'football', 'baseball', 'soccer', 'princess', 'sunshine', 'superman', 'batman', 'pokemon', 'minecraft', 'fortnite', 'roblox', 'secret', 'master', 'shadow', 'starwars', 'trustno1', 'hello1', 'hello123', 'computer', 'freedom', 'whatever', 'asdfgh', 'zxcvbn', 'aaaaaa', 'gaming', 'brbgaming']);
+export function checkPassword(p, username = '') {
   p = String(p || '');
   if (p.length < 6) return 'Use at least 6 characters for your password.';
   if (p.length > 72) return 'That password is too long.';
+  const low = p.toLowerCase();
+  if (COMMON.has(low) || /^(.)\1+$/.test(p)) return 'That password is too easy to guess. Try mixing words and numbers.';
+  if (username && low.includes(String(username).toLowerCase())) return "Don't put your name in your password.";
   return null;
 }
 
@@ -85,7 +100,9 @@ export function endSession(req, res) {
   if (id) q.run('DELETE FROM sessions WHERE id=?', id);
   setCookie(res, COOKIE, '', 0);
 }
+let lastSweep = 0;
 export function sessionMiddleware(req, res, next) {
+  if (now() - lastSweep > 3600e3) { lastSweep = now(); q.run('DELETE FROM sessions WHERE expires_at<?', now()); }
   req.user = null; req.sessionId = null;
   const id = unpack(parseCookies(req)[COOKIE]);
   if (id) {

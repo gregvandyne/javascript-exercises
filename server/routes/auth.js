@@ -52,12 +52,19 @@ router.post('/api/auth/guest', rateLimit('guest', 30, 3600e3), (req, res) => {
 router.post('/api/auth/signup', rateLimit('signup', 10, 3600e3), (req, res) => {
   const { username, password } = req.body || {};
   const n = auth.cleanName(username); if (!n.ok) return res.status(400).json({ error: n.error, field: 'username' });
-  const pe = auth.checkPassword(password); if (pe) return res.status(400).json({ error: pe, field: 'password' });
+  const pe = auth.checkPassword(password, n.value); if (pe) return res.status(400).json({ error: pe, field: 'password' });
   const taken = auth.getUserByName(n.value);
   if (taken && !(req.user && taken.id === req.user.id)) return res.status(400).json({ error: 'That name is taken. Try adding a number or another word.', field: 'username' });
   let u;
-  if (req.user && req.user.is_guest) { u = auth.upgradeGuest(req.user.id, { username: n.value, password }); audit(u.id, 'user.upgrade', u.id); }
-  else { u = auth.createUser({ username: n.value, password }); auth.startSession(res, u.id, req.headers['user-agent']); audit(u.id, 'user.signup', u.id); }
+  if (req.user && req.user.is_guest) {
+    u = auth.upgradeGuest(req.user.id, { username: n.value, password }); audit(u.id, 'user.upgrade', u.id);
+    auth.endSession(req, res); auth.startSession(res, u.id, req.headers['user-agent']); // fresh session id after the upgrade
+  }
+  else {
+    try { u = auth.createUser({ username: n.value, password }); }
+    catch (e) { if (/UNIQUE/.test(e.message)) return res.status(400).json({ error: 'That name is taken. Try adding a number or another word.', field: 'username' }); throw e; }
+    auth.startSession(res, u.id, req.headers['user-agent']); audit(u.id, 'user.signup', u.id);
+  }
   res.json({ ok: true, user: auth.publicUser(u) });
 });
 router.post('/api/auth/login', rateLimit('login', 20, 900e3, 'Too many tries. Wait a few minutes and try again.'), (req, res) => {
