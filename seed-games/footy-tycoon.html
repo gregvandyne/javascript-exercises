@@ -242,6 +242,7 @@ button{font-family:inherit}
       <li><b>Championships</b> work like railroads: the more trophies you own, the more everyone pays.</li>
       <li>Land on <b>Shoot</b> and a player takes a shot. If you own him, it's a goal and you get a check mark.</li>
       <li>Sign a <b>goalkeeper</b> 🧤 to block someone else's goal. After the save, he goes back to the bank.</li>
+      <li>Roll <b>doubles</b> and you go again after your move.</li>
       <li>Land on the <b>Red Card</b> corner and you go straight to the Sin Bin. Pay $50, use a Ref's Pardon, or roll doubles to get out.</li>
       <li>On your turn, tap <b>Trade</b> to offer cash, players and trophies to another player.</li>
       <li>Run out of money? You must sell players and trophies back to the bank for half price, or auction them to the other players. Nothing left to sell means you're bankrupt and out!</li>
@@ -819,7 +820,8 @@ function doRoll(){
   animating=true;render();
   const d=[1+rnd(6),1+rnd(6)];
   throwDice(d,()=>{
-    S.dice=d;S.msg=S.players[S.turn].name+' rolled '+(d[0]+d[1])+(d[0]===d[1]?' (doubles!)':'')+'.';
+    S.dice=d;S.msg=S.players[S.turn].name+' rolled '+(d[0]+d[1])+(d[0]===d[1]?' (doubles! Roll again after this move)':'')+'.';
+    S.again=d[0]===d[1];
     if(d[0]===d[1]){const back=liftSusp(S.turn);if(back.length)S.msg+=' '+back.join(', ')+' is back from suspension!';}
     render();
     move(d[0]+d[1],resolve);
@@ -1025,6 +1027,12 @@ function endTurn(){
   const debtor=S.players.findIndex(p=>!p.out&&p.money<0);
   if(debtor>=0) return resolveDebt(debtor,endTurn);
   if(winCheck()) return;
+  const cur=S.players[S.turn];
+  if(S.again&&!cur.out&&!cur.inJail){
+    S.again=false;S.msg='Doubles! '+cur.name+' rolls again.';
+    render();save();return botTick();
+  }
+  S.again=false;
   nextTurn();
 }
 function winCheck(){
@@ -1126,7 +1134,7 @@ function bankrupt(q,then){
 /* ---------- Sin Bin (jail) ---------- */
 function sendToBin(){
   const q=S.turn,p=S.players[q];
-  p.pos=SINBIN;p.inJail=true;p.jailTries=0;S.msg=p.name+' was sent to the Sin Bin!';render(q);
+  p.pos=SINBIN;p.inJail=true;p.jailTries=0;S.again=false;S.msg=p.name+' was sent to the Sin Bin!';render(q);
   modal({kicker:'Red card',title:'Off to the Sin Bin!',color:'#e11d48',html:`<p class="big">🟥</p><p>${nm(q)} goes straight to the Sin Bin and does not collect $${PASS_GO}.</p><p>To get out on your next turn: pay $50, use a Ref's Pardon, or roll doubles. You get 3 tries.</p>`,
     buttons:[{label:'OK',primary:true,fn:endTurn}]});
 }
@@ -1141,7 +1149,7 @@ function jailTurn(){
     animating=true;render();
     const d=[1+rnd(6),1+rnd(6)];
     throwDice(d,()=>{
-      S.dice=d;animating=false;
+      S.dice=d;animating=false;S.again=false;
       if(d[0]===d[1]){release();S.msg='Doubles! '+p.name+' is out of the Sin Bin.';render();move(d[0]+d[1],resolve);}
       else if(p.jailTries>=2){pay(q,50);release();S.msg='Third miss. '+p.name+' pays $50 and moves.';render();move(d[0]+d[1],resolve);}
       else{p.jailTries++;S.msg='No doubles. '+p.name+' stays in the Sin Bin.';render();
