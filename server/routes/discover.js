@@ -9,6 +9,16 @@ import { rateLimit } from '../services/ratelimit.js';
 
 export const router = Router();
 
+// "Build your own game" lives in its own banner, separate from the featured-game hero.
+function buildBanner(u) {
+  const mine = u && !u.is_guest;
+  return html`<section class="buildbanner" aria-labelledby="bb-h">
+    <div class="bb-art" aria-hidden="true">🛠️</div>
+    <div class="bb-text"><h2 id="bb-h">Make your own game</h2><p>Tell our Builder your idea. Add a drawing or photo for ideas. It makes the game for you!</p></div>
+    <a class="btn btn-coral" href="/build">${mine ? 'Open my Studio' : 'Start building'}</a>
+  </section>`;
+}
+
 router.get('/', (req, res) => {
   const u = req.user;
   const featured = games.listVisible(u, { featured: true, order: 'plays', limit: 12 });
@@ -16,6 +26,7 @@ router.get('/', (req, res) => {
   const mine = u && !u.is_guest ? games.myGames(u.id, 12) : [];
   const rails = [
     rail({ title: 'Featured', emoji: '⭐', games: featured, user: u, id: 'featured' }),
+    buildBanner(u),
     rail({ title: 'Playing now', emoji: '🟢', games: games.playingNow(u, 12), user: u, id: 'playing', more: '/search?sort=playing' }),
     rail({ title: 'From your friends', emoji: '👫', games: games.fromFriends(u, 12), user: u, id: 'friends' }),
     rail({ title: 'Popular', emoji: '🔥', games: games.listVisible(u, { order: 'popular', limit: 16 }), user: u, id: 'popular', more: '/search?sort=popular' }),
@@ -25,17 +36,18 @@ router.get('/', (req, res) => {
     ...games.CATEGORIES.map(([k, e, label]) => rail({ title: label, emoji: e, games: games.listVisible(u, { category: k, limit: 12 }), user: u, id: `cat-${k}`, more: `/search?cat=${k}` })),
   ];
   const body = html`
-  <section class="hero cover-${hero ? hero.cover : 'ocean'}" aria-label="Welcome">
+  ${hero ? html`<section class="hero cover-${hero.cover}" aria-label="Featured game">
     <div>
-      <h1>${hero ? hero.title : 'Play. Build. Share.'}</h1>
-      <p>${hero ? hero.description.split('. ')[0] + '.' : 'Free games for everyone, and a Builder that makes your game idea real.'}</p>
+      <span class="hero-kicker">⭐ Featured game</span>
+      <h1>${hero.title}</h1>
+      <p>${hero.description.split('. ')[0] + '.'}</p>
       <div class="row">
-        ${hero ? html`<a class="btn btn-big" href="/play/${hero.slug}">▶ Play</a>` : ''}
-        <a class="btn btn-ghost btn-big" href="/build">🛠️ Build a game</a>
+        <a class="btn btn-big" href="/play/${hero.slug}">▶ Play</a>
+        <a class="btn btn-ghost" href="/g/${hero.slug}">More info</a>
       </div>
     </div>
-    ${hero ? html`<a class="heroart" href="/g/${hero.slug}" aria-label="About ${hero.title}">${coverArt(hero, '')}</a>` : ''}
-  </section>
+    <a class="heroart" href="/g/${hero.slug}" aria-label="About ${hero.title}">${coverArt(hero, '')}</a>
+  </section>` : ''}
   <div class="chips scroll" role="list" aria-label="Categories" style="margin-bottom:18px">
     ${games.CATEGORIES.map(([k, e, l]) => html`<a class="chip" role="listitem" href="/search?cat=${k}"><span aria-hidden="true">${e}</span>${l}</a>`)}
   </div>
