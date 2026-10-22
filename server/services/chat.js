@@ -1,0 +1,207 @@
+// Friends-only chat (added at the owner's request; kid-safe by design). Every rule lives here and is unit-tested.
+//  - Only between accepted friends, both real accounts, both with chat switched on, neither banned, neither blocking the other.
+//  - Text: max 200 chars, trimmed, control characters stripped. Bad words and personal details (phone, email, link,
+//    address, "add me on snap", "what school") are refused and never stored; they count in chat_usage.blocked.
+//  - 5 refused messages in a day pause text chat for 10 minutes. Max 8 messages per 20 s, config.chatDailyLimit per day.
+//  - Quick phrases (fixed list) are always allowed. Game invites only for games both people can open.
+//  - Block hides the thread both ways. Reporting a message hides it for the reporter at once and queues it for admins.
+import { q, uid, now, today, migrate, audit } from '../db.js';
+import { config } from '../config.js';
+import { hasProfanity, personalInfo } from './textfilter.js';
+import { getGame, canView } from './games.js';
+
+migrate([['0002_community', 'ALTER TABLE chat_usage ADD COLUMN paused_until INTEGER NOT NULL DEFAULT 0; CREATE INDEX IF NOT EXISTS chat_reports_msg ON chat_reports(message_id, reporter_id);']]);
+
+export const MAX_LEN = 200;
+export const RATE_MAX = 8;
+export const RATE_WINDOW = 20e3;
+export const PAUSE_AFTER = 5;
+export const PAUSE_MS = 10 * 60e3;
+export const QUICK = ['👋 Hi!', 'Good game! 🎉', 'Want to play?', 'Nice job!', 'Brb!', 'Play again?', 'Thanks!', 'Bye! 👋', '👋', '😂', '🔥', '🏆', '❤️', '👍'];
+export const REPORT_REASONS = [['mean', 'Mean or rude'], ['scary', 'Scary'], ['personal', 'Asked for personal info'], ['grownup', 'Grown-up stuff'], ['spam', 'Spam'], ['other', 'Something else']];
+
+const BLOCKED_TEXT = {
+  words: "Oops! That message has words we don't allow. Try saying it a kinder way.",
+  phone: "We didn't send that. Phone numbers stay private on BRB Gaming, even with friends.",
+  email: "We didn't send that. Email addresses stay private on BRB Gaming.",
+  link: "We didn't send that. Links aren't allowed in chat. Share a game with the 🎮 button instead.",
+  address: "We didn't send that. Home addresses stay private. Never share where you live.",
+  contact: "We didn't send that. Keep chat on BRB Gaming: no other apps, schools or meet-ups.",
+  handle: "We didn't send that. Keep chat on BRB Gaming: no usernames from other apps.",
+};
+
+/** Strip control and bidi-override characters, squash whitespace, trim. */
+export const cleanBody = s => String(s ?? '').replace(/[\u0000-\u001f\u007f-\u009f​-‏‪-‮⁦-⁩﻿]/g, ' ').replace(/\s+/g, ' ').trim();
+
+const userById = id => (id ? q.get('SELECT * FROM users WHERE id=?', id) : null);
+export const isBlocked = (a, b) => !!q.get('SELECT 1 FROM chat_blocks WHERE user_id=? AND blocked_id=?', a, b);
+const accepted = (a, b) => !!q.get("SELECT 1 FROM friends WHERE user_id=? AND friend_id=? AND status='accepted'", a, b);
+
+/** Can `me` chat with `other` at all? Returns { ok, code, reason } with a plain-words reason when not. */
+export function canChat(me, other) {
+  me = me && userById(me.id); other = other && userById(other.id);
+  const no = (code, reason) => ({ ok: false, code, reason });
+  if (!me || me.is_guest) return no('guest', 'Make a free account to chat with friends.');
+  if (me.banned) return no('banned', 'Your account is paused, so chat is off.');
+  if (!other || other.banned) return no('missing', "This player isn't on BRB Gaming right now.");
+  if (other.id === me.id) return no('self', "You can't chat with yourself. Pick a friend!");
+  if (other.is_guest) return no('guest_other', 'You can only chat with friends who have a free account.');
+  if (!accepted(me.id, other.id) || !accepted(other.id, me.id)) return no('not_friends', `You can only chat with friends. Add ${other.display_name} with their friend code first, and they need to say yes.`);
+  if (!me.chat_enabled) return no('chat_off_me', 'Your chat is switched off. A grown-up can switch it on in Me.');
+  if (!other.chat_enabled) return no('chat_off_other', `${other.display_name} has chat switched off.`);
+  if (isBlocked(me.id, other.id)) return no('blocked_by_me', `You blocked ${other.display_name}. You can unblock them on the Friends page.`);
+  if (isBlocked(other.id, me.id)) return no('blocked_by_other', `You can't chat with ${other.display_name} right now.`);
+  return { ok: true, code: 'ok', reason: '' };
+}
+
+function usage(userId, day = today()) {
+  return q.get('SELECT * FROM chat_usage WHERE user_id=? AND day=?', userId, day) || { user_id: userId, day, sent: 0, blocked: 0, paused_until: 0 };
+}
+const bump = (userId, col) => q.run(`INSERT INTO chat_usage(user_id, day, ${col}) VALUES (?,?,1) ON CONFLICT(user_id, day) DO UPDATE SET ${col}=${col}+1`, userId, today());
+/** ms timestamp until which text chat is paused for this user (0 = not paused). */
+export function pausedUntil(userId) {
+  const u = q.get('SELECT MAX(paused_until) t FROM chat_usage WHERE user_id=?', userId);
+  const t = (u && u.t) || 0;
+  return t > now() ? t : 0;
+}
+function recordBlocked(userId) {
+  bump(userId, 'blocked');
+  const u = usage(userId);
+  if (u.blocked >= PAUSE_AFTER && u.blocked % PAUSE_AFTER === 0) {
+    q.run('UPDATE chat_usage SET paused_until=? WHERE user_id=? AND day=?', now() + PAUSE_MS, userId, today());
+    audit(userId, 'chat.paused', userId, { blocked: u.blocked });
+    return true;
+  }
+  return false;
+}
+const pauseMsg = until => `Chat is taking a little break. You can type again in ${Math.max(1, Math.ceil((until - now()) / 60e3))} minutes. You can still send quick messages.`;
+
+/** Check a text message. Returns { ok, value } or { ok:false, code, error }. Does not record anything. */
+export function checkText(body) {
+  const raw = String(body ?? '');
+  const t = cleanBody(raw);
+  if (!t) return { ok: false, code: 'empty', error: 'Type a message first.' };
+  if (t.length > MAX_LEN) return { ok: false, code: 'long', error: `That message is too long. Keep it under ${MAX_LEN} letters.` };
+  if (hasProfanity(t)) return { ok: false, code: 'words', blocked: true, error: BLOCKED_TEXT.words };
+  const pi = personalInfo(t) || extraPersonal(t);
+  if (pi) return { ok: false, code: pi, blocked: true, error: BLOCKED_TEXT[pi] || BLOCKED_TEXT.contact };
+  return { ok: true, value: t };
+}
+// A few chat-specific phrasings on top of textfilter.personalInfo (it is shared with usernames and games, so we add here).
+function extraPersonal(t) {
+  if (/\b(add|follow|find|dm|message|text|call)\s+me\s+(on|at|in)\b/i.test(t)) return 'contact';
+  if (/\b(what|which)\s+(school|town|city|street)\b|\bwhere\s+(do\s+)?(you|u)\s+(live|go to school)\b|\bhow\s+old\s+(are\s+)?(you|u)\b|\byour\s+(real\s+name|address|password|last\s+name|age)\b/i.test(t)) return 'contact';
+  if (/\b(my|our)\s+(address|password|school)\s+is\b/i.test(t)) return 'contact';
+  // digits spelled with spaces or words ("five five five one two ...")
+  const digits = t.replace(/\b(zero|oh|one|two|three|four|five|six|seven|eight|nine)\b/gi, '1');
+  if (/(\d[\s.\-_,/()]*){7,}/.test(digits)) return 'phone';
+  return null;
+}
+
+/**
+ * Send a message. kind: 'text' | 'quick' | 'game' (body = game id).
+ * Returns { ok:true, message } or { ok:false, code, error, blocked?, paused? }.
+ */
+export function send(me, other, { kind = 'text', body = '' } = {}) {
+  const c = canChat(me, other);
+  if (!c.ok) return { ok: false, code: c.code, error: c.reason };
+  if (!['text', 'quick', 'game'].includes(kind)) return { ok: false, code: 'kind', error: 'Pick something to send.' };
+  const t = now();
+  const recent = q.get('SELECT COUNT(*) n FROM chat_messages WHERE from_id=? AND created_at>?', me.id, t - RATE_WINDOW).n;
+  if (recent >= RATE_MAX) return { ok: false, code: 'rate', error: 'Whoa, that is a lot of messages! Wait a few seconds.' };
+  if (usage(me.id).sent >= config.chatDailyLimit) return { ok: false, code: 'daily', error: "That's all the chat for today. Come back tomorrow!" };
+  let text = '';
+  if (kind === 'quick') {
+    text = String(body);
+    if (!QUICK.includes(text)) return { ok: false, code: 'quick', error: 'Pick one of the quick messages.' };
+  } else if (kind === 'game') {
+    const g = getGame(String(body));
+    if (!g || !canView(me, g)) return { ok: false, code: 'game', error: "We couldn't find that game." };
+    if (!canView(userById(other.id), g)) return { ok: false, code: 'game_hidden', error: `${other.display_name} can't open that game. Share a game that is for friends or everyone.` };
+    text = g.id;
+  } else {
+    const p = pausedUntil(me.id);
+    if (p) return { ok: false, code: 'paused', paused: true, until: p, error: pauseMsg(p) };
+    const r = checkText(body);
+    if (!r.ok) {
+      if (r.blocked) {
+        const paused = recordBlocked(me.id);
+        if (paused) return { ok: false, code: r.code, blocked: true, paused: true, until: pausedUntil(me.id), error: `${r.error} ${pauseMsg(pausedUntil(me.id))}` };
+      }
+      return r;
+    }
+    text = r.value;
+  }
+  const id = uid(14);
+  q.run('INSERT INTO chat_messages(id, from_id, to_id, body, kind, status, created_at) VALUES (?,?,?,?,?,?,?)', id, me.id, other.id, text, kind, 'ok', t);
+  bump(me.id, 'sent');
+  return { ok: true, message: present(q.get('SELECT * FROM chat_messages WHERE id=?', id), me) };
+}
+
+/** Shape a message row for the viewer. Game invites carry the game card only if the viewer can open it. */
+export function present(m, viewer) {
+  const out = { id: m.id, mine: m.from_id === viewer.id, kind: m.kind, body: m.body, at: m.created_at, read: !!m.read_at };
+  if (m.kind === 'game') {
+    const g = getGame(m.body);
+    out.body = '';
+    out.game = g && canView(userById(viewer.id), g) ? { id: g.id, slug: g.slug, title: g.title, icon: g.icon, cover: g.cover } : null;
+  }
+  return out;
+}
+
+const VISIBLE_FOR = `m.status='ok' AND NOT EXISTS (SELECT 1 FROM chat_reports r WHERE r.message_id=m.id AND r.reporter_id=?)`;
+/** Messages between me and other that I may see, oldest first. `after` = ms timestamp (inclusive; clients de-dupe by id). */
+export function thread(me, other, { after = 0, limit = 80 } = {}) {
+  if (isBlocked(me.id, other.id) || isBlocked(other.id, me.id)) return [];
+  const rows = after
+    ? q.all(`SELECT * FROM chat_messages m WHERE ((m.from_id=? AND m.to_id=?) OR (m.from_id=? AND m.to_id=?)) AND m.created_at>=? AND ${VISIBLE_FOR} ORDER BY m.created_at ASC, m.id ASC LIMIT ?`, me.id, other.id, other.id, me.id, +after || 0, me.id, limit)
+    : q.all(`SELECT * FROM (SELECT * FROM chat_messages m WHERE ((m.from_id=? AND m.to_id=?) OR (m.from_id=? AND m.to_id=?)) AND ${VISIBLE_FOR} ORDER BY m.created_at DESC, m.id DESC LIMIT ?) ORDER BY created_at ASC, id ASC`, me.id, other.id, other.id, me.id, me.id, limit);
+  return rows.map(m => present(m, me));
+}
+export function markRead(me, other) {
+  return q.run('UPDATE chat_messages SET read_at=? WHERE to_id=? AND from_id=? AND read_at IS NULL', now(), me.id, other.id).changes;
+}
+
+/** Inbox: every friend I can see, with the latest visible message and my unread count, newest first. */
+export function inbox(me) {
+  const friends = q.all(`SELECT u.id, u.username, u.display_name, u.avatar, u.color, u.chat_enabled FROM friends f JOIN users u ON u.id=f.friend_id
+    WHERE f.user_id=? AND f.status='accepted' AND u.banned=0 AND u.is_guest=0
+    AND NOT EXISTS (SELECT 1 FROM chat_blocks b WHERE (b.user_id=? AND b.blocked_id=u.id) OR (b.user_id=u.id AND b.blocked_id=?))`, me.id, me.id, me.id);
+  const rows = friends.map(f => {
+    const last = q.get(`SELECT * FROM chat_messages m WHERE ((m.from_id=? AND m.to_id=?) OR (m.from_id=? AND m.to_id=?)) AND ${VISIBLE_FOR} ORDER BY m.created_at DESC, m.id DESC LIMIT 1`, me.id, f.id, f.id, me.id, me.id);
+    const unread = q.get(`SELECT COUNT(*) n FROM chat_messages m WHERE m.from_id=? AND m.to_id=? AND m.read_at IS NULL AND ${VISIBLE_FOR}`, f.id, me.id, me.id).n;
+    let preview = '';
+    if (last) preview = (last.from_id === me.id ? 'You: ' : '') + (last.kind === 'game' ? '🎮 Shared a game' : last.body);
+    return { id: f.id, username: f.username, displayName: f.display_name, avatar: f.avatar, color: f.color, chatOn: !!f.chat_enabled, last: last ? last.created_at : 0, preview, unread };
+  });
+  return rows.sort((a, b) => b.last - a.last || a.displayName.localeCompare(b.displayName));
+}
+
+export function block(me, otherId) {
+  if (!otherId || otherId === me.id) return false;
+  q.run('INSERT OR IGNORE INTO chat_blocks(user_id, blocked_id, created_at) VALUES (?,?,?)', me.id, otherId, now());
+  // Nothing from a blocked person should keep a badge lit.
+  q.run('UPDATE chat_messages SET read_at=? WHERE to_id=? AND from_id=? AND read_at IS NULL', now(), me.id, otherId);
+  q.run('UPDATE chat_messages SET read_at=? WHERE to_id=? AND from_id=? AND read_at IS NULL', now(), otherId, me.id);
+  audit(me.id, 'chat.block', otherId);
+  return true;
+}
+export function unblock(me, otherId) {
+  const n = q.run('DELETE FROM chat_blocks WHERE user_id=? AND blocked_id=?', me.id, otherId).changes;
+  if (n) audit(me.id, 'chat.unblock', otherId);
+  return n > 0;
+}
+export const blockedList = userId => q.all('SELECT u.id, u.username, u.display_name, u.avatar, u.color FROM chat_blocks b JOIN users u ON u.id=b.blocked_id WHERE b.user_id=? ORDER BY b.created_at DESC', userId);
+
+/** Report a message someone sent me. It disappears for me at once; admins see it in Chat reports. */
+export function report(me, messageId, reason) {
+  if (!REPORT_REASONS.some(([k]) => k === reason)) return { ok: false, error: 'Pick a reason.' };
+  const m = q.get('SELECT * FROM chat_messages WHERE id=?', String(messageId || ''));
+  if (!m || m.to_id !== me.id) return { ok: false, error: "We couldn't find that message." };
+  if (!q.get('SELECT 1 FROM chat_reports WHERE message_id=? AND reporter_id=?', m.id, me.id)) {
+    q.run('INSERT INTO chat_reports(id, message_id, reporter_id, reason, status, created_at) VALUES (?,?,?,?,?,?)', uid(), m.id, me.id, reason, 'open', now());
+    q.run('UPDATE chat_messages SET read_at=COALESCE(read_at, ?) WHERE id=?', now(), m.id);
+    audit(me.id, 'chat.report', m.id, { reason, from: m.from_id });
+  }
+  return { ok: true, message: 'Thank you for telling us. We hid that message, and a grown-up on our team will look at it.' };
+}
