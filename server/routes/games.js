@@ -150,13 +150,13 @@ router.post('/api/games/:id/like', requireUser, rateLimit('like', 30, 60e3), (re
 router.post('/api/games/:id/play', rateLimit('play', 60, 60e3), (req, res) => {
   const g = apiGame(req, res); if (!g) return;
   const key = req.sessionId || `anon:${req.ip}`;
-  presence.touch(g.id, key);
+  presence.touch(g.id, key, req.user ? req.user.id : null);
   const playId = games.recordPlay(g.id, req.user && req.user.id);
   res.json({ ok: true, playId, playing: presence.count(g.id) });
 });
 router.post('/api/games/:id/heartbeat', rateLimit('hb', 30, 60e3), (req, res) => {
   const g = apiGame(req, res); if (!g) return;
-  presence.touch(g.id, req.sessionId || `anon:${req.ip}`);
+  presence.touch(g.id, req.sessionId || `anon:${req.ip}`, req.user ? req.user.id : null);
   res.json({ ok: true, playing: presence.count(g.id) });
 });
 // sendBeacon posts text/plain; accept both.
