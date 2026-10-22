@@ -1,0 +1,380 @@
+<title>Wiggle Words</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Fredoka:wght@500;600;700&display=swap">
+<style>
+/* Layout: HUD, then the picture hint with the bookworm host, the word slots, big letter tiles and two helper buttons.
+   Overlays for title, pause and results. */
+:root{
+  --bg1:#a7f3d0; --bg2:#fef9c3; --ink:#134e4a; --accent:#0d9488; --accentDark:#115e59; --tile:#fff; --tileShadow:#99d6c9;
+  --good:#22c55e; --bad:#ef4444; --card:#fff; --worm:#84cc16; --wormDark:#4d7c0f;
+  --font:"Fredoka","Trebuchet MS",system-ui,sans-serif; --letters:"Andika","Trebuchet MS",system-ui,sans-serif;
+}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{margin:0;overflow:hidden;font-family:var(--font);color:var(--ink);background:linear-gradient(170deg,var(--bg1),var(--bg2));touch-action:manipulation;user-select:none;-webkit-user-select:none}
+#bgArt{position:fixed;inset:0;width:100%;height:100%;pointer-events:none}
+.app{position:relative;height:100%;max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:10px;padding:10px max(14px,env(safe-area-inset-left)) 14px max(14px,env(safe-area-inset-right))}
+button{font-family:inherit;color:inherit;cursor:pointer}
+button:focus-visible{outline:4px solid #f59e0b;outline-offset:2px}
+.hud{display:flex;align-items:center;gap:6px}
+.hud .grow{flex:1;display:flex;justify-content:center;gap:5px;min-width:0}
+.pill{background:rgba(255,255,255,.94);border-radius:999px;padding:6px 10px;font-weight:700;font-size:1rem;box-shadow:0 3px 0 rgba(0,0,0,.12);white-space:nowrap}
+.icon-btn{width:46px;height:46px;flex:none;border:0;border-radius:50%;background:#fff;font-size:1.35rem;box-shadow:0 4px 0 rgba(0,0,0,.15);display:grid;place-items:center;padding:0}
+.icon-btn:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.15)}
+.hint-row{display:flex;align-items:center;justify-content:center;gap:6px;min-height:0;flex:1}
+.worm{width:92px;height:110px;flex:none;transform-origin:50% 100%}
+.worm.happy{animation:hop .6s ease-out}.worm.sad{animation:wobble .6s}
+@keyframes hop{30%{transform:translateY(-16px) scale(1.05,.95)}60%{transform:translateY(0) scale(.95,1.05)}}
+@keyframes wobble{25%{transform:rotate(-8deg)}75%{transform:rotate(8deg)}}
+.picture{position:relative;width:min(58vw,210px);aspect-ratio:1;max-height:100%;display:grid;place-items:center;background:var(--card);border-radius:28px;box-shadow:0 6px 0 rgba(0,0,0,.12);border:4px dashed #a7e3d4}
+.picture span{font-size:clamp(4rem,min(26vw,18vh),7.5rem);line-height:1}
+.picture .hear{position:absolute;right:-10px;bottom:-10px}
+.mode{text-align:center;font-weight:700;font-size:1.2rem;margin:0}
+.slots{display:flex;justify-content:center;gap:8px;flex-wrap:nowrap}
+.slot{width:min(15vw,62px);height:min(18vw,72px);border-radius:14px 14px 6px 6px;background:rgba(19,78,74,.07);border-bottom:6px solid var(--accent);display:grid;place-items:center;
+  font:700 clamp(2rem,10vw,2.8rem)/1 var(--letters);color:var(--ink)}
+.slot.blank{background:#fff7d6;border-bottom-color:#f59e0b;animation:glow 1.6s ease-in-out infinite alternate}
+.slot.pop{animation:pop .45s ease-out;background:#dcfce7;border-bottom-color:var(--good)}
+@keyframes glow{to{transform:scale(1.06)}}
+@keyframes pop{40%{transform:translateY(-12px) scale(1.18)}}
+.tiles{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;min-height:76px}
+.tile{width:min(17vw,70px);height:min(17vw,70px);min-width:52px;min-height:52px;border:0;border-radius:18px;background:var(--tile);box-shadow:0 6px 0 var(--tileShadow);
+  font:700 clamp(2rem,9.5vw,2.6rem)/1 var(--letters);color:var(--ink);display:grid;place-items:center;padding:0}
+.tile:nth-child(5n+1){background:#fde68a;--tileShadow:#e0b84a}.tile:nth-child(5n+2){background:#fbcfe8;--tileShadow:#e59ac2}
+.tile:nth-child(5n+3){background:#bfdbfe;--tileShadow:#86b3ea}.tile:nth-child(5n+4){background:#ddd6fe;--tileShadow:#b3a6f0}.tile:nth-child(5n){background:#bbf7d0;--tileShadow:#7fd9a0}
+.tile:active:not(:disabled){transform:translateY(4px);box-shadow:0 2px 0 var(--tileShadow)}
+.tile.used{visibility:hidden}
+.tile.shake{animation:shake .4s;background:#fecaca}
+@keyframes shake{20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+.tools{display:flex;gap:10px;justify-content:center}
+.tool{border:0;border-radius:16px;padding:10px 18px;min-height:50px;font-weight:700;font-size:1.1rem;color:#fff;background:#8b5cf6;box-shadow:0 4px 0 #5b21b6}
+.tool.helpme{background:#f59e0b;box-shadow:0 4px 0 #b45309}
+.tool:active{transform:translateY(3px);box-shadow:none}
+.tool:disabled{opacity:.45}
+.screen{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(19,78,74,.3)}
+.panel{background:var(--card);border-radius:28px;padding:22px 20px;width:min(100%,420px);max-height:100%;overflow:auto;text-align:center;
+  box-shadow:0 10px 0 rgba(0,0,0,.18);display:flex;flex-direction:column;align-items:center;gap:12px}
+.panel h1{margin:0;font-size:clamp(2rem,9vw,2.6rem);line-height:1.05;color:var(--accent)}
+.panel p{margin:0;font-size:1.1rem;line-height:1.35}
+.panel .worm{width:110px;height:130px}
+.big-btn{border:0;border-radius:20px;background:var(--accent);color:#fff;font-weight:700;font-size:1.5rem;padding:14px 34px;min-height:60px;min-width:200px;box-shadow:0 6px 0 var(--accentDark)}
+.big-btn.alt{background:#ccfbf1;color:var(--ink);box-shadow:0 6px 0 #99e6d6;font-size:1.2rem;min-height:52px}
+.big-btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--accentDark)}
+.chips{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.chip{font-weight:700;background:#fff4cc;border-radius:999px;padding:6px 14px}
+.wordlist{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;font-size:1.6rem}
+.stars{display:flex;gap:6px}
+.stars svg{width:56px;height:56px}
+.stars svg.on{animation:starIn .5s both}
+.stars svg:nth-child(2){animation-delay:.2s}.stars svg:nth-child(3){animation-delay:.4s}
+@keyframes starIn{from{transform:scale(0) rotate(-90deg)}to{transform:scale(1) rotate(0)}}
+.newbest{background:var(--good);color:#fff;border-radius:999px;padding:4px 14px;font-weight:700}
+.spark{position:fixed;pointer-events:none;font-size:1.4rem;z-index:6}
+@media (max-height:640px){.worm{width:70px;height:84px}.tile{width:56px;height:56px}}
+/* Short landscape screens: picture on the left, letters on the right */
+@media (orientation:landscape) and (max-height:540px){
+  .app{max-width:920px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);grid-template-rows:auto 1fr auto auto auto 1fr;column-gap:16px;row-gap:10px}
+  .hud{grid-column:1/-1}
+  .hint-row{grid-column:1;grid-row:2/7}
+  .mode{grid-column:2;grid-row:3}.slots{grid-column:2;grid-row:4}.tiles{grid-column:2;grid-row:5;min-height:0}.tools{grid-column:2;grid-row:6;align-self:start}
+  .picture{width:auto;height:min(62vh,210px)}
+  .slot{width:54px;height:62px}.tile{width:58px;height:58px}
+}
+@media (prefers-reduced-motion:reduce){.worm.happy,.worm.sad,.slot.blank,.slot.pop,.tile.shake,.stars svg.on{animation:none}#bgArt *{animation:none!important}}
+</style>
+
+<!-- Soft background: clouds and floating letters (slow, transform-only) -->
+<svg id="bgArt" viewBox="0 0 400 700" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+  <style>.fl{animation:fl 10s ease-in-out infinite alternate}.fl2{animation:fl 13s ease-in-out infinite alternate-reverse}@keyframes fl{to{transform:translateY(-24px)}}</style>
+  <g fill="#fff" opacity=".55"><path class="fl" d="M30 130a22 22 0 0 1 40-12 18 18 0 0 1 30 14H30z"/><path class="fl2" d="M280 90a26 26 0 0 1 46-14 20 20 0 0 1 34 16h-80z"/></g>
+  <g font-family="Andika,Trebuchet MS,sans-serif" font-weight="700" font-size="54" opacity=".13" fill="#0f766e">
+    <text class="fl" x="20" y="420">a</text><text class="fl2" x="340" y="360">b</text><text class="fl" x="330" y="640">c</text><text class="fl2" x="40" y="660">d</text>
+  </g>
+</svg>
+
+<!-- Wiggles the bookworm -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="wormArt" viewBox="0 0 110 130">
+    <ellipse cx="55" cy="124" rx="40" ry="6" fill="rgba(0,0,0,.12)"/>
+    <circle cx="22" cy="108" r="15" fill="var(--worm)"/><circle cx="40" cy="104" r="17" fill="var(--worm)"/><circle cx="58" cy="96" r="18" fill="var(--worm)"/>
+    <circle cx="22" cy="108" r="15" fill="none" stroke="var(--wormDark)" stroke-width="2" opacity=".3"/>
+    <circle cx="66" cy="58" r="34" fill="var(--worm)"/>
+    <path d="M44 34q-6-22 4-28M84 32q8-20-2-28" stroke="var(--wormDark)" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <circle cx="48" cy="6" r="5" fill="#f472b6"/><circle cx="82" cy="4" r="5" fill="#f472b6"/>
+    <!-- glasses -->
+    <circle cx="54" cy="54" r="12" fill="#fff" stroke="#134e4a" stroke-width="3"/><circle cx="80" cy="54" r="12" fill="#fff" stroke="#134e4a" stroke-width="3"/>
+    <path d="M66 54h2" stroke="#134e4a" stroke-width="3"/>
+    <circle cx="56" cy="55" r="5" fill="#134e4a"/><circle cx="82" cy="55" r="5" fill="#134e4a"/>
+    <circle cx="57.5" cy="53" r="1.6" fill="#fff"/><circle cx="83.5" cy="53" r="1.6" fill="#fff"/>
+    <path d="M56 74q11 10 22 0" stroke="#134e4a" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+    <circle cx="44" cy="70" r="5" fill="#f9a8d4" opacity=".7"/><circle cx="92" cy="70" r="5" fill="#f9a8d4" opacity=".7"/>
+    <!-- little book -->
+    <path d="M70 100l18-6 18 6v20l-18-6-18 6z" fill="#f97316"/><path d="M88 94v20" stroke="#c2410c" stroke-width="2"/>
+  </symbol>
+</svg>
+
+<div class="app">
+  <div class="hud">
+    <button class="icon-btn" id="pauseBtn" aria-label="Pause">⏸️</button>
+    <div class="grow">
+      <div class="pill" id="numEl">1/10</div>
+      <div class="pill" id="livesEl" aria-label="Hearts">❤️❤️❤️❤️❤️</div>
+      <div class="pill" id="scoreEl" aria-label="Score">⭐ 0</div>
+    </div>
+    <button class="icon-btn mute" aria-label="Turn sound off">🔊</button>
+  </div>
+  <div class="hint-row">
+    <svg class="worm" id="worm" aria-hidden="true"><use href="#wormArt"/></svg>
+    <div class="picture"><span id="pic" role="img" aria-label="Picture hint">🐱</span><button class="icon-btn hear" id="hearBtn" aria-label="Hear the word">🗣️</button></div>
+  </div>
+  <p class="mode" id="modeEl" aria-live="polite">Fill the missing letter!</p>
+  <div class="slots" id="slots" aria-live="polite"></div>
+  <div class="tiles" id="tiles"></div>
+  <div class="tools"><button class="tool helpme" id="helpBtn">💡 Help me</button></div>
+</div>
+
+<section class="screen" id="titleScreen">
+  <div class="panel">
+    <svg class="worm" aria-hidden="true"><use href="#wormArt"/></svg>
+    <h1 id="titleText">Wiggle Words</h1>
+    <p id="subtitleText">Look at the picture and build the word!</p>
+    <div class="chip" id="bestTitle">🏆 Best: 0</div>
+    <button class="big-btn" id="playBtn">▶ Play</button>
+    <p style="font-size:.95rem">Tap the letters or type them · 🗣️ hears the word</p>
+    <button class="icon-btn mute" aria-label="Turn sound off">🔊</button>
+  </div>
+</section>
+
+<section class="screen" id="pauseScreen" hidden>
+  <div class="panel">
+    <h1>Paused</h1>
+    <button class="big-btn" id="resumeBtn">▶ Keep going</button>
+    <button class="big-btn alt" id="restartBtn">↺ Start over</button>
+    <button class="icon-btn mute" aria-label="Turn sound off">🔊</button>
+  </div>
+</section>
+
+<section class="screen" id="resultScreen" hidden>
+  <div class="panel">
+    <h1 id="resultTitle">Super reader!</h1>
+    <div class="stars" id="starsEl"></div>
+    <p id="resultLine"></p>
+    <div class="wordlist" id="wordList"></div>
+    <div class="chips"><div class="chip" id="resultScore">⭐ 0</div><div class="chip" id="bestResult">🏆 Best: 0</div></div>
+    <div class="newbest" id="newBest" hidden>New best score!</div>
+    <button class="big-btn" id="againBtn">↺ Play again</button>
+  </div>
+</section>
+
+<script>
+/* =====================================================================
+   CONFIG: change these to make the word game your own!
+   Words use capital letters; pick an emoji that shows the word.
+   ===================================================================== */
+const CONFIG = {
+  title: 'Wiggle Words',
+  subtitle: 'Look at the picture and build the word!',
+  hostName: 'Wiggles',
+  colors: { bg1: '#a7f3d0', bg2: '#fef9c3', accent: '#0d9488', accentDark: '#115e59', worm: '#84cc16', wormDark: '#4d7c0f' },
+  words: [
+    ['CAT', '🐱'], ['DOG', '🐶'], ['SUN', '☀️'], ['PIG', '🐷'], ['COW', '🐮'], ['BUS', '🚌'], ['HAT', '🎩'], ['BEE', '🐝'],
+    ['FOX', '🦊'], ['EGG', '🥚'], ['FISH', '🐟'], ['DUCK', '🦆'], ['MOON', '🌙'], ['STAR', '⭐'], ['FROG', '🐸'], ['CAKE', '🍰'],
+    ['BEAR', '🐻'], ['TREE', '🌳'], ['LION', '🦁'], ['BOAT', '⛵'], ['APPLE', '🍎'], ['HOUSE', '🏠'], ['TIGER', '🐯'],
+    ['ZEBRA', '🦓'], ['TRAIN', '🚂'], ['SNAKE', '🐍'], ['WHALE', '🐳'], ['ROBOT', '🤖'], ['PIZZA', '🍕'],
+  ],
+  wordsPerRound: 10,
+  missingLetterRounds: 4,   // the first words: fill in one missing letter; after that: unscramble the whole word
+  choices: 3,               // letter choices for "missing letter"
+  hearts: 5,
+  pointsPerWord: 100,
+  perfectBonus: 50,         // no mistakes on a word
+  readAloud: true,          // say the word out loud (if the device can)
+  cheers: ['Great reading!', 'You did it!', 'Wonderful!', 'Super speller!', 'Yes!'],
+  saveKey: 'word-best',
+};
+
+/* ===== Shell helpers ===== */
+const $ = id => document.getElementById(id);
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const ABC = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+const pick = list => list[Math.floor(Math.random() * list.length)];
+const shuffle = list => { const a = list.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+for (const k in CONFIG.colors) document.documentElement.style.setProperty('--' + k, CONFIG.colors[k]);
+document.title = CONFIG.title;
+$('titleText').textContent = CONFIG.title;
+$('subtitleText').textContent = CONFIG.subtitle;
+function showScreen(id) { document.querySelectorAll('.screen').forEach(s => { s.hidden = s.id !== id; }); }
+function updateMute() {
+  document.querySelectorAll('.mute').forEach(b => { b.textContent = BRB.sfx.muted ? '🔇' : '🔊'; b.setAttribute('aria-label', BRB.sfx.muted ? 'Turn sound on' : 'Turn sound off'); });
+}
+document.querySelectorAll('.mute').forEach(b => b.addEventListener('click', () => { BRB.sfx.mute(); updateMute(); BRB.sfx.play('click'); }));
+updateMute();
+let best = +BRB.storage.get(CONFIG.saveKey) || 0;
+$('bestTitle').textContent = '🏆 Best: ' + best;
+function say(text) {
+  if (!CONFIG.readAloud || BRB.sfx.muted) return;
+  try { if (!('speechSynthesis' in window)) return; speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.rate = 0.8; u.pitch = 1.15; speechSynthesis.speak(u); } catch (e) { /* no voice on this device */ }
+}
+function starSvg(on) {
+  return '<svg viewBox="0 0 50 50" class="' + (on ? 'on' : '') + '"><path d="M25 3l6.5 14 15 1.6-11.3 10.2 3.2 15L25 36.2 11.6 43.8l3.2-15L3.5 18.6l15-1.6z" fill="' +
+    (on ? '#ffc83d' : '#e2e8f0') + '" stroke="' + (on ? '#e09a00' : '#cbd5e1') + '" stroke-width="3" stroke-linejoin="round"/></svg>';
+}
+
+/* ===== Game state ===== */
+let round = [], index = 0, score = 0, hearts = 0, perfect = 0, done = [];
+let word = '', mode = 'missing', filled = [], missingAt = -1, mistakes = 0, busy = false, playing = false, paused = false;
+
+function startGame() {
+  // short words first, longer ones later: the difficulty ramp
+  const all = shuffle(CONFIG.words);
+  const short = all.filter(w => w[0].length <= 4), long = all.filter(w => w[0].length > 4);
+  const first = short.slice(0, CONFIG.missingLetterRounds);
+  const rest = shuffle(short.slice(CONFIG.missingLetterRounds)).slice(0, Math.ceil((CONFIG.wordsPerRound - first.length) / 2))
+    .concat(long).slice(0, CONFIG.wordsPerRound - first.length).sort((a, b) => a[0].length - b[0].length);
+  round = first.concat(rest).slice(0, CONFIG.wordsPerRound);
+  index = 0; score = 0; hearts = CONFIG.hearts; perfect = 0; done = []; playing = true; paused = false;
+  showScreen(null); BRB.sfx.play('powerup'); showWord();
+}
+
+function showWord() {
+  [word] = round[index];
+  $('pic').textContent = round[index][1];
+  mode = index < CONFIG.missingLetterRounds ? 'missing' : 'scramble';
+  mistakes = 0; busy = false;
+  filled = word.split('').map(() => false);
+  const tiles = $('tiles'); tiles.innerHTML = '';
+  let letters;
+  if (mode === 'missing') {
+    missingAt = Math.floor(Math.random() * word.length);
+    filled = filled.map((_, i) => i !== missingAt);
+    const wrong = shuffle(ABC.split('').filter(l => !word.includes(l))).slice(0, CONFIG.choices - 1);
+    letters = shuffle([word[missingAt], ...wrong]);
+    $('modeEl').textContent = 'Which letter is missing?';
+  } else {
+    letters = word.split('');
+    for (let tries = 0; tries < 10 && letters.join('') === word; tries++) letters = shuffle(letters);
+    $('modeEl').textContent = 'Tap the letters in order!';
+  }
+  letters.forEach(l => {
+    const b = document.createElement('button'); b.className = 'tile'; b.textContent = l; b.dataset.l = l; b.setAttribute('aria-label', 'Letter ' + l);
+    b.addEventListener('click', () => tap(b));
+    tiles.appendChild(b);
+  });
+  renderSlots();
+  updateHud();
+  if (!REDUCED) document.querySelector('.picture').animate([{ transform: 'scale(.7) rotate(-6deg)', opacity: 0 }, { transform: 'scale(1)', opacity: 1 }], { duration: 350, easing: 'cubic-bezier(.3,1.5,.5,1)' });
+  setTimeout(() => say(word.toLowerCase()), 300);
+}
+
+function nextSlot() { return filled.indexOf(false); }
+function renderSlots(popAt) {
+  const next = nextSlot();
+  $('slots').innerHTML = word.split('').map((ch, i) => {
+    const cls = filled[i] ? (i === popAt ? ' pop' : '') : (i === next ? ' blank' : '');
+    return '<div class="slot' + cls + '">' + (filled[i] ? ch : '') + '</div>';
+  }).join('');
+}
+
+function tap(tile) {
+  if (busy || paused || !playing || tile.classList.contains('used')) return;
+  const at = nextSlot(), need = word[at];
+  if (tile.dataset.l === need) {
+    filled[at] = true; tile.classList.add('used'); BRB.sfx.play('coin');
+    renderSlots(at);
+    if (nextSlot() === -1) wordDone();
+  } else {
+    mistakes++; hearts--; updateHud();
+    BRB.sfx.play('hit'); worm('sad');
+    tile.classList.remove('shake'); void tile.offsetWidth; tile.classList.add('shake');
+    if (hearts <= 0) { busy = true; setTimeout(() => endGame(false), 700); }
+  }
+}
+
+function wordDone() {
+  busy = true;
+  const gain = CONFIG.pointsPerWord + (mistakes === 0 ? CONFIG.perfectBonus : 0);
+  score += gain; if (mistakes === 0) perfect++;
+  done.push(round[index][1]);
+  updateHud(); worm('happy'); BRB.sfx.play('powerup'); burst();
+  $('modeEl').textContent = pick(CONFIG.cheers) + ' +' + gain;
+  say(word.toLowerCase() + '! ' + pick(CONFIG.cheers));
+  setTimeout(() => { index++; if (index >= round.length) endGame(true); else if (playing) showWord(); }, 1500);
+}
+
+function helpMe() {
+  if (busy || paused || !playing) return;
+  const at = nextSlot(); if (at < 0) return;
+  const tile = [...document.querySelectorAll('.tile:not(.used)')].find(t => t.dataset.l === word[at]);
+  mistakes++;   // using help means no perfect bonus, but no heart is lost
+  BRB.sfx.play('click'); say(word[at].toLowerCase());
+  if (tile) tap(tile);
+}
+
+function endGame(won) {
+  playing = false;
+  const stars = !won ? 0 : perfect >= round.length - 1 ? 3 : perfect >= round.length / 2 ? 2 : 1;
+  const isBest = score > best;
+  if (isBest) { best = score; BRB.storage.set(CONFIG.saveKey, best); }
+  BRB.score.submit(score, done.length + ' words');
+  BRB.gameOver({ won, score });
+  BRB.sfx.play(won ? 'win' : 'lose');
+  if (won || isBest) BRB.fx.confetti();
+  $('resultTitle').textContent = won ? 'Super reader!' : 'Out of hearts!';
+  $('starsEl').innerHTML = [0, 1, 2].map(i => starSvg(i < stars)).join('');
+  $('resultLine').textContent = won ? 'You built all ' + round.length + ' words! ' + perfect + ' with no mistakes.' : 'You built ' + done.length + ' words. ' + CONFIG.hostName + ' knows you can do more!';
+  $('wordList').textContent = done.join(' ');
+  $('resultScore').textContent = '⭐ ' + score;
+  $('bestResult').textContent = '🏆 Best: ' + best;
+  $('bestTitle').textContent = '🏆 Best: ' + best;
+  $('newBest').hidden = !isBest;
+  showScreen('resultScreen'); $('againBtn').focus({ preventScroll: true });
+  if (won) say('You did it! Super reader!');
+}
+
+/* ===== HUD and juice ===== */
+function updateHud() {
+  $('numEl').textContent = Math.min(index + 1, round.length) + '/' + round.length;
+  $('livesEl').textContent = '❤️'.repeat(Math.max(0, hearts)) + '🤍'.repeat(Math.max(0, CONFIG.hearts - hearts));
+  $('scoreEl').textContent = '⭐ ' + score;
+}
+function worm(mood) { const w = $('worm'); w.classList.remove('happy', 'sad'); void w.getBoundingClientRect(); w.classList.add(mood); }
+function burst() {
+  if (REDUCED) return;
+  const r = $('slots').getBoundingClientRect();
+  for (let i = 0; i < 14; i++) {
+    const s = document.createElement('div'); s.className = 'spark'; s.textContent = pick(['⭐', '✨', '🌟', '💚']);
+    s.style.left = r.left + Math.random() * r.width + 'px'; s.style.top = r.top + r.height / 2 + 'px'; document.body.appendChild(s);
+    const dx = (Math.random() - 0.5) * 160, dy = -60 - Math.random() * 120;
+    s.animate([{ transform: 'translate(-50%,-50%) scale(.5)', opacity: 1 }, { transform: 'translate(calc(-50% + ' + dx + 'px),calc(-50% + ' + dy + 'px)) scale(1.2)', opacity: 0 }], { duration: 900, easing: 'ease-out' }).onfinish = () => s.remove();
+  }
+}
+
+/* ===== Pause ===== */
+function pause() { if (!playing || paused) return; paused = true; showScreen('pauseScreen'); BRB.sfx.play('click'); }
+function resume() { paused = false; showScreen(null); BRB.sfx.play('click'); }
+document.addEventListener('visibilitychange', () => { if (document.hidden) pause(); });
+
+/* ===== Controls ===== */
+$('playBtn').addEventListener('click', startGame);
+$('againBtn').addEventListener('click', startGame);
+$('pauseBtn').addEventListener('click', pause);
+$('resumeBtn').addEventListener('click', resume);
+$('restartBtn').addEventListener('click', startGame);
+$('hearBtn').addEventListener('click', () => { BRB.sfx.play('click'); say(word.toLowerCase()); });
+$('helpBtn').addEventListener('click', helpMe);
+addEventListener('keydown', e => {
+  if (e.repeat || e.metaKey || e.ctrlKey || e.altKey) return;
+  const k = e.key;
+  if (!$('titleScreen').hidden || !$('resultScreen').hidden) { if (k === 'Enter') { e.preventDefault(); startGame(); } return; }
+  if (!$('pauseScreen').hidden) { if (k === 'Escape') resume(); return; }
+  if (k === 'Escape') return pause();
+  const l = k.toUpperCase();
+  if (l.length === 1 && ABC.includes(l)) {
+    const tiles = [...document.querySelectorAll('.tile:not(.used)')];
+    const at = nextSlot();
+    // prefer the right tile if there are two of the same letter
+    const tile = tiles.find(t => t.dataset.l === l && l === word[at]) || tiles.find(t => t.dataset.l === l);
+    if (tile) tap(tile);
+  }
+});
+</script>

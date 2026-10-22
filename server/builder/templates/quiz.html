@@ -1,0 +1,390 @@
+<title>Animal Quiz Show</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap">
+<style>
+/* Layout: HUD on top, timer bar, the host (an owl drawn in SVG) with a speech bubble,
+   the question card, then four big answer buttons. Overlays for title, pause and results. */
+:root{
+  --bg1:#ff8a5c; --bg2:#ffd166; --ink:#33204a; --accent:#7c3aed; --accentDark:#5b21b6;
+  --good:#22c55e; --bad:#ef4444; --card:#ffffff; --owl:#a0673a; --owlBelly:#f5d9b5;
+  --font:"Fredoka","Trebuchet MS",system-ui,sans-serif;
+}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{margin:0;overflow:hidden;font-family:var(--font);color:var(--ink);background:linear-gradient(170deg,var(--bg1),var(--bg2));
+  touch-action:manipulation;user-select:none;-webkit-user-select:none}
+#bgArt{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.app{position:relative;z-index:1;height:100%;max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:8px;
+  padding:10px max(14px,env(safe-area-inset-left)) 14px max(14px,env(safe-area-inset-right))}
+button{font-family:inherit;color:inherit;cursor:pointer}
+button:focus-visible{outline:4px solid #fff;outline-offset:2px}
+
+/* HUD */
+.hud{display:flex;align-items:center;gap:6px}
+.pill{background:var(--card);border-radius:999px;padding:6px 12px;font-weight:700;font-size:1.05rem;box-shadow:0 3px 0 rgba(0,0,0,.15);white-space:nowrap}
+.hud .grow{flex:1;display:flex;gap:6px;justify-content:center;min-width:0}
+.icon-btn{width:46px;height:46px;flex:none;border:0;border-radius:50%;background:var(--card);font-size:1.35rem;box-shadow:0 4px 0 rgba(0,0,0,.18);display:grid;place-items:center;padding:0}
+.icon-btn:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.18)}
+.streak{transition:transform .2s}
+.streak.hot{background:#fff1c2}
+.timer{height:14px;border-radius:999px;background:rgba(255,255,255,.55);overflow:hidden;box-shadow:inset 0 2px 0 rgba(0,0,0,.08)}
+.timer i{display:block;height:100%;width:100%;border-radius:inherit;background:var(--good);transform-origin:left center}
+
+/* Host + bubble */
+.stage{display:flex;align-items:flex-end;gap:8px;min-height:0}
+.owl{width:96px;height:104px;flex:none;transform-origin:50% 100%}
+.owl.happy{animation:hop .6s ease-out}
+.owl.sad{animation:wobble .6s ease-in-out}
+@keyframes hop{30%{transform:translateY(-16px) scale(1.05,.95)}60%{transform:translateY(0) scale(.95,1.05)}}
+@keyframes wobble{25%{transform:rotate(-8deg)}75%{transform:rotate(8deg)}}
+.bubble{position:relative;flex:1;background:var(--card);border-radius:20px;padding:10px 14px;font-size:1.05rem;line-height:1.3;min-height:64px;
+  box-shadow:0 4px 0 rgba(0,0,0,.12);display:flex;flex-direction:column;justify-content:center;gap:6px;margin-bottom:12px}
+.bubble::before{content:"";position:absolute;left:-12px;bottom:18px;border:8px solid transparent;border-right:14px solid var(--card);border-left:0}
+.bubble b{font-size:1.2rem}
+.next{align-self:flex-end;border:0;border-radius:14px;background:var(--accent);color:#fff;font-weight:700;font-size:1.15rem;padding:10px 18px;min-height:46px;box-shadow:0 4px 0 var(--accentDark)}
+.next:active{transform:translateY(3px);box-shadow:none}
+
+/* Question */
+.qcard{background:var(--card);border-radius:24px;padding:12px 16px;text-align:center;box-shadow:0 6px 0 rgba(0,0,0,.12);position:relative}
+.qcard .emoji{font-size:clamp(2.6rem,11vh,4.2rem);line-height:1.1;display:block}
+.qcard h2{margin:4px 0 0;font-size:clamp(1.15rem,5.2vw,1.5rem);line-height:1.25;font-weight:700}
+.answers{display:grid;gap:10px;flex:1;align-content:start}
+.ans{display:flex;align-items:center;gap:12px;min-height:58px;width:100%;border:0;border-radius:18px;background:var(--card);padding:8px 14px;text-align:left;
+  font-size:clamp(1.05rem,4.8vw,1.3rem);font-weight:600;box-shadow:0 5px 0 rgba(0,0,0,.16);transition:background .2s,transform .1s}
+.ans span{width:36px;height:36px;flex:none;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:#fff;font-weight:700}
+.ans:active:not(:disabled){transform:translateY(4px);box-shadow:0 1px 0 rgba(0,0,0,.16)}
+.ans:disabled{cursor:default}
+.ans.right{background:var(--good);color:#fff}
+.ans.right span{background:#fff;color:var(--good)}
+.ans.wrong{background:#ffd5d5;color:#9b1c1c}
+.ans.wrong span{background:var(--bad)}
+.ans.dim{opacity:.55}
+.shake{animation:shake .4s}
+@keyframes shake{20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+.pop{position:absolute;left:50%;top:10px;font-weight:700;font-size:1.6rem;color:var(--accent);pointer-events:none;text-shadow:0 2px 0 #fff}
+.spark{position:fixed;font-size:1.4rem;pointer-events:none;z-index:5}
+
+/* Overlay screens */
+.screen{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(51,32,74,.35)}
+.panel{background:var(--card);border-radius:28px;padding:22px 20px;width:min(100%,420px);max-height:100%;overflow:auto;text-align:center;
+  box-shadow:0 10px 0 rgba(0,0,0,.18);display:flex;flex-direction:column;align-items:center;gap:12px}
+.panel h1{margin:0;font-size:clamp(2rem,9vw,2.6rem);line-height:1.05;color:var(--accent)}
+.panel p{margin:0;font-size:1.1rem;line-height:1.35}
+.panel .owl{width:120px;height:130px}
+.big-btn{border:0;border-radius:20px;background:var(--accent);color:#fff;font-weight:700;font-size:1.5rem;padding:14px 34px;min-height:60px;min-width:200px;box-shadow:0 6px 0 var(--accentDark)}
+.big-btn.alt{background:#e9e3f5;color:var(--ink);box-shadow:0 6px 0 #c9bfe0;font-size:1.2rem;min-height:52px}
+.big-btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--accentDark)}
+.row{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap}
+.best{font-weight:700;background:#fff4cc;border-radius:999px;padding:6px 14px}
+.stars{display:flex;gap:6px}
+.stars svg{width:58px;height:58px}
+.stars svg.on{animation:starIn .5s both}
+.stars svg:nth-child(2){animation-delay:.2s}.stars svg:nth-child(3){animation-delay:.4s}
+@keyframes starIn{from{transform:scale(0) rotate(-90deg)}to{transform:scale(1) rotate(0)}}
+.newbest{background:var(--good);color:#fff;border-radius:999px;padding:4px 14px;font-weight:700}
+@media (max-height:640px){.owl{width:72px;height:78px}.qcard .emoji{font-size:2.3rem}.ans{min-height:50px}.answers{gap:8px}}
+/* Short landscape screens: question on the left, answers on the right */
+@media (orientation:landscape) and (max-height:540px){
+  .app{max-width:920px;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto auto auto 1fr;column-gap:14px;row-gap:8px;align-content:start}
+  .hud,.timer{grid-column:1/-1}
+  .stage{grid-column:1;grid-row:3}.qcard{grid-column:1;grid-row:4;align-self:start}
+  .answers{grid-column:2;grid-row:3/5;gap:8px}
+  .owl{width:60px;height:66px}.qcard .emoji{font-size:2.2rem}.ans{min-height:48px}
+  .panel{max-width:520px}.panel .owl{width:80px;height:86px}
+}
+@media (prefers-reduced-motion:reduce){.owl.happy,.owl.sad,.shake,.stars svg.on{animation:none}#bgArt circle{animation:none!important}}
+</style>
+
+<!-- Soft floating bubbles behind everything (slow, transform-only animation) -->
+<svg id="bgArt" viewBox="0 0 400 700" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+  <style>.fl{animation:float 9s ease-in-out infinite alternate}.fl2{animation:float 12s ease-in-out infinite alternate-reverse}
+  @keyframes float{to{transform:translateY(-30px)}}</style>
+  <circle class="fl" cx="40" cy="120" r="60" fill="#fff" opacity=".18"/>
+  <circle class="fl2" cx="360" cy="260" r="80" fill="#fff" opacity=".14"/>
+  <circle class="fl" cx="320" cy="620" r="70" fill="#fff" opacity=".16"/>
+  <circle class="fl2" cx="70" cy="520" r="40" fill="#fff" opacity=".2"/>
+  <path class="fl" d="M200 40l8 16 18 3-13 12 3 18-16-9-16 9 3-18-13-12 18-3z" fill="#fff" opacity=".3"/>
+</svg>
+
+<!-- The owl host, reused on several screens -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="owlArt" viewBox="0 0 120 130">
+    <ellipse cx="60" cy="124" rx="34" ry="6" fill="rgba(0,0,0,.15)"/>
+    <path d="M22 70c0-34 16-52 38-52s38 18 38 52c0 32-16 52-38 52S22 102 22 70z" fill="var(--owl)"/>
+    <ellipse cx="60" cy="88" rx="24" ry="28" fill="var(--owlBelly)"/>
+    <path d="M50 80q4 4 8 0M62 90q4 4 8 0M50 100q4 4 8 0" stroke="var(--owl)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M22 72q-14 14-6 34 10-4 14-20z" fill="var(--owl)"/>
+    <path d="M98 72q14 14 6 34-10-4-14-20z" fill="var(--owl)"/>
+    <circle cx="44" cy="52" r="15" fill="#fff"/><circle cx="76" cy="52" r="15" fill="#fff"/>
+    <g class="pupils"><circle cx="46" cy="54" r="7" fill="#33204a"/><circle cx="74" cy="54" r="7" fill="#33204a"/>
+    <circle cx="48" cy="51" r="2.5" fill="#fff"/><circle cx="76" cy="51" r="2.5" fill="#fff"/></g>
+    <path d="M55 64l5 9 5-9z" fill="#ffb020"/>
+    <path d="M40 112h10M70 112h10" stroke="#ffb020" stroke-width="5" stroke-linecap="round"/>
+    <!-- graduation cap -->
+    <path d="M30 22l30-12 30 12-30 12z" fill="#33204a"/><rect x="46" y="24" width="28" height="10" rx="3" fill="#33204a"/>
+    <path d="M88 22v14" stroke="#ffd166" stroke-width="3"/><circle cx="88" cy="38" r="4" fill="#ffd166"/>
+  </symbol>
+</svg>
+
+<div class="app" id="app">
+  <div class="hud">
+    <button class="icon-btn" id="pauseBtn" aria-label="Pause">⏸️</button>
+    <div class="grow">
+      <div class="pill" id="qNum" aria-label="Question number">1/10</div>
+      <div class="pill" id="scoreEl" aria-label="Score">⭐ 0</div>
+      <div class="pill streak" id="streakEl" aria-label="Streak">🔥 0</div>
+    </div>
+    <button class="icon-btn mute" aria-label="Turn sound off">🔊</button>
+  </div>
+  <div class="timer" aria-hidden="true"><i id="timerBar"></i></div>
+  <div class="stage">
+    <svg class="owl" id="owl" aria-hidden="true"><use href="#owlArt"/></svg>
+    <div class="bubble" id="bubble" aria-live="polite"><span id="say">Ready?</span><button class="next" id="nextBtn" hidden>Next ➜</button></div>
+  </div>
+  <div class="qcard" id="qcard"><span class="emoji" id="qEmoji">🦉</span><h2 id="qText">Question</h2></div>
+  <div class="answers" id="answers"></div>
+</div>
+
+<section class="screen" id="titleScreen">
+  <div class="panel">
+    <svg class="owl" aria-hidden="true"><use href="#owlArt"/></svg>
+    <h1 id="titleText">Animal Quiz Show</h1>
+    <p id="subtitleText">10 questions. Answer fast for bonus points!</p>
+    <div class="best" id="bestTitle">🏆 Best: 0</div>
+    <button class="big-btn" id="playBtn">▶ Play</button>
+    <div class="row"><button class="icon-btn mute" aria-label="Turn sound off">🔊</button><span>Keys: 1 2 3 4 to answer</span></div>
+  </div>
+</section>
+
+<section class="screen" id="pauseScreen" hidden>
+  <div class="panel">
+    <h1>Paused</h1>
+    <button class="big-btn" id="resumeBtn">▶ Keep going</button>
+    <button class="big-btn alt" id="restartBtn">↺ Start over</button>
+    <button class="icon-btn mute" aria-label="Turn sound off">🔊</button>
+  </div>
+</section>
+
+<section class="screen" id="resultScreen" hidden>
+  <div class="panel">
+    <h1 id="resultTitle">Quiz complete!</h1>
+    <div class="stars" id="starsEl"></div>
+    <p id="resultLine">You got 0 out of 10</p>
+    <div class="row"><div class="best" id="resultScore">⭐ 0</div><div class="best" id="bestResult">🏆 Best: 0</div></div>
+    <div class="newbest" id="newBest" hidden>New best score!</div>
+    <button class="big-btn" id="againBtn">↺ Play again</button>
+  </div>
+</section>
+
+<script>
+/* =====================================================================
+   CONFIG: change these to make the quiz your own!
+   Each question: the FIRST answer is the right one (answers get shuffled).
+   ===================================================================== */
+const CONFIG = {
+  title: 'Animal Quiz Show',
+  subtitle: '10 questions. Answer fast for bonus points!',
+  hostName: 'Professor Hoot',
+  colors: { bg1: '#ff8a5c', bg2: '#ffd166', accent: '#7c3aed', accentDark: '#5b21b6', owl: '#a0673a', owlBelly: '#f5d9b5' },
+  startSeconds: 15,     // time for the first question
+  minSeconds: 8,        // questions get faster down to this
+  secondsStep: 0.8,     // how much faster each question gets
+  pointsRight: 100,     // points for a right answer
+  speedBonus: 50,       // extra points for answering instantly
+  streakBonus: 25,      // extra points per answer in a row
+  passMark: 6,          // right answers needed to "win"
+  cheers: ['Hoot hoot! Yes!', 'Brilliant!', 'You got it!', 'Wow, smart!', 'Super!'],
+  oops: ['Not quite!', 'Oh, so close!', 'Nice try!'],
+  questions: [
+    { q: 'Which animal is the biggest in the whole world?', emoji: '🐋', answers: ['Blue whale', 'Elephant', 'Giraffe', 'Hippo'], fact: 'A blue whale is as long as three school buses!' },
+    { q: 'How many legs does a spider have?', emoji: '🕷️', answers: ['8', '6', '10', '4'], fact: 'Spiders have 8 legs. Insects have 6.' },
+    { q: 'What do bees make?', emoji: '🐝', answers: ['Honey', 'Milk', 'Jam', 'Bread'], fact: 'Bees make honey from flower nectar.' },
+    { q: 'Which bird cannot fly but is a super swimmer?', emoji: '🐧', answers: ['Penguin', 'Parrot', 'Owl', 'Eagle'], fact: 'Penguins use their wings like flippers.' },
+    { q: 'What is a baby frog called?', emoji: '🐸', answers: ['Tadpole', 'Kitten', 'Cub', 'Chick'], fact: 'Tadpoles live in water and grow legs later.' },
+    { q: 'Which animal has a long neck for treetop leaves?', emoji: '🦒', answers: ['Giraffe', 'Zebra', 'Lion', 'Camel'], fact: 'A giraffe tongue can be as long as your arm!' },
+    { q: 'Where does a baby kangaroo ride?', emoji: '🦘', answers: ['In a pouch', 'In a nest', 'In a cave', 'Up a tree'], fact: 'A baby kangaroo is called a joey.' },
+    { q: 'Which animal can change colour to hide?', emoji: '🦎', answers: ['Chameleon', 'Rabbit', 'Cow', 'Duck'], fact: 'Chameleons also change colour when they feel cold or excited.' },
+    { q: 'What do pandas love to munch?', emoji: '🐼', answers: ['Bamboo', 'Pizza', 'Fish', 'Carrots'], fact: 'Pandas munch bamboo for about 12 hours a day!' },
+    { q: 'How do fish breathe underwater?', emoji: '🐟', answers: ['With gills', 'With a snorkel', 'They hold their breath', 'With a straw'], fact: 'Gills take oxygen out of the water.' },
+  ],
+  saveKey: 'quiz-best',
+};
+
+/* ===== Shell helpers: screens, sound toggle, best score ===== */
+const $ = id => document.getElementById(id);
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const pick = list => list[Math.floor(Math.random() * list.length)];
+const shuffle = list => { const a = list.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+for (const k in CONFIG.colors) document.documentElement.style.setProperty('--' + k, CONFIG.colors[k]);
+document.title = CONFIG.title;
+$('titleText').textContent = CONFIG.title;
+$('subtitleText').textContent = CONFIG.subtitle;
+
+function showScreen(id) { document.querySelectorAll('.screen').forEach(s => { s.hidden = s.id !== id; }); }
+function updateMute() {
+  document.querySelectorAll('.mute').forEach(b => { b.textContent = BRB.sfx.muted ? '🔇' : '🔊'; b.setAttribute('aria-label', BRB.sfx.muted ? 'Turn sound on' : 'Turn sound off'); });
+}
+document.querySelectorAll('.mute').forEach(b => b.addEventListener('click', () => { BRB.sfx.mute(); updateMute(); BRB.sfx.play('click'); }));
+updateMute();
+let best = +BRB.storage.get(CONFIG.saveKey) || 0;
+function showBest() { $('bestTitle').textContent = '🏆 Best: ' + best; }
+showBest();
+
+/* ===== Game state ===== */
+let questions = [], index = 0, score = 0, streak = 0, correct = 0;
+let timeLeft = 0, timeTotal = 1, answered = true, paused = false, playing = false, lastT = 0;
+
+function startGame() {
+  questions = shuffle(CONFIG.questions).slice(0, 10);
+  index = 0; score = 0; streak = 0; correct = 0; paused = false; playing = true;
+  updateHud(); showScreen(null); BRB.sfx.play('powerup');
+  say('Hi! I am ' + CONFIG.hostName + '. Let’s go!');
+  showQuestion();
+}
+
+function showQuestion() {
+  const item = questions[index];
+  answered = false;
+  timeTotal = Math.max(CONFIG.minSeconds, CONFIG.startSeconds - index * CONFIG.secondsStep);
+  timeLeft = timeTotal;
+  $('qEmoji').textContent = item.emoji;
+  $('qText').textContent = item.q;
+  $('nextBtn').hidden = true;
+  if (index > 0) say(pick(['Here comes the next one!', 'Think fast!', 'Ooh, a good one!', 'You can do it!']));
+  const box = $('answers'); box.innerHTML = '';
+  shuffle(item.answers.map((text, i) => ({ text, right: i === 0 }))).forEach((a, i) => {
+    const b = document.createElement('button');
+    b.className = 'ans'; b.dataset.right = a.right ? '1' : '';
+    b.innerHTML = '<span>' + 'ABCD'[i] + '</span>';
+    b.appendChild(document.createTextNode(a.text));
+    b.addEventListener('click', () => choose(b));
+    box.appendChild(b);
+  });
+  updateHud();
+  if (!REDUCED) $('qcard').animate([{ transform: 'scale(.85)', opacity: 0 }, { transform: 'scale(1)', opacity: 1 }], { duration: 300, easing: 'ease-out' });
+}
+
+function choose(btn) {
+  if (answered || paused) return;
+  answered = true;
+  const item = questions[index];
+  const buttons = [...document.querySelectorAll('.ans')];
+  buttons.forEach(b => { b.disabled = true; if (b.dataset.right) b.classList.add('right'); else if (b !== btn) b.classList.add('dim'); });
+  if (btn && btn.dataset.right) {
+    streak++; correct++;
+    const gain = CONFIG.pointsRight + Math.round(CONFIG.speedBonus * timeLeft / timeTotal) + (streak > 1 ? CONFIG.streakBonus * (streak - 1) : 0);
+    score += gain;
+    BRB.sfx.play(streak >= 3 ? 'powerup' : 'coin');
+    owlMood('happy'); burst(btn); popText('+' + gain);
+    say('<b>' + pick(CONFIG.cheers) + '</b>' + item.fact);
+  } else {
+    streak = 0;
+    if (btn) { btn.classList.add('wrong'); btn.classList.add('shake'); }
+    BRB.sfx.play('hit'); owlMood('sad');
+    BRB.fx.shake($('qcard'), 6);
+    say('<b>' + (btn ? pick(CONFIG.oops) : 'Time’s up!') + '</b>' + item.fact);
+  }
+  updateHud();
+  $('nextBtn').hidden = false;
+  $('nextBtn').textContent = index === questions.length - 1 ? 'Finish 🏁' : 'Next ➜';
+  $('nextBtn').focus({ preventScroll: true });
+}
+
+function nextQuestion() {
+  if (!answered || paused || !playing) return;
+  BRB.sfx.play('click');
+  index++;
+  if (index >= questions.length) endGame(); else showQuestion();
+}
+
+function endGame() {
+  playing = false;
+  const won = correct >= CONFIG.passMark;
+  const stars = correct >= 9 ? 3 : correct >= 6 ? 2 : correct >= 3 ? 1 : 0;
+  const isBest = score > best;
+  if (isBest) { best = score; BRB.storage.set(CONFIG.saveKey, best); }
+  BRB.score.submit(score, correct + '/' + questions.length + ' right');
+  BRB.gameOver({ won, score });
+  $('resultTitle').textContent = won ? 'Quiz champion!' : 'Good try!';
+  $('resultLine').textContent = 'You got ' + correct + ' out of ' + questions.length + ' right.';
+  $('resultScore').textContent = '⭐ ' + score;
+  $('bestResult').textContent = '🏆 Best: ' + best;
+  $('newBest').hidden = !isBest;
+  $('starsEl').innerHTML = [0, 1, 2].map(i => starSvg(i < stars)).join('');
+  showBest(); showScreen('resultScreen');
+  BRB.sfx.play(won ? 'win' : 'lose');
+  if (won || isBest) BRB.fx.confetti();
+  $('againBtn').focus({ preventScroll: true });
+}
+
+function starSvg(on) {
+  return '<svg viewBox="0 0 50 50" class="' + (on ? 'on' : '') + '"><path d="M25 3l6.5 14 15 1.6-11.3 10.2 3.2 15L25 36.2 11.6 43.8l3.2-15L3.5 18.6l15-1.6z" fill="' +
+    (on ? '#ffc83d' : '#e7e2ee') + '" stroke="' + (on ? '#e09a00' : '#cfc7dc') + '" stroke-width="3" stroke-linejoin="round"/></svg>';
+}
+
+/* ===== HUD, host and juice ===== */
+function updateHud() {
+  $('qNum').textContent = Math.min(index + 1, questions.length || 10) + '/' + (questions.length || 10);
+  $('scoreEl').textContent = '⭐ ' + score;
+  $('streakEl').textContent = '🔥 ' + streak;
+  $('streakEl').classList.toggle('hot', streak >= 3);
+}
+function say(html) { $('say').innerHTML = html.replace(/<\/b>/, '</b><br>'); }
+function owlMood(mood) {
+  const o = $('owl'); o.classList.remove('happy', 'sad'); void o.getBoundingClientRect(); o.classList.add(mood);
+}
+function popText(text) {
+  if (REDUCED) return;
+  const p = document.createElement('div'); p.className = 'pop'; p.textContent = text; $('qcard').appendChild(p);
+  p.animate([{ transform: 'translate(-50%,0)', opacity: 1 }, { transform: 'translate(-50%,-50px)', opacity: 0 }], { duration: 900, easing: 'ease-out' }).onfinish = () => p.remove();
+}
+function burst(el) {
+  if (REDUCED) return;
+  const r = el.getBoundingClientRect();
+  for (let i = 0; i < 12; i++) {
+    const s = document.createElement('div'); s.className = 'spark'; s.textContent = pick(['⭐', '✨', '💛']);
+    s.style.left = (r.left + r.width / 2) + 'px'; s.style.top = (r.top + r.height / 2) + 'px'; document.body.appendChild(s);
+    const a = Math.random() * Math.PI * 2, d = 50 + Math.random() * 90;
+    s.animate([{ transform: 'translate(-50%,-50%) scale(.4)', opacity: 1 }, { transform: 'translate(calc(-50% + ' + Math.cos(a) * d + 'px),calc(-50% + ' + Math.sin(a) * d + 'px)) scale(1.2)', opacity: 0 }],
+      { duration: 700 + Math.random() * 300, easing: 'cubic-bezier(.2,.8,.3,1)' }).onfinish = () => s.remove();
+  }
+}
+
+/* ===== Timer loop ===== */
+function loop(t) {
+  const dt = Math.min(0.1, (t - lastT) / 1000 || 0); lastT = t;
+  if (playing && !paused && !answered) {
+    timeLeft -= dt;
+    if (timeLeft <= 0) { timeLeft = 0; choose(null); }
+  }
+  const frac = playing ? (answered ? timeLeft : timeLeft) / timeTotal : 1;
+  const bar = $('timerBar');
+  bar.style.transform = 'scaleX(' + Math.max(0, frac) + ')';
+  bar.style.background = frac > 0.5 ? 'var(--good)' : frac > 0.25 ? '#f59e0b' : 'var(--bad)';
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+/* ===== Pause ===== */
+function pause() { if (!playing || paused) return; paused = true; showScreen('pauseScreen'); BRB.sfx.play('click'); }
+function resume() { paused = false; showScreen(null); BRB.sfx.play('click'); }
+document.addEventListener('visibilitychange', () => { if (document.hidden) pause(); });
+
+/* ===== Controls ===== */
+$('playBtn').addEventListener('click', startGame);
+$('againBtn').addEventListener('click', startGame);
+$('pauseBtn').addEventListener('click', pause);
+$('resumeBtn').addEventListener('click', resume);
+$('restartBtn').addEventListener('click', startGame);
+$('nextBtn').addEventListener('click', nextQuestion);
+addEventListener('keydown', e => {
+  if (e.repeat) return;
+  const k = e.key.toLowerCase();
+  if (!$('titleScreen').hidden || !$('resultScreen').hidden) { if (k === 'enter' || k === ' ') { e.preventDefault(); startGame(); } return; }
+  if (!$('pauseScreen').hidden) { if (k === 'escape' || k === 'p' || k === 'enter') resume(); return; }
+  if (k === 'escape' || k === 'p') return pause();
+  const i = '1234'.indexOf(k) >= 0 ? '1234'.indexOf(k) : 'abcd'.indexOf(k);
+  if (i >= 0 && !answered) { const b = document.querySelectorAll('.ans')[i]; if (b) choose(b); }
+  else if ((k === 'enter' || k === ' ') && answered) { e.preventDefault(); nextQuestion(); }
+});
+</script>
