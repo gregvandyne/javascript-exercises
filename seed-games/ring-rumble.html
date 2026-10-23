@@ -35,23 +35,86 @@ body{background:var(--night);color:var(--ink);font-family:var(--body);overflow:h
 .btn:focus-visible,.card:focus-visible,.pb:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
 .keys{font-size:clamp(.6rem,1.9vh,.8rem);color:var(--muted);text-align:center;line-height:1.5;margin:0}
 .keys b{color:var(--ink)}
+#title,#ready,#controls{overflow-x:hidden;overflow-y:auto;justify-content:center;justify-content:safe center}
+
+/* keyboard controls panel: two key-cap diagrams (P1 red, P2 blue), shown on desktop only */
+.ctlwrap{display:flex;gap:clamp(12px,3vw,48px);justify-content:center;flex-wrap:wrap;--ks:clamp(30px,6vh,50px)}
+.ctl{--kc:var(--p1);border:2px solid var(--kc);border-radius:16px;padding:clamp(6px,1.4vh,12px) clamp(10px,2vw,18px);background:rgba(10,8,20,.78);
+  box-shadow:0 0 24px rgba(0,0,0,.6);box-shadow:0 0 24px color-mix(in srgb,var(--kc) 35%,transparent);text-align:center}
+.ctl.p2{--kc:var(--p2)}
+.ctl h3{font:400 clamp(1.1rem,4.2vh,1.8rem)/1 var(--display);letter-spacing:.05em;color:var(--kc);margin:0 0 clamp(4px,1vh,8px)}
+.ctl h3 small{display:block;font:800 clamp(.72rem,1.6vh,.78rem)/1.3 var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:3px}
+.ctlrow{display:flex;gap:clamp(10px,2vw,22px);align-items:center;justify-content:center}
+.cluster{display:flex;flex-direction:column;align-items:center;gap:4px}
+.kr{display:flex;gap:4px}
+.cl{font:800 clamp(.72rem,1.6vh,.78rem) var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--ink);white-space:nowrap}
+.acts2{display:flex;gap:clamp(6px,1vw,12px)}
+.ak{display:flex;flex-direction:column;align-items:center;gap:4px}
+.ak span{font:800 clamp(.72rem,1.6vh,.78rem) var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--ink)}
+kbd.k{display:inline-flex;align-items:center;justify-content:center;min-width:var(--ks);height:var(--ks);padding:0 .35em;box-sizing:border-box;border-radius:9px;
+  font:900 calc(var(--ks)*.46)/1 var(--body);color:#fff;text-shadow:0 1px 0 rgba(0,0,0,.5);
+  /* plain fallbacks first, then the color-mix() versions (older browsers keep the solid player colour) */
+  background:var(--kc);box-shadow:0 4px 0 rgba(0,0,0,.55);
+  background:linear-gradient(180deg,color-mix(in srgb,var(--kc) 70%,#fff 30%) 0%,var(--kc) 55%,color-mix(in srgb,var(--kc) 75%,#000) 100%);
+  border:2px solid rgba(255,255,255,.75);box-shadow:0 4px 0 color-mix(in srgb,var(--kc) 45%,#000),0 0 10px color-mix(in srgb,var(--kc) 40%,transparent)}
+kbd.k.spc{--kc:#f59e0b} kbd.k.esc{--kc:#6b6690}
+.ctlfoot{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;font:800 clamp(.7rem,1.8vh,.8rem) var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);--ks:clamp(26px,4.4vh,36px);--kc:#6b6690}
+.ctlfoot b{color:var(--ink)}
+/* short windows (844x390 laptops): smaller caps and tighter gaps, but every caption stays */
+@media (max-height:460px){.ctlwrap{--ks:clamp(26px,6vh,50px)}.ctl{padding:5px clamp(8px,1.6vw,14px)}.ctl h3{margin-bottom:3px}.cluster,.ak{gap:2px}}
+@media (max-width:600px){.ctlwrap{--ks:clamp(24px,5vh,40px)}#ready{gap:1vh}#ready .readyhead{font-size:clamp(1.6rem,6vh,3rem)}
+  /* narrow desktop window: smaller logo, no tagline and tighter gaps so the two key panels sit above the fold */
+  html.desk #title{gap:1vh}html.desk #title .logo{font-size:clamp(2.2rem,8vh,8rem)}html.desk #title .tag{display:none}
+  html.desk #title .btn{font-size:clamp(1.1rem,3.4vh,1.9rem);padding:.4em 1.2em}html.desk #title .ctlwrap{--ks:clamp(22px,4vh,40px);gap:8px}html.desk #title .ctl{padding:5px 10px}}
+
+/* Get ready screen (2 players, desktop) */
+#ready{gap:1.4vh;background:linear-gradient(180deg,rgba(5,4,11,.88),rgba(5,4,11,.7))}
+.readyhead{font:400 clamp(2rem,9vh,4.5rem)/1 var(--display);letter-spacing:.05em;margin:0;text-align:center;color:var(--gold);text-shadow:0 4px 0 #000,0 0 26px rgba(255,207,58,.5)}
+.vsline{font:400 clamp(1rem,3.6vh,1.6rem)/1 var(--display);letter-spacing:.06em;margin:0;text-align:center}
+.vsline .n1{color:var(--p1)} .vsline .n2{color:var(--p2)}
+.anykey{font:400 clamp(1.1rem,4.4vh,2rem)/1 var(--display);letter-spacing:.08em;color:#fff;margin:0;text-align:center;text-shadow:0 3px 0 #000}
+
+/* Controls screen (from pause / top buttons) */
+#controls{background:linear-gradient(180deg,rgba(5,4,11,.9),rgba(5,4,11,.8))}
+.notekb{font:800 clamp(.7rem,1.8vh,.85rem) var(--body);color:var(--muted);margin:0;text-align:center;letter-spacing:.05em}
+
+/* in-fight key hint strips (desktop, 2 players, round 1) */
+.hint{position:fixed;z-index:4;display:flex;gap:8px;align-items:center;flex-wrap:nowrap;white-space:nowrap;--ks:clamp(22px,min(3.4vh,2.1vw),28px);--kc:var(--p1);opacity:0;transition:opacity .7s;pointer-events:none;
+  background:rgba(5,4,11,.6);padding:3px 8px;border-radius:10px;border:1px solid rgba(255,255,255,.18);max-width:calc(50vw - 32px);overflow:hidden} /* max-width is refined by layoutHints() so the two strips never meet */
+.hint.p2{--kc:var(--p2);justify-content:flex-end}
+.hint.show{opacity:1}
+.hint.show.dim{opacity:.22;transition:opacity .15s} /* a wrestler is jumping through the strip's band: get out of the way */
+.hint .hk{display:inline-flex;align-items:center;gap:3px}
+.hint .hk em{font:800 clamp(.68rem,1.6vh,.75rem) var(--body);font-style:normal;letter-spacing:.08em;text-transform:uppercase;color:var(--ink);margin-left:2px}
+/* narrower stages (under ~1150px, e.g. 1024x768 and 844x390 windows): tighter strip so it stays one row; very narrow windows drop it (the Get ready screen showed the keys) */
+@media (max-width:1150px){.hint{gap:4px;padding:3px 5px;--ks:clamp(20px,min(3vh,2.1vw),24px)}.hint .hk em{letter-spacing:.03em;font-size:.64rem;margin-left:0}.hint .hk{gap:2px}}
+/* Narrow desktop windows: the strips would clip, so show only the key caps (players saw the full labels on the Get ready screen). */
+@media (max-width:900px){.hint .hk em{display:none}.hint{gap:5px}.hint .hk{gap:0}}
+@media (max-width:560px){.hint{display:none}}
+@media (prefers-reduced-motion:reduce){.hint{transition:none}}
 
 /* select */
-#select{justify-content:flex-start;gap:1.2vh;background:linear-gradient(180deg,rgba(5,4,11,.85),rgba(5,4,11,.6))}
+#select{justify-content:center;gap:1.2vh;background:linear-gradient(180deg,rgba(5,4,11,.85),rgba(5,4,11,.6))}
 .selhead{font:400 clamp(1.4rem,6vh,2.6rem)/1 var(--display);letter-spacing:.05em;margin:0;text-align:center}
 .selhead.p1{color:var(--p1);text-shadow:0 0 18px rgba(255,59,78,.6)} .selhead.p2{color:var(--p2);text-shadow:0 0 18px rgba(47,139,255,.6)}
-.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1.2vh 10px;width:100%;max-width:1000px;flex:1;min-height:0}
+.grid{display:grid;--cols:4;--rows:2;grid-template-columns:repeat(var(--cols),minmax(0,1fr));gap:1.2vh 10px;width:100%;max-width:1000px;flex:1;min-height:0;
+  /* Cap the height so a card is never taller than about 2/3 of its width: the portrait (height 100%, 2:3) then takes ~45% of the card and the name,
+     stats and special keep the rest. Without this, tall windows (1280x800, 1920x1080) stretch the rows and the portrait swallows the text column. */
+  max-height:calc((min(100vw - 32px,1000px) - (var(--cols) - 1)*10px) / var(--cols) * 2 / 3 * var(--rows) + (var(--rows) - 1)*1.2vh)}
+@media (max-width:600px){.grid{--cols:2;--rows:4}} /* narrow desktop windows: two columns of wider cards */
 .card{position:relative;border:2px solid var(--line);border-radius:12px;background:linear-gradient(160deg,#1d1838,#0c0a18);cursor:pointer;color:var(--ink);
   display:flex;flex-direction:row;align-items:stretch;padding:0;overflow:hidden;min-height:0;text-align:left;font:inherit}
 .card img{height:100%;aspect-ratio:2/3;object-fit:cover;flex:none;background:var(--c)}
-.card .info{flex:1;min-width:0;padding:.6vh 8px;display:flex;flex-direction:column;justify-content:center;gap:.3vh}
+.card .info{flex:1;min-width:0;padding:.6vh 8px;display:flex;flex-direction:column;justify-content:center;justify-content:safe center;gap:.3vh} /* safe: never clip the top of the name */
 .card .nm{font:400 clamp(.8rem,3.2vh,1.35rem)/.95 var(--display);letter-spacing:.02em;overflow-wrap:anywhere}
-.card .nk{font:800 clamp(.5rem,1.8vh,.72rem)/1.1 var(--body);color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card .nk{font:800 clamp(.5rem,1.8vh,.72rem)/1.1 var(--body);color:var(--muted);overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;min-height:1.1em} /* nickname: up to two lines, then cut */
 .stat{display:flex;align-items:center;gap:5px;font:900 clamp(.45rem,1.6vh,.62rem) var(--body);color:var(--muted)}
 .stat i{flex:1;height:clamp(4px,1vh,7px);border-radius:9px;background:#2a2446;overflow:hidden;position:relative}
 .stat i::after{content:"";position:absolute;inset:0;width:var(--v);background:linear-gradient(90deg,var(--c),#fff)}
-.card .sp{font:400 clamp(.55rem,2vh,.8rem)/1 var(--display);letter-spacing:.04em;color:var(--gold)}
-@media (max-height:520px){.card .nk{display:none}.card .info{gap:2px;padding:4px 6px}}
+.card .sp{font:400 clamp(.55rem,2vh,.8rem)/1 var(--display);letter-spacing:.04em;color:var(--gold);overflow-wrap:anywhere}
+/* short or narrow windows: drop the nickname and tighten the text column so the name, stats and special all fit */
+@media (max-height:520px),(max-width:600px){.card .nk{display:none}.card .info{gap:2px;padding:4px 6px}}
+@media (max-width:600px){.card .nm{font-size:clamp(.8rem,2.4vh,1.05rem)}.card .sp{font-size:clamp(.55rem,1.6vh,.7rem)}}
 .card:hover{border-color:#fff}
 .card.p1{border-color:var(--p1);box-shadow:0 0 0 2px var(--p1),0 0 22px rgba(255,59,78,.55)}
 .card.p2{border-color:var(--p2);box-shadow:0 0 0 2px var(--p2),0 0 22px rgba(47,139,255,.55)}
@@ -97,7 +160,8 @@ body{background:var(--night);color:var(--ink);font-family:var(--body);overflow:h
 .pad.p1 .pb{--pc:var(--p1)} .pad.p2 .pb{--pc:var(--p2)}
 .pad .pb.spc{--pc:#f59e0b}
 .topbtns{position:fixed;top:max(6px,env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);z-index:6;display:flex;gap:8px}
-.ib{width:34px;height:34px;border-radius:10px;border:2px solid rgba(255,255,255,.35);background:rgba(10,8,20,.6);color:#fff;font-size:1rem;cursor:pointer}
+.ib{position:relative;width:34px;height:34px;border-radius:10px;border:2px solid rgba(255,255,255,.35);background:rgba(10,8,20,.6);color:#fff;font-size:1rem;cursor:pointer}
+.ib::before{content:"";position:absolute;inset:-7px} /* 44px tap target: the pseudo-element grows from the 30px padding box (34px minus the 2px borders) */
 #rotate{z-index:30;background:var(--night);text-align:center}
 #rotate .ph{font-size:4rem;animation:spin 2s ease-in-out infinite}
 @keyframes spin{50%{transform:rotate(-90deg)}}
@@ -114,7 +178,24 @@ body{background:var(--night);color:var(--ink);font-family:var(--body);overflow:h
     <button class="btn" id="go2">2 Players</button>
     <button class="btn blue" id="go1">Vs Computer</button>
   </div>
-  <p class="keys">Keyboard: <b>P1</b> A D move · W jump · F punch · G kick · H slam · T special &nbsp;|&nbsp; <b>P2</b> ← → move · ↑ jump · K punch · L kick · ; slam · P special</p>
+  <p class="keys" id="keysLine">Keyboard: <b>P1</b> A D move · W jump · F punch · G kick · H slam · T special &nbsp;|&nbsp; <b>P2</b> ← → move · ↑ jump · K punch · L kick · ; slam · P special</p>
+  <!-- big key-cap diagrams; filled by controlsHTML() and shown on desktop (keyboard) only -->
+  <div id="titleCtl" hidden></div>
+</section>
+
+<section class="screen" id="ready" hidden>
+  <h2 class="readyhead">Get ready!</h2>
+  <p class="vsline"><span class="n1" id="rdyN1"></span> &nbsp;vs&nbsp; <span class="n2" id="rdyN2"></span></p>
+  <div id="readyCtl"></div>
+  <p class="anykey">Press any key to fight!</p>
+  <div class="row"><button class="btn gold" id="fightBtn">Fight!</button><button class="btn ghost" id="readyBack">Pick again</button></div>
+</section>
+
+<section class="screen" id="controls" hidden>
+  <h2 class="readyhead">Controls</h2>
+  <div id="ctlPanel"></div>
+  <p class="notekb" id="padNote">No keyboard? Use the touch pads on the screen.</p>
+  <div class="row"><button class="btn gold" id="ctlClose">Back</button><button class="btn ghost" id="padToggle">Show touch pads</button></div>
 </section>
 
 <section class="screen" id="select" hidden>
@@ -146,10 +227,13 @@ body{background:var(--night);color:var(--ink);font-family:var(--body);overflow:h
   <div class="dpad"><button class="pb up" data-k="up"><b>▲</b></button><button class="pb" data-k="left"><b>◀</b></button><button class="pb" data-k="right"><b>▶</b></button></div>
   <div class="acts"><button class="pb" data-k="punch"><b>👊</b><small>PUNCH</small></button><button class="pb" data-k="kick"><b>🦶</b><small>KICK</small></button><button class="pb" data-k="grab"><b>💪</b><small>SLAM</small></button><button class="pb spc" data-k="special"><b>⚡</b><small>SPECIAL</small></button></div>
 </div>
-<div class="topbtns" id="topbtns" hidden><button class="ib" id="pauseBtn" aria-label="Pause">⏸</button><button class="ib" id="muteBtn" aria-label="Sound on or off">🔊</button><button class="ib" id="fsBtn" aria-label="Full screen">⛶</button></div>
+<!-- key hint strips under each health bar (desktop, 2 players, first round only); filled by hintHTML() -->
+<div class="hint p1" id="hint1" aria-hidden="true"></div>
+<div class="hint p2" id="hint2" aria-hidden="true"></div>
+<div class="topbtns" id="topbtns" hidden><button class="ib" id="pauseBtn" aria-label="Pause">⏸</button><button class="ib" id="ctlBtn" aria-label="Controls">⌨</button><button class="ib" id="muteBtn" aria-label="Sound on or off">🔊</button><button class="ib" id="fsBtn" aria-label="Full screen">⛶</button></div>
 <section class="screen" id="pause" hidden>
   <h2 class="logo" style="font-size:clamp(2.5rem,12vh,5rem)">Paused</h2>
-  <div class="row"><button class="btn gold" id="resume">Resume</button><button class="btn ghost" id="quit">Quit match</button></div>
+  <div class="row"><button class="btn gold" id="resume">Resume</button><button class="btn blue" id="ctlOpen">Controls</button><button class="btn ghost" id="quit">Quit match</button></div>
 </section>
 <section class="screen" id="rotate" hidden><div class="ph">📱</div><p>Turn your phone sideways<br>to wrestle!</p></section>
 
@@ -451,12 +535,21 @@ function setState(f,s,dur=0){f.state=s;f.t=0;f.dur=dur;f.hitDone=false;}
 const inputs=[{},{}];
 const KEYMAP={KeyA:[0,'left'],KeyD:[0,'right'],KeyW:[0,'up'],KeyF:[0,'punch'],KeyG:[0,'kick'],KeyH:[0,'grab'],KeyT:[0,'special'],
   ArrowLeft:[1,'left'],ArrowRight:[1,'right'],ArrowUp:[1,'up'],KeyK:[1,'punch'],KeyL:[1,'kick'],Semicolon:[1,'grab'],KeyP:[1,'special']};
-addEventListener('keydown',e=>{const m=KEYMAP[e.code];if(m){inputs[m[0]][m[1]]=true;e.preventDefault();}if(e.code==='Escape'&&phase!=='menu')togglePause();});
+addEventListener('keydown',e=>{
+  const m=KEYMAP[e.code];
+  if(m){inputs[m[0]][m[1]]=true;e.preventDefault();}
+  if(!e.repeat)noteKeyboard(); // a real key press means a keyboard is in use
+  // "Get ready" screen: any ordinary key starts the fight (not Esc, Tab, F-keys, modifier keys such as Shift, or browser
+  // shortcuts like Ctrl+R / Cmd+L); Enter or Space on a focused button lets that button do its job (Fight! or Pick again)
+  if(mode==='ready'&&!e.ctrlKey&&!e.altKey&&!e.metaKey&&!/^(Escape|Tab|F\d\d?|Shift|Control|Alt|Meta|OS|CapsLock|NumLock|ScrollLock|ContextMenu|Unidentified)/.test(e.code||'')
+     &&!(/^(Enter|NumpadEnter|Space)$/.test(e.code)&&document.activeElement&&document.activeElement.tagName==='BUTTON')){e.preventDefault();startFromReady();return;}
+  if(e.code==='Escape'){if(!$('controls').hidden)closeControls();else if(phase!=='menu')togglePause();}
+});
 addEventListener('keyup',e=>{const m=KEYMAP[e.code];if(m){inputs[m[0]][m[1]]=false;}});
 [['pad1',0],['pad2',1]].forEach(([id,pl])=>{
   $(id).querySelectorAll('.pb').forEach(b=>{
     const k=b.dataset.k,set=v=>{inputs[pl][k]=v;b.classList.toggle('on',v);};
-    b.addEventListener('pointerdown',e=>{e.preventDefault();audio();try{b.setPointerCapture(e.pointerId);}catch(_){}set(true);});
+    b.addEventListener('pointerdown',e=>{e.preventDefault();audio();padsTouched=true;try{b.setPointerCapture(e.pointerId);}catch(_){}set(true);});
     ['pointerup','pointercancel','lostpointercapture'].forEach(ev=>b.addEventListener(ev,()=>set(false)));
     b.addEventListener('contextmenu',e=>e.preventDefault());
   });
@@ -468,6 +561,100 @@ function readInput(f,i){
   return{left:!!cur.left,right:!!cur.right,ev};
 }
 const consume=(f,k)=>{f.buf[k]=0;};
+
+/* ======================= DESKTOP DETECTION + CONTROLS PANEL =======================
+   Desktop = a mouse/trackpad device (hover + fine pointer) or any real key press.
+   On desktop the touch pads are hidden during the fight (a "Show touch pads" toggle brings them back
+   for laptops with a touchscreen) and big key-cap diagrams explain the keyboard instead.
+   The diagrams are built from KEYMAP, so the keys shown always match the keys that work. */
+let desktop=matchMedia('(hover: hover) and (pointer: fine)').matches;
+let padsForced=null;      // desktop only: null = hidden (keyboard play); true/false = player's choice from the Controls screen
+let padsTouched=false;    // someone used the on-screen pads this match; a key press then no longer hides them
+let matchLive=false;      // a match is on (fight, paused or controls open)
+let hintT=0;              // seconds left for the in-fight key hint strips
+try{const sv=localStorage.getItem('rr.pads');if(sv==='1'||sv==='0')padsForced=sv==='1';}catch(e){}
+const KEYLABEL={ArrowLeft:'←',ArrowRight:'→',ArrowUp:'↑',Semicolon:';'};
+const keyLabel=code=>KEYLABEL[code]||code.replace('Key','');
+const ACTIONS=[['punch','Punch'],['kick','Kick'],['grab','Slam'],['special','Special']];
+function keysOf(pl){ // {left:'A',right:'D',up:'W',punch:'F',...} for player 0 or 1
+  const o={};for(const code in KEYMAP){const[p,k]=KEYMAP[code];if(p===pl)o[k]=keyLabel(code);}return o;
+}
+const cap=(k,cls)=>`<kbd class="k${cls?' '+cls:''}">${k}</kbd>`;
+function playerPanel(pl){
+  const k=keysOf(pl),who=pl?'Player 2':'Player 1',side=pl?'Right side of the keyboard':'Left side of the keyboard';
+  return `<div class="ctl p${pl+1}"><h3>${who}<small>${side}</small></h3><div class="ctlrow">
+    <div class="cluster"><span class="cl">Jump</span><div class="kr">${cap(k.up)}</div><div class="kr">${cap(k.left)}${cap(k.right)}</div><span class="cl">◀ Move ▶</span></div>
+    <div class="acts2">${ACTIONS.map(([a,n])=>`<div class="ak">${cap(k[a],a==='special'?'spc':'')}<span>${n}</span></div>`).join('')}</div>
+  </div></div>`;
+}
+/* The whole panel: P1 (and P2 unless CPU plays) plus the pause key. */
+function controlsHTML(both){
+  return `<div class="ctlwrap">${playerPanel(0)}${both?playerPanel(1):''}</div>
+    <div class="ctlfoot">${cap('Esc','esc')} <b>Pause</b></div>`;
+}
+function hintHTML(pl){
+  const k=keysOf(pl);
+  const hk=(caps,n)=>`<span class="hk">${caps.map(c=>cap(c)).join('')}<em>${n}</em></span>`;
+  return hk([k.left,k.right],'Move')+hk([k.up],'Jump')+hk([k.punch],'Punch')+hk([k.kick],'Kick')+hk([k.grab],'Slam')+`<span class="hk">${cap(k.special,'spc')}<em>Special</em></span>`;
+}
+/* Phones (no keyboard seen) always get the pads and no Hide button, so a saved choice from a laptop can never strip them. */
+function padsWanted(){return !desktop||padsForced===true;}
+function applyPads(){
+  const show=matchLive&&!autoplay&&padsWanted();
+  $('pad1').hidden=!show;$('pad2').hidden=!show||vsCPU;
+  $('padToggle').hidden=!desktop;
+  $('padToggle').textContent=padsWanted()?'Hide touch pads':'Show touch pads';
+}
+/* Title screen: big panel on desktop, the small text line on phones. */
+function applyDesktop(){
+  document.documentElement.classList.toggle('desk',desktop);
+  $('titleCtl').hidden=!desktop;$('keysLine').hidden=desktop;
+  if(desktop&&!$('titleCtl').innerHTML)$('titleCtl').innerHTML=controlsHTML(true);
+  applyPads();
+}
+function noteKeyboard(){
+  if(desktop)return;
+  desktop=true;applyDesktop();
+  if(padsTouched&&padsForced===null){padsForced=true;applyPads();} // pads were in use: keep them
+}
+/* --- Get ready screen (desktop): both key diagrams (P1 only vs the computer), then any key or the Fight button --- */
+function openReady(){
+  $('rdyN1').textContent=picks[0].name;$('rdyN2').textContent=picks[1].name;
+  $('readyCtl').innerHTML=controlsHTML(!vsCPU);
+  showScreen('ready');mode='ready';
+}
+function startFromReady(){if(mode!=='ready')return;audio();SFX.bell();goVS();}
+/* --- Controls screen: from the pause menu or the ⌨ top button, any time --- */
+let ctlReturn='title';
+function openControls(){
+  if(mode==='game'){mode='paused';ctlReturn='pause';}
+  else if(mode==='paused')ctlReturn='pause';
+  else ctlReturn='title';
+  $('ctlPanel').innerHTML=controlsHTML(!vsCPU||!matchLive);
+  $('padNote').hidden=desktop&&!matchMedia('(pointer:coarse)').matches;
+  applyPads();showScreen('controls');
+}
+function closeControls(){showScreen(ctlReturn);if(ctlReturn==='title')mode='menu';}
+/* --- in-fight key hint strips under the health bars (desktop, 2 players, round 1 only) --- */
+function showHints(){
+  $('hint1').innerHTML=hintHTML(0);$('hint2').innerHTML=hintHTML(1);layoutHints();
+  hintT=8;$('hint1').classList.add('show');$('hint2').classList.toggle('show',!vsCPU); // no strip for the computer's side
+}
+function hideHints(){hintT=0;['hint1','hint2'].forEach(id=>$(id).classList.remove('show','dim'));}
+/* While a wrestler is in the air its head crosses the strips' band: dim them so they never hide the action. */
+function dimHints(){
+  const air=F.some(f=>f.y<-40);
+  $('hint1').classList.toggle('dim',air);$('hint2').classList.toggle('dim',air);
+}
+/* Put the strips just under the HUD (same numbers as drawHUD: bar, name, meter, "SPECIAL READY" text). */
+function layoutHints(){
+  const s=Math.min(cw/1400,ch/720),pad=Math.max(12,ch*.03),barH=Math.max(12,30*s),top=pad+(ch<500?4:10),mh=Math.max(6,barH*.32);
+  const y=top+2+barH+barH*1.15+mh+2+mh*1.5+8;
+  $('hint1').style.top=$('hint2').style.top=y+'px';
+  $('hint1').style.left=pad+'px';$('hint2').style.right=pad+'px';
+  // each strip may use its half of the screen minus its outer margin and 8px, so there is always a 16px gap between them
+  $('hint1').style.maxWidth=$('hint2').style.maxWidth=Math.floor(cw/2-pad-8)+'px';
+}
 
 /* ======================= AI ======================= */
 function think(f,o,dt){
@@ -618,8 +805,10 @@ function pyro(x){for(let i=0;i<40;i++){const a=rand(-PI*.9,-PI*.1),s=rand(400,11
 function startMatch(){
   wins=[0,0];round=1;F=[mkFighter(picks[0],0),mkFighter(picks[1],1)];
   startRound();
-  showScreen(null);$('pad1').hidden=false;$('pad2').hidden=vsCPU&&!autoplay?true:false;if(autoplay){$('pad1').hidden=$('pad2').hidden=true;}$('topbtns').hidden=false;
+  showScreen(null);matchLive=true;padsTouched=false;applyPads();$('topbtns').hidden=false;
   mode='game';
+  // desktop: remind the keyboard players of their keys for the first few seconds of round 1 (P1 only vs the computer)
+  if(desktop&&!autoplay)showHints();else hideHints();
 }
 function startRound(){
   F.forEach((f,i)=>{Object.assign(f,{x:i?RIGHTX-170:LEFTX+170,y:0,vx:0,vy:0,face:i?-1:1,hp:100,hpTrail:100,invuln:0,koed:false,pose:null,buf:{},combo:0,victim:null,holder:null,airDown:false});setState(f,'idle');});
@@ -662,7 +851,7 @@ function updateMatch(dt,T){
 let banner2=false;
 function endMatch(){
   phase='over';mode='result';const w=F[winner];
-  $('pad1').hidden=$('pad2').hidden=true;$('topbtns').hidden=true;
+  matchLive=false;applyPads();hideHints();$('topbtns').hidden=true;
   $('resWho').textContent=w.d.name+' WINS!';$('result').style.setProperty('--wc',w.d.aura);
   $('resImg').src=portrait(w.d,300,400,'clear').toDataURL();
   showScreen('result');
@@ -672,6 +861,7 @@ function endMatch(){
 function resize(){
   dpr=Math.min(2,window.devicePixelRatio||1);cw=innerWidth;ch=innerHeight;cv.width=Math.round(cw*dpr);cv.height=Math.round(ch*dpr);
   $('rotate').hidden=!(cw<ch&&matchMedia('(pointer:coarse)').matches);
+  layoutHints();
 }
 addEventListener('resize',resize);resize();
 
@@ -846,6 +1036,7 @@ function frame(now){
   let dt=rdt*slow;
   if(hitstop>0){hitstop-=rdt;dt=0;}
   T+=rdt;
+  if(hintT>0){hintT-=rdt;if(hintT<=0)hideHints();else dimHints();} // key hint strips fade after a few seconds (frozen while paused)
   excite=Math.max(.25,excite-rdt*.12);
   if(crowdGain&&AC)crowdGain.gain.value=muted?0:.03+excite*.07;
   if(mode==='game'&&dt>0){
@@ -876,7 +1067,7 @@ function frame(now){
 requestAnimationFrame(frame);
 
 /* ======================= MENUS ======================= */
-const screens=['title','select','vs','result','pause'];
+const screens=['title','select','vs','result','pause','ready','controls'];
 function showScreen(id){screens.forEach(s=>$(s).hidden=s!==id);}
 function buildSelect(){
   const g=$('grid');g.innerHTML='';
@@ -900,9 +1091,9 @@ function choose(i){
   if(pickStage===0){picks[0]=ROSTER[i];pickStage=1;markCards();
     if(vsCPU){$('selhead').textContent='The computer is choosing...';$('selhead').className='selhead p2';
       let n=0;const others=ROSTER.filter(r=>r!==picks[0]);const spin=setInterval(()=>{picks[1]=others[n++%others.length];markCards();SFX.block();
-        if(n>10+Math.floor(Math.random()*7)){clearInterval(spin);setTimeout(goVS,500);}},110);}
+        if(n>10+Math.floor(Math.random()*7)){clearInterval(spin);setTimeout(desktop?openReady:goVS,500);}},110);} // keyboard player sees "Get ready!" first
     else{$('selhead').textContent='Player 2, pick your wrestler!';$('selhead').className='selhead p2';}
-  } else if(pickStage===1&&!vsCPU){picks[1]=ROSTER[i];pickStage=2;markCards();setTimeout(goVS,450);}
+  } else if(pickStage===1&&!vsCPU){picks[1]=ROSTER[i];pickStage=2;markCards();setTimeout(desktop?openReady:goVS,450);} // keyboard players see "Get ready!" first
 }
 function openSelect(cpu){
   vsCPU=cpu;picks=[null,null];pickStage=0;audio();
@@ -915,8 +1106,9 @@ function goVS(){
   $('vsI1').src=portrait(picks[0],300,400,'clear').toDataURL();$('vsI2').src=portrait(picks[1],300,400,'clear').toDataURL();
   $('vsI2').style.transform='scaleX(-1)';
   showScreen('vs');mode='vs';SFX.boom();
-  setTimeout(()=>{startMatch();},2300);
+  vsTimer=setTimeout(()=>{startMatch();},2300);
 }
+let vsTimer=0;
 $('go2').addEventListener('click',()=>openSelect(false));
 $('go1').addEventListener('click',()=>openSelect(true));
 $('selBack').addEventListener('click',()=>{showScreen('title');mode='menu';F=[];});
@@ -924,12 +1116,34 @@ $('rematch').addEventListener('click',()=>{audio();startMatch();});
 $('newPick').addEventListener('click',()=>{F=[];openSelect(vsCPU);});
 function togglePause(){if(mode==='game'){mode='paused';showScreen('pause');}else if(mode==='paused'){mode='game';showScreen(null);}}
 $('pauseBtn').addEventListener('click',togglePause);
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&mode==='game')togglePause();}); // tab hidden: pause the fight
 $('resume').addEventListener('click',togglePause);
-$('quit').addEventListener('click',()=>{mode='menu';F=[];ref=null;phase='menu';$('pad1').hidden=$('pad2').hidden=true;$('topbtns').hidden=true;showScreen('title');});
+$('quit').addEventListener('click',()=>{mode='menu';F=[];ref=null;phase='menu';matchLive=false;applyPads();hideHints();$('topbtns').hidden=true;showScreen('title');});
+$('fightBtn').addEventListener('click',startFromReady);
+$('readyBack').addEventListener('click',()=>openSelect(vsCPU));
+$('ctlBtn').addEventListener('click',openControls);
+$('ctlOpen').addEventListener('click',openControls);
+$('ctlClose').addEventListener('click',closeControls);
+$('padToggle').addEventListener('click',()=>{padsForced=!padsWanted();try{localStorage.setItem('rr.pads',padsForced?'1':'0');}catch(e){}applyPads();});
+applyDesktop();
 $('muteBtn').addEventListener('click',()=>{muted=!muted;$('muteBtn').textContent=muted?'🔇':'🔊';if(crowdGain)crowdGain.gain.value=0;if(!muted)audio();});
 $('fsBtn').addEventListener('click',()=>{const el=document.documentElement;try{const r=(el.requestFullscreen||el.webkitRequestFullscreen).call(el);if(r&&r.then)r.then(()=>{try{screen.orientation.lock('landscape').catch(()=>{});}catch(e){}}).catch(()=>{});}catch(e){}});
 document.fonts&&document.fonts.ready.then(()=>{for(const k in portraitCache)delete portraitCache[k];if($('grid').children.length){$('grid').innerHTML='';buildSelect();markCards();}});
 // demo mode for testing: #demo
 if(location.hash==='#demo'){autoplay=true;vsCPU=true;picks=[ROSTER[0],ROSTER[1]];startMatch();}
+
+/* ======================= DEBUG HOOK (for automated playtests; harmless in production) =======================
+   state()        -> {mode, phase, round, wins, desktop, padsShown:[p1,p2], hints:boolean (P1 strip visible), hintT}
+   fighters()     -> the live fighter objects F (F[0].x, F[i].state, F[i].hp ...)
+   setDesktop(v)  -> force desktop (keyboard) or phone (touch) presentation
+   skipVS()       -> jump from the VS splash straight into the match
+   keys(pl)       -> the key labels for player 0 or 1, as shown in the diagrams */
+window.__brbTest={
+  state:()=>({mode,phase,round,wins:[...wins],desktop,padsShown:[!$('pad1').hidden,!$('pad2').hidden],hints:$('hint1').classList.contains('show'),hintT}),
+  fighters:()=>F,
+  setDesktop:v=>{desktop=!!v;applyDesktop();},
+  skipVS:()=>{if(mode==='vs'){clearTimeout(vsTimer);startMatch();}},
+  keys:keysOf
+};
 })();
 </script>

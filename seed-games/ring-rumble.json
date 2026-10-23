@@ -10,5 +10,5 @@
   "players_max": 2,
   "age_rating": "everyone",
   "featured": true,
-  "notes": "Calls element.requestFullscreen() from its fullscreen button; route it through the SDK. Two players share one keyboard or the on-screen touch pads. Loads Google Fonts (Bangers, Rubik). Cartoon slapstick only, no blood."
+  "notes": "Calls element.requestFullscreen() from its fullscreen button; route it through the SDK. Two players share one keyboard: Player 1 uses the left side (A / D move, W jump, F punch, G kick, H slam, T special), Player 2 uses the right side (Left / Right arrows move, Up arrow jump, K punch, L kick, ; slam, P special); Esc pauses. On desktop (mouse + keyboard) the game shows big key-cap diagrams on the title screen, a Get ready screen after the wrestlers are picked (both players' keys, or just Player 1's against the computer; Rematch! jumps straight back into the ring), a Controls screen (pause menu / top button) and hides the on-screen touch pads (a Show touch pads toggle brings them back on touch laptops). Phones always keep the touch pads. Loads Google Fonts (Bangers, Rubik). Cartoon slapstick only, no blood."
 }
