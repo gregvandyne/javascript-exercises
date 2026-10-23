@@ -238,6 +238,7 @@ button{font-family:inherit}
     <button class="btn" id="openShop">🏆 Trophy Shop <span id="shopBadge"></span></button>
     <ol class="rules">
       <li>Roll and move. Land on a soccer player nobody owns? Sign him.</li>
+      <li>Pass or land on <b>Kick Off</b> and collect <b>$200</b>.</li>
       <li>Land on someone else's player and you pay their fee. Own both players of one colour and the fee doubles.</li>
       <li><b>Championships</b> work like railroads: the more trophies you own, the more everyone pays.</li>
       <li>Land on <b>Shoot</b> and a player takes a shot. If you own him, it's a goal and you get a check mark.</li>
@@ -293,7 +294,7 @@ const rnd=n=>Math.floor(Math.random()*n);
 const reduced=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
 const KEY='footy-tycoon-v3';
 const TOKENS=['#ff4f5e','#3d9bff','#ffd23f','#b07cff'];
-const START_MONEY=1000, PASS_GO=150, WIN=3, SINBIN=9;
+const START_MONEY=1000, PASS_GO=200, WIN=3, SINBIN=9;
 
 /* ---------- player art (cartoon, not likenesses) ---------- */
 const SK={l:'#f5d0b0',m:'#ddaa82',t:'#c08658',d:'#8e5a3a',dd:'#5f3a26'};
