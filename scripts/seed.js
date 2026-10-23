@@ -10,6 +10,8 @@ import { createUser, getUserByName, setPassword } from '../server/auth.js';
 import { importGame } from './import-game.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+// The launch games, imported in this order (the first featured one becomes the home-page hero).
+export const SEED_GAMES = ['shark-plank', 'ring-rumble', 'footy-tycoon'];
 export function seed({ quiet = false } = {}) {
   const say = (...a) => { if (!quiet) console.log(...a); };
   let admin = getUserByName(config.adminUsername);
@@ -25,7 +27,7 @@ export function seed({ quiet = false } = {}) {
   if (!official) { official = createUser({ username: 'BRBGaming', password: crypto.randomBytes(24).toString('hex'), displayName: 'BRB Gaming', avatar: '🎮', color: '#2f6bff' }); say('Created the official BRB Gaming builder account'); }
   q.run("UPDATE users SET display_name='BRB Gaming', bio='Official games from the BRB Gaming team.' WHERE id=?", official.id);
   const dir = path.join(ROOT, 'seed-games');
-  for (const f of ['shark-plank', 'ring-rumble', 'footy-tycoon']) {
+  for (const f of SEED_GAMES) {
     const g = importGame(path.join(dir, `${f}.html`), path.join(dir, `${f}.json`), official.id);
     say(`  ✓ ${g.title}  /g/${g.slug}`);
   }
