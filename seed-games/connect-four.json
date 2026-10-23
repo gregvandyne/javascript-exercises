@@ -1,0 +1,14 @@
+{
+  "slug": "connect-four",
+  "title": "Drop Four",
+  "icon": "🔴",
+  "cover": "candy",
+  "category": "board",
+  "tags": "connect four,four in a row,2 player,strategy,robot,board game,drop four,classic",
+  "description": "The classic connect-four game with candy colours. Drop your discs and get four in a row across, down or diagonal before the other player does. Play with a friend on one phone, or take on the robot at Easy, Normal or Hard and earn robot points.",
+  "orientation": "any",
+  "players_max": 2,
+  "age_rating": "everyone",
+  "featured": true,
+  "notes": "Saves settings and wins/losses per robot level in BRB.storage key 'drop-four-v1'. Leaderboard score = robot wins weighted Easy 1 / Normal 2 / Hard 4, submitted with label 'robot wins'. Hard uses depth-7 alpha-beta with a transposition cache, run in setTimeout slices (no Worker: the frame CSP has no blob: worker-src). Names are tapped from a nickname list, never typed. Loads Google Font Fredoka."
+}

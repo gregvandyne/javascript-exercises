@@ -1,0 +1,1242 @@
+<title>Drop Four</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&display=swap">
+<style>
+/* Drop Four: the classic connect-four game. Layout: HUD (pause / whose turn / mute), the match score chips,
+   the board (one canvas; discs + plate + preview drawn by script), a message line and a small controls row.
+   Overlays for the title screen, pause and results. In short landscape the board sits left and everything
+   else stacks in a side column so the cells stay big. */
+:root{
+  --bg1:#ffe9f4; --bg2:#ffb8dc; --bg3:#b8a4ff;
+  --ink:#3b1f47; --accent:#ff3d8b; --accentDark:#c21463; --card:#fff; --soft:#fff0f7; --softEdge:#ffc2dd;
+  --board:#2f62e6; --font:"Fredoka","Trebuchet MS",system-ui,sans-serif;
+}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{margin:0;overflow:hidden;font-family:var(--font);color:var(--ink);
+  background:radial-gradient(circle at 20% 0%,var(--bg1),var(--bg2) 45%,var(--bg3));
+  touch-action:manipulation;user-select:none;-webkit-user-select:none}
+.app{position:relative;height:100%;max-width:980px;margin:0 auto;display:grid;gap:8px;align-content:center;
+  padding:10px max(12px,env(safe-area-inset-left)) 12px max(12px,env(safe-area-inset-right));
+  grid-template-areas:"hud" "scores" "board" "msg" "ctrl";grid-template-rows:auto auto auto auto auto;grid-template-columns:minmax(0,1fr);
+  transition:transform .45s ease}
+.app.offstage{visibility:hidden} /* the title screen covers the game; keep the live HUD out of sight */
+button{font-family:inherit;color:inherit;cursor:pointer}
+button:focus-visible{outline:4px solid #fff;outline-offset:2px}
+.panel button:focus-visible{outline-color:var(--ink)} /* the panels are white, so a white ring would be invisible there */
+.hud{grid-area:hud;display:flex;align-items:center;gap:8px}
+.turn{flex:1;min-width:0;display:flex;justify-content:center}
+.turn div{background:#fff;border-radius:999px;padding:7px 14px;font-weight:700;font-size:1.1rem;line-height:1.15;box-shadow:0 3px 0 rgba(0,0,0,.15);
+  text-align:center;overflow-wrap:break-word;border:3px solid var(--who,#fff);max-width:100%;transition:border-color .2s}
+.turn div.long{font-size:.95rem}   /* long names wrap to a second line instead of being cut off */
+.turn div.thinking{animation:breathe 1.2s ease-in-out infinite}
+@keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+.icon-btn{width:46px;height:46px;flex:none;border:0;border-radius:50%;background:#fff;font-size:1.35rem;box-shadow:0 4px 0 rgba(0,0,0,.18);display:grid;place-items:center;padding:0}
+.icon-btn:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.18)}
+.scores{grid-area:scores;display:flex;align-items:stretch;justify-content:center;gap:8px} /* both chips the same height, even when one name is shrunk */
+/* A chip is a small grid: the name (and, in a series, the win dots under it) on the left, the win count on the right.
+   Putting the dots under the name instead of beside it keeps even a 12-letter name on one line at phone width. */
+.pchip{max-width:300px;flex:1;min-width:0;display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:6px;row-gap:3px;align-items:center;align-content:center;background:#fff;border-radius:16px;padding:5px 9px;border:3px solid var(--pc,#fff);
+  box-shadow:0 3px 0 rgba(0,0,0,.12);font-weight:700;font-size:1rem;transition:transform .2s,box-shadow .2s}
+.pchip.active{transform:translateY(-2px) scale(1.03);box-shadow:0 5px 0 rgba(0,0,0,.18)}
+.pchip .pname{grid-column:1;min-width:0;line-height:1.1;overflow-wrap:break-word}
+.pchip .pname.long{font-size:.8rem}
+.pchip .pwins{grid-column:2;font-size:1.35rem;min-width:1.2em;text-align:right}
+.pchip.series .pwins{grid-row:1 / span 2} /* the number stays centred beside both lines */
+.pchip .sdots{grid-column:1;display:flex;gap:4px} /* "First to 3": one dot per win needed, under the name */
+.pchip .sdots i{width:13px;height:13px;border-radius:50%;background:#e9d5f5;display:block;box-shadow:inset 0 1px 2px rgba(0,0,0,.12)}
+.pchip .sdots i.on{background:var(--pc)}
+.vs{font-weight:700;opacity:.7;flex:none;align-self:center;font-size:.9rem}
+@media (max-width:374px){.vs{display:none}.pchip{padding:5px 7px}} /* a 360px phone: the chips need that room for a 12-letter name */
+.boardWrap{grid-area:board;position:relative;min-height:0;display:grid;place-items:start center}
+canvas#board{display:block;touch-action:none;outline:none;border-radius:16px;transform-origin:top center;transition:transform .45s ease} /* keyboard focus shows as the hovering disc... */
+canvas#board.ring:focus-visible{outline:4px solid #fff;outline-offset:3px} /* ...and as a ring whenever no disc is hovering (the robot's turn, the results) */
+/* No min-height here: an explicit one would become the row's minimum in the grid and let a two-line message
+   spill over the Undo row on a very short screen. An empty message keeps one line with a blank instead. */
+.msg{grid-area:msg;text-align:center;font-weight:700;font-size:1.1rem;line-height:1.25;margin:0;text-shadow:0 1px 0 rgba(255,255,255,.6);overflow-wrap:break-word}
+.msg:empty::before{content:"\00a0"}
+.ctrl{grid-area:ctrl;display:flex;justify-content:center;gap:10px}
+.mini{border:0;border-radius:16px;background:#fff;font-weight:700;font-size:1.05rem;padding:10px 18px;min-height:48px;box-shadow:0 4px 0 rgba(0,0,0,.15)}
+.mini:active:not(:disabled){transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.15)}
+.mini:disabled{opacity:.45;cursor:default}
+.screen{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;padding:14px;background:rgba(59,31,71,.38)}
+.screen.results{background:rgba(59,31,71,.14);align-items:flex-end;pointer-events:none} /* the HUD's mute button stays live behind the thin tint */
+.screen.results .panel{pointer-events:auto}
+.app.over #pauseBtn{visibility:hidden} /* nothing to pause once the game is over */
+.panel{position:relative;background:var(--card);border-radius:28px;padding:14px 16px 16px;width:min(100%,440px);max-height:100%;overflow:auto;text-align:center;
+  box-shadow:0 10px 0 rgba(0,0,0,.18);display:flex;flex-direction:column;align-items:center;gap:8px}
+.panel h1{margin:0;font-size:clamp(2rem,9vw,2.7rem);line-height:1.05;color:var(--accent);letter-spacing:.01em}
+.panel h2{margin:0;font-size:clamp(1.5rem,7vw,2rem);line-height:1.1;color:var(--accent)}
+.panel p{margin:0;font-size:1.05rem;line-height:1.35}
+.panel .hint{font-size:.92rem;opacity:.75}
+.logo{width:150px;height:60px;flex:none;display:block} /* flex:none so the panel never squashes the logo */
+.kbhint{display:none} /* the keyboard hint only fits on tall screens */
+@media (min-height:760px){.kbhint{display:block}}
+.row{display:flex;gap:8px;width:100%;justify-content:center}
+.row button{flex:1;border:3px solid var(--softEdge);background:var(--soft);border-radius:16px;min-height:44px;font-weight:700;font-size:1rem;padding:6px 5px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.row button[aria-pressed="true"]{background:var(--accent);border-color:var(--accentDark);color:#fff}
+@media (max-width:374px){.row button{font-size:.9rem;padding:6px 3px}} /* three level buttons still fit on a 360px phone */
+.setup,.setupL,.setupR{display:contents}
+.seats{display:flex;flex-direction:column;gap:8px;width:100%}
+.seat{display:flex;align-items:center;gap:8px;background:var(--soft);border-radius:18px;padding:6px}
+.seat .who{flex:none;font-size:1rem;font-weight:700;opacity:.8;width:2.8em;text-align:left;padding-left:4px}
+.seat button{border:3px solid var(--softEdge);background:#fff;border-radius:14px;min-height:44px;font-weight:700;font-size:1.1rem;padding:4px 10px}
+.seat button.fixed{cursor:default;border-color:transparent;background:transparent} /* the robot's picture and name cannot change: shown as labels */
+.seat button.fixed:active{animation:wiggle .35s ease} /* ...but a tap still gets a little beep and wiggle */
+@keyframes wiggle{0%,100%{transform:rotate(0)}30%{transform:rotate(-10deg) scale(1.1)}70%{transform:rotate(8deg) scale(1.1)}}
+.seat .emojiBtn{flex:none;width:52px;font-size:1.5rem;padding:0}
+.seat .nameBtn{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.seat .nameBtn.long{font-size:.95rem;padding:4px 6px}
+.seat .nameBtn.wrap{white-space:normal;overflow-wrap:anywhere;line-height:1.1} /* a name too wide even at the smallest size wraps instead of being cut */
+.panel .mute.corner{position:absolute;top:10px;right:10px}
+.seat .colorBtn{flex:none;width:52px;padding:0;display:grid;place-items:center}
+.seat .colorBtn i{width:30px;height:30px;border-radius:50%;display:block;background:radial-gradient(circle at 35% 30%,var(--dl),var(--dm) 55%,var(--dd));box-shadow:0 2px 0 rgba(0,0,0,.2)}
+.big-btn{border:0;border-radius:20px;background:var(--accent);color:#fff;font-weight:700;font-size:1.5rem;padding:14px 34px;min-height:60px;min-width:200px;box-shadow:0 6px 0 var(--accentDark)}
+.big-btn.alt{background:var(--soft);color:var(--ink);box-shadow:0 6px 0 var(--softEdge);font-size:1.15rem;min-height:52px;padding:10px 24px}
+.big-btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--accentDark)}
+.big-btn.alt:active{box-shadow:0 2px 0 var(--softEdge)}
+.chips{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.chip{font-weight:700;background:#fff4cc;border-radius:999px;padding:6px 14px;font-size:1rem}
+.chip.good{background:#dcfce7}
+.chip .sub{display:block;font-size:.85rem;opacity:.8;line-height:1.2} /* the per-level breakdown on its own line */
+.score-line{font-size:1.4rem;font-weight:700}
+.btns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;width:100%}
+.btns .big-btn{flex:1;min-width:140px;font-size:1.25rem;padding:10px 12px;min-height:54px;white-space:nowrap}
+.btns .big-btn.alt{font-size:1rem}
+@media (max-width:374px){.btns .big-btn{font-size:1.1rem;padding:10px 8px;min-width:120px}} /* "Play again" and "Pick players" stay on one line on a 360px phone */
+.results .panel{padding:14px 14px 16px;gap:8px}
+.results .chip{font-size:.95rem;padding:5px 12px}
+.results .mute{display:none} /* in portrait the HUD's own mute button stays tappable above the panel; landscape hides the HUD and shows this one */
+@media (orientation:landscape) and (max-height:560px){
+  .app{grid-template-areas:"board hud" "board scores" "board msg" "board ctrl";grid-template-rows:auto auto minmax(0,1fr) auto;grid-template-columns:minmax(0,1fr) 300px;column-gap:14px;align-content:stretch}
+  .boardWrap{height:auto!important}
+  .turn div{font-size:1rem;padding:7px 10px}
+  .turn div.long{font-size:.85rem} /* a 12-letter name's turn still fits on one line beside the two round buttons */
+  .setup{display:grid;grid-template-columns:1.2fr 1fr;gap:10px;width:100%;align-items:start}
+  .setupL,.setupR{display:flex;flex-direction:column;gap:8px;min-width:0}
+  .panel{width:min(100%,620px)}
+  .panel .hint,.logo,.seat .who{display:none}
+  .seat button{font-size:1rem}
+  .scores{flex-direction:column;align-items:stretch}
+  .vs{display:none}
+  .msg{white-space:normal;line-height:1.3;align-self:center} /* the message floats mid-column, so robot mode (no Undo row) has no empty tail */
+  .ctrl{flex-direction:column;align-items:stretch}
+  .screen.results{align-items:center;justify-content:flex-end}
+  .screen.results .panel{width:min(100%,300px)} /* widened by script into the free space next to the board */
+  .screen.results .panel h2{font-size:1.6rem}
+  .results .mute{display:grid}
+  .app.over .hud,.app.over .scores,.app.over .msg,.app.over .ctrl{visibility:hidden} /* the results panel takes the side column */
+  .panel{padding:14px 16px;gap:8px}
+  .boardWrap{place-items:center}
+}
+@media (prefers-reduced-motion:reduce){.app,canvas#board{transition:none}}
+@media (prefers-reduced-motion:reduce){.turn div.thinking{animation:none}.pchip{transition:none}.seat button.fixed:active{animation:none}}
+</style>
+
+<div class="app offstage" id="app">
+  <div class="hud" id="hud">
+    <button class="icon-btn" id="pauseBtn" aria-label="Pause">⏸️</button>
+    <div class="turn"><div id="turnEl">Your turn</div></div>
+    <button class="icon-btn mute" aria-label="Turn sound off">🔊</button>
+  </div>
+  <div class="scores" id="scores">
+    <div class="pchip" id="chip1"><span class="pname" id="chipName1">🦊 Fox</span><span class="sdots" id="dots1" hidden></span><b class="pwins" id="chipWins1">0</b></div>
+    <span class="vs">vs</span>
+    <div class="pchip" id="chip2"><span class="pname" id="chipName2">🤖 Robo</span><span class="sdots" id="dots2" hidden></span><b class="pwins" id="chipWins2">0</b></div>
+  </div>
+  <div class="boardWrap" id="boardWrap"><canvas id="board" tabindex="0" aria-label="Game board. Use the arrow keys to pick a column and Enter to drop a disc."></canvas></div>
+  <p class="msg" id="msgEl" aria-live="polite">Tap a column to drop a disc.</p>
+  <div class="ctrl" id="ctrlRow">
+    <button class="mini" id="undoBtn">↩️ Undo</button>
+  </div>
+</div>
+
+<section class="screen" id="titleScreen">
+  <div class="panel">
+    <svg class="logo" viewBox="0 0 150 60" aria-hidden="true">
+      <rect x="3" y="6" width="144" height="50" rx="12" fill="#2f62e6"/>
+      <rect x="6" y="9" width="138" height="44" rx="10" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="2"/>
+      <g>
+        <circle cx="24" cy="31" r="14" fill="#1c3f9c"/><circle cx="24" cy="30" r="12" fill="#ff4b4b"/><ellipse cx="20" cy="25" rx="4" ry="2.4" fill="rgba(255,255,255,.6)"/>
+        <circle cx="58" cy="31" r="14" fill="#1c3f9c"/><circle cx="58" cy="30" r="12" fill="#ffcf33"/><ellipse cx="54" cy="25" rx="4" ry="2.4" fill="rgba(255,255,255,.6)"/>
+        <circle cx="92" cy="31" r="14" fill="#1c3f9c"/><circle cx="92" cy="30" r="12" fill="#ff4b4b"/><ellipse cx="88" cy="25" rx="4" ry="2.4" fill="rgba(255,255,255,.6)"/>
+        <circle cx="126" cy="31" r="14" fill="#1c3f9c"/><circle cx="126" cy="30" r="12" fill="#ffcf33"/><ellipse cx="122" cy="25" rx="4" ry="2.4" fill="rgba(255,255,255,.6)"/>
+      </g>
+    </svg>
+    <h1 id="titleText">Drop Four</h1>
+    <p>Drop discs. Get four in a row. Win!</p>
+    <div class="setup">
+      <div class="setupL">
+        <div class="row" role="group" aria-label="Who plays">
+          <button data-mode="two" aria-pressed="false">👫 Two players</button>
+          <button data-mode="robot" aria-pressed="true">🤖 Vs Robot</button>
+        </div>
+        <div class="row" id="levelRow" role="group" aria-label="Robot level">
+          <button data-level="easy" aria-pressed="false">🌱 Easy</button>
+          <button data-level="normal" aria-pressed="true">⭐ Normal</button>
+          <button data-level="hard" aria-pressed="false">🔥 Hard</button>
+        </div>
+        <div class="row" role="group" aria-label="How many games">
+          <button data-series="single" aria-pressed="true">🎮 1 game</button>
+          <button data-series="three" aria-pressed="false">🏆 First to 3</button>
+        </div>
+      </div>
+      <div class="setupR">
+        <div class="seats">
+          <div class="seat"><span class="who">P1</span><button class="emojiBtn" data-p="0" aria-label="Change picture">🦊</button><button class="nameBtn" data-p="0" aria-label="Change name">Fox</button><button class="colorBtn" data-p="0" aria-label="Change disc colour"><i></i></button></div>
+          <div class="seat"><span class="who">P2</span><button class="emojiBtn" data-p="1" aria-label="Change picture">🐸</button><button class="nameBtn" data-p="1" aria-label="Change name">Frog</button><button class="colorBtn" data-p="1" aria-label="Change disc colour"><i></i></button></div>
+        </div>
+        <p class="hint" id="setupHint">Tap your picture, name or disc to change it.</p>
+        <div class="chip" id="bestChip">🏆 Robot points: 0</div>
+      </div>
+    </div>
+    <button class="big-btn" id="playBtn">▶ Play</button>
+    <p class="hint kbhint" id="kbHint">Tap a column to drop. Keys 1–7, ← → and Enter work too.</p>
+    <button class="icon-btn mute corner" aria-label="Turn sound off">🔊</button>
+  </div>
+</section>
+
+<section class="screen" id="pauseScreen" hidden>
+  <div class="panel">
+    <h2>Paused</h2>
+    <p id="pauseInfo">Take a breath.</p>
+    <button class="big-btn" id="resumeBtn">▶ Keep playing</button>
+    <div class="btns">
+      <button class="big-btn alt" id="restartBtn">🔄 Start over</button>
+      <button class="big-btn alt" id="quitBtn">🏠 Quit</button>
+    </div>
+    <button class="icon-btn mute" aria-label="Turn sound off">🔊</button>
+  </div>
+</section>
+
+<section class="screen results" id="resultScreen" hidden>
+  <div class="panel">
+    <h2 id="resultTitle">Fox wins!</h2>
+    <p id="resultSub">Four in a row!</p>
+    <div class="score-line" id="resultScore">Fox 1 – 0 Robo</div>
+    <div class="chips" id="resultChips"></div>
+    <div class="btns">
+      <button class="big-btn" id="againBtn">▶ Play again</button>
+      <button class="big-btn alt" id="changeBtn">👫 Pick players</button>
+    </div>
+    <button class="icon-btn mute" aria-label="Turn sound off">🔊</button>
+  </div>
+</section>
+
+<script>
+/* =====================================================================================
+   CONFIG: change these to make the game your own!
+   ===================================================================================== */
+const CONFIG = {
+  title: 'Drop Four',
+  cols: 7, rows: 6, inARow: 4,
+  saveKey: 'drop-four-v1',
+  seriesWins: 3,            // "First to 3" series length
+  gravity: 40,              // how fast a disc falls (cells per second, per second)
+  bounce: 0.3,              // how bouncy a landing is (0 = thud, 0.5 = very bouncy)
+  emojiOnDiscs: true,       // draw each player's picture on their discs
+  robot: {
+    name: 'Robo', emoji: '🤖',
+    minThinkMs: 600,        // the robot always "thinks" at least this long so it feels fair
+    hoverMs: 320,           // the robot shows its disc over the column before dropping
+    sliceMs: 35,            // the search never blocks the screen longer than this
+    maxNodes: 700000,       // safety cap for one robot move
+    easy:   { depth: 0, blockChance: 1, carefulChance: 0.6 },     // mostly random, but always takes a win and always blocks one
+    normal: { depth: 4, slipChance: 0.15 },                       // looks 4 moves ahead, sometimes plays its 2nd best move
+    hard:   { depth: 7, slipChance: 0 },                          // looks 7 moves ahead with full pruning and a cache
+    pointsPerWin: { easy: 1, normal: 2, hard: 4 }                 // leaderboard points for beating each level
+  },
+  discs: [
+    { id: 'red',    name: 'Red',    main: '#ff4b4b', dark: '#c71f1f', light: '#ffb0b0' },
+    { id: 'yellow', name: 'Yellow', main: '#ffcf33', dark: '#d19600', light: '#fff1b0' },
+    { id: 'green',  name: 'Green',  main: '#45d47a', dark: '#17923f', light: '#b9f5cf' },
+    { id: 'purple', name: 'Purple', main: '#a985ff', dark: '#6b2fd9', light: '#ddd2ff' },
+    { id: 'orange', name: 'Orange', main: '#ff8a3d', dark: '#c75500', light: '#ffd0b0' },
+    { id: 'pink',   name: 'Pink',   main: '#ff6fb5', dark: '#c2287a', light: '#ffc4e2' },
+    { id: 'cyan',   name: 'Cyan',   main: '#3fd0e8', dark: '#0f88a3', light: '#bdf1fa' }
+  ],
+  emojis: ['🦊', '🐸', '🐼', '🦄', '🐯', '🐙', '🦖', '🐧', '🐱', '🐶', '🦋', '🐵'],
+  nicknames: ['Fox', 'Frog', 'Rocket', 'Star', 'Bubbles', 'Tiger', 'Pickle', 'Comet', 'Waffle', 'Ninja', 'Panda', 'Zippy', 'Mango', 'Sparky'],
+  robotSays: {
+    think: ['Hmm, let me think…', 'Beep boop… thinking!', 'My gears are turning…', 'Looking at the board…'],
+    move:  ['Your move!', 'I have a plan…', 'Did you see that?', 'Try and stop me!', 'Beep boop!', 'Nice move. Mine is nicer!', 'Zap! I am buzzing!'],
+    win:   ['Beep boop! I win this one!', 'Robots rule! Play again?', 'My circuits are dancing!', 'Too easy! Try again?'],
+    lose:  ['You beat me! Wow!', 'Oops! You found my weak spot!', 'Okay okay, you are good!', 'Zap! You got me!'],
+    draw:  ['A tie! We are both clever.', 'Nobody won. Rematch?']
+  }
+};
+
+/* =====================================================================================
+   Small helpers
+   ===================================================================================== */
+const $ = id => document.getElementById(id);
+const { cols: COLS, rows: ROWS } = CONFIG;
+const CENTRE = Math.floor((COLS - 1) / 2);   // the middle column (3 on the classic 7-wide board); the robot and the preview start here
+let REDUCED = false; try { REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { /* ignore */ }
+
+// Seeded random numbers (mulberry32) so tests can replay the robot. seed() is exposed on __brbTest.
+let rngState = (Math.random() * 4294967295) >>> 0;
+function rng() { rngState = (rngState + 0x6D2B79F5) >>> 0; let t = rngState; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }
+const pick = arr => arr[Math.floor(rng() * arr.length)];
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const wait = ms => new Promise(r => setTimeout(r, ms));
+const discById = id => CONFIG.discs.find(d => d.id === id) || CONFIG.discs[0];
+const LEVELS = ['easy', 'normal', 'hard'];
+/** "1 win", "2 wins". */
+const plural = (n, word) => n + ' ' + word + (n === 1 ? '' : (word.endsWith('s') ? 'es' : 's'));
+/** "Fox's", "Bubbles'" (names ending in s only get the apostrophe). */
+const possessive = name => name + (/s$/i.test(name) ? "'" : "'s");
+
+document.title = CONFIG.title;
+$('titleText').textContent = CONFIG.title;
+$('kbHint').textContent = 'Tap a column to drop. Keys 1–' + Math.min(COLS, 9) + ', ← → and Enter work too.';
+
+/* =====================================================================================
+   Saved settings and stats (BRB.storage is the per-player cloud save)
+   ===================================================================================== */
+const DEFAULT_SAVE = {
+  v: 1,
+  mode: 'robot', difficulty: 'normal', series: 'single',
+  players: [
+    { emoji: '🦊', name: (BRB.user.displayName || 'Fox').slice(0, 12), color: 'red' },
+    { emoji: '🐸', name: 'Frog', color: 'yellow' }
+  ],
+  robotColor: 'yellow',
+  stats: { easy: { w: 0, l: 0, d: 0 }, normal: { w: 0, l: 0, d: 0 }, hard: { w: 0, l: 0, d: 0 } }
+};
+let save = DEFAULT_SAVE;
+try {
+  const s = BRB.storage.get(CONFIG.saveKey);
+  if (s && s.v === 1 && Array.isArray(s.players) && s.players.length === 2 && s.stats) {
+    save = s;
+    for (const k of LEVELS) save.stats[k] = Object.assign({ w: 0, l: 0, d: 0 }, save.stats[k]);
+  }
+} catch (e) { /* fresh start */ }
+// Only the three known levels (and modes, series) ever reach the stats table.
+if (!LEVELS.includes(save.difficulty)) save.difficulty = 'normal';
+if (save.mode !== 'two' && save.mode !== 'robot') save.mode = 'robot';
+if (save.series !== 'single' && save.series !== 'three') save.series = 'single';
+function persist() { try { BRB.storage.set(CONFIG.saveKey, save); } catch (e) { /* ignore */ } }
+/** Leaderboard points: every win against the robot, weighted by level (Hard pays the most). */
+function robotPoints() { const p = CONFIG.robot.pointsPerWin; return save.stats.easy.w * p.easy + save.stats.normal.w * p.normal + save.stats.hard.w * p.hard; }
+
+/* =====================================================================================
+   Game state
+   ===================================================================================== */
+const S = {
+  screen: 'title',            // 'title' | 'play' | 'pause' | 'over'
+  mode: 'robot',              // 'two' | 'robot'
+  difficulty: 'normal',       // 'easy' | 'normal' | 'hard'
+  series: 'single',           // 'single' | 'three'
+  board: [],                  // board[row][col]: 0 empty, 1 player one, 2 player two; row 0 is the TOP row
+  turn: 1, winner: null,      // winner: null while playing, 1 or 2 for a win, 0 for a tie
+  winningCells: [],           // [[row, col], ...] of every winning cell (two lines at once are both in here)
+  winLines: [],               // each winning line on its own, sorted, for the line drawn through it
+  moves: [], placed: 0,       // move history (columns) for undo
+  wins: [0, 0], starter: 1, gameNo: 1, seriesOver: false,
+  players: [null, null],      // [{emoji,name,color}, {...}]; players[1] is the robot in robot mode
+  previewCol: CENTRE, previewX: CENTRE, // the disc hovering above the board (previewX eases towards previewCol)
+  busy: false, thinking: false, paused: false, over: false,
+  firstMoves: 0
+};
+let fast = false;             // __brbTest.skipAnimations(): drops land instantly, the robot does not pause for show
+let thinkToken = 0;           // bumps when a game ends or restarts so a stale robot search is ignored
+let robotPromise = null;      // the robot's in-flight move (for __brbTest.robotMove)
+let resultsTimer = 0, bubbleTimer = 0;
+
+const emptyBoard = () => Array.from({ length: ROWS }, () => new Array(COLS).fill(0));
+const inside = (r, c) => r >= 0 && r < ROWS && c >= 0 && c < COLS;
+const lowestEmpty = (board, c) => { for (let r = ROWS - 1; r >= 0; r--) if (!board[r][c]) return r; return -1; };
+const isRobotTurn = () => S.mode === 'robot' && S.turn === 2;
+
+/** Every run of >= inARow through (r,c): an array of lines (each a sorted list of [row, col]), or null.
+    A disc that completes two lines at once (say across and down) returns both, so both get highlighted. */
+function winFrom(board, r, c) {
+  const p = board[r][c]; if (!p) return null;
+  const lines = [];
+  for (const [dr, dc] of [[0, 1], [1, 0], [1, 1], [1, -1]]) {
+    const cells = [[r, c]];
+    for (const s of [1, -1]) {
+      let rr = r + dr * s, cc = c + dc * s;
+      while (inside(rr, cc) && board[rr][cc] === p) { cells.push([rr, cc]); rr += dr * s; cc += dc * s; }
+    }
+    if (cells.length >= CONFIG.inARow) lines.push(cells.sort((a, b) => a[0] - b[0] || a[1] - b[1]));
+  }
+  return lines.length ? lines : null;
+}
+
+/* =====================================================================================
+   The robot. A negamax alpha-beta search over a flat Int8Array copy of the board with
+   centre-first move ordering, immediate win/block detection and a Zobrist transposition
+   cache. The top three plies run inside a generator that yields every CONFIG.robot.sliceMs
+   so the page keeps painting while the robot thinks (the sandbox CSP has no blob: workers).
+   ===================================================================================== */
+const AI = (() => {
+  const L = CONFIG.inARow, N = COLS * ROWS, INF = 1e9, WIN = 100000, SLICE_PLIES = 3;
+  // Centre-first move order ([3,2,4,1,5,0,6] on the classic board): the middle columns are usually best, so
+  // trying them first makes the alpha-beta pruning cut off far more of the tree.
+  const ORDER = Array.from({ length: COLS }, (_, c) => c).sort((a, b) => Math.abs(a - CENTRE) - Math.abs(b - CENTRE) || a - b);
+  const CENTRES = COLS % 2 ? [CENTRE] : [CENTRE, CENTRE + 1];   // the column(s) worth a small bonus
+  const cells = new Int8Array(N), heights = new Int8Array(COLS);
+  let filled = 0, h1 = 0, h2 = 0, nodes = 0, sliceEnd = 0, lastSearch = null, rootMove = -1;
+  const idx = (r, c) => r * COLS + c;
+
+  // Every inARow-long window on the board, and the windows that touch each cell (for fast win checks).
+  const WINDOWS = [], WIN_AT = Array.from({ length: N }, () => []), E = L - 1;
+  for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
+    const dirs = [];
+    if (c + E < COLS) dirs.push([0, 1]);
+    if (r + E < ROWS) dirs.push([1, 0]);
+    if (r + E < ROWS && c + E < COLS) dirs.push([1, 1]);
+    if (r + E < ROWS && c - E >= 0) dirs.push([1, -1]);
+    for (const [dr, dc] of dirs) {
+      const w = []; for (let j = 0; j < L; j++) w.push(idx(r + dr * j, c + dc * j));
+      WINDOWS.push(w); for (const i of w) WIN_AT[i].push(w);
+    }
+  }
+  // Zobrist keys from a fixed-seed generator so the cache behaves the same on every device.
+  const Z1 = new Int32Array(N * 3), Z2 = new Int32Array(N * 3);
+  { let s = 0x9E3779B9; const next = () => { s = (s + 0x6D2B79F5) >>> 0; let t = s; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return (t ^ (t >>> 14)) | 0; };
+    for (let i = 0; i < N * 3; i++) { Z1[i] = next(); Z2[i] = next(); } }
+  // 52-bit cache key from the cells plus who is to move (the same cells can be either side's turn,
+  // because "Rematch" alternates who starts).
+  const SIDE = 0x5bd1e995 | 0;
+  const key = p => ((h1 ^ (p === 2 ? SIDE : 0)) >>> 0) * 1048576 + (h2 >>> 12);
+  const tt = new Map();
+  const EXACT = 0, LOWER = 1, UPPER = 2;
+
+  function load(board) {
+    cells.fill(0); heights.fill(0); filled = 0; h1 = 0; h2 = 0;
+    for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
+      const p = board[r][c]; if (!p) continue;
+      const i = idx(r, c); cells[i] = p; heights[c]++; filled++; h1 ^= Z1[i * 3 + p]; h2 ^= Z2[i * 3 + p];
+    }
+  }
+  function place(c, p) { const i = idx(ROWS - 1 - heights[c], c); cells[i] = p; heights[c]++; filled++; h1 ^= Z1[i * 3 + p]; h2 ^= Z2[i * 3 + p]; return i; }
+  function unplace(c, p, i) { cells[i] = 0; heights[c]--; filled--; h1 ^= Z1[i * 3 + p]; h2 ^= Z2[i * 3 + p]; }
+  function winsAt(i, p) {
+    const ws = WIN_AT[i];
+    for (let k = 0; k < ws.length; k++) { const w = ws[k]; let j = 0; while (j < L && cells[w[j]] === p) j++; if (j === L) return true; }
+    return false;
+  }
+  /** Static evaluation from player p's point of view: windows one short of a win, windows two short, centre control. */
+  function evaluate(p) {
+    const o = 3 - p; let s = 0;
+    for (let k = 0; k < WINDOWS.length; k++) {
+      const w = WINDOWS[k]; let me = 0, op = 0;
+      for (let j = 0; j < L; j++) { const v = cells[w[j]]; if (v === p) me++; else if (v === o) op++; }
+      if (me && op) continue;
+      if (me === L - 1) s += 50; else if (me === L - 2) s += 10;
+      else if (op === L - 1) s -= 60; else if (op === L - 2) s -= 10;
+    }
+    for (const cc of CENTRES) for (let r = 0; r < ROWS; r++) { const v = cells[idx(r, cc)]; if (v === p) s += 6; else if (v === o) s -= 6; }
+    return s;
+  }
+  /** Column that wins at once for p, or -1. */
+  function immediateWin(p) {
+    for (let k = 0; k < COLS; k++) { const c = ORDER[k]; if (heights[c] >= ROWS) continue; const i = place(c, p); const w = winsAt(i, p); unplace(c, p, i); if (w) return c; }
+    return -1;
+  }
+  /** True if dropping in c lets the other player win right on top of it. */
+  function givesWinAbove(c, p) {
+    if (heights[c] >= ROWS - 1) return false;
+    const i = place(c, p); const j = place(c, 3 - p); const bad = winsAt(j, 3 - p); unplace(c, 3 - p, j); unplace(c, p, i); return bad;
+  }
+
+  function negamax(depth, alpha, beta, p) {
+    nodes++;
+    const alphaOrig = alpha, k = key(p), e = tt.get(k); let first = -1;
+    if (e) {
+      first = e.m;
+      if (e.d >= depth) {
+        if (e.f === EXACT) return e.v;
+        if (e.f === LOWER) { if (e.v > alpha) alpha = e.v; } else if (e.v < beta) beta = e.v;
+        if (alpha >= beta) return e.v;
+      }
+    }
+    if (depth === 0) return evaluate(p);
+    let best = -INF, bestMove = -1;
+    for (let k2 = -1; k2 < COLS; k2++) {
+      const c = k2 < 0 ? first : ORDER[k2];
+      if (c < 0 || (k2 >= 0 && c === first) || heights[c] >= ROWS) continue;
+      const i = place(c, p); let v;
+      if (winsAt(i, p)) v = WIN + depth;
+      else if (filled === N) v = 0;
+      else v = -negamax(depth - 1, -beta, -alpha, 3 - p);
+      unplace(c, p, i);
+      if (v > best) { best = v; bestMove = c; }
+      if (best > alpha) alpha = best;
+      if (alpha >= beta) break;
+    }
+    if (bestMove < 0) return 0;
+    tt.set(k, { d: depth, v: best, f: best <= alphaOrig ? UPPER : best >= beta ? LOWER : EXACT, m: bestMove });
+    return best;
+  }
+  /** Same search for the top plies, as a generator that yields when the time slice is used up.
+      At the root (ply 0) every child is searched with alpha lowered by one, so a move that merely EQUALS
+      the best so far comes back as an exact value instead of an upper bound: out[c] is then the true
+      value for every move scoring >= the best, which makes a random tie-break between them safe. */
+  function* sliced(depth, alpha, beta, p, ply, out) {
+    nodes++;
+    const alphaOrig = alpha, k = key(p), e = tt.get(k); let first = -1;
+    if (e) {
+      first = e.m;
+      if (ply > 0 && e.d >= depth) {
+        if (e.f === EXACT) return e.v;
+        if (e.f === LOWER) { if (e.v > alpha) alpha = e.v; } else if (e.v < beta) beta = e.v;
+        if (alpha >= beta) return e.v;
+      }
+    }
+    let best = -INF, bestMove = -1;
+    for (let k2 = -1; k2 < COLS; k2++) {
+      const c = k2 < 0 ? first : ORDER[k2];
+      if (c < 0 || (k2 >= 0 && c === first) || heights[c] >= ROWS) continue;
+      const i = place(c, p), a = ply === 0 ? alpha - 1 : alpha; let v;
+      if (winsAt(i, p)) v = WIN + depth;
+      else if (filled === N) v = 0;
+      else if (depth === 1) v = -evaluate(3 - p);
+      else if (ply + 1 < SLICE_PLIES) v = -(yield* sliced(depth - 1, -beta, -a, 3 - p, ply + 1, null));
+      else v = -negamax(depth - 1, -beta, -a, 3 - p);
+      unplace(c, p, i);
+      if (out) out[c] = v;
+      if (v > best) { best = v; bestMove = c; }
+      if (best > alpha) alpha = best;
+      if (ply === 0) rootMove = bestMove;
+      if (performance.now() > sliceEnd || nodes > CONFIG.robot.maxNodes) yield;   // let the screen breathe
+      if (alpha >= beta) break;
+    }
+    if (bestMove < 0) return 0;
+    tt.set(k, { d: depth, v: best, f: best <= alphaOrig ? UPPER : best >= beta ? LOWER : EXACT, m: bestMove });
+    return best;
+  }
+
+  /** Iterative deepening to maxDepth, sliced. Resolves { col, score, depth, nodes, out } (col -1 if cancelled). */
+  function search(p, maxDepth, isCancelled, isPaused) {
+    return new Promise(resolve => {
+      if (tt.size > 250000) tt.clear();
+      let d = 1, gen = null, out = null, bestMove = -1, bestScore = 0, lastOut = null, reached = 0;
+      nodes = 0;
+      const step = () => {
+        if (isCancelled()) return resolve({ col: -1 });
+        if (isPaused()) return void setTimeout(step, 120);
+        sliceEnd = performance.now() + CONFIG.robot.sliceMs;
+        if (!gen) { out = new Float64Array(COLS).fill(-INF); rootMove = -1; gen = sliced(d, -INF, INF, p, 0, out); }
+        let r;
+        try { r = gen.next(); } catch (err) { r = { done: true, value: null }; }
+        if (!r.done) {
+          if (nodes <= CONFIG.robot.maxNodes) return void setTimeout(step, 0);
+          // Over budget: give up on this depth and use the best move from the last finished depth.
+          try { gen.return(); } catch (err) { /* ignore */ }
+          if (bestMove < 0) { let bm = -1, bv = -INF; for (let c = 0; c < COLS; c++) if (heights[c] < ROWS && out[c] > bv) { bv = out[c]; bm = c; } bestMove = bm; bestScore = bv; lastOut = out; }
+          return resolve({ col: bestMove, score: bestScore, depth: reached, nodes, out: lastOut });
+        }
+        if (r.value !== null && nodes <= CONFIG.robot.maxNodes) {
+          bestScore = r.value; lastOut = out; reached = d;
+          if (rootMove >= 0) bestMove = rootMove;   // the move that actually produced the best score
+        }
+        gen = null; d++;
+        const decisive = Math.abs(bestScore) >= WIN - 100;
+        if (d > maxDepth || decisive || nodes > CONFIG.robot.maxNodes) return resolve({ col: bestMove, score: bestScore, depth: reached, nodes, out: lastOut });
+        setTimeout(step, 0);
+      };
+      step();
+    });
+  }
+
+  /** Decide the robot's column for `board` as player p at `level`. Resolves the column (or -1 if cancelled). */
+  async function choose(board, p, level, isCancelled, isPaused) {
+    load(board);
+    const cfg = CONFIG.robot[level] || CONFIG.robot.normal;
+    const legal = []; for (const c of ORDER) if (heights[c] < ROWS) legal.push(c);
+    if (!legal.length) return -1;
+    const win = immediateWin(p); if (win >= 0) return win;
+    const block = immediateWin(3 - p);
+    if (level === 'easy') {
+      if (block >= 0 && rng() < cfg.blockChance) return block;
+      let options = legal;
+      if (rng() < cfg.carefulChance) { const safe = legal.filter(c => !givesWinAbove(c, p)); if (safe.length) options = safe; }
+      const weights = options.map(c => Math.max(1, CENTRE + 1 - Math.abs(c - CENTRE)));   // a little love for the middle
+      let t = rng() * weights.reduce((a, b) => a + b, 0);
+      for (let k = 0; k < options.length; k++) { t -= weights[k]; if (t <= 0) return options[k]; }
+      return options[options.length - 1];
+    }
+    if (block >= 0) return block;
+    const res = await search(p, cfg.depth, isCancelled, isPaused);
+    lastSearch = res;
+    if (res.col < 0) return isCancelled() ? -1 : pick(legal);
+    const out = res.out || [];
+    // Tie-break between equal moves at random so games feel different each time. out[c] is exact for every
+    // move that scores >= the best (see sliced), so these really are equal moves.
+    const ties = legal.filter(c => out[c] === res.score);
+    let col = ties.length > 1 ? pick(ties) : res.col;
+    // Normal sometimes slips to its second-best move, unless that would throw the game away.
+    if (cfg.slipChance && rng() < cfg.slipChance && Math.abs(res.score) < WIN - 100) {
+      const ranked = legal.filter(c => c !== col && out[c] > -WIN + 100 && !givesWinAbove(c, p)).sort((a, b) => out[b] - out[a]);
+      if (ranked.length) col = ranked[0];
+    }
+    return col;
+  }
+  /** Static evaluation of a 6x7 board for `player` (used by __brbTest.evaluateBoard). Works on a copy of
+      the search state and puts it back, so a call during a sliced search does not corrupt the search. */
+  function evaluateBoard(board, player) {
+    const sc = cells.slice(), sh = heights.slice(), sf = filled, s1 = h1, s2 = h2;
+    load(board); const v = evaluate(player === 2 ? 2 : 1);
+    cells.set(sc); heights.set(sh); filled = sf; h1 = s1; h2 = s2;
+    return v;
+  }
+  /** Forget the cache (called when a new game starts). */
+  function reset() { tt.clear(); }
+  return { choose, evaluateBoard, reset, get nodes() { return nodes; }, get lastSearch() { return lastSearch; } };
+})();
+
+/* =====================================================================================
+   Drawing: one canvas. Layers: placed discs (offscreen, redrawn when the board changes),
+   the falling disc, the plate with holes (offscreen, redrawn on resize), the preview disc,
+   the winning line and particles. All animation is time-based inside requestAnimationFrame.
+   ===================================================================================== */
+const wrap = $('boardWrap'), canvas = $('board'), ctx = canvas.getContext('2d');
+const discLayer = document.createElement('canvas'), plateLayer = document.createElement('canvas');
+const G = { cell: 48, pad: 6, w: 348, h: 360, plateX: 6, plateY: 54, plateW: 336, plateH: 288, holeR: 19, dpr: 1, ready: false };
+let discDirty = true, falling = null, winAt = 0, hoverOwner = 0, lastFrame = 0, rafId = 0;
+const EMOJI_FONT = '"Fredoka","Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",system-ui,sans-serif';
+
+const LANDSCAPE = matchMedia('(orientation:landscape) and (max-height:560px)');
+/** Size the board to the room it has. In portrait the board row is sized by hand (everything else is measured
+    and the leftover goes below the controls); in short landscape the board column simply fills the height. */
+function layout() {
+  const app = $('app'), cs = getComputedStyle(app);
+  let availW = wrap.clientWidth, availH;
+  if (LANDSCAPE.matches) { wrap.style.height = ''; availH = wrap.clientHeight; }
+  else {
+    const gap = parseFloat(cs.rowGap) || 8; let used = 0, rows = 0;
+    for (const id of ['hud', 'scores', 'msgEl', 'ctrlRow']) { const el = $(id); if (el.hidden) continue; used += el.offsetHeight; rows++; }
+    availH = app.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom) - used - gap * rows;
+  }
+  if (availW < 40 || availH < 40) return;
+  const pad = 6, feet = 0.3;
+  const cell = Math.max(24, Math.floor(Math.min((availW - 2 * pad) / COLS, (availH - 2 * pad) / (ROWS + 1 + feet))));
+  const dpr = Math.min(3, window.devicePixelRatio || 1);
+  // Same size as last time (say the message line grew or shrank): keep the canvases, nothing to redraw.
+  if (G.ready && cell === G.cell && dpr === G.dpr) { if (!LANDSCAPE.matches) wrap.style.height = G.h + 'px'; return; }
+  G.ready = true; G.cell = cell; G.pad = pad; G.holeR = cell * 0.41; G.dpr = dpr;
+  G.w = cell * COLS + 2 * pad; G.h = Math.ceil(cell * (ROWS + 1 + feet) + 2 * pad);
+  G.plateX = pad; G.plateY = pad + cell; G.plateW = cell * COLS; G.plateH = cell * ROWS;
+  for (const cv of [canvas, discLayer, plateLayer]) { cv.width = Math.round(G.w * G.dpr); cv.height = Math.round(G.h * G.dpr); }
+  canvas.style.width = G.w + 'px'; canvas.style.height = G.h + 'px';
+  if (!LANDSCAPE.matches) wrap.style.height = G.h + 'px';
+  drawPlate(); discDirty = true;
+}
+// Centre of a hole, as two plain functions (no array to throw away per call: frame() uses these a lot).
+const cx = col => G.pad + col * G.cell + G.cell / 2, cy = row => G.plateY + row * G.cell + G.cell / 2;
+
+function roundRect(c, x, y, w, h, r) { c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r); c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath(); }
+
+/** The chunky blue plate with real holes (even-odd fill) and shaded rims, plus two little feet. */
+function drawPlate() {
+  const c = plateLayer.getContext('2d'); c.setTransform(G.dpr, 0, 0, G.dpr, 0, 0); c.clearRect(0, 0, G.w, G.h);
+  const { plateX: x, plateY: y, plateW: w, plateH: h, cell } = G, rad = cell * 0.28;
+  // feet
+  c.fillStyle = '#1b3fa8';
+  c.beginPath(); roundRect(c, x + cell * 0.25, y + h - cell * 0.1, cell * 1.1, cell * 0.4, cell * 0.12); c.fill();
+  c.beginPath(); roundRect(c, x + w - cell * 1.35, y + h - cell * 0.1, cell * 1.1, cell * 0.4, cell * 0.12); c.fill();
+  // drop shadow
+  c.fillStyle = 'rgba(50,20,90,.22)'; c.beginPath(); roundRect(c, x, y + cell * 0.12, w, h, rad); c.fill();
+  // plate with holes
+  const g = c.createLinearGradient(0, y, 0, y + h); g.addColorStop(0, '#4a7cf5'); g.addColorStop(1, '#2149c9');
+  c.fillStyle = g; c.beginPath(); roundRect(c, x, y, w, h, rad);
+  for (let r = 0; r < ROWS; r++) for (let col = 0; col < COLS; col++) { const x = cx(col), y = cy(r); c.moveTo(x + G.holeR, y); c.arc(x, y, G.holeR, 0, Math.PI * 2); }
+  c.fill('evenodd');
+  // bevel
+  c.lineWidth = Math.max(2, cell * 0.06); c.strokeStyle = 'rgba(255,255,255,.3)'; c.beginPath(); roundRect(c, x + cell * 0.08, y + cell * 0.08, w - cell * 0.16, h - cell * 0.16, rad * 0.8); c.stroke();
+  c.lineWidth = Math.max(2, cell * 0.05); c.strokeStyle = '#17358f'; c.beginPath(); roundRect(c, x, y, w, h, rad); c.stroke();
+  // hole rims: a dark inner shadow at the top, a light lip at the bottom
+  c.lineWidth = Math.max(1.5, cell * 0.05);
+  for (let r = 0; r < ROWS; r++) for (let col = 0; col < COLS; col++) {
+    const x = cx(col), y = cy(r);
+    c.strokeStyle = 'rgba(10,20,80,.45)'; c.beginPath(); c.arc(x, y, G.holeR, Math.PI * 1.05, Math.PI * 1.95); c.stroke();
+    c.strokeStyle = 'rgba(255,255,255,.28)'; c.beginPath(); c.arc(x, y, G.holeR, Math.PI * 0.1, Math.PI * 0.9); c.stroke();
+  }
+}
+/** Disc gradients are cached per context, colour and size (keyed by the disc object and a rounded radius, so
+    looking one up builds no string), so a frame never creates a new gradient. */
+const gradCache = new WeakMap();
+function discGradient(c, r, disc) {
+  let m = gradCache.get(c); if (!m) { m = new Map(); gradCache.set(c, m); }
+  let byR = m.get(disc); if (!byR) { byR = new Map(); m.set(disc, byR); }
+  const k = Math.round(r * 4); let g = byR.get(k);
+  if (!g) { g = c.createRadialGradient(-r * 0.3, -r * 0.35, r * 0.1, 0, 0, r); g.addColorStop(0, disc.light); g.addColorStop(0.5, disc.main); g.addColorStop(1, disc.dark); byR.set(k, g); }
+  return g;
+}
+// The winning rings' white, at 32 brightness steps, built once (no colour string per frame).
+const RING_WHITE = Array.from({ length: 32 }, (_, i) => 'rgba(255,255,255,' + (0.45 + 0.45 * i / 31).toFixed(2) + ')');
+/** A glossy disc with a highlight; the player's picture on top when CONFIG.emojiOnDiscs is on. */
+function drawDisc(c, x, y, r, disc, emoji, squash) {
+  const sx = 1 + 0.18 * (squash || 0), sy = 1 - 0.22 * (squash || 0);
+  c.save(); c.translate(x, y); c.scale(sx, sy);
+  c.fillStyle = disc.dark; c.beginPath(); c.arc(0, r * 0.07, r, 0, Math.PI * 2); c.fill();
+  c.fillStyle = discGradient(c, r, disc); c.beginPath(); c.arc(0, 0, r * 0.96, 0, Math.PI * 2); c.fill();
+  c.lineWidth = r * 0.09; c.strokeStyle = 'rgba(0,0,0,.14)'; c.beginPath(); c.arc(0, 0, r * 0.68, 0, Math.PI * 2); c.stroke();
+  c.fillStyle = 'rgba(255,255,255,.6)'; c.beginPath(); c.ellipse(-r * 0.32, -r * 0.42, r * 0.26, r * 0.14, -0.5, 0, Math.PI * 2); c.fill();
+  if (emoji && CONFIG.emojiOnDiscs) { c.font = Math.round(r * 0.95) + 'px ' + EMOJI_FONT; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillStyle = '#000'; c.fillText(emoji, 0, r * 0.08); }
+  c.restore();
+}
+function drawDiscLayer() {
+  const c = discLayer.getContext('2d'); c.setTransform(G.dpr, 0, 0, G.dpr, 0, 0); c.clearRect(0, 0, G.w, G.h);
+  for (let r = 0; r < ROWS; r++) for (let col = 0; col < COLS; col++) {
+    const p = S.board[r][col]; if (!p) continue;
+    const pl = S.players[p - 1];
+    drawDisc(c, cx(col), cy(r), G.holeR * 0.97, pl.disc, pl.emoji, 0);
+  }
+  discDirty = false;
+}
+
+// Particles (a fixed pool, no per-frame allocation).
+const PARTS = Array.from({ length: 140 }, () => ({ on: false, x: 0, y: 0, vx: 0, vy: 0, life: 0, max: 1, size: 3, color: '#fff', star: false }));
+let partsLive = 0;   // how many particles are flying (so the loop knows when the picture has gone still)
+function burst(x, y, color, n, speed, star) {
+  if (REDUCED) return;
+  let made = 0;
+  for (let i = 0; i < PARTS.length; i++) {
+    const p = PARTS[i]; if (p.on) continue;
+    const a = rng() * Math.PI * 2, sp = speed * (0.35 + rng() * 0.85);
+    p.on = true; p.x = x; p.y = y; p.vx = Math.cos(a) * sp; p.vy = Math.sin(a) * sp - speed * 0.35; p.max = p.life = 0.45 + rng() * 0.5;
+    p.size = G.cell * (0.05 + rng() * 0.08); p.color = rng() < 0.3 ? '#fff' : color; p.star = !!star;
+    partsLive++;
+    if (++made >= n) break;
+  }
+}
+function drawParticles(dt) {
+  partsLive = 0;
+  for (let i = 0; i < PARTS.length; i++) {
+    const p = PARTS[i]; if (!p.on) continue;
+    p.life -= dt; if (p.life <= 0) { p.on = false; continue; }
+    partsLive++;
+    p.vy += G.cell * 9 * dt; p.x += p.vx * dt; p.y += p.vy * dt;
+    const k = p.life / p.max; ctx.globalAlpha = k; ctx.fillStyle = p.color;
+    if (p.star) { ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.life * 6); ctx.fillRect(-p.size, -p.size * 0.35, p.size * 2, p.size * 0.7); ctx.fillRect(-p.size * 0.35, -p.size, p.size * 0.7, p.size * 2); ctx.restore(); }
+    else { ctx.beginPath(); ctx.arc(p.x, p.y, p.size * k, 0, Math.PI * 2); ctx.fill(); }
+  }
+  ctx.globalAlpha = 1;
+}
+
+/** One frame. Only runs while the board is on screen; nothing moves while paused, so nothing is redrawn then.
+    On the results screen the rings pulse and the sparkles fall for a few seconds, then one calm frame is drawn
+    and the loop idles (no redraw, nothing allocated) until something changes, to spare a phone's battery. */
+let idle = false, ringOn = false;
+function frame(now) {
+  rafId = requestAnimationFrame(frame);
+  const dt = S.paused ? 0 : Math.min(0.05, (now - lastFrame) / 1000 || 0); lastFrame = now;
+  if (S.screen === 'title' || S.paused) return;
+  // A ring on the board edge shows keyboard focus whenever the player's own disc is not hovering to show it
+  // (the robot's turn, where the hovering disc is the robot's, and the results screen).
+  const wantRing = !hoverOwner || S.over || isRobotTurn();
+  if (wantRing !== ringOn) { ringOn = wantRing; canvas.classList.toggle('ring', ringOn); }
+  let still = false;
+  if (S.screen === 'over' && !falling && !partsLive && !discDirty && now - winAt > 3500) {
+    if (idle) return;
+    idle = still = true;   // draw this one last frame with the rings at full brightness, then rest
+  } else idle = false;
+  // Move the falling disc first. When its squash ends it is committed to the board here, which marks the disc
+  // layer dirty, so the layer below is repainted with the new disc in this same frame (no one-frame blink
+  // between the moving disc and the resting one).
+  if (falling) {
+    const f = falling;
+    if (!f.settled) {
+      f.vy += CONFIG.gravity * dt; f.y += f.vy * dt;
+      if (f.y >= f.row) {
+        f.y = f.row;
+        if (!f.landed) { f.landed = true; onLand(f); }
+        if (f.vy > 3 && f.bounces < 2 && !REDUCED && CONFIG.bounce > 0) { f.vy = -f.vy * CONFIG.bounce; f.bounces++; }
+        else { f.vy = 0; f.settled = true; f.squash = REDUCED ? 0 : 1; }
+      }
+    } else { f.squash -= dt * 7; if (f.squash <= 0) commitFalling(); }
+  }
+  if (discDirty) drawDiscLayer();
+  ctx.setTransform(G.dpr, 0, 0, G.dpr, 0, 0); ctx.clearRect(0, 0, G.w, G.h);
+  ctx.drawImage(discLayer, 0, 0, G.w, G.h);
+
+  // the falling disc (behind the plate)
+  if (falling) { const f = falling, pl = S.players[f.player - 1]; drawDisc(ctx, cx(f.col), G.plateY + f.y * G.cell + G.cell / 2, G.holeR * 0.97, pl.disc, pl.emoji, Math.max(0, f.squash)); }
+  ctx.drawImage(plateLayer, 0, 0, G.w, G.h);
+
+  // the winning four: pulsing rings and a line that draws itself through them
+  if (S.winningCells.length) {
+    const t = (now - winAt) / 1000, prog = (REDUCED || fast) ? 1 : clamp((t - 0.1) / 0.6, 0, 1), pulse = still ? 1 : 0.5 + 0.5 * Math.sin(t * 4);
+    const disc = S.players[S.winner - 1].disc, cells = S.winningCells;
+    ctx.lineWidth = G.cell * 0.08; ctx.strokeStyle = RING_WHITE[Math.round(pulse * 31)];
+    for (let i = 0; i < cells.length; i++) { ctx.beginPath(); ctx.arc(cx(cells[i][1]), cy(cells[i][0]), G.holeR * (0.88 + 0.07 * pulse), 0, Math.PI * 2); ctx.stroke(); }
+    if (prog > 0) for (let i = 0; i < S.winLines.length; i++) {   // one line per completed four (a drop can finish two at once)
+      const line = S.winLines[i], first = line[0], last = line[line.length - 1];
+      const ax = cx(first[1]), ay = cy(first[0]), ex = ax + (cx(last[1]) - ax) * prog, ey = ay + (cy(last[0]) - ay) * prog;
+      ctx.lineCap = 'round';
+      ctx.lineWidth = G.cell * 0.24; ctx.strokeStyle = 'rgba(255,255,255,.9)'; ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(ex, ey); ctx.stroke();
+      ctx.lineWidth = G.cell * 0.11; ctx.strokeStyle = disc.dark; ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(ex, ey); ctx.stroke();
+    }
+    if (!REDUCED && t < 1.6 && rng() < dt * 12) { const cell = pick(cells); burst(cx(cell[1]), cy(cell[0]), disc.light, 2, G.cell * 2.2, true); }
+  }
+
+  // the preview disc hovering above the board
+  const owner = hoverOwner;
+  if (owner && !falling && !S.over) {
+    S.previewX += (S.previewCol - S.previewX) * Math.min(1, dt * 16);
+    const pl = S.players[owner - 1], disc = pl.disc;
+    const bob = REDUCED ? 0 : Math.sin(now / 260) * G.cell * 0.03;
+    const x = G.pad + S.previewX * G.cell + G.cell / 2, y = G.pad + G.cell / 2 + bob;
+    const full = lowestEmpty(S.board, S.previewCol) < 0;
+    ctx.globalAlpha = full ? 0.35 : (S.thinking ? 0.8 : 1);
+    drawDisc(ctx, x, y, G.holeR * 0.95, disc, pl.emoji, 0);
+    ctx.globalAlpha = 1;
+    if (!full && !S.thinking) { // a little arrow under the disc
+      ctx.fillStyle = 'rgba(255,255,255,.7)'; ctx.beginPath(); ctx.moveTo(x - G.cell * 0.12, y + G.holeR * 1.02); ctx.lineTo(x + G.cell * 0.12, y + G.holeR * 1.02); ctx.lineTo(x, y + G.holeR * 1.02 + G.cell * 0.12); ctx.fill();
+    }
+  }
+  drawParticles(dt);
+}
+
+/* =====================================================================================
+   Dropping discs
+   ===================================================================================== */
+function onLand(f) {
+  BRB.sfx.play('hit');
+  const x = cx(f.col), y = cy(f.row), disc = S.players[f.player - 1].disc;
+  burst(x - G.holeR * 0.7, y + G.holeR * 0.6, disc.light, 5, G.cell * 2.4, false);
+  burst(x + G.holeR * 0.7, y + G.holeR * 0.6, disc.light, 5, G.cell * 2.4, false);
+  if (!REDUCED) BRB.fx.shake(canvas, 2);
+}
+function commitFalling() {
+  const f = falling; falling = null;
+  S.board[f.row][f.col] = f.player; discDirty = true;
+  f.resolve();
+}
+/** Animate (or, when fast, instantly place) the current player's disc in `col`. Resolves after it lands. */
+function animateDrop(col, row, player) {
+  return new Promise(resolve => {
+    if (fast || S.screen !== 'play') { S.board[row][col] = player; discDirty = true; resolve(); return; }
+    falling = { col, row, player, y: -1, vy: REDUCED ? 6 : 0, bounces: 0, squash: 0, settled: false, landed: false, resolve };
+  });
+}
+/** Drop a disc for whoever's turn it is. Returns false if the move is not possible right now. */
+async function dropDisc(col) {
+  if (S.screen !== 'play' || S.busy || S.over || S.paused) return false;
+  col = clamp(Math.round(col), 0, COLS - 1);
+  const row = lowestEmpty(S.board, col);
+  if (row < 0) { BRB.sfx.play('click'); if (!REDUCED) BRB.fx.shake(canvas, 4); say('That column is full!'); return false; }
+  S.busy = true; const player = S.turn; const token = thinkToken;
+  S.previewCol = col; hoverOwner = 0;
+  BRB.sfx.play('click');
+  await animateDrop(col, row, player);
+  if (token !== thinkToken) { S.busy = false; return false; }   // the game was reset mid-drop
+  S.moves.push(col); S.placed++; S.firstMoves++;
+  const lines = winFrom(S.board, row, col);
+  S.busy = false;
+  if (lines) finishGame(player, lines);
+  else if (S.placed >= ROWS * COLS) finishGame(0, []);
+  else { S.turn = 3 - S.turn; afterTurnChange(); }
+  return true;
+}
+function afterTurnChange() {
+  updateHud();
+  if (isRobotTurn()) {
+    // Start the robot on the next tick, so whoever awaited the human's drop sees the board as it landed.
+    hoverOwner = 0; const token = thinkToken;
+    setTimeout(() => { if (token === thinkToken && S.screen === 'play' && !S.over) robotMove(); }, 0);
+  } else { hoverOwner = S.turn; if (S.mode === 'robot') say(S.firstMoves < 2 ? 'Your turn! Tap a column to drop a disc.' : pick(['Your turn!', 'Your move!', 'Go on, drop one!'])); else say(S.players[S.turn - 1].emoji + ' ' + S.players[S.turn - 1].name + ', tap a column!'); }
+  updateUndo();
+}
+
+/** The robot's move: think in slices, show the disc over its column, then drop. */
+function robotMove() {
+  if (robotPromise) return robotPromise;
+  if (!isRobotTurn() || S.over || S.screen !== 'play') return Promise.resolve(false);
+  const token = thinkToken, t0 = performance.now();
+  S.thinking = true; hoverOwner = 2; S.previewCol = CENTRE; updateHud(); updateUndo();
+  bubble(pick(CONFIG.robotSays.think));
+  robotPromise = (async () => {
+    const col = await AI.choose(S.board, 2, S.difficulty, () => token !== thinkToken, () => S.paused);
+    if (token !== thinkToken || col < 0) { if (token === thinkToken) S.thinking = false; return false; }
+    if (!fast) { const left = CONFIG.robot.minThinkMs - (performance.now() - t0); if (left > 0) await wait(left); }
+    if (token !== thinkToken) return false;
+    S.previewCol = col;
+    if (!fast) await wait(CONFIG.robot.hoverMs);
+    // The game may have been paused during any wait above: hold the disc over the column until play resumes.
+    while (S.paused && token === thinkToken) await wait(100);
+    if (token !== thinkToken) return false;
+    S.thinking = false; updateHud();
+    const ok = await dropDisc(col);
+    if (ok && token === thinkToken && !S.over && rng() < 0.3) bubble(pick(CONFIG.robotSays.move));
+    return ok;
+  })();
+  const p = robotPromise;
+  p.finally(() => { if (robotPromise === p) robotPromise = null; });
+  return p;
+}
+
+/* =====================================================================================
+   Game flow
+   ===================================================================================== */
+function applyPlayers() {
+  S.players[0] = Object.assign({}, save.players[0]);
+  if (S.mode === 'robot') {
+    let color = save.robotColor; if (color === S.players[0].color) color = CONFIG.discs.find(d => d.id !== color).id;
+    S.players[1] = { emoji: CONFIG.robot.emoji, name: CONFIG.robot.name, color };
+  } else {
+    S.players[1] = Object.assign({}, save.players[1]);
+    if (S.players[1].color === S.players[0].color) S.players[1].color = CONFIG.discs.find(d => d.id !== S.players[0].color).id;
+  }
+  for (const pl of S.players) pl.disc = discById(pl.color);   // looked up once here, never per frame
+}
+/** Start a fresh board. keepScore keeps the session match score (rematch: the other player starts and the game
+    number goes up); restart replays the current game with the same starter ("Start over" from the pause menu). */
+function startGame({ keepScore = false, restart = false } = {}) {
+  thinkToken++; robotPromise = null; falling = null; clearTimeout(resultsTimer); AI.reset();
+  if (!keepScore) { S.wins = [0, 0]; S.starter = 1; S.gameNo = 1; S.seriesOver = false; applyPlayers(); S.firstMoves = 0; }
+  else if (!restart) { S.starter = 3 - S.starter; S.gameNo++; if (S.seriesOver) { S.wins = [0, 0]; S.gameNo = 1; S.seriesOver = false; } }
+  S.board = emptyBoard(); S.moves = []; S.placed = 0; S.turn = S.starter; S.winner = null; S.winningCells = []; S.winLines = [];
+  S.busy = false; S.thinking = false; S.paused = false; S.over = false; S.previewCol = CENTRE; S.previewX = CENTRE;
+  for (const p of PARTS) p.on = false;
+  discDirty = true; S.screen = 'play';
+  $('titleScreen').hidden = true; $('pauseScreen').hidden = true; $('resultScreen').hidden = true;
+  const app = $('app'); app.classList.remove('offstage', 'over'); app.style.transform = ''; canvas.style.transform = '';
+  $('ctrlRow').hidden = S.mode !== 'two';
+  document.documentElement.style.setProperty('--p1', discById(S.players[0].color).main);
+  document.documentElement.style.setProperty('--p2', discById(S.players[1].color).main);
+  $('chip1').style.setProperty('--pc', discById(S.players[0].color).main);
+  $('chip2').style.setProperty('--pc', discById(S.players[1].color).main);
+  updateScores(); updateHud(); updateUndo();
+  layout(); canvas.focus({ preventScroll: true });
+  if (!rafId) { lastFrame = performance.now(); rafId = requestAnimationFrame(frame); }
+  if (isRobotTurn()) { hoverOwner = 0; say(''); const token = thinkToken; setTimeout(() => { if (token === thinkToken && S.screen === 'play' && !S.over) robotMove(); }, fast ? 0 : 500); }
+  else { hoverOwner = S.turn; say(S.mode === 'robot' ? 'You start! Tap a column to drop a disc.' : S.players[S.turn - 1].emoji + ' ' + S.players[S.turn - 1].name + ' starts. Tap a column!'); }
+}
+/** winner: 1 | 2 with the winning line(s) from winFrom, or 0 for a tie with []. */
+function finishGame(winner, lines) {
+  thinkToken++; robotPromise = null;
+  S.over = true; S.winner = winner; winAt = performance.now(); hoverOwner = 0; S.thinking = false;
+  S.winLines = lines;
+  const seen = new Set(); S.winningCells = [];   // every winning cell once (two lines share the disc that was just dropped)
+  for (const line of lines) for (const cell of line) { const k = cell[0] * COLS + cell[1]; if (!seen.has(k)) { seen.add(k); S.winningCells.push(cell); } }
+  const robot = S.mode === 'robot';
+  const humanWon = winner === 1 || (!robot && winner === 2);
+  if (winner) S.wins[winner - 1]++;
+  if (S.series === 'three' && winner && S.wins[winner - 1] >= CONFIG.seriesWins) S.seriesOver = true;
+  let gained = 0;
+  if (robot) {
+    const st = save.stats[S.difficulty];
+    if (winner === 1) { st.w++; gained = CONFIG.robot.pointsPerWin[S.difficulty]; } else if (winner === 2) st.l++; else st.d++;
+    persist();
+    const points = robotPoints();
+    // The labelled submit goes first: gameOver() submits the score again without a label, and the play page
+    // keeps only the first score message it gets within two seconds.
+    BRB.score.submit(points, 'robot wins');
+    BRB.gameOver({ won: winner === 1, score: points });
+  }
+  updateScores(); updateHud(); updateUndo();
+  if (winner) {
+    const name = S.players[winner - 1].emoji + ' ' + S.players[winner - 1].name;
+    say(name + ' wins!');
+    if (robot && winner === 2) { BRB.sfx.play('lose'); if (!REDUCED) BRB.fx.shake(wrap, 8); bubble(pick(CONFIG.robotSays.win)); }
+    else { BRB.sfx.play('win'); const d = discById(S.players[winner - 1].color); setTimeout(() => BRB.fx.confetti({ colors: [d.main, d.light, '#fff', '#ffd23f', '#a855f7'] }), fast ? 0 : 350); if (robot) bubble(pick(CONFIG.robotSays.lose)); }
+  } else { say("It's a tie! Rematch?"); BRB.sfx.play('coin'); if (robot) bubble(pick(CONFIG.robotSays.draw)); }
+  resultsTimer = setTimeout(() => showResults(winner, humanWon, gained), fast ? 0 : (winner ? 1500 : 900));
+}
+function showResults(winner, humanWon, gained) {
+  if (S.screen !== 'play' || !S.over) return;
+  S.screen = 'over';
+  const robot = S.mode === 'robot';
+  const p1 = S.players[0], p2 = S.players[1];
+  $('resultTitle').textContent = winner ? p(winner).emoji + ' ' + p(winner).name + ' wins!' : "It's a tie!";
+  let sub;
+  if (S.series === 'three') {
+    sub = S.seriesOver ? '🏆 ' + p(winner).name + ' wins the series ' + S.wins[winner - 1] + '–' + S.wins[2 - winner] + '!' : 'Game ' + S.gameNo + ' of First to ' + CONFIG.seriesWins + '. Keep going!';
+  } else sub = winner ? (robot ? (winner === 1 ? 'You beat ' + CONFIG.robot.name + ' on ' + levelName(S.difficulty) + '!' : CONFIG.robot.name + ' got four in a row.') : 'Four in a row!') : 'The board is full. Rematch?';
+  $('resultSub').textContent = sub;
+  $('resultScore').textContent = p1.name + ' ' + S.wins[0] + ' – ' + S.wins[1] + ' ' + p2.name;
+  const chips = [];
+  if (robot) {
+    chips.push('<span class="chip">⭐ Robot points: ' + robotPoints() + (gained ? ' <b>(+' + gained + ')</b>' : '') + '</span>');
+    const st = save.stats[S.difficulty];
+    chips.push('<span class="chip' + (humanWon ? ' good' : '') + '">' + levelName(S.difficulty) + ': ' + plural(st.w, 'win') + ' · ' + plural(st.l, 'loss') + '</span>');
+  }
+  $('resultChips').innerHTML = chips.join('');
+  $('againBtn').textContent = S.seriesOver ? '▶ New series' : '▶ Play again';
+  $('resultScreen').hidden = false;
+  fitBoardBehindResults();
+  $('againBtn').focus({ preventScroll: true });
+  function p(n) { return S.players[n - 1]; }
+}
+/** The results panel sits at the bottom in portrait: slide the stack up into any spare room and scale the board
+    down so the final board (and the winning line) stays in view behind the panel. Landscape puts the panel in
+    the side column instead (the HUD there is hidden by CSS while .app has the "over" class). */
+function fitBoardBehindResults() {
+  const app = $('app'), panel = $('resultScreen').querySelector('.panel'); app.classList.add('over');
+  // Layout offsets, not client rects: a transform from the previous results may still be easing back.
+  const boardLeft = app.offsetLeft + wrap.offsetLeft + canvas.offsetLeft, boardTop = app.offsetTop + wrap.offsetTop + canvas.offsetTop;
+  if (LANDSCAPE.matches) {
+    // Widen the side panel into the empty space right of the board (never over it) so its buttons fit on one row.
+    const room = window.innerWidth - (boardLeft + canvas.offsetWidth) - 20;
+    panel.style.width = Math.round(clamp(room, 300, 380)) + 'px';
+    return;
+  }
+  panel.style.width = '';
+  const panelTop = panel.getBoundingClientRect().top, hudTop = app.offsetTop + $('hud').offsetTop;
+  const shift = Math.max(0, hudTop - 10);                       // spare room above the HUD (the stack is centred)
+  const room = panelTop - 8 - (boardTop - shift);              // height left for the board once it has moved up
+  const k = clamp(room / canvas.offsetHeight, 0.4, 1);
+  if (shift > 1) app.style.transform = 'translateY(' + Math.round(-shift) + 'px)';
+  if (k < 0.999) canvas.style.transform = 'scale(' + k.toFixed(3) + ')';
+}
+const levelName = d => ({ easy: 'Easy', normal: 'Normal', hard: 'Hard' })[d] || 'Normal';
+
+function undoMove() {
+  if (S.mode !== 'two' || S.screen !== 'play' || S.busy || S.over || !S.moves.length || falling) return;
+  const col = S.moves.pop();
+  for (let r = 0; r < ROWS; r++) if (S.board[r][col]) { S.board[r][col] = 0; break; }
+  S.placed--; S.turn = 3 - S.turn; discDirty = true; S.previewCol = col; hoverOwner = S.turn;
+  BRB.sfx.play('click'); updateHud(); updateUndo(); say(S.players[S.turn - 1].emoji + ' ' + S.players[S.turn - 1].name + ', try again!');
+}
+function updateUndo() { $('undoBtn').disabled = !(S.mode === 'two' && S.screen === 'play' && S.moves.length && !S.over && !S.busy); }
+
+function setPaused(on) {
+  if (S.screen !== 'play' && S.screen !== 'pause') return;
+  if (on && S.over) return;
+  S.paused = on; S.screen = on ? 'pause' : 'play';
+  $('pauseScreen').hidden = !on;
+  if (on) { $('pauseInfo').textContent = S.mode === 'robot' ? 'The robot is waiting for you.' : 'Your friend can wait a moment.'; $('resumeBtn').focus({ preventScroll: true }); }
+  else {
+    lastFrame = performance.now(); canvas.focus({ preventScroll: true });
+    if (isRobotTurn() && !S.over && !robotPromise) robotMove();   // the robot's start was skipped while paused
+  }
+  BRB.sfx.play('click');
+}
+function quitToTitle() {
+  thinkToken++; robotPromise = null; falling = null; clearTimeout(resultsTimer); clearTimeout(bubbleTimer);
+  S.screen = 'title'; S.paused = false; S.over = false; S.thinking = false; S.busy = false; hoverOwner = 0;
+  $('pauseScreen').hidden = true; $('resultScreen').hidden = true; $('titleScreen').hidden = false;
+  const app = $('app'); app.classList.add('offstage'); app.classList.remove('over'); app.style.transform = ''; canvas.style.transform = '';
+  if (rafId) { cancelAnimationFrame(rafId); rafId = 0; }
+  refreshTitle(); $('playBtn').focus({ preventScroll: true });
+}
+
+/* =====================================================================================
+   HUD and messages
+   ===================================================================================== */
+function say(text) { $('msgEl').textContent = text; }
+/** A short robot speech line in the message slot (kid-friendly cheers and taunts). */
+function bubble(text) {
+  if (S.mode !== 'robot') return;
+  clearTimeout(bubbleTimer);
+  say(CONFIG.robot.emoji + ' ' + text);
+  if (!S.over) bubbleTimer = setTimeout(() => { if (S.screen === 'play' && !S.thinking && !S.over && S.turn === 1) say('Your turn!'); }, 2600);
+}
+function updateHud() {
+  const el = $('turnEl');
+  const cur = S.players[S.turn - 1]; if (!cur) return;
+  el.classList.toggle('thinking', S.thinking && !REDUCED);
+  el.classList.toggle('long', (S.over && S.winner ? S.players[S.winner - 1] : cur).name.length > 8);
+  if (S.over) el.textContent = S.winner ? S.players[S.winner - 1].emoji + ' ' + S.players[S.winner - 1].name + ' wins!' : "It's a tie!";
+  else if (S.thinking) el.textContent = cur.emoji + ' ' + cur.name + ' is thinking…';
+  else if (S.mode === 'robot' && S.turn === 1) el.textContent = cur.emoji + ' Your turn';
+  else el.textContent = cur.emoji + ' ' + possessive(cur.name) + ' turn';
+  el.style.setProperty('--who', discById((S.over && S.winner ? S.players[S.winner - 1] : cur).color).main);
+  $('chip1').classList.toggle('active', !S.over && S.turn === 1);
+  $('chip2').classList.toggle('active', !S.over && S.turn === 2);
+}
+function updateScores() {
+  for (let i = 0; i < 2; i++) {
+    const pl = S.players[i]; if (!pl) continue;
+    $('chipName' + (i + 1)).textContent = pl.emoji + ' ' + pl.name;
+    $('chipName' + (i + 1)).classList.toggle('long', pl.name.length > 8);
+    $('chipWins' + (i + 1)).textContent = S.wins[i];
+    $('chip' + (i + 1)).classList.toggle('series', S.series === 'three');
+    const dots = $('dots' + (i + 1)); dots.hidden = S.series !== 'three';   // in a series: the number plus one dot per win needed
+    dots.innerHTML = Array.from({ length: CONFIG.seriesWins }, (_, k) => '<i class="' + (k < S.wins[i] ? 'on' : '') + '"></i>').join('');
+  }
+}
+function updateMute() {
+  document.querySelectorAll('.mute').forEach(b => { b.textContent = BRB.sfx.muted ? '🔇' : '🔊'; b.setAttribute('aria-label', BRB.sfx.muted ? 'Turn sound on' : 'Turn sound off'); });
+}
+updateMute();
+document.querySelectorAll('.mute').forEach(b => b.addEventListener('click', () => { BRB.sfx.mute(); updateMute(); BRB.sfx.play('click'); }));
+
+/* =====================================================================================
+   Title screen: pick who plays, the robot level, series length, pictures, names and colours.
+   Names are tapped from a list of fun nicknames (we never ask for real names).
+   ===================================================================================== */
+function refreshTitle() {
+  document.querySelectorAll('[data-mode]').forEach(b => b.setAttribute('aria-pressed', b.dataset.mode === save.mode));
+  document.querySelectorAll('[data-level]').forEach(b => b.setAttribute('aria-pressed', b.dataset.level === save.difficulty));
+  document.querySelectorAll('[data-series]').forEach(b => b.setAttribute('aria-pressed', b.dataset.series === save.series));
+  $('levelRow').hidden = save.mode !== 'robot';
+  const seats = document.querySelectorAll('.seat');
+  for (let i = 0; i < 2; i++) {
+    const robot = i === 1 && save.mode === 'robot';
+    const pl = robot ? { emoji: CONFIG.robot.emoji, name: CONFIG.robot.name, color: save.robotColor === save.players[0].color ? CONFIG.discs.find(d => d.id !== save.robotColor).id : save.robotColor } : save.players[i];
+    const seat = seats[i];
+    seat.querySelector('.who').textContent = 'P' + (i + 1);   // the robot is still "P2" (its picture is already the 🤖 button)
+    const e = seat.querySelector('.emojiBtn'), n = seat.querySelector('.nameBtn'), c = seat.querySelector('.colorBtn');
+    // The robot's picture and name are fixed: shown as flat labels that still beep and wiggle when tapped.
+    e.textContent = pl.emoji; e.classList.toggle('fixed', robot); e.setAttribute('aria-disabled', robot); e.setAttribute('aria-label', robot ? 'The robot' : 'Change picture');
+    n.textContent = pl.name; n.classList.toggle('fixed', robot); n.setAttribute('aria-disabled', robot); n.setAttribute('aria-label', robot ? 'The robot is called ' + pl.name : 'Change name');
+    n.classList.toggle('long', pl.name.length > 9);
+    const d = discById(pl.color); const dot = c.querySelector('i');
+    dot.style.setProperty('--dm', d.main); dot.style.setProperty('--dd', d.dark); dot.style.setProperty('--dl', d.light);
+    c.setAttribute('aria-label', 'Change disc colour (now ' + d.name + ')');
+  }
+  $('setupHint').textContent = save.mode === 'robot' ? 'Tap your picture, name or disc to change it.' : 'Tap a picture, name or disc to change it.';
+  const pts = robotPoints(), st = save.stats, chip = $('bestChip');
+  chip.textContent = pts ? '🏆 Robot points: ' + pts : '🏆 Beat the robot to earn points!';
+  if (pts) {   // the per-level wins on a second line, each "level number" pair kept together
+    const sub = document.createElement('span'); sub.className = 'sub';
+    sub.textContent = 'Easy ' + st.easy.w + ' · Normal ' + st.normal.w + ' · Hard ' + st.hard.w;
+    chip.appendChild(sub);
+  }
+  fitNameButtons();
+}
+/** Shrink a long name until it fits its button on one line (landscape gives the seats less room). If it still does
+    not fit at the smallest readable size, let it wrap rather than cut it off with "…". */
+function fitNameButtons() {
+  document.querySelectorAll('.seat .nameBtn').forEach(b => {
+    b.style.fontSize = ''; b.classList.remove('wrap');
+    if (!b.clientWidth) return;   // not on screen
+    let size = parseFloat(getComputedStyle(b).fontSize) || 16;
+    while (b.scrollWidth > b.clientWidth && size > 12) { size -= 1; b.style.fontSize = size + 'px'; }
+    if (b.scrollWidth > b.clientWidth) b.classList.add('wrap');
+  });
+}
+function cycle(list, cur, step) { const i = list.indexOf(cur); return list[(i < 0 ? 0 : i + step + list.length) % list.length]; }
+// The names to tap through: the player's own BRB name first (so it can always be picked again), then the nicknames.
+const NAME_LIST = (() => { const own = String(BRB.user.displayName || '').slice(0, 12).trim(); return own && !CONFIG.nicknames.includes(own) ? [own].concat(CONFIG.nicknames) : CONFIG.nicknames.slice(); })();
+function nextFreeColor(cur, otherId) { let id = cur; do { id = cycle(CONFIG.discs.map(d => d.id), id, 1); } while (id === otherId); return id; }
+
+document.querySelectorAll('[data-mode]').forEach(b => b.addEventListener('click', () => { save.mode = b.dataset.mode; persist(); refreshTitle(); BRB.sfx.play('click'); }));
+document.querySelectorAll('[data-level]').forEach(b => b.addEventListener('click', () => { save.difficulty = b.dataset.level; persist(); refreshTitle(); BRB.sfx.play('click'); }));
+document.querySelectorAll('[data-series]').forEach(b => b.addEventListener('click', () => { save.series = b.dataset.series; persist(); refreshTitle(); BRB.sfx.play('click'); }));
+/** Tapping the robot's picture or name: it cannot change, so it just beeps (the wiggle is CSS on :active). */
+function robotSeatTap(b) { if (b.dataset.p !== '1' || save.mode !== 'robot') return false; BRB.sfx.play('click'); return true; }
+document.querySelectorAll('.emojiBtn').forEach(b => b.addEventListener('click', () => {
+  if (robotSeatTap(b)) return;
+  const i = +b.dataset.p, other = save.players[1 - i].emoji;
+  let e = save.players[i].emoji; do { e = cycle(CONFIG.emojis, e, 1); } while (e === other);
+  save.players[i].emoji = e; persist(); refreshTitle(); BRB.sfx.play('coin');
+}));
+document.querySelectorAll('.nameBtn').forEach(b => b.addEventListener('click', () => {
+  if (robotSeatTap(b)) return;
+  const i = +b.dataset.p, other = save.players[1 - i].name;
+  let n = save.players[i].name; do { n = cycle(NAME_LIST, n, 1); } while (n === other);
+  save.players[i].name = n; persist(); refreshTitle(); BRB.sfx.play('click');
+}));
+document.querySelectorAll('.colorBtn').forEach(b => b.addEventListener('click', () => {
+  const i = +b.dataset.p;
+  if (i === 1 && save.mode === 'robot') save.robotColor = nextFreeColor(save.robotColor, save.players[0].color);
+  else save.players[i].color = nextFreeColor(save.players[i].color, i === 1 ? save.players[0].color : (save.mode === 'robot' ? save.robotColor : save.players[1].color));
+  persist(); refreshTitle(); BRB.sfx.play('powerup');
+}));
+$('playBtn').addEventListener('click', () => { S.mode = save.mode; S.difficulty = save.difficulty; S.series = save.series; BRB.sfx.play('powerup'); startGame(); });
+$('againBtn').addEventListener('click', () => { BRB.sfx.play('click'); startGame({ keepScore: true }); });
+$('changeBtn').addEventListener('click', () => { BRB.sfx.play('click'); quitToTitle(); });
+$('pauseBtn').addEventListener('click', () => setPaused(true));
+$('resumeBtn').addEventListener('click', () => setPaused(false));
+$('restartBtn').addEventListener('click', () => { BRB.sfx.play('click'); startGame({ keepScore: true, restart: true }); });
+$('quitBtn').addEventListener('click', () => { BRB.sfx.play('click'); quitToTitle(); });
+$('undoBtn').addEventListener('click', undoMove);
+document.addEventListener('visibilitychange', () => { if (document.hidden && S.screen === 'play' && !S.over) setPaused(true); });
+
+/* =====================================================================================
+   Input: tap/click or drag a finger over a column to preview, release to drop (slide away to
+   cancel). Keyboard: arrows or A/D move the preview, Enter/Space drop, 1-7 drop in that column,
+   U undo (two players), P or Esc pause, M mute.
+   ===================================================================================== */
+const canAct = () => S.screen === 'play' && !S.paused && !S.busy && !S.thinking && !S.over && !falling && !isRobotTurn();
+let pointerDown = false;
+function colFromEvent(e) { const r = canvas.getBoundingClientRect(); const x = (e.clientX - r.left) * (G.w / r.width); return clamp(Math.floor((x - G.pad) / G.cell), 0, COLS - 1); }
+function preview(e) { if (!canAct()) return; S.previewCol = colFromEvent(e); hoverOwner = S.turn; }
+canvas.addEventListener('pointerdown', e => { if (!canAct()) return; pointerDown = true; preview(e); try { canvas.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ } e.preventDefault(); });
+canvas.addEventListener('pointermove', e => { if (pointerDown || e.pointerType === 'mouse') preview(e); });
+canvas.addEventListener('pointerup', e => {
+  if (!pointerDown) return; pointerDown = false;
+  if (!canAct()) return;
+  const r = canvas.getBoundingClientRect();
+  if (e.clientY < r.top - 40 || e.clientY > r.bottom + 40) return;   // slid away: cancel
+  dropDisc(colFromEvent(e));
+});
+canvas.addEventListener('pointercancel', () => { pointerDown = false; });
+canvas.addEventListener('contextmenu', e => e.preventDefault());
+
+document.addEventListener('keydown', e => {
+  const k = e.key;
+  if (k === 'p' || k === 'P' || k === 'Escape') { if (S.screen === 'play' && !S.over) { setPaused(true); e.preventDefault(); } else if (S.screen === 'pause') { setPaused(false); e.preventDefault(); } return; }
+  if (k === 'm' || k === 'M') { BRB.sfx.mute(); updateMute(); return; }
+  if (S.screen !== 'play') return;
+  if (e.target && e.target.tagName === 'BUTTON' && (k === 'Enter' || k === ' ')) return;   // let buttons be buttons
+  if (k === 'u' || k === 'U') { undoMove(); return; }
+  if (!canAct()) return;
+  if (k === 'ArrowLeft' || k === 'a' || k === 'A') { S.previewCol = (S.previewCol + COLS - 1) % COLS; hoverOwner = S.turn; BRB.sfx.play('click'); e.preventDefault(); }
+  else if (k === 'ArrowRight' || k === 'd' || k === 'D') { S.previewCol = (S.previewCol + 1) % COLS; hoverOwner = S.turn; BRB.sfx.play('click'); e.preventDefault(); }
+  else if (k === 'Enter' || k === ' ' || k === 'ArrowDown') { dropDisc(S.previewCol); e.preventDefault(); }
+  else if (k.length === 1 && k >= '1' && k <= '9' && +k <= COLS) { dropDisc(+k - 1); e.preventDefault(); }   // 1..COLS drop straight into that column
+});
+
+// Keep the board sized to its box (the page, and the rows around the board, can change size).
+const relayout = () => { if (S.screen !== 'title') layout(); else fitNameButtons(); };
+if (window.ResizeObserver) { const ro = new ResizeObserver(relayout); for (const id of ['app', 'hud', 'scores', 'msgEl', 'ctrlRow']) ro.observe($(id)); }
+window.addEventListener('resize', relayout);
+try { if (document.fonts && document.fonts.ready) document.fonts.ready.then(relayout); } catch (e) { /* ignore */ }
+
+refreshTitle();
+
+/* =====================================================================================
+   window.__brbTest: hooks for automated play tests (harmless in production).
+     state()                      -> { screen, board (6x7 of 0/1/2, row 0 = top), turn, winner (null | 0 tie | 1 | 2),
+                                      winningCells [[row,col]...] (every winning cell), winLines [[[row,col]...]...] (one per
+                                      completed four), mode, difficulty, thinking, wins, moves, previewCol }
+     start({ mode:'two'|'robot', difficulty:'easy'|'normal'|'hard', series:'single'|'three', names:[a,b], starter:1|2 })
+                                     (an unknown difficulty / mode / series is ignored and the saved one kept)
+     drop(col)                    -> Promise of state() after the disc has landed (ignored when it is not a human's turn).
+                                     The robot's reply, if any, starts on the next tick, so the state is the board as it landed.
+     robotMove()                  -> Promise of state() after the robot has moved (starts a move if it is the robot's turn)
+     setBoard(board, turn)        -> put a 6x7 position (0/1/2, row 0 = top) on the live board with `turn` to move; the
+                                     robot does not start by itself (call robotMove()). Works from any screen: on the
+                                     results or pause screen the current game is restarted first (same players, same
+                                     score); on the title screen a game starts with the saved settings. Returns state().
+     skipAnimations(on = true)    -> discs land instantly and the robot does not pause for show
+     evaluateBoard(board, player) -> the robot's static evaluation of a 6x7 board for player 1 or 2
+     seed(n)                      -> reset the game's random numbers (robot tie-breaks, Easy moves, taunts)
+     undo(), pause(on), rematch(), quit()
+   ===================================================================================== */
+window.__brbTest = {
+  state() {
+    return { screen: S.screen, board: S.board.map(r => r.slice()), turn: S.turn, winner: S.winner, winningCells: S.winningCells.map(c => c.slice()),
+      winLines: S.winLines.map(l => l.map(c => c.slice())), mode: S.mode, difficulty: S.difficulty, series: S.series, thinking: S.thinking, busy: S.busy, over: S.over, wins: S.wins.slice(), moves: S.moves.slice(), previewCol: S.previewCol, paused: S.paused };
+  },
+  start(opts = {}) {
+    if (opts.mode === 'two' || opts.mode === 'robot') save.mode = opts.mode;
+    if (LEVELS.includes(opts.difficulty)) save.difficulty = opts.difficulty;
+    if (opts.series === 'single' || opts.series === 'three') save.series = opts.series;
+    if (Array.isArray(opts.names)) opts.names.forEach((n, i) => { if (n && save.players[i]) save.players[i].name = String(n).slice(0, 12); });
+    S.mode = save.mode; S.difficulty = save.difficulty; S.series = save.series;
+    startGame();
+    if (opts.starter === 2 || opts.starter === 1) { thinkToken++; robotPromise = null; S.starter = opts.starter; S.turn = opts.starter; hoverOwner = 0; updateHud(); if (isRobotTurn()) robotMove(); else hoverOwner = S.turn; }
+    return this.state();
+  },
+  async drop(col) { if (!isRobotTurn()) await dropDisc(col); return this.state(); },
+  setBoard(board, turn = 1) {
+    if (S.screen === 'title') { S.mode = save.mode; S.difficulty = save.difficulty; S.series = save.series; startGame(); }
+    else if (S.screen !== 'play') startGame({ keepScore: true, restart: true });   // results or pause: a fresh board, same game
+    thinkToken++; robotPromise = null; falling = null; clearTimeout(resultsTimer);
+    S.board = board.map(r => r.map(v => (v === 1 || v === 2) ? v : 0)); S.placed = S.board.flat().filter(Boolean).length;
+    S.moves = []; S.turn = turn === 2 ? 2 : 1; S.winner = null; S.winningCells = []; S.winLines = []; S.over = false; S.busy = false; S.thinking = false;
+    hoverOwner = isRobotTurn() ? 0 : S.turn; discDirty = true; updateHud(); updateUndo();
+    return this.state();
+  },
+  async robotMove() { if (robotPromise) await robotPromise; else if (isRobotTurn()) await robotMove(); return this.state(); },
+  skipAnimations(on = true) { fast = on !== false; return fast; },
+  evaluateBoard(board, player) { return AI.evaluateBoard(board, player); },
+  seed(n) { rngState = (n >>> 0) || 1; },
+  undo() { undoMove(); return this.state(); },
+  pause(on = true) { setPaused(on); return this.state(); },
+  rematch() { startGame({ keepScore: true }); return this.state(); },
+  quit() { quitToTitle(); return this.state(); },
+  get nodes() { return AI.nodes; },
+  get lastSearch() { return AI.lastSearch; }   // { col, score, depth, nodes } of the robot's last real search
+};
+</script>
