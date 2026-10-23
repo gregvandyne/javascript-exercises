@@ -1,0 +1,14 @@
+{
+  "slug": "happy-putt",
+  "title": "Happy Putt",
+  "icon": "⛳",
+  "cover": "mint",
+  "category": "sports",
+  "tags": "mini golf,putt,golf,18 holes,course,movie,pass the phone,hockey,gator,windmill",
+  "description": "18 wild mini golf holes inspired by Happy Gilmore. Slap your ball across a hockey rink, time the laughing clown mouth, dodge the swamp gator and the moving truck, ride a neon loop, relax in the happy place and bounce your final putt off a toppled TV tower. Play alone or pass the phone with up to 4 friends.",
+  "orientation": "any",
+  "players_max": 4,
+  "age_rating": "everyone",
+  "featured": true,
+  "notes": "Canvas 2D, fixed-step physics with moving obstacles (windmill sails, gates, gator, truck, car, cart), slopes, sand, water hazards, tunnels and boost pads. Saves best totals in BRB.storage key 'happy-putt-best-v1'. Score = 200 - total strokes for a full 18 (only 18-hole rounds go on the leaderboard; Quick 9 is practice and just saves a local best). In pass-the-phone rounds the leaderboard entry and the saved best always use player 1's total (the device owner), never a guest's. Homage to the movie's course gags only: no character names or likenesses; the rival is the original Sir Smugsworth, the coach is Coach Mitts. Loads Google Fonts (Fredoka, Nunito). window.__brbTest exposes state/start/loadHole/shoot/skipAnimations/setBall/seed/holePlan for verifiers."
+}
