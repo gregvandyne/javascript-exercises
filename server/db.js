@@ -120,6 +120,14 @@ const MIGRATIONS = [
     CREATE TABLE IF NOT EXISTS class_lessons (id TEXT PRIMARY KEY, class_id TEXT NOT NULL, lesson_id TEXT NOT NULL, unit_id TEXT, position INTEGER NOT NULL DEFAULT 0,
       opens_at INTEGER, due_at INTEGER, assigned_by TEXT, assigned_at INTEGER NOT NULL);
     CREATE INDEX IF NOT EXISTS class_lessons_class ON class_lessons(class_id, unit_id, position);`],
+  // Step 3: each student's progress on each step of an assigned lesson (done, best game score, play time, written
+  // answers and the teacher's feedback, the game made in a "build" step).
+  ['0011_progress', `CREATE TABLE IF NOT EXISTS step_progress (class_lesson_id TEXT NOT NULL, step_id TEXT NOT NULL, user_id TEXT NOT NULL,
+      status TEXT NOT NULL DEFAULT 'started', score INTEGER, label TEXT NOT NULL DEFAULT '', plays INTEGER NOT NULL DEFAULT 0, seconds INTEGER NOT NULL DEFAULT 0,
+      answer TEXT NOT NULL DEFAULT '', game_id TEXT, feedback TEXT NOT NULL DEFAULT '', reviewed_at INTEGER, reviewed_by TEXT,
+      started_at INTEGER NOT NULL, done_at INTEGER, updated_at INTEGER NOT NULL, PRIMARY KEY (class_lesson_id, step_id, user_id));
+    CREATE INDEX IF NOT EXISTS step_progress_user ON step_progress(user_id, updated_at);
+    CREATE INDEX IF NOT EXISTS step_progress_review ON step_progress(class_lesson_id, reviewed_at);`],
 ];
 
 db.exec('CREATE TABLE IF NOT EXISTS migrations (name TEXT PRIMARY KEY, applied_at INTEGER NOT NULL)');

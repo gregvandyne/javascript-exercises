@@ -1206,7 +1206,14 @@
       "move": "Déplacer",
       "removeStudent": "Retirer",
       "removeConfirm": "Retirer {name} de cette classe ? Son travail dans cette classe est conservé.",
-      "edit": "Modifier la classe"
+      "noStudentsText": "Ajoutez ci-dessous des élèves avec des comptes école, ou donnez le code de classe aux élèves qui ont leur propre compte.",
+      "details": "Détails de la classe",
+      "teachersText": "Les co-enseignants peuvent gérer cette classe avec vous : leçons, élèves et progression.",
+      "removeTeacher": "Retirer {name} de cette classe",
+      "archiveTitle": "Archiver cette classe",
+      "archiveText": "Les classes archivées sont masquées pour les élèves et dans votre liste. Tout est conservé, et vous pouvez restaurer la classe à tout moment.",
+      "restoreTitle": "Réactiver cette classe",
+      "restoreText": "Cette classe est archivée. Restaurez-la pour l’utiliser à nouveau."
     },
     "requests": {
       "title": "{count, plural, one {# élève veut rejoindre la classe} other {# élèves veulent rejoindre la classe}}",
@@ -1293,6 +1300,12 @@
       "staffUseTeach": "Vous êtes enseignant dans cette école. Ouvrez plutôt l’Espace enseignant.",
       "ownAccountsOff": "Cette école utilise uniquement des comptes école. Demande une carte de connexion à ton prof.",
       "lastTeacher": "Une classe doit avoir au moins un enseignant."
+    },
+    "classTabs": {
+      "lessons": "Leçons",
+      "progress": "Progression",
+      "students": "Élèves",
+      "settings": "Paramètres"
     }
   },
   "lessons": {
@@ -1306,7 +1319,8 @@
     "kinds": {
       "game": "Jouer à un jeu",
       "build": "Créer un jeu",
-      "text": "Lire ou faire"
+      "text": "Lire ou faire",
+      "question": "Répondre à une question"
     },
     "library": {
       "title": "Bibliothèque de leçons",
@@ -1350,7 +1364,6 @@
       "kind": "Type",
       "title": "Titre de l’étape (facultatif)",
       "game": "Jeu",
-      "gameHint": "Pour les étapes « Jouer à un jeu ».",
       "myGames": "Mes jeux",
       "schoolGames": "Partagés dans mon école",
       "siteGames": "Jeux Magic Cups",
@@ -1427,7 +1440,9 @@
       "build": "Crée ton propre jeu",
       "buildText": "Un quiz de 6 questions sur {topic}",
       "wrapup": "Bilan",
-      "wrapupText": "Dis une chose que tu as apprise aujourd’hui."
+      "wrapupText": "Dis une chose que tu as apprise aujourd’hui.",
+      "exit": "Ticket de sortie",
+      "exitText": "En deux ou trois phrases : quelle est la chose la plus importante que tu as apprise sur {topic} aujourd’hui ?"
     },
     "errors": {
       "notFound": "Nous n’avons pas trouvé cette page, ou elle n’est pas accessible.",
@@ -1442,7 +1457,85 @@
       "tooManySteps": "Une leçon peut avoir jusqu’à 40 étapes.",
       "badDate": "Cette date ne semble pas correcte.",
       "topic": "Indiquez le sujet de la leçon.",
-      "aiFailed": "L’IA n’a pas pu rédiger cette ébauche pour le moment. Réessayez dans une minute, ou créez la leçon vous-même."
+      "aiFailed": "L’IA n’a pas pu rédiger cette ébauche pour le moment. Réessayez dans une minute, ou créez la leçon vous-même.",
+      "questionText": "Écrivez la question à laquelle les élèves répondront."
+    }
+  },
+  "progress": {
+    "errors": {
+      "notFound": "Nous n’avons pas trouvé cette page, ou elle n’est pas accessible.",
+      "answerFirst": "Écris ta réponse pour terminer cette étape.",
+      "answerEmpty": "Écris d’abord ta réponse.",
+      "noGame": "Commence d’abord à créer ton jeu.",
+      "emptyGame": "Ton jeu est encore vide. Demande d’abord au Constructeur de le créer, puis rends-le."
+    },
+    "play": {
+      "backToLesson": "Retour à la leçon"
+    },
+    "status": {
+      "done": "Terminé",
+      "started": "Commencé",
+      "none": "Pas commencé"
+    },
+    "key": {
+      "done": "terminé",
+      "steps": "étapes faites",
+      "late": "date limite dépassée",
+      "toRead": "réponses à lire"
+    },
+    "teach": {
+      "toRead": "{count, plural, one {# réponse à lire} other {# réponses à lire}}"
+    },
+    "gradebook": {
+      "title": "Progression",
+      "text": "Étapes terminées par chaque élève dans chaque leçon. Ouvrez une leçon pour voir les scores et lire les réponses.",
+      "csv": "Télécharger (CSV)",
+      "overall": "Global",
+      "late": "Date limite dépassée",
+      "toRead": "{count, plural, one {Vous avez # réponse à lire.} other {Vous avez # réponses à lire.}}",
+      "noLessons": "Pas encore de leçon",
+      "noLessonsText": "Attribuez une leçon dans l’onglet Leçons, et vous verrez ici où en est chaque élève.",
+      "noStudents": "Pas encore d’élèves",
+      "noStudentsText": "Ajoutez des élèves dans l’onglet Élèves, et leur progression s’affichera ici."
+    },
+    "lesson": {
+      "finished": "Élèves ayant terminé : {done} sur {total}",
+      "studentView": "Vue élève",
+      "seeProgress": "Progression de la classe",
+      "jump": "Les lire",
+      "lastActive": "Dernière activité",
+      "openGame": "Jouer à son jeu",
+      "readAnswer": "Lire",
+      "question": "Question de l’étape {n}",
+      "read": "Lue",
+      "new": "Nouvelle",
+      "feedback": "Commentaire pour l’élève",
+      "feedbackPlaceholder": "Commentaire pour l’élève (facultatif)",
+      "send": "Enregistrer et marquer comme lue",
+      "update": "Modifier le commentaire",
+      "noAnswers": "Pas encore de réponse."
+    },
+    "student": {
+      "doneOf": "{done} sur {total} terminées",
+      "allDone": "Tout est fini ! Bravo.",
+      "markDone": "C’est fait",
+      "undo": "Pas encore fini",
+      "best": "Ton meilleur score : {score}",
+      "gameHint": "Cette étape est terminée quand tu finis une partie ou que tu joues pendant 2 minutes.",
+      "played": "J’y ai joué",
+      "keepBuilding": "Continuer à créer",
+      "handIn": "Rendre mon jeu",
+      "handInConfirm": "Rendre ton jeu ? Ton prof et ton école pourront y jouer.",
+      "handInHint": "Quand ton jeu est prêt, rends-le pour que ton prof puisse y jouer.",
+      "handedInText": "Tu as rendu ton jeu.",
+      "seeGame": "Voir mon jeu",
+      "yourAnswer": "Ta réponse",
+      "answerPlaceholder": "Écris ta réponse ici",
+      "sendAnswer": "Envoyer ma réponse",
+      "updateAnswer": "Modifier ma réponse",
+      "sentAgo": "Envoyée {when}",
+      "feedback": "De ton prof",
+      "readNoFeedback": "Ton prof a lu ta réponse."
     }
   }
 }

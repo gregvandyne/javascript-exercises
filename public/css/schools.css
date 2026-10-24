@@ -1,7 +1,6 @@
-/* Schools: school console, teaching pages, class pages, lessons, login cards, My classes.
+/* Schools: school console, teaching pages, class pages, lessons, progress, login cards, My classes.
    Spacing follows one scale so nothing touches and gaps feel the same everywhere:
-   4 · 8 · 12 · 16 · 24 · 32 px (--s1 … --s6). tests/e2e/layout.spec.js checks that no two boxes touch. */
-:root{--s1:4px;--s2:8px;--s3:12px;--s4:16px;--s5:24px;--s6:32px}
+   4 · 8 · 12 · 16 · 24 · 32 px (--s1 … --s6, defined in app.css). tests/e2e/layout.spec.js checks that no two boxes touch. */
 
 /* ---------- Page flow ---------- */
 /* Blocks stacked directly in the page keep --s4 between them (vertical margins overlap, so a larger one still wins). */
@@ -11,42 +10,75 @@ main.wrap>.pagehead{margin-bottom:var(--s5)}
 main.wrap>.pagehead+.tabs,main.wrap>.pagehead+.seg{margin-top:0}
 main.wrap>.tabs{margin-bottom:var(--s5)}
 main.wrap>.sec-h{margin:var(--s6) 0 var(--s3)}
-.sec-h{font-size:1.15rem}
+main.wrap>.tabs+.sec-h{margin-top:0}
+main.wrap>.empty{padding:var(--s5) var(--s4)}
 .pagehead>div:first-child{flex:1;min-width:min(100%,240px)}
 .pagehead>div:first-child>h1{margin:2px 0 0}
 .pagehead p{margin:var(--s1) 0 0}
-.pagehead .row{gap:var(--s2)}
-@media (max-width:600px){.pagehead{gap:var(--s3)}.pagehead>.row,.pagehead>.btn,.pagehead>form{width:100%}.pagehead>.row>.btn{flex:1 1 auto}}
+.pagehead .row{gap:var(--s3) var(--s2)}
+/* A title with a subtitle: buttons line up with the first title line, not the middle of the block. */
+main.wrap>.pagehead:has(>div:first-child){align-items:flex-start}
+main.wrap>.pagehead:has(>div:first-child)>:not(:first-child){margin-top:18px}
+@media (max-width:600px){
+  .pagehead{gap:var(--s3)}
+  .pagehead>.row,.pagehead>.btn,.pagehead>form{width:100%}
+  .pagehead>.row>.btn{flex:1 1 auto}
+  main.wrap>.pagehead:has(>div:first-child)>:not(:first-child){margin-top:0}
+}
 
 /* ---------- Inside panels ---------- */
 /* Everything stacked inside a panel keeps --s3 between items; headings get a little more room above. */
 :where(section.panel,div.panel,details.panel[open],li.stepcard):not(.joincode):not(.tblwrap)>*+*{margin-top:var(--s3)}
 :where(section.panel,div.panel,details.panel[open]):not(.joincode):not(.tblwrap)>*+:is(h2,h3){margin-top:var(--s5)}
 .panel>h2,.panel>h3{margin-bottom:0}
-.panel>h2+p.small,.panel>h2+.small{margin-top:var(--s1)}
+.panel>:is(h2,h3)+p.small,.panel>:is(h2,h3)+.small{margin-top:var(--s1)}
 .panel>p:last-child,.panel>ul:last-child{margin-bottom:0}
 .panel p{margin-bottom:0}
 .panel>.empty{padding:var(--s4) 0}
-details.panel>summary{cursor:pointer;font-weight:800;min-height:44px;display:flex;align-items:center;gap:var(--s2);margin:calc(-1 * var(--s2)) 0;list-style-position:inside}
+details.panel>summary{cursor:pointer;font-weight:800;min-height:44px;display:flex;align-items:center;gap:var(--s2);margin:calc(-1 * var(--s2)) 0}
 details.panel[open]>summary{margin-bottom:var(--s2);padding-bottom:var(--s3);border-bottom:1px solid var(--line)}
 details.panel[open]>summary+*{margin-top:var(--s4)}
+/* Disclosures show an open/closed chevron (the native marker is hidden by the flex layout). */
+:is(.stepcard>details,.newgame,details.panel,.libdrop)>summary{list-style:none}
+:is(.stepcard>details,.newgame,details.panel,.libdrop)>summary::-webkit-details-marker{display:none}
+:is(.stepcard>details,.newgame,details.panel)>summary::after{content:"";flex:none;width:.45em;height:.45em;border:solid currentColor;border-width:0 2px 2px 0;transform:translateY(-25%) rotate(45deg);margin-inline-start:var(--s2);opacity:.7}
+:is(.stepcard>details,.newgame,details.panel)[open]>summary::after{transform:translateY(25%) rotate(-135deg)}
+details.panel>summary::after{margin-inline-start:auto}
+/* Two short panels side by side on wide screens (e.g. Teachers | Classmates, Waiting | Join). */
+.cols2{display:grid;gap:var(--s4);grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr))}
+.cols2>.panel{margin:0}
 
 /* ---------- Forms ---------- */
-.formgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,200px),1fr));gap:var(--s4) var(--s3);align-items:end}
+.formgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:var(--s4) var(--s3);align-items:end}
 .formgrid .field{margin:0}
 .formgrid .wide{grid-column:1/-1}
 .formgrid>p{margin:0}
 .formgrid .end{display:flex;align-items:flex-end}
 .formgrid .end .btn{width:100%}
+@media (min-width:601px){.formgrid .end .btn{width:auto;min-width:140px}}
+/* One height for every single-line field and the buttons next to them, so a row lines up (labels too). */
+.input:is(input,select):not(.input-sm){height:50px}
+.formgrid .end .btn:not(.btn-sm),form.row>.btn:not(.btn-sm){min-height:50px}
+.formgrid .end .btn-primary:not(.btn-sm),form.row>.btn-primary:not(.btn-sm){min-height:46px;margin-bottom:4px}
+form.row>.btn:not(.btn-sm){align-self:flex-start}
+.formgrid textarea.input{field-sizing:content;min-height:96px;max-height:min(50vh,420px)}
+/* An action row at the end of a form: the main button, then secondary ones; destructive last. */
+.formacts{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s3);align-items:center}
+.formacts>.btn-danger{margin-inline-start:auto}
+.formacts>p{margin:0;flex:1 1 240px}
 .grow{flex:1;min-width:0}
-.input-sm{min-height:40px;padding:6px 10px;width:auto;max-width:150px}
+form.row>.input.grow{flex:1 1 220px}
+@media (max-width:600px){form.row>.input.grow~.btn:not(.btn-sm){flex:1 1 100%}}
+.input.input-sm{min-height:40px;height:40px;padding:6px 10px;width:auto;max-width:150px}
 .code-input{max-width:180px;text-transform:uppercase;letter-spacing:.15em;font-weight:900}
 .stack>.field{margin:0}
 .stack{gap:var(--s4)}
-.stack h3{margin:var(--s3) 0 0}
+.stack>h3{margin:var(--s3) 0 0;padding-top:var(--s4);border-top:1px solid var(--line)}
+.stack>h3+p.small{margin-top:calc(var(--s1) - var(--s4))}
+.settingsform{max-width:640px}
 /* Separate forms stacked one after another (e.g. "save" then "archive") never touch. */
 form+form{margin-top:var(--s3)}
-.acts>form+form,.row>form+form,.menu>form+form,.inline+form{margin-top:0}
+.acts>form+form,.row>form+form,.menu>form+form,.inline+form,.formacts>form+form{margin-top:0}
 
 /* ---------- Buttons in a row ---------- */
 .acts{display:flex;gap:var(--s2);flex-wrap:wrap;align-items:center}
@@ -58,6 +90,7 @@ form.inline{display:inline-flex;gap:var(--s2);align-items:center;margin:0}
 /* ---------- People ---------- */
 .pp{display:inline-flex;align-items:center;gap:var(--s2);min-width:0}
 .pp b{overflow-wrap:anywhere}
+.pp>span:not(.avatar){display:flex;flex-direction:column;min-width:0;line-height:1.3}
 .chips-list{display:flex;flex-wrap:wrap;gap:var(--s3) var(--s5);margin:0;padding:0;list-style:none}
 .linkbtn{border:0;background:none;color:var(--muted);cursor:pointer;min-width:32px;min-height:32px;font-size:.9rem}
 .chip-s{display:inline-block;padding:1px 8px;border-radius:999px;background:var(--card-2);box-shadow:inset 0 0 0 1px var(--line);font-size:.75rem;font-weight:800;color:var(--muted);white-space:nowrap}
@@ -69,7 +102,7 @@ form.inline{display:inline-flex;gap:var(--s2);align-items:center;margin:0}
 .classgrid>.classcard{margin:0;display:flex;flex-direction:column;gap:var(--s1);color:var(--ink);text-decoration:none;min-height:128px}
 .classcard:hover{transform:translateY(-2px)}
 .cc-name{font-size:1.2rem;line-height:1.25}
-.cc-meta{margin-top:auto;padding-top:var(--s2);font-size:.9rem;color:var(--ink-2)}
+.cc-meta{margin-top:auto;padding-top:var(--s2);font-size:.9rem;color:var(--ink-2);display:flex;flex-wrap:wrap;gap:var(--s1) var(--s2);align-items:center}
 
 /* ---------- Class page ---------- */
 .joincode{display:flex;flex-wrap:wrap;gap:var(--s3) var(--s4);align-items:center;justify-content:space-between}
@@ -79,14 +112,28 @@ form.inline{display:inline-flex;gap:var(--s2);align-items:center;margin:0}
 .jc-code{font:900 2rem/1 ui-monospace,Menlo,monospace;letter-spacing:.18em;padding:10px 16px;border-radius:14px;background:var(--blue-50);color:var(--ink)}
 .reqlist{display:grid;gap:var(--s3);margin:0;padding:0}
 .reqcard{display:grid;gap:var(--s3);padding:var(--s4);border-radius:14px;box-shadow:inset 0 0 0 2px var(--line)}
-.reqcard>form+form{margin-top:0}
+.reqhead{display:flex;align-items:center;justify-content:space-between;gap:var(--s3);flex-wrap:wrap}
+.reqhead>form{margin:0}
+.classtabs a{gap:2px}
+.tabbadge{display:inline-grid;place-items:center;min-width:22px;height:22px;padding:0 6px;margin-inline-start:6px;border-radius:999px;background:var(--coral);color:#fff;font-size:.78rem;font-weight:900}
+/* Phones: the four class tabs share the width evenly, icon above the label, so none is cut off. */
+@media (max-width:600px){
+  .classtabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;overflow:visible}
+  .classtabs a{flex-direction:column;justify-content:center;gap:2px;padding:6px 2px;min-height:56px;font-size:.8rem;text-align:center;white-space:normal;line-height:1.15;position:relative}
+  .classtabs a>[aria-hidden]{font-size:1.2rem}
+  .classtabs .tabbadge{position:absolute;top:2px;inset-inline-end:calc(50% - 26px);margin:0;min-width:18px;height:18px;font-size:.7rem}
+}
 
-/* ---------- Tables; on phones they become stacked cards (label: value) ---------- */
+/* ---------- Tables; on phones and tablets they become stacked cards (label: value) ---------- */
 .rtable td{vertical-align:middle}
-.rtable td.acts{display:table-cell}
-.rtable td.acts>*{display:inline-flex;vertical-align:middle;margin:2px 0}
-.rtable td.acts>*+*{margin-inline-start:var(--s2)}
-@media (max-width:700px){
+.rtable td.tacts{width:1%;white-space:nowrap}
+.rtable td.tacts>.acts{flex-wrap:nowrap;justify-content:flex-end}
+.rtable select.input-sm{width:auto}
+.rtable td.edit form.inline{flex-wrap:nowrap}
+.rtable.people th:nth-child(1){width:36%}
+.rtable.people th:nth-child(2){width:26%}
+.rtable.people th:nth-child(3){width:10%}
+@media (max-width:900px){
   .rtable thead{display:none}
   .rtable,.rtable tbody,.rtable tr,.rtable td{display:block;width:100%}
   .rtable tr{padding:var(--s4) 0;border-bottom:1px solid var(--line)}
@@ -96,11 +143,13 @@ form.inline{display:inline-flex;gap:var(--s2);align-items:center;margin:0}
   .rtable td:first-child{font-size:1.05rem;padding-bottom:var(--s2)}
   .rtable td[data-label]{display:inline-block;width:auto;margin-inline-end:var(--s4)}
   .rtable td[data-label]::before{content:attr(data-label) ": ";font-weight:800;color:var(--muted);font-size:.85rem}
-  .rtable td.acts{display:flex;flex-wrap:wrap;gap:var(--s2);padding-top:var(--s3)}
-  .rtable td.acts>*+*{margin-inline-start:0}
+  .rtable td.edit{display:flex;align-items:center;gap:var(--s2);width:100%;margin:var(--s1) 0 0}
+  .rtable td.edit form.inline{flex:1 1 auto}
+  .rtable td.tacts{width:100%;white-space:normal;padding-top:var(--s3)}
+  .rtable td.tacts>.acts{flex-wrap:wrap;justify-content:flex-start}
+  .rtable td.tacts form.inline{order:1;flex:1 1 100%;max-width:420px}
   .rtable td.hide-sm{display:none}
   .rtable .input-sm{max-width:none;flex:1}
-  .rtable form.inline{flex:1 1 100%}
 }
 
 /* ---------- Login cards: 2 per row on paper, nothing else printed ---------- */
@@ -120,55 +169,141 @@ form.inline{display:inline-flex;gap:var(--s2);align-items:center;margin:0}
 
 /* ---------- Lesson library ---------- */
 .crumbs{display:flex;flex-wrap:wrap;gap:var(--s2);align-items:center;font-weight:800}
-.libtools{display:flex;flex-wrap:wrap;gap:var(--s3);align-items:flex-start}
+.crumbs [aria-current]{color:var(--ink)}
+.libtools{display:flex;flex-wrap:wrap;gap:var(--s3);align-items:center}
 .libtools>form{flex:1 1 320px}
-.aidraft{flex:1 1 100%}
-.aidraft[open]{padding:var(--s4);border-radius:var(--r);background:var(--card);box-shadow:var(--shadow)}
-.aidraft>summary{list-style:none;display:inline-flex}
-.aidraft>summary::-webkit-details-marker{display:none}
-.aidraft[open]>summary{margin-bottom:var(--s4)}
-.folderlist,.lessonlist,.steplist,.cl-list{display:grid;gap:var(--s3);padding:0;list-style:none}
-:is(.folderlist,.lessonlist,.steplist,.cl-list)>li{margin:0}
+.libdrop{flex:0 0 auto}
+.libdrop[open]{flex:1 1 100%;order:1;padding:var(--s4);border-radius:var(--r);background:var(--card);box-shadow:var(--shadow)}
+.libdrop>summary{display:inline-flex}
+.libdrop[open]>summary{margin-bottom:var(--s4)}
+.aiform{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media (min-width:600px){.aiform{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.aiform .formacts{grid-column:1/-1}
+.folderlist,.lessonlist,.steplist,.cl-list{display:grid;gap:var(--s3);padding:0;margin:0;list-style:none}
+:is(.folderlist,.lessonlist,.steplist,.cl-list)>:is(li,.panel){margin:0}
 .folderlist,.lessonlist{gap:var(--s2)}
-.folderrow,.lessonrow{display:flex;gap:var(--s3);align-items:center;justify-content:space-between;padding:var(--s3) var(--s4)}
-.fr-name{font-weight:900;color:var(--ink);text-decoration:none;flex:1;min-width:0;min-height:40px;display:flex;align-items:center}
+.steplist{gap:var(--s4)}
+.folderrow,.lessonrow{display:flex;flex-wrap:wrap;gap:var(--s3);align-items:center;justify-content:space-between;padding:var(--s3) var(--s4)}
+.folderrow>.fr-name,.lessonrow>.lr-main{flex:1 1 240px}
+.folderrow>.acts,.lessonrow>.acts{margin-inline-start:auto}
+.fr-name{font-weight:900;color:var(--ink);text-decoration:none;min-width:0;min-height:40px;display:flex;align-items:center}
 .lr-main,.cl-main{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0;color:var(--ink);text-decoration:none}
 .lr-main b,.cl-main b{overflow-wrap:anywhere}
 .lr-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:2px}
 .lr-chips:empty{display:none}
+.nw{white-space:nowrap}
 .inline-menu{position:relative}
 .inline-menu>summary{list-style:none}
 .inline-menu>summary::-webkit-details-marker{display:none}
 .inline-menu .menu{position:absolute;inset-inline-end:0;top:calc(100% + 6px);z-index:20;display:grid;gap:var(--s3);width:min(86vw,340px);padding:var(--s4);border-radius:14px;background:var(--card);box-shadow:var(--shadow-lg)}
 .inline-menu .menu .formgrid{grid-template-columns:1fr 1fr;gap:var(--s3)}
 .inline-menu .menu .btn{justify-content:center}
-.inline-menu .menu>form>.btn,.inline-menu .menu>.btn{width:100%}
+.inline-menu .menu>form:not(.row):not(.formgrid)>.btn,.inline-menu .menu>.btn{width:100%}
+.inline-menu .menu>form.row{flex-wrap:nowrap;gap:var(--s2)}
+.inline-menu .menu>form.row>.input{flex:1;max-width:none;min-width:0}
+.inline-menu .menu>form.row>.btn{flex:none;width:auto;align-self:stretch}
+.inline-menu .menu>form:has(.btn-danger){padding-top:var(--s3);border-top:1px solid var(--line)}
+.inline-menu .menu .lbl{font-size:.8rem;font-weight:800;color:var(--muted);margin-bottom:-6px}
 
 /* ---------- Lesson steps ---------- */
-.stepcard{padding:var(--s4)}
 .sc-head{display:flex;gap:var(--s3);align-items:flex-start}
 .sc-head>.sc-num,.sc-head>.sc-kind{margin-top:2px}
 .sc-num{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--blue-50);font-weight:900;flex:none}
 .sc-kind{font-size:1.4rem;line-height:28px}
 .sc-title{display:flex;flex-direction:column;flex:1;min-width:0}
+/* Up/down keep fixed slots: ↑ always left, ↓ always right. */
+.sc-head>.acts{display:grid;grid-template-columns:repeat(2,40px);gap:var(--s2);flex:none}
+.sc-head>.acts>form[data-api$="/up"]{grid-column:1}
+.sc-head>.acts>form[data-api$="/down"]{grid-column:2}
+.sc-head>.acts .btn-sm{width:40px;padding:0}
 .sc-game,.sc-build{margin:0;font-weight:700}
 .sc-build{font-style:italic}
 .sc-body p{margin:0}
 .sc-body p+p{margin-top:var(--s2)}
-.stepcard>details>summary{min-height:36px;display:inline-flex;align-items:center;cursor:pointer}
+.stepcard>details>summary{min-height:36px;display:inline-flex;align-items:center;cursor:pointer;font-weight:800;font-size:.9rem;color:var(--ink-2)}
 .stepcard>details[open]>summary{margin-bottom:var(--s3)}
 @media (max-width:520px){.sc-kind{display:none}}
-.newgame>summary{min-height:36px;display:inline-flex;align-items:center;cursor:pointer}
+/* The step form: type and minutes side by side, then title, game and instructions. */
+.stepgrid{grid-template-columns:minmax(0,1fr) 6.5rem;grid-template-areas:"k m" "t t" "g g" "b b" "a a"}
+.stepgrid>.f-k{grid-area:k}.stepgrid>.f-t{grid-area:t}.stepgrid>.f-g{grid-area:g}.stepgrid>.f-m{grid-area:m}.stepgrid>.f-b{grid-area:b}.stepgrid>.formacts,.stepgrid>.end{grid-area:a}
+@media (min-width:720px){.stepgrid{grid-template-columns:minmax(0,1fr) minmax(0,1.4fr) 6.5rem;grid-template-areas:"k g m" "t t t" "b b b" "a a a"}}
+.panel>.newgame{margin-top:var(--s5);padding-top:var(--s4);border-top:1px solid var(--line)}
+.newgame>summary{min-height:36px;display:inline-flex;align-items:center;cursor:pointer;font-weight:800}
 .newgame[open]>summary{margin-bottom:var(--s3)}
+@media (min-width:600px){.newgame .formgrid{grid-template-columns:minmax(0,1fr) auto}}
+@media (min-width:720px){.assigngrid{grid-template-columns:repeat(3,minmax(0,1fr)) auto}}
+.sec-h{font-size:clamp(1.2rem,3vw,1.5rem)}
 
 /* ---------- Units and lessons on a class page ---------- */
 .unit+.unit{margin-top:var(--s5)}
+.panel>h2+.unit{margin-top:var(--s4)}
 .unit-head{display:flex;align-items:center;justify-content:space-between;gap:var(--s3);margin-bottom:var(--s3)}
-.unit h3{margin:0}
+.unit h3{margin:0;font-size:1rem}
 .unit>h3{margin-bottom:var(--s3)}
-.cl-row{display:flex;gap:var(--s3);align-items:center;justify-content:space-between;padding:var(--s3) var(--s4);border-radius:14px;box-shadow:inset 0 0 0 2px var(--line)}
-.cl-tools{display:grid;gap:var(--s4);padding-top:var(--s5);border-top:1px solid var(--line)}
+.cl-row{display:flex;flex-wrap:wrap;gap:var(--s3);align-items:center;justify-content:space-between;padding:var(--s3) var(--s4);border-radius:14px;box-shadow:inset 0 0 0 2px var(--line)}
+.cl-row>.cl-main{flex:1 1 220px}
+.cl-meta{display:flex;flex-wrap:wrap;align-items:center;gap:2px var(--s2)}
+.cl-tools{display:grid;gap:var(--s5);padding-top:var(--s5);border-top:1px solid var(--line)}
 .panel>.cl-tools{margin-top:var(--s5)}
 .cl-more{display:flex;flex-wrap:wrap;gap:var(--s3);align-items:center;justify-content:space-between}
 .unitform{display:flex;flex-wrap:wrap;gap:var(--s2);flex:1 1 300px;max-width:560px}
 .unitform .input{flex:1 1 180px;min-width:0}
+@media (max-width:600px){.cl-more{row-gap:var(--s2)}.unitform .btn,.cl-more>.btn{flex:1 1 100%}}
+
+/* ---------- Progress: gradebook (teachers) ---------- */
+.gb-tools{align-items:center}
+.gb-tools p{margin:0;flex:1 1 260px}
+.gbwrap{position:relative;overflow-x:auto;margin:0 calc(-1 * var(--s2));padding:0 var(--s2)}
+.gradebook{min-width:100%;border-collapse:separate;border-spacing:0}
+.gradebook th,.gradebook td{text-align:center;vertical-align:middle;padding:var(--s2) var(--s3)}
+.gradebook thead th{font-size:.82rem;text-transform:none;letter-spacing:0;color:var(--ink-2);min-width:120px;max-width:200px}
+.gradebook thead th a{color:var(--ink);font-weight:900;display:block;overflow-wrap:break-word;hyphens:auto}
+.gradebook .gb-name{text-align:start;position:sticky;inset-inline-start:0;z-index:1;background:var(--card);min-width:140px;max-width:240px}
+.gradebook tbody th{text-transform:none;letter-spacing:0;font-size:1rem;color:var(--ink);font-weight:700}
+.gradebook tbody .gb-name{display:table-cell}
+.gradebook tbody .gb-name .small{display:block;margin-top:2px;font-weight:700}
+.gb-due{display:block;margin-top:2px;font-weight:700;color:var(--muted);white-space:nowrap}
+.gb-step{display:block;margin-top:2px;font-weight:700;color:var(--muted);max-width:140px;margin-inline:auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gb-cell{display:inline-flex;flex-direction:column;align-items:center;gap:var(--s1);min-width:64px;min-height:44px;justify-content:center;color:var(--ink);text-decoration:none;border-radius:10px;padding:2px 6px}
+.gb-cell:hover{background:var(--blue-50);text-decoration:none}
+.gb-num{font-weight:900;font-variant-numeric:tabular-nums}
+.gb-done{background:color-mix(in srgb,var(--lime-bg) 70%,transparent)}
+.gb-late{background:color-mix(in srgb,var(--danger) 10%,transparent)}
+.gb-late .gb-num::after{content:" ⏰"}
+.gb-all{font-variant-numeric:tabular-nums}
+.gb-key{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s5);align-items:center}
+.gb-key>span{display:inline-flex;align-items:center;gap:6px}
+.pbar{display:inline-block;width:56px;height:6px;border-radius:999px;background:var(--line);overflow:hidden;vertical-align:middle}
+.pbar>span{display:block;height:100%;border-radius:inherit;background:var(--blue)}
+.gb-done .pbar>span,.lessonprogress.all .pbar>span{background:var(--ok)}
+.st{display:inline-flex;align-items:center;gap:6px;justify-content:center;min-height:28px}
+.st-none{color:var(--muted)}
+.st-score{font-weight:800;font-variant-numeric:tabular-nums}
+.gradebook td>.small{display:block;margin-top:2px}
+
+/* ---------- Progress: written answers (teachers) ---------- */
+.q-text{font-weight:800;padding:var(--s3) var(--s4);border-radius:12px;background:var(--blue-50);color:var(--ink)}
+.q-text p{margin:0}
+.answerlist{display:grid;gap:var(--s3)}
+.answercard{display:grid;gap:var(--s3);padding:var(--s4);border-radius:14px;box-shadow:inset 0 0 0 2px var(--line)}
+.answercard.is-read{box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--line) 60%,transparent)}
+.ac-head{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2) var(--s3)}
+.ac-head .pp{margin-inline-end:auto}
+.ac-answer{margin:0;white-space:pre-wrap;overflow-wrap:anywhere}
+.ac-form{display:grid;gap:var(--s2)}
+.ac-form textarea{min-height:64px;field-sizing:content}
+
+/* ---------- Progress: the student's side ---------- */
+.lessonprogress{display:flex;align-items:center;gap:var(--s4);padding:var(--s3) var(--s4);border-radius:var(--r);background:var(--card);box-shadow:var(--shadow);font-weight:900}
+.lessonprogress .pbar{flex:1;width:auto;height:10px}
+.stepstate{display:inline-flex;align-items:center;gap:4px;flex:none;padding:2px 10px;border-radius:999px;background:var(--card-2);box-shadow:inset 0 0 0 1px var(--line);font-size:.8rem;font-weight:800;color:var(--ink-2);white-space:nowrap}
+.stepstate.is-done{background:color-mix(in srgb,var(--lime-bg) 80%,var(--card));color:var(--ok);box-shadow:none}
+.sc-head>.stepstate{margin-inline-start:auto;margin-top:2px}
+.cl-row>.stepstate{margin-inline-start:auto}
+.stepcard.is-done .sc-num{background:color-mix(in srgb,var(--lime-bg) 80%,var(--card));color:var(--ok)}
+.sc-score{margin:0;font-weight:800}
+.answerform{display:grid;gap:var(--s2)}
+.answerform .row{gap:var(--s3)}
+.answerform textarea{field-sizing:content;min-height:110px}
+.feedback{display:grid;gap:var(--s1);padding:var(--s3) var(--s4);border-radius:12px;background:color-mix(in srgb,var(--sun) 18%,var(--card))}
+.feedback p{margin:0;white-space:pre-wrap}

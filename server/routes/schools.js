@@ -10,6 +10,7 @@ import { requireUser, requireAdmin, getUserByName } from '../auth.js';
 import { rateLimit } from '../services/ratelimit.js';
 import * as S from '../services/schools.js';
 import { teacherLessonsPanel, studentLessonsPanel } from './lessons.js';
+import * as P from '../services/progress.js';
 
 export const router = Router();
 const CSS = raw('<link rel="stylesheet" href="/css/community.css"><link rel="stylesheet" href="/css/schools.css">');
@@ -73,10 +74,10 @@ router.get('/school/:slug', requireUser, (req, res) => {
 function classTable(t, list, { archived = false } = {}) {
   return html`<div class="panel tblwrap"><table class="tbl rtable"><thead><tr><th>${t('school.class.name')}</th><th>${t('school.class.grade')}</th><th>${t('school.class.teachers')}</th><th>${t('school.class.students')}</th><th>${t('school.class.code')}</th><th><span class="sr-only">${t('school.actions')}</span></th></tr></thead><tbody>
     ${list.map(c => html`<tr><td><a href="/class/${c.id}"><b>${c.name}</b></a>${c.subject ? html`<div class="small muted">${c.subject}</div>` : ''}</td><td data-label="${t('school.class.grade')}">${c.grade || '–'}</td><td data-label="${t('school.class.teachers')}">${c.teachers || html`<span class="muted">–</span>`}</td><td data-label="${t('school.class.students')}">${c.students}</td><td data-label="${t('school.class.code')}"><code dir="ltr">${c.join_code}</code></td>
-      <td class="acts">${archived
+      <td class="tacts"><div class="acts">${archived
         ? html`<form data-api="/api/classes/${c.id}/restore" data-reload><button class="btn btn-sm" type="submit">${t('school.class.restore')}</button></form>`
         : html`<form data-api="/api/classes/${c.id}/archive" data-reload data-confirm="${t('school.class.archiveConfirm', { name: c.name })}"><button class="btn btn-sm" type="submit">${t('school.class.archive')}</button></form>`}
-        ${c.students ? '' : html`<form data-api="/api/classes/${c.id}/delete" data-reload data-confirm="${t('school.class.deleteConfirm', { name: c.name })}"><button class="btn btn-sm btn-danger" type="submit">${t('school.class.delete')}</button></form>`}</td></tr>`)}
+        ${c.students ? '' : html`<form data-api="/api/classes/${c.id}/delete" data-reload data-confirm="${t('school.class.deleteConfirm', { name: c.name })}"><button class="btn btn-sm btn-danger" type="submit">${t('school.class.delete')}</button></form>`}</div></td></tr>`)}
   </tbody></table></div>`;
 }
 function newClassForm(t, s, schools = null) {
@@ -97,21 +98,25 @@ function schoolClasses(req, s) {
 }
 function personRow(t, s, p, me) {
   const mine = p.id === me.id;
-  return html`<tr><td><span class="pp">${avatar(p, 32)}<span><b>${nameOf(p)}</b><span class="small muted"> <bdi>@${p.username}</bdi>${p.managed_school === s.id ? html` · ${t('school.people.schoolAccount')}` : html` · ${t('school.people.ownAccount')}`}</span></span></span></td>
-    <td data-label="${t('school.people.role')}">${t(`school.roles.${p.role}`)}</td>${p.role === 'student' ? html`<td data-label="${t('school.people.grade')}">${p.grade || '–'}</td>` : html`<td class="hide-sm"></td>`}<td data-label="${t('school.class.classes')}">${p.classes}</td>
-    <td class="acts">
-      <form class="inline" data-api="/api/schools/${s.id}/members/${p.id}" data-reload><label class="sr-only" for="g-${p.id}">${t('school.people.grade')}</label>
-        ${p.role === 'student' ? html`<input class="input input-sm" id="g-${p.id}" name="grade" value="${p.grade}" maxlength="12" placeholder="${t('school.people.grade')}">` : html`<select class="input input-sm" name="role" aria-label="${t('school.people.role')}">${['teacher', 'admin'].map(r => html`<option value="${r}" ${p.role === r ? raw('selected') : ''}>${t(`school.roles.${r}`)}</option>`)}</select>`}
-        <button class="btn btn-sm" type="submit">${t('school.save')}</button></form>
+  return html`<tr><td><span class="pp">${avatar(p, 32)}<span><b>${nameOf(p)}</b><span class="small muted"><bdi>@${p.username}</bdi>${p.managed_school === s.id ? html` · ${t('school.people.schoolAccount')}` : html` · ${t('school.people.ownAccount')}`}</span></span></span></td>
+    <td class="edit"><form class="inline" data-api="/api/schools/${s.id}/members/${p.id}" data-reload data-toast="${t('school.settings.saved')}">
+      ${p.role === 'student'
+        ? html`<label class="sr-only" for="g-${p.id}">${t('school.people.grade')}</label><input class="input input-sm" id="g-${p.id}" name="grade" value="${p.grade}" maxlength="12" placeholder="${t('school.people.grade')}">`
+        : html`<label class="sr-only" for="r-${p.id}">${t('school.people.role')}</label><select class="input input-sm" id="r-${p.id}" name="role">${['teacher', 'admin'].map(r => html`<option value="${r}" ${p.role === r ? raw('selected') : ''}>${t(`school.roles.${r}`)}</option>`)}</select>`}
+      <button class="btn btn-sm" type="submit">${t('school.save')}</button></form></td>
+    <td data-label="${t('school.class.classes')}">${p.classes}</td>
+    <td class="tacts"><div class="acts">
       ${p.managed_school === s.id ? html`<form data-api="/api/schools/${s.id}/members/${p.id}/password" data-confirm="${t('school.people.resetConfirm', { name: nameOf(p) })}"><button class="btn btn-sm" type="submit">🔑 ${t('school.people.reset')}</button></form>` : ''}
       ${mine ? '' : html`<form data-api="/api/schools/${s.id}/members/${p.id}/remove" data-reload data-confirm="${t('school.people.removeConfirm', { name: nameOf(p) })}"><button class="btn btn-sm btn-danger" type="submit">${t('school.people.remove')}</button></form>`}
-    </td></tr>`;
+    </div></td></tr>`;
 }
 function schoolPeople(req, s) {
   const t = req.t; const staff = S.members(s.id, 'staff'), students = S.members(s.id, 'student');
-  const table = (rows, empty) => rows.length ? html`<div class="panel tblwrap"><table class="tbl rtable"><thead><tr><th>${t('school.people.name')}</th><th>${t('school.people.role')}</th><th>${t('school.people.grade')}</th><th>${t('school.class.classes')}</th><th><span class="sr-only">${t('school.actions')}</span></th></tr></thead><tbody>${rows.map(p => personRow(t, s, p, req.user))}</tbody></table></div>` : html`<p class="muted">${empty}</p>`;
+  const table = (rows, second, empty) => rows.length ? html`<div class="panel tblwrap"><table class="tbl rtable people"><thead><tr><th>${t('school.people.name')}</th><th>${second}</th><th>${t('school.class.classes')}</th><th><span class="sr-only">${t('school.actions')}</span></th></tr></thead><tbody>${rows.map(p => personRow(t, s, p, req.user))}</tbody></table></div>` : html`<p class="muted">${empty}</p>`;
   return html`
-  <section class="panel"><h2>${t('school.people.addStaff')}</h2>
+  <h2 class="sec-h">🍎 ${t('school.people.staff')}</h2>
+  ${table(staff, t('school.people.role'), t('school.people.noStaff'))}
+  <section class="panel"><h3>➕ ${t('school.people.addStaff')}</h3>
     <p class="small muted">${t('school.people.addStaffText')}</p>
     <form class="formgrid" data-api="/api/schools/${s.id}/staff" novalidate>
       <div class="field"><label for="st-n">${t('school.people.realName')}</label><input class="input" id="st-n" name="rosterName" maxlength="60" required><span class="err" id="st-n-err"></span></div>
@@ -119,20 +124,20 @@ function schoolPeople(req, s) {
       <div class="field"><label for="st-u">${t('school.people.existing')}</label><input class="input" id="st-u" name="username" maxlength="16" dir="ltr" placeholder="${t('school.people.existingPlaceholder')}"><span class="err" id="st-u-err"></span></div>
       <div class="field end"><button class="btn btn-primary" type="submit">➕ ${t('school.people.add')}</button></div>
     </form></section>
-  <h2 class="sec-h">${t('school.people.staff')}</h2>${table(staff, t('school.people.noStaff'))}
-  <section class="panel"><h2>${t('school.people.addStudents')}</h2>
+  <h2 class="sec-h">👩‍🎓 ${t('school.people.students')}</h2>
+  ${table(students, t('school.people.grade'), t('school.people.noStudents'))}
+  <section class="panel"><h3>➕ ${t('school.people.addStudents')}</h3>
     <p class="small muted">${t('school.people.addStudentsText')}</p>
     <form class="formgrid" data-api="/api/schools/${s.id}/students" novalidate>
       <div class="field wide"><label for="ss-n">${t('school.people.names')}</label><textarea class="input" id="ss-n" name="names" rows="4" required placeholder="${t('school.people.namesPlaceholder')}"></textarea><span class="err" id="ss-n-err"></span></div>
       <div class="field"><label for="ss-g">${t('school.people.grade')}</label><input class="input" id="ss-g" name="grade" maxlength="12"></div>
       <div class="field end"><button class="btn btn-primary" type="submit">➕ ${t('school.people.createAccounts')}</button></div>
-    </form></section>
-  <h2 class="sec-h">${t('school.people.students')}</h2>${table(students, t('school.people.noStudents'))}`;
+    </form></section>`;
 }
 function schoolSettings(req, s) {
   const t = req.t; const st = S.settingsOf(s);
   const yn = (name, val) => html`<select class="input" id="set-${name}" name="${name}"><option value="1" ${val ? raw('selected') : ''}>${t('school.settings.yes')}</option><option value="0" ${val ? '' : raw('selected')}>${t('school.settings.no')}</option></select>`;
-  return html`<section class="panel"><form class="stack" data-api="/api/schools/${s.id}/settings" data-reload data-toast="${t('school.settings.saved')}" novalidate>
+  return html`<section class="panel"><form class="stack settingsform" data-api="/api/schools/${s.id}/settings" data-reload data-toast="${t('school.settings.saved')}" novalidate>
     <div class="field"><label for="set-name">${t('school.settings.name')}</label><input class="input" id="set-name" name="name" value="${s.name}" maxlength="80"></div>
     <div class="field"><label for="set-teachersCreateClasses">${t('school.settings.teachersCreate')}</label>${yn('teachersCreateClasses', st.teachersCreateClasses)}</div>
     <div class="field"><label for="set-allowOwnAccounts">${t('school.settings.ownAccounts')}</label>${yn('allowOwnAccounts', st.allowOwnAccounts)}<span class="hint">${t('school.settings.ownAccountsHint')}</span></div>
@@ -201,6 +206,7 @@ router.get('/teach', requireUser, (req, res) => {
   const allSchools = S.isPlatformAdmin(u) ? S.listSchools().filter(x => !x.archived_at) : schools;
   if (!allSchools.length) return notFound(req, res, t('school.errors.notTeacher'));
   const mine = S.classesOf(u.id, 'teacher');
+  const toRead = P.toReadByClass(mine.map(c => c.id));
   const canCreate = allSchools.filter(x => S.canCreateClass(u, x.id));
   const admins = allSchools.filter(x => S.canManageSchool(u, x.id));
   const body = html`
@@ -208,7 +214,7 @@ router.get('/teach', requireUser, (req, res) => {
   ${mine.length ? html`<div class="classgrid">${mine.map(c => html`<a class="panel classcard" href="/class/${c.id}">
       <span class="cc-school small muted">${c.school_name}</span><b class="cc-name">${c.name}</b>
       <span class="small">${[c.subject, c.grade ? t('school.class.gradeN', { grade: c.grade }) : ''].filter(Boolean).join(' · ')}</span>
-      <span class="cc-meta">👩‍🎓 ${t('school.class.studentsN', { count: c.students })}${c.requests ? html` · <span class="chip-s warn">✋ ${t('school.class.requestsN', { count: c.requests })}</span>` : ''}</span></a>`)}</div>`
+      <span class="cc-meta">👩‍🎓 ${t('school.class.studentsN', { count: c.students })}${c.requests ? html` <span class="chip-s warn">✋ ${t('school.class.requestsN', { count: c.requests })}</span>` : ''}${toRead[c.id] ? html` <span class="chip-s warn">✍️ ${t('progress.teach.toRead', { count: toRead[c.id] })}</span>` : ''}</span></a>`)}</div>`
     : emptyState({ emoji: '🍎', title: t('school.teach.none'), text: canCreate.length ? t('school.teach.noneText') : t('school.teach.noneAsk') })}
   ${canCreate.length ? newClassForm(t, canCreate[0], canCreate) : ''}`;
   page(req, res, { title: t('school.teach.title'), active: 'classes', body, head: CSS });
@@ -219,7 +225,8 @@ router.post('/api/classes', requireUser, rateLimit('class-new', 60, 3600e3), (re
   if (!String(name || '').trim()) return res.status(400).json({ error: req.t('school.errors.className'), field: 'name' });
   const r = S.createClass(req.user, schoolId, { name, subject, grade });
   if (!r.ok) return err(req, res, r.code);
-  res.json({ ok: true, redirect: `/class/${r.class.id}` });
+  // A new class has no students yet: open it on the Students tab.
+  res.json({ ok: true, redirect: `/class/${r.class.id}?tab=students` });
 });
 
 // ================================================================ a class
@@ -234,8 +241,24 @@ router.get('/class/:id', requireUser, (req, res) => {
   if (c && S.canViewClass(req.user, c)) return studentClass(req, res, c);
   no(req, res);
 });
+const CLASS_TABS = ['lessons', 'progress', 'students', 'settings'];
+/** The class header and its tabs (Lessons, Progress, Students, Settings), shared with the progress pages. */
+export function classHeader(req, c, active) {
+  const t = req.t; const s = S.getSchool(c.school_id);
+  const students = S.roster(c.id).filter(p => p.role === 'student').length;
+  const requests = S.pendingRequests(c.id).length;
+  const toRead = P.toReadByClass([c.id])[c.id] || 0;
+  const href = { lessons: `/class/${c.id}`, progress: `/class/${c.id}/progress`, students: `/class/${c.id}?tab=students`, settings: `/class/${c.id}?tab=settings` };
+  const icon = { lessons: '📚', progress: '📊', students: '👩‍🎓', settings: '⚙️' };
+  const badge = { progress: toRead ? html` <span class="tabbadge" title="${t('progress.gradebook.toRead', { count: toRead })}">${toRead}</span>` : '', students: requests ? html` <span class="tabbadge" title="${t('school.requests.title', { count: requests })}">${requests}</span>` : '' };
+  return html`
+  <div class="pagehead"><div><span class="small muted">${s.name}</span><h1>${c.name}</h1>
+    <p class="muted">${[c.subject, c.grade ? t('school.class.gradeN', { grade: c.grade }) : '', t('school.class.studentsN', { count: students })].filter(Boolean).join(' · ')}${c.archived_at ? html` <span class="chip-s">${t('school.class.isArchived')}</span>` : ''}</p></div></div>
+  <nav class="tabs classtabs" aria-label="${c.name}">${CLASS_TABS.map(k => html`<a href="${href[k]}" ${k === active ? raw('aria-current="page"') : ''}><span aria-hidden="true">${icon[k]}</span> ${t(`school.classTabs.${k}`)}${badge[k] || ''}</a>`)}</nav>`;
+}
 function teacherClass(req, res, c) {
   const t = req.t; const s = S.getSchool(c.school_id);
+  const tab = ['students', 'settings'].includes(req.query.tab) ? req.query.tab : 'lessons';
   const people = S.roster(c.id), teachers = people.filter(p => p.role === 'teacher'), students = people.filter(p => p.role === 'student');
   const requests = S.pendingRequests(c.id);
   const others = S.classesOfSchool(s.id).filter(x => x.id !== c.id);
@@ -243,37 +266,31 @@ function teacherClass(req, res, c) {
   const schoolStudents = S.members(s.id, 'student').filter(p => !inClass.has(p.id));
   const schoolStaff = S.members(s.id, 'staff').filter(p => !inClass.has(p.id));
   const linkable = S.members(s.id, 'student').filter(p => p.managed_school === s.id);
-  const body = html`
-  <div class="pagehead"><div><span class="small muted">${s.name}</span><h1>${c.name}</h1>
-    <p class="muted">${[c.subject, c.grade ? t('school.class.gradeN', { grade: c.grade }) : ''].filter(Boolean).join(' · ')}${c.archived_at ? html` <span class="chip-s">${t('school.class.isArchived')}</span>` : ''}</p></div></div>
-  <section class="panel joincode"><div><h2>${t('school.class.joinCode')}</h2><p class="small muted">${t('school.class.joinCodeText')}</p></div>
-    <div class="jc-code" dir="ltr">${c.join_code}</div>
-    <form data-api="/api/classes/${c.id}/code" data-reload data-confirm="${t('school.class.newCodeConfirm')}"><button class="btn btn-sm" type="submit">🔄 ${t('school.class.newCode')}</button></form></section>
-  ${teacherLessonsPanel(req, c)}
 
-  ${requests.length ? html`<section class="panel" aria-labelledby="rq-h"><h2 id="rq-h">✋ ${t('school.requests.title', { count: requests.length })}</h2>
+  const requestsPanel = requests.length ? html`<section class="panel" aria-labelledby="rq-h"><h2 id="rq-h">✋ ${t('school.requests.title', { count: requests.length })}</h2>
     <p class="small muted">${t('school.requests.text')}</p>
     <ul class="plain reqlist">${requests.map(r => html`<li class="reqcard">
-      <span class="pp">${avatar(r, 40)}<span><b><bdi>@${r.username}</bdi></b><span class="small muted"> ${r.display_name !== r.username ? r.display_name : ''}</span></span></span>
+      <div class="reqhead"><span class="pp">${avatar(r, 40)}<span><b><bdi>@${r.username}</bdi></b>${r.display_name !== r.username ? html`<span class="small muted">${r.display_name}</span>` : ''}</span></span>
+        <form data-api="/api/join-requests/${r.id}/decline" data-reload data-confirm="${t('school.requests.declineConfirm', { name: r.username })}"><button class="btn btn-sm" type="submit">${t('school.requests.decline')}</button></form></div>
       <form class="formgrid" data-api="/api/join-requests/${r.id}/approve" data-reload novalidate>
         <div class="field"><label for="rn-${r.id}">${t('school.requests.realName')}</label><input class="input" id="rn-${r.id}" name="rosterName" maxlength="60" required><span class="err" id="rn-${r.id}-err"></span></div>
         ${linkable.length ? html`<div class="field"><label for="sa-${r.id}">${t('school.requests.sameAs')}</label><select class="input" id="sa-${r.id}" name="sameAs"><option value="">${t('school.requests.sameAsNone')}</option>${linkable.map(p => html`<option value="${p.id}">${nameOf(p)} (@${p.username})</option>`)}</select></div>` : ''}
-        <div class="field end row"><button class="btn btn-primary" type="submit">✅ ${t('school.requests.approve')}</button></div>
+        <div class="field end"><button class="btn btn-primary" type="submit">✅ ${t('school.requests.approve')}</button></div>
       </form>
-      <form data-api="/api/join-requests/${r.id}/decline" data-reload data-confirm="${t('school.requests.declineConfirm', { name: r.username })}"><button class="btn btn-sm" type="submit">${t('school.requests.decline')}</button></form>
-    </li>`)}</ul></section>` : ''}
+    </li>`)}</ul></section>` : '';
 
+  const studentsTab = html`
+  ${requestsPanel}
   <section class="panel" aria-labelledby="stu-h"><h2 id="stu-h">👩‍🎓 ${t('school.class.studentsN', { count: students.length })}</h2>
     ${students.length ? html`<div class="tblwrap"><table class="tbl rtable"><thead><tr><th>${t('school.people.name')}</th><th>${t('school.people.username')}</th><th>${t('school.people.grade')}</th><th><span class="sr-only">${t('school.actions')}</span></th></tr></thead><tbody>
       ${students.map(p => html`<tr><td><span class="pp">${avatar(p, 30)}<b>${nameOf(p)}</b></span></td><td data-label="${t('school.people.username')}"><bdi>@${p.username}</bdi> <span class="small muted">· ${p.managed_school === s.id ? t('school.people.schoolAccount') : t('school.people.ownAccount')}</span></td><td data-label="${t('school.people.grade')}">${p.grade || '–'}</td>
-        <td class="acts">
+        <td class="tacts"><div class="acts">
           ${p.managed_school === s.id ? html`<form data-api="/api/classes/${c.id}/students/${p.id}/password" data-confirm="${t('school.people.resetConfirm', { name: nameOf(p) })}"><button class="btn btn-sm" type="submit">🔑 ${t('school.people.reset')}</button></form>` : ''}
           ${others.length ? html`<form class="inline" data-api="/api/classes/${c.id}/students/${p.id}/move" data-reload><label class="sr-only" for="mv-${p.id}">${t('school.class.moveTo')}</label><select class="input input-sm" id="mv-${p.id}" name="to">${others.map(o => html`<option value="${o.id}">${o.name}</option>`)}</select><button class="btn btn-sm" type="submit">${t('school.class.move')}</button></form>` : ''}
           <form data-api="/api/classes/${c.id}/students/${p.id}/remove" data-reload data-confirm="${t('school.class.removeConfirm', { name: nameOf(p) })}"><button class="btn btn-sm btn-danger" type="submit">${t('school.class.removeStudent')}</button></form>
-        </td></tr>`)}
-    </tbody></table></div>` : html`<p class="muted">${t('school.class.noStudents')}</p>`}
+        </div></td></tr>`)}
+    </tbody></table></div>` : emptyState({ emoji: '👩‍🎓', title: t('school.class.noStudents'), text: t('school.class.noStudentsText') })}
   </section>
-
   <section class="panel"><h2>➕ ${t('school.class.addStudents')}</h2>
     <form class="formgrid" data-api="/api/classes/${c.id}/students" novalidate>
       <div class="field wide"><label for="as-n">${t('school.class.newAccounts')}</label><textarea class="input" id="as-n" name="names" rows="4" placeholder="${t('school.people.namesPlaceholder')}"></textarea><span class="hint">${t('school.class.newAccountsHint')}</span></div>
@@ -281,21 +298,30 @@ function teacherClass(req, res, c) {
       ${schoolStudents.length ? html`<div class="field"><label for="as-e">${t('school.class.fromSchool')}</label><select class="input" id="as-e" name="existing"><option value="">–</option>${schoolStudents.map(p => html`<option value="${p.id}">${nameOf(p)} (@${p.username})</option>`)}</select></div>` : ''}
       <div class="field end"><button class="btn btn-primary" type="submit">➕ ${t('school.class.add')}</button></div>
     </form></section>
+  <section class="panel joincode"><div><h2>🔑 ${t('school.class.joinCode')}</h2><p class="small muted">${t('school.class.joinCodeText')}</p></div>
+    <div class="jc-code" dir="ltr">${c.join_code}</div>
+    <form data-api="/api/classes/${c.id}/code" data-reload data-confirm="${t('school.class.newCodeConfirm')}"><button class="btn btn-sm" type="submit">🔄 ${t('school.class.newCode')}</button></form></section>`;
 
-  <section class="panel"><h2>🍎 ${t('school.class.teachers')}</h2>
-    <ul class="plain chips-list">${teachers.map(p => html`<li class="pp">${avatar(p, 28)} ${nameOf(p)}${teachers.length > 1 && p.id !== req.user.id ? html`<form class="inline" data-api="/api/classes/${c.id}/students/${p.id}/remove" data-reload data-confirm="${t('school.class.removeConfirm', { name: nameOf(p) })}"><button class="linkbtn" type="submit" aria-label="${t('school.class.removeStudent')}">✖</button></form>` : ''}</li>`)}</ul>
-    ${schoolStaff.length ? html`<form class="row" data-api="/api/classes/${c.id}/teachers" data-reload><label class="sr-only" for="at">${t('school.class.addTeacher')}</label><select class="input grow" id="at" name="userId">${schoolStaff.map(p => html`<option value="${p.id}">${nameOf(p)}</option>`)}</select><button class="btn" type="submit">➕ ${t('school.class.addTeacher')}</button></form>` : ''}
-  </section>
-
-  <details class="panel"><summary>⚙️ ${t('school.class.edit')}</summary>
-    <form class="formgrid" data-api="/api/classes/${c.id}" data-reload novalidate>
-      <div class="field"><label for="ec-n">${t('school.class.name')}</label><input class="input" id="ec-n" name="name" value="${c.name}" maxlength="60" required></div>
+  const settingsTab = html`
+  <section class="panel"><h2>✏️ ${t('school.class.details')}</h2>
+    <form class="formgrid" data-api="/api/classes/${c.id}" data-reload data-toast="${t('school.settings.saved')}" novalidate>
+      <div class="field"><label for="ec-n">${t('school.class.name')}</label><input class="input" id="ec-n" name="name" value="${c.name}" maxlength="60" required><span class="err" id="ec-n-err"></span></div>
       <div class="field"><label for="ec-s">${t('school.class.subject')}</label><input class="input" id="ec-s" name="subject" value="${c.subject}" maxlength="40"></div>
       <div class="field"><label for="ec-g">${t('school.class.grade')}</label><input class="input" id="ec-g" name="grade" value="${c.grade}" maxlength="12"></div>
       <div class="field end"><button class="btn btn-primary" type="submit">${t('school.save')}</button></div>
-    </form>
-    <form data-api="/api/classes/${c.id}/${c.archived_at ? 'restore' : 'archive'}" data-reload ${c.archived_at ? '' : raw(`data-confirm="${t('school.class.archiveConfirm', { name: c.name }).replace(/"/g, '&quot;')}"`)}><button class="btn" type="submit">${c.archived_at ? t('school.class.restore') : t('school.class.archive')}</button></form>
-  </details>`;
+    </form></section>
+  <section class="panel"><h2>🍎 ${t('school.class.teachers')}</h2>
+    <p class="small muted">${t('school.class.teachersText')}</p>
+    <ul class="plain chips-list">${teachers.map(p => html`<li class="pp">${avatar(p, 28)} ${nameOf(p)}${teachers.length > 1 && p.id !== req.user.id ? html`<form class="inline" data-api="/api/classes/${c.id}/students/${p.id}/remove" data-reload data-confirm="${t('school.class.removeConfirm', { name: nameOf(p) })}"><button class="linkbtn" type="submit" aria-label="${t('school.class.removeTeacher', { name: nameOf(p) })}">✖</button></form>` : ''}</li>`)}</ul>
+    ${schoolStaff.length ? html`<form class="row" data-api="/api/classes/${c.id}/teachers" data-reload><label class="sr-only" for="at">${t('school.class.addTeacher')}</label><select class="input grow" id="at" name="userId">${schoolStaff.map(p => html`<option value="${p.id}">${nameOf(p)}</option>`)}</select><button class="btn" type="submit">➕ ${t('school.class.addTeacher')}</button></form>` : ''}
+  </section>
+  <section class="panel"><h2>🗄️ ${c.archived_at ? t('school.class.restoreTitle') : t('school.class.archiveTitle')}</h2>
+    <p class="small muted">${c.archived_at ? t('school.class.restoreText') : t('school.class.archiveText')}</p>
+    <form data-api="/api/classes/${c.id}/${c.archived_at ? 'restore' : 'archive'}" data-reload ${c.archived_at ? '' : raw(`data-confirm="${t('school.class.archiveConfirm', { name: c.name }).replace(/"/g, '&quot;')}"`)}><button class="btn ${c.archived_at ? '' : 'btn-danger'}" type="submit">${c.archived_at ? t('school.class.restore') : t('school.class.archive')}</button></form>
+  </section>`;
+
+  const body = html`${classHeader(req, c, tab)}
+  ${tab === 'students' ? studentsTab : tab === 'settings' ? settingsTab : teacherLessonsPanel(req, c)}`;
   page(req, res, { title: c.name, active: 'classes', body, head: CSS, back: '/teach', backLabel: t('school.teach.title') });
 }
 function studentClass(req, res, c) {
@@ -306,8 +332,8 @@ function studentClass(req, res, c) {
   <div class="pagehead"><div><span class="small muted">${s.name}</span><h1>${c.name}</h1>
     <p class="muted">${[c.subject, c.grade ? t('school.class.gradeN', { grade: c.grade }) : ''].filter(Boolean).join(' · ')}</p></div></div>
   ${studentLessonsPanel(req, c)}
-  <section class="panel"><h2>🍎 ${t('school.class.teachers')}</h2><ul class="plain chips-list">${teachers.map(p => html`<li class="pp">${avatar(p, 28)} ${nameOf(p)}</li>`)}</ul></section>
-  <section class="panel"><h2>👫 ${t('classes.classmates', { count: classmates.length })}</h2><ul class="plain chips-list">${classmates.map(p => html`<li class="pp">${avatar(p, 28)} ${p.display_name}</li>`)}</ul></section>`;
+  <div class="cols2"><section class="panel"><h2>🍎 ${t('school.class.teachers')}</h2><ul class="plain chips-list">${teachers.map(p => html`<li class="pp">${avatar(p, 28)} ${nameOf(p)}</li>`)}</ul></section>
+  <section class="panel"><h2>👫 ${t('classes.classmates', { count: classmates.length })}</h2><ul class="plain chips-list">${classmates.map(p => html`<li class="pp">${avatar(p, 28)} ${p.display_name}</li>`)}</ul></section></div>`;
   page(req, res, { title: c.name, active: 'classes', body, head: CSS, back: '/classes', backLabel: t('nav.classes') });
 }
 
@@ -329,7 +355,7 @@ router.post('/api/classes/:id/students', requireUser, rateLimit('school-add', 12
   const { names, grade, existing } = b(req);
   if (existing) { const r = S.addToClass(req.user, c.id, existing, 'student'); if (!r.ok) return err(req, res, r.code); }
   const list = parseNames(names);
-  if (!list.length) return existing ? res.json({ ok: true, redirect: `/class/${c.id}` }) : res.status(400).json({ error: req.t('school.errors.names'), field: 'names' });
+  if (!list.length) return existing ? res.json({ ok: true, redirect: `/class/${c.id}?tab=students` }) : res.status(400).json({ error: req.t('school.errors.names'), field: 'names' });
   const made = [];
   for (const n of list) { const r = S.createSchoolAccount(req.user, c.school_id, { rosterName: n, grade }); if (r.ok) { S.addToClass(req.user, c.id, r.user.id, 'student'); made.push(card(r)); } }
   res.json({ ok: true, redirect: `/cards/${keepCards(req.user, c.id, made)}` });
@@ -376,7 +402,7 @@ router.get('/cards/:k', requireUser, (req, res) => {
   if (!v || v.by !== req.user.id || v.exp < Date.now()) return notFound(req, res, t('school.cards.gone'));
   const c = v.classId ? S.getClass(v.classId) : null;
   const site = String(req.get('host') || '').replace(/^www\./, '');
-  const back = c ? `/class/${c.id}` : '/teach';
+  const back = c ? `/class/${c.id}?tab=students` : '/teach';
   const body = html`
   <div class="pagehead noprint"><h1>🪪 ${t('school.cards.title')}</h1><div class="row"><button class="btn btn-primary" type="button" data-print>🖨️ ${t('school.cards.print')}</button><a class="btn" href="${back}">${t('school.cards.done')}</a></div></div>
   <p class="notice warn noprint">${t('school.cards.once')}</p>
@@ -395,13 +421,14 @@ router.get('/classes', requireUser, (req, res) => {
   const staff = S.isStaff(u);
   const body = html`
   <div class="pagehead"><h1>🏫 ${t('classes.title')}</h1>${staff ? html`<a class="btn" href="/teach">🍎 ${t('school.nav.teach')}</a>` : ''}</div>
-  ${mine.length ? html`<div class="classgrid">${mine.map(c => html`<a class="panel classcard" href="/class/${c.id}"><span class="cc-school small muted">${c.school_name}</span><b class="cc-name">${c.name}</b><span class="small">${c.teachers || ''}</span></a>`)}</div>`
-    : emptyState({ emoji: '🏫', title: t('classes.none'), text: u.is_guest ? t('classes.guest') : t('classes.noneText') })}
+  ${mine.length ? html`<div class="classgrid">${mine.map(c => html`<a class="panel classcard" href="/class/${c.id}"><span class="cc-school small muted">${c.school_name}</span><b class="cc-name">${c.name}</b>${c.teachers ? html`<span class="cc-meta">🍎 ${c.teachers}</span>` : ''}</a>`)}</div>`
+    : waiting.length ? '' : emptyState({ emoji: '🏫', title: t('classes.none'), text: u.is_guest ? t('classes.guest') : t('classes.noneText') })}
+  ${waiting.length || !u.is_guest ? html`<div class="cols2">
   ${waiting.length ? html`<section class="panel"><h2>⏳ ${t('classes.waiting')}</h2><ul class="plain">${waiting.map(w => html`<li>${w.class_name} <span class="muted small">· ${w.school_name}</span></li>`)}</ul></section>` : ''}
   ${u.is_guest ? '' : html`<section class="panel"><h2>${t('classes.join')}</h2><p class="small muted">${t('classes.joinText')}</p>
     <form class="row" data-api="/api/classes/join" novalidate><label class="sr-only" for="jc">${t('classes.code')}</label>
       <input class="input code-input" id="jc" name="code" maxlength="8" autocomplete="off" autocapitalize="characters" spellcheck="false" dir="ltr" placeholder="ABC123" required>
-      <button class="btn btn-primary" type="submit">${t('classes.joinButton')}</button><span class="err form-err"></span></form></section>`}`;
+      <button class="btn btn-primary" type="submit">${t('classes.joinButton')}</button><span class="err form-err"></span></form></section>`}</div>` : ''}`;
   page(req, res, { title: t('classes.title'), active: 'classes', body, head: CSS });
 });
 

@@ -1,5 +1,5 @@
 // Lesson plans: each teacher has a library per school (folders inside folders, lessons in the order they choose),
-// lessons are lists of steps (play a game, build a game, read), and lessons are assigned to classes, grouped in units.
+// lessons are lists of steps (play a game, build a game, read, answer a question), and lessons are assigned to classes, grouped in units.
 //
 // Who can do what:
 //   the lesson's owner (while staff of its school) and that school's admins   edit, move, delete, share
@@ -11,7 +11,7 @@ import { q, uid, now, tx, audit } from '../db.js';
 import * as S from './schools.js';
 import * as games from './games.js';
 
-export const STEP_KINDS = ['game', 'build', 'text'];
+export const STEP_KINDS = ['game', 'build', 'text', 'question'];
 const ok = (extra = {}) => ({ ok: true, ...extra });
 const fail = code => ({ ok: false, code });
 const clip = (s, n) => String(s == null ? '' : s).replace(/[ \t]+/g, ' ').trim().slice(0, n);
@@ -121,7 +121,10 @@ const touch = lessonId => q.run('UPDATE lessons SET updated_at=? WHERE id=?', no
 /** Delete a lesson, its steps, and its assignments to classes. */
 export function deleteLesson(u, lessonId) {
   const l = getLesson(lessonId); if (!canEditLesson(u, l)) return fail('notFound');
-  tx(() => { q.run('DELETE FROM class_lessons WHERE lesson_id=?', l.id); q.run('DELETE FROM lesson_steps WHERE lesson_id=?', l.id); q.run('DELETE FROM lessons WHERE id=?', l.id); });
+  tx(() => {
+    q.run('DELETE FROM step_progress WHERE class_lesson_id IN (SELECT id FROM class_lessons WHERE lesson_id=?)', l.id);
+    q.run('DELETE FROM class_lessons WHERE lesson_id=?', l.id); q.run('DELETE FROM lesson_steps WHERE lesson_id=?', l.id); q.run('DELETE FROM lessons WHERE id=?', l.id);
+  });
   audit(u.id, 'lesson.delete', l.id, { title: l.title });
   return ok();
 }
@@ -183,6 +186,7 @@ function cleanStep(u, input, old = {}) {
   }
   if (kind === 'build' && !v.body) return fail('buildPrompt');
   if (kind === 'text' && !v.body && !v.title) return fail('stepText');
+  if (kind === 'question' && !v.body) return fail('questionText');
   return ok({ v });
 }
 export function addStep(u, lessonId, input) {
@@ -204,7 +208,7 @@ export function updateStep(u, stepId, input) {
 }
 export function deleteStep(u, stepId) {
   const s = getStep(stepId); const l = s && getLesson(s.lesson_id); if (!canEditLesson(u, l)) return fail('notFound');
-  q.run('DELETE FROM lesson_steps WHERE id=?', s.id); touch(l.id);
+  tx(() => { q.run('DELETE FROM step_progress WHERE step_id=?', s.id); q.run('DELETE FROM lesson_steps WHERE id=?', s.id); }); touch(l.id);
   return ok();
 }
 export function reorderStep(u, stepId, dir) {
@@ -300,7 +304,8 @@ export function updateAssignment(u, clId, { unitId, opensAt, dueAt } = {}) {
 }
 export function unassign(u, clId) {
   const cl = getClassLesson(clId); if (!cl || !managed(u, cl.class_id)) return fail('notFound');
-  q.run('DELETE FROM class_lessons WHERE id=?', cl.id);
+  // Students' progress on it goes too (their answers are only kept while the lesson is assigned).
+  tx(() => { q.run('DELETE FROM step_progress WHERE class_lesson_id=?', cl.id); q.run('DELETE FROM class_lessons WHERE id=?', cl.id); });
   audit(u.id, 'lesson.unassign', cl.class_id, { lesson: cl.lesson_id });
   return ok();
 }

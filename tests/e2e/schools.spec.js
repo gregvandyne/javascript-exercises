@@ -42,7 +42,7 @@ test('school -> teacher -> class -> login cards -> own-account student joins wit
   await teacher.goto(classUrl);
   await expect(teacher.locator('.reqcard')).toHaveCount(1);
   await teacher.locator('.reqcard input[name=rosterName]').fill('Cara Lee');
-  await teacher.locator('.reqcard button[type=submit]').first().click();
+  await teacher.locator('.reqcard form[data-api$="/approve"] button[type=submit]').click();
   await expect(teacher.locator('.reqcard')).toHaveCount(0);
   await expect(teacher.locator('main')).toContainText('Cara Lee');
 

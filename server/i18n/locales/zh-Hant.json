@@ -1206,7 +1206,14 @@
       "move": "移動",
       "removeStudent": "移除",
       "removeConfirm": "要將 {name} 從這個班級移除嗎？他們在這個班級的作品會保留。",
-      "edit": "編輯班級"
+      "noStudentsText": "請在下方用學校帳號新增學生，或把班級代碼給擁有個人帳號的學生。",
+      "details": "班級詳細資料",
+      "teachersText": "協同老師可以和你一起管理這個班級：課程、學生和進度。",
+      "removeTeacher": "將 {name} 從這個班級移除",
+      "archiveTitle": "封存這個班級",
+      "archiveText": "封存的班級不會顯示給學生，也不會出現在你的清單中。所有內容都會保留，你隨時可以還原這個班級。",
+      "restoreTitle": "還原這個班級",
+      "restoreText": "這個班級已封存。還原後即可再次使用。"
     },
     "requests": {
       "title": "{count, plural, other {# 位學生想加入}}",
@@ -1293,6 +1300,12 @@
       "staffUseTeach": "你是這所學校的老師。請改為開啟「我的教學」。",
       "ownAccountsOff": "這所學校只使用學校帳號。請向老師拿登入卡。",
       "lastTeacher": "每個班級至少需要一位老師。"
+    },
+    "classTabs": {
+      "lessons": "課程",
+      "progress": "進度",
+      "students": "學生",
+      "settings": "設定"
     }
   },
   "lessons": {
@@ -1306,7 +1319,8 @@
     "kinds": {
       "game": "玩遊戲",
       "build": "做遊戲",
-      "text": "讀一讀、做一做"
+      "text": "讀一讀、做一做",
+      "question": "回答問題"
     },
     "library": {
       "title": "課程庫",
@@ -1350,7 +1364,6 @@
       "kind": "類型",
       "title": "步驟名稱（選填）",
       "game": "遊戲",
-      "gameHint": "用於「玩遊戲」步驟。",
       "myGames": "我的遊戲",
       "schoolGames": "校內分享",
       "siteGames": "Magic Cups 遊戲",
@@ -1427,7 +1440,9 @@
       "build": "做出你自己的遊戲",
       "buildText": "一個關於{topic}、有 6 題的問答遊戲",
       "wrapup": "總結",
-      "wrapupText": "說一說你今天學到的一件事。"
+      "wrapupText": "說一說你今天學到的一件事。",
+      "exit": "今日小回顧",
+      "exitText": "用兩、三句話寫一寫：今天關於{topic}，你學到最重要的事是什麼？"
     },
     "errors": {
       "notFound": "找不到該項目，或你沒有權限開啟。",
@@ -1442,7 +1457,85 @@
       "tooManySteps": "每堂課程最多可以有 40 個步驟。",
       "badDate": "這個日期看起來不太對。",
       "topic": "請輸入這堂課程的主題。",
-      "aiFailed": "AI 目前無法擬定草稿。請過一分鐘再試一次，或自己建立課程。"
+      "aiFailed": "AI 目前無法擬定草稿。請過一分鐘再試一次，或自己建立課程。",
+      "questionText": "請寫下學生要回答的問題。"
+    }
+  },
+  "progress": {
+    "errors": {
+      "notFound": "找不到這個內容，或你不能開啟它。",
+      "answerFirst": "寫下你的答案，就能完成這個步驟。",
+      "answerEmpty": "請先寫下你的答案。",
+      "noGame": "先開始做你的遊戲吧。",
+      "emptyGame": "你的遊戲還是空的。請先讓小幫手把遊戲做出來，再繳交。"
+    },
+    "play": {
+      "backToLesson": "回到課程"
+    },
+    "status": {
+      "done": "完成",
+      "started": "進行中",
+      "none": "還沒開始"
+    },
+    "key": {
+      "done": "已完成",
+      "steps": "已完成的步驟",
+      "late": "已過截止日期",
+      "toRead": "待閱讀的答案"
+    },
+    "teach": {
+      "toRead": "{count, plural, other {# 份答案待閱讀}}"
+    },
+    "gradebook": {
+      "title": "進度",
+      "text": "每位學生在各課程中已完成的步驟。開啟課程即可查看分數並閱讀答案。",
+      "csv": "下載（CSV）",
+      "overall": "整體",
+      "late": "已過截止日期",
+      "toRead": "{count, plural, other {有 # 份答案等你閱讀。}}",
+      "noLessons": "還沒有課程",
+      "noLessonsText": "在「課程」分頁指派課程後，就能在這裡看到每位學生的學習情形。",
+      "noStudents": "還沒有學生",
+      "noStudentsText": "在「學生」分頁新增學生後，他們的進度就會顯示在這裡。"
+    },
+    "lesson": {
+      "finished": "{total} 位學生中有 {done} 位完成",
+      "studentView": "學生畫面",
+      "seeProgress": "班級進度",
+      "jump": "前往閱讀",
+      "lastActive": "最後活動",
+      "openGame": "玩學生的遊戲",
+      "readAnswer": "閱讀",
+      "question": "步驟 {n} 的問題",
+      "read": "已讀",
+      "new": "新",
+      "feedback": "給學生的回饋",
+      "feedbackPlaceholder": "給學生的回饋（選填）",
+      "send": "儲存並標為已讀",
+      "update": "更新回饋",
+      "noAnswers": "還沒有答案。"
+    },
+    "student": {
+      "doneOf": "已完成 {done}/{total}",
+      "allDone": "全部完成了！做得真好。",
+      "markDone": "我做完了",
+      "undo": "還沒做完",
+      "best": "你的最高分：{score}",
+      "gameHint": "玩完一場遊戲，或玩 2 分鐘，這個步驟就完成了。",
+      "played": "我玩過了",
+      "keepBuilding": "繼續做",
+      "handIn": "繳交我的遊戲",
+      "handInConfirm": "要繳交你的遊戲嗎？老師和學校裡的每個人都能玩。",
+      "handInHint": "遊戲做好後就繳交出去，讓老師可以玩。",
+      "handedInText": "你已經繳交遊戲了。",
+      "seeGame": "看我的遊戲",
+      "yourAnswer": "你的答案",
+      "answerPlaceholder": "在這裡寫下你的答案",
+      "sendAnswer": "送出我的答案",
+      "updateAnswer": "修改我的答案",
+      "sentAgo": "已於 {when} 送出",
+      "feedback": "老師的話",
+      "readNoFeedback": "老師已經看過你的答案了。"
     }
   }
 }

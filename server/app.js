@@ -18,6 +18,7 @@ import { router as chatRoutes } from './routes/chat.js';
 import { router as adminRoutes } from './routes/admin.js';
 import { router as schoolRoutes } from './routes/schools.js';
 import { router as lessonRoutes } from './routes/lessons.js';
+import { router as progressRoutes } from './routes/progress.js';
 import { router as infoRoutes } from './routes/info.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -58,7 +59,7 @@ export function createApp() {
   app.use(i18n);
   app.use(csrfCheck);
 
-  for (const r of [authRoutes, discoverRoutes, gameRoutes, studioRoutes, socialRoutes, chatRoutes, adminRoutes, schoolRoutes, lessonRoutes, infoRoutes]) app.use(r);
+  for (const r of [authRoutes, discoverRoutes, gameRoutes, studioRoutes, socialRoutes, chatRoutes, adminRoutes, schoolRoutes, progressRoutes, lessonRoutes, infoRoutes]) app.use(r);
 
   app.use('/api', (req, res) => res.status(404).json({ error: tReq(req)('errors.api.notFound') }));
   app.use((req, res) => notFound(req, res));

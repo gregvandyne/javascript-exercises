@@ -11,6 +11,7 @@ import { importGame } from './import-game.js';
 import * as schools from '../server/services/schools.js';
 import * as lessons from '../server/services/lessons.js';
 import { getGameBySlug } from '../server/services/games.js';
+import * as progress from '../server/services/progress.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 // The launch games, imported in this order (the first featured one becomes the home-page hero).
@@ -72,6 +73,8 @@ export function seedDemoTeacher(admin, say = () => {}) {
   } else setPassword(student.id, pw);
   // Sample lessons, only while the teacher's library is empty (so demo edits are kept).
   if (cls && !lessons.allLessonsOf(teacher.id, school.id).length) seedDemoLessons(teacher, school, cls);
+  if (cls) seedDemoQuestions(teacher, school);
+  if (cls) seedDemoProgress(teacher, cls);
   return { school, teacher, student };
 }
 
@@ -119,3 +122,38 @@ function seedDemoLessons(teacher, school, cls) {
   if (words) lessons.assign(teacher, cls.id, words.id, { unitId: u2 && u2.id, dueAt: iso(Date.now() + 14 * day) });
 }
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) { seed(); console.log('Seed done.'); }
+
+/** Written questions in the sample lessons (added once; demos made before questions existed get them too). */
+function seedDemoQuestions(teacher, school) {
+  const add = (title, step) => {
+    const l = lessons.allLessonsOf(teacher.id, school.id).find(x => x.title === title);
+    if (!l || lessons.steps(l.id).some(s => s.kind === 'question')) return;
+    const r = lessons.addStep(teacher, l.id, step);
+    // before the last step (the wrap-up)
+    if (r.ok) lessons.reorderStep(teacher, r.step.id, -1);
+  };
+  add('Adding fractions with the same denominator', { kind: 'question', title: 'Exit ticket', minutes: 4, body: 'Explain in your own words why 2/8 + 3/8 = 5/8. Draw a picture if it helps.' });
+  add('Word detectives: spelling patterns', { kind: 'question', title: 'Use the pattern', minutes: 5, body: 'Write one sentence that uses at least two words ending in -ight.' });
+}
+
+/** Sample progress for the demo classmates (once), so the gradebook has something to show. DemoStudent starts fresh. */
+function seedDemoProgress(teacher, cls) {
+  const plan = lessons.classPlan(cls.id).flatMap(g => g.lessons);
+  if (!plan.length) return;
+  const kids = schools.roster(cls.id).filter(p => p.role === 'student' && p.username !== 'DemoStudent');
+  if (!kids.length || plan.some(cl => Object.keys(progress.forStudent(cl.id, kids[0].id)).length)) return;
+  const answers = {
+    'Adding fractions with the same denominator': ['Because the eighths are the same size, so you just count them: 2 eighths and 3 more eighths make 5 eighths.', 'The bottom number stays 8 because the pizza is still cut into 8 slices. You add the top: 2 + 3 = 5.', 'I drew a bar with 8 parts and coloured 2 then 3. That is 5 out of 8.', '2 slices and 3 slices is 5 slices of the same pizza.'],
+    'Word detectives: spelling patterns': ['The night was so bright that it gave me a fright!', 'I might fly my kite tonight if the light is right.', 'My flashlight is bright.', 'Turn right at the light.'],
+  };
+  kids.forEach((k, ki) => plan.forEach((cl, li) => {
+    const st = lessons.steps(cl.lesson_id);
+    const howFar = li === 0 ? [st.length, st.length - 1, 3, 2][ki % 4] : [2, 1, 0, st.length][ki % 4];
+    st.slice(0, howFar).forEach((s, si) => {
+      if (s.kind === 'game') { progress.gameStarted(k, cl.id, s.id); progress.gameScore(k, cl.id, s.id, [42, 35, 51, 28][ki % 4] + si); }
+      else if (s.kind === 'question') { const list = answers[cl.title] || answers['Word detectives: spelling patterns']; progress.answer(k, cl.id, s.id, list[ki % list.length]); if (ki === 0) progress.review(teacher, cl.id, s.id, k.id, 'Lovely explanation, and great use of a drawing!'); }
+      else if (s.kind === 'build') { /* a hand-in needs a real game: left for the demo */ }
+      else progress.markDone(k, cl.id, s.id);
+    });
+  }));
+}

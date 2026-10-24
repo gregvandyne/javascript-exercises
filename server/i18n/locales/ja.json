@@ -1206,7 +1206,14 @@
       "move": "移動",
       "removeStudent": "外す",
       "removeConfirm": "{name}をこのクラスから外しますか？このクラスでの作品は残ります。",
-      "edit": "クラスを編集"
+      "noStudentsText": "下から学校アカウントで生徒を追加するか、個人アカウントを持っている生徒にクラスコードを伝えてください。",
+      "details": "クラスの詳細",
+      "teachersText": "共同担当の教員は、あなたと一緒にこのクラスのレッスン、生徒、進捗を管理できます。",
+      "removeTeacher": "{name}をこのクラスから外す",
+      "archiveTitle": "このクラスをアーカイブ",
+      "archiveText": "アーカイブしたクラスは、生徒にもあなたの一覧にも表示されなくなります。データはすべて残り、いつでも復元できます。",
+      "restoreTitle": "このクラスを復元",
+      "restoreText": "このクラスはアーカイブ済みです。もう一度使うには復元してください。"
     },
     "requests": {
       "title": "{count, plural, other {#人の生徒が参加を希望しています}}",
@@ -1293,6 +1300,12 @@
       "staffUseTeach": "あなたはこの学校の教員です。代わりに「担当クラス」を開いてください。",
       "ownAccountsOff": "この学校では、学校のアカウントだけをつかいます。先生にログインカードをもらってください。",
       "lastTeacher": "クラスには少なくとも1人の教員が必要です。"
+    },
+    "classTabs": {
+      "lessons": "レッスン",
+      "progress": "進捗",
+      "students": "生徒",
+      "settings": "設定"
     }
   },
   "lessons": {
@@ -1306,7 +1319,8 @@
     "kinds": {
       "game": "ゲームであそぶ",
       "build": "ゲームをつくる",
-      "text": "よむ・やってみる"
+      "text": "よむ・やってみる",
+      "question": "しつもんにこたえる"
     },
     "library": {
       "title": "レッスンライブラリ",
@@ -1350,7 +1364,6 @@
       "kind": "種類",
       "title": "ステップ名（任意）",
       "game": "ゲーム",
-      "gameHint": "「ゲームであそぶ」ステップ用です。",
       "myGames": "自分のゲーム",
       "schoolGames": "学校内で共有",
       "siteGames": "Magic Cupsのゲーム",
@@ -1427,7 +1440,9 @@
       "build": "自分のゲームをつくろう",
       "buildText": "{topic}についての6問のクイズゲーム",
       "wrapup": "まとめ",
-      "wrapupText": "きょうわかったことを1つ、みんなにおしえてください。"
+      "wrapupText": "きょうわかったことを1つ、みんなにおしえてください。",
+      "exit": "ふりかえり",
+      "exitText": "{topic}について、きょうわかったいちばん大切なことはなにかな？ 2〜3文でかいてみましょう。"
     },
     "errors": {
       "notFound": "見つからないか、開く権限がありません。",
@@ -1442,7 +1457,85 @@
       "tooManySteps": "1つのレッスンに追加できるステップは40個までです。",
       "badDate": "日付が正しくないようです。",
       "topic": "レッスンのテーマを入力してください。",
-      "aiFailed": "現在AIで下書きを作成できません。1分ほどしてからもう一度お試しいただくか、ご自身でレッスンを作成してください。"
+      "aiFailed": "現在AIで下書きを作成できません。1分ほどしてからもう一度お試しいただくか、ご自身でレッスンを作成してください。",
+      "questionText": "生徒が答える質問を入力してください。"
+    }
+  },
+  "progress": {
+    "errors": {
+      "notFound": "見つからないか、ひらくことができません。",
+      "answerFirst": "このステップをおえるには、こたえをかいてください。",
+      "answerEmpty": "先にこたえをかいてください。",
+      "noGame": "まず、ゲームをつくりはじめてください。",
+      "emptyGame": "きみのゲームはまだからっぽです。先にビルダーにつくってもらってから、ていしゅつしてください。"
+    },
+    "play": {
+      "backToLesson": "レッスンにもどる"
+    },
+    "status": {
+      "done": "できた",
+      "started": "とちゅう",
+      "none": "まだ"
+    },
+    "key": {
+      "done": "完了",
+      "steps": "完了したステップ",
+      "late": "期限切れ",
+      "toRead": "未読の回答"
+    },
+    "teach": {
+      "toRead": "{count, plural, other {未読の回答#件}}"
+    },
+    "gradebook": {
+      "title": "進捗",
+      "text": "各生徒が各レッスンで完了したステップ数です。スコアの確認や回答を読むには、レッスンを開いてください。",
+      "csv": "ダウンロード（CSV）",
+      "overall": "全体",
+      "late": "期限切れ",
+      "toRead": "{count, plural, other {未読の回答が#件あります。}}",
+      "noLessons": "レッスンはまだありません",
+      "noLessonsText": "「レッスン」タブでレッスンを割り当てると、各生徒の進み具合がここに表示されます。",
+      "noStudents": "生徒はまだいません",
+      "noStudentsText": "「生徒」タブで生徒を追加すると、ここに進捗が表示されます。"
+    },
+    "lesson": {
+      "finished": "{total}人中{done}人が完了",
+      "studentView": "生徒の画面",
+      "seeProgress": "クラスの進捗",
+      "jump": "回答を読む",
+      "lastActive": "最終利用",
+      "openGame": "ゲームを遊ぶ",
+      "readAnswer": "読む",
+      "question": "ステップ{n}の質問",
+      "read": "既読",
+      "new": "新着",
+      "feedback": "生徒へのフィードバック",
+      "feedbackPlaceholder": "生徒へのフィードバック（任意）",
+      "send": "保存して既読にする",
+      "update": "フィードバックを更新",
+      "noAnswers": "回答はまだありません。"
+    },
+    "student": {
+      "doneOf": "{done}/{total} できた",
+      "allDone": "ぜんぶできました！ よくがんばりましたね。",
+      "markDone": "できました",
+      "undo": "まだできていない",
+      "best": "きみのベストスコア：{score}",
+      "gameHint": "ゲームを1回さいごまでやるか、2分あそぶと、このステップはできたことになります。",
+      "played": "あそびました",
+      "keepBuilding": "つくりつづける",
+      "handIn": "ゲームをていしゅつする",
+      "handInConfirm": "ゲームをていしゅつしますか？ 先生と学校のみんながあそべるようになります。",
+      "handInHint": "ゲームができたら、先生があそべるようにていしゅつしてください。",
+      "handedInText": "ゲームをていしゅつしました。",
+      "seeGame": "自分のゲームを見る",
+      "yourAnswer": "きみのこたえ",
+      "answerPlaceholder": "ここにこたえをかいてください",
+      "sendAnswer": "こたえをおくる",
+      "updateAnswer": "こたえをなおす",
+      "sentAgo": "{when}におくりました",
+      "feedback": "先生から",
+      "readNoFeedback": "先生がきみのこたえをよみました。"
     }
   }
 }

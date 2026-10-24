@@ -12,6 +12,7 @@ import { q, uid, now, audit } from '../db.js';
 import { config } from '../config.js';
 import { tEn, normalizeCode, localeInfo } from '../i18n/index.js';
 import { fileFor } from '../services/shots.js';
+import * as progress from '../services/progress.js';
 import fs from 'node:fs';
 
 export const router = Router();
@@ -100,9 +101,12 @@ router.get('/play/:slug', (req, res) => {
   if (!versionId) return notFound(req, res, t('game.notReadyYet'));
   const token = signToken({ v: versionId, g: g.id, u: u ? u.id : null, l: req.locale });
   const liked = games.userLiked(g.id, u && u.id);
+  // Opened from a lesson step (?lesson=<class lesson>&step=<step>): play time and scores count for that step.
+  const lc = req.query.lesson && req.query.step && u ? progress.context(u, String(req.query.lesson), String(req.query.step)) : null;
+  const lesson = lc && lc.ok && lc.step.kind === 'game' && lc.step.game_id === g.id ? { cl: lc.cl.id, step: lc.step.id, back: `/class/${lc.cl.class_id}/lessons/${lc.cl.id}` } : null;
   const body = html`
   <div class="playbar">
-    <a class="iconbtn" href="/g/${g.slug}" aria-label="${t('play.backTo', { title: g.title })}"><span class="emo flip" aria-hidden="true">←</span><span class="lbl">${t('layout.back')}</span></a>
+    <a class="iconbtn" href="${lesson ? lesson.back : `/g/${g.slug}`}" aria-label="${lesson ? t('progress.play.backToLesson') : t('play.backTo', { title: g.title })}"><span class="emo flip" aria-hidden="true">←</span><span class="lbl">${t('layout.back')}</span></a>
     <span class="ptitle">${g.icon} ${g.title}</span>
     <span class="livecount" data-live="${g.id}" data-live-format="bar"></span>
     <button class="iconbtn" type="button" id="p-like" aria-pressed="${liked}" aria-label="${t('game.like')}"><span class="emo" aria-hidden="true">${liked ? '❤️' : '🤍'}</span><span class="lbl">${t('game.like')}</span></button>
@@ -113,7 +117,7 @@ router.get('/play/:slug', (req, res) => {
     <iframe id="gameframe" title="${g.title}" src="/frame/${token}" sandbox="${SANDBOX}" allow="fullscreen; autoplay" allowfullscreen referrerpolicy="no-referrer"></iframe>
   </div>
   <div class="orient-hint ${g.orientation === 'landscape' ? 'show' : ''}" id="orient"><div><div class="emo" aria-hidden="true">📱</div><h2>${t('play.turn.heading')}</h2><p>${t('play.turn.text')}</p><button class="btn" type="button" id="orient-ok">${t('play.turn.ok')}</button></div></div>
-  ${jsonData('page-data', { gameId: g.id, slug: g.slug, title: g.title, signedIn: !!u, myStars: games.userRating(g.id, u && u.id), canSave: !!u })}`;
+  ${jsonData('page-data', { gameId: g.id, slug: g.slug, title: g.title, signedIn: !!u, myStars: games.userRating(g.id, u && u.id), canSave: !!u, lesson })}`;
   page(req, res, { title: g.title, bare: true, bodyClass: `playmode ${g.orientation === 'landscape' ? 'wants-landscape' : ''}`, body, scripts: ['/js/play.js'] });
 });
 

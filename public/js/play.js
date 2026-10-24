@@ -10,7 +10,14 @@ async function start() {
   try { const r = await api(`/api/games/${d.gameId}/play`, { method: 'POST', body: {} }); playId = r.playId; refreshLive(); } catch { /* ignore */ }
 }
 start();
-setInterval(() => { if (!document.hidden) api(`/api/games/${d.gameId}/heartbeat`, { method: 'POST', body: {} }).then(() => refreshLive()).catch(() => {}); }, 30000);
+// Opened from a lesson: play time and scores also count for that lesson step (see server/services/progress.js).
+const lessonEvent = body => { if (d.lesson) api(`/api/progress/${d.lesson.cl}/${d.lesson.step}/game`, { method: 'POST', body }).catch(() => {}); };
+lessonEvent({ event: 'start' });
+setInterval(() => {
+  if (document.hidden) return;
+  api(`/api/games/${d.gameId}/heartbeat`, { method: 'POST', body: {} }).then(() => refreshLive()).catch(() => {});
+  lessonEvent({ event: 'time', seconds: 30 });
+}, 30000);
 addEventListener('pagehide', () => { navigator.sendBeacon(`/api/games/${d.gameId}/leave`, new Blob([JSON.stringify({ playId })], { type: 'text/plain' })); });
 
 // ---- message validation ----
@@ -41,9 +48,10 @@ addEventListener('message', e => {
     case 'brb:score': {
       if (!d.canSave || Date.now() - lastScoreAt < 2000) return; lastScoreAt = Date.now();
       api(`/api/games/${d.gameId}/score`, { method: 'POST', body: { score: m.score, label: m.label || '' } }).then(r => { if (r.improved) toast(t('js.play.newBest', { score: r.best })); }).catch(() => {});
+      lessonEvent({ event: 'score', score: m.score, label: m.label || '' });
       break;
     }
-    case 'brb:gameover': break;
+    case 'brb:gameover': lessonEvent({ event: 'end', score: m.score }); break;
     case 'brb:fullscreen': m.on ? goFull() : (document.fullscreenElement && document.exitFullscreen().catch(() => {})); break;
     case 'brb:orientation': if (m.value.startsWith('landscape')) $('#orient').classList.add('show'); break;
   }
