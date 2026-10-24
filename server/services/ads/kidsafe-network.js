@@ -8,7 +8,7 @@
 //     through our own origin (the site CSP blocks third-party hosts anyway).
 //  2. Contextual only. The only targeting input is { placement, category }. Never pass user ids,
 //     sessions, IPs, ages, history or device data to the partner.
-//  3. Clicks go to an internal URL first (e.g. /go/ad/<id>) which shows a "You are leaving Magic Cup
+//  3. Clicks go to an internal URL first (e.g. /go/ad/<id>) which shows a "You are leaving Magic Cups
 //     Gaming — ask a grown-up" page before any external link. Not built yet; house ads are internal.
 //  4. Only partners certified for children (COPPA / GDPR-K, e.g. a kidSAFE-listed network) and
 //     only creatives that are static: no animation, sound, countdowns, or "you won" bait.

@@ -121,9 +121,9 @@ export async function screenImage(buf, mime) {
   return v && v !== 'allow' ? v : null;
 }
 const IMAGE_REPLIES = {
-  real_faces: 'That picture shows a real person, so I can’t keep it. Real faces stay private on Magic Cup. Try a drawing or a toy instead!',
+  real_faces: 'That picture shows a real person, so I can’t keep it. Real faces stay private on Magic Cups. Try a drawing or a toy instead!',
   personal_info: 'That picture shows private details like a name, school or address, so I can’t keep it. Try a drawing instead!',
-  unsafe: 'That picture isn’t right for Magic Cup, so I can’t keep it. Try a different picture!',
+  unsafe: 'That picture isn’t right for Magic Cups, so I can’t keep it. Try a different picture!',
 };
 
 export const countForGame = gameId => q.get('SELECT COUNT(*) n FROM builder_uploads WHERE game_id=?', gameId).n;

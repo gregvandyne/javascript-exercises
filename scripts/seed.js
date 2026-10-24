@@ -1,4 +1,4 @@
-// Seed: admin account (ADMIN_USERNAME / ADMIN_PASSWORD), the official "Magic Cup" builder, and the three featured games.
+// Seed: admin account (ADMIN_USERNAME / ADMIN_PASSWORD), the official "Magic Cups" builder, and the three featured games.
 // Safe to re-run.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -23,12 +23,14 @@ export function seed({ quiet = false } = {}) {
     if (admin.role !== 'admin') q.run("UPDATE users SET role='admin' WHERE id=?", admin.id);
     if (config.adminPassword) setPassword(admin.id, config.adminPassword);
   }
-  // The official account was called BRBGaming before the site became Magic Cup: rename it in place so its games keep their owner.
-  const legacy = getUserByName('BRBGaming');
-  if (legacy && !getUserByName('MagicCup')) q.run("UPDATE users SET username='MagicCup' WHERE id=?", legacy.id);
-  let official = getUserByName('MagicCup');
-  if (!official) { official = createUser({ username: 'MagicCup', password: crypto.randomBytes(24).toString('hex'), displayName: 'Magic Cup', avatar: '🎮', color: '#2f6bff' }); say('Created the official Magic Cup builder account'); }
-  q.run("UPDATE users SET display_name='Magic Cup', bio='Official games from the Magic Cup team.' WHERE id=?", official.id);
+  // The official account was called BRBGaming, then MagicCup, before the site became Magic Cups: rename it in place so its games keep their owner.
+  if (!getUserByName('MagicCups')) {
+    const legacy = getUserByName('MagicCup') || getUserByName('BRBGaming');
+    if (legacy) q.run("UPDATE users SET username='MagicCups' WHERE id=?", legacy.id);
+  }
+  let official = getUserByName('MagicCups');
+  if (!official) { official = createUser({ username: 'MagicCups', password: crypto.randomBytes(24).toString('hex'), displayName: 'Magic Cups', avatar: '🎮', color: '#2f6bff' }); say('Created the official Magic Cups builder account'); }
+  q.run("UPDATE users SET display_name='Magic Cups', bio='Official games from the Magic Cups team.' WHERE id=?", official.id);
   const dir = path.join(ROOT, 'seed-games');
   for (const f of SEED_GAMES) {
     const g = importGame(path.join(dir, `${f}.html`), path.join(dir, `${f}.json`), official.id);

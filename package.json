@@ -1,8 +1,8 @@
 {
-  "name": "magic-cup",
+  "name": "magic-cups",
   "version": "0.1.0",
   "private": true,
-  "description": "Magic Cup: a kid-safe platform where anyone can play, build and publish web games with an AI game builder.",
+  "description": "Magic Cups: a kid-safe platform where anyone can play, build and publish web games with an AI game builder.",
   "type": "module",
   "engines": {
     "node": ">=22"

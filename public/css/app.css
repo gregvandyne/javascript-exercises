@@ -1,4 +1,4 @@
-/* Magic Cup design system. One file, used by every page. Tokens first, then components. */
+/* Magic Cups design system. One file, used by every page. Tokens first, then components. */
 @font-face{font-family:Nunito;font-style:normal;font-weight:400;font-display:swap;src:url(/fonts/nunito-latin-400-normal.woff2) format('woff2')}
 @font-face{font-family:Nunito;font-style:normal;font-weight:700;font-display:swap;src:url(/fonts/nunito-latin-700-normal.woff2) format('woff2')}
 @font-face{font-family:Nunito;font-style:normal;font-weight:800;font-display:swap;src:url(/fonts/nunito-latin-800-normal.woff2) format('woff2')}
