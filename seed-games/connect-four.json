@@ -5,10 +5,60 @@
   "cover": "candy",
   "category": "board",
   "tags": "connect four,four in a row,2 player,strategy,robot,board game,drop four,classic",
-  "description": "The classic connect-four game with candy colours. Drop your discs and get four in a row across, down or diagonal before the other player does. Play with a friend on one phone, or take on the robot at Easy, Normal or Hard and earn robot points.",
+  "description": "The classic connect-four game with candy colors. Drop your discs and get four in a row across, down or diagonal before the other player does. Play with a friend on one phone, or take on the robot at Easy, Normal or Hard and earn robot points.",
   "orientation": "any",
   "players_max": 2,
   "age_rating": "everyone",
   "featured": true,
-  "notes": "Saves settings and wins/losses per robot level in BRB.storage key 'drop-four-v1'. Leaderboard score = robot wins weighted Easy 1 / Normal 2 / Hard 4, submitted with label 'robot wins'. Hard uses depth-7 alpha-beta with a transposition cache, run in setTimeout slices (no Worker: the frame CSP has no blob: worker-src). Names are tapped from a nickname list, never typed. Loads Google Font Fredoka."
+  "notes": "Saves settings and wins/losses per robot level in BRB.storage key 'drop-four-v1'. Leaderboard score = robot wins weighted Easy 1 / Normal 2 / Hard 4, submitted with label 'robot wins'. Hard uses depth-7 alpha-beta with a transposition cache, run in setTimeout slices (no Worker: the frame CSP has no blob: worker-src). Names are tapped from a nickname list, never typed. Loads Google Font Fredoka.",
+  "l10n": {
+    "en-GB": {
+      "description": "The classic connect-four game with candy colours. Drop your discs and get four in a row across, down or diagonal before the other player does. Play with a friend on one phone, or take on the robot at Easy, Normal or Hard and earn robot points.",
+      "tags": "connect four,four in a row,2 player,strategy,robot,board game,drop four,classic"
+    },
+    "pt": {
+      "description": "O clássico jogo de quatro em linha, com cores de bala. Solte suas fichas e faça quatro em linha na horizontal, na vertical ou na diagonal antes do outro jogador. Jogue com um amigo no mesmo celular ou enfrente o robô no Fácil, Normal ou Difícil e ganhe pontos.",
+      "tags": "quatro em linha,lig 4,2 jogadores,estratégia,robô,jogo de tabuleiro,clássico"
+    },
+    "fr": {
+      "description": "Le grand classique du puissance 4, aux couleurs de bonbons. Lâche tes jetons et aligne-en quatre, en ligne, en colonne ou en diagonale, avant l’autre joueur. Joue avec un ami sur le même téléphone, ou affronte le robot en Facile, Normal ou Difficile pour gagner des points.",
+      "tags": "puissance 4,quatre à la suite,2 joueurs,stratégie,robot,jeu de plateau,classique"
+    },
+    "es": {
+      "description": "El clásico juego de cuatro en línea con colores de caramelo. Suelta tus fichas y haz cuatro en línea en horizontal, vertical o diagonal antes que el otro jugador. Juega con un amigo en el mismo teléfono o enfréntate al robot en Fácil, Normal o Difícil y gana puntos.",
+      "tags": "cuatro en línea,cuatro en raya,2 jugadores,estrategia,robot,juego de mesa,clásico"
+    },
+    "de": {
+      "description": "Das klassische Vier-gewinnt-Spiel in Bonbonfarben. Wirf deine Steine ein und bilde vor dem anderen Spieler vier in einer Reihe, waagerecht, senkrecht oder schräg. Spiel mit einem Freund an einem Handy oder tritt gegen den Roboter auf Leicht, Normal oder Schwer an und sammle Roboterpunkte.",
+      "tags": "vier gewinnt,vier in einer reihe,2 spieler,strategie,roboter,brettspiel,klassiker"
+    },
+    "he": {
+      "description": "משחק ארבע בשורה הקלאסי בצבעי סוכריות. הפילו דיסקיות וסדרו ארבע בשורה – לרוחב, לגובה או באלכסון – לפני השחקן השני. שחקו עם חבר על אותו טלפון, או התמודדו מול הרובוט ברמה קלה, רגילה או קשה וצברו נקודות.",
+      "tags": "ארבע בשורה,2 שחקנים,אסטרטגיה,רובוט,משחק לוח,קלאסי"
+    },
+    "ja": {
+      "description": "おなじみの「4つならべ」ゲームを、キャンディみたいな いろで。コマをおとして、よこ・たて・ななめに あいてより さきに4つならべましょう。ひとつのスマホで ともだちと あそんだり、「かんたん」「ふつう」「むずかしい」のロボットと たいせんして ポイントをあつめたり できます。",
+      "tags": "4つならべ,コネクトフォー,ふたりで,さくせん,ロボット,ボードゲーム"
+    },
+    "ar": {
+      "description": "لعبة أربعة في صف الكلاسيكية بألوان الحلوى. أسقط أقراصك واصنع أربعة في صف أفقيًا أو عموديًا أو قطريًا قبل اللاعب الآخر. العب مع صديق على هاتف واحد، أو تحدَّ الروبوت في المستوى السهل أو العادي أو الصعب واربح النقاط.",
+      "tags": "أربعة في صف,لاعبان,استراتيجية,روبوت,لعبة لوحية,كلاسيكية"
+    },
+    "ru": {
+      "description": "Классическая игра «Четыре в ряд» в конфетных цветах. Бросай фишки и собери четыре в ряд по горизонтали, вертикали или диагонали раньше соперника. Играй с другом на одном телефоне или сразись с роботом на уровне «Лёгкий», «Обычный» или «Сложный» и получай очки.",
+      "tags": "четыре в ряд,2 игрока,стратегия,робот,настольная игра,классика"
+    },
+    "it": {
+      "description": "Il classico forza quattro con i colori delle caramelle. Fai cadere i gettoni e mettine quattro in fila in orizzontale, in verticale o in diagonale prima dell'altro giocatore. Gioca con un amico sullo stesso telefono, oppure sfida il robot a livello Facile, Normale o Difficile e guadagna punti.",
+      "tags": "forza quattro,quattro in fila,2 giocatori,strategia,robot,gioco da tavolo,classico"
+    },
+    "zh-Hant": {
+      "description": "經典的四子棋遊戲，配上糖果般的顏色。放下棋子，比對手先把四顆連成一線，橫的、直的、斜的都可以。和朋友用同一支手機對戰，或挑戰簡單、普通、困難三種難度的機器人來賺積分。",
+      "tags": "四子棋,四連棋,雙人,策略,機器人,桌遊,經典"
+    },
+    "nl": {
+      "description": "Het klassieke vier-op-een-rij-spel in snoepkleuren. Laat je schijven vallen en maak vier op een rij, horizontaal, verticaal of schuin, voordat de ander dat doet. Speel samen met een vriend op één telefoon, of neem het op tegen de robot op Makkelijk, Normaal of Moeilijk en verdien robotpunten.",
+      "tags": "vier op een rij,2 spelers,strategie,robot,bordspel,klassiek"
+    }
+  }
 }
