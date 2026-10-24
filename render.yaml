@@ -28,3 +28,7 @@ services:
         value: "0.7"
       - key: BUILDER_DAILY_TURNS
         value: "60"
+      - key: AI_DAILY_BUDGET_USD
+        value: "5"
+      - key: AI_MONTHLY_BUDGET_USD
+        value: "50"

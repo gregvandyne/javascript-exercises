@@ -10,6 +10,7 @@
 // what screens other languages. The per-language word lists (server/i18n/blocklists) run in the pre-filter for all.
 import { hasProfanity, normalise, personalInfo } from '../services/textfilter.js';
 import { config } from '../config.js';
+import * as aiBudget from '../services/ai-budget.js';
 import { anthropic } from './anthropic.js';
 import { tEn } from '../i18n/index.js';
 
@@ -117,6 +118,7 @@ export async function modelClassify(text) {
     output_config: { effort: 'low', format: { type: 'json_schema', schema: CLASSIFIER_SCHEMA } },
     messages: [{ role: 'user', content: `<message>\n${String(text).slice(0, 4000)}\n</message>` }],
   }, { timeout: 15000, maxRetries: 1 });
+  aiBudget.recordUsage(res.model || process.env.BUILDER_SCREEN_MODEL || 'claude-haiku-5-5', res.usage);
   if (res.stop_reason === 'refusal') return 'other';
   const block = (res.content || []).find(b => b.type === 'text');
   const out = JSON.parse(block ? block.text : '{}');

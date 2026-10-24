@@ -896,7 +896,8 @@
           "c": "❓ A fun quiz"
         }
       }
-    }
+    },
+    "budgetResting": "The AI Builder is resting until tomorrow, so I'll use my simple building blocks for now."
   },
   "uploads": {
     "tooFast": "That is a lot of files! Wait a minute and try again.",
@@ -909,7 +910,8 @@
     "image": {
       "real_faces": "That picture shows a real person, so I can’t keep it. Real faces stay private on Magic Cups. Try a drawing or a toy instead!",
       "personal_info": "That picture shows private details like a name, school or address, so I can’t keep it. Try a drawing instead!",
-      "unsafe": "That picture isn’t right for Magic Cups, so I can’t keep it. Try a different picture!"
+      "unsafe": "That picture isn’t right for Magic Cups, so I can’t keep it. Try a different picture!",
+      "resting": "Pictures need our safety check, and it's resting until tomorrow. Try a picture again later, or describe your idea in words!"
     }
   },
   "creator": {

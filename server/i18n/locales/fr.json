@@ -895,7 +895,8 @@
           "c": "❓ Un quiz rigolo"
         }
       }
-    }
+    },
+    "budgetResting": "Le Constructeur IA se repose jusqu’à demain, alors j’utilise mes blocs simples pour l’instant."
   },
   "uploads": {
     "tooFast": "Ça fait beaucoup de fichiers ! Attends une minute et réessaie.",
@@ -908,7 +909,8 @@
     "image": {
       "real_faces": "Cette image montre une vraie personne, alors je ne peux pas la garder. Les vrais visages restent privés sur Magic Cups. Essaie plutôt un dessin ou un jouet !",
       "personal_info": "Cette image montre des infos privées, comme un nom, une école ou une adresse, alors je ne peux pas la garder. Essaie plutôt un dessin !",
-      "unsafe": "Cette image ne convient pas à Magic Cups, alors je ne peux pas la garder. Essaie une autre image !"
+      "unsafe": "Cette image ne convient pas à Magic Cups, alors je ne peux pas la garder. Essaie une autre image !",
+      "resting": "Les images doivent passer notre vérification de sécurité, qui se repose jusqu’à demain. Réessaie plus tard, ou décris ton idée avec des mots !"
     }
   },
   "creator": {

@@ -10,7 +10,8 @@ import { q, uid, now, migrate, audit } from '../db.js';
 import { config } from '../config.js';
 import { cleanText } from '../services/textfilter.js';
 import { prefilter, mockClassify, refusal } from './screen.js';
-import { anthropic } from './anthropic.js';
+import { anthropic, resting } from './anthropic.js';
+import * as aiBudget from '../services/ai-budget.js';
 import { tEn } from '../i18n/index.js';
 
 migrate([['0002_studio_uploads', `
@@ -116,6 +117,7 @@ export async function screenImage(buf, mime) {
     output_config: { effort: 'low', format: { type: 'json_schema', schema: IMAGE_SCREEN_SCHEMA } },
     messages: [{ role: 'user', content: [{ type: 'image', source: { type: 'base64', media_type: mime, data: Buffer.from(buf).toString('base64') } }, { type: 'text', text: 'Check this picture.' }] }],
   }, { timeout: 20000, maxRetries: 1 });
+  aiBudget.recordUsage(res.model || process.env.BUILDER_SCREEN_MODEL || 'claude-haiku-5-5', res.usage);
   if (res.stop_reason === 'refusal') return 'unsafe';
   const block = (res.content || []).find(c => c.type === 'text');
   const v = JSON.parse(block ? block.text : '{}').verdict;
@@ -151,6 +153,8 @@ export async function saveUpload({ user, game, name, bytes, t = tEn }, { screen 
     if (cat) { audit(user.id, 'builder.upload_refused', game.id, { name: fileName, category: cat }); const r = refusal(cat, 'prefilter', t); throw new UploadError(`${r.message} ${r.suggestion}`, 422); }
   }
   if (screen && type.kind === 'image') {
+    // Pictures are only kept after the vision safety check; when the AI budget is spent, that check can't run.
+    if (resting()) throw new UploadError(t('uploads.image.resting'), 503);
     let bad = null; try { bad = await screenImage(clean, type.mime); } catch { bad = null; }
     if (bad) { audit(user.id, 'builder.upload_refused', game.id, { name: fileName, category: bad }); throw new UploadError(t(`uploads.image.${IMAGE_VERDICTS.includes(bad) ? bad : 'unsafe'}`), 422); }
   }

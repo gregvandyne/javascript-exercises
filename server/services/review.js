@@ -4,6 +4,7 @@
 // fails in any way, or when the static scan flagged something (a flagged version is never auto-approved).
 import { config } from '../config.js';
 import { anthropic } from '../builder/anthropic.js';
+import * as aiBudget from './ai-budget.js';
 
 const REVIEW_MODEL = () => process.env.REVIEW_MODEL || config.builderModel;
 const unavailable = reason => ({ verdict: 'unavailable', reasons: [reason], by: 'none' });
@@ -56,6 +57,7 @@ ${excerpt}
       output_config: { effort: 'medium', format: { type: 'json_schema', schema: SCHEMA } },
       messages: [{ role: 'user', content: body }],
     }, { timeout: 60000, maxRetries: 1 });
+    aiBudget.recordUsage(res.model || REVIEW_MODEL(), res.usage);
     if (res.stop_reason === 'refusal') return { verdict: 'blocked', reasons: ['This game is not right for Magic Cups.'], by: REVIEW_MODEL() };
     const block = (res.content || []).find(b => b.type === 'text');
     const out = JSON.parse(block ? block.text : '');

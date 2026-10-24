@@ -896,7 +896,8 @@
           "c": "❓ Un quiz divertente"
         }
       }
-    }
+    },
+    "budgetResting": "Il Costruttore IA si riposa fino a domani, quindi per ora uso i miei blocchi semplici."
   },
   "uploads": {
     "tooFast": "Quanti file! Aspetta un minuto e riprova.",
@@ -909,7 +910,8 @@
     "image": {
       "real_faces": "Questa immagine mostra una persona vera, quindi non posso tenerla. Su Magic Cups i volti veri restano privati. Prova con un disegno o un giocattolo!",
       "personal_info": "Questa immagine mostra dati privati come un nome, una scuola o un indirizzo, quindi non posso tenerla. Prova con un disegno!",
-      "unsafe": "Questa immagine non va bene per Magic Cups, quindi non posso tenerla. Prova con un'altra immagine!"
+      "unsafe": "Questa immagine non va bene per Magic Cups, quindi non posso tenerla. Prova con un'altra immagine!",
+      "resting": "Le immagini hanno bisogno del nostro controllo di sicurezza, che si riposa fino a domani. Riprova più tardi o descrivi la tua idea a parole!"
     }
   },
   "creator": {

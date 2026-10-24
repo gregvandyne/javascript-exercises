@@ -896,7 +896,8 @@
           "c": "❓ Een leuke quiz"
         }
       }
-    }
+    },
+    "budgetResting": "De AI-Bouwer rust uit tot morgen, dus ik gebruik nu mijn simpele bouwblokken."
   },
   "uploads": {
     "tooFast": "Dat zijn veel bestanden! Wacht een minuutje en probeer het opnieuw.",
@@ -909,7 +910,8 @@
     "image": {
       "real_faces": "Op dat plaatje staat een echt persoon, dus ik kan het niet bewaren. Echte gezichten blijven privé op Magic Cups. Probeer liever een tekening of speelgoed!",
       "personal_info": "Op dat plaatje staan privégegevens zoals een naam, school of adres, dus ik kan het niet bewaren. Probeer liever een tekening!",
-      "unsafe": "Dat plaatje past niet bij Magic Cups, dus ik kan het niet bewaren. Probeer een ander plaatje!"
+      "unsafe": "Dat plaatje past niet bij Magic Cups, dus ik kan het niet bewaren. Probeer een ander plaatje!",
+      "resting": "Plaatjes moeten door onze veiligheidscheck, en die rust uit tot morgen. Probeer het later nog eens, of beschrijf je idee in woorden!"
     }
   },
   "creator": {

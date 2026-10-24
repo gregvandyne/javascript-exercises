@@ -896,7 +896,8 @@
           "c": "❓ Ein lustiges Quiz"
         }
       }
-    }
+    },
+    "budgetResting": "Der KI-Baumeister ruht sich bis morgen aus, deshalb nehme ich jetzt meine einfachen Bausteine."
   },
   "uploads": {
     "tooFast": "Das sind ganz schön viele Dateien! Warte eine Minute und versuch es noch mal.",
@@ -909,7 +910,8 @@
     "image": {
       "real_faces": "Auf dem Bild ist ein echter Mensch, deshalb kann ich es nicht behalten. Echte Gesichter bleiben auf Magic Cups privat. Probier lieber eine Zeichnung oder ein Spielzeug!",
       "personal_info": "Auf dem Bild sind private Sachen wie ein Name, eine Schule oder eine Adresse, deshalb kann ich es nicht behalten. Probier lieber eine Zeichnung!",
-      "unsafe": "Dieses Bild passt nicht zu Magic Cups, deshalb kann ich es nicht behalten. Probier ein anderes Bild!"
+      "unsafe": "Dieses Bild passt nicht zu Magic Cups, deshalb kann ich es nicht behalten. Probier ein anderes Bild!",
+      "resting": "Bilder brauchen unseren Sicherheitscheck, und der ruht sich bis morgen aus. Versuch das Bild später noch mal oder beschreib deine Idee mit Worten!"
     }
   },
   "creator": {

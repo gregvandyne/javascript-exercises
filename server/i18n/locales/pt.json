@@ -896,7 +896,8 @@
           "c": "❓ Um quiz divertido"
         }
       }
-    }
+    },
+    "budgetResting": "O Construtor de IA está descansando até amanhã, então vou usar meus blocos simples por enquanto."
   },
   "uploads": {
     "tooFast": "Quantos arquivos! Espere um minuto e tente de novo.",
@@ -909,7 +910,8 @@
     "image": {
       "real_faces": "Essa imagem mostra uma pessoa de verdade, então não posso guardar. Rostos reais são segredo no Magic Cups. Tente um desenho ou um brinquedo!",
       "personal_info": "Essa imagem mostra dados pessoais, como um nome, uma escola ou um endereço, então não posso guardar. Tente um desenho!",
-      "unsafe": "Essa imagem não combina com o Magic Cups, então não posso guardar. Tente outra imagem!"
+      "unsafe": "Essa imagem não combina com o Magic Cups, então não posso guardar. Tente outra imagem!",
+      "resting": "As fotos precisam da nossa verificação de segurança, e ela está descansando até amanhã. Tente a foto mais tarde ou conte sua ideia com palavras!"
     }
   },
   "creator": {

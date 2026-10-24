@@ -10,12 +10,14 @@ import { toolbox } from './tools.js';
 import { getUpload, takeForTurn, LIMITS } from './uploads.js';
 import * as mock from './mock.js';
 import * as claude from './claude.js';
+import { resting } from './anthropic.js';
 import { tEn } from '../i18n/index.js';
 
 export const MAX_INPUT = 2000;
 /** Which provider runs the Builder: Claude when a key is set, the mock otherwise (BRB_BUILDER_PROVIDER=mock forces the mock). */
 export function providerName() {
   if (process.env.BRB_BUILDER_PROVIDER === 'mock' || !config.anthropicKey) return 'mock';
+  if (resting()) return 'mock';   // the AI budget is spent for today or this month
   return 'claude';
 }
 const PROVIDERS = { mock, claude };
@@ -71,6 +73,7 @@ export async function runTurn({ user, gameId, text = '', pro = false, uploadIds 
     const state = { ...chat.state, scanFails: 0 };
     const tb = toolbox({ user, gameId, emit: relay, state, locale });
     const name = provider || providerName();
+    if (!provider && name === 'mock' && resting()) relay('text', { text: t('builder.budgetResting') + '\n\n' });
     let usage = { tokensIn: 0, tokensOut: 0, model: name };
     try {
       usage = { ...usage, ...(await PROVIDERS[name].run({ user, game, text, pro: !!pro, history, uploads, state, tools: tb, emit: relay, signal, locale, t })) };
