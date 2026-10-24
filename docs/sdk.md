@@ -45,7 +45,7 @@ The SDK (`public/sdk/brb-sdk.js`) is loaded before the game's own code and is fr
 
 | API | What it does |
 |---|---|
-| `BRB.user` | `{ displayName, avatar, isGuest }`. No other identity is ever given to a game. |
+| `BRB.user` | `{ displayName, avatar, isGuest, lang, dir }`. No other identity is ever given to a game. `lang` and `dir` are explained in [Languages](#languages). |
 | `BRB.game` | `{ id, title }` |
 | `BRB.preview` | `true` inside the Studio preview (saving is off there). |
 | `BRB.storage.get(key)` | Per-player, per-game cloud save. Synchronous read. Values are JSON-decoded when possible. |
@@ -92,3 +92,34 @@ Without an API key a deterministic mock Builder is used. It adapts the "Start fr
 "make it harder", "change the colour", "change the hero to a dragon" or "add a second level" through a small
 "tune-up" script (`server/builder/layer.js`) whose settings are single lines such as `BRB_TUNE.speed = 1.25;`,
 so every change is a real `edit_game` find/replace and a new version.
+
+## Languages
+
+Magic Cups is offered in 13 languages (see `server/i18n`). A game can speak the player's language too:
+
+| Field | Value |
+|---|---|
+| `BRB.user.lang` | The player's site language code: `en`, `en-GB`, `pt` (Brazilian Portuguese), `fr`, `es`, `de`, `he`, `ja`, `ar`, `ru`, `it`, `zh-Hant`, `nl`. Always set; `en` when unknown. |
+| `BRB.user.dir` | `rtl` for right-to-left languages (`he`, `ar`), otherwise `ltr`. |
+
+The page does **not** change the game's own direction: the frame stays left-to-right so existing games keep their layout.
+A game that has text in several languages picks one and sets the direction itself:
+
+```js
+const TEXT = {
+  en: { play: 'Play', again: 'Play again' },
+  fr: { play: 'Jouer', again: 'Rejouer' },
+  ar: { play: 'العب', again: 'العب مرة أخرى' },
+};
+const lang = BRB.user.lang.split('-')[0];            // 'en-GB' -> 'en', 'zh-Hant' -> 'zh'
+const T = TEXT[BRB.user.lang] || TEXT[lang] || TEXT.en;
+document.documentElement.lang = BRB.user.lang;
+document.querySelector('#menu').dir = BRB.user.dir;  // mirror menus and text, not the playfield
+```
+
+- Keep the playfield, controls and scores working the same in both directions (an arrow key still moves the way it points).
+- Numbers can be shown with `n.toLocaleString(BRB.user.lang)`.
+- The language comes from the play page (it is in the signed frame link), so it is right in the Studio preview as well.
+- The AI Builder already writes new games in the builder's language, unless they ask for another one.
+- The launch games are not translated yet: they read `BRB.user.lang` when they are.
+
