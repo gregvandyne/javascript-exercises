@@ -1207,7 +1207,14 @@
       "move": "Verplaatsen",
       "removeStudent": "Verwijderen",
       "removeConfirm": "{name} uit deze klas verwijderen? Het werk in deze klas blijft bewaard.",
-      "edit": "Klas bewerken"
+      "noStudentsText": "Voeg hieronder leerlingen toe met schoolaccounts, of geef leerlingen met een eigen account de klascode.",
+      "details": "Details van de klas",
+      "teachersText": "Collega's kunnen deze klas samen met je leiden: lessen, leerlingen en voortgang.",
+      "removeTeacher": "{name} uit deze klas verwijderen",
+      "archiveTitle": "Deze klas archiveren",
+      "archiveText": "Gearchiveerde klassen zijn verborgen voor leerlingen en staan niet meer in je lijst. Alles blijft bewaard, en je kunt de klas altijd terughalen.",
+      "restoreTitle": "Deze klas terughalen",
+      "restoreText": "Deze klas is gearchiveerd. Herstel de klas om hem weer te gebruiken."
     },
     "requests": {
       "title": "{count, plural, one {# leerling wil meedoen} other {# leerlingen willen meedoen}}",
@@ -1294,6 +1301,12 @@
       "staffUseTeach": "Je bent leerkracht op deze school. Open in plaats daarvan Lesgeven.",
       "ownAccountsOff": "Deze school gebruikt alleen schoolaccounts. Vraag je leerkracht om een inlogkaart.",
       "lastTeacher": "Een klas heeft minstens één leerkracht nodig."
+    },
+    "classTabs": {
+      "lessons": "Lessen",
+      "progress": "Voortgang",
+      "students": "Leerlingen",
+      "settings": "Instellingen"
     }
   },
   "lessons": {
@@ -1307,7 +1320,8 @@
     "kinds": {
       "game": "Speel een game",
       "build": "Bouw een game",
-      "text": "Lees of doe"
+      "text": "Lees of doe",
+      "question": "Beantwoord een vraag"
     },
     "library": {
       "title": "Lessenbibliotheek",
@@ -1351,7 +1365,6 @@
       "kind": "Soort",
       "title": "Titel van de stap (optioneel)",
       "game": "Game",
-      "gameHint": "Voor stappen van het soort “Speel een game”.",
       "myGames": "Mijn games",
       "schoolGames": "Gedeeld op mijn school",
       "siteGames": "Magic Cups-games",
@@ -1428,7 +1441,9 @@
       "build": "Bouw je eigen game",
       "buildText": "Een quizgame met 6 vragen over {topic}",
       "wrapup": "Afsluiting",
-      "wrapupText": "Vertel één ding dat je vandaag hebt geleerd."
+      "wrapupText": "Vertel één ding dat je vandaag hebt geleerd.",
+      "exit": "Exitticket",
+      "exitText": "In twee of drie zinnen: wat is het belangrijkste dat je vandaag over {topic} hebt geleerd?"
     },
     "errors": {
       "notFound": "We konden dat niet vinden, of je kunt het niet openen.",
@@ -1443,7 +1458,85 @@
       "tooManySteps": "Een les kan maximaal 40 stappen hebben.",
       "badDate": "Die datum klopt niet.",
       "topic": "Typ waar de les over gaat.",
-      "aiFailed": "De AI kan dit nu niet maken. Probeer het over een minuutje nog eens, of maak de les zelf."
+      "aiFailed": "De AI kan dit nu niet maken. Probeer het over een minuutje nog eens, of maak de les zelf.",
+      "questionText": "Schrijf de vraag op die leerlingen gaan beantwoorden."
+    }
+  },
+  "progress": {
+    "errors": {
+      "notFound": "We konden dat niet vinden, of je kunt het niet openen.",
+      "answerFirst": "Schrijf je antwoord om deze stap af te maken.",
+      "answerEmpty": "Schrijf eerst je antwoord.",
+      "noGame": "Begin eerst met het bouwen van je game.",
+      "emptyGame": "Je game is nog leeg. Vraag eerst de Bouwer om hem te maken en lever hem dan in."
+    },
+    "play": {
+      "backToLesson": "Terug naar de les"
+    },
+    "status": {
+      "done": "Klaar",
+      "started": "Begonnen",
+      "none": "Nog niet begonnen"
+    },
+    "key": {
+      "done": "klaar",
+      "steps": "stappen gedaan",
+      "late": "inleverdatum voorbij",
+      "toRead": "antwoorden om te lezen"
+    },
+    "teach": {
+      "toRead": "{count, plural, one {# antwoord om te lezen} other {# antwoorden om te lezen}}"
+    },
+    "gradebook": {
+      "title": "Voortgang",
+      "text": "De stappen die elke leerling in elke les heeft afgerond. Open een les om scores te zien en antwoorden te lezen.",
+      "csv": "Downloaden (CSV)",
+      "overall": "Totaal",
+      "late": "Inleverdatum voorbij",
+      "toRead": "{count, plural, one {# antwoord wacht tot je het leest.} other {# antwoorden wachten tot je ze leest.}}",
+      "noLessons": "Nog geen lessen",
+      "noLessonsText": "Wijs een les toe op het tabblad Lessen, dan zie je hier hoe elke leerling ervoor staat.",
+      "noStudents": "Nog geen leerlingen",
+      "noStudentsText": "Voeg leerlingen toe op het tabblad Leerlingen, dan verschijnt hier hun voortgang."
+    },
+    "lesson": {
+      "finished": "{done} van de {total} leerlingen klaar",
+      "studentView": "Leerlingweergave",
+      "seeProgress": "Voortgang van de klas",
+      "jump": "Lees ze",
+      "lastActive": "Laatst actief",
+      "openGame": "Speel de game",
+      "readAnswer": "Lezen",
+      "question": "Vraag in stap {n}",
+      "read": "Gelezen",
+      "new": "Nieuw",
+      "feedback": "Feedback voor de leerling",
+      "feedbackPlaceholder": "Feedback voor de leerling (optioneel)",
+      "send": "Opslaan en als gelezen markeren",
+      "update": "Feedback bijwerken",
+      "noAnswers": "Nog geen antwoorden."
+    },
+    "student": {
+      "doneOf": "{done} van {total} klaar",
+      "allDone": "Alles klaar! Goed gedaan.",
+      "markDone": "Ik heb dit gedaan",
+      "undo": "Nog niet klaar",
+      "best": "Je beste score: {score}",
+      "gameHint": "Deze stap is klaar als je een ronde uitspeelt of 2 minuten speelt.",
+      "played": "Ik heb het gespeeld",
+      "keepBuilding": "Verder bouwen",
+      "handIn": "Mijn game inleveren",
+      "handInConfirm": "Je game inleveren? Je leerkracht en je school kunnen hem dan spelen.",
+      "handInHint": "Is je game klaar? Lever hem dan in, zodat je leerkracht hem kan spelen.",
+      "handedInText": "Je hebt je game ingeleverd.",
+      "seeGame": "Bekijk mijn game",
+      "yourAnswer": "Jouw antwoord",
+      "answerPlaceholder": "Schrijf hier je antwoord",
+      "sendAnswer": "Verstuur mijn antwoord",
+      "updateAnswer": "Verander mijn antwoord",
+      "sentAgo": "Verstuurd {when}",
+      "feedback": "Van je leerkracht",
+      "readNoFeedback": "Je leerkracht heeft je antwoord gelezen."
     }
   }
 }

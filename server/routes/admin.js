@@ -202,7 +202,7 @@ router.get('/admin/stats', (req, res) => {
   const top7 = stats.topGames(7), topAll = stats.topGamesAllTime(10), builders = stats.topBuilders(10), areas = stats.areas(7), models = stats.aiByModel(30), fresh = stats.newestUsers(8);
   const tok = t => int((t.input || 0) + (t.output || 0));
   const body = html`
-  <div class="pagehead"><h1>📊 Stats</h1><nav class="seg" aria-label="Time range">${[7, 30, 90].map(d => html`<a class="btn ${d === days ? 'btn-primary' : ''}" href="/admin/stats?days=${d}" ${d === days ? raw('aria-current="page"') : ''}>${d} days</a>`)}</nav></div>
+  <div class="pagehead"><h1>📊 Stats</h1><nav class="seg" aria-label="Time range">${[7, 30, 90].map(d => html`<a href="/admin/stats?days=${d}" ${d === days ? raw('aria-current="page"') : ''}>${d} days</a>`)}</nav></div>
   <p class="muted small">All times are UTC. Visits count page loads by people (no bots, no tracking: one daily total per page area, and each visitor once a day).</p>
 
   <h2 class="stats-h">Today and this week</h2>
@@ -216,7 +216,7 @@ router.get('/admin/stats', (req, res) => {
     ${tile('🤖 AI cost today', usd(k.ai.today), `of ${usd(k.ai.daily)} cap · ${int(k.ai.callsToday)} calls`, k.ai.ok ? '' : 'bad')}
     ${tile('📅 AI cost this month', usd(k.ai.month), `of ${usd(k.ai.monthly)} cap · ${int(k.ai.callsMonth)} calls`, k.ai.ok ? '' : 'bad')}
     ${tile('🔤 Tokens today', tok(k.ai.tokensToday), `${int(k.ai.tokensToday.input)} in · ${int(k.ai.tokensToday.output)} out`)}
-    ${tile('💬 Builder messages today', int(k.ai.turnsToday), `from ${int(k.ai.buildersToday)} builder${k.ai.buildersToday === 1 ? '' : 's'}`)}
+    ${tile('💬 Builder messages', int(k.ai.turnsToday), `today · from ${int(k.ai.buildersToday)} builder${k.ai.buildersToday === 1 ? '' : 's'}`)}
   </div>
   ${k.ai.ok ? '' : html`<p class="notice warn">The AI ${k.ai.reason} cap is reached: the Builder is using the offline builder until it resets.</p>`}
 

@@ -11,7 +11,7 @@ const SCHEMA = {
   properties: {
     title: { type: 'string' }, summary: { type: 'string' }, objectives: { type: 'string' },
     steps: { type: 'array', items: { type: 'object', additionalProperties: false, required: ['kind', 'title', 'body', 'minutes', 'gameId'], properties: {
-      kind: { type: 'string', enum: ['text', 'game', 'build'] }, title: { type: 'string' }, body: { type: 'string' },
+      kind: { type: 'string', enum: ['text', 'game', 'build', 'question'] }, title: { type: 'string' }, body: { type: 'string' },
       minutes: { type: 'integer' }, gameId: { type: 'string' } } } },
   },
 };
@@ -31,7 +31,8 @@ Write a practical lesson plan for the teacher, in ${lang}. Keep it kind, clear a
 Steps are one of:
 - "text": instructions or a short reading for the students (plain text, short paragraphs, written for the students' age),
 - "game": the students play one of the available games (put its id in gameId; only use ids from the list, and only when a game really fits the topic),
-- "build": the students build their own small game with the Magic Cups Builder; body is the idea they type to the Builder (one or two sentences a child could write, e.g. "a quiz with 8 questions about the planets").
+- "build": the students build their own small game with the Magic Cups Builder; body is the idea they type to the Builder (one or two sentences a child could write, e.g. "a quiz with 8 questions about the planets"),
+- "question": the students answer a question in writing and the teacher reads the answers; body is the question (one clear, open question; use one or two per lesson, for example an exit ticket near the end).
 Use 3 to 7 steps that fill about ${minutes} minutes in total (minutes per step). Start with a short warm-up, end with a wrap-up. gameId is "" for non-game steps.
 Objectives: 2 to 4 short lines, one per line.`,
     output_config: { effort: 'low', format: { type: 'json_schema', schema: SCHEMA } },
@@ -54,6 +55,7 @@ export function templateDraft({ topic, grade, subject }, catalog = [], t = tEn) 
   const steps = [{ kind: 'text', title: t('lessons.template.warmup'), body: t('lessons.template.warmupText', { topic }), minutes: 5, gameId: '' }];
   if (match) steps.push({ kind: 'game', title: t('lessons.template.play', { title: match.title }), body: '', minutes: 10, gameId: match.id });
   steps.push({ kind: 'build', title: t('lessons.template.build'), body: t('lessons.template.buildText', { topic }), minutes: 20, gameId: '' });
+  steps.push({ kind: 'question', title: t('lessons.template.exit'), body: t('lessons.template.exitText', { topic }), minutes: 5, gameId: '' });
   steps.push({ kind: 'text', title: t('lessons.template.wrapup'), body: t('lessons.template.wrapupText'), minutes: 5, gameId: '' });
   return { title: String(topic || '').slice(0, 100), summary: '', objectives: '', steps, grade, subject };
 }

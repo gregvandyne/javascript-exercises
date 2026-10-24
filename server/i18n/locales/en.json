@@ -1207,7 +1207,14 @@
       "move": "Move",
       "removeStudent": "Remove",
       "removeConfirm": "Remove {name} from this class? Their work in this class is kept.",
-      "edit": "Edit class"
+      "noStudentsText": "Add students below with school accounts, or give students who have their own account the class code.",
+      "details": "Class details",
+      "teachersText": "Co-teachers can run this class with you: lessons, students and progress.",
+      "removeTeacher": "Remove {name} from this class",
+      "archiveTitle": "Archive this class",
+      "archiveText": "Archived classes are hidden from students and from your list. Everything is kept, and you can bring the class back at any time.",
+      "restoreTitle": "Bring this class back",
+      "restoreText": "This class is archived. Restore it to use it again."
     },
     "requests": {
       "title": "{count, plural, one {# student wants to join} other {# students want to join}}",
@@ -1294,6 +1301,12 @@
       "staffUseTeach": "You're a teacher at this school. Open My teaching instead.",
       "ownAccountsOff": "This school uses school accounts only. Ask your teacher for a login card.",
       "lastTeacher": "A class needs at least one teacher."
+    },
+    "classTabs": {
+      "lessons": "Lessons",
+      "progress": "Progress",
+      "students": "Students",
+      "settings": "Settings"
     }
   },
   "lessons": {
@@ -1307,7 +1320,8 @@
     "kinds": {
       "game": "Play a game",
       "build": "Build a game",
-      "text": "Read or do"
+      "text": "Read or do",
+      "question": "Answer a question"
     },
     "library": {
       "title": "Lesson library",
@@ -1351,7 +1365,6 @@
       "kind": "Type",
       "title": "Step title (optional)",
       "game": "Game",
-      "gameHint": "For “Play a game” steps.",
       "myGames": "My games",
       "schoolGames": "Shared in my school",
       "siteGames": "Magic Cups games",
@@ -1428,7 +1441,9 @@
       "build": "Build your own game",
       "buildText": "A quiz game with 6 questions about {topic}",
       "wrapup": "Wrap-up",
-      "wrapupText": "Share one thing you learned today."
+      "wrapupText": "Share one thing you learned today.",
+      "exit": "Exit ticket",
+      "exitText": "In two or three sentences: what is the most important thing you learned about {topic} today?"
     },
     "errors": {
       "notFound": "We couldn't find that, or you can't open it.",
@@ -1443,7 +1458,85 @@
       "tooManySteps": "A lesson can have up to 40 steps.",
       "badDate": "That date doesn't look right.",
       "topic": "Type what the lesson is about.",
-      "aiFailed": "The AI couldn't draft this right now. Try again in a minute, or make the lesson yourself."
+      "aiFailed": "The AI couldn't draft this right now. Try again in a minute, or make the lesson yourself.",
+      "questionText": "Write the question students will answer."
+    }
+  },
+  "progress": {
+    "errors": {
+      "notFound": "We couldn't find that, or you can't open it.",
+      "answerFirst": "Write your answer to finish this step.",
+      "answerEmpty": "Write your answer first.",
+      "noGame": "Start building your game first.",
+      "emptyGame": "Your game is still empty. Ask the Builder to make it first, then hand it in."
+    },
+    "play": {
+      "backToLesson": "Back to the lesson"
+    },
+    "status": {
+      "done": "Done",
+      "started": "Started",
+      "none": "Not started"
+    },
+    "key": {
+      "done": "finished",
+      "steps": "steps done",
+      "late": "past the due date",
+      "toRead": "answers to read"
+    },
+    "teach": {
+      "toRead": "{count, plural, one {# answer to read} other {# answers to read}}"
+    },
+    "gradebook": {
+      "title": "Progress",
+      "text": "Steps each student has finished in each lesson. Open a lesson to see scores and read answers.",
+      "csv": "Download (CSV)",
+      "overall": "Overall",
+      "late": "Past the due date",
+      "toRead": "{count, plural, one {# answer is waiting for you to read.} other {# answers are waiting for you to read.}}",
+      "noLessons": "No lessons yet",
+      "noLessonsText": "Assign a lesson on the Lessons tab, and you'll see how each student is doing here.",
+      "noStudents": "No students yet",
+      "noStudentsText": "Add students on the Students tab, and their progress shows up here."
+    },
+    "lesson": {
+      "finished": "{done} of {total} students finished",
+      "studentView": "Student view",
+      "seeProgress": "Class progress",
+      "jump": "Read them",
+      "lastActive": "Last active",
+      "openGame": "Play their game",
+      "readAnswer": "Read",
+      "question": "Question in step {n}",
+      "read": "Read",
+      "new": "New",
+      "feedback": "Feedback for the student",
+      "feedbackPlaceholder": "Feedback for the student (optional)",
+      "send": "Save and mark as read",
+      "update": "Update feedback",
+      "noAnswers": "No answers yet."
+    },
+    "student": {
+      "doneOf": "{done} of {total} done",
+      "allDone": "All done! Great work.",
+      "markDone": "I've done this",
+      "undo": "Not done yet",
+      "best": "Your best score: {score}",
+      "gameHint": "This step is done when you finish a game or play for 2 minutes.",
+      "played": "I've played it",
+      "keepBuilding": "Keep building",
+      "handIn": "Hand in my game",
+      "handInConfirm": "Hand in your game? Your teacher and your school will be able to play it.",
+      "handInHint": "When your game is ready, hand it in so your teacher can play it.",
+      "handedInText": "You handed in your game.",
+      "seeGame": "See my game",
+      "yourAnswer": "Your answer",
+      "answerPlaceholder": "Write your answer here",
+      "sendAnswer": "Send my answer",
+      "updateAnswer": "Change my answer",
+      "sentAgo": "Sent {when}",
+      "feedback": "From your teacher",
+      "readNoFeedback": "Your teacher has read your answer."
     }
   }
 }

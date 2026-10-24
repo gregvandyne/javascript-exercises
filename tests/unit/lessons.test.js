@@ -115,10 +115,10 @@ test('assigning to a class: units, order, dates; students see open lessons only;
 
 test('AI draft without a key: a template in the teacher’s language with a matching game', async () => {
   const d = templateDraft({ topic: 'planets' }, [{ id: publicGame.id, title: 'Planet Quiz', description: '', tags: '' }]);
-  assert.deepEqual(d.steps.map(s => s.kind), ['text', 'game', 'build', 'text']);
+  assert.deepEqual(d.steps.map(s => s.kind), ['text', 'game', 'build', 'question', 'text']);
   assert.equal(d.steps[1].gameId, publicGame.id);
   const r = await draftLesson({ topic: 'oceans' }, []);
-  assert.equal(r.ai, false); assert.equal(r.draft.steps.length, 3);
+  assert.equal(r.ai, false); assert.equal(r.draft.steps.length, 4);
 });
 
 test('pages and APIs: library, editor, draft, class lessons, student lesson page, build step, 404s', async () => {
@@ -136,7 +136,7 @@ test('pages and APIs: library, editor, draft, class lessons, student lesson page
   r = await as(kid)(`/class/${cls.id}/lessons/${cl.id}`); assert.equal(r.status, 200); assert.match(r.text, /Start building/);
   assert.equal((await as(outsider)(`/class/${cls.id}/lessons/${cl.id}`)).status, 404);
   const build = L.steps(id).find(s => s.kind === 'build');
-  r = await as(kid)(`/api/class-lessons/${cl.id}/steps/${build.id}/build`, { method: 'POST', body: {} });
+  r = await as(kid)(`/api/progress/${cl.id}/${build.id}/build`, { method: 'POST', body: {} });
   assert.equal(r.status, 200); assert.match(r.json.redirect, /^\/studio\/[^?]+\?ask=/);
   const gid = r.json.redirect.match(/studio\/([^?]+)/)[1]; assert.equal(games.getGame(gid).owner_id, kid.id);
   // new game from the lesson editor -> a game step + the Studio with the idea ready

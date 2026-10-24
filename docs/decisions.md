@@ -160,3 +160,21 @@ The game site stays as it is; schools are a layer on the same app and the same a
   two that touch (< 8px, < 4px between controls). `tests/e2e/layout.spec.js` runs it on the main pages at phone,
   tablet and desktop widths, light and dark, with collapsible sections closed and opened; `scripts/layout-audit.js`
   crawls every page it can reach as several people and runs the same check.
+
+## Schools, step 3 (progress and gradebook)
+- **What counts as done:** read steps when the student marks them done; questions when they send an answer; game
+  steps when the game reports a score or the end of a game, after 2 minutes of play, or when the student marks it
+  played; build steps when the student hands in their game (it is shared with the school so the teacher can play it).
+- **Game scores** come from the game SDK: a lesson's Play button opens `/play/<game>?lesson=<class lesson>&step=<step>`,
+  and the play page reports start, play time, scores and game over for that step (best score kept). Only students of
+  the class, on open lessons, and only for that step's game.
+- **Written answers:** a new step type, "Answer a question". Answers are seen only by the class's teachers and school
+  admins. Feedback marks an answer read; a changed answer goes back to the teacher's "to read" list. Counts of
+  answers to read show on My teaching, on the class's Progress tab and on the lesson.
+- **Build steps** make one Studio game per student (reopened later, not a new game each time).
+- **Class page tabs:** Lessons, Progress (the gradebook: students × lessons, steps done, past-due and to-read marks,
+  CSV download), Students (join requests, roster, add students, class code) and Settings (details, co-teachers,
+  archive). New classes open on Students. One lesson's progress page shows every student × step (scores, answers,
+  handed-in games) and the answers with feedback forms.
+- **Privacy:** progress for a lesson is deleted when it is unassigned or deleted (with the step, for a step).
+- Not yet: grading scales/marks, rubrics, parent views, LMS grade sync (step 5).

@@ -1207,7 +1207,14 @@
       "move": "Verschieben",
       "removeStudent": "Entfernen",
       "removeConfirm": "{name} aus dieser Klasse entfernen? Die Arbeiten aus dieser Klasse bleiben erhalten.",
-      "edit": "Klasse bearbeiten"
+      "noStudentsText": "Fügen Sie unten Schüler mit Schulkonten hinzu, oder geben Sie Schülern mit eigenem Konto den Klassencode.",
+      "details": "Details zur Klasse",
+      "teachersText": "Weitere Lehrkräfte können diese Klasse gemeinsam mit Ihnen führen: Lektionen, Schüler und Fortschritt.",
+      "removeTeacher": "{name} aus dieser Klasse entfernen",
+      "archiveTitle": "Diese Klasse archivieren",
+      "archiveText": "Archivierte Klassen sind für Schüler und in Ihrer Liste ausgeblendet. Alles bleibt erhalten, und Sie können die Klasse jederzeit zurückholen.",
+      "restoreTitle": "Diese Klasse zurückholen",
+      "restoreText": "Diese Klasse ist archiviert. Stellen Sie sie wieder her, um sie erneut zu verwenden."
     },
     "requests": {
       "title": "{count, plural, one {# Schüler möchte beitreten} other {# Schüler möchten beitreten}}",
@@ -1294,6 +1301,12 @@
       "staffUseTeach": "Sie sind Lehrkraft an dieser Schule. Öffnen Sie stattdessen „Mein Unterricht“.",
       "ownAccountsOff": "Diese Schule nutzt nur Schulkonten. Frag deine Lehrkraft nach einer Anmeldekarte.",
       "lastTeacher": "Eine Klasse braucht mindestens eine Lehrkraft."
+    },
+    "classTabs": {
+      "lessons": "Lektionen",
+      "progress": "Fortschritt",
+      "students": "Schüler",
+      "settings": "Einstellungen"
     }
   },
   "lessons": {
@@ -1307,7 +1320,8 @@
     "kinds": {
       "game": "Ein Spiel spielen",
       "build": "Ein Spiel bauen",
-      "text": "Lesen oder mitmachen"
+      "text": "Lesen oder mitmachen",
+      "question": "Eine Frage beantworten"
     },
     "library": {
       "title": "Lektionsbibliothek",
@@ -1351,7 +1365,6 @@
       "kind": "Typ",
       "title": "Titel des Schritts (optional)",
       "game": "Spiel",
-      "gameHint": "Für Schritte vom Typ „Ein Spiel spielen“.",
       "myGames": "Meine Spiele",
       "schoolGames": "In meiner Schule geteilt",
       "siteGames": "Magic-Cups-Spiele",
@@ -1428,7 +1441,9 @@
       "build": "Bau dein eigenes Spiel",
       "buildText": "Ein Quizspiel mit 6 Fragen über {topic}",
       "wrapup": "Abschluss",
-      "wrapupText": "Erzähl eine Sache, die du heute gelernt hast."
+      "wrapupText": "Erzähl eine Sache, die du heute gelernt hast.",
+      "exit": "Exit-Ticket",
+      "exitText": "In zwei oder drei Sätzen: Was ist das Wichtigste, das du heute über {topic} gelernt hast?"
     },
     "errors": {
       "notFound": "Das haben wir nicht gefunden, oder Sie können es nicht öffnen.",
@@ -1443,7 +1458,85 @@
       "tooManySteps": "Eine Lektion kann bis zu 40 Schritte haben.",
       "badDate": "Dieses Datum sieht nicht richtig aus.",
       "topic": "Geben Sie ein, worum es in der Lektion geht.",
-      "aiFailed": "Die KI kann das gerade nicht entwerfen. Versuchen Sie es in einer Minute noch einmal, oder erstellen Sie die Lektion selbst."
+      "aiFailed": "Die KI kann das gerade nicht entwerfen. Versuchen Sie es in einer Minute noch einmal, oder erstellen Sie die Lektion selbst.",
+      "questionText": "Schreiben Sie die Frage auf, die die Schüler beantworten sollen."
+    }
+  },
+  "progress": {
+    "errors": {
+      "notFound": "Das haben wir nicht gefunden, oder es ist für dieses Konto nicht zugänglich.",
+      "answerFirst": "Schreib deine Antwort, um diesen Schritt abzuschließen.",
+      "answerEmpty": "Schreib zuerst deine Antwort.",
+      "noGame": "Fang zuerst an, dein Spiel zu bauen.",
+      "emptyGame": "Dein Spiel ist noch leer. Bitte zuerst den Baumeister, es zu machen, und gib es dann ab."
+    },
+    "play": {
+      "backToLesson": "Zurück zur Lektion"
+    },
+    "status": {
+      "done": "Fertig",
+      "started": "Angefangen",
+      "none": "Noch nicht angefangen"
+    },
+    "key": {
+      "done": "fertig",
+      "steps": "Schritte erledigt",
+      "late": "überfällig",
+      "toRead": "ungelesene Antworten"
+    },
+    "teach": {
+      "toRead": "{count, plural, one {# ungelesene Antwort} other {# ungelesene Antworten}}"
+    },
+    "gradebook": {
+      "title": "Fortschritt",
+      "text": "Erledigte Schritte jedes Schülers in jeder Lektion. Öffnen Sie eine Lektion, um Punkte zu sehen und Antworten zu lesen.",
+      "csv": "Herunterladen (CSV)",
+      "overall": "Gesamt",
+      "late": "Überfällig",
+      "toRead": "{count, plural, one {# Antwort ist noch ungelesen.} other {# Antworten sind noch ungelesen.}}",
+      "noLessons": "Noch keine Lektionen",
+      "noLessonsText": "Weisen Sie unter „Lektionen“ eine Lektion zu, dann sehen Sie hier, wie weit jeder Schüler ist.",
+      "noStudents": "Noch keine Schüler",
+      "noStudentsText": "Fügen Sie unter „Schüler“ Schüler hinzu, dann erscheint hier ihr Fortschritt."
+    },
+    "lesson": {
+      "finished": "{done} von {total} Schülern fertig",
+      "studentView": "Schüleransicht",
+      "seeProgress": "Fortschritt der Klasse",
+      "jump": "Jetzt lesen",
+      "lastActive": "Zuletzt aktiv",
+      "openGame": "Spiel ausprobieren",
+      "readAnswer": "Lesen",
+      "question": "Frage in Schritt {n}",
+      "read": "Gelesen",
+      "new": "Neu",
+      "feedback": "Feedback für den Schüler",
+      "feedbackPlaceholder": "Feedback für den Schüler (optional)",
+      "send": "Speichern und als gelesen markieren",
+      "update": "Feedback aktualisieren",
+      "noAnswers": "Noch keine Antworten."
+    },
+    "student": {
+      "doneOf": "{done} von {total} geschafft",
+      "allDone": "Alles geschafft! Super gemacht.",
+      "markDone": "Hab ich gemacht",
+      "undo": "Noch nicht fertig",
+      "best": "Dein bester Punktestand: {score}",
+      "gameHint": "Dieser Schritt ist geschafft, wenn du eine Runde zu Ende spielst oder 2 Minuten lang spielst.",
+      "played": "Hab ich gespielt",
+      "keepBuilding": "Weiterbauen",
+      "handIn": "Mein Spiel abgeben",
+      "handInConfirm": "Dein Spiel abgeben? Deine Lehrkraft und deine Schule können es dann spielen.",
+      "handInHint": "Wenn dein Spiel fertig ist, gib es ab, damit deine Lehrkraft es spielen kann.",
+      "handedInText": "Du hast dein Spiel abgegeben.",
+      "seeGame": "Mein Spiel ansehen",
+      "yourAnswer": "Deine Antwort",
+      "answerPlaceholder": "Schreib deine Antwort hier",
+      "sendAnswer": "Antwort abschicken",
+      "updateAnswer": "Antwort ändern",
+      "sentAgo": "Abgeschickt {when}",
+      "feedback": "Von deiner Lehrkraft",
+      "readNoFeedback": "Deine Lehrkraft hat deine Antwort gelesen."
     }
   }
 }

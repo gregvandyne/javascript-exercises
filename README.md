@@ -10,6 +10,7 @@ Think "Roblox for web games", for a 7-year-old, a 12-year-old and their parent s
 - **13 languages**: English (US/UK), Português, Français, Español, Deutsch, עברית, 日本語, العربية, Русский, Italiano, 繁體中文 and Nederlands, picked with the 🌐 menu; right-to-left for Hebrew and Arabic; the Builder replies in the kid's language. Translators start at `server/i18n/README.md`.
 - **Schools** (enterprise, step 1): schools, school admins, teachers, classrooms with join codes, school accounts with printable login cards, students joining with their own account (teacher approves), and school rules for school accounts on the game site.
 - **Lesson plans** (schools, step 2): a lesson library with folders, lessons made of read, play and build steps, ✨ Draft with AI, sharing and copying within the school, and assigning lessons to classes in units with open and due dates. See `docs/decisions.md`.
+- **Progress and gradebook** (schools, step 3): students mark steps done, answer written questions and play games from the lesson (scores and play time count); teachers see a gradebook per class (CSV), each lesson's progress, read answers and give feedback. See `docs/decisions.md`.
 - **No ads**: there are no ads, sponsored cards or purchases anywhere on the site.
 
 ## Run it locally (Node 22)
@@ -72,8 +73,8 @@ In environments with a pre-installed Chromium at `/opt/pw-browsers`, the e2e con
 
 ```
 server/            app factory (app.js), entry (index.js), db.js, auth.js, config.js
-  routes/          auth, discover (home/search), games (game/play/frame/APIs), studio, social, chat, admin (incl. stats), schools (school console, teaching, classes), lessons (library, editor, class lessons), info
-  services/        games, publish, scanner, sanitize, frame, presence, textfilter, ratelimit, review, chat, friends, moderation, schools, lessons, lesson-ai, photos, stats, traffic, shots, snapshot, ai-budget, jobs, log
+  routes/          auth, discover (home/search), games (game/play/frame/APIs), studio, social, chat, admin (incl. stats), schools (school console, teaching, classes), lessons (library, editor, class lessons), progress (lesson pages for students, gradebook, answers), info
+  services/        games, publish, scanner, sanitize, frame, presence, textfilter, ratelimit, review, chat, friends, moderation, schools, lessons, lesson-ai, progress, photos, stats, traffic, shots, snapshot, ai-budget, jobs, log
   builder/         Builder agent loop, providers (Claude + mock), screening, templates/
   views/           layout + components (server-rendered HTML)
   i18n/            languages: index.js (t, negotiation, Intl), locales/<code>.json, notes.json, blocklists/, README for translators
