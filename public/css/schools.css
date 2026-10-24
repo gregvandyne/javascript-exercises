@@ -1,44 +1,114 @@
-/* Schools: school console, teacher class pages, login cards, My classes. */
-.sec-h{margin:22px 0 10px;font-size:1.15rem}
-.formgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,200px),1fr));gap:12px;align-items:end}
+/* Schools: school console, teaching pages, class pages, lessons, login cards, My classes.
+   Spacing follows one scale so nothing touches and gaps feel the same everywhere:
+   4 · 8 · 12 · 16 · 24 · 32 px (--s1 … --s6). tests/e2e/layout.spec.js checks that no two boxes touch. */
+:root{--s1:4px;--s2:8px;--s3:12px;--s4:16px;--s5:24px;--s6:32px}
+
+/* ---------- Page flow ---------- */
+/* Blocks stacked directly in the page keep --s4 between them (vertical margins overlap, so a larger one still wins). */
+main.wrap>*+*{margin-top:var(--s4)}
+main.wrap>.backlink+*{margin-top:var(--s1)}
+main.wrap>.pagehead{margin-bottom:var(--s5)}
+main.wrap>.pagehead+.tabs,main.wrap>.pagehead+.seg{margin-top:0}
+main.wrap>.tabs{margin-bottom:var(--s5)}
+main.wrap>.sec-h{margin:var(--s6) 0 var(--s3)}
+.sec-h{font-size:1.15rem}
+.pagehead>div:first-child{flex:1;min-width:min(100%,240px)}
+.pagehead>div:first-child>h1{margin:2px 0 0}
+.pagehead p{margin:var(--s1) 0 0}
+.pagehead .row{gap:var(--s2)}
+@media (max-width:600px){.pagehead{gap:var(--s3)}.pagehead>.row,.pagehead>.btn,.pagehead>form{width:100%}.pagehead>.row>.btn{flex:1 1 auto}}
+
+/* ---------- Inside panels ---------- */
+/* Everything stacked inside a panel keeps --s3 between items; headings get a little more room above. */
+:where(section.panel,div.panel,details.panel[open],li.stepcard):not(.joincode):not(.tblwrap)>*+*{margin-top:var(--s3)}
+:where(section.panel,div.panel,details.panel[open]):not(.joincode):not(.tblwrap)>*+:is(h2,h3){margin-top:var(--s5)}
+.panel>h2,.panel>h3{margin-bottom:0}
+.panel>h2+p.small,.panel>h2+.small{margin-top:var(--s1)}
+.panel>p:last-child,.panel>ul:last-child{margin-bottom:0}
+.panel p{margin-bottom:0}
+.panel>.empty{padding:var(--s4) 0}
+details.panel>summary{cursor:pointer;font-weight:800;min-height:44px;display:flex;align-items:center;gap:var(--s2);margin:calc(-1 * var(--s2)) 0;list-style-position:inside}
+details.panel[open]>summary{margin-bottom:var(--s2);padding-bottom:var(--s3);border-bottom:1px solid var(--line)}
+details.panel[open]>summary+*{margin-top:var(--s4)}
+
+/* ---------- Forms ---------- */
+.formgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,200px),1fr));gap:var(--s4) var(--s3);align-items:end}
 .formgrid .field{margin:0}
 .formgrid .wide{grid-column:1/-1}
+.formgrid>p{margin:0}
 .formgrid .end{display:flex;align-items:flex-end}
 .formgrid .end .btn{width:100%}
 .grow{flex:1;min-width:0}
 .input-sm{min-height:40px;padding:6px 10px;width:auto;max-width:150px}
-.acts{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.code-input{max-width:180px;text-transform:uppercase;letter-spacing:.15em;font-weight:900}
+.stack>.field{margin:0}
+.stack{gap:var(--s4)}
+.stack h3{margin:var(--s3) 0 0}
+/* Separate forms stacked one after another (e.g. "save" then "archive") never touch. */
+form+form{margin-top:var(--s3)}
+.acts>form+form,.row>form+form,.menu>form+form,.inline+form{margin-top:0}
+
+/* ---------- Buttons in a row ---------- */
+.acts{display:flex;gap:var(--s2);flex-wrap:wrap;align-items:center}
 .acts form{margin:0}
-form.inline{display:inline-flex;gap:6px;align-items:center;margin:0}
+form.inline{display:inline-flex;gap:var(--s2);align-items:center;margin:0}
 .acts .btn-sm,.inline .btn-sm{min-height:40px}
-.pp{display:inline-flex;align-items:center;gap:8px;min-width:0}
+.row.end{justify-content:flex-end}
+
+/* ---------- People ---------- */
+.pp{display:inline-flex;align-items:center;gap:var(--s2);min-width:0}
 .pp b{overflow-wrap:anywhere}
-.chips-list{display:flex;flex-wrap:wrap;gap:10px 18px;margin:0;padding:0;list-style:none}
+.chips-list{display:flex;flex-wrap:wrap;gap:var(--s3) var(--s5);margin:0;padding:0;list-style:none}
 .linkbtn{border:0;background:none;color:var(--muted);cursor:pointer;min-width:32px;min-height:32px;font-size:.9rem}
-.classgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,240px),1fr));grid-auto-rows:1fr;gap:14px;margin-bottom:18px}
-.classgrid>.classcard{margin:0;display:flex;flex-direction:column;gap:4px;color:var(--ink);text-decoration:none;min-height:120px}
-.classcard:hover{transform:translateY(-2px)}
-.cc-name{font-size:1.2rem;line-height:1.25}
-.cc-meta{margin-top:auto;font-size:.9rem;color:var(--ink-2)}
-.chip-s{display:inline-block;padding:1px 8px;border-radius:999px;background:var(--card-2);box-shadow:inset 0 0 0 1px var(--line);font-size:.75rem;font-weight:800;color:var(--muted)}
+.chip-s{display:inline-block;padding:1px 8px;border-radius:999px;background:var(--card-2);box-shadow:inset 0 0 0 1px var(--line);font-size:.75rem;font-weight:800;color:var(--muted);white-space:nowrap}
 .chip-s.warn{background:#fff4d6;color:#7a5200;box-shadow:none}
 @media (prefers-color-scheme:dark){.chip-s.warn{background:#3a2e10;color:#ffd25e}}
-.joincode{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between}
-.joincode h2{margin:0 0 4px}
-.joincode p{margin:0}
+
+/* ---------- Class cards (My teaching, My classes) ---------- */
+.classgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr));grid-auto-rows:1fr;gap:var(--s4)}
+.classgrid>.classcard{margin:0;display:flex;flex-direction:column;gap:var(--s1);color:var(--ink);text-decoration:none;min-height:128px}
+.classcard:hover{transform:translateY(-2px)}
+.cc-name{font-size:1.2rem;line-height:1.25}
+.cc-meta{margin-top:auto;padding-top:var(--s2);font-size:.9rem;color:var(--ink-2)}
+
+/* ---------- Class page ---------- */
+.joincode{display:flex;flex-wrap:wrap;gap:var(--s3) var(--s4);align-items:center;justify-content:space-between}
+.joincode>div:first-child{flex:1 1 280px}
+.joincode h2{margin:0}
+.joincode p{margin:var(--s1) 0 0}
 .jc-code{font:900 2rem/1 ui-monospace,Menlo,monospace;letter-spacing:.18em;padding:10px 16px;border-radius:14px;background:var(--blue-50);color:var(--ink)}
-.reqlist{display:grid;gap:12px;margin:0;padding:0}
-.reqcard{display:grid;gap:10px;padding:12px;border-radius:14px;box-shadow:inset 0 0 0 2px var(--line)}
-.code-input{max-width:180px;text-transform:uppercase;letter-spacing:.15em;font-weight:900}
-.panel+details.panel,details.panel{margin-top:16px}
-details.panel summary{cursor:pointer;font-weight:800}
-.panel>.empty{padding:12px 0}
-/* Login cards: 2 per row on paper, nothing else printed. */
-.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:14px}
-.logincard{border:2px dashed var(--line);border-radius:16px;padding:16px;background:var(--card);break-inside:avoid}
+.reqlist{display:grid;gap:var(--s3);margin:0;padding:0}
+.reqcard{display:grid;gap:var(--s3);padding:var(--s4);border-radius:14px;box-shadow:inset 0 0 0 2px var(--line)}
+.reqcard>form+form{margin-top:0}
+
+/* ---------- Tables; on phones they become stacked cards (label: value) ---------- */
+.rtable td{vertical-align:middle}
+.rtable td.acts{display:table-cell}
+.rtable td.acts>*{display:inline-flex;vertical-align:middle;margin:2px 0}
+.rtable td.acts>*+*{margin-inline-start:var(--s2)}
+@media (max-width:700px){
+  .rtable thead{display:none}
+  .rtable,.rtable tbody,.rtable tr,.rtable td{display:block;width:100%}
+  .rtable tr{padding:var(--s4) 0;border-bottom:1px solid var(--line)}
+  .rtable tr:first-child{padding-top:var(--s1)}
+  .rtable tr:last-child{border-bottom:0;padding-bottom:0}
+  .rtable td{border:0;padding:2px 0}
+  .rtable td:first-child{font-size:1.05rem;padding-bottom:var(--s2)}
+  .rtable td[data-label]{display:inline-block;width:auto;margin-inline-end:var(--s4)}
+  .rtable td[data-label]::before{content:attr(data-label) ": ";font-weight:800;color:var(--muted);font-size:.85rem}
+  .rtable td.acts{display:flex;flex-wrap:wrap;gap:var(--s2);padding-top:var(--s3)}
+  .rtable td.acts>*+*{margin-inline-start:0}
+  .rtable td.hide-sm{display:none}
+  .rtable .input-sm{max-width:none;flex:1}
+  .rtable form.inline{flex:1 1 100%}
+}
+
+/* ---------- Login cards: 2 per row on paper, nothing else printed ---------- */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:var(--s4)}
+.logincard{border:2px dashed var(--line);border-radius:16px;padding:var(--s4);background:var(--card);break-inside:avoid}
 .lc-top{font-weight:900;color:var(--muted);font-size:.9rem}
 .lc-name{font-size:1.35rem;font-weight:900;margin:6px 0 10px}
-.logincard dl{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin:0}
+.logincard dl{display:grid;grid-template-columns:auto 1fr;gap:var(--s1) var(--s3);margin:0}
 .logincard dt{color:var(--muted);font-size:.9rem}
 .logincard dd{margin:0;font-family:ui-monospace,Menlo,monospace;overflow-wrap:anywhere}
 @media print{
@@ -47,69 +117,58 @@ details.panel summary{cursor:pointer;font-weight:800}
   .cards{grid-template-columns:1fr 1fr;gap:10px}
   .logincard{border-color:#999;background:#fff;color:#000}
 }
-/* Phones: tables become stacked cards (label: value), so names and buttons have room. */
-@media (max-width:700px){
-  .rtable thead{display:none}
-  .rtable,.rtable tbody,.rtable tr,.rtable td{display:block;width:100%}
-  .rtable tr{padding:12px 2px;border-bottom:1px solid var(--line)}
-  .rtable tr:last-child{border-bottom:0}
-  .rtable td{border:0;padding:3px 0}
-  .rtable td:first-child{font-size:1.05rem;padding-bottom:6px}
-  .rtable td[data-label]::before{content:attr(data-label) ": ";font-weight:800;color:var(--muted);font-size:.85rem}
-  .rtable td.acts{display:flex;padding-top:10px}
-  /* Short facts (username, grade) sit side by side under the name. */
-  .rtable td[data-label]{display:inline-block;width:auto;margin-inline-end:16px}
-  .rtable td.hide-sm{display:none}
-  .rtable .input-sm{max-width:none;flex:1}
-  .rtable form.inline{flex:1 1 100%}
-}
-/* Lesson library, editor and class lessons */
-.crumbs{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:4px 0 12px;font-weight:800}
-.libtools{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-start;margin-bottom:14px}
+
+/* ---------- Lesson library ---------- */
+.crumbs{display:flex;flex-wrap:wrap;gap:var(--s2);align-items:center;font-weight:800}
+.libtools{display:flex;flex-wrap:wrap;gap:var(--s3);align-items:flex-start}
 .libtools>form{flex:1 1 320px}
 .aidraft{flex:1 1 100%}
-.aidraft[open]{padding:14px;border-radius:var(--r);background:var(--card);box-shadow:var(--shadow)}
+.aidraft[open]{padding:var(--s4);border-radius:var(--r);background:var(--card);box-shadow:var(--shadow)}
 .aidraft>summary{list-style:none;display:inline-flex}
 .aidraft>summary::-webkit-details-marker{display:none}
-.aidraft[open]>summary{margin-bottom:12px}
-.folderlist,.lessonlist,.steplist,.cl-list{display:grid;gap:10px;margin:0 0 14px;padding:0;list-style:none}
-.folderlist>li,.lessonlist>li,.steplist>li,.folderlist>li.panel,.lessonlist>li.panel,.steplist>li.panel{margin:0}
-.steplist{gap:12px;margin:0 0 16px}
-.panel+.steplist,.notice+.panel,.notice+.steplist{margin-top:16px}
-.steplist+.panel,.steplist+section{margin-top:16px}
-.folderrow,.lessonrow{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:12px 14px}
-.fr-name{font-weight:900;color:var(--ink);text-decoration:none;flex:1;min-width:0}
+.aidraft[open]>summary{margin-bottom:var(--s4)}
+.folderlist,.lessonlist,.steplist,.cl-list{display:grid;gap:var(--s3);padding:0;list-style:none}
+:is(.folderlist,.lessonlist,.steplist,.cl-list)>li{margin:0}
+.folderlist,.lessonlist{gap:var(--s2)}
+.folderrow,.lessonrow{display:flex;gap:var(--s3);align-items:center;justify-content:space-between;padding:var(--s3) var(--s4)}
+.fr-name{font-weight:900;color:var(--ink);text-decoration:none;flex:1;min-width:0;min-height:40px;display:flex;align-items:center}
 .lr-main,.cl-main{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0;color:var(--ink);text-decoration:none}
 .lr-main b,.cl-main b{overflow-wrap:anywhere}
 .lr-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:2px}
-.newfolder{margin-top:8px}
+.lr-chips:empty{display:none}
 .inline-menu{position:relative}
 .inline-menu>summary{list-style:none}
 .inline-menu>summary::-webkit-details-marker{display:none}
-.inline-menu .menu{position:absolute;inset-inline-end:0;top:calc(100% + 6px);z-index:20;display:grid;gap:8px;width:min(86vw,320px);padding:12px;border-radius:14px;background:var(--card);box-shadow:var(--shadow-lg)}
-.inline-menu .menu .formgrid{grid-template-columns:1fr 1fr}
+.inline-menu .menu{position:absolute;inset-inline-end:0;top:calc(100% + 6px);z-index:20;display:grid;gap:var(--s3);width:min(86vw,340px);padding:var(--s4);border-radius:14px;background:var(--card);box-shadow:var(--shadow-lg)}
+.inline-menu .menu .formgrid{grid-template-columns:1fr 1fr;gap:var(--s3)}
 .inline-menu .menu .btn{justify-content:center}
-.stepcard{padding:14px 16px}
-.sc-head{display:flex;gap:10px;align-items:flex-start}
+.inline-menu .menu>form>.btn,.inline-menu .menu>.btn{width:100%}
+
+/* ---------- Lesson steps ---------- */
+.stepcard{padding:var(--s4)}
+.sc-head{display:flex;gap:var(--s3);align-items:flex-start}
 .sc-head>.sc-num,.sc-head>.sc-kind{margin-top:2px}
 .sc-num{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--blue-50);font-weight:900;flex:none}
-.sc-kind{font-size:1.4rem}
+.sc-kind{font-size:1.4rem;line-height:28px}
 .sc-title{display:flex;flex-direction:column;flex:1;min-width:0}
-.sc-game,.sc-build{margin:10px 0 6px;font-weight:700}
+.sc-game,.sc-build{margin:0;font-weight:700}
 .sc-build{font-style:italic}
-.sc-body{margin-top:8px}
-.sc-body p{margin:0 0 8px}
-.stepcard details{margin-top:8px}
-@media (max-width:520px){.sc-kind{display:none}.stepcard{padding:14px}}
-.stepcard .btn-big{margin-top:10px}
-.unit{margin-bottom:14px}
-.unit-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.unit h3{margin:12px 0 10px}
-.cl-row{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 12px;border-radius:14px;box-shadow:inset 0 0 0 2px var(--line)}
-.cl-tools{display:grid;gap:16px;margin-top:16px;padding-top:16px;border-top:1px solid var(--line)}
-.cl-more{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
-.unitform{display:flex;gap:8px;flex:1 1 300px;max-width:520px}
-.unitform .input{flex:1;min-width:0}
-.schoolpick{margin-bottom:12px}
-.newgame{margin-top:14px}
-.rtable td{vertical-align:middle}
+.sc-body p{margin:0}
+.sc-body p+p{margin-top:var(--s2)}
+.stepcard>details>summary{min-height:36px;display:inline-flex;align-items:center;cursor:pointer}
+.stepcard>details[open]>summary{margin-bottom:var(--s3)}
+@media (max-width:520px){.sc-kind{display:none}}
+.newgame>summary{min-height:36px;display:inline-flex;align-items:center;cursor:pointer}
+.newgame[open]>summary{margin-bottom:var(--s3)}
+
+/* ---------- Units and lessons on a class page ---------- */
+.unit+.unit{margin-top:var(--s5)}
+.unit-head{display:flex;align-items:center;justify-content:space-between;gap:var(--s3);margin-bottom:var(--s3)}
+.unit h3{margin:0}
+.unit>h3{margin-bottom:var(--s3)}
+.cl-row{display:flex;gap:var(--s3);align-items:center;justify-content:space-between;padding:var(--s3) var(--s4);border-radius:14px;box-shadow:inset 0 0 0 2px var(--line)}
+.cl-tools{display:grid;gap:var(--s4);padding-top:var(--s5);border-top:1px solid var(--line)}
+.panel>.cl-tools{margin-top:var(--s5)}
+.cl-more{display:flex;flex-wrap:wrap;gap:var(--s3);align-items:center;justify-content:space-between}
+.unitform{display:flex;flex-wrap:wrap;gap:var(--s2);flex:1 1 300px;max-width:560px}
+.unitform .input{flex:1 1 180px;min-width:0}

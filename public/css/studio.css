@@ -70,7 +70,7 @@
 @media (max-width:960px){.st-main{grid-template-columns:minmax(0,1fr);height:auto}}
 .st-chat,.st-preview{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);display:flex;flex-direction:column;min-height:0;min-width:0}
 @media (max-width:960px){.st-chat{height:min(68vh,620px)}.st-preview{height:min(86vh,820px)}}
-.st-chat-head{display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.st-chat-head{display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid var(--line);flex-wrap:wrap;flex:none}
 .st-bot{font-size:1.5rem}
 .st-turns{order:3;flex-basis:100%;font-size:.85rem;font-weight:800;color:var(--muted)}
 .st-chat-head b{margin-inline-end:auto}

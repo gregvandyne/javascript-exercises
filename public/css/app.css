@@ -234,7 +234,7 @@ textarea.input{min-height:96px;resize:vertical}
 .stat b{font-size:1.15rem;color:var(--ink);font-weight:900}
 .playbig{min-width:min(100%,260px)}
 @media (max-width:640px){.gamehero .actions{grid-column:1/-1}.playbig{width:100%}}
-.taglist{display:flex;gap:6px;flex-wrap:wrap}
+.taglist{display:flex;gap:8px;flex-wrap:wrap}
 .tag{padding:4px 12px;border-radius:999px;background:var(--blue-50);color:var(--blue-700);font-size:.85rem;font-weight:800}
 @media (prefers-color-scheme:dark){.tag{color:var(--blue-700)}}
 .lb{list-style:none;margin:0;padding:0;counter-reset:lb}
