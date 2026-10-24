@@ -18,7 +18,8 @@ const safeJson = o => JSON.stringify(o).replace(/</g, '\\u003c').replace(/\u2028
 /** init: { user:{displayName,avatar,isGuest}, game:{id,title}, save:{}, canSave:boolean, preview:boolean } */
 export function frameDocument(gameHtml, init) {
   const { html } = sanitizeGameHtml(gameHtml);
-  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="referrer" content="no-referrer"><style>${RESET}</style><script>window.__BRB_INIT__=${safeJson(init)};</script><script>${SDK}</script>\n${html}`;
+  const lang = String((init && init.user && init.user.lang) || 'en').replace(/[^A-Za-z-]/g, '').slice(0, 12) || 'en';
+  return `<!doctype html><html lang="${lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="referrer" content="no-referrer"><style>${RESET}</style><script>window.__BRB_INIT__=${safeJson(init)};</script><script>${SDK}</script>\n${html}`;
 }
 export function sendFrame(res, doc) {
   res.set({

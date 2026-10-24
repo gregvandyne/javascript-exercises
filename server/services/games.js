@@ -3,6 +3,7 @@
 // search also returns builders, and versions carry review status for updates to published games.
 import { q, uid, now, tx } from '../db.js';
 import * as presence from './presence.js';
+import { current } from '../i18n/index.js';
 
 export const CATEGORIES = [
   ['arcade', '🕹️', 'Arcade'], ['sports', '⚽', 'Sports'], ['puzzle', '🧩', 'Puzzle'], ['words', '🔤', 'Words'],
@@ -51,13 +52,22 @@ export function visibleWhere(user) {
     params: [user.id, user.id]
   };
 }
-export const SELECT = `SELECT g.id, g.slug, g.owner_id, g.title, g.description, g.icon, g.cover, g.category, g.tags, g.visibility, g.status, g.plays, g.likes, g.rating_sum, g.rating_count, g.featured, g.players_max, g.orientation, g.source, g.published_at, g.updated_at, g.created_at, g.current_version_id, g.published_version_id, g.pending_version_id, g.review_note, g.hidden_reason,
+export const SELECT = `SELECT g.id, g.slug, g.owner_id, g.title, g.description, g.icon, g.cover, g.category, g.tags, g.visibility, g.status, g.plays, g.likes, g.rating_sum, g.rating_count, g.featured, g.players_max, g.orientation, g.source, g.published_at, g.updated_at, g.created_at, g.current_version_id, g.published_version_id, g.pending_version_id, g.review_note, g.hidden_reason, g.l10n,
   u.username AS owner_name, u.display_name AS owner_display, u.avatar AS owner_avatar, u.color AS owner_color FROM games g JOIN users u ON u.id=g.owner_id`;
 
 export const avgRating = g => (g.rating_count ? g.rating_sum / g.rating_count : 0);
+/** Launch games carry translated descriptions (seed JSON "l10n"): show the one for the page's language.
+ *  Read-only view helper: never save its result back (the stored title/description stay the originals). */
+export function localizeGame(g, locale = current().locale) {
+  if (!g || !g.l10n || !locale || locale === 'en') return g;
+  let m; try { m = JSON.parse(g.l10n); } catch { return g; }
+  const e = (m && (m[locale] || m[locale.split('-')[0]])) || null;
+  if (!e) return g;
+  return { ...g, title: e.title || g.title, description: e.description || g.description, tags: e.tags || g.tags };
+}
 export function decorate(rows) {
   const pc = presence.counts(rows.map(r => r.id));
-  return rows.map(r => ({ ...r, playing: pc[r.id] || 0, rating: avgRating(r), tagList: r.tags ? r.tags.split(',').map(s => s.trim()).filter(Boolean) : [] }));
+  return rows.map(r => localizeGame(r)).map(r => ({ ...r, playing: pc[r.id] || 0, rating: avgRating(r), tagList: r.tags ? r.tags.split(',').map(s => s.trim()).filter(Boolean) : [] }));
 }
 const ORDERS = {
   plays: 'g.featured DESC, g.plays DESC, g.published_at DESC',
@@ -93,8 +103,8 @@ export function search(user, { text = '', category = null, order = 'relevance', 
   const t = String(text || '').trim().slice(0, 60);
   if (t) {
     const like = likeEsc(t);
-    where += ' AND (g.title LIKE ? OR g.description LIKE ? OR g.tags LIKE ? OR u.username LIKE ? OR u.display_name LIKE ? OR g.category LIKE ?)';
-    params.push(like, like, like, like, like, like);
+    where += ' AND (g.title LIKE ? OR g.description LIKE ? OR g.tags LIKE ? OR u.username LIKE ? OR u.display_name LIKE ? OR g.category LIKE ? OR g.l10n LIKE ?)';
+    params.push(like, like, like, like, like, like, like);
   }
   if (category) { where += ' AND g.category=?'; params.push(category); }
   let orderSql = ORDERS.popular;
