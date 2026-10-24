@@ -27,7 +27,7 @@ function renderTop() {
   pb.classList.toggle('st-update', !!canUpdate);
   pb.classList.toggle('btn-coral', !S.live || !!canUpdate);
   pb.textContent = !S.live ? (S.pending ? '⏳ In review' : '🚀 Publish') : canUpdate ? '⬆️ Update live game' : '✅ Live';
-  document.title = `Studio: ${S.game.title} · BRB Gaming`;
+  document.title = `Studio: ${S.game.title} · Magic Cup`;
 }
 function renderTurns() { $('#st-turns').textContent = `🔋 ${S.turnsLeft} of ${S.dailyTurns} turns left today`; }
 function renderLive() {

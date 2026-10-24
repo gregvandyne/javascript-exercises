@@ -1,5 +1,5 @@
 {
-  "_about": "BRB Gaming's own promos (the 'house' ad provider). Internal links only, kid-appropriate, no tracking. 'categories': shown first on pages of those categories (contextual only); empty = fits anywhere. 'placements': where it may appear ('grid', 'game'). 'needsAccount': hide from guests/signed-out visitors because the link needs a free account.",
+  "_about": "Magic Cup's own promos (the 'house' ad provider). Internal links only, kid-appropriate, no tracking. 'categories': shown first on pages of those categories (contextual only); empty = fits anywhere. 'placements': where it may appear ('grid', 'game'). 'needsAccount': hide from guests/signed-out visitors because the link needs a free account.",
   "ads": [
     { "id": "house-build", "title": "Make your own game", "text": "Tell our Builder your idea. It makes the game!", "icon": "🛠️", "href": "/build", "categories": [], "placements": ["grid", "game"] },
     { "id": "house-friends", "title": "Invite a friend", "text": "Share your friend code and play together.", "icon": "👫", "href": "/friends", "categories": [], "placements": ["grid", "game"], "needsAccount": true },

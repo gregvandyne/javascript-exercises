@@ -1,4 +1,4 @@
-/* BRB Gaming design system. One file, used by every page. Tokens first, then components. */
+/* Magic Cup design system. One file, used by every page. Tokens first, then components. */
 @font-face{font-family:Nunito;font-style:normal;font-weight:400;font-display:swap;src:url(/fonts/nunito-latin-400-normal.woff2) format('woff2')}
 @font-face{font-family:Nunito;font-style:normal;font-weight:700;font-display:swap;src:url(/fonts/nunito-latin-700-normal.woff2) format('woff2')}
 @font-face{font-family:Nunito;font-style:normal;font-weight:800;font-display:swap;src:url(/fonts/nunito-latin-800-normal.woff2) format('woff2')}
@@ -43,7 +43,7 @@ p{margin:0 0 .8em}
 .topbar{position:sticky;top:0;z-index:40;height:var(--top);display:flex;align-items:center;gap:12px;padding:0 max(16px,env(safe-area-inset-left));background:color-mix(in srgb,var(--card) 92%,transparent);backdrop-filter:saturate(1.4) blur(12px);border-bottom:1px solid var(--line)}
 .logo{display:flex;align-items:center;gap:8px;font-weight:900;font-size:1.25rem;color:var(--ink);white-space:nowrap;min-height:44px}
 .logo:hover{text-decoration:none}
-.logo-mark{display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,var(--blue),#7c4dff);color:#fff;font-size:.95rem;letter-spacing:-.5px;box-shadow:0 3px 0 var(--blue-700)}
+.logo-mark{display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,var(--blue),#7c4dff);color:#fff;font-size:1.3rem;line-height:1;box-shadow:0 3px 0 var(--blue-700)}
 .logo-text span{color:var(--coral)}
 .topsearch{flex:1;max-width:460px;position:relative}
 .topsearch input{width:100%;height:44px;border-radius:999px;border:2px solid var(--line);background:var(--card-2);padding:0 16px 0 42px;font:inherit;color:var(--ink)}

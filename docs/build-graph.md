@@ -1,4 +1,4 @@
-# BRB Gaming build graph
+# Magic Cup build graph
 
 The platform is built as a dependency graph. Each node has an owner, inputs (edges in), the files it owns, and a proof.
 Nodes on the same level have no edges between them and are built in parallel.

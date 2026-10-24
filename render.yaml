@@ -1,7 +1,7 @@
 # Render blueprint: one web service with a persistent disk for the SQLite file.
 services:
   - type: web
-    name: brb-gaming
+    name: magic-cup
     runtime: docker
     plan: starter
     healthCheckPath: /health

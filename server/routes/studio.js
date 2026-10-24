@@ -24,8 +24,8 @@ export const router = Router();
 
 export const SHARE_TEXT = {
   private: 'Only you can play it.',
-  friends: 'Only you and your friends on BRB Gaming can play it.',
-  public: 'Everyone on BRB Gaming can find and play it, after a quick safety check.',
+  friends: 'Only you and your friends on Magic Cup can play it.',
+  public: 'Everyone on Magic Cup can find and play it, after a quick safety check.',
 };
 export const ICONS = ['🎮', '🦈', '🐉', '🦖', '🤖', '🦄', '🚀', '👽', '🐱', '🐶', '🦊', '🐧', '🐰', '🐸', '🐙', '🐝', '🐠', '🐵', '🦁', '🐼', '👻', '🏴‍☠️', '👸', '🧙', '🥷', '🦋', '🐢', '🦉', '🐻', '🍕', '🧁', '🍎', '⚽', '🏀', '🚗', '🚂', '⛄', '⭐', '🌈', '🌸', '🏆', '🎲', '🧩', '🔤', '❓', '🎵', '💎', '🏰'];
 

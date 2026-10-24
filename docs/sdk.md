@@ -1,6 +1,6 @@
 # The Game Contract and the `window.BRB` SDK
 
-Every game on BRB Gaming, whether it came from our team, a "Start from" template or the AI Builder, follows the same contract.
+Every game on Magic Cup, whether it came from our team, a "Start from" template or the AI Builder, follows the same contract.
 
 ## The Game Contract
 

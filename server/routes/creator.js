@@ -70,7 +70,7 @@ router.get('/creator', requireAccount, (req, res) => {
   const explain = html`<section class="panel" aria-labelledby="how-h"><h2 id="how-h">💡 How earnings work</h2>
     <ul class="howlist">
       <li>Your games earn when players see the small <b>Sponsored</b> cards on your game's page, or next to your game on Home and Search.</li>
-      <li>About 1,000 views of those cards earn your games about <b>${per1000}</b>. You get ${Math.round(s.share * 100)}% and the rest keeps BRB Gaming free.</li>
+      <li>About 1,000 views of those cards earn your games about <b>${per1000}</b>. You get ${Math.round(s.share * 100)}% and the rest keeps Magic Cup free.</li>
       <li>We never show ads inside games or while you play.</li>
       <li>Your own visits don't count. Each player counts once an hour.</li>
       <li>These numbers are an <b>estimate</b>. They update every hour and can change after we check for cheating.</li>
