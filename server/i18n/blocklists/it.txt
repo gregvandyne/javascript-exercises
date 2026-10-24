@@ -2,3 +2,82 @@
 # One entry per line, ROT13-encoded (a-z shifted by 13, so the repo never spells the words out; letters in other
 # scripts stay as written). Lines starting with # are comments. See README.md in this folder for the format.
 # Every list applies to every message on the site, whatever language the sender uses.
+
+# Parolacce e insulti
+pnmm
+xnmm
+vapnmm
+zvapuv
+=zvaxvn
+fgebam
+fgebaf
+sbgg
+inssnaphy
+inssnaxhy
+nssnaphy
+=inssn
+snaphy
+snaxhy
+yrppnphy
+pbtyvba
+ebzcvpbtyvba
+pbwba
+zreq
+grfgnqvpnmmb
+fhppuvnpnmm
+=pbeahgb
+
+# Bestemmie
+cbepbqvb
+cbexbqvb
+cbepb qvb
+=qvb cbepb
+qvbcbepb
+=qvb pnar
+qvbpnar
+qvbxnar
+cbepn znqbaan
+cbepnznqbaan
+
+# Termini sessuali
+chggna
+=mbppbyn
+=mbppbyr
+=mbxxbyn
+zvtabgg
+ontnfpv
+onyqenpp
+fthnyqeva
+cbzcva
+frtnvby
+=fpbcnzv
+fpbcngn
+=svtn
+=grggr
+grggba
+fobee
+vaphyn
+znfgheo
+=frffb
+fghce
+crqbsvy
+
+# Insulti discriminatori (omofobia, razzismo regionale, abilismo)
+sebpvb
+=sebpv
+sebprgg
+evppuvba
+erppuvba
+phynggbar
+=purppn
+=greebar
+=greebav
+zbatbybvq
+
+# Parole innocenti che contengono un termine bloccato (tolte prima del controllo)
+!pnmmhby
+!pnmmbgg
+!svtne
+!svtnq
+!cbffrff
+!ivaphy

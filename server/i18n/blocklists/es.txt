@@ -2,3 +2,92 @@
 # One entry per line, ROT13-encoded (a-z shifted by 13, so the repo never spells the words out; letters in other
 # scripts stay as written). Lines starting with # are comments. See README.md in this folder for the format.
 # Every list applies to every message on the site, whatever language the sender uses.
+# Leetspeak (digits/symbols), spaced-out letters, case and accents are handled by the filter, so entries are plain words.
+
+# Swear words and insults
+chgn
+chgb
+cign
+cigb
+=cgz
+=uqc
+=ucgn
+uvwhrchg
+uvwbrchg
+whrchg
+uvwbqrchg
+zvreq
+=zeqn
+wbqre
+wbqvq
+wbqrg
+puvatn
+puvatba
+=puvatb
+craqrw
+caqw
+pnoeba
+xnoeba
+xoeba
+=iretn
+=iretnf
+=phyreb
+=phyrebf
+=phyren
+phyvnb
+phyvnq
+dyvnb
+znycnevq
+tvyvcbyy
+=chargn
+=chargnf
+chargreb
+pbapunghznqe
+pbapun qr gh znqe
+pbapurfhznqe
+=pgz
+=pfz
+znznthri
+znznuhri
+znznovpu
+
+# Sexual words
+=cbyyn
+=sbyyne
+sbyynaqb
+=sbyyn
+=grgnf
+=grgban
+puhcnzryn
+puhcnyn
+=cnwreb
+=cnwren
+=cnwrebf
+cnwvyyre
+cvpuhy
+=cvatn
+=pbwbarf
+enzren
+cebfgvgh
+qrfahq
+crqbsvy
+
+# Slurs and hate
+znevpba
+=znevpn
+=znevpnf
+=wbgb
+=wbgbf
+=gebyb
+=obyyren
+fhqnpn
+arteng
+
+# Violence and self-harm
+ivbynqbe
+=ivbyne
+fhvpvq
+=zngngr
+
+# Safe words: everyday words that contain a blocked stem
+!qvchgnq

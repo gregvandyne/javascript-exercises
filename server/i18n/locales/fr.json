@@ -1,1 +1,1214 @@
-{}
+{
+  "layout": {
+    "titleHome": "Magic Cups · Joue et crée des jeux",
+    "titleWith": "{title} · Magic Cups",
+    "description": "Joue à des jeux gratuits et crée les tiens avec Magic Cups.",
+    "skip": "Aller aux jeux",
+    "logoLabel": "Accueil de Magic Cups",
+    "mainNav": "Menu principal",
+    "signIn": "Connexion",
+    "meLabel": "Moi : {name}",
+    "back": "Retour",
+    "badgeNew": "{count, plural, one {# nouveau} other {# nouveaux}}",
+    "search": {
+      "label": "Chercher des jeux et des créateurs",
+      "placeholder": "Jeux, créateurs"
+    },
+    "lang": {
+      "title": "Langue",
+      "button": "Langue : {language}"
+    },
+    "footer": {
+      "tagline": "© Magic Cups · Gratuit pour jouer, gratuit pour créer",
+      "safety": "Sécurité",
+      "parents": "Pour les parents",
+      "builders": "Pour les créateurs"
+    }
+  },
+  "nav": {
+    "home": "Accueil",
+    "search": "Recherche",
+    "build": "Créer",
+    "friends": "Amis",
+    "me": "Moi"
+  },
+  "errors": {
+    "goHome": "Retour à l’accueil",
+    "notFound": {
+      "title": "Page introuvable",
+      "heading": "Oups ! On a perdu la carte.",
+      "text": "Nous n’avons pas trouvé cette page."
+    },
+    "broken": {
+      "title": "Oups",
+      "heading": "Quelque chose s’est cassé",
+      "text": "Notre équipe est prévenue. Réessaie dans un moment."
+    },
+    "api": {
+      "notFound": "Introuvable",
+      "tooBig": "C’est trop gros.",
+      "badRequest": "Demande incorrecte.",
+      "server": "Quelque chose n’a pas marché de notre côté. Réessaie, s’il te plaît.",
+      "slowDown": "Oh là, doucement ! Réessaie dans une minute.",
+      "signInFirst": "Connecte-toi ou joue en invité d’abord, s’il te plaît.",
+      "needAccount": "Crée un compte gratuit pour faire ça.",
+      "crossSite": "Requête intersite bloquée."
+    }
+  },
+  "time": {
+    "justNow": "à l’instant"
+  },
+  "textfilter": {
+    "name": {
+      "chars": "Utilise de 3 à 16 lettres, chiffres ou tirets bas (_).",
+      "notAllowed": "Ce nom n’est pas autorisé. Essaie autre chose.",
+      "numbers": "Pas de longs nombres dans les noms, s’il te plaît. Garde les numéros de téléphone secrets.",
+      "birthYear": "Ne mets pas ton année de naissance dans ton nom, s’il te plaît.",
+      "realName": "On dirait un vrai nom. Choisis plutôt un nom rigolo inventé."
+    },
+    "text": {
+      "notAllowed": "Ce texte n’est pas autorisé sur Magic Cups.",
+      "personal": "Ne mets pas de numéros de téléphone, d’e-mails, d’adresses ni de liens sur Magic Cups, s’il te plaît."
+    }
+  },
+  "auth": {
+    "password": {
+      "short": "Ton mot de passe doit avoir au moins 6 caractères.",
+      "long": "Ce mot de passe est trop long.",
+      "easy": "Ce mot de passe est trop facile à deviner. Essaie de mélanger des mots et des chiffres.",
+      "name": "Ne mets pas ton nom dans ton mot de passe."
+    },
+    "page": {
+      "titleSignup": "Créer un compte",
+      "titleLogin": "Connexion",
+      "headingUpgrade": "Garde ta progression",
+      "headingSignup": "Crée un compte gratuit",
+      "headingLogin": "Te revoilà !",
+      "introSignup": "Juste un nom rigolo et un mot de passe. Pas besoin d’e-mail.",
+      "introLogin": "Connecte-toi avec ton nom Magic Cups et ton mot de passe.",
+      "upgradeNotice": "Tu joues en tant que <b>{name}</b>. Tout ce que tu as sauvegardé vient avec toi.",
+      "nameLabelSignup": "Choisis un nom rigolo",
+      "nameLabelLogin": "Ton nom Magic Cups",
+      "namePlaceholder": "comme RocketPanda",
+      "nameHint": "3 à 16 lettres ou chiffres. N’utilise pas ton vrai nom.",
+      "passwordLabel": "Mot de passe",
+      "passwordHint": "Au moins 6 caractères. Demande à un adulte de t’aider à t’en souvenir.",
+      "submitSignup": "Créer mon compte",
+      "submitLogin": "Se connecter",
+      "or": "ou",
+      "playAsGuest": "🎮 Jouer en invité",
+      "haveAccount": "Tu as déjà un compte ?",
+      "signInLink": "Connecte-toi",
+      "newHere": "Première visite ?",
+      "signupLink": "Crée un compte gratuit"
+    },
+    "api": {
+      "tooManyGuests": "Trop d’invités depuis cet endroit. Réessaie plus tard.",
+      "nameTaken": "Ce nom est déjà pris. Essaie d’ajouter un chiffre ou un autre mot.",
+      "tooManyTries": "Trop d’essais. Attends quelques minutes et réessaie.",
+      "wrongLogin": "Ce nom et ce mot de passe ne vont pas ensemble.",
+      "paused": "Ce compte est en pause. Un adulte peut nous contacter.",
+      "pickAvatar": "Choisis un des avatars.",
+      "pickColor": "Choisis une des couleurs.",
+      "pickLanguage": "Choisis une des langues."
+    }
+  },
+  "me": {
+    "title": "Moi",
+    "guestTag": "invité",
+    "guestNotice": "Tu joues sans compte. <a href=\"{href}\"><b>Crée un compte gratuit</b></a> pour garder tes jeux et ta progression sur tous tes appareils, créer des jeux et discuter avec tes amis.",
+    "tiles": {
+      "profile": "Mon profil",
+      "games": "Mes jeux",
+      "friends": "Amis",
+      "chat": "Chat",
+      "money": "Mes gains",
+      "admin": "Admin"
+    },
+    "look": {
+      "heading": "Choisis ton look",
+      "avatarGroup": "Avatar",
+      "avatarLabel": "Avatar {emoji}",
+      "colorHeading": "Couleur",
+      "colorGroup": "Couleur",
+      "colorLabel": "Couleur {color}"
+    },
+    "language": {
+      "heading": "Langue",
+      "text": "Magic Cups, les menus et le Constructeur utilisent cette langue.",
+      "label": "Langue",
+      "save": "Enregistrer"
+    },
+    "chat": {
+      "heading": "Chat",
+      "text": "Le chat te permet d’envoyer des messages aux amis que tu as ajoutés avec un code ami. Adultes : vous pouvez le désactiver ici.",
+      "toggle": "Le chat avec mes amis est activé"
+    },
+    "signOut": {
+      "heading": "Se déconnecter",
+      "guest": "Les invités perdent leur progression quand ils se déconnectent.",
+      "account": "À bientôt !",
+      "button": "Se déconnecter"
+    }
+  },
+  "cards": {
+    "new": "Nouveau",
+    "noRatings": "Pas encore de notes",
+    "starsLabel": "{stars} étoiles sur 5, {count, plural, one {# note} other {# notes}}",
+    "playing": "{count} en jeu",
+    "gameBy": "{title}, par {name}",
+    "by": "par {name}",
+    "plays": "{count, plural, one {{n} partie} other {{n} parties}}",
+    "sponsored": "Sponsorisé",
+    "sponsoredLabel": "Sponsorisé : {title}",
+    "seeAll": "Voir tout",
+    "scrollBack": "Reculer dans {title}",
+    "scrollForward": "Avancer dans {title}"
+  },
+  "vis": {
+    "private": "Juste moi",
+    "friends": "Amis",
+    "public": "Tout le monde"
+  },
+  "status": {
+    "hidden": "Caché",
+    "inReview": "En vérification",
+    "needsChanges": "À modifier",
+    "suspended": "Suspendu",
+    "draft": "Brouillon"
+  },
+  "categories": {
+    "arcade": "Arcade",
+    "sports": "Sport",
+    "puzzle": "Réflexion",
+    "words": "Mots",
+    "board": "Plateau",
+    "adventure": "Aventure",
+    "learning": "Apprendre",
+    "music": "Musique",
+    "silly": "Rigolo"
+  },
+  "ads": {
+    "house": {
+      "house-build": {
+        "title": "Crée ton propre jeu",
+        "text": "Dis ton idée au Constructeur. Il fait le jeu !"
+      },
+      "house-friends": {
+        "title": "Invite un ami",
+        "text": "Partage ton code ami et jouez ensemble."
+      },
+      "house-new": {
+        "title": "Nouveau cette semaine",
+        "text": "De nouveaux jeux faits par des créateurs comme toi."
+      },
+      "house-rate": {
+        "title": "Note un jeu que tu adores",
+        "text": "Mets des étoiles pour que d’autres le trouvent."
+      },
+      "house-words": {
+        "title": "Essaie un jeu de mots",
+        "text": "Épelle, devine et trouve des mots cachés."
+      },
+      "house-build-words": {
+        "title": "Crée un jeu de mots",
+        "text": "Transforme ta liste de mots en jeu !"
+      },
+      "house-puzzle": {
+        "title": "L’heure des énigmes",
+        "text": "Des casse-têtes pour les esprits rapides."
+      },
+      "house-sports": {
+        "title": "Marque un but",
+        "text": "Des jeux de sport pour toute l’année."
+      },
+      "house-build-sports": {
+        "title": "Crée un jeu de sport",
+        "text": "Choisis un sport. Le Constructeur fait le reste."
+      },
+      "house-arcade": {
+        "title": "Classiques d’arcade",
+        "text": "Saute, esquive et bats ton record."
+      },
+      "house-build-arcade": {
+        "title": "Crée un jeu d’arcade",
+        "text": "Esquive, saute, ramasse. C’est toi qui décides !"
+      },
+      "house-adventure": {
+        "title": "Pars à l’aventure",
+        "text": "Explore des cartes et trouve des trésors !"
+      },
+      "house-learning": {
+        "title": "Apprends en jouant",
+        "text": "Maths, sciences et plus, en s’amusant."
+      },
+      "house-music": {
+        "title": "Fais de la musique",
+        "text": "Tape le rythme et joue un air."
+      },
+      "house-silly": {
+        "title": "Un truc rigolo",
+        "text": "Des jeux qui vont te faire rire."
+      },
+      "house-board": {
+        "title": "Soirée jeux de société",
+        "text": "Des jeux classiques à faire en famille."
+      },
+      "house-playing": {
+        "title": "En ce moment",
+        "text": "Regarde à quoi tout le monde joue aujourd’hui."
+      }
+    }
+  },
+  "home": {
+    "build": {
+      "title": "Crée ton propre jeu",
+      "text": "Dis ton idée au Constructeur. Ajoute un dessin ou une photo pour l’inspirer. Il fait le jeu pour toi !",
+      "openStudio": "Ouvrir mon Studio",
+      "start": "Commencer"
+    },
+    "rails": {
+      "featured": "À la une",
+      "playing": "En ce moment",
+      "friends": "De tes amis",
+      "popular": "Populaires",
+      "rated": "Les mieux notés",
+      "new": "Nouveautés",
+      "mine": "Mes jeux"
+    },
+    "hero": {
+      "label": "Jeu à la une",
+      "kicker": "Jeu à la une",
+      "play": "Jouer",
+      "more": "Plus d’infos",
+      "about": "À propos de {title}"
+    },
+    "categories": "Catégories",
+    "empty": {
+      "title": "Pas encore de jeux",
+      "text": "Crée le tout premier !",
+      "action": "Créer un jeu"
+    }
+  },
+  "search": {
+    "title": "Recherche",
+    "titleQuery": "« {text} »",
+    "label": "Chercher des jeux ou des créateurs",
+    "placeholder": "Essaie « requin », « foot » ou le nom d’un créateur",
+    "category": "Catégorie",
+    "all": "Tout",
+    "sortLabel": "Trier :",
+    "sort": "Trier",
+    "sorts": {
+      "relevance": "Plus proche",
+      "popular": "Succès",
+      "rated": "Mieux notés",
+      "new": "Récents",
+      "playing": "En jeu"
+    },
+    "builders": "Créateurs",
+    "games": "Jeux",
+    "gameCount": "{count, plural, one {# jeu} other {# jeux}}",
+    "noMatch": "Aucun jeu ne correspond à « {text} »",
+    "noneYet": "Pas encore de jeux ici",
+    "tryCategory": "Essaie plutôt une catégorie :"
+  },
+  "info": {
+    "safety": {
+      "title": "Sécurité",
+      "description": "Comment Magic Cups protège les enfants : des jeux dans une boîte fermée, chaque jeu vérifié, un chat seulement avec des amis de la vraie vie.",
+      "heading": "Comment on protège Magic Cups",
+      "box": {
+        "h": "Les jeux restent dans une boîte",
+        "p1": "Chaque jeu tourne dans une boîte fermée à clé (un « bac à sable »). Les jeux ne peuvent pas aller sur Internet, ne peuvent pas voir ton compte et ne peuvent pas ouvrir d’autres pages."
+      },
+      "checked": {
+        "h": "Chaque jeu est vérifié",
+        "p1": "Un robot vérificateur lit chaque version de chaque jeu. Les jeux pour tout le monde sont aussi vérifiés avec soin avant que d’autres personnes puissent y jouer.",
+        "p2": "Si quelque chose passe quand même, touche 🚩 Signaler sur la page du jeu. Quand trois personnes signalent un jeu, il est caché jusqu’à ce que notre équipe le regarde."
+      },
+      "chat": {
+        "h": "Le chat, c’est seulement avec des amis",
+        "p1": "Tu peux discuter seulement avec les personnes que tu as ajoutées avec leur code ami secret. Le chat bloque les gros mots, les numéros de téléphone, les e-mails, les adresses et les liens.",
+        "p2": "Tu peux bloquer ou signaler n’importe qui, à tout moment. Les adultes peuvent désactiver le chat sur la page Moi."
+      },
+      "personal": {
+        "h": "Pas d’infos personnelles",
+        "p1": "Nous ne te demandons jamais ton e-mail, ton vrai nom, ton âge ou ton adresse. Choisis un nom rigolo inventé."
+      },
+      "ads": {
+        "h": "Les pubs sont discrètes",
+        "p1": "Quelques petites cartes disent « Sponsorisé ». Elles n’apparaissent jamais dans un jeu ni par-dessus, ne font jamais de bruit et ne s’ouvrent jamais toutes seules."
+      }
+    },
+    "parents": {
+      "title": "Pour les parents",
+      "description": "Ce qu’est Magic Cups, les données conservées, le fonctionnement des amis et du chat, et comment le Constructeur IA reste adapté aux enfants.",
+      "heading": "Pour les parents",
+      "what": {
+        "h": "Qu’est-ce que Magic Cups ?",
+        "p1": "Un site gratuit où les enfants jouent à des jeux web et créent les leurs en les décrivant à un Constructeur IA. Aucun téléchargement, aucun achat, aucune loot box, aucune monnaie de jeu qui coûte de l’argent réel."
+      },
+      "data": {
+        "h": "Les données que nous conservons",
+        "p1": "Un nom d’utilisateur, un mot de passe (enregistré sous une forme illisible), les sauvegardes de jeux, les scores, les notes, les « j’aime » et la langue du site choisie par votre enfant. Pas d’e-mail, pas de vrai nom, pas d’âge, pas de localisation. Aucun traceur tiers."
+      },
+      "friends": {
+        "h": "Amis et chat",
+        "p1": "Les amis s’ajoutent uniquement avec un code ami de 6 caractères, jamais en cherchant un nom. Le chat se fait uniquement par texte, entre amis acceptés ; il est filtré contre le langage grossier et les informations personnelles, limité en nombre de messages, et chaque message peut être signalé. Vous pouvez désactiver le chat sur la page Moi."
+      },
+      "builder": {
+        "h": "Le Constructeur",
+        "p1": "Le Constructeur suit des règles de sécurité fixes pour les enfants : pas de gore, pas de scènes d’horreur qui font sursauter (jump scares), pas de jeux d’argent, pas de vraies marques ni de vraies personnes, pas de chat ni de collecte de données dans les jeux, pas de liens vers l’extérieur. Les demandes qui enfreignent ces règles sont refusées avec gentillesse."
+      },
+      "languages": {
+        "h": "Langues",
+        "p1": "Choisissez une langue avec le bouton 🌐 en haut de chaque page ou sur la page Moi. Le Constructeur répond dans cette langue et écrit aussi les textes des nouveaux jeux dans cette langue. Les mêmes filtres de sécurité vérifient chaque message, dans toutes les langues."
+      },
+      "money": {
+        "h": "Argent",
+        "p1": "La publicité finance la plateforme, et les créateurs reçoivent une part selon le nombre de parties jouées sur leurs jeux. Les versements au-delà de $10 sont traités à la main par notre équipe."
+      }
+    },
+    "sdk": {
+      "title": "Pour les créateurs",
+      "description": "Le petit assistant que reçoit chaque jeu Magic Cups : sauvegardes, scores, effets, sons et langue du joueur.",
+      "heading": "SDK des jeux",
+      "brb": {
+        "p1": "Chaque jeu reçoit un petit assistant appelé BRB. {get} et {set} sauvegardent la progression de chaque joueur. localStorage marche aussi et il est sauvegardé dans le cloud.",
+        "p2": "{submit} ajoute un score au classement (seulement le meilleur). {over} termine une manche.",
+        "p3": "{fx} donnent du peps.",
+        "p4": "{full} et {orient} le demandent poliment à la page.",
+        "p5": "{lang} est la langue du joueur (comme \"fr\" ou \"ar\") et {dir} vaut \"rtl\" pour les langues qui s’écrivent de droite à gauche : ainsi, un jeu peut parler la langue du joueur."
+      },
+      "rules": {
+        "h": "Règles",
+        "p1": "Les jeux ne peuvent pas utiliser Internet, les cookies, les formulaires, les fenêtres pop-up ni les liens. Les polices de Google Fonts et les bibliothèques de cdnjs sont autorisées. Chaque jeu doit faire moins de 2 Mo."
+      }
+    }
+  },
+  "game": {
+    "notShared": "Ce jeu n’existe pas, ou il n’est pas partagé avec toi.",
+    "notReadyYet": "Ce jeu n’est pas encore prêt.",
+    "play": "Jouer",
+    "notReady": "Pas encore prêt à jouer.",
+    "like": "J’aime",
+    "share": "Partager",
+    "edit": "Modifier",
+    "updateWaiting": "une mise à jour attend d’être vérifiée",
+    "reviewer": "Vérificateur : « {note} »",
+    "stats": {
+      "ratings": "{count, plural, one {{n} note} other {{n} notes}}",
+      "noRatings": "pas encore de notes",
+      "playingNow": "en ce moment",
+      "plays": "{count, plural, one {partie} other {parties}}",
+      "likes": "j’aime"
+    },
+    "about": {
+      "heading": "À propos de ce jeu",
+      "noDescription": "Pas encore de description.",
+      "players": "1 à {count} joueurs",
+      "onePlayer": "1 joueur",
+      "sideways": "Mieux à l’horizontale",
+      "updated": "Mis à jour {when}"
+    },
+    "rate": {
+      "heading": "Donne ta note",
+      "yourRating": "Ta note",
+      "stars": "{count, plural, one {# étoile} other {# étoiles}}",
+      "thanks": "Merci ! Touche les étoiles pour changer ta note quand tu veux.",
+      "tap": "Touche une étoile.",
+      "guest": "Joue en invité pour noter"
+    },
+    "leaderboard": {
+      "heading": "Classement",
+      "empty": "Pas encore de scores. À toi de jouer !"
+    },
+    "more": {
+      "label": "Plus",
+      "heading": "Dans le même genre"
+    },
+    "shareText": {
+      "private": "Il n’y a que toi qui peux ouvrir ce jeu. Choisis Amis ou Tout le monde pour le partager.",
+      "friends": "Seuls tes amis sur Magic Cups peuvent ouvrir ce lien.",
+      "public": "Toute personne qui a le lien peut jouer à ce jeu."
+    },
+    "report": {
+      "button": "Signaler",
+      "already": "Merci, nous avons déjà ton signalement.",
+      "thanks": "Merci de nous avoir prévenus. Un adulte de notre équipe va regarder.",
+      "reasons": {
+        "scary": "Il fait trop peur",
+        "mean": "Il est méchant ou grossier",
+        "grownup": "Il y a des trucs pour adultes",
+        "broken": "Il ne marche pas",
+        "copy": "Il copie le jeu de quelqu’un d’autre",
+        "other": "Autre chose"
+      }
+    },
+    "api": {
+      "notFound": "Jeu introuvable.",
+      "pickStars": "Choisis de 1 à 5 étoiles.",
+      "saveFailed": "Nous n’avons pas pu enregistrer ça.",
+      "badScore": "Score invalide.",
+      "pickReason": "Choisis une raison."
+    }
+  },
+  "play": {
+    "backTo": "Retour à {title}",
+    "rate": "Noter",
+    "fullScreen": "Plein écran",
+    "turn": {
+      "heading": "Tourne ton téléphone sur le côté",
+      "text": "Ce jeu est mieux à l’horizontale.",
+      "ok": "Jouer quand même"
+    },
+    "frameExpired": "Ce lien de jeu a expiré. Reviens en arrière et appuie encore sur Jouer.",
+    "defaultPlayer": "Joueur"
+  },
+  "friends": {
+    "title": "Amis",
+    "chat": "Chat",
+    "playing": "Joue à {game}",
+    "notPlaying": "Ne joue pas en ce moment",
+    "needAccount": {
+      "title": "Crée un compte gratuit pour ajouter des amis",
+      "text": "Pour les amis et le chat, il faut un compte gratuit. Juste un nom et un mot de passe, sans e-mail.",
+      "action": "Crée un compte gratuit",
+      "actionGuest": "Créer mon compte gratuit",
+      "guestNote": "Les invités peuvent jouer à tous les jeux. Ta progression te suit quand tu crées un compte."
+    },
+    "code": {
+      "heading": "Ton code ami",
+      "copy": "Copier",
+      "hint": "Donne ce code seulement à des amis que tu connais dans la vraie vie. Ils le tapent pour t’envoyer une demande d’ami."
+    },
+    "add": {
+      "heading": "Ajouter un ami",
+      "label": "Tape le code de ton ami",
+      "button": "Ajouter",
+      "hint": "6 lettres et chiffres. Majuscules ou minuscules, pas grave."
+    },
+    "requests": {
+      "heading": "Demandes d’amis",
+      "accept": "Accepter",
+      "decline": "Refuser"
+    },
+    "waiting": {
+      "heading": "En attente d’un oui",
+      "asked": "Demandé {when}",
+      "cancel": "Annuler"
+    },
+    "list": {
+      "heading": "Tes amis",
+      "profile": "Profil",
+      "remove": "Retirer",
+      "shared": "Jeux partagés par {name}",
+      "emptyTitle": "Pas encore d’amis",
+      "emptyText": "Échange des codes amis avec quelqu’un que tu connais dans la vraie vie, comme ton frère, ta sœur ou un copain de classe."
+    },
+    "blocked": {
+      "heading": "Bloqués",
+      "text": "Les amis bloqués ne peuvent pas discuter avec toi. Débloque-les pour discuter à nouveau.",
+      "unblock": "Débloquer"
+    },
+    "api": {
+      "tooManyTries": "Beaucoup d’essais ! Attends quelques minutes, puis vérifie le code avec ton ami.",
+      "gone": "Cette demande n’existe plus. Essaie de recharger la page.",
+      "accepted": "{name} et toi, vous êtes maintenant amis ! 🎉",
+      "declined": "Demande refusée.",
+      "canceled": "Demande annulée.",
+      "removed": "{name} ne fait plus partie de tes amis.",
+      "needAccount": "Crée un compte gratuit pour ajouter des amis.",
+      "typeCode": "Tape d’abord le code de ton ami.",
+      "codeLength": "Un code ami a 6 lettres et chiffres. Vérifie-le et réessaie.",
+      "codeNotFound": "Nous n’avons pas trouvé ce code. Vérifie chaque lettre et réessaie.",
+      "ownCode": "C’est ton propre code ! Donne-le à un ami pour qu’il puisse t’ajouter.",
+      "guest": "Ce joueur est un invité. Il lui faut un compte gratuit pour que vous puissiez être amis.",
+      "already": "{name} et toi, vous êtes déjà amis.",
+      "alreadyAsked": "Tu as déjà fait une demande à {name}. Attends sa réponse.",
+      "sent": "Demande d’ami envoyée à {name} ! Il faut maintenant que {name} dise oui."
+    }
+  },
+  "profile": {
+    "notFound": "Nous n’avons pas trouvé ce joueur.",
+    "description": "{name} sur Magic Cups",
+    "team": "Équipe Magic Cups",
+    "yourFriend": "Dans tes amis",
+    "badgesLabel": "Badges",
+    "changeLook": "Changer mon look",
+    "answerRequest": "Répondre à la demande d’ami",
+    "requestSent": "Demande d’ami envoyée",
+    "yourProfile": "C’est ton profil. Tout le monde voit ton nom, ton look, tes jeux et tes badges. Personne ne voit tes amis.",
+    "statsLabel": "Statistiques",
+    "stats": {
+      "games": "{count, plural, one {jeu} other {jeux}}"
+    },
+    "gamesBy": "Jeux de {name}",
+    "noGames": "Pas encore de jeux à montrer",
+    "noGamesMe": "Crées-en un et partage-le !",
+    "favorites": "Jeux préférés",
+    "noFavorites": "Pas encore de favoris.",
+    "beFriends": "Envie d’être amis ? Échangez vos codes amis dans la vraie vie, puis ajoute le code sur la page {link}.",
+    "guest": {
+      "tag": "Joueur invité",
+      "text": "Les invités peuvent jouer à tous les jeux. Quand ils créent un compte gratuit, ils ont aussi un profil.",
+      "action": "Trouver un jeu"
+    },
+    "badges": {
+      "builder": {
+        "label": "Créateur",
+        "why": "A un jeu en ligne"
+      },
+      "hit": {
+        "label": "Gros succès",
+        "why": "Un jeu avec au moins 100 parties"
+      },
+      "top": {
+        "label": "Top noté",
+        "why": "Un jeu noté 4,5 ou plus par au moins 5 joueurs"
+      },
+      "player": {
+        "label": "Joueur",
+        "why": "A joué à au moins 10 jeux différents"
+      },
+      "friendly": {
+        "label": "Sympa",
+        "why": "A au moins 3 amis"
+      }
+    }
+  },
+  "chat": {
+    "title": "Chat",
+    "notFound": "Nous n’avons pas trouvé cette discussion.",
+    "allChats": "Toutes les discussions",
+    "block": "Bloquer",
+    "goToFriends": "Aller à Amis",
+    "offNotice": "Ton chat est désactivé. Un adulte peut l’activer sur la page {link}.",
+    "blockedToast": "{name} est bloqué. Tu ne verras plus ses messages.",
+    "unblockedToast": "{name} est débloqué.",
+    "guest": {
+      "title": "Crée un compte gratuit pour discuter",
+      "text": "Le chat, c’est seulement avec des amis ajoutés avec un code ami. Il faut un compte gratuit : juste un nom et un mot de passe, sans e-mail."
+    },
+    "safety": {
+      "heading": "Sécurité du chat",
+      "text": "Discute seulement avec des amis que tu connais dans la vraie vie. Ne donne jamais ton adresse, ton école ou ton numéro de téléphone. Parle à un adulte si quelque chose te semble bizarre."
+    },
+    "inbox": {
+      "label": "Discussions avec tes amis",
+      "sayHi": "Dis bonjour ! 👋",
+      "off": "Le chat est désactivé",
+      "emptyTitle": "Pas encore d’amis avec qui discuter",
+      "emptyText": "Tu peux discuter seulement avec tes amis. Échange des codes amis avec quelqu’un que tu connais dans la vraie vie.",
+      "sharedGame": "A partagé un jeu",
+      "you": "Toi : {text}"
+    },
+    "thread": {
+      "title": "Discussion avec {name}",
+      "label": "Messages avec {name}",
+      "empty": "Pas encore de messages. Dis bonjour avec un message rapide ! 👋",
+      "quickLabel": "Messages rapides",
+      "shareGame": "Partager un jeu",
+      "game": "Jeu",
+      "messageTo": "Message à {name}",
+      "placeholder": "Écris un message",
+      "send": "Envoyer"
+    },
+    "quick": {
+      "hi": "👋 Salut !",
+      "gg": "Bien joué ! 🎉",
+      "play": "On joue ?",
+      "nice": "Trop fort !",
+      "brb": "Je reviens !",
+      "again": "On rejoue ?",
+      "thanks": "Merci !",
+      "bye": "À plus ! 👋"
+    },
+    "cant": {
+      "guest": "Crée un compte gratuit pour discuter avec tes amis.",
+      "banned": "Ton compte est en pause, alors le chat est désactivé.",
+      "missing": "Ce joueur n’est pas sur Magic Cups en ce moment.",
+      "self": "Tu ne peux pas discuter avec toi-même. Choisis un ami !",
+      "guest_other": "Tu peux discuter seulement avec des amis qui ont un compte gratuit.",
+      "not_friends": "Tu peux discuter seulement avec tes amis. Ajoute d’abord {name} avec son code ami, puis attends son oui.",
+      "chat_off_me": "Ton chat est désactivé. Un adulte peut l’activer sur la page Moi.",
+      "chat_off_other": "{name} a désactivé le chat.",
+      "blocked_by_me": "Tu as bloqué {name}. Tu peux le débloquer sur la page Amis.",
+      "blocked_by_other": "Tu ne peux pas discuter avec {name} pour le moment."
+    },
+    "paused": "Le chat fait une petite pause. Tu pourras écrire à nouveau dans {minutes, plural, one {# minute} other {# minutes}}. Tu peux quand même envoyer des messages rapides.",
+    "errors": {
+      "empty": "Écris d’abord un message.",
+      "long": "Ce message est trop long. Pas plus de {max} lettres.",
+      "kind": "Choisis quelque chose à envoyer.",
+      "rate": "Oh là, ça fait beaucoup de messages ! Attends quelques secondes.",
+      "daily": "C’est fini pour le chat aujourd’hui. Reviens demain !",
+      "quick": "Choisis un des messages rapides.",
+      "game": "Nous n’avons pas trouvé ce jeu.",
+      "gameHidden": "{name} ne peut pas ouvrir ce jeu. Partage un jeu pour les amis ou pour tout le monde.",
+      "messageNotFound": "Nous n’avons pas trouvé ce message."
+    },
+    "blocked": {
+      "words": "Oups ! Ce message contient des mots qui ne sont pas autorisés. Essaie de le dire plus gentiment.",
+      "phone": "Message pas envoyé. Les numéros de téléphone restent secrets sur Magic Cups, même avec des amis.",
+      "email": "Message pas envoyé. Les adresses e-mail restent secrètes sur Magic Cups.",
+      "link": "Message pas envoyé. Les liens ne sont pas autorisés dans le chat. Partage plutôt un jeu avec le bouton 🎮.",
+      "address": "Message pas envoyé. Les adresses de maison restent secrètes. Ne dis jamais où tu habites.",
+      "contact": "Message pas envoyé. Reste sur Magic Cups pour discuter : pas d’autres applis, pas d’écoles, pas de rendez-vous.",
+      "handle": "Message pas envoyé. Reste sur Magic Cups pour discuter : pas de pseudos d’autres applis."
+    },
+    "report": {
+      "thanks": "Merci de nous avoir prévenus. Nous avons caché ce message, et un adulte de notre équipe va le regarder.",
+      "reasons": {
+        "mean": "Méchant ou grossier",
+        "scary": "Ça fait peur",
+        "personal": "A demandé des infos personnelles",
+        "grownup": "Des trucs pour adultes",
+        "spam": "Spam",
+        "other": "Autre chose"
+      }
+    }
+  },
+  "build": {
+    "title": "Créer un jeu",
+    "hero": {
+      "heading": "Crée ton propre jeu en discutant !",
+      "text": "Dis ton idée au Constructeur. Il construit le jeu, et tu peux continuer à le changer."
+    },
+    "newGame": "Nouveau jeu",
+    "startFrom": "Commencer avec un modèle",
+    "startFromLabel": "Commencer avec {title}",
+    "twoPlayers": "2 joueurs",
+    "updateWaiting": "Mise à jour en attente de vérification",
+    "changed": "Modifié {when}",
+    "empty": "Touche « Nouveau jeu » ou choisis un modèle plus haut. Tes jeux apparaîtront ici."
+  },
+  "studio": {
+    "title": "Studio : {title}",
+    "notYours": "Ce jeu n’existe pas, ou tu ne peux pas le modifier.",
+    "newGameTitle": "Mon nouveau jeu",
+    "startedFrom": "Commencé avec le modèle {title}",
+    "shareText": {
+      "private": "Il n’y a que toi qui peux y jouer.",
+      "friends": "Seuls toi et tes amis sur Magic Cups pouvez y jouer.",
+      "public": "Tout le monde sur Magic Cups peut le trouver et y jouer, après une petite vérification de sécurité."
+    },
+    "status": {
+      "hidden": "Caché pour l’instant",
+      "suspended": "Désactivé par notre équipe",
+      "live": "En ligne : {who}"
+    },
+    "top": {
+      "icon": "Changer l’icône du jeu",
+      "name": "Nom du jeu",
+      "tools": "Outils du jeu",
+      "save": "Enregistrer",
+      "versions": "Versions",
+      "settings": "Réglages",
+      "publish": "Publier"
+    },
+    "chat": {
+      "label": "Discuter avec le Constructeur",
+      "builder": "Constructeur",
+      "pro": "Qualité pro",
+      "proTitle": "La qualité pro prend plus de temps, mais crée des jeux plus beaux",
+      "attach": "Ajouter une image ou un fichier",
+      "inputLabel": "Message au Constructeur",
+      "placeholder": "Dis ton idée au Constructeur…"
+    },
+    "preview": {
+      "label": "Aperçu du jeu",
+      "size": "Taille de l’aperçu",
+      "phone": "Mobile",
+      "tablet": "Tablette",
+      "sideways": "Horizontal",
+      "reload": "Recharger",
+      "emptyTitle": "Ton jeu va apparaître ici.",
+      "emptyText": "Dis ton idée au Constructeur pour commencer."
+    },
+    "templates": {
+      "quiz": {
+        "title": "Le Grand Quiz",
+        "description": "Dix questions rapides à choix multiples, avec une barre de temps, des bonus de série et une chouette qui t’encourage."
+      },
+      "runner": {
+        "title": "Course sans fin",
+        "description": "Saute par-dessus les bosses, attrape des pièces et fonce vers le drapeau arc-en-ciel, de plus en plus vite."
+      },
+      "catch": {
+        "title": "Attrape ce qui tombe",
+        "description": "Fais glisser le panier pour attraper de bons fruits, évite les trucs qui puent et fais de gros combos."
+      },
+      "memory": {
+        "title": "Memory",
+        "description": "Retourne les cartes pour trouver les paires d’emoji sur trois niveaux, bats le chrono et gagne des étoiles."
+      },
+      "word": {
+        "title": "Mots en folie",
+        "description": "Un jeu de mots pour les jeunes lecteurs : trouve la lettre qui manque, puis remets les lettres des mots dans l’ordre avec des images pour t’aider."
+      },
+      "duel": {
+        "title": "Duel à deux",
+        "description": "Deux joueurs, un écran : attends le feu vert et touche le premier pour attraper le goûter. Le meilleur sur cinq manches gagne."
+      },
+      "board": {
+        "title": "Course sur plateau",
+        "description": "Lance le dé et fais la course sur un chemin qui tourne, avec des fusées et des toboggans. Joue contre un ami ou contre le robot."
+      }
+    },
+    "api": {
+      "tooManyGames": "Tu as déjà créé plein de jeux ! Réessaie un peu plus tard.",
+      "pickStarter": "Choisis un des modèles.",
+      "buildingOff": "La création est désactivée pour ce compte.",
+      "builderBreak": "Le Constructeur a besoin d’une petite pause. Réessaie dans une minute.",
+      "wentWrong": "Quelque chose n’a pas marché. Réessaie, s’il te plaît.",
+      "nameIt": "Donne un nom à ton jeu.",
+      "pickIcon": "Choisis une icône dans la liste.",
+      "pickCategory": "Choisis une catégorie.",
+      "pickCover": "Choisis un fond.",
+      "pickDirection": "Choisis un sens.",
+      "versionNotFound": "Cette version est introuvable.",
+      "restored": "Récupérée comme version {number}.",
+      "buildFirst": "Crée d’abord quelque chose, puis enregistre-le.",
+      "savedNote": "Enregistrée : {note}",
+      "savedDefault": "ma version préférée",
+      "saved": "Enregistrée comme version {number}.",
+      "pickWho": "Choisis qui peut jouer.",
+      "notLive": "Ce jeu n’est pas encore en ligne. Utilise d’abord Publier.",
+      "updatedFriends": "Mis à jour pour tes amis ! La nouvelle version attend aussi sa vérification avant que tout le monde puisse y jouer.",
+      "updatedYou": "Mis à jour pour toi ! La nouvelle version attend aussi sa vérification avant que tout le monde puisse y jouer."
+    }
+  },
+  "publish": {
+    "buildFirst": "Crée d’abord ton jeu, puis partage-le.",
+    "failedScan": "Cette version contient quelque chose que nous ne pouvons pas encore partager. Demande d’abord au Constructeur de réparer le problème de sécurité.",
+    "private": "Enregistré. Il n’y a que toi qui peux y jouer.",
+    "friends": "Partagé avec tes amis !",
+    "rejected": "La vérification de sécurité demande des changements avant que ce jeu puisse être public.",
+    "updateLive": "La mise à jour est en ligne pour tout le monde !",
+    "public": "Ton jeu est public !",
+    "updateWaiting": "Ta mise à jour attend une petite vérification. D’ici là, les joueurs gardent l’ancienne version.",
+    "waiting": "Ton jeu attend une petite vérification de sécurité. Nous le partagerons dès qu’il sera validé."
+  },
+  "builder": {
+    "kindRefusal": "Je ne peux pas t’aider pour ça. Créons plutôt quelque chose d’amusant ! Quel genre de jeu aimerais-tu ?",
+    "scanStillFailing": "La vérification de sécurité n’est toujours pas contente. Touche « Réparer avec le Constructeur » pour réessayer.",
+    "errors": {
+      "disabled": "La création est désactivée pour ce compte. Un adulte peut nous demander de la réactiver.",
+      "empty": "Écris un message ou touche une idée d’abord.",
+      "busy": "Le Constructeur travaille encore sur ton dernier message. Un instant !",
+      "limit": "Tu as utilisé tes {count} tours avec le Constructeur pour aujourd’hui. Reviens demain pour en avoir d’autres !",
+      "muddled": "Le Constructeur s’est un peu emmêlé. Réessaie dans un moment."
+    },
+    "refusals": {
+      "tryThese": "Tu veux essayer une de ces idées ?",
+      "rules": {
+        "message": "Je suis toujours les règles de Magic Cups, et personne ne peut les changer. Mais j’adorerais créer un jeu avec toi !",
+        "suggestion": "Parle-moi d’un jeu que tu veux, comme « un renard qui saute par-dessus les rivières »."
+      },
+      "links": {
+        "message": "Les jeux de Magic Cups restent à l’intérieur du jeu : ils ne peuvent pas mener vers des sites, des vidéos ou des chaînes.",
+        "suggestion": "Et si on mettait une porte secrète dans le jeu, qui mène à un niveau bonus ?"
+      },
+      "chat": {
+        "message": "Les jeux de Magic Cups n’ont pas de chat entre joueurs. Comme ça, tout le monde est en sécurité.",
+        "suggestion": "Et si les joueurs s’encourageaient plutôt avec de gros boutons emoji ?"
+      },
+      "personal": {
+        "message": "Les jeux de Magic Cups ne demandent jamais de noms, d’adresses, d’écoles, de dates d’anniversaire ni d’autres infos privées. Gardons-les secrets !",
+        "suggestion": "Et si on faisait un jeu où tu choisis un nom de héros rigolo dans une liste ?"
+      },
+      "profanity": {
+        "message": "Gardons des mots gentils sur Magic Cups.",
+        "suggestion": "Quel jeu on crée ? Peut-être un robot rigolo qui ramasse des chaussettes ?"
+      },
+      "sexual": {
+        "message": "Ça, je ne peux pas le faire. Les jeux de Magic Cups sont pour les enfants et les familles.",
+        "suggestion": "Et si on faisait un jeu de fête où on danse avec des pas rigolos ?"
+      },
+      "selfharm": {
+        "message": "Ça a l’air vraiment difficile. Si tu te sens triste ou pas en sécurité, parles-en tout de suite à un adulte en qui tu as confiance. Tu comptes beaucoup. 💛",
+        "suggestion": "Je suis là pour créer un jeu joyeux avec toi quand tu veux, comme un petit chiot tout doux qui ramasse des étoiles."
+      },
+      "hate": {
+        "message": "Magic Cups est pour tout le monde, alors je ne peux pas faire de jeux méchants envers les gens.",
+        "suggestion": "Et si on faisait un jeu d’équipe où tout le monde s’entraide pour gagner ?"
+      },
+      "violence": {
+        "message": "C’est trop brutal pour Magic Cups. Les petits bonks de dessin animé, ça va, mais pas de sang et pas de mal fait à de vraies personnes.",
+        "suggestion": "Et si on tapait des robots rigolos avec des oreillers, ou si on zappait du slime avec un canon à bulles ?"
+      },
+      "scary": {
+        "message": "Restons dans le rigolo, pas dans l’effrayant. Magic Cups n’a pas d’horreur ni de trucs qui font sursauter.",
+        "suggestion": "Et si on faisait un gentil fantôme rigolo qui ramasse des bonbons ?"
+      },
+      "drugs": {
+        "message": "Je ne peux pas faire de jeux là-dessus.",
+        "suggestion": "Et si on faisait un labo de potions où tu mélanges des couleurs qui pétillent ?"
+      },
+      "gambling": {
+        "message": "Magic Cups n’a pas de paris, pas de casinos et pas de loot boxes.",
+        "suggestion": "Et si on faisait une chasse au trésor où tu gagnes des étoiles en réfléchissant bien ?"
+      },
+      "real_people": {
+        "message": "Je ne peux pas mettre de vraies personnes dans les jeux. Inventons un tout nouveau personnage !",
+        "suggestion": "Et si on faisait un pingouin superstar qui chante et qui danse ?"
+      },
+      "copyright": {
+        "message": "Ce personnage ou cette marque appartient à quelqu’un d’autre, alors je ne peux pas l’utiliser. Inventons le nôtre !",
+        "suggestion": "Et si on faisait un héros original, comme Zip, un renard qui saute ? 🦊"
+      },
+      "other": {
+        "message": "Je ne peux pas créer ça sur Magic Cups.",
+        "suggestion": "Et si on faisait un jeu avec un petit robot courageux qui part à l’aventure ?"
+      },
+      "chips": {
+        "copyright": {
+          "a": "🦊 Zip, le renard qui saute",
+          "b": "🤖 Un robot de course",
+          "c": "🐉 Un gentil dragon"
+        },
+        "real_people": {
+          "a": "🐧 Un pingouin superstar",
+          "b": "🦸 Un super-héros inventé",
+          "c": "🐶 Un chiot pop star"
+        },
+        "violence": {
+          "a": "🤖 Robots et oreillers",
+          "b": "🫧 Canon à bulles contre slime",
+          "c": "🧟 Des zombies qui éternuent"
+        },
+        "scary": {
+          "a": "👻 Un gentil fantôme",
+          "b": "🎃 Attrape les citrouilles",
+          "c": "🦇 Une chauve-souris qui dort"
+        },
+        "gambling": {
+          "a": "🏴‍☠️ Une chasse au trésor",
+          "b": "⭐ Ramasse les étoiles",
+          "c": "🧩 Une énigme avec des prix"
+        },
+        "default": {
+          "a": "🦊 Un renard qui saute",
+          "b": "🧺 Attrape ce qui tombe",
+          "c": "❓ Un quiz rigolo"
+        }
+      }
+    }
+  },
+  "uploads": {
+    "tooFast": "Ça fait beaucoup de fichiers ! Attends une minute et réessaie.",
+    "alreadySent": "Celui-ci a déjà été envoyé au Constructeur.",
+    "empty": "Ce fichier est vide.",
+    "tooMany": "Ce jeu a déjà {max} images et fichiers. C’est le maximum.",
+    "badType": "Je peux utiliser seulement des images (PNG, JPEG, WebP, GIF), des PDF ou des fichiers texte (TXT, MD, CSV, JSON).",
+    "textTooBig": "Les fichiers texte peuvent faire jusqu’à 200 Ko.",
+    "fileTooBig": "Les images et les PDF peuvent faire jusqu’à 5 Mo.",
+    "image": {
+      "real_faces": "Cette image montre une vraie personne, alors je ne peux pas la garder. Les vrais visages restent privés sur Magic Cups. Essaie plutôt un dessin ou un jouet !",
+      "personal_info": "Cette image montre des infos privées, comme un nom, une école ou une adresse, alors je ne peux pas la garder. Essaie plutôt un dessin !",
+      "unsafe": "Cette image ne convient pas à Magic Cups, alors je ne peux pas la garder. Essaie une autre image !"
+    }
+  },
+  "creator": {
+    "title": "Mes gains",
+    "estimate": "Estimation",
+    "allGames": "Tous tes jeux",
+    "underOneCent": "moins de 1¢",
+    "earned": "gagnés",
+    "last14": "14 derniers jours",
+    "yourGames": "Tes jeux",
+    "stats": {
+      "earnedSoFar": "gagnés jusqu’ici",
+      "adViews": "vues de pubs",
+      "players": "{count, plural, one {joueur} other {joueurs}}",
+      "noRatings": "pas de notes",
+      "averageStars": "étoiles en moyenne"
+    },
+    "chart": {
+      "barTitle": "{day} : {money}, {views} vues de pubs",
+      "caption": "Chaque barre est un jour. Barre plus haute = plus de gains.",
+      "empty": "Pas encore de gains ces 14 derniers jours. Les barres poussent ici quand des joueurs voient les cartes Sponsorisé.",
+      "showNumbers": "Voir les chiffres de chaque jour",
+      "tableCaption": "Gains estimés pour chacun des 14 derniers jours",
+      "day": "Jour",
+      "earned": "Gagné (estimation)"
+    },
+    "how": {
+      "heading": "Comment marchent les gains",
+      "p1": "Tes jeux rapportent quand des joueurs voient les petites cartes <b>Sponsorisé</b> sur la page de ton jeu, ou à côté de ton jeu dans Accueil et Recherche.",
+      "p2": "Environ 1 000 vues de ces cartes rapportent à tes jeux environ <b>{amount}</b>. Tu reçois {share} %, et le reste permet à Magic Cups de rester gratuit.",
+      "p3": "Nous ne montrons jamais de pubs dans les jeux ni pendant que tu joues.",
+      "p4": "Tes propres visites ne comptent pas. Chaque joueur compte une fois par heure.",
+      "p5": "Ces chiffres sont une <b>estimation</b>. Ils sont mis à jour toutes les heures et peuvent changer après notre vérification anti-triche."
+    },
+    "empty": {
+      "title": "Crée un jeu pour commencer à gagner",
+      "text": "Quand des joueurs aiment tes jeux, tu gagnes de l’argent grâce aux petites cartes Sponsorisé qu’ils voient."
+    },
+    "payouts": {
+      "heading": "Versements",
+      "ready": "prêt à être versé",
+      "progress": "Progression vers le minimum de versement",
+      "reached": "Tu as atteint le minimum. Tu peux demander un versement !",
+      "toGo": "Tu peux demander un versement à partir de {min}. Encore {left}.",
+      "ask": "Demander un versement",
+      "byHand": "Notre équipe fait chaque versement à la main. Si tu as moins de 18 ans, nous vérifions d’abord avec ton parent ou ton tuteur.",
+      "pending": "En attente de paiement",
+      "paid": "Versé",
+      "history": "Historique",
+      "notYet": "Tu pourras demander un versement quand tu auras {min} ou plus."
+    },
+    "payoutStatus": {
+      "requested": "En attente",
+      "paid": "Payé",
+      "cancelled": "Annulé"
+    }
+  },
+  "js": {
+    "app": {
+      "wentWrong": "Quelque chose n’a pas marché. Réessaie, s’il te plaît.",
+      "close": "Fermer",
+      "playing": "{n} en jeu",
+      "justNow": "à l’instant"
+    },
+    "game": {
+      "needSignIn": "Touche « Jouer en invité » ou connecte-toi d’abord.",
+      "rated": "Tu lui as donné {count, plural, one {# étoile} other {# étoiles}}. La moyenne est maintenant de {average}.",
+      "thanksRating": "Merci pour ta note !",
+      "liked": "J’aime ajouté !",
+      "unliked": "J’aime retiré",
+      "shareTitle": "Partager ce jeu",
+      "link": "Lien",
+      "copyLink": "Copier le lien",
+      "linkCopied": "Lien copié !",
+      "holdToCopy": "Appuie longtemps pour copier.",
+      "reportTitle": "Signaler ce jeu",
+      "reportText": "Qu’est-ce qui ne va pas ? Un adulte de notre équipe va regarder."
+    },
+    "play": {
+      "saveFailed": "Impossible d’enregistrer ta progression.",
+      "newBest": "Nouveau record : {score} !",
+      "noFullscreen": "Le plein écran n’est pas disponible ici.",
+      "tapFullscreen": "Touche le bouton plein écran pour voir en grand.",
+      "signInToLike": "Connecte-toi ou joue en invité pour aimer des jeux.",
+      "signInToRate": "Connecte-toi ou joue en invité pour noter des jeux.",
+      "liked": "J’aime ajouté !",
+      "unliked": "J’aime retiré",
+      "rateTitle": "Noter {title}",
+      "stars": "Étoiles",
+      "starsLabel": "{count, plural, one {# étoile} other {# étoiles}}",
+      "thanksRating": "Merci pour ta note !"
+    },
+    "friends": {
+      "codeCopied": "Code copié ! Donne-le à un ami que tu connais.",
+      "holdToCopy": "Appuie longtemps sur le code pour le copier.",
+      "typeCode": "Tape d’abord le code de ton ami.",
+      "done": "C’est fait !",
+      "removeTitle": "Retirer {name} ?",
+      "removeText": "Vous ne serez plus amis et vous ne pourrez plus discuter. Vous pourrez vous ajouter à nouveau plus tard avec vos codes.",
+      "removeYes": "Retirer l’ami",
+      "removeNo": "Garder l’ami",
+      "playing": "Joue à {game}",
+      "notPlaying": "Ne joue pas en ce moment"
+    },
+    "build": {
+      "gettingReady": "Préparation…"
+    },
+    "me": {
+      "lookingGood": "Super look !",
+      "chatOn": "Le chat est activé.",
+      "chatOff": "Le chat est désactivé."
+    },
+    "profile": {
+      "linkCopied": "Lien du profil copié !"
+    },
+    "search": {
+      "failed": "La recherche fait une sieste. Réessaie."
+    },
+    "creator": {
+      "payoutRequested": "C’est fait ! Nous avons bien reçu ta demande de {amount}."
+    },
+    "chat": {
+      "sayHi": "Dis bonjour ! 👋",
+      "chatOff": "Le chat est désactivé",
+      "newCount": "{count, plural, one {# nouveau} other {# nouveaux}}",
+      "play": "Jouer",
+      "gameGone": "Ce jeu n’est pas disponible.",
+      "report": "Signaler",
+      "reportLabel": "Signaler ce message",
+      "paused": "Le chat fait une petite pause. Tu pourras écrire à nouveau dans {minutes, plural, one {# minute} other {# minutes}}. Les messages rapides marchent toujours.",
+      "typeFirst": "Écris d’abord un message.",
+      "noGames": "Pas encore de jeux à partager.",
+      "shareTitle": "Partager un jeu avec {name}",
+      "shareText": "Seuls les jeux que {name} peut ouvrir sont affichés.",
+      "yourGame": "Ton jeu",
+      "gameShared": "Jeu partagé !",
+      "reportTitle": "Signaler ce message",
+      "reportText": "Qu’est-ce qui ne va pas ? Nous allons le cacher pour toi, et un adulte de notre équipe va regarder.",
+      "reportBlockHint": "Tu peux aussi bloquer {name} avec le bouton Bloquer en haut.",
+      "blockTitle": "Bloquer {name} ?",
+      "blockText": "Tu ne verras plus les messages de {name}, et {name} ne pourra plus t’en envoyer. Vous restez amis, et tu peux annuler le blocage sur la page Amis.",
+      "block": "Bloquer",
+      "cancel": "Annuler"
+    },
+    "studio": {
+      "docTitle": "Studio : {title} · Magic Cups",
+      "turns": "Encore {left} tours sur {total} aujourd’hui",
+      "fixButton": "Réparer avec le Constructeur",
+      "fixMessage": "Répare les problèmes de sécurité de la version {number}, s’il te plaît :",
+      "buildFirst": "Crée d’abord quelque chose !",
+      "noFullscreen": "Le plein écran n’est pas autorisé ici.",
+      "roundOver": "Manche terminée ! Score : {score}",
+      "stillWorking": "Un instant, le Constructeur travaille encore !",
+      "stillFinishing": "Le Constructeur termine encore ton dernier message…",
+      "thinking": "Le Constructeur réfléchit",
+      "working": "Le Constructeur travaille…",
+      "building": "Construction de ton jeu…",
+      "editing": "Modifications en cours…",
+      "noAnswer": "Le Constructeur n’a pas pu répondre. Réessaie, s’il te plaît.",
+      "dropped": "Oups, la connexion a coupé. Réessaie, s’il te plaît.",
+      "proOn": "Qualité pro activée : plus lent, mais des jeux plus beaux.",
+      "proOff": "Qualité pro désactivée : créations rapides.",
+      "nameSaved": "Nom enregistré !",
+      "pickIcon": "Choisis une icône",
+      "vis": {
+        "private": "Juste moi",
+        "friends": "Amis",
+        "public": "Tout le monde"
+      },
+      "top": {
+        "inReview": "En vérification",
+        "publish": "Publier",
+        "update": "Mettre le jeu à jour",
+        "live": "En ligne"
+      },
+      "live": {
+        "editing": "Modification : version {number}",
+        "nothingYet": "Rien de créé pour l’instant",
+        "hidden": "Ce jeu est caché pour l’instant parce que des joueurs l’ont signalé. Un adulte de notre équipe va bientôt le regarder.",
+        "liveVersion": "En ligne : version {number} · {who}",
+        "updateTo": "Passer le jeu en ligne à la version {number}",
+        "waitingFriends": "En attente d’une petite vérification de sécurité avant que tout le monde puisse jouer. En attendant, tes amis peuvent y jouer.",
+        "waitingYou": "En attente d’une petite vérification de sécurité avant que tout le monde puisse jouer. En attendant, il n’y a que toi qui peux y jouer.",
+        "pendingUpdate": "La version {pending} attend une petite vérification de sécurité. Les joueurs continuent avec la version {live} jusqu’à ce qu’elle soit validée.",
+        "playersOn": "Les joueurs jouent à la version {live}. Appuie sur « Mettre le jeu à jour » pour leur donner la version {number}.",
+        "publicCheck": "Les jeux pour tout le monde passent d’abord une petite vérification de sécurité, et les joueurs gardent l’ancienne version jusqu’à ce qu’elle soit validée.",
+        "onlyYou": "visible seulement par toi",
+        "pendingNew": "La version {number} attend une petite vérification de sécurité. Nous la partagerons dès qu’elle sera validée.",
+        "reviewer": "Le vérificateur dit : « {note} » Demande au Constructeur de faire le changement, puis appuie de nouveau sur Mettre à jour ou Publier."
+      },
+      "safety": {
+        "chipPass": "Sûr",
+        "chipFlag": "À voir",
+        "chipFail": "À réparer",
+        "pass": "Vérification de sécurité réussie pour la version {number}.",
+        "flag": "Vérification de sécurité : la version {number} est OK pour toi et tes amis, mais une personne va regarder avant que tout le monde puisse jouer.",
+        "fail": "La version {number} ne peut pas encore être partagée.",
+        "checking": "Vérification de la version {number}…"
+      },
+      "log": {
+        "versionReady": "La version {number} est prête !",
+        "versionFailed": "La version {number} est créée, mais la vérification de sécurité a trouvé un problème",
+        "seeIt": "Voir",
+        "thingsToTry": "Idées à essayer",
+        "namedIt": "Je l’ai appelé {title}",
+        "whatKind": "Quel genre de jeu on fait ?",
+        "hello": "Salut ! Je suis le Constructeur 🤖 Dis-moi ton idée de jeu, ou touche une idée pour commencer.",
+        "readyToPlay": "Ton jeu « {title} » est prêt : tu peux y jouer dans l’aperçu ! 🎉 Qu’est-ce qu’on change ? Dis-le avec tes mots, ou touche une idée."
+      },
+      "startChips": {
+        "a": "🏃 Un jeu de course et de saut",
+        "b": "🧺 Attrape ce qui tombe",
+        "c": "❓ Un jeu de quiz",
+        "d": "🃏 Un jeu de memory",
+        "e": "🔤 Un jeu de mots",
+        "f": "⚔️ À deux sur un téléphone",
+        "g": "🎲 Un jeu de plateau",
+        "h": "✨ Surprends-moi !"
+      },
+      "nextChips": {
+        "a": "Rends-le plus difficile",
+        "b": "Ajoute un deuxième niveau",
+        "c": "Transforme le héros en dragon"
+      },
+      "uploads": {
+        "remove": "Retirer {name}",
+        "max": "Tu peux en ajouter jusqu’à {max} à la fois.",
+        "types": "Je peux utiliser des images, des PDF et des fichiers texte.",
+        "textTooBig": "Les fichiers texte peuvent faire jusqu’à 200 Ko.",
+        "fileTooBig": "Les images et les PDF peuvent faire jusqu’à 5 Mo.",
+        "failed": "Ce fichier n’a pas pu être ajouté."
+      },
+      "settings": {
+        "title": "Réglages du jeu",
+        "about": "De quoi parle ton jeu ?",
+        "kind": "Genre de jeu",
+        "tags": "Mots de recherche",
+        "tagsPlaceholder": "requin, océan, rapide",
+        "tagsHint": "Des mots qui aident à trouver ton jeu, séparés par des virgules.",
+        "orientation": "Dans quel sens ?",
+        "or": {
+          "any": "Au choix",
+          "portrait": "Vertical",
+          "landscape": "Horizontal"
+        },
+        "players": "Combien de joueurs sur un téléphone ?",
+        "color": "Couleur de la carte",
+        "save": "Enregistrer les réglages",
+        "saved": "Réglages enregistrés !"
+      },
+      "covers": {
+        "sunset": "Crépuscule",
+        "ocean": "Océan",
+        "forest": "Forêt",
+        "candy": "Bonbon",
+        "night": "Nuit",
+        "lava": "Lave",
+        "mint": "Menthe",
+        "gold": "Or"
+      },
+      "save": {
+        "buildFirst": "Crée d’abord quelque chose, puis enregistre-le !",
+        "title": "Enregistrer cette version",
+        "label": "Donne-lui un nom (tu peux passer cette étape)",
+        "placeholder": "Ma version préférée",
+        "hint": "Chaque changement est gardé de toute façon. Enregistrer ajoute une ⭐ pour la retrouver facilement.",
+        "button": "Enregistrer"
+      },
+      "versions": {
+        "none": "Pas encore de versions. Demande au Constructeur de créer ton jeu !",
+        "newVersion": "Une nouvelle version",
+        "editing": "En cours",
+        "bringBack": "Récupérer",
+        "title": "Versions",
+        "hint": "« Récupérer » copie une ancienne version tout en haut, comme nouvelle version. Rien n’est jamais perdu."
+      },
+      "share": {
+        "buildFirst": "Crée d’abord ton jeu, puis partage-le !",
+        "link": "Lien vers ton jeu",
+        "copy": "Copier",
+        "titleLive": "Partage ton jeu",
+        "titlePublish": "Publie ton jeu",
+        "titleWho": "Qui peut jouer ?",
+        "playersGet": "Les joueurs auront la version {number}.",
+        "pickWho": "Choisis qui peut jouer à la version {number}.",
+        "whoLabel": "Qui peut jouer",
+        "save": "Enregistrer",
+        "publicHint": "Les jeux pour tout le monde passent d’abord une petite vérification de sécurité.",
+        "copied": "Lien copié !",
+        "copyFailed": "Impossible de copier."
+      },
+      "update": {
+        "title": "Mettre à jour ton jeu en ligne",
+        "text": "Les joueurs ont la {live}. Avec ça, ils auront la {number}.",
+        "version": "version {number}",
+        "publicText": "Comme tout le monde peut y jouer, la mise à jour passe d’abord une petite vérification de sécurité. Les joueurs gardent la version {live} jusqu’à ce qu’elle soit validée.",
+        "now": "La mise à jour est immédiate.",
+        "notYet": "Pas encore",
+        "button": "Mettre à jour"
+      }
+    }
+  }
+}

@@ -7,7 +7,7 @@ import { signup, login, ownIp, gameFrame } from './helpers.js';
 const NAMES = ['English', 'English (UK)', 'Português', 'Français', 'Español', 'Deutsch', 'עברית', '日本語', 'العربية', 'Русский', 'Italiano', '繁體中文', 'Nederlands'];
 const html = page => page.locator('html');
 
-test('the picker lists every language by its own name; choosing French translates and falls back to English', async ({ page }) => {
+test('the picker lists every language by its own name; choosing French translates the site', async ({ page }) => {
   await ownIp(page);
   await page.goto('/');
   await expect(html(page)).toHaveAttribute('lang', 'en');
@@ -21,8 +21,8 @@ test('the picker lists every language by its own name; choosing French translate
   await expect(html(page)).toHaveAttribute('lang', 'fr');
   await expect(page.locator('.topnav .navlink').first()).toContainText('Accueil');
   await expect(page.locator('.hero .btn-big')).toContainText('Jouer');
-  await expect(page.locator('.topnav'), 'keys missing in fr.json fall back to English').toContainText('Build');
-  await expect(page.locator('.topbar .langpick summary')).toHaveAttribute('aria-label', 'Language: Français');
+  await expect(page.locator('.topnav'), 'the real fr.json fills the keys the stub leaves out (fallback itself is unit-tested)').toContainText('Créer');
+  await expect(page.locator('.topbar .langpick summary')).toHaveAttribute('aria-label', 'Langue\u00a0: Français');
   // The choice persists across pages (cookie), including client-side strings.
   await page.goto('/search');
   await expect(html(page)).toHaveAttribute('lang', 'fr');

@@ -2,3 +2,124 @@
 # One entry per line, ROT13-encoded (a-z shifted by 13, so the repo never spells the words out; letters in other
 # scripts stay as written). Lines starting with # are comments. See README.md in this folder for the format.
 # Every list applies to every message on the site, whatever language the sender uses.
+# Insults and slurs (Arabic script). Hamza, vowel marks and tatweel are ignored when matching.
+=كس
+=الكس
+=كسك
+كسمك
+كسختك
+طيز
+الطيز
+=زب
+=الزب
+=زبي
+=اير
+=ايري
+=عير
+شرموط
+الشرموط
+شراميط
+عاهر
+العاهر
+قحب
+القحب
+قحاب
+كحبة
+=نيك
+=النيك
+ينيك
+انيك
+منيوك
+المنيوك
+منيك
+نياك
+متناك
+=خول
+لوطي
+معرص
+=عرص
+ديوث
+مخنث
+سحاق
+بعبص
+داعر
+فاجرة
+زانية
+ابن الكلب
+بنت الكلب
+ابن الحرام
+ولد الحرام
+يلعن ابوك
+يلعن امك
+يلعن دينك
+=خرا
+=خراء
+# Sexual words
+سكس
+!سكسوني
+!سكسفون
+بورنو
+=بورن
+اباحي
+الاباحي
+مهبل
+بزاز
+!بزازة
+=عارية
+=عاريات
+=عراة
+اغتصاب
+اغتصب
+# Bullying about self-harm, hate symbols and hard drugs (same idea as the English core list)
+=انتحر
+=انتحار
+هتلر
+نازي
+كوكايين
+هيروين
+# Arabizi: Arabic written in Latin letters and digits (3 = ع, 7 = ح, 5 = خ, 6 = ط, 9 = ق)
+xbfbz
+xbffbz
+xhfbz
+xbf bznx
+xbf bzznx
+xbf rznx
+xbf bxugnx
+xbf rxugnx
+avx bznx
+avx bzznx
+avxbznx
+=arrx
+anlrx
+zrganx
+znalbhx
+znalbbx
+funezbhg
+funezbbg
+funezbg
+funezhg
+punezbhg
+xnuo
+dnuo
+tnuo
+xn7o
+9nuo
+9n7o
+=mrov
+=mrol
+grrmnx
+gvmnx
+xunjny
+5njny
+=xunen
+=5nen
+=3nef
+z3nef
+z3neenf
+lry3na
+lvy3na
+nler svx
+nlev svx
+nlersvx
+voa ry xnyo
+roa ry xnyo
