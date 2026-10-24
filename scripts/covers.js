@@ -84,6 +84,13 @@ const RECIPES = {
     });
     await wait(1600);
   } },
+  'swish-flick': { viewport: PORTRAIT, touch: true, async prep(f) {
+    await hook(f);
+    await f.evaluate(() => { const T = window.__brbTest; T.start({ mode: 'arcade', seed: 7 }); T.skipAnimations(); for (let i = 0; i < 5; i++) { T.step(300); T.flick(T.solve()); T.step(1600); } });
+    await wait(1700);   // let the last "Swish! +2" fade off the board
+    await f.evaluate(() => { const T = window.__brbTest; T.flick(T.solve()); T.step(260); T.freeze(true); });   // flaming ball rising toward the hoop, LED shows 5
+    await wait(600);
+  } },
   'word-hunt': { viewport: PORTRAIT, async prep(f) {
     await hook(f); await f.evaluate(() => window.__brbTest.start({ theme: 'Space', difficulty: 'medium', seed: 3 }));
     await f.evaluate(() => { const t = window.__brbTest; t.skipAnimations && t.skipAnimations(); const s = t.state(); s.words.slice(0, 4).forEach(w => t.select(w.start, w.end)); });
