@@ -17,13 +17,6 @@
   "categories": {
     "sports": "Sport"
   },
-  "ads": {
-    "house": {
-      "house-learning": {
-        "text": "Maths, science and more, made fun."
-      }
-    }
-  },
   "search": {
     "placeholder": "Try “shark”, “football” or a builder’s name"
   },
@@ -57,11 +50,6 @@
       "drugs": {
         "suggestion": "How about a potion lab where you mix bubbly colours?"
       }
-    }
-  },
-  "creator": {
-    "payoutStatus": {
-      "cancelled": "Cancelled"
     }
   },
   "js": {

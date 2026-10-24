@@ -59,11 +59,6 @@ const MIGRATIONS = [
   CREATE INDEX IF NOT EXISTS reports_game ON reports(game_id, status);
   CREATE TABLE IF NOT EXISTS builder_chats (id TEXT PRIMARY KEY, game_id TEXT UNIQUE NOT NULL, user_id TEXT NOT NULL, messages TEXT NOT NULL DEFAULT '[]', state TEXT NOT NULL DEFAULT '{}', tokens_in INTEGER NOT NULL DEFAULT 0, tokens_out INTEGER NOT NULL DEFAULT 0, created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL);
   CREATE TABLE IF NOT EXISTS builder_usage (user_id TEXT NOT NULL, day TEXT NOT NULL, turns INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(user_id, day));
-  CREATE TABLE IF NOT EXISTS ad_impressions (id TEXT PRIMARY KEY, game_id TEXT, placement TEXT NOT NULL, ad_id TEXT NOT NULL DEFAULT '', games_shown TEXT NOT NULL DEFAULT '', user_id TEXT, session_id TEXT, ip TEXT NOT NULL DEFAULT '', day TEXT NOT NULL, hour TEXT NOT NULL DEFAULT '', created_at INTEGER NOT NULL);
-  CREATE INDEX IF NOT EXISTS adimp_day ON ad_impressions(day, game_id);
-  CREATE INDEX IF NOT EXISTS adimp_dedupe ON ad_impressions(session_id, placement, hour);
-  CREATE TABLE IF NOT EXISTS earnings (game_id TEXT NOT NULL, day TEXT NOT NULL, impressions INTEGER NOT NULL DEFAULT 0, revenue_cents INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(game_id, day));
-  CREATE TABLE IF NOT EXISTS payouts (id TEXT PRIMARY KEY, user_id TEXT NOT NULL, amount_cents INTEGER NOT NULL, status TEXT NOT NULL DEFAULT 'requested', note TEXT NOT NULL DEFAULT '', created_at INTEGER NOT NULL);
   CREATE TABLE IF NOT EXISTS audit_log (id TEXT PRIMARY KEY, actor_id TEXT, action TEXT NOT NULL, target TEXT NOT NULL DEFAULT '', details TEXT NOT NULL DEFAULT '', created_at INTEGER NOT NULL);
   CREATE TABLE IF NOT EXISTS settings (key TEXT PRIMARY KEY, value TEXT NOT NULL);
   -- Friends-only chat (added at the owner's request; see docs/decisions.md and docs/safety.md)
@@ -88,6 +83,8 @@ const MIGRATIONS = [
       cache_read INTEGER NOT NULL DEFAULT 0, cache_write INTEGER NOT NULL DEFAULT 0, usd REAL NOT NULL DEFAULT 0, PRIMARY KEY(day, model));
     CREATE INDEX IF NOT EXISTS plays_started ON plays(started_at);
     CREATE INDEX IF NOT EXISTS users_created ON users(created_at);`],
+  // Profile photos: when the photo was set (0 = using the emoji). The file is <dataDir>/avatars/<userId>.jpg.
+  ['0008_user_photo', `ALTER TABLE users ADD COLUMN photo_at INTEGER NOT NULL DEFAULT 0;`],
 ];
 
 db.exec('CREATE TABLE IF NOT EXISTS migrations (name TEXT PRIMARY KEY, applied_at INTEGER NOT NULL)');

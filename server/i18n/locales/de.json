@@ -123,7 +123,6 @@
       "games": "Meine Spiele",
       "friends": "Freunde",
       "chat": "Chat",
-      "money": "Mein Geld",
       "admin": "Admin",
       "favorites": "Meine Favoriten"
     },
@@ -133,7 +132,8 @@
       "avatarLabel": "Avatar {emoji}",
       "colorHeading": "Farbe",
       "colorGroup": "Farbe",
-      "colorLabel": "Farbe {color}"
+      "colorLabel": "Farbe {color}",
+      "avatarHeading": "Oder wähl ein Emoji"
     },
     "language": {
       "heading": "Sprache",
@@ -151,6 +151,22 @@
       "guest": "Gäste verlieren ihren Fortschritt, wenn sie sich abmelden.",
       "account": "Bis bald!",
       "button": "Abmelden"
+    },
+    "photo": {
+      "heading": "Profilfoto",
+      "text": "Nimm ein Foto statt deines Emojis. Nur du, deine Freunde und das Magic-Cups-Team sehen es. Alle anderen sehen dein Emoji.",
+      "guest": "Leg ein kostenloses Konto an, um ein Profilfoto hinzuzufügen.",
+      "upload": "Foto hochladen",
+      "change": "Foto ändern",
+      "remove": "Foto entfernen",
+      "errors": {
+        "guest": "Leg ein kostenloses Konto an, um ein Profilfoto hinzuzufügen.",
+        "badType": "Diese Datei ist kein Foto, das wir verwenden können. Probier ein anderes.",
+        "tooBig": "Das Foto ist zu groß. Probier ein anderes.",
+        "unsafe": "Dieses Foto passt nicht zu Magic Cups. Probier ein anderes.",
+        "personal_info": "Auf dem Foto sind private Dinge wie ein Name, eine Schule oder eine Adresse zu sehen. Probier ein anderes.",
+        "resting": "Fotos brauchen unsere Sicherheitsprüfung, und die macht gerade Pause. Versuch es später noch mal."
+      }
     }
   },
   "cards": {
@@ -161,8 +177,6 @@
     "gameBy": "{title}, von {name}",
     "by": "von {name}",
     "plays": "{count, plural, one {{n}× gespielt} other {{n}× gespielt}}",
-    "sponsored": "Werbung",
-    "sponsoredLabel": "Werbung: {title}",
     "seeAll": "Alle zeigen",
     "scrollBack": "{title} zurückblättern",
     "scrollForward": "{title} weiterblättern"
@@ -189,78 +203,6 @@
     "learning": "Lernen",
     "music": "Musik",
     "silly": "Quatsch"
-  },
-  "ads": {
-    "house": {
-      "house-build": {
-        "title": "Bau dein eigenes Spiel",
-        "text": "Erzähl dem Baumeister deine Idee. Er baut es!"
-      },
-      "house-friends": {
-        "title": "Lade Freunde ein",
-        "text": "Teil deinen Freundescode und spielt zusammen."
-      },
-      "house-new": {
-        "title": "Neu diese Woche",
-        "text": "Neue Spiele von Spielemachern wie dir."
-      },
-      "house-rate": {
-        "title": "Bewerte ein tolles Spiel",
-        "text": "Tipp auf die Sterne, damit andere es finden."
-      },
-      "house-words": {
-        "title": "Probier ein Wörterspiel",
-        "text": "Buchstabiere, rate und finde versteckte Wörter."
-      },
-      "house-build-words": {
-        "title": "Bau ein Wörterspiel",
-        "text": "Mach aus deinen Lernwörtern ein Spiel!"
-      },
-      "house-puzzle": {
-        "title": "Zeit zum Knobeln",
-        "text": "Rätsel für schlaue Köpfe."
-      },
-      "house-sports": {
-        "title": "Schieß ein Tor",
-        "text": "Sportspiele für jede Jahreszeit."
-      },
-      "house-build-sports": {
-        "title": "Bau ein Sportspiel",
-        "text": "Wähl einen Sport. Der Baumeister macht den Rest."
-      },
-      "house-arcade": {
-        "title": "Arcade-Klassiker",
-        "text": "Spring, weich aus und knack deinen Rekord."
-      },
-      "house-build-arcade": {
-        "title": "Bau ein Arcade-Spiel",
-        "text": "Ausweichen, springen, sammeln. Deine Regeln!"
-      },
-      "house-adventure": {
-        "title": "Erlebe ein Abenteuer",
-        "text": "Entdecke Karten, finde Schätze, sei mutig."
-      },
-      "house-learning": {
-        "title": "Spielend lernen",
-        "text": "Mathe, Natur und mehr, mit viel Spaß."
-      },
-      "house-music": {
-        "title": "Mach Musik",
-        "text": "Tipp den Takt und spiel eine Melodie."
-      },
-      "house-silly": {
-        "title": "Etwas Quatsch",
-        "text": "Spiele, die dich zum Kichern bringen."
-      },
-      "house-board": {
-        "title": "Brettspiel-Abend",
-        "text": "Klassische Spiele für die ganze Familie."
-      },
-      "house-playing": {
-        "title": "Wird gerade gespielt",
-        "text": "Schau, was heute alle spielen."
-      }
-    }
   },
   "home": {
     "build": {
@@ -340,8 +282,8 @@
         "p1": "Wir fragen nie nach deiner E-Mail, deinem echten Namen, deinem Alter oder deiner Adresse. Denk dir einen lustigen Namen aus."
       },
       "ads": {
-        "h": "Werbung ist leise",
-        "p1": "Ein paar kleine Kärtchen sind mit „Werbung“ markiert. Sie erscheinen nie in oder über einem Spiel, machen nie Geräusche und springen nie auf."
+        "h": "Keine Werbung",
+        "p1": "Auf Magic Cups gibt es keine Werbung. Nichts ist zu kaufen, und nichts springt über einem Spiel auf."
       }
     },
     "parents": {
@@ -367,10 +309,6 @@
       "languages": {
         "h": "Sprachen",
         "p1": "Wählen Sie eine Sprache mit dem 🌐-Knopf oben auf jeder Seite oder auf der Seite „Ich“. Der Baumeister antwortet in dieser Sprache und schreibt auch die Texte in neuen Spielen in dieser Sprache. Dieselben Sicherheitsfilter prüfen jede Nachricht, in jeder Sprache."
-      },
-      "money": {
-        "h": "Geld",
-        "p1": "Werbung finanziert die Plattform, und Spielemacher bekommen einen Anteil, der sich danach richtet, wie oft ihre Spiele gespielt werden. Auszahlungen ab $10 werden von unserem Team von Hand bearbeitet."
       }
     },
     "sdk": {
@@ -919,61 +857,6 @@
       "resting": "Bilder brauchen unseren Sicherheitscheck, und der ruht sich bis morgen aus. Versuch das Bild später noch mal oder beschreib deine Idee mit Worten!"
     }
   },
-  "creator": {
-    "title": "Mein Geld",
-    "estimate": "Schätzung",
-    "allGames": "Alle deine Spiele",
-    "underOneCent": "unter 1¢",
-    "earned": "verdient",
-    "last14": "Letzte 14 Tage",
-    "yourGames": "Deine Spiele",
-    "stats": {
-      "earnedSoFar": "bisher verdient",
-      "adViews": "Werbe-Aufrufe",
-      "players": "{count, plural, one {Spieler} other {Spieler}}",
-      "noRatings": "keine Bewertungen",
-      "averageStars": "Sterne im Schnitt"
-    },
-    "chart": {
-      "barTitle": "{day}: {money}, {views} Werbe-Aufrufe",
-      "caption": "Jeder Balken ist ein Tag. Höherer Balken = mehr verdient.",
-      "empty": "In den letzten 14 Tagen noch nichts verdient. Hier wachsen Balken, wenn Spieler die Werbe-Kärtchen sehen.",
-      "showNumbers": "Zahlen für jeden Tag zeigen",
-      "tableCaption": "Geschätzte Einnahmen für jeden der letzten 14 Tage",
-      "day": "Tag",
-      "earned": "Verdient (geschätzt)"
-    },
-    "how": {
-      "heading": "So funktioniert das Verdienen",
-      "p1": "Deine Spiele verdienen Geld, wenn Spieler die kleinen <b>Werbung</b>-Kärtchen auf der Seite deines Spiels sehen, oder neben deinem Spiel unter Start und Suche.",
-      "p2": "Etwa 1.000 Aufrufe dieser Kärtchen bringen deinen Spielen etwa <b>{amount}</b>. Du bekommst {share} % und der Rest sorgt dafür, dass Magic Cups kostenlos bleibt.",
-      "p3": "Wir zeigen nie Werbung in Spielen oder während du spielst.",
-      "p4": "Deine eigenen Besuche zählen nicht. Jeder Spieler zählt einmal pro Stunde.",
-      "p5": "Diese Zahlen sind eine <b>Schätzung</b>. Sie werden jede Stunde aktualisiert und können sich ändern, nachdem wir auf Schummeln geprüft haben."
-    },
-    "empty": {
-      "title": "Bau ein Spiel, um Geld zu verdienen",
-      "text": "Wenn Spieler deine Spiele mögen, verdienst du Geld mit den kleinen Werbe-Kärtchen, die sie sehen."
-    },
-    "payouts": {
-      "heading": "Auszahlungen",
-      "ready": "bereit zur Auszahlung",
-      "progress": "Fortschritt bis zum Mindestbetrag",
-      "reached": "Du hast den Mindestbetrag erreicht. Du kannst eine Auszahlung anfragen!",
-      "toGo": "Ab {min} kannst du eine Auszahlung anfragen. Noch {left}.",
-      "ask": "Auszahlung anfragen",
-      "byHand": "Unser Team zahlt jede Auszahlung von Hand aus. Wenn du unter 18 bist, fragen wir vorher bei deinen Eltern oder deinem Vormund nach.",
-      "pending": "Wartet auf Auszahlung",
-      "paid": "An dich ausgezahlt",
-      "history": "Verlauf",
-      "notYet": "Du kannst eine Auszahlung anfragen, wenn du {min} oder mehr hast."
-    },
-    "payoutStatus": {
-      "requested": "Wartet",
-      "paid": "Ausgezahlt",
-      "cancelled": "Storniert"
-    }
-  },
   "js": {
     "app": {
       "wentWrong": "Etwas ist schiefgelaufen. Bitte versuch es noch mal.",
@@ -1037,16 +920,17 @@
     "me": {
       "lookingGood": "Sieht super aus!",
       "chatOn": "Chat ist an.",
-      "chatOff": "Chat ist aus."
+      "chatOff": "Chat ist aus.",
+      "photoChecking": "Dein Foto wird geprüft…",
+      "photoSaved": "Foto gespeichert!",
+      "photoRemoved": "Foto entfernt",
+      "photoBad": "Diese Datei ist kein Foto, das wir verwenden können. Probier ein anderes."
     },
     "profile": {
       "linkCopied": "Profil-Link kopiert!"
     },
     "search": {
       "failed": "Die Suche macht gerade ein Nickerchen. Versuch es noch mal."
-    },
-    "creator": {
-      "payoutRequested": "Fertig! Wir haben deine Anfrage über {amount} bekommen."
     },
     "chat": {
       "sayHi": "Sag Hallo! 👋",

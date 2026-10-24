@@ -3,7 +3,7 @@
 import { q, now, tx, audit } from '../db.js';
 import { tEn } from '../i18n/index.js';
 
-const USER_COLS = 'u.id, u.username, u.display_name, u.avatar, u.color, u.is_guest, u.chat_enabled';
+const USER_COLS = 'u.id, u.username, u.display_name, u.avatar, u.color, u.photo_at, u.is_guest, u.chat_enabled';
 
 /** Friend codes are case-insensitive and people type spaces or dashes; keep letters and digits only. */
 export const normCode = s => String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '');

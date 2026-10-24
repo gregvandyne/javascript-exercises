@@ -22,10 +22,6 @@ services:
         sync: false
       - key: ANTHROPIC_API_KEY
         sync: false
-      - key: AD_ECPM_CENTS
-        value: "200"
-      - key: BUILDER_SHARE
-        value: "0.7"
       - key: BUILDER_DAILY_TURNS
         value: "60"
       - key: AI_DAILY_BUDGET_USD

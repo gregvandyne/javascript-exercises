@@ -122,7 +122,6 @@
       "games": "Mes jeux",
       "friends": "Amis",
       "chat": "Chat",
-      "money": "Mes gains",
       "admin": "Admin",
       "favorites": "Mes favoris"
     },
@@ -132,7 +131,8 @@
       "avatarLabel": "Avatar {emoji}",
       "colorHeading": "Couleur",
       "colorGroup": "Couleur",
-      "colorLabel": "Couleur {color}"
+      "colorLabel": "Couleur {color}",
+      "avatarHeading": "Ou choisis un emoji"
     },
     "language": {
       "heading": "Langue",
@@ -150,6 +150,22 @@
       "guest": "Les invités perdent leur progression quand ils se déconnectent.",
       "account": "À bientôt !",
       "button": "Se déconnecter"
+    },
+    "photo": {
+      "heading": "Photo de profil",
+      "text": "Mets une photo à la place de ton emoji. Seuls toi, tes amis et l’équipe Magic Cups peuvent la voir. Les autres voient ton emoji.",
+      "guest": "Crée un compte gratuit pour ajouter une photo de profil.",
+      "upload": "Ajouter une photo",
+      "change": "Changer de photo",
+      "remove": "Enlever la photo",
+      "errors": {
+        "guest": "Crée un compte gratuit pour ajouter une photo de profil.",
+        "badType": "Ce fichier n’est pas une photo qu’on peut utiliser. Essaie-en une autre.",
+        "tooBig": "Cette photo est trop grande. Essaie-en une autre.",
+        "unsafe": "Cette photo ne convient pas à Magic Cups. Essaie-en une autre.",
+        "personal_info": "Cette photo montre des détails privés comme un nom, une école ou une adresse. Essaie-en une autre.",
+        "resting": "Les photos passent par notre vérification de sécurité, et elle se repose en ce moment. Réessaie plus tard."
+      }
     }
   },
   "cards": {
@@ -160,8 +176,6 @@
     "gameBy": "{title}, par {name}",
     "by": "par {name}",
     "plays": "{count, plural, one {{n} partie} other {{n} parties}}",
-    "sponsored": "Sponsorisé",
-    "sponsoredLabel": "Sponsorisé : {title}",
     "seeAll": "Voir tout",
     "scrollBack": "Reculer dans {title}",
     "scrollForward": "Avancer dans {title}"
@@ -188,78 +202,6 @@
     "learning": "Apprendre",
     "music": "Musique",
     "silly": "Rigolo"
-  },
-  "ads": {
-    "house": {
-      "house-build": {
-        "title": "Crée ton propre jeu",
-        "text": "Dis ton idée au Constructeur. Il fait le jeu !"
-      },
-      "house-friends": {
-        "title": "Invite un ami",
-        "text": "Partage ton code ami et jouez ensemble."
-      },
-      "house-new": {
-        "title": "Nouveau cette semaine",
-        "text": "De nouveaux jeux faits par des créateurs comme toi."
-      },
-      "house-rate": {
-        "title": "Note un jeu que tu adores",
-        "text": "Mets des étoiles pour que d’autres le trouvent."
-      },
-      "house-words": {
-        "title": "Essaie un jeu de mots",
-        "text": "Épelle, devine et trouve des mots cachés."
-      },
-      "house-build-words": {
-        "title": "Crée un jeu de mots",
-        "text": "Transforme ta liste de mots en jeu !"
-      },
-      "house-puzzle": {
-        "title": "L’heure des énigmes",
-        "text": "Des casse-têtes pour les esprits rapides."
-      },
-      "house-sports": {
-        "title": "Marque un but",
-        "text": "Des jeux de sport pour toute l’année."
-      },
-      "house-build-sports": {
-        "title": "Crée un jeu de sport",
-        "text": "Choisis un sport. Le Constructeur fait le reste."
-      },
-      "house-arcade": {
-        "title": "Classiques d’arcade",
-        "text": "Saute, esquive et bats ton record."
-      },
-      "house-build-arcade": {
-        "title": "Crée un jeu d’arcade",
-        "text": "Esquive, saute, ramasse. C’est toi qui décides !"
-      },
-      "house-adventure": {
-        "title": "Pars à l’aventure",
-        "text": "Explore des cartes et trouve des trésors !"
-      },
-      "house-learning": {
-        "title": "Apprends en jouant",
-        "text": "Maths, sciences et plus, en s’amusant."
-      },
-      "house-music": {
-        "title": "Fais de la musique",
-        "text": "Tape le rythme et joue un air."
-      },
-      "house-silly": {
-        "title": "Un truc rigolo",
-        "text": "Des jeux qui vont te faire rire."
-      },
-      "house-board": {
-        "title": "Soirée jeux de société",
-        "text": "Des jeux classiques à faire en famille."
-      },
-      "house-playing": {
-        "title": "En ce moment",
-        "text": "Regarde à quoi tout le monde joue aujourd’hui."
-      }
-    }
   },
   "home": {
     "build": {
@@ -339,8 +281,8 @@
         "p1": "Nous ne te demandons jamais ton e-mail, ton vrai nom, ton âge ou ton adresse. Choisis un nom rigolo inventé."
       },
       "ads": {
-        "h": "Les pubs sont discrètes",
-        "p1": "Quelques petites cartes disent « Sponsorisé ». Elles n’apparaissent jamais dans un jeu ni par-dessus, ne font jamais de bruit et ne s’ouvrent jamais toutes seules."
+        "h": "Pas de publicité",
+        "p1": "Il n’y a aucune publicité sur Magic Cups. Rien n’est à vendre et rien ne s’affiche par-dessus un jeu."
       }
     },
     "parents": {
@@ -366,10 +308,6 @@
       "languages": {
         "h": "Langues",
         "p1": "Choisissez une langue avec le bouton 🌐 en haut de chaque page ou sur la page Moi. Le Constructeur répond dans cette langue et écrit aussi les textes des nouveaux jeux dans cette langue. Les mêmes filtres de sécurité vérifient chaque message, dans toutes les langues."
-      },
-      "money": {
-        "h": "Argent",
-        "p1": "La publicité finance la plateforme, et les créateurs reçoivent une part selon le nombre de parties jouées sur leurs jeux. Les versements au-delà de $10 sont traités à la main par notre équipe."
       }
     },
     "sdk": {
@@ -918,61 +856,6 @@
       "resting": "Les images doivent passer notre vérification de sécurité, qui se repose jusqu’à demain. Réessaie plus tard, ou décris ton idée avec des mots !"
     }
   },
-  "creator": {
-    "title": "Mes gains",
-    "estimate": "Estimation",
-    "allGames": "Tous tes jeux",
-    "underOneCent": "moins de 1¢",
-    "earned": "gagnés",
-    "last14": "14 derniers jours",
-    "yourGames": "Tes jeux",
-    "stats": {
-      "earnedSoFar": "gagnés jusqu’ici",
-      "adViews": "vues de pubs",
-      "players": "{count, plural, one {joueur} other {joueurs}}",
-      "noRatings": "pas de notes",
-      "averageStars": "étoiles en moyenne"
-    },
-    "chart": {
-      "barTitle": "{day} : {money}, {views} vues de pubs",
-      "caption": "Chaque barre est un jour. Barre plus haute = plus de gains.",
-      "empty": "Pas encore de gains ces 14 derniers jours. Les barres poussent ici quand des joueurs voient les cartes Sponsorisé.",
-      "showNumbers": "Voir les chiffres de chaque jour",
-      "tableCaption": "Gains estimés pour chacun des 14 derniers jours",
-      "day": "Jour",
-      "earned": "Gagné (estimation)"
-    },
-    "how": {
-      "heading": "Comment marchent les gains",
-      "p1": "Tes jeux rapportent quand des joueurs voient les petites cartes <b>Sponsorisé</b> sur la page de ton jeu, ou à côté de ton jeu dans Accueil et Recherche.",
-      "p2": "Environ 1 000 vues de ces cartes rapportent à tes jeux environ <b>{amount}</b>. Tu reçois {share} %, et le reste permet à Magic Cups de rester gratuit.",
-      "p3": "Nous ne montrons jamais de pubs dans les jeux ni pendant que tu joues.",
-      "p4": "Tes propres visites ne comptent pas. Chaque joueur compte une fois par heure.",
-      "p5": "Ces chiffres sont une <b>estimation</b>. Ils sont mis à jour toutes les heures et peuvent changer après notre vérification anti-triche."
-    },
-    "empty": {
-      "title": "Crée un jeu pour commencer à gagner",
-      "text": "Quand des joueurs aiment tes jeux, tu gagnes de l’argent grâce aux petites cartes Sponsorisé qu’ils voient."
-    },
-    "payouts": {
-      "heading": "Versements",
-      "ready": "prêt à être versé",
-      "progress": "Progression vers le minimum de versement",
-      "reached": "Tu as atteint le minimum. Tu peux demander un versement !",
-      "toGo": "Tu peux demander un versement à partir de {min}. Encore {left}.",
-      "ask": "Demander un versement",
-      "byHand": "Notre équipe fait chaque versement à la main. Si tu as moins de 18 ans, nous vérifions d’abord avec ton parent ou ton tuteur.",
-      "pending": "En attente de paiement",
-      "paid": "Versé",
-      "history": "Historique",
-      "notYet": "Tu pourras demander un versement quand tu auras {min} ou plus."
-    },
-    "payoutStatus": {
-      "requested": "En attente",
-      "paid": "Payé",
-      "cancelled": "Annulé"
-    }
-  },
   "js": {
     "app": {
       "wentWrong": "Quelque chose n’a pas marché. Réessaie, s’il te plaît.",
@@ -1036,16 +919,17 @@
     "me": {
       "lookingGood": "Super look !",
       "chatOn": "Le chat est activé.",
-      "chatOff": "Le chat est désactivé."
+      "chatOff": "Le chat est désactivé.",
+      "photoChecking": "Je vérifie ta photo…",
+      "photoSaved": "Photo enregistrée !",
+      "photoRemoved": "Photo enlevée",
+      "photoBad": "Ce fichier n’est pas une photo qu’on peut utiliser. Essaie-en une autre."
     },
     "profile": {
       "linkCopied": "Lien du profil copié !"
     },
     "search": {
       "failed": "La recherche fait une sieste. Réessaie."
-    },
-    "creator": {
-      "payoutRequested": "C’est fait ! Nous avons bien reçu ta demande de {amount}."
     },
     "chat": {
       "sayHi": "Dis bonjour ! 👋",

@@ -1,5 +1,5 @@
 {
-  "_about": "Magic Cups: testi in italiano. Stessa struttura di en.json. Glossario: Builder = Costruttore, Studio = Studio, builders = creatori, Publish = Pubblica, friend code = codice amico, leaderboard = Classifica, likes = mi piace, plays = partite, ratings = voti, Sponsored = Pubblicità, Me = Io.",
+  "_about": "Magic Cups: testi in italiano. Stessa struttura di en.json. Glossario: Builder = Costruttore, Studio = Studio, builders = creatori, Publish = Pubblica, friend code = codice amico, leaderboard = Classifica, likes = mi piace, plays = partite, ratings = voti, Me = Io.",
   "layout": {
     "titleHome": "Magic Cups · Gioca e crea giochi",
     "titleWith": "{title} · Magic Cups",
@@ -123,7 +123,6 @@
       "games": "I miei giochi",
       "friends": "Amici",
       "chat": "Chat",
-      "money": "Guadagni da creatore",
       "admin": "Admin",
       "favorites": "I miei preferiti"
     },
@@ -133,7 +132,8 @@
       "avatarLabel": "Avatar {emoji}",
       "colorHeading": "Colore",
       "colorGroup": "Colore",
-      "colorLabel": "Colore {color}"
+      "colorLabel": "Colore {color}",
+      "avatarHeading": "Oppure scegli un’emoji"
     },
     "language": {
       "heading": "Lingua",
@@ -151,6 +151,22 @@
       "guest": "Gli ospiti perdono i loro progressi quando escono.",
       "account": "A presto!",
       "button": "Esci"
+    },
+    "photo": {
+      "heading": "Foto del profilo",
+      "text": "Usa una foto al posto della tua emoji. La vedono solo tu, i tuoi amici e il team di Magic Cups. Gli altri vedono la tua emoji.",
+      "guest": "Crea un account gratis per aggiungere una foto del profilo.",
+      "upload": "Carica una foto",
+      "change": "Cambia foto",
+      "remove": "Togli la foto",
+      "errors": {
+        "guest": "Crea un account gratis per aggiungere una foto del profilo.",
+        "badType": "Questo file non è una foto che possiamo usare. Provane un’altra.",
+        "tooBig": "Questa foto è troppo grande. Provane un’altra.",
+        "unsafe": "Questa foto non va bene per Magic Cups. Provane un’altra.",
+        "personal_info": "Questa foto mostra dati privati come un nome, una scuola o un indirizzo. Provane un’altra.",
+        "resting": "Le foto passano il nostro controllo di sicurezza, che adesso sta riposando. Riprova più tardi."
+      }
     }
   },
   "cards": {
@@ -161,8 +177,6 @@
     "gameBy": "{title}, di {name}",
     "by": "di {name}",
     "plays": "{count, plural, one {{n} partita} other {{n} partite}}",
-    "sponsored": "Pubblicità",
-    "sponsoredLabel": "Pubblicità: {title}",
     "seeAll": "Vedi tutti",
     "scrollBack": "Scorri {title} indietro",
     "scrollForward": "Scorri {title} avanti"
@@ -189,78 +203,6 @@
     "learning": "Imparare",
     "music": "Musica",
     "silly": "Buffi"
-  },
-  "ads": {
-    "house": {
-      "house-build": {
-        "title": "Crea il tuo gioco",
-        "text": "Di' la tua idea al Costruttore. Il gioco lo fa lui!"
-      },
-      "house-friends": {
-        "title": "Invita un amico",
-        "text": "Condividi il tuo codice amico e giocate insieme."
-      },
-      "house-new": {
-        "title": "Novità della settimana",
-        "text": "Giochi nuovi fatti da creatori come te."
-      },
-      "house-rate": {
-        "title": "Vota un gioco che ami",
-        "text": "Tocca le stelle per aiutare altri a trovarlo."
-      },
-      "house-words": {
-        "title": "Prova un gioco di parole",
-        "text": "Scrivi, indovina e trova parole nascoste."
-      },
-      "house-build-words": {
-        "title": "Crea un gioco di parole",
-        "text": "Trasforma la tua lista di parole in un gioco!"
-      },
-      "house-puzzle": {
-        "title": "Ora dei rompicapi",
-        "text": "Indovinelli per chi pensa veloce."
-      },
-      "house-sports": {
-        "title": "Fai gol!",
-        "text": "Giochi sportivi per ogni stagione."
-      },
-      "house-build-sports": {
-        "title": "Crea un gioco sportivo",
-        "text": "Scegli uno sport. Al resto pensa il Costruttore."
-      },
-      "house-arcade": {
-        "title": "Classici arcade",
-        "text": "Salta, schiva e batti il tuo record."
-      },
-      "house-build-arcade": {
-        "title": "Crea un gioco arcade",
-        "text": "Schiva, salta, raccogli. Le regole le scegli tu!"
-      },
-      "house-adventure": {
-        "title": "Vivi un'avventura",
-        "text": "Esplora mappe, trova tesori, fatti coraggio."
-      },
-      "house-learning": {
-        "title": "Impara giocando",
-        "text": "Matematica, scienze e altro, in modo divertente."
-      },
-      "house-music": {
-        "title": "Fai musica",
-        "text": "Segui il ritmo e suona una melodia."
-      },
-      "house-silly": {
-        "title": "Qualcosa di buffo",
-        "text": "Giochi che ti faranno ridere."
-      },
-      "house-board": {
-        "title": "Serata giochi da tavolo",
-        "text": "Giochi classici da fare in famiglia."
-      },
-      "house-playing": {
-        "title": "In gioco adesso",
-        "text": "Guarda a cosa giocano tutti oggi."
-      }
-    }
   },
   "home": {
     "build": {
@@ -340,8 +282,8 @@
         "p1": "Non ti chiediamo mai la tua email, il tuo nome vero, la tua età o il tuo indirizzo. Scegli un nome inventato e divertente."
       },
       "ads": {
-        "h": "Le pubblicità sono tranquille",
-        "p1": "Alcune piccole schede dicono «Pubblicità». Non compaiono mai dentro o sopra un gioco, non fanno mai rumore e non saltano mai fuori all'improvviso."
+        "h": "Niente pubblicità",
+        "p1": "Su Magic Cups non c’è pubblicità. Non si vende niente e niente compare sopra un gioco."
       }
     },
     "parents": {
@@ -367,10 +309,6 @@
       "languages": {
         "h": "Lingue",
         "p1": "Scegliete una lingua con il pulsante 🌐 in cima a qualsiasi pagina o nella pagina Io. Il Costruttore risponde in quella lingua e la usa anche per i testi dei nuovi giochi. Gli stessi filtri di sicurezza controllano ogni messaggio, in ogni lingua."
-      },
-      "money": {
-        "h": "Soldi",
-        "p1": "La pubblicità paga la piattaforma e i creatori ricevono una parte in base alle partite giocate ai loro giochi. I pagamenti oltre $10 vengono gestiti a mano dal nostro team."
       }
     },
     "sdk": {
@@ -919,61 +857,6 @@
       "resting": "Le immagini hanno bisogno del nostro controllo di sicurezza, che si riposa fino a domani. Riprova più tardi o descrivi la tua idea a parole!"
     }
   },
-  "creator": {
-    "title": "Guadagni da creatore",
-    "estimate": "Stima",
-    "allGames": "Tutti i tuoi giochi",
-    "underOneCent": "meno di 1¢",
-    "earned": "guadagnati",
-    "last14": "Ultimi 14 giorni",
-    "yourGames": "I tuoi giochi",
-    "stats": {
-      "earnedSoFar": "guadagnati finora",
-      "adViews": "visualizzazioni annunci",
-      "players": "{count, plural, one {giocatore} other {giocatori}}",
-      "noRatings": "nessun voto",
-      "averageStars": "media stelle"
-    },
-    "chart": {
-      "barTitle": "{day}: {money}, {views} visualizzazioni annunci",
-      "caption": "Ogni barra è un giorno. Barra più alta = più guadagni.",
-      "empty": "Ancora nessun guadagno negli ultimi 14 giorni. Le barre crescono qui quando i giocatori vedono le schede Pubblicità.",
-      "showNumbers": "Mostra i numeri di ogni giorno",
-      "tableCaption": "Guadagni stimati per ognuno degli ultimi 14 giorni",
-      "day": "Giorno",
-      "earned": "Guadagno (stima)"
-    },
-    "how": {
-      "heading": "Come funzionano i guadagni",
-      "p1": "I tuoi giochi guadagnano quando i giocatori vedono le piccole schede <b>Pubblicità</b> nella pagina del tuo gioco, o accanto al tuo gioco in Home e Cerca.",
-      "p2": "Circa 1.000 visualizzazioni di quelle schede fanno guadagnare ai tuoi giochi circa <b>{amount}</b>. Tu ricevi il {share}% e il resto serve a tenere Magic Cups gratis.",
-      "p3": "Non mostriamo mai pubblicità dentro i giochi o mentre giochi.",
-      "p4": "Le tue visite non contano. Ogni giocatore conta una volta all'ora.",
-      "p5": "Questi numeri sono una <b>stima</b>. Si aggiornano ogni ora e possono cambiare dopo che controlliamo che nessuno abbia imbrogliato."
-    },
-    "empty": {
-      "title": "Crea un gioco per iniziare a guadagnare",
-      "text": "Quando i giocatori si divertono con i tuoi giochi, guadagni soldi dalle piccole schede Pubblicità che vedono."
-    },
-    "payouts": {
-      "heading": "Pagamenti",
-      "ready": "pronti da incassare",
-      "progress": "Progressi verso il minimo per il pagamento",
-      "reached": "Hai raggiunto il minimo. Puoi chiedere un pagamento!",
-      "toGo": "Puoi chiedere un pagamento da {min}. Mancano {left}.",
-      "ask": "Chiedi un pagamento",
-      "byHand": "Il nostro team fa ogni pagamento a mano. Se hai meno di 18 anni, prima ne parliamo con un tuo genitore o tutore.",
-      "pending": "In attesa di pagamento",
-      "paid": "Pagati a te",
-      "history": "Storico",
-      "notYet": "Puoi chiedere un pagamento quando hai {min} o più."
-    },
-    "payoutStatus": {
-      "requested": "In attesa",
-      "paid": "Pagato",
-      "cancelled": "Annullato"
-    }
-  },
   "js": {
     "app": {
       "wentWrong": "Qualcosa è andato storto. Riprova.",
@@ -1037,16 +920,17 @@
     "me": {
       "lookingGood": "Che stile!",
       "chatOn": "La chat è accesa.",
-      "chatOff": "La chat è spenta."
+      "chatOff": "La chat è spenta.",
+      "photoChecking": "Controllo la tua foto…",
+      "photoSaved": "Foto salvata!",
+      "photoRemoved": "Foto tolta",
+      "photoBad": "Questo file non è una foto che possiamo usare. Provane un’altra."
     },
     "profile": {
       "linkCopied": "Link del profilo copiato!"
     },
     "search": {
       "failed": "La ricerca sta facendo un pisolino. Riprova."
-    },
-    "creator": {
-      "payoutRequested": "Fatto! Abbiamo ricevuto la tua richiesta di {amount}."
     },
     "chat": {
       "sayHi": "Saluta! 👋",

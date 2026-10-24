@@ -123,7 +123,6 @@
       "games": "Mijn games",
       "friends": "Vrienden",
       "chat": "Chat",
-      "money": "Mijn geld",
       "admin": "Beheer",
       "favorites": "Mijn favorieten"
     },
@@ -133,7 +132,8 @@
       "avatarLabel": "Avatar {emoji}",
       "colorHeading": "Kleur",
       "colorGroup": "Kleur",
-      "colorLabel": "Kleur {color}"
+      "colorLabel": "Kleur {color}",
+      "avatarHeading": "Of kies een emoji"
     },
     "language": {
       "heading": "Taal",
@@ -151,6 +151,22 @@
       "guest": "Gasten verliezen hun voortgang als ze uitloggen.",
       "account": "Tot snel!",
       "button": "Uitloggen"
+    },
+    "photo": {
+      "heading": "Profielfoto",
+      "text": "Gebruik een foto in plaats van je emoji. Alleen jij, je vrienden en het Magic Cups-team zien hem. Alle anderen zien je emoji.",
+      "guest": "Maak een gratis account om een profielfoto toe te voegen.",
+      "upload": "Foto uploaden",
+      "change": "Foto wijzigen",
+      "remove": "Foto weghalen",
+      "errors": {
+        "guest": "Maak een gratis account om een profielfoto toe te voegen.",
+        "badType": "Dat bestand is geen foto die we kunnen gebruiken. Probeer een andere.",
+        "tooBig": "Die foto is te groot. Probeer een andere.",
+        "unsafe": "Die foto past niet bij Magic Cups. Probeer een andere.",
+        "personal_info": "Op die foto staan privégegevens zoals een naam, school of adres. Probeer een andere.",
+        "resting": "Foto’s gaan door onze veiligheidscheck, en die rust nu even. Probeer het later nog eens."
+      }
     }
   },
   "cards": {
@@ -161,8 +177,6 @@
     "gameBy": "{title}, door {name}",
     "by": "door {name}",
     "plays": "{count, plural, one {{n}× gespeeld} other {{n}× gespeeld}}",
-    "sponsored": "Reclame",
-    "sponsoredLabel": "Reclame: {title}",
     "seeAll": "Alles zien",
     "scrollBack": "{title} terug scrollen",
     "scrollForward": "{title} verder scrollen"
@@ -189,78 +203,6 @@
     "learning": "Leren",
     "music": "Muziek",
     "silly": "Grappig"
-  },
-  "ads": {
-    "house": {
-      "house-build": {
-        "title": "Maak je eigen game",
-        "text": "Vertel de Bouwer je idee. Hij maakt de game!"
-      },
-      "house-friends": {
-        "title": "Nodig een vriend uit",
-        "text": "Deel je vriendcode en speel samen."
-      },
-      "house-new": {
-        "title": "Nieuw deze week",
-        "text": "Verse games van makers zoals jij."
-      },
-      "house-rate": {
-        "title": "Beoordeel je favoriet",
-        "text": "Tik op de sterren zodat anderen hem vinden."
-      },
-      "house-words": {
-        "title": "Probeer een woordspel",
-        "text": "Spel, raad en vind verstopte woorden."
-      },
-      "house-build-words": {
-        "title": "Bouw een woordspel",
-        "text": "Maak van je woordjeslijst een game!"
-      },
-      "house-puzzle": {
-        "title": "Tijd om te puzzelen",
-        "text": "Breinbrekers voor snelle denkers."
-      },
-      "house-sports": {
-        "title": "Scoor een doelpunt",
-        "text": "Sportgames voor elk seizoen."
-      },
-      "house-build-sports": {
-        "title": "Bouw een sportgame",
-        "text": "Kies een sport. De Bouwer doet de rest."
-      },
-      "house-arcade": {
-        "title": "Arcade-klassiekers",
-        "text": "Spring, ontwijk en verbeter je record."
-      },
-      "house-build-arcade": {
-        "title": "Bouw een arcadegame",
-        "text": "Ontwijken, springen, pakken. Jij kiest de regels!"
-      },
-      "house-adventure": {
-        "title": "Ga op avontuur",
-        "text": "Ontdek kaarten, vind schatten, wees dapper."
-      },
-      "house-learning": {
-        "title": "Leer terwijl je speelt",
-        "text": "Rekenen, natuur en meer, heel leuk gemaakt."
-      },
-      "house-music": {
-        "title": "Maak muziek",
-        "text": "Tik de maat en speel een liedje."
-      },
-      "house-silly": {
-        "title": "Iets grappigs",
-        "text": "Games waar je om moet giechelen."
-      },
-      "house-board": {
-        "title": "Spelletjesavond",
-        "text": "Klassieke spellen om met je familie te spelen."
-      },
-      "house-playing": {
-        "title": "Wordt nu gespeeld",
-        "text": "Kijk wat iedereen vandaag speelt."
-      }
-    }
   },
   "home": {
     "build": {
@@ -340,8 +282,8 @@
         "p1": "We vragen nooit naar je e-mail, echte naam, leeftijd of adres. Kies een leuke verzonnen naam."
       },
       "ads": {
-        "h": "Reclame is rustig",
-        "p1": "Een paar kleine kaartjes zeggen “Reclame”. Ze staan nooit in of over een game, maken nooit geluid en springen nooit open."
+        "h": "Geen reclame",
+        "p1": "Op Magic Cups staat geen reclame. Er wordt niets verkocht en er springt niets over een game heen."
       }
     },
     "parents": {
@@ -367,10 +309,6 @@
       "languages": {
         "h": "Talen",
         "p1": "Kies een taal met de 🌐-knop bovenaan elke pagina of op de pagina Ik. De Bouwer antwoordt in die taal en schrijft ook de teksten in nieuwe games in die taal. Dezelfde veiligheidsfilters controleren elk bericht, in elke taal."
-      },
-      "money": {
-        "h": "Geld",
-        "p1": "Reclame betaalt het platform en makers krijgen een deel, op basis van hoe vaak hun games worden gespeeld. Uitbetalingen boven $10 worden door ons team met de hand afgehandeld."
       }
     },
     "sdk": {
@@ -919,61 +857,6 @@
       "resting": "Plaatjes moeten door onze veiligheidscheck, en die rust uit tot morgen. Probeer het later nog eens, of beschrijf je idee in woorden!"
     }
   },
-  "creator": {
-    "title": "Mijn geld",
-    "estimate": "Schatting",
-    "allGames": "Al je games",
-    "underOneCent": "minder dan 1¢",
-    "earned": "verdiend",
-    "last14": "Afgelopen 14 dagen",
-    "yourGames": "Je games",
-    "stats": {
-      "earnedSoFar": "tot nu toe verdiend",
-      "adViews": "keer reclame gezien",
-      "players": "{count, plural, one {speler} other {spelers}}",
-      "noRatings": "geen beoordelingen",
-      "averageStars": "sterren gemiddeld"
-    },
-    "chart": {
-      "barTitle": "{day}: {money}, {views} keer reclame gezien",
-      "caption": "Elke staaf is één dag. Hogere staaf = meer verdiend.",
-      "empty": "Nog niets verdiend in de afgelopen 14 dagen. Hier groeien staven als spelers de reclamekaartjes zien.",
-      "showNumbers": "Laat de getallen per dag zien",
-      "tableCaption": "Geschatte verdiensten voor elk van de afgelopen 14 dagen",
-      "day": "Dag",
-      "earned": "Verdiend (schatting)"
-    },
-    "how": {
-      "heading": "Zo werkt verdienen",
-      "p1": "Je games verdienen geld als spelers de kleine <b>Reclame</b>-kaartjes zien op de pagina van je game, of naast je game bij Start en Zoeken.",
-      "p2": "Ongeveer 1.000 keer kijken naar die kaartjes levert je games ongeveer <b>{amount}</b> op. Jij krijgt {share}% en de rest houdt Magic Cups gratis.",
-      "p3": "We laten nooit reclame zien in games of terwijl je speelt.",
-      "p4": "Je eigen bezoekjes tellen niet mee. Elke speler telt één keer per uur.",
-      "p5": "Deze getallen zijn een <b>schatting</b>. Ze worden elk uur bijgewerkt en kunnen nog veranderen nadat we op valsspelen hebben gecontroleerd."
-    },
-    "empty": {
-      "title": "Bouw een game om te gaan verdienen",
-      "text": "Als spelers je games leuk vinden, verdien je geld met de kleine reclamekaartjes die ze zien."
-    },
-    "payouts": {
-      "heading": "Uitbetalingen",
-      "ready": "klaar om uit te betalen",
-      "progress": "Op weg naar het minimumbedrag",
-      "reached": "Je hebt het minimumbedrag gehaald. Je kunt een uitbetaling aanvragen!",
-      "toGo": "Vanaf {min} kun je een uitbetaling aanvragen. Nog {left} te gaan.",
-      "ask": "Uitbetaling aanvragen",
-      "byHand": "Ons team doet elke uitbetaling met de hand. Ben je jonger dan 18, dan vragen we het eerst aan je ouder of voogd.",
-      "pending": "Wacht op betaling",
-      "paid": "Aan jou betaald",
-      "history": "Geschiedenis",
-      "notYet": "Je kunt een uitbetaling aanvragen als je {min} of meer hebt."
-    },
-    "payoutStatus": {
-      "requested": "Wacht",
-      "paid": "Betaald",
-      "cancelled": "Geannuleerd"
-    }
-  },
   "js": {
     "app": {
       "wentWrong": "Er ging iets mis. Probeer het nog eens.",
@@ -1037,16 +920,17 @@
     "me": {
       "lookingGood": "Ziet er goed uit!",
       "chatOn": "Chat staat aan.",
-      "chatOff": "Chat staat uit."
+      "chatOff": "Chat staat uit.",
+      "photoChecking": "Je foto wordt gecheckt…",
+      "photoSaved": "Foto opgeslagen!",
+      "photoRemoved": "Foto weggehaald",
+      "photoBad": "Dat bestand is geen foto die we kunnen gebruiken. Probeer een andere."
     },
     "profile": {
       "linkCopied": "Profiellink gekopieerd!"
     },
     "search": {
       "failed": "Zoeken doet even een dutje. Probeer het nog eens."
-    },
-    "creator": {
-      "payoutRequested": "Klaar! We hebben je aanvraag voor {amount} ontvangen."
     },
     "chat": {
       "sayHi": "Zeg hoi! 👋",

@@ -1,10 +1,12 @@
 // Accounts: guest play, sign up (or upgrade a guest), sign in/out, and the Me hub.
-import { Router } from 'express';
+import express, { Router } from 'express';
+import fs from 'node:fs';
 import { html, raw } from '../views/html.js';
 import { page } from '../views/layout.js';
 import { avatar } from '../views/components.js';
 import * as auth from '../auth.js';
 import { q, audit } from '../db.js';
+import * as photos from '../services/photos.js';
 import { rateLimit, allow } from '../services/ratelimit.js';
 import { availableLocales, normalizeCode, tHtml, setLangCookie, saveUserLang } from '../i18n/index.js';
 
@@ -82,6 +84,28 @@ router.post('/api/auth/login', rateLimit('login', 20, 900e3, 'auth.api.tooManyTr
 });
 router.post('/api/auth/logout', (req, res) => { auth.endSession(req, res); res.json({ ok: true, redirect: '/' }); });
 router.get('/api/me', (req, res) => res.json({ user: auth.publicUser(req.user) }));
+// ---- Profile photo. Raw body: a JPEG the browser already shrank to a 512px square.
+router.post('/api/me/photo', auth.requireUser, rateLimit('me-photo', 10, 3600e3), express.raw({ type: () => true, limit: '1mb' }), async (req, res) => {
+  const t = req.t;
+  try {
+    const at = await photos.savePhoto(req.user, Buffer.isBuffer(req.body) ? req.body : Buffer.alloc(0));
+    res.json({ ok: true, photo: photos.photoUrl({ id: req.user.id, photo_at: at }) });
+  } catch (e) {
+    if (e instanceof photos.PhotoError) return res.status(e.status).json({ error: t(`me.photo.errors.${e.code}`) });
+    res.status(503).json({ error: t('me.photo.errors.resting') });
+  }
+});
+router.delete('/api/me/photo', auth.requireUser, (req, res) => { photos.removePhoto(req.user.id); res.json({ ok: true }); });
+// The picture behind /avatars/<id>: the photo for the player, their friends and admins; the emoji for everyone else.
+router.get('/avatars/:id', (req, res) => {
+  const u = auth.getUser(String(req.params.id));
+  res.set({ 'Cache-Control': 'private, max-age=600', Vary: 'Cookie', 'X-Content-Type-Options': 'nosniff' });
+  if (!u) return res.status(404).end();
+  const file = photos.fileFor(u.id);
+  if (photos.canSeePhoto(req.user, u) && fs.existsSync(file)) return res.type('jpg').sendFile(file);
+  res.type('image/svg+xml').send(photos.emojiSvg(u));
+});
+
 router.post('/api/me', auth.requireUser, rateLimit('me', 30, 60e3), (req, res) => {
   const t = req.t;
   const { avatar: av, color, displayName, chatEnabled, lang } = req.body || {};
@@ -120,16 +144,28 @@ router.get('/me', (req, res) => {
     ['🛠️', t('me.tiles.games'), '/build'],
     ['👫', t('me.tiles.friends'), '/friends'],
     ['💬', t('me.tiles.chat'), '/chat'],
-    !u.is_guest && ['💰', t('me.tiles.money'), '/creator'],
     u.role === 'admin' && ['🛡️', t('me.tiles.admin'), '/admin'],
   ].filter(Boolean);
   const body = html`
   <div class="pagehead">${avatar(u, 72)}<div style="flex:1;min-width:0"><h1 style="margin:0">${u.display_name}</h1><div class="muted"><bdi>@${u.username}</bdi>${u.is_guest ? ` · ${t('me.guestTag')}` : ''}</div></div></div>
   ${u.is_guest ? html`<div class="notice warn" style="margin-bottom:16px">${tHtml(t, 'me.guestNotice', { href: '/signup?next=/me' })}</div>` : ''}
-  <div class="cardgrid" style="grid-template-columns:repeat(auto-fill,minmax(150px,1fr));margin-bottom:24px">
-    ${tiles.map(([e, l, h]) => html`<a class="panel center" href="${h}" style="color:var(--ink);font-weight:900"><div style="font-size:2.2rem" aria-hidden="true">${e}</div>${l}</a>`)}
-  </div>
+  <nav class="metiles" aria-label="${t('me.title')}">
+    ${tiles.map(([e, l, h]) => html`<a class="panel metile" href="${h}"><span class="metile-e" aria-hidden="true">${e}</span><span>${l}</span></a>`)}
+  </nav>
   <section class="panel" aria-labelledby="av-h"><h2 id="av-h">${t('me.look.heading')}</h2>
+    <div class="photo-row">
+      ${avatar(u, 84)}
+      <div class="photo-ctl">
+        <h3>${t('me.photo.heading')}</h3>
+        <p class="muted small">${u.is_guest ? t('me.photo.guest') : t('me.photo.text')}</p>
+        ${u.is_guest ? '' : html`<div class="row">
+          <button class="btn btn-primary" type="button" id="photo-pick">📷 ${u.photo_at ? t('me.photo.change') : t('me.photo.upload')}</button>
+          ${u.photo_at ? html`<button class="btn" type="button" id="photo-remove">${t('me.photo.remove')}</button>` : ''}
+          <input type="file" id="photo-file" accept="image/*" hidden>
+        </div>`}
+      </div>
+    </div>
+    <h3 style="margin-top:16px">${t('me.look.avatarHeading')}</h3>
     <div class="chips" role="group" aria-label="${t('me.look.avatarGroup')}">${auth.AVATARS.map(a => html`<button class="chip" type="button" data-avatar="${a}" aria-pressed="${a === u.avatar}" aria-label="${t('me.look.avatarLabel', { emoji: a })}" style="font-size:1.4rem;padding:0 12px">${a}</button>`)}</div>
     <h3 style="margin-top:16px">${t('me.look.colorHeading')}</h3>
     <div class="chips" role="group" aria-label="${t('me.look.colorGroup')}">${auth.COLORS.map(c => html`<button class="chip" type="button" data-color="${c}" aria-pressed="${c === u.color}" aria-label="${t('me.look.colorLabel', { color: c })}"><span class="avatar" style="--s:26px;--c:${c}"></span></button>`)}</div>

@@ -176,10 +176,10 @@ router.get('/u/:username', (req, res) => {
     <div class="stat"><b>${f.num(stats.likes)}</b>${t('game.stats.likes', { count: stats.likes })}</div>
   </div>
   <section aria-labelledby="built-h"><h2 id="built-h">🛠️ ${t('profile.gamesBy', { name: p.display_name })}</h2>
-    ${built.length ? cardGrid(built, { ads: false }) : emptyState({ emoji: '🧱', title: t('profile.noGames'), text: isMe ? t('profile.noGamesMe') : '', action: isMe ? { href: '/build', label: t('home.empty.action') } : null })}
+    ${built.length ? cardGrid(built, {}) : emptyState({ emoji: '🧱', title: t('profile.noGames'), text: isMe ? t('profile.noGamesMe') : '', action: isMe ? { href: '/build', label: t('home.empty.action') } : null })}
   </section>
   <section aria-labelledby="fav-h" style="margin-top:28px"><h2 id="fav-h">❤️ ${t('profile.favorites')}</h2>
-    ${favs.length ? cardGrid(favs, { ads: false }) : html`<p class="muted">${t('profile.noFavorites')}</p>`}
+    ${favs.length ? cardGrid(favs, {}) : html`<p class="muted">${t('profile.noFavorites')}</p>`}
   </section>
   ${!isMe && viewer && !viewer.is_guest && rel === 'none' ? html`<p class="small muted" style="margin-top:24px">${tHtml(t, 'profile.beFriends', { link: html`<a href="/friends">${t('nav.friends')}</a>` })}</p>` : ''}`;
   page(req, res, { title: p.display_name, active: isMe ? 'me' : null, body, head: COMMUNITY_CSS, back: '/', backLabel: t('nav.home'), description: t('profile.description', { name: p.display_name }), scripts: ['/js/profile.js'] });

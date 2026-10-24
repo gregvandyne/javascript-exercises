@@ -14,7 +14,7 @@ function info(req, pageKey, emoji, sections) {
 const codeBlock = s => html`<code dir="ltr">${s}</code>`;
 
 router.get('/safety', (req, res) => page(req, res, { title: req.t('info.safety.title'), back: '/', description: req.t('info.safety.description'), body: info(req, 'safety', '🛡️', [['box', 1], ['checked', 2], ['chat', 2], ['personal', 1], ['ads', 1]]) }));
-router.get('/parents', (req, res) => page(req, res, { title: req.t('info.parents.title'), back: '/', description: req.t('info.parents.description'), body: info(req, 'parents', '👪', [['what', 1], ['data', 1], ['friends', 1], ['builder', 1], ['languages', 1], ['money', 1]]) }));
+router.get('/parents', (req, res) => page(req, res, { title: req.t('info.parents.title'), back: '/', description: req.t('info.parents.description'), body: info(req, 'parents', '👪', [['what', 1], ['data', 1], ['friends', 1], ['builder', 1], ['languages', 1]]) }));
 router.get('/sdk', (req, res) => {
   const t = req.t;
   // The SDK names (BRB.storage.get...) are code and stay as they are in every language.

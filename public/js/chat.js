@@ -5,12 +5,14 @@ import { timeAgo as ago, INTL } from '/js/i18n.js';
 const d = pageData();
 
 const clock = at => new Date(at).toLocaleTimeString(INTL, { hour: 'numeric', minute: '2-digit' });
-const avatarHtml = (a, c, s) => `<span class="avatar" style="--s:${s}px;--c:${esc(c)}" aria-hidden="true">${esc(a)}</span>`;
+const avatarHtml = (a, c, s, photo) => photo && /^\/avatars\/[\w-]+\?v=\w+$/.test(photo)
+  ? `<span class="avatar has-photo" style="--s:${s}px;--c:${esc(c)}" aria-hidden="true"><img src="${esc(photo)}" alt="" loading="lazy"></span>`
+  : `<span class="avatar" style="--s:${s}px;--c:${esc(c)}" aria-hidden="true">${esc(a)}</span>`;
 
 // ---------------- Inbox ----------------
 if (d.mode === 'inbox') {
   const box = $('#inbox');
-  const row = th => `<li><a class="inboxrow ${th.unread ? 'unread' : ''}" href="/chat/${encodeURIComponent(th.username)}" data-thread="${esc(th.username)}">${avatarHtml(th.avatar, th.color, 48)}<span class="who"><span class="nm">${esc(th.displayName)}</span><span class="sub">${esc(th.preview || (th.chatOn ? t('js.chat.sayHi') : t('js.chat.chatOff')))}</span></span><span class="meta">${th.last ? `<span class="time">${esc(ago(th.last))}</span>` : ''}${th.unread ? `<span class="badge" aria-label="${esc(t('js.chat.newCount', { count: th.unread }))}">${th.unread > 9 ? '9+' : th.unread}</span>` : ''}</span></a></li>`;
+  const row = th => `<li><a class="inboxrow ${th.unread ? 'unread' : ''}" href="/chat/${encodeURIComponent(th.username)}" data-thread="${esc(th.username)}">${avatarHtml(th.avatar, th.color, 48, th.photo)}<span class="who"><span class="nm">${esc(th.displayName)}</span><span class="sub">${esc(th.preview || (th.chatOn ? t('js.chat.sayHi') : t('js.chat.chatOff')))}</span></span><span class="meta">${th.last ? `<span class="time">${esc(ago(th.last))}</span>` : ''}${th.unread ? `<span class="badge" aria-label="${esc(t('js.chat.newCount', { count: th.unread }))}">${th.unread > 9 ? '9+' : th.unread}</span>` : ''}</span></a></li>`;
   let last = box ? box.innerHTML : '';
   const refresh = async () => {
     if (!box || document.hidden) return;

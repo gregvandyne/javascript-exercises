@@ -7,6 +7,7 @@
 //  - Block hides the thread both ways. Reporting a message hides it for the reporter at once and queues it for admins.
 //  - Messages to the player come back in the language of t (req.t; English by default). Quick phrases are stored by id
 //    and shown to each reader in their own language, so friends who speak different languages can still say "Good game!".
+import { photoUrl } from './photos.js';
 import { q, uid, now, today, migrate, audit } from '../db.js';
 import { config } from '../config.js';
 import { hasProfanity, personalInfo, foldDigits } from './textfilter.js';
@@ -172,7 +173,7 @@ export function markRead(me, other) {
 
 /** Inbox: every friend I can see, with the latest visible message and my unread count, newest first. */
 export function inbox(me, t = tEn) {
-  const friends = q.all(`SELECT u.id, u.username, u.display_name, u.avatar, u.color, u.chat_enabled FROM friends f JOIN users u ON u.id=f.friend_id
+  const friends = q.all(`SELECT u.id, u.username, u.display_name, u.avatar, u.color, u.photo_at, u.chat_enabled FROM friends f JOIN users u ON u.id=f.friend_id
     WHERE f.user_id=? AND f.status='accepted' AND u.banned=0 AND u.is_guest=0
     AND NOT EXISTS (SELECT 1 FROM chat_blocks b WHERE (b.user_id=? AND b.blocked_id=u.id) OR (b.user_id=u.id AND b.blocked_id=?))`, me.id, me.id, me.id);
   const rows = friends.map(f => {
@@ -183,7 +184,7 @@ export function inbox(me, t = tEn) {
       const text = last.kind === 'game' ? `🎮 ${t('chat.inbox.sharedGame')}` : last.kind === 'quick' ? quickText(last.body, t) : last.body;
       preview = last.from_id === me.id ? t('chat.inbox.you', { text }) : text;
     }
-    return { id: f.id, username: f.username, displayName: f.display_name, avatar: f.avatar, color: f.color, chatOn: !!f.chat_enabled, last: last ? last.created_at : 0, preview, unread };
+    return { id: f.id, username: f.username, displayName: f.display_name, avatar: f.avatar, color: f.color, photo_at: f.photo_at, photo: photoUrl(f), chatOn: !!f.chat_enabled, last: last ? last.created_at : 0, preview, unread };
   });
   return rows.sort((a, b) => b.last - a.last || a.displayName.localeCompare(b.displayName));
 }
@@ -202,7 +203,7 @@ export function unblock(me, otherId) {
   if (n) audit(me.id, 'chat.unblock', otherId);
   return n > 0;
 }
-export const blockedList = userId => q.all('SELECT u.id, u.username, u.display_name, u.avatar, u.color FROM chat_blocks b JOIN users u ON u.id=b.blocked_id WHERE b.user_id=? ORDER BY b.created_at DESC', userId);
+export const blockedList = userId => q.all('SELECT u.id, u.username, u.display_name, u.avatar, u.color, u.photo_at FROM chat_blocks b JOIN users u ON u.id=b.blocked_id WHERE b.user_id=? ORDER BY b.created_at DESC', userId);
 
 /** Report a message someone sent me. It disappears for me at once; admins see it in Chat reports. */
 export function report(me, messageId, reason, t = tEn) {

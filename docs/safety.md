@@ -171,5 +171,5 @@ language; typed messages are never machine-translated. Usernames stay Latin lett
 
 ## 9. What we do not do
 
-No real-money purchases, loot boxes or paid boosts. No third-party trackers or behavioural ads. No ads inside or over games.
+No real-money purchases, loot boxes or paid boosts. No third-party trackers and no ads of any kind.
 No collecting emails, real names, ages or locations.

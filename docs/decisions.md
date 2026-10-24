@@ -100,3 +100,17 @@ Site visits are counted without tracking anyone: only daily totals per page area
 day through a salted hash of (day, IP, browser) that changes every day and is deleted after two days. Bots, APIs, files,
 game frames, errors and admin pages are not counted. AI tokens are logged per day and model next to the spend cap.
 Counting of visits and tokens starts with this update; plays, accounts, games and AI cost already had history.
+
+## No ads, no creator money (ed-tech pivot)
+Magic Cups is becoming an enterprise ed-tech product, so it will not be paid for by ads. The Sponsored cards, ad impression
+tracking, the earnings roll-up, the Creator money page, payout requests and the admin Money page are removed, with their
+settings (AD_ECPM_CENTS, BUILDER_SHARE, PAYOUT_THRESHOLD_CENTS) and texts. Existing databases keep the old ad_impressions,
+earnings and payouts tables untouched (nothing reads them); new databases no longer create them.
+
+## Profile photos: friends-only, safety-checked
+Players with a real account can use a photo instead of their emoji (Me → Pick your look). The browser crops it to a 512px
+square JPEG; the server accepts only that, strips all metadata, and runs an AI safety check first (nothing unsafe, no
+private details such as name tags, school logos or addresses; faces are fine). Without the check (no API key or the AI
+budget is resting) photos wait. A child's face is never public: /avatars/<id> sends the photo only to the player, their
+accepted friends and admins, and the emoji to everyone else. Admins can remove a photo from the Users tab; all changes
+are audited. Guests keep emoji only.

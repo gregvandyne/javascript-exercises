@@ -26,7 +26,7 @@ export function uniqueSlug(title, exceptId = null) {
 export const getGame = id => (id ? q.get('SELECT * FROM games WHERE id=?', id) : null) || null;
 export const getGameBySlug = slug => q.get('SELECT * FROM games WHERE slug=?', String(slug || '')) || null;
 export const getVersion = id => (id ? q.get('SELECT * FROM game_versions WHERE id=?', id) : null) || null;
-export const getOwner = game => q.get('SELECT id, username, display_name, avatar, color FROM users WHERE id=?', game.owner_id) || null;
+export const getOwner = game => q.get('SELECT id, username, display_name, avatar, color, photo_at FROM users WHERE id=?', game.owner_id) || null;
 
 export function areFriends(a, b) {
   if (!a || !b) return false;
@@ -46,7 +46,7 @@ export function canView(user, game) {
 }
 export const canEdit = (user, game) => !!user && !!game && game.status !== 'deleted' && (user.id === game.owner_id || user.role === 'admin');
 
-/** A builder deletes their game. Kept in the database (reports, earnings and the audit trail still point at it) but gone
+/** A builder deletes their game. Kept in the database (reports and the audit trail still point at it) but gone
  *  for everyone: off every list, out of the review queue, and the Studio and play page say not found. Starter games can't be deleted. */
 export function deleteGame(gameId) {
   q.run("UPDATE games SET status='deleted', visibility='private', pending_version_id=NULL, featured=0, updated_at=? WHERE id=?", now(), gameId);
@@ -62,7 +62,7 @@ export function visibleWhere(user) {
   };
 }
 export const SELECT = `SELECT g.id, g.slug, g.owner_id, g.title, g.description, g.icon, g.cover, g.category, g.tags, g.visibility, g.status, g.plays, g.likes, g.rating_sum, g.rating_count, g.featured, g.players_max, g.orientation, g.source, g.published_at, g.updated_at, g.created_at, g.current_version_id, g.published_version_id, g.pending_version_id, g.review_note, g.hidden_reason, g.l10n,
-  u.username AS owner_name, u.display_name AS owner_display, u.avatar AS owner_avatar, u.color AS owner_color FROM games g JOIN users u ON u.id=g.owner_id`;
+  u.username AS owner_name, u.display_name AS owner_display, u.avatar AS owner_avatar, u.color AS owner_color, u.photo_at AS owner_photo_at FROM games g JOIN users u ON u.id=g.owner_id`;
 
 export const avgRating = g => (g.rating_count ? g.rating_sum / g.rating_count : 0);
 /** Launch games carry translated descriptions (seed JSON "l10n"): show the one for the page's language.
@@ -134,7 +134,7 @@ export function search(user, { text = '', category = null, order = 'relevance', 
 export function searchBuilders(user, text, limit = 8) {
   const t = String(text || '').trim().slice(0, 40); if (t.length < 2) return [];
   const v = visibleWhere(user); const like = likeEsc(t);
-  return q.all(`SELECT u.id, u.username, u.display_name, u.avatar, u.color, COUNT(g.id) AS games, COALESCE(SUM(g.plays),0) AS plays
+  return q.all(`SELECT u.id, u.username, u.display_name, u.avatar, u.color, u.photo_at, COUNT(g.id) AS games, COALESCE(SUM(g.plays),0) AS plays
     FROM users u JOIN games g ON g.owner_id=u.id WHERE ${v.sql} AND (u.username LIKE ? OR u.display_name LIKE ?) GROUP BY u.id ORDER BY plays DESC LIMIT ?`, ...v.params, like, like, limit);
 }
 export function similar(user, game, limit = 6) {
@@ -176,7 +176,7 @@ export function endPlay(playId, userId) {
   const t = now(); q.run('UPDATE plays SET ended_at=?, seconds=? WHERE id=?', t, Math.min(6 * 3600, Math.round((t - p.started_at) / 1000)), playId);
 }
 export function leaderboard(gameId, limit = 10) {
-  return q.all(`SELECT s.score, s.label, s.created_at, u.username, u.display_name, u.avatar, u.color FROM scores s JOIN users u ON u.id=s.user_id WHERE s.game_id=? AND u.banned=0 ORDER BY s.score DESC, s.created_at ASC LIMIT ?`, gameId, limit);
+  return q.all(`SELECT s.score, s.label, s.created_at, u.id, u.username, u.display_name, u.avatar, u.color, u.photo_at FROM scores s JOIN users u ON u.id=s.user_id WHERE s.game_id=? AND u.banned=0 ORDER BY s.score DESC, s.created_at ASC LIMIT ?`, gameId, limit);
 }
 export function submitScore(gameId, userId, score, label = '') {
   score = Math.max(0, Math.min(1e9, Math.floor(+score || 0)));
