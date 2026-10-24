@@ -9,7 +9,8 @@ import { cleanText } from '../services/textfilter.js';
 import { signToken } from '../auth.js';
 
 const CATS = games.CATEGORY_KEYS;
-export const previewUrl = (version, game, userId) => `/frame/${signToken({ v: version.id, g: game.id, u: userId, p: 1 })}`;
+/** A Studio preview link (signed, short-lived). lang: the builder's language, passed to the game as BRB.user.lang. */
+export const previewUrl = (version, game, userId, lang = null) => `/frame/${signToken({ v: version.id, g: game.id, u: userId, p: 1, ...(lang ? { l: lang } : {}) })}`;
 const plainIssues = report => (report.issues || []).map(i => `${i.level === 'fail' ? 'Must fix' : 'Check'}: ${i.message}`);
 
 /** Apply exact find/replace edits. Each find must occur exactly once (in the text as it is when that edit runs). */
@@ -30,7 +31,7 @@ export function applyEdits(html, edits) {
   return { ok: true, html: out };
 }
 
-/** ctx: { user, gameId, emit(name, data), state } — state.scanFails counts failed scans this turn. */
+/** ctx: { user, gameId, emit(name, data), state, locale } — state.scanFails counts failed scans this turn. */
 export function toolbox(ctx) {
   const game = () => games.getGame(ctx.gameId);
   const current = () => { const g = game(); return g && g.current_version_id ? games.getVersion(g.current_version_id) : null; };
@@ -43,7 +44,7 @@ export function toolbox(ctx) {
     const note = String(notes || '').replace(/\s+/g, ' ').trim().slice(0, 200) || 'New version';
     const v = games.addVersion(ctx.gameId, html, { notes: note, createdBy: ctx.user.id, safetyStatus: report.status, safetyReport: report });
     const g = game();
-    const event = ['version', { id: v.id, number: v.number, notes: v.notes, status: report.status, issues: plainIssues(report), preview: previewUrl(v, g, ctx.user.id), created_at: v.created_at }];
+    const event = ['version', { id: v.id, number: v.number, notes: v.notes, status: report.status, issues: plainIssues(report), preview: previewUrl(v, g, ctx.user.id, ctx.locale), created_at: v.created_at }];
     let forModel = `Saved as version ${v.number}. Safety scan: ${report.status}.`;
     if (removed.length) forModel += ` The platform removed: ${[...new Set(removed)].join(', ')}.`;
     if (report.status === 'fail') {

@@ -74,6 +74,16 @@ const RECIPES = {
     });
     await wait(900);
   } },
+  'word-peek': { viewport: PORTRAIT, touch: true, async prep(f) {
+    await hook(f);
+    await f.evaluate(() => {
+      const t = window.__brbTest;   // three coloured rows with CR being typed in the fourth
+      t.skipAnimations(true); t.start({ mode: 'practice', answer: 'crane' });
+      t.guess('stare'); t.guess('plant'); t.guess('cream');
+      t.skipAnimations(false); t.type('cr');
+    });
+    await wait(1600);
+  } },
   'word-hunt': { viewport: PORTRAIT, async prep(f) {
     await hook(f); await f.evaluate(() => window.__brbTest.start({ theme: 'Space', difficulty: 'medium', seed: 3 }));
     await f.evaluate(() => { const t = window.__brbTest; t.skipAnimations && t.skipAnimations(); const s = t.state(); s.words.slice(0, 4).forEach(w => t.select(w.start, w.end)); });

@@ -1,6 +1,6 @@
 // Parent side of the game sandbox. Validates every message from the frame (source, origin, shape)
 // and turns allowed ones into server calls. Docs: docs/sdk.md
-import { api, toast, sheet, pageData, refreshLive, $ } from '/js/app.js';
+import { api, toast, sheet, pageData, refreshLive, $, t, esc } from '/js/app.js';
 const d = pageData();
 const frame = $('#gameframe'), stage = $('#stage');
 let playId = null;
@@ -32,7 +32,7 @@ export function validMessage(e, frameWin) {
 let saveTimer = null, pendingSave = null, lastScoreAt = 0;
 async function flushSave() {
   saveTimer = null; const data = pendingSave; pendingSave = null; if (!data) return;
-  try { await api(`/api/games/${d.gameId}/save`, { method: 'POST', body: { data } }); } catch (err) { if (err.status !== 401) toast('Could not save your progress.', { bad: true }); }
+  try { await api(`/api/games/${d.gameId}/save`, { method: 'POST', body: { data } }); } catch (err) { if (err.status !== 401) toast(t('js.play.saveFailed'), { bad: true }); }
 }
 addEventListener('message', e => {
   const m = validMessage(e, frame.contentWindow); if (!m) return;
@@ -40,7 +40,7 @@ addEventListener('message', e => {
     case 'brb:save': if (!d.canSave) return; pendingSave = m.data; if (!saveTimer) saveTimer = setTimeout(flushSave, 1500); break;
     case 'brb:score': {
       if (!d.canSave || Date.now() - lastScoreAt < 2000) return; lastScoreAt = Date.now();
-      api(`/api/games/${d.gameId}/score`, { method: 'POST', body: { score: m.score, label: m.label || '' } }).then(r => { if (r.improved) toast(`New best: ${r.best}!`); }).catch(() => {});
+      api(`/api/games/${d.gameId}/score`, { method: 'POST', body: { score: m.score, label: m.label || '' } }).then(r => { if (r.improved) toast(t('js.play.newBest', { score: r.best })); }).catch(() => {});
       break;
     }
     case 'brb:gameover': break;
@@ -53,20 +53,20 @@ addEventListener('pagehide', () => { if (pendingSave) { navigator.sendBeacon && 
 // ---- bar buttons ----
 function goFull() {
   const el = stage; const req = el.requestFullscreen || el.webkitRequestFullscreen;
-  if (!req) return toast('Full screen is not available here.');
-  Promise.resolve(req.call(el)).then(() => { try { screen.orientation.lock && screen.orientation.lock(document.body.classList.contains('wants-landscape') ? 'landscape' : 'any').catch(() => {}); } catch { /* ignore */ } }).catch(() => toast('Tap the full screen button to go big.'));
+  if (!req) return toast(t('js.play.noFullscreen'));
+  Promise.resolve(req.call(el)).then(() => { try { screen.orientation.lock && screen.orientation.lock(document.body.classList.contains('wants-landscape') ? 'landscape' : 'any').catch(() => {}); } catch { /* ignore */ } }).catch(() => toast(t('js.play.tapFullscreen')));
 }
 $('#p-full').addEventListener('click', goFull);
 $('#orient-ok') && $('#orient-ok').addEventListener('click', () => $('#orient').classList.remove('show'));
 $('#p-like').addEventListener('click', async () => {
-  if (!d.signedIn) return toast('Sign in or play as a guest to like games.');
-  try { const r = await api(`/api/games/${d.gameId}/like`, { method: 'POST', body: {} }); const b = $('#p-like'); b.setAttribute('aria-pressed', String(r.liked)); b.querySelector('.emo').textContent = r.liked ? '❤️' : '🤍'; toast(r.liked ? 'Liked!' : 'Like removed'); } catch (err) { toast(err.message, { bad: true }); }
+  if (!d.signedIn) return toast(t('js.play.signInToLike'));
+  try { const r = await api(`/api/games/${d.gameId}/like`, { method: 'POST', body: {} }); const b = $('#p-like'); b.setAttribute('aria-pressed', String(r.liked)); b.querySelector('.emo').textContent = r.liked ? '❤️' : '🤍'; toast(r.liked ? t('js.play.liked') : t('js.play.unliked')); } catch (err) { toast(err.message, { bad: true }); }
 });
 $('#p-rate').addEventListener('click', () => {
-  if (!d.signedIn) return toast('Sign in or play as a guest to rate games.');
-  const s = sheet({ title: `Rate ${d.title}`, content: `<div class="rate" role="radiogroup" aria-label="Stars">${[1, 2, 3, 4, 5].map(n => `<button type="button" role="radio" aria-checked="${n === d.myStars}" aria-label="${n} stars" data-stars="${n}" class="${n <= d.myStars ? 'on' : ''}">★</button>`).join('')}</div>` });
+  if (!d.signedIn) return toast(t('js.play.signInToRate'));
+  const s = sheet({ title: t('js.play.rateTitle', { title: d.title }), content: `<div class="rate" role="radiogroup" aria-label="${esc(t('js.play.stars'))}">${[1, 2, 3, 4, 5].map(n => `<button type="button" role="radio" aria-checked="${n === d.myStars}" aria-label="${esc(t('js.play.starsLabel', { count: n }))}" data-stars="${n}" class="${n <= d.myStars ? 'on' : ''}">★</button>`).join('')}</div>` });
   s.el.addEventListener('click', async e => {
     const b = e.target.closest('[data-stars]'); if (!b) return;
-    try { await api(`/api/games/${d.gameId}/rate`, { method: 'POST', body: { stars: +b.dataset.stars } }); d.myStars = +b.dataset.stars; toast('Thanks for rating!'); s.close(); } catch (err) { toast(err.message, { bad: true }); }
+    try { await api(`/api/games/${d.gameId}/rate`, { method: 'POST', body: { stars: +b.dataset.stars } }); d.myStars = +b.dataset.stars; toast(t('js.play.thanksRating')); s.close(); } catch (err) { toast(err.message, { bad: true }); }
   });
 });

@@ -7,6 +7,7 @@ import { sessionMiddleware, csrfCheck } from './auth.js';
 import { notFound, page } from './views/layout.js';
 import { html } from './views/html.js';
 import { log } from './services/log.js';
+import { middleware as i18n, tReq } from './i18n/index.js';
 import { router as authRoutes } from './routes/auth.js';
 import { router as discoverRoutes } from './routes/discover.js';
 import { router as gameRoutes } from './routes/games.js';
@@ -47,19 +48,21 @@ export function createApp() {
   app.use(express.json({ limit: '3mb' }));
   app.use(express.text({ type: 'text/plain', limit: '64kb' }));
   app.use(sessionMiddleware);
+  app.use(i18n);
   app.use(csrfCheck);
 
   for (const r of [authRoutes, discoverRoutes, gameRoutes, studioRoutes, socialRoutes, chatRoutes, adminRoutes, adsRoutes, creatorRoutes, infoRoutes]) app.use(r);
 
-  app.use('/api', (req, res) => res.status(404).json({ error: 'Not found' }));
+  app.use('/api', (req, res) => res.status(404).json({ error: tReq(req)('errors.api.notFound') }));
   app.use((req, res) => notFound(req, res));
   // eslint-disable-next-line no-unused-vars
   app.use((err, req, res, next) => {
     log('error', 'unhandled', { path: req.path, error: err.message, stack: err.stack });
-    if (err.type === 'entity.too.large') return res.status(413).json({ error: 'That is too big.' });
-    if (err.type === 'entity.parse.failed') return res.status(400).json({ error: 'Bad request.' });
-    if (req.originalUrl.startsWith('/api/')) return res.status(500).json({ error: 'Something went wrong on our side. Please try again.' });
-    page(req, res, { title: 'Oops', body: html`<div class="empty"><div class="emo">🛠️</div><h1>Something broke</h1><p>Our team has been told. Try again in a moment.</p><a class="btn btn-primary" href="/">Go home</a></div>` }, 500);
+    const t = tReq(req);
+    if (err.type === 'entity.too.large') return res.status(413).json({ error: t('errors.api.tooBig') });
+    if (err.type === 'entity.parse.failed') return res.status(400).json({ error: t('errors.api.badRequest') });
+    if (req.originalUrl.startsWith('/api/')) return res.status(500).json({ error: t('errors.api.server') });
+    page(req, res, { title: t('errors.broken.title'), body: html`<div class="empty"><div class="emo">🛠️</div><h1>${t('errors.broken.heading')}</h1><p>${t('errors.broken.text')}</p><a class="btn btn-primary" href="/">${t('errors.goHome')}</a></div>` }, 500);
   });
   return app;
 }

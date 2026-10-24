@@ -1,0 +1,14 @@
+{
+  "slug": "word-peek",
+  "title": "Word Peek",
+  "icon": "🔠",
+  "cover": "gold",
+  "category": "words",
+  "tags": "word game,words,guess the word,daily,spelling,vocabulary,five letters,puzzle,owl,reading",
+  "description": "Can you peek the hidden word in six tries? Type a guess and Pip the owl shows which letters are in the right spot, in the word, or not in it at all. Come back every day for a new Daily Peek, or play Practice, Little Peek with 4 letters, Big Peek with 6 letters, or set a secret word for a friend!",
+  "orientation": "portrait",
+  "players_max": 1,
+  "age_rating": "everyone",
+  "featured": true,
+  "notes": "Original daily five-letter word-guessing game (no Wordle/NYT name, layout or colours): teal tick = right spot, amber dot = wrong spot, dimmed slate = not in the word; high-contrast mode uses orange/blue, and every mark also has a shape. Duplicate letters are scored greens first, then yellows limited by the letters left. Modes: Daily Peek (one 5-letter word per local date, same for everyone, once a day, countdown, streak; the order is a seeded shuffle of the answer list and a new cycle never starts with any of the last 250 words), Practice (5), Little Peek (4), Big Peek (6), and Friend Peek (pass-the-phone secret word, no points). Optional hard mode. Hand-written word lists: 782/402/356 kid-friendly answers (5/4/6 letters) each with a short meaning, and 5,009/2,220/6,728 allowed guesses; rude words are blocked by a ROT13 blocklist. Saves in BRB.storage key 'word-peek-v1' (settings, points, stats per mode, today's daily board, the unfinished practice round). Score: each win adds (7 - tries) x 8/10/12 points for 4/5/6 letters (x1.5 in hard mode); BRB.score.submit(total, 'word points') then BRB.gameOver({won, score: total}); a loss calls BRB.gameOver({won:false, score: total}). The word is read aloud with speechSynthesis when available (guarded). No share button. Loads Google Fonts (Fredoka). Test hooks on window.__brbTest."
+}

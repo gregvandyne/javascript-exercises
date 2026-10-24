@@ -1,0 +1,5 @@
+# Magic Cups word blocklist: en
+# One entry per line, ROT13-encoded (a-z shifted by 13, so the repo never spells the words out; letters in other
+# scripts stay as written). Lines starting with # are comments. See README.md in this folder for the format.
+# Every list applies to every message on the site, whatever language the sender uses.
+# The core English list is built into server/services/textfilter.js (BLOCK, NAME_ONLY, SAFE); add extra English words here.

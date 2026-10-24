@@ -51,7 +51,7 @@ test('personal-info prompts and visible profanity fail', () => {
   assert.ok(codes(scanVersion(GAME('const msg = "you are shit";'))).includes('profanity'));
 });
 test('the three seed games pass', () => {
-  for (const f of ['shark-plank', 'ring-rumble', 'footy-tycoon', 'connect-four', 'happy-putt', 'castle-clash', 'brick-drop', 'word-hunt', 'sum-racer', 'munch-maze']) {
+  for (const f of ['shark-plank', 'ring-rumble', 'footy-tycoon', 'connect-four', 'happy-putt', 'castle-clash', 'brick-drop', 'word-hunt', 'sum-racer', 'munch-maze', 'word-peek']) {
     const r = scanVersion(sanitizeGameHtml(fs.readFileSync(path.join(ROOT, 'seed-games', f + '.html'), 'utf8')).html);
     assert.equal(r.status, 'pass', `${f}: ${JSON.stringify(r.issues)}`);
   }

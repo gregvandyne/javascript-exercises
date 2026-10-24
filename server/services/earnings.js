@@ -18,6 +18,7 @@ import { getGame, canView } from './games.js';
 import * as presence from './presence.js';
 import { getAd, PLACEMENTS } from './ads.js';
 import { payoutAdapter } from './payouts.js';
+import { tEn } from '../i18n/index.js';
 
 migrate([['0002_money', `
   ALTER TABLE earnings ADD COLUMN weight_milli INTEGER NOT NULL DEFAULT 0;
@@ -143,11 +144,11 @@ export const canRequestPayout = b => b.availableCents >= b.thresholdCents;
 export const listPayouts = userId => q.all('SELECT * FROM payouts WHERE user_id=? ORDER BY created_at DESC', userId);
 
 /** Ask for the whole available balance. Creates a 'requested' row for a person to handle. */
-export function requestPayout(user) {
-  if (!user || user.is_guest) return { ok: false, error: 'Make a free account to do this.' };
+export function requestPayout(user, t = tEn) {
+  if (!user || user.is_guest) return { ok: false, error: t('errors.api.needAccount') };
   return tx(() => {
     const b = balance(user.id);
-    if (!canRequestPayout(b)) return { ok: false, error: `You can ask for a payout when you have $${(b.thresholdCents / 100).toFixed(2)} or more.` };
+    if (!canRequestPayout(b)) return { ok: false, error: t('creator.payouts.notYet', { min: `$${(b.thresholdCents / 100).toFixed(2)}` }) };
     const id = uid();
     q.run("INSERT INTO payouts(id, user_id, amount_cents, status, note, created_at) VALUES (?,?,?, 'requested', '', ?)", id, user.id, b.availableCents, now());
     audit(user.id, 'payout.request', id, { amount_cents: b.availableCents });

@@ -1,5 +1,6 @@
 // Creator dashboard + admin money page (Money node).
-import { api, toast, $, $$ } from '/js/app.js';
+import { api, toast, $, $$, t } from '/js/app.js';
+import { INTL } from '/js/i18n.js';
 
 // Creator: ask for a payout.
 const payBtn = $('#payout-btn');
@@ -8,7 +9,7 @@ if (payBtn) payBtn.addEventListener('click', async () => {
   payBtn.disabled = true;
   try {
     const r = await api('/api/creator/payout', { method: 'POST', body: {} });
-    toast(`Done! We got your request for $${(r.payout.amount_cents / 100).toFixed(2)}.`);
+    toast(t('js.creator.payoutRequested', { amount: new Intl.NumberFormat(INTL, { style: 'currency', currency: 'USD' }).format(r.payout.amount_cents / 100) }));
     setTimeout(() => location.reload(), 900);
   } catch (e) { toast(e.message, { bad: true }); payBtn.disabled = false; }
 });
@@ -16,7 +17,7 @@ if (payBtn) payBtn.addEventListener('click', async () => {
 // Creator: keep the "playing now" total in step with the per-game live counts app.js refreshes.
 const liveTotal = $('#live-total');
 if (liveTotal) setInterval(() => {
-  const n = $$('.mgames [data-live]').reduce((s, el) => s + (parseFloat(el.textContent) || 0) * (/K$/.test(el.textContent) ? 1000 : 1), 0);
+  const n = $$('.mgames [data-live]').reduce((s, el) => s + (+el.dataset.count || 0), 0);
   liveTotal.textContent = String(Math.round(n));
 }, 31000);
 

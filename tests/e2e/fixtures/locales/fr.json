@@ -1,0 +1,7 @@
+{
+  "_about": "e2e stub: merged over the real fr.json by playwright.config.js, so the test sees these strings whatever the translators wrote.",
+  "nav": { "home": "Accueil", "search": "Recherche" },
+  "home": { "hero": { "play": "Jouer" } },
+  "layout": { "lang": { "title": "Langue" } },
+  "js": { "app": { "close": "Fermer" } }
+}
