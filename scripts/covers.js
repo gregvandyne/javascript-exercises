@@ -58,6 +58,22 @@ const RECIPES = {
     });
     await wait(2500); // let the Go! banner fade
   } },
+  'munch-maze': { viewport: PORTRAIT, touch: true, async prep(f) {
+    await hook(f);
+    await f.evaluate(() => {
+      // All four Gloops out, the bottom dots eaten, a bonus snack showing (sequence from the game's builder).
+      const T = window.__brbTest;
+      T.start({ mode: 'classic', seed: 7, maze: 'candy' });
+      T.manual(true); T.skipAnimations(true); T.step(20); T.skipAnimations(false);
+      const rows = T.maze();
+      for (let y = 21; y <= 29; y++) for (let x = 1; x <= 26; x++) if (rows[y][x] === '.') { T.placeMunch(x, y); T.step(9); }
+      T.placeMunch(10, 20); T.input('right');
+      T.placeGloop('Zippy', 17, 20, 'left'); T.placeGloop('Sneaky', 6, 23, 'up');
+      T.placeGloop('Tricky', 22, 24, 'left'); T.placeGloop('Dozy', 15, 26, 'right');
+      T.step(60);
+    });
+    await wait(900);
+  } },
   'word-hunt': { viewport: PORTRAIT, async prep(f) {
     await hook(f); await f.evaluate(() => window.__brbTest.start({ theme: 'Space', difficulty: 'medium', seed: 3 }));
     await f.evaluate(() => { const t = window.__brbTest; t.skipAnimations && t.skipAnimations(); const s = t.state(); s.words.slice(0, 4).forEach(w => t.select(w.start, w.end)); });

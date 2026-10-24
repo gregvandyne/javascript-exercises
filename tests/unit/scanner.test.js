@@ -9,7 +9,7 @@ const ok = '<title>T</title><style>body{background:#fff}</style><canvas id=c></c
 const s = js => `<title>T</title><canvas></canvas><script>${js}</script>`;
 
 test('clean game passes', () => assert.equal(scanVersion(ok).status, 'pass'));
-test('seed games pass', () => { for (const f of ['shark-plank', 'ring-rumble', 'footy-tycoon', 'connect-four', 'happy-putt', 'castle-clash', 'brick-drop', 'word-hunt', 'sum-racer']) assert.equal(scanVersion(fs.readFileSync(`seed-games/${f}.html`, 'utf8')).status, 'pass', f); });
+test('seed games pass', () => { for (const f of ['shark-plank', 'ring-rumble', 'footy-tycoon', 'connect-four', 'happy-putt', 'castle-clash', 'brick-drop', 'word-hunt', 'sum-racer', 'munch-maze']) assert.equal(scanVersion(fs.readFileSync(`seed-games/${f}.html`, 'utf8')).status, 'pass', f); });
 for (const [name, js] of [['fetch', 'fetch("/x")'], ['xhr', 'new XMLHttpRequest()'], ['websocket', 'new WebSocket("wss://x")'], ['beacon', 'navigator.sendBeacon("/x")'], ['top', 'window.top.location="x"'], ['parent', 'parent.location.href="x"'], ['cookie', 'document.cookie'], ['eval', 'eval("1+1")'], ['newFunction', 'new Function("return 1")'], ['import', 'import("x.js")'], ['timerString', 'setTimeout("alert(1)", 10)'], ['open', 'window.open("x")']]) {
   test(`fails: ${name}`, () => assert.equal(scanVersion(s(js)).status, 'fail'));
 }
