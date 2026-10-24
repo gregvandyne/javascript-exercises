@@ -32,7 +32,8 @@
     "build": "Bouwen",
     "friends": "Vrienden",
     "me": "Ik",
-    "classes": "Klassen"
+    "classes": "Klassen",
+    "schools": "Scholen"
   },
   "errors": {
     "goHome": "Naar de start",
@@ -1138,7 +1139,7 @@
     "guest": "Maak eerst een gratis account. Doe daarna mee met je klas met de code van je leerkracht.",
     "waiting": "Wacht op je leerkracht",
     "join": "Doe mee met een klas",
-    "joinText": "Typ de code die je van je leerkracht hebt gekregen. Als je leerkracht ja zegt, verschijnt de klas hier.",
+    "joinText": "Typ de code die je van je leerkracht hebt gekregen.",
     "code": "Klascode",
     "joinButton": "Meedoen",
     "sent": "Je hebt gevraagd om mee te doen met {name}. Je leerkracht zegt snel ja!",
@@ -1147,9 +1148,6 @@
     "noLessonsText": "Je leerkracht zet hier lessen en games neer."
   },
   "school": {
-    "nav": {
-      "teach": "Lesgeven"
-    },
     "tabs": {
       "classes": "Klassen",
       "people": "Mensen",
@@ -1163,10 +1161,12 @@
       "student": "Leerling"
     },
     "teach": {
-      "title": "Lesgeven",
+      "title": "Mijn klassen",
       "none": "Nog geen klassen",
       "noneText": "Maak hieronder je eerste klas aan. Je krijgt een code om met je leerlingen te delen.",
-      "noneAsk": "Vraag je schoolbeheerder om je aan een klas toe te voegen."
+      "noneAsk": "Vraag je schoolbeheerder om je aan een klas toe te voegen.",
+      "manage": "{school} beheren",
+      "noneAdmin": "Je geeft nog geen les aan een klas"
     },
     "class": {
       "new": "Nieuwe klas",
@@ -1179,52 +1179,80 @@
       "teachers": "Leerkrachten",
       "students": "Leerlingen",
       "classes": "Klassen",
-      "code": "Code",
+      "code": "Klascode",
       "gradeN": "Groep {grade}",
       "studentsN": "{count, plural, one {# leerling} other {# leerlingen}}",
       "requestsN": "{count, plural, one {# verzoek} other {# verzoeken}}",
       "none": "Nog geen klassen",
       "noneText": "Maak hierboven een klas aan, of laat leerkrachten zelf klassen aanmaken.",
       "archived": "{count, plural, one {# gearchiveerde klas} other {# gearchiveerde klassen}}",
-      "isArchived": "Gearchiveerd",
       "archive": "Archiveren",
       "restore": "Herstellen",
       "delete": "Verwijderen",
       "archiveConfirm": "{name} archiveren? Leerlingen zien de klas dan niet meer, maar de geschiedenis blijft bewaard. Je kunt de klas later herstellen.",
       "deleteConfirm": "{name} verwijderen? Dit kan niet ongedaan worden gemaakt.",
       "joinCode": "Klascode",
-      "joinCodeText": "Leerlingen met een eigen Magic Cups-account typen deze code op hun pagina Klassen. Jij keurt elk verzoek goed.",
       "newCode": "Nieuwe code",
       "newCodeConfirm": "Een nieuwe code maken? De oude werkt dan niet meer.",
-      "noStudents": "Nog geen leerlingen. Voeg ze hieronder toe, of deel de klascode.",
-      "addStudents": "Leerlingen toevoegen",
-      "newAccounts": "Nieuwe schoolaccounts (één naam per regel)",
+      "noStudents": "Nog geen leerlingen",
+      "newAccounts": "Nieuwe schoolaccounts",
       "newAccountsHint": "Elke leerling krijgt een gebruikersnaam en wachtwoord om op een inlogkaart te printen. Echte namen zijn alleen zichtbaar voor leerkrachten.",
-      "fromSchool": "Of voeg een leerling van je school toe",
-      "add": "Toevoegen",
       "addTeacher": "Leerkracht toevoegen",
       "moveTo": "Naar klas verplaatsen",
       "move": "Verplaatsen",
       "removeStudent": "Verwijderen",
       "removeConfirm": "{name} uit deze klas verwijderen? Het werk in deze klas blijft bewaard.",
-      "noStudentsText": "Voeg hieronder leerlingen toe met schoolaccounts, of geef leerlingen met een eigen account de klascode.",
+      "noStudentsText": "Typ hieronder hun namen om schoolaccounts en inlogkaarten te maken.",
       "details": "Details van de klas",
       "teachersText": "Collega's kunnen deze klas samen met je leiden: lessen, leerlingen en voortgang.",
       "removeTeacher": "{name} uit deze klas verwijderen",
       "archiveTitle": "Deze klas archiveren",
-      "archiveText": "Gearchiveerde klassen zijn verborgen voor leerlingen en staan niet meer in je lijst. Alles blijft bewaard, en je kunt de klas altijd terughalen.",
-      "restoreTitle": "Deze klas terughalen",
-      "restoreText": "Deze klas is gearchiveerd. Herstel de klas om hem weer te gebruiken."
+      "archiveText": "Gearchiveerde klassen zijn verborgen voor leerlingen en staan onder Gearchiveerde klassen, onderaan Mijn klassen. Alles blijft bewaard, en je kunt de klas altijd herstellen.",
+      "teacher": "Leerkracht",
+      "teacherChoose": "Kies een leerkracht…",
+      "teacherNone": "Nog geen leerkracht",
+      "noTeacherChip": "Geen leerkracht",
+      "created": "Klas aangemaakt: {name}",
+      "restored": "{name} hersteld",
+      "deleted": "{name} verwijderd",
+      "archivedBanner": "Deze klas is gearchiveerd. Leerlingen kunnen de klas niet zien.",
+      "deleteTitle": "Deze klas verwijderen",
+      "deleteText": "Er heeft nog nooit een leerling in deze klas gezeten, dus je kunt de klas definitief verwijderen.",
+      "noStudentsCode": "Of deel de klascode met leerlingen die een eigen account hebben.",
+      "createCards": "Accounts en inlogkaarten maken",
+      "alreadyAt": "Leerlingen die al op {school} zitten ({count})",
+      "addToClass": "Aan klas toevoegen",
+      "addedN": "{count, plural, one {# leerling toegevoegd} other {# leerlingen toegevoegd}}",
+      "moveChoose": "Verplaatsen naar…",
+      "moveConfirm": "{name} naar de gekozen klas verplaatsen? Het werk hier blijft bij deze klas, en in de nieuwe klas begint diegene opnieuw.",
+      "moved": "{name} verplaatst naar {class}",
+      "reprint": "Nieuwe inlogkaarten voor de klas",
+      "reprintConfirm": "{count, plural, one {Een nieuw wachtwoord maken voor # leerling met een schoolaccount? Het oude wachtwoord werkt dan niet meer en de leerling wordt uitgelogd.} other {Nieuwe wachtwoorden maken voor # leerlingen met een schoolaccount? De oude wachtwoorden werken dan niet meer en de leerlingen worden uitgelogd.}}",
+      "joinCodeTextOn": "Leerlingen typen deze code op hun pagina Mijn klassen. Leerlingen met een schoolaccount van {school} doen meteen mee; leerlingen met een eigen Magic Cups-account wachten tot jij ze goedkeurt.",
+      "joinCodeTextOff": "Leerlingen met een schoolaccount van {school} typen deze code op hun pagina Mijn klassen en doen meteen mee.",
+      "noTeacher": "Deze klas heeft nog geen leerkracht. Voeg er hieronder een toe.",
+      "removeTeacherConfirm": "{name} van deze klas halen? Dan staat de klas niet meer bij Mijn klassen van {name}.",
+      "leave": "Deze klas verlaten",
+      "leaveConfirm": "{name} verlaten? Dan staat de klas niet meer bij Mijn klassen. De andere leerkrachten blijven de klas leiden.",
+      "left": "Je hebt {name} verlaten",
+      "onlyStaff": "Alleen personeel van {school} kan worden toegevoegd.",
+      "askAdmin": "Vraag je schoolbeheerder ({admins}) om diegene toe te voegen op het tabblad Mensen van de school.",
+      "addStaffLink": "Personeel toevoegen op het tabblad Mensen"
     },
     "requests": {
       "title": "{count, plural, one {# leerling wil meedoen} other {# leerlingen willen meedoen}}",
       "text": "Deze leerlingen hebben de klascode met hun eigen account gebruikt. Typ hun echte naam voor je klassenlijst. Heeft de school al een account voor een leerling gemaakt? Kies dat dan, zodat de klasgegevens worden overgezet.",
       "realName": "Echte naam (alleen leerkrachten zien die)",
-      "sameAs": "Zelfde leerling als schoolaccount",
-      "sameAsNone": "Nee, een nieuwe leerling",
+      "sameAs": "Heeft de school al een account voor deze leerling?",
+      "sameAsNone": "Nee, dit is een nieuwe leerling",
       "approve": "Goedkeuren",
       "decline": "Weigeren",
-      "declineConfirm": "@{name} weigeren?"
+      "declineConfirm": "@{name} weigeren?",
+      "inClass": "In deze klas",
+      "otherAccounts": "Andere schoolaccounts",
+      "mergeHint": "Als je er een kiest, wordt het samengevoegd met @{name}: het schoolaccount werkt dan niet meer, en de klassen en games ervan gaan over naar @{name}.",
+      "mergeConfirm": "@{account} samenvoegen met @{name}? @{account} werkt dan niet meer.",
+      "approved": "@{name} zit nu in de klas"
     },
     "people": {
       "staff": "Personeel",
@@ -1236,22 +1264,31 @@
       "schoolAccount": "schoolaccount",
       "ownAccount": "eigen account",
       "addStaff": "Leerkracht of schoolbeheerder toevoegen",
-      "addStaffText": "Typ de naam. Laat de gebruikersnaam leeg om een schoolaccount te maken (je krijgt een inlogkaart), of typ de gebruikersnaam van een account dat diegene al heeft.",
+      "addStaffText": "Gebruik de echte naam, zoals leerlingen en collega's diegene kennen. Schoolaccounts volgen de veiligheidsregels van de school; personeel dat games openbaar wil delen, gebruikt beter een eigen account.",
       "realName": "Echte naam",
-      "existing": "Bestaande gebruikersnaam (optioneel)",
+      "existing": "Magic Cups-naam van diegene",
       "existingPlaceholder": "bijv. JufSanne",
-      "add": "Toevoegen",
       "addStudents": "Leerlingen aan de school toevoegen",
-      "addStudentsText": "Eén naam per regel. Elke leerling krijgt een schoolaccount en een inlogkaart om te printen. Zet ze in klassen via de pagina van elke klas.",
+      "addStudentsText": "Eén naam per regel. Elke leerling krijgt een schoolaccount en een inlogkaart om te printen.",
       "names": "Namen van leerlingen",
-      "namesPlaceholder": "Emma de Vries\nDaan Jansen\nSara El Amrani",
-      "createAccounts": "Accounts maken",
+      "namesPlaceholder": "Voornaam Achternaam, één per regel",
+      "createAccounts": "Accounts en inlogkaarten maken",
       "noStaff": "Nog geen personeel.",
       "noStudents": "Nog geen leerlingen.",
       "reset": "Nieuw wachtwoord",
       "resetConfirm": "Een nieuw wachtwoord maken voor {name}? Het oude werkt dan niet meer.",
       "remove": "Van school verwijderen",
-      "removeConfirm": "{name} van de school verwijderen? Diegene verlaat alle klassen hier. Schoolaccounts worden uitgezet."
+      "removeConfirm": "{name} van de school verwijderen? Diegene verlaat alle klassen hier. Schoolaccounts worden uitgezet.",
+      "you": "{role} · jij",
+      "noClass": "Niet in een klas",
+      "newSchool": "Volgende stap: wijs de schoolbeheerder aan. Die kan daarna leerkrachten, klassen en leerlingen toevoegen.",
+      "account": "Hoe logt diegene in?",
+      "accountNew": "Maak een schoolaccount voor diegene",
+      "accountExisting": "Diegene heeft al een Magic Cups-account",
+      "createStaff": "Account en inlogkaart maken",
+      "addToSchool": "Aan school toevoegen",
+      "added": "{name} toegevoegd als {role}",
+      "putInClass": "Klas"
     },
     "settings": {
       "name": "Naam van de school",
@@ -1260,26 +1297,29 @@
       "saved": "Instellingen opgeslagen",
       "teachersCreate": "Leerkrachten kunnen zelf klassen aanmaken",
       "ownAccounts": "Leerlingen kunnen meedoen met een eigen account",
-      "ownAccountsHint": "Leerlingen die Magic Cups al gebruiken, typen een klascode; een leerkracht keurt elk verzoek goed. Zet dit uit om alleen schoolaccounts te gebruiken.",
+      "ownAccountsHint": "Leerlingen die Magic Cups al gebruiken, typen een klascode; een leerkracht keurt elk verzoek goed. Staat dit uit, dan werken klascodes alleen voor schoolaccounts.",
       "gameSite": "Schoolaccounts op de gamesite",
-      "gameSiteText": "Met schoolaccounts kun je games spelen en bouwen. Deze regels houden ze veilig. Eigen accounts van leerlingen houden buiten de les hun gewone instellingen.",
+      "gameSiteText": "Deze regels gelden voor accounts die de school heeft gemaakt (leerlingen en personeel). Leerlingen die met een eigen account meedoen, houden hun eigen instellingen.",
       "chat": "Chat",
-      "chatClassmates": "Alleen chatten met vrienden uit de klas",
+      "chatClassmates": "Chatten met vrienden uit hun klassen",
       "chatOff": "Geen chat",
       "publishing": "Games delen",
       "publishSchool": "Alleen binnen de school",
       "publishPublic": "Ook met iedereen delen",
-      "photos": "Profielfoto’s van schoolaccounts zijn alleen zichtbaar voor klasgenoten, leerkrachten en vrienden."
+      "photos": "Profielfoto’s van schoolaccounts zijn alleen zichtbaar voor klasgenoten, leerkrachten en vrienden.",
+      "chatHint": "Schoolaccounts kunnen alleen klasgenoten als vrienden toevoegen."
     },
     "cards": {
       "title": "Inlogkaarten",
       "print": "Printen",
-      "done": "Klaar",
       "once": "Print ze nu of schrijf ze op. Wachtwoorden worden maar één keer getoond. Raakt er een kwijt? Dan kun je later een nieuw wachtwoord maken.",
       "site": "Website",
-      "username": "Gebruikersnaam",
+      "username": "Magic Cups-naam",
       "password": "Wachtwoord",
-      "gone": "Deze inlogkaarten zijn er niet meer. Maak een nieuw wachtwoord via de pagina van de klas."
+      "gone": "Deze inlogkaarten zijn er niet meer. Maak een nieuw wachtwoord via het tabblad Leerlingen van de klas of het tabblad Mensen van de school.",
+      "backPeople": "Terug naar Mensen",
+      "backClass": "Terug naar {name}",
+      "skipped": "{count, plural, one {# leerling gebruikt een eigen account en houdt het huidige wachtwoord} other {# leerlingen gebruiken een eigen account en houden hun huidige wachtwoord}}: {names}."
     },
     "errors": {
       "notFound": "We konden dat niet vinden, of je kunt het niet openen.",
@@ -1298,16 +1338,28 @@
       "notInSchool": "Die persoon zit niet op deze school.",
       "otherSchool": "Je kunt leerlingen alleen verplaatsen tussen klassen van dezelfde school.",
       "badCode": "Die klascode werkt niet. Check hem met je leerkracht.",
-      "staffUseTeach": "Je bent leerkracht op deze school. Open in plaats daarvan Lesgeven.",
+      "staffUseTeach": "Je bent leerkracht op deze school. Open in plaats daarvan Mijn klassen.",
       "ownAccountsOff": "Deze school gebruikt alleen schoolaccounts. Vraag je leerkracht om een inlogkaart.",
-      "lastTeacher": "Een klas heeft minstens één leerkracht nodig."
+      "lastTeacher": "Een klas heeft minstens één leerkracht nodig.",
+      "staffName": "Typ de naam.",
+      "username": "Typ de Magic Cups-naam.",
+      "alreadyStaff": "{name} hoort hier al bij het personeel ({role}).",
+      "sameName": "{count, plural, one {Deze naam bestaat al op {school}: {names}. Haal de naam uit de lijst, of voeg een initiaal toe om de leerlingen uit elkaar te houden.} other {Deze namen bestaan al op {school}: {names}. Haal ze uit de lijst, of voeg een initiaal toe om de leerlingen uit elkaar te houden.}} Wil je leerlingen die er al zijn in een klas zetten? Vink ze dan aan op het tabblad Leerlingen van de klas.",
+      "chooseTeacher": "Kies een leerkracht.",
+      "chooseClass": "Kies een klas.",
+      "noSchoolAccounts": "Geen enkele leerling in deze klas heeft een schoolaccount.",
+      "badTeacher": "Kies iemand van het personeel van de school.",
+      "adminNotStudent": "Jij zorgt voor Magic Cups, dus je kunt niet als leerling meedoen met een klas."
     },
     "classTabs": {
       "lessons": "Lessen",
       "progress": "Voortgang",
       "students": "Leerlingen",
       "settings": "Instellingen"
-    }
+    },
+    "optional": "(optioneel)",
+    "me": "ik",
+    "moreFor": "Meer opties voor {name}"
   },
   "lessons": {
     "up": "Omhoog",
@@ -1326,8 +1378,8 @@
     "library": {
       "title": "Lessenbibliotheek",
       "mine": "Mijn lessen",
-      "shared": "Gedeeld op mijn school",
-      "top": "Bibliotheek",
+      "shared": "Gedeeld door collega's",
+      "top": "Lessenbibliotheek",
       "path": "Mappen",
       "newLesson": "Nieuwe les",
       "newLessonPlaceholder": "Titel van de les, bijv. Opwarmer breuken",
@@ -1337,9 +1389,10 @@
     "folder": {
       "name": "Naam van de map",
       "new": "Nieuwe map",
-      "newPlaceholder": "Nieuwe map, bijv. Periode 1",
+      "newPlaceholder": "Nieuwe map, bijv. Breuken",
       "delete": "Map verwijderen",
-      "deleteConfirm": "De map {name} verwijderen? De lessen en mappen erin gaan één niveau omhoog."
+      "deleteConfirm": "De map {name} verwijderen? De lessen en mappen erin gaan één niveau omhoog.",
+      "hint": "Mappen zijn alleen voor jou. Leerlingen zien ze nooit."
     },
     "lesson": {
       "title": "Titel van de les",
@@ -1348,16 +1401,20 @@
       "objectivesHint": "Eén leerdoel per regel",
       "steps": "Stappen",
       "noSteps": "Nog geen stappen. Voeg hieronder de eerste toe.",
-      "details": "Details van de les",
       "share": "Delen met mijn school",
-      "shareNo": "Nee, alleen ik",
-      "shareYes": "Ja, andere leerkrachten kunnen hem kopiëren",
       "sharedChip": "Gedeeld",
       "duplicate": "Kopie maken",
-      "duplicated": "Kopie gemaakt. Je vindt hem in je bibliotheek.",
       "delete": "Les verwijderen",
       "deleteConfirm": "De les {name} verwijderen? Dit kan niet ongedaan worden gemaakt.",
-      "deleteAssignedConfirm": "De les {name} verwijderen? Hij wordt ook weggehaald uit {count, plural, one {# klas} other {# klassen}}. Dit kan niet ongedaan worden gemaakt."
+      "deleteAssignedConfirm": "De les {name} verwijderen? Hij wordt ook weggehaald uit {count, plural, one {# klas} other {# klassen}}. Dit kan niet ongedaan worden gemaakt.",
+      "unshare": "Stoppen met delen",
+      "sharedToast": "Gedeeld met je school. Collega's kunnen hem nu kopiëren.",
+      "unsharedToast": "Niet meer gedeeld.",
+      "sharedStatus": "Gedeeld met je school",
+      "editDetails": "Details bewerken",
+      "copiedNotice": "Dit is je kopie. Geef hem een nieuwe naam bij Details bewerken.",
+      "deleteWorkConfirm": "De les {name} verwijderen? Het werk van {n, plural, one {# leerling} other {# leerlingen}} in deze les wordt verwijderd. Dit kan niet ongedaan worden gemaakt.",
+      "deleteLiveConfirm": "De les {name} verwijderen? Hij staat in {count, plural, one {# klas} other {# klassen}}, en het werk van {n, plural, one {# leerling} other {# leerlingen}} in deze les wordt verwijderd. Dit kan niet ongedaan worden gemaakt. Wil je hun werk bewaren? Haal de les dan uit de klas."
     },
     "step": {
       "add": "Stap toevoegen",
@@ -1369,8 +1426,6 @@
       "schoolGames": "Gedeeld op mijn school",
       "siteGames": "Magic Cups-games",
       "minutes": "Minuten",
-      "body": "Instructies",
-      "bodyHint": "Wat leerlingen moeten doen. Bij “Bouw een game” is dit het idee dat ze aan de Bouwer geven, bijv. “een quiz met 8 vragen over de planeten”.",
       "edit": "Stap bewerken",
       "delete": "Stap verwijderen",
       "deleteConfirm": "Deze stap verwijderen?",
@@ -1382,7 +1437,14 @@
       "newGameIdea": "Jouw idee voor de game",
       "newGamePlaceholder": "bijv. een quiz met 10 vragen over breuken voor groep 6",
       "newGameButton": "Open de Bouwer",
-      "newGameNote": "Er komt een gamestap in deze les, en de Studio opent met je idee al klaar. Publiceer de game voor je school als hij af is."
+      "newGameNote": "Er komt een gamestap in deze les, en de Studio opent met je idee al klaar. Publiceer de game voor je school als hij af is.",
+      "bodyText": "Wat leerlingen lezen of doen",
+      "bodyQuestion": "De vraag",
+      "bodyBuild": "Idee dat leerlingen aan de Bouwer geven",
+      "bodyGame": "Instructies (optioneel)",
+      "buildHint": "bijv. “een quiz met 8 vragen over de planeten”",
+      "newGameLink": "Maak een nieuwe game voor leerlingen",
+      "deleteWorkConfirm": "Deze stap verwijderen? Het werk van {n, plural, one {# leerling} other {# leerlingen}} aan deze stap wordt verwijderd. Dit kan niet ongedaan worden gemaakt."
     },
     "ai": {
       "button": "Opzet met AI",
@@ -1392,7 +1454,7 @@
       "make": "Maak de opzet",
       "note": "Claude maakt een opzet voor een les met stappen en passende games. Je kunt alles aanpassen voordat je hem gebruikt.",
       "done": "Hier is je opzet. Controleer elke stap en pas aan wat je wilt.",
-      "template": "Hier is een begin. Voeg je eigen stappen en games toe."
+      "template": "De AI is nu niet beschikbaar, dus hier is een eenvoudig sjabloon om mee te beginnen. Pas aan wat je wilt."
     },
     "assign": {
       "title": "Toewijzen aan een klas",
@@ -1400,13 +1462,15 @@
       "opens": "Zichtbaar vanaf (optioneel)",
       "due": "Inleveren op (optioneel)",
       "button": "Toewijzen",
-      "already": "Toegewezen aan:",
       "noClasses": "Je geeft nog geen les aan een klas op deze school.",
-      "note": "Leerlingen zien de les vanaf de dag dat hij zichtbaar wordt. Wat je later verandert, zie je terug in elke klas."
+      "note": "Leerlingen zien de les vanaf de dag dat hij zichtbaar wordt. Wat je later verandert, zie je terug in elke klas.",
+      "done": "Toegewezen aan {class}",
+      "restored": "Opnieuw toegewezen aan {class}. Het eerdere werk van leerlingen is terug.",
+      "changeDates": "Datums wijzigen",
+      "allClasses": "Deze les staat in al je klassen."
     },
     "class": {
       "title": "Lessen",
-      "none": "Nog geen lessen. Wijs er een toe uit je bibliotheek.",
       "assign": "Les toewijzen",
       "library": "Lessenbibliotheek",
       "unit": "Thema",
@@ -1420,19 +1484,27 @@
       "dueOn": "Inleveren op {date}",
       "editLesson": "Les bewerken",
       "unassign": "Uit klas halen",
-      "unassignConfirm": "{name} uit deze klas halen? De les blijft in je bibliotheek."
+      "unassignConfirm": "{name} uit deze klas halen? Leerlingen zien de les dan niet meer. Hun werk blijft bewaard en komt terug als je de les opnieuw toewijst.",
+      "empty": "Nog geen lessen",
+      "emptyText": "Maak een nieuwe les voor deze klas, of laat de AI een opzet maken die jij controleert.",
+      "allIn": "Al je lessen staan in deze klas.",
+      "sharedHint": "Wil je een les van een collega gebruiken? Maak er eerst een kopie van via {tab}.",
+      "unitHint": "Thema's groeperen de lessen van deze klas. Leerlingen zien ze.",
+      "doneOf": "{done} van {students} klaar",
+      "toReview": "{count} na te kijken",
+      "dueToday": "Vandaag inleveren",
+      "late": "Te laat"
     },
     "view": {
-      "teacherPreview": "Dit zien je leerlingen.",
+      "teacherPreview": "Leerlingweergave. Knoppen die werk opslaan, staan voor jou uit.",
       "play": "Speel {title}",
       "build": "Begin met bouwen",
       "notReady": "Deze game is nog niet klaar. Vraag het je leerkracht."
     },
     "shared": {
       "copy": "Kopiëren naar mijn bibliotheek",
-      "copied": "Gekopieerd naar je bibliotheek!",
-      "empty": "Nog niets gedeeld",
-      "emptyText": "Als leerkrachten op je school een les delen, verschijnt die hier."
+      "empty": "Nog niets gedeeld door collega's",
+      "emptyText": "Lessen die andere leerkrachten delen, verschijnen hier. Lessen die jij deelt, staan in Mijn lessen met 🏫 Gedeeld."
     },
     "template": {
       "warmup": "Opwarmer",
@@ -1440,8 +1512,6 @@
       "play": "Speel {title}",
       "build": "Bouw je eigen game",
       "buildText": "Een quizgame met 6 vragen over {topic}",
-      "wrapup": "Afsluiting",
-      "wrapupText": "Vertel één ding dat je vandaag hebt geleerd.",
       "exit": "Exitticket",
       "exitText": "In twee of drie zinnen: wat is het belangrijkste dat je vandaag over {topic} hebt geleerd?"
     },
@@ -1459,7 +1529,11 @@
       "badDate": "Die datum klopt niet.",
       "topic": "Typ waar de les over gaat.",
       "aiFailed": "De AI kan dit nu niet maken. Probeer het over een minuutje nog eens, of maak de les zelf.",
-      "questionText": "Schrijf de vraag op die leerlingen gaan beantwoorden."
+      "questionText": "Schrijf de vraag op die leerlingen gaan beantwoorden.",
+      "alreadyAssigned": "Deze les staat al in {class}. Wijzig de datums via het menu ⋯ op het tabblad Lessen van de klas."
+    },
+    "editor": {
+      "live": "In gebruik in {classes}. {count, plural, =0 {Er is nog geen leerling begonnen.} one {# leerling is begonnen.} other {# leerlingen zijn begonnen.}} Leerlingen zien wijzigingen meteen."
     }
   },
   "progress": {
@@ -1481,38 +1555,39 @@
     "key": {
       "done": "klaar",
       "steps": "stappen gedaan",
-      "late": "inleverdatum voorbij",
-      "toRead": "antwoorden om te lezen"
+      "late": "te laat",
+      "toRead": "antwoorden om na te kijken"
     },
     "teach": {
-      "toRead": "{count, plural, one {# antwoord om te lezen} other {# antwoorden om te lezen}}"
+      "toRead": "{count, plural, one {# antwoord om na te kijken} other {# antwoorden om na te kijken}}"
     },
     "gradebook": {
       "title": "Voortgang",
-      "text": "De stappen die elke leerling in elke les heeft afgerond. Open een les om scores te zien en antwoorden te lezen.",
+      "text": "De stappen die elke leerling in elke les heeft afgerond. Open een les om scores te zien en antwoorden na te kijken.",
       "csv": "Downloaden (CSV)",
       "overall": "Totaal",
-      "late": "Inleverdatum voorbij",
-      "toRead": "{count, plural, one {# antwoord wacht tot je het leest.} other {# antwoorden wachten tot je ze leest.}}",
+      "toRead": "{count, plural, one {# antwoord om na te kijken} other {# antwoorden om na te kijken}}",
       "noLessons": "Nog geen lessen",
       "noLessonsText": "Wijs een les toe op het tabblad Lessen, dan zie je hier hoe elke leerling ervoor staat.",
       "noStudents": "Nog geen leerlingen",
-      "noStudentsText": "Voeg leerlingen toe op het tabblad Leerlingen, dan verschijnt hier hun voortgang."
+      "noStudentsText": "Voeg leerlingen toe op het tabblad Leerlingen, dan verschijnt hier hun voortgang.",
+      "toReviewList": "Antwoorden om na te kijken:",
+      "reviewLink": "{title} ({count})"
     },
     "lesson": {
       "finished": "{done} van de {total} leerlingen klaar",
       "studentView": "Leerlingweergave",
-      "seeProgress": "Voortgang van de klas",
-      "jump": "Lees ze",
+      "seeProgress": "Voortgang",
+      "jump": "Naar de antwoorden",
       "lastActive": "Laatst actief",
       "openGame": "Speel de game",
-      "readAnswer": "Lezen",
+      "readAnswer": "Antwoord bekijken",
       "question": "Vraag in stap {n}",
-      "read": "Gelezen",
+      "read": "Nagekeken",
       "new": "Nieuw",
       "feedback": "Feedback voor de leerling",
       "feedbackPlaceholder": "Feedback voor de leerling (optioneel)",
-      "send": "Opslaan en als gelezen markeren",
+      "send": "Opslaan en als nagekeken markeren",
       "update": "Feedback bijwerken",
       "noAnswers": "Nog geen antwoorden."
     },
@@ -1536,7 +1611,7 @@
       "updateAnswer": "Verander mijn antwoord",
       "sentAgo": "Verstuurd {when}",
       "feedback": "Van je leerkracht",
-      "readNoFeedback": "Je leerkracht heeft je antwoord gelezen."
+      "readNoFeedback": "Je leerkracht heeft je antwoord gezien."
     }
   }
 }
