@@ -1,0 +1,14 @@
+{
+  "slug": "word-hunt",
+  "title": "Word Hunt",
+  "icon": "🔍",
+  "cover": "mint",
+  "category": "words",
+  "tags": "word search,words,spelling,reading,puzzle,themes,learning,early readers,daily puzzle",
+  "description": "Find the hidden words! Drag across the letters, or tap the first and last letter. Pick a theme like Ocean, Space or Dinosaurs, tap a word to hear it read out loud, and come back every day for the daily puzzle. You can even race a friend!",
+  "orientation": "any",
+  "players_max": 2,
+  "age_rating": "everyone",
+  "featured": true,
+  "notes": "Puzzles are generated from a seed (13 themes, Easy 8x8 / Medium 10x10 with diagonals / Hard 12x12 all 8 directions); every word is placed exactly once and filler letters are checked against an internal blocklist in all directions. Daily puzzle is seeded by the local date. Saves progress in localStorage key 'word-hunt-v1' (points, puzzles per theme, best times per difficulty, daily streak). Score: BRB.score.submit(total, 'puzzle points') plus BRB.gameOver per solved puzzle. Read-aloud uses speechSynthesis when available (guarded). 'Race a friend' is pass-the-phone on the same grid. Loads Google Fonts (Andika, Fredoka). Test hooks on window.__brbTest."
+}
