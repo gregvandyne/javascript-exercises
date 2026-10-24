@@ -56,7 +56,9 @@ details.panel summary{cursor:pointer;font-weight:800}
   .rtable td{border:0;padding:3px 0}
   .rtable td:first-child{font-size:1.05rem;padding-bottom:6px}
   .rtable td[data-label]::before{content:attr(data-label) ": ";font-weight:800;color:var(--muted);font-size:.85rem}
-  .rtable td.acts{padding-top:8px}
+  .rtable td.acts{display:flex;padding-top:10px}
+  /* Short facts (username, grade) sit side by side under the name. */
+  .rtable td[data-label]{display:inline-block;width:auto;margin-inline-end:16px}
   .rtable td.hide-sm{display:none}
   .rtable .input-sm{max-width:none;flex:1}
   .rtable form.inline{flex:1 1 100%}
@@ -71,7 +73,10 @@ details.panel summary{cursor:pointer;font-weight:800}
 .aidraft>summary::-webkit-details-marker{display:none}
 .aidraft[open]>summary{margin-bottom:12px}
 .folderlist,.lessonlist,.steplist,.cl-list{display:grid;gap:10px;margin:0 0 14px;padding:0;list-style:none}
-.folderlist>li,.lessonlist>li,.steplist>li{margin:0}
+.folderlist>li,.lessonlist>li,.steplist>li,.folderlist>li.panel,.lessonlist>li.panel,.steplist>li.panel{margin:0}
+.steplist{gap:12px;margin:0 0 16px}
+.panel+.steplist,.notice+.panel,.notice+.steplist{margin-top:16px}
+.steplist+.panel,.steplist+section{margin-top:16px}
 .folderrow,.lessonrow{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:12px 14px}
 .fr-name{font-weight:900;color:var(--ink);text-decoration:none;flex:1;min-width:0}
 .lr-main,.cl-main{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0;color:var(--ink);text-decoration:none}
@@ -85,7 +90,8 @@ details.panel summary{cursor:pointer;font-weight:800}
 .inline-menu .menu .formgrid{grid-template-columns:1fr 1fr}
 .inline-menu .menu .btn{justify-content:center}
 .stepcard{padding:14px 16px}
-.sc-head{display:flex;gap:10px;align-items:center}
+.sc-head{display:flex;gap:10px;align-items:flex-start}
+.sc-head>.sc-num,.sc-head>.sc-kind{margin-top:2px}
 .sc-num{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--blue-50);font-weight:900;flex:none}
 .sc-kind{font-size:1.4rem}
 .sc-title{display:flex;flex-direction:column;flex:1;min-width:0}
@@ -94,11 +100,16 @@ details.panel summary{cursor:pointer;font-weight:800}
 .sc-body{margin-top:8px}
 .sc-body p{margin:0 0 8px}
 .stepcard details{margin-top:8px}
+@media (max-width:520px){.sc-kind{display:none}.stepcard{padding:14px}}
 .stepcard .btn-big{margin-top:10px}
 .unit{margin-bottom:14px}
 .unit-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.unit h3{margin:10px 0 8px}
+.unit h3{margin:12px 0 10px}
 .cl-row{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 12px;border-radius:14px;box-shadow:inset 0 0 0 2px var(--line)}
-.cl-tools{display:grid;gap:12px;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
-.row.wrap{flex-wrap:wrap}
+.cl-tools{display:grid;gap:16px;margin-top:16px;padding-top:16px;border-top:1px solid var(--line)}
+.cl-more{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.unitform{display:flex;gap:8px;flex:1 1 300px;max-width:520px}
+.unitform .input{flex:1;min-width:0}
 .schoolpick{margin-bottom:12px}
+.newgame{margin-top:14px}
+.rtable td{vertical-align:middle}

@@ -40,8 +40,8 @@ router.get('/admin/schools', requireAdmin, (req, res) => {
       <button class="btn btn-primary" type="submit">➕ Add school</button>
     </form>
   </section>
-  ${list.length ? html`<div class="panel tblwrap"><table class="tbl"><thead><tr><th>School</th><th>Classes</th><th>Staff</th><th>Students</th><th>Added</th></tr></thead><tbody>
-    ${list.map(s => html`<tr><td><a href="/school/${s.slug}"><b>${s.name}</b></a>${s.archived_at ? html` <span class="chip-s">archived</span>` : ''}</td><td>${s.classes}</td><td>${s.staff}</td><td>${s.students}</td><td>${new Date(s.created_at).toISOString().slice(0, 10)}</td></tr>`)}
+  ${list.length ? html`<div class="panel tblwrap"><table class="tbl rtable"><thead><tr><th>School</th><th>Classes</th><th>Staff</th><th>Students</th><th>Added</th></tr></thead><tbody>
+    ${list.map(s => html`<tr><td><a href="/school/${s.slug}"><b>${s.name}</b></a>${s.archived_at ? html` <span class="chip-s">archived</span>` : ''}</td><td data-label="Classes">${s.classes}</td><td data-label="Staff">${s.staff}</td><td data-label="Students">${s.students}</td><td data-label="Added">${new Date(s.created_at).toISOString().slice(0, 10)}</td></tr>`)}
   </tbody></table></div>` : emptyState({ emoji: '🏫', title: 'No schools yet', text: 'Add the first school above, then appoint its school admin from the school page.' })}`;
   page(req, res, { title: 'Schools', active: 'me', body, head: CSS, back: '/admin', backLabel: 'Admin' });
 });
@@ -204,7 +204,7 @@ router.get('/teach', requireUser, (req, res) => {
   const canCreate = allSchools.filter(x => S.canCreateClass(u, x.id));
   const admins = allSchools.filter(x => S.canManageSchool(u, x.id));
   const body = html`
-  <div class="pagehead"><h1>🍎 ${t('school.teach.title')}</h1><div class="row wrap"><a class="btn btn-primary" href="/teach/lessons">📚 ${t('lessons.library.title')}</a>${admins.map(x => html`<a class="btn" href="/school/${x.slug}">🏫 ${x.name}</a>`)}</div></div>
+  <div class="pagehead"><h1>🍎 ${t('school.teach.title')}</h1><div class="row"><a class="btn btn-primary" href="/teach/lessons">📚 ${t('lessons.library.title')}</a>${admins.map(x => html`<a class="btn" href="/school/${x.slug}">🏫 ${x.name}</a>`)}</div></div>
   ${mine.length ? html`<div class="classgrid">${mine.map(c => html`<a class="panel classcard" href="/class/${c.id}">
       <span class="cc-school small muted">${c.school_name}</span><b class="cc-name">${c.name}</b>
       <span class="small">${[c.subject, c.grade ? t('school.class.gradeN', { grade: c.grade }) : ''].filter(Boolean).join(' · ')}</span>

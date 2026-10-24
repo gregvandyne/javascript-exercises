@@ -150,7 +150,7 @@ function stepFields(t, pick, s = {}, idp) {
     <div class="field"><label for="${idp}-g">${t('lessons.step.game')}</label><select class="input" id="${idp}-g" name="gameId"><option value="">–</option>
       ${pick.mine.length ? html`<optgroup label="${t('lessons.step.myGames')}">${pick.mine.map(opt)}</optgroup>` : ''}
       ${pick.school.length ? html`<optgroup label="${t('lessons.step.schoolGames')}">${pick.school.map(opt)}</optgroup>` : ''}
-      <optgroup label="${t('lessons.step.siteGames')}">${pick.site.map(opt)}</optgroup></select><span class="hint">${t('lessons.step.gameHint')}</span></div>
+      <optgroup label="${t('lessons.step.siteGames')}">${pick.site.map(opt)}</optgroup></select></div>
     <div class="field"><label for="${idp}-m">${t('lessons.step.minutes')}</label><input class="input" id="${idp}-m" name="minutes" type="number" min="0" max="240" value="${s.minutes || ''}"></div>
     <div class="field wide"><label for="${idp}-b">${t('lessons.step.body')}</label><textarea class="input" id="${idp}-b" name="body" rows="3" maxlength="4000">${s.body || ''}</textarea><span class="hint">${t('lessons.step.bodyHint')}</span><span class="err" id="${idp}-b-err"></span></div>`;
 }
@@ -225,7 +225,7 @@ router.get('/teach/lessons/:id', requireUser, (req, res) => {
     <form data-api="/api/lessons/${l.id}/copy" data-toast="${t('lessons.lesson.duplicated')}"><button class="btn" type="submit">📄 ${t('lessons.lesson.duplicate')}</button></form>
     <form data-api="/api/lessons/${l.id}/delete" data-confirm="${assigned.length ? t('lessons.lesson.deleteAssignedConfirm', { name: l.title, count: assigned.length }) : t('lessons.lesson.deleteConfirm', { name: l.title })}"><button class="btn btn-danger" type="submit">${t('lessons.lesson.delete')}</button></form>
   </details>` : ''}`;
-  page(req, res, { title: l.title, active: 'classes', body, head: CSS, back: `/teach/lessons?school=${l.school_id}${edit && l.folder_id ? `&folder=${l.folder_id}` : ''}`, backLabel: t('lessons.library.title') });
+  page(req, res, { title: l.title, active: 'classes', mid: true, body, head: CSS, back: `/teach/lessons?school=${l.school_id}${edit && l.folder_id ? `&folder=${l.folder_id}` : ''}`, backLabel: t('lessons.library.title') });
 });
 
 // ---- editor APIs
@@ -306,8 +306,9 @@ export function teacherLessonsPanel(req, c) {
         <div class="field"><label for="al-o">${t('lessons.assign.opens')}</label><input class="input" id="al-o" name="opensAt" type="date"></div>
         <div class="field"><label for="al-d">${t('lessons.assign.due')}</label><input class="input" id="al-d" name="dueAt" type="date"></div>
         <div class="field end"><button class="btn btn-primary" type="submit">📌 ${t('lessons.assign.button')}</button></div></form>` : ''}
-      <div class="row wrap"><a class="btn" href="/teach/lessons?school=${c.school_id}">📚 ${t('lessons.class.library')}</a>
-        <form class="row" data-api="/api/classes/${c.id}/units" data-reload novalidate><label class="sr-only" for="nu">${t('lessons.class.unitName')}</label><input class="input" id="nu" name="name" maxlength="60" placeholder="${t('lessons.class.newUnitPlaceholder')}" required><button class="btn" type="submit">🗂️ ${t('lessons.class.newUnit')}</button></form></div>
+      <div class="cl-more">
+        <form class="unitform" data-api="/api/classes/${c.id}/units" data-reload novalidate><label class="sr-only" for="nu">${t('lessons.class.unitName')}</label><input class="input" id="nu" name="name" maxlength="60" placeholder="${t('lessons.class.newUnitPlaceholder')}" required><button class="btn" type="submit">🗂️ ${t('lessons.class.newUnit')}</button></form>
+        <a class="btn btn-ghost" href="/teach/lessons?school=${c.school_id}">📚 ${t('lessons.class.library')}</a></div>
     </div></section>`;
 }
 /** Student view: open lessons by unit. */
@@ -359,7 +360,7 @@ router.get('/class/:cid/lessons/:clid', requireUser, (req, res) => {
     ${s.kind === 'build' ? html`<p class="sc-build" dir="auto">💬 “${s.body}”</p>
       <form data-api="/api/class-lessons/${cl.id}/steps/${s.id}/build"><button class="btn btn-primary btn-big" type="submit">🛠️ ${t('lessons.view.build')}</button></form>` : ''}
   </li>`)}</ol>`;
-  page(req, res, { title: l.title, active: 'classes', body, head: CSS, back: `/class/${c.id}`, backLabel: c.name });
+  page(req, res, { title: l.title, active: 'classes', mid: true, body, head: CSS, back: `/class/${c.id}`, backLabel: c.name });
 });
 /** A "build" step: a new Studio game for the student, with the teacher's idea ready in the Builder box. */
 router.post('/api/class-lessons/:clid/steps/:sid/build', requireAccount, rateLimit('studio-new', 30, 3600e3, 'studio.api.tooManyGames'), (req, res) => {
