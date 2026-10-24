@@ -1,10 +1,10 @@
 // /build: "New game" and "Start from" template cards create a game and open the Studio.
-import { api, toast, $, $$ } from '/js/app.js';
+import { api, toast, $, $$, t } from '/js/app.js';
 
 async function create(template, btn) {
   $$('.tplcard, #newgame').forEach(b => (b.disabled = true));
   const old = btn.innerHTML;
-  if (btn.id === 'newgame') btn.textContent = '✨ Getting ready…';
+  if (btn.id === 'newgame') btn.textContent = `✨ ${t('js.build.gettingReady')}`;
   try {
     const r = await api('/api/studio/new', { method: 'POST', body: template ? { template } : {} });
     location.href = r.url;
