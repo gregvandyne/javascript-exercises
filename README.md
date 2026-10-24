@@ -16,7 +16,7 @@ npm install && npm run seed && npm start
 # open http://localhost:3000
 ```
 
-`npm run seed` creates the admin account (prints a random password unless you set `ADMIN_PASSWORD`), the official **Magic Cups** builder account, and the six featured launch games: Shark Plank (hangman for early readers), Ring Rumble (two-player wrestling; on a desktop both players share one keyboard), Footy Tycoon (a soccer property board game), Drop Four (connect-four with a three-level robot), Happy Putt (18-hole mini golf inspired by *Happy Gilmore*) and Castle Clash (chess with lessons, puzzles and a four-level robot). The list lives in `SEED_GAMES` in `scripts/seed.js`. Re-running the seed is safe and publishes an updated version of a launch game when its HTML changed.
+`npm run seed` creates the admin account (prints a random password unless you set `ADMIN_PASSWORD`), the official **Magic Cups** builder account, and the featured launch games: Shark Plank (hangman for early readers), Ring Rumble (two-player wrestling; on a desktop both players share one keyboard), Footy Tycoon (a soccer property board game), Drop Four (connect-four with a three-level robot), Happy Putt (18-hole mini golf inspired by *Happy Gilmore*), Castle Clash (chess with lessons, puzzles and a four-level robot) and Brick Drop (a falling-blocks puzzle with Marathon, Sprint 40 and Zen modes). The list lives in `SEED_GAMES` in `scripts/seed.js`. Re-running the seed is safe and publishes an updated version of a launch game when its HTML changed.
 
 No API key is needed: without `ANTHROPIC_API_KEY` the Builder uses a built-in mock that still makes real, playable games from templates, and public publishing goes to the human review queue.
 
@@ -71,7 +71,7 @@ server/            app factory (app.js), entry (index.js), db.js, auth.js, confi
   builder/         Builder agent loop, providers (Claude + mock), screening, templates/
   views/           layout + components (server-rendered HTML)
 public/            css/app.css (design system), js/ (one small module per page), sdk/brb-sdk.js (in-frame SDK), fonts, icons
-seed-games/        the six launch games (HTML + metadata JSON)
+seed-games/        the launch games (HTML + metadata JSON)
 scripts/           seed.js, import-game.js, backup.js, rollup.js, screenshots.js
 tests/             unit/, safety/, e2e/
 docs/              build-graph.md, decisions.md, status.md, safety.md, sdk.md, brief/
