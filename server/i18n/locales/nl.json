@@ -683,7 +683,9 @@
     "twoPlayers": "2 spelers",
     "updateWaiting": "Update wacht op controle",
     "changed": "Veranderd {when}",
-    "empty": "Tik op “Nieuwe game” of kies hierboven een voorbeeld. Je games verschijnen dan hier."
+    "empty": "Tik op “Nieuwe game” of kies hierboven een voorbeeld. Je games verschijnen dan hier.",
+    "rename": "Naam wijzigen",
+    "delete": "Verwijderen"
   },
   "studio": {
     "title": "Studio: {title}",
@@ -778,7 +780,8 @@
       "pickWho": "Kies wie mag spelen.",
       "notLive": "Deze game staat nog niet online. Gebruik eerst Publiceren.",
       "updatedFriends": "Bijgewerkt voor je vrienden! De nieuwe versie wacht ook nog op een check voordat iedereen hem kan spelen.",
-      "updatedYou": "Bijgewerkt voor jou! De nieuwe versie wacht ook nog op een check voordat iedereen hem kan spelen."
+      "updatedYou": "Bijgewerkt voor jou! De nieuwe versie wacht ook nog op een check voordat iedereen hem kan spelen.",
+      "cantDeleteStarter": "Startspellen kunnen niet worden verwijderd."
     }
   },
   "publish": {
@@ -1017,7 +1020,17 @@
       "notPlaying": "Speelt nu niet"
     },
     "build": {
-      "gettingReady": "Even klaarmaken…"
+      "gettingReady": "Even klaarmaken…",
+      "renameTitle": "Naam van spel wijzigen",
+      "nameLabel": "Naam van het spel",
+      "save": "Opslaan",
+      "renamed": "Naam opgeslagen",
+      "deleteTitle": "Dit spel verwijderen?",
+      "deleteText": "“{title}” is dan voor altijd weg. Dit kun je niet ongedaan maken.",
+      "deleteLive": "Spelers kunnen het dan niet meer vinden.",
+      "keep": "Houden",
+      "deleteYes": "Verwijderen",
+      "deleted": "Spel verwijderd"
     },
     "me": {
       "lookingGood": "Ziet er goed uit!",

@@ -89,7 +89,7 @@ router.get('/build', requireAccount, async (req, res) => {
   </section>
   <section aria-labelledby="mine-h" class="build-sec">
     <h2 id="mine-h">${t('home.rails.mine')}</h2>
-    ${mine.length ? html`<ul class="mygames">${mine.map(g => { const s = studioStatus(g, t); return html`<li class="mygame panel">
+    ${mine.length ? html`<ul class="mygames">${mine.map(g => { const s = studioStatus(g, t); return html`<li class="mygame panel" data-id="${g.id}" data-title="${g.title}" data-live="${s.live ? '1' : ''}">
       <a class="mg-cover" href="/studio/${g.id}" tabindex="-1" aria-hidden="true">${coverArt(g)}</a>
       <div class="mg-body">
         <h3><a href="/studio/${g.id}">${g.title}</a></h3>
@@ -98,8 +98,14 @@ router.get('/build', requireAccount, async (req, res) => {
         <p class="small muted">${t('build.changed', { when: req.fmt.ago(g.updated_at) })}</p>
       </div>
       <div class="mg-actions">
-        <a class="btn btn-primary" href="/studio/${g.id}">✏️ ${t('game.edit')}</a>
-        ${g.published_version_id ? html`<a class="btn" href="/g/${g.slug}">▶ ${t('game.play')}</a>` : ''}
+        <div class="mg-row">
+          <a class="btn btn-primary" href="/studio/${g.id}">✏️ ${t('game.edit')}</a>
+          ${g.published_version_id ? html`<a class="btn" href="/g/${g.slug}">▶ ${t('game.play')}</a>` : ''}
+        </div>
+        <div class="mg-row mg-more">
+          <button class="btn" type="button" data-rename>🏷️ ${t('build.rename')}</button>
+          ${g.source === 'seed' ? '' : html`<button class="btn mg-del" type="button" data-delete>🗑️ ${t('build.delete')}</button>`}
+        </div>
       </div></li>`; })}</ul>`
     : emptyState({ emoji: '🌱', title: t('home.empty.title'), text: t('build.empty') })}
   </section>`;
@@ -230,6 +236,15 @@ router.post('/api/studio/:id/meta', requireAccount, rateLimit('studio-meta', 60,
   if (b.players_max !== undefined) f.players_max = Math.max(1, Math.min(8, Math.round(+b.players_max || 1)));
   games.updateMeta(g.id, f);
   res.json({ ok: true, state: studioState(req.user, g.id, t) });
+});
+
+// Delete from "My games". Starter (seed) games stay: they belong to the site, not a builder.
+router.post('/api/studio/:id/delete', requireAccount, rateLimit('studio-delete', 20, 60e3), (req, res) => {
+  const g = loadEditable(req, res); if (!g) return;
+  if (g.source === 'seed') return res.status(400).json({ error: req.t('studio.api.cantDeleteStarter') });
+  games.deleteGame(g.id);
+  audit(req.user.id, 'game.delete', g.id, { title: g.title, wasLive: g.status === 'published' });
+  res.json({ ok: true });
 });
 
 router.post('/api/studio/:id/restore', requireAccount, rateLimit('studio-restore', 30, 60e3), (req, res) => {

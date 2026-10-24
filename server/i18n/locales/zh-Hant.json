@@ -682,7 +682,9 @@
     "twoPlayers": "2 位玩家",
     "updateWaiting": "更新等待審核中",
     "changed": "{when}修改",
-    "empty": "點「新遊戲」或選上面的範本。你的遊戲會出現在這裡。"
+    "empty": "點「新遊戲」或選上面的範本。你的遊戲會出現在這裡。",
+    "rename": "改名",
+    "delete": "刪除"
   },
   "studio": {
     "title": "工作室：{title}",
@@ -777,7 +779,8 @@
       "pickWho": "請選擇誰可以玩。",
       "notLive": "這個遊戲還沒上線。請先按「發布」。",
       "updatedFriends": "已為你的好友更新！新版本也在等待檢查，通過後所有人才能玩。",
-      "updatedYou": "已為你更新！新版本也在等待檢查，通過後所有人才能玩。"
+      "updatedYou": "已為你更新！新版本也在等待檢查，通過後所有人才能玩。",
+      "cantDeleteStarter": "入門遊戲無法刪除。"
     }
   },
   "publish": {
@@ -1016,7 +1019,17 @@
       "notPlaying": "現在沒有在玩"
     },
     "build": {
-      "gettingReady": "準備中…"
+      "gettingReady": "準備中…",
+      "renameTitle": "幫遊戲改名",
+      "nameLabel": "遊戲名稱",
+      "save": "儲存",
+      "renamed": "名稱已儲存",
+      "deleteTitle": "要刪除這個遊戲嗎？",
+      "deleteText": "「{title}」會永遠消失，而且無法復原。",
+      "deleteLive": "玩家將再也找不到它。",
+      "keep": "保留",
+      "deleteYes": "刪除",
+      "deleted": "遊戲已刪除"
     },
     "me": {
       "lookingGood": "看起來很棒！",

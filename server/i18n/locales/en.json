@@ -683,7 +683,9 @@
     "twoPlayers": "2 players",
     "updateWaiting": "Update waiting for review",
     "changed": "Changed {when}",
-    "empty": "Tap “New game” or pick a starter above. Your games will show up here."
+    "empty": "Tap “New game” or pick a starter above. Your games will show up here.",
+    "rename": "Rename",
+    "delete": "Delete"
   },
   "studio": {
     "title": "Studio: {title}",
@@ -778,7 +780,8 @@
       "pickWho": "Pick who can play.",
       "notLive": "This game is not live yet. Use Publish first.",
       "updatedFriends": "Updated for your friends! The new version is also waiting for its check before everyone can play.",
-      "updatedYou": "Updated for you! The new version is also waiting for its check before everyone can play."
+      "updatedYou": "Updated for you! The new version is also waiting for its check before everyone can play.",
+      "cantDeleteStarter": "Starter games can’t be deleted."
     }
   },
   "publish": {
@@ -1017,7 +1020,17 @@
       "notPlaying": "Not playing right now"
     },
     "build": {
-      "gettingReady": "Getting ready…"
+      "gettingReady": "Getting ready…",
+      "renameTitle": "Rename game",
+      "nameLabel": "Game name",
+      "save": "Save",
+      "renamed": "Name saved",
+      "deleteTitle": "Delete this game?",
+      "deleteText": "“{title}” will be gone for good. You can’t undo this.",
+      "deleteLive": "Players won’t be able to find it anymore.",
+      "keep": "Keep it",
+      "deleteYes": "Delete",
+      "deleted": "Game deleted"
     },
     "me": {
       "lookingGood": "Looking good!",

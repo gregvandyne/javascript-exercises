@@ -163,3 +163,34 @@ test('publish, share and update a live game; public updates wait for review whil
   assert.equal(r.json.state.live.id, live, 'players keep the old version'); assert.ok(r.json.state.pending, 'update waits for review');
   assert.ok(q.get("SELECT 1 FROM audit_log WHERE action='game.submit_review' AND target=?", gameId));
 });
+
+test('My games: rename and delete from /build; a deleted live game is gone for everyone', async () => {
+  // a draft
+  let r = await owner('/api/studio/new', { method: 'POST', body: {} }); const draft = r.json.id;
+  r = await owner('/build'); assert.match(r.text, new RegExp(`data-id="${draft}"`)); assert.match(r.text, /data-delete/); assert.match(r.text, /data-rename/);
+  r = await owner(`/api/studio/${draft}/meta`, { method: 'POST', body: { title: 'Space Cats' } }); assert.equal(r.json.state.game.title, 'Space Cats');
+  r = await stranger(`/api/studio/${draft}/delete`, { method: 'POST', body: {} }); assert.equal(r.status, 404, 'not yours');
+  r = await owner(`/api/studio/${draft}/delete`, { method: 'POST', body: {} }); assert.equal(r.status, 200, r.text);
+  r = await owner('/build'); assert.doesNotMatch(r.text, new RegExp(`data-id="${draft}"`));
+  assert.equal((await owner(`/studio/${draft}`)).status, 404); assert.equal((await owner(`/api/studio/${draft}`)).status, 404);
+  assert.equal((await owner(`/api/studio/${draft}/delete`, { method: 'POST', body: {} })).status, 404, 'only once');
+  assert.ok(q.get("SELECT 1 FROM audit_log WHERE action='game.delete' AND target=?", draft));
+
+  // the public game from the test above, with an update waiting for review
+  const g = games.getGame(gameId); assert.equal(g.visibility, 'public'); assert.ok(g.pending_version_id);
+  assert.equal((await stranger(`/g/${g.slug}`)).status, 200);
+  r = await owner(`/api/studio/${gameId}/delete`, { method: 'POST', body: {} }); assert.equal(r.status, 200);
+  const d = games.getGame(gameId); assert.equal(d.status, 'deleted'); assert.equal(d.pending_version_id, null, 'out of the review queue');
+  assert.equal((await stranger(`/g/${g.slug}`)).status, 404); assert.equal((await owner(`/g/${g.slug}`)).status, 404);
+  assert.ok(!games.listVisible(null, { limit: 500 }).some(x => x.id === gameId), 'off every list');
+});
+
+test('starter (seed) games cannot be deleted, even by an admin', async () => {
+  const seed = games.createGame('admin', { title: 'Seedy', source: 'seed' });
+  q.run("UPDATE users SET role='admin' WHERE username=?", 'HttpStranger');
+  try {
+    const r = await stranger(`/api/studio/${seed.id}/delete`, { method: 'POST', body: {} });
+    assert.equal(r.status, 400); assert.match(r.json.error, /Starter games/);
+    assert.notEqual(games.getGame(seed.id).status, 'deleted');
+  } finally { q.run("UPDATE users SET role='player' WHERE username=?", 'HttpStranger'); }
+});

@@ -67,3 +67,9 @@ Every Claude API call (Builder, chat classifier, picture check, public review) r
 
 ## Real people: facts yes, characters no
 Kid feedback showed the Builder refusing a soccer quiz about famous players and World Cup records. The rule is now: true, kind, well-established facts about well-known public figures are fine in quiz, trivia and learning games; a real person as a character, hero, enemy or picture, any jokes or made-up things about them, and any private person the child knows stay refused. The model classifier, the Builder's system prompt and public review all use this wording; the offline name list skips its real-people rule for quiz/trivia/facts requests unless they mock someone.
+
+## Builders can delete their own games (soft delete)
+"My games" on /build has Rename and Delete. Delete asks first, then marks the game `status='deleted'`: it leaves every
+list, the review queue and search, and its Studio and play page answer 404, even for the owner. The row and its versions
+stay in the database so reports, earnings history and the audit log still point at something; admins can still open it.
+Starter (seed) games can't be deleted, since they belong to the site.
