@@ -145,7 +145,7 @@ test('pages: school console for admins, teacher pages for teachers, student clas
   r = await as(rivera)('/teach'); assert.equal(r.status, 200); assert.match(r.text, /Web Class/);
   assert.equal((await as(kid)('/teach')).status, 404);
   r = await as(rivera)(`/class/${c.id}`); assert.match(r.text, /classtabs/); assert.match(r.text, /Lessons/);
-  r = await as(rivera)(`/class/${c.id}?tab=students`); assert.match(r.text, new RegExp(c.join_code)); assert.match(r.text, /Add students/);
+  r = await as(rivera)(`/class/${c.id}?tab=students`); assert.match(r.text, new RegExp(c.join_code)); assert.match(r.text, /New school accounts/);
   r = await as(rivera)(`/class/${c.id}?tab=settings`); assert.match(r.text, /Class details/); assert.match(r.text, /Archive this class/);
   assert.equal((await as(kid)(`/class/${c.id}`)).status, 404, 'not in the class yet');
   // add students by name -> login cards (shown once, only to the teacher who made them)
@@ -165,4 +165,94 @@ test('pages: school console for admins, teacher pages for teachers, student clas
   // nav: school people get a Classes tab
   assert.match((await as(kid)('/')).text, /href="\/classes"/); assert.match((await as(rivera)('/')).text, /href="\/teach"/);
   assert.doesNotMatch((await as(createUser({ username: 'NoSchoolKid', password: 'secret123' }))('/')).text, /href="\/classes"[^>]*class="tab"|class="tab" href="\/classes"/);
+});
+
+test('school page and class flows: who teaches a new class, adding staff, duplicate names, ticked students, class cards, leaving, deleting', async () => {
+  const kim = S.createSchoolAccount(head, oak.id, { rosterName: 'Ms Kim', role: 'teacher' }).user;
+  // A class made on the school page names its teacher (the admin doesn't become its teacher); "none" leaves it without one.
+  let r = await as(head)('/api/classes', { method: 'POST', body: { schoolId: oak.id, name: 'Set Up Class', teacherId: '' } });
+  assert.equal(r.status, 400); assert.equal(r.json.field, 'teacherId');
+  r = await as(head)('/api/classes', { method: 'POST', body: { schoolId: oak.id, name: 'Set Up Class', teacherId: elmTeacher.id } });
+  assert.equal(r.status, 400, 'only staff of this school'); assert.equal(r.json.field, 'teacherId');
+  r = await as(head)('/api/classes', { method: 'POST', body: { schoolId: oak.id, name: 'Set Up Class', teacherId: kim.id } });
+  assert.equal(r.status, 200, r.text); assert.equal(r.json.redirect, `/school/${oak.slug}`); assert.match(r.json.toast, /Set Up Class/);
+  const setup = S.classesOfSchool(oak.id).find(c => c.name === 'Set Up Class');
+  assert.deepEqual(S.roster(setup.id).map(p => p.id), [kim.id]);
+  r = await as(head)('/api/classes', { method: 'POST', body: { schoolId: oak.id, name: 'Nobody Yet', teacherId: 'none' } });
+  assert.equal(r.status, 200); assert.equal(S.roster(S.classesOfSchool(oak.id).find(c => c.name === 'Nobody Yet').id).length, 0);
+  assert.match((await as(head)(`/school/${oak.slug}`)).text, /No teacher/);
+  assert.equal((await as(rivera)('/api/classes', { method: 'POST', body: { schoolId: oak.id, name: 'X', teacherId: kim.id } })).status, 404, 'only school admins pick a teacher');
+
+  // Adding staff with an existing account: a toast, and a plain error when they're already staff.
+  const own = createUser({ username: 'MsOwnAccount', password: 'secret123' });
+  r = await as(head)(`/api/schools/${oak.id}/staff`, { method: 'POST', body: { account: 'existing', rosterName: 'Ms Own', role: 'teacher', username: '' } });
+  assert.equal(r.status, 400); assert.equal(r.json.field, 'username');
+  r = await as(head)(`/api/schools/${oak.id}/staff`, { method: 'POST', body: { account: 'existing', rosterName: 'Ms Own', role: 'teacher', username: 'MsOwnAccount' } });
+  assert.equal(r.status, 200); assert.match(r.json.toast, /Ms Own added as Teacher/); assert.equal(S.membership(oak.id, own.id).role, 'teacher');
+  r = await as(head)(`/api/schools/${oak.id}/staff`, { method: 'POST', body: { account: 'existing', rosterName: 'Ms Own', role: 'admin', username: 'MsOwnAccount' } });
+  assert.equal(r.status, 400); assert.match(r.json.error, /already staff here \(Teacher\)/); assert.equal(S.membership(oak.id, own.id).role, 'teacher', 'unchanged');
+  r = await as(head)(`/api/schools/${oak.id}/staff`, { method: 'POST', body: { rosterName: 'Mr New', role: 'teacher', username: 'MsOwnAccount' } });
+  assert.match(r.json.redirect, /^\/cards\//, 'without account=existing a school account is made (the username field is ignored)');
+  assert.match((await as(head)(r.json.redirect)).text, /Back to People/);
+
+  // Typing a name that is already a student at the school: one 400 naming every match, and nothing is created.
+  const c = S.createClass(rivera, oak.id, { name: 'Flow Class', grade: '5' }).class;
+  const before = S.members(oak.id, 'student').length;
+  r = await as(rivera)(`/api/classes/${c.id}/students`, { method: 'POST', body: { names: 'Brand New\nana silva', grade: '5' } });
+  assert.equal(r.status, 400); assert.equal(r.json.field, 'names'); assert.match(r.json.error, /Ana Silva \(@/);
+  assert.equal(S.members(oak.id, 'student').length, before, 'all or nothing');
+  // Ticking students already at the school adds them all (repeated field names arrive as an array).
+  const a = S.createSchoolAccount(head, oak.id, { rosterName: 'Tick One' }).user, bb = S.createSchoolAccount(head, oak.id, { rosterName: 'Tick Two' }).user;
+  const page = (await as(rivera)(`/class/${c.id}?tab=students`)).text;
+  assert.match(page, /Students already at Oak Hill Primary/); assert.match(page, /Not in a class/);
+  r = await as(rivera)(`/api/classes/${c.id}/students`, { method: 'POST', body: { existing: [a.id, bb.id] } });
+  assert.equal(r.status, 200); assert.match(r.json.toast, /2 students added/);
+  assert.ok(S.classMember(c.id, a.id) && S.classMember(c.id, bb.id));
+  assert.equal((await as(rivera)(`/api/classes/${c.id}/students`, { method: 'POST', body: { existing: [elmTeacher.id] } })).status, 400, 'only students of this school');
+  // People-tab students can go straight into a class; their cards go back to People.
+  r = await as(head)(`/api/schools/${oak.id}/students`, { method: 'POST', body: { names: 'Placed Kid', classId: c.id } });
+  assert.equal(r.status, 200); const placed = S.members(oak.id, 'student').find(p => p.roster_name === 'Placed Kid');
+  assert.ok(S.classMember(c.id, placed.id)); const pc = (await as(head)(r.json.redirect)).text;
+  assert.match(pc, /Back to People/); assert.match(pc, /Oak Hill Primary · Flow Class/);
+
+  // New login cards for the whole class: only school accounts, old passwords stop working; own accounts are listed as skipped.
+  const kid = createUser({ username: 'FlowOwnKid', password: 'secret123' });
+  S.addMember(head, oak.id, kid.id, 'student', { rosterName: 'Own Kid' }); S.addToClass(head, c.id, kid.id, 'student');
+  const oldHash = getUser(a.id).password_hash;
+  r = await as(rivera)(`/api/classes/${c.id}/cards`, { method: 'POST', body: {} });
+  assert.equal(r.status, 200); const cards = (await as(rivera)(r.json.redirect)).text;
+  assert.equal((cards.match(/class="logincard"/g) || []).length, 3); assert.match(cards, /Own Kid/); assert.match(cards, /Back to Flow Class/);
+  assert.notEqual(getUser(a.id).password_hash, oldHash); assert.ok(verifyPassword(getUser(kid.id), 'secret123'), 'own accounts keep their password');
+  assert.equal((await as(elmTeacher)(`/api/classes/${c.id}/cards`, { method: 'POST', body: {} })).status, 404);
+
+  // Moving asks for a class; leaving a class you co-teach goes back to My classes.
+  const sid = S.roster(c.id).find(p => p.role === 'student').id;
+  assert.equal((await as(rivera)(`/api/classes/${c.id}/students/${sid}/move`, { method: 'POST', body: { to: '' } })).status, 400);
+  r = await as(rivera)(`/api/classes/${c.id}/students/${sid}/move`, { method: 'POST', body: { to: setup.id } });
+  assert.equal(r.status, 200); assert.match(r.json.toast, /moved to Set Up Class/);
+  S.addToClass(head, c.id, kim.id, 'teacher');
+  r = await as(rivera)(`/api/classes/${c.id}/students/${rivera.id}/remove`, { method: 'POST', body: {} });
+  assert.equal(r.status, 200); assert.equal(r.json.redirect, '/teach'); assert.ok(!S.teaches(rivera, c.id));
+  assert.equal((await as(kim)(`/api/classes/${c.id}/students/${kim.id}/remove`, { method: 'POST', body: {} })).status, 400, 'the last teacher stays');
+
+  // Deleting: only a class that never had students; afterwards back to the school page (school admin) or My classes.
+  const empty = S.createClass(rivera, oak.id, { name: 'Oops Class' }).class;
+  assert.match((await as(rivera)(`/class/${empty.id}?tab=settings`)).text, /Delete class|data-api="\/api\/classes\/[^/]+\/delete"/);
+  assert.doesNotMatch((await as(kim)(`/class/${c.id}?tab=settings`)).text, /\/delete"/, 'no delete for a class that had students');
+  r = await as(rivera)(`/api/classes/${empty.id}/delete`, { method: 'POST', body: {} });
+  assert.equal(r.status, 200); assert.equal(r.json.redirect, '/teach'); assert.equal(S.getClass(empty.id), null);
+  const empty2 = S.createClass(head, oak.id, { name: 'Oops Two', teacherId: 'none' }).class;
+  assert.equal((await as(head)(`/api/classes/${empty2.id}/delete`, { method: 'POST', body: { from: 'school' } })).json.redirect, `/school/${oak.slug}`);
+
+  // Archived classes stay reachable from My classes, with a banner and Restore on the class.
+  S.archiveClass(head, setup.id, true);
+  assert.match((await as(kim)('/teach')).text, /1 archived class/);
+  assert.match((await as(kim)(`/class/${setup.id}`)).text, /This class is archived/);
+
+  // The platform admin works from Schools; staff without student classes go to My classes.
+  assert.equal((await as(boss)('/teach')).status, 302);
+  assert.equal((await as(rivera)('/classes')).status, 302);
+  assert.equal((await as(boss)('/api/classes/join', { method: 'POST', body: { code: c.join_code } })).status, 400);
+  // A school admin who doesn't teach a class gets back to the school page from it.
+  assert.match((await as(head)(`/class/${c.id}`)).text, new RegExp(`href="/school/${oak.slug}"`));
 });

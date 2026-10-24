@@ -307,3 +307,104 @@ form.inline{display:inline-flex;gap:var(--s2);align-items:center;margin:0}
 .answerform textarea{field-sizing:content;min-height:110px}
 .feedback{display:grid;gap:var(--s1);padding:var(--s3) var(--s4);border-radius:12px;background:color-mix(in srgb,var(--sun) 18%,var(--card))}
 .feedback p{margin:0;white-space:pre-wrap}
+
+/* ---- School pages, My classes, class Students/Settings (batch 2) ---- */
+/* My classes cards: the class name is the card's link (stretched over it); the request / review chips are their own links. */
+.classgrid>.classcard{position:relative}
+.cc-link{color:inherit;text-decoration:none}
+.cc-link::after{content:"";position:absolute;inset:0;border-radius:inherit}
+.cc-link:focus-visible{outline:none}
+.classcard:has(.cc-link:focus-visible){outline:3px solid var(--blue);outline-offset:2px}
+.classcard a.chip-s{position:relative;z-index:1;text-decoration:none;font-size:.8rem;padding:3px 10px}
+.classcard a.chip-s:hover{text-decoration:underline}
+/* Archived classes list (My classes) and the archived banner on a class. */
+.archlist{display:grid;gap:var(--s2);margin:0;padding:0}
+.archlist>li{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s1) var(--s3);padding:var(--s2) 0;border-bottom:1px solid var(--line)}
+.archlist>li:last-child{border-bottom:0;padding-bottom:0}
+.archlist>li>form{margin:0 0 0 auto}
+.archbanner{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--s2) var(--s3)}
+.archbanner>form{margin:0}
+main.wrap>.archbanner+.tabs{margin-top:var(--s4)}
+/* A panel heading with a button beside it. */
+.panelhead{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--s2) var(--s3)}
+.panelhead>h2,.panelhead>h3{margin:0}
+.panelhead>form{margin:0}
+/* Two-choice radios (add staff). */
+fieldset.choice{border:0;padding:0;margin:0;display:flex;flex-direction:row;flex-wrap:wrap;gap:var(--s2) var(--s3)}
+fieldset.choice>legend{font-weight:800;padding:0;margin-bottom:var(--s2)}
+fieldset.choice>label{display:flex;align-items:center;gap:var(--s2);min-height:44px;padding:var(--s2) var(--s4);border-radius:14px;box-shadow:inset 0 0 0 2px var(--line);font-weight:700;cursor:pointer}
+fieldset.choice>label:has(input:checked){box-shadow:inset 0 0 0 2px var(--blue);background:var(--blue-50)}
+/* Tick list of students already at the school. */
+fieldset.picklist{border:0;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,280px),1fr));gap:var(--s2)}
+fieldset.picklist>label{display:flex;align-items:center;flex-wrap:wrap;gap:var(--s1) var(--s2);min-height:48px;padding:var(--s2) var(--s3);border-radius:12px;box-shadow:inset 0 0 0 2px var(--line);cursor:pointer}
+fieldset.picklist>label:has(input:checked){box-shadow:inset 0 0 0 2px var(--blue);background:var(--blue-50)}
+fieldset.picklist input{width:20px;height:20px;flex:none}
+/* ⋯ menus inside tables open in the row (a table scrolls sideways, so a floating menu would be cut off). */
+.rtable .inline-menu .menu{position:static;width:min(100%,340px);min-width:260px;margin-top:var(--s2);white-space:normal;box-shadow:inset 0 0 0 2px var(--line)}
+.rtable td.tacts .inline-menu[open]{flex-basis:100%}
+.rtable td.tacts:has(.inline-menu[open]){white-space:normal}
+.rtable td.tacts:has(.inline-menu[open])>.acts{flex-wrap:wrap}
+
+/* ---- Progress pages (batch 2) ---- */
+/* Date chips: '🔒 Opens …' (plain), '📅 Due today' (.warn, amber) and '⏰ Late' (.bad, red). */
+.chip-s.bad{background:color-mix(in srgb,var(--danger) 14%,var(--card));color:var(--danger);box-shadow:none}
+.lp-meta{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s1) var(--s3)}
+/* Gradebook column heads: the lesson's dates under its title; lessons that haven't opened are greyed out. */
+.gb-dates{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:var(--s1) 6px;margin-top:var(--s1);font-weight:700;color:var(--muted)}
+.gradebook th.gb-locked,.gradebook td.gb-locked{background:color-mix(in srgb,var(--line) 30%,transparent);color:var(--muted)}
+.gradebook th.gb-locked a{color:var(--ink-2)}
+.gradebook td.gb-locked{font-weight:900}
+/* Answers to review, per lesson, above the gradebook. */
+.gb-review a{font-weight:800}
+/* One lesson's progress: its title and buttons under the class tabs. */
+.lphead{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:var(--s3) var(--s4)}
+.lphead>div:first-child{flex:1 1 280px;min-width:0}
+.lphead h2{margin:0;font-size:clamp(1.3rem,3.4vw,1.7rem);overflow-wrap:anywhere}
+.lphead .lp-meta{margin:var(--s1) 0 0}
+.lphead>.row{gap:var(--s3) var(--s2)}
+@media (max-width:600px){.lphead>.row{width:100%}.lphead>.row>.btn{flex:1 1 auto}}
+/* Under each student's name: steps done, late, and a link to their first answer to review. */
+.gradebook tbody .gb-name .gb-sub{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s1) 6px}
+.gb-sub a.chip-s{text-decoration:none}
+.gb-sub a.chip-s:hover{text-decoration:underline}
+/* A link to an answer (#a-…) or a student row (#s-…) scrolls it clear of the top bar and highlights it. */
+.answercard,.gradebook tbody tr,#answers,#to-review{scroll-margin-top:96px}
+.answercard:target{box-shadow:inset 0 0 0 3px var(--blue)}
+.gradebook tbody tr:target>*{background:var(--blue-50)}
+fieldset.picklist>label{flex-wrap:nowrap;align-items:flex-start}
+fieldset.picklist>label>input{margin-top:2px}
+fieldset.picklist>label>span{flex:1;min-width:0}
+.pl-sub{display:block;margin-top:2px}
+
+/* ---- Lessons: library, lesson editor, class Lessons tab (batch 2) ---- */
+/* A hint under the form inside a drop-down (New folder, New unit). */
+.libdrop>p{margin:var(--s3) 0 0}
+/* Editor header: Assign, Make a copy, Share with my school. */
+.pagehead>.edacts{gap:var(--s2)}
+.livenote a{font-weight:900}
+/* Step form: only the fields for the chosen type. data-kind comes from the server and schools.js keeps it in step with
+   the Type select; the :has() part follows the select too, so without JS picking "Play a game" still shows the Game field. */
+.stepgrid [data-for-kind][hidden]{display:none!important}
+.stepgrid[data-kind]:not([data-kind="game"]):not(:has(>.f-k option[value="game"]:checked))>.f-g{display:none}
+.stepgrid[data-kind]:not([data-kind="game"]):not(:has(>.f-k option[value="game"]:checked)){grid-template-areas:"k m" "t t" "b b" "a a"}
+@media (min-width:720px){.stepgrid[data-kind]:not([data-kind="game"]):not(:has(>.f-k option[value="game"]:checked)){grid-template-areas:"k t m" "b b b" "a a a"}}
+.f-glink{align-self:flex-start;font-weight:800;min-height:32px;display:inline-flex;align-items:center}
+.stepgrid{align-items:start} /* the Game field can be taller (its link): the fields beside it stay level at the top */
+/* Editor: the classes the lesson is in, one line each. */
+.assignedlist{display:grid;gap:var(--s2);margin:0;padding:0;list-style:none}
+.assignedlist a{font-weight:800}
+/* Class Lessons tab: each row opens the lesson's progress; "Change dates" links land on the row (#cl-<id>). */
+.cl-stats{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2);font-weight:700;color:var(--ink-2)}
+.cl-main>.cl-stats{margin-top:6px}
+.cl-meta{row-gap:var(--s2)}
+/* Chips side by side keep 8px (they are boxes too). */
+.lr-chips{gap:var(--s2)}
+.cl-row{scroll-margin-top:calc(var(--top) + var(--s4))}
+.cl-row:target{box-shadow:inset 0 0 0 3px var(--blue);background:var(--blue-50)}
+.empty .emptyacts{justify-content:center;margin-top:var(--s2)}
+.cl-more>.allin{margin:0;flex:1 1 100%}
+.cl-more>.libdrop[open]{background:transparent;box-shadow:inset 0 0 0 2px var(--line)}
+@media (max-width:600px){
+  .cl-more>.btn,.cl-more>.libdrop:not([open]){flex:1 1 0;min-width:0}
+  .cl-more>.libdrop>summary{width:100%;justify-content:center}
+}

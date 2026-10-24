@@ -73,11 +73,16 @@ document.addEventListener('submit', async e => {
   if (f.dataset.confirm && !window.confirm(f.dataset.confirm)) return;
   const btn = f.querySelector('[type=submit]'); if (btn) btn.disabled = true;
   $$('.err', f).forEach(x => (x.textContent = '')); $$('[aria-invalid]', f).forEach(x => x.removeAttribute('aria-invalid'));
-  const body = Object.fromEntries(new FormData(f).entries());
+  // Fields that repeat (a list of checkboxes with one name) are sent as arrays.
+  const body = {};
+  for (const [k, v] of new FormData(f).entries()) body[k] = k in body ? [].concat(body[k], v) : v;
   try {
     const r = await api(f.dataset.api, { method: f.dataset.method || 'POST', body });
-    if (f.dataset.toast) toast(f.dataset.toast);
+    const msg = (r && r.toast) || f.dataset.toast;
     const next = (r && r.redirect) || f.dataset.next;
+    const leaving = next || f.dataset.reload !== undefined;
+    // A confirmation shown just before a reload would vanish: keep it for the next page instead.
+    if (msg) { if (leaving) { try { sessionStorage.setItem('brb-toast', msg); } catch { toast(msg); } } else toast(msg); }
     if (next) location.href = next; else if (f.dataset.reload !== undefined) location.reload();
   } catch (err) {
     const field = err.data && err.data.field; const target = field && f.querySelector(`[name="${field}"]`);
@@ -113,3 +118,6 @@ document.addEventListener('click', async e => {
   try { await api('/api/auth/guest', { method: 'POST', body: {} }); location.href = b.dataset.guestPlay || location.href; }
   catch (err) { toast(err.message, { bad: true }); b.disabled = false; }
 });
+
+// A confirmation saved by a form just before it reloaded or moved to another page.
+try { const m = sessionStorage.getItem('brb-toast'); if (m) { sessionStorage.removeItem('brb-toast'); toast(m); } } catch { /* storage off */ }

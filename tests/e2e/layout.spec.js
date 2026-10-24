@@ -60,11 +60,11 @@ test('student pages: nothing touches', async ({ browser }) => {
 
 test('teacher pages: nothing touches', async ({ browser }) => {
   const { page, state, ctx } = await signIn(browser, 'DemoTeacher', DEMO);
-  const cls = await href(page, '/teach', 'a.classcard');
+  const cls = await href(page, '/teach', 'a.cc-link');
   const folder = await href(page, '/teach/lessons', 'a.fr-name');
   const editor = await href(page, folder, 'a.fr-name').then(sub => href(page, sub, 'a.lr-main'));
   await ctx.close();
-  expect(await checkPages(browser, state, ['/teach', cls, '/teach/lessons', folder, editor])).toEqual([]);
+  expect(await checkPages(browser, state, ['/teach', cls, `${cls}?tab=students`, `${cls}?tab=settings`, `${cls}/progress`, '/teach/lessons', folder, editor])).toEqual([]);
 });
 
 test('admin pages: nothing touches', async ({ browser }) => {

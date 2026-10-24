@@ -7,7 +7,7 @@
 import { html, raw, esc, jsonData } from './html.js';
 import { avatar } from './components.js';
 import { navBadges } from '../services/badges.js';
-import { inAnySchool, isStaff } from '../services/schools.js';
+import { inAnySchool, isSchoolStaff, isPlatformAdmin } from '../services/schools.js';
 import { availableLocales, localeInfo, tReq, clientStrings, DEFAULT_LOCALE } from '../i18n/index.js';
 
 const NAV = [
@@ -46,9 +46,12 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
   const cur = k => (k === active ? raw('aria-current="page"') : '');
   const badge = k => (badges[k] ? html`<span class="badge" aria-label="${t('layout.badgeNew', { count: badges[k] })}">${badges[k] > 9 ? '9+' : badges[k]}</span>` : '');
   const meHref = u ? '/me' : '/login';
-  // People in a school (and staff) get a Classes tab: teachers land on /teach, students on /classes.
-  const staff = u && isStaff(u);
-  const navItems = u && (staff || inAnySchool(u)) ? [...NAV, ['classes', staff ? '/teach' : '/classes', '🏫']] : NAV;
+  // People in a school get a Classes tab (teachers land on /teach, students on /classes); the platform admin, when not
+  // staff of a school, gets Schools instead.
+  const staff = u && isSchoolStaff(u);
+  const navItems = u && staff ? [...NAV, ['classes', '/teach', '🏫']]
+    : u && isPlatformAdmin(u) ? [...NAV, ['schools', '/admin/schools', '🏫']]
+    : u && inAnySchool(u) ? [...NAV, ['classes', '/classes', '🏫']] : NAV;
   const signIn = t('layout.signIn');
   const nav = bare ? '' : html`
   <a class="skip" href="#main">${t('layout.skip')}</a>

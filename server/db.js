@@ -128,6 +128,9 @@ const MIGRATIONS = [
       started_at INTEGER NOT NULL, done_at INTEGER, updated_at INTEGER NOT NULL, PRIMARY KEY (class_lesson_id, step_id, user_id));
     CREATE INDEX IF NOT EXISTS step_progress_user ON step_progress(user_id, updated_at);
     CREATE INDEX IF NOT EXISTS step_progress_review ON step_progress(class_lesson_id, reviewed_at);`],
+  // Removing a lesson from a class keeps students' work: the assignment is marked removed (and comes back, with the
+  // work, if the lesson is assigned to that class again).
+  ['0012_class_lesson_removed', `ALTER TABLE class_lessons ADD COLUMN removed_at INTEGER;`],
 ];
 
 db.exec('CREATE TABLE IF NOT EXISTS migrations (name TEXT PRIMARY KEY, applied_at INTEGER NOT NULL)');

@@ -6,7 +6,8 @@
 //   staff of the school                                                       see lessons shared with the school, copy them
 //   a class's teachers / school admins                                        assign lessons to the class, units, order, dates
 //   students of the class                                                     see assigned lessons once they are open
-// Assigned lessons are live links: editing the lesson changes it for every class.
+// Assigned lessons are live links: editing the lesson changes it for every class. A lesson is in a class at most once;
+// removing it from the class keeps the students' work (class_lessons.removed_at), and assigning it again brings it back.
 import { q, uid, now, tx, audit } from '../db.js';
 import * as S from './schools.js';
 import * as games from './games.js';
@@ -24,7 +25,8 @@ export const getFolder = id => (id ? q.get('SELECT * FROM lesson_folders WHERE i
 export const getLesson = id => (id ? q.get('SELECT * FROM lessons WHERE id=?', id) : null) || null;
 export const getStep = id => (id ? q.get('SELECT * FROM lesson_steps WHERE id=?', id) : null) || null;
 export const getUnit = id => (id ? q.get('SELECT * FROM class_units WHERE id=?', id) : null) || null;
-export const getClassLesson = id => (id ? q.get('SELECT * FROM class_lessons WHERE id=?', id) : null) || null;
+/** An assignment that is still in its class (removed ones are invisible everywhere except to assign(), which revives them). */
+export const getClassLesson = id => (id ? q.get('SELECT * FROM class_lessons WHERE id=? AND removed_at IS NULL', id) : null) || null;
 export const steps = lessonId => q.all(`SELECT s.*, g.slug game_slug, g.title game_title, g.icon game_icon, g.status game_status, g.visibility game_visibility,
     g.owner_id game_owner, g.published_version_id game_live, g.hidden_reason game_hidden, g.source game_source
   FROM lesson_steps s LEFT JOIN games g ON g.id=s.game_id WHERE s.lesson_id=? ORDER BY s.position, s.created_at`, lessonId);
@@ -85,7 +87,7 @@ export function moveFolder(u, folderId, parentId) {
 
 // ---------------------------------------------------------------- lessons
 const LESSON_COLS = `l.*, (SELECT COUNT(*) FROM lesson_steps s WHERE s.lesson_id=l.id) steps,
-  (SELECT COUNT(*) FROM class_lessons cl WHERE cl.lesson_id=l.id) assigned`;
+  (SELECT COUNT(*) FROM class_lessons cl JOIN classrooms c ON c.id=cl.class_id WHERE cl.lesson_id=l.id AND cl.removed_at IS NULL) assigned`;
 export const lessonsIn = (ownerId, schoolId, folderId = null) => q.all(`SELECT ${LESSON_COLS} FROM lessons l WHERE l.owner_id=? AND l.school_id=? AND l.folder_id IS ? AND l.archived_at IS NULL
   ORDER BY l.position, l.created_at`, ownerId, schoolId, folderId || null);
 export const allLessonsOf = (ownerId, schoolId) => q.all(`SELECT ${LESSON_COLS} FROM lessons l WHERE l.owner_id=? AND l.school_id=? AND l.archived_at IS NULL ORDER BY l.title COLLATE NOCASE`, ownerId, schoolId);
@@ -154,9 +156,11 @@ export function reorderFolder(u, folderId, dir) {
   return ok();
 }
 /** Copy a lesson (own, or shared by a colleague) into the user's library. */
-export function copyLesson(u, lessonId, { folderId = null } = {}) {
+export function copyLesson(u, lessonId, { folderId } = {}) {
   const l = getLesson(lessonId);
   if (!l || !(canEditLesson(u, l) || canSeeShared(u, l))) return fail('notFound');
+  // A copy of your own lesson lands next to it (same folder); a colleague's lesson goes to the top of your library.
+  if (folderId === undefined) folderId = l.owner_id === u.id ? l.folder_id || null : null;
   const r = createLesson(u, l.school_id, { title: l.owner_id === u.id ? `${l.title} (2)` : l.title, folderId, summary: l.summary, subject: l.subject, grade: l.grade, objectives: l.objectives });
   if (!r.ok) return r;
   tx(() => {
@@ -241,8 +245,17 @@ export function gamesForPicker(u, schoolId) {
 export const unitsOf = classId => q.all('SELECT * FROM class_units WHERE class_id=? ORDER BY position, created_at', classId);
 export const classLessons = classId => q.all(`SELECT cl.*, l.title, l.summary, l.subject, l.grade, l.owner_id, l.school_id,
     (SELECT COUNT(*) FROM lesson_steps s WHERE s.lesson_id=l.id) steps, (SELECT COALESCE(SUM(minutes),0) FROM lesson_steps s WHERE s.lesson_id=l.id) minutes
-  FROM class_lessons cl JOIN lessons l ON l.id=cl.lesson_id WHERE cl.class_id=? ORDER BY cl.position, cl.assigned_at`, classId);
+  FROM class_lessons cl JOIN lessons l ON l.id=cl.lesson_id WHERE cl.class_id=? AND cl.removed_at IS NULL ORDER BY cl.position, cl.assigned_at`, classId);
 export const isOpen = (cl, t = now()) => !cl.opens_at || cl.opens_at <= t;
+/** Dates are stored as the day at 00:00 UTC. 'today' from the start of the due day; 'late' only once the due day is over
+ *  everywhere (+36h), so nobody is late on the due day in any time zone. null when there is no due date. */
+export const LATE_AFTER = 36 * 3600e3;
+export function dueState(cl, t = now()) {
+  if (!cl || !cl.due_at) return null;
+  if (t >= cl.due_at + LATE_AFTER) return 'late';
+  if (t >= cl.due_at) return 'today';
+  return 'upcoming';
+}
 /** Units in order, each with its lessons; lessons without a unit come first (unit null). openOnly: what students see. */
 export function classPlan(classId, { openOnly = false } = {}) {
   const ls = classLessons(classId).filter(cl => !openOnly || isOpen(cl));
@@ -280,22 +293,27 @@ export function reorderUnit(u, unitId, dir) {
 export function assign(u, classId, lessonId, { unitId = null, opensAt = null, dueAt = null } = {}) {
   const c = managed(u, classId); if (!c) return fail('notFound');
   const l = getLesson(lessonId);
-  if (!l || l.school_id !== c.school_id || !(canEditLesson(u, l) || canSeeShared(u, l))) return fail('notFound');
+  // Only lessons you can edit (yours, or any in the school for its admins): a colleague's lesson is copied first.
+  if (!l || l.school_id !== c.school_id || !canEditLesson(u, l)) return fail('notFound');
   if (unitId) { const un = getUnit(unitId); if (!un || un.class_id !== c.id) return fail('notFound'); }
   const o = dateOrNull(opensAt), d = dateOrNull(dueAt);
   if (o === undefined || d === undefined) return fail('badDate');
-  const id = uid(10);
-  q.run('INSERT INTO class_lessons(id, class_id, lesson_id, unit_id, position, opens_at, due_at, assigned_by, assigned_at) VALUES (?,?,?,?,?,?,?,?,?)',
-    id, c.id, l.id, unitId || null, nextPos('class_lessons', 'class_id=? AND unit_id IS ?', c.id, unitId || null), o, d, u.id, now());
-  audit(u.id, 'lesson.assign', c.id, { lesson: l.id });
-  return ok({ classLesson: getClassLesson(id) });
+  if (q.get('SELECT 1 FROM class_lessons WHERE class_id=? AND lesson_id=? AND removed_at IS NULL', c.id, l.id)) return { ok: false, code: 'alreadyAssigned', className: c.name };
+  const pos = nextPos('class_lessons', 'class_id=? AND unit_id IS ? AND removed_at IS NULL', c.id, unitId || null);
+  // Assigned before and removed: bring it back with its students' work.
+  const old = q.get('SELECT id FROM class_lessons WHERE class_id=? AND lesson_id=? AND removed_at IS NOT NULL ORDER BY removed_at DESC LIMIT 1', c.id, l.id);
+  const id = old ? old.id : uid(10);
+  if (old) q.run('UPDATE class_lessons SET removed_at=NULL, unit_id=?, position=?, opens_at=?, due_at=?, assigned_by=?, assigned_at=? WHERE id=?', unitId || null, pos, o, d, u.id, now(), id);
+  else q.run('INSERT INTO class_lessons(id, class_id, lesson_id, unit_id, position, opens_at, due_at, assigned_by, assigned_at) VALUES (?,?,?,?,?,?,?,?,?)', id, c.id, l.id, unitId || null, pos, o, d, u.id, now());
+  audit(u.id, 'lesson.assign', c.id, { lesson: l.id, restored: !!old });
+  return ok({ classLesson: getClassLesson(id), restored: !!old });
 }
 export function updateAssignment(u, clId, { unitId, opensAt, dueAt } = {}) {
   const cl = getClassLesson(clId); if (!cl || !managed(u, cl.class_id)) return fail('notFound');
   const v = { unit_id: cl.unit_id, opens_at: cl.opens_at, due_at: cl.due_at, position: cl.position };
   if (unitId !== undefined) {
     if (unitId) { const un = getUnit(unitId); if (!un || un.class_id !== cl.class_id) return fail('notFound'); }
-    if ((unitId || null) !== cl.unit_id) { v.unit_id = unitId || null; v.position = nextPos('class_lessons', 'class_id=? AND unit_id IS ?', cl.class_id, v.unit_id); }
+    if ((unitId || null) !== cl.unit_id) { v.unit_id = unitId || null; v.position = nextPos('class_lessons', 'class_id=? AND unit_id IS ? AND removed_at IS NULL', cl.class_id, v.unit_id); }
   }
   if (opensAt !== undefined) { const o = dateOrNull(opensAt); if (o === undefined) return fail('badDate'); v.opens_at = o; }
   if (dueAt !== undefined) { const d = dateOrNull(dueAt); if (d === undefined) return fail('badDate'); v.due_at = d; }
@@ -304,14 +322,14 @@ export function updateAssignment(u, clId, { unitId, opensAt, dueAt } = {}) {
 }
 export function unassign(u, clId) {
   const cl = getClassLesson(clId); if (!cl || !managed(u, cl.class_id)) return fail('notFound');
-  // Students' progress on it goes too (their answers are only kept while the lesson is assigned).
-  tx(() => { q.run('DELETE FROM step_progress WHERE class_lesson_id=?', cl.id); q.run('DELETE FROM class_lessons WHERE id=?', cl.id); });
+  // Students' work is kept: the assignment is only marked removed, and assigning the lesson again brings it back.
+  q.run('UPDATE class_lessons SET removed_at=? WHERE id=?', now(), cl.id);
   audit(u.id, 'lesson.unassign', cl.class_id, { lesson: cl.lesson_id });
   return ok();
 }
 export function reorderAssignment(u, clId, dir) {
   const cl = getClassLesson(clId); if (!cl || !managed(u, cl.class_id)) return fail('notFound');
-  shift('class_lessons', cl.id, dir, 'class_id=? AND unit_id IS ?', [cl.class_id, cl.unit_id || null]);
+  shift('class_lessons', cl.id, dir, 'class_id=? AND unit_id IS ? AND removed_at IS NULL', [cl.class_id, cl.unit_id || null]);
   return ok();
 }
 /** A lesson as a class sees it: for the class's managers, or its students once open. */
@@ -322,4 +340,13 @@ export function canViewClassLesson(u, cl) {
   return S.canViewClass(u, c) && isOpen(cl);
 }
 /** Classes (managed by u) that a lesson is assigned to. */
-export const assignedClasses = lessonId => q.all('SELECT cl.id, cl.class_id, c.name FROM class_lessons cl JOIN classrooms c ON c.id=cl.class_id WHERE cl.lesson_id=? ORDER BY c.name', lessonId);
+export const assignedClasses = lessonId => q.all('SELECT cl.id, cl.class_id, cl.opens_at, cl.due_at, c.name, c.archived_at FROM class_lessons cl JOIN classrooms c ON c.id=cl.class_id WHERE cl.lesson_id=? AND cl.removed_at IS NULL ORDER BY c.name', lessonId);
+/** How much student work a delete would lose: students with any progress on a step / in a lesson (all its classes). */
+export const stepWork = stepId => q.get('SELECT COUNT(DISTINCT user_id) n FROM step_progress WHERE step_id=?', stepId).n;
+export const lessonWork = lessonId => q.get('SELECT COUNT(DISTINCT p.user_id) n FROM step_progress p JOIN class_lessons cl ON cl.id=p.class_lesson_id WHERE cl.lesson_id=?', lessonId).n;
+/** Classes a lesson is in now (any teacher's), for the delete warning. */
+export const lessonClassCount = lessonId => q.get('SELECT COUNT(*) n FROM class_lessons WHERE lesson_id=? AND removed_at IS NULL', lessonId).n;
+/** Students who have started any of these class lessons (for the editor's "live" notice). */
+export const startedIn = clIds => (clIds.length ? q.get(`SELECT COUNT(DISTINCT user_id) n FROM step_progress WHERE class_lesson_id IN (${clIds.map(() => '?').join(',')})`, ...clIds).n : 0);
+/** How many lessons colleagues share in a school (the viewer's own are not counted). */
+export const sharedCount = (u, schoolId) => q.get('SELECT COUNT(*) n FROM lessons WHERE school_id=? AND shared=1 AND archived_at IS NULL AND owner_id!=?', schoolId, u.id).n;
