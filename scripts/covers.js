@@ -100,6 +100,15 @@ const RECIPES = {
     });
     await wait(2900);   // let the "New sticker" toast fade
   } },
+  'beat-lanes': { viewport: PORTRAIT, touch: true, async prep(f) {
+    await hook(f);
+    await f.evaluate(() => {   // mid-song on Hard: notes on the highway, a big combo and sparks
+      const t = window.__brbTest; t.skipAnimations(true);
+      t.start({ song: 'robot', difficulty: 'hard' }); t.manual(true); t.autoplay(true);
+      t.step(48000); t.step(700);
+    });
+    await wait(500);
+  } },
   'word-hunt': { viewport: PORTRAIT, async prep(f) {
     await hook(f); await f.evaluate(() => window.__brbTest.start({ theme: 'Space', difficulty: 'medium', seed: 3 }));
     await f.evaluate(() => { const t = window.__brbTest; t.skipAnimations && t.skipAnimations(); const s = t.state(); s.words.slice(0, 4).forEach(w => t.select(w.start, w.end)); });
