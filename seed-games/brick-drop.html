@@ -274,7 +274,7 @@ const CONFIG = {
   dasMs: 150,               // hold left/right this long before it starts repeating...
   arrMs: 40,                // ...then move one square this often
   softDropMs: 30,           // ms per row while going down fast
-  gravity: { startMs: 1000, factor: 0.82, minMs: 25 },  // ms per row = startMs * factor^(level-1), never below minMs
+  gravity: { startMs: 1000, factor: 0.82, minMs: 25 },  // ms per row = startMs * factor^steps (steps grow with every cleared row), never below minMs
   linesPerLevel: 10,
   sprintLines: 40,
   zenClearRows: 10,         // Zen: when the stack hits the top, the top this-many rows melt away
@@ -817,8 +817,14 @@ function createEngine(cfg) {
   const p = E.piece;
   const grounded = () => !fits(p.type, p.rot, p.x, p.y + 1);
   function gravityMs() {
-    const g = cfg.gravity, lv = E.mode === 'marathon' ? E.level : 1;
-    return Math.max(g.minMs, g.startMs * Math.pow(g.factor, lv - 1));
+    // Harder with every row you clear: in Marathon each row moves the speed a tenth of the way to the next
+    // level (so a level-up finishes the step), and Sprint speeds up the same way from its first row.
+    // Zen stays at the gentle starting speed on purpose (it is the mode for little kids).
+    const g = cfg.gravity, per = cfg.linesPerLevel;
+    let steps = 0;
+    if (E.mode === 'marathon') steps = (E.level - 1) + (E.lines % per) / per;
+    else if (E.mode === 'sprint') steps = E.lines / per;
+    return Math.max(g.minMs, g.startMs * Math.pow(g.factor, steps));
   }
   /** Put a new brick at the top. Returns false when there is no room (top out). */
   function spawn(type) {
