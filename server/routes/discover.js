@@ -23,7 +23,7 @@ function buildBanner(req) {
 router.get('/', (req, res) => {
   const t = req.t;
   const u = req.user;
-  const featured = games.listVisible(u, { featured: true, order: 'plays', limit: 12 });
+  const featured = games.listVisible(u, { featured: true, order: 'plays', limit: 24 });   // every launch game fits; the rail scrolls
   const hero = featured[0];
   const mine = u && !u.is_guest ? games.myGames(u.id, 12) : [];
   const rails = [
