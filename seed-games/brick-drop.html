@@ -36,14 +36,14 @@ button:focus-visible{outline:4px solid #fff;outline-offset:2px}
 .icon-btn:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(58,29,79,.2)}
 .stats{flex:1;min-width:0;display:flex;gap:6px;justify-content:center}
 .stat{flex:1;min-width:0;max-width:120px;background:#fff;border-radius:14px;padding:3px 6px 4px;text-align:center;box-shadow:0 3px 0 rgba(58,29,79,.14);line-height:1.1}
-.stat .lab{display:block;font-size:.72rem;font-weight:600;opacity:.7;text-transform:uppercase;letter-spacing:.04em}
+.stat .lab{display:block;font-size:.72rem;font-weight:600;opacity:.7;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;overflow:hidden}
 .stat b{display:block;font-size:1.15rem;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .side{display:flex;flex-direction:column;gap:8px;min-width:0}
 .holdSide{grid-area:hold}
 .nextSide{grid-area:next}
 .box{background:rgba(255,255,255,.88);border-radius:14px;padding:4px 4px 6px;box-shadow:0 3px 0 rgba(58,29,79,.14);display:flex;flex-direction:column;align-items:center;gap:2px;transition:opacity .2s}
 .box.used{opacity:.55}
-.boxLab{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;opacity:.75}
+.boxLab{display:block;max-width:100%;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;opacity:.75;white-space:nowrap;overflow:hidden;text-align:center}
 .box canvas{display:block}
 .app.wide .keys{display:block}
 .keys{display:none;background:rgba(255,255,255,.75);border-radius:14px;padding:8px 10px;font-size:.85rem;line-height:1.55;box-shadow:0 3px 0 rgba(58,29,79,.1)}
@@ -52,7 +52,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:2px}
   background:linear-gradient(180deg,#fff,#ffd6ec);box-shadow:0 6px 0 rgba(58,29,79,.25),0 0 0 0 rgba(255,80,110,0);transition:box-shadow .5s}
 .wellWrap.danger{box-shadow:0 6px 0 rgba(58,29,79,.25),0 0 0 4px rgba(255,90,110,.55)}
 canvas#well{display:block;border-radius:8px;touch-action:none;background:var(--well)}
-.banner{position:absolute;left:4px;right:4px;top:34%;pointer-events:none;text-align:center;font-weight:700;color:#fff;line-height:1;
+.banner{position:absolute;left:4px;right:4px;top:34%;pointer-events:none;text-align:center;font-weight:700;color:#fff;line-height:1.1;white-space:nowrap;overflow:hidden;padding:4px 0;
   font-size:calc(var(--cell)*1.25);text-shadow:0 3px 0 rgba(58,29,79,.55),0 0 16px rgba(255,79,154,.9);opacity:0}
 .banner.sub{top:56%;font-size:calc(var(--cell)*.8);text-shadow:0 2px 0 rgba(58,29,79,.6),0 0 12px rgba(80,170,255,.9)}
 .banner.show{animation:bannerPop 1.2s ease-out forwards}
@@ -62,7 +62,7 @@ canvas#well{display:block;border-radius:8px;touch-action:none;background:var(--w
 .pbtn{border:0;border-radius:16px;background:#fff;font-weight:700;font-size:1.05rem;min-width:0;padding:0 4px;box-shadow:0 5px 0 rgba(58,29,79,.22);
   display:flex;align-items:center;justify-content:center;gap:6px;touch-action:none;-webkit-tap-highlight-color:transparent}
 .pbtn svg{width:28px;height:28px;flex:none;pointer-events:none}
-.pbtn span{pointer-events:none}
+.pbtn span{pointer-events:none;display:block;min-width:0;white-space:nowrap;overflow:hidden}
 .pbtn.wide{grid-column:span 2}
 .pbtn.go{background:linear-gradient(180deg,#ff7cb6,var(--accent));color:#fff;box-shadow:0 5px 0 var(--accentDark)}
 .pbtn.turn{background:linear-gradient(180deg,#8fd0ff,#4aaeff);color:#fff;box-shadow:0 5px 0 #1f7fd8}
@@ -108,19 +108,19 @@ canvas#well{display:block;border-radius:8px;touch-action:none;background:var(--w
 .panel .hint{font-size:.9rem;opacity:.75}
 .logo{width:150px;height:76px;flex:none;display:block}
 .modes{display:flex;flex-direction:column;gap:8px;width:100%}
-.mode{display:flex;align-items:center;gap:10px;width:100%;min-height:56px;border:3px solid var(--softEdge);background:var(--soft);border-radius:18px;padding:6px 10px;text-align:left}
+.mode{display:flex;align-items:center;gap:10px;width:100%;min-height:56px;border:3px solid var(--softEdge);background:var(--soft);border-radius:18px;padding:6px 10px;text-align:start}
 .mode[aria-pressed="true"]{background:#ffe0ef;border-color:var(--accent);box-shadow:0 3px 0 var(--accentDark)}
 .mode .mi{font-size:1.6rem;flex:none;width:1.6em;text-align:center}
 .mode .mt{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.15}
 .mode .mt b{font-size:1.15rem}
 .mode .mt small{font-size:.85rem;opacity:.75}
-.mode .mb{flex:none;font-weight:700;font-size:.85rem;background:#fff4cc;border-radius:999px;padding:4px 9px;white-space:nowrap}
+.mode .mb{flex:none;max-width:40%;font-weight:700;font-size:.85rem;line-height:1.15;text-align:center;background:#fff4cc;border-radius:999px;padding:4px 9px}
 .big-btn{border:0;border-radius:20px;background:var(--accent);color:#fff;font-weight:700;font-size:1.5rem;padding:12px 34px;min-height:60px;min-width:200px;box-shadow:0 6px 0 var(--accentDark)}
 .big-btn.alt{background:var(--soft);color:var(--ink);box-shadow:0 6px 0 var(--softEdge);font-size:1.15rem;min-height:52px;padding:10px 20px}
 .big-btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--accentDark)}
 .big-btn.alt:active{box-shadow:0 2px 0 var(--softEdge)}
 .btns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;width:100%}
-.btns .big-btn{flex:1;min-width:130px;font-size:1.2rem;padding:10px 12px;min-height:54px;white-space:nowrap}
+.btns .big-btn{flex:1;min-width:130px;font-size:1.2rem;line-height:1.15;padding:10px 12px;min-height:54px}
 .btns .big-btn.alt{font-size:1.05rem}
 .chips{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
 .chip{font-weight:700;background:#fff4cc;border-radius:999px;padding:6px 14px;font-size:1rem}
@@ -129,12 +129,17 @@ canvas#well{display:block;border-radius:8px;touch-action:none;background:var(--w
 @keyframes wob{0%,100%{transform:rotate(0)}25%{transform:rotate(-3deg) scale(1.06)}75%{transform:rotate(3deg) scale(1.06)}}
 .statGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%}
 .statGrid div{background:var(--soft);border-radius:16px;padding:6px 8px}
-.statGrid span{display:block;font-size:.8rem;opacity:.7;text-transform:uppercase;letter-spacing:.04em;font-weight:600}
+.statGrid span{display:block;font-size:.8rem;opacity:.7;text-transform:uppercase;letter-spacing:.04em;font-weight:600;overflow-wrap:anywhere}
 .statGrid b{font-size:1.35rem;font-variant-numeric:tabular-nums}
 .panel .mute.corner{position:absolute;top:10px;right:10px}
+.panel[dir="rtl"] .mute.corner{right:auto;left:10px}
+/* Arabic letters must stay joined: no letter spacing. Japanese: break lines between phrases. */
+html[lang="ar"] *{letter-spacing:0!important}
+html[lang="ja"] .panel p{word-break:auto-phrase}
 .kbhint{display:none}
 @media (hover:hover) and (pointer:fine){.kbhint{display:block}}
 @media (orientation:landscape) and (max-height:560px){
+  .mode .mb{max-width:100%}
   .panel{width:min(100%,680px);padding:12px 16px 14px;gap:8px}
   .logo{display:none}
   .modes{flex-direction:row}
@@ -161,8 +166,8 @@ canvas#well{display:block;border-radius:8px;touch-action:none;background:var(--w
 
 <div class="app offstage" id="app">
   <div class="hud" id="hud">
-    <button class="icon-btn" id="pauseBtn" aria-label="Pause">⏸️</button>
-    <div class="stats">
+    <button class="icon-btn" id="pauseBtn" aria-label="Pause" data-ta="pause">⏸️</button>
+    <div class="stats" id="stats">
       <div class="stat"><span class="lab" id="lab1">Score</span><b id="val1">0</b></div>
       <div class="stat"><span class="lab" id="lab2">Level</span><b id="val2">1</b></div>
       <div class="stat"><span class="lab" id="lab3">Lines</span><b id="val3">0</b></div>
@@ -170,35 +175,35 @@ canvas#well{display:block;border-radius:8px;touch-action:none;background:var(--w
     <button class="icon-btn mute" aria-label="Turn sound off">🔊</button>
   </div>
   <div class="side holdSide" id="holdSide">
-    <div class="box" id="holdBox"><span class="boxLab">Hold</span><canvas id="holdCv" aria-label="Held brick"></canvas></div>
-    <div class="keys" id="keysHint" aria-label="Keys">
-      <div><b>←</b><b>→</b> move</div>
-      <div><b>↓</b> go down</div>
-      <div><b>Space</b> drop</div>
-      <div><b>↑</b><b>X</b> turn</div>
-      <div><b>Z</b> turn back</div>
-      <div><b>C</b> hold</div>
-      <div><b>P</b> pause</div>
+    <div class="box" id="holdBox"><span class="boxLab" data-t="hold">Hold</span><canvas id="holdCv" aria-label="Held brick" data-ta="heldAria"></canvas></div>
+    <div class="keys" id="keysHint" aria-label="Keys" data-ta="keysAria">
+      <div><span dir="ltr"><b>←</b><b>→</b></span> <span data-t="kMove">move</span></div>
+      <div><b>↓</b> <span data-t="kDown">go down</span></div>
+      <div><b>Space</b> <span data-t="kDrop">drop</span></div>
+      <div><span dir="ltr"><b>↑</b><b>X</b></span> <span data-t="kTurn">turn</span></div>
+      <div><b>Z</b> <span data-t="kTurnBack">turn back</span></div>
+      <div><b>C</b> <span data-t="kHold">hold</span></div>
+      <div><b>P</b> <span data-t="kPause">pause</span></div>
     </div>
   </div>
   <div class="wellWrap" id="wellWrap">
-    <canvas id="well" aria-label="The well. Bricks fall here. Tap to turn, swipe to move, swipe down fast to drop."></canvas>
+    <canvas id="well" aria-label="The well. Bricks fall here. Tap to turn, swipe to move, swipe down fast to drop." data-ta="wellAria"></canvas>
     <div class="banner" id="banner" aria-live="polite"></div>
     <div class="banner sub" id="subBanner"></div>
   </div>
   <div class="side nextSide" id="nextSide">
-    <div class="box" id="nextBox"><span class="boxLab">Next</span><canvas id="nextCv" aria-label="Next bricks"></canvas></div>
+    <div class="box" id="nextBox"><span class="boxLab" data-t="next">Next</span><canvas id="nextCv" aria-label="Next bricks" data-ta="nextAria"></canvas></div>
   </div>
   <div class="pad" id="pad">
     <div class="padL">
-      <button class="pbtn wide" data-act="soft" tabindex="-1" aria-label="Move down"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19 4.5 10h5V4h5v6h5z" fill="#3a1d4f"/></svg></button>
-      <button class="pbtn" data-act="left" tabindex="-1" aria-label="Move left"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12l9-8v5h7v6h-7v5z" fill="#3a1d4f"/></svg></button>
-      <button class="pbtn" data-act="right" tabindex="-1" aria-label="Move right"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12l-9 8v-5H4V9h7V4z" fill="#3a1d4f"/></svg></button>
+      <button class="pbtn wide" data-act="soft" tabindex="-1" aria-label="Move down" data-ta="padDown"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19 4.5 10h5V4h5v6h5z" fill="#3a1d4f"/></svg></button>
+      <button class="pbtn" data-act="left" tabindex="-1" aria-label="Move left" data-ta="padLeft"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12l9-8v5h7v6h-7v5z" fill="#3a1d4f"/></svg></button>
+      <button class="pbtn" data-act="right" tabindex="-1" aria-label="Move right" data-ta="padRight"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12l-9 8v-5H4V9h7V4z" fill="#3a1d4f"/></svg></button>
     </div>
     <div class="padR">
-      <button class="pbtn" data-act="hold" tabindex="-1" aria-label="Hold brick"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="4" fill="none" stroke="#3a1d4f" stroke-width="2.6"/><rect x="8" y="9" width="8" height="6" rx="1.5" fill="#3a1d4f"/></svg><span>Hold</span></button>
-      <button class="pbtn go" data-act="hard" tabindex="-1" aria-label="Drop brick"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15 5 7h14z" fill="#fff"/><rect x="4" y="17" width="16" height="3.2" rx="1.6" fill="#fff"/></svg><span>Drop</span></button>
-      <button class="pbtn wide turn" data-act="rotateCW" tabindex="-1" aria-label="Turn brick"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4a8 8 0 1 0 7.7 10h-3.2A5 5 0 1 1 12 7v3.2L17 5.6 12 1z" fill="#fff"/></svg><span>Turn</span></button>
+      <button class="pbtn" data-act="hold" tabindex="-1" aria-label="Hold brick" data-ta="padHold"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="4" fill="none" stroke="#3a1d4f" stroke-width="2.6"/><rect x="8" y="9" width="8" height="6" rx="1.5" fill="#3a1d4f"/></svg><span data-t="hold">Hold</span></button>
+      <button class="pbtn go" data-act="hard" tabindex="-1" aria-label="Drop brick" data-ta="padDrop"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15 5 7h14z" fill="#fff"/><rect x="4" y="17" width="16" height="3.2" rx="1.6" fill="#fff"/></svg><span data-t="drop">Drop</span></button>
+      <button class="pbtn wide turn" data-act="rotateCW" tabindex="-1" aria-label="Turn brick" data-ta="padTurn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4a8 8 0 1 0 7.7 10h-3.2A5 5 0 1 1 12 7v3.2L17 5.6 12 1z" fill="#fff"/></svg><span data-t="turn">Turn</span></button>
     </div>
   </div>
 </div>
@@ -207,45 +212,45 @@ canvas#well{display:block;border-radius:8px;touch-action:none;background:var(--w
   <div class="panel">
     <svg class="logo" viewBox="0 0 170 86" aria-hidden="true"><defs><linearGradient id="lgP" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffc1e0"/><stop offset=".5" stop-color="#ff6fb5"/><stop offset="1" stop-color="#d63c8c"/></linearGradient><linearGradient id="lgM" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a8f5de"/><stop offset=".5" stop-color="#36d6a8"/><stop offset="1" stop-color="#16a07c"/></linearGradient><linearGradient id="lgY" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff1a6"/><stop offset=".5" stop-color="#ffcc33"/><stop offset="1" stop-color="#df9d00"/></linearGradient><linearGradient id="lgB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b8e2ff"/><stop offset=".5" stop-color="#4aaeff"/><stop offset="1" stop-color="#1f7fd8"/></linearGradient><linearGradient id="lgG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#dccdff"/><stop offset=".5" stop-color="#a57cff"/><stop offset="1" stop-color="#7448e0"/></linearGradient><linearGradient id="lgO" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd3a8"/><stop offset=".5" stop-color="#ff9640"/><stop offset="1" stop-color="#e0660c"/></linearGradient><linearGradient id="lgR" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffb7be"/><stop offset=".5" stop-color="#ff5d6c"/><stop offset="1" stop-color="#cf2a3e"/></linearGradient><g id="lgFace"><circle cx="7" cy="9" r="2.4" fill="#fff"/><circle cx="13" cy="9" r="2.4" fill="#fff"/><circle cx="7.2" cy="9.8" r="1.3" fill="#3a1d4f"/><circle cx="13.2" cy="9.8" r="1.3" fill="#3a1d4f"/><path d="M8 13.2q2 1.8 4 0" stroke="#3a1d4f" stroke-width="1.2" fill="none" stroke-linecap="round"/></g><g id="lgSleep"><path d="M5.2 9.5q1.8 1.6 3.6 0M11.2 9.5q1.8 1.6 3.6 0" stroke="#3a1d4f" stroke-width="1.2" fill="none" stroke-linecap="round" opacity=".6"/><circle cx="4.6" cy="12.8" r="1.3" fill="#ff9ccb" opacity=".8"/><circle cx="15.4" cy="12.8" r="1.3" fill="#ff9ccb" opacity=".8"/></g><g id="lgShine"><ellipse cx="6.8" cy="4.8" rx="3.6" ry="1.6" fill="#fff" opacity=".6" transform="rotate(-20 6.8 4.8)"/></g></defs><g transform="translate(1 64)"><rect width="20" height="20" rx="5" fill="url(#lgM)"/><use href="#lgShine"/><use href="#lgSleep"/></g><g transform="translate(22 64)"><rect width="20" height="20" rx="5" fill="url(#lgM)"/><use href="#lgShine"/><use href="#lgSleep"/></g><g transform="translate(43 64)"><rect width="20" height="20" rx="5" fill="url(#lgP)"/><use href="#lgShine"/><use href="#lgSleep"/></g><g transform="translate(64 64)"><rect width="20" height="20" rx="5" fill="url(#lgB)"/><use href="#lgShine"/><use href="#lgSleep"/></g><g transform="translate(106 64)"><rect width="20" height="20" rx="5" fill="url(#lgG)"/><use href="#lgShine"/><use href="#lgSleep"/></g><g transform="translate(127 64)"><rect width="20" height="20" rx="5" fill="url(#lgO)"/><use href="#lgShine"/><use href="#lgSleep"/></g><g transform="translate(148 64)"><rect width="20" height="20" rx="5" fill="url(#lgO)"/><use href="#lgShine"/><use href="#lgSleep"/></g><g transform="translate(1 43)"><rect width="20" height="20" rx="5" fill="url(#lgP)"/><use href="#lgShine"/><use href="#lgSleep"/></g><g transform="translate(22 43)"><rect width="20" height="20" rx="5" fill="url(#lgP)"/><use href="#lgShine"/><use href="#lgSleep"/></g><g transform="translate(43 43)"><rect width="20" height="20" rx="5" fill="url(#lgM)"/><use href="#lgShine"/><use href="#lgSleep"/></g><g transform="translate(127 43)"><rect width="20" height="20" rx="5" fill="url(#lgR)"/><use href="#lgShine"/><use href="#lgSleep"/></g><g transform="translate(148 43)"><rect width="20" height="20" rx="5" fill="url(#lgO)"/><use href="#lgShine"/><use href="#lgSleep"/></g><g transform="translate(64 2)"><rect width="20" height="20" rx="5" fill="url(#lgY)"/><use href="#lgShine"/><use href="#lgFace"/></g><g transform="translate(85 2)"><rect width="20" height="20" rx="5" fill="url(#lgY)"/><use href="#lgShine"/><use href="#lgFace"/></g><g transform="translate(106 2)"><rect width="20" height="20" rx="5" fill="url(#lgY)"/><use href="#lgShine"/><use href="#lgFace"/></g><g transform="translate(85 23)"><rect width="20" height="20" rx="5" fill="url(#lgY)"/><use href="#lgShine"/><use href="#lgFace"/></g><path d="M60 4v10M57 9h0" stroke="#fff" stroke-width="2.4" stroke-linecap="round" opacity=".9"/><path d="M128 6v9M131 1v6" stroke="#fff" stroke-width="2.4" stroke-linecap="round" opacity=".9"/><path d="M150 22l2.2-5 2.2 5 5 2.2-5 2.2-2.2 5-2.2-5-5-2.2z" fill="#ffcc33"/><path d="M14 26l1.6-3.6 1.6 3.6 3.6 1.6-3.6 1.6-1.6 3.6-1.6-3.6-3.6-1.6z" fill="#ff6fb5"/></svg>
     <h1 id="titleText">Brick Drop</h1>
-    <p>Stack the falling bricks. Fill a row to pop it!</p>
-    <div class="modes" role="group" aria-label="Pick a game">
-      <button class="mode" data-mode="marathon" aria-pressed="true"><span class="mi">🏃</span><span class="mt"><b>Marathon</b><small>Faster every 10 lines</small></span><span class="mb" id="bestM">Best 0</span></button>
-      <button class="mode" data-mode="sprint" aria-pressed="false"><span class="mi">⏱️</span><span class="mt"><b>Sprint 40</b><small>Clear 40 lines fast</small></span><span class="mb" id="bestS">No time yet</span></button>
-      <button class="mode" data-mode="zen" aria-pressed="false"><span class="mi">🌸</span><span class="mt"><b>Zen</b><small>Slow and calm. No game over</small></span><span class="mb" id="bestZ">Best 0 lines</span></button>
+    <p data-t="tagline">Stack the falling bricks. Fill a row to pop it!</p>
+    <div class="modes" role="group" aria-label="Pick a game" data-ta="pickGame">
+      <button class="mode" data-mode="marathon" aria-pressed="true"><span class="mi">🏃</span><span class="mt"><b id="mName1">Marathon</b><small id="mSub1">Faster every 10 lines</small></span><span class="mb" id="bestM">Best 0</span></button>
+      <button class="mode" data-mode="sprint" aria-pressed="false"><span class="mi">⏱️</span><span class="mt"><b id="mName2">Sprint 40</b><small id="mSub2">Clear 40 lines fast</small></span><span class="mb" id="bestS">No time yet</span></button>
+      <button class="mode" data-mode="zen" aria-pressed="false"><span class="mi">🌸</span><span class="mt"><b id="mName3" data-t="zen">Zen</b><small id="mSub3" data-t="zenSub">Slow and calm. No game over</small></span><span class="mb" id="bestZ">Best 0 lines</span></button>
     </div>
-    <button class="big-btn" id="playBtn">▶ Play</button>
+    <button class="big-btn" id="playBtn">▶ <span data-t="play">Play</span></button>
     <p class="hint" id="totalHint">🧱 Lines popped so far: 0</p>
-    <p class="hint kbhint">Keys: ← → move, ↑ turn, Space drop, C hold, P pause.</p>
+    <p class="hint kbhint" data-t="kbHint">Keys: ← → move, ↑ turn, Space drop, C hold, P pause.</p>
     <button class="icon-btn mute corner" aria-label="Turn sound off">🔊</button>
   </div>
 </section>
 
 <section class="screen" id="pauseScreen" hidden>
   <div class="panel">
-    <h2>Paused</h2>
-    <p id="pauseInfo">Take a break. The bricks will wait.</p>
+    <h2 data-t="paused">Paused</h2>
+    <p id="pauseInfo" data-t="pauseInfo">Take a break. The bricks will wait.</p>
     <div class="btns">
-      <button class="big-btn" id="resumeBtn">▶ Keep playing</button>
+      <button class="big-btn" id="resumeBtn">▶ <span data-t="keepPlaying">Keep playing</span></button>
     </div>
     <div class="btns">
-      <button class="big-btn alt" id="restartBtn">🔄 Start over</button>
-      <button class="big-btn alt" id="zenEndBtn" hidden>🏁 Finish</button>
-      <button class="big-btn alt" id="menuBtn">🏠 Menu</button>
+      <button class="big-btn alt" id="restartBtn">🔄 <span data-t="startOver">Start over</span></button>
+      <button class="big-btn alt" id="zenEndBtn" hidden>🏁 <span data-t="finish">Finish</span></button>
+      <button class="big-btn alt" id="menuBtn">🏠 <span data-t="menu">Menu</span></button>
     </div>
-    <p class="hint">On a phone: tap the well to turn, swipe to move, swipe down fast to drop, swipe up to hold.</p>
+    <p class="hint" data-t="phoneHint">On a phone: tap the well to turn, swipe to move, swipe down fast to drop, swipe up to hold.</p>
     <button class="icon-btn mute corner" aria-label="Turn sound off">🔊</button>
   </div>
 </section>
 
 <section class="screen" id="resultsScreen" hidden>
   <div class="panel">
-    <h2 id="resTitle">Great stacking!</h2>
-    <p id="resSub">The bricks reached the top.</p>
+    <h2 id="resTitle" data-t="resGreat">Great stacking!</h2>
+    <p id="resSub" data-t="resTop">The bricks reached the top.</p>
     <div class="chips" id="resChips"></div>
     <div class="statGrid" id="resGrid"></div>
     <div class="btns">
-      <button class="big-btn" id="againBtn">▶ Play again</button>
-      <button class="big-btn alt" id="resMenuBtn">🏠 Menu</button>
+      <button class="big-btn" id="againBtn">▶ <span data-t="playAgain">Play again</span></button>
+      <button class="big-btn alt" id="resMenuBtn">🏠 <span data-t="menu">Menu</span></button>
     </div>
     <button class="icon-btn mute corner" aria-label="Turn sound off">🔊</button>
   </div>
@@ -299,6 +304,432 @@ const CONFIG = {
   wellTop: '#30215f', wellBottom: '#1c1340'
 };
 /* ==== CONFIG END ==== */
+
+/* =====================================================================================
+   I18N: every word the player sees, in the 13 site languages. BRB.user.lang picks the table;
+   missing keys fall back to the base language (en-GB -> en), then to English.
+   A value can be a plural set ({ one, few, many, other, ... }) picked with Intl.PluralRules for {n}.
+   ===================================================================================== */
+/* ==== I18N START ==== */
+const I18N = {
+  en: {
+    pause: "Pause", soundOff: "Turn sound off", soundOn: "Turn sound on",
+    score: "Score", level: "Level", lines: "Lines", time: "Time", bricks: "Bricks",
+    hold: "Hold", next: "Next", drop: "Drop", turn: "Turn",
+    heldAria: "Held brick", nextAria: "Next bricks", keysAria: "Keys",
+    kMove: "move", kDown: "go down", kDrop: "drop", kTurn: "turn", kTurnBack: "turn back", kHold: "hold", kPause: "pause",
+    wellAria: "The well. Bricks fall here. Tap to turn, swipe to move, swipe down fast to drop.",
+    padDown: "Move down", padLeft: "Move left", padRight: "Move right", padHold: "Hold brick", padDrop: "Drop brick", padTurn: "Turn brick",
+    tagline: "Stack the falling bricks. Fill a row to pop it!",
+    pickGame: "Pick a game",
+    marathon: "Marathon", marathonSub: "Faster every {n} lines",
+    sprint: "Sprint {n}", sprintSub: "Clear {n} lines fast",
+    zen: "Zen", zenSub: "Slow and calm. No game over",
+    bestN: "Best {n}", noTime: "No time yet",
+    bestLines: { one: "Best {n} line", other: "Best {n} lines" },
+    play: "Play",
+    totalHint: "Lines popped so far: {n}",
+    kbHint: "Keys: ← → move, ↑ turn, Space drop, C hold, P pause.",
+    paused: "Paused",
+    pauseInfo: "Take a break. The bricks will wait.",
+    pauseSprint: { one: "The clock is stopped. {n} line to go!", other: "The clock is stopped. {n} lines to go!" },
+    keepPlaying: "Keep playing", startOver: "Start over", finish: "Finish", menu: "Menu",
+    phoneHint: "On a phone: tap the well to turn, swipe to move, swipe down fast to drop, swipe up to hold.",
+    resNewBest: "New best score!", resGreat: "Great stacking!", resTop: "The bricks reached the top.",
+    resDidIt: "You did it!", resSprint: "{n} lines in {time}.", resClose: "So close!", resTopAgain: "The bricks reached the top. Try again?",
+    resCalm: "Nice and calm!", resZen: { one: "You popped {n} line.", other: "You popped {n} lines." },
+    chipBestTime: "New best time!", chipMostLines: "Most lines yet!", chipNewBest: "New best!", chipBest: "Best: {v}",
+    playAgain: "Play again",
+    bBlast: "BRICK BLAST!", bB2b: "Back-to-back! ×{x}", bCombo: "Combo ×{n}", bDouble: "Double!", bTriple: "Triple!",
+    bLevel: "Level {n}!", bGo: "Go!", bWhoosh: "Whoosh! More room!", bReady: "Ready?", bReadySprint: "Ready? {n} lines!", bReadyZen: "Relax and stack"
+  },
+  'en-GB': {},
+  pt: {
+    pause: "Pausar", soundOff: "Desligar o som", soundOn: "Ligar o som",
+    score: "Pontos", level: "Nível", lines: "Linhas", time: "Tempo", bricks: "Tijolos",
+    hold: "Guarde", next: "Próximos", drop: "Soltar", turn: "Girar",
+    heldAria: "Tijolo guardado", nextAria: "Próximos tijolos", keysAria: "Teclas",
+    kMove: "mover", kDown: "descer", kDrop: "soltar", kTurn: "girar", kTurnBack: "girar ao contrário", kHold: "guardar", kPause: "pausar",
+    wellAria: "O poço. Os tijolos caem aqui. Toque para girar, deslize para mover, deslize rápido para baixo para soltar.",
+    padDown: "Descer", padLeft: "Ir para a esquerda", padRight: "Ir para a direita", padHold: "Guardar tijolo", padDrop: "Soltar tijolo", padTurn: "Girar tijolo",
+    tagline: "Empilhe os tijolos que caem. Complete uma linha para ela estourar!",
+    pickGame: "Escolha um jogo",
+    marathon: "Maratona", marathonSub: "Mais rápido a cada {n} linhas",
+    sprint: "Sprint {n}", sprintSub: "Faça {n} linhas bem rápido",
+    zen: "Zen", zenSub: "Devagar e calmo. Não tem fim de jogo",
+    bestN: "Recorde {n}", noTime: "Ainda sem tempo",
+    bestLines: { zero: "Recorde {n} linhas", one: "Recorde {n} linha", other: "Recorde {n} linhas" },
+    play: "Jogar",
+    totalHint: "Linhas estouradas até agora: {n}",
+    kbHint: "Teclas: ← → mover, ↑ girar, Space soltar, C guardar, P pausar.",
+    paused: "Pausado",
+    pauseInfo: "Faça uma pausa. Os tijolos esperam por você.",
+    pauseSprint: { one: "O relógio parou. Falta {n} linha!", other: "O relógio parou. Faltam {n} linhas!" },
+    keepPlaying: "Continuar", startOver: "Recomeçar", finish: "Terminar", menu: "Menu",
+    phoneHint: "No celular: toque no poço para girar, deslize para mover, deslize rápido para baixo para soltar e para cima para guardar.",
+    resNewBest: "Novo recorde!", resGreat: "Que pilha legal!", resTop: "Os tijolos chegaram ao topo.",
+    resDidIt: "Você conseguiu!", resSprint: "{n} linhas em {time}.", resClose: "Quase!", resTopAgain: "Os tijolos chegaram ao topo. Jogar de novo?",
+    resCalm: "Bem tranquilo!", resZen: { zero: "Você estourou {n} linhas.", one: "Você estourou {n} linha.", other: "Você estourou {n} linhas." },
+    chipBestTime: "Novo melhor tempo!", chipMostLines: "Mais linhas que nunca!", chipNewBest: "Novo recorde!", chipBest: "Recorde: {v}",
+    playAgain: "Jogar de novo",
+    bBlast: "TIJOLAÇO!", bB2b: "De novo! ×{x}", bCombo: "Combo ×{n}", bDouble: "Dupla!", bTriple: "Tripla!",
+    bLevel: "Nível {n}!", bGo: "Já!", bWhoosh: "Vuuush! Mais espaço!", bReady: "Pronto?", bReadySprint: "Pronto? {n} linhas!", bReadyZen: "Relaxe e empilhe"
+  },
+  fr: {
+    pause: "Pause", soundOff: "Couper le son", soundOn: "Remettre le son",
+    score: "Score", level: "Niveau", lines: "Lignes", time: "Temps", bricks: "Briques",
+    hold: "Garde", next: "Après", drop: "Lâcher", turn: "Tourner",
+    heldAria: "Brique en réserve", nextAria: "Prochaines briques", keysAria: "Touches",
+    kMove: "bouger", kDown: "descendre", kDrop: "lâcher", kTurn: "tourner", kTurnBack: "tourner à l’envers", kHold: "réserve", kPause: "pause",
+    wellAria: "Le puits. Les briques tombent ici. Touche pour tourner, glisse pour bouger, glisse vite vers le bas pour lâcher.",
+    padDown: "Descendre", padLeft: "Aller à gauche", padRight: "Aller à droite", padHold: "Mettre en réserve", padDrop: "Lâcher la brique", padTurn: "Tourner la brique",
+    tagline: "Empile les briques qui tombent. Remplis une ligne pour la faire éclater !",
+    pickGame: "Choisis un jeu",
+    marathon: "Marathon", marathonSub: "Plus rapide toutes les {n} lignes",
+    sprint: "Sprint {n}", sprintSub: "Fais {n} lignes très vite",
+    zen: "Zen", zenSub: "Lent et calme. On ne perd jamais",
+    bestN: "Record {n}", noTime: "Pas encore de temps",
+    bestLines: { one: "Record {n} ligne", other: "Record {n} lignes" },
+    play: "Jouer",
+    totalHint: "Lignes éclatées jusqu’ici : {n}",
+    kbHint: "Touches : ← → bouger, ↑ tourner, Space lâcher, C réserve, P pause.",
+    paused: "Pause",
+    pauseInfo: "Fais une pause. Les briques t’attendent.",
+    pauseSprint: { one: "Le chrono est arrêté. Encore {n} ligne !", other: "Le chrono est arrêté. Encore {n} lignes !" },
+    keepPlaying: "Continuer", startOver: "Recommencer", finish: "Terminer", menu: "Menu",
+    phoneHint: "Sur téléphone : touche le puits pour tourner, glisse pour bouger, glisse vite vers le bas pour lâcher et vers le haut pour la réserve.",
+    resNewBest: "Nouveau record !", resGreat: "Bel empilage !", resTop: "Les briques ont touché le haut.",
+    resDidIt: "Tu as réussi !", resSprint: "{n} lignes en {time}.", resClose: "Presque !", resTopAgain: "Les briques ont touché le haut. On réessaie ?",
+    resCalm: "Tout en douceur !", resZen: { one: "Tu as fait éclater {n} ligne.", other: "Tu as fait éclater {n} lignes." },
+    chipBestTime: "Meilleur temps !", chipMostLines: "Le plus de lignes !", chipNewBest: "Nouveau record !", chipBest: "Record : {v}",
+    playAgain: "Rejouer",
+    bBlast: "BRIQUE-BOUM !", bB2b: "Encore un ! ×{x}", bCombo: "Combo ×{n}", bDouble: "Double !", bTriple: "Triple !",
+    bLevel: "Niveau {n} !", bGo: "C’est parti !", bWhoosh: "Hop ! De la place !", bReady: "Prêt ?", bReadySprint: "Prêt ? {n} lignes !", bReadyZen: "Empile tranquille"
+  },
+  es: {
+    pause: "Pausa", soundOff: "Quitar el sonido", soundOn: "Poner el sonido",
+    score: "Puntos", level: "Nivel", lines: "Líneas", time: "Tiempo", bricks: "Ladrillos",
+    hold: "Guarda", next: "Siguen", drop: "Soltar", turn: "Girar",
+    heldAria: "Ladrillo guardado", nextAria: "Próximos ladrillos", keysAria: "Teclas",
+    kMove: "mover", kDown: "bajar", kDrop: "soltar", kTurn: "girar", kTurnBack: "girar al revés", kHold: "guardar", kPause: "pausa",
+    wellAria: "El pozo. Aquí caen los ladrillos. Toca para girar, desliza para mover, desliza rápido hacia abajo para soltar.",
+    padDown: "Bajar", padLeft: "Mover a la izquierda", padRight: "Mover a la derecha", padHold: "Guardar ladrillo", padDrop: "Soltar ladrillo", padTurn: "Girar ladrillo",
+    tagline: "Apila los ladrillos que caen. ¡Llena una fila para que explote!",
+    pickGame: "Elige un juego",
+    marathon: "Maratón", marathonSub: "Más rápido cada {n} líneas",
+    sprint: "Sprint {n}", sprintSub: "Haz {n} líneas rápido",
+    zen: "Zen", zenSub: "Lento y tranquilo. Nunca pierdes",
+    bestN: "Récord {n}", noTime: "Aún sin tiempo",
+    bestLines: { one: "Récord {n} línea", other: "Récord {n} líneas" },
+    play: "Jugar",
+    totalHint: "Líneas explotadas hasta ahora: {n}",
+    kbHint: "Teclas: ← → mover, ↑ girar, Space soltar, C guardar, P pausa.",
+    paused: "Pausa",
+    pauseInfo: "Tómate un descanso. Los ladrillos te esperan.",
+    pauseSprint: { one: "El reloj está parado. ¡Falta {n} línea!", other: "El reloj está parado. ¡Faltan {n} líneas!" },
+    keepPlaying: "Seguir jugando", startOver: "Reiniciar", finish: "Terminar", menu: "Menú",
+    phoneHint: "En el teléfono: toca el pozo para girar, desliza para mover, desliza rápido hacia abajo para soltar y hacia arriba para guardar.",
+    resNewBest: "¡Nuevo récord!", resGreat: "¡Qué bien apilas!", resTop: "Los ladrillos llegaron arriba.",
+    resDidIt: "¡Lo lograste!", resSprint: "{n} líneas en {time}.", resClose: "¡Casi!", resTopAgain: "Los ladrillos llegaron arriba. ¿Otra vez?",
+    resCalm: "¡Qué tranquilidad!", resZen: { one: "Hiciste explotar {n} línea.", other: "Hiciste explotar {n} líneas." },
+    chipBestTime: "¡Nuevo mejor tiempo!", chipMostLines: "¡Más líneas que nunca!", chipNewBest: "¡Nuevo récord!", chipBest: "Récord: {v}",
+    playAgain: "Jugar otra vez",
+    bBlast: "¡LADRILLAZO!", bB2b: "¡Otra vez! ×{x}", bCombo: "Combo ×{n}", bDouble: "¡Doble!", bTriple: "¡Triple!",
+    bLevel: "¡Nivel {n}!", bGo: "¡Ya!", bWhoosh: "¡Fiu! ¡Más espacio!", bReady: "¿Listo?", bReadySprint: "¿Listo? ¡{n} líneas!", bReadyZen: "Relájate y apila"
+  },
+  de: {
+    pause: "Pause", soundOff: "Ton aus", soundOn: "Ton an",
+    score: "Punkte", level: "Level", lines: "Reihen", time: "Zeit", bricks: "Steine",
+    hold: "Halten", next: "Nächste", drop: "Fallen", turn: "Drehen",
+    heldAria: "Gehaltener Stein", nextAria: "Nächste Steine", keysAria: "Tasten",
+    kMove: "bewegen", kDown: "runter", kDrop: "fallen lassen", kTurn: "drehen", kTurnBack: "zurückdrehen", kHold: "halten", kPause: "Pause",
+    wellAria: "Der Schacht. Hier fallen die Steine. Tippen zum Drehen, wischen zum Bewegen, schnell nach unten wischen zum Fallenlassen.",
+    padDown: "Nach unten", padLeft: "Nach links", padRight: "Nach rechts", padHold: "Stein halten", padDrop: "Stein fallen lassen", padTurn: "Stein drehen",
+    tagline: "Staple die fallenden Steine. Mach eine Reihe voll, dann ploppt sie weg!",
+    pickGame: "Wähl ein Spiel",
+    marathon: "Marathon", marathonSub: "Alle {n} Reihen schneller",
+    sprint: "Sprint {n}", sprintSub: "{n} Reihen, so schnell du kannst",
+    zen: "Zen", zenSub: "Ruhig und langsam. Du verlierst nie",
+    bestN: "Rekord {n}", noTime: "Noch keine Zeit",
+    bestLines: { one: "Rekord {n} Reihe", other: "Rekord {n} Reihen" },
+    play: "Spielen",
+    totalHint: "Bisher weggeploppte Reihen: {n}",
+    kbHint: "Tasten: ← → bewegen, ↑ drehen, Space fallen lassen, C halten, P Pause.",
+    paused: "Pause",
+    pauseInfo: "Mach eine Pause. Die Steine warten auf dich.",
+    pauseSprint: { one: "Die Uhr ist angehalten. Noch {n} Reihe!", other: "Die Uhr ist angehalten. Noch {n} Reihen!" },
+    keepPlaying: "Weiterspielen", startOver: "Neu starten", finish: "Fertig", menu: "Menü",
+    phoneHint: "Am Handy: Tipp auf den Schacht zum Drehen, wisch zum Bewegen, wisch schnell nach unten zum Fallenlassen und nach oben zum Halten.",
+    resNewBest: "Neuer Rekord!", resGreat: "Toll gestapelt!", resTop: "Die Steine sind oben angekommen.",
+    resDidIt: "Geschafft!", resSprint: "{n} Reihen in {time}.", resClose: "Fast geschafft!", resTopAgain: "Die Steine sind oben angekommen. Noch mal?",
+    resCalm: "Schön entspannt!", resZen: { one: "Du hast {n} Reihe weggeploppt.", other: "Du hast {n} Reihen weggeploppt." },
+    chipBestTime: "Neue Bestzeit!", chipMostLines: "So viele Reihen wie nie!", chipNewBest: "Neuer Rekord!", chipBest: "Rekord: {v}",
+    playAgain: "Noch mal",
+    bBlast: "STEIN-KNALL!", bB2b: "Gleich noch mal! ×{x}", bCombo: "Kombo ×{n}", bDouble: "Doppelt!", bTriple: "Dreifach!",
+    bLevel: "Level {n}!", bGo: "Los!", bWhoosh: "Wusch! Mehr Platz!", bReady: "Bereit?", bReadySprint: "Bereit? {n} Reihen!", bReadyZen: "Ganz entspannt stapeln"
+  },
+  he: {
+    pause: "השהיה", soundOff: "כיבוי צליל", soundOn: "הפעלת צליל",
+    score: "ניקוד", level: "שלב", lines: "שורות", time: "זמן", bricks: "לבנים",
+    hold: "שמירה", next: "הבא", drop: "הפלה", turn: "סיבוב",
+    heldAria: "לבנה שמורה", nextAria: "הלבנים הבאות", keysAria: "מקשים",
+    kMove: "הזזה", kDown: "למטה", kDrop: "הפלה", kTurn: "סיבוב", kTurnBack: "סיבוב לאחור", kHold: "שמירה", kPause: "השהיה",
+    wellAria: "הבאר. כאן הלבנים נופלות. הקישו כדי לסובב, החליקו כדי להזיז, החליקו מהר למטה כדי להפיל.",
+    padDown: "למטה", padLeft: "שמאלה", padRight: "ימינה", padHold: "שמירת לבנה", padDrop: "הפלת לבנה", padTurn: "סיבוב לבנה",
+    tagline: "ערמו את הלבנים הנופלות. מלאו שורה שלמה והיא תתפוצץ!",
+    pickGame: "בחרו משחק",
+    marathon: "מרתון", marathonSub: "מהר יותר כל {n} שורות",
+    sprint: "ספרינט {n}", sprintSub: "נקו {n} שורות מהר",
+    zen: "זן", zenSub: "לאט ובשקט. אי אפשר להפסיד",
+    bestN: "שיא {n}", noTime: "עוד אין זמן",
+    bestLines: { one: "שיא: שורה אחת", other: "שיא: {n} שורות" },
+    play: "לשחק",
+    totalHint: "שורות שפוצצתם עד עכשיו: {n}",
+    kbHint: "מקשים: ← → הזזה, ↑ סיבוב, Space הפלה, C שמירה, P השהיה.",
+    paused: "מושהה",
+    pauseInfo: "קחו הפסקה. הלבנים יחכו לכם.",
+    pauseSprint: { one: "השעון עצר. נשארה עוד שורה אחת!", other: "השעון עצר. נשארו עוד {n} שורות!" },
+    keepPlaying: "להמשיך", startOver: "מההתחלה", finish: "לסיים", menu: "תפריט",
+    phoneHint: "בטלפון: הקישו על הבאר כדי לסובב, החליקו כדי להזיז, החליקו מהר למטה כדי להפיל ולמעלה כדי לשמור.",
+    resNewBest: "שיא חדש!", resGreat: "ערימה מעולה!", resTop: "הלבנים הגיעו עד למעלה.",
+    resDidIt: "הצלחתם!", resSprint: "{n} שורות ב־{time}.", resClose: "כמעט!", resTopAgain: "הלבנים הגיעו עד למעלה. עוד ניסיון?",
+    resCalm: "רגוע ונעים!", resZen: { one: "פוצצתם שורה אחת.", other: "פוצצתם {n} שורות." },
+    chipBestTime: "זמן שיא חדש!", chipMostLines: "הכי הרבה שורות!", chipNewBest: "שיא חדש!", chipBest: "שיא: {v}",
+    playAgain: "לשחק שוב",
+    bBlast: "בום לבנים!", bB2b: "שוב ברצף! ×{x}", bCombo: "קומבו ×{n}", bDouble: "כפול!", bTriple: "משולש!",
+    bLevel: "שלב {n}!", bGo: "יאללה!", bWhoosh: "ווש! יש מקום!", bReady: "מוכנים?", bReadySprint: "מוכנים? {n} שורות!", bReadyZen: "נרגעים ובונים"
+  },
+  ja: {
+    pause: "ポーズ", soundOff: "おとをけす", soundOn: "おとをだす",
+    score: "スコア", level: "レベル", lines: "ライン", time: "タイム", bricks: "ブロック",
+    hold: "キープ", next: "つぎ", drop: "おとす", turn: "まわす",
+    heldAria: "キープしたブロック", nextAria: "つぎのブロック", keysAria: "キー",
+    kMove: "うごかす", kDown: "さげる", kDrop: "おとす", kTurn: "まわす", kTurnBack: "ぎゃくにまわす", kHold: "キープ", kPause: "ポーズ",
+    wellAria: "ブロックがおちてくる場所です。タップでまわす、スワイプでうごかす、下へすばやくスワイプでおとします。",
+    padDown: "下へ", padLeft: "左へ", padRight: "右へ", padHold: "ブロックをキープ", padDrop: "ブロックをおとす", padTurn: "ブロックをまわす",
+    tagline: "おちてくるブロックをつもう。よこ1れつそろえると、パチンとはじけるよ！",
+    pickGame: "あそびかたをえらんでね",
+    marathon: "マラソン", marathonSub: "{n}ラインごとにはやくなる",
+    sprint: "スプリント{n}", sprintSub: "{n}ラインをはやくけそう",
+    zen: "のんびり", zenSub: "ゆっくり、おだやか。ゲームオーバーなし",
+    bestN: "ベスト {n}", noTime: "まだきろくなし",
+    bestLines: "ベスト {n}ライン",
+    play: "あそぶ",
+    totalHint: "これまでにけしたライン：{n}",
+    kbHint: "キー：← → うごかす、↑ まわす、Space おとす、C キープ、P ポーズ",
+    paused: "ポーズちゅう",
+    pauseInfo: "ひとやすみしよう。ブロックはまっていてくれるよ。",
+    pauseSprint: "とけいはとまっています。あと{n}ライン！",
+    keepPlaying: "つづける", startOver: "はじめから", finish: "おわる", menu: "メニュー",
+    phoneHint: "スマホでは：タップでまわす、スワイプでうごかす、下へすばやくスワイプでおとす、上へスワイプでキープ。",
+    resNewBest: "ベストきろく！", resGreat: "じょうずにつめたね！", resTop: "ブロックがてっぺんまでとどいたよ。",
+    resDidIt: "やったね！", resSprint: "{n}ラインを{time}でクリア！", resClose: "おしい！", resTopAgain: "ブロックがてっぺんまでとどいたよ。もう1回？",
+    resCalm: "のんびりできたね！", resZen: "{n}ラインけしたよ。",
+    chipBestTime: "ベストタイム！", chipMostLines: "いちばんたくさんけした！", chipNewBest: "ベストこうしん！", chipBest: "ベスト：{v}",
+    playAgain: "もう1回",
+    bBlast: "ドッカーン！", bB2b: "れんぞく！×{x}", bCombo: "コンボ×{n}", bDouble: "ダブル！", bTriple: "トリプル！",
+    bLevel: "レベル{n}！", bGo: "スタート！", bWhoosh: "シュッ！ひろくなった！", bReady: "いくよ？", bReadySprint: "いくよ？{n}ライン！", bReadyZen: "のんびりつもう"
+  },
+  ar: {
+    pause: "إيقاف مؤقت", soundOff: "أطفئ الصوت", soundOn: "شغّل الصوت",
+    score: "النتيجة", level: "المستوى", lines: "الصفوف", time: "الوقت", bricks: "الطوبات",
+    hold: "احتفظ", next: "التالي", drop: "أسقِط", turn: "دوّر",
+    heldAria: "الطوبة المحفوظة", nextAria: "الطوبات التالية", keysAria: "المفاتيح",
+    kMove: "تحريك", kDown: "نزول", kDrop: "إسقاط", kTurn: "تدوير", kTurnBack: "تدوير عكسي", kHold: "احتفاظ", kPause: "إيقاف مؤقت",
+    wellAria: "البئر. هنا تسقط الطوبات. انقر للتدوير، واسحب للتحريك، واسحب للأسفل بسرعة للإسقاط.",
+    padDown: "إلى الأسفل", padLeft: "إلى اليسار", padRight: "إلى اليمين", padHold: "احتفظ بالطوبة", padDrop: "أسقِط الطوبة", padTurn: "دوّر الطوبة",
+    tagline: "رُصّ الطوبات المتساقطة. املأ صفًا كاملًا ليختفي بفرقعة!",
+    pickGame: "اختر لعبة",
+    marathon: "ماراثون",
+    marathonSub: { zero: "أسرع كل {n} صف", one: "أسرع بعد كل صف", two: "أسرع كل صفّين", few: "أسرع كل {n} صفوف", many: "أسرع كل {n} صفًا", other: "أسرع كل {n} صف" },
+    sprint: "سباق {n}",
+    sprintSub: { zero: "امسح {n} صف بسرعة", one: "امسح صفًا واحدًا بسرعة", two: "امسح صفّين بسرعة", few: "امسح {n} صفوف بسرعة", many: "امسح {n} صفًا بسرعة", other: "امسح {n} صف بسرعة" },
+    zen: "هدوء", zenSub: "ببطء وهدوء. لا خسارة أبدًا",
+    bestN: "الأفضل {n}", noTime: "لا وقت بعد",
+    bestLines: { zero: "الأفضل: {n} صف", one: "الأفضل: صف واحد", two: "الأفضل: صفّان", few: "الأفضل: {n} صفوف", many: "الأفضل: {n} صفًا", other: "الأفضل: {n} صف" },
+    play: "العب",
+    totalHint: "الصفوف التي فرقعتها حتى الآن: {n}",
+    kbHint: "المفاتيح: ← → تحريك، ↑ تدوير، Space إسقاط، C احتفاظ، P إيقاف مؤقت.",
+    paused: "متوقفة مؤقتًا",
+    pauseInfo: "خذ استراحة. الطوبات ستنتظرك.",
+    pauseSprint: { zero: "الساعة متوقفة.", one: "الساعة متوقفة. بقي صف واحد!", two: "الساعة متوقفة. بقي صفّان!", few: "الساعة متوقفة. بقيت {n} صفوف!", many: "الساعة متوقفة. بقي {n} صفًا!", other: "الساعة متوقفة. بقي {n} صف!" },
+    keepPlaying: "تابع اللعب", startOver: "ابدأ من جديد", finish: "إنهاء", menu: "القائمة",
+    phoneHint: "على الهاتف: انقر على البئر للتدوير، واسحب للتحريك، واسحب للأسفل بسرعة للإسقاط، وللأعلى للاحتفاظ.",
+    resNewBest: "رقم قياسي جديد!", resGreat: "رصّ رائع!", resTop: "وصلت الطوبات إلى القمة.",
+    resDidIt: "لقد نجحت!", resSprint: { zero: "{n} صف في {time}.", one: "صف واحد في {time}.", two: "صفّان في {time}.", few: "{n} صفوف في {time}.", many: "{n} صفًا في {time}.", other: "{n} صف في {time}." },
+    resClose: "اقتربت كثيرًا!", resTopAgain: "وصلت الطوبات إلى القمة. هل تحاول مرة أخرى؟",
+    resCalm: "هادئ وجميل!", resZen: { zero: "لم تفرقع أي صف.", one: "فرقعت صفًا واحدًا.", two: "فرقعت صفّين.", few: "فرقعت {n} صفوف.", many: "فرقعت {n} صفًا.", other: "فرقعت {n} صف." },
+    chipBestTime: "أفضل وقت جديد!", chipMostLines: "أكثر صفوف حتى الآن!", chipNewBest: "رقم قياسي جديد!", chipBest: "الأفضل: {v}",
+    playAgain: "العب مرة أخرى",
+    bBlast: "انفجار الطوب!", bB2b: "مرة أخرى! ×{x}", bCombo: "سلسلة ×{n}", bDouble: "مزدوج!", bTriple: "ثلاثي!",
+    bLevel: "المستوى {n}!", bGo: "انطلق!", bWhoosh: "ووش! مساحة أكبر!", bReady: "مستعد؟",
+    bReadySprint: { zero: "مستعد؟ {n} صف!", one: "مستعد؟ صف واحد!", two: "مستعد؟ صفّان!", few: "مستعد؟ {n} صفوف!", many: "مستعد؟ {n} صفًا!", other: "مستعد؟ {n} صف!" },
+    bReadyZen: "استرخِ ورُصّ"
+  },
+  ru: {
+    pause: "Пауза", soundOff: "Выключить звук", soundOn: "Включить звук",
+    score: "Счёт", level: "Уровень", lines: "Линии", time: "Время", bricks: "Кирпичики",
+    hold: "Запас", next: "Далее", drop: "Сброс", turn: "Повернуть",
+    heldAria: "Кирпичик в запасе", nextAria: "Следующие кирпичики", keysAria: "Клавиши",
+    kMove: "двигать", kDown: "вниз", kDrop: "бросить", kTurn: "повернуть", kTurnBack: "повернуть назад", kHold: "в запас", kPause: "пауза",
+    wellAria: "Колодец. Сюда падают кирпичики. Коснись, чтобы повернуть, проведи пальцем, чтобы двигать, быстро проведи вниз, чтобы бросить.",
+    padDown: "Вниз", padLeft: "Влево", padRight: "Вправо", padHold: "Убрать в запас", padDrop: "Бросить кирпичик", padTurn: "Повернуть кирпичик",
+    tagline: "Складывай падающие кирпичики. Заполни ряд, и он лопнет!",
+    pickGame: "Выбери игру",
+    marathon: "Марафон",
+    marathonSub: { one: "Быстрее каждую {n} линию", few: "Быстрее каждые {n} линии", many: "Быстрее каждые {n} линий", other: "Быстрее каждые {n} линии" },
+    sprint: "Спринт {n}",
+    sprintSub: { one: "Собери {n} линию на скорость", few: "Собери {n} линии на скорость", many: "Собери {n} линий на скорость", other: "Собери {n} линии на скорость" },
+    zen: "Дзен", zenSub: "Медленно и спокойно. Проиграть нельзя",
+    bestN: "Рекорд {n}", noTime: "Пока без времени",
+    bestLines: { one: "Рекорд: {n} линия", few: "Рекорд: {n} линии", many: "Рекорд: {n} линий", other: "Рекорд: {n} линии" },
+    play: "Играть",
+    totalHint: "Всего собрано линий: {n}",
+    kbHint: "Клавиши: ← → двигать, ↑ повернуть, Space бросить, C запас, P пауза.",
+    paused: "Пауза",
+    pauseInfo: "Отдохни. Кирпичики подождут.",
+    pauseSprint: { one: "Часы стоят. Осталась {n} линия!", few: "Часы стоят. Осталось {n} линии!", many: "Часы стоят. Осталось {n} линий!", other: "Часы стоят. Осталось {n} линии!" },
+    keepPlaying: "Продолжить", startOver: "Заново", finish: "Закончить", menu: "Меню",
+    phoneHint: "На телефоне: коснись колодца, чтобы повернуть, проведи пальцем, чтобы двигать, быстро вниз — бросить, вверх — в запас.",
+    resNewBest: "Новый рекорд!", resGreat: "Отличная стройка!", resTop: "Кирпичики дошли до верха.",
+    resDidIt: "Получилось!",
+    resSprint: { one: "{n} линия за {time}.", few: "{n} линии за {time}.", many: "{n} линий за {time}.", other: "{n} линии за {time}." },
+    resClose: "Почти!", resTopAgain: "Кирпичики дошли до верха. Ещё раз?",
+    resCalm: "Спокойно и мирно!",
+    resZen: { one: "Собрана {n} линия.", few: "Собрано {n} линии.", many: "Собрано {n} линий.", other: "Собрано {n} линии." },
+    chipBestTime: "Лучшее время!", chipMostLines: "Больше всего линий!", chipNewBest: "Новый рекорд!", chipBest: "Рекорд: {v}",
+    playAgain: "Ещё раз",
+    bBlast: "КИРПИЧ-БУМ!", bB2b: "Снова! ×{x}", bCombo: "Комбо ×{n}", bDouble: "Двойная!", bTriple: "Тройная!",
+    bLevel: "Уровень {n}!", bGo: "Вперёд!", bWhoosh: "Вжух! Больше места!", bReady: "Приготовься!",
+    bReadySprint: { one: "Приготовься! {n} линия!", few: "Приготовься! {n} линии!", many: "Приготовься! {n} линий!", other: "Приготовься! {n} линии!" },
+    bReadyZen: "Складывай не спеша"
+  },
+  it: {
+    pause: "Pausa", soundOff: "Togli l’audio", soundOn: "Metti l’audio",
+    score: "Punti", level: "Livello", lines: "Righe", time: "Tempo", bricks: "Mattoni",
+    hold: "Riserva", next: "Dopo", drop: "Lascia", turn: "Gira",
+    heldAria: "Mattone in riserva", nextAria: "Prossimi mattoni", keysAria: "Tasti",
+    kMove: "muovi", kDown: "scendi", kDrop: "lascia cadere", kTurn: "gira", kTurnBack: "gira al contrario", kHold: "riserva", kPause: "pausa",
+    wellAria: "Il pozzo. I mattoni cadono qui. Tocca per girare, scorri per muovere, scorri veloce in giù per lasciar cadere.",
+    padDown: "Scendi", padLeft: "Vai a sinistra", padRight: "Vai a destra", padHold: "Metti in riserva", padDrop: "Lascia cadere il mattone", padTurn: "Gira il mattone",
+    tagline: "Impila i mattoni che cadono. Riempi una riga per farla scoppiare!",
+    pickGame: "Scegli un gioco",
+    marathon: "Maratona", marathonSub: "Più veloce ogni {n} righe",
+    sprint: "Sprint {n}", sprintSub: "Fai {n} righe in fretta",
+    zen: "Zen", zenSub: "Lento e tranquillo. Non si perde mai",
+    bestN: "Record {n}", noTime: "Ancora nessun tempo",
+    bestLines: { one: "Record {n} riga", other: "Record {n} righe" },
+    play: "Gioca",
+    totalHint: "Righe scoppiate finora: {n}",
+    kbHint: "Tasti: ← → muovi, ↑ gira, Space lascia cadere, C riserva, P pausa.",
+    paused: "In pausa",
+    pauseInfo: "Fai una pausa. I mattoni ti aspettano.",
+    pauseSprint: { one: "Il cronometro è fermo. Manca {n} riga!", other: "Il cronometro è fermo. Mancano {n} righe!" },
+    keepPlaying: "Continua", startOver: "Ricomincia", finish: "Finisci", menu: "Menu",
+    phoneHint: "Sul telefono: tocca il pozzo per girare, scorri per muovere, scorri veloce in giù per lasciar cadere e in su per la riserva.",
+    resNewBest: "Nuovo record!", resGreat: "Che bella pila!", resTop: "I mattoni sono arrivati in cima.",
+    resDidIt: "Ce l’hai fatta!", resSprint: "{n} righe in {time}.", resClose: "C’eri quasi!", resTopAgain: "I mattoni sono arrivati in cima. Riprovi?",
+    resCalm: "Tutto tranquillo!", resZen: { one: "Hai fatto scoppiare {n} riga.", other: "Hai fatto scoppiare {n} righe." },
+    chipBestTime: "Nuovo tempo record!", chipMostLines: "Mai così tante righe!", chipNewBest: "Nuovo record!", chipBest: "Record: {v}",
+    playAgain: "Gioca ancora",
+    bBlast: "MATTONATA!", bB2b: "Ancora! ×{x}", bCombo: "Combo ×{n}", bDouble: "Doppia!", bTriple: "Tripla!",
+    bLevel: "Livello {n}!", bGo: "Via!", bWhoosh: "Fiuu! Più spazio!", bReady: "Pronto?", bReadySprint: "Pronto? {n} righe!", bReadyZen: "Rilassati e impila"
+  },
+  'zh-Hant': {
+    pause: "暫停", soundOff: "關閉聲音", soundOn: "開啟聲音",
+    score: "分數", level: "等級", lines: "行數", time: "時間", bricks: "方塊",
+    hold: "保留", next: "下一個", drop: "落下", turn: "旋轉",
+    heldAria: "保留的方塊", nextAria: "接下來的方塊", keysAria: "按鍵",
+    kMove: "移動", kDown: "往下", kDrop: "落下", kTurn: "旋轉", kTurnBack: "反轉", kHold: "保留", kPause: "暫停",
+    wellAria: "方塊會掉到這裡。點一下旋轉，滑動來移動，快速往下滑就會落下。",
+    padDown: "往下", padLeft: "往左", padRight: "往右", padHold: "保留方塊", padDrop: "讓方塊落下", padTurn: "旋轉方塊",
+    tagline: "把掉下來的方塊疊起來。排滿一整行，它就會砰地消失！",
+    pickGame: "選一種玩法",
+    marathon: "馬拉松", marathonSub: "每 {n} 行變快一次",
+    sprint: "衝刺 {n}", sprintSub: "快快消掉 {n} 行",
+    zen: "放鬆", zenSub: "慢慢來，不會輸",
+    bestN: "最高 {n}", noTime: "還沒有紀錄",
+    bestLines: "最多 {n} 行",
+    play: "開始玩",
+    totalHint: "目前總共消掉：{n} 行",
+    kbHint: "按鍵：← → 移動、↑ 旋轉、Space 落下、C 保留、P 暫停",
+    paused: "暫停中",
+    pauseInfo: "休息一下，方塊會等你。",
+    pauseSprint: "計時停住了。還差 {n} 行！",
+    keepPlaying: "繼續玩", startOver: "重新開始", finish: "結束", menu: "選單",
+    phoneHint: "用手機玩：點一下旋轉，滑動來移動，快速往下滑讓方塊落下，往上滑保留。",
+    resNewBest: "新紀錄！", resGreat: "疊得真好！", resTop: "方塊疊到頂了。",
+    resDidIt: "你做到了！", resSprint: "{time} 消掉 {n} 行。", resClose: "好可惜！", resTopAgain: "方塊疊到頂了。再試一次？",
+    resCalm: "好悠閒！", resZen: "你消掉了 {n} 行。",
+    chipBestTime: "最快紀錄！", chipMostLines: "最多行數！", chipNewBest: "新紀錄！", chipBest: "最高：{v}",
+    playAgain: "再玩一次",
+    bBlast: "方塊大爆炸！", bB2b: "連續！×{x}", bCombo: "連擊 ×{n}", bDouble: "雙行！", bTriple: "三行！",
+    bLevel: "第 {n} 級！", bGo: "開始！", bWhoosh: "咻！空間變大了！", bReady: "準備好了嗎？", bReadySprint: "準備！{n} 行！", bReadyZen: "放輕鬆，慢慢疊"
+  },
+  nl: {
+    pause: "Pauze", soundOff: "Geluid uit", soundOn: "Geluid aan",
+    score: "Score", level: "Level", lines: "Rijen", time: "Tijd", bricks: "Stenen",
+    hold: "Bewaar", next: "Volgende", drop: "Vallen", turn: "Draai",
+    heldAria: "Bewaarde steen", nextAria: "Volgende stenen", keysAria: "Toetsen",
+    kMove: "bewegen", kDown: "omlaag", kDrop: "laten vallen", kTurn: "draaien", kTurnBack: "terugdraaien", kHold: "bewaren", kPause: "pauze",
+    wellAria: "De put. Hier vallen de stenen. Tik om te draaien, veeg om te bewegen, veeg snel omlaag om te laten vallen.",
+    padDown: "Omlaag", padLeft: "Naar links", padRight: "Naar rechts", padHold: "Steen bewaren", padDrop: "Steen laten vallen", padTurn: "Steen draaien",
+    tagline: "Stapel de vallende stenen. Maak een rij vol en hij knalt weg!",
+    pickGame: "Kies een spel",
+    marathon: "Marathon", marathonSub: "Elke {n} rijen sneller",
+    sprint: "Sprint {n}", sprintSub: "Maak zo snel mogelijk {n} rijen",
+    zen: "Zen", zenSub: "Rustig en langzaam. Je verliest nooit",
+    bestN: "Record {n}", noTime: "Nog geen tijd",
+    bestLines: { one: "Record {n} rij", other: "Record {n} rijen" },
+    play: "Spelen",
+    totalHint: "Rijen weggeknald tot nu toe: {n}",
+    kbHint: "Toetsen: ← → bewegen, ↑ draaien, Space laten vallen, C bewaren, P pauze.",
+    paused: "Pauze",
+    pauseInfo: "Even rust. De stenen wachten op je.",
+    pauseSprint: { one: "De klok staat stil. Nog {n} rij!", other: "De klok staat stil. Nog {n} rijen!" },
+    keepPlaying: "Verder spelen", startOver: "Opnieuw", finish: "Klaar", menu: "Menu",
+    phoneHint: "Op een telefoon: tik op de put om te draaien, veeg om te bewegen, veeg snel omlaag om te laten vallen en omhoog om te bewaren.",
+    resNewBest: "Nieuw record!", resGreat: "Mooi gestapeld!", resTop: "De stenen kwamen bovenaan.",
+    resDidIt: "Het is gelukt!", resSprint: "{n} rijen in {time}.", resClose: "Bijna!", resTopAgain: "De stenen kwamen bovenaan. Nog een keer?",
+    resCalm: "Lekker rustig!", resZen: { one: "Je hebt {n} rij weggeknald.", other: "Je hebt {n} rijen weggeknald." },
+    chipBestTime: "Nieuwe beste tijd!", chipMostLines: "Meeste rijen ooit!", chipNewBest: "Nieuw record!", chipBest: "Record: {v}",
+    playAgain: "Nog een keer",
+    bBlast: "STENENKNAL!", bB2b: "Nog een! ×{x}", bCombo: "Combo ×{n}", bDouble: "Dubbel!", bTriple: "Driedubbel!",
+    bLevel: "Level {n}!", bGo: "Start!", bWhoosh: "Wiesj! Meer ruimte!", bReady: "Klaar?", bReadySprint: "Klaar? {n} rijen!", bReadyZen: "Rustig stapelen"
+  }
+};
+/* ==== I18N END ==== */
+
+/** The player's language (from the platform; never from the URL) and helpers. Looked up once, never per frame. */
+const LANG = (window.BRB && BRB.user && BRB.user.lang) || 'en';
+const LANG_BASE = String(LANG).split('-')[0];
+const RTL = ((window.BRB && BRB.user && BRB.user.dir) === 'rtl') || LANG_BASE === 'he' || LANG_BASE === 'ar';
+const NUM_LOCALE = LANG_BASE === 'ar' ? 'ar-u-nu-latn' : LANG;     // Arabic text, Latin digits (like the site)
+const I18N_CHAIN = [I18N[LANG], I18N[LANG_BASE], I18N.en].filter(Boolean);
+let PLURAL = null, NUMF = null, DEC = '.';
+try { PLURAL = new Intl.PluralRules(NUM_LOCALE); } catch (e) { /* old browser: one/other below */ }
+try { NUMF = new Intl.NumberFormat(NUM_LOCALE); const d = NUMF.formatToParts(1.5).find(p => p.type === 'decimal'); if (d) DEC = d.value; } catch (e) { /* ignore */ }
+const fmtNum = n => (NUMF ? NUMF.format(n) : String(n));
+/** t('key', { n: 3, v: 'x' }): the string for this language; {name} placeholders filled; a plural set picks its form by n. */
+function t(key, vars) {
+  let s;
+  for (let i = 0; i < I18N_CHAIN.length && s === undefined; i++) s = I18N_CHAIN[i][key];
+  if (s === undefined) return key;
+  if (s && typeof s === 'object') { const n = vars && typeof vars.n === 'number' ? vars.n : 0; s = (n === 0 && s.zero) || s[PLURAL ? PLURAL.select(n) : (n === 1 ? 'one' : 'other')] || s.other; }
+  if (vars) s = s.replace(/\{(\w+)\}/g, (m, k) => (vars[k] === undefined ? m : typeof vars[k] === 'number' ? fmtNum(vars[k]) : vars[k]));
+  return s;
+}
+/** Words that never change during play, looked up once. */
+const TX = { score: t('score'), level: t('level'), lines: t('lines'), time: t('time'), bricks: t('bricks'), soundOn: t('soundOn'), soundOff: t('soundOff') };
+/** Shrink one line of text (nowrap + overflow hidden) until it fits its box. Called on layout or when the text changes, never per frame. */
+function fitText(el, minScale) {
+  if (!el) return;
+  el.style.fontSize = '';
+  const cw = el.clientWidth, sw = el.scrollWidth;
+  if (!cw || sw <= cw + 1) return;
+  const fs = parseFloat(getComputedStyle(el).fontSize) || 16;
+  el.style.fontSize = Math.max(fs * (minScale || 0.45), fs * cw / sw * 0.97).toFixed(1) + 'px';
+}
 
 /* =====================================================================================
    ENGINE: the pure game rules (no drawing, no DOM). Proven by Node tests.
@@ -625,6 +1056,18 @@ const INK = '#3a1d4f';
 const E = createEngine(CONFIG);
 const W = E.W, HID = E.HID, VIS = E.VIS;
 document.title = CONFIG.title; $('titleText').textContent = CONFIG.title;
+/* ---------- Language: fill every fixed label once ---------- */
+function applyLanguage() {
+  try { document.documentElement.lang = LANG; } catch (e) { /* ignore */ }
+  document.querySelectorAll('[data-t]').forEach(el => { el.textContent = t(el.dataset.t); });
+  document.querySelectorAll('[data-ta]').forEach(el => { el.setAttribute('aria-label', t(el.dataset.ta)); });
+  $('mName1').textContent = t('marathon'); $('mSub1').textContent = t('marathonSub', { n: CONFIG.linesPerLevel });
+  $('mName2').textContent = t('sprint', { n: CONFIG.sprintLines }); $('mSub2').textContent = t('sprintSub', { n: CONFIG.sprintLines });
+  // Right-to-left languages: text panels, the keys hint, HUD labels and banners read right to left; the well, the
+  // Hold/Next boxes, the touch pad and the digits keep their places.
+  if (RTL) document.querySelectorAll('.panel, .keys, .banner, #stats').forEach(el => { el.dir = 'rtl'; });
+}
+applyLanguage();
 
 /* ---------- Save (BRB.storage is the per-player cloud save) ---------- */
 let save = { mode: 'marathon', bestMarathon: 0, bestSprintMs: 0, bestZenLines: 0, totalLines: 0, games: 0 };
@@ -752,9 +1195,14 @@ function layout() {
   const mw = Math.round(G.mini * 4.6), holdH = Math.round(G.mini * 2.8), nextH = Math.round(G.mini * (3 + 2.7 * (CONFIG.nextCount - 1) * 0.8) + G.mini * 0.4);
   sizeCanvas(holdCv, mw, holdH); sizeCanvas(nextCv, mw, nextH);
   app.classList.toggle('wide', !land && side >= 130);
+  fitLabels();
   if (G.S !== Sdev || !spritesBuilt) { G.S = Sdev; buildSprites(); spritesBuilt = true; }
   stackDirty = true; holdKey = -1; nextKey = -1;
   if (S.screen !== 'title') render(performance.now());
+}
+/** Long words (German, Russian...) shrink to fit the small labels. Runs on layout only. */
+function fitLabels() {
+  document.querySelectorAll('.boxLab, .pbtn span, .stat .lab').forEach(el => fitText(el, 0.55));
 }
 function sizeCanvas(cv, w, h) { cv.width = Math.round(w * G.dpr); cv.height = Math.round(h * G.dpr); cv.style.width = w + 'px'; cv.style.height = h + 'px'; }
 
@@ -769,10 +1217,18 @@ function spawnParticle(x, y, vx, vy, life, size, col, kind) {
   const i = pNext; pNext = (pNext + 1) % MAXP;
   PX[i] = x; PY[i] = y; PVX[i] = vx; PVY[i] = vy; PLIFE[i] = life; PMAX[i] = life; PSIZE[i] = size; PCOL[i] = col; PKIND[i] = kind;
 }
-const POPS = []; for (let i = 0; i < 8; i++) POPS.push({ text: '', x: 0, y: 0, t: 0, life: 0, size: 1, color: '#fff' });
+// Floating score text: each pop-up is drawn once into its own little canvas, then only copied while it floats.
+const POPS = []; for (let i = 0; i < 8; i++) POPS.push({ text: '', x: 0, y: 0, t: 0, life: 0, size: 1, color: '#fff', cv: document.createElement('canvas'), w: 0, h: 0 });
 function popup(text, x, y, size, color) {
   let best = POPS[0]; for (const p of POPS) { if (p.t >= p.life) { best = p; break; } if (p.t / p.life > best.t / best.life) best = p; }
   best.text = text; best.x = x; best.y = y; best.t = 0; best.life = 1100; best.size = size; best.color = color;
+  const fs = Math.round(size), lw = Math.max(2, size * 0.16), font = '700 ' + fs + 'px Fredoka, "Trebuchet MS", system-ui, sans-serif';
+  const c = best.cv.getContext('2d'); c.font = font;
+  const w = Math.ceil(c.measureText(text).width + lw * 2 + 4), h = Math.ceil(fs * 1.4 + lw * 2);
+  best.cv.width = w; best.cv.height = h; best.w = w; best.h = h;
+  c.font = font; c.textAlign = 'center'; c.textBaseline = 'middle'; c.lineJoin = 'round';
+  c.lineWidth = lw; c.strokeStyle = 'rgba(58,29,79,.85)'; c.strokeText(text, w / 2, h / 2);
+  c.fillStyle = color; c.fillText(text, w / 2, h / 2);
 }
 const glow = { cells: new Int8Array(8), t: 999, id: 1 };              // a soft glow on a brick that just stuck
 const trail = { x: new Int8Array(4), y0: new Int8Array(4), y1: new Int8Array(4), n: 0, t: 999, id: 1 };
@@ -876,9 +1332,7 @@ function render(now) {
     const q = POPS[i]; if (q.t >= q.life) continue;
     const k = q.t / q.life, rise = REDUCED ? 0 : k * s * 1.4;
     ctx.globalAlpha = k < 0.75 ? 1 : (1 - k) / 0.25;
-    ctx.font = '700 ' + Math.round(q.size) + 'px Fredoka, "Trebuchet MS", sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.lineWidth = Math.max(2, q.size * 0.16); ctx.strokeStyle = 'rgba(58,29,79,.85)'; ctx.strokeText(q.text, q.x, q.y - rise);
-    ctx.fillStyle = q.color; ctx.fillText(q.text, q.x, q.y - rise);
+    ctx.drawImage(q.cv, Math.round(q.x - q.w / 2), Math.round(q.y - rise - q.h / 2));
   }
   ctx.globalAlpha = 1;
 }
@@ -914,23 +1368,22 @@ function renderSide() {
 
 /* ---------- HUD ---------- */
 const hudCache = { l1: '', v1: '', l2: '', v2: '', l3: '', v3: '' };
-function setText(key, el, text) { if (hudCache[key] !== text) { hudCache[key] = text; $(el).textContent = text; } }
-const fmtNum = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-function fmtTime(ms) { const t = Math.floor(ms / 100), m = Math.floor(t / 600), sec = Math.floor(t / 10) % 60; return m + ':' + (sec < 10 ? '0' : '') + sec + '.' + (t % 10); }
+function setText(key, el, text) { if (hudCache[key] !== text) { hudCache[key] = text; const e = $(el); e.textContent = text; if (key[0] === 'l') fitText(e, 0.55); } }
+function fmtTime(ms) { const t = Math.floor(ms / 100), m = Math.floor(t / 600), sec = Math.floor(t / 10) % 60; return m + ':' + (sec < 10 ? '0' : '') + sec + DEC + (t % 10); }
 let hudScore = -1, hudLines = -1, hudLevel = -1, hudTenth = -1;
 function updateHud() {
   if (E.mode === 'sprint') {
     const tenth = Math.floor(E.time / 100);
     if (tenth !== hudTenth) { hudTenth = tenth; setText('v1', 'val1', fmtTime(E.time)); }
-    setText('l1', 'lab1', 'Time'); setText('l2', 'lab2', 'Lines'); setText('l3', 'lab3', 'Score');
+    setText('l1', 'lab1', TX.time); setText('l2', 'lab2', TX.lines); setText('l3', 'lab3', TX.score);
     if (E.lines !== hudLines) { hudLines = E.lines; setText('v2', 'val2', Math.min(E.lines, CONFIG.sprintLines) + '/' + CONFIG.sprintLines); }
     if (E.score !== hudScore) { hudScore = E.score; setText('v3', 'val3', fmtNum(E.score)); }
   } else {
-    setText('l1', 'lab1', 'Score'); setText('l2', 'lab2', E.mode === 'zen' ? 'Time' : 'Level'); setText('l3', 'lab3', 'Lines');
+    setText('l1', 'lab1', TX.score); setText('l2', 'lab2', E.mode === 'zen' ? TX.time : TX.level); setText('l3', 'lab3', TX.lines);
     if (E.score !== hudScore) { hudScore = E.score; setText('v1', 'val1', fmtNum(E.score)); }
     if (E.mode === 'zen') { const tenth = Math.floor(E.time / 1000); if (tenth !== hudTenth) { hudTenth = tenth; setText('v2', 'val2', fmtTime(E.time).slice(0, -2)); } }
-    else if (E.level !== hudLevel) { hudLevel = E.level; setText('v2', 'val2', String(E.level)); }
-    if (E.lines !== hudLines) { hudLines = E.lines; setText('v3', 'val3', String(E.lines)); }
+    else if (E.level !== hudLevel) { hudLevel = E.level; setText('v2', 'val2', fmtNum(E.level)); }
+    if (E.lines !== hudLines) { hudLines = E.lines; setText('v3', 'val3', fmtNum(E.lines)); }
   }
 }
 function resetHudCache() { hudScore = hudLines = hudLevel = hudTenth = -1; }
@@ -944,7 +1397,7 @@ function banner(el, text, pri = 1) {
   const at = pri > bannerPri[el] || now >= bannerFree[el] ? now : bannerFree[el];
   bannerFree[el] = at + (S.fast ? 0 : 750); bannerPri[el] = pri;
   const gid = S.gameId;
-  const show = () => { if (S.screen !== 'play' || gid !== S.gameId) return; const b = $(el); b.textContent = text; b.classList.remove('show'); void b.offsetWidth; b.classList.add('show'); };
+  const show = () => { if (S.screen !== 'play' || gid !== S.gameId) return; const b = $(el); b.textContent = text; b.classList.remove('show'); fitText(b, 0.4); b.classList.add('show'); };
   if (at - now < 20) show(); else setTimeout(show, at - now);
 }
 
@@ -991,24 +1444,24 @@ E.onEvent = (name, a, b) => {
       let mid = 0; for (let i = 0; i < E.clearCount; i++) mid += E.clearRows[i]; mid = mid / E.clearCount;
       popup('+' + fmtNum(b), W * s / 2, cellCenterY(mid), s * (big ? 1.1 : 0.85), big ? '#ffe066' : '#fff');
       if (big) {
-        banner('banner', 'BRICK BLAST!', 3); BRB.sfx.play('win');
+        banner('banner', t('bBlast'), 3); BRB.sfx.play('win');
         if (!REDUCED) BRB.fx.shake(wellWrap, 7);
-        if (E.last.b2b) banner('subBanner', 'Back-to-back! ×1.5', 3);
-        else if (E.last.combo > 0) banner('subBanner', 'Combo ×' + (E.last.combo + 1));
+        if (E.last.b2b) banner('subBanner', t('bB2b', { x: fmtNum(CONFIG.points.b2bMultiplier) }), 3);
+        else if (E.last.combo > 0) banner('subBanner', t('bCombo', { n: E.last.combo + 1 }));
       } else {
         BRB.sfx.play('coin');
-        if (E.last.combo > 0) banner('subBanner', 'Combo ×' + (E.last.combo + 1));
-        else if (n >= 2) banner('subBanner', n === 2 ? 'Double!' : 'Triple!');
+        if (E.last.combo > 0) banner('subBanner', t('bCombo', { n: E.last.combo + 1 }));
+        else if (n >= 2) banner('subBanner', t(n === 2 ? 'bDouble' : 'bTriple'));
       }
       if (E.fast) burstRows(n);
       save.totalLines += n; persist();
       break;
     }
     case 'level':
-      banner('banner', 'Level ' + a + '!', 2); setTimeout(() => BRB.sfx.play('powerup'), 250);
+      banner('banner', t('bLevel', { n: a }), 2); setTimeout(() => BRB.sfx.play('powerup'), 250);
       break;
-    case 'go': banner('banner', 'Go!', 0); BRB.sfx.play('click'); break;
-    case 'zenclear': banner('subBanner', 'Whoosh! More room!'); BRB.sfx.play('powerup'); break;
+    case 'go': banner('banner', t('bGo'), 0); BRB.sfx.play('click'); break;
+    case 'zenclear': banner('subBanner', t('bWhoosh')); BRB.sfx.play('powerup'); break;
     case 'topout': BRB.sfx.play('lose'); endRound('over'); break;
     case 'finish': BRB.sfx.play('win'); endRound('finish'); break;
   }
@@ -1075,10 +1528,10 @@ function frame(now) {
 const titleScreen = $('titleScreen'), pauseScreen = $('pauseScreen'), resultsScreen = $('resultsScreen');
 function refreshTitle() {
   document.querySelectorAll('.mode').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.mode === S.mode)));
-  $('bestM').textContent = 'Best ' + fmtNum(save.bestMarathon || 0);
-  $('bestS').textContent = save.bestSprintMs ? 'Best ' + fmtTime(save.bestSprintMs) : 'No time yet';
-  $('bestZ').textContent = 'Best ' + (save.bestZenLines || 0) + ' lines';
-  $('totalHint').textContent = '🧱 Lines popped so far: ' + fmtNum(save.totalLines || 0);
+  $('bestM').textContent = t('bestN', { n: save.bestMarathon || 0 });
+  $('bestS').textContent = save.bestSprintMs ? t('bestN', { n: fmtTime(save.bestSprintMs) }) : t('noTime');
+  $('bestZ').textContent = t('bestLines', { n: save.bestZenLines || 0 });
+  $('totalHint').textContent = '🧱 ' + t('totalHint', { n: save.totalLines || 0 });
 }
 function startGame(mode) {
   S.mode = mode || S.mode; save.mode = S.mode; persist();
@@ -1091,7 +1544,7 @@ function startGame(mode) {
   titleScreen.hidden = true; pauseScreen.hidden = true; resultsScreen.hidden = true; app.classList.remove('offstage');
   resetHudCache(); holdKey = -1; nextKey = -1; stackDirty = true;
   layout();
-  if (E.phase === 'ready') banner('banner', S.mode === 'sprint' ? 'Ready? 40 lines!' : S.mode === 'zen' ? 'Relax and stack' : 'Ready?', 0);
+  if (E.phase === 'ready') banner('banner', S.mode === 'sprint' ? t('bReadySprint', { n: CONFIG.sprintLines }) : S.mode === 'zen' ? t('bReadyZen') : t('bReady'), 0);
   $('pauseBtn').style.visibility = '';
 }
 function quitToTitle() {
@@ -1104,7 +1557,7 @@ function setPaused(on) {
   S.paused = !!on; E.releaseAll(); releaseButtons();
   pauseScreen.hidden = !S.paused;
   $('zenEndBtn').hidden = E.mode !== 'zen';
-  $('pauseInfo').textContent = E.mode === 'sprint' ? 'The clock is stopped. ' + Math.max(0, CONFIG.sprintLines - E.lines) + ' lines to go!' : 'Take a break. The bricks will wait.';
+  $('pauseInfo').textContent = E.mode === 'sprint' ? t('pauseSprint', { n: Math.max(0, CONFIG.sprintLines - E.lines) }) : t('pauseInfo');
   if (S.paused) { BRB.sfx.play('click'); focusBtn('resumeBtn'); }
 }
 /** The round ended: save bests, tell the platform, then (after a little show) the results screen. */
@@ -1140,20 +1593,20 @@ function showResults() {
   const r = S.result; if (!r) return;
   S.screen = 'results';
   let title, sub;
-  if (r.mode === 'marathon') { title = r.best ? 'New best score!' : 'Great stacking!'; sub = 'The bricks reached the top.'; }
-  else if (r.mode === 'sprint') { if (r.won) { title = 'You did it!'; sub = '40 lines in ' + fmtTime(r.time) + '.'; } else { title = 'So close!'; sub = 'The bricks reached the top. Try again?'; } }
-  else { title = 'Nice and calm!'; sub = 'You popped ' + r.lines + ' lines.'; }
+  if (r.mode === 'marathon') { title = t(r.best ? 'resNewBest' : 'resGreat'); sub = t('resTop'); }
+  else if (r.mode === 'sprint') { if (r.won) { title = t('resDidIt'); sub = t('resSprint', { n: CONFIG.sprintLines, time: fmtTime(r.time) }); } else { title = t('resClose'); sub = t('resTopAgain'); } }
+  else { title = t('resCalm'); sub = t('resZen', { n: r.lines }); }
   $('resTitle').textContent = title; $('resSub').textContent = sub;
   const chips = $('resChips'); chips.innerHTML = '';
   const addChip = (t, cls) => { const c = document.createElement('div'); c.className = 'chip' + (cls ? ' ' + cls : ''); c.textContent = t; chips.appendChild(c); };
-  if (r.best) addChip(r.mode === 'sprint' ? '🏆 New best time!' : r.mode === 'zen' ? '🏆 Most lines yet!' : '🏆 New best!', 'best');
-  else if (r.mode === 'marathon' && save.bestMarathon) addChip('Best: ' + fmtNum(save.bestMarathon));
-  else if (r.mode === 'sprint' && save.bestSprintMs) addChip('Best: ' + fmtTime(save.bestSprintMs));
+  if (r.best) addChip('🏆 ' + t(r.mode === 'sprint' ? 'chipBestTime' : r.mode === 'zen' ? 'chipMostLines' : 'chipNewBest'), 'best');
+  else if (r.mode === 'marathon' && save.bestMarathon) addChip(t('chipBest', { v: fmtNum(save.bestMarathon) }));
+  else if (r.mode === 'sprint' && save.bestSprintMs) addChip(t('chipBest', { v: fmtTime(save.bestSprintMs) }));
   const grid = $('resGrid'); grid.innerHTML = '';
   const add = (lab, val) => { const d = document.createElement('div'); const sp = document.createElement('span'); sp.textContent = lab; const b = document.createElement('b'); b.textContent = val; d.append(sp, b); grid.appendChild(d); };
-  if (r.mode === 'marathon') { add('Score', fmtNum(r.score)); add('Lines', String(r.lines)); add('Level', String(r.level)); add('Time', fmtTime(r.time)); }
-  else if (r.mode === 'sprint') { add('Time', fmtTime(r.time)); add('Lines', Math.min(r.lines, CONFIG.sprintLines) + '/' + CONFIG.sprintLines); add('Score', fmtNum(r.score)); add('Bricks', String(r.pieces)); }
-  else { add('Score', fmtNum(r.score)); add('Lines', String(r.lines)); add('Time', fmtTime(r.time)); add('Bricks', String(r.pieces)); }
+  if (r.mode === 'marathon') { add(TX.score, fmtNum(r.score)); add(TX.lines, fmtNum(r.lines)); add(TX.level, fmtNum(r.level)); add(TX.time, fmtTime(r.time)); }
+  else if (r.mode === 'sprint') { add(TX.time, fmtTime(r.time)); add(TX.lines, Math.min(r.lines, CONFIG.sprintLines) + '/' + CONFIG.sprintLines); add(TX.score, fmtNum(r.score)); add(TX.bricks, fmtNum(r.pieces)); }
+  else { add(TX.score, fmtNum(r.score)); add(TX.lines, fmtNum(r.lines)); add(TX.time, fmtTime(r.time)); add(TX.bricks, fmtNum(r.pieces)); }
   resultsScreen.hidden = false; pauseScreen.hidden = true;
   focusBtn('againBtn');
 }
@@ -1170,7 +1623,7 @@ $('zenEndBtn').addEventListener('click', () => { S.paused = false; pauseScreen.h
 $('againBtn').addEventListener('click', () => { BRB.sfx.play('click'); startGame(); });
 $('resMenuBtn').addEventListener('click', () => { BRB.sfx.play('click'); quitToTitle(); });
 function syncMute() {
-  document.querySelectorAll('.mute').forEach(b => { b.textContent = BRB.sfx.muted ? '🔇' : '🔊'; b.setAttribute('aria-label', BRB.sfx.muted ? 'Turn sound on' : 'Turn sound off'); });
+  document.querySelectorAll('.mute').forEach(b => { b.textContent = BRB.sfx.muted ? '🔇' : '🔊'; b.setAttribute('aria-label', BRB.sfx.muted ? TX.soundOn : TX.soundOff); });
 }
 document.querySelectorAll('.mute').forEach(b => b.addEventListener('click', e => { BRB.sfx.mute(); syncMute(); if (!BRB.sfx.muted) BRB.sfx.play('click'); e.currentTarget.blur(); }));
 

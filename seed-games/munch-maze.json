@@ -10,5 +10,55 @@
   "players_max": 1,
   "age_rating": "everyone",
   "featured": true,
-  "notes": "Original maze-chase game: hero Munch and the Gloops Zippy, Sneaky, Tricky and Dozy are original characters; the three 28x31 mazes (Candy Lane, Mint Caves, Starry Swirl) are original, mirrored, have no dead ends and wrapping side tunnels. Classic mechanics: tile movement with cornering and buffered turns on a fixed 120 Hz step, the four chase personalities, the scatter/chase timer with reversals, house dot counters plus the no-dot timer, frightened chain 200/400/800/1600, eyes return home, two bonus snacks per level, extra life at 10,000, arcade-style level speed tables and three short original cartoons. Easy mode: slower Gloops, 5 lives, longer Super Snack time. Controls: swipe anywhere (slide to keep steering), optional on-screen arrow buttons, arrows/WASD, P/Esc pause, M mute. Saves best score and best level per mode, total dots and settings in BRB.storage key 'munch-maze-v1'. Leaderboard: Classic only (BRB.score.submit(score, 'points') then BRB.gameOver); Easy calls BRB.gameOver({won:false}) with no score. Sounds use BRB.sfx plus a small original WebAudio synth (chomp, hum) that follows BRB.sfx.muted. No flashing faster than 2 per second. window.__brbTest drives the game for tests. Loads Google Font Fredoka."
+  "notes": "Original maze-chase game: hero Munch and the Gloops Zippy, Sneaky, Tricky and Dozy are original characters; the three 28x31 mazes (Candy Lane, Mint Caves, Starry Swirl) are original, mirrored, have no dead ends and wrapping side tunnels. Classic mechanics: tile movement with cornering and buffered turns on a fixed 120 Hz step, the four chase personalities, the scatter/chase timer with reversals, house dot counters plus the no-dot timer, frightened chain 200/400/800/1600, eyes return home, two bonus snacks per level, extra life at 10,000, arcade-style level speed tables and three short original cartoons. Easy mode: slower Gloops, 5 lives, longer Super Snack time. Controls: swipe anywhere (slide to keep steering), optional on-screen arrow buttons, arrows/WASD, P/Esc pause, M mute. Saves best score and best level per mode, total dots and settings in BRB.storage key 'munch-maze-v1'. Leaderboard: Classic only (BRB.score.submit(score, 'points') then BRB.gameOver); Easy calls BRB.gameOver({won:false}) with no score. Sounds use BRB.sfx plus a small original WebAudio synth (chomp, hum) that follows BRB.sfx.muted. No flashing faster than 2 per second. window.__brbTest drives the game for tests. Loads Google Font Fredoka.",
+  "l10n": {
+    "en-GB": {
+      "description": "Guide Munch the bouncy blob through glowing sweetie mazes and eat every dot before the four silly Gloops catch you. Grab a Super Snack and the Gloops turn blue, so you can munch them for big points. Play Classic or Easy, swipe or use the arrow keys, and try three different mazes.",
+      "tags": "maze,arcade,classic,chase,dots,ghosts,retro,munch,gloops,easy mode"
+    },
+    "pt": {
+      "description": "Guie o Munch, uma bolinha saltitante, por labirintos de doces brilhantes e coma todas as bolinhas antes que os quatro Gloops bobinhos peguem você. Pegue um Superlanche e os Gloops ficam azuis: aí você pode comê-los e ganhar muitos pontos. Jogue no Clássico ou no Fácil, deslize ou use as setas e experimente três labirintos.",
+      "tags": "labirinto,arcade,clássico,perseguição,bolinhas,fantasmas,retrô,munch,gloops,fácil"
+    },
+    "fr": {
+      "description": "Guide Munch, la petite boule rebondissante, dans des labyrinthes en bonbons qui brillent et mange toutes les pastilles avant que les quatre Gloops rigolos t’attrapent. Attrape un Super Goûter : les Gloops deviennent bleus et tu peux les croquer pour plein de points. Joue en Classique ou en Facile, glisse ou utilise les flèches, et essaie trois labyrinthes.",
+      "tags": "labyrinthe,arcade,classique,poursuite,pastilles,fantômes,rétro,munch,gloops,facile"
+    },
+    "es": {
+      "description": "Guía a Munch, una bolita saltarina, por laberintos de caramelo brillantes y cómete todos los puntitos antes de que te atrapen los cuatro Gloops traviesos. Toma un Súper Bocado y los Gloops se ponen azules: ¡cómetelos para ganar muchos puntos! Juega en Clásico o Fácil, desliza o usa las flechas y prueba tres laberintos.",
+      "tags": "laberinto,arcade,clásico,persecución,puntitos,fantasmas,retro,munch,gloops,fácil"
+    },
+    "de": {
+      "description": "Lenk Munch, den hüpfenden Knubbel, durch leuchtende Bonbon-Labyrinthe und iss alle Kügelchen, bevor dich die vier albernen Gloops erwischen. Schnapp dir einen Super-Snack, dann werden die Gloops blau und du kannst sie für viele Punkte mampfen. Spiel Klassisch oder Leicht, wisch oder nimm die Pfeiltasten und probier drei Labyrinthe aus.",
+      "tags": "Labyrinth,Arcade,Klassiker,Verfolgungsjagd,Punkte,Geister,Retro,Munch,Gloops,leicht"
+    },
+    "he": {
+      "description": "הובילו את מאנץ', הכדור הקופצני, דרך מבוכי ממתקים זוהרים ואכלו את כל הנקודות לפני שארבעת הגלופים המצחיקים יתפסו אתכם. תפסו סופר־חטיף והגלופים יהפכו לכחולים, ואז אפשר לאכול אותם ולקבל המון נקודות. שחקו בקלאסי או בקל, החליקו או השתמשו בחיצים, ונסו שלושה מבוכים שונים.",
+      "tags": "מבוך,ארקייד,קלאסי,מרדף,נקודות,רוחות,רטרו,מאנץ',גלופים,קל"
+    },
+    "ja": {
+      "description": "ぴょんぴょんはねるマンチをうごかして、キラキラ光るおかしのめいろのドットをぜんぶたべよう。4ひきのゼリーおばけにつかまらないように気をつけてね。スーパーおやつをとると、おばけが青くなってたべられるよ。クラシックとかんたんの2つのモードと、3つのめいろであそべます。スワイプでも矢じるしキーでもうごかせるよ。",
+      "tags": "めいろ,アーケード,クラシック,おいかけっこ,ドット,おばけ,レトロ,マンチ,かんたん"
+    },
+    "ar": {
+      "description": "وجّه مانش، الكرة القافزة، عبر متاهات حلوى متوهجة وكُل كل النقاط قبل أن تمسك بك الهلاميات الأربع المضحكة. خذ وجبة خارقة فتتحول الهلاميات إلى اللون الأزرق، وعندها يمكنك أكلها لتربح نقاطًا كثيرة. العب في الوضع الكلاسيكي أو السهل، واسحب أو استخدم الأسهم، وجرّب ثلاث متاهات مختلفة.",
+      "tags": "متاهة,أركيد,كلاسيكي,مطاردة,نقاط,أشباح,ريترو,مانش,هلاميات,سهل"
+    },
+    "ru": {
+      "description": "Веди Манча, прыгучий шарик, по светящимся конфетным лабиринтам и съешь все точки, пока тебя не поймали четыре смешных Глупса. Схвати суперугощение, и Глупсы посинеют: тогда их можно слопать и получить много очков. Играй в режиме «Классика» или «Легко», проводи пальцем или жми стрелки и попробуй три разных лабиринта.",
+      "tags": "лабиринт,аркада,классика,погоня,точки,привидения,ретро,манч,глупсы,легко"
+    },
+    "it": {
+      "description": "Guida Munch, la pallina saltellante, in labirinti di dolci luminosi e mangia tutti i puntini prima che ti prendano i quattro buffi Gloops. Prendi un Super Spuntino e i Gloops diventano blu: puoi sgranocchiarli per fare tanti punti. Gioca in modalità Classica o Facile, scorri o usa le frecce e prova tre labirinti diversi.",
+      "tags": "labirinto,arcade,classico,inseguimento,puntini,fantasmi,retrò,munch,gloops,facile"
+    },
+    "zh-Hant": {
+      "description": "帶著蹦蹦跳跳的嚼嚼穿過閃亮的糖果迷宮，在四隻傻呼呼的果凍怪抓到你之前吃光所有豆豆。吃到超級點心，果凍怪就會變成藍色，這時吃掉牠們能拿很多分。可以選經典或簡單模式，用滑動或方向鍵操作，還有三個不同的迷宮。",
+      "tags": "迷宮,街機,經典,追逐,豆豆,鬼,復古,嚼嚼,果凍怪,簡單"
+    },
+    "nl": {
+      "description": "Stuur Munch, het stuiterende bolletje, door glinsterende snoepdoolhoven en eet alle bolletjes op voordat de vier gekke Gloops je pakken. Pak een Supersnack, dan worden de Gloops blauw en kun je ze opsmikkelen voor veel punten. Speel Klassiek of Makkelijk, veeg of gebruik de pijltjestoetsen en probeer drie verschillende doolhoven.",
+      "tags": "doolhof,arcade,klassiek,achtervolging,bolletjes,spookjes,retro,munch,gloops,makkelijk"
+    }
+  }
 }
