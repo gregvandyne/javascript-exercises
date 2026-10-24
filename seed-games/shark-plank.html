@@ -22,6 +22,10 @@ h1 span{color:var(--coral)}
 .levels{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
 .lvl{font:700 .95rem/1.1 var(--display);padding:6px 2px;border-radius:14px;border:3px solid #fff;background:rgba(255,255,255,.6);color:var(--deep);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px}
 .lvl b{font-size:1.5rem;line-height:1}
+.lvl span,.tool span{display:block;max-width:100%;white-space:nowrap;overflow:hidden}   /* long words shrink to fit (fitText) */
+.tool span{width:0;min-width:100%}   /* the label never widens the play column; it shrinks instead */
+.ttl{min-width:0;display:flex;flex-direction:column;gap:2px}
+.practise{margin:0;font:700 clamp(.8rem,3.6vw,.95rem)/1.2 var(--body);color:var(--deep)}
 .lvl[aria-pressed="true"]{background:var(--sea);color:#fff;border-color:var(--sun);box-shadow:0 0 0 3px rgba(255,210,63,.4)}
 .scene{position:relative;border-radius:22px;overflow:hidden;box-shadow:0 8px 0 rgba(6,58,92,.25),0 0 0 4px #fff;background:var(--sky)}
 canvas{display:block;width:100%;height:auto;aspect-ratio:5/3}
@@ -56,34 +60,48 @@ canvas{display:block;width:100%;height:auto;aspect-ratio:5/3}
 .btn{font:700 1.25rem var(--display);padding:10px;border-radius:14px;border:0;background:var(--coral);color:#fff;box-shadow:0 4px 0 #c2410c;cursor:pointer}
 .err{color:var(--bad);min-height:1.2em}
 @media (prefers-reduced-motion:reduce){.slot.pop{animation:none}}
+/* Landscape phones: the sea on the left, the word and the letter keys on the right, so nothing needs scrolling. */
+@media (min-aspect-ratio:3/2) and (max-height:520px){
+  body{padding-block:6px}
+  body>.app{max-width:900px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);grid-template-areas:"top play" "levels play" "scene play";grid-template-rows:auto auto 1fr;column-gap:14px;row-gap:6px;align-items:start}
+  body>.app>.top{grid-area:top} body>.app>.levels{grid-area:levels} body>.app>.scene{grid-area:scene}
+  #play,#secret{grid-area:play;align-self:center;width:100%}
+  #play{gap:6px!important}
+  .lvl{padding:3px 2px;flex-direction:row;justify-content:center;gap:4px} .lvl b{font-size:1.2rem}
+  .slot{height:44px;width:clamp(30px,5vw,44px);font-size:1.7rem}
+  .key{aspect-ratio:auto;height:clamp(44px,11.5vh,54px);font-size:1.45rem}
+  .tool{flex-direction:row;justify-content:center;gap:6px;padding:4px;min-height:44px} .tool b{font-size:1.3rem;flex:none}
+  .tool span{width:auto;min-width:0;flex:0 1 auto}
+  .lvl{min-height:44px}
+}
 </style>
 
 <div class="app">
-  <div class="top"><h1>Shark <span>Plank</span></h1><div class="stars" id="stars" aria-label="Words won">⭐ 0</div></div>
-  <div class="levels" role="group" aria-label="Word size">
-    <button class="lvl" data-l="easy" aria-pressed="true"><b>🐣</b>3–4</button>
-    <button class="lvl" data-l="mid" aria-pressed="false"><b>🐥</b>5–6</button>
-    <button class="lvl" data-l="hard" aria-pressed="false"><b>🦅</b>Big</button>
-    <button class="lvl" data-l="two" aria-pressed="false"><b>👫</b>2 play</button>
+  <div class="top"><div class="ttl"><h1 dir="ltr">Shark <span>Plank</span></h1><p class="practise" id="practise" data-i18n="practise" hidden></p></div><div class="stars" id="stars" data-i18n-aria="wordsWon" aria-label="Words won">⭐ 0</div></div>
+  <div class="levels" role="group" data-i18n-aria="wordSize" aria-label="Word size">
+    <button class="lvl" data-l="easy" aria-pressed="true" data-i18n-aria="lvlEasyA"><b>🐣</b><span dir="ltr">3–4</span></button>
+    <button class="lvl" data-l="mid" aria-pressed="false" data-i18n-aria="lvlMidA"><b>🐥</b><span dir="ltr">5–6</span></button>
+    <button class="lvl" data-l="hard" aria-pressed="false" data-i18n-aria="lvlHardA"><b>🦅</b><span data-i18n="lvlHard">Big</span></button>
+    <button class="lvl" data-l="two" aria-pressed="false" data-i18n-aria="lvlTwoA"><b>👫</b><span data-i18n="lvlTwo">2 play</span></button>
   </div>
 
-  <div class="scene"><canvas id="cv" width="1000" height="600" aria-label="A kid on a pirate plank with a shark in the water"></canvas></div>
+  <div class="scene" dir="ltr"><canvas id="cv" width="1000" height="600" data-i18n-aria="scene" aria-label="A kid on a pirate plank with a shark in the water"></canvas></div>
 
   <section id="play" class="app" style="gap:10px">
-    <div class="word" id="word" aria-live="polite"></div>
-    <div class="keys" id="keys"></div>
+    <div class="word" id="word" aria-live="polite" dir="ltr"></div>
+    <div class="keys" id="keys" dir="ltr"></div>
     <div class="tools">
-      <button class="tool hear" id="hear"><b>🔊</b>Hear it</button>
-      <button class="tool hint" id="hint"><b>💡</b>Help me</button>
-      <button class="tool next" id="next"><b>➡️</b>New word</button>
+      <button class="tool hear" id="hear"><b>🔊</b><span data-i18n="hear">Hear it</span></button>
+      <button class="tool hint" id="hint"><b>💡</b><span data-i18n="hint">Help me</span></button>
+      <button class="tool next" id="next"><b id="nextArrow">➡️</b><span data-i18n="next">New word</span></button>
     </div>
   </section>
 
   <section class="secret" id="secret" hidden>
-    <p><b>Grown-up or Player 1:</b> type a secret word. Don't let the other player peek!</p>
-    <input id="secretIn" type="password" autocomplete="off" maxlength="14" placeholder="e.g. Goal" aria-label="Secret word">
-    <div class="err" id="err"></div>
-    <button class="btn" id="startSecret">Hide it and pass the phone 📱</button>
+    <p><b data-i18n="secretWho">Grown-up or Player 1:</b> <span data-i18n="secretMsg">type a secret word. Don't let the other player peek!</span></p>
+    <input id="secretIn" type="password" autocomplete="off" maxlength="14" dir="ltr" placeholder="e.g. Goal" data-i18n-ph="secretPh" data-i18n-aria="secretLabel" aria-label="Secret word">
+    <div class="err" id="err" role="alert"></div>
+    <button class="btn" id="startSecret" data-i18n="startSecret">Hide it and pass the phone 📱</button>
   </section>
 </div>
 
@@ -95,15 +113,133 @@ const W={
  mid:[['APPLE','🍎'],['HOUSE','🏠'],['MOUSE','🐭'],['SHARK','🦈'],['PIZZA','🍕'],['ROBOT','🤖'],['TIGER','🐯'],['ZEBRA','🦓'],['HORSE','🐴'],['TRAIN','🚂'],['SNAKE','🐍'],['WHALE','🐳'],['CLOCK','⏰'],['TRUCK','🚚'],['BREAD','🍞'],['GRAPES','🍇'],['BANANA','🍌'],['ROCKET','🚀'],['PIRATE','🏴‍☠️'],['MONKEY','🐵'],['CASTLE','🏰'],['DRAGON','🐉'],['TURTLE','🐢'],['RABBIT','🐰'],['PENCIL','✏️'],['SPIDER','🕷️']],
  hard:[['ELEPHANT','🐘'],['PENGUIN','🐧'],['DINOSAUR','🦕'],['OCTOPUS','🐙'],['BUTTERFLY','🦋'],['RAINBOW','🌈'],['UNICORN','🦄'],['GIRAFFE','🦒'],['STRAWBERRY','🍓'],['ASTRONAUT','🧑‍🚀'],['HELICOPTER','🚁'],['SNOWMAN','⛄'],['CROCODILE','🐊'],['KANGAROO','🦘'],['FOOTBALL','⚽'],['HAMBURGER','🍔'],['VOLCANO','🌋'],['TELESCOPE','🔭']]
 };
+/* ---------- LANGUAGES: every word the player sees or hears, per site language ----------
+   The hidden words stay English on purpose (this is an English spelling game), and they are always
+   read aloud with an English voice. Only the menus, help and cheers change language. */
+const LANG=(window.BRB&&BRB.user&&BRB.user.lang)||'en';
+const DIR=(window.BRB&&BRB.user&&BRB.user.dir)||(/^(he|ar)\b/.test(LANG)?'rtl':'ltr');
+const I18N={
+ en:{wordsWon:'Words won',wordSize:'Word size',lvlEasyA:'Short words: 3 or 4 letters',lvlMidA:'Middle words: 5 or 6 letters',lvlHard:'Big',lvlHardA:'Big words',lvlTwo:'2 play',lvlTwoA:'Two players: one hides a word, one guesses',
+  scene:'A kid on a pirate plank with a shark in the water',hear:'Hear it',hint:'Help me',next:'New word',
+  secretWho:'Grown-up or Player 1:',secretMsg:"type a secret word. Don't let the other player peek!",secretPh:'e.g. Goal',secretLabel:'Secret word',startSecret:'Hide it and pass the phone 📱',
+  errShort:'Type a word with 2 or more letters.',errAZ:'Use the letters A to Z.',letter:'Letter {l}',blank:'blank',practise:'Practice English words! 🔤',
+  sNoHelp:'No more help this time!',sYes:'{l}! Yes!',sNo:'No {l}',sWin:'{w}! You did it! Great job!',sLose:'Oh no! The word was {w}.',chomp:'CHOMP!',burp:'BURP!',win:'YOU DID IT!'},
+ 'en-GB':{practise:'Practise English words! 🔤'},
+ pt:{wordsWon:'Palavras acertadas',wordSize:'Tamanho da palavra',lvlEasyA:'Palavras curtas: 3 ou 4 letras',lvlMidA:'Palavras médias: 5 ou 6 letras',lvlHard:'Longas',lvlHardA:'Palavras longas',lvlTwo:'Em dupla',lvlTwoA:'Dois jogadores: um esconde uma palavra e o outro adivinha',
+  scene:'Uma criança na prancha de um navio pirata, com um tubarão na água',hear:'Ouvir',hint:'Me ajuda',next:'Nova palavra',
+  secretWho:'Adulto ou Jogador 1:',secretMsg:'digite uma palavra secreta. Não deixe o outro jogador espiar!',secretPh:'ex.: cat',secretLabel:'Palavra secreta',startSecret:'Esconda e passe o celular 📱',
+  errShort:'Digite uma palavra com 2 letras ou mais.',errAZ:'Use as letras de A a Z.',letter:'Letra {l}',blank:'vazio',practise:'Pratique palavras em inglês! 🔤',
+  sNoHelp:'Não tem mais ajuda desta vez!',sYes:'{l}! Isso!',sNo:'Não tem {l}',sWin:'{w}! Você conseguiu! Muito bem!',sLose:'Ah, não! A palavra era {w}.',chomp:'NHAC!',burp:'BURP!',win:'CONSEGUIU!'},
+ fr:{wordsWon:'Mots trouvés',wordSize:'Taille du mot',lvlEasyA:'Mots courts : 3 ou 4 lettres',lvlMidA:'Mots moyens : 5 ou 6 lettres',lvlHard:'Longs',lvlHardA:'Mots longs',lvlTwo:'À deux',lvlTwoA:'À deux : l’un cache un mot, l’autre devine',
+  scene:'Un enfant sur la planche d’un bateau pirate, avec un requin dans l’eau',hear:'Écouter',hint:'Aide-moi',next:'Nouveau mot',
+  secretWho:'Adulte ou Joueur 1 :',secretMsg:'écris un mot secret. L’autre joueur ne doit pas regarder !',secretPh:'ex. : cat',secretLabel:'Mot secret',startSecret:'Cache-le et passe le téléphone 📱',
+  errShort:'Écris un mot d’au moins 2 lettres.',errAZ:'Utilise les lettres de A à Z.',letter:'Lettre {l}',blank:'vide',practise:'Entraîne-toi avec des mots anglais ! 🔤',
+  sNoHelp:'Plus d’aide cette fois !',sYes:'{l} ! Oui !',sNo:'Pas de {l}',sWin:'{w} ! Tu as réussi ! Bravo !',sLose:'Oh non ! Le mot était {w}.',chomp:'CROC !',burp:'BEURP !',win:'BRAVO !'},
+ es:{wordsWon:'Palabras acertadas',wordSize:'Tamaño de palabra',lvlEasyA:'Palabras cortas: 3 o 4 letras',lvlMidA:'Palabras medianas: 5 o 6 letras',lvlHard:'Largas',lvlHardA:'Palabras largas',lvlTwo:'Para 2',lvlTwoA:'Dos jugadores: uno esconde una palabra y el otro adivina',
+  scene:'Un niño en la tabla de un barco pirata, con un tiburón en el agua',hear:'Escuchar',hint:'Ayúdame',next:'Otra palabra',
+  secretWho:'Adulto o Jugador 1:',secretMsg:'escribe una palabra secreta. ¡Que el otro jugador no mire!',secretPh:'p. ej.: cat',secretLabel:'Palabra secreta',startSecret:'Escóndela y pasa el teléfono 📱',
+  errShort:'Escribe una palabra de 2 letras o más.',errAZ:'Usa las letras de la A a la Z.',letter:'Letra {l}',blank:'vacío',practise:'¡Practica palabras en inglés! 🔤',
+  sNoHelp:'¡Ya no hay más ayuda esta vez!',sYes:'¡{l}! ¡Sí!',sNo:'No hay {l}',sWin:'¡{w}! ¡Lo lograste! ¡Muy bien!',sLose:'¡Oh, no! La palabra era {w}.',chomp:'¡ÑAM!',burp:'¡BURP!',win:'¡LO LOGRASTE!'},
+ de:{wordsWon:'Gelöste Wörter',wordSize:'Wortlänge',lvlEasyA:'Kurze Wörter: 3 oder 4 Buchstaben',lvlMidA:'Mittlere Wörter: 5 oder 6 Buchstaben',lvlHard:'Lang',lvlHardA:'Lange Wörter',lvlTwo:'Zu zweit',lvlTwoA:'Zu zweit: Einer versteckt ein Wort, der andere rät',
+  scene:'Ein Kind auf der Planke eines Piratenschiffs, im Wasser ein Hai',hear:'Anhören',hint:'Hilf mir',next:'Neues Wort',
+  secretWho:'Erwachsene oder Spieler 1:',secretMsg:'Tippe ein geheimes Wort. Der andere darf nicht gucken!',secretPh:'z. B. cat',secretLabel:'Geheimes Wort',startSecret:'Verstecken und Handy weitergeben 📱',
+  errShort:'Tippe ein Wort mit mindestens 2 Buchstaben.',errAZ:'Nimm nur die Buchstaben A bis Z.',letter:'Buchstabe {l}',blank:'leer',practise:'Übe englische Wörter! 🔤',
+  sNoHelp:'Diesmal gibt es keine Hilfe mehr!',sYes:'{l}! Ja!',sNo:'Kein {l}',sWin:'{w}! Geschafft! Super gemacht!',sLose:'Oh nein! Das Wort war {w}.',chomp:'HAPS!',burp:'RÜLPS!',win:'GESCHAFFT!'},
+ he:{wordsWon:'מילים שפתרתם',wordSize:'אורך המילה',lvlEasyA:'מילים קצרות: 3 או 4 אותיות',lvlMidA:'מילים בינוניות: 5 או 6 אותיות',lvlHard:'ארוכות',lvlHardA:'מילים ארוכות',lvlTwo:'בשניים',lvlTwoA:'שני שחקנים: אחד מסתיר מילה והשני מנחש',
+  scene:'ילד על קרש של ספינת פיראטים, וכריש במים',hear:'הקשיבו',hint:'עזרו לי',next:'מילה חדשה',
+  secretWho:'מבוגר או שחקן 1:',secretMsg:'הקלידו מילה סודית. אל תתנו לשחקן השני להציץ!',secretPh:'למשל: cat',secretLabel:'מילה סודית',startSecret:'הסתירו והעבירו את הטלפון 📱',
+  errShort:'הקלידו מילה עם 2 אותיות או יותר.',errAZ:'השתמשו באותיות A עד Z.',letter:'האות {l}',blank:'ריק',practise:'מתרגלים מילים באנגלית! 🔤',
+  sNoHelp:'אין עוד עזרה הפעם!',sYes:'{l}! כן!',sNo:'אין {l}',sWin:'{w}! הצלחתם! כל הכבוד!',sLose:'אוי לא! המילה הייתה {w}.',chomp:'האם!',burp:'גרעפס!',win:'הצלחתם!'},
+ ja:{wordsWon:'とけたことば',wordSize:'ことばのながさ',lvlEasyA:'みじかいことば：3〜4もじ',lvlMidA:'ふつうのことば：5〜6もじ',lvlHard:'ながい',lvlHardA:'ながいことば',lvlTwo:'ふたりで',lvlTwoA:'ふたりで：ひとりがことばをかくして、もうひとりがあてます',
+  scene:'かいぞくせんの いたの上にいる子どもと、海にいるサメ',hear:'きく',hint:'ヒント',next:'つぎのことば',
+  secretWho:'おとなか プレイヤー1：',secretMsg:'ひみつのことばを 入力してね。もうひとりは 見ちゃだめだよ！',secretPh:'れい：cat',secretLabel:'ひみつのことば',startSecret:'かくして、スマホをわたそう 📱',
+  errShort:'2もじ いじょうの ことばを 入力してね。',errAZ:'A から Z の もじを つかってね。',letter:'もじ {l}',blank:'まだ わからない もじ',practise:'えいごの ことばを れんしゅうしよう！🔤',
+  sNoHelp:'こんかいは もう ヒントは ないよ！',sYes:'{l}！ あたり！',sNo:'{l} は ないよ',sWin:'{w}！ やったね！ すごいです！',sLose:'ああっ！ こたえは {w} でした。',chomp:'パクッ！',burp:'ゲップ！',win:'やったね！'},
+ ar:{wordsWon:'الكلمات التي حللتها',wordSize:'طول الكلمة',lvlEasyA:'كلمات قصيرة: 3 أو 4 حروف',lvlMidA:'كلمات متوسطة: 5 أو 6 حروف',lvlHard:'طويلة',lvlHardA:'كلمات طويلة',lvlTwo:'لاعبان',lvlTwoA:'لاعبان: واحد يخفي كلمة والآخر يخمّنها',
+  scene:'طفل على لوح سفينة قراصنة، وفي الماء سمكة قرش',hear:'استمع',hint:'ساعدني',next:'كلمة جديدة',
+  secretWho:'شخص كبير أو اللاعب 1:',secretMsg:'اكتب كلمة سرية. لا تدع اللاعب الآخر ينظر!',secretPh:'مثلًا: cat',secretLabel:'الكلمة السرية',startSecret:'أخفِها ومرّر الهاتف 📱',
+  errShort:'اكتب كلمة من حرفين أو أكثر.',errAZ:'استعمل الحروف من A إلى Z.',letter:'الحرف {l}',blank:'فارغ',practise:'تدرّب على كلمات إنجليزية! 🔤',
+  sNoHelp:'لا مساعدة أخرى هذه المرة!',sYes:'{l}! نعم!',sNo:'لا يوجد {l}',sWin:'{w}! لقد نجحت! أحسنت!',sLose:'أوه لا! الكلمة كانت {w}.',chomp:'هام!',burp:'بُررب!',win:'أحسنت!'},
+ ru:{wordsWon:'Отгаданные слова',wordSize:'Длина слова',lvlEasyA:'Короткие слова: 3 или 4 буквы',lvlMidA:'Средние слова: 5 или 6 букв',lvlHard:'Длинные',lvlHardA:'Длинные слова',lvlTwo:'Вдвоём',lvlTwoA:'Вдвоём: один прячет слово, другой угадывает',
+  scene:'Ребёнок на доске пиратского корабля, а в воде акула',hear:'Слушать',hint:'Помоги',next:'Новое слово',
+  secretWho:'Взрослый или Игрок 1:',secretMsg:'напиши секретное слово. Другой игрок не должен подглядывать!',secretPh:'например: cat',secretLabel:'Секретное слово',startSecret:'Спрятать и передать телефон 📱',
+  errShort:'Напиши слово из 2 букв или длиннее.',errAZ:'Используй буквы от A до Z.',letter:'Буква {l}',blank:'пусто',practise:'Учим английские слова! 🔤',
+  sNoHelp:'Больше подсказок нет!',sYes:'{l}! Да!',sNo:'Нет буквы {l}',sWin:'{w}! Получилось! Молодец!',sLose:'Ой! Это было слово {w}.',chomp:'АМ!',burp:'БУРП!',win:'ПОЛУЧИЛОСЬ!'},
+ it:{wordsWon:'Parole indovinate',wordSize:'Lunghezza della parola',lvlEasyA:'Parole corte: 3 o 4 lettere',lvlMidA:'Parole medie: 5 o 6 lettere',lvlHard:'Lunghe',lvlHardA:'Parole lunghe',lvlTwo:'In due',lvlTwoA:'In due: uno nasconde una parola, l’altro indovina',
+  scene:'Un bambino sull’asse di una nave pirata, con uno squalo nell’acqua',hear:'Ascolta',hint:'Aiutami',next:'Nuova parola',
+  secretWho:'Adulto o Giocatore 1:',secretMsg:'scrivi una parola segreta. L’altro giocatore non deve sbirciare!',secretPh:'es.: cat',secretLabel:'Parola segreta',startSecret:'Nascondila e passa il telefono 📱',
+  errShort:'Scrivi una parola di almeno 2 lettere.',errAZ:'Usa le lettere dalla A alla Z.',letter:'Lettera {l}',blank:'vuoto',practise:'Allenati con le parole inglesi! 🔤',
+  sNoHelp:'Niente più aiuti questa volta!',sYes:'{l}! Sì!',sNo:'Niente {l}',sWin:'{w}! Ce l’hai fatta! Grande!',sLose:'Oh no! La parola era {w}.',chomp:'GNAM!',burp:'BURP!',win:'CE L’HAI FATTA!'},
+ 'zh-Hant':{wordsWon:'猜中的單字',wordSize:'單字長度',lvlEasyA:'短單字：3 或 4 個字母',lvlMidA:'中單字：5 或 6 個字母',lvlHard:'長單字',lvlHardA:'長單字',lvlTwo:'雙人',lvlTwoA:'雙人：一個人藏單字，另一個人猜',
+  scene:'海盜船木板上的小孩，水裡有一隻鯊魚',hear:'聽一聽',hint:'幫幫我',next:'換一個字',
+  secretWho:'大人或玩家 1：',secretMsg:'輸入一個祕密單字，別讓另一位玩家偷看！',secretPh:'例如：cat',secretLabel:'祕密單字',startSecret:'藏好後把手機交出去 📱',
+  errShort:'請輸入 2 個字母以上的單字。',errAZ:'請用 A 到 Z 的字母。',letter:'字母 {l}',blank:'空格',practise:'一起練習英文單字！🔤',
+  sNoHelp:'這次沒有提示了！',sYes:'{l}！答對了！',sNo:'沒有 {l}',sWin:'{w}！你成功了！好棒！',sLose:'哎呀！答案是 {w}。',chomp:'啊嗚！',burp:'嗝～！',win:'成功了！'},
+ nl:{wordsWon:'Geraden woorden',wordSize:'Woordlengte',lvlEasyA:'Korte woorden: 3 of 4 letters',lvlMidA:'Middelgrote woorden: 5 of 6 letters',lvlHard:'Lang',lvlHardA:'Lange woorden',lvlTwo:'Samen',lvlTwoA:'Met z’n tweeën: de een verstopt een woord, de ander raadt',
+  scene:'Een kind op de plank van een piratenschip, met een haai in het water',hear:'Luister',hint:'Help me',next:'Nieuw woord',
+  secretWho:'Volwassene of Speler 1:',secretMsg:'typ een geheim woord. De andere speler mag niet kijken!',secretPh:'bijv. cat',secretLabel:'Geheim woord',startSecret:'Verstop het en geef de telefoon door 📱',
+  errShort:'Typ een woord van 2 letters of meer.',errAZ:'Gebruik de letters A tot en met Z.',letter:'Letter {l}',blank:'leeg',practise:'Oefen Engelse woorden! 🔤',
+  sNoHelp:'Deze keer geen hulp meer!',sYes:'{l}! Ja!',sNo:'Geen {l}',sWin:'{w}! Het is gelukt! Goed zo!',sLose:'Oh nee! Het woord was {w}.',chomp:'HAP!',burp:'BOER!',win:'GELUKT!'}
+};
+const BASE=LANG.split('-')[0],IS_EN=BASE==='en';
+function t(key,vars){
+  const pick=o=>o&&Object.prototype.hasOwnProperty.call(o,key)?o[key]:undefined;
+  let s=pick(I18N[LANG]);if(s===undefined)s=pick(I18N[BASE]);if(s===undefined)s=pick(I18N.en);if(s===undefined)s=key;
+  return vars?s.replace(/\{(\w+)\}/g,(m,k)=>k in vars?vars[k]:m):s;
+}
+const NUM=new Intl.NumberFormat(BASE==='ar'?'ar-u-nu-latn':LANG);
+const fmtN=n=>NUM.format(n);
+function applyI18n(){
+  try{document.documentElement.lang=LANG;document.documentElement.dir=DIR;}catch(e){}
+  document.querySelectorAll('[data-i18n]').forEach(el=>{el.textContent=t(el.dataset.i18n);});
+  document.querySelectorAll('[data-i18n-aria]').forEach(el=>el.setAttribute('aria-label',t(el.dataset.i18nAria)));
+  document.querySelectorAll('[data-i18n-ph]').forEach(el=>el.setAttribute('placeholder',t(el.dataset.i18nPh)));
+  $('practise').hidden=IS_EN;            // "Practise English words!" only when the menus are in another language
+  if(DIR==='rtl')$('nextArrow').textContent='⬅️';   // "next" points the reading way
+  fitLabels();
+}
+/* German and Russian labels run long: shrink a label until it fits on one line (wrap only as a last resort). */
+function fitLabels(){
+  document.querySelectorAll('.lvl span,.tool span').forEach(el=>{
+    el.style.fontSize='';el.style.whiteSpace='';if(!el.offsetParent)return;
+    let fs=parseFloat(getComputedStyle(el).fontSize);
+    while(el.scrollWidth>el.clientWidth+1&&fs>11){fs-=.5;el.style.fontSize=fs+'px';}
+    if(el.scrollWidth>el.clientWidth+1)el.style.whiteSpace='normal';
+  });
+}
+addEventListener('resize',fitLabels);
+try{document.fonts&&document.fonts.ready&&document.fonts.ready.then(fitLabels);}catch(e){}
+
 const LIVES=6,ABC='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 let level='easy',word='',pic='',guessed=new Set(),miss=0,over=false,stars=0,used={};
 try{stars=+localStorage.getItem('shark-plank-stars')||0;}catch(e){}
 
 /* ---------- speech ---------- */
-function say(t,rate=.85){try{if(!('speechSynthesis' in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.rate=rate;u.pitch=1.15;u.lang='en-US';speechSynthesis.speak(u);}catch(e){}}
+/* The game's words and letters are always spoken with an English (en-US) voice. Cheers and messages use the
+   menu language's voice when the device has one; with no such voice only the English word is spoken. */
+const VOICE_TAG={pt:'pt-BR','zh-Hant':'zh-TW',fr:'fr-FR',es:'es-ES',de:'de-DE',he:'he-IL',ja:'ja-JP',ar:'ar-SA',ru:'ru-RU',it:'it-IT',nl:'nl-NL'};
+function uiVoice(){
+  const tag=VOICE_TAG[LANG]||LANG;let vs=[];try{vs=speechSynthesis.getVoices()||[];}catch(e){}
+  if(!vs.length)return {lang:tag,voice:null};          // voices not listed yet: let the browser pick by language
+  const norm=x=>String(x||'').replace('_','-').toLowerCase(),want=norm(tag),base=want.split('-')[0];
+  const v=vs.find(x=>norm(x.lang)===want)||vs.find(x=>norm(x.lang).split('-')[0]===base);
+  return v?{lang:v.lang,voice:v}:null;
+}
+function utter(text,rate,ui){const u=new SpeechSynthesisUtterance(text);u.rate=rate;u.pitch=1.15;if(ui){u.lang=ui.lang;if(ui.voice)u.voice=ui.voice;}else u.lang='en-US';speechSynthesis.speak(u);}
+function say(t,rate=.85){try{if(!('speechSynthesis' in window))return;speechSynthesis.cancel();utter(t,rate,null);}catch(e){}}
+function sayT(key,vars={},rate=.85){
+  try{
+    if(!('speechSynthesis' in window))return;speechSynthesis.cancel();
+    if(IS_EN){utter(t(key,vars),rate,null);return;}
+    const ui=uiVoice();
+    t(key).split(/(\{\w+\})/).forEach(seg=>{const m=/^\{(\w+)\}$/.exec(seg);
+      if(m){if(vars[m[1]]!=null)utter(String(vars[m[1]]),rate,null);}
+      else if(ui&&/\p{L}/u.test(seg))utter(seg.replace(/^[\s\p{P}]+/u,'').trim(),rate,ui);});
+  }catch(e){}
+}
 
 /* ---------- UI ---------- */
-$('keys').innerHTML=ABC.split('').map(l=>`<button class="key" id="k${l}" aria-label="Letter ${l}">${l}<small>${l.toLowerCase()}</small></button>`).join('');
+$('keys').innerHTML=ABC.split('').map(l=>`<button class="key" id="k${l}" aria-label="${t('letter',{l})}">${l}<small>${l.toLowerCase()}</small></button>`).join('');
 ABC.split('').forEach(l=>$('k'+l).addEventListener('click',()=>guess(l)));
 addEventListener('keydown',e=>{if($('play').hidden||e.metaKey||e.ctrlKey||e.altKey)return;const l=e.key.toUpperCase();if(l.length===1&&ABC.includes(l))guess(l);});
 document.querySelectorAll('.lvl').forEach(b=>b.addEventListener('click',()=>{
@@ -112,14 +248,16 @@ document.querySelectorAll('.lvl').forEach(b=>b.addEventListener('click',()=>{
   else{$('play').hidden=false;$('secret').hidden=true;newWord();}
 }));
 $('startSecret').addEventListener('click',()=>{
-  const w=$('secretIn').value.toUpperCase().replace(/[^A-Z]/g,'');
-  if(w.length<2){$('err').textContent='Type a word with 2 or more letters.';return;}
+  const raw=$('secretIn').value.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase();   // é -> E
+  const w=raw.replace(/[^A-Z]/g,'');
+  if(/[^A-Z\P{L}]/u.test(raw)){$('err').textContent=t('errAZ');return;}   // letters the A-Z keys can't type
+  if(w.length<2){$('err').textContent=t('errShort');return;}
   $('secret').hidden=true;$('play').hidden=false;newWord(w);
 });
 $('hear').addEventListener('click',()=>{if(word)say(word.toLowerCase(),.7);});
 $('hint').addEventListener('click',()=>{
   if(over)return;const left=[...new Set(word.split(''))].filter(l=>!guessed.has(l));
-  if(!left.length||miss>=LIVES-1){say('No more help this time!');return;}
+  if(!left.length||miss>=LIVES-1){sayT('sNoHelp');return;}
   miss++;scene.step=miss;scene.walk=1;const l=left[Math.floor(Math.random()*left.length)];
   guessed.add(l);$('k'+l).disabled=true;$('k'+l).classList.add('good');renderWord(l);say(l);checkWin();
 });
@@ -134,25 +272,25 @@ function newWord(custom){
   guessed=new Set();miss=0;over=false;
   ABC.split('').forEach(l=>{const k=$('k'+l);k.disabled=false;k.className='key';});
   $('hint').disabled=false;resetScene();renderWord();
-  $('stars').textContent='⭐ '+stars;
+  $('stars').textContent='⭐ '+fmtN(stars);
 }
 function renderWord(popL){
   $('word').innerHTML=word.split('').map(ch=>{
     const shown=guessed.has(ch)||over,cls=over&&!guessed.has(ch)?' miss':(popL===ch?' pop':'');
-    return `<span class="slot${cls}" aria-label="${shown?ch:'blank'}">${shown?ch:''}</span>`;}).join('');
+    return `<span class="slot${cls}" aria-label="${shown?ch:t('blank')}">${shown?ch:''}</span>`;}).join('');
 }
 function guess(l){
   if(over||guessed.has(l)||scene.anim)return;
   guessed.add(l);const k=$('k'+l);k.disabled=true;
-  if(word.includes(l)){k.classList.add('good');renderWord(l);say(l+'! Yes!');scene.happy=1.2;checkWin();}
-  else{k.classList.add('bad');miss++;scene.step=miss;scene.walk=1;say('No '+l);
+  if(word.includes(l)){k.classList.add('good');renderWord(l);sayT('sYes',{l});scene.happy=1.2;checkWin();}
+  else{k.classList.add('bad');miss++;scene.step=miss;scene.walk=1;sayT('sNo',{l});
     if(miss>=LIVES){over=true;ABC.split('').forEach(x=>$('k'+x).disabled=true);$('hint').disabled=true;scene.anim='chomp';scene.at=0;}}
 }
 function checkWin(){
   if(word.split('').every(ch=>guessed.has(ch))){
     over=true;ABC.split('').forEach(x=>$('k'+x).disabled=true);$('hint').disabled=true;
-    stars++;try{localStorage.setItem('shark-plank-stars',stars);}catch(e){}$('stars').textContent='⭐ '+stars;
-    scene.anim='win';scene.at=0;setTimeout(()=>say(word.toLowerCase()+'! You did it! Great job!'),600);
+    stars++;try{localStorage.setItem('shark-plank-stars',stars);}catch(e){}$('stars').textContent='⭐ '+fmtN(stars);
+    scene.anim='win';scene.at=0;setTimeout(()=>sayT('sWin',{w:word.toLowerCase()}),600);
   }
 }
 
@@ -314,20 +452,20 @@ function frame(now){
       if(k<.05&&!scene.splash1){scene.splash1=1;splash(kx+150,SEA,40,true);scene.shake=10;}
       const mouth=k<.45?k/.45:Math.max(0,1-(k-.45)/.12);
       if(!scene.kid.gone&&k<.52){drawKid(kx,ky-(k>.35?(k-.35)*300:0),T,{worry:6,fly:k>.35});}
-      if(k>=.52&&!scene.kid.gone){scene.kid.gone=true;words('CHOMP!',Math.max(260,kx),150,'#ff4f5e',1.2);scene.shake=16;}
+      if(k>=.52&&!scene.kid.gone){scene.kid.gone=true;words(t('chomp'),Math.max(260,kx),150,'#ff4f5e',1.2);scene.shake=16;}
       drawShark(sx,sy,-.9+k*1.7,mouth,1,T);}
     else if(a<2.4){const k=(a-1.5)/.9;if(!scene.splash2){scene.splash2=1;splash(kx-40,SEA,70,true);scene.shake=20;}
       if(k<.4)drawShark(kx-40,SEA+40+k*200,.9,0,1,T);}
     else if(a<3.6){const k=(a-2.4)/1.2;
       const sy=SEA+40-Math.sin(Math.min(1,k*1.6)*Math.PI/2)*90;drawShark(kx+40,sy,-.25,k>.45?Math.min(1,(k-.45)*5):0,1,T);
-      if(k>.5&&!scene.burp){scene.burp=1;words('BURP!',kx+140,SEA-170,'#8b5cf6',1.2);}
+      if(k>.5&&!scene.burp){scene.burp=1;words(t('burp'),kx+140,SEA-170,'#8b5cf6',1.2);}
       if(k>.5){const f=Math.min(1,(k-.5)/.5);const fx=lerp(kx+200,kidX(0),f),fy=lerp(SEA-40,PLANK_Y-12,f)-Math.sin(f*Math.PI)*220;drawKid(fx,fy+bob,T,{worry:5,fly:1,rot:f*6.28});
         if(f>=1&&!scene.drip)scene.drip=1;}}
     else{drawFin(kx+200+Math.sin(T)*120,T,Math.cos(T)>0?1:-1);drawKid(kidX(0),PLANK_Y-12+bob,T,{worry:4});
-      if(!scene.revealed){scene.revealed=1;renderWord();say('Oh no! The word was '+word.toLowerCase()+'.');}
+      if(!scene.revealed){scene.revealed=1;renderWord();sayT('sLose',{w:word.toLowerCase()});}
       c.fillStyle='rgba(120,200,255,.8)';for(let i=0;i<3;i++){c.beginPath();c.ellipse(kidX(0)-20+i*20,PLANK_Y-140+((T*60+i*15)%60),3,6,0,0,7);c.fill();}}
   } else if(scene.anim==='win'){
-    scene.at+=dt;if(!scene.conf){scene.conf=1;confetti();words('YOU DID IT!',SW/2,160,'#22c55e',1.1);}
+    scene.at+=dt;if(!scene.conf){scene.conf=1;confetti();words(t('win'),SW/2,160,'#22c55e',1.1);}
     drawFin(kx+200+scene.at*260,T,1);
     drawKid(kx,ky,T,{happy:1});
   } else {
@@ -346,8 +484,10 @@ function frame(now){
   for(const p of scene.parts){
     if(p.k==='drop'){p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=900*dt;c.fillStyle=`rgba(220,245,255,${1-p.t/p.life})`;c.beginPath();c.arc(p.x,p.y,p.r,0,7);c.fill();}
     else if(p.k==='conf'){p.x+=p.vx*dt;p.y+=p.vy*dt;p.rot+=dt*6;c.save();c.translate(p.x,p.y);c.rotate(p.rot);c.fillStyle=p.col;c.fillRect(-6,-9,12,18);c.restore();}
-    else if(p.k==='txt'){const k=p.t/p.life,s=p.s*(k<.15?k/.15*1.2:1.2-k*.2);c.save();c.translate(p.x,p.y-k*40);c.scale(s,s);c.rotate(-.08);
-      c.font='bold 90px Fredoka, sans-serif';c.textAlign='center';c.lineJoin='round';c.lineWidth=16;c.strokeStyle='#fff';c.globalAlpha=k>.75?(1-k)/.25:1;c.strokeText(p.txt,0,0);c.fillStyle=p.col;c.fillText(p.txt,0,0);c.restore();}
+    else if(p.k==='txt'){const k=p.t/p.life;let s=p.s*(k<.15?k/.15*1.2:1.2-k*.2);c.save();
+      c.font='bold 90px Fredoka, sans-serif';try{c.direction=DIR;}catch(e){}
+      const tw=c.measureText(p.txt).width*s;if(tw>900)s*=900/tw;const half=Math.min(tw,900)/2+20;   // long words (GESCHAFFT!) shrink to fit
+      c.translate(Math.max(half,Math.min(SW-half,p.x)),p.y-k*40);c.scale(s,s);c.rotate(-.08);c.textAlign='center';c.lineJoin='round';c.lineWidth=16;c.strokeStyle='#fff';c.globalAlpha=k>.75?(1-k)/.25:1;c.strokeText(p.txt,0,0);c.fillStyle=p.col;c.fillText(p.txt,0,0);c.restore();}
   }
   // lives: little life-rings on the ship
   for(let i=0;i<LIVES;i++){const x=24+i*30,y=24,used=i<scene.step;c.globalAlpha=used?.25:1;c.strokeStyle='#fff';c.lineWidth=9;c.beginPath();c.arc(x,y,10,0,7);c.stroke();
@@ -355,6 +495,7 @@ function frame(now){
   c.restore();
 }
 const lerp=(a,b,t)=>a+(b-a)*t;
+applyI18n();
 requestAnimationFrame(frame);
 newWord();
 })();

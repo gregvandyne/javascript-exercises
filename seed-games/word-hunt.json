@@ -6,9 +6,55 @@
   "category": "words",
   "tags": "word search,words,spelling,reading,puzzle,themes,learning,early readers,daily puzzle",
   "description": "Find the hidden words! Drag across the letters, or tap the first and last letter. Pick a theme like Ocean, Space or Dinosaurs, tap a word to hear it read out loud, and come back every day for the daily puzzle. You can even race a friend!",
+  "l10n": {
+    "pt": {
+      "description": "Ache as palavras escondidas em inglês! Arraste o dedo sobre as letras ou toque na primeira e na última letra. Escolha um tema como Oceano, Espaço ou Dinossauros, toque numa palavra para ouvir como se fala e volte todo dia para o desafio do dia. Dá até para apostar corrida com um amigo!",
+      "tags": "caça-palavras,palavras,inglês,soletrar,leitura,quebra-cabeça,temas,aprender,desafio do dia"
+    },
+    "fr": {
+      "description": "Trouve les mots anglais cachés ! Glisse le doigt sur les lettres, ou touche la première et la dernière lettre. Choisis un thème comme Océan, Espace ou Dinosaures, touche un mot pour l’entendre à voix haute, et reviens chaque jour pour le défi du jour. Tu peux même faire la course avec un ami !",
+      "tags": "mots mêlés,mots cachés,anglais,orthographe,lecture,puzzle,thèmes,apprendre,défi du jour"
+    },
+    "es": {
+      "description": "¡Encuentra las palabras en inglés escondidas! Desliza el dedo sobre las letras o toca la primera y la última letra. Elige un tema como Océano, Espacio o Dinosaurios, toca una palabra para oír cómo se dice y vuelve cada día para el reto del día. ¡Hasta puedes echar una carrera con un amigo!",
+      "tags": "sopa de letras,palabras,inglés,deletrear,lectura,rompecabezas,temas,aprender,reto del día"
+    },
+    "de": {
+      "description": "Finde die versteckten englischen Wörter! Wisch über die Buchstaben oder tippe auf den ersten und den letzten Buchstaben. Wähle ein Thema wie Meer, Weltall oder Dinosaurier, tippe auf ein Wort, um es vorgelesen zu hören, und komm jeden Tag für das Tagesrätsel wieder. Du kannst sogar ein Wettrennen zu zweit machen!",
+      "tags": "Buchstabensalat,Suchsel,Wörter,Englisch,Lesen,Rätsel,Themen,Lernen,Tagesrätsel"
+    },
+    "he": {
+      "description": "מצאו את המילים המוסתרות באנגלית! גררו את האצבע על האותיות, או לחצו על האות הראשונה והאחרונה. בחרו נושא כמו ים, חלל או דינוזאורים, לחצו על מילה כדי לשמוע אותה בקול, וחזרו בכל יום לחידה היומית. אפשר אפילו לעשות מרוץ עם חבר!",
+      "tags": "תפזורת,חיפוש מילים,מילים,אנגלית,איות,קריאה,חידה,נושאים,חידה יומית"
+    },
+    "ja": {
+      "description": "かくれた えいごの ことばを さがそう！ もじの上を なぞるか、さいしょと さいごの もじを タップしてね。うみ・うちゅう・きょうりゅうなどの テーマを えらんで、ことばを タップすると 声で よんでくれます。まいにち かわる きょうの パズルも あるよ。ともだちと きょうそうも できます！",
+      "tags": "ことばさがし,ワードサーチ,えいご,ことば,スペル,パズル,テーマ,まなぶ,きょうのパズル"
+    },
+    "ar": {
+      "description": "ابحث عن الكلمات الإنجليزية المخفية! اسحب إصبعك على الحروف، أو اضغط على أول حرف وآخر حرف. اختر موضوعًا مثل المحيط أو الفضاء أو الديناصورات، واضغط على كلمة لتسمعها بصوت عالٍ، وعُد كل يوم من أجل لغز اليوم. ويمكنك أيضًا أن تتسابق مع صديق!",
+      "tags": "البحث عن الكلمات,كلمات,إنجليزي,تهجئة,قراءة,ألغاز,مواضيع,تعلّم,لغز اليوم"
+    },
+    "ru": {
+      "description": "Найди спрятанные английские слова! Проведи пальцем по буквам или нажми на первую и последнюю букву. Выбери тему — океан, космос или динозавры, нажми на слово, чтобы услышать, как оно звучит, и возвращайся каждый день за заданием дня. Можно даже устроить гонку с другом!",
+      "tags": "поиск слов,филворд,слова,английский,чтение,головоломка,темы,учёба,задание дня"
+    },
+    "it": {
+      "description": "Trova le parole inglesi nascoste! Trascina il dito sulle lettere oppure tocca la prima e l’ultima lettera. Scegli un tema come Oceano, Spazio o Dinosauri, tocca una parola per sentirla ad alta voce e torna ogni giorno per la sfida del giorno. Puoi anche fare una gara con un amico!",
+      "tags": "crucipuzzle,cerca parole,parole,inglese,lettura,puzzle,temi,imparare,sfida del giorno"
+    },
+    "zh-Hant": {
+      "description": "找出藏起來的英文單字！用手指劃過字母，或點第一個和最後一個字母。選一個主題，像是海洋、太空或恐龍，點一下單字就能聽到怎麼唸，每天還有新的每日謎題。你還可以和朋友比賽喔！",
+      "tags": "找字遊戲,單字,英文,拼字,閱讀,謎題,主題,學習,每日謎題"
+    },
+    "nl": {
+      "description": "Vind de verstopte Engelse woorden! Veeg over de letters, of tik op de eerste en de laatste letter. Kies een thema zoals Zee, Ruimte of Dinosaurussen, tik op een woord om het te horen en kom elke dag terug voor de puzzel van de dag. Je kunt zelfs een race doen tegen een vriend!",
+      "tags": "woordzoeker,woorden,Engels,spellen,lezen,puzzel,thema's,leren,puzzel van de dag"
+    }
+  },
   "orientation": "any",
   "players_max": 2,
   "age_rating": "everyone",
   "featured": true,
-  "notes": "Puzzles are generated from a seed (13 themes, Easy 8x8 / Medium 10x10 with diagonals / Hard 12x12 all 8 directions); every word is placed exactly once and filler letters are checked against an internal blocklist in all directions. Daily puzzle is seeded by the local date. Saves progress in localStorage key 'word-hunt-v1' (points, puzzles per theme, best times per difficulty, daily streak). Score: BRB.score.submit(total, 'puzzle points') plus BRB.gameOver per solved puzzle. Read-aloud uses speechSynthesis when available (guarded). 'Race a friend' is pass-the-phone on the same grid. Loads Google Fonts (Andika, Fredoka). Test hooks on window.__brbTest."
+  "notes": "Puzzles are generated from a seed (13 themes, Easy 8x8 / Medium 10x10 with diagonals / Hard 12x12 all 8 directions); every word is placed exactly once and filler letters are checked against an internal blocklist in all directions. Daily puzzle is seeded by the local date. Saves progress in localStorage key 'word-hunt-v1' (points, puzzles per theme, best times per difficulty, daily streak). Score: BRB.score.submit(total, 'puzzle points') plus BRB.gameOver per solved puzzle. Read-aloud uses speechSynthesis when available (guarded). 'Race a friend' is pass-the-phone on the same grid. Loads Google Fonts (Andika, Fredoka). Test hooks on window.__brbTest. UI is translated into all 13 site languages from BRB.user.lang (I18N table, Intl plurals/numbers, RTL for he/ar); the hidden words, word list and read-aloud stay English (en-US voice) on purpose."
 }

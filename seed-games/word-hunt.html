@@ -47,6 +47,7 @@ canvas#grid{display:block;touch-action:none;outline:none;border-radius:10px}
   background:var(--ink);color:#fff;font-weight:600;font-size:1rem;line-height:1.2;text-align:center;padding:5px 12px;border-radius:18px;pointer-events:none;
   opacity:0;transition:opacity .2s,transform .2s;z-index:3;box-shadow:0 3px 0 rgba(0,0,0,.2)}
 .toast.show{opacity:1;transform:translateY(-50%) scale(1)}
+.toast.long{font-size:.9rem;line-height:1.15}
 .words{grid-area:words;list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;justify-content:center;gap:6px;align-content:flex-start}
 .words li{display:contents}
 .wchip{display:flex;align-items:center;gap:5px;min-height:38px;border:3px solid transparent;background:#fff;border-radius:14px;padding:2px 10px 2px 6px;
@@ -112,7 +113,7 @@ canvas#grid{display:block;touch-action:none;outline:none;border-radius:10px}
 .panel h2{margin:0;font-size:clamp(1.5rem,7vw,2rem);line-height:1.1;color:var(--acc)}
 .panel p{margin:0;font-size:1.05rem;line-height:1.3}
 .panel .sub{font-size:.95rem;color:var(--muted)}
-.corner{position:absolute;top:10px;right:10px}
+.corner{position:absolute;top:10px;inset-inline-end:10px}
 .big-btn{border:0;border-radius:20px;background:var(--acc);color:#fff;font-weight:700;font-size:1.45rem;padding:12px 30px;min-height:58px;min-width:200px;box-shadow:0 6px 0 var(--accDark)}
 .big-btn.alt{background:var(--accSoft);color:var(--ink);box-shadow:0 6px 0 rgba(0,0,0,.14);font-size:1.15rem;min-height:52px}
 .big-btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--accDark)}
@@ -122,8 +123,17 @@ canvas#grid{display:block;touch-action:none;outline:none;border-radius:10px}
 /* Title screen */
 .titlePanel{display:grid;width:min(100%,480px);grid-template-columns:minmax(0,1fr);justify-items:center;gap:8px;
   grid-template-areas:"art" "name" "tag" "daily" "diff" "themes" "opts" "play"}
+.nameBox{grid-area:name;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0}
+.practise{margin:0;font-size:1rem;font-weight:600;line-height:1.2;color:var(--ink)}
+/* Not in English: the "practise English words" line takes the tagline's place on phones, so the menu still fits. */
+@media (max-height:800px){.titlePanel.hasPractise .tag{display:none}}
+/* Long words (German, Russian, Japanese) stay on one line and shrink to fit (fitLabels). */
+.daily{white-space:nowrap;overflow:hidden;min-width:0}
+.daily .streak{font-size:.86em}
+.row button{overflow:hidden}
+.row button .dn{white-space:nowrap}
+.row button small{font-size:.72em}
 .titleArt{grid-area:art;width:140px;height:96px;display:block}
-.titlePanel h1{grid-area:name}
 .tag{grid-area:tag}
 .daily{grid-area:daily;width:100%;min-height:52px;border:3px solid #ffd43b;background:#fff9db;border-radius:18px;font-weight:700;font-size:1.1rem;
   display:flex;align-items:center;justify-content:center;gap:8px;padding:6px 10px;box-shadow:0 4px 0 #f0c419}
@@ -137,7 +147,7 @@ canvas#grid{display:block;touch-action:none;outline:none;border-radius:10px}
 .themes{grid-area:themes;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;width:100%}
 .themes button{min-height:56px;padding:4px 1px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:.8rem;line-height:1.05;min-width:0}
 .themes button .te{font-size:1.5rem;line-height:1}
-.themes button .tn{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.themes button .tn{max-width:100%;overflow:hidden;white-space:nowrap}   /* long names shrink to fit (fitLabels) */
 .opts{grid-area:opts;display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;width:100%}
 .opt{min-height:44px;padding:4px 14px;font-size:1rem}
 .opt[aria-pressed="true"]{background:#d3f9d8;border-color:#40c057}
@@ -151,7 +161,7 @@ canvas#grid{display:block;touch-action:none;outline:none;border-radius:10px}
   .titleArt{width:120px;height:66px}
   .tag{display:none}
   .themes button{min-height:50px}
-  .titlePanel .corner{right:auto;left:10px}
+  .titlePanel .corner{inset-inline-end:auto;inset-inline-start:10px}
   .titlePanel h1{font-size:2.2rem}
 }
 @media (min-aspect-ratio:5/4) and (max-height:400px){.titleArt{display:none}.titlePanel{grid-template-areas:"name themes" "daily themes" "diff themes" "play opts"}}
@@ -193,7 +203,7 @@ canvas#grid{display:block;touch-action:none;outline:none;border-radius:10px}
 
 <div class="app offstage" id="app">
   <div class="hud" id="hud">
-    <button class="icon-btn" id="pauseBtn" aria-label="Pause">⏸️</button>
+    <button class="icon-btn" id="pauseBtn" aria-label="Pause" data-i18n-aria="pause">⏸️</button>
     <div class="info">
       <canvas id="hudArt" aria-hidden="true"></canvas>
       <div class="infoText"><b id="themeName">Animals</b><span id="hudSub" aria-live="off">⏱ 0:00 · 0 of 6</span></div>
@@ -202,34 +212,34 @@ canvas#grid{display:block;touch-action:none;outline:none;border-radius:10px}
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
   </div>
   <div class="boardWrap" id="boardWrap">
-    <div class="card" id="card"><canvas id="grid" tabindex="0" aria-label="Letter grid. Drag across a word, or tap its first letter and then its last letter. With a keyboard, use the arrow keys and press Enter on the first and last letter."></canvas></div>
+    <div class="card" id="card"><canvas id="grid" tabindex="0" data-i18n-aria="gridLabel" aria-label="Letter grid. Drag across a word, or tap its first letter and then its last letter. With a keyboard, use the arrow keys and press Enter on the first and last letter."></canvas></div>
   </div>
-  <ul class="words" id="words" aria-label="Words to find"></ul>
+  <ul class="words" id="words" aria-label="Words to find" data-i18n-aria="wordsLabel" dir="ltr"></ul>
   <div class="tools" id="tools">
-    <button class="tool hint" id="hintBtn">💡 Hint <span class="cost" id="hintCost"></span></button>
-    <button class="tool read" id="readBtn">🗣️ Read to me</button>
+    <button class="tool hint" id="hintBtn">💡 <span data-i18n="hint">Hint</span> <span class="cost" id="hintCost" dir="ltr"></span></button>
+    <button class="tool read" id="readBtn">🗣️ <span data-i18n="read">Read to me</span></button>
   </div>
 </div>
 
 <section class="screen" id="titleScreen">
   <div class="panel titlePanel">
     <canvas class="titleArt" id="titleArt" aria-hidden="true"></canvas>
-    <h1>Word Hunt</h1>
-    <p class="tag">Find the hidden words!</p>
-    <button class="daily" id="dailyBtn">📅 Daily puzzle <span class="streak" id="streakChip">🔥 0</span></button>
-    <div class="row" role="group" aria-label="How hard">
-      <button data-diff="easy" aria-pressed="true">🐣 Easy<small>8 × 8</small></button>
-      <button data-diff="medium" aria-pressed="false">🦊 Medium<small>10 × 10</small></button>
-      <button data-diff="hard" aria-pressed="false">🦁 Hard<small>12 × 12</small></button>
+    <div class="nameBox"><h1 dir="ltr">Word Hunt</h1><p class="practise" id="practise" hidden></p></div>
+    <p class="tag" data-i18n="tag">Find the hidden words!</p>
+    <button class="daily" id="dailyBtn"><span id="dailyTxt">📅 Daily puzzle</span> <span class="streak" id="streakChip">🔥 0</span></button>
+    <div class="row" role="group" aria-label="How hard" data-i18n-aria="howHard">
+      <button data-diff="easy" aria-pressed="true"><span class="dn">🐣 <span data-i18n="lvl_easy">Easy</span></span><small dir="ltr">8 × 8</small></button>
+      <button data-diff="medium" aria-pressed="false"><span class="dn">🦊 <span data-i18n="lvl_medium">Medium</span></span><small dir="ltr">10 × 10</small></button>
+      <button data-diff="hard" aria-pressed="false"><span class="dn">🦁 <span data-i18n="lvl_hard">Hard</span></span><small dir="ltr">12 × 12</small></button>
     </div>
-    <div class="themes" id="themes" role="group" aria-label="Pick a theme"></div>
+    <div class="themes" id="themes" role="group" aria-label="Pick a theme" data-i18n-aria="pickTheme"></div>
     <div class="opts">
-      <button class="opt" id="relaxBtn" aria-pressed="false">🌿 Relax (no timer)</button>
+      <button class="opt" id="relaxBtn" aria-pressed="false">🌿 <span data-i18n="relaxOpt">Relax (no timer)</span></button>
       <span class="chip" id="pointsChip">⭐ 0 points</span>
     </div>
     <div class="playRow">
-      <button class="big-btn" id="playBtn">▶ Play</button>
-      <button class="big-btn alt race" id="raceBtn">👫 Race a friend</button>
+      <button class="big-btn" id="playBtn">▶ <span data-i18n="play">Play</span></button>
+      <button class="big-btn alt race" id="raceBtn">👫 <span data-i18n="race">Race a friend</span></button>
     </div>
     <button class="icon-btn mute corner" aria-label="Turn sound off">🔊</button>
   </div>
@@ -237,10 +247,10 @@ canvas#grid{display:block;touch-action:none;outline:none;border-radius:10px}
 
 <section class="screen dim" id="pauseScreen" hidden>
   <div class="panel">
-    <h2>Paused</h2>
-    <p>Take a little break. The timer is stopped.</p>
-    <button class="big-btn" id="resumeBtn">▶ Keep playing</button>
-    <button class="big-btn alt" id="quitBtn">🏠 Change theme</button>
+    <h2 data-i18n="paused">Paused</h2>
+    <p data-i18n="pausedMsg">Take a little break. The timer is stopped.</p>
+    <button class="big-btn" id="resumeBtn">▶ <span data-i18n="resume">Keep playing</span></button>
+    <button class="big-btn alt" id="quitBtn">🏠 <span data-i18n="changeTheme">Change theme</span></button>
     <button class="icon-btn mute corner" aria-label="Turn sound off">🔊</button>
   </div>
 </section>
@@ -286,8 +296,484 @@ const CONFIG = {
     ['#f5b942', '#a86b00'], ['#7cc6f0', '#1f6f9e'], ['#3fc39a', '#0b6b4f'], ['#f2e85c', '#8f8600'],
     ['#5b9be0', '#0a4f94'], ['#f08a4b', '#a5420b'], ['#e29bc6', '#9c3f76'], ['#a3dd6b', '#4a7f1a']
   ],
-  cheers: ['Great job!', 'You found it!', 'Super!', 'Wow!', 'Nice one!', 'Yes!', 'Awesome!', 'Way to go!']
+  cheers: ['Great job!', 'You found it!', 'Super!', 'Wow!', 'Nice one!', 'Yes!', 'Awesome!', 'Way to go!']   // English; other languages: I18N below
 };
+// Level names, player names, cheers and theme names above are the English originals; what the player sees comes from I18N.
+
+/* =====================================================================================
+   LANGUAGES: every word the player sees (and every message the game says) in the 13 site languages.
+   The hidden words, their emoji and how they are read aloud stay English on purpose: this is an English
+   word game. Theme names, buttons, help and cheers follow the player's language (BRB.user.lang).
+   A value can be { one, few, many, other, ... } for plurals (picked with Intl.PluralRules).
+   ===================================================================================== */
+const LANG = (window.BRB && BRB.user && BRB.user.lang) || 'en';
+const BASE = LANG.split('-')[0], IS_EN = BASE === 'en';
+const DIR = (window.BRB && BRB.user && BRB.user.dir) || (BASE === 'he' || BASE === 'ar' ? 'rtl' : 'ltr');
+const I18N = {
+  en: {
+    pause: 'Pause', soundOff: 'Turn sound off', soundOn: 'Turn sound on',
+    gridLabel: 'Letter grid. Drag across a word, or tap its first letter and then its last letter. With a keyboard, use the arrow keys and press Enter on the first and last letter.',
+    wordsLabel: 'Words to find', hint: 'Hint', read: 'Read to me', tag: 'Find the hidden words!', practise: 'Practice English words! 🔤',
+    daily: 'Daily puzzle', dailyDone: 'Daily puzzle done!', days: { one: '{n} day', other: '{n} days' }, newEveryDay: 'New every day',
+    dailyAriaPlay: 'Play the daily puzzle.', dailyAriaDone: 'Daily puzzle, done today. Play it again.', streakAria: { one: 'Streak: {n} day.', other: 'Streak: {n} days.' },
+    howHard: 'How hard', lvl_easy: 'Easy', lvl_medium: 'Medium', lvl_hard: 'Hard', pickTheme: 'Pick a theme',
+    relaxOpt: 'Relax (no timer)', relax: 'Relax', points: { one: '{n} point', other: '{n} points' }, play: 'Play', race: 'Race a friend',
+    paused: 'Paused', pausedMsg: 'Take a little break. The timer is stopped.', resume: 'Keep playing', changeTheme: 'Change theme',
+    resAll: 'You found them all!', resSuper: 'Super star!', stars: { one: '{n} star', other: '{n} stars' }, nextPuzzle: 'Next puzzle',
+    th_animals: 'Animals', th_ocean: 'Ocean', th_space: 'Space', th_food: 'Food', th_sports: 'Sports', th_weather: 'Weather', th_bugs: 'Bugs',
+    th_dinos: 'Dinosaurs', ths_dinos: 'Dinos', th_farm: 'Farm', th_music: 'Music', th_colours: 'Colors', th_feelings: 'Feelings',
+    th_vehicles: 'Things That Go', ths_vehicles: 'Go Go Go', th_surprise: 'Surprise me', ths_surprise: 'Surprise',
+    player1: 'Player 1', player2: 'Player 2',
+    cheers: ['Great job!', 'You found it!', 'Super!', 'Wow!', 'Nice one!', 'Yes!', 'Awesome!', 'Way to go!'],
+    toastHelp: 'Drag across a word. Or tap its first and last letter!',
+    toastFind: { one: 'Find {n} {theme} word!', other: 'Find {n} {theme} words!' },
+    raceGo: { one: '{p}, go! Find {n} word!', other: '{p}, go! Find {n} words!' },
+    already: 'You already found {w}!', notOnList: '{w} is not on the list. Try again!', longer: 'Try a longer line!',
+    tapLast: 'Now tap the last letter.', straight: 'Pick a letter in a straight line.',
+    kbCell: 'Row {r}, column {c}: {l}', kbFirst: 'First letter {l}. Move to the last letter and press Enter.', kbCancel: 'Canceled.',
+    kbNotStraight: 'That is not a straight line. Try another letter.',
+    count: '{a} of {b}', hintToast: '💡 {e} {w} starts with the glowing {l}!', hintSay: '{w} starts with {l}',
+    noTalk: "This device can't talk, but you can read them!",
+    streakNew: '🔥 {n} day streak! Come back tomorrow.', streakRow: { one: '🔥 {n} day in a row!', other: '🔥 {n} days in a row!' },
+    alreadyDaily: "You already did today's puzzle. 🔥 {n}",
+    hints: { one: '{n} hint', other: '{n} hints' }, plusPoints: { one: '+{n} point', other: '+{n} points' },
+    newBest: '🏆 New best time for {level}!', tipNoHints: 'Try with no hints for 3 stars!', tipFaster: 'Be a bit faster for 3 stars!',
+    totalPoints: { one: '⭐ {n} point in all', other: '⭐ {n} points in all' },
+    saySuper: 'Super star! You found them all!', sayAll: 'You found them all! Great job!',
+    raceDone: '{p} is done!', raceAria: 'Race', passPhone: 'Pass the phone to {p}. Same puzzle. No peeking!', pGo: '{p}, go!',
+    stopRace: 'Stop the race', sayPass: 'Pass the phone to {p}!', tie: "It's a tie!", wins: '{p} wins!', raceOver: 'Race over',
+    hintAdds: { one: 'Each hint adds {n} second. Fastest wins!', other: 'Each hint adds {n} seconds. Fastest wins!' },
+    raceAgain: 'Race again', sayWins: '{p} wins! Great racing!',
+    chipNotFound: '{w}, not found yet. Tap to hear it.', chipFound: '{w}, found! Tap to hear it.'
+  },
+  'en-GB': { practise: 'Practise English words! 🔤', th_sports: 'Sport', th_colours: 'Colours', kbCancel: 'Cancelled.' },
+  pt: {
+    pause: 'Pausar', soundOff: 'Desligar o som', soundOn: 'Ligar o som',
+    gridLabel: 'Grade de letras. Arraste o dedo sobre uma palavra ou toque na primeira letra e depois na última. Com o teclado, use as setas e aperte Enter na primeira e na última letra.',
+    wordsLabel: 'Palavras para achar', hint: 'Dica', read: 'Leia pra mim', tag: 'Ache as palavras escondidas!', practise: 'Pratique palavras em inglês! 🔤',
+    daily: 'Desafio do dia', dailyDone: 'Desafio do dia feito!', days: { one: '{n} dia', other: '{n} dias' }, newEveryDay: 'Novo todo dia',
+    dailyAriaPlay: 'Jogar o desafio do dia.', dailyAriaDone: 'Desafio do dia feito hoje. Jogar de novo.', streakAria: { one: 'Sequência: {n} dia.', other: 'Sequência: {n} dias.' },
+    howHard: 'Dificuldade', lvl_easy: 'Fácil', lvl_medium: 'Médio', lvl_hard: 'Difícil', pickTheme: 'Escolha um tema',
+    relaxOpt: 'Tranquilo (sem tempo)', relax: 'Tranquilo', points: { one: '{n} ponto', other: '{n} pontos' }, play: 'Jogar', race: 'Corrida com amigo',
+    paused: 'Pausado', pausedMsg: 'Faça uma pausa. O tempo está parado.', resume: 'Continuar', changeTheme: 'Trocar de tema',
+    resAll: 'Você achou todas!', resSuper: 'Superestrela!', stars: { one: '{n} estrela', other: '{n} estrelas' }, nextPuzzle: 'Próximo',
+    th_animals: 'Animais', th_ocean: 'Oceano', th_space: 'Espaço', th_food: 'Comida', th_sports: 'Esportes', th_weather: 'Clima', th_bugs: 'Insetos',
+    th_dinos: 'Dinossauros', ths_dinos: 'Dinos', th_farm: 'Fazenda', th_music: 'Música', th_colours: 'Cores', th_feelings: 'Sentimentos', ths_feelings: 'Emoções',
+    th_vehicles: 'Veículos', ths_vehicles: 'Vrum', th_surprise: 'Me surpreenda', ths_surprise: 'Surpresa',
+    player1: 'Jogador 1', player2: 'Jogador 2',
+    cheers: ['Muito bem!', 'Você achou!', 'Super!', 'Uau!', 'Boa!', 'Isso!', 'Incrível!', 'Mandou bem!'],
+    toastHelp: 'Arraste o dedo sobre uma palavra. Ou toque na primeira e na última letra!',
+    toastFind: { one: '{theme}: ache {n} palavra!', other: '{theme}: ache {n} palavras!' },
+    raceGo: { one: '{p}, vai! Ache {n} palavra!', other: '{p}, vai! Ache {n} palavras!' },
+    already: 'Você já achou {w}!', notOnList: '{w} não está na lista. Tente de novo!', longer: 'Tente uma linha maior!',
+    tapLast: 'Agora toque na última letra.', straight: 'Escolha uma letra em linha reta.',
+    kbCell: 'Linha {r}, coluna {c}: {l}', kbFirst: 'Primeira letra {l}. Vá até a última letra e aperte Enter.', kbCancel: 'Cancelado.',
+    kbNotStraight: 'Isso não é uma linha reta. Tente outra letra.',
+    count: '{a} de {b}', hintToast: '💡 {e} {w} começa com o {l} brilhante!', hintSay: '{w} começa com {l}',
+    noTalk: 'Este aparelho não fala, mas você pode ler as palavras!',
+    streakNew: '🔥 {n} dia seguido! Volte amanhã.', streakRow: { one: '🔥 {n} dia seguido!', other: '🔥 {n} dias seguidos!' },
+    alreadyDaily: 'Você já fez o desafio de hoje. 🔥 {n}',
+    hints: { one: '{n} dica', other: '{n} dicas' }, plusPoints: { one: '+{n} ponto', other: '+{n} pontos' },
+    newBest: '🏆 Novo recorde no {level}!', tipNoHints: 'Tente sem dicas para ganhar 3 estrelas!', tipFaster: 'Seja um pouco mais rápido para ganhar 3 estrelas!',
+    totalPoints: { one: '⭐ {n} ponto no total', other: '⭐ {n} pontos no total' },
+    saySuper: 'Superestrela! Você achou todas!', sayAll: 'Você achou todas! Muito bem!',
+    raceDone: '{p} terminou!', raceAria: 'Corrida', passPhone: 'Passe o celular para o {p}. Mesmo desafio. Nada de espiar!', pGo: '{p}, vai!',
+    stopRace: 'Parar a corrida', sayPass: 'Passe o celular para o {p}!', tie: 'Empate!', wins: '{p} venceu!', raceOver: 'Fim da corrida',
+    hintAdds: { one: 'Cada dica soma {n} segundo. O mais rápido vence!', other: 'Cada dica soma {n} segundos. O mais rápido vence!' },
+    raceAgain: 'Correr de novo', sayWins: '{p} venceu! Que corrida!',
+    chipNotFound: '{w}, ainda não achada. Toque para ouvir.', chipFound: '{w}, achada! Toque para ouvir.'
+  },
+  fr: {
+    pause: 'Pause', soundOff: 'Couper le son', soundOn: 'Remettre le son',
+    gridLabel: 'Grille de lettres. Glisse le doigt sur un mot, ou touche sa première lettre puis sa dernière lettre. Au clavier, utilise les flèches et appuie sur Entrée sur la première et la dernière lettre.',
+    wordsLabel: 'Mots à trouver', hint: 'Indice', read: 'Lis-moi', tag: 'Trouve les mots cachés !', practise: 'Entraîne-toi avec des mots anglais ! 🔤',
+    daily: 'Défi du jour', dailyDone: 'Défi du jour réussi !', days: { one: '{n} jour', other: '{n} jours' }, newEveryDay: 'Nouveau chaque jour',
+    dailyAriaPlay: 'Jouer au défi du jour.', dailyAriaDone: 'Défi du jour réussi aujourd’hui. Le refaire.', streakAria: { one: 'Série : {n} jour.', other: 'Série : {n} jours.' },
+    howHard: 'Difficulté', lvl_easy: 'Facile', lvl_medium: 'Moyen', lvl_hard: 'Difficile', pickTheme: 'Choisis un thème',
+    relaxOpt: 'Zen (sans chrono)', relax: 'Zen', points: { one: '{n} point', other: '{n} points' }, play: 'Jouer', race: 'Course avec un ami',
+    paused: 'Pause', pausedMsg: 'Fais une petite pause. Le chrono est arrêté.', resume: 'Continuer', changeTheme: 'Changer de thème',
+    resAll: 'Tu les as tous trouvés !', resSuper: 'Super star !', stars: { one: '{n} étoile', other: '{n} étoiles' }, nextPuzzle: 'Grille suivante',
+    th_animals: 'Animaux', th_ocean: 'Océan', th_space: 'Espace', th_food: 'Aliments', th_sports: 'Sports', th_weather: 'Météo', th_bugs: 'Insectes',
+    th_dinos: 'Dinosaures', ths_dinos: 'Dinos', th_farm: 'Ferme', th_music: 'Musique', th_colours: 'Couleurs', th_feelings: 'Émotions',
+    th_vehicles: 'Véhicules', ths_vehicles: 'Vroum', th_surprise: 'Surprends-moi', ths_surprise: 'Surprise',
+    player1: 'Joueur 1', player2: 'Joueur 2',
+    cheers: ['Bravo !', 'Tu l’as trouvé !', 'Super !', 'Waouh !', 'Bien joué !', 'Oui !', 'Génial !', 'Continue comme ça !'],
+    toastHelp: 'Glisse le doigt sur un mot. Ou touche sa première et sa dernière lettre !',
+    toastFind: { one: '{theme} : trouve {n} mot !', other: '{theme} : trouve {n} mots !' },
+    raceGo: { one: '{p}, à toi ! Trouve {n} mot !', other: '{p}, à toi ! Trouve {n} mots !' },
+    already: 'Tu as déjà trouvé {w} !', notOnList: '{w} n’est pas dans la liste. Réessaie !', longer: 'Essaie une ligne plus longue !',
+    tapLast: 'Touche maintenant la dernière lettre.', straight: 'Choisis une lettre en ligne droite.',
+    kbCell: 'Ligne {r}, colonne {c} : {l}', kbFirst: 'Première lettre {l}. Va jusqu’à la dernière lettre et appuie sur Entrée.', kbCancel: 'Annulé.',
+    kbNotStraight: 'Ce n’est pas une ligne droite. Essaie une autre lettre.',
+    count: '{a} sur {b}', hintToast: '💡 {e} {w} commence par le {l} qui brille !', hintSay: '{w} commence par {l}',
+    noTalk: 'Cet appareil ne sait pas parler, mais tu peux lire les mots !',
+    streakNew: '🔥 {n} jour de suite ! Reviens demain.', streakRow: { one: '🔥 {n} jour de suite !', other: '🔥 {n} jours de suite !' },
+    alreadyDaily: 'Tu as déjà fait le défi d’aujourd’hui. 🔥 {n}',
+    hints: { one: '{n} indice', other: '{n} indices' }, plusPoints: { one: '+{n} point', other: '+{n} points' },
+    newBest: '🏆 Nouveau record en {level} !', tipNoHints: 'Essaie sans indice pour avoir 3 étoiles !', tipFaster: 'Va un peu plus vite pour avoir 3 étoiles !',
+    totalPoints: { one: '⭐ {n} point en tout', other: '⭐ {n} points en tout' },
+    saySuper: 'Super star ! Tu les as tous trouvés !', sayAll: 'Tu les as tous trouvés ! Bravo !',
+    raceDone: '{p} a fini !', raceAria: 'Course', passPhone: 'Passe le téléphone à {p}. Même grille. On ne regarde pas !', pGo: '{p}, à toi !',
+    stopRace: 'Arrêter la course', sayPass: 'Passe le téléphone à {p} !', tie: 'Égalité !', wins: '{p} gagne !', raceOver: 'Course finie',
+    hintAdds: { one: 'Chaque indice ajoute {n} seconde. Le plus rapide gagne !', other: 'Chaque indice ajoute {n} secondes. Le plus rapide gagne !' },
+    raceAgain: 'Nouvelle course', sayWins: '{p} gagne ! Belle course !',
+    chipNotFound: '{w}, pas encore trouvé. Touche pour l’écouter.', chipFound: '{w}, trouvé ! Touche pour l’écouter.'
+  },
+  es: {
+    pause: 'Pausa', soundOff: 'Quitar el sonido', soundOn: 'Poner el sonido',
+    gridLabel: 'Sopa de letras. Desliza el dedo sobre una palabra, o toca su primera letra y luego la última. Con el teclado, usa las flechas y pulsa Enter en la primera y en la última letra.',
+    wordsLabel: 'Palabras que buscar', hint: 'Pista', read: 'Léemelas', tag: '¡Encuentra las palabras escondidas!', practise: '¡Practica palabras en inglés! 🔤',
+    daily: 'Reto del día', dailyDone: '¡Reto del día hecho!', days: { one: '{n} día', other: '{n} días' }, newEveryDay: 'Nuevo cada día',
+    dailyAriaPlay: 'Jugar el reto del día.', dailyAriaDone: 'Reto del día hecho hoy. Jugar otra vez.', streakAria: { one: 'Racha: {n} día.', other: 'Racha: {n} días.' },
+    howHard: 'Dificultad', lvl_easy: 'Fácil', lvl_medium: 'Medio', lvl_hard: 'Difícil', pickTheme: 'Elige un tema',
+    relaxOpt: 'Tranquilo (sin reloj)', relax: 'Tranquilo', points: { one: '{n} punto', other: '{n} puntos' }, play: 'Jugar', race: 'Carrera con un amigo',
+    paused: 'En pausa', pausedMsg: 'Tómate un descanso. El reloj está parado.', resume: 'Seguir jugando', changeTheme: 'Cambiar de tema',
+    resAll: '¡Las encontraste todas!', resSuper: '¡Superestrella!', stars: { one: '{n} estrella', other: '{n} estrellas' }, nextPuzzle: 'Siguiente',
+    th_animals: 'Animales', th_ocean: 'Océano', th_space: 'Espacio', th_food: 'Comida', th_sports: 'Deportes', th_weather: 'Clima', th_bugs: 'Bichos',
+    th_dinos: 'Dinosaurios', ths_dinos: 'Dinos', th_farm: 'Granja', th_music: 'Música', th_colours: 'Colores', th_feelings: 'Emociones',
+    th_vehicles: 'Vehículos', ths_vehicles: 'Brum', th_surprise: 'Sorpréndeme', ths_surprise: 'Sorpresa',
+    player1: 'Jugador 1', player2: 'Jugador 2',
+    cheers: ['¡Muy bien!', '¡La encontraste!', '¡Súper!', '¡Guau!', '¡Bien hecho!', '¡Sí!', '¡Genial!', '¡Así se hace!'],
+    toastHelp: 'Desliza el dedo sobre una palabra. ¡O toca su primera y su última letra!',
+    toastFind: { one: '{theme}: ¡encuentra {n} palabra!', other: '{theme}: ¡encuentra {n} palabras!' },
+    raceGo: { one: '¡{p}, adelante! Encuentra {n} palabra.', other: '¡{p}, adelante! Encuentra {n} palabras.' },
+    already: '¡Ya encontraste {w}!', notOnList: '{w} no está en la lista. ¡Inténtalo otra vez!', longer: '¡Prueba una línea más larga!',
+    tapLast: 'Ahora toca la última letra.', straight: 'Elige una letra en línea recta.',
+    kbCell: 'Fila {r}, columna {c}: {l}', kbFirst: 'Primera letra {l}. Ve hasta la última letra y pulsa Enter.', kbCancel: 'Cancelado.',
+    kbNotStraight: 'Eso no es una línea recta. Prueba otra letra.',
+    count: '{a} de {b}', hintToast: '💡 {e} ¡{w} empieza por la {l} que brilla!', hintSay: '{w} empieza por {l}',
+    noTalk: 'Este aparato no puede hablar, ¡pero tú puedes leerlas!',
+    streakNew: '🔥 ¡{n} día de racha! Vuelve mañana.', streakRow: { one: '🔥 ¡{n} día seguido!', other: '🔥 ¡{n} días seguidos!' },
+    alreadyDaily: 'Ya hiciste el reto de hoy. 🔥 {n}',
+    hints: { one: '{n} pista', other: '{n} pistas' }, plusPoints: { one: '+{n} punto', other: '+{n} puntos' },
+    newBest: '🏆 ¡Nuevo récord en {level}!', tipNoHints: '¡Prueba sin pistas para ganar 3 estrellas!', tipFaster: '¡Ve un poco más rápido para ganar 3 estrellas!',
+    totalPoints: { one: '⭐ {n} punto en total', other: '⭐ {n} puntos en total' },
+    saySuper: '¡Superestrella! ¡Las encontraste todas!', sayAll: '¡Las encontraste todas! ¡Muy bien!',
+    raceDone: '¡{p} terminó!', raceAria: 'Carrera', passPhone: 'Pasa el teléfono a {p}. La misma sopa de letras. ¡No mires!', pGo: '¡{p}, adelante!',
+    stopRace: 'Parar la carrera', sayPass: '¡Pasa el teléfono a {p}!', tie: '¡Empate!', wins: '¡Gana {p}!', raceOver: 'Fin de la carrera',
+    hintAdds: { one: 'Cada pista suma {n} segundo. ¡Gana el más rápido!', other: 'Cada pista suma {n} segundos. ¡Gana el más rápido!' },
+    raceAgain: 'Otra carrera', sayWins: '¡Gana {p}! ¡Qué carrera!',
+    chipNotFound: '{w}, sin encontrar. Toca para escucharla.', chipFound: '{w}, ¡encontrada! Toca para escucharla.'
+  },
+  de: {
+    pause: 'Pause', soundOff: 'Ton aus', soundOn: 'Ton an',
+    gridLabel: 'Buchstabengitter. Wisch über ein Wort oder tippe auf seinen ersten und dann auf seinen letzten Buchstaben. Mit der Tastatur: Pfeiltasten benutzen und auf dem ersten und letzten Buchstaben Enter drücken.',
+    wordsLabel: 'Wörter zum Finden', hint: 'Tipp', read: 'Vorlesen', tag: 'Finde die versteckten Wörter!', practise: 'Übe englische Wörter! 🔤',
+    daily: 'Tagesrätsel', dailyDone: 'Tagesrätsel geschafft!', days: { one: '{n} Tag', other: '{n} Tage' }, newEveryDay: 'Jeden Tag neu',
+    dailyAriaPlay: 'Das Tagesrätsel spielen.', dailyAriaDone: 'Tagesrätsel heute geschafft. Noch mal spielen.', streakAria: { one: 'Serie: {n} Tag.', other: 'Serie: {n} Tage.' },
+    howHard: 'Wie schwer', lvl_easy: 'Leicht', lvl_medium: 'Mittel', lvl_hard: 'Schwer', pickTheme: 'Wähle ein Thema',
+    relaxOpt: 'Entspannt (ohne Uhr)', relax: 'Entspannt', points: { one: '{n} Punkt', other: '{n} Punkte' }, play: 'Spielen', race: 'Wettrennen zu zweit',
+    paused: 'Pause', pausedMsg: 'Mach eine kleine Pause. Die Uhr ist angehalten.', resume: 'Weiterspielen', changeTheme: 'Thema wechseln',
+    resAll: 'Du hast alle gefunden!', resSuper: 'Superstar!', stars: { one: '{n} Stern', other: '{n} Sterne' }, nextPuzzle: 'Nächstes Rätsel',
+    th_animals: 'Tiere', th_ocean: 'Meer', th_space: 'Weltall', th_food: 'Essen', th_sports: 'Sport', th_weather: 'Wetter', th_bugs: 'Krabbeltiere', ths_bugs: 'Käfer',
+    th_dinos: 'Dinosaurier', ths_dinos: 'Dinos', th_farm: 'Bauernhof', th_music: 'Musik', th_colours: 'Farben', th_feelings: 'Gefühle',
+    th_vehicles: 'Fahrzeuge', ths_vehicles: 'Brumm', th_surprise: 'Überrasch mich', ths_surprise: 'Zufall',
+    player1: 'Spieler 1', player2: 'Spieler 2',
+    cheers: ['Super gemacht!', 'Gefunden!', 'Klasse!', 'Wow!', 'Gut so!', 'Ja!', 'Toll!', 'Weiter so!'],
+    toastHelp: 'Wisch über ein Wort. Oder tippe auf den ersten und den letzten Buchstaben!',
+    toastFind: { one: '{theme}: Finde {n} Wort!', other: '{theme}: Finde {n} Wörter!' },
+    raceGo: { one: '{p}, los! Finde {n} Wort!', other: '{p}, los! Finde {n} Wörter!' },
+    already: '{w} hast du schon gefunden!', notOnList: '{w} steht nicht auf der Liste. Versuch es noch mal!', longer: 'Versuch eine längere Linie!',
+    tapLast: 'Tippe jetzt auf den letzten Buchstaben.', straight: 'Nimm einen Buchstaben in einer geraden Linie.',
+    kbCell: 'Zeile {r}, Spalte {c}: {l}', kbFirst: 'Erster Buchstabe {l}. Geh zum letzten Buchstaben und drück Enter.', kbCancel: 'Abgebrochen.',
+    kbNotStraight: 'Das ist keine gerade Linie. Versuch einen anderen Buchstaben.',
+    count: '{a} von {b}', hintToast: '💡 {e} {w} fängt mit dem leuchtenden {l} an!', hintSay: '{w} fängt mit {l} an',
+    noTalk: 'Dieses Gerät kann nicht sprechen, aber du kannst die Wörter lesen!',
+    streakNew: '🔥 {n} Tag Serie! Komm morgen wieder.', streakRow: { one: '🔥 {n} Tag hintereinander!', other: '🔥 {n} Tage hintereinander!' },
+    alreadyDaily: 'Das heutige Rätsel hast du schon gelöst. 🔥 {n}',
+    hints: { one: '{n} Tipp', other: '{n} Tipps' }, plusPoints: { one: '+{n} Punkt', other: '+{n} Punkte' },
+    newBest: '🏆 Neue Bestzeit bei {level}!', tipNoHints: 'Schaff es ohne Tipps für 3 Sterne!', tipFaster: 'Sei ein bisschen schneller für 3 Sterne!',
+    totalPoints: { one: '⭐ {n} Punkt insgesamt', other: '⭐ {n} Punkte insgesamt' },
+    saySuper: 'Superstar! Du hast alle gefunden!', sayAll: 'Du hast alle gefunden! Super gemacht!',
+    raceDone: '{p} ist fertig!', raceAria: 'Wettrennen', passPhone: 'Gib das Handy an {p} weiter. Gleiches Rätsel. Nicht gucken!', pGo: '{p}, los!',
+    stopRace: 'Rennen beenden', sayPass: 'Gib das Handy an {p} weiter!', tie: 'Unentschieden!', wins: '{p} gewinnt!', raceOver: 'Rennen vorbei',
+    hintAdds: { one: 'Jeder Tipp gibt {n} Sekunde dazu. Die Schnellsten gewinnen!', other: 'Jeder Tipp gibt {n} Sekunden dazu. Die Schnellsten gewinnen!' },
+    raceAgain: 'Noch ein Rennen', sayWins: '{p} gewinnt! Tolles Rennen!',
+    chipNotFound: '{w}, noch nicht gefunden. Tippen zum Anhören.', chipFound: '{w}, gefunden! Tippen zum Anhören.'
+  },
+  he: {
+    pause: 'השהיה', soundOff: 'כיבוי צליל', soundOn: 'הפעלת צליל',
+    gridLabel: 'לוח אותיות. גררו את האצבע על מילה, או לחצו על האות הראשונה שלה ואז על האחרונה. במקלדת, השתמשו בחיצים ולחצו Enter על האות הראשונה ועל האחרונה.',
+    wordsLabel: 'מילים למצוא', hint: 'רמז', read: 'הקריאו לי', tag: 'מצאו את המילים המוסתרות!', practise: 'מתרגלים מילים באנגלית! 🔤',
+    daily: 'החידה היומית', dailyDone: 'החידה היומית נפתרה!', days: { one: 'יום אחד', two: 'יומיים', other: '{n} ימים' }, newEveryDay: 'חדשה בכל יום',
+    dailyAriaPlay: 'שחקו בחידה היומית.', dailyAriaDone: 'החידה היומית נפתרה היום. שחקו בה שוב.', streakAria: { one: 'רצף: יום אחד.', two: 'רצף: יומיים.', other: 'רצף: {n} ימים.' },
+    howHard: 'רמת קושי', lvl_easy: 'קל', lvl_medium: 'בינוני', lvl_hard: 'קשה', pickTheme: 'בחרו נושא',
+    relaxOpt: 'בנחת (בלי שעון)', relax: 'בנחת', points: { one: 'נקודה אחת', other: '{n} נקודות' }, play: 'לשחק', race: 'מרוץ עם חבר',
+    paused: 'בהשהיה', pausedMsg: 'קחו הפסקה קטנה. השעון עצר.', resume: 'להמשיך לשחק', changeTheme: 'החלפת נושא',
+    resAll: 'מצאתם את כולן!', resSuper: 'אלופים!', stars: { one: 'כוכב אחד', two: 'שני כוכבים', other: '{n} כוכבים' }, nextPuzzle: 'החידה הבאה',
+    th_animals: 'חיות', th_ocean: 'ים', th_space: 'חלל', th_food: 'אוכל', th_sports: 'ספורט', th_weather: 'מזג אוויר', th_bugs: 'חרקים',
+    th_dinos: 'דינוזאורים', ths_dinos: 'דינו', th_farm: 'חווה', th_music: 'מוזיקה', th_colours: 'צבעים', th_feelings: 'רגשות',
+    th_vehicles: 'כלי תחבורה', ths_vehicles: 'תחבורה', th_surprise: 'הפתיעו אותי', ths_surprise: 'הפתעה',
+    player1: 'שחקן 1', player2: 'שחקן 2',
+    cheers: ['כל הכבוד!', 'מצאתם!', 'סופר!', 'וואו!', 'יפה מאוד!', 'כן!', 'מדהים!', 'ככה ממשיכים!'],
+    toastHelp: 'גררו את האצבע על מילה. או לחצו על האות הראשונה ועל האחרונה!',
+    toastFind: { one: '{theme}: מצאו מילה אחת!', other: '{theme}: מצאו {n} מילים!' },
+    raceGo: { one: '{p}, קדימה! מצאו מילה אחת!', other: '{p}, קדימה! מצאו {n} מילים!' },
+    already: 'כבר מצאתם את {w}!', notOnList: '{w} לא ברשימה. נסו שוב!', longer: 'נסו קו ארוך יותר!',
+    tapLast: 'עכשיו לחצו על האות האחרונה.', straight: 'בחרו אות בקו ישר.',
+    kbCell: 'שורה {r}, עמודה {c}: {l}', kbFirst: 'האות הראשונה {l}. עברו לאות האחרונה ולחצו Enter.', kbCancel: 'בוטל.',
+    kbNotStraight: 'זה לא קו ישר. נסו אות אחרת.',
+    count: '{a} מתוך {b}', hintToast: '💡 {e} {w} מתחילה ב־{l} הזוהרת!', hintSay: '{w} מתחילה ב־{l}',
+    noTalk: 'המכשיר הזה לא יודע לדבר, אבל אתם יכולים לקרוא את המילים!',
+    streakNew: '🔥 רצף של יום אחד! חזרו מחר.', streakRow: { one: '🔥 יום אחד ברצף!', two: '🔥 יומיים ברצף!', other: '🔥 {n} ימים ברצף!' },
+    alreadyDaily: 'כבר פתרתם את החידה של היום. 🔥 {n}',
+    hints: { one: 'רמז אחד', other: '{n} רמזים' }, plusPoints: { one: '+נקודה אחת', other: '+{n} נקודות' },
+    newBest: '🏆 זמן שיא חדש ברמה {level}!', tipNoHints: 'נסו בלי רמזים כדי לקבל 3 כוכבים!', tipFaster: 'היו קצת יותר מהירים כדי לקבל 3 כוכבים!',
+    totalPoints: { one: '⭐ נקודה אחת בסך הכול', other: '⭐ {n} נקודות בסך הכול' },
+    saySuper: 'אלופים! מצאתם את כולן!', sayAll: 'מצאתם את כולן! כל הכבוד!',
+    raceDone: '{p} סיים!', raceAria: 'מרוץ', passPhone: 'העבירו את הטלפון ל{p}. אותה חידה. בלי להציץ!', pGo: '{p}, קדימה!',
+    stopRace: 'לעצור את המרוץ', sayPass: 'העבירו את הטלפון ל{p}!', tie: 'תיקו!', wins: '{p} ניצח!', raceOver: 'המרוץ נגמר',
+    hintAdds: { one: 'כל רמז מוסיף שנייה אחת. המהיר ביותר מנצח!', other: 'כל רמז מוסיף {n} שניות. המהיר ביותר מנצח!' },
+    raceAgain: 'עוד מרוץ', sayWins: '{p} ניצח! איזה מרוץ!',
+    chipNotFound: '{w}, עוד לא נמצאה. לחצו כדי לשמוע.', chipFound: '{w}, נמצאה! לחצו כדי לשמוע.'
+  },
+  ja: {
+    pause: 'ポーズ', soundOff: 'おとを けす', soundOn: 'おとを だす',
+    gridLabel: 'もじの マス。ことばの上を なぞるか、さいしょの もじと さいごの もじを じゅんに タップしてね。キーボードでは やじるしキーで うごかして、さいしょと さいごの もじで Enter を おしてね。',
+    wordsLabel: 'さがす ことば', hint: 'ヒント', read: 'よんで', tag: 'かくれた ことばを さがそう！', practise: 'えいごの ことばを れんしゅうしよう！🔤',
+    daily: 'きょうの パズル', dailyDone: 'きょうの パズル クリア！', days: { other: '{n}日' }, newEveryDay: 'まいにち あたらしい',
+    dailyAriaPlay: 'きょうの パズルで あそぶ。', dailyAriaDone: 'きょうの パズルは クリアずみ。もう一度 あそぶ。', streakAria: { other: 'れんぞく {n}日。' },
+    howHard: 'むずかしさ', lvl_easy: 'かんたん', lvl_medium: 'ふつう', lvl_hard: 'むずかしい', pickTheme: 'テーマを えらぼう',
+    relaxOpt: 'のんびり（タイマーなし）', relax: 'のんびり', points: { other: '{n}ポイント' }, play: 'あそぶ', race: 'ともだちと きょうそう',
+    paused: 'ポーズちゅう', pausedMsg: 'ちょっと ひとやすみ。タイマーは とまっているよ。', resume: 'つづける', changeTheme: 'テーマを かえる',
+    resAll: 'ぜんぶ みつけたね！', resSuper: 'スーパースター！', stars: { other: 'ほし{n}つ' }, nextPuzzle: 'つぎの パズル',
+    th_animals: 'どうぶつ', th_ocean: 'うみ', th_space: 'うちゅう', th_food: 'たべもの', th_sports: 'スポーツ', th_weather: 'てんき', th_bugs: 'むし',
+    th_dinos: 'きょうりゅう', ths_dinos: 'きょう\u200bりゅう', th_farm: 'のうじょう', th_music: 'おんがく', th_colours: 'いろ', th_feelings: 'きもち',
+    th_vehicles: 'のりもの', th_surprise: 'おまかせ', ths_surprise: 'おまかせ',
+    player1: 'プレイヤー1', player2: 'プレイヤー2',
+    cheers: ['すごい！', 'みつけたね！', 'スーパー！', 'わあ！', 'いいね！', 'やった！', 'さいこう！', 'そのちょうし！'],
+    toastHelp: 'ことばの上を なぞってね。さいしょと さいごの もじを タップしても いいよ！',
+    toastFind: { other: '{theme}の ことばを {n}こ さがそう！' },
+    raceGo: { other: '{p}、スタート！ ことばを {n}こ さがそう！' },
+    already: '{w} は もう みつけたよ！', notOnList: '{w} は リストに ないよ。もう一度！', longer: 'もっと ながい せんに してね！',
+    tapLast: 'つぎは さいごの もじを タップしてね。', straight: 'まっすぐ ならんだ もじを えらんでね。',
+    kbCell: '{r}ぎょう め、{c}れつ め：{l}', kbFirst: 'さいしょの もじ {l}。さいごの もじまで うごかして Enter を おしてね。', kbCancel: 'やめました。',
+    kbNotStraight: 'まっすぐじゃ ないよ。ほかの もじに してね。',
+    count: '{a}/{b}', hintToast: '💡 {e} {w} は ひかっている {l} から はじまるよ！', hintSay: '{w} は {l} から はじまるよ',
+    noTalk: 'この きかいは しゃべれないけど、じぶんで よめるよ！',
+    streakNew: '🔥 {n}日 れんぞく！ あしたも きてね。', streakRow: { other: '🔥 {n}日 れんぞく！' },
+    alreadyDaily: 'きょうの パズルは もう やったよ。🔥 {n}',
+    hints: { other: 'ヒント{n}かい' }, plusPoints: { other: '+{n}ポイント' },
+    newBest: '🏆 「{level}」の ベストきろく！', tipNoHints: 'ヒントなしで ほし3つを めざそう！', tipFaster: 'もうすこし はやく できたら ほし3つ！',
+    totalPoints: { other: '⭐ ぜんぶで {n}ポイント' },
+    saySuper: 'スーパースター！ ぜんぶ みつけたね！', sayAll: 'ぜんぶ みつけたね！ すごいです！',
+    raceDone: '{p} おわり！', raceAria: 'きょうそう', passPhone: '{p}に スマホを わたしてね。おなじ パズルだよ。のぞいちゃ だめ！', pGo: '{p}、スタート！',
+    stopRace: 'きょうそうを やめる', sayPass: '{p}に スマホを わたしてね！', tie: 'ひきわけ！', wins: '{p}の かち！', raceOver: 'きょうそう おわり',
+    hintAdds: { other: 'ヒント1かいで {n}びょう ふえるよ。いちばん はやい人の かち！' },
+    raceAgain: 'もう一度 きょうそう', sayWins: '{p}の かち！ いい きょうそうだったね！',
+    chipNotFound: '{w}、まだ みつけていない。タップで きけるよ。', chipFound: '{w}、みつけた！ タップで きけるよ。'
+  },
+  ar: {
+    pause: 'إيقاف مؤقت', soundOff: 'إطفاء الصوت', soundOn: 'تشغيل الصوت',
+    gridLabel: 'شبكة الحروف. اسحب إصبعك على كلمة، أو اضغط على أول حرف فيها ثم على آخر حرف. باستعمال لوحة المفاتيح، استعمل الأسهم واضغط Enter على أول حرف وآخر حرف.',
+    wordsLabel: 'كلمات للبحث', hint: 'تلميح', read: 'اقرأ لي', tag: 'ابحث عن الكلمات المخفية!', practise: 'تدرّب على كلمات إنجليزية! 🔤',
+    daily: 'لغز اليوم', dailyDone: 'حللت لغز اليوم!', days: { zero: '{n} يوم', one: 'يوم واحد', two: 'يومان', few: '{n} أيام', many: '{n} يومًا', other: '{n} يوم' }, newEveryDay: 'جديد كل يوم',
+    dailyAriaPlay: 'العب لغز اليوم.', dailyAriaDone: 'حللت لغز اليوم. العبه مرة أخرى.', streakAria: { zero: 'السلسلة: {n} يوم.', one: 'السلسلة: يوم واحد.', two: 'السلسلة: يومان.', few: 'السلسلة: {n} أيام.', many: 'السلسلة: {n} يومًا.', other: 'السلسلة: {n} يوم.' },
+    howHard: 'مستوى الصعوبة', lvl_easy: 'سهل', lvl_medium: 'متوسط', lvl_hard: 'صعب', pickTheme: 'اختر موضوعًا',
+    relaxOpt: 'براحتك (بلا مؤقّت)', relax: 'براحتك', points: { zero: '{n} نقطة', one: 'نقطة واحدة', two: 'نقطتان', few: '{n} نقاط', many: '{n} نقطة', other: '{n} نقطة' }, play: 'العب', race: 'سباق مع صديق',
+    paused: 'متوقّف مؤقتًا', pausedMsg: 'خذ استراحة قصيرة. المؤقّت متوقّف.', resume: 'تابع اللعب', changeTheme: 'غيّر الموضوع',
+    resAll: 'وجدتها كلها!', resSuper: 'نجم رائع!', stars: { zero: '{n} نجوم', one: 'نجمة واحدة', two: 'نجمتان', few: '{n} نجوم', many: '{n} نجمة', other: '{n} نجمة' }, nextPuzzle: 'اللغز التالي',
+    th_animals: 'حيوانات', th_ocean: 'المحيط', th_space: 'الفضاء', th_food: 'طعام', th_sports: 'رياضة', th_weather: 'الطقس', th_bugs: 'حشرات',
+    th_dinos: 'ديناصورات', th_farm: 'المزرعة', th_music: 'موسيقى', th_colours: 'ألوان', th_feelings: 'مشاعر',
+    th_vehicles: 'وسائل النقل', ths_vehicles: 'مركبات', th_surprise: 'فاجئني', ths_surprise: 'مفاجأة',
+    player1: 'اللاعب 1', player2: 'اللاعب 2',
+    cheers: ['أحسنت!', 'وجدتها!', 'رائع!', 'واو!', 'عمل جميل!', 'نعم!', 'مدهش!', 'استمر!'],
+    toastHelp: 'اسحب إصبعك على كلمة. أو اضغط على أول حرف وآخر حرف!',
+    toastFind: { zero: '{theme}: ابحث عن {n} كلمة!', one: '{theme}: ابحث عن كلمة واحدة!', two: '{theme}: ابحث عن كلمتين!', few: '{theme}: ابحث عن {n} كلمات!', many: '{theme}: ابحث عن {n} كلمة!', other: '{theme}: ابحث عن {n} كلمة!' },
+    raceGo: { zero: '{p}، انطلق! ابحث عن {n} كلمة!', one: '{p}، انطلق! ابحث عن كلمة واحدة!', two: '{p}، انطلق! ابحث عن كلمتين!', few: '{p}، انطلق! ابحث عن {n} كلمات!', many: '{p}، انطلق! ابحث عن {n} كلمة!', other: '{p}، انطلق! ابحث عن {n} كلمة!' },
+    already: 'وجدت {w} من قبل!', notOnList: '{w} ليست في القائمة. حاول مرة أخرى!', longer: 'جرّب خطًا أطول!',
+    tapLast: 'الآن اضغط على آخر حرف.', straight: 'اختر حرفًا على خط مستقيم.',
+    kbCell: 'الصف {r}، العمود {c}: {l}', kbFirst: 'أول حرف {l}. انتقل إلى آخر حرف واضغط Enter.', kbCancel: 'تم الإلغاء.',
+    kbNotStraight: 'هذا ليس خطًا مستقيمًا. جرّب حرفًا آخر.',
+    count: '{a} من {b}', hintToast: '💡 {e} تبدأ {w} بالحرف {l} المضيء!', hintSay: '{w} تبدأ بالحرف {l}',
+    noTalk: 'هذا الجهاز لا يتكلّم، لكن يمكنك قراءة الكلمات!',
+    streakNew: '🔥 سلسلة يوم واحد! عُد غدًا.', streakRow: { zero: '🔥 {n} يوم متتالٍ!', one: '🔥 يوم واحد متتالٍ!', two: '🔥 يومان متتاليان!', few: '🔥 {n} أيام متتالية!', many: '🔥 {n} يومًا متتاليًا!', other: '🔥 {n} يوم متتالٍ!' },
+    alreadyDaily: 'حللت لغز اليوم من قبل. 🔥 {n}',
+    hints: { zero: '{n} تلميح', one: 'تلميح واحد', two: 'تلميحان', few: '{n} تلميحات', many: '{n} تلميحًا', other: '{n} تلميح' },
+    plusPoints: { zero: '+{n} نقطة', one: '+نقطة واحدة', two: '+نقطتان', few: '+{n} نقاط', many: '+{n} نقطة', other: '+{n} نقطة' },
+    newBest: '🏆 أفضل وقت جديد في مستوى {level}!', tipNoHints: 'جرّب بلا تلميحات لتربح 3 نجوم!', tipFaster: 'كن أسرع قليلًا لتربح 3 نجوم!',
+    totalPoints: { zero: '⭐ {n} نقطة في المجموع', one: '⭐ نقطة واحدة في المجموع', two: '⭐ نقطتان في المجموع', few: '⭐ {n} نقاط في المجموع', many: '⭐ {n} نقطة في المجموع', other: '⭐ {n} نقطة في المجموع' },
+    saySuper: 'نجم رائع! وجدتها كلها!', sayAll: 'وجدتها كلها! أحسنت!',
+    raceDone: 'انتهى {p}!', raceAria: 'سباق', passPhone: 'مرّر الهاتف إلى {p}. اللغز نفسه. ممنوع النظر!', pGo: '{p}، انطلق!',
+    stopRace: 'أوقف السباق', sayPass: 'مرّر الهاتف إلى {p}!', tie: 'تعادل!', wins: 'فاز {p}!', raceOver: 'انتهى السباق',
+    hintAdds: { zero: 'كل تلميح يضيف {n} ثانية. الأسرع يفوز!', one: 'كل تلميح يضيف ثانية واحدة. الأسرع يفوز!', two: 'كل تلميح يضيف ثانيتين. الأسرع يفوز!', few: 'كل تلميح يضيف {n} ثوانٍ. الأسرع يفوز!', many: 'كل تلميح يضيف {n} ثانية. الأسرع يفوز!', other: 'كل تلميح يضيف {n} ثانية. الأسرع يفوز!' },
+    raceAgain: 'سباق جديد', sayWins: 'فاز {p}! سباق رائع!',
+    chipNotFound: '{w}، لم تجدها بعد. اضغط لتسمعها.', chipFound: '{w}، وجدتها! اضغط لتسمعها.'
+  },
+  ru: {
+    pause: 'Пауза', soundOff: 'Выключить звук', soundOn: 'Включить звук',
+    gridLabel: 'Поле с буквами. Проведи пальцем по слову или нажми на его первую, а потом на последнюю букву. На клавиатуре двигайся стрелками и нажимай Enter на первой и последней букве.',
+    wordsLabel: 'Слова, которые нужно найти', hint: 'Подсказка', read: 'Прочитай', tag: 'Найди спрятанные слова!', practise: 'Учим английские слова! 🔤',
+    daily: 'Задание дня', dailyDone: 'Задание дня готово!', days: { one: '{n} день', few: '{n} дня', many: '{n} дней', other: '{n} дня' }, newEveryDay: 'Новое каждый день',
+    dailyAriaPlay: 'Играть в задание дня.', dailyAriaDone: 'Задание дня уже решено. Сыграть ещё раз.', streakAria: { one: 'Серия: {n} день.', few: 'Серия: {n} дня.', many: 'Серия: {n} дней.', other: 'Серия: {n} дня.' },
+    howHard: 'Сложность', lvl_easy: 'Легко', lvl_medium: 'Средне', lvl_hard: 'Сложно', pickTheme: 'Выбери тему',
+    relaxOpt: 'Спокойно (без таймера)', relax: 'Спокойно', points: { one: '{n} очко', few: '{n} очка', many: '{n} очков', other: '{n} очка' }, play: 'Играть', race: 'Гонка с другом',
+    paused: 'Пауза', pausedMsg: 'Немного отдохни. Таймер остановлен.', resume: 'Играть дальше', changeTheme: 'Сменить тему',
+    resAll: 'Ты нашёл все слова!', resSuper: 'Суперзвезда!', stars: { one: '{n} звезда', few: '{n} звезды', many: '{n} звёзд', other: '{n} звезды' }, nextPuzzle: 'Следующее поле',
+    th_animals: 'Животные', ths_animals: 'Звери', th_ocean: 'Океан', th_space: 'Космос', th_food: 'Еда', th_sports: 'Спорт', th_weather: 'Погода', th_bugs: 'Жучки',
+    th_dinos: 'Динозавры', ths_dinos: 'Дино', th_farm: 'Ферма', th_music: 'Музыка', th_colours: 'Цвета', th_feelings: 'Чувства',
+    th_vehicles: 'Транспорт', ths_vehicles: 'Машины', th_surprise: 'Удиви меня', ths_surprise: 'Сюрприз',
+    player1: 'Игрок 1', player2: 'Игрок 2',
+    cheers: ['Молодец!', 'Нашлось!', 'Супер!', 'Ух ты!', 'Отлично!', 'Да!', 'Здорово!', 'Так держать!'],
+    toastHelp: 'Проведи пальцем по слову. Или нажми на первую и последнюю букву!',
+    toastFind: { one: '{theme}: найди {n} слово!', few: '{theme}: найди {n} слова!', many: '{theme}: найди {n} слов!', other: '{theme}: найди {n} слова!' },
+    raceGo: { one: '{p}, вперёд! Найди {n} слово!', few: '{p}, вперёд! Найди {n} слова!', many: '{p}, вперёд! Найди {n} слов!', other: '{p}, вперёд! Найди {n} слова!' },
+    already: 'Слово {w} уже найдено!', notOnList: '{w} нет в списке. Попробуй ещё раз!', longer: 'Попробуй линию подлиннее!',
+    tapLast: 'Теперь нажми на последнюю букву.', straight: 'Выбери букву на прямой линии.',
+    kbCell: 'Строка {r}, столбец {c}: {l}', kbFirst: 'Первая буква {l}. Дойди до последней буквы и нажми Enter.', kbCancel: 'Отменено.',
+    kbNotStraight: 'Это не прямая линия. Попробуй другую букву.',
+    count: '{a} из {b}', hintToast: '💡 {e} {w} начинается со светящейся {l}!', hintSay: '{w} начинается с {l}',
+    noTalk: 'Это устройство не умеет говорить, но ты можешь прочитать слова сам!',
+    streakNew: '🔥 Серия: {n} день! Приходи завтра.', streakRow: { one: '🔥 {n} день подряд!', few: '🔥 {n} дня подряд!', many: '🔥 {n} дней подряд!', other: '🔥 {n} дня подряд!' },
+    alreadyDaily: 'Сегодняшнее задание уже решено. 🔥 {n}',
+    hints: { one: '{n} подсказка', few: '{n} подсказки', many: '{n} подсказок', other: '{n} подсказки' },
+    plusPoints: { one: '+{n} очко', few: '+{n} очка', many: '+{n} очков', other: '+{n} очка' },
+    newBest: '🏆 Новый рекорд времени: {level}!', tipNoHints: 'Попробуй без подсказок, чтобы получить 3 звезды!', tipFaster: 'Чуть быстрее — и будет 3 звезды!',
+    totalPoints: { one: '⭐ Всего {n} очко', few: '⭐ Всего {n} очка', many: '⭐ Всего {n} очков', other: '⭐ Всего {n} очка' },
+    saySuper: 'Суперзвезда! Все слова найдены!', sayAll: 'Все слова найдены! Молодец!',
+    raceDone: '{p} закончил!', raceAria: 'Гонка', passPhone: 'Передай телефон: {p}. То же поле. Не подглядывай!', pGo: '{p}, вперёд!',
+    stopRace: 'Закончить гонку', sayPass: 'Передай телефон: {p}!', tie: 'Ничья!', wins: '{p} победил!', raceOver: 'Гонка окончена',
+    hintAdds: { one: 'Каждая подсказка добавляет {n} секунду. Побеждает самый быстрый!', few: 'Каждая подсказка добавляет {n} секунды. Побеждает самый быстрый!', many: 'Каждая подсказка добавляет {n} секунд. Побеждает самый быстрый!', other: 'Каждая подсказка добавляет {n} секунды. Побеждает самый быстрый!' },
+    raceAgain: 'Ещё гонка', sayWins: '{p} победил! Отличная гонка!',
+    chipNotFound: '{w}, ещё не найдено. Нажми, чтобы послушать.', chipFound: '{w}, найдено! Нажми, чтобы послушать.'
+  },
+  it: {
+    pause: 'Pausa', soundOff: 'Togli l’audio', soundOn: 'Attiva l’audio',
+    gridLabel: 'Griglia di lettere. Trascina il dito su una parola, oppure tocca la sua prima lettera e poi l’ultima. Con la tastiera usa le frecce e premi Invio sulla prima e sull’ultima lettera.',
+    wordsLabel: 'Parole da trovare', hint: 'Aiuto', read: 'Leggimi', tag: 'Trova le parole nascoste!', practise: 'Allenati con le parole inglesi! 🔤',
+    daily: 'Sfida del giorno', dailyDone: 'Sfida del giorno fatta!', days: { one: '{n} giorno', other: '{n} giorni' }, newEveryDay: 'Nuova ogni giorno',
+    dailyAriaPlay: 'Gioca la sfida del giorno.', dailyAriaDone: 'Sfida del giorno fatta oggi. Giocala di nuovo.', streakAria: { one: 'Serie: {n} giorno.', other: 'Serie: {n} giorni.' },
+    howHard: 'Difficoltà', lvl_easy: 'Facile', lvl_medium: 'Medio', lvl_hard: 'Difficile', pickTheme: 'Scegli un tema',
+    relaxOpt: 'Relax (senza tempo)', relax: 'Relax', points: { one: '{n} punto', other: '{n} punti' }, play: 'Gioca', race: 'Gara con un amico',
+    paused: 'In pausa', pausedMsg: 'Fai una piccola pausa. Il tempo è fermo.', resume: 'Continua a giocare', changeTheme: 'Cambia tema',
+    resAll: 'Le hai trovate tutte!', resSuper: 'Superstella!', stars: { one: '{n} stella', other: '{n} stelle' }, nextPuzzle: 'Prossima griglia',
+    th_animals: 'Animali', th_ocean: 'Oceano', th_space: 'Spazio', th_food: 'Cibo', th_sports: 'Sport', th_weather: 'Meteo', th_bugs: 'Insetti',
+    th_dinos: 'Dinosauri', ths_dinos: 'Dino', th_farm: 'Fattoria', th_music: 'Musica', th_colours: 'Colori', th_feelings: 'Emozioni',
+    th_vehicles: 'Veicoli', th_surprise: 'Sorprendimi', ths_surprise: 'Sorpresa',
+    player1: 'Giocatore 1', player2: 'Giocatore 2',
+    cheers: ['Bravo!', 'L’hai trovata!', 'Super!', 'Wow!', 'Ben fatto!', 'Sì!', 'Fantastico!', 'Continua così!'],
+    toastHelp: 'Trascina il dito su una parola. Oppure tocca la prima e l’ultima lettera!',
+    toastFind: { one: '{theme}: trova {n} parola!', other: '{theme}: trova {n} parole!' },
+    raceGo: { one: '{p}, via! Trova {n} parola!', other: '{p}, via! Trova {n} parole!' },
+    already: 'Hai già trovato {w}!', notOnList: '{w} non è nella lista. Riprova!', longer: 'Prova una linea più lunga!',
+    tapLast: 'Ora tocca l’ultima lettera.', straight: 'Scegli una lettera in linea retta.',
+    kbCell: 'Riga {r}, colonna {c}: {l}', kbFirst: 'Prima lettera {l}. Vai all’ultima lettera e premi Invio.', kbCancel: 'Annullato.',
+    kbNotStraight: 'Questa non è una linea retta. Prova un’altra lettera.',
+    count: '{a} su {b}', hintToast: '💡 {e} {w} comincia con la {l} che brilla!', hintSay: '{w} comincia con {l}',
+    noTalk: 'Questo dispositivo non sa parlare, ma tu puoi leggere le parole!',
+    streakNew: '🔥 {n} giorno di fila! Torna domani.', streakRow: { one: '🔥 {n} giorno di fila!', other: '🔥 {n} giorni di fila!' },
+    alreadyDaily: 'Hai già fatto la sfida di oggi. 🔥 {n}',
+    hints: { one: '{n} aiuto', other: '{n} aiuti' }, plusPoints: { one: '+{n} punto', other: '+{n} punti' },
+    newBest: '🏆 Nuovo record a livello {level}!', tipNoHints: 'Prova senza aiuti per avere 3 stelle!', tipFaster: 'Vai un po’ più veloce per avere 3 stelle!',
+    totalPoints: { one: '⭐ {n} punto in tutto', other: '⭐ {n} punti in tutto' },
+    saySuper: 'Superstella! Le hai trovate tutte!', sayAll: 'Le hai trovate tutte! Bravissimo!',
+    raceDone: '{p} ha finito!', raceAria: 'Gara', passPhone: 'Passa il telefono a {p}. Stessa griglia. Non sbirciare!', pGo: '{p}, via!',
+    stopRace: 'Ferma la gara', sayPass: 'Passa il telefono a {p}!', tie: 'Pareggio!', wins: 'Vince {p}!', raceOver: 'Gara finita',
+    hintAdds: { one: 'Ogni aiuto aggiunge {n} secondo. Vince il più veloce!', other: 'Ogni aiuto aggiunge {n} secondi. Vince il più veloce!' },
+    raceAgain: 'Un’altra gara', sayWins: 'Vince {p}! Che gara!',
+    chipNotFound: '{w}, non ancora trovata. Tocca per ascoltarla.', chipFound: '{w}, trovata! Tocca per ascoltarla.'
+  },
+  'zh-Hant': {
+    pause: '暫停', soundOff: '關掉聲音', soundOn: '打開聲音',
+    gridLabel: '字母方格。用手指劃過一個單字，或先點它的第一個字母，再點最後一個字母。用鍵盤時，按方向鍵移動，在第一個和最後一個字母上按 Enter。',
+    wordsLabel: '要找的單字', hint: '提示', read: '唸給我聽', tag: '找出藏起來的單字！', practise: '一起練習英文單字！🔤',
+    daily: '每日謎題', dailyDone: '每日謎題完成！', days: { other: '{n} 天' }, newEveryDay: '每天都有新的',
+    dailyAriaPlay: '玩每日謎題。', dailyAriaDone: '今天的每日謎題已完成。再玩一次。', streakAria: { other: '連續 {n} 天。' },
+    howHard: '難度', lvl_easy: '簡單', lvl_medium: '普通', lvl_hard: '困難', pickTheme: '選一個主題',
+    relaxOpt: '輕鬆玩（不計時）', relax: '輕鬆玩', points: { other: '{n} 分' }, play: '開始玩', race: '和朋友比賽',
+    paused: '暫停中', pausedMsg: '休息一下吧，計時器停住了。', resume: '繼續玩', changeTheme: '換主題',
+    resAll: '你全部找到了！', resSuper: '超級明星！', stars: { other: '{n} 顆星' }, nextPuzzle: '下一題',
+    th_animals: '動物', th_ocean: '海洋', th_space: '太空', th_food: '食物', th_sports: '運動', th_weather: '天氣', th_bugs: '昆蟲',
+    th_dinos: '恐龍', th_farm: '農場', th_music: '音樂', th_colours: '顏色', th_feelings: '心情',
+    th_vehicles: '交通工具', ths_vehicles: '交通', th_surprise: '給我驚喜', ths_surprise: '驚喜',
+    player1: '玩家 1', player2: '玩家 2',
+    cheers: ['做得好！', '找到了！', '超棒！', '哇！', '好厲害！', '對了！', '太棒了！', '繼續加油！'],
+    toastHelp: '用手指劃過一個單字，或點它的第一個和最後一個字母！',
+    toastFind: { other: '找出 {n} 個「{theme}」單字！' },
+    raceGo: { other: '{p}，開始！找出 {n} 個單字！' },
+    already: '你已經找到 {w} 了！', notOnList: '{w} 不在清單上，再試一次！', longer: '試試更長的線！',
+    tapLast: '現在點最後一個字母。', straight: '請選同一條直線上的字母。',
+    kbCell: '第 {r} 列，第 {c} 行：{l}', kbFirst: '第一個字母 {l}。移到最後一個字母，按 Enter。', kbCancel: '已取消。',
+    kbNotStraight: '這不是直線，換一個字母試試。',
+    count: '{a}/{b}', hintToast: '💡 {e} {w} 從發光的 {l} 開始！', hintSay: '{w} 從 {l} 開始',
+    noTalk: '這台裝置不會說話，不過你可以自己讀！',
+    streakNew: '🔥 連續 {n} 天！明天再來喔。', streakRow: { other: '🔥 連續 {n} 天！' },
+    alreadyDaily: '今天的謎題你已經完成了。🔥 {n}',
+    hints: { other: '提示 {n} 次' }, plusPoints: { other: '+{n} 分' },
+    newBest: '🏆「{level}」新的最快紀錄！', tipNoHints: '不用提示，就能拿到 3 顆星！', tipFaster: '再快一點，就能拿到 3 顆星！',
+    totalPoints: { other: '⭐ 總共 {n} 分' },
+    saySuper: '超級明星！你全部找到了！', sayAll: '你全部找到了！好棒！',
+    raceDone: '{p} 完成了！', raceAria: '比賽', passPhone: '把手機交給{p}。同一題，不可以偷看！', pGo: '{p}，開始！',
+    stopRace: '結束比賽', sayPass: '把手機交給{p}！', tie: '平手！', wins: '{p} 贏了！', raceOver: '比賽結束',
+    hintAdds: { other: '每用一次提示加 {n} 秒。最快的人贏！' },
+    raceAgain: '再比一次', sayWins: '{p} 贏了！比得真好！',
+    chipNotFound: '{w}，還沒找到。點一下聽聽看。', chipFound: '{w}，找到了！點一下聽聽看。'
+  },
+  nl: {
+    pause: 'Pauze', soundOff: 'Geluid uit', soundOn: 'Geluid aan',
+    gridLabel: 'Letterrooster. Veeg over een woord, of tik op de eerste letter en daarna op de laatste. Met het toetsenbord gebruik je de pijltjes en druk je op Enter bij de eerste en de laatste letter.',
+    wordsLabel: 'Woorden om te vinden', hint: 'Hint', read: 'Lees voor', tag: 'Vind de verstopte woorden!', practise: 'Oefen Engelse woorden! 🔤',
+    daily: 'Puzzel van de dag', dailyDone: 'Dagpuzzel gelukt!', days: { one: '{n} dag', other: '{n} dagen' }, newEveryDay: 'Elke dag nieuw',
+    dailyAriaPlay: 'Speel de puzzel van de dag.', dailyAriaDone: 'Puzzel van de dag is vandaag gelukt. Nog een keer spelen.', streakAria: { one: 'Reeks: {n} dag.', other: 'Reeks: {n} dagen.' },
+    howHard: 'Hoe moeilijk', lvl_easy: 'Makkelijk', lvl_medium: 'Gemiddeld', lvl_hard: 'Moeilijk', pickTheme: 'Kies een thema',
+    relaxOpt: 'Rustig (geen klok)', relax: 'Rustig', points: { one: '{n} punt', other: '{n} punten' }, play: 'Spelen', race: 'Race tegen een vriend',
+    paused: 'Pauze', pausedMsg: 'Neem even pauze. De klok staat stil.', resume: 'Verder spelen', changeTheme: 'Ander thema',
+    resAll: 'Je hebt ze allemaal!', resSuper: 'Superster!', stars: { one: '{n} ster', other: '{n} sterren' }, nextPuzzle: 'Volgende puzzel',
+    th_animals: 'Dieren', th_ocean: 'Zee', th_space: 'Ruimte', th_food: 'Eten', th_sports: 'Sport', th_weather: 'Weer', th_bugs: 'Beestjes',
+    th_dinos: 'Dinosaurussen', ths_dinos: 'Dino’s', th_farm: 'Boerderij', th_music: 'Muziek', th_colours: 'Kleuren', th_feelings: 'Gevoelens', ths_feelings: 'Gevoel',
+    th_vehicles: 'Voertuigen', ths_vehicles: 'Vervoer', th_surprise: 'Verras me', ths_surprise: 'Verras me',
+    player1: 'Speler 1', player2: 'Speler 2',
+    cheers: ['Goed zo!', 'Gevonden!', 'Super!', 'Wauw!', 'Mooi zo!', 'Ja!', 'Geweldig!', 'Ga zo door!'],
+    toastHelp: 'Veeg over een woord. Of tik op de eerste en de laatste letter!',
+    toastFind: { one: '{theme}: vind {n} woord!', other: '{theme}: vind {n} woorden!' },
+    raceGo: { one: '{p}, start! Vind {n} woord!', other: '{p}, start! Vind {n} woorden!' },
+    already: '{w} heb je al gevonden!', notOnList: '{w} staat niet op de lijst. Probeer het nog eens!', longer: 'Probeer een langere lijn!',
+    tapLast: 'Tik nu op de laatste letter.', straight: 'Kies een letter op een rechte lijn.',
+    kbCell: 'Rij {r}, kolom {c}: {l}', kbFirst: 'Eerste letter {l}. Ga naar de laatste letter en druk op Enter.', kbCancel: 'Geannuleerd.',
+    kbNotStraight: 'Dat is geen rechte lijn. Probeer een andere letter.',
+    count: '{a} van {b}', hintToast: '💡 {e} {w} begint met de gloeiende {l}!', hintSay: '{w} begint met {l}',
+    noTalk: 'Dit apparaat kan niet praten, maar jij kunt ze lezen!',
+    streakNew: '🔥 {n} dag op rij! Kom morgen terug.', streakRow: { one: '🔥 {n} dag op rij!', other: '🔥 {n} dagen op rij!' },
+    alreadyDaily: 'Je hebt de puzzel van vandaag al gedaan. 🔥 {n}',
+    hints: { one: '{n} hint', other: '{n} hints' }, plusPoints: { one: '+{n} punt', other: '+{n} punten' },
+    newBest: '🏆 Nieuwe beste tijd bij {level}!', tipNoHints: 'Probeer het zonder hints voor 3 sterren!', tipFaster: 'Wees iets sneller voor 3 sterren!',
+    totalPoints: { one: '⭐ {n} punt in totaal', other: '⭐ {n} punten in totaal' },
+    saySuper: 'Superster! Je hebt ze allemaal!', sayAll: 'Je hebt ze allemaal! Goed zo!',
+    raceDone: '{p} is klaar!', raceAria: 'Race', passPhone: 'Geef de telefoon aan {p}. Dezelfde puzzel. Niet spieken!', pGo: '{p}, start!',
+    stopRace: 'Stop de race', sayPass: 'Geef de telefoon aan {p}!', tie: 'Gelijkspel!', wins: '{p} wint!', raceOver: 'Race voorbij',
+    hintAdds: { one: 'Elke hint telt {n} seconde erbij. De snelste wint!', other: 'Elke hint telt {n} seconden erbij. De snelste wint!' },
+    raceAgain: 'Nog een race', sayWins: '{p} wint! Mooie race!',
+    chipNotFound: '{w}, nog niet gevonden. Tik om het te horen.', chipFound: '{w}, gevonden! Tik om het te horen.'
+  }
+};
+const PLURAL = (() => { try { return new Intl.PluralRules(LANG); } catch (e) { return { select: n => (n === 1 ? 'one' : 'other') }; } })();
+const NUM = (() => { try { return new Intl.NumberFormat(BASE === 'ar' ? 'ar-u-nu-latn' : LANG); } catch (e) { return { format: n => String(n) }; } })();
+const fmtN = n => NUM.format(n);
+const own = (o, k) => o && Object.prototype.hasOwnProperty.call(o, k) ? o[k] : undefined;
+/** The raw entry for a key: the player's language, then its base language (en-GB -> en), then English. */
+function raw(key) {
+  let v = own(I18N[LANG], key); if (v === undefined) v = own(I18N[BASE], key); if (v === undefined) v = own(I18N.en, key);
+  return v;
+}
+/** t('points', { n: 3 }) -> '3 points'. {name} placeholders; a plural entry is picked by vars.n. Numbers are formatted for the language. */
+function t(key, vars) {
+  let s = raw(key);
+  if (s === undefined) return key;
+  if (s && typeof s === 'object' && !Array.isArray(s)) s = s[PLURAL.select(vars && vars.n != null ? vars.n : 1)] || s.other;
+  if (!vars) return s;
+  return String(s).replace(/\{(\w+)\}/g, (m, k) => k in vars ? (typeof vars[k] === 'number' ? fmtN(vars[k]) : vars[k]) : m);
+}
+/** English words inside a right-to-left sentence keep their own direction (and their "!" stays on the right side). */
+const isoEn = w => DIR === 'rtl' ? '⁦' + w + '⁩' : w;
+const themeName = id => t('th_' + id);
+/** A theme's short name for the small picker buttons (falls back to its full name in that language). */
+function themeShort(id) {
+  for (const o of [I18N[LANG], I18N[BASE], I18N.en]) { const sh = own(o, 'ths_' + id); if (sh !== undefined) return sh; const n = own(o, 'th_' + id); if (n !== undefined) return n; }
+  return id;
+}
+const levelName = id => t('lvl_' + id);
+const playerName = i => t(i ? 'player2' : 'player1');
+
 
 /* =====================================================================================
    THEMES + PUZZLE GENERATOR (pure code, no DOM: the Node tests run this part on its own)
@@ -751,12 +1237,42 @@ function paintBackground() {
    ===================================================================================== */
 function sfx(name) { try { BRB.sfx.play(name); } catch (e) { /* ignore */ } }
 function canSpeak() { try { return !!(window.speechSynthesis && window.SpeechSynthesisUtterance); } catch (e) { return false; } }
+/** Speaks an English word (always an en-US voice, whatever the menu language). */
 function say(text, queue) {
   if (!canSpeak()) return false;
   try {
     if (!queue) window.speechSynthesis.cancel();
-    const u = new window.SpeechSynthesisUtterance(text); u.rate = CONFIG.speechRate; u.pitch = 1.1; u.lang = 'en-US';
-    window.speechSynthesis.speak(u); return true;
+    utter(text, null); return true;
+  } catch (e) { return false; }
+}
+function utter(text, ui) {
+  const u = new window.SpeechSynthesisUtterance(text); u.rate = CONFIG.speechRate; u.pitch = 1.1;
+  if (ui) { u.lang = ui.lang; if (ui.voice) u.voice = ui.voice; } else u.lang = 'en-US';
+  window.speechSynthesis.speak(u);
+}
+const VOICE_TAG = { pt: 'pt-BR', 'zh-Hant': 'zh-TW', fr: 'fr-FR', es: 'es-ES', de: 'de-DE', he: 'he-IL', ja: 'ja-JP', ar: 'ar-SA', ru: 'ru-RU', it: 'it-IT', nl: 'nl-NL' };
+/** The device's voice for the menu language, or null if it has none (then only the English words are spoken). */
+function uiVoice() {
+  const tag = VOICE_TAG[LANG] || LANG; let vs = [];
+  try { vs = window.speechSynthesis.getVoices() || []; } catch (e) { /* ignore */ }
+  if (!vs.length) return { lang: tag, voice: null };   // the list is not ready yet: let the browser pick by language
+  const norm = x => String(x || '').replace('_', '-').toLowerCase(), want = norm(tag), base = want.split('-')[0];
+  const v = vs.find(x => norm(x.lang) === want) || vs.find(x => norm(x.lang).split('-')[0] === base);
+  return v ? { lang: v.lang, voice: v } : null;
+}
+/** Says a message in the menu language. Placeholders named in enKeys are English words: they get the English voice. */
+function sayT(key, vars = {}, enKeys = ['w', 'l']) {
+  if (!canSpeak()) return false;
+  try {
+    window.speechSynthesis.cancel();
+    if (IS_EN) { utter(t(key, vars), null); return true; }
+    const ui = uiVoice(), local = Object.assign({}, vars); enKeys.forEach(k => { delete local[k]; });
+    t(key, local).split(/(\{\w+\})/).forEach(seg => {
+      const m = /^\{(\w+)\}$/.exec(seg);
+      if (m) { if (vars[m[1]] != null) utter(String(vars[m[1]]), null); }
+      else if (ui && /\p{L}/u.test(seg)) utter(seg.replace(/^[\s\p{P}]+/u, '').trim(), ui);
+    });
+    return true;
   } catch (e) { return false; }
 }
 function stopSpeaking() { try { if (canSpeak()) window.speechSynthesis.cancel(); } catch (e) { /* ignore */ } clearReadTimers(); }
@@ -786,16 +1302,16 @@ function startPuzzle(opts = {}) {
   applyThemeColours(theme);
   $('titleScreen').hidden = true; $('resultsScreen').hidden = true; $('pauseScreen').hidden = true;
   $('app').classList.remove('offstage', 'over', 'paused');
-  const racer = S.race ? CONFIG.race.players[S.race.turn] : null;
-  $('themeName').textContent = racer ? racer[0] + ' ' + racer[1] + ' · ' + THEME_BY_ID[theme].name : (daily ? '📅 ' : '') + THEME_BY_ID[theme].name;
+  const racer = S.race ? [CONFIG.race.players[S.race.turn][0], playerName(S.race.turn)] : null;
+  $('themeName').textContent = racer ? racer[0] + ' ' + racer[1] + ' · ' + themeName(theme) : (daily ? '📅 ' : '') + themeName(theme);
   buildWordList();
   $('hintCost').textContent = '−' + CONFIG.hintCost;
   paintBackground(); layout(); updateHud(true);
   paintArt($('hudArt'), theme, 40, 40, { scale: 0.95 });
   sfx('powerup');
-  if (racer) toast(racer[0] + ' ' + racer[1] + ', go! Find ' + S.words.length + ' words!', 2400);
-  else if (save.seenHelp < 2) { toast('Drag across a word. Or tap its first and last letter!', 3800); save.seenHelp++; persist(); }
-  else toast('Find ' + S.words.length + ' ' + THEME_BY_ID[theme].name.toLowerCase() + ' words!', 2000);
+  if (racer) toast(t('raceGo', { p: racer[0] + ' ' + racer[1], n: S.words.length }), 2400);
+  else if (save.seenHelp < 2) { toast(t('toastHelp'), 3800); save.seenHelp++; persist(); }
+  else toast(t('toastFind', { n: S.words.length, theme: IS_EN ? themeName(theme).toLowerCase() : themeName(theme) }), 2000);
   lastTick = performance.now(); dirty = true;
   focusIfKeys(gridCv);
 }
@@ -810,9 +1326,9 @@ function buildWordList() {
   const ul = $('words'); ul.innerHTML = ''; ul.classList.toggle('many', S.words.length > 8);
   S.words.forEach((w, i) => {
     const li = document.createElement('li'), b = document.createElement('button');
-    b.className = 'wchip'; b.dataset.i = i;
+    b.className = 'wchip'; b.dataset.i = i; b.dir = 'ltr';   // the words are English
     b.innerHTML = '<span class="em" aria-hidden="true">' + w.emoji + '</span><span class="w">' + w.word + '</span>';
-    b.setAttribute('aria-label', w.word.toLowerCase() + ', not found yet. Tap to hear it.');
+    b.setAttribute('aria-label', t('chipNotFound', { w: w.word.toLowerCase() }));
     b.addEventListener('click', () => { if (!say(w.say)) toast('🔈 ' + w.word); sfx('click'); b.classList.remove('pop'); void b.offsetWidth; if (!REDUCED) b.classList.add('pop'); });
     li.appendChild(b); ul.appendChild(li);
   });
@@ -939,11 +1455,11 @@ function trySelect(a, b) {
   const same = (p, q) => p[0] === q[0] && p[1] === q[1];
   const w = S.words.find(x => (same(x.start, a) && same(x.end, b)) || (same(x.start, b) && same(x.end, a)));
   if (w && !w.found) { markFound(w); return true; }
-  if (w && w.found) { toast('You already found ' + w.word + '!'); sfx('click'); return false; }
+  if (w && w.found) { toast(t('already', { w: isoEn(w.word) })); sfx('click'); return false; }
   // not a word: grey band that wobbles away, gently
   S.fails.push({ start: a, end: b, born: performance.now() });
   const letters = cellsOf(a, b).map(([r, c]) => S.letters[r][c]).join('');
-  toast(letters.length > 2 ? letters + ' is not on the list. Try again!' : 'Try a longer line!', 1600);
+  toast(letters.length > 2 ? t('notOnList', { w: isoEn(letters) }) : t('longer'), 1600);
   sfx('click'); dirty = true;
   try { BRB.fx.shake($('card'), 3); } catch (e) { /* ignore */ }   // a small, gentle wobble (skipped for reduced motion)
   return false;
@@ -958,7 +1474,7 @@ function markFound(w) {
     const [fill, dark] = CONFIG.bands[w.band % CONFIG.bands.length];
     chip.style.setProperty('--band', fill + '66'); chip.style.setProperty('--bandDark', dark);
     chip.classList.add('found'); chip.classList.remove('hinted', 'pop'); void chip.offsetWidth; if (!REDUCED) chip.classList.add('pop');
-    chip.setAttribute('aria-label', w.word.toLowerCase() + ', found! Tap to hear it.');
+    chip.setAttribute('aria-label', t('chipFound', { w: w.word.toLowerCase() }));
   }
   // sparkles along the word
   if (!REDUCED && !fast) for (const [r, c] of cellsOf(w.start, w.end)) for (let i = 0; i < 3; i++) {
@@ -968,7 +1484,8 @@ function markFound(w) {
   const last = S.found === S.words.length;
   sfx(last ? 'win' : 'coin');
   if (!last) {
-    toast(w.emoji + ' ' + w.word + '! ' + CONFIG.cheers[Math.floor(Math.random() * CONFIG.cheers.length)], 1500);
+    const cheers = raw('cheers');
+    toast(w.emoji + ' ' + isoEn(w.word + '!') + ' ' + cheers[Math.floor(Math.random() * cheers.length)], 1500);
     if (!BRB.sfx.muted) say(w.say);
   }
   updateHud(true); dirty = true;
@@ -1025,10 +1542,10 @@ gridCv.addEventListener('pointercancel', e => endDrag(e, true));
 gridCv.addEventListener('lostpointercapture', e => { if (S.drag && S.drag.id === e.pointerId) endDrag(e, false); });
 /** Tap-tap selection: first tap marks the first letter, second tap (in a straight line) picks the last letter. */
 function tapCell(rc) {
-  if (!S.pending) { S.pending = rc; sfx('click'); toast('Now tap the last letter.', 1300); dirty = true; return; }
+  if (!S.pending) { S.pending = rc; sfx('click'); toast(t('tapLast'), 1300); dirty = true; return; }
   const a = S.pending;
   if (a[0] === rc[0] && a[1] === rc[1]) { S.pending = null; dirty = true; return; }   // tap the same letter again to cancel
-  if (!inLine(a, rc)) { S.pending = rc; sfx('click'); toast('Pick a letter in a straight line.', 1500); dirty = true; return; }
+  if (!inLine(a, rc)) { S.pending = rc; sfx('click'); toast(t('straight'), 1500); dirty = true; return; }
   S.pending = null; trySelect(a, rc); dirty = true;
 }
 
@@ -1039,14 +1556,14 @@ gridCv.addEventListener('keydown', e => {
   if (mv) {
     e.preventDefault(); S.kb = true;
     S.cursor = [Math.max(0, Math.min(S.n - 1, S.cursor[0] + mv[0])), Math.max(0, Math.min(S.n - 1, S.cursor[1] + mv[1]))];
-    announce('Row ' + (S.cursor[0] + 1) + ', column ' + (S.cursor[1] + 1) + ': ' + S.letters[S.cursor[0]][S.cursor[1]]);
+    announce(t('kbCell', { r: S.cursor[0] + 1, c: S.cursor[1] + 1, l: S.letters[S.cursor[0]][S.cursor[1]] }));
     dirty = true; return;
   }
   if (k === 'Enter' || k === ' ') {
     e.preventDefault(); S.kb = true;
-    if (!S.pending) { S.pending = S.cursor.slice(); sfx('click'); announce('First letter ' + S.letters[S.cursor[0]][S.cursor[1]] + '. Move to the last letter and press Enter.'); }
-    else if (S.pending[0] === S.cursor[0] && S.pending[1] === S.cursor[1]) { S.pending = null; announce('Cancelled.'); }
-    else if (!inLine(S.pending, S.cursor)) { announce('That is not a straight line. Try another letter.'); sfx('click'); }
+    if (!S.pending) { S.pending = S.cursor.slice(); sfx('click'); announce(t('kbFirst', { l: S.letters[S.cursor[0]][S.cursor[1]] })); }
+    else if (S.pending[0] === S.cursor[0] && S.pending[1] === S.cursor[1]) { S.pending = null; announce(t('kbCancel')); }
+    else if (!inLine(S.pending, S.cursor)) { announce(t('kbNotStraight')); sfx('click'); }
     else { const a = S.pending; S.pending = null; trySelect(a, S.cursor.slice()); }
     dirty = true;
   }
@@ -1062,13 +1579,13 @@ let lastShownSec = -1;
 function updateHud(force) {
   const sec = Math.floor(S.timeMs / 1000);
   if (!force && sec === lastShownSec) return; lastShownSec = sec;
-  const count = S.found + ' of ' + S.words.length;
-  $('hudSub').textContent = (save.relax && !S.race ? '🌿 Relax' : '⏱ ' + fmtTime(S.timeMs)) + ' · ✅ ' + count;
+  const count = t('count', { a: S.found, b: S.words.length });
+  $('hudSub').textContent = (save.relax && !S.race ? '🌿 ' + t('relax') : '⏱ \u2066' + fmtTime(S.timeMs) + '\u2069') + ' · ✅ ' + count;
 }
 let toastTimer = null;
 function hideToast() { clearTimeout(toastTimer); $('toast').classList.remove('show'); }
 function toast(text, ms = 1800) {
-  const el = $('toast'); el.textContent = text; el.classList.add('show');
+  const el = $('toast'); el.textContent = text; el.classList.add('show'); el.classList.toggle('long', text.length > 48);
   clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove('show'), ms);
 }
 function useHint() {
@@ -1079,8 +1596,8 @@ function useHint() {
   w.hinted = true; S.hintsUsed++;
   S.hint = { word: w, cell: w.start, t: performance.now() };
   const chip = chipFor(w); if (chip) chip.classList.add('hinted');
-  toast('💡 ' + w.emoji + ' ' + w.word + ' starts with the glowing ' + w.word[0] + '!', 2600);
-  sfx('powerup'); if (!BRB.sfx.muted) say(w.say + ' starts with ' + w.word[0]);
+  toast(t('hintToast', { e: w.emoji, w: isoEn(w.word), l: isoEn(w.word[0]) }), 2600);
+  sfx('powerup'); if (!BRB.sfx.muted) sayT('hintSay', { w: w.say, l: w.word[0] });
   dirty = true;
   return { word: w.word, cell: w.start.slice() };
 }
@@ -1088,7 +1605,7 @@ $('hintBtn').addEventListener('click', useHint);
 function readWords() {
   const left = S.words.filter(w => !w.found), list = left.length ? left : S.words;
   stopSpeaking();
-  if (!canSpeak()) { toast('This device can\'t talk, but you can read them!', 2200); sfx('click'); }
+  if (!canSpeak()) { toast(t('noTalk'), 2200); sfx('click'); }
   list.forEach((w, i) => {
     readTimers.push(setTimeout(() => {
       document.querySelectorAll('.wchip.speaking').forEach(b => b.classList.remove('speaking'));
@@ -1125,30 +1642,30 @@ function finishPuzzle() {
     if (save.daily.last !== today) {
       save.daily.streak = save.daily.last === todayStr(-1) ? save.daily.streak + 1 : 1;
       save.daily.last = today; save.daily.bestStreak = Math.max(save.daily.bestStreak, save.daily.streak);
-      streakMsg = '🔥 ' + save.daily.streak + (save.daily.streak === 1 ? ' day streak! Come back tomorrow.' : ' days in a row!');
-    } else streakMsg = 'You already did today\'s puzzle. 🔥 ' + save.daily.streak;
+      streakMsg = save.daily.streak === 1 ? t('streakNew', { n: 1 }) : t('streakRow', { n: save.daily.streak });
+    } else streakMsg = t('alreadyDaily', { n: save.daily.streak });
   }
   persist();
-  BRB.score.submit(save.total, 'puzzle points');
+  BRB.score.submit(save.total, 'puzzle points');   // the leaderboard label stays English: everyone shares one leaderboard
   BRB.gameOver({ won: true, score: save.total });
   $('app').classList.add('over');
   const show = () => {
     S.screen = 'results';
-    $('resTitle').textContent = stars === 3 ? 'Super star!' : 'You found them all!';
+    $('resTitle').textContent = stars === 3 ? t('resSuper') : t('resAll');
     $('resStars').innerHTML = [0, 1, 2].map(i => '<span class="' + (i < stars ? 'pop' : 'off') + '" style="animation-delay:' + (i * 0.18) + 's">⭐</span>').join('');
-    $('resStars').setAttribute('aria-label', stars + (stars === 1 ? ' star' : ' stars'));
-    $('resChips').innerHTML = (save.relax ? '<span class="chip">🌿 Relax</span>' : '<span class="chip">⏱ ' + fmtTime(S.timeMs) + '</span>') +
-      '<span class="chip">💡 ' + S.hintsUsed + (S.hintsUsed === 1 ? ' hint' : ' hints') + '</span><span class="chip good">+' + points + ' points</span>';
+    $('resStars').setAttribute('aria-label', t('stars', { n: stars }));
+    $('resChips').innerHTML = (save.relax ? '<span class="chip">🌿 ' + t('relax') + '</span>' : '<span class="chip">⏱ <span dir="ltr">' + fmtTime(S.timeMs) + '</span></span>') +
+      '<span class="chip">💡 ' + t('hints', { n: S.hintsUsed }) + '</span><span class="chip good">' + t('plusPoints', { n: points }) + '</span>';
     const tips = [];
     if (streakMsg) tips.push(streakMsg);
-    if (newBest && prevBest != null) tips.push('🏆 New best time for ' + L.name + '!');
-    if (stars < 3 && !streakMsg) tips.push(S.hintsUsed ? 'Try with no hints for 3 stars!' : 'Be a bit faster for 3 stars!');
-    tips.push('⭐ ' + save.total + ' points in all');
+    if (newBest && prevBest != null) tips.push(t('newBest', { level: levelName(S.difficulty) }));
+    if (stars < 3 && !streakMsg) tips.push(S.hintsUsed ? t('tipNoHints') : t('tipFaster'));
+    tips.push(t('totalPoints', { n: save.total }));
     $('resNote').textContent = tips.join('  ·  ');
     paintArt($('resArt'), S.theme, 120, 80, { bob: true, t: 0 });
     hideToast(); $('resultsScreen').hidden = false;
     focusIfKeys($('nextBtn'));
-    say(stars === 3 ? 'Super star! You found them all!' : 'You found them all! Great job!');
+    sayT(stars === 3 ? 'saySuper' : 'sayAll');
   };
   if (!fast) setTimeout(() => BRB.fx.confetti({ colors: CONFIG.bands.map(b => b[0]) }), 300);
   clearTimeout(resultsTimer);
@@ -1156,30 +1673,30 @@ function finishPuzzle() {
 }
 /** Race a friend: player 1 solves, passes the phone, player 2 solves the same grid. Fastest wins (each hint adds time). */
 function finishRaceTurn() {
-  const R = S.race, me = CONFIG.race.players[R.turn];
+  const R = S.race, me = [CONFIG.race.players[R.turn][0], playerName(R.turn)];
   R.results[R.turn] = { timeMs: Math.round(S.timeMs), hints: S.hintsUsed };
   $('app').classList.add('over');
   const total = r => r.timeMs + r.hints * CONFIG.race.hintSeconds * 1000;
-  const line = (i) => { const r = R.results[i], pl = CONFIG.race.players[i]; return '<span class="chip">' + pl[0] + ' ' + fmtTime(r.timeMs) + (r.hints ? ' + 💡' + r.hints : '') + '</span>'; };
+  const line = (i) => { const r = R.results[i], pl = CONFIG.race.players[i]; return '<span class="chip" dir="ltr">' + pl[0] + ' ' + fmtTime(r.timeMs) + (r.hints ? ' + 💡' + r.hints : '') + '</span>'; };
   let winner = -1;
   if (R.turn === 1) { const a = total(R.results[0]), b = total(R.results[1]); winner = a === b ? 2 : (a < b ? 0 : 1); BRB.gameOver({ won: true, score: save.total }); }
   const show = () => {
     S.screen = 'results';
     if (R.turn === 0) {
-      $('resTitle').textContent = me[0] + ' ' + me[1] + ' is done!';
-      $('resStars').innerHTML = '<span>⏱️</span>'; $('resStars').setAttribute('aria-label', 'Race');
+      $('resTitle').textContent = t('raceDone', { p: me[0] + ' ' + me[1] });
+      $('resStars').innerHTML = '<span>⏱️</span>'; $('resStars').setAttribute('aria-label', t('raceAria'));
       $('resChips').innerHTML = line(0);
-      $('resNote').textContent = 'Pass the phone to ' + CONFIG.race.players[1][1] + '. Same puzzle. No peeking!';
-      $('nextBtn').textContent = '📱 ' + CONFIG.race.players[1][1] + ', go!'; $('changeBtn').textContent = '🏠 Stop the race';
-      say('Pass the phone to player 2!');
+      $('resNote').textContent = t('passPhone', { p: playerName(1) });
+      $('nextBtn').textContent = '📱 ' + t('pGo', { p: playerName(1) }); $('changeBtn').textContent = '🏠 ' + t('stopRace');
+      sayT('sayPass', { p: playerName(1) }, []);
     } else {
-      const w = CONFIG.race.players[winner];
-      $('resTitle').textContent = winner === 2 ? "It's a tie!" : w[0] + ' ' + w[1] + ' wins!';
-      $('resStars').innerHTML = '<span class="pop">🏆</span>'; $('resStars').setAttribute('aria-label', 'Race over');
+      const w = winner === 2 ? null : [CONFIG.race.players[winner][0], playerName(winner)];
+      $('resTitle').textContent = winner === 2 ? t('tie') : t('wins', { p: w[0] + ' ' + w[1] });
+      $('resStars').innerHTML = '<span class="pop">🏆</span>'; $('resStars').setAttribute('aria-label', t('raceOver'));
       $('resChips').innerHTML = line(0) + line(1);
-      $('resNote').textContent = 'Each hint adds ' + CONFIG.race.hintSeconds + ' seconds. Fastest wins!';
-      $('nextBtn').textContent = '🔁 Race again'; $('changeBtn').textContent = '🎨 Change theme';
-      say(winner === 2 ? "It's a tie!" : w[1] + ' wins! Great racing!');
+      $('resNote').textContent = t('hintAdds', { n: CONFIG.race.hintSeconds });
+      $('nextBtn').textContent = '🔁 ' + t('raceAgain'); $('changeBtn').textContent = '🎨 ' + t('changeTheme');
+      if (winner === 2) sayT('tie'); else sayT('sayWins', { p: w[1] }, []);
     }
     paintArt($('resArt'), S.theme, 120, 80, { bob: true, t: 0 });
     hideToast(); $('resultsScreen').hidden = false; focusIfKeys($('nextBtn'));
@@ -1188,7 +1705,7 @@ function finishRaceTurn() {
   clearTimeout(resultsTimer);
   if (fast) show(); else resultsTimer = setTimeout(show, 1100);
 }
-function resetResultButtons() { $('nextBtn').textContent = '▶ Next puzzle'; $('changeBtn').textContent = '🎨 Change theme'; }
+function resetResultButtons() { $('nextBtn').textContent = '▶ ' + t('nextPuzzle'); $('changeBtn').textContent = '🎨 ' + t('changeTheme'); }
 $('nextBtn').addEventListener('click', () => {
   sfx('click');
   if (S.race && S.race.turn === 0 && S.race.results[0]) { S.race.turn = 1; return startPuzzle({ theme: S.theme, difficulty: S.difficulty, seed: S.seed, race: 'next' }); }
@@ -1220,7 +1737,7 @@ addEventListener('keydown', e => {
   if ((k === 'p' || k === 'P' || k === 'Escape') && (S.screen === 'play' || S.screen === 'pause')) { e.preventDefault(); setPaused(S.screen === 'play'); }
 });
 function updateMute() {
-  document.querySelectorAll('.mute').forEach(b => { b.textContent = BRB.sfx.muted ? '🔇' : '🔊'; b.setAttribute('aria-label', BRB.sfx.muted ? 'Turn sound on' : 'Turn sound off'); });
+  document.querySelectorAll('.mute').forEach(b => { b.textContent = BRB.sfx.muted ? '🔇' : '🔊'; b.setAttribute('aria-label', BRB.sfx.muted ? t('soundOn') : t('soundOff')); });
 }
 updateMute();
 document.querySelectorAll('.mute').forEach(b => b.addEventListener('click', () => { BRB.sfx.mute(); updateMute(); sfx('click'); if (BRB.sfx.muted) stopSpeaking(); }));
@@ -1234,8 +1751,8 @@ function toTitle() {
 }
 function buildThemeButtons() {
   const box = $('themes');
-  const items = THEMES.map(t => ({ id: t.id, name: t.name, short: t.short || t.name, emoji: t.emoji })).concat([{ id: 'surprise', name: 'Surprise me', short: 'Surprise', emoji: '🎲' }]);
-  box.innerHTML = items.map(t => '<button data-theme="' + t.id + '" aria-pressed="false" aria-label="' + t.name + '"><span class="te" aria-hidden="true">' + t.emoji + '</span><span class="tn">' + t.short + '</span></button>').join('');
+  const items = THEMES.map(th => ({ id: th.id, emoji: th.emoji })).concat([{ id: 'surprise', emoji: '🎲' }]).map(it => Object.assign(it, { name: themeName(it.id), short: themeShort(it.id) }));
+  box.innerHTML = items.map(it => '<button data-theme="' + it.id + '" aria-pressed="false" aria-label="' + it.name + '"><span class="te" aria-hidden="true">' + it.emoji + '</span><span class="tn">' + it.short + '</span></button>').join('');
   box.querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
     S.pickTheme = b.dataset.theme; save.theme = S.pickTheme; persist(); sfx('click');
     if (S.pickTheme !== 'surprise') applyThemeColours(S.pickTheme);
@@ -1246,13 +1763,14 @@ function refreshTitle() {
   document.querySelectorAll('[data-diff]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.diff === S.difficulty)));
   document.querySelectorAll('[data-theme]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.theme === S.pickTheme)));
   $('relaxBtn').setAttribute('aria-pressed', String(!!save.relax));
-  $('pointsChip').textContent = '⭐ ' + save.total + ' points';
+  $('pointsChip').textContent = '⭐ ' + t('points', { n: save.total });
   const doneToday = save.daily.last === todayStr(), st = liveStreak();
   $('dailyBtn').classList.toggle('done', doneToday);
-  $('dailyBtn').firstChild.textContent = doneToday ? '✅ Daily puzzle done! ' : '📅 Daily puzzle ';
-  $('streakChip').textContent = st ? '🔥 ' + st + (st === 1 ? ' day' : ' days') : '✨ New every day';
-  $('dailyBtn').setAttribute('aria-label', (doneToday ? 'Daily puzzle, done today. Play it again.' : 'Play the daily puzzle.') + ' Streak: ' + st + ' days.');
+  $('dailyTxt').textContent = doneToday ? '✅ ' + t('dailyDone') : '📅 ' + t('daily');
+  $('streakChip').textContent = st ? '🔥 ' + t('days', { n: st }) : '✨ ' + t('newEveryDay');
+  $('dailyBtn').setAttribute('aria-label', (doneToday ? t('dailyAriaDone') : t('dailyAriaPlay')) + ' ' + t('streakAria', { n: st }));
   if (S.pickTheme !== 'surprise') applyThemeColours(S.pickTheme);
+  fitLabels();
 }
 document.querySelectorAll('[data-diff]').forEach(b => b.addEventListener('click', () => { S.difficulty = b.dataset.diff; save.difficulty = S.difficulty; persist(); sfx('click'); refreshTitle(); }));
 $('relaxBtn').addEventListener('click', () => { save.relax = !save.relax; persist(); sfx('click'); refreshTitle(); });
@@ -1283,7 +1801,36 @@ addEventListener('resize', relayout);
 if (window.ResizeObserver) { const ro = new ResizeObserver(() => { if (S.screen !== 'title') layout(); }); ro.observe($('boardWrap')); }
 try { if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { dirty = true; relayout(); }); } catch (e) { /* ignore */ }
 
-buildThemeButtons(); refreshTitle(); measureTitleArt(); paintBackground();
+/* ---------- language: fill in the page's words, set the reading direction, make long words fit ---------- */
+function applyI18n() {
+  try { document.documentElement.lang = LANG; document.documentElement.dir = DIR; } catch (e) { /* ignore */ }
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
+  document.querySelectorAll('[data-i18n-aria]').forEach(el => el.setAttribute('aria-label', t(el.dataset.i18nAria)));
+  const pr = $('practise'); pr.textContent = t('practise'); pr.hidden = IS_EN;   // "Practise English words!" for everyone not playing in English
+  document.querySelector('.titlePanel').classList.toggle('hasPractise', !IS_EN);
+  resetResultButtons();
+}
+/** Shrinks a label until it fits on one line (German and Russian run long), down to a readable minimum. */
+function fitLabels() {
+  const fit = (el, min) => {
+    el.style.fontSize = ''; if (!el.offsetParent) return;
+    let fs = parseFloat(getComputedStyle(el).fontSize);
+    while (el.scrollWidth > el.clientWidth + 1 && fs > min) { fs -= 0.5; el.style.fontSize = fs + 'px'; }
+  };
+  document.querySelectorAll('.themes .tn').forEach(el => {
+    el.style.whiteSpace = ''; fit(el, 9.5);
+    if (el.scrollWidth > el.clientWidth + 1) {   // CJK: wrap onto 2 lines (at the marked spot when the name has one)
+      el.style.whiteSpace = 'normal'; el.style.fontSize = '10.5px'; el.style.wordBreak = el.textContent.includes('\u200b') ? 'keep-all' : '';
+    }
+  });
+  document.querySelectorAll('.row button').forEach(el => fit(el, 11));
+  fit($('dailyBtn'), 11);
+}
+addEventListener('resize', fitLabels);
+try { if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitLabels); } catch (e) { /* ignore */ }
+
+applyI18n();
+buildThemeButtons(); refreshTitle(); measureTitleArt(); paintBackground(); fitLabels();
 requestAnimationFrame(frame);
 
 /* =====================================================================================

@@ -6,9 +6,55 @@
   "category": "words",
   "tags": "hangman,spelling,reading,early readers,shark,letters",
   "description": "A hangman game for kids who are just learning to read. Pick a letter, hear the word read aloud, and keep your explorer off the plank. Guess wrong too many times and the shark jumps out of the water! Earn stars for every word you solve.",
+  "l10n": {
+    "pt": {
+      "description": "Um jogo da forca para crianças que estão aprendendo a ler, com palavras em inglês. Escolha uma letra, ouça a palavra em voz alta e não deixe seu explorador cair da prancha. Se errar muitas vezes, o tubarão pula da água! Ganhe estrelas por cada palavra que você descobrir.",
+      "tags": "forca,soletrar,leitura,inglês,primeiras palavras,tubarão,letras"
+    },
+    "fr": {
+      "description": "Un jeu du pendu pour les enfants qui apprennent à lire, avec des mots anglais. Choisis une lettre, écoute le mot lu à voix haute et garde ton explorateur sur la planche. Si tu te trompes trop souvent, le requin saute hors de l’eau ! Gagne des étoiles pour chaque mot trouvé.",
+      "tags": "pendu,orthographe,lecture,anglais,premiers mots,requin,lettres"
+    },
+    "es": {
+      "description": "Un juego del ahorcado para niños que están aprendiendo a leer, con palabras en inglés. Elige una letra, escucha la palabra en voz alta y no dejes que tu explorador se caiga de la tabla. Si fallas demasiadas veces, ¡el tiburón salta del agua! Gana estrellas por cada palabra que resuelvas.",
+      "tags": "ahorcado,deletrear,lectura,inglés,primeras palabras,tiburón,letras"
+    },
+    "de": {
+      "description": "Ein Galgenmännchen-Spiel mit englischen Wörtern für Kinder, die gerade lesen lernen. Wähle einen Buchstaben, hör dir das Wort vorlesen und halte deinen Entdecker auf der Planke. Rätst du zu oft falsch, springt der Hai aus dem Wasser! Für jedes gelöste Wort gibt es Sterne.",
+      "tags": "Galgenmännchen,Buchstabieren,Lesen,Englisch,Leseanfänger,Hai,Buchstaben"
+    },
+    "he": {
+      "description": "משחק איש תלוי עם מילים באנגלית לילדים שרק לומדים לקרוא. בחרו אות, הקשיבו למילה בקול ושמרו על החוקר שלכם על הקרש. טועים יותר מדי פעמים? הכריש קופץ מהמים! הרוויחו כוכבים על כל מילה שפתרתם.",
+      "tags": "איש תלוי,איות,קריאה,אנגלית,קוראים מתחילים,כריש,אותיות"
+    },
+    "ja": {
+      "description": "字をよみはじめた子どものための、えいごのことばでやる ハングマンゲームです。もじをえらんで、ことばを声できいて、たんけんかが いたからおちないようにしよう。まちがえすぎると、サメが水から とびだすよ！ ことばをとくたびに ほしがもらえます。",
+      "tags": "ハングマン,スペル,よむ,えいご,ことば,サメ,もじ"
+    },
+    "ar": {
+      "description": "لعبة الرجل المشنوق بكلمات إنجليزية للأطفال الذين يتعلّمون القراءة. اختر حرفًا، واستمع إلى الكلمة بصوت عالٍ، وأبقِ المستكشف على اللوح. إذا أخطأت مرات كثيرة، يقفز القرش من الماء! اربح نجومًا عن كل كلمة تحلّها.",
+      "tags": "الرجل المشنوق,تهجئة,قراءة,إنجليزي,قراء مبتدئون,قرش,حروف"
+    },
+    "ru": {
+      "description": "Игра «Виселица» с английскими словами для детей, которые только учатся читать. Выбери букву, послушай, как звучит слово, и не дай исследователю упасть с доски. Ошибёшься слишком много раз — из воды выпрыгнет акула! За каждое отгаданное слово ты получаешь звёзды.",
+      "tags": "виселица,правописание,чтение,английский,первые слова,акула,буквы"
+    },
+    "it": {
+      "description": "Un gioco dell’impiccato con parole inglesi per bambini che stanno imparando a leggere. Scegli una lettera, ascolta la parola letta ad alta voce e tieni il tuo esploratore sull’asse. Se sbagli troppe volte, lo squalo salta fuori dall’acqua! Guadagna stelle per ogni parola che indovini.",
+      "tags": "impiccato,spelling,lettura,inglese,prime parole,squalo,lettere"
+    },
+    "zh-Hant": {
+      "description": "給剛開始學認字的小朋友玩的英文猜字遊戲（吊死鬼）。選一個字母，聽聽單字怎麼唸，別讓探險家掉下木板。猜錯太多次，鯊魚就會跳出水面！每猜中一個單字就能得到星星。",
+      "tags": "猜字,拼字,閱讀,英文,初學,鯊魚,字母"
+    },
+    "nl": {
+      "description": "Galgje met Engelse woorden voor kinderen die net leren lezen. Kies een letter, luister hoe het woord klinkt en houd je ontdekkingsreiziger op de plank. Raad je te vaak fout, dan springt de haai uit het water! Verdien sterren voor elk woord dat je raadt.",
+      "tags": "galgje,spellen,lezen,Engels,beginnende lezers,haai,letters"
+    }
+  },
   "orientation": "any",
   "players_max": 1,
   "age_rating": "everyone",
   "featured": true,
-  "notes": "Uses localStorage key 'shark-plank-stars' for the star total and speechSynthesis for read-aloud (fine inside the sandbox). Loads Google Fonts (Andika, Fredoka)."
+  "notes": "Uses localStorage key 'shark-plank-stars' for the star total and speechSynthesis for read-aloud (fine inside the sandbox). Loads Google Fonts (Andika, Fredoka). UI is translated into all 13 site languages from BRB.user.lang (I18N table); the hidden words stay English and are read aloud with an en-US voice."
 }
