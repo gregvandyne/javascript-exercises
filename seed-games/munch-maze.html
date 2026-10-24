@@ -39,11 +39,17 @@ button:focus-visible{outline:3px solid #fff;outline-offset:2px}
 .info canvas{display:block}
 #levelEl{font-weight:700;font-size:1rem;color:var(--soft);white-space:nowrap}
 .side{grid-area:side;display:flex;flex-direction:column;align-items:center;gap:6px}
-.pad{display:grid;grid-template-columns:repeat(3,58px);grid-template-rows:repeat(3,56px);gap:3px}
-.pad button{border:0;border-radius:16px;background:var(--chip);font-size:1.5rem;color:#fff;box-shadow:0 4px 0 rgba(0,0,0,.45),inset 0 0 0 2px var(--panelEdge);touch-action:none;padding:0}
+.pad{display:grid;grid-template-columns:repeat(3,var(--pc,64px));grid-template-rows:repeat(3,var(--pc,64px));gap:6px}
+.pad button{border:0;border-radius:18px;background:var(--chip);font-size:calc(var(--pc,64px)*.42);color:#fff;box-shadow:0 4px 0 rgba(0,0,0,.45),inset 0 0 0 2px var(--panelEdge);touch-action:none;padding:0}
 .pad button.on,.pad button:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.45),inset 0 0 0 2px var(--lime);background:#3d2380}
 .pad [data-dir=up]{grid-area:1/2} .pad [data-dir=left]{grid-area:2/1} .pad [data-dir=right]{grid-area:2/3} .pad [data-dir=down]{grid-area:3/2}
 .pad .hub{grid-area:2/2;border-radius:50%;margin:10px;background:rgba(255,255,255,.06)}
+/* Portrait phones: a wide two-row pad (tall ◀ ▶ on the sides, ▲ ▼ stacked in the middle) gives big buttons without eating maze height. */
+.app:not(.wide) .side{justify-self:stretch}
+.app:not(.wide) .pad{width:min(100%,460px);grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,var(--pc,64px))}
+.app:not(.wide) .pad [data-dir=left]{grid-area:1/1/3/2} .app:not(.wide) .pad [data-dir=right]{grid-area:1/3/3/4}
+.app:not(.wide) .pad [data-dir=up]{grid-area:1/2} .app:not(.wide) .pad [data-dir=down]{grid-area:2/2}
+.app:not(.wide) .pad .hub{display:none}
 .keys{margin:0;font-size:.9rem;color:var(--soft);text-align:center;line-height:1.35}
 .keys kbd{display:inline-block;min-width:1.4em;padding:0 .3em;border-radius:6px;background:var(--chip);box-shadow:inset 0 0 0 1px var(--panelEdge);font-family:inherit;font-weight:700;color:#fff}
 .toast{position:absolute;left:50%;top:38%;transform:translate(-50%,-50%);pointer-events:none;background:#fff;color:#2a1366;font-weight:700;font-size:1.25rem;
@@ -1140,6 +1146,8 @@ try {
   }
 } catch (e) { /* fresh start */ }
 if (save.maze !== 'mix' && !MAZES.some(m => m.id === save.maze)) save.maze = 'mix';
+// Arrow buttons start on for touch screens (phones, tablets) and off with a mouse, until the player picks with the toggle.
+if (!save.padChosen) save.pad = !FINE;
 function persist() { try { BRB.storage.set(CONFIG.saveKey, save); } catch (e) { /* ignore */ } }
 
 /* =====================================================================================
@@ -1162,7 +1170,9 @@ let dotsKey = '';
 /* =====================================================================================
    Layout: fit the maze into the screen (portrait: HUD above, info + pad below; wide: HUD left, pad right)
    ===================================================================================== */
-function layout() {
+// Several passes: a pass can measure the pad/HUD rows at the previous maze width; the next one settles the size.
+function layout() { layoutPass(); const before = cv.style.width; layoutPass(); if (cv.style.width !== before) layoutPass(); }
+function layoutPass() {
   const W = innerWidth, H = innerHeight;
   DPR = Math.min(3, window.devicePixelRatio || 1);
   const wide = W > H * 1.05 && W >= 560;
@@ -1171,9 +1181,13 @@ function layout() {
   $('side').hidden = !save.pad && !FINE;
   let avW, avH;
   if (wide) {
-    const sideW = clamp(W * 0.2, 190, 290);
+    // The maze is limited by height here, so give the sides whatever width is left: a bigger pad costs no maze.
+    const mazeW = 28 * Math.max(5, (H - 14) / 31);
+    const sideW = clamp((W - mazeW - 52) / 2, 190, 320);
+    app.style.setProperty('--pc', Math.round(clamp(Math.min((sideW - 12) / 3, (H - 40) / 3.4), 56, 96)) + 'px');
     avW = W - 2 * sideW - 36 - 16; avH = H - 14;
   } else {
+    app.style.setProperty('--pc', Math.round(clamp(H * 0.095, 58, 84)) + 'px');
     const side = $('side'), rows = side.hidden ? 2 : 3;
     avW = W - 16;
     avH = H - 14 - $('hud').offsetHeight - $('info').offsetHeight - (side.hidden ? 0 : side.offsetHeight) - 6 * rows;
@@ -1788,6 +1802,7 @@ function startGame(mode, opts) {
   app.classList.remove('offstage');
   for (const k in hudCache) hudCache[k] = -1;
   layout(); updateHud();
+  requestAnimationFrame(() => { if (UI.screen === 'play') layout(); });   // the HUD text just changed size
   held.length = 0;
   BRB.sfx.play('click');
 }
@@ -1962,7 +1977,7 @@ function toggleMute() { BRB.sfx.mute(); if (BRB.sfx.muted) Sound.hum('', 0, 0); 
 function syncPadToggles() {
   for (const id of ['padToggle', 'padToggle2']) { const b = $(id); b.setAttribute('aria-pressed', String(!!save.pad)); b.textContent = save.pad ? TX.padOn : TX.padOff; }
 }
-function togglePad() { save.pad = !save.pad; persist(); syncPadToggles(); BRB.sfx.play('click'); if (UI.screen !== 'title') layout(); }
+function togglePad() { save.pad = !save.pad; save.padChosen = true; persist(); syncPadToggles(); BRB.sfx.play('click'); if (UI.screen !== 'title') layout(); }
 for (const b of document.querySelectorAll('.mute')) b.addEventListener('click', toggleMute);
 $('padToggle').addEventListener('click', togglePad);
 $('padToggle2').addEventListener('click', togglePad);

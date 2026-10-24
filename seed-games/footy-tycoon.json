@@ -10,5 +10,55 @@
   "players_max": 4,
   "age_rating": "everyone",
   "featured": true,
-  "notes": "Saves the game in localStorage key 'footy-tycoon-v3' and the trophy wallet in 'footy-wallet-v1'; both must round-trip through the SDK storage shim so the Trophy Shop persists per user. Player rosters are original cartoon characters. Loads Google Fonts (Bungee, Nunito)."
+  "notes": "Saves the game in localStorage key 'footy-tycoon-v3' and the trophy wallet in 'footy-wallet-v1'; both must round-trip through the SDK storage shim so the Trophy Shop persists per user. Player rosters are original cartoon characters. Loads Google Fonts (Bungee, Nunito).",
+  "l10n": {
+    "en-GB": {
+      "description": "Football meets a property-trading board game. Roll the 3D dice, buy star players and championships, score goals with Shoot cards, make trades, dodge the red card sin bin, and be the first to three ticks. Play Normal or Legends mode with 2 to 4 people, add a bot, and spend the trophies you win in the Trophy Shop.",
+      "tags": "football,board game,property,trading,trophies,legends,footballers"
+    },
+    "pt": {
+      "description": "Futebol e jogo de tabuleiro de compra e venda juntos. Jogue os dados 3D, contrate craques e campeonatos, faça gols nas casas de Chute, troque com os amigos, fuja do cartão vermelho e seja o primeiro a fazer três certinhos. Jogue no modo Normal ou Lendas com 2 a 4 pessoas, chame um robô e gaste os troféus que ganhar na Loja de Troféus.",
+      "tags": "futebol,jogo de tabuleiro,banco imobiliário,trocas,troféus,lendas,craques"
+    },
+    "fr": {
+      "description": "Le foot rencontre un jeu de plateau où l’on achète et échange. Lance les dés en 3D, recrute des stars et des championnats, marque des buts sur les cases Tir, fais des échanges, évite le carton rouge et le banc des punis, et sois le premier à obtenir trois coches. Joue en mode Normal ou Légendes à 2, 3 ou 4, ajoute un robot et dépense tes trophées à la Boutique des trophées.",
+      "tags": "foot,football,jeu de plateau,échanges,trophées,légendes,stars"
+    },
+    "es": {
+      "description": "El fútbol se junta con un juego de mesa de comprar y vender. Tira los dados en 3D, ficha estrellas y campeonatos, marca goles en las casillas de Tiro, haz cambios, esquiva la tarjeta roja y sé el primero en conseguir tres marcas. Juega en modo Normal o Leyendas con 2 a 4 personas, agrega un robot y gasta tus trofeos en la Tienda de trofeos.",
+      "tags": "fútbol,juego de mesa,compraventa,cambios,trofeos,leyendas,estrellas"
+    },
+    "de": {
+      "description": "Fußball trifft auf ein Brettspiel zum Kaufen und Tauschen. Würfle mit 3D-Würfeln, hol dir Stars und Meisterschaften, schieß Tore auf den Schuss-Feldern, tausche mit den anderen, weich der Roten Karte und der Strafbank aus und hol als Erster drei Haken. Spiel im Modus Normal oder Legenden mit 2 bis 4 Leuten, nimm einen Bot dazu und gib deine Pokale im Pokal-Laden aus.",
+      "tags": "fußball,brettspiel,kaufen,tauschen,pokale,legenden,stars"
+    },
+    "he": {
+      "description": "כדורגל פוגש משחק לוח של קנייה והחלפה. הטילו קוביות תלת־ממד, החתימו כוכבים וקנו אליפויות, הבקיעו שערים במשבצות הבעיטה, עשו החלפות, התחמקו מהכרטיס האדום והגיעו ראשונים לשלושה וי. שחקו במצב רגיל או אגדות עם 2 עד 4 שחקנים, הוסיפו בוט, ובזבזו את הגביעים שזכיתם בהם בחנות הגביעים.",
+      "tags": "כדורגל,משחק לוח,מונופול,החלפות,גביעים,אגדות,כוכבים"
+    },
+    "ja": {
+      "description": "サッカーと、かったり こうかんしたりする ボードゲームが ひとつに。3Dの サイコロを ふって、スターせんしゅや たいかいを てに入れ、シュートの マスで ゴールを きめよう。こうかんを したり、レッドカードを さけたりしながら、さきに チェックを 3つ あつめた人の かち。ふつうモードと レジェンドモードで 2〜4人で あそべて、ボットも くわえられます。かって もらった トロフィーは トロフィーショップで つかえます。",
+      "tags": "サッカー,ボードゲーム,こうかん,トロフィー,レジェンド,スター"
+    },
+    "ar": {
+      "description": "كرة القدم مع لعبة لوحية للشراء والتبادل. ارمِ النرد ثلاثي الأبعاد، وتعاقد مع النجوم واشترِ البطولات، وسجّل الأهداف في خانات التسديدة، وتبادل مع الآخرين، وتجنّب البطاقة الحمراء ودكة العقوبة، وكن أول من يجمع ثلاث علامات. العب في الوضع العادي أو وضع الأساطير مع 2 إلى 4 لاعبين، وأضف روبوتًا، واصرف الكؤوس التي تربحها في متجر الكؤوس.",
+      "tags": "كرة القدم,لعبة لوحية,تبادل,كؤوس,أساطير,نجوم"
+    },
+    "ru": {
+      "description": "Футбол встречается с настольной игрой про покупки и обмены. Бросай 3D-кубики, подписывай звёзд и покупай чемпионаты, забивай голы на клетках Удар, меняйся с другими, избегай красной карточки и скамейки штрафников и первым собери три галочки. Играй в обычном режиме или в режиме «Легенды» вдвоём, втроём или вчетвером, добавь бота и трать выигранные кубки в Магазине кубков.",
+      "tags": "футбол,настольная игра,монополия,обмен,кубки,легенды,звёзды"
+    },
+    "it": {
+      "description": "Il calcio incontra un gioco da tavolo di compravendite. Tira i dadi in 3D, ingaggia campioni e compra campionati, segna gol sulle caselle Tiro, fai scambi, evita il cartellino rosso e la panchina dei puniti e fai per primo tre spunte. Gioca in modalità Normale o Leggende da 2 a 4 persone, aggiungi un robot e spendi i trofei vinti nel Negozio dei trofei.",
+      "tags": "calcio,gioco da tavolo,compravendita,scambi,trofei,leggende,campioni"
+    },
+    "zh-Hant": {
+      "description": "足球加上買賣交換的大富翁式桌遊。擲 3D 骰子，簽下球星、買下錦標賽，在射門格進球，跟別人交換，避開紅牌和受罰席，最先拿到三個勾勾就贏了。可以用一般模式或傳奇模式，2 到 4 人一起玩，也能加入電腦玩家，再把贏來的獎盃拿到獎盃商店使用。",
+      "tags": "足球,桌遊,大富翁,交換,獎盃,傳奇,球星"
+    },
+    "nl": {
+      "description": "Voetbal ontmoet een bordspel vol kopen en ruilen. Gooi met 3D-dobbelstenen, koop sterren en kampioenschappen, scoor goals op de Schot-vakken, ruil met elkaar, ontwijk de rode kaart en de strafbank en haal als eerste drie vinkjes. Speel in de modus Normaal of Legendes met 2 tot 4 mensen, voeg een robot toe en geef je bekers uit in de Bekerwinkel.",
+      "tags": "voetbal,bordspel,kopen,ruilen,bekers,legendes,sterren"
+    }
+  }
 }

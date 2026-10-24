@@ -40,7 +40,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:2px}
 .pchip.active{transform:translateY(-2px) scale(1.03);box-shadow:0 5px 0 rgba(0,0,0,.18)}
 .pchip .pname{grid-column:1;min-width:0;line-height:1.1;overflow-wrap:break-word}
 .pchip .pname.long{font-size:.8rem}
-.pchip .pwins{grid-column:2;font-size:1.35rem;min-width:1.2em;text-align:right}
+.pchip .pwins{grid-column:2;font-size:1.35rem;min-width:1.2em;text-align:end}
 .pchip.series .pwins{grid-row:1 / span 2} /* the number stays centred beside both lines */
 .pchip .sdots{grid-column:1;display:flex;gap:4px} /* "First to 3": one dot per win needed, under the name */
 .pchip .sdots i{width:13px;height:13px;border-radius:50%;background:#e9d5f5;display:block;box-shadow:inset 0 1px 2px rgba(0,0,0,.12)}
@@ -76,10 +76,14 @@ canvas#board.ring:focus-visible{outline:4px solid #fff;outline-offset:3px} /* ..
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
 .row button[aria-pressed="true"]{background:var(--accent);border-color:var(--accentDark);color:#fff}
 @media (max-width:374px){.row button{font-size:.9rem;padding:6px 3px}} /* three level buttons still fit on a 360px phone */
+/* Translated labels: fitButtons() shrinks a label that is too wide; one that still does not fit wraps (never "…"). */
+.row button.wrap,.btns .big-btn.wrap,.big-btn.wrap{white-space:normal;line-height:1.1;overflow-wrap:anywhere;text-overflow:clip}
+:lang(ar) *{letter-spacing:0!important} /* letter spacing breaks joined Arabic letters */
+:lang(ja) .panel p,:lang(ja) .msg,:lang(ja) .turn div{word-break:keep-all;overflow-wrap:anywhere} /* Japanese lines break at the spaces between phrases */
 .setup,.setupL,.setupR{display:contents}
 .seats{display:flex;flex-direction:column;gap:8px;width:100%}
 .seat{display:flex;align-items:center;gap:8px;background:var(--soft);border-radius:18px;padding:6px}
-.seat .who{flex:none;font-size:1rem;font-weight:700;opacity:.8;width:2.8em;text-align:left;padding-left:4px}
+.seat .who{flex:none;font-size:1rem;font-weight:700;opacity:.8;width:2.8em;text-align:start;padding-inline-start:4px}
 .seat button{border:3px solid var(--softEdge);background:#fff;border-radius:14px;min-height:44px;font-weight:700;font-size:1.1rem;padding:4px 10px}
 .seat button.fixed{cursor:default;border-color:transparent;background:transparent} /* the robot's picture and name cannot change: shown as labels */
 .seat button.fixed:active{animation:wiggle .35s ease} /* ...but a tap still gets a little beep and wiggle */
@@ -88,7 +92,7 @@ canvas#board.ring:focus-visible{outline:4px solid #fff;outline-offset:3px} /* ..
 .seat .nameBtn{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .seat .nameBtn.long{font-size:.95rem;padding:4px 6px}
 .seat .nameBtn.wrap{white-space:normal;overflow-wrap:anywhere;line-height:1.1} /* a name too wide even at the smallest size wraps instead of being cut */
-.panel .mute.corner{position:absolute;top:10px;right:10px}
+.panel .mute.corner{position:absolute;top:10px;inset-inline-end:10px}
 .seat .colorBtn{flex:none;width:52px;padding:0;display:grid;place-items:center}
 .seat .colorBtn i{width:30px;height:30px;border-radius:50%;display:block;background:radial-gradient(circle at 35% 30%,var(--dl),var(--dm) 55%,var(--dd));box-shadow:0 2px 0 rgba(0,0,0,.2)}
 .big-btn{border:0;border-radius:20px;background:var(--accent);color:#fff;font-weight:700;font-size:1.5rem;padding:14px 34px;min-height:60px;min-width:200px;box-shadow:0 6px 0 var(--accentDark)}
@@ -135,19 +139,19 @@ canvas#board.ring:focus-visible{outline:4px solid #fff;outline-offset:3px} /* ..
 
 <div class="app offstage" id="app">
   <div class="hud" id="hud">
-    <button class="icon-btn" id="pauseBtn" aria-label="Pause">⏸️</button>
-    <div class="turn"><div id="turnEl">Your turn</div></div>
+    <button class="icon-btn" id="pauseBtn" aria-label="Pause" data-i18n-aria="pause">⏸️</button>
+    <div class="turn"><div id="turnEl"></div></div>
     <button class="icon-btn mute" aria-label="Turn sound off">🔊</button>
   </div>
   <div class="scores" id="scores">
-    <div class="pchip" id="chip1"><span class="pname" id="chipName1">🦊 Fox</span><span class="sdots" id="dots1" hidden></span><b class="pwins" id="chipWins1">0</b></div>
-    <span class="vs">vs</span>
-    <div class="pchip" id="chip2"><span class="pname" id="chipName2">🤖 Robo</span><span class="sdots" id="dots2" hidden></span><b class="pwins" id="chipWins2">0</b></div>
+    <div class="pchip" id="chip1"><span class="pname" id="chipName1"></span><span class="sdots" id="dots1" hidden></span><b class="pwins" id="chipWins1">0</b></div>
+    <span class="vs" data-i18n="vs">vs</span>
+    <div class="pchip" id="chip2"><span class="pname" id="chipName2"></span><span class="sdots" id="dots2" hidden></span><b class="pwins" id="chipWins2">0</b></div>
   </div>
-  <div class="boardWrap" id="boardWrap"><canvas id="board" tabindex="0" aria-label="Game board. Use the arrow keys to pick a column and Enter to drop a disc."></canvas></div>
-  <p class="msg" id="msgEl" aria-live="polite">Tap a column to drop a disc.</p>
+  <div class="boardWrap" id="boardWrap"><canvas id="board" tabindex="0" aria-label="Game board. Use the arrow keys to pick a column and Enter to drop a disc." data-i18n-aria="boardAria"></canvas></div>
+  <p class="msg" id="msgEl" aria-live="polite" data-i18n="tapColumn">Tap a column to drop a disc.</p>
   <div class="ctrl" id="ctrlRow">
-    <button class="mini" id="undoBtn">↩️ Undo</button>
+    <button class="mini" id="undoBtn" data-i18n="undo" data-emoji="↩️">↩️ Undo</button>
   </div>
 </div>
 
@@ -164,33 +168,33 @@ canvas#board.ring:focus-visible{outline:4px solid #fff;outline-offset:3px} /* ..
       </g>
     </svg>
     <h1 id="titleText">Drop Four</h1>
-    <p>Drop discs. Get four in a row. Win!</p>
+    <p data-i18n="tagline">Drop discs. Get four in a row. Win!</p>
     <div class="setup">
       <div class="setupL">
-        <div class="row" role="group" aria-label="Who plays">
-          <button data-mode="two" aria-pressed="false">👫 Two players</button>
-          <button data-mode="robot" aria-pressed="true">🤖 Vs Robot</button>
+        <div class="row" role="group" aria-label="Who plays" data-i18n-aria="whoPlays">
+          <button data-mode="two" aria-pressed="false" data-i18n="twoPlayers" data-emoji="👫">👫 Two players</button>
+          <button data-mode="robot" aria-pressed="true" data-i18n="vsRobot" data-emoji="🤖">🤖 Vs Robot</button>
         </div>
-        <div class="row" id="levelRow" role="group" aria-label="Robot level">
-          <button data-level="easy" aria-pressed="false">🌱 Easy</button>
-          <button data-level="normal" aria-pressed="true">⭐ Normal</button>
-          <button data-level="hard" aria-pressed="false">🔥 Hard</button>
+        <div class="row" id="levelRow" role="group" aria-label="Robot level" data-i18n-aria="robotLevel">
+          <button data-level="easy" aria-pressed="false" data-i18n="easy" data-emoji="🌱">🌱 Easy</button>
+          <button data-level="normal" aria-pressed="true" data-i18n="normal" data-emoji="⭐">⭐ Normal</button>
+          <button data-level="hard" aria-pressed="false" data-i18n="hard" data-emoji="🔥">🔥 Hard</button>
         </div>
-        <div class="row" role="group" aria-label="How many games">
-          <button data-series="single" aria-pressed="true">🎮 1 game</button>
-          <button data-series="three" aria-pressed="false">🏆 First to 3</button>
+        <div class="row" role="group" aria-label="How many games" data-i18n-aria="howMany">
+          <button data-series="single" aria-pressed="true" data-i18n="oneGame" data-emoji="🎮">🎮 1 game</button>
+          <button data-series="three" aria-pressed="false" data-i18n="firstTo" data-emoji="🏆">🏆 First to 3</button>
         </div>
       </div>
       <div class="setupR">
         <div class="seats">
-          <div class="seat"><span class="who">P1</span><button class="emojiBtn" data-p="0" aria-label="Change picture">🦊</button><button class="nameBtn" data-p="0" aria-label="Change name">Fox</button><button class="colorBtn" data-p="0" aria-label="Change disc colour"><i></i></button></div>
-          <div class="seat"><span class="who">P2</span><button class="emojiBtn" data-p="1" aria-label="Change picture">🐸</button><button class="nameBtn" data-p="1" aria-label="Change name">Frog</button><button class="colorBtn" data-p="1" aria-label="Change disc colour"><i></i></button></div>
+          <div class="seat"><span class="who">P1</span><button class="emojiBtn" data-p="0" aria-label="Change picture" data-i18n-aria="changePic">🦊</button><button class="nameBtn" data-p="0" aria-label="Change name" data-i18n-aria="changeName">Fox</button><button class="colorBtn" data-p="0" aria-label="Change disc color" data-i18n-aria="changeColor"><i></i></button></div>
+          <div class="seat"><span class="who">P2</span><button class="emojiBtn" data-p="1" aria-label="Change picture" data-i18n-aria="changePic">🐸</button><button class="nameBtn" data-p="1" aria-label="Change name" data-i18n-aria="changeName">Frog</button><button class="colorBtn" data-p="1" aria-label="Change disc color" data-i18n-aria="changeColor"><i></i></button></div>
         </div>
         <p class="hint" id="setupHint">Tap your picture, name or disc to change it.</p>
         <div class="chip" id="bestChip">🏆 Robot points: 0</div>
       </div>
     </div>
-    <button class="big-btn" id="playBtn">▶ Play</button>
+    <button class="big-btn" id="playBtn" data-i18n="play" data-emoji="▶">▶ Play</button>
     <p class="hint kbhint" id="kbHint">Tap a column to drop. Keys 1–7, ← → and Enter work too.</p>
     <button class="icon-btn mute corner" aria-label="Turn sound off">🔊</button>
   </div>
@@ -198,12 +202,12 @@ canvas#board.ring:focus-visible{outline:4px solid #fff;outline-offset:3px} /* ..
 
 <section class="screen" id="pauseScreen" hidden>
   <div class="panel">
-    <h2>Paused</h2>
-    <p id="pauseInfo">Take a breath.</p>
-    <button class="big-btn" id="resumeBtn">▶ Keep playing</button>
+    <h2 data-i18n="paused">Paused</h2>
+    <p id="pauseInfo"></p>
+    <button class="big-btn" id="resumeBtn" data-i18n="keepPlaying" data-emoji="▶">▶ Keep playing</button>
     <div class="btns">
-      <button class="big-btn alt" id="restartBtn">🔄 Start over</button>
-      <button class="big-btn alt" id="quitBtn">🏠 Quit</button>
+      <button class="big-btn alt" id="restartBtn" data-i18n="startOver" data-emoji="🔄">🔄 Start over</button>
+      <button class="big-btn alt" id="quitBtn" data-i18n="quit" data-emoji="🏠">🏠 Quit</button>
     </div>
     <button class="icon-btn mute" aria-label="Turn sound off">🔊</button>
   </div>
@@ -211,13 +215,13 @@ canvas#board.ring:focus-visible{outline:4px solid #fff;outline-offset:3px} /* ..
 
 <section class="screen results" id="resultScreen" hidden>
   <div class="panel">
-    <h2 id="resultTitle">Fox wins!</h2>
-    <p id="resultSub">Four in a row!</p>
-    <div class="score-line" id="resultScore">Fox 1 – 0 Robo</div>
+    <h2 id="resultTitle"></h2>
+    <p id="resultSub"></p>
+    <div class="score-line" id="resultScore"></div>
     <div class="chips" id="resultChips"></div>
     <div class="btns">
-      <button class="big-btn" id="againBtn">▶ Play again</button>
-      <button class="big-btn alt" id="changeBtn">👫 Pick players</button>
+      <button class="big-btn" id="againBtn" data-i18n="playAgain" data-emoji="▶">▶ Play again</button>
+      <button class="big-btn alt" id="changeBtn" data-i18n="pickPlayers" data-emoji="👫">👫 Pick players</button>
     </div>
     <button class="icon-btn mute" aria-label="Turn sound off">🔊</button>
   </div>
@@ -256,15 +260,1006 @@ const CONFIG = {
     { id: 'cyan',   name: 'Cyan',   main: '#3fd0e8', dark: '#0f88a3', light: '#bdf1fa' }
   ],
   emojis: ['🦊', '🐸', '🐼', '🦄', '🐯', '🐙', '🦖', '🐧', '🐱', '🐶', '🦋', '🐵'],
-  nicknames: ['Fox', 'Frog', 'Rocket', 'Star', 'Bubbles', 'Tiger', 'Pickle', 'Comet', 'Waffle', 'Ninja', 'Panda', 'Zippy', 'Mango', 'Sparky'],
-  robotSays: {
-    think: ['Hmm, let me think…', 'Beep boop… thinking!', 'My gears are turning…', 'Looking at the board…'],
-    move:  ['Your move!', 'I have a plan…', 'Did you see that?', 'Try and stop me!', 'Beep boop!', 'Nice move. Mine is nicer!', 'Zap! I am buzzing!'],
-    win:   ['Beep boop! I win this one!', 'Robots rule! Play again?', 'My circuits are dancing!', 'Too easy! Try again?'],
-    lose:  ['You beat me! Wow!', 'Oops! You found my weak spot!', 'Okay okay, you are good!', 'Zap! You got me!'],
-    draw:  ['A tie! We are both clever.', 'Nobody won. Rematch?']
-  }
+  // The nicknames players tap through (we never ask for real names). These English words are the ids kept in the
+  // save; each language shows its own word for them (I18N[lang].nick), so a save works in every language.
+  nicknames: ['Fox', 'Frog', 'Rocket', 'Star', 'Bubbles', 'Tiger', 'Pickle', 'Comet', 'Waffle', 'Ninja', 'Panda', 'Zippy', 'Mango', 'Sparky']
 };
+
+/* =====================================================================================
+   Languages: every word the player sees, in each Magic Cups language. The robot's lines are
+   think / move / win / lose / draw; nick maps a nickname id to the word shown.
+   Lookup order: the player's language, then its base language (en-GB -> en), then en.
+   ===================================================================================== */
+const LANG = (window.BRB && BRB.user && BRB.user.lang) || 'en';
+const DIR = (window.BRB && BRB.user && BRB.user.dir) === 'rtl' ? 'rtl' : 'ltr';
+const I18N = /*I18N:BEGIN*/{
+"en": {
+  "pause": "Pause",
+  "soundOn": "Turn sound on",
+  "soundOff": "Turn sound off",
+  "vs": "vs",
+  "boardAria": "Game board. Use the arrow keys to pick a column and Enter to drop a disc.",
+  "tapColumn": "Tap a column to drop a disc.",
+  "undo": "Undo",
+  "tagline": "Drop discs. Get four in a row. Win!",
+  "whoPlays": "Who plays",
+  "robotLevel": "Robot level",
+  "howMany": "How many games",
+  "twoPlayers": "Two players",
+  "vsRobot": "Vs Robot",
+  "easy": "Easy",
+  "normal": "Normal",
+  "hard": "Hard",
+  "oneGame": "1 game",
+  "firstTo": "First to {n}",
+  "seat": "P{n}",
+  "changePic": "Change picture",
+  "changeName": "Change name",
+  "changeColor": "Change disc color",
+  "changeColorNow": "Change disc color (now {color})",
+  "theRobot": "The robot",
+  "robotCalled": "The robot is called {name}",
+  "hintRobot": "Tap your picture, name or disc to change it.",
+  "hintTwo": "Tap a picture, name or disc to change it.",
+  "robotPoints": "Robot points: {n}",
+  "beatRobot": "Beat the robot to earn points!",
+  "levelsLine": "Easy {e} · Normal {m} · Hard {h}",
+  "play": "Play",
+  "kbHint": "Tap a column to drop. Keys 1–{n}, ← → and Enter work too.",
+  "paused": "Paused",
+  "keepPlaying": "Keep playing",
+  "startOver": "Start over",
+  "quit": "Quit",
+  "playAgain": "Play again",
+  "pickPlayers": "Pick players",
+  "newSeries": "New series",
+  "pauseRobot": "The robot is waiting for you.",
+  "pauseFriend": "Your friend can wait a moment.",
+  "colFull": "That column is full!",
+  "yourTurnTap": "Your turn! Tap a column to drop a disc.",
+  "nudge": ["Your turn!","Your move!","Go on, drop one!"],
+  "nameTap": "{name}, tap a column!",
+  "youStart": "You start! Tap a column to drop a disc.",
+  "nameStarts": "{name} starts. Tap a column!",
+  "wins": "{name} wins!",
+  "tie": "It's a tie!",
+  "tieRematch": "It's a tie! Rematch?",
+  "seriesWin": "{name} wins the series {a}–{b}!",
+  "seriesGame": "Game {n} of First to {m}. Keep going!",
+  "beatOn": "You beat {robot} on {level}!",
+  "robotFour": "{robot} got four in a row.",
+  "fourInRow": "Four in a row!",
+  "boardFull": "The board is full. Rematch?",
+  "chipPoints": "Robot points: {n}",
+  "winsN": {"one":"{n} win","other":"{n} wins"},
+  "lossesN": {"one":"{n} loss","other":"{n} losses"},
+  "tryAgain": "{name}, try again!",
+  "thinking": "{name} is thinking…",
+  "yourTurn": "Your turn",
+  "turnOf": "{pos} turn",
+  "robotName": "Robo",
+  "c_red": "Red",
+  "c_yellow": "Yellow",
+  "c_green": "Green",
+  "c_purple": "Purple",
+  "c_orange": "Orange",
+  "c_pink": "Pink",
+  "c_cyan": "Cyan",
+  "nick": {"Fox":"Fox","Frog":"Frog","Rocket":"Rocket","Star":"Star","Bubbles":"Bubbles","Tiger":"Tiger","Pickle":"Pickle","Comet":"Comet","Waffle":"Waffle","Ninja":"Ninja","Panda":"Panda","Zippy":"Zippy","Mango":"Mango","Sparky":"Sparky"},
+  "think": ["Hmm, let me think…","Beep boop… thinking!","My gears are turning…","Looking at the board…"],
+  "move": ["Your move!","I have a plan…","Did you see that?","Try and stop me!","Beep boop!","Nice move. Mine is nicer!","Zap! I am buzzing!"],
+  "win": ["Beep boop! I win this one!","Robots rule! Play again?","My circuits are dancing!","Too easy! Try again?"],
+  "lose": ["You beat me! Wow!","Oops! You found my weak spot!","Okay okay, you are good!","Zap! You got me!"],
+  "draw": ["A tie! We are both clever.","Nobody won. Rematch?"],
+  "levelStats": "{level}: {w} · {l}"
+},
+"en-GB": {
+  "changeColor": "Change disc colour",
+  "changeColorNow": "Change disc colour (now {color})",
+  "tie": "It's a draw!",
+  "tieRematch": "It's a draw! Rematch?",
+  "draw": ["A draw! We are both clever.","Nobody won. Rematch?"]
+},
+"pt": {
+  "pause": "Pausar",
+  "soundOn": "Ligar o som",
+  "soundOff": "Desligar o som",
+  "vs": "x",
+  "boardAria": "Tabuleiro do jogo. Use as setas para escolher uma coluna e Enter para soltar uma ficha.",
+  "tapColumn": "Toque numa coluna para soltar uma ficha.",
+  "undo": "Desfazer",
+  "tagline": "Solte as fichas. Faça quatro em linha. Vença!",
+  "whoPlays": "Quem joga",
+  "robotLevel": "Nível do robô",
+  "howMany": "Quantas partidas",
+  "twoPlayers": "Dois jogadores",
+  "vsRobot": "Contra o robô",
+  "easy": "Fácil",
+  "normal": "Normal",
+  "hard": "Difícil",
+  "oneGame": "1 partida",
+  "firstTo": "Quem ganhar {n}",
+  "seat": "J{n}",
+  "changePic": "Trocar figura",
+  "changeName": "Trocar nome",
+  "changeColor": "Trocar a cor da ficha",
+  "changeColorNow": "Trocar a cor da ficha (agora {color})",
+  "theRobot": "O robô",
+  "robotCalled": "O robô se chama {name}",
+  "hintRobot": "Toque na sua figura, no seu nome ou na sua ficha para trocar.",
+  "hintTwo": "Toque numa figura, num nome ou numa ficha para trocar.",
+  "robotPoints": "Pontos contra o robô: {n}",
+  "beatRobot": "Vença o robô para ganhar pontos!",
+  "levelsLine": "Fácil {e} · Normal {m} · Difícil {h}",
+  "play": "Jogar",
+  "kbHint": "Toque numa coluna para soltar. As teclas 1–{n}, ← → e Enter também funcionam.",
+  "paused": "Pausado",
+  "keepPlaying": "Continuar",
+  "startOver": "Recomeçar",
+  "quit": "Sair",
+  "playAgain": "Jogar de novo",
+  "pickPlayers": "Escolher jogadores",
+  "newSeries": "Nova série",
+  "pauseRobot": "O robô está esperando você.",
+  "pauseFriend": "Seu amigo pode esperar um pouquinho.",
+  "colFull": "Essa coluna está cheia!",
+  "yourTurnTap": "Sua vez! Toque numa coluna para soltar uma ficha.",
+  "nudge": ["Sua vez!","Sua jogada!","Vai, solta uma!"],
+  "nameTap": "{name}, toque numa coluna!",
+  "youStart": "Você começa! Toque numa coluna para soltar uma ficha.",
+  "nameStarts": "{name} começa. Toque numa coluna!",
+  "wins": "{name} venceu!",
+  "tie": "Empate!",
+  "tieRematch": "Empate! Revanche?",
+  "seriesWin": "{name} venceu a série por {a}–{b}!",
+  "seriesGame": "Partida {n}. Vence quem ganhar {m} primeiro. Continue!",
+  "beatOn": "Você venceu {robot} no nível {level}!",
+  "robotFour": "{robot} fez quatro em linha.",
+  "fourInRow": "Quatro em linha!",
+  "boardFull": "O tabuleiro encheu. Revanche?",
+  "chipPoints": "Pontos contra o robô: {n}",
+  "winsN": {"=0":"{n} vitórias","one":"{n} vitória","other":"{n} vitórias"},
+  "lossesN": {"=0":"{n} derrotas","one":"{n} derrota","other":"{n} derrotas"},
+  "tryAgain": "{name}, tente de novo!",
+  "thinking": "{name} está pensando…",
+  "yourTurn": "Sua vez",
+  "turnOf": "Vez de {name}",
+  "robotName": "Robo",
+  "c_red": "Vermelho",
+  "c_yellow": "Amarelo",
+  "c_green": "Verde",
+  "c_purple": "Roxo",
+  "c_orange": "Laranja",
+  "c_pink": "Rosa",
+  "c_cyan": "Ciano",
+  "nick": {"Fox":"Raposa","Frog":"Sapo","Rocket":"Foguete","Star":"Estrela","Bubbles":"Bolhas","Tiger":"Tigre","Pickle":"Picles","Comet":"Cometa","Waffle":"Waffle","Ninja":"Ninja","Panda":"Panda","Zippy":"Ligeirinho","Mango":"Manga","Sparky":"Faísca"},
+  "think": ["Hum, deixa eu pensar…","Bip bop… pensando!","Minhas engrenagens estão girando…","Olhando o tabuleiro…"],
+  "move": ["Sua vez!","Tenho um plano…","Viu essa?","Tenta me parar!","Bip bop!","Boa jogada. A minha é melhor!","Zap! Estou zumbindo!"],
+  "win": ["Bip bop! Essa eu ganhei!","Robôs mandam! Jogar de novo?","Meus circuitos estão dançando!","Fácil demais! Tenta de novo?"],
+  "lose": ["Você me venceu! Uau!","Ops! Você achou meu ponto fraco!","Tá bom, tá bom, você é bom!","Zap! Você me pegou!"],
+  "draw": ["Empate! Nós dois somos espertos.","Ninguém ganhou. Revanche?"],
+  "levelStats": "{level}: {w} · {l}"
+},
+"fr": {
+  "pause": "Pause",
+  "soundOn": "Activer le son",
+  "soundOff": "Couper le son",
+  "vs": "vs",
+  "boardAria": "Plateau de jeu. Utilise les flèches pour choisir une colonne et Entrée pour lâcher un jeton.",
+  "tapColumn": "Touche une colonne pour lâcher un jeton.",
+  "undo": "Annuler",
+  "tagline": "Lâche tes jetons. Aligne-en quatre. Gagne !",
+  "whoPlays": "Qui joue",
+  "robotLevel": "Niveau du robot",
+  "howMany": "Combien de parties",
+  "twoPlayers": "Deux joueurs",
+  "vsRobot": "Contre le robot",
+  "easy": "Facile",
+  "normal": "Normal",
+  "hard": "Difficile",
+  "oneGame": "1 partie",
+  "firstTo": "Premier à {n}",
+  "seat": "J{n}",
+  "changePic": "Changer l’image",
+  "changeName": "Changer le nom",
+  "changeColor": "Changer la couleur du jeton",
+  "changeColorNow": "Changer la couleur du jeton (maintenant {color})",
+  "theRobot": "Le robot",
+  "robotCalled": "Le robot s’appelle {name}",
+  "hintRobot": "Touche ton image, ton nom ou ton jeton pour le changer.",
+  "hintTwo": "Touche une image, un nom ou un jeton pour le changer.",
+  "robotPoints": "Points robot : {n}",
+  "beatRobot": "Bats le robot pour gagner des points !",
+  "levelsLine": "Facile {e} · Normal {m} · Difficile {h}",
+  "play": "Jouer",
+  "kbHint": "Touche une colonne pour lâcher. Les touches 1–{n}, ← → et Entrée marchent aussi.",
+  "paused": "Pause",
+  "keepPlaying": "Continuer",
+  "startOver": "Recommencer",
+  "quit": "Quitter",
+  "playAgain": "Rejouer",
+  "pickPlayers": "Choisir les joueurs",
+  "newSeries": "Nouvelle série",
+  "pauseRobot": "Le robot t’attend.",
+  "pauseFriend": "Ton ami peut attendre un moment.",
+  "colFull": "Cette colonne est pleine !",
+  "yourTurnTap": "À toi ! Touche une colonne pour lâcher un jeton.",
+  "nudge": ["À toi !","À ton tour !","Vas-y, lâche un jeton !"],
+  "nameTap": "{name}, touche une colonne !",
+  "youStart": "Tu commences ! Touche une colonne pour lâcher un jeton.",
+  "nameStarts": "{name} commence. Touche une colonne !",
+  "wins": "{name} gagne !",
+  "tie": "Égalité !",
+  "tieRematch": "Égalité ! On rejoue ?",
+  "seriesWin": "{name} gagne la série {a}–{b} !",
+  "seriesGame": "Partie {n}. Le premier à {m} victoires gagne. Continue !",
+  "beatOn": "Tu as battu {robot} en mode {level} !",
+  "robotFour": "{robot} a aligné quatre jetons.",
+  "fourInRow": "Quatre à la suite !",
+  "boardFull": "Le plateau est plein. On rejoue ?",
+  "chipPoints": "Points robot : {n}",
+  "winsN": {"one":"{n} victoire","other":"{n} victoires"},
+  "lossesN": {"one":"{n} défaite","other":"{n} défaites"},
+  "tryAgain": "{name}, réessaie !",
+  "thinking": "{name} réfléchit…",
+  "yourTurn": "À toi",
+  "turnOf": "Au tour de {name}",
+  "robotName": "Robo",
+  "c_red": "rouge",
+  "c_yellow": "jaune",
+  "c_green": "vert",
+  "c_purple": "violet",
+  "c_orange": "orange",
+  "c_pink": "rose",
+  "c_cyan": "cyan",
+  "nick": {"Fox":"Renard","Frog":"Grenouille","Rocket":"Fusée","Star":"Étoile","Bubbles":"Bulle","Tiger":"Tigre","Pickle":"Cornichon","Comet":"Comète","Waffle":"Gaufre","Ninja":"Ninja","Panda":"Panda","Zippy":"Éclair","Mango":"Mangue","Sparky":"Étincelle"},
+  "think": ["Hum, je réfléchis…","Bip bop… je calcule !","Mes engrenages tournent…","Je regarde le plateau…"],
+  "move": ["À toi !","J’ai un plan…","Tu as vu ça ?","Essaie de m’arrêter !","Bip bop !","Joli coup. Le mien est encore mieux !","Zap ! Je grésille !"],
+  "win": ["Bip bop ! Celle-là, je la gagne !","Les robots sont les rois ! On rejoue ?","Mes circuits dansent !","Trop facile ! Tu réessaies ?"],
+  "lose": ["Tu m’as battu ! Waouh !","Oups ! Tu as trouvé mon point faible !","D’accord, d’accord, tu es trop fort !","Zap ! Tu m’as eu !"],
+  "draw": ["Égalité ! On est malins tous les deux.","Personne n’a gagné. On rejoue ?"],
+  "levelStats": "{level} : {w} · {l}"
+},
+"es": {
+  "pause": "Pausa",
+  "soundOn": "Activar el sonido",
+  "soundOff": "Quitar el sonido",
+  "vs": "vs",
+  "boardAria": "Tablero de juego. Usa las flechas para elegir una columna y Enter para soltar una ficha.",
+  "tapColumn": "Toca una columna para soltar una ficha.",
+  "undo": "Deshacer",
+  "tagline": "Suelta fichas. Haz cuatro en línea. ¡Gana!",
+  "whoPlays": "Quién juega",
+  "robotLevel": "Nivel del robot",
+  "howMany": "Cuántas partidas",
+  "twoPlayers": "Dos jugadores",
+  "vsRobot": "Contra el robot",
+  "easy": "Fácil",
+  "normal": "Normal",
+  "hard": "Difícil",
+  "oneGame": "1 partida",
+  "firstTo": "El primero a {n}",
+  "seat": "J{n}",
+  "changePic": "Cambiar dibujo",
+  "changeName": "Cambiar nombre",
+  "changeColor": "Cambiar el color de la ficha",
+  "changeColorNow": "Cambiar el color de la ficha (ahora {color})",
+  "theRobot": "El robot",
+  "robotCalled": "El robot se llama {name}",
+  "hintRobot": "Toca tu dibujo, tu nombre o tu ficha para cambiarlo.",
+  "hintTwo": "Toca un dibujo, un nombre o una ficha para cambiarlo.",
+  "robotPoints": "Puntos robot: {n}",
+  "beatRobot": "¡Gánale al robot para sumar puntos!",
+  "levelsLine": "Fácil {e} · Normal {m} · Difícil {h}",
+  "play": "Jugar",
+  "kbHint": "Toca una columna para soltar. Las teclas 1–{n}, ← → y Enter también sirven.",
+  "paused": "Pausa",
+  "keepPlaying": "Seguir jugando",
+  "startOver": "Reiniciar",
+  "quit": "Salir",
+  "playAgain": "Jugar otra vez",
+  "pickPlayers": "Elegir jugadores",
+  "newSeries": "Nueva serie",
+  "pauseRobot": "El robot te está esperando.",
+  "pauseFriend": "Tu amigo puede esperar un momento.",
+  "colFull": "¡Esa columna está llena!",
+  "yourTurnTap": "¡Te toca! Toca una columna para soltar una ficha.",
+  "nudge": ["¡Te toca!","¡Tu jugada!","¡Vamos, suelta una!"],
+  "nameTap": "¡{name}, toca una columna!",
+  "youStart": "¡Empiezas tú! Toca una columna para soltar una ficha.",
+  "nameStarts": "Empieza {name}. ¡Toca una columna!",
+  "wins": "¡{name} gana!",
+  "tie": "¡Empate!",
+  "tieRematch": "¡Empate! ¿Revancha?",
+  "seriesWin": "¡{name} gana la serie {a}–{b}!",
+  "seriesGame": "Partida {n}. Gana quien llegue primero a {m}. ¡Sigue así!",
+  "beatOn": "¡Le ganaste a {robot} en {level}!",
+  "robotFour": "{robot} hizo cuatro en línea.",
+  "fourInRow": "¡Cuatro en línea!",
+  "boardFull": "El tablero está lleno. ¿Revancha?",
+  "chipPoints": "Puntos robot: {n}",
+  "winsN": {"one":"{n} victoria","other":"{n} victorias"},
+  "lossesN": {"one":"{n} derrota","other":"{n} derrotas"},
+  "tryAgain": "¡{name}, inténtalo otra vez!",
+  "thinking": "{name} está pensando…",
+  "yourTurn": "Te toca",
+  "turnOf": "Turno de {name}",
+  "robotName": "Robo",
+  "c_red": "rojo",
+  "c_yellow": "amarillo",
+  "c_green": "verde",
+  "c_purple": "morado",
+  "c_orange": "naranja",
+  "c_pink": "rosa",
+  "c_cyan": "celeste",
+  "nick": {"Fox":"Zorro","Frog":"Rana","Rocket":"Cohete","Star":"Estrella","Bubbles":"Burbujas","Tiger":"Tigre","Pickle":"Pepinillo","Comet":"Cometa","Waffle":"Gofre","Ninja":"Ninja","Panda":"Panda","Zippy":"Rayo","Mango":"Mango","Sparky":"Chispa"},
+  "think": ["Mmm, déjame pensar…","Bip bup… ¡pensando!","Mis engranajes están girando…","Mirando el tablero…"],
+  "move": ["¡Te toca!","Tengo un plan…","¿Viste eso?","¡A ver si me paras!","¡Bip bup!","Buena jugada. ¡La mía es mejor!","¡Zas! ¡Estoy zumbando!"],
+  "win": ["¡Bip bup! ¡Esta la gano yo!","¡Los robots mandan! ¿Jugamos otra?","¡Mis circuitos están bailando!","¡Demasiado fácil! ¿Lo intentas otra vez?"],
+  "lose": ["¡Me ganaste! ¡Guau!","¡Uy! ¡Encontraste mi punto débil!","Está bien, está bien, ¡eres muy bueno!","¡Zas! ¡Me atrapaste!"],
+  "draw": ["¡Empate! Los dos somos listos.","Nadie ganó. ¿Revancha?"],
+  "levelStats": "{level}: {w} · {l}"
+},
+"de": {
+  "pause": "Pause",
+  "soundOn": "Ton an",
+  "soundOff": "Ton aus",
+  "vs": "vs",
+  "boardAria": "Spielbrett. Mit den Pfeiltasten wählst du eine Spalte, mit Enter wirfst du einen Stein ein.",
+  "tapColumn": "Tippe auf eine Spalte, um einen Stein einzuwerfen.",
+  "undo": "Rückgängig",
+  "tagline": "Steine einwerfen. Vier in eine Reihe. Gewinnen!",
+  "whoPlays": "Wer spielt",
+  "robotLevel": "Roboter-Stufe",
+  "howMany": "Wie viele Spiele",
+  "twoPlayers": "Zwei Spieler",
+  "vsRobot": "Gegen Roboter",
+  "easy": "Leicht",
+  "normal": "Normal",
+  "hard": "Schwer",
+  "oneGame": "1 Spiel",
+  "firstTo": "Bis {n} Siege",
+  "seat": "S{n}",
+  "changePic": "Bild ändern",
+  "changeName": "Namen ändern",
+  "changeColor": "Steinfarbe ändern",
+  "changeColorNow": "Steinfarbe ändern (jetzt {color})",
+  "theRobot": "Der Roboter",
+  "robotCalled": "Der Roboter heißt {name}",
+  "hintRobot": "Tippe auf dein Bild, deinen Namen oder deinen Stein, um ihn zu ändern.",
+  "hintTwo": "Tippe auf ein Bild, einen Namen oder einen Stein, um ihn zu ändern.",
+  "robotPoints": "Roboterpunkte: {n}",
+  "beatRobot": "Besiege den Roboter und sammle Punkte!",
+  "levelsLine": "Leicht {e} · Normal {m} · Schwer {h}",
+  "play": "Spielen",
+  "kbHint": "Tippe auf eine Spalte. Die Tasten 1–{n}, ← → und Enter gehen auch.",
+  "paused": "Pause",
+  "keepPlaying": "Weiterspielen",
+  "startOver": "Neu starten",
+  "quit": "Beenden",
+  "playAgain": "Noch mal",
+  "pickPlayers": "Spieler wählen",
+  "newSeries": "Neue Runde",
+  "pauseRobot": "Der Roboter wartet auf dich.",
+  "pauseFriend": "Dein Freund kann kurz warten.",
+  "colFull": "Diese Spalte ist voll!",
+  "yourTurnTap": "Du bist dran! Tippe auf eine Spalte, um einen Stein einzuwerfen.",
+  "nudge": ["Du bist dran!","Dein Zug!","Los, wirf einen ein!"],
+  "nameTap": "{name}, tippe auf eine Spalte!",
+  "youStart": "Du fängst an! Tippe auf eine Spalte, um einen Stein einzuwerfen.",
+  "nameStarts": "{name} fängt an. Tippe auf eine Spalte!",
+  "wins": "{name} gewinnt!",
+  "tie": "Unentschieden!",
+  "tieRematch": "Unentschieden! Revanche?",
+  "seriesWin": "{name} gewinnt die Runde {a}–{b}!",
+  "seriesGame": "Spiel {n}. Wer zuerst {m} Siege hat, gewinnt. Weiter so!",
+  "beatOn": "Du hast {robot} auf „{level}“ besiegt!",
+  "robotFour": "{robot} hat vier in einer Reihe.",
+  "fourInRow": "Vier in einer Reihe!",
+  "boardFull": "Das Brett ist voll. Revanche?",
+  "chipPoints": "Roboterpunkte: {n}",
+  "winsN": {"one":"{n} Sieg","other":"{n} Siege"},
+  "lossesN": {"one":"{n} Niederlage","other":"{n} Niederlagen"},
+  "tryAgain": "{name}, versuch’s noch mal!",
+  "thinking": "{name} denkt nach…",
+  "yourTurn": "Du bist dran",
+  "turnOf": "{name} ist dran",
+  "robotName": "Robo",
+  "c_red": "Rot",
+  "c_yellow": "Gelb",
+  "c_green": "Grün",
+  "c_purple": "Lila",
+  "c_orange": "Orange",
+  "c_pink": "Rosa",
+  "c_cyan": "Türkis",
+  "nick": {"Fox":"Fuchs","Frog":"Frosch","Rocket":"Rakete","Star":"Stern","Bubbles":"Blubber","Tiger":"Tiger","Pickle":"Gurke","Comet":"Komet","Waffle":"Waffel","Ninja":"Ninja","Panda":"Panda","Zippy":"Flitzer","Mango":"Mango","Sparky":"Funki"},
+  "think": ["Hmm, lass mich nachdenken…","Piep piep… ich denke!","Meine Zahnräder drehen sich…","Ich schaue mir das Brett an…"],
+  "move": ["Du bist dran!","Ich habe einen Plan…","Hast du das gesehen?","Halt mich doch auf!","Piep piep!","Guter Zug. Meiner ist besser!","Zap! Ich summe!"],
+  "win": ["Piep piep! Das habe ich gewonnen!","Roboter sind super! Noch mal?","Meine Schaltkreise tanzen!","Zu leicht! Noch ein Versuch?"],
+  "lose": ["Du hast mich besiegt! Wow!","Ups! Du hast meine Schwachstelle gefunden!","Okay, okay, du bist gut!","Zap! Du hast mich erwischt!"],
+  "draw": ["Unentschieden! Wir sind beide schlau.","Keiner hat gewonnen. Revanche?"],
+  "levelStats": "{level}: {w} · {l}"
+},
+"he": {
+  "pause": "השהיה",
+  "soundOn": "להפעיל צליל",
+  "soundOff": "לכבות צליל",
+  "vs": "נגד",
+  "boardAria": "לוח המשחק. בחרו עמודה עם החצים ולחצו Enter כדי להפיל דיסקית.",
+  "tapColumn": "הקישו על עמודה כדי להפיל דיסקית.",
+  "undo": "ביטול מהלך",
+  "tagline": "מפילים דיסקיות. ארבע בשורה. מנצחים!",
+  "whoPlays": "מי משחק",
+  "robotLevel": "רמת הרובוט",
+  "howMany": "כמה משחקים",
+  "twoPlayers": "שני שחקנים",
+  "vsRobot": "נגד הרובוט",
+  "easy": "קל",
+  "normal": "רגיל",
+  "hard": "קשה",
+  "oneGame": "משחק אחד",
+  "firstTo": "הראשון ל־{n}",
+  "seat": "#{n}",
+  "changePic": "להחליף תמונה",
+  "changeName": "להחליף שם",
+  "changeColor": "להחליף צבע דיסקית",
+  "changeColorNow": "להחליף צבע דיסקית (עכשיו {color})",
+  "theRobot": "הרובוט",
+  "robotCalled": "קוראים לרובוט {name}",
+  "hintRobot": "הקישו על התמונה, השם או הדיסקית שלכם כדי להחליף.",
+  "hintTwo": "הקישו על תמונה, שם או דיסקית כדי להחליף.",
+  "robotPoints": "נקודות רובוט: {n}",
+  "beatRobot": "נצחו את הרובוט כדי להרוויח נקודות!",
+  "levelsLine": "קל {e} · רגיל {m} · קשה {h}",
+  "play": "לשחק",
+  "kbHint": "הקישו על עמודה כדי להפיל. גם המקשים 1–{n}, ← → ו־Enter עובדים.",
+  "paused": "הפסקה",
+  "keepPlaying": "להמשיך לשחק",
+  "startOver": "להתחיל מחדש",
+  "quit": "יציאה",
+  "playAgain": "עוד סיבוב",
+  "pickPlayers": "בחירת שחקנים",
+  "newSeries": "סדרה חדשה",
+  "pauseRobot": "הרובוט מחכה לכם.",
+  "pauseFriend": "החבר שלכם יכול לחכות רגע.",
+  "colFull": "העמודה הזאת מלאה!",
+  "yourTurnTap": "תורכם! הקישו על עמודה כדי להפיל דיסקית.",
+  "nudge": ["תורכם!","המהלך שלכם!","קדימה, הפילו אחת!"],
+  "nameTap": "{name}, הקישו על עמודה!",
+  "youStart": "אתם מתחילים! הקישו על עמודה כדי להפיל דיסקית.",
+  "nameStarts": "{name} פותח. הקישו על עמודה!",
+  "wins": "{name} – ניצחון!",
+  "tie": "תיקו!",
+  "tieRematch": "תיקו! עוד סיבוב?",
+  "seriesWin": "הסדרה ל־{name}, {a}–{b}!",
+  "seriesGame": "משחק {n}. מי שמגיע ראשון ל־{m} ניצחונות מנצח. ממשיכים!",
+  "beatOn": "ניצחתם את {robot} ברמה {level}!",
+  "robotFour": "ל־{robot} יש ארבע בשורה.",
+  "fourInRow": "ארבע בשורה!",
+  "boardFull": "הלוח מלא. עוד סיבוב?",
+  "chipPoints": "נקודות רובוט: {n}",
+  "winsN": {"one":"ניצחון אחד","two":"{n} ניצחונות","other":"{n} ניצחונות"},
+  "lossesN": {"one":"הפסד אחד","two":"{n} הפסדים","other":"{n} הפסדים"},
+  "tryAgain": "{name}, נסו שוב!",
+  "thinking": "{name} חושב…",
+  "yourTurn": "תורכם",
+  "turnOf": "התור של {name}",
+  "robotName": "רובו",
+  "c_red": "אדום",
+  "c_yellow": "צהוב",
+  "c_green": "ירוק",
+  "c_purple": "סגול",
+  "c_orange": "כתום",
+  "c_pink": "ורוד",
+  "c_cyan": "תכלת",
+  "nick": {"Fox":"שועל","Frog":"צפרדע","Rocket":"טיל","Star":"כוכב","Bubbles":"בועות","Tiger":"נמר","Pickle":"מלפפון","Comet":"שביט","Waffle":"וופל","Ninja":"נינג׳ה","Panda":"פנדה","Zippy":"זריז","Mango":"מנגו","Sparky":"ניצוץ"},
+  "think": ["הממ, רגע, אני חושב…","ביפ בופ… חושב!","גלגלי השיניים שלי מסתובבים…","מסתכל על הלוח…"],
+  "move": ["תורכם!","יש לי תוכנית…","ראיתם את זה?","נסו לעצור אותי!","ביפ בופ!","מהלך יפה. שלי יפה יותר!","זאפ! אני מזמזם!"],
+  "win": ["ביפ בופ! את זה אני ניצחתי!","רובוטים שולטים! עוד סיבוב?","המעגלים שלי רוקדים!","קל מדי! מנסים שוב?"],
+  "lose": ["ניצחתם אותי! וואו!","אופס! מצאתם את הנקודה החלשה שלי!","טוב, טוב, אתם טובים!","זאפ! תפסתם אותי!"],
+  "draw": ["תיקו! שנינו חכמים.","אף אחד לא ניצח. עוד סיבוב?"],
+  "levelStats": "{level}: {w} · {l}"
+},
+"ja": {
+  "pause": "いちじていし",
+  "soundOn": "おとをオンにする",
+  "soundOff": "おとをオフにする",
+  "vs": "vs",
+  "boardAria": "ゲームばん。やじるしキーでれつをえらんで、Enterでコマをおとします。",
+  "tapColumn": "れつをタップして、コマをおとしましょう。",
+  "undo": "もどす",
+  "tagline": "コマをおとして、4つ ならべよう！",
+  "whoPlays": "だれがあそぶ？",
+  "robotLevel": "ロボットのつよさ",
+  "howMany": "なんかいあそぶ？",
+  "twoPlayers": "ふたりで",
+  "vsRobot": "ロボットと",
+  "easy": "かんたん",
+  "normal": "ふつう",
+  "hard": "むずかしい",
+  "oneGame": "1かい",
+  "firstTo": "さきに{n}しょう",
+  "seat": "{n}P",
+  "changePic": "えをかえる",
+  "changeName": "なまえをかえる",
+  "changeColor": "コマのいろをかえる",
+  "changeColorNow": "コマのいろをかえる（いまは{color}）",
+  "theRobot": "ロボット",
+  "robotCalled": "ロボットのなまえは{name}です",
+  "hintRobot": "じぶんの え・なまえ・コマを タップすると かえられます。",
+  "hintTwo": "え・なまえ・コマを タップすると かえられます。",
+  "robotPoints": "ロボットポイント：{n}",
+  "beatRobot": "ロボットにかって、ポイントをもらいましょう！",
+  "levelsLine": "かんたん {e} · ふつう {m} · むずかしい {h}",
+  "play": "あそぶ",
+  "kbHint": "れつをタップしておとします。1–{n}キー、← →、Enterキーもつかえます。",
+  "paused": "ひとやすみ",
+  "keepPlaying": "つづける",
+  "startOver": "さいしょから",
+  "quit": "やめる",
+  "playAgain": "もう1回あそぶ",
+  "pickPlayers": "あそぶ人をえらぶ",
+  "newSeries": "あたらしいしょうぶ",
+  "pauseRobot": "ロボットが まっています。",
+  "pauseFriend": "おともだちは すこし まってくれます。",
+  "colFull": "そのれつは いっぱいです！",
+  "yourTurnTap": "あなたのばんです！れつをタップして、コマをおとしましょう。",
+  "nudge": ["あなたのばんです！","どうぞ！","さあ、おとしてね！"],
+  "nameTap": "{name}、れつをタップしてね！",
+  "youStart": "あなたからです！れつをタップして、コマをおとしましょう。",
+  "nameStarts": "{name}からです。れつをタップしてね！",
+  "wins": "{name}のかち！",
+  "tie": "ひきわけ！",
+  "tieRematch": "ひきわけ！もう1回？",
+  "seriesWin": "{name}が {a}–{b} でしょうぶにかちました！",
+  "seriesGame": "{n}かいめ。さきに{m}かいかったほうのかちです。がんばって！",
+  "beatOn": "「{level}」の{robot}にかちました！",
+  "robotFour": "{robot}が4つならべました。",
+  "fourInRow": "4つならんだ！",
+  "boardFull": "ばんが いっぱいです。もう1回？",
+  "chipPoints": "ロボットポイント：{n}",
+  "winsN": {"other":"{n}しょう"},
+  "lossesN": {"other":"{n}はい"},
+  "tryAgain": "{name}、もう1回どうぞ！",
+  "thinking": "{name}が かんがえています…",
+  "yourTurn": "あなたのばん",
+  "turnOf": "{name}のばん",
+  "robotName": "ロボ",
+  "c_red": "あか",
+  "c_yellow": "きいろ",
+  "c_green": "みどり",
+  "c_purple": "むらさき",
+  "c_orange": "オレンジ",
+  "c_pink": "ピンク",
+  "c_cyan": "みずいろ",
+  "nick": {"Fox":"キツネ","Frog":"カエル","Rocket":"ロケット","Star":"ほし","Bubbles":"あわあわ","Tiger":"トラ","Pickle":"ピクルス","Comet":"すいせい","Waffle":"ワッフル","Ninja":"にんじゃ","Panda":"パンダ","Zippy":"ビュン","Mango":"マンゴー","Sparky":"ピカピカ"},
+  "think": ["うーん、かんがえちゅう…","ピポパ…かんがえています！","はぐるまが まわっています…","ばんを みています…"],
+  "move": ["あなたのばんです！","さくせんが あります…","いまの みましたか？","とめられるかな？","ピポパ！","いい手ですね。ぼくのほうが もっといい！","ビビッ！ わくわくします！"],
+  "win": ["ピポパ！ ぼくのかちです！","ロボットさいこう！ もう1回？","かいろが おどっています！","かんたんすぎ！ もう1回やる？"],
+  "lose": ["まけました！ すごい！","あっ！ よわいところを 見つけられました！","わかった、わかった、つよいですね！","ビビッ！ やられました！"],
+  "draw": ["ひきわけ！ どっちも かしこいですね。","だれも かちませんでした。もう1回？"],
+  "levelStats": "{level}：{w}・{l}"
+},
+"ar": {
+  "pause": "إيقاف مؤقت",
+  "soundOn": "تشغيل الصوت",
+  "soundOff": "إيقاف الصوت",
+  "vs": "ضد",
+  "boardAria": "لوحة اللعب. استخدم الأسهم لاختيار عمود، واضغط Enter لإسقاط قرص.",
+  "tapColumn": "اضغط على عمود لإسقاط قرص.",
+  "undo": "تراجع",
+  "tagline": "أسقط الأقراص. اصنع أربعة في صف. واربح!",
+  "whoPlays": "من يلعب",
+  "robotLevel": "مستوى الروبوت",
+  "howMany": "كم لعبة",
+  "twoPlayers": "لاعبان",
+  "vsRobot": "ضد الروبوت",
+  "easy": "سهل",
+  "normal": "عادي",
+  "hard": "صعب",
+  "oneGame": "لعبة واحدة",
+  "firstTo": "الأول إلى {n}",
+  "seat": "#{n}",
+  "changePic": "غيّر الصورة",
+  "changeName": "غيّر الاسم",
+  "changeColor": "غيّر لون القرص",
+  "changeColorNow": "غيّر لون القرص (الآن {color})",
+  "theRobot": "الروبوت",
+  "robotCalled": "اسم الروبوت {name}",
+  "hintRobot": "اضغط على صورتك أو اسمك أو قرصك لتغييره.",
+  "hintTwo": "اضغط على صورة أو اسم أو قرص لتغييره.",
+  "robotPoints": "نقاط الروبوت: {n}",
+  "beatRobot": "اهزم الروبوت لتربح نقاطًا!",
+  "levelsLine": "سهل {e} · عادي {m} · صعب {h}",
+  "play": "العب",
+  "kbHint": "اضغط على عمود لإسقاط قرص. تعمل أيضًا المفاتيح 1–{n} و← → وEnter.",
+  "paused": "توقف مؤقت",
+  "keepPlaying": "تابع اللعب",
+  "startOver": "ابدأ من جديد",
+  "quit": "خروج",
+  "playAgain": "العب مرة أخرى",
+  "pickPlayers": "اختر اللاعبين",
+  "newSeries": "سلسلة جديدة",
+  "pauseRobot": "الروبوت ينتظرك.",
+  "pauseFriend": "صديقك يستطيع أن ينتظر قليلًا.",
+  "colFull": "هذا العمود ممتلئ!",
+  "yourTurnTap": "دورك! اضغط على عمود لإسقاط قرص.",
+  "nudge": ["دورك!","حركتك!","هيا، أسقط قرصًا!"],
+  "nameTap": "{name}، اضغط على عمود!",
+  "youStart": "أنت تبدأ! اضغط على عمود لإسقاط قرص.",
+  "nameStarts": "يبدأ {name}. اضغط على عمود!",
+  "wins": "فاز {name}!",
+  "tie": "تعادل!",
+  "tieRematch": "تعادل! نلعب مرة أخرى؟",
+  "seriesWin": "فاز {name} بالسلسلة {a}–{b}!",
+  "seriesGame": "اللعبة {n}. يفوز من يصل أولًا إلى {m}. استمر!",
+  "beatOn": "هزمت {robot} في المستوى {level}!",
+  "robotFour": "صنع {robot} أربعة في صف.",
+  "fourInRow": "أربعة في صف!",
+  "boardFull": "امتلأت اللوحة. نلعب مرة أخرى؟",
+  "chipPoints": "نقاط الروبوت: {n}",
+  "winsN": {"other":"فوز {n}"},
+  "lossesN": {"other":"خسارة {n}"},
+  "tryAgain": "{name}، حاول مرة أخرى!",
+  "thinking": "{name} يفكّر…",
+  "yourTurn": "دورك",
+  "turnOf": "دور {name}",
+  "robotName": "روبو",
+  "c_red": "أحمر",
+  "c_yellow": "أصفر",
+  "c_green": "أخضر",
+  "c_purple": "بنفسجي",
+  "c_orange": "برتقالي",
+  "c_pink": "وردي",
+  "c_cyan": "سماوي",
+  "nick": {"Fox":"ثعلب","Frog":"ضفدع","Rocket":"صاروخ","Star":"نجمة","Bubbles":"فقاعات","Tiger":"نمر","Pickle":"مخلل","Comet":"مذنّب","Waffle":"وافل","Ninja":"نينجا","Panda":"باندا","Zippy":"سريع","Mango":"مانجو","Sparky":"شرارة"},
+  "think": ["همم، دعني أفكّر…","بيب بوب… أفكّر!","تروسي تدور…","أنظر إلى اللوحة…"],
+  "move": ["دورك!","عندي خطة…","هل رأيت ذلك؟","حاول أن توقفني!","بيب بوب!","حركة جميلة. حركتي أجمل!","زاب! أنا متحمّس!"],
+  "win": ["بيب بوب! فزت بهذه!","الروبوتات هي الأفضل! نلعب مرة أخرى؟","دوائري ترقص!","سهلة جدًا! تحاول مرة أخرى؟"],
+  "lose": ["هزمتني! رائع!","أوبس! وجدت نقطة ضعفي!","حسنًا، حسنًا، أنت ماهر!","زاب! أمسكت بي!"],
+  "draw": ["تعادل! كلانا ذكي.","لم يفز أحد. نلعب مرة أخرى؟"],
+  "levelStats": "{level}: {w} · {l}"
+},
+"ru": {
+  "pause": "Пауза",
+  "soundOn": "Включить звук",
+  "soundOff": "Выключить звук",
+  "vs": "vs",
+  "boardAria": "Игровое поле. Стрелками выбери столбик, а клавишей Enter брось фишку.",
+  "tapColumn": "Нажми на столбик, чтобы бросить фишку.",
+  "undo": "Отменить",
+  "tagline": "Бросай фишки. Собери четыре в ряд. Победи!",
+  "whoPlays": "Кто играет",
+  "robotLevel": "Уровень робота",
+  "howMany": "Сколько игр",
+  "twoPlayers": "Вдвоём",
+  "vsRobot": "С роботом",
+  "easy": "Лёгкий",
+  "normal": "Обычный",
+  "hard": "Сложный",
+  "oneGame": "1 игра",
+  "firstTo": "До {n} побед",
+  "seat": "И{n}",
+  "changePic": "Сменить картинку",
+  "changeName": "Сменить имя",
+  "changeColor": "Сменить цвет фишки",
+  "changeColorNow": "Сменить цвет фишки (сейчас {color})",
+  "theRobot": "Робот",
+  "robotCalled": "Робота зовут {name}",
+  "hintRobot": "Нажми на свою картинку, имя или фишку, чтобы сменить.",
+  "hintTwo": "Нажми на картинку, имя или фишку, чтобы сменить.",
+  "robotPoints": "Очки за робота: {n}",
+  "beatRobot": "Обыграй робота и получи очки!",
+  "levelsLine": "Лёгкий {e} · Обычный {m} · Сложный {h}",
+  "play": "Играть",
+  "kbHint": "Нажми на столбик, чтобы бросить. Клавиши 1–{n}, ← → и Enter тоже работают.",
+  "paused": "Пауза",
+  "keepPlaying": "Продолжить",
+  "startOver": "Начать заново",
+  "quit": "Выйти",
+  "playAgain": "Ещё раз",
+  "pickPlayers": "Выбрать игроков",
+  "newSeries": "Новая серия",
+  "pauseRobot": "Робот тебя ждёт.",
+  "pauseFriend": "Твой друг может немного подождать.",
+  "colFull": "Этот столбик полный!",
+  "yourTurnTap": "Твой ход! Нажми на столбик, чтобы бросить фишку.",
+  "nudge": ["Твой ход!","Ходи!","Давай, бросай!"],
+  "nameTap": "{name}, нажми на столбик!",
+  "youStart": "Ты начинаешь! Нажми на столбик, чтобы бросить фишку.",
+  "nameStarts": "Начинает {name}. Нажми на столбик!",
+  "wins": "Победа: {name}!",
+  "tie": "Ничья!",
+  "tieRematch": "Ничья! Реванш?",
+  "seriesWin": "Серия за {name}: {a}–{b}!",
+  "seriesGame": "Игра {n}. Побеждает тот, кто первым наберёт {m}. Вперёд!",
+  "beatOn": "Победа над {robot} на уровне «{level}»!",
+  "robotFour": "{robot} собрал четыре в ряд.",
+  "fourInRow": "Четыре в ряд!",
+  "boardFull": "Поле заполнено. Реванш?",
+  "chipPoints": "Очки за робота: {n}",
+  "winsN": {"one":"{n} победа","few":"{n} победы","many":"{n} побед","other":"{n} победы"},
+  "lossesN": {"one":"{n} поражение","few":"{n} поражения","many":"{n} поражений","other":"{n} поражения"},
+  "tryAgain": "{name}, попробуй ещё раз!",
+  "thinking": "{name} думает…",
+  "yourTurn": "Твой ход",
+  "turnOf": "Ход: {name}",
+  "robotName": "Робо",
+  "c_red": "красный",
+  "c_yellow": "жёлтый",
+  "c_green": "зелёный",
+  "c_purple": "фиолетовый",
+  "c_orange": "оранжевый",
+  "c_pink": "розовый",
+  "c_cyan": "голубой",
+  "nick": {"Fox":"Лис","Frog":"Лягушка","Rocket":"Ракета","Star":"Звезда","Bubbles":"Пузырёк","Tiger":"Тигр","Pickle":"Огурчик","Comet":"Комета","Waffle":"Вафля","Ninja":"Ниндзя","Panda":"Панда","Zippy":"Шустрик","Mango":"Манго","Sparky":"Искорка"},
+  "think": ["Хм, дай подумать…","Бип-буп… думаю!","Мои шестерёнки крутятся…","Смотрю на поле…"],
+  "move": ["Твой ход!","У меня есть план…","Видел?","Попробуй меня остановить!","Бип-буп!","Хороший ход. А мой ещё лучше!","Бзз! Я весь искрюсь!"],
+  "win": ["Бип-буп! Эту игру выиграл я!","Роботы рулят! Ещё раз?","Мои схемы танцуют!","Слишком легко! Попробуешь ещё?"],
+  "lose": ["Ты меня обыграл! Ого!","Ой! Ты нашёл моё слабое место!","Ладно, ладно, ты молодец!","Бзз! Ты меня поймал!"],
+  "draw": ["Ничья! Мы оба умные.","Никто не выиграл. Реванш?"],
+  "levelStats": "{level}: {w} · {l}"
+},
+"it": {
+  "pause": "Pausa",
+  "soundOn": "Attiva il suono",
+  "soundOff": "Togli il suono",
+  "vs": "vs",
+  "boardAria": "Tabellone di gioco. Usa le frecce per scegliere una colonna e Invio per far cadere un gettone.",
+  "tapColumn": "Tocca una colonna per far cadere un gettone.",
+  "undo": "Annulla",
+  "tagline": "Fai cadere i gettoni. Mettine quattro in fila. Vinci!",
+  "whoPlays": "Chi gioca",
+  "robotLevel": "Livello del robot",
+  "howMany": "Quante partite",
+  "twoPlayers": "Due giocatori",
+  "vsRobot": "Contro il robot",
+  "easy": "Facile",
+  "normal": "Normale",
+  "hard": "Difficile",
+  "oneGame": "1 partita",
+  "firstTo": "Chi arriva a {n}",
+  "seat": "G{n}",
+  "changePic": "Cambia immagine",
+  "changeName": "Cambia nome",
+  "changeColor": "Cambia colore del gettone",
+  "changeColorNow": "Cambia colore del gettone (ora {color})",
+  "theRobot": "Il robot",
+  "robotCalled": "Il robot si chiama {name}",
+  "hintRobot": "Tocca la tua immagine, il tuo nome o il tuo gettone per cambiarlo.",
+  "hintTwo": "Tocca un'immagine, un nome o un gettone per cambiarlo.",
+  "robotPoints": "Punti robot: {n}",
+  "beatRobot": "Batti il robot per guadagnare punti!",
+  "levelsLine": "Facile {e} · Normale {m} · Difficile {h}",
+  "play": "Gioca",
+  "kbHint": "Tocca una colonna. Funzionano anche i tasti 1–{n}, ← → e Invio.",
+  "paused": "In pausa",
+  "keepPlaying": "Continua",
+  "startOver": "Ricomincia",
+  "quit": "Esci",
+  "playAgain": "Rigioca",
+  "pickPlayers": "Scegli i giocatori",
+  "newSeries": "Nuova sfida",
+  "pauseRobot": "Il robot ti aspetta.",
+  "pauseFriend": "Il tuo amico può aspettare un attimo.",
+  "colFull": "Questa colonna è piena!",
+  "yourTurnTap": "Tocca a te! Tocca una colonna per far cadere un gettone.",
+  "nudge": ["Tocca a te!","La tua mossa!","Dai, fanne cadere uno!"],
+  "nameTap": "{name}, tocca una colonna!",
+  "youStart": "Inizi tu! Tocca una colonna per far cadere un gettone.",
+  "nameStarts": "Inizia {name}. Tocca una colonna!",
+  "wins": "Vince {name}!",
+  "tie": "Pareggio!",
+  "tieRematch": "Pareggio! Rivincita?",
+  "seriesWin": "{name} vince la sfida {a}–{b}!",
+  "seriesGame": "Partita {n}. Vince chi arriva prima a {m}. Avanti così!",
+  "beatOn": "Hai battuto {robot} a livello {level}!",
+  "robotFour": "{robot} ha fatto quattro in fila.",
+  "fourInRow": "Quattro in fila!",
+  "boardFull": "Il tabellone è pieno. Rivincita?",
+  "chipPoints": "Punti robot: {n}",
+  "winsN": {"one":"{n} vittoria","other":"{n} vittorie"},
+  "lossesN": {"one":"{n} sconfitta","other":"{n} sconfitte"},
+  "tryAgain": "{name}, riprova!",
+  "thinking": "{name} sta pensando…",
+  "yourTurn": "Tocca a te",
+  "turnOf": "Tocca a {name}",
+  "robotName": "Robo",
+  "c_red": "rosso",
+  "c_yellow": "giallo",
+  "c_green": "verde",
+  "c_purple": "viola",
+  "c_orange": "arancione",
+  "c_pink": "rosa",
+  "c_cyan": "azzurro",
+  "nick": {"Fox":"Volpe","Frog":"Rana","Rocket":"Razzo","Star":"Stella","Bubbles":"Bollicine","Tiger":"Tigre","Pickle":"Cetriolino","Comet":"Cometa","Waffle":"Cialda","Ninja":"Ninja","Panda":"Panda","Zippy":"Saetta","Mango":"Mango","Sparky":"Scintilla"},
+  "think": ["Mmm, fammi pensare…","Bip bop… sto pensando!","I miei ingranaggi girano…","Guardo il tabellone…"],
+  "move": ["Tocca a te!","Ho un piano…","Hai visto?","Prova a fermarmi!","Bip bop!","Bella mossa. La mia è più bella!","Zap! Sono carichissimo!"],
+  "win": ["Bip bop! Questa la vinco io!","I robot sono i migliori! Rigiochiamo?","I miei circuiti ballano!","Troppo facile! Riprovi?"],
+  "lose": ["Mi hai battuto! Wow!","Ops! Hai trovato il mio punto debole!","Va bene, va bene, sei bravo!","Zap! Mi hai preso!"],
+  "draw": ["Pareggio! Siamo bravi tutti e due.","Nessuno ha vinto. Rivincita?"],
+  "levelStats": "{level}: {w} · {l}"
+},
+"zh-Hant": {
+  "pause": "暫停",
+  "soundOn": "開啟聲音",
+  "soundOff": "關閉聲音",
+  "vs": "vs",
+  "boardAria": "遊戲棋盤。用方向鍵選一個直行，按 Enter 放下棋子。",
+  "tapColumn": "點一下直行，放下棋子。",
+  "undo": "悔棋",
+  "tagline": "放下棋子，連成四個就贏了！",
+  "whoPlays": "誰來玩",
+  "robotLevel": "機器人難度",
+  "howMany": "玩幾局",
+  "twoPlayers": "兩人對戰",
+  "vsRobot": "對戰機器人",
+  "easy": "簡單",
+  "normal": "普通",
+  "hard": "困難",
+  "oneGame": "1 局",
+  "firstTo": "先贏 {n} 局",
+  "seat": "{n}P",
+  "changePic": "換圖案",
+  "changeName": "換名字",
+  "changeColor": "換棋子顏色",
+  "changeColorNow": "換棋子顏色（現在是{color}）",
+  "theRobot": "機器人",
+  "robotCalled": "機器人叫做{name}",
+  "hintRobot": "點你的圖案、名字或棋子就能換。",
+  "hintTwo": "點圖案、名字或棋子就能換。",
+  "robotPoints": "機器人積分：{n}",
+  "beatRobot": "打敗機器人就能得到積分！",
+  "levelsLine": "簡單 {e} · 普通 {m} · 困難 {h}",
+  "play": "開始玩",
+  "kbHint": "點一下直行放下棋子。也可以用 1–{n} 鍵、← → 和 Enter。",
+  "paused": "暫停中",
+  "keepPlaying": "繼續玩",
+  "startOver": "重新開始",
+  "quit": "離開",
+  "playAgain": "再玩一次",
+  "pickPlayers": "選玩家",
+  "newSeries": "新的對戰",
+  "pauseRobot": "機器人在等你。",
+  "pauseFriend": "你的朋友可以等一下。",
+  "colFull": "這一行滿了！",
+  "yourTurnTap": "輪到你了！點一下直行放下棋子。",
+  "nudge": ["輪到你了！","換你下！","快，放一顆！"],
+  "nameTap": "{name}，點一下直行！",
+  "youStart": "你先下！點一下直行放下棋子。",
+  "nameStarts": "{name}先下。點一下直行！",
+  "wins": "{name}贏了！",
+  "tie": "平手！",
+  "tieRematch": "平手！再來一局？",
+  "seriesWin": "{name}以 {a}–{b} 贏得對戰！",
+  "seriesGame": "第 {n} 局。先贏 {m} 局的人獲勝。加油！",
+  "beatOn": "你在「{level}」難度打敗了{robot}！",
+  "robotFour": "{robot}連成四個了。",
+  "fourInRow": "連成四個！",
+  "boardFull": "棋盤滿了。再來一局？",
+  "chipPoints": "機器人積分：{n}",
+  "winsN": {"other":"{n} 勝"},
+  "lossesN": {"other":"{n} 敗"},
+  "tryAgain": "{name}，再試一次！",
+  "thinking": "{name}正在想…",
+  "yourTurn": "輪到你",
+  "turnOf": "輪到{name}",
+  "robotName": "羅波",
+  "c_red": "紅色",
+  "c_yellow": "黃色",
+  "c_green": "綠色",
+  "c_purple": "紫色",
+  "c_orange": "橘色",
+  "c_pink": "粉紅色",
+  "c_cyan": "青色",
+  "nick": {"Fox":"狐狸","Frog":"青蛙","Rocket":"火箭","Star":"星星","Bubbles":"泡泡","Tiger":"老虎","Pickle":"酸黃瓜","Comet":"彗星","Waffle":"鬆餅","Ninja":"忍者","Panda":"熊貓","Zippy":"閃電","Mango":"芒果","Sparky":"火花"},
+  "think": ["嗯，讓我想想…","嗶嗶啵…思考中！","我的齒輪在轉…","我在看棋盤…"],
+  "move": ["輪到你了！","我有計畫了…","你看到了嗎？","來阻止我呀！","嗶嗶啵！","下得好。我的更好！","滋滋！我電力滿滿！"],
+  "win": ["嗶嗶啵！這局我贏了！","機器人最強！再玩一次？","我的電路在跳舞！","太簡單了！再試一次？"],
+  "lose": ["你打敗我了！哇！","哎呀！你找到我的弱點了！","好啦好啦，你很厲害！","滋滋！被你抓到了！"],
+  "draw": ["平手！我們都很聰明。","沒有人贏。再來一局？"],
+  "levelStats": "{level}：{w}・{l}"
+},
+"nl": {
+  "pause": "Pauze",
+  "soundOn": "Geluid aan",
+  "soundOff": "Geluid uit",
+  "vs": "vs",
+  "boardAria": "Speelbord. Kies met de pijltjestoetsen een kolom en laat met Enter een schijf vallen.",
+  "tapColumn": "Tik op een kolom om een schijf te laten vallen.",
+  "undo": "Zet terug",
+  "tagline": "Laat schijven vallen. Maak vier op een rij. Win!",
+  "whoPlays": "Wie speelt",
+  "robotLevel": "Robotniveau",
+  "howMany": "Hoeveel potjes",
+  "twoPlayers": "Twee spelers",
+  "vsRobot": "Tegen robot",
+  "easy": "Makkelijk",
+  "normal": "Normaal",
+  "hard": "Moeilijk",
+  "oneGame": "1 potje",
+  "firstTo": "Eerst bij {n}",
+  "seat": "S{n}",
+  "changePic": "Plaatje wijzigen",
+  "changeName": "Naam wijzigen",
+  "changeColor": "Kleur van de schijf wijzigen",
+  "changeColorNow": "Kleur van de schijf wijzigen (nu {color})",
+  "theRobot": "De robot",
+  "robotCalled": "De robot heet {name}",
+  "hintRobot": "Tik op je plaatje, naam of schijf om het te veranderen.",
+  "hintTwo": "Tik op een plaatje, naam of schijf om het te veranderen.",
+  "robotPoints": "Robotpunten: {n}",
+  "beatRobot": "Versla de robot en verdien punten!",
+  "levelsLine": "Makkelijk {e} · Normaal {m} · Moeilijk {h}",
+  "play": "Spelen",
+  "kbHint": "Tik op een kolom. De toetsen 1–{n}, ← → en Enter werken ook.",
+  "paused": "Gepauzeerd",
+  "keepPlaying": "Verder spelen",
+  "startOver": "Opnieuw",
+  "quit": "Stoppen",
+  "playAgain": "Nog een keer",
+  "pickPlayers": "Spelers kiezen",
+  "newSeries": "Nieuwe reeks",
+  "pauseRobot": "De robot wacht op je.",
+  "pauseFriend": "Je vriend kan even wachten.",
+  "colFull": "Die kolom is vol!",
+  "yourTurnTap": "Jouw beurt! Tik op een kolom om een schijf te laten vallen.",
+  "nudge": ["Jouw beurt!","Jouw zet!","Toe maar, laat er een vallen!"],
+  "nameTap": "{name}, tik op een kolom!",
+  "youStart": "Jij begint! Tik op een kolom om een schijf te laten vallen.",
+  "nameStarts": "{name} begint. Tik op een kolom!",
+  "wins": "{name} wint!",
+  "tie": "Gelijkspel!",
+  "tieRematch": "Gelijkspel! Revanche?",
+  "seriesWin": "{name} wint de reeks met {a}–{b}!",
+  "seriesGame": "Potje {n}. Wie het eerst {m} keer wint, wint. Ga zo door!",
+  "beatOn": "Je hebt {robot} verslagen op {level}!",
+  "robotFour": "{robot} heeft vier op een rij.",
+  "fourInRow": "Vier op een rij!",
+  "boardFull": "Het bord is vol. Revanche?",
+  "chipPoints": "Robotpunten: {n}",
+  "winsN": {"one":"{n} overwinning","other":"{n} overwinningen"},
+  "lossesN": {"one":"{n} nederlaag","other":"{n} nederlagen"},
+  "tryAgain": "{name}, probeer het nog eens!",
+  "thinking": "{name} denkt na…",
+  "yourTurn": "Jouw beurt",
+  "turnOf": "{name} is aan de beurt",
+  "robotName": "Robo",
+  "c_red": "rood",
+  "c_yellow": "geel",
+  "c_green": "groen",
+  "c_purple": "paars",
+  "c_orange": "oranje",
+  "c_pink": "roze",
+  "c_cyan": "lichtblauw",
+  "nick": {"Fox":"Vos","Frog":"Kikker","Rocket":"Raket","Star":"Ster","Bubbles":"Bubbels","Tiger":"Tijger","Pickle":"Augurk","Comet":"Komeet","Waffle":"Wafel","Ninja":"Ninja","Panda":"Panda","Zippy":"Flitser","Mango":"Mango","Sparky":"Vonkje"},
+  "think": ["Hmm, even denken…","Piep piep… ik denk na!","Mijn tandwielen draaien…","Ik kijk naar het bord…"],
+  "move": ["Jouw beurt!","Ik heb een plan…","Zag je dat?","Probeer me maar tegen te houden!","Piep piep!","Mooie zet. De mijne is mooier!","Zap! Ik zoem!"],
+  "win": ["Piep piep! Deze win ik!","Robots zijn de baas! Nog een keer?","Mijn circuits dansen!","Te makkelijk! Nog een poging?"],
+  "lose": ["Je hebt me verslagen! Wauw!","Oeps! Je hebt mijn zwakke plek gevonden!","Oké oké, je bent goed!","Zap! Je hebt me te pakken!"],
+  "draw": ["Gelijkspel! We zijn allebei slim.","Niemand heeft gewonnen. Revanche?"],
+  "levelStats": "{level}: {w} · {l}"
+}
+}/*I18N:END*/;
+const LANG_CHAIN = [LANG, LANG.split('-')[0], 'en'];
+/** The raw entry (a string, a plural object, a list or a map) for key, with the fallbacks above. */
+function tv(key) { for (const l of LANG_CHAIN) { const d = I18N[l]; if (d && d[key] !== undefined) return d[key]; } return key; }
+let PLURALS, NUMBERS;
+try { PLURALS = new Intl.PluralRules(LANG); } catch (e) { PLURALS = new Intl.PluralRules('en'); }
+try { NUMBERS = new Intl.NumberFormat(LANG === 'ar' ? 'ar-u-nu-latn' : LANG); } catch (e) { NUMBERS = new Intl.NumberFormat('en'); }
+const fmtN = n => NUMBERS.format(n);
+/** t('wins', { name: 'Fox' }) -> "Fox wins!". {placeholders} are filled from vars (numbers are formatted for the
+    language); a plural entry ({ one, few, many, other... }) picks its form from vars.n. */
+function t(key, vars) {
+  let s = tv(key);
+  if (s && typeof s === 'object' && !Array.isArray(s)) { const n = vars && typeof vars.n === 'number' ? vars.n : 0; s = s['=' + n] || s[PLURALS.select(n)] || s.other; }
+  return String(s).replace(/\{(\w+)\}/g, (m, k) => (vars && vars[k] != null) ? (typeof vars[k] === 'number' ? fmtN(vars[k]) : vars[k]) : m);
+}
+/** The word shown for a saved name: a nickname id in this language; any other name as it is. */
+const showName = n => { const m = tv('nick'); return (m && typeof m === 'object' && m[n]) || n; };
+const robotName = () => t('robotName');
+const say4 = list => pick(tv(list));   // a random robot line from think / move / win / lose / draw
+document.documentElement.lang = LANG;
 
 /* =====================================================================================
    Small helpers
@@ -282,14 +1277,40 @@ const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const wait = ms => new Promise(r => setTimeout(r, ms));
 const discById = id => CONFIG.discs.find(d => d.id === id) || CONFIG.discs[0];
 const LEVELS = ['easy', 'normal', 'hard'];
-/** "1 win", "2 wins". */
-const plural = (n, word) => n + ' ' + word + (n === 1 ? '' : (word.endsWith('s') ? 'es' : 's'));
-/** "Fox's", "Bubbles'" (names ending in s only get the apostrophe). */
+/** English "Fox's", "Bubbles'" (names ending in s only get the apostrophe); used by the English "{pos} turn". */
 const possessive = name => name + (/s$/i.test(name) ? "'" : "'s");
 
 document.title = CONFIG.title;
-$('titleText').textContent = CONFIG.title;
-$('kbHint').textContent = 'Tap a column to drop. Keys 1–' + Math.min(COLS, 9) + ', ← → and Enter work too.';
+$('titleText').textContent = CONFIG.title;   // the game's name is a brand: it stays the same in every language
+/** Put the language's words on the static page: data-i18n (text, after an optional data-emoji) and data-i18n-aria. */
+function applyStaticText() {
+  document.querySelectorAll('[data-i18n]').forEach(el => { const e = el.dataset.emoji; el.textContent = (e ? e + ' ' : '') + t(el.dataset.i18n, { n: CONFIG.seriesWins }); });
+  document.querySelectorAll('[data-i18n-aria]').forEach(el => el.setAttribute('aria-label', t(el.dataset.i18nAria)));
+  $('kbHint').textContent = t('kbHint', { n: Math.min(COLS, 9) });
+  // Right-to-left languages mirror the menus and messages; the board (a canvas) and its columns stay left-to-right.
+  document.querySelectorAll('.panel, #msgEl, .turn, .pchip, .ctrl').forEach(el => el.dir = DIR);
+}
+applyStaticText();
+/** Does the label of button b fit on one line? (A button clips its text, so scrollWidth cannot tell: the label is
+    measured in a hidden ruler span with the button's font.) */
+const ruler = document.createElement('span');
+ruler.style.cssText = 'position:absolute;left:0;top:0;visibility:hidden;white-space:nowrap;pointer-events:none';
+function labelFits(b) {
+  const cs = getComputedStyle(b), room = b.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+  ruler.style.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily; ruler.style.letterSpacing = cs.letterSpacing;
+  ruler.textContent = b.textContent; if (!ruler.isConnected) document.body.appendChild(ruler);
+  return ruler.getBoundingClientRect().width <= room - 1;   // a little slack: the browser clips at a fraction of a pixel
+}
+/** Shrink a button label that is too wide for its button; if it still does not fit at a readable size, let it wrap. */
+function fitButtons() {
+  document.querySelectorAll('.row button, .big-btn, .mini').forEach(b => {
+    b.style.fontSize = ''; b.classList.remove('wrap');
+    if (!b.clientWidth) return;   // not on screen
+    let size = parseFloat(getComputedStyle(b).fontSize) || 16; const min = Math.max(11, size * 0.72);
+    while (!labelFits(b) && size > min) { size -= 0.5; b.style.fontSize = size + 'px'; }
+    if (!labelFits(b)) b.classList.add('wrap');
+  });
+}
 
 /* =====================================================================================
    Saved settings and stats (BRB.storage is the per-player cloud save)
@@ -820,7 +1841,7 @@ async function dropDisc(col) {
   if (S.screen !== 'play' || S.busy || S.over || S.paused) return false;
   col = clamp(Math.round(col), 0, COLS - 1);
   const row = lowestEmpty(S.board, col);
-  if (row < 0) { BRB.sfx.play('click'); if (!REDUCED) BRB.fx.shake(canvas, 4); say('That column is full!'); return false; }
+  if (row < 0) { BRB.sfx.play('click'); if (!REDUCED) BRB.fx.shake(canvas, 4); say(t('colFull')); return false; }
   S.busy = true; const player = S.turn; const token = thinkToken;
   S.previewCol = col; hoverOwner = 0;
   BRB.sfx.play('click');
@@ -840,7 +1861,7 @@ function afterTurnChange() {
     // Start the robot on the next tick, so whoever awaited the human's drop sees the board as it landed.
     hoverOwner = 0; const token = thinkToken;
     setTimeout(() => { if (token === thinkToken && S.screen === 'play' && !S.over) robotMove(); }, 0);
-  } else { hoverOwner = S.turn; if (S.mode === 'robot') say(S.firstMoves < 2 ? 'Your turn! Tap a column to drop a disc.' : pick(['Your turn!', 'Your move!', 'Go on, drop one!'])); else say(S.players[S.turn - 1].emoji + ' ' + S.players[S.turn - 1].name + ', tap a column!'); }
+  } else { hoverOwner = S.turn; if (S.mode === 'robot') say(S.firstMoves < 2 ? t('yourTurnTap') : pick(tv('nudge'))); else say(t('nameTap', { name: S.players[S.turn - 1].emoji + ' ' + S.players[S.turn - 1].name })); }
   updateUndo();
 }
 
@@ -850,7 +1871,7 @@ function robotMove() {
   if (!isRobotTurn() || S.over || S.screen !== 'play') return Promise.resolve(false);
   const token = thinkToken, t0 = performance.now();
   S.thinking = true; hoverOwner = 2; S.previewCol = CENTRE; updateHud(); updateUndo();
-  bubble(pick(CONFIG.robotSays.think));
+  bubble(say4('think'));
   robotPromise = (async () => {
     const col = await AI.choose(S.board, 2, S.difficulty, () => token !== thinkToken, () => S.paused);
     if (token !== thinkToken || col < 0) { if (token === thinkToken) S.thinking = false; return false; }
@@ -863,7 +1884,7 @@ function robotMove() {
     if (token !== thinkToken) return false;
     S.thinking = false; updateHud();
     const ok = await dropDisc(col);
-    if (ok && token === thinkToken && !S.over && rng() < 0.3) bubble(pick(CONFIG.robotSays.move));
+    if (ok && token === thinkToken && !S.over && rng() < 0.3) bubble(say4('move'));
     return ok;
   })();
   const p = robotPromise;
@@ -875,12 +1896,13 @@ function robotMove() {
    Game flow
    ===================================================================================== */
 function applyPlayers() {
-  S.players[0] = Object.assign({}, save.players[0]);
+  // S.players is never saved, so it holds the names as shown in this language (a nickname id becomes its word).
+  S.players[0] = Object.assign({}, save.players[0], { name: showName(save.players[0].name) });
   if (S.mode === 'robot') {
     let color = save.robotColor; if (color === S.players[0].color) color = CONFIG.discs.find(d => d.id !== color).id;
-    S.players[1] = { emoji: CONFIG.robot.emoji, name: CONFIG.robot.name, color };
+    S.players[1] = { emoji: CONFIG.robot.emoji, name: robotName(), color };
   } else {
-    S.players[1] = Object.assign({}, save.players[1]);
+    S.players[1] = Object.assign({}, save.players[1], { name: showName(save.players[1].name) });
     if (S.players[1].color === S.players[0].color) S.players[1].color = CONFIG.discs.find(d => d.id !== S.players[0].color).id;
   }
   for (const pl of S.players) pl.disc = discById(pl.color);   // looked up once here, never per frame
@@ -906,7 +1928,7 @@ function startGame({ keepScore = false, restart = false } = {}) {
   layout(); canvas.focus({ preventScroll: true });
   if (!rafId) { lastFrame = performance.now(); rafId = requestAnimationFrame(frame); }
   if (isRobotTurn()) { hoverOwner = 0; say(''); const token = thinkToken; setTimeout(() => { if (token === thinkToken && S.screen === 'play' && !S.over) robotMove(); }, fast ? 0 : 500); }
-  else { hoverOwner = S.turn; say(S.mode === 'robot' ? 'You start! Tap a column to drop a disc.' : S.players[S.turn - 1].emoji + ' ' + S.players[S.turn - 1].name + ' starts. Tap a column!'); }
+  else { hoverOwner = S.turn; say(S.mode === 'robot' ? t('youStart') : t('nameStarts', { name: S.players[S.turn - 1].emoji + ' ' + S.players[S.turn - 1].name })); }
 }
 /** winner: 1 | 2 with the winning line(s) from winFrom, or 0 for a tie with []. */
 function finishGame(winner, lines) {
@@ -933,10 +1955,10 @@ function finishGame(winner, lines) {
   updateScores(); updateHud(); updateUndo();
   if (winner) {
     const name = S.players[winner - 1].emoji + ' ' + S.players[winner - 1].name;
-    say(name + ' wins!');
-    if (robot && winner === 2) { BRB.sfx.play('lose'); if (!REDUCED) BRB.fx.shake(wrap, 8); bubble(pick(CONFIG.robotSays.win)); }
-    else { BRB.sfx.play('win'); const d = discById(S.players[winner - 1].color); setTimeout(() => BRB.fx.confetti({ colors: [d.main, d.light, '#fff', '#ffd23f', '#a855f7'] }), fast ? 0 : 350); if (robot) bubble(pick(CONFIG.robotSays.lose)); }
-  } else { say("It's a tie! Rematch?"); BRB.sfx.play('coin'); if (robot) bubble(pick(CONFIG.robotSays.draw)); }
+    say(t('wins', { name }));
+    if (robot && winner === 2) { BRB.sfx.play('lose'); if (!REDUCED) BRB.fx.shake(wrap, 8); bubble(say4('win')); }
+    else { BRB.sfx.play('win'); const d = discById(S.players[winner - 1].color); setTimeout(() => BRB.fx.confetti({ colors: [d.main, d.light, '#fff', '#ffd23f', '#a855f7'] }), fast ? 0 : 350); if (robot) bubble(say4('lose')); }
+  } else { say(t('tieRematch')); BRB.sfx.play('coin'); if (robot) bubble(say4('draw')); }
   resultsTimer = setTimeout(() => showResults(winner, humanWon, gained), fast ? 0 : (winner ? 1500 : 900));
 }
 function showResults(winner, humanWon, gained) {
@@ -944,23 +1966,26 @@ function showResults(winner, humanWon, gained) {
   S.screen = 'over';
   const robot = S.mode === 'robot';
   const p1 = S.players[0], p2 = S.players[1];
-  $('resultTitle').textContent = winner ? p(winner).emoji + ' ' + p(winner).name + ' wins!' : "It's a tie!";
+  $('resultTitle').textContent = winner ? t('wins', { name: p(winner).emoji + ' ' + p(winner).name }) : t('tie');
   let sub;
   if (S.series === 'three') {
-    sub = S.seriesOver ? '🏆 ' + p(winner).name + ' wins the series ' + S.wins[winner - 1] + '–' + S.wins[2 - winner] + '!' : 'Game ' + S.gameNo + ' of First to ' + CONFIG.seriesWins + '. Keep going!';
-  } else sub = winner ? (robot ? (winner === 1 ? 'You beat ' + CONFIG.robot.name + ' on ' + levelName(S.difficulty) + '!' : CONFIG.robot.name + ' got four in a row.') : 'Four in a row!') : 'The board is full. Rematch?';
+    sub = S.seriesOver ? '🏆 ' + t('seriesWin', { name: p(winner).name, a: S.wins[winner - 1], b: S.wins[2 - winner] }) : t('seriesGame', { n: S.gameNo, m: CONFIG.seriesWins });
+  } else sub = winner ? (robot ? (winner === 1 ? t('beatOn', { robot: robotName(), level: levelName(S.difficulty) }) : t('robotFour', { robot: robotName() })) : t('fourInRow')) : t('boardFull');
   $('resultSub').textContent = sub;
-  $('resultScore').textContent = p1.name + ' ' + S.wins[0] + ' – ' + S.wins[1] + ' ' + p2.name;
+  // Each name and number is its own isolated piece, so a right-to-left language reads it in its own order.
+  const bdi = x => '<bdi>' + esc(x) + '</bdi>';
+  $('resultScore').innerHTML = [bdi(p1.name), bdi(fmtN(S.wins[0])), '–', bdi(fmtN(S.wins[1])), bdi(p2.name)].join(' ');
   const chips = [];
   if (robot) {
-    chips.push('<span class="chip">⭐ Robot points: ' + robotPoints() + (gained ? ' <b>(+' + gained + ')</b>' : '') + '</span>');
+    chips.push('<span class="chip">⭐ ' + esc(t('chipPoints', { n: robotPoints() })) + (gained ? ' <b><bdi>(+' + fmtN(gained) + ')</bdi></b>' : '') + '</span>');
     const st = save.stats[S.difficulty];
-    chips.push('<span class="chip' + (humanWon ? ' good' : '') + '">' + levelName(S.difficulty) + ': ' + plural(st.w, 'win') + ' · ' + plural(st.l, 'loss') + '</span>');
+    chips.push('<span class="chip' + (humanWon ? ' good' : '') + '">' + esc(t('levelStats', { level: levelName(S.difficulty), w: t('winsN', { n: st.w }), l: t('lossesN', { n: st.l }) })) + '</span>');
   }
   $('resultChips').innerHTML = chips.join('');
-  $('againBtn').textContent = S.seriesOver ? '▶ New series' : '▶ Play again';
+  $('againBtn').textContent = '▶ ' + t(S.seriesOver ? 'newSeries' : 'playAgain');
   $('resultScreen').hidden = false;
   fitBoardBehindResults();
+  fitButtons();
   $('againBtn').focus({ preventScroll: true });
   function p(n) { return S.players[n - 1]; }
 }
@@ -985,14 +2010,15 @@ function fitBoardBehindResults() {
   if (shift > 1) app.style.transform = 'translateY(' + Math.round(-shift) + 'px)';
   if (k < 0.999) canvas.style.transform = 'scale(' + k.toFixed(3) + ')';
 }
-const levelName = d => ({ easy: 'Easy', normal: 'Normal', hard: 'Hard' })[d] || 'Normal';
+const levelName = d => t(LEVELS.includes(d) ? d : 'normal');
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 
 function undoMove() {
   if (S.mode !== 'two' || S.screen !== 'play' || S.busy || S.over || !S.moves.length || falling) return;
   const col = S.moves.pop();
   for (let r = 0; r < ROWS; r++) if (S.board[r][col]) { S.board[r][col] = 0; break; }
   S.placed--; S.turn = 3 - S.turn; discDirty = true; S.previewCol = col; hoverOwner = S.turn;
-  BRB.sfx.play('click'); updateHud(); updateUndo(); say(S.players[S.turn - 1].emoji + ' ' + S.players[S.turn - 1].name + ', try again!');
+  BRB.sfx.play('click'); updateHud(); updateUndo(); say(t('tryAgain', { name: S.players[S.turn - 1].emoji + ' ' + S.players[S.turn - 1].name }));
 }
 function updateUndo() { $('undoBtn').disabled = !(S.mode === 'two' && S.screen === 'play' && S.moves.length && !S.over && !S.busy); }
 
@@ -1001,7 +2027,7 @@ function setPaused(on) {
   if (on && S.over) return;
   S.paused = on; S.screen = on ? 'pause' : 'play';
   $('pauseScreen').hidden = !on;
-  if (on) { $('pauseInfo').textContent = S.mode === 'robot' ? 'The robot is waiting for you.' : 'Your friend can wait a moment.'; $('resumeBtn').focus({ preventScroll: true }); }
+  if (on) { $('pauseInfo').textContent = t(S.mode === 'robot' ? 'pauseRobot' : 'pauseFriend'); fitButtons(); $('resumeBtn').focus({ preventScroll: true }); }
   else {
     lastFrame = performance.now(); canvas.focus({ preventScroll: true });
     if (isRobotTurn() && !S.over && !robotPromise) robotMove();   // the robot's start was skipped while paused
@@ -1026,17 +2052,17 @@ function bubble(text) {
   if (S.mode !== 'robot') return;
   clearTimeout(bubbleTimer);
   say(CONFIG.robot.emoji + ' ' + text);
-  if (!S.over) bubbleTimer = setTimeout(() => { if (S.screen === 'play' && !S.thinking && !S.over && S.turn === 1) say('Your turn!'); }, 2600);
+  if (!S.over) bubbleTimer = setTimeout(() => { if (S.screen === 'play' && !S.thinking && !S.over && S.turn === 1) say(tv('nudge')[0]); }, 2600);
 }
 function updateHud() {
   const el = $('turnEl');
   const cur = S.players[S.turn - 1]; if (!cur) return;
   el.classList.toggle('thinking', S.thinking && !REDUCED);
   el.classList.toggle('long', (S.over && S.winner ? S.players[S.winner - 1] : cur).name.length > 8);
-  if (S.over) el.textContent = S.winner ? S.players[S.winner - 1].emoji + ' ' + S.players[S.winner - 1].name + ' wins!' : "It's a tie!";
-  else if (S.thinking) el.textContent = cur.emoji + ' ' + cur.name + ' is thinking…';
-  else if (S.mode === 'robot' && S.turn === 1) el.textContent = cur.emoji + ' Your turn';
-  else el.textContent = cur.emoji + ' ' + possessive(cur.name) + ' turn';
+  if (S.over) el.textContent = S.winner ? t('wins', { name: S.players[S.winner - 1].emoji + ' ' + S.players[S.winner - 1].name }) : t('tie');
+  else if (S.thinking) el.textContent = cur.emoji + ' ' + t('thinking', { name: cur.name });
+  else if (S.mode === 'robot' && S.turn === 1) el.textContent = cur.emoji + ' ' + t('yourTurn');
+  else el.textContent = cur.emoji + ' ' + t('turnOf', { name: cur.name, pos: possessive(cur.name) });
   el.style.setProperty('--who', discById((S.over && S.winner ? S.players[S.winner - 1] : cur).color).main);
   $('chip1').classList.toggle('active', !S.over && S.turn === 1);
   $('chip2').classList.toggle('active', !S.over && S.turn === 2);
@@ -1053,7 +2079,7 @@ function updateScores() {
   }
 }
 function updateMute() {
-  document.querySelectorAll('.mute').forEach(b => { b.textContent = BRB.sfx.muted ? '🔇' : '🔊'; b.setAttribute('aria-label', BRB.sfx.muted ? 'Turn sound on' : 'Turn sound off'); });
+  document.querySelectorAll('.mute').forEach(b => { b.textContent = BRB.sfx.muted ? '🔇' : '🔊'; b.setAttribute('aria-label', t(BRB.sfx.muted ? 'soundOn' : 'soundOff')); });
 }
 updateMute();
 document.querySelectorAll('.mute').forEach(b => b.addEventListener('click', () => { BRB.sfx.mute(); updateMute(); BRB.sfx.play('click'); }));
@@ -1070,27 +2096,28 @@ function refreshTitle() {
   const seats = document.querySelectorAll('.seat');
   for (let i = 0; i < 2; i++) {
     const robot = i === 1 && save.mode === 'robot';
-    const pl = robot ? { emoji: CONFIG.robot.emoji, name: CONFIG.robot.name, color: save.robotColor === save.players[0].color ? CONFIG.discs.find(d => d.id !== save.robotColor).id : save.robotColor } : save.players[i];
+    const pl = robot ? { emoji: CONFIG.robot.emoji, name: robotName(), color: save.robotColor === save.players[0].color ? CONFIG.discs.find(d => d.id !== save.robotColor).id : save.robotColor }
+      : Object.assign({}, save.players[i], { name: showName(save.players[i].name) });
     const seat = seats[i];
-    seat.querySelector('.who').textContent = 'P' + (i + 1);   // the robot is still "P2" (its picture is already the 🤖 button)
+    seat.querySelector('.who').textContent = t('seat', { n: i + 1 });   // the robot is still "P2" (its picture is already the 🤖 button)
     const e = seat.querySelector('.emojiBtn'), n = seat.querySelector('.nameBtn'), c = seat.querySelector('.colorBtn');
     // The robot's picture and name are fixed: shown as flat labels that still beep and wiggle when tapped.
-    e.textContent = pl.emoji; e.classList.toggle('fixed', robot); e.setAttribute('aria-disabled', robot); e.setAttribute('aria-label', robot ? 'The robot' : 'Change picture');
-    n.textContent = pl.name; n.classList.toggle('fixed', robot); n.setAttribute('aria-disabled', robot); n.setAttribute('aria-label', robot ? 'The robot is called ' + pl.name : 'Change name');
+    e.textContent = pl.emoji; e.classList.toggle('fixed', robot); e.setAttribute('aria-disabled', robot); e.setAttribute('aria-label', robot ? t('theRobot') : t('changePic'));
+    n.textContent = pl.name; n.classList.toggle('fixed', robot); n.setAttribute('aria-disabled', robot); n.setAttribute('aria-label', robot ? t('robotCalled', { name: pl.name }) : t('changeName'));
     n.classList.toggle('long', pl.name.length > 9);
     const d = discById(pl.color); const dot = c.querySelector('i');
     dot.style.setProperty('--dm', d.main); dot.style.setProperty('--dd', d.dark); dot.style.setProperty('--dl', d.light);
-    c.setAttribute('aria-label', 'Change disc colour (now ' + d.name + ')');
+    c.setAttribute('aria-label', t('changeColorNow', { color: t('c_' + d.id) }));
   }
-  $('setupHint').textContent = save.mode === 'robot' ? 'Tap your picture, name or disc to change it.' : 'Tap a picture, name or disc to change it.';
+  $('setupHint').textContent = t(save.mode === 'robot' ? 'hintRobot' : 'hintTwo');
   const pts = robotPoints(), st = save.stats, chip = $('bestChip');
-  chip.textContent = pts ? '🏆 Robot points: ' + pts : '🏆 Beat the robot to earn points!';
+  chip.textContent = '🏆 ' + (pts ? t('robotPoints', { n: pts }) : t('beatRobot'));
   if (pts) {   // the per-level wins on a second line, each "level number" pair kept together
     const sub = document.createElement('span'); sub.className = 'sub';
-    sub.textContent = 'Easy ' + st.easy.w + ' · Normal ' + st.normal.w + ' · Hard ' + st.hard.w;
+    sub.textContent = t('levelsLine', { e: st.easy.w, m: st.normal.w, h: st.hard.w });
     chip.appendChild(sub);
   }
-  fitNameButtons();
+  fitNameButtons(); fitButtons();
 }
 /** Shrink a long name until it fits its button on one line (landscape gives the seats less room). If it still does
     not fit at the smallest readable size, let it wrap rather than cut it off with "…". */
@@ -1099,8 +2126,8 @@ function fitNameButtons() {
     b.style.fontSize = ''; b.classList.remove('wrap');
     if (!b.clientWidth) return;   // not on screen
     let size = parseFloat(getComputedStyle(b).fontSize) || 16;
-    while (b.scrollWidth > b.clientWidth && size > 12) { size -= 1; b.style.fontSize = size + 'px'; }
-    if (b.scrollWidth > b.clientWidth) b.classList.add('wrap');
+    while (!labelFits(b) && size > 12) { size -= 1; b.style.fontSize = size + 'px'; }
+    if (!labelFits(b)) b.classList.add('wrap');
   });
 }
 function cycle(list, cur, step) { const i = list.indexOf(cur); return list[(i < 0 ? 0 : i + step + list.length) % list.length]; }
@@ -1177,7 +2204,7 @@ document.addEventListener('keydown', e => {
 });
 
 // Keep the board sized to its box (the page, and the rows around the board, can change size).
-const relayout = () => { if (S.screen !== 'title') layout(); else fitNameButtons(); };
+const relayout = () => { if (S.screen !== 'title') layout(); else fitNameButtons(); fitButtons(); };
 if (window.ResizeObserver) { const ro = new ResizeObserver(relayout); for (const id of ['app', 'hud', 'scores', 'msgEl', 'ctrlRow']) ro.observe($(id)); }
 window.addEventListener('resize', relayout);
 try { if (document.fonts && document.fonts.ready) document.fonts.ready.then(relayout); } catch (e) { /* ignore */ }
