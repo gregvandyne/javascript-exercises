@@ -1,8 +1,8 @@
 // Game page, play page, the sandboxed frame, and the game APIs the SDK talks to (via the parent page).
 import { Router } from 'express';
-import { html, raw, jsonData, fmtNum, timeAgo } from '../views/html.js';
+import { html, jsonData } from '../views/html.js';
 import { page, notFound } from '../views/layout.js';
-import { coverArt, stars, avatar, cardGrid, adCard, emptyState, VIS_LABEL, statusLabel } from '../views/components.js';
+import { coverArt, avatar, cardGrid, adCard, statusLabel, categoryLabel } from '../views/components.js';
 import * as games from '../services/games.js';
 import * as presence from '../services/presence.js';
 import { frameDocument, sendFrame, SANDBOX } from '../services/frame.js';
@@ -10,23 +10,23 @@ import { signToken, readToken, requireUser, getUser, createGuest, startSession }
 import { rateLimit, allow } from '../services/ratelimit.js';
 import { q, uid, now, audit } from '../db.js';
 import { config } from '../config.js';
+import { tEn, normalizeCode, localeInfo } from '../i18n/index.js';
 
 export const router = Router();
-const SHARE_TEXT = {
-  private: 'Only you can open this game. Change it to Friends or Everyone to share it.',
-  friends: 'Only your friends on Magic Cups can open this link.',
-  public: 'Anyone with the link can play this game.',
-};
-export const REPORT_REASONS = [['scary', 'It is too scary'], ['mean', 'It is mean or rude'], ['grownup', 'It has grown-up stuff'], ['broken', 'It does not work'], ['copy', 'It copies someone else'], ['other', 'Something else']];
+const REASON_KEYS = ['scary', 'mean', 'grownup', 'broken', 'copy', 'other'];
+/** [key, label] pairs in the reader's language (English by default; the admin panel uses English). */
+export const reportReasons = (t = tEn) => REASON_KEYS.map(k => [k, t(`game.report.reasons.${k}`)]);
+export const REPORT_REASONS = reportReasons();
 
 function loadViewable(req, res) {
   const g = games.getGameBySlug(req.params.slug);
-  if (!g || !games.canView(req.user, g)) { notFound(req, res, "This game doesn't exist, or it isn't shared with you."); return null; }
+  if (!g || !games.canView(req.user, g)) { notFound(req, res, req.t('game.notShared')); return null; }
   return g;
 }
 
 router.get('/g/:slug', (req, res) => {
   const g = loadViewable(req, res); if (!g) return;
+  const t = req.t, f = req.fmt;
   const u = req.user;
   const [d] = games.decorate([{ ...g, ...(() => { const o = games.getOwner(g); return { owner_name: o.username, owner_display: o.display_name, owner_avatar: o.avatar, owner_color: o.color }; })() }]);
   const owner = games.getOwner(g);
@@ -36,57 +36,59 @@ router.get('/g/:slug', (req, res) => {
   const more = games.similar(u, g, 6);
   const cat = games.categoryInfo(g.category);
   const playable = !!g.published_version_id || (isOwner && g.current_version_id);
+  const players = g.players_max > 1 ? `👥 ${t('game.about.players', { count: g.players_max })} · ` : `👤 ${t('game.about.onePlayer')} · `;
   const body = html`
   <article>
     <div class="gamehero">
       <div style="position:relative">${coverArt(d)}</div>
       <div>
         <h1>${g.title}</h1>
-        <a class="person" href="/u/${owner.username}" style="display:inline-flex;padding:4px 10px 4px 4px;margin-left:-4px">${avatar(owner, 32)}<span class="nm">${owner.display_name}</span></a>
+        <a class="person ownerchip" href="/u/${owner.username}">${avatar(owner, 32)}<span class="nm">${owner.display_name}</span></a>
         <div class="statrow">
-          <div class="stat"><b>${d.rating_count ? d.rating.toFixed(1) + ' ★' : 'New'}</b>${d.rating_count ? `${fmtNum(d.rating_count)} ratings` : 'no ratings yet'}</div>
-          <div class="stat"><b data-live="${g.id}" data-live-format="number">${d.playing}</b>playing now</div>
-          <div class="stat"><b>${fmtNum(g.plays)}</b>plays</div>
-          <div class="stat"><b id="likecount">${fmtNum(g.likes)}</b>likes</div>
+          <div class="stat"><b>${d.rating_count ? d.rating.toFixed(1) + ' ★' : t('cards.new')}</b>${d.rating_count ? t('game.stats.ratings', { count: d.rating_count, n: f.num(d.rating_count) }) : t('game.stats.noRatings')}</div>
+          <div class="stat"><b data-live="${g.id}" data-live-format="number">${d.playing}</b>${t('game.stats.playingNow')}</div>
+          <div class="stat"><b>${f.num(g.plays)}</b>${t('game.stats.plays', { count: +g.plays || 0 })}</div>
+          <div class="stat"><b id="likecount">${f.num(g.likes)}</b>${t('game.stats.likes', { count: +g.likes || 0 })}</div>
         </div>
         <div class="row actions">
-          ${playable ? html`<a class="btn btn-primary btn-big playbig" href="/play/${g.slug}" id="playbtn">▶ Play</a>` : html`<span class="notice">Not ready to play yet.</span>`}
-          <button class="iconbtn" type="button" id="likebtn" aria-pressed="${liked}"><span class="emo" aria-hidden="true">${liked ? '❤️' : '🤍'}</span>Like</button>
-          <button class="iconbtn" type="button" id="sharebtn"><span class="emo" aria-hidden="true">🔗</span>Share</button>
-          ${isOwner ? html`<a class="iconbtn" href="/studio/${g.id}"><span class="emo" aria-hidden="true">🛠️</span>Edit</a>` : html`<button class="iconbtn" type="button" id="reportbtn"><span class="emo" aria-hidden="true">🚩</span>Report</button>`}
+          ${playable ? html`<a class="btn btn-primary btn-big playbig" href="/play/${g.slug}" id="playbtn">▶ ${t('game.play')}</a>` : html`<span class="notice">${t('game.notReady')}</span>`}
+          <button class="iconbtn" type="button" id="likebtn" aria-pressed="${liked}"><span class="emo" aria-hidden="true">${liked ? '❤️' : '🤍'}</span>${t('game.like')}</button>
+          <button class="iconbtn" type="button" id="sharebtn"><span class="emo" aria-hidden="true">🔗</span>${t('game.share')}</button>
+          ${isOwner ? html`<a class="iconbtn" href="/studio/${g.id}"><span class="emo" aria-hidden="true">🛠️</span>${t('game.edit')}</a>` : html`<button class="iconbtn" type="button" id="reportbtn"><span class="emo" aria-hidden="true">🚩</span>${t('game.report.button')}</button>`}
         </div>
-        ${isOwner ? html`<p class="small muted" style="margin-top:8px">${statusLabel(g)}${g.pending_version_id ? ' · an update is waiting for review' : ''}${g.review_note ? html` · Reviewer: “${g.review_note}”` : ''}</p>` : ''}
+        ${isOwner ? html`<p class="small muted" style="margin-top:8px">${statusLabel(g, t)}${g.pending_version_id ? ` · ${t('game.updateWaiting')}` : ''}${g.review_note ? html` · ${t('game.reviewer', { note: g.review_note })}` : ''}</p>` : ''}
       </div>
     </div>
     <div class="grid2">
       <div class="stack">
-        <section class="panel"><h2>About this game</h2>
-          <p style="white-space:pre-line">${g.description || 'No description yet.'}</p>
-          <div class="taglist"><a class="tag" href="/search?cat=${cat.key}">${cat.icon} ${cat.label}</a>${d.tagList.map(t => html`<a class="tag" href="/search?q=${encodeURIComponent(t)}">#${t}</a>`)}</div>
-          <p class="small muted" style="margin:12px 0 0">${g.players_max > 1 ? `👥 1 to ${g.players_max} players · ` : '👤 1 player · '}${g.orientation === 'landscape' ? '📱↔️ Best sideways · ' : ''}Updated ${timeAgo(g.updated_at)}</p>
+        <section class="panel"><h2>${t('game.about.heading')}</h2>
+          <p style="white-space:pre-line">${g.description || t('game.about.noDescription')}</p>
+          <div class="taglist"><a class="tag" href="/search?cat=${cat.key}">${cat.icon} ${categoryLabel(cat.key, t)}</a>${d.tagList.map(tag => html`<a class="tag" href="/search?q=${encodeURIComponent(tag)}">#${tag}</a>`)}</div>
+          <p class="small muted" style="margin:12px 0 0">${players}${g.orientation === 'landscape' ? `📱↔️ ${t('game.about.sideways')} · ` : ''}${t('game.about.updated', { when: f.ago(g.updated_at) })}</p>
         </section>
-        <section class="panel" aria-labelledby="rate-h"><h2 id="rate-h">Rate it</h2>
-          ${u ? html`<div class="rate" role="radiogroup" aria-label="Your rating" id="rate">${[1, 2, 3, 4, 5].map(n => html`<button type="button" role="radio" aria-checked="${myStars === n}" aria-label="${n} star${n > 1 ? 's' : ''}" data-stars="${n}" class="${n <= myStars ? 'on' : ''}">★</button>`)}</div>
-            <p class="small muted" id="ratemsg">${myStars ? 'Thanks! Tap to change your stars any time.' : 'Tap a star.'}</p>`
-          : html`<p><button class="btn" type="button" data-guest-play="">Play as guest to rate</button></p>`}
+        <section class="panel" aria-labelledby="rate-h"><h2 id="rate-h">${t('game.rate.heading')}</h2>
+          ${u ? html`<div class="rate" role="radiogroup" aria-label="${t('game.rate.yourRating')}" id="rate">${[1, 2, 3, 4, 5].map(n => html`<button type="button" role="radio" aria-checked="${myStars === n}" aria-label="${t('game.rate.stars', { count: n })}" data-stars="${n}" class="${n <= myStars ? 'on' : ''}">★</button>`)}</div>
+            <p class="small muted" id="ratemsg">${myStars ? t('game.rate.thanks') : t('game.rate.tap')}</p>`
+          : html`<p><button class="btn" type="button" data-guest-play="">${t('game.rate.guest')}</button></p>`}
         </section>
-        <section class="panel" aria-labelledby="lb-h"><h2 id="lb-h">🏆 Leaderboard</h2>
-          ${lb.length ? html`<ol class="lb">${lb.map(r => html`<li>${avatar(r, 30)}<span>${r.display_name}</span><span class="sc">${fmtNum(r.score)}${r.label ? ' ' + r.label : ''}</span></li>`)}</ol>` : html`<p class="muted">No scores yet. Be the first!</p>`}
+        <section class="panel" aria-labelledby="lb-h"><h2 id="lb-h">🏆 ${t('game.leaderboard.heading')}</h2>
+          ${lb.length ? html`<ol class="lb">${lb.map(r => html`<li>${avatar(r, 30)}<span>${r.display_name}</span><span class="sc" dir="ltr">${f.int(r.score)}${r.label ? ' ' + r.label : ''}</span></li>`)}</ol>` : html`<p class="muted">${t('game.leaderboard.empty')}</p>`}
         </section>
       </div>
-      <aside class="stack" aria-label="More">
+      <aside class="stack" aria-label="${t('game.more.label')}">
         <div style="max-width:200px">${adCard({ placement: 'game', category: g.category, gameId: g.id, user: u })}</div>
-        ${more.length ? html`<section><h2>More like this</h2>${cardGrid(more, { ads: false })}</section>` : ''}
+        ${more.length ? html`<section><h2>${t('game.more.heading')}</h2>${cardGrid(more, { ads: false })}</section>` : ''}
       </aside>
     </div>
   </article>
-  ${jsonData('page-data', { gameId: g.id, slug: g.slug, title: g.title, visibility: g.visibility, shareText: SHARE_TEXT[g.visibility], reasons: REPORT_REASONS, signedIn: !!u })}`;
-  page(req, res, { title: g.title, active: 'home', back: '/', backLabel: 'Home', body, description: g.description.slice(0, 160), scripts: ['/js/game.js', '/js/ads.js'] });
+  ${jsonData('page-data', { gameId: g.id, slug: g.slug, title: g.title, visibility: g.visibility, shareText: t(`game.shareText.${g.visibility}`), reasons: reportReasons(t), signedIn: !!u })}`;
+  page(req, res, { title: g.title, active: 'home', back: '/', backLabel: t('nav.home'), body, description: g.description.slice(0, 160), scripts: ['/js/game.js', '/js/ads.js'] });
 });
 
 router.get('/play/:slug', (req, res) => {
+  const t = req.t;
   const g = games.getGameBySlug(req.params.slug);
-  if (!g || !games.canView(req.user, g)) return notFound(req, res, "This game doesn't exist, or it isn't shared with you.");
+  if (!g || !games.canView(req.user, g)) return notFound(req, res, t('game.notShared'));
   // One tap to play: a visitor without a session becomes a guest so progress saves (rate-limited per IP).
   if (!req.user && req.headers['sec-fetch-mode'] === 'navigate' && allow(`guestip:${req.ip}`, 60, 3600e3)) {
     const guest = createGuest(); req.sessionId = startSession(res, guest.id, req.headers['user-agent']); req.user = guest;
@@ -94,35 +96,39 @@ router.get('/play/:slug', (req, res) => {
   const u = req.user;
   const isOwner = u && (u.id === g.owner_id || u.role === 'admin');
   const versionId = g.published_version_id || (isOwner ? g.current_version_id : null);
-  if (!versionId) return notFound(req, res, 'This game is not ready yet.');
-  const token = signToken({ v: versionId, g: g.id, u: u ? u.id : null });
+  if (!versionId) return notFound(req, res, t('game.notReadyYet'));
+  const token = signToken({ v: versionId, g: g.id, u: u ? u.id : null, l: req.locale });
+  const liked = games.userLiked(g.id, u && u.id);
   const body = html`
   <div class="playbar">
-    <a class="iconbtn" href="/g/${g.slug}" aria-label="Back to ${g.title}"><span class="emo" aria-hidden="true">←</span><span class="lbl">Back</span></a>
+    <a class="iconbtn" href="/g/${g.slug}" aria-label="${t('play.backTo', { title: g.title })}"><span class="emo flip" aria-hidden="true">←</span><span class="lbl">${t('layout.back')}</span></a>
     <span class="ptitle">${g.icon} ${g.title}</span>
     <span class="livecount" data-live="${g.id}" data-live-format="bar"></span>
-    <button class="iconbtn" type="button" id="p-like" aria-pressed="${games.userLiked(g.id, u && u.id)}" aria-label="Like"><span class="emo" aria-hidden="true">${games.userLiked(g.id, u && u.id) ? '❤️' : '🤍'}</span><span class="lbl">Like</span></button>
-    <button class="iconbtn" type="button" id="p-rate" aria-label="Rate"><span class="emo" aria-hidden="true">⭐</span><span class="lbl">Rate</span></button>
-    <button class="iconbtn" type="button" id="p-full" aria-label="Full screen"><span class="emo" aria-hidden="true">⛶</span><span class="lbl">Full screen</span></button>
+    <button class="iconbtn" type="button" id="p-like" aria-pressed="${liked}" aria-label="${t('game.like')}"><span class="emo" aria-hidden="true">${liked ? '❤️' : '🤍'}</span><span class="lbl">${t('game.like')}</span></button>
+    <button class="iconbtn" type="button" id="p-rate" aria-label="${t('play.rate')}"><span class="emo" aria-hidden="true">⭐</span><span class="lbl">${t('play.rate')}</span></button>
+    <button class="iconbtn" type="button" id="p-full" aria-label="${t('play.fullScreen')}"><span class="emo" aria-hidden="true">⛶</span><span class="lbl">${t('play.fullScreen')}</span></button>
   </div>
-  <div class="stage" id="stage">
+  <div class="stage" id="stage" dir="ltr">
     <iframe id="gameframe" title="${g.title}" src="/frame/${token}" sandbox="${SANDBOX}" allow="fullscreen; autoplay" allowfullscreen referrerpolicy="no-referrer"></iframe>
   </div>
-  <div class="orient-hint ${g.orientation === 'landscape' ? 'show' : ''}" id="orient"><div><div class="emo" aria-hidden="true">📱</div><h2>Turn your phone sideways</h2><p>This game is best in landscape.</p><button class="btn" type="button" id="orient-ok">Play anyway</button></div></div>
+  <div class="orient-hint ${g.orientation === 'landscape' ? 'show' : ''}" id="orient"><div><div class="emo" aria-hidden="true">📱</div><h2>${t('play.turn.heading')}</h2><p>${t('play.turn.text')}</p><button class="btn" type="button" id="orient-ok">${t('play.turn.ok')}</button></div></div>
   ${jsonData('page-data', { gameId: g.id, slug: g.slug, title: g.title, signedIn: !!u, myStars: games.userRating(g.id, u && u.id), canSave: !!u })}`;
   page(req, res, { title: g.title, bare: true, bodyClass: `playmode ${g.orientation === 'landscape' ? 'wants-landscape' : ''}`, body, scripts: ['/js/play.js'] });
 });
 
 // The frame: no cookies are needed; access comes from the short-lived signed token minted for the play/studio page.
+// The token also carries the player's language (l), which games read as BRB.user.lang / BRB.user.dir.
 router.get('/frame/:token', (req, res) => {
-  const t = readToken(req.params.token);
-  if (!t) return res.status(403).type('text').send('This game link expired. Go back and press Play again.');
-  const v = games.getVersion(t.v); const g = v && games.getGame(v.game_id);
-  if (!v || !g || g.id !== t.g) return res.status(404).type('text').send('Not found');
-  const u = t.u ? getUser(t.u) : null;
-  const preview = !!t.p;
+  const t = req.t;
+  const tok = readToken(req.params.token);
+  if (!tok) return res.status(403).type('text').send(t('play.frameExpired'));
+  const v = games.getVersion(tok.v); const g = v && games.getGame(v.game_id);
+  if (!v || !g || g.id !== tok.g) return res.status(404).type('text').send(t('errors.api.notFound'));
+  const u = tok.u ? getUser(tok.u) : null;
+  const preview = !!tok.p;
+  const lang = normalizeCode(tok.l) || req.locale;
   const init = {
-    user: u ? { displayName: u.display_name, avatar: u.avatar, isGuest: !!u.is_guest } : { displayName: 'Player', avatar: '🙂', isGuest: true },
+    user: { ...(u ? { displayName: u.display_name, avatar: u.avatar, isGuest: !!u.is_guest } : { displayName: t('play.defaultPlayer'), avatar: '🙂', isGuest: true }), lang, dir: localeInfo(lang).dir },
     game: { id: g.id, title: g.title },
     save: u && !preview ? games.getSave(g.id, u.id) : {},
     canSave: !!u && !preview,
@@ -134,13 +140,13 @@ router.get('/frame/:token', (req, res) => {
 // ---- APIs used by game.js / play.js ----
 function apiGame(req, res) {
   const g = games.getGame(req.params.id);
-  if (!g || !games.canView(req.user, g)) { res.status(404).json({ error: 'Game not found.' }); return null; }
+  if (!g || !games.canView(req.user, g)) { res.status(404).json({ error: req.t('game.api.notFound') }); return null; }
   return g;
 }
 router.post('/api/games/:id/rate', requireUser, rateLimit('rate', 30, 60e3), (req, res) => {
   const g = apiGame(req, res); if (!g) return;
   const s = Math.round(+(req.body || {}).stars);
-  if (!(s >= 1 && s <= 5)) return res.status(400).json({ error: 'Pick 1 to 5 stars.' });
+  if (!(s >= 1 && s <= 5)) return res.status(400).json({ error: req.t('game.api.pickStars') });
   res.json({ ok: true, ...games.rate(g.id, req.user.id, s) });
 });
 router.post('/api/games/:id/like', requireUser, rateLimit('like', 30, 60e3), (req, res) => {
@@ -170,7 +176,7 @@ router.post('/api/games/:id/leave', (req, res) => {
 router.post('/api/games/:id/save', requireUser, rateLimit('save', 60, 60e3), (req, res) => {
   const g = apiGame(req, res); if (!g) return;
   try { games.putSave(g.id, req.user.id, (req.body || {}).data); res.json({ ok: true }); }
-  catch (e) { res.status(400).json({ error: e.message }); }
+  catch { res.status(400).json({ error: req.t('game.api.saveFailed') }); }
 });
 router.get('/api/games/:id/save', requireUser, (req, res) => {
   const g = apiGame(req, res); if (!g) return;
@@ -179,7 +185,7 @@ router.get('/api/games/:id/save', requireUser, (req, res) => {
 router.post('/api/games/:id/score', requireUser, rateLimit('score', 30, 60e3), (req, res) => {
   const g = apiGame(req, res); if (!g) return;
   const { score, label } = req.body || {};
-  if (!Number.isFinite(+score) || +score < 0) return res.status(400).json({ error: 'Bad score.' });
+  if (!Number.isFinite(+score) || +score < 0) return res.status(400).json({ error: req.t('game.api.badScore') });
   res.json({ ok: true, ...games.submitScore(g.id, req.user.id, +score, label) });
 });
 router.get('/api/games/:id/leaderboard', (req, res) => {
@@ -188,17 +194,18 @@ router.get('/api/games/:id/leaderboard', (req, res) => {
 });
 // Reports: any signed-in player (guests included) can report with a simple reason. N open reports auto-hide the game.
 router.post('/api/games/:id/report', requireUser, rateLimit('report', 10, 3600e3), (req, res) => {
+  const t = req.t;
   const g = games.getGame(req.params.id);
-  if (!g || !games.canView(req.user, g)) return res.status(404).json({ error: 'Game not found.' });
+  if (!g || !games.canView(req.user, g)) return res.status(404).json({ error: t('game.api.notFound') });
   const reason = String((req.body || {}).reason || '');
-  if (!REPORT_REASONS.some(([k]) => k === reason)) return res.status(400).json({ error: 'Pick a reason.' });
+  if (!REASON_KEYS.includes(reason)) return res.status(400).json({ error: t('game.api.pickReason') });
   const details = String((req.body || {}).details || '').slice(0, 300);
-  if (q.get("SELECT 1 FROM reports WHERE game_id=? AND user_id=? AND status='open'", g.id, req.user.id)) return res.json({ ok: true, already: true, message: 'Thanks, we already have your report.' });
+  if (q.get("SELECT 1 FROM reports WHERE game_id=? AND user_id=? AND status='open'", g.id, req.user.id)) return res.json({ ok: true, already: true, message: t('game.report.already') });
   q.run('INSERT INTO reports(id, game_id, user_id, reason, details, created_at) VALUES (?,?,?,?,?,?)', uid(), g.id, req.user.id, reason, details, now());
   const open = q.get("SELECT COUNT(DISTINCT user_id) n FROM reports WHERE game_id=? AND status='open'", g.id).n;
   if (open >= config.reportsToHide && !g.hidden_reason && g.owner_id !== req.user.id) {
     q.run("UPDATE games SET hidden_reason='reports', updated_at=? WHERE id=?", now(), g.id);
     audit(null, 'game.auto_hidden', g.id, { reports: open });
   }
-  res.json({ ok: true, message: 'Thank you for telling us. A grown-up on our team will take a look.' });
+  res.json({ ok: true, message: t('game.report.thanks') });
 });

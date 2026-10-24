@@ -1,4 +1,4 @@
-// Admin panel (role admin only). Non-admins get 404 for every page and API under /admin and /api/admin.
+// Admin panel (role admin only). Internal tool: its text stays English (the page frame follows the admin's language). Non-admins get 404 for every page and API under /admin and /api/admin.
 // Tabs: Review queue, Reports, Chat reports, Users, Audit log. Every action is audited (services/moderation.js, services/publish.js).
 import { Router } from 'express';
 import { html, raw, jsonData, fmtNum, timeAgo } from '../views/html.js';
@@ -10,6 +10,7 @@ import { REPORT_REASONS as GAME_REASONS } from './games.js';
 import * as mod from '../services/moderation.js';
 import * as chat from '../services/chat.js';
 import { COMMUNITY_CSS } from './social.js';
+import { tEn } from '../i18n/index.js';
 
 export const router = Router();
 router.use('/admin', requireAdmin);
@@ -63,7 +64,7 @@ function reportsTab() {
       <div class="rc-cover small">${coverArt(g)}</div>
       <div style="flex:1;min-width:200px">
         <h2 style="margin:0"><a href="/g/${g.slug}">${g.title}</a></h2>
-        <p class="small muted" style="margin:0">by @${g.owner_name} · ${statusLabel(g)}${g.hidden_reason ? ` (hidden by ${g.hidden_reason})` : ''}</p>
+        <p class="small muted" style="margin:0">by @${g.owner_name} · ${statusLabel(g, tEn)}${g.hidden_reason ? ` (hidden by ${g.hidden_reason})` : ''}</p>
         <p style="margin:6px 0"><b>${g.open_reports}</b> open report${g.open_reports === 1 ? '' : 's'}${g.last_report ? html` · last ${when(g.last_report)}` : ''}</p>
         ${g.reasons.length ? html`<div class="chips">${g.reasons.map(r => html`<span class="chip-s">${gameReason(r.reason)} × ${r.n}</span>`)}</div>` : ''}
         ${g.details.length ? html`<ul class="small">${g.details.map(d => html`<li>“${d}”</li>`)}</ul>` : ''}
@@ -86,7 +87,7 @@ function chatTab() {
     <p class="small">Reporter: ${who(reporter)}</p>
     <ol class="ctx" aria-label="Conversation around the message">${context.map(c => html`<li class="${c.id === m.id ? 'hit' : ''} ${c.from_id === m.from_id ? 'from-sender' : 'from-other'}">
       <span class="ctx-who">${c.from_id === m.from_id ? (sender && sender.username) : (reporter && c.from_id === reporter.id ? reporter.username : 'other')}</span>
-      <span class="ctx-body">${c.kind === 'game' ? '🎮 shared a game' : c.body}${c.status === 'hidden' ? html` <i class="muted">(hidden)</i>` : ''}</span>
+      <span class="ctx-body">${c.kind === 'game' ? '🎮 shared a game' : c.kind === 'quick' ? chat.quickText(c.body) : c.body}${c.status === 'hidden' ? html` <i class="muted">(hidden)</i>` : ''}</span>
       <span class="ctx-time muted">${when(c.created_at)}</span></li>`)}</ol>
     <div class="row">
       <button class="btn" type="button" data-act="hide" data-id="${r.id}">🙈 Hide message</button>

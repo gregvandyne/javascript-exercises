@@ -1,6 +1,7 @@
 // Friends: added only by a 6-character friend code (never by searching names, for kids' safety).
 // Storage: one 'pending' row (requester -> target) while waiting; two 'accepted' rows (both directions) once friends.
 import { q, now, tx, audit } from '../db.js';
+import { tEn } from '../i18n/index.js';
 
 const USER_COLS = 'u.id, u.username, u.display_name, u.avatar, u.color, u.is_guest, u.chat_enabled';
 
@@ -9,24 +10,25 @@ export const normCode = s => String(s || '').toUpperCase().replace(/[^A-Z0-9]/g,
 
 const fail = error => ({ ok: false, error });
 
-export function addByCode(user, code) {
-  if (!user || user.is_guest) return fail('Make a free account to add friends.');
+/** Messages come back in the language of tr (req.t); English by default. */
+export function addByCode(user, code, tr = tEn) {
+  if (!user || user.is_guest) return fail(tr('friends.api.needAccount'));
   const c = normCode(code);
-  if (!c) return fail("Type your friend's code first.");
-  if (c.length !== 6) return fail('A friend code has 6 letters and numbers. Check it and try again.');
+  if (!c) return fail(tr('friends.api.typeCode'));
+  if (c.length !== 6) return fail(tr('friends.api.codeLength'));
   const t = q.get('SELECT * FROM users WHERE friend_code=?', c);
-  if (!t || t.banned) return fail("We couldn't find that code. Check each letter and try again.");
-  if (t.id === user.id) return fail("That's your own code! Give it to a friend so they can add you.");
-  if (t.is_guest) return fail('That player is a guest. They need a free account before you can be friends.');
+  if (!t || t.banned) return fail(tr('friends.api.codeNotFound'));
+  if (t.id === user.id) return fail(tr('friends.api.ownCode'));
+  if (t.is_guest) return fail(tr('friends.api.guest'));
   const name = t.display_name;
   const mine = q.get('SELECT status FROM friends WHERE user_id=? AND friend_id=?', user.id, t.id);
   const theirs = q.get('SELECT status FROM friends WHERE user_id=? AND friend_id=?', t.id, user.id);
-  if (mine && mine.status === 'accepted') return { ok: true, state: 'already', message: `You and ${name} are already friends.`, friend: t };
-  if (theirs && theirs.status === 'pending') { accept(user, t.id); return { ok: true, state: 'accepted', message: `You and ${name} are now friends! 🎉`, friend: t }; }
-  if (mine) return { ok: true, state: 'pending', message: `You already asked ${name}. Wait for them to say yes.`, friend: t };
+  if (mine && mine.status === 'accepted') return { ok: true, state: 'already', message: tr('friends.api.already', { name }), friend: t };
+  if (theirs && theirs.status === 'pending') { accept(user, t.id); return { ok: true, state: 'accepted', message: tr('friends.api.accepted', { name }), friend: t }; }
+  if (mine) return { ok: true, state: 'pending', message: tr('friends.api.alreadyAsked', { name }), friend: t };
   q.run("INSERT INTO friends(user_id, friend_id, status, created_at) VALUES (?,?,'pending',?)", user.id, t.id, now());
   audit(user.id, 'friend.request', t.id);
-  return { ok: true, state: 'sent', message: `Friend request sent to ${name}! They need to say yes.`, friend: t };
+  return { ok: true, state: 'sent', message: tr('friends.api.sent', { name }), friend: t };
 }
 
 /** Accept a pending request from `fromId` to `user`. */

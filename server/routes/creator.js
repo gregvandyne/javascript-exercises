@@ -3,6 +3,7 @@ import { Router } from 'express';
 import { html, raw, jsonData, fmtNum, fmtMoney, timeAgo } from '../views/html.js';
 import { page } from '../views/layout.js';
 import { emptyState, avatar, statusLabel } from '../views/components.js';
+import { tEn, tHtml } from '../i18n/index.js';
 import { requireAccount, requireAdmin } from '../auth.js';
 import { today, audit } from '../db.js';
 import { rateLimit } from '../services/ratelimit.js';
@@ -11,123 +12,129 @@ import * as earnings from '../services/earnings.js';
 export const router = Router();
 const HEAD = '<link rel="stylesheet" href="/css/creator.css">';
 
-/** Money from millicents, rounded down to whole cents; tiny amounts say so instead of "$0.00". */
-export function fmtEst(mc) {
+/** Money from millicents, rounded down to whole cents; tiny amounts say so instead of "$0.00". fmt/t: the reader's language. */
+export function fmtEst(mc, fmt = null, t = tEn) {
   mc = +mc || 0;
-  if (mc > 0 && mc < 1000) return 'under 1¢';
-  return fmtMoney(Math.floor(mc / 1000));
+  if (mc > 0 && mc < 1000) return t('creator.underOneCent');
+  return fmt ? fmt.money(Math.floor(mc / 1000)) : fmtMoney(Math.floor(mc / 1000));
 }
-const shortDay = d => new Date(d + 'T00:00:00Z').toLocaleDateString('en', { month: 'short', day: 'numeric', timeZone: 'UTC' });
-const weekday = d => new Date(d + 'T00:00:00Z').toLocaleDateString('en', { weekday: 'short', timeZone: 'UTC' });
-const PAYOUT_LABEL = { requested: '⏳ Waiting', paid: '✅ Paid', cancelled: '↩️ Cancelled' };
+const dayDate = d => new Date(d + 'T00:00:00Z');
+const PAYOUT_EMOJI = { requested: '⏳', paid: '✅', cancelled: '↩️' };
+const payoutLabel = (status, t) => (PAYOUT_EMOJI[status] ? `${PAYOUT_EMOJI[status]} ${t(`creator.payoutStatus.${status}`)}` : status);
 
 function mstat(value, label, extra = '') {
   return html`<div class="mstat"><b ${extra ? raw(extra) : ''}>${value}</b><span>${label}</span></div>`;
 }
 
-function chart(daily) {
+function chart(req, daily) {
+  const t = req.t, f = req.fmt;
+  const shortDay = d => dayDate(d).toLocaleDateString(f.intl, { month: 'short', day: 'numeric', timeZone: 'UTC' });
+  const weekday = d => dayDate(d).toLocaleDateString(f.intl, { weekday: 'short', timeZone: 'UTC' });
   const max = Math.max(...daily.map(d => d.millicents), 1);
   const anyMoney = daily.some(d => d.millicents > 0);
   return html`<figure class="bars-fig">
-    <div class="bars" aria-hidden="true">
-      ${daily.map(d => html`<div class="bar" title="${shortDay(d.day)}: ${fmtEst(d.millicents)}, ${fmtNum(d.impressions)} ad views">
+    <div class="bars" aria-hidden="true" dir="ltr">
+      ${daily.map(d => html`<div class="bar" title="${t('creator.chart.barTitle', { day: shortDay(d.day), money: fmtEst(d.millicents, f, t), views: f.int(d.impressions) })}">
         <span class="fill" style="--h:${d.millicents ? Math.max(4, Math.round(d.millicents / max * 100)) : 0}%"></span>
-        <span class="lbl">${+d.day.slice(8)}</span></div>`)}
+        <span class="lbl">${f.int(+d.day.slice(8))}</span></div>`)}
     </div>
-    <figcaption class="small muted">${anyMoney ? 'Each bar is one day. Taller bar = more earned.' : 'No earnings in the last 14 days yet. Bars grow here when players see the Sponsored cards.'}</figcaption>
+    <figcaption class="small muted">${anyMoney ? t('creator.chart.caption') : t('creator.chart.empty')}</figcaption>
   </figure>
-  <details class="daytable"><summary>Show the numbers for each day</summary>
-    <div class="tblwrap"><table class="tbl"><caption class="sr-only">Estimated earnings for each of the last 14 days</caption>
-      <thead><tr><th scope="col">Day</th><th scope="col">Ad views</th><th scope="col">Earned (estimate)</th></tr></thead>
-      <tbody>${[...daily].reverse().map(d => html`<tr><th scope="row">${weekday(d.day)} ${shortDay(d.day)}</th><td>${fmtNum(d.impressions)}</td><td>${fmtEst(d.millicents)}</td></tr>`)}</tbody>
+  <details class="daytable"><summary>${t('creator.chart.showNumbers')}</summary>
+    <div class="tblwrap"><table class="tbl"><caption class="sr-only">${t('creator.chart.tableCaption')}</caption>
+      <thead><tr><th scope="col">${t('creator.chart.day')}</th><th scope="col">${t('creator.stats.adViews')}</th><th scope="col">${t('creator.chart.earned')}</th></tr></thead>
+      <tbody>${[...daily].reverse().map(d => html`<tr><th scope="row">${weekday(d.day)} ${shortDay(d.day)}</th><td>${f.int(d.impressions)}</td><td>${fmtEst(d.millicents, f, t)}</td></tr>`)}</tbody>
     </table></div>
   </details>`;
 }
 
-function gameBlock(g) {
+function gameBlock(req, g) {
+  const t = req.t, f = req.fmt;
   return html`<li class="panel mgame">
     <div class="mgame-head">
       <span class="mgame-icon cover-${g.cover || 'sunset'}" aria-hidden="true">${g.icon}</span>
-      <div style="min-width:0;flex:1"><h3><a href="/g/${g.slug}">${g.title}</a></h3><span class="small muted">${statusLabel(g)}</span></div>
-      <div class="mgame-earned"><b>${fmtEst(g.lifetimeMillicents)}</b><span class="small muted">earned</span></div>
+      <div style="min-width:0;flex:1"><h3><a href="/g/${g.slug}">${g.title}</a></h3><span class="small muted">${statusLabel(g, t)}</span></div>
+      <div class="mgame-earned"><b>${fmtEst(g.lifetimeMillicents, f, t)}</b><span class="small muted">${t('creator.earned')}</span></div>
     </div>
     <div class="mstats compact">
-      ${mstat(fmtNum(g.plays), 'plays')}
-      ${mstat(fmtNum(g.uniquePlayers), 'players')}
-      ${mstat(g.ratingCount ? g.rating.toFixed(1) + ' ★' : 'New', g.ratingCount ? `${fmtNum(g.ratingCount)} ratings` : 'no ratings')}
-      ${mstat(String(g.live), 'playing now', `data-live="${g.id}" data-live-format="number"`)}
-      ${mstat(fmtNum(g.impressions), 'ad views')}
+      ${mstat(f.num(g.plays), t('game.stats.plays', { count: g.plays }))}
+      ${mstat(f.num(g.uniquePlayers), t('creator.stats.players', { count: g.uniquePlayers }))}
+      ${mstat(g.ratingCount ? g.rating.toFixed(1) + ' ★' : t('cards.new'), g.ratingCount ? t('game.stats.ratings', { count: g.ratingCount, n: f.num(g.ratingCount) }) : t('creator.stats.noRatings'))}
+      ${mstat(String(g.live), t('game.stats.playingNow'), `data-live="${g.id}" data-live-format="number"`)}
+      ${mstat(f.num(g.impressions), t('creator.stats.adViews'))}
     </div>
   </li>`;
 }
 
 router.get('/creator', requireAccount, (req, res) => {
+  const t = req.t, f = req.fmt;
   const u = req.user;
   const s = earnings.creatorSummary(u.id);
   const b = s.balance;
-  const per1000 = fmtMoney(Math.round(s.ecpmCents * s.share));
+  const per1000 = f.money(Math.round(s.ecpmCents * s.share));
   const pct = Math.min(100, Math.round(b.availableCents / Math.max(1, b.thresholdCents) * 100));
-  const explain = html`<section class="panel" aria-labelledby="how-h"><h2 id="how-h">💡 How earnings work</h2>
+  const explain = html`<section class="panel" aria-labelledby="how-h"><h2 id="how-h">💡 ${t('creator.how.heading')}</h2>
     <ul class="howlist">
-      <li>Your games earn when players see the small <b>Sponsored</b> cards on your game's page, or next to your game on Home and Search.</li>
-      <li>About 1,000 views of those cards earn your games about <b>${per1000}</b>. You get ${Math.round(s.share * 100)}% and the rest keeps Magic Cups free.</li>
-      <li>We never show ads inside games or while you play.</li>
-      <li>Your own visits don't count. Each player counts once an hour.</li>
-      <li>These numbers are an <b>estimate</b>. They update every hour and can change after we check for cheating.</li>
+      <li>${tHtml(t, 'creator.how.p1')}</li>
+      <li>${tHtml(t, 'creator.how.p2', { amount: per1000, share: Math.round(s.share * 100) })}</li>
+      <li>${t('creator.how.p3')}</li>
+      <li>${t('creator.how.p4')}</li>
+      <li>${tHtml(t, 'creator.how.p5')}</li>
     </ul></section>`;
   if (!s.games.length) {
-    const body = html`<div class="pagehead"><h1>💰 Creator money</h1></div>
-      <section class="panel">${emptyState({ emoji: '🛠️', title: 'Build a game to start earning', text: 'When players enjoy your games, you earn money from the small Sponsored cards they see.', action: { href: '/build', label: 'Build a game' } })}</section>
+    const body = html`<div class="pagehead"><h1>💰 ${t('creator.title')}</h1></div>
+      <section class="panel">${emptyState({ emoji: '🛠️', title: t('creator.empty.title'), text: t('creator.empty.text'), action: { href: '/build', label: t('home.empty.action') } })}</section>
       ${explain}`;
-    return page(req, res, { title: 'Creator money', active: 'me', back: '/me', backLabel: 'Me', head: HEAD, body });
+    return page(req, res, { title: t('creator.title'), active: 'me', back: '/me', backLabel: t('nav.me'), head: HEAD, body });
   }
   const body = html`
-  <div class="pagehead"><h1>💰 Creator money</h1><span class="estpill">Estimate</span></div>
-  <section class="mstats big" aria-label="All your games">
-    ${mstat(fmtEst(s.totals.lifetimeMillicents), 'earned so far')}
-    ${mstat(fmtNum(s.totals.impressions), 'ad views')}
-    ${mstat(fmtNum(s.totals.plays), 'plays')}
-    ${mstat(fmtNum(s.totals.uniquePlayers), 'players')}
-    ${mstat(s.totals.ratingCount ? s.totals.rating.toFixed(1) + ' ★' : 'New', 'average stars')}
-    ${mstat(String(s.totals.live), 'playing now', `id="live-total"`)}
+  <div class="pagehead"><h1>💰 ${t('creator.title')}</h1><span class="estpill">${t('creator.estimate')}</span></div>
+  <section class="mstats big" aria-label="${t('creator.allGames')}">
+    ${mstat(fmtEst(s.totals.lifetimeMillicents, f, t), t('creator.stats.earnedSoFar'))}
+    ${mstat(f.num(s.totals.impressions), t('creator.stats.adViews'))}
+    ${mstat(f.num(s.totals.plays), t('game.stats.plays', { count: s.totals.plays }))}
+    ${mstat(f.num(s.totals.uniquePlayers), t('creator.stats.players', { count: s.totals.uniquePlayers }))}
+    ${mstat(s.totals.ratingCount ? s.totals.rating.toFixed(1) + ' ★' : t('cards.new'), t('creator.stats.averageStars'))}
+    ${mstat(String(s.totals.live), t('game.stats.playingNow'), `id="live-total"`)}
   </section>
   <div class="grid2">
     <div class="stack">
-      <section class="panel" aria-labelledby="days-h"><h2 id="days-h">📈 Last 14 days</h2>${chart(s.daily)}</section>
-      <section aria-labelledby="games-h"><h2 id="games-h">🎮 Your games</h2>
-        <ul class="mgames">${s.games.map(gameBlock)}</ul></section>
+      <section class="panel" aria-labelledby="days-h"><h2 id="days-h">📈 ${t('creator.last14')}</h2>${chart(req, s.daily)}</section>
+      <section aria-labelledby="games-h"><h2 id="games-h">🎮 ${t('creator.yourGames')}</h2>
+        <ul class="mgames">${s.games.map(g => gameBlock(req, g))}</ul></section>
     </div>
     <div class="stack">
-      <section class="panel" aria-labelledby="pay-h"><h2 id="pay-h">🏦 Payouts</h2>
+      <section class="panel" aria-labelledby="pay-h"><h2 id="pay-h">🏦 ${t('creator.payouts.heading')}</h2>
         <div class="paybox">
-          <div class="mstat"><b>${fmtMoney(b.availableCents)}</b><span>ready to pay out</span></div>
-          <div class="progress" role="progressbar" aria-label="Progress to the payout minimum" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}"><span style="width:${pct}%"></span></div>
-          <p class="small muted">${s.canRequest ? 'You reached the minimum. You can ask for a payout!' : `You can ask for a payout at ${fmtMoney(b.thresholdCents)}. ${fmtMoney(Math.max(0, b.thresholdCents - b.availableCents))} to go.`}</p>
-          <button class="btn btn-primary btn-block" type="button" id="payout-btn" ${s.canRequest ? '' : raw('disabled aria-disabled="true"')}>Ask for a payout</button>
-          <p class="small muted" style="margin-top:10px">Our team pays every payout by hand. If you are under 18, we check with your parent or guardian first.</p>
+          <div class="mstat"><b>${f.money(b.availableCents)}</b><span>${t('creator.payouts.ready')}</span></div>
+          <div class="progress" role="progressbar" aria-label="${t('creator.payouts.progress')}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}"><span style="width:${pct}%"></span></div>
+          <p class="small muted">${s.canRequest ? t('creator.payouts.reached') : t('creator.payouts.toGo', { min: f.money(b.thresholdCents), left: f.money(Math.max(0, b.thresholdCents - b.availableCents)) })}</p>
+          <button class="btn btn-primary btn-block" type="button" id="payout-btn" ${s.canRequest ? '' : raw('disabled aria-disabled="true"')}>${t('creator.payouts.ask')}</button>
+          <p class="small muted" style="margin-top:10px">${t('creator.payouts.byHand')}</p>
         </div>
         <dl class="paylist">
-          <div><dt>Waiting to be paid</dt><dd>${fmtMoney(b.pendingCents)}</dd></div>
-          <div><dt>Paid to you</dt><dd>${fmtMoney(b.paidCents)}</dd></div>
+          <div><dt>${t('creator.payouts.pending')}</dt><dd>${f.money(b.pendingCents)}</dd></div>
+          <div><dt>${t('creator.payouts.paid')}</dt><dd>${f.money(b.paidCents)}</dd></div>
         </dl>
-        ${s.payouts.length ? html`<h3>History</h3><ul class="payhist">${s.payouts.map(p => html`<li><span>${new Date(p.created_at).toLocaleDateString('en', { month: 'short', day: 'numeric', year: 'numeric' })}</span><b>${fmtMoney(p.amount_cents)}</b><span class="tag">${PAYOUT_LABEL[p.status] || p.status}</span></li>`)}</ul>` : ''}
+        ${s.payouts.length ? html`<h3>${t('creator.payouts.history')}</h3><ul class="payhist">${s.payouts.map(p => html`<li><span>${f.date(p.created_at)}</span><b>${f.money(p.amount_cents)}</b><span class="tag">${payoutLabel(p.status, t)}</span></li>`)}</ul>` : ''}
       </section>
       ${explain}
     </div>
   </div>
   ${jsonData('page-data', { canRequest: s.canRequest, available: b.availableCents })}`;
-  page(req, res, { title: 'Creator money', active: 'me', back: '/me', backLabel: 'Me', head: HEAD, body, scripts: ['/js/creator.js'] });
+  page(req, res, { title: t('creator.title'), active: 'me', back: '/me', backLabel: t('nav.me'), head: HEAD, body, scripts: ['/js/creator.js'] });
 });
 
 router.get('/api/creator/summary', requireAccount, (req, res) => res.json(earnings.creatorSummary(req.user.id)));
 
 router.post('/api/creator/payout', requireAccount, rateLimit('payout', 5, 60e3), (req, res) => {
-  const r = earnings.requestPayout(req.user);
+  const r = earnings.requestPayout(req.user, req.t);
   if (!r.ok) return res.status(400).json({ error: r.error });
   res.json({ ok: true, payout: r.payout });
 });
 
-// ---------- Admin ----------
+// ---------- Admin (internal, English only) ----------
+const PAYOUT_LABEL = { requested: '⏳ Waiting', paid: '✅ Paid', cancelled: '↩️ Cancelled' };
 router.get('/admin/money', requireAdmin, (req, res) => {
   const t = earnings.adminTotals();
   const payouts = earnings.adminPayouts();
