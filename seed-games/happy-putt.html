@@ -23,6 +23,7 @@ button:focus-visible,input:focus-visible{outline:4px solid #fff;outline-offset:2
 .hud.solo .who{display:none}  /* one player: no need to say who is up, give the hole name the room */
 .hud .strokes{flex:none;background:#fff;color:var(--ink);border-radius:14px;padding:4px 10px;text-align:center;line-height:1.05;min-width:62px}
 .hud .strokes b{display:block;font:600 1.25rem/1 var(--display)}
+.hud .strokes .stick{font-size:.95rem;margin-right:3px;vertical-align:1px}  /* the hockey-stick putter next to the stroke count */
 .hud .strokes small{font-size:.62rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .hud .who{flex:0 1 auto;display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.14);border-radius:999px;padding:4px 9px 4px 5px;font-weight:900;font-size:.76rem;max-width:122px;min-width:0}
 .hud .who i{width:16px;height:16px;border-radius:50%;flex:none;background:var(--c,#fff);box-shadow:inset -2px -2px 0 rgba(0,0,0,.2)}
@@ -68,11 +69,20 @@ canvas#c{display:block;touch-action:none;border-radius:6px;box-shadow:0 10px 30p
   .bar{order:2;flex-direction:column;width:150px;padding:10px;justify-content:center}
   .power{width:100%}
   .putt{width:100%;min-width:0}
-  #title .panel{display:grid;grid-template-columns:1fr 1fr;gap:8px 18px;width:min(100%,720px);align-items:start}
-  #title .tcol{display:flex;flex-direction:column;gap:10px;min-width:0}
-  #title .tcol:last-child{padding-top:42px}  /* the corner mute button sits over this column's top-right in landscape: start the player chips below it */
-  #title .ballpreview{display:none}
-  #title h1{font-size:2.2rem}
+  #title{gap:3px;padding:4px 12px}
+  #title .panel{display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;width:min(100%,720px);align-items:start;padding:8px 16px}
+  #title .chip{min-height:44px}
+  #title .names.many{gap:4px}
+  #playersBox p{margin-bottom:2px!important}
+  #title .tcol{display:flex;flex-direction:column;gap:6px;min-width:0}
+  #title .panel .corner{top:auto;bottom:8px}  /* landscape: the mute button sits in the bottom-right corner beside the keys hint, so the player column starts at the top */
+  #titleKeys{padding-right:50px;text-align:left}
+  #titleDesc{font-size:.85rem}
+  #titlePanel #titleDesc{padding-right:0}  /* landscape: the mute button is in the bottom corner, so the text can use the full column */
+  .marquee b{font-size:2rem}
+  .marquee small{font-size:.6rem;margin-top:2px}
+  .ceremony{height:110px}
+  #results .resultbig{font-size:2rem}
   /* results: two columns side by side (scores left, scorecard + buttons right); each column scrolls on its own if it must */
   #results .panel{flex-direction:row;align-items:stretch;gap:16px;width:min(100%,760px);padding:14px 16px}
   #results .tcol{display:flex;flex-direction:column;gap:8px;flex:1 1 0;min-width:0;min-height:0;overflow:auto}
@@ -91,13 +101,11 @@ canvas#c{display:block;touch-action:none;border-radius:6px;box-shadow:0 10px 30p
 .panel{background:var(--card);border-radius:26px;padding:18px 16px;width:min(100%,420px);max-height:100%;overflow:auto;box-shadow:0 20px 50px rgba(0,0,0,.45);display:flex;flex-direction:column;gap:12px;text-align:center;position:relative}
 .panel>*,.tcol>*{flex:none}  /* a panel scrolls as a whole; nothing inside gets squashed (ball preview, scorecard) */
 .tcol{display:contents}       /* title / results columns: flat in portrait (ordered below), two columns in landscape */
-#title h1{order:1}#title .ballpreview{order:2}#titleDesc{order:3}#playersBox{order:4}#names{order:5}#playRow{order:6}#bestLine{order:7}#titleKeys{order:8}
+#titleDesc{order:1}#playersBox{order:2}#names{order:3}#playRow{order:4}#bestLine{order:5}#titleKeys{order:6}
 #cardTitle{order:1}#cardLine{order:2}#cardTable{order:3}#cardLegend{order:4}#cardNext{order:5}
 .panel .corner{position:absolute;top:10px;right:10px;z-index:1}  /* mute toggle on the title card, so sound can be turned off before the first putt */
 /* results: the scorecard gives up height first so "Play again" always stays on screen; the table scrolls inside it */
-#results .scorecard{flex:0 1 auto;min-height:92px;max-height:none}
-#results .podium{gap:4px}
-#results .podium div{padding:5px 10px;font-size:.9rem}
+#results .scorecard{flex:0 1 auto;min-height:112px;max-height:none}
 .panel h1{font:700 clamp(2rem,10vw,3rem)/1 var(--display);margin:0;color:var(--grass2);letter-spacing:.01em}
 .panel h1 small{display:block;font:900 .72rem var(--body);letter-spacing:.25em;text-transform:uppercase;color:var(--gold2);margin-top:4px}
 .panel h2{font:600 1.5rem/1.1 var(--display);margin:0;color:var(--ink)}
@@ -126,41 +134,72 @@ canvas#c{display:block;touch-action:none;border-radius:6px;box-shadow:0 10px 30p
 .best{font-size:.85rem;font-weight:900;color:var(--gold2)}
 .holeno{display:inline-block;background:var(--grass2);color:#fff;border-radius:999px;padding:4px 14px;font:600 .95rem var(--display);letter-spacing:.06em}
 .ballpreview{width:70px;height:70px;border-radius:50%;margin:0 auto;background:radial-gradient(circle at 35% 30%,#fff,var(--c) 60%);box-shadow:0 8px 14px rgba(0,0,0,.25),inset -6px -6px 0 rgba(0,0,0,.12);display:grid;place-items:center;font-size:1.6rem}
-.scorecard{overflow:auto;max-height:50vh;border:2px solid #dde7dd;border-radius:14px}
-.scorecard table{border-collapse:collapse;width:100%;font-size:.8rem}
-.scorecard th,.scorecard td{padding:4px 5px;text-align:center;border-bottom:1px solid #eef3ee;white-space:nowrap}
+/* Scorecard = a scrolling box of hole rows + a Total footer that keeps its own room below the box (so it never covers a hole row) */
+.scorecard{display:flex;flex-direction:column;max-height:50vh;border:2px solid #dde7dd;border-radius:14px;overflow:hidden;background:#fff}
+.scorecard .scroller{overflow:auto;min-height:0;flex:1 1 auto;scrollbar-gutter:stable}
+.scorecard .footwrap{flex:none;overflow:hidden;scrollbar-gutter:stable;border-top:2px solid #cfe6d3}
+.scorecard table{border-collapse:collapse;width:100%;table-layout:fixed;font-size:.8rem}
+.scorecard th,.scorecard td{padding:3px 4px;text-align:center;border-bottom:1px solid #eef3ee;white-space:nowrap;overflow:hidden}
 .scorecard th{background:#eef7ee;font-weight:900;position:sticky;top:0;z-index:1}
 .scorecard th i{display:inline-block;width:10px;height:10px;border-radius:50%;vertical-align:-1px;margin-right:3px;border:1px solid rgba(0,0,0,.25);background:var(--c)}
 .scorecard th span{display:inline-block;max-width:96px;overflow:hidden;text-overflow:ellipsis;vertical-align:bottom}
-/* 3-4 players: tighter cells and shorter names so four columns fit in 330 px without a sideways scroll */
+.scorecard td small{display:block;font-size:.56rem;line-height:1.1;font-weight:900;letter-spacing:.02em;opacity:.8;text-transform:uppercase}  /* the word under the number: ACE, BIRDIE, PAR, BOGEY... */
+/* 3-4 players: tighter cells; the name sits under its ball dot and may wrap onto two lines instead of being cut short */
 .scorecard.many table{font-size:.72rem}
-.scorecard.many th,.scorecard.many td{padding:4px 3px}
-.scorecard.many th span{max-width:46px}
+.scorecard.many th,.scorecard.many td{padding:3px 2px}
+.scorecard.many th{vertical-align:bottom;line-height:1.05}
+.scorecard.many th i{display:block;margin:0 auto 2px}
+.scorecard.many th span{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;max-width:none;white-space:normal;overflow-wrap:anywhere;font-size:.58rem;letter-spacing:-.01em;text-overflow:clip}
+.scorecard.many td small{font-size:.5rem;letter-spacing:0}
 .legend{font-size:.7rem;color:var(--muted);font-weight:800;margin:0}
 .legend span{white-space:nowrap}
 .legend i{display:inline-block;width:10px;height:10px;border-radius:3px;vertical-align:-1px;margin:0 2px 0 6px}
 .namerow button.swap{min-width:44px;padding:0;font-size:1.1rem}  /* 3-4 players: icon-only "change name" button so the nickname keeps its room */
 .scorecard tr.now td{background:#fff6d6;box-shadow:inset 0 2px 0 var(--gold),inset 0 -2px 0 var(--gold)}  /* the hole just played: gold bars, and its score keeps its colour (rules below win) */
-.scorecard tr.total td{font-weight:900;background:#e3f5e6;position:sticky;bottom:0;line-height:1.1}
-.scorecard tr.total small{display:block;font-size:.66rem;color:var(--muted)}
+.scorecard tr.total td{font-weight:900;background:#e3f5e6;line-height:1.1;border-bottom:0}
+.scorecard tr.total small{display:block;font-size:.66rem;color:var(--muted);text-transform:none;opacity:1;letter-spacing:0}
 .scorecard tr td.under{color:#1d7a3a;font-weight:900;background:#cdeed3}
 .scorecard tr td.over{color:#b8322e;font-weight:900;background:#fbe0de}
 .scorecard tr td.hio{background:#ffe27a;font-weight:900}
 .resultbig{font:700 clamp(2.4rem,12vw,3.6rem)/1 var(--display);color:var(--gold2);margin:0}
-.podium{display:flex;flex-direction:column;gap:6px}
-.podium div{display:flex;align-items:center;gap:8px;background:#f2f6f2;border-radius:12px;padding:8px 10px;font-weight:900}
-.podium div i{width:18px;height:18px;border-radius:50%;background:var(--c);flex:none}
-.podium div span{flex:1;text-align:left}
-.podium div.win{background:#fff0b8}
 .keys{font-size:.74rem;color:var(--muted);font-weight:800;line-height:1.5}
-@media (prefers-reduced-motion:reduce){.toast{transition:none}}
+/* Title show + gold jacket ceremony: a drawn scene fills the screen behind the card (opaque, so nothing greyed-out shows through) */
+.art{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none;z-index:0}
+#title,#results{backdrop-filter:none}
+#title{flex-direction:column;gap:10px;background:#8fcbff}
+#results{background:#141a3a}
+#title .panel,#results .panel,.marquee{position:relative;z-index:1}
+#title .panel{flex:0 1 auto;min-height:0;max-height:none;overflow:auto;padding-top:14px}
+.marquee{flex:none;margin:0;padding:4px 0 0;text-align:center;line-height:1;animation:marqueeSway 4.5s ease-in-out infinite alternate}
+.marquee b{display:block;font:700 clamp(2.7rem,14vw,4.2rem)/1 var(--display);letter-spacing:.015em;transform:rotate(-2.5deg);
+  color:#ffe27a;background:linear-gradient(#fff8d2 10%,#f6cf5a 50%,#d79a12 92%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  -webkit-text-stroke:1.5px #5a3500;filter:drop-shadow(0 4px 0 #5a3500) drop-shadow(0 10px 12px rgba(0,0,0,.4))}
+.marquee small{display:block;font:900 .78rem/1 var(--body);letter-spacing:.17em;text-transform:uppercase;color:#fff;margin-top:12px;text-shadow:0 2px 0 rgba(0,0,0,.45),0 0 10px rgba(0,0,0,.3)}
+@keyframes marqueeSway{from{transform:translateY(0) rotate(-1deg)}to{transform:translateY(-4px) rotate(1deg)}}
+#titleDesc{font-size:.9rem;padding-right:48px}  /* portrait: the 44px mute button sits in the top-right corner, so the first lines stop short of it */
+.ceremony{width:100%;height:140px;display:block;border-radius:16px;background:#1d2d5c}
+.chant{font:600 1.05rem/1.2 var(--display);color:#8e1c3a;margin:0}
+.chant small{display:inline-block;font:900 .62rem var(--body);letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-right:6px;vertical-align:1px}
+/* short portrait phones (360x640): the ceremony picture, the gaps and the scorecard box give up height first so Play again stays on screen */
+@media (max-width:370px){#resultsRow .btn{padding:12px 10px;font-size:1.2rem}}  /* 360 px phones: Play again / Menu stay on one line */
+@media (max-height:720px) and (orientation:portrait){.ceremony{height:126px}#results .panel{gap:9px}}
+@media (max-height:680px) and (orientation:portrait){
+  .ceremony{height:112px}
+  #results .panel{gap:8px;padding:14px 14px}
+  #results .panel h2{font-size:1.3rem}
+  #results .resultbig{font-size:2rem}
+  #results .panel p{font-size:.88rem;line-height:1.3}
+  #results .scorecard{min-height:84px}
+  #results .legend{font-size:.66rem}
+}
+@media (prefers-reduced-motion:reduce){.toast{transition:none}.marquee{animation:none}}
 </style>
 
 <div class="app" id="app">
   <header class="hud solo" id="hud">
     <div class="holebox"><b id="hudName">Happy Putt</b><small id="hudPar">Tap play to start</small></div>
     <div class="who" id="hudWho" style="--c:#fff"><i></i><span id="hudWhoName">You</span></div>
-    <div class="strokes"><b id="hudStrokes">0</b><small>strokes</small></div>
+    <div class="strokes"><b><span class="stick" aria-hidden="true">🏒</span><span id="hudStrokes">0</span></b><small>strokes</small></div>
     <div class="btns">
       <button class="icon-btn" id="pauseBtn" aria-label="Pause">⏸</button>
       <button class="icon-btn" id="muteBtn" aria-label="Sound on">🔊</button>
@@ -177,13 +216,13 @@ canvas#c{display:block;touch-action:none;border-radius:6px;box-shadow:0 10px 30p
   </div>
 </div>
 
-<!-- Title -->
+<!-- Title: a drawn country-club scene (canvas) behind a big marquee title and the start card -->
 <div class="screen" id="title">
-  <div class="panel">
+  <canvas class="art" id="titleArt" aria-hidden="true"></canvas>
+  <h1 class="marquee"><b>Happy Putt</b><small>Country Club · 18 holes</small></h1>
+  <div class="panel" id="titlePanel">
     <button class="icon-btn corner" id="titleMute" aria-label="Sound on">🔊</button>
     <div class="tcol">
-      <h1>Happy Putt<small>Country Club · 18 holes</small></h1>
-      <div class="ballpreview" style="--c:#ffd23f">⛳</div>
       <p id="titleDesc">Eighteen wild holes: a hockey rink, a laughing clown, a swamp gator, a loop, a happy cloud and a toppled TV tower. Putt your way round and win the gold jacket!</p>
       <div class="row" id="playRow"><button class="btn gold" id="play18">Play 18</button><button class="btn" id="play9">Quick 9</button></div>
       <div class="best" id="bestLine"></div>
@@ -244,15 +283,17 @@ canvas#c{display:block;touch-action:none;border-radius:6px;box-shadow:0 10px 30p
   </div>
 </div>
 
-<!-- Results -->
+<!-- Results: the gold jacket ceremony (podium canvas inside the card, a night stadium with fireworks behind it) -->
 <div class="screen" id="results" hidden>
+  <canvas class="art" id="resultsArt" aria-hidden="true"></canvas>
   <div class="panel">
     <div class="tcol">
       <h2 id="resultsTitle">Round over!</h2>
+      <canvas class="ceremony" id="ceremony" aria-label="Gold jacket ceremony: the winner on the podium"></canvas>
       <p class="resultbig" id="resultsBig">148 pts</p>
       <p id="resultsLine"></p>
+      <p class="chant" id="chant"></p>
       <div class="best" id="resultsBest"></div>
-      <div class="podium" id="podium"></div>
     </div>
     <div class="tcol">
       <div class="scorecard" id="resultsTable"></div>
@@ -467,15 +508,45 @@ function sandFill(ctx, pathFn, base, rake) {
   ctx.restore();
 }
 function stars(ctx, n, col) { for (let i = 0; i < n; i++) { const x = rr(0, CONFIG.W), y = rr(0, CONFIG.H), s = rr(0.6, 1.8); circle(ctx, x, y, s, col); } }
-// A little gold jacket on a hanger (hole 11's spinning rack): sleeves, lapels, white shirt, two buttons, a sparkle.
-function goldJacket(ctx, x, y, t) {
-  circle(ctx, x, y + 4, 15, 'rgba(0,0,0,.2)');
-  ctx.strokeStyle = '#8d99ae'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(x, y - 13, 3, Math.PI, 0); ctx.stroke();
-  ctx.fillStyle = '#e3b23c'; ctx.beginPath(); ctx.moveTo(x - 14, y - 10); ctx.lineTo(x + 14, y - 10); ctx.lineTo(x + 13, y + 3); ctx.lineTo(x + 9, y + 3); ctx.lineTo(x + 9, y + 14); ctx.lineTo(x - 9, y + 14); ctx.lineTo(x - 9, y + 3); ctx.lineTo(x - 13, y + 3); ctx.closePath(); ctx.fill();
-  ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.moveTo(x - 4, y - 10); ctx.lineTo(x + 4, y - 10); ctx.lineTo(x, y + 3); ctx.closePath(); ctx.fill();
-  ctx.fillStyle = '#c98f12'; ctx.beginPath(); ctx.moveTo(x - 8, y - 10); ctx.lineTo(x - 4, y - 10); ctx.lineTo(x, y + 3); ctx.lineTo(x - 2, y + 7); ctx.closePath(); ctx.moveTo(x + 8, y - 10); ctx.lineTo(x + 4, y - 10); ctx.lineTo(x, y + 3); ctx.lineTo(x + 2, y + 7); ctx.closePath(); ctx.fill();
-  circle(ctx, x + 1, y + 8, 1.4, '#5a3500'); circle(ctx, x + 1, y + 12, 1.4, '#5a3500');
-  const tw = 0.5 + 0.5 * Math.sin(t * 5); circle(ctx, x - 9, y - 5, 1.5 + tw * 1.5, 'rgba(255,255,255,' + (0.4 + tw * 0.5) + ')');
+// The gold jacket: sleeves, lapels, white shirt, two buttons, a sparkle. On a hanger (hole 11's rack, the title stand) or
+// worn (no hanger, no floor shadow) by the champion at the ceremony. s scales it; the drawing is 28 wide and 24 tall at s = 1.
+function goldJacket(ctx, x, y, t, s, worn) {
+  ctx.save(); ctx.translate(x, y); if (s && s !== 1) ctx.scale(s, s);
+  if (!worn) { circle(ctx, 0, 4, 15, 'rgba(0,0,0,.2)'); ctx.strokeStyle = '#8d99ae'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(0, -13, 3, Math.PI, 0); ctx.stroke(); }
+  ctx.fillStyle = '#e3b23c'; ctx.beginPath(); ctx.moveTo(-14, -10); ctx.lineTo(14, -10); ctx.lineTo(13, 3); ctx.lineTo(9, 3); ctx.lineTo(9, 14); ctx.lineTo(-9, 14); ctx.lineTo(-9, 3); ctx.lineTo(-13, 3); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.moveTo(-4, -10); ctx.lineTo(4, -10); ctx.lineTo(0, 3); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = '#c98f12'; ctx.beginPath(); ctx.moveTo(-8, -10); ctx.lineTo(-4, -10); ctx.lineTo(0, 3); ctx.lineTo(-2, 7); ctx.closePath(); ctx.moveTo(8, -10); ctx.lineTo(4, -10); ctx.lineTo(0, 3); ctx.lineTo(2, 7); ctx.closePath(); ctx.fill();
+  circle(ctx, 1, 8, 1.4, '#5a3500'); circle(ctx, 1, 12, 1.4, '#5a3500');
+  const tw = 0.5 + 0.5 * Math.sin(t * 5); circle(ctx, -9, -5, 1.5 + tw * 1.5, 'rgba(255,255,255,' + (0.4 + tw * 0.5) + ')');
+  ctx.restore();
+}
+// A tiny cartoon golfer standing with feet at (x, y): legs, jersey in the ball colour, cap, round face. The champion wears the gold
+// jacket and holds the trophy up; everybody else claps. Used by the title scene and the ceremony.
+function golfer(c, x, y, col, t, win, idle) {
+  shadowBlob(c, x, y + 1, 12, 3, 0.25);
+  c.fillStyle = '#2b3a55'; c.fillRect(x - 7, y - 13, 5, 13); c.fillRect(x + 2, y - 13, 5, 13); c.fillStyle = '#1d2b1f'; c.fillRect(x - 8, y - 2, 7, 3); c.fillRect(x + 1, y - 2, 7, 3);
+  c.fillStyle = col; rrect(c, x - 10, y - 33, 20, 22, 6); c.fill();
+  if (win) goldJacket(c, x, y - 22, t, 0.95, true);
+  const w = idle ? 0 : Math.sin(t * 6) * 0.5;
+  c.strokeStyle = win ? '#e3b23c' : col; c.lineWidth = 4; c.lineCap = 'round'; c.beginPath();
+  if (win) { c.moveTo(x - 9, y - 29); c.lineTo(x - 17, y - 44 + w * 3); c.moveTo(x + 9, y - 29); c.lineTo(x + 17, y - 46 - w * 3); }
+  else { c.moveTo(x - 9, y - 29); c.lineTo(x - 15 + w * 5, y - 18); c.moveTo(x + 9, y - 29); c.lineTo(x + 15 - w * 5, y - 18); }
+  c.stroke(); c.lineCap = 'butt';
+  if (win) emoji(c, '🏆', x + 19, y - 54 - w * 3, 18);
+  circle(c, x, y - 41, 9, '#f1c27d'); circle(c, x - 3, y - 42, 1.4, '#111'); circle(c, x + 3, y - 42, 1.4, '#111');
+  c.strokeStyle = '#8d4a2b'; c.lineWidth = 1.5; c.beginPath(); c.arc(x, y - 40, 4, 0.3, Math.PI - 0.3); c.stroke();
+  c.fillStyle = col; c.beginPath(); c.arc(x, y - 43, 9.5, Math.PI, 0); c.fill(); c.fillRect(x - 11, y - 44, 15, 3);
+}
+// A happy clown face peeking out (title scene): white face, red nose, orange hair, hat, eyes that look where the time points.
+function clownFace(c, x, y, t, s) {
+  c.save(); c.translate(x, y); c.scale(s, s);
+  for (let i = -2; i <= 2; i++) circle(c, i * 11, -16 + Math.abs(i) * 3, 9, '#ff8c42');
+  circle(c, 0, 0, 24, '#fff'); c.fillStyle = '#2f6bff'; rrect(c, -16, -36, 32, 14, 4); c.fill(); c.fillStyle = '#ffd23f'; rrect(c, -20, -24, 40, 5, 2); c.fill();
+  const ex = Math.cos(t * 0.7) * 3, ey = Math.sin(t * 0.9) * 2;
+  for (const sx of [-9, 9]) { circle(c, sx, -6, 6, '#fff'); ring(c, sx, -6, 6, '#2f6bff', 1.5); circle(c, sx + ex, -6 + ey, 3, '#111'); }
+  circle(c, 0, 4, 6, '#ff3b3b'); circle(c, -2, 2, 2, 'rgba(255,255,255,.7)');
+  c.strokeStyle = '#ff3b3b'; c.lineWidth = 3.5; c.lineCap = 'round'; c.beginPath(); c.arc(0, 6, 13, 0.35, Math.PI - 0.35); c.stroke(); c.lineCap = 'butt';
+  c.restore();
 }
 function skyline(ctx, x0, x1, base, h, col, win) {
   for (let x = x0; x < x1;) { const w = 18 + ((x * 7) % 20), hh = h * (0.5 + ((x * 13) % 10) / 20); ctx.fillStyle = col; ctx.fillRect(x, base - hh, w, hh); ctx.fillStyle = win; for (let yy = base - hh + 6; yy < base - 6; yy += 10) for (let xx = x + 4; xx < x + w - 4; xx += 8) if ((xx * yy) % 7 < 4) ctx.fillRect(xx, yy, 4, 5); x += w + 4; }
@@ -818,7 +889,7 @@ HOLES.push({
   gag: 'The whole fairway is one tiny circle of grass in a sea of sand, under a huge sign that says JUST TAP IT IN. Hit it hard and you will be digging. Tap tap taparoo.',
   tip: 'Barely touch it. Power 30 is plenty.',
   tee: { x: 195, y: 360 }, cup: { x: 195, y: 262 },
-  testShot: { angle: 90, power: 0.30, timing: 'none', window: '0.24-0.37' },
+  testShot: { angle: 90, power: 0.30, timing: 'none', window: '0.25-0.37' },
   build(h) {
     const pts = []; for (let k = 0; k < 24; k++) pts.push([195 + 130 * Math.cos(k * 15 * RAD), 300 - 130 * Math.sin(k * 15 * RAD)]);
     h.lane = pts; h.segs = segsFromPts(pts, true, 0.6); for (const s of h.segs) s.onHit = (sp, x, y) => { h.wobT = 0.8; defaultHit(sp, x, y); };
@@ -851,7 +922,7 @@ HOLES.push({
   gag: 'The laughing clown. A funnel leads into a giant clown mouth that opens and shuts. Time it wrong and the clown spits your ball back out with a big HA HA HA.',
   tip: 'Watch the mouth. Shoot the moment it opens.',
   tee: { x: 195, y: 560 }, cup: { x: 195, y: 150 },
-  testShot: { angle: 90, power: 0.60, timing: 'phase 0 (mouth open 0-1.4 s of 2.4 s)', window: '0.56-0.63' },
+  testShot: { angle: 90, power: 0.60, timing: 'phase 0 (mouth open 0-1.4 s of 2.4 s)', window: '0.57-0.63' },
   lane: [[60, 600], [330, 600], [330, 330], [225, 250], [270, 250], [270, 60], [120, 60], [120, 250], [165, 250], [60, 330]],
   build(h) {
     h.segs = segsFromPts(h.lane, true, 0.75, { 4: { rest: 0.3, kind: 'soft' }, 5: { rest: 0.3, kind: 'soft' }, 6: { rest: 0.3, kind: 'soft' } });
@@ -952,6 +1023,8 @@ HOLES.push({
     shadowBlob(ctx, 4, 6, 80, 80, 0.08);
     for (let i = 0; i < 4; i++) { const a = r.a + i * TAU / 4; ctx.save(); ctx.rotate(-a); ctx.fillStyle = '#f7efdd'; rrect(ctx, 28, -5, 50, 10, 4); ctx.fill(); ctx.strokeStyle = '#8b5a2b'; ctx.lineWidth = 1.5; ctx.strokeRect(30, -3, 46, 6); for (let x = 36; x < 76; x += 8) { ctx.beginPath(); ctx.moveTo(x, -3); ctx.lineTo(x, 3); ctx.stroke(); } ctx.restore(); }
     circle(ctx, 0, 0, 28, '#8b5a2b'); circle(ctx, 0, 0, 22, '#a56d3a'); circle(ctx, 0, 0, 6, '#5b3a1e'); ctx.restore();
+    // canal ripples around the sail boat and the lily pads
+    ctx.save(); ctx.beginPath(); ctx.rect(302, 95, 88, 545); ctx.clip(); ripples(ctx, now, 346, 312, 8, 'rgba(255,255,255,.55)'); ripples(ctx, now + 0.9, 330, 560, 6, 'rgba(255,255,255,.4)'); ripples(ctx, now + 1.5, 322, 210, 5, 'rgba(255,255,255,.4)'); ctx.restore();
     if (ball.state === 'rolling' && ball.x > 150 && ball.x < 200 && ball.y > 300 && ball.y < 360 && !reducedMotion) shake = Math.max(shake, 1.2);
   }
 });
@@ -962,7 +1035,7 @@ HOLES.push({
   gag: 'Save grandma\'s house! The moving truck is parked out front while the movers carry boxes. Putt up the driveway and across the yard before it pulls away and honks.',
   tip: 'Go while the truck is parked on the right. Straight up the driveway!',
   tee: { x: 195, y: 575 }, cup: { x: 195, y: 125 },
-  testShot: { angle: 90, power: 0.62, timing: 'phase 0 (truck parked right until 0.8 s)', window: '0.59-0.65' },
+  testShot: { angle: 90, power: 0.62, timing: 'phase 0 (truck parked right until 0.8 s)', window: '0.60-0.65' },
   lane: [[150, 600], [150, 380], [50, 380], [50, 80], [340, 80], [340, 380], [240, 380], [240, 600]],
   build(h) {
     h.segs = segsFromPts(h.lane, true, 0.75, { 3: { rest: 0.3, kind: 'soft', onHit: (sp, x, y) => { defaultHit(sp, x, y, 'soft'); if (sp > 120) bubble('BONK', x, y + 20); } } });
@@ -1056,7 +1129,7 @@ HOLES.push({
   gag: 'The driving range. The big net is for everybody else: you are going THROUGH the torn hole in it, up the hill to the 200 yard sign, while the caged ball-picker cart putters past.',
   tip: 'Hit it hard and straight through the torn hole. The hill eats speed!',
   tee: { x: 195, y: 575 }, cup: { x: 195, y: 120 },
-  testShot: { angle: 90, power: 0.66, timing: 'phase 0 (cart starts at the left)', window: '0.645-0.69' },
+  testShot: { angle: 90, power: 0.66, timing: 'phase 0 (cart starts at the left)', window: '0.63-0.69' },
   lane: [[50, 60], [340, 60], [340, 600], [50, 600]],
   build(h) {
     h.segs = segsFromPts(h.lane, true, 0.75, { 0: { rest: 0.15, kind: 'soft', onHit: (sp, x, y) => { h.backNetT = 0.6; defaultHit(sp, x, y, 'soft'); } } });
@@ -1131,7 +1204,7 @@ HOLES.push({
     laneBorder(ctx, h.lane, '#3a3f4b', 6); txt(ctx, 'LOOP-DE-PUTT', 195, 622, 15, '#fff', { stroke: '#3a3f4b', strokeW: 3 });
   },
   fg(ctx, t, now, h) {
-    const riding = ball.state === 'riding'; const speed = riding ? 3 : 2; // marquee lamps: never faster than 3 Hz
+    const riding = ball.state === 'riding'; const speed = riding ? 2 : 1.5; // marquee lamps step every 500 ms (667 ms at rest): well inside the flashing safety margin
     shadowBlob(ctx, 195, 300, 60, 60, 0.12); glow(ctx, 195, 290, 95, riding ? '255,210,63' : '200,120,255', 0.35); // the neon loop lights up the grass
     ctx.lineWidth = 14; ctx.strokeStyle = '#3a3f4b'; ctx.beginPath(); ctx.arc(195, 290, 55, 0, TAU); ctx.stroke();
     for (let i = 0; i < 16; i++) { ctx.strokeStyle = i % 2 ? '#9b5de5' : '#ff7a00'; ctx.lineWidth = 8; ctx.beginPath(); ctx.arc(195, 290, 55, i * TAU / 16 + 0.04, (i + 1) * TAU / 16 - 0.04); ctx.stroke(); }
@@ -1151,7 +1224,7 @@ HOLES.push({
   gag: 'The water-everywhere Open. A long wooden pier runs in a straight line from the tee to the flag; the grassy zigzag bridges are the long, safe way round. The ducks are already laughing.',
   tip: 'Brave? Shoot straight along the wooden pier. Careful? Zigzag over the grassy bridges.',
   tee: { x: 120, y: 560 }, cup: { x: 270, y: 120 },
-  testShot: { angle: 71.2, power: 0.63, timing: 'none', window: '0.60-0.665' },
+  testShot: { angle: 71.2, power: 0.63, timing: 'none', window: '0.61-0.66' },
   lane: [[30, 40], [360, 40], [360, 610], [30, 610]],
   build(h) {
     h.segs = segsFromPts(h.lane, true, 0.75);
@@ -1202,13 +1275,14 @@ HOLES.push({
   gag: 'Close your eyes and go to your happy place: clouds, soft music, a pancake tower, a unicorn, and a cup that gently pulls your ball home no matter how nervous you are.',
   tip: 'Breathe. Roll it anywhere near the glow and the cup does the rest.',
   tee: { x: 195, y: 545 }, cup: { x: 195, y: 180 },
-  testShot: { angle: 90, power: 0.55, timing: 'none', window: '0.47-0.59' },
+  testShot: { angle: 90, power: 0.55, timing: 'none', window: '0.48-0.63' },
   lane: [[90, 600], [300, 600], [330, 540], [340, 440], [320, 360], [340, 280], [330, 180], [290, 100], [195, 70], [100, 100], [60, 180], [50, 280], [70, 360], [50, 440], [60, 540]],
   build(h) {
     h.segs = segsFromPts(h.lane, true, 0.4); for (const s of h.segs) { s.kind = 'soft'; s.onHit = (sp, x, y) => { defaultHit(sp, x, y, 'soft'); if (sp > 100) { puff(x, y, 6, '#fff', 60, 0.6, 5, -40); bubble('boing', x, y, '#cdb4db', 'rgba(255,255,255,.85)'); } }; }
     h.circles = [{ x: 110, y: 360, r: 18, rest: 0.9, onHit: (sp, x, y) => { defaultHit(sp, x, y); puff(x, y, 8, '#e8a33d', 120, 0.5, 3, 300); } }, { x: 280, y: 360, r: 18, rest: 0.9, onHit: (sp, x, y) => { defaultHit(sp, x, y); puff(x, y, 8, '#e8a33d', 120, 0.5, 3, 300); } }];
-    h.slopes = [{ type: 'radial', x: 195, y: 180, r: 100, accel: 700, onInside: () => { h.glow = 1; if (ball.state === 'rolling' && rnd() < 0.3) puff(ball.x, ball.y, 1, ['#fff', '#ffc8dd', '#bde0fe'], 20, 0.6, 2, -30); } }];
-    h.glow = 0; h.prance = 0;
+    h.slopes = [{ type: 'radial', x: 195, y: 180, r: 100, accel: 700, onInside: () => { h.glow = 1; if (!h.inGlow) { h.inGlow = true; if (ball.state === 'rolling') sfx('coin'); } if (ball.state === 'rolling' && rnd() < 0.3) puff(ball.x, ball.y, 1, ['#fff', '#ffc8dd', '#bde0fe'], 20, 0.6, 2, -30); } }];
+    h.glow = 0; h.prance = 0; h.inGlow = false;
+    h.update = () => { if (hyp(ball.x - 195, ball.y - 180) > 105) h.inGlow = false; }; // a gentle chime the first time each stroke rolls into the glow
   },
   bg(ctx, h) {
     const g = ctx.createLinearGradient(0, 0, 0, P.H); g.addColorStop(0, '#ffc8dd'); g.addColorStop(1, '#cdb4db'); ctx.fillStyle = g; ctx.fillRect(0, 0, P.W, P.H);
@@ -1241,7 +1315,7 @@ HOLES.push({
   gag: 'The trophy room: glass cases, red carpet and the glittering gold jacket spinning on its rack. The straight line is blocked by the champion\'s case, so bounce it off the soft red wall like a champ.',
   tip: 'Bank it off the LEFT wall. Aim up-left, hit it firm.',
   tee: { x: 100, y: 560 }, cup: { x: 290, y: 120 },
-  testShot: { angle: 122.1, power: 0.86, timing: 'none', window: '0.82-0.90' },
+  testShot: { angle: 122.1, power: 0.86, timing: 'none', window: '0.83-0.90' },
   lane: [[50, 60], [340, 60], [340, 600], [50, 600]],
   build(h) {
     h.segs = segsFromPts(h.lane, true, 0.75, { 0: { rest: 0.3, kind: 'soft' } });
@@ -1324,7 +1398,7 @@ HOLES.push({
   gag: 'The monster drive. Take a run-up, hit the SLAP pad, and your ball flies the length of the fairway, bounces off the corner boards and lands by a sign that says 400 YARDS?!',
   tip: 'Straight up into the pad. The corner boards turn it toward the cup.',
   tee: { x: 195, y: 585 }, cup: { x: 310, y: 125 },
-  testShot: { angle: 90, power: 0.57, timing: 'none', window: '0.53-0.62' },
+  testShot: { angle: 90, power: 0.57, timing: 'none', window: '0.53-0.61' },
   lane: [[150, 600], [150, 160], [260, 50], [350, 50], [350, 180], [240, 180], [240, 600]],
   build(h) {
     h.segs = segsFromPts(h.lane, true, 0.75, { 3: { rest: 0.3, kind: 'soft', onHit: (sp, x, y) => { defaultHit(sp, x, y, 'soft'); h.gasp = 1; } } });
@@ -1364,7 +1438,7 @@ HOLES.push({
   gag: 'Talk to the ball: "Go to your home!" A little cottage sits in a grassy bowl and gravity does the rest. Anything that reaches the rim rolls right down to the front door.',
   tip: 'Just reach the rim of the bowl. Power 45 and tell it to go home.',
   tee: { x: 195, y: 560 }, cup: { x: 195, y: 230 },
-  testShot: { angle: 90, power: 0.45, timing: 'none', window: '0.43-0.70 (lip-outs come back)' },
+  testShot: { angle: 90, power: 0.45, timing: 'none', window: '0.43-0.63 (the bowl brings lip-outs back)' },
   lane: [[60, 80], [330, 80], [330, 600], [60, 600]],
   build(h) {
     h.segs = segsFromPts(h.lane, true, 0.6);
@@ -1415,7 +1489,7 @@ HOLES.push({
   gag: 'The pin sits on top of a sand mound. Too soft and it rolls back down to your feet, too hard and it tumbles over the top into the sand sea behind.',
   tip: 'Power 59 straight up. Not a hair more!',
   tee: { x: 195, y: 560 }, cup: { x: 195, y: 200 },
-  testShot: { angle: 90, power: 0.59, timing: 'none', window: '0.57-0.615' },
+  testShot: { angle: 90, power: 0.59, timing: 'none', window: '0.55-0.615' },
   lane: [[60, 70], [330, 70], [330, 600], [60, 600]],
   build(h) {
     h.segs = segsFromPts(h.lane, true, 0.6);
@@ -1451,7 +1525,7 @@ HOLES.push({
   gag: 'The rival\'s private club. Sir Smugsworth\'s giant golden statue blocks the middle and two gold gates clank open and shut in turn, and his sign cheerfully points you the wrong way.',
   tip: 'The sign is fibbing. Take the LEFT lane while its gate is open.',
   tee: { x: 90, y: 575 }, cup: { x: 170, y: 120 },
-  testShot: { angle: 80.0, power: 0.63, timing: 'phase 0 (left gate open 0-1.5 s of 3 s)', window: '0.60-0.66' },
+  testShot: { angle: 80.0, power: 0.63, timing: 'phase 0 (left gate open 0-1.5 s of 3 s)', window: '0.61-0.66' },
   lane: [[50, 60], [340, 60], [340, 600], [50, 600]],
   build(h) {
     h.segs = segsFromPts(h.lane, true, 0.75, { 0: { rest: 0.3, kind: 'soft' } });
@@ -1495,7 +1569,7 @@ HOLES.push({
   gag: 'The tour bus is parked right across the green, so you putt into its open luggage bay and the ball pops out the other side aimed at the flag. All aboard!',
   tip: 'Aim at a luggage door. The bus aims the exit at the flag for you.',
   tee: { x: 195, y: 570 }, cup: { x: 195, y: 120 },
-  testShot: { angle: 118.2, power: 0.50, timing: 'none', window: '0.45-0.53' },
+  testShot: { angle: 118.2, power: 0.50, timing: 'none', window: '0.44-0.52' },
   lane: [[50, 60], [340, 60], [340, 600], [50, 600]],
   build(h) {
     h.segs = segsFromPts(h.lane, true, 0.75, { 0: { rest: 0.3, kind: 'soft' } });
@@ -1579,10 +1653,13 @@ HOLES.push({
     crowd(ctx, 4, 100, 38, 610, 14, now, wave); crowd(ctx, 352, 100, 388, 610, 14, now, wave); crowd(ctx, 44, 70, 346, 88, 14, now, wave);
     // pond glints
     for (let i = 0; i < 5; i++) { const a = 0.3 + 0.3 * Math.sin(now * 2 + i * 1.7); ctx.fillStyle = 'rgba(255,255,255,' + a + ')'; ctx.fillRect(225 + i * 9, 470 + ((i * 13) % 20), 7, 2); }
-    // tower (topples during the intro, then lies still with sparks)
+    ctx.save(); ctx.beginPath(); ctx.arc(245, 480, 44, 0, TAU); ctx.clip(); ripples(ctx, now, 245, 480, 6, 'rgba(255,255,255,.5)'); ripples(ctx, now + 1.1, 262, 496, 4, 'rgba(255,255,255,.3)'); ctx.restore();
+    // tower (topples during the intro, then lies across the green with a slow, slight bob on its bent legs and sparks at the tip).
+    // The bob is only a picture: the collision beam stays exactly where the test shot expects it.
     const k = h.timber > 0 ? clamp(1 - h.timber / 1.2, 0, 1) : 1; const ease = 1 - Math.pow(1 - k, 3);
     const aEnd = Math.atan2(160 - 260, 320 - 70); // from pointing straight up to the fallen angle
-    const ang = lerp(-Math.PI / 2, aEnd, ease), L = 269;
+    const sway = k >= 1 && !reducedMotion ? Math.sin(now * 1.3) * 0.011 : 0;
+    const ang = lerp(-Math.PI / 2, aEnd, ease) + sway, L = 269;
     const ex = 70 + Math.cos(ang) * L, ey = 260 + Math.sin(ang) * L;
     ctx.save(); ctx.translate(70, 260); ctx.rotate(ang);
     ctx.fillStyle = 'rgba(0,0,0,.25)'; ctx.fillRect(0, -6 + 8, L, 18);
@@ -1769,27 +1846,37 @@ function showCard() {
   fillCard('cardTable', 'cardLegend', game.holeIdx);
   $('cardNext').textContent = 'Hole ' + (hole.n + 1);
   setScreen('card');
-  const row = $('cardTable').querySelector('tr.now'); if (row && row.scrollIntoView) row.scrollIntoView({ block: 'center' });
+  const sc = $('cardTable').querySelector('.scroller'), row = sc.querySelector('tr.now'); if (row) sc.scrollTop = Math.max(0, row.offsetTop - sc.clientHeight / 2); // bring the hole just played into view (only the box scrolls, never the card)
 }
 function total(p) { let t = 0; for (let i = 0; i < game.holesToPlay; i++) t += game.scores[p][i] || 0; return t; }
 function parPlayed(p) { let t = 0; for (let i = 0; i < game.holesToPlay; i++) if (game.scores[p][i] !== undefined) t += HOLES[i].par; return t; }
 function coursePar(n) { let t = 0; for (let i = 0; i < n; i++) t += HOLES[i].par; return t; }
+// The word for a score on the card (short, so it fits under the number in a 4-player column).
+function shortLabel(strokes, par) {
+  if (strokes === 1) return 'Ace';
+  const d = strokes - par;
+  return d <= -2 ? 'Eagle' : d === -1 ? 'Birdie' : d === 0 ? 'Par' : d === 1 ? 'Bogey' : d === 2 ? 'Double' : d === 3 ? 'Triple' : 'Ouch';
+}
+// Scorecard markup: a scrolling box of hole rows (sticky header) and a Total footer in its own row space below the box.
+// Both tables share one fixed column plan so the footer lines up with the columns above it.
 function cardHtml(highlight) {
-  let s = '<table><tr><th>Hole</th><th>Par</th>'; for (let p = 0; p < game.players; p++) s += '<th><i style="--c:' + playerColor(p) + '"></i><span>' + esc(playerName(p)) + '</span></th>'; s += '</tr>';
+  const n = game.players, cols = '<colgroup><col style="width:' + (n >= 3 ? 13 : 16) + '%"><col style="width:' + (n >= 3 ? 9 : 14) + '%">' + '<col>'.repeat(n) + '</colgroup>';
+  let s = '<div class="scroller"><table>' + cols + '<tr><th>Hole</th><th>Par</th>'; for (let p = 0; p < n; p++) s += '<th><i style="--c:' + playerColor(p) + '"></i><span>' + esc(playerName(p)) + '</span></th>'; s += '</tr>';
   let parT = 0;
   for (let i = 0; i < game.holesToPlay; i++) {
     const h = HOLES[i]; parT += h.par; s += '<tr' + (i === highlight ? ' class="now"' : '') + '><td>' + h.n + '</td><td>' + h.par + '</td>';
-    for (let p = 0; p < game.players; p++) { const v = game.scores[p][i]; let cls = ''; if (v === 1) cls = 'hio'; else if (v !== undefined && v < h.par) cls = 'under'; else if (v !== undefined && v > h.par) cls = 'over'; s += '<td class="' + cls + '">' + (v === undefined ? '·' : v) + '</td>'; }
+    for (let p = 0; p < n; p++) { const v = game.scores[p][i]; let cls = ''; if (v === 1) cls = 'hio'; else if (v !== undefined && v < h.par) cls = 'under'; else if (v !== undefined && v > h.par) cls = 'over'; s += '<td class="' + cls + '">' + (v === undefined ? '·' : v + '<small>' + shortLabel(v, h.par) + '</small>') + '</td>'; }
     s += '</tr>';
   }
+  s += '</table></div>';
   // Total, with "vs par" on its own line underneath (par of the holes that player has finished = the whole course at the end)
-  s += '<tr class="total"><td>Total</td><td>' + parT + '</td>'; for (let p = 0; p < game.players; p++) { const t = total(p), d = t - parPlayed(p); s += '<td>' + t + '<small>' + (d === 0 ? 'E' : d > 0 ? '+' + d : d) + '</small></td>'; } s += '</tr></table>';
+  s += '<div class="footwrap"><table>' + cols + '<tr class="total"><td>Total</td><td>' + parT + '</td>'; for (let p = 0; p < n; p++) { const t = total(p), d = t - parPlayed(p); s += '<td>' + t + '<small>' + (d === 0 ? 'E' : d > 0 ? '+' + d : d) + '</small></td>'; } s += '</tr></table></div>';
   return s;
 }
 // Fill a scorecard box: the table, the 3-4 player squeeze, and the colour legend next to it (what gold / green / red mean).
 function fillCard(tableId, legendId, highlight) {
-  const box = $(tableId); box.innerHTML = cardHtml(highlight); box.scrollTop = 0; box.classList.toggle('many', game.players >= 3);
-  $(legendId).innerHTML = '<span><i style="background:#ffe27a"></i>hole in one</span> <span><i style="background:#cdeed3"></i>under par: birdie, eagle</span> <span><i style="background:#fbe0de"></i>over par: bogey</span>';
+  const box = $(tableId); box.innerHTML = cardHtml(highlight); box.querySelector('.scroller').scrollTop = 0; box.classList.toggle('many', game.players >= 3);
+  $(legendId).innerHTML = '<span><i style="background:#ffe27a"></i>Ace = hole in one</span> <span><i style="background:#cdeed3"></i>under par: Birdie, Eagle</span> <span><i style="background:#fbe0de"></i>over par: Bogey, Double</span>';
 }
 function listNames(a) { return a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1]; }
 function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
@@ -1804,7 +1891,7 @@ function finishRound() {
   // The leaderboard entry and the saved best belong to the device owner = player 1 (a guest's round never changes the owner's score).
   const mine = totals[0], points = pointsFor(mine);
   // Only a full 18 goes on the leaderboard (one formula for everybody); Quick 9 is practice.
-  try { if (full) BRB.score.submit(points, mine + ' strokes'); BRB.gameOver({ won: true, score: full ? points : null }); } catch (e) { /* ignore */ } // the labelled submit above is the leaderboard entry; gameOver carries the same points so the platform shows the round score (Quick 9 is practice: no score)
+  try { if (full) BRB.score.submit(points, mine + ' strokes'); BRB.gameOver({ won: true, score: full ? points : undefined }); } catch (e) { /* ignore */ } // the labelled submit above is the leaderboard entry; gameOver carries the same points so the platform shows the round score (Quick 9 is practice: undefined, not null, because the SDK turns null into 0)
   // save best per player count + hole count
   let bestNote = '';
   try {
@@ -1820,11 +1907,16 @@ function finishRound() {
   $('resultsLine').textContent = multi
     ? (winners.length > 1 ? (winners.length === game.players ? 'Everyone tied' : listNames(winners.map(playerName)) + ' tied') : playerName(best)) + ' on ' + game.holesToPlay + ' holes · par ' + parT + ' · ' + vsPar + (full ? ' · ' + playerName(0) + ' scores ' + points + ' pts for the leaderboard' : '')
     : mine + ' strokes on ' + game.holesToPlay + ' holes · par ' + parT + ' · ' + vsPar;
-  let pod = ''; const order = totals.map((t, i) => i).sort((a, b) => totals[a] - totals[b]); for (const p of order) { const win = winners.indexOf(p) >= 0; pod += '<div class="' + (win ? 'win' : '') + '" style="--c:' + playerColor(p) + '"><i></i><span>' + esc(playerName(p)) + '</span><b>' + totals[p] + '</b>' + (win ? ' 🏅' : '') + '</div>'; }
-  $('podium').innerHTML = multi ? pod : ''; $('podium').hidden = !multi; // solo: the big number says it all
+  // The ceremony: everyone on the podium in finishing order; the champion(s) wear the gold jacket. Solo: the jacket is yours at par or better.
+  const order = totals.map((t, i) => i).sort((a, b) => totals[a] - totals[b]);
+  // rank = how many players beat you, so tied players share the same rank, label and block height (two co-champions both read '1st')
+  cer.players = order.map(p => ({ name: playerName(p), col: playerColor(p), total: totals[p], rank: totals.filter(t => t < totals[p]).length, win: multi ? winners.indexOf(p) >= 0 : d <= 0 }));
+  cer.t0 = performance.now() / 1000; cer.confetti.length = 0; cer.bursts.length = 0;
+  const champ = multi && winners.length === 1 ? playerName(best) : (!multi && d <= 0 ? playerName(0) : '');
+  $('chant').innerHTML = '<small>The crowd chants</small>' + esc(champ ? '“' + champ + '! ' + champ + '! ' + champ + '!”' : (multi ? '“Gold jacket! Gold jacket!”' : '“Nice round, ' + playerName(0) + '!”'));
   fillCard('resultsTable', 'resultsLegend', -1);
-  setScreen('results'); $('resultsTable').scrollTop = 0; // reset once the table is visible (a scroll set while it was hidden does nothing)
-  sfx('win'); try { BRB.fx.confetti({ count: 180 }); } catch (e) { /* ignore */ }
+  setScreen('results'); $('resultsTable').querySelector('.scroller').scrollTop = 0; // reset once the table is visible (a scroll set while it was hidden does nothing)
+  sfx('win'); // the confetti falls behind the card and inside the ceremony picture, never over the words
   showBest();
 }
 // Title screen best line for the player count currently picked (18 holes and Quick 9, whichever have been played).
@@ -1927,6 +2019,7 @@ function frame(nowMs) {
   if (game.screen === 'play') { const can = canPutt(); if (puttBtn.disabled === can) puttBtn.disabled = !can; } // greyed out while the ball rolls / the tower falls
   // Under a card, pass screen or pause the picture is still: skip the repaint (a blur over a repainting canvas is costly on cheap phones).
   if (game.screen === 'play' || renderDirty > 0 || trans > 0 || shake > 0 || particles.length) { render(now); if (renderDirty > 0) renderDirty--; }
+  if (game.screen === 'title') drawTitleArt(now); else if (game.screen === 'results') drawCeremony(now);
 }
 
 /* ================================================================================================
@@ -2010,6 +2103,139 @@ $('toMenu').addEventListener('click', () => { sfx('click'); setScreen('title'); 
 addEventListener('resize', resize);
 resize(); setTimeout(resize, 50);
 requestAnimationFrame(frame);
+
+/* ================================================================================================
+   TITLE SHOW + GOLD JACKET CEREMONY. Scenes drawn on a canvas that fills the screen behind the title card and the
+   results card (opaque, so nothing greyed-out shows through), plus the podium picture inside the results card.
+   Painted from the main loop only while those screens are showing; the still parts are cached per layout.
+   ================================================================================================ */
+const titleArt = $('titleArt'), resultsArt = $('resultsArt'), cerCv = $('ceremony');
+// Size a canvas to its CSS box (device pixels, capped at 2x) and return a context in CSS-pixel coordinates.
+function fitArt(cv) {
+  const r = cv.getBoundingClientRect(), d = Math.min(2, devicePixelRatio || 1), w = Math.max(1, Math.round(r.width)), h = Math.max(1, Math.round(r.height));
+  if (cv.width !== Math.round(w * d) || cv.height !== Math.round(h * d)) { cv.width = Math.round(w * d); cv.height = Math.round(h * d); }
+  const c = cv.getContext('2d'); c.setTransform(d, 0, 0, d, 0, 0); return { c, w, h };
+}
+function sparkle(c, x, y, r, col) { c.fillStyle = col; c.beginPath(); c.moveTo(x, y - r); c.lineTo(x + r * 0.3, y - r * 0.3); c.lineTo(x + r, y); c.lineTo(x + r * 0.3, y + r * 0.3); c.lineTo(x, y + r); c.lineTo(x - r * 0.3, y + r * 0.3); c.lineTo(x - r, y); c.lineTo(x - r * 0.3, y - r * 0.3); c.closePath(); c.fill(); }
+function blimp(c, x, y, label) { c.fillStyle = '#e63946'; c.beginPath(); c.moveTo(x - 26, y); c.lineTo(x - 38, y - 9); c.lineTo(x - 38, y + 9); c.closePath(); c.fill(); c.fillStyle = '#f4d35e'; c.beginPath(); c.ellipse(x, y, 30, 10, 0, 0, TAU); c.fill(); c.fillStyle = 'rgba(255,255,255,.45)'; c.beginPath(); c.ellipse(x - 6, y - 4, 16, 3, 0, 0, TAU); c.fill(); c.fillStyle = '#3a3f4b'; rrect(c, x - 7, y + 8, 14, 6, 2); c.fill(); txt(c, label, x + 2, y + 1, 9, '#1d2b1f'); }
+
+// --- Title: the country-club gate. On a phone the card hides the lawn, so the gate, flag and clouds live in the sky band above
+// the card, the clown peeks out from behind the card's top edge and the rink + jacket stand sit in the band below it.
+// On a wide screen (landscape, desktop) the scenery moves out to the sides of the card instead.
+const tArt = { cv: null, key: '', sparks: [] };
+function titleLayout(w, h, card) {
+  const side = card.left >= 56;
+  return { side, gy: side ? Math.round(h * 0.62) : Math.round(card.top + 12), lx: side ? 30 : 27, rx: side ? w - 30 : w - 27, ph: side ? 118 : clamp(Math.round(card.top) - 44, 56, 118) };
+}
+function titleStatic(w, h, card) {
+  const L = titleLayout(w, h, card), d = Math.min(2, devicePixelRatio || 1);
+  const cv = tArt.cv || (tArt.cv = document.createElement('canvas')); cv.width = Math.ceil((w + 12) * d); cv.height = Math.ceil(h * d);
+  const c = cv.getContext('2d'); c.setTransform(d, 0, 0, d, 6 * d, 0); // 6 px spare on each side so the slow sway never shows an edge
+  const gy = L.gy;
+  const sky = c.createLinearGradient(0, 0, 0, gy); sky.addColorStop(0, '#4fa8ff'); sky.addColorStop(1, '#d9f1ff'); c.fillStyle = sky; c.fillRect(-6, 0, w + 12, gy);
+  glow(c, w - 52, 42, 64, '255,236,150', 0.7); circle(c, w - 52, 42, 20, '#ffd23f'); circle(c, w - 52, 42, 15, '#fff2a8');
+  c.fillStyle = '#9ad68a'; c.beginPath(); c.ellipse(w * 0.2, gy, w * 0.45, 26, 0, 0, TAU); c.fill(); c.fillStyle = '#86c878'; c.beginPath(); c.ellipse(w * 0.8, gy + 2, w * 0.5, 30, 0, 0, TAU); c.fill();
+  c.fillStyle = '#4caf50'; c.fillRect(-6, gy, w + 12, h - gy); c.fillStyle = 'rgba(255,255,255,.09)'; for (let x = -60; x < w + 40; x += 44) { c.beginPath(); c.moveTo(x, gy); c.lineTo(x + 22, gy); c.lineTo(x + 60, h); c.lineTo(x + 38, h); c.fill(); }
+  // the gate: two stone pillars; a lamp on the right one, the flag pole on the left one
+  const pillar = (x, lamp) => {
+    c.fillStyle = 'rgba(0,0,0,.15)'; c.fillRect(x - 9, gy - 2, 30, 6);
+    c.fillStyle = '#d8d0c4'; c.fillRect(x - 11, gy - L.ph, 22, L.ph); c.fillStyle = '#bfb5a6'; for (let y = gy - L.ph + 8; y < gy; y += 16) { c.fillRect(x - 11, y, 22, 2); c.fillRect(x - 11 + ((y / 16 | 0) % 2) * 11, y + 2, 2, 14); }
+    c.fillStyle = '#efe9df'; c.fillRect(x - 14, gy - L.ph - 6, 28, 8);
+    if (lamp) { c.fillStyle = '#5b5f6b'; c.fillRect(x - 5, gy - L.ph - 16, 10, 10); glow(c, x, gy - L.ph - 20, 28, '255,236,150', 0.55); circle(c, x, gy - L.ph - 20, 7, '#fff3c4'); }
+    else { c.fillStyle = '#f5f5f5'; c.fillRect(x - 1, gy - L.ph - 44, 3, 40); circle(c, x, gy - L.ph - 45, 3, '#ffd23f'); }
+  };
+  pillar(L.lx, false); pillar(L.rx, true);
+  cartoonTree(c, L.lx + 36, gy - 8, 1, '#2e8b57'); cartoonTree(c, L.rx - 36, gy - 4, 0.85, '#3a9a60');
+  // a small MEMBERS sign on the left pillar (the right one is where the clown peeks in on phones); bunting is drawn live
+  c.fillStyle = '#5a3500'; rrect(c, L.lx - 24, gy - L.ph * 0.55, 48, 16, 3); c.fill(); txt(c, 'MEMBERS', L.lx, gy - L.ph * 0.55 + 8, 8, '#ffe27a');
+  // sparkle spots in the sky and on the lawn, kept off the card
+  tArt.sparks = []; seedRng(77); for (let i = 0; i < 60 && tArt.sparks.length < 18; i++) { const x = rr(8, w - 8), y = rr(8, h - 8); if (x > card.left - 8 && x < card.right + 8 && y > card.top - 8 && y < card.bottom + 8) continue; tArt.sparks.push([x, y, rr(0, 6)]); }
+  return cv;
+}
+function drawTitleArt(now) {
+  const { c, w, h } = fitArt(titleArt); const card = $('titlePanel').getBoundingClientRect(); if (!card.width) return;
+  const key = w + 'x' + h + '|' + Math.round(card.top) + '|' + Math.round(card.bottom) + '|' + Math.round(card.left);
+  if (tArt.key !== key) { titleStatic(w, h, card); tArt.key = key; }
+  const L = titleLayout(w, h, card), sway = reducedMotion ? 0 : Math.sin(now * 0.45) * 3; // the scene breathes left-right; clouds drift at half that (parallax)
+  c.drawImage(tArt.cv, -6 + sway, 0, w + 12, h);
+  const gy = L.gy, lx = L.lx + sway, rx = L.rx + sway;
+  for (let i = 0; i < 3; i++) { const x = ((now * (5 + i * 3) + i * 170) % (w + 160)) - 80 + sway * 0.5, y = 24 + i * 28; cloudPuff(c, x, y, 0.75 + i * 0.15, 'rgba(255,255,255,.9)'); }
+  blimp(c, ((now * 12) % (w + 140)) - 70, 14, 'PUTT!');
+  // waving flag on the left pillar's pole
+  const fy = gy - L.ph - 42, fw = Math.sin(now * 5) * 4; c.fillStyle = '#e63946'; c.beginPath(); c.moveTo(lx + 2, fy); c.quadraticCurveTo(lx + 18, fy + 2 + fw, lx + 34, fy + 7 + fw); c.lineTo(lx + 2, fy + 20); c.closePath(); c.fill(); txt(c, '18', lx + 14, fy + 10 + fw * 0.5, 9, '#fff');
+  // bunting from the flag pole to the lamp (behind the marquee title)
+  c.lineWidth = 1.5; c.strokeStyle = 'rgba(255,255,255,.7)'; c.beginPath(); c.moveTo(lx, fy + 24); c.quadraticCurveTo(w / 2, fy + 44, rx, gy - L.ph - 10); c.stroke();
+  for (let i = 1; i < 12; i++) { const k = i / 12, bx = lx + (rx - lx) * k, by = (1 - k) * (1 - k) * (fy + 24) + 2 * (1 - k) * k * (fy + 44) + k * k * (gy - L.ph - 10) + Math.sin(now * 2 + i) * 1.5; c.fillStyle = RAINBOW[i % 5]; c.beginPath(); c.moveTo(bx - 5, by); c.lineTo(bx + 5, by); c.lineTo(bx, by + 9); c.closePath(); c.fill(); }
+  // the clown peeks out from behind the card: up past its top-right corner on phones (clear of the subtitle), out of its left edge on wide screens
+  const peek = 0.5 + 0.5 * Math.sin(now * 0.55);
+  if (L.side) clownFace(c, card.left + 16 - peek * 46, h * 0.45, now, 1); else clownFace(c, w - 46 + sway, card.top + 36 - peek * 62, now, 1);
+  // hockey rink with a penguin, and the gold jacket on its stand: below the card on phones, down the sides on wide screens
+  const band = h - card.bottom;
+  if (L.side || band > 72) {
+    const rxx = L.side ? card.left / 2 : w * 0.27 + sway, ry = L.side ? h * 0.8 : card.bottom + band / 2 + 4, rw = L.side ? Math.min(26, card.left / 2 - 4) : Math.min(84, w * 0.2), rh = L.side ? 30 : Math.min(28, band / 2 - 8);
+    c.fillStyle = 'rgba(0,0,0,.12)'; c.beginPath(); c.ellipse(rxx + 3, ry + 4, rw, rh, 0, 0, TAU); c.fill();
+    c.fillStyle = '#eef6ff'; c.beginPath(); c.ellipse(rxx, ry, rw, rh, 0, 0, TAU); c.fill(); c.strokeStyle = '#d8dee9'; c.lineWidth = 4; c.stroke();
+    c.fillStyle = '#e63946'; c.fillRect(rxx - 2, ry - rh + 4, 4, rh * 2 - 8); ring(c, rxx, ry, Math.min(rw, rh) * 0.45, '#2f6bff', 2);
+    const pk = (now * 0.35) % 1, px = rxx - rw * 0.7 + rw * 1.4 * (pk < 0.5 ? pk * 2 : 2 - pk * 2); circle(c, px, ry + 2, 3, '#1d2b1f');
+    emoji(c, '🐧', rxx + rw * 0.5, ry - rh - 8 - Math.abs(Math.sin(now * 3)) * 4, 20);
+    const jx = L.side ? (card.right + w) / 2 : w * 0.74 + sway, jy = L.side ? h * 0.78 : card.bottom + band / 2 + 2;
+    c.fillStyle = '#5a3500'; c.fillRect(jx - 14, jy + 20, 28, 5); c.fillRect(jx - 1.5, jy - 26, 3, 48); goldJacket(c, jx, jy - 6, now, 1.4); txt(c, 'GOLD JACKET', jx, jy + 32, 8, '#fff', { stroke: 'rgba(0,0,0,.35)', strokeW: 2 });
+  }
+  for (const s of tArt.sparks) { const a = 0.3 + 0.35 * Math.sin(now * 1.6 + s[2]); sparkle(c, s[0], s[1], 3 + a * 3, 'rgba(255,255,255,' + a + ')'); }
+}
+
+// --- Results: a night stadium behind the card (stars, floodlights, a cheering crowd, fireworks, light confetti that
+// falls BEHIND the card) and the podium picture inside the card: the champion in the gold jacket with the trophy.
+const cer = { players: [], t0: 0, confetti: [], bursts: [], cbursts: [], lastBurst: 0, stat: null, key: '' };
+function addBurst(list, x, y, now, max) { list.push({ x, y, t: now, col: RAINBOW[(list.length + ((now * 7) | 0)) % 5] }); if (list.length > max) list.shift(); }
+function drawBursts(c, list, now, r1) { for (const b of list) { const k = (now - b.t) / 1.4; if (k > 1 || k < 0) continue; const r = 6 + r1 * (1 - Math.pow(1 - k, 2)); c.globalAlpha = 1 - k; for (let i = 0; i < 14; i++) { const a = i * TAU / 14; circle(c, b.x + Math.cos(a) * r, b.y + Math.sin(a) * r + k * k * 30, 2.2, b.col); } c.globalAlpha = 1; } }
+function stepConfetti(c, list, w, h, now, t, spawnFor, count, size) {
+  if (reducedMotion) return;
+  while (list.length < count && t < spawnFor) list.push({ x: rr(0, w), y: -rr(4, h), vy: rr(50, 110), ph: rr(0, 6), a: rr(0, 6), va: rr(-3, 3), col: RAINBOW[(list.length) % 5] });
+  for (let i = list.length - 1; i >= 0; i--) { const p = list[i]; p.y += p.vy * fdt; p.x += Math.sin(now * 2 + p.ph) * 30 * fdt; p.a += p.va * fdt; if (p.y > h + 10) { if (t < spawnFor) { p.y = -10; p.x = rr(0, w); } else list.splice(i, 1); continue; } c.save(); c.translate(p.x, p.y); c.rotate(p.a); c.globalAlpha = 0.85; c.fillStyle = p.col; c.fillRect(-size, -size / 2, size * 2, size); c.restore(); }
+  c.globalAlpha = 1;
+}
+function drawCeremony(now) {
+  const t = now - cer.t0;
+  // 1) behind the card
+  const A = fitArt(resultsArt), c = A.c, w = A.w, h = A.h, card = $('results').querySelector('.panel').getBoundingClientRect();
+  const key = w + 'x' + h;
+  if (cer.key !== key) {
+    const d = Math.min(2, devicePixelRatio || 1), cv = cer.stat || (cer.stat = document.createElement('canvas')); cv.width = Math.ceil(w * d); cv.height = Math.ceil(h * d); const g = cv.getContext('2d'); g.setTransform(d, 0, 0, d, 0, 0);
+    const sky = g.createLinearGradient(0, 0, 0, h); sky.addColorStop(0, '#141a3a'); sky.addColorStop(1, '#4a1b6e'); g.fillStyle = sky; g.fillRect(0, 0, w, h);
+    seedRng(99); for (let i = 0; i < 90; i++) circle(g, rr(0, w), rr(0, h * 0.7), rr(0.6, 1.8), 'rgba(255,255,255,.8)');
+    for (const m of [[14, 14], [w - 14, 14], [14, h - 14], [w - 14, h - 14]]) { g.fillStyle = '#8d99ae'; g.fillRect(m[0] - 3, m[1] - 10, 6, 20); glow(g, m[0], m[1], 70, '255,251,230', 0.5); circle(g, m[0], m[1], 7, '#fffbe6'); }
+    cer.key = key;
+  }
+  c.drawImage(cer.stat, 0, 0, w, h);
+  if (now - cer.lastBurst > (reducedMotion ? 2.6 : 0.9)) { cer.lastBurst = now; seedRng((now * 1000) | 0); addBurst(cer.bursts, rr(20, w - 20), rr(h * 0.06, h * 0.45), now, 5); addBurst(cer.cbursts, rr(30, 300), rr(14, 40), now, 3); }
+  drawBursts(c, cer.bursts, now, 60);
+  if (h - card.bottom > 26) crowdDraw(c, 6, card.bottom + 16, w - 6, h - 4, 16, now, true);
+  if (card.left > 30) { crowdDraw(c, 8, 70, card.left - 10, h - 6, 16, now, true); crowdDraw(c, card.right + 10, 70, w - 8, h - 6, 16, now, true); }
+  stepConfetti(c, cer.confetti, w, h, now, t, 7, 90, 4);
+  // 2) the podium inside the card
+  const B = fitArt(cerCv), p = B.c, pw = B.w, ph = B.h, s = ph / 156; // figures and blocks scale with the picture's height
+  const sky2 = p.createLinearGradient(0, 0, 0, ph); sky2.addColorStop(0, '#1d2d5c'); sky2.addColorStop(1, '#5a1f7a'); p.fillStyle = sky2; p.fillRect(0, 0, pw, ph);
+  seedRng(5); for (let i = 0; i < 26; i++) { const x = rr(0, pw), y = rr(0, ph * 0.6), a = 0.4 + 0.4 * Math.sin(now * 1.5 + i); circle(p, x, y, 1.2, 'rgba(255,255,255,' + a + ')'); }
+  glow(p, pw / 2 + Math.sin(now * 0.7) * pw * 0.35, ph * 0.5, 80, '255,248,225', 0.22); glow(p, pw / 2 - Math.sin(now * 0.9 + 1) * pw * 0.35, ph * 0.45, 80, '255,248,225', 0.22);
+  drawBursts(p, cer.cbursts, now, 24);
+  // the scoreboard sign and the stand full of fans along the back
+  p.fillStyle = '#111'; rrect(p, pw / 2 - 72, 2, 144, 17, 4); p.fill(); const pulse = reducedMotion ? 1 : 1 + 0.03 * Math.sin(now * 3); p.save(); p.translate(pw / 2, 11); p.scale(pulse, pulse); txt(p, '★ GOLD JACKET ★', 0, 0, 11, '#ffe27a'); p.restore();
+  p.fillStyle = '#2b2d5e'; p.fillRect(0, 21, pw, 20 * s); crowdDraw(p, 8, 29, pw - 8, 21 + 20 * s, 13, now, true);
+  const fy = ph - 8; p.fillStyle = '#3a3f4b'; p.fillRect(0, fy, pw, 8); p.fillStyle = '#8e1c3a'; p.fillRect(0, fy - 4, pw, 5); p.fillStyle = '#e3b23c'; p.fillRect(0, fy - 5, pw, 1.5);
+  const ps = cer.players, n = ps.length, sp = Math.min(86, (pw - 16) / Math.max(n, 1));
+  const slots = n <= 1 ? [0] : n === 2 ? [1, 0] : n === 3 ? [1, 0, 2] : [1, 0, 2, 3]; // left to right: 2nd, 1st, 3rd, 4th
+  const x0 = pw / 2 - (slots.length - 1) * sp / 2, heights = [54, 42, 33, 25];
+  slots.forEach((rank, i) => {
+    const pl = ps[rank]; if (!pl) return; const x = x0 + i * sp, bh = heights[pl.rank] * s, bw = Math.min(sp - 8, 78); // pl.rank (ties share it), not the slot index
+    p.fillStyle = 'rgba(0,0,0,.3)'; p.fillRect(x - bw / 2 + 4, fy - bh + 4, bw, bh); p.fillStyle = pl.win ? '#fff0b8' : '#f1ede6'; rrect(p, x - bw / 2, fy - bh, bw, bh, 4); p.fill(); p.fillStyle = pl.win ? '#e3b23c' : '#8e1c3a'; p.fillRect(x - bw / 2, fy - bh, bw, 3);
+    txt(p, pl.name, x, fy - bh + (bh > 30 * s ? 11 : 9), bh > 30 * s ? 9 : 8, '#1d2b1f', { font: 'Nunito, system-ui, sans-serif', weight: '900' });
+    if (n > 1 && bh > 20) txt(p, (pl.rank + 1) + (['st', 'nd', 'rd', 'th'][pl.rank]) + ' · ' + pl.total, x, fy - bh + (bh > 30 * s ? 22 : 18), 8, '#6b7a6e', { font: 'Nunito, system-ui, sans-serif', weight: '900' });
+    p.save(); p.translate(x, fy - bh - 1); p.scale(s, s); golfer(p, 0, 0, pl.col, now, pl.win, reducedMotion); p.restore();
+  });
+  if (n === 1 && !ps[0].win) { const jx = pw - 40; p.fillStyle = '#5a3500'; p.fillRect(jx - 12, fy - 10, 24, 4); p.fillRect(jx - 1.5, fy - 48, 3, 40); goldJacket(p, jx, fy - 30, now, 1.1); } // next time: it is right there on its stand
+  stepConfetti(p, cer.confetti2 || (cer.confetti2 = []), pw, ph, now, t, 8, 46, 2.6);
+}
 
 /* ================================================================================================
    TEST HOOKS (harmless in production). A verifier drives the game deterministically with these:

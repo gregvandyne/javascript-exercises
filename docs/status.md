@@ -1,6 +1,6 @@
 # Status
 
-_Last updated: 2026-10-22_
+_Last updated: 2026-10-23_
 
 ## How to run
 `npm install && npm run seed && npm start` → http://localhost:3000 (Node 22, no API key needed). Tests: `npm test` (unit + safety), `npm run test:e2e` (Playwright). Details in README.
@@ -9,7 +9,8 @@ _Last updated: 2026-10-22_
 | Area | Proof |
 |---|---|
 | Guest play in one tap, cloud saves via the localStorage shim, guest → account keeps saves | e2e `play.spec.js` |
-| Seed games: Shark Plank, Ring Rumble (fullscreen via SDK), Footy Tycoon (trophy wallet persists) | e2e `play.spec.js` |
+| Seed games: Shark Plank, Ring Rumble (fullscreen via SDK; two players on one keyboard with on-screen key guides on desktop), Footy Tycoon (trophy wallet persists; doubles roll again; $200 for passing Kick Off) | e2e `play.spec.js`, `seeds.spec.js` |
+| Drop Four (connect-four, 2 players or a three-level robot) and Happy Putt (18-hole mini golf homage to Happy Gilmore): each built, then verified over several rounds by independent playtest, visual and code review agents in the real sandbox | e2e `seeds.spec.js`, scanner tests, workflow verification logs |
 | Sandbox: opaque origin, no cookies, no network, no parent access, no `allow-same-origin` | e2e `play.spec.js`, unit `scanner.test.js` |
 | Search by title, tag and builder name; builder cards | e2e + unit |
 | Ratings (rolling sum/count), likes, leaderboards, live player counts across two browsers | e2e + unit |
