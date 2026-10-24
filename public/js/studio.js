@@ -1,5 +1,6 @@
 // The Studio: chat with the Builder (SSE over fetch), live preview in the player sandbox, versions, sharing and publishing.
-import { api, toast, sheet, pageData, $, $$, esc, copyText } from '/js/app.js';
+import { api, toast, sheet, pageData, $, $$, esc, copyText, t } from '/js/app.js';
+import { INTL } from '/js/i18n.js';
 
 let S = pageData();
 const ID = S.game.id;
@@ -7,11 +8,13 @@ const log = $('#st-log'), input = $('#st-input'), frame = $('#st-frame'), stage 
 let busy = false, pro = false;
 try { pro = localStorage.getItem('brb-pro') === '1'; } catch { /* private mode */ }
 const SIZES = { phone: [390, 760], tablet: [820, 1100], landscape: [844, 390] };
-const VIS = { private: ['🔒', 'Only me'], friends: ['👫', 'Friends'], public: ['🌍', 'Everyone'] };
-const START_CHIPS = ['🏃 A running and jumping game', '🧺 Catch the falling things', '❓ A quiz game', '🃏 A memory match', '🔤 A word game', '⚔️ Two players on one phone', '🎲 A board game', '✨ Surprise me!'];
-const NEXT_CHIPS = ['Make it harder', 'Add a second level', 'Change the hero to a dragon'];
-const when = t => { const d = new Date(t); return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) + ' ' + d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' }); };
-const safetyChip = s => ({ pass: '<span class="stchip good">✅ Safe</span>', flag: '<span class="stchip warn">⚠️ Check</span>', fail: '<span class="stchip bad">⛔ Needs a fix</span>' }[s] || '<span class="stchip">…</span>');
+const VIS = { private: ['🔒', t('js.studio.vis.private')], friends: ['👫', t('js.studio.vis.friends')], public: ['🌍', t('js.studio.vis.public')] };
+// Idea chips: keys a, b, c... under a prefix (missing letters are skipped).
+const chipList = prefix => [...'abcdefgh'].map(k => t(`${prefix}.${k}`)).filter(x => !x.startsWith(prefix));
+const START_CHIPS = chipList('js.studio.startChips');
+const NEXT_CHIPS = chipList('js.studio.nextChips');
+const when = at => { const d = new Date(at); return d.toLocaleDateString(INTL, { month: 'short', day: 'numeric' }) + ' ' + d.toLocaleTimeString(INTL, { hour: 'numeric', minute: '2-digit' }); };
+const safetyChip = s => ({ pass: `<span class="stchip good">✅ ${esc(t('js.studio.safety.chipPass'))}</span>`, flag: `<span class="stchip warn">⚠️ ${esc(t('js.studio.safety.chipFlag'))}</span>`, fail: `<span class="stchip bad">⛔ ${esc(t('js.studio.safety.chipFail'))}</span>` }[s] || '<span class="stchip">…</span>');
 
 // ---------------------------------------------------------------- state + top
 async function refresh() {
@@ -26,38 +29,39 @@ function renderTop() {
   const canUpdate = S.live && S.current && S.current.id !== S.live.id && !(S.pending && S.pending.id === S.current.id);
   pb.classList.toggle('st-update', !!canUpdate);
   pb.classList.toggle('btn-coral', !S.live || !!canUpdate);
-  pb.textContent = !S.live ? (S.pending ? '⏳ In review' : '🚀 Publish') : canUpdate ? '⬆️ Update live game' : '✅ Live';
-  document.title = `Studio: ${S.game.title} · Magic Cups`;
+  pb.textContent = !S.live ? (S.pending ? `⏳ ${t('js.studio.top.inReview')}` : `🚀 ${t('js.studio.top.publish')}`) : canUpdate ? `⬆️ ${t('js.studio.top.update')}` : `✅ ${t('js.studio.top.live')}`;
+  document.title = t('js.studio.docTitle', { title: S.game.title });
 }
-function renderTurns() { $('#st-turns').textContent = `🔋 ${S.turnsLeft} of ${S.dailyTurns} turns left today`; }
+function renderTurns() { $('#st-turns').textContent = `🔋 ${t('js.studio.turns', { left: S.turnsLeft, total: S.dailyTurns })}`; }
+const E = (key, vars) => esc(t(key, vars));
 function renderLive() {
   const box = $('#st-live'); const parts = [];
-  const cur = S.current ? `✏️ Editing: version ${S.current.number}` : '✏️ Nothing built yet';
-  if (S.game.hidden_reason) parts.push(`<p class="note">⚠️ This game is hidden for now because players reported it. A grown-up on our team will look at it soon.</p>`);
+  const cur = S.current ? `✏️ ${E('js.studio.live.editing', { number: S.current.number })}` : `✏️ ${E('js.studio.live.nothingYet')}`;
+  if (S.game.hidden_reason) parts.push(`<p class="note">⚠️ ${E('js.studio.live.hidden')}</p>`);
   if (S.live) {
     const [e, w] = VIS[S.live.visibility] || ['', S.live.visibility];
-    parts.push(`<span class="stchip good">🟢 Live: version ${S.live.number} · ${e} ${w}</span><span class="vtag">${cur}</span>`);
+    parts.push(`<span class="stchip good">🟢 ${E('js.studio.live.liveVersion', { number: S.live.number, who: `${e} ${w}` })}</span><span class="vtag">${cur}</span>`);
     const canUpdate = S.current && S.current.id !== S.live.id && !(S.pending && S.pending.id === S.current.id);
-    if (canUpdate) parts.push(`<button class="btn btn-coral btn-sm st-update" type="button" data-act="update">⬆️ Update live game to version ${S.current.number}</button>`);
-    if (S.pending && S.pending.id === S.live.id) parts.push(`<p class="note">⏳ Waiting for a quick safety check before everyone can play. Until then: ${S.live.visibility === 'friends' ? 'your friends can play it' : 'only you can play it'}.</p>`);
-    else if (S.pending) parts.push(`<p class="note">⏳ Version ${S.pending.number} is waiting for a quick safety check. Players keep playing version ${S.live.number} until it passes.</p>`);
-    else if (canUpdate) parts.push(`<p class="note info">Players are playing version ${S.live.number}. Press “Update live game” to give them version ${S.current.number}.${S.live.visibility === 'public' ? ' Games for everyone get a quick safety check first, and players keep the old version until it passes.' : ''}</p>`);
+    if (canUpdate) parts.push(`<button class="btn btn-coral btn-sm st-update" type="button" data-act="update">⬆️ ${E('js.studio.live.updateTo', { number: S.current.number })}</button>`);
+    if (S.pending && S.pending.id === S.live.id) parts.push(`<p class="note">⏳ ${E(S.live.visibility === 'friends' ? 'js.studio.live.waitingFriends' : 'js.studio.live.waitingYou')}</p>`);
+    else if (S.pending) parts.push(`<p class="note">⏳ ${E('js.studio.live.pendingUpdate', { pending: S.pending.number, live: S.live.number })}</p>`);
+    else if (canUpdate) parts.push(`<p class="note info">${E('js.studio.live.playersOn', { live: S.live.number, number: S.current.number })}${S.live.visibility === 'public' ? ' ' + E('js.studio.live.publicCheck') : ''}</p>`);
   } else {
-    parts.push(`<span class="stchip">${S.status.label}${S.status.label.includes('Draft') ? ' · only you can see it' : ''}</span><span class="vtag">${cur}</span>`);
-    if (S.pending) parts.push(`<p class="note">⏳ Version ${S.pending.number} is waiting for a quick safety check. We will share it as soon as it passes.</p>`);
+    parts.push(`<span class="stchip">${esc(S.status.label)}${S.status.code === 'draft' ? ' · ' + E('js.studio.live.onlyYou') : ''}</span><span class="vtag">${cur}</span>`);
+    if (S.pending) parts.push(`<p class="note">⏳ ${E('js.studio.live.pendingNew', { number: S.pending.number })}</p>`);
   }
-  if (S.game.review_note) parts.push(`<p class="note">💬 Reviewer says: “${esc(S.game.review_note)}” Ask the Builder to change it, then press Update or Publish again.</p>`);
+  if (S.game.review_note) parts.push(`<p class="note">💬 ${E('js.studio.live.reviewer', { note: S.game.review_note })}</p>`);
   box.innerHTML = parts.join('');
 }
 function renderSafety() {
   const box = $('#st-safety'); const c = S.current;
   if (!c) { box.innerHTML = ''; return; }
-  const list = c.issues.length ? `<ul>${c.issues.map(i => `<li>${esc(i.message)}</li>`).join('')}</ul>` : '';
-  const fixBtn = '<button class="btn btn-sm" type="button" data-act="fix">🛠️ Ask the Builder to fix it</button>';
-  if (c.safety === 'pass') box.innerHTML = `✅ Safety check passed for version ${c.number}.`;
-  else if (c.safety === 'flag') box.innerHTML = `⚠️ Safety check: version ${c.number} is OK for you and friends, but a person will look before everyone can play. ${fixBtn}${list}`;
-  else if (c.safety === 'fail') box.innerHTML = `⛔ Version ${c.number} can’t be shared yet. ${fixBtn}${list}`;
-  else box.innerHTML = `Checking version ${c.number}…`;
+  const list = c.issues.length ? `<ul dir="ltr" lang="en">${c.issues.map(i => `<li>${esc(i.message)}</li>`).join('')}</ul>` : '';
+  const fixBtn = `<button class="btn btn-sm" type="button" data-act="fix">🛠️ ${E('js.studio.fixButton')}</button>`;
+  if (c.safety === 'pass') box.innerHTML = `✅ ${E('js.studio.safety.pass', { number: c.number })}`;
+  else if (c.safety === 'flag') box.innerHTML = `⚠️ ${E('js.studio.safety.flag', { number: c.number })} ${fixBtn}${list}`;
+  else if (c.safety === 'fail') box.innerHTML = `⛔ ${E('js.studio.safety.fail', { number: c.number })} ${fixBtn}${list}`;
+  else box.innerHTML = E('js.studio.safety.checking', { number: c.number });
 }
 
 // ---------------------------------------------------------------- preview
@@ -79,18 +83,18 @@ function setPreview(url) {
   S.preview = url; $('#st-empty').hidden = true;
   frame.src = url;
 }
-$('#st-reload').addEventListener('click', () => { if (!S.preview) return toast('Build something first!'); frame.src = 'about:blank'; setTimeout(() => (frame.src = S.preview), 30); });
-const full = () => { if (document.fullscreenElement) document.exitFullscreen(); else if (stage.requestFullscreen) stage.requestFullscreen().catch(() => toast('Full screen is not allowed here.', { bad: true })); };
+$('#st-reload').addEventListener('click', () => { if (!S.preview) return toast(t('js.studio.buildFirst')); frame.src = 'about:blank'; setTimeout(() => (frame.src = S.preview), 30); });
+const full = () => { if (document.fullscreenElement) document.exitFullscreen(); else if (stage.requestFullscreen) stage.requestFullscreen().catch(() => toast(t('js.studio.noFullscreen'), { bad: true })); };
 $('#st-full').addEventListener('click', full);
 addEventListener('message', e => {
   if (e.source !== frame.contentWindow || !e.data || e.data.brb !== 1) return; // only our sandboxed preview
   if (e.data.type === 'brb:fullscreen') { if (!!e.data.on !== !!document.fullscreenElement) full(); }
-  else if (e.data.type === 'brb:gameover' && typeof e.data.score === 'number') toast(`Round over! Score: ${e.data.score}`);
+  else if (e.data.type === 'brb:gameover' && typeof e.data.score === 'number') toast(t('js.studio.roundOver', { score: e.data.score }));
 });
 
 // ---------------------------------------------------------------- chat log
 const scrollDown = () => { log.scrollTop = log.scrollHeight; };
-function bubble(cls, text) { const d = document.createElement('div'); d.className = `msg ${cls}`; d.textContent = text || ''; log.appendChild(d); return d; }
+function bubble(cls, text) { const d = document.createElement('div'); d.className = `msg ${cls}`; d.dir = 'auto'; d.textContent = text || ''; log.appendChild(d); return d; }
 function attHtml(list) {
   return `<div class="att-list">${list.map(u => `<span class="att">${u.kind === 'image' ? `<img src="/api/studio/${ID}/uploads/${esc(u.id)}" alt="">` : `<span class="fi" aria-hidden="true">${u.kind === 'pdf' ? '📄' : '📝'}</span>`}<span class="nm">${esc(u.name)}</span></span>`).join('')}</div>`;
 }
@@ -102,12 +106,12 @@ function userBubble(text, uploads = []) {
 function card(cls, inner) { const d = document.createElement('div'); d.className = `ev ${cls}`; d.innerHTML = inner; log.appendChild(d); return d; }
 function versionCard(v, live = false) {
   const fail = v.status === 'fail';
-  const d = card(`version ${fail ? 'fail' : ''}`, `<span class="evh">🎮 Version ${v.number} ${fail ? 'built, but the safety check found a problem' : 'is ready!'}</span><span>${esc(v.notes)}</span>
-    <span class="row">${safetyChip(v.status)}${live ? '<button class="btn btn-sm" type="button" data-act="see">👀 See it</button>' : ''}${fail && live ? '<button class="btn btn-sm" type="button" data-act="fix">🛠️ Ask the Builder to fix it</button>' : ''}</span>`);
+  const d = card(`version ${fail ? 'fail' : ''}`, `<span class="evh">🎮 ${E(fail ? 'js.studio.log.versionFailed' : 'js.studio.log.versionReady', { number: v.number })}</span><span dir="auto">${esc(v.notes)}</span>
+    <span class="row">${safetyChip(v.status)}${live ? `<button class="btn btn-sm" type="button" data-act="see">👀 ${E('js.studio.log.seeIt')}</button>` : ''}${fail && live ? `<button class="btn btn-sm" type="button" data-act="fix">🛠️ ${E('js.studio.fixButton')}</button>` : ''}</span>`);
   return d;
 }
-function notesCard(list) { return card('notes', `<span class="evh">🧪 Things to try</span><ul>${list.map(x => `<li>${esc(x)}</li>`).join('')}</ul>`); }
-function metaCard(m) { return card('meta', `<span>${esc(m.icon)} Named it <b>${esc(m.title)}</b></span>`); }
+function notesCard(list) { return card('notes', `<span class="evh">🧪 ${E('js.studio.log.thingsToTry')}</span><ul dir="auto">${list.map(x => `<li>${esc(x)}</li>`).join('')}</ul>`); }
+function metaCard(m) { return card('meta', `<span>${esc(m.icon)} ${t('js.studio.log.namedIt', { title: `<b>${esc(m.title)}</b>` })}</span>`); }
 function chips(options, active) {
   const d = document.createElement('div'); d.className = 'qchips' + (active ? '' : ' used');
   d.innerHTML = options.map(o => `<button class="chip" type="button" data-chip="${esc(o)}">${esc(o)}</button>`).join('');
@@ -133,8 +137,8 @@ function renderLog() {
     }
   });
   if (!msgs.length) {
-    if (!S.current) { askBlock({ question: 'What kind of game should we make?' }, true, bubble('bot', 'Hi! I’m the Builder 🤖 Tell me your game idea, or tap one to start.')); chips(START_CHIPS, true); }
-    else { bubble('bot', `Your game “${S.game.title}” is ready to play in the preview! 🎉 What should we change? Tell me in your own words, or tap an idea.`); chips(NEXT_CHIPS, true); }
+    if (!S.current) { askBlock({ question: t('js.studio.log.whatKind') }, true, bubble('bot', t('js.studio.log.hello'))); chips(START_CHIPS, true); }
+    else { bubble('bot', t('js.studio.log.readyToPlay', { title: S.game.title })); chips(NEXT_CHIPS, true); }
   }
   scrollDown();
 }
@@ -144,24 +148,24 @@ let pending = []; // uploads waiting to be sent: { id, name, kind, url }
 async function send(text) {
   text = String(text || '').trim();
   const ups = pending.filter(u => u.id);
-  if (busy) return toast('One moment, the Builder is still working!');
+  if (busy) return toast(t('js.studio.stillWorking'));
   if (!text && !ups.length) { input.focus(); return; }
   busy = true; $('#st-send').disabled = true;
   $$('.qchips').forEach(c => c.classList.add('used'));
   userBubble(text, ups); input.value = ''; autosize();
   pending = []; renderAttach();
-  let cur = bubble('bot', ''); cur.innerHTML = '<span class="typing" aria-label="The Builder is thinking"><i></i><i></i><i></i></span>';
+  let cur = bubble('bot', ''); cur.innerHTML = `<span class="typing" aria-label="${E('js.studio.thinking')}"><i></i><i></i><i></i></span>`;
   let typing = true; scrollDown();
-  const status = document.createElement('div'); status.className = 'st-busy'; status.textContent = '🤖 The Builder is working…'; stage.appendChild(status);
+  const status = document.createElement('div'); status.className = 'st-busy'; status.dir = document.dir; status.textContent = `🤖 ${t('js.studio.working')}`; stage.appendChild(status);
   const textBubble = () => { if (!cur) cur = bubble('bot', ''); if (typing) { cur.textContent = ''; typing = false; } return cur; };
   const endBubble = () => { if (cur && typing) { cur.remove(); } cur = null; typing = false; };
   const handle = (ev, d) => {
     if (ev === 'text') { const b = textBubble(); b.textContent += d.text; }
     else if (ev === 'ask') { const b = cur && !typing ? cur : (endBubble(), bubble('bot', '')); askBlock(d, true, b); cur = null; }
-    else if (ev === 'version') { endBubble(); versionCard(d, true); setPreview(d.preview); status.textContent = `🎮 Version ${d.number} is ready!`; }
+    else if (ev === 'version') { endBubble(); versionCard(d, true); setPreview(d.preview); status.textContent = `🎮 ${t('js.studio.log.versionReady', { number: d.number })}`; }
     else if (ev === 'meta') { endBubble(); metaCard(d); S.game = { ...S.game, ...d }; renderTop(); }
     else if (ev === 'notes') { endBubble(); notesCard(d.checklist); }
-    else if (ev === 'progress') { status.textContent = d.stage === 'building' ? `🔨 Building your game… ${d.bytes ? Math.round(d.bytes / 1024) + ' KB' : ''}` : '✏️ Making changes…'; }
+    else if (ev === 'progress') { status.textContent = d.stage === 'building' ? `🔨 ${t('js.studio.building')} ${d.bytes ? Math.round(d.bytes / 1024) + ' KB' : ''}` : `✏️ ${t('js.studio.editing')}`; }
     else if (ev === 'refused') { endBubble(); const b = bubble('bot refused', `${d.message} ${d.suggestion}`); void b; if (d.chips && d.chips.length) chips(d.chips, true); }
     else if (ev === 'error') { endBubble(); bubble('err', d.message); }
     else if (ev === 'done') { if (typeof d.turnsLeft === 'number') { S.turnsLeft = d.turnsLeft; renderTurns(); } }
@@ -169,7 +173,7 @@ async function send(text) {
   };
   try {
     const res = await fetch(`/api/studio/${ID}/chat`, { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json', Accept: 'text/event-stream' }, body: JSON.stringify({ text, pro, uploads: ups.map(u => u.id) }) });
-    if (!res.ok || !res.body) { let msg = 'The Builder could not answer. Please try again.'; try { msg = (await res.json()).error || msg; } catch { /* not JSON */ } throw new Error(msg); }
+    if (!res.ok || !res.body) { let msg = t('js.studio.noAnswer'); try { msg = (await res.json()).error || msg; } catch { /* not JSON */ } throw new Error(msg); }
     const reader = res.body.getReader(); const dec = new TextDecoder(); let buf = '';
     for (;;) {
       const { value, done } = await reader.read(); if (done) break;
@@ -182,7 +186,7 @@ async function send(text) {
         try { handle(ev, JSON.parse(data)); } catch { /* bad chunk */ }
       }
     }
-  } catch (e) { endBubble(); bubble('err', e.message || 'Oops, the connection dropped. Please try again.'); }
+  } catch (e) { endBubble(); bubble('err', e.message || t('js.studio.dropped')); }
   finally {
     endBubble(); status.remove(); busy = false; $('#st-send').disabled = false; scrollDown();
     await refresh();
@@ -197,35 +201,35 @@ log.addEventListener('click', e => {
 });
 document.addEventListener('click', e => {
   const a = e.target.closest('[data-act]'); if (!a) return;
-  if (a.dataset.act === 'fix') send(`Please fix the safety check problems in version ${S.current ? S.current.number : ''}: ${(S.current && S.current.issues || []).map(i => i.message).join(' ')}`.trim());
+  if (a.dataset.act === 'fix') send(`${t('js.studio.fixMessage', { number: S.current ? S.current.number : '' })} ${(S.current && S.current.issues || []).map(i => i.message).join(' ')}`.trim());
   else if (a.dataset.act === 'see') { $('.st-preview').scrollIntoView({ behavior: 'smooth', block: 'start' }); }
   else if (a.dataset.act === 'update') updateLive();
 });
 const proBtn = $('#st-pro');
 const setPro = v => { pro = v; proBtn.setAttribute('aria-pressed', String(pro)); try { localStorage.setItem('brb-pro', pro ? '1' : '0'); } catch { /* ignore */ } };
-proBtn.addEventListener('click', () => { setPro(!pro); toast(pro ? '✨ Pro quality on: slower, but fancier games.' : 'Pro quality off: quick builds.'); });
+proBtn.addEventListener('click', () => { setPro(!pro); toast(pro ? `✨ ${t('js.studio.proOn')}` : t('js.studio.proOff')); });
 setPro(pro);
 
 // ---------------------------------------------------------------- uploads (inspiration pictures and files)
 const OK_TYPES = /^(image\/(png|jpeg|webp|gif)|application\/pdf|text\/(plain|markdown|csv)|application\/json)$/;
 function renderAttach() {
   const box = $('#st-attach'); box.hidden = !pending.length;
-  box.innerHTML = pending.map((u, i) => `<span class="att ${u.id ? '' : 'loading'}">${u.kind === 'image' && u.preview ? `<img src="${esc(u.preview)}" alt="">` : `<span class="fi" aria-hidden="true">${u.kind === 'image' ? '🖼️' : u.kind === 'pdf' ? '📄' : '📝'}</span>`}<span class="nm">${esc(u.name)}</span>${u.id ? `<button class="rm" type="button" data-rm="${i}" aria-label="Remove ${esc(u.name)}">✕</button>` : ''}</span>`).join('');
+  box.innerHTML = pending.map((u, i) => `<span class="att ${u.id ? '' : 'loading'}">${u.kind === 'image' && u.preview ? `<img src="${esc(u.preview)}" alt="">` : `<span class="fi" aria-hidden="true">${u.kind === 'image' ? '🖼️' : u.kind === 'pdf' ? '📄' : '📝'}</span>`}<span class="nm">${esc(u.name)}</span>${u.id ? `<button class="rm" type="button" data-rm="${i}" aria-label="${E('js.studio.uploads.remove', { name: u.name })}">✕</button>` : ''}</span>`).join('');
 }
 async function addFiles(files) {
   for (const f of files) {
-    if (pending.length >= S.uploads.limits.perMessage) { toast(`You can add up to ${S.uploads.limits.perMessage} at a time.`, { bad: true }); break; }
+    if (pending.length >= S.uploads.limits.perMessage) { toast(t('js.studio.uploads.max', { max: S.uploads.limits.perMessage }), { bad: true }); break; }
     const ext = (f.name.match(/\.([a-z0-9]+)$/i) || [])[1] || '';
-    if (!OK_TYPES.test(f.type) && !/^(txt|md|csv|json)$/i.test(ext)) { toast('I can use pictures, PDFs and text files.', { bad: true }); continue; }
+    if (!OK_TYPES.test(f.type) && !/^(txt|md|csv|json)$/i.test(ext)) { toast(t('js.studio.uploads.types'), { bad: true }); continue; }
     const kind = f.type.startsWith('image/') ? 'image' : f.type === 'application/pdf' ? 'pdf' : 'text';
     const max = kind === 'text' ? S.uploads.limits.text : S.uploads.limits.image;
-    if (f.size > max) { toast(kind === 'text' ? 'Text files can be up to 200 KB.' : 'Pictures and PDFs can be up to 5 MB.', { bad: true }); continue; }
+    if (f.size > max) { toast(kind === 'text' ? t('js.studio.uploads.textTooBig') : t('js.studio.uploads.fileTooBig'), { bad: true }); continue; }
     const item = { name: f.name, kind, preview: kind === 'image' ? URL.createObjectURL(f) : null };
     pending.push(item); renderAttach();
     try {
       const res = await fetch(`/api/studio/${ID}/uploads?name=${encodeURIComponent(f.name)}`, { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/octet-stream' }, body: f });
       const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.error || 'That file could not be added.');
+      if (!res.ok) throw new Error(data.error || t('js.studio.uploads.failed'));
       Object.assign(item, data.upload);
     } catch (e) { pending = pending.filter(x => x !== item); toast(e.message, { bad: true }); }
     renderAttach();
@@ -252,21 +256,21 @@ async function saveMeta(body, okMsg) {
   catch (e) { toast(e.message, { bad: true }); return false; }
 }
 titleIn.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); titleIn.blur(); } if (e.key === 'Escape') { titleIn.value = S.game.title; titleIn.blur(); } });
-titleIn.addEventListener('change', async () => { const v = titleIn.value.trim(); if (!v || v === S.game.title) { titleIn.value = S.game.title; return; } if (!(await saveMeta({ title: v }, 'Name saved!'))) titleIn.value = S.game.title; });
+titleIn.addEventListener('change', async () => { const v = titleIn.value.trim(); if (!v || v === S.game.title) { titleIn.value = S.game.title; return; } if (!(await saveMeta({ title: v }, t('js.studio.nameSaved')))) titleIn.value = S.game.title; });
 $('#st-icon').addEventListener('click', () => {
-  const s = sheet({ title: 'Pick an icon', content: `<div class="emojigrid">${S.icons.map(e => `<button type="button" data-emoji="${esc(e)}" aria-pressed="${e === S.game.icon}" aria-label="${esc(e)}">${esc(e)}</button>`).join('')}</div>` });
+  const s = sheet({ title: t('js.studio.pickIcon'), content: `<div class="emojigrid">${S.icons.map(e => `<button type="button" data-emoji="${esc(e)}" aria-pressed="${e === S.game.icon}" aria-label="${esc(e)}">${esc(e)}</button>`).join('')}</div>` });
   s.el.addEventListener('click', async e => { const b = e.target.closest('[data-emoji]'); if (!b) return; if (await saveMeta({ icon: b.dataset.emoji })) s.close(); });
 });
 $('#st-settings').addEventListener('click', () => {
   const g = S.game;
-  const s = sheet({ title: '⚙️ Game settings', content: `<form id="setform">
-    <div class="field"><label for="set-desc">What is your game about?</label><textarea class="input" id="set-desc" maxlength="600" rows="3">${esc(g.description)}</textarea><span class="err" id="set-desc-err"></span></div>
-    <div class="field"><label for="set-cat">Kind of game</label><select class="input" id="set-cat">${S.categories.map(([k, i, l]) => `<option value="${k}" ${k === g.category ? 'selected' : ''}>${i} ${esc(l)}</option>`).join('')}</select></div>
-    <div class="field"><label for="set-tags">Search words</label><input class="input" id="set-tags" maxlength="200" value="${esc(g.tags)}" placeholder="shark, ocean, fast"><span class="hint">Words that help people find it, with commas between.</span><span class="err" id="set-tags-err"></span></div>
-    <div class="field"><span id="set-or-l"><b>Which way up?</b></span><div class="seg" role="group" aria-labelledby="set-or-l" id="set-or">${[['any', 'Any way'], ['portrait', 'Tall'], ['landscape', 'Sideways']].map(([k, l]) => `<button type="button" data-or="${k}" aria-pressed="${k === g.orientation}">${l}</button>`).join('')}</div></div>
-    <div class="field"><label for="set-pl">How many players on one phone?</label><select class="input" id="set-pl">${[1, 2, 3, 4, 5, 6, 7, 8].map(n => `<option ${n === g.players_max ? 'selected' : ''}>${n}</option>`).join('')}</select></div>
-    <div class="field"><span id="set-cov-l"><b>Card colour</b></span><div class="covergrid" role="group" aria-labelledby="set-cov-l">${S.covers.map(c => `<button type="button" class="cover-${c}" data-cover="${c}" aria-pressed="${c === g.cover}" aria-label="${c}"></button>`).join('')}</div></div>
-    <div class="sheet-actions"><button class="btn btn-primary" type="submit">Save settings</button></div></form>` });
+  const s = sheet({ title: `⚙️ ${t('js.studio.settings.title')}`, content: `<form id="setform">
+    <div class="field"><label for="set-desc">${E('js.studio.settings.about')}</label><textarea class="input" id="set-desc" maxlength="600" rows="3" dir="auto">${esc(g.description)}</textarea><span class="err" id="set-desc-err"></span></div>
+    <div class="field"><label for="set-cat">${E('js.studio.settings.kind')}</label><select class="input" id="set-cat">${S.categories.map(([k, i, l]) => `<option value="${k}" ${k === g.category ? 'selected' : ''}>${i} ${esc(l)}</option>`).join('')}</select></div>
+    <div class="field"><label for="set-tags">${E('js.studio.settings.tags')}</label><input class="input" id="set-tags" maxlength="200" dir="auto" value="${esc(g.tags)}" placeholder="${E('js.studio.settings.tagsPlaceholder')}"><span class="hint">${E('js.studio.settings.tagsHint')}</span><span class="err" id="set-tags-err"></span></div>
+    <div class="field"><span id="set-or-l"><b>${E('js.studio.settings.orientation')}</b></span><div class="seg" role="group" aria-labelledby="set-or-l" id="set-or">${['any', 'portrait', 'landscape'].map(k => `<button type="button" data-or="${k}" aria-pressed="${k === g.orientation}">${E(`js.studio.settings.or.${k}`)}</button>`).join('')}</div></div>
+    <div class="field"><label for="set-pl">${E('js.studio.settings.players')}</label><select class="input" id="set-pl">${[1, 2, 3, 4, 5, 6, 7, 8].map(n => `<option value="${n}" ${n === g.players_max ? 'selected' : ''}>${n}</option>`).join('')}</select></div>
+    <div class="field"><span id="set-cov-l"><b>${E('js.studio.settings.color')}</b></span><div class="covergrid" role="group" aria-labelledby="set-cov-l">${S.covers.map(c => `<button type="button" class="cover-${c}" data-cover="${c}" aria-pressed="${c === g.cover}" aria-label="${E(`js.studio.covers.${c}`)}"></button>`).join('')}</div></div>
+    <div class="sheet-actions"><button class="btn btn-primary" type="submit">${E('js.studio.settings.save')}</button></div></form>` });
   let or = g.orientation, cover = g.cover;
   s.el.addEventListener('click', e => {
     const o = e.target.closest('[data-or]'); if (o) { or = o.dataset.or; $$('[data-or]', s.el).forEach(b => b.setAttribute('aria-pressed', String(b === o))); }
@@ -276,7 +280,7 @@ $('#st-settings').addEventListener('click', () => {
     e.preventDefault();
     try {
       const r = await api(`/api/studio/${ID}/meta`, { method: 'POST', body: { description: $('#set-desc', s.el).value, category: $('#set-cat', s.el).value, tags: $('#set-tags', s.el).value, orientation: or, players_max: +$('#set-pl', s.el).value, cover } });
-      applyState(r.state); toast('Settings saved!'); s.close();
+      applyState(r.state); toast(t('js.studio.settings.saved')); s.close();
     } catch (err) {
       const f = err.data && err.data.field; const el = f && $(`#set-${f === 'description' ? 'desc' : f}-err`, s.el);
       if (el) el.textContent = err.message; else toast(err.message, { bad: true });
@@ -286,8 +290,8 @@ $('#st-settings').addEventListener('click', () => {
 
 // ---------------------------------------------------------------- save + versions
 $('#st-save').addEventListener('click', () => {
-  if (!S.current) return toast('Build something first, then save it!');
-  const s = sheet({ title: '💾 Save this version', content: `<form id="saveform"><div class="field"><label for="save-note">Give it a name (you can skip this)</label><input class="input" id="save-note" maxlength="80" placeholder="My favourite so far"></div><p class="small muted">Every change is kept anyway. Saving adds a ⭐ so it is easy to find later.</p><div class="sheet-actions"><button class="btn btn-primary" type="submit">Save</button></div></form>` });
+  if (!S.current) return toast(t('js.studio.save.buildFirst'));
+  const s = sheet({ title: `💾 ${t('js.studio.save.title')}`, content: `<form id="saveform"><div class="field"><label for="save-note">${E('js.studio.save.label')}</label><input class="input" id="save-note" maxlength="80" dir="auto" placeholder="${E('js.studio.save.placeholder')}"></div><p class="small muted">${E('js.studio.save.hint')}</p><div class="sheet-actions"><button class="btn btn-primary" type="submit">${E('js.studio.save.button')}</button></div></form>` });
   $('#saveform', s.el).addEventListener('submit', async e => {
     e.preventDefault();
     try { const r = await api(`/api/studio/${ID}/save`, { method: 'POST', body: { note: $('#save-note', s.el).value } }); applyState(r.state); toast(r.message); s.close(); }
@@ -295,11 +299,11 @@ $('#st-save').addEventListener('click', () => {
   });
 });
 $('#st-history').addEventListener('click', () => {
-  if (!S.versions.length) return toast('No versions yet. Ask the Builder to make your game!');
-  const row = v => `<li class="vrow"><span class="vn">v${v.number}</span><span><span class="vnotes">${esc(v.notes || 'A new version')}</span><br><span class="vmeta">${esc(when(v.at))}</span>
-    <span class="tags">${safetyChip(v.safety)}${v.current ? '<span class="stchip">✏️ Editing</span>' : ''}${v.live ? '<span class="stchip good">🟢 Live</span>' : ''}${v.pending ? '<span class="stchip warn">⏳ In review</span>' : ''}</span></span>
-    ${v.current ? '' : `<button class="btn btn-sm" type="button" data-restore="${esc(v.id)}">↩️ Bring back</button>`}</li>`;
-  const s = sheet({ title: '🕘 Versions', content: `<p class="small muted">“Bring back” copies an old version to the top as a new version. Nothing is ever lost.</p><ul class="vlist">${S.versions.map(row).join('')}</ul>` });
+  if (!S.versions.length) return toast(t('js.studio.versions.none'));
+  const row = v => `<li class="vrow"><span class="vn" dir="ltr">v${v.number}</span><span><span class="vnotes" dir="auto">${esc(v.notes || t('js.studio.versions.newVersion'))}</span><br><span class="vmeta">${esc(when(v.at))}</span>
+    <span class="tags">${safetyChip(v.safety)}${v.current ? `<span class="stchip">✏️ ${E('js.studio.versions.editing')}</span>` : ''}${v.live ? `<span class="stchip good">🟢 ${E('js.studio.top.live')}</span>` : ''}${v.pending ? `<span class="stchip warn">⏳ ${E('js.studio.top.inReview')}</span>` : ''}</span></span>
+    ${v.current ? '' : `<button class="btn btn-sm" type="button" data-restore="${esc(v.id)}">↩️ ${E('js.studio.versions.bringBack')}</button>`}</li>`;
+  const s = sheet({ title: `🕘 ${t('js.studio.versions.title')}`, content: `<p class="small muted">${E('js.studio.versions.hint')}</p><ul class="vlist">${S.versions.map(row).join('')}</ul>` });
   s.el.addEventListener('click', async e => {
     const b = e.target.closest('[data-restore]'); if (!b) return; b.disabled = true;
     try { const r = await api(`/api/studio/${ID}/restore`, { method: 'POST', body: { versionId: b.dataset.restore } }); applyState(r.state); setPreview(r.state.preview); toast(r.message); s.close(); }
@@ -309,18 +313,18 @@ $('#st-history').addEventListener('click', () => {
 
 // ---------------------------------------------------------------- share, publish, update
 function shareSheet(mode) {
-  if (!S.current) return toast('Build your game first, then share it!');
+  if (!S.current) return toast(t('js.studio.share.buildFirst'));
   const live = S.live; let pick = live ? live.visibility : (S.game.visibility || 'private');
   const opts = ['private', 'friends', 'public'].map(k => `<button type="button" data-vis="${k}" aria-pressed="${k === pick}"><b>${VIS[k][0]} ${VIS[k][1]}</b><span>${esc(S.shareText[k])}</span></button>`).join('');
-  const link = live ? `<div class="field"><label for="share-link">Link to your game</label><div class="row"><input class="input" id="share-link" readonly value="${esc(location.origin + S.shareUrl)}" style="flex:1;min-width:0"><button class="btn" type="button" id="share-copy">📋 Copy</button></div></div>` : '';
-  const title = live ? '🔗 Share your game' : mode === 'publish' ? '🚀 Publish your game' : '🔗 Who can play?';
-  const s = sheet({ title, content: `${live ? `<p>Players get version ${live.number}.</p>` : `<p>Pick who can play version ${S.current.number}.</p>`}<div class="vischoice" role="group" aria-label="Who can play">${opts}</div><p class="small muted" id="vis-hint"></p>${link}<div class="sheet-actions"><button class="btn btn-primary" type="button" id="vis-go">${live ? 'Save' : 'Publish'}</button></div>` });
-  const hint = () => { $('#vis-hint', s.el).textContent = pick === 'public' ? 'Games for everyone get a quick safety check first.' : ''; };
+  const link = live ? `<div class="field"><label for="share-link">${E('js.studio.share.link')}</label><div class="row"><input class="input" id="share-link" dir="ltr" readonly value="${esc(location.origin + S.shareUrl)}" style="flex:1;min-width:0"><button class="btn" type="button" id="share-copy">📋 ${E('js.studio.share.copy')}</button></div></div>` : '';
+  const title = live ? `🔗 ${t('js.studio.share.titleLive')}` : mode === 'publish' ? `🚀 ${t('js.studio.share.titlePublish')}` : `🔗 ${t('js.studio.share.titleWho')}`;
+  const s = sheet({ title, content: `${live ? `<p>${E('js.studio.share.playersGet', { number: live.number })}</p>` : `<p>${E('js.studio.share.pickWho', { number: S.current.number })}</p>`}<div class="vischoice" role="group" aria-label="${E('js.studio.share.whoLabel')}">${opts}</div><p class="small muted" id="vis-hint"></p>${link}<div class="sheet-actions"><button class="btn btn-primary" type="button" id="vis-go">${live ? E('js.studio.share.save') : E('js.studio.top.publish')}</button></div>` });
+  const hint = () => { $('#vis-hint', s.el).textContent = pick === 'public' ? t('js.studio.share.publicHint') : ''; };
   hint();
   s.el.addEventListener('click', async e => {
     const v = e.target.closest('[data-vis]');
     if (v) { pick = v.dataset.vis; $$('[data-vis]', s.el).forEach(b => b.setAttribute('aria-pressed', String(b === v))); hint(); return; }
-    if (e.target.closest('#share-copy')) { (await copyText(location.origin + S.shareUrl)) ? toast('Link copied! ' + S.shareText[S.live.visibility]) : toast('Could not copy.', { bad: true }); return; }
+    if (e.target.closest('#share-copy')) { (await copyText(location.origin + S.shareUrl)) ? toast(`${t('js.studio.share.copied')} ${S.shareText[S.live.visibility]}`) : toast(t('js.studio.share.copyFailed'), { bad: true }); return; }
     const go = e.target.closest('#vis-go'); if (!go) return;
     if (live && pick === live.visibility) { s.close(); return; }
     go.disabled = true;
@@ -333,7 +337,7 @@ function shareSheet(mode) {
 async function updateLive() {
   if (!S.live || !S.current) return;
   const pub = S.live.visibility === 'public';
-  const s = sheet({ title: '⬆️ Update your live game', content: `<p>Players are playing <b>version ${S.live.number}</b>. This gives them <b>version ${S.current.number}</b>.</p>${pub ? '<p>Because everyone can play it, the update gets a quick safety check first. Players keep version ' + S.live.number + ' until it passes.</p>' : '<p>It updates straight away.</p>'}<div class="sheet-actions"><button class="btn" type="button" data-close>Not yet</button><button class="btn btn-coral" type="button" id="upd-go">⬆️ Update</button></div>` });
+  const s = sheet({ title: `⬆️ ${t('js.studio.update.title')}`, content: `<p>${t('js.studio.update.text', { live: `<b>${E('js.studio.update.version', { number: S.live.number })}</b>`, number: `<b>${E('js.studio.update.version', { number: S.current.number })}</b>` })}</p><p>${pub ? E('js.studio.update.publicText', { live: S.live.number }) : E('js.studio.update.now')}</p><div class="sheet-actions"><button class="btn" type="button" data-close>${E('js.studio.update.notYet')}</button><button class="btn btn-coral" type="button" id="upd-go">⬆️ ${E('js.studio.update.button')}</button></div>` });
   s.el.querySelector('[data-close]').addEventListener('click', s.close);
   $('#upd-go', s.el).addEventListener('click', async e => {
     e.target.disabled = true;
@@ -348,4 +352,4 @@ $('#st-publish').addEventListener('click', () => {
 });
 
 renderTop(); renderLive(); renderSafety(); renderTurns(); renderLog();
-if (S.busy) toast('The Builder is still finishing your last message…');
+if (S.busy) toast(t('js.studio.stillFinishing'));

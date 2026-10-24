@@ -1,6 +1,6 @@
 # Status
 
-_Last updated: 2026-10-23_
+_Last updated: 2026-10-24_
 
 ## How to run
 `npm install && npm run seed && npm start` → http://localhost:3000 (Node 22, no API key needed). Tests: `npm test` (unit + safety), `npm run test:e2e` (Playwright). Details in README.
@@ -23,11 +23,14 @@ _Last updated: 2026-10-23_
 | Admin: review queue, reports, chat reports, users/bans, audit log; 404 for non-admins | e2e + unit `moderation.test.js` |
 | Ads: impression after ≥50% visible for 1 s, dedupe, owner views ignored → roll-up → creator dashboard; no ads on play page | e2e `money.spec.js`, unit `earnings.test.js`, `ads.test.js` |
 | Safety suite: 76 adversarial prompts refused, 40 kid prompts allowed; scanner fails fetch/links/eval, flags flashing | `tests/safety/` |
+| **13 site languages**: 🌐 picker (mouse, keyboard, phone, no-JS links), `?lang=` → cookie → account → Accept-Language → en, choice saved to the account, `<html lang dir>`, RTL for he/ar, English fallback per key, `BRB.user.lang` in games | unit `i18n.test.js`, e2e `i18n.spec.js`, RTL screenshots of home, game, play, Studio, chat, friends and Me |
+| Locale-file guard for translators: no extra keys, placeholders kept, code keys exist, notes valid (`npm run i18n:check`) | unit `i18n.test.js` |
+| Phone numbers and emails in full-width or Arabic-Indic digits/letters are refused; per-language word lists apply to everyone | safety `i18n-filters.test.js` |
 | 7 starter templates pass the scanner and play to the results screen | unit `templates.test.js` + manual headless run |
 | Every page at 390 px and 1280 px, light and dark: no horizontal overflow, reviewed by eye | `npm run screenshots` |
 | Docker: image boots, seeds, serves `/health`, home and game pages | built locally with pre-installed deps (see limits) |
 
-Counts at this commit: unit + safety 133/133, e2e 16/16 (run three times).
+Counts at this commit: unit + safety 156/156, e2e 28/28.
 
 ## Not verified / known limits
 - **Real Claude calls are untested** (no `ANTHROPIC_API_KEY` here). Request shapes (cache_control, tools, models, review schema) are tested against a local fake Messages API. Set the key and try one Studio game before launch.
@@ -38,9 +41,12 @@ Counts at this commit: unit + safety 133/133, e2e 16/16 (run three times).
 - Payouts are recorded for manual handling; Stripe Connect is designed but stubbed.
 - Ads are BRB's own house promos; a kid-safe ad network adapter point exists but no partner is wired in.
 - The mock Builder makes real games from templates and real find/replace edits, but it is not creative. The real Builder needs the API key.
+- **Only English is written so far**: `server/i18n/locales/en.json` has every string (832 keys); the other 12 locale files are `{}` stubs waiting for translators, and the per-language word lists are empty. Until then those languages show English text (in the right direction for he/ar). The Builder already replies in the kid's language when an API key is set; the offline mock Builder speaks English.
+- Without an API key, Builder input screening for non-English messages relies on the word lists only (the keyword rules are English).
 
 ## Recommended next steps
 1. Add `ANTHROPIC_API_KEY`, build a few games end to end, tune the system prompt.
+1. Fill the 12 locale files and word lists (see `server/i18n/README.md`; `npm run i18n:check` shows progress), then let the launch games read `BRB.user.lang`.
 2. Real-time multiplayer and live chat over WebSockets (plus Redis for presence/rate limits).
 3. A kid-safe ad partner (COPPA-compliant, contextual only) behind the adapter.
 4. Stripe Connect payouts with parent/guardian verification.

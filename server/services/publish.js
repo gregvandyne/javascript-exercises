@@ -12,6 +12,7 @@ import { q, now, tx, audit } from '../db.js';
 import { getGame, getVersion } from './games.js';
 import { scanVersion } from './scanner.js';
 import { reviewVersion } from './review.js';
+import { tEn } from '../i18n/index.js';
 
 export function ensureScanned(version) {
   if (version.safety_status !== 'unchecked') return version;
@@ -22,17 +23,17 @@ export function ensureScanned(version) {
 
 /**
  * Publish the game's current version at a sharing level.
- * Returns { ok, state: 'live'|'in_review'|'rejected'|'blocked', message, game }.
+ * Returns { ok, state: 'live'|'in_review'|'rejected'|'blocked', message, game }. message is in the language of opts.t.
  */
-export async function publish(user, gameId, visibility, { versionId = null } = {}) {
+export async function publish(user, gameId, visibility, { versionId = null, t = tEn } = {}) {
   let game = getGame(gameId);
-  if (!game) return { ok: false, state: 'blocked', message: 'Game not found.' };
-  if (!['private', 'friends', 'public'].includes(visibility)) return { ok: false, state: 'blocked', message: 'Pick who can play.' };
+  if (!game) return { ok: false, state: 'blocked', message: t('game.api.notFound') };
+  if (!['private', 'friends', 'public'].includes(visibility)) return { ok: false, state: 'blocked', message: t('studio.api.pickWho') };
   let version = getVersion(versionId || game.current_version_id);
-  if (!version || version.game_id !== game.id) return { ok: false, state: 'blocked', message: 'Build your game first, then share it.' };
+  if (!version || version.game_id !== game.id) return { ok: false, state: 'blocked', message: t('publish.buildFirst') };
   version = ensureScanned(version);
   if (version.safety_status === 'fail') {
-    return { ok: false, state: 'blocked', message: 'This version has something we cannot share yet. Ask the Builder to fix the safety check first.', report: JSON.parse(version.safety_report || '{}') };
+    return { ok: false, state: 'blocked', message: t('publish.failedScan'), report: JSON.parse(version.safety_report || '{}') };
   }
   const wasLive = game.status === 'published' && !!game.published_version_id;
 
@@ -41,7 +42,7 @@ export async function publish(user, gameId, visibility, { versionId = null } = {
       q.run("UPDATE games SET visibility=?, status='published', published_version_id=?, pending_version_id=NULL, review_note='', published_at=COALESCE(published_at, ?), updated_at=? WHERE id=?", visibility, version.id, now(), now(), game.id);
     });
     audit(user.id, wasLive ? 'game.update' : 'game.publish', game.id, { visibility, version: version.number });
-    return { ok: true, state: 'live', message: visibility === 'private' ? 'Saved. Only you can play it.' : 'Shared with your friends!', game: getGame(game.id) };
+    return { ok: true, state: 'live', message: visibility === 'private' ? t('publish.private') : t('publish.friends'), game: getGame(game.id) };
   }
 
   // Public: reuse an earlier approval of this exact version, otherwise review.
@@ -53,7 +54,7 @@ export async function publish(user, gameId, visibility, { versionId = null } = {
     if (verdict.verdict === 'needs_changes' || verdict.verdict === 'blocked') {
       q.run('UPDATE games SET review_note=?, updated_at=? WHERE id=?', (verdict.reasons || []).join(' ').slice(0, 500), now(), game.id);
       audit(user.id, 'game.review_rejected', game.id, verdict);
-      return { ok: false, state: 'rejected', message: 'The safety review asked for changes before this can be public.', reasons: verdict.reasons || [], game: getGame(game.id) };
+      return { ok: false, state: 'rejected', message: t('publish.rejected'), reasons: verdict.reasons || [], game: getGame(game.id) };
     }
   }
   if (version.review_status === 'approved') {
@@ -61,7 +62,7 @@ export async function publish(user, gameId, visibility, { versionId = null } = {
       q.run("UPDATE games SET visibility='public', status='published', published_version_id=?, pending_version_id=NULL, review_note='', published_at=COALESCE(published_at, ?), updated_at=? WHERE id=?", version.id, now(), now(), game.id);
     });
     audit(user.id, wasLive ? 'game.update' : 'game.publish', game.id, { visibility: 'public', version: version.number, reviewed: 'model' });
-    return { ok: true, state: 'live', message: wasLive ? 'Update is live for everyone!' : 'Your game is public!', game: getGame(game.id) };
+    return { ok: true, state: 'live', message: wasLive ? t('publish.updateLive') : t('publish.public'), game: getGame(game.id) };
   }
   // Waiting for a human. If it was already live, it stays live (at its old visibility) on the old version.
   tx(() => {
@@ -70,7 +71,7 @@ export async function publish(user, gameId, visibility, { versionId = null } = {
     q.run("UPDATE game_versions SET review_status='queued' WHERE id=?", version.id);
   });
   audit(user.id, 'game.submit_review', game.id, { version: version.number, update: wasLive });
-  return { ok: true, state: 'in_review', message: wasLive ? 'Your update is waiting for a quick check. Players keep the old version until then.' : 'Your game is waiting for a quick safety check. We will share it as soon as it passes.', game: getGame(game.id) };
+  return { ok: true, state: 'in_review', message: wasLive ? t('publish.updateWaiting') : t('publish.waiting'), game: getGame(game.id) };
 }
 
 /** Admin approves the pending version: it becomes the public published version. */
@@ -95,8 +96,8 @@ export function reject(admin, gameId, note = '') {
   return getGame(game.id);
 }
 /** Change who can see a live game without changing its version. Moving to public re-reviews an unreviewed version. */
-export async function setVisibility(user, gameId, visibility) {
-  const game = getGame(gameId); if (!game) return { ok: false, message: 'Game not found.' };
-  if (!game.published_version_id || game.status !== 'published') return publish(user, gameId, visibility);
-  return publish(user, gameId, visibility, { versionId: game.published_version_id });
+export async function setVisibility(user, gameId, visibility, t = tEn) {
+  const game = getGame(gameId); if (!game) return { ok: false, message: t('game.api.notFound') };
+  if (!game.published_version_id || game.status !== 'published') return publish(user, gameId, visibility, { t });
+  return publish(user, gameId, visibility, { versionId: game.published_version_id, t });
 }

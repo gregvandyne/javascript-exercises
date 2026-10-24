@@ -128,7 +128,9 @@
 
   var BRB = {
     version: 1,
-    user: Object.freeze({ displayName: (INIT.user && INIT.user.displayName) || 'Player', avatar: (INIT.user && INIT.user.avatar) || '🙂', isGuest: !!(INIT.user && INIT.user.isGuest) }),
+    // lang: the player's site language ("en", "fr", "ar"...); dir: "rtl" for right-to-left languages (he, ar), else "ltr".
+    user: Object.freeze({ displayName: (INIT.user && INIT.user.displayName) || 'Player', avatar: (INIT.user && INIT.user.avatar) || '🙂', isGuest: !!(INIT.user && INIT.user.isGuest),
+      lang: (INIT.user && typeof INIT.user.lang === 'string' && INIT.user.lang) || 'en', dir: INIT.user && INIT.user.dir === 'rtl' ? 'rtl' : 'ltr' }),
     game: Object.freeze({ id: (INIT.game && INIT.game.id) || '', title: (INIT.game && INIT.game.title) || '' }),
     preview: !!INIT.preview,
     storage: {

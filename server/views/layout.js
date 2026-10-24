@@ -1,52 +1,78 @@
 // Page layout. Contract for every route:
-//   res.send(layout(req, { title, active, body, scripts, head, back, bodyClass, description, bare }))
+//   res.send(layout(req, { title, active, body, scripts, head, back, bodyClass, description, bare, i18n }))
 //   active: 'home'|'search'|'build'|'friends'|'me'|null   back: href for the Back link on inner pages
 //   scripts: ['/js/foo.js'] (ES modules)   bare: true = no nav/footer (play page)
-import { html, raw, esc } from './html.js';
+//   i18n: extra key prefixes to embed for the browser. Every page gets 'js.app' plus 'js.<name>' for each /js/<name>.js.
+import { html, raw, esc, jsonData } from './html.js';
 import { avatar } from './components.js';
 import { navBadges } from '../services/badges.js';
+import { LOCALES, localeInfo, tReq, clientStrings, DEFAULT_LOCALE } from '../i18n/index.js';
 
 const NAV = [
-  ['home', '/', '🏠', 'Home'],
-  ['search', '/search', '🔎', 'Search'],
-  ['build', '/build', '🛠️', 'Build'],
-  ['friends', '/friends', '👫', 'Friends'],
+  ['home', '/', '🏠'],
+  ['search', '/search', '🔎'],
+  ['build', '/build', '🛠️'],
+  ['friends', '/friends', '👫'],
 ];
 const VERSION = Date.now().toString(36); // cache-buster per boot
 
-export function layout(req, { title = '', active = null, body = '', scripts = [], head = '', back = null, backLabel = 'Back', bodyClass = '', description = 'Play free games and build your own with Magic Cups.', bare = false } = {}) {
+/** URL of the current page with ?lang=<code> (the server stores the choice and redirects back without it). */
+function langHref(req, code) {
+  const u = new URL(req.originalUrl || '/', 'http://x');
+  u.searchParams.set('lang', code);
+  return u.pathname + '?' + u.searchParams;
+}
+/** The 🌐 language picker: a <details> menu of plain links, so it works with no JavaScript (app.js adds keys and outside-click). */
+export function langPicker(req) {
+  const t = tReq(req); const cur = req.locale || DEFAULT_LOCALE; const info = localeInfo(cur);
+  return html`<details class="langpick" data-langpick>
+    <summary class="lang-btn" aria-label="${t('layout.lang.button', { language: info.name })}" title="${t('layout.lang.title')}"><span class="globe" aria-hidden="true">🌐</span><span class="lang-code" aria-hidden="true">${cur.split('-')[0].toUpperCase()}</span></summary>
+    <div class="lang-menu">
+      <p class="lang-head" id="lang-head">${t('layout.lang.title')}</p>
+      <ul class="lang-list" aria-labelledby="lang-head">${LOCALES.map(l => html`<li><a href="${langHref(req, l.code)}" hreflang="${l.code}" ${l.code === cur ? raw('aria-current="true"') : ''}><span class="lang-check" aria-hidden="true">${l.code === cur ? '✓' : ''}</span><span class="lang-name" lang="${l.code}" dir="${l.dir}">${l.name}</span></a></li>`)}</ul>
+    </div>
+  </details>`;
+}
+
+export function layout(req, { title = '', active = null, body = '', scripts = [], head = '', back = null, backLabel = null, bodyClass = '', description = null, bare = false, i18n = [] } = {}) {
+  const t = tReq(req);
+  const locale = req.locale || DEFAULT_LOCALE; const info = localeInfo(locale);
   const u = req.user;
   const badges = u ? navBadges(u) : { friends: 0 };
   const cur = k => (k === active ? raw('aria-current="page"') : '');
-  const badge = k => (badges[k] ? html`<span class="badge" aria-label="${badges[k]} new">${badges[k] > 9 ? '9+' : badges[k]}</span>` : '');
+  const badge = k => (badges[k] ? html`<span class="badge" aria-label="${t('layout.badgeNew', { count: badges[k] })}">${badges[k] > 9 ? '9+' : badges[k]}</span>` : '');
   const meHref = u ? '/me' : '/login';
+  const signIn = t('layout.signIn');
   const nav = bare ? '' : html`
-  <a class="skip" href="#main">Skip to the games</a>
+  <a class="skip" href="#main">${t('layout.skip')}</a>
   <header class="topbar">
-    <a class="logo" href="/" aria-label="Magic Cups home"><span class="logo-mark" aria-hidden="true">🏆</span><span class="logo-text">Magic <span>Cups</span></span></a>
+    <a class="logo" href="/" aria-label="${t('layout.logoLabel')}"><span class="logo-mark" aria-hidden="true">🏆</span><span class="logo-text" dir="ltr">Magic <span>Cups</span></span></a>
     <form class="topsearch" role="search" action="/search" method="get">
       <span class="ico" aria-hidden="true">🔎</span>
-      <label class="sr-only" for="topq">Search games and builders</label>
-      <input id="topq" name="q" type="search" placeholder="Search games or builders" autocomplete="off" value="${active === 'search' ? (req.query.q || '') : ''}">
+      <label class="sr-only" for="topq">${t('layout.search.label')}</label>
+      <input id="topq" name="q" type="search" placeholder="${t('layout.search.placeholder')}" autocomplete="off" value="${active === 'search' ? (req.query.q || '') : ''}">
     </form>
-    <nav class="topnav" aria-label="Main">
-      ${NAV.map(([k, href, emo, label]) => html`<a class="navlink" href="${href}" ${cur(k)}><span class="emo" aria-hidden="true">${emo}</span>${label}${badge(k)}</a>`)}
+    <nav class="topnav" aria-label="${t('layout.mainNav')}">
+      ${NAV.map(([k, href, emo]) => html`<a class="navlink" href="${href}" ${cur(k)}><span class="emo" aria-hidden="true">${emo}</span>${t(`nav.${k}`)}${badge(k)}</a>`)}
     </nav>
-    <a class="me-btn" href="${meHref}" ${cur('me')} aria-label="${u ? 'Me: ' + u.display_name : 'Sign in'}">${u ? avatar(u, 38) : html`<span class="avatar" style="--s:38px;--c:#94a3b8" aria-hidden="true">🙂</span>`}<span class="name">${u ? u.display_name : 'Sign in'}</span></a>
+    ${langPicker(req)}
+    <a class="me-btn" href="${meHref}" ${cur('me')} aria-label="${u ? t('layout.meLabel', { name: u.display_name }) : signIn}">${u ? avatar(u, 38) : html`<span class="avatar" style="--s:38px;--c:#94a3b8" aria-hidden="true">🙂</span>`}<span class="name">${u ? u.display_name : signIn}</span></a>
   </header>
-  <nav class="tabbar" aria-label="Main">
-    ${NAV.map(([k, href, emo, label]) => html`<a class="tab" href="${href}" ${cur(k)}><span class="emo" aria-hidden="true">${emo}</span>${label}${badge(k)}</a>`)}
-    <a class="tab" href="${meHref}" ${cur('me')}><span class="emo" aria-hidden="true">${u ? u.avatar : '🙂'}</span>${u ? 'Me' : 'Sign in'}</a>
+  <nav class="tabbar" aria-label="${t('layout.mainNav')}">
+    ${NAV.map(([k, href, emo]) => html`<a class="tab" href="${href}" ${cur(k)}><span class="emo" aria-hidden="true">${emo}</span>${t(`nav.${k}`)}${badge(k)}</a>`)}
+    <a class="tab" href="${meHref}" ${cur('me')}><span class="emo" aria-hidden="true">${u ? u.avatar : '🙂'}</span>${u ? t('nav.me') : signIn}</a>
   </nav>`;
-  const foot = bare ? '' : html`<footer class="foot"><span>© Magic Cups · Free to play, free to build</span><a href="/safety">Safety</a><a href="/parents">For grown-ups</a><a href="/sdk">For builders</a></footer>`;
-  const backHtml = back ? html`<a class="backlink" href="${back}"><span aria-hidden="true">←</span> ${backLabel}</a>` : '';
+  const foot = bare ? '' : html`<footer class="foot"><span>${t('layout.footer.tagline')}</span><a href="/safety">${t('layout.footer.safety')}</a><a href="/parents">${t('layout.footer.parents')}</a><a href="/sdk">${t('layout.footer.builders')}</a><a href="/me#language" class="foot-lang"><span aria-hidden="true">🌐</span> ${info.name}</a></footer>`;
+  const backHtml = back ? html`<a class="backlink" href="${back}"><span class="flip" aria-hidden="true">←</span> ${backLabel || t('layout.back')}</a>` : '';
+  const prefixes = ['js.app', ...scripts.map(s => (s.match(/^\/js\/([\w-]+)\.js$/) || [])[1]).filter(Boolean).map(n => `js.${n}`), ...i18n];
+  const strings = jsonData('i18n', { lang: locale, dir: info.dir, intl: info.intl, strings: clientStrings(locale, [...new Set(prefixes)]) });
   return `<!doctype html>
-<html lang="en">
+<html lang="${esc(locale)}" dir="${esc(info.dir)}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>${esc(title ? `${title} · Magic Cups` : 'Magic Cups · Play and build games')}</title>
-<meta name="description" content="${esc(description)}">
+<title>${esc(title ? t('layout.titleWith', { title }) : t('layout.titleHome'))}</title>
+<meta name="description" content="${esc(description || t('layout.description'))}">
 <meta name="theme-color" content="#2f6bff">
 <link rel="icon" href="/icons/icon.svg" type="image/svg+xml">
 <link rel="manifest" href="/manifest.webmanifest">
@@ -59,12 +85,14 @@ ${nav}
 <main id="main"${bare ? '' : ' class="wrap"'}>${backHtml}${body}</main>
 ${foot}
 <div class="toasts" role="status" aria-live="polite" id="toasts"></div>
+${strings}
 <script type="module" src="/js/app.js?v=${VERSION}"></script>
 ${scripts.map(s => `<script type="module" src="${esc(s)}?v=${VERSION}"></script>`).join('\n')}
 </body>
 </html>`;
 }
 export const page = (req, res, opts, status = 200) => res.status(status).type('html').send(layout(req, opts));
-export function notFound(req, res, msg = "We couldn't find that page.") {
-  return page(req, res, { title: 'Not found', body: html`<div class="empty"><div class="emo">🧭</div><h1>Oops! Lost the map.</h1><p>${msg}</p><a class="btn btn-primary" href="/">Go home</a></div>` }, 404);
+export function notFound(req, res, msg = null) {
+  const t = tReq(req);
+  return page(req, res, { title: t('errors.notFound.title'), body: html`<div class="empty"><div class="emo">🧭</div><h1>${t('errors.notFound.heading')}</h1><p>${msg || t('errors.notFound.text')}</p><a class="btn btn-primary" href="/">${t('errors.goHome')}</a></div>` }, 404);
 }

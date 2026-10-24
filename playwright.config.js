@@ -7,6 +7,17 @@ import fs from 'node:fs';
 const PORT = +(process.env.E2E_PORT || 4310);
 const DATA = process.env.E2E_DATA || fs.mkdtempSync(path.join(os.tmpdir(), 'brb-e2e-'));
 const exe = '/opt/pw-browsers/chromium-1194/chrome-linux/chrome';
+
+// Locales for the test server: the real files, with the small stubs in tests/e2e/fixtures/locales merged over them,
+// so tests/e2e/i18n.spec.js can check translated text whatever the translators have written so far.
+const LOCALES = fs.mkdtempSync(path.join(os.tmpdir(), 'brb-e2e-locales-'));
+const merge = (a, b) => { for (const [k, v] of Object.entries(b)) a[k] = v && typeof v === 'object' && !Array.isArray(v) ? merge(a[k] && typeof a[k] === 'object' ? a[k] : {}, v) : v; return a; };
+for (const f of fs.readdirSync('server/i18n/locales')) fs.copyFileSync(path.join('server/i18n/locales', f), path.join(LOCALES, f));
+for (const f of fs.readdirSync('tests/e2e/fixtures/locales')) {
+  const real = JSON.parse(fs.readFileSync(path.join(LOCALES, f), 'utf8'));
+  fs.writeFileSync(path.join(LOCALES, f), JSON.stringify(merge(real, JSON.parse(fs.readFileSync(path.join('tests/e2e/fixtures/locales', f), 'utf8')))));
+}
+
 export default defineConfig({
   testDir: 'tests/e2e',
   timeout: 60_000,
@@ -17,12 +28,13 @@ export default defineConfig({
     baseURL: `http://localhost:${PORT}`,
     launchOptions: fs.existsSync(exe) ? { executablePath: exe } : {},
     trace: 'retain-on-failure',
+    locale: 'en-US',
   },
   webServer: {
     command: `node scripts/seed.js && node server/index.js`,
     url: `http://localhost:${PORT}/health`,
     reuseExistingServer: false,
     timeout: 30_000,
-    env: { PORT: String(PORT), BRB_DATA_DIR: DATA, ADMIN_USERNAME: 'admin', ADMIN_PASSWORD: 'admin-pass-123', ANTHROPIC_API_KEY: '', BRB_SILENT: '1', REPORTS_TO_HIDE: '3' },
+    env: { PORT: String(PORT), BRB_DATA_DIR: DATA, BRB_LOCALES_DIR: LOCALES, ADMIN_USERNAME: 'admin', ADMIN_PASSWORD: 'admin-pass-123', ANTHROPIC_API_KEY: '', BRB_SILENT: '1', REPORTS_TO_HIDE: '3' },
   },
 });

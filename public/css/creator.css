@@ -22,7 +22,7 @@
 .mgame-head{display:flex;align-items:center;gap:12px}
 .mgame-head h3{margin:0;overflow-wrap:anywhere}
 .mgame-icon{flex:none;display:grid;place-items:center;width:52px;height:52px;border-radius:14px;font-size:1.7rem}
-.mgame-earned{display:flex;flex-direction:column;align-items:flex-end;text-align:right}
+.mgame-earned{display:flex;flex-direction:column;align-items:flex-end;text-align:end}
 .mgame-earned b{font-size:1.2rem;font-weight:900;color:var(--ok)}
 
 .paybox .mstat b{font-size:2rem;color:var(--ok)}
@@ -35,7 +35,7 @@
 .payhist{list-style:none;margin:0;padding:0}
 .payhist li{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:8px 0;border-bottom:1px solid var(--line)}
 .payhist li span:first-child{flex:1;color:var(--muted)}
-.howlist{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:8px}
+.howlist{margin:0;padding-inline-start:1.2em;display:flex;flex-direction:column;gap:8px}
 
 .adminpay{list-style:none;margin:0;padding:0}
 .adminpay li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}

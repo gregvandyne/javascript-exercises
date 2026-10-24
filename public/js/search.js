@@ -1,4 +1,4 @@
-import { api, $, $$, refreshLive } from '/js/app.js';
+import { api, $, $$, refreshLive, t, esc } from '/js/app.js';
 const form = $('#searchform'), q = $('#q'), results = $('#results');
 const state = { q: q.value, cat: form.cat.value, sort: form.sort.value };
 let timer = null, ctrl = null;
@@ -8,7 +8,7 @@ async function run(push = true) {
   if (ctrl) ctrl.abort(); ctrl = new AbortController();
   results.setAttribute('aria-busy', 'true');
   try { const r = await api('/api/search?' + params, { signal: ctrl.signal }); results.innerHTML = r.html; refreshLive(); }
-  catch (e) { if (e.name !== 'AbortError') results.innerHTML = '<p class="notice bad">Search is having a nap. Try again.</p>'; }
+  catch (e) { if (e.name !== 'AbortError') results.innerHTML = `<p class="notice bad">${esc(t('js.search.failed'))}</p>`; }
   finally { results.removeAttribute('aria-busy'); }
 }
 q.addEventListener('input', () => { state.q = q.value.trim(); if (!state.q && state.sort === 'relevance') state.sort = 'popular'; clearTimeout(timer); timer = setTimeout(run, 220); });

@@ -6,7 +6,8 @@
 //   so game source and upload bytes are never resent from history.
 import { config } from '../config.js';
 import { anthropic } from './anthropic.js';
-import { SYSTEM_PROMPT, TOOLS, sourceBlock } from './prompt.js';
+import { SYSTEM_PROMPT, TOOLS, sourceBlock, languageBlock } from './prompt.js';
+import { tEn } from '../i18n/index.js';
 import { summariseEvents } from './chat.js';
 import { modelBlocks, transcriptNote } from './uploads.js';
 
@@ -32,10 +33,9 @@ export function historyToMessages(history) {
   return out;
 }
 
-const KIND_REFUSAL = 'I can’t help with that one. Let’s build something fun instead. What kind of game would you like?';
-
 export async function run(ctx) {
   const client = anthropic(); if (!client) throw new Error('No API key');
+  const t = ctx.t || tEn;
   const model = ctx.pro ? config.builderProModel : config.builderModel;
   const userContent = [...modelBlocks(ctx.uploads || []), { type: 'text', text: ctx.text || 'Here is something for inspiration.' }];
   const messages = [...historyToMessages(ctx.history), { role: 'user', content: userContent }];
@@ -43,9 +43,11 @@ export async function run(ctx) {
 
   for (let step = 0; step < MAX_STEPS; step++) {
     const cur = ctx.tools.current();
+    // The short language block goes last, after both cache points, so the cached prefix is the same for every language.
     const system = [
       { type: 'text', text: SYSTEM_PROMPT, cache_control: { type: 'ephemeral' } },
       { type: 'text', text: sourceBlock(cur, ctx.tools.game()), cache_control: { type: 'ephemeral' } },
+      { type: 'text', text: languageBlock(ctx.locale || 'en') },
     ];
     const params = { model, max_tokens: config.builderMaxTokens, system, tools: TOOLS, messages, output_config: { effort: ctx.pro ? 'high' : 'medium' } };
     const opts = { signal: ctx.signal || undefined };
@@ -69,7 +71,7 @@ export async function run(ctx) {
     const u = msg.usage || {};
     tokensIn += (u.input_tokens || 0) + (u.cache_read_input_tokens || 0) + (u.cache_creation_input_tokens || 0);
     tokensOut += u.output_tokens || 0;
-    if (msg.stop_reason === 'refusal') { ctx.emit('text', { text: (step ? '\n\n' : '') + KIND_REFUSAL }); break; }
+    if (msg.stop_reason === 'refusal') { ctx.emit('text', { text: (step ? '\n\n' : '') + t('builder.kindRefusal') }); break; }
     messages.push({ role: 'assistant', content: msg.content });
     const uses = msg.content.filter(b => b.type === 'tool_use');
     if (!uses.length) break;
@@ -84,7 +86,7 @@ export async function run(ctx) {
       results.push({ type: 'tool_result', tool_use_id: tu.id, content: r.forModel, ...(r.ok ? {} : { is_error: true }) });
     }
     if (stop) break;
-    if (failedScan && ++fixes > MAX_SCAN_FIXES) { ctx.emit('text', { text: '\n\nThe safety check still is not happy. Tap “Ask the Builder to fix it” to try again.' }); break; }
+    if (failedScan && ++fixes > MAX_SCAN_FIXES) { ctx.emit('text', { text: '\n\n' + t('builder.scanStillFailing') }); break; }
     messages.push({ role: 'user', content: results });
   }
   return { model, tokensIn, tokensOut };

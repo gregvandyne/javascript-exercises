@@ -11,6 +11,7 @@ import { config } from '../config.js';
 import { cleanText } from '../services/textfilter.js';
 import { prefilter, mockClassify, refusal } from './screen.js';
 import { anthropic } from './anthropic.js';
+import { tEn } from '../i18n/index.js';
 
 migrate([['0002_studio_uploads', `
   CREATE TABLE IF NOT EXISTS builder_uploads (
@@ -120,11 +121,7 @@ export async function screenImage(buf, mime) {
   const v = JSON.parse(block ? block.text : '{}').verdict;
   return v && v !== 'allow' ? v : null;
 }
-const IMAGE_REPLIES = {
-  real_faces: 'That picture shows a real person, so I can’t keep it. Real faces stay private on Magic Cups. Try a drawing or a toy instead!',
-  personal_info: 'That picture shows private details like a name, school or address, so I can’t keep it. Try a drawing instead!',
-  unsafe: 'That picture isn’t right for Magic Cups, so I can’t keep it. Try a different picture!',
-};
+const IMAGE_VERDICTS = ['real_faces', 'personal_info', 'unsafe'];
 
 export const countForGame = gameId => q.get('SELECT COUNT(*) n FROM builder_uploads WHERE game_id=?', gameId).n;
 export const getUpload = id => q.get('SELECT * FROM builder_uploads WHERE id=?', String(id || '')) || null;
@@ -133,29 +130,29 @@ export const publicUpload = u => ({ id: u.id, kind: u.kind, mime: u.mime, name: 
 
 class UploadError extends Error { constructor(msg, status = 400) { super(msg); this.status = status; } }
 /**
- * Store one upload. -> publicUpload(row). Throws UploadError(message) with a kid-friendly message.
+ * Store one upload. -> publicUpload(row). Throws UploadError(message) with a kid-friendly message in the language of t.
  * opts.screen: run the vision/text screening (default true).
  */
-export async function saveUpload({ user, game, name, bytes }, { screen = true } = {}) {
+export async function saveUpload({ user, game, name, bytes, t = tEn }, { screen = true } = {}) {
   const buf = Buffer.from(bytes || []);
-  if (!buf.length) throw new UploadError('That file is empty.');
-  if (countForGame(game.id) >= LIMITS.perGame) throw new UploadError(`This game already has ${LIMITS.perGame} pictures and files. That is the most it can have.`);
+  if (!buf.length) throw new UploadError(t('uploads.empty'));
+  if (countForGame(game.id) >= LIMITS.perGame) throw new UploadError(t('uploads.tooMany', { max: LIMITS.perGame }));
   const cleanName = cleanText(String(name || 'file').split(/[\\/]/).pop().replace(/[^\p{L}\p{N} ._()-]/gu, '').slice(0, 80), 80);
   const ext = (String(name || '').toLowerCase().match(/\.([a-z0-9]{1,5})$/) || [])[0] || '';
   const fileName = cleanName.ok && cleanName.value ? cleanName.value : 'file' + ext;
   const type = sniff(buf, fileName);
-  if (!type) throw new UploadError('I can only use pictures (PNG, JPEG, WebP, GIF), PDFs, or text files (TXT, MD, CSV, JSON).', 415);
-  if (buf.length > LIMITS[type.kind]) throw new UploadError(type.kind === 'text' ? 'Text files can be up to 200 KB.' : 'Pictures and PDFs can be up to 5 MB.', 413);
+  if (!type) throw new UploadError(t('uploads.badType'), 415);
+  if (buf.length > LIMITS[type.kind]) throw new UploadError(type.kind === 'text' ? t('uploads.textTooBig') : t('uploads.fileTooBig'), 413);
   const clean = stripMetadata(buf, type.mime);
   // Text and PDF content is untrusted builder input: run the same pre-filter as chat messages.
   if (screen && type.kind !== 'image') {
     const text = type.kind === 'text' ? clean.toString('utf8') : pdfText(clean);
     const cat = text ? (prefilter(text) || mockClassify(text)) : null;
-    if (cat) { audit(user.id, 'builder.upload_refused', game.id, { name: fileName, category: cat }); const r = refusal(cat, 'prefilter'); throw new UploadError(`${r.message} ${r.suggestion}`, 422); }
+    if (cat) { audit(user.id, 'builder.upload_refused', game.id, { name: fileName, category: cat }); const r = refusal(cat, 'prefilter', t); throw new UploadError(`${r.message} ${r.suggestion}`, 422); }
   }
   if (screen && type.kind === 'image') {
     let bad = null; try { bad = await screenImage(clean, type.mime); } catch { bad = null; }
-    if (bad) { audit(user.id, 'builder.upload_refused', game.id, { name: fileName, category: bad }); throw new UploadError(IMAGE_REPLIES[bad] || IMAGE_REPLIES.unsafe, 422); }
+    if (bad) { audit(user.id, 'builder.upload_refused', game.id, { name: fileName, category: bad }); throw new UploadError(t(`uploads.image.${IMAGE_VERDICTS.includes(bad) ? bad : 'unsafe'}`), 422); }
   }
   const row = { id: uid(16), game_id: game.id, user_id: user.id, kind: type.kind, mime: type.mime, name: fileName, size: clean.length, sha256: crypto.createHash('sha256').update(clean).digest('hex'), created_at: now() };
   fs.mkdirSync(uploadDir(game.id), { recursive: true });

@@ -4,6 +4,7 @@ import bcrypt from 'bcryptjs';
 import { q, uid, now, setting, tx } from './db.js';
 import { config } from './config.js';
 import { cleanName, cleanText } from './services/textfilter.js';
+import { tEn, tReq } from './i18n/index.js';
 export { cleanName, cleanText };
 
 const SESSION_DAYS = 60;
@@ -79,13 +80,14 @@ export function setPassword(userId, password, { signOutEverywhere = false } = {}
 }
 // The most common passwords: easy to guess, so not allowed.
 const COMMON = new Set(['123456', '1234567', '12345678', '123456789', '1234567890', '111111', '000000', '654321', '123123', '121212', '112233', 'password', 'password1', 'passw0rd', 'qwerty', 'qwerty123', 'qwertyuiop', 'abc123', 'abcdef', 'abcd1234', 'letmein', 'welcome', 'iloveyou', 'monkey', 'dragon', 'football', 'baseball', 'soccer', 'princess', 'sunshine', 'superman', 'batman', 'pokemon', 'minecraft', 'fortnite', 'roblox', 'secret', 'master', 'shadow', 'starwars', 'trustno1', 'hello1', 'hello123', 'computer', 'freedom', 'whatever', 'asdfgh', 'zxcvbn', 'aaaaaa', 'gaming', 'brbgaming', 'magiccup', 'magiccups', 'magic123']);
-export function checkPassword(p, username = '') {
+/** -> null when fine, otherwise a kid-friendly message (in the language of t). */
+export function checkPassword(p, username = '', t = tEn) {
   p = String(p || '');
-  if (p.length < 6) return 'Use at least 6 characters for your password.';
-  if (p.length > 72) return 'That password is too long.';
+  if (p.length < 6) return t('auth.password.short');
+  if (p.length > 72) return t('auth.password.long');
   const low = p.toLowerCase();
-  if (COMMON.has(low) || /^(.)\1+$/.test(p)) return 'That password is too easy to guess. Try mixing words and numbers.';
-  if (username && low.includes(String(username).toLowerCase())) return "Don't put your name in your password.";
+  if (COMMON.has(low) || /^(.)\1+$/.test(p)) return t('auth.password.easy');
+  if (username && low.includes(String(username).toLowerCase())) return t('auth.password.name');
   return null;
 }
 
@@ -117,32 +119,33 @@ export function sessionMiddleware(req, res, next) {
 const isApi = req => req.originalUrl.startsWith('/api/');
 export function requireUser(req, res, next) {
   if (req.user) return next();
-  if (isApi(req)) return res.status(401).json({ error: 'Please sign in or play as a guest first.' });
+  if (isApi(req)) return res.status(401).json({ error: tReq(req)('errors.api.signInFirst') });
   res.redirect('/login?next=' + encodeURIComponent(req.originalUrl));
 }
 export function requireAccount(req, res, next) { // a real (non-guest) account
   if (req.user && !req.user.is_guest) return next();
-  if (isApi(req)) return res.status(req.user ? 403 : 401).json({ error: 'Make a free account to do this.' });
+  if (isApi(req)) return res.status(req.user ? 403 : 401).json({ error: tReq(req)('errors.api.needAccount') });
   res.redirect('/signup?next=' + encodeURIComponent(req.originalUrl));
 }
 export function requireAdmin(req, res, next) {
   if (req.user && req.user.role === 'admin') return next();
-  if (isApi(req)) return res.status(404).json({ error: 'Not found' });
+  if (isApi(req)) return res.status(404).json({ error: tReq(req)('errors.api.notFound') });
   res.status(404).send('Not found');
 }
 export function csrfCheck(req, res, next) {
   // Same-origin check for state-changing requests: browsers send Sec-Fetch-Site (and Origin); non-browser clients send neither.
   if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method)) {
     const site = req.headers['sec-fetch-site'];
-    if (site && site !== 'same-origin' && site !== 'none') return res.status(403).json({ error: 'Cross-site request blocked.' });
+    const blocked = () => res.status(403).json({ error: tReq(req)('errors.api.crossSite') });
+    if (site && site !== 'same-origin' && site !== 'none') return blocked();
     const origin = req.headers.origin;
     if (!site && origin && origin !== 'null') {
-      try { if (new URL(origin).host !== req.headers.host) return res.status(403).json({ error: 'Cross-site request blocked.' }); } catch { return res.status(403).json({ error: 'Cross-site request blocked.' }); }
+      try { if (new URL(origin).host !== req.headers.host) return blocked(); } catch { return blocked(); }
     }
   }
   next();
 }
 export function publicUser(u) {
   if (!u) return null;
-  return { id: u.id, username: u.username, displayName: u.display_name, avatar: u.avatar, color: u.color, isGuest: !!u.is_guest, role: u.role };
+  return { id: u.id, username: u.username, displayName: u.display_name, avatar: u.avatar, color: u.color, isGuest: !!u.is_guest, role: u.role, lang: u.lang || '' };
 }

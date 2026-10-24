@@ -1,5 +1,8 @@
 // Shared client helpers for every page. Other page modules import from here:
 //   import { api, toast, sheet, pageData, $, $$ } from '/js/app.js';
+// Text for the reader's language comes from /js/i18n.js (t, fmtNum).
+import { t, fmtNum, RTL } from '/js/i18n.js';
+export { t };
 export const $ = (s, el = document) => el.querySelector(s);
 export const $$ = (s, el = document) => Array.from(el.querySelectorAll(s));
 export const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -9,7 +12,7 @@ export function pageData(id = 'page-data') { const el = document.getElementById(
 export async function api(url, { method = 'GET', body, signal } = {}) {
   const res = await fetch(url, { method, signal, credentials: 'same-origin', headers: body !== undefined ? { 'Content-Type': 'application/json' } : {}, body: body !== undefined ? JSON.stringify(body) : undefined });
   let data = null; try { data = await res.json(); } catch { /* no body */ }
-  if (!res.ok) { const e = new Error((data && data.error) || 'Something went wrong. Please try again.'); e.status = res.status; e.data = data; throw e; }
+  if (!res.ok) { const e = new Error((data && data.error) || t('js.app.wentWrong')); e.status = res.status; e.data = data; throw e; }
   return data;
 }
 export function toast(msg, { bad = false, ms = 2800 } = {}) {
@@ -21,7 +24,7 @@ export function toast(msg, { bad = false, ms = 2800 } = {}) {
 export function sheet({ title, content, onClose } = {}) {
   const prev = document.activeElement;
   const bg = document.createElement('div'); bg.className = 'sheet-bg';
-  bg.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title"><button class="iconbtn close" type="button" aria-label="Close"><span class="emo">✖️</span></button><h2 id="sheet-title">${esc(title)}</h2><div class="sheet-body">${content}</div></div>`;
+  bg.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title"><button class="iconbtn close" type="button" aria-label="${esc(t('js.app.close'))}"><span class="emo">✖️</span></button><h2 id="sheet-title">${esc(title)}</h2><div class="sheet-body">${content}</div></div>`;
   document.body.appendChild(bg);
   const close = () => { bg.remove(); document.removeEventListener('keydown', onKey); if (prev && prev.focus) prev.focus(); onClose && onClose(); };
   const onKey = e => { if (e.key === 'Escape') close(); if (e.key === 'Tab') trap(e); };
@@ -43,21 +46,21 @@ export async function copyText(text) {
 document.addEventListener('click', e => {
   const b = e.target.closest('[data-rail]'); if (!b) return;
   const track = document.getElementById(b.dataset.rail); if (!track) return;
-  track.scrollBy({ left: +b.dataset.dir * track.clientWidth * 0.85, behavior: 'smooth' });
+  // In right-to-left pages "forward" scrolls toward the left.
+  track.scrollBy({ left: +b.dataset.dir * (RTL ? -1 : 1) * track.clientWidth * 0.85, behavior: 'smooth' });
 });
 
 // ---- Live player counts: refresh every 30 s without reloads ----
-const fmt = n => (n >= 1000 ? (n / 1000).toFixed(1) + 'K' : String(n));
 export async function refreshLive() {
   const els = $$('[data-live]'); if (!els.length) return;
   const ids = [...new Set(els.map(e => e.dataset.live))].slice(0, 100);
   try {
     const { counts } = await api('/api/live?ids=' + encodeURIComponent(ids.join(',')));
     for (const el of els) {
-      const n = counts[el.dataset.live] || 0; const f = el.dataset.liveFormat || 'pill';
-      if (f === 'pill') { el.textContent = `${fmt(n)} playing`; el.hidden = !n; }
-      else if (f === 'number') el.textContent = fmt(n);
-      else if (f === 'bar') el.textContent = n ? `🟢 ${fmt(n)} playing` : '';
+      const n = counts[el.dataset.live] || 0; const f = el.dataset.liveFormat || 'pill'; el.dataset.count = String(n);
+      if (f === 'pill') { el.textContent = t('js.app.playing', { n: fmtNum(n) }); el.hidden = !n; }
+      else if (f === 'number') el.textContent = fmtNum(n);
+      else if (f === 'bar') el.textContent = n ? `🟢 ${t('js.app.playing', { n: fmtNum(n) })}` : '';
     }
   } catch { /* offline: try again later */ }
 }
@@ -81,6 +84,26 @@ document.addEventListener('submit', async e => {
     else { const er = f.querySelector('.form-err'); if (er) er.textContent = err.message; else toast(err.message, { bad: true }); }
   } finally { if (btn) btn.disabled = false; }
 });
+
+// ---- 🌐 language menu: a <details> of plain links (works without JS); here we add Escape, outside-click and arrow keys ----
+for (const d of $$('[data-langpick]')) {
+  const links = () => $$('.lang-list a', d);
+  const close = (focus = true) => { if (!d.open) return; d.open = false; if (focus) $('summary', d).focus(); };
+  d.addEventListener('toggle', () => { if (d.open) { const cur = links().find(a => a.getAttribute('aria-current') === 'true') || links()[0]; if (cur) cur.focus(); } });
+  d.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { e.preventDefault(); close(); return; }
+    if (!d.open || !['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(e.key)) return;
+    e.preventDefault();
+    const list = links(); const i = list.indexOf(document.activeElement);
+    const next = e.key === 'Home' ? 0 : e.key === 'End' ? list.length - 1 : e.key === 'ArrowDown' ? (i + 1) % list.length : (i - 1 + list.length) % list.length;
+    list[next].focus();
+  });
+  document.addEventListener('click', e => { if (d.open && !d.contains(e.target)) close(false); });
+  d.addEventListener('focusout', e => { if (d.open && e.relatedTarget && !d.contains(e.relatedTarget)) close(false); });
+}
+// The Me page's language form saves as soon as a language is picked.
+const langSel = document.getElementById('lang-select');
+if (langSel) langSel.addEventListener('change', () => langSel.form.submit());
 
 // ---- "Play as guest" buttons anywhere ----
 document.addEventListener('click', async e => {
