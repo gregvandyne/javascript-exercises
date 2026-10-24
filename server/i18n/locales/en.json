@@ -1211,7 +1211,8 @@
         "now": "It updates straight away.",
         "notYet": "Not yet",
         "button": "Update"
-      }
+      },
+      "reconnecting": "The connection dropped, but the Builder is still working. Hang on…"
     }
   }
 }

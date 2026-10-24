@@ -195,12 +195,15 @@ router.post('/api/studio/:id/chat', requireAccount, rateLimit('builder', 20, 60e
   const b = req.body || {};
   res.writeHead(200, { 'Content-Type': 'text/event-stream; charset=utf-8', 'Cache-Control': 'no-cache, no-transform', 'X-Accel-Buffering': 'no', Connection: 'keep-alive' });
   res.flushHeaders && res.flushHeaders();
-  const send = (event, data) => { if (!res.writableEnded) res.write(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`); };
-  const ac = new AbortController();
-  res.on('close', () => { if (!res.writableFinished) ac.abort(); });
-  const ping = setInterval(() => { if (!res.writableEnded) res.write(': ping\n\n'); }, 15000);
+  // If the connection drops (a phone locks, switches apps or loses signal), the turn keeps running and is saved:
+  // the Studio sees state.busy, waits, and then shows the result. So we only stop writing, never abort the Builder.
+  let gone = false;
+  res.on('close', () => { if (!res.writableFinished) gone = true; });
+  res.on('error', () => { gone = true; });
+  const send = (event, data) => { if (!gone && !res.writableEnded) res.write(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`); };
+  const ping = setInterval(() => { if (!gone && !res.writableEnded) res.write(': ping\n\n'); }, 15000);
   try {
-    await runTurn({ user: req.user, gameId: g.id, text: b.text, pro: !!b.pro, uploadIds: b.uploads, emit: send, signal: ac.signal, t: req.t });
+    await runTurn({ user: req.user, gameId: g.id, text: b.text, pro: !!b.pro, uploadIds: b.uploads, emit: send, t: req.t });
   } catch {
     send('error', { message: req.t('studio.api.wentWrong') }); send('done', { turnsLeft: turnsLeft(req.user.id) });
   } finally { clearInterval(ping); res.end(); }

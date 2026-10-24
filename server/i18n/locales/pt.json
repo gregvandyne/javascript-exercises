@@ -1211,7 +1211,8 @@
         "now": "Atualiza na hora.",
         "notYet": "Agora não",
         "button": "Atualizar"
-      }
+      },
+      "reconnecting": "A conexão caiu, mas o Construtor continua trabalhando. Aguenta aí…"
     }
   }
 }

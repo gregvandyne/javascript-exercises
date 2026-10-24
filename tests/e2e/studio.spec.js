@@ -132,3 +132,24 @@ test('a picture attached in the Studio shows in the chat and is private to the b
   expect((await other.request.get(src)).status()).toBe(404);
   await otherCtx.close();
 });
+
+test('a dropped connection mid-build still shows what the Builder made; a message that never arrived says so', async ({ page }) => {
+  test.setTimeout(90_000);
+  await signup(page, uniq('Drp'));
+  await page.goto('/build');
+  await Promise.all([page.waitForURL(/\/studio\//), page.click('#newgame')]);
+  // The phone loses the stream after the server has the message: the server finishes the turn and saves it,
+  // and the page (seeing a network error) waits for the Builder and redraws the chat from the saved state.
+  await page.route('**/api/studio/*/chat', async route => { await route.fetch(); await route.abort('connectionreset'); });
+  for (let i = 0; i < 5 && !(await page.locator('#st-log .ev.version').count()); i++) {
+    await page.locator('#st-log .qchips:not(.used) .chip').first().click();
+    await expect(page.locator('.st-busy')).toHaveCount(0, { timeout: 30000 }); await idle(page);
+  }
+  await expect(page.locator('#st-log .ev.version')).toContainText('Version 1 is ready');
+  await expect(page.locator('#st-log .err')).toHaveCount(0);
+  // The message never reaches the server: nothing new is saved, so the page says the connection dropped.
+  await page.unroute('**/api/studio/*/chat');
+  await page.route('**/api/studio/*/chat', route => route.abort('connectionreset'));
+  await page.fill('#st-input', 'Make it harder'); await page.press('#st-input', 'Enter');
+  await expect(page.locator('#st-log .err').last()).toBeVisible({ timeout: 30000 }); await idle(page);
+});

@@ -143,6 +143,18 @@ function renderLog() {
   scrollDown();
 }
 
+// After a dropped connection (or a reload mid-build) the server finishes the turn on its own: poll until it's
+// done, then redraw the chat and preview from the saved state. -> true once the Builder is free again.
+async function waitForBuilder(maxMs = 10 * 60e3) {
+  const end = Date.now() + maxMs;
+  while (Date.now() < end) {
+    await new Promise(r => setTimeout(r, 3000));
+    let st; try { st = await api(`/api/studio/${ID}`); } catch { continue; }
+    if (!st.busy) { S = { ...S, ...st }; renderLog(); if (S.preview) setPreview(S.preview); return true; }
+  }
+  return false;
+}
+
 // ---------------------------------------------------------------- sending (SSE over fetch)
 let pending = []; // uploads waiting to be sent: { id, name, kind, url }
 async function send(text) {
@@ -151,6 +163,7 @@ async function send(text) {
   if (busy) return toast(t('js.studio.stillWorking'));
   if (!text && !ups.length) { input.focus(); return; }
   busy = true; $('#st-send').disabled = true;
+  const savedBefore = (S.chat || []).length;   // to tell, after a dropped connection, whether the server got the message
   $$('.qchips').forEach(c => c.classList.add('used'));
   userBubble(text, ups); input.value = ''; autosize();
   pending = []; renderAttach();
@@ -173,8 +186,8 @@ async function send(text) {
   };
   try {
     const res = await fetch(`/api/studio/${ID}/chat`, { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json', Accept: 'text/event-stream' }, body: JSON.stringify({ text, pro, uploads: ups.map(u => u.id) }) });
-    if (!res.ok || !res.body) { let msg = t('js.studio.noAnswer'); try { msg = (await res.json()).error || msg; } catch { /* not JSON */ } throw new Error(msg); }
-    const reader = res.body.getReader(); const dec = new TextDecoder(); let buf = '';
+    if (!res.ok || !res.body) { let msg = t('js.studio.noAnswer'); try { msg = (await res.json()).error || msg; } catch { /* not JSON */ } const err = new Error(msg); err.fromServer = true; throw err; }
+    const reader = res.body.getReader(); const dec = new TextDecoder(); let buf = ''; let finished = false;
     for (;;) {
       const { value, done } = await reader.read(); if (done) break;
       buf += dec.decode(value, { stream: true });
@@ -183,10 +196,21 @@ async function send(text) {
         let ev = 'message', data = '';
         for (const line of block.split('\n')) { if (line.startsWith('event: ')) ev = line.slice(7); else if (line.startsWith('data: ')) data += line.slice(6); }
         if (!data) continue;
+        if (ev === 'done') finished = true;
         try { handle(ev, JSON.parse(data)); } catch { /* bad chunk */ }
       }
     }
-  } catch (e) { endBubble(); bubble('err', e.message || t('js.studio.dropped')); }
+    if (!finished) throw new Error('stream ended early');
+  } catch (e) {
+    endBubble();
+    if (e.fromServer) bubble('err', e.message);
+    else {
+      // The connection dropped, but the Builder keeps going on the server: wait for it, then show what it made.
+      status.textContent = `📶 ${t('js.studio.reconnecting')}`;
+      // If the message never reached the server, nothing new was saved: say so, so it can be sent again.
+      if (!(await waitForBuilder()) || (S.chat || []).length <= savedBefore) bubble('err', t('js.studio.dropped'));
+    }
+  }
   finally {
     endBubble(); status.remove(); busy = false; $('#st-send').disabled = false; scrollDown();
     await refresh();
@@ -352,4 +376,8 @@ $('#st-publish').addEventListener('click', () => {
 });
 
 renderTop(); renderLive(); renderSafety(); renderTurns(); renderLog();
-if (S.busy) toast(t('js.studio.stillFinishing'));
+if (S.busy) {
+  toast(t('js.studio.stillFinishing'));
+  busy = true; $('#st-send').disabled = true;
+  waitForBuilder().then(() => { busy = false; $('#st-send').disabled = false; return refresh(); });
+}

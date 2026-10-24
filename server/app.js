@@ -35,6 +35,11 @@ export function createApp() {
       if (!config.logRequests || req.path.startsWith('/css/') || req.path.startsWith('/fonts/')) return;
       log('info', 'request', { method: req.method, path: req.path, status: res.statusCode, ms: Number(process.hrtime.bigint() - t0) / 1e6, user: req.user ? req.user.id : null });
     });
+    // A connection that closes before the response is done (e.g. a phone dropping a long Builder stream).
+    res.on('close', () => {
+      if (res.writableFinished || !config.logRequests) return;
+      log('info', 'request closed early', { method: req.method, path: req.path, ms: Number(process.hrtime.bigint() - t0) / 1e6, user: req.user ? req.user.id : null });
+    });
     next();
   });
   // Security headers for the site (the game frame overrides CSP with its own, stricter one).
