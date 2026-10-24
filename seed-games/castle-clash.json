@@ -10,5 +10,51 @@
   "players_max": 2,
   "age_rating": "everyone",
   "featured": true,
-  "notes": "Complete chess rules (castling, en passant, promotion picker, check, checkmate, stalemate, threefold repetition, fifty-move rule, insufficient material) with SAN move list; the move generator matches the standard perft counts (window.__brbTest.perft). The robot searches in short time slices with setTimeout (no Web Worker under the frame CSP) so the page never freezes. Saves settings, robot wins, lesson stars and solved puzzles in localStorage key 'castle-clash-v1' and the game in progress in 'castle-clash-game-v1' (both through the SDK storage shim). Leaderboard: BRB.score.submit(points, 'robot wins') with points = robot wins weighted Pawn 1, Knight 2, Bishop 4, Queen 8. All art is original canvas drawing. Loads Google Fonts (Fredoka)."
+  "notes": "Complete chess rules (castling, en passant, promotion picker, check, checkmate, stalemate, threefold repetition, fifty-move rule, insufficient material) with SAN move list; the move generator matches the standard perft counts (window.__brbTest.perft). The robot searches in short time slices with setTimeout (no Web Worker under the frame CSP) so the page never freezes. Saves settings, robot wins, lesson stars and solved puzzles in localStorage key 'castle-clash-v1' and the game in progress in 'castle-clash-game-v1' (both through the SDK storage shim). Leaderboard: BRB.score.submit(points, 'robot wins') with points = robot wins weighted Pawn 1, Knight 2, Bishop 4, Queen 8. All art is original canvas drawing. Loads Google Fonts (Fredoka).",
+  "l10n": {
+    "pt": {
+      "description": "Xadrez de verdade entre o Reino do Sol e o Reino da Lua, com peças simpáticas que piscam e comemoram. Jogue contra o Mago Hoot, o robô coruja, em quatro níveis, jogue com um amigo na mesma tela, aprenda cada peça em lições curtinhas e resolva 24 desafios de xeque-mate.",
+      "tags": "xadrez,estratégia,2 jogadores,robô,aprender xadrez,desafios,jogo de tabuleiro,sol e lua,coruja"
+    },
+    "fr": {
+      "description": "De vrais échecs entre le Royaume du Soleil et le Royaume de la Lune, avec des pièces sympas qui clignent des yeux et applaudissent. Affronte le magicien Hoot, le robot hibou, sur quatre niveaux, joue avec un ami sur le même écran, découvre chaque pièce en petites leçons et résous 24 énigmes d'échec et mat.",
+      "tags": "échecs,stratégie,2 joueurs,robot,apprendre les échecs,énigmes,jeu de plateau,soleil et lune,hibou"
+    },
+    "es": {
+      "description": "Ajedrez de verdad entre el Reino del Sol y el Reino de la Luna, con piezas simpáticas que parpadean y celebran. Juega contra el Mago Hoot, el robot búho, en cuatro niveles, juega con un amigo en la misma pantalla, aprende cada pieza en lecciones cortas y resuelve 24 problemas de jaque mate.",
+      "tags": "ajedrez,estrategia,2 jugadores,robot,aprender ajedrez,problemas,juego de mesa,sol y luna,búho"
+    },
+    "de": {
+      "description": "Echtes Schach zwischen dem Sonnenreich und dem Mondreich, mit freundlichen Figuren, die zwinkern und jubeln. Spiel gegen Zauberer Hoot, den Eulen-Roboter, auf vier Stufen, spiel zu zweit an einem Bildschirm, lerne jede Figur in kurzen Lektionen und löse 24 Schachmatt-Rätsel.",
+      "tags": "Schach,Strategie,2 Spieler,Roboter,Schach lernen,Rätsel,Brettspiel,Sonne und Mond,Eule"
+    },
+    "he": {
+      "description": "שחמט אמיתי בין ממלכת השמש לממלכת הירח, עם כלים חמודים שקורצים ומריעים. שחקו נגד הקוסם הוּט, רובוט הינשוף, בארבע רמות, שחקו עם חבר על אותו מסך, למדו כל כלי בשיעורים קצרים ופתרו 24 חידות מט.",
+      "tags": "שחמט,אסטרטגיה,2 שחקנים,רובוט,ללמוד שחמט,חידות,משחק לוח,שמש וירח,ינשוף"
+    },
+    "ja": {
+      "description": "たいようの王国とつきの王国がたたかう、ほんもののチェス。こまたちはまばたきしたり、おうえんしたりします。フクロウのロボット「まほうつかいフート」と4つのレベルでたいせんしたり、ひとつの画面でともだちとあそんだり、みじかいレッスンでぜんぶのこまをおぼえたり、24このチェックメイト・パズルにちょうせんしよう。",
+      "tags": "チェス,せんりゃく,ふたりであそぶ,ロボット,チェスをまなぶ,パズル,ボードゲーム,たいようとつき,フクロウ"
+    },
+    "ar": {
+      "description": "شطرنج حقيقي بين مملكة الشمس ومملكة القمر، مع قطع لطيفة ترمش وتهتف. العب مع الساحر هوت، الروبوت البومة، في أربعة مستويات، والعب مع صديق على شاشة واحدة، وتعلّم كل قطعة في دروس قصيرة، وحلّ 24 لغز كش مات.",
+      "tags": "شطرنج,استراتيجية,لاعبان,روبوت,تعلم الشطرنج,ألغاز,لعبة لوحية,الشمس والقمر,بومة"
+    },
+    "ru": {
+      "description": "Настоящие шахматы между Солнечным и Лунным королевствами, с весёлыми фигурами, которые моргают и радуются. Играй с совой-роботом Волшебником Хутом на четырёх уровнях, играй с другом на одном экране, узнай каждую фигуру на коротких уроках и реши 24 задачи на мат.",
+      "tags": "шахматы,стратегия,2 игрока,робот,учимся шахматам,задачи,настольная игра,солнце и луна,сова"
+    },
+    "it": {
+      "description": "Scacchi veri tra il Regno del Sole e il Regno della Luna, con pezzi simpatici che fanno l'occhiolino ed esultano. Sfida il Mago Hoot, il robot gufo, su quattro livelli, gioca con un amico sullo stesso schermo, impara ogni pezzo con lezioni brevi e risolvi 24 enigmi di scacco matto.",
+      "tags": "scacchi,strategia,2 giocatori,robot,imparare gli scacchi,enigmi,gioco da tavolo,sole e luna,gufo"
+    },
+    "zh-Hant": {
+      "description": "太陽王國和月亮王國之間真正的西洋棋，棋子會眨眼又會歡呼，超可愛！和貓頭鷹機器人「巫師呼特」挑戰四種等級，和朋友在同一個螢幕上對戰，用簡短的課程認識每一種棋子，還有 24 道將死謎題等你來解。",
+      "tags": "西洋棋,策略,雙人,機器人,學西洋棋,謎題,桌遊,太陽和月亮,貓頭鷹"
+    },
+    "nl": {
+      "description": "Echt schaken tussen het Zonnerijk en het Maanrijk, met vrolijke stukken die knipogen en juichen. Speel tegen Tovenaar Hoot, de uilrobot, op vier niveaus, speel met een vriend op één scherm, leer elk stuk in korte lessen en los 24 schaakmatpuzzels op.",
+      "tags": "schaken,strategie,2 spelers,robot,leren schaken,puzzels,bordspel,zon en maan,uil"
+    }
+  }
 }
