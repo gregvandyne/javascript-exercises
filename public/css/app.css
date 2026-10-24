@@ -340,4 +340,4 @@ table.tbl{width:100%;border-collapse:collapse;font-size:.95rem}
 :lang(ar) body,:lang(he) body{line-height:1.6}
 /* Text people typed (game titles and descriptions, names, notes) takes its direction from its own letters, so an English
    title reads right in an Arabic page and the other way round. Alignment still follows the page. */
-.gcard .t,.gcard .by,.hero h1,.hero p,.gamehero h1,.nm,.ptitle,.tpl-t,.tpl-d,.mg-t,.gi-t,.vnotes,.lb li span,.mygame h3,.pagehead h1,.profilehead h1,.fc-games h3,.mg-note,#st-live .note,.chip,.inboxrow .sub,.tag,.ugc,.st-turns,.pbadge{unicode-bidi:plaintext;text-align:match-parent}
+.gcard .t,.gcard .by,.hero h1,.hero p,.gamehero h1,.nm,.ptitle,.tpl-t,.tpl-d,.mg-t,.gi-t,.vnotes,.lb li span,.mygame h3,.pagehead h1,.profilehead h1,.fc-games h3,.mg-note,#st-live .note,.chip,.inboxrow .sub,.tag,.ugc,.st-turns,.pbadge,.adtext{unicode-bidi:plaintext;text-align:match-parent}
