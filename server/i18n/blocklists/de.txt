@@ -2,3 +2,76 @@
 # One entry per line, ROT13-encoded (a-z shifted by 13, so the repo never spells the words out; letters in other
 # scripts stay as written). Lines starting with # are comments. See README.md in this folder for the format.
 # Every list applies to every message on the site, whatever language the sender uses.
+# German and Dutch build long compound words: "=" entries stop a stem from catching innocent compounds, and "!" safe
+# words protect everyday words (also in other site languages) that start with an entry.
+# --- sexual words, word start
+svpx
+trsvpxg
+=svttra
+=svttg
+sbgm
+=zhfpuv
+=zhfpuvf
+=zbrfr
+cvzzry
+=gvggr
+gvggra
+=ohzfra
+=ohzfg
+=trohzfg
+anpxgovyq
+anpxgsbgb
+betnfzhf
+fcrezn
+fpujnamyhgfpure
+xvaqresvpxre
+zhggresvpxre
+nefpusvpxre
+iretrjnygvt
+# --- worst swear words and insults
+=fpuynzcr
+=fpuynzcra
+=uher
+uherafbua
+uheafbua
+uhuerafbua
+uherafba
+=svxxra
+sbqm
+uheraobpx
+qerpxfuher
+=uhfb
+=ahggr
+=ahggra
+jvpufre
+=jvpufg
+jvpufn
+jvkkre
+=jvkre
+nefpuy
+fpurvf
+fpurvß
+furvff
+qerpxfnh
+irecvff
+zvfftroheg
+fcnfg
+fcnffg
+zbatbybvq
+# --- slurs
+artre
+xnanxr
+mvtrhare
+fpuyvgmnhtr
+xüzzrygüex
+xhrzzryghrex
+whqrafnh
+fpujhpugry
+=ghagr
+xnzcsyrfor
+=genafr
+=genafra
+fvrt urvy
+fvrturvy
+# --- safe words: innocent words that start with an entry above
+!svpxyr

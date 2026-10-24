@@ -2,3 +2,110 @@
 # One entry per line, ROT13-encoded (a-z shifted by 13, so the repo never spells the words out; letters in other
 # scripts stay as written). Lines starting with # are comments. See README.md in this folder for the format.
 # Every list applies to every message on the site, whatever language the sender uses.
+# Leetspeak (digits/symbols), spaced-out letters, case and accents are handled by the filter, so entries are plain words.
+
+# Swear words and insults
+chgnva
+=cga
+=cgnva
+chgr
+=sqc
+zreq
+znveq
+raphy
+raxhy
+naphy
+pbaaneq
+pbaane
+pbane
+xbane
+xbaane
+pbaanff
+pbanff
+fnybc
+fnynhc
+fnynhq
+ongne
+pbhvyy
+=sbhger
+oenay
+rzzreq
+=puvre
+avdhre
+=avxre
+avdhr gn
+avdhr gba
+avdhr fn
+gr avdhr
+avx gn
+avxgnz
+=agz
+=adgz
+gebh qh phy
+gebhqhp
+crgnff
+cbhssvnf
+cbhsvnf
+tebtanff
+
+# Sexual words
+avpuba
+=grho
+=grhof
+sbhsbha
+fbqbzv
+sryyng
+yriergg
+cnegbhm
+rwnphy
+znfgheo
+betnfz
+pyvgb
+intva
+=onvfr
+=onvfrhe
+crqbcuvy
+
+# Slurs and hate
+gneybhm
+gnsvby
+tbhvar
+=arter
+=arterf
+obhtabhy
+=lbhcva
+=lbhcvaf
+lbhger
+=ovpbg
+avnxbh
+puvargbd
+=onzobhyn
+fnyr whvs
+fnyr nenor
+
+# Violence and self-harm
+=ivby
+ivbyre
+ivbyrhe
+=ghr-gbv
+=ghr gbv
+
+# Safe words: everyday words that contain a blocked stem
+!fnybcrggr
+!oenaynag
+!roenay
+!pbzchg
+!qvfchg
+!erchg
+!vzchg
+!nzchg
+!qrchgr
+!cvdhr-avdhr
+!cvdhr avdhr
+!havdhr
+!grpuavdhr
+!pncgnva
+!pncga
+!ivbyrg
+!ivbyva
+!ivbyba

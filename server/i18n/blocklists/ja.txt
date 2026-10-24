@@ -2,3 +2,132 @@
 # One entry per line, ROT13-encoded (a-z shifted by 13, so the repo never spells the words out; letters in other
 # scripts stay as written). Lines starting with # are comments. See README.md in this folder for the format.
 # Every list applies to every message on the site, whatever language the sender uses.
+# Japanese and Chinese entries match anywhere in a message, so each one is at least two characters and is checked
+# against everyday sentences; "!" lines remove innocent words that contain an entry before matching.
+
+# Sexual words and body parts (hiragana and katakana)
+まんこ
+おまんこ
+マンコ
+ちんこ
+チンコ
+ちんぽ
+チンポ
+せっくす
+セックス
+おっぱい
+オッパイ
+エロ
+ぱいずり
+パイズリ
+フェラ
+ふぇら
+オナニー
+おなにー
+エッチしよ
+えっちしよ
+ヤリマン
+やりまん
+ヤリチン
+やりちん
+淫乱
+勃起
+ぼっき
+童貞
+ni女優
+ラブホ
+デリヘル
+
+# Sexual violence, selling sex
+レイプ
+痴漢
+援助交際
+パパ活
+売春
+
+# Slurs (disability, ethnicity, sexuality)
+ガイジ
+がいじ
+キチガイ
+きちがい
+チャンコロ
+シナ人
+ホモ
+オカマ
+レズ
+
+# Telling someone to die, suicide
+死ね
+シネ
+くたばれ
+自殺
+じさつ
+
+# Romaji (Latin letters: start of a word, or "=" whole word)
+puvaxb
+puvacb
+znaxb
+bznaxb
+frxxhfh
+bccnv
+lnevzna
+lnevpuva
+xvpuvtnv
+banavv
+=banav
+cnvmhev
+anxnqnfuv
+ervch
+uragnv
+
+# Innocent words that contain an entry: numbers and buns ending in まん before こ ("100まんこ" = a million pieces, "にくまん")
+!0まん
+!1まん
+!2まん
+!3まん
+!4まん
+!5まん
+!6まん
+!7まん
+!8まん
+!9まん
+!いちまん
+!にまん
+!さんまん
+!よんまん
+!ごまん
+!ろくまん
+!ななまん
+!はちまん
+!きゅうまん
+!じゅうまん
+!ひゃくまん
+!せんまん
+!なんまん
+!あんまん
+!にくまん
+!ぴざまん
+!ぱんまん
+!すまん
+!じまん
+!がまん
+!ふまん
+
+# Innocent words that contain an entry: other
+!パチンコ
+!ぱちんこ
+!ロマンコ
+!ピエロ
+!フェラーリ
+!ふぇらーり
+!がいじん
+!ガイジン
+!ホモサピエンス
+!ホモ・サピエンス
+!ホモジナイズ
+!オオカマキリ
+!シネマ
+!シネコン
+!グレイプ
+!蓬勃起
+!売春巻

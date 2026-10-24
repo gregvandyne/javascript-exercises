@@ -2,3 +2,78 @@
 # One entry per line, ROT13-encoded (a-z shifted by 13, so the repo never spells the words out; letters in other
 # scripts stay as written). Lines starting with # are comments. See README.md in this folder for the format.
 # Every list applies to every message on the site, whatever language the sender uses.
+# Insults and slurs (Hebrew script)
+זונה
+זונות
+הזונה
+שרמוט
+מניאק
+=זין
+=זיין
+לזיין
+מזיין
+תזדיין
+מזדיין
+להזדיין
+הזדיין
+=זיון
+זיונים
+# "כוס" alone also means "cup", so only the swear phrases are listed
+כוס אמא
+כוסאמא
+כוס אמק
+כוסאמק
+כוס עמק
+כוסעמק
+כוס אחותך
+כוסאוחתק
+שמוק
+=פוץ
+=פאק
+פאקינג
+=ביץ
+קוקסינל
+כושי
+כושים
+ערבוש
+=חרא
+=מפגר
+=מפגרת
+=מפגרים
+# Sexual words
+סקס
+!סקסופון
+פורנו
+אורגזמה
+אוננות
+לאונן
+מאונן
+חרמן
+=ציצים
+=ציצי
+עירום
+עירומה
+=אונס
+=אנס
+לאנוס
+# Bullying about self-harm, hate symbols and hard drugs (same idea as the English core list)
+תתאבד
+לך תמות
+היטלר
+נאצי
+!נאציונל
+קוקאין
+הרואין
+# Hebrew written in Latin letters
+ora mban
+oramban
+ong mban
+xhf rznx
+xhfrznx
+xhf rzrx
+xhfrzrx
+xhf vzn
+gvmqnlra
+zvmqnlra
+uvmqnlra
+funezhg

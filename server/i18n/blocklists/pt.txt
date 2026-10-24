@@ -2,3 +2,91 @@
 # One entry per line, ROT13-encoded (a-z shifted by 13, so the repo never spells the words out; letters in other
 # scripts stay as written). Lines starting with # are comments. See README.md in this folder for the format.
 # Every list applies to every message on the site, whatever language the sender uses.
+
+# Palavrões e xingamentos
+pnenyu
+pnenyvb
+pnenvb
+xnenyu
+xey
+cbeen
+=cbun
+zreq
+sqc
+cdc
+ifs
+igap
+gap
+xpg
+pnprgr
+xnprgr
+chgn
+chgvaun
+svyubqnchgn
+svbqnchgn
+svqnchgn
+sbqn
+=sbqre
+sbqvq
+=sbqrh
+=shqre
+shqvq
+=shqrh
+neebzonq
+=gbzne ab ph
+=cnh ab ph
+phmnb
+phmvaub
+
+# Termos sexuais
+ohprgn
+obprgn
+ohfrgn
+opg
+kbkbgn
+=kbgn
+krerpn
+cvebpn
+cvebxn
+chaurg
+=obdhrgr
+fvevevpn
+grfnb
+grfhq
+=genafne
+znfgheo
+cebfgvghg
+=intnohaqn
+=inqvn
+=inqvnf
+rfghce
+crqbsvy
+znaqn ahqr
+znaqr ahqr
+kivqrb
+
+# Ofensas preconceituosas (homofobia, capacitismo)
+ivnqb
+ivnqvau
+=ovpun
+ovpuban
+=fncngn
+fncngnb
+genirpb
+obvbyn
+onvgbyn
+zbatbybvq
+
+# Palavras inocentes que contêm um termo bloqueado (removidas antes da checagem)
+!erchgn
+!qrchgn
+!qvfchgn
+!nzchgn
+!vzchgn
+!pbzchgn
+!ovpuna
+!nivnq
+!raivnq
+!qrfivnq
+!rkgenivnq
+!ivnqbgg

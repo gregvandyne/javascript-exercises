@@ -83,3 +83,17 @@ test('every shipped blocklist file parses and carries the header', () => {
     assert.doesNotThrow(() => tf.parseBlocklist(text), f);
   }
 });
+
+test('no translated site text and no everyday foreign word trips the English list', async () => {
+  const { hasProfanity } = await import('../../server/services/textfilter.js');
+  const { flatten } = await import('../../server/i18n/index.js');
+  const dir = path.resolve('server/i18n/locales');
+  for (const f of fs.readdirSync(dir).filter(f => f.endsWith('.json'))) {
+    const d = flatten(JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8')));
+    for (const [k, v] of Object.entries(d)) if (typeof v === 'string') assert.equal(hasProfanity(v), false, `${f} ${k} is blocked: ${v}`);
+  }
+  for (const s of ['Ich mag Nudeln', 'Die Methode ist gut', 'Analyse der Daten', 'Im Cockpit', 'der dicke Hund', 'Feliz cumpleaños', 'el sexto nivel', 'sexta-feira',
+    'cumprimentar', 'análise', 'Je suis en retard', 'La nazione italiana', 'fagioli e pasta', 'un fagiano', 'my method', 'the heroine wins', 'cockatoo', 'analog clock', 'cumulus clouds'])
+    assert.equal(hasProfanity(s), false, s);
+  for (const s of ['you are a dick', 'meth head', 'retarded', 'nazi flag', 'cock', 'heroin', 'f a g']) assert.equal(hasProfanity(s), true, s);
+});

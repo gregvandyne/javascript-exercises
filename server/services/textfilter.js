@@ -17,7 +17,12 @@ export const BLOCK = ['fuck', 'shit', 'bitch', 'cunt', 'dick', 'cock', 'pussy', 
 // Only blocked in usernames (too many false positives in chat sentences).
 const NAME_ONLY = ['ass', 'damn', 'hell', 'kill', 'drug', 'weed', 'die'];
 // Allow-list of innocent words that contain blocked fragments.
-const SAFE = ['class', 'pass', 'grass', 'glass', 'bass', 'mass', 'assist', 'assemble', 'hello', 'shell', 'skill', 'killer whale', 'sussex', 'essex', 'scunthorpe', 'cocktail', 'peacock', 'hancock', 'dickens', 'cocoa', 'shiitake', 'therapist', 'grape', 'drape', 'sextant', 'sixty', 'documentary', 'cucumber', 'circumstance', 'analysis', 'canal', 'banal', 'scumbag', 'hellfire', 'michelle', 'diesel', 'diet', 'died', 'dies', 'studied', 'buddies', 'cookies', 'goodies', 'indie', 'birdie', 'hoodie', 'skilled', 'killed', 'mill', 'kills', 'nudes'];
+const SAFE = ['class', 'pass', 'grass', 'glass', 'bass', 'mass', 'assist', 'assemble', 'hello', 'shell', 'skill', 'killer whale', 'sussex', 'essex', 'scunthorpe', 'cocktail', 'peacock', 'hancock', 'dickens', 'cocoa', 'shiitake', 'therapist', 'grape', 'drape', 'sextant', 'sixty', 'documentary', 'cucumber', 'circumstance', 'analysis', 'canal', 'banal', 'scumbag', 'hellfire', 'michelle', 'diesel', 'diet', 'died', 'dies', 'studied', 'buddies', 'cookies', 'goodies', 'indie', 'birdie', 'hoodie', 'skilled', 'killed', 'mill', 'kills', 'nudes',
+  // English words, and everyday words in the other site languages, that start like a blocked word (found by the translators)
+  'method', 'analy', 'analis', 'analiz', 'analog', 'cockpit', 'cockatoo', 'cockroach', 'cockermouth', 'penistone', 'heroine', 'heroina', 'cumul', 'cumbia',
+  'nudel', 'methode', 'dicke', 'dicker', 'dickes', 'dicken',                 // de/nl: noodles, method, thick
+  'cumple', 'cumpl', 'cumpri', 'cumbre', 'sexta', 'sexto', 'sextet',         // es/pt: birthday, fulfil, greet, summit, Friday/sixth
+  'en retard', 'nazion', 'fagiol', 'fagian', 'fagott'];                       // fr: late; it: nation, beans, pheasant, bassoon
 
 const LEET = { '0': 'o', '1': 'i', '!': 'i', '3': 'e', '4': 'a', '@': 'a', '5': 's', '$': 's', '7': 't', '+': 't', '8': 'b', '9': 'g', '|': 'i' };
 export function normalise(s) {

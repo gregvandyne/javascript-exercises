@@ -12,7 +12,7 @@ const exe = '/opt/pw-browsers/chromium-1194/chrome-linux/chrome';
 // so tests/e2e/i18n.spec.js can check translated text whatever the translators have written so far.
 const LOCALES = fs.mkdtempSync(path.join(os.tmpdir(), 'brb-e2e-locales-'));
 const merge = (a, b) => { for (const [k, v] of Object.entries(b)) a[k] = v && typeof v === 'object' && !Array.isArray(v) ? merge(a[k] && typeof a[k] === 'object' ? a[k] : {}, v) : v; return a; };
-for (const f of fs.readdirSync('server/i18n/locales')) fs.copyFileSync(path.join('server/i18n/locales', f), path.join(LOCALES, f));
+for (const f of fs.readdirSync('server/i18n/locales').filter(f => f.endsWith('.json'))) fs.copyFileSync(path.join('server/i18n/locales', f), path.join(LOCALES, f));
 for (const f of fs.readdirSync('tests/e2e/fixtures/locales')) {
   const real = JSON.parse(fs.readFileSync(path.join(LOCALES, f), 'utf8'));
   fs.writeFileSync(path.join(LOCALES, f), JSON.stringify(merge(real, JSON.parse(fs.readFileSync(path.join('tests/e2e/fixtures/locales', f), 'utf8')))));

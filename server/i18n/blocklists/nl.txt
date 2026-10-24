@@ -2,3 +2,88 @@
 # One entry per line, ROT13-encoded (a-z shifted by 13, so the repo never spells the words out; letters in other
 # scripts stay as written). Lines starting with # are comments. See README.md in this folder for the format.
 # Every list applies to every message on the site, whatever language the sender uses.
+# German and Dutch build long compound words: "=" entries stop a stem from catching innocent compounds, and "!" safe
+# words protect everyday words (also in other site languages) that start with an entry.
+# --- sexual words
+=arhx
+=arhxra
+=arhxg
+=arhxgr
+=arhxgra
+=trarhxg
+arhxcnegvw
+frxf
+=gvrg
+=gvrgra
+=gvrgwrf
+cvrzry
+cvwcorheg
+=ivatrera
+=trivatreq
+=orssra
+annxgsbgb
+irexenpug
+# --- worst swear words and insults
+=xhg
+=xhgg
+xhgwr
+xhgjvws
+xhgmbbv
+xnaxreyvwre
+xnaxreylre
+xnaxreubre
+xnaxrexvaq
+xnaxrembbv
+=xnaxrera
+=xnaxre bc
+=xevwt qr xnaxre
+xraxre
+=xxe
+grevatyvwre
+grevatylre
+grevatubre
+grevatfyrg
+=xevwt qr grevat
+glshf
+gvrshf
+xyreryvwre
+cbxxryvwre
+tbqireqbzzr
+tbqireqbzfr
+=tbqire
+=tiq
+=ubre
+=ubregwr
+ubrerawbat
+ubrerambba
+ubrermbba
+ubreraybcre
+fgbrcubre
+=fyrg
+=fyrggra
+fyrgwr
+=yhy
+xybbgmnx
+xbagtng
+snxxvat
+sbxxvat
+# --- slurs
+=syvxxre
+=syvxxref
+=zbatbby
+avxxre
+obfartre
+xnaxrewbbq
+xhgznebxxnna
+mjnegwbrxry
+=znxnx
+fcyrrgbbt
+# --- safe words: innocent words that contain an entry above
+!artrera
+!frxfr
+!yhyh
+!yhyynol
+!xhgfpu
+!arhxvepu
+!arhxöyya
+!arhxbryya

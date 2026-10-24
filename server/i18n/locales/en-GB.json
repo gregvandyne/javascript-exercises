@@ -1,1 +1,74 @@
-{}
+{
+  "auth": {
+    "api": {
+      "pickColor": "Pick one of the colours."
+    }
+  },
+  "me": {
+    "look": {
+      "colorHeading": "Colour",
+      "colorGroup": "Colour",
+      "colorLabel": "Colour {color}"
+    }
+  },
+  "categories": {
+    "sports": "Sport"
+  },
+  "ads": {
+    "house": {
+      "house-learning": {
+        "text": "Maths, science and more, made fun."
+      }
+    }
+  },
+  "search": {
+    "placeholder": "Try “shark”, “football” or a builder’s name"
+  },
+  "friends": {
+    "api": {
+      "canceled": "Request cancelled."
+    }
+  },
+  "profile": {
+    "favorites": "Favourite games",
+    "noFavorites": "No favourites yet."
+  },
+  "studio": {
+    "templates": {
+      "board": {
+        "description": "Roll the dice and race along a winding path with rocket boosts and slides. Play a friend or the bot."
+      }
+    },
+    "api": {
+      "savedDefault": "my favourite so far"
+    }
+  },
+  "builder": {
+    "refusals": {
+      "selfharm": {
+        "suggestion": "I am here to build a happy game with you whenever you want, like a cosy puppy who collects stars."
+      },
+      "scary": {
+        "suggestion": "How about a silly, friendly ghost who collects sweets?"
+      },
+      "drugs": {
+        "suggestion": "How about a potion lab where you mix bubbly colours?"
+      }
+    }
+  },
+  "creator": {
+    "payoutStatus": {
+      "cancelled": "Cancelled"
+    }
+  },
+  "js": {
+    "studio": {
+      "settings": {
+        "color": "Card colour"
+      },
+      "save": {
+        "placeholder": "My favourite so far"
+      }
+    }
+  }
+}

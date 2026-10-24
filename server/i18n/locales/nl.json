@@ -1,1 +1,1215 @@
-{}
+{
+  "_about": "Magic Cups: Nederlandse teksten. Termen: de Bouwer (AI-helper), Studio, Publiceren, vrienden, vriendcode, chat, ranglijst, likes, keer gespeeld, Reclame.",
+  "layout": {
+    "titleHome": "Magic Cups · Speel en bouw games",
+    "titleWith": "{title} · Magic Cups",
+    "description": "Speel gratis games en bouw je eigen games met Magic Cups.",
+    "skip": "Ga naar de games",
+    "logoLabel": "Magic Cups startpagina",
+    "mainNav": "Hoofdmenu",
+    "signIn": "Inloggen",
+    "meLabel": "Ik: {name}",
+    "back": "Terug",
+    "badgeNew": "{count} nieuw",
+    "search": {
+      "label": "Zoek games en makers",
+      "placeholder": "Zoek games"
+    },
+    "lang": {
+      "title": "Taal",
+      "button": "Taal: {language}"
+    },
+    "footer": {
+      "tagline": "© Magic Cups · Gratis spelen, gratis bouwen",
+      "safety": "Veiligheid",
+      "parents": "Voor volwassenen",
+      "builders": "Voor makers"
+    }
+  },
+  "nav": {
+    "home": "Start",
+    "search": "Zoeken",
+    "build": "Bouwen",
+    "friends": "Vrienden",
+    "me": "Ik"
+  },
+  "errors": {
+    "goHome": "Naar de start",
+    "notFound": {
+      "title": "Niet gevonden",
+      "heading": "Oeps! De kaart is kwijt.",
+      "text": "We konden die pagina niet vinden."
+    },
+    "broken": {
+      "title": "Oeps",
+      "heading": "Er ging iets kapot",
+      "text": "Ons team weet het al. Probeer het zo nog eens."
+    },
+    "api": {
+      "notFound": "Niet gevonden",
+      "tooBig": "Dat is te groot.",
+      "badRequest": "Ongeldig verzoek.",
+      "server": "Er ging bij ons iets mis. Probeer het nog eens.",
+      "slowDown": "Wow, rustig aan! Probeer het over een minuutje nog eens.",
+      "signInFirst": "Log eerst in of speel als gast.",
+      "needAccount": "Maak een gratis account om dit te doen.",
+      "crossSite": "Verzoek van een andere website geblokkeerd."
+    }
+  },
+  "time": {
+    "justNow": "zojuist"
+  },
+  "textfilter": {
+    "name": {
+      "chars": "Gebruik 3 tot 16 letters, cijfers of liggende streepjes.",
+      "notAllowed": "Die naam mag niet. Probeer iets anders.",
+      "numbers": "Geen lange getallen in je naam, alsjeblieft. Telefoonnummers blijven geheim.",
+      "birthYear": "Laat je geboortejaar uit je naam, alsjeblieft.",
+      "realName": "Dat lijkt op een echte naam. Kies liever een leuke verzonnen naam."
+    },
+    "text": {
+      "notAllowed": "Die tekst mag niet op Magic Cups.",
+      "personal": "Zet geen telefoonnummers, e-mails, adressen of links op Magic Cups."
+    }
+  },
+  "auth": {
+    "password": {
+      "short": "Je wachtwoord moet minstens 6 tekens hebben.",
+      "long": "Dat wachtwoord is te lang.",
+      "easy": "Dat wachtwoord is te makkelijk te raden. Mix woorden en cijfers.",
+      "name": "Zet je naam niet in je wachtwoord."
+    },
+    "page": {
+      "titleSignup": "Account maken",
+      "titleLogin": "Inloggen",
+      "headingUpgrade": "Bewaar wat je hebt gedaan",
+      "headingSignup": "Maak een gratis account",
+      "headingLogin": "Welkom terug!",
+      "introSignup": "Alleen een leuke naam en een wachtwoord. Geen e-mail nodig.",
+      "introLogin": "Log in met je Magic Cups-naam en wachtwoord.",
+      "upgradeNotice": "Je speelt als <b>{name}</b>. Alles wat je hebt bewaard, gaat mee.",
+      "nameLabelSignup": "Kies een leuke naam",
+      "nameLabelLogin": "Je Magic Cups-naam",
+      "namePlaceholder": "bijvoorbeeld RocketPanda",
+      "nameHint": "3 tot 16 letters of cijfers. Gebruik niet je echte naam.",
+      "passwordLabel": "Wachtwoord",
+      "passwordHint": "Minstens 6 tekens. Vraag een volwassene om je te helpen het te onthouden.",
+      "submitSignup": "Maak mijn account",
+      "submitLogin": "Inloggen",
+      "or": "of",
+      "playAsGuest": "🎮 Speel als gast",
+      "haveAccount": "Heb je al een account?",
+      "signInLink": "Inloggen",
+      "newHere": "Nieuw hier?",
+      "signupLink": "Maak een gratis account"
+    },
+    "api": {
+      "tooManyGuests": "Te veel gasten vanaf hier. Probeer het later nog eens.",
+      "nameTaken": "Die naam is al bezet. Zet er een cijfer of een ander woord bij.",
+      "tooManyTries": "Te veel pogingen. Wacht een paar minuten en probeer het dan opnieuw.",
+      "wrongLogin": "Die naam en dat wachtwoord passen niet bij elkaar.",
+      "paused": "Dit account is gepauzeerd. Een volwassene kan contact met ons opnemen.",
+      "pickAvatar": "Kies een van de avatars.",
+      "pickColor": "Kies een van de kleuren.",
+      "pickLanguage": "Kies een van de talen."
+    }
+  },
+  "me": {
+    "title": "Ik",
+    "guestTag": "gast",
+    "guestNotice": "Je bent een gast. <a href=\"{href}\"><b>Maak een gratis account</b></a> om je games en voortgang op elk apparaat te houden, games te bouwen en met vrienden te chatten.",
+    "tiles": {
+      "profile": "Mijn profiel",
+      "games": "Mijn games",
+      "friends": "Vrienden",
+      "chat": "Chat",
+      "money": "Mijn geld",
+      "admin": "Beheer"
+    },
+    "look": {
+      "heading": "Kies je look",
+      "avatarGroup": "Avatar",
+      "avatarLabel": "Avatar {emoji}",
+      "colorHeading": "Kleur",
+      "colorGroup": "Kleur",
+      "colorLabel": "Kleur {color}"
+    },
+    "language": {
+      "heading": "Taal",
+      "text": "Magic Cups, de menu's en de Bouwer gebruiken deze taal.",
+      "label": "Taal",
+      "save": "Opslaan"
+    },
+    "chat": {
+      "heading": "Chat",
+      "text": "Met de chat stuur je berichten naar vrienden die je met een vriendcode hebt toegevoegd. Volwassenen: hier kun je de chat uitzetten.",
+      "toggle": "Chatten met mijn vrienden staat aan"
+    },
+    "signOut": {
+      "heading": "Uitloggen",
+      "guest": "Gasten verliezen hun voortgang als ze uitloggen.",
+      "account": "Tot snel!",
+      "button": "Uitloggen"
+    }
+  },
+  "cards": {
+    "new": "Nieuw",
+    "noRatings": "Nog geen beoordelingen",
+    "starsLabel": "{stars} van de 5 sterren uit {count, plural, one {# beoordeling} other {# beoordelingen}}",
+    "playing": "{count} spelen",
+    "gameBy": "{title}, door {name}",
+    "by": "door {name}",
+    "plays": "{count, plural, one {{n}× gespeeld} other {{n}× gespeeld}}",
+    "sponsored": "Reclame",
+    "sponsoredLabel": "Reclame: {title}",
+    "seeAll": "Alles zien",
+    "scrollBack": "{title} terug scrollen",
+    "scrollForward": "{title} verder scrollen"
+  },
+  "vis": {
+    "private": "Alleen ik",
+    "friends": "Vrienden",
+    "public": "Iedereen"
+  },
+  "status": {
+    "hidden": "Verborgen",
+    "inReview": "Wordt bekeken",
+    "needsChanges": "Moet anders",
+    "suspended": "Uitgezet",
+    "draft": "Concept"
+  },
+  "categories": {
+    "arcade": "Arcade",
+    "sports": "Sport",
+    "puzzle": "Puzzel",
+    "words": "Woorden",
+    "board": "Bordspel",
+    "adventure": "Avontuur",
+    "learning": "Leren",
+    "music": "Muziek",
+    "silly": "Grappig"
+  },
+  "ads": {
+    "house": {
+      "house-build": {
+        "title": "Maak je eigen game",
+        "text": "Vertel de Bouwer je idee. Hij maakt de game!"
+      },
+      "house-friends": {
+        "title": "Nodig een vriend uit",
+        "text": "Deel je vriendcode en speel samen."
+      },
+      "house-new": {
+        "title": "Nieuw deze week",
+        "text": "Verse games van makers zoals jij."
+      },
+      "house-rate": {
+        "title": "Beoordeel je favoriet",
+        "text": "Tik op de sterren zodat anderen hem vinden."
+      },
+      "house-words": {
+        "title": "Probeer een woordspel",
+        "text": "Spel, raad en vind verstopte woorden."
+      },
+      "house-build-words": {
+        "title": "Bouw een woordspel",
+        "text": "Maak van je woordjeslijst een game!"
+      },
+      "house-puzzle": {
+        "title": "Tijd om te puzzelen",
+        "text": "Breinbrekers voor snelle denkers."
+      },
+      "house-sports": {
+        "title": "Scoor een doelpunt",
+        "text": "Sportgames voor elk seizoen."
+      },
+      "house-build-sports": {
+        "title": "Bouw een sportgame",
+        "text": "Kies een sport. De Bouwer doet de rest."
+      },
+      "house-arcade": {
+        "title": "Arcade-klassiekers",
+        "text": "Spring, ontwijk en verbeter je record."
+      },
+      "house-build-arcade": {
+        "title": "Bouw een arcadegame",
+        "text": "Ontwijken, springen, pakken. Jij kiest de regels!"
+      },
+      "house-adventure": {
+        "title": "Ga op avontuur",
+        "text": "Ontdek kaarten, vind schatten, wees dapper."
+      },
+      "house-learning": {
+        "title": "Leer terwijl je speelt",
+        "text": "Rekenen, natuur en meer, heel leuk gemaakt."
+      },
+      "house-music": {
+        "title": "Maak muziek",
+        "text": "Tik de maat en speel een liedje."
+      },
+      "house-silly": {
+        "title": "Iets grappigs",
+        "text": "Games waar je om moet giechelen."
+      },
+      "house-board": {
+        "title": "Spelletjesavond",
+        "text": "Klassieke spellen om met je familie te spelen."
+      },
+      "house-playing": {
+        "title": "Wordt nu gespeeld",
+        "text": "Kijk wat iedereen vandaag speelt."
+      }
+    }
+  },
+  "home": {
+    "build": {
+      "title": "Maak je eigen game",
+      "text": "Vertel de Bouwer je idee. Voeg een tekening of foto toe voor ideeën. Hij maakt de game voor je!",
+      "openStudio": "Open mijn Studio",
+      "start": "Begin met bouwen"
+    },
+    "rails": {
+      "featured": "Uitgelicht",
+      "playing": "Nu gespeeld",
+      "friends": "Van je vrienden",
+      "popular": "Populair",
+      "rated": "Top",
+      "new": "Nieuw",
+      "mine": "Mijn games"
+    },
+    "hero": {
+      "label": "Uitgelichte game",
+      "kicker": "Uitgelichte game",
+      "play": "Spelen",
+      "more": "Meer info",
+      "about": "Over {title}"
+    },
+    "categories": "Categorieën",
+    "empty": {
+      "title": "Nog geen games",
+      "text": "Bouw jij de eerste?",
+      "action": "Bouw een game"
+    }
+  },
+  "search": {
+    "title": "Zoeken",
+    "titleQuery": "“{text}”",
+    "label": "Zoek games of makers",
+    "placeholder": "Probeer “haai”, “voetbal” of de naam van een maker",
+    "category": "Categorie",
+    "all": "Alles",
+    "sortLabel": "Sorteer:",
+    "sort": "Sorteren",
+    "sorts": {
+      "relevance": "Beste match",
+      "popular": "Populair",
+      "rated": "Top",
+      "new": "Nieuw",
+      "playing": "Nu live"
+    },
+    "builders": "Makers",
+    "games": "Games",
+    "gameCount": "{count, plural, one {# game} other {# games}}",
+    "noMatch": "Geen games gevonden voor “{text}”",
+    "noneYet": "Hier zijn nog geen games",
+    "tryCategory": "Probeer liever een categorie:"
+  },
+  "info": {
+    "safety": {
+      "title": "Veiligheid",
+      "description": "Zo houdt Magic Cups kinderen veilig: games in een afgesloten doos, elke game wordt gecontroleerd, chatten alleen met vrienden uit het echte leven.",
+      "heading": "Zo houden we Magic Cups veilig",
+      "box": {
+        "h": "Games zitten in een doos",
+        "p1": "Elke game draait in een afgesloten doos (een sandbox). Games kunnen niet op internet, kunnen je account niet zien en kunnen geen andere pagina's openen."
+      },
+      "checked": {
+        "h": "Elke game wordt gecontroleerd",
+        "p1": "Een controle-robot leest elke versie van elke game. Games voor iedereen worden ook nog zorgvuldig bekeken voordat iemand anders ze kan spelen.",
+        "p2": "Glipt er toch iets doorheen? Tik dan op de gamepagina op 🚩 Melden. Als drie mensen een game melden, wordt hij verborgen tot ons team ernaar kijkt."
+      },
+      "chat": {
+        "h": "Chatten alleen met vrienden",
+        "p1": "Je kunt alleen chatten met mensen die je hebt toegevoegd met hun geheime vriendcode. De chat blokkeert lelijke woorden, telefoonnummers, e-mails, adressen en links.",
+        "p2": "Je kunt iedereen altijd blokkeren of melden. Volwassenen kunnen de chat uitzetten op de pagina Ik."
+      },
+      "personal": {
+        "h": "Geen persoonlijke gegevens",
+        "p1": "We vragen nooit naar je e-mail, echte naam, leeftijd of adres. Kies een leuke verzonnen naam."
+      },
+      "ads": {
+        "h": "Reclame is rustig",
+        "p1": "Een paar kleine kaartjes zeggen “Reclame”. Ze staan nooit in of over een game, maken nooit geluid en springen nooit open."
+      }
+    },
+    "parents": {
+      "title": "Voor volwassenen",
+      "description": "Wat Magic Cups is, welke gegevens we bewaren, hoe vrienden en chat werken en hoe de AI-Bouwer kindveilig blijft.",
+      "heading": "Voor volwassenen",
+      "what": {
+        "h": "Wat is Magic Cups?",
+        "p1": "Een gratis website waar kinderen webgames spelen en hun eigen games bouwen door ze te beschrijven aan een AI-Bouwer. Geen downloads, geen aankopen, geen lootboxen, geen spelgeld dat echt geld kost."
+      },
+      "data": {
+        "h": "Welke gegevens we bewaren",
+        "p1": "Een gebruikersnaam, een wachtwoord (versleuteld opgeslagen), opgeslagen spelvoortgang, scores, beoordelingen, likes en de taal die je kind heeft gekozen. Geen e-mail, geen echte naam, geen leeftijd, geen locatie. Geen trackers van derden."
+      },
+      "friends": {
+        "h": "Vrienden en chat",
+        "p1": "Vrienden worden alleen toegevoegd met een vriendcode van 6 tekens, nooit door op namen te zoeken. De chat is alleen tekst tussen geaccepteerde vrienden, wordt gefilterd op grof taalgebruik en persoonlijke gegevens, heeft een berichtenlimiet en kan worden gemeld. Je kunt de chat uitzetten op de pagina Ik."
+      },
+      "builder": {
+        "h": "De Bouwer",
+        "p1": "De Bouwer volgt vaste regels voor kindveiligheid: geen bloederige beelden, geen horror of schrikmomenten, geen gokken, geen echte merken of echte mensen, geen chat of verzameling van gegevens in games, geen links naar buiten. Verzoeken die de regels breken, worden vriendelijk geweigerd."
+      },
+      "languages": {
+        "h": "Talen",
+        "p1": "Kies een taal met de 🌐-knop bovenaan elke pagina of op de pagina Ik. De Bouwer antwoordt in die taal en schrijft ook de teksten in nieuwe games in die taal. Dezelfde veiligheidsfilters controleren elk bericht, in elke taal."
+      },
+      "money": {
+        "h": "Geld",
+        "p1": "Reclame betaalt het platform en makers krijgen een deel, op basis van hoe vaak hun games worden gespeeld. Uitbetalingen boven $10 worden door ons team met de hand afgehandeld."
+      }
+    },
+    "sdk": {
+      "title": "Voor makers",
+      "description": "De kleine helper die elke Magic Cups-game krijgt: opslaan, scores, effecten, geluiden en de taal van de speler.",
+      "heading": "Game-SDK",
+      "brb": {
+        "p1": "Elke game krijgt een kleine helper die BRB heet. {get} en {set} slaan de voortgang van elke speler op. localStorage werkt ook en wordt in de cloud bewaard.",
+        "p2": "{submit} zet een score op de ranglijst (alleen de beste score telt). {over} beëindigt een ronde.",
+        "p3": "{fx} maken je game levendig.",
+        "p4": "{full} en {orient} vragen het netjes aan de pagina.",
+        "p5": "{lang} is de taal van de speler (zoals \"fr\" of \"ar\") en {dir} is \"rtl\" voor talen die van rechts naar links gaan, zodat een game de taal van de speler kan spreken."
+      },
+      "rules": {
+        "h": "Regels",
+        "p1": "Games mogen geen internet, cookies, formulieren, pop-ups of links gebruiken. Lettertypes van Google Fonts en bibliotheken van cdnjs mogen wel. Houd elke game kleiner dan 2 MB."
+      }
+    }
+  },
+  "game": {
+    "notShared": "Deze game bestaat niet, of hij is niet met je gedeeld.",
+    "notReadyYet": "Deze game is nog niet klaar.",
+    "play": "Spelen",
+    "notReady": "Nog niet klaar om te spelen.",
+    "like": "Like",
+    "share": "Delen",
+    "edit": "Bewerken",
+    "updateWaiting": "een update wacht op controle",
+    "reviewer": "Controleur: “{note}”",
+    "stats": {
+      "ratings": "{count, plural, one {{n} beoordeling} other {{n} beoordelingen}}",
+      "noRatings": "nog geen beoordelingen",
+      "playingNow": "spelen nu",
+      "plays": "keer gespeeld",
+      "likes": "{count, plural, one {like} other {likes}}"
+    },
+    "about": {
+      "heading": "Over deze game",
+      "noDescription": "Nog geen beschrijving.",
+      "players": "1 tot {count} spelers",
+      "onePlayer": "1 speler",
+      "sideways": "Het best liggend",
+      "updated": "Bijgewerkt {when}"
+    },
+    "rate": {
+      "heading": "Beoordeel hem",
+      "yourRating": "Jouw beoordeling",
+      "stars": "{count, plural, one {# ster} other {# sterren}}",
+      "thanks": "Bedankt! Tik wanneer je wilt om je sterren te veranderen.",
+      "tap": "Tik op een ster.",
+      "guest": "Speel als gast om te beoordelen"
+    },
+    "leaderboard": {
+      "heading": "Ranglijst",
+      "empty": "Nog geen scores. Wees de eerste!"
+    },
+    "more": {
+      "label": "Meer",
+      "heading": "Meer zoals deze"
+    },
+    "shareText": {
+      "private": "Alleen jij kunt deze game openen. Zet hem op Vrienden of Iedereen om hem te delen.",
+      "friends": "Alleen je vrienden op Magic Cups kunnen deze link openen.",
+      "public": "Iedereen met de link kan deze game spelen."
+    },
+    "report": {
+      "button": "Melden",
+      "already": "Bedankt, we hebben je melding al.",
+      "thanks": "Bedankt dat je het ons vertelt. Een volwassene uit ons team gaat ernaar kijken.",
+      "reasons": {
+        "scary": "Hij is te eng",
+        "mean": "Hij is gemeen of onbeleefd",
+        "grownup": "Er zit iets voor volwassenen in",
+        "broken": "Hij werkt niet",
+        "copy": "Hij is nagemaakt van iemand anders",
+        "other": "Iets anders"
+      }
+    },
+    "api": {
+      "notFound": "Game niet gevonden.",
+      "pickStars": "Kies 1 tot 5 sterren.",
+      "saveFailed": "We konden dat niet opslaan.",
+      "badScore": "Ongeldige score.",
+      "pickReason": "Kies een reden."
+    }
+  },
+  "play": {
+    "backTo": "Terug naar {title}",
+    "rate": "Beoordeel",
+    "fullScreen": "Groot scherm",
+    "turn": {
+      "heading": "Draai je telefoon",
+      "text": "Deze game is het leukst als je telefoon ligt.",
+      "ok": "Toch spelen"
+    },
+    "frameExpired": "Deze gamelink is verlopen. Ga terug en druk nog eens op Spelen.",
+    "defaultPlayer": "Speler"
+  },
+  "friends": {
+    "title": "Vrienden",
+    "chat": "Chat",
+    "playing": "Speelt {game}",
+    "notPlaying": "Speelt nu niet",
+    "needAccount": {
+      "title": "Maak een gratis account om vrienden toe te voegen",
+      "text": "Voor vrienden en chat heb je een gratis account nodig. Alleen een naam en een wachtwoord, geen e-mail.",
+      "action": "Maak een gratis account",
+      "actionGuest": "Maak mijn gratis account",
+      "guestNote": "Gasten kunnen elke game spelen. Je voortgang gaat mee als je een account maakt."
+    },
+    "code": {
+      "heading": "Jouw vriendcode",
+      "copy": "Kopieer",
+      "hint": "Geef deze code alleen aan vrienden die je in het echte leven kent. Zij typen hem in om je een vriendverzoek te sturen."
+    },
+    "add": {
+      "heading": "Vriend toevoegen",
+      "label": "Typ de vriendcode",
+      "button": "Toevoegen",
+      "hint": "6 letters en cijfers. Hoofdletters maken niet uit."
+    },
+    "requests": {
+      "heading": "Vriendverzoeken",
+      "accept": "Accepteren",
+      "decline": "Weigeren"
+    },
+    "waiting": {
+      "heading": "Wachten op een ja",
+      "asked": "Gevraagd {when}",
+      "cancel": "Annuleren"
+    },
+    "list": {
+      "heading": "Je vrienden",
+      "profile": "Profiel",
+      "remove": "Verwijderen",
+      "shared": "Games die {name} deelde",
+      "emptyTitle": "Nog geen vrienden",
+      "emptyText": "Ruil vriendcodes met iemand die je in het echte leven kent, zoals je broer, zus of een klasgenoot."
+    },
+    "blocked": {
+      "heading": "Geblokkeerd",
+      "text": "Geblokkeerde vrienden kunnen niet met je chatten. Deblokkeer ze om weer te chatten.",
+      "unblock": "Deblokkeren"
+    },
+    "api": {
+      "tooManyTries": "Veel pogingen! Wacht een paar minuten en check de code dan samen met je vriend.",
+      "gone": "Dat verzoek is er niet meer. Probeer de pagina opnieuw te laden.",
+      "accepted": "Jij en {name} zijn nu vrienden! 🎉",
+      "declined": "Verzoek geweigerd.",
+      "canceled": "Verzoek geannuleerd.",
+      "removed": "{name} is niet meer je vriend.",
+      "needAccount": "Maak een gratis account om vrienden toe te voegen.",
+      "typeCode": "Typ eerst de code van je vriend.",
+      "codeLength": "Een vriendcode heeft 6 letters en cijfers. Check hem en probeer het opnieuw.",
+      "codeNotFound": "We konden die code niet vinden. Check elke letter en probeer het opnieuw.",
+      "ownCode": "Dat is je eigen code! Geef hem aan een vriend, zodat die jou kan toevoegen.",
+      "guest": "Die speler is een gast. Er is eerst een gratis account nodig voordat jullie vrienden kunnen worden.",
+      "already": "Jij en {name} zijn al vrienden.",
+      "alreadyAsked": "Je hebt {name} al gevraagd. Wacht tot er ja wordt gezegd.",
+      "sent": "Vriendverzoek naar {name} gestuurd! Nu moet {name} nog ja zeggen."
+    }
+  },
+  "profile": {
+    "notFound": "We konden die speler niet vinden.",
+    "description": "{name} op Magic Cups",
+    "team": "Magic Cups-team",
+    "yourFriend": "Je vriend",
+    "badgesLabel": "Badges",
+    "changeLook": "Mijn look veranderen",
+    "answerRequest": "Vriendverzoek beantwoorden",
+    "requestSent": "Vriendverzoek gestuurd",
+    "yourProfile": "Dit is je profiel. Iedereen ziet je naam, look, games en badges. Niemand ziet je vrienden.",
+    "statsLabel": "Cijfers",
+    "stats": {
+      "games": "{count, plural, one {game} other {games}}"
+    },
+    "gamesBy": "Games van {name}",
+    "noGames": "Nog geen games om te laten zien",
+    "noGamesMe": "Bouw er een en deel hem!",
+    "favorites": "Favoriete games",
+    "noFavorites": "Nog geen favorieten.",
+    "beFriends": "Wil je vrienden worden? Ruil vriendcodes in het echte leven en voeg de code toe op de pagina {link}.",
+    "guest": {
+      "tag": "Gastspeler",
+      "text": "Gasten kunnen elke game spelen. Als ze een gratis account maken, krijgen ze ook een profiel.",
+      "action": "Zoek een game"
+    },
+    "badges": {
+      "builder": {
+        "label": "Maker",
+        "why": "Heeft een game die online staat"
+      },
+      "hit": {
+        "label": "Hitmaker",
+        "why": "Een game die 100+ keer is gespeeld"
+      },
+      "top": {
+        "label": "Topgame",
+        "why": "Een game met 4,5+ sterren van 5 of meer spelers"
+      },
+      "player": {
+        "label": "Speler",
+        "why": "Heeft 10+ verschillende games gespeeld"
+      },
+      "friendly": {
+        "label": "Vriendelijk",
+        "why": "Heeft 3+ vrienden"
+      }
+    }
+  },
+  "chat": {
+    "title": "Chat",
+    "notFound": "We konden die chat niet vinden.",
+    "allChats": "Alle chats",
+    "block": "Blokkeren",
+    "goToFriends": "Naar Vrienden",
+    "offNotice": "Je chat staat uit. Een volwassene kan hem aanzetten bij {link}.",
+    "blockedToast": "{name} is geblokkeerd. Je ziet de berichten van {name} niet meer.",
+    "unblockedToast": "{name} is gedeblokkeerd.",
+    "guest": {
+      "title": "Maak een gratis account om te chatten",
+      "text": "Je kunt alleen chatten met vrienden die je met een vriendcode toevoegt. Je hebt een gratis account nodig: alleen een naam en een wachtwoord, geen e-mail."
+    },
+    "safety": {
+      "heading": "Veilig chatten",
+      "text": "Chat alleen met vrienden die je in het echte leven kent. Vertel nooit je adres, school of telefoonnummer. Zeg het tegen een volwassene als iets niet goed voelt."
+    },
+    "inbox": {
+      "label": "Chats met vrienden",
+      "sayHi": "Zeg hoi! 👋",
+      "off": "Chat staat uit",
+      "emptyTitle": "Nog geen vrienden om mee te chatten",
+      "emptyText": "Je kunt alleen chatten met vrienden. Ruil vriendcodes met iemand die je in het echte leven kent.",
+      "sharedGame": "Deelde een game",
+      "you": "Jij: {text}"
+    },
+    "thread": {
+      "title": "Chat met {name}",
+      "label": "Berichten met {name}",
+      "empty": "Nog geen berichten. Zeg hoi met een snel bericht! 👋",
+      "quickLabel": "Snelle berichten",
+      "shareGame": "Deel een game",
+      "game": "Game",
+      "messageTo": "Bericht aan {name}",
+      "placeholder": "Typ een bericht",
+      "send": "Stuur"
+    },
+    "quick": {
+      "hi": "👋 Hoi!",
+      "gg": "Goed gespeeld! 🎉",
+      "play": "Samen spelen?",
+      "nice": "Goed gedaan!",
+      "brb": "Ben zo terug!",
+      "again": "Nog een keer?",
+      "thanks": "Bedankt!",
+      "bye": "Doei! 👋"
+    },
+    "cant": {
+      "guest": "Maak een gratis account om met vrienden te chatten.",
+      "banned": "Je account is gepauzeerd, dus de chat staat uit.",
+      "missing": "Deze speler is nu niet op Magic Cups.",
+      "self": "Je kunt niet met jezelf chatten. Kies een vriend!",
+      "guest_other": "Je kunt alleen chatten met vrienden die een gratis account hebben.",
+      "not_friends": "Je kunt alleen chatten met vrienden. Voeg {name} eerst toe met de vriendcode, en dan moet {name} ja zeggen.",
+      "chat_off_me": "Je chat staat uit. Een volwassene kan hem aanzetten bij Ik.",
+      "chat_off_other": "{name} heeft de chat uitgezet.",
+      "blocked_by_me": "Je hebt {name} geblokkeerd. Je kunt {name} deblokkeren op de pagina Vrienden.",
+      "blocked_by_other": "Je kunt nu niet met {name} chatten."
+    },
+    "paused": "De chat neemt even pauze. Je kunt weer typen over {minutes, plural, one {# minuut} other {# minuten}}. Snelle berichten kun je nog wel sturen.",
+    "errors": {
+      "empty": "Typ eerst een bericht.",
+      "long": "Dat bericht is te lang. Gebruik minder dan {max} tekens.",
+      "kind": "Kies iets om te sturen.",
+      "rate": "Wow, dat zijn veel berichten! Wacht een paar seconden.",
+      "daily": "Dat was alle chat voor vandaag. Kom morgen terug!",
+      "quick": "Kies een van de snelle berichten.",
+      "game": "We konden die game niet vinden.",
+      "gameHidden": "{name} kan die game niet openen. Deel een game die voor vrienden of voor iedereen is.",
+      "messageNotFound": "We konden dat bericht niet vinden."
+    },
+    "blocked": {
+      "words": "Oeps! In dat bericht staan woorden die niet mogen. Probeer het op een aardigere manier te zeggen.",
+      "phone": "Dat hebben we niet verstuurd. Telefoonnummers blijven geheim op Magic Cups, ook bij vrienden.",
+      "email": "Dat hebben we niet verstuurd. E-mailadressen blijven geheim op Magic Cups.",
+      "link": "Dat hebben we niet verstuurd. Links mogen niet in de chat. Deel liever een game met de 🎮-knop.",
+      "address": "Dat hebben we niet verstuurd. Adressen blijven geheim. Vertel nooit waar je woont.",
+      "contact": "Dat hebben we niet verstuurd. Houd de chat op Magic Cups: geen andere apps, geen scholen en niet ergens afspreken.",
+      "handle": "Dat hebben we niet verstuurd. Houd de chat op Magic Cups: geen gebruikersnamen van andere apps."
+    },
+    "report": {
+      "thanks": "Bedankt dat je het ons vertelt. We hebben dat bericht verborgen en een volwassene uit ons team gaat ernaar kijken.",
+      "reasons": {
+        "mean": "Gemeen of onbeleefd",
+        "scary": "Eng",
+        "personal": "Vroeg naar privégegevens",
+        "grownup": "Iets voor volwassenen",
+        "spam": "Spam",
+        "other": "Iets anders"
+      }
+    }
+  },
+  "build": {
+    "title": "Bouw een game",
+    "hero": {
+      "heading": "Maak je eigen game door te chatten!",
+      "text": "Vertel de Bouwer je idee. Hij bouwt de game, en jij kunt hem steeds blijven veranderen."
+    },
+    "newGame": "Nieuwe game",
+    "startFrom": "Begin met een voorbeeld",
+    "startFromLabel": "Begin met {title}",
+    "twoPlayers": "2 spelers",
+    "updateWaiting": "Update wacht op controle",
+    "changed": "Veranderd {when}",
+    "empty": "Tik op “Nieuwe game” of kies hierboven een voorbeeld. Je games verschijnen dan hier."
+  },
+  "studio": {
+    "title": "Studio: {title}",
+    "notYours": "Deze game bestaat niet, of je mag hem niet bewerken.",
+    "newGameTitle": "Mijn nieuwe game",
+    "startedFrom": "Begonnen met het voorbeeld {title}",
+    "shareText": {
+      "private": "Alleen jij kunt hem spelen.",
+      "friends": "Alleen jij en je vrienden op Magic Cups kunnen hem spelen.",
+      "public": "Iedereen op Magic Cups kan hem vinden en spelen, na een snelle veiligheidscheck."
+    },
+    "status": {
+      "hidden": "Even verborgen",
+      "suspended": "Uitgezet door ons team",
+      "live": "Online: {who}"
+    },
+    "top": {
+      "icon": "Verander het game-icoon",
+      "name": "Naam van de game",
+      "tools": "Game-gereedschap",
+      "save": "Opslaan",
+      "versions": "Versies",
+      "settings": "Opties",
+      "publish": "Publiceren"
+    },
+    "chat": {
+      "label": "Chat met de Bouwer",
+      "builder": "Bouwer",
+      "pro": "Pro-kwaliteit",
+      "proTitle": "Pro-kwaliteit duurt langer, maar bouwt mooiere games",
+      "attach": "Voeg een plaatje of bestand toe",
+      "inputLabel": "Bericht aan de Bouwer",
+      "placeholder": "Vertel je idee…"
+    },
+    "preview": {
+      "label": "Voorbeeld van de game",
+      "size": "Grootte van het voorbeeld",
+      "phone": "Telefoon",
+      "tablet": "Tablet",
+      "sideways": "Liggend",
+      "reload": "Herladen",
+      "emptyTitle": "Je game verschijnt hier.",
+      "emptyText": "Vertel de Bouwer je idee om te beginnen."
+    },
+    "templates": {
+      "quiz": {
+        "title": "Quizshow",
+        "description": "Tien snelle meerkeuzevragen met een tijdbalk, bonussen voor goede reeksen en een juichende uil."
+      },
+      "runner": {
+        "title": "Eindeloze Renner",
+        "description": "Spring over bulten, pak munten en race naar de regenboogvlag terwijl het steeds sneller gaat."
+      },
+      "catch": {
+        "title": "Vang wat er valt",
+        "description": "Schuif het mandje om lekker fruit te vangen, ontwijk de vieze dingen en maak grote combo's."
+      },
+      "memory": {
+        "title": "Memory",
+        "description": "Draai kaartjes om en vind de emoji-paren in drie levels, versla de klok en verdien sterren."
+      },
+      "word": {
+        "title": "Woordenbouwer",
+        "description": "Een woordspel voor beginnende lezers: vul de ontbrekende letter in en zet daarna woorden in de goede volgorde met plaatjes als hint."
+      },
+      "duel": {
+        "title": "Duel voor twee",
+        "description": "Twee spelers, één scherm: wacht op het groene licht en tik als eerste om de snack te pakken. Wie het eerst drie keer wint."
+      },
+      "board": {
+        "title": "Race-bordspel",
+        "description": "Gooi de dobbelsteen en race over een kronkelpad met raketboosts en glijbanen. Speel tegen een vriend of de computer."
+      }
+    },
+    "api": {
+      "tooManyGames": "Je hebt al heel veel games gemaakt! Probeer het straks nog eens.",
+      "pickStarter": "Kies een van de voorbeelden.",
+      "buildingOff": "Bouwen staat uit voor dit account.",
+      "builderBreak": "De Bouwer heeft even pauze nodig. Probeer het over een minuutje nog eens.",
+      "wentWrong": "Er ging iets mis. Probeer het nog eens.",
+      "nameIt": "Geef je game een naam.",
+      "pickIcon": "Kies een icoon uit de lijst.",
+      "pickCategory": "Kies een categorie.",
+      "pickCover": "Kies een omslag.",
+      "pickDirection": "Kies een richting.",
+      "versionNotFound": "Die versie is niet gevonden.",
+      "restored": "Teruggezet als versie {number}.",
+      "buildFirst": "Bouw eerst iets en sla het dan op.",
+      "savedNote": "Opgeslagen: {note}",
+      "savedDefault": "mijn favoriet tot nu toe",
+      "saved": "Opgeslagen als versie {number}.",
+      "pickWho": "Kies wie mag spelen.",
+      "notLive": "Deze game staat nog niet online. Gebruik eerst Publiceren.",
+      "updatedFriends": "Bijgewerkt voor je vrienden! De nieuwe versie wacht ook nog op een check voordat iedereen hem kan spelen.",
+      "updatedYou": "Bijgewerkt voor jou! De nieuwe versie wacht ook nog op een check voordat iedereen hem kan spelen."
+    }
+  },
+  "publish": {
+    "buildFirst": "Bouw eerst je game en deel hem dan.",
+    "failedScan": "In deze versie zit iets wat we nog niet kunnen delen. Vraag de Bouwer om eerst de veiligheidscheck te repareren.",
+    "private": "Opgeslagen. Alleen jij kunt hem spelen.",
+    "friends": "Gedeeld met je vrienden!",
+    "rejected": "Bij de veiligheidscontrole is gevraagd om iets te veranderen voordat de game voor iedereen kan.",
+    "updateLive": "De update staat online voor iedereen!",
+    "public": "Je game is nu voor iedereen!",
+    "updateWaiting": "Je update wacht op een snelle check. Tot die tijd spelen spelers de oude versie.",
+    "waiting": "Je game wacht op een snelle veiligheidscheck. We delen hem zodra hij is goedgekeurd."
+  },
+  "builder": {
+    "kindRefusal": "Daar kan ik niet mee helpen. Laten we iets leuks bouwen! Wat voor game wil je graag?",
+    "scanStillFailing": "De veiligheidscheck is nog niet tevreden. Tik op “Laat de Bouwer het repareren” om het opnieuw te proberen.",
+    "errors": {
+      "disabled": "Bouwen staat uit voor dit account. Een volwassene kan ons vragen het weer aan te zetten.",
+      "empty": "Typ eerst een bericht of tik op een idee.",
+      "busy": "De Bouwer is nog bezig met je vorige bericht. Even geduld!",
+      "limit": "Je hebt vandaag al je {count} berichten aan de Bouwer gebruikt. Kom morgen terug voor meer!",
+      "muddled": "De Bouwer raakte in de war. Probeer het zo nog eens."
+    },
+    "refusals": {
+      "tryThese": "Wil je een van deze proberen?",
+      "rules": {
+        "message": "Ik volg altijd de regels van Magic Cups, en niemand kan ze veranderen. Maar ik bouw heel graag een game met je!",
+        "suggestion": "Vertel me over een game die je wilt, zoals “een vos die over rivieren springt”."
+      },
+      "links": {
+        "message": "Games op Magic Cups blijven binnen de game, dus ze kunnen niet linken naar websites, video's of kanalen.",
+        "suggestion": "Wat dacht je van een geheime deur in de game die naar een bonuslevel leidt?"
+      },
+      "chat": {
+        "message": "Games op Magic Cups hebben geen chat tussen spelers. Zo blijft iedereen veilig.",
+        "suggestion": "Wat dacht je ervan als spelers elkaar aanmoedigen met grote emoji-knoppen?"
+      },
+      "personal": {
+        "message": "Games op Magic Cups vragen nooit naar namen, adressen, scholen, verjaardagen of andere privédingen. Die houden we lekker geheim!",
+        "suggestion": "Wat dacht je van een game waarin je een grappige heldennaam uit een lijst kiest?"
+      },
+      "profanity": {
+        "message": "Laten we op Magic Cups aardige woorden gebruiken.",
+        "suggestion": "Welke game gaan we bouwen? Misschien een grappige robot die sokken verzamelt?"
+      },
+      "sexual": {
+        "message": "Dat kan ik niet maken. Magic Cups-games zijn voor kinderen en gezinnen.",
+        "suggestion": "Wat dacht je van een dansfeestgame met gekke bewegingen?"
+      },
+      "selfharm": {
+        "message": "Dat klinkt echt moeilijk. Als je je verdrietig of niet veilig voelt, praat dan nu meteen met een volwassene die je vertrouwt. Jij bent belangrijk. 💛",
+        "suggestion": "Ik ben er altijd om een vrolijke game met je te bouwen, zoals een knuffelig puppy'tje dat sterren verzamelt."
+      },
+      "hate": {
+        "message": "Magic Cups is voor iedereen, dus ik kan geen games maken die gemeen zijn tegen mensen.",
+        "suggestion": "Wat dacht je van een teamgame waarin iedereen elkaar helpt om te winnen?"
+      },
+      "violence": {
+        "message": "Dat is te ruw voor Magic Cups. Tekenfilm-bonks zijn prima, maar geen bloed en geen echte mensen pijn doen.",
+        "suggestion": "Wat dacht je van gekke robots bonken met kussens, of slijm wegschieten met een bellenblazer?"
+      },
+      "scary": {
+        "message": "Laten we het leuk houden, niet eng. Magic Cups heeft geen horror en geen schrikmomenten.",
+        "suggestion": "Wat dacht je van een grappig, vriendelijk spookje dat snoep verzamelt?"
+      },
+      "drugs": {
+        "message": "Daar kan ik geen games over maken.",
+        "suggestion": "Wat dacht je van een toverdranklab waar je bruisende kleuren mengt?"
+      },
+      "gambling": {
+        "message": "Magic Cups heeft geen gokken, casino's of lootboxen.",
+        "suggestion": "Wat dacht je van een schattenjacht waarbij je sterren verdient door slim te zijn?"
+      },
+      "real_people": {
+        "message": "Ik kan geen echte mensen in games zetten. Laten we een gloednieuw personage verzinnen!",
+        "suggestion": "Wat dacht je van een superster-pinguïn die zingt en danst?"
+      },
+      "copyright": {
+        "message": "Dat personage of merk is van iemand anders, dus dat kan ik niet gebruiken. Laten we zelf iets verzinnen!",
+        "suggestion": "Wat dacht je van een eigen held, zoals een springende vos die Flits heet? 🦊"
+      },
+      "other": {
+        "message": "Dat kan ik niet bouwen op Magic Cups.",
+        "suggestion": "Wat dacht je van een game met een dappere kleine robot op avontuur?"
+      },
+      "chips": {
+        "copyright": {
+          "a": "🦊 Een springvos die Flits heet",
+          "b": "🤖 Een racende robot",
+          "c": "🐉 Een vriendelijke draak"
+        },
+        "real_people": {
+          "a": "🐧 Een superster-pinguïn",
+          "b": "🦸 Een verzonnen superheld",
+          "c": "🐶 Een puppy-popster"
+        },
+        "violence": {
+          "a": "🤖 Robots bonken met kussens",
+          "b": "🫧 Bellenblazer tegen slijm",
+          "c": "🧟 Tekenfilmzombies die niezen"
+        },
+        "scary": {
+          "a": "👻 Een vriendelijk spookje",
+          "b": "🎃 Een pompoen-vanggame",
+          "c": "🦇 Een slaperige vleermuis"
+        },
+        "gambling": {
+          "a": "🏴‍☠️ Een schattenjacht",
+          "b": "⭐ Verzamel de sterren",
+          "c": "🧩 Een puzzel met prijzen"
+        },
+        "default": {
+          "a": "🦊 Een game met een springvos",
+          "b": "🧺 Vang wat er valt",
+          "c": "❓ Een leuke quiz"
+        }
+      }
+    }
+  },
+  "uploads": {
+    "tooFast": "Dat zijn veel bestanden! Wacht een minuutje en probeer het opnieuw.",
+    "alreadySent": "Dat bestand is al naar de Bouwer gestuurd.",
+    "empty": "Dat bestand is leeg.",
+    "tooMany": "Deze game heeft al {max} plaatjes en bestanden. Meer kan niet.",
+    "badType": "Ik kan alleen plaatjes (PNG, JPEG, WebP, GIF), PDF's of tekstbestanden (TXT, MD, CSV, JSON) gebruiken.",
+    "textTooBig": "Tekstbestanden mogen maximaal 200 KB zijn.",
+    "fileTooBig": "Plaatjes en PDF's mogen maximaal 5 MB zijn.",
+    "image": {
+      "real_faces": "Op dat plaatje staat een echt persoon, dus ik kan het niet bewaren. Echte gezichten blijven privé op Magic Cups. Probeer liever een tekening of speelgoed!",
+      "personal_info": "Op dat plaatje staan privégegevens zoals een naam, school of adres, dus ik kan het niet bewaren. Probeer liever een tekening!",
+      "unsafe": "Dat plaatje past niet bij Magic Cups, dus ik kan het niet bewaren. Probeer een ander plaatje!"
+    }
+  },
+  "creator": {
+    "title": "Mijn geld",
+    "estimate": "Schatting",
+    "allGames": "Al je games",
+    "underOneCent": "minder dan 1¢",
+    "earned": "verdiend",
+    "last14": "Afgelopen 14 dagen",
+    "yourGames": "Je games",
+    "stats": {
+      "earnedSoFar": "tot nu toe verdiend",
+      "adViews": "keer reclame gezien",
+      "players": "{count, plural, one {speler} other {spelers}}",
+      "noRatings": "geen beoordelingen",
+      "averageStars": "sterren gemiddeld"
+    },
+    "chart": {
+      "barTitle": "{day}: {money}, {views} keer reclame gezien",
+      "caption": "Elke staaf is één dag. Hogere staaf = meer verdiend.",
+      "empty": "Nog niets verdiend in de afgelopen 14 dagen. Hier groeien staven als spelers de reclamekaartjes zien.",
+      "showNumbers": "Laat de getallen per dag zien",
+      "tableCaption": "Geschatte verdiensten voor elk van de afgelopen 14 dagen",
+      "day": "Dag",
+      "earned": "Verdiend (schatting)"
+    },
+    "how": {
+      "heading": "Zo werkt verdienen",
+      "p1": "Je games verdienen geld als spelers de kleine <b>Reclame</b>-kaartjes zien op de pagina van je game, of naast je game bij Start en Zoeken.",
+      "p2": "Ongeveer 1.000 keer kijken naar die kaartjes levert je games ongeveer <b>{amount}</b> op. Jij krijgt {share}% en de rest houdt Magic Cups gratis.",
+      "p3": "We laten nooit reclame zien in games of terwijl je speelt.",
+      "p4": "Je eigen bezoekjes tellen niet mee. Elke speler telt één keer per uur.",
+      "p5": "Deze getallen zijn een <b>schatting</b>. Ze worden elk uur bijgewerkt en kunnen nog veranderen nadat we op valsspelen hebben gecontroleerd."
+    },
+    "empty": {
+      "title": "Bouw een game om te gaan verdienen",
+      "text": "Als spelers je games leuk vinden, verdien je geld met de kleine reclamekaartjes die ze zien."
+    },
+    "payouts": {
+      "heading": "Uitbetalingen",
+      "ready": "klaar om uit te betalen",
+      "progress": "Op weg naar het minimumbedrag",
+      "reached": "Je hebt het minimumbedrag gehaald. Je kunt een uitbetaling aanvragen!",
+      "toGo": "Vanaf {min} kun je een uitbetaling aanvragen. Nog {left} te gaan.",
+      "ask": "Uitbetaling aanvragen",
+      "byHand": "Ons team doet elke uitbetaling met de hand. Ben je jonger dan 18, dan vragen we het eerst aan je ouder of voogd.",
+      "pending": "Wacht op betaling",
+      "paid": "Aan jou betaald",
+      "history": "Geschiedenis",
+      "notYet": "Je kunt een uitbetaling aanvragen als je {min} of meer hebt."
+    },
+    "payoutStatus": {
+      "requested": "Wacht",
+      "paid": "Betaald",
+      "cancelled": "Geannuleerd"
+    }
+  },
+  "js": {
+    "app": {
+      "wentWrong": "Er ging iets mis. Probeer het nog eens.",
+      "close": "Sluiten",
+      "playing": "{n} spelen",
+      "justNow": "zojuist"
+    },
+    "game": {
+      "needSignIn": "Tik eerst op “Speel als gast” of log in.",
+      "rated": "Je gaf {count, plural, one {# ster} other {# sterren}}. Het gemiddelde is nu {average}.",
+      "thanksRating": "Bedankt voor je beoordeling!",
+      "liked": "Geliket!",
+      "unliked": "Like weggehaald",
+      "shareTitle": "Deel deze game",
+      "link": "Link",
+      "copyLink": "Link kopiëren",
+      "linkCopied": "Link gekopieerd!",
+      "holdToCopy": "Houd je vinger erop om te kopiëren.",
+      "reportTitle": "Meld deze game",
+      "reportText": "Wat is er mis? Een volwassene uit ons team gaat ernaar kijken."
+    },
+    "play": {
+      "saveFailed": "Je voortgang kon niet worden opgeslagen.",
+      "newBest": "Nieuw record: {score}!",
+      "noFullscreen": "Volledig scherm werkt hier niet.",
+      "tapFullscreen": "Tik op de knop Groot scherm om het groot te maken.",
+      "signInToLike": "Log in of speel als gast om games te liken.",
+      "signInToRate": "Log in of speel als gast om games te beoordelen.",
+      "liked": "Geliket!",
+      "unliked": "Like weggehaald",
+      "rateTitle": "Beoordeel {title}",
+      "stars": "Sterren",
+      "starsLabel": "{count, plural, one {# ster} other {# sterren}}",
+      "thanksRating": "Bedankt voor je beoordeling!"
+    },
+    "friends": {
+      "codeCopied": "Code gekopieerd! Geef hem aan een vriend die je kent.",
+      "holdToCopy": "Houd je vinger op de code om hem te kopiëren.",
+      "typeCode": "Typ eerst de code van je vriend.",
+      "done": "Klaar!",
+      "removeTitle": "{name} verwijderen?",
+      "removeText": "Jullie zijn dan geen vrienden meer en kunnen niet chatten. Later kunnen jullie elkaar weer toevoegen met jullie codes.",
+      "removeYes": "Vriend verwijderen",
+      "removeNo": "Vriend houden",
+      "playing": "Speelt {game}",
+      "notPlaying": "Speelt nu niet"
+    },
+    "build": {
+      "gettingReady": "Even klaarmaken…"
+    },
+    "me": {
+      "lookingGood": "Ziet er goed uit!",
+      "chatOn": "Chat staat aan.",
+      "chatOff": "Chat staat uit."
+    },
+    "profile": {
+      "linkCopied": "Profiellink gekopieerd!"
+    },
+    "search": {
+      "failed": "Zoeken doet even een dutje. Probeer het nog eens."
+    },
+    "creator": {
+      "payoutRequested": "Klaar! We hebben je aanvraag voor {amount} ontvangen."
+    },
+    "chat": {
+      "sayHi": "Zeg hoi! 👋",
+      "chatOff": "Chat staat uit",
+      "newCount": "{count} nieuw",
+      "play": "Spelen",
+      "gameGone": "Deze game is niet beschikbaar.",
+      "report": "Melden",
+      "reportLabel": "Meld dit bericht",
+      "paused": "De chat neemt even pauze. Je kunt weer typen over {minutes, plural, one {# minuut} other {# minuten}}. Snelle berichten werken nog wel.",
+      "typeFirst": "Typ eerst een bericht.",
+      "noGames": "Nog geen games om te delen.",
+      "shareTitle": "Deel een game met {name}",
+      "shareText": "Je ziet alleen games die {name} kan openen.",
+      "yourGame": "Jouw game",
+      "gameShared": "Game gedeeld!",
+      "reportTitle": "Meld dit bericht",
+      "reportText": "Wat is er mis? We verbergen het voor je en een volwassene uit ons team gaat ernaar kijken.",
+      "reportBlockHint": "Je kunt {name} ook blokkeren met de knop Blokkeren bovenaan.",
+      "blockTitle": "{name} blokkeren?",
+      "blockText": "Je ziet geen berichten meer van {name}, en {name} kan je niets meer sturen. Jullie blijven vrienden, en je kunt {name} deblokkeren op de pagina Vrienden.",
+      "block": "Blokkeren",
+      "cancel": "Annuleren"
+    },
+    "studio": {
+      "docTitle": "Studio: {title} · Magic Cups",
+      "turns": "Nog {left} van {total} berichten vandaag",
+      "fixButton": "Laat de Bouwer het repareren",
+      "fixMessage": "Repareer alsjeblieft de problemen uit de veiligheidscheck in versie {number}:",
+      "buildFirst": "Bouw eerst iets!",
+      "noFullscreen": "Volledig scherm mag hier niet.",
+      "roundOver": "Ronde voorbij! Score: {score}",
+      "stillWorking": "Even geduld, de Bouwer is nog bezig!",
+      "stillFinishing": "De Bouwer is je vorige bericht nog aan het afmaken…",
+      "thinking": "De Bouwer denkt na",
+      "working": "De Bouwer is bezig…",
+      "building": "Je game wordt gebouwd…",
+      "editing": "Veranderingen maken…",
+      "noAnswer": "De Bouwer kon geen antwoord geven. Probeer het nog eens.",
+      "dropped": "Oeps, de verbinding viel weg. Probeer het nog eens.",
+      "proOn": "Pro-kwaliteit aan: langzamer, maar mooiere games.",
+      "proOff": "Pro-kwaliteit uit: snel gebouwd.",
+      "nameSaved": "Naam opgeslagen!",
+      "pickIcon": "Kies een icoon",
+      "vis": {
+        "private": "Alleen ik",
+        "friends": "Vrienden",
+        "public": "Iedereen"
+      },
+      "top": {
+        "inReview": "Wordt bekeken",
+        "publish": "Publiceren",
+        "update": "Game bijwerken",
+        "live": "Online"
+      },
+      "live": {
+        "editing": "Je bewerkt: versie {number}",
+        "nothingYet": "Nog niets gebouwd",
+        "hidden": "Deze game is even verborgen omdat spelers hem hebben gemeld. Een volwassene uit ons team kijkt er snel naar.",
+        "liveVersion": "Online: versie {number} · {who}",
+        "updateTo": "Game bijwerken naar versie {number}",
+        "waitingFriends": "Wacht op een snelle veiligheidscheck voordat iedereen kan spelen. Tot die tijd kunnen je vrienden hem spelen.",
+        "waitingYou": "Wacht op een snelle veiligheidscheck voordat iedereen kan spelen. Tot die tijd kun alleen jij hem spelen.",
+        "pendingUpdate": "Versie {pending} wacht op een snelle veiligheidscheck. Spelers spelen versie {live} tot hij is goedgekeurd.",
+        "playersOn": "Spelers spelen versie {live}. Druk op “Game bijwerken” om ze versie {number} te geven.",
+        "publicCheck": "Games voor iedereen krijgen eerst een snelle veiligheidscheck, en spelers houden de oude versie tot hij is goedgekeurd.",
+        "onlyYou": "alleen jij kunt hem zien",
+        "pendingNew": "Versie {number} wacht op een snelle veiligheidscheck. We delen hem zodra hij is goedgekeurd.",
+        "reviewer": "De controleur zegt: “{note}” Vraag de Bouwer om het te veranderen en druk dan nog eens op Bijwerken of Publiceren."
+      },
+      "safety": {
+        "chipPass": "Veilig",
+        "chipFlag": "Controle",
+        "chipFail": "Repareren",
+        "pass": "Veiligheidscheck geslaagd voor versie {number}.",
+        "flag": "Veiligheidscheck: versie {number} is goed voor jou en je vrienden, maar een mens kijkt er eerst naar voordat iedereen kan spelen.",
+        "fail": "Versie {number} kan nog niet worden gedeeld.",
+        "checking": "Versie {number} wordt gecontroleerd…"
+      },
+      "log": {
+        "versionReady": "Versie {number} is klaar!",
+        "versionFailed": "Versie {number} is gebouwd, maar de veiligheidscheck vond een probleem",
+        "seeIt": "Bekijken",
+        "thingsToTry": "Dingen om te proberen",
+        "namedIt": "Naam gegeven: {title}",
+        "whatKind": "Wat voor game zullen we maken?",
+        "hello": "Hoi! Ik ben de Bouwer 🤖 Vertel me je game-idee, of tik op een idee om te beginnen.",
+        "readyToPlay": "Je game “{title}” is klaar om te spelen in het voorbeeld! 🎉 Wat zullen we veranderen? Vertel het in je eigen woorden, of tik op een idee."
+      },
+      "startChips": {
+        "a": "🏃 Een ren- en springgame",
+        "b": "🧺 Vang wat er valt",
+        "c": "❓ Een quizgame",
+        "d": "🃏 Een memory-spel",
+        "e": "🔤 Een woordspel",
+        "f": "⚔️ Samen op één telefoon",
+        "g": "🎲 Een bordspel",
+        "h": "✨ Verras me!"
+      },
+      "nextChips": {
+        "a": "Maak het moeilijker",
+        "b": "Voeg een tweede level toe",
+        "c": "Maak van de held een draak"
+      },
+      "uploads": {
+        "remove": "{name} verwijderen",
+        "max": "Je kunt er maximaal {max} tegelijk toevoegen.",
+        "types": "Ik kan plaatjes, PDF's en tekstbestanden gebruiken.",
+        "textTooBig": "Tekstbestanden mogen maximaal 200 KB zijn.",
+        "fileTooBig": "Plaatjes en PDF's mogen maximaal 5 MB zijn.",
+        "failed": "Dat bestand kon niet worden toegevoegd."
+      },
+      "settings": {
+        "title": "Game-opties",
+        "about": "Waar gaat je game over?",
+        "kind": "Soort game",
+        "tags": "Zoekwoorden",
+        "tagsPlaceholder": "haai, zee, snel",
+        "tagsHint": "Woorden waarmee mensen hem vinden, met komma's ertussen.",
+        "orientation": "Welke kant op?",
+        "or": {
+          "any": "Maakt niet uit",
+          "portrait": "Staand",
+          "landscape": "Liggend"
+        },
+        "players": "Hoeveel spelers op één telefoon?",
+        "color": "Kaartkleur",
+        "save": "Opties opslaan",
+        "saved": "Opties opgeslagen!"
+      },
+      "covers": {
+        "sunset": "Zonsondergang",
+        "ocean": "Oceaan",
+        "forest": "Bos",
+        "candy": "Snoep",
+        "night": "Nacht",
+        "lava": "Lava",
+        "mint": "Munt",
+        "gold": "Goud"
+      },
+      "save": {
+        "buildFirst": "Bouw eerst iets en sla het dan op!",
+        "title": "Deze versie opslaan",
+        "label": "Geef hem een naam (mag je overslaan)",
+        "placeholder": "Mijn favoriet tot nu toe",
+        "hint": "Elke verandering wordt toch al bewaard. Opslaan zet er een ⭐ bij, zodat je hem later makkelijk terugvindt.",
+        "button": "Opslaan"
+      },
+      "versions": {
+        "none": "Nog geen versies. Vraag de Bouwer om je game te maken!",
+        "newVersion": "Een nieuwe versie",
+        "editing": "Bezig",
+        "bringBack": "Terugzetten",
+        "title": "Versies",
+        "hint": "“Terugzetten” kopieert een oude versie als nieuwe versie naar boven. Er gaat nooit iets verloren."
+      },
+      "share": {
+        "buildFirst": "Bouw eerst je game en deel hem dan!",
+        "link": "Link naar je game",
+        "copy": "Kopieer",
+        "titleLive": "Deel je game",
+        "titlePublish": "Publiceer je game",
+        "titleWho": "Wie mag spelen?",
+        "playersGet": "Spelers krijgen versie {number}.",
+        "pickWho": "Kies wie versie {number} mag spelen.",
+        "whoLabel": "Wie mag spelen",
+        "save": "Opslaan",
+        "publicHint": "Games voor iedereen krijgen eerst een snelle veiligheidscheck.",
+        "copied": "Link gekopieerd!",
+        "copyFailed": "Kopiëren lukte niet."
+      },
+      "update": {
+        "title": "Werk je online game bij",
+        "text": "Spelers spelen {live}. Hiermee krijgen ze {number}.",
+        "version": "versie {number}",
+        "publicText": "Omdat iedereen hem kan spelen, krijgt de update eerst een snelle veiligheidscheck. Spelers houden versie {live} tot hij is goedgekeurd.",
+        "now": "Hij wordt meteen bijgewerkt.",
+        "notYet": "Nog niet",
+        "button": "Bijwerken"
+      }
+    }
+  }
+}
