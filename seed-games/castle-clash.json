@@ -1,0 +1,14 @@
+{
+  "slug": "castle-clash",
+  "title": "Castle Clash",
+  "icon": "♞",
+  "cover": "night",
+  "category": "board",
+  "tags": "chess,strategy,2 player,robot,learn chess,puzzles,board game,sun and moon,owl",
+  "description": "Real chess between the Sun Kingdom and the Moon Kingdom, with friendly pieces that blink and cheer. Play Wizard Hoot the owl robot at four levels, play a friend on one screen, learn every piece in short lessons, and solve 24 checkmate puzzles.",
+  "orientation": "any",
+  "players_max": 2,
+  "age_rating": "everyone",
+  "featured": true,
+  "notes": "Complete chess rules (castling, en passant, promotion picker, check, checkmate, stalemate, threefold repetition, fifty-move rule, insufficient material) with SAN move list; the move generator matches the standard perft counts (window.__brbTest.perft). The robot searches in short time slices with setTimeout (no Web Worker under the frame CSP) so the page never freezes. Saves settings, robot wins, lesson stars and solved puzzles in localStorage key 'castle-clash-v1' and the game in progress in 'castle-clash-game-v1' (both through the SDK storage shim). Leaderboard: BRB.score.submit(points, 'robot wins') with points = robot wins weighted Pawn 1, Knight 2, Bishop 4, Queen 8. All art is original canvas drawing. Loads Google Fonts (Fredoka)."
+}

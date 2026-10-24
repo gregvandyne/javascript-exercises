@@ -11,7 +11,7 @@ import { importGame } from './import-game.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 // The launch games, imported in this order (the first featured one becomes the home-page hero).
-export const SEED_GAMES = ['shark-plank', 'ring-rumble', 'footy-tycoon', 'connect-four', 'happy-putt'];
+export const SEED_GAMES = ['shark-plank', 'ring-rumble', 'footy-tycoon', 'connect-four', 'happy-putt', 'castle-clash'];
 export function seed({ quiet = false } = {}) {
   const say = (...a) => { if (!quiet) console.log(...a); };
   let admin = getUserByName(config.adminUsername);
