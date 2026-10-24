@@ -1295,5 +1295,155 @@
       "ownAccountsOff": "Deze school gebruikt alleen schoolaccounts. Vraag je leerkracht om een inlogkaart.",
       "lastTeacher": "Een klas heeft minstens één leerkracht nodig."
     }
+  },
+  "lessons": {
+    "up": "Omhoog",
+    "down": "Omlaag",
+    "move": "Verplaatsen",
+    "moveTo": "Verplaatsen naar",
+    "stepsN": "{count, plural, one {# stap} other {# stappen}}",
+    "minutesN": "{count, plural, one {# minuut} other {# minuten}}",
+    "assignedN": "{count, plural, one {in # klas} other {in # klassen}}",
+    "kinds": {
+      "game": "Speel een game",
+      "build": "Bouw een game",
+      "text": "Lees of doe"
+    },
+    "library": {
+      "title": "Lessenbibliotheek",
+      "mine": "Mijn lessen",
+      "shared": "Gedeeld op mijn school",
+      "top": "Bibliotheek",
+      "path": "Mappen",
+      "newLesson": "Nieuwe les",
+      "newLessonPlaceholder": "Titel van de les, bijv. Opwarmer breuken",
+      "empty": "Hier staan nog geen lessen",
+      "emptyText": "Maak een nieuwe les, laat de AI een opzet maken, of kopieer een les die een collega heeft gedeeld."
+    },
+    "folder": {
+      "name": "Naam van de map",
+      "new": "Nieuwe map",
+      "newPlaceholder": "Nieuwe map, bijv. Periode 1",
+      "delete": "Map verwijderen",
+      "deleteConfirm": "De map {name} verwijderen? De lessen en mappen erin gaan één niveau omhoog."
+    },
+    "lesson": {
+      "title": "Titel van de les",
+      "summary": "Samenvatting",
+      "objectives": "Leerdoelen",
+      "objectivesHint": "Eén leerdoel per regel",
+      "steps": "Stappen",
+      "noSteps": "Nog geen stappen. Voeg hieronder de eerste toe.",
+      "details": "Details van de les",
+      "share": "Delen met mijn school",
+      "shareNo": "Nee, alleen ik",
+      "shareYes": "Ja, andere leerkrachten kunnen hem kopiëren",
+      "sharedChip": "Gedeeld",
+      "duplicate": "Kopie maken",
+      "duplicated": "Kopie gemaakt. Je vindt hem in je bibliotheek.",
+      "delete": "Les verwijderen",
+      "deleteConfirm": "De les {name} verwijderen? Dit kan niet ongedaan worden gemaakt.",
+      "deleteAssignedConfirm": "De les {name} verwijderen? Hij wordt ook weggehaald uit {count, plural, one {# klas} other {# klassen}}. Dit kan niet ongedaan worden gemaakt."
+    },
+    "step": {
+      "add": "Stap toevoegen",
+      "addButton": "Toevoegen",
+      "kind": "Soort",
+      "title": "Titel van de stap (optioneel)",
+      "game": "Game",
+      "gameHint": "Voor stappen van het soort “Speel een game”.",
+      "myGames": "Mijn games",
+      "schoolGames": "Gedeeld op mijn school",
+      "siteGames": "Magic Cups-games",
+      "minutes": "Minuten",
+      "body": "Instructies",
+      "bodyHint": "Wat leerlingen moeten doen. Bij “Bouw een game” is dit het idee dat ze aan de Bouwer geven, bijv. “een quiz met 8 vragen over de planeten”.",
+      "edit": "Stap bewerken",
+      "delete": "Stap verwijderen",
+      "deleteConfirm": "Deze stap verwijderen?",
+      "notShared": "Je klas kan deze game nog niet openen",
+      "notSharedHint": "Deel hem eerst met je school, of open hem in de Studio en klik op Publiceren.",
+      "shareGame": "Delen met mijn school",
+      "openStudio": "Openen in de Studio",
+      "newGame": "Maak met de Bouwer een nieuwe game voor deze les",
+      "newGameIdea": "Jouw idee voor de game",
+      "newGamePlaceholder": "bijv. een quiz met 10 vragen over breuken voor groep 6",
+      "newGameButton": "Open de Bouwer",
+      "newGameNote": "Er komt een gamestap in deze les, en de Studio opent met je idee al klaar. Publiceer de game voor je school als hij af is."
+    },
+    "ai": {
+      "button": "Opzet met AI",
+      "topic": "Waar gaat de les over?",
+      "topicPlaceholder": "bijv. De waterkringloop",
+      "minutes": "Minuten",
+      "make": "Maak de opzet",
+      "note": "Claude maakt een opzet voor een les met stappen en passende games. Je kunt alles aanpassen voordat je hem gebruikt.",
+      "done": "Hier is je opzet. Controleer elke stap en pas aan wat je wilt.",
+      "template": "Hier is een begin. Voeg je eigen stappen en games toe."
+    },
+    "assign": {
+      "title": "Toewijzen aan een klas",
+      "class": "Klas",
+      "opens": "Zichtbaar vanaf (optioneel)",
+      "due": "Inleveren op (optioneel)",
+      "button": "Toewijzen",
+      "already": "Toegewezen aan:",
+      "noClasses": "Je geeft nog geen les aan een klas op deze school.",
+      "note": "Leerlingen zien de les vanaf de dag dat hij zichtbaar wordt. Wat je later verandert, zie je terug in elke klas."
+    },
+    "class": {
+      "title": "Lessen",
+      "none": "Nog geen lessen. Wijs er een toe uit je bibliotheek.",
+      "assign": "Les toewijzen",
+      "library": "Lessenbibliotheek",
+      "unit": "Thema",
+      "unitName": "Naam van het thema",
+      "newUnit": "Nieuw thema",
+      "newUnitPlaceholder": "Nieuw thema, bijv. Breuken",
+      "emptyUnit": "Nog geen lessen in dit thema.",
+      "deleteUnit": "Thema verwijderen",
+      "deleteUnitConfirm": "Het thema {name} verwijderen? De lessen blijven in de klas.",
+      "opensOn": "Vanaf {date}",
+      "dueOn": "Inleveren op {date}",
+      "editLesson": "Les bewerken",
+      "unassign": "Uit klas halen",
+      "unassignConfirm": "{name} uit deze klas halen? De les blijft in je bibliotheek."
+    },
+    "view": {
+      "teacherPreview": "Dit zien je leerlingen.",
+      "play": "Speel {title}",
+      "build": "Begin met bouwen",
+      "notReady": "Deze game is nog niet klaar. Vraag het je leerkracht."
+    },
+    "shared": {
+      "copy": "Kopiëren naar mijn bibliotheek",
+      "copied": "Gekopieerd naar je bibliotheek!",
+      "empty": "Nog niets gedeeld",
+      "emptyText": "Als leerkrachten op je school een les delen, verschijnt die hier."
+    },
+    "template": {
+      "warmup": "Opwarmer",
+      "warmupText": "Wat weet je al over {topic}? Praat er twee minuten over met een klasgenoot.",
+      "play": "Speel {title}",
+      "build": "Bouw je eigen game",
+      "buildText": "Een quizgame met 6 vragen over {topic}",
+      "wrapup": "Afsluiting",
+      "wrapupText": "Vertel één ding dat je vandaag hebt geleerd."
+    },
+    "errors": {
+      "notFound": "We konden dat niet vinden, of je kunt het niet openen.",
+      "lessonTitle": "Geef de les een titel.",
+      "folderName": "Geef de map een naam.",
+      "unitName": "Geef het thema een naam.",
+      "folderLoop": "Een map kan niet in zichzelf staan.",
+      "stepKind": "Kies een soort stap.",
+      "pickGame": "Kies een game voor deze stap.",
+      "buildPrompt": "Schrijf het idee op dat leerlingen aan de Bouwer geven.",
+      "stepText": "Schrijf de instructies voor deze stap.",
+      "tooManySteps": "Een les kan maximaal 40 stappen hebben.",
+      "badDate": "Die datum klopt niet.",
+      "topic": "Typ waar de les over gaat.",
+      "aiFailed": "De AI kan dit nu niet maken. Probeer het over een minuutje nog eens, of maak de les zelf."
+    }
   }
 }

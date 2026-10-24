@@ -135,3 +135,19 @@ The game site stays as it is; schools are a layer on the same app and the same a
   or off; games shared inside the school ('school' visibility, a new sharing level any school member can use) and not
   public unless the school allows it; profile photos also visible to classmates and teachers. Students' own accounts
   keep their normal settings outside class.
+
+## Schools, step 2 (lesson plans)
+- **Library:** each teacher has a lesson library per school (/teach/lessons) with nested folders and their own order
+  (↑/↓ on folders and lessons; deleting a folder moves its contents up). A lesson can be shared with the school; other
+  teachers see shared lessons read-only and can copy them into their own library. School admins can edit any lesson.
+- **Lessons are steps:** read (instructions or a short text), play a game (any game the class can open: the teacher's,
+  shared in the school, or public) and build a game (the idea a student types to the Builder). If a game step uses the
+  teacher's own unshared game, the editor warns and offers "Share with my school". "Make a new game" opens the Studio
+  with the idea filled in.
+- **✨ Draft with AI:** Claude drafts title, summary, objectives and 3 to 7 steps from a topic and grade, in the
+  teacher's language, choosing only from games the teacher can use. Counts towards the AI spending cap; without an API
+  key a simple template draft is made instead. The teacher edits the draft before using it.
+- **Assigning:** lessons are assigned to classes, optionally in units, with an optional open date and due date.
+  Assignments are live links: edits to the lesson show up for every class. Students see open lessons on their class
+  page; a build step makes a game in the student's own Studio with the idea filled in.
+- **Later (step 3):** progress, scores from games, written answers and the gradebook.

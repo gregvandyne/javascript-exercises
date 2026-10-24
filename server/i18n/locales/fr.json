@@ -1294,5 +1294,155 @@
       "ownAccountsOff": "Cette école utilise uniquement des comptes école. Demande une carte de connexion à ton prof.",
       "lastTeacher": "Une classe doit avoir au moins un enseignant."
     }
+  },
+  "lessons": {
+    "up": "Monter",
+    "down": "Descendre",
+    "move": "Déplacer",
+    "moveTo": "Déplacer vers",
+    "stepsN": "{count, plural, one {# étape} other {# étapes}}",
+    "minutesN": "{count, plural, one {# minute} other {# minutes}}",
+    "assignedN": "{count, plural, one {dans # classe} other {dans # classes}}",
+    "kinds": {
+      "game": "Jouer à un jeu",
+      "build": "Créer un jeu",
+      "text": "Lire ou faire"
+    },
+    "library": {
+      "title": "Bibliothèque de leçons",
+      "mine": "Mes leçons",
+      "shared": "Partagées dans mon école",
+      "top": "Bibliothèque",
+      "path": "Dossiers",
+      "newLesson": "Nouvelle leçon",
+      "newLessonPlaceholder": "Titre de la leçon, ex. Échauffement sur les fractions",
+      "empty": "Pas encore de leçon ici",
+      "emptyText": "Créez une nouvelle leçon, laissez l’IA en rédiger une ébauche, ou copiez une leçon partagée par un collègue."
+    },
+    "folder": {
+      "name": "Nom du dossier",
+      "new": "Nouveau dossier",
+      "newPlaceholder": "Nouveau dossier, ex. 1er trimestre",
+      "delete": "Supprimer le dossier",
+      "deleteConfirm": "Supprimer le dossier {name} ? Les leçons et dossiers qu’il contient remontent d’un niveau."
+    },
+    "lesson": {
+      "title": "Titre de la leçon",
+      "summary": "Résumé",
+      "objectives": "Objectifs d’apprentissage",
+      "objectivesHint": "Un objectif par ligne",
+      "steps": "Étapes",
+      "noSteps": "Pas encore d’étape. Ajoutez la première ci-dessous.",
+      "details": "Détails de la leçon",
+      "share": "Partager avec mon école",
+      "shareNo": "Non, juste moi",
+      "shareYes": "Oui, les autres enseignants peuvent la copier",
+      "sharedChip": "Partagée",
+      "duplicate": "Faire une copie",
+      "duplicated": "Copie créée. Vous la trouverez dans votre bibliothèque.",
+      "delete": "Supprimer la leçon",
+      "deleteConfirm": "Supprimer la leçon {name} ? Cette action est irréversible.",
+      "deleteAssignedConfirm": "Supprimer la leçon {name} ? Elle sera aussi retirée de {count, plural, one {# classe} other {# classes}}. Cette action est irréversible."
+    },
+    "step": {
+      "add": "Ajouter une étape",
+      "addButton": "Ajouter l’étape",
+      "kind": "Type",
+      "title": "Titre de l’étape (facultatif)",
+      "game": "Jeu",
+      "gameHint": "Pour les étapes « Jouer à un jeu ».",
+      "myGames": "Mes jeux",
+      "schoolGames": "Partagés dans mon école",
+      "siteGames": "Jeux Magic Cups",
+      "minutes": "Minutes",
+      "body": "Consignes",
+      "bodyHint": "Ce que les élèves doivent faire. Pour « Créer un jeu », c’est l’idée qu’ils donnent au Constructeur, ex. « un quiz de 8 questions sur les planètes ».",
+      "edit": "Modifier l’étape",
+      "delete": "Supprimer l’étape",
+      "deleteConfirm": "Supprimer cette étape ?",
+      "notShared": "Votre classe ne peut pas encore ouvrir ce jeu",
+      "notSharedHint": "Partagez-le d’abord avec votre école, ou ouvrez-le dans le Studio et appuyez sur Publier.",
+      "shareGame": "Partager avec mon école",
+      "openStudio": "Ouvrir dans le Studio",
+      "newGame": "Créer un nouveau jeu pour cette leçon avec le Constructeur",
+      "newGameIdea": "Votre idée de jeu",
+      "newGamePlaceholder": "ex. un quiz de 10 questions sur les fractions pour le CM1",
+      "newGameButton": "Ouvrir le Constructeur",
+      "newGameNote": "Une étape de jeu est ajoutée à cette leçon, et le Studio s’ouvre avec votre idée prête. Une fois le jeu terminé, publiez-le pour votre école."
+    },
+    "ai": {
+      "button": "Rédiger avec l’IA",
+      "topic": "Sur quoi porte la leçon ?",
+      "topicPlaceholder": "ex. Le cycle de l’eau",
+      "minutes": "Minutes",
+      "make": "Rédiger l’ébauche",
+      "note": "Claude rédige une ébauche de leçon avec des étapes et des jeux adaptés. Vous pouvez tout modifier avant de l’utiliser.",
+      "done": "Voici votre ébauche. Vérifiez chaque étape et modifiez ce que vous voulez.",
+      "template": "Voici un point de départ. Ajoutez vos propres étapes et jeux."
+    },
+    "assign": {
+      "title": "Attribuer à une classe",
+      "class": "Classe",
+      "opens": "Date d’ouverture (facultatif)",
+      "due": "Date limite (facultatif)",
+      "button": "Attribuer",
+      "already": "Attribuée à :",
+      "noClasses": "Vous n’enseignez encore dans aucune classe de cette école.",
+      "note": "Les élèves voient la leçon à partir de sa date d’ouverture. Les modifications que vous faites ensuite s’appliquent à toutes les classes."
+    },
+    "class": {
+      "title": "Leçons",
+      "none": "Pas encore de leçon. Attribuez-en une depuis votre bibliothèque.",
+      "assign": "Attribuer une leçon",
+      "library": "Bibliothèque de leçons",
+      "unit": "Unité",
+      "unitName": "Nom de l’unité",
+      "newUnit": "Nouvelle unité",
+      "newUnitPlaceholder": "Nouvelle unité, ex. Les fractions",
+      "emptyUnit": "Pas encore de leçon dans cette unité.",
+      "deleteUnit": "Supprimer l’unité",
+      "deleteUnitConfirm": "Supprimer l’unité {name} ? Ses leçons restent dans la classe.",
+      "opensOn": "Ouvre le {date}",
+      "dueOn": "À faire pour le {date}",
+      "editLesson": "Modifier la leçon",
+      "unassign": "Retirer de la classe",
+      "unassignConfirm": "Retirer {name} de cette classe ? La leçon reste dans votre bibliothèque."
+    },
+    "view": {
+      "teacherPreview": "Voici ce que voient vos élèves.",
+      "play": "Jouer à {title}",
+      "build": "Commencer à créer",
+      "notReady": "Ce jeu n’est pas encore prêt. Demande à ton prof."
+    },
+    "shared": {
+      "copy": "Copier dans ma bibliothèque",
+      "copied": "Copiée dans votre bibliothèque !",
+      "empty": "Rien de partagé pour l’instant",
+      "emptyText": "Quand des enseignants de votre école partagent une leçon, elle apparaît ici."
+    },
+    "template": {
+      "warmup": "Mise en route",
+      "warmupText": "Que sais-tu déjà sur {topic} ? Parles-en avec un camarade pendant deux minutes.",
+      "play": "Jouer à {title}",
+      "build": "Crée ton propre jeu",
+      "buildText": "Un quiz de 6 questions sur {topic}",
+      "wrapup": "Bilan",
+      "wrapupText": "Dis une chose que tu as apprise aujourd’hui."
+    },
+    "errors": {
+      "notFound": "Nous n’avons pas trouvé cette page, ou elle n’est pas accessible.",
+      "lessonTitle": "Donnez un titre à la leçon.",
+      "folderName": "Donnez un nom au dossier.",
+      "unitName": "Donnez un nom à l’unité.",
+      "folderLoop": "Un dossier ne peut pas être placé dans lui-même.",
+      "stepKind": "Choisissez un type d’étape.",
+      "pickGame": "Choisissez un jeu pour cette étape.",
+      "buildPrompt": "Écrivez l’idée que les élèves donneront au Constructeur.",
+      "stepText": "Écrivez les consignes de cette étape.",
+      "tooManySteps": "Une leçon peut avoir jusqu’à 40 étapes.",
+      "badDate": "Cette date ne semble pas correcte.",
+      "topic": "Indiquez le sujet de la leçon.",
+      "aiFailed": "L’IA n’a pas pu rédiger cette ébauche pour le moment. Réessayez dans une minute, ou créez la leçon vous-même."
+    }
   }
 }

@@ -1295,5 +1295,155 @@
       "ownAccountsOff": "Questa scuola usa solo account scolastici. Chiedi all'insegnante una scheda di accesso.",
       "lastTeacher": "Una classe ha bisogno di almeno un insegnante."
     }
+  },
+  "lessons": {
+    "up": "Sposta su",
+    "down": "Sposta giù",
+    "move": "Sposta",
+    "moveTo": "Sposta in",
+    "stepsN": "{count, plural, one {# passaggio} other {# passaggi}}",
+    "minutesN": "{count, plural, one {# minuto} other {# minuti}}",
+    "assignedN": "{count, plural, one {in # classe} other {in # classi}}",
+    "kinds": {
+      "game": "Fai un gioco",
+      "build": "Crea un gioco",
+      "text": "Leggi o fai"
+    },
+    "library": {
+      "title": "Biblioteca delle lezioni",
+      "mine": "Le mie lezioni",
+      "shared": "Condivise nella mia scuola",
+      "top": "Biblioteca",
+      "path": "Cartelle",
+      "newLesson": "Nuova lezione",
+      "newLessonPlaceholder": "Titolo della lezione, es. Riscaldamento sulle frazioni",
+      "empty": "Ancora nessuna lezione qui",
+      "emptyText": "Crei una nuova lezione, lasci che l'IA ne prepari una bozza, oppure copi una lezione condivisa da un collega."
+    },
+    "folder": {
+      "name": "Nome della cartella",
+      "new": "Nuova cartella",
+      "newPlaceholder": "Nuova cartella, es. Primo quadrimestre",
+      "delete": "Elimina cartella",
+      "deleteConfirm": "Eliminare la cartella {name}? Le lezioni e le cartelle al suo interno salgono di un livello."
+    },
+    "lesson": {
+      "title": "Titolo della lezione",
+      "summary": "Riepilogo",
+      "objectives": "Obiettivi di apprendimento",
+      "objectivesHint": "Un obiettivo per riga",
+      "steps": "Passaggi",
+      "noSteps": "Ancora nessun passaggio. Aggiunga il primo qui sotto.",
+      "details": "Dettagli della lezione",
+      "share": "Condividi con la mia scuola",
+      "shareNo": "No, solo per me",
+      "shareYes": "Sì, gli altri insegnanti possono copiarla",
+      "sharedChip": "Condivisa",
+      "duplicate": "Crea una copia",
+      "duplicated": "Copia creata. La trova nella sua biblioteca.",
+      "delete": "Elimina lezione",
+      "deleteConfirm": "Eliminare la lezione {name}? L'operazione non si può annullare.",
+      "deleteAssignedConfirm": "Eliminare la lezione {name}? Verrà rimossa anche da {count, plural, one {# classe} other {# classi}}. L'operazione non si può annullare."
+    },
+    "step": {
+      "add": "Aggiungi un passaggio",
+      "addButton": "Aggiungi",
+      "kind": "Tipo",
+      "title": "Titolo del passaggio (facoltativo)",
+      "game": "Gioco",
+      "gameHint": "Per i passaggi «Fai un gioco».",
+      "myGames": "I miei giochi",
+      "schoolGames": "Condivisi nella mia scuola",
+      "siteGames": "Giochi di Magic Cups",
+      "minutes": "Minuti",
+      "body": "Istruzioni",
+      "bodyHint": "Cosa devono fare gli studenti. Per «Crea un gioco», è l'idea che danno al Costruttore, es. «un quiz con 8 domande sui pianeti».",
+      "edit": "Modifica passaggio",
+      "delete": "Elimina passaggio",
+      "deleteConfirm": "Eliminare questo passaggio?",
+      "notShared": "La sua classe non può ancora aprire questo gioco",
+      "notSharedHint": "Prima lo condivida con la scuola, oppure lo apra nello Studio e usi Pubblica.",
+      "shareGame": "Condividi con la mia scuola",
+      "openStudio": "Apri nello Studio",
+      "newGame": "Crei un nuovo gioco per questa lezione con il Costruttore",
+      "newGameIdea": "La sua idea per il gioco",
+      "newGamePlaceholder": "es. un quiz con 10 domande sulle frazioni per la quarta elementare",
+      "newGameButton": "Apri il Costruttore",
+      "newGameNote": "Alla lezione viene aggiunto un passaggio di gioco e lo Studio si apre con la sua idea già pronta. Quando il gioco è finito, lo pubblichi per la sua scuola."
+    },
+    "ai": {
+      "button": "Bozza con l'IA",
+      "topic": "Di cosa parla la lezione?",
+      "topicPlaceholder": "es. Il ciclo dell'acqua",
+      "minutes": "Minuti",
+      "make": "Prepara la bozza",
+      "note": "Claude prepara una bozza di lezione con passaggi e giochi adatti. Potrà modificare tutto prima di usarla.",
+      "done": "Ecco la sua bozza. Controlli ogni passaggio e modifichi ciò che vuole.",
+      "template": "Ecco un punto di partenza. Aggiunga i suoi passaggi e giochi."
+    },
+    "assign": {
+      "title": "Assegna a una classe",
+      "class": "Classe",
+      "opens": "Disponibile dal (facoltativo)",
+      "due": "Scadenza (facoltativa)",
+      "button": "Assegna",
+      "already": "Assegnata a:",
+      "noClasses": "Non insegna ancora in nessuna classe di questa scuola.",
+      "note": "Gli studenti vedono la lezione dal giorno in cui diventa disponibile. Le modifiche successive compaiono in tutte le classi."
+    },
+    "class": {
+      "title": "Lezioni",
+      "none": "Ancora nessuna lezione. Ne assegni una dalla sua biblioteca.",
+      "assign": "Assegna una lezione",
+      "library": "Biblioteca delle lezioni",
+      "unit": "Unità",
+      "unitName": "Nome dell'unità",
+      "newUnit": "Nuova unità",
+      "newUnitPlaceholder": "Nuova unità, es. Frazioni",
+      "emptyUnit": "Ancora nessuna lezione in questa unità.",
+      "deleteUnit": "Elimina unità",
+      "deleteUnitConfirm": "Eliminare l'unità {name}? Le sue lezioni restano nella classe.",
+      "opensOn": "Dal {date}",
+      "dueOn": "Da finire entro: {date}",
+      "editLesson": "Modifica lezione",
+      "unassign": "Rimuovi dalla classe",
+      "unassignConfirm": "Rimuovere {name} da questa classe? La lezione resta nella sua biblioteca."
+    },
+    "view": {
+      "teacherPreview": "Ecco cosa vedono gli studenti.",
+      "play": "Gioca a {title}",
+      "build": "Inizia a creare",
+      "notReady": "Questo gioco non è ancora pronto. Chiedi all'insegnante."
+    },
+    "shared": {
+      "copy": "Copia nella mia biblioteca",
+      "copied": "Copiata nella sua biblioteca!",
+      "empty": "Ancora niente di condiviso",
+      "emptyText": "Quando gli insegnanti della sua scuola condividono una lezione, compare qui."
+    },
+    "template": {
+      "warmup": "Riscaldamento",
+      "warmupText": "Cosa sai già su {topic}? Parlane con un compagno per due minuti.",
+      "play": "Gioca a {title}",
+      "build": "Crea il tuo gioco",
+      "buildText": "Un quiz con 6 domande su {topic}",
+      "wrapup": "Conclusione",
+      "wrapupText": "Racconta una cosa che hai imparato oggi."
+    },
+    "errors": {
+      "notFound": "Non l'abbiamo trovato, oppure non può aprirlo.",
+      "lessonTitle": "Dia un titolo alla lezione.",
+      "folderName": "Dia un nome alla cartella.",
+      "unitName": "Dia un nome all'unità.",
+      "folderLoop": "Una cartella non può stare dentro se stessa.",
+      "stepKind": "Scelga un tipo di passaggio.",
+      "pickGame": "Scelga un gioco per questo passaggio.",
+      "buildPrompt": "Scriva l'idea che gli studenti daranno al Costruttore.",
+      "stepText": "Scriva le istruzioni per questo passaggio.",
+      "tooManySteps": "Una lezione può avere al massimo 40 passaggi.",
+      "badDate": "Questa data non sembra corretta.",
+      "topic": "Scriva di cosa parla la lezione.",
+      "aiFailed": "L'IA non riesce a preparare la bozza in questo momento. Riprovi tra un minuto, oppure crei la lezione da sé."
+    }
   }
 }

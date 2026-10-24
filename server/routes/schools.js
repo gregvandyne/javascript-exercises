@@ -9,6 +9,7 @@ import { avatar, emptyState } from '../views/components.js';
 import { requireUser, requireAdmin, getUserByName } from '../auth.js';
 import { rateLimit } from '../services/ratelimit.js';
 import * as S from '../services/schools.js';
+import { teacherLessonsPanel, studentLessonsPanel } from './lessons.js';
 
 export const router = Router();
 const CSS = raw('<link rel="stylesheet" href="/css/community.css"><link rel="stylesheet" href="/css/schools.css">');
@@ -203,7 +204,7 @@ router.get('/teach', requireUser, (req, res) => {
   const canCreate = allSchools.filter(x => S.canCreateClass(u, x.id));
   const admins = allSchools.filter(x => S.canManageSchool(u, x.id));
   const body = html`
-  <div class="pagehead"><h1>🍎 ${t('school.teach.title')}</h1>${admins.map(x => html`<a class="btn" href="/school/${x.slug}">🏫 ${x.name}</a>`)}</div>
+  <div class="pagehead"><h1>🍎 ${t('school.teach.title')}</h1><div class="row wrap"><a class="btn btn-primary" href="/teach/lessons">📚 ${t('lessons.library.title')}</a>${admins.map(x => html`<a class="btn" href="/school/${x.slug}">🏫 ${x.name}</a>`)}</div></div>
   ${mine.length ? html`<div class="classgrid">${mine.map(c => html`<a class="panel classcard" href="/class/${c.id}">
       <span class="cc-school small muted">${c.school_name}</span><b class="cc-name">${c.name}</b>
       <span class="small">${[c.subject, c.grade ? t('school.class.gradeN', { grade: c.grade }) : ''].filter(Boolean).join(' · ')}</span>
@@ -248,6 +249,7 @@ function teacherClass(req, res, c) {
   <section class="panel joincode"><div><h2>${t('school.class.joinCode')}</h2><p class="small muted">${t('school.class.joinCodeText')}</p></div>
     <div class="jc-code" dir="ltr">${c.join_code}</div>
     <form data-api="/api/classes/${c.id}/code" data-reload data-confirm="${t('school.class.newCodeConfirm')}"><button class="btn btn-sm" type="submit">🔄 ${t('school.class.newCode')}</button></form></section>
+  ${teacherLessonsPanel(req, c)}
 
   ${requests.length ? html`<section class="panel" aria-labelledby="rq-h"><h2 id="rq-h">✋ ${t('school.requests.title', { count: requests.length })}</h2>
     <p class="small muted">${t('school.requests.text')}</p>
@@ -303,7 +305,7 @@ function studentClass(req, res, c) {
   const body = html`
   <div class="pagehead"><div><span class="small muted">${s.name}</span><h1>${c.name}</h1>
     <p class="muted">${[c.subject, c.grade ? t('school.class.gradeN', { grade: c.grade }) : ''].filter(Boolean).join(' · ')}</p></div></div>
-  <section class="panel">${emptyState({ emoji: '📚', title: t('classes.noLessons'), text: t('classes.noLessonsText') })}</section>
+  ${studentLessonsPanel(req, c)}
   <section class="panel"><h2>🍎 ${t('school.class.teachers')}</h2><ul class="plain chips-list">${teachers.map(p => html`<li class="pp">${avatar(p, 28)} ${nameOf(p)}</li>`)}</ul></section>
   <section class="panel"><h2>👫 ${t('classes.classmates', { count: classmates.length })}</h2><ul class="plain chips-list">${classmates.map(p => html`<li class="pp">${avatar(p, 28)} ${p.display_name}</li>`)}</ul></section>`;
   page(req, res, { title: c.name, active: 'classes', body, head: CSS, back: '/classes', backLabel: t('nav.classes') });
