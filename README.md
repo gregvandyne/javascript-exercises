@@ -7,6 +7,7 @@ Think "Roblox for web games", for a 7-year-old, a 12-year-old and their parent s
 - **Build**: the Studio — chat with the Builder, live sandboxed preview, version history with restore, Private / Friends / Everyone sharing, and **updates to games you already published** (players keep the old version while an update is reviewed).
 - **Friends + chat**: add friends by a 6-character code; friends-only, filtered text chat with quick-chat chips, block and report.
 - **Safety**: every game runs in an opaque-origin sandbox with a strict CSP and no network; every version is scanned; public games are reviewed; reports auto-hide games; an admin panel handles review, reports, chat reports, bans and the audit log.
+- **13 languages**: English (US/UK), Português, Français, Español, Deutsch, עברית, 日本語, العربية, Русский, Italiano, 繁體中文 and Nederlands, picked with the 🌐 menu; right-to-left for Hebrew and Arabic; the Builder replies in the kid's language. Translators start at `server/i18n/README.md`.
 - **Money**: two quiet "Sponsored" card placements fund the platform; builders earn a share by plays of their games (creator dashboard, payout requests).
 
 ## Run it locally (Node 22)
@@ -26,6 +27,7 @@ No API key is needed: without `ANTHROPIC_API_KEY` the Builder uses a built-in mo
 npm test             # unit + safety suites (node:test, in-memory DB)
 npm run test:e2e     # Playwright end-to-end (starts its own server + temp DB, mock Builder)
 npm run screenshots  # BASE=http://localhost:3000 ADMIN_PASSWORD=... → screenshots/ at 390/1280 px, light/dark
+npm run i18n:check   # per language: missing / extra keys and placeholder problems
 ```
 
 In environments with a pre-installed Chromium at `/opt/pw-browsers`, the e2e config uses it automatically; otherwise run `npx playwright install chromium` once.
@@ -53,6 +55,7 @@ In environments with a pre-installed Chromium at `/opt/pw-browsers`, the e2e con
 | `POSTHOG_KEY` / `POSTHOG_HOST` | – | Optional product analytics (off unless set; never sends usernames or text). |
 | `LOG_REQUESTS` | `1` | `0` turns off the JSON request log. |
 | `TRUST_PROXY` | `1` | Set `0` if not behind a proxy. |
+| `BRB_LOCALES_DIR` | `server/i18n/locales` | Another folder of locale files (the e2e tests use one with stub translations). |
 
 ## Deploy
 
@@ -70,6 +73,7 @@ server/            app factory (app.js), entry (index.js), db.js, auth.js, confi
   services/        games, publish, scanner, sanitize, frame, presence, textfilter, ratelimit, review, chat, friends, moderation, ads, earnings, payouts, jobs, log
   builder/         Builder agent loop, providers (Claude + mock), screening, templates/
   views/           layout + components (server-rendered HTML)
+  i18n/            languages: index.js (t, negotiation, Intl), locales/<code>.json, notes.json, blocklists/, README for translators
 public/            css/app.css (design system), js/ (one small module per page), sdk/brb-sdk.js (in-frame SDK), fonts, icons
 seed-games/        the launch games (HTML + metadata JSON)
 scripts/           seed.js, import-game.js, backup.js, rollup.js, screenshots.js

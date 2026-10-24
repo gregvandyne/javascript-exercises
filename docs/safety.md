@@ -59,7 +59,10 @@ Before any AI model reads a kid's message, it goes through two checks (`server/b
    (phone numbers, emails, addresses, "make a game that asks for your address"), links, and chat between players.
 2. **Classifier.** With an API key this is a fast, cheap Claude model (`claude-haiku-5-5`) that answers with a
    fixed set of categories. Without a key, a rules-based classifier is used instead. The rules also run as a
-   backstop when the model is available.
+   backstop when the model is available. Kids may write in any of the site's languages: the classifier is told that
+   messages can be in any language, mixed, misspelled or transliterated, and judges the meaning by the same rules. The
+   keyword rules are English, so without an API key other languages are checked by the per-language word lists only.
+   Refusals are shown in the kid's language.
 
 Refused topics: sexual content, gore and graphic or real-world violence, horror and jump-scares, hate and bullying,
 self-harm, drugs, alcohol and smoking, gambling (casinos, betting, loot boxes, paying real money), real people
@@ -156,6 +159,15 @@ Messages are short, filtered for rude words and personal details (phone numbers,
 schools, meet-ups) and refused messages are never stored. Repeated refusals pause chat for a while, and there are rate
 and daily limits. Anyone can block or report a message; grown-ups can switch chat off on the Me page.
 (See `server/services/chat.js`.)
+
+**In every language.** The site is offered in 13 languages, and the same filters check every message whatever language
+it is written in. Text is normalised first: full-width letters and digits (`０１２`, `ｂｏｂ＠ｍａｉｌ．ｃｏｍ`) count as plain
+ones, invisible characters cannot split a number, and digits from any script (Arabic-Indic `٠١٢`, Devanagari, Thai...)
+count for the phone-number check. Emails with non-Latin letters are caught too. Rude-word lists for each language live in
+`server/i18n/blocklists/<code>.txt` (ROT13-encoded, see the README there) and **every list applies to every message**, so a
+child cannot get around the filter by switching language. Quick-chat phrases are shown to each friend in their own
+language; typed messages are never machine-translated. Usernames stay Latin letters and digits in every language.
+(See `server/services/textfilter.js` and `tests/safety/i18n-filters.test.js`.)
 
 ## 9. What we do not do
 

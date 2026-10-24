@@ -62,7 +62,7 @@ router.get('/g/:slug', (req, res) => {
     <div class="grid2">
       <div class="stack">
         <section class="panel"><h2>${t('game.about.heading')}</h2>
-          <p style="white-space:pre-line">${g.description || t('game.about.noDescription')}</p>
+          <p class="ugc" style="white-space:pre-line">${g.description || t('game.about.noDescription')}</p>
           <div class="taglist"><a class="tag" href="/search?cat=${cat.key}">${cat.icon} ${categoryLabel(cat.key, t)}</a>${d.tagList.map(tag => html`<a class="tag" href="/search?q=${encodeURIComponent(tag)}">#${tag}</a>`)}</div>
           <p class="small muted" style="margin:12px 0 0">${players}${g.orientation === 'landscape' ? `📱↔️ ${t('game.about.sideways')} · ` : ''}${t('game.about.updated', { when: f.ago(g.updated_at) })}</p>
         </section>
