@@ -90,3 +90,17 @@ test('refusals always offer something else to build (except self-harm, which poi
   const s = await screenInput('i want to die game');
   assert.equal(s.category, 'selfharm'); assert.match(s.message, /grown-up you trust/); assert.deepEqual(s.chips, []);
 });
+
+test('real people: true facts in a quiz are fine; characters, jokes and people the child knows are not (rules)', async () => {
+  const { mockClassify } = await import('../../server/builder/screen.js');
+  for (const s of [
+    'Make it about soccer and make varying degrees of difficulty. Base it on rules, history, plus famous players and records etc',
+    'The questions will just have players as answers or include them as part of the question. Also want to include World Cup championship questions etc.',
+    'a quiz with questions about Messi and Ronaldo records',
+    'make a trivia game about US presidents',
+    'Un quiz sobre los ganadores del Mundial y jugadores famosos',
+  ]) assert.equal(mockClassify(s), null, s);
+  for (const s of ['make a game where Messi is the hero and runs around', 'a game where you punch Ronaldo', 'put my friend Jake in the game',
+    'a quiz that makes fun of Taylor Swift', 'make Taylor Swift a character that dances', 'trivia about my teacher Mrs Smith'])
+    assert.equal(mockClassify(s), 'real_people', s);
+});
