@@ -25,6 +25,7 @@ export function summariseEvents(events) {
     if (name === 'ask') return `[Asked: "${d.question}" with options: ${(d.options || []).join(' | ')}]`;
     if (name === 'meta') return `[Set game details: "${d.title}" ${d.icon}, ${d.category}]`;
     if (name === 'notes') return `[Things to try: ${(d.checklist || []).join('; ')}]`;
+    if (name === 'playtest') return `[Playtested version ${d.version}: ${d.problems ? `${d.problems} problem(s) found` : 'no problems found'}]`;
     return '';
   }).filter(Boolean).join('\n');
 }

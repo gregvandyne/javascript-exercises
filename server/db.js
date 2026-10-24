@@ -78,6 +78,8 @@ const MIGRATIONS = [
   ['0003_user_lang', `ALTER TABLE users ADD COLUMN lang TEXT NOT NULL DEFAULT '';`],
   ['0004_game_l10n', `ALTER TABLE games ADD COLUMN l10n TEXT NOT NULL DEFAULT '';`],
   ['0005_ai_spend', `CREATE TABLE IF NOT EXISTS ai_spend (day TEXT PRIMARY KEY, usd REAL NOT NULL DEFAULT 0, calls INTEGER NOT NULL DEFAULT 0);`],
+  // Screenshot covers: when a version's picture was taken (0 = none yet) and how many tries failed.
+  ['0006_version_shots', `ALTER TABLE game_versions ADD COLUMN shot_at INTEGER NOT NULL DEFAULT 0; ALTER TABLE game_versions ADD COLUMN shot_tries INTEGER NOT NULL DEFAULT 0;`],
 ];
 
 db.exec('CREATE TABLE IF NOT EXISTS migrations (name TEXT PRIMARY KEY, applied_at INTEGER NOT NULL)');

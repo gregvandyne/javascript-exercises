@@ -1227,7 +1227,8 @@
         "notYet": "Non ancora",
         "button": "Aggiorna"
       },
-      "reconnecting": "La connessione è caduta, ma il Costruttore sta ancora lavorando. Aspetta un attimo…"
+      "reconnecting": "La connessione è caduta, ma il Costruttore sta ancora lavorando. Aspetta un attimo…",
+      "testing": "Gioco al tuo gioco per controllarlo…"
     }
   },
   "favorites": {

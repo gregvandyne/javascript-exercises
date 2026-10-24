@@ -45,6 +45,8 @@ In environments with a pre-installed Chromium at `/opt/pw-browsers`, the e2e con
 | `BUILDER_MAX_TOKENS` | `32000` | Max output tokens per Builder turn. |
 | `AI_DAILY_BUDGET_USD` | `5` | Most the site spends on Claude per UTC day. At the cap the Builder goes offline (mock builder), picture uploads pause and public reviews wait for a person. `0` turns the AI off. |
 | `AI_MONTHLY_BUDGET_USD` | `50` | Same, per calendar month. Today's and this month's spend show on `/admin`. Also set a spend limit in the Anthropic Console as the hard backstop. |
+| `BRB_SNAPSHOTS` | on in production | Headless Chromium for game screenshots: cover pictures of Studio games and the Builder's `playtest_game` tool. `0` turns it off, `1` turns it on in development. |
+| `BRB_CHROMIUM` | (Playwright's) | Path to a Chromium / headless-shell binary, if not the one Playwright installed. |
 | `ADMIN_USERNAME` / `ADMIN_PASSWORD` | `admin` / random | Admin account created by `npm run seed`. |
 | `AD_ECPM_CENTS` | `200` | Revenue per 1000 ad impressions, in cents. |
 | `BUILDER_SHARE` | `0.7` | Builders' share of ad revenue. |

@@ -13,6 +13,7 @@ import { getGame, getVersion } from './games.js';
 import { scanVersion } from './scanner.js';
 import { reviewVersion } from './review.js';
 import { tEn } from '../i18n/index.js';
+import { queueShot } from './shots.js';
 
 export function ensureScanned(version) {
   if (version.safety_status !== 'unchecked') return version;
@@ -42,6 +43,7 @@ export async function publish(user, gameId, visibility, { versionId = null, t = 
       q.run("UPDATE games SET visibility=?, status='published', published_version_id=?, pending_version_id=NULL, review_note='', published_at=COALESCE(published_at, ?), updated_at=? WHERE id=?", visibility, version.id, now(), now(), game.id);
     });
     audit(user.id, wasLive ? 'game.update' : 'game.publish', game.id, { visibility, version: version.number });
+    queueShot(version.id);
     return { ok: true, state: 'live', message: visibility === 'private' ? t('publish.private') : t('publish.friends'), game: getGame(game.id) };
   }
 
@@ -62,6 +64,7 @@ export async function publish(user, gameId, visibility, { versionId = null, t = 
       q.run("UPDATE games SET visibility='public', status='published', published_version_id=?, pending_version_id=NULL, review_note='', published_at=COALESCE(published_at, ?), updated_at=? WHERE id=?", version.id, now(), now(), game.id);
     });
     audit(user.id, wasLive ? 'game.update' : 'game.publish', game.id, { visibility: 'public', version: version.number, reviewed: 'model' });
+    queueShot(version.id);
     return { ok: true, state: 'live', message: wasLive ? t('publish.updateLive') : t('publish.public'), game: getGame(game.id) };
   }
   // Waiting for a human. If it was already live, it stays live (at its old visibility) on the old version.
@@ -82,6 +85,7 @@ export function approve(admin, gameId, note = '') {
     q.run("UPDATE games SET visibility='public', status='published', published_version_id=pending_version_id, pending_version_id=NULL, review_note=?, published_at=COALESCE(published_at, ?), updated_at=? WHERE id=?", String(note).slice(0, 500), now(), now(), game.id);
   });
   audit(admin.id, 'admin.approve', game.id, { note });
+  queueShot(game.pending_version_id);
   return getGame(game.id);
 }
 /** Admin rejects: the builder sees the note. A live game keeps its old version. */

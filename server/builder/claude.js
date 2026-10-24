@@ -12,7 +12,7 @@ import { tEn } from '../i18n/index.js';
 import { summariseEvents } from './chat.js';
 import { modelBlocks, transcriptNote } from './uploads.js';
 
-const MAX_STEPS = 8;          // model calls per turn
+const MAX_STEPS = 14;         // model calls per turn (build, details, playtest, fixes, retest, notes, question)
 const MAX_SCAN_FIXES = 2;     // extra rounds allowed to fix a failed safety scan
 const HISTORY_MESSAGES = 40;  // earlier transcript entries sent to the model
 const FALLBACKS = process.env.BUILDER_FALLBACKS !== '0';
@@ -84,7 +84,7 @@ export async function run(ctx) {
       const input = tu.input && typeof tu.input === 'object' ? tu.input : {};
       // Eager input streaming means inputs are not validated by the API: a truncated call (max_tokens) is reported back.
       const truncated = msg.stop_reason === 'max_tokens' && tu === uses[uses.length - 1];
-      const r = truncated ? { ok: false, forModel: 'Your last tool call was cut off because it was too long. Make it shorter (use edit_game for small changes).' } : ctx.tools.exec(tu.name, input);
+      const r = truncated ? { ok: false, forModel: 'Your last tool call was cut off because it was too long. Make it shorter (use edit_game for small changes).' } : await ctx.tools.exec(tu.name, input);
       if (r.stop) stop = true;
       if (r.report && r.report.status === 'fail') failedScan = true;
       results.push({ type: 'tool_result', tool_use_id: tu.id, content: r.forModel, ...(r.ok ? {} : { is_error: true }) });

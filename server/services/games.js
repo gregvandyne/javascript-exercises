@@ -4,6 +4,7 @@
 import { q, uid, now, tx } from '../db.js';
 import * as presence from './presence.js';
 import { current } from '../i18n/index.js';
+import { queueShot } from './shots.js';
 
 export const CATEGORIES = [
   ['arcade', '🕹️', 'Arcade'], ['sports', '⚽', 'Sports'], ['puzzle', '🧩', 'Puzzle'], ['words', '🔤', 'Words'],
@@ -227,6 +228,7 @@ export function addVersion(gameId, html, { notes = '', createdBy = null, safetyS
     q.run('INSERT INTO game_versions(id, game_id, number, html, notes, safety_status, safety_report, created_by, created_at) VALUES (?,?,?,?,?,?,?,?,?)', id, gameId, number, html, String(notes).slice(0, 500), safetyStatus, JSON.stringify(safetyReport), createdBy, now());
     q.run('UPDATE games SET current_version_id=?, updated_at=? WHERE id=?', id, now(), gameId);
   });
+  if (safetyStatus !== 'fail') queueShot(id);   // its cover picture, in the background (skips launch games)
   return getVersion(id);
 }
 /** Restore = copy an old version forward as a new version (history is never rewritten). */

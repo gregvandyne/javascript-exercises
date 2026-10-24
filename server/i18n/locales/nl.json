@@ -1227,7 +1227,8 @@
         "notYet": "Nog niet",
         "button": "Bijwerken"
       },
-      "reconnecting": "De verbinding viel weg, maar de Bouwer is nog bezig. Even geduld…"
+      "reconnecting": "De verbinding viel weg, maar de Bouwer is nog bezig. Even geduld…",
+      "testing": "Ik speel je game om hem te testen…"
     }
   },
   "favorites": {
