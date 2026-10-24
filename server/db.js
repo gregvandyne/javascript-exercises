@@ -103,6 +103,23 @@ const MIGRATIONS = [
       created_at INTEGER NOT NULL, decided_by TEXT, decided_at INTEGER);
     CREATE INDEX IF NOT EXISTS join_requests_class ON join_requests(class_id, status);
     ALTER TABLE users ADD COLUMN managed_school TEXT NOT NULL DEFAULT '';`],
+  // Lesson plans: a teacher's library (folders inside folders, lessons, steps), and lessons assigned to classes in units.
+  // Assigned lessons are live links: editing a lesson updates it for every class it is assigned to.
+  ['0010_lessons', `CREATE TABLE IF NOT EXISTS lesson_folders (id TEXT PRIMARY KEY, school_id TEXT NOT NULL, owner_id TEXT NOT NULL, parent_id TEXT,
+      name TEXT NOT NULL, position INTEGER NOT NULL DEFAULT 0, created_at INTEGER NOT NULL);
+    CREATE INDEX IF NOT EXISTS lesson_folders_owner ON lesson_folders(owner_id, school_id);
+    CREATE TABLE IF NOT EXISTS lessons (id TEXT PRIMARY KEY, school_id TEXT NOT NULL, owner_id TEXT NOT NULL, folder_id TEXT, title TEXT NOT NULL,
+      summary TEXT NOT NULL DEFAULT '', subject TEXT NOT NULL DEFAULT '', grade TEXT NOT NULL DEFAULT '', objectives TEXT NOT NULL DEFAULT '',
+      position INTEGER NOT NULL DEFAULT 0, shared INTEGER NOT NULL DEFAULT 0, copied_from TEXT, created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL, archived_at INTEGER);
+    CREATE INDEX IF NOT EXISTS lessons_owner ON lessons(owner_id, school_id, folder_id);
+    CREATE INDEX IF NOT EXISTS lessons_shared ON lessons(school_id, shared);
+    CREATE TABLE IF NOT EXISTS lesson_steps (id TEXT PRIMARY KEY, lesson_id TEXT NOT NULL, position INTEGER NOT NULL DEFAULT 0, kind TEXT NOT NULL,
+      title TEXT NOT NULL DEFAULT '', body TEXT NOT NULL DEFAULT '', game_id TEXT, minutes INTEGER NOT NULL DEFAULT 0, created_at INTEGER NOT NULL);
+    CREATE INDEX IF NOT EXISTS lesson_steps_lesson ON lesson_steps(lesson_id, position);
+    CREATE TABLE IF NOT EXISTS class_units (id TEXT PRIMARY KEY, class_id TEXT NOT NULL, name TEXT NOT NULL, position INTEGER NOT NULL DEFAULT 0, created_at INTEGER NOT NULL);
+    CREATE TABLE IF NOT EXISTS class_lessons (id TEXT PRIMARY KEY, class_id TEXT NOT NULL, lesson_id TEXT NOT NULL, unit_id TEXT, position INTEGER NOT NULL DEFAULT 0,
+      opens_at INTEGER, due_at INTEGER, assigned_by TEXT, assigned_at INTEGER NOT NULL);
+    CREATE INDEX IF NOT EXISTS class_lessons_class ON class_lessons(class_id, unit_id, position);`],
 ];
 
 db.exec('CREATE TABLE IF NOT EXISTS migrations (name TEXT PRIMARY KEY, applied_at INTEGER NOT NULL)');

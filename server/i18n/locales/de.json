@@ -1295,5 +1295,155 @@
       "ownAccountsOff": "Diese Schule nutzt nur Schulkonten. Frag deine Lehrkraft nach einer Anmeldekarte.",
       "lastTeacher": "Eine Klasse braucht mindestens eine Lehrkraft."
     }
+  },
+  "lessons": {
+    "up": "Nach oben",
+    "down": "Nach unten",
+    "move": "Verschieben",
+    "moveTo": "Verschieben nach",
+    "stepsN": "{count, plural, one {# Schritt} other {# Schritte}}",
+    "minutesN": "{count, plural, one {# Minute} other {# Minuten}}",
+    "assignedN": "{count, plural, one {in # Klasse} other {in # Klassen}}",
+    "kinds": {
+      "game": "Ein Spiel spielen",
+      "build": "Ein Spiel bauen",
+      "text": "Lesen oder mitmachen"
+    },
+    "library": {
+      "title": "Lektionsbibliothek",
+      "mine": "Meine Lektionen",
+      "shared": "In meiner Schule geteilt",
+      "top": "Bibliothek",
+      "path": "Ordner",
+      "newLesson": "Neue Lektion",
+      "newLessonPlaceholder": "Titel der Lektion, z. B. Brüche zum Aufwärmen",
+      "empty": "Hier gibt es noch keine Lektionen",
+      "emptyText": "Erstellen Sie eine neue Lektion, lassen Sie die KI einen Entwurf schreiben, oder kopieren Sie eine Lektion, die jemand aus dem Kollegium geteilt hat."
+    },
+    "folder": {
+      "name": "Ordnername",
+      "new": "Neuer Ordner",
+      "newPlaceholder": "Neuer Ordner, z. B. 1. Halbjahr",
+      "delete": "Ordner löschen",
+      "deleteConfirm": "Den Ordner {name} löschen? Die Lektionen und Ordner darin rücken eine Ebene nach oben."
+    },
+    "lesson": {
+      "title": "Titel der Lektion",
+      "summary": "Zusammenfassung",
+      "objectives": "Lernziele",
+      "objectivesHint": "Ein Lernziel pro Zeile",
+      "steps": "Schritte",
+      "noSteps": "Noch keine Schritte. Fügen Sie unten den ersten hinzu.",
+      "details": "Details zur Lektion",
+      "share": "Mit meiner Schule teilen",
+      "shareNo": "Nein, nur für mich",
+      "shareYes": "Ja, andere Lehrkräfte können sie kopieren",
+      "sharedChip": "Geteilt",
+      "duplicate": "Kopie erstellen",
+      "duplicated": "Kopie erstellt. Sie finden sie in Ihrer Bibliothek.",
+      "delete": "Lektion löschen",
+      "deleteConfirm": "Die Lektion {name} löschen? Das kann nicht rückgängig gemacht werden.",
+      "deleteAssignedConfirm": "Die Lektion {name} löschen? Sie wird auch aus {count, plural, one {# Klasse} other {# Klassen}} entfernt. Das kann nicht rückgängig gemacht werden."
+    },
+    "step": {
+      "add": "Schritt hinzufügen",
+      "addButton": "Hinzufügen",
+      "kind": "Typ",
+      "title": "Titel des Schritts (optional)",
+      "game": "Spiel",
+      "gameHint": "Für Schritte vom Typ „Ein Spiel spielen“.",
+      "myGames": "Meine Spiele",
+      "schoolGames": "In meiner Schule geteilt",
+      "siteGames": "Magic-Cups-Spiele",
+      "minutes": "Minuten",
+      "body": "Anleitung",
+      "bodyHint": "Was die Schüler tun sollen. Bei „Ein Spiel bauen“ ist das die Idee, die sie dem Baumeister geben, z. B. „ein Quiz mit 8 Fragen über die Planeten“.",
+      "edit": "Schritt bearbeiten",
+      "delete": "Schritt löschen",
+      "deleteConfirm": "Diesen Schritt löschen?",
+      "notShared": "Ihre Klasse kann dieses Spiel noch nicht öffnen",
+      "notSharedHint": "Teilen Sie es zuerst mit Ihrer Schule, oder öffnen Sie es im Studio und tippen Sie auf „Freigeben“.",
+      "shareGame": "Mit meiner Schule teilen",
+      "openStudio": "Im Studio öffnen",
+      "newGame": "Mit dem Baumeister ein neues Spiel für diese Lektion bauen",
+      "newGameIdea": "Ihre Idee für das Spiel",
+      "newGamePlaceholder": "z. B. ein Quiz mit 10 Fragen zu Brüchen für die 4. Klasse",
+      "newGameButton": "Baumeister öffnen",
+      "newGameNote": "Die Lektion bekommt einen Spiel-Schritt, und das Studio öffnet sich mit Ihrer Idee. Geben Sie das Spiel für Ihre Schule frei, wenn es fertig ist."
+    },
+    "ai": {
+      "button": "Mit KI entwerfen",
+      "topic": "Worum geht es in der Lektion?",
+      "topicPlaceholder": "z. B. Der Wasserkreislauf",
+      "minutes": "Minuten",
+      "make": "Lektion entwerfen",
+      "note": "Claude entwirft eine Lektion mit Schritten und passenden Spielen. Sie können alles ändern, bevor Sie sie verwenden.",
+      "done": "Hier ist Ihr Entwurf. Prüfen Sie jeden Schritt, und ändern Sie, was Sie möchten.",
+      "template": "Hier ist ein Anfang. Fügen Sie eigene Schritte und Spiele hinzu."
+    },
+    "assign": {
+      "title": "Einer Klasse zuweisen",
+      "class": "Klasse",
+      "opens": "Sichtbar ab (optional)",
+      "due": "Fällig am (optional)",
+      "button": "Zuweisen",
+      "already": "Zugewiesen an:",
+      "noClasses": "Sie unterrichten an dieser Schule noch keine Klasse.",
+      "note": "Die Schüler sehen die Lektion ab dem Tag, an dem sie sichtbar wird. Spätere Änderungen erscheinen in jeder Klasse."
+    },
+    "class": {
+      "title": "Lektionen",
+      "none": "Noch keine Lektionen. Weisen Sie eine aus Ihrer Bibliothek zu.",
+      "assign": "Lektion zuweisen",
+      "library": "Lektionsbibliothek",
+      "unit": "Einheit",
+      "unitName": "Name der Einheit",
+      "newUnit": "Neue Einheit",
+      "newUnitPlaceholder": "Neue Einheit, z. B. Brüche",
+      "emptyUnit": "Noch keine Lektionen in dieser Einheit.",
+      "deleteUnit": "Einheit löschen",
+      "deleteUnitConfirm": "Die Einheit {name} löschen? Ihre Lektionen bleiben in der Klasse.",
+      "opensOn": "Ab {date}",
+      "dueOn": "Bis {date}",
+      "editLesson": "Lektion bearbeiten",
+      "unassign": "Aus Klasse entfernen",
+      "unassignConfirm": "{name} aus dieser Klasse entfernen? Die Lektion bleibt in Ihrer Bibliothek."
+    },
+    "view": {
+      "teacherPreview": "So sehen die Schüler diese Seite.",
+      "play": "{title} spielen",
+      "build": "Jetzt bauen",
+      "notReady": "Dieses Spiel ist noch nicht fertig. Frag deine Lehrkraft."
+    },
+    "shared": {
+      "copy": "In meine Bibliothek kopieren",
+      "copied": "In Ihre Bibliothek kopiert!",
+      "empty": "Noch nichts geteilt",
+      "emptyText": "Wenn Lehrkräfte Ihrer Schule eine Lektion teilen, erscheint sie hier."
+    },
+    "template": {
+      "warmup": "Aufwärmen",
+      "warmupText": "Was weißt du schon über {topic}? Sprich zwei Minuten lang mit einem anderen Kind darüber.",
+      "play": "{title} spielen",
+      "build": "Bau dein eigenes Spiel",
+      "buildText": "Ein Quizspiel mit 6 Fragen über {topic}",
+      "wrapup": "Abschluss",
+      "wrapupText": "Erzähl eine Sache, die du heute gelernt hast."
+    },
+    "errors": {
+      "notFound": "Das haben wir nicht gefunden, oder Sie können es nicht öffnen.",
+      "lessonTitle": "Geben Sie der Lektion einen Titel.",
+      "folderName": "Geben Sie dem Ordner einen Namen.",
+      "unitName": "Geben Sie der Einheit einen Namen.",
+      "folderLoop": "Ein Ordner kann nicht in sich selbst liegen.",
+      "stepKind": "Wählen Sie einen Typ für den Schritt.",
+      "pickGame": "Wählen Sie ein Spiel für diesen Schritt.",
+      "buildPrompt": "Schreiben Sie die Idee auf, die die Schüler dem Baumeister geben.",
+      "stepText": "Schreiben Sie die Anleitung für diesen Schritt.",
+      "tooManySteps": "Eine Lektion kann bis zu 40 Schritte haben.",
+      "badDate": "Dieses Datum sieht nicht richtig aus.",
+      "topic": "Geben Sie ein, worum es in der Lektion geht.",
+      "aiFailed": "Die KI kann das gerade nicht entwerfen. Versuchen Sie es in einer Minute noch einmal, oder erstellen Sie die Lektion selbst."
+    }
   }
 }

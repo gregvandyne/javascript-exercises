@@ -1294,5 +1294,155 @@
       "ownAccountsOff": "Esta escuela solo usa cuentas escolares. Pídele una tarjeta de acceso a tu profe.",
       "lastTeacher": "Una clase necesita al menos un docente."
     }
+  },
+  "lessons": {
+    "up": "Subir",
+    "down": "Bajar",
+    "move": "Mover",
+    "moveTo": "Mover a",
+    "stepsN": "{count, plural, one {# paso} other {# pasos}}",
+    "minutesN": "{count, plural, one {# minuto} other {# minutos}}",
+    "assignedN": "{count, plural, one {en # clase} other {en # clases}}",
+    "kinds": {
+      "game": "Jugar un juego",
+      "build": "Crear un juego",
+      "text": "Leer o hacer"
+    },
+    "library": {
+      "title": "Biblioteca de lecciones",
+      "mine": "Mis lecciones",
+      "shared": "Compartidas en mi escuela",
+      "top": "Biblioteca",
+      "path": "Carpetas",
+      "newLesson": "Nueva lección",
+      "newLessonPlaceholder": "Título de la lección, p. ej., Calentamiento de fracciones",
+      "empty": "Todavía no hay lecciones aquí",
+      "emptyText": "Cree una lección nueva, deje que la IA prepare un borrador o copie una lección que compartió un colega."
+    },
+    "folder": {
+      "name": "Nombre de la carpeta",
+      "new": "Nueva carpeta",
+      "newPlaceholder": "Nueva carpeta, p. ej., Primer trimestre",
+      "delete": "Eliminar carpeta",
+      "deleteConfirm": "¿Eliminar la carpeta {name}? Las lecciones y carpetas que contiene suben un nivel."
+    },
+    "lesson": {
+      "title": "Título de la lección",
+      "summary": "Resumen",
+      "objectives": "Objetivos de aprendizaje",
+      "objectivesHint": "Un objetivo por línea",
+      "steps": "Pasos",
+      "noSteps": "Todavía no hay pasos. Agregue el primero abajo.",
+      "details": "Detalles de la lección",
+      "share": "Compartir con mi escuela",
+      "shareNo": "No, solo yo",
+      "shareYes": "Sí, otros docentes pueden copiarla",
+      "sharedChip": "Compartida",
+      "duplicate": "Hacer una copia",
+      "duplicated": "Copia creada. La encontrará en su biblioteca.",
+      "delete": "Eliminar lección",
+      "deleteConfirm": "¿Eliminar la lección {name}? Esta acción no se puede deshacer.",
+      "deleteAssignedConfirm": "¿Eliminar la lección {name}? También se quitará de {count, plural, one {# clase} other {# clases}}. Esta acción no se puede deshacer."
+    },
+    "step": {
+      "add": "Agregar un paso",
+      "addButton": "Agregar paso",
+      "kind": "Tipo",
+      "title": "Título del paso (opcional)",
+      "game": "Juego",
+      "gameHint": "Para los pasos de “Jugar un juego”.",
+      "myGames": "Mis juegos",
+      "schoolGames": "Compartidos en mi escuela",
+      "siteGames": "Juegos de Magic Cups",
+      "minutes": "Minutos",
+      "body": "Instrucciones",
+      "bodyHint": "Lo que deben hacer los estudiantes. En “Crear un juego”, es la idea que le dan al Constructor, p. ej., “un quiz con 8 preguntas sobre los planetas”.",
+      "edit": "Editar paso",
+      "delete": "Eliminar paso",
+      "deleteConfirm": "¿Eliminar este paso?",
+      "notShared": "Su clase todavía no puede abrir este juego",
+      "notSharedHint": "Primero compártalo con su escuela, o ábralo en el Estudio y pulse Publicar.",
+      "shareGame": "Compartir con mi escuela",
+      "openStudio": "Abrir en el Estudio",
+      "newGame": "Crear un juego nuevo para esta lección con el Constructor",
+      "newGameIdea": "Su idea para el juego",
+      "newGamePlaceholder": "p. ej., un quiz con 10 preguntas sobre fracciones para 4.º grado",
+      "newGameButton": "Abrir el Constructor",
+      "newGameNote": "Se agrega un paso de juego a esta lección y el Estudio se abre con su idea lista. Cuando el juego esté terminado, publíquelo para su escuela."
+    },
+    "ai": {
+      "button": "Crear borrador con IA",
+      "topic": "¿De qué trata la lección?",
+      "topicPlaceholder": "p. ej., El ciclo del agua",
+      "minutes": "Minutos",
+      "make": "Crear el borrador",
+      "note": "Claude prepara el borrador de una lección con pasos y juegos relacionados. Puede cambiarlo todo antes de usarla.",
+      "done": "Aquí está su borrador. Revise cada paso y cambie lo que quiera.",
+      "template": "Aquí tiene un punto de partida. Agregue sus propios pasos y juegos."
+    },
+    "assign": {
+      "title": "Asignar a una clase",
+      "class": "Clase",
+      "opens": "Fecha de apertura (opcional)",
+      "due": "Fecha de entrega (opcional)",
+      "button": "Asignar",
+      "already": "Asignada a:",
+      "noClasses": "Todavía no da ninguna clase en esta escuela.",
+      "note": "Los estudiantes ven la lección desde el día en que se abre. Los cambios que haga después se verán en todas las clases."
+    },
+    "class": {
+      "title": "Lecciones",
+      "none": "Todavía no hay lecciones. Asigne una desde su biblioteca.",
+      "assign": "Asignar una lección",
+      "library": "Biblioteca de lecciones",
+      "unit": "Unidad",
+      "unitName": "Nombre de la unidad",
+      "newUnit": "Nueva unidad",
+      "newUnitPlaceholder": "Nueva unidad, p. ej., Fracciones",
+      "emptyUnit": "Todavía no hay lecciones en esta unidad.",
+      "deleteUnit": "Eliminar unidad",
+      "deleteUnitConfirm": "¿Eliminar la unidad {name}? Sus lecciones se quedan en la clase.",
+      "opensOn": "Se abre el {date}",
+      "dueOn": "Para el {date}",
+      "editLesson": "Editar lección",
+      "unassign": "Quitar de la clase",
+      "unassignConfirm": "¿Quitar {name} de esta clase? La lección se queda en su biblioteca."
+    },
+    "view": {
+      "teacherPreview": "Esto es lo que ven sus estudiantes.",
+      "play": "Jugar {title}",
+      "build": "Empezar a crear",
+      "notReady": "Este juego todavía no está listo. Pregúntale a tu profe."
+    },
+    "shared": {
+      "copy": "Copiar a mi biblioteca",
+      "copied": "¡Copiada a su biblioteca!",
+      "empty": "Todavía no hay nada compartido",
+      "emptyText": "Cuando los docentes de su escuela compartan una lección, aparecerá aquí."
+    },
+    "template": {
+      "warmup": "Calentamiento",
+      "warmupText": "¿Qué sabes ya sobre {topic}? Habla con un compañero durante dos minutos.",
+      "play": "Jugar {title}",
+      "build": "Crea tu propio juego",
+      "buildText": "Un quiz con 6 preguntas sobre {topic}",
+      "wrapup": "Cierre",
+      "wrapupText": "Comparte algo que aprendiste hoy."
+    },
+    "errors": {
+      "notFound": "No pudimos encontrarlo, o no se puede abrir.",
+      "lessonTitle": "Ponga un título a la lección.",
+      "folderName": "Ponga un nombre a la carpeta.",
+      "unitName": "Ponga un nombre a la unidad.",
+      "folderLoop": "Una carpeta no puede estar dentro de sí misma.",
+      "stepKind": "Elija un tipo de paso.",
+      "pickGame": "Elija un juego para este paso.",
+      "buildPrompt": "Escriba la idea que los estudiantes le darán al Constructor.",
+      "stepText": "Escriba las instrucciones para este paso.",
+      "tooManySteps": "Una lección puede tener hasta 40 pasos.",
+      "badDate": "Esa fecha no parece correcta.",
+      "topic": "Escriba de qué trata la lección.",
+      "aiFailed": "La IA no pudo preparar el borrador en este momento. Inténtelo de nuevo en un minuto o cree la lección usted mismo."
+    }
   }
 }

@@ -1295,5 +1295,155 @@
       "ownAccountsOff": "Esta escola usa só contas da escola. Peça um cartão de acesso ao seu professor.",
       "lastTeacher": "Uma turma precisa de pelo menos um professor."
     }
+  },
+  "lessons": {
+    "up": "Mover para cima",
+    "down": "Mover para baixo",
+    "move": "Mover",
+    "moveTo": "Mover para",
+    "stepsN": "{count, plural, one {# etapa} other {# etapas}}",
+    "minutesN": "{count, plural, one {# minuto} other {# minutos}}",
+    "assignedN": "{count, plural, one {em # turma} other {em # turmas}}",
+    "kinds": {
+      "game": "Jogar um jogo",
+      "build": "Criar um jogo",
+      "text": "Ler ou fazer"
+    },
+    "library": {
+      "title": "Biblioteca de aulas",
+      "mine": "Minhas aulas",
+      "shared": "Compartilhadas na minha escola",
+      "top": "Biblioteca",
+      "path": "Pastas",
+      "newLesson": "Nova aula",
+      "newLessonPlaceholder": "Título da aula, ex.: Aquecimento de frações",
+      "empty": "Ainda não há aulas aqui",
+      "emptyText": "Crie uma nova aula, deixe a IA fazer um rascunho ou copie uma aula que um colega compartilhou."
+    },
+    "folder": {
+      "name": "Nome da pasta",
+      "new": "Nova pasta",
+      "newPlaceholder": "Nova pasta, ex.: 1º bimestre",
+      "delete": "Excluir pasta",
+      "deleteConfirm": "Excluir a pasta {name}? As aulas e pastas que estão dentro dela sobem um nível."
+    },
+    "lesson": {
+      "title": "Título da aula",
+      "summary": "Resumo",
+      "objectives": "Objetivos de aprendizagem",
+      "objectivesHint": "Um objetivo por linha",
+      "steps": "Etapas",
+      "noSteps": "Ainda não há etapas. Adicione a primeira abaixo.",
+      "details": "Detalhes da aula",
+      "share": "Compartilhar com a minha escola",
+      "shareNo": "Não, só eu",
+      "shareYes": "Sim, outros professores podem copiá-la",
+      "sharedChip": "Compartilhada",
+      "duplicate": "Fazer uma cópia",
+      "duplicated": "Cópia feita. Ela está na sua biblioteca.",
+      "delete": "Excluir aula",
+      "deleteConfirm": "Excluir a aula {name}? Isso não pode ser desfeito.",
+      "deleteAssignedConfirm": "Excluir a aula {name}? Ela também será removida de {count, plural, one {# turma} other {# turmas}}. Isso não pode ser desfeito."
+    },
+    "step": {
+      "add": "Adicionar uma etapa",
+      "addButton": "Adicionar etapa",
+      "kind": "Tipo",
+      "title": "Título da etapa (opcional)",
+      "game": "Jogo",
+      "gameHint": "Para etapas do tipo “Jogar um jogo”.",
+      "myGames": "Meus jogos",
+      "schoolGames": "Compartilhados na minha escola",
+      "siteGames": "Jogos do Magic Cups",
+      "minutes": "Minutos",
+      "body": "Instruções",
+      "bodyHint": "O que os alunos devem fazer. Em “Criar um jogo”, é a ideia que eles dão ao Construtor, ex.: “um quiz com 8 perguntas sobre os planetas”.",
+      "edit": "Editar etapa",
+      "delete": "Excluir etapa",
+      "deleteConfirm": "Excluir esta etapa?",
+      "notShared": "Sua turma ainda não pode abrir este jogo",
+      "notSharedHint": "Primeiro compartilhe o jogo com a sua escola, ou abra-o no Estúdio e toque em Publicar.",
+      "shareGame": "Compartilhar com a minha escola",
+      "openStudio": "Abrir no Estúdio",
+      "newGame": "Criar um novo jogo para esta aula com o Construtor",
+      "newGameIdea": "Sua ideia para o jogo",
+      "newGamePlaceholder": "ex.: um quiz com 10 perguntas sobre frações para o 4º ano",
+      "newGameButton": "Abrir o Construtor",
+      "newGameNote": "Uma etapa de jogo é adicionada a esta aula, e o Estúdio abre com a sua ideia pronta. Quando o jogo estiver pronto, publique-o para a sua escola."
+    },
+    "ai": {
+      "button": "Criar rascunho com IA",
+      "topic": "Sobre o que é a aula?",
+      "topicPlaceholder": "ex.: O ciclo da água",
+      "minutes": "Minutos",
+      "make": "Criar o rascunho da aula",
+      "note": "O Claude cria o rascunho de uma aula com etapas e jogos relacionados. Você pode mudar tudo antes de usar.",
+      "done": "Aqui está o seu rascunho. Confira cada etapa e mude o que quiser.",
+      "template": "Aqui está um ponto de partida. Adicione suas próprias etapas e jogos."
+    },
+    "assign": {
+      "title": "Atribuir a uma turma",
+      "class": "Turma",
+      "opens": "Abre em (opcional)",
+      "due": "Prazo (opcional)",
+      "button": "Atribuir",
+      "already": "Atribuída a:",
+      "noClasses": "Você ainda não dá aula para nenhuma turma nesta escola.",
+      "note": "Os alunos veem a aula a partir do dia em que ela abre. As mudanças que você fizer depois aparecem para todas as turmas."
+    },
+    "class": {
+      "title": "Aulas",
+      "none": "Ainda não há aulas. Atribua uma da sua biblioteca.",
+      "assign": "Atribuir uma aula",
+      "library": "Biblioteca de aulas",
+      "unit": "Unidade",
+      "unitName": "Nome da unidade",
+      "newUnit": "Nova unidade",
+      "newUnitPlaceholder": "Nova unidade, ex.: Frações",
+      "emptyUnit": "Ainda não há aulas nesta unidade.",
+      "deleteUnit": "Excluir unidade",
+      "deleteUnitConfirm": "Excluir a unidade {name}? As aulas dela continuam na turma.",
+      "opensOn": "Abre em {date}",
+      "dueOn": "Entregar até {date}",
+      "editLesson": "Editar aula",
+      "unassign": "Remover da turma",
+      "unassignConfirm": "Remover {name} desta turma? A aula continua na sua biblioteca."
+    },
+    "view": {
+      "teacherPreview": "É isto que os seus alunos veem.",
+      "play": "Jogar {title}",
+      "build": "Começar a criar",
+      "notReady": "Este jogo ainda não está pronto. Pergunte ao seu professor."
+    },
+    "shared": {
+      "copy": "Copiar para a minha biblioteca",
+      "copied": "Copiada para a sua biblioteca!",
+      "empty": "Nada compartilhado ainda",
+      "emptyText": "Quando os professores da sua escola compartilharem uma aula, ela vai aparecer aqui."
+    },
+    "template": {
+      "warmup": "Aquecimento",
+      "warmupText": "O que você já sabe sobre {topic}? Converse com um colega por dois minutos.",
+      "play": "Jogar {title}",
+      "build": "Crie o seu próprio jogo",
+      "buildText": "Um quiz com 6 perguntas sobre {topic}",
+      "wrapup": "Fechamento",
+      "wrapupText": "Conte uma coisa que você aprendeu hoje."
+    },
+    "errors": {
+      "notFound": "Não encontramos isso, ou não é possível abrir.",
+      "lessonTitle": "Dê um título à aula.",
+      "folderName": "Dê um nome à pasta.",
+      "unitName": "Dê um nome à unidade.",
+      "folderLoop": "Uma pasta não pode ficar dentro dela mesma.",
+      "stepKind": "Escolha um tipo de etapa.",
+      "pickGame": "Escolha um jogo para esta etapa.",
+      "buildPrompt": "Escreva a ideia que os alunos vão dar ao Construtor.",
+      "stepText": "Escreva as instruções para esta etapa.",
+      "tooManySteps": "Uma aula pode ter até 40 etapas.",
+      "badDate": "Essa data não parece certa.",
+      "topic": "Digite sobre o que é a aula.",
+      "aiFailed": "A IA não conseguiu criar o rascunho agora. Tente de novo daqui a um minuto ou crie a aula você mesmo."
+    }
   }
 }

@@ -376,6 +376,9 @@ $('#st-publish').addEventListener('click', () => {
 });
 
 renderTop(); renderLive(); renderSafety(); renderTurns(); renderLog();
+// Opened from a lesson ("build a game about..."): the idea is ready in the box; the builder presses Send.
+const ask = new URLSearchParams(location.search).get('ask');
+if (ask && !input.value) { input.value = ask.slice(0, 600); autosize(); input.focus(); history.replaceState(null, '', location.pathname); }
 if (S.busy) {
   toast(t('js.studio.stillFinishing'));
   busy = true; $('#st-send').disabled = true;

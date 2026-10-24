@@ -97,5 +97,10 @@
     "people": {
       "grade": "Year"
     }
+  },
+  "lessons": {
+    "step": {
+      "newGamePlaceholder": "e.g. a quiz with 10 questions about fractions for Year 4"
+    }
   }
 }

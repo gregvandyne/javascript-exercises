@@ -1294,5 +1294,155 @@
       "ownAccountsOff": "這所學校只使用學校帳號。請向老師拿登入卡。",
       "lastTeacher": "每個班級至少需要一位老師。"
     }
+  },
+  "lessons": {
+    "up": "上移",
+    "down": "下移",
+    "move": "移動",
+    "moveTo": "移到",
+    "stepsN": "{count, plural, other {# 個步驟}}",
+    "minutesN": "{count, plural, other {# 分鐘}}",
+    "assignedN": "{count, plural, other {已指派給 # 個班級}}",
+    "kinds": {
+      "game": "玩遊戲",
+      "build": "做遊戲",
+      "text": "讀一讀、做一做"
+    },
+    "library": {
+      "title": "課程庫",
+      "mine": "我的課程",
+      "shared": "校內分享",
+      "top": "課程庫",
+      "path": "資料夾",
+      "newLesson": "新增課程",
+      "newLessonPlaceholder": "課程名稱，例如：分數暖身",
+      "empty": "這裡還沒有課程",
+      "emptyText": "建立新課程、讓 AI 擬一份草稿，或複製同事分享的課程。"
+    },
+    "folder": {
+      "name": "資料夾名稱",
+      "new": "新增資料夾",
+      "newPlaceholder": "新增資料夾，例如：上學期",
+      "delete": "刪除資料夾",
+      "deleteConfirm": "要刪除資料夾 {name} 嗎？裡面的課程和資料夾會移到上一層。"
+    },
+    "lesson": {
+      "title": "課程名稱",
+      "summary": "摘要",
+      "objectives": "學習目標",
+      "objectivesHint": "每行一個目標",
+      "steps": "步驟",
+      "noSteps": "還沒有步驟。請在下方新增第一個步驟。",
+      "details": "課程詳細資料",
+      "share": "分享給我的學校",
+      "shareNo": "不要，只有我",
+      "shareYes": "要，其他老師可以複製",
+      "sharedChip": "已分享",
+      "duplicate": "建立副本",
+      "duplicated": "已建立副本，可在你的課程庫中找到。",
+      "delete": "刪除課程",
+      "deleteConfirm": "要刪除課程 {name} 嗎？此動作無法復原。",
+      "deleteAssignedConfirm": "要刪除課程 {name} 嗎？它也會從 {count, plural, other {# 個班級}}中移除。此動作無法復原。"
+    },
+    "step": {
+      "add": "新增步驟",
+      "addButton": "新增步驟",
+      "kind": "類型",
+      "title": "步驟名稱（選填）",
+      "game": "遊戲",
+      "gameHint": "用於「玩遊戲」步驟。",
+      "myGames": "我的遊戲",
+      "schoolGames": "校內分享",
+      "siteGames": "Magic Cups 遊戲",
+      "minutes": "分鐘",
+      "body": "說明",
+      "bodyHint": "學生要做的事。若是「做遊戲」步驟，這就是他們要告訴小幫手的點子，例如：「一個關於行星、有 8 題的問答遊戲」。",
+      "edit": "編輯步驟",
+      "delete": "刪除步驟",
+      "deleteConfirm": "要刪除這個步驟嗎？",
+      "notShared": "你的班級還不能開啟這個遊戲",
+      "notSharedHint": "請先分享給你的學校，或在工作室中開啟並按「發布」。",
+      "shareGame": "分享給我的學校",
+      "openStudio": "在工作室中開啟",
+      "newGame": "用小幫手為這堂課程製作新遊戲",
+      "newGameIdea": "你的遊戲點子",
+      "newGamePlaceholder": "例如：給四年級、有 10 題關於分數的問答遊戲",
+      "newGameButton": "開啟小幫手",
+      "newGameNote": "這堂課程會新增一個遊戲步驟，工作室也會開啟並填好你的點子。完成後請發布到你的學校。"
+    },
+    "ai": {
+      "button": "用 AI 擬草稿",
+      "topic": "這堂課程的主題是什麼？",
+      "topicPlaceholder": "例如：水循環",
+      "minutes": "分鐘",
+      "make": "擬定課程草稿",
+      "note": "Claude 會擬出一份包含步驟和相關遊戲的課程草稿。使用前，你可以修改任何內容。",
+      "done": "這是你的草稿。請檢查每個步驟，並依需要修改。",
+      "template": "這是一個起點。請加入你自己的步驟和遊戲。"
+    },
+    "assign": {
+      "title": "指派給班級",
+      "class": "班級",
+      "opens": "開放日期（選填）",
+      "due": "截止日期（選填）",
+      "button": "指派",
+      "already": "已指派給：",
+      "noClasses": "你在這所學校還沒有任教的班級。",
+      "note": "學生從開放日期起就能看到課程。之後所做的修改會同步到每個班級。"
+    },
+    "class": {
+      "title": "課程",
+      "none": "還沒有課程。請從你的課程庫指派。",
+      "assign": "指派課程",
+      "library": "課程庫",
+      "unit": "單元",
+      "unitName": "單元名稱",
+      "newUnit": "新增單元",
+      "newUnitPlaceholder": "新增單元，例如：分數",
+      "emptyUnit": "這個單元還沒有課程。",
+      "deleteUnit": "刪除單元",
+      "deleteUnitConfirm": "要刪除單元 {name} 嗎？其中的課程會留在班級中。",
+      "opensOn": "{date} 開放",
+      "dueOn": "{date} 前完成",
+      "editLesson": "編輯課程",
+      "unassign": "從班級移除",
+      "unassignConfirm": "要將 {name} 從這個班級移除嗎？課程仍會保留在你的課程庫中。"
+    },
+    "view": {
+      "teacherPreview": "這就是學生看到的畫面。",
+      "play": "玩 {title}",
+      "build": "開始做遊戲",
+      "notReady": "這個遊戲還沒準備好，問問老師吧。"
+    },
+    "shared": {
+      "copy": "複製到我的課程庫",
+      "copied": "已複製到你的課程庫！",
+      "empty": "還沒有分享的課程",
+      "emptyText": "當學校裡的老師分享課程時，就會出現在這裡。"
+    },
+    "template": {
+      "warmup": "暖身",
+      "warmupText": "關於{topic}，你已經知道哪些呢？和旁邊的同學聊兩分鐘。",
+      "play": "玩 {title}",
+      "build": "做出你自己的遊戲",
+      "buildText": "一個關於{topic}、有 6 題的問答遊戲",
+      "wrapup": "總結",
+      "wrapupText": "說一說你今天學到的一件事。"
+    },
+    "errors": {
+      "notFound": "找不到該項目，或你沒有權限開啟。",
+      "lessonTitle": "請輸入課程名稱。",
+      "folderName": "請輸入資料夾名稱。",
+      "unitName": "請輸入單元名稱。",
+      "folderLoop": "資料夾不能放進它自己裡面。",
+      "stepKind": "請選擇步驟類型。",
+      "pickGame": "請為這個步驟選擇遊戲。",
+      "buildPrompt": "請寫下學生要告訴小幫手的點子。",
+      "stepText": "請寫下這個步驟的說明。",
+      "tooManySteps": "每堂課程最多可以有 40 個步驟。",
+      "badDate": "這個日期看起來不太對。",
+      "topic": "請輸入這堂課程的主題。",
+      "aiFailed": "AI 目前無法擬定草稿。請過一分鐘再試一次，或自己建立課程。"
+    }
   }
 }

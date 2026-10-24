@@ -1295,5 +1295,155 @@
       "ownAccountsOff": "This school uses school accounts only. Ask your teacher for a login card.",
       "lastTeacher": "A class needs at least one teacher."
     }
+  },
+  "lessons": {
+    "up": "Move up",
+    "down": "Move down",
+    "move": "Move",
+    "moveTo": "Move to",
+    "stepsN": "{count, plural, one {# step} other {# steps}}",
+    "minutesN": "{count, plural, one {# minute} other {# minutes}}",
+    "assignedN": "{count, plural, one {in # class} other {in # classes}}",
+    "kinds": {
+      "game": "Play a game",
+      "build": "Build a game",
+      "text": "Read or do"
+    },
+    "library": {
+      "title": "Lesson library",
+      "mine": "My lessons",
+      "shared": "Shared in my school",
+      "top": "Library",
+      "path": "Folders",
+      "newLesson": "New lesson",
+      "newLessonPlaceholder": "Lesson title, e.g. Fractions warm-up",
+      "empty": "No lessons here yet",
+      "emptyText": "Make a new lesson, let the AI draft one, or copy one a colleague shared."
+    },
+    "folder": {
+      "name": "Folder name",
+      "new": "New folder",
+      "newPlaceholder": "New folder, e.g. Term 1",
+      "delete": "Delete folder",
+      "deleteConfirm": "Delete the folder {name}? The lessons and folders inside move up one level."
+    },
+    "lesson": {
+      "title": "Lesson title",
+      "summary": "Summary",
+      "objectives": "Learning objectives",
+      "objectivesHint": "One objective per line",
+      "steps": "Steps",
+      "noSteps": "No steps yet. Add the first one below.",
+      "details": "Lesson details",
+      "share": "Share with my school",
+      "shareNo": "No, only me",
+      "shareYes": "Yes, other teachers can copy it",
+      "sharedChip": "Shared",
+      "duplicate": "Make a copy",
+      "duplicated": "Copy made. Find it in your library.",
+      "delete": "Delete lesson",
+      "deleteConfirm": "Delete the lesson {name}? This can't be undone.",
+      "deleteAssignedConfirm": "Delete the lesson {name}? It will also be removed from {count, plural, one {# class} other {# classes}}. This can't be undone."
+    },
+    "step": {
+      "add": "Add a step",
+      "addButton": "Add step",
+      "kind": "Type",
+      "title": "Step title (optional)",
+      "game": "Game",
+      "gameHint": "For “Play a game” steps.",
+      "myGames": "My games",
+      "schoolGames": "Shared in my school",
+      "siteGames": "Magic Cups games",
+      "minutes": "Minutes",
+      "body": "Instructions",
+      "bodyHint": "What students should do. For “Build a game”, this is the idea they give the Builder, e.g. “a quiz with 8 questions about the planets”.",
+      "edit": "Edit step",
+      "delete": "Delete step",
+      "deleteConfirm": "Delete this step?",
+      "notShared": "Your class can't open this game yet",
+      "notSharedHint": "Share it with your school first, or open it in the Studio and press Publish.",
+      "shareGame": "Share with my school",
+      "openStudio": "Open in the Studio",
+      "newGame": "Make a new game for this lesson with the Builder",
+      "newGameIdea": "Your idea for the game",
+      "newGamePlaceholder": "e.g. a quiz with 10 questions about fractions for grade 4",
+      "newGameButton": "Open the Builder",
+      "newGameNote": "A game step is added to this lesson, and the Studio opens with your idea ready. Publish it to your school when it's done."
+    },
+    "ai": {
+      "button": "Draft with AI",
+      "topic": "What is the lesson about?",
+      "topicPlaceholder": "e.g. The water cycle",
+      "minutes": "Minutes",
+      "make": "Draft the lesson",
+      "note": "Claude drafts a lesson with steps and matching games. You can change everything before you use it.",
+      "done": "Here is your draft. Check every step and change anything you like.",
+      "template": "Here is a starting point. Add your own steps and games."
+    },
+    "assign": {
+      "title": "Assign to a class",
+      "class": "Class",
+      "opens": "Opens on (optional)",
+      "due": "Due on (optional)",
+      "button": "Assign",
+      "already": "Assigned to:",
+      "noClasses": "You don't teach a class in this school yet.",
+      "note": "Students see the lesson from the day it opens. Changes you make later show up for every class."
+    },
+    "class": {
+      "title": "Lessons",
+      "none": "No lessons yet. Assign one from your library.",
+      "assign": "Assign a lesson",
+      "library": "Lesson library",
+      "unit": "Unit",
+      "unitName": "Unit name",
+      "newUnit": "New unit",
+      "newUnitPlaceholder": "New unit, e.g. Fractions",
+      "emptyUnit": "No lessons in this unit yet.",
+      "deleteUnit": "Delete unit",
+      "deleteUnitConfirm": "Delete the unit {name}? Its lessons stay in the class.",
+      "opensOn": "Opens {date}",
+      "dueOn": "Due {date}",
+      "editLesson": "Edit lesson",
+      "unassign": "Remove from class",
+      "unassignConfirm": "Remove {name} from this class? The lesson stays in your library."
+    },
+    "view": {
+      "teacherPreview": "This is what your students see.",
+      "play": "Play {title}",
+      "build": "Start building",
+      "notReady": "This game isn't ready yet. Ask your teacher."
+    },
+    "shared": {
+      "copy": "Copy to my library",
+      "copied": "Copied to your library!",
+      "empty": "Nothing shared yet",
+      "emptyText": "When teachers in your school share a lesson, it shows up here."
+    },
+    "template": {
+      "warmup": "Warm-up",
+      "warmupText": "What do you already know about {topic}? Talk with a partner for two minutes.",
+      "play": "Play {title}",
+      "build": "Build your own game",
+      "buildText": "A quiz game with 6 questions about {topic}",
+      "wrapup": "Wrap-up",
+      "wrapupText": "Share one thing you learned today."
+    },
+    "errors": {
+      "notFound": "We couldn't find that, or you can't open it.",
+      "lessonTitle": "Give the lesson a title.",
+      "folderName": "Give the folder a name.",
+      "unitName": "Give the unit a name.",
+      "folderLoop": "A folder can't go inside itself.",
+      "stepKind": "Pick a type of step.",
+      "pickGame": "Pick a game for this step.",
+      "buildPrompt": "Write the idea students will give the Builder.",
+      "stepText": "Write the instructions for this step.",
+      "tooManySteps": "A lesson can have up to 40 steps.",
+      "badDate": "That date doesn't look right.",
+      "topic": "Type what the lesson is about.",
+      "aiFailed": "The AI couldn't draft this right now. Try again in a minute, or make the lesson yourself."
+    }
   }
 }
