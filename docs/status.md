@@ -23,6 +23,7 @@ _Last updated: 2026-10-24_
 | Admin: review queue, reports, chat reports, users/bans, audit log; 404 for non-admins | e2e + unit `moderation.test.js` |
 | Schools: platform admin creates schools; school admins run classes, people and settings; teachers run classes, add students with login cards, approve own-account joins (with matching); school rules for school accounts | unit `schools.test.js`, e2e `schools.spec.js` |
 | Lesson plans: library with folders and order, read/play/build steps, Draft with AI (template without a key), share and copy in the school, assign to classes in units with dates, students open lessons and start build steps | unit `lessons.test.js`, e2e `lessons.spec.js` |
+| Layout: no two boxes touch on the main pages (phone, tablet, desktop; light and dark; sections opened) | e2e `layout.spec.js`; `scripts/layout-audit.js` for the whole site |
 | Admin stats: visits (no tracking), accounts, plays, games, AI cost and tokens; admin-only | unit `stats.test.js` |
 | Safety suite: 76 adversarial prompts refused, 40 kid prompts allowed; scanner fails fetch/links/eval, flags flashing | `tests/safety/` |
 | **13 site languages**: 🌐 picker (mouse, keyboard, phone, no-JS links), `?lang=` → cookie → account → Accept-Language → en, choice saved to the account, `<html lang dir>`, RTL for he/ar, English fallback per key, `BRB.user.lang` in games | unit `i18n.test.js`, e2e `i18n.spec.js`, RTL screenshots of home, game, play, Studio, chat, friends and Me |

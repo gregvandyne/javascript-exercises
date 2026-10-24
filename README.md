@@ -29,6 +29,7 @@ No API key is needed: without `ANTHROPIC_API_KEY` the Builder uses a built-in mo
 npm test             # unit + safety suites (node:test, in-memory DB)
 npm run test:e2e     # Playwright end-to-end (starts its own server + temp DB, mock Builder)
 npm run screenshots  # BASE=http://localhost:3000 ADMIN_PASSWORD=... → screenshots/ at 390/1280 px, light/dark
+node scripts/layout-audit.js  # BASE=... AUDIT_USERS="guest,teacher:name:pass" → boxes that touch, on every page it can reach
 npm run i18n:check   # per language: missing / extra keys and placeholder problems
 ```
 

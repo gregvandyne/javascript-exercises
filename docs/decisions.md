@@ -151,3 +151,12 @@ The game site stays as it is; schools are a layer on the same app and the same a
   Assignments are live links: edits to the lesson show up for every class. Students see open lessons on their class
   page; a build step makes a game in the student's own Studio with the idea filled in.
 - **Later (step 3):** progress, scores from games, written answers and the gradebook.
+
+## Spacing: containers never touch
+- The schools/teaching module uses one spacing scale (4 · 8 · 12 · 16 · 24 · 32 px, `--s1`…`--s6` in
+  public/css/schools.css) and shared rules instead of per-page margins: blocks stacked in a page keep 16px, items
+  stacked inside a panel keep 12px, forms, button rows, lists, menus and phone tables each have one rule.
+- `tests/e2e/touching.js` measures every box on a page (a border, shadow or different background) and reports any
+  two that touch (< 8px, < 4px between controls). `tests/e2e/layout.spec.js` runs it on the main pages at phone,
+  tablet and desktop widths, light and dark, with collapsible sections closed and opened; `scripts/layout-audit.js`
+  crawls every page it can reach as several people and runs the same check.
