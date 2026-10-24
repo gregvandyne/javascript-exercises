@@ -3,6 +3,14 @@
 //  - ad cards: a.adcard[data-ad][data-placement][data-game|data-games] observed by public/js/ads.js
 import { html, raw, esc, fmtNum } from './html.js';
 import { pickAd } from '../services/ads.js';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+// Real screenshots of the launch games (made by `npm run covers`), keyed by slug -> cache-busting version.
+const COVER_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../public/covers');
+const COVER_SHOTS = new Map();
+try { for (const f of fs.readdirSync(COVER_DIR)) if (f.endsWith('.jpg')) COVER_SHOTS.set(f.slice(0, -4), Math.round(fs.statSync(path.join(COVER_DIR, f)).mtimeMs).toString(36)); } catch { /* no covers yet */ }
 
 export const VIS_LABEL = { private: '🔒 Only me', friends: '👫 Friends', public: '🌍 Everyone' };
 export function stars(rating, count) {
@@ -19,6 +27,9 @@ export function livePill(g) {
   return html`<span class="live" data-live="${g.id}" data-live-format="pill" ${g.playing ? '' : raw('hidden')}>${g.playing} playing</span>`;
 }
 export function coverArt(g, extra = '') {
+  // Launch games show a real screenshot; everything else (Studio games, templates) keeps the emoji art.
+  const shot = g.source === 'seed' && g.slug ? COVER_SHOTS.get(g.slug) : null;
+  if (shot) return html`<div class="coverart has-shot cover-${g.cover || 'sunset'} ${extra}"><img src="/covers/${g.slug}.jpg?v=${shot}" alt="" loading="lazy" decoding="async"><span class="shot-icon" aria-hidden="true">${g.icon || '🎮'}</span></div>`;
   return html`<div class="coverart cover-${g.cover || 'sunset'} ${extra}"><div class="art" aria-hidden="true">${g.icon || '🎮'}</div></div>`;
 }
 export function gameCard(g, { showVis = false } = {}) {
