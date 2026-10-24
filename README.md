@@ -50,6 +50,7 @@ In environments with a pre-installed Chromium at `/opt/pw-browsers`, the e2e con
 | `BRB_SNAPSHOTS` | on in production | Headless Chromium for game screenshots: cover pictures of Studio games and the Builder's `playtest_game` tool. `0` turns it off, `1` turns it on in development. |
 | `BRB_CHROMIUM` | (Playwright's) | Path to a Chromium / headless-shell binary, if not the one Playwright installed. |
 | `ADMIN_USERNAME` / `ADMIN_PASSWORD` | `admin` / random | Admin account created by `npm run seed`. |
+| `DEMO_TEACHER_PASSWORD` | unset | Demo school for showing schools: creates "Magic Cups Demo School" with `DemoTeacher` and `DemoStudent` (this password, reset on every boot), four classmates, a Demo Class and sample lessons (added again only if the teacher's library is empty). |
 | `AD_IP_DAILY_CAP` | `200` | Max counted ad impressions per IP per day. |
 | `CHAT_DAILY_LIMIT` | `300` | Max chat messages per user per day. |
 | `REPORTS_TO_HIDE` | `3` | Open reports from different players that auto-hide a game. |
