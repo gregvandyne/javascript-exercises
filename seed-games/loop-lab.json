@@ -1,0 +1,60 @@
+{
+  "slug": "loop-lab",
+  "title": "Loop Lab",
+  "icon": "🎛️",
+  "cover": "mint",
+  "category": "music",
+  "tags": "music,beats,make music,sequencer,drums,create,loops,songs,creative,melody,challenges,stickers",
+  "description": "Tap glowing squares to make your own beat with drums, bass, melody and silly sounds, and hear it loop right away. Start from a ready beat or press Surprise me, chain patterns into a song and play it like a little concert. Clear 10 music challenges to fill your sticker book.",
+  "orientation": "any",
+  "players_max": 1,
+  "age_rating": "everyone",
+  "featured": true,
+  "notes": "Original kid-friendly step sequencer. One AudioContext with a look-ahead scheduler on the audio clock (step times are multiplied from an anchor, so no drift; tempo changes re-anchor at the next unscheduled step, so no doubles or gaps; a sleeping timer skips missed steps instead of piling them up). All sounds are synthesised: 3 drum kits (real, robot, toy box), 3 bass sounds, 4 melody sounds (piano, marimba, synth, flute) and 12 silly FX in 3 kits (meow, croak, quack, tweet, bleep, laser, UFO, blip, boing, cowbell, pop, slide whistle). Mix: track volumes, mute/solo, compressor and a soft clipper that never reaches 1.0, gated on BRB.sfx.muted. Bass (6 rows) and melody (10 rows, two octaves of pentatonic) are one note per step on scale degrees; scales major/minor pentatonic, major, blues in C, D, F, G. 16 or 32 steps, 4 pattern slots, song chain, undo/redo, copy, shift, clear, Surprise me (rule-based random beats), 8 original starter beats, Jam pads and a full-screen Play my song concert with a visualizer. 10 challenges with grid checks and gentle hints, plus 6 bonus stickers. Up to 12 named saves (word-picker names stored as word ids, or a typed name: letters/numbers/spaces, max 24, no phone-like digits) in BRB.storage key 'loop-lab-v1'; compact versioned song format (v2) that still reads the v1 draft format and repairs junk. Finishing a challenge calls BRB.gameOver({won:true}); never BRB.score.submit. Characters: Clank the drum robot, Bruno the bass bear, Lulu the melody bird and Blip the FX alien bop on their notes (springs, no flashing; calmer with reduced motion). All 13 site languages incl. RTL panels (the grid stays left to right). window.__brbTest drives everything for tests. Loads Google Font Fredoka.",
+  "l10n": {
+    "pt": {
+      "description": "Toque nos quadrados brilhantes para criar sua própria batida com bateria, baixo, melodia e sons malucos, e ouça tudo tocar em loop na hora. Comece com uma batida pronta ou aperte Me surpreenda, junte padrões numa música e toque como num pequeno show. Vença 10 desafios musicais para completar seu álbum de figurinhas.",
+      "tags": "música,batidas,fazer música,sequenciador,bateria,criar,loops,canções,criativo,melodia,desafios,figurinhas"
+    },
+    "fr": {
+      "description": "Tape sur des cases lumineuses pour créer ton propre rythme avec batterie, basse, mélodie et sons rigolos, et écoute-le tourner en boucle tout de suite. Pars d’un rythme tout prêt ou appuie sur Surprise, enchaîne des motifs pour faire une chanson et joue-la comme un petit concert. Réussis 10 défis musicaux pour remplir ton album d’autocollants.",
+      "tags": "musique,rythmes,faire de la musique,séquenceur,batterie,créer,boucles,chansons,créatif,mélodie,défis,autocollants"
+    },
+    "es": {
+      "description": "Toca cuadros brillantes para crear tu propio ritmo con batería, bajo, melodía y sonidos locos, y escúchalo sonar en bucle al momento. Empieza con un ritmo listo o pulsa Sorpréndeme, une patrones en una canción y tócala como en un pequeño concierto. Supera 10 retos musicales para llenar tu álbum de pegatinas.",
+      "tags": "música,ritmos,hacer música,secuenciador,batería,crear,bucles,canciones,creativo,melodía,retos,pegatinas"
+    },
+    "de": {
+      "description": "Tippe leuchtende Kästchen an und bau deinen eigenen Beat mit Schlagzeug, Bass, Melodie und lustigen Klängen, der sofort in Schleife läuft. Starte mit einem fertigen Beat oder drück „Überrasch mich“, häng Muster zu einem Song zusammen und spiel ihn wie ein kleines Konzert. Schaff 10 Musik-Aufgaben und füll dein Stickeralbum.",
+      "tags": "Musik,Beats,Musik machen,Sequenzer,Schlagzeug,kreativ,Loops,Songs,Melodie,Aufgaben,Sticker"
+    },
+    "he": {
+      "description": "הקישו על ריבועים זוהרים כדי ליצור קצב משלכם עם תופים, בס, מנגינה וצלילים מצחיקים, ושמעו אותו מתנגן בלופ מיד. התחילו מקצב מוכן או לחצו על „הפתיעו אותי”, חברו תבניות לשיר ונגנו אותו כמו בהופעה קטנה. השלימו 10 אתגרי מוזיקה כדי למלא את אלבום המדבקות.",
+      "tags": "מוזיקה,קצבים,יצירת מוזיקה,סקוונסר,תופים,יצירה,לופים,שירים,יצירתי,מנגינה,אתגרים,מדבקות"
+    },
+    "ja": {
+      "description": "ひかるマスをタップして、ドラム、ベース、メロディー、おもしろ音で、じぶんだけのビートをつくろう。つくった音はすぐにくりかえしえんそうされます。おてほんビートからはじめたり、「おまかせ」をおしたり、パターンをつなげて曲にして、小さなコンサートみたいにえんそうしよう。10この音楽チャレンジをクリアして、シールちょうをうめよう。",
+      "tags": "おんがく,ビート,音楽づくり,シーケンサー,ドラム,つくる,ループ,曲,メロディー,チャレンジ,シール"
+    },
+    "ar": {
+      "description": "اضغط على المربعات المضيئة لتصنع إيقاعك الخاص بالطبول والباص واللحن والأصوات المضحكة، واسمعه يتكرر فورًا. ابدأ بإيقاع جاهز أو اضغط «فاجئني»، واربط المقاطع لتصنع أغنية وشغّلها كأنها حفلة صغيرة. أنجز 10 تحديات موسيقية لتملأ ألبوم الملصقات.",
+      "tags": "موسيقى,إيقاعات,صنع الموسيقى,مُسلسِل,طبول,إبداع,تكرار,أغاني,لحن,تحديات,ملصقات"
+    },
+    "ru": {
+      "description": "Нажимай на светящиеся клетки и сочиняй свой бит с барабанами, басом, мелодией и смешными звуками — он сразу играет по кругу. Начни с готового бита или нажми «Сюрприз», собери узоры в песню и сыграй её, как на маленьком концерте. Пройди 10 музыкальных заданий и заполни альбом наклеек.",
+      "tags": "музыка,биты,сочинять музыку,секвенсор,барабаны,творчество,петли,песни,мелодия,задания,наклейки"
+    },
+    "it": {
+      "description": "Tocca i quadratini luminosi per creare il tuo ritmo con batteria, basso, melodia e suoni buffi, e ascoltalo suonare in loop subito. Parti da un ritmo pronto o premi Sorprendimi, unisci le sequenze in una canzone e suonala come in un piccolo concerto. Supera 10 sfide musicali per riempire il tuo album di adesivi.",
+      "tags": "musica,ritmi,fare musica,sequencer,batteria,creare,loop,canzoni,creativo,melodia,sfide,adesivi"
+    },
+    "zh-Hant": {
+      "description": "點點發亮的格子，用鼓、貝斯、旋律和好玩的音效做出你自己的節奏，馬上就能循環播放。可以從範例節奏開始，或按「給我驚喜」，把段落接成一首歌，像小小演唱會一樣播放。完成 10 個音樂挑戰，集滿你的貼紙簿。",
+      "tags": "音樂,節奏,做音樂,音序器,鼓,創作,循環,歌曲,旋律,挑戰,貼紙"
+    },
+    "nl": {
+      "description": "Tik op glimmende vakjes en maak je eigen beat met drums, bas, melodie en gekke geluiden, die meteen in een lus speelt. Begin met een kant-en-klare beat of druk op Verras me, plak patronen aan elkaar tot een liedje en speel het als een klein concert. Haal 10 muziekuitdagingen en vul je stickerboek.",
+      "tags": "muziek,beats,muziek maken,sequencer,drums,creatief,loops,liedjes,melodie,uitdagingen,stickers"
+    }
+  }
+}

@@ -91,6 +91,15 @@ const RECIPES = {
     await f.evaluate(() => { const T = window.__brbTest; T.flick(T.solve()); T.step(260); T.freeze(true); });   // flaming ball rising toward the hoop, LED shows 5
     await wait(600);
   } },
+  'loop-lab': { viewport: PORTRAIT, touch: true, async prep(f) {
+    await hook(f);
+    await f.evaluate(() => {   // a rainbow melody line playing, with the characters bopping
+      const T = window.__brbTest; T.start({ template: 'pop' }); T.stop(); T.kit('melody', 'marimba');
+      [0, 2, 4, 5, 7, 9, 8, 7, 5, 4, 2, 4, 5, 7, 9, 7].forEach((d, s) => { if (T.state().notes.melody[s] !== d) T.toggle('melody', d, s); });
+      T.setTempo(112); T.tab('melody'); T.play();
+    });
+    await wait(2900);   // let the "New sticker" toast fade
+  } },
   'word-hunt': { viewport: PORTRAIT, async prep(f) {
     await hook(f); await f.evaluate(() => window.__brbTest.start({ theme: 'Space', difficulty: 'medium', seed: 3 }));
     await f.evaluate(() => { const t = window.__brbTest; t.skipAnimations && t.skipAnimations(); const s = t.state(); s.words.slice(0, 4).forEach(w => t.select(w.start, w.end)); });
