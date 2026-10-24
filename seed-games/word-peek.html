@@ -47,7 +47,7 @@ button:focus-visible{outline:3px solid var(--accentDark);outline-offset:2px}
 .pill{flex:1;min-width:0;height:44px;box-sizing:border-box;border-radius:999px;background:rgba(255,253,246,.85);box-shadow:inset 0 0 0 2px rgba(160,100,40,.18);
   display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.05;padding:0 8px;text-align:center}
 .pill b{font-weight:600;font-size:clamp(.82rem,3.8vw,1.02rem);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
-.pill span{font-size:clamp(.72rem,3.2vw,.86rem);color:var(--ink2);font-weight:500;white-space:nowrap}
+.pill span{font-size:clamp(.72rem,3.2vw,.86rem);color:var(--ink2);font-weight:500;white-space:nowrap;overflow:hidden;max-width:100%}
 
 .boardWrap{grid-area:board;position:relative;min-height:0;min-width:0;display:flex;align-items:center;justify-content:center}
 .card{position:relative;background:var(--card);border-radius:20px;padding:10px;box-shadow:0 0 0 4px var(--cardEdge),0 10px 24px rgba(140,80,20,.22);
@@ -98,13 +98,13 @@ button:focus-visible{outline:3px solid var(--accentDark);outline-offset:2px}
 .owl.happy .happyEye,.owl.cheer .happyEye,.resOwl.happy .happyEye,.logoOwl .happyEye{display:block}
 .owl.happy .eyeOpen,.owl.cheer .eyeOpen,.resOwl.happy .eyeOpen,.logoOwl .eyeOpen{display:none}
 .bubble{position:absolute;left:50%;top:18px;transform:translate(-50%,-6px);z-index:4;background:#fff;color:var(--ink);
-  border-radius:16px;padding:9px 16px;font-weight:600;font-size:clamp(.95rem,4.2vw,1.1rem);white-space:nowrap;box-shadow:0 4px 0 rgba(120,70,20,.25),0 0 0 3px #ffd88a;
+  border-radius:16px;padding:9px 16px;font-weight:600;font-size:clamp(.95rem,4.2vw,1.1rem);white-space:normal;width:max-content;text-align:center;line-height:1.2;box-shadow:0 4px 0 rgba(120,70,20,.25),0 0 0 3px #ffd88a;
   opacity:0;transition:opacity .2s ease,transform .2s ease;pointer-events:none;max-width:calc(100% - 8px);box-sizing:border-box;text-overflow:ellipsis;overflow:visible}
 .bubble::before{content:"";position:absolute;left:50%;top:-9px;margin-left:-9px;border:9px solid transparent;border-top:0;border-bottom-color:#fff}
 .bubble.show{opacity:1;transform:translate(-50%,0)}
 .grid.secret .row:not(:first-child){display:none}
 .secretHelp{margin:0 0 10px;text-align:center;font-weight:600;font-size:1.05rem;line-height:1.3;max-width:calc(var(--tile) * 6.4)}
-.secretHelp span{display:block;font-weight:500;font-size:.92rem;color:var(--ink2)}
+.secretHelp .sub{display:block;font-weight:500;font-size:.92rem;color:var(--ink2)}
 
 /* ---------- keyboard ---------- */
 .kb{grid-area:kb;display:flex;flex-direction:column;gap:6px;width:100%;max-width:540px;margin:0 auto;align-self:end}
@@ -134,8 +134,8 @@ button:focus-visible{outline:3px solid var(--accentDark);outline-offset:2px}
 @keyframes panelIn{0%{transform:scale(.9);opacity:0}100%{transform:scale(1);opacity:1}}
 .panel h2{margin:2px 0 8px;font-size:1.55rem;font-weight:700}
 .panel p{margin:6px 0;line-height:1.35;font-size:1.02rem}
-.close{position:absolute;top:8px;right:8px}
-.btn{min-height:50px;border:0;border-radius:16px;padding:10px 16px;font-size:1.08rem;font-weight:600;background:#fff;color:var(--ink);white-space:nowrap;
+.close{position:absolute;top:8px;inset-inline-end:8px}
+.btn{min-height:50px;border:0;border-radius:16px;padding:10px 16px;font-size:1.08rem;font-weight:600;background:#fff;color:var(--ink);white-space:normal;line-height:1.15;
   box-shadow:0 4px 0 rgba(120,70,20,.3),inset 0 0 0 2px rgba(160,100,40,.18)}
 .btn:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(120,70,20,.3)}
 .btn.primary{background:var(--accent);color:#fff;box-shadow:0 4px 0 var(--accentDark)}
@@ -149,9 +149,12 @@ button:focus-visible{outline:3px solid var(--accentDark);outline-offset:2px}
 .logoTiles{display:flex;gap:6px;position:relative;z-index:1}
 .logoTiles .tile{--tile:52px;border:0;color:#fff;box-shadow:inset 0 -4px 0 rgba(0,0,0,.16)}
 .logoWord{font-size:2.3rem;font-weight:700;letter-spacing:.5px;margin:2px 0 0;line-height:1;color:var(--ink)}
-.tag{margin:0;color:var(--ink2);font-weight:500;font-size:1.05rem}
+.tag{margin:0;color:var(--ink2);font-weight:500;font-size:1.05rem;text-align:center}
+.tag,.mode .md,.resMsg,.def,.secretHelp{text-wrap:balance}
+:lang(ja){word-break:auto-phrase}   /* Japanese: break lines between phrases, not inside words */
+.tag .practise{display:block;margin-top:3px;font-size:.92rem;font-weight:600;color:var(--accentDark)}
 .modes{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%}
-.mode{border:0;border-radius:18px;background:var(--card);box-shadow:0 4px 0 rgba(120,70,20,.3),0 0 0 3px var(--cardEdge);padding:10px 10px 9px;text-align:left;
+.mode{border:0;border-radius:18px;background:var(--card);box-shadow:0 4px 0 rgba(120,70,20,.3),0 0 0 3px var(--cardEdge);padding:10px 10px 9px;text-align:start;
   display:flex;flex-direction:column;gap:2px;min-height:86px;color:var(--ink)}
 .mode:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(120,70,20,.3),0 0 0 3px var(--cardEdge)}
 .mode .mt{font-size:1.12rem;font-weight:600;display:flex;align-items:center;gap:6px}
@@ -159,14 +162,15 @@ button:focus-visible{outline:3px solid var(--accentDark);outline-offset:2px}
 .mode .md{font-size:.88rem;color:var(--ink2);line-height:1.2}
 .mode.daily{grid-column:1 / -1;background:linear-gradient(135deg,#fff8e6,#ffe7b5);min-height:78px}
 .mode.daily .md b{color:var(--accentDark)}
-.mode.daily{position:relative;padding-right:96px}
-.mode .go{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:var(--accent);color:#fff;font-weight:600;font-size:1.05rem;border-radius:999px;
+.mode.daily{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto;column-gap:10px;align-items:center;align-content:center}
+.mode.daily .mt{grid-column:1;grid-row:1}.mode.daily .md{grid-column:1;grid-row:2}
+.mode .go{grid-column:2;grid-row:1 / span 2;align-self:center;background:var(--accent);color:#fff;font-weight:600;font-size:1.05rem;border-radius:999px;
   padding:9px 14px;box-shadow:0 3px 0 var(--accentDark);white-space:nowrap}
 .mode.friend{grid-column:1 / -1;min-height:62px;flex-direction:row;align-items:center;gap:10px}
 .homeBar{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap}
 .homeBar .btn{min-height:46px;padding:8px 14px;font-size:1rem}
 .points{font-weight:600;color:var(--ink2);font-size:1rem}
-.corner{position:fixed;top:8px;right:max(8px,env(safe-area-inset-right));display:flex;gap:6px;z-index:2}
+.corner{position:fixed;top:8px;inset-inline-end:max(8px,env(safe-area-inset-right));display:flex;gap:6px;z-index:2}
 @media (max-height:700px) and (orientation:portrait){
   .home{gap:8px}
   .logoOwl{width:124px;height:79px;margin-bottom:-10px}.logoTiles .tile{--tile:46px}.logoWord{font-size:2rem}
@@ -178,9 +182,9 @@ button:focus-visible{outline:3px solid var(--accentDark);outline-offset:2px}
 .ex{display:flex;gap:5px;justify-content:center;margin:8px 0 2px}
 .ex .tile{--tile:42px}
 .exNote{font-size:.95rem!important;color:var(--ink2)}
-.help{text-align:left}
+.help{text-align:start}
 .help h2{text-align:center}
-.help ul{margin:6px 0;padding-left:20px;line-height:1.4}
+.help ul{margin:6px 0;padding-inline-start:20px;padding-inline-end:0;line-height:1.4}
 @media (max-height:740px){
   .help{padding:14px 14px 12px}.help h2{margin-bottom:10px}.help p{font-size:.95rem;margin:4px 0}
   .ex{margin:4px 0 0}.ex .tile{--tile:36px}.exNote{font-size:.88rem!important;margin:2px 0 4px!important}
@@ -197,15 +201,15 @@ button:focus-visible{outline:3px solid var(--accentDark);outline-offset:2px}
 .nums div{display:flex;flex-direction:column;align-items:center;line-height:1.1}
 .nums b{font-size:1.6rem;font-weight:700}
 .nums span{font-size:.78rem;color:var(--ink2)}
-.dist{display:flex;flex-direction:column;gap:4px;text-align:left}
+.dist{display:flex;flex-direction:column;gap:4px;text-align:start}
 .bar{display:flex;align-items:center;gap:6px;font-weight:600}
-.bar i{font-style:normal;width:14px;text-align:right}
-.bar b{display:block;min-width:26px;padding:3px 7px;border-radius:7px;background:var(--miss);color:#fff;text-align:right;font-size:.9rem;box-sizing:border-box;transition:width .4s ease}
+.bar i{font-style:normal;width:14px;text-align:end}
+.bar b{display:block;min-width:26px;padding:3px 7px;border-radius:7px;background:var(--miss);color:#fff;text-align:end;font-size:.9rem;box-sizing:border-box;transition:width .4s ease}
 .bar.last b{background:var(--hit)}
 .totalPts{margin-top:10px;font-weight:600}
 
 /* settings */
-.set{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 2px;border-bottom:2px dashed #efdcb6;text-align:left}
+.set{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 2px;border-bottom:2px dashed #efdcb6;text-align:start}
 .set:last-of-type{border-bottom:0}
 .set div{display:flex;flex-direction:column;line-height:1.2}
 .set b{font-size:1.06rem}
@@ -252,23 +256,24 @@ button:focus-visible{outline:3px solid var(--accentDark);outline-offset:2px}
 </style>
 
 <!-- ======================= play screen ======================= -->
+<!-- Every player-visible string comes from the I18N table in the script: data-t = text, data-th = text with <b> markup, data-ta = aria-label. -->
 <div class="app offstage" id="app">
   <div class="hud">
-    <button class="icon-btn" id="homeBtn" aria-label="Home">🏠</button>
-    <div class="pill"><b id="modeName">Daily Peek</b><span id="tryText">Try 1 of 6</span></div>
-    <button class="icon-btn" id="statsBtn" aria-label="Stats">📊</button>
-    <button class="icon-btn" id="setBtn" aria-label="Settings">⚙️</button>
-    <button class="icon-btn" id="muteBtn" aria-label="Sound on or off">🔊</button>
+    <button class="icon-btn" id="homeBtn" data-ta="a_home">🏠</button>
+    <div class="pill"><b id="modeName"></b><span id="tryText"></span></div>
+    <button class="icon-btn" id="statsBtn" data-ta="a_stats">📊</button>
+    <button class="icon-btn" id="setBtn" data-ta="a_settings">⚙️</button>
+    <button class="icon-btn" id="muteBtn" data-ta="a_soundOff">🔊</button>
   </div>
   <div class="boardWrap" id="boardWrap">
     <div class="card" id="card">
       <div class="owl" id="owl" aria-hidden="true"></div>
       <div class="bubble" id="bubble" role="status" aria-live="polite"></div>
-      <p class="secretHelp" id="secretHelp" hidden>🤫 Player 1: type a secret word<span>Use 4, 5 or 6 letters. Don't let your friend peek!</span></p>
-      <div class="grid" id="grid" aria-label="Guesses"></div>
+      <p class="secretHelp" id="secretHelp" hidden><span data-t="secret1"></span><span class="sub" data-t="secret2"></span></p>
+      <div class="grid" id="grid" dir="ltr" lang="en" data-ta="a_guesses"></div>
     </div>
   </div>
-  <div class="kb" id="kb" aria-label="Keyboard"></div>
+  <div class="kb" id="kb" dir="ltr" data-ta="a_keyboard"></div>
 </div>
 
 <!-- ======================= home ======================= -->
@@ -276,59 +281,59 @@ button:focus-visible{outline:3px solid var(--accentDark);outline-offset:2px}
   <div class="home">
     <div class="logo">
       <svg class="logoOwl" id="logoOwl" viewBox="0 0 120 78" aria-hidden="true"></svg>
-      <div class="logoTiles" aria-hidden="true">
+      <div class="logoTiles" dir="ltr" aria-hidden="true">
         <div class="tile" style="background:var(--hit)">P</div><div class="tile" style="background:var(--near);color:var(--nearInk)">E</div>
         <div class="tile" style="background:var(--near);color:var(--nearInk)">E</div><div class="tile" style="background:var(--hit)">K</div>
       </div>
       <h1 class="logoWord">Word Peek</h1>
     </div>
-    <p class="tag">Find the hidden word with Pip the owl!</p>
+    <p class="tag"><span data-t="tag"></span><span class="practise" id="practiseLine" data-t="practise"></span></p>
     <div class="modes">
-      <button class="mode daily" id="modeDaily" data-mode="daily"><span class="mt"><i>📅</i>Daily Peek</span><span class="md" id="dailyNote">A new 5-letter word every day</span><span class="go" id="dailyGo">Play ▶</span></button>
-      <button class="mode" data-mode="practice"><span class="mt"><i>🎯</i>Practice</span><span class="md">5 letters. Play as much as you like</span></button>
-      <button class="mode" data-mode="little"><span class="mt"><i>🐣</i>Little Peek</span><span class="md">4-letter words for new readers</span></button>
-      <button class="mode" data-mode="big"><span class="mt"><i>🦉</i>Big Peek</span><span class="md">6-letter words for word wizards</span></button>
-      <button class="mode" data-mode="friend" id="modeFriend"><span class="mt"><i>🤝</i>Friend Peek</span><span class="md">Pick a secret word for a friend</span></button>
+      <button class="mode daily" id="modeDaily" data-mode="daily"><span class="mt"><i>📅</i><span data-t="m_daily"></span></span><span class="md" id="dailyNote"></span><span class="go" id="dailyGo"></span></button>
+      <button class="mode" data-mode="practice"><span class="mt"><i>🎯</i><span data-t="m_practice"></span></span><span class="md" data-t="md_practice"></span></button>
+      <button class="mode" data-mode="little"><span class="mt"><i>🐣</i><span data-t="m_little"></span></span><span class="md" data-t="md_little"></span></button>
+      <button class="mode" data-mode="big"><span class="mt"><i>🦉</i><span data-t="m_big"></span></span><span class="md" data-t="md_big"></span></button>
+      <button class="mode" data-mode="friend" id="modeFriend"><span class="mt"><i>🤝</i><span data-t="m_friend"></span></span><span class="md" data-t="md_friend"></span></button>
     </div>
     <div class="homeBar">
-      <button class="btn" id="helpBtnHome">❓ How to play</button>
-      <button class="btn" id="statsBtnHome">📊 Stats</button>
+      <button class="btn" id="helpBtnHome" data-t="b_help"></button>
+      <button class="btn" id="statsBtnHome" data-t="b_stats"></button>
     </div>
     <div class="corner">
-      <button class="icon-btn" id="setBtnHome" aria-label="Settings">⚙️</button>
-      <button class="icon-btn" id="muteBtnHome" aria-label="Sound on or off">🔊</button>
+      <button class="icon-btn" id="setBtnHome" data-ta="a_settings">⚙️</button>
+      <button class="icon-btn" id="muteBtnHome" data-ta="a_soundOff">🔊</button>
     </div>
-    <div class="points" id="homePoints">⭐ 0 word points</div>
+    <div class="points" id="homePoints"></div>
   </div>
 </section>
 
 <!-- ======================= how to play ======================= -->
 <section class="screen dim" id="helpScreen" hidden>
-  <div class="panel help" role="dialog" aria-label="How to play">
-    <button class="icon-btn close" data-close aria-label="Close">✖️</button>
-    <h2>How to play</h2>
-    <p>Guess the hidden word in <b>6 tries</b>. Type a real word and press <b>Enter</b>. Pip the owl shows you how close you are:</p>
-    <div class="ex"><div class="tile hit">P<span class="mk"></span></div><div class="tile filled">L</div><div class="tile filled">A</div><div class="tile filled">N</div><div class="tile filled">T</div></div>
-    <p class="exNote"><b>P</b> is in the word and in the <b>right spot</b> (tick).</p>
-    <div class="ex"><div class="tile filled">C</div><div class="tile filled">H</div><div class="tile filled">A</div><div class="tile near">I<span class="mk"></span></div><div class="tile filled">R</div></div>
-    <p class="exNote"><b>I</b> is in the word but in a <b>different spot</b> (dot).</p>
-    <div class="ex"><div class="tile filled">B</div><div class="tile filled">R</div><div class="tile miss">O<span class="mk"></span></div><div class="tile filled">W</div><div class="tile filled">N</div></div>
-    <p class="exNote"><b>O</b> is <b>not in the word</b> at all.</p>
+  <div class="panel help" role="dialog" data-ta="h_title">
+    <button class="icon-btn close" data-close data-ta="a_close">✖️</button>
+    <h2 data-t="h_title"></h2>
+    <p data-th="h_intro"></p>
+    <div class="ex" dir="ltr" lang="en"><div class="tile hit">P<span class="mk"></span></div><div class="tile filled">L</div><div class="tile filled">A</div><div class="tile filled">N</div><div class="tile filled">T</div></div>
+    <p class="exNote" data-th="h_hit"></p>
+    <div class="ex" dir="ltr" lang="en"><div class="tile filled">C</div><div class="tile filled">H</div><div class="tile filled">A</div><div class="tile near">I<span class="mk"></span></div><div class="tile filled">R</div></div>
+    <p class="exNote" data-th="h_near"></p>
+    <div class="ex" dir="ltr" lang="en"><div class="tile filled">B</div><div class="tile filled">R</div><div class="tile miss">O<span class="mk"></span></div><div class="tile filled">W</div><div class="tile filled">N</div></div>
+    <p class="exNote" data-th="h_miss"></p>
     <ul>
-      <li>A letter can show up more than once.</li>
-      <li><b>Daily Peek</b> has one word a day. Win days in a row for a 🔥 streak!</li>
-      <li><b>Little Peek</b> uses 4 letters. <b>Big Peek</b> uses 6.</li>
-      <li><b>Hard mode</b>: letters you found must be used in your next guesses.</li>
+      <li data-th="h_li1"></li>
+      <li data-th="h_li2"></li>
+      <li data-th="h_li3"></li>
+      <li data-th="h_li4"></li>
     </ul>
-    <div class="btns"><button class="btn primary" data-close>Let's play!</button></div>
+    <div class="btns"><button class="btn primary" data-close data-t="h_go"></button></div>
   </div>
 </section>
 
 <!-- ======================= stats ======================= -->
 <section class="screen dim" id="statsScreen" hidden>
-  <div class="panel" role="dialog" aria-label="Stats">
-    <button class="icon-btn close" data-close aria-label="Close">✖️</button>
-    <h2>Your stats</h2>
+  <div class="panel" role="dialog" data-ta="a_stats">
+    <button class="icon-btn close" data-close data-ta="a_close">✖️</button>
+    <h2 data-t="s_title"></h2>
     <div class="tabs" id="statTabs"></div>
     <div class="nums" id="statNums"></div>
     <div class="dist" id="statDist"></div>
@@ -338,31 +343,31 @@ button:focus-visible{outline:3px solid var(--accentDark);outline-offset:2px}
 
 <!-- ======================= settings ======================= -->
 <section class="screen dim" id="setScreen" hidden>
-  <div class="panel" role="dialog" aria-label="Settings">
-    <button class="icon-btn close" data-close aria-label="Close">✖️</button>
-    <h2>Settings</h2>
-    <div class="set"><div><b>High contrast</b><span>Orange and blue colours</span></div><button class="switch" id="swContrast" role="switch" aria-checked="false" aria-label="High contrast"></button></div>
-    <div class="set"><div><b>Hard mode</b><span>Use the letters you found</span></div><button class="switch" id="swHard" role="switch" aria-checked="false" aria-label="Hard mode"></button></div>
-    <div class="set"><div><b>Sound</b><span>Clicks, flips and cheers</span></div><button class="switch" id="swSound" role="switch" aria-checked="true" aria-label="Sound"></button></div>
-    <div class="btns"><button class="btn" id="helpBtnSet">❓ How to play</button><button class="btn primary" data-close>Done</button></div>
+  <div class="panel" role="dialog" data-ta="a_settings">
+    <button class="icon-btn close" data-close data-ta="a_close">✖️</button>
+    <h2 data-t="set_title"></h2>
+    <div class="set"><div><b data-t="set_hc"></b><span data-t="set_hc_d"></span></div><button class="switch" id="swContrast" role="switch" aria-checked="false" data-ta="set_hc"></button></div>
+    <div class="set"><div><b data-t="set_hard"></b><span data-t="set_hard_d"></span></div><button class="switch" id="swHard" role="switch" aria-checked="false" data-ta="set_hard"></button></div>
+    <div class="set"><div><b data-t="set_sound"></b><span data-t="set_sound_d"></span></div><button class="switch" id="swSound" role="switch" aria-checked="true" data-ta="set_sound"></button></div>
+    <div class="btns"><button class="btn" id="helpBtnSet" data-t="b_help"></button><button class="btn primary" data-close data-t="done"></button></div>
   </div>
 </section>
 
 <!-- ======================= result ======================= -->
 <section class="screen dim" id="resScreen" hidden>
-  <div class="panel resPanel" role="dialog" aria-label="Result">
-    <button class="icon-btn close" data-close aria-label="Close">✖️</button>
+  <div class="panel resPanel" role="dialog" data-ta="a_result">
+    <button class="icon-btn close" data-close data-ta="a_close">✖️</button>
     <div class="resA">
       <svg class="resOwl" id="resOwl" viewBox="0 0 120 78" aria-hidden="true"></svg>
-      <h2 class="resTitle" id="resTitle">Genius!</h2>
+      <h2 class="resTitle" id="resTitle"></h2>
       <p class="resMsg" id="resMsg"></p>
-      <div class="wordCard"><span class="big" id="resWord">ROBOT</span><button class="icon-btn say" id="sayBtn" aria-label="Say the word">🔊</button></div>
-      <p class="def" id="resDef"></p>
+      <div class="wordCard" dir="ltr"><span class="big" id="resWord" lang="en"></span><button class="icon-btn say" id="sayBtn" data-ta="a_say">🔊</button></div>
+      <p class="def" id="resDef" lang="en" dir="ltr"></p>
     </div>
     <div class="resB">
-      <div class="resMid"><div class="emojis" id="resEmojis" aria-label="Your result"></div><div class="nums resNums" id="resNums"></div></div>
+      <div class="resMid"><div class="emojis" id="resEmojis" dir="ltr" data-ta="a_yourResult"></div><div class="nums resNums" id="resNums"></div></div>
       <p class="ptsLine" id="resPts"></p>
-      <div class="countdown" id="resCount" hidden>Next word in <b id="resTimer">00:00:00</b></div>
+      <div class="countdown" id="resCount" hidden><span data-t="r_next"></span> <b id="resTimer" dir="ltr">00:00:00</b></div>
       <div class="btns" id="resBtns"></div>
     </div>
   </div>
@@ -370,12 +375,12 @@ button:focus-visible{outline:3px solid var(--accentDark);outline-offset:2px}
 
 <!-- ======================= friend hand-off ======================= -->
 <section class="screen dim" id="passScreen" hidden>
-  <div class="panel" role="dialog" aria-label="Pass the phone">
-    <h2>🤫 Secret word set!</h2>
-    <p>Now pass the phone to your friend.</p>
-    <div class="secretRow" id="passRow"></div>
-    <p>Friend: can you peek the word in 6 tries?</p>
-    <div class="btns"><button class="btn" id="passBack">Change word</button><button class="btn primary" id="passGo">I'm ready!</button></div>
+  <div class="panel" role="dialog" data-ta="a_pass">
+    <h2 data-t="p_title"></h2>
+    <p data-t="p_1"></p>
+    <div class="secretRow" id="passRow" dir="ltr"></div>
+    <p data-t="p_2"></p>
+    <div class="btns"><button class="btn" id="passBack" data-t="p_back"></button><button class="btn primary" id="passGo" data-t="p_go"></button></div>
   </div>
 </section>
 
@@ -398,16 +403,582 @@ const CONFIG = {
   recentAvoid: 40,                  // practice modes don't repeat any of your last 40 words
   maxTile: 66,                      // biggest tile size in px
   speechRate: 0.8,
-  winWords: ['Genius!', 'Amazing!', 'Super!', 'Great job!', 'Nice one!', 'Phew!'],   // by the try you won on
   hitEmoji: '🟢', nearEmoji: '🟡', missEmoji: '⚪', hcHitEmoji: '🟠', hcNearEmoji: '🔵',
-  modes: {
-    daily:    { name: 'Daily Peek',  icon: '📅', length: 5 },
-    practice: { name: 'Practice',    icon: '🎯', length: 5 },
-    little:   { name: 'Little Peek', icon: '🐣', length: 4 },
-    big:      { name: 'Big Peek',    icon: '🦉', length: 6 },
-    friend:   { name: 'Friend Peek', icon: '🤝', length: 5 }
+  modes: {                          // names come from I18N ('m_' + id)
+    daily:    { icon: '📅', length: 5 },
+    practice: { icon: '🎯', length: 5 },
+    little:   { icon: '🐣', length: 4 },
+    big:      { icon: '🦉', length: 6 },
+    friend:   { icon: '🤝', length: 5 }
   }
 };
+
+/* =====================================================================================
+   I18N: every player-visible string, per site language (BRB.user.lang). Lookup order: the locale,
+   then its base language (en-GB -> en), then en. Plural strings are { one, two, few, many, other }
+   objects picked with Intl.PluralRules; {name} placeholders are filled by t(key, vars).
+   The words you guess, the keyboard and the word meanings stay English (it is an English word game).
+   ===================================================================================== */
+const I18N = {
+  en: {
+    tag: "Find the hidden word with Pip the owl!", practise: "",
+    m_daily: "Daily Peek", m_practice: "Practice", m_little: "Little Peek", m_big: "Big Peek", m_friend: "Friend Peek",
+    tab_daily: "Daily", tab_practice: "Practice", tab_little: "Little", tab_big: "Big",
+    md_daily: "A new 5-letter word every day", md_practice: "5 letters. Play as much as you like", md_little: "4-letter words for new readers",
+    md_big: "6-letter words for word wizards", md_friend: "Pick a secret word for a friend",
+    go_play: "Play ▶", go_go: "Go ▶", go_see: "See ▶", b_help: "❓ How to play", b_stats: "📊 Stats",
+    points: { one: "⭐ {n} word point", other: "⭐ {n} word points" },
+    a_home: "Home", a_stats: "Stats", a_settings: "Settings", a_soundOn: "Turn sound on", a_soundOff: "Turn sound off", a_guesses: "Guesses",
+    a_keyboard: "Keyboard", a_close: "Close", a_result: "Result", a_pass: "Pass the phone", a_say: "Say the word", a_yourResult: "Your result", a_delete: "Delete letter",
+    secret1: "🤫 Player 1: type a secret word", secret2: "Use 4, 5 or 6 letters. Don't let your friend peek!",
+    h_title: "How to play",
+    h_intro: "Guess the hidden word in <b>6 tries</b>. Type a real word and press <b>Enter</b>. Pip the owl shows you how close you are:",
+    h_hit: "<b>P</b> is in the word and in the <b>right spot</b> (check mark).",
+    h_near: "<b>I</b> is in the word but in a <b>different spot</b> (dot).",
+    h_miss: "<b>O</b> is <b>not in the word</b> at all.",
+    h_li1: "A letter can show up more than once.",
+    h_li2: "<b>{daily}</b> has one word a day. Win days in a row for a 🔥 streak!",
+    h_li3: "<b>{little}</b> uses 4 letters. <b>{big}</b> uses 6.",
+    h_li4: "<b>{hard}</b>: letters you found must be used in your next guesses.",
+    h_go: "Let's play!",
+    s_title: "Your stats", s_played: "Played", s_win: "Win %", s_streak: "Streak", s_best: "Best", s_dist: "Wins by try",
+    s_total: { one: "⭐ {n} word point in all", other: "⭐ {n} word points in all" },
+    set_title: "Settings", set_hc: "High contrast", set_hc_d: "Orange and blue colors", set_hard: "Hard mode", set_hard_d: "Use the letters you found",
+    set_sound: "Sound", set_sound_d: "Clicks, flips and cheers", done: "Done",
+    win: ["Genius!", "Amazing!", "Super!", "Great job!", "Nice one!", "Phew!"],
+    r_close: "So close!",
+    r_friend: { one: "You found your friend's word in {n} try!", other: "You found your friend's word in {n} tries!" },
+    r_found: { one: "You found it in {n} try!", other: "You found it in {n} tries!" },
+    r_lost: "The word was {word}. You'll get the next one!", r_secret: "A great secret word!", r_tryAria: "Try {n}: {marks}",
+    r_plus: { one: "+{n} point", other: "+{n} points" }, r_next: "Next word in",
+    b_practice: "🎯 Practice", b_home: "🏠 Home", b_newSecret: "🤝 New secret word", b_again: "▶️ Play again",
+    p_title: "🤫 Secret word set!", p_1: "Now pass the phone to your friend.", p_2: "Friend: can you peek the word in 6 tries?", p_back: "Change word", p_go: "I'm ready!",
+    hud_try: "Try {n} of {total}", hud_secret: "Type a secret word", hud_solved: "Solved in {n}!", hud_over: "Round over", hud_hard: "Hard",
+    t_back: "Welcome back! Keep going.", t_find4: "Find the 4-letter word!", t_find6: "Find the 6-letter word!", t_friend: "Guess your friend’s word!", t_find: "Find the hidden word!",
+    e_short: "Not enough letters", e_list: "Not in my word list", e_len: "Use 4, 5 or 6 letters",
+    hard_spot: "Letter {n} must be {l}", hard_many: "Use {n} {l}s", hard_one: "Use the {l} you found", hard_locked: "Change hard mode before your first guess",
+    t_lose: "So close! Here is the word.", t_near: "So close!", t_noVoice: "Sorry, I can’t talk on this device",
+    mk_hit: "right spot", mk_near: "wrong spot", mk_miss: "not in word", mk_empty: "empty",
+    k_hit: "right spot", k_near: "in the word", k_miss: "not in the word",
+    hm_solved: "✅ Solved!", hm_done: "🌙 Done for today.", hm_newIn: "New word in <b>{time}</b>", hm_keep: "Keep going: try {n} of {total}",
+    hm_streak: { one: "🔥 {n} day", other: "🔥 {n} days" }
+  },
+  'en-GB': {
+    set_hc_d: "Orange and blue colours",
+    h_hit: "<b>P</b> is in the word and in the <b>right spot</b> (tick)."
+  },
+  fr: {
+    tag: "Trouve le mot caché avec Pip le hibou !", practise: "Entraîne-toi avec des mots anglais !",
+    m_daily: "Mot du jour", m_practice: "Jeu libre", m_little: "Petit mot", m_big: "Grand mot", m_friend: "Mot secret",
+    tab_daily: "Jour", tab_practice: "Libre", tab_little: "Petit", tab_big: "Grand",
+    md_daily: "Un nouveau mot de 5 lettres chaque jour", md_practice: "5 lettres. Joue autant que tu veux", md_little: "Des mots de 4 lettres pour bien commencer",
+    md_big: "Des mots de 6 lettres pour les champions", md_friend: "Choisis un mot secret pour un ami",
+    go_play: "Jouer ▶", go_go: "Continuer ▶", go_see: "Voir ▶", b_help: "❓ Comment jouer", b_stats: "📊 Statistiques",
+    points: { one: "⭐ {n} point", other: "⭐ {n} points" },
+    a_home: "Accueil", a_stats: "Statistiques", a_settings: "Réglages", a_soundOn: "Activer le son", a_soundOff: "Couper le son", a_guesses: "Essais",
+    a_keyboard: "Clavier", a_close: "Fermer", a_result: "Résultat", a_pass: "Passe le téléphone", a_say: "Dire le mot", a_yourResult: "Ton résultat", a_delete: "Effacer la lettre",
+    secret1: "🤫 Joueur 1 : tape un mot secret en anglais", secret2: "4, 5 ou 6 lettres. Ne laisse pas ton ami regarder !",
+    h_title: "Comment jouer",
+    h_intro: "Devine le mot caché en <b>6 essais</b>. Tape un vrai mot anglais et appuie sur <b>Enter</b>. Pip le hibou te montre si tu es proche :",
+    h_hit: "<b>P</b> est dans le mot, à la <b>bonne place</b> (✓).",
+    h_near: "<b>I</b> est dans le mot, mais à une <b>autre place</b> (●).",
+    h_miss: "<b>O</b> n’est <b>pas du tout dans le mot</b>.",
+    h_li1: "Une lettre peut revenir plusieurs fois.",
+    h_li2: "<b>{daily}</b> : un mot par jour. Gagne plusieurs jours de suite pour une série 🔥 !",
+    h_li3: "<b>{little}</b> : 4 lettres. <b>{big}</b> : 6 lettres.",
+    h_li4: "<b>{hard}</b> : tu dois réutiliser les lettres trouvées dans tes essais suivants.",
+    h_go: "C’est parti !",
+    s_title: "Tes statistiques", s_played: "Parties", s_win: "% gagné", s_streak: "Série", s_best: "Record", s_dist: "Victoires par essai",
+    s_total: { one: "⭐ {n} point en tout", other: "⭐ {n} points en tout" },
+    set_title: "Réglages", set_hc: "Contraste élevé", set_hc_d: "Couleurs orange et bleu", set_hard: "Mode difficile", set_hard_d: "Réutilise les lettres trouvées",
+    set_sound: "Son", set_sound_d: "Clics, tuiles qui tournent et bravos", done: "Terminé",
+    win: ["Génial !", "Incroyable !", "Super !", "Bravo !", "Bien joué !", "Ouf !"],
+    r_close: "Presque !",
+    r_friend: { one: "Tu as trouvé le mot de ton ami en {n} essai !", other: "Tu as trouvé le mot de ton ami en {n} essais !" },
+    r_found: { one: "Tu l’as trouvé en {n} essai !", other: "Tu l’as trouvé en {n} essais !" },
+    r_lost: "Le mot était {word}. Tu auras le prochain !", r_secret: "Un super mot secret !", r_tryAria: "Essai {n} : {marks}",
+    r_plus: { one: "+{n} point", other: "+{n} points" }, r_next: "Prochain mot dans",
+    b_practice: "🎯 Jeu libre", b_home: "🏠 Accueil", b_newSecret: "🤝 Nouveau mot secret", b_again: "▶️ Rejouer",
+    p_title: "🤫 Mot secret choisi !", p_1: "Maintenant, passe le téléphone à ton ami.", p_2: "Ami : peux-tu trouver le mot en 6 essais ?", p_back: "Changer le mot", p_go: "C’est parti !",
+    hud_try: "Essai {n} sur {total}", hud_secret: "Tape un mot secret", hud_solved: "Trouvé en {n} !", hud_over: "Partie finie", hud_hard: "Difficile",
+    t_back: "Te revoilà ! Continue.", t_find4: "Trouve le mot de 4 lettres !", t_find6: "Trouve le mot de 6 lettres !", t_friend: "Devine le mot de ton ami !", t_find: "Trouve le mot caché !",
+    e_short: "Il manque des lettres", e_list: "Ce mot n’est pas dans ma liste", e_len: "Mets 4, 5 ou 6 lettres",
+    hard_spot: "La lettre {n} doit être un {l}", hard_many: "Mets {n} fois la lettre {l}", hard_one: "Utilise le {l} que tu as trouvé", hard_locked: "Change le mode difficile avant ton premier essai",
+    t_lose: "Presque ! Voici le mot.", t_near: "Presque !", t_noVoice: "Désolé, je ne peux pas parler sur cet appareil",
+    mk_hit: "bonne place", mk_near: "mauvaise place", mk_miss: "pas dans le mot", mk_empty: "vide",
+    k_hit: "bonne place", k_near: "dans le mot", k_miss: "pas dans le mot",
+    hm_solved: "✅ Trouvé !", hm_done: "🌙 Fini pour aujourd’hui.", hm_newIn: "Nouveau mot dans <b>{time}</b>", hm_keep: "Continue : essai {n} sur {total}",
+    hm_streak: { one: "🔥 {n} jour", other: "🔥 {n} jours" }
+  },
+  es: {
+    tag: "¡Encuentra la palabra escondida con Pip, el búho!", practise: "¡Practica palabras en inglés!",
+    m_daily: "Palabra del día", m_practice: "Práctica", m_little: "Palabra mini", m_big: "Palabra grande", m_friend: "Palabra secreta",
+    tab_daily: "Día", tab_practice: "Práctica", tab_little: "Mini", tab_big: "Grande",
+    md_daily: "Una palabra nueva de 5 letras cada día", md_practice: "5 letras. Juega todo lo que quieras", md_little: "Palabras de 4 letras para empezar a leer",
+    md_big: "Palabras de 6 letras para magos de las palabras", md_friend: "Elige una palabra secreta para un amigo",
+    go_play: "Jugar ▶", go_go: "Seguir ▶", go_see: "Ver ▶", b_help: "❓ Cómo jugar", b_stats: "📊 Estadísticas",
+    points: { one: "⭐ {n} punto", other: "⭐ {n} puntos" },
+    a_home: "Inicio", a_stats: "Estadísticas", a_settings: "Ajustes", a_soundOn: "Activar el sonido", a_soundOff: "Quitar el sonido", a_guesses: "Intentos",
+    a_keyboard: "Teclado", a_close: "Cerrar", a_result: "Resultado", a_pass: "Pasa el teléfono", a_say: "Decir la palabra", a_yourResult: "Tu resultado", a_delete: "Borrar letra",
+    secret1: "🤫 Jugador 1: escribe una palabra secreta en inglés", secret2: "Usa 4, 5 o 6 letras. ¡Que tu amigo no mire!",
+    h_title: "Cómo jugar",
+    h_intro: "Adivina la palabra escondida en <b>6 intentos</b>. Escribe una palabra de verdad en inglés y pulsa <b>Enter</b>. Pip, el búho, te muestra si estás cerca:",
+    h_hit: "<b>P</b> está en la palabra y en el <b>lugar correcto</b> (✓).",
+    h_near: "<b>I</b> está en la palabra, pero en <b>otro lugar</b> (●).",
+    h_miss: "<b>O</b> <b>no está en la palabra</b>.",
+    h_li1: "Una letra puede salir más de una vez.",
+    h_li2: "<b>{daily}</b>: una palabra al día. ¡Gana varios días seguidos para hacer una racha 🔥!",
+    h_li3: "<b>{little}</b> usa 4 letras. <b>{big}</b> usa 6.",
+    h_li4: "<b>{hard}</b>: tienes que usar las letras que encontraste en tus siguientes intentos.",
+    h_go: "¡A jugar!",
+    s_title: "Tus estadísticas", s_played: "Jugadas", s_win: "% ganadas", s_streak: "Racha", s_best: "Récord", s_dist: "Victorias por intento",
+    s_total: { one: "⭐ {n} punto en total", other: "⭐ {n} puntos en total" },
+    set_title: "Ajustes", set_hc: "Alto contraste", set_hc_d: "Colores naranja y azul", set_hard: "Modo difícil", set_hard_d: "Usa las letras que encontraste",
+    set_sound: "Sonido", set_sound_d: "Clics, giros y aplausos", done: "Listo",
+    win: ["¡Genial!", "¡Increíble!", "¡Súper!", "¡Muy bien!", "¡Bien hecho!", "¡Uf, por poco!"],
+    r_close: "¡Casi!",
+    r_friend: { one: "¡Encontraste la palabra de tu amigo en {n} intento!", other: "¡Encontraste la palabra de tu amigo en {n} intentos!" },
+    r_found: { one: "¡La encontraste en {n} intento!", other: "¡La encontraste en {n} intentos!" },
+    r_lost: "La palabra era {word}. ¡La próxima te sale!", r_secret: "¡Una gran palabra secreta!", r_tryAria: "Intento {n}: {marks}",
+    r_plus: { one: "+{n} punto", other: "+{n} puntos" }, r_next: "Próxima palabra en",
+    b_practice: "🎯 Práctica", b_home: "🏠 Inicio", b_newSecret: "🤝 Nueva palabra secreta", b_again: "▶️ Jugar otra vez",
+    p_title: "🤫 ¡Palabra secreta lista!", p_1: "Ahora pásale el teléfono a tu amigo.", p_2: "Amigo: ¿puedes adivinar la palabra en 6 intentos?", p_back: "Cambiar palabra", p_go: "¡Vamos!",
+    hud_try: "Intento {n} de {total}", hud_secret: "Escribe una palabra secreta", hud_solved: "¡Resuelto en {n}!", hud_over: "Ronda terminada", hud_hard: "Difícil",
+    t_back: "¡Qué bueno verte otra vez! Sigue así.", t_find4: "¡Encuentra la palabra de 4 letras!", t_find6: "¡Encuentra la palabra de 6 letras!", t_friend: "¡Adivina la palabra de tu amigo!", t_find: "¡Encuentra la palabra escondida!",
+    e_short: "Faltan letras", e_list: "No está en mi lista de palabras", e_len: "Usa 4, 5 o 6 letras",
+    hard_spot: "La letra {n} tiene que ser {l}", hard_many: "Usa la {l} {n} veces", hard_one: "Usa la {l} que encontraste", hard_locked: "Cambia el modo difícil antes de tu primer intento",
+    t_lose: "¡Casi! Esta es la palabra.", t_near: "¡Casi!", t_noVoice: "Lo siento, no puedo hablar en este dispositivo",
+    mk_hit: "lugar correcto", mk_near: "otro lugar", mk_miss: "no está", mk_empty: "vacía",
+    k_hit: "lugar correcto", k_near: "está en la palabra", k_miss: "no está en la palabra",
+    hm_solved: "✅ ¡Resuelto!", hm_done: "🌙 Listo por hoy.", hm_newIn: "Nueva palabra en <b>{time}</b>", hm_keep: "Sigue: intento {n} de {total}",
+    hm_streak: { one: "🔥 {n} día", other: "🔥 {n} días" }
+  },
+  pt: {
+    tag: "Encontre a palavra escondida com a coruja Pip!", practise: "Pratique palavras em inglês!",
+    m_daily: "Palavra do dia", m_practice: "Treino", m_little: "Palavrinha", m_big: "Palavrona", m_friend: "Palavra secreta",
+    tab_daily: "Dia", tab_practice: "Treino", tab_little: "Pequena", tab_big: "Grande",
+    md_daily: "Uma palavra nova de 5 letras todo dia", md_practice: "5 letras. Jogue quanto quiser", md_little: "Palavras de 4 letras para quem está começando",
+    md_big: "Palavras de 6 letras para craques das palavras", md_friend: "Escolha uma palavra secreta para um amigo",
+    go_play: "Jogar ▶", go_go: "Continuar ▶", go_see: "Ver ▶", b_help: "❓ Como jogar", b_stats: "📊 Estatísticas",
+    points: { one: "⭐ {n} ponto", other: "⭐ {n} pontos" },
+    a_home: "Início", a_stats: "Estatísticas", a_settings: "Ajustes", a_soundOn: "Ligar o som", a_soundOff: "Desligar o som", a_guesses: "Tentativas",
+    a_keyboard: "Teclado", a_close: "Fechar", a_result: "Resultado", a_pass: "Passe o celular", a_say: "Falar a palavra", a_yourResult: "Seu resultado", a_delete: "Apagar letra",
+    secret1: "🤫 Jogador 1: digite uma palavra secreta em inglês", secret2: "Use 4, 5 ou 6 letras. Não deixe seu amigo espiar!",
+    h_title: "Como jogar",
+    h_intro: "Adivinhe a palavra escondida em <b>6 tentativas</b>. Digite uma palavra de verdade em inglês e aperte <b>Enter</b>. A coruja Pip mostra se você está perto:",
+    h_hit: "<b>P</b> está na palavra e no <b>lugar certo</b> (✓).",
+    h_near: "<b>I</b> está na palavra, mas em <b>outro lugar</b> (●).",
+    h_miss: "<b>O</b> <b>não está na palavra</b>.",
+    h_li1: "Uma letra pode aparecer mais de uma vez.",
+    h_li2: "<b>{daily}</b>: uma palavra por dia. Vença vários dias seguidos para fazer uma sequência 🔥!",
+    h_li3: "<b>{little}</b> usa 4 letras. <b>{big}</b> usa 6.",
+    h_li4: "<b>{hard}</b>: as letras que você achou precisam ser usadas nas próximas tentativas.",
+    h_go: "Vamos jogar!",
+    s_title: "Suas estatísticas", s_played: "Jogos", s_win: "% vitórias", s_streak: "Sequência", s_best: "Recorde", s_dist: "Vitórias por tentativa",
+    s_total: { one: "⭐ {n} ponto no total", other: "⭐ {n} pontos no total" },
+    set_title: "Ajustes", set_hc: "Alto contraste", set_hc_d: "Cores laranja e azul", set_hard: "Modo difícil", set_hard_d: "Use as letras que você achou",
+    set_sound: "Som", set_sound_d: "Cliques, viradas e vivas", done: "Pronto",
+    win: ["Gênio!", "Incrível!", "Super!", "Muito bem!", "Boa!", "Ufa, foi por pouco!"],
+    r_close: "Quase!",
+    r_friend: { one: "Você achou a palavra do seu amigo em {n} tentativa!", other: "Você achou a palavra do seu amigo em {n} tentativas!" },
+    r_found: { one: "Você achou em {n} tentativa!", other: "Você achou em {n} tentativas!" },
+    r_lost: "A palavra era {word}. Você acerta a próxima!", r_secret: "Uma ótima palavra secreta!", r_tryAria: "Tentativa {n}: {marks}",
+    r_plus: { one: "+{n} ponto", other: "+{n} pontos" }, r_next: "Próxima palavra em",
+    b_practice: "🎯 Treino", b_home: "🏠 Início", b_newSecret: "🤝 Nova palavra secreta", b_again: "▶️ Jogar de novo",
+    p_title: "🤫 Palavra secreta escolhida!", p_1: "Agora passe o celular para o seu amigo.", p_2: "Amigo: você consegue achar a palavra em 6 tentativas?", p_back: "Trocar palavra", p_go: "Vamos lá!",
+    hud_try: "Tentativa {n} de {total}", hud_secret: "Digite uma palavra secreta", hud_solved: "Acertou em {n}!", hud_over: "Fim da rodada", hud_hard: "Difícil",
+    t_back: "Que bom ver você de novo! Continue.", t_find4: "Encontre a palavra de 4 letras!", t_find6: "Encontre a palavra de 6 letras!", t_friend: "Adivinhe a palavra do seu amigo!", t_find: "Encontre a palavra escondida!",
+    e_short: "Faltam letras", e_list: "Não está na minha lista", e_len: "Use 4, 5 ou 6 letras",
+    hard_spot: "A letra {n} precisa ser {l}", hard_many: "Use o {l} {n} vezes", hard_one: "Use o {l} que você achou", hard_locked: "Mude o modo difícil antes da primeira tentativa",
+    t_lose: "Quase! Aqui está a palavra.", t_near: "Quase!", t_noVoice: "Desculpe, não consigo falar neste aparelho",
+    mk_hit: "lugar certo", mk_near: "outro lugar", mk_miss: "não está", mk_empty: "vazio",
+    k_hit: "lugar certo", k_near: "está na palavra", k_miss: "não está na palavra",
+    hm_solved: "✅ Acertou!", hm_done: "🌙 Pronto por hoje.", hm_newIn: "Nova palavra em <b>{time}</b>", hm_keep: "Continue: tentativa {n} de {total}",
+    hm_streak: { one: "🔥 {n} dia", other: "🔥 {n} dias" }
+  },
+  de: {
+    tag: "Finde das versteckte Wort mit Pip, der Eule!", practise: "Übe englische Wörter!",
+    m_daily: "Tageswort", m_practice: "Freies Spiel", m_little: "Kleines Wort", m_big: "Großes Wort", m_friend: "Geheimwort",
+    tab_daily: "Tag", tab_practice: "Frei", tab_little: "Klein", tab_big: "Groß",
+    md_daily: "Jeden Tag ein neues Wort mit 5 Buchstaben", md_practice: "5 Buchstaben. Spiel, so viel du willst", md_little: "Wörter mit 4 Buchstaben für Leseanfänger",
+    md_big: "Wörter mit 6 Buchstaben für Wortprofis", md_friend: "Wähl ein Geheimwort für einen Freund",
+    go_play: "Spielen ▶", go_go: "Weiter ▶", go_see: "Ansehen ▶", b_help: "❓ So geht’s", b_stats: "📊 Zahlen",
+    points: { one: "⭐ {n} Punkt", other: "⭐ {n} Punkte" },
+    a_home: "Start", a_stats: "Zahlen", a_settings: "Optionen", a_soundOn: "Ton an", a_soundOff: "Ton aus", a_guesses: "Versuche",
+    a_keyboard: "Tastatur", a_close: "Schließen", a_result: "Ergebnis", a_pass: "Gib das Handy weiter", a_say: "Wort vorlesen", a_yourResult: "Dein Ergebnis", a_delete: "Buchstaben löschen",
+    secret1: "🤫 Spieler 1: Tipp ein geheimes englisches Wort", secret2: "Nimm 4, 5 oder 6 Buchstaben. Lass deinen Freund nicht gucken!",
+    h_title: "So geht’s",
+    h_intro: "Errate das versteckte Wort in <b>6 Versuchen</b>. Tipp ein echtes englisches Wort und drück <b>Enter</b>. Pip, die Eule, zeigt dir, wie nah du dran bist:",
+    h_hit: "<b>P</b> ist im Wort und an der <b>richtigen Stelle</b> (✓).",
+    h_near: "<b>I</b> ist im Wort, aber an einer <b>anderen Stelle</b> (●).",
+    h_miss: "<b>O</b> ist <b>gar nicht im Wort</b>.",
+    h_li1: "Ein Buchstabe kann auch mehrmals vorkommen.",
+    h_li2: "<b>{daily}</b>: ein Wort pro Tag. Gewinn mehrere Tage hintereinander für eine 🔥 Serie!",
+    h_li3: "<b>{little}</b> hat 4 Buchstaben. <b>{big}</b> hat 6.",
+    h_li4: "<b>{hard}</b>: Gefundene Buchstaben musst du in den nächsten Versuchen benutzen.",
+    h_go: "Los geht’s!",
+    s_title: "Deine Zahlen", s_played: "Gespielt", s_win: "% gewonnen", s_streak: "Serie", s_best: "Rekord", s_dist: "Siege pro Versuch",
+    s_total: { one: "⭐ {n} Punkt insgesamt", other: "⭐ {n} Punkte insgesamt" },
+    set_title: "Optionen", set_hc: "Hoher Kontrast", set_hc_d: "Orange und blaue Farben", set_hard: "Schwer-Modus", set_hard_d: "Benutze die gefundenen Buchstaben",
+    set_sound: "Ton", set_sound_d: "Klicks, Umdrehen und Jubel", done: "Fertig",
+    win: ["Genial!", "Wahnsinn!", "Super!", "Toll gemacht!", "Gut gemacht!", "Puh, geschafft!"],
+    r_close: "Knapp daneben!",
+    r_friend: { one: "Du hast das Wort deines Freundes in {n} Versuch gefunden!", other: "Du hast das Wort deines Freundes in {n} Versuchen gefunden!" },
+    r_found: { one: "Du hast es in {n} Versuch gefunden!", other: "Du hast es in {n} Versuchen gefunden!" },
+    r_lost: "Das Wort war {word}. Das nächste schaffst du!", r_secret: "Ein tolles Geheimwort!", r_tryAria: "Versuch {n}: {marks}",
+    r_plus: { one: "+{n} Punkt", other: "+{n} Punkte" }, r_next: "Nächstes Wort in",
+    b_practice: "🎯 Freies Spiel", b_home: "🏠 Start", b_newSecret: "🤝 Neues Geheimwort", b_again: "▶️ Noch mal",
+    p_title: "🤫 Geheimwort gewählt!", p_1: "Gib das Handy jetzt deinem Freund.", p_2: "Freund: Findest du das Wort in 6 Versuchen?", p_back: "Wort ändern", p_go: "Los geht’s!",
+    hud_try: "Versuch {n} von {total}", hud_secret: "Tipp ein Geheimwort", hud_solved: "Gelöst in {n}!", hud_over: "Runde vorbei", hud_hard: "Schwer",
+    t_back: "Schön, dass du wieder da bist! Weiter geht’s.", t_find4: "Finde das Wort mit 4 Buchstaben!", t_find6: "Finde das Wort mit 6 Buchstaben!", t_friend: "Errate das Wort deines Freundes!", t_find: "Finde das versteckte Wort!",
+    e_short: "Zu wenig Buchstaben", e_list: "Dieses Wort kenne ich nicht", e_len: "Nimm 4, 5 oder 6 Buchstaben",
+    hard_spot: "Buchstabe {n} muss ein {l} sein", hard_many: "Benutze {l} {n}-mal", hard_one: "Benutze das gefundene {l}", hard_locked: "Ändere den Schwer-Modus vor deinem ersten Versuch",
+    t_lose: "Knapp! Hier ist das Wort.", t_near: "Ganz knapp!", t_noVoice: "Tut mir leid, auf diesem Gerät kann ich nicht sprechen",
+    mk_hit: "richtige Stelle", mk_near: "falsche Stelle", mk_miss: "nicht im Wort", mk_empty: "leer",
+    k_hit: "richtige Stelle", k_near: "im Wort", k_miss: "nicht im Wort",
+    hm_solved: "✅ Gelöst!", hm_done: "🌙 Für heute fertig.", hm_newIn: "Neues Wort in <b>{time}</b>", hm_keep: "Weiter: Versuch {n} von {total}",
+    hm_streak: { one: "🔥 {n} Tag", other: "🔥 {n} Tage" }
+  },
+  he: {
+    tag: "מצאו את המילה הנסתרת עם פיפ הינשוף!", practise: "מתרגלים מילים באנגלית!",
+    m_daily: "מילת היום", m_practice: "תרגול", m_little: "מילה קטנה", m_big: "מילה גדולה", m_friend: "מילה סודית",
+    tab_daily: "היום", tab_practice: "תרגול", tab_little: "קטנה", tab_big: "גדולה",
+    md_daily: "מילה חדשה בת 5 אותיות בכל יום", md_practice: "5 אותיות. משחקים כמה שרוצים", md_little: "מילים בנות 4 אותיות לקוראים מתחילים",
+    md_big: "מילים בנות 6 אותיות לקוסמי מילים", md_friend: "בחרו מילה סודית בשביל חבר",
+    go_play: "לשחק ◀", go_go: "להמשיך ◀", go_see: "לראות ◀", b_help: "❓ איך משחקים", b_stats: "📊 נתונים",
+    points: { one: "⭐ נקודה אחת", other: "⭐ {n} נקודות" },
+    a_home: "בית", a_stats: "נתונים", a_settings: "הגדרות", a_soundOn: "להפעיל צליל", a_soundOff: "לכבות צליל", a_guesses: "ניחושים",
+    a_keyboard: "מקלדת", a_close: "סגירה", a_result: "תוצאה", a_pass: "העבירו את הטלפון", a_say: "הקראת המילה", a_yourResult: "התוצאה שלכם", a_delete: "מחיקת אות",
+    secret1: "🤫 שחקן 1: הקלידו מילה סודית באנגלית", secret2: "4, 5 או 6 אותיות. אל תתנו לחבר להציץ!",
+    h_title: "איך משחקים",
+    h_intro: "נחשו את המילה הנסתרת ב-<b>6 ניסיונות</b>. הקלידו מילה אמיתית באנגלית ולחצו <b>Enter</b>. פיפ הינשוף יראה לכם כמה אתם קרובים:",
+    h_hit: "<b>P</b> נמצאת במילה, וגם <b>במקום הנכון</b> (✓).",
+    h_near: "<b>I</b> נמצאת במילה, אבל <b>במקום אחר</b> (●).",
+    h_miss: "<b>O</b> <b>לא נמצאת במילה</b> בכלל.",
+    h_li1: "אות יכולה להופיע יותר מפעם אחת.",
+    h_li2: "<b>{daily}</b>: מילה אחת ביום. נצחו כמה ימים ברצף וקבלו רצף 🔥!",
+    h_li3: "<b>{little}</b>: 4 אותיות. <b>{big}</b>: 6 אותיות.",
+    h_li4: "<b>{hard}</b>: חייבים להשתמש באותיות שמצאתם בניחושים הבאים.",
+    h_go: "יאללה, משחקים!",
+    s_title: "הנתונים שלכם", s_played: "משחקים", s_win: "% ניצחונות", s_streak: "רצף", s_best: "שיא", s_dist: "ניצחונות לפי ניסיון",
+    s_total: { one: "⭐ נקודה אחת בסך הכול", other: "⭐ {n} נקודות בסך הכול" },
+    set_title: "הגדרות", set_hc: "ניגודיות גבוהה", set_hc_d: "צבעים כתום וכחול", set_hard: "מצב קשה", set_hard_d: "להשתמש באותיות שמצאתם",
+    set_sound: "צליל", set_sound_d: "קליקים, היפוכים ותשואות", done: "סיום",
+    win: ["גאוני!", "מדהים!", "סופר!", "כל הכבוד!", "יפה מאוד!", "פיו, בדיוק בזמן!"],
+    r_close: "כמעט!",
+    r_friend: { one: "מצאתם את המילה של החבר בניסיון אחד!", other: "מצאתם את המילה של החבר ב-{n} ניסיונות!" },
+    r_found: { one: "מצאתם אותה בניסיון אחד!", other: "מצאתם אותה ב-{n} ניסיונות!" },
+    r_lost: "המילה הייתה {word}. את הבאה תצליחו!", r_secret: "מילה סודית מעולה!", r_tryAria: "ניסיון {n}: {marks}",
+    r_plus: { one: "+נקודה אחת", other: "+{n} נקודות" }, r_next: "מילה חדשה בעוד",
+    b_practice: "🎯 תרגול", b_home: "🏠 בית", b_newSecret: "🤝 מילה סודית חדשה", b_again: "▶️ עוד סיבוב",
+    p_title: "🤫 המילה הסודית נבחרה!", p_1: "עכשיו העבירו את הטלפון לחבר.", p_2: "חברים: תצליחו לנחש את המילה ב-6 ניסיונות?", p_back: "להחליף מילה", p_go: "מוכנים!",
+    hud_try: "ניסיון {n} מתוך {total}", hud_secret: "הקלידו מילה סודית", hud_solved: "פתרתם ב-{n}!", hud_over: "הסיבוב נגמר", hud_hard: "קשה",
+    t_back: "כיף שחזרתם! ממשיכים.", t_find4: "מצאו את המילה בת 4 האותיות!", t_find6: "מצאו את המילה בת 6 האותיות!", t_friend: "נחשו את המילה של החבר!", t_find: "מצאו את המילה הנסתרת!",
+    e_short: "אין מספיק אותיות", e_list: "המילה לא ברשימה שלי", e_len: "השתמשו ב-4, 5 או 6 אותיות",
+    hard_spot: "אות {n} חייבת להיות {l}", hard_many: "השתמשו ב-{l} {n} פעמים", hard_one: "השתמשו ב-{l} שמצאתם", hard_locked: "שנו את המצב הקשה לפני הניחוש הראשון",
+    t_lose: "כמעט! הנה המילה.", t_near: "כמעט!", t_noVoice: "סליחה, אי אפשר לדבר במכשיר הזה",
+    mk_hit: "במקום הנכון", mk_near: "במקום אחר", mk_miss: "לא במילה", mk_empty: "ריק",
+    k_hit: "במקום הנכון", k_near: "נמצאת במילה", k_miss: "לא נמצאת במילה",
+    hm_solved: "✅ נפתר!", hm_done: "🌙 סיימתם להיום.", hm_newIn: "מילה חדשה בעוד <b>{time}</b>", hm_keep: "ממשיכים: ניסיון {n} מתוך {total}",
+    hm_streak: { one: "🔥 יום אחד", two: "🔥 יומיים", other: "🔥 {n} ימים" }
+  },
+  ja: {
+    tag: "フクロウのピップといっしょに、かくれたことばを見つけましょう！", practise: "えいごのことばを、れんしゅうしましょう！",
+    m_daily: "きょうのことば", m_practice: "れんしゅう", m_little: "ミニことば", m_big: "ビッグことば", m_friend: "ひみつことば",
+    tab_daily: "きょう", tab_practice: "れんしゅう", tab_little: "ミニ", tab_big: "ビッグ",
+    md_daily: "まいにち、あたらしい5もじのことば", md_practice: "5もじ。すきなだけあそべます", md_little: "よみはじめの子に、4もじのことば",
+    md_big: "ことばはかせに、6もじのことば", md_friend: "ともだちに、ひみつのことばをえらびます",
+    go_play: "あそぶ ▶", go_go: "つづける ▶", go_see: "みる ▶", b_help: "❓ あそびかた", b_stats: "📊 データ",
+    points: { other: "⭐ {n}ポイント" },
+    a_home: "ホーム", a_stats: "データ", a_settings: "せってい", a_soundOn: "おとをオンにする", a_soundOff: "おとをオフにする", a_guesses: "よそう",
+    a_keyboard: "キーボード", a_close: "とじる", a_result: "けっか", a_pass: "スマホをわたす", a_say: "ことばをよみあげる", a_yourResult: "あなたのけっか", a_delete: "1もじけす",
+    secret1: "🤫 プレイヤー1：ひみつのえいごのことばをうってください", secret2: "4、5、6もじでうちます。ともだちには見せないでね！",
+    h_title: "あそびかた",
+    h_intro: "かくれたことばを<b>6かい</b>であてましょう。ほんとうにあるえいごのことばをうって、<b>Enter</b>をおします。フクロウのピップが、どれくらいちかいかおしえてくれます：",
+    h_hit: "<b>P</b>はことばの中にあって、<b>ばしょもあっています</b>（✓）。",
+    h_near: "<b>I</b>はことばの中にありますが、<b>ちがうばしょ</b>です（●）。",
+    h_miss: "<b>O</b>は<b>ことばの中にありません</b>。",
+    h_li1: "おなじもじが、なんかいもでることがあります。",
+    h_li2: "<b>{daily}</b>は1日1つ。なん日もつづけてかつと🔥れんしょうになります！",
+    h_li3: "<b>{little}</b>は4もじ、<b>{big}</b>は6もじです。",
+    h_li4: "<b>{hard}</b>：見つけたもじは、つぎのよそうでかならずつかいます。",
+    h_go: "あそぼう！",
+    s_title: "あなたのデータ", s_played: "あそんだ", s_win: "かった%", s_streak: "れんしょう", s_best: "さいこう", s_dist: "なんかいめでかったか",
+    s_total: { other: "⭐ ぜんぶで{n}ポイント" },
+    set_title: "せってい", set_hc: "みやすいいろ", set_hc_d: "オレンジとあおのいろ", set_hard: "むずかしいモード", set_hard_d: "見つけたもじをつかいます",
+    set_sound: "おと", set_sound_d: "クリック、めくるおと、はくしゅ", done: "OK",
+    win: ["てんさい！", "すごい！", "スーパー！", "よくできました！", "いいね！", "ふう、セーフ！"],
+    r_close: "おしい！",
+    r_friend: { other: "ともだちのことばを{n}かいで見つけました！" },
+    r_found: { other: "{n}かいで見つけました！" },
+    r_lost: "こたえは{word}でした。つぎはきっとできます！", r_secret: "すてきなひみつのことば！", r_tryAria: "{n}かいめ：{marks}",
+    r_plus: { other: "+{n}ポイント" }, r_next: "つぎのことばまで",
+    b_practice: "🎯 れんしゅう", b_home: "🏠 ホーム", b_newSecret: "🤝 あたらしいひみつのことば", b_again: "▶️ もういちど",
+    p_title: "🤫 ひみつのことばがきまりました！", p_1: "スマホをともだちにわたしてください。", p_2: "ともだちへ：6かいでことばをあてられるかな？", p_back: "ことばをかえる", p_go: "じゅんびOK！",
+    hud_try: "{n}/{total}かいめ", hud_secret: "ひみつのことばをうってね", hud_solved: "{n}かいでせいかい！", hud_over: "ラウンドおわり", hud_hard: "むずかしい",
+    t_back: "おかえりなさい！つづけましょう。", t_find4: "4もじのことばを見つけよう！", t_find6: "6もじのことばを見つけよう！", t_friend: "ともだちのことばをあてよう！", t_find: "かくれたことばを見つけよう！",
+    e_short: "もじがたりません", e_list: "わたしのリストにないことばです", e_len: "4、5、6もじにしてください",
+    hard_spot: "{n}もじめは{l}です", hard_many: "{l}を{n}こつかってください", hard_one: "見つけた{l}をつかってください", hard_locked: "むずかしいモードは、さいしょのよそうのまえにかえてね",
+    t_lose: "おしい！こたえはこれです。", t_near: "おしい！", t_noVoice: "ごめんなさい、このきかいではしゃべれません",
+    mk_hit: "ばしょもあたり", mk_near: "ちがうばしょ", mk_miss: "はいっていない", mk_empty: "から",
+    k_hit: "ばしょもあたり", k_near: "ことばにある", k_miss: "ことばにない",
+    hm_solved: "✅ せいかい！", hm_done: "🌙 きょうはおしまい。", hm_newIn: "つぎのことばまで<b>{time}</b>", hm_keep: "つづき：{n}/{total}かいめ",
+    hm_streak: { other: "🔥 {n}にち" }
+  },
+  ar: {
+    tag: "اعثر على الكلمة المخفية مع البومة بيب!", practise: "تدرّب على كلمات إنجليزية!",
+    m_daily: "كلمة اليوم", m_practice: "تدريب", m_little: "كلمة صغيرة", m_big: "كلمة كبيرة", m_friend: "كلمة سرية",
+    tab_daily: "اليوم", tab_practice: "تدريب", tab_little: "صغيرة", tab_big: "كبيرة",
+    md_daily: "كلمة جديدة من 5 أحرف كل يوم", md_practice: "5 أحرف. العب كما تشاء", md_little: "كلمات من 4 أحرف لمن يبدأ القراءة",
+    md_big: "كلمات من 6 أحرف لأبطال الكلمات", md_friend: "اختر كلمة سرية لصديقك",
+    go_play: "العب ◀", go_go: "تابع ◀", go_see: "شاهد ◀", b_help: "❓ طريقة اللعب", b_stats: "📊 الإحصائيات",
+    points: { zero: "⭐ {n} نقطة", one: "⭐ نقطة واحدة", two: "⭐ نقطتان", few: "⭐ {n} نقاط", other: "⭐ {n} نقطة" },
+    a_home: "الرئيسية", a_stats: "الإحصائيات", a_settings: "الإعدادات", a_soundOn: "تشغيل الصوت", a_soundOff: "إيقاف الصوت", a_guesses: "التخمينات",
+    a_keyboard: "لوحة المفاتيح", a_close: "إغلاق", a_result: "النتيجة", a_pass: "أعطِ الهاتف لصديقك", a_say: "انطق الكلمة", a_yourResult: "نتيجتك", a_delete: "احذف حرفًا",
+    secret1: "🤫 اللاعب 1: اكتب كلمة سرية بالإنجليزية", secret2: "استخدم 4 أو 5 أو 6 أحرف. لا تدع صديقك يرى!",
+    h_title: "طريقة اللعب",
+    h_intro: "خمّن الكلمة المخفية في <b>6 محاولات</b>. اكتب كلمة إنجليزية حقيقية واضغط <b>Enter</b>. ستريك البومة بيب كم أنت قريب:",
+    h_hit: "الحرف <b>P</b> موجود في الكلمة وفي <b>المكان الصحيح</b> (✓).",
+    h_near: "الحرف <b>I</b> موجود في الكلمة لكن في <b>مكان آخر</b> (●).",
+    h_miss: "الحرف <b>O</b> <b>ليس في الكلمة</b> أبدًا.",
+    h_li1: "قد يتكرر الحرف أكثر من مرة.",
+    h_li2: "<b>{daily}</b>: كلمة واحدة كل يوم. افز عدة أيام متتالية لتحصل على سلسلة 🔥!",
+    h_li3: "<b>{little}</b> من 4 أحرف. <b>{big}</b> من 6 أحرف.",
+    h_li4: "<b>{hard}</b>: يجب أن تستخدم الحروف التي وجدتها في تخميناتك التالية.",
+    h_go: "هيا نلعب!",
+    s_title: "إحصائياتك", s_played: "لعبت", s_win: "% الفوز", s_streak: "السلسلة", s_best: "الأفضل", s_dist: "الفوز حسب المحاولة",
+    s_total: { zero: "⭐ {n} نقطة في المجموع", one: "⭐ نقطة واحدة في المجموع", two: "⭐ نقطتان في المجموع", few: "⭐ {n} نقاط في المجموع", other: "⭐ {n} نقطة في المجموع" },
+    set_title: "الإعدادات", set_hc: "تباين عالٍ", set_hc_d: "ألوان برتقالية وزرقاء", set_hard: "الوضع الصعب", set_hard_d: "استخدم الحروف التي وجدتها",
+    set_sound: "الصوت", set_sound_d: "نقرات وقلب وتصفيق", done: "تم",
+    win: ["عبقري!", "مذهل!", "رائع!", "أحسنت!", "جميل!", "أخيرًا!"],
+    r_close: "اقتربت كثيرًا!",
+    r_friend: { one: "وجدت كلمة صديقك من أول محاولة!", two: "وجدت كلمة صديقك في محاولتين!", few: "وجدت كلمة صديقك في {n} محاولات!", other: "وجدت كلمة صديقك في {n} محاولة!" },
+    r_found: { one: "وجدتها من أول محاولة!", two: "وجدتها في محاولتين!", few: "وجدتها في {n} محاولات!", other: "وجدتها في {n} محاولة!" },
+    r_lost: "الكلمة كانت {word}. ستنجح في المرة القادمة!", r_secret: "كلمة سرية رائعة!", r_tryAria: "المحاولة {n}: {marks}",
+    r_plus: { few: "+{n} نقاط", other: "+{n} نقطة" }, r_next: "الكلمة التالية بعد",
+    b_practice: "🎯 تدريب", b_home: "🏠 الرئيسية", b_newSecret: "🤝 كلمة سرية جديدة", b_again: "▶️ العب مرة أخرى",
+    p_title: "🤫 تم اختيار الكلمة السرية!", p_1: "الآن أعطِ الهاتف لصديقك.", p_2: "يا صديقي: هل تستطيع تخمين الكلمة في 6 محاولات؟", p_back: "غيّر الكلمة", p_go: "أنا جاهز!",
+    hud_try: "المحاولة {n} من {total}", hud_secret: "اكتب كلمة سرية", hud_solved: "حللتها في {n}!", hud_over: "انتهت الجولة", hud_hard: "صعب",
+    t_back: "أهلًا بعودتك! تابع.", t_find4: "اعثر على الكلمة ذات 4 أحرف!", t_find6: "اعثر على الكلمة ذات 6 أحرف!", t_friend: "خمّن كلمة صديقك!", t_find: "اعثر على الكلمة المخفية!",
+    e_short: "الأحرف غير كافية", e_list: "ليست في قائمة كلماتي", e_len: "استخدم 4 أو 5 أو 6 أحرف",
+    hard_spot: "الحرف رقم {n} يجب أن يكون {l}", hard_many: "استخدم {l} {n} مرات", hard_one: "استخدم الحرف {l} الذي وجدته", hard_locked: "غيّر الوضع الصعب قبل أول تخمين",
+    t_lose: "اقتربت! هذه هي الكلمة.", t_near: "اقتربت كثيرًا!", t_noVoice: "عذرًا، لا أستطيع الكلام على هذا الجهاز",
+    mk_hit: "في المكان الصحيح", mk_near: "في مكان آخر", mk_miss: "ليس في الكلمة", mk_empty: "فارغ",
+    k_hit: "في المكان الصحيح", k_near: "موجود في الكلمة", k_miss: "ليس في الكلمة",
+    hm_solved: "✅ تم الحل!", hm_done: "🌙 انتهيت لهذا اليوم.", hm_newIn: "كلمة جديدة بعد <b>{time}</b>", hm_keep: "تابع: المحاولة {n} من {total}",
+    hm_streak: { one: "🔥 يوم واحد", two: "🔥 يومان", few: "🔥 {n} أيام", other: "🔥 {n} يومًا" }
+  },
+  ru: {
+    tag: "Найди спрятанное слово вместе с совёнком Пипом!", practise: "Учи английские слова!",
+    m_daily: "Слово дня", m_practice: "Практика", m_little: "Мини-слово", m_big: "Макси-слово", m_friend: "Тайное слово",
+    tab_daily: "День", tab_practice: "Практика", tab_little: "Мини", tab_big: "Макси",
+    md_daily: "Каждый день новое слово из 5 букв", md_practice: "5 букв. Играй сколько хочешь", md_little: "Слова из 4 букв для тех, кто учится читать",
+    md_big: "Слова из 6 букв для знатоков слов", md_friend: "Загадай тайное слово для друга",
+    go_play: "Играть ▶", go_go: "Дальше ▶", go_see: "Смотреть ▶", b_help: "❓ Как играть", b_stats: "📊 Статистика",
+    points: { one: "⭐ {n} очко", few: "⭐ {n} очка", many: "⭐ {n} очков", other: "⭐ {n} очка" },
+    a_home: "Главная", a_stats: "Статистика", a_settings: "Опции", a_soundOn: "Включить звук", a_soundOff: "Выключить звук", a_guesses: "Попытки",
+    a_keyboard: "Клавиатура", a_close: "Закрыть", a_result: "Итог", a_pass: "Передай телефон", a_say: "Произнести слово", a_yourResult: "Твой итог", a_delete: "Стереть букву",
+    secret1: "🤫 Игрок 1: напиши тайное английское слово", secret2: "4, 5 или 6 букв. Не давай другу подглядывать!",
+    h_title: "Как играть",
+    h_intro: "Угадай спрятанное слово за <b>6 попыток</b>. Напиши настоящее английское слово и нажми <b>Enter</b>. Совёнок Пип покажет, насколько ты близко:",
+    h_hit: "<b>P</b> есть в слове и стоит на <b>своём месте</b> (✓).",
+    h_near: "<b>I</b> есть в слове, но на <b>другом месте</b> (●).",
+    h_miss: "<b>O</b> <b>совсем нет в слове</b>.",
+    h_li1: "Одна буква может встречаться несколько раз.",
+    h_li2: "<b>{daily}</b>: одно слово в день. Побеждай несколько дней подряд, и будет 🔥 серия!",
+    h_li3: "<b>{little}</b> — 4 буквы. <b>{big}</b> — 6 букв.",
+    h_li4: "<b>{hard}</b>: найденные буквы нужно использовать в следующих попытках.",
+    h_go: "Играем!",
+    s_title: "Твоя статистика", s_played: "Игры", s_win: "% побед", s_streak: "Серия", s_best: "Рекорд", s_dist: "Победы по попыткам",
+    s_total: { one: "⭐ Всего {n} очко", few: "⭐ Всего {n} очка", many: "⭐ Всего {n} очков", other: "⭐ Всего {n} очка" },
+    set_title: "Опции", set_hc: "Высокий контраст", set_hc_d: "Оранжевый и синий цвета", set_hard: "Сложный режим", set_hard_d: "Используй найденные буквы",
+    set_sound: "Звук", set_sound_d: "Щелчки, переворот плиток и аплодисменты", done: "Готово",
+    win: ["Гений!", "Потрясающе!", "Супер!", "Отлично!", "Молодец!", "Фух, получилось!"],
+    r_close: "Чуть-чуть не хватило!",
+    r_friend: { one: "Слово друга найдено за {n} попытку!", few: "Слово друга найдено за {n} попытки!", many: "Слово друга найдено за {n} попыток!", other: "Слово друга найдено за {n} попытки!" },
+    r_found: { one: "Слово найдено за {n} попытку!", few: "Слово найдено за {n} попытки!", many: "Слово найдено за {n} попыток!", other: "Слово найдено за {n} попытки!" },
+    r_lost: "Это было слово {word}. Следующее у тебя получится!", r_secret: "Отличное тайное слово!", r_tryAria: "Попытка {n}: {marks}",
+    r_plus: { one: "+{n} очко", few: "+{n} очка", many: "+{n} очков", other: "+{n} очка" }, r_next: "Новое слово через",
+    b_practice: "🎯 Практика", b_home: "🏠 Главная", b_newSecret: "🤝 Новое тайное слово", b_again: "▶️ Ещё раз",
+    p_title: "🤫 Тайное слово загадано!", p_1: "Теперь передай телефон другу.", p_2: "Друг, сможешь угадать слово за 6 попыток?", p_back: "Другое слово", p_go: "Поехали!",
+    hud_try: "Попытка {n} из {total}", hud_secret: "Напиши тайное слово",
+    hud_solved: { one: "Угадано за {n} попытку!", few: "Угадано за {n} попытки!", many: "Угадано за {n} попыток!", other: "Угадано за {n} попытки!" },
+    hud_over: "Раунд окончен", hud_hard: "Сложно",
+    t_back: "С возвращением! Продолжай.", t_find4: "Найди слово из 4 букв!", t_find6: "Найди слово из 6 букв!", t_friend: "Угадай слово друга!", t_find: "Найди спрятанное слово!",
+    e_short: "Не хватает букв", e_list: "Такого слова нет в моём списке", e_len: "Нужно 4, 5 или 6 букв",
+    hard_spot: "Буква {n} должна быть {l}",
+    hard_many: { one: "Используй {l} {n} раз", few: "Используй {l} {n} раза", many: "Используй {l} {n} раз", other: "Используй {l} {n} раза" },
+    hard_one: "Используй найденную букву {l}", hard_locked: "Сложный режим меняют до первой попытки",
+    t_lose: "Почти! Вот это слово.", t_near: "Почти!", t_noVoice: "Прости, на этом устройстве я не умею говорить",
+    mk_hit: "на своём месте", mk_near: "не на своём месте", mk_miss: "нет в слове", mk_empty: "пусто",
+    k_hit: "на своём месте", k_near: "есть в слове", k_miss: "нет в слове",
+    hm_solved: "✅ Угадано!", hm_done: "🌙 На сегодня всё.", hm_newIn: "Новое слово через <b>{time}</b>", hm_keep: "Продолжай: попытка {n} из {total}",
+    hm_streak: { one: "🔥 {n} день", few: "🔥 {n} дня", many: "🔥 {n} дней", other: "🔥 {n} дня" }
+  },
+  it: {
+    tag: "Trova la parola nascosta con il gufo Pip!", practise: "Allenati con le parole inglesi!",
+    m_daily: "Parola del giorno", m_practice: "Gioco libero", m_little: "Parolina", m_big: "Parolona", m_friend: "Parola segreta",
+    tab_daily: "Giorno", tab_practice: "Libero", tab_little: "Piccola", tab_big: "Grande",
+    md_daily: "Una nuova parola di 5 lettere ogni giorno", md_practice: "5 lettere. Gioca quanto vuoi", md_little: "Parole di 4 lettere per chi inizia a leggere",
+    md_big: "Parole di 6 lettere per maghi delle parole", md_friend: "Scegli una parola segreta per un amico",
+    go_play: "Gioca ▶", go_go: "Continua ▶", go_see: "Vedi ▶", b_help: "❓ Come si gioca", b_stats: "📊 Statistiche",
+    points: { one: "⭐ {n} punto", other: "⭐ {n} punti" },
+    a_home: "Home", a_stats: "Statistiche", a_settings: "Opzioni", a_soundOn: "Attiva l’audio", a_soundOff: "Disattiva l’audio", a_guesses: "Tentativi",
+    a_keyboard: "Tastiera", a_close: "Chiudi", a_result: "Risultato", a_pass: "Passa il telefono", a_say: "Pronuncia la parola", a_yourResult: "Il tuo risultato", a_delete: "Cancella lettera",
+    secret1: "🤫 Giocatore 1: scrivi una parola segreta in inglese", secret2: "Usa 4, 5 o 6 lettere. Non far sbirciare il tuo amico!",
+    h_title: "Come si gioca",
+    h_intro: "Indovina la parola nascosta in <b>6 tentativi</b>. Scrivi una vera parola inglese e premi <b>Enter</b>. Il gufo Pip ti mostra quanto sei vicino:",
+    h_hit: "<b>P</b> è nella parola ed è al <b>posto giusto</b> (✓).",
+    h_near: "<b>I</b> è nella parola, ma in un <b>altro posto</b> (●).",
+    h_miss: "<b>O</b> <b>non è nella parola</b>.",
+    h_li1: "Una lettera può comparire più di una volta.",
+    h_li2: "<b>{daily}</b>: una parola al giorno. Vinci più giorni di fila per una serie 🔥!",
+    h_li3: "<b>{little}</b> ha 4 lettere. <b>{big}</b> ne ha 6.",
+    h_li4: "<b>{hard}</b>: le lettere trovate vanno usate nei tentativi successivi.",
+    h_go: "Giochiamo!",
+    s_title: "Le tue statistiche", s_played: "Partite", s_win: "% vinte", s_streak: "Serie", s_best: "Record", s_dist: "Vittorie per tentativo",
+    s_total: { one: "⭐ {n} punto in tutto", other: "⭐ {n} punti in tutto" },
+    set_title: "Opzioni", set_hc: "Contrasto alto", set_hc_d: "Colori arancione e blu", set_hard: "Modalità difficile", set_hard_d: "Usa le lettere trovate",
+    set_sound: "Audio", set_sound_d: "Clic, tessere che girano e applausi", done: "Fatto",
+    win: ["Genio!", "Fantastico!", "Super!", "Ottimo lavoro!", "Ben fatto!", "Uff, per un pelo!"],
+    r_close: "Quasi!",
+    r_friend: { one: "Hai trovato la parola del tuo amico in {n} tentativo!", other: "Hai trovato la parola del tuo amico in {n} tentativi!" },
+    r_found: { one: "L’hai trovata in {n} tentativo!", other: "L’hai trovata in {n} tentativi!" },
+    r_lost: "La parola era {word}. La prossima la indovini!", r_secret: "Un’ottima parola segreta!", r_tryAria: "Tentativo {n}: {marks}",
+    r_plus: { one: "+{n} punto", other: "+{n} punti" }, r_next: "Prossima parola tra",
+    b_practice: "🎯 Gioco libero", b_home: "🏠 Home", b_newSecret: "🤝 Nuova parola segreta", b_again: "▶️ Gioca ancora",
+    p_title: "🤫 Parola segreta pronta!", p_1: "Ora passa il telefono al tuo amico.", p_2: "Amico: riesci a trovare la parola in 6 tentativi?", p_back: "Cambia parola", p_go: "Via!",
+    hud_try: "Tentativo {n} di {total}", hud_secret: "Scrivi una parola segreta", hud_solved: "Risolta in {n}!", hud_over: "Partita finita", hud_hard: "Difficile",
+    t_back: "Ciao di nuovo! Continua così.", t_find4: "Trova la parola di 4 lettere!", t_find6: "Trova la parola di 6 lettere!", t_friend: "Indovina la parola del tuo amico!", t_find: "Trova la parola nascosta!",
+    e_short: "Mancano lettere", e_list: "Non è nella mia lista di parole", e_len: "Usa 4, 5 o 6 lettere",
+    hard_spot: "La lettera {n} deve essere {l}", hard_many: "Usa la {l} {n} volte", hard_one: "Usa la {l} che hai trovato", hard_locked: "Cambia la modalità difficile prima del primo tentativo",
+    t_lose: "Quasi! Ecco la parola.", t_near: "Quasi!", t_noVoice: "Scusa, su questo dispositivo non posso parlare",
+    mk_hit: "posto giusto", mk_near: "posto sbagliato", mk_miss: "non c’è", mk_empty: "vuota",
+    k_hit: "posto giusto", k_near: "nella parola", k_miss: "non è nella parola",
+    hm_solved: "✅ Risolta!", hm_done: "🌙 Finito per oggi.", hm_newIn: "Nuova parola tra <b>{time}</b>", hm_keep: "Continua: tentativo {n} di {total}",
+    hm_streak: { one: "🔥 {n} giorno", other: "🔥 {n} giorni" }
+  },
+  'zh-Hant': {
+    tag: "和貓頭鷹皮普一起，找出藏起來的單字！", practise: "一起練習英文單字！",
+    m_daily: "每日單字", m_practice: "練習", m_little: "小單字", m_big: "大單字", m_friend: "祕密單字",
+    tab_daily: "每日", tab_practice: "練習", tab_little: "小", tab_big: "大",
+    md_daily: "每天一個新的 5 個字母單字", md_practice: "5 個字母，想玩多久就玩多久", md_little: "4 個字母的單字，適合剛學閱讀的你",
+    md_big: "6 個字母的單字，給單字小達人", md_friend: "幫朋友選一個祕密單字",
+    go_play: "開始玩 ▶", go_go: "繼續 ▶", go_see: "查看 ▶", b_help: "❓ 怎麼玩", b_stats: "📊 統計",
+    points: { other: "⭐ {n} 分" },
+    a_home: "首頁", a_stats: "統計", a_settings: "設定", a_soundOn: "打開聲音", a_soundOff: "關掉聲音", a_guesses: "猜過的字",
+    a_keyboard: "鍵盤", a_close: "關閉", a_result: "結果", a_pass: "把手機交給朋友", a_say: "念出單字", a_yourResult: "你的結果", a_delete: "刪除字母",
+    secret1: "🤫 玩家 1：輸入一個英文祕密單字", secret2: "用 4、5 或 6 個字母。別讓朋友偷看！",
+    h_title: "怎麼玩",
+    h_intro: "在 <b>6 次</b>內猜出藏起來的單字。輸入一個真的英文單字，再按 <b>Enter</b>。貓頭鷹皮普會告訴你有多接近：",
+    h_hit: "<b>P</b> 在單字裡，而且在<b>正確的位置</b>（✓）。",
+    h_near: "<b>I</b> 在單字裡，但在<b>別的位置</b>（●）。",
+    h_miss: "<b>O</b> <b>不在單字裡</b>。",
+    h_li1: "同一個字母可能出現不只一次。",
+    h_li2: "<b>{daily}</b>每天一個單字。連續幾天都贏，就有 🔥 連勝！",
+    h_li3: "<b>{little}</b>用 4 個字母，<b>{big}</b>用 6 個。",
+    h_li4: "<b>{hard}</b>：找到的字母，接下來每次猜都要用上。",
+    h_go: "開始玩吧！",
+    s_title: "你的統計", s_played: "玩過", s_win: "勝率 %", s_streak: "連勝", s_best: "最佳", s_dist: "第幾次猜中",
+    s_total: { other: "⭐ 總共 {n} 分" },
+    set_title: "設定", set_hc: "高對比", set_hc_d: "橘色和藍色", set_hard: "困難模式", set_hard_d: "要用上找到的字母",
+    set_sound: "聲音", set_sound_d: "點擊、翻牌和歡呼聲", done: "完成",
+    win: ["天才！", "太厲害了！", "超棒！", "做得好！", "不錯喔！", "呼，好險！"],
+    r_close: "好可惜！",
+    r_friend: { other: "你用 {n} 次就找到朋友的單字！" },
+    r_found: { other: "你用 {n} 次就找到了！" },
+    r_lost: "答案是 {word}。下一個你一定行！", r_secret: "很棒的祕密單字！", r_tryAria: "第 {n} 次：{marks}",
+    r_plus: { other: "+{n} 分" }, r_next: "下一個單字還有",
+    b_practice: "🎯 練習", b_home: "🏠 首頁", b_newSecret: "🤝 新的祕密單字", b_again: "▶️ 再玩一次",
+    p_title: "🤫 祕密單字設好了！", p_1: "現在把手機交給你的朋友。", p_2: "朋友：你能在 6 次內猜出單字嗎？", p_back: "換單字", p_go: "我準備好了！",
+    hud_try: "第 {n}/{total} 次", hud_secret: "輸入祕密單字", hud_solved: "{n} 次猜中！", hud_over: "這回合結束", hud_hard: "困難",
+    t_back: "歡迎回來！繼續加油。", t_find4: "找出 4 個字母的單字！", t_find6: "找出 6 個字母的單字！", t_friend: "猜猜朋友的單字！", t_find: "找出藏起來的單字！",
+    e_short: "字母不夠", e_list: "我的單字表裡沒有這個字", e_len: "請用 4、5 或 6 個字母",
+    hard_spot: "第 {n} 個字母要是 {l}", hard_many: "要用 {n} 個 {l}", hard_one: "要用上找到的 {l}", hard_locked: "請在第一次猜之前切換困難模式",
+    t_lose: "好可惜！答案在這裡。", t_near: "差一點！", t_noVoice: "抱歉，我在這台裝置上不能說話",
+    mk_hit: "位置正確", mk_near: "位置不對", mk_miss: "不在單字裡", mk_empty: "空白",
+    k_hit: "位置正確", k_near: "在單字裡", k_miss: "不在單字裡",
+    hm_solved: "✅ 猜中了！", hm_done: "🌙 今天玩完了。", hm_newIn: "新單字還有 <b>{time}</b>", hm_keep: "繼續：第 {n}/{total} 次",
+    hm_streak: { other: "🔥 {n} 天" }
+  },
+  nl: {
+    tag: "Vind het verborgen woord met Pip de uil!", practise: "Oefen Engelse woorden!",
+    m_daily: "Woord van de dag", m_practice: "Vrij spelen", m_little: "Klein woord", m_big: "Groot woord", m_friend: "Geheim woord",
+    tab_daily: "Dag", tab_practice: "Vrij", tab_little: "Klein", tab_big: "Groot",
+    md_daily: "Elke dag een nieuw woord van 5 letters", md_practice: "5 letters. Speel zo vaak je wilt", md_little: "Woorden van 4 letters voor beginnende lezers",
+    md_big: "Woorden van 6 letters voor woordtovenaars", md_friend: "Kies een geheim woord voor een vriend",
+    go_play: "Spelen ▶", go_go: "Verder ▶", go_see: "Bekijk ▶", b_help: "❓ Hoe speel je?", b_stats: "📊 Cijfers",
+    points: { one: "⭐ {n} punt", other: "⭐ {n} punten" },
+    a_home: "Start", a_stats: "Cijfers", a_settings: "Opties", a_soundOn: "Geluid aan", a_soundOff: "Geluid uit", a_guesses: "Pogingen",
+    a_keyboard: "Toetsenbord", a_close: "Sluiten", a_result: "Uitslag", a_pass: "Geef de telefoon door", a_say: "Zeg het woord", a_yourResult: "Jouw uitslag", a_delete: "Letter wissen",
+    secret1: "🤫 Speler 1: typ een geheim Engels woord", secret2: "Gebruik 4, 5 of 6 letters. Laat je vriend niet spieken!",
+    h_title: "Hoe speel je?",
+    h_intro: "Raad het verborgen woord in <b>6 pogingen</b>. Typ een echt Engels woord en druk op <b>Enter</b>. Pip de uil laat zien hoe dichtbij je bent:",
+    h_hit: "<b>P</b> zit in het woord en staat op de <b>goede plek</b> (✓).",
+    h_near: "<b>I</b> zit in het woord, maar op een <b>andere plek</b> (●).",
+    h_miss: "<b>O</b> zit <b>helemaal niet in het woord</b>.",
+    h_li1: "Een letter kan vaker voorkomen.",
+    h_li2: "<b>{daily}</b>: één woord per dag. Win dagen achter elkaar voor een 🔥 reeks!",
+    h_li3: "<b>{little}</b> heeft 4 letters. <b>{big}</b> heeft er 6.",
+    h_li4: "<b>{hard}</b>: letters die je hebt gevonden, moet je in je volgende pogingen gebruiken.",
+    h_go: "Spelen maar!",
+    s_title: "Jouw cijfers", s_played: "Gespeeld", s_win: "% gewonnen", s_streak: "Reeks", s_best: "Record", s_dist: "Gewonnen per poging",
+    s_total: { one: "⭐ {n} punt in totaal", other: "⭐ {n} punten in totaal" },
+    set_title: "Opties", set_hc: "Hoog contrast", set_hc_d: "Oranje en blauwe kleuren", set_hard: "Moeilijke modus", set_hard_d: "Gebruik de letters die je vond",
+    set_sound: "Geluid", set_sound_d: "Klikjes, omdraaien en gejuich", done: "Klaar",
+    win: ["Genie!", "Geweldig!", "Super!", "Goed gedaan!", "Netjes!", "Pfoe, net op tijd!"],
+    r_close: "Bijna!",
+    r_friend: { one: "Je vond het woord van je vriend in {n} poging!", other: "Je vond het woord van je vriend in {n} pogingen!" },
+    r_found: { one: "Je vond het in {n} poging!", other: "Je vond het in {n} pogingen!" },
+    r_lost: "Het woord was {word}. De volgende lukt je vast!", r_secret: "Een supergoed geheim woord!", r_tryAria: "Poging {n}: {marks}",
+    r_plus: { one: "+{n} punt", other: "+{n} punten" }, r_next: "Nieuw woord over",
+    b_practice: "🎯 Vrij spelen", b_home: "🏠 Start", b_newSecret: "🤝 Nieuw geheim woord", b_again: "▶️ Nog een keer",
+    p_title: "🤫 Geheim woord gekozen!", p_1: "Geef de telefoon nu aan je vriend.", p_2: "Vriend: vind jij het woord in 6 pogingen?", p_back: "Ander woord", p_go: "Ik ben er klaar voor!",
+    hud_try: "Poging {n} van {total}", hud_secret: "Typ een geheim woord", hud_solved: "Geraden in {n}!", hud_over: "Ronde voorbij", hud_hard: "Moeilijk",
+    t_back: "Welkom terug! Ga zo door.", t_find4: "Vind het woord van 4 letters!", t_find6: "Vind het woord van 6 letters!", t_friend: "Raad het woord van je vriend!", t_find: "Vind het verborgen woord!",
+    e_short: "Te weinig letters", e_list: "Dat woord staat niet in mijn lijst", e_len: "Gebruik 4, 5 of 6 letters",
+    hard_spot: "Letter {n} moet een {l} zijn", hard_many: "Gebruik de {l} {n} keer", hard_one: "Gebruik de {l} die je vond", hard_locked: "Verander de moeilijke modus vóór je eerste poging",
+    t_lose: "Bijna! Dit is het woord.", t_near: "Bijna!", t_noVoice: "Sorry, op dit apparaat kan ik niet praten",
+    mk_hit: "goede plek", mk_near: "verkeerde plek", mk_miss: "zit er niet in", mk_empty: "leeg",
+    k_hit: "goede plek", k_near: "zit in het woord", k_miss: "zit niet in het woord",
+    hm_solved: "✅ Geraden!", hm_done: "🌙 Klaar voor vandaag.", hm_newIn: "Nieuw woord over <b>{time}</b>", hm_keep: "Ga door: poging {n} van {total}",
+    hm_streak: { one: "🔥 {n} dag", other: "🔥 {n} dagen" }
+  }
+};
+const LANG = (() => { let l = 'en'; try { l = String((window.BRB && BRB.user && BRB.user.lang) || 'en'); } catch (e) { /* old SDK */ } return l; })();
+const LANG_BASE = LANG.split('-')[0];
+const LANG_CHAIN = [LANG, LANG_BASE, 'en'].filter((l, i, a) => I18N[l] && a.indexOf(l) === i);
+const RTL = (() => { try { if (BRB.user.dir === 'rtl') return true; } catch (e) { /* old SDK */ } return LANG_BASE === 'he' || LANG_BASE === 'ar'; })();
+const NUM_LOCALE = LANG_BASE === 'ar' ? 'ar-u-nu-latn' : (I18N[LANG] ? LANG : 'en');
+const NF = (() => { try { return new Intl.NumberFormat(NUM_LOCALE); } catch (e) { return { format: n => String(n) }; } })();
+const PLURAL = (() => { try { return new Intl.PluralRules(NUM_LOCALE); } catch (e) { return { select: n => (n === 1 ? 'one' : 'other') }; } })();
+/** The raw entry for a key (string, plural object or list), following the lookup order. */
+function tRaw(key) { for (const l of LANG_CHAIN) { const v = I18N[l][key]; if (v !== undefined) return v; } return key; }
+/** A translated string: picks the plural form by vars.n and fills {name} placeholders (numbers are formatted for the language). */
+function t(key, vars) {
+  let v = tRaw(key);
+  if (v && typeof v === 'object' && !Array.isArray(v)) { const n = vars && typeof vars.n === 'number' ? vars.n : 0; const f = PLURAL.select(n); v = v[f] != null ? v[f] : v.other; }
+  v = String(v);
+  return vars ? v.replace(/\{(\w+)\}/g, (m, k) => (k in vars ? (typeof vars[k] === 'number' ? NF.format(vars[k]) : String(vars[k])) : m)) : v;
+}
+/** Puts the static strings into the page (data-t = text, data-th = text with <b>, data-ta = aria-label) and sets the language + direction. */
+function applyI18n() {
+  const root = document.documentElement; root.lang = LANG; if (RTL) root.dir = 'rtl';
+  const vars = { daily: t('m_daily'), little: t('m_little'), big: t('m_big'), hard: t('set_hard') };
+  document.querySelectorAll('[data-t]').forEach(el => { el.textContent = t(el.dataset.t); });
+  document.querySelectorAll('[data-th]').forEach(el => { el.innerHTML = t(el.dataset.th, vars); });
+  document.querySelectorAll('[data-ta]').forEach(el => { el.setAttribute('aria-label', t(el.dataset.ta)); });
+  const pl = document.getElementById('practiseLine'); if (pl) pl.hidden = !pl.textContent;
+}
+/** Shrinks a one-line label until it fits its box (never below minPx). */
+function fitText(el, minPx) {
+  if (!el || !el.clientWidth) return; el.style.fontSize = '';
+  const cs = getComputedStyle(el), avail = el.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+  const range = document.createRange(); range.selectNodeContents(el);   // the text's real (unclipped, fractional) width
+  let size = parseFloat(cs.fontSize) || 16;
+  while (range.getBoundingClientRect().width > avail - 1 && size > minPx) { size -= 0.5; el.style.fontSize = size + 'px'; }
+}
+
 
 /* =====================================================================================
    WORD DATA (generated from hand-written lists; see the notes in word-peek.json)
@@ -2013,16 +2584,19 @@ function keyboardMarks(guesses) {
   for (const g of guesses) g.word.split('').forEach((ch, i) => { const m = g.marks[i]; if (!k[ch] || RANK[m] > RANK[k[ch]]) k[ch] = m; });
   return k;
 }
+/** Hard-mode messages come from I18N; when this block runs on its own (the Node tests) they fall back to English. */
+const tHM = (key, vars, en) => (typeof t === 'function' ? t(key, vars) : en);
 /** Hard mode: every letter already found must be used (right-spot letters in the same spot). Returns '' or a message. */
 function hardModeError(word, guesses) {
   word = word.toLowerCase();
   for (const g of guesses) {
-    for (let i = 0; i < g.word.length; i++) if (g.marks[i] === 'hit' && word[i] !== g.word[i]) return `Letter ${i + 1} must be ${g.word[i].toUpperCase()}`;
+    for (let i = 0; i < g.word.length; i++) if (g.marks[i] === 'hit' && word[i] !== g.word[i]) return tHM('hard_spot', { n: i + 1, l: g.word[i].toUpperCase() }, `Letter ${i + 1} must be ${g.word[i].toUpperCase()}`);
     const need = {};
     g.word.split('').forEach((ch, i) => { if (g.marks[i] !== 'miss') need[ch] = (need[ch] || 0) + 1; });
     for (const ch in need) {
       const have = word.split('').filter(c => c === ch).length;
-      if (have < need[ch]) return need[ch] > 1 ? `Use ${need[ch]} ${ch.toUpperCase()}s` : `Use the ${ch.toUpperCase()} you found`;
+      if (have < need[ch]) return need[ch] > 1 ? tHM('hard_many', { n: need[ch], l: ch.toUpperCase() }, `Use ${need[ch]} ${ch.toUpperCase()}s`)
+        : tHM('hard_one', { l: ch.toUpperCase() }, `Use the ${ch.toUpperCase()} you found`);
     }
   }
   return '';
@@ -2133,7 +2707,7 @@ function isMuted() { try { return !!BRB.sfx.muted; } catch (e) { return false; }
 function setMuted(on) { try { BRB.sfx.mute(!!on); } catch (e) { /* ignore */ } save.settings.muted = isMuted(); persist(); refreshMute(); }
 function refreshMute() {
   const m = isMuted();
-  for (const id of ['muteBtn', 'muteBtnHome']) { $(id).textContent = m ? '🔇' : '🔊'; $(id).setAttribute('aria-label', m ? 'Turn sound on' : 'Turn sound off'); }
+  for (const id of ['muteBtn', 'muteBtnHome']) { $(id).textContent = m ? '🔇' : '🔊'; $(id).setAttribute('aria-label', t(m ? 'a_soundOn' : 'a_soundOff')); }
   $('swSound').setAttribute('aria-checked', String(!m));
 }
 
@@ -2202,7 +2776,7 @@ function buildKeyboard() {
     for (const ch of r) {
       const b = document.createElement('button'); b.className = 'key'; b.type = 'button';
       if (ch === '+') { b.classList.add('wide'); b.textContent = 'Enter'; b.dataset.k = 'enter'; b.setAttribute('aria-label', 'Enter'); }
-      else if (ch === '-') { b.classList.add('wide'); b.textContent = '⌫'; b.dataset.k = 'back'; b.setAttribute('aria-label', 'Delete letter'); }
+      else if (ch === '-') { b.classList.add('wide'); b.textContent = '⌫'; b.dataset.k = 'back'; b.setAttribute('aria-label', t('a_delete')); }
       else { b.innerHTML = ch + '<span class="km"></span>'; b.dataset.k = ch; b.setAttribute('aria-label', ch.toUpperCase()); }
       row.appendChild(b);
     }
@@ -2219,11 +2793,11 @@ function buildGrid() {
   layout();
 }
 const rowEl = r => $('grid').children[r];
-function setTile(t, ch, mark) {
-  t.querySelector('.ch').textContent = ch ? ch.toUpperCase() : '';
-  t.classList.remove('filled', 'hit', 'near', 'miss', 'cursor', 'flip', 'bounce');
-  if (mark) t.classList.add(mark); else if (ch) t.classList.add('filled');
-  t.setAttribute('aria-label', ch ? ch.toUpperCase() + (mark === 'hit' ? ' right spot' : mark === 'near' ? ' wrong spot' : mark === 'miss' ? ' not in word' : '') : 'empty');
+function setTile(tile, ch, mark) {
+  tile.querySelector('.ch').textContent = ch ? ch.toUpperCase() : '';
+  tile.classList.remove('filled', 'hit', 'near', 'miss', 'cursor', 'flip', 'bounce');
+  if (mark) tile.classList.add(mark); else if (ch) tile.classList.add('filled');
+  tile.setAttribute('aria-label', ch ? ch.toUpperCase() + (mark ? ' ' + t('mk_' + mark) : '') : t('mk_empty'));
 }
 /** Draws every row from the state (used after a restore and when nothing is animating). */
 function paintBoard() {
@@ -2241,15 +2815,16 @@ function paintKeyboard() {
   const marks = keyboardMarks(S.guesses);
   $('kb').querySelectorAll('.key').forEach(k => {
     k.classList.remove('hit', 'near', 'miss'); const m = marks[k.dataset.k]; if (m) k.classList.add(m);
-    if (k.dataset.k.length === 1) k.setAttribute('aria-label', k.dataset.k.toUpperCase() + (m === 'hit' ? ', right spot' : m === 'near' ? ', in the word' : m === 'miss' ? ', not in the word' : ''));
+    if (k.dataset.k.length === 1) k.setAttribute('aria-label', k.dataset.k.toUpperCase() + (m ? ', ' + t('k_' + m) : ''));
   });
 }
 function paintHud() {
   const m = CONFIG.modes[S.mode];
-  $('modeName').textContent = m.icon + ' ' + m.name + (S.hard ? ' · Hard' : '');
-  if (S.friendSetup) $('tryText').textContent = 'Type a secret word';
-  else if (S.over) $('tryText').textContent = S.won ? `Solved in ${S.guesses.length}!` : 'Round over';
-  else $('tryText').textContent = `Try ${Math.min(S.guesses.length + 1, CONFIG.tries)} of ${CONFIG.tries}` + (S.mode === 'daily' && dailyStreakNow() ? ` · 🔥${dailyStreakNow()}` : '');
+  $('modeName').textContent = m.icon + ' ' + t('m_' + S.mode) + (S.hard ? ' · ' + t('hud_hard') : '');
+  if (S.friendSetup) $('tryText').textContent = t('hud_secret');
+  else if (S.over) $('tryText').textContent = S.won ? t('hud_solved', { n: S.guesses.length }) : t('hud_over');
+  else $('tryText').textContent = t('hud_try', { n: Math.min(S.guesses.length + 1, CONFIG.tries), total: CONFIG.tries }) + (S.mode === 'daily' && dailyStreakNow() ? ` · 🔥${NF.format(dailyStreakNow())}` : '');
+  fitText($('modeName'), 10); fitText($('tryText'), 9);   // long words (German, Russian) shrink to fit the pill
 }
 
 /** Fits the tiles and keys to the space we have (portrait: stacked; short and wide: side by side). */
@@ -2327,8 +2902,8 @@ function startRound(opts = {}) {
   if (S.over) setTimeout(() => showResult(false), fast ? 0 : 450);
   else if (!S.friendSetup) {
     sfx('powerup');
-    if (S.guesses.length) toast('Welcome back! Keep going.', 1600);
-    else toast(mode === 'little' ? 'Find the 4-letter word!' : mode === 'big' ? 'Find the 6-letter word!' : mode === 'friend' ? 'Guess your friend’s word!' : 'Find the hidden word!', 1500);
+    if (S.guesses.length) toast(t('t_back'), 1600);
+    else toast(t(mode === 'little' ? 't_find4' : mode === 'big' ? 't_find6' : mode === 'friend' ? 't_friend' : 't_find'), 1500);
   }
   layout();
 }
@@ -2373,8 +2948,8 @@ function submit() {
   if (S.over) return 'Round is over';
   if (S.busy) return 'Wait a moment';
   const w = S.typed;
-  if (w.length < S.length) return rejectRow('Not enough letters');
-  if (!isAllowed(w)) return rejectRow('Not in my word list');
+  if (w.length < S.length) return rejectRow(t('e_short'));
+  if (!isAllowed(w)) return rejectRow(t('e_list'));
   if (S.hard) { const e = hardModeError(w, S.guesses); if (e) return rejectRow(e); }
   const marks = scoreGuess(w, S.answer);
   S.guesses.push({ word: w, marks }); S.typed = '';
@@ -2406,18 +2981,18 @@ function reveal(r, done) {
 function afterReveal(marks) {
   if (S.over) {
     if (S.won) {
-      owlMood('cheer'); sfx('win'); toast(CONFIG.winWords[S.guesses.length - 1], 2000);
+      owlMood('cheer'); sfx('win'); toast(tRaw('win')[S.guesses.length - 1], 2000);
       try { BRB.fx.confetti({ colors: ['#0e8f88', '#f2a627', '#e46b2c', '#ffd34d', '#7cc6f0', '#fff3c4'] }); } catch (e) { /* ignore */ }
       const row = rowEl(S.guesses.length - 1);
       if (!REDUCED && !fast) [...row.children].forEach((t, c) => setTimeout(() => t.classList.add('bounce'), c * 90));
     } else {
-      owlMood('sad'); sfx('lose'); toast('So close! Here is the word.', 2000);
+      owlMood('sad'); sfx('lose'); toast(t('t_lose'), 2000);
     }
     setTimeout(() => showResult(true), fast ? 0 : 1500);
     return;
   }
   const hits = marks.filter(m => m === 'hit').length, nears = marks.filter(m => m === 'near').length;
-  if (hits >= S.length - 1) { owlMood('happy', 1300); toast('So close!', 1200); }
+  if (hits >= S.length - 1) { owlMood('happy', 1300); toast(t('t_near'), 1200); }
   else if (hits) owlMood('happy', 1100);
   else if (nears) { owlMood('tilt', 900); }
   else { owlMood('sad', 900); }
@@ -2458,8 +3033,8 @@ function paintSecret() {
 }
 function submitSecret() {
   const w = S.typed;
-  if (w.length < 4) return rejectRow('Use 4, 5 or 6 letters');
-  if (!isAllowed(w)) return rejectRow('Not in my word list');
+  if (w.length < 4) return rejectRow(t('e_len'));
+  if (!isAllowed(w)) return rejectRow(t('e_list'));
   hideToast(); S.typed = ''; S.pendingSecret = w;
   const pr = $('passRow'); pr.innerHTML = ''; for (let i = 0; i < w.length; i++) { const t = document.createElement('div'); t.className = 'tile filled'; t.textContent = '?'; pr.appendChild(t); }
   openPanel('pass'); sfx('coin');
@@ -2478,20 +3053,22 @@ function emojiGrid() {
 function statNumsHTML(st) {
   const pct = st.played ? Math.round(st.wins / st.played * 100) : 0;
   const streak = st === save.stats.daily ? dailyStreakNow() : st.streak;
-  return `<div><b>${st.played}</b><span>Played</span></div><div><b>${pct}</b><span>Win %</span></div><div><b>${streak}</b><span>Streak</span></div><div><b>${st.best}</b><span>Best</span></div>`;
+  return [[st.played, 's_played'], [pct, 's_win'], [streak, 's_streak'], [st.best, 's_best']].map(([n, k]) => `<div><b>${NF.format(n)}</b><span>${t(k)}</span></div>`).join('');
 }
 function showResult(fresh) {
   if (S.screen !== 'play' || !S.over) return;
   const word = S.answer.toUpperCase(), tries = S.guesses.length;
-  $('resTitle').textContent = S.won ? CONFIG.winWords[tries - 1] : 'So close!';
-  $('resMsg').textContent = S.won ? (S.mode === 'friend' ? `You found your friend's word in ${tries}!` : `You found it in ${tries} ${tries === 1 ? 'try' : 'tries'}!`)
-    : `The word was ${word}. You'll get the next one!`;
+  $('resTitle').textContent = S.won ? tRaw('win')[tries - 1] : t('r_close');
+  $('resMsg').textContent = S.won ? t(S.mode === 'friend' ? 'r_friend' : 'r_found', { n: tries }) : t('r_lost', { word: '\u2066' + word + '\u2069' });
   $('resWord').textContent = word;
-  $('resDef').textContent = GLOSSARY[S.answer] ? '📖 ' + GLOSSARY[S.answer][0].toUpperCase() + GLOSSARY[S.answer].slice(1) + '.' : (S.mode === 'friend' ? 'A great secret word!' : '');
+  // The meaning stays English (lang="en" on #resDef): it teaches the English word. A friend's secret word may have no meaning listed.
+  const def = GLOSSARY[S.answer] ? '📖 ' + GLOSSARY[S.answer][0].toUpperCase() + GLOSSARY[S.answer].slice(1) + '.' : '';
+  $('resDef').textContent = def || (S.mode === 'friend' ? t('r_secret') : '');
+  $('resDef').lang = def ? 'en' : LANG; $('resDef').dir = def ? 'ltr' : 'auto';
   $('resEmojis').textContent = emojiGrid();
-  $('resEmojis').setAttribute('aria-label', S.guesses.map((g, i) => `Try ${i + 1}: ` + g.marks.join(' ')).join('. '));
+  $('resEmojis').setAttribute('aria-label', S.guesses.map((g, i) => t('r_tryAria', { n: i + 1, marks: g.marks.map(m => t('mk_' + m)).join(', ') })).join('. '));
   const st = save.stats[S.mode];
-  $('resPts').textContent = S.mode === 'friend' ? '' : (S.won && S.lastPoints && fresh ? `+${S.lastPoints} points · ` : '') + `⭐ ${save.points} word points`;
+  $('resPts').textContent = S.mode === 'friend' ? '' : (S.won && S.lastPoints && fresh ? t('r_plus', { n: S.lastPoints }) + ' · ' : '') + t('points', { n: save.points });
   $('resNums').hidden = !st; if (st) $('resNums').innerHTML = statNumsHTML(st);
   rebuildResOwl(S.won ? 'happy' : 'sad');
   const btns = $('resBtns'); btns.innerHTML = '';
@@ -2499,13 +3076,13 @@ function showResult(fresh) {
   clearInterval(countdownTimer);
   if (S.mode === 'daily') {
     $('resCount').hidden = false; tickCountdown(); countdownTimer = setInterval(tickCountdown, 1000);
-    add('🎯 Practice', 'primary', () => startRound({ mode: 'practice', resume: true }), 'resMain');
-    add('🏠 Home', '', toHome, 'resHome');
+    add(t('b_practice'), 'primary', () => startRound({ mode: 'practice', resume: true }), 'resMain');
+    add(t('b_home'), '', toHome, 'resHome');
   } else {
     $('resCount').hidden = true;
-    if (S.mode === 'friend') add('🤝 New secret word', 'primary', () => startRound({ mode: 'friend' }), 'resMain');
-    else add('▶️ Play again', 'primary', () => startRound({ mode: S.mode }), 'resMain');
-    add('🏠 Home', '', toHome, 'resHome');
+    if (S.mode === 'friend') add(t('b_newSecret'), 'primary', () => startRound({ mode: 'friend' }), 'resMain');
+    else add(t('b_again'), 'primary', () => startRound({ mode: S.mode }), 'resMain');
+    add(t('b_home'), '', toHome, 'resHome');
   }
   openPanel('res');
 }
@@ -2540,23 +3117,24 @@ function toHome() {
   $('homeScreen').hidden = false; $('app').classList.add('offstage'); refreshHome();
 }
 function refreshHome() {
-  const t = todayStr(), d = save.daily, done = d && d.date === t && d.over, streak = dailyStreakNow();
-  const st = streak ? ` · 🔥 ${streak} day${streak > 1 ? 's' : ''}` : '';
-  $('dailyGo').textContent = done ? 'See ▶' : (d && d.date === t && d.guesses && d.guesses.length ? 'Go ▶' : 'Play ▶');
-  if (done) $('dailyNote').innerHTML = (d.won ? '✅ Solved! ' : '🌙 Done for today. ') + `New word in <b>${fmtTime(msToMidnight())}</b>` + st;
-  else if (d && d.date === t && d.guesses && d.guesses.length) $('dailyNote').innerHTML = `Keep going: try ${d.guesses.length + 1} of 6` + st;
-  else $('dailyNote').innerHTML = 'A new 5-letter word every day' + st;
-  $('homePoints').textContent = `⭐ ${save.points} word points`;
+  const today = todayStr(), d = save.daily, done = d && d.date === today && d.over, streak = dailyStreakNow();
+  const going = !done && d && d.date === today && d.guesses && d.guesses.length;
+  const st = streak ? ' · ' + t('hm_streak', { n: streak }) : '';
+  $('dailyGo').textContent = t(done ? 'go_see' : going ? 'go_go' : 'go_play');
+  if (done) $('dailyNote').innerHTML = t(d.won ? 'hm_solved' : 'hm_done') + ' ' + t('hm_newIn', { time: '<span dir="ltr">' + fmtTime(msToMidnight()) + '</span>' }) + st;
+  else if (going) $('dailyNote').innerHTML = t('hm_keep', { n: d.guesses.length + 1, total: CONFIG.tries }) + st;
+  else $('dailyNote').innerHTML = t('md_daily') + st;
+  $('homePoints').textContent = t('points', { n: save.points });
 }
 let statTab = 'daily';
 function renderStats(mode) {
   statTab = mode;
-  $('statTabs').innerHTML = MODE_IDS.map(m => `<button class="tab${m === mode ? ' on' : ''}" data-tab="${m}"><i>${CONFIG.modes[m].icon}</i>${CONFIG.modes[m].name.replace(' Peek', '')}</button>`).join('');
+  $('statTabs').innerHTML = MODE_IDS.map(m => `<button class="tab${m === mode ? ' on' : ''}" data-tab="${m}"><i>${CONFIG.modes[m].icon}</i>${t('tab_' + m)}</button>`).join('');
   const st = save.stats[mode]; $('statNums').innerHTML = statNumsHTML(st);
   const max = Math.max(1, ...st.dist);
-  $('statDist').innerHTML = '<b style="text-align:center">Wins by try</b>' + st.dist.map((n, i) =>
+  $('statDist').innerHTML = '<b style="text-align:center">' + t('s_dist') + '</b>' + st.dist.map((n, i) =>
     `<div class="bar${st.last === i + 1 ? ' last' : ''}"><i>${i + 1}</i><b style="width:${Math.max(8, Math.round(n / max * 100))}%">${n}</b></div>`).join('');
-  $('statPts').textContent = `⭐ ${save.points} word points in all`;
+  $('statPts').textContent = t('s_total', { n: save.points });
 }
 function refreshSettings() {
   $('swContrast').setAttribute('aria-checked', String(!!save.settings.contrast));
@@ -2567,7 +3145,7 @@ function setContrast(on) { save.settings.contrast = !!on; document.documentEleme
 /** Hard mode can be switched before your first guess of a round. */
 function setHard(on) {
   on = !!on;
-  if (S.screen === 'play' && !S.over && S.guesses.length && on !== S.hard) { toast('Change hard mode before your first guess', 1800); return false; }
+  if (S.screen === 'play' && !S.over && S.guesses.length && on !== S.hard) { toast(t('hard_locked'), 1800); return false; }
   save.settings.hard = on; if (S.screen === 'play' && !S.over) { S.hard = on; if (S.mode === 'daily' && save.daily) save.daily.hard = on; else if (save.round) save.round.hard = on; paintHud(); }
   persist(); refreshSettings(); return true;
 }
@@ -2615,7 +3193,7 @@ $('swSound').addEventListener('click', () => { setMuted(!isMuted()); sfx('click'
 $('swContrast').addEventListener('click', () => { setContrast(!save.settings.contrast); sfx('click'); });
 $('swHard').addEventListener('click', () => { setHard(!save.settings.hard); sfx('click'); });
 $('statTabs').addEventListener('click', e => { const t = e.target.closest('[data-tab]'); if (t) { sfx('click'); renderStats(t.dataset.tab); } });
-$('sayBtn').addEventListener('click', () => { if (!say(S.answer)) toast('Sorry, I can’t talk on this device', 1600); });
+$('sayBtn').addEventListener('click', () => { if (!say(S.answer)) toast(t('t_noVoice'), 1600); });
 $('passGo').addEventListener('click', () => { sfx('click'); const w = S.pendingSecret; S.pendingSecret = ''; startRound({ mode: 'friend', answer: w }); });
 $('passBack').addEventListener('click', () => { sfx('click'); closePanel(); S.typed = ''; paintSecret(); });
 addEventListener('resize', layout);
@@ -2625,7 +3203,7 @@ try { if (document.fonts && document.fonts.ready) document.fonts.ready.then(layo
 /* =====================================================================================
    Boot
    ===================================================================================== */
-initOwls(); buildKeyboard();
+applyI18n(); initOwls(); buildKeyboard();
 document.documentElement.classList.toggle('hc', !!save.settings.contrast);
 if (typeof save.settings.muted === 'boolean' && save.settings.muted !== isMuted()) { try { BRB.sfx.mute(save.settings.muted); } catch (e) { /* ignore */ } }
 refreshMute(); refreshHome(); blinkLoop();

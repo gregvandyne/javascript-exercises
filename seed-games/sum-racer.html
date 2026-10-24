@@ -37,9 +37,11 @@ button:focus-visible{outline:4px solid #fff;outline-offset:2px}
 .logo .l2{color:var(--accent);font-size:1.08em}
 .signs{display:flex;gap:8px;justify-content:center}
 .signs span{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-weight:700;font-size:1.6rem;color:#fff;box-shadow:0 3px 0 rgba(0,0,0,.2)}
-.tag{margin:0;font-size:1.15rem;font-weight:600;line-height:1.3}
+.tag{margin:0;font-size:1.15rem;font-weight:600;line-height:1.3;text-wrap:balance}
+:lang(ja){word-break:auto-phrase}   /* Japanese: break lines between phrases, not inside words */
+.pickHint,.panel p,.practise,.moveUp{text-wrap:balance}
 .chips{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
-.titleCard .mute{position:absolute;top:10px;right:10px}
+.titleCard .mute{position:absolute;top:10px;inset-inline-end:10px}
 .titleCard .big-btn{min-width:230px;font-size:1.8rem}
 
 /* ---------- Track picker ---------- */
@@ -52,15 +54,15 @@ button:focus-visible{outline:4px solid #fff;outline-offset:2px}
 .seg button{flex:1;min-width:0;border:0;border-radius:16px;background:rgba(255,255,255,.75);min-height:56px;font-weight:700;font-size:1.05rem;padding:4px 6px;line-height:1.1}
 .seg button[aria-pressed="true"]{background:#fff;box-shadow:0 4px 0 rgba(0,0,0,.18);color:var(--accentDark)}
 .tracks{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
-.tcard{position:relative;border:0;border-radius:20px;background:#fff;padding:0 0 8px;text-align:left;overflow:hidden;box-shadow:0 5px 0 rgba(0,0,0,.2);display:flex;flex-direction:column;min-height:56px}
+.tcard{position:relative;border:0;border-radius:20px;background:#fff;padding:0 0 8px;text-align:start;overflow:hidden;box-shadow:0 5px 0 rgba(0,0,0,.2);display:flex;flex-direction:column;min-height:56px}
 .tcard:active{transform:translateY(3px);box-shadow:0 2px 0 rgba(0,0,0,.2)}
 .tcard canvas{display:block;width:100%;aspect-ratio:21/9;background:#9ad}
-.tcard .tnum{position:absolute;top:6px;left:6px;width:30px;height:30px;border-radius:50%;background:var(--ink);color:#fff;font-weight:700;display:grid;place-items:center;font-size:1.05rem}
+.tcard .tnum{position:absolute;top:6px;inset-inline-start:6px;width:30px;height:30px;border-radius:50%;background:var(--ink);color:#fff;font-weight:700;display:grid;place-items:center;font-size:1.05rem}
 .tcard .tname{font-weight:700;font-size:1.1rem;padding:6px 10px 0;line-height:1.1}
 .tcard .tskill{font-size:.92rem;padding:2px 10px 0;opacity:.8;line-height:1.15}
 .tcard .tmeta{display:flex;justify-content:space-between;align-items:center;padding:4px 10px 0;font-size:.95rem;font-weight:600}
 .tcard .tstars{color:#f2a900;letter-spacing:1px;font-size:1.1rem}
-.tcard .tbadge{position:absolute;top:6px;right:6px;background:var(--good);color:#fff;font-weight:700;border-radius:999px;padding:3px 10px;font-size:.9rem;box-shadow:0 2px 0 rgba(0,0,0,.2)}
+.tcard .tbadge{position:absolute;top:6px;inset-inline-end:6px;background:var(--good);color:#fff;font-weight:700;border-radius:999px;padding:3px 10px;font-size:.9rem;box-shadow:0 2px 0 rgba(0,0,0,.2)}
 .pickHint{color:#fff;text-align:center;font-weight:600;margin:12px 0 0;text-shadow:0 2px 0 rgba(0,0,0,.2)}
 
 /* ---------- Overlays ---------- */
@@ -74,7 +76,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:2px}
 .tables{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;width:100%}
 .tables button{min-height:60px;border:3px solid var(--softEdge);background:var(--soft);border-radius:16px;font-weight:700;font-size:1.5rem}
 .tables button[aria-pressed="true"]{background:var(--accent);border-color:var(--accentDark);color:#fff}
-.panel .mute{position:absolute;top:10px;right:10px}
+.panel .mute{position:absolute;top:10px;inset-inline-end:10px}
 
 /* ---------- Race ---------- */
 .race{display:grid;background:var(--dash1);align-items:stretch;justify-content:stretch}
@@ -84,7 +86,8 @@ button:focus-visible{outline:4px solid #fff;outline-offset:2px}
 .race.two .h1{transform:rotate(180deg)}  /* the top player sits on the other side of the phone */
 .bar{grid-area:bar;display:flex;align-items:center;gap:10px;padding:4px 10px;background:var(--dash1);min-height:60px;box-sizing:border-box}
 .bar .tname{flex:1;min-width:0;text-align:center;color:#fff;font-weight:700;font-size:1.15rem;line-height:1.1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.bar .tname small{display:block;font-size:.85rem;font-weight:500;opacity:.8}
+.bar .tname b,.bar .tname small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar .tname small{font-size:.85rem;font-weight:500;opacity:.8}
 .race.two .bar .tname small{display:none}
 .half{min-width:0;min-height:0;display:grid;grid-template-rows:minmax(0,1fr) auto;grid-template-columns:minmax(0,1fr)}
 .h0{grid-area:h0}.h1{grid-area:h1}
@@ -160,7 +163,7 @@ button:focus-visible{outline:4px solid #fff;outline-offset:2px}
 .practise{font-size:1.05rem;font-weight:600;color:var(--kind);line-height:1.3}
 .moveUp{font-weight:700;color:var(--goodDark)}
 .resRows{display:flex;flex-direction:column;gap:4px;width:100%}
-.resRow{display:flex;align-items:center;gap:8px;background:var(--soft);border-radius:14px;padding:6px 10px;font-weight:600;text-align:left;font-size:1rem;line-height:1.2}
+.resRow{display:flex;align-items:center;gap:8px;background:var(--soft);border-radius:14px;padding:6px 10px;font-weight:600;text-align:start;font-size:1rem;line-height:1.2}
 .resRow b{font-size:1.2rem}
 @media (orientation:landscape) and (max-height:560px){
   .resPanel{width:min(100%,820px);display:grid;grid-template-columns:1fr 1fr;align-items:center;column-gap:16px;row-gap:6px;padding:12px 16px}
@@ -191,57 +194,57 @@ button:focus-visible{outline:4px solid #fff;outline-offset:2px}
 <section class="screen" id="titleScreen">
   <canvas class="bgcanvas" id="titleCanvas" aria-hidden="true"></canvas>
   <div class="titleCard">
-    <h1 class="logo" aria-label="Sum Racer"><span>Sum</span><span class="l2">Racer</span></h1>
-    <div class="signs" aria-hidden="true"><span style="background:#ff6a1a">+</span><span style="background:#1fbfae">−</span><span style="background:#7c4dff">×</span><span style="background:#ff5fa8">÷</span></div>
-    <p class="tag">Answer maths questions to zoom your kart to the finish!</p>
-    <button class="big-btn" id="playBtn">▶ Play</button>
-    <div class="chips"><span class="chip" id="starChip">⭐ 0 stars</span><span class="chip" id="rightChip">✅ 0 right answers</span></div>
-    <button class="icon-btn mute" aria-label="Turn sound off">🔊</button>
+    <h1 class="logo" dir="ltr" aria-label="Sum Racer"><span>Sum</span><span class="l2">Racer</span></h1>
+    <div class="signs" dir="ltr" aria-hidden="true"><span style="background:#ff6a1a">+</span><span style="background:#1fbfae">−</span><span style="background:#7c4dff">×</span><span style="background:#ff5fa8">÷</span></div>
+    <p class="tag" data-t="tag"></p>
+    <button class="big-btn" id="playBtn" data-t="play"></button>
+    <div class="chips"><span class="chip" id="starChip"></span><span class="chip" id="rightChip"></span></div>
+    <button class="icon-btn mute" data-ta="a_soundOff">🔊</button>
   </div>
 </section>
 
 <!-- Track picker -->
 <section class="screen picker" id="pickScreen" hidden>
   <header class="pickHead">
-    <button class="icon-btn" id="backBtn" aria-label="Back">⬅️</button>
-    <h2>Pick a track</h2>
-    <button class="icon-btn mute" aria-label="Turn sound off">🔊</button>
+    <button class="icon-btn" id="backBtn" data-ta="a_back">⬅️</button>
+    <h2 data-t="pick_title"></h2>
+    <button class="icon-btn mute" data-ta="a_soundOff">🔊</button>
   </header>
   <div class="pickBody">
     <div class="toggles">
-      <div class="seg" role="group" aria-label="How to answer">
-        <button data-mode="choice" aria-pressed="true">👆 Tap answers</button>
-        <button data-mode="keypad" aria-pressed="false">🔢 Type answers</button>
+      <div class="seg" role="group" data-ta="a_answerHow">
+        <button data-mode="choice" aria-pressed="true" data-t="m_tap"></button>
+        <button data-mode="keypad" aria-pressed="false" data-t="m_type"></button>
       </div>
-      <div class="seg" role="group" aria-label="How many players">
-        <button data-players="1" aria-pressed="true">🧒 1 player</button>
-        <button data-players="2" aria-pressed="false">👫 2 players</button>
+      <div class="seg" role="group" data-ta="a_players">
+        <button data-players="1" aria-pressed="true" data-t="p_one"></button>
+        <button data-players="2" aria-pressed="false" data-t="p_two"></button>
       </div>
     </div>
     <div class="tracks" id="trackGrid"></div>
-    <p class="pickHint" id="pickHint">Tap a track to race!</p>
+    <p class="pickHint" id="pickHint"></p>
   </div>
 </section>
 
 <!-- Practice tables -->
 <section class="screen modal" id="practiceScreen" hidden>
   <div class="panel">
-    <h2>Practice Loop</h2>
-    <p>Pick the times tables you want to practise.</p>
-    <div class="tables" id="tableGrid"></div>
+    <h2 data-t="tn8"></h2>
+    <p data-t="pr_text"></p>
+    <div class="tables" id="tableGrid" dir="ltr"></div>
     <div class="btns">
-      <button class="big-btn alt" id="practiceBack">⬅️ Back</button>
-      <button class="big-btn go" id="practiceGo">🏁 Race!</button>
+      <button class="big-btn alt" id="practiceBack" data-t="back"></button>
+      <button class="big-btn go" id="practiceGo" data-t="race_go"></button>
     </div>
   </div>
 </section>
 
 <!-- Race -->
-<section class="screen race one" id="raceScreen" hidden>
+<section class="screen race one" id="raceScreen" dir="ltr" hidden>
   <div class="bar" id="raceBar">
-    <button class="icon-btn" id="pauseBtn" aria-label="Pause">⏸️</button>
-    <div class="tname" id="raceName">Number Lane<small>Adding to 10</small></div>
-    <button class="icon-btn mute" aria-label="Turn sound off">🔊</button>
+    <button class="icon-btn" id="pauseBtn" data-ta="a_pause">⏸️</button>
+    <div class="tname" id="raceName"></div>
+    <button class="icon-btn mute" data-ta="a_soundOff">🔊</button>
   </div>
   <div class="half h0" id="half0"></div>
   <div class="half h1" id="half1"></div>
@@ -250,30 +253,30 @@ button:focus-visible{outline:4px solid #fff;outline-offset:2px}
 <!-- Pause -->
 <section class="screen modal" id="pauseScreen" hidden>
   <div class="panel">
-    <h2>Paused</h2>
-    <p>Take a breather. Your kart will wait.</p>
-    <button class="big-btn go" id="resumeBtn">▶ Keep racing</button>
+    <h2 data-t="paused"></h2>
+    <p data-t="pause_text"></p>
+    <button class="big-btn go" id="resumeBtn" data-t="resume"></button>
     <div class="btns">
-      <button class="big-btn alt" id="restartBtn">🔄 Start again</button>
-      <button class="big-btn alt" id="quitBtn">🏁 Tracks</button>
+      <button class="big-btn alt" id="restartBtn" data-t="restart"></button>
+      <button class="big-btn alt" id="quitBtn" data-t="tracks"></button>
     </div>
-    <button class="icon-btn mute" aria-label="Turn sound off">🔊</button>
+    <button class="icon-btn mute" data-ta="a_soundOff">🔊</button>
   </div>
 </section>
 
 <!-- Results -->
 <section class="screen modal" id="resultScreen" hidden>
   <div class="panel resPanel">
-    <h2 id="resTitle">You won!</h2>
+    <h2 id="resTitle"></h2>
     <canvas id="podium" aria-hidden="true"></canvas>
     <div class="resRows" id="resRows" hidden></div>
     <div class="resStats" id="resStats"></div>
     <div class="practise" id="resPractise"></div>
     <div class="moveUp" id="resMoveUp" hidden></div>
     <div class="btns">
-      <button class="big-btn" id="againBtn">🔄 Race again</button>
-      <button class="big-btn go" id="nextBtn">➡️ Next track</button>
-      <button class="big-btn alt" id="menuBtn">🏁 Tracks</button>
+      <button class="big-btn" id="againBtn" data-t="again"></button>
+      <button class="big-btn go" id="nextBtn" data-t="next"></button>
+      <button class="big-btn alt" id="menuBtn" data-t="tracks"></button>
     </div>
   </div>
 </section>
@@ -281,17 +284,17 @@ button:focus-visible{outline:4px solid #fff;outline-offset:2px}
 <template id="halfTpl">
   <div class="view"><canvas aria-hidden="true"></canvas></div>
   <div class="qpanel">
-    <div class="qline" aria-live="polite"><div class="qlabel">Get ready!</div><div class="qmain"><span class="qt">Ready…</span></div></div>
-    <div class="answers choices">
+    <div class="qline" aria-live="polite"><div class="qlabel" data-t="ready_label"></div><div class="qmain" dir="ltr"><span class="qt" data-t="ready"></span></div></div>
+    <div class="answers choices" dir="ltr">
       <button class="ans" data-i="0">1</button><button class="ans" data-i="1">2</button><button class="ans" data-i="2">3</button><button class="ans" data-i="3">4</button>
     </div>
-    <div class="answers keypad" hidden>
+    <div class="answers keypad" dir="ltr" hidden>
       <button class="key" data-k="1" style="grid-area:k1">1</button><button class="key" data-k="2" style="grid-area:k2">2</button><button class="key" data-k="3" style="grid-area:k3">3</button>
       <button class="key" data-k="4" style="grid-area:k4">4</button><button class="key" data-k="5" style="grid-area:k5">5</button><button class="key" data-k="6" style="grid-area:k6">6</button>
       <button class="key" data-k="7" style="grid-area:k7">7</button><button class="key" data-k="8" style="grid-area:k8">8</button><button class="key" data-k="9" style="grid-area:k9">9</button>
-      <button class="key" data-k="back" style="grid-area:kb" aria-label="Rub out">⌫</button><button class="key" data-k="0" style="grid-area:k0">0</button><button class="key" data-k="ok" style="grid-area:ko" aria-label="Go">✓</button>
+      <button class="key" data-k="back" style="grid-area:kb" data-ta="a_rubOut">⌫</button><button class="key" data-k="0" style="grid-area:k0">0</button><button class="key" data-k="ok" style="grid-area:ko" data-ta="a_go">✓</button>
     </div>
-    <p class="kbhint">Keys: type the answer, then press Enter.</p>
+    <p class="kbhint" data-t="kbhint"></p>
   </div>
 </template>
 
@@ -324,21 +327,22 @@ const CONFIG = {
   winBonus: 50,
   moveUpAfterWins: 3,
   practiceTables: [2, 3, 4, 5],
+  // Track names and skills come from I18N ('tn' + id, 'ts' + id); rival names from 'rv_' + kind.
   // rivalSpeed (m/s) is tuned so a steady answerer at `pace` seconds per question wins about half the time.
   tracks: [
-    { id: 1, name: 'Number Lane',      skill: 'Adding to 10',            short: 'Add to 10',   mult: 1, lap: 600, rivalSpeed: 16.3, pace: 6.5 },
-    { id: 2, name: 'Sunny Speedway',   skill: 'Add and take away to 20', short: '+ and − to 20', mult: 2, lap: 650, rivalSpeed: 17.2, pace: 6 },
-    { id: 3, name: 'Desert Dash',      skill: 'Add and take away to 100', short: '+ and − to 100', mult: 3, lap: 600, rivalSpeed: 15.9, pace: 8 },
-    { id: 4, name: 'Snowy Summit',     skill: '2, 5 and 10 times tables', short: '×2 ×5 ×10',  mult: 3, lap: 650, rivalSpeed: 17.2, pace: 6 },
-    { id: 5, name: 'Jungle Jam',       skill: 'All times tables to 12',  short: 'All × to 12', mult: 4, lap: 600, rivalSpeed: 16.3, pace: 7 },
-    { id: 6, name: 'Volcano Valley',   skill: 'Sharing (division) facts', short: '÷ facts',    mult: 5, lap: 600, rivalSpeed: 16.0, pace: 7.5 },
-    { id: 7, name: 'Galaxy Grand Prix', skill: 'Mixed + − × ÷',          short: 'Mixed',       mult: 6, lap: 550, rivalSpeed: 15.0, pace: 9 },
-    { id: 8, name: 'Practice Loop',    skill: 'Pick your times tables',  short: 'Practice',    mult: 2, lap: 600, rivalSpeed: 16.3, pace: 7 }
+    { id: 1, mult: 1, lap: 600, rivalSpeed: 16.3, pace: 6.5 },
+    { id: 2, mult: 2, lap: 650, rivalSpeed: 17.2, pace: 6 },
+    { id: 3, mult: 3, lap: 600, rivalSpeed: 15.9, pace: 8 },
+    { id: 4, mult: 3, lap: 650, rivalSpeed: 17.2, pace: 6 },
+    { id: 5, mult: 4, lap: 600, rivalSpeed: 16.3, pace: 7 },
+    { id: 6, mult: 5, lap: 600, rivalSpeed: 16.0, pace: 7.5 },
+    { id: 7, mult: 6, lap: 550, rivalSpeed: 15.0, pace: 9 },
+    { id: 8, mult: 2, lap: 600, rivalSpeed: 16.3, pace: 7 }
   ],
   rivals: [
-    { name: 'Zippy', kind: 'bunny', color: '#ff5fa8', dark: '#c22a74', pace: 1.03 },
-    { name: 'Bolt',  kind: 'robot', color: '#1fbfae', dark: '#0f7f74', pace: 1.0 },
-    { name: 'Rex',   kind: 'dino',  color: '#7ccf35', dark: '#4a8f17', pace: 0.95 }
+    { kind: 'bunny', color: '#ff5fa8', dark: '#c22a74', pace: 1.03 },
+    { kind: 'robot', color: '#1fbfae', dark: '#0f7f74', pace: 1.0 },
+    { kind: 'dino',  color: '#7ccf35', dark: '#4a8f17', pace: 0.95 }
   ],
   players: [
     { color: '#ff5a2a', dark: '#b8320f', fallback: '🦊' },
@@ -529,6 +533,441 @@ function makeRace(track, humans, rng) {
 /* @@PURE-END */
 
 /* =====================================================================================
+   I18N: every player-visible string, per site language (BRB.user.lang). Lookup order: the locale,
+   then its base language (en-GB -> en), then en. Plural strings are { one, two, few, many, other }
+   objects picked with Intl.PluralRules; lists (ord, place, cheers) are arrays; {name} placeholders
+   are filled by t(key, vars). Maths symbols and digits stay as they are (Latin digits everywhere).
+   ===================================================================================== */
+const I18N = {
+  en: {
+    tag: "Answer math questions to zoom your kart to the finish!", play: "▶ Play",
+    stars: { one: "⭐ {n} star", other: "⭐ {n} stars" }, rights: { one: "✅ {n} right answer", other: "✅ {n} right answers" },
+    a_soundOn: "Turn sound on", a_soundOff: "Turn sound off", a_back: "Back", a_pause: "Pause", a_answerHow: "How to answer", a_players: "How many players", a_rubOut: "Rub out", a_go: "Go",
+    pick_title: "Pick a track", m_tap: "👆 Tap answers", m_type: "🔢 Type answers", p_one: "🧒 1 player", p_two: "👫 2 players",
+    hint_1: "Tap a track to race! Win 3 races on a track and we will tell you which one to try next.",
+    hint_2: "Two players: put the phone flat between you. Each of you answers on your own half!",
+    pr_text: "Pick the times tables you want to practice.", back: "⬅️ Back", race_go: "🏁 Race!", table_aria: "{n} times table",
+    paused: "Paused", pause_text: "Take a breather. Your kart will wait.", resume: "▶ Keep racing", restart: "🔄 Start again", tracks: "🏁 Tracks",
+    again: "🔄 Race again", next: "➡️ Next track", ready_label: "Get ready!", ready: "Ready…", kbhint: "Keys: type the answer, then press Enter.",
+    tn1: "Number Lane", tn2: "Sunny Speedway", tn3: "Desert Dash", tn4: "Snowy Summit", tn5: "Jungle Jam", tn6: "Volcano Valley", tn7: "Galaxy Grand Prix", tn8: "Practice Loop",
+    ts1: "Adding to 10", ts2: "Add and take away to 20", ts3: "Add and take away to 100", ts4: "2, 5 and 10 times tables", ts5: "All times tables to 12",
+    ts6: "Sharing (division) facts", ts7: "Mixed + − × ÷", ts8: "Pick your times tables",
+    rv_bunny: "Zippy", rv_robot: "Bolt", rv_dino: "Rex", you: "You", player: "Player {n}", pshort: "P{n}",
+    g_start: "START", g_finish: "FINISH", g_lap: "LAP {n}", hud_lap: "Lap {n}/{total}", go: "GO!", meters: "{n}m",
+    won_banner: "🏆 You won! 🏆", fin_place: "🏁 {place}!",
+    turbo: ["Turbo!", "Super turbo!", "Mega turbo!"], zoom: ["Zoom!", "Vroom!", "Whoosh!", "Yes!", "Super!"],
+    passed: "You passed {name}!", lastLap: "Last lap!", lapPop: "Lap {n}!",
+    q_ready: "Get ready! Right answers make you zoom.", q_finished2: "Finished! Cheer on your friend!", q_finished: "Finished!",
+    right_words: ["Zoom!", "Yes!", "Super!", "Great!", "Vroom!", "Nice one!"], kind_words: ["Good try!", "Nearly!", "Nice try!", "Almost!"],
+    remember: "{kind} Remember:", is: "{q} is {a}", inrow: "🔥 {n} in a row!", tricky: "⭐ A tricky one from before!",
+    again1: "🔁 This one again. You can do it!", inrowGo: "🔥 {n} in a row! Keep going!", question: "Question {n}", ans_aria: "Answer {n}",
+    r_won: "You won! 🏆", r_2nd: "So close! 2nd place!", r_3rd: "3rd place! Nice racing!", r_4th: "You finished! Well done!", r_pwins: "Player {n} wins! 🏆",
+    c_right: "✅ {n} right ({acc})", c_fast: "⚡ Fastest {s}", secs: "{s} s", c_row: "🔥 {n} in a row",
+    c_points: { one: "{stars} {n} point", other: "{stars} {n} points" }, row_line: "Player {i}: {n} right ({acc})",
+    c_p1pts: { one: "⭐ Player 1: {n} point", other: "⭐ Player 1: {n} points" },
+    practise: "Let's practice {list}!", list_sep: ",  ", noMistakes: "No mistakes at all. Super math!",
+    moveUp: { one: "You have won {n} race here! Ready for {track}?", other: "You have won {n} races here! Ready for {track}?" },
+    best: "Best: {ord}", new: "New!", startHere: "Start here!", tryMe: "Try me!",
+    ord: ["1st", "2nd", "3rd", "4th"], place: ["1st place", "2nd place", "3rd place", "4th place"]
+  },
+  'en-GB': {
+    tag: "Answer maths questions to zoom your kart to the finish!", pr_text: "Pick the times tables you want to practise.",
+    practise: "Let's practise {list}!", noMistakes: "No mistakes at all. Super maths!"
+  },
+  fr: {
+    tag: "Réponds aux questions de maths pour foncer jusqu’à l’arrivée !", play: "▶ Jouer",
+    stars: { one: "⭐ {n} étoile", other: "⭐ {n} étoiles" }, rights: { one: "✅ {n} bonne réponse", other: "✅ {n} bonnes réponses" },
+    a_soundOn: "Activer le son", a_soundOff: "Couper le son", a_back: "Retour", a_pause: "Pause", a_answerHow: "Comment répondre", a_players: "Combien de joueurs", a_rubOut: "Effacer", a_go: "Valider",
+    pick_title: "Choisis un circuit", m_tap: "👆 Toucher la réponse", m_type: "🔢 Taper la réponse", p_one: "🧒 1 joueur", p_two: "👫 2 joueurs",
+    hint_1: "Touche un circuit pour faire la course ! Gagne 3 courses sur un circuit et on te dira lequel essayer ensuite.",
+    hint_2: "À deux : posez le téléphone à plat entre vous. Chacun répond sur sa moitié !",
+    pr_text: "Choisis les tables de multiplication à réviser.", back: "⬅️ Retour", race_go: "🏁 En piste !", table_aria: "Table de {n}",
+    paused: "Pause", pause_text: "Souffle un peu. Ton kart t’attend.", resume: "▶ Continuer la course", restart: "🔄 Recommencer", tracks: "🏁 Circuits",
+    again: "🔄 Rejouer", next: "➡️ Circuit suivant", ready_label: "Prépare-toi !", ready: "Prêts…", kbhint: "Clavier : tape la réponse, puis appuie sur Enter.",
+    tn1: "Rue des Nombres", tn2: "Circuit Soleil", tn3: "Désert Express", tn4: "Sommet Enneigé", tn5: "Jungle en Folie", tn6: "Vallée du Volcan", tn7: "Grand Prix Galaxie", tn8: "Boucle d’entraînement",
+    ts1: "Additions jusqu’à 10", ts2: "Plus et moins jusqu’à 20", ts3: "Plus et moins jusqu’à 100", ts4: "Tables de 2, 5 et 10", ts5: "Toutes les tables jusqu’à 12",
+    ts6: "Divisions (partages)", ts7: "Mélange + − × ÷", ts8: "Choisis tes tables",
+    rv_bunny: "Zou", rv_robot: "Boulon", rv_dino: "Rex", you: "Toi", player: "Joueur {n}", pshort: "J{n}",
+    g_start: "DÉPART", g_finish: "ARRIVÉE", g_lap: "TOUR {n}", hud_lap: "Tour {n}/{total}", go: "PARTEZ !", meters: "{n} m",
+    won_banner: "🏆 Tu as gagné ! 🏆", fin_place: "🏁 {place} !",
+    turbo: ["Turbo !", "Super turbo !", "Méga turbo !"], zoom: ["Zoum !", "Vroum !", "Fiouuu !", "Oui !", "Super !"],
+    passed: "Tu as doublé {name} !", lastLap: "Dernier tour !", lapPop: "Tour {n} !",
+    q_ready: "Prépare-toi ! Les bonnes réponses te font foncer.", q_finished2: "Fini ! Encourage ton ami !", q_finished: "C’est fini !",
+    right_words: ["Zoum !", "Oui !", "Super !", "Génial !", "Vroum !", "Bien joué !"], kind_words: ["Bien essayé !", "Presque !", "Pas loin !", "Tout près !"],
+    remember: "{kind} Retiens bien :", is: "{q}, ça fait {a}", inrow: "🔥 {n} d’affilée !", tricky: "⭐ Une question difficile de la dernière fois !",
+    again1: "🔁 Encore celle-ci. Tu vas y arriver !", inrowGo: "🔥 {n} d’affilée ! Continue !", question: "Question {n}", ans_aria: "Réponse {n}",
+    r_won: "Tu as gagné ! 🏆", r_2nd: "Presque ! 2e place !", r_3rd: "3e place ! Belle course !", r_4th: "Tu as fini ! Bravo !", r_pwins: "Le joueur {n} gagne ! 🏆",
+    c_right: { one: "✅ {n} bonne ({acc})", other: "✅ {n} bonnes ({acc})" }, c_fast: "⚡ Plus rapide : {s}", secs: "{s} s", c_row: "🔥 {n} d’affilée",
+    c_points: { one: "{stars} {n} point", other: "{stars} {n} points" }, row_line: { one: "Joueur {i} : {n} bonne ({acc})", other: "Joueur {i} : {n} bonnes ({acc})" },
+    c_p1pts: { one: "⭐ Joueur 1 : {n} point", other: "⭐ Joueur 1 : {n} points" },
+    practise: "Révisons {list} !", noMistakes: "Aucune erreur. Super en maths !",
+    moveUp: { one: "Tu as gagné {n} course ici ! On essaie {track} ?", other: "Tu as gagné {n} courses ici ! On essaie {track} ?" },
+    best: "Record : {ord}", new: "Nouveau !", startHere: "Commence ici !", tryMe: "Essaie-moi !",
+    ord: ["1er", "2e", "3e", "4e"], place: ["1re place", "2e place", "3e place", "4e place"]
+  },
+  es: {
+    tag: "¡Responde preguntas de mate para que tu kart vuele hasta la meta!", play: "▶ Jugar",
+    stars: { one: "⭐ {n} estrella", other: "⭐ {n} estrellas" }, rights: { one: "✅ {n} respuesta correcta", other: "✅ {n} respuestas correctas" },
+    a_soundOn: "Activar el sonido", a_soundOff: "Quitar el sonido", a_back: "Volver", a_pause: "Pausa", a_answerHow: "Cómo responder", a_players: "Cuántos jugadores", a_rubOut: "Borrar", a_go: "Listo",
+    pick_title: "Elige una pista", m_tap: "👆 Tocar la respuesta", m_type: "🔢 Escribir la respuesta", p_one: "🧒 1 jugador", p_two: "👫 2 jugadores",
+    hint_1: "¡Toca una pista para correr! Gana 3 carreras en una pista y te diremos cuál probar después.",
+    hint_2: "Dos jugadores: pongan el teléfono plano entre ustedes. ¡Cada uno responde en su mitad!",
+    pr_text: "Elige las tablas de multiplicar que quieres practicar.", back: "⬅️ Volver", race_go: "🏁 ¡A correr!", table_aria: "Tabla del {n}",
+    paused: "Pausa", pause_text: "Tómate un respiro. Tu kart te espera.", resume: "▶ Seguir corriendo", restart: "🔄 Empezar de nuevo", tracks: "🏁 Pistas",
+    again: "🔄 Correr otra vez", next: "➡️ Siguiente pista", ready_label: "¡Prepárate!", ready: "Listos…", kbhint: "Teclado: escribe la respuesta y pulsa Enter.",
+    tn1: "Calle de los Números", tn2: "Pista Soleada", tn3: "Carrera del Desierto", tn4: "Cumbre Nevada", tn5: "Fiesta en la Selva", tn6: "Valle del Volcán", tn7: "Gran Premio Galaxia", tn8: "Circuito de Práctica",
+    ts1: "Sumar hasta 10", ts2: "Sumar y restar hasta 20", ts3: "Sumar y restar hasta 100", ts4: "Tablas del 2, el 5 y el 10", ts5: "Todas las tablas hasta el 12",
+    ts6: "Repartir (divisiones)", ts7: "Mezcla + − × ÷", ts8: "Elige tus tablas",
+    rv_bunny: "Chispa", rv_robot: "Tuerca", rv_dino: "Rex", you: "Tú", player: "Jugador {n}", pshort: "J{n}",
+    g_start: "SALIDA", g_finish: "META", g_lap: "VUELTA {n}", hud_lap: "Vuelta {n}/{total}", go: "¡YA!", meters: "{n} m",
+    won_banner: "🏆 ¡Ganaste! 🏆", fin_place: "🏁 ¡{place}!",
+    turbo: ["¡Turbo!", "¡Súper turbo!", "¡Mega turbo!"], zoom: ["¡Zum!", "¡Brum!", "¡Fiuuu!", "¡Sí!", "¡Súper!"],
+    passed: "¡Pasaste a {name}!", lastLap: "¡Última vuelta!", lapPop: "¡Vuelta {n}!",
+    q_ready: "¡Prepárate! Las respuestas correctas te hacen volar.", q_finished2: "¡Llegaste! ¡Anima a tu amigo!", q_finished: "¡Llegaste!",
+    right_words: ["¡Zum!", "¡Sí!", "¡Súper!", "¡Genial!", "¡Brum!", "¡Bien hecho!"], kind_words: ["¡Buen intento!", "¡Casi!", "¡Muy cerca!", "¡Por poco!"],
+    remember: "{kind} Recuerda:", is: { one: "{q} es {a}", other: "{q} son {a}" }, inrow: "🔥 ¡{n} seguidas!", tricky: "⭐ ¡Una difícil de la otra vez!",
+    again1: "🔁 Otra vez esta. ¡Tú puedes!", inrowGo: "🔥 ¡{n} seguidas! ¡Sigue así!", question: "Pregunta {n}", ans_aria: "Respuesta {n}",
+    r_won: "¡Ganaste! 🏆", r_2nd: "¡Casi! ¡2.º puesto!", r_3rd: "¡3.er puesto! ¡Buena carrera!", r_4th: "¡Llegaste! ¡Bien hecho!", r_pwins: "¡Gana el jugador {n}! 🏆",
+    c_right: { one: "✅ {n} correcta ({acc})", other: "✅ {n} correctas ({acc})" }, c_fast: "⚡ La más rápida: {s}", secs: "{s} s", c_row: "🔥 {n} seguidas",
+    c_points: { one: "{stars} {n} punto", other: "{stars} {n} puntos" }, row_line: { one: "Jugador {i}: {n} correcta ({acc})", other: "Jugador {i}: {n} correctas ({acc})" },
+    c_p1pts: { one: "⭐ Jugador 1: {n} punto", other: "⭐ Jugador 1: {n} puntos" },
+    practise: "¡Practiquemos {list}!", noMistakes: "¡Ni un solo error! ¡Súper en mate!",
+    moveUp: { one: "¡Ganaste {n} carrera aquí! ¿Probamos {track}?", other: "¡Ganaste {n} carreras aquí! ¿Probamos {track}?" },
+    best: "Récord: {ord}", new: "¡Nueva!", startHere: "¡Empieza aquí!", tryMe: "¡Pruébame!",
+    ord: ["1.º", "2.º", "3.º", "4.º"], place: ["1.er puesto", "2.º puesto", "3.er puesto", "4.º puesto"]
+  },
+  pt: {
+    tag: "Responda perguntas de matemática e acelere seu kart até a chegada!", play: "▶ Jogar",
+    stars: { one: "⭐ {n} estrela", other: "⭐ {n} estrelas" }, rights: { one: "✅ {n} resposta certa", other: "✅ {n} respostas certas" },
+    a_soundOn: "Ligar o som", a_soundOff: "Desligar o som", a_back: "Voltar", a_pause: "Pausar", a_answerHow: "Como responder", a_players: "Quantos jogadores", a_rubOut: "Apagar", a_go: "Confirmar",
+    pick_title: "Escolha uma pista", m_tap: "👆 Tocar na resposta", m_type: "🔢 Digitar a resposta", p_one: "🧒 1 jogador", p_two: "👫 2 jogadores",
+    hint_1: "Toque numa pista para correr! Vença 3 corridas numa pista e a gente diz qual tentar depois.",
+    hint_2: "Dois jogadores: deixem o celular deitado entre vocês. Cada um responde na sua metade!",
+    pr_text: "Escolha as tabuadas que você quer treinar.", back: "⬅️ Voltar", race_go: "🏁 Correr!", table_aria: "Tabuada do {n}",
+    paused: "Pausado", pause_text: "Respire um pouco. Seu kart espera você.", resume: "▶ Continuar correndo", restart: "🔄 Começar de novo", tracks: "🏁 Pistas",
+    again: "🔄 Correr de novo", next: "➡️ Próxima pista", ready_label: "Prepare-se!", ready: "Preparar…", kbhint: "Teclado: digite a resposta e aperte Enter.",
+    tn1: "Rua dos Números", tn2: "Pista do Sol", tn3: "Corrida no Deserto", tn4: "Pico Nevado", tn5: "Festa na Selva", tn6: "Vale do Vulcão", tn7: "Grande Prêmio Galáxia", tn8: "Circuito de Treino",
+    ts1: "Somar até 10", ts2: "Somar e subtrair até 20", ts3: "Somar e subtrair até 100", ts4: "Tabuadas do 2, do 5 e do 10", ts5: "Todas as tabuadas até 12",
+    ts6: "Dividir (divisão)", ts7: "Misturado + − × ÷", ts8: "Escolha suas tabuadas",
+    rv_bunny: "Faísca", rv_robot: "Parafuso", rv_dino: "Rex", you: "Você", player: "Jogador {n}", pshort: "J{n}",
+    g_start: "LARGADA", g_finish: "CHEGADA", g_lap: "VOLTA {n}", hud_lap: "Volta {n}/{total}", go: "VAI!", meters: "{n} m",
+    won_banner: "🏆 Você venceu! 🏆", fin_place: "🏁 {place}!",
+    turbo: ["Turbo!", "Super turbo!", "Mega turbo!"], zoom: ["Zum!", "Vrum!", "Fiuuu!", "Isso!", "Super!"],
+    passed: "Você passou {name}!", lastLap: "Última volta!", lapPop: "Volta {n}!",
+    q_ready: "Prepare-se! Respostas certas fazem você acelerar.", q_finished2: "Chegou! Torça pelo seu amigo!", q_finished: "Chegou!",
+    right_words: ["Zum!", "Isso!", "Super!", "Ótimo!", "Vrum!", "Boa!"], kind_words: ["Boa tentativa!", "Quase!", "Foi por pouco!", "Quase lá!"],
+    remember: "{kind} Lembre:", is: "{q} dá {a}", inrow: "🔥 {n} seguidas!", tricky: "⭐ Uma difícil da última vez!",
+    again1: "🔁 Essa de novo. Você consegue!", inrowGo: "🔥 {n} seguidas! Continue!", question: "Pergunta {n}", ans_aria: "Resposta {n}",
+    r_won: "Você venceu! 🏆", r_2nd: "Quase! 2º lugar!", r_3rd: "3º lugar! Boa corrida!", r_4th: "Você chegou! Muito bem!", r_pwins: "Jogador {n} venceu! 🏆",
+    c_right: { one: "✅ {n} certa ({acc})", other: "✅ {n} certas ({acc})" }, c_fast: "⚡ Mais rápida: {s}", secs: "{s} s", c_row: "🔥 {n} seguidas",
+    c_points: { one: "{stars} {n} ponto", other: "{stars} {n} pontos" }, row_line: { one: "Jogador {i}: {n} certa ({acc})", other: "Jogador {i}: {n} certas ({acc})" },
+    c_p1pts: { one: "⭐ Jogador 1: {n} ponto", other: "⭐ Jogador 1: {n} pontos" },
+    practise: "Vamos treinar {list}!", noMistakes: "Nenhum erro! Craque da matemática!",
+    moveUp: { one: "Você venceu {n} corrida aqui! Que tal tentar {track}?", other: "Você venceu {n} corridas aqui! Que tal tentar {track}?" },
+    best: "Recorde: {ord}", new: "Nova!", startHere: "Comece aqui!", tryMe: "Tente esta!",
+    ord: ["1º", "2º", "3º", "4º"], place: ["1º lugar", "2º lugar", "3º lugar", "4º lugar"]
+  },
+  de: {
+    tag: "Löse Matheaufgaben und flitze mit deinem Kart ins Ziel!", play: "▶ Spielen",
+    stars: { one: "⭐ {n} Stern", other: "⭐ {n} Sterne" }, rights: { one: "✅ {n} richtige Antwort", other: "✅ {n} richtige Antworten" },
+    a_soundOn: "Ton an", a_soundOff: "Ton aus", a_back: "Zurück", a_pause: "Pause", a_answerHow: "Wie willst du antworten?", a_players: "Wie viele Spieler?", a_rubOut: "Löschen", a_go: "Los",
+    pick_title: "Wähl eine Strecke", m_tap: "👆 Antwort antippen", m_type: "🔢 Antwort eintippen", p_one: "🧒 1 Spieler", p_two: "👫 2 Spieler",
+    hint_1: "Tipp auf eine Strecke und fahr los! Gewinn 3 Rennen auf einer Strecke, dann sagen wir dir, welche als Nächstes dran ist.",
+    hint_2: "Zu zweit: Legt das Handy flach zwischen euch. Jeder antwortet auf seiner Hälfte!",
+    pr_text: "Wähl die Einmaleins-Reihen, die du üben willst.", back: "⬅️ Zurück", race_go: "🏁 Los!", table_aria: "{n}er-Reihe",
+    paused: "Pause", pause_text: "Verschnauf kurz. Dein Kart wartet auf dich.", resume: "▶ Weiterfahren", restart: "🔄 Neu starten", tracks: "🏁 Strecken",
+    again: "🔄 Noch ein Rennen", next: "➡️ Nächste Strecke", ready_label: "Mach dich bereit!", ready: "Achtung…", kbhint: "Tasten: Tipp die Antwort und drück Enter.",
+    tn1: "Zahlenweg", tn2: "Sonnenpiste", tn3: "Wüstenflitzer", tn4: "Schneegipfel", tn5: "Dschungel-Rallye", tn6: "Vulkantal", tn7: "Galaxie-Grand-Prix", tn8: "Übungsrunde",
+    ts1: "Plus bis 10", ts2: "Plus und minus bis 20", ts3: "Plus und minus bis 100", ts4: "Die 2er-, 5er- und 10er-Reihe", ts5: "Das ganze Einmaleins bis 12",
+    ts6: "Teilen (Geteilt-Aufgaben)", ts7: "Gemischt + − × ÷", ts8: "Wähl deine Einmaleins-Reihen",
+    rv_bunny: "Flitzi", rv_robot: "Bolzen", rv_dino: "Rex", you: "Du", player: "Spieler {n}", pshort: "S{n}",
+    g_start: "START", g_finish: "ZIEL", g_lap: "RUNDE {n}", hud_lap: "Runde {n}/{total}", go: "LOS!", meters: "{n} m",
+    won_banner: "🏆 Gewonnen! 🏆", fin_place: "🏁 {place}!",
+    turbo: ["Turbo!", "Super-Turbo!", "Mega-Turbo!"], zoom: ["Wusch!", "Brumm!", "Sauber!", "Ja!", "Super!"],
+    passed: "Du hast {name} überholt!", lastLap: "Letzte Runde!", lapPop: "Runde {n}!",
+    q_ready: "Mach dich bereit! Richtige Antworten geben Gas.", q_finished2: "Im Ziel! Feuere deinen Freund an!", q_finished: "Im Ziel!",
+    right_words: ["Wusch!", "Ja!", "Super!", "Klasse!", "Brumm!", "Gut gemacht!"], kind_words: ["Guter Versuch!", "Fast!", "Knapp!", "Beinahe!"],
+    remember: "{kind} Merk dir:", is: "{q} ist {a}", inrow: "🔥 {n} richtig in Folge!", tricky: "⭐ Eine knifflige Aufgabe von letztem Mal!",
+    again1: "🔁 Die gleich noch mal. Du schaffst das!", inrowGo: "🔥 {n} in Folge! Weiter so!", question: "Aufgabe {n}", ans_aria: "Antwort {n}",
+    r_won: "Gewonnen! 🏆", r_2nd: "Knapp! 2. Platz!", r_3rd: "3. Platz! Gut gefahren!", r_4th: "Im Ziel! Gut gemacht!", r_pwins: "Spieler {n} gewinnt! 🏆",
+    c_right: "✅ {n} richtig ({acc})", c_fast: "⚡ Am schnellsten: {s}", secs: "{s} s", c_row: "🔥 {n} in Folge",
+    c_points: { one: "{stars} {n} Punkt", other: "{stars} {n} Punkte" }, row_line: "Spieler {i}: {n} richtig ({acc})",
+    c_p1pts: { one: "⭐ Spieler 1: {n} Punkt", other: "⭐ Spieler 1: {n} Punkte" },
+    practise: "Lass uns {list} üben!", noMistakes: "Kein einziger Fehler. Super gerechnet!",
+    moveUp: { one: "Du hast hier {n} Rennen gewonnen! Bereit für {track}?", other: "Du hast hier {n} Rennen gewonnen! Bereit für {track}?" },
+    best: "Rekord: {ord}", new: "Neu!", startHere: "Fang hier an!", tryMe: "Probier mich!",
+    ord: ["1.", "2.", "3.", "4."], place: ["1. Platz", "2. Platz", "3. Platz", "4. Platz"]
+  },
+  he: {
+    tag: "ענו על תרגילי חשבון, והקארט שלכם יטוס עד קו הסיום!", play: "▶ לשחק",
+    stars: { one: "⭐ כוכב אחד", two: "⭐ שני כוכבים", other: "⭐ {n} כוכבים" }, rights: { one: "✅ תשובה נכונה אחת", two: "✅ שתי תשובות נכונות", other: "✅ {n} תשובות נכונות" },
+    a_soundOn: "להפעיל צליל", a_soundOff: "לכבות צליל", a_back: "חזרה", a_pause: "השהיה", a_answerHow: "איך עונים", a_players: "כמה שחקנים", a_rubOut: "מחיקה", a_go: "אישור",
+    pick_title: "בחרו מסלול", m_tap: "👆 לגעת בתשובה", m_type: "🔢 להקליד תשובה", p_one: "🧒 שחקן אחד", p_two: "👫 2 שחקנים",
+    hint_1: "לחצו על מסלול כדי להתחיל! נצחו 3 מרוצים באותו מסלול, ונגיד לכם איזה מסלול לנסות אחר כך.",
+    hint_2: "שני שחקנים: הניחו את הטלפון שטוח ביניכם. כל אחד עונה בחצי שלו!",
+    pr_text: "בחרו את לוחות הכפל שתרצו לתרגל.", back: "➡️ חזרה", race_go: "🏁 למרוץ!", table_aria: "לוח הכפל של {n}",
+    paused: "הפסקה", pause_text: "קחו נשימה. הקארט מחכה לכם.", resume: "▶ להמשיך במרוץ", restart: "🔄 להתחיל מחדש", tracks: "🏁 מסלולים",
+    again: "🔄 עוד מרוץ", next: "⬅️ המסלול הבא", ready_label: "היכונו!", ready: "היכון…", kbhint: "מקלדת: הקלידו את התשובה ולחצו Enter.",
+    tn1: "רחוב המספרים", tn2: "מסלול השמש", tn3: "דהירה במדבר", tn4: "פסגת השלג", tn5: "חגיגה בג׳ונגל", tn6: "עמק הר הגעש", tn7: "הגרנד פרי הגלקטי", tn8: "מסלול תרגול",
+    ts1: "חיבור עד 10", ts2: "חיבור וחיסור עד 20", ts3: "חיבור וחיסור עד 100", ts4: "לוח הכפל של 2, 5 ו־10", ts5: "כל לוח הכפל עד 12",
+    ts6: "חילוק", ts7: "מעורב + − × ÷", ts8: "בחרו לוחות כפל",
+    rv_bunny: "זריזי", rv_robot: "בורגי", rv_dino: "רקס", you: "אני", player: "שחקן {n}", pshort: "שחקן {n}",
+    g_start: "זינוק", g_finish: "סיום", g_lap: "הקפה {n}", hud_lap: "הקפה {n}/{total}", go: "קדימה!", meters: "{n} מ׳",
+    won_banner: "🏆 ניצחתם! 🏆", fin_place: "🏁 {place}!",
+    turbo: ["טורבו!", "סופר טורבו!", "מגה טורבו!"], zoom: ["זוום!", "ברררום!", "ווש!", "יש!", "סופר!"],
+    passed: "עקפתם את {name}!", lastLap: "הקפה אחרונה!", lapPop: "הקפה {n}!",
+    q_ready: "היכונו! תשובות נכונות נותנות לכם מהירות.", q_finished2: "סיימתם! עודדו את החבר!", q_finished: "סיימתם!",
+    right_words: ["זוום!", "יש!", "סופר!", "מעולה!", "ברררום!", "יפה מאוד!"], kind_words: ["ניסיון יפה!", "כמעט!", "קרוב מאוד!", "עוד קצת!"],
+    remember: "{kind} זכרו:", is: "{q} = {a}", inrow: "🔥 {n} ברצף!", tricky: "⭐ תרגיל קשה מהפעם הקודמת!",
+    again1: "🔁 שוב את זה. אתם יכולים!", inrowGo: "🔥 {n} ברצף! ממשיכים ככה!", question: "תרגיל {n}", ans_aria: "תשובה {n}",
+    r_won: "ניצחתם! 🏆", r_2nd: "כמעט! מקום שני!", r_3rd: "מקום שלישי! מרוץ יפה!", r_4th: "סיימתם! כל הכבוד!", r_pwins: "ניצחון לשחקן {n}! 🏆",
+    c_right: "✅ {n} נכונות ({acc})", c_fast: "⚡ הכי מהר: {s}", secs: "{s} שנ׳", c_row: "🔥 {n} ברצף",
+    c_points: { one: "{stars} נקודה אחת", other: "{stars} {n} נקודות" }, row_line: "שחקן {i}: {n} נכונות ({acc})",
+    c_p1pts: { one: "⭐ שחקן 1: נקודה אחת", other: "⭐ שחקן 1: {n} נקודות" },
+    practise: "בואו נתרגל: {list}!", noMistakes: "בלי אף טעות. אלופי חשבון!",
+    moveUp: { one: "ניצחתם כאן מרוץ אחד! מוכנים למסלול {track}?", other: "ניצחתם כאן {n} מרוצים! מוכנים למסלול {track}?" },
+    best: "שיא: {ord}", new: "חדש!", startHere: "מתחילים כאן!", tryMe: "נסו אותי!",
+    ord: ["ראשון", "שני", "שלישי", "רביעי"], place: ["מקום ראשון", "מקום שני", "מקום שלישי", "מקום רביעי"]
+  },
+  ja: {
+    tag: "さんすうのもんだいにこたえて、カートをゴールまでとばしましょう！", play: "▶ あそぶ",
+    stars: { other: "⭐ ほし{n}つ" }, rights: { other: "✅ せいかい{n}もん" },
+    a_soundOn: "おとをオンにする", a_soundOff: "おとをオフにする", a_back: "もどる", a_pause: "いちじていし", a_answerHow: "こたえかた", a_players: "なんにんであそぶ", a_rubOut: "けす", a_go: "けってい",
+    pick_title: "コースをえらぼう", m_tap: "👆 タップでこたえる", m_type: "🔢 すうじをうつ", p_one: "🧒 ひとりで", p_two: "👫 ふたりで",
+    hint_1: "コースをタップしてレースしよう！ 1つのコースで3かいかつと、つぎにおすすめのコースをおしえます。",
+    hint_2: "ふたりで：スマホをあいだにおいてね。それぞれ、じぶんのがわでこたえます！",
+    pr_text: "れんしゅうしたい、かけざんのだんをえらんでください。", back: "⬅️ もどる", race_go: "🏁 スタート！", table_aria: "{n}のだん",
+    paused: "いちじていし", pause_text: "ひとやすみしましょう。カートはまっています。", resume: "▶ レースをつづける", restart: "🔄 さいしょから", tracks: "🏁 コース",
+    again: "🔄 もういちど", next: "➡️ つぎのコース", ready_label: "じゅんびして！", ready: "よーい…", kbhint: "キーボード：こたえをうって、Enterをおします。",
+    tn1: "かずのみち", tn2: "おひさまサーキット", tn3: "さばくダッシュ", tn4: "ゆきやまのいただき", tn5: "ジャングルパーティー", tn6: "かざんのたに", tn7: "ギャラクシーグランプリ", tn8: "れんしゅうコース",
+    ts1: "10までのたしざん", ts2: "20までのたしざん・ひきざん", ts3: "100までのたしざん・ひきざん", ts4: "2・5・10のだん", ts5: "12までのぜんぶのだん",
+    ts6: "わりざん", ts7: "ぜんぶまぜて + − × ÷", ts8: "かけざんのだんをえらぼう",
+    rv_bunny: "ピョン", rv_robot: "ボルト", rv_dino: "レックス", you: "あなた", player: "プレイヤー{n}", pshort: "P{n}",
+    g_start: "スタート", g_finish: "ゴール", g_lap: "{n}しゅうめ", hud_lap: "{n}/{total}しゅう", go: "ゴー！", meters: "{n}m",
+    won_banner: "🏆 ゆうしょう！ 🏆", fin_place: "🏁 {place}！",
+    turbo: ["ターボ！", "スーパーターボ！", "メガターボ！"], zoom: ["ビューン！", "ブーン！", "シュッ！", "やった！", "スーパー！"],
+    passed: "{name}をぬいた！", lastLap: "さいごの1しゅう！", lapPop: "{n}しゅうめ！",
+    q_ready: "じゅんびして！せいかいするとカートがはやくなります。", q_finished2: "ゴール！ともだちをおうえんしよう！", q_finished: "ゴール！",
+    right_words: ["ビューン！", "やった！", "スーパー！", "すごい！", "ブーン！", "いいね！"], kind_words: ["おしい！", "もうすこし！", "いいちょうし！", "あとちょっと！"],
+    remember: "{kind} おぼえよう：", is: "{q} は {a}", inrow: "🔥 {n}もんれんぞく！", tricky: "⭐ まえにまちがえたもんだい！",
+    again1: "🔁 もういちどこのもんだい。きっとできます！", inrowGo: "🔥 {n}もんれんぞく！そのちょうし！", question: "だい{n}もん", ans_aria: "こたえ {n}",
+    r_won: "ゆうしょう！ 🏆", r_2nd: "おしい！2位！", r_3rd: "3位！ナイスレース！", r_4th: "ゴールしました！よくがんばりました！", r_pwins: "プレイヤー{n}のかち！ 🏆",
+    c_right: "✅ せいかい{n}もん（{acc}）", c_fast: "⚡ いちばんはやい：{s}", secs: "{s}びょう", c_row: "🔥 {n}もんれんぞく",
+    c_points: { other: "{stars} {n}ポイント" }, row_line: "プレイヤー{i}：せいかい{n}もん（{acc}）",
+    c_p1pts: { other: "⭐ プレイヤー1：{n}ポイント" },
+    practise: "れんしゅうしよう：{list}", list_sep: "、", noMistakes: "まちがいゼロ！さんすうはかせです！",
+    moveUp: { other: "ここで{n}かいかちました！つぎは「{track}」にちょうせんしますか？" },
+    best: "さいこう：{ord}", new: "はじめて！", startHere: "ここからスタート！", tryMe: "やってみて！",
+    ord: ["1位", "2位", "3位", "4位"], place: ["1位", "2位", "3位", "4位"]
+  },
+  ar: {
+    tag: "أجب عن أسئلة الرياضيات لتنطلق بسيارتك نحو خط النهاية!", play: "▶ العب",
+    stars: { zero: "⭐ {n} نجمة", one: "⭐ نجمة واحدة", two: "⭐ نجمتان", few: "⭐ {n} نجوم", other: "⭐ {n} نجمة" },
+    rights: { zero: "✅ {n} إجابة صحيحة", one: "✅ إجابة صحيحة واحدة", two: "✅ إجابتان صحيحتان", few: "✅ {n} إجابات صحيحة", other: "✅ {n} إجابة صحيحة" },
+    a_soundOn: "تشغيل الصوت", a_soundOff: "إيقاف الصوت", a_back: "رجوع", a_pause: "إيقاف مؤقت", a_answerHow: "طريقة الإجابة", a_players: "عدد اللاعبين", a_rubOut: "امسح", a_go: "تأكيد",
+    pick_title: "اختر حلبة", m_tap: "👆 المس الإجابة", m_type: "🔢 اكتب الإجابة", p_one: "🧒 لاعب واحد", p_two: "👫 لاعبان",
+    hint_1: "المس حلبة لتبدأ السباق! افز في 3 سباقات على حلبة وسنخبرك أي حلبة تجرّب بعدها.",
+    hint_2: "لاعبان: ضعا الهاتف مسطحًا بينكما. كل واحد يجيب في نصفه!",
+    pr_text: "اختر جداول الضرب التي تريد التدرّب عليها.", back: "➡️ رجوع", race_go: "🏁 انطلق!", table_aria: "جدول الضرب {n}",
+    paused: "توقف مؤقت", pause_text: "خذ استراحة. سيارتك تنتظرك.", resume: "▶ تابع السباق", restart: "🔄 ابدأ من جديد", tracks: "🏁 الحلبات",
+    again: "🔄 سباق آخر", next: "⬅️ الحلبة التالية", ready_label: "استعد!", ready: "استعد…", kbhint: "لوحة المفاتيح: اكتب الإجابة ثم اضغط Enter.",
+    tn1: "شارع الأرقام", tn2: "حلبة الشمس", tn3: "سباق الصحراء", tn4: "قمة الثلج", tn5: "مهرجان الغابة", tn6: "وادي البركان", tn7: "جائزة المجرة الكبرى", tn8: "حلقة التدريب",
+    ts1: "الجمع حتى 10", ts2: "الجمع والطرح حتى 20", ts3: "الجمع والطرح حتى 100", ts4: "جداول الضرب 2 و5 و10", ts5: "كل جداول الضرب حتى 12",
+    ts6: "القسمة", ts7: "مزيج + − × ÷", ts8: "اختر جداول الضرب",
+    rv_bunny: "سهم", rv_robot: "برغي", rv_dino: "ريكس", you: "أنت", player: "اللاعب {n}", pshort: "لاعب {n}",
+    g_start: "البداية", g_finish: "النهاية", g_lap: "اللفة {n}", hud_lap: "اللفة {n}/{total}", go: "انطلق!", meters: "{n} م",
+    won_banner: "🏆 فزت! 🏆", fin_place: "🏁 {place}!",
+    turbo: ["تيربو!", "تيربو خارق!", "تيربو عملاق!"], zoom: ["زووم!", "فرووم!", "ووش!", "نعم!", "رائع!"],
+    passed: "تجاوزت {name}!", lastLap: "اللفة الأخيرة!", lapPop: "اللفة {n}!",
+    q_ready: "استعد! الإجابات الصحيحة تجعلك تنطلق.", q_finished2: "وصلت! شجّع صديقك!", q_finished: "وصلت!",
+    right_words: ["زووم!", "نعم!", "رائع!", "ممتاز!", "فرووم!", "أحسنت!"], kind_words: ["محاولة جيدة!", "اقتربت!", "قريب جدًا!", "تقريبًا!"],
+    remember: "{kind} تذكّر:", is: "{q} = {a}", inrow: "🔥 {n} على التوالي!", tricky: "⭐ سؤال صعب من المرة السابقة!",
+    again1: "🔁 هذا السؤال مرة أخرى. تستطيع!", inrowGo: "🔥 {n} على التوالي! استمر!", question: "السؤال {n}", ans_aria: "الإجابة {n}",
+    r_won: "فزت! 🏆", r_2nd: "اقتربت! المركز الثاني!", r_3rd: "المركز الثالث! سباق رائع!", r_4th: "وصلت إلى النهاية! أحسنت!", r_pwins: "فاز اللاعب {n}! 🏆",
+    c_right: "✅ {n} صحيحة ({acc})", c_fast: "⚡ الأسرع: {s}", secs: "{s} ث", c_row: "🔥 {n} على التوالي",
+    c_points: { zero: "{stars} {n} نقطة", one: "{stars} نقطة واحدة", two: "{stars} نقطتان", few: "{stars} {n} نقاط", other: "{stars} {n} نقطة" },
+    row_line: "اللاعب {i}: {n} صحيحة ({acc})",
+    c_p1pts: { zero: "⭐ اللاعب 1: {n} نقطة", one: "⭐ اللاعب 1: نقطة واحدة", two: "⭐ اللاعب 1: نقطتان", few: "⭐ اللاعب 1: {n} نقاط", other: "⭐ اللاعب 1: {n} نقطة" },
+    practise: "لنتدرّب على {list}!", list_sep: "، ", noMistakes: "ولا خطأ واحد. أنت بطل الرياضيات!",
+    moveUp: { few: "فزت هنا {n} مرات! هل تجرّب {track}؟", other: "فزت هنا {n} مرة! هل تجرّب {track}؟" },
+    best: "الأفضل: {ord}", new: "جديد!", startHere: "ابدأ هنا!", tryMe: "جرّبني!",
+    ord: ["الأول", "الثاني", "الثالث", "الرابع"], place: ["المركز الأول", "المركز الثاني", "المركز الثالث", "المركز الرابع"]
+  },
+  ru: {
+    tag: "Решай примеры, и твой карт помчится к финишу!", play: "▶ Играть",
+    stars: { one: "⭐ {n} звезда", few: "⭐ {n} звезды", many: "⭐ {n} звёзд", other: "⭐ {n} звезды" },
+    rights: { one: "✅ {n} верный ответ", few: "✅ {n} верных ответа", many: "✅ {n} верных ответов", other: "✅ {n} верного ответа" },
+    a_soundOn: "Включить звук", a_soundOff: "Выключить звук", a_back: "Назад", a_pause: "Пауза", a_answerHow: "Как отвечать", a_players: "Сколько игроков", a_rubOut: "Стереть", a_go: "Готово",
+    pick_title: "Выбери трассу", m_tap: "👆 Выбирать ответ", m_type: "🔢 Печатать ответ", p_one: "🧒 1 игрок", p_two: "👫 2 игрока",
+    hint_1: "Нажми на трассу, чтобы начать гонку! Выиграй 3 гонки на одной трассе, и мы подскажем, какую попробовать дальше.",
+    hint_2: "Вдвоём: положите телефон между собой. Каждый отвечает на своей половине!",
+    pr_text: "Выбери, какие таблицы умножения повторить.", back: "⬅️ Назад", race_go: "🏁 Поехали!", table_aria: "Умножение на {n}",
+    paused: "Пауза", pause_text: "Передохни. Твой карт подождёт.", resume: "▶ Продолжить гонку", restart: "🔄 Начать заново", tracks: "🏁 Трассы",
+    again: "🔄 Ещё гонка", next: "➡️ Следующая трасса", ready_label: "Приготовься!", ready: "Внимание…", kbhint: "Клавиши: напиши ответ и нажми Enter.",
+    tn1: "Числовая улица", tn2: "Солнечная трасса", tn3: "Пустынный рывок", tn4: "Снежная вершина", tn5: "Весёлые джунгли", tn6: "Долина вулкана", tn7: "Гран-при «Галактика»", tn8: "Тренировочный круг",
+    ts1: "Сложение до 10", ts2: "Плюс и минус до 20", ts3: "Плюс и минус до 100", ts4: "Умножение на 2, 5 и 10", ts5: "Вся таблица умножения до 12",
+    ts6: "Деление", ts7: "Всё вперемешку + − × ÷", ts8: "Выбери таблицы умножения",
+    rv_bunny: "Шустрик", rv_robot: "Болтик", rv_dino: "Рекс", you: "Ты", player: "Игрок {n}", pshort: "И{n}",
+    g_start: "СТАРТ", g_finish: "ФИНИШ", g_lap: "КРУГ {n}", hud_lap: "Круг {n}/{total}", go: "МАРШ!", meters: "{n} м",
+    won_banner: "🏆 Победа! 🏆", fin_place: "🏁 {place}!",
+    turbo: ["Турбо!", "Супертурбо!", "Мегатурбо!"], zoom: ["Вжух!", "Врум!", "Ура!", "Да!", "Супер!"],
+    passed: "Обгон: {name}!", lastLap: "Последний круг!", lapPop: "Круг {n}!",
+    q_ready: "Приготовься! Верные ответы разгоняют карт.", q_finished2: "Финиш! Поболей за друга!", q_finished: "Финиш!",
+    right_words: ["Вжух!", "Да!", "Супер!", "Отлично!", "Врум!", "Молодец!"], kind_words: ["Хорошая попытка!", "Почти!", "Чуть-чуть!", "Близко!"],
+    remember: "{kind} Запомни:", is: "{q} будет {a}", inrow: "🔥 {n} подряд!", tricky: "⭐ Трудный пример из прошлой гонки!",
+    again1: "🔁 Этот ещё раз. У тебя получится!", inrowGo: "🔥 {n} подряд! Так держать!", question: "Пример {n}", ans_aria: "Ответ {n}",
+    r_won: "Победа! 🏆", r_2nd: "Почти! 2-е место!", r_3rd: "3-е место! Отличная гонка!", r_4th: "Финиш! Молодец!", r_pwins: "Игрок {n} побеждает! 🏆",
+    c_right: "✅ Верно: {n} ({acc})", c_fast: "⚡ Быстрее всего: {s}", secs: "{s} с", c_row: "🔥 {n} подряд",
+    c_points: { one: "{stars} {n} очко", few: "{stars} {n} очка", many: "{stars} {n} очков", other: "{stars} {n} очка" }, row_line: "Игрок {i}: верно {n} ({acc})",
+    c_p1pts: { one: "⭐ Игрок 1: {n} очко", few: "⭐ Игрок 1: {n} очка", many: "⭐ Игрок 1: {n} очков", other: "⭐ Игрок 1: {n} очка" },
+    practise: "Давай повторим: {list}!", noMistakes: "Ни одной ошибки. Ты супер в математике!",
+    moveUp: { one: "Здесь уже {n} победа! Попробуем трассу «{track}»?", few: "Здесь уже {n} победы! Попробуем трассу «{track}»?", many: "Здесь уже {n} побед! Попробуем трассу «{track}»?", other: "Здесь уже {n} победы! Попробуем трассу «{track}»?" },
+    best: "Рекорд: {ord}", new: "Новая!", startHere: "Начни здесь!", tryMe: "Попробуй!",
+    ord: ["1-е", "2-е", "3-е", "4-е"], place: ["1-е место", "2-е место", "3-е место", "4-е место"]
+  },
+  it: {
+    tag: "Rispondi alle domande di matematica e sfreccia col tuo kart fino al traguardo!", play: "▶ Gioca",
+    stars: { one: "⭐ {n} stella", other: "⭐ {n} stelle" }, rights: { one: "✅ {n} risposta giusta", other: "✅ {n} risposte giuste" },
+    a_soundOn: "Attiva l’audio", a_soundOff: "Disattiva l’audio", a_back: "Indietro", a_pause: "Pausa", a_answerHow: "Come rispondere", a_players: "Quanti giocatori", a_rubOut: "Cancella", a_go: "Vai",
+    pick_title: "Scegli una pista", m_tap: "👆 Tocca la risposta", m_type: "🔢 Scrivi la risposta", p_one: "🧒 1 giocatore", p_two: "👫 2 giocatori",
+    hint_1: "Tocca una pista per correre! Vinci 3 gare su una pista e ti diremo quale provare dopo.",
+    hint_2: "In due: mettete il telefono piatto tra di voi. Ognuno risponde sulla sua metà!",
+    pr_text: "Scegli le tabelline che vuoi ripassare.", back: "⬅️ Indietro", race_go: "🏁 Si parte!", table_aria: "Tabellina del {n}",
+    paused: "In pausa", pause_text: "Riprendi fiato. Il tuo kart ti aspetta.", resume: "▶ Continua la gara", restart: "🔄 Ricomincia", tracks: "🏁 Piste",
+    again: "🔄 Corri ancora", next: "➡️ Pista successiva", ready_label: "Preparati!", ready: "Pronti…", kbhint: "Tastiera: scrivi la risposta, poi premi Enter.",
+    tn1: "Via dei Numeri", tn2: "Pista del Sole", tn3: "Corsa nel Deserto", tn4: "Vetta Innevata", tn5: "Giungla Pazza", tn6: "Valle del Vulcano", tn7: "Gran Premio Galassia", tn8: "Giro di Allenamento",
+    ts1: "Addizioni fino a 10", ts2: "Più e meno fino a 20", ts3: "Più e meno fino a 100", ts4: "Tabelline del 2, del 5 e del 10", ts5: "Tutte le tabelline fino al 12",
+    ts6: "Divisioni (dividere in parti)", ts7: "Misto + − × ÷", ts8: "Scegli le tue tabelline",
+    rv_bunny: "Saetta", rv_robot: "Bullone", rv_dino: "Rex", you: "Tu", player: "Giocatore {n}", pshort: "G{n}",
+    g_start: "PARTENZA", g_finish: "ARRIVO", g_lap: "GIRO {n}", hud_lap: "Giro {n}/{total}", go: "VIA!", meters: "{n} m",
+    won_banner: "🏆 Hai vinto! 🏆", fin_place: "🏁 {place}!",
+    turbo: ["Turbo!", "Super turbo!", "Mega turbo!"], zoom: ["Zoom!", "Vroom!", "Fiuuu!", "Sì!", "Super!"],
+    passed: "Hai superato {name}!", lastLap: "Ultimo giro!", lapPop: "Giro {n}!",
+    q_ready: "Preparati! Le risposte giuste ti fanno sfrecciare.", q_finished2: "Traguardo! Fai il tifo per il tuo amico!", q_finished: "Traguardo!",
+    right_words: ["Zoom!", "Sì!", "Super!", "Grande!", "Vroom!", "Ben fatto!"], kind_words: ["Bel tentativo!", "Quasi!", "Ci sei quasi!", "Per poco!"],
+    remember: "{kind} Ricorda:", is: "{q} fa {a}", inrow: "🔥 {n} di fila!", tricky: "⭐ Una difficile dell’altra volta!",
+    again1: "🔁 Ancora questa. Ce la fai!", inrowGo: "🔥 {n} di fila! Continua così!", question: "Domanda {n}", ans_aria: "Risposta {n}",
+    r_won: "Hai vinto! 🏆", r_2nd: "Quasi! 2º posto!", r_3rd: "3º posto! Bella gara!", r_4th: "Traguardo raggiunto! Ben fatto!", r_pwins: "Vince il giocatore {n}! 🏆",
+    c_right: { one: "✅ {n} giusta ({acc})", other: "✅ {n} giuste ({acc})" }, c_fast: "⚡ La più veloce: {s}", secs: "{s} s", c_row: "🔥 {n} di fila",
+    c_points: { one: "{stars} {n} punto", other: "{stars} {n} punti" }, row_line: { one: "Giocatore {i}: {n} giusta ({acc})", other: "Giocatore {i}: {n} giuste ({acc})" },
+    c_p1pts: { one: "⭐ Giocatore 1: {n} punto", other: "⭐ Giocatore 1: {n} punti" },
+    practise: "Ripassiamo {list}!", noMistakes: "Nessun errore! Super in matematica!",
+    moveUp: { one: "Hai vinto {n} gara qui! Proviamo {track}?", other: "Hai vinto {n} gare qui! Proviamo {track}?" },
+    best: "Record: {ord}", new: "Nuova!", startHere: "Inizia da qui!", tryMe: "Prova questa!",
+    ord: ["1º", "2º", "3º", "4º"], place: ["1º posto", "2º posto", "3º posto", "4º posto"]
+  },
+  'zh-Hant': {
+    tag: "回答數學題，讓你的賽車衝向終點！", play: "▶ 開始玩",
+    stars: { other: "⭐ {n} 顆星" }, rights: { other: "✅ 答對 {n} 題" },
+    a_soundOn: "打開聲音", a_soundOff: "關掉聲音", a_back: "返回", a_pause: "暫停", a_answerHow: "怎麼回答", a_players: "幾個人玩", a_rubOut: "刪除", a_go: "確定",
+    pick_title: "選一條賽道", m_tap: "👆 點選答案", m_type: "🔢 輸入答案", p_one: "🧒 1 人", p_two: "👫 2 人",
+    hint_1: "點一條賽道開始比賽！在同一條賽道贏 3 場，我們就告訴你下一條該挑戰哪裡。",
+    hint_2: "兩人玩：把手機平放在你們中間。各自在自己那一半回答！",
+    pr_text: "選出你想練習的乘法。", back: "⬅️ 返回", race_go: "🏁 出發！", table_aria: "{n} 的乘法",
+    paused: "暫停中", pause_text: "休息一下。你的賽車會等你。", resume: "▶ 繼續比賽", restart: "🔄 重新開始", tracks: "🏁 賽道",
+    again: "🔄 再比一次", next: "➡️ 下一條賽道", ready_label: "準備好！", ready: "預備…", kbhint: "鍵盤：輸入答案，再按 Enter。",
+    tn1: "數字小路", tn2: "陽光賽道", tn3: "沙漠衝刺", tn4: "雪山頂峰", tn5: "叢林派對", tn6: "火山谷", tn7: "銀河大獎賽", tn8: "練習賽道",
+    ts1: "10 以內的加法", ts2: "20 以內的加減法", ts3: "100 以內的加減法", ts4: "2、5、10 的乘法", ts5: "12 以內所有乘法",
+    ts6: "除法（平分）", ts7: "混合 + − × ÷", ts8: "選擇要練的乘法",
+    rv_bunny: "跳跳", rv_robot: "螺絲", rv_dino: "雷克斯", you: "你", player: "玩家 {n}", pshort: "P{n}",
+    g_start: "起點", g_finish: "終點", g_lap: "第 {n} 圈", hud_lap: "第 {n}/{total} 圈", go: "出發！", meters: "{n}m",
+    won_banner: "🏆 你贏了！ 🏆", fin_place: "🏁 {place}！",
+    turbo: ["加速！", "超級加速！", "無敵加速！"], zoom: ["咻！", "轟！", "衝啊！", "答對了！", "超棒！"],
+    passed: "你超過了{name}！", lastLap: "最後一圈！", lapPop: "第 {n} 圈！",
+    q_ready: "準備好！答對就能加速。", q_finished2: "到終點了！幫朋友加油吧！", q_finished: "到終點了！",
+    right_words: ["咻！", "答對了！", "超棒！", "太好了！", "轟！", "做得好！"], kind_words: ["不錯的嘗試！", "差一點！", "好可惜！", "快答對了！"],
+    remember: "{kind} 記住：", is: "{q} 等於 {a}", inrow: "🔥 連對 {n} 題！", tricky: "⭐ 上次比較難的題目！",
+    again1: "🔁 這題再來一次。你可以的！", inrowGo: "🔥 連對 {n} 題！繼續加油！", question: "第 {n} 題", ans_aria: "答案 {n}",
+    r_won: "你贏了！ 🏆", r_2nd: "好可惜！第 2 名！", r_3rd: "第 3 名！跑得好！", r_4th: "你跑完了！很棒！", r_pwins: "玩家 {n} 獲勝！ 🏆",
+    c_right: "✅ 答對 {n} 題（{acc}）", c_fast: "⚡ 最快：{s}", secs: "{s} 秒", c_row: "🔥 連對 {n} 題",
+    c_points: { other: "{stars} {n} 分" }, row_line: "玩家 {i}：答對 {n} 題（{acc}）",
+    c_p1pts: { other: "⭐ 玩家 1：{n} 分" },
+    practise: "來練習 {list}！", list_sep: "、", noMistakes: "完全沒有錯！數學超厲害！",
+    moveUp: { other: "你在這裡贏了 {n} 場！要挑戰「{track}」嗎？" },
+    best: "最佳：{ord}", new: "新的！", startHere: "從這裡開始！", tryMe: "試試我！",
+    ord: ["第1名", "第2名", "第3名", "第4名"], place: ["第1名", "第2名", "第3名", "第4名"]
+  },
+  nl: {
+    tag: "Beantwoord rekensommen en race met je kart naar de finish!", play: "▶ Spelen",
+    stars: { one: "⭐ {n} ster", other: "⭐ {n} sterren" }, rights: { one: "✅ {n} goed antwoord", other: "✅ {n} goede antwoorden" },
+    a_soundOn: "Geluid aan", a_soundOff: "Geluid uit", a_back: "Terug", a_pause: "Pauze", a_answerHow: "Hoe wil je antwoorden?", a_players: "Hoeveel spelers?", a_rubOut: "Wissen", a_go: "Klaar",
+    pick_title: "Kies een circuit", m_tap: "👆 Antwoord tikken", m_type: "🔢 Antwoord typen", p_one: "🧒 1 speler", p_two: "👫 2 spelers",
+    hint_1: "Tik op een circuit om te racen! Win 3 races op een circuit, dan vertellen we welke je daarna kunt proberen.",
+    hint_2: "Met z’n tweeën: leg de telefoon plat tussen jullie in. Ieder antwoordt op zijn eigen helft!",
+    pr_text: "Kies de tafels die je wilt oefenen.", back: "⬅️ Terug", race_go: "🏁 Racen!", table_aria: "Tafel van {n}",
+    paused: "Pauze", pause_text: "Even uitblazen. Je kart wacht op je.", resume: "▶ Verder racen", restart: "🔄 Opnieuw", tracks: "🏁 Circuits",
+    again: "🔄 Nog een race", next: "➡️ Volgend circuit", ready_label: "Maak je klaar!", ready: "Klaar…", kbhint: "Toetsen: typ het antwoord en druk op Enter.",
+    tn1: "Getallenlaan", tn2: "Zonnecircuit", tn3: "Woestijnrace", tn4: "Sneeuwtop", tn5: "Junglefeest", tn6: "Vulkaandal", tn7: "Grote Prijs Melkweg", tn8: "Oefenrondje",
+    ts1: "Plussommen tot 10", ts2: "Plus en min tot 20", ts3: "Plus en min tot 100", ts4: "Tafels van 2, 5 en 10", ts5: "Alle tafels tot 12",
+    ts6: "Delen (deelsommen)", ts7: "Gemengd + − × ÷", ts8: "Kies je tafels",
+    rv_bunny: "Flits", rv_robot: "Bout", rv_dino: "Rex", you: "Jij", player: "Speler {n}", pshort: "S{n}",
+    g_start: "START", g_finish: "FINISH", g_lap: "RONDE {n}", hud_lap: "Ronde {n}/{total}", go: "GAAN!", meters: "{n} m",
+    won_banner: "🏆 Gewonnen! 🏆", fin_place: "🏁 {place}!",
+    turbo: ["Turbo!", "Superturbo!", "Megaturbo!"], zoom: ["Zoem!", "Vroem!", "Woesj!", "Ja!", "Super!"],
+    passed: "Je hebt {name} ingehaald!", lastLap: "Laatste ronde!", lapPop: "Ronde {n}!",
+    q_ready: "Maak je klaar! Goede antwoorden geven je vaart.", q_finished2: "Gefinisht! Moedig je vriend aan!", q_finished: "Gefinisht!",
+    right_words: ["Zoem!", "Ja!", "Super!", "Top!", "Vroem!", "Goed zo!"], kind_words: ["Goed geprobeerd!", "Bijna!", "Net niet!", "Zo dichtbij!"],
+    remember: "{kind} Onthoud:", is: "{q} is {a}", inrow: "🔥 {n} op rij!", tricky: "⭐ Een lastige van de vorige keer!",
+    again1: "🔁 Deze nog een keer. Jij kunt het!", inrowGo: "🔥 {n} op rij! Ga zo door!", question: "Som {n}", ans_aria: "Antwoord {n}",
+    r_won: "Gewonnen! 🏆", r_2nd: "Bijna! 2e plaats!", r_3rd: "3e plaats! Mooi gereden!", r_4th: "Gefinisht! Goed gedaan!", r_pwins: "Speler {n} wint! 🏆",
+    c_right: "✅ {n} goed ({acc})", c_fast: "⚡ Snelste: {s}", secs: "{s} s", c_row: "🔥 {n} op rij",
+    c_points: { one: "{stars} {n} punt", other: "{stars} {n} punten" }, row_line: "Speler {i}: {n} goed ({acc})",
+    c_p1pts: { one: "⭐ Speler 1: {n} punt", other: "⭐ Speler 1: {n} punten" },
+    practise: "Laten we {list} oefenen!", noMistakes: "Geen enkele fout. Super gerekend!",
+    moveUp: { one: "Je hebt hier {n} race gewonnen! Klaar voor {track}?", other: "Je hebt hier {n} races gewonnen! Klaar voor {track}?" },
+    best: "Record: {ord}", new: "Nieuw!", startHere: "Begin hier!", tryMe: "Probeer mij!",
+    ord: ["1e", "2e", "3e", "4e"], place: ["1e plaats", "2e plaats", "3e plaats", "4e plaats"]
+  }
+};
+const LANG = (() => { let l = 'en'; try { l = String((window.BRB && BRB.user && BRB.user.lang) || 'en'); } catch (e) { /* old SDK */ } return l; })();
+const LANG_BASE = LANG.split('-')[0];
+const LANG_CHAIN = [LANG, LANG_BASE, 'en'].filter((l, i, a) => I18N[l] && a.indexOf(l) === i);
+const RTL = (() => { try { if (BRB.user.dir === 'rtl') return true; } catch (e) { /* old SDK */ } return LANG_BASE === 'he' || LANG_BASE === 'ar'; })();
+const NUM_LOCALE = LANG_BASE === 'ar' ? 'ar-u-nu-latn' : (I18N[LANG] ? LANG : 'en');
+const NF = (() => { try { return new Intl.NumberFormat(NUM_LOCALE); } catch (e) { return { format: n => String(n) }; } })();
+const NF1 = (() => { try { return new Intl.NumberFormat(NUM_LOCALE, { minimumFractionDigits: 1, maximumFractionDigits: 1 }); } catch (e) { return { format: n => n.toFixed(1) }; } })();
+const PCT = (() => { try { return new Intl.NumberFormat(NUM_LOCALE, { style: 'percent' }); } catch (e) { return { format: n => Math.round(n * 100) + '%' }; } })();
+const PLURAL = (() => { try { return new Intl.PluralRules(NUM_LOCALE); } catch (e) { return { select: n => (n === 1 ? 'one' : 'other') }; } })();
+/** Maths shown inside a sentence stays left-to-right, also in Hebrew and Arabic (Unicode isolate marks), and never breaks across lines. */
+const LTR = s => '\u2066' + s.replace(/ /g, '\u00a0') + '\u2069';
+/** The raw entry for a key (string, plural object or list), following the lookup order. */
+function tRaw(key) { for (const l of LANG_CHAIN) { const v = I18N[l][key]; if (v !== undefined) return v; } return key; }
+/** A translated string: picks the plural form by vars.n and fills {name} placeholders (numbers are formatted for the language). */
+function t(key, vars) {
+  let v = tRaw(key);
+  if (v && typeof v === 'object' && !Array.isArray(v)) { const n = vars && typeof vars.n === 'number' ? vars.n : 0; const f = PLURAL.select(n); v = v[f] != null ? v[f] : v.other; }
+  v = String(v);
+  return vars ? v.replace(/\{(\w+)\}/g, (m, k) => (k in vars ? (typeof vars[k] === 'number' ? NF.format(vars[k]) : String(vars[k])) : m)) : v;
+}
+const trackName = id => t('tn' + id), trackSkill = id => t('ts' + id);
+const ordinal = n => tRaw('ord')[n - 1] || String(n);        // "1st", "2e", "3.", "ראשון"...
+const placeName = n => tRaw('place')[n - 1] || String(n);    // "2nd place", "2. Platz"...
+/** Puts the static strings into the page (data-t = text, data-ta = aria-label) and sets the language + direction.
+    Menus and panels turn right-to-left for Hebrew and Arabic; the race, answer buttons, keypad and table picker stay left-to-right. */
+function applyI18n() {
+  const root = document.documentElement; root.lang = LANG; if (RTL) root.dir = 'rtl';
+  document.querySelectorAll('[data-t]').forEach(el => { el.textContent = t(el.dataset.t); });
+  document.querySelectorAll('[data-ta]').forEach(el => { el.setAttribute('aria-label', t(el.dataset.ta)); });
+  if (RTL) { document.querySelectorAll('.qlabel, .kbhint, #raceName').forEach(el => { el.dir = 'rtl'; }); document.getElementById('backBtn').textContent = '➡️'; }
+}
+/** Shrinks a label until its text fits its box (never below minPx). */
+function fitText(el, minPx) {
+  if (!el || !el.clientWidth) return; el.style.fontSize = '';
+  const cs = getComputedStyle(el), avail = el.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+  const range = document.createRange(); range.selectNodeContents(el);   // the text's real (unclipped, fractional) width
+  let size = parseFloat(cs.fontSize) || 16;
+  while (range.getBoundingClientRect().width > avail - 1 && size > minPx) { size -= 0.5; el.style.fontSize = size + 'px'; }
+}
+/** Canvas text: sets the font, shrinking it until the text is at most maxW wide. Returns the size used. */
+function fitFont(g, text, size, maxW, weight) {
+  size = Math.round(size); g.font = (weight || '700') + ' ' + size + 'px ' + FONT;
+  while (size > 8 && g.measureText(text).width > maxW) { size--; g.font = (weight || '700') + ' ' + size + 'px ' + FONT; }
+  return size;
+}
+/** Canvas text direction: words follow the language; digits-only labels stay left-to-right. */
+const textDir = (g, words) => { g.direction = words && RTL ? 'rtl' : 'ltr'; };
+
+/* =====================================================================================
    Small helpers
    ===================================================================================== */
 const $ = id => document.getElementById(id);
@@ -537,7 +976,6 @@ const FONT = 'Fredoka, "Trebuchet MS", system-ui, sans-serif';
 const TAU = Math.PI * 2;
 const visRng = makeRng((Math.random() * 4294967295) >>> 0);   // looks only (particles, cheers): never the maths or the race
 const pickOne = arr => arr[Math.floor(visRng() * arr.length)];
-const ordinal = n => n + (n === 1 ? 'st' : n === 2 ? 'nd' : n === 3 ? 'rd' : 'th');
 const DPR = () => Math.min(2, window.devicePixelRatio || 1);
 function sfx(name) { try { BRB.sfx.play(name); } catch (e) { /* ignore */ } }
 function makeCanvas(w, h) { const c = document.createElement('canvas'); c.width = Math.max(1, Math.ceil(w)); c.height = Math.max(1, Math.ceil(h)); return c; }
@@ -968,11 +1406,12 @@ function drawGantries(v, cam, race, time) {
     const sq = Math.max(4, m.laneH / 4), rows = Math.ceil((m.roadBot - m.roadTop) / sq);
     for (let r = 0; r < rows; r++) for (let c = 0; c < 2; c++) { g.fillStyle = (r + c) % 2 ? '#222' : '#fff'; g.fillRect(x + c * sq, m.roadTop + r * sq, sq, Math.min(sq, m.roadBot - m.roadTop - r * sq)); }
     if (k === 0 && v.kind === 'race' && (S.phase === 'countdown' || S.goT > 0)) continue;   // the traffic lights hang here instead
-    const label = k === 0 ? 'START' : k === CONFIG.laps ? 'FINISH' : 'LAP ' + (k + 1);
-    const bh = Math.max(16, Math.min(34, m.roadTop * 0.18)), bw = bh * (label.length * 0.62 + 1.2), by = Math.max(m.hud + 4, m.roadTop - bh * 2.6);
+    const label = k === 0 ? t('g_start') : k === CONFIG.laps ? t('g_finish') : t('g_lap', { n: k + 1 });
+    const bh = Math.max(16, Math.min(34, m.roadTop * 0.18)), by = Math.max(m.hud + 4, m.roadTop - bh * 2.6);
+    g.font = '700 ' + Math.round(bh * 0.66) + 'px ' + FONT; const bw = g.measureText(label).width + bh * 0.9;   // banner fits the word in any language
     g.fillStyle = '#5b5f73'; g.fillRect(x - 3, by, 6, m.roadTop - by); g.fillRect(x + bw - 3, by, 6, m.roadTop - by);
     g.fillStyle = k === CONFIG.laps ? '#ff3b6b' : '#2a1846'; rrect(g, x - 6, by, bw + 12, bh, bh * 0.3); g.fill();
-    g.fillStyle = '#fff'; g.font = '700 ' + Math.round(bh * 0.66) + 'px ' + FONT; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(label, x + bw / 2, by + bh * 0.54);
+    g.fillStyle = '#fff'; g.font = '700 ' + Math.round(bh * 0.66) + 'px ' + FONT; g.textAlign = 'center'; g.textBaseline = 'middle'; textDir(g, true); g.fillText(label, x + bw / 2, by + bh * 0.54);
   }
   // Crowd stands next to the finish line.
   const fx = sx(v, cam, race.total); if (fx > -m.w && fx < m.w * 2) {
@@ -1083,8 +1522,9 @@ function drawEdgeBubble(v, info, ahead, gap, y) {
   const w = r * 2 + r * 2.4, x = ahead ? m.w - w - 4 : 4, cy = Math.max(m.roadTop - r, Math.min(m.h - r - 2, y));
   g.fillStyle = 'rgba(42,24,70,.82)'; rrect(g, x, cy - r, w, r * 2, r); g.fill();
   const hx = ahead ? x + w - r * 2 : x; g.drawImage(hs.c, hx, cy - r, r * 2, r * 2);
-  g.fillStyle = '#fff'; g.font = '700 ' + Math.round(r * 0.8) + 'px ' + FONT; g.textAlign = 'center'; g.textBaseline = 'middle';
-  g.fillText(Math.round(gap) + 'm', ahead ? x + r * 1.25 : x + r * 2 + r * 1.15, cy + 1);
+  const gapTxt = t('meters', { n: Math.round(gap) });
+  g.fillStyle = '#fff'; fitFont(g, gapTxt, r * 0.8, r * 2.2); g.textAlign = 'center'; g.textBaseline = 'middle'; textDir(g, true);
+  g.fillText(gapTxt, ahead ? x + r * 1.25 : x + r * 2 + r * 1.15, cy + 1);
   poly(g, ahead ? [m.w - 1, cy, m.w - 7, cy - 5, m.w - 7, cy + 5] : [1, cy, 7, cy - 5, 7, cy + 5], '#fff');
 }
 function drawKarts(v, race, infos, cam, time) {
@@ -1109,8 +1549,8 @@ function drawPops(v, race, cam, dt) {
   for (let i = v.pops.length - 1; i >= 0; i--) {
     const p = v.pops[i]; p.t += dt; if (p.t > 1.3) { v.pops.splice(i, 1); continue; }
     const k = race.karts[p.k], base = Math.max(16, Math.min(32, m.kartW * (p.big ? 0.3 : 0.24), m.h * 0.11));
-    const sc = REDUCED ? 1 : Math.min(1, 0.6 + p.t * 3), size = base * sc, a = p.t > 0.9 ? Math.max(0, 1 - (p.t - 0.9) / 0.4) : 1;
-    g.font = '700 ' + Math.round(size) + 'px ' + FONT; const half = g.measureText(p.text).width / 2 + 6;
+    const sc = REDUCED ? 1 : Math.min(1, 0.6 + p.t * 3), a = p.t > 0.9 ? Math.max(0, 1 - (p.t - 0.9) / 0.4) : 1;
+    const size = fitFont(g, p.text, base * sc, m.w - 16); textDir(g, true); const half = g.measureText(p.text).width / 2 + 6;   // long words shrink to fit the view
     const x = Math.max(half, Math.min(m.w - half, sx(v, cam, k.dist) + m.kartW * 0.15));
     const y = Math.max(m.hud + base * 0.7 + p.slot * base * 1.1, laneY(v, k.lane) - m.kartW * 0.7 - (REDUCED ? 0 : p.t * 20) - p.slot * base * 1.1);
     g.globalAlpha = a; g.textAlign = 'center'; g.textBaseline = 'middle';
@@ -1123,15 +1563,15 @@ function drawHud(v, race, infos, p) {
   const g = v.g, m = v.m, me = race.karts[v.follow], place = race.placeOf(me), hh = m.hud;
   g.fillStyle = 'rgba(42,24,70,.78)'; g.fillRect(0, 0, m.w, hh);
   const bw = hh * 1.55; g.fillStyle = PLACE_COL[place - 1]; rrect(g, 5, 4, bw, hh - 8, (hh - 8) / 2); g.fill();
-  g.fillStyle = '#2a1846'; g.font = '700 ' + Math.round(hh * 0.52) + 'px ' + FONT; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(ordinal(place), 5 + bw / 2, hh / 2 + 1);
-  const lap = race.lapOf(me), lapTxt = 'Lap ' + lap + '/' + CONFIG.laps; g.font = '700 ' + Math.round(hh * 0.44) + 'px ' + FONT; const lw = g.measureText(lapTxt).width;
+  g.fillStyle = '#2a1846'; fitFont(g, ordinal(place), hh * 0.52, bw - 8); g.textAlign = 'center'; g.textBaseline = 'middle'; textDir(g, true); g.fillText(ordinal(place), 5 + bw / 2, hh / 2 + 1);
+  const lap = race.lapOf(me), lapTxt = t('hud_lap', { n: lap, total: CONFIG.laps }); g.font = '700 ' + Math.round(hh * 0.44) + 'px ' + FONT; const lw = g.measureText(lapTxt).width;
   g.fillStyle = '#fff'; g.textAlign = 'right'; g.fillText(lapTxt, m.w - 8, hh / 2 + 1);
   // streak flame
   let right = m.w - lw - 16;
   if (p && p.streak >= 2) {
-    const t = '×' + p.streak; g.font = '700 ' + Math.round(hh * 0.44) + 'px ' + FONT; const tw = g.measureText(t).width, fx = right - tw - hh * 0.35;
+    const st = '×' + p.streak; g.font = '700 ' + Math.round(hh * 0.44) + 'px ' + FONT; textDir(g, false); const tw = g.measureText(st).width, fx = right - tw - hh * 0.35;
     const fs = hh * 0.26; poly(g, [fx, hh / 2 - fs * 1.4, fx + fs * 0.9, hh / 2 + fs * 0.2, fx + fs * 0.4, hh / 2 + fs, fx - fs * 0.4, hh / 2 + fs, fx - fs * 0.9, hh / 2 + fs * 0.2], p.streak >= 3 ? '#ff7a1a' : '#ffb347'); disc(g, fx, hh / 2 + fs * 0.35, fs * 0.45, '#ffe08a');
-    g.fillStyle = p.streak >= 3 ? '#ffd23f' : '#fff'; g.textAlign = 'left'; g.fillText(t, fx + fs * 1.1, hh / 2 + 1); right = fx - fs * 1.4;
+    g.fillStyle = p.streak >= 3 ? '#ffd23f' : '#fff'; g.textAlign = 'left'; g.fillText(st, fx + fs * 1.1, hh / 2 + 1); right = fx - fs * 1.4;
   }
   // progress strip: where every kart is in the whole race
   const x0 = 5 + bw + 12, x1 = right - 10, y = hh / 2;
@@ -1151,16 +1591,18 @@ function drawCountdown(v) {
   g.fillStyle = '#5b5f73'; g.fillRect(lx - 3, y + h, 6, Math.max(0, m.roadTop - y - h));
   g.fillStyle = '#2a2438'; rrect(g, x, y, w, h, r); g.fill(); g.strokeStyle = '#fff'; g.lineWidth = 2; g.stroke();
   for (let i = 0; i < 3; i++) disc(g, x + r * 1.3 + i * r * 2.4, y + h / 2, r, go ? '#2ee06a' : i < lit ? '#ff3b3b' : '#4a4360');
-  const txt = go ? 'GO!' : String(4 - lit), size = Math.max(28, Math.min(80, sky * 0.62, (m.w - x - w) * 0.55)), p = REDUCED ? 1 : 1 + 0.15 * Math.max(0, 1 - ((go ? 0.9 - S.goT : e % CD_STEP) / 0.25));
-  g.font = '700 ' + Math.round(size * p) + 'px ' + FONT; g.textAlign = 'center'; g.textBaseline = 'middle'; g.lineWidth = size * 0.14; g.strokeStyle = '#2a1846';
-  const tx = Math.min(m.w - size * 0.9, x + w + (m.w - x - w) / 2), ty = y + h / 2 + size * 0.1;
+  const txt = go ? t('go') : String(4 - lit), p = REDUCED ? 1 : 1 + 0.15 * Math.max(0, 1 - ((go ? 0.9 - S.goT : e % CD_STEP) / 0.25));
+  const room = m.w - x - w - 16, size = Math.max(14, Math.min(80, sky * 0.62, Math.max(28, room * 0.55)));
+  const drawn = fitFont(g, txt, size * p, room); g.textAlign = 'center'; g.textBaseline = 'middle'; g.lineWidth = drawn * 0.14; g.strokeStyle = '#2a1846'; textDir(g, true);
+  const tx = x + w + 4 + room / 2, ty = y + h / 2 + size * 0.1;   // longer words ("PARTEZ !", "МАРШ!") shrink to fit beside the lights
   g.strokeText(txt, tx, ty); g.fillStyle = go ? '#2ee06a' : '#ffd23f'; g.fillText(txt, tx, ty);
 }
 function drawFinishBanner(v, place) {
   const g = v.g, m = v.m, size = Math.max(22, Math.min(54, m.h * 0.14)), y = m.hud + (m.roadTop - m.hud) * 0.5;
   g.fillStyle = 'rgba(42,24,70,.72)'; g.fillRect(0, y - size * 0.95, m.w, size * 1.9);
-  g.font = '700 ' + Math.round(size) + 'px ' + FONT; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = place === 1 ? '#ffd23f' : '#fff';
-  g.fillText(place === 1 ? '🏆 You won! 🏆' : '🏁 ' + ordinal(place) + ' place!', m.w / 2, y + 1);
+  const msg = place === 1 ? t('won_banner') : t('fin_place', { place: placeName(place) });
+  fitFont(g, msg, size, m.w - 16); g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = place === 1 ? '#ffd23f' : '#fff'; textDir(g, true);
+  g.fillText(msg, m.w / 2, y + 1);
 }
 function drawSpeedLines(v, k, time) {
   if (REDUCED || k.boost < 12) return;
@@ -1257,9 +1699,9 @@ const HALVES = [0, 1].map(i => {
 function playerInfo(i) {
   const pc = CONFIG.players[i], own = (BRB.user && BRB.user.avatar) || pc.fallback;
   let face = i === 0 ? own : pc.fallback; if (i === 1 && face === own) face = '🐯';
-  return { key: 'p' + i + face, kind: 'human', color: pc.color, dark: pc.dark, face, num: String(i + 1), name: S.players === 1 ? 'You' : 'Player ' + (i + 1), short: S.players === 1 ? 'You' : 'P' + (i + 1) };
+  return { key: 'p' + i + face, kind: 'human', color: pc.color, dark: pc.dark, face, num: String(i + 1), name: S.players === 1 ? t('you') : t('player', { n: i + 1 }), short: S.players === 1 ? t('you') : t('pshort', { n: i + 1 }) };
 }
-function rivalInfo(r, n) { return { key: r.kind, kind: r.kind, color: r.color, dark: r.dark, face: '', num: String(n), name: r.name, short: r.name }; }
+function rivalInfo(r, n) { const name = t('rv_' + r.kind); return { key: r.kind, kind: r.kind, color: r.color, dark: r.dark, face: '', num: String(n), name, short: name }; }
 function infosFor(race) { return race.karts.map(k => k.human ? playerInfo(k.player) : rivalInfo(CONFIG.rivals[k.rival], k.rival + 3)); }
 
 /* =====================================================================================
@@ -1281,10 +1723,11 @@ function startRace(track, opts) {
   S.manual = !!opts.manual;
   save.lastTrack = track; save.mode = S.mode; save.players = S.players; persist();
   const scr = $('raceScreen'); scr.classList.toggle('one', S.players === 1); scr.classList.toggle('two', S.players === 2);
-  const tc = CONFIG.tracks[track - 1]; $('raceName').innerHTML = ''; $('raceName').append(tc.name); const sm = document.createElement('small'); sm.textContent = tc.skill; $('raceName').append(sm);
+  const nm = document.createElement('b'), sm = document.createElement('small'); nm.textContent = trackName(track); sm.textContent = trackSkill(track);
+  $('raceName').innerHTML = ''; $('raceName').append(nm, sm);
   HALVES.forEach(u => { u.choices.hidden = S.mode !== 'choice'; u.keypad.hidden = S.mode !== 'keypad'; });
   VIEWS.forEach(v => { v.scene = sceneOf(track); v.tiles = null; v.pn = 0; v.pops.length = 0; v.lead = 0; });
-  showScreen('race'); layoutViews();
+  showScreen('race'); layoutViews(); fitText(nm, 11); fitText(sm, 9);   // long names (German, Russian) shrink to fit the bar
   S.P.forEach(p => renderPanel(p));
   if (S.fast) beginRacing(); else sfx('click');
 }
@@ -1309,8 +1752,8 @@ function answer(pi, value) {
     p.fb = 'right'; p.fbT = S.fast ? 0 : CONFIG.feedback.rightMs / 1000;
     const milestone = CONFIG.race.combo.some(c => c[0] === p.streak);
     sfx(milestone ? 'powerup' : 'coin');
-    const turbo = ['Turbo!', 'Super turbo!', 'Mega turbo!'][CONFIG.race.combo.findIndex(c => c[0] === p.streak)];
-    addPop(v, ki, milestone ? turbo : pickOne(['Zoom!', 'Vroom!', 'Whoosh!', 'Yes!', 'Super!']), milestone ? '#ffd23f' : '#fff', milestone);
+    const turbo = tRaw('turbo')[CONFIG.race.combo.findIndex(c => c[0] === p.streak)];
+    addPop(v, ki, milestone ? turbo : pickOne(tRaw('zoom')), milestone ? '#ffd23f' : '#fff', milestone);
     for (let j = 0; j < (REDUCED ? 3 : 10); j++) addPart(v, 2, p.kart.dist + (visRng() - 0.3) * 6, p.kart.lane + 0.2 + visRng() * 0.6, p.kart.v * 0.9 + (visRng() - 0.5) * 8, (visRng() - 0.7) * 2, 0.6, 0.18 + visRng() * 0.14);
   } else {
     p.wrong++; p.streak = 0; S.race.wrong(p.kart);
@@ -1350,11 +1793,11 @@ function update(dt) {
     const v = VIEWS[p.idx], ki = race.karts.indexOf(p.kart), place = race.placeOf(p.kart);
     if (p.passT > 0) p.passT -= dt;
     if (place < p.prevPlace && !p.kart.finished && p.passT <= 0) {
-      const passed = race.standings()[place]; if (passed) { addPop(v, ki, 'You passed ' + S.infos[race.karts.indexOf(passed)].short + '!', '#7ff0ff'); sfx('jump'); p.passT = 1.2; }
+      const passed = race.standings()[place]; if (passed) { addPop(v, ki, t('passed', { name: S.infos[race.karts.indexOf(passed)].short }), '#7ff0ff'); sfx('jump'); p.passT = 1.2; }
     }
     p.prevPlace = place;
     const lap = race.lapOf(p.kart);
-    if (lap > p.lap) { p.lap = lap; addPop(v, ki, lap === CONFIG.laps ? 'Last lap!' : 'Lap ' + lap + '!', '#ffd23f', true); sfx('coin'); }
+    if (lap > p.lap) { p.lap = lap; addPop(v, ki, lap === CONFIG.laps ? t('lastLap') : t('lapPop', { n: lap }), '#ffd23f', true); sfx('coin'); }
     if (p.kart.finished && !p.finishedShown) {
       p.finishedShown = true; p.q = null; p.locked = true; p.fb = ''; renderPanel(p);
       sfx(p.kart.place === 1 ? 'win' : 'coin');
@@ -1385,8 +1828,6 @@ function endRace() {
 /* =====================================================================================
    The question panel (DOM)
    ===================================================================================== */
-const RIGHT_WORDS = ['Zoom!', 'Yes!', 'Super!', 'Great!', 'Vroom!', 'Nice one!'];
-const KIND_WORDS = ['Good try!', 'Nearly!', 'Nice try!', 'Almost!'];
 function setMain(ui, text, box) {
   ui.qmain.textContent = ''; const t = document.createElement('span'); t.className = 'qt'; t.textContent = text; ui.qmain.append(t);
   if (box != null) { const b = document.createElement('span'); b.className = 'qbox'; b.textContent = box; ui.qmain.append(b); }
@@ -1402,25 +1843,26 @@ function renderPanel(p) {
   ui.qpanel.classList.toggle('racing-off', S.phase === 'countdown' || p.kart.finished);
   if (S.phase === 'countdown') {
     const n = Math.min(3, Math.floor(S.cd / CD_STEP) + 1);
-    ui.qlabel.textContent = 'Get ready! Right answers make you zoom.'; setMain(ui, String(4 - n) + '…');
+    ui.qlabel.textContent = t('q_ready'); fitText(ui.qlabel, 11); setMain(ui, String(4 - n) + '…');
     ui.ans.forEach(b => { b.textContent = '?'; }); return;
   }
   if (p.kart.finished) {
-    cls.add('done'); ui.qlabel.textContent = S.players === 2 ? 'Finished! Cheer on your friend!' : 'Finished!';
-    setMain(ui, (p.kart.place === 1 ? '🏆 ' : '🏁 ') + ordinal(p.kart.place) + ' place'); return;
+    cls.add('done'); ui.qlabel.textContent = t(S.players === 2 ? 'q_finished2' : 'q_finished'); fitText(ui.qlabel, 11);
+    ui.qmain.dir = 'auto'; setMain(ui, (p.kart.place === 1 ? '🏆 ' : '🏁 ') + placeName(p.kart.place)); ui.qmain.dir = 'ltr'; return;
   }
   if (!q) return;
   if (p.fb === 'right') {
-    cls.add('right'); ui.qlabel.textContent = p.streak >= 3 ? '🔥 ' + p.streak + ' in a row!' : pickOne(RIGHT_WORDS);
+    cls.add('right'); ui.qlabel.textContent = p.streak >= 3 ? t('inrow', { n: p.streak }) : pickOne(tRaw('right_words'));
     setMain(ui, q.text + ' = ' + q.answer + ' ✓');
   } else if (p.fb === 'wrong') {
-    cls.add('wrong'); ui.qlabel.textContent = pickOne(KIND_WORDS) + ' Remember:';
-    setMain(ui, q.text + ' is ' + q.answer);
+    cls.add('wrong'); ui.qlabel.textContent = t('remember', { kind: pickOne(tRaw('kind_words')) });
+    setMain(ui, t('is', { q: q.text, a: String(q.answer), n: q.answer }));   // the kind correction: "7 + 5 is 12" 
   } else {
-    ui.qlabel.textContent = q.tricky ? '⭐ A tricky one from before!' : q.review ? '🔁 This one again. You can do it!' : p.streak >= 2 ? '🔥 ' + p.streak + ' in a row! Keep going!' : 'Question ' + q.n;
+    ui.qlabel.textContent = q.tricky ? t('tricky') : q.review ? t('again1') : p.streak >= 2 ? t('inrowGo', { n: p.streak }) : t('question', { n: q.n });
     setMain(ui, q.text + ' =', p.typed || '?');
   }
-  ui.ans.forEach((b, j) => { b.textContent = q.choices[j]; b.setAttribute('aria-label', 'Answer ' + q.choices[j]); });
+  fitText(ui.qlabel, 11);
+  ui.ans.forEach((b, j) => { b.textContent = q.choices[j]; b.setAttribute('aria-label', t('ans_aria', { n: q.choices[j] })); });
   if (p.fb) {
     ui.choices.classList.add('locked'); ui.keypad.classList.add('locked');
     ui.ans.forEach(b => { const n = +b.textContent; if (n === q.answer) b.classList.add('isRight'); else if (p.fb === 'wrong' && n === p.picked) b.classList.add('isOops'); });
@@ -1438,8 +1880,8 @@ function showScreen(name) {
   if (name === 'title') refreshTitle();
 }
 function refreshTitle() {
-  $('starChip').textContent = '⭐ ' + totalStars() + (totalStars() === 1 ? ' star' : ' stars');
-  $('rightChip').textContent = '✅ ' + save.totalCorrect + ' right answer' + (save.totalCorrect === 1 ? '' : 's');
+  $('starChip').textContent = t('stars', { n: totalStars() });
+  $('rightChip').textContent = t('rights', { n: save.totalCorrect });
 }
 function setPaused(on) {
   if (S.screen !== 'race' || S.phase === 'done') return;
@@ -1460,7 +1902,7 @@ function showPicker() {
     CONFIG.tracks.forEach(tc => {
       const b = document.createElement('button'); b.className = 'tcard'; b.dataset.track = tc.id;
       b.innerHTML = '<canvas aria-hidden="true"></canvas><span class="tnum"></span><span class="tname"></span><span class="tskill"></span><span class="tmeta"><span class="tstars"></span><span class="tbest"></span></span>';
-      b.querySelector('.tnum').textContent = tc.id === 8 ? '★' : tc.id; b.querySelector('.tname').textContent = tc.name; b.querySelector('.tskill').textContent = tc.skill;
+      b.querySelector('.tnum').textContent = tc.id === 8 ? '★' : tc.id; b.querySelector('.tname').textContent = trackName(tc.id); b.querySelector('.tskill').textContent = trackSkill(tc.id);
       b.addEventListener('click', () => { sfx('click'); if (tc.id === 8) openPractice(); else startRace(tc.id); });
       grid.append(b);
     });
@@ -1469,13 +1911,13 @@ function showPicker() {
   grid.querySelectorAll('.tcard').forEach(b => {
     const id = +b.dataset.track, ts = trackSave(id);
     b.querySelector('.tstars').textContent = id === 8 ? '' : '★'.repeat(ts.stars) + '☆'.repeat(3 - ts.stars);
-    b.querySelector('.tbest').textContent = ts.best ? 'Best: ' + ordinal(ts.best) : id === 8 ? '×' + save.tables.join(' ×') : 'New!';
-    let badge = b.querySelector('.tbadge'); if (id === sug && id !== 8) { if (!badge) { badge = document.createElement('span'); badge.className = 'tbadge'; b.append(badge); } badge.textContent = id === 1 && !ts.races ? 'Start here!' : 'Try me!'; } else if (badge) badge.remove();
-    b.setAttribute('aria-label', CONFIG.tracks[id - 1].name + ', ' + CONFIG.tracks[id - 1].skill);
+    b.querySelector('.tbest').textContent = ts.best ? t('best', { ord: ordinal(ts.best) }) : id === 8 ? LTR('×' + save.tables.join(' ×')) : t('new');
+    let badge = b.querySelector('.tbadge'); if (id === sug && id !== 8) { if (!badge) { badge = document.createElement('span'); badge.className = 'tbadge'; b.append(badge); } badge.textContent = t(id === 1 && !ts.races ? 'startHere' : 'tryMe'); } else if (badge) badge.remove();
+    b.setAttribute('aria-label', trackName(id) + ', ' + trackSkill(id));
   });
   document.querySelectorAll('[data-mode]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.mode === S.mode)));
   document.querySelectorAll('[data-players]').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.players === S.players)));
-  $('pickHint').textContent = S.players === 2 ? 'Two players: put the phone flat between you. Each of you answers on your own half!' : 'Tap a track to race! Win 3 races on a track and we will tell you which one to try next.';
+  $('pickHint').textContent = t(S.players === 2 ? 'hint_2' : 'hint_1');
   if (!thumbsDrawn) { thumbsDrawn = true; requestAnimationFrame(drawThumbs); }
 }
 function drawThumbs() {
@@ -1491,7 +1933,7 @@ function drawThumbs() {
 function openPractice() {
   const grid = $('tableGrid');
   if (!grid.children.length) for (let n = 2; n <= 12; n++) {
-    const b = document.createElement('button'); b.textContent = '×' + n; b.dataset.t = n; b.setAttribute('aria-label', n + ' times table');
+    const b = document.createElement('button'); b.textContent = '×' + n; b.dataset.t = n; b.setAttribute('aria-label', t('table_aria', { n }));
     b.addEventListener('click', () => {
       const i = save.tables.indexOf(n); if (i >= 0) { if (save.tables.length > 1) save.tables.splice(i, 1); } else save.tables.push(n);
       save.tables.sort((a, c) => a - c); persist(); refreshTables(); sfx('click');
@@ -1508,29 +1950,29 @@ function showResults() {
   const R = S.results, tc = CONFIG.tracks[S.track - 1], two = S.players === 2;
   showScreen('results');
   let title;
-  if (!two) title = R.place === 1 ? 'You won! 🏆' : R.place === 2 ? 'So close! 2nd place!' : R.place === 3 ? '3rd place! Nice racing!' : 'You finished! Well done!';
-  else { const a = R.per[0].place, b = R.per[1].place; title = a < b ? 'Player 1 wins! 🏆' : 'Player 2 wins! 🏆'; }
+  if (!two) title = t(['r_won', 'r_2nd', 'r_3rd', 'r_4th'][R.place - 1]);
+  else { const a = R.per[0].place, b = R.per[1].place; title = t('r_pwins', { n: a < b ? 1 : 2 }); }
   $('resTitle').textContent = title;
   const stats = $('resStats'); stats.textContent = ''; const rows = $('resRows'); rows.textContent = ''; rows.hidden = !two;
   if (!two) {
     const p = R.per[0];
-    stats.append(chip('✅ ' + p.correct + ' right (' + p.acc + '%)', 'good'));
-    if (p.fastest != null) stats.append(chip('⚡ Fastest ' + p.fastest.toFixed(1) + ' s'));
-    if (p.bestStreak >= 3) stats.append(chip('🔥 ' + p.bestStreak + ' in a row'));
-    stats.append(chip('⭐'.repeat(R.stars) + ' ' + R.points + ' points', 'star'));
+    stats.append(chip(t('c_right', { n: p.correct, acc: PCT.format(p.acc / 100) }), 'good'));
+    if (p.fastest != null) stats.append(chip(t('c_fast', { s: t('secs', { s: NF1.format(p.fastest) }) })));
+    if (p.bestStreak >= 3) stats.append(chip(t('c_row', { n: p.bestStreak })));
+    stats.append(chip(t('c_points', { stars: '⭐'.repeat(R.stars), n: R.points }), 'star'));
   } else {
     R.per.forEach((p, i) => {
       const r = document.createElement('div'); r.className = 'resRow';
       r.innerHTML = '<b></b><span></span>';
       r.querySelector('b').textContent = S.infos[S.race.karts.indexOf(S.P[i].kart)].face + ' ' + ordinal(p.place);
-      r.querySelector('span').textContent = 'Player ' + (i + 1) + ': ' + p.correct + ' right (' + p.acc + '%)' + (p.fastest != null ? ' ⚡' + p.fastest.toFixed(1) + ' s' : '');
+      r.querySelector('span').textContent = t('row_line', { i: i + 1, n: p.correct, acc: PCT.format(p.acc / 100) }) + (p.fastest != null ? ' ⚡' + t('secs', { s: NF1.format(p.fastest) }) : '');
       rows.append(r);
     });
-    stats.append(chip('⭐ Player 1: ' + R.points + ' points', 'star'));
+    stats.append(chip(t('c_p1pts', { n: R.points }), 'star'));
   }
   const missed = R.per[0].missed.concat(two ? R.per[1].missed : []).filter((m, i, a) => a.findIndex(o => o.key === m.key) === i).slice(0, 3);
-  $('resPractise').textContent = missed.length ? "Let's practise " + missed.map(m => m.text + ' = ' + m.answer).join(',  ') + '!' : 'No mistakes at all. Super maths!';
-  const mu = $('resMoveUp'); mu.hidden = !R.moveUp; if (R.moveUp) mu.textContent = 'You have won ' + CONFIG.moveUpAfterWins + ' races here! Ready for ' + CONFIG.tracks[S.track].name + '?';
+  $('resPractise').textContent = missed.length ? t('practise', { list: missed.map(m => LTR(m.text + ' = ' + m.answer)).join(t('list_sep')) }) : t('noMistakes');
+  const mu = $('resMoveUp'); mu.hidden = !R.moveUp; if (R.moveUp) mu.textContent = t('moveUp', { n: CONFIG.moveUpAfterWins, track: trackName(S.track + 1) });
   const hasNext = S.track < 7; $('nextBtn').hidden = !hasNext;
   $('againBtn').className = 'big-btn' + (R.moveUp ? ' alt' : ''); $('nextBtn').className = 'big-btn ' + (R.moveUp || R.place === 1 ? 'go' : 'alt');
   if (R.place === 1 || (two && Math.min(R.per[0].place, R.per[1].place) === 1)) { try { BRB.fx.confetti(); } catch (e) { /* ignore */ } }
@@ -1554,15 +1996,16 @@ function drawPodium(time) {
     const ki = R.standings[st.place - 1], info = S.infos[ki], top = base - st.hgt;
     g.fillStyle = PLACE_COL[st.place - 1]; rrect(g, st.x - bw / 2 + 2, top, bw - 4, st.hgt, 8); g.fill();
     g.fillStyle = 'rgba(0,0,0,.12)'; g.fillRect(st.x - bw / 2 + 2, top + st.hgt * 0.75, bw - 4, st.hgt * 0.25);
-    g.fillStyle = '#2a1846'; g.font = '700 ' + Math.round(Math.min(28, st.hgt * 0.42)) + 'px ' + FONT; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(String(st.place), st.x, top + Math.min(st.hgt * 0.32, 20));
+    g.fillStyle = '#2a1846'; g.font = '700 ' + Math.round(Math.min(28, st.hgt * 0.42)) + 'px ' + FONT; g.textAlign = 'center'; g.textBaseline = 'middle'; textDir(g, false); g.fillText(String(st.place), st.x, top + Math.min(st.hgt * 0.32, 20));
     const hs = Math.min(bw * 0.7, h * 0.34), drop = REDUCED ? 0 : Math.max(0, 1 - t * 2.2 + (st.place - 1) * 0.25), bounce = REDUCED ? 0 : Math.abs(Math.sin(time * 3 + st.place)) * (st.place === 1 ? 4 : 2);
     const sp = headSprite(info, hs, d); g.drawImage(sp.c, st.x - hs / 2, top - hs - 4 - drop * h * 0.6 - bounce, hs, hs);
-    g.font = '700 ' + Math.round(Math.min(15, bw * 0.16)) + 'px ' + FONT; g.fillStyle = '#2a1846'; g.fillText(info.short, st.x, base - 9);
+    fitFont(g, info.short, Math.min(15, bw * 0.16), bw - 6); g.fillStyle = '#2a1846'; textDir(g, true); g.fillText(info.short, st.x, base - 9);
   }
   // 4th place waves from the side
   const k4 = R.standings[3], i4 = S.infos[k4], hs4 = Math.min(bw * 0.5, h * 0.26), x4 = Math.min(w - hs4 / 2 - 8, cx + bw * 2.05);
   g.drawImage(headSprite(i4, hs4, d).c, x4 - hs4 / 2, base - hs4 - 18, hs4, hs4);
-  g.fillStyle = '#2a1846'; g.font = '700 ' + Math.round(Math.min(15, hs4 * 0.32)) + 'px ' + FONT; g.textAlign = 'center'; g.fillText('4th ' + i4.short, x4, base - 7);
+  const l4 = ordinal(4) + ' ' + i4.short;
+  g.fillStyle = '#2a1846'; fitFont(g, l4, Math.min(15, hs4 * 0.32), Math.min(w - 8, 2 * (w - x4) - 8)); g.textAlign = 'center'; textDir(g, true); g.fillText(l4, x4, base - 7);
   g.restore();
 }
 
@@ -1618,7 +2061,7 @@ function frame(now) {
 /* =====================================================================================
    Buttons and keys
    ===================================================================================== */
-function updateMute() { const m = BRB.sfx.muted; document.querySelectorAll('.mute').forEach(b => { b.textContent = m ? '🔇' : '🔊'; b.setAttribute('aria-label', m ? 'Turn sound on' : 'Turn sound off'); }); }
+function updateMute() { const m = BRB.sfx.muted; document.querySelectorAll('.mute').forEach(b => { b.textContent = m ? '🔇' : '🔊'; b.setAttribute('aria-label', t(m ? 'a_soundOn' : 'a_soundOff')); }); }
 document.querySelectorAll('.mute').forEach(b => b.addEventListener('click', () => { BRB.sfx.mute(); updateMute(); sfx('click'); }));
 $('playBtn').addEventListener('click', () => { sfx('powerup'); showPicker(); });
 $('backBtn').addEventListener('click', () => { sfx('click'); showScreen('title'); });
@@ -1653,6 +2096,7 @@ document.addEventListener('keydown', e => {
   else if ((k === 'Enter' || k === ' ') && p.fb === 'wrong') { skipFeedback(0); e.preventDefault(); }
 });
 
+applyI18n();
 updateMute();
 showScreen('title');
 requestAnimationFrame(frame);

@@ -10,5 +10,51 @@
   "players_max": 1,
   "age_rating": "everyone",
   "featured": true,
-  "notes": "Original daily five-letter word-guessing game (no Wordle/NYT name, layout or colours): teal tick = right spot, amber dot = wrong spot, dimmed slate = not in the word; high-contrast mode uses orange/blue, and every mark also has a shape. Duplicate letters are scored greens first, then yellows limited by the letters left. Modes: Daily Peek (one 5-letter word per local date, same for everyone, once a day, countdown, streak; the order is a seeded shuffle of the answer list and a new cycle never starts with any of the last 250 words), Practice (5), Little Peek (4), Big Peek (6), and Friend Peek (pass-the-phone secret word, no points). Optional hard mode. Hand-written word lists: 782/402/356 kid-friendly answers (5/4/6 letters) each with a short meaning, and 5,009/2,220/6,728 allowed guesses; rude words are blocked by a ROT13 blocklist. Saves in BRB.storage key 'word-peek-v1' (settings, points, stats per mode, today's daily board, the unfinished practice round). Score: each win adds (7 - tries) x 8/10/12 points for 4/5/6 letters (x1.5 in hard mode); BRB.score.submit(total, 'word points') then BRB.gameOver({won, score: total}); a loss calls BRB.gameOver({won:false, score: total}). The word is read aloud with speechSynthesis when available (guarded). No share button. Loads Google Fonts (Fredoka). Test hooks on window.__brbTest."
+  "notes": "Original daily five-letter word-guessing game (no Wordle/NYT name, layout or colours): teal tick = right spot, amber dot = wrong spot, dimmed slate = not in the word; high-contrast mode uses orange/blue, and every mark also has a shape. Duplicate letters are scored greens first, then yellows limited by the letters left. Modes: Daily Peek (one 5-letter word per local date, same for everyone, once a day, countdown, streak; the order is a seeded shuffle of the answer list and a new cycle never starts with any of the last 250 words), Practice (5), Little Peek (4), Big Peek (6), and Friend Peek (pass-the-phone secret word, no points). Optional hard mode. Hand-written word lists: 782/402/356 kid-friendly answers (5/4/6 letters) each with a short meaning, and 5,009/2,220/6,728 allowed guesses; rude words are blocked by a ROT13 blocklist. Saves in BRB.storage key 'word-peek-v1' (settings, points, stats per mode, today's daily board, the unfinished practice round). Score: each win adds (7 - tries) x 8/10/12 points for 4/5/6 letters (x1.5 in hard mode); BRB.score.submit(total, 'word points') then BRB.gameOver({won, score: total}); a loss calls BRB.gameOver({won:false, score: total}). The word is read aloud with speechSynthesis when available (guarded). No share button. Loads Google Fonts (Fredoka). Test hooks on window.__brbTest.",
+  "l10n": {
+    "pt": {
+      "description": "Você consegue descobrir a palavra secreta em inglês em seis tentativas? Digite um palpite e a coruja Pip mostra quais letras estão no lugar certo, na palavra ou fora dela. Volte todo dia para a Palavra do dia, ou jogue no Treino, com a Palavrinha de 4 letras, a Palavrona de 6 letras, ou escolha uma palavra secreta para um amigo!",
+      "tags": "jogo de palavras,palavras,adivinhar a palavra,diário,ortografia,vocabulário,inglês,cinco letras,quebra-cabeça,coruja,leitura"
+    },
+    "fr": {
+      "description": "Trouveras-tu le mot anglais caché en six essais ? Tape un mot et Pip le hibou te montre quelles lettres sont à la bonne place, dans le mot ou pas du tout. Reviens chaque jour pour le Mot du jour, ou joue en Jeu libre, avec un Petit mot de 4 lettres, un Grand mot de 6 lettres, ou choisis un mot secret pour un ami !",
+      "tags": "jeu de mots,mots,deviner le mot,quotidien,orthographe,vocabulaire,anglais,cinq lettres,puzzle,hibou,lecture"
+    },
+    "es": {
+      "description": "¿Puedes adivinar la palabra escondida en inglés en seis intentos? Escribe una palabra y Pip, el búho, te muestra qué letras están en el lugar correcto, en la palabra o no están. Vuelve cada día por la Palabra del día, o juega en Práctica, con la Palabra mini de 4 letras, la Palabra grande de 6 letras, ¡o elige una palabra secreta para un amigo!",
+      "tags": "juego de palabras,palabras,adivinar la palabra,diario,ortografía,vocabulario,inglés,cinco letras,rompecabezas,búho,lectura"
+    },
+    "de": {
+      "description": "Findest du das versteckte englische Wort in sechs Versuchen? Tipp ein Wort, und Pip, die Eule, zeigt dir, welche Buchstaben an der richtigen Stelle, im Wort oder gar nicht im Wort sind. Komm jeden Tag für ein neues Tageswort wieder, spiel frei, mit dem kleinen Wort aus 4 oder dem großen Wort aus 6 Buchstaben, oder wähl ein Geheimwort für einen Freund!",
+      "tags": "Wortspiel,Wörter,Wort raten,täglich,Rechtschreibung,Wortschatz,Englisch,fünf Buchstaben,Rätsel,Eule,Lesen"
+    },
+    "he": {
+      "description": "תצליחו לגלות את המילה הנסתרת באנגלית בשישה ניסיונות? הקלידו ניחוש, ופיפ הינשוף יראה לכם אילו אותיות במקום הנכון, אילו במילה ואילו לא נמצאות בה בכלל. חזרו בכל יום למילת היום, או שחקו בתרגול, עם מילה קטנה בת 4 אותיות, מילה גדולה בת 6 אותיות, או בחרו מילה סודית בשביל חבר!",
+      "tags": "משחק מילים,מילים,ניחוש מילה,יומי,איות,אוצר מילים,אנגלית,חמש אותיות,חידה,ינשוף,קריאה"
+    },
+    "ja": {
+      "description": "かくれたえいごのことばを6かいであてられるかな？ ことばをうつと、フクロウのピップが、ばしょもあっているもじ、ことばにあるもじ、ないもじをおしえてくれます。まいにち「きょうのことば」にちょうせんしたり、れんしゅう、4もじのミニことば、6もじのビッグことばであそんだり、ともだちにひみつのことばを出したりできます！",
+      "tags": "ことばあそび,ことば,ことばあて,まいにち,スペル,たんご,えいご,5もじ,パズル,フクロウ,よみかき"
+    },
+    "ar": {
+      "description": "هل تستطيع اكتشاف الكلمة الإنجليزية المخفية في ست محاولات؟ اكتب تخمينًا وستريك البومة بيب أي الحروف في المكان الصحيح، وأيها في الكلمة، وأيها ليس فيها أبدًا. عُد كل يوم لكلمة اليوم، أو العب في التدريب، مع كلمة صغيرة من 4 أحرف، أو كلمة كبيرة من 6 أحرف، أو اختر كلمة سرية لصديقك!",
+      "tags": "لعبة كلمات,كلمات,خمّن الكلمة,يومي,تهجئة,مفردات,إنجليزي,خمسة أحرف,لغز,بومة,قراءة"
+    },
+    "ru": {
+      "description": "Сможешь угадать спрятанное английское слово за шесть попыток? Напиши слово, и совёнок Пип покажет, какие буквы стоят на своём месте, какие есть в слове, а каких нет совсем. Заходи каждый день за новым Словом дня или играй в Практику, Мини-слово из 4 букв, Макси-слово из 6 букв, а ещё можно загадать тайное слово другу!",
+      "tags": "игра в слова,слова,угадай слово,каждый день,правописание,словарный запас,английский,пять букв,головоломка,сова,чтение"
+    },
+    "it": {
+      "description": "Riesci a scoprire la parola inglese nascosta in sei tentativi? Scrivi una parola e il gufo Pip ti mostra quali lettere sono al posto giusto, nella parola o per niente. Torna ogni giorno per la Parola del giorno, oppure gioca in Gioco libero, con la Parolina di 4 lettere, la Parolona di 6 lettere, o scegli una parola segreta per un amico!",
+      "tags": "gioco di parole,parole,indovina la parola,quotidiano,ortografia,vocabolario,inglese,cinque lettere,rompicapo,gufo,lettura"
+    },
+    "zh-Hant": {
+      "description": "你能在 6 次內猜出藏起來的英文單字嗎？輸入一個字，貓頭鷹皮普就會告訴你哪些字母位置正確、哪些在單字裡、哪些根本不在。每天回來挑戰每日單字，也可以玩練習、4 個字母的小單字、6 個字母的大單字，或幫朋友出一個祕密單字！",
+      "tags": "文字遊戲,單字,猜單字,每日,拼字,字彙,英文,五個字母,益智,貓頭鷹,閱讀"
+    },
+    "nl": {
+      "description": "Kun jij het verborgen Engelse woord in zes pogingen raden? Typ een woord en Pip de uil laat zien welke letters op de goede plek staan, in het woord zitten of er helemaal niet in zitten. Kom elke dag terug voor het Woord van de dag, of speel vrij, met een klein woord van 4 letters, een groot woord van 6 letters, of kies een geheim woord voor een vriend!",
+      "tags": "woordspel,woorden,woord raden,dagelijks,spelling,woordenschat,Engels,vijf letters,puzzel,uil,lezen"
+    }
+  }
 }
