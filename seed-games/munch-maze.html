@@ -30,7 +30,7 @@ button:focus-visible{outline:3px solid #fff;outline-offset:2px}
 .icon-btn:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(0,0,0,.45),inset 0 0 0 2px var(--panelEdge)}
 #pauseBtn{order:0} #scoreBox{order:1} #bestBox{order:2} #muteBtn{order:3}
 .stat{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;line-height:1.05;background:rgba(0,0,0,.25);border-radius:14px;padding:4px 6px}
-.stat .lbl{font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--soft)}
+.stat .lbl{max-width:100%;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--soft);white-space:nowrap;overflow:hidden}
 .stat b{font-size:1.25rem;font-variant-numeric:tabular-nums;white-space:nowrap}
 #bestBox b{color:#ffe36e}
 .board{grid-area:board;position:relative;display:grid;place-items:center}
@@ -47,7 +47,7 @@ button:focus-visible{outline:3px solid #fff;outline-offset:2px}
 .keys{margin:0;font-size:.9rem;color:var(--soft);text-align:center;line-height:1.35}
 .keys kbd{display:inline-block;min-width:1.4em;padding:0 .3em;border-radius:6px;background:var(--chip);box-shadow:inset 0 0 0 1px var(--panelEdge);font-family:inherit;font-weight:700;color:#fff}
 .toast{position:absolute;left:50%;top:38%;transform:translate(-50%,-50%);pointer-events:none;background:#fff;color:#2a1366;font-weight:700;font-size:1.25rem;
-  padding:8px 18px;border-radius:999px;box-shadow:0 5px 0 rgba(0,0,0,.35);white-space:nowrap;animation:pop 1.6s ease forwards}
+  padding:8px 18px;border-radius:999px;box-shadow:0 5px 0 rgba(0,0,0,.35);white-space:nowrap;max-width:96%;overflow:hidden;text-overflow:ellipsis;animation:pop 1.6s ease forwards}
 @keyframes pop{0%{transform:translate(-50%,-50%) scale(.4);opacity:0}15%{transform:translate(-50%,-50%) scale(1.1);opacity:1}25%{transform:translate(-50%,-50%) scale(1)}80%{opacity:1}100%{transform:translate(-50%,-80%) scale(1);opacity:0}}
 .skip{position:absolute;right:8px;bottom:8px;border:0;border-radius:999px;background:rgba(0,0,0,.55);color:#fff;font-weight:700;font-size:1rem;min-height:44px;padding:0 16px;box-shadow:inset 0 0 0 2px var(--panelEdge)}
 
@@ -80,7 +80,7 @@ button:focus-visible{outline:3px solid #fff;outline-offset:2px}
 .big-btn.easy:active{box-shadow:0 2px 0 var(--orangeDark)}
 .big-btn.alt:active{box-shadow:0 2px 0 rgba(0,0,0,.45),inset 0 0 0 2px var(--panelEdge)}
 .btns{display:flex;gap:10px;width:100%;justify-content:center;flex-wrap:wrap}
-.btns .big-btn{flex:1;min-width:140px}
+.btns .big-btn{flex:1;min-width:140px;white-space:normal;line-height:1.15}
 .big-btn small{display:block;font-size:.8rem;font-weight:500;opacity:.85;line-height:1.1}
 .mazes{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;width:100%}
 .mazes button{border:0;border-radius:14px;background:var(--chip);box-shadow:inset 0 0 0 2px var(--panelEdge);padding:5px 2px 4px;min-height:44px;
@@ -106,27 +106,30 @@ button:focus-visible{outline:3px solid #fff;outline-offset:2px}
   .panel.wideable .colL,.panel.wideable .colR{display:flex;flex-direction:column;align-items:center;gap:8px;min-width:0}
 }
 .colL,.colR{display:contents}
+/* Arabic letters must stay joined: no letter spacing. Japanese: break lines between phrases. */
+html[lang="ar"] *{letter-spacing:0!important}
+html[lang="ja"] .panel p{word-break:auto-phrase}
 @media (prefers-reduced-motion:reduce){.toast{animation:none}}
 </style>
 
 <div class="app offstage" id="app">
   <div class="hud" id="hud">
-    <button class="icon-btn" id="pauseBtn" aria-label="Pause">⏸️</button>
-    <div class="stat" id="scoreBox"><span class="lbl">Score</span><b id="scoreEl">0</b></div>
-    <div class="stat" id="bestBox"><span class="lbl">Best</span><b id="bestEl">0</b></div>
+    <button class="icon-btn" id="pauseBtn" aria-label="Pause" data-ta="pause">⏸️</button>
+    <div class="stat" id="scoreBox"><span class="lbl" data-t="score">Score</span><b id="scoreEl">0</b></div>
+    <div class="stat" id="bestBox"><span class="lbl" data-t="best">Best</span><b id="bestEl">0</b></div>
     <button class="icon-btn mute" id="muteBtn" aria-label="Turn sound off">🔊</button>
   </div>
-  <div class="board" id="board"><canvas id="cv" aria-label="The maze. Swipe or use the arrow keys to move Munch."></canvas></div>
-  <div class="info" id="info"><canvas id="livesCv" aria-label="Lives"></canvas><span id="levelEl">Level 1</span><canvas id="fruitCv" aria-label="Bonus snacks"></canvas></div>
+  <div class="board" id="board"><canvas id="cv" aria-label="The maze. Swipe or use the arrow keys to move Munch." data-ta="mazeAria"></canvas></div>
+  <div class="info" id="info"><canvas id="livesCv" aria-label="Lives" data-ta="livesAria"></canvas><span id="levelEl">Level 1</span><canvas id="fruitCv" aria-label="Bonus snacks" data-ta="snacksAria"></canvas></div>
   <div class="side" id="side">
-    <div class="pad" id="pad" role="group" aria-label="Arrow buttons">
-      <button data-dir="up" aria-label="Up">▲</button>
-      <button data-dir="left" aria-label="Left">◀</button>
+    <div class="pad" id="pad" role="group" aria-label="Arrow buttons" data-ta="padAria">
+      <button data-dir="up" aria-label="Up" data-ta="up">▲</button>
+      <button data-dir="left" aria-label="Left" data-ta="left">◀</button>
       <span class="hub"></span>
-      <button data-dir="right" aria-label="Right">▶</button>
-      <button data-dir="down" aria-label="Down">▼</button>
+      <button data-dir="right" aria-label="Right" data-ta="right">▶</button>
+      <button data-dir="down" aria-label="Down" data-ta="down">▼</button>
     </div>
-    <p class="keys kbonly" id="keysHint"><kbd>←</kbd><kbd>↑</kbd><kbd>↓</kbd><kbd>→</kbd> or <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> to move<br><kbd>P</kbd> pause · <kbd>M</kbd> sound</p>
+    <p class="keys kbonly" id="keysHint"><span dir="ltr"><kbd>←</kbd><kbd>↑</kbd><kbd>↓</kbd><kbd>→</kbd></span> <span data-t="kOr">or</span> <span dir="ltr"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd></span> <span data-t="kToMove">to move</span><br><kbd>P</kbd> <span data-t="kPause">pause</span> · <kbd>M</kbd> <span data-t="kSound">sound</span></p>
   </div>
 </div>
 
@@ -135,18 +138,18 @@ button:focus-visible{outline:3px solid #fff;outline-offset:2px}
     <div class="colL">
       <canvas id="demo" aria-hidden="true"></canvas>
       <h1>Munch <span>Maze</span></h1>
-      <p class="hint intro">Eat every dot! Grab a Super Snack and the Gloops turn blue, so you can munch them.</p>
+      <p class="hint intro" data-t="intro">Eat every dot! Grab a Super Snack and the Gloops turn blue, so you can munch them.</p>
       <div class="btns">
-        <button class="big-btn" id="playClassic">▶ Play<small>Classic</small></button>
-        <button class="big-btn easy" id="playEasy">🐣 Play<small>Easy</small></button>
+        <button class="big-btn" id="playClassic">▶ <span data-t="play">Play</span><small data-t="classic">Classic</small></button>
+        <button class="big-btn easy" id="playEasy">🐣 <span data-t="play">Play</span><small data-t="easy">Easy</small></button>
       </div>
     </div>
     <div class="colR">
-      <div class="lbl-row">Maze</div>
-      <div class="mazes" id="mazePick" role="group" aria-label="Pick a maze"></div>
+      <div class="lbl-row" data-t="maze">Maze</div>
+      <div class="mazes" id="mazePick" role="group" aria-label="Pick a maze" data-ta="pickMaze"></div>
       <div class="chips" id="bestChips"></div>
       <button class="toggle" id="padToggle" aria-pressed="false">🎮 Arrow buttons: Off</button>
-      <p class="hint kbonly">Arrows or WASD to move. P to pause. M for sound.</p>
+      <p class="hint kbonly" data-t="kbTitle">Arrows or WASD to move. P to pause. M for sound.</p>
     </div>
     <button class="icon-btn mute corner" aria-label="Turn sound off">🔊</button>
   </div>
@@ -154,12 +157,12 @@ button:focus-visible{outline:3px solid #fff;outline-offset:2px}
 
 <section class="screen" id="pauseScreen" hidden>
   <div class="panel">
-    <h2>Paused</h2>
-    <p id="pauseInfo">Take a breath!</p>
-    <button class="big-btn" id="resumeBtn">▶ Keep playing</button>
+    <h2 data-t="paused">Paused</h2>
+    <p id="pauseInfo" data-t="breath">Take a breath!</p>
+    <button class="big-btn" id="resumeBtn">▶ <span data-t="keepPlaying">Keep playing</span></button>
     <div class="btns">
-      <button class="big-btn alt" id="restartBtn">🔄 Start over</button>
-      <button class="big-btn alt" id="quitBtn">🏠 Menu</button>
+      <button class="big-btn alt" id="restartBtn">🔄 <span data-t="startOver">Start over</span></button>
+      <button class="big-btn alt" id="quitBtn">🏠 <span data-t="menu">Menu</span></button>
     </div>
     <button class="toggle" id="padToggle2" aria-pressed="false">🎮 Arrow buttons: Off</button>
     <button class="icon-btn mute" aria-label="Turn sound off">🔊</button>
@@ -168,13 +171,13 @@ button:focus-visible{outline:3px solid #fff;outline-offset:2px}
 
 <section class="screen" id="overScreen" hidden>
   <div class="panel">
-    <h2 id="overTitle">Game over!</h2>
-    <p id="overSub">Great munching!</p>
+    <h2 id="overTitle" data-t="gameOver">Game over!</h2>
+    <p id="overSub" data-t="niceTry">Great munching!</p>
     <div class="score-big" id="overScore">0</div>
     <div class="chips" id="overChips"></div>
     <div class="btns">
-      <button class="big-btn" id="againBtn">▶ Play again</button>
-      <button class="big-btn alt" id="menuBtn">🏠 Menu</button>
+      <button class="big-btn" id="againBtn">▶ <span data-t="playAgain">Play again</span></button>
+      <button class="big-btn alt" id="menuBtn">🏠 <span data-t="menu">Menu</span></button>
     </div>
     <button class="icon-btn mute" aria-label="Turn sound off">🔊</button>
   </div>
@@ -228,6 +231,349 @@ const CONFIG = {
     { id: 'icecream', name: 'Ice cream', points: 3000 },
     { id: 'crown', name: 'Candy crown', points: 5000 }
   ]
+};
+
+/* =====================================================================================
+   I18N: every word the player sees, in the 13 site languages. BRB.user.lang picks the table;
+   missing keys fall back to the base language (en-GB -> en), then to English.
+   A value can be a plural set ({ one, few, many, other, ... }) picked with Intl.PluralRules for {n}.
+   Character names: "Munch" stays Munch where it reads well; the Gloops' names are English puns
+   (fast, sneaky, tricky, sleepy), so each language has its own names with the same personalities.
+   ===================================================================================== */
+const I18N = {
+  en: {
+    pause: "Pause", soundOff: "Turn sound off", soundOn: "Turn sound on",
+    score: "Score", best: "Best",
+    mazeAria: "The maze. Swipe or use the arrow keys to move Munch.",
+    livesAria: "Lives", livesN: { one: "{n} life", other: "{n} lives" }, snacksAria: "Bonus snacks",
+    levelN: "Level {n}", padAria: "Arrow buttons", up: "Up", left: "Left", right: "Right", down: "Down",
+    kOr: "or", kToMove: "to move", kPause: "pause", kSound: "sound",
+    intro: "Eat every dot! Grab a Super Snack and the Gloops turn blue, so you can munch them.",
+    play: "Play", classic: "Classic", easy: "Easy",
+    maze: "Maze", pickMaze: "Pick a maze", mix: "Mix", mixAria: "Mix: a new maze as you go",
+    mazeCandy: "Candy Lane", mazeCandyS: "Candy", mazeMint: "Mint Caves", mazeMintS: "Mint", mazeStarry: "Starry Swirl", mazeStarryS: "Starry",
+    padOn: "Arrow buttons: On", padOff: "Arrow buttons: Off",
+    kbTitle: "Arrows or WASD to move. P to pause. M for sound.",
+    paused: "Paused", breath: "Take a breath!", keepPlaying: "Keep playing", startOver: "Start over", menu: "Menu",
+    gameOver: "Game over!", newBestScore: "New best score!", wowBest: "Wow, that is your best ever!",
+    reachedLevel: "Great munching! You reached level {n}.", niceTry: "Nice try! Have another go.",
+    playAgain: "Play again",
+    chipBest: "Best {v}", chipGloops: "Gloops munched: {n}", chipSnacks: "Bonus snacks: {n}", chipEasyBest: "Easy {v}", chipDots: "Dots munched: {n}",
+    pauseInfo: "Level {n} · Score {s}",
+    toastBest: "New best!", toastLife: "Extra life!", skip: "Skip",
+    ready: "READY!", levelMaze: "Level {n} · {maze}", hintKeys: "Arrow keys or WASD to move", hintPad: "Swipe or tap the arrows", hintSwipe: "Swipe to steer Munch",
+    over: "GAME OVER", clear: "Maze clear!", oops: "oops!",
+    carChase: "The big chase!", carNap: "Nap time!", carParade: "Gloop parade!",
+    munch: "Munch", gloopNames: ["Zippy", "Sneaky", "Tricky", "Dozy"]
+  },
+  'en-GB': { mazeCandy: "Sweetie Lane", mazeCandyS: "Sweetie" },
+  pt: {
+    pause: "Pausar", soundOff: "Desligar o som", soundOn: "Ligar o som",
+    score: "Pontos", best: "Recorde",
+    mazeAria: "O labirinto. Deslize ou use as setas para mover o Munch.",
+    livesAria: "Vidas", livesN: { one: "{n} vida", other: "{n} vidas" }, snacksAria: "Lanchinhos bônus",
+    levelN: "Fase {n}", padAria: "Botões de seta", up: "Cima", left: "Esquerda", right: "Direita", down: "Baixo",
+    kOr: "ou", kToMove: "para mover", kPause: "pausar", kSound: "som",
+    intro: "Coma todas as bolinhas! Pegue um Superlanche e os Gloops ficam azuis: aí você pode comê-los.",
+    play: "Jogar", classic: "Clássico", easy: "Fácil",
+    maze: "Labirinto", pickMaze: "Escolha um labirinto", mix: "Mistura", mixAria: "Mistura: um labirinto novo a cada fase",
+    mazeCandy: "Rua dos Doces", mazeCandyS: "Doces", mazeMint: "Cavernas de Menta", mazeMintS: "Menta", mazeStarry: "Redemoinho Estrelado", mazeStarryS: "Estrelas",
+    padOn: "Botões de seta: ligados", padOff: "Botões de seta: desligados",
+    kbTitle: "Setas ou WASD para mover. P para pausar. M para o som.",
+    paused: "Pausado", breath: "Respire fundo!", keepPlaying: "Continuar", startOver: "Recomeçar", menu: "Menu",
+    gameOver: "Fim de jogo!", newBestScore: "Novo recorde!", wowBest: "Uau, é o seu melhor de todos!",
+    reachedLevel: "Que comilança! Você chegou à fase {n}.", niceTry: "Boa tentativa! Jogue de novo.",
+    playAgain: "Jogar de novo",
+    chipBest: "Recorde {v}", chipGloops: "Gloops comidos: {n}", chipSnacks: "Lanchinhos bônus: {n}", chipEasyBest: "Fácil {v}", chipDots: "Bolinhas comidas: {n}",
+    pauseInfo: "Fase {n} · Pontos {s}",
+    toastBest: "Novo recorde!", toastLife: "Vida extra!", skip: "Pular",
+    ready: "PRONTO!", levelMaze: "Fase {n} · {maze}", hintKeys: "Setas ou WASD para mover", hintPad: "Deslize ou toque nas setas", hintSwipe: "Deslize para guiar o Munch",
+    over: "FIM DE JOGO", clear: "Labirinto limpo!", oops: "opa!",
+    carChase: "A grande perseguição!", carNap: "Hora da soneca!", carParade: "Desfile dos Gloops!",
+    munch: "Munch", gloopNames: ["Raio", "Xereta", "Espertinho", "Soneca"]
+  },
+  fr: {
+    pause: "Pause", soundOff: "Couper le son", soundOn: "Remettre le son",
+    score: "Score", best: "Record",
+    mazeAria: "Le labyrinthe. Glisse ou utilise les flèches pour guider Munch.",
+    livesAria: "Vies", livesN: { one: "{n} vie", other: "{n} vies" }, snacksAria: "Friandises bonus",
+    levelN: "Niveau {n}", padAria: "Boutons fléchés", up: "Haut", left: "Gauche", right: "Droite", down: "Bas",
+    kOr: "ou", kToMove: "pour bouger", kPause: "pause", kSound: "son",
+    intro: "Mange toutes les pastilles ! Attrape un Super Goûter et les Gloops deviennent bleus : tu peux les croquer.",
+    play: "Jouer", classic: "Classique", easy: "Facile",
+    maze: "Labyrinthe", pickMaze: "Choisis un labyrinthe", mix: "Mélange", mixAria: "Mélange : un nouveau labyrinthe à chaque niveau",
+    mazeCandy: "Rue des Bonbons", mazeCandyS: "Bonbons", mazeMint: "Grottes Menthe", mazeMintS: "Menthe", mazeStarry: "Tourbillon d’étoiles", mazeStarryS: "Étoiles",
+    padOn: "Boutons fléchés : oui", padOff: "Boutons fléchés : non",
+    kbTitle: "Flèches ou WASD pour bouger. P pour la pause. M pour le son.",
+    paused: "Pause", breath: "Respire un coup !", keepPlaying: "Continuer", startOver: "Recommencer", menu: "Menu",
+    gameOver: "Partie terminée !", newBestScore: "Nouveau record !", wowBest: "Waouh, c’est ton meilleur score !",
+    reachedLevel: "Bien croqué ! Tu as atteint le niveau {n}.", niceTry: "Bien essayé ! On refait une partie ?",
+    playAgain: "Rejouer",
+    chipBest: "Record {v}", chipGloops: "Gloops croqués : {n}", chipSnacks: "Friandises bonus : {n}", chipEasyBest: "Facile {v}", chipDots: "Pastilles croquées : {n}",
+    pauseInfo: "Niveau {n} · Score {s}",
+    toastBest: "Nouveau record !", toastLife: "Une vie en plus !", skip: "Passer",
+    ready: "PRÊT ?", levelMaze: "Niveau {n} · {maze}", hintKeys: "Flèches ou WASD pour bouger", hintPad: "Glisse ou touche les flèches", hintSwipe: "Glisse pour guider Munch",
+    over: "FIN DE PARTIE", clear: "Labyrinthe fini !", oops: "oups !",
+    carChase: "La grande poursuite !", carNap: "L’heure de la sieste !", carParade: "La parade des Gloops !",
+    munch: "Munch", gloopNames: ["Fusée", "Filou", "Malin", "Dodo"]
+  },
+  es: {
+    pause: "Pausa", soundOff: "Quitar el sonido", soundOn: "Poner el sonido",
+    score: "Puntos", best: "Récord",
+    mazeAria: "El laberinto. Desliza o usa las flechas para mover a Munch.",
+    livesAria: "Vidas", livesN: { one: "{n} vida", other: "{n} vidas" }, snacksAria: "Golosinas extra",
+    levelN: "Nivel {n}", padAria: "Botones de flecha", up: "Arriba", left: "Izquierda", right: "Derecha", down: "Abajo",
+    kOr: "o", kToMove: "para moverte", kPause: "pausa", kSound: "sonido",
+    intro: "¡Cómete todos los puntitos! Toma un Súper Bocado y los Gloops se ponen azules: ¡a comérselos!",
+    play: "Jugar", classic: "Clásico", easy: "Fácil",
+    maze: "Laberinto", pickMaze: "Elige un laberinto", mix: "Mezcla", mixAria: "Mezcla: un laberinto nuevo en cada nivel",
+    mazeCandy: "Calle Caramelo", mazeCandyS: "Caramelo", mazeMint: "Cuevas de Menta", mazeMintS: "Menta", mazeStarry: "Remolino Estelar", mazeStarryS: "Estrellas",
+    padOn: "Botones de flecha: sí", padOff: "Botones de flecha: no",
+    kbTitle: "Flechas o WASD para moverte. P para pausa. M para el sonido.",
+    paused: "Pausa", breath: "¡Respira hondo!", keepPlaying: "Seguir jugando", startOver: "Reiniciar", menu: "Menú",
+    gameOver: "¡Fin del juego!", newBestScore: "¡Nuevo récord!", wowBest: "¡Guau, es tu mejor puntuación!",
+    reachedLevel: "¡Qué bien comes! Llegaste al nivel {n}.", niceTry: "¡Buen intento! Juega otra vez.",
+    playAgain: "Jugar otra vez",
+    chipBest: "Récord {v}", chipGloops: "Gloops comidos: {n}", chipSnacks: "Golosinas extra: {n}", chipEasyBest: "Fácil {v}", chipDots: "Puntitos comidos: {n}",
+    pauseInfo: "Nivel {n} · Puntos {s}",
+    toastBest: "¡Nuevo récord!", toastLife: "¡Vida extra!", skip: "Saltar",
+    ready: "¡LISTOS!", levelMaze: "Nivel {n} · {maze}", hintKeys: "Flechas o WASD para moverte", hintPad: "Desliza o toca las flechas", hintSwipe: "Desliza para guiar a Munch",
+    over: "FIN DEL JUEGO", clear: "¡Laberinto limpio!", oops: "¡uy!",
+    carChase: "¡La gran persecución!", carNap: "¡Hora de la siesta!", carParade: "¡Desfile de Gloops!",
+    munch: "Munch", gloopNames: ["Rayo", "Pillo", "Truco", "Dormilón"]
+  },
+  de: {
+    pause: "Pause", soundOff: "Ton aus", soundOn: "Ton an",
+    score: "Punkte", best: "Rekord",
+    mazeAria: "Das Labyrinth. Wisch oder nimm die Pfeiltasten, um Munch zu steuern.",
+    livesAria: "Leben", livesN: { one: "{n} Leben", other: "{n} Leben" }, snacksAria: "Bonus-Snacks",
+    levelN: "Level {n}", padAria: "Pfeil-Knöpfe", up: "Hoch", left: "Links", right: "Rechts", down: "Runter",
+    kOr: "oder", kToMove: "zum Laufen", kPause: "Pause", kSound: "Ton",
+    intro: "Iss alle Kügelchen! Schnapp dir einen Super-Snack, dann werden die Gloops blau und du kannst sie mampfen.",
+    play: "Spielen", classic: "Klassisch", easy: "Leicht",
+    maze: "Labyrinth", pickMaze: "Wähl ein Labyrinth", mix: "Mix", mixAria: "Mix: mit jedem Level ein neues Labyrinth",
+    mazeCandy: "Bonbonweg", mazeCandyS: "Bonbon", mazeMint: "Minzhöhlen", mazeMintS: "Minze", mazeStarry: "Sternenwirbel", mazeStarryS: "Sterne",
+    padOn: "Pfeil-Knöpfe: An", padOff: "Pfeil-Knöpfe: Aus",
+    kbTitle: "Pfeile oder WASD zum Laufen. P für Pause. M für Ton.",
+    paused: "Pause", breath: "Kurz durchatmen!", keepPlaying: "Weiterspielen", startOver: "Neu starten", menu: "Menü",
+    gameOver: "Spiel vorbei!", newBestScore: "Neuer Rekord!", wowBest: "Wow, so gut warst du noch nie!",
+    reachedLevel: "Toll gemampft! Du hast Level {n} erreicht.", niceTry: "Guter Versuch! Probier’s noch mal.",
+    playAgain: "Noch mal",
+    chipBest: "Rekord {v}", chipGloops: "Gloops gemampft: {n}", chipSnacks: "Bonus-Snacks: {n}", chipEasyBest: "Leicht {v}", chipDots: "Kügelchen gemampft: {n}",
+    pauseInfo: "Level {n} · Punkte {s}",
+    toastBest: "Neuer Rekord!", toastLife: "Extraleben!", skip: "Überspringen",
+    ready: "BEREIT?", levelMaze: "Level {n} · {maze}", hintKeys: "Pfeiltasten oder WASD zum Laufen", hintPad: "Wisch oder tipp auf die Pfeile", hintSwipe: "Wisch, um Munch zu steuern",
+    over: "SPIEL VORBEI", clear: "Labyrinth geschafft!", oops: "hoppla!",
+    carChase: "Die große Jagd!", carNap: "Zeit fürs Nickerchen!", carParade: "Gloop-Parade!",
+    munch: "Munch", gloopNames: ["Flitzi", "Schleichi", "Trixi", "Dösi"]
+  },
+  he: {
+    pause: "השהיה", soundOff: "כיבוי צליל", soundOn: "הפעלת צליל",
+    score: "ניקוד", best: "שיא",
+    mazeAria: "המבוך. החליקו או השתמשו במקשי החיצים כדי להזיז את מאנץ'.",
+    livesAria: "חיים", livesN: { one: "חיים אחרונים", other: "{n} חיים" }, snacksAria: "חטיפי בונוס",
+    levelN: "שלב {n}", padAria: "כפתורי חיצים", up: "למעלה", left: "שמאלה", right: "ימינה", down: "למטה",
+    kOr: "או", kToMove: "כדי לזוז", kPause: "השהיה", kSound: "צליל",
+    intro: "אכלו את כל הנקודות! תפסו סופר־חטיף והגלופים יהפכו לכחולים, ואז אפשר לאכול אותם.",
+    play: "לשחק", classic: "קלאסי", easy: "קל",
+    maze: "מבוך", pickMaze: "בחרו מבוך", mix: "ערבוב", mixAria: "ערבוב: מבוך חדש בכל שלב",
+    mazeCandy: "רחוב הממתקים", mazeCandyS: "ממתקים", mazeMint: "מערות המנטה", mazeMintS: "מנטה", mazeStarry: "מערבולת כוכבים", mazeStarryS: "כוכבים",
+    padOn: "כפתורי חיצים: פועלים", padOff: "כפתורי חיצים: כבויים",
+    kbTitle: "חיצים או WASD כדי לזוז. P להשהיה. M לצליל.",
+    paused: "מושהה", breath: "קחו נשימה!", keepPlaying: "להמשיך", startOver: "מההתחלה", menu: "תפריט",
+    gameOver: "המשחק נגמר!", newBestScore: "שיא חדש!", wowBest: "וואו, זה השיא שלכם!",
+    reachedLevel: "אכלתם יפה! הגעתם לשלב {n}.", niceTry: "ניסיון יפה! נסו שוב.",
+    playAgain: "לשחק שוב",
+    chipBest: "שיא {v}", chipGloops: "גלופים שנאכלו: {n}", chipSnacks: "חטיפי בונוס: {n}", chipEasyBest: "קל {v}", chipDots: "נקודות שנאכלו: {n}",
+    pauseInfo: "שלב {n} · ניקוד {s}",
+    toastBest: "שיא חדש!", toastLife: "עוד חיים!", skip: "דילוג",
+    ready: "היכונו!", levelMaze: "שלב {n} · {maze}", hintKeys: "מקשי חיצים או WASD כדי לזוז", hintPad: "החליקו או הקישו על החיצים", hintSwipe: "החליקו כדי להוביל את מאנץ'",
+    over: "המשחק נגמר", clear: "המבוך נוקה!", oops: "אופס!",
+    carChase: "המרדף הגדול!", carNap: "שעת תנומה!", carParade: "מצעד הגלופים!",
+    munch: "מאנץ'", gloopNames: ["זריזי", "חמקני", "שובבי", "ישנוני"]
+  },
+  ja: {
+    pause: "ポーズ", soundOff: "おとをけす", soundOn: "おとをだす",
+    score: "スコア", best: "ベスト",
+    mazeAria: "めいろです。スワイプか矢じるしキーで、マンチをうごかします。",
+    livesAria: "ライフ", livesN: "ライフ {n}", snacksAria: "ボーナスおやつ",
+    levelN: "ステージ{n}", padAria: "矢じるしボタン", up: "上", left: "左", right: "右", down: "下",
+    kOr: "または", kToMove: "でうごく", kPause: "ポーズ", kSound: "おと",
+    intro: "ドットをぜんぶたべよう！スーパーおやつをとると、ゼリーおばけが青くなって、たべられるよ。",
+    play: "あそぶ", classic: "クラシック", easy: "かんたん",
+    maze: "めいろ", pickMaze: "めいろをえらぼう", mix: "ミックス", mixAria: "ミックス：すすむたびにちがうめいろ",
+    mazeCandy: "キャンディ通り", mazeCandyS: "キャンディ", mazeMint: "ミントのどうくつ", mazeMintS: "ミント", mazeStarry: "ほしのうず", mazeStarryS: "ほし",
+    padOn: "矢じるしボタン：オン", padOff: "矢じるしボタン：オフ",
+    kbTitle: "矢じるしかWASDでうごく。Pでポーズ。Mでおと。",
+    paused: "ポーズちゅう", breath: "ひといきつこう！", keepPlaying: "つづける", startOver: "はじめから", menu: "メニュー",
+    gameOver: "ゲームオーバー！", newBestScore: "ベストきろく！", wowBest: "すごい、いままででいちばん！",
+    reachedLevel: "よくたべたね！ステージ{n}までいけたよ。", niceTry: "おしい！もう1回やってみよう。",
+    playAgain: "もう1回",
+    chipBest: "ベスト {v}", chipGloops: "たべたおばけ：{n}", chipSnacks: "ボーナスおやつ：{n}", chipEasyBest: "かんたん {v}", chipDots: "たべたドット：{n}",
+    pauseInfo: "ステージ{n}・スコア {s}",
+    toastBest: "ベストこうしん！", toastLife: "ライフがふえた！", skip: "スキップ",
+    ready: "よーい！", levelMaze: "ステージ{n}・{maze}", hintKeys: "矢じるしキーかWASDでうごく", hintPad: "スワイプか、矢じるしをタップ", hintSwipe: "スワイプでマンチをうごかそう",
+    over: "ゲームオーバー", clear: "めいろクリア！", oops: "あっ！",
+    carChase: "大おいかけっこ！", carNap: "おひるねタイム！", carParade: "おばけパレード！",
+    munch: "マンチ", gloopNames: ["ピュン", "コッソリ", "イタズラ", "ネムネム"]
+  },
+  ar: {
+    pause: "إيقاف مؤقت", soundOff: "أطفئ الصوت", soundOn: "شغّل الصوت",
+    score: "النتيجة", best: "الأفضل",
+    mazeAria: "المتاهة. اسحب أو استخدم مفاتيح الأسهم لتحريك مانش.",
+    livesAria: "الأرواح", livesN: { zero: "لا أرواح", one: "روح واحدة", two: "روحان", few: "{n} أرواح", many: "{n} روحًا", other: "{n} روح" }, snacksAria: "حلويات المكافأة",
+    levelN: "المستوى {n}", padAria: "أزرار الأسهم", up: "أعلى", left: "يسار", right: "يمين", down: "أسفل",
+    kOr: "أو", kToMove: "للتحرك", kPause: "إيقاف مؤقت", kSound: "الصوت",
+    intro: "كُل كل النقاط! خذ وجبة خارقة فتتحول الهلاميات إلى اللون الأزرق، وعندها يمكنك أكلها.",
+    play: "العب", classic: "كلاسيكي", easy: "سهل",
+    maze: "المتاهة", pickMaze: "اختر متاهة", mix: "خليط", mixAria: "خليط: متاهة جديدة في كل مستوى",
+    mazeCandy: "شارع الحلوى", mazeCandyS: "حلوى", mazeMint: "كهوف النعناع", mazeMintS: "نعناع", mazeStarry: "دوّامة النجوم", mazeStarryS: "نجوم",
+    padOn: "أزرار الأسهم: تعمل", padOff: "أزرار الأسهم: مطفأة",
+    kbTitle: "الأسهم أو WASD للتحرك. P للإيقاف المؤقت. M للصوت.",
+    paused: "متوقفة مؤقتًا", breath: "خذ نفسًا!", keepPlaying: "تابع اللعب", startOver: "ابدأ من جديد", menu: "القائمة",
+    gameOver: "انتهت اللعبة!", newBestScore: "رقم قياسي جديد!", wowBest: "رائع، هذه أفضل نتيجة لك!",
+    reachedLevel: "أكلٌ رائع! وصلت إلى المستوى {n}.", niceTry: "محاولة جيدة! العب مرة أخرى.",
+    playAgain: "العب مرة أخرى",
+    chipBest: "الأفضل {v}", chipGloops: "هلاميات أكلتها: {n}", chipSnacks: "حلويات المكافأة: {n}", chipEasyBest: "سهل {v}", chipDots: "نقاط أكلتها: {n}",
+    pauseInfo: "المستوى {n} · النتيجة {s}",
+    toastBest: "رقم قياسي جديد!", toastLife: "روح إضافية!", skip: "تخطَّ",
+    ready: "استعد!", levelMaze: "المستوى {n} · {maze}", hintKeys: "مفاتيح الأسهم أو WASD للتحرك", hintPad: "اسحب أو اضغط على الأسهم", hintSwipe: "اسحب لتوجيه مانش",
+    over: "انتهت اللعبة", clear: "أنهيت المتاهة!", oops: "أوه!",
+    carChase: "المطاردة الكبرى!", carNap: "وقت القيلولة!", carParade: "استعراض الهلاميات!",
+    munch: "مانش", gloopNames: ["برق", "خفيّ", "شقيّ", "نعسان"]
+  },
+  ru: {
+    pause: "Пауза", soundOff: "Выключить звук", soundOn: "Включить звук",
+    score: "Счёт", best: "Рекорд",
+    mazeAria: "Лабиринт. Проводи пальцем или нажимай стрелки, чтобы вести Манча.",
+    livesAria: "Жизни", livesN: { one: "{n} жизнь", few: "{n} жизни", many: "{n} жизней", other: "{n} жизни" }, snacksAria: "Бонусные сладости",
+    levelN: "Уровень {n}", padAria: "Кнопки-стрелки", up: "Вверх", left: "Влево", right: "Вправо", down: "Вниз",
+    kOr: "или", kToMove: "— ходить", kPause: "пауза", kSound: "звук",
+    intro: "Съешь все точки! Схвати суперугощение, и Глупсы посинеют. Тогда их можно слопать!",
+    play: "Играть", classic: "Классика", easy: "Легко",
+    maze: "Лабиринт", pickMaze: "Выбери лабиринт", mix: "Микс", mixAria: "Микс: новый лабиринт на каждом уровне",
+    mazeCandy: "Конфетная улица", mazeCandyS: "Конфеты", mazeMint: "Мятные пещеры", mazeMintS: "Мята", mazeStarry: "Звёздный вихрь", mazeStarryS: "Звёзды",
+    padOn: "Кнопки-стрелки: вкл.", padOff: "Кнопки-стрелки: выкл.",
+    kbTitle: "Стрелки или WASD — ходить. P — пауза. M — звук.",
+    paused: "Пауза", breath: "Переведи дух!", keepPlaying: "Продолжить", startOver: "Заново", menu: "Меню",
+    gameOver: "Игра окончена!", newBestScore: "Новый рекорд!", wowBest: "Ух ты, это твой лучший результат!",
+    reachedLevel: "Вкуснотища! Достигнут уровень {n}.", niceTry: "Хорошая попытка! Сыграй ещё.",
+    playAgain: "Ещё раз",
+    chipBest: "Рекорд {v}", chipGloops: "Слопано Глупсов: {n}", chipSnacks: "Бонусных сладостей: {n}", chipEasyBest: "Легко {v}", chipDots: "Съедено точек: {n}",
+    pauseInfo: "Уровень {n} · Счёт {s}",
+    toastBest: "Новый рекорд!", toastLife: "+1 жизнь!", skip: "Пропустить",
+    ready: "ВНИМАНИЕ!", levelMaze: "Уровень {n} · {maze}", hintKeys: "Стрелки или WASD — ходить", hintPad: "Проводи пальцем или жми стрелки", hintSwipe: "Проводи пальцем, чтобы вести Манча",
+    over: "ИГРА ОКОНЧЕНА", clear: "Лабиринт пройден!", oops: "ой!",
+    carChase: "Большая погоня!", carNap: "Тихий час!", carParade: "Парад Глупсов!",
+    munch: "Манч", gloopNames: ["Шустрик", "Тихоня", "Хитрюга", "Соня"]
+  },
+  it: {
+    pause: "Pausa", soundOff: "Togli l’audio", soundOn: "Metti l’audio",
+    score: "Punti", best: "Record",
+    mazeAria: "Il labirinto. Scorri o usa le frecce per muovere Munch.",
+    livesAria: "Vite", livesN: { one: "{n} vita", other: "{n} vite" }, snacksAria: "Dolcetti bonus",
+    levelN: "Livello {n}", padAria: "Tasti freccia", up: "Su", left: "Sinistra", right: "Destra", down: "Giù",
+    kOr: "o", kToMove: "per muoverti", kPause: "pausa", kSound: "audio",
+    intro: "Mangia tutti i puntini! Prendi un Super Spuntino e i Gloops diventano blu: puoi sgranocchiarli.",
+    play: "Gioca", classic: "Classica", easy: "Facile",
+    maze: "Labirinto", pickMaze: "Scegli un labirinto", mix: "Misto", mixAria: "Misto: un labirinto nuovo a ogni livello",
+    mazeCandy: "Via dei Dolci", mazeCandyS: "Dolci", mazeMint: "Grotte di Menta", mazeMintS: "Menta", mazeStarry: "Vortice di Stelle", mazeStarryS: "Stelle",
+    padOn: "Tasti freccia: sì", padOff: "Tasti freccia: no",
+    kbTitle: "Frecce o WASD per muoverti. P per la pausa. M per l’audio.",
+    paused: "In pausa", breath: "Fai un bel respiro!", keepPlaying: "Continua", startOver: "Ricomincia", menu: "Menu",
+    gameOver: "Partita finita!", newBestScore: "Nuovo record!", wowBest: "Wow, è il tuo record di sempre!",
+    reachedLevel: "Che scorpacciata! Hai raggiunto il livello {n}.", niceTry: "Bel tentativo! Riprova.",
+    playAgain: "Gioca ancora",
+    chipBest: "Record {v}", chipGloops: "Gloops mangiati: {n}", chipSnacks: "Dolcetti bonus: {n}", chipEasyBest: "Facile {v}", chipDots: "Puntini mangiati: {n}",
+    pauseInfo: "Livello {n} · Punti {s}",
+    toastBest: "Nuovo record!", toastLife: "Vita extra!", skip: "Salta",
+    ready: "PRONTI!", levelMaze: "Livello {n} · {maze}", hintKeys: "Frecce o WASD per muoverti", hintPad: "Scorri o tocca le frecce", hintSwipe: "Scorri per guidare Munch",
+    over: "FINE PARTITA", clear: "Labirinto finito!", oops: "ops!",
+    carChase: "Il grande inseguimento!", carNap: "Ora del pisolino!", carParade: "La parata dei Gloops!",
+    munch: "Munch", gloopNames: ["Saetta", "Furbetto", "Birba", "Pisolo"]
+  },
+  'zh-Hant': {
+    pause: "暫停", soundOff: "關閉聲音", soundOn: "開啟聲音",
+    score: "分數", best: "最高分",
+    mazeAria: "迷宮。滑動或用方向鍵移動嚼嚼。",
+    livesAria: "生命", livesN: "{n} 條命", snacksAria: "加分點心",
+    levelN: "第 {n} 關", padAria: "方向按鈕", up: "上", left: "左", right: "右", down: "下",
+    kOr: "或", kToMove: "移動", kPause: "暫停", kSound: "聲音",
+    intro: "吃光所有的豆豆！吃到超級點心，果凍怪就會變成藍色，這時就能吃掉牠們。",
+    play: "開始玩", classic: "經典", easy: "簡單",
+    maze: "迷宮", pickMaze: "選一個迷宮", mix: "混合", mixAria: "混合：每一關換新迷宮",
+    mazeCandy: "糖果小路", mazeCandyS: "糖果", mazeMint: "薄荷洞穴", mazeMintS: "薄荷", mazeStarry: "星星漩渦", mazeStarryS: "星星",
+    padOn: "方向按鈕：開", padOff: "方向按鈕：關",
+    kbTitle: "用方向鍵或 WASD 移動。按 P 暫停，按 M 開關聲音。",
+    paused: "暫停中", breath: "喘口氣吧！", keepPlaying: "繼續玩", startOver: "重新開始", menu: "選單",
+    gameOver: "遊戲結束！", newBestScore: "新紀錄！", wowBest: "哇，這是你最棒的一次！",
+    reachedLevel: "吃得真棒！你玩到第 {n} 關。", niceTry: "不錯喔！再玩一次吧。",
+    playAgain: "再玩一次",
+    chipBest: "最高分 {v}", chipGloops: "吃掉果凍怪：{n}", chipSnacks: "加分點心：{n}", chipEasyBest: "簡單 {v}", chipDots: "吃掉豆豆：{n}",
+    pauseInfo: "第 {n} 關 · 分數 {s}",
+    toastBest: "新紀錄！", toastLife: "多一條命！", skip: "跳過",
+    ready: "準備！", levelMaze: "第 {n} 關 · {maze}", hintKeys: "用方向鍵或 WASD 移動", hintPad: "滑動或點方向鍵", hintSwipe: "滑動來控制嚼嚼",
+    over: "遊戲結束", clear: "迷宮過關！", oops: "哎呀！",
+    carChase: "大追逐！", carNap: "午睡時間！", carParade: "果凍怪大遊行！",
+    munch: "嚼嚼", gloopNames: ["快快", "偷偷", "皮皮", "睏睏"]
+  },
+  nl: {
+    pause: "Pauze", soundOff: "Geluid uit", soundOn: "Geluid aan",
+    score: "Score", best: "Record",
+    mazeAria: "Het doolhof. Veeg of gebruik de pijltjestoetsen om Munch te bewegen.",
+    livesAria: "Levens", livesN: { one: "{n} leven", other: "{n} levens" }, snacksAria: "Bonussnoepjes",
+    levelN: "Level {n}", padAria: "Pijlknoppen", up: "Omhoog", left: "Links", right: "Rechts", down: "Omlaag",
+    kOr: "of", kToMove: "om te lopen", kPause: "pauze", kSound: "geluid",
+    intro: "Eet alle bolletjes op! Pak een Supersnack, dan worden de Gloops blauw en kun je ze opsmikkelen.",
+    play: "Spelen", classic: "Klassiek", easy: "Makkelijk",
+    maze: "Doolhof", pickMaze: "Kies een doolhof", mix: "Mix", mixAria: "Mix: elk level een nieuw doolhof",
+    mazeCandy: "Snoepjeslaan", mazeCandyS: "Snoep", mazeMint: "Muntgrotten", mazeMintS: "Munt", mazeStarry: "Sterrenkolk", mazeStarryS: "Sterren",
+    padOn: "Pijlknoppen: aan", padOff: "Pijlknoppen: uit",
+    kbTitle: "Pijltjes of WASD om te lopen. P voor pauze. M voor geluid.",
+    paused: "Pauze", breath: "Even diep ademhalen!", keepPlaying: "Verder spelen", startOver: "Opnieuw", menu: "Menu",
+    gameOver: "Game over!", newBestScore: "Nieuw record!", wowBest: "Wauw, dat is je beste ooit!",
+    reachedLevel: "Lekker gesmuld! Je haalde level {n}.", niceTry: "Goed geprobeerd! Speel nog een keer.",
+    playAgain: "Nog een keer",
+    chipBest: "Record {v}", chipGloops: "Gloops opgesmikkeld: {n}", chipSnacks: "Bonussnoepjes: {n}", chipEasyBest: "Makkelijk {v}", chipDots: "Bolletjes gegeten: {n}",
+    pauseInfo: "Level {n} · Score {s}",
+    toastBest: "Nieuw record!", toastLife: "Extra leven!", skip: "Overslaan",
+    ready: "KLAAR?", levelMaze: "Level {n} · {maze}", hintKeys: "Pijltjestoetsen of WASD om te lopen", hintPad: "Veeg of tik op de pijlen", hintSwipe: "Veeg om Munch te sturen",
+    over: "GAME OVER", clear: "Doolhof leeg!", oops: "oeps!",
+    carChase: "De grote achtervolging!", carNap: "Dutjestijd!", carParade: "Gloop-parade!",
+    munch: "Munch", gloopNames: ["Flits", "Sluipie", "Slimmie", "Suffie"]
+  }
+};
+
+/** The player's language (from the platform; never from the URL) and helpers. Looked up once, never per frame. */
+const LANG = (window.BRB && BRB.user && BRB.user.lang) || 'en';
+const LANG_BASE = String(LANG).split('-')[0];
+const RTL = ((window.BRB && BRB.user && BRB.user.dir) === 'rtl') || LANG_BASE === 'he' || LANG_BASE === 'ar';
+const NUM_LOCALE = LANG_BASE === 'ar' ? 'ar-u-nu-latn' : LANG;     // Arabic text, Latin digits (like the site)
+const I18N_CHAIN = [I18N[LANG], I18N[LANG_BASE], I18N.en].filter(Boolean);
+let PLURAL = null, NUMF = null;
+try { PLURAL = new Intl.PluralRules(NUM_LOCALE); } catch (e) { /* old browser: one/other below */ }
+try { NUMF = new Intl.NumberFormat(NUM_LOCALE); } catch (e) { /* ignore */ }
+const fmtNum = n => (NUMF ? NUMF.format(n) : String(n));
+/** t('key', { n: 3, v: 'x' }): the string for this language; {name} placeholders filled; a plural set picks its form by n. */
+function t(key, vars) {
+  let s;
+  for (let i = 0; i < I18N_CHAIN.length && s === undefined; i++) s = I18N_CHAIN[i][key];
+  if (s === undefined) return key;
+  if (s && typeof s === 'object' && !Array.isArray(s)) { const n = vars && typeof vars.n === 'number' ? vars.n : 0; s = (n === 0 && s.zero) || s[PLURAL ? PLURAL.select(n) : (n === 1 ? 'one' : 'other')] || s.other; }
+  if (vars && typeof s === 'string') s = s.replace(/\{(\w+)\}/g, (m, k) => (vars[k] === undefined ? m : typeof vars[k] === 'number' ? fmtNum(vars[k]) : vars[k]));
+  return s;
+}
+const MAZE_KEYS = { candy: 'mazeCandy', mint: 'mazeMint', starry: 'mazeStarry' };
+const mazeName = id => t(MAZE_KEYS[id] || id), mazeShort = id => t((MAZE_KEYS[id] || id) + 'S');
+const levelMazeText = (n, id) => t('levelMaze', { n, maze: mazeName(id) });   // (renderBoard has its own local `t`, the clock)
+/** Words drawn on the canvas or shown during play, looked up once. */
+const TX = {
+  ready: t('ready'), over: t('over'), clear: t('clear'), oops: t('oops'),
+  hintKeys: t('hintKeys'), hintPad: t('hintPad'), hintSwipe: t('hintSwipe'),
+  cartoons: [t('carChase'), t('carNap'), t('carParade')],
+  munch: t('munch'), gloopNames: t('gloopNames'),
+  toastBest: t('toastBest') + ' 🏆', toastLife: t('toastLife') + ' 💚', skip: t('skip') + ' ⏭',
+  soundOn: t('soundOn'), soundOff: t('soundOff'), padOn: '🎮 ' + t('padOn'), padOff: '🎮 ' + t('padOff')
 };
 
 /* =====================================================================================
@@ -779,7 +1125,7 @@ const $ = id => document.getElementById(id);
 const TAU = Math.PI * 2;
 let REDUCED = false; try { REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { /* ignore */ }
 let FINE = false; try { FINE = matchMedia('(hover: hover) and (pointer: fine)').matches; } catch (e) { /* ignore */ }
-const fmt = n => Math.floor(n).toLocaleString('en-US');
+const fmt = n => fmtNum(Math.floor(n));
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 function hexRgb(h) { const n = parseInt(h.slice(1), 16); return [n >> 16, (n >> 8) & 255, n & 255]; }
 function mix(a, b, t) { const A = hexRgb(a), B = hexRgb(b); return 'rgb(' + Math.round(A[0] + (B[0] - A[0]) * t) + ',' + Math.round(A[1] + (B[1] - A[1]) * t) + ',' + Math.round(A[2] + (B[2] - A[2]) * t) + ')'; }
@@ -1114,31 +1460,49 @@ function drawParticles(c, dt) {
   }
   c.globalAlpha = 1;
 }
+/** Canvas words are drawn once into a small offscreen canvas and then only copied each frame (no text layout per frame). */
+const TXT = new Map();
+const CFONT = 'Fredoka, "Trebuchet MS", system-ui, sans-serif';
+function textSprite(str, fontPx, fill, stroke, lw, bg) {
+  const key = fontPx + '|' + fill + '|' + (stroke || '') + '|' + lw + '|' + (bg || '') + '|' + str;
+  let sp = TXT.get(key);
+  if (sp) return sp;
+  if (TXT.size > 200) TXT.clear();
+  const c = document.createElement('canvas'), x = c.getContext('2d'), font = '700 ' + fontPx + 'px ' + CFONT;
+  x.font = font;
+  const tw = Math.ceil(x.measureText(str).width);
+  const w = Math.max(1, bg ? Math.ceil(tw + fontPx * 1.1) : tw + Math.ceil(lw) * 2 + 4), h = Math.max(1, Math.ceil(bg ? fontPx * 1.45 : fontPx * 1.5 + lw * 2));
+  c.width = w; c.height = h;
+  x.font = font; x.textAlign = 'center'; x.textBaseline = 'middle'; x.lineJoin = 'round';
+  try { x.direction = RTL ? 'rtl' : 'ltr'; } catch (e) { /* ignore */ }
+  if (bg) { x.fillStyle = bg; roundRect(x, 0, 0, w, h, h / 2); x.fill(); }
+  if (stroke) { x.lineWidth = lw; x.strokeStyle = stroke; x.strokeText(str, w / 2, h / 2); }
+  x.fillStyle = fill; x.fillText(str, w / 2, bg ? h / 2 + fontPx * 0.04 : h / 2);
+  sp = { c, w, h }; TXT.set(key, sp);
+  return sp;
+}
+// When the web font arrives, redraw the words with it.
+try { document.fonts.addEventListener('loadingdone', () => TXT.clear()); } catch (e) { /* ignore */ }
 /** Text drawn in device pixels (crisp), positioned in tiles. */
 function textAt(c, str, tx, ty, size, fill, stroke) {
+  const sp = textSprite(str, Math.round(size * BT), fill, stroke, stroke ? Math.max(2, BT * 0.22) : 0, null);
   c.save(); c.setTransform(1, 0, 0, 1, 0, 0);
-  c.font = '700 ' + Math.round(size * BT) + 'px Fredoka, "Trebuchet MS", system-ui, sans-serif';
-  c.textAlign = 'center'; c.textBaseline = 'middle'; c.lineJoin = 'round';
-  const px = (tx + 0.5) * BT, py = (ty + 0.5) * BT;
-  if (stroke) { c.lineWidth = Math.max(2, BT * 0.22); c.strokeStyle = stroke; c.strokeText(str, px, py); }
-  c.fillStyle = fill; c.fillText(str, px, py);
+  c.drawImage(sp.c, Math.round((tx + 0.5) * BT - sp.w / 2), Math.round((ty + 0.5) * BT - sp.h / 2));
   c.restore();
 }
 function pill(c, str, tx, ty, size, fill, bg) {
+  const fs = Math.round(Math.max(size * BT, 11.5 * DPR));   // never smaller than 11.5 CSS px, even on a small phone
+  const sp = textSprite(str, fs, fill, null, 0, bg);
+  const k = Math.min(1, (28 * BT * 0.96) / sp.w), w = sp.w * k, h = sp.h * k;   // long words: shrink to fit the maze
   c.save(); c.setTransform(1, 0, 0, 1, 0, 0);
-  const fs = Math.max(size * BT, 11.5 * DPR);   // never smaller than 11.5 CSS px, even on a small phone
-  c.font = '700 ' + Math.round(fs) + 'px Fredoka, "Trebuchet MS", system-ui, sans-serif';
-  size = fs / BT;
-  const w = c.measureText(str).width + size * BT * 1.1, h = size * BT * 1.45, px = (tx + 0.5) * BT, py = (ty + 0.5) * BT;
-  c.fillStyle = bg; roundRect(c, px - w / 2, py - h / 2, w, h, h / 2); c.fill();
-  c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillStyle = fill; c.fillText(str, px, py + size * BT * 0.04);
+  c.drawImage(sp.c, Math.round((tx + 0.5) * BT - w / 2), Math.round((ty + 0.5) * BT - h / 2), w, h);
   c.restore();
 }
 
 /* =====================================================================================
    Drawing the board every frame
    ===================================================================================== */
-let caughtPopped = false, lastPhase = '', eyeSpark = 0;
+let caughtPopped = false, lastPhase = '', eyeSpark = 0, readyKey = '', readyLine = '';
 function frightWhite() {   // 0 = blue, 1 = white: a slow smooth fade while the power runs out
   if (G.frightT <= 0 || G.frightT > CONFIG.blinkSeconds) return 0;
   const k = (CONFIG.blinkSeconds - G.frightT) / CONFIG.blinkPeriod;
@@ -1196,7 +1560,7 @@ function renderBoard(t, dt) {
       if (p > 0.5) { const k = clamp((p - 0.5) / 0.85, 0, 1); o.rot = (REDUCED ? 0 : k * k * TAU * 2.5); o.scale = 1 - k * k; }
       if (p > 1.35) {
         show = false;
-        if (!caughtPopped) { caughtPopped = true; burst(m.x, m.y, 14, '#ffe36e', 6, 2); burst(m.x, m.y, 8, CONFIG.munch.color, 4, 2); popup('oops!', m.x, m.y - 1, '#ffffff', 1.1, 1); Sound.pop(); }
+        if (!caughtPopped) { caughtPopped = true; burst(m.x, m.y, 14, '#ffe36e', 6, 2); burst(m.x, m.y, 8, CONFIG.munch.color, 4, 2); popup(TX.oops, m.x, m.y - 1, '#ffffff', 1.1, 1); Sound.pop(); }
       }
     }
     if (show) drawWrapped(m.x, m.y, (x, y) => drawMunch(ctx, x, y, o));
@@ -1209,11 +1573,15 @@ function renderBoard(t, dt) {
     ctx.globalAlpha = Math.min(1, p.life / p.max * 2); textAt(ctx, p.text, p.x, p.y - (1 - p.life / p.max) * 0.8, p.size, p.color, '#0a0420'); ctx.globalAlpha = 1;
   }
   if (G.phase === 'ready') {
-    pill(ctx, 'READY!', M.fruit.x, M.fruit.y, 1.05, '#ffe36e', 'rgba(10,4,32,.82)');
-    if (G.lives > 0) pill(ctx, 'Level ' + G.level + ' · ' + M.name, M.fruit.x, M.fruit.y + 1.9, 0.62, '#ffffff', 'rgba(10,4,32,.78)');
-    if (G.score === 0 && G.level === 1) pill(ctx, FINE ? 'Arrow keys or WASD to move' : save.pad ? 'Swipe or tap the arrows' : 'Swipe to steer Munch', M.fruit.x, M.fruit.y + 3.6, 0.62, '#7ef0ff', 'rgba(10,4,32,.78)');
-  } else if (G.phase === 'over') pill(ctx, 'GAME OVER', M.fruit.x, M.fruit.y, 1.05, '#ff8ad8', 'rgba(10,4,32,.85)');
-  else if (G.phase === 'clear' && G.phaseT > 0.4) pill(ctx, 'Maze clear!', M.fruit.x, M.fruit.y, 0.95, '#9be34f', 'rgba(10,4,32,.85)');
+    pill(ctx, TX.ready, M.fruit.x, M.fruit.y, 1.05, '#ffe36e', 'rgba(10,4,32,.82)');
+    if (G.lives > 0) {
+      const k = G.level + ':' + M.id;
+      if (k !== readyKey) { readyKey = k; readyLine = levelMazeText(G.level, M.id); }
+      pill(ctx, readyLine, M.fruit.x, M.fruit.y + 1.9, 0.62, '#ffffff', 'rgba(10,4,32,.78)');
+    }
+    if (G.score === 0 && G.level === 1) pill(ctx, FINE ? TX.hintKeys : save.pad ? TX.hintPad : TX.hintSwipe, M.fruit.x, M.fruit.y + 3.6, 0.62, '#7ef0ff', 'rgba(10,4,32,.78)');
+  } else if (G.phase === 'over') pill(ctx, TX.over, M.fruit.x, M.fruit.y, 1.05, '#ff8ad8', 'rgba(10,4,32,.85)');
+  else if (G.phase === 'clear' && G.phaseT > 0.4) pill(ctx, TX.clear, M.fruit.x, M.fruit.y, 0.95, '#9be34f', 'rgba(10,4,32,.85)');
 }
 /** Draw something, plus its twin on the other side while it is passing through a tunnel. */
 function drawWrapped(x, y, fn) { fn(x, y); if (x < 1) fn(x + 28, y); else if (x > 26) fn(x - 28, y); }
@@ -1226,8 +1594,7 @@ function drawIntermission(t, dt) {
   c.setTransform(BT, 0, 0, BT, BT / 2, BT / 2);
   const y = 15, S = 1.5, gl = id => CONFIG.gloops[id];
   const T = t;
-  const titles = ['The big chase!', 'Nap time!', 'Gloop parade!'];
-  textAt(c, titles[G.interKind], 13.5, 8.5, 1.3, '#ffe36e', '#0a0420');
+  textAt(c, TX.cartoons[G.interKind], 13.5, 8.5, 1.3, '#ffe36e', '#0a0420');
   c.strokeStyle = M.colors.glow; c.globalAlpha = 0.5; c.lineWidth = 0.12; c.beginPath(); c.moveTo(-1, y + 1.1); c.lineTo(29, y + 1.1); c.stroke(); c.globalAlpha = 1;
   if (G.interKind === 0) {
     if (p < 3.8) {
@@ -1254,11 +1621,14 @@ function drawIntermission(t, dt) {
     }
     if (p >= 6.1 && p < 6.4 && !G.heartDone) { G.heartDone = true; burst(13.5, y - 1, 10, '#ff5fc8', 5, 2); }
   } else {
+    const tagSize = Math.max(0.85, 12 * DPR / BT);   // name tags never smaller than 12 CSS px; every other one sits lower so long names never touch
     for (let i = 0; i < 5; i++) {
       const x = -2 + p * 5.6 - i * 3.2, hop = REDUCED ? 0 : Math.abs(Math.sin(p * 6 + i * 0.7)) * 0.9;
       if (x < -2 || x > 30) continue;
       if (i === 0) drawMunch(c, x, y - hop, { dir: 'right', mouth: 0.5 + 0.5 * Math.sin(p * 6), step: p * 12, scale: S });
       else { const C = gl(i - 1); drawGloop(c, x, y - hop, { id: i - 1, color: C.color, dark: C.dark, dir: 'right', t: T, mode: 'normal', scale: S }); }
+      // name tags: everyone in the parade says who they are (names in the player's language)
+      textAt(c, i === 0 ? TX.munch : TX.gloopNames[i - 1], x, y + (i % 2 ? 3.4 : 2.2), tagSize, i === 0 ? CONFIG.munch.color : gl(i - 1).color, '#0a0420');
     }
     for (let i = 0; i < 4; i++) { const q = (p * 0.5 + i / 4) % 1; c.globalAlpha = 1 - q; textAt(c, i % 2 ? '♪' : '♫', 4 + i * 6.5, y - 2 - q * 4, 1, i % 2 ? '#ffe36e' : '#7ef0ff', null); }
     c.globalAlpha = 1;
@@ -1343,13 +1713,13 @@ function updateHud() {
   if (G.score !== hudCache.score) { hudCache.score = G.score; $('scoreEl').textContent = fmt(G.score); }
   const best = currentBest();
   if (best !== hudCache.best) { hudCache.best = best; $('bestEl').textContent = fmt(best); }
-  if (G.level !== hudCache.level || G.maze.id !== hudCache.maze) { hudCache.level = G.level; hudCache.maze = G.maze.id; $('levelEl').textContent = 'Level ' + G.level; }
+  if (G.level !== hudCache.level || G.maze.id !== hudCache.maze) { hudCache.level = G.level; hudCache.maze = G.maze.id; $('levelEl').textContent = t('levelN', { n: G.level }); }
   const size = app.classList.contains('wide') ? 26 : 22;
   if (G.lives !== hudCache.lives) {
     hudCache.lives = G.lives;
     const n = clamp(G.lives, 0, 6);
     paintIcons($('livesCv'), Math.max(1, n), size, (c, i) => { if (i < n) drawMunch(c, 0, -0.05, { dir: 'right', mouth: 0 }); });
-    $('livesCv').setAttribute('aria-label', G.lives + ' lives');
+    $('livesCv').setAttribute('aria-label', t('livesN', { n: G.lives }));
   }
   if (G.level !== hudCache.fruitLevel) {
     hudCache.fruitLevel = G.level;
@@ -1357,10 +1727,10 @@ function updateHud() {
     paintIcons($('fruitCv'), n, size, (c, i) => drawFruit(c, Engine.fruitIndex(first + i), 0, 0, 0.95));
   }
   // a cheer the first time the old best is beaten
-  if (!UI.newBestShown && UI.bestAtStart > 0 && G.score > UI.bestAtStart) { UI.newBestShown = true; toast('New best! 🏆'); }
+  if (!UI.newBestShown && UI.bestAtStart > 0 && G.score > UI.bestAtStart) { UI.newBestShown = true; toast(TX.toastBest); }
 }
 function toast(text) {
-  const el = document.createElement('div'); el.className = 'toast'; el.textContent = text; $('board').appendChild(el);
+  const el = document.createElement('div'); el.className = 'toast'; el.dir = RTL ? 'rtl' : 'ltr'; el.textContent = text; $('board').appendChild(el);
   setTimeout(() => el.remove(), 1700);
 }
 
@@ -1381,7 +1751,7 @@ function handleEvents() {
       case 'fruitSpawn': Sound.ding(); spawn(3, G.maze.fruit.x, G.maze.fruit.y, 0, 0, 0.6, 0.6, '#ffffff'); break;
       case 'fruit': BRB.sfx.play('coin'); popup(String(e.points), e.x, e.y, '#ffe36e', 1.6, 0.85); burst(e.x, e.y, 10, '#ffe36e', 5, 2); break;
       case 'fruitGone': burst(G.maze.fruit.x, G.maze.fruit.y, 6, '#ffffff', 3, 0); break;
-      case 'extraLife': BRB.sfx.play('jump'); toast('Extra life! 💚'); break;
+      case 'extraLife': BRB.sfx.play('jump'); toast(TX.toastLife); break;
       case 'turn': if (!REDUCED) { const v = Engine.DIRS[G.munch.dir]; spawn(0, e.x - v[0] * 0.5, e.y - v[1] * 0.5 + 0.3, -v[0] * 1.5, -v[1] * 1.5 - 0.5, 0.35, 0.16, 'rgba(255,255,255,.5)'); } break;
       case 'caught': BRB.sfx.play('hit'); Sound.whoops(); BRB.fx.shake($('board'), 6); break;
       case 'clear': BRB.sfx.play('win'); save.dots += G.maze.total; persist(); break;
@@ -1395,7 +1765,7 @@ function handleEvents() {
 }
 function showSkip() {
   removeSkip();
-  const b = document.createElement('button'); b.className = 'skip'; b.id = 'skipBtn'; b.textContent = 'Skip ⏭';
+  const b = document.createElement('button'); b.className = 'skip'; b.id = 'skipBtn'; b.textContent = TX.skip;
   b.addEventListener('click', e => { e.stopPropagation(); skipCartoon(); });
   $('board').appendChild(b);
 }
@@ -1438,16 +1808,16 @@ function endGame() {
 function showOver(newBest) {
   if (!G || !G.over) return;
   UI.screen = 'over'; UI.overShown = true;
-  $('overTitle').textContent = newBest ? 'New best score!' : 'Game over!';
-  $('overSub').textContent = newBest ? 'Wow, that is your best ever!' : (G.level > 1 ? 'Great munching! You reached level ' + G.level + '.' : 'Nice try! Have another go.');
+  $('overTitle').textContent = t(newBest ? 'newBestScore' : 'gameOver');
+  $('overSub').textContent = newBest ? t('wowBest') : (G.level > 1 ? t('reachedLevel', { n: G.level }) : t('niceTry'));
   $('overScore').textContent = fmt(G.score);
   const chips = $('overChips'); chips.textContent = '';
   const add = (t, cls) => { const s = document.createElement('span'); s.className = 'chip' + (cls ? ' ' + cls : ''); s.textContent = t; chips.appendChild(s); };
-  add('Level ' + G.level);
-  add('🏆 Best ' + fmt(save.best[G.mode]), newBest ? 'gold' : '');
-  if (G.gloopsEaten) add('Gloops munched: ' + G.gloopsEaten);
-  if (G.fruitsEaten.length) add('Bonus snacks: ' + G.fruitsEaten.length);
-  add(G.mode === 'easy' ? '🐣 Easy' : '⭐ Classic');
+  add(t('levelN', { n: G.level }));
+  add('🏆 ' + t('chipBest', { v: fmt(save.best[G.mode]) }), newBest ? 'gold' : '');
+  if (G.gloopsEaten) add(t('chipGloops', { n: G.gloopsEaten }));
+  if (G.fruitsEaten.length) add(t('chipSnacks', { n: G.fruitsEaten.length }));
+  add(G.mode === 'easy' ? '🐣 ' + t('easy') : '⭐ ' + t('classic'));
   $('overScreen').hidden = false;
   if (newBest) BRB.fx.confetti();
   if (FINE) setTimeout(() => { try { $('againBtn').focus({ preventScroll: true }); } catch (e) { /* ignore */ } }, 50);   // keyboard players can press Enter
@@ -1456,7 +1826,7 @@ function setPaused(on) {
   if (!G || UI.screen !== 'play' || G.over) return;
   UI.paused = !!on;
   $('pauseScreen').hidden = !UI.paused;
-  if (UI.paused) { $('pauseInfo').textContent = 'Level ' + G.level + ' · Score ' + fmt(G.score); Sound.hum('', 0, 0); }
+  if (UI.paused) { $('pauseInfo').textContent = t('pauseInfo', { n: G.level, s: fmt(G.score) }); Sound.hum('', 0, 0); }
   held.length = 0;
 }
 function quitToTitle() {
@@ -1474,10 +1844,10 @@ function quitToTitle() {
 function refreshTitle() {
   const box = $('mazePick');
   if (!box.childElementCount) {
-    const opts = [{ id: 'mix', name: 'Mix' }].concat(MAZES.map(m => ({ id: m.id, name: m.name.split(' ')[0] })));
+    const opts = [{ id: 'mix', name: t('mix') }].concat(MAZES.map(m => ({ id: m.id, name: mazeShort(m.id) })));
     for (const o of opts) {
       const b = document.createElement('button'); b.dataset.maze = o.id; b.setAttribute('aria-pressed', 'false');
-      b.setAttribute('aria-label', o.id === 'mix' ? 'Mix: a new maze as you go' : MAZES.find(m => m.id === o.id).name);
+      b.setAttribute('aria-label', o.id === 'mix' ? t('mixAria') : mazeName(o.id));
       if (o.id === 'mix') { const s = document.createElement('span'); s.className = 'mix'; s.textContent = '🔀'; b.appendChild(s); }
       else { const c = document.createElement('canvas'); thumb(c, Engine.MAZES.find(m => m.id === o.id)); b.appendChild(c); }
       const l = document.createElement('span'); l.textContent = o.name; b.appendChild(l);
@@ -1488,9 +1858,9 @@ function refreshTitle() {
   for (const b of box.children) b.setAttribute('aria-pressed', String(b.dataset.maze === save.maze));
   const chips = $('bestChips'); chips.textContent = '';
   const add = t => { const s = document.createElement('span'); s.className = 'chip'; s.textContent = t; chips.appendChild(s); };
-  add('🏆 Best ' + fmt(save.best.classic));
-  if (save.best.easy) add('🐣 Easy ' + fmt(save.best.easy));
-  if (save.dots) add('Dots munched: ' + fmt(save.dots));
+  add('🏆 ' + t('chipBest', { v: fmt(save.best.classic) }));
+  if (save.best.easy) add('🐣 ' + t('chipEasyBest', { v: fmt(save.best.easy) }));
+  if (save.dots) add(t('chipDots', { n: save.dots }));
   syncPadToggles();
 }
 function thumb(c, M) {
@@ -1523,7 +1893,7 @@ function drawDemo(t) {
   else if (p < 7.8) { textAt2(c, '200', (gx + mx) / 2, y - 1, d, s); drawGloop(c, cols + 1 - (cols + 1 - gx) * Math.max(0, 1 - (p - 6) * 0.8), y, { id: 0, dir: 'right', t, mode: 'eyes' }); }
   drawMunch(c, mx, y, { dir: mdir, mouth: 0.5 - 0.5 * Math.cos(p * 12), step: p * 14, blink: (t % 3) < 0.12 });
 }
-function textAt2(c, str, x, y, d, s) { c.save(); c.setTransform(d, 0, 0, d, 0, 0); c.font = '700 ' + Math.round(s * 0.8) + 'px Fredoka, system-ui, sans-serif'; c.textAlign = 'center'; c.fillStyle = '#7ef0ff'; c.fillText(str, x * s, y * s); c.restore(); }
+function textAt2(c, str, x, y, d, s) { const sp = textSprite(str, Math.round(s * 0.8 * d), '#7ef0ff', null, 0, null); c.save(); c.setTransform(1, 0, 0, 1, 0, 0); c.drawImage(sp.c, Math.round(x * s * d - sp.w / 2), Math.round(y * s * d - sp.h * 0.6)); c.restore(); }
 
 /* =====================================================================================
    Controls: swipe anywhere (slide without lifting to keep steering), the optional D-pad, keys.
@@ -1586,11 +1956,11 @@ pad.addEventListener('contextmenu', e => e.preventDefault());
 /* ---------- buttons ---------- */
 function syncMute() {
   const m = BRB.sfx.muted;
-  for (const b of document.querySelectorAll('.mute')) { b.textContent = m ? '🔇' : '🔊'; b.setAttribute('aria-label', m ? 'Turn sound on' : 'Turn sound off'); }
+  for (const b of document.querySelectorAll('.mute')) { b.textContent = m ? '🔇' : '🔊'; b.setAttribute('aria-label', m ? TX.soundOn : TX.soundOff); }
 }
 function toggleMute() { BRB.sfx.mute(); if (BRB.sfx.muted) Sound.hum('', 0, 0); else BRB.sfx.play('click'); syncMute(); }
 function syncPadToggles() {
-  for (const id of ['padToggle', 'padToggle2']) { const b = $(id); b.setAttribute('aria-pressed', String(!!save.pad)); b.textContent = '🎮 Arrow buttons: ' + (save.pad ? 'On' : 'Off'); }
+  for (const id of ['padToggle', 'padToggle2']) { const b = $(id); b.setAttribute('aria-pressed', String(!!save.pad)); b.textContent = save.pad ? TX.padOn : TX.padOff; }
 }
 function togglePad() { save.pad = !save.pad; persist(); syncPadToggles(); BRB.sfx.play('click'); if (UI.screen !== 'title') layout(); }
 for (const b of document.querySelectorAll('.mute')) b.addEventListener('click', toggleMute);
@@ -1628,6 +1998,15 @@ function frame(now) {
   updateHum(t);
 }
 
+/* ---------- Language: fill every fixed label once ---------- */
+function applyLanguage() {
+  try { document.documentElement.lang = LANG; } catch (e) { /* ignore */ }
+  document.querySelectorAll('[data-t]').forEach(el => { el.textContent = t(el.dataset.t); });
+  document.querySelectorAll('[data-ta]').forEach(el => { el.setAttribute('aria-label', t(el.dataset.ta)); });
+  // Right-to-left languages: panels and hints read right to left; the maze, the D-pad and the HUD keep their places.
+  if (RTL) document.querySelectorAll('.panel, #keysHint, .stat, #levelEl').forEach(el => { el.dir = 'rtl'; });
+}
+applyLanguage();
 syncMute();
 refreshTitle();
 layout();

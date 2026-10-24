@@ -10,5 +10,55 @@
   "players_max": 1,
   "age_rating": "everyone",
   "featured": true,
-  "notes": "Falling-blocks puzzle with an original name and candy look (never uses the trademarked name). 10x20 well + 4 hidden rows, seeded 7-bag, SRS rotation with standard wall kicks, ghost, hold (once per drop), next x3, lock delay 500 ms with 15 move resets, DAS 150 ms / ARR 40 ms, gravity 1000*0.82^(level-1) ms per row (min 25). Scoring 100/300/500/800 x level, soft 1/cell, hard 2/cell, back-to-back 4-line x1.5, combo 50 x combo x level. Modes: Marathon (BRB.score.submit(score,'points') + gameOver), Sprint 40 (best time saved on the device only, no leaderboard), Zen (no leaderboard; the top 10 rows melt away instead of game over). Saves bestMarathon, bestSprintMs, bestZenLines and totalLines in BRB.storage key 'brick-drop-v1'. Touch: on-screen pad plus well gestures (tap turn, swipe move, slow drag down, flick down drop, flick up hold). window.__brbTest documented at the end of the script. Loads Google Font Fredoka."
+  "notes": "Falling-blocks puzzle with an original name and candy look (never uses the trademarked name). 10x20 well + 4 hidden rows, seeded 7-bag, SRS rotation with standard wall kicks, ghost, hold (once per drop), next x3, lock delay 500 ms with 15 move resets, DAS 150 ms / ARR 40 ms, gravity 1000*0.82^(level-1) ms per row (min 25). Scoring 100/300/500/800 x level, soft 1/cell, hard 2/cell, back-to-back 4-line x1.5, combo 50 x combo x level. Modes: Marathon (BRB.score.submit(score,'points') + gameOver), Sprint 40 (best time saved on the device only, no leaderboard), Zen (no leaderboard; the top 10 rows melt away instead of game over). Saves bestMarathon, bestSprintMs, bestZenLines and totalLines in BRB.storage key 'brick-drop-v1'. Touch: on-screen pad plus well gestures (tap turn, swipe move, slow drag down, flick down drop, flick up hold). window.__brbTest documented at the end of the script. Loads Google Font Fredoka.",
+  "l10n": {
+    "en-GB": {
+      "description": "Stack the falling sweetie bricks and fill a whole row to make it pop! Clear four rows at once for a BRICK BLAST. Play Marathon to go faster and faster, race to 40 lines in Sprint, or relax in Zen where the game never ends.",
+      "tags": "blocks,falling blocks,puzzle,lines,arcade,classic,brick drop,sprint,zen"
+    },
+    "pt": {
+      "description": "Empilhe os tijolos de doce que caem e complete uma linha inteira para ela estourar! Faça quatro linhas de uma vez para um TIJOLAÇO. Jogue Maratona para ir cada vez mais rápido, corra até 40 linhas no Sprint ou relaxe no Zen, onde o jogo nunca acaba.",
+      "tags": "blocos,tijolos,quebra-cabeça,linhas,arcade,clássico,sprint,zen"
+    },
+    "fr": {
+      "description": "Empile les briques en bonbon qui tombent et remplis une ligne entière pour la faire éclater ! Fais quatre lignes d’un coup pour un BRIQUE-BOUM. Joue au Marathon pour aller de plus en plus vite, fonce jusqu’à 40 lignes en Sprint ou détends-toi en Zen, où la partie ne finit jamais.",
+      "tags": "blocs,briques,puzzle,casse-tête,lignes,arcade,classique,sprint,zen"
+    },
+    "es": {
+      "description": "¡Apila los ladrillos de caramelo que caen y llena una fila entera para que explote! Haz cuatro filas a la vez para un LADRILLAZO. Juega Maratón para ir cada vez más rápido, corre hasta 40 líneas en Sprint o relájate en Zen, donde el juego nunca termina.",
+      "tags": "bloques,ladrillos,rompecabezas,puzle,líneas,arcade,clásico,sprint,zen"
+    },
+    "de": {
+      "description": "Staple die fallenden Bonbon-Steine und mach eine ganze Reihe voll, dann ploppt sie weg! Räum vier Reihen auf einmal ab für einen STEIN-KNALL. Spiel Marathon und werde immer schneller, schaff 40 Reihen im Sprint oder entspann dich im Zen-Modus, der nie endet.",
+      "tags": "Blöcke,Steine,fallende Blöcke,Puzzle,Reihen,Arcade,Klassiker,Sprint,Zen"
+    },
+    "he": {
+      "description": "ערמו את לבני הממתקים הנופלות ומלאו שורה שלמה כדי שתתפוצץ! נקו ארבע שורות בבת אחת בשביל בום לבנים. שחקו במרתון שנהיה מהיר יותר ויותר, הגיעו ל־40 שורות בספרינט, או תירגעו בזן, שבו המשחק אף פעם לא נגמר.",
+      "tags": "לבנים,קוביות,פאזל,שורות,ארקייד,קלאסי,ספרינט,זן"
+    },
+    "ja": {
+      "description": "おちてくるキャンディのブロックをつんで、よこ1れつそろえるとパチンとはじけるよ！4れついっぺんにけすと「ドッカーン！」。どんどんはやくなるマラソン、40ラインをはやくけすスプリント、おわりのないのんびりモードであそべます。",
+      "tags": "ブロック,パズル,ライン,おちものパズル,アーケード,クラシック,スプリント,のんびり"
+    },
+    "ar": {
+      "description": "رُصّ طوبات الحلوى المتساقطة واملأ صفًا كاملًا ليختفي بفرقعة! امسح أربعة صفوف مرة واحدة لتحصل على انفجار الطوب. العب الماراثون لتزداد السرعة أكثر فأكثر، أو تسابق حتى 40 صفًا في السباق، أو استرخِ في وضع الهدوء حيث لا تنتهي اللعبة أبدًا.",
+      "tags": "طوب,مكعبات,ألغاز,صفوف,أركيد,كلاسيكي,سباق,هدوء"
+    },
+    "ru": {
+      "description": "Складывай падающие конфетные кирпичики и заполни целый ряд, чтобы он лопнул! Собери четыре ряда сразу, и будет КИРПИЧ-БУМ. Играй в «Марафон», где всё быстрее и быстрее, собери 40 линий на скорость в «Спринте» или отдыхай в «Дзене», где игра никогда не кончается.",
+      "tags": "блоки,кирпичики,головоломка,линии,аркада,классика,спринт,дзен"
+    },
+    "it": {
+      "description": "Impila i mattoni di caramella che cadono e riempi una riga intera per farla scoppiare! Fai quattro righe insieme per una MATTONATA. Gioca a Maratona per andare sempre più veloce, corri fino a 40 righe in Sprint o rilassati in Zen, dove la partita non finisce mai.",
+      "tags": "blocchi,mattoni,puzzle,rompicapo,righe,arcade,classico,sprint,zen"
+    },
+    "zh-Hant": {
+      "description": "把掉下來的糖果方塊疊起來，排滿一整行它就會砰地消失！一次消掉四行就是「方塊大爆炸」。玩馬拉松模式會越來越快，衝刺模式比誰最快消掉 40 行，放鬆模式則永遠不會結束。",
+      "tags": "方塊,積木,益智,消行,街機,經典,衝刺,放鬆"
+    },
+    "nl": {
+      "description": "Stapel de vallende snoepstenen en maak een hele rij vol, dan knalt hij weg! Ruim vier rijen tegelijk op voor een STENENKNAL. Speel Marathon en ga steeds sneller, race naar 40 rijen in Sprint of ontspan in Zen, waar het spel nooit stopt.",
+      "tags": "blokken,stenen,puzzel,rijen,arcade,klassiek,sprint,zen"
+    }
+  }
 }

@@ -19,6 +19,7 @@ export function importGame(htmlPath, metaPath, ownerId) {
   const fields = { title: meta.title, description: meta.description, icon: meta.icon, cover: meta.cover, category: meta.category, tags: meta.tags, orientation: meta.orientation || 'any', players_max: meta.players_max || 1 };
   if (!g) g = games.createGame(ownerId, { ...fields, slug: meta.slug, source: 'seed' });
   else games.updateMeta(g.id, fields);
+  q.run('UPDATE games SET l10n=? WHERE id=?', meta.l10n && typeof meta.l10n === 'object' ? JSON.stringify(meta.l10n) : '', g.id);
   const cur = games.getVersion(g.current_version_id);
   let v = cur;
   if (!cur || cur.html !== html) v = games.addVersion(g.id, html, { notes: meta.notes ? 'Imported. ' + meta.notes.slice(0, 300) : 'Imported', createdBy: ownerId, safetyStatus: report.status, safetyReport: report });

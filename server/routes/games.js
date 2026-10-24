@@ -21,7 +21,7 @@ export const REPORT_REASONS = reportReasons();
 function loadViewable(req, res) {
   const g = games.getGameBySlug(req.params.slug);
   if (!g || !games.canView(req.user, g)) { notFound(req, res, req.t('game.notShared')); return null; }
-  return g;
+  return games.localizeGame(g, req.locale);
 }
 
 router.get('/g/:slug', (req, res) => {
@@ -87,7 +87,7 @@ router.get('/g/:slug', (req, res) => {
 
 router.get('/play/:slug', (req, res) => {
   const t = req.t;
-  const g = games.getGameBySlug(req.params.slug);
+  const g = games.localizeGame(games.getGameBySlug(req.params.slug), req.locale);
   if (!g || !games.canView(req.user, g)) return notFound(req, res, t('game.notShared'));
   // One tap to play: a visitor without a session becomes a guest so progress saves (rate-limited per IP).
   if (!req.user && req.headers['sec-fetch-mode'] === 'navigate' && allow(`guestip:${req.ip}`, 60, 3600e3)) {
