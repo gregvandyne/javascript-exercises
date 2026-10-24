@@ -81,3 +81,25 @@ test('three reports auto-hide a public game (HTTP), admin restore brings it back
   assert.equal(games.canView(stranger, games.getGame(g.id)), true);
   assert.equal(q.get("SELECT COUNT(*) n FROM reports WHERE game_id=? AND status='open'", g.id).n, 0);
 });
+
+test('favorites: ❤️ games show on Home, Me and /favorites, newest first; games that go private or get deleted drop off', async () => {
+  const kid = mk('FavFiona');
+  const a = mkGame(owner, 'public'), b = mkGame(owner, 'public'), c = mkGame(owner, 'public');
+  games.toggleLike(a.id, kid.id); q.run('UPDATE likes SET created_at=1 WHERE game_id=? AND user_id=?', a.id, kid.id);
+  games.toggleLike(b.id, kid.id); games.toggleLike(c.id, kid.id);
+  assert.deepEqual(games.favorites(kid, kid.id).map(g => g.id).sort(), [a.id, b.id, c.id].sort());
+  assert.equal(games.favorites(kid, kid.id).at(-1).id, a.id, 'oldest favorite last');
+  q.run("UPDATE games SET visibility='private' WHERE id=?", b.id);
+  games.deleteGame(c.id);
+  assert.deepEqual(games.favorites(kid, kid.id).map(g => g.id), [a.id]);
+  const cookie = cookieFor(kid.id);
+  const get = p => fetch(base + p, { headers: { cookie }, redirect: 'manual' });
+  let r = await get('/favorites'); assert.equal(r.status, 200); let h = await r.text();
+  assert.match(h, new RegExp(`href="/g/${a.slug}"`)); assert.doesNotMatch(h, new RegExp(`/g/${b.slug}"`));
+  r = await get('/'); h = await r.text(); assert.match(h, /id="favorites-h"/); assert.match(h, /href="\/favorites"/);
+  r = await get('/me'); h = await r.text(); assert.match(h, /href="\/favorites"/);
+  // nobody's favorites without signing in; an empty list says how to add one
+  r = await fetch(base + '/favorites', { redirect: 'manual' }); assert.equal(r.status, 302); assert.match(r.headers.get('location'), /^\/login/);
+  const none = mk('FavNone'); r = await fetch(base + '/favorites', { headers: { cookie: cookieFor(none.id) } }); assert.match(await r.text(), /No favorites yet/);
+  r = await fetch(base + '/', { headers: { cookie: cookieFor(none.id) } }); assert.doesNotMatch(await r.text(), /id="favorites-h"/);
+});

@@ -124,7 +124,8 @@
       "friends": "Friends",
       "chat": "Chat",
       "money": "Creator money",
-      "admin": "Admin"
+      "admin": "Admin",
+      "favorites": "My favorites"
     },
     "look": {
       "heading": "Pick your look",
@@ -275,7 +276,8 @@
       "popular": "Popular",
       "rated": "Top rated",
       "new": "New",
-      "mine": "My games"
+      "mine": "My games",
+      "favorites": "My favorites"
     },
     "hero": {
       "label": "Featured game",
@@ -393,7 +395,7 @@
     "notReadyYet": "This game is not ready yet.",
     "play": "Play",
     "notReady": "Not ready to play yet.",
-    "like": "Like",
+    "like": "Favorite",
     "share": "Share",
     "edit": "Edit",
     "updateWaiting": "an update is waiting for review",
@@ -403,7 +405,7 @@
       "noRatings": "no ratings yet",
       "playingNow": "playing now",
       "plays": "{count, plural, one {play} other {plays}}",
-      "likes": "{count, plural, one {like} other {likes}}"
+      "likes": "{count, plural, one {favorite} other {favorites}}"
     },
     "about": {
       "heading": "About this game",
@@ -983,8 +985,8 @@
       "needSignIn": "Tap “Play as guest” or sign in first.",
       "rated": "You gave it {count, plural, one {# star} other {# stars}}. Average is now {average}.",
       "thanksRating": "Thanks for rating!",
-      "liked": "Liked!",
-      "unliked": "Like removed",
+      "liked": "Added to your favorites!",
+      "unliked": "Removed from your favorites",
       "shareTitle": "Share this game",
       "link": "Link",
       "copyLink": "Copy link",
@@ -998,10 +1000,10 @@
       "newBest": "New best: {score}!",
       "noFullscreen": "Full screen is not available here.",
       "tapFullscreen": "Tap the full screen button to go big.",
-      "signInToLike": "Sign in or play as a guest to like games.",
+      "signInToLike": "Sign in or play as a guest to save favorites.",
       "signInToRate": "Sign in or play as a guest to rate games.",
-      "liked": "Liked!",
-      "unliked": "Like removed",
+      "liked": "Added to your favorites!",
+      "unliked": "Removed from your favorites",
       "rateTitle": "Rate {title}",
       "stars": "Stars",
       "starsLabel": "{count, plural, one {# star} other {# stars}}",
@@ -1227,5 +1229,11 @@
       },
       "reconnecting": "The connection dropped, but the Builder is still working. Hang on…"
     }
+  },
+  "favorites": {
+    "title": "My favorites",
+    "emptyTitle": "No favorites yet",
+    "emptyText": "Tap ❤️ Favorite on any game and it will wait for you here.",
+    "emptyAction": "Find games"
   }
 }

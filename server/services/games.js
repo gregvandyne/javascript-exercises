@@ -101,6 +101,11 @@ export function fromFriends(user, limit = 12) {
   if (!user) return [];
   return decorate(q.all(`${SELECT} WHERE g.status='published' AND g.published_version_id IS NOT NULL AND g.hidden_reason='' AND g.visibility IN ('public','friends') AND g.owner_id IN (SELECT friend_id FROM friends WHERE user_id=? AND status='accepted') ORDER BY g.published_at DESC LIMIT ?`, user.id, limit));
 }
+/** A player's favorites (the games they tapped ❤️ on), newest first. Only games this viewer may still see. */
+export function favorites(viewer, userId, limit = 24, offset = 0) {
+  const v = visibleWhere(viewer);
+  return decorate(q.all(`${SELECT} JOIN likes l ON l.game_id=g.id AND l.user_id=? WHERE ${v.sql} ORDER BY l.created_at DESC LIMIT ? OFFSET ?`, userId, ...v.params, limit, offset));
+}
 /** All of a builder's own games (any status) for "My games". */
 export function myGames(userId, limit = 50) {
   return decorate(q.all(`${SELECT} WHERE g.owner_id=? AND g.status!='deleted' ORDER BY g.updated_at DESC LIMIT ?`, userId, limit));

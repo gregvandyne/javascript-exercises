@@ -123,7 +123,8 @@
       "friends": "好友",
       "chat": "聊天",
       "money": "創作者收入",
-      "admin": "管理"
+      "admin": "管理",
+      "favorites": "我的最愛"
     },
     "look": {
       "heading": "選擇你的造型",
@@ -274,7 +275,8 @@
       "popular": "熱門",
       "rated": "評分最高",
       "new": "最新",
-      "mine": "我的遊戲"
+      "mine": "我的遊戲",
+      "favorites": "我的最愛"
     },
     "hero": {
       "label": "精選遊戲",
@@ -392,7 +394,7 @@
     "notReadyYet": "這個遊戲還沒準備好。",
     "play": "開始玩",
     "notReady": "還不能玩。",
-    "like": "按讚",
+    "like": "最愛",
     "share": "分享",
     "edit": "編輯",
     "updateWaiting": "有更新正在等待審核",
@@ -402,7 +404,7 @@
       "noRatings": "還沒有評分",
       "playingNow": "正在玩",
       "plays": "遊玩次數",
-      "likes": "讚"
+      "likes": "人加入最愛"
     },
     "about": {
       "heading": "關於這個遊戲",
@@ -982,8 +984,8 @@
       "needSignIn": "請點「用訪客身分玩」或先登入。",
       "rated": "你給了 {count} 顆星。現在平均是 {average}。",
       "thanksRating": "謝謝你評分！",
-      "liked": "已按讚！",
-      "unliked": "已收回讚",
+      "liked": "已加入你的最愛！",
+      "unliked": "已從你的最愛移除",
       "shareTitle": "分享這個遊戲",
       "link": "連結",
       "copyLink": "複製連結",
@@ -997,10 +999,10 @@
       "newBest": "新紀錄：{score}！",
       "noFullscreen": "這裡不能使用全螢幕。",
       "tapFullscreen": "點全螢幕按鈕，把畫面變大。",
-      "signInToLike": "登入或用訪客身分玩，就能幫遊戲按讚。",
+      "signInToLike": "登入或用訪客身分玩，就能收藏最愛。",
       "signInToRate": "登入或用訪客身分玩，就能幫遊戲評分。",
-      "liked": "已按讚！",
-      "unliked": "已收回讚",
+      "liked": "已加入你的最愛！",
+      "unliked": "已從你的最愛移除",
       "rateTitle": "幫 {title} 評分",
       "stars": "星星",
       "starsLabel": "{count} 顆星",
@@ -1226,5 +1228,11 @@
       },
       "reconnecting": "連線中斷了，但小幫手還在努力做。稍等一下…"
     }
+  },
+  "favorites": {
+    "title": "我的最愛",
+    "emptyTitle": "還沒有最愛",
+    "emptyText": "在任何遊戲按 ❤️ 最愛，它就會在這裡等你。",
+    "emptyAction": "找遊戲"
   }
 }

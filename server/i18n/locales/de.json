@@ -124,7 +124,8 @@
       "friends": "Freunde",
       "chat": "Chat",
       "money": "Mein Geld",
-      "admin": "Admin"
+      "admin": "Admin",
+      "favorites": "Meine Favoriten"
     },
     "look": {
       "heading": "Such dir deinen Look aus",
@@ -275,7 +276,8 @@
       "popular": "Beliebt",
       "rated": "Am besten bewertet",
       "new": "Neu",
-      "mine": "Meine Spiele"
+      "mine": "Meine Spiele",
+      "favorites": "Meine Favoriten"
     },
     "hero": {
       "label": "Empfohlenes Spiel",
@@ -393,7 +395,7 @@
     "notReadyYet": "Dieses Spiel ist noch nicht fertig.",
     "play": "Spielen",
     "notReady": "Noch nicht spielbereit.",
-    "like": "Like",
+    "like": "Favorit",
     "share": "Teilen",
     "edit": "Ändern",
     "updateWaiting": "ein Update wartet auf die Prüfung",
@@ -403,7 +405,7 @@
       "noRatings": "noch keine Bewertungen",
       "playingNow": "spielen gerade",
       "plays": "Mal gespielt",
-      "likes": "{count, plural, one {Like} other {Likes}}"
+      "likes": "{count, plural, one {Favorit} other {Favoriten}}"
     },
     "about": {
       "heading": "Über dieses Spiel",
@@ -983,8 +985,8 @@
       "needSignIn": "Tipp auf „Als Gast spielen“ oder melde dich zuerst an.",
       "rated": "Du hast {count, plural, one {# Stern} other {# Sterne}} gegeben. Der Schnitt ist jetzt {average}.",
       "thanksRating": "Danke fürs Bewerten!",
-      "liked": "Geliked!",
-      "unliked": "Like entfernt",
+      "liked": "Zu deinen Favoriten hinzugefügt!",
+      "unliked": "Aus deinen Favoriten entfernt",
       "shareTitle": "Dieses Spiel teilen",
       "link": "Link",
       "copyLink": "Link kopieren",
@@ -998,10 +1000,10 @@
       "newBest": "Neuer Rekord: {score}!",
       "noFullscreen": "Vollbild geht hier nicht.",
       "tapFullscreen": "Tipp auf den Vollbild-Knopf, um es groß zu machen.",
-      "signInToLike": "Melde dich an oder spiel als Gast, um Spiele zu liken.",
+      "signInToLike": "Melde dich an oder spiel als Gast, um Favoriten zu speichern.",
       "signInToRate": "Melde dich an oder spiel als Gast, um Spiele zu bewerten.",
-      "liked": "Geliked!",
-      "unliked": "Like entfernt",
+      "liked": "Zu deinen Favoriten hinzugefügt!",
+      "unliked": "Aus deinen Favoriten entfernt",
       "rateTitle": "{title} bewerten",
       "stars": "Sterne",
       "starsLabel": "{count, plural, one {# Stern} other {# Sterne}}",
@@ -1227,5 +1229,11 @@
       },
       "reconnecting": "Die Verbindung ist weg, aber der Baumeister arbeitet weiter. Kurz warten…"
     }
+  },
+  "favorites": {
+    "title": "Meine Favoriten",
+    "emptyTitle": "Noch keine Favoriten",
+    "emptyText": "Tippe bei einem Spiel auf ❤️ Favorit, dann wartet es hier auf dich.",
+    "emptyAction": "Spiele finden"
   }
 }

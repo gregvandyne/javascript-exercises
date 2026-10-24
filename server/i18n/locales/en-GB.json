@@ -9,6 +9,9 @@
       "colorHeading": "Colour",
       "colorGroup": "Colour",
       "colorLabel": "Colour {color}"
+    },
+    "tiles": {
+      "favorites": "My favourites"
     }
   },
   "categories": {
@@ -69,6 +72,32 @@
       "save": {
         "placeholder": "My favourite so far"
       }
+    },
+    "game": {
+      "liked": "Added to your favourites!",
+      "unliked": "Removed from your favourites"
+    },
+    "play": {
+      "liked": "Added to your favourites!",
+      "unliked": "Removed from your favourites",
+      "signInToLike": "Sign in or play as a guest to save favourites."
     }
+  },
+  "game": {
+    "like": "Favourite",
+    "stats": {
+      "likes": "{count, plural, one {favourite} other {favourites}}"
+    }
+  },
+  "home": {
+    "rails": {
+      "favorites": "My favourites"
+    }
+  },
+  "favorites": {
+    "title": "My favourites",
+    "emptyTitle": "No favourites yet",
+    "emptyText": "Tap ❤️ Favourite on any game and it will wait for you here.",
+    "emptyAction": "Find games"
   }
 }

@@ -87,7 +87,7 @@ test('search by title and by builder name', async ({ page }) => {
   await expect(page.locator('#results').getByText('Footy Tycoon')).toBeVisible();
 });
 
-test('rate and like a game', async ({ page }) => {
+test('rate and favorite a game; it shows in My favorites', async ({ page }) => {
   await signup(page);
   await page.goto('/g/shark-plank');
   await page.click('#rate [data-stars="4"]');
@@ -98,6 +98,11 @@ test('rate and like a game', async ({ page }) => {
   await page.click('#likebtn');
   await expect(page.locator('#likecount')).toHaveText(String(before + 1));
   await expect(page.locator('#likebtn')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('#likebtn')).toContainText('Favorite');
+  await page.goto('/favorites');
+  await expect(page.locator('a.gcard[href="/g/shark-plank"]')).toBeVisible();
+  await page.goto('/');
+  await expect(page.locator('#favorites-h')).toContainText('My favorites');
 });
 
 test('live player count rises when a second browser opens a game', async ({ browser }) => {

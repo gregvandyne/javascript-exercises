@@ -123,7 +123,8 @@
       "friends": "Amis",
       "chat": "Chat",
       "money": "Mes gains",
-      "admin": "Admin"
+      "admin": "Admin",
+      "favorites": "Mes favoris"
     },
     "look": {
       "heading": "Choisis ton look",
@@ -274,7 +275,8 @@
       "popular": "Populaires",
       "rated": "Les mieux notés",
       "new": "Nouveautés",
-      "mine": "Mes jeux"
+      "mine": "Mes jeux",
+      "favorites": "Mes favoris"
     },
     "hero": {
       "label": "Jeu à la une",
@@ -392,7 +394,7 @@
     "notReadyYet": "Ce jeu n’est pas encore prêt.",
     "play": "Jouer",
     "notReady": "Pas encore prêt à jouer.",
-    "like": "J’aime",
+    "like": "Favori",
     "share": "Partager",
     "edit": "Modifier",
     "updateWaiting": "une mise à jour attend d’être vérifiée",
@@ -402,7 +404,7 @@
       "noRatings": "pas encore de notes",
       "playingNow": "en ce moment",
       "plays": "{count, plural, one {partie} other {parties}}",
-      "likes": "j’aime"
+      "likes": "{count, plural, one {favori} other {favoris}}"
     },
     "about": {
       "heading": "À propos de ce jeu",
@@ -982,8 +984,8 @@
       "needSignIn": "Touche « Jouer en invité » ou connecte-toi d’abord.",
       "rated": "Tu lui as donné {count, plural, one {# étoile} other {# étoiles}}. La moyenne est maintenant de {average}.",
       "thanksRating": "Merci pour ta note !",
-      "liked": "J’aime ajouté !",
-      "unliked": "J’aime retiré",
+      "liked": "Ajouté à tes favoris !",
+      "unliked": "Retiré de tes favoris",
       "shareTitle": "Partager ce jeu",
       "link": "Lien",
       "copyLink": "Copier le lien",
@@ -997,10 +999,10 @@
       "newBest": "Nouveau record : {score} !",
       "noFullscreen": "Le plein écran n’est pas disponible ici.",
       "tapFullscreen": "Touche le bouton plein écran pour voir en grand.",
-      "signInToLike": "Connecte-toi ou joue en invité pour aimer des jeux.",
+      "signInToLike": "Connecte-toi ou joue en invité pour garder tes favoris.",
       "signInToRate": "Connecte-toi ou joue en invité pour noter des jeux.",
-      "liked": "J’aime ajouté !",
-      "unliked": "J’aime retiré",
+      "liked": "Ajouté à tes favoris !",
+      "unliked": "Retiré de tes favoris",
       "rateTitle": "Noter {title}",
       "stars": "Étoiles",
       "starsLabel": "{count, plural, one {# étoile} other {# étoiles}}",
@@ -1226,5 +1228,11 @@
       },
       "reconnecting": "La connexion a coupé, mais le Constructeur travaille encore. Patiente un peu…"
     }
+  },
+  "favorites": {
+    "title": "Mes favoris",
+    "emptyTitle": "Pas encore de favoris",
+    "emptyText": "Touche ❤️ Favori sur un jeu et il t’attendra ici.",
+    "emptyAction": "Trouver des jeux"
   }
 }
