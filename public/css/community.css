@@ -27,7 +27,7 @@ ul.plain,ol.plain{list-style:none;margin:0;padding:0}
 .playing{display:inline-flex;align-items:center;gap:8px;font-weight:800;color:var(--ok);min-height:44px}
 .playing .dot{width:10px;height:10px;border-radius:50%;background:#4ade80;box-shadow:0 0 0 3px color-mix(in srgb,#4ade80 30%,transparent);flex:none}
 .fc-acts{display:flex;gap:8px;flex-wrap:wrap}
-.fc-acts .btn-ghost{margin-left:auto;color:var(--muted)}
+.fc-acts .btn-ghost{margin-inline-start:auto;color:var(--muted)}
 .fc-games h3{margin:4px 0 6px;font-size:.85rem;text-transform:uppercase;letter-spacing:.04em}
 .minigames{display:flex;gap:8px;overflow-x:auto;scrollbar-width:thin;padding-bottom:4px}
 .minigame{display:flex;align-items:center;gap:8px;min-height:44px;padding:4px 12px 4px 4px;border-radius:14px;background:var(--card-2);border:2px solid var(--line);color:var(--ink);font-weight:800;font-size:.9rem;white-space:nowrap;flex:none;max-width:220px}
@@ -91,7 +91,7 @@ details.chatsafety p{margin:6px 0 0}
 .composer{padding-top:10px}
 .composer .quick{margin-bottom:8px}
 .sendrow{display:flex;gap:8px;align-items:center}
-.sendrow .input{flex:1;min-width:0;border-radius:999px;padding-left:18px}
+.sendrow .input{flex:1;min-width:0;border-radius:999px;padding-inline-start:18px}
 .sendrow .iconbtn{min-width:52px;flex:none}
 .sendrow .btn{flex:none}
 .sendinfo{display:flex;justify-content:space-between;gap:8px;min-height:22px;padding:2px 8px 0}
@@ -118,7 +118,7 @@ details.chatsafety p{margin:6px 0 0}
 .rc-preview{height:440px;border-radius:14px;overflow:hidden;background:#000;box-shadow:var(--shadow)}
 .rc-preview iframe{width:100%;height:100%;border:0;display:block;background:#fff}
 .rc-checks h3{margin:4px 0 6px}
-.issues{margin:0 0 12px;padding-left:20px;font-size:.92rem}
+.issues{margin:0 0 12px;padding-inline-start:20px;font-size:.92rem}
 .issues .lvl-fail b{color:var(--danger)} .issues .lvl-flag b{color:var(--sun-600)}
 .scan-pass{color:var(--ok)} .scan-flag{color:var(--sun-600)} .scan-fail{color:var(--danger)}
 .ctx{list-style:none;margin:8px 0 12px;padding:0;border:1px solid var(--line);border-radius:14px;overflow:hidden}
