@@ -13,7 +13,7 @@ export const CATEGORIES = [
 export const CATEGORY_KEYS = CATEGORIES.map(c => c[0]);
 export const categoryInfo = k => { const c = CATEGORIES.find(x => x[0] === k) || CATEGORIES[0]; return { key: c[0], icon: c[1], label: c[2] }; };
 export const COVERS = ['sunset', 'ocean', 'forest', 'candy', 'night', 'lava', 'mint', 'gold'];
-export const VISIBILITIES = ['private', 'friends', 'public'];
+export const VISIBILITIES = ['private', 'friends', 'school', 'public'];
 export const ORIENTATIONS = ['any', 'portrait', 'landscape'];
 
 export const slugify = s => String(s).toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40) || 'game';
@@ -28,6 +28,8 @@ export const getGameBySlug = slug => q.get('SELECT * FROM games WHERE slug=?', S
 export const getVersion = id => (id ? q.get('SELECT * FROM game_versions WHERE id=?', id) : null) || null;
 export const getOwner = game => q.get('SELECT id, username, display_name, avatar, color, photo_at FROM users WHERE id=?', game.owner_id) || null;
 
+/** Same school (both active members)? Games shared with 'My school' are for schoolmates. */
+export const sameSchool = (a, b) => !!(a && b && q.get("SELECT 1 FROM school_members x JOIN school_members y ON y.school_id=x.school_id WHERE x.user_id=? AND y.user_id=? AND x.status='active' AND y.status='active'", a, b));
 export function areFriends(a, b) {
   if (!a || !b) return false;
   return !!q.get("SELECT 1 FROM friends WHERE user_id=? AND friend_id=? AND status='accepted'", a, b);
@@ -42,6 +44,7 @@ export function canView(user, game) {
   if (game.status !== 'published' || !game.published_version_id || game.hidden_reason) return false;
   if (game.visibility === 'public') return true;
   if (game.visibility === 'friends') return !!user && areFriends(game.owner_id, user.id);
+  if (game.visibility === 'school') return !!user && sameSchool(game.owner_id, user.id);
   return false;
 }
 export const canEdit = (user, game) => !!user && !!game && game.status !== 'deleted' && (user.id === game.owner_id || user.role === 'admin');
@@ -57,8 +60,9 @@ export function visibleWhere(user) {
   const base = "g.status='published' AND g.published_version_id IS NOT NULL AND g.hidden_reason=''";
   if (!user) return { sql: `${base} AND g.visibility='public'`, params: [] };
   return {
-    sql: `${base} AND (g.visibility='public' OR g.owner_id=? OR (g.visibility='friends' AND g.owner_id IN (SELECT friend_id FROM friends WHERE user_id=? AND status='accepted')))`,
-    params: [user.id, user.id]
+    sql: `${base} AND (g.visibility='public' OR g.owner_id=? OR (g.visibility='friends' AND g.owner_id IN (SELECT friend_id FROM friends WHERE user_id=? AND status='accepted'))
+      OR (g.visibility='school' AND g.owner_id IN (SELECT a.user_id FROM school_members a JOIN school_members b ON b.school_id=a.school_id WHERE b.user_id=? AND a.status='active' AND b.status='active')))`,
+    params: [user.id, user.id, user.id]
   };
 }
 export const SELECT = `SELECT g.id, g.slug, g.owner_id, g.title, g.description, g.icon, g.cover, g.category, g.tags, g.visibility, g.status, g.plays, g.likes, g.rating_sum, g.rating_count, g.featured, g.players_max, g.orientation, g.source, g.published_at, g.updated_at, g.created_at, g.current_version_id, g.published_version_id, g.pending_version_id, g.review_note, g.hidden_reason, g.l10n,

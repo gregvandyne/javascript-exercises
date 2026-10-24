@@ -30,7 +30,8 @@
     "search": "Buscar",
     "build": "Crear",
     "friends": "Amigos",
-    "me": "Yo"
+    "me": "Yo",
+    "classes": "Clases"
   },
   "errors": {
     "goHome": "Ir al inicio",
@@ -123,7 +124,8 @@
       "friends": "Amigos",
       "chat": "Chat",
       "admin": "Admin",
-      "favorites": "Mis favoritos"
+      "favorites": "Mis favoritos",
+      "classes": "Mis clases"
     },
     "look": {
       "heading": "Elige tu estilo",
@@ -183,7 +185,8 @@
   "vis": {
     "private": "Solo yo",
     "friends": "Amigos",
-    "public": "Todos"
+    "public": "Todos",
+    "school": "Mi escuela"
   },
   "status": {
     "hidden": "Oculto",
@@ -467,7 +470,8 @@
       "guest": "Ese jugador es un invitado. Necesita una cuenta gratis para que puedan ser amigos.",
       "already": "{name} y tú ya son amigos.",
       "alreadyAsked": "Ya le enviaste una solicitud a {name}. Espera a que diga que sí.",
-      "sent": "¡Solicitud de amistad enviada a {name}! Tiene que decir que sí."
+      "sent": "¡Solicitud de amistad enviada a {name}! Tiene que decir que sí.",
+      "classmatesOnly": "Las cuentas escolares solo pueden ser amigas de compañeros de clase."
     }
   },
   "profile": {
@@ -575,7 +579,9 @@
       "chat_off_me": "Tu chat está desactivado. Un adulto puede activarlo en Yo.",
       "chat_off_other": "{name} tiene el chat desactivado.",
       "blocked_by_me": "Bloqueaste a {name}. Puedes desbloquearlo en la página Amigos.",
-      "blocked_by_other": "No puedes chatear con {name} ahora."
+      "blocked_by_other": "No puedes chatear con {name} ahora.",
+      "school_off_me": "Tu escuela desactivó el chat.",
+      "school_off_other": "La escuela de {name} desactivó el chat."
     },
     "paused": "El chat se está tomando un descanso. Podrás escribir otra vez en {minutes, plural, one {# minuto} other {# minutos}}. Igual puedes enviar mensajes rápidos.",
     "errors": {
@@ -634,7 +640,8 @@
     "shareText": {
       "private": "Solo tú puedes jugarlo.",
       "friends": "Solo tú y tus amigos de Magic Cups pueden jugarlo.",
-      "public": "Todos en Magic Cups pueden encontrarlo y jugarlo, después de una revisión de seguridad rápida."
+      "public": "Todos en Magic Cups pueden encontrarlo y jugarlo, después de una revisión de seguridad rápida.",
+      "school": "Todos en tu escuela pueden encontrarlo y jugarlo."
     },
     "status": {
       "hidden": "Oculto por ahora",
@@ -732,7 +739,9 @@
     "updateLive": "¡La actualización ya está disponible para todos!",
     "public": "¡Tu juego es público!",
     "updateWaiting": "Tu actualización está esperando una revisión rápida. Mientras tanto, los jugadores siguen con la versión anterior.",
-    "waiting": "Tu juego está esperando una revisión de seguridad rápida. Lo compartiremos en cuanto la pase."
+    "waiting": "Tu juego está esperando una revisión de seguridad rápida. Lo compartiremos en cuanto la pase.",
+    "school": "¡Ya está en tu escuela! Todos en tu escuela pueden encontrarlo y jugarlo.",
+    "schoolOnly": "Tu escuela mantiene los juegos dentro de la escuela. Mejor compártelo con tu escuela."
   },
   "builder": {
     "kindRefusal": "Con eso no te puedo ayudar. Mejor hagamos algo divertido. ¿Qué tipo de juego te gustaría?",
@@ -977,7 +986,8 @@
       "vis": {
         "private": "Solo yo",
         "friends": "Amigos",
-        "public": "Todos"
+        "public": "Todos",
+        "school": "Mi escuela"
       },
       "top": {
         "inReview": "En revisión",
@@ -1119,5 +1129,170 @@
     "emptyTitle": "Todavía no hay favoritos",
     "emptyText": "Toca ❤️ Favorito en cualquier juego y te esperará aquí.",
     "emptyAction": "Buscar juegos"
+  },
+  "classes": {
+    "title": "Mis clases",
+    "none": "Todavía no tienes clases",
+    "noneText": "¿Tu profe te dio un código de clase? Escríbelo abajo.",
+    "guest": "Primero crea una cuenta gratis y luego únete a tu clase con el código de tu profe.",
+    "waiting": "Esperando a tu profe",
+    "join": "Únete a una clase",
+    "joinText": "Escribe el código que te dio tu profe. Cuando tu profe diga que sí, la clase aparecerá aquí.",
+    "code": "Código de clase",
+    "joinButton": "Unirme",
+    "sent": "Pediste unirte a {name}. ¡Tu profe dirá que sí pronto!",
+    "classmates": "{count, plural, one {# compañero} other {# compañeros}}",
+    "noLessons": "Todavía no hay lecciones",
+    "noLessonsText": "Tu profe agregará lecciones y juegos aquí."
+  },
+  "school": {
+    "nav": {
+      "teach": "Panel docente"
+    },
+    "tabs": {
+      "classes": "Clases",
+      "people": "Personas",
+      "settings": "Configuración"
+    },
+    "actions": "Acciones",
+    "save": "Guardar",
+    "roles": {
+      "admin": "Admin de la escuela",
+      "teacher": "Docente",
+      "student": "Estudiante"
+    },
+    "teach": {
+      "title": "Panel docente",
+      "none": "Todavía no hay clases",
+      "noneText": "Cree su primera clase abajo. Recibirá un código para compartir con sus estudiantes.",
+      "noneAsk": "Pida al admin de su escuela que le asigne una clase."
+    },
+    "class": {
+      "new": "Nueva clase",
+      "create": "Crear clase",
+      "name": "Nombre de la clase",
+      "namePlaceholder": "p. ej., 4.º B Matemáticas",
+      "subject": "Materia",
+      "grade": "Grado",
+      "school": "Escuela",
+      "teachers": "Docentes",
+      "students": "Estudiantes",
+      "classes": "Clases",
+      "code": "Código",
+      "gradeN": "Grado {grade}",
+      "studentsN": "{count, plural, one {# estudiante} other {# estudiantes}}",
+      "requestsN": "{count, plural, one {# solicitud} other {# solicitudes}}",
+      "none": "Todavía no hay clases",
+      "noneText": "Cree una clase arriba o deje que los docentes creen las suyas.",
+      "archived": "{count, plural, one {# clase archivada} other {# clases archivadas}}",
+      "isArchived": "Archivada",
+      "archive": "Archivar",
+      "restore": "Restaurar",
+      "delete": "Eliminar",
+      "archiveConfirm": "¿Archivar {name}? Los estudiantes ya no la verán, pero se conserva su historial. Puede restaurarla más tarde.",
+      "deleteConfirm": "¿Eliminar {name}? Esta acción no se puede deshacer.",
+      "joinCode": "Código de clase",
+      "joinCodeText": "Los estudiantes con su propia cuenta de Magic Cups escriben este código en su página Clases. Usted aprueba a cada uno.",
+      "newCode": "Nuevo código",
+      "newCodeConfirm": "¿Crear un código nuevo? El anterior dejará de funcionar.",
+      "noStudents": "Todavía no hay estudiantes. Agréguelos abajo o comparta el código de clase.",
+      "addStudents": "Agregar estudiantes",
+      "newAccounts": "Nuevas cuentas escolares (un nombre por línea)",
+      "newAccountsHint": "Cada estudiante recibe un nombre de usuario y una contraseña para imprimir en una tarjeta de acceso. Solo los docentes ven los nombres reales.",
+      "fromSchool": "O agregue a un estudiante de su escuela",
+      "add": "Agregar",
+      "addTeacher": "Agregar un docente",
+      "moveTo": "Mover a la clase",
+      "move": "Mover",
+      "removeStudent": "Quitar",
+      "removeConfirm": "¿Quitar a {name} de esta clase? Su trabajo en esta clase se conserva.",
+      "edit": "Editar clase"
+    },
+    "requests": {
+      "title": "{count, plural, one {# estudiante quiere unirse} other {# estudiantes quieren unirse}}",
+      "text": "Estos estudiantes usaron el código de clase con su propia cuenta. Escriba su nombre real para la lista de la clase. Si la escuela ya les creó una cuenta, selecciónela para que su historial de la clase se transfiera.",
+      "realName": "Nombre real (solo lo ven los docentes)",
+      "sameAs": "Mismo estudiante que la cuenta escolar",
+      "sameAsNone": "No, es un estudiante nuevo",
+      "approve": "Aprobar",
+      "decline": "Rechazar",
+      "declineConfirm": "¿Rechazar a @{name}?"
+    },
+    "people": {
+      "staff": "Personal",
+      "students": "Estudiantes",
+      "name": "Nombre",
+      "username": "Nombre de usuario",
+      "role": "Rol",
+      "grade": "Grado",
+      "schoolAccount": "cuenta escolar",
+      "ownAccount": "cuenta propia",
+      "addStaff": "Agregar un docente o admin de la escuela",
+      "addStaffText": "Escriba su nombre. Deje vacío el nombre de usuario para crear una cuenta escolar (recibirá una tarjeta de acceso) o escriba el nombre de usuario de una cuenta que ya tenga.",
+      "realName": "Nombre real",
+      "existing": "Nombre de usuario existente (opcional)",
+      "existingPlaceholder": "p. ej., ProfeRivera",
+      "add": "Agregar",
+      "addStudents": "Agregar estudiantes a la escuela",
+      "addStudentsText": "Un nombre por línea. Cada estudiante recibe una cuenta escolar y una tarjeta de acceso para imprimir. Asígnelos a clases desde la página de cada clase.",
+      "names": "Nombres de los estudiantes",
+      "namesPlaceholder": "Ana García\nBruno López\nCamila Torres",
+      "createAccounts": "Crear cuentas",
+      "noStaff": "Todavía no hay personal.",
+      "noStudents": "Todavía no hay estudiantes.",
+      "reset": "Nueva contraseña",
+      "resetConfirm": "¿Crear una contraseña nueva para {name}? La anterior dejará de funcionar.",
+      "remove": "Quitar de la escuela",
+      "removeConfirm": "¿Quitar a {name} de la escuela? Saldrá de todas las clases de esta escuela. Las cuentas escolares se desactivan."
+    },
+    "settings": {
+      "name": "Nombre de la escuela",
+      "yes": "Sí",
+      "no": "No",
+      "saved": "Configuración guardada",
+      "teachersCreate": "Los docentes pueden crear sus propias clases",
+      "ownAccounts": "Los estudiantes pueden unirse con su propia cuenta",
+      "ownAccountsHint": "Los estudiantes que ya usan Magic Cups escriben un código de clase; un docente aprueba a cada uno. Desactívelo para usar solo cuentas escolares.",
+      "gameSite": "Cuentas escolares en el sitio de juegos",
+      "gameSiteText": "Las cuentas escolares pueden jugar y crear juegos. Estas reglas las mantienen seguras. Las cuentas propias de los estudiantes conservan su configuración normal fuera de clase.",
+      "chat": "Chat",
+      "chatClassmates": "Chat solo con amigos de la clase",
+      "chatOff": "Sin chat",
+      "publishing": "Compartir juegos",
+      "publishSchool": "Solo dentro de la escuela",
+      "publishPublic": "También pueden compartir con todos",
+      "photos": "Las fotos de perfil de las cuentas escolares solo las ven sus compañeros de clase, sus docentes y sus amigos."
+    },
+    "cards": {
+      "title": "Tarjetas de acceso",
+      "print": "Imprimir",
+      "done": "Listo",
+      "once": "Imprímalas o anótelas ahora. Las contraseñas se muestran una sola vez. Si alguien pierde la suya, puede crear una nueva más tarde.",
+      "site": "Sitio web",
+      "username": "Nombre de usuario",
+      "password": "Contraseña",
+      "gone": "Estas tarjetas de acceso ya no están disponibles. Cree una contraseña nueva desde la página de la clase."
+    },
+    "errors": {
+      "notFound": "No pudimos encontrarlo, o no se puede abrir.",
+      "notTeacher": "Esta página es para docentes y admins de la escuela.",
+      "schoolName": "Ponga un nombre a la escuela.",
+      "className": "Ponga un nombre a la clase.",
+      "rosterName": "Escriba el nombre del estudiante.",
+      "names": "Escriba al menos un nombre.",
+      "badRole": "Ese rol no está permitido aquí.",
+      "ownRole": "No puede cambiar ni quitar su propio rol de admin.",
+      "noAccount": "Primero crea una cuenta gratis.",
+      "noSuchUser": "No hay ninguna cuenta con ese nombre de usuario.",
+      "otherSchoolAccount": "Esa cuenta pertenece a otra escuela.",
+      "notSchoolAccount": "Aquí solo se puede crear una contraseña nueva para cuentas escolares. Los estudiantes con cuenta propia la restablecen ellos mismos.",
+      "classHasStudents": "Esta clase ya tuvo estudiantes, así que no se puede eliminar. Archívela en su lugar.",
+      "notInSchool": "Esa persona no está en esta escuela.",
+      "otherSchool": "Solo puede mover estudiantes entre clases de la misma escuela.",
+      "badCode": "Ese código de clase no funciona. Revísalo con tu profe.",
+      "staffUseTeach": "Usted es docente en esta escuela. Abra el Panel docente.",
+      "ownAccountsOff": "Esta escuela solo usa cuentas escolares. Pídele una tarjeta de acceso a tu profe.",
+      "lastTeacher": "Una clase necesita al menos un docente."
+    }
   }
 }

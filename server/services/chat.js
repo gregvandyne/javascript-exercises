@@ -8,6 +8,8 @@
 //  - Messages to the player come back in the language of t (req.t; English by default). Quick phrases are stored by id
 //    and shown to each reader in their own language, so friends who speak different languages can still say "Good game!".
 import { photoUrl } from './photos.js';
+import { accountRules } from './schools.js';
+const schoolChatOff = u => { const r = accountRules(u); return !!r && r.chat === 'off'; };
 import { q, uid, now, today, migrate, audit } from '../db.js';
 import { config } from '../config.js';
 import { hasProfanity, personalInfo, foldDigits } from './textfilter.js';
@@ -53,6 +55,8 @@ export function canChat(me, other, t = tEn) {
   if (other.is_guest) return no('guest_other');
   const name = other.display_name;
   if (!accepted(me.id, other.id) || !accepted(other.id, me.id)) return no('not_friends', { name });
+  if (schoolChatOff(me)) return no('school_off_me');
+  if (schoolChatOff(other)) return no('school_off_other', { name });
   if (!me.chat_enabled) return no('chat_off_me');
   if (!other.chat_enabled) return no('chat_off_other', { name });
   if (isBlocked(me.id, other.id)) return no('blocked_by_me', { name });

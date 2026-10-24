@@ -153,7 +153,7 @@ router.get('/admin', (req, res) => {
   const n = { queue: c.queue, reports: c.reports, chat: c.chat };
   const content = { queue: queueTab, reports: reportsTab, chat: chatTab, users: usersTab, audit: auditTab }[tab](req);
   const body = html`
-  <div class="pagehead"><h1>🛡️ Admin</h1><div class="row"><a class="btn btn-primary" href="/admin/stats"><span aria-hidden="true">📊</span> Stats</a></div></div>
+  <div class="pagehead"><h1>🛡️ Admin</h1><div class="row"><a class="btn btn-primary" href="/admin/stats"><span aria-hidden="true">📊</span> Stats</a><a class="btn" href="/admin/schools"><span aria-hidden="true">🏫</span> Schools</a></div></div>
   ${aiSpendPanel()}
   <nav class="tabs" aria-label="Admin sections">${TABS.map(([k, e, l]) => html`<a href="/admin?tab=${k}" ${k === tab ? raw('aria-current="page"') : ''}><span aria-hidden="true">${e}</span>&nbsp;${l}${n[k] ? html`&nbsp;<span class="badge">${n[k]}</span>` : ''}</a>`)}</nav>
   ${content}

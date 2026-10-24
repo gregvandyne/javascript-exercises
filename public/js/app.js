@@ -70,6 +70,7 @@ if (document.querySelector('[data-live]')) setInterval(() => { if (!document.hid
 document.addEventListener('submit', async e => {
   const f = e.target.closest('form[data-api]'); if (!f) return;
   e.preventDefault();
+  if (f.dataset.confirm && !window.confirm(f.dataset.confirm)) return;
   const btn = f.querySelector('[type=submit]'); if (btn) btn.disabled = true;
   $$('.err', f).forEach(x => (x.textContent = '')); $$('[aria-invalid]', f).forEach(x => x.removeAttribute('aria-invalid'));
   const body = Object.fromEntries(new FormData(f).entries());

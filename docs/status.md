@@ -21,6 +21,7 @@ _Last updated: 2026-10-24_
 | **Friends-only chat**: delivery by polling, phone numbers/links/profanity refused, block, report | e2e `community.spec.js`, unit `chat.test.js` |
 | Reports: 3 distinct reporters auto-hide a game | e2e `reports.spec.js` |
 | Admin: review queue, reports, chat reports, users/bans, audit log; 404 for non-admins | e2e + unit `moderation.test.js` |
+| Schools: platform admin creates schools; school admins run classes, people and settings; teachers run classes, add students with login cards, approve own-account joins (with matching); school rules for school accounts | unit `schools.test.js`, e2e `schools.spec.js` |
 | Admin stats: visits (no tracking), accounts, plays, games, AI cost and tokens; admin-only | unit `stats.test.js` |
 | Safety suite: 76 adversarial prompts refused, 40 kid prompts allowed; scanner fails fetch/links/eval, flags flashing | `tests/safety/` |
 | **13 site languages**: 🌐 picker (mouse, keyboard, phone, no-JS links), `?lang=` → cookie → account → Accept-Language → en, choice saved to the account, `<html lang dir>`, RTL for he/ar, English fallback per key, `BRB.user.lang` in games | unit `i18n.test.js`, e2e `i18n.spec.js`, RTL screenshots of home, game, play, Studio, chat, friends and Me |

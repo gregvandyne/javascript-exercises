@@ -7,6 +7,7 @@ import { avatar } from '../views/components.js';
 import * as auth from '../auth.js';
 import { q, audit } from '../db.js';
 import * as photos from '../services/photos.js';
+import { isStaff } from '../services/schools.js';
 import { rateLimit, allow } from '../services/ratelimit.js';
 import { availableLocales, normalizeCode, tHtml, setLangCookie, saveUserLang } from '../i18n/index.js';
 
@@ -141,6 +142,7 @@ router.get('/me', (req, res) => {
   const tiles = [
     !u.is_guest && ['👤', t('me.tiles.profile'), `/u/${u.username}`],
     ['❤️', t('me.tiles.favorites'), '/favorites'],
+    !u.is_guest && ['🏫', t('me.tiles.classes'), isStaff(u) ? '/teach' : '/classes'],
     ['🛠️', t('me.tiles.games'), '/build'],
     ['👫', t('me.tiles.friends'), '/friends'],
     ['💬', t('me.tiles.chat'), '/chat'],

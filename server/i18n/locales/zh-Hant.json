@@ -30,7 +30,8 @@
     "search": "搜尋",
     "build": "製作",
     "friends": "好友",
-    "me": "我的"
+    "me": "我的",
+    "classes": "班級"
   },
   "errors": {
     "goHome": "回首頁",
@@ -123,7 +124,8 @@
       "friends": "好友",
       "chat": "聊天",
       "admin": "管理",
-      "favorites": "我的最愛"
+      "favorites": "我的最愛",
+      "classes": "我的班級"
     },
     "look": {
       "heading": "選擇你的造型",
@@ -183,7 +185,8 @@
   "vis": {
     "private": "只有我",
     "friends": "好友",
-    "public": "所有人"
+    "public": "所有人",
+    "school": "我的學校"
   },
   "status": {
     "hidden": "已隱藏",
@@ -467,7 +470,8 @@
       "guest": "這位玩家是訪客。他們需要先建立免費帳號，你們才能成為好友。",
       "already": "你和 {name} 已經是好友了。",
       "alreadyAsked": "你已經邀請過 {name} 了。等他們答應吧。",
-      "sent": "已傳送好友邀請給 {name}！要等他們答應喔。"
+      "sent": "已傳送好友邀請給 {name}！要等他們答應喔。",
+      "classmatesOnly": "學校帳號只能和同班同學當好友。"
     }
   },
   "profile": {
@@ -575,7 +579,9 @@
       "chat_off_me": "你的聊天已關閉。大人可以在「我的」打開它。",
       "chat_off_other": "{name} 關閉了聊天。",
       "blocked_by_me": "你封鎖了 {name}。你可以在「好友」頁面解除封鎖。",
-      "blocked_by_other": "你現在不能和 {name} 聊天。"
+      "blocked_by_other": "你現在不能和 {name} 聊天。",
+      "school_off_me": "你的學校關閉了聊天。",
+      "school_off_other": "{name} 的學校關閉了聊天。"
     },
     "paused": "聊天正在休息一下。{minutes} 分鐘後就能再打字。你還是可以傳快速訊息。",
     "errors": {
@@ -634,7 +640,8 @@
     "shareText": {
       "private": "只有你能玩。",
       "friends": "只有你和你在 Magic Cups 上的好友能玩。",
-      "public": "經過快速安全檢查後，Magic Cups 上的所有人都能找到並玩它。"
+      "public": "經過快速安全檢查後，Magic Cups 上的所有人都能找到並玩它。",
+      "school": "學校裡的每個人都能找到並玩它。"
     },
     "status": {
       "hidden": "暫時隱藏",
@@ -732,7 +739,9 @@
     "updateLive": "更新已對所有人上線！",
     "public": "你的遊戲公開了！",
     "updateWaiting": "你的更新正在等待快速檢查。在那之前，玩家會繼續玩舊版本。",
-    "waiting": "你的遊戲正在等待快速安全檢查。一通過我們就會分享出去。"
+    "waiting": "你的遊戲正在等待快速安全檢查。一通過我們就會分享出去。",
+    "school": "已在你的學校上線！學校裡的每個人都能找到並玩它。",
+    "schoolOnly": "你的學校讓遊戲只留在學校裡。改成分享給你的學校吧。"
   },
   "builder": {
     "kindRefusal": "這個我沒辦法幫忙。我們來做點好玩的東西吧！你想做什麼樣的遊戲？",
@@ -977,7 +986,8 @@
       "vis": {
         "private": "只有我",
         "friends": "好友",
-        "public": "所有人"
+        "public": "所有人",
+        "school": "我的學校"
       },
       "top": {
         "inReview": "審核中",
@@ -1119,5 +1129,170 @@
     "emptyTitle": "還沒有最愛",
     "emptyText": "在任何遊戲按 ❤️ 最愛，它就會在這裡等你。",
     "emptyAction": "找遊戲"
+  },
+  "classes": {
+    "title": "我的班級",
+    "none": "還沒有班級",
+    "noneText": "老師給你班級代碼了嗎？在下面輸入吧。",
+    "guest": "先建立免費帳號，再用老師給你的代碼加入班級。",
+    "waiting": "等老師答應",
+    "join": "加入班級",
+    "joinText": "輸入老師給你的代碼。老師答應後，班級就會出現在這裡。",
+    "code": "班級代碼",
+    "joinButton": "加入",
+    "sent": "已申請加入 {name}。老師很快就會答應！",
+    "classmates": "{count, plural, other {# 位同學}}",
+    "noLessons": "還沒有課程",
+    "noLessonsText": "老師會在這裡放上課程和遊戲。"
+  },
+  "school": {
+    "nav": {
+      "teach": "我的教學"
+    },
+    "tabs": {
+      "classes": "班級",
+      "people": "成員",
+      "settings": "設定"
+    },
+    "actions": "操作",
+    "save": "儲存",
+    "roles": {
+      "admin": "校務管理員",
+      "teacher": "老師",
+      "student": "學生"
+    },
+    "teach": {
+      "title": "我的教學",
+      "none": "還沒有班級",
+      "noneText": "在下方建立你的第一個班級。你會取得一組代碼，可以分享給學生。",
+      "noneAsk": "請校務管理員將你加入班級。"
+    },
+    "class": {
+      "new": "新增班級",
+      "create": "建立班級",
+      "name": "班級名稱",
+      "namePlaceholder": "例如：四年二班 數學",
+      "subject": "科目",
+      "grade": "年級",
+      "school": "學校",
+      "teachers": "老師",
+      "students": "學生",
+      "classes": "班級",
+      "code": "代碼",
+      "gradeN": "{grade} 年級",
+      "studentsN": "{count, plural, other {# 位學生}}",
+      "requestsN": "{count, plural, other {# 筆申請}}",
+      "none": "還沒有班級",
+      "noneText": "在上方建立班級，或讓老師自行建立。",
+      "archived": "{count, plural, other {# 個已封存的班級}}",
+      "isArchived": "已封存",
+      "archive": "封存",
+      "restore": "還原",
+      "delete": "刪除",
+      "archiveConfirm": "要封存 {name} 嗎？學生將看不到這個班級，但紀錄會保留。之後可以還原。",
+      "deleteConfirm": "要刪除 {name} 嗎？此動作無法復原。",
+      "joinCode": "班級代碼",
+      "joinCodeText": "擁有自己 Magic Cups 帳號的學生，可在「班級」頁面輸入這組代碼。每位學生都需要你核准。",
+      "newCode": "新代碼",
+      "newCodeConfirm": "要產生新代碼嗎？舊代碼將會失效。",
+      "noStudents": "還沒有學生。請在下方新增，或分享班級代碼。",
+      "addStudents": "新增學生",
+      "newAccounts": "新的學校帳號（每行一個名字）",
+      "newAccountsHint": "每位學生會取得一組使用者名稱和密碼，可印成登入卡。真實姓名只有老師看得到。",
+      "fromSchool": "或從你的學校新增學生",
+      "add": "新增",
+      "addTeacher": "新增老師",
+      "moveTo": "移到班級",
+      "move": "移動",
+      "removeStudent": "移除",
+      "removeConfirm": "要將 {name} 從這個班級移除嗎？他們在這個班級的作品會保留。",
+      "edit": "編輯班級"
+    },
+    "requests": {
+      "title": "{count, plural, other {# 位學生想加入}}",
+      "text": "這些學生用自己的帳號輸入了班級代碼。請輸入他們的真實姓名，以列入班級名單。如果學校已經為他們建立帳號，請選擇該帳號，讓班級紀錄一併轉移。",
+      "realName": "真實姓名（只有老師看得到）",
+      "sameAs": "與此學校帳號為同一位學生",
+      "sameAsNone": "不是，這是新學生",
+      "approve": "核准",
+      "decline": "拒絕",
+      "declineConfirm": "要拒絕 @{name} 嗎？"
+    },
+    "people": {
+      "staff": "教職員",
+      "students": "學生",
+      "name": "姓名",
+      "username": "使用者名稱",
+      "role": "身分",
+      "grade": "年級",
+      "schoolAccount": "學校帳號",
+      "ownAccount": "個人帳號",
+      "addStaff": "新增老師或校務管理員",
+      "addStaffText": "輸入對方的姓名。使用者名稱留空會建立學校帳號（你會取得登入卡）；若對方已有帳號，請輸入該帳號的使用者名稱。",
+      "realName": "真實姓名",
+      "existing": "現有使用者名稱（選填）",
+      "existingPlaceholder": "例如：TeacherLin",
+      "add": "新增",
+      "addStudents": "將學生加入學校",
+      "addStudentsText": "每行一個名字。每位學生會取得一個學校帳號和可列印的登入卡。請在各班級頁面將他們加入班級。",
+      "names": "學生姓名",
+      "namesPlaceholder": "陳宥廷\n林芯妤\n王柏翰",
+      "createAccounts": "建立帳號",
+      "noStaff": "還沒有教職員。",
+      "noStudents": "還沒有學生。",
+      "reset": "新密碼",
+      "resetConfirm": "要為 {name} 產生新密碼嗎？舊密碼將會失效。",
+      "remove": "從學校移除",
+      "removeConfirm": "要將 {name} 從學校移除嗎？對方會離開這所學校的所有班級，學校帳號也會停用。"
+    },
+    "settings": {
+      "name": "學校名稱",
+      "yes": "是",
+      "no": "否",
+      "saved": "設定已儲存",
+      "teachersCreate": "老師可以自行建立班級",
+      "ownAccounts": "學生可以用個人帳號加入",
+      "ownAccountsHint": "已經在使用 Magic Cups 的學生輸入班級代碼後，由老師逐一核准。關閉此選項即只使用學校帳號。",
+      "gameSite": "學校帳號在遊戲網站上的設定",
+      "gameSiteText": "學校帳號可以玩遊戲和製作遊戲，以下規則能確保他們的安全。學生的個人帳號在課堂之外會維持原本的設定。",
+      "chat": "聊天",
+      "chatClassmates": "只能和同班的好友聊天",
+      "chatOff": "不開放聊天",
+      "publishing": "分享遊戲",
+      "publishSchool": "僅限校內",
+      "publishPublic": "也可以分享給所有人",
+      "photos": "學校帳號的個人照片只有同班同學、老師和好友看得到。"
+    },
+    "cards": {
+      "title": "登入卡",
+      "print": "列印",
+      "done": "完成",
+      "once": "請現在列印或抄寫下來。密碼只會顯示一次。如果遺失，之後可以再產生新密碼。",
+      "site": "網站",
+      "username": "使用者名稱",
+      "password": "密碼",
+      "gone": "這些登入卡已無法再顯示。請到班級頁面產生新密碼。"
+    },
+    "errors": {
+      "notFound": "找不到該項目，或你沒有權限開啟。",
+      "notTeacher": "此頁面僅供老師和校務管理員使用。",
+      "schoolName": "請輸入學校名稱。",
+      "className": "請輸入班級名稱。",
+      "rosterName": "請輸入學生的姓名。",
+      "names": "請至少輸入一個名字。",
+      "badRole": "這裡不允許設定這個身分。",
+      "ownRole": "你無法變更或移除自己的管理員身分。",
+      "noAccount": "請先建立免費帳號。",
+      "noSuchUser": "沒有這個使用者名稱的帳號。",
+      "otherSchoolAccount": "這個帳號屬於其他學校。",
+      "notSchoolAccount": "這裡只能為學校帳號產生新密碼。使用個人帳號的學生請自行重設密碼。",
+      "classHasStudents": "這個班級曾經有學生，所以無法刪除。請改為封存。",
+      "notInSchool": "此人不在這所學校。",
+      "otherSchool": "只能在同一所學校的班級之間移動學生。",
+      "badCode": "這個班級代碼不能用。請和老師確認一下。",
+      "staffUseTeach": "你是這所學校的老師。請改為開啟「我的教學」。",
+      "ownAccountsOff": "這所學校只使用學校帳號。請向老師拿登入卡。",
+      "lastTeacher": "每個班級至少需要一位老師。"
+    }
   }
 }

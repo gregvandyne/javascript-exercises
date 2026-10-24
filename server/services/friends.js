@@ -2,6 +2,7 @@
 // Storage: one 'pending' row (requester -> target) while waiting; two 'accepted' rows (both directions) once friends.
 import { q, now, tx, audit } from '../db.js';
 import { tEn } from '../i18n/index.js';
+import { classmates } from './schools.js';
 
 const USER_COLS = 'u.id, u.username, u.display_name, u.avatar, u.color, u.photo_at, u.is_guest, u.chat_enabled';
 
@@ -20,6 +21,8 @@ export function addByCode(user, code, tr = tEn) {
   if (!t || t.banned) return fail(tr('friends.api.codeNotFound'));
   if (t.id === user.id) return fail(tr('friends.api.ownCode'));
   if (t.is_guest) return fail(tr('friends.api.guest'));
+  // School accounts make friends with classmates only (the school's safe default).
+  if ((user.managed_school || t.managed_school) && !classmates(user.id, t.id)) return fail(tr('friends.api.classmatesOnly'));
   const name = t.display_name;
   const mine = q.get('SELECT status FROM friends WHERE user_id=? AND friend_id=?', user.id, t.id);
   const theirs = q.get('SELECT status FROM friends WHERE user_id=? AND friend_id=?', t.id, user.id);
