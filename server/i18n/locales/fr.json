@@ -1210,7 +1210,8 @@
         "now": "La mise à jour est immédiate.",
         "notYet": "Pas encore",
         "button": "Mettre à jour"
-      }
+      },
+      "reconnecting": "La connexion a coupé, mais le Constructeur travaille encore. Patiente un peu…"
     }
   }
 }

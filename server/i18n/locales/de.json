@@ -1211,7 +1211,8 @@
         "now": "Es wird sofort aktualisiert.",
         "notYet": "Noch nicht",
         "button": "Aktualisieren"
-      }
+      },
+      "reconnecting": "Die Verbindung ist weg, aber der Baumeister arbeitet weiter. Kurz warten…"
     }
   }
 }

@@ -1211,7 +1211,8 @@
         "now": "Hij wordt meteen bijgewerkt.",
         "notYet": "Nog niet",
         "button": "Bijwerken"
-      }
+      },
+      "reconnecting": "De verbinding viel weg, maar de Bouwer is nog bezig. Even geduld…"
     }
   }
 }

@@ -1210,7 +1210,8 @@
         "now": "Se actualiza enseguida.",
         "notYet": "Todavía no",
         "button": "Actualizar"
-      }
+      },
+      "reconnecting": "Se cortó la conexión, pero el Constructor sigue trabajando. Espera un poco…"
     }
   }
 }

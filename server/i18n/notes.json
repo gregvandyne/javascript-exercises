@@ -238,5 +238,6 @@
   "js.studio.update.version": "Used inside js.studio.update.text. {number} is a version number.",
   "js.studio.update.publicText": "{live} is a version number.",
   "builder.budgetResting": "Shown in the Builder chat when the site's daily/monthly AI spending cap is reached; the offline builder takes over. Kid reading level.",
-  "uploads.image.resting": "Shown when a child uploads a picture while the AI spending cap is reached, so the picture can't be safety-checked. Kid reading level."
+  "uploads.image.resting": "Shown when a child uploads a picture while the AI spending cap is reached, so the picture can't be safety-checked. Kid reading level.",
+  "js.studio.reconnecting": "Status line in the Studio when the phone's connection to the Builder dropped mid-build; the Builder keeps working and the page waits for it. Kid reading level."
 }
