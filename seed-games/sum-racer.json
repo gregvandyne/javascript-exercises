@@ -1,0 +1,14 @@
+{
+  "slug": "sum-racer",
+  "title": "Sum Racer",
+  "icon": "🏎️",
+  "cover": "sunset",
+  "category": "learning",
+  "tags": "math,maths,racing,addition,subtraction,times tables,division,learning,kart,2 player",
+  "description": "Answer maths questions to zoom your kart past Zippy the bunny, Bolt the robot and Rex the dino. Race 7 tracks from adding to 10 up to times tables, sharing and a mixed Galaxy Grand Prix. Tap the answer or type it, and race a friend on one phone.",
+  "orientation": "any",
+  "players_max": 2,
+  "age_rating": "everyone",
+  "featured": true,
+  "notes": "Canvas 2D side-scrolling race with parallax scenery drawn in code for 7 tracks (Number Lane, Sunny Speedway, Desert Dash, Snowy Summit, Jungle Jam, Volcano Valley, Galaxy Grand Prix) plus a Practice Loop where you pick the times tables (2-12). Answer by tapping one of 4 choices or with a keypad (keyboard digits + Enter). Right answers boost the kart (streaks give Turbo); wrong answers give a short wobble and a kind correction ('7 + 5 is 12'). Rivals are rubber-banded to the track's pace, weaker in the final stretch, so a steady answerer wins about half the time and loses narrowly. No answer timers; the last kart is towed home. Missed facts return 3 questions later and once more after a right retry, and are saved as 'tricky facts' that come back in later races until answered right in a later race. Two players: split screen (top half upside down in portrait, side by side in landscape). Saves best place, stars, wins per track, tricky facts and total right answers in BRB.storage key 'sum-racer-v1' (player 1 only). Score = player 1's right answers x track multiplier (1-6) + 50 for a win, submitted with label 'race points'. Loads Google Font Fredoka. window.__brbTest exposes state/start/answer/step/skipAnimations/finish/questionsFor/deck/seed/tricky/save/frameStats for verifiers."
+}

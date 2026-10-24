@@ -59,8 +59,8 @@ const RECIPES = {
     await wait(2500); // let the Go! banner fade
   } },
   'word-hunt': { viewport: PORTRAIT, async prep(f) {
-    await hook(f); await f.evaluate(() => window.__brbTest.start({ theme: 'Ocean', difficulty: 'easy', seed: 3 }));
-    await f.evaluate(() => { const t = window.__brbTest; t.skipAnimations && t.skipAnimations(); const s = t.state(); s.words.slice(0, 2).forEach(w => t.select(w.start, w.end)); });
+    await hook(f); await f.evaluate(() => window.__brbTest.start({ theme: 'Space', difficulty: 'medium', seed: 3 }));
+    await f.evaluate(() => { const t = window.__brbTest; t.skipAnimations && t.skipAnimations(); const s = t.state(); s.words.slice(0, 4).forEach(w => t.select(w.start, w.end)); });
     await wait(900);
   } },
   'sum-racer': { viewport: PORTRAIT, async prep(f) {
