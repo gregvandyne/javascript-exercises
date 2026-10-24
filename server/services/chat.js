@@ -22,12 +22,12 @@ export const REPORT_REASONS = [['mean', 'Mean or rude'], ['scary', 'Scary'], ['p
 
 const BLOCKED_TEXT = {
   words: "Oops! That message has words we don't allow. Try saying it a kinder way.",
-  phone: "We didn't send that. Phone numbers stay private on Magic Cup, even with friends.",
-  email: "We didn't send that. Email addresses stay private on Magic Cup.",
+  phone: "We didn't send that. Phone numbers stay private on Magic Cups, even with friends.",
+  email: "We didn't send that. Email addresses stay private on Magic Cups.",
   link: "We didn't send that. Links aren't allowed in chat. Share a game with the 🎮 button instead.",
   address: "We didn't send that. Home addresses stay private. Never share where you live.",
-  contact: "We didn't send that. Keep chat on Magic Cup: no other apps, schools or meet-ups.",
-  handle: "We didn't send that. Keep chat on Magic Cup: no usernames from other apps.",
+  contact: "We didn't send that. Keep chat on Magic Cups: no other apps, schools or meet-ups.",
+  handle: "We didn't send that. Keep chat on Magic Cups: no usernames from other apps.",
 };
 
 /** Strip control and bidi-override characters, squash whitespace, trim. */
@@ -43,7 +43,7 @@ export function canChat(me, other) {
   const no = (code, reason) => ({ ok: false, code, reason });
   if (!me || me.is_guest) return no('guest', 'Make a free account to chat with friends.');
   if (me.banned) return no('banned', 'Your account is paused, so chat is off.');
-  if (!other || other.banned) return no('missing', "This player isn't on Magic Cup right now.");
+  if (!other || other.banned) return no('missing', "This player isn't on Magic Cups right now.");
   if (other.id === me.id) return no('self', "You can't chat with yourself. Pick a friend!");
   if (other.is_guest) return no('guest_other', 'You can only chat with friends who have a free account.');
   if (!accepted(me.id, other.id) || !accepted(other.id, me.id)) return no('not_friends', `You can only chat with friends. Add ${other.display_name} with their friend code first, and they need to say yes.`);

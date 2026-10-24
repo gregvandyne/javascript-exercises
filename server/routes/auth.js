@@ -21,10 +21,10 @@ function authPage(req, res, mode) {
     <div class="panel">
       <div class="center" style="font-size:3rem" aria-hidden="true">${isSignup ? '🎉' : '👋'}</div>
       <h1 class="center">${isSignup ? (upgrading ? 'Keep your progress' : 'Make a free account') : 'Welcome back!'}</h1>
-      <p class="center muted">${isSignup ? 'Just a fun name and a password. No email needed.' : 'Sign in with your Magic Cup name and password.'}</p>
+      <p class="center muted">${isSignup ? 'Just a fun name and a password. No email needed.' : 'Sign in with your Magic Cups name and password.'}</p>
       ${upgrading ? html`<p class="notice good">You are playing as <b>${u.display_name}</b>. Everything you saved comes with you.</p>` : ''}
       <form data-api="/api/auth/${isSignup ? 'signup' : 'login'}" data-next="${next}" novalidate>
-        <div class="field"><label for="username">${isSignup ? 'Pick a fun name' : 'Your Magic Cup name'}</label>
+        <div class="field"><label for="username">${isSignup ? 'Pick a fun name' : 'Your Magic Cups name'}</label>
           <input class="input" id="username" name="username" autocomplete="username" required minlength="3" maxlength="16" autocapitalize="off" spellcheck="false" placeholder="${isSignup ? 'like RocketPanda' : ''}">
           ${isSignup ? html`<span class="hint">3 to 16 letters or numbers. Don't use your real name.</span>` : ''}
           <span class="err" id="username-err" aria-live="polite"></span></div>

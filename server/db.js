@@ -1,4 +1,4 @@
-// Magic Cup database: SQLite via better-sqlite3. One file, WAL mode, versioned migrations.
+// Magic Cups database: SQLite via better-sqlite3. One file, WAL mode, versioned migrations.
 // Reused from the starter with chat tables and update-review fields added.
 // Everything else talks to the DB through `q` (and the service modules), so a Postgres swap is a repository-layer change.
 import Database from 'better-sqlite3';

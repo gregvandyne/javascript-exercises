@@ -14,7 +14,7 @@ import { config } from '../config.js';
 export const router = Router();
 const SHARE_TEXT = {
   private: 'Only you can open this game. Change it to Friends or Everyone to share it.',
-  friends: 'Only your friends on Magic Cup can open this link.',
+  friends: 'Only your friends on Magic Cups can open this link.',
   public: 'Anyone with the link can play this game.',
 };
 export const REPORT_REASONS = [['scary', 'It is too scary'], ['mean', 'It is mean or rude'], ['grownup', 'It has grown-up stuff'], ['broken', 'It does not work'], ['copy', 'It copies someone else'], ['other', 'Something else']];

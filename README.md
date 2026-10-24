@@ -1,4 +1,4 @@
-# Magic Cup
+# Magic Cups
 
 A free, kid-safe website where anyone can **play** web games and **build** their own by talking to an AI Builder (Claude).
 Think "Roblox for web games", for a 7-year-old, a 12-year-old and their parent sharing one phone.
@@ -16,7 +16,7 @@ npm install && npm run seed && npm start
 # open http://localhost:3000
 ```
 
-`npm run seed` creates the admin account (prints a random password unless you set `ADMIN_PASSWORD`), the official **Magic Cup** builder account, and the six featured launch games: Shark Plank (hangman for early readers), Ring Rumble (two-player wrestling; on a desktop both players share one keyboard), Footy Tycoon (a soccer property board game), Drop Four (connect-four with a three-level robot), Happy Putt (18-hole mini golf inspired by *Happy Gilmore*) and Castle Clash (chess with lessons, puzzles and a four-level robot). The list lives in `SEED_GAMES` in `scripts/seed.js`. Re-running the seed is safe and publishes an updated version of a launch game when its HTML changed.
+`npm run seed` creates the admin account (prints a random password unless you set `ADMIN_PASSWORD`), the official **Magic Cups** builder account, and the six featured launch games: Shark Plank (hangman for early readers), Ring Rumble (two-player wrestling; on a desktop both players share one keyboard), Footy Tycoon (a soccer property board game), Drop Four (connect-four with a three-level robot), Happy Putt (18-hole mini golf inspired by *Happy Gilmore*) and Castle Clash (chess with lessons, puzzles and a four-level robot). The list lives in `SEED_GAMES` in `scripts/seed.js`. Re-running the seed is safe and publishes an updated version of a launch game when its HTML changed.
 
 No API key is needed: without `ANTHROPIC_API_KEY` the Builder uses a built-in mock that still makes real, playable games from templates, and public publishing goes to the human review queue.
 
@@ -56,7 +56,7 @@ In environments with a pre-installed Chromium at `/opt/pw-browsers`, the e2e con
 
 ## Deploy
 
-**Docker**: `docker build -t magic-cup . && docker run -p 3000:3000 -v brb-data:/data -e ADMIN_PASSWORD=... -e SESSION_SECRET=... magic-cup`. The container seeds on boot (idempotent) and stores everything in `/data`.
+**Docker**: `docker build -t magic-cups . && docker run -p 3000:3000 -v brb-data:/data -e ADMIN_PASSWORD=... -e SESSION_SECRET=... magic-cups`. The container seeds on boot (idempotent) and stores everything in `/data`.
 
 **Render**: push the repo and create a Blueprint from `render.yaml` (one web service + a 2 GB persistent disk at `/data`). Set `ADMIN_PASSWORD` and optionally `ANTHROPIC_API_KEY` in the dashboard.
 
