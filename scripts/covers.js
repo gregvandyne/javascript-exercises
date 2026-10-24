@@ -44,10 +44,19 @@ const RECIPES = {
     for (const m of ['e4', 'e5', 'Nf3', 'Nc6', 'Bc4', 'Bc5', 'c3', 'Nf6']) await f.evaluate(m => window.__brbTest.move(m), m);
     await wait(900);
   } },
-  'brick-drop': { viewport: PORTRAIT, async prep(f) {
+  'brick-drop': { viewport: PORTRAIT, touch: true, async prep(f) {
     await hook(f); await f.evaluate(() => window.__brbTest.start({ mode: 'marathon', seed: 7 }));
-    await f.evaluate(() => { const t = window.__brbTest; t.skipAnimations && t.skipAnimations(); const moves = [['left', 'left', 'left', 'left'], ['left', 'left'], [], ['right', 'right'], ['right', 'right', 'right', 'right'], ['rotateCW', 'left', 'left', 'left'], ['rotateCW', 'right', 'right', 'right']]; for (const seq of moves) { for (const a of seq) t.input(a); t.input('hard'); } t.step && t.step(400); });
-    await wait(900);
+    await f.evaluate(() => {
+      const t = window.__brbTest; t.skipAnimations(); t.step(3000);
+      // A colourful half-built stack with a gap for the falling piece (ids 1-7 are the brick colours).
+      const rows = Array.from({ length: 20 }, () => Array(10).fill(0));
+      const stack = ['0000000000', '0000000000', '0000000000', '0000000000', '0000000000', '0000000000', '0000000000', '0000000000', '0000000000', '0000000000',
+        '0000000000', '0000000000', '0000000660', '1000006660', '1100055670', '1130755677', '2233775447', '2233370444', '6611177420', '6651174422'];
+      stack.forEach((r, y) => [...r].forEach((c, x) => { rows[y][x] = +c; }));
+      t.setBoard(rows); t.setQueue(['I', 'T', 'O', 'L']); t.step(200);
+      for (let i = 0; i < 6; i++) t.step(160);
+    });
+    await wait(2500); // let the Go! banner fade
   } },
   'word-hunt': { viewport: PORTRAIT, async prep(f) {
     await hook(f); await f.evaluate(() => window.__brbTest.start({ theme: 'Ocean', difficulty: 'easy', seed: 3 }));
@@ -74,7 +83,7 @@ async function capture(browser, slug) {
     r.end(`<!doctype html><style>html,body{margin:0;height:100%;background:#000}iframe{width:100%;height:100%;border:0;display:block}</style><iframe sandbox="${SANDBOX}" src="/g"></iframe>`);
   });
   await new Promise(r => srv.listen(0, r));
-  const ctx = await browser.newContext({ viewport: recipe.viewport, deviceScaleFactor: 1.5, reducedMotion: 'no-preference' });
+  const ctx = await browser.newContext({ viewport: recipe.viewport, deviceScaleFactor: 1.5, reducedMotion: 'no-preference', ...(recipe.touch ? { hasTouch: true } : {}) });
   const page = await ctx.newPage();
   await page.route(/fonts\.(googleapis|gstatic)\.com/, route => {
     try {
