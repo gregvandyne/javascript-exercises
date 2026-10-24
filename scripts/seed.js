@@ -1,4 +1,4 @@
-// Seed: admin account (ADMIN_USERNAME / ADMIN_PASSWORD), the official "Magic Cups" builder, and the three featured games.
+// Seed: admin account (ADMIN_USERNAME / ADMIN_PASSWORD), a demo teacher (DEMO_TEACHER_PASSWORD, see seedDemoTeacher), the official "Magic Cups" builder, and the three featured games.
 // Safe to re-run.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -8,6 +8,7 @@ import { q } from '../server/db.js';
 import { config } from '../server/config.js';
 import { createUser, getUserByName, setPassword } from '../server/auth.js';
 import { importGame } from './import-game.js';
+import * as schools from '../server/services/schools.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 // The launch games, imported in this order (the first featured one becomes the home-page hero).
@@ -36,6 +37,23 @@ export function seed({ quiet = false } = {}) {
     const g = importGame(path.join(dir, `${f}.html`), path.join(dir, `${f}.json`), official.id);
     say(`  ✓ ${g.title}  /g/${g.slug}`);
   }
-  return { admin, official };
+  const demo = seedDemoTeacher(admin, say);
+  return { admin, official, demo };
+}
+
+/** With DEMO_TEACHER_PASSWORD set: a "Magic Cups Demo School" with the teacher DemoTeacher (that password, reset on
+ *  every boot like the admin's) and a starter class. Without it, nothing happens. Safe to re-run. */
+export function seedDemoTeacher(admin, say = () => {}) {
+  const pw = process.env.DEMO_TEACHER_PASSWORD;
+  if (!pw) return null;
+  const name = 'Magic Cups Demo School';
+  let school = q.get('SELECT * FROM schools WHERE name=? AND archived_at IS NULL ORDER BY created_at LIMIT 1', name);
+  if (!school) { school = schools.createSchool(admin, { name }).school; say(`Created "${name}"`); }
+  let teacher = getUserByName('DemoTeacher');
+  if (!teacher) { teacher = createUser({ username: 'DemoTeacher', password: pw, displayName: 'Demo Teacher', avatar: '🍎', color: '#2f6bff' }); say('Created the demo teacher DemoTeacher'); }
+  else setPassword(teacher.id, pw);
+  if (schools.roleIn(teacher, school.id) !== 'teacher') schools.addMember(admin, school.id, teacher.id, 'teacher', { rosterName: 'Demo Teacher' });
+  if (!schools.classesOf(teacher.id, 'teacher').some(c => c.school_id === school.id)) schools.createClass(teacher, school.id, { name: 'Demo Class', grade: '4' });
+  return { school, teacher };
 }
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) { seed(); console.log('Seed done.'); }
