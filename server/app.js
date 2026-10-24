@@ -1,4 +1,5 @@
 // App factory. createApp() returns a configured Express app (used by index.js and by tests).
+import { countVisits } from './services/traffic.js';
 import express from 'express';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -53,6 +54,7 @@ export function createApp() {
   app.use(express.json({ limit: '3mb' }));
   app.use(express.text({ type: 'text/plain', limit: '64kb' }));
   app.use(sessionMiddleware);
+  app.use(countVisits);
   app.use(i18n);
   app.use(csrfCheck);
 

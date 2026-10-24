@@ -37,6 +37,12 @@ export function costOf(model, usage = {}) {
 export function recordUsage(model, usage, day = today()) {
   const usd = costOf(model, usage);
   q.run('INSERT INTO ai_spend(day, usd, calls) VALUES (?,?,1) ON CONFLICT(day) DO UPDATE SET usd=usd+excluded.usd, calls=calls+1', day, usd);
+  // Token counts per model, for the admin stats page.
+  const u = usage || {}, m = String(model || 'unknown').replace(/-\d{8}$/, '').slice(0, 60);
+  q.run(`INSERT INTO ai_usage(day, model, calls, input, output, cache_read, cache_write, usd) VALUES (?,?,1,?,?,?,?,?)
+    ON CONFLICT(day, model) DO UPDATE SET calls=calls+1, input=input+excluded.input, output=output+excluded.output,
+    cache_read=cache_read+excluded.cache_read, cache_write=cache_write+excluded.cache_write, usd=usd+excluded.usd`,
+  day, m, u.input_tokens || 0, u.output_tokens || 0, u.cache_read_input_tokens || 0, u.cache_creation_input_tokens || 0, usd);
   return usd;
 }
 

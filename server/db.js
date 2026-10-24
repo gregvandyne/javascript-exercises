@@ -80,6 +80,14 @@ const MIGRATIONS = [
   ['0005_ai_spend', `CREATE TABLE IF NOT EXISTS ai_spend (day TEXT PRIMARY KEY, usd REAL NOT NULL DEFAULT 0, calls INTEGER NOT NULL DEFAULT 0);`],
   // Screenshot covers: when a version's picture was taken (0 = none yet) and how many tries failed.
   ['0006_version_shots', `ALTER TABLE game_versions ADD COLUMN shot_at INTEGER NOT NULL DEFAULT 0; ALTER TABLE game_versions ADD COLUMN shot_tries INTEGER NOT NULL DEFAULT 0;`],
+  // Admin stats: page views per day and area (area '_visitors' = distinct visitors that day), the day's visitor
+  // fingerprints (salted hashes, deleted after two days), AI tokens per day and model, and indexes for daily counts.
+  ['0007_stats', `CREATE TABLE IF NOT EXISTS traffic (day TEXT NOT NULL, area TEXT NOT NULL, views INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(day, area));
+    CREATE TABLE IF NOT EXISTS visit_seen (day TEXT NOT NULL, h TEXT NOT NULL, PRIMARY KEY(day, h));
+    CREATE TABLE IF NOT EXISTS ai_usage (day TEXT NOT NULL, model TEXT NOT NULL, calls INTEGER NOT NULL DEFAULT 0, input INTEGER NOT NULL DEFAULT 0, output INTEGER NOT NULL DEFAULT 0,
+      cache_read INTEGER NOT NULL DEFAULT 0, cache_write INTEGER NOT NULL DEFAULT 0, usd REAL NOT NULL DEFAULT 0, PRIMARY KEY(day, model));
+    CREATE INDEX IF NOT EXISTS plays_started ON plays(started_at);
+    CREATE INDEX IF NOT EXISTS users_created ON users(created_at);`],
 ];
 
 db.exec('CREATE TABLE IF NOT EXISTS migrations (name TEXT PRIMARY KEY, applied_at INTEGER NOT NULL)');
