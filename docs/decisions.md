@@ -73,3 +73,9 @@ Kid feedback showed the Builder refusing a soccer quiz about famous players and 
 list, the review queue and search, and its Studio and play page answer 404, even for the owner. The row and its versions
 stay in the database so reports, earnings history and the audit log still point at something; admins can still open it.
 Starter (seed) games can't be deleted, since they belong to the site.
+
+## Favorites are the ❤️ button (formerly "Like")
+The ❤️ button on a game was already saving a list (profiles showed it as "Favorite games"), so it is now called
+Favorite instead of adding a second, look-alike button. Signed-in players (accounts and guests) get a ❤️ My favorites
+row at the top of Home, a /favorites page and a Me tile. The list only shows games the player may still open, so games
+that go private or get deleted drop off. Existing likes became favorites with no migration.

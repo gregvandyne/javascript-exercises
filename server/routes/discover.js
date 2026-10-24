@@ -6,6 +6,7 @@ import { rail, cardGrid, emptyState, avatar, coverArt, categoryLabel } from '../
 import * as games from '../services/games.js';
 import * as presence from '../services/presence.js';
 import { rateLimit } from '../services/ratelimit.js';
+import { requireUser } from '../auth.js';
 
 export const router = Router();
 
@@ -20,6 +21,15 @@ function buildBanner(req) {
   </section>`;
 }
 
+// My favorites: every game this player tapped ❤️ on.
+router.get('/favorites', requireUser, (req, res) => {
+  const t = req.t;
+  const favs = games.favorites(req.user, req.user.id, 200);
+  const body = html`<div class="pagehead"><h1>❤️ ${t('favorites.title')}</h1></div>
+  ${favs.length ? cardGrid(favs, { ads: false }) : emptyState({ emoji: '🤍', title: t('favorites.emptyTitle'), text: t('favorites.emptyText'), action: { href: '/', label: t('favorites.emptyAction') } })}`;
+  page(req, res, { title: t('favorites.title'), active: 'me', body, back: '/me', backLabel: t('nav.me') });
+});
+
 router.get('/', (req, res) => {
   const t = req.t;
   const u = req.user;
@@ -27,6 +37,7 @@ router.get('/', (req, res) => {
   const hero = featured[0];
   const mine = u && !u.is_guest ? games.myGames(u.id, 12) : [];
   const rails = [
+    u ? rail({ title: t('home.rails.favorites'), emoji: '❤️', games: games.favorites(u, u.id, 16), user: u, ads: false, id: 'favorites', more: '/favorites' }) : '',
     rail({ title: t('home.rails.featured'), emoji: '⭐', games: featured, user: u, id: 'featured' }),
     buildBanner(req),
     rail({ title: t('home.rails.playing'), emoji: '🟢', games: games.playingNow(u, 12), user: u, id: 'playing', more: '/search?sort=playing' }),

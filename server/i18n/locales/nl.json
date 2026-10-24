@@ -124,7 +124,8 @@
       "friends": "Vrienden",
       "chat": "Chat",
       "money": "Mijn geld",
-      "admin": "Beheer"
+      "admin": "Beheer",
+      "favorites": "Mijn favorieten"
     },
     "look": {
       "heading": "Kies je look",
@@ -275,7 +276,8 @@
       "popular": "Populair",
       "rated": "Top",
       "new": "Nieuw",
-      "mine": "Mijn games"
+      "mine": "Mijn games",
+      "favorites": "Mijn favorieten"
     },
     "hero": {
       "label": "Uitgelichte game",
@@ -393,7 +395,7 @@
     "notReadyYet": "Deze game is nog niet klaar.",
     "play": "Spelen",
     "notReady": "Nog niet klaar om te spelen.",
-    "like": "Like",
+    "like": "Favoriet",
     "share": "Delen",
     "edit": "Bewerken",
     "updateWaiting": "een update wacht op controle",
@@ -403,7 +405,7 @@
       "noRatings": "nog geen beoordelingen",
       "playingNow": "spelen nu",
       "plays": "keer gespeeld",
-      "likes": "{count, plural, one {like} other {likes}}"
+      "likes": "{count, plural, one {favoriet} other {favorieten}}"
     },
     "about": {
       "heading": "Over deze game",
@@ -983,8 +985,8 @@
       "needSignIn": "Tik eerst op “Speel als gast” of log in.",
       "rated": "Je gaf {count, plural, one {# ster} other {# sterren}}. Het gemiddelde is nu {average}.",
       "thanksRating": "Bedankt voor je beoordeling!",
-      "liked": "Geliket!",
-      "unliked": "Like weggehaald",
+      "liked": "Toegevoegd aan je favorieten!",
+      "unliked": "Weggehaald uit je favorieten",
       "shareTitle": "Deel deze game",
       "link": "Link",
       "copyLink": "Link kopiëren",
@@ -998,10 +1000,10 @@
       "newBest": "Nieuw record: {score}!",
       "noFullscreen": "Volledig scherm werkt hier niet.",
       "tapFullscreen": "Tik op de knop Groot scherm om het groot te maken.",
-      "signInToLike": "Log in of speel als gast om games te liken.",
+      "signInToLike": "Log in of speel als gast om favorieten te bewaren.",
       "signInToRate": "Log in of speel als gast om games te beoordelen.",
-      "liked": "Geliket!",
-      "unliked": "Like weggehaald",
+      "liked": "Toegevoegd aan je favorieten!",
+      "unliked": "Weggehaald uit je favorieten",
       "rateTitle": "Beoordeel {title}",
       "stars": "Sterren",
       "starsLabel": "{count, plural, one {# ster} other {# sterren}}",
@@ -1227,5 +1229,11 @@
       },
       "reconnecting": "De verbinding viel weg, maar de Bouwer is nog bezig. Even geduld…"
     }
+  },
+  "favorites": {
+    "title": "Mijn favorieten",
+    "emptyTitle": "Nog geen favorieten",
+    "emptyText": "Tik bij een game op ❤️ Favoriet, dan wacht hij hier op je.",
+    "emptyAction": "Games zoeken"
   }
 }

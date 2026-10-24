@@ -116,6 +116,7 @@ router.get('/me', (req, res) => {
   if (!u) return res.redirect('/login?next=/me');
   const tiles = [
     !u.is_guest && ['👤', t('me.tiles.profile'), `/u/${u.username}`],
+    ['❤️', t('me.tiles.favorites'), '/favorites'],
     ['🛠️', t('me.tiles.games'), '/build'],
     ['👫', t('me.tiles.friends'), '/friends'],
     ['💬', t('me.tiles.chat'), '/chat'],

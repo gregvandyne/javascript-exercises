@@ -123,7 +123,8 @@
       "friends": "Amigos",
       "chat": "Chat",
       "money": "Mis ganancias",
-      "admin": "Admin"
+      "admin": "Admin",
+      "favorites": "Mis favoritos"
     },
     "look": {
       "heading": "Elige tu estilo",
@@ -274,7 +275,8 @@
       "popular": "Populares",
       "rated": "Mejor calificados",
       "new": "Nuevos",
-      "mine": "Mis juegos"
+      "mine": "Mis juegos",
+      "favorites": "Mis favoritos"
     },
     "hero": {
       "label": "Juego destacado",
@@ -392,7 +394,7 @@
     "notReadyYet": "Este juego todavía no está listo.",
     "play": "Jugar",
     "notReady": "Todavía no se puede jugar.",
-    "like": "Me gusta",
+    "like": "Favorito",
     "share": "Compartir",
     "edit": "Editar",
     "updateWaiting": "hay una actualización esperando revisión",
@@ -402,7 +404,7 @@
       "noRatings": "sin calificaciones aún",
       "playingNow": "jugando ahora",
       "plays": "{count, plural, one {partida} other {partidas}}",
-      "likes": "me gusta"
+      "likes": "{count, plural, one {favorito} other {favoritos}}"
     },
     "about": {
       "heading": "Sobre este juego",
@@ -982,8 +984,8 @@
       "needSignIn": "Primero toca “Jugar como invitado” o entra a tu cuenta.",
       "rated": "Le diste {count, plural, one {# estrella} other {# estrellas}}. Ahora el promedio es {average}.",
       "thanksRating": "¡Gracias por calificar!",
-      "liked": "¡Te gusta!",
-      "unliked": "Quitaste tu me gusta",
+      "liked": "¡Añadido a tus favoritos!",
+      "unliked": "Quitado de tus favoritos",
       "shareTitle": "Compartir este juego",
       "link": "Enlace",
       "copyLink": "Copiar enlace",
@@ -997,10 +999,10 @@
       "newBest": "¡Nuevo récord: {score}!",
       "noFullscreen": "La pantalla completa no está disponible aquí.",
       "tapFullscreen": "Toca el botón Agrandar para verlo en grande.",
-      "signInToLike": "Entra a tu cuenta o juega como invitado para darle me gusta a los juegos.",
+      "signInToLike": "Entra a tu cuenta o juega como invitado para guardar favoritos.",
       "signInToRate": "Entra a tu cuenta o juega como invitado para calificar juegos.",
-      "liked": "¡Te gusta!",
-      "unliked": "Quitaste tu me gusta",
+      "liked": "¡Añadido a tus favoritos!",
+      "unliked": "Quitado de tus favoritos",
       "rateTitle": "Calificar {title}",
       "stars": "Estrellas",
       "starsLabel": "{count, plural, one {# estrella} other {# estrellas}}",
@@ -1226,5 +1228,11 @@
       },
       "reconnecting": "Se cortó la conexión, pero el Constructor sigue trabajando. Espera un poco…"
     }
+  },
+  "favorites": {
+    "title": "Mis favoritos",
+    "emptyTitle": "Todavía no hay favoritos",
+    "emptyText": "Toca ❤️ Favorito en cualquier juego y te esperará aquí.",
+    "emptyAction": "Buscar juegos"
   }
 }

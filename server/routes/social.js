@@ -134,10 +134,7 @@ export function profileBadges(user, visibleGames, t = tEn) {
   };
   return BADGES.filter(([k]) => has[k]).map(([key, emoji]) => ({ key, emoji, label: t(`profile.badges.${key}.label`), why: t(`profile.badges.${key}.why`) }));
 }
-export function favouriteGames(viewer, userId, limit = 12) {
-  const v = games.visibleWhere(viewer);
-  return games.decorate(q.all(`${games.SELECT} JOIN likes l ON l.game_id=g.id AND l.user_id=? WHERE ${v.sql} ORDER BY l.created_at DESC LIMIT ?`, userId, ...v.params, limit));
-}
+export const favouriteGames = (viewer, userId, limit = 12) => games.favorites(viewer, userId, limit);
 
 router.get('/u/:username', (req, res) => {
   const t = req.t, f = req.fmt;
