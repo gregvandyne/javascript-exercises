@@ -6,7 +6,7 @@ import { avatar } from '../views/components.js';
 import * as auth from '../auth.js';
 import { q, audit } from '../db.js';
 import { rateLimit, allow } from '../services/ratelimit.js';
-import { LOCALES, normalizeCode, tHtml, setLangCookie, saveUserLang } from '../i18n/index.js';
+import { availableLocales, normalizeCode, tHtml, setLangCookie, saveUserLang } from '../i18n/index.js';
 
 export const router = Router();
 const safeNext = n => (typeof n === 'string' && /^\/(?!\/)[\w\-/?=&%.#]*$/.test(n) ? n : '/');
@@ -99,11 +99,12 @@ router.post('/api/me', auth.requireUser, rateLimit('me', 30, 60e3), (req, res) =
 /** The language choice on the Me page: a plain GET form (?lang=), so it works without JavaScript. */
 export function languagePanel(req) {
   const t = req.t;
+  if (availableLocales().length < 2) return '';
   return html`<section class="panel" id="language" aria-labelledby="lang-h"><h2 id="lang-h"><span aria-hidden="true">🌐</span> ${t('me.language.heading')}</h2>
     <p class="muted">${t('me.language.text')}</p>
     <form class="row" action="${req.path}" method="get" id="langform">
       <label class="sr-only" for="lang-select">${t('me.language.label')}</label>
-      <select class="input langselect" id="lang-select" name="lang">${LOCALES.map(l => html`<option value="${l.code}" lang="${l.code}" ${l.code === req.locale ? raw('selected') : ''}>${l.code === req.locale ? '✓ ' : ''}${l.name}</option>`)}</select>
+      <select class="input langselect" id="lang-select" name="lang">${availableLocales().map(l => html`<option value="${l.code}" lang="${l.code}" ${l.code === req.locale ? raw('selected') : ''}>${l.code === req.locale ? '✓ ' : ''}${l.name}</option>`)}</select>
       <button class="btn btn-primary" type="submit">${t('me.language.save')}</button>
     </form>
   </section>`;

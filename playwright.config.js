@@ -35,6 +35,6 @@ export default defineConfig({
     url: `http://localhost:${PORT}/health`,
     reuseExistingServer: false,
     timeout: 30_000,
-    env: { PORT: String(PORT), BRB_DATA_DIR: DATA, BRB_LOCALES_DIR: LOCALES, ADMIN_USERNAME: 'admin', ADMIN_PASSWORD: 'admin-pass-123', ANTHROPIC_API_KEY: '', BRB_SILENT: '1', REPORTS_TO_HIDE: '3' },
+    env: { PORT: String(PORT), BRB_DATA_DIR: DATA, BRB_LOCALES_DIR: LOCALES, BRB_ALL_LOCALES: '1', ADMIN_USERNAME: 'admin', ADMIN_PASSWORD: 'admin-pass-123', ANTHROPIC_API_KEY: '', BRB_SILENT: '1', REPORTS_TO_HIDE: '3' },
   },
 });

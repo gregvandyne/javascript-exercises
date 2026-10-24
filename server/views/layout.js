@@ -6,7 +6,7 @@
 import { html, raw, esc, jsonData } from './html.js';
 import { avatar } from './components.js';
 import { navBadges } from '../services/badges.js';
-import { LOCALES, localeInfo, tReq, clientStrings, DEFAULT_LOCALE } from '../i18n/index.js';
+import { availableLocales, localeInfo, tReq, clientStrings, DEFAULT_LOCALE } from '../i18n/index.js';
 
 const NAV = [
   ['home', '/', '🏠'],
@@ -25,11 +25,13 @@ function langHref(req, code) {
 /** The 🌐 language picker: a <details> menu of plain links, so it works with no JavaScript (app.js adds keys and outside-click). */
 export function langPicker(req) {
   const t = tReq(req); const cur = req.locale || DEFAULT_LOCALE; const info = localeInfo(cur);
+  const langs = availableLocales();
+  if (langs.length < 2) return '';   // nothing to choose yet
   return html`<details class="langpick" data-langpick>
     <summary class="lang-btn" aria-label="${t('layout.lang.button', { language: info.name })}" title="${t('layout.lang.title')}"><span class="globe" aria-hidden="true">🌐</span><span class="lang-code" aria-hidden="true">${cur.split('-')[0].toUpperCase()}</span></summary>
     <div class="lang-menu">
       <p class="lang-head" id="lang-head">${t('layout.lang.title')}</p>
-      <ul class="lang-list" aria-labelledby="lang-head">${LOCALES.map(l => html`<li><a href="${langHref(req, l.code)}" hreflang="${l.code}" ${l.code === cur ? raw('aria-current="true"') : ''}><span class="lang-check" aria-hidden="true">${l.code === cur ? '✓' : ''}</span><span class="lang-name" lang="${l.code}" dir="${l.dir}">${l.name}</span></a></li>`)}</ul>
+      <ul class="lang-list" aria-labelledby="lang-head">${langs.map(l => html`<li><a href="${langHref(req, l.code)}" hreflang="${l.code}" ${l.code === cur ? raw('aria-current="true"') : ''}><span class="lang-check" aria-hidden="true">${l.code === cur ? '✓' : ''}</span><span class="lang-name" lang="${l.code}" dir="${l.dir}">${l.name}</span></a></li>`)}</ul>
     </div>
   </details>`;
 }

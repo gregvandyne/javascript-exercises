@@ -75,6 +75,21 @@ export function reload(dir = LOCALES_DIR) {
 reload();
 export const dictionary = code => dicts.get(code) || {};
 
+/** Languages ready to offer: English, plus any locale with at least 90% of the English keys (en-GB only lists
+ *  its differences, so it counts once it has any). The picker and Accept-Language matching only use these, so a
+ *  half-done translation never shows up as a choice. BRB_ALL_LOCALES=1 offers every locale (tests, translators). */
+export const READY_SHARE = 0.9;
+export function availableCodes() {
+  if (process.env.BRB_ALL_LOCALES === '1') return CODES.slice();
+  const total = Object.keys(dictionary(DEFAULT_LOCALE)).length || 1;
+  return CODES.filter(c => {
+    if (c === DEFAULT_LOCALE) return true;
+    const n = Object.keys(dictionary(c)).length;
+    return c === 'en-GB' ? n > 0 : n / total >= READY_SHARE;
+  });
+}
+export const availableLocales = () => { const ok = new Set(availableCodes()); return LOCALES.filter(l => ok.has(l.code)); };
+
 /** Lookup order: the locale, then its base language (en-GB -> en), then English. */
 function chain(code) {
   const out = [code];
@@ -162,7 +177,7 @@ export function pickLocale({ query = null, cookie = null, user = null, acceptLan
   const fromQuery = normalizeCode(query); if (fromQuery) return { locale: fromQuery, source: 'query' };
   const fromCookie = normalizeCode(cookie); if (fromCookie) return { locale: fromCookie, source: 'cookie' };
   const fromUser = normalizeCode(user && user.lang); if (fromUser) return { locale: fromUser, source: 'user' };
-  const fromHeader = negotiate(acceptLanguage); if (fromHeader) return { locale: fromHeader, source: 'header' };
+  const fromHeader = negotiate(acceptLanguage); if (fromHeader && availableCodes().includes(fromHeader)) return { locale: fromHeader, source: 'header' };
   return { locale: DEFAULT_LOCALE, source: 'default' };
 }
 

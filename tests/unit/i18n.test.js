@@ -1,6 +1,7 @@
 // i18n: message format, t() fallback, plurals, locale negotiation, cookie precedence (HTTP), the locale-file guard
 // for translators, Intl formatting, and the Builder's language block.
 import './_setup.js';
+process.env.BRB_ALL_LOCALES = '1';   // these tests negotiate every locale; the readiness rule has its own test below
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -217,4 +218,22 @@ test('Builder: the system prompt asks for the builder\'s language; refusals come
     assert.deepEqual(r.chips, ['👻 Un fantôme gentil', '🎃 A pumpkin catch game', '🦇 A sleepy bat']);
     assert.deepEqual(refusal('selfharm', 'x').chips, [], 'no game chips after a self-harm message');
   } finally { i18n.reload(); }
+});
+
+test('only finished translations are offered (picker and Accept-Language)', () => {
+  const saved = process.env.BRB_ALL_LOCALES;
+  try {
+    delete process.env.BRB_ALL_LOCALES;
+    const en = i18n.dictionary('en'); const total = Object.keys(en).length;
+    for (const code of i18n.availableCodes()) {
+      if (code === 'en') continue;
+      const n = Object.keys(i18n.dictionary(code)).length;
+      assert.ok(code === 'en-GB' ? n > 0 : n / total >= i18n.READY_SHARE, `${code} offered with ${n}/${total} keys`);
+    }
+    assert.ok(i18n.availableCodes().includes('en'));
+    for (const code of i18n.CODES.filter(c => !i18n.availableCodes().includes(c)))
+      assert.equal(i18n.pickLocale({ acceptLanguage: code }).locale, 'en', `${code} is not ready, so the browser language falls back to English`);
+    process.env.BRB_ALL_LOCALES = '1';
+    assert.equal(i18n.availableCodes().length, i18n.CODES.length);
+  } finally { if (saved === undefined) delete process.env.BRB_ALL_LOCALES; else process.env.BRB_ALL_LOCALES = saved; }
 });
