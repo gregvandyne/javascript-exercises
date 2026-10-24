@@ -1,5 +1,6 @@
 // Page layout. Contract for every route:
-//   res.send(layout(req, { title, active, body, scripts, head, back, bodyClass, description, bare, i18n }))
+//   res.send(layout(req, { title, active, body, scripts, head, back, bodyClass, description, bare, mid, i18n }))
+//   mid: true = a medium-width page (reading pages like lessons)
 //   active: 'home'|'search'|'build'|'friends'|'me'|null   back: href for the Back link on inner pages
 //   scripts: ['/js/foo.js'] (ES modules)   bare: true = no nav/footer (play page)
 //   i18n: extra key prefixes to embed for the browser. Every page gets 'js.app' plus 'js.<name>' for each /js/<name>.js.
@@ -37,7 +38,7 @@ export function langPicker(req) {
   </details>`;
 }
 
-export function layout(req, { title = '', active = null, body = '', scripts = [], head = '', back = null, backLabel = null, bodyClass = '', description = null, bare = false, i18n = [] } = {}) {
+export function layout(req, { title = '', active = null, body = '', scripts = [], head = '', back = null, backLabel = null, bodyClass = '', description = null, bare = false, mid = false, i18n = [] } = {}) {
   const t = tReq(req);
   const locale = req.locale || DEFAULT_LOCALE; const info = localeInfo(locale);
   const u = req.user;
@@ -88,7 +89,7 @@ ${head}
 </head>
 <body class="${esc(bodyClass)}" data-user="${u ? esc(u.id) : ''}" data-guest="${u && u.is_guest ? '1' : ''}">
 ${nav}
-<main id="main"${bare ? '' : ' class="wrap"'}>${backHtml}${body}</main>
+<main id="main"${bare ? '' : mid ? ' class="wrap mid"' : ' class="wrap"'}>${backHtml}${body}</main>
 ${foot}
 <div class="toasts" role="status" aria-live="polite" id="toasts"></div>
 ${strings}
