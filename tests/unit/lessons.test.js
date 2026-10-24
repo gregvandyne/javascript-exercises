@@ -115,10 +115,21 @@ test('assigning to a class: units, order, dates; students see open lessons only;
 
 test('AI draft without a key: a template in the teacher’s language with a matching game', async () => {
   const d = templateDraft({ topic: 'planets' }, [{ id: publicGame.id, title: 'Planet Quiz', description: '', tags: '' }]);
-  assert.deepEqual(d.steps.map(s => s.kind), ['text', 'game', 'build', 'question', 'text']);
+  assert.deepEqual(d.steps.map(s => s.kind), ['text', 'game', 'build', 'question'], 'no separate wrap-up: the exit ticket ends it');
   assert.equal(d.steps[1].gameId, publicGame.id);
-  const r = await draftLesson({ topic: 'oceans' }, []);
-  assert.equal(r.ai, false); assert.equal(r.draft.steps.length, 4);
+  assert.equal(d.steps.reduce((n, s) => n + s.minutes, 0), 40, 'fills the default 40 minutes');
+  const r = await draftLesson({ topic: 'oceans', minutes: 20 }, []);
+  assert.equal(r.ai, false); assert.equal(r.draft.steps.length, 3, 'no game step when nothing matches');
+  assert.equal(r.draft.steps.reduce((n, s) => n + s.minutes, 0), 20, 'minutes scaled to the length asked for');
+  // small words and descriptions never pick a game; tags win over titles; subject words count after topic words
+  const catalog = [{ id: 'h', title: 'Hangman', description: 'guess the letters and words', tags: 'spelling' },
+    { id: 't', title: 'Fraction Pizza', description: '', tags: '' }, { id: 'g', title: 'Slice Race', description: '', tags: 'fractions, maths' }];
+  assert.equal(templateDraft({ topic: 'cats and dogs' }, catalog).steps.some(s => s.kind === 'game'), false, "'and' matched a description before");
+  assert.equal(templateDraft({ topic: 'letters' }, catalog).steps.some(s => s.kind === 'game'), false, 'never on the description alone');
+  assert.equal(templateDraft({ topic: 'Fractions' }, catalog).steps[1].gameId, 'g', 'tags first');
+  assert.equal(templateDraft({ topic: 'pizza day' }, catalog).steps[1].gameId, 't', 'then titles');
+  assert.equal(templateDraft({ topic: 'halves', subject: 'Maths' }, catalog).steps[1].gameId, 'g', 'subject words too');
+  assert.equal(templateDraft({ topic: 'x', minutes: 10 }, catalog).steps.reduce((n, s) => n + s.minutes, 0), 10);
 });
 
 test('pages and APIs: library, editor, draft, class lessons, student lesson page, build step, 404s', async () => {
@@ -147,4 +158,71 @@ test('pages and APIs: library, editor, draft, class lessons, student lesson page
   const gstep = L.steps(id).find(s => s.kind === 'game' && games.getGame(s.game_id).owner_id === ana.id);
   r = await as(ana)(`/api/lesson-steps/${gstep.id}/share-game`, { method: 'POST', body: {} });
   assert.equal(r.status, 400, 'an empty game cannot be shared yet');
+});
+
+test('class Lessons tab and editor: one assignment per class, rows open progress, copy-first, copies open, work counted', async () => {
+  const P = await import('../../server/services/progress.js');
+  const folder = L.createFolder(ana, oak.id, { name: 'Copies here' }).folder;
+  const l = L.createLesson(ana, oak.id, { title: 'Tab lesson', folderId: folder.id }).lesson;
+  const step = L.addStep(ana, l.id, { kind: 'text', body: 'Read this' }).step;
+  const c5 = S.createClass(ana, oak.id, { name: 'Ana 5C' }).class;
+  const benClass = S.createClass(ben, oak.id, { name: 'Ben 6A' }).class;
+  const benLesson = L.createLesson(ben, oak.id, { title: 'Ben shared lesson' }).lesson; L.updateLesson(ben, benLesson.id, { shared: true });
+  // a new class: the empty state leads to a new lesson / an AI draft that come back with the class
+  let r = await as(ana)(`/class/${c5.id}`);
+  assert.match(r.text, new RegExp(`/teach/lessons\\?school=${oak.id}&class=${c5.id}&open=new`));
+  assert.match(r.text, new RegExp(`<option value="${l.id}">`));
+  assert.doesNotMatch(r.text, new RegExp(`<option value="${benLesson.id}"`), "a colleague's lesson is copied first, not assigned");
+  assert.match(r.text, /tab=shared/, 'with a hint pointing at Shared by colleagues');
+  assert.equal((await as(ana)(`/api/classes/${c5.id}/lessons`, { method: 'POST', body: { lessonId: benLesson.id } })).status, 404);
+  r = await as(ana)(`/teach/lessons?school=${oak.id}&class=${c5.id}&open=ai`);
+  assert.match(r.text, new RegExp(`name="classId" value="${c5.id}"`)); assert.match(r.text, /class="libdrop aidraft" open/);
+  r = await as(ana)('/api/lessons', { method: 'POST', body: { schoolId: oak.id, title: 'From the class', classId: c5.id } });
+  assert.match(r.json.redirect, new RegExp(`\\?class=${c5.id}$`));
+  r = await as(ana)('/api/lessons', { method: 'POST', body: { schoolId: oak.id, title: 'Not my class', classId: benClass.id } });
+  assert.doesNotMatch(r.json.redirect, /class=/, "only a class you teach comes along");
+  // assign from the class tab, then the same lesson again from the editor: refused, naming the class
+  r = await as(ana)(`/api/classes/${c5.id}/lessons`, { method: 'POST', body: { lessonId: l.id } });
+  assert.equal(r.status, 200); assert.match(r.json.toast, /Ana 5C/);
+  r = await as(ana)(`/api/lessons/${l.id}/assign`, { method: 'POST', body: { classId: c5.id } });
+  assert.equal(r.status, 400); assert.match(r.json.error, /already in Ana 5C/);
+  const cl = L.classLessons(c5.id).find(x => x.lesson_id === l.id);
+  r = await as(ana)(`/class/${c5.id}`);
+  assert.match(r.text, new RegExp(`<li class="cl-row" id="cl-${cl.id}">`));
+  assert.match(r.text, new RegExp(`<a class="cl-main" href="/class/${c5.id}/progress/${cl.id}">`), 'the row opens its progress');
+  assert.match(r.text, new RegExp(`href="/class/${c5.id}/lessons/${cl.id}"`), 'student view in the ⋯ menu');
+  assert.match(r.text, new RegExp(`href="/teach/lessons/${l.id}\\?from=${c5.id}"`));
+  assert.doesNotMatch(r.text, new RegExp(`<option value="${l.id}">`), 'not offered twice');
+  assert.doesNotMatch(r.text, /<h2 id="ls-h"/);
+  // the editor: one line per class (linking to the row), live notice, class not offered again, back to the class
+  r = await as(ana)(`/teach/lessons/${l.id}?from=${c5.id}`);
+  assert.match(r.text, new RegExp(`href="/class/${c5.id}#cl-${cl.id}"`));
+  assert.match(r.text, new RegExp(`href="/class/${c5.id}/progress/${cl.id}"`));
+  assert.doesNotMatch(r.text, new RegExp(`<option value="${c5.id}"`));
+  assert.match(r.text, new RegExp(`class="backlink" href="/class/${c5.id}"`));
+  assert.match(r.text, /<section class="panel" id="assign">/);
+  assert.match((await as(ana)(`/teach/lessons/${l.id}?class=${cls.id}`)).text, new RegExp(`<option value="${cls.id}" selected>`), '?class= preselects');
+  assert.doesNotMatch((await as(ana)(`/teach/lessons/${l.id}?from=${benClass.id}`)).text, new RegExp(`class="backlink" href="/class/${benClass.id}"`), "?from= only for your own classes");
+  assert.match(r.text, /data-kind="text"/, 'a new step starts as Read or do');
+  assert.match(r.text, /\/js\/schools\.js/);
+  // student work is counted in the delete confirms; removing from the class keeps it, assigning again brings it back
+  S.addToClass(ana, c5.id, kid.id);
+  assert.ok(P.markDone(kid, cl.id, step.id).ok);
+  r = await as(ana)(`/teach/lessons/${l.id}`);
+  assert.match(r.text, /1 student&#39;s work on it will be deleted/);
+  assert.match(r.text, /It is in 1 class, and 1 student&#39;s work in it will be deleted/);
+  assert.match(r.text, /1 student has started/);
+  assert.ok(L.unassign(ana, cl.id).ok);
+  r = await as(ana)(`/api/lessons/${l.id}/assign`, { method: 'POST', body: { classId: c5.id } });
+  assert.equal(r.status, 200); assert.match(r.json.toast, /again/);
+  assert.equal(L.lessonWork(l.id), 1);
+  // Make a copy: next to the original, and it opens
+  r = await as(ana)(`/api/lessons/${l.id}/copy`, { method: 'POST', body: {} });
+  const copyId = r.json.id; assert.equal(r.json.redirect, `/teach/lessons/${copyId}?copied=1`);
+  assert.equal(L.getLesson(copyId).folder_id, folder.id);
+  assert.match((await as(ana)(r.json.redirect)).text, /This is your copy/);
+  // sharing is one button; the Shared by colleagues tab says what it lists
+  r = await as(ana)(`/teach/lessons?school=${oak.id}&folder=${folder.id}`);
+  assert.match(r.text, new RegExp(`data-api="/api/lessons/${l.id}" data-reload[^>]*><input type="hidden" name="shared" value="1">`));
+  r = await as(head)(`/teach/lessons?school=${oak.id}&tab=shared`); assert.match(r.text, /Shared by colleagues/);
 });

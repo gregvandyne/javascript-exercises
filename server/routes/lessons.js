@@ -26,7 +26,7 @@ const KIND_ICON = { game: '🎮', build: '🛠️', text: '📖', question: '✍
 const isoDay = t => (t ? new Date(t).toISOString().slice(0, 10) : '');
 const paras = text => String(text || '').split(/\n{2,}/).filter(Boolean).map(p => html`<p dir="auto">${p.split('\n').map((line, i) => html`${i ? raw('<br>') : ''}${line}`)}</p>`);
 /** "Subject (optional)": the field name and the shared "(optional)" word. */
-const optional = (t, label) => html`${label} <span class="muted">${t('school.class.optional')}</span>`;
+const optional = (t, label) => html`${label} <span class="muted">${t('school.optional')}</span>`;
 
 /** The schools where the user is staff (platform admins: all). */
 function staffSchools(u) {
