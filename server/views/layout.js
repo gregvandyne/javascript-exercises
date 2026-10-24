@@ -6,6 +6,7 @@
 import { html, raw, esc, jsonData } from './html.js';
 import { avatar } from './components.js';
 import { navBadges } from '../services/badges.js';
+import { inAnySchool, isStaff } from '../services/schools.js';
 import { availableLocales, localeInfo, tReq, clientStrings, DEFAULT_LOCALE } from '../i18n/index.js';
 
 const NAV = [
@@ -44,6 +45,9 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
   const cur = k => (k === active ? raw('aria-current="page"') : '');
   const badge = k => (badges[k] ? html`<span class="badge" aria-label="${t('layout.badgeNew', { count: badges[k] })}">${badges[k] > 9 ? '9+' : badges[k]}</span>` : '');
   const meHref = u ? '/me' : '/login';
+  // People in a school (and staff) get a Classes tab: teachers land on /teach, students on /classes.
+  const staff = u && isStaff(u);
+  const navItems = u && (staff || inAnySchool(u)) ? [...NAV, ['classes', staff ? '/teach' : '/classes', '🏫']] : NAV;
   const signIn = t('layout.signIn');
   const nav = bare ? '' : html`
   <a class="skip" href="#main">${t('layout.skip')}</a>
@@ -55,13 +59,13 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
       <input id="topq" name="q" type="search" placeholder="${t('layout.search.placeholder')}" autocomplete="off" value="${active === 'search' ? (req.query.q || '') : ''}">
     </form>
     <nav class="topnav" aria-label="${t('layout.mainNav')}">
-      ${NAV.map(([k, href, emo]) => html`<a class="navlink" href="${href}" ${cur(k)}><span class="emo" aria-hidden="true">${emo}</span>${t(`nav.${k}`)}${badge(k)}</a>`)}
+      ${navItems.map(([k, href, emo]) => html`<a class="navlink" href="${href}" ${cur(k)}><span class="emo" aria-hidden="true">${emo}</span>${t(`nav.${k}`)}${badge(k)}</a>`)}
     </nav>
     ${langPicker(req)}
     <a class="me-btn" href="${meHref}" ${cur('me')} aria-label="${u ? t('layout.meLabel', { name: u.display_name }) : signIn}">${u ? avatar(u, 38) : html`<span class="avatar" style="--s:38px;--c:#94a3b8" aria-hidden="true">🙂</span>`}<span class="name">${u ? u.display_name : signIn}</span></a>
   </header>
   <nav class="tabbar" aria-label="${t('layout.mainNav')}">
-    ${NAV.map(([k, href, emo]) => html`<a class="tab" href="${href}" ${cur(k)}><span class="emo" aria-hidden="true">${emo}</span>${t(`nav.${k}`)}${badge(k)}</a>`)}
+    ${navItems.map(([k, href, emo]) => html`<a class="tab" href="${href}" ${cur(k)}><span class="emo" aria-hidden="true">${emo}</span>${t(`nav.${k}`)}${badge(k)}</a>`)}
     <a class="tab" href="${meHref}" ${cur('me')}>${u && u.photo_at ? html`<span class="emo">${avatar(u, 28)}</span>` : html`<span class="emo" aria-hidden="true">${u ? u.avatar : '🙂'}</span>`}${u ? t('nav.me') : signIn}</a>
   </nav>`;
   const foot = bare ? '' : html`<footer class="foot"><span>${t('layout.footer.tagline')}</span><a href="/safety">${t('layout.footer.safety')}</a><a href="/parents">${t('layout.footer.parents')}</a><a href="/sdk">${t('layout.footer.builders')}</a><a href="/me#language" class="foot-lang"><span aria-hidden="true">🌐</span> ${info.name}</a></footer>`;

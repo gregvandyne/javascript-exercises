@@ -14,7 +14,7 @@ const COVER_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..
 const COVER_SHOTS = new Map();
 try { for (const f of fs.readdirSync(COVER_DIR)) if (f.endsWith('.jpg')) COVER_SHOTS.set(f.slice(0, -4), Math.round(fs.statSync(path.join(COVER_DIR, f)).mtimeMs).toString(36)); } catch { /* no covers yet */ }
 
-const VIS_EMOJI = { private: '🔒', friends: '👫', public: '🌍' };
+const VIS_EMOJI = { private: '🔒', friends: '👫', school: '🏫', public: '🌍' };
 /** "🔒 Only me" / "👫 Friends" / "🌍 Everyone" in the reader's language. */
 export function visLabel(v, t = current().t) { return VIS_EMOJI[v] ? `${VIS_EMOJI[v]} ${t(`vis.${v}`)}` : v; }
 /** A category's label in the reader's language. */

@@ -85,6 +85,24 @@ const MIGRATIONS = [
     CREATE INDEX IF NOT EXISTS users_created ON users(created_at);`],
   // Profile photos: when the photo was set (0 = using the emoji). The file is <dataDir>/avatars/<userId>.jpg.
   ['0008_user_photo', `ALTER TABLE users ADD COLUMN photo_at INTEGER NOT NULL DEFAULT 0;`],
+  // Schools (enterprise). Every school record carries school_id. Members and class members are never deleted, only
+  // marked 'left' with a date, so history survives class moves and transfers. users.managed_school = the school that
+  // created (and owns) the account; '' for personal accounts.
+  ['0009_schools', `CREATE TABLE IF NOT EXISTS schools (id TEXT PRIMARY KEY, name TEXT NOT NULL, slug TEXT UNIQUE NOT NULL, settings TEXT NOT NULL DEFAULT '{}',
+      created_by TEXT, created_at INTEGER NOT NULL, archived_at INTEGER);
+    CREATE TABLE IF NOT EXISTS school_members (school_id TEXT NOT NULL, user_id TEXT NOT NULL, role TEXT NOT NULL, roster_name TEXT NOT NULL DEFAULT '',
+      grade TEXT NOT NULL DEFAULT '', status TEXT NOT NULL DEFAULT 'active', joined_at INTEGER NOT NULL, left_at INTEGER, PRIMARY KEY(school_id, user_id));
+    CREATE INDEX IF NOT EXISTS school_members_user ON school_members(user_id, status);
+    CREATE TABLE IF NOT EXISTS classrooms (id TEXT PRIMARY KEY, school_id TEXT NOT NULL, name TEXT NOT NULL, subject TEXT NOT NULL DEFAULT '',
+      grade TEXT NOT NULL DEFAULT '', join_code TEXT UNIQUE NOT NULL, created_by TEXT, created_at INTEGER NOT NULL, archived_at INTEGER);
+    CREATE INDEX IF NOT EXISTS classrooms_school ON classrooms(school_id);
+    CREATE TABLE IF NOT EXISTS class_members (class_id TEXT NOT NULL, user_id TEXT NOT NULL, role TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'active',
+      joined_at INTEGER NOT NULL, left_at INTEGER, PRIMARY KEY(class_id, user_id));
+    CREATE INDEX IF NOT EXISTS class_members_user ON class_members(user_id, status);
+    CREATE TABLE IF NOT EXISTS join_requests (id TEXT PRIMARY KEY, class_id TEXT NOT NULL, user_id TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'pending',
+      created_at INTEGER NOT NULL, decided_by TEXT, decided_at INTEGER);
+    CREATE INDEX IF NOT EXISTS join_requests_class ON join_requests(class_id, status);
+    ALTER TABLE users ADD COLUMN managed_school TEXT NOT NULL DEFAULT '';`],
 ];
 
 db.exec('CREATE TABLE IF NOT EXISTS migrations (name TEXT PRIMARY KEY, applied_at INTEGER NOT NULL)');

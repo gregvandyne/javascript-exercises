@@ -31,7 +31,8 @@
     "search": "Zoeken",
     "build": "Bouwen",
     "friends": "Vrienden",
-    "me": "Ik"
+    "me": "Ik",
+    "classes": "Klassen"
   },
   "errors": {
     "goHome": "Naar de start",
@@ -124,7 +125,8 @@
       "friends": "Vrienden",
       "chat": "Chat",
       "admin": "Beheer",
-      "favorites": "Mijn favorieten"
+      "favorites": "Mijn favorieten",
+      "classes": "Mijn klassen"
     },
     "look": {
       "heading": "Kies je look",
@@ -184,7 +186,8 @@
   "vis": {
     "private": "Alleen ik",
     "friends": "Vrienden",
-    "public": "Iedereen"
+    "public": "Iedereen",
+    "school": "Mijn school"
   },
   "status": {
     "hidden": "Verborgen",
@@ -468,7 +471,8 @@
       "guest": "Die speler is een gast. Er is eerst een gratis account nodig voordat jullie vrienden kunnen worden.",
       "already": "Jij en {name} zijn al vrienden.",
       "alreadyAsked": "Je hebt {name} al gevraagd. Wacht tot er ja wordt gezegd.",
-      "sent": "Vriendverzoek naar {name} gestuurd! Nu moet {name} nog ja zeggen."
+      "sent": "Vriendverzoek naar {name} gestuurd! Nu moet {name} nog ja zeggen.",
+      "classmatesOnly": "Schoolaccounts kunnen alleen vrienden zijn met klasgenoten."
     }
   },
   "profile": {
@@ -576,7 +580,9 @@
       "chat_off_me": "Je chat staat uit. Een volwassene kan hem aanzetten bij Ik.",
       "chat_off_other": "{name} heeft de chat uitgezet.",
       "blocked_by_me": "Je hebt {name} geblokkeerd. Je kunt {name} deblokkeren op de pagina Vrienden.",
-      "blocked_by_other": "Je kunt nu niet met {name} chatten."
+      "blocked_by_other": "Je kunt nu niet met {name} chatten.",
+      "school_off_me": "Je school heeft de chat uitgezet.",
+      "school_off_other": "De school van {name} heeft de chat uitgezet."
     },
     "paused": "De chat neemt even pauze. Je kunt weer typen over {minutes, plural, one {# minuut} other {# minuten}}. Snelle berichten kun je nog wel sturen.",
     "errors": {
@@ -635,7 +641,8 @@
     "shareText": {
       "private": "Alleen jij kunt hem spelen.",
       "friends": "Alleen jij en je vrienden op Magic Cups kunnen hem spelen.",
-      "public": "Iedereen op Magic Cups kan hem vinden en spelen, na een snelle veiligheidscheck."
+      "public": "Iedereen op Magic Cups kan hem vinden en spelen, na een snelle veiligheidscheck.",
+      "school": "Iedereen op je school kan hem vinden en spelen."
     },
     "status": {
       "hidden": "Even verborgen",
@@ -733,7 +740,9 @@
     "updateLive": "De update staat online voor iedereen!",
     "public": "Je game is nu voor iedereen!",
     "updateWaiting": "Je update wacht op een snelle check. Tot die tijd spelen spelers de oude versie.",
-    "waiting": "Je game wacht op een snelle veiligheidscheck. We delen hem zodra hij is goedgekeurd."
+    "waiting": "Je game wacht op een snelle veiligheidscheck. We delen hem zodra hij is goedgekeurd.",
+    "school": "Online voor je school! Iedereen op je school kan hem vinden en spelen.",
+    "schoolOnly": "Je school houdt games binnen de school. Deel hem dus met je school."
   },
   "builder": {
     "kindRefusal": "Daar kan ik niet mee helpen. Laten we iets leuks bouwen! Wat voor game wil je graag?",
@@ -978,7 +987,8 @@
       "vis": {
         "private": "Alleen ik",
         "friends": "Vrienden",
-        "public": "Iedereen"
+        "public": "Iedereen",
+        "school": "Mijn school"
       },
       "top": {
         "inReview": "Wordt bekeken",
@@ -1120,5 +1130,170 @@
     "emptyTitle": "Nog geen favorieten",
     "emptyText": "Tik bij een game op ❤️ Favoriet, dan wacht hij hier op je.",
     "emptyAction": "Games zoeken"
+  },
+  "classes": {
+    "title": "Mijn klassen",
+    "none": "Nog geen klassen",
+    "noneText": "Heb je een klascode van je leerkracht gekregen? Typ hem hieronder.",
+    "guest": "Maak eerst een gratis account. Doe daarna mee met je klas met de code van je leerkracht.",
+    "waiting": "Wacht op je leerkracht",
+    "join": "Doe mee met een klas",
+    "joinText": "Typ de code die je van je leerkracht hebt gekregen. Als je leerkracht ja zegt, verschijnt de klas hier.",
+    "code": "Klascode",
+    "joinButton": "Meedoen",
+    "sent": "Je hebt gevraagd om mee te doen met {name}. Je leerkracht zegt snel ja!",
+    "classmates": "{count, plural, one {# klasgenoot} other {# klasgenoten}}",
+    "noLessons": "Nog geen lessen",
+    "noLessonsText": "Je leerkracht zet hier lessen en games neer."
+  },
+  "school": {
+    "nav": {
+      "teach": "Lesgeven"
+    },
+    "tabs": {
+      "classes": "Klassen",
+      "people": "Mensen",
+      "settings": "Instellingen"
+    },
+    "actions": "Acties",
+    "save": "Opslaan",
+    "roles": {
+      "admin": "Schoolbeheerder",
+      "teacher": "Leerkracht",
+      "student": "Leerling"
+    },
+    "teach": {
+      "title": "Lesgeven",
+      "none": "Nog geen klassen",
+      "noneText": "Maak hieronder je eerste klas aan. Je krijgt een code om met je leerlingen te delen.",
+      "noneAsk": "Vraag je schoolbeheerder om je aan een klas toe te voegen."
+    },
+    "class": {
+      "new": "Nieuwe klas",
+      "create": "Klas aanmaken",
+      "name": "Naam van de klas",
+      "namePlaceholder": "bijv. 4B Rekenen",
+      "subject": "Vak",
+      "grade": "Groep",
+      "school": "School",
+      "teachers": "Leerkrachten",
+      "students": "Leerlingen",
+      "classes": "Klassen",
+      "code": "Code",
+      "gradeN": "Groep {grade}",
+      "studentsN": "{count, plural, one {# leerling} other {# leerlingen}}",
+      "requestsN": "{count, plural, one {# verzoek} other {# verzoeken}}",
+      "none": "Nog geen klassen",
+      "noneText": "Maak hierboven een klas aan, of laat leerkrachten zelf klassen aanmaken.",
+      "archived": "{count, plural, one {# gearchiveerde klas} other {# gearchiveerde klassen}}",
+      "isArchived": "Gearchiveerd",
+      "archive": "Archiveren",
+      "restore": "Herstellen",
+      "delete": "Verwijderen",
+      "archiveConfirm": "{name} archiveren? Leerlingen zien de klas dan niet meer, maar de geschiedenis blijft bewaard. Je kunt de klas later herstellen.",
+      "deleteConfirm": "{name} verwijderen? Dit kan niet ongedaan worden gemaakt.",
+      "joinCode": "Klascode",
+      "joinCodeText": "Leerlingen met een eigen Magic Cups-account typen deze code op hun pagina Klassen. Jij keurt elk verzoek goed.",
+      "newCode": "Nieuwe code",
+      "newCodeConfirm": "Een nieuwe code maken? De oude werkt dan niet meer.",
+      "noStudents": "Nog geen leerlingen. Voeg ze hieronder toe, of deel de klascode.",
+      "addStudents": "Leerlingen toevoegen",
+      "newAccounts": "Nieuwe schoolaccounts (één naam per regel)",
+      "newAccountsHint": "Elke leerling krijgt een gebruikersnaam en wachtwoord om op een inlogkaart te printen. Echte namen zijn alleen zichtbaar voor leerkrachten.",
+      "fromSchool": "Of voeg een leerling van je school toe",
+      "add": "Toevoegen",
+      "addTeacher": "Leerkracht toevoegen",
+      "moveTo": "Naar klas verplaatsen",
+      "move": "Verplaatsen",
+      "removeStudent": "Verwijderen",
+      "removeConfirm": "{name} uit deze klas verwijderen? Het werk in deze klas blijft bewaard.",
+      "edit": "Klas bewerken"
+    },
+    "requests": {
+      "title": "{count, plural, one {# leerling wil meedoen} other {# leerlingen willen meedoen}}",
+      "text": "Deze leerlingen hebben de klascode met hun eigen account gebruikt. Typ hun echte naam voor je klassenlijst. Heeft de school al een account voor een leerling gemaakt? Kies dat dan, zodat de klasgegevens worden overgezet.",
+      "realName": "Echte naam (alleen leerkrachten zien die)",
+      "sameAs": "Zelfde leerling als schoolaccount",
+      "sameAsNone": "Nee, een nieuwe leerling",
+      "approve": "Goedkeuren",
+      "decline": "Weigeren",
+      "declineConfirm": "@{name} weigeren?"
+    },
+    "people": {
+      "staff": "Personeel",
+      "students": "Leerlingen",
+      "name": "Naam",
+      "username": "Gebruikersnaam",
+      "role": "Rol",
+      "grade": "Groep",
+      "schoolAccount": "schoolaccount",
+      "ownAccount": "eigen account",
+      "addStaff": "Leerkracht of schoolbeheerder toevoegen",
+      "addStaffText": "Typ de naam. Laat de gebruikersnaam leeg om een schoolaccount te maken (je krijgt een inlogkaart), of typ de gebruikersnaam van een account dat diegene al heeft.",
+      "realName": "Echte naam",
+      "existing": "Bestaande gebruikersnaam (optioneel)",
+      "existingPlaceholder": "bijv. JufSanne",
+      "add": "Toevoegen",
+      "addStudents": "Leerlingen aan de school toevoegen",
+      "addStudentsText": "Eén naam per regel. Elke leerling krijgt een schoolaccount en een inlogkaart om te printen. Zet ze in klassen via de pagina van elke klas.",
+      "names": "Namen van leerlingen",
+      "namesPlaceholder": "Emma de Vries\nDaan Jansen\nSara El Amrani",
+      "createAccounts": "Accounts maken",
+      "noStaff": "Nog geen personeel.",
+      "noStudents": "Nog geen leerlingen.",
+      "reset": "Nieuw wachtwoord",
+      "resetConfirm": "Een nieuw wachtwoord maken voor {name}? Het oude werkt dan niet meer.",
+      "remove": "Van school verwijderen",
+      "removeConfirm": "{name} van de school verwijderen? Diegene verlaat alle klassen hier. Schoolaccounts worden uitgezet."
+    },
+    "settings": {
+      "name": "Naam van de school",
+      "yes": "Ja",
+      "no": "Nee",
+      "saved": "Instellingen opgeslagen",
+      "teachersCreate": "Leerkrachten kunnen zelf klassen aanmaken",
+      "ownAccounts": "Leerlingen kunnen meedoen met een eigen account",
+      "ownAccountsHint": "Leerlingen die Magic Cups al gebruiken, typen een klascode; een leerkracht keurt elk verzoek goed. Zet dit uit om alleen schoolaccounts te gebruiken.",
+      "gameSite": "Schoolaccounts op de gamesite",
+      "gameSiteText": "Met schoolaccounts kun je games spelen en bouwen. Deze regels houden ze veilig. Eigen accounts van leerlingen houden buiten de les hun gewone instellingen.",
+      "chat": "Chat",
+      "chatClassmates": "Alleen chatten met vrienden uit de klas",
+      "chatOff": "Geen chat",
+      "publishing": "Games delen",
+      "publishSchool": "Alleen binnen de school",
+      "publishPublic": "Ook met iedereen delen",
+      "photos": "Profielfoto’s van schoolaccounts zijn alleen zichtbaar voor klasgenoten, leerkrachten en vrienden."
+    },
+    "cards": {
+      "title": "Inlogkaarten",
+      "print": "Printen",
+      "done": "Klaar",
+      "once": "Print ze nu of schrijf ze op. Wachtwoorden worden maar één keer getoond. Raakt er een kwijt? Dan kun je later een nieuw wachtwoord maken.",
+      "site": "Website",
+      "username": "Gebruikersnaam",
+      "password": "Wachtwoord",
+      "gone": "Deze inlogkaarten zijn er niet meer. Maak een nieuw wachtwoord via de pagina van de klas."
+    },
+    "errors": {
+      "notFound": "We konden dat niet vinden, of je kunt het niet openen.",
+      "notTeacher": "Deze pagina is voor leerkrachten en schoolbeheerders.",
+      "schoolName": "Geef de school een naam.",
+      "className": "Geef de klas een naam.",
+      "rosterName": "Typ de naam van de leerling.",
+      "names": "Typ minstens één naam.",
+      "badRole": "Die rol is hier niet toegestaan.",
+      "ownRole": "Je kunt je eigen beheerdersrol niet wijzigen of verwijderen.",
+      "noAccount": "Maak eerst een gratis account.",
+      "noSuchUser": "Er is geen account met die gebruikersnaam.",
+      "otherSchoolAccount": "Dat account hoort bij een andere school.",
+      "notSchoolAccount": "Alleen schoolaccounts kunnen hier een nieuw wachtwoord krijgen. Leerlingen met een eigen account stellen het zelf opnieuw in.",
+      "classHasStudents": "Deze klas heeft leerlingen gehad en kan dus niet worden verwijderd. Archiveer de klas in plaats daarvan.",
+      "notInSchool": "Die persoon zit niet op deze school.",
+      "otherSchool": "Je kunt leerlingen alleen verplaatsen tussen klassen van dezelfde school.",
+      "badCode": "Die klascode werkt niet. Check hem met je leerkracht.",
+      "staffUseTeach": "Je bent leerkracht op deze school. Open in plaats daarvan Lesgeven.",
+      "ownAccountsOff": "Deze school gebruikt alleen schoolaccounts. Vraag je leerkracht om een inlogkaart.",
+      "lastTeacher": "Een klas heeft minstens één leerkracht nodig."
+    }
   }
 }

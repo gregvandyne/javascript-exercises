@@ -3,7 +3,7 @@
 //   every metadata segment (EXIF location, camera, XMP...) and keeps it in <dataDir>/avatars/<userId>.jpg.
 // - Every photo passes an AI safety check first (nothing unsafe, no private details such as name tags, school logos or
 //   addresses). Faces are allowed: it is a profile photo. Without the check (no API key, AI budget resting) photos wait.
-// - Who sees it: the player, their accepted friends and admins. Everyone else (strangers, visitors) sees the emoji,
+// - Who sees it: the player, their accepted friends, their classmates and teachers, and admins. Everyone else (strangers, visitors) sees the emoji,
 //   so a child's face is never public. /avatars/<id> decides per viewer.
 // - Admins can remove a photo; every change is audited.
 import fs from 'node:fs';
@@ -14,6 +14,7 @@ import { anthropic } from '../builder/anthropic.js';
 import * as aiBudget from './ai-budget.js';
 import { sniff, stripJpeg } from '../builder/uploads.js';
 import { areFriends } from './games.js';
+import { classmates } from './schools.js';
 
 export const DIR = path.join(config.dataDir, 'avatars');
 export const MAX_BYTES = 600 * 1024;
@@ -89,7 +90,7 @@ export function removePhoto(userId, by = userId) {
 /** Can this viewer see that user's photo? The user, their accepted friends and admins. */
 export function canSeePhoto(viewer, user) {
   if (!viewer || !user || !user.photo_at || user.banned) return false;
-  return viewer.id === user.id || viewer.role === 'admin' || areFriends(viewer.id, user.id);
+  return viewer.id === user.id || viewer.role === 'admin' || areFriends(viewer.id, user.id) || classmates(viewer.id, user.id);
 }
 
 const svgEsc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));

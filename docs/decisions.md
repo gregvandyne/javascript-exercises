@@ -114,3 +114,24 @@ private details such as name tags, school logos or addresses; faces are fine). W
 budget is resting) photos wait. A child's face is never public: /avatars/<id> sends the photo only to the player, their
 accepted friends and admins, and the emoji to everyone else. Admins can remove a photo from the Users tab; all changes
 are audited. Guests keep emoji only.
+
+## Schools, step 1 (enterprise foundation)
+The game site stays as it is; schools are a layer on the same app and the same accounts.
+- **Roles:** platform admin (users.role='admin') creates schools and appoints school admins (/admin/schools). School
+  admins run the whole school (/school/<slug>: classes, people, settings). Teachers create classes (unless the school
+  turns that off) and run their own: roster, adding students (one name per line -> school accounts + printable login
+  cards), moving students between classes of the school, resetting school passwords, approving join requests, adding
+  co-teachers. Students see My classes (/classes) and a class page. All checks live in services/schools.js.
+- **Accounts:** teachers create school accounts by default (users.managed_school = the school; usernames like
+  SunnyOtter27, passwords like maple-comet-42, shown once on login cards). Students who already have their own account
+  join with the class code; a teacher approves and types their real name for the class list, and can match them to a
+  school account made earlier (its class records move over, the empty school account is switched off). Schools can turn
+  own accounts off.
+- **Names:** real names live only in school_members.roster_name. Staff see students' real names; students see their
+  teachers' real names and only usernames for classmates; the public site never shows real names.
+- **History:** members and class members are never deleted, only marked 'left' with a date, so class moves keep
+  records; classes with students are archived rather than deleted. School years and grade rollover come in step 4.
+- **Game-site rules for school accounts (school-adjustable):** friends only with classmates; chat with classmate friends
+  or off; games shared inside the school ('school' visibility, a new sharing level any school member can use) and not
+  public unless the school allows it; profile photos also visible to classmates and teachers. Students' own accounts
+  keep their normal settings outside class.

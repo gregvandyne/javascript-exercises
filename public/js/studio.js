@@ -8,7 +8,7 @@ const log = $('#st-log'), input = $('#st-input'), frame = $('#st-frame'), stage 
 let busy = false, pro = false;
 try { pro = localStorage.getItem('brb-pro') === '1'; } catch { /* private mode */ }
 const SIZES = { phone: [390, 760], tablet: [820, 1100], landscape: [844, 390] };
-const VIS = { private: ['🔒', t('js.studio.vis.private')], friends: ['👫', t('js.studio.vis.friends')], public: ['🌍', t('js.studio.vis.public')] };
+const VIS = { private: ['🔒', t('js.studio.vis.private')], friends: ['👫', t('js.studio.vis.friends')], school: ['🏫', t('js.studio.vis.school')], public: ['🌍', t('js.studio.vis.public')] };
 // Idea chips: keys a, b, c... under a prefix (missing letters are skipped).
 const chipList = prefix => [...'abcdefgh'].map(k => t(`${prefix}.${k}`)).filter(x => !x.startsWith(prefix));
 const START_CHIPS = chipList('js.studio.startChips');
@@ -339,7 +339,7 @@ $('#st-history').addEventListener('click', () => {
 function shareSheet(mode) {
   if (!S.current) return toast(t('js.studio.share.buildFirst'));
   const live = S.live; let pick = live ? live.visibility : (S.game.visibility || 'private');
-  const opts = ['private', 'friends', 'public'].map(k => `<button type="button" data-vis="${k}" aria-pressed="${k === pick}"><b>${VIS[k][0]} ${VIS[k][1]}</b><span>${esc(S.shareText[k])}</span></button>`).join('');
+  const opts = (S.shareOptions || ['private', 'friends', 'public']).map(k => `<button type="button" data-vis="${k}" aria-pressed="${k === pick}"><b>${VIS[k][0]} ${VIS[k][1]}</b><span>${esc(S.shareText[k])}</span></button>`).join('');
   const link = live ? `<div class="field"><label for="share-link">${E('js.studio.share.link')}</label><div class="row"><input class="input" id="share-link" dir="ltr" readonly value="${esc(location.origin + S.shareUrl)}" style="flex:1;min-width:0"><button class="btn" type="button" id="share-copy">📋 ${E('js.studio.share.copy')}</button></div></div>` : '';
   const title = live ? `🔗 ${t('js.studio.share.titleLive')}` : mode === 'publish' ? `🚀 ${t('js.studio.share.titlePublish')}` : `🔗 ${t('js.studio.share.titleWho')}`;
   const s = sheet({ title, content: `${live ? `<p>${E('js.studio.share.playersGet', { number: live.number })}</p>` : `<p>${E('js.studio.share.pickWho', { number: S.current.number })}</p>`}<div class="vischoice" role="group" aria-label="${E('js.studio.share.whoLabel')}">${opts}</div><p class="small muted" id="vis-hint"></p>${link}<div class="sheet-actions"><button class="btn btn-primary" type="button" id="vis-go">${live ? E('js.studio.share.save') : E('js.studio.top.publish')}</button></div>` });

@@ -87,5 +87,15 @@
     "emptyTitle": "No favourites yet",
     "emptyText": "Tap ❤️ Favourite on any game and it will wait for you here.",
     "emptyAction": "Find games"
+  },
+  "school": {
+    "class": {
+      "grade": "Year",
+      "gradeN": "Year {grade}",
+      "namePlaceholder": "e.g. 4B Maths"
+    },
+    "people": {
+      "grade": "Year"
+    }
   }
 }

@@ -14,6 +14,8 @@ import { scanVersion } from './scanner.js';
 import { reviewVersion } from './review.js';
 import { tEn } from '../i18n/index.js';
 import { queueShot } from './shots.js';
+import { sharingOptions } from './schools.js';
+import { getUser } from '../auth.js';
 
 export function ensureScanned(version) {
   if (version.safety_status !== 'unchecked') return version;
@@ -29,7 +31,9 @@ export function ensureScanned(version) {
 export async function publish(user, gameId, visibility, { versionId = null, t = tEn } = {}) {
   let game = getGame(gameId);
   if (!game) return { ok: false, state: 'blocked', message: t('game.api.notFound') };
-  if (!['private', 'friends', 'public'].includes(visibility)) return { ok: false, state: 'blocked', message: t('studio.api.pickWho') };
+  if (!['private', 'friends', 'school', 'public'].includes(visibility)) return { ok: false, state: 'blocked', message: t('studio.api.pickWho') };
+  // School accounts follow their school's rules (e.g. games stay inside the school).
+  if (!sharingOptions(getUser(game.owner_id)).includes(visibility)) return { ok: false, state: 'blocked', message: t(visibility === 'public' ? 'publish.schoolOnly' : 'studio.api.pickWho') };
   let version = getVersion(versionId || game.current_version_id);
   if (!version || version.game_id !== game.id) return { ok: false, state: 'blocked', message: t('publish.buildFirst') };
   version = ensureScanned(version);
@@ -44,7 +48,7 @@ export async function publish(user, gameId, visibility, { versionId = null, t = 
     });
     audit(user.id, wasLive ? 'game.update' : 'game.publish', game.id, { visibility, version: version.number });
     queueShot(version.id);
-    return { ok: true, state: 'live', message: visibility === 'private' ? t('publish.private') : t('publish.friends'), game: getGame(game.id) };
+    return { ok: true, state: 'live', message: visibility === 'private' ? t('publish.private') : visibility === 'school' ? t('publish.school') : t('publish.friends'), game: getGame(game.id) };
   }
 
   // Public: reuse an earlier approval of this exact version, otherwise review.

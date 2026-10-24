@@ -31,7 +31,8 @@
     "search": "Search",
     "build": "Build",
     "friends": "Friends",
-    "me": "Me"
+    "me": "Me",
+    "classes": "Classes"
   },
   "errors": {
     "goHome": "Go home",
@@ -124,7 +125,8 @@
       "friends": "Friends",
       "chat": "Chat",
       "admin": "Admin",
-      "favorites": "My favorites"
+      "favorites": "My favorites",
+      "classes": "My classes"
     },
     "look": {
       "heading": "Pick your look",
@@ -184,7 +186,8 @@
   "vis": {
     "private": "Only me",
     "friends": "Friends",
-    "public": "Everyone"
+    "public": "Everyone",
+    "school": "My school"
   },
   "status": {
     "hidden": "Hidden",
@@ -468,7 +471,8 @@
       "guest": "That player is a guest. They need a free account before you can be friends.",
       "already": "You and {name} are already friends.",
       "alreadyAsked": "You already asked {name}. Wait for them to say yes.",
-      "sent": "Friend request sent to {name}! They need to say yes."
+      "sent": "Friend request sent to {name}! They need to say yes.",
+      "classmatesOnly": "School accounts can only be friends with classmates."
     }
   },
   "profile": {
@@ -576,7 +580,9 @@
       "chat_off_me": "Your chat is switched off. A grown-up can switch it on in Me.",
       "chat_off_other": "{name} has chat switched off.",
       "blocked_by_me": "You blocked {name}. You can unblock them on the Friends page.",
-      "blocked_by_other": "You can't chat with {name} right now."
+      "blocked_by_other": "You can't chat with {name} right now.",
+      "school_off_me": "Your school has turned chat off.",
+      "school_off_other": "{name}'s school has turned chat off."
     },
     "paused": "Chat is taking a little break. You can type again in {minutes, plural, one {# minute} other {# minutes}}. You can still send quick messages.",
     "errors": {
@@ -635,7 +641,8 @@
     "shareText": {
       "private": "Only you can play it.",
       "friends": "Only you and your friends on Magic Cups can play it.",
-      "public": "Everyone on Magic Cups can find and play it, after a quick safety check."
+      "public": "Everyone on Magic Cups can find and play it, after a quick safety check.",
+      "school": "Everyone at your school can find and play it."
     },
     "status": {
       "hidden": "Hidden for now",
@@ -733,7 +740,9 @@
     "updateLive": "Update is live for everyone!",
     "public": "Your game is public!",
     "updateWaiting": "Your update is waiting for a quick check. Players keep the old version until then.",
-    "waiting": "Your game is waiting for a quick safety check. We will share it as soon as it passes."
+    "waiting": "Your game is waiting for a quick safety check. We will share it as soon as it passes.",
+    "school": "Live for your school! Everyone at your school can find and play it.",
+    "schoolOnly": "Your school keeps games inside the school. Share it with your school instead."
   },
   "builder": {
     "kindRefusal": "I can’t help with that one. Let’s build something fun instead. What kind of game would you like?",
@@ -978,7 +987,8 @@
       "vis": {
         "private": "Only me",
         "friends": "Friends",
-        "public": "Everyone"
+        "public": "Everyone",
+        "school": "My school"
       },
       "top": {
         "inReview": "In review",
@@ -1120,5 +1130,170 @@
     "emptyTitle": "No favorites yet",
     "emptyText": "Tap ❤️ Favorite on any game and it will wait for you here.",
     "emptyAction": "Find games"
+  },
+  "classes": {
+    "title": "My classes",
+    "none": "No classes yet",
+    "noneText": "Got a class code from your teacher? Type it below.",
+    "guest": "Make a free account first, then join your class with the code from your teacher.",
+    "waiting": "Waiting for your teacher",
+    "join": "Join a class",
+    "joinText": "Type the code your teacher gave you. Your teacher says yes, then the class shows up here.",
+    "code": "Class code",
+    "joinButton": "Join",
+    "sent": "Asked to join {name}. Your teacher will say yes soon!",
+    "classmates": "{count, plural, one {# classmate} other {# classmates}}",
+    "noLessons": "No lessons yet",
+    "noLessonsText": "Your teacher will add lessons and games here."
+  },
+  "school": {
+    "nav": {
+      "teach": "My teaching"
+    },
+    "tabs": {
+      "classes": "Classes",
+      "people": "People",
+      "settings": "Settings"
+    },
+    "actions": "Actions",
+    "save": "Save",
+    "roles": {
+      "admin": "School admin",
+      "teacher": "Teacher",
+      "student": "Student"
+    },
+    "teach": {
+      "title": "My teaching",
+      "none": "No classes yet",
+      "noneText": "Create your first class below. You'll get a code to share with students.",
+      "noneAsk": "Ask your school admin to add you to a class."
+    },
+    "class": {
+      "new": "New class",
+      "create": "Create class",
+      "name": "Class name",
+      "namePlaceholder": "e.g. 4B Math",
+      "subject": "Subject",
+      "grade": "Grade",
+      "school": "School",
+      "teachers": "Teachers",
+      "students": "Students",
+      "classes": "Classes",
+      "code": "Code",
+      "gradeN": "Grade {grade}",
+      "studentsN": "{count, plural, one {# student} other {# students}}",
+      "requestsN": "{count, plural, one {# request} other {# requests}}",
+      "none": "No classes yet",
+      "noneText": "Create a class above, or let teachers create their own.",
+      "archived": "{count, plural, one {# archived class} other {# archived classes}}",
+      "isArchived": "Archived",
+      "archive": "Archive",
+      "restore": "Restore",
+      "delete": "Delete",
+      "archiveConfirm": "Archive {name}? Students won't see it, but its history is kept. You can restore it later.",
+      "deleteConfirm": "Delete {name}? This can't be undone.",
+      "joinCode": "Class code",
+      "joinCodeText": "Students with their own Magic Cups account type this code on their Classes page. You approve each one.",
+      "newCode": "New code",
+      "newCodeConfirm": "Make a new code? The old one stops working.",
+      "noStudents": "No students yet. Add them below, or share the class code.",
+      "addStudents": "Add students",
+      "newAccounts": "New school accounts (one name per line)",
+      "newAccountsHint": "Each student gets a username and password to print on a login card. Real names are only seen by teachers.",
+      "fromSchool": "Or add a student from your school",
+      "add": "Add",
+      "addTeacher": "Add a teacher",
+      "moveTo": "Move to class",
+      "move": "Move",
+      "removeStudent": "Remove",
+      "removeConfirm": "Remove {name} from this class? Their work in this class is kept.",
+      "edit": "Edit class"
+    },
+    "requests": {
+      "title": "{count, plural, one {# student wants to join} other {# students want to join}}",
+      "text": "These students used the class code with their own account. Type their real name for your class list. If the school already made an account for them, pick it so their class records move over.",
+      "realName": "Real name (only teachers see it)",
+      "sameAs": "Same student as school account",
+      "sameAsNone": "No, a new student",
+      "approve": "Approve",
+      "decline": "Decline",
+      "declineConfirm": "Decline @{name}?"
+    },
+    "people": {
+      "staff": "Staff",
+      "students": "Students",
+      "name": "Name",
+      "username": "Username",
+      "role": "Role",
+      "grade": "Grade",
+      "schoolAccount": "school account",
+      "ownAccount": "own account",
+      "addStaff": "Add a teacher or school admin",
+      "addStaffText": "Type their name. Leave the username empty to create a school account (you'll get a login card), or type the username of an account they already have.",
+      "realName": "Real name",
+      "existing": "Existing username (optional)",
+      "existingPlaceholder": "e.g. MsRivera",
+      "add": "Add",
+      "addStudents": "Add students to the school",
+      "addStudentsText": "One name per line. Each student gets a school account and a printable login card. Put them in classes from each class page.",
+      "names": "Student names",
+      "namesPlaceholder": "Ana Silva\nBen Okafor\nChloe Martin",
+      "createAccounts": "Create accounts",
+      "noStaff": "No staff yet.",
+      "noStudents": "No students yet.",
+      "reset": "New password",
+      "resetConfirm": "Make a new password for {name}? The old one stops working.",
+      "remove": "Remove from school",
+      "removeConfirm": "Remove {name} from the school? They leave all classes here. School accounts are switched off."
+    },
+    "settings": {
+      "name": "School name",
+      "yes": "Yes",
+      "no": "No",
+      "saved": "Settings saved",
+      "teachersCreate": "Teachers can create their own classes",
+      "ownAccounts": "Students can join with their own account",
+      "ownAccountsHint": "Students who already use Magic Cups type a class code; a teacher approves each one. Turn off to use school accounts only.",
+      "gameSite": "School accounts on the game site",
+      "gameSiteText": "School accounts can play and build games. These rules keep them safe. Students' own accounts keep their normal settings outside class.",
+      "chat": "Chat",
+      "chatClassmates": "Chat with classmate friends only",
+      "chatOff": "No chat",
+      "publishing": "Sharing games",
+      "publishSchool": "Inside the school only",
+      "publishPublic": "Can also share with everyone",
+      "photos": "Profile photos of school accounts are seen only by their classmates, teachers and friends."
+    },
+    "cards": {
+      "title": "Login cards",
+      "print": "Print",
+      "done": "Done",
+      "once": "Print or write these down now. Passwords are only shown once. You can make a new password later if one gets lost.",
+      "site": "Website",
+      "username": "Username",
+      "password": "Password",
+      "gone": "These login cards are gone. Make a new password from the class page."
+    },
+    "errors": {
+      "notFound": "We couldn't find that, or you can't open it.",
+      "notTeacher": "This page is for teachers and school admins.",
+      "schoolName": "Give the school a name.",
+      "className": "Give the class a name.",
+      "rosterName": "Type the student's name.",
+      "names": "Type at least one name.",
+      "badRole": "That role isn't allowed here.",
+      "ownRole": "You can't change or remove your own admin role.",
+      "noAccount": "Make a free account first.",
+      "noSuchUser": "No account with that username.",
+      "otherSchoolAccount": "That account belongs to another school.",
+      "notSchoolAccount": "Only school accounts can get a new password here. Students with their own account reset it themselves.",
+      "classHasStudents": "This class has had students, so it can't be deleted. Archive it instead.",
+      "notInSchool": "That person isn't in this school.",
+      "otherSchool": "You can only move students between classes of the same school.",
+      "badCode": "That class code doesn't work. Check it with your teacher.",
+      "staffUseTeach": "You're a teacher at this school. Open My teaching instead.",
+      "ownAccountsOff": "This school uses school accounts only. Ask your teacher for a login card.",
+      "lastTeacher": "A class needs at least one teacher."
+    }
   }
 }

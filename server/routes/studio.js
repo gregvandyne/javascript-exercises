@@ -20,11 +20,12 @@ import { loadChat } from '../builder/chat.js';
 import { previewUrl } from '../builder/tools.js';
 import { saveUpload, getUpload, deleteUpload, readUploadBytes, listUploads, LIMITS, UploadError } from '../builder/uploads.js';
 import { tEn } from '../i18n/index.js';
+import { sharingOptions } from '../services/schools.js';
 
 export const router = Router();
 
 /** What each sharing level means, in the reader's language. */
-export const shareText = (t = tEn) => ({ private: t('studio.shareText.private'), friends: t('studio.shareText.friends'), public: t('studio.shareText.public') });
+export const shareText = (t = tEn) => ({ private: t('studio.shareText.private'), friends: t('studio.shareText.friends'), school: t('studio.shareText.school'), public: t('studio.shareText.public') });
 export const ICONS = ['🎮', '🦈', '🐉', '🦖', '🤖', '🦄', '🚀', '👽', '🐱', '🐶', '🦊', '🐧', '🐰', '🐸', '🐙', '🐝', '🐠', '🐵', '🦁', '🐼', '👻', '🏴‍☠️', '👸', '🧙', '🥷', '🦋', '🐢', '🦉', '🐻', '🍕', '🧁', '🍎', '⚽', '🏀', '🚗', '🚂', '⛄', '⭐', '🌈', '🌸', '🏆', '🎲', '🧩', '🔤', '❓', '🎵', '💎', '🏰'];
 
 /** One plain-words status for a builder's own game. code: hidden|suspended|in_review|rejected|draft|live */
@@ -64,7 +65,7 @@ export function studioState(user, gameId, t = tEn) {
     preview: cur ? previewUrl(cur, g, user.id, t.locale) : null,
     chat: chat.messages,
     turnsLeft: turnsLeft(user.id), dailyTurns: dailyTurns(), provider: providerName(), busy: isBusy(g.id),
-    shareText: shareText(t), shareUrl: `/g/${g.slug}`,
+    shareText: shareText(t), shareUrl: `/g/${g.slug}`, shareOptions: sharingOptions(games.getOwner(g)),
     uploads: { limits: LIMITS, used: listUploads(g.id).length },
   };
 }
@@ -265,7 +266,7 @@ router.post('/api/studio/:id/save', requireAccount, rateLimit('studio-save', 30,
   res.json({ ok: true, message: t('studio.api.saved', { number: v.number }), state: studioState(req.user, g.id, t) });
 });
 
-const VIS = ['private', 'friends', 'public'];
+const VIS = ['private', 'friends', 'school', 'public'];
 router.post('/api/studio/:id/publish', requireAccount, rateLimit('studio-publish', 20, 60e3), async (req, res) => {
   const g = loadEditable(req, res); if (!g) return;
   const vis = String((req.body || {}).visibility || '');
