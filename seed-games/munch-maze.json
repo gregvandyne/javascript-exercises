@@ -1,0 +1,14 @@
+{
+  "slug": "munch-maze",
+  "title": "Munch Maze",
+  "icon": "🟡",
+  "cover": "night",
+  "category": "arcade",
+  "tags": "maze,arcade,classic,chase,dots,ghosts,retro,munch,gloops,easy mode",
+  "description": "Guide Munch the bouncy blob through glowing candy mazes and eat every dot before the four silly Gloops catch you. Grab a Super Snack and the Gloops turn blue, so you can munch them for big points. Play Classic or Easy, swipe or use the arrow keys, and try three different mazes.",
+  "orientation": "any",
+  "players_max": 1,
+  "age_rating": "everyone",
+  "featured": true,
+  "notes": "Original maze-chase game: hero Munch and the Gloops Zippy, Sneaky, Tricky and Dozy are original characters; the three 28x31 mazes (Candy Lane, Mint Caves, Starry Swirl) are original, mirrored, have no dead ends and wrapping side tunnels. Classic mechanics: tile movement with cornering and buffered turns on a fixed 120 Hz step, the four chase personalities, the scatter/chase timer with reversals, house dot counters plus the no-dot timer, frightened chain 200/400/800/1600, eyes return home, two bonus snacks per level, extra life at 10,000, arcade-style level speed tables and three short original cartoons. Easy mode: slower Gloops, 5 lives, longer Super Snack time. Controls: swipe anywhere (slide to keep steering), optional on-screen arrow buttons, arrows/WASD, P/Esc pause, M mute. Saves best score and best level per mode, total dots and settings in BRB.storage key 'munch-maze-v1'. Leaderboard: Classic only (BRB.score.submit(score, 'points') then BRB.gameOver); Easy calls BRB.gameOver({won:false}) with no score. Sounds use BRB.sfx plus a small original WebAudio synth (chomp, hum) that follows BRB.sfx.muted. No flashing faster than 2 per second. window.__brbTest drives the game for tests. Loads Google Font Fredoka."
+}

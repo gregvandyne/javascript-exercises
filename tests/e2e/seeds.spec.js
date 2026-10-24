@@ -2,7 +2,7 @@
 import { test, expect } from '@playwright/test';
 import { gameFrame } from './helpers.js';
 
-const SEEDS = [['shark-plank', 'Shark Plank'], ['ring-rumble', 'Ring Rumble'], ['footy-tycoon', 'Footy Tycoon'], ['connect-four', null], ['happy-putt', null], ['castle-clash', null], ['brick-drop', null], ['word-hunt', null], ['sum-racer', null]];
+const SEEDS = [['shark-plank', 'Shark Plank'], ['ring-rumble', 'Ring Rumble'], ['footy-tycoon', 'Footy Tycoon'], ['connect-four', null], ['happy-putt', null], ['castle-clash', null], ['brick-drop', null], ['word-hunt', null], ['sum-racer', null], ['munch-maze', null]];
 
 for (const [slug, title] of SEEDS) {
   test(`${slug} loads in the sandbox and shows up on Home`, async ({ page }) => {

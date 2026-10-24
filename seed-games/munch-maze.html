@@ -1,0 +1,1700 @@
+<title>Munch Maze</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&display=swap">
+<style>
+/* Munch Maze: a classic maze-chase game with original characters (Munch and the four Gloops) and original mazes.
+   Layout: a HUD row (pause / score / best / mute), the maze canvas, an info row (lives / level / bonus snacks)
+   and an optional on-screen D-pad. On wide screens (landscape phones, desktop) the maze sits in the middle with
+   the HUD on the left and the D-pad on the right. The script sizes the maze so a whole number of device pixels
+   makes one tile (crisp at any devicePixelRatio). Overlays: title, pause and game over. */
+:root{
+  --bg1:#2a1366; --bg2:#0c0624; --ink:#fff; --soft:#cbb9ff; --panel:#21114d; --panelEdge:#4d2c9c; --chip:#33196e;
+  --lime:#9be34f; --limeDark:#4f9c1b; --orange:#ffab40; --orangeDark:#c46f0c; --pink:#ff5fc8; --cyan:#38e1f0;
+  --font:"Fredoka","Trebuchet MS",system-ui,sans-serif;
+}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{margin:0;overflow:hidden;font-family:var(--font);color:var(--ink);background:var(--bg2);
+  background:radial-gradient(ellipse at 50% 0%,var(--bg1),var(--bg2) 70%);
+  touch-action:none;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
+button{font-family:inherit;color:inherit;cursor:pointer}
+button:focus-visible{outline:3px solid #fff;outline-offset:2px}
+
+/* ---------- play screen ---------- */
+.app{position:fixed;inset:0;display:grid;justify-content:center;align-content:center;gap:6px;
+  padding:max(6px,env(safe-area-inset-top)) max(8px,env(safe-area-inset-right)) max(6px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left));
+  grid-template-columns:var(--bw,340px);grid-template-areas:"hud" "board" "info" "side"}
+.app.offstage{visibility:hidden}
+.hud{grid-area:hud;display:flex;align-items:center;gap:6px;min-width:0}
+.icon-btn{width:46px;height:46px;flex:none;border:0;border-radius:50%;background:var(--chip);font-size:1.3rem;display:grid;place-items:center;padding:0;
+  box-shadow:0 3px 0 rgba(0,0,0,.45),inset 0 0 0 2px var(--panelEdge)}
+.icon-btn:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(0,0,0,.45),inset 0 0 0 2px var(--panelEdge)}
+#pauseBtn{order:0} #scoreBox{order:1} #bestBox{order:2} #muteBtn{order:3}
+.stat{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;line-height:1.05;background:rgba(0,0,0,.25);border-radius:14px;padding:4px 6px}
+.stat .lbl{font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--soft)}
+.stat b{font-size:1.25rem;font-variant-numeric:tabular-nums;white-space:nowrap}
+#bestBox b{color:#ffe36e}
+.board{grid-area:board;position:relative;display:grid;place-items:center}
+#cv{display:block;border-radius:10px;touch-action:none;box-shadow:0 0 0 2px rgba(255,255,255,.06),0 10px 30px rgba(0,0,0,.5)}
+.info{grid-area:info;display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:26px}
+.info canvas{display:block}
+#levelEl{font-weight:700;font-size:1rem;color:var(--soft);white-space:nowrap}
+.side{grid-area:side;display:flex;flex-direction:column;align-items:center;gap:6px}
+.pad{display:grid;grid-template-columns:repeat(3,58px);grid-template-rows:repeat(3,56px);gap:3px}
+.pad button{border:0;border-radius:16px;background:var(--chip);font-size:1.5rem;color:#fff;box-shadow:0 4px 0 rgba(0,0,0,.45),inset 0 0 0 2px var(--panelEdge);touch-action:none;padding:0}
+.pad button.on,.pad button:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.45),inset 0 0 0 2px var(--lime);background:#3d2380}
+.pad [data-dir=up]{grid-area:1/2} .pad [data-dir=left]{grid-area:2/1} .pad [data-dir=right]{grid-area:2/3} .pad [data-dir=down]{grid-area:3/2}
+.pad .hub{grid-area:2/2;border-radius:50%;margin:10px;background:rgba(255,255,255,.06)}
+.keys{margin:0;font-size:.9rem;color:var(--soft);text-align:center;line-height:1.35}
+.keys kbd{display:inline-block;min-width:1.4em;padding:0 .3em;border-radius:6px;background:var(--chip);box-shadow:inset 0 0 0 1px var(--panelEdge);font-family:inherit;font-weight:700;color:#fff}
+.toast{position:absolute;left:50%;top:38%;transform:translate(-50%,-50%);pointer-events:none;background:#fff;color:#2a1366;font-weight:700;font-size:1.25rem;
+  padding:8px 18px;border-radius:999px;box-shadow:0 5px 0 rgba(0,0,0,.35);white-space:nowrap;animation:pop 1.6s ease forwards}
+@keyframes pop{0%{transform:translate(-50%,-50%) scale(.4);opacity:0}15%{transform:translate(-50%,-50%) scale(1.1);opacity:1}25%{transform:translate(-50%,-50%) scale(1)}80%{opacity:1}100%{transform:translate(-50%,-80%) scale(1);opacity:0}}
+.skip{position:absolute;right:8px;bottom:8px;border:0;border-radius:999px;background:rgba(0,0,0,.55);color:#fff;font-weight:700;font-size:1rem;min-height:44px;padding:0 16px;box-shadow:inset 0 0 0 2px var(--panelEdge)}
+
+/* Wide screens: HUD on the left, D-pad on the right, maze in the middle. */
+.app.wide{grid-template-columns:minmax(0,1fr) var(--bw,340px) minmax(0,1fr);grid-template-rows:1fr auto auto 1fr;column-gap:18px;row-gap:12px;
+  grid-template-areas:". board ." "hud board side" "info board side" ". board ."}
+.app.wide .board{grid-row:1/5}
+.app.wide .side{grid-row:1/5;justify-content:center}
+.app.wide .hud{flex-wrap:wrap;justify-content:center;justify-self:center;width:min(100%,210px);gap:10px}
+.app.wide .stat,.app.wide #scoreBox,.app.wide #bestBox{flex-basis:100%;order:2;padding:6px 10px}
+.app.wide .stat b{font-size:1.6rem}
+.app.wide #muteBtn{order:1}
+.app.wide .info{flex-direction:column;justify-content:flex-start;justify-self:center;gap:8px}
+
+/* ---------- overlays ---------- */
+.screen{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;padding:12px;background:rgba(8,3,26,.62)}
+.screen.title{background:radial-gradient(ellipse at 50% 0%,var(--bg1),var(--bg2) 75%)}
+.panel{position:relative;background:var(--panel);border-radius:26px;padding:14px 16px 16px;width:min(100%,440px);max-height:100%;overflow:auto;text-align:center;
+  box-shadow:0 8px 0 rgba(0,0,0,.45),inset 0 0 0 3px var(--panelEdge);display:flex;flex-direction:column;align-items:center;gap:9px}
+.panel h1{margin:0;font-size:clamp(2.2rem,11vw,3rem);line-height:1;letter-spacing:.02em;color:var(--lime);text-shadow:0 3px 0 var(--limeDark),0 0 18px rgba(155,227,79,.45)}
+.panel h1 span{color:var(--pink);text-shadow:0 3px 0 #a3247c,0 0 18px rgba(255,95,200,.45)}
+.panel h2{margin:0;font-size:clamp(1.7rem,8vw,2.2rem);line-height:1.05;color:var(--lime);text-shadow:0 3px 0 var(--limeDark)}
+.panel p{margin:0;font-size:1.02rem;line-height:1.3}
+.panel .hint{font-size:.92rem;color:var(--soft)}
+#demo{display:block;width:300px;height:84px;max-width:100%}
+.big-btn{border:0;border-radius:20px;background:var(--lime);color:#173300;font-weight:700;font-size:1.4rem;padding:10px 20px;min-height:58px;box-shadow:0 6px 0 var(--limeDark);white-space:nowrap}
+.big-btn.easy{background:var(--orange);color:#3a1d00;box-shadow:0 6px 0 var(--orangeDark)}
+.big-btn.alt{background:var(--chip);color:#fff;box-shadow:0 6px 0 rgba(0,0,0,.45),inset 0 0 0 2px var(--panelEdge);font-size:1.1rem;min-height:50px}
+.big-btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--limeDark)}
+.big-btn.easy:active{box-shadow:0 2px 0 var(--orangeDark)}
+.big-btn.alt:active{box-shadow:0 2px 0 rgba(0,0,0,.45),inset 0 0 0 2px var(--panelEdge)}
+.btns{display:flex;gap:10px;width:100%;justify-content:center;flex-wrap:wrap}
+.btns .big-btn{flex:1;min-width:140px}
+.big-btn small{display:block;font-size:.8rem;font-weight:500;opacity:.85;line-height:1.1}
+.mazes{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;width:100%}
+.mazes button{border:0;border-radius:14px;background:var(--chip);box-shadow:inset 0 0 0 2px var(--panelEdge);padding:5px 2px 4px;min-height:44px;
+  display:flex;flex-direction:column;align-items:center;gap:2px;font-weight:700;font-size:.78rem;line-height:1.05;min-width:0}
+.mazes button canvas{display:block;width:34px;height:38px}
+.mazes button .mix{font-size:1.5rem;line-height:38px;height:38px}
+.mazes button[aria-pressed=true]{background:#4a2a9e;box-shadow:inset 0 0 0 3px var(--lime)}
+.lbl-row{font-size:.85rem;font-weight:700;color:var(--soft);letter-spacing:.06em;text-transform:uppercase;margin-bottom:-4px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.chip{font-weight:700;background:var(--chip);border-radius:999px;padding:5px 12px;font-size:.95rem;box-shadow:inset 0 0 0 2px var(--panelEdge)}
+.chip.gold{background:#ffe36e;color:#3a2a00;box-shadow:none}
+.toggle{border:0;border-radius:999px;background:var(--chip);box-shadow:inset 0 0 0 2px var(--panelEdge);min-height:44px;padding:0 16px;font-weight:700;font-size:1rem}
+.toggle[aria-pressed=true]{box-shadow:inset 0 0 0 3px var(--lime)}
+.panel .corner{position:fixed;top:max(10px,env(safe-area-inset-top));right:max(10px,env(safe-area-inset-right));z-index:2}
+.score-big{font-size:2.6rem;font-weight:700;line-height:1;color:#ffe36e;font-variant-numeric:tabular-nums}
+.kbonly{display:none}
+@media (hover:hover) and (pointer:fine){.kbonly{display:block}}
+@media (max-height:600px){#demo{height:60px}.panel{gap:7px;padding:12px 14px}.big-btn{min-height:52px;font-size:1.25rem}.panel .hint.intro{display:none}}
+@media (max-width:374px){.big-btn{font-size:1.2rem;padding:10px 12px}.btns .big-btn{min-width:120px}.mazes button{font-size:.7rem}}
+/* Short landscape: the title panel goes two columns so nothing scrolls. */
+@media (orientation:landscape) and (max-height:500px){
+  .panel.wideable{width:min(100%,720px);display:grid;grid-template-columns:1fr 1fr;align-items:center;column-gap:16px}
+  .panel.wideable .colL,.panel.wideable .colR{display:flex;flex-direction:column;align-items:center;gap:8px;min-width:0}
+}
+.colL,.colR{display:contents}
+@media (prefers-reduced-motion:reduce){.toast{animation:none}}
+</style>
+
+<div class="app offstage" id="app">
+  <div class="hud" id="hud">
+    <button class="icon-btn" id="pauseBtn" aria-label="Pause">⏸️</button>
+    <div class="stat" id="scoreBox"><span class="lbl">Score</span><b id="scoreEl">0</b></div>
+    <div class="stat" id="bestBox"><span class="lbl">Best</span><b id="bestEl">0</b></div>
+    <button class="icon-btn mute" id="muteBtn" aria-label="Turn sound off">🔊</button>
+  </div>
+  <div class="board" id="board"><canvas id="cv" aria-label="The maze. Swipe or use the arrow keys to move Munch."></canvas></div>
+  <div class="info" id="info"><canvas id="livesCv" aria-label="Lives"></canvas><span id="levelEl">Level 1</span><canvas id="fruitCv" aria-label="Bonus snacks"></canvas></div>
+  <div class="side" id="side">
+    <div class="pad" id="pad" role="group" aria-label="Arrow buttons">
+      <button data-dir="up" aria-label="Up">▲</button>
+      <button data-dir="left" aria-label="Left">◀</button>
+      <span class="hub"></span>
+      <button data-dir="right" aria-label="Right">▶</button>
+      <button data-dir="down" aria-label="Down">▼</button>
+    </div>
+    <p class="keys kbonly" id="keysHint"><kbd>←</kbd><kbd>↑</kbd><kbd>↓</kbd><kbd>→</kbd> or <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> to move<br><kbd>P</kbd> pause · <kbd>M</kbd> sound</p>
+  </div>
+</div>
+
+<section class="screen title" id="titleScreen">
+  <div class="panel wideable">
+    <div class="colL">
+      <canvas id="demo" aria-hidden="true"></canvas>
+      <h1>Munch <span>Maze</span></h1>
+      <p class="hint intro">Eat every dot! Grab a Super Snack and the Gloops turn blue, so you can munch them.</p>
+      <div class="btns">
+        <button class="big-btn" id="playClassic">▶ Play<small>Classic</small></button>
+        <button class="big-btn easy" id="playEasy">🐣 Play<small>Easy</small></button>
+      </div>
+    </div>
+    <div class="colR">
+      <div class="lbl-row">Maze</div>
+      <div class="mazes" id="mazePick" role="group" aria-label="Pick a maze"></div>
+      <div class="chips" id="bestChips"></div>
+      <button class="toggle" id="padToggle" aria-pressed="false">🎮 Arrow buttons: Off</button>
+      <p class="hint kbonly">Arrows or WASD to move. P to pause. M for sound.</p>
+    </div>
+    <button class="icon-btn mute corner" aria-label="Turn sound off">🔊</button>
+  </div>
+</section>
+
+<section class="screen" id="pauseScreen" hidden>
+  <div class="panel">
+    <h2>Paused</h2>
+    <p id="pauseInfo">Take a breath!</p>
+    <button class="big-btn" id="resumeBtn">▶ Keep playing</button>
+    <div class="btns">
+      <button class="big-btn alt" id="restartBtn">🔄 Start over</button>
+      <button class="big-btn alt" id="quitBtn">🏠 Menu</button>
+    </div>
+    <button class="toggle" id="padToggle2" aria-pressed="false">🎮 Arrow buttons: Off</button>
+    <button class="icon-btn mute" aria-label="Turn sound off">🔊</button>
+  </div>
+</section>
+
+<section class="screen" id="overScreen" hidden>
+  <div class="panel">
+    <h2 id="overTitle">Game over!</h2>
+    <p id="overSub">Great munching!</p>
+    <div class="score-big" id="overScore">0</div>
+    <div class="chips" id="overChips"></div>
+    <div class="btns">
+      <button class="big-btn" id="againBtn">▶ Play again</button>
+      <button class="big-btn alt" id="menuBtn">🏠 Menu</button>
+    </div>
+    <button class="icon-btn mute" aria-label="Turn sound off">🔊</button>
+  </div>
+</section>
+
+<script>
+/* =====================================================================================
+   CONFIG: change these to make the game your own!
+   ===================================================================================== */
+const CONFIG = {
+  title: 'Munch Maze',
+  saveKey: 'munch-maze-v1',
+  lives: 3,                    // lives at the start of a Classic game
+  extraLifeAt: 10000,          // one extra life when the score reaches this
+  baseSpeed: 9,                // tiles per second at "100%" (the level tables below are percentages of this)
+  stepHz: 120,                 // the game logic runs in fixed steps, this many per second, on every screen
+  cornerWindow: 0.45,          // how early or late (in tiles) Munch may turn into an opening ("cornering")
+  hitRadius: 0.5,              // how close (in tiles) a Gloop must get to catch Munch
+  dotPause: 1 / 60,            // Munch stops this long (seconds) after each dot, like the old arcade games
+  snackPause: 3 / 60,          // ...and this long after a Super Snack
+  points: { dot: 10, snack: 50, gloops: [200, 400, 800, 1600] },
+  fruitAtDots: [70, 170],      // a bonus snack appears after this many dots (out of 244; scaled to each maze)
+  fruitSeconds: 9,             // a bonus snack stays 9 to 10 seconds
+  eatFreeze: 0.7,              // the game pauses this long to show the points when a Gloop is munched
+  eyesSpeed: 1.7,              // eyes hurry home this fast (x baseSpeed)
+  houseSpeed: 0.5,             // Gloops move this fast inside the house
+  frightMinSeconds: 1,         // Super Snack power never drops below this (late levels)
+  blinkSeconds: 2,             // the Gloops start fading blue <-> white this long before the power ends...
+  blinkPeriod: 0.6,            // ...one slow fade every 0.6 s (under 2 a second, never a strobe)
+  readySeconds: 2.4,           // "READY!" at the start of a game
+  readyAgainSeconds: 1.7,      // "READY!" after a new level or a lost life
+  intermissionAfter: [2, 5, 9, 13, 17],   // a short funny cartoon plays after these levels
+  swipeMin: 16,                // pixels a finger must slide before it counts as a swipe
+  easy: { lives: 5, gloopSpeed: 0.78, frightScale: 1.6, minFright: 3, munchMin: 0.85 },
+  // The four Gloops. corner = the tile each one wanders to in "scatter" time.
+  gloops: [
+    { name: 'Zippy',  color: '#ff4f6d', dark: '#c21f45', corner: [25, -3] },   // chases Munch's tile; speeds up near the end
+    { name: 'Sneaky', color: '#ff8ad8', dark: '#c94fa3', corner: [2, -3] },    // aims 4 tiles ahead of Munch
+    { name: 'Tricky', color: '#38e1f0', dark: '#0f9fb5', corner: [27, 31] },   // uses Zippy's spot to cut Munch off
+    { name: 'Dozy',   color: '#ffab40', dark: '#cf7410', corner: [0, 31] }     // chases from far, wanders off when close
+  ],
+  munch: { color: '#9be34f', dark: '#4f9c1b', light: '#e0ffb0' },
+  // Bonus snacks by level (level 13 and up get the crown).
+  fruits: [
+    { id: 'cherry', name: 'Cherries', points: 100 },
+    { id: 'berry', name: 'Strawberry', points: 300 },
+    { id: 'cupcake', name: 'Cupcake', points: 500 },
+    { id: 'melon', name: 'Melon slice', points: 700 },
+    { id: 'star', name: 'Star cookie', points: 1000 },
+    { id: 'lolly', name: 'Lollipop', points: 2000 },
+    { id: 'icecream', name: 'Ice cream', points: 3000 },
+    { id: 'crown', name: 'Candy crown', points: 5000 }
+  ]
+};
+
+/* =====================================================================================
+   MAZES: 28 x 31 tiles, mirrored left/right. # wall, . dot, o Super Snack, (space) path with no dot,
+   t tunnel (wraps to the other side; Gloops slow down in it), - house door, _ inside the house.
+   start = Munch's first spot (x.5 = between two tiles). Mix mode rotates them as the levels go up.
+   ===================================================================================== */
+const MAZES = [
+  { id: 'candy', name: 'Candy Lane', start: [13.5, 23], deco: 'sprinkles',
+    colors: { glow: '#ff5fc8', edge: '#ffc2ec', fill: '#3b0f4d', fill2: '#250934', dot: '#ffd9f3', snack: '#ffef6e', door: '#ffd1f0', bg: '#12051f' },
+    rows: [
+      '############################',
+      '#..........................#',
+      '#.###.#.############.#.###.#',
+      '#o###.#.############.#.###o#',
+      '#.....#..............#.....#',
+      '#.###.#.###.####.###.#.###.#',
+      '#.###...###.####.###...###.#',
+      '#.####.####.####.####.####.#',
+      '#.####......####......####.#',
+      '#......####.####.####......#',
+      '######.####.####.####.######',
+      '######                ######',
+      '######.## ###--### ##.######',
+      '######.## #______# ##.######',
+      'tttt  .   #______#   .  tttt',
+      '######.## #______# ##.######',
+      '######.## ######## ##.######',
+      '######                ######',
+      '######.####.####.####.######',
+      '######.####.####.####.######',
+      '#..........................#',
+      '#.####.####.####.####.####.#',
+      '#.####.####.####.####.####.#',
+      '#.####.##..........##.####.#',
+      '#.......#.########.#.......#',
+      '#####.#.#.########.#.#.#####',
+      '#.....#..............#.....#',
+      '#o###.#.############.#.###o#',
+      '#.###.#.############.#.###.#',
+      '#..........................#',
+      '############################'
+    ] },
+  { id: 'mint', name: 'Mint Caves', start: [13.5, 24], deco: 'gems',
+    colors: { glow: '#3dffc0', edge: '#c4ffeb', fill: '#0c3a44', fill2: '#06232b', dot: '#d4fff0', snack: '#fff27a', door: '#b8fff0', bg: '#03121a' },
+    rows: [
+      '############################',
+      '#............##............#',
+      '#.##.###.###.##.###.###.##.#',
+      '#o##.###.###.##.###.###.##o#',
+      '#.##.###............###.##.#',
+      '#....###.##########.###....#',
+      '####.###.##########.###.####',
+      '####.###.##########.###.####',
+      'ttt.........####.........ttt',
+      '####.###.##.####.##.###.####',
+      '####.###.##.####.##.###.####',
+      '####.###            ###.####',
+      '####.#### ###--### ####.####',
+      '####.#### #______# ####.####',
+      '####.     #______#     .####',
+      '####.#### #______# ####.####',
+      '####.#### ######## ####.####',
+      '####.###            ###.####',
+      '####.###.##########.###.####',
+      '####.###.##########.###.####',
+      '####.###.##########.###.####',
+      'tttt....................tttt',
+      '#.####.###.######.###.####.#',
+      '#.####.###.######.###.####.#',
+      '#......###........###......#',
+      '#.####.##############.####.#',
+      '#.####.##############.####.#',
+      '#o####................####o#',
+      '#.#######.########.#######.#',
+      '#..........................#',
+      '############################'
+    ] },
+  { id: 'starry', name: 'Starry Swirl', start: [13.5, 20], deco: 'stars',
+    colors: { glow: '#8aa8ff', edge: '#dfe6ff', fill: '#1e1760', fill2: '#120d3d', dot: '#fff3b8', snack: '#ff9be0', door: '#ffe1a8', bg: '#070521' },
+    rows: [
+      '############################',
+      '#......##..........##......#',
+      '#o####.##.########.##.####o#',
+      '#.####....########....####.#',
+      '#.#######.########.#######.#',
+      'ttt......................ttt',
+      '###.#######.####.#######.###',
+      '###.#######.####.#######.###',
+      '#......####.####.####......#',
+      '#.####.####.####.####.####.#',
+      '#.####.####.####.####.####.#',
+      '#.####                ####.#',
+      '#.####.## ###--### ##.####.#',
+      '#.####.## #______# ##.####.#',
+      '#.....    #______#    .....#',
+      '#.####.## #______# ##.####.#',
+      '#.####.## ######## ##.####.#',
+      '#.####                ####.#',
+      '#.####.##.########.##.####.#',
+      '#.####.##.########.##.####.#',
+      '#......##..........##......#',
+      '###.#######.####.#######.###',
+      '###.#######.####.#######.###',
+      '###.#######.####.#######.###',
+      '###.#######.####.#######.###',
+      'ttt......................ttt',
+      '#.####.##############.####.#',
+      '#.####....########....####.#',
+      '#o####.##.########.##.####o#',
+      '#......##..........##......#',
+      '############################'
+    ] }
+];
+
+/* ENGINE:BEGIN ========================================================================
+   The game rules, with no drawing and no page access (so they can be tested on their own).
+   Positions are in tiles; a whole number is the centre of a tile. Everything runs in fixed
+   steps of 1/CONFIG.stepHz seconds, so the game plays the same at 30, 60 or 144 frames a second.
+   The engine reports what happened (dots, snacks, catches...) as events in G.ev for the
+   screen to turn into sounds and sparkles.
+   ===================================================================================== */
+const Engine = (() => {
+  const DIRS = { up: [0, -1], left: [-1, 0], down: [0, 1], right: [1, 0] };
+  const ORDER = ['up', 'left', 'down', 'right'];          // tie-break order when two ways are equally good
+  const OPP = { up: 'down', down: 'up', left: 'right', right: 'left' };
+  const EPS = 1e-6;
+  const T_WALL = 0, T_PATH = 1, T_TUNNEL = 2, T_DOOR = 3, T_HOUSE = 4;
+  const STEP = 1 / CONFIG.stepHz;
+  const CAUGHT_LEN = 2.1, CLEAR_LEN = 3.0, INTER_LEN = 8.5;
+  const GLOBAL_LIMITS = [0, 7, 17, 32];                  // after a lost life: dots before Sneaky, Tricky, Dozy come out
+  const FRIGHT = [6, 5, 4, 3, 2, 5, 2, 2, 1, 5, 2, 1, 1, 3, 1, 1, 0, 1];   // Super Snack seconds by level (then 0)
+
+  /** Turn a maze definition (rows of text) into typed grids plus the house and tunnel positions. */
+  function parseMaze(def, index) {
+    const rows = def.rows, H = rows.length, W = rows[0].length;
+    const grid = new Uint8Array(W * H), dots = new Uint8Array(W * H), tunnelRows = [];
+    let doorY = -1, doorX0 = 99, doorX1 = -1, total = 0;
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+      const ch = rows[y][x], i = y * W + x;
+      if (ch === '#') grid[i] = T_WALL;
+      else if (ch === 't') grid[i] = T_TUNNEL;
+      else if (ch === '-') { grid[i] = T_DOOR; doorY = y; doorX0 = Math.min(doorX0, x); doorX1 = Math.max(doorX1, x); }
+      else if (ch === '_') grid[i] = T_HOUSE;
+      else { grid[i] = T_PATH; if (ch === '.') { dots[i] = 1; total++; } else if (ch === 'o') { dots[i] = 2; total++; } }
+      if (x === 0 && ch === 't') tunnelRows.push(y);
+    }
+    const homeX = (doorX0 + doorX1) / 2;
+    return { index, id: def.id, name: def.name, colors: def.colors, deco: def.deco, rows, W, H, grid, dots, total, tunnelRows,
+      doorY, doorX0, doorX1, homeX, exitY: doorY - 1, houseY: doorY + 2,
+      start: { x: def.start[0], y: def.start[1] }, fruit: { x: homeX, y: doorY + 5 } };
+  }
+  const PARSED = MAZES.map(parseMaze);
+
+  const wrapX = (M, x) => ((x % M.W) + M.W) % M.W;
+  const wrapDist = (M, a, b) => { const d = Math.abs(a - b) % M.W; return Math.min(d, M.W - d); };
+  function tileType(M, tx, ty) { if (ty < 0 || ty >= M.H) return T_WALL; return M.grid[ty * M.W + wrapX(M, tx)]; }
+  /** Can Munch (or a Gloop out in the maze) stand on this tile? Walls, the door and the house say no. */
+  function open(M, tx, ty) { const t = tileType(M, tx, ty); return t === T_PATH || t === T_TUNNEL; }
+
+  // Seeded random numbers (mulberry32), kept in the game so a seed replays the same game.
+  function rnd(G) { G.rs = (G.rs + 0x6D2B79F5) >>> 0; let t = G.rs; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }
+
+  /* ---------- level tables (classic arcade values, as fractions of CONFIG.baseSpeed) ---------- */
+  function speedTable(level) {
+    if (level <= 1) return { munch: 0.80, munchFright: 0.90, gloop: 0.75, tunnel: 0.40, fright: 0.50, elroy1: 0.80, elroy2: 0.85 };
+    if (level <= 4) return { munch: 0.90, munchFright: 0.95, gloop: 0.85, tunnel: 0.45, fright: 0.55, elroy1: 0.90, elroy2: 0.95 };
+    if (level <= 20) return { munch: 1.00, munchFright: 1.00, gloop: 0.95, tunnel: 0.50, fright: 0.60, elroy1: 1.00, elroy2: 1.05 };
+    return { munch: 0.90, munchFright: 0.90, gloop: 0.95, tunnel: 0.50, fright: 0.60, elroy1: 1.00, elroy2: 1.05 };
+  }
+  /** Scatter / chase schedule in seconds: scatter, chase, scatter, chase... the last chase lasts forever. */
+  function modeTable(level) {
+    if (level <= 1) return [7, 20, 7, 20, 5, 20, 5, Infinity];
+    if (level <= 4) return [7, 20, 7, 20, 5, 1033, 1 / 60, Infinity];
+    return [5, 20, 5, 20, 5, 1037, 1 / 60, Infinity];
+  }
+  function frightSeconds(G) {
+    let s = FRIGHT[G.level - 1]; if (s === undefined) s = 0;
+    if (G.mode === 'easy') s = Math.max(CONFIG.easy.minFright, s * CONFIG.easy.frightScale);
+    return Math.max(CONFIG.frightMinSeconds, s);
+  }
+  /** Zippy speeds up ("in a hurry") when this few dots are left; twice as hurried at half that. */
+  function elroyDots(level) { return level <= 1 ? 20 : level === 2 ? 30 : level <= 5 ? 40 : level <= 8 ? 50 : level <= 11 ? 60 : level <= 14 ? 80 : level <= 18 ? 100 : 120; }
+  /** Dots each Gloop waits for in the house at the start of a level (by Gloop id; Zippy starts outside). */
+  function houseLimits(level) { return level <= 1 ? [0, 0, 30, 60] : level === 2 ? [0, 0, 0, 50] : [0, 0, 0, 0]; }
+  function fruitIndex(level) { return level <= 1 ? 0 : level === 2 ? 1 : Math.min(CONFIG.fruits.length - 1, Math.floor((level - 3) / 2) + 2); }
+  /** Which maze a level uses. Mix: levels 1-2, 3-5, 6-9 on the three mazes, then a new maze every 4 levels. */
+  function mazeIndexFor(pick, level) {
+    if (pick !== 'mix') { const i = PARSED.findIndex(m => m.id === pick); return i < 0 ? 0 : i; }
+    if (level <= 2) return 0; if (level <= 5) return 1 % PARSED.length; if (level <= 9) return 2 % PARSED.length;
+    return Math.floor((level - 10) / 4) % PARSED.length;
+  }
+
+  /* ---------- game setup ---------- */
+  function newGame(opts = {}) {
+    const mode = opts.mode === 'easy' ? 'easy' : 'classic';
+    const pick = opts.maze && (opts.maze === 'mix' || PARSED.some(m => m.id === opts.maze)) ? opts.maze : 'mix';
+    const G = {
+      mode, mazePick: pick, level: 1, score: 0, lives: mode === 'easy' ? CONFIG.easy.lives : CONFIG.lives,
+      rs: (opts.seed >>> 0) || 20240601, ev: [], acc: 0, time: 0, extraGiven: false, fast: !!opts.fast,
+      fruitsEaten: [], over: false, dotsEatenTotal: 0, gloopsEaten: 0, levelsCleared: 0,
+      munch: { x: 0, y: 0, dir: 'left', next: null, pause: 0, moving: false, travel: 0 },
+      gloops: CONFIG.gloops.map((c, id) => ({ id, name: c.name, x: 0, y: 0, dir: 'left', state: 'house', fright: false, reverse: false, dotCounter: 0 }))
+    };
+    startLevel(G, Math.max(1, Math.floor(+opts.level) || 1));
+    G.phaseT = G.fast ? 0 : CONFIG.readySeconds;
+    G.ev.push({ type: 'start' });
+    return G;
+  }
+  function startLevel(G, level) {
+    G.level = level;
+    G.maze = PARSED[mazeIndexFor(G.mazePick, level)];
+    G.dots = G.maze.dots.slice(); G.dotsLeft = G.maze.total; G.dotsEaten = 0;
+    G.spd = speedTable(level); G.modes = modeTable(level); G.houseLimits = houseLimits(level);
+    const k = G.maze.total / 244; G.fruitAt = CONFIG.fruitAtDots.map(n => Math.round(n * k)); G.fruitsSpawned = 0;
+    G.elroy1 = elroyDots(level); G.elroy2 = G.elroy1 / 2; G.elroyOff = false; G.globalCounter = null;
+    G.levelFruit = fruitIndex(level);
+    for (const g of G.gloops) g.dotCounter = 0;
+    resetActors(G);
+    G.phase = 'ready'; G.phaseT = G.fast ? 0 : CONFIG.readyAgainSeconds;
+    G.ev.push({ type: 'level', level, maze: G.maze.name });
+  }
+  /** Everyone back to their start spots (new level or after Munch is caught). */
+  function resetActors(G) {
+    const M = G.maze, m = G.munch;
+    m.x = M.start.x; m.y = M.start.y; m.dir = 'left'; m.next = null; m.pause = 0; m.moving = false;
+    for (const g of G.gloops) {
+      g.fright = false; g.reverse = false;
+      if (g.id === 0) { g.state = 'active'; g.x = M.homeX; g.y = M.exitY; g.dir = 'left'; }
+      else { g.state = 'house'; g.x = M.homeX + (g.id === 2 ? -2 : g.id === 3 ? 2 : 0); g.y = M.houseY; g.dir = g.id === 1 ? 'down' : 'up'; }
+    }
+    G.modeIdx = 0; G.modeT = 0; G.frightT = 0; G.frightTotal = 0; G.chain = 0;
+    G.fruit = null; G.noDotT = 0; G.freezeT = 0; G.eaten = null; G.caughtBy = -1;
+  }
+
+  /* ---------- the clock ---------- */
+  /** Real time in (seconds); runs as many fixed steps as fit. */
+  function update(G, dt) { G.acc += Math.min(Math.max(dt, 0), 0.25); let n = 0; while (G.acc >= STEP - 1e-9 && n < 40) { G.acc -= STEP; tick(G, STEP); n++; } }
+  /** Exactly `seconds` of game time, for tests. */
+  function advance(G, seconds) { let n = Math.round(seconds / STEP); while (n-- > 0) tick(G, STEP); }
+  function tick(G, dt) {
+    G.time += dt;
+    switch (G.phase) {
+      case 'ready': G.phaseT -= dt; if (G.phaseT <= 0) { G.phase = 'play'; G.ev.push({ type: 'go' }); } break;
+      case 'play': play(G, dt); break;
+      case 'eat': G.freezeT -= dt; if (G.freezeT <= 0) { G.phase = 'play'; G.eaten = null; } break;
+      case 'caught': G.phaseT += dt; if (G.phaseT >= (G.fast ? 0.05 : CAUGHT_LEN)) afterCaught(G); break;
+      case 'clear': G.phaseT += dt; if (G.phaseT >= (G.fast ? 0.05 : CLEAR_LEN)) afterClear(G); break;
+      case 'intermission': G.phaseT += dt; if (G.fast || G.phaseT >= INTER_LEN) startLevel(G, G.level + 1); break;
+      default: break;   // 'over'
+    }
+  }
+  function afterCaught(G) {
+    G.lives--;
+    G.ev.push({ type: 'lifeLost', lives: G.lives });
+    if (G.lives <= 0) { G.phase = 'over'; G.over = true; G.ev.push({ type: 'over', score: G.score, level: G.level }); return; }
+    resetActors(G);
+    G.globalCounter = 0; G.elroyOff = true;   // the house now uses one shared dot counter; Zippy calms down until Dozy is out
+    G.phase = 'ready'; G.phaseT = G.fast ? 0 : CONFIG.readyAgainSeconds;
+  }
+  function afterClear(G) {
+    G.levelsCleared++;
+    const k = CONFIG.intermissionAfter.indexOf(G.level);
+    if (k >= 0 && !G.fast) { G.phase = 'intermission'; G.phaseT = 0; G.interKind = k % 3; G.ev.push({ type: 'intermission', kind: G.interKind }); }
+    else startLevel(G, G.level + 1);
+  }
+  function skipIntermission(G) { if (G.phase === 'intermission') startLevel(G, G.level + 1); }
+
+  const isScatter = G => G.modeIdx % 2 === 0;
+  function elroyLevel(G) { if (G.elroyOff) return 0; return G.dotsLeft <= G.elroy2 ? 2 : G.dotsLeft <= G.elroy1 ? 1 : 0; }
+
+  /* ---------- one step of play ---------- */
+  function play(G, dt) {
+    // Super Snack power counts down; the scatter/chase clock waits while it lasts.
+    if (G.frightT > 0) {
+      G.frightT -= dt;
+      if (G.frightT <= 0) { G.frightT = 0; for (const g of G.gloops) g.fright = false; G.ev.push({ type: 'frightEnd' }); }
+    } else if (G.modeIdx < G.modes.length - 1) {
+      G.modeT += dt;
+      if (G.modeT >= G.modes[G.modeIdx]) {
+        G.modeT = 0; G.modeIdx++;
+        for (const g of G.gloops) if (g.state === 'active') g.reverse = true;   // every switch turns the Gloops around
+        G.ev.push({ type: 'mode', scatter: isScatter(G) });
+      }
+    }
+    if (G.fruit) { G.fruit.t -= dt; if (G.fruit.t <= 0) { G.fruit = null; G.ev.push({ type: 'fruitGone' }); } }
+    G.noDotT += dt;
+    releaseCheck(G);
+    const m = G.munch;
+    if (m.pause > 0) m.pause -= dt;
+    else moveMunch(G, munchSpeed(G) * CONFIG.baseSpeed * dt);
+    eatHere(G);
+    if (collide(G)) return;
+    for (const g of G.gloops) moveGloop(G, g, dt);
+    if (collide(G)) return;
+    if (G.dotsLeft <= 0) { G.phase = 'clear'; G.phaseT = 0; G.ev.push({ type: 'clear', level: G.level }); }
+  }
+
+  function munchSpeed(G) {
+    let f = G.frightT > 0 ? G.spd.munchFright : G.spd.munch;
+    if (G.mode === 'easy') f = Math.max(f, CONFIG.easy.munchMin);
+    return f;
+  }
+  function inTunnel(G, g) { const M = G.maze, rx = Math.round(g.x), ry = Math.round(g.y); if (rx < 0 || rx >= M.W) return true; return M.grid[ry * M.W + rx] === T_TUNNEL; }
+  function gloopSpeed(G, g) {
+    if (g.state === 'eyes' || g.state === 'entering') return CONFIG.eyesSpeed;
+    let f;
+    if (g.state === 'house' || g.state === 'leaving') f = CONFIG.houseSpeed;
+    else if (inTunnel(G, g)) f = G.spd.tunnel;
+    else if (g.fright) f = G.spd.fright;
+    else if (g.id === 0 && elroyLevel(G)) f = elroyLevel(G) === 2 ? G.spd.elroy2 : G.spd.elroy1;
+    else f = G.spd.gloop;
+    if (G.mode === 'easy') f *= CONFIG.easy.gloopSpeed;
+    return f;
+  }
+
+  /** Munch: tile-based with smooth sub-tile motion, instant reversing, buffered turns and cornering
+      (an early or late turn within CONFIG.cornerWindow of a junction slides diagonally into the new lane). */
+  function moveMunch(G, dist) {
+    const M = G.maze, m = G.munch;
+    if (m.next === m.dir) m.next = null;
+    if (m.next && m.next === OPP[m.dir]) { m.dir = m.next; m.next = null; }
+    let guard = 0;
+    while (dist > EPS && guard++ < 8) {
+      const cx = Math.round(m.x), cy = Math.round(m.y);
+      let [dx, dy] = DIRS[m.dir];
+      const off = dx ? m.x - cx : m.y - cy;
+      if (m.next && m.next !== OPP[m.dir] && Math.abs(off) <= CONFIG.cornerWindow) {
+        const [nx, ny] = DIRS[m.next];
+        if (open(M, cx + nx, cy + ny)) {
+          G.ev.push({ type: 'turn', x: m.x, y: m.y, dir: m.next });
+          m.dir = m.next; m.next = null; [dx, dy] = DIRS[m.dir];
+        }
+      }
+      const along = dx ? m.x - cx : m.y - cy;
+      if (Math.abs(along) < EPS && !open(M, cx + dx, cy + dy)) {   // at a centre facing a wall: stop here
+        if (dx) m.x = cx; else m.y = cy;
+        // finish any corner slide so Munch sits neatly in the lane
+        if (dx) m.y = approach(m.y, cy, dist); else m.x = approach(m.x, cx, dist);
+        m.moving = false; break;
+      }
+      m.moving = true;
+      const p = dx ? m.x : m.y, s = dx || dy;
+      const toNext = s > 0 ? Math.floor(p + EPS) + 1 - p : p - (Math.ceil(p - EPS) - 1);
+      const step = Math.min(dist, toNext);
+      if (dx) { m.x += dx * step; m.y = approach(m.y, cy, step); }
+      else { m.y += dy * step; m.x = approach(m.x, cx, step); }
+      m.travel += step;
+      dist -= step;
+      if (m.x < -0.5) m.x += M.W; else if (m.x >= M.W - 0.5) m.x -= M.W;
+    }
+  }
+  const approach = (v, t, d) => v < t ? Math.min(t, v + d) : Math.max(t, v - d);
+
+  function eatHere(G) {
+    const M = G.maze, m = G.munch;
+    const tx = wrapX(M, Math.round(m.x)), ty = Math.round(m.y), i = ty * M.W + tx;
+    const d = G.dots[i];
+    if (d) {
+      G.dots[i] = 0; G.dotsLeft--; G.dotsEaten++; G.dotsEatenTotal++; G.noDotT = 0;
+      if (G.globalCounter !== null) G.globalCounter++; else { const p = preferred(G); if (p) p.dotCounter++; }
+      if (d === 1) { addScore(G, CONFIG.points.dot); m.pause = Math.max(m.pause, CONFIG.dotPause); G.ev.push({ type: 'dot', x: tx, y: ty }); }
+      else { addScore(G, CONFIG.points.snack); m.pause = Math.max(m.pause, CONFIG.snackPause); frighten(G); G.ev.push({ type: 'snack', x: tx, y: ty }); }
+      if (G.fruitsSpawned < 2 && G.dotsEaten >= G.fruitAt[G.fruitsSpawned]) spawnFruit(G);
+      releaseCheck(G);
+    }
+    const f = G.fruit;
+    if (f && Math.abs(m.y - f.y) < 0.5 && wrapDist(M, m.x, f.x) < 0.75) {
+      addScore(G, f.points); G.fruitsEaten.push(f.kind);
+      G.ev.push({ type: 'fruit', kind: f.kind, points: f.points, x: f.x, y: f.y });
+      G.fruit = null;
+    }
+  }
+  function addScore(G, n) {
+    const before = G.score; G.score += n;
+    if (!G.extraGiven && before < CONFIG.extraLifeAt && G.score >= CONFIG.extraLifeAt) { G.extraGiven = true; G.lives++; G.ev.push({ type: 'extraLife', lives: G.lives }); }
+  }
+  function spawnFruit(G) {
+    const k = G.levelFruit, F = CONFIG.fruits[k];
+    G.fruit = { kind: k, id: F.id, points: F.points, x: G.maze.fruit.x, y: G.maze.fruit.y, t: CONFIG.fruitSeconds + rnd(G) };
+    G.fruitsSpawned++;
+    G.ev.push({ type: 'fruitSpawn', kind: k });
+  }
+  /** A Super Snack: every Gloop that is not just eyes turns blue (frightened); the ones out in the maze turn around. */
+  function frighten(G) {
+    const s = frightSeconds(G); G.chain = 0;
+    for (const g of G.gloops) {
+      if (g.state === 'eyes' || g.state === 'entering') continue;
+      if (g.state === 'active') g.reverse = true;
+      if (s > 0) g.fright = true;
+    }
+    G.frightT = s; G.frightTotal = s;
+  }
+  function collide(G) {
+    const m = G.munch, M = G.maze, r = CONFIG.hitRadius;
+    for (const g of G.gloops) {
+      if (g.state !== 'active') continue;
+      const dx = wrapDist(M, m.x, g.x), dy = Math.abs(m.y - g.y);
+      if (dx * dx + dy * dy >= r * r) continue;
+      if (g.fright) {   // munch it! 200, 400, 800, 1600 in a row
+        const pts = CONFIG.points.gloops[Math.min(G.chain, CONFIG.points.gloops.length - 1)];
+        G.chain++; G.gloopsEaten++;
+        addScore(G, pts);
+        g.fright = false; g.state = 'eyes'; g.reverse = false;
+        G.eaten = { id: g.id, x: g.x, y: g.y, points: pts };
+        G.ev.push({ type: 'eatGloop', id: g.id, x: g.x, y: g.y, points: pts, chain: G.chain });
+        G.phase = 'eat'; G.freezeT = G.fast ? 0 : CONFIG.eatFreeze;
+        return true;
+      }
+      G.phase = 'caught'; G.phaseT = 0; G.caughtBy = g.id; G.fruit = null;
+      G.ev.push({ type: 'caught', id: g.id });
+      return true;
+    }
+    return false;
+  }
+
+  /* ---------- the house ---------- */
+  /** The first Gloop (Sneaky, then Tricky, then Dozy) still waiting in the house. */
+  function preferred(G) { for (let i = 1; i < G.gloops.length; i++) if (G.gloops[i].state === 'house') return G.gloops[i]; return null; }
+  function releaseCheck(G) {
+    const p = preferred(G); if (!p) return;
+    let go = false;
+    if (G.globalCounter !== null) { if (G.globalCounter >= GLOBAL_LIMITS[p.id]) { go = true; if (p.id === 3) G.globalCounter = null; } }
+    else if (p.dotCounter >= G.houseLimits[p.id]) go = true;
+    if (!go && G.noDotT >= (G.level < 5 ? 4 : 3)) { go = true; G.noDotT = 0; }   // Munch stopped eating: let one out anyway
+    if (go) { p.state = 'leaving'; G.ev.push({ type: 'release', id: p.id }); }
+  }
+
+  /* ---------- Gloops ---------- */
+  function moveGloop(G, g, dt) {
+    const M = G.maze;
+    const dist = gloopSpeed(G, g) * CONFIG.baseSpeed * dt;
+    if (g.state === 'house') {             // bob up and down in place
+      const top = M.houseY - 0.4, bot = M.houseY + 0.4;
+      if (g.dir === 'up') { g.y -= dist; if (g.y <= top) { g.y = top; g.dir = 'down'; } }
+      else { g.y += dist; if (g.y >= bot) { g.y = bot; g.dir = 'up'; } }
+    } else if (g.state === 'leaving') {    // to the middle, then up and out of the door
+      if (Math.abs(g.x - M.homeX) > EPS) {
+        if (Math.abs(g.y - M.houseY) > EPS) { g.dir = g.y < M.houseY ? 'down' : 'up'; g.y = approach(g.y, M.houseY, dist); }
+        else { g.dir = g.x < M.homeX ? 'right' : 'left'; g.x = approach(g.x, M.homeX, dist); }
+      } else {
+        g.dir = 'up'; g.y = approach(g.y, M.exitY, dist);
+        if (g.y <= M.exitY + EPS) {
+          g.y = M.exitY; g.x = M.homeX; g.state = 'active'; g.dir = 'left'; g.reverse = false;
+          if (g.id === 3) G.elroyOff = false;
+          G.ev.push({ type: 'leave', id: g.id });
+        }
+      }
+    } else if (g.state === 'entering') {   // eyes drop back in through the door, then the Gloop comes back to life
+      if (Math.abs(g.x - M.homeX) > EPS) { g.dir = g.x < M.homeX ? 'right' : 'left'; g.x = approach(g.x, M.homeX, dist); }
+      else {
+        g.dir = 'down'; g.y = approach(g.y, M.houseY, dist);
+        if (Math.abs(g.y - M.houseY) < EPS) { g.state = 'leaving'; g.fright = false; G.ev.push({ type: 'revive', id: g.id }); }
+      }
+    } else tileMove(G, g, dist);
+  }
+  function tileMove(G, g, dist) {
+    const M = G.maze;
+    if (g.reverse) { g.reverse = false; g.dir = OPP[g.dir]; }
+    let guard = 0;
+    while (dist > EPS && guard++ < 6) {
+      const rx = Math.round(g.x), ry = Math.round(g.y);
+      if (Math.abs(g.x - rx) < EPS && Math.abs(g.y - ry) < EPS) {   // at a tile centre: pick the next way
+        g.x = rx; g.y = ry;
+        const tx = wrapX(M, rx);
+        if (g.state === 'eyes' && ry === M.exitY && Math.abs(tx - M.homeX) < 1) { g.x = tx; g.state = 'entering'; return; }
+        g.dir = chooseDir(G, g, tx, ry);
+      }
+      const [dx, dy] = DIRS[g.dir];
+      const p = dx ? g.x : g.y, s = dx || dy;
+      const toNext = s > 0 ? Math.floor(p + EPS) + 1 - p : p - (Math.ceil(p - EPS) - 1);
+      const step = Math.min(dist, toNext);
+      if (dx) g.x += dx * step; else g.y += dy * step;
+      dist -= step;
+      if (g.x < -0.5) g.x += M.W; else if (g.x >= M.W - 0.5) g.x -= M.W;
+    }
+  }
+  /** Classic rule: never turn back; of the open ways, take the one whose next tile is closest (straight line)
+      to the target. Frightened Gloops pick at random. */
+  function chooseDir(G, g, tx, ty) {
+    const M = G.maze, back = OPP[g.dir];
+    let n = 0, only = null;
+    for (const d of ORDER) { if (d === back) continue; const v = DIRS[d]; if (open(M, tx + v[0], ty + v[1])) { n++; only = d; } }
+    if (!n) return back;
+    if (n === 1) return only;
+    if (g.fright && g.state === 'active') {
+      let k = Math.floor(rnd(G) * n);
+      for (const d of ORDER) { if (d === back) continue; const v = DIRS[d]; if (open(M, tx + v[0], ty + v[1]) && k-- === 0) return d; }
+    }
+    const t = targetOf(G, g);
+    let best = only, bd = Infinity;
+    for (const d of ORDER) {
+      if (d === back) continue; const v = DIRS[d];
+      if (!open(M, tx + v[0], ty + v[1])) continue;
+      const ex = tx + v[0] - t[0], ey = ty + v[1] - t[1], dd = ex * ex + ey * ey;
+      if (dd < bd - 1e-9) { bd = dd; best = d; }
+    }
+    return best;
+  }
+  /** Each Gloop's target tile right now: its personality. */
+  function targetOf(G, g) {
+    const M = G.maze;
+    if (g.state === 'eyes' || g.state === 'entering') return [Math.floor(M.homeX), M.exitY];
+    const corner = CONFIG.gloops[g.id].corner;
+    if (isScatter(G) && !(g.id === 0 && elroyLevel(G) > 0)) return [corner[0], corner[1]];
+    const m = G.munch, mx = wrapX(M, Math.round(m.x)), my = Math.round(m.y), v = DIRS[m.dir];
+    switch (g.id) {
+      case 0: return [mx, my];                                          // Zippy: straight at Munch
+      case 1: return [mx + 4 * v[0], my + 4 * v[1]];                    // Sneaky: 4 tiles ahead of Munch
+      case 2: {                                                          // Tricky: from Zippy through 2 ahead of Munch, doubled
+        const z = G.gloops[0], zx = wrapX(M, Math.round(z.x)), zy = Math.round(z.y);
+        const px = mx + 2 * v[0], py = my + 2 * v[1];
+        return [2 * px - zx, 2 * py - zy];
+      }
+      default: {                                                         // Dozy: chases from far away, wanders home when close
+        const d = G.gloops[g.id], ddx = wrapX(M, Math.round(d.x)) - mx, ddy = Math.round(d.y) - my;
+        return ddx * ddx + ddy * ddy > 64 ? [mx, my] : [corner[0], corner[1]];
+      }
+    }
+  }
+
+  /* ---------- controls and test helpers ---------- */
+  function input(G, dir) { if (DIRS[dir]) G.munch.next = dir; }
+  function eatAllDots(G) {
+    G.dots.fill(0); G.dotsLeft = 0;
+    if (G.phase === 'play' || G.phase === 'ready') { G.phase = 'clear'; G.phaseT = 0; G.ev.push({ type: 'clear', level: G.level }); }
+  }
+  function placeMunch(G, x, y) { G.munch.x = x; G.munch.y = y; G.munch.next = null; }
+  function gloopMode(G, g) {
+    if (g.state === 'eyes' || g.state === 'entering') return 'eyes';
+    if (g.state === 'house' || g.state === 'leaving') return 'house';
+    if (g.fright) return 'frightened';
+    return isScatter(G) && !(g.id === 0 && elroyLevel(G) > 0) ? 'scatter' : 'chase';
+  }
+
+  return {
+    MAZES: PARSED, DIRS, OPP, STEP, CAUGHT_LEN, CLEAR_LEN, INTER_LEN, T_WALL, T_PATH, T_TUNNEL, T_DOOR, T_HOUSE,
+    newGame, startLevel, update, advance, tick, input, eatAllDots, placeMunch, skipIntermission, frighten,
+    targetOf, gloopMode, isScatter, elroyLevel, frightSeconds, speedTable, modeTable, fruitIndex, mazeIndexFor,
+    gloopSpeed, munchSpeed, open, tileType, wrapX, rnd
+  };
+})();
+/* ENGINE:END */
+
+/* =====================================================================================
+   Helpers and saved data
+   ===================================================================================== */
+const $ = id => document.getElementById(id);
+const TAU = Math.PI * 2;
+let REDUCED = false; try { REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { /* ignore */ }
+let FINE = false; try { FINE = matchMedia('(hover: hover) and (pointer: fine)').matches; } catch (e) { /* ignore */ }
+const fmt = n => Math.floor(n).toLocaleString('en-US');
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+function hexRgb(h) { const n = parseInt(h.slice(1), 16); return [n >> 16, (n >> 8) & 255, n & 255]; }
+function mix(a, b, t) { const A = hexRgb(a), B = hexRgb(b); return 'rgb(' + Math.round(A[0] + (B[0] - A[0]) * t) + ',' + Math.round(A[1] + (B[1] - A[1]) * t) + ',' + Math.round(A[2] + (B[2] - A[2]) * t) + ')'; }
+
+const DEFAULT_SAVE = { v: 1, best: { classic: 0, easy: 0 }, bestLevel: { classic: 0, easy: 0 }, dots: 0, gloops: 0, games: 0, maze: 'mix', pad: false };
+let save = JSON.parse(JSON.stringify(DEFAULT_SAVE));
+try {
+  const s = BRB.storage.get(CONFIG.saveKey);
+  if (s && s.v === 1) {
+    save = Object.assign(save, s);
+    save.best = Object.assign({ classic: 0, easy: 0 }, s.best); save.bestLevel = Object.assign({ classic: 0, easy: 0 }, s.bestLevel);
+  }
+} catch (e) { /* fresh start */ }
+if (save.maze !== 'mix' && !MAZES.some(m => m.id === save.maze)) save.maze = 'mix';
+function persist() { try { BRB.storage.set(CONFIG.saveKey, save); } catch (e) { /* ignore */ } }
+
+/* =====================================================================================
+   Screen state
+   ===================================================================================== */
+const UI = {
+  screen: 'title',          // 'title' | 'play' | 'over'
+  mode: 'classic', paused: false,
+  manual: false,            // __brbTest.manual(true): only __brbTest.step() moves time
+  fast: false,              // __brbTest.skipAnimations(): no READY wait, no cartoons, instant catches
+  bestAtStart: 0, newBestShown: false, overShown: false, overTimer: 0
+};
+let G = null;               // the running game (see Engine.newGame)
+const app = $('app'), cv = $('cv'), ctx = cv.getContext('2d');
+let DPR = 1, BT = 12, TILE = 12;          // BT: device pixels per tile (a whole number, so the maze stays crisp)
+let wallCache = null, wallFlash = null, wallKey = '';
+const dotLayer = document.createElement('canvas'), dctx = dotLayer.getContext('2d');
+let dotsKey = '';
+
+/* =====================================================================================
+   Layout: fit the maze into the screen (portrait: HUD above, info + pad below; wide: HUD left, pad right)
+   ===================================================================================== */
+function layout() {
+  const W = innerWidth, H = innerHeight;
+  DPR = Math.min(3, window.devicePixelRatio || 1);
+  const wide = W > H * 1.05 && W >= 560;
+  app.classList.toggle('wide', wide);
+  $('pad').hidden = !save.pad;
+  $('side').hidden = !save.pad && !FINE;
+  let avW, avH;
+  if (wide) {
+    const sideW = clamp(W * 0.2, 190, 290);
+    avW = W - 2 * sideW - 36 - 16; avH = H - 14;
+  } else {
+    const side = $('side'), rows = side.hidden ? 2 : 3;
+    avW = W - 16;
+    avH = H - 14 - $('hud').offsetHeight - $('info').offsetHeight - (side.hidden ? 0 : side.offsetHeight) - 6 * rows;
+  }
+  const tile = Math.max(5, Math.min(avW / 28, avH / 31));
+  BT = Math.max(5, Math.floor(tile * DPR));
+  TILE = BT / DPR;
+  cv.width = BT * 28; cv.height = BT * 31;
+  cv.style.width = (BT * 28 / DPR) + 'px'; cv.style.height = (BT * 31 / DPR) + 'px';
+  app.style.setProperty('--bw', (BT * 28 / DPR) + 'px');
+  dotLayer.width = cv.width; dotLayer.height = cv.height;
+  wallKey = ''; dotsKey = '';
+  hudCache.lives = -1; hudCache.fruitLevel = -1;
+}
+
+/* =====================================================================================
+   Maze art: neon candy tubes. Each wall tile is a circle joined to its wall neighbours; drawing that
+   shape at a few shrinking radii gives a glowing outline with rounded corners for any layout.
+   Cached in an offscreen canvas (one normal, one white for the level-clear flash).
+   ===================================================================================== */
+function wallPath(M, r) {
+  const p = new Path2D();
+  const isW = (x, y) => { if (y < 0 || y >= M.H) return true; if (x < 0 || x >= M.W) return M.tunnelRows.indexOf(y) < 0; return M.grid[y * M.W + x] === Engine.T_WALL; };
+  for (let y = -1; y <= M.H; y++) for (let x = -1; x <= M.W; x++) {
+    if (!isW(x, y)) continue;
+    const cx = x + 0.5, cy = y + 0.5;
+    p.moveTo(cx + r, cy); p.arc(cx, cy, r, 0, TAU);
+    const right = isW(x + 1, y), down = isW(x, y + 1);
+    if (right) p.rect(cx, cy - r, 1, 2 * r);
+    if (down) p.rect(cx - r, cy, 2 * r, 1);
+    if (right && down && isW(x + 1, y + 1)) p.rect(cx, cy, 1, 1);
+  }
+  return p;
+}
+function hash(x, y, k) { let h = (x * 374761393 + y * 668265263 + k * 2147483647) | 0; h = Math.imul(h ^ (h >>> 13), 1274126177); return ((h ^ (h >>> 16)) >>> 0) / 4294967296; }
+function buildWalls(M, flash) {
+  const c = document.createElement('canvas'); c.width = M.W * BT; c.height = M.H * BT;
+  const x = c.getContext('2d'), col = M.colors;
+  x.fillStyle = col.bg; x.fillRect(0, 0, c.width, c.height);
+  const vg = x.createRadialGradient(c.width / 2, c.height * 0.45, BT, c.width / 2, c.height / 2, c.height * 0.75);
+  vg.addColorStop(0, 'rgba(255,255,255,0.07)'); vg.addColorStop(1, 'rgba(0,0,0,0.3)');
+  x.fillStyle = vg; x.fillRect(0, 0, c.width, c.height);
+  x.setTransform(BT, 0, 0, BT, 0, 0);
+  const glow = flash ? '#ffffff' : col.glow, edge = flash ? '#ffffff' : col.edge;
+  x.save(); x.shadowColor = glow; x.shadowBlur = BT * 0.8; x.fillStyle = glow; x.fill(wallPath(M, 0.43)); x.restore();
+  x.fillStyle = edge; x.fill(wallPath(M, 0.385));
+  x.fillStyle = glow; x.fill(wallPath(M, 0.345));
+  const inner = wallPath(M, 0.3);
+  const fg = x.createLinearGradient(0, 0, 0, M.H);
+  fg.addColorStop(0, flash ? '#4d3d82' : col.fill); fg.addColorStop(1, flash ? '#3a2d66' : col.fill2);
+  x.fillStyle = fg; x.fill(inner);
+  // decorations inside the walls: sprinkles, gems or tiny stars
+  x.save(); x.clip(inner);
+  const SPR = ['#ff7ad1', '#ffe36e', '#7ef0ff', '#b6ff7a', '#ffffff'];
+  for (let ty = 0; ty < M.H; ty++) for (let tx = 0; tx < M.W; tx++) {
+    if (M.grid[ty * M.W + tx] !== Engine.T_WALL || hash(tx, ty, 1) > 0.55) continue;
+    const px = tx + 0.25 + hash(tx, ty, 2) * 0.5, py = ty + 0.25 + hash(tx, ty, 3) * 0.5, a = hash(tx, ty, 4) * Math.PI;
+    x.save(); x.translate(px, py); x.rotate(a); x.globalAlpha = flash ? 0.3 : 0.6;
+    if (M.deco === 'sprinkles') { x.fillStyle = SPR[Math.floor(hash(tx, ty, 5) * SPR.length)]; x.fillRect(-0.11, -0.035, 0.22, 0.07); }
+    else if (M.deco === 'gems') { x.fillStyle = hash(tx, ty, 5) > 0.5 ? '#9dffe0' : '#5fd6ff'; x.beginPath(); x.moveTo(0, -0.1); x.lineTo(0.07, 0); x.lineTo(0, 0.1); x.lineTo(-0.07, 0); x.closePath(); x.fill(); }
+    else { x.fillStyle = hash(tx, ty, 5) > 0.6 ? '#fff3b8' : '#c9d6ff'; x.beginPath(); for (let k = 0; k < 8; k++) { const r = k % 2 ? 0.03 : 0.1, an = k * Math.PI / 4; x.lineTo(Math.cos(an) * r, Math.sin(an) * r); } x.closePath(); x.fill(); }
+    x.restore();
+  }
+  x.restore();
+  // the house door: a soft candy bar
+  x.fillStyle = flash ? '#ffffff' : col.door;
+  x.save(); x.shadowColor = x.fillStyle; x.shadowBlur = BT * 0.5;
+  roundRect(x, M.doorX0 - 0.1, M.doorY + 0.36, M.doorX1 - M.doorX0 + 1.2, 0.28, 0.14); x.fill(); x.restore();
+  return c;
+}
+function roundRect(c, x, y, w, h, r) { c.beginPath(); c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r); c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath(); }
+function ensureWalls() {
+  const key = G.maze.id + ':' + BT;
+  if (key === wallKey) return;
+  wallKey = key; wallCache = buildWalls(G.maze, false); wallFlash = buildWalls(G.maze, true);
+}
+function ensureDots() {
+  const key = G.level + ':' + G.dotsLeft + ':' + BT + ':' + G.maze.id;
+  if (key === dotsKey) return;
+  dotsKey = key;
+  const M = G.maze;
+  dctx.setTransform(1, 0, 0, 1, 0, 0); dctx.clearRect(0, 0, dotLayer.width, dotLayer.height);
+  dctx.setTransform(BT, 0, 0, BT, BT / 2, BT / 2);
+  dctx.fillStyle = M.colors.dot; dctx.shadowColor = M.colors.dot; dctx.shadowBlur = BT * 0.35;
+  dctx.beginPath();
+  for (let i = 0; i < G.dots.length; i++) if (G.dots[i] === 1) { const x = i % M.W, y = (i / M.W) | 0; dctx.moveTo(x + 0.13, y); dctx.arc(x, y, 0.13, 0, TAU); }
+  dctx.fill(); dctx.shadowBlur = 0;
+}
+
+/* =====================================================================================
+   Characters (all original): Munch the bouncy lime blob, and the Gloops, friendly jelly monsters
+   with googly eyes. Drawn in tile units around (x, y).
+   ===================================================================================== */
+function drawMunch(c, x, y, o) {
+  const P = CONFIG.munch, s = o.scale || 1, R = 0.66, sq = o.squash || 0;
+  const v = Engine.DIRS[o.dir] || Engine.DIRS.left;
+  c.save(); c.translate(x, y); if (o.rot) c.rotate(o.rot); c.scale(s * (1 + sq), s * (1 - sq));
+  // little feet that take turns
+  const lift = Math.sin(o.step || 0) * 0.1;
+  c.fillStyle = P.dark;
+  c.beginPath(); c.ellipse(-0.27, 0.6 - Math.max(0, lift), 0.19, 0.11, 0, 0, TAU); c.fill();
+  c.beginPath(); c.ellipse(0.27, 0.6 - Math.max(0, -lift), 0.19, 0.11, 0, 0, TAU); c.fill();
+  // body
+  const g = c.createRadialGradient(-0.22, -0.3, 0.05, 0, 0, R);
+  g.addColorStop(0, P.light); g.addColorStop(0.5, P.color); g.addColorStop(1, P.dark);
+  c.fillStyle = g; c.beginPath(); c.arc(0, 0, R, 0, TAU); c.fill();
+  c.fillStyle = 'rgba(255,255,255,.55)'; c.beginPath(); c.ellipse(-0.27, -0.38, 0.14, 0.075, -0.6, 0, TAU); c.fill();
+  // the face turns the way Munch is going
+  const fx = v[0] * 0.17, fy = v[1] * 0.14;
+  c.fillStyle = 'rgba(255,110,150,.45)';
+  c.beginPath(); c.ellipse(fx - 0.39, fy + 0.12, 0.1, 0.065, 0, 0, TAU); c.fill();
+  c.beginPath(); c.ellipse(fx + 0.39, fy + 0.12, 0.1, 0.065, 0, 0, TAU); c.fill();
+  const ey = fy - 0.17;
+  for (let k = -1; k <= 1; k += 2) {
+    const ex = fx + k * 0.2, wide = o.surprised;
+    c.fillStyle = '#fff'; c.beginPath(); c.ellipse(ex, ey, wide ? 0.16 : 0.14, wide ? 0.21 : 0.17, 0, 0, TAU); c.fill();
+    c.lineWidth = 0.035; c.strokeStyle = P.dark; c.stroke();
+    if (o.blink) {
+      c.fillStyle = P.color; c.beginPath(); c.ellipse(ex, ey, 0.15, 0.18, 0, 0, TAU); c.fill();
+      c.strokeStyle = '#2b1238'; c.lineWidth = 0.05; c.lineCap = 'round';
+      c.beginPath(); c.moveTo(ex - 0.11, ey); c.quadraticCurveTo(ex, ey + 0.08, ex + 0.11, ey); c.stroke();
+    } else {
+      const px = ex + v[0] * 0.05, py = ey + v[1] * 0.06 + 0.02;
+      c.fillStyle = '#2b1238'; c.beginPath(); c.arc(px, py, wide ? 0.055 : 0.075, 0, TAU); c.fill();
+      c.fillStyle = '#fff'; c.beginPath(); c.arc(px - 0.025, py - 0.025, 0.025, 0, TAU); c.fill();
+    }
+  }
+  // mouth: opens and closes as Munch munches
+  const open = o.mouth || 0, up = v[1] < 0, my = fy + (up ? 0.12 : 0.21), mw = up ? 0.16 : 0.23;
+  if (open < 0.15 && !o.surprised) {
+    c.strokeStyle = '#5c1236'; c.lineWidth = 0.05; c.lineCap = 'round';
+    c.beginPath(); c.arc(fx, my - 0.07, mw * 0.75, 0.2 * Math.PI, 0.8 * Math.PI); c.stroke();
+  } else {
+    const oo = o.surprised ? 0.6 : open;
+    c.fillStyle = '#5c1236'; c.beginPath(); c.ellipse(fx, my, o.surprised ? 0.1 : mw, 0.04 + 0.17 * oo, 0, 0, TAU); c.fill();
+    if (oo > 0.35 && !o.surprised) { c.fillStyle = '#ff7aa8'; c.beginPath(); c.ellipse(fx, my + 0.05 + 0.06 * oo, mw * 0.55, 0.05 + 0.04 * oo, 0, 0, TAU); c.fill(); }
+  }
+  c.restore();
+}
+
+function drawGloop(c, x, y, o) {
+  const s = o.scale || 1, R = 0.64;
+  const v = Engine.DIRS[o.dir] || Engine.DIRS.left;
+  const t = o.t || 0;
+  c.save(); c.translate(x, y); c.scale(s, s);
+  if (o.mode !== 'eyes') {
+    const fright = o.mode === 'fright';
+    const body = fright ? mix('#4a5cff', '#f4f2ff', o.white || 0) : o.color;
+    const dark = fright ? mix('#2833b5', '#bdb6ff', o.white || 0) : o.dark;
+    const wob = REDUCED ? 0 : Math.sin(t * 9 + o.id * 1.3);
+    c.save(); c.scale(1 + wob * 0.035, 1 - wob * 0.035);
+    // jelly body: a dome with a wobbly, drippy hem
+    c.beginPath(); c.moveTo(-R, 0); c.arc(0, -0.02, R, Math.PI, 0); c.lineTo(R, 0.47);
+    const n = 4, w = (2 * R) / n;
+    for (let i = 0; i < n; i++) {
+      const x0 = R - i * w, x1 = x0 - w, d = 0.64 + (REDUCED ? 0 : Math.sin(t * 8 + i * 1.9 + o.id) * 0.07);
+      c.quadraticCurveTo(x0 - w / 2, d + 0.1, x1, i === n - 1 ? 0.47 : 0.5);
+    }
+    c.closePath();
+    const bg = c.createLinearGradient(0, -R, 0, 0.7); bg.addColorStop(0, body); bg.addColorStop(1, dark);
+    c.fillStyle = bg; c.fill();
+    c.fillStyle = 'rgba(255,255,255,.42)'; c.beginPath(); c.ellipse(-0.3, -0.36, 0.13, 0.08, -0.6, 0, TAU); c.fill();
+    c.beginPath(); c.arc(-0.1, -0.5, 0.035, 0, TAU); c.fill();
+    c.restore();
+    if (fright) {   // worried face: little eyes and a wiggly mouth
+      const fc = (o.white || 0) > 0.5 ? '#ff4f6d' : '#ffffff';
+      c.fillStyle = fc; c.beginPath(); c.arc(-0.2, -0.13, 0.085, 0, TAU); c.arc(0.2, -0.13, 0.085, 0, TAU); c.fill();
+      c.strokeStyle = fc; c.lineWidth = 0.055; c.lineJoin = 'round'; c.lineCap = 'round'; c.beginPath();
+      for (let i = 0; i <= 6; i++) { const px = -0.3 + i * 0.1, py = 0.18 + (i % 2 ? -0.05 : 0.04); if (i) c.lineTo(px, py); else c.moveTo(px, py); }
+      c.stroke(); c.restore(); return;
+    }
+    drawHat(c, o.id, t);
+    c.fillStyle = 'rgba(255,255,255,.3)'; c.beginPath(); c.ellipse(-0.37, 0.1, 0.09, 0.055, 0, 0, TAU); c.ellipse(0.37, 0.1, 0.09, 0.055, 0, 0, TAU); c.fill();
+    c.strokeStyle = 'rgba(40,8,40,.75)'; c.lineWidth = 0.05; c.lineCap = 'round';
+    c.beginPath(); c.arc(v[0] * 0.08, 0.08 + v[1] * 0.04, 0.11, 0.15 * Math.PI, 0.85 * Math.PI); c.stroke();
+  }
+  // googly eyes that look where the Gloop is going (and jiggle)
+  const ex0 = v[0] * 0.1, ey = -0.16 + v[1] * 0.07;
+  const jx = REDUCED ? 0 : Math.sin(t * 17 + o.id * 2) * 0.02, jy = REDUCED ? 0 : Math.cos(t * 13 + o.id) * 0.02;
+  for (let k = -1; k <= 1; k += 2) {
+    const ex = ex0 + k * 0.22;
+    c.fillStyle = '#fff'; c.beginPath(); c.arc(ex, ey, 0.17, 0, TAU); c.fill();
+    c.lineWidth = 0.03; c.strokeStyle = 'rgba(30,10,40,.4)'; c.stroke();
+    c.fillStyle = '#1d0b2b'; c.beginPath(); c.arc(ex + v[0] * 0.07 + jx, ey + v[1] * 0.07 + jy + 0.01, 0.075, 0, TAU); c.fill();
+    if (o.id === 3 && o.mode !== 'eyes') {     // Dozy always looks sleepy
+      c.fillStyle = o.dark; c.beginPath(); c.arc(ex, ey, 0.18, Math.PI * 1.02, Math.PI * 1.98); c.closePath(); c.fill();
+    }
+  }
+  c.restore();
+}
+/** Each Gloop's little extra: Zippy's lightning tuft, Sneaky's bow, Tricky's curly antenna, Dozy's night cap. */
+function drawHat(c, id, t) {
+  c.lineJoin = 'round'; c.lineCap = 'round';
+  if (id === 0) {
+    c.fillStyle = '#ffe14d'; c.strokeStyle = '#b8860b'; c.lineWidth = 0.03;
+    c.beginPath(); c.moveTo(0.06, -0.6); c.lineTo(-0.09, -0.86); c.lineTo(0.02, -0.84); c.lineTo(-0.05, -1.04); c.lineTo(0.18, -0.76); c.lineTo(0.07, -0.78); c.lineTo(0.16, -0.6); c.closePath(); c.fill(); c.stroke();
+  } else if (id === 1) {
+    c.save(); c.translate(0.3, -0.58); c.rotate(0.35); c.fillStyle = '#ff3fa4';
+    c.beginPath(); c.moveTo(0, 0); c.lineTo(-0.2, -0.12); c.lineTo(-0.2, 0.12); c.closePath(); c.moveTo(0, 0); c.lineTo(0.2, -0.12); c.lineTo(0.2, 0.12); c.closePath(); c.fill();
+    c.fillStyle = '#ffd1ec'; c.beginPath(); c.arc(0, 0, 0.06, 0, TAU); c.fill(); c.restore();
+  } else if (id === 2) {
+    const sway = REDUCED ? 0 : Math.sin(t * 4) * 0.06;
+    c.strokeStyle = '#0f9fb5'; c.lineWidth = 0.05; c.beginPath(); c.moveTo(0, -0.62); c.quadraticCurveTo(0.12 + sway, -0.8, 0.04 + sway, -0.95); c.stroke();
+    c.fillStyle = '#fff27a'; c.beginPath(); c.arc(0.04 + sway, -0.98, 0.08, 0, TAU); c.fill();
+  } else {
+    c.fillStyle = '#7d6bff'; c.beginPath(); c.moveTo(-0.42, -0.42); c.quadraticCurveTo(0.05, -0.95, 0.5, -0.86); c.quadraticCurveTo(0.2, -0.62, 0.4, -0.46); c.closePath(); c.fill();
+    c.fillStyle = '#fff'; c.beginPath(); c.arc(0.52, -0.86, 0.08, 0, TAU); c.fill();
+  }
+}
+
+/* Bonus snacks, drawn in tile units (about 1.1 tiles tall). */
+function ball(c, x, y, r, col, dark) {
+  const g = c.createRadialGradient(x - r * 0.35, y - r * 0.35, r * 0.1, x, y, r); g.addColorStop(0, '#fff'); g.addColorStop(0.25, col); g.addColorStop(1, dark);
+  c.fillStyle = g; c.beginPath(); c.arc(x, y, r, 0, TAU); c.fill();
+}
+function drawFruit(c, kind, x, y, s) {
+  c.save(); c.translate(x, y); c.scale(s || 1, s || 1); c.lineJoin = 'round'; c.lineCap = 'round';
+  switch (CONFIG.fruits[kind].id) {
+    case 'cherry':
+      c.strokeStyle = '#3f9d2f'; c.lineWidth = 0.07; c.beginPath(); c.moveTo(-0.22, 0.1); c.quadraticCurveTo(-0.1, -0.3, 0.1, -0.5); c.moveTo(0.24, 0.16); c.quadraticCurveTo(0.2, -0.2, 0.1, -0.5); c.stroke();
+      c.fillStyle = '#5ccc3c'; c.beginPath(); c.ellipse(0.27, -0.48, 0.16, 0.07, -0.4, 0, TAU); c.fill();
+      ball(c, -0.23, 0.24, 0.24, '#ff3b5c', '#a8103a'); ball(c, 0.24, 0.3, 0.24, '#ff3b5c', '#a8103a'); break;
+    case 'berry':
+      c.fillStyle = '#ff3b5c'; c.beginPath(); c.moveTo(0, 0.56); c.bezierCurveTo(-0.6, 0.15, -0.52, -0.38, 0, -0.3); c.bezierCurveTo(0.52, -0.38, 0.6, 0.15, 0, 0.56); c.fill();
+      c.fillStyle = '#ffe36e'; for (const [px, py] of [[-0.2, -0.08], [0.18, -0.1], [0, 0.08], [-0.14, 0.24], [0.15, 0.22], [0, 0.38]]) { c.beginPath(); c.ellipse(px, py, 0.03, 0.045, 0, 0, TAU); c.fill(); }
+      c.fillStyle = '#4cc83a'; c.beginPath(); for (let k = 0; k < 10; k++) { const r = k % 2 ? 0.08 : 0.25, a = Math.PI + k * Math.PI / 9; c.lineTo(Math.cos(a) * r, -0.32 + Math.sin(a) * r * 0.6); } c.closePath(); c.fill(); break;
+    case 'cupcake':
+      c.fillStyle = '#5ec8ff'; c.beginPath(); c.moveTo(-0.38, 0.02); c.lineTo(0.38, 0.02); c.lineTo(0.27, 0.55); c.lineTo(-0.27, 0.55); c.closePath(); c.fill();
+      c.strokeStyle = '#2b8fd0'; c.lineWidth = 0.045; c.beginPath(); for (const px of [-0.18, 0, 0.18]) { c.moveTo(px * 1.2, 0.04); c.lineTo(px, 0.53); } c.stroke();
+      c.fillStyle = '#ff9bd6'; c.beginPath(); c.arc(-0.2, -0.04, 0.21, 0, TAU); c.arc(0.2, -0.04, 0.21, 0, TAU); c.arc(0, -0.24, 0.22, 0, TAU); c.fill();
+      ball(c, 0, -0.5, 0.1, '#ff3b5c', '#a8103a'); break;
+    case 'melon':
+      c.fillStyle = '#3aa845'; c.beginPath(); c.arc(0, -0.12, 0.58, 0, Math.PI); c.closePath(); c.fill();
+      c.fillStyle = '#e8ffd8'; c.beginPath(); c.arc(0, -0.12, 0.5, 0, Math.PI); c.closePath(); c.fill();
+      c.fillStyle = '#ff4f6d'; c.beginPath(); c.arc(0, -0.12, 0.44, 0, Math.PI); c.closePath(); c.fill();
+      c.fillStyle = '#2b1238'; for (const [px, py] of [[-0.22, 0.02], [0, 0.12], [0.22, 0.02], [-0.1, -0.04], [0.11, -0.04]]) { c.beginPath(); c.ellipse(px, py, 0.03, 0.05, 0, 0, TAU); c.fill(); } break;
+    case 'star':
+      c.fillStyle = '#ffd23f'; c.strokeStyle = '#d18b00'; c.lineWidth = 0.05; c.beginPath();
+      for (let k = 0; k < 10; k++) { const r = k % 2 ? 0.25 : 0.58, a = -Math.PI / 2 + k * Math.PI / 5; c.lineTo(Math.cos(a) * r, Math.sin(a) * r + 0.04); } c.closePath(); c.fill(); c.stroke();
+      c.fillStyle = '#5c3a00'; c.beginPath(); c.arc(-0.1, 0.02, 0.045, 0, TAU); c.arc(0.1, 0.02, 0.045, 0, TAU); c.fill(); break;
+    case 'lolly':
+      c.strokeStyle = '#fff'; c.lineWidth = 0.09; c.beginPath(); c.moveTo(0, 0.1); c.lineTo(0, 0.62); c.stroke();
+      c.fillStyle = '#ff6fb5'; c.beginPath(); c.arc(0, -0.14, 0.4, 0, TAU); c.fill();
+      c.strokeStyle = '#fff'; c.lineWidth = 0.07; c.beginPath(); for (let k = 0; k < 40; k++) { const a = k * 0.42, r = 0.02 + k * 0.0085; c.lineTo(Math.cos(a) * r, -0.14 + Math.sin(a) * r); } c.stroke(); break;
+    case 'icecream':
+      c.fillStyle = '#e0a35a'; c.beginPath(); c.moveTo(-0.27, 0); c.lineTo(0.27, 0); c.lineTo(0, 0.64); c.closePath(); c.fill();
+      c.strokeStyle = '#b4762f'; c.lineWidth = 0.035; c.beginPath(); c.moveTo(-0.16, 0.02); c.lineTo(0.08, 0.42); c.moveTo(0.16, 0.02); c.lineTo(-0.08, 0.42); c.stroke();
+      ball(c, -0.14, -0.1, 0.22, '#ffe1f0', '#e7a6c8'); ball(c, 0.14, -0.1, 0.22, '#9be8ff', '#4fb2d6'); ball(c, 0, -0.34, 0.21, '#ffb0d9', '#e0609f'); break;
+    default:
+      c.fillStyle = '#ffd23f'; c.strokeStyle = '#c98a00'; c.lineWidth = 0.05; c.beginPath();
+      c.moveTo(-0.46, 0.36); c.lineTo(0.46, 0.36); c.lineTo(0.48, -0.16); c.lineTo(0.24, 0.06); c.lineTo(0, -0.4); c.lineTo(-0.24, 0.06); c.lineTo(-0.48, -0.16); c.closePath(); c.fill(); c.stroke();
+      c.fillStyle = '#ff4f9a'; c.beginPath(); c.arc(0, 0.17, 0.08, 0, TAU); c.fill(); c.fillStyle = '#38e1f0'; c.beginPath(); c.arc(-0.27, 0.2, 0.06, 0, TAU); c.arc(0.27, 0.2, 0.06, 0, TAU); c.fill();
+  }
+  c.restore();
+}
+
+/* =====================================================================================
+   Particles and score pop-ups (fixed pools, so no garbage while playing)
+   ===================================================================================== */
+const PARTS = Array.from({ length: 200 }, () => ({ on: false, kind: 0, x: 0, y: 0, vx: 0, vy: 0, life: 0, max: 1, size: 0, color: '#fff', rot: 0 }));
+let partNext = 0;
+function spawn(kind, x, y, vx, vy, life, size, color) {
+  const p = PARTS[partNext]; partNext = (partNext + 1) % PARTS.length;
+  p.on = true; p.kind = kind; p.x = x; p.y = y; p.vx = vx; p.vy = vy; p.life = life; p.max = life; p.size = size; p.color = color; p.rot = Math.random() * TAU;
+}
+const POPS = Array.from({ length: 12 }, () => ({ on: false, x: 0, y: 0, text: '', life: 0, max: 1, color: '#fff', size: 1 }));
+let popNext = 0;
+function popup(text, x, y, color, life, size) { const p = POPS[popNext]; popNext = (popNext + 1) % POPS.length; p.on = true; p.text = text; p.x = x; p.y = y; p.color = color; p.life = p.max = life || 1.2; p.size = size || 0.9; }
+function burst(x, y, n, color, speed, kind) { if (REDUCED) n = Math.ceil(n / 3); for (let i = 0; i < n; i++) { const a = Math.random() * TAU, sp = speed * (0.5 + Math.random() * 0.7); spawn(kind || 1, x, y, Math.cos(a) * sp, Math.sin(a) * sp, 0.5 + Math.random() * 0.4, 0.1 + Math.random() * 0.08, color); } }
+function drawParticles(c, dt) {
+  for (const p of PARTS) {
+    if (!p.on) continue;
+    p.life -= dt; if (p.life <= 0) { p.on = false; continue; }
+    p.x += p.vx * dt; p.y += p.vy * dt; p.vx *= 0.94; p.vy *= 0.94; p.rot += dt * 5;
+    const k = p.life / p.max; c.globalAlpha = Math.min(1, k * 1.5);
+    c.fillStyle = p.color;
+    if (p.kind === 0) { c.beginPath(); c.arc(p.x, p.y, p.size * (1.6 - k * 0.6), 0, TAU); c.fill(); }           // dust puff
+    else if (p.kind === 2) {                                                                                     // star
+      c.save(); c.translate(p.x, p.y); c.rotate(p.rot); c.beginPath();
+      for (let i = 0; i < 10; i++) { const r = i % 2 ? p.size * 0.45 : p.size, a = i * Math.PI / 5; c.lineTo(Math.cos(a) * r, Math.sin(a) * r); }
+      c.closePath(); c.fill(); c.restore();
+    } else if (p.kind === 3) { c.strokeStyle = p.color; c.lineWidth = 0.08; c.beginPath(); c.arc(p.x, p.y, p.size * (2 - k * 1.6), 0, TAU); c.stroke(); }   // ring
+    else { c.beginPath(); c.arc(p.x, p.y, p.size * k, 0, TAU); c.fill(); }                                      // spark
+  }
+  c.globalAlpha = 1;
+}
+/** Text drawn in device pixels (crisp), positioned in tiles. */
+function textAt(c, str, tx, ty, size, fill, stroke) {
+  c.save(); c.setTransform(1, 0, 0, 1, 0, 0);
+  c.font = '700 ' + Math.round(size * BT) + 'px Fredoka, "Trebuchet MS", system-ui, sans-serif';
+  c.textAlign = 'center'; c.textBaseline = 'middle'; c.lineJoin = 'round';
+  const px = (tx + 0.5) * BT, py = (ty + 0.5) * BT;
+  if (stroke) { c.lineWidth = Math.max(2, BT * 0.22); c.strokeStyle = stroke; c.strokeText(str, px, py); }
+  c.fillStyle = fill; c.fillText(str, px, py);
+  c.restore();
+}
+function pill(c, str, tx, ty, size, fill, bg) {
+  c.save(); c.setTransform(1, 0, 0, 1, 0, 0);
+  const fs = Math.max(size * BT, 11.5 * DPR);   // never smaller than 11.5 CSS px, even on a small phone
+  c.font = '700 ' + Math.round(fs) + 'px Fredoka, "Trebuchet MS", system-ui, sans-serif';
+  size = fs / BT;
+  const w = c.measureText(str).width + size * BT * 1.1, h = size * BT * 1.45, px = (tx + 0.5) * BT, py = (ty + 0.5) * BT;
+  c.fillStyle = bg; roundRect(c, px - w / 2, py - h / 2, w, h, h / 2); c.fill();
+  c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillStyle = fill; c.fillText(str, px, py + size * BT * 0.04);
+  c.restore();
+}
+
+/* =====================================================================================
+   Drawing the board every frame
+   ===================================================================================== */
+let caughtPopped = false, lastPhase = '', eyeSpark = 0;
+function frightWhite() {   // 0 = blue, 1 = white: a slow smooth fade while the power runs out
+  if (G.frightT <= 0 || G.frightT > CONFIG.blinkSeconds) return 0;
+  const k = (CONFIG.blinkSeconds - G.frightT) / CONFIG.blinkPeriod;
+  return 0.5 - 0.5 * Math.cos(k * TAU);
+}
+function clearFlashOn() {  // level clear: 2 slow blinks (0.4 s white, 0.4 s normal)
+  if (G.phase !== 'clear') return false;
+  const p = G.phaseT - 0.8; if (p < 0 || p >= 1.6) return false;
+  return Math.floor(p / 0.4) % 2 === 0;
+}
+function renderBoard(t, dt) {
+  const M = G.maze;
+  if (G.phase !== lastPhase) { if (G.phase === 'caught') caughtPopped = false; lastPhase = G.phase; }
+  ensureWalls(); ensureDots();
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  if (G.phase === 'intermission') { drawIntermission(t, dt); return; }
+  ctx.drawImage(clearFlashOn() ? wallFlash : wallCache, 0, 0);
+  ctx.drawImage(dotLayer, 0, 0);
+  ctx.setTransform(BT, 0, 0, BT, BT / 2, BT / 2);   // tile centres at whole numbers from here on
+  // Super Snacks: glowing gumballs that gently swell (no flashing)
+  const pulse = REDUCED ? 0 : Math.sin(t * TAU * 1.1) * 0.05;
+  for (let i = 0; i < G.dots.length; i++) if (G.dots[i] === 2) {
+    const x = i % M.W, y = (i / M.W) | 0;
+    ctx.globalAlpha = 0.22; ctx.fillStyle = M.colors.snack; ctx.beginPath(); ctx.arc(x, y, 0.62 + pulse * 2, 0, TAU); ctx.fill(); ctx.globalAlpha = 1;
+    ball(ctx, x, y, 0.34 + pulse, M.colors.snack, mix(M.colors.snack, '#000000', 0.45));
+  }
+  // bonus snack under the house
+  if (G.fruit) {
+    const bob = REDUCED ? 0 : Math.sin(t * 3) * 0.08;
+    ctx.globalAlpha = 0.25; ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.ellipse(G.fruit.x, G.fruit.y + 0.55, 0.45, 0.12, 0, 0, TAU); ctx.fill(); ctx.globalAlpha = 1;
+    drawFruit(ctx, G.fruit.kind, G.fruit.x, G.fruit.y + bob, 1.05);
+  }
+  // Gloops
+  const hideGloops = (G.phase === 'caught' && G.phaseT > 0.5) || (G.phase === 'clear' && G.phaseT > 0.8) || G.phase === 'over';
+  if (!hideGloops) {
+    const white = frightWhite();
+    for (let i = G.gloops.length - 1; i >= 0; i--) {
+      const g = G.gloops[i];
+      if (G.phase === 'eat' && G.eaten && G.eaten.id === g.id) continue;
+      const C = CONFIG.gloops[g.id], eyes = g.state === 'eyes' || g.state === 'entering';
+      const o = { id: g.id, color: C.color, dark: C.dark, dir: g.dir, t: t + g.id, mode: eyes ? 'eyes' : g.fright ? 'fright' : 'normal', white };
+      drawWrapped(g.x, g.y, (x, y) => drawGloop(ctx, x, y, o));
+      if (eyes && !REDUCED && (eyeSpark += dt) > 0.06) { eyeSpark = 0; spawn(1, g.x, g.y + 0.1, 0, 0, 0.35, 0.09, '#ffffff'); }
+    }
+  }
+  // Munch
+  const m = G.munch;
+  if (G.phase !== 'over') {
+    const o = { dir: m.dir, mouth: 0, step: m.travel * Math.PI * 2, squash: 0, blink: (t % 3.3) < 0.13 };
+    if (G.phase === 'play' || G.phase === 'eat') { o.mouth = m.moving ? 0.5 - 0.5 * Math.cos(m.travel * TAU) : 0.12; o.squash = m.moving && !REDUCED ? Math.sin(m.travel * TAU * 2) * 0.035 : 0; }
+    if (G.phase === 'ready') o.mouth = 0;
+    let show = true;
+    if (G.phase === 'caught') {
+      const p = G.phaseT; o.surprised = true; o.blink = false;
+      if (p > 0.5) { const k = clamp((p - 0.5) / 0.85, 0, 1); o.rot = (REDUCED ? 0 : k * k * TAU * 2.5); o.scale = 1 - k * k; }
+      if (p > 1.35) {
+        show = false;
+        if (!caughtPopped) { caughtPopped = true; burst(m.x, m.y, 14, '#ffe36e', 6, 2); burst(m.x, m.y, 8, CONFIG.munch.color, 4, 2); popup('oops!', m.x, m.y - 1, '#ffffff', 1.1, 1); Sound.pop(); }
+      }
+    }
+    if (show) drawWrapped(m.x, m.y, (x, y) => drawMunch(ctx, x, y, o));
+  }
+  drawParticles(ctx, dt);
+  // texts
+  if (G.phase === 'eat' && G.eaten) textAt(ctx, String(G.eaten.points), G.eaten.x, G.eaten.y, 0.95, '#7ef0ff', '#0a0420');
+  for (const p of POPS) {
+    if (!p.on) continue; p.life -= dt; if (p.life <= 0) { p.on = false; continue; }
+    ctx.globalAlpha = Math.min(1, p.life / p.max * 2); textAt(ctx, p.text, p.x, p.y - (1 - p.life / p.max) * 0.8, p.size, p.color, '#0a0420'); ctx.globalAlpha = 1;
+  }
+  if (G.phase === 'ready') {
+    pill(ctx, 'READY!', M.fruit.x, M.fruit.y, 1.05, '#ffe36e', 'rgba(10,4,32,.82)');
+    if (G.lives > 0) pill(ctx, 'Level ' + G.level + ' · ' + M.name, M.fruit.x, M.fruit.y + 1.9, 0.62, '#ffffff', 'rgba(10,4,32,.78)');
+    if (G.score === 0 && G.level === 1) pill(ctx, FINE ? 'Arrow keys or WASD to move' : save.pad ? 'Swipe or tap the arrows' : 'Swipe to steer Munch', M.fruit.x, M.fruit.y + 3.6, 0.62, '#7ef0ff', 'rgba(10,4,32,.78)');
+  } else if (G.phase === 'over') pill(ctx, 'GAME OVER', M.fruit.x, M.fruit.y, 1.05, '#ff8ad8', 'rgba(10,4,32,.85)');
+  else if (G.phase === 'clear' && G.phaseT > 0.4) pill(ctx, 'Maze clear!', M.fruit.x, M.fruit.y, 0.95, '#9be34f', 'rgba(10,4,32,.85)');
+}
+/** Draw something, plus its twin on the other side while it is passing through a tunnel. */
+function drawWrapped(x, y, fn) { fn(x, y); if (x < 1) fn(x + 28, y); else if (x > 26) fn(x - 28, y); }
+
+/* ---------- intermissions: short original cartoons between some levels ---------- */
+function drawIntermission(t, dt) {
+  const c = ctx, p = G.phaseT, M = G.maze;
+  c.drawImage(wallCache, 0, 0);
+  c.fillStyle = 'rgba(8,3,26,.82)'; c.fillRect(0, 0, cv.width, cv.height);
+  c.setTransform(BT, 0, 0, BT, BT / 2, BT / 2);
+  const y = 15, S = 1.5, gl = id => CONFIG.gloops[id];
+  const T = t;
+  const titles = ['The big chase!', 'Nap time!', 'Gloop parade!'];
+  textAt(c, titles[G.interKind], 13.5, 8.5, 1.3, '#ffe36e', '#0a0420');
+  c.strokeStyle = M.colors.glow; c.globalAlpha = 0.5; c.lineWidth = 0.12; c.beginPath(); c.moveTo(-1, y + 1.1); c.lineTo(29, y + 1.1); c.stroke(); c.globalAlpha = 1;
+  if (G.interKind === 0) {
+    if (p < 3.8) {
+      const x = 30 - p * 8.6;
+      drawGloop(c, x + 3.2, y, { id: 0, color: gl(0).color, dark: gl(0).dark, dir: 'left', t: T, mode: 'normal', scale: S });
+      drawMunch(c, x, y, { dir: 'left', mouth: 0.5 - 0.5 * Math.cos(p * 14), step: p * 16, blink: false, scale: S });
+    } else if (p > 4.4) {
+      const k = p - 4.4, x = -6 + k * 9;
+      drawGloop(c, x + 6, y, { id: 0, color: gl(0).color, dark: gl(0).dark, dir: 'right', t: T, mode: 'fright', white: 0, scale: S });
+      if (!REDUCED && Math.random() < dt * 12) spawn(1, x + 6.6, y - 0.6, -2, -2, 0.4, 0.12, '#7ef0ff');
+      drawMunch(c, x, y - 2.1, { dir: 'right', mouth: 0.5 - 0.5 * Math.cos(k * 10), step: k * 10, scale: 3.4 });
+    }
+  } else if (G.interKind === 1) {
+    const dz = p < 3 ? 30 - p * 5.5 : p < 6.6 ? 13.5 : 13.5 + (p - 6.6) * 9;
+    const asleep = p >= 3 && p < 6.1, hat = p >= 5.6;
+    const dy = asleep && !REDUCED ? Math.sin(T * 2) * 0.08 : p >= 6.1 && p < 6.6 ? -Math.sin((p - 6.1) / 0.5 * Math.PI) * 1.2 : 0;
+    drawGloop(c, dz, y + dy, { id: 3, color: gl(3).color, dark: gl(3).dark, dir: p < 3 ? 'left' : 'right', t: asleep ? 0 : T, mode: 'normal', scale: S });
+    if (asleep) { for (let i = 0; i < 3; i++) { const q = ((p * 0.7 + i / 3) % 1); c.globalAlpha = 1 - q; textAt(c, 'z', dz + 1 + q * 1.5, y - 1.6 - q * 2.2, 0.7 + q * 0.5, '#ffffff', null); } c.globalAlpha = 1; }
+    if (hat) { c.fillStyle = '#ff5fc8'; c.beginPath(); c.moveTo(dz - 0.55, y + dy - 0.85); c.lineTo(dz + 0.55, y + dy - 0.85); c.lineTo(dz + 0.08, y + dy - 2.3); c.closePath(); c.fill(); c.fillStyle = '#ffe36e'; c.beginPath(); c.arc(dz + 0.08, y + dy - 2.35, 0.2, 0, TAU); c.fill(); }
+    if (p >= 3.4) {
+      const mx = p < 5.2 ? -2 + (p - 3.4) * 6.8 : p < 6.6 ? 10.3 : 10.3 + (p - 6.6) * 9;
+      const tip = p < 5.2 && !REDUCED ? Math.abs(Math.sin(p * 7)) * 0.25 : 0;
+      drawMunch(c, mx, y - tip, { dir: 'right', mouth: p > 6.1 ? 0.7 : 0, step: p * 9, blink: p > 4.6 && p < 5.6, scale: S });
+    }
+    if (p >= 6.1 && p < 6.4 && !G.heartDone) { G.heartDone = true; burst(13.5, y - 1, 10, '#ff5fc8', 5, 2); }
+  } else {
+    for (let i = 0; i < 5; i++) {
+      const x = -2 + p * 5.6 - i * 3.2, hop = REDUCED ? 0 : Math.abs(Math.sin(p * 6 + i * 0.7)) * 0.9;
+      if (x < -2 || x > 30) continue;
+      if (i === 0) drawMunch(c, x, y - hop, { dir: 'right', mouth: 0.5 + 0.5 * Math.sin(p * 6), step: p * 12, scale: S });
+      else { const C = gl(i - 1); drawGloop(c, x, y - hop, { id: i - 1, color: C.color, dark: C.dark, dir: 'right', t: T, mode: 'normal', scale: S }); }
+    }
+    for (let i = 0; i < 4; i++) { const q = (p * 0.5 + i / 4) % 1; c.globalAlpha = 1 - q; textAt(c, i % 2 ? '♪' : '♫', 4 + i * 6.5, y - 2 - q * 4, 1, i % 2 ? '#ffe36e' : '#7ef0ff', null); }
+    c.globalAlpha = 1;
+  }
+  drawParticles(c, dt);
+}
+
+/* =====================================================================================
+   Sound: SDK sounds for the big moments, plus a tiny original synth (gated on the SDK mute) for the
+   munch-munch chomp, the gulp, the bonus ding and a soft background hum.
+   ===================================================================================== */
+const Sound = (() => {
+  let ac = null, master = null, hum = null, humGain = null, humType = '', alt = false, tuneGain = null;
+  function init() {
+    if (ac) return ac;
+    try { const C = window.AudioContext || window.webkitAudioContext; if (!C) return null; ac = new C(); master = ac.createGain(); master.gain.value = 0.8; master.connect(ac.destination); } catch (e) { ac = null; }
+    return ac;
+  }
+  function ready() { if (BRB.sfx.muted || !init()) return false; if (ac.state === 'suspended') ac.resume(); return true; }
+  function tone(f0, f1, dur, type, vol, delay, dest) {
+    if (!ready()) return;
+    const t = ac.currentTime + (delay || 0), o = ac.createOscillator(), g = ac.createGain();
+    o.type = type; o.frequency.setValueAtTime(f0, t); if (f1 && f1 !== f0) o.frequency.exponentialRampToValueAtTime(f1, t + dur);
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g); g.connect(dest || master); o.start(t); o.stop(t + dur + 0.05);
+  }
+  function melody(notes, step, type, vol, dest) { notes.forEach((n, i) => { if (n) tone(n, 0, step * 0.9, type, vol, i * step, dest); }); }
+  return {
+    unlock() { if (init() && ac.state === 'suspended') ac.resume(); },
+    chomp() { alt = !alt; if (alt) tone(520, 250, 0.075, 'triangle', 0.12); else tone(400, 190, 0.075, 'triangle', 0.12); },
+    gulp(n) { const b = 280 + n * 110; tone(b, b * 2.4, 0.2, 'square', 0.06); tone(b * 1.5, b * 3.2, 0.16, 'triangle', 0.08, 0.1); },
+    ding() { tone(988, 0, 0.12, 'sine', 0.12); tone(1480, 0, 0.22, 'sine', 0.1, 0.1); },
+    pop() { tone(900, 1800, 0.08, 'sine', 0.12); tone(1400, 2600, 0.1, 'sine', 0.08, 0.06); },
+    whoops() { tone(660, 160, 0.6, 'triangle', 0.12); },
+    jingle() { melody([523, 659, 784, 659, 698, 880, 784, 0, 659, 784, 1047], 0.16, 'square', 0.05); melody([131, 0, 196, 0, 175, 0, 196, 0, 165, 0, 262], 0.16, 'triangle', 0.12); },
+    tune() {
+      if (!ready()) return;
+      tuneGain = ac.createGain(); tuneGain.gain.value = 1; tuneGain.connect(master);
+      const a = [392, 0, 494, 587, 523, 0, 440, 494, 392, 0, 330, 392, 440, 0, 523, 494];
+      melody(a.concat(a, a), 0.17, 'square', 0.04, tuneGain);
+      melody([98, 0, 147, 0, 131, 0, 110, 0, 98, 0, 82, 0, 110, 0, 131, 0].concat([98, 0, 147, 0, 131, 0, 110, 0, 98, 0, 82, 0, 110, 0, 131, 0]).concat([98, 0, 147, 0, 131, 0, 110, 0]), 0.17, 'triangle', 0.1, tuneGain);
+    },
+    stopTune() { if (tuneGain && ac) { tuneGain.gain.setTargetAtTime(0, ac.currentTime, 0.05); tuneGain = null; } },
+    /** kind: '' (quiet), 'siren', 'fright' or 'eyes'; k = how far through the maze (0..1) */
+    hum(kind, k, time) {
+      if (!kind || BRB.sfx.muted) { if (humGain && ac) humGain.gain.setTargetAtTime(0, ac.currentTime, 0.04); return; }
+      if (!ready()) return;
+      if (!hum) { hum = ac.createOscillator(); humGain = ac.createGain(); humGain.gain.value = 0; hum.connect(humGain); humGain.connect(master); hum.start(); }
+      const type = kind === 'eyes' ? 'square' : kind === 'fright' ? 'triangle' : 'sine';
+      if (type !== humType) { hum.type = type; humType = type; }
+      let f, v;
+      if (kind === 'siren') { f = 250 + 130 * k + 55 * (0.5 - 0.5 * Math.cos(time * TAU * 1.5)); v = 0.035; }
+      else if (kind === 'fright') { f = 170 + 45 * Math.sin(time * TAU * 6); v = 0.045; }
+      else { f = 620 + 380 * ((time * 5) % 1); v = 0.018; }
+      const now = ac.currentTime;
+      hum.frequency.setTargetAtTime(f, now, 0.012); humGain.gain.setTargetAtTime(v, now, 0.05);
+    }
+  };
+})();
+function updateHum(t) {
+  let kind = '';
+  if (G && UI.screen === 'play' && !UI.paused && G.phase === 'play') {
+    kind = G.gloops.some(g => g.state === 'eyes' || g.state === 'entering') ? 'eyes' : G.frightT > 0 ? 'fright' : 'siren';
+  }
+  Sound.hum(kind, G ? 1 - G.dotsLeft / G.maze.total : 0, t);
+}
+
+/* =====================================================================================
+   HUD
+   ===================================================================================== */
+const hudCache = { score: -1, best: -1, level: -1, lives: -1, fruitLevel: -1, maze: '' };
+function currentBest() { return Math.max(save.best[G ? G.mode : UI.mode] || 0, G ? G.score : 0); }
+function paintIcons(canvas, n, size, draw) {
+  const d = Math.min(3, window.devicePixelRatio || 1);
+  canvas.width = Math.max(1, Math.round(n * size * d)); canvas.height = Math.round(size * d);
+  canvas.style.width = (n * size) + 'px'; canvas.style.height = size + 'px';
+  const c = canvas.getContext('2d'); c.setTransform(d * size, 0, 0, d * size, 0, 0); c.clearRect(0, 0, n, 1);
+  for (let i = 0; i < n; i++) { c.save(); c.translate(i + 0.5, 0.5); c.scale(0.62, 0.62); draw(c, i); c.restore(); }
+}
+function updateHud() {
+  if (!G) return;
+  if (G.score !== hudCache.score) { hudCache.score = G.score; $('scoreEl').textContent = fmt(G.score); }
+  const best = currentBest();
+  if (best !== hudCache.best) { hudCache.best = best; $('bestEl').textContent = fmt(best); }
+  if (G.level !== hudCache.level || G.maze.id !== hudCache.maze) { hudCache.level = G.level; hudCache.maze = G.maze.id; $('levelEl').textContent = 'Level ' + G.level; }
+  const size = app.classList.contains('wide') ? 26 : 22;
+  if (G.lives !== hudCache.lives) {
+    hudCache.lives = G.lives;
+    const n = clamp(G.lives, 0, 6);
+    paintIcons($('livesCv'), Math.max(1, n), size, (c, i) => { if (i < n) drawMunch(c, 0, -0.05, { dir: 'right', mouth: 0 }); });
+    $('livesCv').setAttribute('aria-label', G.lives + ' lives');
+  }
+  if (G.level !== hudCache.fruitLevel) {
+    hudCache.fruitLevel = G.level;
+    const max = app.classList.contains('wide') ? 7 : (innerWidth < 380 ? 5 : 6), first = Math.max(1, G.level - max + 1), n = G.level - first + 1;
+    paintIcons($('fruitCv'), n, size, (c, i) => drawFruit(c, Engine.fruitIndex(first + i), 0, 0, 0.95));
+  }
+  // a cheer the first time the old best is beaten
+  if (!UI.newBestShown && UI.bestAtStart > 0 && G.score > UI.bestAtStart) { UI.newBestShown = true; toast('New best! 🏆'); }
+}
+function toast(text) {
+  const el = document.createElement('div'); el.className = 'toast'; el.textContent = text; $('board').appendChild(el);
+  setTimeout(() => el.remove(), 1700);
+}
+
+/* =====================================================================================
+   Events from the engine -> sounds, sparkles, saves
+   ===================================================================================== */
+function handleEvents() {
+  if (!G) return;
+  const ev = G.ev;
+  for (let i = 0; i < ev.length; i++) {
+    const e = ev[i];
+    switch (e.type) {
+      case 'start': Sound.jingle(); break;
+      case 'level': dotsKey = ''; hudCache.fruitLevel = -1; removeSkip(); G.heartDone = false; break;
+      case 'dot': Sound.chomp(); if (!REDUCED && Math.random() < 0.5) spawn(1, e.x, e.y, (Math.random() - 0.5) * 3, (Math.random() - 0.5) * 3, 0.3, 0.08, G.maze.colors.dot); break;
+      case 'snack': BRB.sfx.play('powerup'); burst(e.x, e.y, 10, G.maze.colors.snack, 6, 1); spawn(3, e.x, e.y, 0, 0, 0.5, 0.6, G.maze.colors.snack); break;
+      case 'eatGloop': Sound.gulp(e.chain); burst(e.x, e.y, 12, '#7ef0ff', 6, 2); break;
+      case 'fruitSpawn': Sound.ding(); spawn(3, G.maze.fruit.x, G.maze.fruit.y, 0, 0, 0.6, 0.6, '#ffffff'); break;
+      case 'fruit': BRB.sfx.play('coin'); popup(String(e.points), e.x, e.y, '#ffe36e', 1.6, 0.85); burst(e.x, e.y, 10, '#ffe36e', 5, 2); break;
+      case 'fruitGone': burst(G.maze.fruit.x, G.maze.fruit.y, 6, '#ffffff', 3, 0); break;
+      case 'extraLife': BRB.sfx.play('jump'); toast('Extra life! 💚'); break;
+      case 'turn': if (!REDUCED) { const v = Engine.DIRS[G.munch.dir]; spawn(0, e.x - v[0] * 0.5, e.y - v[1] * 0.5 + 0.3, -v[0] * 1.5, -v[1] * 1.5 - 0.5, 0.35, 0.16, 'rgba(255,255,255,.5)'); } break;
+      case 'caught': BRB.sfx.play('hit'); Sound.whoops(); BRB.fx.shake($('board'), 6); break;
+      case 'clear': BRB.sfx.play('win'); save.dots += G.maze.total; persist(); break;
+      case 'intermission': Sound.tune(); showSkip(); break;
+      case 'revive': burst(G.gloops[e.id].x, G.gloops[e.id].y, 6, CONFIG.gloops[e.id].color, 3, 2); break;
+      case 'over': endGame(); break;
+      default: break;
+    }
+  }
+  ev.length = 0;
+}
+function showSkip() {
+  removeSkip();
+  const b = document.createElement('button'); b.className = 'skip'; b.id = 'skipBtn'; b.textContent = 'Skip ⏭';
+  b.addEventListener('click', e => { e.stopPropagation(); skipCartoon(); });
+  $('board').appendChild(b);
+}
+function removeSkip() { const b = $('skipBtn'); if (b) b.remove(); Sound.stopTune(); }
+function skipCartoon() { if (G && G.phase === 'intermission') { Engine.skipIntermission(G); removeSkip(); handleEvents(); } }
+
+/* =====================================================================================
+   Game flow: title -> play -> game over
+   ===================================================================================== */
+function startGame(mode, opts) {
+  opts = opts || {};
+  Sound.unlock();
+  UI.mode = mode === 'easy' ? 'easy' : 'classic';
+  const maze = opts.maze && (opts.maze === 'mix' || MAZES.some(m => m.id === opts.maze)) ? opts.maze : save.maze;
+  G = Engine.newGame({ mode: UI.mode, maze, seed: opts.seed !== undefined ? opts.seed : (Math.random() * 4294967295) >>> 0, level: opts.level, fast: UI.fast });
+  UI.bestAtStart = save.best[UI.mode] || 0; UI.newBestShown = false; UI.overShown = false; clearTimeout(UI.overTimer);
+  UI.screen = 'play'; UI.paused = false;
+  for (const p of PARTS) p.on = false; for (const p of POPS) p.on = false;
+  $('titleScreen').hidden = true; $('overScreen').hidden = true; $('pauseScreen').hidden = true;
+  app.classList.remove('offstage');
+  for (const k in hudCache) hudCache[k] = -1;
+  layout(); updateHud();
+  held.length = 0;
+  BRB.sfx.play('click');
+}
+function endGame() {
+  const mode = G.mode, score = G.score;
+  const newBest = score > (save.best[mode] || 0);
+  if (newBest) save.best[mode] = score;
+  save.bestLevel[mode] = Math.max(save.bestLevel[mode] || 0, G.level);
+  save.dots += G.dotsEaten; save.gloops += G.gloopsEaten; save.games++;
+  persist();
+  // Only Classic goes on the leaderboard: Easy scores run higher and would push Classic bests aside.
+  if (mode === 'easy') BRB.gameOver({ won: false });
+  else { BRB.score.submit(score, 'points'); BRB.gameOver({ won: false, score }); }
+  BRB.sfx.play('lose');
+  removeSkip();
+  UI.overTimer = setTimeout(() => showOver(newBest), UI.fast ? 0 : 1400);
+}
+function showOver(newBest) {
+  if (!G || !G.over) return;
+  UI.screen = 'over'; UI.overShown = true;
+  $('overTitle').textContent = newBest ? 'New best score!' : 'Game over!';
+  $('overSub').textContent = newBest ? 'Wow, that is your best ever!' : (G.level > 1 ? 'Great munching! You reached level ' + G.level + '.' : 'Nice try! Have another go.');
+  $('overScore').textContent = fmt(G.score);
+  const chips = $('overChips'); chips.textContent = '';
+  const add = (t, cls) => { const s = document.createElement('span'); s.className = 'chip' + (cls ? ' ' + cls : ''); s.textContent = t; chips.appendChild(s); };
+  add('Level ' + G.level);
+  add('🏆 Best ' + fmt(save.best[G.mode]), newBest ? 'gold' : '');
+  if (G.gloopsEaten) add('Gloops munched: ' + G.gloopsEaten);
+  if (G.fruitsEaten.length) add('Bonus snacks: ' + G.fruitsEaten.length);
+  add(G.mode === 'easy' ? '🐣 Easy' : '⭐ Classic');
+  $('overScreen').hidden = false;
+  if (newBest) BRB.fx.confetti();
+  if (FINE) setTimeout(() => { try { $('againBtn').focus({ preventScroll: true }); } catch (e) { /* ignore */ } }, 50);   // keyboard players can press Enter
+}
+function setPaused(on) {
+  if (!G || UI.screen !== 'play' || G.over) return;
+  UI.paused = !!on;
+  $('pauseScreen').hidden = !UI.paused;
+  if (UI.paused) { $('pauseInfo').textContent = 'Level ' + G.level + ' · Score ' + fmt(G.score); Sound.hum('', 0, 0); }
+  held.length = 0;
+}
+function quitToTitle() {
+  if (G && !G.over && G.score > 0) { save.dots += G.dotsEaten; persist(); }
+  G = null; UI.screen = 'title'; UI.paused = false; clearTimeout(UI.overTimer); removeSkip();
+  $('pauseScreen').hidden = true; $('overScreen').hidden = true; $('titleScreen').hidden = false;
+  app.classList.add('offstage');
+  Sound.hum('', 0, 0);
+  refreshTitle();
+}
+
+/* =====================================================================================
+   Title screen: animated demo, maze picker, best scores
+   ===================================================================================== */
+function refreshTitle() {
+  const box = $('mazePick');
+  if (!box.childElementCount) {
+    const opts = [{ id: 'mix', name: 'Mix' }].concat(MAZES.map(m => ({ id: m.id, name: m.name.split(' ')[0] })));
+    for (const o of opts) {
+      const b = document.createElement('button'); b.dataset.maze = o.id; b.setAttribute('aria-pressed', 'false');
+      b.setAttribute('aria-label', o.id === 'mix' ? 'Mix: a new maze as you go' : MAZES.find(m => m.id === o.id).name);
+      if (o.id === 'mix') { const s = document.createElement('span'); s.className = 'mix'; s.textContent = '🔀'; b.appendChild(s); }
+      else { const c = document.createElement('canvas'); thumb(c, Engine.MAZES.find(m => m.id === o.id)); b.appendChild(c); }
+      const l = document.createElement('span'); l.textContent = o.name; b.appendChild(l);
+      b.addEventListener('click', () => { save.maze = o.id; persist(); BRB.sfx.play('click'); refreshTitle(); });
+      box.appendChild(b);
+    }
+  }
+  for (const b of box.children) b.setAttribute('aria-pressed', String(b.dataset.maze === save.maze));
+  const chips = $('bestChips'); chips.textContent = '';
+  const add = t => { const s = document.createElement('span'); s.className = 'chip'; s.textContent = t; chips.appendChild(s); };
+  add('🏆 Best ' + fmt(save.best.classic));
+  if (save.best.easy) add('🐣 Easy ' + fmt(save.best.easy));
+  if (save.dots) add('Dots munched: ' + fmt(save.dots));
+  syncPadToggles();
+}
+function thumb(c, M) {
+  const k = 2; c.width = M.W * k; c.height = M.H * k;
+  const x = c.getContext('2d'); x.fillStyle = M.colors.bg; x.fillRect(0, 0, c.width, c.height);
+  x.fillStyle = M.colors.glow;
+  for (let i = 0; i < M.grid.length; i++) if (M.grid[i] === Engine.T_WALL) x.fillRect((i % M.W) * k, ((i / M.W) | 0) * k, k, k);
+  x.fillStyle = M.colors.dot; for (let i = 0; i < M.dots.length; i++) if (M.dots[i]) x.fillRect((i % M.W) * k + 0.5, ((i / M.W) | 0) * k + 0.5, 1, 1);
+}
+const demo = $('demo'), dmx = demo.getContext('2d');
+function drawDemo(t) {
+  const d = Math.min(3, window.devicePixelRatio || 1), w = demo.clientWidth || 300, h = demo.clientHeight || 84;
+  if (demo.width !== Math.round(w * d) || demo.height !== Math.round(h * d)) { demo.width = Math.round(w * d); demo.height = Math.round(h * d); }
+  const c = dmx, s = h / 3.4, cols = w / s;      // s px per tile; a corridor 3.4 tiles tall
+  c.setTransform(1, 0, 0, 1, 0, 0); c.clearRect(0, 0, demo.width, demo.height);
+  c.setTransform(d * s, 0, 0, d * s, 0, 0);
+  const y = 1.7;
+  c.strokeStyle = '#ff5fc8'; c.lineWidth = 0.16; c.shadowColor = '#ff5fc8'; c.shadowBlur = 8 * d;
+  roundRect(c, 0.15, 0.2, cols - 0.3, 3, 0.8); c.stroke(); c.shadowBlur = 0;
+  const P = 9, p = REDUCED ? 2.2 : t % P, snackX = 1.6;
+  // phase A: Munch runs left eating dots with Zippy behind; phase B: snack! Zippy turns blue, Munch chases it back
+  let mx, gx, gMode = 'normal', mdir = 'left', gdir = 'left', eaten = false;
+  if (p < 4) { mx = cols + 1 - (cols + 1 - snackX) * (p / 4); gx = mx + 2.6; }
+  else { const k = p - 4; mx = snackX + k * 4.2; gx = snackX + 2.6 - Math.min(k, 0.4) * 2 + Math.max(0, k - 0.4) * 2.8; gMode = 'fright'; mdir = 'right'; gdir = k < 0.4 ? 'left' : 'right'; if (mx >= gx - 0.3) eaten = true; }
+  c.fillStyle = '#ffd9f3';
+  for (let x = snackX + 1.5; x < cols - 0.5; x += 1) if (p >= 4 || x < mx - 0.3) { c.beginPath(); c.arc(x, y, 0.13, 0, TAU); c.fill(); }
+  if (p < 4) ball(c, snackX, y, 0.34 + Math.sin(t * 7) * 0.03, '#ffef6e', '#8c8333');
+  const white = gMode === 'fright' && p > 7.2 ? 0.5 - 0.5 * Math.cos((p - 7.2) / 0.6 * TAU) : 0;
+  if (!eaten) drawGloop(c, gx, y, { id: 0, color: CONFIG.gloops[0].color, dark: CONFIG.gloops[0].dark, dir: gdir, t, mode: gMode, white });
+  else if (p < 7.8) { textAt2(c, '200', (gx + mx) / 2, y - 1, d, s); drawGloop(c, cols + 1 - (cols + 1 - gx) * Math.max(0, 1 - (p - 6) * 0.8), y, { id: 0, dir: 'right', t, mode: 'eyes' }); }
+  drawMunch(c, mx, y, { dir: mdir, mouth: 0.5 - 0.5 * Math.cos(p * 12), step: p * 14, blink: (t % 3) < 0.12 });
+}
+function textAt2(c, str, x, y, d, s) { c.save(); c.setTransform(d, 0, 0, d, 0, 0); c.font = '700 ' + Math.round(s * 0.8) + 'px Fredoka, system-ui, sans-serif'; c.textAlign = 'center'; c.fillStyle = '#7ef0ff'; c.fillText(str, x * s, y * s); c.restore(); }
+
+/* =====================================================================================
+   Controls: swipe anywhere (slide without lifting to keep steering), the optional D-pad, keys.
+   Every direction is buffered by the engine and taken at the next opening.
+   ===================================================================================== */
+const held = [];   // directions currently held down (keys / D-pad); the newest wins
+function steer(dir) { if (G && UI.screen === 'play' && !UI.paused) Engine.input(G, dir); }
+const KEYS = { ArrowUp: 'up', ArrowDown: 'down', ArrowLeft: 'left', ArrowRight: 'right', w: 'up', W: 'up', s: 'down', S: 'down', a: 'left', A: 'left', d: 'right', D: 'right' };
+addEventListener('keydown', e => {
+  const k = e.key;
+  if (k === 'm' || k === 'M') { toggleMute(); return; }
+  if (UI.screen === 'title') { if (k === 'Enter' && e.target === document.body) { e.preventDefault(); startGame('classic'); } return; }
+  if (UI.screen !== 'play') return;
+  if (k === 'p' || k === 'P' || k === 'Escape') { e.preventDefault(); setPaused(!UI.paused); return; }
+  if (G && G.phase === 'intermission' && (k === 'Enter' || k === ' ')) { e.preventDefault(); skipCartoon(); return; }
+  const dir = KEYS[k]; if (!dir) return;
+  e.preventDefault();
+  if (UI.paused) return;
+  const i = held.indexOf(dir); if (i >= 0) held.splice(i, 1); held.push(dir);
+  steer(dir);
+});
+addEventListener('keyup', e => { const dir = KEYS[e.key]; if (!dir) return; const i = held.indexOf(dir); if (i >= 0) held.splice(i, 1); });
+addEventListener('blur', () => { held.length = 0; });
+// swipe
+let swipe = null;
+addEventListener('pointerdown', e => {
+  if (UI.screen !== 'play' || UI.paused || e.target.closest('button,.pad')) return;
+  if (G && G.phase === 'intermission') { skipCartoon(); return; }
+  swipe = { id: e.pointerId, x: e.clientX, y: e.clientY };
+});
+addEventListener('pointermove', e => {
+  if (!swipe || e.pointerId !== swipe.id) return;
+  const dx = e.clientX - swipe.x, dy = e.clientY - swipe.y;
+  if (Math.max(Math.abs(dx), Math.abs(dy)) < CONFIG.swipeMin) return;
+  steer(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up'));
+  swipe.x = e.clientX; swipe.y = e.clientY;   // keep sliding to steer again without lifting the finger
+}, { passive: true });
+const endSwipe = e => { if (swipe && e.pointerId === swipe.id) swipe = null; };
+addEventListener('pointerup', endSwipe); addEventListener('pointercancel', endSwipe);
+// D-pad (slide between the buttons without lifting)
+const pad = $('pad');
+let padDir = null, padPointer = null;
+function setPad(dir) {
+  if (dir === padDir) return;
+  if (padDir) { const i = held.indexOf(padDir); if (i >= 0) held.splice(i, 1); }
+  padDir = dir;
+  for (const b of pad.querySelectorAll('[data-dir]')) b.classList.toggle('on', b.dataset.dir === dir);
+  if (dir) { held.push(dir); steer(dir); }
+}
+pad.addEventListener('pointerdown', e => { const b = e.target.closest('[data-dir]'); e.preventDefault(); padPointer = e.pointerId; try { pad.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ } setPad(b ? b.dataset.dir : null); });
+pad.addEventListener('pointermove', e => {
+  if (e.pointerId !== padPointer) return;
+  const el = document.elementFromPoint(e.clientX, e.clientY), b = el && el.closest && el.closest('[data-dir]');
+  if (b && b.parentElement === pad) setPad(b.dataset.dir);
+});
+const padUp = e => { if (e.pointerId === padPointer) { padPointer = null; setPad(null); } };
+pad.addEventListener('pointerup', padUp); pad.addEventListener('pointercancel', padUp);
+pad.addEventListener('contextmenu', e => e.preventDefault());
+
+/* ---------- buttons ---------- */
+function syncMute() {
+  const m = BRB.sfx.muted;
+  for (const b of document.querySelectorAll('.mute')) { b.textContent = m ? '🔇' : '🔊'; b.setAttribute('aria-label', m ? 'Turn sound on' : 'Turn sound off'); }
+}
+function toggleMute() { BRB.sfx.mute(); if (BRB.sfx.muted) Sound.hum('', 0, 0); else BRB.sfx.play('click'); syncMute(); }
+function syncPadToggles() {
+  for (const id of ['padToggle', 'padToggle2']) { const b = $(id); b.setAttribute('aria-pressed', String(!!save.pad)); b.textContent = '🎮 Arrow buttons: ' + (save.pad ? 'On' : 'Off'); }
+}
+function togglePad() { save.pad = !save.pad; persist(); syncPadToggles(); BRB.sfx.play('click'); if (UI.screen !== 'title') layout(); }
+for (const b of document.querySelectorAll('.mute')) b.addEventListener('click', toggleMute);
+$('padToggle').addEventListener('click', togglePad);
+$('padToggle2').addEventListener('click', togglePad);
+$('playClassic').addEventListener('click', () => startGame('classic'));
+$('playEasy').addEventListener('click', () => startGame('easy'));
+$('pauseBtn').addEventListener('click', () => { BRB.sfx.play('click'); setPaused(true); });
+$('resumeBtn').addEventListener('click', () => { BRB.sfx.play('click'); setPaused(false); });
+$('restartBtn').addEventListener('click', () => startGame(UI.mode));
+$('quitBtn').addEventListener('click', () => { BRB.sfx.play('click'); quitToTitle(); });
+$('againBtn').addEventListener('click', () => startGame(UI.mode));
+$('menuBtn').addEventListener('click', () => { BRB.sfx.play('click'); quitToTitle(); });
+document.addEventListener('visibilitychange', () => { if (document.hidden && UI.screen === 'play' && G && !G.over) setPaused(true); });
+addEventListener('resize', () => { if (UI.screen !== 'title') layout(); });
+
+/* =====================================================================================
+   The main loop (requestAnimationFrame). The engine catches up in fixed steps; drawing uses real time.
+   ===================================================================================== */
+const GAPS = new Float32Array(600); let gapN = 0, lastNow = 0;
+function frame(now) {
+  requestAnimationFrame(frame);
+  const gap = lastNow ? now - lastNow : 16.7; lastNow = now;
+  GAPS[gapN % GAPS.length] = gap; gapN++;
+  const dt = Math.min(0.1, gap / 1000), t = now / 1000;
+  if (UI.screen === 'title') { drawDemo(t); return; }
+  if (!G) return;
+  if (UI.screen === 'play' && !UI.paused && !UI.manual) {
+    if (held.length) Engine.input(G, held[held.length - 1]);   // holding a key or button works like a joystick
+    Engine.update(G, dt);
+  }
+  handleEvents();
+  renderBoard(t, UI.paused ? 0 : dt);
+  updateHud();
+  updateHum(t);
+}
+
+syncMute();
+refreshTitle();
+layout();
+requestAnimationFrame(frame);
+
+/* =====================================================================================
+   window.__brbTest: hooks for automated play tests (harmless in production).
+   Positions are in tiles (x = column, y = row; a whole number is the middle of a tile).
+     state()            -> { screen, paused, mode, phase, level, score, high, lives, dotsLeft, totalDots, maze, mazeName,
+                             munch: {x, y, dir, next, moving}, gloops: [{name, x, y, dir, mode: 'scatter'|'chase'|'frightened'|'eyes'|'house',
+                             state, fright, target: [x, y], speed}], fruit: {kind, points, x, y, secondsLeft} | null,
+                             fruitsSpawned, fruitsEaten, scatter, frightLeft, chain, extraGiven, over }
+     start({ mode: 'classic'|'easy', seed, level, maze: 'mix'|'candy'|'mint'|'starry' }) -> state()
+     input(dir)         -> buffer a turn: 'up' | 'down' | 'left' | 'right'
+     step(ms)           -> advance the game exactly ms of game time (fixed steps), then state()
+     manual(on = true)  -> stop real time; only step() moves the game (for exact tests)
+     eatAllDots()       -> clear the maze (the level-clear sequence follows)
+     placeMunch(x, y)   -> move Munch to a tile
+     skipAnimations(on = true) -> no READY wait, no cartoons, instant catch / clear animations
+     seed(n)            -> reset the game's random numbers (frightened wandering, fruit timers)
+     maze()             -> the current maze as rows of text (# wall, . dot, o Super Snack, t tunnel, - door, _ house; eaten dots are spaces)
+     frighten()         -> as if Munch ate a Super Snack;  setScore(n);  pause(on);  quit();  skipCartoon()
+     placeGloop(nameOrIndex, x, y, dir) -> put a Gloop out in the maze at a tile, heading dir
+     fps()              -> { median, worst, frames } rAF gaps in ms over the last ~600 frames
+   ===================================================================================== */
+window.__brbTest = {
+  state() {
+    if (!G) return { screen: UI.screen, paused: false, mode: UI.mode, phase: null, level: 0, score: 0, high: save.best[UI.mode] || 0, lives: 0, dotsLeft: 0, munch: null, gloops: [], fruit: null, over: false };
+    return {
+      screen: UI.screen, paused: UI.paused, mode: G.mode, phase: G.phase, level: G.level, score: G.score, high: currentBest(), lives: G.lives,
+      dotsLeft: G.dotsLeft, totalDots: G.maze.total, maze: G.maze.id, mazeName: G.maze.name,
+      munch: { x: G.munch.x, y: G.munch.y, dir: G.munch.dir, next: G.munch.next, moving: G.munch.moving },
+      gloops: G.gloops.map(g => ({ name: g.name, x: g.x, y: g.y, dir: g.dir, mode: Engine.gloopMode(G, g), state: g.state, fright: g.fright, target: Engine.targetOf(G, g), speed: Engine.gloopSpeed(G, g) * CONFIG.baseSpeed })),
+      fruit: G.fruit ? { kind: G.fruit.id, points: G.fruit.points, x: G.fruit.x, y: G.fruit.y, secondsLeft: G.fruit.t } : null,
+      fruitsSpawned: G.fruitsSpawned, fruitsEaten: G.fruitsEaten.map(k => CONFIG.fruits[k].id), scatter: Engine.isScatter(G), frightLeft: G.frightT,
+      chain: G.chain, extraGiven: G.extraGiven, over: G.over, munchSpeed: Engine.munchSpeed(G) * CONFIG.baseSpeed
+    };
+  },
+  start(opts) { opts = opts || {}; startGame(opts.mode, opts); return this.state(); },
+  input(dir) { if (G) Engine.input(G, dir); return this.state(); },
+  step(ms) { if (G) { Engine.advance(G, (+ms || 0) / 1000); handleEvents(); } return this.state(); },
+  manual(on) { UI.manual = on !== false; return UI.manual; },
+  eatAllDots() { if (G) { Engine.eatAllDots(G); handleEvents(); } return this.state(); },
+  placeMunch(x, y) { if (G) Engine.placeMunch(G, +x, +y); return this.state(); },
+  skipAnimations(on) { UI.fast = on !== false; if (G) { G.fast = UI.fast; if (UI.fast && G.phase === 'ready') G.phaseT = 0; } return UI.fast; },
+  seed(n) { if (G) G.rs = (n >>> 0) || 1; return this.state(); },
+  maze() {
+    if (!G) return MAZES[0].rows.slice();
+    const M = G.maze;
+    return M.rows.map((r, y) => r.split('').map((ch, x) => (ch === '.' || ch === 'o') && !G.dots[y * M.W + x] ? ' ' : ch).join(''));
+  },
+  frighten() { if (G) Engine.frighten(G); return this.state(); },
+  placeGloop(which, x, y, dir) {
+    if (!G) return this.state();
+    const g = typeof which === 'number' ? G.gloops[which] : G.gloops.find(q => q.name.toLowerCase() === String(which).toLowerCase());
+    if (g) { g.x = +x; g.y = +y; g.state = 'active'; g.reverse = false; if (Engine.DIRS[dir]) g.dir = dir; }
+    return this.state();
+  },
+  setScore(n) { if (G) G.score = Math.max(0, Math.floor(+n) || 0); return this.state(); },
+  pause(on) { setPaused(on !== false); return this.state(); },
+  quit() { quitToTitle(); return this.state(); },
+  skipCartoon() { skipCartoon(); return this.state(); },
+  fps() {
+    const n = Math.min(gapN, GAPS.length), a = Array.from(GAPS.slice(0, n)).sort((x, y) => x - y);
+    return { median: a[Math.floor(n / 2)] || 0, worst: a[n - 1] || 0, frames: n };
+  },
+  resetFps() { gapN = 0; lastNow = 0; },
+  get engine() { return Engine; }
+};
+</script>
