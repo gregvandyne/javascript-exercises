@@ -153,3 +153,29 @@ test('a dropped connection mid-build still shows what the Builder made; a messag
   await page.fill('#st-input', 'Make it harder'); await page.press('#st-input', 'Enter');
   await expect(page.locator('#st-log .err').last()).toBeVisible({ timeout: 30000 }); await idle(page);
 });
+
+test('My games: rename and delete right from the Build page (phone size)', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 800 });
+  await signup(page, uniq('Del'));
+  for (let i = 0; i < 2; i++) { await page.goto('/build'); await Promise.all([page.waitForURL(/\/studio\//), page.click('#newgame')]); }
+  await page.goto('/build');
+  const cards = page.locator('.mygame');
+  await expect(cards).toHaveCount(2);
+  // rename the first one
+  await cards.first().locator('[data-rename]').click();
+  await page.fill('#mg-name', 'Rocket Race');
+  await page.click('.sheet button[type=submit]');
+  await expect(cards.first().locator('h3')).toHaveText('Rocket Race');
+  await page.reload(); await expect(page.locator('.mygame h3', { hasText: 'Rocket Race' })).toHaveCount(1);
+  // delete it: "Keep it" does nothing, Delete removes it
+  const rocket = page.locator('.mygame', { hasText: 'Rocket Race' });
+  await rocket.locator('[data-delete]').click();
+  await expect(page.locator('.sheet')).toContainText('Rocket Race');
+  await page.click('.sheet [data-keep]'); await expect(cards).toHaveCount(2);
+  await rocket.locator('[data-delete]').click();
+  await page.click('.sheet [data-yes]');
+  await expect(cards).toHaveCount(1);
+  await page.reload(); await expect(cards).toHaveCount(1); await expect(page.locator('.mygame', { hasText: 'Rocket Race' })).toHaveCount(0);
+  // buttons stay big enough to tap
+  for (const b of await page.locator('.mg-actions .btn').all()) expect((await b.boundingBox()).height).toBeGreaterThanOrEqual(44);
+});

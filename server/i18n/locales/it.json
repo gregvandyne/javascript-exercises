@@ -683,7 +683,9 @@
     "twoPlayers": "2 giocatori",
     "updateWaiting": "Aggiornamento in attesa di revisione",
     "changed": "Modificato {when}",
-    "empty": "Tocca «Nuovo gioco» o scegli un modello qui sopra. I tuoi giochi compariranno qui."
+    "empty": "Tocca «Nuovo gioco» o scegli un modello qui sopra. I tuoi giochi compariranno qui.",
+    "rename": "Rinomina",
+    "delete": "Elimina"
   },
   "studio": {
     "title": "Studio: {title}",
@@ -778,7 +780,8 @@
       "pickWho": "Scegli chi può giocare.",
       "notLive": "Questo gioco non è ancora online. Prima usa Pubblica.",
       "updatedFriends": "Aggiornato per i tuoi amici! La nuova versione aspetta anche il suo controllo prima che tutti possano giocarci.",
-      "updatedYou": "Aggiornato per te! La nuova versione aspetta anche il suo controllo prima che tutti possano giocarci."
+      "updatedYou": "Aggiornato per te! La nuova versione aspetta anche il suo controllo prima che tutti possano giocarci.",
+      "cantDeleteStarter": "I giochi iniziali non si possono eliminare."
     }
   },
   "publish": {
@@ -1017,7 +1020,17 @@
       "notPlaying": "Non sta giocando ora"
     },
     "build": {
-      "gettingReady": "Preparazione…"
+      "gettingReady": "Preparazione…",
+      "renameTitle": "Rinomina il gioco",
+      "nameLabel": "Nome del gioco",
+      "save": "Salva",
+      "renamed": "Nome salvato",
+      "deleteTitle": "Eliminare questo gioco?",
+      "deleteText": "«{title}» sparirà per sempre. Non puoi annullare.",
+      "deleteLive": "I giocatori non potranno più trovarlo.",
+      "keep": "Tienilo",
+      "deleteYes": "Elimina",
+      "deleted": "Gioco eliminato"
     },
     "me": {
       "lookingGood": "Che stile!",

@@ -682,7 +682,9 @@
     "twoPlayers": "2 joueurs",
     "updateWaiting": "Mise à jour en attente de vérification",
     "changed": "Modifié {when}",
-    "empty": "Touche « Nouveau jeu » ou choisis un modèle plus haut. Tes jeux apparaîtront ici."
+    "empty": "Touche « Nouveau jeu » ou choisis un modèle plus haut. Tes jeux apparaîtront ici.",
+    "rename": "Renommer",
+    "delete": "Supprimer"
   },
   "studio": {
     "title": "Studio : {title}",
@@ -777,7 +779,8 @@
       "pickWho": "Choisis qui peut jouer.",
       "notLive": "Ce jeu n’est pas encore en ligne. Utilise d’abord Publier.",
       "updatedFriends": "Mis à jour pour tes amis ! La nouvelle version attend aussi sa vérification avant que tout le monde puisse y jouer.",
-      "updatedYou": "Mis à jour pour toi ! La nouvelle version attend aussi sa vérification avant que tout le monde puisse y jouer."
+      "updatedYou": "Mis à jour pour toi ! La nouvelle version attend aussi sa vérification avant que tout le monde puisse y jouer.",
+      "cantDeleteStarter": "Les jeux de départ ne peuvent pas être supprimés."
     }
   },
   "publish": {
@@ -1016,7 +1019,17 @@
       "notPlaying": "Ne joue pas en ce moment"
     },
     "build": {
-      "gettingReady": "Préparation…"
+      "gettingReady": "Préparation…",
+      "renameTitle": "Renommer le jeu",
+      "nameLabel": "Nom du jeu",
+      "save": "Enregistrer",
+      "renamed": "Nom enregistré",
+      "deleteTitle": "Supprimer ce jeu ?",
+      "deleteText": "« {title} » va disparaître pour toujours. Tu ne pourras pas annuler.",
+      "deleteLive": "Les joueurs ne pourront plus le trouver.",
+      "keep": "Le garder",
+      "deleteYes": "Supprimer",
+      "deleted": "Jeu supprimé"
     },
     "me": {
       "lookingGood": "Super look !",

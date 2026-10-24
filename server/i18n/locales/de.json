@@ -683,7 +683,9 @@
     "twoPlayers": "2 Spieler",
     "updateWaiting": "Update wartet auf Prüfung",
     "changed": "Geändert {when}",
-    "empty": "Tipp auf „Neues Spiel“ oder such dir oben eine Vorlage aus. Deine Spiele erscheinen dann hier."
+    "empty": "Tipp auf „Neues Spiel“ oder such dir oben eine Vorlage aus. Deine Spiele erscheinen dann hier.",
+    "rename": "Umbenennen",
+    "delete": "Löschen"
   },
   "studio": {
     "title": "Studio: {title}",
@@ -778,7 +780,8 @@
       "pickWho": "Wähl aus, wer spielen darf.",
       "notLive": "Dieses Spiel ist noch nicht online. Tipp zuerst auf Freigeben.",
       "updatedFriends": "Für deine Freunde aktualisiert! Die neue Version wartet auch noch auf ihre Prüfung, bevor alle sie spielen können.",
-      "updatedYou": "Für dich aktualisiert! Die neue Version wartet auch noch auf ihre Prüfung, bevor alle sie spielen können."
+      "updatedYou": "Für dich aktualisiert! Die neue Version wartet auch noch auf ihre Prüfung, bevor alle sie spielen können.",
+      "cantDeleteStarter": "Startspiele können nicht gelöscht werden."
     }
   },
   "publish": {
@@ -1017,7 +1020,17 @@
       "notPlaying": "Spielt gerade nicht"
     },
     "build": {
-      "gettingReady": "Wird vorbereitet…"
+      "gettingReady": "Wird vorbereitet…",
+      "renameTitle": "Spiel umbenennen",
+      "nameLabel": "Name des Spiels",
+      "save": "Speichern",
+      "renamed": "Name gespeichert",
+      "deleteTitle": "Dieses Spiel löschen?",
+      "deleteText": "„{title}“ ist dann für immer weg. Das kannst du nicht rückgängig machen.",
+      "deleteLive": "Andere können es dann nicht mehr finden.",
+      "keep": "Behalten",
+      "deleteYes": "Löschen",
+      "deleted": "Spiel gelöscht"
     },
     "me": {
       "lookingGood": "Sieht super aus!",

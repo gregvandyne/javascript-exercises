@@ -35,13 +35,21 @@ export function areFriends(a, b) {
  *  Private: owner and admins. Friends: owner, admins, accepted friends. Public: everyone while published and not hidden. */
 export function canView(user, game) {
   if (!game) return false;
-  if (user && (user.id === game.owner_id || user.role === 'admin')) return true;
+  if (user && user.role === 'admin') return true;
+  if (game.status === 'deleted') return false;
+  if (user && user.id === game.owner_id) return true;
   if (game.status !== 'published' || !game.published_version_id || game.hidden_reason) return false;
   if (game.visibility === 'public') return true;
   if (game.visibility === 'friends') return !!user && areFriends(game.owner_id, user.id);
   return false;
 }
-export const canEdit = (user, game) => !!user && !!game && (user.id === game.owner_id || user.role === 'admin');
+export const canEdit = (user, game) => !!user && !!game && game.status !== 'deleted' && (user.id === game.owner_id || user.role === 'admin');
+
+/** A builder deletes their game. Kept in the database (reports, earnings and the audit trail still point at it) but gone
+ *  for everyone: off every list, out of the review queue, and the Studio and play page say not found. Starter games can't be deleted. */
+export function deleteGame(gameId) {
+  q.run("UPDATE games SET status='deleted', visibility='private', pending_version_id=NULL, featured=0, updated_at=? WHERE id=?", now(), gameId);
+}
 
 /** SQL fragment + params restricting listings to games this viewer may see (mirrors canView; listings never show other people's private games). */
 export function visibleWhere(user) {
@@ -95,7 +103,7 @@ export function fromFriends(user, limit = 12) {
 }
 /** All of a builder's own games (any status) for "My games". */
 export function myGames(userId, limit = 50) {
-  return decorate(q.all(`${SELECT} WHERE g.owner_id=? ORDER BY g.updated_at DESC LIMIT ?`, userId, limit));
+  return decorate(q.all(`${SELECT} WHERE g.owner_id=? AND g.status!='deleted' ORDER BY g.updated_at DESC LIMIT ?`, userId, limit));
 }
 const likeEsc = t => `%${t.replace(/[\\%_]/g, '')}%`;
 export function search(user, { text = '', category = null, order = 'relevance', limit = 40 } = {}) {
