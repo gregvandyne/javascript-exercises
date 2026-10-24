@@ -28,11 +28,8 @@ const paras = text => String(text || '').split(/\n{2,}/).filter(Boolean).map(p =
 /** "Subject (optional)": the field name and the shared "(optional)" word. */
 const optional = (t, label) => html`${label} <span class="muted">${t('school.optional')}</span>`;
 
-/** The schools where the user is staff (platform admins: all). */
-function staffSchools(u) {
-  const mine = S.schoolsOf(u.id).filter(s => s.role !== 'student');
-  return S.isPlatformAdmin(u) && !mine.length ? S.listSchools().filter(s => !s.archived_at) : mine;
-}
+/** The schools where the user is staff (by membership: the platform admin works from Schools instead). */
+const staffSchools = u => S.schoolsOf(u.id).filter(s => s.role !== 'student');
 /** A class the viewer manages, from an id in the URL or a form (?from=, ?class=); anything else is ignored. */
 function managedClass(u, id) {
   const c = id && typeof id === 'string' ? S.getClass(id) : null;
@@ -73,7 +70,7 @@ function shareForm(t, l, id = null) {
 router.get('/teach/lessons', requireUser, (req, res) => {
   const t = req.t; const u = req.user;
   const schools = staffSchools(u);
-  if (!schools.length) return notFound(req, res, t('school.errors.notTeacher'));
+  if (!schools.length) return S.isPlatformAdmin(u) ? res.redirect('/admin/schools') : notFound(req, res, t('school.errors.notTeacher'));
   const school = schools.find(s => s.id === req.query.school) || schools[0];
   const tab = req.query.tab === 'shared' ? 'shared' : 'mine';
   // From a class's empty Lessons tab: the New lesson / Draft with AI form is ready, and the class comes along to the editor.
@@ -214,7 +211,7 @@ function stepFields(t, pick, s = {}, idp, { newGameLink = false } = {}) {
     <div class="field f-g"><label for="${idp}-g">${t('lessons.step.game')}</label><select class="input" id="${idp}-g" name="gameId"><option value="">–</option>
       ${pick.mine.length ? html`<optgroup label="${t('lessons.step.myGames')}">${pick.mine.map(opt)}</optgroup>` : ''}
       ${pick.school.length ? html`<optgroup label="${t('lessons.step.schoolGames')}">${pick.school.map(opt)}</optgroup>` : ''}
-      <optgroup label="${t('lessons.step.siteGames')}">${pick.site.map(opt)}</optgroup></select>
+      <optgroup label="${t('lessons.step.siteGames')}">${pick.site.map(opt)}</optgroup></select><span class="err" id="${idp}-g-err"></span>
       ${newGameLink ? html`<a class="small f-glink" href="#ng-i">➕ ${t('lessons.step.newGameLink')}</a>` : ''}</div>
     <div class="field f-m"><label for="${idp}-m">${t('lessons.step.minutes')}</label><input class="input" id="${idp}-m" name="minutes" type="number" min="0" max="240" value="${s.minutes || ''}"></div>
     <div class="field f-b"><label for="${idp}-b">${KIND_ORDER.map(k => html`<span data-for-kind="${k}" ${forKind(k)}>${t(BODY_LABEL[k])}</span>`)}</label><textarea class="input" id="${idp}-b" name="body" rows="3" maxlength="4000">${s.body || ''}</textarea><span class="hint" data-for-kind="build" ${forKind('build')}>${t('lessons.step.buildHint')}</span><span class="err" id="${idp}-b-err"></span></div>`;

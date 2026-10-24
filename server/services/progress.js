@@ -122,8 +122,9 @@ export function lessonProgress(clId) {
       const cells = st.map(s => by.get(`${p.id}:${s.id}`) || null);
       const doneN = cells.filter(x => x && x.status === 'done').length;
       const last = rows.filter(r => r.user_id === p.id && ids.has(r.step_id)).reduce((m, r) => Math.max(m, r.updated_at), 0);
-      const firstNew = cells.findIndex(x => x && x.answer && !x.reviewed_at);
-      return { ...p, cells, done: doneN, total: st.length, last: last || null, toRead: cells.filter(x => x && x.answer && !x.reviewed_at).length, firstNew: firstNew >= 0 ? st[firstNew].id : null };
+      const isNew = (x, i) => !!(x && x.answer && !x.reviewed_at && st[i].kind === 'question');
+      const firstNew = cells.findIndex(isNew);
+      return { ...p, cells, done: doneN, total: st.length, last: last || null, toRead: cells.filter(isNew).length, firstNew: firstNew >= 0 ? st[firstNew].id : null };
     }),
   };
 }
@@ -133,7 +134,7 @@ export function classProgress(classId) {
   const t = now();
   const lessons = L.classPlan(classId).flatMap(g => g.lessons.map(cl => ({ ...cl, unit: g.unit, locked: !L.isOpen(cl, t), due: L.dueState(cl, t) })));
   const students = studentsOf(classId);
-  const counts = q.all(`SELECT p.class_lesson_id cl, p.user_id u, SUM(p.status='done') done, SUM(p.answer!='' AND p.reviewed_at IS NULL) toread, MAX(p.updated_at) last
+  const counts = q.all(`SELECT p.class_lesson_id cl, p.user_id u, SUM(p.status='done') done, SUM(p.answer!='' AND p.reviewed_at IS NULL AND s.kind='question') toread, MAX(p.updated_at) last
     FROM step_progress p JOIN class_lessons c ON c.id=p.class_lesson_id AND c.removed_at IS NULL JOIN lesson_steps s ON s.id=p.step_id AND s.lesson_id=c.lesson_id
     WHERE c.class_id=? GROUP BY p.class_lesson_id, p.user_id`, classId);
   const by = new Map(counts.map(r => [`${r.u}:${r.cl}`, r]));
@@ -150,8 +151,10 @@ export function overall(cells) {
   const total = open.reduce((n, x) => n + x.total, 0);
   return total ? Math.round((100 * open.reduce((n, x) => n + Math.min(x.done, x.total), 0)) / total) : 0;
 }
-/** Answers waiting for a teacher to review, per class (for My classes). */
+/** Answers waiting for a teacher to review, per class (for My classes). Only answers to question steps count: a step
+ *  changed to another type keeps its old answers, but there is nothing left to review. */
 export const toReadByClass = classIds => (classIds.length ? Object.fromEntries(q.all(`SELECT c.class_id cid, COUNT(*) n FROM step_progress p JOIN class_lessons c ON c.id=p.class_lesson_id
+  JOIN lesson_steps s ON s.id=p.step_id AND s.lesson_id=c.lesson_id AND s.kind='question'
   JOIN class_members m ON m.class_id=c.class_id AND m.user_id=p.user_id AND m.status='active' AND m.role='student'
   WHERE p.answer!='' AND p.reviewed_at IS NULL AND c.removed_at IS NULL AND c.class_id IN (${classIds.map(() => '?').join(',')}) GROUP BY c.class_id`, ...classIds).map(r => [r.cid, r.n])) : {});
 /** Done / total steps per assigned lesson for one student (for their class page). */
@@ -166,12 +169,12 @@ export function toReadByLesson(classId) {
   return q.all(`SELECT c.id cl, l.title, COUNT(*) n FROM step_progress p JOIN class_lessons c ON c.id=p.class_lesson_id AND c.removed_at IS NULL
     JOIN lessons l ON l.id=c.lesson_id JOIN lesson_steps s ON s.id=p.step_id AND s.lesson_id=c.lesson_id
     JOIN class_members m ON m.class_id=c.class_id AND m.user_id=p.user_id AND m.status='active' AND m.role='student'
-    WHERE c.class_id=? AND p.answer!='' AND p.reviewed_at IS NULL GROUP BY c.id ORDER BY c.position`, classId);
+    WHERE c.class_id=? AND s.kind='question' AND p.answer!='' AND p.reviewed_at IS NULL GROUP BY c.id ORDER BY c.position`, classId);
 }
 /** The first answer waiting for review for each student in a class lesson: { 'userId:clId': stepId }. */
 export function firstNewAnswers(classId) {
   const rows = q.all(`SELECT p.user_id u, p.class_lesson_id cl, p.step_id s, s.position pos FROM step_progress p JOIN class_lessons c ON c.id=p.class_lesson_id AND c.removed_at IS NULL
-    JOIN lesson_steps s ON s.id=p.step_id AND s.lesson_id=c.lesson_id WHERE c.class_id=? AND p.answer!='' AND p.reviewed_at IS NULL ORDER BY s.position`, classId);
+    JOIN lesson_steps s ON s.id=p.step_id AND s.lesson_id=c.lesson_id WHERE c.class_id=? AND s.kind='question' AND p.answer!='' AND p.reviewed_at IS NULL ORDER BY s.position, s.created_at`, classId);
   const out = {}; for (const r of rows) { const k = `${r.u}:${r.cl}`; if (!out[k]) out[k] = r.s; } return out;
 }
 /** Done / students for each assigned lesson in a class, and answers to review (for the class's Lessons tab rows). */

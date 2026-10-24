@@ -12,7 +12,7 @@ import * as L from '../services/lessons.js';
 import * as P from '../services/progress.js';
 import * as games from '../services/games.js';
 import { publish } from '../services/publish.js';
-import { classHeader } from './schools.js';
+import { classHeader, classBack } from './schools.js';
 
 export const router = Router();
 const CSS = raw('<link rel="stylesheet" href="/css/community.css"><link rel="stylesheet" href="/css/schools.css">');
@@ -55,11 +55,6 @@ const pct = (d, t) => (t ? Math.round((100 * d) / t) : 0);
 function bar(d, t) {
   const p = pct(d, t);
   return html`<span class="pbar" aria-hidden="true"><span style="width:${p}%"></span></span>`;
-}
-/** Back from a class's progress: My classes, or the school page for a school admin who doesn't teach the class. */
-function backTo(req, c) {
-  if (!S.teaches(req.user, c.id) && S.canManageSchool(req.user, c.school_id)) { const s = S.getSchool(c.school_id); if (s) return { back: `/school/${s.slug}`, backLabel: s.name }; }
-  return { back: '/teach', backLabel: req.t('school.teach.title') };
 }
 const SHORT = { month: 'short', day: 'numeric' };
 /** An assigned lesson's dates as chips: '🔒 Opens {date}' before it opens, '📅 Due today' (amber) on the due day, else
@@ -111,7 +106,7 @@ router.get('/class/:id/progress', requireUser, (req, res) => {
   ${!gb.lessons.length ? html`<section class="panel">${emptyState({ emoji: '📚', title: t('progress.gradebook.noLessons'), text: t('progress.gradebook.noLessonsText') })}</section>`
     : !gb.students.length ? html`<section class="panel">${emptyState({ emoji: '👩‍🎓', title: t('progress.gradebook.noStudents'), text: t('progress.gradebook.noStudentsText') })}</section>`
     : html`<section class="panel">${table}<p class="small muted gb-key"><span>✅ ${t('progress.key.done')}</span><span><span class="pbar"><span style="width:60%"></span></span> ${t('progress.key.steps')}</span><span class="gb-late-key">⏰ ${t('progress.key.late')}</span><span>✍️ ${t('progress.key.toRead')}</span></p></section>`}`;
-  page(req, res, { title: `${t('progress.gradebook.title')} · ${c.name}`, active: 'classes', body, head: CSS, ...backTo(req, c) });
+  page(req, res, { title: `${t('progress.gradebook.title')} · ${c.name}`, active: 'classes', body, head: CSS, ...classBack(req, c) });
 });
 
 /** CSV: one row per student, one column per lesson (steps done of total, '–' before it opens), then Overall (the same

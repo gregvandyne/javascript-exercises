@@ -239,6 +239,25 @@ test('removed lessons leave the gradebook, the CSV and the student\'s lessons; l
   assert.equal(row.overall, P.overall(row.cells.filter((x, i) => i !== col)), 'left out of Overall');
   assert.doesNotMatch((await kid(`/class/${cls.id}`)).text, /Gone soon/, 'students don\'t see it before it opens');
   L.unassign(ana, soon.id);
+
+  // only answers to question steps wait for review: a question changed to another type can't keep a count going
+  const quick = L.createLesson(ana, oak.id, { title: 'Quick question' }).lesson;
+  const qs = L.addStep(ana, quick.id, { kind: 'question', body: 'Why?' }).step;
+  const qcl = L.assign(ana, cls.id, quick.id).classLesson;
+  const waiting = () => P.toReadByClass([cls.id])[cls.id] || 0;
+  const before = waiting();
+  assert.ok(P.answer(mia, qcl.id, qs.id, 'Because.').ok);
+  assert.equal(waiting(), before + 1);
+  assert.equal(P.classProgress(cls.id).toRead, waiting(), 'the gradebook, the tab badge and My classes agree');
+  assert.deepEqual(P.toReadByLesson(cls.id).find(r => r.cl === qcl.id), { cl: qcl.id, title: 'Quick question', n: 1 });
+  assert.equal(P.firstNewAnswers(cls.id)[`${mia.id}:${qcl.id}`], qs.id);
+  assert.ok(L.updateStep(ana, qs.id, { kind: 'text', body: 'Read why.' }).ok);
+  assert.equal(waiting(), before);
+  assert.equal(P.classProgress(cls.id).toRead, before);
+  assert.ok(!P.toReadByLesson(cls.id).some(r => r.cl === qcl.id));
+  assert.equal(P.firstNewAnswers(cls.id)[`${mia.id}:${qcl.id}`], undefined);
+  assert.equal(P.lessonProgress(qcl.id).students.find(p => p.id === mia.id).toRead, 0);
+  L.unassign(ana, qcl.id);
 });
 
 test('build steps: one Studio game per student, reopened after; hand-in needs a made game', async () => {
