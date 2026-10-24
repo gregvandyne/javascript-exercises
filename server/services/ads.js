@@ -26,7 +26,7 @@ function loadHouse(file = HOUSE_FILE) {
       categories: Array.isArray(a.categories) ? a.categories : [], placements: Array.isArray(a.placements) && a.placements.length ? a.placements : PLACEMENTS, needsAccount: !!a.needsAccount }));
 }
 
-/** BRB Gaming's own promos. Works with zero ad partners. */
+/** Magic Cup's own promos. Works with zero ad partners. */
 export function houseProvider(ads = loadHouse()) {
   const byId = new Map(ads.map(a => [a.id, a]));
   return {

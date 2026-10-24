@@ -59,8 +59,8 @@ const REALNAME = /^(james|john|robert|michael|william|david|richard|joseph|thoma
 /** Free text the platform shows to others (game titles, descriptions, report details). */
 export function cleanText(s, max = 200) {
   const t = String(s || '').replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f‪-‮⁦-⁩]/g, '').trim().slice(0, max);
-  if (hasProfanity(t)) return { ok: false, error: "That text isn't allowed on BRB Gaming." };
+  if (hasProfanity(t)) return { ok: false, error: "That text isn't allowed on Magic Cup." };
   const pi = personalInfo(t);
-  if (pi && pi !== 'handle') return { ok: false, error: 'Please keep phone numbers, emails, addresses and links out of BRB Gaming.' };
+  if (pi && pi !== 'handle') return { ok: false, error: 'Please keep phone numbers, emails, addresses and links out of Magic Cup.' };
   return { ok: true, value: t };
 }

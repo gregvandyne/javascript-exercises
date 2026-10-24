@@ -1,5 +1,5 @@
 // Import a game from an HTML file + metadata JSON. Usage:
-//   node scripts/import-game.js seed-games/shark-plank.html [seed-games/shark-plank.json] [--owner BRBGaming]
+//   node scripts/import-game.js seed-games/shark-plank.html [seed-games/shark-plank.json] [--owner MagicCup]
 // Re-running updates the game in place: a new version is added only when the HTML changed (builders' version history is kept).
 import fs from 'node:fs';
 import path from 'node:path';
@@ -32,7 +32,7 @@ export function importGame(htmlPath, metaPath, ownerId) {
 
 if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(new URL(import.meta.url).pathname)) {
   const args = process.argv.slice(2);
-  const oi = args.indexOf('--owner'); const ownerName = oi >= 0 ? args.splice(oi, 2)[1] : 'BRBGaming';
+  const oi = args.indexOf('--owner'); const ownerName = oi >= 0 ? args.splice(oi, 2)[1] : 'MagicCup';
   const owner = getUserByName(ownerName);
   if (!owner) { console.error(`Owner ${ownerName} not found. Run npm run seed first.`); process.exit(1); }
   const g = importGame(args[0], args[1], owner.id);

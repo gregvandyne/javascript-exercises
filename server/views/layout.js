@@ -14,7 +14,7 @@ const NAV = [
 ];
 const VERSION = Date.now().toString(36); // cache-buster per boot
 
-export function layout(req, { title = '', active = null, body = '', scripts = [], head = '', back = null, backLabel = 'Back', bodyClass = '', description = 'Play free games and build your own with BRB Gaming.', bare = false } = {}) {
+export function layout(req, { title = '', active = null, body = '', scripts = [], head = '', back = null, backLabel = 'Back', bodyClass = '', description = 'Play free games and build your own with Magic Cup.', bare = false } = {}) {
   const u = req.user;
   const badges = u ? navBadges(u) : { friends: 0 };
   const cur = k => (k === active ? raw('aria-current="page"') : '');
@@ -23,7 +23,7 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
   const nav = bare ? '' : html`
   <a class="skip" href="#main">Skip to the games</a>
   <header class="topbar">
-    <a class="logo" href="/" aria-label="BRB Gaming home"><span class="logo-mark" aria-hidden="true">BRB</span><span class="logo-text">BRB <span>Gaming</span></span></a>
+    <a class="logo" href="/" aria-label="Magic Cup home"><span class="logo-mark" aria-hidden="true">🏆</span><span class="logo-text">Magic <span>Cup</span></span></a>
     <form class="topsearch" role="search" action="/search" method="get">
       <span class="ico" aria-hidden="true">🔎</span>
       <label class="sr-only" for="topq">Search games and builders</label>
@@ -38,14 +38,14 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
     ${NAV.map(([k, href, emo, label]) => html`<a class="tab" href="${href}" ${cur(k)}><span class="emo" aria-hidden="true">${emo}</span>${label}${badge(k)}</a>`)}
     <a class="tab" href="${meHref}" ${cur('me')}><span class="emo" aria-hidden="true">${u ? u.avatar : '🙂'}</span>${u ? 'Me' : 'Sign in'}</a>
   </nav>`;
-  const foot = bare ? '' : html`<footer class="foot"><span>© BRB Gaming · Free to play, free to build</span><a href="/safety">Safety</a><a href="/parents">For grown-ups</a><a href="/sdk">For builders</a></footer>`;
+  const foot = bare ? '' : html`<footer class="foot"><span>© Magic Cup · Free to play, free to build</span><a href="/safety">Safety</a><a href="/parents">For grown-ups</a><a href="/sdk">For builders</a></footer>`;
   const backHtml = back ? html`<a class="backlink" href="${back}"><span aria-hidden="true">←</span> ${backLabel}</a>` : '';
   return `<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>${esc(title ? `${title} · BRB Gaming` : 'BRB Gaming · Play and build games')}</title>
+<title>${esc(title ? `${title} · Magic Cup` : 'Magic Cup · Play and build games')}</title>
 <meta name="description" content="${esc(description)}">
 <meta name="theme-color" content="#2f6bff">
 <link rel="icon" href="/icons/icon.svg" type="image/svg+xml">

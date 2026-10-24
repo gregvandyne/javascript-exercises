@@ -1,6 +1,6 @@
-# How BRB Gaming keeps kids safe
+# How Magic Cup keeps kids safe
 
-BRB Gaming is a website where kids play web games and build their own by chatting with an AI Builder.
+Magic Cup is a website where kids play web games and build their own by chatting with an AI Builder.
 We treat **every game as untrusted code** and **every message to the Builder as untrusted input**.
 This page explains, in plain words, every layer of protection that exists today, and where it lives in the code.
 
@@ -75,7 +75,7 @@ splatting slime), friendly-spooky themes (a silly ghost), sports, cooking, anima
 learning games. Words like "kill" or "shoot" alone are fine in a cartoon game; they are refused when aimed at
 real people ("shoot the kids in my class").
 
-A refusal is always kind and short, says what BRB Gaming can't have, and suggests something else to build
+A refusal is always kind and short, says what Magic Cup can't have, and suggests something else to build
 ("How about an original hero, like a jumping fox called Zip? 🦊"), with tappable ideas. For self-harm the Builder
 gently tells the child to talk to a grown-up they trust. Refused messages:
 - never reach the model, now or in later turns;

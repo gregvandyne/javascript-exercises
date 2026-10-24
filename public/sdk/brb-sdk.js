@@ -1,4 +1,4 @@
-/* BRB Gaming in-frame SDK. Injected (inline) into every game frame before the game's own code.
+/* Magic Cup in-frame SDK. Injected (inline) into every game frame before the game's own code.
  * Games run in an opaque-origin sandbox with no network; everything they may do with the platform
  * goes through window.BRB and postMessage to the parent play page, which validates every message.
  * Docs: docs/sdk.md */

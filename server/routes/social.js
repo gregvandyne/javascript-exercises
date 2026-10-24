@@ -155,7 +155,7 @@ router.get('/u/:username', (req, res) => {
     ${avatar(p, 96)}
     <div class="ph-main">
       <h1>${p.display_name}</h1>
-      <div class="muted">@${p.username}${p.role === 'admin' ? ' · 🛡️ BRB team' : ''}${rel === 'friends' ? ' · 👫 Your friend' : ''}</div>
+      <div class="muted">@${p.username}${p.role === 'admin' ? ' · 🛡️ Magic Cup team' : ''}${rel === 'friends' ? ' · 👫 Your friend' : ''}</div>
       ${p.bio ? html`<p class="small" style="margin:6px 0 0">${p.bio}</p>` : ''}
       ${badges.length ? html`<ul class="badgelist" aria-label="Badges">${badges.map(b => html`<li class="pbadge" title="${b.why}"><span aria-hidden="true">${b.emoji}</span> ${b.label}<span class="sr-only">: ${b.why}</span></li>`)}</ul>` : ''}
     </div>
@@ -180,5 +180,5 @@ router.get('/u/:username', (req, res) => {
     ${favs.length ? cardGrid(favs, { ads: false }) : html`<p class="muted">No favourites yet.</p>`}
   </section>
   ${!isMe && viewer && !viewer.is_guest && rel === 'none' ? html`<p class="small muted" style="margin-top:24px">Want to be friends? Swap friend codes in real life, then add the code on the <a href="/friends">Friends</a> page.</p>` : ''}`;
-  page(req, res, { title: p.display_name, active: isMe ? 'me' : null, body, head: COMMUNITY_CSS, back: '/', backLabel: 'Home', description: `${p.display_name} on BRB Gaming`, scripts: ['/js/profile.js'] });
+  page(req, res, { title: p.display_name, active: isMe ? 'me' : null, body, head: COMMUNITY_CSS, back: '/', backLabel: 'Home', description: `${p.display_name} on Magic Cup`, scripts: ['/js/profile.js'] });
 });

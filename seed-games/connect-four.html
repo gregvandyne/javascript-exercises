@@ -1104,7 +1104,7 @@ function fitNameButtons() {
   });
 }
 function cycle(list, cur, step) { const i = list.indexOf(cur); return list[(i < 0 ? 0 : i + step + list.length) % list.length]; }
-// The names to tap through: the player's own BRB name first (so it can always be picked again), then the nicknames.
+// The names to tap through: the player's own Magic Cup name first (so it can always be picked again), then the nicknames.
 const NAME_LIST = (() => { const own = String(BRB.user.displayName || '').slice(0, 12).trim(); return own && !CONFIG.nicknames.includes(own) ? [own].concat(CONFIG.nicknames) : CONFIG.nicknames.slice(); })();
 function nextFreeColor(cur, otherId) { let id = cur; do { id = cycle(CONFIG.discs.map(d => d.id), id, 1); } while (id === otherId); return id; }
 
