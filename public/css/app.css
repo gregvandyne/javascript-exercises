@@ -142,6 +142,9 @@ textarea.input{min-height:96px;resize:vertical}
 .coverart::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 20% 15%,rgba(255,255,255,.45),transparent 40%),radial-gradient(circle at 85% 90%,rgba(0,0,0,.18),transparent 50%)}
 .coverart::after{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.18) 2px,transparent 2.5px);background-size:22px 22px;opacity:.6}
 .coverart .art{position:relative;z-index:1;display:grid;place-items:center;height:100%;font-size:var(--art,4rem);line-height:1;filter:drop-shadow(0 6px 10px rgba(0,0,0,.25))}
+.coverart.has-shot::before,.coverart.has-shot::after{display:none}
+.coverart.has-shot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top center;display:block}
+.coverart .shot-icon{position:absolute;left:8px;bottom:8px;z-index:1;display:grid;place-items:center;width:2.1em;height:2.1em;border-radius:50%;background:rgba(255,255,255,.92);box-shadow:0 2px 8px rgba(0,0,0,.25);font-size:1rem;line-height:1}
 
 /* game card: 3:4 cover, icon art, title, builder, stars, live pill */
 .gcard{display:flex;flex-direction:column;gap:6px;color:var(--ink);min-width:0;position:relative;border-radius:var(--r);outline-offset:4px}

@@ -18,7 +18,8 @@
     "test:unit": "node --test tests/unit/*.test.js",
     "test:safety": "node --test tests/safety/*.test.js",
     "test:e2e": "playwright test",
-    "screenshots": "node scripts/screenshots.js"
+    "screenshots": "node scripts/screenshots.js",
+    "covers": "BRB_DB=:memory: BRB_SILENT=1 node scripts/covers.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.1.0",
