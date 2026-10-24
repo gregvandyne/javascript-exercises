@@ -122,7 +122,6 @@
       "games": "Mis juegos",
       "friends": "Amigos",
       "chat": "Chat",
-      "money": "Mis ganancias",
       "admin": "Admin",
       "favorites": "Mis favoritos"
     },
@@ -132,7 +131,8 @@
       "avatarLabel": "Avatar {emoji}",
       "colorHeading": "Color",
       "colorGroup": "Color",
-      "colorLabel": "Color {color}"
+      "colorLabel": "Color {color}",
+      "avatarHeading": "O elige un emoji"
     },
     "language": {
       "heading": "Idioma",
@@ -150,6 +150,22 @@
       "guest": "Los invitados pierden su progreso cuando cierran sesión.",
       "account": "¡Hasta pronto!",
       "button": "Cerrar sesión"
+    },
+    "photo": {
+      "heading": "Foto de perfil",
+      "text": "Usa una foto en lugar de tu emoji. Solo tú, tus amigos y el equipo de Magic Cups pueden verla. Los demás ven tu emoji.",
+      "guest": "Crea una cuenta gratis para poner una foto de perfil.",
+      "upload": "Subir una foto",
+      "change": "Cambiar foto",
+      "remove": "Quitar foto",
+      "errors": {
+        "guest": "Crea una cuenta gratis para poner una foto de perfil.",
+        "badType": "Ese archivo no es una foto que podamos usar. Prueba con otra.",
+        "tooBig": "Esa foto es demasiado grande. Prueba con otra.",
+        "unsafe": "Esa foto no es adecuada para Magic Cups. Prueba con otra.",
+        "personal_info": "Esa foto muestra datos privados como un nombre, una escuela o una dirección. Prueba con otra.",
+        "resting": "Las fotos necesitan nuestra revisión de seguridad y ahora está descansando. Inténtalo más tarde."
+      }
     }
   },
   "cards": {
@@ -160,8 +176,6 @@
     "gameBy": "{title}, de {name}",
     "by": "de {name}",
     "plays": "{count, plural, one {{n} partida} other {{n} partidas}}",
-    "sponsored": "Patrocinado",
-    "sponsoredLabel": "Patrocinado: {title}",
     "seeAll": "Ver todo",
     "scrollBack": "Mover {title} hacia atrás",
     "scrollForward": "Mover {title} hacia adelante"
@@ -188,78 +202,6 @@
     "learning": "Aprender",
     "music": "Música",
     "silly": "Locuras"
-  },
-  "ads": {
-    "house": {
-      "house-build": {
-        "title": "Crea tu propio juego",
-        "text": "Cuéntale tu idea al Constructor. ¡Él hace el juego!"
-      },
-      "house-friends": {
-        "title": "Invita a un amigo",
-        "text": "Comparte tu código de amigo y jueguen juntos."
-      },
-      "house-new": {
-        "title": "Nuevo esta semana",
-        "text": "Juegos nuevos hechos por creadores como tú."
-      },
-      "house-rate": {
-        "title": "Califica un juego",
-        "text": "Toca las estrellas para que otros lo encuentren."
-      },
-      "house-words": {
-        "title": "Prueba un juego de palabras",
-        "text": "Deletrea, adivina y encuentra palabras ocultas."
-      },
-      "house-build-words": {
-        "title": "Crea un juego de palabras",
-        "text": "¡Convierte tu lista de palabras en un juego!"
-      },
-      "house-puzzle": {
-        "title": "Hora de pensar",
-        "text": "Acertijos para mentes rápidas."
-      },
-      "house-sports": {
-        "title": "Mete un gol",
-        "text": "Juegos de deportes para todo el año."
-      },
-      "house-build-sports": {
-        "title": "Crea un juego de deportes",
-        "text": "Elige un deporte. El Constructor hace el resto."
-      },
-      "house-arcade": {
-        "title": "Clásicos de arcade",
-        "text": "Salta, esquiva y supera tu récord."
-      },
-      "house-build-arcade": {
-        "title": "Crea un juego de arcade",
-        "text": "Esquiva, salta, recoge. ¡Tú pones las reglas!"
-      },
-      "house-adventure": {
-        "title": "Vive una aventura",
-        "text": "Explora mapas, encuentra tesoros, sé valiente."
-      },
-      "house-learning": {
-        "title": "Aprende jugando",
-        "text": "Mate, ciencias y más, de forma divertida."
-      },
-      "house-music": {
-        "title": "Haz música",
-        "text": "Sigue el ritmo y toca una canción."
-      },
-      "house-silly": {
-        "title": "Algo divertido",
-        "text": "Juegos que te van a dar risa."
-      },
-      "house-board": {
-        "title": "Noche de juegos de mesa",
-        "text": "Juegos clásicos para jugar en familia."
-      },
-      "house-playing": {
-        "title": "Jugando ahora",
-        "text": "Mira a qué está jugando todo el mundo hoy."
-      }
-    }
   },
   "home": {
     "build": {
@@ -339,8 +281,8 @@
         "p1": "Nunca te pedimos tu correo, tu nombre real, tu edad ni tu dirección. Elige un nombre divertido e inventado."
       },
       "ads": {
-        "h": "Los anuncios son tranquilos",
-        "p1": "Algunas tarjetas pequeñas dicen “Patrocinado”. Nunca aparecen dentro ni encima de un juego, nunca hacen ruido y nunca saltan de repente."
+        "h": "Sin anuncios",
+        "p1": "No hay anuncios en Magic Cups. No se vende nada y nada aparece encima de un juego."
       }
     },
     "parents": {
@@ -366,10 +308,6 @@
       "languages": {
         "h": "Idiomas",
         "p1": "Elija un idioma con el botón 🌐 en la parte de arriba de cualquier página o en la página Yo. El Constructor responde en ese idioma y también escribe en él los textos de los juegos nuevos. Los mismos filtros de seguridad revisan cada mensaje, en todos los idiomas."
-      },
-      "money": {
-        "h": "Dinero",
-        "p1": "Los anuncios pagan la plataforma, y los creadores reciben una parte según las partidas jugadas en sus juegos. Los pagos de más de $10 los gestiona a mano nuestro equipo."
       }
     },
     "sdk": {
@@ -918,61 +856,6 @@
       "resting": "Las imágenes necesitan nuestra revisión de seguridad, y está descansando hasta mañana. ¡Prueba la imagen más tarde o cuenta tu idea con palabras!"
     }
   },
-  "creator": {
-    "title": "Mis ganancias",
-    "estimate": "Estimado",
-    "allGames": "Todos tus juegos",
-    "underOneCent": "menos de 1¢",
-    "earned": "ganado",
-    "last14": "Últimos 14 días",
-    "yourGames": "Tus juegos",
-    "stats": {
-      "earnedSoFar": "ganado hasta ahora",
-      "adViews": "vistas de anuncios",
-      "players": "{count, plural, one {jugador} other {jugadores}}",
-      "noRatings": "sin calificaciones",
-      "averageStars": "estrellas en promedio"
-    },
-    "chart": {
-      "barTitle": "{day}: {money}, {views} vistas de anuncios",
-      "caption": "Cada barra es un día. Barra más alta = más ganado.",
-      "empty": "Todavía no hay ganancias en los últimos 14 días. Las barras crecen aquí cuando los jugadores ven las tarjetas Patrocinado.",
-      "showNumbers": "Ver los números de cada día",
-      "tableCaption": "Ganancias estimadas de cada uno de los últimos 14 días",
-      "day": "Día",
-      "earned": "Ganado (estimado)"
-    },
-    "how": {
-      "heading": "Cómo funcionan las ganancias",
-      "p1": "Tus juegos ganan dinero cuando los jugadores ven las tarjetas pequeñas de <b>Patrocinado</b> en la página de tu juego, o junto a tu juego en Inicio y Buscar.",
-      "p2": "Unas 1.000 vistas de esas tarjetas les dan a tus juegos unos <b>{amount}</b>. Tú recibes el {share} % y el resto mantiene gratis a Magic Cups.",
-      "p3": "Nunca mostramos anuncios dentro de los juegos ni mientras juegas.",
-      "p4": "Tus propias visitas no cuentan. Cada jugador cuenta una vez por hora.",
-      "p5": "Estos números son un <b>estimado</b>. Se actualizan cada hora y pueden cambiar después de que revisemos si hubo trampas."
-    },
-    "empty": {
-      "title": "Crea un juego para empezar a ganar",
-      "text": "Cuando los jugadores disfrutan tus juegos, ganas dinero con las tarjetas pequeñas de Patrocinado que ven."
-    },
-    "payouts": {
-      "heading": "Pagos",
-      "ready": "listo para cobrar",
-      "progress": "Progreso hacia el pago mínimo",
-      "reached": "Llegaste al mínimo. ¡Puedes pedir un pago!",
-      "toGo": "Puedes pedir un pago al llegar a {min}. Te faltan {left}.",
-      "ask": "Pedir un pago",
-      "byHand": "Nuestro equipo hace cada pago a mano. Si tienes menos de 18 años, primero lo confirmamos con tu madre, padre o tutor.",
-      "pending": "Esperando el pago",
-      "paid": "Pagado a ti",
-      "history": "Historial",
-      "notYet": "Puedes pedir un pago cuando tengas {min} o más."
-    },
-    "payoutStatus": {
-      "requested": "En espera",
-      "paid": "Pagado",
-      "cancelled": "Cancelado"
-    }
-  },
   "js": {
     "app": {
       "wentWrong": "Algo salió mal. Inténtalo de nuevo, por favor.",
@@ -1036,16 +919,17 @@
     "me": {
       "lookingGood": "¡Te ves genial!",
       "chatOn": "El chat está activado.",
-      "chatOff": "El chat está desactivado."
+      "chatOff": "El chat está desactivado.",
+      "photoChecking": "Revisando tu foto…",
+      "photoSaved": "¡Foto guardada!",
+      "photoRemoved": "Foto quitada",
+      "photoBad": "Ese archivo no es una foto que podamos usar. Prueba con otra."
     },
     "profile": {
       "linkCopied": "¡Enlace del perfil copiado!"
     },
     "search": {
       "failed": "La búsqueda está tomando una siesta. Inténtalo de nuevo."
-    },
-    "creator": {
-      "payoutRequested": "¡Listo! Recibimos tu pedido de {amount}."
     },
     "chat": {
       "sayHi": "¡Saluda! 👋",

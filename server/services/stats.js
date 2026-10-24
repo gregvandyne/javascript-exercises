@@ -100,7 +100,7 @@ export function topGamesAllTime(limit = 10) {
 }
 /** Builders whose games are played most (Studio games only). */
 export function topBuilders(limit = 10) {
-  return q.all(`SELECT u.username, u.display_name, u.avatar, COUNT(g.id) games, SUM(CASE WHEN g.status='published' THEN 1 ELSE 0 END) live,
+  return q.all(`SELECT u.id, u.username, u.display_name, u.avatar, u.color, u.photo_at, COUNT(g.id) games, SUM(CASE WHEN g.status='published' THEN 1 ELSE 0 END) live,
       COALESCE(SUM(g.plays),0) plays
     FROM games g JOIN users u ON u.id=g.owner_id WHERE g.source!='seed' AND g.status!='deleted'
     GROUP BY u.id ORDER BY plays DESC, games DESC LIMIT ?`, limit);
@@ -116,5 +116,5 @@ export function aiByModel(days = 30, end = today()) {
 }
 /** The newest accounts. */
 export function newestUsers(limit = 10) {
-  return q.all('SELECT username, display_name, avatar, color, is_guest, created_at, last_seen FROM users WHERE is_guest=0 ORDER BY created_at DESC LIMIT ?', limit);
+  return q.all('SELECT id, username, display_name, avatar, color, photo_at, is_guest, created_at, last_seen FROM users WHERE is_guest=0 ORDER BY created_at DESC LIMIT ?', limit);
 }

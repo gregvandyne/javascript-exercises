@@ -2,7 +2,7 @@
 import { Router } from 'express';
 import { html, jsonData } from '../views/html.js';
 import { page, notFound } from '../views/layout.js';
-import { coverArt, avatar, cardGrid, adCard, statusLabel, categoryLabel } from '../views/components.js';
+import { coverArt, avatar, cardGrid, statusLabel, categoryLabel } from '../views/components.js';
 import * as games from '../services/games.js';
 import * as presence from '../services/presence.js';
 import { frameDocument, sendFrame, SANDBOX } from '../services/frame.js';
@@ -78,13 +78,12 @@ router.get('/g/:slug', (req, res) => {
         </section>
       </div>
       <aside class="stack" aria-label="${t('game.more.label')}">
-        <div style="max-width:200px">${adCard({ placement: 'game', category: g.category, gameId: g.id, user: u })}</div>
-        ${more.length ? html`<section><h2>${t('game.more.heading')}</h2>${cardGrid(more, { ads: false })}</section>` : ''}
+        ${more.length ? html`<section><h2>${t('game.more.heading')}</h2>${cardGrid(more, {})}</section>` : ''}
       </aside>
     </div>
   </article>
   ${jsonData('page-data', { gameId: g.id, slug: g.slug, title: g.title, visibility: g.visibility, shareText: t(`game.shareText.${g.visibility}`), reasons: reportReasons(t), signedIn: !!u })}`;
-  page(req, res, { title: g.title, active: 'home', back: '/', backLabel: t('nav.home'), body, description: g.description.slice(0, 160), scripts: ['/js/game.js', '/js/ads.js'] });
+  page(req, res, { title: g.title, active: 'home', back: '/', backLabel: t('nav.home'), body, description: g.description.slice(0, 160), scripts: ['/js/game.js'] });
 });
 
 router.get('/play/:slug', (req, res) => {

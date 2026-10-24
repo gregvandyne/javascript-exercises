@@ -8,7 +8,7 @@ Think "Roblox for web games", for a 7-year-old, a 12-year-old and their parent s
 - **Friends + chat**: add friends by a 6-character code; friends-only, filtered text chat with quick-chat chips, block and report.
 - **Safety**: every game runs in an opaque-origin sandbox with a strict CSP and no network; every version is scanned; public games are reviewed; reports auto-hide games; an admin panel handles review, reports, chat reports, bans and the audit log.
 - **13 languages**: English (US/UK), Português, Français, Español, Deutsch, עברית, 日本語, العربية, Русский, Italiano, 繁體中文 and Nederlands, picked with the 🌐 menu; right-to-left for Hebrew and Arabic; the Builder replies in the kid's language. Translators start at `server/i18n/README.md`.
-- **Money**: two quiet "Sponsored" card placements fund the platform; builders earn a share by plays of their games (creator dashboard, payout requests).
+- **No ads**: there are no ads, sponsored cards or purchases anywhere on the site.
 
 ## Run it locally (Node 22)
 
@@ -48,12 +48,7 @@ In environments with a pre-installed Chromium at `/opt/pw-browsers`, the e2e con
 | `BRB_SNAPSHOTS` | on in production | Headless Chromium for game screenshots: cover pictures of Studio games and the Builder's `playtest_game` tool. `0` turns it off, `1` turns it on in development. |
 | `BRB_CHROMIUM` | (Playwright's) | Path to a Chromium / headless-shell binary, if not the one Playwright installed. |
 | `ADMIN_USERNAME` / `ADMIN_PASSWORD` | `admin` / random | Admin account created by `npm run seed`. |
-| `AD_ECPM_CENTS` | `200` | Revenue per 1000 ad impressions, in cents. |
-| `BUILDER_SHARE` | `0.7` | Builders' share of ad revenue. |
-| `PAYOUT_THRESHOLD_CENTS` | `1000` | Minimum balance for a payout request ($10). |
 | `AD_IP_DAILY_CAP` | `200` | Max counted ad impressions per IP per day. |
-| `BRB_AD_PROVIDER` | `house` | Ad provider (`house` = BRB's own promos; adapter point for a kid-safe network in `server/services/ads/`). |
-| `PAYOUT_PROVIDER` | `manual` | Payout adapter (Stripe Connect is designed but stubbed). |
 | `CHAT_DAILY_LIMIT` | `300` | Max chat messages per user per day. |
 | `REPORTS_TO_HIDE` | `3` | Open reports from different players that auto-hide a game. |
 | `POSTHOG_KEY` / `POSTHOG_HOST` | – | Optional product analytics (off unless set; never sends usernames or text). |
@@ -67,14 +62,14 @@ In environments with a pre-installed Chromium at `/opt/pw-browsers`, the e2e con
 
 **Render**: push the repo and create a Blueprint from `render.yaml` (one web service + a 2 GB persistent disk at `/data`). Set `ADMIN_PASSWORD` and optionally `ANTHROPIC_API_KEY` in the dashboard.
 
-**Ops**: `GET /health`; JSON request logs on stdout; graceful shutdown on SIGTERM; `npm run backup` (online SQLite backup, keeps 14); earnings roll-up runs on a schedule and from the admin Money page (`npm run rollup [YYYY-MM-DD]` by hand).
+**Ops**: `GET /health`; JSON request logs on stdout; graceful shutdown on SIGTERM; `npm run backup` (online SQLite backup, keeps 14). Site stats (visits, plays, accounts, AI cost and tokens) are on `/admin/stats`.
 
 ## Layout
 
 ```
 server/            app factory (app.js), entry (index.js), db.js, auth.js, config.js
-  routes/          auth, discover (home/search), games (game/play/frame/APIs), studio, social, chat, admin, ads, creator, info
-  services/        games, publish, scanner, sanitize, frame, presence, textfilter, ratelimit, review, chat, friends, moderation, ads, earnings, payouts, jobs, log
+  routes/          auth, discover (home/search), games (game/play/frame/APIs), studio, social, chat, admin (incl. stats), info
+  services/        games, publish, scanner, sanitize, frame, presence, textfilter, ratelimit, review, chat, friends, moderation, stats, traffic, shots, snapshot, ai-budget, jobs, log
   builder/         Builder agent loop, providers (Claude + mock), screening, templates/
   views/           layout + components (server-rendered HTML)
   i18n/            languages: index.js (t, negotiation, Intl), locales/<code>.json, notes.json, blocklists/, README for translators

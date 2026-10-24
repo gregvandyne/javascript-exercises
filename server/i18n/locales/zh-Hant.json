@@ -122,7 +122,6 @@
       "games": "我的遊戲",
       "friends": "好友",
       "chat": "聊天",
-      "money": "創作者收入",
       "admin": "管理",
       "favorites": "我的最愛"
     },
@@ -132,7 +131,8 @@
       "avatarLabel": "頭像 {emoji}",
       "colorHeading": "顏色",
       "colorGroup": "顏色",
-      "colorLabel": "顏色 {color}"
+      "colorLabel": "顏色 {color}",
+      "avatarHeading": "或選一個表情符號"
     },
     "language": {
       "heading": "語言",
@@ -150,6 +150,22 @@
       "guest": "訪客登出後，進度會不見。",
       "account": "下次見！",
       "button": "登出"
+    },
+    "photo": {
+      "heading": "個人照片",
+      "text": "用照片代替你的表情符號。只有你、你的朋友和 Magic Cups 團隊看得到，其他人會看到你的表情符號。",
+      "guest": "建立免費帳號，就能加上個人照片。",
+      "upload": "上傳照片",
+      "change": "更換照片",
+      "remove": "移除照片",
+      "errors": {
+        "guest": "建立免費帳號，就能加上個人照片。",
+        "badType": "這個檔案不是能用的照片，換一張試試。",
+        "tooBig": "這張照片太大了，換一張試試。",
+        "unsafe": "這張照片不適合 Magic Cups，換一張試試。",
+        "personal_info": "這張照片拍到了名字、學校或地址等私人資料，換一張試試。",
+        "resting": "照片需要通過安全檢查，但現在檢查正在休息，請稍後再試。"
+      }
     }
   },
   "cards": {
@@ -160,8 +176,6 @@
     "gameBy": "{title}，作者：{name}",
     "by": "作者：{name}",
     "plays": "{n} 次遊玩",
-    "sponsored": "廣告",
-    "sponsoredLabel": "廣告：{title}",
     "seeAll": "看全部",
     "scrollBack": "往回捲動「{title}」",
     "scrollForward": "往前捲動「{title}」"
@@ -188,78 +202,6 @@
     "learning": "學習",
     "music": "音樂",
     "silly": "搞笑"
-  },
-  "ads": {
-    "house": {
-      "house-build": {
-        "title": "製作你自己的遊戲",
-        "text": "把點子告訴小幫手，它會幫你做出遊戲！"
-      },
-      "house-friends": {
-        "title": "邀請好友",
-        "text": "分享你的好友代碼，一起玩吧。"
-      },
-      "house-new": {
-        "title": "本週新遊戲",
-        "text": "和你一樣的創作者做的新鮮遊戲。"
-      },
-      "house-rate": {
-        "title": "幫喜歡的遊戲評分",
-        "text": "點星星，幫其他玩家找到它。"
-      },
-      "house-words": {
-        "title": "玩玩文字遊戲",
-        "text": "拼字、猜字、找出藏起來的字。"
-      },
-      "house-build-words": {
-        "title": "製作文字遊戲",
-        "text": "把你的生字表變成遊戲！"
-      },
-      "house-puzzle": {
-        "title": "益智時間",
-        "text": "給動腦高手的腦筋急轉彎。"
-      },
-      "house-sports": {
-        "title": "射門得分",
-        "text": "每個季節都有運動遊戲。"
-      },
-      "house-build-sports": {
-        "title": "製作運動遊戲",
-        "text": "選一種運動，剩下的交給小幫手。"
-      },
-      "house-arcade": {
-        "title": "經典街機遊戲",
-        "text": "跳躍、閃躲，打破你的最高分。"
-      },
-      "house-build-arcade": {
-        "title": "製作街機遊戲",
-        "text": "閃躲、跳躍、收集，規則由你決定！"
-      },
-      "house-adventure": {
-        "title": "去冒險吧",
-        "text": "探索地圖、尋找寶藏，勇敢前進。"
-      },
-      "house-learning": {
-        "title": "邊玩邊學",
-        "text": "數學、自然和更多科目，變得好好玩。"
-      },
-      "house-music": {
-        "title": "來玩音樂",
-        "text": "跟著節拍點一點，彈奏一首曲子。"
-      },
-      "house-silly": {
-        "title": "來點搞笑的",
-        "text": "讓你咯咯笑的遊戲。"
-      },
-      "house-board": {
-        "title": "桌遊之夜",
-        "text": "和家人一起玩的經典遊戲。"
-      },
-      "house-playing": {
-        "title": "大家正在玩",
-        "text": "看看今天大家都在玩什麼。"
-      }
-    }
   },
   "home": {
     "build": {
@@ -339,8 +281,8 @@
         "p1": "我們絕對不會問你的電子郵件、真實姓名、年齡或地址。取一個好玩的自創名字吧。"
       },
       "ads": {
-        "h": "廣告很安靜",
-        "p1": "有幾張小卡片會寫著「廣告」。它們絕對不會出現在遊戲裡面或蓋住遊戲，絕對不會發出聲音，也絕對不會突然跳出來。"
+        "h": "沒有廣告",
+        "p1": "Magic Cups 沒有任何廣告。這裡不賣東西，也不會有東西跳出來擋住遊戲。"
       }
     },
     "parents": {
@@ -366,10 +308,6 @@
       "languages": {
         "h": "語言",
         "p1": "在任何頁面上方按 🌐 按鈕，或在「我的」頁面選擇語言。小幫手會用該語言回答，並用該語言撰寫新遊戲裡的文字。每一種語言的每則訊息，都經過相同的安全過濾。"
-      },
-      "money": {
-        "h": "金錢",
-        "p1": "廣告支付平台的營運費用，創作者依自己遊戲的遊玩次數獲得分潤。超過 $10 的款項由我們的團隊人工處理。"
       }
     },
     "sdk": {
@@ -918,61 +856,6 @@
       "resting": "圖片需要經過安全檢查，但它要休息到明天。晚點再試一次，或用文字描述你的點子吧！"
     }
   },
-  "creator": {
-    "title": "創作者收入",
-    "estimate": "估計值",
-    "allGames": "你所有的遊戲",
-    "underOneCent": "不到 1¢",
-    "earned": "收入",
-    "last14": "最近 14 天",
-    "yourGames": "你的遊戲",
-    "stats": {
-      "earnedSoFar": "目前總收入",
-      "adViews": "廣告觀看次數",
-      "players": "玩家",
-      "noRatings": "沒有評分",
-      "averageStars": "平均星數"
-    },
-    "chart": {
-      "barTitle": "{day}：{money}，廣告觀看 {views} 次",
-      "caption": "每一條代表一天。越高 = 賺越多。",
-      "empty": "最近 14 天還沒有收入。玩家看到廣告卡片時，這裡的長條就會長高。",
-      "showNumbers": "顯示每天的數字",
-      "tableCaption": "最近 14 天每天的估計收入",
-      "day": "日期",
-      "earned": "收入（估計）"
-    },
-    "how": {
-      "heading": "收入怎麼來",
-      "p1": "當玩家在你的遊戲頁面，或在「首頁」和「搜尋」中你的遊戲旁邊，看到小小的<b>廣告</b>卡片時，你的遊戲就會有收入。",
-      "p2": "這些卡片大約每被看 1,000 次，你的遊戲大約能賺 <b>{amount}</b>。你可以拿到 {share}%，其餘的用來讓 Magic Cups 維持免費。",
-      "p3": "我們絕對不會在遊戲裡面或你玩的時候顯示廣告。",
-      "p4": "你自己的瀏覽不算。每位玩家每小時只算一次。",
-      "p5": "這些數字是<b>估計值</b>。它們每小時更新一次，在我們檢查作弊後可能會改變。"
-    },
-    "empty": {
-      "title": "做一個遊戲開始賺錢",
-      "text": "當玩家喜歡你的遊戲時，你就能從他們看到的小廣告卡片賺到錢。"
-    },
-    "payouts": {
-      "heading": "領款",
-      "ready": "可以領取",
-      "progress": "距離最低領款金額的進度",
-      "reached": "你已經達到最低金額。可以申請領款了！",
-      "toGo": "到 {min} 就能申請領款，還差 {left}。",
-      "ask": "申請領款",
-      "byHand": "每一筆領款都由我們的團隊人工處理。如果你未滿 18 歲，我們會先和你的父母或監護人確認。",
-      "pending": "等待付款",
-      "paid": "已付給你",
-      "history": "紀錄",
-      "notYet": "當你有 {min} 以上時，就能申請領款。"
-    },
-    "payoutStatus": {
-      "requested": "等待中",
-      "paid": "已付款",
-      "cancelled": "已取消"
-    }
-  },
   "js": {
     "app": {
       "wentWrong": "出了點問題。請再試一次。",
@@ -1036,16 +919,17 @@
     "me": {
       "lookingGood": "看起來很棒！",
       "chatOn": "聊天已開啟。",
-      "chatOff": "聊天已關閉。"
+      "chatOff": "聊天已關閉。",
+      "photoChecking": "正在檢查你的照片…",
+      "photoSaved": "照片已儲存！",
+      "photoRemoved": "照片已移除",
+      "photoBad": "這個檔案不是能用的照片，換一張試試。"
     },
     "profile": {
       "linkCopied": "已複製個人檔案連結！"
     },
     "search": {
       "failed": "搜尋在打瞌睡。請再試一次。"
-    },
-    "creator": {
-      "payoutRequested": "完成！我們收到你 {amount} 的領款申請了。"
     },
     "chat": {
       "sayHi": "打聲招呼吧！👋",

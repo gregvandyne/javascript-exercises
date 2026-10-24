@@ -9,7 +9,7 @@ const presence = await import('../../server/services/presence.js');
 
 test('schema has every table from the brief plus chat', () => {
   const names = q.all("SELECT name FROM sqlite_master WHERE type='table'").map(r => r.name);
-  for (const t of ['users', 'sessions', 'games', 'game_versions', 'friends', 'plays', 'saves', 'scores', 'ratings', 'likes', 'reports', 'builder_chats', 'builder_usage', 'ad_impressions', 'earnings', 'payouts', 'audit_log', 'settings', 'chat_messages', 'chat_blocks', 'chat_reports'])
+  for (const t of ['users', 'sessions', 'games', 'game_versions', 'friends', 'plays', 'saves', 'scores', 'ratings', 'likes', 'reports', 'builder_chats', 'builder_usage', 'audit_log', 'settings', 'chat_messages', 'chat_blocks', 'chat_reports'])
     assert.ok(names.includes(t), t);
 });
 

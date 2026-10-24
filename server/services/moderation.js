@@ -8,7 +8,7 @@ const parse = s => { try { return JSON.parse(s || '{}'); } catch { return {}; } 
 
 /** Games waiting for a human: pending_version_id set. */
 export function reviewQueue() {
-  const rows = q.all(`SELECT g.*, u.username AS owner_name, u.display_name AS owner_display, u.avatar AS owner_avatar, u.color AS owner_color
+  const rows = q.all(`SELECT g.*, u.username AS owner_name, u.display_name AS owner_display, u.avatar AS owner_avatar, u.photo_at AS owner_photo_at, u.color AS owner_color
     FROM games g JOIN users u ON u.id=g.owner_id WHERE g.pending_version_id IS NOT NULL ORDER BY g.updated_at ASC LIMIT 100`);
   return rows.map(g => {
     const v = getVersion(g.pending_version_id) || {};
@@ -60,7 +60,7 @@ export function unsuspendGame(admin, gameId) {
   return getGame(g.id);
 }
 
-const MSG_USER = 'SELECT id, username, display_name, avatar, color, banned, role FROM users WHERE id=?';
+const MSG_USER = 'SELECT id, username, display_name, avatar, color, photo_at, banned, role FROM users WHERE id=?';
 /** Open chat reports, each with the message, 5 messages of context on each side, reporter and sender. */
 export function chatReports() {
   const reps = q.all("SELECT r.*, m.from_id, m.to_id, m.body, m.kind, m.status AS msg_status, m.created_at AS msg_at FROM chat_reports r JOIN chat_messages m ON m.id=r.message_id WHERE r.status='open' ORDER BY r.created_at ASC LIMIT 100");
@@ -102,7 +102,7 @@ export function findUser(username) {
   const games = q.get('SELECT COUNT(*) n FROM games WHERE owner_id=?', u.id).n;
   const friendsN = q.get("SELECT COUNT(*) n FROM friends WHERE user_id=? AND status='accepted'", u.id).n;
   const reportsAgainst = q.get('SELECT COUNT(*) n FROM chat_reports r JOIN chat_messages m ON m.id=r.message_id WHERE m.from_id=?', u.id).n;
-  return { id: u.id, username: u.username, display_name: u.display_name, avatar: u.avatar, color: u.color, role: u.role, is_guest: !!u.is_guest, banned: !!u.banned, chat_enabled: !!u.chat_enabled, created_at: u.created_at, last_seen: u.last_seen, games, friends: friendsN, chatReports: reportsAgainst };
+  return { id: u.id, username: u.username, display_name: u.display_name, avatar: u.avatar, color: u.color, photo_at: u.photo_at, role: u.role, is_guest: !!u.is_guest, banned: !!u.banned, chat_enabled: !!u.chat_enabled, created_at: u.created_at, last_seen: u.last_seen, games, friends: friendsN, chatReports: reportsAgainst };
 }
 /** Ban: account paused, every session ended. Admins cannot be banned from here. */
 export function banUser(admin, userId, reason = '') {

@@ -2,6 +2,7 @@
 // Tabs: Review queue, Reports, Chat reports, Users, Audit log. Every action is audited (services/moderation.js, services/publish.js).
 import * as aiBudget from '../services/ai-budget.js';
 import * as stats from '../services/stats.js';
+import * as photos from '../services/photos.js';
 import { Router } from 'express';
 import { html, raw, jsonData, fmtNum, timeAgo } from '../views/html.js';
 import { page } from '../views/layout.js';
@@ -124,6 +125,7 @@ function usersTab(req) {
       <tr><th scope="row">Chat</th><td>${u.chat_enabled ? 'on' : 'off'} · ${u.chatReports} message report${u.chatReports === 1 ? '' : 's'} against them</td></tr>
     </tbody></table></div>
     <div class="row" style="margin-top:12px"><a class="btn" href="/u/${u.username}">View profile</a>
+      ${u.photo_at ? html`<button class="btn" type="button" data-act="unphoto" data-id="${u.id}" data-name="${u.username}">🖼️ Remove photo</button>` : ''}
       ${u.role === 'admin' ? '' : u.banned ? html`<button class="btn" type="button" data-act="unban" data-id="${u.id}" data-name="${u.username}">Unban</button>` : html`<button class="btn btn-danger" type="button" data-act="ban" data-id="${u.id}" data-name="${u.username}">⛔ Ban</button>`}</div>
   </section>` : ''}`;
 }
@@ -151,7 +153,7 @@ router.get('/admin', (req, res) => {
   const n = { queue: c.queue, reports: c.reports, chat: c.chat };
   const content = { queue: queueTab, reports: reportsTab, chat: chatTab, users: usersTab, audit: auditTab }[tab](req);
   const body = html`
-  <div class="pagehead"><h1>🛡️ Admin</h1><div class="row"><a class="btn btn-primary" href="/admin/stats"><span aria-hidden="true">📊</span> Stats</a><a class="btn" href="/admin/money"><span aria-hidden="true">💰</span> Money</a></div></div>
+  <div class="pagehead"><h1>🛡️ Admin</h1><div class="row"><a class="btn btn-primary" href="/admin/stats"><span aria-hidden="true">📊</span> Stats</a></div></div>
   ${aiSpendPanel()}
   <nav class="tabs" aria-label="Admin sections">${TABS.map(([k, e, l]) => html`<a href="/admin?tab=${k}" ${k === tab ? raw('aria-current="page"') : ''}><span aria-hidden="true">${e}</span>&nbsp;${l}${n[k] ? html`&nbsp;<span class="badge">${n[k]}</span>` : ''}</a>`)}</nav>
   ${content}
@@ -277,5 +279,6 @@ router.post('/api/admin/chat-reports/:id/dismiss', (req, res) => (mod.dismissCha
 router.post('/api/admin/chat-reports/:id/ban', (req, res) => { const r = mod.banSender(req.user, req.params.id); res.status(r.ok ? 200 : 400).json(r); });
 router.get('/api/admin/users', (req, res) => { const u = mod.findUser(req.query.username); return u ? res.json({ user: u }) : res.status(404).json({ error: 'No user with that exact name.' }); });
 router.post('/api/admin/users/:id/ban', (req, res) => { const r = mod.banUser(req.user, req.params.id, note(req)); res.status(r.ok ? 200 : 400).json(r); });
+router.post('/api/admin/users/:id/photo/remove', (req, res) => (photos.removePhoto(req.params.id, req.user.id) ? res.json({ ok: true }) : res.status(404).json({ error: 'That player has no photo.' })));
 router.post('/api/admin/users/:id/unban', (req, res) => { const r = mod.unbanUser(req.user, req.params.id); res.status(r.ok ? 200 : 400).json(r); });
 router.get('/api/admin/audit', (req, res) => res.json({ rows: mod.auditLog(200) }));

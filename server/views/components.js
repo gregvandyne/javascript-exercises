@@ -1,11 +1,10 @@
 // Shared UI components (server-rendered). Markup contracts used by public/js/*.js:
 //  - live counts: any element with [data-live="<gameId>"] gets its text updated every 30s by app.js
-//  - ad cards: a.adcard[data-ad][data-placement][data-game|data-games] observed by public/js/ads.js
 // Text comes from the request's language via current() (server/i18n); outside a request it is English.
 import { html, raw, esc } from './html.js';
-import { pickAd } from '../services/ads.js';
 import { current } from '../i18n/index.js';
 import { urlFor } from '../services/shots.js';
+import { photoUrl } from '../services/photos.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -27,9 +26,13 @@ export function stars(rating, count) {
   if (!count) return html`<span class="stars small muted" aria-label="${t('cards.noRatings')}">☆ ${t('cards.new')}</span>`;
   return html`<span class="stars" aria-label="${t('cards.starsLabel', { stars: r.toFixed(1), count })}">★<span class="num">${r.toFixed(1)}</span></span>`;
 }
+/** A player's picture: their profile photo when they have one, else their emoji on their colour. The photo URL itself
+ *  decides per viewer (/avatars/<id>): friends, the player and admins get the photo, everyone else the emoji. */
 export function avatar(u, size = 40) {
   if (!u) return '';
   const a = u.avatar || u.owner_avatar || '🙂', c = u.color || u.owner_color || '#2f6bff';
+  const photo = photoUrl(u);
+  if (photo) return html`<span class="avatar has-photo" style="--s:${size}px;--c:${c}" aria-hidden="true"><img src="${photo}" alt="" loading="lazy" decoding="async" width="${size}" height="${size}"></span>`;
   return html`<span class="avatar" style="--s:${size}px;--c:${c}" aria-hidden="true">${a}</span>`;
 }
 export function livePill(g) {
@@ -62,41 +65,11 @@ export function statusLabel(g, t = current().t) {
   if (g.status !== 'published') return `📝 ${t('status.draft')}`;
   return visLabel(g.visibility, t);
 }
-/** House ads have their text in the locale files (ads.house.<id>.*); other providers' text is shown as given. */
-export function adText(ad, t = current().t) {
-  const k = `ads.house.${ad.id}`;
-  return { title: t.has(`${k}.title`) ? t(`${k}.title`) : ad.title, text: t.has(`${k}.text`) ? t(`${k}.text`) : ad.text };
-}
-/** Sponsored card in the same style as a game card. placement: 'grid' | 'game'. */
-export function adCard({ placement, category = null, gameId = null, gamesShown = [], user = null }) {
-  const { t } = current();
-  const ad = pickAd({ placement, category, user });
-  if (!ad) return '';
-  const { title, text } = adText(ad, t);
-  return html`<a class="gcard adcard" href="${ad.href}" data-ad="${ad.id}" data-placement="${placement}" ${gameId ? raw(`data-game="${esc(gameId)}"`) : ''} ${gamesShown.length ? raw(`data-games="${esc(gamesShown.join(','))}"`) : ''} aria-label="${t('cards.sponsoredLabel', { title })}">
-    <div class="coverart cover-ad"><div class="art" aria-hidden="true">${ad.icon}</div><div class="adtext">${text}</div></div>
-    <div class="t">${title}</div>
-    <div class="by"><span class="sponsored">${t('cards.sponsored')}</span></div>
-  </a>`;
-}
-/** Insert a sponsored card as every 8th tile. */
-export function withAds(games, { user, category = null, every = 8 } = {}) {
-  const out = [];
-  games.forEach((g, i) => {
-    out.push(gameCard(g));
-    if ((i + 1) % (every - 1) === 0 && i < games.length - 1) {
-      const shown = games.slice(Math.max(0, i - (every - 2)), i + 1).map(x => x.id);
-      out.push(adCard({ placement: 'grid', category: category || g.category, gamesShown: shown, user }));
-    }
-  });
-  return out;
-}
-let railN = 0;
-export function rail({ title, games, more = null, user = null, ads = true, id = null, emoji = '' }) {
+export function rail({ title, games, more = null, id = null, emoji = '' }) {
   if (!games || !games.length) return '';
   const { t } = current();
   const rid = id || `rail${++railN}`;
-  const cards = ads ? withAds(games, { user }) : games.map(g => gameCard(g));
+  const cards = games.map(g => gameCard(g));
   return html`<section class="rail" aria-labelledby="${rid}-h">
     <div class="rail-head"><h2 id="${rid}-h">${emoji ? emoji + ' ' : ''}${title}</h2>
       ${more ? html`<a class="more" href="${more}">${t('cards.seeAll')}</a>` : ''}
@@ -105,8 +78,8 @@ export function rail({ title, games, more = null, user = null, ads = true, id = 
     <div class="rail-track" id="${rid}" role="list">${cards.map(c => html`<div role="listitem">${c}</div>`)}</div>
   </section>`;
 }
-export function cardGrid(games, { user = null, ads = true, category = null, showVis = false } = {}) {
-  const cards = ads ? withAds(games, { user, category }) : games.map(g => gameCard(g, { showVis }));
+export function cardGrid(games, { showVis = false } = {}) {
+  const cards = games.map(g => gameCard(g, { showVis }));
   return html`<div class="cardgrid">${cards}</div>`;
 }
 export function emptyState({ emoji = '🌈', title, text = '', action = null }) {

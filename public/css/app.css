@@ -160,11 +160,6 @@ textarea.input{min-height:96px;resize:vertical}
 .vis-pill{position:absolute;z-index:2;inset-inline-end:8px;top:8px;padding:3px 9px;border-radius:999px;background:rgba(255,255,255,.9);color:#152036;font-size:.75rem;font-weight:900}
 .stars{color:var(--sun-600);letter-spacing:1px;white-space:nowrap}
 .stars .num{color:var(--ink-2);letter-spacing:0;margin-inline-start:2px}
-.adcard .coverart{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:8px;padding:14px;text-align:center;color:var(--ink)}
-.adcard .coverart::after,.adcard .coverart::before{display:none}
-.adcard .coverart .art{height:auto;font-size:2.6rem;filter:none}
-.adcard .adtext{position:relative;z-index:1;font-weight:800;font-size:.92rem;line-height:1.3}
-.sponsored{display:inline-block;font-size:.72rem;font-weight:900;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
 
 /* rails */
 .rail{margin:8px 0 28px}
@@ -340,7 +335,7 @@ table.tbl{width:100%;border-collapse:collapse;font-size:.95rem}
 :lang(ar) body,:lang(he) body{line-height:1.6}
 /* Text people typed (game titles and descriptions, names, notes) takes its direction from its own letters, so an English
    title reads right in an Arabic page and the other way round. Alignment still follows the page. */
-.gcard .t,.gcard .by,.hero h1,.hero p,.gamehero h1,.nm,.ptitle,.tpl-t,.tpl-d,.mg-t,.gi-t,.vnotes,.lb li span,.mygame h3,.pagehead h1,.profilehead h1,.fc-games h3,.mg-note,#st-live .note,.chip,.inboxrow .sub,.tag,.ugc,.st-turns,.pbadge,.adtext{unicode-bidi:plaintext;text-align:match-parent}
+.gcard .t,.gcard .by,.hero h1,.hero p,.gamehero h1,.nm,.ptitle,.tpl-t,.tpl-d,.mg-t,.gi-t,.vnotes,.lb li span,.mygame h3,.pagehead h1,.profilehead h1,.fc-games h3,.mg-note,#st-live .note,.chip,.inboxrow .sub,.tag,.ugc,.st-turns,.pbadge{unicode-bidi:plaintext;text-align:match-parent}
 
 /* Phones: the featured game's picture fills the hero card, with the words on a dark fade at the bottom. */
 @media (max-width:640px){
@@ -353,3 +348,16 @@ table.tbl{width:100%;border-collapse:collapse;font-size:.95rem}
   .hero>div:first-child a,.hero>div:first-child .btn{pointer-events:auto}
   .hero p{margin-bottom:14px}
 }
+
+/* Me page: shortcut tiles, all the same size (every row as tall as the tallest tile). */
+.metiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));grid-auto-rows:1fr;gap:14px;margin-bottom:24px}
+.metiles>.metile{margin:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:132px;padding:16px 12px;text-align:center;color:var(--ink);font-weight:900;text-decoration:none}
+.metile-e{font-size:2.2rem;line-height:1}
+.metile:hover{transform:translateY(-2px)}
+/* Profile photos */
+.avatar.has-photo{overflow:hidden;background:var(--card-2)}
+.avatar.has-photo img{width:100%;height:100%;object-fit:cover;display:block;border-radius:50%}
+.photo-row{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+.photo-ctl{flex:1;min-width:200px}
+.photo-ctl h3{margin:0 0 4px}
+.photo-ctl p{margin:0 0 10px}

@@ -123,7 +123,6 @@
       "games": "My games",
       "friends": "Friends",
       "chat": "Chat",
-      "money": "Creator money",
       "admin": "Admin",
       "favorites": "My favorites"
     },
@@ -133,7 +132,8 @@
       "avatarLabel": "Avatar {emoji}",
       "colorHeading": "Color",
       "colorGroup": "Color",
-      "colorLabel": "Color {color}"
+      "colorLabel": "Color {color}",
+      "avatarHeading": "Or pick an emoji"
     },
     "language": {
       "heading": "Language",
@@ -151,6 +151,22 @@
       "guest": "Guests lose their progress when they sign out.",
       "account": "See you soon!",
       "button": "Sign out"
+    },
+    "photo": {
+      "heading": "Profile photo",
+      "text": "Use a photo instead of your emoji. Only you, your friends and the Magic Cups team can see it. Everyone else sees your emoji.",
+      "guest": "Make a free account to add a profile photo.",
+      "upload": "Upload a photo",
+      "change": "Change photo",
+      "remove": "Remove photo",
+      "errors": {
+        "guest": "Make a free account to add a profile photo.",
+        "badType": "That file isn’t a photo we can use. Try another one.",
+        "tooBig": "That photo is too big. Try another one.",
+        "unsafe": "That photo isn’t right for Magic Cups. Try a different one.",
+        "personal_info": "That photo shows private details like a name, school or address. Try a different one.",
+        "resting": "Photos need our safety check, and it’s resting right now. Try again later."
+      }
     }
   },
   "cards": {
@@ -161,8 +177,6 @@
     "gameBy": "{title}, by {name}",
     "by": "by {name}",
     "plays": "{count, plural, one {{n} play} other {{n} plays}}",
-    "sponsored": "Sponsored",
-    "sponsoredLabel": "Sponsored: {title}",
     "seeAll": "See all",
     "scrollBack": "Scroll {title} back",
     "scrollForward": "Scroll {title} forward"
@@ -189,78 +203,6 @@
     "learning": "Learning",
     "music": "Music",
     "silly": "Silly"
-  },
-  "ads": {
-    "house": {
-      "house-build": {
-        "title": "Make your own game",
-        "text": "Tell our Builder your idea. It makes the game!"
-      },
-      "house-friends": {
-        "title": "Invite a friend",
-        "text": "Share your friend code and play together."
-      },
-      "house-new": {
-        "title": "New this week",
-        "text": "Fresh games made by builders like you."
-      },
-      "house-rate": {
-        "title": "Rate a game you love",
-        "text": "Tap the stars to help other players find it."
-      },
-      "house-words": {
-        "title": "Try a word game",
-        "text": "Spell, guess and find hidden words."
-      },
-      "house-build-words": {
-        "title": "Build a word game",
-        "text": "Turn your spelling list into a game!"
-      },
-      "house-puzzle": {
-        "title": "Puzzle time",
-        "text": "Brain teasers for quick thinkers."
-      },
-      "house-sports": {
-        "title": "Score a goal",
-        "text": "Sports games for every season."
-      },
-      "house-build-sports": {
-        "title": "Build a sports game",
-        "text": "Pick a sport. The Builder does the rest."
-      },
-      "house-arcade": {
-        "title": "Arcade classics",
-        "text": "Jump, dodge and beat your best score."
-      },
-      "house-build-arcade": {
-        "title": "Build an arcade game",
-        "text": "Dodge, jump, collect. You pick the rules!"
-      },
-      "house-adventure": {
-        "title": "Go on an adventure",
-        "text": "Explore maps, find treasure, be brave."
-      },
-      "house-learning": {
-        "title": "Learn while you play",
-        "text": "Math, science and more, made fun."
-      },
-      "house-music": {
-        "title": "Make some music",
-        "text": "Tap the beat and play a tune."
-      },
-      "house-silly": {
-        "title": "Something silly",
-        "text": "Games that will make you giggle."
-      },
-      "house-board": {
-        "title": "Board game night",
-        "text": "Classic games to play with family."
-      },
-      "house-playing": {
-        "title": "Playing right now",
-        "text": "See what everyone is playing today."
-      }
-    }
   },
   "home": {
     "build": {
@@ -340,8 +282,8 @@
         "p1": "We never ask for your email, real name, age or address. Pick a fun made-up name."
       },
       "ads": {
-        "h": "Ads are quiet",
-        "p1": "A few small cards say “Sponsored”. They never appear inside or over a game, never make sound and never pop up."
+        "h": "No ads",
+        "p1": "There are no ads on Magic Cups. Nothing is for sale, and nothing pops up over a game."
       }
     },
     "parents": {
@@ -367,10 +309,6 @@
       "languages": {
         "h": "Languages",
         "p1": "Pick a language with the 🌐 button at the top of any page or on the Me page. The Builder answers in that language and writes the words inside new games in it too. The same safety filters check every message, in every language."
-      },
-      "money": {
-        "h": "Money",
-        "p1": "Ads pay for the platform and builders get a share based on plays of their games. Payouts above $10 are handled by hand by our team."
       }
     },
     "sdk": {
@@ -919,61 +857,6 @@
       "resting": "Pictures need our safety check, and it's resting until tomorrow. Try a picture again later, or describe your idea in words!"
     }
   },
-  "creator": {
-    "title": "Creator money",
-    "estimate": "Estimate",
-    "allGames": "All your games",
-    "underOneCent": "under 1¢",
-    "earned": "earned",
-    "last14": "Last 14 days",
-    "yourGames": "Your games",
-    "stats": {
-      "earnedSoFar": "earned so far",
-      "adViews": "ad views",
-      "players": "{count, plural, one {player} other {players}}",
-      "noRatings": "no ratings",
-      "averageStars": "average stars"
-    },
-    "chart": {
-      "barTitle": "{day}: {money}, {views} ad views",
-      "caption": "Each bar is one day. Taller bar = more earned.",
-      "empty": "No earnings in the last 14 days yet. Bars grow here when players see the Sponsored cards.",
-      "showNumbers": "Show the numbers for each day",
-      "tableCaption": "Estimated earnings for each of the last 14 days",
-      "day": "Day",
-      "earned": "Earned (estimate)"
-    },
-    "how": {
-      "heading": "How earnings work",
-      "p1": "Your games earn when players see the small <b>Sponsored</b> cards on your game's page, or next to your game on Home and Search.",
-      "p2": "About 1,000 views of those cards earn your games about <b>{amount}</b>. You get {share}% and the rest keeps Magic Cups free.",
-      "p3": "We never show ads inside games or while you play.",
-      "p4": "Your own visits don't count. Each player counts once an hour.",
-      "p5": "These numbers are an <b>estimate</b>. They update every hour and can change after we check for cheating."
-    },
-    "empty": {
-      "title": "Build a game to start earning",
-      "text": "When players enjoy your games, you earn money from the small Sponsored cards they see."
-    },
-    "payouts": {
-      "heading": "Payouts",
-      "ready": "ready to pay out",
-      "progress": "Progress to the payout minimum",
-      "reached": "You reached the minimum. You can ask for a payout!",
-      "toGo": "You can ask for a payout at {min}. {left} to go.",
-      "ask": "Ask for a payout",
-      "byHand": "Our team pays every payout by hand. If you are under 18, we check with your parent or guardian first.",
-      "pending": "Waiting to be paid",
-      "paid": "Paid to you",
-      "history": "History",
-      "notYet": "You can ask for a payout when you have {min} or more."
-    },
-    "payoutStatus": {
-      "requested": "Waiting",
-      "paid": "Paid",
-      "cancelled": "Canceled"
-    }
-  },
   "js": {
     "app": {
       "wentWrong": "Something went wrong. Please try again.",
@@ -1037,16 +920,17 @@
     "me": {
       "lookingGood": "Looking good!",
       "chatOn": "Chat is on.",
-      "chatOff": "Chat is off."
+      "chatOff": "Chat is off.",
+      "photoChecking": "Checking your photo…",
+      "photoSaved": "Photo saved!",
+      "photoRemoved": "Photo removed",
+      "photoBad": "That file isn’t a photo we can use. Try another one."
     },
     "profile": {
       "linkCopied": "Profile link copied!"
     },
     "search": {
       "failed": "Search is having a nap. Try again."
-    },
-    "creator": {
-      "payoutRequested": "Done! We got your request for {amount}."
     },
     "chat": {
       "sayHi": "Say hi! 👋",

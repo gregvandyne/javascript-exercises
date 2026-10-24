@@ -1,4 +1,4 @@
-// Scheduled jobs. The Money node registers the nightly earnings roll-up here.
+// Scheduled jobs (e.g. forgetting old visitor hashes for the admin stats).
 const jobs = [];
 /** register(name, everyMs, fn) */
 export function register(name, everyMs, fn) { jobs.push({ name, everyMs, fn }); }

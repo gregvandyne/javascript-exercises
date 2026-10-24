@@ -5,9 +5,9 @@ const ROUTES = {
   approve: id => `/api/admin/games/${id}/approve`, reject: id => `/api/admin/games/${id}/reject`,
   restore: id => `/api/admin/games/${id}/restore`, suspend: id => `/api/admin/games/${id}/suspend`, unsuspend: id => `/api/admin/games/${id}/unsuspend`,
   hide: id => `/api/admin/chat-reports/${id}/hide`, dismiss: id => `/api/admin/chat-reports/${id}/dismiss`, bansender: id => `/api/admin/chat-reports/${id}/ban`,
-  ban: id => `/api/admin/users/${id}/ban`, unban: id => `/api/admin/users/${id}/unban`,
+  ban: id => `/api/admin/users/${id}/ban`, unban: id => `/api/admin/users/${id}/unban`, unphoto: id => `/api/admin/users/${id}/photo/remove`,
 };
-const DONE = { approve: 'Approved. It is public now.', reject: 'Sent back with your note.', restore: 'Restored and reports dismissed.', suspend: 'Game suspended.', unsuspend: 'Game is back.', hide: 'Message hidden.', dismiss: 'Report dismissed.', bansender: 'Sender banned.', ban: 'User banned.', unban: 'User unbanned.' };
+const DONE = { approve: 'Approved. It is public now.', reject: 'Sent back with your note.', restore: 'Restored and reports dismissed.', suspend: 'Game suspended.', unsuspend: 'Game is back.', hide: 'Message hidden.', dismiss: 'Report dismissed.', bansender: 'Sender banned.', ban: 'User banned.', unban: 'User unbanned.', unphoto: 'Photo removed.' };
 const CONFIRM = {
   suspend: () => ['Suspend this game?', 'Nobody but the builder and admins can open it until you unsuspend it.', '⛔ Suspend'],
   bansender: b => [`Ban @${b.dataset.name}?`, 'Their account is paused, they are signed out everywhere, and the message is hidden.', '⛔ Ban'],

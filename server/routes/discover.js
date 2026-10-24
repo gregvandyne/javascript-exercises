@@ -26,7 +26,7 @@ router.get('/favorites', requireUser, (req, res) => {
   const t = req.t;
   const favs = games.favorites(req.user, req.user.id, 200);
   const body = html`<div class="pagehead"><h1>❤️ ${t('favorites.title')}</h1></div>
-  ${favs.length ? cardGrid(favs, { ads: false }) : emptyState({ emoji: '🤍', title: t('favorites.emptyTitle'), text: t('favorites.emptyText'), action: { href: '/', label: t('favorites.emptyAction') } })}`;
+  ${favs.length ? cardGrid(favs, {}) : emptyState({ emoji: '🤍', title: t('favorites.emptyTitle'), text: t('favorites.emptyText'), action: { href: '/', label: t('favorites.emptyAction') } })}`;
   page(req, res, { title: t('favorites.title'), active: 'me', body, back: '/me', backLabel: t('nav.me') });
 });
 
@@ -37,7 +37,7 @@ router.get('/', (req, res) => {
   const hero = featured[0];
   const mine = u && !u.is_guest ? games.myGames(u.id, 12) : [];
   const rails = [
-    u ? rail({ title: t('home.rails.favorites'), emoji: '❤️', games: games.favorites(u, u.id, 16), user: u, ads: false, id: 'favorites', more: '/favorites' }) : '',
+    u ? rail({ title: t('home.rails.favorites'), emoji: '❤️', games: games.favorites(u, u.id, 16), user: u, id: 'favorites', more: '/favorites' }) : '',
     rail({ title: t('home.rails.featured'), emoji: '⭐', games: featured, user: u, id: 'featured' }),
     buildBanner(req),
     rail({ title: t('home.rails.playing'), emoji: '🟢', games: games.playingNow(u, 12), user: u, id: 'playing', more: '/search?sort=playing' }),
@@ -45,7 +45,7 @@ router.get('/', (req, res) => {
     rail({ title: t('home.rails.popular'), emoji: '🔥', games: games.listVisible(u, { order: 'popular', limit: 16 }), user: u, id: 'popular', more: '/search?sort=popular' }),
     rail({ title: t('home.rails.rated'), emoji: '🏆', games: games.listVisible(u, { order: 'rated', limit: 16 }), user: u, id: 'rated', more: '/search?sort=rated' }),
     rail({ title: t('home.rails.new'), emoji: '✨', games: games.listVisible(u, { order: 'new', limit: 16 }), user: u, id: 'new', more: '/search?sort=new' }),
-    mine.length ? rail({ title: t('home.rails.mine'), emoji: '🛠️', games: mine, user: u, ads: false, id: 'mine', more: '/build' }) : '',
+    mine.length ? rail({ title: t('home.rails.mine'), emoji: '🛠️', games: mine, user: u, id: 'mine', more: '/build' }) : '',
     ...games.CATEGORIES.map(([k, e]) => rail({ title: categoryLabel(k, t), emoji: e, games: games.listVisible(u, { category: k, limit: 12 }), user: u, id: `cat-${k}`, more: `/search?cat=${k}` })),
   ];
   const body = html`
@@ -65,7 +65,7 @@ router.get('/', (req, res) => {
     ${games.CATEGORIES.map(([k, e]) => html`<a class="chip" role="listitem" href="/search?cat=${k}"><span aria-hidden="true">${e}</span>${categoryLabel(k, t)}</a>`)}
   </div>
   ${rails.some(r => r) ? rails : emptyState({ emoji: '🎮', title: t('home.empty.title'), text: t('home.empty.text'), action: { href: '/build', label: t('home.empty.action') } })}`;
-  page(req, res, { title: '', active: 'home', body, scripts: ['/js/ads.js'] });
+  page(req, res, { title: '', active: 'home', body });
 });
 
 function searchResults(req) {
@@ -102,7 +102,7 @@ router.get('/search', (req, res) => {
   <div class="row" style="margin-bottom:18px"><span class="small muted" style="font-weight:800">${t('search.sortLabel')}</span>
     <div class="seg" role="group" aria-label="${t('search.sort')}">${sortBtns.map(k => html`<button type="button" data-sort="${k}" aria-pressed="${r.sort === k}">${t(`search.sorts.${k}`)}</button>`)}</div></div>
   <div id="results" aria-live="polite">${r.markup}</div>`;
-  page(req, res, { title: r.text ? t('search.titleQuery', { text: r.text }) : t('search.title'), active: 'search', body, scripts: ['/js/search.js', '/js/ads.js'] });
+  page(req, res, { title: r.text ? t('search.titleQuery', { text: r.text }) : t('search.title'), active: 'search', body, scripts: ['/js/search.js'] });
 });
 router.get('/api/search', rateLimit('search', 120, 60e3), (req, res) => {
   const r = searchResults(req);

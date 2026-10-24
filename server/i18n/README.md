@@ -65,10 +65,10 @@ Counted things use ICU plural syntax:
 
 - Warm, simple and encouraging, for kids aged 6 to 12. Many readers are 7: short sentences, everyday words.
 - Talk to the child directly and kindly (informal "you": tu, du, tú, ты, je…). Safety messages are friendly, never scary
-  or scolding. The pages for grown-ups (`info.parents.*`, `creator.*`) can use normal adult language.
+  or scolding. The pages for grown-ups (`info.parents.*`) can use normal adult language.
 - Buttons are short: respect the length hints in `notes.json` (phone screens are 390 px wide).
 - Use one word consistently for the same idea everywhere: the **Builder** (the AI helper), the **Studio** (where you make
-  games), a **friend code**, **Publish**, **Sponsored** (ads must be clearly marked).
+  games), a **friend code**, **Publish**.
 - Keep emoji where they are.
 
 ## Never translate

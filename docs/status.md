@@ -21,7 +21,7 @@ _Last updated: 2026-10-24_
 | **Friends-only chat**: delivery by polling, phone numbers/links/profanity refused, block, report | e2e `community.spec.js`, unit `chat.test.js` |
 | Reports: 3 distinct reporters auto-hide a game | e2e `reports.spec.js` |
 | Admin: review queue, reports, chat reports, users/bans, audit log; 404 for non-admins | e2e + unit `moderation.test.js` |
-| Ads: impression after ≥50% visible for 1 s, dedupe, owner views ignored → roll-up → creator dashboard; no ads on play page | e2e `money.spec.js`, unit `earnings.test.js`, `ads.test.js` |
+| Admin stats: visits (no tracking), accounts, plays, games, AI cost and tokens; admin-only | unit `stats.test.js` |
 | Safety suite: 76 adversarial prompts refused, 40 kid prompts allowed; scanner fails fetch/links/eval, flags flashing | `tests/safety/` |
 | **13 site languages**: 🌐 picker (mouse, keyboard, phone, no-JS links), `?lang=` → cookie → account → Accept-Language → en, choice saved to the account, `<html lang dir>`, RTL for he/ar, English fallback per key, `BRB.user.lang` in games | unit `i18n.test.js`, e2e `i18n.spec.js`, RTL screenshots of home, game, play, Studio, chat, friends and Me |
 | Locale-file guard for translators: no extra keys, placeholders kept, code keys exist, notes valid (`npm run i18n:check`) | unit `i18n.test.js` |
@@ -38,8 +38,7 @@ Counts at this commit: unit + safety 156/156, e2e 28/28.
 - The GitHub repo name is unchanged (no tool for that here). Rename it in GitHub → Settings.
 - Presence (live counts) and rate limits are in memory: one server process only. Multi-instance needs Redis.
 - Chat uses polling every ~3.5 s, not WebSockets.
-- Payouts are recorded for manual handling; Stripe Connect is designed but stubbed.
-- Ads are BRB's own house promos; a kid-safe ad network adapter point exists but no partner is wired in.
+- No ads and no creator payouts: removed when Magic Cups became an ed-tech product. Old ad/earnings tables are left untouched in existing databases.
 - The mock Builder makes real games from templates and real find/replace edits, but it is not creative. The real Builder needs the API key.
 - **Only English is written so far**: `server/i18n/locales/en.json` has every string (832 keys); the other 12 locale files are `{}` stubs waiting for translators, and the per-language word lists are empty. Until then those languages show English text (in the right direction for he/ar). The Builder already replies in the kid's language when an API key is set; the offline mock Builder speaks English.
 - Without an API key, Builder input screening for non-English messages relies on the word lists only (the keyword rules are English).
@@ -48,6 +47,4 @@ Counts at this commit: unit + safety 156/156, e2e 28/28.
 1. Add `ANTHROPIC_API_KEY`, build a few games end to end, tune the system prompt.
 1. Fill the 12 locale files and word lists (see `server/i18n/README.md`; `npm run i18n:check` shows progress), then let the launch games read `BRB.user.lang`.
 2. Real-time multiplayer and live chat over WebSockets (plus Redis for presence/rate limits).
-3. A kid-safe ad partner (COPPA-compliant, contextual only) behind the adapter.
-4. Stripe Connect payouts with parent/guardian verification.
 5. Builder analytics (retention, where players quit), game remixing, and 3D later.
