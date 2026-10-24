@@ -7,9 +7,11 @@ COPY package.json package-lock.json ./
 RUN npm ci --omit=dev
 
 FROM ${NODE_IMAGE}
-ENV NODE_ENV=production PORT=3000 BRB_DATA_DIR=/data
+ENV NODE_ENV=production PORT=3000 BRB_DATA_DIR=/data PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
+# Headless Chromium (plus its fonts, emoji included) for game screenshots: cover pictures and the Builder's playtests.
+RUN node node_modules/playwright-core/cli.js install --with-deps --only-shell chromium && rm -rf /var/lib/apt/lists/* /tmp/*
 COPY package.json ./
 COPY server ./server
 COPY public ./public

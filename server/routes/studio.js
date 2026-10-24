@@ -90,7 +90,7 @@ router.get('/build', requireAccount, async (req, res) => {
   <section aria-labelledby="mine-h" class="build-sec">
     <h2 id="mine-h">${t('home.rails.mine')}</h2>
     ${mine.length ? html`<ul class="mygames">${mine.map(g => { const s = studioStatus(g, t); return html`<li class="mygame panel" data-id="${g.id}" data-title="${g.title}" data-live="${s.live ? '1' : ''}">
-      <a class="mg-cover" href="/studio/${g.id}" tabindex="-1" aria-hidden="true">${coverArt(g)}</a>
+      <a class="mg-cover" href="/studio/${g.id}" tabindex="-1" aria-hidden="true">${coverArt(g, '', { draft: true })}</a>
       <div class="mg-body">
         <h3><a href="/studio/${g.id}">${g.title}</a></h3>
         <div class="mg-status"><span class="stchip ${s.tone}">${s.label}</span>${g.pending_version_id ? html`<span class="stchip warn">⏳ ${t('build.updateWaiting')}</span>` : ''}</div>

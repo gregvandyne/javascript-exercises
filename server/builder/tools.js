@@ -7,6 +7,8 @@ import { sanitizeGameHtml, MAX_GAME_BYTES } from '../services/sanitize.js';
 import { scanVersion } from '../services/scanner.js';
 import { cleanText } from '../services/textfilter.js';
 import { signToken } from '../auth.js';
+import * as snapshot from '../services/snapshot.js';
+import { localeInfo } from '../i18n/index.js';
 
 const CATS = games.CATEGORY_KEYS;
 /** A Studio preview link (signed, short-lived). lang: the builder's language, passed to the game as BRB.user.lang. */
@@ -89,6 +91,46 @@ export function toolbox(ctx) {
       const out = { title: g.title, icon: g.icon, description: g.description, category: g.category, tags: g.tags, orientation: g.orientation, players_max: g.players_max, cover: g.cover };
       return { ok: true, forModel: `Game details saved.${problems.length ? ' Skipped: ' + problems.join('; ') + '.' : ''}`, event: ['meta', out] };
     },
+    // Play the current version at phone size like a real player would, and show the model what happened:
+    // a picture of the title screen, a picture two seconds after tapping Play, errors, and layout problems.
+    async playtest_game() {
+      const cur = current(); const g = game();
+      if (!cur) return { ok: false, forModel: 'There is no game yet. Build it with write_game first.' };
+      if (!snapshot.enabled()) return { ok: false, forModel: 'Playtesting is not available on this server right now. Re-read the game carefully instead.' };
+      ctx.emit('progress', { stage: 'testing' });
+      const orientation = g.orientation === 'landscape' ? 'landscape' : 'portrait';
+      let r;
+      try {
+        r = await snapshot.runGame(cur.html, { size: 'phone', orientation, lang: ctx.locale || 'en', dir: localeInfo(ctx.locale || 'en').dir, title: g.title, scale: 1, quality: 62, titleMs: 1500, playMs: 2500 });
+      } catch (e) {
+        return { ok: false, forModel: `The playtest could not run (${String(e.message || e).split('\n')[0]}). The game may freeze or loop forever while loading: check the start-up code.` };
+      }
+      const a = r.after || {}, b = r.before || {};
+      const problems = [];
+      if (r.errors.length) problems.push(`Errors while playing: ${r.errors.join(' | ')}`);
+      if (b.sideways || a.sideways) {
+        const wide = [...new Set([...(b.wide || []), ...(a.wide || [])])];
+        problems.push(`Something is wider than the phone screen (${orientation === 'landscape' ? 844 : 390}px), so a phone zooms the whole game out and everything looks tiny.${wide.length ? ` Sticking out: ${wide.join('; ')}.` : ''} Keep every element inside the screen (max-width:100%, sizes from the screen size, overflow:hidden on the page).`);
+      }
+      const off = [...new Set([...(b.offscreenText || []), ...(a.offscreenText || [])])];
+      if (off.length) problems.push(`Text past the screen edge: ${off.map(x => `"${x}"`).join(', ')}.`);
+      const small = [...new Set([...(b.smallButtons || []), ...(a.smallButtons || [])])];
+      if (small.length) problems.push(`Buttons smaller than 40px (hard for small fingers): ${small.map(x => `"${x}"`).join(', ')}.`);
+      if (!a.testHook) problems.push('window.__brbTest is missing (add state() and start(), see the Game Contract).');
+      const size = orientation === 'landscape' ? '844x390 landscape' : '390x700 portrait';
+      const text = [
+        `Playtest of version ${cur.number} on a phone (${size}), in the builder's language.`,
+        `Picture 1: the title screen after 1.5 seconds. Then I ${r.started || 'could not find anything to tap'}. Picture 2: 2.5 seconds later.`,
+        a.state ? `__brbTest.state() after starting: ${a.state}` : '',
+        problems.length ? `Problems found:\n- ${problems.join('\n- ')}` : 'No errors or layout problems were detected.',
+        'Now look at both pictures like a picky player and art director: Is it clear what to do? Does it look polished and fun, with a real',
+        'background, characters with personality and a tidy HUD? Is anything blank, overlapping, cut off, too small, misaligned or ugly?',
+        'Did the game actually start? Fix every real problem with edit_game (then playtest again), or say it looks good and carry on.',
+      ].filter(Boolean).join('\n');
+      const img = buf => ({ type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: buf.toString('base64') } });
+      const content = [{ type: 'text', text }, img(r.title), ...(r.play ? [img(r.play)] : [])];
+      return { ok: true, forModel: content, event: ['playtest', { version: cur.number, problems: problems.length }] };
+    },
     test_notes(input) {
       const list = (Array.isArray(input && input.checklist) ? input.checklist : []).map(s => String(s).trim().slice(0, 140)).filter(Boolean).slice(0, 8);
       if (!list.length) return { ok: false, forModel: 'checklist must list a few things to try.' };
@@ -99,12 +141,12 @@ export function toolbox(ctx) {
   return {
     current,
     game,
-    /** Run a tool by name; streams its event; returns the tool result. */
+    /** Run a tool by name; streams its event; returns the tool result (a promise for playtest_game). */
     exec(name, input) {
       const fn = tools[name];
       const r = fn ? fn(input) : { ok: false, forModel: `Unknown tool "${name}".` };
-      if (r.event) ctx.emit(r.event[0], r.event[1]);
-      return r;
+      const done = x => { if (x.event) ctx.emit(x.event[0], x.event[1]); return x; };
+      return r && typeof r.then === 'function' ? r.then(done) : done(r);
     },
   };
 }

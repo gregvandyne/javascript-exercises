@@ -19,6 +19,9 @@ export const config = {
   // AI spending cap in US dollars (see server/services/ai-budget.js). Calls stop once either is reached.
   aiDailyBudgetUsd: posNum(process.env.AI_DAILY_BUDGET_USD, 5),
   aiMonthlyBudgetUsd: posNum(process.env.AI_MONTHLY_BUDGET_USD, 50),
+  // Headless Chromium for game screenshots (cover pictures, Builder playtests). On in production; BRB_SNAPSHOTS=1/0 forces it.
+  snapshots: process.env.BRB_SNAPSHOTS ? process.env.BRB_SNAPSHOTS === '1' : (process.env.NODE_ENV || 'development') === 'production',
+  chromiumPath: process.env.BRB_CHROMIUM || '',
   adminUsername: process.env.ADMIN_USERNAME || 'admin',
   adminPassword: process.env.ADMIN_PASSWORD || '',
   adEcpmCents: num(process.env.AD_ECPM_CENTS, 200),

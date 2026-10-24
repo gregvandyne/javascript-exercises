@@ -1226,7 +1226,8 @@
         "notYet": "Todavía no",
         "button": "Actualizar"
       },
-      "reconnecting": "Se cortó la conexión, pero el Constructor sigue trabajando. Espera un poco…"
+      "reconnecting": "Se cortó la conexión, pero el Constructor sigue trabajando. Espera un poco…",
+      "testing": "Jugando tu juego para revisarlo…"
     }
   },
   "favorites": {

@@ -5,6 +5,7 @@
 import { html, raw, esc } from './html.js';
 import { pickAd } from '../services/ads.js';
 import { current } from '../i18n/index.js';
+import { urlFor } from '../services/shots.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -35,10 +36,12 @@ export function livePill(g) {
   const { t } = current();
   return html`<span class="live" data-live="${g.id}" data-live-format="pill" ${g.playing ? '' : raw('hidden')}>${t('cards.playing', { count: g.playing || 0 })}</span>`;
 }
-export function coverArt(g, extra = '') {
-  // Launch games show a real screenshot; everything else (Studio games, templates) keeps the emoji art.
-  const shot = g.source === 'seed' && g.slug ? COVER_SHOTS.get(g.slug) : null;
-  if (shot) return html`<div class="coverart has-shot cover-${g.cover || 'sunset'} ${extra}"><img src="/covers/${g.slug}.jpg?v=${shot}" alt="" loading="lazy" decoding="async"><span class="shot-icon" aria-hidden="true">${g.icon || '🎮'}</span></div>`;
+/** A game's cover: a real screenshot when there is one (launch games: public/covers; Studio games: the picture of the
+ *  published version, or of the draft when draft is true, for the builder's own lists), otherwise the emoji art. */
+export function coverArt(g, extra = '', { draft = false } = {}) {
+  const seed = g.source === 'seed' && g.slug ? COVER_SHOTS.get(g.slug) : null;
+  const src = seed ? `/covers/${g.slug}.jpg?v=${seed}` : g.source !== 'seed' && g.id ? urlFor(draft ? g.current_version_id : g.published_version_id) : null;
+  if (src) return html`<div class="coverart has-shot cover-${g.cover || 'sunset'} ${extra}"><img src="${src}" alt="" loading="lazy" decoding="async"><span class="shot-icon" aria-hidden="true">${g.icon || '🎮'}</span></div>`;
   return html`<div class="coverart cover-${g.cover || 'sunset'} ${extra}"><div class="art" aria-hidden="true">${g.icon || '🎮'}</div></div>`;
 }
 export function gameCard(g, { showVis = false } = {}) {

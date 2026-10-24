@@ -1226,7 +1226,8 @@
         "notYet": "先不要",
         "button": "更新"
       },
-      "reconnecting": "連線中斷了，但小幫手還在努力做。稍等一下…"
+      "reconnecting": "連線中斷了，但小幫手還在努力做。稍等一下…",
+      "testing": "正在玩你的遊戲來檢查…"
     }
   },
   "favorites": {

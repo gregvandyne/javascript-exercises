@@ -178,7 +178,7 @@ async function send(text) {
     else if (ev === 'version') { endBubble(); versionCard(d, true); setPreview(d.preview); status.textContent = `🎮 ${t('js.studio.log.versionReady', { number: d.number })}`; }
     else if (ev === 'meta') { endBubble(); metaCard(d); S.game = { ...S.game, ...d }; renderTop(); }
     else if (ev === 'notes') { endBubble(); notesCard(d.checklist); }
-    else if (ev === 'progress') { status.textContent = d.stage === 'building' ? `🔨 ${t('js.studio.building')} ${d.bytes ? Math.round(d.bytes / 1024) + ' KB' : ''}` : `✏️ ${t('js.studio.editing')}`; }
+    else if (ev === 'progress') { status.textContent = d.stage === 'building' ? `🔨 ${t('js.studio.building')} ${d.bytes ? Math.round(d.bytes / 1024) + ' KB' : ''}` : d.stage === 'testing' ? `🔍 ${t('js.studio.testing')}` : `✏️ ${t('js.studio.editing')}`; }
     else if (ev === 'refused') { endBubble(); const b = bubble('bot refused', `${d.message} ${d.suggestion}`); void b; if (d.chips && d.chips.length) chips(d.chips, true); }
     else if (ev === 'error') { endBubble(); bubble('err', d.message); }
     else if (ev === 'done') { if (typeof d.turnsLeft === 'number') { S.turnsLeft = d.turnsLeft; renderTurns(); } }

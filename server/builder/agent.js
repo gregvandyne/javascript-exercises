@@ -67,7 +67,7 @@ export async function runTurn({ user, gameId, text = '', pro = false, uploadIds 
     const events = []; let said = '';
     const relay = (name, data) => {
       if (name === 'text') said += data.text;
-      if (['ask', 'version', 'meta', 'notes'].includes(name)) events.push([name, name === 'version' ? { ...data, preview: undefined } : data]);
+      if (['ask', 'version', 'meta', 'notes', 'playtest'].includes(name)) events.push([name, name === 'version' ? { ...data, preview: undefined } : data]);
       emit(name, data);
     };
     const state = { ...chat.state, scanFails: 0 };

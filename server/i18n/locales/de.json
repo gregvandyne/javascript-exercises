@@ -1227,7 +1227,8 @@
         "notYet": "Noch nicht",
         "button": "Aktualisieren"
       },
-      "reconnecting": "Die Verbindung ist weg, aber der Baumeister arbeitet weiter. Kurz warten…"
+      "reconnecting": "Die Verbindung ist weg, aber der Baumeister arbeitet weiter. Kurz warten…",
+      "testing": "Ich spiele dein Spiel zum Testen…"
     }
   },
   "favorites": {

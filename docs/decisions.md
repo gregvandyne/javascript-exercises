@@ -79,3 +79,15 @@ The ❤️ button on a game was already saving a list (profiles showed it as "Fa
 Favorite instead of adding a second, look-alike button. Signed-in players (accounts and guests) get a ❤️ My favorites
 row at the top of Home, a /favorites page and a Me tile. The list only shows games the player may still open, so games
 that go private or get deleted drop off. Existing likes became favorites with no migration.
+
+## Real screenshots for Studio games, and a Builder that playtests
+A headless Chromium on the server (installed in the Docker image, one game at a time, closed when idle) runs games in the
+same sandbox players get. It is used for two things:
+- **Cover pictures.** Every new version is photographed in the background (title screen, then about two seconds after Play;
+  the gameplay picture wins unless it came out blank). Players only ever see the picture of the version that is live; the
+  builder sees their draft's on My games. Launch games keep their hand-made covers. `/shots/<version>.jpg` checks access.
+- **The Builder's playtest_game tool.** After building, the model gets the two pictures plus errors and layout problems
+  (wider than the screen, text past the edge, small buttons, missing test hook) and fixes what it sees before showing the kid,
+  the same build, look, fix loop used to make the launch games. The Game Contract now asks for `window.__brbTest` and the
+  prompt carries the launch games' art direction.
+The home hero shows the featured game's picture on phones too (it used to hide it under 640px).

@@ -1227,7 +1227,8 @@
         "notYet": "Not yet",
         "button": "Update"
       },
-      "reconnecting": "The connection dropped, but the Builder is still working. Hang on…"
+      "reconnecting": "The connection dropped, but the Builder is still working. Hang on…",
+      "testing": "Playing your game to check it…"
     }
   },
   "favorites": {

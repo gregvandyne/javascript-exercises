@@ -1227,7 +1227,8 @@
         "notYet": "Agora não",
         "button": "Atualizar"
       },
-      "reconnecting": "A conexão caiu, mas o Construtor continua trabalhando. Aguenta aí…"
+      "reconnecting": "A conexão caiu, mas o Construtor continua trabalhando. Aguenta aí…",
+      "testing": "Jogando seu jogo para conferir…"
     }
   },
   "favorites": {

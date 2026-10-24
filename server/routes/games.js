@@ -11,6 +11,8 @@ import { rateLimit, allow } from '../services/ratelimit.js';
 import { q, uid, now, audit } from '../db.js';
 import { config } from '../config.js';
 import { tEn, normalizeCode, localeInfo } from '../i18n/index.js';
+import { fileFor } from '../services/shots.js';
+import fs from 'node:fs';
 
 export const router = Router();
 const REASON_KEYS = ['scary', 'mean', 'grownup', 'broken', 'copy', 'other'];
@@ -118,6 +120,22 @@ router.get('/play/:slug', (req, res) => {
 
 // The frame: no cookies are needed; access comes from the short-lived signed token minted for the play/studio page.
 // The token also carries the player's language (l), which games read as BRB.user.lang / BRB.user.dir.
+// A Studio game's cover picture. Players get the live version's picture of a game they may open; the builder (and
+// admins) can also see their drafts'. Anything else is a 404, so unreviewed pictures never leak.
+router.get('/shots/:file', (req, res) => {
+  const m = /^([A-Za-z0-9_-]{4,40})\.jpg$/.exec(req.params.file);
+  const v = m && games.getVersion(m[1]);
+  const g = v && v.shot_at && games.getGame(v.game_id);
+  if (!g) return res.status(404).end();
+  const live = g.published_version_id === v.id && games.canView(req.user, g);
+  if (!live && !games.canEdit(req.user, g)) return res.status(404).end();
+  const file = fileFor(v.id);
+  if (!fs.existsSync(file)) return res.status(404).end();
+  const open = live && g.visibility === 'public' && g.status === 'published' && !g.hidden_reason;
+  res.set({ 'Cache-Control': open ? 'public, max-age=604800, immutable' : 'private, max-age=3600', 'X-Content-Type-Options': 'nosniff' });
+  res.type('jpg').sendFile(file);
+});
+
 router.get('/frame/:token', (req, res) => {
   const t = req.t;
   const tok = readToken(req.params.token);

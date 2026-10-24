@@ -188,7 +188,7 @@ textarea.input{min-height:96px;resize:vertical}
 .hero .art{font-size:clamp(5rem,14vw,9rem)}
 .hero .btn{background:#fff;color:#152036;box-shadow:0 4px 0 rgba(0,0,0,.2)}
 .hero .btn-ghost{background:rgba(255,255,255,.18);color:#fff;box-shadow:none}
-@media (max-width:640px){.hero{grid-template-columns:1fr;padding:22px}.hero .coverart{display:none}}
+@media (max-width:640px){.hero{grid-template-columns:1fr;padding:22px}}
 
 /* empty state */
 .empty{display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;padding:36px 16px;color:var(--ink-2)}
@@ -341,3 +341,15 @@ table.tbl{width:100%;border-collapse:collapse;font-size:.95rem}
 /* Text people typed (game titles and descriptions, names, notes) takes its direction from its own letters, so an English
    title reads right in an Arabic page and the other way round. Alignment still follows the page. */
 .gcard .t,.gcard .by,.hero h1,.hero p,.gamehero h1,.nm,.ptitle,.tpl-t,.tpl-d,.mg-t,.gi-t,.vnotes,.lb li span,.mygame h3,.pagehead h1,.profilehead h1,.fc-games h3,.mg-note,#st-live .note,.chip,.inboxrow .sub,.tag,.ugc,.st-turns,.pbadge,.adtext{unicode-bidi:plaintext;text-align:match-parent}
+
+/* Phones: the featured game's picture fills the hero card, with the words on a dark fade at the bottom. */
+@media (max-width:640px){
+  .hero{position:relative;overflow:hidden;padding:0;min-height:min(132vw,520px);align-content:end;gap:0}
+  .hero .heroart{position:absolute;inset:0;max-width:none;z-index:0}
+  [dir] .hero .heroart .coverart,[dir] .hero .heroart:hover .coverart{width:100%;height:100%;aspect-ratio:auto;border-radius:0;transform:none;box-shadow:none}
+  .hero .coverart:not(.has-shot) .art{align-items:start;padding-top:12%}
+  .hero .coverart .shot-icon{display:none}
+  .hero>div:first-child{position:relative;z-index:1;pointer-events:none;padding:96px 20px 20px;background:linear-gradient(to top,rgba(8,12,28,.94) 0,rgba(8,12,28,.82) 55%,rgba(8,12,28,0) 100%)}
+  .hero>div:first-child a,.hero>div:first-child .btn{pointer-events:auto}
+  .hero p{margin-bottom:14px}
+}

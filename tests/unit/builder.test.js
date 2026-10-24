@@ -170,8 +170,8 @@ test('the stored transcript never contains game source; the model gets it as a s
 });
 
 test('system prompt and tools are fixed and cover the kid rules and the contract', () => {
-  for (const s of ['No chat or messaging between players', 'personal details', 'No links', 'real brands', 'jump-scares', 'gambling', 'Cartoon slapstick', 'Educational', 'window.BRB', '<title>', 'BRB.sfx', 'three short questions', 'never put the uploaded photo']) assert.ok(SYSTEM_PROMPT.toLowerCase().includes(s.toLowerCase()), s);
-  assert.deepEqual(TOOLS.map(t => t.name), ['ask_user', 'write_game', 'edit_game', 'set_game', 'test_notes']);
+  for (const s of ['No chat or messaging between players', 'personal details', 'No links', 'real brands', 'jump-scares', 'gambling', 'Cartoon slapstick', 'Educational', 'window.BRB', '<title>', 'BRB.sfx', 'three short questions', 'never put the uploaded photo', 'playtest_game', '__brbTest', 'Art direction', 'start()']) assert.ok(SYSTEM_PROMPT.toLowerCase().includes(s.toLowerCase()), s);
+  assert.deepEqual(TOOLS.map(t => t.name), ['ask_user', 'write_game', 'edit_game', 'set_game', 'playtest_game', 'test_notes']);
   assert.doesNotMatch(SYSTEM_PROMPT, /\$\{/);
 });
 

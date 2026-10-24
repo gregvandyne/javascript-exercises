@@ -157,3 +157,4 @@
 .sheet-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
 .sheet-actions .btn{flex:1}
 .sheet textarea.input{display:block;width:100%}
+.mygame .coverart .shot-icon{display:none}.mygame .coverart.has-shot img{object-position:center}
