@@ -91,3 +91,12 @@ same sandbox players get. It is used for two things:
   the same build, look, fix loop used to make the launch games. The Game Contract now asks for `window.__brbTest` and the
   prompt carries the launch games' art direction.
 The home hero shows the featured game's picture on phones too (it used to hide it under 640px).
+
+## Admin stats dashboard (/admin/stats)
+Admins get a Stats page (button on /admin): headline tiles for today and this week, one bar chart per measure for the
+last 7, 30 or 90 days (visitors, new accounts, plays, games started, Builder messages, AI cost, AI tokens; each with a
+table view, tap a bar for its day), and lists of top games, top builders, page areas, AI use by model and newest accounts.
+Site visits are counted without tracking anyone: only daily totals per page area are stored, and a visitor counts once a
+day through a salted hash of (day, IP, browser) that changes every day and is deleted after two days. Bots, APIs, files,
+game frames, errors and admin pages are not counted. AI tokens are logged per day and model next to the spend cap.
+Counting of visits and tokens starts with this update; plays, accounts, games and AI cost already had history.
