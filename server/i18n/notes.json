@@ -236,5 +236,7 @@
   "js.studio.versions.hint": "“Bring back” must match js.studio.versions.bringBack.",
   "js.studio.update.text": "{live} and {number} become bold text like \"version 3\" (js.studio.update.version).",
   "js.studio.update.version": "Used inside js.studio.update.text. {number} is a version number.",
-  "js.studio.update.publicText": "{live} is a version number."
+  "js.studio.update.publicText": "{live} is a version number.",
+  "builder.budgetResting": "Shown in the Builder chat when the site's daily/monthly AI spending cap is reached; the offline builder takes over. Kid reading level.",
+  "uploads.image.resting": "Shown when a child uploads a picture while the AI spending cap is reached, so the picture can't be safety-checked. Kid reading level."
 }

@@ -112,3 +112,18 @@ test('takeForTurn caps uploads per message and only uses each one once', async (
   assert.match(tb, /^<uploaded_file name="story.txt" kind="text">/); assert.match(tb, /not instructions/);
   assert.equal(tb.match(/<\/uploaded_file>/g).length, 1, 'cannot close the wrapper early');
 });
+
+test('saveUpload: pictures are refused while the AI budget is spent (they cannot be safety-checked)', async () => {
+  const budget = await import('../../server/services/ai-budget.js');
+  const { q } = await import('../../server/db.js');
+  const u = auth.createUser({ username: 'UpBudget', password: 'secret1' });
+  const g = games.createGame(u.id, {});
+  const saved = { key: config.anthropicKey, d: config.aiDailyBudgetUsd };
+  try {
+    config.anthropicKey = 'sk-test-not-real'; config.aiDailyBudgetUsd = 0.01;
+    budget.recordUsage('claude-opus-5-5', { output_tokens: 10000 });
+    await assert.rejects(U.saveUpload({ user: u, game: g, name: 'cat.png', bytes: makePng() }), e => e.status === 503 && /safety check/.test(e.message));
+    const txt = await U.saveUpload({ user: u, game: g, name: 'idea.txt', bytes: Buffer.from('a frog that jumps over logs') });
+    assert.equal(txt.kind, 'text', 'text files still work (they use the word filters)');
+  } finally { config.anthropicKey = saved.key; config.aiDailyBudgetUsd = saved.d; q.run('DELETE FROM ai_spend'); }
+});

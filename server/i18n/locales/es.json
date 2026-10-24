@@ -895,7 +895,8 @@
           "c": "❓ Un concurso divertido"
         }
       }
-    }
+    },
+    "budgetResting": "El Constructor de IA está descansando hasta mañana, así que por ahora usaré mis bloques sencillos."
   },
   "uploads": {
     "tooFast": "¡Son muchos archivos! Espera un minuto y vuelve a intentarlo.",
@@ -908,7 +909,8 @@
     "image": {
       "real_faces": "Esa imagen muestra a una persona real, así que no puedo guardarla. Las caras reales son privadas en Magic Cups. ¡Mejor prueba con un dibujo o un juguete!",
       "personal_info": "Esa imagen muestra datos privados, como un nombre, una escuela o una dirección, así que no puedo guardarla. ¡Mejor prueba con un dibujo!",
-      "unsafe": "Esa imagen no es adecuada para Magic Cups, así que no puedo guardarla. ¡Prueba con otra imagen!"
+      "unsafe": "Esa imagen no es adecuada para Magic Cups, así que no puedo guardarla. ¡Prueba con otra imagen!",
+      "resting": "Las imágenes necesitan nuestra revisión de seguridad, y está descansando hasta mañana. ¡Prueba la imagen más tarde o cuenta tu idea con palabras!"
     }
   },
   "creator": {

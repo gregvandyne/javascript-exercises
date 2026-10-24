@@ -1,5 +1,6 @@
 // Admin panel (role admin only). Internal tool: its text stays English (the page frame follows the admin's language). Non-admins get 404 for every page and API under /admin and /api/admin.
 // Tabs: Review queue, Reports, Chat reports, Users, Audit log. Every action is audited (services/moderation.js, services/publish.js).
+import * as aiBudget from '../services/ai-budget.js';
 import { Router } from 'express';
 import { html, raw, jsonData, fmtNum, timeAgo } from '../views/html.js';
 import { page } from '../views/layout.js';
@@ -135,6 +136,14 @@ function auditTab() {
   </tbody></table></div>`;
 }
 
+/** AI spending vs the caps (AI_DAILY_BUDGET_USD / AI_MONTHLY_BUDGET_USD). Admin pages are English-only. */
+function aiSpendPanel() {
+  const b = aiBudget.status(); const usd = n => '$' + n.toFixed(2);
+  return html`<section class="panel" aria-label="AI spending"><b>🤖 AI spending</b>
+    today ${usd(b.today)} of ${usd(b.daily)} (${b.todayCalls} calls) · this month ${usd(b.month)} of ${usd(b.monthly)}
+    ${b.ok ? '' : html`<br><b>Cap reached (${b.reason}):</b> the Builder is using the offline builder, picture uploads are paused and public reviews wait for a person.`}</section>`;
+}
+
 router.get('/admin', (req, res) => {
   const tab = TABS.some(t => t[0] === req.query.tab) ? req.query.tab : 'queue';
   const c = mod.counts();
@@ -142,6 +151,7 @@ router.get('/admin', (req, res) => {
   const content = { queue: queueTab, reports: reportsTab, chat: chatTab, users: usersTab, audit: auditTab }[tab](req);
   const body = html`
   <div class="pagehead"><h1>🛡️ Admin</h1><a class="btn" href="/admin/money"><span aria-hidden="true">💰</span> Money</a></div>
+  ${aiSpendPanel()}
   <nav class="tabs" aria-label="Admin sections">${TABS.map(([k, e, l]) => html`<a href="/admin?tab=${k}" ${k === tab ? raw('aria-current="page"') : ''}><span aria-hidden="true">${e}</span>&nbsp;${l}${n[k] ? html`&nbsp;<span class="badge">${n[k]}</span>` : ''}</a>`)}</nav>
   ${content}
   ${jsonData('page-data', { tab })}`;

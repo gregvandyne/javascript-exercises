@@ -2,6 +2,8 @@
 import path from 'node:path';
 
 const num = (v, d) => (v === undefined || v === '' || isNaN(+v) ? d : +v);
+// A dollar amount: 0 or more (0 turns the AI off); anything else falls back to the default.
+const posNum = (v, d) => { const n = num(v, d); return Number.isFinite(n) && n >= 0 ? n : d; };
 
 export const config = {
   port: num(process.env.PORT, 3000),
@@ -14,6 +16,9 @@ export const config = {
   builderProModel: process.env.BUILDER_PRO_MODEL || 'claude-opus-5-5',
   builderDailyTurns: num(process.env.BUILDER_DAILY_TURNS, 60),
   builderMaxTokens: num(process.env.BUILDER_MAX_TOKENS, 32000),
+  // AI spending cap in US dollars (see server/services/ai-budget.js). Calls stop once either is reached.
+  aiDailyBudgetUsd: posNum(process.env.AI_DAILY_BUDGET_USD, 5),
+  aiMonthlyBudgetUsd: posNum(process.env.AI_MONTHLY_BUDGET_USD, 50),
   adminUsername: process.env.ADMIN_USERNAME || 'admin',
   adminPassword: process.env.ADMIN_PASSWORD || '',
   adEcpmCents: num(process.env.AD_ECPM_CENTS, 200),

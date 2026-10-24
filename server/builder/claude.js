@@ -6,6 +6,7 @@
 //   so game source and upload bytes are never resent from history.
 import { config } from '../config.js';
 import { anthropic } from './anthropic.js';
+import * as aiBudget from '../services/ai-budget.js';
 import { SYSTEM_PROMPT, TOOLS, sourceBlock, languageBlock } from './prompt.js';
 import { tEn } from '../i18n/index.js';
 import { summariseEvents } from './chat.js';
@@ -42,6 +43,8 @@ export async function run(ctx) {
   let tokensIn = 0, tokensOut = 0, fixes = 0;
 
   for (let step = 0; step < MAX_STEPS; step++) {
+    // The AI budget can run out in the middle of a turn: finish what we have instead of starting another call.
+    if (step && !aiBudget.ok()) { ctx.emit('text', { text: '\n\n' + t('builder.budgetResting') }); break; }
     const cur = ctx.tools.current();
     // The short language block goes last, after both cache points, so the cached prefix is the same for every language.
     const system = [
@@ -69,6 +72,7 @@ export async function run(ctx) {
     }
     const msg = await stream.finalMessage();
     const u = msg.usage || {};
+    aiBudget.recordUsage(msg.model || model, u);
     tokensIn += (u.input_tokens || 0) + (u.cache_read_input_tokens || 0) + (u.cache_creation_input_tokens || 0);
     tokensOut += u.output_tokens || 0;
     if (msg.stop_reason === 'refusal') { ctx.emit('text', { text: (step ? '\n\n' : '') + t('builder.kindRefusal') }); break; }
