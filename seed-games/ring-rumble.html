@@ -103,7 +103,7 @@ kbd.k.spc{--kc:#f59e0b} kbd.k.esc{--kc:#6b6690}
   max-height:calc((min(100vw - 32px,1000px) - (var(--cols) - 1)*10px) / var(--cols) * 2 / 3 * var(--rows) + (var(--rows) - 1)*1.2vh)}
 @media (max-width:600px){.grid{--cols:2;--rows:4}} /* narrow desktop windows: two columns of wider cards */
 .card{position:relative;border:2px solid var(--line);border-radius:12px;background:linear-gradient(160deg,#1d1838,#0c0a18);cursor:pointer;color:var(--ink);
-  display:flex;flex-direction:row;align-items:stretch;padding:0;overflow:hidden;min-height:0;text-align:left;font:inherit}
+  display:flex;flex-direction:row;align-items:stretch;padding:0;overflow:hidden;min-height:0;text-align:start;font:inherit}
 .card img{height:100%;aspect-ratio:2/3;object-fit:cover;flex:none;background:var(--c)}
 .card .info{flex:1;min-width:0;padding:.6vh 8px;display:flex;flex-direction:column;justify-content:center;justify-content:safe center;gap:.3vh} /* safe: never clip the top of the name */
 .card .nm{font:400 clamp(.8rem,3.2vh,1.35rem)/.95 var(--display);letter-spacing:.02em;overflow-wrap:anywhere}
@@ -152,7 +152,7 @@ kbd.k.spc{--kc:#f59e0b} kbd.k.esc{--kc:#6b6690}
   color:#fff;font:400 calc(var(--s)*.3)/1 var(--display);letter-spacing:.02em;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;opacity:.78;
   box-shadow:0 4px 0 rgba(0,0,0,.6);touch-action:none;cursor:pointer;padding:0}
 .pb b{font-size:calc(var(--s)*.38);line-height:1}
-.pb small{font:400 calc(var(--s)*.17) var(--display);letter-spacing:.04em}
+.pb small{font:400 calc(var(--s)*.17) var(--display);letter-spacing:.04em;text-transform:uppercase;max-width:92%;overflow:hidden;white-space:nowrap}
 .pb.on{transform:scale(.9);opacity:1;filter:brightness(1.4)}
 .pb.spc{--pc:#f59e0b}
 .pb.spc.ready{animation:ready .6s infinite alternate;border-color:#fff}
@@ -167,41 +167,46 @@ kbd.k.spc{--kc:#f59e0b} kbd.k.esc{--kc:#6b6690}
 @keyframes spin{50%{transform:rotate(-90deg)}}
 #rotate p{font:400 2rem/1.1 var(--display);letter-spacing:.04em;margin:0}
 @media (prefers-reduced-motion:reduce){.logo,.half,.vsword,#result .who,#rotate .ph{animation:none}}
+/* Right-to-left languages (he, ar): menus and texts read right to left, but the arena, the key diagrams (P1 = left side of the
+   keyboard), the in-fight key strips, the touch pads and the VS splash keep their left/right layout. */
+[dir=rtl] .ctlwrap,[dir=rtl] .hint,[dir=rtl] .pad,[dir=rtl] #vs{direction:ltr}
+[dir=rtl] .stat i::after{background:linear-gradient(270deg,var(--c),#fff)}
+html[lang=ar] *{letter-spacing:0!important} /* letter spacing would pull the joined Arabic letters apart */
 </style>
 
-<canvas id="cv" aria-label="Wrestling arena"></canvas>
+<canvas id="cv" data-i18n-aria="arena"></canvas>
 
 <section class="screen" id="title">
-  <h1 class="logo">Ring Rumble<span>Championship Showdown</span></h1>
-  <p class="tag">Two wrestlers · One ring · Three seconds</p>
+  <h1 class="logo">Ring Rumble<span data-i18n="sub"></span></h1>
+  <p class="tag" data-i18n="tag"></p>
   <div class="row">
-    <button class="btn" id="go2">2 Players</button>
-    <button class="btn blue" id="go1">Vs Computer</button>
+    <button class="btn" id="go2" data-i18n="go2"></button>
+    <button class="btn blue" id="go1" data-i18n="go1"></button>
   </div>
-  <p class="keys" id="keysLine">Keyboard: <b>P1</b> A D move · W jump · F punch · G kick · H slam · T special &nbsp;|&nbsp; <b>P2</b> ← → move · ↑ jump · K punch · L kick · ; slam · P special</p>
+  <p class="keys" id="keysLine"></p>
   <!-- big key-cap diagrams; filled by controlsHTML() and shown on desktop (keyboard) only -->
   <div id="titleCtl" hidden></div>
 </section>
 
 <section class="screen" id="ready" hidden>
-  <h2 class="readyhead">Get ready!</h2>
-  <p class="vsline"><span class="n1" id="rdyN1"></span> &nbsp;vs&nbsp; <span class="n2" id="rdyN2"></span></p>
+  <h2 class="readyhead" data-i18n="getReady"></h2>
+  <p class="vsline"><bdi class="n1" id="rdyN1"></bdi> &nbsp;<span data-i18n="vs"></span>&nbsp; <bdi class="n2" id="rdyN2"></bdi></p>
   <div id="readyCtl"></div>
-  <p class="anykey">Press any key to fight!</p>
-  <div class="row"><button class="btn gold" id="fightBtn">Fight!</button><button class="btn ghost" id="readyBack">Pick again</button></div>
+  <p class="anykey" data-i18n="anykey"></p>
+  <div class="row"><button class="btn gold" id="fightBtn" data-i18n="fight"></button><button class="btn ghost" id="readyBack" data-i18n="pickAgain"></button></div>
 </section>
 
 <section class="screen" id="controls" hidden>
-  <h2 class="readyhead">Controls</h2>
+  <h2 class="readyhead" data-i18n="ctlTitle"></h2>
   <div id="ctlPanel"></div>
-  <p class="notekb" id="padNote">No keyboard? Use the touch pads on the screen.</p>
-  <div class="row"><button class="btn gold" id="ctlClose">Back</button><button class="btn ghost" id="padToggle">Show touch pads</button></div>
+  <p class="notekb" id="padNote" data-i18n="padNote"></p>
+  <div class="row"><button class="btn gold" id="ctlClose" data-i18n="back"></button><button class="btn ghost" id="padToggle"></button></div>
 </section>
 
 <section class="screen" id="select" hidden>
-  <h2 class="selhead p1" id="selhead">Player 1, pick your wrestler!</h2>
+  <h2 class="selhead p1" id="selhead"></h2>
   <div class="grid" id="grid"></div>
-  <div class="selfoot"><button class="btn ghost" id="selBack">Back</button></div>
+  <div class="selfoot"><button class="btn ghost" id="selBack" data-i18n="back"></button></div>
 </section>
 
 <section class="screen" id="vs" hidden>
@@ -214,28 +219,28 @@ kbd.k.spc{--kc:#f59e0b} kbd.k.esc{--kc:#6b6690}
   <img id="resImg" alt="">
   <h2 class="who" id="resWho"></h2>
   <div class="row">
-    <button class="btn gold" id="rematch">Rematch!</button>
-    <button class="btn blue" id="newPick">New wrestlers</button>
+    <button class="btn gold" id="rematch" data-i18n="rematch"></button>
+    <button class="btn blue" id="newPick" data-i18n="newPick"></button>
   </div>
 </section>
 
 <div class="pad p1" id="pad1" hidden>
   <div class="dpad"><button class="pb up" data-k="up"><b>▲</b></button><button class="pb" data-k="left"><b>◀</b></button><button class="pb" data-k="right"><b>▶</b></button></div>
-  <div class="acts"><button class="pb" data-k="punch"><b>👊</b><small>PUNCH</small></button><button class="pb" data-k="kick"><b>🦶</b><small>KICK</small></button><button class="pb" data-k="grab"><b>💪</b><small>SLAM</small></button><button class="pb spc" data-k="special"><b>⚡</b><small>SPECIAL</small></button></div>
+  <div class="acts"><button class="pb" data-k="punch"><b>👊</b><small data-i18n="punch"></small></button><button class="pb" data-k="kick"><b>🦶</b><small data-i18n="kick"></small></button><button class="pb" data-k="grab"><b>💪</b><small data-i18n="slam"></small></button><button class="pb spc" data-k="special"><b>⚡</b><small data-i18n="special"></small></button></div>
 </div>
 <div class="pad p2" id="pad2" hidden>
   <div class="dpad"><button class="pb up" data-k="up"><b>▲</b></button><button class="pb" data-k="left"><b>◀</b></button><button class="pb" data-k="right"><b>▶</b></button></div>
-  <div class="acts"><button class="pb" data-k="punch"><b>👊</b><small>PUNCH</small></button><button class="pb" data-k="kick"><b>🦶</b><small>KICK</small></button><button class="pb" data-k="grab"><b>💪</b><small>SLAM</small></button><button class="pb spc" data-k="special"><b>⚡</b><small>SPECIAL</small></button></div>
+  <div class="acts"><button class="pb" data-k="punch"><b>👊</b><small data-i18n="punch"></small></button><button class="pb" data-k="kick"><b>🦶</b><small data-i18n="kick"></small></button><button class="pb" data-k="grab"><b>💪</b><small data-i18n="slam"></small></button><button class="pb spc" data-k="special"><b>⚡</b><small data-i18n="special"></small></button></div>
 </div>
 <!-- key hint strips under each health bar (desktop, 2 players, first round only); filled by hintHTML() -->
 <div class="hint p1" id="hint1" aria-hidden="true"></div>
 <div class="hint p2" id="hint2" aria-hidden="true"></div>
-<div class="topbtns" id="topbtns" hidden><button class="ib" id="pauseBtn" aria-label="Pause">⏸</button><button class="ib" id="ctlBtn" aria-label="Controls">⌨</button><button class="ib" id="muteBtn" aria-label="Sound on or off">🔊</button><button class="ib" id="fsBtn" aria-label="Full screen">⛶</button></div>
+<div class="topbtns" id="topbtns" hidden><button class="ib" id="pauseBtn" data-i18n-aria="aPause">⏸</button><button class="ib" id="ctlBtn" data-i18n-aria="ctlTitle">⌨</button><button class="ib" id="muteBtn" data-i18n-aria="aMute">🔊</button><button class="ib" id="fsBtn" data-i18n-aria="aFs">⛶</button></div>
 <section class="screen" id="pause" hidden>
-  <h2 class="logo" style="font-size:clamp(2.5rem,12vh,5rem)">Paused</h2>
-  <div class="row"><button class="btn gold" id="resume">Resume</button><button class="btn blue" id="ctlOpen">Controls</button><button class="btn ghost" id="quit">Quit match</button></div>
+  <h2 class="logo" style="font-size:clamp(2.5rem,12vh,5rem)" data-i18n="paused"></h2>
+  <div class="row"><button class="btn gold" id="resume" data-i18n="resume"></button><button class="btn blue" id="ctlOpen" data-i18n="ctlTitle"></button><button class="btn ghost" id="quit" data-i18n="quit"></button></div>
 </section>
-<section class="screen" id="rotate" hidden><div class="ph">📱</div><p>Turn your phone sideways<br>to wrestle!</p></section>
+<section class="screen" id="rotate" hidden><div class="ph">📱</div><p><span data-i18n="rot1"></span><br><span data-i18n="rot2"></span></p></section>
 
 <script>
 (function(){
@@ -248,17 +253,244 @@ const rand=(a,b)=>a+Math.random()*(b-a);
 const pick=a=>a[Math.floor(Math.random()*a.length)];
 const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+/* ======================= LANGUAGES =======================
+   Every word a player sees lives in I18N. The platform tells us the language (BRB.user.lang) and the direction (BRB.user.dir).
+   Lookup order: the locale, then its base language (en-GB -> en), then en. Wrestler names stay as they are in Latin-script
+   languages (they are ring names); Japanese, Chinese, Russian, Hebrew and Arabic get them in their own script. */
+const LANG=(window.BRB&&BRB.user&&BRB.user.lang)||'en';
+const RTL=((window.BRB&&BRB.user&&BRB.user.dir)||(/^(he|ar)\b/.test(LANG)?'rtl':'ltr'))==='rtl';
+const I18N={
+ en:{
+  sub:"Championship Showdown",tag:"Two wrestlers · One ring · Three seconds",go2:"2 Players",go1:"Vs Computer",keyboard:"Keyboard",
+  getReady:"Get ready!",vs:"vs",anykey:"Press any key to fight!",fight:"Fight!",pickAgain:"Pick again",
+  ctlTitle:"Controls",padNote:"No keyboard? Use the touch pads on the screen.",back:"Back",showPads:"Show touch pads",hidePads:"Hide touch pads",
+  pick1:"Player 1, pick your wrestler!",pick2:"Player 2, pick your wrestler!",cpuPicking:"The computer is choosing...",
+  wins:"{name} WINS!",rematch:"Rematch!",newPick:"New wrestlers",
+  aPause:"Pause",aMute:"Sound on or off",aFs:"Full screen",arena:"Wrestling arena",
+  paused:"Paused",resume:"Resume",quit:"Quit match",rot1:"Turn your phone sideways",rot2:"to wrestle!",
+  p1:"Player 1",p2:"Player 2",left:"Left side of the keyboard",right:"Right side of the keyboard",
+  move:"Move",jump:"Jump",punch:"Punch",kick:"Kick",slam:"Slam",special:"Special",pauseKey:"Pause",
+  power:"POWER",speed:"SPEED",tough:"TOUGH",
+  finalRound:"FINAL ROUND",round:"ROUND {n}",fightB:"FIGHT!",roundTo:"ROUND TO {who}",ready:"⚡ SPECIAL READY!",uses:"{name} USES",block:"BLOCK!",ko:"K.O.!",
+  words:{punch:["POW!","BAM!","WHAM!","SMACK!"],kick:["BOOM!","KAPOW!","THWACK!"],slam:["SLAM!","CRASH!","KABOOM!"],special:["MEGA!!","SUPER!!","ULTRA!!"],dropkick:["WHOOSH!","KA-BLAM!"]},
+  signs:["WOW!","SLAM!","#1","POW!","3!","GO!"],
+  nicks:["The Human Earthquake","The Lightning Luchador","Lord of the Night","The Star-Spangled Smasher","The Wild Thing","The Ice Giant","The Pink Rocket","The Mountain Man"],
+  specials:["EARTHQUAKE SPLASH","THUNDER SPIN 360","MIDNIGHT TOMBSTONE","GLORY BOMB","MAYHEM MISSILE","AVALANCHE DROP","ROCKET HURRICANRANA","BEAR HUG BOMB"]
+ },
+ 'en-GB':{},
+ fr:{
+  sub:"Le grand combat du championnat",tag:"Deux catcheurs · Un ring · Trois secondes",go2:"2 joueurs",go1:"Contre l’ordi",keyboard:"Clavier",
+  getReady:"Prêts ?",vs:"contre",anykey:"Appuie sur une touche pour combattre !",fight:"Combat !",pickAgain:"Rechoisir",
+  ctlTitle:"Commandes",padNote:"Pas de clavier ? Utilise les boutons tactiles à l’écran.",back:"Retour",showPads:"Afficher les boutons tactiles",hidePads:"Cacher les boutons tactiles",
+  pick1:"Joueur 1, choisis ton catcheur !",pick2:"Joueur 2, choisis ton catcheur !",cpuPicking:"L’ordi choisit…",
+  wins:"{name} GAGNE !",rematch:"Revanche !",newPick:"Nouveaux catcheurs",
+  aPause:"Pause",aMute:"Son activé ou coupé",aFs:"Plein écran",arena:"Arène de catch",
+  paused:"Pause",resume:"Reprendre",quit:"Quitter le match",rot1:"Tourne ton téléphone",rot2:"pour combattre !",
+  p1:"Joueur 1",p2:"Joueur 2",left:"Côté gauche du clavier",right:"Côté droit du clavier",
+  move:"Bouger",jump:"Sauter",punch:"Poing",kick:"Pied",slam:"Prise",special:"Spécial",pauseKey:"Pause",
+  power:"FORCE",speed:"VITESSE",tough:"RÉSISTANCE",
+  finalRound:"DERNIER ROUND",round:"ROUND {n}",fightB:"COMBAT !",roundTo:"ROUND POUR {who}",ready:"⚡ SPÉCIAL PRÊT !",uses:"{name} UTILISE",block:"PARÉ !",
+  words:{punch:["POW !","BAM !","VLAN !","PAF !"],kick:["BOUM !","KAPOW !","TCHAC !"],slam:["BADABOUM !","CRAC !","BOUM !"],special:["MÉGA !!","SUPER !!","ULTRA !!"],dropkick:["FIOU !","KA-BLAM !"]},
+  signs:["WOW !","PAF !","#1","BAM !","3 !","ALLEZ !"],
+  nicks:["Le Séisme Humain","Le Luchador Éclair","Le Seigneur de la Nuit","Le Cogneur Étoilé","Le Sauvage","Le Géant de Glace","La Fusée Rose","L’Homme des Montagnes"],
+  specials:["PLONGEON SÉISME","TOURBILLON TONNERRE 360","PIERRE TOMBALE DE MINUIT","BOMBE DE GLOIRE","MISSILE FURIEUX","CHUTE AVALANCHE","HURRICANRANA FUSÉE","BOMBE CÂLIN D’OURS"]
+ },
+ es:{
+  sub:"El gran duelo del campeonato",tag:"Dos luchadores · Un ring · Tres segundos",go2:"2 jugadores",go1:"Contra la máquina",keyboard:"Teclado",
+  getReady:"¡Prepárense!",vs:"vs",anykey:"¡Presiona cualquier tecla para luchar!",fight:"¡A luchar!",pickAgain:"Elegir otra vez",
+  ctlTitle:"Controles",padNote:"¿No tienes teclado? Usa los botones táctiles de la pantalla.",back:"Volver",showPads:"Mostrar botones táctiles",hidePads:"Ocultar botones táctiles",
+  pick1:"¡Jugador 1, elige tu luchador!",pick2:"¡Jugador 2, elige tu luchador!",cpuPicking:"La máquina está eligiendo…",
+  wins:"¡{name} GANA!",rematch:"¡Revancha!",newPick:"Nuevos luchadores",
+  aPause:"Pausa",aMute:"Sonido sí o no",aFs:"Agrandar",arena:"Arena de lucha",
+  paused:"Pausa",resume:"Seguir",quit:"Salir del combate",rot1:"¡Gira tu teléfono",rot2:"para luchar!",
+  p1:"Jugador 1",p2:"Jugador 2",left:"Lado izquierdo del teclado",right:"Lado derecho del teclado",
+  move:"Mover",jump:"Saltar",punch:"Puño",kick:"Patada",slam:"Llave",special:"Especial",pauseKey:"Pausa",
+  power:"FUERZA",speed:"VELOCIDAD",tough:"AGUANTE",
+  finalRound:"RONDA FINAL",round:"RONDA {n}",fightB:"¡A LUCHAR!",roundTo:"RONDA PARA {who}",ready:"⚡ ¡ESPECIAL LISTO!",uses:"{name} USA",block:"¡BLOQUEO!",
+  words:{punch:["¡POW!","¡BAM!","¡ZAS!","¡PAF!"],kick:["¡BUM!","¡KAPOW!","¡PLAF!"],slam:["¡CRASH!","¡CATAPUM!","¡BUUM!"],special:["¡¡MEGA!!","¡¡SÚPER!!","¡¡ULTRA!!"],dropkick:["¡FIUU!","¡KA-BLAM!"]},
+  signs:["¡GUAU!","¡PAF!","#1","¡BAM!","¡3!","¡VAMOS!"],
+  nicks:["El Terremoto Humano","El Luchador Relámpago","El Señor de la Noche","El Aplastador Estrellado","El Salvaje","El Gigante de Hielo","El Cohete Rosa","El Hombre de la Montaña"],
+  specials:["SALTO TERREMOTO","GIRO TRUENO 360","LÁPIDA DE MEDIANOCHE","BOMBA DE GLORIA","MISIL CAOS","CAÍDA AVALANCHA","HURACANRANA COHETE","BOMBA ABRAZO DE OSO"]
+ },
+ pt:{
+  sub:"O grande duelo do campeonato",tag:"Dois lutadores · Um ringue · Três segundos",go2:"2 jogadores",go1:"Contra o computador",keyboard:"Teclado",
+  getReady:"Preparados?",vs:"vs",anykey:"Aperte qualquer tecla para lutar!",fight:"Lutar!",pickAgain:"Escolher de novo",
+  ctlTitle:"Controles",padNote:"Sem teclado? Use os botões de toque na tela.",back:"Voltar",showPads:"Mostrar botões de toque",hidePads:"Esconder botões de toque",
+  pick1:"Jogador 1, escolha seu lutador!",pick2:"Jogador 2, escolha seu lutador!",cpuPicking:"O computador está escolhendo…",
+  wins:"{name} VENCEU!",rematch:"Revanche!",newPick:"Novos lutadores",
+  aPause:"Pausar",aMute:"Som ligado ou desligado",aFs:"Tela cheia",arena:"Arena de luta-livre",
+  paused:"Pausado",resume:"Continuar",quit:"Sair da luta",rot1:"Vire o celular de lado",rot2:"para lutar!",
+  p1:"Jogador 1",p2:"Jogador 2",left:"Lado esquerdo do teclado",right:"Lado direito do teclado",
+  move:"Andar",jump:"Pular",punch:"Soco",kick:"Chute",slam:"Agarrão",special:"Especial",pauseKey:"Pausar",
+  power:"FORÇA",speed:"VELOCIDADE",tough:"RESISTÊNCIA",
+  finalRound:"ROUND FINAL",round:"ROUND {n}",fightB:"LUTEM!",roundTo:"ROUND PARA {who}",ready:"⚡ ESPECIAL PRONTO!",uses:"{name} USA",block:"BLOQUEIO!",
+  words:{punch:["POW!","BAM!","PÁ!","TUM!"],kick:["BUM!","KAPOW!","TÓIN!"],slam:["CATAPLOFT!","CRASH!","KABUM!"],special:["MEGA!!","SUPER!!","ULTRA!!"],dropkick:["FIUU!","KA-BLAM!"]},
+  signs:["UAU!","KABUM!","#1","POW!","3!","VAI!"],
+  nicks:["O Terremoto Humano","O Lutador Relâmpago","O Senhor da Noite","O Esmagador Estrelado","O Selvagem","O Gigante de Gelo","A Foguete Rosa","O Homem da Montanha"],
+  specials:["MERGULHO TERREMOTO","GIRO TROVÃO 360","LÁPIDE DA MEIA-NOITE","BOMBA DA GLÓRIA","MÍSSIL BAGUNÇA","QUEDA AVALANCHE","FURACANRANA FOGUETE","BOMBA ABRAÇO DE URSO"]
+ },
+ de:{
+  sub:"Das große Meisterschafts-Duell",tag:"Zwei Wrestler · Ein Ring · Drei Sekunden",go2:"2 Spieler",go1:"Gegen den Computer",keyboard:"Tastatur",
+  getReady:"Macht euch bereit!",vs:"gegen",anykey:"Drück eine Taste zum Kämpfen!",fight:"Kämpfen!",pickAgain:"Neu wählen",
+  ctlTitle:"Steuerung",padNote:"Keine Tastatur? Nimm die Touch-Tasten auf dem Bildschirm.",back:"Zurück",showPads:"Touch-Tasten zeigen",hidePads:"Touch-Tasten verstecken",
+  pick1:"Spieler 1, wähl deinen Wrestler!",pick2:"Spieler 2, wähl deinen Wrestler!",cpuPicking:"Der Computer wählt …",
+  wins:"{name} GEWINNT!",rematch:"Revanche!",newPick:"Neue Wrestler",
+  aPause:"Pause",aMute:"Ton an oder aus",aFs:"Vollbild",arena:"Wrestling-Arena",
+  paused:"Pause",resume:"Weiter",quit:"Kampf beenden",rot1:"Dreh dein Handy quer",rot2:"zum Kämpfen!",
+  p1:"Spieler 1",p2:"Spieler 2",left:"Linke Seite der Tastatur",right:"Rechte Seite der Tastatur",
+  move:"Laufen",jump:"Springen",punch:"Schlag",kick:"Tritt",slam:"Wurf",special:"Spezial",pauseKey:"Pause",
+  power:"KRAFT",speed:"TEMPO",tough:"HÄRTE",
+  finalRound:"LETZTE RUNDE",round:"RUNDE {n}",fightB:"KAMPF!",roundTo:"RUNDE FÜR {who}",ready:"⚡ SPEZIAL BEREIT!",uses:"{name} MACHT",block:"GEBLOCKT!",
+  words:{punch:["POW!","BAM!","WUMMS!","KLATSCH!"],kick:["BUMM!","KAPOW!","ZACK!"],slam:["RUMMS!","KRACH!","KAWUMM!"],special:["MEGA!!","SUPER!!","ULTRA!!"],dropkick:["WUSCH!","KA-BLAM!"]},
+  signs:["WOW!","RUMMS!","#1","POW!","3!","LOS!"],
+  nicks:["Das menschliche Erdbeben","Der Blitz-Luchador","Herr der Nacht","Der Sternen-Schmetterer","Der wilde Kerl","Der Eisriese","Die pinke Rakete","Der Mann vom Berg"],
+  specials:["ERDBEBEN-PLATSCHER","DONNER-WIRBEL 360","MITTERNACHTS-GRABSTEIN","RUHMES-BOMBE","CHAOS-RAKETE","LAWINEN-STURZ","RAKETEN-HURRICANRANA","BÄRENKNUDDEL-BOMBE"]
+ },
+ it:{
+  sub:"La grande sfida del campionato",tag:"Due lottatori · Un ring · Tre secondi",go2:"2 giocatori",go1:"Contro il computer",keyboard:"Tastiera",
+  getReady:"Pronti?",vs:"vs",anykey:"Premi un tasto per combattere!",fight:"Combatti!",pickAgain:"Scegli di nuovo",
+  ctlTitle:"Comandi",padNote:"Niente tastiera? Usa i tasti touch sullo schermo.",back:"Indietro",showPads:"Mostra i tasti touch",hidePads:"Nascondi i tasti touch",
+  pick1:"Giocatore 1, scegli il tuo lottatore!",pick2:"Giocatore 2, scegli il tuo lottatore!",cpuPicking:"Il computer sta scegliendo…",
+  wins:"{name} VINCE!",rematch:"Rivincita!",newPick:"Nuovi lottatori",
+  aPause:"Pausa",aMute:"Audio sì o no",aFs:"Schermo intero",arena:"Arena di wrestling",
+  paused:"In pausa",resume:"Riprendi",quit:"Esci dalla sfida",rot1:"Gira il telefono",rot2:"per lottare!",
+  p1:"Giocatore 1",p2:"Giocatore 2",left:"Lato sinistro della tastiera",right:"Lato destro della tastiera",
+  move:"Muoviti",jump:"Salta",punch:"Pugno",kick:"Calcio",slam:"Presa",special:"Speciale",pauseKey:"Pausa",
+  power:"FORZA",speed:"VELOCITÀ",tough:"RESISTENZA",
+  finalRound:"ROUND FINALE",round:"ROUND {n}",fightB:"COMBATTETE!",roundTo:"ROUND A {who}",ready:"⚡ SPECIALE PRONTA!",uses:"{name} USA",block:"PARATA!",
+  words:{punch:["POW!","BAM!","SBAM!","SDENG!"],kick:["BUM!","KAPOW!","STOCK!"],slam:["SLAM!","CRASH!","KABOOM!"],special:["MEGA!!","SUPER!!","ULTRA!!"],dropkick:["WHOOSH!","KA-BLAM!"]},
+  signs:["WOW!","SBAM!","#1","POW!","3!","DAI!"],
+  nicks:["Il Terremoto Umano","Il Luchador Fulmine","Il Signore della Notte","Lo Spaccatutto Stellato","Il Selvaggio","Il Gigante di Ghiaccio","Il Razzo Rosa","L’Uomo della Montagna"],
+  specials:["TUFFO TERREMOTO","TROTTOLA TUONO 360","LAPIDE DI MEZZANOTTE","BOMBA GLORIA","MISSILE CAOS","CROLLO VALANGA","HURRICANRANA RAZZO","BOMBA ABBRACCIO D’ORSO"]
+ },
+ nl:{
+  sub:"De grote kampioenschapsstrijd",tag:"Twee worstelaars · Eén ring · Drie seconden",go2:"2 spelers",go1:"Tegen de computer",keyboard:"Toetsenbord",
+  getReady:"Maak je klaar!",vs:"vs",anykey:"Druk op een toets om te vechten!",fight:"Vechten!",pickAgain:"Opnieuw kiezen",
+  ctlTitle:"Besturing",padNote:"Geen toetsenbord? Gebruik de aanraakknoppen op het scherm.",back:"Terug",showPads:"Aanraakknoppen tonen",hidePads:"Aanraakknoppen verbergen",
+  pick1:"Speler 1, kies je worstelaar!",pick2:"Speler 2, kies je worstelaar!",cpuPicking:"De computer kiest…",
+  wins:"{name} WINT!",rematch:"Revanche!",newPick:"Nieuwe worstelaars",
+  aPause:"Pauze",aMute:"Geluid aan of uit",aFs:"Groot scherm",arena:"Worstelarena",
+  paused:"Pauze",resume:"Verder",quit:"Wedstrijd stoppen",rot1:"Draai je telefoon",rot2:"om te worstelen!",
+  p1:"Speler 1",p2:"Speler 2",left:"Linkerkant van het toetsenbord",right:"Rechterkant van het toetsenbord",
+  move:"Lopen",jump:"Springen",punch:"Stoot",kick:"Trap",slam:"Worp",special:"Special",pauseKey:"Pauze",
+  power:"KRACHT",speed:"SNELHEID",tough:"TAAI",
+  finalRound:"LAATSTE RONDE",round:"RONDE {n}",fightB:"VECHTEN!",roundTo:"RONDE VOOR {who}",ready:"⚡ SPECIAL KLAAR!",uses:"{name} DOET",block:"GEBLOKT!",
+  words:{punch:["POW!","BAM!","BENG!","PATS!"],kick:["BOEM!","KAPOW!","TJAK!"],slam:["SLAM!","KRAK!","KABOEM!"],special:["MEGA!!","SUPER!!","ULTRA!!"],dropkick:["ZOEF!","KA-BLAM!"]},
+  signs:["WAUW!","BOEM!","#1","POW!","3!","HUP!"],
+  nicks:["De Menselijke Aardbeving","De Bliksem-Luchador","Heer van de Nacht","De Sterrenmepper","De Wildebras","De IJsreus","De Roze Raket","De Bergreus"],
+  specials:["AARDBEVINGSPLONS","DONDERDRAAI 360","MIDDERNACHTSGRAFSTEEN","GLORIEBOM","CHAOSRAKET","LAWINEVAL","RAKET-HURRICANRANA","BERENKNUFFELBOM"]
+ },
+ ru:{
+  sub:"Битва за чемпионский пояс",tag:"Два борца · Один ринг · Три секунды",go2:"2 игрока",go1:"Против компьютера",keyboard:"Клавиатура",
+  getReady:"Приготовьтесь!",vs:"против",anykey:"Нажми любую клавишу — и в бой!",fight:"В бой!",pickAgain:"Выбрать заново",
+  ctlTitle:"Управление",padNote:"Нет клавиатуры? Жми кнопки на экране.",back:"Назад",showPads:"Показать кнопки на экране",hidePads:"Скрыть кнопки на экране",
+  pick1:"Игрок 1, выбери борца!",pick2:"Игрок 2, выбери борца!",cpuPicking:"Компьютер выбирает…",
+  wins:"{name} ПОБЕЖДАЕТ!",rematch:"Реванш!",newPick:"Новые борцы",
+  aPause:"Пауза",aMute:"Звук: вкл. или выкл.",aFs:"Полный экран",arena:"Арена для борьбы",
+  paused:"Пауза",resume:"Продолжить",quit:"Выйти из боя",rot1:"Поверни телефон боком,",rot2:"чтобы бороться!",
+  p1:"Игрок 1",p2:"Игрок 2",left:"Левая сторона клавиатуры",right:"Правая сторона клавиатуры",
+  move:"Ходьба",jump:"Прыжок",punch:"Удар",kick:"Пинок",slam:"Бросок",special:"Супер",pauseKey:"Пауза",
+  power:"СИЛА",speed:"СКОРОСТЬ",tough:"СТОЙКОСТЬ",
+  finalRound:"ФИНАЛЬНЫЙ РАУНД",round:"РАУНД {n}",fightB:"В БОЙ!",roundTo:"РАУНД ЗА {who}",ready:"⚡ СУПЕРПРИЁМ ГОТОВ!",uses:"{name} ПРИМЕНЯЕТ",block:"БЛОК!",
+  words:{punch:["БАХ!","БАМ!","ХРЯСЬ!","ШЛЁП!"],kick:["БУМ!","БАБАХ!","ХЛОП!"],slam:["ШМЯК!","ГРОХОТ!","КАБУМ!"],special:["МЕГА!!","СУПЕР!!","УЛЬТРА!!"],dropkick:["ВЖУХ!","БА-БАХ!"]},
+  signs:["ВАУ!","БУМ!","#1","БАХ!","3!","ДАВАЙ!"],
+  names:["ТИТАН ТАНДЕР","ЭЛЬ РЕЛАМПАГО","ГРЕЙВКИПЕР","КАПИТАН ГЛОРИ","МОХОК МЭЙХЕМ","ФРОСТБАЙТ","РАКЕТА РОЗИ","ГРИЗЛИ ГРАНТ"],
+  nicks:["Живое землетрясение","Лучадор-молния","Повелитель ночи","Звёздный крушитель","Дикарь","Ледяной великан","Розовая ракета","Горный богатырь"],
+  specials:["ПРЫЖОК-ЗЕМЛЕТРЯСЕНИЕ","ГРОМОВОЙ ВИХРЬ 360","ПОЛНОЧНОЕ НАДГРОБИЕ","БОМБА СЛАВЫ","РАКЕТА ХАОСА","СХОД ЛАВИНЫ","РАКЕТНАЯ УРАКАНРАНА","МЕДВЕЖЬИ ОБНИМАШКИ"]
+ },
+ ja:{
+  sub:"チャンピオンけっていせん",tag:"レスラー2人・リング1つ・3びょう",go2:"2人であそぶ",go1:"コンピューターと",keyboard:"キーボード",
+  getReady:"じゅんびはいい？",vs:"VS",anykey:"どれかキーをおすとスタート！",fight:"ファイト！",pickAgain:"えらびなおす",
+  ctlTitle:"そうさ",padNote:"キーボードがないときは、がめんのボタンをつかってね。",back:"もどる",showPads:"タッチボタンをだす",hidePads:"タッチボタンをかくす",
+  pick1:"プレイヤー1、レスラーをえらんでね！",pick2:"プレイヤー2、レスラーをえらんでね！",cpuPicking:"コンピューターがえらんでいます…",
+  wins:"{name}のかち！",rematch:"もう1回！",newPick:"レスラーをかえる",
+  aPause:"いちじていし",aMute:"サウンドのオン／オフ",aFs:"全画面",arena:"プロレスのアリーナ",
+  paused:"いちじていし",resume:"つづける",quit:"しあいをやめる",rot1:"スマホをよこにして",rot2:"たたかおう！",
+  p1:"プレイヤー1",p2:"プレイヤー2",left:"キーボードのひだりがわ",right:"キーボードのみぎがわ",
+  move:"いどう",jump:"ジャンプ",punch:"パンチ",kick:"キック",slam:"なげ",special:"ひっさつ",pauseKey:"いちじていし",
+  power:"パワー",speed:"スピード",tough:"タフさ",
+  finalRound:"さいしゅうラウンド",round:"ラウンド{n}",fightB:"ファイト！",roundTo:"このラウンドは{who}！",ready:"⚡ ひっさつわざOK！",uses:"{name}の",block:"ガード！",
+  words:{punch:["ボカッ！","バシッ！","ドカッ！","ベシッ！"],kick:["ドーン！","バキッ！","ズバッ！"],slam:["ズドーン！","ガシャーン！","ドッカーン！"],special:["メガ！！","スーパー！！","ウルトラ！！"],dropkick:["ビューン！","ドカーン！"]},
+  signs:["すごい！","ドーン","#1","バシッ","3！","いけー！"],
+  names:["タイタン・サンダー","エル・レランパゴ","グレイブキーパー","キャプテン・グローリー","モヒカン・メイヘム","フロストバイト","ロケット・ロージー","グリズリー・グラント"],
+  nicks:["にんげんじしん","いなずまのルチャドール","よるのおう","ほしもようのスマッシャー","ワイルドなあいつ","こおりのきょじん","ピンクのロケット","やまおとこ"],
+  specials:["じしんスプラッシュ","かみなりスピン360","まよなかのトゥームストーン","グローリーボム","メイヘムミサイル","なだれドロップ","ロケット・ハリケーンラナ","くまさんハグボム"]
+ },
+ 'zh-Hant':{
+  sub:"冠軍大對決",tag:"兩位摔角手・一個擂台・三秒鐘",go2:"雙人對戰",go1:"對戰電腦",keyboard:"鍵盤",
+  getReady:"準備好了嗎？",vs:"VS",anykey:"按任意鍵開打！",fight:"開打！",pickAgain:"重新選擇",
+  ctlTitle:"操作方式",padNote:"沒有鍵盤嗎？用螢幕上的觸控按鈕吧。",back:"返回",showPads:"顯示觸控按鈕",hidePads:"隱藏觸控按鈕",
+  pick1:"玩家 1，選擇你的摔角手！",pick2:"玩家 2，選擇你的摔角手！",cpuPicking:"電腦正在選擇……",
+  wins:"{name} 獲勝！",rematch:"再比一場！",newPick:"換摔角手",
+  aPause:"暫停",aMute:"開啟或關閉音效",aFs:"全螢幕",arena:"摔角擂台",
+  paused:"暫停中",resume:"繼續",quit:"離開比賽",rot1:"把手機轉成橫的",rot2:"來摔角吧！",
+  p1:"玩家 1",p2:"玩家 2",left:"鍵盤左邊",right:"鍵盤右邊",
+  move:"移動",jump:"跳",punch:"出拳",kick:"踢腿",slam:"摔",special:"必殺技",pauseKey:"暫停",
+  power:"力量",speed:"速度",tough:"耐打",
+  finalRound:"最終回合",round:"第 {n} 回合",fightB:"開打！",roundTo:"{who} 拿下這回合",ready:"⚡ 必殺技準備好了！",uses:"{name} 使出",block:"擋住！",
+  words:{punch:["砰！","碰！","啪！","咚！"],kick:["轟！","咻碰！","啪嚓！"],slam:["轟隆！","嘩啦！","轟咚！"],special:["超強！！","超級！！","極限！！"],dropkick:["咻～！","碰咚！"]},
+  signs:["哇！","轟！","#1","砰！","3！","加油！"],
+  names:["泰坦雷霆","閃電面具人","守墓人","榮耀隊長","莫霍克狂人","冰霜霸","火箭蘿西","灰熊格蘭特"],
+  nicks:["人肉大地震","閃電面具摔角手","黑夜之王","星條粉碎機","野性狂人","冰霜巨人","粉紅火箭","山中猛男"],
+  specials:["地震大壓擊","雷霆360旋風","午夜墓碑摔","榮耀炸彈","狂暴飛彈","雪崩重摔","火箭颶風摔","熊抱炸彈"]
+ },
+ he:{
+  sub:"קרב האליפות הגדול",tag:"שני מתאבקים · זירה אחת · שלוש שניות",go2:"2 שחקנים",go1:"נגד המחשב",keyboard:"מקלדת",
+  getReady:"היכונו!",vs:"נגד",anykey:"לחצו על מקש כלשהו כדי להתחיל!",fight:"לקרב!",pickAgain:"לבחור שוב",
+  ctlTitle:"שליטה",padNote:"אין מקלדת? השתמשו בכפתורי המגע שעל המסך.",back:"חזרה",showPads:"להציג כפתורי מגע",hidePads:"להסתיר כפתורי מגע",
+  pick1:"שחקן 1, בחרו מתאבק!",pick2:"שחקן 2, בחרו מתאבק!",cpuPicking:"המחשב בוחר…",
+  wins:"ניצחון ל{name}!",rematch:"עוד קרב!",newPick:"מתאבקים חדשים",
+  aPause:"השהיה",aMute:"צליל פועל או כבוי",aFs:"מסך מלא",arena:"זירת היאבקות",
+  paused:"מושהה",resume:"להמשיך",quit:"לצאת מהקרב",rot1:"סובבו את הטלפון הצידה",rot2:"כדי להיאבק!",
+  p1:"שחקן 1",p2:"שחקן 2",left:"הצד השמאלי של המקלדת",right:"הצד הימני של המקלדת",
+  move:"תזוזה",jump:"קפיצה",punch:"אגרוף",kick:"בעיטה",slam:"הטלה",special:"מיוחד",pauseKey:"השהיה",
+  power:"כוח",speed:"מהירות",tough:"קשיחות",
+  finalRound:"סיבוב אחרון",round:"סיבוב {n}",fightB:"לקרב!",roundTo:"הסיבוב של {who}",ready:"⚡ מהלך מיוחד מוכן!",uses:"המהלך של {name}",block:"נחסם!",
+  words:{punch:["בום!","באם!","טראח!","פאו!"],kick:["בום!","קאפאו!","וואק!"],slam:["טראח!","קראש!","קבום!"],special:["מגה!!","סופר!!","אולטרה!!"],dropkick:["ווש!","קה-בלאם!"]},
+  signs:["וואו!","טראח!","#1","בום!","3!","קדימה!"],
+  names:["טיטאן ת׳אנדר","אל רלמפגו","גרייבקיפר","קפטן גלורי","מוהוק מייהם","פרוסטבייט","רוקט רוזי","גריזלי גרנט"],
+  nicks:["רעידת האדמה האנושית","לוחם הברק","שליט הלילה","המרסק עם הכוכבים","הפרוע","ענק הקרח","הטיל הוורוד","איש ההרים"],
+  specials:["נחיתת רעידת אדמה","סחרור רעם 360","מצבת חצות","פצצת תהילה","טיל המהומה","מפולת שלגים","הוריקנרנה טיל","פצצת חיבוק דוב"]
+ },
+ ar:{
+  sub:"نزال البطولة الكبير",tag:"مصارعان · حلبة واحدة · ثلاث ثوانٍ",go2:"لاعبان",go1:"ضد الكمبيوتر",keyboard:"لوحة المفاتيح",
+  getReady:"استعدّا!",vs:"ضد",anykey:"اضغط أي مفتاح لتبدأ النزال!",fight:"إلى النزال!",pickAgain:"اختر من جديد",
+  ctlTitle:"التحكم",padNote:"لا توجد لوحة مفاتيح؟ استخدم أزرار اللمس على الشاشة.",back:"رجوع",showPads:"أظهر أزرار اللمس",hidePads:"أخفِ أزرار اللمس",
+  pick1:"اللاعب 1، اختر مصارعك!",pick2:"اللاعب 2، اختر مصارعك!",cpuPicking:"الكمبيوتر يختار…",
+  wins:"الفوز لـ{name}!",rematch:"مباراة أخرى!",newPick:"مصارعون جدد",
+  aPause:"إيقاف مؤقت",aMute:"تشغيل الصوت أو إيقافه",aFs:"ملء الشاشة",arena:"حلبة المصارعة",
+  paused:"متوقف مؤقتًا",resume:"تابع",quit:"اخرج من المباراة",rot1:"أدر هاتفك على جنبه",rot2:"لتبدأ المصارعة!",
+  p1:"اللاعب 1",p2:"اللاعب 2",left:"الجهة اليسرى من لوحة المفاتيح",right:"الجهة اليمنى من لوحة المفاتيح",
+  move:"حركة",jump:"قفز",punch:"لكمة",kick:"ركلة",slam:"رمية",special:"خارقة",pauseKey:"إيقاف مؤقت",
+  power:"القوة",speed:"السرعة",tough:"الصلابة",
+  finalRound:"الجولة الأخيرة",round:"الجولة {n}",fightB:"نزال!",roundTo:"الجولة لـ{who}",ready:"⚡ الحركة الخارقة جاهزة!",uses:"حركة {name}",block:"صدّ!",
+  words:{punch:["بوم!","بام!","طاخ!","ووم!"],kick:["بووم!","كاباو!","طراخ!"],slam:["دووم!","كراش!","كابووم!"],special:["ميغا!!","سوبر!!","ألترا!!"],dropkick:["ووش!","كا-بلام!"]},
+  signs:["رائع!","بوم!","#1","بام!","3!","هيا!"],
+  names:["تايتن ثاندر","إل ريلامباغو","غريف كيبر","كابتن غلوري","موهوك ميهم","فروست بايت","روكيت روزي","غريزلي غرانت"],
+  nicks:["الزلزال البشري","مصارع البرق","سيد الليل","محطّم النجوم","الجامح","عملاق الجليد","الصاروخ الوردي","رجل الجبال"],
+  specials:["قفزة الزلزال","دوّامة الرعد 360","ضربة منتصف الليل","قنبلة المجد","صاروخ الفوضى","سقطة الانهيار الثلجي","إعصار الصاروخ","قنبلة عناق الدب"]
+ }
+};
+function tv(key){ // raw value: locale, then base language, then English
+  const L=I18N[LANG],B=I18N[LANG.split('-')[0]];
+  if(L&&L[key]!==undefined)return L[key];if(B&&B[key]!==undefined)return B[key];return I18N.en[key];
+}
+function t(key,vars){let s=tv(key);if(typeof s!=='string')return s;if(vars)s=s.replace(/\{(\w+)\}/g,(m,k)=>vars[k]!==undefined?vars[k]:m);return s;}
+
+
 /* ======================= ROSTER (original characters) ======================= */
 const ROSTER=[
- {name:'TITAN THUNDER',nick:'The Human Earthquake',size:1.16,skin:'#c68a5e',hair:'bald',beard:'#2a1a10',trunks:'#e11d2e',acc:'#ffd23f',boots:'#ffd23f',pads:'#e11d2e',aura:'#ff6a00',special:'EARTHQUAKE SPLASH',P:5,Sp:2,T:5,belly:1},
- {name:'EL RELÁMPAGO',nick:'The Lightning Luchador',size:.9,skin:'#d9a27a',mask:'#16a34a',maskA:'#ffd23f',trunks:'#16a34a',acc:'#ffd23f',boots:'#ffd23f',pads:'#16a34a',aura:'#a3ff12',special:'THUNDER SPIN 360',P:2,Sp:5,T:2},
- {name:'THE GRAVEKEEPER',nick:'Lord of the Night',size:1.12,skin:'#e9d8c8',hair:'long',hairC:'#121018',paint:'dark',trunks:'#1a1325',acc:'#8b5cf6',boots:'#141018',pads:'#3b2a5c',aura:'#8b5cf6',special:'MIDNIGHT TOMBSTONE',P:4,Sp:3,T:4},
- {name:'CAPTAIN GLORY',nick:'The Star-Spangled Smasher',size:1.02,skin:'#f1c7a3',hair:'flat',hairC:'#f2c94c',trunks:'#1d4ed8',acc:'#ffffff',stars:1,boots:'#dc2626',pads:'#ffffff',aura:'#60a5fa',special:'GLORY BOMB',P:4,Sp:3,T:3},
- {name:'MOHAWK MAYHEM',nick:'The Wild Thing',size:1.0,skin:'#8d5a3a',hair:'mohawk',hairC:'#ff2bd6',paint:'stripes',trunks:'#f97316',acc:'#111111',boots:'#111111',pads:'#f97316',aura:'#ff2bd6',special:'MAYHEM MISSILE',P:3,Sp:4,T:3},
- {name:'FROSTBITE',nick:'The Ice Giant',size:1.18,skin:'#f3d9c6',hair:'spiky',hairC:'#e0f2fe',beard:'#e0f2fe',trunks:'#38bdf8',acc:'#ffffff',boots:'#e0f2fe',pads:'#0ea5e9',aura:'#7dd3fc',special:'AVALANCHE DROP',P:5,Sp:2,T:5},
- {name:'ROCKET ROSIE',nick:'The Pink Rocket',size:.9,skin:'#e0ac84',hair:'ponytail',hairC:'#c2410c',top:'#ec4899',trunks:'#ec4899',acc:'#fde047',boots:'#fde047',pads:'#ec4899',aura:'#f472b6',special:'ROCKET HURRICANRANA',P:2,Sp:5,T:3},
- {name:'GRIZZLY GRANT',nick:'The Mountain Man',size:1.14,skin:'#5f3a26',hair:'short',hairC:'#111111',beard:'#111111',trunks:'#7c4a1e',acc:'#facc15',boots:'#3b2412',pads:'#facc15',aura:'#f59e0b',special:'BEAR HUG BOMB',P:5,Sp:2,T:4,belly:1}
+ {name:'TITAN THUNDER',size:1.16,skin:'#c68a5e',hair:'bald',beard:'#2a1a10',trunks:'#e11d2e',acc:'#ffd23f',boots:'#ffd23f',pads:'#e11d2e',aura:'#ff6a00',P:5,Sp:2,T:5,belly:1},
+ {name:'EL RELÁMPAGO',size:.9,skin:'#d9a27a',mask:'#16a34a',maskA:'#ffd23f',trunks:'#16a34a',acc:'#ffd23f',boots:'#ffd23f',pads:'#16a34a',aura:'#a3ff12',P:2,Sp:5,T:2},
+ {name:'THE GRAVEKEEPER',size:1.12,skin:'#e9d8c8',hair:'long',hairC:'#121018',paint:'dark',trunks:'#1a1325',acc:'#8b5cf6',boots:'#141018',pads:'#3b2a5c',aura:'#8b5cf6',P:4,Sp:3,T:4},
+ {name:'CAPTAIN GLORY',size:1.02,skin:'#f1c7a3',hair:'flat',hairC:'#f2c94c',trunks:'#1d4ed8',acc:'#ffffff',stars:1,boots:'#dc2626',pads:'#ffffff',aura:'#60a5fa',P:4,Sp:3,T:3},
+ {name:'MOHAWK MAYHEM',size:1.0,skin:'#8d5a3a',hair:'mohawk',hairC:'#ff2bd6',paint:'stripes',trunks:'#f97316',acc:'#111111',boots:'#111111',pads:'#f97316',aura:'#ff2bd6',P:3,Sp:4,T:3},
+ {name:'FROSTBITE',size:1.18,skin:'#f3d9c6',hair:'spiky',hairC:'#e0f2fe',beard:'#e0f2fe',trunks:'#38bdf8',acc:'#ffffff',boots:'#e0f2fe',pads:'#0ea5e9',aura:'#7dd3fc',P:5,Sp:2,T:5},
+ {name:'ROCKET ROSIE',size:.9,skin:'#e0ac84',hair:'ponytail',hairC:'#c2410c',top:'#ec4899',trunks:'#ec4899',acc:'#fde047',boots:'#fde047',pads:'#ec4899',aura:'#f472b6',P:2,Sp:5,T:3},
+ {name:'GRIZZLY GRANT',size:1.14,skin:'#5f3a26',hair:'short',hairC:'#111111',beard:'#111111',trunks:'#7c4a1e',acc:'#facc15',boots:'#3b2412',pads:'#facc15',aura:'#f59e0b',P:5,Sp:2,T:4,belly:1}
 ];
+/* display texts: dn = shown name (the internal id `name` never changes: portraits and drawing details key on it), nk = nickname, spn = special move */
+ROSTER.forEach((d,i)=>{const n=tv('names');d.dn=(n&&n[i])||d.name;d.nk=tv('nicks')[i];d.spn=tv('specials')[i];});
 const REF={size:.98,skin:'#f1c7a3',hair:'short',hairC:'#9ca3af',ref:1,trunks:'#111',acc:'#111',boots:'#111',pads:'#111',top:'stripes'};
 
 /* ======================= colour helpers ======================= */
@@ -521,7 +753,7 @@ let cw=0,ch=0,dpr=1;
 let mode='menu',vsCPU=false,picks=[null,null],pickStage=0;
 let F=[],ref=null,parts=[],texts=[],shake=0,hitstop=0,slow=1,slowT=0,flash=0,excite=.3,round=1,wins=[0,0],phase='menu',phaseT=0,banner=null,camX=W/2,camZ=1,ropeShake=0,winner=-1,countN=0;
 const crowd=[];
-(function buildCrowd(){for(let r=0;r<9;r++){for(let x=-700;x<2300;x+=rand(22,30)){crowd.push({r,x:x+rand(-5,5),y:250+r*34+rand(-3,3),hue:rand(0,360),sat:rand(35,75),sz:rand(.85,1.1),ph:rand(0,TAU),sign:r>=4&&Math.random()<.025?pick(['WOW!','SLAM!','#1','POW!','3!','GO!']):null,flash:0});}}})();
+(function buildCrowd(){for(let r=0;r<9;r++){for(let x=-700;x<2300;x+=rand(22,30)){crowd.push({r,x:x+rand(-5,5),y:250+r*34+rand(-3,3),hue:rand(0,360),sat:rand(35,75),sz:rand(.85,1.1),ph:rand(0,TAU),sign:r>=4&&Math.random()<.025?pick(tv('signs')):null,flash:0});}}})();
 const beams=[{x:300,a:0},{x:800,a:1.3},{x:1300,a:2.6},{x:550,a:3.7},{x:1050,a:5}];
 
 function mkFighter(d,side){
@@ -575,27 +807,27 @@ let hintT=0;              // seconds left for the in-fight key hint strips
 try{const sv=localStorage.getItem('rr.pads');if(sv==='1'||sv==='0')padsForced=sv==='1';}catch(e){}
 const KEYLABEL={ArrowLeft:'←',ArrowRight:'→',ArrowUp:'↑',Semicolon:';'};
 const keyLabel=code=>KEYLABEL[code]||code.replace('Key','');
-const ACTIONS=[['punch','Punch'],['kick','Kick'],['grab','Slam'],['special','Special']];
+const ACTIONS=[['punch','punch'],['kick','kick'],['grab','slam'],['special','special']]; // [input key, I18N key]
 function keysOf(pl){ // {left:'A',right:'D',up:'W',punch:'F',...} for player 0 or 1
   const o={};for(const code in KEYMAP){const[p,k]=KEYMAP[code];if(p===pl)o[k]=keyLabel(code);}return o;
 }
 const cap=(k,cls)=>`<kbd class="k${cls?' '+cls:''}">${k}</kbd>`;
 function playerPanel(pl){
-  const k=keysOf(pl),who=pl?'Player 2':'Player 1',side=pl?'Right side of the keyboard':'Left side of the keyboard';
+  const k=keysOf(pl),who=t(pl?'p2':'p1'),side=t(pl?'right':'left');
   return `<div class="ctl p${pl+1}"><h3>${who}<small>${side}</small></h3><div class="ctlrow">
-    <div class="cluster"><span class="cl">Jump</span><div class="kr">${cap(k.up)}</div><div class="kr">${cap(k.left)}${cap(k.right)}</div><span class="cl">◀ Move ▶</span></div>
-    <div class="acts2">${ACTIONS.map(([a,n])=>`<div class="ak">${cap(k[a],a==='special'?'spc':'')}<span>${n}</span></div>`).join('')}</div>
+    <div class="cluster"><span class="cl">${t('jump')}</span><div class="kr">${cap(k.up)}</div><div class="kr">${cap(k.left)}${cap(k.right)}</div><span class="cl">◀ ${t('move')} ▶</span></div>
+    <div class="acts2">${ACTIONS.map(([a,n])=>`<div class="ak">${cap(k[a],a==='special'?'spc':'')}<span>${t(n)}</span></div>`).join('')}</div>
   </div></div>`;
 }
 /* The whole panel: P1 (and P2 unless CPU plays) plus the pause key. */
 function controlsHTML(both){
   return `<div class="ctlwrap">${playerPanel(0)}${both?playerPanel(1):''}</div>
-    <div class="ctlfoot">${cap('Esc','esc')} <b>Pause</b></div>`;
+    <div class="ctlfoot">${cap('Esc','esc')} <b>${t('pauseKey')}</b></div>`;
 }
 function hintHTML(pl){
   const k=keysOf(pl);
   const hk=(caps,n)=>`<span class="hk">${caps.map(c=>cap(c)).join('')}<em>${n}</em></span>`;
-  return hk([k.left,k.right],'Move')+hk([k.up],'Jump')+hk([k.punch],'Punch')+hk([k.kick],'Kick')+hk([k.grab],'Slam')+`<span class="hk">${cap(k.special,'spc')}<em>Special</em></span>`;
+  return hk([k.left,k.right],t('move'))+hk([k.up],t('jump'))+hk([k.punch],t('punch'))+hk([k.kick],t('kick'))+hk([k.grab],t('slam'))+`<span class="hk">${cap(k.special,'spc')}<em>${t('special')}</em></span>`;
 }
 /* Phones (no keyboard seen) always get the pads and no Hide button, so a saved choice from a laptop can never strip them. */
 function padsWanted(){return !desktop||padsForced===true;}
@@ -603,7 +835,7 @@ function applyPads(){
   const show=matchLive&&!autoplay&&padsWanted();
   $('pad1').hidden=!show;$('pad2').hidden=!show||vsCPU;
   $('padToggle').hidden=!desktop;
-  $('padToggle').textContent=padsWanted()?'Hide touch pads':'Show touch pads';
+  $('padToggle').textContent=t(padsWanted()?'hidePads':'showPads');
 }
 /* Title screen: big panel on desktop, the small text line on phones. */
 function applyDesktop(){
@@ -619,7 +851,7 @@ function noteKeyboard(){
 }
 /* --- Get ready screen (desktop): both key diagrams (P1 only vs the computer), then any key or the Fight button --- */
 function openReady(){
-  $('rdyN1').textContent=picks[0].name;$('rdyN2').textContent=picks[1].name;
+  $('rdyN1').textContent=picks[0].dn;$('rdyN2').textContent=picks[1].dn;
   $('readyCtl').innerHTML=controlsHTML(!vsCPU);
   showScreen('ready');mode='ready';
 }
@@ -673,7 +905,7 @@ function think(f,o,dt){
 }
 
 /* ======================= COMBAT ======================= */
-const WORDS={punch:['POW!','BAM!','WHAM!','SMACK!'],kick:['BOOM!','KAPOW!','THWACK!'],slam:['SLAM!','CRASH!','KABOOM!'],special:['MEGA!!','SUPER!!','ULTRA!!'],block:['BLOCK!'],dropkick:['WHOOSH!','KA-BLAM!']};
+const WORDS=Object.assign({block:[t('block')]},tv('words'));
 function canAct(f){return['idle','walk','block'].includes(f.state);}
 function hurt(v,a,dmg,kind){
   if(v.invuln>0||['down','ko','held','getup'].includes(v.state))return false;
@@ -681,7 +913,7 @@ function hurt(v,a,dmg,kind){
   const hx=v.x-front*30*v.d.size,hy=GY+v.y-200*v.d.size;
   if(v.backing&&v.y===0&&(kind==='punch'||kind==='kick')&&canAct(v)){
     v.hp-=dmg*.2*v.tough;v.vx=front*220;setState(v,'block',.22);
-    sparks(hx,hy,'#7dd3fc',10);addText(hx,hy-40,'BLOCK!','#7dd3fc',.8);SFX.block();a.meter=Math.min(100,a.meter+3);v.meter=Math.min(100,v.meter+4);hitstop=.04;checkKO(v,a);return true;
+    sparks(hx,hy,'#7dd3fc',10);addText(hx,hy-40,t('block'),'#7dd3fc',.8);SFX.block();a.meter=Math.min(100,a.meter+3);v.meter=Math.min(100,v.meter+4);hitstop=.04;checkKO(v,a);return true;
   }
   const d=dmg*a.pw*v.tough;v.hp-=d;v.flashT=.12;
   a.meter=Math.min(100,a.meter+(kind==='special'?0:d*1.4));v.meter=Math.min(100,v.meter+d*1.1);
@@ -699,7 +931,7 @@ function hurt(v,a,dmg,kind){
 }
 function knockDown(v,front,push){setState(v,'down',1.05);v.vx=front*push;v.vy=-420;v.y=Math.min(v.y,-1);v.airDown=true;}
 function checkKO(v,a){
-  if(v.hp<=0&&phase==='fight'){v.hp=0;phase='ko';phaseT=0;slow=.25;slowT=1.3;flash=1;banner={txt:'K.O.!',t:0,col:'#ff3b4e',big:1};SFX.boom();
+  if(v.hp<=0&&phase==='fight'){v.hp=0;phase='ko';phaseT=0;slow=.25;slowT=1.3;flash=1;banner={txt:t('ko'),t:0,col:'#ff3b4e',big:1};SFX.boom();
     if(v.state!=='down')knockDown(v,Math.sign(v.x-a.x)||1,380);v.koed=true;winner=a.side;}
 }
 function tryHit(f,o,range,dmg,kind){
@@ -710,7 +942,7 @@ function tryHit(f,o,range,dmg,kind){
 function startSlam(f,o){setState(f,'slam',1.05);setState(o,'held',1.05);o.holder=f;f.victim=o;f.vx=0;o.vx=0;SFX.whiff();}
 function startSpecial(f,o){
   f.meter=0;setState(f,'special',1.75);f.sx0=f.x;f.vx=0;f.target=o;f.hitDone=false;
-  banner={txt:f.d.special,t:0,col:f.d.aura,sub:f.d.name};slow=.55;slowT=.5;flash=.6;SFX.special();excite=1;
+  banner={txt:f.d.spn,t:0,col:f.d.aura,sub:f.d.dn};slow=.55;slowT=.5;flash=.6;SFX.special();excite=1;
 }
 
 /* ======================= UPDATE ======================= */
@@ -813,11 +1045,11 @@ function startMatch(){
 function startRound(){
   F.forEach((f,i)=>{Object.assign(f,{x:i?RIGHTX-170:LEFTX+170,y:0,vx:0,vy:0,face:i?-1:1,hp:100,hpTrail:100,invuln:0,koed:false,pose:null,buf:{},combo:0,victim:null,holder:null,airDown:false});setState(f,'idle');});
   ref=null;parts=[];texts=[];phase='intro';phaseT=0;winner=-1;countN=0;
-  banner={txt:round===3?'FINAL ROUND':'ROUND '+round,t:0,col:'#ffcf3a',big:1};SFX.bell();
+  banner={txt:round===3?t('finalRound'):t('round',{n:round}),t:0,col:'#ffcf3a',big:1};SFX.bell();
 }
 function updateMatch(dt,T){
   phaseT+=dt;
-  if(phase==='intro'){if(phaseT>1.3&&!banner2){banner={txt:'FIGHT!',t:0,col:'#ff3b4e',big:1};banner2=true;}if(phaseT>1.9){phase='fight';banner2=false;}}
+  if(phase==='intro'){if(phaseT>1.3&&!banner2){banner={txt:t('fightB'),t:0,col:'#ff3b4e',big:1};banner2=true;}if(phaseT>1.9){phase='fight';banner2=false;}}
   if(phase==='ko'&&phaseT>1.6){
     // winner goes for the pin
     const w=F[winner],l=F[1-winner];
@@ -836,7 +1068,7 @@ function updateMatch(dt,T){
       if(n>countN&&n<=3&&((phaseT-.15)%.8)>.55){countN=n;SFX.count();shake=8;addText(ref.x-60,GY-300,String(n),'#ffffff',2.4);excite=Math.min(1,excite+.3);}
       if(phaseT>2.9&&phase==='pin'){phase='roundEnd';phaseT=0;SFX.bell();cheer(1.5);wins[winner]++;
         const w=F[winner];setState(w,'win');w.x=clamp(w.x-w.face*120,LEFTX,RIGHTX);w.face=w.x<W/2?1:-1;w.pose=null;
-        banner={txt:wins[winner]>=2?w.d.name+' WINS!':'ROUND TO '+(winner===0?'P1':(vsCPU?'CPU':'P2')),t:0,col:winner?'#2f8bff':'#ff3b4e',big:wins[winner]>=2?1:0};
+        banner={txt:wins[winner]>=2?t('wins',{name:w.d.dn}):t('roundTo',{who:winner===0?'P1':(vsCPU?'CPU':'P2')}),t:0,col:winner?'#2f8bff':'#ff3b4e',big:wins[winner]>=2?1:0};
         confetti(120);pyro(150);pyro(1450);}
     }
     ref.pose=blendPose(ref.pose,poseFor(ref,T),1-Math.exp(-dt*20));ref.t+=dt;
@@ -852,7 +1084,7 @@ let banner2=false;
 function endMatch(){
   phase='over';mode='result';const w=F[winner];
   matchLive=false;applyPads();hideHints();$('topbtns').hidden=true;
-  $('resWho').textContent=w.d.name+' WINS!';$('result').style.setProperty('--wc',w.d.aura);
+  $('resWho').textContent=t('wins',{name:w.d.dn});$('result').style.setProperty('--wc',w.d.aura);
   $('resImg').src=portrait(w.d,300,400,'clear').toDataURL();
   showScreen('result');
 }
@@ -883,7 +1115,7 @@ function drawArena(T){
   c.save();c.beginPath();c.rect(-310,ty+10,620,210);c.clip();
   for(let i=0;i<14;i++){c.fillStyle=rgba(i%2?'#ff3b4e':'#2f8bff',.08);c.fillRect(-400+((T*120+i*70)%900),ty,30,240);}
   c.font='92px Bangers, Impact, sans-serif';c.textAlign='center';c.textBaseline='middle';
-  if(F.length){c.font='50px Bangers, Impact, sans-serif';c.fillStyle='#ff6b7a';c.fillText(F[0].d.name,0,ty+58,560);c.fillStyle='#6fb0ff';c.fillText(F[1].d.name,0,ty+172,560);
+  if(F.length){c.font='50px Bangers, Impact, sans-serif';c.fillStyle='#ff6b7a';c.fillText(F[0].d.dn,0,ty+58,560);c.fillStyle='#6fb0ff';c.fillText(F[1].d.dn,0,ty+172,560);
     c.fillStyle='#ffcf3a';c.font='64px Bangers, Impact, sans-serif';c.fillText('VS',0,ty+115);}
   else{c.fillStyle='#ffcf3a';c.fillText('RING RUMBLE',0,ty+115);}
   c.restore();c.restore();
@@ -897,7 +1129,7 @@ function drawArena(T){
     c.beginPath();c.ellipse(x,y+s*1.25,s*.95,s*1.05,0,0,TAU);c.fill();
     c.fillStyle=`hsl(25,30%,${light*60}%)`;c.beginPath();c.arc(x,y,s*.55,0,TAU);c.fill();
     if(excite>.55&&(m.ph%1)<excite-.4){c.strokeStyle=`hsl(25,30%,${light*60}%)`;c.lineWidth=s*.28;c.lineCap='round';c.beginPath();c.moveTo(x-s*.6,y+s*.6);c.lineTo(x-s*.85,y-s*.7-bob*.5);c.moveTo(x+s*.6,y+s*.6);c.lineTo(x+s*.85,y-s*.7-bob*.5);c.stroke();}
-    if(m.sign){c.fillStyle='#e9e4d6';c.fillRect(x-26,y-44-bob,52,26);c.fillStyle='#c10e2b';c.font='19px Bangers, Impact, sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillText(m.sign,x,y-31-bob);}
+    if(m.sign){c.fillStyle='#e9e4d6';c.fillRect(x-26,y-44-bob,52,26);c.fillStyle='#c10e2b';c.font='19px Bangers, Impact, sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillText(m.sign,x,y-31-bob,48);}
     if(m.flash>0){m.flash-=1/60;c.fillStyle=`rgba(255,255,255,${m.flash*3})`;c.beginPath();c.arc(x,y-4,10,0,TAU);c.fill();}
     else if(Math.random()<.0006+excite*.002)m.flash=.25;
   }
@@ -981,7 +1213,7 @@ function drawParticles(dt){
   texts=texts.filter(t=>(t.t+=dt)<t.life);
   for(const t of texts){const k=t.t/t.life,s=t.sc*(k<.15?lerp(.3,1.25,k/.15):1.25-k*.25);
     c.save();c.translate(t.x,t.y-k*60);c.rotate(t.rot);c.scale(s,s);c.font='86px Bangers, Impact, sans-serif';c.textAlign='center';c.textBaseline='middle';
-    c.globalAlpha=k>.7?1-(k-.7)/.3:1;c.lineJoin='round';c.strokeStyle='#000';c.lineWidth=14;c.strokeText(t.txt,0,0);c.fillStyle=t.col;c.fillText(t.txt,0,0);c.restore();}
+    c.globalAlpha=k>.7?1-(k-.7)/.3:1;c.lineJoin='round';c.strokeStyle='#000';c.lineWidth=14;c.strokeText(t.txt,0,0,560);c.fillStyle=t.col;c.fillText(t.txt,0,0,560);c.restore();}
 }
 function drawHUD(T){
   const c=ctx,s=Math.min(cw/1400,ch/720),pad=Math.max(12,ch*.03);
@@ -1003,7 +1235,7 @@ function drawHUD(T){
     c.fillStyle='rgba(255,255,255,.35)';shape(gw,by+3,(barH-6)*.35);c.fill();
     // name
     c.font=`${Math.round(barH*.95)}px Bangers, Impact, sans-serif`;c.textBaseline='top';c.textAlign=L?'left':'right';
-    c.lineWidth=4;c.strokeStyle='#000';const nmx=L?bx:bx+barW,nmy=by+barH+3;c.strokeText(f.d.name,nmx,nmy);c.fillStyle='#fff';c.fillText(f.d.name,nmx,nmy);
+    c.lineWidth=4;c.strokeStyle='#000';const nmx=L?bx:bx+barW,nmy=by+barH+3;c.strokeText(f.d.dn,nmx,nmy,barW*.62);c.fillStyle='#fff';c.fillText(f.d.dn,nmx,nmy,barW*.62);
     // round wins
     for(let k=0;k<2;k++){const sx=L?bx+barW-14-k*22*Math.max(s,.7):bx+14+k*22*Math.max(s,.7);c.fillStyle=k<wins[i]?'#ffcf3a':'rgba(255,255,255,.18)';star(c,sx,by+barH+barH*.55,barH*.38);}
     // special meter
@@ -1011,7 +1243,7 @@ function drawHUD(T){
     c.fillStyle='rgba(0,0,0,.65)';c.fillRect(mx,my,mw,mh);
     const full=f.meter>=100,mg=c.createLinearGradient(mx,0,mx+mw,0);mg.addColorStop(0,'#ff7a1a');mg.addColorStop(1,'#ffcf3a');c.fillStyle=full?(Math.sin(T*14)>0?'#fff':'#ffcf3a'):mg;
     const fw=mw*f.meter/100;c.fillRect(L?mx:mx+mw-fw,my,fw,mh);c.strokeStyle='rgba(255,255,255,.6)';c.lineWidth=1.5;c.strokeRect(mx,my,mw,mh);
-    if(full){c.font=`${Math.round(mh*1.5)}px Bangers, Impact, sans-serif`;c.textAlign=L?'left':'right';c.fillStyle='#ffcf3a';c.strokeStyle='#000';c.lineWidth=3;const tx=L?mx:mx+mw,ty2=my+mh+2;c.strokeText('⚡ SPECIAL READY!',tx,ty2);c.fillText('⚡ SPECIAL READY!',tx,ty2);}
+    if(full){c.font=`${Math.round(mh*1.5)}px Bangers, Impact, sans-serif`;c.textAlign=L?'left':'right';c.fillStyle='#ffcf3a';c.strokeStyle='#000';c.lineWidth=3;const tx=L?mx:mx+mw,ty2=my+mh+2;c.strokeText(t('ready'),tx,ty2,mw);c.fillText(t('ready'),tx,ty2,mw);}
   });
   // banner
   if(banner){banner.t+=1/60;const b=banner,k=b.t;
@@ -1019,9 +1251,9 @@ function drawHUD(T){
     else{const sc=k<.18?lerp(3,1,k/.18):1,al=phase==='roundEnd'?1:(k>life-.3?(life-k)/.3:1);
       c.save();c.translate(cw/2,ch*(b.sub?.3:.38));c.scale(sc,sc);c.globalAlpha=clamp(al,0,1);c.rotate(-.04);
       const fs=Math.round((b.big?150:90)*s*(b.txt.length>14?.6:1));c.font=`${fs}px Bangers, Impact, sans-serif`;c.textAlign='center';c.textBaseline='middle';
-      if(b.sub){c.font=`${Math.round(46*s)}px Bangers, Impact, sans-serif`;c.lineWidth=6;c.strokeStyle='#000';c.strokeText(b.sub+' USES',0,-fs*.75);c.fillStyle='#fff';c.fillText(b.sub+' USES',0,-fs*.75);c.font=`${fs}px Bangers, Impact, sans-serif`;}
-      c.lineJoin='round';c.lineWidth=fs*.16;c.strokeStyle='#000';c.strokeText(b.txt,0,0);
-      const tg=c.createLinearGradient(0,-fs/2,0,fs/2);tg.addColorStop(0,'#fff');tg.addColorStop(.5,b.col);tg.addColorStop(1,shade(b.col,-.4));c.fillStyle=tg;c.fillText(b.txt,0,0);c.restore();}
+      if(b.sub){c.font=`${Math.round(46*s)}px Bangers, Impact, sans-serif`;c.lineWidth=6;c.strokeStyle='#000';const usesTxt=t('uses',{name:b.sub});c.strokeText(usesTxt,0,-fs*.75,cw*.9/sc);c.fillStyle='#fff';c.fillText(usesTxt,0,-fs*.75,cw*.9/sc);c.font=`${fs}px Bangers, Impact, sans-serif`;}
+      c.lineJoin='round';c.lineWidth=fs*.16;c.strokeStyle='#000';const bmw=cw*.92/sc;c.strokeText(b.txt,0,0,bmw);
+      const tg=c.createLinearGradient(0,-fs/2,0,fs/2);tg.addColorStop(0,'#fff');tg.addColorStop(.5,b.col);tg.addColorStop(1,shade(b.col,-.4));c.fillStyle=tg;c.fillText(b.txt,0,0,bmw);c.restore();}
   }
   c.restore();
 }
@@ -1073,9 +1305,9 @@ function buildSelect(){
   const g=$('grid');g.innerHTML='';
   ROSTER.forEach((d,i)=>{
     const b=document.createElement('button');b.className='card';b.style.setProperty('--c',d.aura);
-    b.innerHTML=`<img alt="" src="${portrait(d,180,240,'card').toDataURL()}"><div class="info"><div class="nm">${d.name}</div><div class="nk">${d.nick}</div>
-      ${[['POWER',d.P],['SPEED',d.Sp],['TOUGH',d.T]].map(([n,v])=>`<div class="stat">${n}<i style="--v:${v*20}%;--c:${d.aura}"></i></div>`).join('')}
-      <div class="sp">⚡ ${d.special}</div></div>`;
+    b.innerHTML=`<img alt="" src="${portrait(d,180,240,'card').toDataURL()}"><div class="info"><div class="nm">${d.dn}</div><div class="nk">${d.nk}</div>
+      ${[[t('power'),d.P],[t('speed'),d.Sp],[t('tough'),d.T]].map(([n,v])=>`<div class="stat">${n}<i style="--v:${v*20}%;--c:${d.aura}"></i></div>`).join('')}
+      <div class="sp">⚡ ${d.spn}</div></div>`;
     b.addEventListener('click',()=>choose(i));
     g.appendChild(b);
   });
@@ -1089,20 +1321,20 @@ function markCards(){
 function choose(i){
   audio();SFX.punch();
   if(pickStage===0){picks[0]=ROSTER[i];pickStage=1;markCards();
-    if(vsCPU){$('selhead').textContent='The computer is choosing...';$('selhead').className='selhead p2';
+    if(vsCPU){$('selhead').textContent=t('cpuPicking');$('selhead').className='selhead p2';
       let n=0;const others=ROSTER.filter(r=>r!==picks[0]);const spin=setInterval(()=>{picks[1]=others[n++%others.length];markCards();SFX.block();
         if(n>10+Math.floor(Math.random()*7)){clearInterval(spin);setTimeout(desktop?openReady:goVS,500);}},110);} // keyboard player sees "Get ready!" first
-    else{$('selhead').textContent='Player 2, pick your wrestler!';$('selhead').className='selhead p2';}
+    else{$('selhead').textContent=t('pick2');$('selhead').className='selhead p2';}
   } else if(pickStage===1&&!vsCPU){picks[1]=ROSTER[i];pickStage=2;markCards();setTimeout(desktop?openReady:goVS,450);} // keyboard players see "Get ready!" first
 }
 function openSelect(cpu){
   vsCPU=cpu;picks=[null,null];pickStage=0;audio();
-  $('selhead').textContent='Player 1, pick your wrestler!';$('selhead').className='selhead p1';
+  $('selhead').textContent=t('pick1');$('selhead').className='selhead p1';
   if(!$('grid').children.length)buildSelect();markCards();
   showScreen('select');mode='select';
 }
 function goVS(){
-  $('vsN1').textContent=picks[0].name;$('vsN2').textContent=picks[1].name;
+  $('vsN1').textContent=picks[0].dn;$('vsN2').textContent=picks[1].dn;
   $('vsI1').src=portrait(picks[0],300,400,'clear').toDataURL();$('vsI2').src=portrait(picks[1],300,400,'clear').toDataURL();
   $('vsI2').style.transform='scaleX(-1)';
   showScreen('vs');mode='vs';SFX.boom();
@@ -1125,6 +1357,16 @@ $('ctlBtn').addEventListener('click',openControls);
 $('ctlOpen').addEventListener('click',openControls);
 $('ctlClose').addEventListener('click',closeControls);
 $('padToggle').addEventListener('click',()=>{padsForced=!padsWanted();try{localStorage.setItem('rr.pads',padsForced?'1':'0');}catch(e){}applyPads();});
+/* Fill the page's fixed texts from I18N and set the language + direction. The arena, the key diagrams, the touch pads
+   and the VS splash stay left-to-right (P1 is always the left side); see the [dir=rtl] rules in the CSS. */
+function applyI18n(){
+  const html=document.documentElement;html.lang=LANG;html.dir=RTL?'rtl':'ltr';
+  document.querySelectorAll('[data-i18n]').forEach(el=>{el.textContent=t(el.dataset.i18n);});
+  document.querySelectorAll('[data-i18n-aria]').forEach(el=>{el.setAttribute('aria-label',t(el.dataset.i18nAria));});
+  const k1=keysOf(0),k2=keysOf(1),line=k=>`${k.left} ${k.right} ${t('move')} · ${k.up} ${t('jump')} · ${k.punch} ${t('punch')} · ${k.kick} ${t('kick')} · ${k.grab} ${t('slam')} · ${k.special} ${t('special')}`;
+  $('keysLine').innerHTML=`${t('keyboard')}: <b>P1</b> <bdi>${line(k1)}</bdi> &nbsp;|&nbsp; <b>P2</b> <bdi>${line(k2)}</bdi>`;
+}
+applyI18n();
 applyDesktop();
 $('muteBtn').addEventListener('click',()=>{muted=!muted;$('muteBtn').textContent=muted?'🔇':'🔊';if(crowdGain)crowdGain.gain.value=0;if(!muted)audio();});
 $('fsBtn').addEventListener('click',()=>{const el=document.documentElement;try{const r=(el.requestFullscreen||el.webkitRequestFullscreen).call(el);if(r&&r.then)r.then(()=>{try{screen.orientation.lock('landscape').catch(()=>{});}catch(e){}}).catch(()=>{});}catch(e){}});

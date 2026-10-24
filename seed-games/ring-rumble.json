@@ -10,5 +10,51 @@
   "players_max": 2,
   "age_rating": "everyone",
   "featured": true,
-  "notes": "Calls element.requestFullscreen() from its fullscreen button; route it through the SDK. Two players share one keyboard: Player 1 uses the left side (A / D move, W jump, F punch, G kick, H slam, T special), Player 2 uses the right side (Left / Right arrows move, Up arrow jump, K punch, L kick, ; slam, P special); Esc pauses. On desktop (mouse + keyboard) the game shows big key-cap diagrams on the title screen, a Get ready screen after the wrestlers are picked (both players' keys, or just Player 1's against the computer; Rematch! jumps straight back into the ring), a Controls screen (pause menu / top button) and hides the on-screen touch pads (a Show touch pads toggle brings them back on touch laptops). Phones always keep the touch pads. Loads Google Fonts (Bangers, Rubik). Cartoon slapstick only, no blood."
+  "notes": "Calls element.requestFullscreen() from its fullscreen button; route it through the SDK. Two players share one keyboard: Player 1 uses the left side (A / D move, W jump, F punch, G kick, H slam, T special), Player 2 uses the right side (Left / Right arrows move, Up arrow jump, K punch, L kick, ; slam, P special); Esc pauses. On desktop (mouse + keyboard) the game shows big key-cap diagrams on the title screen, a Get ready screen after the wrestlers are picked (both players' keys, or just Player 1's against the computer; Rematch! jumps straight back into the ring), a Controls screen (pause menu / top button) and hides the on-screen touch pads (a Show touch pads toggle brings them back on touch laptops). Phones always keep the touch pads. Loads Google Fonts (Bangers, Rubik). Cartoon slapstick only, no blood.",
+  "l10n": {
+    "pt": {
+      "description": "Escolha um dos oito lutadores de desenho originais e lute com um amigo na mesma tela, ou enfrente o computador. Socos, agarrões, arremessos, provocações e um golpe final gigante, tudo numa arena lotada. Melhor com o celular deitado.",
+      "tags": "luta-livre,luta,2 jogadores,mesma tela,celular deitado,arcade"
+    },
+    "fr": {
+      "description": "Choisis l’un des huit catcheurs de dessin animé originaux et affronte un ami sur le même écran, ou défie l’ordi. Coups de poing, prises, projections, provocations et une énorme attaque finale, le tout dans une arène pleine à craquer. Mieux en mode paysage.",
+      "tags": "catch,combat,2 joueurs,même écran,paysage,arcade"
+    },
+    "es": {
+      "description": "Elige a uno de los ocho luchadores de caricatura originales y pelea con un amigo en la misma pantalla, o enfréntate a la máquina. Puñetazos, llaves, azotes, burlas y un golpe final enorme, todo en una arena llena. Mejor en horizontal.",
+      "tags": "lucha libre,pelea,2 jugadores,misma pantalla,horizontal,arcade"
+    },
+    "de": {
+      "description": "Wähl einen von acht eigenen Cartoon-Wrestlern und kämpf gegen einen Freund am selben Bildschirm oder gegen den Computer. Schläge, Griffe, Würfe, freche Posen und eine riesige Spezialattacke, alles in einer vollen Arena. Am besten im Querformat.",
+      "tags": "Wrestling,Kämpfen,2 Spieler,gleicher Bildschirm,Querformat,Arcade"
+    },
+    "he": {
+      "description": "בחרו אחד משמונה מתאבקים מצוירים מקוריים והיאבקו נגד חבר על אותו מסך, או נגד המחשב. אגרופים, תפיסות, הטלות, התגרויות ומהלך סיום ענק, הכול בזירה מלאה. הכי טוב כשהטלפון שוכב.",
+      "tags": "היאבקות,קרבות,2 שחקנים,אותו מסך,לרוחב,ארקייד"
+    },
+    "ja": {
+      "description": "オリジナルのまんがレスラー8人から1人をえらんで、おなじがめんでフレンドとたいせん、またはコンピューターとたたかおう。パンチ、つかみ、なげ、ちょうはつ、そしてド派手なひっさつわざ！かんきゃくでいっぱいのアリーナでたたかいます。よこむきがおすすめ。",
+      "tags": "プロレス,かくとう,2人,おなじがめん,よこむき,アーケード"
+    },
+    "ar": {
+      "description": "اختر واحدًا من ثمانية مصارعين كرتونيين أصليين وصارع صديقك على الشاشة نفسها، أو تحدَّ الكمبيوتر. لكمات وإمساكات ورميات واستفزازات وحركة ختامية ضخمة، كل ذلك في حلبة مزدحمة بالجمهور. الأفضل والهاتف بالعرض.",
+      "tags": "مصارعة,قتال,لاعبان,الشاشة نفسها,بالعرض,أركيد"
+    },
+    "ru": {
+      "description": "Выбери одного из восьми мультяшных борцов и сразись с другом на одном экране или с компьютером. Удары, захваты, броски, дразнилки и огромный суперприём — всё на арене, полной зрителей. Лучше всего держать телефон боком.",
+      "tags": "рестлинг,борьба,драки,2 игрока,один экран,горизонтально,аркада"
+    },
+    "it": {
+      "description": "Scegli uno degli otto lottatori dei cartoni originali e sfida un amico sullo stesso schermo, o affronta il computer. Pugni, prese, schianti, sfottò e una mossa finale enorme, tutto in un’arena piena. Meglio in orizzontale.",
+      "tags": "wrestling,lotta,2 giocatori,stesso schermo,orizzontale,arcade"
+    },
+    "zh-Hant": {
+      "description": "從八位原創卡通摔角手中選一位，和朋友在同一個螢幕上對戰，或是挑戰電腦。出拳、抓人、摔投、挑釁，還有超大必殺技，全都在擠滿觀眾的擂台上演。橫向畫面玩起來最棒。",
+      "tags": "摔角,格鬥,雙人,同螢幕,橫向,街機"
+    },
+    "nl": {
+      "description": "Kies een van de acht eigen tekenfilmworstelaars en vecht tegen een vriend op hetzelfde scherm, of tegen de computer. Stoten, grepen, worpen, plagerijen en een enorme slotaanval, allemaal in een volle arena. Het leukst in liggende stand.",
+      "tags": "worstelen,vechten,2 spelers,zelfde scherm,liggend,arcade"
+    }
+  }
 }

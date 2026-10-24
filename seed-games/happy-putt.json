@@ -10,5 +10,55 @@
   "players_max": 4,
   "age_rating": "everyone",
   "featured": true,
-  "notes": "Canvas 2D, fixed-step physics with moving obstacles (windmill sails, gates, gator, truck, car, cart), slopes, sand, water hazards, tunnels and boost pads. Saves best totals in BRB.storage key 'happy-putt-best-v1'. Score = 200 - total strokes for a full 18 (only 18-hole rounds go on the leaderboard; Quick 9 is practice and just saves a local best). In pass-the-phone rounds the leaderboard entry and the saved best always use player 1's total (the device owner), never a guest's. Homage to the movie's course gags only: no character names or likenesses; the rival is the original Sir Smugsworth, the coach is Coach Mitts. The title screen is a drawn country-club gate (clown peeking in, hockey rink, gold jacket on its stand) and the round ends with a gold-jacket ceremony: podium, trophy, cheering stand and fireworks drawn on canvas. Loads Google Fonts (Fredoka, Nunito). window.__brbTest exposes state/start/loadHole/shoot/skipAnimations/setBall/seed/holePlan for verifiers."
+  "notes": "Canvas 2D, fixed-step physics with moving obstacles (windmill sails, gates, gator, truck, car, cart), slopes, sand, water hazards, tunnels and boost pads. Saves best totals in BRB.storage key 'happy-putt-best-v1'. Score = 200 - total strokes for a full 18 (only 18-hole rounds go on the leaderboard; Quick 9 is practice and just saves a local best). In pass-the-phone rounds the leaderboard entry and the saved best always use player 1's total (the device owner), never a guest's. Homage to the movie's course gags only: no character names or likenesses; the rival is the original Sir Smugsworth, the coach is Coach Mitts. The title screen is a drawn country-club gate (clown peeking in, hockey rink, gold jacket on its stand) and the round ends with a gold-jacket ceremony: podium, trophy, cheering stand and fireworks drawn on canvas. Loads Google Fonts (Fredoka, Nunito). window.__brbTest exposes state/start/loadHole/shoot/skipAnimations/setBall/seed/holePlan for verifiers.",
+  "l10n": {
+    "en-GB": {
+      "description": "18 wild mini golf holes inspired by Happy Gilmore. Slap your ball across a hockey rink, time the laughing clown mouth, dodge the swamp gator and the removal van, ride a neon loop, relax in the happy place and bounce your final putt off a toppled TV tower. Play alone or pass the phone with up to 4 friends.",
+      "tags": "mini golf,putt,golf,18 holes,course,film,pass the phone,hockey,gator,windmill"
+    },
+    "pt": {
+      "description": "18 buracos malucos de minigolfe inspirados em Happy Gilmore. Taque a bola numa pista de hóquei, acerte a hora da boca do palhaço que gargalha, desvie do jacaré do brejo e do caminhão de mudança, passe por um looping de neon, relaxe no lugar feliz e tabele a última tacada numa torre de TV caída. Jogue sozinho ou passe o celular para até 4 amigos.",
+      "tags": "minigolfe,golfe,tacada,18 buracos,campo,filme,passar o celular,hóquei,jacaré,moinho"
+    },
+    "fr": {
+      "description": "18 trous de mini-golf complètement fous, inspirés de Happy Gilmore. Envoie ta balle sur une patinoire, choisis le bon moment pour la bouche du clown qui rigole, évite l’alligator du marais et le camion de déménagement, passe dans un looping fluo, détends-toi dans le coin du bonheur et fais rebondir ton dernier putt sur une tour télé tombée. Joue seul ou passe le téléphone à 4 amis maximum.",
+      "tags": "mini-golf,golf,putt,18 trous,parcours,film,passe le téléphone,hockey,alligator,moulin"
+    },
+    "es": {
+      "description": "18 hoyos locos de minigolf inspirados en Happy Gilmore. Lanza tu pelota por una pista de hockey, calcula el momento de la boca del payaso que se ríe, esquiva al caimán del pantano y al camión de mudanzas, recorre un rizo de neón, relájate en el lugar feliz y rebota tu último golpe en una torre de TV caída. Juega solo o pasa el teléfono con hasta 4 amigos.",
+      "tags": "minigolf,golf,putt,18 hoyos,campo,película,pasar el teléfono,hockey,caimán,molino"
+    },
+    "de": {
+      "description": "18 verrückte Minigolf-Löcher, inspiriert von Happy Gilmore. Schlag deinen Ball über eine Eishockeyfläche, triff den richtigen Moment beim lachenden Clownsmund, weich dem Sumpf-Alligator und dem Umzugswagen aus, fahr durch einen Neon-Looping, entspann dich am Glücksort und lass deinen letzten Putt von einem umgekippten Fernsehturm abprallen. Spiel allein oder gib das Handy an bis zu 4 Freunde weiter.",
+      "tags": "Minigolf,Golf,Putten,18 Löcher,Platz,Film,Handy weitergeben,Eishockey,Alligator,Windmühle"
+    },
+    "he": {
+      "description": "18 גומות מיני גולף מטורפות בהשראת Happy Gilmore. החטיפו את הכדור על משטח הוקי, תפסו את הרגע הנכון בפה של הליצן הצוחק, התחמקו מהתנין שבביצה וממשאית ההובלות, עברו בלולאת ניאון, תירגעו במקום המאושר והקפיצו את החבטה האחרונה ממגדל טלוויזיה שנפל. שחקו לבד או העבירו את הטלפון לעד 4 חברים.",
+      "tags": "מיני גולף,גולף,חבטה,18 גומות,מסלול,סרט,העבירו את הטלפון,הוקי,תנין,טחנת רוח"
+    },
+    "ja": {
+      "description": "『ハッピー・ギルモア』からうまれた、とんでもないミニゴルフ18ホール。ホッケーリンクでボールをぶっとばし、わらうピエロのくちのタイミングをはかり、ぬまのワニとひっこしトラックをよけて、ネオンのループをくぐり、しあわせのばしょでひとやすみ。さいごはたおれたテレビとうにあててカップイン！ひとりでも、スマホをまわして4人までのフレンドともあそべます。",
+      "tags": "ミニゴルフ,ゴルフ,パット,18ホール,コース,えいが,スマホをまわす,ホッケー,ワニ,ふうしゃ"
+    },
+    "ar": {
+      "description": "18 حفرة غولف مصغّر مجنونة مستوحاة من فيلم Happy Gilmore. اقذف كرتك على حلبة هوكي، واختر اللحظة المناسبة لفم المهرّج الضاحك، وتفادَ تمساح المستنقع وشاحنة نقل الأثاث، ومرّ في حلقة نيون، واسترخِ في المكان السعيد، ثم ارتدّ بضربتك الأخيرة عن برج تلفاز ساقط. العب وحدك أو مرّر الهاتف إلى 4 أصدقاء.",
+      "tags": "غولف مصغر,غولف,ضربة,18 حفرة,ملعب,فيلم,مرر الهاتف,هوكي,تمساح,طاحونة"
+    },
+    "ru": {
+      "description": "18 безумных лунок мини-гольфа по мотивам фильма «Счастливчик Гилмор». Щёлкни мячом по хоккейной площадке, поймай момент у рта хохочущего клоуна, увернись от аллигатора в болоте и грузовика для переезда, пролети мёртвую петлю, отдохни в счастливом местечке и отбей последний удар от упавшей телебашни. Играй один или передавай телефон — до 4 друзей.",
+      "tags": "мини-гольф,гольф,патт,18 лунок,поле,фильм,передай телефон,хоккей,аллигатор,мельница"
+    },
+    "it": {
+      "description": "18 buche pazze di minigolf ispirate a Happy Gilmore. Spara la pallina su una pista da hockey, scegli il momento giusto per la bocca del clown che ride, schiva l’alligatore della palude e il camion dei traslochi, passa in un giro della morte al neon, rilassati nel posto felice e fai rimbalzare l’ultimo tiro su una torre della TV caduta. Gioca da solo o passa il telefono a un massimo di 4 amici.",
+      "tags": "minigolf,golf,putt,18 buche,percorso,film,passa il telefono,hockey,alligatore,mulino"
+    },
+    "zh-Hant": {
+      "description": "靈感來自電影《高爾夫球也瘋狂》（Happy Gilmore）的 18 個瘋狂迷你高爾夫球洞。在冰球場上猛擊開球、抓準哈哈小丑嘴的時機、閃過沼澤鱷魚和搬家卡車、穿過霓虹迴圈、在快樂小天地放鬆一下，最後讓推桿彈過倒下的電視塔進洞。可以自己玩，也能把手機傳給最多 4 位朋友一起玩。",
+      "tags": "迷你高爾夫,高爾夫,推桿,18洞,球場,電影,傳手機,冰球,鱷魚,風車"
+    },
+    "nl": {
+      "description": "18 gekke minigolfholes, geïnspireerd op Happy Gilmore. Sla je bal over een ijshockeybaan, kies het goede moment voor de lachende clownsmond, ontwijk de moerasalligator en de verhuiswagen, rij door een neonlooping, ontspan op het blije plekje en kaats je laatste putt via een omgevallen tv-toren. Speel alleen of geef de telefoon door aan maximaal 4 vrienden.",
+      "tags": "minigolf,golf,putten,18 holes,baan,film,telefoon doorgeven,ijshockey,alligator,windmolen"
+    }
+  }
 }
