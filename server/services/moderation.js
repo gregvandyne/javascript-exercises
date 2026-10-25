@@ -102,7 +102,7 @@ export function findUser(username) {
   const games = q.get('SELECT COUNT(*) n FROM games WHERE owner_id=?', u.id).n;
   const friendsN = q.get("SELECT COUNT(*) n FROM friends WHERE user_id=? AND status='accepted'", u.id).n;
   const reportsAgainst = q.get('SELECT COUNT(*) n FROM chat_reports r JOIN chat_messages m ON m.id=r.message_id WHERE m.from_id=?', u.id).n;
-  return { id: u.id, username: u.username, display_name: u.display_name, avatar: u.avatar, color: u.color, photo_at: u.photo_at, role: u.role, is_guest: !!u.is_guest, banned: !!u.banned, chat_enabled: !!u.chat_enabled, created_at: u.created_at, last_seen: u.last_seen, games, friends: friendsN, chatReports: reportsAgainst };
+  return { id: u.id, username: u.username, display_name: u.display_name, avatar: u.avatar, color: u.color, photo_at: u.photo_at, role: u.role, managed_school: u.managed_school || '', is_guest: !!u.is_guest, banned: !!u.banned, chat_enabled: !!u.chat_enabled, created_at: u.created_at, last_seen: u.last_seen, games, friends: friendsN, chatReports: reportsAgainst };
 }
 /** Ban: account paused, every session ended. Admins cannot be banned from here. */
 export function banUser(admin, userId, reason = '') {
@@ -120,15 +120,55 @@ export function unbanUser(admin, userId) {
   return { ok: true };
 }
 
-/** Latest audit entries with readable actor and target names. */
+/** Lookups for the audit log: one query per table for all the ids on the page (IN (...)), never one per row. */
+const CHUNK = 900; // under SQLite's variable limit (999 on old builds), so even a very long page still works; a 200-row page is one query per table
+const ID_SHAPE = /^[A-Za-z0-9_-]{6,40}$/; // what an id looks like (uid() is 10-12 alphanumerics); skips free text such as notes
+function lookup(sql, ids, key = 'id') {
+  const out = new Map();
+  for (let i = 0; i < ids.length; i += CHUNK) {
+    const part = ids.slice(i, i + CHUNK);
+    for (const r of q.all(sql.replace('(?)', `(${part.map(() => '?').join(',')})`), ...part)) out.set(r[key], r);
+  }
+  return out;
+}
+const clipText = (s, n) => { s = String(s ?? '').replace(/\s+/g, ' ').trim(); return s.length > n ? s.slice(0, n - 1) + '…' : s; };
+/** Latest audit entries with readable actor and target names (games, users, schools, classes) and a short readable
+ *  details line where ids are shown as @username / school / class names. */
 export function auditLog(limit = 200) {
   const rows = q.all('SELECT a.*, u.username AS actor_name FROM audit_log a LEFT JOIN users u ON u.id=a.actor_id ORDER BY a.created_at DESC LIMIT ?', limit);
-  return rows.map(r => {
-    let target = r.target;
-    const g = r.target && q.get('SELECT title FROM games WHERE id=?', r.target);
-    const tu = !g && r.target && q.get('SELECT username FROM users WHERE id=?', r.target);
-    if (g) target = `🎮 ${g.title}`; else if (tu) target = `@${tu.username}`;
-    return { ...r, targetLabel: target };
+  // 1. parse details once, collect every id-shaped value on the page
+  const parsed = rows.map(r => { if (!r.details) return null; try { const o = JSON.parse(r.details); return o && typeof o === 'object' && !Array.isArray(o) ? o : null; } catch { return null; } });
+  const ids = new Set();
+  rows.forEach((r, i) => {
+    if (r.target && ID_SHAPE.test(r.target)) ids.add(r.target);
+    for (const v of Object.values(parsed[i] || {})) if (typeof v === 'string' && ID_SHAPE.test(v)) ids.add(v);
+  });
+  const all = [...ids];
+  // 2. at most one query per table
+  const games = all.length ? lookup('SELECT id, title FROM games WHERE id IN (?)', all) : new Map();
+  const users = all.length ? lookup('SELECT id, username FROM users WHERE id IN (?)', all) : new Map();
+  const schools = all.length ? lookup('SELECT id, name FROM schools WHERE id IN (?)', all) : new Map();
+  const classes = all.length ? lookup('SELECT c.id, c.name, s.name AS school FROM classrooms c LEFT JOIN schools s ON s.id=c.school_id WHERE c.id IN (?)', all) : new Map();
+  const name = id => {
+    if (games.has(id)) return `🎮 ${games.get(id).title}`;
+    if (users.has(id)) return `@${users.get(id).username}`;
+    if (schools.has(id)) return `🏫 ${schools.get(id).name}`;
+    if (classes.has(id)) { const c = classes.get(id); return `🧑‍🏫 ${c.name}${c.school ? ` (${c.school})` : ''}`; }
+    return null;
+  };
+  const plain = id => (users.has(id) ? `@${users.get(id).username}` : schools.has(id) ? schools.get(id).name : classes.has(id) ? classes.get(id).name : games.has(id) ? games.get(id).title : null);
+  const value = v => {
+    if (v === null || v === undefined) return '';
+    if (typeof v === 'string') return plain(v) || clipText(v, 80);
+    if (typeof v === 'object') return clipText(JSON.stringify(v), 80);
+    return String(v);
+  };
+  // 3. label each row
+  return rows.map((r, i) => {
+    const o = parsed[i];
+    const detailsLabel = o ? clipText(Object.entries(o).filter(([, v]) => v !== null && v !== undefined).map(([k, v]) => `${k}: ${value(v)}`).join(' · '), 240)
+      : clipText(r.details, 240);
+    return { ...r, targetLabel: (r.target && name(r.target)) || r.target, detailsLabel };
   });
 }
 export const counts = () => ({

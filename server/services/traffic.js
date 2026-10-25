@@ -11,7 +11,8 @@ import { register } from './jobs.js';
 const SKIP = /^\/(api|frame|shots|covers|sdk|js|css|fonts|img|health|admin|favicon|robots|manifest)/;
 const BOTS = /bot|crawl|spider|slurp|preview|monitor|uptime|curl|wget|python|node-fetch|headless|lighthouse|render/i;
 const AREAS = [[/^\/$/, 'home'], [/^\/g\//, 'game'], [/^\/play\//, 'play'], [/^\/(build|studio)/, 'build'], [/^\/search/, 'search'],
-  [/^\/favorites/, 'favorites'], [/^\/(friends|chat)/, 'friends'], [/^\/u\//, 'profile'], [/^\/me/, 'me'], [/^\/(signup|login)/, 'signup']];
+  [/^\/favorites/, 'favorites'], [/^\/(friends|chat)/, 'friends'], [/^\/u\//, 'profile'], [/^\/me/, 'me'], [/^\/(signup|login)/, 'signup'],
+  [/^\/(teach|class|school|classes)\b/, 'school']]; // teacher, class and school pages (lessons and progress live under /teach and /class)
 export const areaOf = path => (AREAS.find(([re]) => re.test(path)) || [null, 'other'])[1];
 
 const salt = () => config.sessionSecret || 'magic-cups';

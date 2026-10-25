@@ -1480,7 +1480,8 @@
       "done": "Assigned to {class}",
       "restored": "Assigned to {class} again. Students' earlier work is back.",
       "changeDates": "Change dates",
-      "allClasses": "This lesson is in all your classes."
+      "allClasses": "This lesson is in all your classes.",
+      "zoneNote": "{zone, select, none {Days are counted in UTC and nobody is late until 36 hours after the due day starts. A school admin can set the school's time zone in Settings.} other {Lessons open and due dates end at midnight in {zone}.}}"
     },
     "class": {
       "title": "Lessons",

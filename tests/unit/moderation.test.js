@@ -8,6 +8,7 @@ const games = await import('../../server/services/games.js');
 const friends = await import('../../server/services/friends.js');
 const chat = await import('../../server/services/chat.js');
 const mod = await import('../../server/services/moderation.js');
+const S = await import('../../server/services/schools.js');
 const { createApp } = await import('../../server/app.js');
 
 let n = 0;
@@ -125,4 +126,63 @@ test('admin pages and APIs are 404 for visitors, guests and players; 200 for adm
   const r = await fetch(`${base}/api/admin/games/${g.id}/approve`, { method: 'POST', headers: { cookie: ck, 'content-type': 'application/json' }, body: JSON.stringify({ note: 'Lovely' }) });
   assert.equal(r.status, 200);
   assert.equal(games.getGame(g.id).visibility, 'public');
+});
+
+test('audit log names schools and classes, shows user ids in details as @username, and batches the lookups', () => {
+  const school = S.createSchool(admin, { name: 'Audit <Academy>' }).school;
+  const cls = S.createClass(admin, school.id, { name: 'Class 1A', teacherId: 'none' }).class;
+  const kid = S.createSchoolAccount(admin, school.id, { rosterName: 'Secret Realname' }).user;
+  S.addToClass(admin, cls.id, kid.id);
+  const log = mod.auditLog(200);
+  const row = (action, target) => log.find(r => r.action === action && r.target === target);
+  assert.equal(row('school.create', school.id).targetLabel, '🏫 Audit <Academy>');
+  assert.equal(row('school.create', school.id).detailsLabel, 'name: Audit <Academy>');
+  const cc = row('class.create', cls.id);
+  assert.equal(cc.targetLabel, '🧑‍🏫 Class 1A (Audit <Academy>)');
+  assert.equal(cc.detailsLabel, 'school: Audit <Academy> · name: Class 1A', 'school id in details becomes its name');
+  const acc = row('school.account_create', school.id);
+  assert.equal(acc.targetLabel, '🏫 Audit <Academy>');
+  assert.equal(acc.detailsLabel, `user: @${kid.username} · role: student`, 'user id in details becomes @username');
+  assert.equal(row('class.member_add', cls.id).detailsLabel, `user: @${kid.username} · role: student`);
+  assert.ok(log.every(r => typeof r.detailsLabel === 'string' && typeof r.targetLabel === 'string'), 'same shape for every row');
+  assert.ok(!log.some(r => r.detailsLabel.includes(kid.id) || r.targetLabel.includes(school.id) || r.targetLabel.includes(cls.id)), 'no raw ids where a name is known');
+  // non-object details stay raw, long values are clipped, unknown targets stay as they are
+  q.run("INSERT INTO audit_log(id, actor_id, action, target, details, created_at) VALUES ('aud-raw', ?, 'test.raw', 'no-such-id-xyz', 'plain text', ?)", admin.id, Date.now() + 5);
+  q.run("INSERT INTO audit_log(id, actor_id, action, target, details, created_at) VALUES ('aud-long', ?, 'test.long', '', ?, ?)", admin.id, JSON.stringify({ note: 'x'.repeat(500), n: 3, nested: { a: 1 } }), Date.now() + 6);
+  const fresh = mod.auditLog(5);
+  const rawRow = fresh.find(r => r.id === 'aud-raw'), longRow = fresh.find(r => r.id === 'aud-long');
+  assert.equal(rawRow.targetLabel, 'no-such-id-xyz'); assert.equal(rawRow.detailsLabel, 'plain text');
+  assert.ok(longRow.detailsLabel.length <= 240 && longRow.detailsLabel.includes('…') && longRow.detailsLabel.includes('n: 3') && longRow.detailsLabel.includes('nested: {"a":1}'), longRow.detailsLabel);
+  // batching: the page costs a handful of queries, not one per row
+  let n = 0; const orig = q.all; q.all = (...a) => { n++; return orig(...a); };
+  try { mod.auditLog(200); } finally { q.all = orig; }
+  assert.ok(n <= 5, `${n} queries for a 200-row page`);
+});
+
+test('users tab: Site role, Schools row with memberships and links; School account of; none', async () => {
+  const school = S.createSchool(admin, { name: 'Oak & Elm' }).school;
+  const headmaster = mk('Head');
+  S.addMember(admin, school.id, headmaster.id, 'admin', { rosterName: 'Real Head Name' });
+  const pupil = S.createSchoolAccount(admin, school.id, { rosterName: 'Pupil Realname' }).user;
+  const loner = mk('Loner');
+  const ck = cookieFor(admin.id);
+  const pageFor = async name => { const r = await fetch(`${base}/admin?tab=users&username=${name}`, { headers: { cookie: ck } }); assert.equal(r.status, 200); return r.text(); };
+  let h = await pageFor(headmaster.username);
+  assert.match(h, /<th scope="row">Site role<\/th><td>player<\/td>/);
+  assert.match(h, /<th scope="row">Schools<\/th>/);
+  assert.ok(h.includes(`<a href="/school/${school.slug}?tab=people">Oak &amp; Elm</a> · School admin`), 'membership with role, linked to the People tab');
+  assert.ok(!h.includes('School account of'), 'own account');
+  assert.ok(!h.includes('Real Head Name'), 'roster names stay on the school pages');
+  h = await pageFor(pupil.username);
+  assert.ok(h.includes(`School account of <a href="/school/${school.slug}?tab=people">Oak &amp; Elm</a>`), (h.match(/Schools<\/th>.{0,300}/s) || [h.slice(0, 300)])[0]);
+  assert.ok(h.includes(`?tab=people">Oak &amp; Elm</a> · Student`));
+  assert.ok(!h.includes('Pupil Realname'));
+  h = await pageFor(loner.username);
+  assert.match(h, /<th scope="row">Schools<\/th><td>none<\/td>/);
+  // the audit tab prints the readable labels
+  const audit = await (await fetch(`${base}/admin?tab=audit`, { headers: { cookie: ck } })).text();
+  assert.ok(audit.includes('🏫 Oak &amp; Elm') && audit.includes(`user: @${pupil.username}`), 'audit tab shows names and @usernames');
+  assert.ok(!audit.includes(pupil.id) && !audit.includes(school.id), 'no raw ids in the audit tab');
+  const api = await (await fetch(`${base}/api/admin/audit`, { headers: { cookie: ck } })).json();
+  assert.ok(api.rows.some(r => r.targetLabel === '🏫 Oak & Elm' && typeof r.detailsLabel === 'string'));
 });

@@ -13,6 +13,7 @@ import * as P from '../services/progress.js';
 import * as games from '../services/games.js';
 import { publish } from '../services/publish.js';
 import { classHeader, classBack } from './schools.js';
+import { zoneNote } from './lessons.js';
 
 export const router = Router();
 const CSS = raw(`<link rel="stylesheet" href="/css/community.css?v=${VERSION}"><link rel="stylesheet" href="/css/schools.css?v=${VERSION}">`);
@@ -58,13 +59,14 @@ function bar(d, t) {
 }
 const SHORT = { month: 'short', day: 'numeric' };
 /** An assigned lesson's dates as chips: '🔒 Opens {date}' before it opens, '📅 Due today' (amber) on the due day, else
- *  '📅 Due {date}' ('📅 {date}' when short, for gradebook columns), and '⏰ Late' when late is set. */
+ *  '📅 Due {date}' ('📅 {date}' when short, for gradebook columns), and '⏰ Late' when late is set. Stored dates are
+ *  calendar days, so always f.day (the same date whatever zone the server runs in). */
 function dateChips(t, f, cl, { late = false, short = false } = {}) {
   const open = L.isOpen(cl), due = L.dueState(cl);
   return [
-    !open ? html`<span class="chip-s">🔒 ${t('lessons.class.opensOn', { date: f.date(cl.opens_at, SHORT) })}</span>` : '',
+    !open ? html`<span class="chip-s">🔒 ${t('lessons.class.opensOn', { date: f.day(cl.opens_at, SHORT) })}</span>` : '',
     open && due === 'today' ? html`<span class="chip-s warn">📅 ${t('lessons.class.dueToday')}</span>`
-      : cl.due_at ? html`<span class="nw">📅 ${short ? f.date(cl.due_at, SHORT) : t('lessons.class.dueOn', { date: f.date(cl.due_at) })}</span>` : '',
+      : cl.due_at ? html`<span class="nw">📅 ${short ? f.day(cl.due_at, SHORT) : t('lessons.class.dueOn', { date: f.day(cl.due_at) })}</span>` : '',
     late ? html`<span class="chip-s bad">⏰ ${t('lessons.class.late')}</span>` : '',
   ].filter(Boolean);
 }
@@ -91,7 +93,7 @@ router.get('/class/:id/progress', requireUser, (req, res) => {
       return html`<tr><th scope="row" class="gb-name"><span class="pp">${avatar(p, 28)}<b>${nameOf(p)}</b></span></th>
         ${p.cells.map((x, i) => {
           const l = gb.lessons[i];
-          if (x.locked) return html`<td class="gb-locked"><span aria-hidden="true">–</span><span class="sr-only">${t('lessons.class.opensOn', { date: f.date(l.opens_at, SHORT) })}</span></td>`;
+          if (x.locked) return html`<td class="gb-locked"><span aria-hidden="true">–</span><span class="sr-only">${t('lessons.class.opensOn', { date: f.day(l.opens_at, SHORT) })}</span></td>`;
           const full = x.total && x.done >= x.total;
           const first = x.toRead ? firstNew[`${p.id}:${l.id}`] : null;
           return html`<td class="${full ? 'gb-done' : x.late ? 'gb-late' : ''}"><a class="gb-cell" href="/class/${c.id}/progress/${l.id}#${first ? `a-${first}-${p.id}` : `s-${p.id}`}">
@@ -101,7 +103,7 @@ router.get('/class/:id/progress', requireUser, (req, res) => {
         <td class="gb-all">${all ? html`<b>${all}</b>` : html`<span class="muted">–</span>`}</td></tr>`;
     })}</tbody></table></div>`;
   const body = html`${classHeader(req, c, 'progress')}
-  ${gb.lessons.length && gb.students.length ? html`<div class="row gb-tools"><p class="muted grow">${t('progress.gradebook.text')}</p><a class="btn btn-sm" href="/class/${c.id}/progress.csv" download>⬇️ ${t('progress.gradebook.csv')}</a></div>` : ''}
+  ${gb.lessons.length && gb.students.length ? html`<div class="row gb-tools"><p class="muted grow">${t('progress.gradebook.text')} ${zoneNote(t, c.school_id)}</p><a class="btn btn-sm" href="/class/${c.id}/progress.csv" download>⬇️ ${t('progress.gradebook.csv')}</a></div>` : ''}
   ${toReview.length ? html`<p class="notice gb-review" id="to-review">✍️ <b>${t('progress.gradebook.toReviewList')}</b> ${toReview.map((r, i) => html`${i ? ' · ' : ''}<a href="/class/${c.id}/progress/${r.cl}#answers" dir="auto">${t('progress.gradebook.reviewLink', { title: r.title, count: r.n })}</a>`)}</p>` : ''}
   ${!gb.lessons.length ? html`<section class="panel">${emptyState({ emoji: '📚', title: t('progress.gradebook.noLessons'), text: t('progress.gradebook.noLessonsText') })}</section>`
     : !gb.students.length ? html`<section class="panel">${emptyState({ emoji: '👩‍🎓', title: t('progress.gradebook.noStudents'), text: t('progress.gradebook.noStudentsText') })}</section>`

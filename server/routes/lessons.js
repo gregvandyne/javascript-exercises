@@ -42,13 +42,20 @@ function listOf(t, items, render) {
   let k = 0;
   return html`${lf.formatToParts(items.map(() => 'x')).map(p => (p.type === 'element' ? render(items[k++]) : p.value))}`;
 }
-/** A class lesson's due chip: 'Due today' (amber) on the day, 'Late' once the day is over (unless done), else the date. */
+/** A class lesson's due chip: 'Due today' (amber) on the day, 'Late' once the day is over (unless done), else the date.
+ *  Stored dates are calendar days: always f.day (the same date whatever zone the server runs in). */
 function dueChip(t, f, cl, { done = false } = {}) {
   const st = L.dueState(cl);
   if (!st) return '';
   if (st === 'late' && !done) return html`<span class="chip-s bad">⏰ ${t('lessons.class.late')}</span>`;
   if (st === 'today') return html`<span class="chip-s warn">📅 ${t('lessons.class.dueToday')}</span>`;
-  return html`<span class="chip-s">📅 ${t('lessons.class.dueOn', { date: f.date(cl.due_at) })}</span>`;
+  return html`<span class="chip-s">📅 ${t('lessons.class.dueOn', { date: f.day(cl.due_at) })}</span>`;
+}
+/** One line telling teachers when days begin and end: at midnight in the school's time zone, or (none set) in UTC with
+ *  the 36-hour grace. Shown wherever dates are set or lateness is read (assign forms, the gradebook). */
+export function zoneNote(t, schoolId) {
+  const tz = S.zoneOf(S.getSchool(schoolId));
+  return t('lessons.assign.zoneNote', { zone: tz ? tz.replace(/_/g, ' ') : 'none' });
 }
 /** The Delete lesson confirm says what goes with it: the classes it is in and the students' work. */
 function deleteLessonConfirm(t, l) {
@@ -284,13 +291,13 @@ router.get('/teach/lessons/:id', requireUser, (req, res) => {
         <p class="small muted wide">${t('lessons.step.newGameNote')}</p></form></details>
   </section>
   <section class="panel" id="assign"><h2>📌 ${t('lessons.assign.title')}</h2>
-    ${assigned.length ? html`<ul class="plain assignedlist">${assigned.map(a => html`<li><b dir="auto">${a.name}</b>${a.opens_at ? html` · <span class="nw">${t('lessons.class.opensOn', { date: f.date(a.opens_at) })}</span>` : ''}${a.due_at ? html` · <span class="nw">${t('lessons.class.dueOn', { date: f.date(a.due_at) })}</span>` : ''} · <a class="nw" href="/class/${a.class_id}#cl-${a.id}">${t('lessons.assign.changeDates')}</a></li>`)}</ul>` : ''}
+    ${assigned.length ? html`<ul class="plain assignedlist">${assigned.map(a => html`<li><b dir="auto">${a.name}</b>${a.opens_at ? html` · <span class="nw">${t('lessons.class.opensOn', { date: f.day(a.opens_at) })}</span>` : ''}${a.due_at ? html` · <span class="nw">${t('lessons.class.dueOn', { date: f.day(a.due_at) })}</span>` : ''} · <a class="nw" href="/class/${a.class_id}#cl-${a.id}">${t('lessons.assign.changeDates')}</a></li>`)}</ul>` : ''}
     ${assignable.length ? html`<form class="formgrid assigngrid" data-api="/api/lessons/${l.id}/assign" data-reload novalidate>
       <div class="field"><label for="as-c">${t('lessons.assign.class')}</label><select class="input" id="as-c" name="classId">${assignable.map(c => html`<option value="${c.id}" ${c.id === preselect ? raw('selected') : ''}>${c.name}</option>`)}</select></div>
       <div class="field"><label for="as-o">${t('lessons.assign.opens')}</label><input class="input" id="as-o" name="opensAt" type="date"></div>
       <div class="field"><label for="as-d">${t('lessons.assign.due')}</label><input class="input" id="as-d" name="dueAt" type="date"></div>
       <div class="field end"><button class="btn btn-primary" type="submit">📌 ${t('lessons.assign.button')}</button></div>
-      <p class="small muted wide">${t('lessons.assign.note')}</p></form>` : html`<p class="muted">${assigned.length ? t('lessons.assign.allClasses') : t('lessons.assign.noClasses')}</p>`}
+      <p class="small muted wide">${t('lessons.assign.note')} ${zoneNote(t, l.school_id)}</p></form>` : html`<p class="muted">${assigned.length ? t('lessons.assign.allClasses') : t('lessons.assign.noClasses')}</p>`}
   </section>
   <form id="lc-${l.id}" hidden data-api="/api/lessons/${l.id}/copy"></form>
   ${shareForm(t, l, `lsh-${l.id}`)}
@@ -369,7 +376,7 @@ export function teacherLessonsPanel(req, c) {
     const sm = sums[cl.id] || { done: 0, students: 0, toRead: 0 };
     return html`<li class="cl-row" id="cl-${cl.id}">
     <a class="cl-main" href="/class/${c.id}/progress/${cl.id}"><b dir="auto">${cl.title}</b><span class="small muted cl-meta"><span>${t('lessons.stepsN', { count: cl.steps })}${cl.minutes ? ` · ${t('lessons.minutesN', { count: cl.minutes })}` : ''}</span>
-      ${cl.opens_at && !L.isOpen(cl) ? html`<span class="chip-s">🔒 ${t('lessons.class.opensOn', { date: f.date(cl.opens_at) })}</span>` : ''}${dueChip(t, f, cl, { done: !sm.students || sm.done >= sm.students })}</span>
+      ${cl.opens_at && !L.isOpen(cl) ? html`<span class="chip-s">🔒 ${t('lessons.class.opensOn', { date: f.day(cl.opens_at) })}</span>` : ''}${dueChip(t, f, cl, { done: !sm.students || sm.done >= sm.students })}</span>
       ${sm.students ? html`<span class="small cl-stats"><span>${t('lessons.class.doneOf', { done: sm.done, students: sm.students })}</span>${sm.toRead ? html`<span class="chip-s warn">✍️ ${t('lessons.class.toReview', { count: sm.toRead })}</span>` : ''}</span>` : ''}</a>
     <span class="acts">${i ? html`<form data-api="/api/class-lessons/${cl.id}/up" data-reload><button class="btn btn-sm" type="submit" aria-label="${t('lessons.up')}">↑</button></form>` : ''}${i < n - 1 ? html`<form data-api="/api/class-lessons/${cl.id}/down" data-reload><button class="btn btn-sm" type="submit" aria-label="${t('lessons.down')}">↓</button></form>` : ''}
       <details class="inline-menu"><summary class="btn btn-sm" aria-label="${t('school.moreFor', { name: cl.title })}">⋯</summary><div class="menu">
@@ -402,7 +409,8 @@ export function teacherLessonsPanel(req, c) {
         ${units.length ? html`<div class="field"><label for="al-u">${t('lessons.class.unit')}</label><select class="input" id="al-u" name="unitId"><option value="">–</option>${units.map(un => html`<option value="${un.id}">${un.name}</option>`)}</select></div>` : ''}
         <div class="field"><label for="al-o">${t('lessons.assign.opens')}</label><input class="input" id="al-o" name="opensAt" type="date"></div>
         <div class="field"><label for="al-d">${t('lessons.assign.due')}</label><input class="input" id="al-d" name="dueAt" type="date"></div>
-        <div class="field end"><button class="btn btn-primary" type="submit">📌 ${t('lessons.assign.button')}</button></div></form>` : ''}
+        <div class="field end"><button class="btn btn-primary" type="submit">📌 ${t('lessons.assign.button')}</button></div>
+        <p class="small muted wide">${zoneNote(t, c.school_id)}</p></form>` : ''}
       ${colleagues && libOk ? html`<p class="small muted">💡 ${tHtml(t, 'lessons.class.sharedHint', { tab: html`<a href="${lib}&tab=shared">${t('lessons.library.shared')}</a>` })}</p>` : ''}
       <div class="cl-more">
         ${mine.length && !avail.length && !back.length ? html`<p class="small muted allin">${t('lessons.class.allIn')}</p>` : ''}

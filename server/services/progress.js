@@ -130,9 +130,9 @@ export function lessonProgress(clId) {
   };
 }
 /** The class gradebook: every assigned lesson × every student, as done/total, plus answers waiting to be reviewed.
- *  A lesson that hasn't opened yet is 'locked': never late, and left out of the overall figure. */
-export function classProgress(classId) {
-  const t = now();
+ *  A lesson that hasn't opened yet is 'locked': never late, and left out of the overall figure. Open / due / late follow
+ *  the school's time zone when it has one (the rows carry tz); t is "now" (tests pass an instant). */
+export function classProgress(classId, t = now()) {
   const lessons = L.classPlan(classId).flatMap(g => g.lessons.map(cl => ({ ...cl, unit: g.unit, locked: !L.isOpen(cl, t), due: L.dueState(cl, t) })));
   const students = studentsOf(classId);
   const counts = q.all(`SELECT p.class_lesson_id cl, p.user_id u, SUM(p.status='done') done, SUM(p.answer!='' AND p.reviewed_at IS NULL AND s.kind='question') toread, MAX(p.updated_at) last

@@ -14,6 +14,7 @@ import * as mod from '../services/moderation.js';
 import * as chat from '../services/chat.js';
 import { COMMUNITY_CSS } from './social.js';
 import { tEn } from '../i18n/index.js';
+import { schoolsOf, getSchool } from '../services/schools.js';
 
 export const router = Router();
 router.use('/admin', requireAdmin);
@@ -100,6 +101,17 @@ function chatTab() {
   </article>`)}</div>`;
 }
 
+const SCHOOL_ROLE = { admin: 'School admin', teacher: 'Teacher', student: 'Student' };
+const schoolLink = s => html`<a href="/school/${s.slug}?tab=people">${s.name}</a>`;
+/** The Schools row of the users tab: who owns the account (school accounts) and every active membership with its role.
+ *  The platform admin can open every school page, so each school links to its People tab. */
+function schoolsCell(u) {
+  const owner = u.managed_school ? getSchool(u.managed_school) : null;
+  const list = schoolsOf(u.id);
+  if (!u.managed_school && !list.length) return 'none';
+  return html`${u.managed_school ? html`<div>School account of ${owner ? schoolLink(owner) : 'a school that no longer exists'}</div>` : ''}
+    ${list.map(s => html`<div>${schoolLink(s)} · ${SCHOOL_ROLE[s.role] || s.role}</div>`)}`;
+}
 function usersTab(req) {
   const name = String(req.query.username || '').trim().slice(0, 40);
   const u = name ? mod.findUser(name) : null;
@@ -117,7 +129,8 @@ function usersTab(req) {
     <div class="row">${avatar(u, 56)}<div style="flex:1;min-width:180px"><h2 style="margin:0">${u.display_name}</h2><div class="muted">@${u.username}${u.is_guest ? ' · guest' : ''}</div></div>
       ${u.banned ? html`<span class="chip-s bad">⛔ Banned</span>` : html`<span class="chip-s">✅ Active</span>`}</div>
     <div class="tblwrap"><table class="tbl" style="margin-top:12px"><tbody>
-      <tr><th scope="row">Role</th><td>${u.role}</td></tr>
+      <tr><th scope="row">Site role</th><td>${u.role}</td></tr>
+      <tr><th scope="row">Schools</th><td>${schoolsCell(u)}</td></tr>
       <tr><th scope="row">Created</th><td>${new Date(u.created_at).toISOString().slice(0, 10)} (${timeAgo(u.created_at)})</td></tr>
       <tr><th scope="row">Last seen</th><td>${u.last_seen ? timeAgo(u.last_seen) : 'never'}</td></tr>
       <tr><th scope="row">Games</th><td>${u.games}</td></tr>
@@ -133,9 +146,8 @@ function usersTab(req) {
 function auditTab() {
   const rows = mod.auditLog(200);
   if (!rows.length) return emptyState({ emoji: '📜', title: 'No entries yet' });
-  const details = d => { if (!d) return ''; try { const o = JSON.parse(d); return Object.entries(o).map(([k, v]) => `${k}: ${typeof v === 'object' ? JSON.stringify(v) : v}`).join(' · ').slice(0, 220); } catch { return String(d).slice(0, 220); } };
   return html`<div class="panel tblwrap"><table class="tbl audit"><thead><tr><th>When</th><th>Who</th><th>What</th><th>Target</th><th>Details</th></tr></thead><tbody>
-    ${rows.map(r => html`<tr><td>${when(r.created_at)}</td><td>${r.actor_name ? '@' + r.actor_name : 'system'}</td><td><code>${r.action}</code></td><td>${r.targetLabel}</td><td class="small muted">${details(r.details)}</td></tr>`)}
+    ${rows.map(r => html`<tr><td>${when(r.created_at)}</td><td>${r.actor_name ? '@' + r.actor_name : 'system'}</td><td><code>${r.action}</code></td><td>${r.targetLabel}</td><td class="small muted">${r.detailsLabel}</td></tr>`)}
   </tbody></table></div>`;
 }
 
@@ -194,6 +206,8 @@ function barChart({ title, rows, key, fmt = int, unit, tip, total = true }) {
     </tbody></table></div></details>
   </figure>`;
 }
+/** Readable names for services/traffic.js areas. */
+const AREA_LABELS = { home: 'Home', game: 'Game pages', play: 'Play', build: 'Studio', search: 'Search', favorites: 'Favorites', friends: 'Friends & chat', profile: 'Profiles', me: 'Me', signup: 'Sign up & log in', school: 'Schools', other: 'Other' };
 const gameLink = g => html`<a href="/g/${g.slug}">${g.icon} ${g.title}</a>${g.source === 'seed' ? html` <span class="chip-s">launch</span>` : ''}`;
 
 router.get('/admin/stats', (req, res) => {
@@ -246,7 +260,7 @@ router.get('/admin/stats', (req, res) => {
     </section>
     <section class="panel"><h2>🧭 Where people go, last 7 days</h2>
       ${areas.length ? html`<div class="tblwrap"><table class="tbl"><thead><tr><th>Page area</th><th>Views</th></tr></thead><tbody>
-        ${areas.map(a => html`<tr><td>${a.area}</td><td>${int(a.views)}</td></tr>`)}</tbody></table></div>` : html`<p class="muted">No visits counted yet. Counting started with this update.</p>`}
+        ${areas.map(a => html`<tr><td>${AREA_LABELS[a.area] || a.area}</td><td>${int(a.views)}</td></tr>`)}</tbody></table></div>` : html`<p class="muted">No visits counted yet. Counting started with this update.</p>`}
     </section>
     <section class="panel"><h2>🤖 AI by model, last 30 days</h2>
       ${models.length ? html`<div class="tblwrap"><table class="tbl"><thead><tr><th>Model</th><th>Calls</th><th>Tokens in</th><th>Tokens out</th><th>Cost</th></tr></thead><tbody>

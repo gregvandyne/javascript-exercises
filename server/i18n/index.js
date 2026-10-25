@@ -5,7 +5,7 @@
 //                               translate; a key missing in the locale falls back to English, then to the key itself
 //   req.t / res.locals.t        bound per request by middleware() (also req.locale, req.dir, req.fmt)
 //   pickLocale(...)             ?lang= → lang cookie → signed-in user's saved choice → Accept-Language → en
-//   fmt(locale)                 Intl number, compact number, money, date and "time ago" formatting
+//   fmt(locale)                 Intl number, compact number, money, date (timestamps), day (stored calendar days) and "time ago" formatting
 //
 // Locale files: server/i18n/locales/<code>.json, nested objects of strings, flattened to dotted keys
 // ("home.hero.play"). Messages use the ICU-lite syntax in public/js/i18n-format.js ({name}, plural, select).
@@ -201,7 +201,10 @@ export function fmt(code) {
     int: n => num.format(+n || 0),
     /** cents -> "$12.34" in the locale's style */
     money: cents => money.format((+cents || 0) / 100),
+    /** a real timestamp -> "Oct 24, 2026" (in the server's zone) */
     date: (t0, opts = { month: 'short', day: 'numeric', year: 'numeric' }) => new Date(t0).toLocaleDateString(tag, opts),
+    /** a stored calendar day (00:00 UTC) -> the same date whatever zone the server runs in (lesson opens / due dates) */
+    day: (t0, opts = { month: 'short', day: 'numeric', year: 'numeric' }) => new Date(t0).toLocaleDateString(tag, { ...opts, timeZone: 'UTC' }),
     /** ms timestamp -> "5 minutes ago" */
     ago: t0 => {
       const s = Math.max(1, Math.round((Date.now() - t0) / 1000));

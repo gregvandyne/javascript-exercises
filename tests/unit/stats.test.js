@@ -33,6 +33,10 @@ test('page views count by area; each visitor once a day; bots, APIs, files and e
   q.run("INSERT INTO visit_seen(day, h) VALUES ('2020-01-01', 'old')");
   traffic.pruneVisitors(); assert.equal(q.get("SELECT COUNT(*) n FROM visit_seen WHERE day='2020-01-01'").n, 0);
   assert.equal(traffic.areaOf('/play/x'), 'play'); assert.equal(traffic.areaOf('/studio/abc'), 'build'); assert.equal(traffic.areaOf('/weird'), 'other');
+  for (const p of ['/teach', '/teach/lessons/abc', '/class/x', '/class/x/progress', '/school/oak-hill', '/classes']) assert.equal(traffic.areaOf(p), 'school', p);
+  assert.equal(traffic.areaOf('/classy'), 'other', 'word boundary: only the real school pages');
+  await visit('/teach'); // not signed in: a redirect, not a 200 page, so it is not counted
+  assert.equal(views('school'), 0);
 });
 
 test('AI usage is logged per model with tokens; stats add up users, games, plays and AI', () => {
@@ -55,6 +59,7 @@ test('AI usage is logged per model with tokens; stats add up users, games, plays
 });
 
 test('/admin/stats: admins only; shows tiles, charts with tables, and lists', async () => {
+  traffic.recordView('/teach', '10.0.0.9', CHROME);
   const admin = createUser({ username: 'StatsAdmin', password: 'secret123', role: 'admin' });
   const kid = createUser({ username: 'StatsNosy', password: 'secret123' });
   assert.equal((await fetch(base + '/admin/stats', { redirect: 'manual' })).status, 404);
@@ -65,6 +70,7 @@ test('/admin/stats: admins only; shows tiles, charts with tables, and lists', as
     assert.equal((h.match(/class="chart panel"/g) || []).length, 7);
     assert.equal((h.match(/class="bar"/g) || []).length, 7 * days);
     for (const s of ['Visitors today', 'AI cost today', 'Tokens today', 'Most played', 'AI by model', 'Show as a table', 'Stat Game', 'claude-sonnet-5-5']) assert.ok(h.includes(s), s);
+    if (days === 7) { assert.ok(h.includes('<td>Home</td>') && h.includes('<td>Search</td>') && h.includes('<td>Schools</td>'), 'areas are shown by name'); }
   }
   const adm = await (await fetch(base + '/admin', { headers: { cookie: cookieFor(admin.id) } })).text();
   assert.match(adm, /href="\/admin\/stats"/);
