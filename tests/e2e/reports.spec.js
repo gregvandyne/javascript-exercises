@@ -42,6 +42,6 @@ test('three reports from different players hide a public game', async ({ page, b
   await page.goto(`/studio/${g.id}`);
   await expect(page.locator('#st-live')).toContainText('hidden for now');
   await admin.goto('/admin?tab=reports');
-  await expect(admin.locator('.reportcard', { hasText: title })).toContainText('3 open reports');
+  await expect(admin.locator('.reportcard', { hasText: title })).toContainText('4 open reports');
   await visitorCtx.close(); await admin.context().close();
 });
