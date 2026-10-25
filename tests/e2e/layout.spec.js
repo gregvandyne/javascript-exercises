@@ -1,5 +1,5 @@
-// Layout: panels, cards, lists and buttons never touch, on phones, tablets and desktops, in light and dark mode,
-// with collapsible sections closed and opened. Uses the demo school seeded by DEMO_TEACHER_PASSWORD (see
+// Layout: panels, cards, lists and buttons never touch and pages never scroll sideways, on phones, tablets, small
+// laptops and desktops, in light and dark mode, with collapsible sections closed and opened. Uses the demo school seeded by DEMO_TEACHER_PASSWORD (see
 // playwright.config.js). scripts/layout-audit.js runs the same check over every page it can reach.
 import { test, expect } from '@playwright/test';
 import { findTouching } from './touching.js';
@@ -8,7 +8,7 @@ import { ADMIN } from './helpers.js';
 const DEMO = 'demo-pass-123';
 const VIEWS = [
   { width: 390, height: 844, scheme: 'dark' }, { width: 390, height: 844, scheme: 'light' },
-  { width: 820, height: 1180, scheme: 'light' },
+  { width: 820, height: 1180, scheme: 'light' }, { width: 1024, height: 768, scheme: 'dark' },
   { width: 1280, height: 860, scheme: 'dark' }, { width: 1280, height: 860, scheme: 'light' },
 ];
 
@@ -35,6 +35,8 @@ async function checkPages(browser, state, paths) {
     for (const p of paths) {
       await page.goto(p);
       for (const t of await findTouching(page)) problems.push(`${p} @${v.width}/${v.scheme}: ${t.a}  ⟷  ${t.b} (${t.dir} ${t.gap}px)`);
+      const wide = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
+      if (wide > 1) problems.push(`${p} @${v.width}: the page scrolls sideways by ${wide}px`);
       await page.evaluate(() => document.querySelectorAll('details:not(.inline-menu):not(.langpick)').forEach(d => { d.open = true; }));
       for (const t of await findTouching(page)) problems.push(`${p} [opened] @${v.width}/${v.scheme}: ${t.a}  ⟷  ${t.b} (${t.dir} ${t.gap}px)`);
     }

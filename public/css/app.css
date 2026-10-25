@@ -339,6 +339,8 @@ table.tbl{width:100%;border-collapse:collapse;font-size:.95rem}
 .ownerchip{display:inline-flex;padding-block:4px;padding-inline:4px 10px;margin-inline-start:-4px}
 /* Arrows that point "back" or "forward" mirror in right-to-left languages. */
 [dir="rtl"] .flip{display:inline-block;transform:scaleX(-1)}
+/* Long inline code (API names in the docs) breaks rather than pushing a phone page sideways. */
+code{overflow-wrap:anywhere}
 /* Games, codes and scores keep their own left-to-right layout inside a right-to-left page. */
 [dir="rtl"] .stage,[dir="rtl"] .bigcode,[dir="rtl"] .codeinput{direction:ltr}
 [dir="rtl"] .codeinput{text-align:right}
