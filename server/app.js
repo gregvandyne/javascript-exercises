@@ -11,8 +11,8 @@ import { notFound, page } from './views/layout.js';
 import { html } from './views/html.js';
 import { log } from './services/log.js';
 import { handler as health, lifecycle } from './services/health.js';
-import { BRAND } from './views/brand.js';
-import { middleware as i18n, tReq } from './i18n/index.js';
+import { middleware as i18n, tReq, tFor, pickLocale, readCookie, localeInfo, COOKIE as LANG_COOKIE } from './i18n/index.js';
+import { frameSafeHeaders } from './services/frame.js';
 import { middleware as theme } from './theme.js';
 import { router as authRoutes } from './routes/auth.js';
 import { router as discoverRoutes } from './routes/discover.js';
@@ -109,7 +109,7 @@ export function createApp() {
   };
   app.use('/vendor', (req, res, next) => {
     if (req.method !== 'GET') return next();
-    const rel = decodeURIComponent(req.path.replace(/^\/+/, ''));
+    let rel; try { rel = decodeURIComponent(req.path.replace(/^\/+/, '')); } catch { return next(); }   // a malformed escape: express.static answers it
     if (rel.includes('..') || !/\.(js|css|json)$/i.test(rel)) return next();   // only text; other files via express.static
     const enc = /\bbr\b/.test(req.headers['accept-encoding'] || '') ? 'br' : /\bgzip\b/.test(req.headers['accept-encoding'] || '') ? 'gzip' : null;
     if (!enc) return next();
@@ -163,11 +163,16 @@ function movedTo(req, res) {
   res.redirect(config.movedPermanently ? (get ? 301 : 308) : (get ? 302 : 307), where);
 }
 
-/** MAINTENANCE_MODE=1: every page answers 503 "back soon" (health still answers), so nothing writes while data moves. */
+/** MAINTENANCE_MODE=1: every page answers 503 "back soon" (health still answers), so nothing writes while data moves.
+ *  In the visitor's language (cookie or browser; this runs before the session and i18n middleware). */
 function maintenancePage(req, res) {
+  const lang = pickLocale({ cookie: readCookie(req, LANG_COOKIE), acceptLanguage: req.headers['accept-language'] }).locale;
+  const t = tFor(lang);
   res.set({ 'Retry-After': '300', 'Cache-Control': 'no-store' }).status(503);
-  if (req.path.startsWith('/api/')) return res.json({ error: `${BRAND} is moving to a new home. Back in a few minutes!` });
-  res.type('html').send(`<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Back soon</title>`
-    + `<body style="font:18px/1.5 system-ui,sans-serif;display:grid;place-items:center;min-height:90vh;margin:0 16px;text-align:center">`
-    + `<div><div style="font-size:64px">🛠️</div><h1>${BRAND} is moving to a new home</h1><p>We'll be back in a few minutes. Your games and saves are safe.</p></div></body></html>`);
+  if (req.path.startsWith('/api/')) return res.json({ error: t('errors.moving.text') });
+  // A game frame that reloads meanwhile shows the message too, not the browser's "refused to connect".
+  if (req.path.startsWith('/frame/')) return frameSafeHeaders(res).type('text').send(t('errors.moving.text'));
+  res.type('html').send(html`<!doctype html><html lang="${lang}" dir="${localeInfo(lang).dir}"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${t('errors.moving.title')}</title>`
+    + html`<body style="font:18px/1.5 system-ui,sans-serif;display:grid;place-items:center;min-height:90vh;margin:0 16px;text-align:center">`
+    + html`<div><div style="font-size:64px">🛠️</div><h1>${t('errors.moving.heading')}</h1><p>${t('errors.moving.text')}</p></div></body></html>`);
 }

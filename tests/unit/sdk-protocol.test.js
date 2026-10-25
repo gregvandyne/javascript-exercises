@@ -14,6 +14,7 @@ test('accepts well-formed messages from the game frame', () => {
   assert.ok(validMessage(ev({ brb: 1, type: 'brb:score', score: 10, label: 'pts' }), frame));
   assert.ok(validMessage(ev({ brb: 1, type: 'brb:gameover', won: true, score: null }), frame));
   assert.ok(validMessage(ev({ brb: 1, type: 'brb:fullscreen', on: true }), frame));
+  assert.ok(validMessage(ev({ brb: 1, type: 'brb:retry' }), frame));
 });
 test('rejects wrong source, origin, type or shape', () => {
   assert.equal(validMessage(ev({ brb: 1, type: 'brb:ready' }, { source: {} }), frame), null);

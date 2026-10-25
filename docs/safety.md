@@ -52,8 +52,10 @@ Every game, whether it came from our team or from a kid, runs the same way.
 - Each version must be under 2 MB.
 - **Cover pictures and playtests run the game in a throwaway browser.** The headless Chromium that takes screenshots
   runs the game in the very same wrapper players get (sandboxed iframe + the frame CSP), launched from a scrubbed
-  environment and an empty temp working directory so it never sees the server's secrets or folder. It can also run in
-  a **separate container with no database and no secrets** (`server/shots-worker.js`, used when `SNAPSHOT_URL` is set).
+  environment and an empty temp working directory so it never sees the server's secrets or folder. On the recommended
+  AWS/Azure setup (`deploy/docker-compose.yml`) it always runs in the **screenshot worker**, a separate container with
+  no database, no data disk, no secrets but its own token, no internet and a read-only file system
+  (`server/shots-worker.js`, used when `SNAPSHOT_URL` is set); on Render today it runs inside the app's container.
   The 3D library is answered from the code's own `public/vendor` files in both cases, never fetched from anywhere.
   Every other request is aborted, and WebRTC is removed in the screenshot browser (the one outbound path routing
   cannot abort), so a game it renders has no way out of that container.
@@ -229,13 +231,18 @@ reach the website's origin, read its cookies or storage, open a window, start a 
 `fetch`/`XHR`/`WebSocket`/`EventSource` call. It can draw, play sound, use WebGL (so real 3D works), and talk to the
 page only through `postMessage`, which both the page and the server re-check.
 
-**One thing even the CSP does not fully contain: a frame navigating *itself*.** No CSP directive restricts where a
-frame may send *itself* (there is no `navigate-to`/`form-action` for this any more), so a game can point its own
-`location` at an outside URL. That makes **one** request leave, with anything the game put in the URL — so the frame
-is **not** a perfect network jail. We bound it: the play page watches the frame and, on any unexpected navigation,
-pins it straight back to the game (`public/js/play.js`), so an attacker page never stays on screen; but the first
-request still leaks once. Everything else — `fetch`, `XHR`, `WebSocket`, `EventSource`, `sendBeacon`, images, CSS
-`@import`/`url()`, fonts, `data:`/`blob:` — is blocked by the CSP (verified in real Chromium, zero egress).
+**A frame navigating *itself*.** The frame's own CSP has no directive for where a frame may send *itself* (there is
+no `navigate-to` any more), so a game can point its own `location` at an outside URL. What stops it is the **page's**
+CSP: every page that shows a game frame (play, the Studio preview, the admin review queue) has `frame-src 'self'`, and
+the browser checks that before the frame's navigation makes any request — so no off-site request leaves (verified in
+real Chromium: the outside address is never contacted; `tests/e2e/play.spec.js` asserts it, so a CSP change can't undo
+it quietly). The frame is left on the browser's error page, so the play page pins it straight back to the game on any
+unexpected `load` (`public/js/play.js`) — that part is for the player, not for safety. A game that keeps reloading
+itself is pinned twice in 30 seconds and then stopped with a short message, never looped. (A reload the game starts
+itself is refused by the server: it carries no sign-in cookie, so the viewer-bound frame link doesn't match. The 3D
+card's "Try again" therefore asks the page to do the reload.) Everything else — `fetch`, `XHR`, `WebSocket`,
+`EventSource`, `sendBeacon`, images, CSS `@import`/`url()`, fonts, `data:`/`blob:` — is blocked by the frame's CSP
+(verified in real Chromium, zero egress).
 
 **Two more things the CSP does not cover, closed in the SDK** (verified in real Chromium against a hostile game — see
 `tests/unit/sandbox-lockdown.test.js`): WebRTC (removed; no browser has a CSP directive for it) and borrowing a
@@ -261,8 +268,9 @@ unreviewed cdnjs bundle never goes Public on its own. The scanner itself is a st
 sees through the common ways to hide a name but is not a guarantee on its own — it decides pass vs. "a person looks",
 and the CSP + lockdown are what actually contain the code. The headless Chromium that makes covers and playtests runs
 with `--no-sandbox` (the container has no user namespaces), but the game is still inside the iframe sandbox + CSP, and
-the browser is launched from a scrubbed environment and an empty working directory (or a separate container with no
-database or secrets), so a game it runs cannot read anything that matters.
+the browser is launched from a scrubbed environment and an empty working directory (and on the AWS/Azure setup in a
+separate container with no database, data disk, secrets or internet), so a game it runs cannot read anything that
+matters.
 
 ## 10. Honest limits of what the browser can prove
 

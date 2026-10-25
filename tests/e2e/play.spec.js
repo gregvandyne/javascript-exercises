@@ -1,6 +1,6 @@
 // Play mode: guests, saves, accounts, search, ratings, likes, live counts, and the sandbox.
 import { test, expect } from '@playwright/test';
-import { gameFrame, signup, uniq } from './helpers.js';
+import { gameFrame, signup, uniq, ownIp } from './helpers.js';
 
 test('home shows the three featured seed games', async ({ page }) => {
   await page.goto('/');
@@ -39,6 +39,39 @@ test('the game frame has no cookies, no network and no parent access', async ({ 
   expect(r.parent).toBe('blocked');
   expect(r.origin).toBe('null');
   expect(await page.locator('#gameframe').getAttribute('sandbox')).not.toContain('allow-same-origin');
+});
+
+test('a game pointing its own frame at another site: no request leaves, and the play page puts the game back', async ({ page }) => {
+  let outside = 0, loads = 0;
+  await page.context().route(/evil\.invalid/, r => { outside++; return r.fulfill({ status: 200, body: 'x' }); });
+  page.on('response', r => { if (r.url().includes('/frame/') && r.status() === 200) loads++; });
+  await page.goto('/play/ring-rumble');
+  const f = await gameFrame(page);
+  expect(loads).toBe(1);
+  await f.evaluate(() => { location.href = 'http://evil.invalid/steal?d=1'; });
+  // The page's CSP (frame-src 'self') refuses it before any request; the play page then swaps the error page back.
+  await expect.poll(() => loads, { timeout: 10_000 }).toBe(2);
+  await expect.poll(async () => { const g = page.frames().find(x => x.url().includes('/frame/')); return !!g && g.evaluate(() => typeof window.BRB === 'object').catch(() => false); }).toBe(true);
+  expect(outside).toBe(0);
+});
+
+test('a game that keeps reloading itself is stopped with a message after two tries, not looped', async ({ browser }) => {
+  const ctx = await browser.newContext(); const page = await ctx.newPage(); await ownIp(page);
+  // Every game document reloads itself soon after loading (an "auto-restart"), with no tap from the player. A reload
+  // from inside the frame has no sign-in cookie, so the server refuses it, and the play page pins the game back.
+  await ctx.addInitScript(() => { addEventListener('load', () => { if (window.BRB && self.origin === 'null') setTimeout(() => location.reload(), 300); }); });
+  let loads = 0; page.on('response', r => { if (r.url().includes('/frame/') && r.status() === 200) loads++; });
+  await page.goto('/play/ring-rumble');
+  // Just wait: Playwright's own steps run scripts in the page as if the player had tapped, and pins right after a tap
+  // don't count (a "Play again" button that reloads the game is fine), so polling here would keep it going.
+  await page.waitForTimeout(12_000);
+  const box = page.locator('.game-stopped');
+  await expect(box).toBeVisible();
+  await expect(box).toContainText('This game stopped working.');
+  await expect(box.locator('button')).toHaveText('Start again');
+  const n = loads; await page.waitForTimeout(3000);
+  expect(loads, 'no more loads once stopped').toBe(n);
+  await ctx.close();
 });
 
 test('Ring Rumble fullscreen button routes through the SDK', async ({ page }) => {

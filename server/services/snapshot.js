@@ -6,10 +6,11 @@
 //
 // Two modes:
 //   - Local (default; what Render runs): launch Chromium here, from a scrubbed environment and an empty
-//     temp working directory. On unless config.snapshots.
-//   - Remote: when SNAPSHOT_URL is set, send each job to a separate screenshot worker (server/shots-worker.js)
-//     over HTTP, so the browser runs in its own container with no database and no secrets. The worker runs
-//     the exact same code via runLocal().
+//     temp working directory. On in production, or with BRB_SNAPSHOTS=1.
+//   - Remote (what deploy/docker-compose.yml runs): when SNAPSHOT_URL is set, send each job to a separate screenshot
+//     worker (server/shots-worker.js) over HTTP, so the browser runs in its own container with no database and no
+//     secrets. The worker runs the exact same code via runLocal().
+//   BRB_SNAPSHOTS=0 turns both off.
 // The game page can reach nothing but Google Fonts, cdnjs and the self-hosted /vendor/three/ files (the same sources its
 // CSP allows); the vendor files are answered from disk, so 3D games work the same locally and in the worker.
 import fs from 'node:fs';
@@ -17,7 +18,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { frameDocument, frameCsp, SANDBOX } from './frame.js';
-import { VENDOR_PATH } from './vendor.js';
+import { VENDOR_PATH, THREE_MODULE, THREE_CORE } from './vendor.js';
 import { config } from '../config.js';
 
 const HOST = 'http://game.invalid';
@@ -29,6 +30,8 @@ function vendorFile(url) {
   const f = path.join(VENDOR_DIR, m[1], m[2]);
   return f.startsWith(VENDOR_DIR + path.sep) && fs.existsSync(f) && fs.statSync(f).isFile() ? f : null;
 }
+/** Are the pinned Three.js files on this disk? (The worker checks at start: without them 3D covers fail.) */
+export const threeReady = () => [THREE_MODULE, THREE_CORE].every(p => !!vendorFile(`${HOST}${p}`));
 const ALLOWED = /^https:\/\/(fonts\.googleapis\.com|fonts\.gstatic\.com|cdnjs\.cloudflare\.com)\//;
 const IDLE_MS = 45_000;
 const JOB_MS = 40_000;
@@ -41,8 +44,8 @@ const PLAY_WORDS = /\b(play|start|go|begin|let'?s go|tap to (play|start))\b|joue
 
 let browserP = null, idleTimer = null, chain = Promise.resolve(), launches = 0, workDir = null;
 
-// Screenshots are possible if a remote worker is configured, or local Chromium is turned on.
-export const enabled = () => !!config.snapshotUrl || !!config.snapshots;
+// Screenshots are possible if a remote worker is configured, or local Chromium is turned on. BRB_SNAPSHOTS=0 wins.
+export const enabled = () => !config.snapshotsOff && (!!config.snapshotUrl || !!config.snapshots);
 const remote = () => !!config.snapshotUrl;
 
 async function browser() {
@@ -149,17 +152,30 @@ export function resultToJson(r) {
 function jsonToResult(j) {
   return { ...j, title: j.title ? Buffer.from(j.title, 'base64') : null, play: j.play ? Buffer.from(j.play, 'base64') : null };
 }
+// The worker is down, busy (or too slow to answer) or refuses our token: not the game's fault, so callers retry later
+// (err.workerDown).
+const workerDown = msg => Object.assign(new Error(msg), { workerDown: true });
 async function runRemote(gameHtml, opts) {
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), JOB_MS + 15_000);
   try {
-    const res = await fetch(`${config.snapshotUrl}/run`, {
-      method: 'POST', signal: ctrl.signal,
-      headers: { 'content-type': 'application/json', authorization: `Bearer ${config.shotsToken}` },
-      body: JSON.stringify({ html: String(gameHtml || ''), opts: opts || {} }),
-    });
+    let res;
+    try {
+      res = await fetch(`${config.snapshotUrl}/run`, {
+        method: 'POST', signal: ctrl.signal,
+        headers: { 'content-type': 'application/json', authorization: `Bearer ${config.shotsToken}` },
+        body: JSON.stringify({ html: String(gameHtml || ''), opts: opts || {} }),
+      });
+    } catch (e) {
+      // A job is cut off at JOB_MS inside the worker (a game that freezes gets its own error), so running past that
+      // means it waited behind other jobs in the worker's queue: busy, not the game's fault.
+      if (ctrl.signal.aborted) throw workerDown('screenshot worker timed out (busy)');
+      throw workerDown(`screenshot worker unreachable (${(e.cause && e.cause.code) || e.message})`);
+    }
+    if (res.status === 401 || res.status === 403) throw workerDown(`screenshot worker refused SHOTS_TOKEN (${res.status}): it must be the same on the app and the worker`);
+    if (res.status === 502 || res.status === 503 || res.status === 504) throw workerDown(`screenshot worker busy or unavailable (${res.status})`);
     if (!res.ok) throw new Error(`screenshot worker ${res.status}`);
-    const j = await res.json();
+    const j = await res.json().catch(e => { throw ctrl.signal.aborted ? workerDown('screenshot worker timed out (busy)') : e; });
     if (!j || !j.title) throw new Error('screenshot worker returned no picture');
     return jsonToResult(j);
   } finally { clearTimeout(timer); }

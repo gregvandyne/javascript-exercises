@@ -60,6 +60,11 @@
       "heading": "Etwas ist kaputtgegangen",
       "text": "Unser Team weiß schon Bescheid. Versuch es gleich noch mal."
     },
+    "moving": {
+      "title": "Gleich wieder da",
+      "heading": "Oomba Academy zieht in ein neues Zuhause",
+      "text": "In ein paar Minuten sind wir zurück. Deine Spiele und Spielstände sind sicher."
+    },
     "api": {
       "notFound": "Nicht gefunden",
       "tooBig": "Das ist zu groß.",
@@ -978,7 +983,9 @@
       "rateTitle": "{title} bewerten",
       "stars": "Sterne",
       "starsLabel": "{count, plural, one {# Stern} other {# Sterne}}",
-      "thanksRating": "Danke fürs Bewerten!"
+      "thanksRating": "Danke fürs Bewerten!",
+      "stopped": "Dieses Spiel funktioniert gerade nicht mehr.",
+      "restart": "Neu starten"
     },
     "friends": {
       "codeCopied": "Code kopiert! Gib ihn einem Freund, den du kennst.",

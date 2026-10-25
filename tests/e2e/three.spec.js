@@ -85,3 +85,37 @@ test('a browser without import maps gets the friendly device message instead of 
   await f2.waitForFunction(() => document.readyState === 'complete');
   expect(await f2.evaluate(() => !!document.getElementById('brb-device'))).toBe(false);
 });
+
+/** A real tap on an element inside a game frame. The Studio preview is scaled down, which throws off locator clicks
+ *  there, so the point is mapped by hand; a real tap also counts as the player's (user activation). */
+async function tapInFrame(page, frame, frameSel, sel) {
+  const r = await frame.evaluate(s => { const b = document.querySelector(s).getBoundingClientRect(); return { x: b.left + b.width / 2, y: b.top + b.height / 2, w: innerWidth }; }, sel);
+  const box = await page.locator(frameSel).boundingBox(); const k = box.width / r.w;
+  await page.mouse.click(box.x + r.x * k, box.y + r.y * k);
+}
+
+test('a lost 3D picture: "Try again" has the page reload the game, in the Studio and on the play page', async ({ page }) => {
+  test.setTimeout(150_000);
+  const frames = [];
+  page.on('response', r => { if (r.url().includes('/frame/')) frames.push(r.status()); });
+  await signup(page, uniq('Tri'));
+  const { slug } = await templateGame(page, { template: 'island' });
+  const current = () => page.frames().find(f => f.url().includes('/frame/'));
+  const backAndReady = () => expect.poll(async () => { const f = current(); return !!f && f.evaluate(() => !document.getElementById('brb-device') && !!(window.__brbTest && window.__brbTest.state().ready)).catch(() => false); }, { timeout: 30_000 }).toBe(true);
+  const loseAndRetry = async frameSel => {
+    await backAndReady();
+    const f = current();
+    // The island asks for its picture back (preventDefault), but a forced loss never returns: the SDK shows its card.
+    await f.evaluate(() => document.querySelector('canvas').getContext('webgl2').getExtension('WEBGL_lose_context').loseContext());
+    await expect(f.locator('#brb-device')).toBeVisible({ timeout: 15_000 });
+    frames.length = 0;
+    await tapInFrame(page, f, frameSel, '#brb-device button');
+    // The page reloads it (with the sign-in cookie): a fresh 200, never the 403 a reload from inside the frame gets.
+    await expect.poll(() => frames.includes(200), { timeout: 15_000 }).toBe(true);
+    await backAndReady();
+    expect(frames).not.toContain(403);
+  };
+  await loseAndRetry('#st-frame');   // templateGame leaves us in the Studio
+  await page.goto(`/play/${slug}`);
+  await loseAndRetry('#gameframe');
+});

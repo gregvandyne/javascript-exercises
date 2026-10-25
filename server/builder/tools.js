@@ -107,6 +107,8 @@ export function toolbox(ctx) {
       try {
         r = await snapshot.runGame(cur.html, { size: 'phone', orientation, lang: ctx.locale || 'en', dir: localeInfo(ctx.locale || 'en').dir, title: g.title, scale: 1, quality: 62, titleMs: 1500, playMs: 2500 });
       } catch (e) {
+        // The screenshot worker is down or busy: say so, rather than blame the game.
+        if (e.workerDown) return { ok: false, forModel: 'Playtesting is not available on this server right now. Re-read the game carefully instead.' };
         return { ok: false, forModel: `The playtest could not run (${String(e.message || e).split('\n')[0]}). The game may freeze or loop forever while loading: check the start-up code.` };
       }
       const a = r.after || {}, b = r.before || {};

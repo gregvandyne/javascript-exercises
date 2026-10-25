@@ -59,6 +59,11 @@
       "heading": "有東西壞掉了",
       "text": "我們的團隊已經知道了。請等一下再試一次。"
     },
+    "moving": {
+      "title": "馬上回來",
+      "heading": "Oomba Academy 正在搬新家",
+      "text": "幾分鐘後就回來。你的遊戲和存檔都很安全。"
+    },
     "api": {
       "notFound": "找不到",
       "tooBig": "太大了。",
@@ -977,7 +982,9 @@
       "rateTitle": "幫 {title} 評分",
       "stars": "星星",
       "starsLabel": "{count} 顆星",
-      "thanksRating": "謝謝你評分！"
+      "thanksRating": "謝謝你評分！",
+      "stopped": "這個遊戲停止運作了。",
+      "restart": "重新開始"
     },
     "friends": {
       "codeCopied": "已複製代碼！把它給你認識的朋友。",

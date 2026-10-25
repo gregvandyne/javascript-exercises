@@ -5,9 +5,9 @@ are references: backups, monitoring, security, a managed-container alternative, 
 
 **What you get with Part 1:** one EC2 server (a virtual machine) with a separate EBS disk for the data, running the
 app and Caddy (which gets HTTPS certificates by itself) with Docker Compose. Backups go continuously to S3
-(Litestream) plus a daily disk snapshot. A third container, the screenshot worker, will take headless Chromium out of
-the app once that separate change is merged; until then Chromium runs inside the app container, and the compose file
-leaves the worker off (`deploy/docker-compose.yml`, service `shots`).
+(Litestream) plus a daily disk snapshot. A third container, the screenshot worker, runs the headless Chromium that
+takes cover pictures, away from the data: no database, no disk, no secrets but its own token, and no internet
+(`deploy/docker-compose.yml`, service `shots`).
 
 **Ground rules that come from how the app works** (they apply to every option below):
 
@@ -16,7 +16,9 @@ leaves the worker off (`deploy/docker-compose.yml`, service `shots`).
   one server would mean Redis and Postgres first; that is not needed now.)
 - **The database wants a block disk** (EBS), not a network file share. On a network share (EFS) you must set
   `BRB_JOURNAL_MODE=DELETE`, writes get slower, and Litestream can't be used.
-- **2 GB of memory at the very least**, 4 GB recommended: Chromium takes about 1 GB when it takes pictures.
+- **2 GB of memory at the very least**, 4 GB recommended. Chromium takes up to about 1 GB while it takes a picture;
+  the compose file caps the app and the screenshot worker at 1 GB each, so a heavy game can stall the worker, never
+  the site.
 
 Contents: [1. Recommended: one EC2 server](#1-recommended-one-ec2-server-with-an-ebs-disk) ·
 [2. Backups](#2-backups) · [3. Monitoring and alerts](#3-monitoring-and-alerts) · [4. Sizing](#4-sizing) ·
@@ -143,10 +145,8 @@ Fill in at least:
 | `ACME_EMAIL` | your email |
 | `SESSION_SECRET` | moving from Render: the exported one ([section 9](#9-moving-from-render-cut-over-checklist)); brand-new site: output of `openssl rand -hex 32` |
 | `ADMIN_PASSWORD`, `ANTHROPIC_API_KEY` | the same as on Render today |
+| `SHOTS_TOKEN` | output of `openssl rand -hex 32` (a new one: it is only shared between the app and the screenshot worker) |
 | `LITESTREAM_REPLICA_URL` | `s3://oomba-backups-<...>/oomba` (leave the two key lines empty: the role is used). Add a line `AWS_REGION=us-east-1` (your region). Leave it empty while you prepare a move from Render; see section 9. |
-
-Leave the screenshot-worker lines (`COMPOSE_PROFILES`, `SNAPSHOT_URL`, `SHOTS_TOKEN`) commented out until that change
-is merged; `.env.example` says what to set then.
 
 Keep a copy of the secrets somewhere safe outside the server too (section 5).
 
@@ -162,13 +162,15 @@ shows the IP.
 ```bash
 cd /srv/oomba/app/deploy
 docker compose up -d --build              # the first build takes several minutes
-docker compose ps                         # app and caddy "running"; app becomes "healthy"
+docker compose ps                         # app, shots and caddy "running"; app and shots become "healthy"
 docker compose logs -f app                # Ctrl+C to stop watching
 ```
 
 In the app log you should see `"msg":"listening"` with `"sessionSecret":"env"` and `"journalMode":"wal"`, and with
-Litestream on, `starting with Litestream replication`. Caddy's log (`docker compose logs caddy`) says `certificate
-obtained successfully`. Then open `https://play.example.com`, sign in as admin and open a game.
+Litestream on, `starting with Litestream replication`. The worker's log (`docker compose logs shots`) says
+`shots-worker listening` with `"three":"0.185.1"` (the 3D library is in the image), then `job done` for each cover.
+Caddy's log (`docker compose logs caddy`) says `certificate obtained successfully`. Then open
+`https://play.example.com`, sign in as admin and open a game.
 
 ### 1.11 Updating to a new version
 
@@ -252,11 +254,11 @@ Set these up once; all send email through one SNS topic.
 
 | Site size | Server | Data disk |
 |---|---|---|
-| Small (one school, a few hundred players) | t3.small, 2 GiB (minimum; set `BRB_SNAPSHOTS=0` until the screenshot worker lands, or Chromium may run it out of memory) | 20 GiB gp3 |
+| Small (one school, a few hundred players) | t3.small, 2 GiB (minimum: the worker's 1 GB cap keeps Chromium off the app's memory; if `docker stats` shows the server short of memory, add `BRB_SNAPSHOTS=0` to `.env`: no cover pictures) | 20 GiB gp3 |
 | Recommended start | **t3.medium, 4 GiB** | 20 GiB gp3 |
 | Busy (many schools, Builder used all day) | t3.large, 8 GiB | 50 GiB gp3 |
 
-Memory is what runs out first (Chromium). CPU credits: if the CloudWatch metric `CPUCreditBalance` keeps falling to
+Memory is what runs out first (Chromium, in the `shots` container). CPU credits: if the CloudWatch metric `CPUCreditBalance` keeps falling to
 zero, move to the next size or an `m7i`/`m6i` (non-burstable) type. Growing the disk: EBS → Modify volume, then
 `sudo resize2fs /dev/nvme1n1`, online.
 
@@ -264,8 +266,8 @@ zero, move to the next size or an `m7i`/`m6i` (non-burstable) type. Growing the 
 
 ## 5. Secrets
 
-The secrets are `SESSION_SECRET`, `ADMIN_PASSWORD`, `ANTHROPIC_API_KEY`, later `SHOTS_TOKEN` (and Litestream keys if
-you don't use the role). On the server they live only in `deploy/.env` (mode 600, owned by root). Keep the master copy
+The secrets are `SESSION_SECRET`, `ADMIN_PASSWORD`, `ANTHROPIC_API_KEY`, `SHOTS_TOKEN` (and Litestream keys if you
+don't use the role). On the server they live only in `deploy/.env` (mode 600, owned by root). Keep the master copy
 in **Systems Manager → Parameter Store** as *SecureString* parameters under `/oomba/` (e.g. `/oomba/SESSION_SECRET`),
 or in **Secrets Manager**, so a lost server doesn't lose them.
 
@@ -289,8 +291,8 @@ instead of quietly using a different one.
 
 What is already there: HTTPS everywhere (Caddy, HSTS), the app's own security headers and per-user / per-address rate
 limits (sign-in, sign-up, Builder, chat, uploads), port 3000 closed to the internet, the app running as an
-unprivileged user that can't regain privileges, and (once the worker lands) Chromium isolated from the data and the
-secrets.
+unprivileged user that can't regain privileges, and Chromium isolated in the screenshot worker (no data, no secrets,
+no internet, read-only).
 
 **AWS WAF** cannot be attached to an EC2 server directly; it needs CloudFront (or an ALB) in front. Worth it if you see
 abuse (lots of sign-up attempts, scraping) or want AWS's managed bad-bot lists:
@@ -370,16 +372,18 @@ Works, with real catches. Choose it only if you don't want to look after a serve
   2. **EFS** file system in the same VPC, with an **access point**: path `/oomba`, POSIX user and group `1000`, root
      directory owner `1000:1000`, permissions `750`. Its security group allows NFS (2049) from the task's security
      group.
-  3. **Task definition** (Fargate, Linux/X86_64, **1 vCPU / 3 GB**):
+  3. **Task definition** (Fargate, Linux/X86_64, **1 vCPU / 3 GB**; container memory limits app 1 GB, `shots` 1.5 GB,
+     so Chromium can never take the app's memory):
      - `app`: port 3000; environment `NODE_ENV=production`, `BRB_DATA_DIR=/data`, `BRB_JOURNAL_MODE=DELETE`,
        `TRUST_PROXY=1`, `PUBLIC_URL=https://play.example.com`, `REQUIRE_SESSION_SECRET=1`; **secrets**
        `SESSION_SECRET`, `ADMIN_PASSWORD`, `ANTHROPIC_API_KEY` from Secrets Manager or Parameter Store (the task
        execution role needs read access); the EFS volume (with the access point, transit encryption on) mounted at
-       `/data`; **stop timeout 40** seconds. Until the screenshot worker is merged, Chromium runs in this container.
-     - Once the worker is merged, a second container `shots`: the same image, command `node,server/shots-worker.js`,
+       `/data`; **stop timeout 40** seconds; also `SNAPSHOT_URL=http://127.0.0.1:4900` and the secret `SHOTS_TOKEN`.
+     - A second container `shots` (the screenshot worker): the same image, command `node,server/shots-worker.js`,
        user `1000`, *read-only root file system* with a small volume mounted at `/tmp`, environment `SHOTS_PORT=4900`,
-       `HOME=/tmp`, secret `SHOTS_TOKEN`. No EFS. Then add `SNAPSHOT_URL=http://127.0.0.1:4900` and the secret
-       `SHOTS_TOKEN` to `app`.
+       `HOME=/tmp`, secret `SHOTS_TOKEN` and nothing else (no EFS, no other secrets). *Essential* **off** with a
+       restart policy on, so a crash in the worker restarts it and never stops the app. Containers in a task share
+       one network, so unlike the compose stack the worker can reach the internet; it still has no data or secrets.
   4. **Application Load Balancer**: HTTPS listener with an ACM certificate (and HTTP → HTTPS redirect), target group
      HTTP port 3000, health check path `/health`, deregistration delay 30 s. Idle timeout: keep 60 s (the app keeps
      connections 65 s; the Builder stream sends a heartbeat every 15 s). The task's security group allows 3000 only
@@ -513,3 +517,4 @@ there is no DNS switch. Steps marked **(a)** are for the first case only.
 | Builder replies arrive all at once at the end | Something between the visitor and the app buffers responses. Caddy is set not to; check any CDN in front. |
 | Everyone shares one rate limit ("slow down" for all) | `TRUST_PROXY` is missing or too low (section 7). |
 | Out of memory | Bigger instance (section 4); `docker stats` shows which container uses it. |
+| No cover pictures for new games | App log `cover picture waiting for the screenshot worker`: `refused SHOTS_TOKEN` means `.env` changed without a restart of both (`docker compose up -d`); `unreachable` means `docker compose ps shots` is not running (`docker compose logs shots`). Covers are taken once it works again. `cover picture failed` names a game that would not run. |
