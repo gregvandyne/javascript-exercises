@@ -60,6 +60,13 @@ p{margin:0 0 .8em}
 .me-btn{display:flex;align-items:center;gap:8px;min-height:44px;padding-block:0;padding-inline:4px 6px;border-radius:999px;font-weight:800;color:var(--ink)}
 .me-btn:hover{background:var(--blue-50);text-decoration:none}
 .tabbar{display:none}
+/* Small laptops and landscape tablets: the full nav (with Classes or Schools) plus the profile name don't fit. */
+@media (min-width:821px) and (max-width:1180px){
+  .topbar .me-btn .name{display:none}
+  .navlink{padding:0 9px}
+  .topsearch{min-width:0}
+}
+@media (min-width:821px) and (max-width:1000px){.logo-text{display:none}}
 @media (max-width:820px){
   .topnav,.topbar .me-btn .name{display:none}
   .topsearch{max-width:none}

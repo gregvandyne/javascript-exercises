@@ -341,15 +341,15 @@ fieldset.picklist>label:has(input:checked){box-shadow:inset 0 0 0 2px var(--blue
 fieldset.picklist input{width:20px;height:20px;flex:none}
 /* ⋯ menus inside tables open in the row (a table scrolls sideways, so a floating menu would be cut off). */
 .rtable .inline-menu .menu{position:static;width:min(100%,340px);min-width:260px;margin-top:var(--s2);white-space:normal;box-shadow:inset 0 0 0 2px var(--line)}
-.rtable td.tacts:has(.inline-menu[open]){white-space:normal}
 @media (max-width:900px){
+  .rtable td.tacts:has(.inline-menu[open]){white-space:normal}
   .rtable td.tacts .inline-menu[open]{flex-basis:100%}
   .rtable td.tacts:has(.inline-menu[open])>.acts{flex-wrap:wrap}
 }
-/* Desktop: the menu opens under ⋯, lined up with its right edge; ⋯ stays where it was. */
+/* Desktop: the tables fit, so the menu floats under ⋯ as it does elsewhere and the table doesn't reflow. */
 @media (min-width:901px){
-  .rtable td.tacts .inline-menu[open]{display:flex;flex-direction:column;align-items:flex-end}
-  .rtable td.tacts:has(.inline-menu[open])>.acts{align-items:flex-start}
+  .tblwrap:has(>.rtable){overflow:visible}
+  .rtable .inline-menu .menu{position:absolute;inset-inline-end:0;top:calc(100% + 6px);margin-top:0;min-width:0;width:min(86vw,340px);box-shadow:var(--shadow-lg)}
 }
 
 /* ---- Progress pages (batch 2) ---- */
@@ -419,7 +419,8 @@ fieldset.picklist>label>span{flex:1;min-width:0}
 
 /* ---- Review fixes ---- */
 /* Long action labels (and translations) wrap inside the button instead of pushing the page sideways on phones. */
-@media (max-width:600px){.formacts>.btn,.panelhead .btn,.pagehead .row>.btn,.emptyacts>.btn,.cl-more>.btn{white-space:normal;text-align:center;max-width:100%}}
+.formacts>.btn,.panelhead .btn,.pagehead .row>.btn,.emptyacts>.btn{white-space:normal;text-align:center;max-width:100%}
+@media (max-width:600px){.cl-more>.btn{white-space:normal;text-align:center;max-width:100%}}
 /* A visually hidden heading first in a panel doesn't push the first visible item down. */
 :where(section.panel)>.sr-only:first-child+*{margin-top:0}
 /* "Make a new game" only with the Add form's "Play a game" type (no-JS: when that option is picked). */

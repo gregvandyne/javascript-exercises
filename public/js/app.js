@@ -3,6 +3,10 @@
 // Text for the reader's language comes from /js/i18n.js (t, fmtNum).
 import { t, fmtNum, RTL } from '/js/i18n.js';
 export { t };
+// The page loads /js/app.js?v=… and page scripts import '/js/app.js': two copies of this module. Only the first one
+// adds the page-wide listeners below, so one click or one form submit is handled once.
+const FIRST = !globalThis.__brbAppStarted; globalThis.__brbAppStarted = true;
+const on = (target, ...args) => { if (FIRST) target.addEventListener(...args); };
 export const $ = (s, el = document) => el.querySelector(s);
 export const $$ = (s, el = document) => Array.from(el.querySelectorAll(s));
 export const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -43,7 +47,7 @@ export async function copyText(text) {
 }
 
 // ---- Rail arrows (desktop) ----
-document.addEventListener('click', e => {
+on(document, 'click', e => {
   const b = e.target.closest('[data-rail]'); if (!b) return;
   const track = document.getElementById(b.dataset.rail); if (!track) return;
   // In right-to-left pages "forward" scrolls toward the left.
@@ -64,10 +68,10 @@ export async function refreshLive() {
     }
   } catch { /* offline: try again later */ }
 }
-if (document.querySelector('[data-live]')) setInterval(() => { if (!document.hidden) refreshLive(); }, 30000);
+if (FIRST && document.querySelector('[data-live]')) setInterval(() => { if (!document.hidden) refreshLive(); }, 30000);
 
 // ---- Forms with data-api: submit as JSON, show inline errors, then redirect/reload ----
-document.addEventListener('submit', async e => {
+on(document, 'submit', async e => {
   const f = e.target.closest('form[data-api]'); if (!f) return;
   e.preventDefault();
   // A chosen <option data-confirm> (e.g. merging accounts) asks its own question, read at submit time.
@@ -96,10 +100,10 @@ document.addEventListener('submit', async e => {
   } finally { if (btn && !left) { btn.disabled = false; delete btn.dataset.busy; } }   // leaving: stays disabled until the next page
 });
 // Back to a page kept in the browser's cache: buttons we disabled while leaving work again.
-window.addEventListener('pageshow', e => { if (e.persisted) $$('[data-busy]').forEach(b => { b.disabled = false; delete b.dataset.busy; }); });
+on(window, 'pageshow', e => { if (e.persisted) $$('[data-busy]').forEach(b => { b.disabled = false; delete b.dataset.busy; }); });
 
 // ---- 🌐 language menu: a <details> of plain links (works without JS); here we add Escape, outside-click and arrow keys ----
-for (const d of $$('[data-langpick]')) {
+if (FIRST) for (const d of $$('[data-langpick]')) {
   const links = () => $$('.lang-list a', d);
   const close = (focus = true) => { if (!d.open) return; d.open = false; if (focus) $('summary', d).focus(); };
   d.addEventListener('toggle', () => { if (d.open) { const cur = links().find(a => a.getAttribute('aria-current') === 'true') || links()[0]; if (cur) cur.focus(); } });
@@ -116,10 +120,10 @@ for (const d of $$('[data-langpick]')) {
 }
 // The Me page's language form saves as soon as a language is picked.
 const langSel = document.getElementById('lang-select');
-if (langSel) langSel.addEventListener('change', () => langSel.form.submit());
+if (FIRST && langSel) langSel.addEventListener('change', () => langSel.form.submit());
 
 // ---- "Play as guest" buttons anywhere ----
-document.addEventListener('click', async e => {
+on(document, 'click', async e => {
   const b = e.target.closest('[data-guest-play]'); if (!b) return;
   e.preventDefault(); b.disabled = true;
   try { await api('/api/auth/guest', { method: 'POST', body: {} }); location.href = b.dataset.guestPlay || location.href; }
@@ -127,4 +131,4 @@ document.addEventListener('click', async e => {
 });
 
 // A confirmation saved by a form just before it reloaded or moved to another page.
-try { const m = sessionStorage.getItem('brb-toast'); if (m) { sessionStorage.removeItem('brb-toast'); toast(m); } } catch { /* storage off */ }
+if (FIRST) try { const m = sessionStorage.getItem('brb-toast'); if (m) { sessionStorage.removeItem('brb-toast'); toast(m); } } catch { /* storage off */ }

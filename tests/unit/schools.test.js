@@ -288,6 +288,18 @@ test('review fixes: teachers cannot take over staff accounts, wording and links,
   assert.equal(r.status, 400); assert.ok(!getUser(A.id).banned); assert.equal(S.roleIn(outsider, pine.id), null);
   assert.equal(S.approveRequest(T, rid, { sameAs: CO.id }).code, 'notSchoolAccount');
 
+  // Someone who asked to join a class before they became staff: the old request closes and can't be approved.
+  const later = createUser({ username: 'PineLaterStaff', password: 'secret123' });
+  assert.equal(S.requestJoin(later, pc.join_code).state, 'pending');
+  const lrid = S.pendingRequests(pc.id).find(x => x.user_id === later.id).id;
+  r = await as(A)(`/api/schools/${pine.id}/staff`, { method: 'POST', body: { account: 'existing', rosterName: 'Lee Later', role: 'admin', username: 'PineLaterStaff' } });
+  assert.equal(r.status, 200);
+  assert.ok(!S.pendingRequests(pc.id).some(x => x.user_id === later.id), 'no stale card on the Students tab');
+  assert.equal(S.approveRequest(T, lrid, { rosterName: 'x' }).code, 'notFound');
+  q.run("UPDATE join_requests SET status='pending' WHERE id=?", lrid);   // even if it were still open
+  assert.equal(S.approveRequest(T, lrid, { rosterName: 'x' }).code, 'notFound');
+  assert.equal(S.membership(pine.id, later.id).role, 'admin'); assert.equal(S.membership(pine.id, later.id).roster_name, 'Lee Later');
+
   // "They already have an account" refuses a student of the school instead of turning them into staff.
   const kid = S.createSchoolAccount(A, pine.id, { rosterName: 'Kid One' });
   r = await as(A)(`/api/schools/${pine.id}/staff`, { method: 'POST', body: { account: 'existing', rosterName: 'Mr Typo', role: 'teacher', username: kid.username } });

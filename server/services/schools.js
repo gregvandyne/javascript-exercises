@@ -106,6 +106,8 @@ export function addMember(by, schoolId, userId, role, { rosterName = '', grade =
   const gr = clip(grade, 12) || (old && old.grade) || '';
   if (old) q.run("UPDATE school_members SET role=?, roster_name=?, grade=?, status='active', left_at=NULL, joined_at=CASE WHEN status='active' THEN joined_at ELSE ? END WHERE school_id=? AND user_id=?", role, rn, gr, now(), s.id, u.id);
   else q.run("INSERT INTO school_members(school_id, user_id, role, roster_name, grade, status, joined_at) VALUES (?,?,?,?,?,'active',?)", s.id, u.id, role, rn, gr, now());
+  // Now staff here: their old requests to join a class of this school as a student are closed.
+  if (role !== 'student') q.run("UPDATE join_requests SET status='declined', decided_by=?, decided_at=? WHERE user_id=? AND status='pending' AND class_id IN (SELECT id FROM classrooms WHERE school_id=?)", by.id, now(), u.id, s.id);
   audit(by.id, 'school.member_add', s.id, { user: u.id, role });
   return ok({ user: u });
 }
@@ -292,7 +294,9 @@ export function requestJoin(user, code) {
   return ok({ state: 'pending', class: c });
 }
 export const pendingRequests = classId => q.all(`SELECT r.id, r.created_at, u.id user_id, u.username, u.display_name, u.avatar, u.color, u.photo_at
-  FROM join_requests r JOIN users u ON u.id=r.user_id WHERE r.class_id=? AND r.status='pending' AND u.banned=0 ORDER BY r.created_at`, classId);
+  FROM join_requests r JOIN users u ON u.id=r.user_id WHERE r.class_id=? AND r.status='pending' AND u.banned=0
+    AND NOT EXISTS (SELECT 1 FROM school_members sm JOIN classrooms k ON k.school_id=sm.school_id WHERE k.id=r.class_id AND sm.user_id=r.user_id AND sm.status='active' AND sm.role!='student')
+  ORDER BY r.created_at`, classId);
 export const myPendingRequests = userId => q.all(`SELECT r.id, c.name class_name, s.name school_name FROM join_requests r JOIN classrooms c ON c.id=r.class_id JOIN schools s ON s.id=c.school_id
   WHERE r.user_id=? AND r.status='pending' ORDER BY r.created_at DESC`, userId);
 const getRequest = id => q.get('SELECT * FROM join_requests WHERE id=?', String(id || '')) || null;
@@ -305,6 +309,9 @@ export function approveRequest(by, requestId, { rosterName = '', sameAs = null }
   const r = getRequest(requestId); if (!r || r.status !== 'pending') return fail('notFound');
   const c = getClass(r.class_id); const u = getUser(r.user_id);
   if (!c || !u || u.banned) return fail('notFound');
+  // Asked before they became staff here: the old request no longer applies (approving it would make them a student).
+  const cur = membership(c.school_id, u.id);
+  if (cur && cur.role !== 'student') return fail('notFound');
   let res = ok();
   tx(() => {
     if (sameAs) { res = mergeSchoolAccount(by, c.school_id, sameAs, u.id); if (!res.ok) return; }
@@ -329,6 +336,8 @@ export function mergeSchoolAccount(by, schoolId, schoolAccountId, intoUserId) {
   // Only a student school account of this school can be merged (never a teacher's or school admin's account).
   const old = a && membership(schoolId, a.id);
   if (!a || a.managed_school !== schoolId || a.id === intoUserId || !old || old.role !== 'student') return fail('notSchoolAccount');
+  const into = membership(schoolId, intoUserId);
+  if (into && into.role !== 'student') return fail('notSchoolAccount');
   tx(() => {
     if (old) {
       q.run('DELETE FROM school_members WHERE school_id=? AND user_id=?', schoolId, intoUserId);

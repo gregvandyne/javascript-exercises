@@ -357,9 +357,9 @@ export function teacherLessonsPanel(req, c) {
   const count = plan.reduce((n, g) => n + g.lessons.length, 0);
   // A lesson is in a class once, and colleagues' lessons are copied first: the select lists your lessons not in it yet.
   const inClass = new Set(plan.flatMap(g => g.lessons.map(cl => cl.lesson_id)));
-  const mine = L.allLessonsOf(u.id, c.school_id), avail = mine.filter(l => !inClass.has(l.id));
-  // Lessons removed from this class can be brought back (with their work) by any of its teachers.
-  const mineIds = new Set(mine.map(l => l.id)), back = L.removedFrom(c.id).filter(l => !mineIds.has(l.id));
+  // Lessons removed from this class (anyone's) come back with their work; "My lessons" lists the ones never in it.
+  const back = L.removedFrom(c.id), backIds = new Set(back.map(l => l.id));
+  const mine = L.allLessonsOf(u.id, c.school_id), avail = mine.filter(l => !inClass.has(l.id) && !backIds.has(l.id));
   // The library is for school staff (the platform admin manages classes from the school page but has no library).
   const libOk = S.schoolsOf(u.id).some(s => s.id === c.school_id && s.role !== 'student');
   const colleagues = L.sharedCount(u, c.school_id) > 0;

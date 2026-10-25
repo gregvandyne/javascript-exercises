@@ -218,4 +218,11 @@ session notes), done in three batches. The main decisions:
   a copy opens straight away in the original's folder. Delete confirms say how much student work goes.
 - **Offline lesson drafts** (no API key) say so honestly, match games by tags then titles, and scale step minutes to
   the requested length.
+- **Who can reset or merge accounts** (found by the adversarial review): from a class, teachers reset passwords of
+  students only; staff passwords are reset by school admins on People (never your own: it would sign you out).
+  Approving a join request "same as" a school account only takes a student school account, never into someone who is
+  now staff; the account's lesson work moves with it. Someone made staff has their old join requests closed.
+- **Top bar on small laptops and landscape tablets** (821–1180px): the profile name and logo text hide and nav links
+  tighten, so the bar fits with the Classes or Schools tab in every language. app.js adds its page-wide listeners once
+  even when a page module imports it a second time (one click, one request).
 - Left for later: activity columns on the school page, names instead of ids in admin lookups, time zones per school.
