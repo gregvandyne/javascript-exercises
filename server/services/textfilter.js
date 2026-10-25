@@ -119,7 +119,8 @@ export function personalInfo(s) {
   const t = normalizeText(String(s || '').slice(0, 20000));
   if (/(^|[^\d.])(\+?\d{1,3}[\s.-]?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{3,4}(?![\d.])/.test(t) || /\d{7,}/.test(t) || /\b0\d{3,4}[\s-]?\d{6}\b/.test(t)) return 'phone';
   if (/[\p{L}\p{N}._%+-]{1,64}\s{0,3}(@|\(at\)|\[at\])\s{0,3}[\p{L}\p{N}-]{1,63}\s{0,3}(\.|dot|\(dot\)|\[dot\]|。)\s{0,3}\p{L}{2,}/iu.test(t)) return 'email';
-  if (/(https?:\/\/|www\.|\b[a-z0-9-]+\.(com|net|org|io|gg|co|uk|me|tv|app|xyz|ly)\b)/i.test(t)) return 'link';
+  // A scheme or www., or a domain-like token word.tld — but not a bare filename (dragon.png) or abbreviation.
+  if (/https?:\/\/|www\.[a-z0-9-]/i.test(t) || /\b[a-z0-9-]{2,}\.(?!(?:png|jpe?g|gif|webp|svg|bmp|ico|txt|pdf|mp[34]|mov|wav|ogg|zip|rar|docx?|xlsx?|pptx?|csv|js|mjs|json|html?|css|md|exe|dmg|apk)\b)[a-z]{2,24}\b/i.test(t)) return 'link';
   if (/\b\d{1,5}\s+[a-z]+\s+(street|st|road|rd|avenue|ave|lane|ln|drive|dr|court|ct|way|close|crescent)\b/i.test(t)) return 'address';
   if (/\b(snap(chat)?|insta(gram)?|tiktok|discord|whatsapp|kik|telegram|facebook|fb|my number|phone number|gmail|hotmail|yahoo|outlook|icloud|where do you live|what school|home address|meet (me|up))\b/i.test(t)) return 'contact';
   if (/(^|\s)@[a-z0-9_]{3,}/i.test(t)) return 'handle';

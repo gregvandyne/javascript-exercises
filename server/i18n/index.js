@@ -257,8 +257,13 @@ export function middleware(req, res, next) {
   res.vary('Accept-Language'); res.vary('Cookie');
   res.set('Content-Language', code);
   if (picked.source === 'query') {
-    setLangCookie(res, code);
-    saveUserLang(req.user, code);
+    // The language picker is a plain GET (works without JS), so csrfCheck doesn't guard it. Only PERSIST the choice
+    // for a same-origin / direct request, so a cross-site link can't silently change a signed-in user's saved language.
+    const site = req.headers['sec-fetch-site']; const origin = req.headers.origin;
+    let sameOrigin = true;
+    if (site) sameOrigin = site === 'same-origin' || site === 'none';
+    else if (origin && origin !== 'null') { try { sameOrigin = new URL(origin).host === req.headers.host; } catch { sameOrigin = false; } }
+    if (sameOrigin) { setLangCookie(res, code); saveUserLang(req.user, code); }
     const isPage = req.method === 'GET' && !req.path.startsWith('/api/') && !req.path.startsWith('/frame/');
     if (isPage) return res.redirect(303, withoutLang(req.originalUrl));
   }

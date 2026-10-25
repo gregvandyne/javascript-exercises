@@ -42,7 +42,11 @@ export async function publish(user, gameId, visibility, { versionId = null, t = 
   }
   const wasLive = game.status === 'published' && !!game.published_version_id;
 
-  if (visibility !== 'public') {
+  // 'school' can mean a whole school of children, so a flagged (or not-yet-approved) version needs a human look first,
+  // the same as public. Private and friends stay instant; a clean or already-approved school version is instant too.
+  const instant = visibility === 'private' || visibility === 'friends' ||
+    (visibility === 'school' && (version.safety_status === 'pass' || version.review_status === 'approved'));
+  if (visibility !== 'public' && instant) {
     tx(() => {
       q.run("UPDATE games SET visibility=?, status='published', published_version_id=?, pending_version_id=NULL, review_note='', published_at=COALESCE(published_at, ?), updated_at=? WHERE id=?", visibility, version.id, now(), now(), game.id);
     });
@@ -51,7 +55,7 @@ export async function publish(user, gameId, visibility, { versionId = null, t = 
     return { ok: true, state: 'live', message: visibility === 'private' ? t('publish.private') : visibility === 'school' ? t('publish.school') : t('publish.friends'), game: getGame(game.id) };
   }
 
-  // Public: reuse an earlier approval of this exact version, otherwise review.
+  // Public (or a flagged 'school' version): reuse an earlier approval of this exact version, otherwise review.
   if (version.review_status !== 'approved') {
     const verdict = await reviewVersion(game, version);
     q.run('UPDATE game_versions SET review_status=?, review_report=? WHERE id=?',

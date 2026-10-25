@@ -27,7 +27,10 @@ export const SITE_CSP = "default-src 'self'; script-src 'self'; style-src 'self'
 export function createApp() {
   const app = express();
   app.disable('x-powered-by');
-  app.set('trust proxy', process.env.TRUST_PROXY === '0' ? false : 1);
+  // Off by default: a directly-exposed server must NOT trust a client-supplied X-Forwarded-For (it would let anyone
+  // spoof req.ip and bypass every IP-keyed rate limit). A real proxy deployment sets TRUST_PROXY to its address/CIDR
+  // or hop count, and its edge must overwrite (not append) X-Forwarded-For.
+  app.set('trust proxy', (() => { const v = process.env.TRUST_PROXY; if (!v || v === '0' || v === 'false') return false; const n = Number(v); return Number.isInteger(n) ? n : v; })());
   app.set('query parser', 'simple');
 
   // Structured request log (one JSON line per request) + timing.

@@ -149,7 +149,9 @@ export function newUsername() {
   for (let i = 0; i < 200; i++) { const u = `${rnd(ADJ)}${rnd(ANIMAL)}${crypto.randomInt(10, 100)}`; if (!q.get('SELECT 1 FROM users WHERE username=? COLLATE NOCASE', u)) return u; }
   throw new Error('could not make a username');
 }
-export const newPassword = () => `${rnd(WORDS)}-${rnd(WORDS)}-${crypto.randomInt(10, 100)}`;
+// Three words + two digits from an 18-word list: ~18^3 * 90 ≈ 525k combinations, large enough that a brute-force is
+// infeasible once the login limiters are in place (short enough to stay printable on a child's login card).
+export const newPassword = () => `${rnd(WORDS)}-${rnd(WORDS)}-${rnd(WORDS)}-${crypto.randomInt(10, 100)}`;
 
 /** Create a school account (owned by the school) and add it as a member. Returns the one-time password. */
 export function createSchoolAccount(by, schoolId, { rosterName, role = 'student', grade = '' }) {
@@ -348,6 +350,9 @@ export function mergeSchoolAccount(by, schoolId, schoolAccountId, intoUserId) {
   if (!a || a.managed_school !== schoolId || a.id === intoUserId || !old || old.role !== 'student') return fail('notSchoolAccount');
   const into = membership(schoolId, intoUserId);
   if (into && into.role !== 'student') return fail('notSchoolAccount');
+  // Only a student the actor actually manages (a class they teach, or any as a school admin): a teacher can't reach
+  // into another teacher's class and merge away a child they don't teach.
+  if (!canManageStudent(by, schoolId, a.id)) return fail('notSchoolAccount');
   tx(() => {
     if (old) {
       q.run('DELETE FROM school_members WHERE school_id=? AND user_id=?', schoolId, intoUserId);

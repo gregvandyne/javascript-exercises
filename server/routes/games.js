@@ -99,7 +99,7 @@ router.get('/play/:slug', (req, res) => {
   const isOwner = u && (u.id === g.owner_id || u.role === 'admin');
   const versionId = g.published_version_id || (isOwner ? g.current_version_id : null);
   if (!versionId) return notFound(req, res, t('game.notReadyYet'));
-  const token = signToken({ v: versionId, g: g.id, u: u ? u.id : null, l: req.locale });
+  const token = signToken({ v: versionId, g: g.id, u: u ? u.id : null, l: req.locale }, 15 * 60);
   const liked = games.userLiked(g.id, u && u.id);
   // Opened from a lesson step (?lesson=<class lesson>&step=<step>): play time and scores count for that step.
   const lc = req.query.lesson && req.query.step && u ? progress.context(u, String(req.query.lesson), String(req.query.step)) : null;
@@ -145,8 +145,13 @@ router.get('/frame/:token', (req, res) => {
   if (!tok) return res.status(403).type('text').send(t('play.frameExpired'));
   const v = games.getVersion(tok.v); const g = v && games.getGame(v.game_id);
   if (!v || !g || g.id !== tok.g) return res.status(404).type('text').send(t('errors.api.notFound'));
-  const u = tok.u ? getUser(tok.u) : null;
   const preview = !!tok.p;
+  // Bind the token to the viewer so a leaked frame URL is useless to anyone else: the sandboxed iframe is same-site, so
+  // the SameSite=Lax session cookie rides along and req.user is the minter (guest-play sets its cookie before the frame loads).
+  const u = req.user;
+  if (tok.u && (!u || u.id !== tok.u)) return res.status(403).type('text').send(t('play.frameExpired'));
+  // Re-check the live game against the viewer (catches a game since hidden, unpublished or made private); preview is owner/admin-only at mint.
+  if (!preview && !games.canView(u, g)) return res.status(404).type('text').send(t('errors.api.notFound'));
   const lang = normalizeCode(tok.l) || req.locale;
   const init = {
     user: { ...(u ? { displayName: u.display_name, avatar: u.avatar, isGuest: !!u.is_guest } : { displayName: t('play.defaultPlayer'), avatar: '🙂', isGuest: true }), lang, dir: localeInfo(lang).dir },
@@ -174,14 +179,14 @@ router.post('/api/games/:id/like', requireUser, rateLimit('like', 30, 60e3), (re
   const g = apiGame(req, res); if (!g) return;
   res.json({ ok: true, ...games.toggleLike(g.id, req.user.id) });
 });
-router.post('/api/games/:id/play', rateLimit('play', 60, 60e3), (req, res) => {
+router.post('/api/games/:id/play', requireUser, rateLimit('play', 60, 60e3), (req, res) => {
   const g = apiGame(req, res); if (!g) return;
   const key = req.sessionId || `anon:${req.ip}`;
   presence.touch(g.id, key, req.user ? req.user.id : null);
   const playId = games.recordPlay(g.id, req.user && req.user.id);
   res.json({ ok: true, playId, playing: presence.count(g.id) });
 });
-router.post('/api/games/:id/heartbeat', rateLimit('hb', 30, 60e3), (req, res) => {
+router.post('/api/games/:id/heartbeat', requireUser, rateLimit('hb', 30, 60e3), (req, res) => {
   const g = apiGame(req, res); if (!g) return;
   presence.touch(g.id, req.sessionId || `anon:${req.ip}`, req.user ? req.user.id : null);
   res.json({ ok: true, playing: presence.count(g.id) });
@@ -207,6 +212,9 @@ router.post('/api/games/:id/score', requireUser, rateLimit('score', 30, 60e3), (
   const g = apiGame(req, res); if (!g) return;
   const { score, label } = req.body || {};
   if (!Number.isFinite(+score) || +score < 0) return res.status(400).json({ error: req.t('game.api.badScore') });
+  // A score only counts after the player actually opened the game (a recorded play in the last 24h): this stops a
+  // script from poisoning a leaderboard without ever loading the game. Scores are still client-reported (see docs/safety.md).
+  if (!games.hasRecentPlay(g.id, req.user.id)) return res.status(400).json({ error: req.t('game.api.badScore') });
   res.json({ ok: true, ...games.submitScore(g.id, req.user.id, +score, label) });
 });
 router.get('/api/games/:id/leaderboard', (req, res) => {
@@ -223,7 +231,9 @@ router.post('/api/games/:id/report', requireUser, rateLimit('report', 10, 3600e3
   const details = String((req.body || {}).details || '').slice(0, 300);
   if (q.get("SELECT 1 FROM reports WHERE game_id=? AND user_id=? AND status='open'", g.id, req.user.id)) return res.json({ ok: true, already: true, message: t('game.report.already') });
   q.run('INSERT INTO reports(id, game_id, user_id, reason, details, created_at) VALUES (?,?,?,?,?,?)', uid(), g.id, req.user.id, reason, details, now());
-  const open = q.get("SELECT COUNT(DISTINCT user_id) n FROM reports WHERE game_id=? AND status='open'", g.id).n;
+  // Only trustworthy distinct reporters count toward auto-hiding (not guests, not the owner): a few throwaway guest
+  // reports must not silently take a game down. Guest reports are still stored for admin review.
+  const open = q.get("SELECT COUNT(DISTINCT r.user_id) n FROM reports r JOIN users u ON u.id=r.user_id WHERE r.game_id=? AND r.status='open' AND u.is_guest=0 AND r.user_id!=?", g.id, g.owner_id).n;
   if (open >= config.reportsToHide && !g.hidden_reason && g.owner_id !== req.user.id) {
     q.run("UPDATE games SET hidden_reason='reports', updated_at=? WHERE id=?", now(), g.id);
     audit(null, 'game.auto_hidden', g.id, { reports: open });

@@ -88,6 +88,9 @@ router.post('/api/auth/signup', rateLimit('signup', 10, 3600e3), (req, res) => {
 });
 router.post('/api/auth/login', rateLimit('login', 20, 900e3, 'auth.api.tooManyTries'), (req, res) => {
   const { username, password } = req.body || {};
+  // Per-account backstop: caps guesses at one username to 10 / 15 min no matter how many source IPs an attacker uses.
+  const uname = String(username || '').toLowerCase().slice(0, 64);
+  if (uname && !allow(`login-user:${uname}`, 10, 900e3)) return res.status(429).json({ error: req.t('auth.api.tooManyTries') });
   const u = auth.getUserByName(username);
   if (!u || !auth.verifyPassword(u, password)) return res.status(400).json({ error: req.t('auth.api.wrongLogin'), field: 'password' });
   if (u.banned) return res.status(403).json({ error: req.t('auth.api.paused') });

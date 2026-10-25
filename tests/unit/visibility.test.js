@@ -103,3 +103,37 @@ test('favorites: ❤️ games show on Home, Me and /favorites, newest first; gam
   const none = mk('FavNone'); r = await fetch(base + '/favorites', { headers: { cookie: cookieFor(none.id) } }); assert.match(await r.text(), /No favorites yet/);
   r = await fetch(base + '/', { headers: { cookie: cookieFor(none.id) } }); assert.doesNotMatch(await r.text(), /id="favorites-h"/);
 });
+
+// ---- Security fixes from the audit ----
+test('report auto-hide ignores guest reports and the owner; needs enough distinct real reporters', () => {
+  const g = mkGame(owner, 'public');
+  const report = (who) => fetch(`${base}/api/games/${g.id}/report`, { method: 'POST', headers: { cookie: cookieFor(who.id), 'content-type': 'application/json' }, body: JSON.stringify({ reason: 'mean' }) });
+  // owner + 3 guests report: must NOT hide (owner excluded, guests excluded)
+  return (async () => {
+    await report(owner);
+    for (let i = 0; i < 3; i++) { const guest = createGuest(); await report(guest); }
+    assert.equal(games.getGame(g.id).hidden_reason, '', 'guest/owner reports do not auto-hide');
+    // three real distinct players reporting does hide it
+    for (let i = 0; i < 3; i++) await report(mk('Reporter' + i + Math.random().toString(36).slice(2, 5)));
+    assert.equal(games.getGame(g.id).hidden_reason, 'reports', 'enough real reporters auto-hide');
+  })();
+});
+test('a score needs a recorded play for that player and game', async () => {
+  const g = mkGame(owner, 'public');
+  const player = mk('ScoreKid' + Math.random().toString(36).slice(2, 5));
+  const score = (n) => fetch(`${base}/api/games/${g.id}/score`, { method: 'POST', headers: { cookie: cookieFor(player.id), 'content-type': 'application/json' }, body: JSON.stringify({ score: n }) });
+  const r1 = await score(1000); assert.equal(r1.status, 400, 'no play recorded yet -> rejected');
+  games.recordPlay(g.id, player.id);
+  const r2 = await score(1000); assert.equal(r2.status, 200, 'after opening the game the score counts');
+});
+test('frame token is bound to its viewer: another account (or none) cannot replay it', async () => {
+  const g = mkGame(owner, 'public');
+  const other = mk('OtherO' + Math.random().toString(36).slice(2, 5));
+  const page = await (await fetch(`${base}/play/${g.slug}`, { headers: { cookie: cookieFor(owner.id) } })).text();
+  const m = page.match(/\/frame\/([A-Za-z0-9_.\-]+)/);
+  assert.ok(m, 'play page has a frame token');
+  const url = `${base}/frame/${m[1]}`;
+  assert.equal((await fetch(url, { headers: { cookie: cookieFor(owner.id) } })).status, 200, 'the minter can load it');
+  assert.equal((await fetch(url, { headers: { cookie: cookieFor(other.id) } })).status, 403, 'another account cannot');
+  assert.equal((await fetch(url)).status, 403, 'and neither can an anonymous request');
+});

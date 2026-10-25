@@ -21,7 +21,7 @@ const safeEq = (a, b) => { const x = Buffer.from(a), y = Buffer.from(b); return 
 const pack = id => `${id}.${sign(id)}`;
 const unpack = tok => { if (!tok) return null; const i = tok.lastIndexOf('.'); if (i < 0) return null; const id = tok.slice(0, i); return safeEq(sign(id), tok.slice(i + 1)) ? id : null; };
 /** Short-lived signed tokens (frame URLs). */
-export function signToken(payload, ttlSec = 6 * 3600) { const body = Buffer.from(JSON.stringify({ ...payload, exp: now() + ttlSec * 1000 })).toString('base64url'); return `${body}.${sign(body)}`; }
+export function signToken(payload, ttlSec = 30 * 60) { const body = Buffer.from(JSON.stringify({ ...payload, exp: now() + ttlSec * 1000 })).toString('base64url'); return `${body}.${sign(body)}`; }
 export function readToken(tok) {
   if (!tok || typeof tok !== 'string') return null; const i = tok.lastIndexOf('.'); if (i < 0) return null;
   const body = tok.slice(0, i); if (!safeEq(sign(body), tok.slice(i + 1))) return null;

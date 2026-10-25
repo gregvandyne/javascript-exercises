@@ -7,9 +7,12 @@ export function allow(key, max, windowMs) {
   b.n++; return b.n <= max;
 }
 /** Express middleware: limit per user (or IP) per route name. msgKey: an i18n key for the kid-friendly "slow down" message. */
+/** The client key for anonymous limits: the real socket address, not a client-supplied header. X-Forwarded-For is only
+ *  trusted when `trust proxy` is set to a real proxy, so this can't be reset by a spoofed header on a direct connection. */
+export const clientKey = req => (req.socket && req.socket.remoteAddress) || req.ip || 'anon';
 export function rateLimit(name, max, windowMs, msgKey = 'errors.api.slowDown') {
   return (req, res, next) => {
-    const who = req.user ? req.user.id : (req.ip || 'anon');
+    const who = req.user ? req.user.id : clientKey(req);
     if (allow(`${name}:${who}`, max, windowMs)) return next();
     res.status(429).json({ error: tReq(req)(msgKey) });
   };

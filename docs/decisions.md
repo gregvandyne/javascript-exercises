@@ -233,3 +233,19 @@ session notes), done in three batches. The main decisions:
   tighten, so the bar fits with the Classes or Schools tab in every language. app.js adds its page-wide listeners once
   even when a page module imports it a second time (one click, one request).
 - Left for later: school-level dashboards (per-teacher activity), SSO, and roll-over of classes between school years.
+
+## Security review (pre-launch pen test)
+A defensive security review (8 areas, each finding independently verified against a seeded two-school server) led to these fixes:
+- **Credential brute-force.** `trust proxy` now defaults off, so a directly-exposed server can't be given a spoofed
+  `X-Forwarded-For` to reset IP rate limits (set `TRUST_PROXY` when behind a real proxy). Login is additionally capped
+  per account (10 / 15 min), independent of IP, and auto-generated school passwords went from ~29k to ~525k combinations.
+- **Report griefing.** Auto-hide now counts only distinct non-guest, non-owner reporters, so a few throwaway guest
+  reports can't silently take a game down (guest reports are still queued for admin review).
+- **Cross-teacher account merge.** Approving a join request "same student as" an existing account now requires the
+  teacher to actually manage that student (`canManageStudent`), so one teacher can't hijack another's pupil.
+- **School-wide publishing.** A game shared to a whole school now needs a human look when the safety scan flagged it,
+  the same as public (private/friends stay instant).
+- **Game frame.** Frame tokens are bound to their viewer and re-check live visibility, their lifetime dropped from 6h to
+  minutes, and the frame CSP carries a `sandbox` directive so a leaked frame URL is opaque-origin even if opened top-level.
+- **Smaller fixes.** `?lang=` only persists for same-origin requests; play/heartbeat need a session; a score only counts
+  after a recorded play; the chat/text link filter detects any TLD (not a short allowlist) without flagging filenames.

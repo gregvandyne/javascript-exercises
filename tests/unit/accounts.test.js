@@ -86,3 +86,18 @@ test('guest upgrade keeps the account but issues a new session id', async () => 
     assert.equal(me.username, 'UpgradedKid'); assert.equal(me.isGuest, false);
   } finally { await stop(server); fs.rmSync(DATA, { recursive: true, force: true }); }
 });
+
+test('login is throttled per account: 10 wrong guesses at one username, then 429 even from fresh IPs', async () => {
+  const server = await boot();
+  try {
+    const name = 'Throttle' + Math.random().toString(36).slice(2, 6);
+    assert.equal((await post('/api/auth/signup', { username: name, password: 'blue-otter-42' })).status, 200);
+    let sawLock = false;
+    // Spoofing X-Forwarded-For must NOT help (the per-account backstop is independent of IP).
+    for (let i = 0; i < 14; i++) {
+      const r = await fetch(BASE + '/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Forwarded-For': `198.51.100.${i}` }, body: JSON.stringify({ username: name, password: 'nope-' + i }) });
+      if (r.status === 429) { sawLock = true; break; }
+    }
+    assert.ok(sawLock, 'the account is locked out after ~10 guesses regardless of source IP');
+  } finally { await stop(server); }
+});

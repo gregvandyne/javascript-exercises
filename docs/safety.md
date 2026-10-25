@@ -169,7 +169,20 @@ child cannot get around the filter by switching language. Quick-chat phrases are
 language; typed messages are never machine-translated. Usernames stay Latin letters and digits in every language.
 (See `server/services/textfilter.js` and `tests/safety/i18n-filters.test.js`.)
 
-## 9. What we do not do
+## 9. Honest limits of what the browser can prove
+
+Games run in a locked sandbox with no network, so a game cannot cheat the website — but a **score** a game reports, and a
+student **marking a game step done**, are things the player's own browser asserts. We bound the abuse (a score only counts
+after the player has actually opened the game, and the login and action rate limits apply), but leaderboard scores and
+self-marked game/build/text completion are **student-reported, not independently verified**. Written answers, feedback and
+who-can-see-what are enforced on the server and are not self-reported. Teachers reading a gradebook should treat a game
+score the way they would treat a child saying "I got 100".
+
+A note for whoever deploys the site: the per-IP rate limits (and the visitor count) are only as trustworthy as the real
+client IP. Set `TRUST_PROXY` to match your proxy (see the README) so a request can't spoof its address; the login
+brute-force limit is additionally enforced per account so it holds even if the IP is wrong.
+
+## 10. What we do not do
 
 No real-money purchases, loot boxes or paid boosts. No third-party trackers and no ads of any kind.
 No collecting emails, real names, ages or locations.

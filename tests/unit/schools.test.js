@@ -35,7 +35,7 @@ const elmTeacher = S.createSchoolAccount(boss, elm.id, { rosterName: 'Elm Teache
 
 test('school accounts: kid-safe usernames, word passwords, real names only on the roster', () => {
   const r = S.createSchoolAccount(rivera, oak.id, { rosterName: 'Ana Silva', grade: '4' });
-  assert.ok(r.ok); assert.match(r.username, /^[A-Z][a-z]+[A-Z][a-z]+\d{2}$/); assert.match(r.password, /^[a-z]+-[a-z]+-\d{2}$/);
+  assert.ok(r.ok); assert.match(r.username, /^[A-Z][a-z]+[A-Z][a-z]+\d{2}$/); assert.match(r.password, /^[a-z]+-[a-z]+-[a-z]+-\d{2}$/);
   assert.equal(r.user.display_name, r.username, 'the real name never becomes the public name');
   assert.equal(r.user.managed_school, oak.id);
   assert.ok(verifyPassword(getUser(r.user.id), r.password));
@@ -151,7 +151,7 @@ test('pages: school console for admins, teacher pages for teachers, student clas
   // add students by name -> login cards (shown once, only to the teacher who made them)
   r = await as(rivera)(`/api/classes/${c.id}/students`, { method: 'POST', body: { names: 'Lia Park\nOmar Diaz', grade: '4' } });
   assert.equal(r.status, 200); assert.match(r.json.redirect, /^\/cards\//);
-  const cards = await as(rivera)(r.json.redirect); assert.match(cards.text, /Lia Park/); assert.match(cards.text, /[a-z]+-[a-z]+-\d{2}/);
+  const cards = await as(rivera)(r.json.redirect); assert.match(cards.text, /Lia Park/); assert.match(cards.text, /[a-z]+-[a-z]+-[a-z]+-\d{2}/);
   assert.equal((await as(head)(r.json.redirect)).status, 404, 'cards are for their creator only');
   // a student joins with their own account; the teacher approves with a real name
   r = await as(kid)('/api/classes/join', { method: 'POST', body: { code: c.join_code } }); assert.equal(r.json && r.json.state, 'pending', r.text);
@@ -257,6 +257,32 @@ test('school page and class flows: who teaches a new class, adding staff, duplic
   assert.equal((await as(boss)('/api/classes/join', { method: 'POST', body: { code: c.join_code } })).status, 400);
   // A school admin who doesn't teach a class gets back to the school page from it.
   assert.match((await as(head)(`/class/${c.id}`)).text, new RegExp(`href="/school/${oak.slug}"`));
+});
+
+test('account merge on approve only works for a student the teacher actually manages', async () => {
+  // Two teachers, two classes, one student each. Teacher A must not merge teacher B's student via a join request.
+  const sm = S.createSchool(boss, { name: 'Merge School' }).school;
+  const adminM = S.createSchoolAccount(boss, sm.id, { rosterName: 'Mo Admin', role: 'admin' }).user;
+  const tA = S.createSchoolAccount(adminM, sm.id, { rosterName: 'Tess A', role: 'teacher' }).user;
+  const tB = S.createSchoolAccount(adminM, sm.id, { rosterName: 'Theo B', role: 'teacher' }).user;
+  const cA = S.createClass(tA, sm.id, { name: 'Merge A' }).class;
+  const cB = S.createClass(tB, sm.id, { name: 'Merge B' }).class;
+  const stuB = S.createSchoolAccount(tB, sm.id, { rosterName: 'Bella B' }).user; S.addToClass(tB, cB.id, stuB.id);
+  // An own-account player asks to join teacher A's class.
+  const asker = createUser({ username: 'MergeAsker', password: 'secret123' });
+  assert.equal(S.requestJoin(asker, cA.join_code).state, 'pending');
+  const rid = S.pendingRequests(cA.id)[0].id;
+  // Teacher A tries to merge teacher B's student (not in A's class): refused, and stuB is untouched.
+  const r = await as(tA)(`/api/join-requests/${rid}/approve`, { method: 'POST', body: { rosterName: 'x', sameAs: stuB.id } });
+  assert.equal(r.status, 400);
+  assert.equal(getUser(stuB.id).banned, 0, 'the other teacher\'s student is not banned/merged');
+  assert.equal(S.membership(sm.id, stuB.id).role, 'student');
+  // The service call is refused too.
+  assert.equal(S.mergeSchoolAccount(tA, sm.id, stuB.id, asker.id).code, 'notSchoolAccount');
+  // A school admin (manages everyone) CAN merge, and a teacher can merge their OWN student.
+  const stuA = S.createSchoolAccount(tA, sm.id, { rosterName: 'Alan A' }).user; S.addToClass(tA, cA.id, stuA.id);
+  assert.ok(S.canManageStudent(tA, sm.id, stuA.id));
+  assert.ok(S.canManageStudent(adminM, sm.id, stuB.id));
 });
 
 test('review fixes: teachers cannot take over staff accounts, wording and links, sign-in homes, class deletion leaves nothing behind', async () => {

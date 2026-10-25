@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 const auth = await import('../../server/auth.js');
 const games = await import('../../server/services/games.js');
 const pub = await import('../../server/services/publish.js');
+const S = await import('../../server/services/schools.js');
 const GOOD = '<title>G</title><canvas></canvas><script>BRB.sfx.play("win")</script>';
 
 const owner = auth.createUser({ username: 'PubOwner', password: 'secret1' });
@@ -63,4 +64,25 @@ test('first-time public rejection marks the game rejected with the note', async 
   const r = pub.reject(admin, g.id, 'Too scary');
   assert.equal(r.status, 'rejected'); assert.equal(r.review_note, 'Too scary');
   assert.equal(games.canView(stranger, r), false);
+});
+
+test("a flagged 'school' version waits for review, but a clean one goes live", async () => {
+  // A school-account owner, so 'school' is an allowed sharing level for them.
+  const boss = auth.createUser({ username: 'PubBoss', password: 'secret1', role: 'admin' });
+  const school = S.createSchool(boss, { name: 'Publish School' }).school;
+  const sowner = S.createSchoolAccount(boss, school.id, { rosterName: 'Pub Kid' }).user;
+  // Flagged: a whole school of children is a broad audience, so it needs a human look first (like public).
+  const g = games.createGame(sowner.id, { title: 'School flagged' });
+  games.addVersion(g.id, GOOD, { createdBy: sowner.id, safetyStatus: 'flag' });
+  const r = await pub.publish(sowner, g.id, 'school');
+  assert.notEqual(r.state, 'live', 'a flagged school version is not instantly live');
+  // Clean scan: instant, as before.
+  const g2 = games.createGame(sowner.id, { title: 'School clean' });
+  games.addVersion(g2.id, GOOD, { createdBy: sowner.id, safetyStatus: 'pass' });
+  const r2 = await pub.publish(sowner, g2.id, 'school');
+  assert.equal(r2.state, 'live');
+  // Friends stays instant even when flagged (narrow, consenting audience).
+  const g3 = games.createGame(sowner.id, { title: 'Friends flagged' });
+  games.addVersion(g3.id, GOOD, { createdBy: sowner.id, safetyStatus: 'flag' });
+  assert.equal((await pub.publish(sowner, g3.id, 'friends')).state, 'live');
 });
