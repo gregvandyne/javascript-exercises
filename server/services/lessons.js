@@ -91,6 +91,11 @@ const LESSON_COLS = `l.*, (SELECT COUNT(*) FROM lesson_steps s WHERE s.lesson_id
 export const lessonsIn = (ownerId, schoolId, folderId = null) => q.all(`SELECT ${LESSON_COLS} FROM lessons l WHERE l.owner_id=? AND l.school_id=? AND l.folder_id IS ? AND l.archived_at IS NULL
   ORDER BY l.position, l.created_at`, ownerId, schoolId, folderId || null);
 export const allLessonsOf = (ownerId, schoolId) => q.all(`SELECT ${LESSON_COLS} FROM lessons l WHERE l.owner_id=? AND l.school_id=? AND l.archived_at IS NULL ORDER BY l.title COLLATE NOCASE`, ownerId, schoolId);
+/** Lessons that were in a class and were removed (not in it now): any teacher of the class can bring them back. */
+export const removedFrom = classId => q.all(`SELECT DISTINCT l.id, l.title FROM class_lessons cl JOIN lessons l ON l.id=cl.lesson_id
+  WHERE cl.class_id=? AND cl.removed_at IS NOT NULL AND l.archived_at IS NULL
+    AND NOT EXISTS (SELECT 1 FROM class_lessons x WHERE x.class_id=cl.class_id AND x.lesson_id=cl.lesson_id AND x.removed_at IS NULL)
+  ORDER BY l.title COLLATE NOCASE`, classId);
 /** Lessons colleagues shared with the school (not the viewer's own). */
 export const sharedLessons = (u, schoolId) => q.all(`SELECT ${LESSON_COLS}, COALESCE(NULLIF(m.roster_name,''), u.display_name) owner_name FROM lessons l JOIN users u ON u.id=l.owner_id
   LEFT JOIN school_members m ON m.school_id=l.school_id AND m.user_id=l.owner_id WHERE l.school_id=? AND l.shared=1 AND l.archived_at IS NULL AND l.owner_id!=? ORDER BY l.updated_at DESC LIMIT 200`, schoolId, u.id);
@@ -247,12 +252,15 @@ export const classLessons = classId => q.all(`SELECT cl.*, l.title, l.summary, l
     (SELECT COUNT(*) FROM lesson_steps s WHERE s.lesson_id=l.id) steps, (SELECT COALESCE(SUM(minutes),0) FROM lesson_steps s WHERE s.lesson_id=l.id) minutes
   FROM class_lessons cl JOIN lessons l ON l.id=cl.lesson_id WHERE cl.class_id=? AND cl.removed_at IS NULL ORDER BY cl.position, cl.assigned_at`, classId);
 export const isOpen = (cl, t = now()) => !cl.opens_at || cl.opens_at <= t;
-/** Dates are stored as the day at 00:00 UTC. 'today' from the start of the due day; 'late' only once the due day is over
- *  everywhere (+36h), so nobody is late on the due day in any time zone. null when there is no due date. */
+/** Dates are stored as the day at 00:00 UTC. 'today' during the due day (UTC, until schools have a time zone); 'due'
+ *  after it; 'late' only once the due day is over everywhere (+36h), so nobody is late on the due day in any time zone.
+ *  null when there is no due date. */
 export const LATE_AFTER = 36 * 3600e3;
+const DAY = 24 * 3600e3;
 export function dueState(cl, t = now()) {
   if (!cl || !cl.due_at) return null;
   if (t >= cl.due_at + LATE_AFTER) return 'late';
+  if (t >= cl.due_at + DAY) return 'due';
   if (t >= cl.due_at) return 'today';
   return 'upcoming';
 }
@@ -281,7 +289,13 @@ export function renameUnit(u, unitId, name) {
 /** Delete a unit: its lessons stay in the class, without a unit. */
 export function deleteUnit(u, unitId) {
   const un = getUnit(unitId); if (!un || !managed(u, un.class_id)) return fail('notFound');
-  tx(() => { q.run('UPDATE class_lessons SET unit_id=NULL WHERE unit_id=?', un.id); q.run('DELETE FROM class_units WHERE id=?', un.id); });
+  // Its lessons go after the lessons already outside a unit, in their order (so positions never tie).
+  tx(() => {
+    let p = nextPos('class_lessons', 'class_id=? AND unit_id IS NULL AND removed_at IS NULL', un.class_id);
+    for (const r of q.all('SELECT id FROM class_lessons WHERE unit_id=? AND removed_at IS NULL ORDER BY position, assigned_at', un.id)) q.run('UPDATE class_lessons SET unit_id=NULL, position=? WHERE id=?', p++, r.id);
+    q.run('UPDATE class_lessons SET unit_id=NULL WHERE unit_id=?', un.id);
+    q.run('DELETE FROM class_units WHERE id=?', un.id);
+  });
   return ok();
 }
 export function reorderUnit(u, unitId, dir) {
@@ -293,20 +307,22 @@ export function reorderUnit(u, unitId, dir) {
 export function assign(u, classId, lessonId, { unitId = null, opensAt = null, dueAt = null } = {}) {
   const c = managed(u, classId); if (!c) return fail('notFound');
   const l = getLesson(lessonId);
-  // Only lessons you can edit (yours, or any in the school for its admins): a colleague's lesson is copied first.
-  if (!l || l.school_id !== c.school_id || !canEditLesson(u, l)) return fail('notFound');
+  // Assigned before and removed: bring it back with its students' work (any teacher of the class may undo a removal).
+  const old = l && q.get('SELECT id FROM class_lessons WHERE class_id=? AND lesson_id=? AND removed_at IS NOT NULL ORDER BY removed_at DESC LIMIT 1', c.id, l.id);
+  // Otherwise only lessons you can edit (yours, or any in the school for its admins): a colleague's lesson is copied first.
+  if (!l || l.school_id !== c.school_id || !(old || canEditLesson(u, l))) return fail('notFound');
   if (unitId) { const un = getUnit(unitId); if (!un || un.class_id !== c.id) return fail('notFound'); }
   const o = dateOrNull(opensAt), d = dateOrNull(dueAt);
   if (o === undefined || d === undefined) return fail('badDate');
   if (q.get('SELECT 1 FROM class_lessons WHERE class_id=? AND lesson_id=? AND removed_at IS NULL', c.id, l.id)) return { ok: false, code: 'alreadyAssigned', className: c.name };
   const pos = nextPos('class_lessons', 'class_id=? AND unit_id IS ? AND removed_at IS NULL', c.id, unitId || null);
-  // Assigned before and removed: bring it back with its students' work.
-  const old = q.get('SELECT id FROM class_lessons WHERE class_id=? AND lesson_id=? AND removed_at IS NOT NULL ORDER BY removed_at DESC LIMIT 1', c.id, l.id);
   const id = old ? old.id : uid(10);
   if (old) q.run('UPDATE class_lessons SET removed_at=NULL, unit_id=?, position=?, opens_at=?, due_at=?, assigned_by=?, assigned_at=? WHERE id=?', unitId || null, pos, o, d, u.id, now(), id);
   else q.run('INSERT INTO class_lessons(id, class_id, lesson_id, unit_id, position, opens_at, due_at, assigned_by, assigned_at) VALUES (?,?,?,?,?,?,?,?,?)', id, c.id, l.id, unitId || null, pos, o, d, u.id, now());
   audit(u.id, 'lesson.assign', c.id, { lesson: l.id, restored: !!old });
-  return ok({ classLesson: getClassLesson(id), restored: !!old });
+  // restored: the row came back; workBack: and students had work in it.
+  const workBack = !!old && !!q.get('SELECT 1 FROM step_progress WHERE class_lesson_id=? LIMIT 1', id);
+  return ok({ classLesson: getClassLesson(id), restored: !!old, workBack });
 }
 export function updateAssignment(u, clId, { unitId, opensAt, dueAt } = {}) {
   const cl = getClassLesson(clId); if (!cl || !managed(u, cl.class_id)) return fail('notFound');
@@ -345,7 +361,7 @@ export const assignedClasses = lessonId => q.all('SELECT cl.id, cl.class_id, cl.
 export const stepWork = stepId => q.get('SELECT COUNT(DISTINCT user_id) n FROM step_progress WHERE step_id=?', stepId).n;
 export const lessonWork = lessonId => q.get('SELECT COUNT(DISTINCT p.user_id) n FROM step_progress p JOIN class_lessons cl ON cl.id=p.class_lesson_id WHERE cl.lesson_id=?', lessonId).n;
 /** Classes a lesson is in now (any teacher's), for the delete warning. */
-export const lessonClassCount = lessonId => q.get('SELECT COUNT(*) n FROM class_lessons WHERE lesson_id=? AND removed_at IS NULL', lessonId).n;
+export const lessonClassCount = lessonId => q.get('SELECT COUNT(*) n FROM class_lessons cl JOIN classrooms c ON c.id=cl.class_id WHERE cl.lesson_id=? AND cl.removed_at IS NULL', lessonId).n;
 /** Students who have started any of these class lessons (for the editor's "live" notice). */
 export const startedIn = clIds => (clIds.length ? q.get(`SELECT COUNT(DISTINCT user_id) n FROM step_progress WHERE class_lesson_id IN (${clIds.map(() => '?').join(',')})`, ...clIds).n : 0);
 /** How many lessons colleagues share in a school (the viewer's own are not counted). */

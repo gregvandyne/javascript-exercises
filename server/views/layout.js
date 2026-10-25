@@ -16,7 +16,7 @@ const NAV = [
   ['build', '/build', '🛠️'],
   ['friends', '/friends', '👫'],
 ];
-const VERSION = Date.now().toString(36); // cache-buster per boot
+export const VERSION = Date.now().toString(36); // cache-buster per boot
 
 /** URL of the current page with ?lang=<code> (the server stores the choice and redirects back without it). */
 function langHref(req, code) {
@@ -43,7 +43,6 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
   const locale = req.locale || DEFAULT_LOCALE; const info = localeInfo(locale);
   const u = req.user;
   const badges = u ? navBadges(u) : { friends: 0 };
-  const cur = k => (k === active ? raw('aria-current="page"') : '');
   const badge = k => (badges[k] ? html`<span class="badge" aria-label="${t('layout.badgeNew', { count: badges[k] })}">${badges[k] > 9 ? '9+' : badges[k]}</span>` : '');
   const meHref = u ? '/me' : '/login';
   // People in a school get a Classes tab (teachers land on /teach, students on /classes); the platform admin, when not
@@ -52,7 +51,10 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
   const navItems = u && staff ? [...NAV, ['classes', '/teach', '🏫']]
     : u && isPlatformAdmin(u) ? [...NAV, ['schools', '/admin/schools', '🏫']]
     : u && inAnySchool(u) ? [...NAV, ['classes', '/classes', '🏫']] : NAV;
+  // Pages in the Classes area highlight Schools for the platform admin, whose nav has Schools instead of Classes.
+  const act = active === 'classes' && !navItems.some(([k]) => k === 'classes') && navItems.some(([k]) => k === 'schools') ? 'schools' : active;
   const signIn = t('layout.signIn');
+  const cur = k => (k === act ? raw('aria-current="page"') : '');
   const nav = bare ? '' : html`
   <a class="skip" href="#main">${t('layout.skip')}</a>
   <header class="topbar">

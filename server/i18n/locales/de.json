@@ -1166,7 +1166,8 @@
       "noneText": "Legen Sie unten Ihre erste Klasse an. Sie erhalten einen Code, den Sie mit Ihren Schülern teilen.",
       "noneAsk": "Bitten Sie einen Schuladmin, Sie einer Klasse hinzuzufügen.",
       "manage": "{school} verwalten",
-      "noneAdmin": "Sie unterrichten noch keine Klasse"
+      "noneAdmin": "Sie unterrichten noch keine Klasse",
+      "noneAdminText": "Klassen, die Sie unterrichten, erscheinen hier. Alle Klassen von {school} finden Sie oben unter „{school} verwalten“."
     },
     "class": {
       "new": "Neue Klasse",
@@ -1196,7 +1197,7 @@
       "newCodeConfirm": "Einen neuen Code erstellen? Der alte funktioniert dann nicht mehr.",
       "noStudents": "Noch keine Schüler",
       "newAccounts": "Neue Schulkonten",
-      "newAccountsHint": "Jeder Schüler erhält einen Benutzernamen und ein Passwort zum Ausdrucken auf einer Anmeldekarte. Echte Namen sehen nur Lehrkräfte.",
+      "newAccountsHint": "Jeder Schüler erhält einen Magic Cups Namen und ein Passwort zum Ausdrucken auf einer Anmeldekarte. Echte Namen sehen nur Lehrkräfte.",
       "addTeacher": "Lehrkraft hinzufügen",
       "moveTo": "In Klasse verschieben",
       "move": "Verschieben",
@@ -1228,7 +1229,7 @@
       "moved": "{name} in {class} verschoben",
       "reprint": "Neue Anmeldekarten für die Klasse",
       "reprintConfirm": "{count, plural, one {Ein neues Passwort für # Schüler mit Schulkonto erstellen? Das alte Passwort funktioniert dann nicht mehr, und der Schüler wird abgemeldet.} other {Neue Passwörter für # Schüler mit Schulkonto erstellen? Die alten Passwörter funktionieren dann nicht mehr, und die Schüler werden abgemeldet.}}",
-      "joinCodeTextOn": "Die Schüler geben diesen Code auf ihrer Seite „Meine Klassen“ ein. Schüler mit einem Schulkonto von {school} sind sofort dabei; Schüler mit eigenem Konto bei Magic Cups warten, bis Sie sie annehmen.",
+      "joinCodeTextOn": "Die Schüler geben diesen Code auf ihrer Seite „Meine Klassen“ ein (Ich → Meine Klassen). Schüler mit einem Schulkonto von {school} sind sofort dabei; Schüler mit eigenem Konto bei Magic Cups warten, bis Sie sie annehmen.",
       "joinCodeTextOff": "Schüler mit einem Schulkonto von {school} geben diesen Code auf ihrer Seite „Meine Klassen“ ein und sind sofort dabei.",
       "noTeacher": "Diese Klasse hat noch keine Lehrkraft. Fügen Sie unten eine hinzu.",
       "removeTeacherConfirm": "{name} aus dieser Klasse entfernen? Die Klasse verschwindet dann aus „Meine Klassen“ von {name}.",
@@ -1237,7 +1238,9 @@
       "left": "Sie haben {name} verlassen",
       "onlyStaff": "Nur Mitglieder des Kollegiums von {school} können hinzugefügt werden.",
       "askAdmin": "Bitten Sie den Schuladmin ({admins}), die Person auf der Schulseite unter „Personen“ hinzuzufügen.",
-      "addStaffLink": "Unter „Personen“ zum Kollegium hinzufügen"
+      "addStaffLink": "Unter „Personen“ zum Kollegium hinzufügen",
+      "askNoAdmin": "{school} hat noch keinen Schuladmin. Bitten Sie das Magic Cups Team, einen zu ernennen; diese Person kann dann auf der Schulseite unter „Personen“ das Kollegium eintragen.",
+      "archivedToast": "{name} archiviert"
     },
     "requests": {
       "title": "{count, plural, one {# Schüler möchte beitreten} other {# Schüler möchten beitreten}}",
@@ -1258,7 +1261,7 @@
       "staff": "Kollegium",
       "students": "Schüler",
       "name": "Name",
-      "username": "Benutzername",
+      "username": "Magic Cups Name",
       "role": "Rolle",
       "grade": "Klassenstufe",
       "schoolAccount": "Schulkonto",
@@ -1276,7 +1279,7 @@
       "noStaff": "Noch keine Lehrkräfte.",
       "noStudents": "Noch keine Schüler.",
       "reset": "Neues Passwort",
-      "resetConfirm": "Ein neues Passwort für {name} erstellen? Das alte funktioniert dann nicht mehr.",
+      "resetConfirm": "Ein neues Passwort für {name} erstellen? Das alte funktioniert dann nicht mehr, und {name} wird abgemeldet.",
       "remove": "Aus Schule entfernen",
       "removeConfirm": "{name} aus der Schule entfernen? Die Person verlässt alle Klassen hier. Schulkonten werden deaktiviert.",
       "you": "{role} · Sie",
@@ -1331,7 +1334,7 @@
       "badRole": "Diese Rolle ist hier nicht erlaubt.",
       "ownRole": "Sie können Ihre eigene Admin-Rolle nicht ändern oder entfernen.",
       "noAccount": "Mach dir zuerst ein kostenloses Konto.",
-      "noSuchUser": "Es gibt kein Konto mit diesem Benutzernamen.",
+      "noSuchUser": "Es gibt kein Konto mit diesem Magic Cups Namen.",
       "otherSchoolAccount": "Dieses Konto gehört zu einer anderen Schule.",
       "notSchoolAccount": "Nur Schulkonten können hier ein neues Passwort bekommen. Schüler mit eigenem Konto setzen es selbst zurück.",
       "classHasStudents": "Diese Klasse hatte bereits Schüler und kann daher nicht gelöscht werden. Archivieren Sie sie stattdessen.",
@@ -1349,7 +1352,9 @@
       "chooseClass": "Wählen Sie eine Klasse.",
       "noSchoolAccounts": "Kein Schüler in dieser Klasse hat ein Schulkonto.",
       "badTeacher": "Wählen Sie jemanden aus dem Kollegium der Schule.",
-      "adminNotStudent": "Du kümmerst dich um Magic Cups, deshalb kannst du keiner Klasse als Schüler beitreten."
+      "adminNotStudent": "Du kümmerst dich um Magic Cups, deshalb kannst du keiner Klasse als Schüler beitreten.",
+      "isStudent": "{name} ist hier Schüler und kann deshalb nicht zum Kollegium hinzugefügt werden.",
+      "tickStudents": "Haken Sie mindestens einen Schüler an."
     },
     "classTabs": {
       "lessons": "Lektionen",
@@ -1433,7 +1438,6 @@
       "notSharedHint": "Teilen Sie es zuerst mit Ihrer Schule, oder öffnen Sie es im Studio und tippen Sie auf „Freigeben“.",
       "shareGame": "Mit meiner Schule teilen",
       "openStudio": "Im Studio öffnen",
-      "newGame": "Mit dem Baumeister ein neues Spiel für diese Lektion bauen",
       "newGameIdea": "Ihre Idee für das Spiel",
       "newGamePlaceholder": "z. B. ein Quiz mit 10 Fragen zu Brüchen für die 4. Klasse",
       "newGameButton": "Baumeister öffnen",
@@ -1493,7 +1497,8 @@
       "doneOf": "{done} von {students} fertig",
       "toReview": "{count} zu prüfen",
       "dueToday": "Heute fällig",
-      "late": "Überfällig"
+      "late": "Überfällig",
+      "removedGroup": "Aus dieser Klasse entfernt"
     },
     "view": {
       "teacherPreview": "Schüleransicht. Schaltflächen, die Arbeiten speichern, sind für Sie ausgeschaltet.",

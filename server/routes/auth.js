@@ -13,6 +13,8 @@ import { availableLocales, normalizeCode, tHtml, setLangCookie, saveUserLang } f
 
 export const router = Router();
 const safeNext = n => (typeof n === 'string' && /^\/(?!\/)[\w\-/?=&%.#]*$/.test(n) ? n : '/');
+/** A ?next= that asks for a real page (not missing, unsafe or just '/'), else null so people land on their own home. */
+const wantedNext = n => { const s = safeNext(n); return s === '/' ? null : s; };
 /** Where someone lands after signing in: teachers and school admins on My classes, school-account students on their
  *  classes, the platform admin on the admin area; everyone else on the game site. */
 export function homeFor(u) {
@@ -29,7 +31,7 @@ function authPage(req, res, mode) {
   const u = req.user;
   const isSignup = mode === 'signup';
   const upgrading = isSignup && u && u.is_guest;
-  if (u && !u.is_guest) return res.redirect(req.query.next ? next : homeFor(u));
+  if (u && !u.is_guest) return res.redirect(wantedNext(req.query.next) || homeFor(u));
   const body = html`<div class="authbox">
     <div class="panel">
       <div class="center" style="font-size:3rem" aria-hidden="true">${isSignup ? '🎉' : '👋'}</div>
@@ -37,7 +39,7 @@ function authPage(req, res, mode) {
       <p class="center muted">${isSignup ? t('auth.page.introSignup') : t('auth.page.introLogin')}</p>
       ${upgrading ? html`<p class="notice good">${tHtml(t, 'auth.page.upgradeNotice', { name: u.display_name })}</p>` : ''}
       <form data-api="/api/auth/${isSignup ? 'signup' : 'login'}" ${isSignup ? raw(`data-next="${next.replace(/"/g, '&quot;')}"`) : ''} novalidate>
-        ${!isSignup && req.query.next ? html`<input type="hidden" name="next" value="${next}">` : ''}
+        ${!isSignup && wantedNext(req.query.next) ? html`<input type="hidden" name="next" value="${next}">` : ''}
         <div class="field"><label for="username">${isSignup ? t('auth.page.nameLabelSignup') : t('auth.page.nameLabelLogin')}</label>
           <input class="input" id="username" name="username" dir="ltr" autocomplete="username" required minlength="3" maxlength="16" autocapitalize="off" spellcheck="false" placeholder="${isSignup ? t('auth.page.namePlaceholder') : ''}">
           ${isSignup ? html`<span class="hint">${t('auth.page.nameHint')}</span>` : ''}
@@ -91,7 +93,7 @@ router.post('/api/auth/login', rateLimit('login', 20, 900e3, 'auth.api.tooManyTr
   if (u.banned) return res.status(403).json({ error: req.t('auth.api.paused') });
   if (req.user) auth.endSession(req, res);
   auth.startSession(res, u.id, req.headers['user-agent']);
-  res.json({ ok: true, user: auth.publicUser(u), redirect: (req.body || {}).next ? safeNext(req.body.next) : homeFor(u) });
+  res.json({ ok: true, user: auth.publicUser(u), redirect: wantedNext((req.body || {}).next) || homeFor(u) });
 });
 router.post('/api/auth/logout', (req, res) => { auth.endSession(req, res); res.json({ ok: true, redirect: '/' }); });
 router.get('/api/me', (req, res) => res.json({ user: auth.publicUser(req.user) }));

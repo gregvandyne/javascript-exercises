@@ -50,7 +50,7 @@ Objectives: 2 to 4 short lines, one per line.`,
 /** Small words that say nothing about the topic (they matched unrelated games before). */
 const STOP = new Set(['and', 'the', 'for', 'with', 'about', 'from', 'into', 'what', 'how', 'this', 'that', 'your']);
 /** Words of a text, lower case, with a simple plural trim ("planets" also finds "Planet Quiz"). */
-const wordsOf = s => String(s || '').toLowerCase().split(/[^\p{L}\p{N}]+/u).filter(w => w.length > 2 && !STOP.has(w)).map(w => (w.length > 4 ? w.replace(/(es|s)$/, '') : w));
+const wordsOf = s => String(s || '').toLowerCase().split(/[^\p{L}\p{N}]+/u).filter(w => w.length > 2 && !STOP.has(w)).map(w => (w.length > 3 ? w.replace(/(?<!s)s$/, '').replace(/e$/, '') : w));
 
 /** A plain starting point without the AI: warm-up, a matching game if one is found, a build activity, an exit ticket.
  *  A game matches on its tags first, then its title (topic words before subject words), never on its description alone.

@@ -156,7 +156,10 @@ export function createSchoolAccount(by, schoolId, { rosterName, role = 'student'
 /** New password for a school account (personal accounts keep their own passwords). */
 export function resetSchoolPassword(by, schoolId, userId) {
   const u = getUser(userId);
-  if (!u || u.managed_school !== schoolId || !membership(schoolId, userId)) return fail('notSchoolAccount');
+  const m = membership(schoolId, userId);
+  if (!u || u.managed_school !== schoolId || !m) return fail('notSchoolAccount');
+  // Only school admins reset a staff member's password (teachers reset their students' only).
+  if (m.role !== 'student' && !canManageSchool(by, schoolId)) return fail('notSchoolAccount');
   const password = newPassword();
   setPassword(u.id, password, { signOutEverywhere: true });
   audit(by.id, 'school.password_reset', schoolId, { user: u.id });
@@ -323,8 +326,9 @@ export function declineRequest(by, requestId) {
 /** Move a school account's school records (membership, classes, games) onto the student's own account, then remove it. */
 export function mergeSchoolAccount(by, schoolId, schoolAccountId, intoUserId) {
   const a = getUser(schoolAccountId);
-  if (!a || a.managed_school !== schoolId || a.id === intoUserId) return fail('notSchoolAccount');
-  const old = q.get('SELECT * FROM school_members WHERE school_id=? AND user_id=?', schoolId, a.id);
+  // Only a student school account of this school can be merged (never a teacher's or school admin's account).
+  const old = a && membership(schoolId, a.id);
+  if (!a || a.managed_school !== schoolId || a.id === intoUserId || !old || old.role !== 'student') return fail('notSchoolAccount');
   tx(() => {
     if (old) {
       q.run('DELETE FROM school_members WHERE school_id=? AND user_id=?', schoolId, intoUserId);
@@ -335,6 +339,9 @@ export function mergeSchoolAccount(by, schoolId, schoolAccountId, intoUserId) {
       q.run('UPDATE class_members SET user_id=? WHERE class_id=? AND user_id=?', intoUserId, cm.class_id, a.id);
     }
     q.run('UPDATE games SET owner_id=? WHERE owner_id=?', intoUserId, a.id);
+    // Lesson work moves too (if both accounts did the same step, the student's own account keeps theirs).
+    q.run('UPDATE OR IGNORE step_progress SET user_id=? WHERE user_id=?', intoUserId, a.id);
+    q.run('DELETE FROM step_progress WHERE user_id=?', a.id);
     for (const t of ['sessions', 'friends', 'join_requests']) q.run(`DELETE FROM ${t} WHERE user_id=?`, a.id);
     q.run('DELETE FROM friends WHERE friend_id=?', a.id);
     q.run("UPDATE users SET banned=1, password_hash=NULL, managed_school='', username=? WHERE id=?", `merged_${a.id}`, a.id);

@@ -118,6 +118,12 @@ test('AI draft without a key: a template in the teacher’s language with a matc
   assert.deepEqual(d.steps.map(s => s.kind), ['text', 'game', 'build', 'question'], 'no separate wrap-up: the exit ticket ends it');
   assert.equal(d.steps[1].gameId, publicGame.id);
   assert.equal(d.steps.reduce((n, s) => n + s.minutes, 0), 40, 'fills the default 40 minutes');
+  // plurals match the singular in a game's title or tags (shapes → Shape Sorter, rhymes → rhyme)
+  const pick = (topic, g) => (templateDraft({ topic }, [{ id: 'x', description: '', tags: '', ...g }]).steps.find(st => st.kind === 'game') || {}).gameId;
+  assert.equal(pick('Shapes', { title: 'Shape Sorter' }), 'x');
+  assert.equal(pick('Rhymes', { title: 'Word fun', tags: 'rhyme' }), 'x');
+  assert.equal(pick('glass', { title: 'Glass maze' }), 'x');
+  assert.equal(pick('oceans', { title: 'Shape Sorter' }), undefined);
   const r = await draftLesson({ topic: 'oceans', minutes: 20 }, []);
   assert.equal(r.ai, false); assert.equal(r.draft.steps.length, 3, 'no game step when nothing matches');
   assert.equal(r.draft.steps.reduce((n, s) => n + s.minutes, 0), 20, 'minutes scaled to the length asked for');
@@ -193,7 +199,7 @@ test('class Lessons tab and editor: one assignment per class, rows open progress
   assert.match(r.text, new RegExp(`href="/class/${c5.id}/lessons/${cl.id}"`), 'student view in the ⋯ menu');
   assert.match(r.text, new RegExp(`href="/teach/lessons/${l.id}\\?from=${c5.id}"`));
   assert.doesNotMatch(r.text, new RegExp(`<option value="${l.id}">`), 'not offered twice');
-  assert.doesNotMatch(r.text, /<h2 id="ls-h"/);
+  assert.match(r.text, /<h2 id="ls-h" class="sr-only">/, 'the tab heading is for screen readers only');
   // the editor: one line per class (linking to the row), live notice, class not offered again, back to the class
   r = await as(ana)(`/teach/lessons/${l.id}?from=${c5.id}`);
   assert.match(r.text, new RegExp(`href="/class/${c5.id}#cl-${cl.id}"`));

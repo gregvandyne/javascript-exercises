@@ -131,6 +131,7 @@ const MIGRATIONS = [
   // Removing a lesson from a class keeps students' work: the assignment is marked removed (and comes back, with the
   // work, if the lesson is assigned to that class again).
   ['0012_class_lesson_removed', `ALTER TABLE class_lessons ADD COLUMN removed_at INTEGER;`],
+  ['0013_orphan_class_rows', `DELETE FROM class_lessons WHERE class_id NOT IN (SELECT id FROM classrooms); DELETE FROM class_units WHERE class_id NOT IN (SELECT id FROM classrooms);`],
 ];
 
 db.exec('CREATE TABLE IF NOT EXISTS migrations (name TEXT PRIMARY KEY, applied_at INTEGER NOT NULL)');

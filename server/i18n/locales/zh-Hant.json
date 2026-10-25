@@ -1165,7 +1165,8 @@
       "noneText": "在下方建立你的第一個班級。你會取得一組代碼，可以分享給學生。",
       "noneAsk": "請校務管理員將你加入班級。",
       "manage": "管理 {school}",
-      "noneAdmin": "你還沒有任教的班級"
+      "noneAdmin": "你還沒有任教的班級",
+      "noneAdminText": "你任教的班級會顯示在這裡。{school} 的所有班級都在上方的「管理 {school}」中。"
     },
     "class": {
       "new": "新增班級",
@@ -1195,7 +1196,7 @@
       "newCodeConfirm": "要產生新代碼嗎？舊代碼將會失效。",
       "noStudents": "還沒有學生",
       "newAccounts": "新的學校帳號",
-      "newAccountsHint": "每位學生會取得一組使用者名稱和密碼，可印成登入卡。真實姓名只有老師看得到。",
+      "newAccountsHint": "每位學生會取得一組 Magic Cups 名字和密碼，可印成登入卡。真實姓名只有老師看得到。",
       "addTeacher": "新增老師",
       "moveTo": "移到班級",
       "move": "移動",
@@ -1227,7 +1228,7 @@
       "moved": "已將 {name} 移到 {class}",
       "reprint": "重新產生全班的登入卡",
       "reprintConfirm": "{count, plural, other {要為 # 位使用學校帳號的學生產生新密碼嗎？}}舊密碼將會失效，他們也會被登出。",
-      "joinCodeTextOn": "學生在「我的班級」頁面輸入這組代碼。擁有 {school} 學校帳號的學生會立即加入；使用自己 Magic Cups 帳號的學生則需等你核准。",
+      "joinCodeTextOn": "學生在「我的班級」頁面（我的 → 我的班級）輸入這組代碼。擁有 {school} 學校帳號的學生會立即加入；使用自己 Magic Cups 帳號的學生則需等你核准。",
       "joinCodeTextOff": "擁有 {school} 學校帳號的學生在「我的班級」頁面輸入這組代碼，就能立即加入。",
       "noTeacher": "這個班級還沒有老師，請在下方新增。",
       "removeTeacherConfirm": "要將 {name} 從這個班級移除嗎？這個班級會從對方的「我的班級」中消失。",
@@ -1236,7 +1237,9 @@
       "left": "你已退出 {name}",
       "onlyStaff": "只能新增 {school} 的教職員。",
       "askAdmin": "請校務管理員（{admins}）在學校的「成員」分頁新增對方。",
-      "addStaffLink": "在「成員」分頁新增教職員"
+      "addStaffLink": "在「成員」分頁新增教職員",
+      "askNoAdmin": "{school} 還沒有校務管理員。請 Magic Cups 團隊指派一位；之後校務管理員就能在學校的「成員」分頁新增教職員。",
+      "archivedToast": "已封存 {name}"
     },
     "requests": {
       "title": "{count, plural, other {# 位學生想加入}}",
@@ -1257,7 +1260,7 @@
       "staff": "教職員",
       "students": "學生",
       "name": "姓名",
-      "username": "使用者名稱",
+      "username": "Magic Cups 名字",
       "role": "身分",
       "grade": "年級",
       "schoolAccount": "學校帳號",
@@ -1275,7 +1278,7 @@
       "noStaff": "還沒有教職員。",
       "noStudents": "還沒有學生。",
       "reset": "新密碼",
-      "resetConfirm": "要為 {name} 產生新密碼嗎？舊密碼將會失效。",
+      "resetConfirm": "要為 {name} 產生新密碼嗎？舊密碼將會失效，對方也會被登出。",
       "remove": "從學校移除",
       "removeConfirm": "要將 {name} 從學校移除嗎？對方會離開這所學校的所有班級，學校帳號也會停用。",
       "you": "{role} · 我",
@@ -1330,7 +1333,7 @@
       "badRole": "這裡不允許設定這個身分。",
       "ownRole": "你無法變更或移除自己的管理員身分。",
       "noAccount": "請先建立免費帳號。",
-      "noSuchUser": "沒有這個使用者名稱的帳號。",
+      "noSuchUser": "沒有使用這個 Magic Cups 名字的帳號。",
       "otherSchoolAccount": "這個帳號屬於其他學校。",
       "notSchoolAccount": "這裡只能為學校帳號產生新密碼。使用個人帳號的學生請自行重設密碼。",
       "classHasStudents": "這個班級曾經有學生，所以無法刪除。請改為封存。",
@@ -1348,7 +1351,9 @@
       "chooseClass": "請選擇班級。",
       "noSchoolAccounts": "這個班級沒有使用學校帳號的學生。",
       "badTeacher": "請選擇學校的教職員。",
-      "adminNotStudent": "你負責管理 Magic Cups，所以不能用學生身分加入班級。"
+      "adminNotStudent": "你負責管理 Magic Cups，所以不能用學生身分加入班級。",
+      "isStudent": "{name} 是這裡的學生，因此無法新增為教職員。",
+      "tickStudents": "請至少勾選一位學生。"
     },
     "classTabs": {
       "lessons": "課程",
@@ -1432,7 +1437,6 @@
       "notSharedHint": "請先分享給你的學校，或在工作室中開啟並按「發布」。",
       "shareGame": "分享給我的學校",
       "openStudio": "在工作室中開啟",
-      "newGame": "用小幫手為這堂課程製作新遊戲",
       "newGameIdea": "你的遊戲點子",
       "newGamePlaceholder": "例如：給四年級、有 10 題關於分數的問答遊戲",
       "newGameButton": "開啟小幫手",
@@ -1492,7 +1496,8 @@
       "doneOf": "{students} 人中 {done} 人完成",
       "toReview": "{count} 份待批閱",
       "dueToday": "今天截止",
-      "late": "逾期"
+      "late": "逾期",
+      "removedGroup": "已從這個班級移除"
     },
     "view": {
       "teacherPreview": "這是學生畫面。儲存作品的按鈕已為你停用。",

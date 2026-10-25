@@ -1165,7 +1165,8 @@
       "noneText": "Cree su primera clase abajo. Recibirá un código para compartir con sus estudiantes.",
       "noneAsk": "Pida al admin de su escuela que le asigne una clase.",
       "manage": "Gestionar {school}",
-      "noneAdmin": "Todavía no da ninguna clase"
+      "noneAdmin": "Todavía no da ninguna clase",
+      "noneAdminText": "Aquí aparecen las clases que usted da. Todas las clases de {school} están en Gestionar {school}, más arriba."
     },
     "class": {
       "new": "Nueva clase",
@@ -1195,7 +1196,7 @@
       "newCodeConfirm": "¿Crear un código nuevo? El anterior dejará de funcionar.",
       "noStudents": "Todavía no hay estudiantes",
       "newAccounts": "Nuevas cuentas escolares",
-      "newAccountsHint": "Cada estudiante recibe un nombre de usuario y una contraseña para imprimir en una tarjeta de acceso. Solo los docentes ven los nombres reales.",
+      "newAccountsHint": "Cada estudiante recibe un nombre de Magic Cups y una contraseña para imprimir en una tarjeta de acceso. Solo los docentes ven los nombres reales.",
       "addTeacher": "Agregar un docente",
       "moveTo": "Mover a la clase",
       "move": "Mover",
@@ -1227,7 +1228,7 @@
       "moved": "{name} ahora está en {class}",
       "reprint": "Nuevas tarjetas de acceso para la clase",
       "reprintConfirm": "{count, plural, one {¿Crear una contraseña nueva para # estudiante con cuenta escolar?} other {¿Crear contraseñas nuevas para # estudiantes con cuentas escolares?}} Las contraseñas anteriores dejarán de funcionar y se cerrarán las sesiones abiertas.",
-      "joinCodeTextOn": "Los estudiantes escriben este código en su página Mis clases. Los que tienen una cuenta escolar de {school} se unen al instante; los que tienen su propia cuenta de Magic Cups esperan a que usted los apruebe.",
+      "joinCodeTextOn": "Los estudiantes escriben este código en su página Mis clases (Yo → Mis clases). Los que tienen una cuenta escolar de {school} se unen al instante; los que tienen su propia cuenta de Magic Cups esperan a que usted los apruebe.",
       "joinCodeTextOff": "Los estudiantes con una cuenta escolar de {school} escriben este código en su página Mis clases para unirse al instante.",
       "noTeacher": "Esta clase todavía no tiene docente. Agregue uno abajo.",
       "removeTeacherConfirm": "¿Quitar a {name} de esta clase? La clase desaparecerá de la página Mis clases de esa persona.",
@@ -1236,7 +1237,9 @@
       "left": "Salió de {name}",
       "onlyStaff": "Solo se puede agregar al personal de {school}.",
       "askAdmin": "Pida al admin de su escuela ({admins}) que agregue a esa persona en la pestaña Personas de la escuela.",
-      "addStaffLink": "Agregar personal en la pestaña Personas"
+      "addStaffLink": "Agregar personal en la pestaña Personas",
+      "askNoAdmin": "{school} todavía no tiene admin de la escuela. Pida al equipo de Magic Cups que designe uno; después, esa persona podrá agregar personal en la pestaña Personas de la escuela.",
+      "archivedToast": "Clase {name} archivada"
     },
     "requests": {
       "title": "{count, plural, one {# estudiante quiere unirse} other {# estudiantes quieren unirse}}",
@@ -1257,7 +1260,7 @@
       "staff": "Personal",
       "students": "Estudiantes",
       "name": "Nombre",
-      "username": "Nombre de usuario",
+      "username": "Nombre de Magic Cups",
       "role": "Rol",
       "grade": "Grado",
       "schoolAccount": "cuenta escolar",
@@ -1275,7 +1278,7 @@
       "noStaff": "Todavía no hay personal.",
       "noStudents": "Todavía no hay estudiantes.",
       "reset": "Nueva contraseña",
-      "resetConfirm": "¿Crear una contraseña nueva para {name}? La anterior dejará de funcionar.",
+      "resetConfirm": "¿Crear una contraseña nueva para {name}? La anterior dejará de funcionar y se cerrarán sus sesiones abiertas.",
       "remove": "Quitar de la escuela",
       "removeConfirm": "¿Quitar a {name} de la escuela? Saldrá de todas las clases de esta escuela. Las cuentas escolares se desactivan.",
       "you": "{role} · usted",
@@ -1330,7 +1333,7 @@
       "badRole": "Ese rol no está permitido aquí.",
       "ownRole": "No puede cambiar ni quitar su propio rol de admin.",
       "noAccount": "Primero crea una cuenta gratis.",
-      "noSuchUser": "No hay ninguna cuenta con ese nombre de usuario.",
+      "noSuchUser": "No hay ninguna cuenta con ese nombre de Magic Cups.",
       "otherSchoolAccount": "Esa cuenta pertenece a otra escuela.",
       "notSchoolAccount": "Aquí solo se puede crear una contraseña nueva para cuentas escolares. Los estudiantes con cuenta propia la restablecen ellos mismos.",
       "classHasStudents": "Esta clase ya tuvo estudiantes, así que no se puede eliminar. Archívela en su lugar.",
@@ -1348,7 +1351,9 @@
       "chooseClass": "Elija una clase.",
       "noSchoolAccounts": "Ningún estudiante de esta clase tiene cuenta escolar.",
       "badTeacher": "Elija a alguien del personal de la escuela.",
-      "adminNotStudent": "Cuidas de Magic Cups, así que no puedes unirte a una clase como estudiante."
+      "adminNotStudent": "Cuidas de Magic Cups, así que no puedes unirte a una clase como estudiante.",
+      "isStudent": "{name} es estudiante aquí, así que no se puede agregar al personal.",
+      "tickStudents": "Marque al menos a un estudiante."
     },
     "classTabs": {
       "lessons": "Lecciones",
@@ -1432,7 +1437,6 @@
       "notSharedHint": "Primero compártalo con su escuela, o ábralo en el Estudio y pulse Publicar.",
       "shareGame": "Compartir con mi escuela",
       "openStudio": "Abrir en el Estudio",
-      "newGame": "Crear un juego nuevo para esta lección con el Constructor",
       "newGameIdea": "Su idea para el juego",
       "newGamePlaceholder": "p. ej., un quiz con 10 preguntas sobre fracciones para 4.º grado",
       "newGameButton": "Abrir el Constructor",
@@ -1492,7 +1496,8 @@
       "doneOf": "{done} de {students} terminaron",
       "toReview": "{count} por revisar",
       "dueToday": "Para hoy",
-      "late": "Con retraso"
+      "late": "Con retraso",
+      "removedGroup": "Quitadas de esta clase"
     },
     "view": {
       "teacherPreview": "Vista del estudiante. Los botones que guardan el trabajo están desactivados para usted.",

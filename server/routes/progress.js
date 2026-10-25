@@ -3,7 +3,7 @@
 // Permissions come from services/progress.js (students: only their own steps) and services/schools.js (teachers).
 import { Router } from 'express';
 import { html, raw } from '../views/html.js';
-import { page, notFound } from '../views/layout.js';
+import { page, notFound, VERSION } from '../views/layout.js';
 import { avatar, emptyState } from '../views/components.js';
 import { requireUser } from '../auth.js';
 import { rateLimit } from '../services/ratelimit.js';
@@ -15,7 +15,7 @@ import { publish } from '../services/publish.js';
 import { classHeader, classBack } from './schools.js';
 
 export const router = Router();
-const CSS = raw('<link rel="stylesheet" href="/css/community.css"><link rel="stylesheet" href="/css/schools.css">');
+const CSS = raw(`<link rel="stylesheet" href="/css/community.css?v=${VERSION}"><link rel="stylesheet" href="/css/schools.css?v=${VERSION}">`);
 const b = req => req.body || {};
 const nameOf = r => r.roster_name || r.display_name;
 const KIND_ICON = { game: '🎮', build: '🛠️', text: '📖', question: '✍️' };

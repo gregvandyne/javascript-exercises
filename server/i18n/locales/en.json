@@ -1167,7 +1167,8 @@
       "noneText": "Create your first class below. You'll get a code to share with students.",
       "noneAsk": "Ask your school admin to add you to a class.",
       "manage": "Manage {school}",
-      "noneAdmin": "You don't teach any classes yet"
+      "noneAdmin": "You don't teach any classes yet",
+      "noneAdminText": "Classes you teach show up here. All of {school}'s classes are under Manage {school} above."
     },
     "class": {
       "new": "New class",
@@ -1197,7 +1198,7 @@
       "newCodeConfirm": "Make a new code? The old one stops working.",
       "noStudents": "No students yet",
       "newAccounts": "New school accounts",
-      "newAccountsHint": "Each student gets a username and password to print on a login card. Real names are only seen by teachers.",
+      "newAccountsHint": "Each student gets a Magic Cups name and password to print on a login card. Real names are only seen by teachers.",
       "addTeacher": "Add a teacher",
       "moveTo": "Move to class",
       "move": "Move",
@@ -1229,7 +1230,7 @@
       "moved": "{name} moved to {class}",
       "reprint": "New login cards for the class",
       "reprintConfirm": "{count, plural, one {Make a new password for # student with a school account?} other {Make new passwords for # students with school accounts?}} Their old passwords stop working and they'll be signed out.",
-      "joinCodeTextOn": "Students type this code on their My classes page. Students with a {school} school account join straight away; students with their own Magic Cups account wait for you to approve them.",
+      "joinCodeTextOn": "Students type this code on their My classes page (Me → My classes). Students with a {school} school account join straight away; students with their own Magic Cups account wait for you to approve them.",
       "joinCodeTextOff": "Students with a {school} school account type this code on their My classes page to join straight away.",
       "noTeacher": "This class has no teacher yet. Add one below.",
       "removeTeacherConfirm": "Take {name} off this class? It leaves their My classes.",
@@ -1238,7 +1239,9 @@
       "left": "You left {name}",
       "onlyStaff": "Only staff of {school} can be added.",
       "askAdmin": "Ask your school admin ({admins}) to add them on the school's People tab.",
-      "addStaffLink": "Add staff on the People tab"
+      "addStaffLink": "Add staff on the People tab",
+      "askNoAdmin": "{school} has no school admin yet. Ask the Magic Cups team to appoint one; they can then add staff on the school's People tab.",
+      "archivedToast": "{name} archived"
     },
     "requests": {
       "title": "{count, plural, one {# student wants to join} other {# students want to join}}",
@@ -1259,7 +1262,7 @@
       "staff": "Staff",
       "students": "Students",
       "name": "Name",
-      "username": "Username",
+      "username": "Magic Cups name",
       "role": "Role",
       "grade": "Grade",
       "schoolAccount": "school account",
@@ -1277,7 +1280,7 @@
       "noStaff": "No staff yet.",
       "noStudents": "No students yet.",
       "reset": "New password",
-      "resetConfirm": "Make a new password for {name}? The old one stops working.",
+      "resetConfirm": "Make a new password for {name}? The old one stops working and they'll be signed out.",
       "remove": "Remove from school",
       "removeConfirm": "Remove {name} from the school? They leave all classes here. School accounts are switched off.",
       "you": "{role} · you",
@@ -1332,7 +1335,7 @@
       "badRole": "That role isn't allowed here.",
       "ownRole": "You can't change or remove your own admin role.",
       "noAccount": "Make a free account first.",
-      "noSuchUser": "No account with that username.",
+      "noSuchUser": "No account with that Magic Cups name.",
       "otherSchoolAccount": "That account belongs to another school.",
       "notSchoolAccount": "Only school accounts can get a new password here. Students with their own account reset it themselves.",
       "classHasStudents": "This class has had students, so it can't be deleted. Archive it instead.",
@@ -1350,7 +1353,9 @@
       "chooseClass": "Choose a class.",
       "noSchoolAccounts": "No students in this class have school accounts.",
       "badTeacher": "Choose someone on the school's staff.",
-      "adminNotStudent": "You look after Magic Cups, so you can't join a class as a student."
+      "adminNotStudent": "You look after Magic Cups, so you can't join a class as a student.",
+      "isStudent": "{name} is a student here, so they can't be added as staff.",
+      "tickStudents": "Tick at least one student."
     },
     "classTabs": {
       "lessons": "Lessons",
@@ -1434,7 +1439,6 @@
       "notSharedHint": "Share it with your school first, or open it in the Studio and press Publish.",
       "shareGame": "Share with my school",
       "openStudio": "Open in the Studio",
-      "newGame": "Make a new game for this lesson with the Builder",
       "newGameIdea": "Your idea for the game",
       "newGamePlaceholder": "e.g. a quiz with 10 questions about fractions for grade 4",
       "newGameButton": "Open the Builder",
@@ -1494,7 +1498,8 @@
       "doneOf": "{done} of {students} done",
       "toReview": "{count} to review",
       "dueToday": "Due today",
-      "late": "Late"
+      "late": "Late",
+      "removedGroup": "Removed from this class"
     },
     "view": {
       "teacherPreview": "Student view. Buttons that save work are turned off for you.",

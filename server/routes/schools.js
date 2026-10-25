@@ -6,7 +6,7 @@
 import { Router } from 'express';
 import crypto from 'node:crypto';
 import { html, raw } from '../views/html.js';
-import { page, notFound } from '../views/layout.js';
+import { page, notFound, VERSION } from '../views/layout.js';
 import { avatar, emptyState, gradeLabel } from '../views/components.js';
 import { requireUser, requireAdmin, getUserByName } from '../auth.js';
 import { rateLimit } from '../services/ratelimit.js';
@@ -15,7 +15,7 @@ import { teacherLessonsPanel, studentLessonsPanel } from './lessons.js';
 import * as P from '../services/progress.js';
 
 export const router = Router();
-const CSS = raw('<link rel="stylesheet" href="/css/community.css"><link rel="stylesheet" href="/css/schools.css">');
+const CSS = raw(`<link rel="stylesheet" href="/css/community.css?v=${VERSION}"><link rel="stylesheet" href="/css/schools.css?v=${VERSION}">`);
 const nameOf = r => r.roster_name || r.display_name;
 const err = (req, res, code, status = 400) => res.status(status).json({ error: req.t(`school.errors.${code}`) });
 const fieldErr = (res, field, error) => res.status(400).json({ error, field });
@@ -109,8 +109,8 @@ function classMenu(t, s, c) {
   const canDelete = !S.everHadStudents(c.id);
   return html`<details class="inline-menu"><summary class="btn btn-sm" aria-label="${t('school.moreFor', { name: c.name })}">⋯</summary><div class="menu">
     ${c.archived_at
-      ? html`<form data-api="/api/classes/${c.id}/restore" data-reload><button class="btn btn-sm" type="submit">${t('school.class.restore')}</button></form>`
-      : html`<form data-api="/api/classes/${c.id}/archive" data-reload data-confirm="${t('school.class.archiveConfirm', { name: c.name })}"><button class="btn btn-sm" type="submit">🗄️ ${t('school.class.archive')}</button></form>`}
+      ? html`<form data-api="/api/classes/${c.id}/restore" data-reload data-toast="${t('school.class.restored', { name: c.name })}"><button class="btn btn-sm" type="submit">${t('school.class.restore')}</button></form>`
+      : html`<form data-api="/api/classes/${c.id}/archive" data-reload data-toast="${t('school.class.archivedToast', { name: c.name })}" data-confirm="${t('school.class.archiveConfirm', { name: c.name })}"><button class="btn btn-sm" type="submit">🗄️ ${t('school.class.archive')}</button></form>`}
     ${canDelete ? html`<form data-api="/api/classes/${c.id}/delete" data-confirm="${t('school.class.deleteConfirm', { name: c.name })}"><input type="hidden" name="from" value="school"><button class="btn btn-sm btn-danger" type="submit">${t('school.class.delete')}</button></form>` : ''}
   </div></details>`;
 }
@@ -156,7 +156,7 @@ function personRow(t, s, p, me, classes) {
     <td class="edit">${second}</td>
     <td data-label="${t('school.class.classes')}">${classLinks(t, classes[p.id], student)}</td>
     <td class="tacts"><div class="acts">
-      ${p.managed_school === s.id ? html`<form data-api="/api/schools/${s.id}/members/${p.id}/password" data-confirm="${t('school.people.resetConfirm', { name: nameOf(p) })}"><button class="btn btn-sm" type="submit">🔑 ${t('school.people.reset')}</button></form>` : ''}
+      ${p.managed_school === s.id && !mine ? html`<form data-api="/api/schools/${s.id}/members/${p.id}/password" data-confirm="${t('school.people.resetConfirm', { name: nameOf(p) })}"><button class="btn btn-sm" type="submit">🔑 ${t('school.people.reset')}</button></form>` : ''}
       ${mine ? '' : html`<details class="inline-menu"><summary class="btn btn-sm" aria-label="${t('school.moreFor', { name: nameOf(p) })}">⋯</summary><div class="menu">
         <form data-api="/api/schools/${s.id}/members/${p.id}/remove" data-reload data-confirm="${t('school.people.removeConfirm', { name: nameOf(p) })}"><button class="btn btn-sm btn-danger" type="submit">${t('school.people.remove')}</button></form></div></details>`}
     </div></td></tr>`;
@@ -168,7 +168,7 @@ function schoolPeople(req, s) {
   const live = S.classesOfSchool(s.id);
   const table = (rows, second, empty) => rows.length ? html`<div class="panel tblwrap"><table class="tbl rtable people"><thead><tr><th>${t('school.people.name')}</th><th>${second}</th><th>${t('school.class.classes')}</th><th><span class="sr-only">${t('school.actions')}</span></th></tr></thead><tbody>${rows.map(p => personRow(t, s, p, req.user, classes))}</tbody></table></div>` : html`<p class="muted">${empty}</p>`;
   return html`
-  ${req.query.new ? html`<p class="notice good">👋 ${t('school.people.newSchool')}</p>` : ''}
+  ${req.query.new && !staff.some(p => p.role === 'admin') ? html`<p class="notice good">👋 ${t('school.people.newSchool')}</p>` : ''}
   <h2 class="sec-h">🍎 ${t('school.people.staff')}</h2>
   ${table(staff, t('school.people.role'), t('school.people.noStaff'))}
   <section class="panel" id="add-staff"><h3>➕ ${t('school.people.addStaff')}</h3>
@@ -226,7 +226,8 @@ router.post('/api/schools/:id/staff', requireUser, rateLimit('school-add', 120, 
     const u = getUserByName(username);
     if (!u || u.is_guest || u.banned) return fieldErr(res, 'username', t('school.errors.noSuchUser'));
     const m = S.membership(s.id, u.id);
-    if (m && m.role !== 'student') return fieldErr(res, 'username', t('school.errors.alreadyStaff', { name: nameOf({ ...u, roster_name: m.roster_name }), role: t(`school.roles.${m.role}`) }));
+    if (m && m.role === 'student') return fieldErr(res, 'username', t('school.errors.isStudent', { name: nameOf({ ...u, roster_name: m.roster_name }) }));
+    if (m) return fieldErr(res, 'username', t('school.errors.alreadyStaff', { name: nameOf({ ...u, roster_name: m.roster_name }), role: t(`school.roles.${m.role}`) }));
     const r = S.addMember(req.user, s.id, u.id, role, { rosterName });
     if (!r.ok) return err(req, res, r.code);
     return res.json({ ok: true, toast: t('school.people.added', { name: String(rosterName).trim(), role: t(`school.roles.${role}`) }) });
@@ -257,6 +258,8 @@ router.post('/api/schools/:id/members/:uid', requireUser, (req, res) => {
 });
 router.post('/api/schools/:id/members/:uid/password', requireUser, (req, res) => {
   const s = schoolApi(req, res); if (!s) return;
+  // Not your own: a new password signs you out everywhere, this session too.
+  if (req.params.uid === req.user.id) return err(req, res, 'ownRole');
   const m = S.membership(s.id, req.params.uid);
   const r = S.resetSchoolPassword(req.user, s.id, req.params.uid);
   if (!r.ok) return err(req, res, r.code);
@@ -286,8 +289,8 @@ router.get('/teach', requireUser, (req, res) => {
       <span class="cc-school small muted">${c.school_name}</span><a class="cc-name cc-link" href="/class/${c.id}"><b>${c.name}</b></a>
       <span class="small">${[c.subject, gradeLabel(t, c.grade)].filter(Boolean).join(' · ')}</span>
       <span class="cc-meta">👩‍🎓 ${t('school.class.studentsN', { count: c.students })}${c.requests ? html` <a class="chip-s warn" href="/class/${c.id}?tab=students#requests">✋ ${t('school.class.requestsN', { count: c.requests })}</a>` : ''}${toRead[c.id] ? html` <a class="chip-s warn" href="/class/${c.id}/progress#to-review">✍️ ${t('progress.teach.toRead', { count: toRead[c.id] })}</a>` : ''}</span></div>`)}</div>`
-    : emptyState({ emoji: '🍎', title: admins.length ? t('school.teach.noneAdmin') : t('school.teach.none'), text: canCreate.length ? t('school.teach.noneText') : t('school.teach.noneAsk') })}
-  ${canCreate.length ? newClassForm(t, { schools: canCreate, me: u, open: !mine.length }) : ''}
+    : emptyState({ emoji: '🍎', title: admins.length ? t('school.teach.noneAdmin') : t('school.teach.none'), text: admins.length ? t('school.teach.noneAdminText', { school: admins[0].name }) : canCreate.length ? t('school.teach.noneText') : t('school.teach.noneAsk') })}
+  ${canCreate.length ? newClassForm(t, { schools: canCreate, me: u, open: !mine.length && !admins.length }) : ''}
   ${old.length ? html`<details class="panel archived"><summary>🗄️ ${t('school.class.archived', { count: old.length })}</summary>
     <ul class="plain archlist">${old.map(c => html`<li><a href="/class/${c.id}"><b>${c.name}</b></a> <span class="small muted">${c.school_name}</span>
       <form data-api="/api/classes/${c.id}/restore" data-reload data-toast="${t('school.class.restored', { name: c.name })}"><button class="btn btn-sm" type="submit">${t('school.class.restore')}</button></form></li>`)}</ul></details>` : ''}`;
@@ -354,10 +357,10 @@ function requestsPanel(req, c, s, people) {
         <form data-api="/api/join-requests/${r.id}/decline" data-reload data-confirm="${t('school.requests.declineConfirm', { name: r.username })}"><button class="btn btn-sm" type="submit">${t('school.requests.decline')}</button></form></div>
       <form class="formgrid approveform" data-api="/api/join-requests/${r.id}/approve" data-reload data-toast="${t('school.requests.approved', { name: r.username })}" novalidate>
         <div class="field"><label for="rn-${r.id}">${t('school.requests.realName')}</label><input class="input" id="rn-${r.id}" name="rosterName" maxlength="60" required><span class="err" id="rn-${r.id}-err"></span></div>
-        ${accounts.length ? html`<div class="field"><label for="sa-${r.id}">${t('school.requests.sameAs')}</label><select class="input" id="sa-${r.id}" name="sameAs"><option value="">${t('school.requests.sameAsNone')}</option>
-          ${here.length && elsewhere.length ? html`<optgroup label="${t('school.requests.inClass')}">${opts(r, here)}</optgroup><optgroup label="${t('school.requests.otherAccounts')}">${opts(r, elsewhere)}</optgroup>` : opts(r, accounts)}</select>
-          <span class="hint">${t('school.requests.mergeHint', { name: r.username })}</span></div>` : ''}
+        ${accounts.length ? html`<div class="field"><label for="sa-${r.id}">${t('school.requests.sameAs')}</label><select class="input" id="sa-${r.id}" name="sameAs" autocomplete="off" aria-describedby="sa-${r.id}-hint"><option value="">${t('school.requests.sameAsNone')}</option>
+          ${here.length && elsewhere.length ? html`<optgroup label="${t('school.requests.inClass')}">${opts(r, here)}</optgroup><optgroup label="${t('school.requests.otherAccounts')}">${opts(r, elsewhere)}</optgroup>` : opts(r, accounts)}</select></div>` : ''}
         <div class="formacts"><button class="btn btn-primary" type="submit">✅ ${t('school.requests.approve')}</button></div>
+        ${accounts.length ? html`<p class="hint small muted wide" id="sa-${r.id}-hint">${t('school.requests.mergeHint', { name: r.username })}</p>` : ''}
       </form>
     </li>`)}</ul></section>`;
 }
@@ -400,7 +403,7 @@ function teacherClass(req, res, c) {
       <div class="formacts"><button class="btn btn-primary" type="submit">🪪 ${t('school.class.createCards')}</button></div>
     </form></section>
   ${schoolStudents.length ? html`<details class="panel"><summary>➕ ${t('school.class.alreadyAt', { school: s.name, count: schoolStudents.length })}</summary>
-    <form class="stack" data-api="/api/classes/${c.id}/students" data-reload novalidate>
+    <form class="stack" data-api="/api/classes/${c.id}/students" data-reload novalidate><input type="hidden" name="mode" value="existing">
       <fieldset class="picklist"><legend class="sr-only">${t('school.class.alreadyAt', { school: s.name, count: schoolStudents.length })}</legend>
         ${schoolStudents.map(p => html`<label><input type="checkbox" name="existing" value="${p.id}"><span><b>${nameOf(p)}</b> <span class="small muted"><bdi>@${p.username}</bdi></span><span class="small muted pl-sub">${classes[p.id] ? classes[p.id].map(x => x.name).join(', ') : html`<span class="chip-s">${t('school.people.noClass')}</span>`}</span></span></label>`)}</fieldset>
       <span class="err form-err"></span>
@@ -426,7 +429,7 @@ function teacherClass(req, res, c) {
     ${teachers.length ? html`<ul class="plain chips-list">${teachers.map(p => html`<li class="pp">${avatar(p, 28)} ${nameOf(p)}${teachers.length > 1 && p.id !== req.user.id ? html`<form class="inline" data-api="/api/classes/${c.id}/students/${p.id}/remove" data-reload data-confirm="${t('school.class.removeTeacherConfirm', { name: nameOf(p) })}"><button class="linkbtn" type="submit" aria-label="${t('school.class.removeTeacher', { name: nameOf(p) })}">✖</button></form>` : ''}</li>`)}</ul>` : ''}
     ${schoolStaff.length ? html`<form class="row" data-api="/api/classes/${c.id}/teachers" data-reload><label class="sr-only" for="at">${t('school.class.addTeacher')}</label><select class="input grow" id="at" name="userId" required><option value="">${t('school.class.teacherChoose')}</option>${staffOptions(t, schoolStaff, req.user)}</select><button class="btn" type="submit">➕ ${t('school.class.addTeacher')}</button></form>`
       : manager ? html`<p class="small"><a href="/school/${s.slug}?tab=people#add-staff">➕ ${t('school.class.addStaffLink')}</a></p>`
-        : html`<p class="small muted">${t('school.class.onlyStaff', { school: s.name })}${admins ? ` ${t('school.class.askAdmin', { admins })}` : ''}</p>`}
+        : html`<p class="small muted">${t('school.class.onlyStaff', { school: s.name })} ${admins ? t('school.class.askAdmin', { admins }) : t('school.class.askNoAdmin', { school: s.name })}</p>`}
     ${iTeach && teachers.length > 1 ? html`<form data-api="/api/classes/${c.id}/students/${req.user.id}/remove" data-confirm="${t('school.class.leaveConfirm', { name: c.name })}"><button class="btn btn-sm" type="submit">🚪 ${t('school.class.leave')}</button></form>` : ''}
   </section>
   ${!c.archived_at || canDelete ? html`<section class="panel" aria-labelledby="ad-h"><h2 id="ad-h">🗄️ ${c.archived_at ? t('school.class.deleteTitle') : t('school.class.archiveTitle')}</h2>
@@ -458,7 +461,7 @@ function studentClass(req, res, c) {
 router.post('/api/classes/join', requireUser, rateLimit('class-join', 20, 3600e3), (req, res) => {
   const r = S.requestJoin(req.user, b(req).code);
   if (!r.ok) return err(req, res, r.code);
-  if (r.state === 'pending') return res.json({ ok: true, state: r.state, message: req.t('classes.sent', { name: r.class.name }), redirect: '/classes?sent=1' });
+  if (r.state === 'pending') return res.json({ ok: true, state: r.state, toast: req.t('classes.sent', { name: r.class.name }), redirect: '/classes?sent=1' });
   res.json({ ok: true, state: r.state, redirect: `/class/${r.class.id}` });
 });
 router.post('/api/classes/:id', requireUser, (req, res) => { const c = loadClass(req, res); if (!c) return; const { name, subject, grade } = b(req); if (!String(name || '').trim()) return fieldErr(res, 'name', req.t('school.errors.className')); send(req, res, S.updateClass(req.user, c.id, { name, subject, grade })); });
@@ -476,7 +479,8 @@ router.post('/api/classes/:id/students', requireUser, rateLimit('school-add', 12
   const c = loadClass(req, res); if (!c) return;
   const t = req.t; const s = S.getSchool(c.school_id);
   const existing = asList(b(req).existing);
-  if (existing.length) {
+  if (existing.length || b(req).mode === 'existing') {
+    if (!existing.length) return res.status(400).json({ error: t('school.errors.tickStudents') });
     // Students already at the school, ticked in the list: all must be students of this school.
     if (existing.some(id => { const m = S.membership(s.id, id); return !m || m.role !== 'student'; })) return err(req, res, 'notInSchool');
     for (const id of existing) S.addToClass(req.user, c.id, id, 'student');
@@ -497,6 +501,7 @@ router.post('/api/classes/:id/cards', requireUser, rateLimit('class-cards', 10, 
   const made = [], skipped = [];
   for (const p of students) {
     if (p.managed_school !== c.school_id) { skipped.push(nameOf(p)); continue; }
+    const sm = S.membership(c.school_id, p.id); if (!sm || sm.role !== 'student') continue;
     const r = S.resetSchoolPassword(req.user, c.school_id, p.id);
     if (r.ok) made.push({ name: nameOf(p), username: r.username, password: r.password });
   }
@@ -535,6 +540,8 @@ router.post('/api/classes/:id/students/:uid/move', requireUser, (req, res) => {
 router.post('/api/classes/:id/students/:uid/password', requireUser, (req, res) => {
   const c = loadClass(req, res); if (!c) return; const m = memberOf(req, res, c); if (!m) return;
   const sm = S.membership(c.school_id, m.user_id);
+  // Students only: staff passwords are reset by school admins on the People tab.
+  if (m.role !== 'student' || !sm || sm.role !== 'student') return no(req, res);
   const r = S.resetSchoolPassword(req.user, c.school_id, m.user_id);
   if (!r.ok) return err(req, res, r.code);
   res.json({ ok: true, redirect: `/cards/${keepCards(req.user, [{ name: (sm && sm.roster_name) || r.user.display_name, username: r.username, password: r.password }], { schoolId: c.school_id, classId: c.id })}` });

@@ -313,7 +313,7 @@ form.inline{display:inline-flex;gap:var(--s2);align-items:center;margin:0}
 .classgrid>.classcard{position:relative}
 .cc-link{color:inherit;text-decoration:none}
 .cc-link::after{content:"";position:absolute;inset:0;border-radius:inherit}
-.cc-link:focus-visible{outline:none}
+.classcard:has(.cc-link:focus-visible) .cc-link{outline:none}
 .classcard:has(.cc-link:focus-visible){outline:3px solid var(--blue);outline-offset:2px}
 .classcard a.chip-s{position:relative;z-index:1;text-decoration:none;font-size:.8rem;padding:3px 10px}
 .classcard a.chip-s:hover{text-decoration:underline}
@@ -321,7 +321,7 @@ form.inline{display:inline-flex;gap:var(--s2);align-items:center;margin:0}
 .archlist{display:grid;gap:var(--s2);margin:0;padding:0}
 .archlist>li{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s1) var(--s3);padding:var(--s2) 0;border-bottom:1px solid var(--line)}
 .archlist>li:last-child{border-bottom:0;padding-bottom:0}
-.archlist>li>form{margin:0 0 0 auto}
+.archlist>li>form{margin:0;margin-inline-start:auto}
 .archbanner{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--s2) var(--s3)}
 .archbanner>form{margin:0}
 main.wrap>.archbanner+.tabs{margin-top:var(--s4)}
@@ -341,13 +341,21 @@ fieldset.picklist>label:has(input:checked){box-shadow:inset 0 0 0 2px var(--blue
 fieldset.picklist input{width:20px;height:20px;flex:none}
 /* ⋯ menus inside tables open in the row (a table scrolls sideways, so a floating menu would be cut off). */
 .rtable .inline-menu .menu{position:static;width:min(100%,340px);min-width:260px;margin-top:var(--s2);white-space:normal;box-shadow:inset 0 0 0 2px var(--line)}
-.rtable td.tacts .inline-menu[open]{flex-basis:100%}
 .rtable td.tacts:has(.inline-menu[open]){white-space:normal}
-.rtable td.tacts:has(.inline-menu[open])>.acts{flex-wrap:wrap}
+@media (max-width:900px){
+  .rtable td.tacts .inline-menu[open]{flex-basis:100%}
+  .rtable td.tacts:has(.inline-menu[open])>.acts{flex-wrap:wrap}
+}
+/* Desktop: the menu opens under ⋯, lined up with its right edge; ⋯ stays where it was. */
+@media (min-width:901px){
+  .rtable td.tacts .inline-menu[open]{display:flex;flex-direction:column;align-items:flex-end}
+  .rtable td.tacts:has(.inline-menu[open])>.acts{align-items:flex-start}
+}
 
 /* ---- Progress pages (batch 2) ---- */
 /* Date chips: '🔒 Opens …' (plain), '📅 Due today' (.warn, amber) and '⏰ Late' (.bad, red). */
-.chip-s.bad{background:color-mix(in srgb,var(--danger) 14%,var(--card));color:var(--danger);box-shadow:none}
+.chip-s.bad{background:color-mix(in srgb,var(--danger) 14%,var(--card));color:#b42318;box-shadow:none}
+@media (prefers-color-scheme:dark){.chip-s.bad{color:var(--danger)}}
 .lp-meta{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s1) var(--s3)}
 /* Gradebook column heads: the lesson's dates under its title; lessons that haven't opened are greyed out. */
 .gb-dates{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:var(--s1) 6px;margin-top:var(--s1);font-weight:700;color:var(--muted)}
@@ -405,6 +413,14 @@ fieldset.picklist>label>span{flex:1;min-width:0}
 .cl-more>.allin{margin:0;flex:1 1 100%}
 .cl-more>.libdrop[open]{background:transparent;box-shadow:inset 0 0 0 2px var(--line)}
 @media (max-width:600px){
-  .cl-more>.btn,.cl-more>.libdrop:not([open]){flex:1 1 0;min-width:0}
+  .cl-more>.btn,.cl-more>.libdrop:not([open]){flex:1 1 auto}
   .cl-more>.libdrop>summary{width:100%;justify-content:center}
 }
+
+/* ---- Review fixes ---- */
+/* Long action labels (and translations) wrap inside the button instead of pushing the page sideways on phones. */
+@media (max-width:600px){.formacts>.btn,.panelhead .btn,.pagehead .row>.btn,.emptyacts>.btn,.cl-more>.btn{white-space:normal;text-align:center;max-width:100%}}
+/* A visually hidden heading first in a panel doesn't push the first visible item down. */
+:where(section.panel)>.sr-only:first-child+*{margin-top:0}
+/* "Make a new game" only with the Add form's "Play a game" type (no-JS: when that option is picked). */
+.stepgrid[data-kind]:not([data-kind="game"]):not(:has(>.f-k option[value="game"]:checked)) ~ .newgame{display:none}

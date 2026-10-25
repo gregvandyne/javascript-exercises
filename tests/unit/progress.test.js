@@ -138,10 +138,11 @@ test('gradebook and lesson progress: counts, late, answers to review; removing k
   assert.equal(mia3.cells[fi].locked, true); assert.equal(mia3.cells[fi].late, false);
   assert.equal(P.overall(mia3.cells), P.overall(mia3.cells.filter((x, i) => i !== fi)), 'locked lessons are left out');
   L.unassign(ana, later.id);
-  // due today is not late; late only once the due day is over everywhere
+  // due today is not late; 'today' is the (UTC) due day; late only once the due day is over everywhere
   const day = Date.UTC(2026, 0, 10);
   assert.equal(L.dueState({ due_at: day }, day + 3600e3), 'today');
-  assert.equal(L.dueState({ due_at: day }, day + 30 * 3600e3), 'today');
+  assert.equal(L.dueState({ due_at: day }, day + 23 * 3600e3), 'today');
+  assert.equal(L.dueState({ due_at: day }, day + 30 * 3600e3), 'due', 'the day after: past due, not late yet');
   assert.equal(L.dueState({ due_at: day }, day + 37 * 3600e3), 'late');
   assert.equal(L.dueState({ due_at: day }, day - 1), 'upcoming');
   assert.equal(L.dueState({ due_at: null }), null);
@@ -272,4 +273,75 @@ test('build steps: one Studio game per student, reopened after; hand-in needs a 
   r = await kid(`/api/progress/${cl.id}/${build.id}/hand-in`, { method: 'POST', body: {} });
   assert.equal(r.status, 400, 'the game has nothing in it yet');
   assert.equal((await as(zed)(`/api/progress/${cl.id}/${build.id}/build`, { method: 'POST', body: {} })).status, 404);
+});
+
+test('review fixes: merged accounts keep their work, removed lessons stay out of every count, archived classes take no work, units, bringing lessons back', async () => {
+  // A school account's lesson work moves with it when a join request is approved as "the same student".
+  const card = S.createSchoolAccount(ana, oak.id, { rosterName: 'Nia Card' }).user; S.addToClass(ana, cls.id, card.id);
+  assert.ok(P.answer(card, cl.id, ask.id, 'Two quarters make a half.').ok);
+  const own = createUser({ username: 'NiaOwn', password: 'secret123' });
+  assert.equal(S.requestJoin(own, cls.join_code).state, 'pending');
+  const rid = S.pendingRequests(cls.id).find(r => r.user_id === own.id).id;
+  assert.ok(S.approveRequest(ana, rid, { sameAs: card.id }).ok);
+  assert.equal(P.forStudent(cl.id, own.id)[ask.id].answer, 'Two quarters make a half.');
+  assert.equal(q.get('SELECT COUNT(*) n FROM step_progress WHERE user_id=?', card.id).n, 0);
+
+  // A removed lesson leaves every count: the tab badge and My classes, the gradebook, the review list, the library, the editor.
+  const rm = L.createLesson(ana, oak.id, { title: 'Removed later' }).lesson;
+  const rq = L.addStep(ana, rm.id, { kind: 'question', body: 'What did you learn?' }).step;
+  const rcl = L.assign(ana, cls.id, rm.id).classLesson;
+  const waiting = () => P.toReadByClass([cls.id])[cls.id] || 0, before = waiting();
+  assert.ok(P.answer(mia, rcl.id, rq.id, 'Lots.').ok); assert.equal(waiting(), before + 1);
+  assert.ok(L.unassign(ana, rcl.id).ok);
+  assert.equal(waiting(), before); assert.equal(P.classProgress(cls.id).toRead, before);
+  assert.ok(!P.toReadByLesson(cls.id).some(x => x.cl === rcl.id));
+  assert.equal(L.lessonsIn(ana.id, oak.id, null).find(l => l.id === rm.id).assigned, 0);
+  assert.ok(!L.assignedClasses(rm.id).some(x => x.class_id === cls.id));
+  // Bringing it back says whether work came back (only when students had some).
+  assert.equal(L.assign(ana, cls.id, rm.id).workBack, true);
+  const oops = L.createLesson(ana, oak.id, { title: 'Oops assigned' }).lesson; L.addStep(ana, oops.id, { kind: 'text', body: 'x' });
+  L.unassign(ana, L.assign(ana, cls.id, oops.id).classLesson.id);
+  const again = L.assign(ana, cls.id, oops.id); assert.equal(again.restored, true); assert.equal(again.workBack, false);
+
+  // Answers from a student who moved to another class stop counting here.
+  const kim = S.createSchoolAccount(ana, oak.id, { rosterName: 'Kim Pupil' }).user; S.addToClass(ana, cls.id, kim.id);
+  const exit = L.createLesson(ana, oak.id, { title: 'Exit ticket' }).lesson;
+  const xq = L.addStep(ana, exit.id, { kind: 'question', body: 'One thing you learned?' }).step;
+  const xcl = L.assign(ana, cls.id, exit.id).classLesson;
+  const base = waiting();
+  assert.ok(P.answer(kim, xcl.id, xq.id, 'Halves.').ok); assert.equal(waiting(), base + 1);
+  assert.ok(S.moveStudent(ana, cls.id, other.id, kim.id).ok);
+  assert.equal(waiting(), base); assert.equal(P.classProgress(cls.id).toRead, base);
+  assert.ok(!P.toReadByLesson(cls.id).some(x => x.cl === xcl.id));
+
+  // A co-teacher can bring back a colleague's lesson that was removed from the class (and only there).
+  S.addToClass(ana, cls.id, ben.id, 'teacher');
+  const benL = L.createLesson(ben, oak.id, { title: 'Ben lesson' }).lesson; L.addStep(ben, benL.id, { kind: 'text', body: 'y' });
+  const bcl = L.assign(ben, cls.id, benL.id).classLesson; assert.ok(bcl);
+  assert.ok(L.unassign(ana, bcl.id).ok);
+  const tab = (await as(ana)(`/class/${cls.id}`)).text;
+  assert.match(tab, /<optgroup label="Removed from this class"><option value="[^"]+">/); assert.match(tab, new RegExp(`<option value="${benL.id}">Ben lesson`));
+  const third = S.createClass(ana, oak.id, { name: 'Ana 6A' }).class;
+  assert.equal(L.assign(ana, third.id, benL.id).code, 'notFound', 'a colleague\'s lesson is still copied before it goes into a new class');
+  assert.ok(L.assign(ana, cls.id, benL.id).ok, 'any teacher of the class can undo a removal');
+
+  // An archived class takes no more work.
+  const arc = S.createClass(ana, oak.id, { name: 'Ana Old' }).class; S.addToClass(ana, arc.id, leo.id);
+  const acl = L.assign(ana, arc.id, lesson.id).classLesson;
+  assert.ok(P.markDone(leo, acl.id, read.id).ok);
+  S.archiveClass(ana, arc.id, true);
+  assert.equal(P.markDone(leo, acl.id, read.id, false).code, 'notFound');
+  assert.equal(P.answer(leo, acl.id, ask.id, 'A late answer').code, 'notFound');
+
+  // Deleting a unit puts its lessons after the ones already outside a unit, so ↑/↓ moves the lesson you clicked.
+  const uc = S.createClass(ana, oak.id, { name: 'Ana Units' }).class;
+  const mk = title => { const l = L.createLesson(ana, oak.id, { title }).lesson; L.addStep(ana, l.id, { kind: 'text', body: title }); return l; };
+  const [la, lb, lc, ld] = ['A1', 'B1', 'C1', 'D1'].map(mk);
+  const unit = L.createUnit(ana, uc.id, 'U').unit;
+  L.assign(ana, uc.id, la.id); L.assign(ana, uc.id, lb.id); L.assign(ana, uc.id, lc.id, { unitId: unit.id }); L.assign(ana, uc.id, ld.id, { unitId: unit.id });
+  assert.ok(L.deleteUnit(ana, unit.id).ok);
+  const order = () => L.classLessons(uc.id).map(x => x.title), row = title => L.classLessons(uc.id).find(x => x.title === title);
+  assert.deepEqual(order(), ['A1', 'B1', 'C1', 'D1']);
+  assert.ok(L.reorderAssignment(ana, row('C1').id, -1).ok);
+  assert.deepEqual(order(), ['A1', 'C1', 'B1', 'D1']);
 });

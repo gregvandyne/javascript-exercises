@@ -9,11 +9,9 @@ function staffChoice(f) {
   const btn = f.querySelector('button[type=submit][data-new]'); if (btn) btn.textContent = v === 'existing' ? btn.dataset.existing : btn.dataset.new;
 }
 document.querySelectorAll('form.staffform').forEach(staffChoice);
+// (Approving a join request with a school account picked asks first: app.js reads the option's data-confirm on submit.)
 document.addEventListener('change', e => {
   const f = e.target.closest('form.staffform'); if (f && e.target.name === 'account') staffChoice(f);
-  // Approving a join request: picking a school account merges it into the student's account, so ask first
-  // (app.js asks with the form's data-confirm).
-  if (e.target.matches('.approveform select[name=sameAs]')) { const o = e.target.selectedOptions[0]; e.target.form.dataset.confirm = (o && o.dataset.confirm) || ''; }
 });
 
 // ---- Lessons (batch 2) ----

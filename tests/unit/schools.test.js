@@ -22,7 +22,7 @@ const as = who => async (path, { method = 'GET', body } = {}) => {
   const headers = { cookie: cookieFor(who.id) }; if (body !== undefined) headers['content-type'] = 'application/json';
   const r = await fetch(base + path, { method, headers, body: body !== undefined ? JSON.stringify(body) : undefined, redirect: 'manual' });
   const text = await r.text(); let json = null; try { json = JSON.parse(text); } catch { /* html */ }
-  return { status: r.status, text, json };
+  return { status: r.status, text, json, location: r.headers.get('location') };
 };
 
 const boss = createUser({ username: 'PlatformBoss', password: 'secret123', role: 'admin' });
@@ -250,9 +250,105 @@ test('school page and class flows: who teaches a new class, adding staff, duplic
   assert.match((await as(kim)(`/class/${setup.id}`)).text, /This class is archived/);
 
   // The platform admin works from Schools; staff without student classes go to My classes.
-  assert.equal((await as(boss)('/teach')).status, 302);
-  assert.equal((await as(rivera)('/classes')).status, 302);
+  assert.equal((await as(boss)('/teach')).location, '/admin/schools');
+  assert.equal((await as(boss)('/classes')).location, '/admin/schools');
+  assert.equal((await as(rivera)('/classes')).location, '/teach');
+  const bossHome = (await as(boss)('/')).text; assert.match(bossHome, /href="\/admin\/schools"/); assert.doesNotMatch(bossHome, /href="\/teach"/);
   assert.equal((await as(boss)('/api/classes/join', { method: 'POST', body: { code: c.join_code } })).status, 400);
   // A school admin who doesn't teach a class gets back to the school page from it.
   assert.match((await as(head)(`/class/${c.id}`)).text, new RegExp(`href="/school/${oak.slug}"`));
+});
+
+test('review fixes: teachers cannot take over staff accounts, wording and links, sign-in homes, class deletion leaves nothing behind', async () => {
+  const L = await import('../../server/services/lessons.js');
+  const pine = S.createSchool(boss, { name: 'Pine Grove' }).school;
+  const A = S.createSchoolAccount(boss, pine.id, { rosterName: 'Pat Admin', role: 'admin' }).user;
+  const T = S.createSchoolAccount(A, pine.id, { rosterName: 'Tia Teach', role: 'teacher' }).user;
+  const CO = S.createSchoolAccount(A, pine.id, { rosterName: 'Cody Co', role: 'teacher' }).user;
+  const pc = S.createClass(T, pine.id, { name: 'Pine 3' }).class;
+
+  // A teacher who adds a staff member to their class still can't reset that person's password (nor through the service).
+  let r = await as(T)(`/api/classes/${pc.id}/teachers`, { method: 'POST', body: { userId: A.id } }); assert.equal(r.status, 200);
+  S.addToClass(A, pc.id, CO.id, 'teacher');
+  const hashA = getUser(A.id).password_hash, hashCo = getUser(CO.id).password_hash;
+  assert.equal((await as(T)(`/api/classes/${pc.id}/students/${A.id}/password`, { method: 'POST', body: {} })).status, 404);
+  assert.equal((await as(T)(`/api/classes/${pc.id}/students/${CO.id}/password`, { method: 'POST', body: {} })).status, 404);
+  assert.equal(getUser(A.id).password_hash, hashA); assert.equal(getUser(CO.id).password_hash, hashCo);
+  assert.equal(S.resetSchoolPassword(T, pine.id, A.id).code, 'notSchoolAccount');
+  // The school admin resets a teacher's password on People, but not their own (it would sign them out).
+  assert.match((await as(A)(`/api/schools/${pine.id}/members/${CO.id}/password`, { method: 'POST', body: {} })).json.redirect, /^\/cards\//);
+  assert.equal((await as(A)(`/api/schools/${pine.id}/members/${A.id}/password`, { method: 'POST', body: {} })).status, 400);
+  assert.doesNotMatch((await as(A)(`/school/${pine.slug}?tab=people`)).text, new RegExp(`/members/${A.id}/password`));
+
+  // A join request can't be approved as "the same student as" a staff account (that would hand over the staff role).
+  const outsider = createUser({ username: 'PineOutsider', password: 'secret123' });
+  assert.equal(S.requestJoin(outsider, pc.join_code).state, 'pending');
+  const rid = S.pendingRequests(pc.id)[0].id;
+  r = await as(T)(`/api/join-requests/${rid}/approve`, { method: 'POST', body: { rosterName: 'x', sameAs: A.id } });
+  assert.equal(r.status, 400); assert.ok(!getUser(A.id).banned); assert.equal(S.roleIn(outsider, pine.id), null);
+  assert.equal(S.approveRequest(T, rid, { sameAs: CO.id }).code, 'notSchoolAccount');
+
+  // "They already have an account" refuses a student of the school instead of turning them into staff.
+  const kid = S.createSchoolAccount(A, pine.id, { rosterName: 'Kid One' });
+  r = await as(A)(`/api/schools/${pine.id}/staff`, { method: 'POST', body: { account: 'existing', rosterName: 'Mr Typo', role: 'teacher', username: kid.username } });
+  assert.equal(r.status, 400); assert.equal(r.json.field, 'username'); assert.match(r.json.error, /Kid One is a student here/);
+  assert.equal(S.membership(pine.id, kid.user.id).role, 'student'); assert.equal(S.membership(pine.id, kid.user.id).roster_name, 'Kid One');
+
+  // Ticking nobody says so (in the tick list's own error line, not under a names box it doesn't have).
+  r = await as(T)(`/api/classes/${pc.id}/students`, { method: 'POST', body: { mode: 'existing' } });
+  assert.equal(r.status, 400); assert.match(r.json.error, /Tick at least one student/); assert.equal(r.json.field, undefined);
+  // The Students tab: a merge option carries its own confirm, staff accounts are never offered, the requests panel has its anchor.
+  S.addToClass(A, pc.id, kid.user.id, 'student');
+  const st = (await as(T)(`/class/${pc.id}?tab=students`)).text;
+  assert.match(st, new RegExp(`<option value="${kid.user.id}" data-confirm="Merge @${kid.username} into @PineOutsider\\?`));
+  assert.doesNotMatch(st, new RegExp(`<option value="${A.id}"[^>]*data-confirm`));
+  assert.match(st, /id="requests"/);
+  // My classes: the requests chip opens the Students tab at the requests, and no chip sits inside the card's link.
+  r = await as(T)('/teach');
+  assert.match(r.text, new RegExp(`<a class="chip-s warn" href="/class/${pc.id}\\?tab=students#requests"`));
+  assert.doesNotMatch(r.text.match(new RegExp(`<a class="cc-name cc-link" href="/class/${pc.id}">[\\s\\S]*?</a>`))[0], /chip-s/);
+
+  // A school admin who teaches nothing isn't told to "create your first class below".
+  const lone = S.createSchoolAccount(boss, pine.id, { rosterName: 'Lone Admin', role: 'admin' }).user;
+  const lt = (await as(lone)('/teach')).text;
+  assert.doesNotMatch(lt, /Create your first class below/); assert.match(lt, /Manage Pine Grove/);
+  // A school admin leaving a class goes back to the school page.
+  r = await as(A)(`/api/classes/${pc.id}/students/${A.id}/remove`, { method: 'POST', body: {} });
+  assert.equal(r.json.redirect, `/school/${pine.slug}`);
+
+  // Students: classmates leave out the student; grades show as typed ("Year 4", not "Grade Year 4").
+  const yc = S.createClass(T, pine.id, { name: 'Year Class', grade: 'Year 4' }).class;
+  const s1 = S.createSchoolAccount(T, pine.id, { rosterName: 'S One' }).user, s2 = S.createSchoolAccount(T, pine.id, { rosterName: 'S Two' }).user;
+  S.addToClass(T, yc.id, s1.id); S.addToClass(T, yc.id, s2.id);
+  const sv = (await as(s1)(`/class/${yc.id}`)).text;
+  assert.match(sv, /1 classmate\b/); assert.doesNotMatch(sv, /Grade Year 4/); assert.match(sv, /Year 4/);
+  assert.match((await as(T)(`/class/${S.createClass(T, pine.id, { name: 'G4', grade: '4' }).class.id}`)).text, /Grade 4/);
+  // A join request that waits for the teacher says so after the redirect.
+  r = await as(createUser({ username: 'PineAsker', password: 'secret123' }))('/api/classes/join', { method: 'POST', body: { code: yc.join_code } });
+  assert.match(r.json.toast, /Asked to join Year Class/);
+
+  // Deleting a class takes its lessons and units with it; counts ignore rows of classes deleted before this was fixed.
+  const ec = S.createClass(T, pine.id, { name: 'Empty' }).class;
+  const les = L.createLesson(T, pine.id, { title: 'Delete test' }).lesson;
+  const un = L.createUnit(T, ec.id, 'Unit one').unit;
+  assert.ok(L.assign(T, ec.id, les.id, { unitId: un.id }).ok); assert.equal(L.lessonClassCount(les.id), 1);
+  assert.ok(S.deleteClass(T, ec.id).ok);
+  assert.equal(q.get('SELECT COUNT(*) n FROM class_lessons WHERE class_id=?', ec.id).n, 0);
+  assert.equal(q.get('SELECT COUNT(*) n FROM class_units WHERE class_id=?', ec.id).n, 0);
+  q.run('INSERT INTO class_lessons(id, class_id, lesson_id, position, assigned_at) VALUES (?,?,?,?,?)', 'orphan1', 'gone-class', les.id, 0, Date.now());
+  assert.equal(L.lessonClassCount(les.id), 0);
+
+  // Sign-in homes: staff → My classes, school-account students → their classes, the platform admin → Admin, others → home.
+  const login = async (username, password, next) => (await (await fetch(`${base}/api/auth/login`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ username, password, ...(next !== undefined ? { next } : {}) }) })).json()).redirect;
+  const tAcc = S.createSchoolAccount(boss, pine.id, { rosterName: 'Login Teacher', role: 'teacher' }), sAcc = S.createSchoolAccount(boss, pine.id, { rosterName: 'Login Kid' });
+  createUser({ username: 'PlainPlayer', password: 'secret123' });
+  assert.equal(await login(tAcc.username, tAcc.password), '/teach');
+  assert.equal(await login(sAcc.username, sAcc.password), '/classes');
+  assert.equal(await login('PlatformBoss', 'secret123'), '/admin');
+  assert.equal(await login('PlainPlayer', 'secret123'), '/');
+  assert.equal(await login(tAcc.username, tAcc.password, '/g/x'), '/g/x');
+  assert.equal(await login(tAcc.username, tAcc.password, '//evil.example'), '/teach');
+  assert.equal(await login(tAcc.username, tAcc.password, '/'), '/teach', 'next=/ (from the sign-up page) is no preference');
+  assert.equal((await as(tAcc.user)('/login')).location, '/teach');
+  assert.equal((await as(tAcc.user)('/login?next=/g/x')).location, '/g/x');
 });

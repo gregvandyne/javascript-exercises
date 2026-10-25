@@ -40,6 +40,7 @@ test('teacher builds and assigns a lesson; a student works through it', async ({
   // assigning keeps you on the editor: the class gets its own line (and can't be picked twice)
   await t.click('form[data-api$="/assign"] button[type=submit]');
   await expect(t.locator('#assign .assignedlist')).toContainText('Space Class');
+  await expect(t.locator('#toasts .toast')).toContainText('Assigned to Space Class');   // the message survives the reload
   await t.goto(classUrl);
   await expect(t.locator('#lessons')).toContainText('The planets');
   // a unit (New unit is a drop-down, like New folder in the library)

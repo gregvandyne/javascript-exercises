@@ -1166,7 +1166,8 @@
       "noneText": "Maak hieronder je eerste klas aan. Je krijgt een code om met je leerlingen te delen.",
       "noneAsk": "Vraag je schoolbeheerder om je aan een klas toe te voegen.",
       "manage": "{school} beheren",
-      "noneAdmin": "Je geeft nog geen les aan een klas"
+      "noneAdmin": "Je geeft nog geen les aan een klas",
+      "noneAdminText": "Klassen waar je les aan geeft, verschijnen hier. Alle klassen van {school} vind je hierboven onder {school} beheren."
     },
     "class": {
       "new": "Nieuwe klas",
@@ -1196,7 +1197,7 @@
       "newCodeConfirm": "Een nieuwe code maken? De oude werkt dan niet meer.",
       "noStudents": "Nog geen leerlingen",
       "newAccounts": "Nieuwe schoolaccounts",
-      "newAccountsHint": "Elke leerling krijgt een gebruikersnaam en wachtwoord om op een inlogkaart te printen. Echte namen zijn alleen zichtbaar voor leerkrachten.",
+      "newAccountsHint": "Elke leerling krijgt een Magic Cups-naam en wachtwoord om op een inlogkaart te printen. Echte namen zijn alleen zichtbaar voor leerkrachten.",
       "addTeacher": "Leerkracht toevoegen",
       "moveTo": "Naar klas verplaatsen",
       "move": "Verplaatsen",
@@ -1228,7 +1229,7 @@
       "moved": "{name} verplaatst naar {class}",
       "reprint": "Nieuwe inlogkaarten voor de klas",
       "reprintConfirm": "{count, plural, one {Een nieuw wachtwoord maken voor # leerling met een schoolaccount? Het oude wachtwoord werkt dan niet meer en de leerling wordt uitgelogd.} other {Nieuwe wachtwoorden maken voor # leerlingen met een schoolaccount? De oude wachtwoorden werken dan niet meer en de leerlingen worden uitgelogd.}}",
-      "joinCodeTextOn": "Leerlingen typen deze code op hun pagina Mijn klassen. Leerlingen met een schoolaccount van {school} doen meteen mee; leerlingen met een eigen Magic Cups-account wachten tot jij ze goedkeurt.",
+      "joinCodeTextOn": "Leerlingen typen deze code op hun pagina Mijn klassen (Ik → Mijn klassen). Leerlingen met een schoolaccount van {school} doen meteen mee; leerlingen met een eigen Magic Cups-account wachten tot jij ze goedkeurt.",
       "joinCodeTextOff": "Leerlingen met een schoolaccount van {school} typen deze code op hun pagina Mijn klassen en doen meteen mee.",
       "noTeacher": "Deze klas heeft nog geen leerkracht. Voeg er hieronder een toe.",
       "removeTeacherConfirm": "{name} van deze klas halen? Dan staat de klas niet meer bij Mijn klassen van {name}.",
@@ -1237,7 +1238,9 @@
       "left": "Je hebt {name} verlaten",
       "onlyStaff": "Alleen personeel van {school} kan worden toegevoegd.",
       "askAdmin": "Vraag je schoolbeheerder ({admins}) om diegene toe te voegen op het tabblad Mensen van de school.",
-      "addStaffLink": "Personeel toevoegen op het tabblad Mensen"
+      "addStaffLink": "Personeel toevoegen op het tabblad Mensen",
+      "askNoAdmin": "{school} heeft nog geen schoolbeheerder. Vraag het Magic Cups-team om er een aan te wijzen; die kan daarna personeel toevoegen op het tabblad Mensen van de school.",
+      "archivedToast": "{name} gearchiveerd"
     },
     "requests": {
       "title": "{count, plural, one {# leerling wil meedoen} other {# leerlingen willen meedoen}}",
@@ -1258,7 +1261,7 @@
       "staff": "Personeel",
       "students": "Leerlingen",
       "name": "Naam",
-      "username": "Gebruikersnaam",
+      "username": "Magic Cups-naam",
       "role": "Rol",
       "grade": "Groep",
       "schoolAccount": "schoolaccount",
@@ -1276,7 +1279,7 @@
       "noStaff": "Nog geen personeel.",
       "noStudents": "Nog geen leerlingen.",
       "reset": "Nieuw wachtwoord",
-      "resetConfirm": "Een nieuw wachtwoord maken voor {name}? Het oude werkt dan niet meer.",
+      "resetConfirm": "Een nieuw wachtwoord maken voor {name}? Het oude werkt dan niet meer en {name} wordt uitgelogd.",
       "remove": "Van school verwijderen",
       "removeConfirm": "{name} van de school verwijderen? Diegene verlaat alle klassen hier. Schoolaccounts worden uitgezet.",
       "you": "{role} · jij",
@@ -1331,7 +1334,7 @@
       "badRole": "Die rol is hier niet toegestaan.",
       "ownRole": "Je kunt je eigen beheerdersrol niet wijzigen of verwijderen.",
       "noAccount": "Maak eerst een gratis account.",
-      "noSuchUser": "Er is geen account met die gebruikersnaam.",
+      "noSuchUser": "Er is geen account met die Magic Cups-naam.",
       "otherSchoolAccount": "Dat account hoort bij een andere school.",
       "notSchoolAccount": "Alleen schoolaccounts kunnen hier een nieuw wachtwoord krijgen. Leerlingen met een eigen account stellen het zelf opnieuw in.",
       "classHasStudents": "Deze klas heeft leerlingen gehad en kan dus niet worden verwijderd. Archiveer de klas in plaats daarvan.",
@@ -1349,7 +1352,9 @@
       "chooseClass": "Kies een klas.",
       "noSchoolAccounts": "Geen enkele leerling in deze klas heeft een schoolaccount.",
       "badTeacher": "Kies iemand van het personeel van de school.",
-      "adminNotStudent": "Jij zorgt voor Magic Cups, dus je kunt niet als leerling meedoen met een klas."
+      "adminNotStudent": "Jij zorgt voor Magic Cups, dus je kunt niet als leerling meedoen met een klas.",
+      "isStudent": "{name} is hier leerling en kan dus niet aan het personeel worden toegevoegd.",
+      "tickStudents": "Vink minstens één leerling aan."
     },
     "classTabs": {
       "lessons": "Lessen",
@@ -1433,7 +1438,6 @@
       "notSharedHint": "Deel hem eerst met je school, of open hem in de Studio en klik op Publiceren.",
       "shareGame": "Delen met mijn school",
       "openStudio": "Openen in de Studio",
-      "newGame": "Maak met de Bouwer een nieuwe game voor deze les",
       "newGameIdea": "Jouw idee voor de game",
       "newGamePlaceholder": "bijv. een quiz met 10 vragen over breuken voor groep 6",
       "newGameButton": "Open de Bouwer",
@@ -1493,7 +1497,8 @@
       "doneOf": "{done} van {students} klaar",
       "toReview": "{count} na te kijken",
       "dueToday": "Vandaag inleveren",
-      "late": "Te laat"
+      "late": "Te laat",
+      "removedGroup": "Uit deze klas gehaald"
     },
     "view": {
       "teacherPreview": "Leerlingweergave. Knoppen die werk opslaan, staan voor jou uit.",

@@ -1166,7 +1166,8 @@
       "noneText": "Crie sua primeira turma abaixo. Você vai receber um código para compartilhar com os alunos.",
       "noneAsk": "Peça ao admin da escola para adicionar você a uma turma.",
       "manage": "Gerenciar {school}",
-      "noneAdmin": "Você ainda não dá aula para nenhuma turma"
+      "noneAdmin": "Você ainda não dá aula para nenhuma turma",
+      "noneAdminText": "As turmas em que você dá aula aparecem aqui. Todas as turmas de {school} estão em Gerenciar {school}, logo acima."
     },
     "class": {
       "new": "Nova turma",
@@ -1196,7 +1197,7 @@
       "newCodeConfirm": "Gerar um novo código? O antigo deixa de funcionar.",
       "noStudents": "Nenhum aluno ainda",
       "newAccounts": "Novas contas da escola",
-      "newAccountsHint": "Cada aluno recebe um nome de usuário e uma senha para imprimir em um cartão de acesso. Os nomes reais só são vistos pelos professores.",
+      "newAccountsHint": "Cada aluno recebe um nome no Magic Cups e uma senha para imprimir em um cartão de acesso. Os nomes reais só são vistos pelos professores.",
       "addTeacher": "Adicionar um professor",
       "moveTo": "Mover para a turma",
       "move": "Mover",
@@ -1228,7 +1229,7 @@
       "moved": "{name} agora está em {class}",
       "reprint": "Novos cartões de acesso para a turma",
       "reprintConfirm": "{count, plural, one {Gerar uma nova senha para # aluno com conta da escola?} other {Gerar novas senhas para # alunos com contas da escola?}} As senhas antigas deixam de funcionar, e as sessões abertas são encerradas.",
-      "joinCodeTextOn": "Os alunos digitam este código na página Minhas turmas. Alunos com conta da escola {school} entram na hora; alunos com conta própria no Magic Cups esperam a sua aprovação.",
+      "joinCodeTextOn": "Os alunos digitam este código na página Minhas turmas (Eu → Minhas turmas). Alunos com conta da escola {school} entram na hora; alunos com conta própria no Magic Cups esperam a sua aprovação.",
       "joinCodeTextOff": "Alunos com conta da escola {school} digitam este código na página Minhas turmas para entrar na hora.",
       "noTeacher": "Esta turma ainda não tem professor. Adicione um abaixo.",
       "removeTeacherConfirm": "Tirar {name} desta turma? A turma sai da página Minhas turmas dessa pessoa.",
@@ -1237,7 +1238,9 @@
       "left": "Você saiu de {name}",
       "onlyStaff": "Só é possível adicionar pessoas da equipe de {school}.",
       "askAdmin": "Peça ao admin da escola ({admins}) para adicionar a pessoa na aba Pessoas da escola.",
-      "addStaffLink": "Adicionar à equipe na aba Pessoas"
+      "addStaffLink": "Adicionar à equipe na aba Pessoas",
+      "askNoAdmin": "{school} ainda não tem admin da escola. Peça à equipe do Magic Cups para nomear um; depois, essa pessoa poderá adicionar membros à equipe na aba Pessoas da escola.",
+      "archivedToast": "Turma {name} arquivada"
     },
     "requests": {
       "title": "{count, plural, one {# aluno quer entrar} other {# alunos querem entrar}}",
@@ -1258,7 +1261,7 @@
       "staff": "Equipe",
       "students": "Alunos",
       "name": "Nome",
-      "username": "Nome de usuário",
+      "username": "Nome no Magic Cups",
       "role": "Função",
       "grade": "Ano",
       "schoolAccount": "conta da escola",
@@ -1276,7 +1279,7 @@
       "noStaff": "Ninguém na equipe ainda.",
       "noStudents": "Nenhum aluno ainda.",
       "reset": "Nova senha",
-      "resetConfirm": "Gerar uma nova senha para {name}? A antiga deixa de funcionar.",
+      "resetConfirm": "Gerar uma nova senha para {name}? A antiga deixa de funcionar, e as sessões abertas são encerradas.",
       "remove": "Remover da escola",
       "removeConfirm": "Remover {name} da escola? A pessoa sai de todas as turmas desta escola. As contas da escola são desativadas.",
       "you": "{role} · você",
@@ -1331,7 +1334,7 @@
       "badRole": "Essa função não é permitida aqui.",
       "ownRole": "Você não pode mudar nem remover sua própria função de admin.",
       "noAccount": "Crie uma conta grátis primeiro.",
-      "noSuchUser": "Não há nenhuma conta com esse nome de usuário.",
+      "noSuchUser": "Não há nenhuma conta com esse nome no Magic Cups.",
       "otherSchoolAccount": "Essa conta pertence a outra escola.",
       "notSchoolAccount": "Só contas da escola podem receber uma nova senha aqui. Alunos com conta própria trocam a senha eles mesmos.",
       "classHasStudents": "Esta turma já teve alunos, então não pode ser excluída. Arquive a turma em vez disso.",
@@ -1349,7 +1352,9 @@
       "chooseClass": "Escolha uma turma.",
       "noSchoolAccounts": "Nenhum aluno desta turma tem conta da escola.",
       "badTeacher": "Escolha alguém da equipe da escola.",
-      "adminNotStudent": "Você cuida do Magic Cups, então não pode entrar em uma turma como aluno."
+      "adminNotStudent": "Você cuida do Magic Cups, então não pode entrar em uma turma como aluno.",
+      "isStudent": "{name} tem conta de aluno aqui, por isso não pode entrar na equipe.",
+      "tickStudents": "Marque pelo menos um aluno."
     },
     "classTabs": {
       "lessons": "Aulas",
@@ -1433,7 +1438,6 @@
       "notSharedHint": "Primeiro compartilhe o jogo com a sua escola, ou abra-o no Estúdio e toque em Publicar.",
       "shareGame": "Compartilhar com a minha escola",
       "openStudio": "Abrir no Estúdio",
-      "newGame": "Criar um novo jogo para esta aula com o Construtor",
       "newGameIdea": "Sua ideia para o jogo",
       "newGamePlaceholder": "ex.: um quiz com 10 perguntas sobre frações para o 4º ano",
       "newGameButton": "Abrir o Construtor",
@@ -1493,7 +1497,8 @@
       "doneOf": "{done} de {students} concluíram",
       "toReview": "{count} para revisar",
       "dueToday": "Entregar hoje",
-      "late": "Em atraso"
+      "late": "Em atraso",
+      "removedGroup": "Removidas desta turma"
     },
     "view": {
       "teacherPreview": "Visão do aluno. Os botões que salvam trabalhos estão desativados para você.",

@@ -25,8 +25,9 @@ export const forStudent = (clId, userId) => Object.fromEntries(q.all('SELECT * F
 export function context(u, clId, stepId) {
   const cl = L.getClassLesson(clId); const step = L.getStep(stepId);
   if (!u || !cl || !step || step.lesson_id !== cl.lesson_id) return fail('notFound');
-  const m = S.classMember(cl.class_id, u.id);
-  if (!m || m.role !== 'student' || !L.isOpen(cl)) return fail('notFound');
+  const c = S.getClass(cl.class_id); const m = c && S.classMember(c.id, u.id);
+  // Students of the class who can still see it (not archived, still in the school), on open lessons.
+  if (!m || m.role !== 'student' || !S.canViewClass(u, c) || !L.isOpen(cl)) return fail('notFound');
   return ok({ cl, step });
 }
 
