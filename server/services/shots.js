@@ -16,7 +16,7 @@ const MAX_TRIES = 3;
 const SWEEP_MS = 120_000;
 const queue = new Set();
 const cache = new Map();   // versionId -> shot_at (0 = none)
-let working = false, sweeper = null;
+let working = false, sweeper = null, firstSweep = null;
 
 export const fileFor = versionId => path.join(DIR, `${String(versionId).replace(/[^A-Za-z0-9_-]/g, '')}.jpg`);
 
@@ -84,6 +84,8 @@ export function sweep(limit = 6) {
 /** Start the background sweeper (server start only). */
 export function startSweeper() {
   if (!snapshot.enabled() || sweeper) return;
-  setTimeout(sweep, 20_000).unref();
+  firstSweep = setTimeout(sweep, 20_000); firstSweep.unref();
   sweeper = setInterval(sweep, SWEEP_MS); sweeper.unref();
 }
+/** Stop queueing new pictures (shutdown). */
+export function stopSweeper() { clearTimeout(firstSweep); clearInterval(sweeper); sweeper = null; queue.clear(); }

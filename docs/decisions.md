@@ -320,3 +320,61 @@ The mascot is Oomba: the two o's of the wordmark are its eyes, looking up at a s
 - **Shape:** big panels and heroes 32px corners, cards and tiles 20px, small controls 12px; calmer Ink-based shadows. The
   "go" button (publish, start building) is Spark (`.btn-hot`, was coral); deleting a game confirms with the danger button.
 
+
+## Ready to leave Render (AWS / Azure)
+
+- **Recommended host: one VM with a block disk** (EC2 + EBS, Azure VM + managed disk) running `deploy/docker-compose.yml`
+  (app and Caddy for HTTPS; the screenshot worker sits behind the compose profile `worker` until that change is merged,
+  and the app gets `mem_limit: 2g` meanwhile because Chromium runs inside it). Managed containers (ECS Fargate + EFS,
+  Container Apps / App Service + Azure Files) are documented as alternatives with their catches: a network share needs
+  `BRB_JOURNAL_MODE=DELETE`, rules out Litestream and makes deploys stop-before-start. App Runner is closed to new AWS
+  accounts (30 Apr 2026) and ECS Express Mode has no block disk. — SQLite and the in-memory state want one process on a
+  local disk; a VM is also the cheapest and simplest to reason about.
+- **One instance, no autoscaling**, written in README, the compose file and both guides. — Rate limits, presence and
+  one-time login cards are in memory; SQLite has one writer. Redis/Postgres later, not now.
+- **Container start** (`scripts/entrypoint.sh`): tini is PID 1; the data folder (and only the entries directly in it)
+  gets `chown -h` to uid 1000 only when not already writable, symbolic links are skipped (a link planted by the app user
+  must never make root hand it `/etc/passwd`), and a failed chown is a warning, not a crash (Azure Files); privileges
+  drop with `setpriv --no-new-privs` via `exec`, so no parent shell lingers (the old `su` killed node ~2 s after SIGTERM
+  on Render) and setuid programs can't give them back. With a command (`node server/shots-worker.js`, a script) it skips
+  the data folder entirely. Render's disk works unchanged.
+- **Graceful shutdown**: SIGTERM → `/health` 503 and `Connection: close`, stop accepting, wait up to
+  `SHUTDOWN_GRACE_SECONDS` (25) for requests and Builder turns (also those whose phone disconnected), close the database.
+  Keep-alive 65 s (above ALB's 60 s). The Builder stream already sent `X-Accel-Buffering: no` and 15 s heartbeats.
+- **`/health`** answers 503 when the database doesn't answer a query that reads its file, when that file was deleted or
+  replaced under the running app (inode changed), when the data disk has less than 100 MB free (2 % on disks under
+  5 GB) or refuses a new, uniquely named test file (written, then deleted), and while draining. The file-system part
+  runs one at a time, at most every 2 s, with a 2 s limit, so floods and hung network disks stay cheap; it is never in
+  the request log.
+- **`PUBLIC_URL`** is used for login cards and as an extra accepted origin in both same-origin checks (`csrfCheck`,
+  `sameOrigin`); the Host comparison stays, so unset = today's behaviour. No other absolute site URLs are built on the
+  server (share links use the browser's `location.origin`).
+- **`SESSION_SECRET`**: production warns at every start while it comes from the database; `REQUIRE_SESSION_SECRET=1`
+  refuses to start (not set on Render, so Render is unaffected). `scripts/export-session-secret.js` writes the current
+  secret to a mode-600 file and never prints it. Note for the owner: carrying it over keeps people signed in only if the
+  web address stays the same; a move from `magic-cup.onrender.com` to a new domain signs everyone in once anyway.
+- **Litestream 0.5.17** (binary copied from the official image, pinned by digest) runs only when `LITESTREAM_REPLICA_URL` is set.
+  On an empty disk the container restores the latest backup first (`LITESTREAM_AUTO_RESTORE=1`), and refuses to start
+  if that restore fails, so an empty database is never backed up over a good one. It covers the database only; disk
+  snapshots cover pictures, photos and uploads. The storage keys are removed from the app's environment (`env -u`);
+  since the app runs as the same user as Litestream that only stops careless leaks, so the guides make bucket
+  versioning (AWS) and soft delete + versioning (Azure) required, and Azure uses the VM's managed identity scoped to the
+  container instead of the account key.
+- **Moving day**: `MAINTENANCE_MODE=1` (503 "moving" page, health still 200) and `MOVED_TO_URL` (302/307 every path to
+  the new site; `MOVED_PERMANENTLY=1` for 301/308 once it works) so `magic-cup.onrender.com` keeps working as a redirect.
+  A request arriving on the new site's own name gets the "moving" page instead (no loop while DNS spreads), and only
+  a path is ever appended to the new address. `scripts/export-data.js` packs a consistent database
+  copy plus the picture folders into one mode-600 archive, and `scripts/upload-file.js` sends it to a pre-signed S3 /
+  SAS link, because Render's Docker shell has no scp.
+- **Trust in the compose stack**: `TRUST_PROXY` is the `web` network's fixed subnet (`172.30.42.0/24`, only Caddy and
+  the app on it), not a hop count, so the screenshot worker's network can't choose its own `X-Forwarded-For`.
+- **On/off settings** (`REQUIRE_SESSION_SECRET`, `MAINTENANCE_MODE`, `MOVED_PERMANENTLY`) accept 1/true/yes/on and
+  0/false/no/off; anything else stops the start. With `REQUIRE_SESSION_SECRET` on, a `SESSION_SECRET` under 32
+  characters is refused; otherwise production only warns. Rejected values are never echoed with credentials.
+- **Screenshot worker network**: in the compose file the worker is on an internal network with no internet, as asked.
+  Consequence: games that load fonts or libraries from Google Fonts or cdnjs (3D games using a library from cdnjs, for
+  example) are photographed without them. Adding the `web` network to the worker allows them. **Owner to decide.**
+- **Request bodies**: `inflate: false` on every body parser (browsers never compress uploads; a compressed body gets
+  415), and `body-parser` 2.4.0 in the lockfile (GHSA-27r3-jxmh-p828).
+- Caddy is pinned to the 2.11 line (`caddy:2.11-alpine`) so `docker compose pull` brings security fixes; it replaces any
+  incoming `X-Forwarded-For`, never compresses the Builder's event stream and flushes it at once.

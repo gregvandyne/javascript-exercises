@@ -1,0 +1,23 @@
+# Litestream: continuous copy of the SQLite database to S3 or Azure Blob storage (off the host).
+# Used only when LITESTREAM_REPLICA_URL is set (scripts/entrypoint.sh); the image has this file at /etc/litestream.yml.
+#   S3:          LITESTREAM_REPLICA_URL=s3://my-bucket/oomba          credentials: the instance/task role, or
+#                LITESTREAM_ACCESS_KEY_ID + LITESTREAM_SECRET_ACCESS_KEY
+#                Other S3-compatible stores: put the address in the URL, e.g.
+#                s3://my-bucket/oomba?endpoint=https://s3.example.net&forcePathStyle=true
+#   Azure Blob:  LITESTREAM_REPLICA_URL=abs://STORAGEACCOUNT@CONTAINER/oomba
+#                credentials: the VM's managed identity (nothing to set), or LITESTREAM_AZURE_SAS_TOKEN
+#                (or LITESTREAM_AZURE_ACCOUNT_KEY)
+# The app process itself never gets these keys (the entrypoint removes them from its environment).
+# Litestream needs WAL journal mode (the default); it is skipped when BRB_JOURNAL_MODE is something else.
+# Restoring: docs/runbook-restore.md.
+# A full snapshot every day, kept for a week. A restore can go back to any moment in that week; moments more than a
+# few hours back may come back as they were up to an hour earlier (older changes are merged into larger steps).
+snapshot:
+  interval: 24h
+  retention: 168h
+dbs:
+  - path: ${BRB_DATA_DIR}/brb.db
+    replica:
+      url: ${LITESTREAM_REPLICA_URL}
+      # How often new changes are shipped: at most this much is lost if the disk dies.
+      sync-interval: 10s

@@ -5,3 +5,6 @@ playwright-report/
 screenshots/
 *.tmp.mjs
 .env
+secrets.env
+session-secret*.txt
+oomba-data-*.tgz

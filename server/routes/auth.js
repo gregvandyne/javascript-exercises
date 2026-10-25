@@ -133,7 +133,7 @@ router.post('/api/me/theme', rateLimit('theme', 30, 60e3), (req, res) => {
   res.json({ ok: true, theme });
 });
 // ---- Profile photo. Raw body: a JPEG the browser already shrank to a 512px square.
-router.post('/api/me/photo', auth.requireUser, rateLimit('me-photo', 10, 3600e3), express.raw({ type: () => true, limit: '1mb' }), async (req, res) => {
+router.post('/api/me/photo', auth.requireUser, rateLimit('me-photo', 10, 3600e3), express.raw({ type: () => true, limit: '1mb', inflate: false }), async (req, res) => {
   const t = req.t;
   try {
     const at = await photos.savePhoto(req.user, Buffer.isBuffer(req.body) ? req.body : Buffer.alloc(0));

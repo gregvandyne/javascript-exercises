@@ -5,6 +5,7 @@ import { q, uid, now, setting, tx } from './db.js';
 import { config } from './config.js';
 import { cleanName, cleanText } from './services/textfilter.js';
 import { tEn, tReq } from './i18n/index.js';
+import { isOwnOrigin } from './site.js';
 export { cleanName, cleanText };
 
 const SESSION_DAYS = 60;
@@ -12,7 +13,11 @@ export const BCRYPT_COST = 11;
 // Compared against when a username doesn't exist, so a wrong name takes as long as a wrong password.
 const DUMMY_HASH = bcrypt.hashSync('not-a-real-password', BCRYPT_COST);
 export const COOKIE = 'brb_session';
+// SESSION_SECRET, else one kept in the settings table (made on first boot). REQUIRE_SESSION_SECRET=1 forbids the fallback.
+if (!config.sessionSecret && config.requireSessionSecret) throw new Error('SESSION_SECRET is not set and REQUIRE_SESSION_SECRET=1: refusing to start. See scripts/export-session-secret.js to carry over the current one.');
 let SECRET = config.sessionSecret || setting('session_secret');
+/** Where the secret came from: 'env', 'database' or 'new' (just made and stored). */
+export const secretSource = config.sessionSecret ? 'env' : SECRET ? 'database' : 'new';
 if (!SECRET) { SECRET = crypto.randomBytes(32).toString('hex'); setting('session_secret', SECRET); }
 export const secret = () => SECRET;
 
@@ -145,7 +150,7 @@ export function csrfCheck(req, res, next) {
     if (site && site !== 'same-origin' && site !== 'none') return blocked();
     const origin = req.headers.origin;
     if (!site && origin && origin !== 'null') {
-      try { if (new URL(origin).host !== req.headers.host) return blocked(); } catch { return blocked(); }
+      if (!isOwnOrigin(req, origin)) return blocked();
     }
   }
   next();

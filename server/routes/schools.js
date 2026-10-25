@@ -13,6 +13,7 @@ import { rateLimit } from '../services/ratelimit.js';
 import * as S from '../services/schools.js';
 import { teacherLessonsPanel, studentLessonsPanel } from './lessons.js';
 import * as P from '../services/progress.js';
+import { siteHost } from '../site.js';
 
 export const router = Router();
 const CSS = raw(`<link rel="stylesheet" href="/css/community.css?v=${VERSION}"><link rel="stylesheet" href="/css/schools.css?v=${VERSION}">`);
@@ -586,7 +587,7 @@ router.get('/cards/:k', requireUser, (req, res) => {
   const t = req.t; const v = CARDS.get(req.params.k);
   if (!v || v.by !== req.user.id || v.exp < Date.now()) return notFound(req, res, t('school.cards.gone'));
   const s = S.getSchool(v.schoolId); const c = v.classId ? S.getClass(v.classId) : null;
-  const site = `${String(req.get('host') || '').replace(/^www\./, '')}/login`;
+  const site = `${siteHost(req).replace(/^www\./, '')}/login`;
   const back = v.back === 'class' && c ? { href: `/class/${c.id}?tab=students`, label: t('school.cards.backClass', { name: c.name }) }
     : s ? { href: `/school/${s.slug}?tab=people`, label: t('school.cards.backPeople') } : { href: '/teach', label: t('school.teach.title') };
   const body = html`

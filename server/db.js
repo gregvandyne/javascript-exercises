@@ -1,17 +1,21 @@
-// Oomba Academy database: SQLite via better-sqlite3. One file, WAL mode, versioned migrations.
+// Oomba Academy database: SQLite via better-sqlite3. One file, WAL mode (BRB_JOURNAL_MODE), versioned migrations.
+// SQLite wants a local block disk and one writing process: never two app instances on the same file.
 // Reused from the starter with chat tables and update-review fields added.
 // Everything else talks to the DB through `q` (and the service modules), so a Postgres swap is a repository-layer change.
 import Database from 'better-sqlite3';
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
-import { config } from './config.js';
+import { config, JOURNAL_MODES } from './config.js';
 
 fs.mkdirSync(config.dataDir, { recursive: true });
 export const DB_PATH = config.db === ':memory:' ? ':memory:' : (config.db || path.join(config.dataDir, 'brb.db'));
 
 export const db = new Database(DB_PATH);
-db.pragma('journal_mode = WAL');
+// WAL by default. On a network file system (NFS, SMB: EFS, Azure Files) WAL's shared memory doesn't work: use DELETE.
+if (!JOURNAL_MODES.includes(config.journalMode)) throw new Error(`BRB_JOURNAL_MODE must be one of ${JOURNAL_MODES.join(', ')}`);
+/** The journal mode in use ('memory' for the in-memory test DB). */
+export const JOURNAL_MODE = db.pragma(`journal_mode = ${config.journalMode}`, { simple: true });
 db.pragma('foreign_keys = ON');
 db.pragma('busy_timeout = 5000');
 

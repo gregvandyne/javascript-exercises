@@ -35,14 +35,24 @@ _Last updated: 2026-10-25_
 | 7 starter templates pass the scanner and play to the results screen | unit `templates.test.js` + manual headless run |
 | Every page at 390 px and 1280 px, light and dark: no horizontal overflow, reviewed by eye | `npm run screenshots` |
 | Docker: image boots, seeds, serves `/health`, home and game pages | built locally with pre-installed deps (see limits) |
+| Container start and stop: tini → node (no shell or su left), root-owned disk made writable without recursion, chown refused (network share) is only a warning, SIGTERM during a Builder stream lets it finish and exits 0 (directly and behind Caddy), `/health` 503 on an unwritable disk, `REQUIRE_SESSION_SECRET`, worker-style read-only run as uid 1000 | Docker 29 here, test copy of the Dockerfile (see limits) |
+| Render-like boot (root-owned mount point, uid-1000 files, root-only `lost+found`, `PORT=10000`, only Render's variables): symbolic links planted by uid 1000 at `/etc/passwd`, the node binary and the entrypoint stay root-owned; node runs as uid 1000 with NoNewPrivs; data kept across a restart; SIGTERM exits 0 | Docker, test copy of the Dockerfile; `deploy.test.js` symlink test run inside the image (fails on the old loop) |
+| `/health` sees what matters: full 12 MB tmpfs → 503 `disk full`; `brb.db` moved away or replaced under the running app → 503, back to 200 when restored | Docker + unit `deploy.test.js` |
+| `MOVED_TO_URL`: old host 302 to the same path, POST 307, a request on the new name gets the "moving" page (no loop), a non-path request line goes to `/` | Docker + unit |
+| Litestream: replication under the app, signal hand-off, last sync on stop, empty disk restores itself, point-in-time restore, restore drill, failed restore refuses to start; the app process has none of the storage keys (Litestream's own process still does) | Docker, file replica |
+| `deploy/` stack: compose config, Caddy (HTTPS, gzip but not the event stream, `X-Forwarded-For` replaced, headers), app not published; worker off by default (profile); app refuses to start when the data folder is missing; trust by Caddy's subnet: 31 sign-ups with fake `X-Forwarded-For` hit the 30/hour limit both through Caddy and from the worker's network (with `TRUST_PROXY=1` the worker network got all 31) | `docker compose up` with a local-CA certificate |
+| Graceful shutdown, `/health`, `PUBLIC_URL`, TRUST_PROXY warning, secret rules, on/off settings, journal mode, maintenance / moved modes, export scripts | unit `deploy.test.js` |
 
-Counts at this commit: unit + safety 214/214, e2e 49/49.
+Counts at this commit: unit + safety 234/235 with 1 skipped here (the entrypoint test needs root and a `node` user; it passes inside the image), e2e 49/49.
 
 ## Not verified / known limits
 - **Real Claude calls are untested** (no `ANTHROPIC_API_KEY` here). Request shapes (cache_control, tools, models, review schema) are tested against a local fake Messages API. Set the key and try one Studio game before launch.
-- **Full `docker build` not run here**: this sandbox blocks Debian package mirrors, so the `apt-get` + `npm ci` steps could not run. The image was verified to boot with the same layout using pre-built dependencies. Render/any normal network should build it as-is.
+- **Full `docker build` not run here**: this sandbox blocks Debian package mirrors and Playwright's download site, so the `apt-get` (tini, Chromium's libraries) + `npm ci` steps could not run. The container tests used a copy of the Dockerfile where only those steps are swapped (worktree `node_modules`, Docker's bundled tini 0.19.0, no Chromium); everything else, including the entrypoint and Litestream, is the real thing. Render/any normal network should build it as-is.
+- **Not tried on real AWS or Azure accounts.** The guides follow the consoles as documented; ECS Fargate, Container Apps and App Service were not deployed. Litestream's Azure managed-identity and SAS paths were only checked to be the ones it tries (no Azure account here).
+- **The screenshot worker** (`server/shots-worker.js`, `SNAPSHOT_URL`, `SHOTS_TOKEN`) is a separate change and not merged: until then Chromium runs inside the app (compose gives the app 2 GB), and the compose file's `shots` service stays off behind `COMPOSE_PROFILES=worker`.
+- Litestream runs as the same user as the app, so an attacker who controls the app could still read the storage keys from Litestream's process. Bucket versioning / soft delete (required in the guides) is the real protection.
 - The GitHub repo name is unchanged (no tool for that here). Rename it in GitHub → Settings.
-- Presence (live counts) and rate limits are in memory: one server process only. Multi-instance needs Redis.
+- Presence (live counts), rate limits and one-time login cards are in memory: **one server process only, no autoscaling** (README, Deploy). Multi-instance needs Redis (and Postgres instead of SQLite).
 - Chat uses polling every ~3.5 s, not WebSockets.
 - No ads and no creator payouts: removed when Oomba Academy became an ed-tech product. Old ad/earnings tables are left untouched in existing databases.
 - The mock Builder makes real games from templates and real find/replace edits, but it is not creative. The real Builder needs the API key.

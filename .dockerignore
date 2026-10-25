@@ -6,3 +6,8 @@ screenshots
 .git
 tests
 docs
+.env
+**/.env
+**/secrets.env
+**/session-secret*.txt
+**/oomba-data-*.tgz
