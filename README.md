@@ -84,6 +84,7 @@ On/off settings (`REQUIRE_SESSION_SECRET`, `MAINTENANCE_MODE`, `MOVED_PERMANENTL
 | `CHAT_DAILY_LIMIT` | `300` | Max chat messages per user per day. |
 | `REPORTS_TO_HIDE` | `3` | Open reports from different players that auto-hide a game. |
 | `CONTACT_EMAIL` | – | Where grown-ups write to the team (deletion, export, a lost password). Shown on `/parents` and in the footer; set it before launch (production logs a warning without it). |
+| `BOOTSTRAP_SCHOOLS` | unset | Schools to set up at start-up without the admin pages, each with an existing account as its school admin: `[{"name":"Oak Hill Primary","admin":"MsSmith"}]`. Safe to leave set (done steps are skipped); a bad value or a missing account is logged and skipped. A school admin can also create classes and teaches the ones they create. |
 | `POSTHOG_KEY` | – | Optional product analytics (off unless set; never sends usernames or text). |
 | `POSTHOG_HOST` | `https://us.i.posthog.com` | PostHog address. |
 

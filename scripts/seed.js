@@ -37,7 +37,44 @@ export function seed({ quiet = false } = {}) {
     say(`  ✓ ${g.title}  /g/${g.slug}`);
   }
   const demo = seedDemoTeacher(admin, say);
-  return { admin, official, demo };
+  const bootstrapped = seedSchools(admin, config.bootstrapSchools, say);
+  return { admin, official, demo, bootstrapped };
+}
+
+/**
+ * BOOTSTRAP_SCHOOLS: schools to create at start-up, each with an existing account as its school admin, for setting up
+ * a school without the admin pages (e.g. when only the hosting dashboard is at hand). JSON:
+ *   [{"name":"Donaldson Way Elementary School","admin":"MsJVD"}]
+ * A school is found by its name (any case) or created; the account (by username, any case) becomes its admin. A school
+ * admin can also create classes and teaches the classes they create. Safe to re-run and to leave set; a bad value or
+ * a missing account is reported and skipped, never stopping the start.
+ */
+export function seedSchools(by, raw, say = () => {}) {
+  if (!raw || !String(raw).trim()) return [];
+  let list;
+  try { list = typeof raw === 'string' ? JSON.parse(raw) : raw; } catch { say('BOOTSTRAP_SCHOOLS is not valid JSON: skipped'); return []; }
+  if (!Array.isArray(list)) list = [list];
+  const done = [];
+  for (const item of list) {
+    const name = String((item && item.name) || '').trim(), adminName = String((item && item.admin) || '').trim();
+    if (name.length < 2 || !adminName) { say('BOOTSTRAP_SCHOOLS: each entry needs a "name" and an "admin" username: one skipped'); continue; }
+    const user = getUserByName(adminName);
+    if (!user || user.is_guest) { say(`BOOTSTRAP_SCHOOLS: no account called "${adminName}": "${name}" skipped`); continue; }
+    let school = q.get('SELECT * FROM schools WHERE name=? COLLATE NOCASE ORDER BY archived_at IS NOT NULL, created_at LIMIT 1', name);
+    if (school && school.archived_at) { say(`BOOTSTRAP_SCHOOLS: "${name}" is archived: skipped`); continue; }
+    if (!school) {
+      const r = schools.createSchool(by, { name });
+      if (!r.ok) { say(`BOOTSTRAP_SCHOOLS: could not create "${name}" (${r.code})`); continue; }
+      school = r.school; say(`Created the school "${school.name}" (/school/${school.slug})`);
+    }
+    const m = schools.membership(school.id, user.id);
+    if (m && m.role === 'admin') { done.push({ school: school.id, user: user.id }); continue; }
+    const r = schools.addMember(by, school.id, user.id, 'admin');
+    if (!r.ok) { say(`BOOTSTRAP_SCHOOLS: could not make @${user.username} an admin of "${school.name}" (${r.code})`); continue; }
+    say(`Made @${user.username} a school admin of "${school.name}"`);
+    done.push({ school: school.id, user: user.id });
+  }
+  return done;
 }
 
 /** The official builder account (owner of the launch games). It was called BRBGaming, then MagicCup, then MagicCups,
