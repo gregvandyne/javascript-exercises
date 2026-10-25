@@ -16,7 +16,7 @@ if (d.mode === 'inbox') {
   let last = box ? box.innerHTML : '';
   const refresh = async () => {
     if (!box || document.hidden) return;
-    try { const r = await api('/api/chat'); const h = r.threads.map(row).join(''); if (h !== last) { box.innerHTML = h; last = h; } } catch { /* offline */ }
+    try { const r = await api('/api/chat', { background: true }); const h = r.threads.map(row).join(''); if (h !== last) { box.innerHTML = h; last = h; } } catch { /* offline */ }
   };
   setInterval(refresh, 4000);
   refresh();
@@ -86,7 +86,7 @@ if (d.mode === 'thread') {
   async function poll() {
     if (polling || document.hidden) return; polling = true;
     try {
-      const r = await api(`/api/chat/${encodeURIComponent(other.username)}?after=${lastAt}`);
+      const r = await api(`/api/chat/${encodeURIComponent(other.username)}?after=${lastAt}`, { background: true });
       add(r.messages);
       if (r.can.ok !== can.ok || r.can.reason !== can.reason) setCan(r.can);
       if ((r.paused || 0) !== paused) { paused = r.paused || 0; showPaused(); }

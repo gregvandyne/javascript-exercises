@@ -1,17 +1,21 @@
-// Oomba Academy database: SQLite via better-sqlite3. One file, WAL mode, versioned migrations.
+// Oomba Academy database: SQLite via better-sqlite3. One file, WAL mode (BRB_JOURNAL_MODE), versioned migrations.
+// SQLite wants a local block disk and one writing process: never two app instances on the same file.
 // Reused from the starter with chat tables and update-review fields added.
 // Everything else talks to the DB through `q` (and the service modules), so a Postgres swap is a repository-layer change.
 import Database from 'better-sqlite3';
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
-import { config } from './config.js';
+import { config, JOURNAL_MODES } from './config.js';
 
 fs.mkdirSync(config.dataDir, { recursive: true });
 export const DB_PATH = config.db === ':memory:' ? ':memory:' : (config.db || path.join(config.dataDir, 'brb.db'));
 
 export const db = new Database(DB_PATH);
-db.pragma('journal_mode = WAL');
+// WAL by default. On a network file system (NFS, SMB: EFS, Azure Files) WAL's shared memory doesn't work: use DELETE.
+if (!JOURNAL_MODES.includes(config.journalMode)) throw new Error(`BRB_JOURNAL_MODE must be one of ${JOURNAL_MODES.join(', ')}`);
+/** The journal mode in use ('memory' for the in-memory test DB). */
+export const JOURNAL_MODE = db.pragma(`journal_mode = ${config.journalMode}`, { simple: true });
 db.pragma('foreign_keys = ON');
 db.pragma('busy_timeout = 5000');
 
@@ -19,7 +23,7 @@ export const now = () => Date.now();
 export const uid = (n = 12) => crypto.randomBytes(24).toString('base64url').replace(/[^a-zA-Z0-9]/g, '').slice(0, n);
 export const today = (t = Date.now()) => new Date(t).toISOString().slice(0, 10);
 
-const MIGRATIONS = [
+export const MIGRATIONS = [
   ['0001_init', `
   CREATE TABLE IF NOT EXISTS users (
     id TEXT PRIMARY KEY, username TEXT UNIQUE NOT NULL COLLATE NOCASE, display_name TEXT NOT NULL, password_hash TEXT,
@@ -134,6 +138,18 @@ const MIGRATIONS = [
   ['0013_orphan_class_rows', `DELETE FROM class_lessons WHERE class_id NOT IN (SELECT id FROM classrooms); DELETE FROM class_units WHERE class_id NOT IN (SELECT id FROM classrooms);`],
   // The site theme a signed-in player picked: '' = same as the device, 'light' or 'dark' (see server/theme.js).
   ['0014_user_theme', `ALTER TABLE users ADD COLUMN theme TEXT NOT NULL DEFAULT '';`],
+  // When each session was last used (written at most once a minute), for the session limits in server/auth.js. Sessions
+  // open at upgrade time count as used now, and one the new caps would end at once (school students 10 hours, staff and
+  // the platform admin 7 days, counted from sign-in) gets one more hour, so the deploy itself signs nobody out mid-lesson.
+  ['0015_session_activity', `ALTER TABLE sessions ADD COLUMN last_active INTEGER NOT NULL DEFAULT 0;
+    UPDATE sessions SET last_active=CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER);
+    UPDATE sessions SET created_at=MAX(created_at, last_active - 9 * 3600000) WHERE user_id IN (SELECT id FROM users WHERE managed_school!=''
+      AND role!='admin' AND id NOT IN (SELECT user_id FROM school_members WHERE status='active' AND role!='student'));
+    UPDATE sessions SET created_at=MAX(created_at, last_active - 167 * 3600000) WHERE user_id IN (SELECT id FROM users WHERE role='admin'
+      OR id IN (SELECT user_id FROM school_members WHERE status='active' AND role!='student'));`],
+  // 1 when a staff member or the platform admin last signed in with a password shorter than 12 characters: they are asked
+  // to choose a longer one (auth.notePasswordLength). Changing the password clears it.
+  ['0016_password_short', `ALTER TABLE users ADD COLUMN password_short INTEGER NOT NULL DEFAULT 0;`],
 ];
 
 db.exec('CREATE TABLE IF NOT EXISTS migrations (name TEXT PRIMARY KEY, applied_at INTEGER NOT NULL)');

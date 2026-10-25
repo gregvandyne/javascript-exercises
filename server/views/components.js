@@ -2,7 +2,7 @@
 //  - live counts: any element with [data-live="<gameId>"] gets its text updated every 30s by app.js
 // Text comes from the request's language via current() (server/i18n); outside a request it is English.
 import { html, raw, esc } from './html.js';
-import { current } from '../i18n/index.js';
+import { current, tHtml } from '../i18n/index.js';
 import { urlFor } from '../services/shots.js';
 import { photoUrl } from '../services/photos.js';
 import { OFFICIAL } from '../auth.js';
@@ -43,6 +43,12 @@ export function avatar(u, size = 40) {
   if (!photo && u.username === OFFICIAL) return html`<span class="avatar" style="--s:${size}px;--c:var(--brand-mint)" aria-hidden="true">${faceMark()}</span>`;
   if (photo) return html`<span class="avatar has-photo" style="--s:${size}px;--c:${c}" aria-hidden="true"><img src="${photo}" alt="" loading="lazy" decoding="async" width="${size}" height="${size}"></span>`;
   return html`<span class="avatar" style="--s:${size}px;--c:${c}" aria-hidden="true">${a}</span>`;
+}
+/** "Signed in as Ana. Not you? Sign out" for shared classroom devices: one tap signs out and opens the sign-in page.
+ *  withName: false where the name is already the page heading (the Me page); plain: just "Sign out" (a device of one's own). */
+export function notYou(req, { withName = true, plain = false } = {}) {
+  const t = req.t, u = req.user; if (!u) return '';
+  return html`<form class="notyou small" data-api="/api/auth/logout"><input type="hidden" name="next" value="${plain ? '/' : '/login'}">${withName ? html`<span class="muted">${tHtml(t, 'layout.notYou.signedInAs', { name: html`<b><bdi>${u.display_name}</bdi></b>` })}</span>` : ''}<button class="notyou-btn" type="submit">${plain ? t('me.signOut.button') : t('layout.notYou.button')}</button></form>`;
 }
 export function livePill(g) {
   const { t } = current();

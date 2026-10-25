@@ -5,17 +5,28 @@ const d = pageData();
 const frame = $('#gameframe'), stage = $('#stage');
 let playId = null;
 
+// ---- is someone playing? ----
+// The game's own calls (heartbeat, saves, scores, lesson time) keep a sign-in awake only if the player pressed a key,
+// clicked or tapped in the last few minutes (server/auth.js), so a game left running on a shared classroom device still
+// times out. The browser marks this page as activated for a few seconds after real input, even input inside the game
+// frame, and a game can't fake that; presses on this page count too. (Opening the page counted already, on the server.)
+const ACTIVE_FOR = 5 * 60e3; let lastInput = 0;
+const ua = navigator.userActivation;
+if (ua) setInterval(() => { if (ua.isActive) lastInput = Date.now(); }, 1000);
+for (const ev of ['pointerdown', 'keydown']) addEventListener(ev, () => { lastInput = Date.now(); }, { capture: true, passive: true });
+const playing = () => Date.now() - lastInput < ACTIVE_FOR;
+
 // ---- presence + play counting ----
 async function start() {
   try { const r = await api(`/api/games/${d.gameId}/play`, { method: 'POST', body: {} }); playId = r.playId; refreshLive(); } catch { /* ignore */ }
 }
 start();
 // Opened from a lesson: play time and scores also count for that lesson step (see server/services/progress.js).
-const lessonEvent = body => { if (d.lesson) api(`/api/progress/${d.lesson.cl}/${d.lesson.step}/game`, { method: 'POST', body }).catch(() => {}); };
+const lessonEvent = body => { if (d.lesson) api(`/api/progress/${d.lesson.cl}/${d.lesson.step}/game`, { method: 'POST', body, active: playing() }).catch(() => {}); };
 lessonEvent({ event: 'start' });
 setInterval(() => {
   if (document.hidden) return;
-  api(`/api/games/${d.gameId}/heartbeat`, { method: 'POST', body: {} }).then(() => refreshLive()).catch(() => {});
+  api(`/api/games/${d.gameId}/heartbeat`, { method: 'POST', body: {}, active: playing() }).then(() => refreshLive()).catch(() => {});
   lessonEvent({ event: 'time', seconds: 30 });
 }, 30000);
 addEventListener('pagehide', () => { navigator.sendBeacon(`/api/games/${d.gameId}/leave`, new Blob([JSON.stringify({ playId })], { type: 'text/plain' })); });
@@ -39,7 +50,7 @@ export function validMessage(e, frameWin) {
 let saveTimer = null, pendingSave = null, lastScoreAt = 0;
 async function flushSave() {
   saveTimer = null; const data = pendingSave; pendingSave = null; if (!data) return;
-  try { await api(`/api/games/${d.gameId}/save`, { method: 'POST', body: { data } }); } catch (err) { if (err.status !== 401) toast(t('js.play.saveFailed'), { bad: true }); }
+  try { await api(`/api/games/${d.gameId}/save`, { method: 'POST', body: { data }, active: playing() }); } catch (err) { if (err.status !== 401) toast(t('js.play.saveFailed'), { bad: true }); }
 }
 addEventListener('message', e => {
   const m = validMessage(e, frame.contentWindow); if (!m) return;
@@ -47,7 +58,7 @@ addEventListener('message', e => {
     case 'brb:save': if (!d.canSave) return; pendingSave = m.data; if (!saveTimer) saveTimer = setTimeout(flushSave, 1500); break;
     case 'brb:score': {
       if (!d.canSave || Date.now() - lastScoreAt < 2000) return; lastScoreAt = Date.now();
-      api(`/api/games/${d.gameId}/score`, { method: 'POST', body: { score: m.score, label: m.label || '' } }).then(r => { if (r.improved) toast(t('js.play.newBest', { score: r.best })); }).catch(() => {});
+      api(`/api/games/${d.gameId}/score`, { method: 'POST', body: { score: m.score, label: m.label || '' }, active: playing() }).then(r => { if (r.improved) toast(t('js.play.newBest', { score: r.best })); }).catch(() => {});
       lessonEvent({ event: 'score', score: m.score, label: m.label || '' });
       break;
     }

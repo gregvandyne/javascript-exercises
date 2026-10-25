@@ -23,6 +23,8 @@ export function providerName() {
 const PROVIDERS = { mock, claude };
 const busy = new Set();
 export const isBusy = gameId => busy.has(gameId);
+/** Builder turns running now (a shutdown waits for them, even when the phone already disconnected). */
+export const busyCount = () => busy.size;
 
 /**
  * Run one turn. opts: { user, gameId, text, pro, uploadIds, emit, signal, provider, t }.

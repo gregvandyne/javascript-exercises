@@ -7,12 +7,13 @@ import { Router } from 'express';
 import crypto from 'node:crypto';
 import { html, raw } from '../views/html.js';
 import { page, notFound, VERSION } from '../views/layout.js';
-import { avatar, emptyState, gradeLabel, BRAND, appMark } from '../views/components.js';
-import { requireUser, requireAdmin, getUserByName } from '../auth.js';
+import { avatar, emptyState, gradeLabel, BRAND, appMark, notYou } from '../views/components.js';
+import { requireUser, requireAdmin, getUserByName, accountKind } from '../auth.js';
 import { rateLimit } from '../services/ratelimit.js';
 import * as S from '../services/schools.js';
 import { teacherLessonsPanel, studentLessonsPanel } from './lessons.js';
 import * as P from '../services/progress.js';
+import { siteHost } from '../site.js';
 
 export const router = Router();
 const CSS = raw(`<link rel="stylesheet" href="/css/community.css?v=${VERSION}"><link rel="stylesheet" href="/css/schools.css?v=${VERSION}">`);
@@ -28,6 +29,9 @@ const asList = v => (Array.isArray(v) ? v : v ? [v] : []).map(String).filter(Boo
 const staffHere = (u, schoolId) => { const m = u && S.membership(schoolId, u.id); return !!m && m.role !== 'student'; };
 const selected = on => (on ? raw('selected') : '');
 const optional = (t, label) => html`${label} <span class="muted">${t('school.optional')}</span>`;
+/** "Signed in as … Not you? Sign out" on students' pages (classroom devices are shared): school-account students, and
+ *  own accounts on the pages of a class they are a student in (classStudent). */
+export const studentNotYou = (req, classStudent = false) => (classStudent || accountKind(req.user) === 'student' ? notYou(req) : '');
 
 // Time zones grouped by region, each with its current offset ("Europe/London · GMT+1"). Offsets move with daylight
 // saving, so the list is rebuilt about once an hour.
@@ -475,7 +479,7 @@ function studentClass(req, res, c) {
   const teachers = people.filter(p => p.role === 'teacher'), classmates = people.filter(p => p.role === 'student' && p.id !== req.user.id);
   const body = html`
   <div class="pagehead"><div><span class="small muted">${s.name}</span><h1>${c.name}</h1>
-    <p class="muted">${[c.subject, gradeLabel(t, c.grade)].filter(Boolean).join(' · ')}</p></div></div>
+    <p class="muted">${[c.subject, gradeLabel(t, c.grade)].filter(Boolean).join(' · ')}</p></div>${studentNotYou(req, S.classMember(c.id, req.user.id)?.role === 'student')}</div>
   ${studentLessonsPanel(req, c)}
   <div class="cols2"><section class="panel"><h2>🍎 ${t('school.class.teachers')}</h2><ul class="plain chips-list">${teachers.map(p => html`<li class="pp">${avatar(p, 28)} ${nameOf(p)}</li>`)}</ul></section>
   <section class="panel"><h2>👫 ${t('classes.classmates', { count: classmates.length })}</h2>${classmates.length ? html`<ul class="plain chips-list">${classmates.map(p => html`<li class="pp">${avatar(p, 28)} ${p.display_name}</li>`)}</ul>` : ''}</section></div>`;
@@ -586,7 +590,7 @@ router.get('/cards/:k', requireUser, (req, res) => {
   const t = req.t; const v = CARDS.get(req.params.k);
   if (!v || v.by !== req.user.id || v.exp < Date.now()) return notFound(req, res, t('school.cards.gone'));
   const s = S.getSchool(v.schoolId); const c = v.classId ? S.getClass(v.classId) : null;
-  const site = `${String(req.get('host') || '').replace(/^www\./, '')}/login`;
+  const site = `${siteHost(req).replace(/^www\./, '')}/login`;
   const back = v.back === 'class' && c ? { href: `/class/${c.id}?tab=students`, label: t('school.cards.backClass', { name: c.name }) }
     : s ? { href: `/school/${s.slug}?tab=people`, label: t('school.cards.backPeople') } : { href: '/teach', label: t('school.teach.title') };
   const body = html`
@@ -611,7 +615,7 @@ router.get('/classes', requireUser, (req, res) => {
     if (S.isPlatformAdmin(u)) return res.redirect('/admin/schools');
   }
   const body = html`
-  <div class="pagehead"><h1>🏫 ${t('classes.title')}</h1></div>
+  <div class="pagehead"><h1>🏫 ${t('classes.title')}</h1>${studentNotYou(req, mine.length > 0)}</div>
   ${mine.length ? html`<div class="classgrid">${mine.map(c => html`<a class="panel classcard" href="/class/${c.id}"><span class="cc-school small muted">${c.school_name}</span><b class="cc-name">${c.name}</b>${c.teachers ? html`<span class="cc-meta">🍎 ${c.teachers}</span>` : ''}</a>`)}</div>`
     : waiting.length ? '' : emptyState({ emoji: '🏫', title: t('classes.none'), text: u.is_guest ? t('classes.guest') : t('classes.noneText') })}
   ${waiting.length || !u.is_guest ? html`<div class="cols2">

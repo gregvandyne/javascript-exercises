@@ -1,0 +1,64 @@
+# Caddy in front of Oomba Academy: HTTPS with automatic Let's Encrypt certificates, compression, a few security
+# headers, and the reverse proxy to the app. SITE_DOMAIN and ACME_EMAIL come from deploy/.env.
+{
+	email {$ACME_EMAIL}
+	servers {
+		timeouts {
+			# Slow clients can't hold connections open forever, but responses (the Builder stream) have no time limit.
+			read_header 30s
+			read_body 2m
+			idle 5m
+		}
+	}
+}
+
+{$SITE_DOMAIN} {
+	# Bigger than the app's own limits (3 MB JSON, 6 MB Builder uploads); the app checks the exact sizes.
+	request_body {
+		max_size 8MB
+	}
+
+	# Compress pages, styles and scripts. The Builder's event stream (text/event-stream) is left out on purpose:
+	# it must reach the phone as it is written.
+	encode {
+		zstd
+		gzip
+		match {
+			header Content-Type text/html*
+			header Content-Type text/css*
+			header Content-Type text/plain*
+			header Content-Type text/javascript*
+			header Content-Type application/javascript*
+			header Content-Type application/json*
+			header Content-Type application/manifest+json*
+			header Content-Type image/svg+xml*
+		}
+	}
+
+	# The app sets its own Content-Security-Policy, frame and referrer rules per page (game frames need different
+	# ones), so Caddy only fills in what is missing and hides its name.
+	header {
+		?Strict-Transport-Security "max-age=31536000"
+		?X-Content-Type-Options nosniff
+		?Referrer-Policy same-origin
+		-Server
+	}
+
+	reverse_proxy app:3000 {
+		# Caddy is the edge: replace (never append to) whatever X-Forwarded-For the visitor sent. The app trusts the
+		# header only from Caddy's network (TRUST_PROXY in docker-compose.yml).
+		header_up X-Forwarded-For {remote_host}
+		# Send every chunk on at once (the Builder stream), no buffering.
+		flush_interval -1
+		transport http {
+			dial_timeout 5s
+			# Shorter than the app's keep-alive (65 s), so Caddy never reuses a connection the app is closing.
+			keepalive 30s
+		}
+	}
+}
+
+# www.example.com -> example.com. Delete this block if you don't point www at the server.
+www.{$SITE_DOMAIN} {
+	redir https://{$SITE_DOMAIN}{uri} permanent
+}

@@ -8,6 +8,12 @@
     "mainNav": "Main",
     "signIn": "Sign in",
     "meLabel": "Me: {name}",
+    "notYou": {
+      "signedInAs": "Signed in as {name}.",
+      "button": "Not you? Sign out"
+    },
+    "signedOut": "You were signed out. <a href=\"{href}\">Sign in again</a> to carry on.",
+    "shortPassword": "Your password is shorter than {min} characters. Staff accounts can see children's work, so please <a href=\"{href}\">choose a longer one</a>.",
     "back": "Back",
     "badgeNew": "{count} new",
     "search": {
@@ -29,6 +35,7 @@
       "tagline": "© Oomba Academy · Free to play, free to build",
       "safety": "Safety",
       "parents": "For grown-ups",
+      "contact": "Contact us",
       "builders": "For builders"
     }
   },
@@ -61,6 +68,7 @@
       "slowDown": "Whoa, slow down a little and try again in a minute.",
       "signInFirst": "Please sign in or play as a guest first.",
       "needAccount": "Make a free account to do this.",
+      "signedOut": "You were signed out. Please sign in again.",
       "crossSite": "Cross-site request blocked."
     }
   },
@@ -95,6 +103,7 @@
       "headingLogin": "Welcome back!",
       "introSignup": "Just a fun name and a password. No email needed.",
       "introLogin": "Sign in with your Oomba Academy name and password.",
+      "signedOut": "You were signed out. Sign in again to carry on.",
       "upgradeNotice": "You are playing as <b>{name}</b>. Everything you saved comes with you.",
       "nameLabelSignup": "Pick a fun name",
       "nameLabelLogin": "Your Oomba Academy name",
@@ -104,6 +113,9 @@
       "passwordHint": "At least 6 characters. Ask a grown-up to help you remember it.",
       "submitSignup": "Make my account",
       "submitLogin": "Sign in",
+      "forgotHeading": "Forgot your password?",
+      "forgotSchool": "School account? Ask your teacher for a new login card. Teachers: ask your school admin.",
+      "forgotOwn": "Your own account? We never ask for an email, so we can't send you a new password. Keep it somewhere safe at home. If it's lost, a grown-up can contact us.",
       "or": "or",
       "playAsGuest": "🎮 Play as a guest",
       "haveAccount": "Have an account?",
@@ -162,11 +174,32 @@
       "text": "Chat lets you send messages to friends you added with a friend code. Grown-ups: you can turn it off here.",
       "toggle": "Chat with my friends is on"
     },
+    "password": {
+      "heading": "Password",
+      "text": "Change the password you sign in with. You stay signed in here, and every other device is signed out.",
+      "current": "Current password",
+      "new": "New password",
+      "hint": "At least {min} characters. Don't use your name.",
+      "hintStaff": "At least {min} characters, because staff accounts can see children's work.",
+      "confirm": "New password again",
+      "button": "Change password",
+      "changed": "Password changed. Every other device is signed out.",
+      "needCurrent": "Type your current password.",
+      "wrongCurrent": "That isn't your current password.",
+      "mismatch": "The two new passwords don't match.",
+      "same": "That's the password you have now. Pick a new one.",
+      "staffShort": "That's only {n, plural, one {# character} other {# characters}}. Use at least {min}.",
+      "school": "Your teacher looks after your password — ask them if you forget it."
+    },
     "signOut": {
       "heading": "Sign out",
       "guest": "Guests lose their progress when they sign out.",
       "account": "See you soon!",
-      "button": "Sign out"
+      "button": "Sign out",
+      "everywhereText": "Sign out on every device, this one too. Use it if you signed in on a computer other people use.",
+      "everywhereButton": "Sign out everywhere",
+      "everywhereConfirm": "Sign out on every device, including this one?",
+      "everywhereDone": "You're signed out on every device."
     },
     "photo": {
       "heading": "Profile photo",
@@ -296,7 +329,7 @@
       },
       "personal": {
         "h": "No personal details",
-        "p1": "We never ask for your email, real name, age or address. Pick a fun made-up name."
+        "p1": "We never ask you for your email, age or address, or for your real name (your school may add it to its class list). Pick a fun made-up name."
       },
       "ads": {
         "h": "No ads",
@@ -311,9 +344,23 @@
         "h": "What is Oomba Academy?",
         "p1": "A free website where kids play web games and build their own by describing them to an AI Builder. No downloads, no purchases, no loot boxes, no in-game money that costs money."
       },
-      "data": {
-        "h": "Data we keep",
-        "p1": "A username, a password (stored scrambled), game saves, scores, ratings, likes and the site language your child picked. No email, no real name, no age, no location. No third-party trackers."
+      "stored": {
+        "h": "What we keep",
+        "p1": "Own accounts keep a made-up name, a password (stored scrambled) and what your child does here: the games they make, their chats with the Builder and any pictures or files they add, saves, scores, ratings, favorites, friends, chat messages, a profile photo if they upload one, and settings such as language and theme. Guest play keeps a made-up name, saves, scores, ratings and favorites.",
+        "p2": "A school account is one your child signs in to with a login card from school. It is made and owned by the school, and keeps the same things plus the student's real name as the school typed it for the class list (only the school's staff and our team see it), their classes, lesson progress, written answers and their teacher's feedback. If your child joins a class with their own account and a class code, the school keeps the same things for that class, including their real name if the teacher types one."
+      },
+      "never": {
+        "h": "What we never collect",
+        "p1": "We never ask for an email address, age, home address, location or payment details, and there is nothing to buy. Hidden location data is removed from photos and pictures before they are kept. There are no ads, and no advertising or tracking cookies."
+      },
+      "ai": {
+        "h": "What the AI sees",
+        "p1": "To make a game, the messages, pictures and files your child gives the Builder are sent to Claude, an AI made by the company Anthropic, which writes the game. Your child's name and username are not sent with them. Profile photos are also sent to Claude to be checked before anyone sees them. Claude reviews games before they can be shared with everyone, and our team checks any it is unsure about. Chats between friends and lesson answers are not sent to the AI."
+      },
+      "keep": {
+        "h": "How long we keep it",
+        "p1": "We keep an account's data for as long as the account exists. None of it is deleted on a timer yet. A game your child deletes is taken off the site for everyone, but a copy stays on our server.",
+        "p2": "There is no button yet to delete an account or download its data. To ask for either, a grown-up can contact us. For a school account, ask the school; it can ask us."
       },
       "friends": {
         "h": "Friends and chat",
@@ -326,6 +373,10 @@
       "languages": {
         "h": "Languages",
         "p1": "Pick a language with the 🌐 button at the top of any page or on the Me page. The Builder answers in that language and writes the words inside new games in it too. The same safety filters check every message, in every language."
+      },
+      "contact": {
+        "h": "Contact us",
+        "p1": "Grown-ups can email us at {email}."
       }
     },
     "sdk": {
@@ -884,6 +935,8 @@
   "js": {
     "app": {
       "wentWrong": "Something went wrong. Please try again.",
+      "signedOut": "You were signed out. Please sign in again.",
+      "draftKept": "We kept what you typed.",
       "close": "Close",
       "playing": "{n} playing",
       "justNow": "just now"
@@ -994,6 +1047,7 @@
       "building": "Building your game…",
       "editing": "Making changes…",
       "noAnswer": "The Builder could not answer. Please try again.",
+      "signInAgain": "Sign in again",
       "dropped": "Oops, the connection dropped. Please try again.",
       "proOn": "Pro quality on: slower, but fancier games.",
       "proOff": "Pro quality off: quick builds.",

@@ -4,17 +4,21 @@ import { Router } from 'express';
 import { html } from '../views/html.js';
 import { page } from '../views/layout.js';
 import { tHtml } from '../i18n/index.js';
+import { config } from '../config.js';
 export const router = Router();
 
-/** sections: [[sectionKey, paragraphCount]] under info.<pageKey>. */
-function info(req, pageKey, emoji, sections) {
+/** sections: [[sectionKey, paragraphCount]] under info.<pageKey>; extra: more sections after them. */
+function info(req, pageKey, emoji, sections, extra = '') {
   const t = req.t; const k = `info.${pageKey}`;
-  return html`<div class="wrap narrow" style="padding:0"><h1>${emoji} ${t(`${k}.heading`)}</h1>${sections.map(([s, n]) => html`<section class="panel"><h2>${t(`${k}.${s}.h`)}</h2>${Array.from({ length: n }, (_, i) => html`<p>${t(`${k}.${s}.p${i + 1}`)}</p>`)}</section>`)}</div>`;
+  return html`<div class="wrap narrow" style="padding:0"><h1>${emoji} ${t(`${k}.heading`)}</h1>${sections.map(([s, n]) => html`<section class="panel"><h2>${t(`${k}.${s}.h`)}</h2>${Array.from({ length: n }, (_, i) => html`<p>${t(`${k}.${s}.p${i + 1}`)}</p>`)}</section>`)}${extra}</div>`;
 }
 const codeBlock = s => html`<code dir="ltr">${s}</code>`;
 
 router.get('/safety', (req, res) => page(req, res, { title: req.t('info.safety.title'), back: '/', description: req.t('info.safety.description'), body: info(req, 'safety', '🛡️', [['box', 1], ['checked', 2], ['chat', 2], ['personal', 1], ['ads', 1]]) }));
-router.get('/parents', (req, res) => page(req, res, { title: req.t('info.parents.title'), back: '/', description: req.t('info.parents.description'), body: info(req, 'parents', '👪', [['what', 1], ['data', 1], ['friends', 1], ['builder', 1], ['languages', 1]]) }));
+// "Contact us" (CONTACT_EMAIL): where the page's "a grown-up can contact us" leads. Not shown until it is set.
+const contact = req => (config.contactEmail ? html`<section class="panel" id="contact"><h2>${req.t('info.parents.contact.h')}</h2>
+  <p>${tHtml(req.t, 'info.parents.contact.p1', { email: html`<a href="mailto:${config.contactEmail}" dir="ltr">${config.contactEmail}</a>` })}</p></section>` : '');
+router.get('/parents', (req, res) => page(req, res, { title: req.t('info.parents.title'), back: '/', description: req.t('info.parents.description'), body: info(req, 'parents', '👪', [['what', 1], ['stored', 2], ['never', 1], ['ai', 1], ['keep', 2], ['friends', 1], ['builder', 1], ['languages', 1]], contact(req)) }));
 router.get('/sdk', (req, res) => {
   const t = req.t;
   // The SDK names (BRB.storage.get...) are code and stay as they are in every language.

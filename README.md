@@ -39,51 +39,162 @@ In environments with a pre-installed Chromium at `/opt/pw-browsers`, the e2e con
 
 ## Configuration (env vars)
 
+One row per variable. The server reads them in `server/config.js` (plus `TRUST_PROXY` in `server/app.js`); the
+container start (`scripts/entrypoint.sh`) reads the Litestream ones; `deploy/docker-compose.yml` reads the last group.
+
+**Site and hosting**
+
 | Variable | Default | What it does |
 |---|---|---|
-| `PORT` | `3000` | HTTP port |
-| `BRB_DATA_DIR` | `./data` | Where the SQLite file (`brb.db`) and backups live. Use a persistent disk in production. |
-| `SESSION_SECRET` | random, stored in DB | Signs session cookies and game-frame tokens. Set it in production. |
-| `TRUST_PROXY` | off | How many front proxies to trust for the real client IP (rate limits). Set to the proxy hop count (e.g. `1` on Render/Heroku) **only** when the app is behind a proxy whose edge sets `X-Forwarded-For`; leave off when the app is exposed directly, or a client could spoof its IP and bypass IP rate limits. Login brute-force is additionally capped per account, independent of this. |
-| `ANTHROPIC_API_KEY` | – | Enables the real Builder, input screening classifier and model review. |
-| `BUILDER_MODEL` / `BUILDER_PRO_MODEL` | `claude-sonnet-5-5` / `claude-opus-5-5` | Builder models (normal / "Pro quality"). |
+| `PORT` | `3000` | HTTP port. |
+| `NODE_ENV` | `development` | `production` turns on secure cookies, HSTS, long static caching and screenshots. The Docker image sets it. |
+| `BRB_DATA_DIR` | `./data` (`/data` in Docker) | The SQLite file (`brb.db`), cover pictures (`shots/`), profile photos (`avatars/`), Builder uploads (`uploads/`) and `npm run backup` copies (`backups/`). Must be a persistent **block** disk; see `BRB_JOURNAL_MODE`. |
+| `BRB_JOURNAL_MODE` | `WAL` | SQLite journal mode: `WAL` on a local/block disk (EBS, Azure managed disk, Render disk). `DELETE` on a network file system (EFS/NFS, Azure Files/SMB), where WAL's shared memory doesn't work. Also accepted: `TRUNCATE`, `PERSIST`. Either way: **one app instance, one writer**. |
+| `PUBLIC_URL` | unset | The site's public address, e.g. `https://play.example.com` (origin only). Login cards print it, and the same-origin checks accept it, so a CDN or gateway that rewrites the Host header (CloudFront, Front Door, Application Gateway) works. Unset: the Host header, as before. |
+| `TRUST_PROXY` | off | How many proxies in front of the app to trust for the client's IP (rate limits): see [the table below](#trust_proxy-per-platform). Leave off when the app is reached directly. If a proxy's `X-Forwarded-For` arrives while it is off, the log warns once. |
+| `SESSION_SECRET` | stored in the DB | Signs sign-in cookies and game-frame tokens. Unset, the app makes one and keeps it in the database (`settings` table) and **warns at every production start**. Moving hosts: `node scripts/export-session-secret.js` copies the current one into a file so nobody is signed out. |
+| `REQUIRE_SESSION_SECRET` | off | `1`: refuse to start without `SESSION_SECRET` (no database fallback), or with one shorter than 32 characters. Set it on new hosts. |
+| `SHUTDOWN_GRACE_SECONDS` | `25` | After SIGTERM, how long open requests and running Builder turns get to finish before the process exits. Keep it below the platform's kill timeout (Render ~30 s; Docker 10 s unless `stop_grace_period`/`--stop-timeout` is raised; ECS `stopTimeout`). |
+| `KEEPALIVE_TIMEOUT_SECONDS` | `65` | Idle keep-alive connections stay open this long, longer than the load balancer's idle timeout (AWS ALB 60 s), which avoids random 502s. Raise it if you raise the balancer's. |
+| `MAINTENANCE_MODE` | off | `1`: every page answers 503 "moving to a new home, back in a few minutes" (`/health` still answers), so nothing writes while data is copied. |
+| `MOVED_TO_URL` | unset | e.g. `https://play.example.com`: every request is redirected there with the same path (302; 307 for POSTs). For the old host after a move. A request that arrives on that same name (its DNS still points at the old host) gets the "moving" page instead of a redirect loop. |
+| `MOVED_PERMANENTLY` | off | `1`: make the `MOVED_TO_URL` redirects permanent (301 / 308) once the new site is known to work. Browsers remember these. |
+| `LOG_REQUESTS` | `1` | `0` turns off the JSON request log (`/health` probes are never logged). |
+
+On/off settings (`REQUIRE_SESSION_SECRET`, `MAINTENANCE_MODE`, `MOVED_PERMANENTLY`) take `1`/`true`/`yes`/`on` or
+`0`/`false`/`no`/`off`; anything else stops the start with a message, like a malformed `PUBLIC_URL` does.
+
+**Accounts, AI and limits**
+
+| Variable | Default | What it does |
+|---|---|---|
+| `ADMIN_USERNAME` | `admin` | Admin account made by the seed (every container start runs it). |
+| `ADMIN_PASSWORD` | random | The admin's password, reset to this on every start; unset, the first seed prints a random one. |
+| `DEMO_TEACHER_PASSWORD` | unset | Demo school for showing schools: creates "Oomba Academy Demo School" (at `/school/magic-cups-demo-school`) with `DemoTeacher` and `DemoStudent` (this password, reset on every boot), four classmates, a Demo Class and sample lessons (added again only if the teacher's library is empty). |
+| `ANTHROPIC_API_KEY` | – | Enables the real Builder, input screening classifier and model review. Without it the built-in mock Builder runs. |
+| `BUILDER_MODEL` | built in (`server/config.js`) | Model for normal Builder turns (and public reviews unless `REVIEW_MODEL` is set). |
+| `BUILDER_PRO_MODEL` | built in (`server/config.js`) | Model for "Pro quality" Builder turns. |
+| `BUILDER_SCREEN_MODEL` | built in | Small model for input screening and picture checks. |
+| `REVIEW_MODEL` | `BUILDER_MODEL` | Model for the automatic review of public games. |
+| `BUILDER_FALLBACKS` | on | `0` turns off the API's server-side model fallback for Builder turns (used when the first model is overloaded). |
 | `BUILDER_DAILY_TURNS` | `60` | Builder turns per user per day. |
 | `BUILDER_MAX_TOKENS` | `32000` | Max output tokens per Builder turn. |
-| `AI_DAILY_BUDGET_USD` | `5` | Most the site spends on Claude per UTC day. At the cap the Builder goes offline (mock builder), picture uploads pause and public reviews wait for a person. `0` turns the AI off. |
+| `AI_DAILY_BUDGET_USD` | `5` | Most the site spends on the AI per UTC day. At the cap the Builder goes offline (mock builder), picture uploads pause and public reviews wait for a person. `0` turns the AI off. |
 | `AI_MONTHLY_BUDGET_USD` | `50` | Same, per calendar month. Today's and this month's spend show on `/admin`. Also set a spend limit in the Anthropic Console as the hard backstop. |
-| `BRB_SNAPSHOTS` | on in production | Headless Chromium for game screenshots: cover pictures of Studio games and the Builder's `playtest_game` tool. `0` turns it off, `1` turns it on in development. |
-| `BRB_CHROMIUM` | (Playwright's) | Path to a Chromium / headless-shell binary, if not the one Playwright installed. |
-| `ADMIN_USERNAME` / `ADMIN_PASSWORD` | `admin` / random | Admin account created by `npm run seed`. |
-| `DEMO_TEACHER_PASSWORD` | unset | Demo school for showing schools: creates "Oomba Academy Demo School" (at `/school/magic-cups-demo-school`) with `DemoTeacher` and `DemoStudent` (this password, reset on every boot), four classmates, a Demo Class and sample lessons (added again only if the teacher's library is empty). |
-| `AD_IP_DAILY_CAP` | `200` | Max counted ad impressions per IP per day. |
 | `CHAT_DAILY_LIMIT` | `300` | Max chat messages per user per day. |
 | `REPORTS_TO_HIDE` | `3` | Open reports from different players that auto-hide a game. |
-| `POSTHOG_KEY` / `POSTHOG_HOST` | – | Optional product analytics (off unless set; never sends usernames or text). |
-| `LOG_REQUESTS` | `1` | `0` turns off the JSON request log. |
+| `CONTACT_EMAIL` | – | Where grown-ups write to the team (deletion, export, a lost password). Shown on `/parents` and in the footer; set it before launch (production logs a warning without it). |
+| `BOOTSTRAP_SCHOOLS` | unset | Schools to set up at start-up without the admin pages, each with an existing account as its school admin: `[{"name":"Oak Hill Primary","admin":"MsSmith"}]`. Safe to leave set (done steps are skipped); a bad value or a missing account is logged and skipped. A school admin can also create classes and teaches the ones they create. |
+| `POSTHOG_KEY` | – | Optional product analytics (off unless set; never sends usernames or text). |
+| `POSTHOG_HOST` | `https://us.i.posthog.com` | PostHog address. |
+
+**Screenshots (headless Chromium)**
+
+| Variable | Default | What it does |
+|---|---|---|
+| `BRB_SNAPSHOTS` | on in production | Game screenshots: cover pictures of Studio games and the Builder's `playtest_game` tool. `0` off, `1` on in development. Chromium needs about 1 GB of RAM on top of the app: plan **2 GB+** per server. |
+| `BRB_CHROMIUM` | Playwright's | Path to a Chromium / headless-shell binary, if not the one Playwright installed. |
+| `SNAPSHOT_URL` | unset | With the screenshot worker (a separate change, `server/shots-worker.js`, **not merged yet**): its address, e.g. `http://shots:4900`, so Chromium runs in its own container instead of next to the data. |
+| `SHOTS_TOKEN` | – | Shared secret between the app and the screenshot worker. |
+| `SHOTS_PORT` | `4900` | The worker's port (set on the worker). |
+
+**Off-host backups with Litestream (container only)**
+
+| Variable | Default | What it does |
+|---|---|---|
+| `LITESTREAM_REPLICA_URL` | unset | Turns on continuous replication of `brb.db`: `s3://BUCKET/PATH` or `abs://STORAGEACCOUNT@CONTAINER/PATH`; an S3-compatible store that isn't AWS: `s3://BUCKET/PATH?endpoint=https://...&forcePathStyle=true`. The container then runs the app under `litestream replicate` (config: `deploy/litestream.yml`, in the image at `/etc/litestream.yml`). Needs `BRB_JOURNAL_MODE=WAL`. Turn on bucket versioning / soft delete first (deploy guides, section 2). Restore: `docs/runbook-restore.md`. |
+| `LITESTREAM_ACCESS_KEY_ID` / `LITESTREAM_SECRET_ACCESS_KEY` | – | S3 keys. Leave empty on EC2/ECS with an IAM role. |
+| `AWS_REGION` | – | The S3 bucket's region (read by Litestream's AWS client). |
+| `LITESTREAM_AZURE_SAS_TOKEN` | – | Azure Blob: a SAS token for the one container. Leave empty on an Azure VM whose managed identity has *Storage Blob Data Contributor* on the container. |
+| `LITESTREAM_AZURE_ACCOUNT_KEY` | – | Azure Blob storage account key. Avoid: it controls the whole account, soft-delete settings included. |
+| `LITESTREAM_AUTO_RESTORE` | `1` | With a replica set and **no** `brb.db` on the disk, the container restores the latest backup before starting (a replaced or empty disk heals itself). `0` starts empty instead. If the restore fails the container stops rather than back up an empty database over the good one. |
+| `LITESTREAM_RESTORE_TIMEOUT` | `600` | Seconds before that automatic restore gives up. |
+
+The storage keys go to Litestream only: the entrypoint removes them from the app's environment. (The app runs as the
+same user as Litestream, so this keeps them out of reach of a careless leak, not of an attacker who controls the
+app: bucket versioning / soft delete is what protects the backups.)
+
+**Docker Compose on one server (`deploy/.env` only)**
+
+| Variable | Default | What it does |
+|---|---|---|
+| `SITE_DOMAIN` | – (required) | Domain Caddy serves and gets a Let's Encrypt certificate for. |
+| `ACME_EMAIL` | – (required) | Email Let's Encrypt writes to about certificate problems. |
+| `DATA_DIR` | `/srv/oomba/data` | Host folder on the block disk that becomes `/data`. |
+| `OOMBA_IMAGE` | `oomba-academy:latest` | A pre-built image to run instead of building on the server. |
+| `TRUST_PROXY` | `172.30.42.0/24` | Set in the compose file to Caddy's network (only Caddy and the app are on it). `2` with a CDN in front of Caddy. |
+| `COMPOSE_PROFILES` | – | `worker` starts the screenshot worker (`shots`), once that change is merged; set `SNAPSHOT_URL=http://shots:4900` and `SHOTS_TOKEN` with it. |
+
+**Development and tests only**
+
+| Variable | Default | What it does |
+|---|---|---|
+| `BRB_DB` | `<BRB_DATA_DIR>/brb.db` | Database file; `:memory:` in tests. |
 | `BRB_LOCALES_DIR` | `server/i18n/locales` | Another folder of locale files (the e2e tests use one with stub translations). |
+| `BRB_ALL_LOCALES` | off | `1` offers every language, even unfinished ones (tests, translators). |
+| `BRB_SILENT` | off | `1` hides info/warn log lines (tests). |
+| `BRB_BUILDER_PROVIDER` | – | `mock` forces the mock Builder even with an API key. |
+| `BRB_MOCK_DELAY_MS` | `12` | Delay between the mock Builder's streamed chunks. |
+
+### TRUST_PROXY per platform
+
+Express counts trusted hops from the connection inward, so the number must be exact: too low and every visitor shares
+the proxy's address (rate limits hit everyone), too high and a visitor can fake their address. Two rules for every
+setup: the app port must **not** be reachable without going through the proxy, and the edge proxy should **overwrite**,
+not append to, `X-Forwarded-For` where it can (a proxy that appends is still safe only with the exact count).
+
+| Setup | `TRUST_PROXY` |
+|---|---|
+| App reached directly (no proxy) | unset |
+| Render | `1` |
+| One VM with Caddy (`deploy/`) | Caddy's network, `172.30.42.0/24` (set in the compose file; Caddy replaces `X-Forwarded-For`) |
+| AWS ALB → app (EC2 or ECS) | `1` |
+| CloudFront → ALB → app | `2`, and lock the ALB to CloudFront (AWS guide, section 7) |
+| CloudFront → VM with Caddy | `2` (in `deploy/.env`), and give Caddy `trusted_proxies` for CloudFront's ranges so it keeps the header |
+| Azure App Service (Linux container) | `1` |
+| Azure Container Apps (built-in ingress) | `1` |
+| Front Door → VM with Caddy | `2` (in `deploy/.env`), plus the Caddy changes in the Azure guide (section 6) |
+| Front Door → App Service or Container Apps | `2`, and lock the origin to your Front Door (Azure guide, section 7) |
+| Application Gateway → App Service | `2`, with a rewrite rule that sets `X-Forwarded-For` to `{var_add_x_forwarded_for_proxy}` (Application Gateway adds ports otherwise; the app also drops a `:port`) |
 
 ## Deploy
 
-**Docker**: `docker build -t oomba-academy . && docker run -p 3000:3000 -v brb-data:/data -e ADMIN_PASSWORD=... -e SESSION_SECRET=... oomba-academy`. The container seeds on boot (idempotent) and stores everything in `/data`.
+Run **one instance** of the app, never more and no autoscaling: rate limits, live "N playing" counts and one-time
+login cards are kept in memory, and SQLite takes one writer. (More instances would need Redis and Postgres; not now.)
 
-**Render**: push the repo and create a Blueprint from `render.yaml` (one web service + a 2 GB persistent disk at `/data`). Set `ADMIN_PASSWORD` and optionally `ANTHROPIC_API_KEY` in the dashboard.
-
-**Ops**: `GET /health`; JSON request logs on stdout; graceful shutdown on SIGTERM; `npm run backup` (online SQLite backup, keeps 14). Site stats (visits, plays, accounts, AI cost and tokens) are on `/admin/stats`.
+- **Render** (today): `render.yaml`, one web service with a disk at `/data`. The container fixes the disk's owner
+  (never through a symbolic link), drops to the `node` user for good (no-new-privs), seeds and starts; SIGTERM lets
+  requests and Builder turns finish (25 s).
+- **AWS**: [`docs/deploy-aws.md`](docs/deploy-aws.md). **Azure**: [`docs/deploy-azure.md`](docs/deploy-azure.md).
+  Recommended on both: one VM with a block disk running `deploy/docker-compose.yml` (app + Caddy for HTTPS, plus
+  the screenshot worker once that change is merged). Managed-container options and their catches are in the same
+  documents.
+- **Backups**: set `LITESTREAM_REPLICA_URL` for continuous off-host copies; [`docs/runbook-restore.md`](docs/runbook-restore.md)
+  has the restore steps and a restore drill. `npm run backup` (online SQLite copy into `<data>/backups`, keeps 14)
+  still works.
+- **Plain Docker**: `docker build -t oomba-academy . && docker run -p 3000:3000 -v brb-data:/data -e ADMIN_PASSWORD=... -e SESSION_SECRET=... --stop-timeout 30 oomba-academy`.
+  The image runs tini as PID 1, seeds on boot (idempotent) and keeps everything in `/data`.
+- **Ops**: `GET /health` answers 503 when the database doesn't answer or its file was deleted or replaced under the
+  running app, when the data disk is full (under 100 MB free, or 2 % on a small disk) or takes no new file, and while
+  shutting down. The disk part runs at most every 2 seconds; probes are never logged. JSON logs on stdout; site stats
+  on `/admin/stats`.
 
 ## Layout
 
 ```
-server/            app factory (app.js), entry (index.js), db.js, auth.js, config.js
+server/            app factory (app.js), entry (index.js), shutdown.js, site.js (PUBLIC_URL), db.js, auth.js, config.js
   routes/          auth, discover (home/search), games (game/play/frame/APIs), studio, social, chat, admin (incl. stats), schools (school page, My classes, class pages, login cards), lessons (library, editor, class lessons), progress (lesson pages for students, gradebook, answers), info
-  services/        games, publish, scanner, sanitize, frame, presence, textfilter, ratelimit, review, chat, friends, moderation, schools, lessons, lesson-ai, progress, photos, stats, traffic, shots, snapshot, ai-budget, jobs, log
+  services/        games, publish, scanner, sanitize, frame, presence, textfilter, ratelimit, review, chat, friends, moderation, schools, lessons, lesson-ai, progress, photos, stats, traffic, shots, snapshot, ai-budget, jobs, log, health
   builder/         Builder agent loop, providers (Claude + mock), screening, templates/
   views/           layout + components (server-rendered HTML)
   i18n/            languages: index.js (t, negotiation, Intl), locales/<code>.json, notes.json, blocklists/, README for translators
 public/            css/app.css (design system), js/ (one small module per page), sdk/brb-sdk.js (in-frame SDK), fonts (Bricolage Grotesque), icons (made by scripts/icons.js)
 seed-games/        the launch games (HTML + metadata JSON)
-scripts/           seed.js, import-game.js, backup.js, rollup.js, screenshots.js, icons.js (the logo icons in public/icons), contrast.js (colour contrast of the design tokens)
+scripts/           seed.js, import-game.js, backup.js, rollup.js, screenshots.js, icons.js (the logo icons in public/icons), contrast.js (colour contrast of the design tokens),
+                   entrypoint.sh (container start), export-session-secret.js, export-data.js and upload-file.js (moving hosts)
+deploy/            docker-compose.yml (app + Caddy on one server, screenshot worker ready), Caddyfile, .env.example, litestream.yml
 tests/             unit/, safety/, e2e/
-docs/              build-graph.md, decisions.md, status.md, safety.md, sdk.md, brief/
+docs/              build-graph.md, decisions.md, status.md, safety.md, sdk.md, deploy-aws.md, deploy-azure.md, runbook-restore.md, brief/
 ```
 
 See `docs/status.md` for what works and known limits, and `docs/decisions.md` for choices that need the owner's confirmation.

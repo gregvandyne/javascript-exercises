@@ -46,7 +46,7 @@ document.addEventListener('click', e => {
 async function refreshPlaying() {
   if (!d.friendIds || !d.friendIds.length || document.hidden) return;
   try {
-    const r = await api('/api/friends');
+    const r = await api('/api/friends', { background: true });
     for (const f of r.friends) {
       const el = document.querySelector(`[data-playing="${CSS.escape(f.id)}"]`); if (!el) continue;
       el.innerHTML = f.playing ? `<a class="playing" href="/g/${esc(f.playing.slug)}"><span class="dot" aria-hidden="true"></span>${esc(t('js.friends.playing', { game: `${f.playing.icon} ${f.playing.title}` }))}</a>` : `<span class="sub">${esc(t('js.friends.notPlaying'))}</span>`;

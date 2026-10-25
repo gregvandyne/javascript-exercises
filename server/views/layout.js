@@ -6,10 +6,12 @@
 //   i18n: extra key prefixes to embed for the browser. Every page gets 'js.app' plus 'js.<name>' for each /js/<name>.js.
 import { html, raw, esc, jsonData } from './html.js';
 import { avatar, BRAND, wordmark, appMark } from './components.js';
+import { accountKind, STAFF_PASSWORD_MIN } from '../auth.js';
+import { config } from '../config.js';
 import { ICONS_V } from './brand.js';
 import { navBadges } from '../services/badges.js';
 import { inAnySchool, isSchoolStaff, isPlatformAdmin } from '../services/schools.js';
-import { availableLocales, localeInfo, tReq, clientStrings, DEFAULT_LOCALE, localPath } from '../i18n/index.js';
+import { availableLocales, localeInfo, tReq, tHtml, clientStrings, DEFAULT_LOCALE, localPath } from '../i18n/index.js';
 import { THEMES, THEME_ICONS, BAR_COLORS } from '../theme.js';
 
 const NAV = [
@@ -93,8 +95,13 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
     ${navItems.map(([k, href, emo]) => html`<a class="tab" href="${href}" ${cur(k)}><span class="emo" aria-hidden="true">${emo}</span>${t(`nav.${k}`)}${badge(k)}</a>`)}
     <a class="tab" href="${meHref}" ${cur('me')}>${u && u.photo_at ? html`<span class="emo">${avatar(u, 28)}</span>` : html`<span class="emo" aria-hidden="true">${u ? u.avatar : '🙂'}</span>`}${u ? t('nav.me') : signIn}</a>
   </nav>`;
-  const foot = bare ? '' : html`<footer class="foot"><span>${t('layout.footer.tagline')}</span><a href="/safety">${t('layout.footer.safety')}</a><a href="/parents">${t('layout.footer.parents')}</a><a href="/sdk">${t('layout.footer.builders')}</a><a href="/me#language" class="foot-lang"><span aria-hidden="true">🌐</span> ${info.name}</a></footer>`;
+  const foot = bare ? '' : html`<footer class="foot"><span>${t('layout.footer.tagline')}</span><a href="/safety">${t('layout.footer.safety')}</a><a href="/parents">${t('layout.footer.parents')}</a>${config.contactEmail ? html`<a href="/parents#contact">${t('layout.footer.contact')}</a>` : ''}<a href="/sdk">${t('layout.footer.builders')}</a><a href="/me#language" class="foot-lang"><span aria-hidden="true">🌐</span> ${info.name}</a></footer>`;
   const backHtml = back ? html`<a class="backlink" href="${back}"><span class="flip" aria-hidden="true">←</span> ${backLabel || t('layout.back')}</a>` : '';
+  // A sign-in that just ended (timed out, or ended on another device) is mentioned once, on whatever page comes next; the
+  // sign-in page says it itself.
+  const ended = !bare && req.sessionEnded && req.path !== '/login' ? html`<p class="notice warn pagenote" role="status">${tHtml(t, 'layout.signedOut', { href: `/login?next=${encodeURIComponent(req.originalUrl)}` })}</p>` : '';
+  // Staff (and the platform admin) who signed in with a short password are asked for a longer one on every page.
+  const shortPw = !bare && u && u.password_short && accountKind(u) === 'staff' ? html`<p class="notice warn pagenote">${tHtml(t, 'layout.shortPassword', { min: STAFF_PASSWORD_MIN, href: '/me#password' })}</p>` : '';
   const prefixes = ['js.app', ...scripts.map(s => (s.match(/^\/js\/([\w-]+)\.js$/) || [])[1]).filter(Boolean).map(n => `js.${n}`), ...i18n];
   // An explicit Light or Dark choice is on <html> before any CSS loads, so the first paint is right (no flash, no JS).
   const theme = req.theme === 'light' || req.theme === 'dark' ? req.theme : null;
@@ -122,7 +129,7 @@ ${head}
 </head>
 <body class="${esc(bodyClass)}" data-user="${u ? esc(u.id) : ''}" data-guest="${u && u.is_guest ? '1' : ''}">
 ${nav}
-<main id="main"${bare ? '' : mid ? ' class="wrap mid"' : ' class="wrap"'}>${backHtml}${body}</main>
+<main id="main"${bare ? '' : mid ? ' class="wrap mid"' : ' class="wrap"'}>${ended}${shortPw}${backHtml}${body}</main>
 ${foot}
 <div class="toasts" role="status" aria-live="polite" id="toasts"></div>
 ${strings}

@@ -300,7 +300,7 @@ router.post('/api/studio/:id/visibility', requireAccount, rateLimit('studio-publ
 
 // ---- Uploads (inspiration pictures and files). Raw body: the file bytes; ?name= the file name.
 router.post('/api/studio/:id/uploads', requireAccount, rateLimit('studio-upload', 30, 60e3, 'uploads.tooFast'),
-  express.raw({ type: () => true, limit: '6mb' }), async (req, res) => {
+  express.raw({ type: () => true, limit: '6mb', inflate: false }), async (req, res) => {
     const g = loadEditable(req, res); if (!g) return;
     try {
       const u = await saveUpload({ user: req.user, game: g, name: String(req.query.name || 'file'), bytes: Buffer.isBuffer(req.body) ? req.body : Buffer.alloc(0), t: req.t });

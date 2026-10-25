@@ -17,6 +17,7 @@ import { format } from '../../public/js/i18n-format.js';
 import { q } from '../db.js';
 import { raw, esc, Raw } from '../views/html.js';
 import { config } from '../config.js';
+import { isOwnOrigin } from '../site.js';
 
 export const DIR = path.dirname(fileURLToPath(import.meta.url));
 // BRB_LOCALES_DIR: another folder of <code>.json files (the e2e tests use one with a stub translation).
@@ -252,7 +253,7 @@ export const withoutLang = originalUrl => withoutParam(originalUrl, 'lang');
 export function sameOrigin(req) {
   const site = req.headers['sec-fetch-site']; const origin = req.headers.origin;
   if (site) return site === 'same-origin' || site === 'none';
-  if (origin && origin !== 'null') { try { return new URL(origin).host === req.headers.host; } catch { return false; } }
+  if (origin && origin !== 'null') return isOwnOrigin(req, origin);
   return true;
 }
 /** A GET for a page (not an API call or a game frame): these redirect after a ?lang= or ?theme= choice. */

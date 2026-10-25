@@ -8,6 +8,12 @@
     "mainNav": "Hoofdmenu",
     "signIn": "Inloggen",
     "meLabel": "Ik: {name}",
+    "notYou": {
+      "signedInAs": "Ingelogd als {name}.",
+      "button": "Niet jij? Uitloggen"
+    },
+    "signedOut": "Je bent uitgelogd. <a href=\"{href}\">Log opnieuw in</a> om verder te gaan.",
+    "shortPassword": "Het wachtwoord is korter dan {min} tekens. Accounts van personeel kunnen het werk van kinderen zien, dus <a href=\"{href}\">kies een langer wachtwoord</a>.",
     "back": "Terug",
     "badgeNew": "{count} nieuw",
     "search": {
@@ -29,6 +35,7 @@
       "tagline": "© Oomba Academy · Gratis spelen, gratis bouwen",
       "safety": "Veiligheid",
       "parents": "Voor volwassenen",
+      "contact": "Contact",
       "builders": "Voor makers"
     }
   },
@@ -61,6 +68,7 @@
       "slowDown": "Wow, rustig aan! Probeer het over een minuutje nog eens.",
       "signInFirst": "Log eerst in of speel als gast.",
       "needAccount": "Maak een gratis account om dit te doen.",
+      "signedOut": "Je bent uitgelogd. Log opnieuw in.",
       "crossSite": "Verzoek van een andere website geblokkeerd."
     }
   },
@@ -95,6 +103,7 @@
       "headingLogin": "Welkom terug!",
       "introSignup": "Alleen een leuke naam en een wachtwoord. Geen e-mail nodig.",
       "introLogin": "Log in met je Oomba Academy-naam en wachtwoord.",
+      "signedOut": "Je bent uitgelogd. Log opnieuw in om verder te gaan.",
       "upgradeNotice": "Je speelt als <b>{name}</b>. Alles wat je hebt bewaard, gaat mee.",
       "nameLabelSignup": "Kies een leuke naam",
       "nameLabelLogin": "Je Oomba Academy-naam",
@@ -104,6 +113,9 @@
       "passwordHint": "Minstens 6 tekens. Vraag een volwassene om je te helpen het te onthouden.",
       "submitSignup": "Maak mijn account",
       "submitLogin": "Inloggen",
+      "forgotHeading": "Wachtwoord vergeten?",
+      "forgotSchool": "Schoolaccount? Vraag je leerkracht om een nieuwe inlogkaart. Leerkrachten vragen het aan de schoolbeheerder.",
+      "forgotOwn": "Je eigen account? We vragen nooit om een e-mailadres, dus we kunnen je geen nieuw wachtwoord sturen. Bewaar het thuis op een veilige plek. Ben je het kwijt? Dan kan een volwassene contact met ons opnemen.",
       "or": "of",
       "playAsGuest": "🎮 Speel als gast",
       "haveAccount": "Heb je al een account?",
@@ -162,11 +174,32 @@
       "text": "Met de chat stuur je berichten naar vrienden die je met een vriendcode hebt toegevoegd. Volwassenen: hier kun je de chat uitzetten.",
       "toggle": "Chatten met mijn vrienden staat aan"
     },
+    "password": {
+      "heading": "Wachtwoord",
+      "text": "Verander het wachtwoord waarmee je inlogt. Hier blijf je ingelogd, en op alle andere apparaten word je uitgelogd.",
+      "current": "Huidig wachtwoord",
+      "new": "Nieuw wachtwoord",
+      "hint": "Minstens {min} tekens. Gebruik niet je naam.",
+      "hintStaff": "Minstens {min} tekens, omdat accounts van personeel het werk van kinderen kunnen zien.",
+      "confirm": "Nieuw wachtwoord nog een keer",
+      "button": "Wachtwoord veranderen",
+      "changed": "Wachtwoord veranderd. Op alle andere apparaten ben je uitgelogd.",
+      "needCurrent": "Typ je huidige wachtwoord.",
+      "wrongCurrent": "Dat is niet je huidige wachtwoord.",
+      "mismatch": "De twee nieuwe wachtwoorden zijn niet hetzelfde.",
+      "same": "Dat is je huidige wachtwoord. Kies een nieuw wachtwoord.",
+      "staffShort": "{n, plural, one {Dat is maar # teken.} other {Dat zijn maar # tekens.}} Er zijn er minstens {min} nodig.",
+      "school": "Je leerkracht beheert je wachtwoord. Vraag het je leerkracht als je het vergeet."
+    },
     "signOut": {
       "heading": "Uitloggen",
       "guest": "Gasten verliezen hun voortgang als ze uitloggen.",
       "account": "Tot snel!",
-      "button": "Uitloggen"
+      "button": "Uitloggen",
+      "everywhereText": "Log uit op alle apparaten, ook op dit apparaat. Doe dit als je hebt ingelogd op een computer die ook anderen gebruiken.",
+      "everywhereButton": "Overal uitloggen",
+      "everywhereConfirm": "Uitloggen op alle apparaten, ook op dit apparaat?",
+      "everywhereDone": "Je bent op alle apparaten uitgelogd."
     },
     "photo": {
       "heading": "Profielfoto",
@@ -296,7 +329,7 @@
       },
       "personal": {
         "h": "Geen persoonlijke gegevens",
-        "p1": "We vragen nooit naar je e-mail, echte naam, leeftijd of adres. Kies een leuke verzonnen naam."
+        "p1": "We vragen je nooit naar je e-mail, leeftijd of adres, en ook niet naar je echte naam (je school zet die misschien op de klassenlijst). Kies een leuke verzonnen naam."
       },
       "ads": {
         "h": "Geen reclame",
@@ -311,9 +344,23 @@
         "h": "Wat is Oomba Academy?",
         "p1": "Een gratis website waar kinderen webgames spelen en hun eigen games bouwen door ze te beschrijven aan een AI-Bouwer. Geen downloads, geen aankopen, geen lootboxen, geen spelgeld dat echt geld kost."
       },
-      "data": {
-        "h": "Welke gegevens we bewaren",
-        "p1": "Een gebruikersnaam, een wachtwoord (versleuteld opgeslagen), opgeslagen spelvoortgang, scores, beoordelingen, likes en de taal die je kind heeft gekozen. Geen e-mail, geen echte naam, geen leeftijd, geen locatie. Geen trackers van derden."
+      "stored": {
+        "h": "Wat we bewaren",
+        "p1": "Bij een eigen account bewaren we een verzonnen naam, een wachtwoord (onleesbaar opgeslagen) en wat je kind hier doet: de games die het bouwt, de chats met de Bouwer en de afbeeldingen of bestanden die het toevoegt, opgeslagen spelvoortgang, scores, beoordelingen, favorieten, vrienden, chatberichten, een profielfoto als het er een uploadt, en instellingen zoals taal en thema. Bij spelen als gast bewaren we een verzonnen naam, opgeslagen spelvoortgang, scores, beoordelingen en favorieten.",
+        "p2": "Een schoolaccount is een account waarmee je kind inlogt met een inlogkaart van school. Het wordt gemaakt door de school en is van die school. Daarbij bewaren we hetzelfde, plus de echte naam van de leerling zoals de school die voor de klassenlijst heeft ingetypt (alleen het personeel van de school en ons team zien die), de klassen van de leerling, de voortgang in lessen, geschreven antwoorden en de feedback van de leerkracht. Wordt je kind met een eigen account en een klascode lid van een klas, dan bewaart de school hetzelfde voor die klas, ook de echte naam als de leerkracht die intypt."
+      },
+      "never": {
+        "h": "Wat we nooit verzamelen",
+        "p1": "We vragen nooit om een e-mailadres, leeftijd, woonadres, locatie of betaalgegevens, en er valt niets te kopen. Verborgen locatiegegevens worden uit foto's en afbeeldingen verwijderd voordat ze worden bewaard. Er is geen reclame en er zijn geen advertentie- of trackingcookies."
+      },
+      "ai": {
+        "h": "Wat de AI ziet",
+        "p1": "Om een game te maken, worden de berichten, afbeeldingen en bestanden die je kind aan de Bouwer geeft naar Claude gestuurd, een AI van het bedrijf Anthropic, die de game schrijft. De naam en gebruikersnaam van je kind worden daar niet bij meegestuurd. Ook profielfoto's worden naar Claude gestuurd, zodat ze gecontroleerd worden voordat iemand ze ziet. Claude beoordeelt games voordat ze met iedereen kunnen worden gedeeld, en ons team bekijkt de games waarover Claude twijfelt. Chats tussen vrienden en antwoorden in lessen worden niet naar de AI gestuurd."
+      },
+      "keep": {
+        "h": "Hoe lang we het bewaren",
+        "p1": "We bewaren de gegevens van een account zolang het account bestaat. Er wordt nog niets automatisch na een bepaalde tijd verwijderd. Een game die je kind verwijdert, verdwijnt voor iedereen van de site, maar er blijft een kopie op onze server.",
+        "p2": "Er is nog geen knop om een account te verwijderen of de gegevens ervan te downloaden. Wil je een van beide, dan kan een volwassene contact met ons opnemen. Gaat het om een schoolaccount? Vraag het dan aan de school; die kan het aan ons vragen."
       },
       "friends": {
         "h": "Vrienden en chat",
@@ -326,6 +373,10 @@
       "languages": {
         "h": "Talen",
         "p1": "Kies een taal met de 🌐-knop bovenaan elke pagina of op de pagina Ik. De Bouwer antwoordt in die taal en schrijft ook de teksten in nieuwe games in die taal. Dezelfde veiligheidsfilters controleren elk bericht, in elke taal."
+      },
+      "contact": {
+        "h": "Contact",
+        "p1": "Volwassenen kunnen ons mailen via {email}."
       }
     },
     "sdk": {
@@ -884,6 +935,8 @@
   "js": {
     "app": {
       "wentWrong": "Er ging iets mis. Probeer het nog eens.",
+      "signedOut": "Je bent uitgelogd. Log opnieuw in.",
+      "draftKept": "We hebben bewaard wat je had getypt.",
       "close": "Sluiten",
       "playing": "{n} spelen",
       "justNow": "zojuist"
@@ -994,6 +1047,7 @@
       "building": "Je game wordt gebouwd…",
       "editing": "Veranderingen maken…",
       "noAnswer": "De Bouwer kon geen antwoord geven. Probeer het nog eens.",
+      "signInAgain": "Opnieuw inloggen",
       "dropped": "Oeps, de verbinding viel weg. Probeer het nog eens.",
       "proOn": "Pro-kwaliteit aan: langzamer, maar mooiere games.",
       "proOff": "Pro-kwaliteit uit: snel gebouwd.",
