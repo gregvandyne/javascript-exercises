@@ -1,7 +1,7 @@
 // Site theme: 'system' (follow the device, the default), 'light' or 'dark'. See docs/decisions.md.
 //   pickTheme(...)   ?theme= → theme cookie → the signed-in user's saved choice (users.theme, '' = system) → system
 //   middleware       sets req.theme and req.themeSource; a GET page with ?theme= saves the choice and redirects without it
-// layout.js turns req.theme into <html data-theme> (only for Light or Dark) and <meta name="color-scheme">.
+// layout.js turns req.theme into <html data-theme> (only for Light or Dark), <meta name="color-scheme"> and theme-color.
 import { q } from './db.js';
 import { config } from './config.js';
 import { readCookie, sameOrigin, isPageGet, withoutParam } from './i18n/index.js';
@@ -9,6 +9,9 @@ import { readCookie, sameOrigin, isPageGet, withoutParam } from './i18n/index.js
 export const THEMES = ['system', 'light', 'dark'];
 export const THEME_ICONS = { system: '🌓', light: '☀️', dark: '🌙' };
 export const COOKIE = 'theme';
+/** The top bar's colour in each palette (--bar in public/css/app.css; tests/unit/theme.test.js keeps them in step): the
+ *  browser's theme-color, and the web manifest's theme_color (light). */
+export const BAR_COLORS = { light: '#FFFDF2', dark: '#141414' };
 const ONE_YEAR = 365 * 86400;
 /** 'Dark ' -> 'dark'; anything else -> null. */
 export const normalizeTheme = v => {

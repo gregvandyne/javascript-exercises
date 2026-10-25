@@ -1,12 +1,13 @@
-// Seed: admin account (ADMIN_USERNAME / ADMIN_PASSWORD), a demo teacher (DEMO_TEACHER_PASSWORD, see seedDemoTeacher), the official "Magic Cups" builder, and the three featured games.
+// Seed: admin account (ADMIN_USERNAME / ADMIN_PASSWORD), a demo teacher (DEMO_TEACHER_PASSWORD, see seedDemoTeacher), the official "Oomba Academy" builder, and the launch games.
 // Safe to re-run.
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
-import { q } from '../server/db.js';
+import { q, audit } from '../server/db.js';
 import { config } from '../server/config.js';
-import { createUser, getUserByName, setPassword } from '../server/auth.js';
+import { createUser, getUserByName, setPassword, OFFICIAL, OFFICIAL_OLD_NAMES } from '../server/auth.js';
+import { BRAND } from '../server/views/brand.js';
 import { importGame } from './import-game.js';
 import * as schools from '../server/services/schools.js';
 import * as lessons from '../server/services/lessons.js';
@@ -14,6 +15,8 @@ import { getGameBySlug } from '../server/services/games.js';
 import * as progress from '../server/services/progress.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+// The demo school's address, from its first name (Magic Cups Demo School).
+const DEMO_SLUG = 'magic-cups-demo-school';
 // The launch games, imported in this order (the first featured one becomes the home-page hero).
 export const SEED_GAMES = ['shark-plank', 'ring-rumble', 'footy-tycoon', 'connect-four', 'happy-putt', 'castle-clash', 'brick-drop', 'word-hunt', 'sum-racer', 'munch-maze', 'word-peek', 'swish-flick', 'loop-lab', 'beat-lanes'];
 export function seed({ quiet = false } = {}) {
@@ -21,20 +24,13 @@ export function seed({ quiet = false } = {}) {
   let admin = getUserByName(config.adminUsername);
   if (!admin) {
     const pw = config.adminPassword || crypto.randomBytes(9).toString('base64url');
-    admin = createUser({ username: config.adminUsername, password: pw, displayName: 'Admin', role: 'admin', avatar: '🛡️', color: '#152036' });
+    admin = createUser({ username: config.adminUsername, password: pw, displayName: 'Admin', role: 'admin', avatar: '🛡️', color: '#141414' });
     say(`Created admin "${config.adminUsername}"${config.adminPassword ? '' : ` with password: ${pw}  (set ADMIN_PASSWORD to choose one)`}`);
   } else {
     if (admin.role !== 'admin') q.run("UPDATE users SET role='admin' WHERE id=?", admin.id);
     if (config.adminPassword) setPassword(admin.id, config.adminPassword);
   }
-  // The official account was called BRBGaming, then MagicCup, before the site became Magic Cups: rename it in place so its games keep their owner.
-  if (!getUserByName('MagicCups')) {
-    const legacy = getUserByName('MagicCup') || getUserByName('BRBGaming');
-    if (legacy) q.run("UPDATE users SET username='MagicCups' WHERE id=?", legacy.id);
-  }
-  let official = getUserByName('MagicCups');
-  if (!official) { official = createUser({ username: 'MagicCups', password: crypto.randomBytes(24).toString('hex'), displayName: 'Magic Cups', avatar: '🎮', color: '#2f6bff' }); say('Created the official Magic Cups builder account'); }
-  q.run("UPDATE users SET display_name='Magic Cups', bio='Official games from the Magic Cups team.' WHERE id=?", official.id);
+  const official = seedOfficial(say);
   const dir = path.join(ROOT, 'seed-games');
   for (const f of SEED_GAMES) {
     const g = importGame(path.join(dir, `${f}.html`), path.join(dir, `${f}.json`), official.id);
@@ -44,14 +40,48 @@ export function seed({ quiet = false } = {}) {
   return { admin, official, demo };
 }
 
-/** With DEMO_TEACHER_PASSWORD set: a "Magic Cups Demo School" with the teacher DemoTeacher (that password, reset on
+/** The official builder account (owner of the launch games). It was called BRBGaming, then MagicCup, then MagicCups,
+ *  before the site became Oomba Academy: an old one is renamed in place so its games keep their owner (/u/<old name>
+ *  redirects, see OFFICIAL_OLD_NAMES in server/auth.js). Safe to re-run. */
+export function seedOfficial(say = () => {}) {
+  // The official account is the one that owns the launch games: a player who took a free name (the new one before launch,
+  // or an old one after a rename) is never mistaken for it.
+  const ownsLaunchGames = u => !!(u && q.get("SELECT 1 FROM games WHERE owner_id=? AND source='seed' LIMIT 1", u.id));
+  const holder = getUserByName(OFFICIAL);
+  if (!ownsLaunchGames(holder)) {
+    const legacy = OFFICIAL_OLD_NAMES.map(getUserByName).find(ownsLaunchGames);
+    if (legacy) {
+      if (holder) {
+        let spare = ''; for (let i = 1; !spare; i++) if (!getUserByName(`${OFFICIAL}_${i}`)) spare = `${OFFICIAL}_${i}`;
+        q.run('UPDATE users SET username=? WHERE id=?', spare, holder.id); audit(null, 'user.rename', holder.id, { from: holder.username, to: spare });
+        say(`Moved the player @${holder.username} to @${spare}: the name belongs to the official account`);
+      }
+      q.run('UPDATE users SET username=? WHERE id=?', OFFICIAL, legacy.id); say(`Renamed the official account @${legacy.username} to @${OFFICIAL}`);
+    }
+  }
+  let official = getUserByName(OFFICIAL);
+  if (!official) { official = createUser({ username: OFFICIAL, password: crypto.randomBytes(24).toString('hex'), displayName: BRAND, avatar: '🎮', color: '#66C792' }); say(`Created the official ${BRAND} builder account`); }
+  q.run('UPDATE users SET display_name=?, bio=?, color=? WHERE id=?', BRAND, 'Games made by the Oomba Academy team. Play them, then build your own!', '#66C792', official.id);
+  return getUserByName(OFFICIAL);
+}
+
+/** With DEMO_TEACHER_PASSWORD set: an "Oomba Academy Demo School" with the teacher DemoTeacher (that password, reset on
  *  every boot like the admin's) and a starter class. Without it, nothing happens. Safe to re-run. */
 export function seedDemoTeacher(admin, say = () => {}) {
   const pw = process.env.DEMO_TEACHER_PASSWORD;
   if (!pw) return null;
-  const name = 'Magic Cups Demo School';
-  let school = q.get('SELECT * FROM schools WHERE name=? AND archived_at IS NULL ORDER BY created_at LIMIT 1', name);
-  if (!school) { school = schools.createSchool(admin, { name }).school; say(`Created "${name}"`); }
+  const name = `${BRAND} Demo School`;
+  // Found by its address, which keeps the first name so links to it still work; an older name is updated in place. An
+  // archived school is left alone (a new one is made, at that address only while it is free).
+  const atSlug = schools.getSchoolBySlug(DEMO_SLUG);
+  let school = (atSlug && !atSlug.archived_at ? atSlug : null)
+    || q.get('SELECT * FROM schools WHERE name IN (?,?) AND archived_at IS NULL ORDER BY created_at LIMIT 1', name, 'Magic Cups Demo School');
+  if (school && school.name !== name) { q.run('UPDATE schools SET name=? WHERE id=?', name, school.id); school = schools.getSchool(school.id); say(`Renamed the demo school to "${name}"`); }
+  if (!school) {
+    school = schools.createSchool(admin, { name }).school;
+    if (!atSlug) { q.run('UPDATE schools SET slug=? WHERE id=?', DEMO_SLUG, school.id); school = schools.getSchool(school.id); }
+    say(`Created "${name}"`);
+  }
   let teacher = getUserByName('DemoTeacher');
   if (!teacher) { teacher = createUser({ username: 'DemoTeacher', password: pw, displayName: 'Demo Teacher', avatar: '🍎', color: '#2f6bff' }); say('Created the demo teacher DemoTeacher'); }
   else setPassword(teacher.id, pw);

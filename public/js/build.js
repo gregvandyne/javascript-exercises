@@ -45,7 +45,7 @@ function remove(li) {
     title: t('js.build.deleteTitle'),
     content: `<div class="mg-sheet"><p>${esc(t('js.build.deleteText', { title: '\u2068' + li.dataset.title + '\u2069' }))}${li.dataset.live ? ' ' + esc(t('js.build.deleteLive')) : ''}</p>
       <div class="mg-btns"><button class="btn" type="button" data-keep>${esc(t('js.build.keep'))}</button>
-      <button class="btn btn-coral" type="button" data-yes>🗑️ ${esc(t('js.build.deleteYes'))}</button></div></div>`,
+      <button class="btn btn-danger" type="button" data-yes>🗑️ ${esc(t('js.build.deleteYes'))}</button></div></div>`,
   });
   $('[data-keep]', el).addEventListener('click', close);
   const yes = $('[data-yes]', el);

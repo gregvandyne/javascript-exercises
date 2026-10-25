@@ -96,7 +96,11 @@ on(document, 'submit', async e => {
   } catch (err) {
     const field = err.data && err.data.field; const target = field && f.querySelector(`[name="${field}"]`);
     if (target) { target.setAttribute('aria-invalid', 'true'); const er = f.querySelector(`#${target.id}-err`); if (er) er.textContent = err.message; else toast(err.message, { bad: true }); target.focus(); }
-    else { const er = f.querySelector('.form-err'); if (er) er.textContent = err.message; else toast(err.message, { bad: true }); }
+    else {
+      const er = f.querySelector('.form-err'); if (er) er.textContent = err.message; else toast(err.message, { bad: true });
+      // A form with a single field (e.g. a class code): that field is the one to fix.
+      const only = $$('.input', f); if (er && only.length === 1) { only[0].setAttribute('aria-invalid', 'true'); only[0].focus(); }
+    }
   } finally { if (btn && !left) { btn.disabled = false; delete btn.dataset.busy; } }   // leaving: stays disabled until the next page
 });
 // Back to a page kept in the browser's cache: buttons we disabled while leaving work again.
@@ -118,16 +122,43 @@ if (FIRST) for (const d of $$('[data-langpick],[data-themepick]')) {
   document.addEventListener('click', e => { if (d.open && !d.contains(e.target)) close(false); });
   d.addEventListener('focusout', e => { if (d.open && e.relatedTarget && !d.contains(e.relatedTarget)) close(false); });
 }
+// ---- Top-bar search: the short placeholder ("Search") when the long one would be cut off ----
+const topq = document.getElementById('topq');
+if (FIRST && topq && topq.dataset.short) {
+  const long = topq.placeholder, ctx = document.createElement('canvas').getContext('2d');
+  const fit = () => {
+    const cs = getComputedStyle(topq); ctx.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+    const room = topq.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+    topq.placeholder = ctx.measureText(long).width + 4 <= room ? long : topq.dataset.short;   // 4px: rounding between canvas and layout
+  };
+  fit(); document.fonts.ready.then(fit);
+  if (window.ResizeObserver) new ResizeObserver(fit).observe(topq);
+}
 // The Me page's language form saves as soon as a language is picked.
 const langSel = document.getElementById('lang-select');
 if (FIRST && langSel) langSel.addEventListener('change', () => langSel.form.submit());
 
 // ---- Theme: Same as my device / Light / Dark. The menu links and the Me page form work without JS (?theme=); here a pick
-// applies at once: <html data-theme> and the color-scheme meta change, the menus follow, and the server saves it.
+// applies at once: <html data-theme>, the color-scheme and theme-color metas change, the menus follow, and the server saves it.
+/** The browser's toolbar takes the top bar's colour (--bar, read from the CSS): one value for Light or Dark, one per
+ *  device scheme for "Same as my device" (as server/views/layout.js writes it). */
+function setThemeColor(pinned) {
+  const root = document.documentElement, was = root.dataset.theme;
+  const bar = th => { root.dataset.theme = th; return getComputedStyle(root).getPropertyValue('--bar').trim(); };
+  const metas = pinned ? [[bar(pinned), '']] : [[bar('light'), '(prefers-color-scheme: light)'], [bar('dark'), '(prefers-color-scheme: dark)']];
+  if (was) root.dataset.theme = was; else delete root.dataset.theme;
+  const old = $$('meta[name="theme-color"]'); const at = old[0] || $('meta[name="color-scheme"]');
+  for (const [color, media] of metas) {
+    const m = document.createElement('meta'); m.name = 'theme-color'; m.content = color; if (media) m.media = media;
+    at.before(m);
+  }
+  old.forEach(m => m.remove());
+}
 function applyTheme(theme) {
   const pinned = theme === 'light' || theme === 'dark';
   if (pinned) document.documentElement.dataset.theme = theme; else delete document.documentElement.dataset.theme;
   const meta = $('meta[name="color-scheme"]'); if (meta) meta.content = pinned ? theme : 'light dark';
+  setThemeColor(pinned ? theme : null);
   for (const a of $$('a[data-theme-choice]')) {
     const on = a.dataset.themeChoice === theme;
     if (on) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current');

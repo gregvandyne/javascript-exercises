@@ -1,10 +1,9 @@
 {
   "layout": {
-    "titleHome": "Magic Cups · Joue et crée des jeux",
-    "titleWith": "{title} · Magic Cups",
-    "description": "Joue à des jeux gratuits et crée les tiens avec Magic Cups.",
+    "titleHome": "Oomba Academy · Joue et crée des jeux",
+    "titleWith": "{title} · Oomba Academy",
+    "description": "Joue à des jeux gratuits et crée les tiens avec Oomba Academy.",
     "skip": "Aller aux jeux",
-    "logoLabel": "Accueil de Magic Cups",
     "mainNav": "Menu principal",
     "signIn": "Connexion",
     "meLabel": "Moi : {name}",
@@ -26,7 +25,7 @@
       "dark": "Sombre"
     },
     "footer": {
-      "tagline": "© Magic Cups · Gratuit pour jouer, gratuit pour créer",
+      "tagline": "© Oomba Academy · Gratuit pour jouer, gratuit pour créer",
       "safety": "Sécurité",
       "parents": "Pour les parents",
       "builders": "Pour les créateurs"
@@ -76,8 +75,8 @@
       "realName": "On dirait un vrai nom. Choisis plutôt un nom rigolo inventé."
     },
     "text": {
-      "notAllowed": "Ce texte n’est pas autorisé sur Magic Cups.",
-      "personal": "Ne mets pas de numéros de téléphone, d’e-mails, d’adresses ni de liens sur Magic Cups, s’il te plaît."
+      "notAllowed": "Ce texte n’est pas autorisé sur Oomba Academy.",
+      "personal": "Ne mets pas de numéros de téléphone, d’e-mails, d’adresses ni de liens sur Oomba Academy, s’il te plaît."
     }
   },
   "auth": {
@@ -94,10 +93,10 @@
       "headingSignup": "Crée un compte gratuit",
       "headingLogin": "Te revoilà !",
       "introSignup": "Juste un nom rigolo et un mot de passe. Pas besoin d’e-mail.",
-      "introLogin": "Connecte-toi avec ton nom Magic Cups et ton mot de passe.",
+      "introLogin": "Connecte-toi avec ton nom Oomba Academy et ton mot de passe.",
       "upgradeNotice": "Tu joues en tant que <b>{name}</b>. Tout ce que tu as sauvegardé vient avec toi.",
       "nameLabelSignup": "Choisis un nom rigolo",
-      "nameLabelLogin": "Ton nom Magic Cups",
+      "nameLabelLogin": "Ton nom Oomba Academy",
       "namePlaceholder": "comme RocketPanda",
       "nameHint": "3 à 16 lettres ou chiffres. N’utilise pas ton vrai nom.",
       "passwordLabel": "Mot de passe",
@@ -147,13 +146,13 @@
     },
     "language": {
       "heading": "Langue",
-      "text": "Magic Cups, les menus et le Constructeur utilisent cette langue.",
+      "text": "Oomba Academy, les menus et le Constructeur utilisent cette langue.",
       "label": "Langue",
       "save": "Enregistrer"
     },
     "theme": {
       "heading": "Apparence",
-      "text": "Choisis un écran clair ou sombre, ou un écran qui suit ton appareil.",
+      "text": "Choisis un écran clair ou sombre, ou le même que sur ton appareil.",
       "save": "Enregistrer",
       "invalid": "Choisis un des thèmes."
     },
@@ -170,7 +169,7 @@
     },
     "photo": {
       "heading": "Photo de profil",
-      "text": "Mets une photo à la place de ton emoji. Seuls toi, tes amis et l’équipe Magic Cups peuvent la voir. Les autres voient ton emoji.",
+      "text": "Mets une photo à la place de ton emoji. Seuls toi, tes amis et l’équipe Oomba Academy peuvent la voir. Les autres voient ton emoji.",
       "guest": "Crée un compte gratuit pour ajouter une photo de profil.",
       "upload": "Ajouter une photo",
       "change": "Changer de photo",
@@ -179,7 +178,7 @@
         "guest": "Crée un compte gratuit pour ajouter une photo de profil.",
         "badType": "Ce fichier n’est pas une photo qu’on peut utiliser. Essaie-en une autre.",
         "tooBig": "Cette photo est trop grande. Essaie-en une autre.",
-        "unsafe": "Cette photo ne convient pas à Magic Cups. Essaie-en une autre.",
+        "unsafe": "Cette photo ne convient pas à Oomba Academy. Essaie-en une autre.",
         "personal_info": "Cette photo montre des détails privés comme un nom, une école ou une adresse. Essaie-en une autre.",
         "resting": "Les photos passent par notre vérification de sécurité, et elle se repose en ce moment. Réessaie plus tard."
       }
@@ -278,8 +277,8 @@
   "info": {
     "safety": {
       "title": "Sécurité",
-      "description": "Comment Magic Cups protège les enfants : des jeux dans une boîte fermée, chaque jeu vérifié, un chat seulement avec des amis de la vraie vie.",
-      "heading": "Comment on protège Magic Cups",
+      "description": "Comment Oomba Academy protège les enfants : des jeux dans une boîte fermée, chaque jeu vérifié, un chat seulement avec des amis de la vraie vie.",
+      "heading": "Comment on protège Oomba Academy",
       "box": {
         "h": "Les jeux restent dans une boîte",
         "p1": "Chaque jeu tourne dans une boîte fermée à clé (un « bac à sable »). Les jeux ne peuvent pas aller sur Internet, ne peuvent pas voir ton compte et ne peuvent pas ouvrir d’autres pages."
@@ -300,15 +299,15 @@
       },
       "ads": {
         "h": "Pas de publicité",
-        "p1": "Il n’y a aucune publicité sur Magic Cups. Rien n’est à vendre et rien ne s’affiche par-dessus un jeu."
+        "p1": "Il n’y a aucune publicité sur Oomba Academy. Rien n’est à vendre et rien ne s’affiche par-dessus un jeu."
       }
     },
     "parents": {
       "title": "Pour les parents",
-      "description": "Ce qu’est Magic Cups, les données conservées, le fonctionnement des amis et du chat, et comment le Constructeur IA reste adapté aux enfants.",
+      "description": "Ce qu’est Oomba Academy, les données conservées, le fonctionnement des amis et du chat, et comment le Constructeur IA reste adapté aux enfants.",
       "heading": "Pour les parents",
       "what": {
-        "h": "Qu’est-ce que Magic Cups ?",
+        "h": "Qu’est-ce qu’Oomba Academy ?",
         "p1": "Un site gratuit où les enfants jouent à des jeux web et créent les leurs en les décrivant à un Constructeur IA. Aucun téléchargement, aucun achat, aucune loot box, aucune monnaie de jeu qui coûte de l’argent réel."
       },
       "data": {
@@ -330,7 +329,7 @@
     },
     "sdk": {
       "title": "Pour les créateurs",
-      "description": "Le petit assistant que reçoit chaque jeu Magic Cups : sauvegardes, scores, effets, sons et langue du joueur.",
+      "description": "Le petit assistant que reçoit chaque jeu Oomba Academy : sauvegardes, scores, effets, sons et langue du joueur.",
       "heading": "SDK des jeux",
       "brb": {
         "p1": "Chaque jeu reçoit un petit assistant appelé BRB. {get} et {set} sauvegardent la progression de chaque joueur. localStorage marche aussi et il est sauvegardé dans le cloud.",
@@ -388,7 +387,7 @@
     },
     "shareText": {
       "private": "Il n’y a que toi qui peux ouvrir ce jeu. Choisis Amis ou Tout le monde pour le partager.",
-      "friends": "Seuls tes amis sur Magic Cups peuvent ouvrir ce lien.",
+      "friends": "Seuls tes amis sur Oomba Academy peuvent ouvrir ce lien.",
       "public": "Toute personne qui a le lien peut jouer à ce jeu.",
       "school": "Tout le monde dans ton école peut le trouver et y jouer."
     },
@@ -492,8 +491,8 @@
   },
   "profile": {
     "notFound": "Nous n’avons pas trouvé ce joueur.",
-    "description": "{name} sur Magic Cups",
-    "team": "Équipe Magic Cups",
+    "description": "{name} sur Oomba Academy",
+    "team": "Équipe Oomba Academy",
     "yourFriend": "Dans tes amis",
     "badgesLabel": "Badges",
     "changeLook": "Changer mon look",
@@ -588,7 +587,7 @@
     "cant": {
       "guest": "Crée un compte gratuit pour discuter avec tes amis.",
       "banned": "Ton compte est en pause, alors le chat est désactivé.",
-      "missing": "Ce joueur n’est pas sur Magic Cups en ce moment.",
+      "missing": "Ce joueur n’est pas sur Oomba Academy en ce moment.",
       "self": "Tu ne peux pas discuter avec toi-même. Choisis un ami !",
       "guest_other": "Tu peux discuter seulement avec des amis qui ont un compte gratuit.",
       "not_friends": "Tu peux discuter seulement avec tes amis. Ajoute d’abord {name} avec son code ami, puis attends son oui.",
@@ -613,12 +612,12 @@
     },
     "blocked": {
       "words": "Oups ! Ce message contient des mots qui ne sont pas autorisés. Essaie de le dire plus gentiment.",
-      "phone": "Message pas envoyé. Les numéros de téléphone restent secrets sur Magic Cups, même avec des amis.",
-      "email": "Message pas envoyé. Les adresses e-mail restent secrètes sur Magic Cups.",
+      "phone": "Message pas envoyé. Les numéros de téléphone restent secrets sur Oomba Academy, même avec des amis.",
+      "email": "Message pas envoyé. Les adresses e-mail restent secrètes sur Oomba Academy.",
       "link": "Message pas envoyé. Les liens ne sont pas autorisés dans le chat. Partage plutôt un jeu avec le bouton 🎮.",
       "address": "Message pas envoyé. Les adresses de maison restent secrètes. Ne dis jamais où tu habites.",
-      "contact": "Message pas envoyé. Reste sur Magic Cups pour discuter : pas d’autres applis, pas d’écoles, pas de rendez-vous.",
-      "handle": "Message pas envoyé. Reste sur Magic Cups pour discuter : pas de pseudos d’autres applis."
+      "contact": "Message pas envoyé. Reste sur Oomba Academy pour discuter : pas d’autres applis, pas d’écoles, pas de rendez-vous.",
+      "handle": "Message pas envoyé. Reste sur Oomba Academy pour discuter : pas de pseudos d’autres applis."
     },
     "report": {
       "thanks": "Merci de nous avoir prévenus. Nous avons caché ce message, et un adulte de notre équipe va le regarder.",
@@ -655,8 +654,8 @@
     "startedFrom": "Commencé avec le modèle {title}",
     "shareText": {
       "private": "Il n’y a que toi qui peux y jouer.",
-      "friends": "Seuls toi et tes amis sur Magic Cups pouvez y jouer.",
-      "public": "Tout le monde sur Magic Cups peut le trouver et y jouer, après une petite vérification de sécurité.",
+      "friends": "Seuls toi et tes amis sur Oomba Academy pouvez y jouer.",
+      "public": "Tout le monde sur Oomba Academy peut le trouver et y jouer, après une petite vérification de sécurité.",
       "school": "Tout le monde dans ton école peut le trouver et y jouer."
     },
     "status": {
@@ -772,27 +771,27 @@
     "refusals": {
       "tryThese": "Tu veux essayer une de ces idées ?",
       "rules": {
-        "message": "Je suis toujours les règles de Magic Cups, et personne ne peut les changer. Mais j’adorerais créer un jeu avec toi !",
+        "message": "Je suis toujours les règles d’Oomba Academy, et personne ne peut les changer. Mais j’adorerais créer un jeu avec toi !",
         "suggestion": "Parle-moi d’un jeu que tu veux, comme « un renard qui saute par-dessus les rivières »."
       },
       "links": {
-        "message": "Les jeux de Magic Cups restent à l’intérieur du jeu : ils ne peuvent pas mener vers des sites, des vidéos ou des chaînes.",
+        "message": "Les jeux d’Oomba Academy restent à l’intérieur du jeu : ils ne peuvent pas mener vers des sites, des vidéos ou des chaînes.",
         "suggestion": "Et si on mettait une porte secrète dans le jeu, qui mène à un niveau bonus ?"
       },
       "chat": {
-        "message": "Les jeux de Magic Cups n’ont pas de chat entre joueurs. Comme ça, tout le monde est en sécurité.",
+        "message": "Les jeux d’Oomba Academy n’ont pas de chat entre joueurs. Comme ça, tout le monde est en sécurité.",
         "suggestion": "Et si les joueurs s’encourageaient plutôt avec de gros boutons emoji ?"
       },
       "personal": {
-        "message": "Les jeux de Magic Cups ne demandent jamais de noms, d’adresses, d’écoles, de dates d’anniversaire ni d’autres infos privées. Gardons-les secrets !",
+        "message": "Les jeux d’Oomba Academy ne demandent jamais de noms, d’adresses, d’écoles, de dates d’anniversaire ni d’autres infos privées. Gardons-les secrets !",
         "suggestion": "Et si on faisait un jeu où tu choisis un nom de héros rigolo dans une liste ?"
       },
       "profanity": {
-        "message": "Gardons des mots gentils sur Magic Cups.",
+        "message": "Gardons des mots gentils sur Oomba Academy.",
         "suggestion": "Quel jeu on crée ? Peut-être un robot rigolo qui ramasse des chaussettes ?"
       },
       "sexual": {
-        "message": "Ça, je ne peux pas le faire. Les jeux de Magic Cups sont pour les enfants et les familles.",
+        "message": "Ça, je ne peux pas le faire. Les jeux d’Oomba Academy sont pour les enfants et les familles.",
         "suggestion": "Et si on faisait un jeu de fête où on danse avec des pas rigolos ?"
       },
       "selfharm": {
@@ -800,15 +799,15 @@
         "suggestion": "Je suis là pour créer un jeu joyeux avec toi quand tu veux, comme un petit chiot tout doux qui ramasse des étoiles."
       },
       "hate": {
-        "message": "Magic Cups est pour tout le monde, alors je ne peux pas faire de jeux méchants envers les gens.",
+        "message": "Oomba Academy est pour tout le monde, alors je ne peux pas faire de jeux méchants envers les gens.",
         "suggestion": "Et si on faisait un jeu d’équipe où tout le monde s’entraide pour gagner ?"
       },
       "violence": {
-        "message": "C’est trop brutal pour Magic Cups. Les petits bonks de dessin animé, ça va, mais pas de sang et pas de mal fait à de vraies personnes.",
+        "message": "C’est trop brutal pour Oomba Academy. Les petits bonks de dessin animé, ça va, mais pas de sang et pas de mal fait à de vraies personnes.",
         "suggestion": "Et si on tapait des robots rigolos avec des oreillers, ou si on zappait du slime avec un canon à bulles ?"
       },
       "scary": {
-        "message": "Restons dans le rigolo, pas dans l’effrayant. Magic Cups n’a pas d’horreur ni de trucs qui font sursauter.",
+        "message": "Restons dans le rigolo, pas dans l’effrayant. Oomba Academy n’a pas d’horreur ni de trucs qui font sursauter.",
         "suggestion": "Et si on faisait un gentil fantôme rigolo qui ramasse des bonbons ?"
       },
       "drugs": {
@@ -816,7 +815,7 @@
         "suggestion": "Et si on faisait un labo de potions où tu mélanges des couleurs qui pétillent ?"
       },
       "gambling": {
-        "message": "Magic Cups n’a pas de paris, pas de casinos et pas de loot boxes.",
+        "message": "Oomba Academy n’a pas de paris, pas de casinos et pas de loot boxes.",
         "suggestion": "Et si on faisait une chasse au trésor où tu gagnes des étoiles en réfléchissant bien ?"
       },
       "real_people": {
@@ -828,7 +827,7 @@
         "suggestion": "Et si on faisait un héros original, comme Zip, un renard qui saute ? 🦊"
       },
       "other": {
-        "message": "Je ne peux pas créer ça sur Magic Cups.",
+        "message": "Je ne peux pas créer ça sur Oomba Academy.",
         "suggestion": "Et si on faisait un jeu avec un petit robot courageux qui part à l’aventure ?"
       },
       "chips": {
@@ -875,9 +874,9 @@
     "textTooBig": "Les fichiers texte peuvent faire jusqu’à 200 Ko.",
     "fileTooBig": "Les images et les PDF peuvent faire jusqu’à 5 Mo.",
     "image": {
-      "real_faces": "Cette image montre une vraie personne, alors je ne peux pas la garder. Les vrais visages restent privés sur Magic Cups. Essaie plutôt un dessin ou un jouet !",
+      "real_faces": "Cette image montre une vraie personne, alors je ne peux pas la garder. Les vrais visages restent privés sur Oomba Academy. Essaie plutôt un dessin ou un jouet !",
       "personal_info": "Cette image montre des infos privées, comme un nom, une école ou une adresse, alors je ne peux pas la garder. Essaie plutôt un dessin !",
-      "unsafe": "Cette image ne convient pas à Magic Cups, alors je ne peux pas la garder. Essaie une autre image !",
+      "unsafe": "Cette image ne convient pas à Oomba Academy, alors je ne peux pas la garder. Essaie une autre image !",
       "resting": "Les images doivent passer notre vérification de sécurité, qui se repose jusqu’à demain. Réessaie plus tard, ou décris ton idée avec des mots !"
     }
   },
@@ -980,7 +979,7 @@
       "cancel": "Annuler"
     },
     "studio": {
-      "docTitle": "Studio : {title} · Magic Cups",
+      "docTitle": "Studio : {title} · Oomba Academy",
       "turns": "Encore {left} tours sur {total} aujourd’hui",
       "fixButton": "Réparer avec le Constructeur",
       "fixMessage": "Répare les problèmes de sécurité de la version {number}, s’il te plaît :",
@@ -1211,7 +1210,7 @@
       "newCodeConfirm": "Créer un nouveau code ? L’ancien ne fonctionnera plus.",
       "noStudents": "Pas encore d’élèves",
       "newAccounts": "Nouveaux comptes école",
-      "newAccountsHint": "Chaque élève reçoit un nom Magic Cups et un mot de passe à imprimer sur une carte de connexion. Seuls les enseignants voient les vrais noms.",
+      "newAccountsHint": "Chaque élève reçoit un nom Oomba Academy et un mot de passe à imprimer sur une carte de connexion. Seuls les enseignants voient les vrais noms.",
       "addTeacher": "Ajouter un enseignant",
       "moveTo": "Déplacer vers la classe",
       "move": "Déplacer",
@@ -1243,7 +1242,7 @@
       "moved": "{name} est maintenant dans {class}",
       "reprint": "Nouvelles cartes de connexion pour la classe",
       "reprintConfirm": "{count, plural, one {Créer un nouveau mot de passe pour # élève avec un compte école ?} other {Créer de nouveaux mots de passe pour # élèves avec un compte école ?}} Les anciens mots de passe ne fonctionneront plus et les élèves seront déconnectés.",
-      "joinCodeTextOn": "Les élèves tapent ce code sur leur page Mes classes (Moi → Mes classes). Ceux qui ont un compte école {school} rejoignent la classe tout de suite ; ceux qui ont leur propre compte Magic Cups attendent votre validation.",
+      "joinCodeTextOn": "Les élèves tapent ce code sur leur page Mes classes (Moi → Mes classes). Ceux qui ont un compte école {school} rejoignent la classe tout de suite ; ceux qui ont leur propre compte Oomba Academy attendent votre validation.",
       "joinCodeTextOff": "Les élèves qui ont un compte école {school} tapent ce code sur leur page Mes classes pour rejoindre la classe tout de suite.",
       "noTeacher": "Cette classe n’a pas encore d’enseignant. Ajoutez-en un ci-dessous.",
       "removeTeacherConfirm": "Retirer {name} de cette classe ? La classe disparaîtra de sa page Mes classes.",
@@ -1253,7 +1252,7 @@
       "onlyStaff": "Seul le personnel de {school} peut être ajouté.",
       "askAdmin": "Demandez à l’admin de votre école ({admins}) de l’ajouter dans l’onglet Personnes de l’école.",
       "addStaffLink": "Ajouter du personnel dans l’onglet Personnes",
-      "askNoAdmin": "{school} n’a pas encore d’admin de l’école. Demandez à l’équipe Magic Cups d’en nommer un ; cette personne pourra ensuite ajouter du personnel dans l’onglet Personnes de l’école.",
+      "askNoAdmin": "{school} n’a pas encore d’admin de l’école. Demandez à l’équipe Oomba Academy d’en nommer un ; cette personne pourra ensuite ajouter du personnel dans l’onglet Personnes de l’école.",
       "archivedToast": "Classe {name} archivée",
       "lessons": "Leçons",
       "lastActivity": "Dernière activité",
@@ -1278,7 +1277,7 @@
       "staff": "Personnel",
       "students": "Élèves",
       "name": "Nom",
-      "username": "Nom Magic Cups",
+      "username": "Nom Oomba Academy",
       "role": "Rôle",
       "grade": "Niveau",
       "schoolAccount": "compte école",
@@ -1286,7 +1285,7 @@
       "addStaff": "Ajouter un enseignant ou un admin de l’école",
       "addStaffText": "Utilisez son vrai nom, celui que connaissent les élèves et les collègues. Les comptes école suivent les règles de sécurité de l’école ; le personnel qui veut partager des jeux publiquement doit utiliser son propre compte.",
       "realName": "Vrai nom",
-      "existing": "Son nom Magic Cups",
+      "existing": "Son nom Oomba Academy",
       "existingPlaceholder": "ex. MmeRivera",
       "addStudents": "Ajouter des élèves à l’école",
       "addStudentsText": "Un nom par ligne. Chaque élève reçoit un compte école et une carte de connexion à imprimer.",
@@ -1304,7 +1303,7 @@
       "newSchool": "Prochaine étape : nommez l’admin de l’école. Cette personne pourra ensuite ajouter des enseignants, des classes et des élèves.",
       "account": "Comment se connectera cette personne ?",
       "accountNew": "Lui créer un compte école",
-      "accountExisting": "Cette personne a déjà un compte Magic Cups",
+      "accountExisting": "Cette personne a déjà un compte Oomba Academy",
       "createStaff": "Créer le compte et la carte de connexion",
       "addToSchool": "Ajouter à l’école",
       "added": "{name} fait maintenant partie du personnel ({role})",
@@ -1317,7 +1316,7 @@
       "saved": "Paramètres enregistrés",
       "teachersCreate": "Les enseignants peuvent créer leurs propres classes",
       "ownAccounts": "Les élèves peuvent rejoindre une classe avec leur propre compte",
-      "ownAccountsHint": "Les élèves qui utilisent déjà Magic Cups tapent un code de classe ; un enseignant valide chaque demande. Si l’option est désactivée, les codes de classe ne marchent que pour les comptes école.",
+      "ownAccountsHint": "Les élèves qui utilisent déjà Oomba Academy tapent un code de classe ; un enseignant valide chaque demande. Si l’option est désactivée, les codes de classe ne marchent que pour les comptes école.",
       "gameSite": "Comptes école sur le site de jeux",
       "gameSiteText": "Ces règles s’appliquent aux comptes créés par l’école (élèves et personnel). Les élèves qui ont rejoint la classe avec leur propre compte gardent leurs propres réglages.",
       "chat": "Chat",
@@ -1338,7 +1337,7 @@
       "print": "Imprimer",
       "once": "Imprimez-les ou notez-les maintenant. Les mots de passe ne s’affichent qu’une seule fois. En cas de perte, vous pourrez créer un nouveau mot de passe plus tard.",
       "site": "Site web",
-      "username": "Nom Magic Cups",
+      "username": "Nom Oomba Academy",
       "password": "Mot de passe",
       "gone": "Ces cartes de connexion ne sont plus disponibles. Créez un nouveau mot de passe depuis l’onglet Élèves de la classe ou l’onglet Personnes de l’école.",
       "backPeople": "Retour à Personnes",
@@ -1355,7 +1354,7 @@
       "badRole": "Ce rôle n’est pas autorisé ici.",
       "ownRole": "Vous ne pouvez pas modifier ni retirer votre propre rôle d’admin.",
       "noAccount": "Crée d’abord un compte gratuit.",
-      "noSuchUser": "Aucun compte avec ce nom Magic Cups.",
+      "noSuchUser": "Aucun compte avec ce nom Oomba Academy.",
       "otherSchoolAccount": "Ce compte appartient à une autre école.",
       "notSchoolAccount": "Seuls les comptes école peuvent recevoir un nouveau mot de passe ici. Les élèves qui ont leur propre compte le réinitialisent eux-mêmes.",
       "classHasStudents": "Cette classe a déjà eu des élèves, elle ne peut donc pas être supprimée. Archivez-la plutôt.",
@@ -1366,14 +1365,14 @@
       "ownAccountsOff": "Cette école utilise uniquement des comptes école. Demande une carte de connexion à ton prof.",
       "lastTeacher": "Une classe doit avoir au moins un enseignant.",
       "staffName": "Saisissez son nom.",
-      "username": "Saisissez son nom Magic Cups.",
+      "username": "Saisissez son nom Oomba Academy.",
       "alreadyStaff": "{name} fait déjà partie du personnel ({role}).",
       "sameName": "{count, plural, one {Ce nom existe déjà à {school}} other {Ces noms existent déjà à {school}}} : {names}. Retirez-les de la liste, ou ajoutez une initiale pour les distinguer. Pour mettre des élèves existants dans une classe, cochez-les dans l’onglet Élèves de la classe.",
       "chooseTeacher": "Choisissez un enseignant.",
       "chooseClass": "Choisissez une classe.",
       "noSchoolAccounts": "Aucun élève de cette classe n’a de compte école.",
       "badTeacher": "Choisissez quelqu’un parmi le personnel de l’école.",
-      "adminNotStudent": "Tu t’occupes de Magic Cups, alors tu ne peux pas rejoindre une classe comme élève.",
+      "adminNotStudent": "Tu t’occupes d’Oomba Academy, alors tu ne peux pas rejoindre une classe comme élève.",
       "isStudent": "{name} est élève ici, il n’est donc pas possible de l’ajouter au personnel.",
       "tickStudents": "Cochez au moins un élève.",
       "badZone": "Choisissez un fuseau horaire dans la liste."
@@ -1451,7 +1450,7 @@
       "game": "Jeu",
       "myGames": "Mes jeux",
       "schoolGames": "Partagés dans mon école",
-      "siteGames": "Jeux Magic Cups",
+      "siteGames": "Jeux Oomba Academy",
       "minutes": "Minutes",
       "edit": "Modifier l’étape",
       "delete": "Supprimer l’étape",

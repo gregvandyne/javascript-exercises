@@ -62,12 +62,12 @@ test('parse rejects broken messages; placeholderInfo knows what a translation mu
 });
 
 test('t(): locale value, English fallback for missing keys and locales, key for unknown keys', () => {
-  withStubs({ fr: { home: { hero: { play: 'Jouer' } }, layout: { titleWith: '{title} · Magic Cups' } }, 'en-GB': {} });
+  withStubs({ fr: { home: { hero: { play: 'Jouer' } }, layout: { titleWith: '{title} · Oomba Academy' } }, 'en-GB': {} });
   try {
     const fr = i18n.makeT('fr');
     assert.equal(fr('home.hero.play'), 'Jouer');
     assert.equal(fr('home.hero.more'), 'More info', 'missing in fr -> English');
-    assert.equal(fr('layout.titleWith', { title: 'Shark Plank' }), 'Shark Plank · Magic Cups');
+    assert.equal(fr('layout.titleWith', { title: 'Shark Plank' }), 'Shark Plank · Oomba Academy');
     assert.equal(fr('no.such.key'), 'no.such.key');
     assert.equal(i18n.makeT('en-GB')('nav.home'), 'Home', 'en-GB falls back to en');
     assert.equal(i18n.makeT('xx')('nav.home'), 'Home', 'unknown locale -> English');

@@ -2,7 +2,7 @@
 document.addEventListener('click', e => { if (e.target.closest('[data-print]')) window.print(); });
 
 // ---- School pages (batch 2)
-// Add staff: the "Magic Cups name" field only shows for an existing account, and the button says what will happen.
+// Add staff: the "Oomba Academy name" field only shows for an existing account, and the button says what will happen.
 function staffChoice(f) {
   const v = (f.querySelector('input[name=account]:checked') || {}).value || 'new';
   f.querySelectorAll('[data-account]').forEach(el => { el.hidden = el.dataset.account !== v; });

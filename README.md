@@ -1,4 +1,4 @@
-# Magic Cups
+# Oomba Academy
 
 A free, kid-safe website where anyone can **play** web games and **build** their own by talking to an AI Builder (Claude).
 Think "Roblox for web games", for a 7-year-old, a 12-year-old and their parent sharing one phone.
@@ -20,7 +20,7 @@ npm install && npm run seed && npm start
 # open http://localhost:3000
 ```
 
-`npm run seed` creates the admin account (prints a random password unless you set `ADMIN_PASSWORD`), the official **Magic Cups** builder account, and the featured launch games: Shark Plank (hangman for early readers), Ring Rumble (two-player wrestling; on a desktop both players share one keyboard), Footy Tycoon (a soccer property board game), Drop Four (connect-four with a three-level robot), Happy Putt (18-hole mini golf inspired by *Happy Gilmore*), Castle Clash (chess with lessons, puzzles and a four-level robot), Brick Drop (a falling-blocks puzzle with Marathon, Sprint 40 and Zen modes), Word Hunt (themed word searches with a daily puzzle and a pass-the-phone race), Sum Racer (a maths kart race over seven tracks, from adding within 10 to mixed operations), Munch Maze (an original arcade maze chase with three mazes and an Easy mode), Word Peek (a daily guess-the-word game with 4, 5 and 6-letter modes), Swish Flick (flick-to-shoot basketball with an arcade mode and a 24-level story mode), Loop Lab (a beat-making music studio with starter beats, challenges and saved songs) and Beat Lanes (a tap-to-the-beat rhythm game with nine synthesized songs and three difficulties). The list lives in `SEED_GAMES` in `scripts/seed.js`. Re-running the seed is safe and publishes an updated version of a launch game when its HTML changed.
+`npm run seed` creates the admin account (prints a random password unless you set `ADMIN_PASSWORD`), the official **Oomba Academy** builder account (`OombaAcademy`), and the featured launch games: Shark Plank (hangman for early readers), Ring Rumble (two-player wrestling; on a desktop both players share one keyboard), Footy Tycoon (a soccer property board game), Drop Four (connect-four with a three-level robot), Happy Putt (18-hole mini golf inspired by *Happy Gilmore*), Castle Clash (chess with lessons, puzzles and a four-level robot), Brick Drop (a falling-blocks puzzle with Marathon, Sprint 40 and Zen modes), Word Hunt (themed word searches with a daily puzzle and a pass-the-phone race), Sum Racer (a maths kart race over seven tracks, from adding within 10 to mixed operations), Munch Maze (an original arcade maze chase with three mazes and an Easy mode), Word Peek (a daily guess-the-word game with 4, 5 and 6-letter modes), Swish Flick (flick-to-shoot basketball with an arcade mode and a 24-level story mode), Loop Lab (a beat-making music studio with starter beats, challenges and saved songs) and Beat Lanes (a tap-to-the-beat rhythm game with nine synthesized songs and three difficulties). The list lives in `SEED_GAMES` in `scripts/seed.js`. Re-running the seed is safe and publishes an updated version of a launch game when its HTML changed.
 
 No API key is needed: without `ANTHROPIC_API_KEY` the Builder uses a built-in mock that still makes real, playable games from templates, and public publishing goes to the human review queue.
 
@@ -31,6 +31,7 @@ npm test             # unit + safety suites (node:test, in-memory DB)
 npm run test:e2e     # Playwright end-to-end (starts its own server + temp DB, mock Builder)
 npm run screenshots  # BASE=http://localhost:3000 ADMIN_PASSWORD=... → screenshots/ at 390/1280 px, light/dark
 node scripts/layout-audit.js  # BASE=... AUDIT_USERS="guest,teacher:name:pass" → boxes that touch, on every page it can reach
+node scripts/contrast.js      # every text/background token pair, light and dark, against WCAG AA
 npm run i18n:check   # per language: missing / extra keys and placeholder problems
 ```
 
@@ -53,7 +54,7 @@ In environments with a pre-installed Chromium at `/opt/pw-browsers`, the e2e con
 | `BRB_SNAPSHOTS` | on in production | Headless Chromium for game screenshots: cover pictures of Studio games and the Builder's `playtest_game` tool. `0` turns it off, `1` turns it on in development. |
 | `BRB_CHROMIUM` | (Playwright's) | Path to a Chromium / headless-shell binary, if not the one Playwright installed. |
 | `ADMIN_USERNAME` / `ADMIN_PASSWORD` | `admin` / random | Admin account created by `npm run seed`. |
-| `DEMO_TEACHER_PASSWORD` | unset | Demo school for showing schools: creates "Magic Cups Demo School" with `DemoTeacher` and `DemoStudent` (this password, reset on every boot), four classmates, a Demo Class and sample lessons (added again only if the teacher's library is empty). |
+| `DEMO_TEACHER_PASSWORD` | unset | Demo school for showing schools: creates "Oomba Academy Demo School" (at `/school/magic-cups-demo-school`) with `DemoTeacher` and `DemoStudent` (this password, reset on every boot), four classmates, a Demo Class and sample lessons (added again only if the teacher's library is empty). |
 | `AD_IP_DAILY_CAP` | `200` | Max counted ad impressions per IP per day. |
 | `CHAT_DAILY_LIMIT` | `300` | Max chat messages per user per day. |
 | `REPORTS_TO_HIDE` | `3` | Open reports from different players that auto-hide a game. |
@@ -63,7 +64,7 @@ In environments with a pre-installed Chromium at `/opt/pw-browsers`, the e2e con
 
 ## Deploy
 
-**Docker**: `docker build -t magic-cups . && docker run -p 3000:3000 -v brb-data:/data -e ADMIN_PASSWORD=... -e SESSION_SECRET=... magic-cups`. The container seeds on boot (idempotent) and stores everything in `/data`.
+**Docker**: `docker build -t oomba-academy . && docker run -p 3000:3000 -v brb-data:/data -e ADMIN_PASSWORD=... -e SESSION_SECRET=... oomba-academy`. The container seeds on boot (idempotent) and stores everything in `/data`.
 
 **Render**: push the repo and create a Blueprint from `render.yaml` (one web service + a 2 GB persistent disk at `/data`). Set `ADMIN_PASSWORD` and optionally `ANTHROPIC_API_KEY` in the dashboard.
 
@@ -78,9 +79,9 @@ server/            app factory (app.js), entry (index.js), db.js, auth.js, confi
   builder/         Builder agent loop, providers (Claude + mock), screening, templates/
   views/           layout + components (server-rendered HTML)
   i18n/            languages: index.js (t, negotiation, Intl), locales/<code>.json, notes.json, blocklists/, README for translators
-public/            css/app.css (design system), js/ (one small module per page), sdk/brb-sdk.js (in-frame SDK), fonts, icons
+public/            css/app.css (design system), js/ (one small module per page), sdk/brb-sdk.js (in-frame SDK), fonts (Bricolage Grotesque), icons (made by scripts/icons.js)
 seed-games/        the launch games (HTML + metadata JSON)
-scripts/           seed.js, import-game.js, backup.js, rollup.js, screenshots.js
+scripts/           seed.js, import-game.js, backup.js, rollup.js, screenshots.js, icons.js (the logo icons in public/icons), contrast.js (colour contrast of the design tokens)
 tests/             unit/, safety/, e2e/
 docs/              build-graph.md, decisions.md, status.md, safety.md, sdk.md, brief/
 ```

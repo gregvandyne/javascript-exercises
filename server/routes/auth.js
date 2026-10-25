@@ -80,7 +80,7 @@ router.post('/api/auth/signup', (req, res) => {
   const n = auth.cleanName(username, t); if (!n.ok) return res.status(400).json({ error: n.error, field: 'username' });
   const pe = auth.checkPassword(password, n.value, t); if (pe) return res.status(400).json({ error: pe, field: 'password' });
   const taken = auth.getUserByName(n.value);
-  if (taken && !(req.user && taken.id === req.user.id)) return res.status(400).json({ error: t('auth.api.nameTaken'), field: 'username' });
+  if ((taken && !(req.user && taken.id === req.user.id)) || auth.isRetiredName(n.value)) return res.status(400).json({ error: t('auth.api.nameTaken'), field: 'username' });
   let u;
   if (req.user && req.user.is_guest) {
     u = auth.upgradeGuest(req.user.id, { username: n.value, password }); audit(u.id, 'user.upgrade', u.id);
@@ -237,7 +237,7 @@ router.get('/me', (req, res) => {
   <div class="mesettings">${languagePanel(req)}${appearancePanel(req)}</div>
   ${!u.is_guest ? html`<section class="panel"><h2>${t('me.chat.heading')}</h2>
     <p class="muted">${t('me.chat.text')}</p>
-    <label class="row" style="font-weight:800"><input type="checkbox" id="chat-toggle" ${u.chat_enabled ? raw('checked') : ''} style="width:24px;height:24px"> ${t('me.chat.toggle')}</label>
+    <label class="row" style="font-weight:700"><input type="checkbox" id="chat-toggle" ${u.chat_enabled ? raw('checked') : ''} style="width:24px;height:24px"> ${t('me.chat.toggle')}</label>
   </section>` : ''}
   <section class="panel"><h2>${t('me.signOut.heading')}</h2><p class="muted">${u.is_guest ? t('me.signOut.guest') : t('me.signOut.account')}</p>
     <form data-api="/api/auth/logout" data-next="/"><button class="btn btn-danger" type="submit">${t('me.signOut.button')}</button></form></section>`;

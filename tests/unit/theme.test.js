@@ -4,11 +4,15 @@ import './_setup.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import http from 'node:http';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-const { pickTheme, normalizeTheme } = await import('../../server/theme.js');
+const { pickTheme, normalizeTheme, BAR_COLORS } = await import('../../server/theme.js');
+const contrast = await import('../../scripts/contrast.js');
 const { createApp } = await import('../../server/app.js');
 const auth = await import('../../server/auth.js');
+const games = await import('../../server/services/games.js');
+const { withoutParam } = await import('../../server/i18n/index.js');
 const { q } = await import('../../server/db.js');
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
@@ -30,8 +34,14 @@ async function server() {
   const base = `http://127.0.0.1:${srv.address().port}`;
   const get = (p, headers = {}) => fetch(base + p, { headers, redirect: 'manual' });
   const post = (p, body, headers = {}) => fetch(base + p, { method: 'POST', headers: { 'Content-Type': 'application/json', ...headers }, body: JSON.stringify(body), redirect: 'manual' });
-  return { base, get, post, close: () => new Promise(r => srv.close(r)) };
+  // A path sent exactly as written (fetch would tidy '/./' away first).
+  const raw = p => new Promise((resolve, reject) => http.get({ host: '127.0.0.1', port: srv.address().port, path: p }, r => {
+    let body = ''; r.setEncoding('utf8'); r.on('data', c => { body += c; }); r.on('end', () => resolve({ status: r.statusCode, location: r.headers.location, body }));
+  }).on('error', reject));
+  return { base, get, post, raw, close: () => new Promise(r => srv.close(r)) };
 }
+/** [content, media] of each theme-color meta. */
+const themeColors = body => [...body.matchAll(/<meta name="theme-color" content="([^"]*)"(?: media="([^"]*)")?>/g)].map(m => [m[1], m[2] || null]);
 /** <html ...> tag and color-scheme meta of a page. */
 async function head(res) {
   const body = await res.text();
@@ -52,15 +62,18 @@ test('HTTP: data-theme and color-scheme only follow an explicit choice', async (
     let h = await head(await s.get('/'));
     assert.equal(h.html, '<html lang="en" dir="ltr">', 'same as the device: no data-theme');
     assert.equal(h.scheme, 'light dark');
+    assert.deepEqual(themeColors(h.body), [[BAR_COLORS.light, '(prefers-color-scheme: light)'], [BAR_COLORS.dark, '(prefers-color-scheme: dark)']], 'the toolbar follows the device');
     assert.match(h.body, /<details class="themepick" data-themepick>/);
     assert.match(h.body, /aria-label="Theme: Same as my device"/);
     assert.match(h.body, /href="\/\?theme=dark"[^>]*data-theme-choice="dark"/, 'the menu is plain links (works with no JavaScript)');
     h = await head(await s.get('/', { Cookie: 'theme=dark' }));
     assert.equal(h.html, '<html lang="en" dir="ltr" data-theme="dark">'); assert.equal(h.scheme, 'dark');
+    assert.deepEqual(themeColors(h.body), [[BAR_COLORS.dark, null]], 'a chosen theme: one toolbar colour');
     assert.match(h.body, /aria-label="Theme: Dark"/);
     assert.match(h.body, /data-theme-choice="dark" data-label="Theme: Dark" aria-current="true"/);
     h = await head(await s.get('/safety', { Cookie: 'theme=light' }));
     assert.equal(h.html, '<html lang="en" dir="ltr" data-theme="light">'); assert.equal(h.scheme, 'light');
+    assert.deepEqual(themeColors(h.body), [[BAR_COLORS.light, null]]);
     h = await head(await s.get('/', { Cookie: 'theme=system' }));
     assert.equal(h.html, '<html lang="en" dir="ltr">'); assert.equal(h.scheme, 'light dark');
     h = await head(await s.get('/', { Cookie: 'theme=<script>' }));
@@ -68,6 +81,14 @@ test('HTTP: data-theme and color-scheme only follow an explicit choice', async (
     // Pages without the top bar (the play page) and the error pages still follow the choice.
     h = await head(await s.get('/no/such/page', { Cookie: 'theme=dark' }));
     assert.match(h.html, /data-theme="dark"/);
+    const owner = auth.createUser({ username: uniq('ThemePlay'), password: 'secret123' });
+    const g = games.createGame(owner.id, { title: 'Theme Play' });
+    const v = games.addVersion(g.id, '<div>hi</div>', { createdBy: owner.id, safetyStatus: 'pass' });
+    q.run("UPDATE games SET visibility='public', status='published', published_version_id=? WHERE id=?", v.id, g.id);
+    h = await head(await s.get(`/play/${games.getGame(g.id).slug}`, { Cookie: 'theme=light' }));
+    assert.match(h.body, /<div class="playbar">/, 'the play page');
+    assert.equal(h.html, '<html lang="en" dir="ltr" data-theme="light">'); assert.equal(h.scheme, 'light');
+    assert.deepEqual(themeColors(h.body), [[BAR_COLORS.dark, null]], 'its bar is Ink in both themes: one Ink toolbar colour');
   } finally { await s.close(); }
 });
 
@@ -96,6 +117,15 @@ test('HTTP: ?theme= saves the choice for same-origin requests only, then redirec
     assert.equal(savedTheme(u.id), 'dark', 'saved on the account when signed in');
     // API calls are never redirected.
     assert.equal((await s.get('/api/me?theme=dark')).status, 200);
+    // The redirect stays on this site, even for a path that URL parsing turns into '//host'.
+    assert.equal(withoutParam('/.//evil.com?theme=dark', 'theme'), '/evil.com');
+    for (const p of ['/.//evil.com?theme=dark', '/%2e//evil.com?theme=dark', '/.//evil.com?lang=de']) {
+      const r = await s.raw(p);
+      assert.equal(r.status, 303, p); assert.equal(r.location, '/evil.com', p);
+    }
+    const lost = await s.raw('/.//evil.com');
+    assert.equal(lost.status, 404);
+    assert.match(lost.body, /href="\/evil.com\?theme=dark"/); assert.doesNotMatch(lost.body, /href="\/\//, 'the menus link back to this site');
   } finally { await s.close(); }
 });
 
@@ -172,7 +202,7 @@ test('CSS: the dark colours live in exactly two identical blocks in app.css, and
   assert.equal(dark['color-scheme'], 'dark');
   const light = props(blockAfter(app, '\n:root{'));
   for (const k of Object.keys(dark)) assert.ok(k in light, `${k} has a light value in :root too`);
-  for (const k of ['--bg', '--card', '--ink', '--on-accent', '--warn-bg', '--warn-ink', '--bad-ink', '--viz-1']) assert.ok(k in dark, `${k} is a dark token`);
+  for (const k of ['--bg', '--card', '--text', '--muted', '--link', '--current', '--on-current', '--focus', '--danger', '--on-danger', '--warn-bg', '--warn-ink', '--bad-ink', '--viz-1', '--bar']) assert.ok(k in dark, `${k} is a dark token`);
   for (const f of fs.readdirSync(path.join(ROOT, 'public/css')).filter(f => f.endsWith('.css'))) {
     const n = (css(f).match(/prefers-color-scheme/g) || []).length;
     assert.equal(n, f === 'app.css' ? 1 : 0, `${f}: no other prefers-color-scheme rules (use a token instead)`);
@@ -180,3 +210,16 @@ test('CSS: the dark colours live in exactly two identical blocks in app.css, and
   }
   assert.equal((app.match(/\[data-theme/g) || []).length, 2, 'data-theme appears only in the two token blocks');
 });
+
+test('CSS: the text/background token pairs the CSS uses (listed in scripts/contrast.js) pass WCAG AA in both palettes', () => {
+  const rows = contrast.check();
+  assert.ok(rows.length > 100 && rows.some(r => r.theme === 'dark'));
+  assert.deepEqual(rows.filter(r => !r.ok).map(r => `${r.theme} ${r.fg} on ${r.bg}: ${r.ratio} < ${r.min}`), []);
+  const { light, dark } = contrast.palettes();
+  assert.deepEqual([light['--bar'], dark['--bar']], [BAR_COLORS.light, BAR_COLORS.dark], 'theme-color matches the top bar (--bar)');
+  assert.equal(JSON.parse(fs.readFileSync(path.join(ROOT, 'public/manifest.webmanifest'), 'utf8')).theme_color, BAR_COLORS.light);
+  for (const old of ['--blue', '--coral', '--sun', '--lime', '--ink']) {
+    for (const f of fs.readdirSync(path.join(ROOT, 'public/css'))) assert.doesNotMatch(css(f), new RegExp(`var\\(${old}(-\\w+)?\\)`), `${f}: ${old} was renamed to a role token`);
+  }
+});
+

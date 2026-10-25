@@ -40,7 +40,7 @@ test('school -> teacher -> class -> login cards -> own-account student joins wit
   await teacher.click('form[data-api$="/students"]:has(#as-n) button[type=submit]');
   await expect(teacher.locator('#as-n-err')).toContainText('Ana Silva (@');
 
-  // a student who already plays on Magic Cups joins with the code
+  // a student who already plays on Oomba Academy joins with the code
   const sctx = await browser.newContext(); const kid = await sctx.newPage();
   await signup(kid, uniq('Kid'));
   await kid.goto('/classes');

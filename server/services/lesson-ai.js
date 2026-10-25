@@ -26,12 +26,12 @@ export async function draftLesson({ topic, grade = '', subject = '', minutes = 4
   const games = catalog.slice(0, 80).map(g => `- ${g.id}: ${g.title}${g.description ? ` — ${String(g.description).slice(0, 120)}` : ''}${g.tags ? ` [${String(g.tags).slice(0, 60)}]` : ''}`).join('\n');
   const res = await client.messages.create({
     model: config.builderModel, max_tokens: 3000,
-    system: `You help primary and middle school teachers plan lessons on Magic Cups, a kid-safe website where children play and build small web games.
+    system: `You help primary and middle school teachers plan lessons on Oomba Academy, a kid-safe website where children play and build small web games.
 Write a practical lesson plan for the teacher, in ${lang}. Keep it kind, clear and age-appropriate. No external links, no personal data, no brands.
 Steps are one of:
 - "text": instructions or a short reading for the students (plain text, short paragraphs, written for the students' age),
 - "game": the students play one of the available games (put its id in gameId; only use ids from the list, and only when a game really fits the topic),
-- "build": the students build their own small game with the Magic Cups Builder; body is the idea they type to the Builder (one or two sentences a child could write, e.g. "a quiz with 8 questions about the planets"),
+- "build": the students build their own small game with the Oomba Academy Builder; body is the idea they type to the Builder (one or two sentences a child could write, e.g. "a quiz with 8 questions about the planets"),
 - "question": the students answer a question in writing and the teacher reads the answers; body is the question (one clear, open question; use one or two per lesson, for example an exit ticket near the end).
 Use 3 to 7 steps that fill about ${minutes} minutes in total (minutes per step). Start with a short warm-up, end with a wrap-up. gameId is "" for non-game steps.
 Objectives: 2 to 4 short lines, one per line.`,

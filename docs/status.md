@@ -36,7 +36,7 @@ _Last updated: 2026-10-25_
 | Every page at 390 px and 1280 px, light and dark: no horizontal overflow, reviewed by eye | `npm run screenshots` |
 | Docker: image boots, seeds, serves `/health`, home and game pages | built locally with pre-installed deps (see limits) |
 
-Counts at this commit: unit + safety 199/199, e2e 48/48.
+Counts at this commit: unit + safety 214/214, e2e 49/49.
 
 ## Not verified / known limits
 - **Real Claude calls are untested** (no `ANTHROPIC_API_KEY` here). Request shapes (cache_control, tools, models, review schema) are tested against a local fake Messages API. Set the key and try one Studio game before launch.
@@ -44,7 +44,7 @@ Counts at this commit: unit + safety 199/199, e2e 48/48.
 - The GitHub repo name is unchanged (no tool for that here). Rename it in GitHub → Settings.
 - Presence (live counts) and rate limits are in memory: one server process only. Multi-instance needs Redis.
 - Chat uses polling every ~3.5 s, not WebSockets.
-- No ads and no creator payouts: removed when Magic Cups became an ed-tech product. Old ad/earnings tables are left untouched in existing databases.
+- No ads and no creator payouts: removed when Oomba Academy became an ed-tech product. Old ad/earnings tables are left untouched in existing databases.
 - The mock Builder makes real games from templates and real find/replace edits, but it is not creative. The real Builder needs the API key.
 - **Only English is written so far**: `server/i18n/locales/en.json` has every string (832 keys); the other 12 locale files are `{}` stubs waiting for translators, and the per-language word lists are empty. Until then those languages show English text (in the right direction for he/ar). The Builder already replies in the kid's language when an API key is set; the offline mock Builder speaks English.
 - Without an API key, Builder input screening for non-English messages relies on the word lists only (the keyword rules are English).

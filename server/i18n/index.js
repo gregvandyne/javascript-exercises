@@ -237,11 +237,14 @@ export function saveUserLang(user, code) {
   q.run('UPDATE users SET lang=? WHERE id=?', code, user.id);
   user.lang = code;
 }
+/** A request's path, always starting with exactly one '/': URL parsing turns '/.//evil.com' into '//evil.com', which a
+ *  browser would read as another site. */
+export const localPath = u => '/' + u.pathname.replace(/^\/+/, '');
 /** The same URL without ?<name>= (for the redirect after a choice). */
 export function withoutParam(originalUrl, name) {
   const u = new URL(originalUrl, 'http://x');
   u.searchParams.delete(name);
-  return u.pathname + (u.searchParams.toString() ? '?' + u.searchParams : '');
+  return localPath(u) + (u.searchParams.toString() ? '?' + u.searchParams : '');
 }
 export const withoutLang = originalUrl => withoutParam(originalUrl, 'lang');
 /** Settings picked with a plain GET link (?lang=, ?theme=) are not guarded by csrfCheck, so they are only SAVED for a

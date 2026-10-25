@@ -17,7 +17,7 @@ function buildBanner(req) {
   return html`<section class="buildbanner" aria-labelledby="bb-h">
     <div class="bb-art" aria-hidden="true">🛠️</div>
     <div class="bb-text"><h2 id="bb-h">${t('home.build.title')}</h2><p>${t('home.build.text')}</p></div>
-    <a class="btn btn-coral" href="/build">${mine ? t('home.build.openStudio') : t('home.build.start')}</a>
+    <a class="btn btn-hot" href="/build">${mine ? t('home.build.openStudio') : t('home.build.start')}</a>
   </section>`;
 }
 
@@ -51,7 +51,7 @@ router.get('/', (req, res) => {
   const body = html`
   ${hero ? html`<section class="hero cover-${hero.cover}" aria-label="${t('home.hero.label')}">
     <div>
-      <span class="hero-kicker">⭐ ${t('home.hero.kicker')}</span>
+      <span class="hero-kicker"><span class="emo" aria-hidden="true">⭐</span> ${t('home.hero.kicker')}</span>
       <h1>${hero.title}</h1>
       <p>${hero.description.split('. ')[0] + '.'}</p>
       <div class="row">
@@ -99,7 +99,7 @@ router.get('/search', (req, res) => {
     <button class="chip" type="button" data-cat="" aria-pressed="${!r.cat}">${t('search.all')}</button>
     ${games.CATEGORIES.map(([k, e]) => html`<button class="chip" type="button" data-cat="${k}" aria-pressed="${r.cat === k}"><span aria-hidden="true">${e}</span>${categoryLabel(k, t)}</button>`)}
   </div>
-  <div class="row" style="margin-bottom:18px"><span class="small muted" style="font-weight:800">${t('search.sortLabel')}</span>
+  <div class="row" style="margin-bottom:18px"><span class="small muted" style="font-weight:700">${t('search.sortLabel')}</span>
     <div class="seg" role="group" aria-label="${t('search.sort')}">${sortBtns.map(k => html`<button type="button" data-sort="${k}" aria-pressed="${r.sort === k}">${t(`search.sorts.${k}`)}</button>`)}</div></div>
   <div id="results" aria-live="polite">${r.markup}</div>`;
   page(req, res, { title: r.text ? t('search.titleQuery', { text: r.text }) : t('search.title'), active: 'search', body, scripts: ['/js/search.js'] });

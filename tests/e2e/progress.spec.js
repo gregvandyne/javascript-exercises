@@ -36,6 +36,16 @@ test('student works through a lesson; teacher reads the answer and gives feedbac
   await t.click('.gradebook thead a:has-text("Adding fractions")');
   const card = t.locator('.answercard:has-text("2 + 3 = 5 eighths")');
   await expect(card).toContainText('Demo Student');
+  // The long German and Russian "Save and mark reviewed" labels wrap inside the card on small phones.
+  const lessonUrl = t.url(), teacher = await t.context().storageState();
+  for (const [lang, width] of [['de', 320], ['ru', 320], ['ru', 390]]) {
+    const c = await browser.newContext({ viewport: { width, height: 800 }, storageState: teacher });
+    await c.addCookies([{ name: 'lang', value: lang, url: lessonUrl }]);
+    const p = await c.newPage(); await p.goto(lessonUrl);
+    await expect(p.locator('.answercard .ac-form button[type=submit]').first()).toBeVisible();
+    expect(await p.evaluate(() => document.documentElement.scrollWidth - innerWidth), `${lang} @${width}`).toBeLessThanOrEqual(1);
+    await c.close();
+  }
   await card.locator('textarea').fill('Great explanation, Demo Student!');
   await card.locator('button[type=submit]').click();
   await expect(t.locator('.answercard:has-text("2 + 3 = 5 eighths")')).toHaveClass(/is-read/);

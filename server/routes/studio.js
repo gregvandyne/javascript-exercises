@@ -128,7 +128,7 @@ router.get('/studio/:id', requireAccount, (req, res) => {
         <button class="iconbtn" type="button" id="st-history"><span class="emo" aria-hidden="true">🕘</span>${t('studio.top.versions')}</button>
         <button class="iconbtn" type="button" id="st-settings"><span class="emo" aria-hidden="true">⚙️</span>${t('studio.top.settings')}</button>
         <button class="iconbtn" type="button" id="st-share"><span class="emo" aria-hidden="true">🔗</span>${t('game.share')}</button>
-        <button class="btn btn-coral st-publish" type="button" id="st-publish">🚀 ${t('studio.top.publish')}</button>
+        <button class="btn btn-hot st-publish" type="button" id="st-publish">🚀 ${t('studio.top.publish')}</button>
       </div>
     </div>
     <div class="st-live" id="st-live" aria-live="polite"></div>

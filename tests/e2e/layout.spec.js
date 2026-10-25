@@ -40,7 +40,7 @@ async function checkPages(browser, state, paths) {
       const wide = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
       if (wide > 1) problems.push(`${p} @${v.width}: the page scrolls sideways by ${wide}px`);
       await page.evaluate(() => document.querySelectorAll('details:not(.inline-menu):not(.langpick):not(.themepick)').forEach(d => { d.open = true; }));
-      for (const t of await findTouching(page)) problems.push(`${p} [opened] @${v.width}/${v.scheme}: ${t.a}  ⟷  ${t.b} (${t.dir} ${t.gap}px)`);
+      for (const t of await findTouching(page)) problems.push(`${p} [opened] @${v.width}/${v.theme || v.scheme}: ${t.a}  ⟷  ${t.b} (${t.dir} ${t.gap}px)`);
     }
     await ctx.close();
   }
@@ -76,4 +76,37 @@ test('admin pages: nothing touches', async ({ browser }) => {
   const school = await href(page, '/admin/schools', 'td a[href^="/school/"]');
   await ctx.close();
   expect(await checkPages(browser, state, ['/admin', '/admin/stats', '/admin/schools', school, `${school}?tab=people`, `${school}?tab=settings`])).toEqual([]);
+});
+
+test('the top bar fits the logo, search, the language and theme menus and the Me button in English, German and Russian', async ({ browser }) => {
+  // The demo teacher has the most nav items (Classes) and a long name: the tightest bar.
+  const { state, ctx } = await signIn(browser, 'DemoTeacher', DEMO); await ctx.close();
+  const problems = [];
+  for (const lang of ['en', 'de', 'ru']) for (const width of [320, 360, 390, 820, 1024, 1280]) {
+    const c = await browser.newContext({ viewport: { width, height: 700 }, storageState: state });
+    await c.addCookies([{ name: 'lang', value: lang, url: test.info().project.use.baseURL }]);
+    const page = await c.newPage();
+    await page.goto('/safety'); await page.evaluate(() => document.fonts.ready);
+    const r = await page.evaluate(() => {
+      const items = [...document.querySelector('.topbar').children].filter(e => e.checkVisibility() && !e.classList.contains('skip'))
+        .map(e => e.getBoundingClientRect()).sort((a, b) => a.left - b.left);
+      const nav = [...document.querySelectorAll('.topnav .navlink')].filter(e => e.checkVisibility()).map(e => e.getBoundingClientRect());
+      // The search placeholder (the long one, or the short one app.js swaps in) is never cut off. Below 360px the field is
+      // a round button to the search page instead.
+      const q = document.querySelector('#topq'), cs = getComputedStyle(q), cx = document.createElement('canvas').getContext('2d');
+      cx.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+      const field = q.checkVisibility();
+      const cut = field && cx.measureText(q.placeholder).width > q.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+      const missing = ['.topbar .langpick > summary', '.topbar .themepick > summary', '.topbar .me-btn', field ? '#topq' : '.topsearch-btn']
+        .filter(s => !document.querySelector(s).checkVisibility());
+      return { tight: items.slice(1).some((b, i) => b.left - items[i].right < 4) || nav.slice(1).some((b, i) => b.left - nav[i].right < 2),
+        off: items.some(b => b.left < 0 || b.right > innerWidth), wide: document.documentElement.scrollWidth - innerWidth,
+        logo: document.querySelector('.logo-lockup').checkVisibility() ? 'wordmark' : 'mark', name: document.querySelector('.topbar .logo').getAttribute('aria-label'), cut, missing, field };
+    });
+    // The mark on phones and beside the full nav on small laptops (up to 1100px with five nav items, as here).
+    const logo = width <= 600 || (width > 820 && width <= 1100) ? 'mark' : 'wordmark';
+    if (r.tight || r.off || r.wide || r.cut || r.missing.length || r.field !== width >= 360 || r.logo !== logo || r.name !== 'Oomba Academy') problems.push(`${lang} @${width}: ${JSON.stringify(r)}`);
+    await c.close();
+  }
+  expect(problems).toEqual([]);
 });

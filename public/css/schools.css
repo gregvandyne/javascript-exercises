@@ -35,7 +35,7 @@ main.wrap>.pagehead:has(>div:first-child)>:not(:first-child){margin-top:18px}
 .panel>p:last-child,.panel>ul:last-child{margin-bottom:0}
 .panel p{margin-bottom:0}
 .panel>.empty{padding:var(--s4) 0}
-details.panel>summary{cursor:pointer;font-weight:800;min-height:44px;display:flex;align-items:center;gap:var(--s2);margin:calc(-1 * var(--s2)) 0}
+details.panel>summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;align-items:center;gap:var(--s2);margin:calc(-1 * var(--s2)) 0}
 details.panel[open]>summary{margin-bottom:var(--s2);padding-bottom:var(--s3);border-bottom:1px solid var(--line)}
 details.panel[open]>summary+*{margin-top:var(--s4)}
 /* Disclosures show an open/closed chevron (the native marker is hidden by the flex layout). */
@@ -70,7 +70,7 @@ form.row>.btn:not(.btn-sm){align-self:flex-start}
 form.row>.input.grow{flex:1 1 220px}
 @media (max-width:600px){form.row>.input.grow~.btn:not(.btn-sm){flex:1 1 100%}}
 .input.input-sm{min-height:40px;height:40px;padding:6px 10px;width:auto;max-width:150px}
-.code-input{max-width:180px;text-transform:uppercase;letter-spacing:.15em;font-weight:900}
+.code-input{max-width:180px;text-transform:uppercase;letter-spacing:.15em;font-weight:800}
 .stack>.field{margin:0}
 .stack{gap:var(--s4)}
 .stack>h3{margin:var(--s3) 0 0;padding-top:var(--s4);border-top:1px solid var(--line)}
@@ -93,28 +93,28 @@ form.inline{display:inline-flex;gap:var(--s2);align-items:center;margin:0}
 .pp>span:not(.avatar){display:flex;flex-direction:column;min-width:0;line-height:1.3}
 .chips-list{display:flex;flex-wrap:wrap;gap:var(--s3) var(--s5);margin:0;padding:0;list-style:none}
 .linkbtn{border:0;background:none;color:var(--muted);cursor:pointer;min-width:32px;min-height:32px;font-size:.9rem}
-.chip-s{display:inline-block;padding:1px 8px;border-radius:999px;background:var(--card-2);box-shadow:inset 0 0 0 1px var(--line);font-size:.75rem;font-weight:800;color:var(--muted);white-space:nowrap}
+.chip-s{display:inline-block;padding:1px 8px;border-radius:999px;background:var(--card-2);box-shadow:inset 0 0 0 1px var(--line);font-size:.75rem;font-weight:700;color:var(--muted);white-space:nowrap}
 .chip-s.warn{background:var(--warn-bg);color:var(--warn-ink);box-shadow:none}
 
 /* ---------- Class cards (My teaching, My classes) ---------- */
 .classgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr));grid-auto-rows:1fr;gap:var(--s4)}
-.classgrid>.classcard{margin:0;display:flex;flex-direction:column;gap:var(--s1);color:var(--ink);text-decoration:none;min-height:128px}
+.classgrid>.classcard{margin:0;display:flex;flex-direction:column;gap:var(--s1);color:var(--text);text-decoration:none;min-height:128px}
 .classcard:hover{transform:translateY(-2px)}
 .cc-name{font-size:1.2rem;line-height:1.25}
-.cc-meta{margin-top:auto;padding-top:var(--s2);font-size:.9rem;color:var(--ink-2);display:flex;flex-wrap:wrap;gap:var(--s1) var(--s2);align-items:center}
+.cc-meta{margin-top:auto;padding-top:var(--s2);font-size:.9rem;color:var(--text-2);display:flex;flex-wrap:wrap;gap:var(--s1) var(--s2);align-items:center}
 
 /* ---------- Class page ---------- */
 .joincode{display:flex;flex-wrap:wrap;gap:var(--s3) var(--s4);align-items:center;justify-content:space-between}
 .joincode>div:first-child{flex:1 1 280px}
 .joincode h2{margin:0}
 .joincode p{margin:var(--s1) 0 0}
-.jc-code{font:900 2rem/1 ui-monospace,Menlo,monospace;letter-spacing:.18em;padding:10px 16px;border-radius:14px;background:var(--blue-50);color:var(--ink)}
+.jc-code{font:800 2rem/1 ui-monospace,Menlo,monospace;letter-spacing:.18em;padding:10px 16px;border-radius:var(--r-sm);background:var(--accent-soft);color:var(--text)}
 .reqlist{display:grid;gap:var(--s3);margin:0;padding:0}
-.reqcard{display:grid;gap:var(--s3);padding:var(--s4);border-radius:14px;box-shadow:inset 0 0 0 2px var(--line)}
+.reqcard{display:grid;gap:var(--s3);padding:var(--s4);border-radius:var(--r-sm);box-shadow:inset 0 0 0 2px var(--line)}
 .reqhead{display:flex;align-items:center;justify-content:space-between;gap:var(--s3);flex-wrap:wrap}
 .reqhead>form{margin:0}
 .classtabs a{gap:2px}
-.tabbadge{display:inline-grid;place-items:center;min-width:22px;height:22px;padding:0 6px;margin-inline-start:6px;border-radius:999px;background:var(--coral);color:var(--on-accent);font-size:.78rem;font-weight:900}
+.tabbadge{display:inline-grid;place-items:center;min-width:22px;height:22px;padding:0 6px;margin-inline-start:6px;border-radius:999px;background:var(--spark);color:var(--on-accent);font-size:.78rem;font-weight:800}
 /* Phones: the four class tabs share the width evenly, icon above the label, so none is cut off. */
 @media (max-width:600px){
   .classtabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;overflow:visible}
@@ -141,7 +141,7 @@ form.inline{display:inline-flex;gap:var(--s2);align-items:center;margin:0}
   .rtable td{border:0;padding:2px 0}
   .rtable td:first-child{font-size:1.05rem;padding-bottom:var(--s2)}
   .rtable td[data-label]{display:inline-block;width:auto;margin-inline-end:var(--s4)}
-  .rtable td[data-label]::before{content:attr(data-label) ": ";font-weight:800;color:var(--muted);font-size:.85rem}
+  .rtable td[data-label]::before{content:attr(data-label) ": ";font-weight:700;color:var(--muted);font-size:.85rem}
   .rtable td.edit{display:flex;align-items:center;gap:var(--s2);width:100%;margin:var(--s1) 0 0}
   .rtable td.edit form.inline{flex:1 1 auto}
   .rtable td.tacts{width:100%;white-space:normal;padding-top:var(--s3)}
@@ -153,23 +153,25 @@ form.inline{display:inline-flex;gap:var(--s2);align-items:center;margin:0}
 
 /* ---------- Login cards: 2 per row on paper, nothing else printed ---------- */
 .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:var(--s4)}
-.logincard{border:2px dashed var(--line);border-radius:16px;padding:var(--s4);background:var(--card);break-inside:avoid}
-.lc-top{font-weight:900;color:var(--muted);font-size:.9rem}
-.lc-name{font-size:1.35rem;font-weight:900;margin:6px 0 10px}
+.logincard{border:2px dashed var(--edge);border-radius:var(--r);padding:var(--s4);background:var(--card);break-inside:avoid}
+.lc-top{display:flex;align-items:center;gap:var(--s2);font-weight:800;color:var(--muted);font-size:.9rem}
+.lc-mark{width:22px;height:22px}
+.lc-name{font-size:1.35rem;font-weight:800;margin:6px 0 10px}
 .logincard dl{display:grid;grid-template-columns:1fr;gap:0;margin:0}
 .logincard dt{color:var(--muted);font-size:.9rem;margin-top:var(--s2)}
 .logincard dt:first-child{margin-top:0}
 .logincard dd{margin:0;font-family:ui-monospace,Menlo,monospace;overflow-wrap:break-word}
 @media print{
-  .topbar,.tabbar,.foot,.noprint,.backlink,.skip{display:none!important}
+  .topbar,.tabbar,.foot,.noprint,.backlink,.skip,.toasts{display:none!important}
   body{background:#fff;color:#000}
   .cards{grid-template-columns:1fr 1fr;gap:10px}
   .logincard{border-color:#999;background:#fff;color:#000}
+  .lc-top,.logincard dt{color:#444}
 }
 
 /* ---------- Lesson library ---------- */
-.crumbs{display:flex;flex-wrap:wrap;gap:var(--s2);align-items:center;font-weight:800}
-.crumbs [aria-current]{color:var(--ink)}
+.crumbs{display:flex;flex-wrap:wrap;gap:var(--s2);align-items:center;font-weight:700}
+.crumbs [aria-current]{color:var(--text)}
 .libtools{display:flex;flex-wrap:wrap;gap:var(--s3);align-items:center}
 .libtools>form{flex:1 1 320px}
 .libdrop{flex:0 0 auto}
@@ -186,8 +188,8 @@ form.inline{display:inline-flex;gap:var(--s2);align-items:center;margin:0}
 .folderrow,.lessonrow{display:flex;flex-wrap:wrap;gap:var(--s3);align-items:center;justify-content:space-between;padding:var(--s3) var(--s4)}
 .folderrow>.fr-name,.lessonrow>.lr-main{flex:1 1 240px}
 .folderrow>.acts,.lessonrow>.acts{margin-inline-start:auto}
-.fr-name{font-weight:900;color:var(--ink);text-decoration:none;min-width:0;min-height:40px;display:flex;align-items:center}
-.lr-main,.cl-main{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0;color:var(--ink);text-decoration:none}
+.fr-name{font-weight:800;color:var(--text);text-decoration:none;min-width:0;min-height:40px;display:flex;align-items:center}
+.lr-main,.cl-main{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0;color:var(--text);text-decoration:none}
 .lr-main b,.cl-main b{overflow-wrap:anywhere}
 .lr-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:2px}
 .lr-chips:empty{display:none}
@@ -195,7 +197,7 @@ form.inline{display:inline-flex;gap:var(--s2);align-items:center;margin:0}
 .inline-menu{position:relative}
 .inline-menu>summary{list-style:none}
 .inline-menu>summary::-webkit-details-marker{display:none}
-.inline-menu .menu{position:absolute;inset-inline-end:0;top:calc(100% + 6px);z-index:20;display:grid;gap:var(--s3);width:min(86vw,340px);padding:var(--s4);border-radius:14px;background:var(--card);box-shadow:var(--shadow-lg)}
+.inline-menu .menu{position:absolute;inset-inline-end:0;top:calc(100% + 6px);z-index:20;display:grid;gap:var(--s3);width:min(86vw,340px);padding:var(--s4);border-radius:var(--r-sm);background:var(--card);box-shadow:var(--shadow-lg)}
 .inline-menu .menu .formgrid{grid-template-columns:1fr 1fr;gap:var(--s3)}
 .inline-menu .menu .btn{justify-content:center}
 .inline-menu .menu>form:not(.row):not(.formgrid)>.btn,.inline-menu .menu>.btn{width:100%}
@@ -203,12 +205,13 @@ form.inline{display:inline-flex;gap:var(--s2);align-items:center;margin:0}
 .inline-menu .menu>form.row>.input{flex:1;max-width:none;min-width:0}
 .inline-menu .menu>form.row>.btn{flex:none;width:auto;align-self:stretch}
 .inline-menu .menu>form:has(.btn-danger){padding-top:var(--s3);border-top:1px solid var(--line)}
-.inline-menu .menu .lbl{font-size:.8rem;font-weight:800;color:var(--muted);margin-bottom:-6px}
+.inline-menu .menu>form:has(.btn-danger):first-child{padding-top:0;border-top:0}
+.inline-menu .menu .lbl{font-size:.8rem;font-weight:700;color:var(--muted);margin-bottom:-6px}
 
 /* ---------- Lesson steps ---------- */
 .sc-head{display:flex;gap:var(--s3);align-items:flex-start}
 .sc-head>.sc-num,.sc-head>.sc-kind{margin-top:2px}
-.sc-num{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--blue-50);font-weight:900;flex:none}
+.sc-num{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--accent-soft);font-weight:800;flex:none}
 .sc-kind{font-size:1.4rem;line-height:28px}
 .sc-title{display:flex;flex-direction:column;flex:1;min-width:0}
 /* Up/down keep fixed slots: ↑ always left, ↓ always right. */
@@ -216,11 +219,11 @@ form.inline{display:inline-flex;gap:var(--s2);align-items:center;margin:0}
 .sc-head>.acts>form[data-api$="/up"]{grid-column:1}
 .sc-head>.acts>form[data-api$="/down"]{grid-column:2}
 .sc-head>.acts .btn-sm{width:40px;padding:0}
-.sc-game,.sc-build{margin:0;font-weight:700}
+.sc-game,.sc-build{margin:0;font-weight:600}
 .sc-build{font-style:italic}
 .sc-body p{margin:0}
 .sc-body p+p{margin-top:var(--s2)}
-.stepcard>details>summary{min-height:36px;display:inline-flex;align-items:center;cursor:pointer;font-weight:800;font-size:.9rem;color:var(--ink-2)}
+.stepcard>details>summary{min-height:36px;display:inline-flex;align-items:center;cursor:pointer;font-weight:700;font-size:.9rem;color:var(--text-2)}
 .stepcard>details[open]>summary{margin-bottom:var(--s3)}
 @media (max-width:520px){.sc-kind{display:none}}
 /* The step form: type and minutes side by side, then title, game and instructions. */
@@ -228,7 +231,7 @@ form.inline{display:inline-flex;gap:var(--s2);align-items:center;margin:0}
 .stepgrid>.f-k{grid-area:k}.stepgrid>.f-t{grid-area:t}.stepgrid>.f-g{grid-area:g}.stepgrid>.f-m{grid-area:m}.stepgrid>.f-b{grid-area:b}.stepgrid>.formacts,.stepgrid>.end{grid-area:a}
 @media (min-width:720px){.stepgrid{grid-template-columns:minmax(0,1fr) minmax(0,1.4fr) 6.5rem;grid-template-areas:"k g m" "t t t" "b b b" "a a a"}}
 .panel>.newgame{margin-top:var(--s5);padding-top:var(--s4);border-top:1px solid var(--line)}
-.newgame>summary{min-height:36px;display:inline-flex;align-items:center;cursor:pointer;font-weight:800}
+.newgame>summary{min-height:36px;display:inline-flex;align-items:center;cursor:pointer;font-weight:700}
 .newgame[open]>summary{margin-bottom:var(--s3)}
 @media (min-width:600px){.newgame .formgrid{grid-template-columns:minmax(0,1fr) auto}}
 @media (min-width:720px){.assigngrid{grid-template-columns:repeat(3,minmax(0,1fr)) auto}}
@@ -240,7 +243,7 @@ form.inline{display:inline-flex;gap:var(--s2);align-items:center;margin:0}
 .unit-head{display:flex;align-items:center;justify-content:space-between;gap:var(--s3);margin-bottom:var(--s3)}
 .unit h3{margin:0;font-size:1rem}
 .unit>h3{margin-bottom:var(--s3)}
-.cl-row{display:flex;flex-wrap:wrap;gap:var(--s3);align-items:center;justify-content:space-between;padding:var(--s3) var(--s4);border-radius:14px;box-shadow:inset 0 0 0 2px var(--line)}
+.cl-row{display:flex;flex-wrap:wrap;gap:var(--s3);align-items:center;justify-content:space-between;padding:var(--s3) var(--s4);border-radius:var(--r-sm);box-shadow:inset 0 0 0 2px var(--line)}
 .cl-row>.cl-main{flex:1 1 220px}
 .cl-meta{display:flex;flex-wrap:wrap;align-items:center;gap:2px var(--s2)}
 .cl-tools{display:grid;gap:var(--s5);padding-top:var(--s5);border-top:1px solid var(--line)}
@@ -256,36 +259,36 @@ form.inline{display:inline-flex;gap:var(--s2);align-items:center;margin:0}
 .gbwrap{position:relative;overflow-x:auto;margin:0 calc(-1 * var(--s2));padding:0 var(--s2)}
 .gradebook{min-width:100%;border-collapse:separate;border-spacing:0}
 .gradebook th,.gradebook td{text-align:center;vertical-align:middle;padding:var(--s2) var(--s3)}
-.gradebook thead th{font-size:.82rem;text-transform:none;letter-spacing:0;color:var(--ink-2);min-width:120px;max-width:200px}
-.gradebook thead th a{color:var(--ink);font-weight:900;display:block;overflow-wrap:break-word;hyphens:auto}
+.gradebook thead th{font-size:.82rem;text-transform:none;letter-spacing:0;color:var(--text-2);min-width:120px;max-width:200px}
+.gradebook thead th a{color:var(--text);font-weight:800;display:block;overflow-wrap:break-word;hyphens:auto}
 .gradebook .gb-name{text-align:start;position:sticky;inset-inline-start:0;z-index:1;background:var(--card);min-width:140px;max-width:240px}
-.gradebook tbody th{text-transform:none;letter-spacing:0;font-size:1rem;color:var(--ink);font-weight:700}
+.gradebook tbody th{text-transform:none;letter-spacing:0;font-size:1rem;color:var(--text);font-weight:600}
 .gradebook tbody .gb-name{display:table-cell}
-.gradebook tbody .gb-name .small{display:block;margin-top:2px;font-weight:700}
-.gb-due{display:block;margin-top:2px;font-weight:700;color:var(--muted);white-space:nowrap}
-.gb-step{display:block;margin-top:2px;font-weight:700;color:var(--muted);max-width:140px;margin-inline:auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.gb-cell{display:inline-flex;flex-direction:column;align-items:center;gap:var(--s1);min-width:64px;min-height:44px;justify-content:center;color:var(--ink);text-decoration:none;border-radius:10px;padding:2px 6px}
-.gb-cell:hover{background:var(--blue-50);text-decoration:none}
-.gb-num{font-weight:900;font-variant-numeric:tabular-nums}
-.gb-done{background:color-mix(in srgb,var(--lime-bg) 70%,transparent)}
-.gb-late{background:color-mix(in srgb,var(--danger) 10%,transparent)}
+.gradebook tbody .gb-name .small{display:block;margin-top:2px;font-weight:600}
+.gb-due{display:block;margin-top:2px;font-weight:600;color:var(--muted);white-space:nowrap}
+.gb-step{display:block;margin-top:2px;font-weight:600;color:var(--muted);max-width:140px;margin-inline:auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gb-cell{display:inline-flex;flex-direction:column;align-items:center;gap:var(--s1);min-width:64px;min-height:44px;justify-content:center;color:var(--text);text-decoration:none;border-radius:10px;padding:2px 6px}
+.gb-cell:hover{background:var(--hover);text-decoration:none}
+.gb-num{font-weight:800;font-variant-numeric:tabular-nums}
+.gb-done{background:var(--ok-bg)}
+.gb-late{background:var(--bad-bg)}
 .gb-late .gb-num::after{content:" ⏰"}
 .gb-all{font-variant-numeric:tabular-nums}
 .gb-key{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s5);align-items:center}
 .gb-key>span{display:inline-flex;align-items:center;gap:6px}
 .pbar{display:inline-block;width:56px;height:6px;border-radius:999px;background:var(--line);overflow:hidden;vertical-align:middle}
-.pbar>span{display:block;height:100%;border-radius:inherit;background:var(--blue)}
+.pbar>span{display:block;height:100%;border-radius:inherit;background:var(--accent-line)}
 .gb-done .pbar>span,.lessonprogress.all .pbar>span{background:var(--ok)}
 .st{display:inline-flex;align-items:center;gap:6px;justify-content:center;min-height:28px}
 .st-none{color:var(--muted)}
-.st-score{font-weight:800;font-variant-numeric:tabular-nums}
+.st-score{font-weight:700;font-variant-numeric:tabular-nums}
 .gradebook td>.small{display:block;margin-top:2px}
 
 /* ---------- Progress: written answers (teachers) ---------- */
-.q-text{font-weight:800;padding:var(--s3) var(--s4);border-radius:12px;background:var(--blue-50);color:var(--ink)}
+.q-text{font-weight:700;padding:var(--s3) var(--s4);border-radius:var(--r-sm);background:var(--accent-soft);color:var(--text)}
 .q-text p{margin:0}
 .answerlist{display:grid;gap:var(--s3)}
-.answercard{display:grid;gap:var(--s3);padding:var(--s4);border-radius:14px;box-shadow:inset 0 0 0 2px var(--line)}
+.answercard{display:grid;gap:var(--s3);padding:var(--s4);border-radius:var(--r-sm);box-shadow:inset 0 0 0 2px var(--line)}
 .answercard.is-read{box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--line) 60%,transparent)}
 .ac-head{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2) var(--s3)}
 .ac-head .pp{margin-inline-end:auto}
@@ -294,18 +297,18 @@ form.inline{display:inline-flex;gap:var(--s2);align-items:center;margin:0}
 .ac-form textarea{min-height:64px;field-sizing:content}
 
 /* ---------- Progress: the student's side ---------- */
-.lessonprogress{display:flex;align-items:center;gap:var(--s4);padding:var(--s3) var(--s4);border-radius:var(--r);background:var(--card);box-shadow:var(--shadow);font-weight:900}
+.lessonprogress{display:flex;align-items:center;gap:var(--s4);padding:var(--s3) var(--s4);border-radius:var(--r);background:var(--card);box-shadow:var(--shadow);font-weight:800}
 .lessonprogress .pbar{flex:1;width:auto;height:10px}
-.stepstate{display:inline-flex;align-items:center;gap:4px;flex:none;padding:2px 10px;border-radius:999px;background:var(--card-2);box-shadow:inset 0 0 0 1px var(--line);font-size:.8rem;font-weight:800;color:var(--ink-2);white-space:nowrap}
-.stepstate.is-done{background:color-mix(in srgb,var(--lime-bg) 80%,var(--card));color:var(--ok);box-shadow:none}
+.stepstate{display:inline-flex;align-items:center;gap:4px;flex:none;padding:2px 10px;border-radius:999px;background:var(--card-2);box-shadow:inset 0 0 0 1px var(--line);font-size:.8rem;font-weight:700;color:var(--text-2);white-space:nowrap}
+.stepstate.is-done{background:var(--ok-bg);color:var(--ok);box-shadow:none}
 .sc-head>.stepstate{margin-inline-start:auto;margin-top:2px}
 .cl-row>.stepstate{margin-inline-start:auto}
-.stepcard.is-done .sc-num{background:color-mix(in srgb,var(--lime-bg) 80%,var(--card));color:var(--ok)}
-.sc-score{margin:0;font-weight:800}
+.stepcard.is-done .sc-num{background:var(--ok-bg);color:var(--ok)}
+.sc-score{margin:0;font-weight:700}
 .answerform{display:grid;gap:var(--s2)}
 .answerform .row{gap:var(--s3)}
 .answerform textarea{field-sizing:content;min-height:110px}
-.feedback{display:grid;gap:var(--s1);padding:var(--s3) var(--s4);border-radius:12px;background:color-mix(in srgb,var(--sun) 18%,var(--card))}
+.feedback{display:grid;gap:var(--s1);padding:var(--s3) var(--s4);border-radius:var(--r-sm);background:var(--spark-soft)}
 .feedback p{margin:0;white-space:pre-wrap}
 
 /* ---- School pages, My classes, class Students/Settings (batch 2) ---- */
@@ -314,7 +317,7 @@ form.inline{display:inline-flex;gap:var(--s2);align-items:center;margin:0}
 .cc-link{color:inherit;text-decoration:none}
 .cc-link::after{content:"";position:absolute;inset:0;border-radius:inherit}
 .classcard:has(.cc-link:focus-visible) .cc-link{outline:none}
-.classcard:has(.cc-link:focus-visible){outline:3px solid var(--blue);outline-offset:2px}
+.classcard:has(.cc-link:focus-visible){outline:3px solid var(--focus);outline-offset:2px}
 .classcard a.chip-s{position:relative;z-index:1;text-decoration:none;font-size:.8rem;padding:3px 10px}
 .classcard a.chip-s:hover{text-decoration:underline}
 /* Archived classes list (My classes) and the archived banner on a class. */
@@ -331,13 +334,13 @@ main.wrap>.archbanner+.tabs{margin-top:var(--s4)}
 .panelhead>form{margin:0}
 /* Two-choice radios (add staff). */
 fieldset.choice{border:0;padding:0;margin:0;display:flex;flex-direction:row;flex-wrap:wrap;gap:var(--s2) var(--s3)}
-fieldset.choice>legend{font-weight:800;padding:0;margin-bottom:var(--s2)}
-fieldset.choice>label{display:flex;align-items:center;gap:var(--s2);min-height:44px;padding:var(--s2) var(--s4);border-radius:14px;box-shadow:inset 0 0 0 2px var(--line);font-weight:700;cursor:pointer}
-fieldset.choice>label:has(input:checked){box-shadow:inset 0 0 0 2px var(--blue);background:var(--blue-50)}
+fieldset.choice>legend{font-weight:700;padding:0;margin-bottom:var(--s2)}
+fieldset.choice>label{display:flex;align-items:center;gap:var(--s2);min-height:44px;padding:var(--s2) var(--s4);border-radius:var(--r-sm);box-shadow:inset 0 0 0 2px var(--line);font-weight:600;cursor:pointer}
+fieldset.choice>label:has(input:checked){box-shadow:inset 0 0 0 2px var(--accent-line);background:var(--accent-soft)}
 /* Tick list of students already at the school. */
 fieldset.picklist{border:0;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,280px),1fr));gap:var(--s2)}
-fieldset.picklist>label{display:flex;align-items:center;flex-wrap:wrap;gap:var(--s1) var(--s2);min-height:48px;padding:var(--s2) var(--s3);border-radius:12px;box-shadow:inset 0 0 0 2px var(--line);cursor:pointer}
-fieldset.picklist>label:has(input:checked){box-shadow:inset 0 0 0 2px var(--blue);background:var(--blue-50)}
+fieldset.picklist>label{display:flex;align-items:center;flex-wrap:wrap;gap:var(--s1) var(--s2);min-height:48px;padding:var(--s2) var(--s3);border-radius:var(--r-sm);box-shadow:inset 0 0 0 2px var(--line);cursor:pointer}
+fieldset.picklist>label:has(input:checked){box-shadow:inset 0 0 0 2px var(--accent-line);background:var(--accent-soft)}
 fieldset.picklist input{width:20px;height:20px;flex:none}
 /* ⋯ menus inside tables open in the row (a table scrolls sideways, so a floating menu would be cut off). */
 .rtable .inline-menu .menu{position:static;width:min(100%,340px);min-width:260px;margin-top:var(--s2);white-space:normal;box-shadow:inset 0 0 0 2px var(--line)}
@@ -354,15 +357,15 @@ fieldset.picklist input{width:20px;height:20px;flex:none}
 
 /* ---- Progress pages (batch 2) ---- */
 /* Date chips: '🔒 Opens …' (plain), '📅 Due today' (.warn, amber) and '⏰ Late' (.bad, red). */
-.chip-s.bad{background:color-mix(in srgb,var(--danger) 14%,var(--card));color:var(--bad-ink);box-shadow:none}
+.chip-s.bad{background:var(--bad-bg);color:var(--bad-ink);box-shadow:none}
 .lp-meta{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s1) var(--s3)}
 /* Gradebook column heads: the lesson's dates under its title; lessons that haven't opened are greyed out. */
-.gb-dates{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:var(--s1) 6px;margin-top:var(--s1);font-weight:700;color:var(--muted)}
+.gb-dates{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:var(--s1) 6px;margin-top:var(--s1);font-weight:600;color:var(--muted)}
 .gradebook th.gb-locked,.gradebook td.gb-locked{background:color-mix(in srgb,var(--line) 30%,transparent);color:var(--muted)}
-.gradebook th.gb-locked a{color:var(--ink-2)}
-.gradebook td.gb-locked{font-weight:900}
+.gradebook th.gb-locked a{color:var(--text-2)}
+.gradebook td.gb-locked{font-weight:800}
 /* Answers to review, per lesson, above the gradebook. */
-.gb-review a{font-weight:800}
+.gb-review a{font-weight:700}
 /* One lesson's progress: its title and buttons under the class tabs. */
 .lphead{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:var(--s3) var(--s4)}
 .lphead>div:first-child{flex:1 1 280px;min-width:0}
@@ -376,8 +379,8 @@ fieldset.picklist input{width:20px;height:20px;flex:none}
 .gb-sub a.chip-s:hover{text-decoration:underline}
 /* A link to an answer (#a-…) or a student row (#s-…) scrolls it clear of the top bar and highlights it. */
 .answercard,.gradebook tbody tr,#answers,#to-review{scroll-margin-top:96px}
-.answercard:target{box-shadow:inset 0 0 0 3px var(--blue)}
-.gradebook tbody tr:target>*{background:var(--blue-50)}
+.answercard:target{box-shadow:inset 0 0 0 3px var(--accent-line)}
+.gradebook tbody tr:target>*{background:var(--accent-soft)}
 fieldset.picklist>label{flex-wrap:nowrap;align-items:flex-start}
 fieldset.picklist>label>input{margin-top:2px}
 fieldset.picklist>label>span{flex:1;min-width:0}
@@ -388,26 +391,26 @@ fieldset.picklist>label>span{flex:1;min-width:0}
 .libdrop>p{margin:var(--s3) 0 0}
 /* Editor header: Assign, Make a copy, Share with my school. */
 .pagehead>.edacts{gap:var(--s2)}
-.livenote a{font-weight:900}
+.livenote a{font-weight:800}
 /* Step form: only the fields for the chosen type. data-kind comes from the server and schools.js keeps it in step with
    the Type select; the :has() part follows the select too, so without JS picking "Play a game" still shows the Game field. */
 .stepgrid [data-for-kind][hidden]{display:none!important}
 .stepgrid[data-kind]:not([data-kind="game"]):not(:has(>.f-k option[value="game"]:checked))>.f-g{display:none}
 .stepgrid[data-kind]:not([data-kind="game"]):not(:has(>.f-k option[value="game"]:checked)){grid-template-areas:"k m" "t t" "b b" "a a"}
 @media (min-width:720px){.stepgrid[data-kind]:not([data-kind="game"]):not(:has(>.f-k option[value="game"]:checked)){grid-template-areas:"k t m" "b b b" "a a a"}}
-.f-glink{align-self:flex-start;font-weight:800;min-height:32px;display:inline-flex;align-items:center}
+.f-glink{align-self:flex-start;font-weight:700;min-height:32px;display:inline-flex;align-items:center}
 .stepgrid{align-items:start} /* the Game field can be taller (its link): the fields beside it stay level at the top */
 /* Editor: the classes the lesson is in, one line each. */
 .assignedlist{display:grid;gap:var(--s2);margin:0;padding:0;list-style:none}
-.assignedlist a{font-weight:800}
+.assignedlist a{font-weight:700}
 /* Class Lessons tab: each row opens the lesson's progress; "Change dates" links land on the row (#cl-<id>). */
-.cl-stats{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2);font-weight:700;color:var(--ink-2)}
+.cl-stats{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2);font-weight:600;color:var(--text-2)}
 .cl-main>.cl-stats{margin-top:6px}
 .cl-meta{row-gap:var(--s2)}
 /* Chips side by side keep 8px (they are boxes too). */
 .lr-chips{gap:var(--s2)}
 .cl-row{scroll-margin-top:calc(var(--top) + var(--s4))}
-.cl-row:target{box-shadow:inset 0 0 0 3px var(--blue);background:var(--blue-50)}
+.cl-row:target{box-shadow:inset 0 0 0 3px var(--accent-line);background:var(--accent-soft)}
 .empty .emptyacts{justify-content:center;margin-top:var(--s2)}
 .cl-more>.allin{margin:0;flex:1 1 100%}
 .cl-more>.libdrop[open]{background:transparent;box-shadow:inset 0 0 0 2px var(--line)}
@@ -417,8 +420,14 @@ fieldset.picklist>label>span{flex:1;min-width:0}
 }
 
 /* ---- Review fixes ---- */
-/* Long action labels (and translations) wrap inside the button instead of pushing the page sideways on phones. */
-.formacts>.btn,.panelhead .btn,.pagehead .row>.btn,.emptyacts>.btn{white-space:normal;text-align:center;max-width:100%}
+/* Long action labels (and translations) wrap inside the button instead of pushing the page sideways on phones; a wrapped
+   label keeps room above and below inside the button. */
+.formacts>.btn,.panelhead .btn,.pagehead .row>.btn,.emptyacts>.btn,.ac-form .btn,.answerform .btn{white-space:normal;text-align:center;max-width:100%;line-height:1.2;padding-block:8px}
+.answercard,.ac-form{min-width:0}
+/* The add-staff and new-accounts forms: the action row spans the form, so its long button stays on one line when it can. */
+.staffform>.formacts,form[data-api$="/students"]>.formacts{grid-column:1/-1}
+/* My classes cards: the footer sits at the bottom of every card (beating the panel flow rule) and its chips keep 8px. */
+.classgrid>.classcard>.cc-meta{margin-top:auto;row-gap:var(--s2)}
 @media (max-width:600px){.cl-more>.btn{white-space:normal;text-align:center;max-width:100%}}
 /* A visually hidden heading first in a panel doesn't push the first visible item down. */
 :where(section.panel)>.sr-only:first-child+*{margin-top:0}

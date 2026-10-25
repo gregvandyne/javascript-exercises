@@ -3,8 +3,10 @@
 import { test, expect } from '@playwright/test';
 import { signup, login, ownIp } from './helpers.js';
 
-const DARK_BG = 'rgb(13, 19, 36)';     // --bg in the dark token blocks of app.css
-const LIGHT_BG = 'rgb(244, 247, 252)'; // --bg in :root
+const DARK_BG = 'rgb(20, 20, 20)';     // --bg in the dark token blocks of app.css (Ink)
+const LIGHT_BG = 'rgb(244, 241, 230)'; // --bg in :root
+/** [content, media] of each theme-color meta (the browser toolbar takes the top bar's colour). */
+const themeColors = page => page.evaluate(() => [...document.querySelectorAll('meta[name="theme-color"]')].map(m => [m.content, m.media || null]));
 const html = page => page.locator('html');
 const bodyBg = page => page.evaluate(() => getComputedStyle(document.body).backgroundColor);
 const menu = page => page.locator('.topbar .themepick');
@@ -25,6 +27,7 @@ test('picking Dark in the top bar switches at once, saves, and survives a reload
   expect(await bodyBg(page)).toBe(DARK_BG);
   expect(await page.evaluate(() => window.__samePage), 'no reload: the switch is instant').toBe(true);
   await expect(page.locator('meta[name="color-scheme"]')).toHaveAttribute('content', 'dark');
+  expect(await themeColors(page), 'one toolbar colour: Ink').toEqual([['#141414', null]]);
   await expect(menu(page)).not.toHaveAttribute('open', '');
   await expect(menu(page).locator('summary')).toHaveAttribute('aria-label', 'Theme: Dark');
   await expect(menu(page).locator('summary')).toBeFocused();
@@ -60,6 +63,7 @@ test('"Same as my device" follows the device both ways; Light and Dark ignore it
   await saved;
   await expect(html(page)).not.toHaveAttribute('data-theme', /./);
   await expect(page.locator('meta[name="color-scheme"]')).toHaveAttribute('content', 'light dark');
+  expect(await themeColors(page), 'one toolbar colour per device scheme').toEqual([['#FFFDF2', '(prefers-color-scheme: light)'], ['#141414', '(prefers-color-scheme: dark)']]);
   expect(await bodyBg(page)).toBe(LIGHT_BG);
   await page.emulateMedia({ colorScheme: 'dark' });
   expect(await bodyBg(page)).toBe(DARK_BG);
@@ -111,11 +115,11 @@ test('a choice on the Me page applies at once and follows the account to another
 });
 
 test('the theme button fits the top bar on phones and desktops', async ({ browser }) => {
-  for (const [width, shown] of [[320, false], [390, true], [820, true], [1280, true]]) {
+  for (const width of [320, 360, 390, 820, 1280]) {
     const ctx = await browser.newContext({ viewport: { width, height: 800 } }); const page = await ctx.newPage();
     await ownIp(page);
     await page.goto('/');
-    await expect(menu(page).locator('summary'), `${width}px`).toBeVisible({ visible: shown });
+    await expect(menu(page).locator('summary'), `${width}px`).toBeVisible();
     const r = await page.evaluate(() => {
       const items = [...document.querySelector('.topbar').children].filter(e => e.checkVisibility() && !e.classList.contains('skip'))
         .map(e => e.getBoundingClientRect()).sort((a, b) => a.left - b.left);

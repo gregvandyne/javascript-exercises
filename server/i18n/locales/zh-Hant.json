@@ -1,10 +1,9 @@
 {
   "layout": {
-    "titleHome": "Magic Cups · 玩遊戲、做遊戲",
-    "titleWith": "{title} · Magic Cups",
-    "description": "在 Magic Cups 免費玩遊戲，還能做出你自己的遊戲。",
+    "titleHome": "Oomba Academy · 玩遊戲、做遊戲",
+    "titleWith": "{title} · Oomba Academy",
+    "description": "在 Oomba Academy 免費玩遊戲，還能做出你自己的遊戲。",
     "skip": "跳到遊戲",
-    "logoLabel": "Magic Cups 首頁",
     "mainNav": "主選單",
     "signIn": "登入",
     "meLabel": "我的：{name}",
@@ -26,7 +25,7 @@
       "dark": "深色"
     },
     "footer": {
-      "tagline": "© Magic Cups · 免費玩、免費做",
+      "tagline": "© Oomba Academy · 免費玩、免費做",
       "safety": "安全",
       "parents": "給大人",
       "builders": "給創作者"
@@ -76,8 +75,8 @@
       "realName": "這看起來像真實姓名。請換一個好玩的自創名字。"
     },
     "text": {
-      "notAllowed": "Magic Cups 上不能使用這段文字。",
-      "personal": "請不要在 Magic Cups 上寫電話號碼、電子郵件、地址和連結。"
+      "notAllowed": "Oomba Academy 上不能使用這段文字。",
+      "personal": "請不要在 Oomba Academy 上寫電話號碼、電子郵件、地址和連結。"
     }
   },
   "auth": {
@@ -94,10 +93,10 @@
       "headingSignup": "建立免費帳號",
       "headingLogin": "歡迎回來！",
       "introSignup": "只要一個好玩的名字和密碼，不需要電子郵件。",
-      "introLogin": "用你的 Magic Cups 名字和密碼登入。",
+      "introLogin": "用你的 Oomba Academy 名字和密碼登入。",
       "upgradeNotice": "你現在以 <b>{name}</b> 的身分在玩。你存下來的東西都會一起帶過去。",
       "nameLabelSignup": "取一個好玩的名字",
-      "nameLabelLogin": "你的 Magic Cups 名字",
+      "nameLabelLogin": "你的 Oomba Academy 名字",
       "namePlaceholder": "例如 RocketPanda",
       "nameHint": "3 到 16 個英文字母或數字。不要用你的真實姓名。",
       "passwordLabel": "密碼",
@@ -147,13 +146,13 @@
     },
     "language": {
       "heading": "語言",
-      "text": "Magic Cups 的選單和小幫手都會使用這種語言。",
+      "text": "Oomba Academy 的選單和小幫手都會使用這種語言。",
       "label": "語言",
       "save": "儲存"
     },
     "theme": {
       "heading": "外觀",
-      "text": "選擇淺色或深色畫面，或跟著你的裝置。",
+      "text": "選擇淺色或深色畫面，或跟你的裝置一樣。",
       "save": "儲存",
       "invalid": "請選一種主題。"
     },
@@ -170,7 +169,7 @@
     },
     "photo": {
       "heading": "個人照片",
-      "text": "用照片代替你的表情符號。只有你、你的朋友和 Magic Cups 團隊看得到，其他人會看到你的表情符號。",
+      "text": "用照片代替你的表情符號。只有你、你的朋友和 Oomba Academy 團隊看得到，其他人會看到你的表情符號。",
       "guest": "建立免費帳號，就能加上個人照片。",
       "upload": "上傳照片",
       "change": "更換照片",
@@ -179,7 +178,7 @@
         "guest": "建立免費帳號，就能加上個人照片。",
         "badType": "這個檔案不是能用的照片，換一張試試。",
         "tooBig": "這張照片太大了，換一張試試。",
-        "unsafe": "這張照片不適合 Magic Cups，換一張試試。",
+        "unsafe": "這張照片不適合 Oomba Academy，換一張試試。",
         "personal_info": "這張照片拍到了名字、學校或地址等私人資料，換一張試試。",
         "resting": "照片需要通過安全檢查，但現在檢查正在休息，請稍後再試。"
       }
@@ -278,8 +277,8 @@
   "info": {
     "safety": {
       "title": "安全",
-      "description": "Magic Cups 怎麼保護小朋友：遊戲關在上鎖的盒子裡、每個遊戲都經過檢查、只能和現實生活中認識的朋友聊天。",
-      "heading": "Magic Cups 安全守則",
+      "description": "Oomba Academy 怎麼保護小朋友：遊戲關在上鎖的盒子裡、每個遊戲都經過檢查、只能和現實生活中認識的朋友聊天。",
+      "heading": "Oomba Academy 安全守則",
       "box": {
         "h": "遊戲都放在盒子裡",
         "p1": "每個遊戲都在一個上鎖的盒子（沙盒）裡執行。遊戲不能連上網路、看不到你的帳號，也不能打開其他頁面。"
@@ -300,15 +299,15 @@
       },
       "ads": {
         "h": "沒有廣告",
-        "p1": "Magic Cups 沒有任何廣告。這裡不賣東西，也不會有東西跳出來擋住遊戲。"
+        "p1": "Oomba Academy 沒有任何廣告。這裡不賣東西，也不會有東西跳出來擋住遊戲。"
       }
     },
     "parents": {
       "title": "給大人",
-      "description": "Magic Cups 是什麼、保存哪些資料、好友和聊天如何運作，以及 AI 小幫手如何確保適合兒童。",
+      "description": "Oomba Academy 是什麼、保存哪些資料、好友和聊天如何運作，以及 AI 小幫手如何確保適合兒童。",
       "heading": "給大人",
       "what": {
-        "h": "Magic Cups 是什麼？",
+        "h": "Oomba Academy 是什麼？",
         "p1": "一個免費網站，孩子可以在這裡玩網頁遊戲，也可以向 AI 小幫手描述想法，製作自己的遊戲。不需下載、沒有購買、沒有轉蛋（戰利品箱），也沒有需要花真錢的遊戲內貨幣。"
       },
       "data": {
@@ -330,7 +329,7 @@
     },
     "sdk": {
       "title": "給創作者",
-      "description": "每個 Magic Cups 遊戲都有的小工具：存檔、分數、特效、音效和玩家的語言。",
+      "description": "每個 Oomba Academy 遊戲都有的小工具：存檔、分數、特效、音效和玩家的語言。",
       "heading": "遊戲 SDK",
       "brb": {
         "p1": "每個遊戲都有一個叫做 BRB 的小工具。{get} 和 {set} 可以幫每個玩家儲存進度。localStorage 也能用，而且會存到雲端。",
@@ -388,7 +387,7 @@
     },
     "shareText": {
       "private": "只有你能打開這個遊戲。改成「好友」或「所有人」就能分享。",
-      "friends": "只有你在 Magic Cups 上的好友能打開這個連結。",
+      "friends": "只有你在 Oomba Academy 上的好友能打開這個連結。",
       "public": "任何拿到連結的人都能玩這個遊戲。",
       "school": "學校裡的每個人都能找到並玩它。"
     },
@@ -492,8 +491,8 @@
   },
   "profile": {
     "notFound": "找不到這位玩家。",
-    "description": "{name} 在 Magic Cups",
-    "team": "Magic Cups 團隊",
+    "description": "{name} 在 Oomba Academy",
+    "team": "Oomba Academy 團隊",
     "yourFriend": "你的好友",
     "badgesLabel": "徽章",
     "changeLook": "換我的造型",
@@ -588,7 +587,7 @@
     "cant": {
       "guest": "建立免費帳號才能和好友聊天。",
       "banned": "你的帳號已暫停，所以聊天已關閉。",
-      "missing": "這位玩家現在不在 Magic Cups 上。",
+      "missing": "這位玩家現在不在 Oomba Academy 上。",
       "self": "你不能和自己聊天。選一位好友吧！",
       "guest_other": "你只能和有免費帳號的好友聊天。",
       "not_friends": "你只能和好友聊天。請先用好友代碼加 {name}，而且他們要答應才行。",
@@ -613,12 +612,12 @@
     },
     "blocked": {
       "words": "哎呀！這則訊息裡有不允許的字。試著用更友善的方式說說看。",
-      "phone": "我們沒有傳送。在 Magic Cups 上，電話號碼要保密，就算是好友也一樣。",
-      "email": "我們沒有傳送。在 Magic Cups 上，電子郵件地址要保密。",
+      "phone": "我們沒有傳送。在 Oomba Academy 上，電話號碼要保密，就算是好友也一樣。",
+      "email": "我們沒有傳送。在 Oomba Academy 上，電子郵件地址要保密。",
       "link": "我們沒有傳送。聊天中不能傳連結。改用 🎮 按鈕分享遊戲吧。",
       "address": "我們沒有傳送。家裡的地址要保密。絕對不要說出你住在哪裡。",
-      "contact": "我們沒有傳送。請只在 Magic Cups 上聊天：不要提其他 App、學校或約見面。",
-      "handle": "我們沒有傳送。請只在 Magic Cups 上聊天：不要給其他 App 的帳號名稱。"
+      "contact": "我們沒有傳送。請只在 Oomba Academy 上聊天：不要提其他 App、學校或約見面。",
+      "handle": "我們沒有傳送。請只在 Oomba Academy 上聊天：不要給其他 App 的帳號名稱。"
     },
     "report": {
       "thanks": "謝謝你告訴我們。我們已經把那則訊息藏起來了，團隊裡的大人會去看看。",
@@ -655,8 +654,8 @@
     "startedFrom": "從「{title}」範本開始",
     "shareText": {
       "private": "只有你能玩。",
-      "friends": "只有你和你在 Magic Cups 上的好友能玩。",
-      "public": "經過快速安全檢查後，Magic Cups 上的所有人都能找到並玩它。",
+      "friends": "只有你和你在 Oomba Academy 上的好友能玩。",
+      "public": "經過快速安全檢查後，Oomba Academy 上的所有人都能找到並玩它。",
       "school": "學校裡的每個人都能找到並玩它。"
     },
     "status": {
@@ -772,27 +771,27 @@
     "refusals": {
       "tryThese": "要試試這些嗎？",
       "rules": {
-        "message": "我一定會遵守 Magic Cups 的規則，而且沒有人能改變它們。不過我很樂意和你一起做遊戲！",
+        "message": "我一定會遵守 Oomba Academy 的規則，而且沒有人能改變它們。不過我很樂意和你一起做遊戲！",
         "suggestion": "告訴我你想要的遊戲，像是「一隻跳過河的狐狸」。"
       },
       "links": {
-        "message": "Magic Cups 的遊戲都待在遊戲裡面，所以不能連到網站、影片或頻道。",
+        "message": "Oomba Academy 的遊戲都待在遊戲裡面，所以不能連到網站、影片或頻道。",
         "suggestion": "在遊戲裡做一扇通往隱藏關卡的秘密門，怎麼樣？"
       },
       "chat": {
-        "message": "Magic Cups 的遊戲裡沒有玩家之間的聊天，這樣大家才安全。",
+        "message": "Oomba Academy 的遊戲裡沒有玩家之間的聊天，這樣大家才安全。",
         "suggestion": "改成用大大的表情符號按鈕互相加油，怎麼樣？"
       },
       "personal": {
-        "message": "Magic Cups 的遊戲絕對不會問名字、地址、學校、生日或其他私人資料。我們把這些當作秘密吧！",
+        "message": "Oomba Academy 的遊戲絕對不會問名字、地址、學校、生日或其他私人資料。我們把這些當作秘密吧！",
         "suggestion": "改成從清單裡選一個好笑的英雄名字，怎麼樣？"
       },
       "profanity": {
-        "message": "在 Magic Cups，我們要說友善的話喔。",
+        "message": "在 Oomba Academy，我們要說友善的話喔。",
         "suggestion": "我們要做什麼遊戲呢？也許是一個收集襪子的搞笑機器人？"
       },
       "sexual": {
-        "message": "這個我不能做。Magic Cups 的遊戲是給小朋友和家人玩的。",
+        "message": "這個我不能做。Oomba Academy 的遊戲是給小朋友和家人玩的。",
         "suggestion": "來一個跳搞笑舞步的舞會遊戲，怎麼樣？"
       },
       "selfharm": {
@@ -800,15 +799,15 @@
         "suggestion": "只要你想，我隨時都在這裡陪你做開心的遊戲，像是一隻收集星星的暖呼呼小狗。"
       },
       "hate": {
-        "message": "Magic Cups 是屬於每個人的，所以我不能做對別人不友善的遊戲。",
+        "message": "Oomba Academy 是屬於每個人的，所以我不能做對別人不友善的遊戲。",
         "suggestion": "來一個大家互相幫忙、一起贏的團隊遊戲，怎麼樣？"
       },
       "violence": {
-        "message": "這對 Magic Cups 來說太粗暴了。卡通式的輕輕一敲可以，但不能有血，也不能傷害真實的人。",
+        "message": "這對 Oomba Academy 來說太粗暴了。卡通式的輕輕一敲可以，但不能有血，也不能傷害真實的人。",
         "suggestion": "用枕頭敲敲搞笑機器人，或用泡泡槍打黏液，怎麼樣？"
       },
       "scary": {
-        "message": "我們來做好玩、不可怕的遊戲吧。Magic Cups 沒有恐怖內容或突然嚇人的畫面。",
+        "message": "我們來做好玩、不可怕的遊戲吧。Oomba Academy 沒有恐怖內容或突然嚇人的畫面。",
         "suggestion": "一隻收集糖果、好笑又友善的鬼，怎麼樣？"
       },
       "drugs": {
@@ -816,7 +815,7 @@
         "suggestion": "來一間混合冒泡顏色的魔藥實驗室，怎麼樣？"
       },
       "gambling": {
-        "message": "Magic Cups 沒有賭博、賭場或轉蛋。",
+        "message": "Oomba Academy 沒有賭博、賭場或轉蛋。",
         "suggestion": "來一場靠聰明贏得星星的尋寶遊戲，怎麼樣？"
       },
       "real_people": {
@@ -828,7 +827,7 @@
         "suggestion": "來一個原創英雄，像是一隻叫「小跳」的跳跳狐狸，怎麼樣？🦊"
       },
       "other": {
-        "message": "這個我沒辦法在 Magic Cups 上做。",
+        "message": "這個我沒辦法在 Oomba Academy 上做。",
         "suggestion": "來一個勇敢的小機器人去冒險的遊戲，怎麼樣？"
       },
       "chips": {
@@ -875,9 +874,9 @@
     "textTooBig": "文字檔最大 200 KB。",
     "fileTooBig": "圖片和 PDF 最大 5 MB。",
     "image": {
-      "real_faces": "那張圖片裡有真實的人，所以我不能留著它。在 Magic Cups 上，真實的臉要保密。試試看用圖畫或玩具吧！",
+      "real_faces": "那張圖片裡有真實的人，所以我不能留著它。在 Oomba Academy 上，真實的臉要保密。試試看用圖畫或玩具吧！",
       "personal_info": "那張圖片裡有名字、學校或地址之類的私人資料，所以我不能留著它。試試看用圖畫吧！",
-      "unsafe": "那張圖片不適合 Magic Cups，所以我不能留著它。換一張圖片試試看！",
+      "unsafe": "那張圖片不適合 Oomba Academy，所以我不能留著它。換一張圖片試試看！",
       "resting": "圖片需要經過安全檢查，但它要休息到明天。晚點再試一次，或用文字描述你的點子吧！"
     }
   },
@@ -980,7 +979,7 @@
       "cancel": "取消"
     },
     "studio": {
-      "docTitle": "工作室：{title} · Magic Cups",
+      "docTitle": "工作室：{title} · Oomba Academy",
       "turns": "今天還剩 {left} 次（共 {total} 次）",
       "fixButton": "請小幫手修好",
       "fixMessage": "請修好版本 {number} 的安全檢查問題：",
@@ -1211,7 +1210,7 @@
       "newCodeConfirm": "要產生新代碼嗎？舊代碼將會失效。",
       "noStudents": "還沒有學生",
       "newAccounts": "新的學校帳號",
-      "newAccountsHint": "每位學生會取得一組 Magic Cups 名字和密碼，可印成登入卡。真實姓名只有老師看得到。",
+      "newAccountsHint": "每位學生會取得一組 Oomba Academy 名字和密碼，可印成登入卡。真實姓名只有老師看得到。",
       "addTeacher": "新增老師",
       "moveTo": "移到班級",
       "move": "移動",
@@ -1243,7 +1242,7 @@
       "moved": "已將 {name} 移到 {class}",
       "reprint": "重新產生全班的登入卡",
       "reprintConfirm": "{count, plural, other {要為 # 位使用學校帳號的學生產生新密碼嗎？}}舊密碼將會失效，他們也會被登出。",
-      "joinCodeTextOn": "學生在「我的班級」頁面（我的 → 我的班級）輸入這組代碼。擁有 {school} 學校帳號的學生會立即加入；使用自己 Magic Cups 帳號的學生則需等你核准。",
+      "joinCodeTextOn": "學生在「我的班級」頁面（我的 → 我的班級）輸入這組代碼。擁有 {school} 學校帳號的學生會立即加入；使用自己 Oomba Academy 帳號的學生則需等你核准。",
       "joinCodeTextOff": "擁有 {school} 學校帳號的學生在「我的班級」頁面輸入這組代碼，就能立即加入。",
       "noTeacher": "這個班級還沒有老師，請在下方新增。",
       "removeTeacherConfirm": "要將 {name} 從這個班級移除嗎？這個班級會從對方的「我的班級」中消失。",
@@ -1253,7 +1252,7 @@
       "onlyStaff": "只能新增 {school} 的教職員。",
       "askAdmin": "請校務管理員（{admins}）在學校的「成員」分頁新增對方。",
       "addStaffLink": "在「成員」分頁新增教職員",
-      "askNoAdmin": "{school} 還沒有校務管理員。請 Magic Cups 團隊指派一位；之後校務管理員就能在學校的「成員」分頁新增教職員。",
+      "askNoAdmin": "{school} 還沒有校務管理員。請 Oomba Academy 團隊指派一位；之後校務管理員就能在學校的「成員」分頁新增教職員。",
       "archivedToast": "已封存 {name}",
       "lessons": "課程",
       "lastActivity": "最近活動",
@@ -1278,7 +1277,7 @@
       "staff": "教職員",
       "students": "學生",
       "name": "姓名",
-      "username": "Magic Cups 名字",
+      "username": "Oomba Academy 名字",
       "role": "身分",
       "grade": "年級",
       "schoolAccount": "學校帳號",
@@ -1286,7 +1285,7 @@
       "addStaff": "新增老師或校務管理員",
       "addStaffText": "請使用學生和同事熟知的真實姓名。學校帳號會遵守學校的安全規則；想公開分享遊戲的教職員請使用個人帳號。",
       "realName": "真實姓名",
-      "existing": "對方的 Magic Cups 名字",
+      "existing": "對方的 Oomba Academy 名字",
       "existingPlaceholder": "例如：TeacherLin",
       "addStudents": "將學生加入學校",
       "addStudentsText": "每行一個名字。每位學生會取得一個學校帳號和可列印的登入卡。",
@@ -1304,7 +1303,7 @@
       "newSchool": "下一步：指派校務管理員。之後校務管理員就能新增老師、班級和學生。",
       "account": "對方要如何登入？",
       "accountNew": "為對方建立學校帳號",
-      "accountExisting": "對方已經有 Magic Cups 帳號",
+      "accountExisting": "對方已經有 Oomba Academy 帳號",
       "createStaff": "建立帳號和登入卡",
       "addToSchool": "加入學校",
       "added": "已將 {name} 新增為{role}",
@@ -1317,7 +1316,7 @@
       "saved": "設定已儲存",
       "teachersCreate": "老師可以自行建立班級",
       "ownAccounts": "學生可以用個人帳號加入",
-      "ownAccountsHint": "已經在使用 Magic Cups 的學生輸入班級代碼後，由老師逐一核准。關閉時，班級代碼只適用於學校帳號。",
+      "ownAccountsHint": "已經在使用 Oomba Academy 的學生輸入班級代碼後，由老師逐一核准。關閉時，班級代碼只適用於學校帳號。",
       "gameSite": "學校帳號在遊戲網站上的設定",
       "gameSiteText": "這些規則適用於學校建立的帳號（學生和教職員）。用個人帳號加入的學生會保留自己的設定。",
       "chat": "聊天",
@@ -1338,7 +1337,7 @@
       "print": "列印",
       "once": "請現在列印或抄寫下來。密碼只會顯示一次。如果遺失，之後可以再產生新密碼。",
       "site": "網站",
-      "username": "Magic Cups 名字",
+      "username": "Oomba Academy 名字",
       "password": "密碼",
       "gone": "這些登入卡已無法再顯示。請到班級的「學生」分頁或學校的「成員」分頁產生新密碼。",
       "backPeople": "回到「成員」",
@@ -1355,7 +1354,7 @@
       "badRole": "這裡不允許設定這個身分。",
       "ownRole": "你無法變更或移除自己的管理員身分。",
       "noAccount": "請先建立免費帳號。",
-      "noSuchUser": "沒有使用這個 Magic Cups 名字的帳號。",
+      "noSuchUser": "沒有使用這個 Oomba Academy 名字的帳號。",
       "otherSchoolAccount": "這個帳號屬於其他學校。",
       "notSchoolAccount": "這裡只能為學校帳號產生新密碼。使用個人帳號的學生請自行重設密碼。",
       "classHasStudents": "這個班級曾經有學生，所以無法刪除。請改為封存。",
@@ -1366,14 +1365,14 @@
       "ownAccountsOff": "這所學校只使用學校帳號。請向老師拿登入卡。",
       "lastTeacher": "每個班級至少需要一位老師。",
       "staffName": "請輸入對方的姓名。",
-      "username": "請輸入對方的 Magic Cups 名字。",
+      "username": "請輸入對方的 Oomba Academy 名字。",
       "alreadyStaff": "{name} 已經是這裡的教職員（{role}）。",
       "sameName": "{count, plural, other {{school} 已經有以下名字}}：{names}。請從清單中移除，或在名字後加註以便區分。若要把現有學生加入班級，請在班級的「學生」分頁勾選他們。",
       "chooseTeacher": "請選擇老師。",
       "chooseClass": "請選擇班級。",
       "noSchoolAccounts": "這個班級沒有使用學校帳號的學生。",
       "badTeacher": "請選擇學校的教職員。",
-      "adminNotStudent": "你負責管理 Magic Cups，所以不能用學生身分加入班級。",
+      "adminNotStudent": "你負責管理 Oomba Academy，所以不能用學生身分加入班級。",
       "isStudent": "{name} 是這裡的學生，因此無法新增為教職員。",
       "tickStudents": "請至少勾選一位學生。",
       "badZone": "請從清單中選擇時區。"
@@ -1451,7 +1450,7 @@
       "game": "遊戲",
       "myGames": "我的遊戲",
       "schoolGames": "校內分享",
-      "siteGames": "Magic Cups 遊戲",
+      "siteGames": "Oomba Academy 遊戲",
       "minutes": "分鐘",
       "edit": "編輯步驟",
       "delete": "刪除步驟",

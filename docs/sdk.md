@@ -1,6 +1,6 @@
 # The Game Contract and the `window.BRB` SDK
 
-Every game on Magic Cups, whether it came from our team, a "Start from" template or the AI Builder, follows the same contract.
+Every game on Oomba Academy, whether it came from our team, a "Start from" template or the AI Builder, follows the same contract.
 
 ## The Game Contract
 
@@ -95,7 +95,7 @@ so every change is a real `edit_game` find/replace and a new version.
 
 ## Languages
 
-Magic Cups is offered in 13 languages (see `server/i18n`). A game can speak the player's language too:
+Oomba Academy is offered in 13 languages (see `server/i18n`). A game can speak the player's language too:
 
 | Field | Value |
 |---|---|
