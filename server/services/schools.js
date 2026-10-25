@@ -144,14 +144,36 @@ export function removeMember(by, schoolId, userId) {
 // ---------------------------------------------------------------- school accounts
 const ADJ = ['Sunny', 'Brave', 'Happy', 'Bouncy', 'Clever', 'Swift', 'Lucky', 'Jolly', 'Cosmic', 'Mighty', 'Shiny', 'Zippy', 'Cozy', 'Bright', 'Giggly', 'Speedy'];
 const ANIMAL = ['Otter', 'Panda', 'Koala', 'Tiger', 'Penguin', 'Dolphin', 'Falcon', 'Lynx', 'Owl', 'Fox', 'Turtle', 'Robin', 'Badger', 'Gecko', 'Llama', 'Beaver'];
-const WORDS = ['maple', 'river', 'comet', 'pebble', 'cloud', 'tulip', 'acorn', 'sparkle', 'meadow', 'pickle', 'rocket', 'sunset', 'puzzle', 'banjo', 'waffle', 'cactus', 'harbor', 'zigzag'];
+// Short, everyday words a child can read and type (ASCII only).
+export const WORDS = [
+  'maple', 'river', 'comet', 'pebble', 'cloud', 'tulip', 'acorn', 'sparkle', 'meadow', 'pickle', 'rocket', 'sunset', 'puzzle', 'banjo',
+  'waffle', 'cactus', 'harbor', 'zigzag', 'otter', 'panda', 'koala', 'tiger', 'zebra', 'camel', 'horse', 'goose', 'eagle', 'robin',
+  'raven', 'heron', 'finch', 'swan', 'duck', 'lamb', 'pony', 'frog', 'toad', 'newt', 'crab', 'squid', 'whale', 'shark', 'seal', 'moose',
+  'bison', 'llama', 'lemur', 'sloth', 'hippo', 'rhino', 'gecko', 'puffin', 'parrot', 'beaver', 'badger', 'ferret', 'rabbit', 'kitten',
+  'puppy', 'mouse', 'owl', 'fox', 'bee', 'yak', 'emu', 'wolf', 'bear', 'deer', 'hare', 'mole', 'lynx', 'orca', 'walrus', 'turtle',
+  'salmon', 'trout', 'snail', 'beetle', 'moth', 'dolphin', 'penguin', 'falcon', 'pigeon', 'magpie', 'toucan', 'jaguar', 'donkey',
+  'rooster', 'kiwi', 'forest', 'valley', 'canyon', 'island', 'lake', 'ocean', 'beach', 'desert', 'rainbow', 'breeze', 'snow', 'frost',
+  'leaf', 'petal', 'daisy', 'rose', 'lily', 'fern', 'moss', 'cedar', 'pine', 'oak', 'willow', 'birch', 'bamboo', 'clover', 'lotus',
+  'poppy', 'iris', 'violet', 'ivy', 'sprout', 'seed', 'twig', 'stone', 'sand', 'shell', 'coral', 'wave', 'tide', 'moon', 'star', 'planet',
+  'orbit', 'sky', 'dawn', 'spring', 'summer', 'autumn', 'winter', 'hill', 'cliff', 'cave', 'pond', 'brook', 'creek', 'reef', 'dune',
+  'apple', 'mango', 'peach', 'plum', 'pear', 'lemon', 'lime', 'melon', 'grape', 'cherry', 'berry', 'banana', 'carrot', 'potato', 'tomato',
+  'pepper', 'onion', 'celery', 'radish', 'turnip', 'pumpkin', 'olive', 'bagel', 'muffin', 'cookie', 'donut', 'pretzel', 'noodle', 'pasta',
+  'pizza', 'taco', 'rice', 'bread', 'toast', 'honey', 'butter', 'cheese', 'yogurt', 'popcorn', 'pancake', 'syrup', 'jelly', 'cocoa',
+  'vanilla', 'ginger', 'pudding', 'kite', 'drum', 'flute', 'piano', 'violin', 'guitar', 'trumpet', 'bell', 'lantern', 'candle', 'compass',
+  'anchor', 'sail', 'boat', 'train', 'wagon', 'scooter', 'robot', 'magnet', 'button', 'pencil', 'crayon', 'marker', 'paper', 'ruler',
+  'eraser', 'blanket', 'pillow', 'teapot', 'kettle', 'basket', 'bucket', 'ladder', 'hammer', 'shovel', 'rake', 'mitten', 'scarf', 'sock',
+  'boot', 'helmet', 'crown', 'castle', 'tower', 'bridge', 'tunnel', 'garden', 'window', 'chimney', 'amber', 'azure', 'golden', 'indigo',
+  'ivory', 'jade', 'lilac', 'silver', 'teal', 'ruby', 'emerald', 'topaz', 'igloo', 'jigsaw', 'marble', 'whistle', 'tractor', 'glider',
+  'canoe', 'kayak', 'paddle', 'jacket', 'sandal', 'slipper', 'bubble', 'feather', 'ribbon', 'sticker', 'balloon', 'cupcake', 'sundae'
+];
 const rnd = a => a[crypto.randomInt(a.length)];
 export function newUsername() {
   for (let i = 0; i < 200; i++) { const u = `${rnd(ADJ)}${rnd(ANIMAL)}${crypto.randomInt(10, 100)}`; if (!q.get('SELECT 1 FROM users WHERE username=? COLLATE NOCASE', u)) return u; }
   throw new Error('could not make a username');
 }
-// Three words + two digits from an 18-word list: ~18^3 * 90 ≈ 525k combinations, large enough that a brute-force is
-// infeasible once the login limiters are in place (short enough to stay printable on a child's login card).
+// Three words + two digits from the 273-word list: about 273^3 * 90 ≈ 1.8 billion combinations (~31 bits), so
+// guessing stays hopeless even with the loose per-address sign-in limits a school network needs, while the card still
+// reads like "maple-otter-pizza-42".
 export const newPassword = () => `${rnd(WORDS)}-${rnd(WORDS)}-${rnd(WORDS)}-${crypto.randomInt(10, 100)}`;
 
 /** Create a school account (owned by the school) and add it as a member. Returns the one-time password. */

@@ -66,9 +66,14 @@ router.post('/api/auth/guest', (req, res) => {
   if (req.localeSource === 'cookie') saveUserLang(u, req.locale);
   res.json({ ok: true, user: auth.publicUser(u) });
 });
-// Per address, not per session (a guest cookie is free). 30 an hour leaves room for a class making accounts together.
-router.post('/api/auth/signup', rateLimit('signup', 30, 3600e3, undefined, { byIp: true }), (req, res) => {
+// Sign-up limits, per address (never per session: a guest cookie is free). Only accounts actually made count toward the
+// 30 an hour, so a class fixing typos and taken names isn't locked out; 300 tries an hour stops a flood.
+export const SIGNUP = { perHour: 30, triesPerHour: 300 };
+router.post('/api/auth/signup', (req, res) => {
   const t = req.t;
+  const ip = ipOf(req);
+  if (!allow(`signup-try:${ip}`, SIGNUP.triesPerHour, 3600e3)) return res.status(429).json({ error: t('errors.api.slowDown') });
+  if (count(`signup:${ip}`) >= SIGNUP.perHour) return res.status(429).json({ error: t('auth.api.tooManySignups') });
   const { username, password } = req.body || {};
   const n = auth.cleanName(username, t); if (!n.ok) return res.status(400).json({ error: n.error, field: 'username' });
   const pe = auth.checkPassword(password, n.value, t); if (pe) return res.status(400).json({ error: pe, field: 'password' });
@@ -84,23 +89,27 @@ router.post('/api/auth/signup', rateLimit('signup', 30, 3600e3, undefined, { byI
     catch (e) { if (/UNIQUE/.test(e.message)) return res.status(400).json({ error: t('auth.api.nameTaken'), field: 'username' }); throw e; }
     auth.startSession(res, u.id, req.headers['user-agent']); audit(u.id, 'user.signup', u.id);
   }
+  allow(`signup:${ip}`, SIGNUP.perHour, 3600e3);
   if (req.localeSource === 'cookie') saveUserLang(u, req.locale); // a language picked before signing up comes along
   res.json({ ok: true, user: auth.publicUser(u) });
 });
-// Sign-in limits. A whole class signs in at once from one school address, so successful sign-ins never count against
-// the address; only failures do. Everything is keyed on the address or the username, never the session, so fresh
-// guest cookies can't buy more guesses.
-//   per address: 100 failed sign-ins and 600 tries in all (each try costs a bcrypt check) per 15 min
-//   per username: 10 failed guesses per 15 min, from any address
-export const LOGIN = { ipFails: 100, ipTries: 600, userFails: 10, window: 900e3 };
+// Sign-in limits. A whole school can sign in at once from one address, so successful sign-ins never count; only failures
+// do. Everything is keyed on the address or the username, never the session, so fresh guest cookies can't buy more
+// guesses. Generated school passwords have ~31 bits (schools.js newPassword), so a loose per-address cap is still safe.
+//   per username: 10 failed guesses per 15 min, from any address (a teacher's password reset clears it)
+//   per address: 1000 failed sign-ins per 15 min (a flood guard; a school morning with typos stays far below it)
+export const LOGIN = { ipFails: 1000, userFails: 10, window: 900e3 };
 router.post('/api/auth/login', (req, res) => {
-  const { username, password } = req.body || {};
-  const ip = ipOf(req); const lockKey = String(username || '').trim() ? loginLockKey(username) : '';
+  const { password } = req.body || {};
+  const username = String((req.body || {}).username || '').trim();
+  const ip = ipOf(req); const lockKey = username ? loginLockKey(username) : '';
   const tooMany = () => res.status(429).json({ error: req.t('auth.api.tooManyTries') });
-  if (count(`login-ip-fail:${ip}`) >= LOGIN.ipFails || !allow(`login-ip:${ip}`, LOGIN.ipTries, LOGIN.window)) return tooMany();
+  if (count(`login-ip-fail:${ip}`) >= LOGIN.ipFails) return tooMany();
   if (lockKey && count(lockKey) >= LOGIN.userFails) return tooMany();
-  const u = auth.getUserByName(username);
-  if (!u || !auth.verifyPassword(u, password)) {
+  const u = username ? auth.getUserByName(username) : null;
+  // Always run the password check (against a dummy hash for an unknown name), so the response time doesn't reveal
+  // which names exist.
+  if (!auth.verifyPassword(u, password)) {
     allow(`login-ip-fail:${ip}`, LOGIN.ipFails, LOGIN.window);
     if (lockKey) allow(lockKey, LOGIN.userFails, LOGIN.window);
     return res.status(400).json({ error: req.t('auth.api.wrongLogin'), field: 'password' });

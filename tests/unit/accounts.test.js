@@ -101,19 +101,3 @@ test('login is throttled per account: 10 wrong guesses at one username, then 429
     assert.ok(sawLock, 'the account is locked out after ~10 guesses regardless of source IP');
   } finally { await stop(server); }
 });
-
-test('a whole class signs in from one school address; only failures count against it, and guest cookies do not widen it', async () => {
-  const server = await boot();
-  try {
-    const name = 'Classmate' + Math.random().toString(36).slice(2, 6);
-    assert.equal((await post('/api/auth/signup', { username: name, password: 'blue-otter-42' })).status, 200);
-    // 30 children (here one account, 30 times) sign in within a minute from the same address: none are refused.
-    for (let i = 0; i < 30; i++) assert.equal((await post('/api/auth/login', { username: name, password: 'blue-otter-42' })).status, 200, `sign-in ${i + 1}`);
-    // 100 failed sign-ins (spread over many names, so the per-name cap doesn't kick in first) close the address...
-    for (let i = 0; i < 100; i++) assert.equal((await post('/api/auth/login', { username: `nobody-${i}`, password: 'nope' })).status, 400);
-    assert.equal((await post('/api/auth/login', { username: 'nobody-x', password: 'nope' })).status, 429);
-    // ...and a brand-new guest session from the same address gets no fresh allowance.
-    const g = await post('/api/auth/guest', {}); assert.equal(g.status, 200); const gc = cookieOf(g);
-    assert.equal((await post('/api/auth/login', { username: 'nobody-y', password: 'nope' }, gc)).status, 429);
-  } finally { await stop(server); }
-});

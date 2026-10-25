@@ -106,6 +106,7 @@
     },
     "api": {
       "tooManyGuests": "Trop d’invités depuis cet endroit. Réessaie plus tard.",
+      "tooManySignups": "Trop de nouveaux comptes depuis cet endroit. Réessaie dans une heure.",
       "nameTaken": "Ce nom est déjà pris. Essaie d’ajouter un chiffre ou un autre mot.",
       "tooManyTries": "Trop d’essais. Attends quelques minutes et réessaie.",
       "wrongLogin": "Ce nom et ce mot de passe ne vont pas ensemble.",

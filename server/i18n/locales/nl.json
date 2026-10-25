@@ -107,6 +107,7 @@
     },
     "api": {
       "tooManyGuests": "Te veel gasten vanaf hier. Probeer het later nog eens.",
+      "tooManySignups": "Te veel nieuwe accounts vanaf hier. Probeer het over een uur nog eens.",
       "nameTaken": "Die naam is al bezet. Zet er een cijfer of een ander woord bij.",
       "tooManyTries": "Te veel pogingen. Wacht een paar minuten en probeer het dan opnieuw.",
       "wrongLogin": "Die naam en dat wachtwoord passen niet bij elkaar.",

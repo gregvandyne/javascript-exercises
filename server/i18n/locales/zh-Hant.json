@@ -106,6 +106,7 @@
     },
     "api": {
       "tooManyGuests": "這裡的訪客太多了，請晚點再試。",
+      "tooManySignups": "這裡建立的新帳號太多了，請一小時後再試。",
       "nameTaken": "這個名字有人用了。試著加上數字或其他字。",
       "tooManyTries": "試太多次了。請等幾分鐘再試一次。",
       "wrongLogin": "名字和密碼對不起來。",

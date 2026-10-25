@@ -107,6 +107,7 @@
     },
     "api": {
       "tooManyGuests": "Zu viele Gäste von hier. Versuch es später noch mal.",
+      "tooManySignups": "Zu viele neue Konten von hier. Versuch es in einer Stunde noch mal.",
       "nameTaken": "Diesen Namen gibt es schon. Häng eine Zahl oder ein anderes Wort an.",
       "tooManyTries": "Zu viele Versuche. Warte ein paar Minuten und versuch es dann noch mal.",
       "wrongLogin": "Name und Passwort passen nicht zusammen.",

@@ -239,6 +239,10 @@ A defensive security review (8 areas, each finding independently verified agains
 - **Credential brute-force.** `trust proxy` now defaults off, so a directly-exposed server can't be given a spoofed
   `X-Forwarded-For` to reset IP rate limits (set `TRUST_PROXY` when behind a real proxy). Login is additionally capped
   per account (10 / 15 min), independent of IP, and auto-generated school passwords went from ~29k to ~525k combinations.
+  Later (rating review): per-address limits count only failures and are keyed on the address, never the session (fresh
+  guest cookies no longer buy guesses), so a whole school behind one address can sign in at once; school passwords now
+  use a 273-word list (~1.8 billion combinations); a teacher's reset clears the per-username lock; the login check
+  always runs bcrypt so timing doesn't reveal which names exist.
 - **Report griefing.** Auto-hide now counts only distinct non-guest, non-owner reporters, so a few throwaway guest
   reports can't silently take a game down (guest reports are still queued for admin review).
 - **Cross-teacher account merge.** Approving a join request "same student as" an existing account now requires the

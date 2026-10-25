@@ -107,6 +107,7 @@
     },
     "api": {
       "tooManyGuests": "Troppi ospiti da qui. Riprova più tardi.",
+      "tooManySignups": "Troppi nuovi account da qui. Riprova tra un'ora.",
       "nameTaken": "Questo nome è già preso. Prova ad aggiungere un numero o un'altra parola.",
       "tooManyTries": "Troppi tentativi. Aspetta qualche minuto e riprova.",
       "wrongLogin": "Il nome e la password non corrispondono.",
