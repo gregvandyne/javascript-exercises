@@ -53,6 +53,9 @@ In environments with a pre-installed Chromium at `/opt/pw-browsers`, the e2e con
 | `AI_MONTHLY_BUDGET_USD` | `50` | Same, per calendar month. Today's and this month's spend show on `/admin`. Also set a spend limit in the Anthropic Console as the hard backstop. |
 | `BRB_SNAPSHOTS` | on in production | Headless Chromium for game screenshots: cover pictures of Studio games and the Builder's `playtest_game` tool. `0` turns it off, `1` turns it on in development. |
 | `BRB_CHROMIUM` | (Playwright's) | Path to a Chromium / headless-shell binary, if not the one Playwright installed. |
+| `SNAPSHOT_URL` | unset | URL of a separate screenshot worker (e.g. `http://shots:4900`). When set, the app sends every cover/playtest job to that worker over HTTP instead of launching Chromium itself, so the browser runs in its own container with no database or secrets. Unset = local Chromium (what Render uses). |
+| `SHOTS_TOKEN` | – | Shared bearer secret between the app and the screenshot worker. Required on both sides when `SNAPSHOT_URL` is set; the worker refuses to start without it. The worker needs no database, no data directory and no other secrets — deploy its container **without** the app's secret env vars (`SESSION_SECRET`, `ANTHROPIC_API_KEY`, …), since `server/config.js` reads all of `process.env`. Keep it on an egress-restricted network: it renders untrusted game HTML (its Chromium runs with WebRTC disabled, so a game cannot open an outbound channel from it). |
+| `SHOTS_PORT` | `4900` | Port the screenshot worker (`node server/shots-worker.js`) listens on (`GET /health`, `POST /run`). |
 | `ADMIN_USERNAME` / `ADMIN_PASSWORD` | `admin` / random | Admin account created by `npm run seed`. |
 | `DEMO_TEACHER_PASSWORD` | unset | Demo school for showing schools: creates "Oomba Academy Demo School" (at `/school/magic-cups-demo-school`) with `DemoTeacher` and `DemoStudent` (this password, reset on every boot), four classmates, a Demo Class and sample lessons (added again only if the teacher's library is empty). |
 | `AD_IP_DAILY_CAP` | `200` | Max counted ad impressions per IP per day. |
@@ -79,7 +82,7 @@ server/            app factory (app.js), entry (index.js), db.js, auth.js, confi
   builder/         Builder agent loop, providers (Claude + mock), screening, templates/
   views/           layout + components (server-rendered HTML)
   i18n/            languages: index.js (t, negotiation, Intl), locales/<code>.json, notes.json, blocklists/, README for translators
-public/            css/app.css (design system), js/ (one small module per page), sdk/brb-sdk.js (in-frame SDK), fonts (Bricolage Grotesque), icons (made by scripts/icons.js)
+public/            css/app.css (design system), js/ (one small module per page), sdk/brb-sdk.js (in-frame SDK), fonts (Bricolage Grotesque), icons (made by scripts/icons.js), vendor/three/<version>/ (the pinned, self-hosted Three.js for 3D games; see docs/decisions.md to bump it)
 seed-games/        the launch games (HTML + metadata JSON)
 scripts/           seed.js, import-game.js, backup.js, rollup.js, screenshots.js, icons.js (the logo icons in public/icons), contrast.js (colour contrast of the design tokens)
 tests/             unit/, safety/, e2e/

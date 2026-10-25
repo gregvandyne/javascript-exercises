@@ -422,7 +422,14 @@
       "ok": "Jouer quand même"
     },
     "frameExpired": "Ce lien de jeu a expiré. Reviens en arrière et appuie encore sur Jouer.",
-    "defaultPlayer": "Joueur"
+    "defaultPlayer": "Joueur",
+    "device": {
+      "title": "Ce jeu a besoin d'un appareil ou d'un navigateur plus récent",
+      "text": "Essaie sur une tablette ou un ordinateur plus récent, ou mets le navigateur à jour. Il y a plein d'autres jeux à découvrir aussi !",
+      "lostTitle": "Oups, l'image 3D s'est arrêtée",
+      "lostText": "Ça arrive parfois. Touche Réessayer pour recommencer le jeu.",
+      "retry": "Réessayer"
+    }
   },
   "friends": {
     "title": "Amis",
@@ -719,6 +726,10 @@
       "board": {
         "title": "Course sur plateau",
         "description": "Lance le dé et fais la course sur un chemin qui tourne, avec des fusées et des toboggans. Joue contre un ami ou contre le robot."
+      },
+      "island": {
+        "title": "L'île aux étoiles",
+        "description": "Une île en 3D à explorer : cours, saute sur les rochers volants et trouve toutes les étoiles brillantes avant la fin du temps."
       }
     },
     "api": {
@@ -929,6 +940,7 @@
     },
     "build": {
       "gettingReady": "Préparation…",
+      "needsNewer": "Nécessite un appareil plus récent",
       "renameTitle": "Renommer le jeu",
       "nameLabel": "Nom du jeu",
       "save": "Enregistrer",

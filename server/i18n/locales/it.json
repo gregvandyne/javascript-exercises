@@ -423,7 +423,14 @@
       "ok": "Gioca lo stesso"
     },
     "frameExpired": "Questo link del gioco è scaduto. Torna indietro e premi di nuovo Gioca.",
-    "defaultPlayer": "Giocatore"
+    "defaultPlayer": "Giocatore",
+    "device": {
+      "title": "Questo gioco ha bisogno di un dispositivo o di un browser più recente",
+      "text": "Provalo su un tablet o un computer più recente, oppure aggiorna il browser. Ci sono anche tanti altri giochi!",
+      "lostTitle": "Ops, l'immagine 3D si è fermata",
+      "lostText": "A volte succede. Tocca Riprova per ricominciare il gioco.",
+      "retry": "Riprova"
+    }
   },
   "friends": {
     "title": "Amici",
@@ -720,6 +727,10 @@
       "board": {
         "title": "Corsa sul Tabellone",
         "description": "Tira il dado e corri lungo un percorso pieno di curve, con razzi e scivoli. Gioca con un amico o contro il robot."
+      },
+      "island": {
+        "title": "L'isola delle stelle",
+        "description": "Un'isola in 3D da esplorare: corri, salta sulle rocce volanti e trova tutte le stelle scintillanti prima che finisca il tempo."
       }
     },
     "api": {
@@ -930,6 +941,7 @@
     },
     "build": {
       "gettingReady": "Preparazione…",
+      "needsNewer": "Serve un dispositivo più recente",
       "renameTitle": "Rinomina il gioco",
       "nameLabel": "Nome del gioco",
       "save": "Salva",

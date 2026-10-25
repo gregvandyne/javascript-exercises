@@ -423,7 +423,14 @@
       "ok": "Jogar assim mesmo"
     },
     "frameExpired": "Este link do jogo expirou. Volte e toque em Jogar de novo.",
-    "defaultPlayer": "Jogador"
+    "defaultPlayer": "Jogador",
+    "device": {
+      "title": "Este jogo precisa de um aparelho ou navegador mais novo",
+      "text": "Experimente em um tablet ou computador mais novo, ou atualize o navegador. Tem muitos outros jogos para jogar também!",
+      "lostTitle": "Ops, a imagem 3D parou",
+      "lostText": "Isso às vezes acontece. Toque em Tentar de novo para recomeçar o jogo.",
+      "retry": "Tentar de novo"
+    }
   },
   "friends": {
     "title": "Amigos",
@@ -720,6 +727,10 @@
       "board": {
         "title": "Corrida no Tabuleiro",
         "description": "Jogue o dado e corra por um caminho cheio de curvas, com foguetes e escorregadores. Jogue com um amigo ou com o robô."
+      },
+      "island": {
+        "title": "Ilha das Estrelas",
+        "description": "Uma ilha 3D para explorar: corra, pule nas pedras flutuantes e encontre todas as estrelas brilhantes antes que o tempo acabe."
       }
     },
     "api": {
@@ -930,6 +941,7 @@
     },
     "build": {
       "gettingReady": "Preparando…",
+      "needsNewer": "Precisa de um aparelho mais novo",
       "renameTitle": "Renomear jogo",
       "nameLabel": "Nome do jogo",
       "save": "Salvar",

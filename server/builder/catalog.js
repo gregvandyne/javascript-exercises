@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 const DIR = path.dirname(fileURLToPath(import.meta.url));
 const FALLBACK_HTML = fs.readFileSync(path.join(DIR, 'fallback-game.html'), 'utf8');
 
-export const TEMPLATE_KEYS = ['quiz', 'runner', 'catch', 'memory', 'word', 'duel', 'board'];
+export const TEMPLATE_KEYS = ['quiz', 'runner', 'catch', 'memory', 'word', 'duel', 'board', 'island'];
 const DEFAULTS = {
   quiz: { title: 'Quiz Show', icon: '❓', cover: 'sunset', category: 'learning', players: 1, description: 'Quick questions with a timer and a cheering crowd.' },
   runner: { title: 'Runner', icon: '🏃', cover: 'forest', category: 'arcade', players: 1, description: 'Jump over bumps and grab coins as the speed ramps up.' },
@@ -17,6 +17,7 @@ const DEFAULTS = {
   word: { title: 'Word Game', icon: '🔤', cover: 'mint', category: 'words', players: 1, description: 'Spell, guess and build words.' },
   duel: { title: 'Two-Player Duel', icon: '⚔️', cover: 'lava', category: 'silly', players: 2, description: 'Two players, one screen. Who is fastest?' },
   board: { title: 'Board Game', icon: '🎲', cover: 'gold', category: 'board', players: 2, description: 'Roll the dice and race to the end.' },
+  island: { title: 'Star Island', icon: '🏝️', cover: 'ocean', category: 'adventure', players: 1, description: 'A 3D island to explore and find the stars.' },
 };
 
 let modPromise = null;
@@ -25,7 +26,7 @@ async function mod() {
   return modPromise;
 }
 
-/** [{ key, title, icon, cover, category, description, players }] for the 7 "Start from" cards. */
+/** [{ key, title, icon, cover, category, description, players }] for the "Start from" cards. */
 export async function listTemplates() {
   const m = await mod();
   const fromMod = m && Array.isArray(m.TEMPLATES) ? m.TEMPLATES : [];

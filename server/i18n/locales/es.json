@@ -422,7 +422,14 @@
       "ok": "Jugar igual"
     },
     "frameExpired": "Este enlace del juego ya venció. Vuelve atrás y toca Jugar otra vez.",
-    "defaultPlayer": "Jugador"
+    "defaultPlayer": "Jugador",
+    "device": {
+      "title": "Este juego necesita un dispositivo o navegador más nuevo",
+      "text": "Pruébalo en una tablet o computadora más nueva, o actualiza el navegador. ¡También hay muchos otros juegos para jugar!",
+      "lostTitle": "¡Uy! La imagen 3D se detuvo",
+      "lostText": "A veces pasa. Toca Reintentar para empezar el juego de nuevo.",
+      "retry": "Reintentar"
+    }
   },
   "friends": {
     "title": "Amigos",
@@ -719,6 +726,10 @@
       "board": {
         "title": "Carrera de mesa",
         "description": "Tira el dado y avanza por un camino con curvas, cohetes que te impulsan y toboganes. Juega con un amigo o contra el robot."
+      },
+      "island": {
+        "title": "Isla de las Estrellas",
+        "description": "Una isla en 3D para explorar: corre, salta por las rocas flotantes y encuentra todas las estrellas brillantes antes de que se acabe el tiempo."
       }
     },
     "api": {
@@ -929,6 +940,7 @@
     },
     "build": {
       "gettingReady": "Preparando…",
+      "needsNewer": "Necesita un dispositivo más nuevo",
       "renameTitle": "Renombrar juego",
       "nameLabel": "Nombre del juego",
       "save": "Guardar",

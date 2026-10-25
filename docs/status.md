@@ -32,11 +32,12 @@ _Last updated: 2026-10-25_
 | **13 site languages**: 🌐 picker (mouse, keyboard, phone, no-JS links), `?lang=` → cookie → account → Accept-Language → en, choice saved to the account, `<html lang dir>`, RTL for he/ar, English fallback per key, `BRB.user.lang` in games | unit `i18n.test.js`, e2e `i18n.spec.js`, RTL screenshots of home, game, play, Studio, chat, friends and Me |
 | Locale-file guard for translators: no extra keys, placeholders kept, code keys exist, notes valid (`npm run i18n:check`) | unit `i18n.test.js` |
 | Phone numbers and emails in full-width or Arabic-Indic digits/letters are refused; per-language word lists apply to everyone | safety `i18n-filters.test.js` |
-| 7 starter templates pass the scanner and play to the results screen | unit `templates.test.js` + manual headless run |
+| 8 starter templates pass the scanner and play to the results screen | unit `templates.test.js` + manual headless run |
+| **3D games, step 1**: Star Island template (3D, 13 languages), self-hosted pinned Three.js r185.1 (one import map with SRI, everything else fails the scan), frame CSP allows only the site's `/vendor/three/`, device-check card (no import maps / no WebGL 2 / lost context), `BRB.fx.fit3d` and a WebGL-safe `fit`, covers of 3D games (local and worker), Builder 3D rules + `start_from_template`, mock 3D edits | unit `vendor.test.js`, `three-frame.test.js` (real Chromium), `templates.test.js`, `builder.test.js`, `builder-claude.test.js`, `shots-worker.test.js`; e2e `three.spec.js` |
 | Every page at 390 px and 1280 px, light and dark: no horizontal overflow, reviewed by eye | `npm run screenshots` |
 | Docker: image boots, seeds, serves `/health`, home and game pages | built locally with pre-installed deps (see limits) |
 
-Counts at this commit: unit + safety 214/214, e2e 49/49.
+Counts at this commit: unit + safety 242/242, e2e 51/51.
 
 ## Not verified / known limits
 - **Real Claude calls are untested** (no `ANTHROPIC_API_KEY` here). Request shapes (cache_control, tools, models, review schema) are tested against a local fake Messages API. Set the key and try one Studio game before launch.
@@ -53,4 +54,4 @@ Counts at this commit: unit + safety 214/214, e2e 49/49.
 1. Add `ANTHROPIC_API_KEY`, build a few games end to end, tune the system prompt.
 1. Fill the 12 locale files and word lists (see `server/i18n/README.md`; `npm run i18n:check` shows progress), then let the launch games read `BRB.user.lang`.
 2. Real-time multiplayer and live chat over WebSockets (plus Redis for presence/rate limits).
-5. Builder analytics (retention, where players quit), game remixing, and 3D later.
+5. Builder analytics (retention, where players quit), game remixing, and more 3D templates (3D step 2).

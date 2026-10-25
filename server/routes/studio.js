@@ -84,7 +84,7 @@ router.get('/build', requireAccount, async (req, res) => {
   </section>
   <section aria-labelledby="tpl-h" class="build-sec">
     <h2 id="tpl-h">${t('build.startFrom')}</h2>
-    <div class="tplgrid">${templates.map(tp => { const title = tpl(tp.key, 'title', tp.title); return html`<button type="button" class="tplcard" data-template="${tp.key}" aria-label="${t('build.startFromLabel', { title })}">
+    <div class="tplgrid">${templates.map(tp => { const title = tpl(tp.key, 'title', tp.title); return html`<button type="button" class="tplcard" data-template="${tp.key}"${tp.threeD ? ' data-threed="1"' : ''} aria-label="${t('build.startFromLabel', { title })}">
       ${coverArt({ cover: tp.cover, icon: tp.icon }, 'tplcover')}<span class="tpl-t">${title}</span><span class="tpl-d">${tpl(tp.key, 'description', tp.description)}</span>
       <span class="tpl-p">${tp.players > 1 ? `👫 ${t('build.twoPlayers')}` : `👤 ${t('game.about.onePlayer')}`}</span></button>`; })}</div>
   </section>

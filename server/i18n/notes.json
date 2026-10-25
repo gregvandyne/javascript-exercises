@@ -224,5 +224,12 @@
   "builder.budgetResting": "Shown in the Builder chat when the site's daily/monthly AI spending cap is reached; the offline builder takes over. Kid reading level.",
   "uploads.image.resting": "Shown when a child uploads a picture while the AI spending cap is reached, so the picture can't be safety-checked. Kid reading level.",
   "js.studio.reconnecting": "Status line in the Studio when the phone's connection to the Builder dropped mid-build; the Builder keeps working and the page waits for it. Kid reading level.",
-  "me.theme.heading": "Me page panel with the theme choice, next to the Language panel."
+  "me.theme.heading": "Me page panel with the theme choice, next to the Language panel.",
+  "play.device.title": "Inside a 3D game, when the phone, tablet or computer cannot show 3D (too old: no WebGL 2 or import maps). Big heading on a card, kid-friendly, max ~50 chars.",
+  "play.device.text": "Under play.device.title: what to do instead (newer device, update the browser) and that there are other games. One or two short sentences.",
+  "play.device.lostTitle": "Inside a 3D game when the 3D picture is lost (a GPU reset, memory pressure, coming back from the background) — happens on new devices too, not only old ones. Big heading on a card, kid-friendly, max ~40 chars.",
+  "play.device.lostText": "Under play.device.lostTitle: says it sometimes happens and to tap the Try again button to start over. One or two short sentences.",
+  "play.device.retry": "Label on a big button that reloads the game to start it over. Very short (1-2 words), e.g. \"Try again\".",
+  "studio.templates.island.title": "Name of the 3D \"Start from\" template on the Build page: an island with stars to collect. Short, max ~22 chars.",
+  "studio.templates.island.description": "One-line description of the 3D island template card on the Build page."
 }

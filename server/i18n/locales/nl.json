@@ -423,7 +423,14 @@
       "ok": "Toch spelen"
     },
     "frameExpired": "Deze gamelink is verlopen. Ga terug en druk nog eens op Spelen.",
-    "defaultPlayer": "Speler"
+    "defaultPlayer": "Speler",
+    "device": {
+      "title": "Voor dit spel heb je een nieuwer apparaat of een nieuwere browser nodig",
+      "text": "Probeer het op een nieuwere tablet of computer, of werk de browser bij. Er zijn ook nog veel andere spellen!",
+      "lostTitle": "Oeps, het 3D-beeld stopte",
+      "lostText": "Dat gebeurt soms. Tik op Opnieuw om het spel opnieuw te starten.",
+      "retry": "Opnieuw proberen"
+    }
   },
   "friends": {
     "title": "Vrienden",
@@ -720,6 +727,10 @@
       "board": {
         "title": "Race-bordspel",
         "description": "Gooi de dobbelsteen en race over een kronkelpad met raketboosts en glijbanen. Speel tegen een vriend of de computer."
+      },
+      "island": {
+        "title": "Sterreneiland",
+        "description": "Een 3D-eiland om te ontdekken: ren, spring op zwevende rotsen en vind alle glimmende sterren voordat de tijd op is."
       }
     },
     "api": {
@@ -930,6 +941,7 @@
     },
     "build": {
       "gettingReady": "Even klaarmaken…",
+      "needsNewer": "Heeft een nieuwer apparaat nodig",
       "renameTitle": "Naam van spel wijzigen",
       "nameLabel": "Naam van het spel",
       "save": "Opslaan",

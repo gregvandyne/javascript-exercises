@@ -5,6 +5,18 @@ const d = pageData();
 const frame = $('#gameframe'), stage = $('#stage');
 let playId = null;
 
+// A game must never point its own frame at another website (for phishing or to carry data out in the URL).
+// No CSP directive stops a frame navigating itself, so we watch: the game's own document loads once, and any
+// later 'load' is an unexpected navigation, which we undo by pinning the frame straight back to the game.
+// (The very first off-site request still leaves once before we can react — a known limit, see docs/safety.md.)
+const frameSrc = frame.getAttribute('src');
+let frameSettled = false, framePins = 0;
+frame.addEventListener('load', () => {
+  if (framePins > 0) { framePins--; return; }   // a reload we triggered below
+  if (!frameSettled) { frameSettled = true; return; }   // the game's own first load
+  framePins = 2; frame.src = 'about:blank'; setTimeout(() => { frame.src = frameSrc; }, 30);
+});
+
 // ---- presence + play counting ----
 async function start() {
   try { const r = await api(`/api/games/${d.gameId}/play`, { method: 'POST', body: {} }); playId = r.playId; refreshLive(); } catch { /* ignore */ }

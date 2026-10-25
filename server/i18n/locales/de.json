@@ -423,7 +423,14 @@
       "ok": "Trotzdem spielen"
     },
     "frameExpired": "Dieser Spiel-Link ist abgelaufen. Geh zurück und drück noch mal auf Spielen.",
-    "defaultPlayer": "Spieler"
+    "defaultPlayer": "Spieler",
+    "device": {
+      "title": "Dieses Spiel braucht ein neueres Gerät oder einen neueren Browser",
+      "text": "Probier es auf einem neueren Tablet oder Computer, oder aktualisiere den Browser. Es gibt auch viele andere Spiele!",
+      "lostTitle": "Hoppla, das 3D-Bild ist stehengeblieben",
+      "lostText": "Das passiert manchmal. Tippe auf Nochmal versuchen, um das Spiel neu zu starten.",
+      "retry": "Nochmal versuchen"
+    }
   },
   "friends": {
     "title": "Freunde",
@@ -720,6 +727,10 @@
       "board": {
         "title": "Wettlauf-Brettspiel",
         "description": "Würfle und renn einen kurvigen Weg entlang, mit Raketen-Schub und Rutschen. Spiel gegen einen Freund oder den Bot."
+      },
+      "island": {
+        "title": "Sterneninsel",
+        "description": "Eine 3D-Insel zum Entdecken: Lauf, hüpf auf schwebende Felsen und finde alle funkelnden Sterne, bevor die Zeit um ist."
       }
     },
     "api": {
@@ -930,6 +941,7 @@
     },
     "build": {
       "gettingReady": "Wird vorbereitet…",
+      "needsNewer": "Braucht ein neueres Gerät",
       "renameTitle": "Spiel umbenennen",
       "nameLabel": "Name des Spiels",
       "save": "Speichern",

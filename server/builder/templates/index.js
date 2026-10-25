@@ -22,6 +22,9 @@ export const TEMPLATES = [
     description: 'Two players, one screen: wait for the green light and tap first to grab the snack. Best of five.' },
   { key: 'board', title: 'Race Board Game', icon: '🎲', cover: 'gold', category: 'board', players: 2,
     description: 'Roll the die and race along a winding path with rocket boosts and slides. Play a friend or the bot.' },
+  // 3D: uses the self-hosted Three.js (see server/services/vendor.js); the platform checks the device can run it.
+  { key: 'island', title: 'Star Island', icon: '🏝️', cover: 'ocean', category: 'adventure', players: 1, threeD: true,
+    description: 'A 3D island to explore: run, jump up floating rocks and find every shiny star before time runs out.' },
 ];
 
 const cache = new Map();

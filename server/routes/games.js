@@ -5,12 +5,12 @@ import { page, notFound } from '../views/layout.js';
 import { coverArt, avatar, cardGrid, statusLabel, categoryLabel } from '../views/components.js';
 import * as games from '../services/games.js';
 import * as presence from '../services/presence.js';
-import { frameDocument, sendFrame, SANDBOX } from '../services/frame.js';
+import { frameDocument, sendFrame, requestOrigin, SANDBOX } from '../services/frame.js';
 import { signToken, readToken, requireUser, getUser, createGuest, startSession } from '../auth.js';
 import { rateLimit, allow, ipOf, GUESTS_PER_IP_HOUR } from '../services/ratelimit.js';
 import { q, uid, now, audit } from '../db.js';
 import { config } from '../config.js';
-import { tEn, normalizeCode, localeInfo } from '../i18n/index.js';
+import { tEn, tFor, normalizeCode, localeInfo } from '../i18n/index.js';
 import { fileFor } from '../services/shots.js';
 import * as progress from '../services/progress.js';
 import fs from 'node:fs';
@@ -159,8 +159,14 @@ router.get('/frame/:token', (req, res) => {
     save: u && !preview ? games.getSave(g.id, u.id) : {},
     canSave: !!u && !preview,
     preview,
+    // Shown by the SDK, in the game's language: the "newer device" card (can't run 3D) and the "3D picture
+    // stopped" card (a lost WebGL context on any device) with its Try again button.
+    deviceText: {
+      title: tFor(lang)('play.device.title'), text: tFor(lang)('play.device.text'),
+      lostTitle: tFor(lang)('play.device.lostTitle'), lostText: tFor(lang)('play.device.lostText'), retry: tFor(lang)('play.device.retry'),
+    },
   };
-  sendFrame(res, frameDocument(v.html, init));
+  sendFrame(res, frameDocument(v.html, init), requestOrigin(req));
 });
 
 // ---- APIs used by game.js / play.js ----
