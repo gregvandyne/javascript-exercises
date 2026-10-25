@@ -29,6 +29,25 @@ const staffHere = (u, schoolId) => { const m = u && S.membership(schoolId, u.id)
 const selected = on => (on ? raw('selected') : '');
 const optional = (t, label) => html`${label} <span class="muted">${t('school.optional')}</span>`;
 
+// Time zones grouped by region, each with its current offset ("Europe/London · GMT+1"). Offsets move with daylight
+// saving, so the list is rebuilt about once an hour.
+let zoneCache = { at: 0, groups: [] };
+function zoneGroups() {
+  if (Date.now() - zoneCache.at < 3600e3) return zoneCache.groups;
+  const now = new Date(); const groups = new Map();
+  for (const tz of S.ZONES) {
+    const i = tz.indexOf('/'); if (i < 0) continue;   // 'UTC' and the odd legacy name are left out
+    const region = tz.slice(0, i), city = tz.slice(i + 1).replace(/_/g, ' ');
+    let off = ''; try { off = new Intl.DateTimeFormat('en', { timeZone: tz, timeZoneName: 'shortOffset' }).formatToParts(now).find(p => p.type === 'timeZoneName').value; } catch { continue; }
+    if (!groups.has(region)) groups.set(region, []);
+    groups.get(region).push({ tz, label: `${city} · ${off}` });
+  }
+  zoneCache = { at: Date.now(), groups: [...groups.entries()].sort(([a], [b]) => a.localeCompare(b)) };
+  return zoneCache.groups;
+}
+/** "14:05, Fri" in a zone, for the settings hint. */
+const timeThere = (tz, intl) => { try { return new Intl.DateTimeFormat(intl, { timeZone: tz, hour: '2-digit', minute: '2-digit', weekday: 'short' }).format(new Date()); } catch { return ''; } };
+
 /** Where a class page's back link goes: My classes for its teachers, the school page for school admins who don't teach it. */
 export function classBack(req, c) {
   const t = req.t;
@@ -114,10 +133,13 @@ function classMenu(t, s, c) {
     ${canDelete ? html`<form data-api="/api/classes/${c.id}/delete" data-confirm="${t('school.class.deleteConfirm', { name: c.name })}"><input type="hidden" name="from" value="school"><button class="btn btn-sm btn-danger" type="submit">${t('school.class.delete')}</button></form>` : ''}
   </div></details>`;
 }
-function classTable(t, s, list) {
-  return html`<div class="panel tblwrap"><table class="tbl rtable"><thead><tr><th>${t('school.class.name')}</th><th>${t('school.class.grade')}</th><th>${t('school.class.teachers')}</th><th>${t('school.class.students')}</th><th>${t('school.class.code')}</th><th><span class="sr-only">${t('school.actions')}</span></th></tr></thead><tbody>
-    ${list.map(c => html`<tr><td><a href="/class/${c.id}"><b>${c.name}</b></a>${c.subject ? html`<div class="small muted">${c.subject}</div>` : ''}</td><td data-label="${t('school.class.grade')}">${c.grade || '–'}</td>
-      <td data-label="${t('school.class.teachers')}">${c.teachers || html`<span class="chip-s warn">⚠️ ${t('school.class.noTeacherChip')}</span>`}</td><td data-label="${t('school.class.students')}">${c.students}</td><td data-label="${t('school.class.code')}"><code dir="ltr">${c.join_code}</code></td>
+function classTable(req, s, list) {
+  const t = req.t, f = req.fmt;
+  const toRead = P.toReadByClass(list.map(c => c.id));
+  return html`<div class="panel tblwrap"><table class="tbl rtable classes"><thead><tr><th>${t('school.class.name')}</th><th>${t('school.class.grade')}</th><th>${t('school.class.teachers')}</th><th>${t('school.class.students')}</th><th>${t('school.class.lessons')}</th><th>${t('school.class.lastActivity')}</th><th>${t('school.class.code')}</th><th><span class="sr-only">${t('school.actions')}</span></th></tr></thead><tbody>
+    ${list.map(c => html`<tr><td><a href="/class/${c.id}"><b>${c.name}</b></a>${toRead[c.id] ? html` <a class="chip-s warn" href="/class/${c.id}/progress#to-review">✍️ ${t('progress.teach.toRead', { count: toRead[c.id] })}</a>` : ''}${c.subject ? html`<div class="small muted">${c.subject}</div>` : ''}</td><td data-label="${t('school.class.grade')}">${c.grade || '–'}</td>
+      <td data-label="${t('school.class.teachers')}">${c.teachers || html`<span class="chip-s warn">⚠️ ${t('school.class.noTeacherChip')}</span>`}</td><td data-label="${t('school.class.students')}">${c.students}</td>
+      <td data-label="${t('school.class.lessons')}">${c.lessons}</td><td data-label="${t('school.class.lastActivity')}">${c.last_activity ? f.ago(c.last_activity) : html`<span class="muted">${t('school.class.noActivity')}</span>`}</td><td data-label="${t('school.class.code')}"><code dir="ltr">${c.join_code}</code></td>
       <td class="tacts"><div class="acts">${classMenu(t, s, c)}</div></td></tr>`)}
   </tbody></table></div>`;
 }
@@ -137,8 +159,8 @@ function newClassForm(t, { schools, me, staff = null, open = false }) {
 function schoolClasses(req, s) {
   const t = req.t; const live = S.classesOfSchool(s.id), old = S.classesOfSchool(s.id, { archived: true });
   return html`${newClassForm(t, { schools: [s], me: req.user, staff: S.members(s.id, 'staff') })}
-    ${live.length ? classTable(t, s, live) : emptyState({ emoji: '🏫', title: t('school.class.none'), text: t('school.class.noneText') })}
-    ${old.length ? html`<details class="panel"><summary>🗄️ ${t('school.class.archived', { count: old.length })}</summary>${classTable(t, s, old)}</details>` : ''}`;
+    ${live.length ? classTable(req, s, live) : emptyState({ emoji: '🏫', title: t('school.class.none'), text: t('school.class.noneText') })}
+    ${old.length ? html`<details class="panel"><summary>🗄️ ${t('school.class.archived', { count: old.length })}</summary>${classTable(req, s, old)}</details>` : ''}`;
 }
 
 /** A person's live classes in the school, as links (or "Not in a class"). */
@@ -194,12 +216,16 @@ function schoolPeople(req, s) {
     </form></section>`;
 }
 function schoolSettings(req, s) {
-  const t = req.t; const st = S.settingsOf(s);
+  const t = req.t; const st = S.settingsOf(s); const tz = S.zoneOf(s);
   const yn = (name, val) => html`<select class="input" id="set-${name}" name="${name}"><option value="1" ${selected(val)}>${t('school.settings.yes')}</option><option value="0" ${selected(!val)}>${t('school.settings.no')}</option></select>`;
   return html`<section class="panel"><form class="stack settingsform" data-api="/api/schools/${s.id}/settings" data-reload data-toast="${t('school.settings.saved')}" novalidate>
     <div class="field"><label for="set-name">${t('school.settings.name')}</label><input class="input" id="set-name" name="name" value="${s.name}" maxlength="80"></div>
     <div class="field"><label for="set-teachersCreateClasses">${t('school.settings.teachersCreate')}</label>${yn('teachersCreateClasses', st.teachersCreateClasses)}</div>
     <div class="field"><label for="set-allowOwnAccounts">${t('school.settings.ownAccounts')}</label>${yn('allowOwnAccounts', st.allowOwnAccounts)}<span class="hint">${t('school.settings.ownAccountsHint')}</span></div>
+    <div class="field"><label for="set-timeZone">${t('school.settings.timeZone')}</label>
+      <select class="input" id="set-timeZone" name="timeZone"><option value="" ${selected(!tz)}>${t('school.settings.timeZoneNone')}</option>
+        ${zoneGroups().map(([region, zs]) => html`<optgroup label="${region}">${zs.map(z => html`<option value="${z.tz}" ${selected(z.tz === tz)}>${z.label}</option>`)}</optgroup>`)}</select>
+      <span class="hint">${tz ? t('school.settings.timeZoneHint', { time: timeThere(tz, req.fmt.intl) }) : t('school.settings.timeZoneUnset')}</span></div>
     <h3>${t('school.settings.gameSite')}</h3><p class="small muted">${t('school.settings.gameSiteText')}</p>
     <div class="field"><label for="set-chat">${t('school.settings.chat')}</label><select class="input" id="set-chat" name="chat"><option value="classmates" ${selected(st.chat === 'classmates')}>${t('school.settings.chatClassmates')}</option><option value="off" ${selected(st.chat === 'off')}>${t('school.settings.chatOff')}</option></select><span class="hint">${t('school.settings.chatHint')}</span></div>
     <div class="field"><label for="set-publishing">${t('school.settings.publishing')}</label><select class="input" id="set-publishing" name="publishing"><option value="school" ${selected(st.publishing === 'school')}>${t('school.settings.publishSchool')}</option><option value="public" ${selected(st.publishing === 'public')}>${t('school.settings.publishPublic')}</option></select></div>
@@ -213,7 +239,7 @@ const schoolApi = (req, res) => { const s = S.getSchool(req.params.id); if (!s |
 router.post('/api/schools/:id/settings', requireUser, (req, res) => {
   const s = schoolApi(req, res); if (!s) return;
   const x = b(req); const bool = v => v === true || v === '1' || v === 'true';
-  send(req, res, S.updateSchool(req.user, s.id, { name: x.name, settings: { teachersCreateClasses: x.teachersCreateClasses !== undefined ? bool(x.teachersCreateClasses) : undefined, allowOwnAccounts: x.allowOwnAccounts !== undefined ? bool(x.allowOwnAccounts) : undefined, chat: x.chat, publishing: x.publishing } }));
+  send(req, res, S.updateSchool(req.user, s.id, { name: x.name, settings: { teachersCreateClasses: x.teachersCreateClasses !== undefined ? bool(x.teachersCreateClasses) : undefined, allowOwnAccounts: x.allowOwnAccounts !== undefined ? bool(x.allowOwnAccounts) : undefined, chat: x.chat, publishing: x.publishing, timeZone: typeof x.timeZone === 'string' ? x.timeZone : undefined } }));
 });
 router.post('/api/schools/:id/staff', requireUser, rateLimit('school-add', 120, 3600e3), (req, res) => {
   const s = schoolApi(req, res); if (!s) return;

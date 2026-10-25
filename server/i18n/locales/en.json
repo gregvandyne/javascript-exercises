@@ -1241,7 +1241,10 @@
       "askAdmin": "Ask your school admin ({admins}) to add them on the school's People tab.",
       "addStaffLink": "Add staff on the People tab",
       "askNoAdmin": "{school} has no school admin yet. Ask the Magic Cups team to appoint one; they can then add staff on the school's People tab.",
-      "archivedToast": "{name} archived"
+      "archivedToast": "{name} archived",
+      "lessons": "Lessons",
+      "lastActivity": "Last activity",
+      "noActivity": "none yet"
     },
     "requests": {
       "title": "{count, plural, one {# student wants to join} other {# students want to join}}",
@@ -1311,7 +1314,11 @@
       "publishSchool": "Inside the school only",
       "publishPublic": "Can also share with everyone",
       "photos": "Profile photos of school accounts are seen only by their classmates, teachers and friends.",
-      "chatHint": "School accounts can only add classmates as friends."
+      "chatHint": "School accounts can only add classmates as friends.",
+      "timeZone": "Time zone",
+      "timeZoneNone": "Not set (days are counted in UTC)",
+      "timeZoneUnset": "Set your school's time zone so lessons open at midnight and due dates end at midnight where you are. Until then, nobody is late until 36 hours after the due day starts.",
+      "timeZoneHint": "Lessons open at midnight and due dates end at midnight in this zone. It's {time} there now."
     },
     "cards": {
       "title": "Login cards",
@@ -1355,7 +1362,8 @@
       "badTeacher": "Choose someone on the school's staff.",
       "adminNotStudent": "You look after Magic Cups, so you can't join a class as a student.",
       "isStudent": "{name} is a student here, so they can't be added as staff.",
-      "tickStudents": "Tick at least one student."
+      "tickStudents": "Tick at least one student.",
+      "badZone": "Pick a time zone from the list."
     },
     "classTabs": {
       "lessons": "Lessons",
