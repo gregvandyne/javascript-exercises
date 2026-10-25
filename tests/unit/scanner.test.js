@@ -19,8 +19,10 @@ test('fails: external link and script, form action', () => {
   assert.equal(scanVersion('<title>T</title><form action="/steal"><input></form>').status, 'fail');
   assert.equal(scanVersion('<title>T</title><div style="background:url(http://x.example.org/a.png)">x</div>').status, 'fail');
 });
-test('allows Google Fonts and cdnjs', () => {
-  assert.equal(scanVersion('<title>T</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito"><script src="https://cdnjs.cloudflare.com/ajax/libs/x/1/x.js"></script><div>x</div>').status, 'pass');
+test('allows Google Fonts; cdnjs libraries need a review', () => {
+  assert.equal(scanVersion('<title>T</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito"><div>x</div>').status, 'pass');
+  // an unknown cdnjs library is flagged for review, not passed
+  assert.equal(scanVersion('<title>T</title><script src="https://cdnjs.cloudflare.com/ajax/libs/x/1/x.js"></script><div>x</div>').status, 'flag');
 });
 test('flags flashing', () => {
   assert.equal(scanVersion(s('setInterval(()=>{document.body.style.background=on?"red":"blue";on=!on}, 100)')).status, 'flag');

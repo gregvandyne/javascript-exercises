@@ -39,12 +39,15 @@ test.after(() => fake.close());
 
 const { config } = await import('../../server/config.js');
 config.anthropicKey = 'sk-ant-test-fake';
+const fsmod = await import('node:fs');
+const exe = process.env.BRB_CHROMIUM || ['/opt/pw-browsers/chromium-1194/chrome-linux/chrome', '/opt/pw-browsers/chromium_headless_shell-1194/chrome-linux/headless_shell'].find(f => fsmod.existsSync(f));
 const auth = await import('../../server/auth.js');
 const games = await import('../../server/services/games.js');
 const { runTurn, providerName } = await import('../../server/builder/agent.js');
 const { loadChat } = await import('../../server/builder/chat.js');
 const { reviewVersion } = await import('../../server/services/review.js');
-const { SYSTEM_PROMPT } = await import('../../server/builder/prompt.js');
+const { SYSTEM_PROMPT, THREE_D_RULES } = await import('../../server/builder/prompt.js');
+const { threeImportMap } = await import('../../server/services/vendor.js');
 
 const GAME = '<title>Fox Hop</title><style>body{margin:0}</style><canvas id="c"></canvas><script>const CONFIG = { speed: 1 }; BRB.sfx.play("jump");</script>';
 
@@ -96,6 +99,40 @@ test('Claude provider: streams text, runs tools, makes versions, caches the syst
   assert.doesNotMatch(JSON.stringify(last.messages), /<canvas/);
 });
 
+test('3D: the fixed 3D rules block is sent only for 3D, and start_from_template copies Star Island in', async () => {
+  const u = auth.createUser({ username: 'ClaudeThreeD', password: 'secret1' }); const g = games.createGame(u.id, {});
+  script.push(
+    [{ type: 'tool_use', name: 'start_from_template', input: { template: 'island', notes: 'Started a 3D island' } }],
+    [{ type: 'tool_use', name: 'edit_game', input: { edits: [{ find: "  sky: 'day',", replace: "  sky: 'night'," }, { find: "  hero: '🐣',", replace: "  hero: '🦊'," }], notes: 'A fox at night' } }],
+    [{ type: 'text', text: 'Your 3D island is ready!' }],
+  );
+  const before = requests.length; const events = [];
+  const r = await runTurn({ user: u, gameId: g.id, text: 'make a 3D game with a fox', emit: (n, d) => events.push([n, d]) });
+  assert.equal(r.ok, true, JSON.stringify(events.filter(e => e[0] === 'error')));
+  const calls = requests.slice(before).filter(x => x.body.stream);
+  assert.equal(calls.length, 3);
+  const sys = calls[0].body.system;
+  assert.equal(sys[0].text, SYSTEM_PROMPT, 'the main prompt is unchanged (cache-friendly)');
+  assert.equal(sys[1].text, THREE_D_RULES); assert.deepEqual(sys[1].cache_control, { type: 'ephemeral' });
+  assert.match(sys[2].text, /CURRENT GAME: none yet/); assert.match(sys[3].text, /^LANGUAGE:/);
+  assert.ok(THREE_D_RULES.includes(threeImportMap()), 'the rules carry the exact pinned import map');
+  for (const s of ['start_from_template', 'fit3d', '60 to 75', 'reduced-motion', 'Chromebooks', 'GLTFLoader.parse', 'InstancedMesh', 'webglcontextlost']) assert.ok(THREE_D_RULES.includes(s), s);
+  assert.ok(calls[0].body.tools.some(t => t.name === 'start_from_template'));
+  assert.match(calls[1].body.system[2].text, /<current_game>[\s\S]*type="importmap"/, 'the template is the current game for the next step');
+  const v = games.getVersion(games.getGame(g.id).current_version_id);
+  assert.equal(v.number, 2); assert.equal(v.safety_status, 'pass', v.safety_report);
+  assert.match(v.html, /sky: 'night'/); assert.match(v.html, /hero: '🦊'/); assert.ok(v.html.includes(threeImportMap()));
+  // Later turns on a 3D game keep the block; a 2D game never gets it.
+  script.push([{ type: 'text', text: 'Sure!' }]);
+  await runTurn({ user: u, gameId: g.id, text: 'thanks', emit: () => {} });
+  assert.equal(requests.filter(x => x.body.stream).at(-1).body.system[1].text, THREE_D_RULES);
+  const g2 = games.createGame(u.id, {});
+  script.push([{ type: 'text', text: 'What kind of game?' }]);
+  await runTurn({ user: u, gameId: g2.id, text: 'a catching game with apples', emit: () => {} });
+  const sys2 = requests.filter(x => x.body.stream).at(-1).body.system;
+  assert.equal(sys2.length, 3); assert.ok(!sys2.some(b => b.text === THREE_D_RULES));
+});
+
 test('the model classifier can refuse what the word rules miss', async () => {
   const u = auth.createUser({ username: 'ClaudeKid2', password: 'secret1' }); const g = games.createGame(u.id, {});
   const before = requests.filter(x => x.body.stream).length;
@@ -106,7 +143,24 @@ test('the model classifier can refuse what the word rules miss', async () => {
 test('model review returns a structured verdict; flagged versions still go to a human', async () => {
   const r = await reviewVersion({ title: 'Fox', description: '', tags: '', category: 'arcade' }, { html: GAME, safety_status: 'pass', safety_report: '{}' });
   assert.equal(r.verdict, 'needs_changes'); assert.match(r.reasons[0], /hero/); assert.equal(r.by, config.builderModel);
-  const call = requests.at(-1).body; assert.equal(call.output_config.format.type, 'json_schema'); assert.match(call.messages[0].content, /<game>[\s\S]*Fox Hop/);
+  const call = requests.at(-1).body; assert.equal(call.output_config.format.type, 'json_schema');
+  const blocks = call.messages[0].content; // now a content array (text + any pictures)
+  assert.equal(blocks[0].type, 'text'); assert.match(blocks[0].text, /<game>[\s\S]*Fox Hop/);
+  assert.match(blocks[0].text, /Code:/, 'a small game is sent in full, not trimmed');
   const f = await reviewVersion({ title: 'Fox' }, { html: GAME, safety_status: 'flag', safety_report: '{}' });
   assert.equal(f.verdict, 'unavailable');
+});
+
+test('review attaches game pictures when screenshots are available', { skip: !exe ? 'no Chromium' : false, timeout: 60_000 }, async () => {
+  const snapshot = await import('../../server/services/snapshot.js');
+  config.snapshots = true; config.chromiumPath = exe;
+  try {
+    const r = await reviewVersion({ title: 'Fox', description: '', tags: '', category: 'arcade' }, { html: GAME, safety_status: 'pass', safety_report: '{}' });
+    assert.equal(r.verdict, 'needs_changes');
+    const blocks = requests.at(-1).body.messages[0].content;
+    const imgs = blocks.filter(b => b.type === 'image');
+    assert.ok(imgs.length >= 1, 'at least the title screen was attached');
+    assert.equal(imgs[0].source.type, 'base64'); assert.equal(imgs[0].source.media_type, 'image/jpeg');
+    assert.match(blocks[0].text, /Pictures: \d+ attached/);
+  } finally { config.snapshots = false; config.chromiumPath = ''; await snapshot.closeBrowser(); }
 });

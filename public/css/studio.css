@@ -19,6 +19,8 @@
 .tpl-t{font-weight:800;padding:6px 12px 0;line-height:1.2}
 .tpl-d{font-size:.86rem;color:var(--muted);padding:0 12px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .tpl-p{font-size:.8rem;font-weight:700;color:var(--text-2);padding:2px 12px 0}
+.tplcard.needs-newer .tplcover{opacity:.7}
+.tpl-needs{align-self:start;margin:4px 12px 0;font-size:.74rem;font-weight:800;color:var(--warn-ink);background:var(--warn-bg);border-radius:999px;padding:2px 9px}
 .mygames{list-style:none;margin:0;padding:0;display:grid;gap:12px}
 .mygame{display:grid;grid-template-columns:72px minmax(0,1fr) auto;gap:14px;align-items:center;padding:12px}
 .mygame .coverart{width:72px;height:72px;border-radius:var(--r-sm);--art:2.2rem}

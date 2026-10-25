@@ -1,13 +1,34 @@
-// Runs a game in a headless Chromium, the same way players get it (frameDocument + FRAME_CSP inside a sandboxed iframe),
+// Runs a game in a headless Chromium, the same way players get it (frameDocument + the frame CSP inside a sandboxed iframe),
 // and takes pictures: one of the title screen and one after tapping Play. Used for
 //   - cover pictures of Studio games (services/shots.js), and
 //   - the Builder's playtest_game tool, which shows the model what its game really looks like.
-// One browser, one game at a time, closed again when idle (the server is small). Off unless config.snapshots.
-// The game page can reach nothing but Google Fonts and cdnjs (the same hosts its CSP allows); everything else is aborted.
-import { frameDocument, FRAME_CSP, SANDBOX } from './frame.js';
+// One browser, one game at a time, closed again when idle (the server is small).
+//
+// Two modes:
+//   - Local (default; what Render runs): launch Chromium here, from a scrubbed environment and an empty
+//     temp working directory. On unless config.snapshots.
+//   - Remote: when SNAPSHOT_URL is set, send each job to a separate screenshot worker (server/shots-worker.js)
+//     over HTTP, so the browser runs in its own container with no database and no secrets. The worker runs
+//     the exact same code via runLocal().
+// The game page can reach nothing but Google Fonts, cdnjs and the self-hosted /vendor/three/ files (the same sources its
+// CSP allows); the vendor files are answered from disk, so 3D games work the same locally and in the worker.
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { frameDocument, frameCsp, SANDBOX } from './frame.js';
+import { VENDOR_PATH } from './vendor.js';
 import { config } from '../config.js';
 
 const HOST = 'http://game.invalid';
+const VENDOR_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../public', `.${VENDOR_PATH}`);
+/** A /vendor/three/... request -> the file on disk, or null (only plain .js/LICENSE names, never outside the folder). */
+function vendorFile(url) {
+  const m = /^\/vendor\/three\/([0-9][0-9a-z.-]{0,30})\/([a-z0-9][a-z0-9.-]{0,60})$/i.exec(new URL(url).pathname);
+  if (!m || m[1].includes('..') || m[2].includes('..')) return null;
+  const f = path.join(VENDOR_DIR, m[1], m[2]);
+  return f.startsWith(VENDOR_DIR + path.sep) && fs.existsSync(f) && fs.statSync(f).isFile() ? f : null;
+}
 const ALLOWED = /^https:\/\/(fonts\.googleapis\.com|fonts\.gstatic\.com|cdnjs\.cloudflare\.com)\//;
 const IDLE_MS = 45_000;
 const JOB_MS = 40_000;
@@ -18,19 +39,26 @@ export const SIZES = {
 // Words on a start button, in the site's languages (lower case).
 const PLAY_WORDS = /\b(play|start|go|begin|let'?s go|tap to (play|start))\b|jouer|commencer|jugar|empezar|comenzar|spielen|starten|los geht|jogar|começar|iniciar|gioca|inizia|spelen|begin|играть|начать|старт|スタート|あそぶ|はじめる|開始|遊戲|שחק|התחל|العب|ابدأ|▶|►/i;
 
-let browserP = null, idleTimer = null, chain = Promise.resolve(), launches = 0;
+let browserP = null, idleTimer = null, chain = Promise.resolve(), launches = 0, workDir = null;
 
-export const enabled = () => !!config.snapshots;
+// Screenshots are possible if a remote worker is configured, or local Chromium is turned on.
+export const enabled = () => !!config.snapshotUrl || !!config.snapshots;
+const remote = () => !!config.snapshotUrl;
 
 async function browser() {
   if (browserP) { const b = await browserP.catch(() => null); if (b && b.isConnected()) return b; browserP = null; }
   browserP = (async () => {
     const { chromium } = await import('playwright-core');
     launches++;
+    // An empty temp directory for the browser's profile, downloads and working directory, so Chromium
+    // never reads or writes the server's own folder (where the database and backups live).
+    if (!workDir || !fs.existsSync(workDir)) workDir = fs.mkdtempSync(path.join(os.tmpdir(), 'brb-chromium-'));
     return chromium.launch({
       ...(config.chromiumPath ? { executablePath: config.chromiumPath } : {}),
+      cwd: workDir,
+      downloadsPath: workDir,
       // A bare environment: the browser never sees the server's secrets (API key, session secret).
-      env: { PATH: process.env.PATH || '/usr/bin:/bin', HOME: process.env.HOME || '/tmp', ...(process.env.FONTCONFIG_PATH ? { FONTCONFIG_PATH: process.env.FONTCONFIG_PATH } : {}) },
+      env: { PATH: process.env.PATH || '/usr/bin:/bin', HOME: workDir, TMPDIR: workDir, ...(process.env.FONTCONFIG_PATH ? { FONTCONFIG_PATH: process.env.FONTCONFIG_PATH } : {}) },
       // The container has no user namespaces for Chromium's own sandbox; the game is still inside the iframe sandbox + CSP.
       args: ['--no-sandbox', '--disable-dev-shm-usage', '--disable-gpu', '--mute-audio', '--no-first-run', '--disable-extensions',
         '--disable-background-networking', '--renderer-process-limit=2', '--js-flags=--max-old-space-size=128'],
@@ -42,6 +70,7 @@ export async function closeBrowser() {
   clearTimeout(idleTimer);
   const p = browserP; browserP = null;
   if (p) { try { const b = await p; await b.close(); } catch { /* already gone */ } }
+  if (workDir) { try { fs.rmSync(workDir, { recursive: true, force: true }); } catch { /* ignore */ } workDir = null; }
 }
 const idle = () => { clearTimeout(idleTimer); idleTimer = setTimeout(() => { closeBrowser(); }, IDLE_MS); idleTimer.unref?.(); };
 
@@ -97,13 +126,43 @@ function startTarget(words) {
 }
 
 /**
- * Run a game and photograph it.
+ * Run a game and photograph it (remote worker when SNAPSHOT_URL is set, else local Chromium).
  * opts: { size: 'cover'|'phone', orientation: 'portrait'|'landscape'|'any', lang, dir, title, titleMs, playMs, scale, quality }
  * Returns { title: Buffer, play: Buffer|null, started, errors: [], before: inspect(), after: inspect() }.
  */
 export function runGame(gameHtml, opts = {}) {
   if (!enabled()) return Promise.reject(new Error('Screenshots are off on this server'));
+  if (remote()) return runRemote(gameHtml, opts);
+  return runLocal(gameHtml, opts);
+}
+
+/** Always run locally in this process (one game at a time, time-limited). The worker calls this. */
+export function runLocal(gameHtml, opts = {}) {
   return serial(() => capture(gameHtml, opts));
+}
+
+// ---- Remote worker client / wire format ---------------------------------------------
+// The result travels as JSON, so the JPEG buffers go as base64.
+export function resultToJson(r) {
+  return { ...r, title: r.title ? r.title.toString('base64') : null, play: r.play ? r.play.toString('base64') : null };
+}
+function jsonToResult(j) {
+  return { ...j, title: j.title ? Buffer.from(j.title, 'base64') : null, play: j.play ? Buffer.from(j.play, 'base64') : null };
+}
+async function runRemote(gameHtml, opts) {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), JOB_MS + 15_000);
+  try {
+    const res = await fetch(`${config.snapshotUrl}/run`, {
+      method: 'POST', signal: ctrl.signal,
+      headers: { 'content-type': 'application/json', authorization: `Bearer ${config.shotsToken}` },
+      body: JSON.stringify({ html: String(gameHtml || ''), opts: opts || {} }),
+    });
+    if (!res.ok) throw new Error(`screenshot worker ${res.status}`);
+    const j = await res.json();
+    if (!j || !j.title) throw new Error('screenshot worker returned no picture');
+    return jsonToResult(j);
+  } finally { clearTimeout(timer); }
 }
 
 async function capture(gameHtml, opts) {
@@ -115,10 +174,28 @@ async function capture(gameHtml, opts) {
   const ctx = await b.newContext({ viewport: shape, deviceScaleFactor: o.scale, hasTouch: true, isMobile: false, reducedMotion: 'no-preference', serviceWorkers: 'block', locale: o.lang });
   const errors = [];
   try {
+    // Screenshots never need WebRTC, and it is the one outbound path ctx.route cannot abort (it is not HTTP).
+    // Remove its constructors from every frame (top and any nested one), so a hostile game cannot open a
+    // UDP/WebRTC channel out of the rendering container. Runs before the game's code in each frame.
+    await ctx.addInitScript(() => {
+      try {
+        for (const k of Object.getOwnPropertyNames(window)) {
+          if (/^(?:webkit|moz)?RTC/.test(k)) {
+            try { Object.defineProperty(window, k, { value: undefined, writable: false, configurable: false }); }
+            catch (e) { try { window[k] = undefined; } catch (e2) { /* ignore */ } }
+          }
+        }
+      } catch (e) { /* ignore */ }
+    });
     await ctx.route('**/*', route => {
       const u = route.request().url();
       if (u === `${HOST}/`) return route.fulfill({ status: 200, contentType: 'text/html; charset=utf-8', body: host });
-      if (u === `${HOST}/frame`) return route.fulfill({ status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'content-security-policy': FRAME_CSP }, body: doc });
+      if (u === `${HOST}/frame`) return route.fulfill({ status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'content-security-policy': frameCsp(HOST) }, body: doc });
+      if (u.startsWith(`${HOST}${VENDOR_PATH}`)) {
+        const f = vendorFile(u);
+        if (!f) return route.fulfill({ status: 404, body: '' });
+        return route.fulfill({ status: 200, headers: { 'content-type': f.endsWith('.js') ? 'text/javascript; charset=utf-8' : 'text/plain; charset=utf-8', 'access-control-allow-origin': '*', 'cross-origin-resource-policy': 'cross-origin' }, body: fs.readFileSync(f) });
+      }
       if (ALLOWED.test(u)) return route.continue();
       return route.abort();
     });

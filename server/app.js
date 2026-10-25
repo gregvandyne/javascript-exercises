@@ -2,6 +2,8 @@
 import { countVisits } from './services/traffic.js';
 import express from 'express';
 import path from 'node:path';
+import fs from 'node:fs';
+import zlib from 'node:zlib';
 import { fileURLToPath } from 'node:url';
 import { config } from './config.js';
 import { sessionMiddleware, csrfCheck } from './auth.js';
@@ -62,7 +64,9 @@ export function createApp() {
   app.use((req, res, next) => {
     const t0 = process.hrtime.bigint();
     res.on('finish', () => {
-      if (!config.logRequests || req.path.startsWith('/css/') || req.path.startsWith('/fonts/')) return;
+      // originalUrl, because a mounted handler (e.g. /vendor) that ends the response leaves req.path stripped.
+      const p = req.originalUrl.split('?')[0];
+      if (!config.logRequests || p.startsWith('/css/') || p.startsWith('/fonts/') || p.startsWith('/vendor/')) return;
       log('info', 'request', { method: req.method, path: req.path, status: res.statusCode, ms: Number(process.hrtime.bigint() - t0) / 1e6, user: req.user ? req.user.id : null });
     });
     // A connection that closes before the response is done (e.g. a phone dropping a long Builder stream).
@@ -81,6 +85,46 @@ export function createApp() {
   // Moving day (see docs/deploy-aws.md / deploy-azure.md, cut-over): the old host redirects, or says "back soon".
   if (config.movedTo) app.use(movedTo);
   if (config.maintenance) app.use(maintenancePage);
+  // Self-hosted game libraries (public/vendor/three/<version>/ for 3D games). A versioned folder never changes, so it is
+  // cached for a year. Game frames are opaque-origin and load these as module scripts, which needs CORS.
+  // A CORS preflight (only sent if something adds request headers, e.g. a test harness) is answered too: public files, no credentials.
+  app.use('/vendor', (req, res, next) => {
+    if (req.method !== 'OPTIONS') return next();
+    const asked = String(req.get('access-control-request-headers') || '');
+    res.set({ 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'GET, HEAD', 'Access-Control-Max-Age': '86400', ...(/^[\w-]+(\s*,\s*[\w-]+)*$/.test(asked) ? { 'Access-Control-Allow-Headers': asked } : {}) });
+    res.status(204).end();
+  });
+  // The three.js files are large text, so compress them. The app has no general compression (static HTML is
+  // small and first-paint-critical), so this is scoped to /vendor's library files only. Each compressed form is
+  // built once and kept in memory (the folder is immutable); the browser decompresses before checking SRI.
+  const VENDOR_ROOT = path.join(ROOT, 'public/vendor');
+  const vendorGz = new Map();
+  const vendorCompressed = (abs, enc) => {
+    const key = enc + '|' + abs;
+    if (vendorGz.has(key)) return vendorGz.get(key);
+    const raw = fs.readFileSync(abs);
+    const out = enc === 'br' ? zlib.brotliCompressSync(raw, { params: { [zlib.constants.BROTLI_PARAM_QUALITY]: 11 } }) : zlib.gzipSync(raw, { level: 9 });
+    if (vendorGz.size < 64) vendorGz.set(key, out);
+    return out;
+  };
+  app.use('/vendor', (req, res, next) => {
+    if (req.method !== 'GET') return next();
+    const rel = decodeURIComponent(req.path.replace(/^\/+/, ''));
+    if (rel.includes('..') || !/\.(js|css|json)$/i.test(rel)) return next();   // only text; other files via express.static
+    const enc = /\bbr\b/.test(req.headers['accept-encoding'] || '') ? 'br' : /\bgzip\b/.test(req.headers['accept-encoding'] || '') ? 'gzip' : null;
+    if (!enc) return next();
+    const abs = path.join(VENDOR_ROOT, rel);
+    if (!abs.startsWith(VENDOR_ROOT + path.sep) || !fs.existsSync(abs) || !fs.statSync(abs).isFile()) return next();
+    let body; try { body = vendorCompressed(abs, enc); } catch { return next(); }
+    res.set({
+      'Content-Type': rel.endsWith('.css') ? 'text/css; charset=utf-8' : rel.endsWith('.json') ? 'application/json; charset=utf-8' : 'text/javascript; charset=utf-8',
+      'Content-Encoding': enc, 'Vary': 'Accept-Encoding',
+      'Cache-Control': 'public, max-age=31536000, immutable',
+      'Access-Control-Allow-Origin': '*', 'Cross-Origin-Resource-Policy': 'cross-origin',
+    });
+    res.send(body);
+  });
+  app.use('/vendor', express.static(path.join(ROOT, 'public/vendor'), { index: false, immutable: true, maxAge: '365d', setHeaders: res => res.set({ 'Access-Control-Allow-Origin': '*', 'Cross-Origin-Resource-Policy': 'cross-origin' }) }));
   app.use(express.static(path.join(ROOT, 'public'), { maxAge: config.env === 'production' ? '1h' : 0, index: false }));
   app.use(express.json({ limit: '3mb', ...NO_INFLATE }));
   app.use(express.text({ type: 'text/plain', limit: '64kb', ...NO_INFLATE }));

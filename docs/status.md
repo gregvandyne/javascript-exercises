@@ -33,7 +33,8 @@ _Last updated: 2026-10-25_
 | **13 site languages**: 🌐 picker (mouse, keyboard, phone, no-JS links), `?lang=` → cookie → account → Accept-Language → en, choice saved to the account, `<html lang dir>`, RTL for he/ar, English fallback per key, `BRB.user.lang` in games | unit `i18n.test.js`, e2e `i18n.spec.js`, RTL screenshots of home, game, play, Studio, chat, friends and Me |
 | Locale-file guard for translators: no extra keys, placeholders kept, code keys exist, notes valid (`npm run i18n:check`) | unit `i18n.test.js` |
 | Phone numbers and emails in full-width or Arabic-Indic digits/letters are refused; per-language word lists apply to everyone | safety `i18n-filters.test.js` |
-| 7 starter templates pass the scanner and play to the results screen | unit `templates.test.js` + manual headless run |
+| 8 starter templates pass the scanner and play to the results screen | unit `templates.test.js` + manual headless run |
+| **3D games, step 1**: Star Island template (3D, 13 languages), self-hosted pinned Three.js r185.1 (one import map with SRI, everything else fails the scan), frame CSP allows only the site's `/vendor/three/`, device-check card (no import maps / no WebGL 2 / lost context), `BRB.fx.fit3d` and a WebGL-safe `fit`, covers of 3D games (local and worker), Builder 3D rules + `start_from_template`, mock 3D edits | unit `vendor.test.js`, `three-frame.test.js` (real Chromium), `templates.test.js`, `builder.test.js`, `builder-claude.test.js`, `shots-worker.test.js`; e2e `three.spec.js` |
 | Every page at 390 px and 1280 px, light and dark: no horizontal overflow, reviewed by eye | `npm run screenshots` |
 | Docker: image boots, seeds, serves `/health`, home and game pages | built locally with pre-installed deps (see limits) |
 | Container start and stop: tini → node (no shell or su left), root-owned disk made writable without recursion, chown refused (network share) is only a warning, SIGTERM during a Builder stream lets it finish and exits 0 (directly and behind Caddy), `/health` 503 on an unwritable disk, `REQUIRE_SESSION_SECRET`, worker-style read-only run as uid 1000 | Docker 29 here, test copy of the Dockerfile (see limits) |
@@ -44,7 +45,7 @@ _Last updated: 2026-10-25_
 | `deploy/` stack: compose config, Caddy (HTTPS, gzip but not the event stream, `X-Forwarded-For` replaced, headers), app not published; worker off by default (profile); app refuses to start when the data folder is missing; trust by Caddy's subnet: 31 sign-ups with fake `X-Forwarded-For` hit the 30/hour limit both through Caddy and from the worker's network (with `TRUST_PROXY=1` the worker network got all 31) | `docker compose up` with a local-CA certificate |
 | Graceful shutdown, `/health`, `PUBLIC_URL`, TRUST_PROXY warning, secret rules, on/off settings, journal mode, maintenance / moved modes, export scripts | unit `deploy.test.js` |
 
-Counts at this commit: unit + safety 234/235 with 1 skipped here (the entrypoint test needs root and a `node` user; it passes inside the image), e2e 49/49.
+Counts at this commit: see the latest PR (unit + safety and e2e run on the merged branch).
 
 ## Not verified / known limits
 - **Real Claude calls are untested** (no `ANTHROPIC_API_KEY` here). Request shapes (cache_control, tools, models, review schema) are tested against a local fake Messages API. Set the key and try one Studio game before launch.
@@ -64,4 +65,4 @@ Counts at this commit: unit + safety 234/235 with 1 skipped here (the entrypoint
 1. Add `ANTHROPIC_API_KEY`, build a few games end to end, tune the system prompt.
 1. Fill the 12 locale files and word lists (see `server/i18n/README.md`; `npm run i18n:check` shows progress), then let the launch games read `BRB.user.lang`.
 2. Real-time multiplayer and live chat over WebSockets (plus Redis for presence/rate limits).
-5. Builder analytics (retention, where players quit), game remixing, and 3D later.
+5. Builder analytics (retention, where players quit), game remixing, and more 3D templates (3D step 2).

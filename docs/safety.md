@@ -15,17 +15,50 @@ Every game, whether it came from our team or from a kid, runs the same way.
   The Studio preview uses the exact same sandbox as the play page.
 - The game is served from its own route (`/frame/<token>`) with a strict Content Security Policy:
   no network at all (`connect-src 'none'`), no forms (`form-action 'none'`), no other pages may embed it,
-  scripts only inline or from `cdnjs.cloudflare.com`, styles and fonts only from Google Fonts.
+  scripts only inline, from `cdnjs.cloudflare.com`, or from the site's own `/vendor/three/` folder (the one 3D library,
+  named by the site's origin plus that path, so no other script on the site can run in a game), styles and fonts only
+  from Google Fonts.
 - The token in the frame link is signed and expires. Studio previews use a preview token, which also switches
   saving off.
+- **Two network gaps the CSP cannot cover are closed in code, before any game code runs** (`public/sdk/brb-sdk.js`,
+  the "Lockdown" block):
+  - **WebRTC.** No browser has a CSP directive for WebRTC, so `connect-src 'none'` would not stop a data channel.
+    The SDK deletes every WebRTC entry point (`RTCPeerConnection`, `webkitRTCPeerConnection`, `RTCDataChannel`,
+    `RTCSessionDescription`, `RTCIceCandidate` and the rest) from the frame's window, non-restorable.
+  - **Borrowing another window.** A game could build an `<iframe>`/`<object>`/`<embed>` at runtime and reach a
+    fresh window through it (a new browsing context inherits the sandbox and CSP, but WebRTC lives outside the CSP).
+    The SDK makes `contentWindow`/`contentDocument`/`getSVGDocument()` return `null`, and screens every DOM-insertion
+    path (`appendChild`/`insertBefore`, `insertAdjacentElement`, `innerHTML`/`outerHTML`, `insertAdjacentHTML`,
+    `setHTMLUnsafe`, `Range.insertNode`/`surroundContents`, `document.write`, …) — including a plain wrapper that
+    hides a frame among its descendants — so a frame element can never join the page; a `MutationObserver` backstop
+    pulls out anything that still reaches the document. With no child browsing context, `window.frames` stays empty
+    and `window[0]` stays `undefined`, so there is no other window to borrow.
 - Games can only talk to the website through a tiny helper called `window.BRB` (see `docs/sdk.md`).
   The page around the game checks where every message came from and what shape it has, and the server checks
   and rate-limits everything again.
 - Before a game is stored or served we strip things a game never needs: `<base>`, `<meta http-equiv>`,
   `<iframe>`, `<object>`, `<embed>`, external `<link>`s (except Google Fonts) and form targets.
+- **Code libraries are pinned.** The CSP allows scripts from `cdnjs.cloudflare.com`, but the scanner only passes a
+  short, reviewed list of exact library files (empty today). Any other cdnjs script or import-map entry is *flagged*
+  for a human, because the scanner cannot read a big minified bundle. (WebAssembly, Workers and `blob:`/`data:` script
+  loading stay blocked by the CSP — we do **not** add `wasm-unsafe-eval` or `worker-src`.)
+- **3D games use one self-hosted, pinned Three.js** (r185.1, in `public/vendor/three/0.185.1/` with its MIT licence).
+  A game loads it with exactly one import map whose `integrity` lines carry the files' sha384 hashes, so a changed file
+  would not run (in browsers that check import-map integrity: Chrome 127+, Safari 18+, Firefox 138+). The scanner passes
+  that exact form and **fails** every other way of loading Three.js (another version, another host, no map, no integrity,
+  add-ons). There are no add-ons and nothing can be loaded by URL, so a 3D game is still one self-contained file.
+  The files are served with a year of immutable caching and `Access-Control-Allow-Origin: *` (the opaque-origin frame
+  loads them as module scripts, which needs CORS); they are public library files, never anything about a player.
 - Each version must be under 2 MB.
+- **Cover pictures and playtests run the game in a throwaway browser.** The headless Chromium that takes screenshots
+  runs the game in the very same wrapper players get (sandboxed iframe + the frame CSP), launched from a scrubbed
+  environment and an empty temp working directory so it never sees the server's secrets or folder. It can also run in
+  a **separate container with no database and no secrets** (`server/shots-worker.js`, used when `SNAPSHOT_URL` is set).
+  The 3D library is answered from the code's own `public/vendor` files in both cases, never fetched from anywhere.
+  Every other request is aborted, and WebRTC is removed in the screenshot browser (the one outbound path routing
+  cannot abort), so a game it renders has no way out of that container.
 
-Code: `server/services/frame.js`, `server/services/sanitize.js`, `server/routes/games.js`, `public/sdk/brb-sdk.js`.
+Code: `server/services/frame.js`, `server/services/sanitize.js`, `server/services/vendor.js`, `server/routes/games.js`, `public/sdk/brb-sdk.js`.
 
 ## 2. The scanner: a robot checks every version
 
@@ -39,13 +72,26 @@ A version gets one of three results:
 | ⛔ **fail** | Cannot be shared at all until it is fixed. |
 
 It **fails** a version that tries to reach the internet (`fetch`, `XMLHttpRequest`, `WebSocket`, `EventSource`,
-`sendBeacon`, `import()`), escape the box (`window.top`, `parent.location`, `window.open`, navigating away),
+`sendBeacon`, `import()`, WebRTC), escape the box (`window.top`, `parent.location`, `window.open`, navigating away),
 read cookies, build code from text (`eval`, `new Function`, string timers), ask for the camera, microphone,
 location or notifications, link or load scripts from outside, submit forms, show rude words, or ask players
 for personal details ("type your address").
 
-It **flags** fast flashing (anything that flips colours more than three times a second, in code or CSS),
-hidden text, and anything that looks like a phone number or email.
+It also **sees through the obvious ways to hide those names from a word search.** Before the word rules run, the
+scanner rebuilds pieces that were joined together — `'RTC'+'PeerConnection'`, `String.fromCharCode(...)`,
+`['f','e','t','c','h'].join('')`, `atob('...')` — and checks reaching a feature by name on the window
+(`window['fetch']`, `self['RTCPeerConnection']`). A blocked name that only appears once the pieces are joined is
+treated as a deliberate dodge and **fails**. (These obfuscations are also dead on arrival inside the frame — the CSP
+blocks the network ones and the SDK lockdown removes WebRTC — but the scanner should never quietly pass them.)
+
+It **fails** a 3D game that loads Three.js any way but the one pinned, self-hosted import map (see section 1), with a
+message that tells the Builder exactly what to use instead.
+
+It **flags** (so a person looks before it can go Public) building or looking inside a frame
+(`createElement('iframe')`, `.contentWindow`, `window.frames`, `document.write`) — all of which the SDK lockdown
+already neutralises — any **cdnjs library that is not on the pinned allow-list**, fast flashing (anything that flips
+colours more than three times a second, in code or CSS), hidden text, and anything that looks like a phone number or
+email.
 
 In the Studio the result is shown under the preview in plain words. A failed version has a
 **"Ask the Builder to fix it"** button that sends the problems back to the Builder.
@@ -135,10 +181,15 @@ Builders pick who can play:
 | 👫 Friends | the builder's accepted friends | the scan must not fail |
 | 🌍 Everyone | everybody | the scan must not fail **and** a review |
 
-**Review for "Everyone"** (`server/services/review.js`): Claude reads the game's visible text, its title, description and
-tags, the scan result and a short part of its code, and answers with a structured verdict: allowed, needs changes (with
-kid-friendly reasons the builder sees), or blocked. A **flagged** version is never approved automatically. If there is no
-API key, or the review fails for any reason, the game waits in the **human review queue** for an admin.
+**Review for "Everyone"** (`server/services/review.js`): a model reads the game's title, description and tags, the scan
+result, its visible text, its code (the whole game for anything under ~60 KB, head + tail for bigger ones) **and one or
+two real pictures of the game running** — the title screen and a moment of play — and answers with a structured verdict:
+allowed, needs changes (with kid-friendly reasons the builder sees), or blocked. The pictures let the review catch things
+that are only visible on screen (a copied character, a scary scene) and not in the text. Pictures reuse the cover already
+taken for that version when there is one, or a fresh snapshot is taken with a short time limit so publishing never hangs;
+if screenshots are off or time out, the review goes ahead on the text and code alone. A **flagged** version is never
+approved automatically. If there is no API key, or the review fails for any reason, the game waits in the **human review
+queue** for an admin.
 
 **Updating a live game.** Builders can keep improving games after publishing. While an update waits for review, players
 keep playing the old version. Only `server/services/publish.js` can move a version live.
@@ -169,7 +220,51 @@ child cannot get around the filter by switching language. Quick-chat phrases are
 language; typed messages are never machine-translated. Usernames stay Latin letters and digits in every language.
 (See `server/services/textfilter.js` and `tests/safety/i18n-filters.test.js`.)
 
-## 9. Honest limits of what the browser can prove
+## 9. What the game sandbox guarantees, and its honest limits
+
+**The wall.** The guarantee a game cannot get around is the browser's own: an opaque-origin iframe with
+`sandbox="allow-scripts allow-pointer-lock allow-orientation-lock"` (never `allow-same-origin`) under a CSP with
+`connect-src 'none'`, `default-src 'none'`, no `allow-popups`, no `wasm-unsafe-eval`, no `worker-src`. A game cannot
+reach the website's origin, read its cookies or storage, open a window, start a Worker, run WebAssembly, or make a
+`fetch`/`XHR`/`WebSocket`/`EventSource` call. It can draw, play sound, use WebGL (so real 3D works), and talk to the
+page only through `postMessage`, which both the page and the server re-check.
+
+**One thing even the CSP does not fully contain: a frame navigating *itself*.** No CSP directive restricts where a
+frame may send *itself* (there is no `navigate-to`/`form-action` for this any more), so a game can point its own
+`location` at an outside URL. That makes **one** request leave, with anything the game put in the URL — so the frame
+is **not** a perfect network jail. We bound it: the play page watches the frame and, on any unexpected navigation,
+pins it straight back to the game (`public/js/play.js`), so an attacker page never stays on screen; but the first
+request still leaks once. Everything else — `fetch`, `XHR`, `WebSocket`, `EventSource`, `sendBeacon`, images, CSS
+`@import`/`url()`, fonts, `data:`/`blob:` — is blocked by the CSP (verified in real Chromium, zero egress).
+
+**Two more things the CSP does not cover, closed in the SDK** (verified in real Chromium against a hostile game — see
+`tests/unit/sandbox-lockdown.test.js`): WebRTC (removed; no browser has a CSP directive for it) and borrowing a
+freshly-built frame's window (no frame element can be attached, so there is no second window with un-removed
+constructors). We tested the paths a game would actually use: deleting and re-adding the WebRTC constructors,
+`iframe`/`object`/`embed`/`srcdoc`, `appendChild`/`insertBefore`, `insertAdjacentElement`, a wrapper `<div>` hiding a
+frame descendant, `innerHTML`/`insertAdjacentHTML`/`setHTMLUnsafe`, `Range.insertNode`, `document.write`, `DOMParser`,
+`window.frames`/`window[0]`.
+
+**3D.** WebGL gives a game the graphics chip, which is a bigger and older part of the browser than plain drawing. It
+stays inside the same sandbox and CSP (no network, no origin), and the 3D library is a single pinned, self-hosted build,
+so the only new code is Three.js itself, reviewed once per version bump. For 3D games the frame tells the SDK what the
+game needs; a device without WebGL 2 or import maps (for example an iPad still on iPadOS 15), or one whose 3D picture is
+lost and not restored, gets a friendly "This game needs a newer device or browser" card instead of a blank screen. The
+Builder's 3D rules keep games comfortable (field of view 60–75, a smooth follow camera, no shake or flashing, reduced
+motion respected) and light enough for school Chromebooks (pixel ratio ≤ 1.5 with an automatic quality ladder).
+
+**Honest limits.** The SDK lockdown is defence-in-depth layered **on top of** the CSP, not the wall itself. It relies
+on running first — which it does, because it is inlined ahead of the game's code — and on the list of entry points we
+enumerated; a brand-new browser API in some future engine could need adding. That is why the static scanner also
+*flags* frame-building and unknown cdnjs libraries for a human even though the SDK already neutralises them, and why an
+unreviewed cdnjs bundle never goes Public on its own. The scanner itself is a static text check, not a interpreter: it
+sees through the common ways to hide a name but is not a guarantee on its own — it decides pass vs. "a person looks",
+and the CSP + lockdown are what actually contain the code. The headless Chromium that makes covers and playtests runs
+with `--no-sandbox` (the container has no user namespaces), but the game is still inside the iframe sandbox + CSP, and
+the browser is launched from a scrubbed environment and an empty working directory (or a separate container with no
+database or secrets), so a game it runs cannot read anything that matters.
+
+## 10. Honest limits of what the browser can prove
 
 Games run in a locked sandbox with no network, so a game cannot cheat the website — but a **score** a game reports, and a
 student **marking a game step done**, are things the player's own browser asserts. We bound the abuse (a score only counts
@@ -192,7 +287,7 @@ away), and someone inside a school who scripts 1000 wrong sign-ins can block sig
 up to 15 minutes. At the edge (AWS WAF / Azure Front Door rate rules) such floods should be stopped before they reach
 the app.
 
-## 10. Data, and what we do not do
+## 11. Data, and what we do not do
 
 The same facts as the grown-ups page (`/parents`, text in `info.parents.*`), kept to what is true today:
 

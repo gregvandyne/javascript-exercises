@@ -188,7 +188,7 @@ server/            app factory (app.js), entry (index.js), shutdown.js, site.js 
   builder/         Builder agent loop, providers (Claude + mock), screening, templates/
   views/           layout + components (server-rendered HTML)
   i18n/            languages: index.js (t, negotiation, Intl), locales/<code>.json, notes.json, blocklists/, README for translators
-public/            css/app.css (design system), js/ (one small module per page), sdk/brb-sdk.js (in-frame SDK), fonts (Bricolage Grotesque), icons (made by scripts/icons.js)
+public/            css/app.css (design system), js/ (one small module per page), sdk/brb-sdk.js (in-frame SDK), fonts (Bricolage Grotesque), icons (made by scripts/icons.js), vendor/three/<version>/ (the pinned, self-hosted Three.js for 3D games; see docs/decisions.md to bump it)
 seed-games/        the launch games (HTML + metadata JSON)
 scripts/           seed.js, import-game.js, backup.js, rollup.js, screenshots.js, icons.js (the logo icons in public/icons), contrast.js (colour contrast of the design tokens),
                    entrypoint.sh (container start), export-session-secret.js, export-data.js and upload-file.js (moving hosts)

@@ -75,6 +75,12 @@ export const config = {
   // Headless Chromium for game screenshots (cover pictures, Builder playtests). On in production; BRB_SNAPSHOTS=1/0 forces it.
   snapshots: process.env.BRB_SNAPSHOTS ? process.env.BRB_SNAPSHOTS === '1' : (process.env.NODE_ENV || 'development') === 'production',
   chromiumPath: process.env.BRB_CHROMIUM || '',
+  // Remote screenshot worker. When SNAPSHOT_URL is set, the app sends every screenshot/playtest job to
+  // that worker over HTTP instead of launching Chromium itself, so the browser can run in a separate
+  // container with no database or secrets. SHOTS_TOKEN is the shared bearer secret. Unset = local Chromium.
+  snapshotUrl: (process.env.SNAPSHOT_URL || '').replace(/\/+$/, ''),
+  shotsToken: process.env.SHOTS_TOKEN || '',
+  shotsPort: num(process.env.SHOTS_PORT, 4900),
   adminUsername: process.env.ADMIN_USERNAME || 'admin',
   adminPassword: process.env.ADMIN_PASSWORD || '',
   chatDailyLimit: num(process.env.CHAT_DAILY_LIMIT, 300),
