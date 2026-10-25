@@ -6,15 +6,14 @@ export function allow(key, max, windowMs) {
   if (!b || b.reset < t) { b = { n: 0, reset: t + windowMs }; buckets.set(key, b); }
   b.n++; return b.n <= max;
 }
-/** Express middleware: limit per user (or IP) per route name. msgKey: an i18n key for the kid-friendly "slow down" message. */
-/** The client key for anonymous limits: the real socket address, not a client-supplied header. X-Forwarded-For is only
- *  trusted when `trust proxy` is set to a real proxy, so this can't be reset by a spoofed header on a direct connection. */
-export const clientKey = req => (req.socket && req.socket.remoteAddress) || req.ip || 'anon';
 /** Current count in a window without incrementing it (for "check, then only penalise failures" flows like login). */
 export function count(key) { const b = buckets.get(key); return b && b.reset > Date.now() ? b.n : 0; }
+/** Express middleware: limit per user (or IP) per route name. msgKey: an i18n key for the kid-friendly "slow down" message. */
 export function rateLimit(name, max, windowMs, msgKey = 'errors.api.slowDown') {
   return (req, res, next) => {
-    const who = req.user ? req.user.id : clientKey(req);
+    // req.ip: the socket address when `trust proxy` is off (direct, unspoofable) or the real client IP behind a
+    // configured proxy. Keeping trust proxy correct (default off) is what stops X-Forwarded-For spoofing.
+    const who = req.user ? req.user.id : (req.ip || 'anon');
     if (allow(`${name}:${who}`, max, windowMs)) return next();
     res.status(429).json({ error: tReq(req)(msgKey) });
   };
