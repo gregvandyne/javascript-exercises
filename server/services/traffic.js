@@ -7,6 +7,7 @@ import crypto from 'node:crypto';
 import { q, today } from '../db.js';
 import { config } from '../config.js';
 import { register } from './jobs.js';
+import { ipOf } from './ratelimit.js';
 
 const SKIP = /^\/(api|frame|shots|covers|sdk|js|css|fonts|img|health|admin|favicon|robots|manifest)/;
 const BOTS = /bot|crawl|spider|slurp|preview|monitor|uptime|curl|wget|python|node-fetch|headless|lighthouse|render/i;
@@ -32,7 +33,7 @@ export function countVisits(req, res, next) {
   if (!ua || BOTS.test(ua)) return next();
   res.on('finish', () => {
     if (res.statusCode !== 200 || !String(res.getHeader('content-type') || '').includes('text/html')) return;
-    try { recordView(req.path, req.ip || '', ua); } catch { /* stats must never break a page */ }
+    try { recordView(req.path, ipOf(req), ua); } catch { /* stats must never break a page */ }
   });
   next();
 }

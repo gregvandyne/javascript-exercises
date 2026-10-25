@@ -59,7 +59,6 @@ In environments with a pre-installed Chromium at `/opt/pw-browsers`, the e2e con
 | `REPORTS_TO_HIDE` | `3` | Open reports from different players that auto-hide a game. |
 | `POSTHOG_KEY` / `POSTHOG_HOST` | – | Optional product analytics (off unless set; never sends usernames or text). |
 | `LOG_REQUESTS` | `1` | `0` turns off the JSON request log. |
-| `TRUST_PROXY` | `1` | Set `0` if not behind a proxy. |
 | `BRB_LOCALES_DIR` | `server/i18n/locales` | Another folder of locale files (the e2e tests use one with stub translations). |
 
 ## Deploy

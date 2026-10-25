@@ -390,3 +390,14 @@ test('review fixes: teachers cannot take over staff accounts, wording and links,
   assert.equal((await as(tAcc.user)('/login')).location, '/teach');
   assert.equal((await as(tAcc.user)('/login?next=/g/x')).location, '/g/x');
 });
+
+test('a teacher resetting a password also lifts the lock from wrong guesses', async () => {
+  const { allow, count, loginLockKey } = await import('../../server/services/ratelimit.js');
+  const birch = S.createSchool(boss, { name: 'Birch Lane' }).school;
+  const bt = S.createSchoolAccount(boss, birch.id, { rosterName: 'Bo Teach', role: 'teacher' }).user;
+  const kid = S.createSchoolAccount(bt, birch.id, { rosterName: 'Kit Kid' }).user;
+  for (let i = 0; i < 10; i++) allow(loginLockKey(kid.username), 10, 900e3);
+  assert.equal(count(loginLockKey(kid.username.toUpperCase())), 10, 'the key ignores case');
+  const r = S.resetSchoolPassword(bt, birch.id, kid.id); assert.ok(r.ok);
+  assert.equal(count(loginLockKey(kid.username)), 0);
+});

@@ -7,7 +7,7 @@ import * as games from '../services/games.js';
 import * as presence from '../services/presence.js';
 import { frameDocument, sendFrame, SANDBOX } from '../services/frame.js';
 import { signToken, readToken, requireUser, getUser, createGuest, startSession } from '../auth.js';
-import { rateLimit, allow } from '../services/ratelimit.js';
+import { rateLimit, allow, ipOf, GUESTS_PER_IP_HOUR } from '../services/ratelimit.js';
 import { q, uid, now, audit } from '../db.js';
 import { config } from '../config.js';
 import { tEn, normalizeCode, localeInfo } from '../i18n/index.js';
@@ -92,7 +92,7 @@ router.get('/play/:slug', (req, res) => {
   const g = games.localizeGame(games.getGameBySlug(req.params.slug), req.locale);
   if (!g || !games.canView(req.user, g)) return notFound(req, res, t('game.notShared'));
   // One tap to play: a visitor without a session becomes a guest so progress saves (rate-limited per IP).
-  if (!req.user && req.headers['sec-fetch-mode'] === 'navigate' && allow(`guestip:${req.ip}`, 60, 3600e3)) {
+  if (!req.user && req.headers['sec-fetch-mode'] === 'navigate' && allow(`guestip:${ipOf(req)}`, GUESTS_PER_IP_HOUR, 3600e3)) {
     const guest = createGuest(); req.sessionId = startSession(res, guest.id, req.headers['user-agent']); req.user = guest;
   }
   const u = req.user;
