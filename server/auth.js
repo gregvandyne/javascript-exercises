@@ -8,7 +8,6 @@ import { tEn, tReq } from './i18n/index.js';
 import { isOwnOrigin } from './site.js';
 export { cleanName, cleanText };
 
-const SESSION_DAYS = 60;
 export const BCRYPT_COST = 11;
 // Compared against when a username doesn't exist, so a wrong name takes as long as a wrong password.
 const DUMMY_HASH = bcrypt.hashSync('not-a-real-password', BCRYPT_COST);
@@ -83,10 +82,16 @@ export function verifyPassword(user, password) {
   const ok = bcrypt.compareSync(String(password || '').slice(0, 72), (user && user.password_hash) || DUMMY_HASH);
   return !!(user && user.password_hash && ok);
 }
-/** signOutEverywhere: a changed password ends every other session (off for the seed script's idempotent admin reset). */
+/** signOutEverywhere: a changed password ends every session (off for the seed script's idempotent admin reset). */
 export function setPassword(userId, password, { signOutEverywhere = false } = {}) {
-  q.run('UPDATE users SET password_hash=? WHERE id=?', bcrypt.hashSync(password, BCRYPT_COST), userId);
-  if (signOutEverywhere) q.run('DELETE FROM sessions WHERE user_id=?', userId);
+  q.run('UPDATE users SET password_hash=?, password_short=0 WHERE id=?', bcrypt.hashSync(password, BCRYPT_COST), userId);
+  if (signOutEverywhere) endSessions(userId);
+}
+/** At sign-in (the only time the password itself is known): staff and the platform admin whose password is shorter than
+ *  STAFF_PASSWORD_MIN are asked to choose a longer one until they do (users.password_short, shown by views/layout.js). */
+export function notePasswordLength(u, password) {
+  const short = accountKind(u) === 'staff' && String(password || '').length < STAFF_PASSWORD_MIN ? 1 : 0;
+  if (short !== (u.password_short || 0)) q.run('UPDATE users SET password_short=? WHERE id=?', short, u.id);
 }
 // The most common passwords: easy to guess, so not allowed.
 const COMMON = new Set(['123456', '1234567', '12345678', '123456789', '1234567890', '111111', '000000', '654321', '123123', '121212', '112233', 'password', 'password1', 'passw0rd', 'qwerty', 'qwerty123', 'qwertyuiop', 'abc123', 'abcdef', 'abcd1234', 'letmein', 'welcome', 'iloveyou', 'monkey', 'dragon', 'football', 'baseball', 'soccer', 'princess', 'sunshine', 'superman', 'batman', 'pokemon', 'minecraft', 'fortnite', 'roblox', 'secret', 'master', 'shadow', 'starwars', 'trustno1', 'hello1', 'hello123', 'computer', 'freedom', 'whatever', 'asdfgh', 'zxcvbn', 'aaaaaa', 'gaming', 'brbgaming', 'magiccup', 'magiccups', 'magic123', 'oomba123', 'oombaacademy', 'academy']);
@@ -101,41 +106,117 @@ export function checkPassword(p, username = '', t = tEn) {
   return null;
 }
 
+// How long a sign-in lasts, by account type (see docs/decisions.md). idle: signed out after this long without activity
+// (0 = no idle limit); max: signed out this long after signing in, whatever happens.
+//   student   school accounts of students (shared classroom devices)              1 hour idle, 10 hours at most
+//   staff     teachers and admins of any school, and the platform admin            12 hours idle, 7 days at most
+//   standard  own accounts and guests                                              60 days
+export const SESSION_RULES = {
+  student: { idle: 3600e3, max: 10 * 3600e3 },
+  staff: { idle: 12 * 3600e3, max: 7 * 86400e3 },
+  standard: { idle: 0, max: 60 * 86400e3 },
+};
+/** Activity is written to a session at most this often, so most requests don't write to the database. */
+export const ACTIVITY_EVERY = 60e3;
+// Calls a game page makes on its own (a game can save, score or keep playing with nobody at the keyboard). They keep a
+// sign-in awake only when the play page marks them X-Brb-Active: the player pressed or tapped something lately.
+const PASSIVE = /^\/api\/(games\/[^/]+\/(play|heartbeat|leave|save|score)|progress\/[^/]+\/[^/]+\/game)$/;
+/** Whether a request counts as activity for the idle limits, decided here rather than left to the page: opening a page
+ *  and requests that change something. Background reads (fetch, polling), anything marked X-Brb-Background and the
+ *  passive game calls above don't, so a page or game left open still times out. */
+export function isActivity(req) {
+  const h = req.headers;
+  if (h['x-brb-background'] === '1') return false;
+  // Browsers say what a GET is for: only a page opened in the tab counts (not a fetch, an image or the game frame).
+  // Without those headers (old browsers) a non-API page counts.
+  if (req.method === 'GET' || req.method === 'HEAD') {
+    if (h['sec-fetch-dest']) return h['sec-fetch-dest'] === 'document';
+    if (h['sec-fetch-mode']) return h['sec-fetch-mode'] === 'navigate';
+    return !req.path.startsWith('/api/');
+  }
+  return !PASSIVE.test(req.path) || h['x-brb-active'] === '1';
+}
+/** 'student' | 'staff' | 'standard' (the rows of SESSION_RULES). Staff is the same test as services/schools.js isStaff,
+ *  written out here because that module imports this one. */
+export function accountKind(u) {
+  if (!u || u.is_guest) return 'standard';
+  if (u.role === 'admin' || q.get("SELECT 1 FROM school_members WHERE user_id=? AND status='active' AND role!='student'", u.id)) return 'staff';
+  return u.managed_school ? 'student' : 'standard';
+}
+/** School students' passwords are looked after by their teacher, and guests have none. */
+export const canChangePassword = u => !!u && !u.is_guest && accountKind(u) !== 'student';
+/** Staff and the platform admin can see children's data, so their new passwords are longer. */
+export const STAFF_PASSWORD_MIN = 12;
+
+// The cookie outlives its session by a day, so a device that comes back to an ended sign-in (even the next morning) is
+// told so, and the next person to sign in there isn't sent to the last one's page.
+const COOKIE_GRACE = 86400;
 export function startSession(res, userId, ua = '') {
-  const id = uid(32); const t = now();
-  q.run('INSERT INTO sessions(id, user_id, created_at, expires_at, ua) VALUES (?,?,?,?,?)', id, userId, t, t + SESSION_DAYS * 86400e3, String(ua).slice(0, 200));
-  setCookie(res, COOKIE, pack(id), SESSION_DAYS * 86400);
+  const id = uid(32); const t = now(); const { max } = SESSION_RULES[accountKind(getUser(userId))];
+  q.run('INSERT INTO sessions(id, user_id, created_at, expires_at, ua, last_active) VALUES (?,?,?,?,?,?)', id, userId, t, t + max, String(ua).slice(0, 200), t);
+  setCookie(res, COOKIE, pack(id), Math.floor(max / 1000) + COOKIE_GRACE);
   return id;
 }
+// Set when a sign-in ends on its own (timed out, or ended from another device): who was signed in on this device ('-'
+// when that session was already swept). Signing in as someone else then ignores the old page's ?next= (routes/auth.js).
+const ENDED = 'brb_ended';
+/** -> the id of who was signed in here when a sign-in ended, '' if unknown, null if no sign-in ended here. */
+export function endedUser(req) {
+  const v = req.sessionEnded ? req.endedUser : unpack(parseCookies(req)[ENDED]);
+  return v === null || v === undefined ? null : v === '-' ? '' : v;
+}
+export function clearEnded(req, res) { if (req.sessionEnded || parseCookies(req)[ENDED]) setCookie(res, ENDED, '', 0); }
 export function endSession(req, res) {
   const id = unpack(parseCookies(req)[COOKIE]);
   if (id) q.run('DELETE FROM sessions WHERE id=?', id);
   setCookie(res, COOKIE, '', 0);
 }
+/** End someone's sessions on every device, or all but one (except: a session id). -> how many ended. They are marked
+ *  ended rather than deleted, so a device that comes back to one still knows whose it was (see ENDED). */
+export function endSessions(userId, { except = null } = {}) {
+  const t = now();
+  return (except ? q.run('UPDATE sessions SET expires_at=? WHERE user_id=? AND expires_at>? AND id!=?', t, userId, t, except)
+    : q.run('UPDATE sessions SET expires_at=? WHERE user_id=? AND expires_at>?', t, userId, t)).changes;
+}
 let lastSweep = 0;
 export function sessionMiddleware(req, res, next) {
-  if (now() - lastSweep > 3600e3) { lastSweep = now(); q.run('DELETE FROM sessions WHERE expires_at<?', now()); }
-  req.user = null; req.sessionId = null;
+  const t = now();
+  // Ended sessions are kept a day (as long as their cookie), then swept.
+  if (t - lastSweep > 3600e3) { lastSweep = t; q.run('DELETE FROM sessions WHERE expires_at<?', t - COOKIE_GRACE * 1000); }
+  req.user = null; req.sessionId = null; req.sessionEnded = false;
   const id = unpack(parseCookies(req)[COOKIE]);
   if (id) {
-    const s = q.get('SELECT * FROM sessions WHERE id=? AND expires_at>?', id, now());
-    if (s) {
-      const u = getUser(s.user_id);
-      if (u && !u.banned) { req.user = u; req.sessionId = id; if (now() - u.last_seen > 60e3) q.run('UPDATE users SET last_seen=? WHERE id=?', now(), u.id); }
+    const s = q.get('SELECT * FROM sessions WHERE id=?', id);
+    const u = s && s.expires_at > t ? getUser(s.user_id) : null;
+    const rule = u && SESSION_RULES[accountKind(u)];
+    if (u && !u.banned && !(rule.idle && t - (s.last_active || s.created_at) > rule.idle) && t - s.created_at <= rule.max) {
+      req.user = u; req.sessionId = id;
+      if (t - s.last_active > ACTIVITY_EVERY && isActivity(req)) q.run('UPDATE sessions SET last_active=? WHERE id=?', t, id);
+      if (t - u.last_seen > 60e3) q.run('UPDATE users SET last_seen=? WHERE id=?', t, u.id);
+    } else {
+      // Timed out, or ended from another device: signed out from here on, and pages can say so (once: the cookie goes).
+      if (s) q.run('DELETE FROM sessions WHERE id=?', id);
+      setCookie(res, COOKIE, '', 0);
+      req.sessionEnded = true; req.endedUser = s ? s.user_id : '-';
+      setCookie(res, ENDED, pack(req.endedUser), 86400);
     }
   }
   next();
 }
 const isApi = req => req.originalUrl.startsWith('/api/');
+/** The sign-in page, coming back here afterwards; signedout=1 when a session just ended, so it can say so. */
+const signInAgain = req => `/login?next=${encodeURIComponent(req.originalUrl)}${req.sessionEnded ? '&signedout=1' : ''}`;
+/** The 401 reply: "you were signed out" (signedOut: true, so pages can keep what was typed) when a session just ended. */
+const signedOutReply = (req, key) => (req.sessionEnded ? { error: tReq(req)('errors.api.signedOut'), signedOut: true } : { error: tReq(req)(key) });
 export function requireUser(req, res, next) {
   if (req.user) return next();
-  if (isApi(req)) return res.status(401).json({ error: tReq(req)('errors.api.signInFirst') });
-  res.redirect('/login?next=' + encodeURIComponent(req.originalUrl));
+  if (isApi(req)) return res.status(401).json(signedOutReply(req, 'errors.api.signInFirst'));
+  res.redirect(signInAgain(req));
 }
 export function requireAccount(req, res, next) { // a real (non-guest) account
   if (req.user && !req.user.is_guest) return next();
-  if (isApi(req)) return res.status(req.user ? 403 : 401).json({ error: tReq(req)('errors.api.needAccount') });
-  res.redirect('/signup?next=' + encodeURIComponent(req.originalUrl));
+  if (isApi(req)) return req.user ? res.status(403).json({ error: tReq(req)('errors.api.needAccount') }) : res.status(401).json(signedOutReply(req, 'errors.api.needAccount'));
+  res.redirect(req.sessionEnded ? signInAgain(req) : '/signup?next=' + encodeURIComponent(req.originalUrl));
 }
 export function requireAdmin(req, res, next) {
   if (req.user && req.user.role === 'admin') return next();

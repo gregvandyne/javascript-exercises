@@ -34,7 +34,8 @@ const server = app.listen(config.port, () => log('info', 'listening', {
 // Keep idle connections open longer than the load balancer does (ALB: 60 s), or it may reuse one we just closed: a 502.
 server.keepAliveTimeout = config.keepAliveTimeoutMs;
 server.headersTimeout = config.keepAliveTimeoutMs + 1000;
-
+// The site tells grown-ups they can contact us (deletion, export, a lost password); without an address that leads nowhere.
+if (config.env === 'production' && !config.contactEmail) log('warn', 'CONTACT_EMAIL is not set: /parents has no way to contact the team');
 const stopJobs = startJobs();
 startSweeper();
 const shutdown = makeShutdown({

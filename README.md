@@ -83,6 +83,7 @@ On/off settings (`REQUIRE_SESSION_SECRET`, `MAINTENANCE_MODE`, `MOVED_PERMANENTL
 | `AI_MONTHLY_BUDGET_USD` | `50` | Same, per calendar month. Today's and this month's spend show on `/admin`. Also set a spend limit in the Anthropic Console as the hard backstop. |
 | `CHAT_DAILY_LIMIT` | `300` | Max chat messages per user per day. |
 | `REPORTS_TO_HIDE` | `3` | Open reports from different players that auto-hide a game. |
+| `CONTACT_EMAIL` | – | Where grown-ups write to the team (deletion, export, a lost password). Shown on `/parents` and in the footer; set it before launch (production logs a warning without it). |
 | `POSTHOG_KEY` | – | Optional product analytics (off unless set; never sends usernames or text). |
 | `POSTHOG_HOST` | `https://us.i.posthog.com` | PostHog address. |
 

@@ -12,7 +12,7 @@ import * as L from '../services/lessons.js';
 import * as P from '../services/progress.js';
 import * as games from '../services/games.js';
 import { publish } from '../services/publish.js';
-import { classHeader, classBack } from './schools.js';
+import { classHeader, classBack, studentNotYou } from './schools.js';
 import { zoneNote } from './lessons.js';
 
 export const router = Router();
@@ -232,6 +232,7 @@ router.get('/class/:cid/lessons/:clid', requireUser, (req, res) => {
   const body = html`
   <div class="pagehead"><div><h1 dir="auto">${l.title}</h1>
     <p class="muted lp-meta"><span>${t('lessons.stepsN', { count: st.length })}</span>${dateChips(t, f, cl, { late })}</p></div>
+    ${student ? studentNotYou(req, true) : ''}
     ${teacher ? html`<div class="row"><a class="btn" href="/class/${c.id}/progress/${cl.id}">📊 ${t('progress.lesson.seeProgress')}</a>${L.canEditLesson(u, l) ? html`<a class="btn" href="/teach/lessons/${l.id}?from=${c.id}">✏️ ${t('lessons.class.editLesson')}</a>` : ''}</div>` : ''}</div>
   ${teacher ? html`<p class="notice">👀 ${t('lessons.view.teacherPreview')}</p>` : ''}
   ${student && st.length ? html`<div class="lessonprogress ${doneN >= st.length ? 'all' : ''}" role="status"><span>${doneN >= st.length ? `🎉 ${t('progress.student.allDone')}` : t('progress.student.doneOf', { done: doneN, total: st.length })}</span>${bar(doneN, st.length)}</div>` : ''}

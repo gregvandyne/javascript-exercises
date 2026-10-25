@@ -8,6 +8,12 @@
     "mainNav": "Principale",
     "signIn": "Accedi",
     "meLabel": "Io: {name}",
+    "notYou": {
+      "signedInAs": "Accesso effettuato come {name}.",
+      "button": "Non sei tu? Esci"
+    },
+    "signedOut": "La tua sessione è stata chiusa. <a href=\"{href}\">Accedi di nuovo</a> per continuare.",
+    "shortPassword": "La password ha meno di {min} caratteri. Gli account del personale possono vedere il lavoro dei bambini, quindi è meglio <a href=\"{href}\">sceglierne una più lunga</a>.",
     "back": "Indietro",
     "badgeNew": "Nuovi: {count}",
     "search": {
@@ -29,6 +35,7 @@
       "tagline": "© Oomba Academy · Gratis per giocare, gratis per creare",
       "safety": "Sicurezza",
       "parents": "Per gli adulti",
+      "contact": "Contattaci",
       "builders": "Per i creatori"
     }
   },
@@ -61,6 +68,7 @@
       "slowDown": "Ehi, vai un po' più piano e riprova tra un minuto.",
       "signInFirst": "Prima accedi o gioca come ospite.",
       "needAccount": "Crea un account gratis per farlo.",
+      "signedOut": "La tua sessione è stata chiusa. Accedi di nuovo.",
       "crossSite": "Richiesta da un altro sito bloccata."
     }
   },
@@ -95,6 +103,7 @@
       "headingLogin": "Ciao di nuovo!",
       "introSignup": "Solo un nome divertente e una password. Non serve l'email.",
       "introLogin": "Accedi con il tuo nome e la tua password di Oomba Academy.",
+      "signedOut": "La tua sessione è stata chiusa. Accedi di nuovo per continuare.",
       "upgradeNotice": "Stai giocando come <b>{name}</b>. Tutto quello che hai salvato viene con te.",
       "nameLabelSignup": "Scegli un nome divertente",
       "nameLabelLogin": "Il tuo nome su Oomba Academy",
@@ -104,6 +113,9 @@
       "passwordHint": "Almeno 6 caratteri. Chiedi a un adulto di aiutarti a ricordarla.",
       "submitSignup": "Crea il mio account",
       "submitLogin": "Accedi",
+      "forgotHeading": "Hai dimenticato la password?",
+      "forgotSchool": "Account scolastico? Chiedi all'insegnante una nuova scheda di accesso. Insegnanti: rivolgetevi all'admin della scuola.",
+      "forgotOwn": "Account personale? Non chiediamo mai l'email, quindi non possiamo mandarti una nuova password. Tienila in un posto sicuro a casa. Se la perdi, un adulto può contattarci.",
       "or": "oppure",
       "playAsGuest": "🎮 Gioca come ospite",
       "haveAccount": "Hai già un account?",
@@ -162,11 +174,32 @@
       "text": "Con la chat puoi mandare messaggi agli amici che hai aggiunto con un codice amico. Adulti: potete spegnerla qui.",
       "toggle": "La chat con i miei amici è accesa"
     },
+    "password": {
+      "heading": "Password",
+      "text": "Cambia la password con cui accedi. Qui la sessione resta aperta, mentre su tutti gli altri dispositivi viene chiusa.",
+      "current": "Password attuale",
+      "new": "Nuova password",
+      "hint": "Almeno {min} caratteri. Non usare il tuo nome.",
+      "hintStaff": "Almeno {min} caratteri, perché gli account del personale possono vedere il lavoro dei bambini.",
+      "confirm": "Ripeti la nuova password",
+      "button": "Cambia password",
+      "changed": "Password cambiata. Su tutti gli altri dispositivi la sessione è stata chiusa.",
+      "needCurrent": "Scrivi la tua password attuale.",
+      "wrongCurrent": "Questa non è la tua password attuale.",
+      "mismatch": "Le due nuove password non sono uguali.",
+      "same": "Questa è la password che hai già. Scegline una nuova.",
+      "staffShort": "{n, plural, one {È solo # carattere.} other {Sono solo # caratteri.}} Ne servono almeno {min}.",
+      "school": "La tua password la gestisce l'insegnante: se la dimentichi, chiedi a lui o a lei."
+    },
     "signOut": {
       "heading": "Esci",
       "guest": "Gli ospiti perdono i loro progressi quando escono.",
       "account": "A presto!",
-      "button": "Esci"
+      "button": "Esci",
+      "everywhereText": "Esci su tutti i dispositivi, anche su questo. Usalo se hai fatto l'accesso su un computer che usano anche altre persone.",
+      "everywhereButton": "Esci ovunque",
+      "everywhereConfirm": "Uscire su tutti i dispositivi, compreso questo?",
+      "everywhereDone": "Hai chiuso la sessione su tutti i dispositivi."
     },
     "photo": {
       "heading": "Foto del profilo",
@@ -296,7 +329,7 @@
       },
       "personal": {
         "h": "Niente dati personali",
-        "p1": "Non ti chiediamo mai la tua email, il tuo nome vero, la tua età o il tuo indirizzo. Scegli un nome inventato e divertente."
+        "p1": "Non ti chiediamo mai la tua email, la tua età o il tuo indirizzo, e nemmeno il tuo nome vero (la tua scuola potrebbe aggiungerlo al suo elenco della classe). Scegli un nome inventato e divertente."
       },
       "ads": {
         "h": "Niente pubblicità",
@@ -311,9 +344,23 @@
         "h": "Cos'è Oomba Academy?",
         "p1": "Un sito gratuito dove i bambini giocano a giochi web e creano i propri descrivendoli a un Costruttore basato sull'intelligenza artificiale (IA). Niente download, niente acquisti, niente loot box, niente valute di gioco che si comprano con soldi veri."
       },
-      "data": {
-        "h": "Dati che conserviamo",
-        "p1": "Un nome utente, una password (salvata in forma cifrata con hash), i salvataggi dei giochi, i punteggi, i voti, i «mi piace» e la lingua del sito scelta dal bambino. Niente email, niente nome vero, niente età, niente posizione. Nessun tracker di terze parti."
+      "stored": {
+        "h": "Cosa conserviamo",
+        "p1": "Per gli account personali conserviamo un nome inventato, una password (salvata in forma illeggibile) e quello che vostro figlio o figlia fa qui: i giochi che crea, le chat con il Costruttore e le immagini o i file che aggiunge, i salvataggi, i punteggi, i voti, i preferiti, gli amici, i messaggi in chat, una foto del profilo se ne carica una e impostazioni come lingua e tema. Per chi gioca come ospite conserviamo un nome inventato, i salvataggi, i punteggi, i voti e i preferiti.",
+        "p2": "Un account scolastico è quello con cui vostro figlio o figlia accede usando una scheda di accesso della scuola. È creato dalla scuola e le appartiene. Per questi account conserviamo le stesse cose, più il nome vero dello studente come la scuola l'ha scritto per l'elenco della classe (lo vedono solo il personale della scuola e il nostro team), le sue classi, i progressi nelle lezioni, le risposte scritte e il feedback dell'insegnante. Se vostro figlio o figlia entra in una classe con il proprio account e un codice classe, la scuola conserva le stesse cose per quella classe, compreso il nome vero se l'insegnante lo scrive."
+      },
+      "never": {
+        "h": "Cosa non raccogliamo mai",
+        "p1": "Non chiediamo mai indirizzo email, età, indirizzo di casa, posizione o dati di pagamento, e non c'è niente da comprare. I dati di posizione nascosti vengono rimossi da foto e immagini prima di conservarle. Non ci sono pubblicità né cookie pubblicitari o di tracciamento."
+      },
+      "ai": {
+        "h": "Cosa vede l'IA",
+        "p1": "Per creare un gioco, i messaggi, le immagini e i file che vostro figlio o figlia dà al Costruttore vengono inviati a Claude, un'IA creata dall'azienda Anthropic, che scrive il gioco. Il nome e il nome utente di vostro figlio o figlia non vengono inviati insieme a questi contenuti. Anche le foto del profilo vengono inviate a Claude per essere controllate prima che qualcuno le veda. Claude verifica i giochi prima che possano essere condivisi con tutti, e il nostro team controlla quelli su cui ha dei dubbi. Le chat tra amici e le risposte alle lezioni non vengono inviate all'IA."
+      },
+      "keep": {
+        "h": "Per quanto tempo li conserviamo",
+        "p1": "Conserviamo i dati di un account finché l'account esiste. Per ora nessun dato viene cancellato automaticamente dopo un certo tempo. Un gioco che vostro figlio o figlia elimina sparisce dal sito per tutti, ma una copia resta sul nostro server.",
+        "p2": "Non c'è ancora un pulsante per eliminare un account o scaricarne i dati. Per chiedere l'una o l'altra cosa, un adulto può contattarci. Per un account scolastico, rivolgetevi alla scuola, che può chiederlo a noi."
       },
       "friends": {
         "h": "Amici e chat",
@@ -326,6 +373,10 @@
       "languages": {
         "h": "Lingue",
         "p1": "Scegliete una lingua con il pulsante 🌐 in cima a qualsiasi pagina o nella pagina Io. Il Costruttore risponde in quella lingua e la usa anche per i testi dei nuovi giochi. Gli stessi filtri di sicurezza controllano ogni messaggio, in ogni lingua."
+      },
+      "contact": {
+        "h": "Contattaci",
+        "p1": "Gli adulti possono scriverci a {email}."
       }
     },
     "sdk": {
@@ -884,6 +935,8 @@
   "js": {
     "app": {
       "wentWrong": "Qualcosa è andato storto. Riprova.",
+      "signedOut": "La tua sessione è stata chiusa. Accedi di nuovo.",
+      "draftKept": "Abbiamo tenuto quello che hai scritto.",
       "close": "Chiudi",
       "playing": "{n} in gioco",
       "justNow": "proprio ora"
@@ -994,6 +1047,7 @@
       "building": "Sto creando il tuo gioco…",
       "editing": "Sto facendo le modifiche…",
       "noAnswer": "Il Costruttore non è riuscito a rispondere. Riprova.",
+      "signInAgain": "Accedi di nuovo",
       "dropped": "Ops, la connessione si è interrotta. Riprova.",
       "proOn": "Qualità Pro accesa: più lenta, ma con giochi più belli.",
       "proOff": "Qualità Pro spenta: creazioni veloci.",

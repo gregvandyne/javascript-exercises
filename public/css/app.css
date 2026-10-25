@@ -486,6 +486,23 @@ code{overflow-wrap:anywhere}
 .themechoice input{width:20px;height:20px;margin:0;flex:none}
 .themechoice input:focus-visible{outline:0}
 #themeform>.btn{margin-top:var(--s3)}
+/* Me page: password and sign out. */
+.pwform{max-width:420px}
+.pwform .field:last-of-type{margin-bottom:var(--s3)}
+.pwform .form-err:empty{display:none}
+.so-every{margin-top:var(--s4);padding-top:var(--s4);border-top:2px solid var(--line)}
+.so-every p{margin-bottom:var(--s3)}
+/* "Signed in as … Not you? Sign out" (school students' pages and the Me page): small, but a full-size tap target. */
+.notyou{display:flex;flex-wrap:wrap;align-items:center;gap:0 var(--s3);margin:0}
+.notyou-btn{min-height:44px;padding:0 6px;margin-inline:-6px;border:0;border-radius:var(--r-sm);background:none;color:var(--link);font:700 1em var(--font);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.notyou-btn:hover{background:var(--hover)}
+.pagehead>.notyou{margin-inline-start:auto}
+/* "You were signed out" and "choose a longer password", at the top of any page. */
+.pagenote{margin-bottom:var(--s4)}
+/* Sign-in page: what to do about a forgotten password. */
+.forgot{margin-top:var(--s4);padding:var(--s3) var(--s4);border-radius:var(--r-sm);background:var(--card-2);color:var(--text-2)}
+.forgot-h{font-size:1rem;margin:0 0 var(--s2)}
+.forgot p{margin:0 0 var(--s2)} .forgot p:last-child{margin:0}
 
 /* iPhone and iPad: date and time fields otherwise keep a minimum width that spills out of their card, and collapse when empty. */
 @supports (-webkit-touch-callout:none){

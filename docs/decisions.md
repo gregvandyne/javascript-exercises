@@ -378,3 +378,85 @@ The mascot is Oomba: the two o's of the wordmark are its eyes, looking up at a s
   415), and `body-parser` 2.4.0 in the lockfile (GHSA-27r3-jxmh-p828).
 - Caddy is pinned to the 2.11 line (`caddy:2.11-alpine`) so `docker compose pull` brings security fixes; it replaces any
   incoming `X-Forwarded-For`, never compresses the Builder's event stream and flushes it at once.
+
+## Accounts: passwords, signing out, session lifetimes, honest privacy text
+From a rating of the accounts side: nobody could change their own password, every sign-in lasted 60 days (children on
+shared school Chromebooks, staff who can see children's work), the sign-in page said nothing about a forgotten password,
+Sign out sat at the bottom of the Me page, and the grown-ups page promised "no real name" although school accounts
+store one.
+- **Change password** (Me page) for own accounts, school staff and the platform admin: current password, new password
+  twice, the usual rules (`auth.checkPassword`) and at least 12 characters for staff and the platform admin. Rule
+  mistakes are answered before the bcrypt check. Wrong current passwords count 5 per 15 minutes per account and also
+  toward the account's sign-in lock (10 per 15 minutes), so someone at a device left signed in gets no more guesses
+  than at the sign-in page; a flood guard caps every try (20). On success every session ends, this one too, and this
+  device gets a fresh one: it stays signed in, and a copied cookie is useless. `user.password_change` is audited (never
+  the password). School students see "Your teacher looks after your password — ask them if you forget it." (their
+  teacher resets it from the class, which also clears a sign-in lock); guests see nothing.
+- **Staff with short passwords:** the 12-character rule only applies when a password is chosen, so staff and the
+  platform admin who sign in with a shorter one (the only moment the password itself is known) get
+  `users.password_short` (migration `0016_password_short`) and a notice on every page linking to the Me page form, until
+  they change it. Not enforced before /teach or /admin: a nudge, not a lock-out mid-term.
+- **Sign out everywhere** ends every session, this one too. — One clear promise for a lost device or a password
+  someone saw; "end the others and stay here" is what changing the password already does, so the two don't overlap.
+- **Session lifetimes by account type**, checked on every request from the account as it is now (`SESSION_RULES` in
+  `server/auth.js`): school students 1 hour idle and 10 hours at most; staff of any school and the platform admin 12
+  hours idle and 7 days at most; own accounts and guests 60 days as before. The cookie lasts a day longer than its
+  session, so a device that comes back to an ended sign-in (even the next morning) is told so. Activity is written to
+  `sessions.last_active` (migration `0015_session_activity`) at most once a minute per session.
+- **What counts as activity is decided on the server** (`auth.isActivity`), so it fails closed: opening a page (a GET
+  with `Sec-Fetch-Dest: document`, or a non-API GET from a browser that doesn't send it) and requests that change
+  something. Background reads (any fetch GET, live counts, chat and friends polling), anything sent with
+  `X-Brb-Background: 1`, and the calls a game page makes on its own (play, heartbeat, leave, save, score, lesson play
+  time) don't, so a page or a game left open on a classroom device still times out after an hour. — A game can save,
+  score and keep its heartbeat going with nobody at the keyboard, so playing counts only when the play page marks a
+  call `X-Brb-Active: 1`: the player pressed a key, clicked or tapped in the last 5 minutes. The page knows from
+  `navigator.userActivation`, which the browser sets for a few seconds after real input, even input inside the
+  sandboxed game frame, and which a game can't fake (presses on the play page itself count too). Browsers without it
+  (Safari before 16.4) only see presses outside the frame, so a child there may be signed out after an hour of play
+  with no saves or scores.
+- **An ended session behaves like signed out:** pages go to `/login?next=…&signedout=1`, APIs answer 401 with
+  `signedOut: true`, and the stale cookie is dropped. A calm "You were signed out" notice is shown once, on the sign-in
+  page or on whatever page comes next (Home, a game), with a link to sign in again. In the browser, any 401 on a page
+  that was opened signed in is shown with one client string (`js.app.signedOut`), because only the first request after
+  the end hears it from the server. Forms keep what was typed on the page (text only, never passwords) for the same
+  person after signing in again (`signedOut()` in `public/js/app.js`; drafts of anyone else are dropped on a shared
+  device); the Studio puts an unsent Builder message back in the box with a "Sign in again" button, and its other
+  actions (rename, settings, save, versions, publish, uploads, waiting for a build after a dropped connection) go to
+  the sign-in page the same way.
+- **The next child on a shared device isn't sent to the last child's page:** when a session ends on its own, a signed
+  `brb_ended` cookie (1 day) remembers who was signed in. Signing in follows `?next=` only for that same person (or when
+  no sign-in ended here); anyone else lands on their own home (`/classes` for school students). For this, sessions
+  ended from another device (sign out everywhere, a new password, a teacher's reset) are marked ended rather than
+  deleted, and ended or expired rows are kept a day (like their cookie) before the sweep; if a row is already gone,
+  nobody knows whose it was and everyone lands on their own home.
+- **Deploying `0015`:** sessions open at upgrade count as used now, and one the new caps would end at once (school
+  students 10 hours, staff 7 days, counted from sign-in) gets one more hour, so the deploy itself signs nobody out
+  mid-lesson. Still, deploy outside school hours: an hour later every school student signed in for more than 9 hours,
+  and every staff member signed in for more than 7 days, is signed out together.
+- **Sign-in help** under the form: school accounts ask their teacher for a new login card (staff: their school admin,
+  the only one who can reset a staff password); own accounts are told the truth: we never ask for an email, so we
+  can't send a new password; keep it somewhere safe; if it's lost, a grown-up can contact us.
+- **"Not you? Sign out"** with the signed-in name on school students' My classes, class and lesson pages, and also for
+  own accounts on the pages of a class they are a student in (they use the same shared Chromebooks), and on the Me
+  page under the name for school students. Own accounts get a plain "Sign out" there instead (their own device). One
+  tap signs out and opens the sign-in page. Own accounts in a class keep 60-day sessions: a product decision for later
+  (for example shorter sessions for own accounts that sign in from a class page).
+- **Privacy text:** the grown-ups page (`info.parents.stored/never/ai/keep`) and docs/safety.md §10 now say only what is
+  true: what own and school accounts store (and what the school keeps when an own account joins a class with a code),
+  what is never asked for, what goes to Anthropic's Claude (Builder messages, pictures and files, profile photos, games
+  for the public review, with our team checking any it is unsure about) and what doesn't (friends' chats, lesson
+  answers), how long data is kept and how to ask for deletion. The kid-facing /safety page no longer says "we never ask
+  for your real name" without saying a school may add it. All 13 locales are translated.
+- **Contact:** `CONTACT_EMAIL` shows a "Contact us" section on /parents and a footer link; production logs a warning
+  without it.
+- **Still missing — recommended before a wide launch:**
+  - a **legal review** of the privacy text and of the school terms (children's privacy law such as COPPA and GDPR, and
+    the agreements schools expect when they hand over a class list), including whether Anthropic keeps or trains on
+    what the Builder sends: parents will ask, and the page should answer only once the API terms are confirmed;
+  - an **account deletion and data export feature** (today data is kept while the account exists, deleted games are
+    only hidden, and leavers are marked 'left'), for parents and for schools;
+  - a **real contact address**: the site says "a grown-up can contact us" (paused accounts, building switched off, the
+    sign-in help and the grown-ups page). Owner decision: set `CONTACT_EMAIL` (a monitored address) before launch;
+  - an **admin "reset password" for own accounts**, with an ownership check (for example the account's games or friend
+    code described by the grown-up), so the team can actually help when a grown-up writes about a lost password: today
+    only school accounts can be reset (by their school), and the seed script only resets the platform admin.
