@@ -35,4 +35,5 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=60s CMD node -e "fetch('h
 # The entrypoint fixes the data folder's owner if needed (a mounted disk can arrive owned by root), drops to the
 # unprivileged "node" user, seeds (idempotent: the admin and the launch games exist after every boot) and starts the
 # server, under Litestream when LITESTREAM_REPLICA_URL is set. See scripts/entrypoint.sh.
-ENTRYPOINT ["/usr/bin/tini", "--", "/app/scripts/entrypoint.sh"]
+# tini is started by the entrypoint as the "node" user (see the top of scripts/entrypoint.sh).
+ENTRYPOINT ["/app/scripts/entrypoint.sh"]
