@@ -23,7 +23,14 @@ export const DEFAULT_SETTINGS = {
   allowOwnAccounts: true,        // students may join with their personal account (teacher approves)
   chat: 'classmates',            // school accounts: 'classmates' (chat with classmate friends) | 'off'
   publishing: 'school',          // school accounts: 'school' (share games within the school) | 'public' (allowed to go public)
+  timeZone: '',                  // IANA zone, e.g. 'Europe/London': lessons open and fall due at the school's midnight; '' = not set
 };
+/** Time zones a school can pick (IANA names Node knows). */
+export const ZONES = Intl.supportedValuesOf('timeZone');
+const ZONE_SET = new Set(ZONES);
+export const isZone = tz => typeof tz === 'string' && ZONE_SET.has(tz);
+/** The school's time zone, or null when it hasn't been set (then days are counted in UTC with a 36-hour grace). */
+export const zoneOf = school => { const tz = settingsOf(school).timeZone; return isZone(tz) ? tz : null; };
 const ok = (extra = {}) => ({ ok: true, ...extra });
 const fail = code => ({ ok: false, code });
 const clip = (s, n) => String(s == null ? '' : s).replace(/\s+/g, ' ').trim().slice(0, n);
@@ -77,6 +84,7 @@ export function updateSchool(by, schoolId, { name, settings } = {}) {
     for (const k of ['teachersCreateClasses', 'allowOwnAccounts']) if (settings[k] !== undefined) next[k] = !!settings[k];
     if (['classmates', 'off'].includes(settings.chat)) next.chat = settings.chat;
     if (['school', 'public'].includes(settings.publishing)) next.publishing = settings.publishing;
+    if (settings.timeZone !== undefined) { if (settings.timeZone !== '' && !isZone(settings.timeZone)) return fail('badZone'); next.timeZone = settings.timeZone; }
     q.run('UPDATE schools SET settings=? WHERE id=?', JSON.stringify(next), s.id);
   }
   audit(by.id, 'school.update', s.id, { name, settings });
@@ -141,7 +149,9 @@ export function newUsername() {
   for (let i = 0; i < 200; i++) { const u = `${rnd(ADJ)}${rnd(ANIMAL)}${crypto.randomInt(10, 100)}`; if (!q.get('SELECT 1 FROM users WHERE username=? COLLATE NOCASE', u)) return u; }
   throw new Error('could not make a username');
 }
-export const newPassword = () => `${rnd(WORDS)}-${rnd(WORDS)}-${crypto.randomInt(10, 100)}`;
+// Three words + two digits from an 18-word list: ~18^3 * 90 ≈ 525k combinations, large enough that a brute-force is
+// infeasible once the login limiters are in place (short enough to stay printable on a child's login card).
+export const newPassword = () => `${rnd(WORDS)}-${rnd(WORDS)}-${rnd(WORDS)}-${crypto.randomInt(10, 100)}`;
 
 /** Create a school account (owned by the school) and add it as a member. Returns the one-time password. */
 export function createSchoolAccount(by, schoolId, { rosterName, role = 'student', grade = '' }) {
@@ -180,7 +190,9 @@ const CLASS_COLS = `c.*, s.name school_name, s.slug school_slug,
   (SELECT COUNT(*) FROM class_members m WHERE m.class_id=c.id AND m.status='active' AND m.role='student') students,
   (SELECT GROUP_CONCAT(COALESCE(NULLIF(sm.roster_name,''), u.display_name), ', ') FROM class_members m JOIN users u ON u.id=m.user_id
      LEFT JOIN school_members sm ON sm.school_id=c.school_id AND sm.user_id=u.id WHERE m.class_id=c.id AND m.status='active' AND m.role='teacher') teachers,
-  (SELECT COUNT(*) FROM join_requests r WHERE r.class_id=c.id AND r.status='pending') requests`;
+  (SELECT COUNT(*) FROM join_requests r WHERE r.class_id=c.id AND r.status='pending') requests,
+  (SELECT COUNT(*) FROM class_lessons cl WHERE cl.class_id=c.id AND cl.removed_at IS NULL) lessons,
+  (SELECT MAX(p.updated_at) FROM step_progress p JOIN class_lessons cl ON cl.id=p.class_lesson_id WHERE cl.class_id=c.id AND cl.removed_at IS NULL) last_activity`;
 export const classesOfSchool = (schoolId, { archived = false } = {}) => q.all(`SELECT ${CLASS_COLS} FROM classrooms c JOIN schools s ON s.id=c.school_id
   WHERE c.school_id=? AND c.archived_at IS ${archived ? 'NOT ' : ''}NULL ORDER BY c.name COLLATE NOCASE`, schoolId);
 /** Active classes a user is in, as teacher or student. */
@@ -338,6 +350,9 @@ export function mergeSchoolAccount(by, schoolId, schoolAccountId, intoUserId) {
   if (!a || a.managed_school !== schoolId || a.id === intoUserId || !old || old.role !== 'student') return fail('notSchoolAccount');
   const into = membership(schoolId, intoUserId);
   if (into && into.role !== 'student') return fail('notSchoolAccount');
+  // Only a student the actor actually manages (a class they teach, or any as a school admin): a teacher can't reach
+  // into another teacher's class and merge away a child they don't teach.
+  if (!canManageStudent(by, schoolId, a.id)) return fail('notSchoolAccount');
   tx(() => {
     if (old) {
       q.run('DELETE FROM school_members WHERE school_id=? AND user_id=?', schoolId, intoUserId);

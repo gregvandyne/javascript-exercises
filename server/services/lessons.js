@@ -25,8 +25,20 @@ export const getFolder = id => (id ? q.get('SELECT * FROM lesson_folders WHERE i
 export const getLesson = id => (id ? q.get('SELECT * FROM lessons WHERE id=?', id) : null) || null;
 export const getStep = id => (id ? q.get('SELECT * FROM lesson_steps WHERE id=?', id) : null) || null;
 export const getUnit = id => (id ? q.get('SELECT * FROM class_units WHERE id=?', id) : null) || null;
+/** Rows read from class_lessons for display or progress carry tz: the school's time zone (IANA name) or null when it
+ *  isn't set, so isOpen() and dueState() count days where the school is. One join per query, never a lookup per row. */
+const SCHOOL_OF = 'JOIN classrooms c ON c.id=cl.class_id LEFT JOIN schools sch ON sch.id=c.school_id';
+function withZones(rows) {
+  const seen = new Map();
+  for (const r of rows) {
+    const k = r.school_settings || '';
+    let tz = seen.get(k); if (tz === undefined) { tz = S.zoneOf({ settings: k }); seen.set(k, tz); }
+    r.tz = tz; delete r.school_settings;
+  }
+  return rows;
+}
 /** An assignment that is still in its class (removed ones are invisible everywhere except to assign(), which revives them). */
-export const getClassLesson = id => (id ? q.get('SELECT * FROM class_lessons WHERE id=? AND removed_at IS NULL', id) : null) || null;
+export const getClassLesson = id => (id ? withZones(q.all(`SELECT cl.*, sch.settings school_settings FROM class_lessons cl ${SCHOOL_OF} WHERE cl.id=? AND cl.removed_at IS NULL`, id))[0] : null) || null;
 export const steps = lessonId => q.all(`SELECT s.*, g.slug game_slug, g.title game_title, g.icon game_icon, g.status game_status, g.visibility game_visibility,
     g.owner_id game_owner, g.published_version_id game_live, g.hidden_reason game_hidden, g.source game_source
   FROM lesson_steps s LEFT JOIN games g ON g.id=s.game_id WHERE s.lesson_id=? ORDER BY s.position, s.created_at`, lessonId);
@@ -248,17 +260,56 @@ export function gamesForPicker(u, schoolId) {
 
 // ---------------------------------------------------------------- class lessons
 export const unitsOf = classId => q.all('SELECT * FROM class_units WHERE class_id=? ORDER BY position, created_at', classId);
-export const classLessons = classId => q.all(`SELECT cl.*, l.title, l.summary, l.subject, l.grade, l.owner_id, l.school_id,
+export const classLessons = classId => withZones(q.all(`SELECT cl.*, l.title, l.summary, l.subject, l.grade, l.owner_id, l.school_id, sch.settings school_settings,
     (SELECT COUNT(*) FROM lesson_steps s WHERE s.lesson_id=l.id) steps, (SELECT COALESCE(SUM(minutes),0) FROM lesson_steps s WHERE s.lesson_id=l.id) minutes
-  FROM class_lessons cl JOIN lessons l ON l.id=cl.lesson_id WHERE cl.class_id=? AND cl.removed_at IS NULL ORDER BY cl.position, cl.assigned_at`, classId);
-export const isOpen = (cl, t = now()) => !cl.opens_at || cl.opens_at <= t;
-/** Dates are stored as the day at 00:00 UTC. 'today' during the due day (UTC, until schools have a time zone); 'due'
- *  after it; 'late' only once the due day is over everywhere (+36h), so nobody is late on the due day in any time zone.
- *  null when there is no due date. */
-export const LATE_AFTER = 36 * 3600e3;
+  FROM class_lessons cl JOIN lessons l ON l.id=cl.lesson_id ${SCHOOL_OF} WHERE cl.class_id=? AND cl.removed_at IS NULL ORDER BY cl.position, cl.assigned_at`, classId));
+
+// ---------------------------------------------------------------- days in the school's time zone
+// opens_at / due_at are stored as the calendar day at 00:00 UTC and mean "this date". With a school time zone, the date
+// starts at that zone's local midnight; without one, days are counted in UTC with a 36-hour grace (see dueState).
 const DAY = 24 * 3600e3;
+const dtfs = new Map();
+const dtf = tz => { let f = dtfs.get(tz); if (!f) { f = new Intl.DateTimeFormat('en-US', { timeZone: tz, hourCycle: 'h23', year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' }); dtfs.set(tz, f); } return f; };
+/** The zone's wall clock at instant t, as numbers { year, month, day, hour, minute, second }. */
+function wall(tz, t) { const p = {}; for (const x of dtf(tz).formatToParts(new Date(t))) if (x.type !== 'literal') p[x.type] = +x.value; return p; }
+/** The zone's UTC offset (ms) at instant t: its wall clock read as UTC, minus t. */
+const offsetAt = (tz, t) => { const p = wall(tz, t); return Date.UTC(p.year, p.month - 1, p.day, p.hour % 24, p.minute, p.second) - Math.floor(t / 1000) * 1000; };
+/** The calendar day (as a 00:00 UTC value) that instant t falls on in the zone. */
+const localDay = (tz, t) => { const p = wall(tz, t); return Date.UTC(p.year, p.month - 1, p.day); };
+/** The instant a stored day starts in a zone (its local midnight). DST: the offset at the first guess is read and the
+ *  guess adjusted once; on the rare day a zone moves its clocks at midnight itself, the earliest instant that is on
+ *  the date wins (so a date that starts at 01:00 still starts when it begins). */
+function dayStart(day, tz) {
+  const a = day - offsetAt(tz, day), b = day - offsetAt(tz, a);
+  if (a === b) return a;
+  const lo = Math.min(a, b), hi = Math.max(a, b);
+  return localDay(tz, lo) === day ? lo : hi;
+}
+const boundsCache = new Map();
+/** For a stored day and an IANA zone: { start, end } = when that date starts there and when the next one does (ms). */
+export function dayBounds(day, tz) {
+  day = Math.floor(day / DAY) * DAY;
+  const key = `${tz}|${day}`;
+  let r = boundsCache.get(key);
+  if (!r) { if (boundsCache.size > 20000) boundsCache.clear(); r = { start: dayStart(day, tz), end: dayStart(day + DAY, tz) }; boundsCache.set(key, r); }
+  return r;
+}
+/** The row's school zone (rows from classLessons / getClassLesson / assignedClasses carry tz), only if Node knows it. */
+const zoneFor = cl => (cl && typeof cl.tz === 'string' && S.isZone(cl.tz) ? cl.tz : null);
+/** Open from local midnight of opens_at where the school is; from 00:00 UTC without a zone. No opens_at: always open. */
+export function isOpen(cl, t = now()) {
+  if (!cl.opens_at) return true;
+  const tz = zoneFor(cl);
+  return (tz ? dayBounds(cl.opens_at, tz).start : cl.opens_at) <= t;
+}
+/** With a school time zone: 'today' during the due day there, 'late' from the next local midnight, 'upcoming' before.
+ *  Without one: 'today' during the due day (UTC); 'due' after it; 'late' only once the due day is over everywhere
+ *  (+36h), so nobody is late on the due day in any time zone. null when there is no due date. */
+export const LATE_AFTER = 36 * 3600e3;
 export function dueState(cl, t = now()) {
   if (!cl || !cl.due_at) return null;
+  const tz = zoneFor(cl);
+  if (tz) { const { start, end } = dayBounds(cl.due_at, tz); return t >= end ? 'late' : t >= start ? 'today' : 'upcoming'; }
   if (t >= cl.due_at + LATE_AFTER) return 'late';
   if (t >= cl.due_at + DAY) return 'due';
   if (t >= cl.due_at) return 'today';
@@ -272,7 +323,8 @@ export function classPlan(classId, { openOnly = false } = {}) {
   return openOnly ? groups.filter(g => g.lessons.length) : groups;
 }
 const managed = (u, classId) => { const c = S.getClass(classId); return c && S.canManageClass(u, c) ? c : null; };
-const dateOrNull = v => { if (v === null || v === '' || v === undefined) return null; const t = Date.parse(String(v).length === 10 ? `${v}T00:00:00Z` : v); return Number.isFinite(t) ? t : undefined; };
+/** 'YYYY-MM-DD' (or any date Date.parse reads) -> that calendar day at 00:00 UTC; '' -> null; unreadable -> undefined. */
+const dateOrNull = v => { if (v === null || v === '' || v === undefined) return null; const t = Date.parse(String(v).length === 10 ? `${v}T00:00:00Z` : v); return Number.isFinite(t) ? Math.floor(t / DAY) * DAY : undefined; };
 export function createUnit(u, classId, name) {
   const c = managed(u, classId); if (!c) return fail('notFound');
   const n = clip(name, 60); if (!n) return fail('unitName');
@@ -356,7 +408,7 @@ export function canViewClassLesson(u, cl) {
   return S.canViewClass(u, c) && isOpen(cl);
 }
 /** Classes (managed by u) that a lesson is assigned to. */
-export const assignedClasses = lessonId => q.all('SELECT cl.id, cl.class_id, cl.opens_at, cl.due_at, c.name, c.archived_at FROM class_lessons cl JOIN classrooms c ON c.id=cl.class_id WHERE cl.lesson_id=? AND cl.removed_at IS NULL ORDER BY c.name', lessonId);
+export const assignedClasses = lessonId => withZones(q.all(`SELECT cl.id, cl.class_id, cl.opens_at, cl.due_at, c.name, c.archived_at, sch.settings school_settings FROM class_lessons cl ${SCHOOL_OF} WHERE cl.lesson_id=? AND cl.removed_at IS NULL ORDER BY c.name`, lessonId));
 /** How much student work a delete would lose: students with any progress on a step / in a lesson (all its classes). */
 export const stepWork = stepId => q.get('SELECT COUNT(DISTINCT user_id) n FROM step_progress WHERE step_id=?', stepId).n;
 export const lessonWork = lessonId => q.get('SELECT COUNT(DISTINCT p.user_id) n FROM step_progress p JOIN class_lessons cl ON cl.id=p.class_lesson_id WHERE cl.lesson_id=?', lessonId).n;

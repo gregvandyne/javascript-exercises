@@ -20,7 +20,7 @@ test('school -> teacher -> class -> login cards -> own-account student joins wit
   await Promise.all([admin.waitForURL(/\/cards\//), admin.click('form[data-api$="/staff"] button[type=submit]')]);
   const tUser = (await admin.locator('.logincard dd b').nth(0).textContent()).trim();
   const tPass = (await admin.locator('.logincard dd b').nth(1).textContent()).trim();
-  expect(tPass).toMatch(/^[a-z]+-[a-z]+-\d{2}$/);
+  expect(tPass).toMatch(/^[a-z]+-[a-z]+-[a-z]+-\d{2}$/);
 
   const tctx = await browser.newContext(); const teacher = await tctx.newPage();
   await login(teacher, tUser, tPass);

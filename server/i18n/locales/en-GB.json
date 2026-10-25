@@ -92,15 +92,30 @@
     "class": {
       "grade": "Year",
       "gradeN": "Year {grade}",
-      "namePlaceholder": "e.g. 4B Maths"
+      "namePlaceholder": "e.g. 4B Maths",
+      "lessons": "Lessons",
+      "lastActivity": "Last activity",
+      "noActivity": "none yet"
     },
     "people": {
       "grade": "Year"
+    },
+    "settings": {
+      "timeZone": "Time zone",
+      "timeZoneNone": "Not set (days are counted in UTC)",
+      "timeZoneUnset": "Set your school's time zone so lessons open at midnight and due dates end at midnight where you are. Until then, nobody is late until 36 hours after the due day starts.",
+      "timeZoneHint": "Lessons open at midnight and due dates end at midnight in this zone. It's {time} there now."
+    },
+    "errors": {
+      "badZone": "Pick a time zone from the list."
     }
   },
   "lessons": {
     "step": {
       "newGamePlaceholder": "e.g. a quiz with 10 questions about fractions for Year 4"
+    },
+    "assign": {
+      "zoneNote": "{zone, select, none {Days are counted in UTC and nobody is late until 36 hours after the due day starts. A school admin can set the school's time zone in Settings.} other {Lessons open and due dates end at midnight in {zone}.}}"
     }
   }
 }

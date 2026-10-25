@@ -43,6 +43,7 @@ In environments with a pre-installed Chromium at `/opt/pw-browsers`, the e2e con
 | `PORT` | `3000` | HTTP port |
 | `BRB_DATA_DIR` | `./data` | Where the SQLite file (`brb.db`) and backups live. Use a persistent disk in production. |
 | `SESSION_SECRET` | random, stored in DB | Signs session cookies and game-frame tokens. Set it in production. |
+| `TRUST_PROXY` | off | How many front proxies to trust for the real client IP (rate limits). Set to the proxy hop count (e.g. `1` on Render/Heroku) **only** when the app is behind a proxy whose edge sets `X-Forwarded-For`; leave off when the app is exposed directly, or a client could spoof its IP and bypass IP rate limits. Login brute-force is additionally capped per account, independent of this. |
 | `ANTHROPIC_API_KEY` | – | Enables the real Builder, input screening classifier and model review. |
 | `BUILDER_MODEL` / `BUILDER_PRO_MODEL` | `claude-sonnet-5-5` / `claude-opus-5-5` | Builder models (normal / "Pro quality"). |
 | `BUILDER_DAILY_TURNS` | `60` | Builder turns per user per day. |

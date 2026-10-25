@@ -194,9 +194,16 @@ session notes), done in three batches. The main decisions:
   0012); every query skips removed rows, a removed lesson takes no more work, and assigning it again revives the row
   with its work. A lesson can be in a class only once. Colleagues' shared lessons must be copied before they are
   assigned (so a colleague's edits or delete can't change another teacher's class).
-- **Due dates:** nobody is late on the due day (late = 36 hours after the start of the due date in UTC, so the whole
-  due day counts in every time zone); lessons that haven't opened are greyed out in the gradebook and don't count
-  towards Overall (page and CSV agree).
+- **Due dates:** nobody is late on the due day. Without a school time zone, late = 36 hours after the start of the due
+  date in UTC, so the whole due day counts in every time zone; lessons that haven't opened are greyed out in the
+  gradebook and don't count towards Overall (page and CSV agree).
+- **Time zone per school** (school Settings, `settings.timeZone`, an IANA name): dates stay stored as the calendar day at
+  00:00 UTC (no migration); class-lesson rows carry the school's `tz` (one join, never a lookup per row) and
+  `isOpen`/`dueState` count the day from that zone's local midnight to the next (DST handled from Intl offsets, with a
+  one-step re-adjustment and a check for zones that switch at midnight), so "Due today" and "Late" flip at the school's
+  midnight and the 36-hour grace is only for schools with no zone. Stored days print with `fmt.day` (UTC), never
+  `fmt.date`, so the server's own zone can't shift a date. Teachers see which rule applies next to the assign forms and
+  on the gradebook.
 - **Counts lead somewhere:** class cards link "✋ requests" to the Students tab's requests and "✍️ to review" to the
   gradebook's review list; gradebook cells with new answers open the first new answer; class lesson rows open that
   lesson's progress. All "to review" counts only count current students, so they always agree.
@@ -225,4 +232,20 @@ session notes), done in three batches. The main decisions:
 - **Top bar on small laptops and landscape tablets** (821–1180px): the profile name and logo text hide and nav links
   tighten, so the bar fits with the Classes or Schools tab in every language. app.js adds its page-wide listeners once
   even when a page module imports it a second time (one click, one request).
-- Left for later: activity columns on the school page, names instead of ids in admin lookups, time zones per school.
+- Left for later: school-level dashboards (per-teacher activity), SSO, and roll-over of classes between school years.
+
+## Security review (pre-launch pen test)
+A defensive security review (8 areas, each finding independently verified against a seeded two-school server) led to these fixes:
+- **Credential brute-force.** `trust proxy` now defaults off, so a directly-exposed server can't be given a spoofed
+  `X-Forwarded-For` to reset IP rate limits (set `TRUST_PROXY` when behind a real proxy). Login is additionally capped
+  per account (10 / 15 min), independent of IP, and auto-generated school passwords went from ~29k to ~525k combinations.
+- **Report griefing.** Auto-hide now counts only distinct non-guest, non-owner reporters, so a few throwaway guest
+  reports can't silently take a game down (guest reports are still queued for admin review).
+- **Cross-teacher account merge.** Approving a join request "same student as" an existing account now requires the
+  teacher to actually manage that student (`canManageStudent`), so one teacher can't hijack another's pupil.
+- **School-wide publishing.** A game shared to a whole school now needs a human look when the safety scan flagged it,
+  the same as public (private/friends stay instant).
+- **Game frame.** Frame tokens are bound to their viewer and re-check live visibility, their lifetime dropped from 6h to
+  minutes, and the frame CSP carries a `sandbox` directive so a leaked frame URL is opaque-origin even if opened top-level.
+- **Smaller fixes.** `?lang=` only persists for same-origin requests; play/heartbeat need a session; a score only counts
+  after a recorded play; the chat/text link filter detects any TLD (not a short allowlist) without flagging filenames.

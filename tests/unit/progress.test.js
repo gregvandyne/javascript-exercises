@@ -345,3 +345,72 @@ test('review fixes: merged accounts keep their work, removed lessons stay out of
   assert.ok(L.reorderAssignment(ana, row('C1').id, -1).ok);
   assert.deepEqual(order(), ['A1', 'C1', 'B1', 'D1']);
 });
+
+test('school time zone: lessons open and fall due at the school\'s midnight (DST included); without a zone the UTC + 36h rule stays', async () => {
+  const DAY = 86400e3, H = 3600e3;
+  const kiwi = S.createSchool(boss, { name: 'Kiwi Zone' }).school;
+  assert.equal(S.updateSchool(boss, kiwi.id, { settings: { timeZone: 'Mars/Olympus' } }).code, 'badZone');
+  assert.ok(S.updateSchool(boss, kiwi.id, { settings: { timeZone: 'Pacific/Auckland' } }).ok);
+  const kt = S.createSchoolAccount(boss, kiwi.id, { rosterName: 'Kiwi Teacher', role: 'teacher' }).user;
+  const kc = S.createClass(kt, kiwi.id, { name: 'Kiwi 5' }).class;
+  const kid = S.createSchoolAccount(kt, kiwi.id, { rosterName: 'Kiwi Kid' }).user; S.addToClass(kt, kc.id, kid.id);
+  const kl = L.createLesson(kt, kiwi.id, { title: 'Kiwi lesson' }).lesson; L.addStep(kt, kl.id, { kind: 'text', body: 'x' });
+  const kcl = L.assign(kt, kc.id, kl.id, { opensAt: '2026-01-10', dueAt: '2026-01-10' }).classLesson;
+  // every row that reaches isOpen / dueState carries the school's zone (null when none is set)
+  assert.equal(kcl.tz, 'Pacific/Auckland');
+  assert.equal(L.getClassLesson(kcl.id).tz, 'Pacific/Auckland');
+  assert.deepEqual(L.classLessons(kc.id).map(x => x.tz), ['Pacific/Auckland']);
+  assert.deepEqual(L.classPlan(kc.id).flatMap(g => g.lessons).map(x => x.tz), ['Pacific/Auckland']);
+  assert.equal(L.assignedClasses(kl.id)[0].tz, 'Pacific/Auckland');
+  assert.equal(L.getClassLesson(cl.id).tz, null, 'Oak has no zone');
+  assert.ok(L.classLessons(cls.id).length && L.classLessons(cls.id).every(x => x.tz === null));
+  assert.ok(!('school_settings' in kcl), 'the settings JSON itself is not carried around');
+  // Jan 10 2026 in Auckland (NZDT, UTC+13) runs from Jan 9 11:00 UTC to Jan 10 11:00 UTC
+  const start = Date.UTC(2026, 0, 9, 11), end = Date.UTC(2026, 0, 10, 11);
+  assert.deepEqual(L.dayBounds(Date.UTC(2026, 0, 10), 'Pacific/Auckland'), { start, end });
+  assert.equal(L.isOpen(kcl, start - 1), false); assert.equal(L.isOpen(kcl, start), true);
+  assert.equal(L.dueState(kcl, start - 1), 'upcoming'); assert.equal(L.dueState(kcl, start), 'today');
+  assert.equal(L.dueState(kcl, end - 1), 'today'); assert.equal(L.dueState(kcl, end), 'late');
+  assert.equal(L.dueState(kcl, end + 20 * H), 'late', "no 'due' state once a zone is set");
+  // the same stored day with no zone: the UTC day, 'due' the day after, late 36 hours after it starts
+  const plain = { opens_at: kcl.opens_at, due_at: kcl.due_at, tz: null };
+  assert.equal(L.isOpen(plain, start), false); assert.equal(L.isOpen(plain, Date.UTC(2026, 0, 10)), true);
+  assert.equal(L.dueState(plain, end), 'today'); assert.equal(L.dueState(plain, Date.UTC(2026, 0, 11, 6)), 'due'); assert.equal(L.dueState(plain, Date.UTC(2026, 0, 11, 12)), 'late');
+  assert.equal(L.dueState({ due_at: kcl.due_at, tz: 'Not/AZone' }, end), 'today', 'an unknown zone falls back to the UTC rule instead of throwing');
+  // Los Angeles: the clocks go forward on Mar 8 2026 (a 23-hour day) and back on Nov 1 (25 hours)
+  assert.deepEqual(L.dayBounds(Date.UTC(2026, 2, 8), 'America/Los_Angeles'), { start: Date.UTC(2026, 2, 8, 8), end: Date.UTC(2026, 2, 9, 7) });
+  assert.deepEqual(L.dayBounds(Date.UTC(2026, 10, 1), 'America/Los_Angeles'), { start: Date.UTC(2026, 10, 1, 7), end: Date.UTC(2026, 10, 2, 8) });
+  const laRow = { opens_at: Date.UTC(2026, 2, 8), due_at: Date.UTC(2026, 2, 8), tz: 'America/Los_Angeles' };
+  assert.equal(L.isOpen(laRow, Date.UTC(2026, 2, 8, 7, 59, 59)), false); assert.equal(L.isOpen(laRow, Date.UTC(2026, 2, 8, 8)), true);
+  assert.equal(L.dueState(laRow, Date.UTC(2026, 2, 8, 7, 59, 59)), 'upcoming'); assert.equal(L.dueState(laRow, Date.UTC(2026, 2, 8, 8)), 'today');
+  assert.equal(L.dueState(laRow, Date.UTC(2026, 2, 9, 6, 59, 59)), 'today'); assert.equal(L.dueState(laRow, Date.UTC(2026, 2, 9, 7)), 'late');
+  // zones that move their clocks at midnight itself (Chile) included: every day starts when its date begins there and ends when the next one does
+  const localDay = (tz, t) => { const p = Object.fromEntries(new Intl.DateTimeFormat('en-US', { timeZone: tz, year: 'numeric', month: 'numeric', day: 'numeric' }).formatToParts(new Date(t)).filter(x => x.type !== 'literal').map(x => [x.type, +x.value])); return Date.UTC(p.year, p.month - 1, p.day); };
+  for (const tz of ['America/Santiago', 'America/Los_Angeles', 'Pacific/Auckland']) for (let d = Date.UTC(2026, 0, 1); d < Date.UTC(2027, 0, 1); d += DAY) {
+    const b = L.dayBounds(d, tz);
+    assert.equal(localDay(tz, b.start), d, `${tz} ${new Date(d).toISOString()} starts on its date`);
+    assert.equal(localDay(tz, b.start - 1000), d - DAY, 'the second before belongs to the day before');
+    assert.equal(b.end, L.dayBounds(d + DAY, tz).start, 'days meet');
+  }
+  // the gradebook's locked / late follow the zone
+  const cellAt = t => P.classProgress(kc.id, t).students.find(p => p.id === kid.id).cells[0];
+  assert.deepEqual([cellAt(start - 1).locked, cellAt(start - 1).late], [true, false], 'not open yet in Auckland');
+  assert.deepEqual([cellAt(end - 1).locked, cellAt(end - 1).late], [false, false], 'due today there');
+  assert.deepEqual([cellAt(end).locked, cellAt(end).late], [false, true], 'late from the next Auckland midnight');
+  assert.equal(P.classProgress(kc.id, end).lessons[0].due, 'late');
+  // Oak (no zone) at the same instants keeps the old rule
+  const oakSoon = L.assign(ana, cls.id, future.id, { opensAt: '2026-01-10', dueAt: '2026-01-10' }).classLesson;
+  const oakAt = t => { const gb = P.classProgress(cls.id, t); return gb.students.find(p => p.id === mia.id).cells[gb.lessons.findIndex(l => l.id === oakSoon.id)]; };
+  assert.equal(oakAt(start).locked, true, 'UTC Jan 10 has not started');
+  assert.equal(oakAt(end).late, false, 'still the due day in UTC');
+  assert.equal(oakAt(Date.UTC(2026, 0, 11, 12)).late, true, '36 hours after the due day starts');
+  L.unassign(ana, oakSoon.id);
+  // the pages print stored days as that date (not shifted by the server's zone)
+  const r = await as(kt)(`/teach/lessons/${kl.id}`);
+  assert.equal(r.status, 200); assert.match(r.text, /Opens Jan 10, 2026/); assert.match(r.text, /Due Jan 10, 2026/);
+  assert.equal((await as(kt)(`/class/${kc.id}/progress`)).status, 200);
+  // clearing the zone goes back to the UTC rule
+  assert.ok(S.updateSchool(boss, kiwi.id, { settings: { timeZone: '' } }).ok);
+  assert.equal(L.getClassLesson(kcl.id).tz, null);
+  assert.equal(L.dueState(L.getClassLesson(kcl.id), end), 'today');
+});

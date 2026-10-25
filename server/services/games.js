@@ -167,6 +167,8 @@ export function toggleLike(gameId, userId) {
 }
 export function userRating(gameId, userId) { const r = userId ? q.get('SELECT stars FROM ratings WHERE game_id=? AND user_id=?', gameId, userId) : null; return r ? r.stars : 0; }
 export function userLiked(gameId, userId) { return !!(userId && q.get('SELECT 1 FROM likes WHERE game_id=? AND user_id=?', gameId, userId)); }
+/** True if this user opened this game recently (a recorded play in the window): a cheap gate before accepting a score. */
+export const hasRecentPlay = (gameId, userId, windowMs = 24 * 3600e3) => !!userId && !!q.get('SELECT 1 FROM plays WHERE game_id=? AND user_id=? AND started_at > ?', gameId, userId, now() - windowMs);
 export function recordPlay(gameId, userId) {
   const id = uid();
   tx(() => {

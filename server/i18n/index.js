@@ -5,7 +5,7 @@
 //                               translate; a key missing in the locale falls back to English, then to the key itself
 //   req.t / res.locals.t        bound per request by middleware() (also req.locale, req.dir, req.fmt)
 //   pickLocale(...)             ?lang= → lang cookie → signed-in user's saved choice → Accept-Language → en
-//   fmt(locale)                 Intl number, compact number, money, date and "time ago" formatting
+//   fmt(locale)                 Intl number, compact number, money, date (timestamps), day (stored calendar days) and "time ago" formatting
 //
 // Locale files: server/i18n/locales/<code>.json, nested objects of strings, flattened to dotted keys
 // ("home.hero.play"). Messages use the ICU-lite syntax in public/js/i18n-format.js ({name}, plural, select).
@@ -201,7 +201,10 @@ export function fmt(code) {
     int: n => num.format(+n || 0),
     /** cents -> "$12.34" in the locale's style */
     money: cents => money.format((+cents || 0) / 100),
+    /** a real timestamp -> "Oct 24, 2026" (in the server's zone) */
     date: (t0, opts = { month: 'short', day: 'numeric', year: 'numeric' }) => new Date(t0).toLocaleDateString(tag, opts),
+    /** a stored calendar day (00:00 UTC) -> the same date whatever zone the server runs in (lesson opens / due dates) */
+    day: (t0, opts = { month: 'short', day: 'numeric', year: 'numeric' }) => new Date(t0).toLocaleDateString(tag, { ...opts, timeZone: 'UTC' }),
     /** ms timestamp -> "5 minutes ago" */
     ago: t0 => {
       const s = Math.max(1, Math.round((Date.now() - t0) / 1000));
@@ -254,8 +257,13 @@ export function middleware(req, res, next) {
   res.vary('Accept-Language'); res.vary('Cookie');
   res.set('Content-Language', code);
   if (picked.source === 'query') {
-    setLangCookie(res, code);
-    saveUserLang(req.user, code);
+    // The language picker is a plain GET (works without JS), so csrfCheck doesn't guard it. Only PERSIST the choice
+    // for a same-origin / direct request, so a cross-site link can't silently change a signed-in user's saved language.
+    const site = req.headers['sec-fetch-site']; const origin = req.headers.origin;
+    let sameOrigin = true;
+    if (site) sameOrigin = site === 'same-origin' || site === 'none';
+    else if (origin && origin !== 'null') { try { sameOrigin = new URL(origin).host === req.headers.host; } catch { sameOrigin = false; } }
+    if (sameOrigin) { setLangCookie(res, code); saveUserLang(req.user, code); }
     const isPage = req.method === 'GET' && !req.path.startsWith('/api/') && !req.path.startsWith('/frame/');
     if (isPage) return res.redirect(303, withoutLang(req.originalUrl));
   }

@@ -26,10 +26,11 @@ test('three reports from different players hide a public game', async ({ page, b
   await visitor.goto(`/search?q=${encodeURIComponent(title)}`);
   await expect(visitor.locator(`#results a[href="/g/${g.slug}"]`).first()).toBeVisible();
 
-  await report(browser, g.slug);
-  await report(browser, g.slug, { guest: true });
-  expect((await visitor.goto(`/g/${g.slug}`)).status()).toBe(200); // two is not enough
-  await report(browser, g.slug);
+  await report(browser, g.slug);                       // real reporter 1
+  await report(browser, g.slug, { guest: true });      // a guest report does NOT count toward auto-hide
+  await report(browser, g.slug);                       // real reporter 2
+  expect((await visitor.goto(`/g/${g.slug}`)).status()).toBe(200); // two real reporters (+ a guest) is not enough
+  await report(browser, g.slug);                       // real reporter 3 -> now hidden
 
   // Gone for a stranger: page, play page and search.
   expect((await visitor.goto(`/g/${g.slug}`)).status()).toBe(404);
@@ -41,6 +42,6 @@ test('three reports from different players hide a public game', async ({ page, b
   await page.goto(`/studio/${g.id}`);
   await expect(page.locator('#st-live')).toContainText('hidden for now');
   await admin.goto('/admin?tab=reports');
-  await expect(admin.locator('.reportcard', { hasText: title })).toContainText('3 open reports');
+  await expect(admin.locator('.reportcard', { hasText: title })).toContainText('4 open reports');
   await visitorCtx.close(); await admin.context().close();
 });

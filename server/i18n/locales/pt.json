@@ -1240,7 +1240,10 @@
       "askAdmin": "Peça ao admin da escola ({admins}) para adicionar a pessoa na aba Pessoas da escola.",
       "addStaffLink": "Adicionar à equipe na aba Pessoas",
       "askNoAdmin": "{school} ainda não tem admin da escola. Peça à equipe do Magic Cups para nomear um; depois, essa pessoa poderá adicionar membros à equipe na aba Pessoas da escola.",
-      "archivedToast": "Turma {name} arquivada"
+      "archivedToast": "Turma {name} arquivada",
+      "lessons": "Aulas",
+      "lastActivity": "Última atividade",
+      "noActivity": "nada ainda"
     },
     "requests": {
       "title": "{count, plural, one {# aluno quer entrar} other {# alunos querem entrar}}",
@@ -1310,7 +1313,11 @@
       "publishSchool": "Só dentro da escola",
       "publishPublic": "Também podem compartilhar com todos",
       "photos": "As fotos de perfil das contas da escola só são vistas pelos colegas de turma, professores e amigos.",
-      "chatHint": "As contas da escola só podem adicionar colegas de turma como amigos."
+      "chatHint": "As contas da escola só podem adicionar colegas de turma como amigos.",
+      "timeZone": "Fuso horário",
+      "timeZoneNone": "Não definido (os dias são contados em UTC)",
+      "timeZoneUnset": "Defina o fuso horário da sua escola para que as aulas abram à meia-noite e os prazos terminem à meia-noite onde você está. Até lá, ninguém fica em atraso até 36 horas após o início do dia de entrega.",
+      "timeZoneHint": "As aulas abrem e os prazos terminam à meia-noite neste fuso. Agora lá são {time}."
     },
     "cards": {
       "title": "Cartões de acesso",
@@ -1354,7 +1361,8 @@
       "badTeacher": "Escolha alguém da equipe da escola.",
       "adminNotStudent": "Você cuida do Magic Cups, então não pode entrar em uma turma como aluno.",
       "isStudent": "{name} tem conta de aluno aqui, por isso não pode entrar na equipe.",
-      "tickStudents": "Marque pelo menos um aluno."
+      "tickStudents": "Marque pelo menos um aluno.",
+      "badZone": "Escolha um fuso horário da lista."
     },
     "classTabs": {
       "lessons": "Aulas",
@@ -1471,7 +1479,8 @@
       "done": "Atribuída a {class}",
       "restored": "Atribuída de novo a {class}. Os trabalhos anteriores dos alunos voltaram.",
       "changeDates": "Mudar datas",
-      "allClasses": "Esta aula já está em todas as suas turmas."
+      "allClasses": "Esta aula já está em todas as suas turmas.",
+      "zoneNote": "{zone, select, none {Os dias são contados em UTC e ninguém fica em atraso até 36 horas após o início do dia de entrega. Um admin da escola pode definir o fuso horário da escola nas Configurações.} other {As aulas abrem e os prazos terminam à meia-noite em {zone}.}}"
     },
     "class": {
       "title": "Aulas",

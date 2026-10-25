@@ -200,6 +200,11 @@ test('fmt: Intl numbers, money, dates and time-ago per locale', () => {
   assert.equal(i18n.fmt('en').ago(Date.now() - 5 * 60e3), '5 minutes ago');
   assert.match(i18n.fmt('es').ago(Date.now() - 2 * 3600e3), /hace 2 horas/);
   assert.match(i18n.fmt('ja').date(Date.UTC(2026, 9, 24)), /2026/);
+  // stored calendar days (00:00 UTC) print as that date whatever zone the server runs in
+  assert.equal(i18n.fmt('en').day(Date.UTC(2026, 0, 10)), 'Jan 10, 2026');
+  assert.equal(i18n.fmt('en').day(Date.UTC(2026, 0, 10, 23, 59, 59)), 'Jan 10, 2026');
+  assert.equal(i18n.fmt('en').day(Date.UTC(2026, 0, 10), { month: 'short', day: 'numeric' }), 'Jan 10');
+  assert.equal(i18n.fmt('de').day(Date.UTC(2026, 0, 10)), '10. Jan. 2026');
 });
 
 test('Builder: the system prompt asks for the builder\'s language; refusals come from the locale files', () => {

@@ -1240,7 +1240,10 @@
       "askAdmin": "Bitten Sie den Schuladmin ({admins}), die Person auf der Schulseite unter „Personen“ hinzuzufügen.",
       "addStaffLink": "Unter „Personen“ zum Kollegium hinzufügen",
       "askNoAdmin": "{school} hat noch keinen Schuladmin. Bitten Sie das Magic Cups Team, einen zu ernennen; diese Person kann dann auf der Schulseite unter „Personen“ das Kollegium eintragen.",
-      "archivedToast": "{name} archiviert"
+      "archivedToast": "{name} archiviert",
+      "lessons": "Lektionen",
+      "lastActivity": "Zuletzt aktiv",
+      "noActivity": "noch nichts"
     },
     "requests": {
       "title": "{count, plural, one {# Schüler möchte beitreten} other {# Schüler möchten beitreten}}",
@@ -1310,7 +1313,11 @@
       "publishSchool": "Nur innerhalb der Schule",
       "publishPublic": "Auch mit allen teilen",
       "photos": "Profilfotos von Schulkonten sehen nur Klassenkameraden, Lehrkräfte und Freunde.",
-      "chatHint": "Schulkonten können nur Klassenkameraden als Freunde hinzufügen."
+      "chatHint": "Schulkonten können nur Klassenkameraden als Freunde hinzufügen.",
+      "timeZone": "Zeitzone",
+      "timeZoneNone": "Nicht festgelegt (die Tage werden in UTC gezählt)",
+      "timeZoneUnset": "Legen Sie die Zeitzone Ihrer Schule fest, damit Lektionen um Mitternacht beginnen und Fälligkeitstermine bei Ihnen um Mitternacht enden. Bis dahin ist niemand zu spät, bis 36 Stunden nach Beginn des Fälligkeitstags vergangen sind.",
+      "timeZoneHint": "Lektionen beginnen und Fälligkeitstermine enden um Mitternacht in dieser Zeitzone. Dort ist es jetzt {time}."
     },
     "cards": {
       "title": "Anmeldekarten",
@@ -1354,7 +1361,8 @@
       "badTeacher": "Wählen Sie jemanden aus dem Kollegium der Schule.",
       "adminNotStudent": "Du kümmerst dich um Magic Cups, deshalb kannst du keiner Klasse als Schüler beitreten.",
       "isStudent": "{name} ist hier Schüler und kann deshalb nicht zum Kollegium hinzugefügt werden.",
-      "tickStudents": "Haken Sie mindestens einen Schüler an."
+      "tickStudents": "Haken Sie mindestens einen Schüler an.",
+      "badZone": "Wählen Sie eine Zeitzone aus der Liste."
     },
     "classTabs": {
       "lessons": "Lektionen",
@@ -1471,7 +1479,8 @@
       "done": "Der Klasse {class} zugewiesen",
       "restored": "Wieder der Klasse {class} zugewiesen. Die früheren Arbeiten der Schüler sind wieder da.",
       "changeDates": "Termine ändern",
-      "allClasses": "Diese Lektion ist in all Ihren Klassen."
+      "allClasses": "Diese Lektion ist in all Ihren Klassen.",
+      "zoneNote": "{zone, select, none {Die Tage werden in UTC gezählt, und niemand ist zu spät, bis 36 Stunden nach Beginn des Fälligkeitstags vergangen sind. Ein Schuladmin kann die Zeitzone der Schule in den Einstellungen festlegen.} other {Lektionen beginnen und Fälligkeitstermine enden um Mitternacht in {zone}.}}"
     },
     "class": {
       "title": "Lektionen",

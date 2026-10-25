@@ -8,7 +8,7 @@ import * as auth from '../auth.js';
 import { q, audit } from '../db.js';
 import * as photos from '../services/photos.js';
 import { isSchoolStaff, isPlatformAdmin } from '../services/schools.js';
-import { rateLimit, allow } from '../services/ratelimit.js';
+import { rateLimit, allow, count } from '../services/ratelimit.js';
 import { availableLocales, normalizeCode, tHtml, setLangCookie, saveUserLang } from '../i18n/index.js';
 
 export const router = Router();
@@ -88,8 +88,12 @@ router.post('/api/auth/signup', rateLimit('signup', 10, 3600e3), (req, res) => {
 });
 router.post('/api/auth/login', rateLimit('login', 20, 900e3, 'auth.api.tooManyTries'), (req, res) => {
   const { username, password } = req.body || {};
+  // Per-account backstop: at most 10 FAILED guesses per username / 15 min, independent of source IP (a spoofed/rotated
+  // IP can't widen it). Successful logins never count, so normal use is unaffected.
+  const uname = String(username || '').toLowerCase().slice(0, 64);
+  if (uname && count(`login-user:${uname}`) >= 10) return res.status(429).json({ error: req.t('auth.api.tooManyTries') });
   const u = auth.getUserByName(username);
-  if (!u || !auth.verifyPassword(u, password)) return res.status(400).json({ error: req.t('auth.api.wrongLogin'), field: 'password' });
+  if (!u || !auth.verifyPassword(u, password)) { if (uname) allow(`login-user:${uname}`, 10, 900e3); return res.status(400).json({ error: req.t('auth.api.wrongLogin'), field: 'password' }); }
   if (u.banned) return res.status(403).json({ error: req.t('auth.api.paused') });
   if (req.user) auth.endSession(req, res);
   auth.startSession(res, u.id, req.headers['user-agent']);

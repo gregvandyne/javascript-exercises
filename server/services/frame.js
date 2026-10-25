@@ -9,8 +9,10 @@ const SDK_PATH = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../
 let SDK = fs.readFileSync(SDK_PATH, 'utf8');
 export const reloadSdk = () => { SDK = fs.readFileSync(SDK_PATH, 'utf8'); };
 
-export const FRAME_CSP = "default-src 'none'; script-src 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com data:; img-src data: blob:; media-src data: blob:; connect-src 'none'; frame-ancestors 'self'; form-action 'none'; base-uri 'none'";
 export const SANDBOX = 'allow-scripts allow-pointer-lock allow-orientation-lock';
+// The `sandbox` directive means a /frame document is opaque-origin with these same limits even if loaded top-level
+// (not just inside the iframe), so a leaked frame URL can never run at the site origin. No allow-same-origin, ever.
+export const FRAME_CSP = `sandbox ${SANDBOX}; default-src 'none'; script-src 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com data:; img-src data: blob:; media-src data: blob:; connect-src 'none'; frame-ancestors 'self'; form-action 'none'; base-uri 'none'`;
 
 const RESET = 'html,body{margin:0;padding:0;-webkit-tap-highlight-color:transparent}*,*::before,*::after{box-sizing:border-box}body{min-height:100vh;font-family:system-ui,sans-serif;overscroll-behavior:none}';
 const safeJson = o => JSON.stringify(o).replace(/</g, '\\u003c').replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029');

@@ -1240,7 +1240,10 @@
       "askAdmin": "Vraag je schoolbeheerder ({admins}) om diegene toe te voegen op het tabblad Mensen van de school.",
       "addStaffLink": "Personeel toevoegen op het tabblad Mensen",
       "askNoAdmin": "{school} heeft nog geen schoolbeheerder. Vraag het Magic Cups-team om er een aan te wijzen; die kan daarna personeel toevoegen op het tabblad Mensen van de school.",
-      "archivedToast": "{name} gearchiveerd"
+      "archivedToast": "{name} gearchiveerd",
+      "lessons": "Lessen",
+      "lastActivity": "Laatst actief",
+      "noActivity": "nog niets"
     },
     "requests": {
       "title": "{count, plural, one {# leerling wil meedoen} other {# leerlingen willen meedoen}}",
@@ -1310,7 +1313,11 @@
       "publishSchool": "Alleen binnen de school",
       "publishPublic": "Ook met iedereen delen",
       "photos": "Profielfoto’s van schoolaccounts zijn alleen zichtbaar voor klasgenoten, leerkrachten en vrienden.",
-      "chatHint": "Schoolaccounts kunnen alleen klasgenoten als vrienden toevoegen."
+      "chatHint": "Schoolaccounts kunnen alleen klasgenoten als vrienden toevoegen.",
+      "timeZone": "Tijdzone",
+      "timeZoneNone": "Niet ingesteld (de dagen worden in UTC geteld)",
+      "timeZoneUnset": "Stel de tijdzone van je school in, zodat lessen zichtbaar worden om middernacht en inleverdata om middernacht eindigen waar jij bent. Tot die tijd is niemand te laat tot 36 uur na het begin van de inleverdag.",
+      "timeZoneHint": "Lessen worden zichtbaar en inleverdata eindigen om middernacht in deze tijdzone. Daar is het nu {time}."
     },
     "cards": {
       "title": "Inlogkaarten",
@@ -1354,7 +1361,8 @@
       "badTeacher": "Kies iemand van het personeel van de school.",
       "adminNotStudent": "Jij zorgt voor Magic Cups, dus je kunt niet als leerling meedoen met een klas.",
       "isStudent": "{name} is hier leerling en kan dus niet aan het personeel worden toegevoegd.",
-      "tickStudents": "Vink minstens één leerling aan."
+      "tickStudents": "Vink minstens één leerling aan.",
+      "badZone": "Kies een tijdzone uit de lijst."
     },
     "classTabs": {
       "lessons": "Lessen",
@@ -1471,7 +1479,8 @@
       "done": "Toegewezen aan {class}",
       "restored": "Opnieuw toegewezen aan {class}. Het eerdere werk van leerlingen is terug.",
       "changeDates": "Datums wijzigen",
-      "allClasses": "Deze les staat in al je klassen."
+      "allClasses": "Deze les staat in al je klassen.",
+      "zoneNote": "{zone, select, none {De dagen worden in UTC geteld en niemand is te laat tot 36 uur na het begin van de inleverdag. Een schoolbeheerder kan in Instellingen de tijdzone van de school instellen.} other {Lessen worden zichtbaar en inleverdata eindigen om middernacht in {zone}.}}"
     },
     "class": {
       "title": "Lessen",
