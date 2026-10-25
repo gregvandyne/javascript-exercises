@@ -1,6 +1,6 @@
-# Translating Magic Cups
+# Translating Oomba Academy
 
-Magic Cups is a free website where kids aged 6 to 12 play web games and build their own by chatting with an AI helper
+Oomba Academy is a free website where kids aged 6 to 12 play web games and build their own by chatting with an AI helper
 called the **Builder**. Thank you for translating it!
 
 ## The files
@@ -73,8 +73,13 @@ Counted things use ICU plural syntax:
 
 ## Never translate
 
-- **Magic Cups** (the brand), game titles, usernames, and the code words on the SDK page (`BRB.storage.get(key)`,
+- **Oomba Academy** (the brand), game titles, usernames, and the code words on the SDK page (`BRB.storage.get(key)`,
   `localStorage`...).
+- The brand is always in Latin letters and never translated; fix the grammar around it instead. It is one singular
+  name: English `an Oomba Academy account`, German `Oomba-Academy-Name`, Dutch `Oomba Academy-naam`, French
+  `d’Oomba Academy` and `qu’Oomba Academy`. Where a word must agree with it, it is feminine like "academy"
+  (Portuguese `na Oomba Academy`, Italian `sicura`, Russian `безопасной`, Hebrew `שומרת`); Arabic writes
+  `موقع Oomba Academy` so the verb agrees with موقع.
 - File types and product names: PNG, JPEG, PDF, Google Fonts, cdnjs.
 - Language codes like `"fr"` or `"rtl"` inside sentences.
 
@@ -84,7 +89,7 @@ Counted things use ICU plural syntax:
 - Arrows in the interface are mirrored for you; do not swap "left/right" words unless they describe the screen
   (none of the current strings do).
 - Usernames, game titles and numbers stay left-to-right inside your sentence automatically.
-- Arabic uses Western digits (0-9) on Magic Cups, the same as in the games.
+- Arabic uses Western digits (0-9) on Oomba Academy, the same as in the games.
 
 ## Checking your work
 

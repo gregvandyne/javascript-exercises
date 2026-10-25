@@ -96,15 +96,19 @@ on(document, 'submit', async e => {
   } catch (err) {
     const field = err.data && err.data.field; const target = field && f.querySelector(`[name="${field}"]`);
     if (target) { target.setAttribute('aria-invalid', 'true'); const er = f.querySelector(`#${target.id}-err`); if (er) er.textContent = err.message; else toast(err.message, { bad: true }); target.focus(); }
-    else { const er = f.querySelector('.form-err'); if (er) er.textContent = err.message; else toast(err.message, { bad: true }); }
+    else {
+      const er = f.querySelector('.form-err'); if (er) er.textContent = err.message; else toast(err.message, { bad: true });
+      // A form with a single field (e.g. a class code): that field is the one to fix.
+      const only = $$('.input', f); if (er && only.length === 1) { only[0].setAttribute('aria-invalid', 'true'); only[0].focus(); }
+    }
   } finally { if (btn && !left) { btn.disabled = false; delete btn.dataset.busy; } }   // leaving: stays disabled until the next page
 });
 // Back to a page kept in the browser's cache: buttons we disabled while leaving work again.
 on(window, 'pageshow', e => { if (e.persisted) $$('[data-busy]').forEach(b => { b.disabled = false; delete b.dataset.busy; }); });
 
-// ---- 🌐 language menu: a <details> of plain links (works without JS); here we add Escape, outside-click and arrow keys ----
-if (FIRST) for (const d of $$('[data-langpick]')) {
-  const links = () => $$('.lang-list a', d);
+// ---- 🌐 language and ☀️/🌙/🌓 theme menus: a <details> of plain links (works without JS); here we add Escape, outside-click and arrow keys ----
+if (FIRST) for (const d of $$('[data-langpick],[data-themepick]')) {
+  const links = () => $$('li > a', d);
   const close = (focus = true) => { if (!d.open) return; d.open = false; if (focus) $('summary', d).focus(); };
   d.addEventListener('toggle', () => { if (d.open) { const cur = links().find(a => a.getAttribute('aria-current') === 'true') || links()[0]; if (cur) cur.focus(); } });
   d.addEventListener('keydown', e => {
@@ -118,9 +122,68 @@ if (FIRST) for (const d of $$('[data-langpick]')) {
   document.addEventListener('click', e => { if (d.open && !d.contains(e.target)) close(false); });
   d.addEventListener('focusout', e => { if (d.open && e.relatedTarget && !d.contains(e.relatedTarget)) close(false); });
 }
+// ---- Top-bar search: the short placeholder ("Search") when the long one would be cut off ----
+const topq = document.getElementById('topq');
+if (FIRST && topq && topq.dataset.short) {
+  const long = topq.placeholder, ctx = document.createElement('canvas').getContext('2d');
+  const fit = () => {
+    const cs = getComputedStyle(topq); ctx.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+    const room = topq.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+    topq.placeholder = ctx.measureText(long).width + 4 <= room ? long : topq.dataset.short;   // 4px: rounding between canvas and layout
+  };
+  fit(); document.fonts.ready.then(fit);
+  if (window.ResizeObserver) new ResizeObserver(fit).observe(topq);
+}
 // The Me page's language form saves as soon as a language is picked.
 const langSel = document.getElementById('lang-select');
 if (FIRST && langSel) langSel.addEventListener('change', () => langSel.form.submit());
+
+// ---- Theme: Same as my device / Light / Dark. The menu links and the Me page form work without JS (?theme=); here a pick
+// applies at once: <html data-theme>, the color-scheme and theme-color metas change, the menus follow, and the server saves it.
+/** The browser's toolbar takes the top bar's colour (--bar, read from the CSS): one value for Light or Dark, one per
+ *  device scheme for "Same as my device" (as server/views/layout.js writes it). */
+function setThemeColor(pinned) {
+  const root = document.documentElement, was = root.dataset.theme;
+  const bar = th => { root.dataset.theme = th; return getComputedStyle(root).getPropertyValue('--bar').trim(); };
+  const metas = pinned ? [[bar(pinned), '']] : [[bar('light'), '(prefers-color-scheme: light)'], [bar('dark'), '(prefers-color-scheme: dark)']];
+  if (was) root.dataset.theme = was; else delete root.dataset.theme;
+  const old = $$('meta[name="theme-color"]'); const at = old[0] || $('meta[name="color-scheme"]');
+  for (const [color, media] of metas) {
+    const m = document.createElement('meta'); m.name = 'theme-color'; m.content = color; if (media) m.media = media;
+    at.before(m);
+  }
+  old.forEach(m => m.remove());
+}
+function applyTheme(theme) {
+  const pinned = theme === 'light' || theme === 'dark';
+  if (pinned) document.documentElement.dataset.theme = theme; else delete document.documentElement.dataset.theme;
+  const meta = $('meta[name="color-scheme"]'); if (meta) meta.content = pinned ? theme : 'light dark';
+  setThemeColor(pinned ? theme : null);
+  for (const a of $$('a[data-theme-choice]')) {
+    const on = a.dataset.themeChoice === theme;
+    if (on) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current');
+    const check = $('.lang-check', a); if (check) check.textContent = on ? '✓' : '';
+    if (on) for (const s of $$('[data-themepick] > summary')) { s.setAttribute('aria-label', a.dataset.label); $('.theme-ico', s).textContent = $('.theme-ico', a).textContent; }
+  }
+  for (const r of $$('#themeform input[name="theme"]')) r.checked = r.value === theme;
+}
+let themeSaving = Promise.resolve();   // one save at a time, so the last pick is the one kept
+function chooseTheme(theme, fallback) {
+  applyTheme(theme);
+  themeSaving = themeSaving.then(() => api('/api/me/theme', { method: 'POST', body: { theme } })).catch(fallback);
+}
+on(document, 'click', e => {
+  const a = e.target.closest('a[data-theme-choice]');
+  if (!a || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+  e.preventDefault();
+  const d = a.closest('details'); if (d) { d.open = false; $('summary', d).focus(); }
+  chooseTheme(a.dataset.themeChoice, () => { location.href = a.href; });   // saving failed: the plain link saves it instead
+});
+const themeForm = document.getElementById('themeform');
+if (FIRST && themeForm) {
+  themeForm.addEventListener('change', e => { if (e.target.name === 'theme') chooseTheme(e.target.value, () => themeForm.submit()); });
+  const save = $('[type=submit]', themeForm); if (save) save.hidden = true;   // picks apply at once
+}
 
 // ---- "Play as guest" buttons anywhere ----
 on(document, 'click', async e => {

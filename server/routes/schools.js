@@ -7,7 +7,7 @@ import { Router } from 'express';
 import crypto from 'node:crypto';
 import { html, raw } from '../views/html.js';
 import { page, notFound, VERSION } from '../views/layout.js';
-import { avatar, emptyState, gradeLabel } from '../views/components.js';
+import { avatar, emptyState, gradeLabel, BRAND, appMark } from '../views/components.js';
 import { requireUser, requireAdmin, getUserByName } from '../auth.js';
 import { rateLimit } from '../services/ratelimit.js';
 import * as S from '../services/schools.js';
@@ -247,7 +247,7 @@ router.post('/api/schools/:id/staff', requireUser, rateLimit('school-add', 120, 
   if (!['teacher', 'admin'].includes(role)) return err(req, res, 'badRole');
   if (!String(rosterName || '').trim()) return fieldErr(res, 'rosterName', t('school.errors.staffName'));
   if (account === 'existing') {
-    // They already have a Magic Cups account: add it (no login card).
+    // They already have an Oomba Academy account: add it (no login card).
     if (!String(username || '').trim()) return fieldErr(res, 'username', t('school.errors.username'));
     const u = getUserByName(username);
     if (!u || u.is_guest || u.banned) return fieldErr(res, 'username', t('school.errors.noSuchUser'));
@@ -432,7 +432,7 @@ function teacherClass(req, res, c) {
     <form class="stack" data-api="/api/classes/${c.id}/students" data-reload novalidate><input type="hidden" name="mode" value="existing">
       <fieldset class="picklist"><legend class="sr-only">${t('school.class.alreadyAt', { school: s.name, count: schoolStudents.length })}</legend>
         ${schoolStudents.map(p => html`<label><input type="checkbox" name="existing" value="${p.id}"><span><b>${nameOf(p)}</b> <span class="small muted"><bdi>@${p.username}</bdi></span><span class="small muted pl-sub">${classes[p.id] ? classes[p.id].map(x => x.name).join(', ') : html`<span class="chip-s">${t('school.people.noClass')}</span>`}</span></span></label>`)}</fieldset>
-      <span class="err form-err"></span>
+      <span class="err form-err" role="alert"></span>
       <div><button class="btn btn-primary" type="submit">➕ ${t('school.class.addToClass')}</button></div>
     </form></details>` : ''}
   <section class="panel joincode"><div><h2>🔑 ${t('school.class.joinCode')}</h2><p class="small muted">${st.allowOwnAccounts ? t('school.class.joinCodeTextOn', { school: s.name }) : t('school.class.joinCodeTextOff', { school: s.name })}</p></div>
@@ -594,7 +594,7 @@ router.get('/cards/:k', requireUser, (req, res) => {
   <p class="notice warn noprint">${t('school.cards.once')}</p>
   ${v.skipped.length ? html`<p class="notice noprint">${t('school.cards.skipped', { count: v.skipped.length, names: v.skipped.join(', ') })}</p>` : ''}
   <div class="cards">${v.cards.map(x => html`<div class="logincard">
-    <div class="lc-top"><span aria-hidden="true">🏆</span> ${['Magic Cups', s && s.name, c && c.name, x.role && t(`school.roles.${x.role}`)].filter(Boolean).join(' · ')}</div>
+    <div class="lc-top">${appMark('lc-mark appmark')}<span>${[s && s.name.includes(BRAND) ? null : BRAND, s && s.name, c && c.name, x.role && t(`school.roles.${x.role}`)].filter(Boolean).join(' · ')}</span></div>
     <div class="lc-name">${x.name}</div>
     <dl><dt>${t('school.cards.site')}</dt><dd dir="ltr">${site}</dd><dt>${t('school.cards.username')}</dt><dd dir="ltr"><b>${x.username}</b></dd><dt>${t('school.cards.password')}</dt><dd dir="ltr"><b>${x.password}</b></dd></dl>
   </div>`)}</div>`;
@@ -619,6 +619,6 @@ router.get('/classes', requireUser, (req, res) => {
   ${u.is_guest ? '' : html`<section class="panel"><h2>${t('classes.join')}</h2><p class="small muted">${t('classes.joinText')}</p>
     <form class="row" data-api="/api/classes/join" novalidate><label class="sr-only" for="jc">${t('classes.code')}</label>
       <input class="input code-input" id="jc" name="code" maxlength="8" autocomplete="off" autocapitalize="characters" spellcheck="false" dir="ltr" placeholder="ABC123" required>
-      <button class="btn btn-primary" type="submit">${t('classes.joinButton')}</button><span class="err form-err"></span></form></section>`}</div>` : ''}`;
+      <button class="btn btn-primary" type="submit">${t('classes.joinButton')}</button><span class="err form-err" role="alert"></span></form></section>`}</div>` : ''}`;
   page(req, res, { title: t('classes.title'), active: 'classes', body, head: CSS });
 });

@@ -29,7 +29,7 @@ const pages = [
   ['home', '/', anon], ['search', '/search?q=s', anon], ['game', '/g/footy-tycoon', anon], ['play', '/play/shark-plank', anon],
   ['login', '/login', anon], ['signup', '/signup', anon], ['safety', '/safety', anon], ['parents', '/parents', anon],
   ['me', '/me', user], ['build', '/build', user], ['friends', '/friends', user], ['chat', '/chat', user],
-  ['profile', '/u/MagicCups', user], ['notfound', '/nope', anon],
+  ['profile', '/u/OombaAcademy', user], ['notfound', '/nope', anon],
   ...(admin ? [['admin', '/admin', admin], ['admin-stats', '/admin/stats', admin]] : []),
 ];
 for (const [name, url, state] of pages) {

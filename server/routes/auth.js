@@ -10,6 +10,7 @@ import * as photos from '../services/photos.js';
 import { isSchoolStaff, isPlatformAdmin } from '../services/schools.js';
 import { rateLimit, allow, count, ipOf, loginLockKey, GUESTS_PER_IP_HOUR } from '../services/ratelimit.js';
 import { availableLocales, normalizeCode, tHtml, setLangCookie, saveUserLang } from '../i18n/index.js';
+import { THEMES, THEME_ICONS, normalizeTheme, setThemeCookie, saveUserTheme } from '../theme.js';
 
 export const router = Router();
 const safeNext = n => (typeof n === 'string' && /^\/(?!\/)[\w\-/?=&%.#]*$/.test(n) ? n : '/');
@@ -64,6 +65,7 @@ router.post('/api/auth/guest', (req, res) => {
   if (!allow(`guestip:${ipOf(req)}`, GUESTS_PER_IP_HOUR, 3600e3)) return res.status(429).json({ error: req.t('auth.api.tooManyGuests') });
   const u = auth.createGuest(); auth.startSession(res, u.id, req.headers['user-agent']);
   if (req.localeSource === 'cookie') saveUserLang(u, req.locale);
+  if (req.themeSource === 'cookie') saveUserTheme(u, req.theme);
   res.json({ ok: true, user: auth.publicUser(u) });
 });
 // Sign-up limits, per address (never per session: a guest cookie is free). Only accounts actually made count toward the
@@ -78,7 +80,7 @@ router.post('/api/auth/signup', (req, res) => {
   const n = auth.cleanName(username, t); if (!n.ok) return res.status(400).json({ error: n.error, field: 'username' });
   const pe = auth.checkPassword(password, n.value, t); if (pe) return res.status(400).json({ error: pe, field: 'password' });
   const taken = auth.getUserByName(n.value);
-  if (taken && !(req.user && taken.id === req.user.id)) return res.status(400).json({ error: t('auth.api.nameTaken'), field: 'username' });
+  if ((taken && !(req.user && taken.id === req.user.id)) || auth.isRetiredName(n.value)) return res.status(400).json({ error: t('auth.api.nameTaken'), field: 'username' });
   let u;
   if (req.user && req.user.is_guest) {
     u = auth.upgradeGuest(req.user.id, { username: n.value, password }); audit(u.id, 'user.upgrade', u.id);
@@ -91,6 +93,7 @@ router.post('/api/auth/signup', (req, res) => {
   }
   allow(`signup:${ip}`, SIGNUP.perHour, 3600e3);
   if (req.localeSource === 'cookie') saveUserLang(u, req.locale); // a language picked before signing up comes along
+  if (req.themeSource === 'cookie') saveUserTheme(u, req.theme);   // and so does a theme
   res.json({ ok: true, user: auth.publicUser(u) });
 });
 // Sign-in limits. A whole school can sign in at once from one address, so successful sign-ins don't count as failures.
@@ -122,6 +125,13 @@ router.post('/api/auth/login', (req, res) => {
 });
 router.post('/api/auth/logout', (req, res) => { auth.endSession(req, res); res.json({ ok: true, redirect: '/' }); });
 router.get('/api/me', (req, res) => res.json({ user: auth.publicUser(req.user) }));
+// The theme menu and the Me page switch at once with this; signed out it only sets the cookie.
+router.post('/api/me/theme', rateLimit('theme', 30, 60e3), (req, res) => {
+  const theme = normalizeTheme((req.body || {}).theme);
+  if (!theme) return res.status(400).json({ error: req.t('me.theme.invalid') });
+  setThemeCookie(res, theme); saveUserTheme(req.user, theme);
+  res.json({ ok: true, theme });
+});
 // ---- Profile photo. Raw body: a JPEG the browser already shrank to a 512px square.
 router.post('/api/me/photo', auth.requireUser, rateLimit('me-photo', 10, 3600e3), express.raw({ type: () => true, limit: '1mb' }), async (req, res) => {
   const t = req.t;
@@ -172,6 +182,21 @@ export function languagePanel(req) {
   </section>`;
 }
 
+/** The theme choice on the Me page: radio buttons in a plain GET form (?theme=), so it works without JavaScript;
+ *  app.js applies a pick at once and hides the Save button. */
+export function appearancePanel(req) {
+  const t = req.t; const cur = THEMES.includes(req.theme) ? req.theme : 'system';
+  return html`<section class="panel" id="appearance" aria-labelledby="theme-h"><h2 id="theme-h"><span aria-hidden="true">🎨</span> ${t('me.theme.heading')}</h2>
+    <p class="muted">${t('me.theme.text')}</p>
+    <form action="${req.path}#appearance" method="get" id="themeform">
+      <fieldset class="themechoices"><legend class="sr-only">${t('layout.theme.title')}</legend>
+        ${THEMES.map(th => html`<label class="themechoice"><input type="radio" name="theme" value="${th}" ${th === cur ? raw('checked') : ''}><span class="theme-ico" aria-hidden="true">${THEME_ICONS[th]}</span><span>${t(`layout.theme.${th}`)}</span></label>`)}
+      </fieldset>
+      <button class="btn btn-primary" type="submit">${t('me.theme.save')}</button>
+    </form>
+  </section>`;
+}
+
 router.get('/me', (req, res) => {
   const t = req.t;
   const u = req.user;
@@ -209,10 +234,10 @@ router.get('/me', (req, res) => {
     <h3 style="margin-top:16px">${t('me.look.colorHeading')}</h3>
     <div class="chips" role="group" aria-label="${t('me.look.colorGroup')}">${auth.COLORS.map(c => html`<button class="chip" type="button" data-color="${c}" aria-pressed="${c === u.color}" aria-label="${t('me.look.colorLabel', { color: c })}"><span class="avatar" style="--s:26px;--c:${c}"></span></button>`)}</div>
   </section>
-  ${languagePanel(req)}
+  <div class="mesettings">${languagePanel(req)}${appearancePanel(req)}</div>
   ${!u.is_guest ? html`<section class="panel"><h2>${t('me.chat.heading')}</h2>
     <p class="muted">${t('me.chat.text')}</p>
-    <label class="row" style="font-weight:800"><input type="checkbox" id="chat-toggle" ${u.chat_enabled ? raw('checked') : ''} style="width:24px;height:24px"> ${t('me.chat.toggle')}</label>
+    <label class="row" style="font-weight:700"><input type="checkbox" id="chat-toggle" ${u.chat_enabled ? raw('checked') : ''} style="width:24px;height:24px"> ${t('me.chat.toggle')}</label>
   </section>` : ''}
   <section class="panel"><h2>${t('me.signOut.heading')}</h2><p class="muted">${u.is_guest ? t('me.signOut.guest') : t('me.signOut.account')}</p>
     <form data-api="/api/auth/logout" data-next="/"><button class="btn btn-danger" type="submit">${t('me.signOut.button')}</button></form></section>`;

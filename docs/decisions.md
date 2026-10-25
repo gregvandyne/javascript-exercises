@@ -24,7 +24,7 @@ One line each: the choice, then why. **Bold = please confirm** (product calls th
 - Express 5 + server-rendered HTML + vanilla ES modules, no build step. — Brief default; fast first paint on cheap phones.
 - SQLite (better-sqlite3, WAL) behind `q` and service modules. — Brief default; Postgres swap stays a repository-layer change.
 - Reused the starter's schema/auth/games/presence; rewrote: `canView` now also respects report auto-hide; added `pending_version_id`, `hidden_reason`, version `review_status`, chat tables, `users.chat_enabled`; bounded all filter regexes after a 2 MB input hung the scanner.
-- Nunito is self-hosted from `@fontsource/nunito` instead of Google Fonts. — No third-party requests from the site itself (privacy) and no external CSP host.
+- The site font is self-hosted (now Bricolage Grotesque in `public/fonts`, before that Nunito) instead of Google Fonts. — No third-party requests from the site itself (privacy) and no external CSP host.
 - Site CSP has no inline scripts; page data goes in `<script type="application/json">`. — Strict CSP for the site, separate stricter CSP for game frames.
 - Game frames are reached by a short-lived signed token URL (`/frame/<token>`), not cookies. — Frames are opaque-origin; the token carries version + viewer and expires in 6 h.
 - The SDK is inlined into each frame. — The frame CSP only allows inline scripts + cdnjs, and `'self'` means nothing in an opaque origin.
@@ -43,8 +43,8 @@ One line each: the choice, then why. **Bold = please confirm** (product calls th
 ## Real screenshots as cover art for launch games
 Launch games show a real screenshot (`public/covers/<slug>.jpg`) on cards, the game page and the home hero instead of the emoji placeholder. `npm run covers [slug...]` makes them: it runs each game in the real sandbox wrapper, plays it to a good moment with a per-game recipe, and photographs it at the card's 3:4 shape. Studio games keep the emoji art (we never screenshot user games automatically). The image URL carries the file's mtime so a re-capture shows up past the 1h static cache.
 
-## Renamed to Magic Cups
-The site name is now **Magic Cups** (was Magic Cup). Every visible string, the page titles, the logo, the web manifest and the official account (`MagicCups`, renamed in place on boot from `MagicCup` or `BRBGaming`) changed. The Render service and its URL stay `magic-cup` (`magic-cup.onrender.com`) until a new service is set up, because Render can't change an `.onrender.com` address in place.
+## Renamed to Magic Cups (history; now Oomba Academy, see the last section)
+The site name became **Magic Cups** (was Magic Cup). Every visible string, the page titles, the logo, the web manifest and the official account (`MagicCups`, renamed in place on boot from `MagicCup` or `BRBGaming`) changed. The Render service and its URL stay `magic-cup` (`magic-cup.onrender.com`) until a new service is set up, because Render can't change an `.onrender.com` address in place.
 
 ## Thirteen site languages (i18n)
 The whole site is available in English (US, default), English (UK), Brazilian Portuguese, French, Spanish, German, Hebrew, Japanese, Arabic, Russian, Italian, Traditional Chinese and Dutch, picked with a 🌐 menu in the header (and on the Me page). — Owner asked for these languages with a picker like makie.kidsai.app.
@@ -102,7 +102,7 @@ game frames, errors and admin pages are not counted. AI tokens are logged per da
 Counting of visits and tokens starts with this update; plays, accounts, games and AI cost already had history.
 
 ## No ads, no creator money (ed-tech pivot)
-Magic Cups is becoming an enterprise ed-tech product, so it will not be paid for by ads. The Sponsored cards, ad impression
+The site is becoming an enterprise ed-tech product, so it will not be paid for by ads. The Sponsored cards, ad impression
 tracking, the earnings roll-up, the Creator money page, payout requests and the admin Money page are removed, with their
 settings (AD_ECPM_CENTS, BUILDER_SHARE, PAYOUT_THRESHOLD_CENTS) and texts. Existing databases keep the old ad_impressions,
 earnings and payouts tables untouched (nothing reads them); new databases no longer create them.
@@ -211,12 +211,12 @@ session notes), done in three batches. The main decisions:
   everyone's teacher. Archive/Delete sit in a ⋯ menu per row (and in class Settings); Delete only for classes no
   student ever joined. A new school opens on People to appoint its school admin; /admin/schools shows each school's
   admins or "None yet".
-- **Adding people:** staff are added with an explicit "school account" / "existing Magic Cups account" choice (a toast
+- **Adding people:** staff are added with an explicit "school account" / "existing Oomba Academy account" choice (a toast
   or a clear error either way; usernames are never made from real names). Students are added either as new school
   accounts (names) or by ticking students already at the school; a typed name that exactly matches an existing
   student is refused (all matches listed, nothing created). People-tab students can go straight into a class.
 - **Login cards** name the school (and class, and role for staff), say where to sign in (`<host>/login`), use the
-  sign-in page's "Magic Cups name", and go back to the page they came from. "New login cards for the class" resets
+  sign-in page's "Oomba Academy name", and go back to the page they came from. "New login cards for the class" resets
   every school account in a class at once (confirm says they'll be signed out; own accounts are listed as skipped).
 - **Roster rows:** "New password" stays visible (the most common daily request); Move and Remove live in a ⋯ menu;
   Move starts on "Move to…" and asks first. Teachers can leave a class they co-teach.
@@ -229,8 +229,8 @@ session notes), done in three batches. The main decisions:
   students only; staff passwords are reset by school admins on People (never your own: it would sign you out).
   Approving a join request "same as" a school account only takes a student school account, never into someone who is
   now staff; the account's lesson work moves with it. Someone made staff has their old join requests closed.
-- **Top bar on small laptops and landscape tablets** (821–1180px): the profile name and logo text hide and nav links
-  tighten, so the bar fits with the Classes or Schools tab in every language. app.js adds its page-wide listeners once
+- **Top bar on small laptops and landscape tablets** (821–1180px): the profile name hides, the logo becomes the app-icon
+  mark (to 1000px, or 1100px with five nav items) and nav links tighten, so the bar fits with the Classes or Schools tab in every language. app.js adds its page-wide listeners once
   even when a page module imports it a second time (one click, one request).
 - Left for later: school-level dashboards (per-teacher activity), SSO, and roll-over of classes between school years.
 
@@ -255,3 +255,68 @@ A defensive security review (8 areas, each finding independently verified agains
   minutes, and the frame CSP carries a `sandbox` directive so a leaked frame URL is opaque-origin even if opened top-level.
 - **Smaller fixes.** `?lang=` only persists for same-origin requests; play/heartbeat need a session; a score only counts
   after a recorded play; the chat/text link filter detects any TLD (not a short allowlist) without flagging filenames.
+
+## Light, dark or "same as my device"
+Players pick a theme from a ☀️/🌙/🌓 menu next to 🌐 in the top bar, or in the Appearance panel on the Me page. The
+default, "Same as my device", follows the phone or computer's own setting, as the site always did.
+- **Choosing works like choosing a language:** `?theme=` → `theme` cookie (1 year, SameSite=Lax) → the signed-in player's
+  saved choice (`users.theme`, migration `0014_user_theme`, `''` = same as the device) → the device. A `?theme=` link only
+  saves for same-origin or direct requests and then redirects to the page without it, so the menu and the Me page form
+  work with no JavaScript; with JavaScript the switch is instant and `POST /api/me/theme` saves it (signed out: cookie
+  only). A choice made before signing up comes along to the new account; a new device with no cookie uses the account's.
+- **No flash:** the server writes `<html data-theme="light|dark">` (only for an explicit choice) and a matching
+  `<meta name="color-scheme">` (`light dark` when following the device), so the first paint is right before any script runs.
+- **Two-block rule for CSS:** every colour that differs between the themes is a token on `:root` in `public/css/app.css`
+  (named for their job since the rebrand: `--accent`, `--link`, `--current`, `--spark`, `--danger`, `--on-accent`, …). The dark
+  values live in exactly two blocks with the same body: `@media screen and (prefers-color-scheme:dark){:root:not([data-theme="light"]){…}}`
+  and `@media screen{:root[data-theme="dark"]{…}}`. No other `prefers-color-scheme` or `[data-theme]` rules anywhere in
+  `public/css`: a component that needs a different dark colour gets a token instead. `tests/unit/theme.test.js` checks
+  this. The `screen` wrapper means printing (login cards) always uses the light palette.
+- In dark mode, text on the filled colours is Ink: on Mint (primary buttons, the current nav tab, your own friends-chat
+  bubble), Spark (badges, the "go" button) and the danger red (error toasts), because Cream on the lighter dark-mode fills
+  was below 3:1. In light mode the current nav tab and error toasts keep Cream text on Ink and on the deeper red.
+- The theme button is in the top bar at every width. On the narrowest phones (under 360px) the search field becomes a
+  round 🔎 button to the search page (Search is in the tab bar too), so the logo mark, search, 🌐, the theme button and
+  Me fit side by side without the search words being cut off. From 821 to 1180px the bar's gaps tighten and 🌐 drops its
+  "EN" so the extra button fits in every language. Game frames and games keep their own colours.
+
+## Renamed to Oomba Academy (new brand)
+The site is now **Oomba Academy**, with the owner's logo board as the source of every value (name, artwork, palette, type).
+The mascot is Oomba: the two o's of the wordmark are its eyes, looking up at a spark of an idea.
+- **Name:** "Oomba Academy" everywhere the product is named (pages, titles, the 13 locale files, the manifest, login cards,
+  Builder/review/lesson prompts, docs). It is a brand, so it stays in Latin letters and is never translated; grammar around
+  it was fixed where a plain swap read wrong (German compounds `Oomba-Academy-Name`, feminine articles in Portuguese, and
+  agreement in Italian and Russian). The PWA short name is "Oomba". Internal names stay: `brb_*` cookies, the `BRB` SDK
+  global, file names, the Render service `magic-cup`, and the demo school's address `/school/magic-cups-demo-school`.
+- **Official account:** `MagicCups` is renamed in place to `OombaAcademy` on boot (so the launch games keep their owner),
+  shown as "Oomba Academy". `/u/MagicCups` (and the older `MagicCup`, `BRBGaming`) 301-redirect to `/u/OombaAcademy`, and
+  sign-up refuses those old names so nobody can pose as the old official account. The demo school is found by its address
+  and renamed in place to "Oomba Academy Demo School" (a fresh database creates it at the same address).
+  The official account is told apart by owning the launch games: a player who signed up as `OombaAcademy` before the
+  rename is moved to `OombaAcademy_1` (logged in the audit log) rather than being adopted, and a player who took a freed
+  old name (`MagicCup`, `BRBGaming`) is never renamed. An archived demo school is left alone; a new one is made.
+- **Logo:** the wordmark is inline SVG (`server/views/brand.js`): letters and pupils in `currentColor`, so it follows the
+  theme, the spark in Spark yellow with an Ink outline in light and none in dark, ACADEMY under it (Leaf on light, Mint on
+  dark). The link's accessible name is "Oomba Academy". On phones (600px and less) and beside the full nav on small
+  laptops (821–1000px, and up to 1100px when there are five nav items, as for teachers) the top bar shows the mint
+  app-icon mark instead, so the search box keeps its room. Login cards
+  carry the small mark. The trophy that stood for the old logo is gone.
+- **Icons:** `scripts/icons.js` draws them from the same artwork: `icon.svg` (the Spark favicon), 192/512 PNGs and a
+  maskable 512 (Mint, art inside the safe circle) for the manifest, and a 180px apple-touch-icon. `theme-color` is the top
+  bar's colour: Cream in light, Ink in dark (one meta per device scheme for "Same as my device", one value for a choice;
+  app.js swaps them when the theme changes); the play page, whose bar is always Ink, is always Ink.
+- **Type:** Bricolage Grotesque, self-hosted as two variable woff2 files (Latin, Latin Extended; weights 200–800 and optical
+  sizes, `font-optical-sizing:auto`) with its OFL licence next to them; copied from `@fontsource-variable/bricolage-grotesque`
+  5.3.0 (no runtime dependency). Headings 800 with slight negative tracking, body 450, buttons and labels 700. Other scripts
+  (Cyrillic, Arabic, Hebrew, Japanese, Chinese) fall back to system fonts as before.
+- **Palette:** tokens are named for their job (`--accent`, `--accent-press`, `--link`, `--current`, `--spark`, `--ok`,
+  `--danger`, …) instead of a hue. Light: page `#F4F1E6`, Cream cards, Ink text; primary buttons are Mint with Ink text on a
+  Leaf pressed edge; links are a deeper Leaf (`#14744A`) because Leaf itself is only 3.4:1 on Cream; the current nav item is
+  an Ink pill; badges and stars are Spark; the focus ring is a 3px Ink outline (the old yellow ring failed contrast).
+  Dark is the board's reversed look: Ink page, warm lifted cards, Cream text, Mint links and current item, a Spark focus
+  ring. Field edges use `--edge` (3:1 against cards, so text boxes can be found); empty rating stars are outlines.
+  `node scripts/contrast.js` prints every text/background pair in both palettes and `tests/unit/theme.test.js` fails if one
+  drops below WCAG AA. Game covers, game frames and players' avatar colours are game content and keep their colours.
+- **Shape:** big panels and heroes 32px corners, cards and tiles 20px, small controls 12px; calmer Ink-based shadows. The
+  "go" button (publish, start building) is Spark (`.btn-hot`, was coral); deleting a game confirms with the danger button.
+

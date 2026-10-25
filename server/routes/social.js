@@ -5,7 +5,7 @@ import { Router } from 'express';
 import { html, raw, jsonData } from '../views/html.js';
 import { page, notFound } from '../views/layout.js';
 import { avatar, cardGrid, emptyState } from '../views/components.js';
-import { requireAccount, getUserByName, getUser } from '../auth.js';
+import { requireAccount, getUserByName, getUser, isRetiredName, OFFICIAL } from '../auth.js';
 import { rateLimit } from '../services/ratelimit.js';
 import * as friends from '../services/friends.js';
 import * as chat from '../services/chat.js';
@@ -139,6 +139,8 @@ export const favouriteGames = (viewer, userId, limit = 12) => games.favorites(vi
 router.get('/u/:username', (req, res) => {
   const t = req.t, f = req.fmt;
   const p = getUserByName(req.params.username);
+  // The official account's old names (MagicCups, …) point to its profile now.
+  if (!p && isRetiredName(req.params.username)) return res.redirect(301, `/u/${OFFICIAL}`);
   if (!p || p.banned) return notFound(req, res, t('profile.notFound'));
   const viewer = req.user;
   if (p.is_guest) {

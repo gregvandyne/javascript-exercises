@@ -1,11 +1,10 @@
 {
-  "_about": "Magic Cups: deutsche Texte (Deutsch). Begriffe: Baumeister (KI-Helfer), Studio, Freigeben, Freunde, Freundescode, Chat, Bestenliste, Likes, Mal gespielt, Werbung.",
+  "_about": "Oomba Academy: deutsche Texte (Deutsch). Begriffe: Baumeister (KI-Helfer), Studio, Freigeben, Freunde, Freundescode, Chat, Bestenliste, Likes, Mal gespielt, Werbung.",
   "layout": {
-    "titleHome": "Magic Cups · Spiele spielen und bauen",
-    "titleWith": "{title} · Magic Cups",
-    "description": "Spiel kostenlose Spiele und bau mit Magic Cups deine eigenen.",
+    "titleHome": "Oomba Academy · Spiele spielen und bauen",
+    "titleWith": "{title} · Oomba Academy",
+    "description": "Spiel kostenlose Spiele und bau mit Oomba Academy deine eigenen.",
     "skip": "Direkt zu den Spielen",
-    "logoLabel": "Magic Cups Startseite",
     "mainNav": "Hauptmenü",
     "signIn": "Anmelden",
     "meLabel": "Ich: {name}",
@@ -19,8 +18,15 @@
       "title": "Sprache",
       "button": "Sprache: {language}"
     },
+    "theme": {
+      "title": "Design",
+      "button": "Design: {theme}",
+      "system": "Wie mein Gerät",
+      "light": "Hell",
+      "dark": "Dunkel"
+    },
     "footer": {
-      "tagline": "© Magic Cups · Kostenlos spielen, kostenlos bauen",
+      "tagline": "© Oomba Academy · Kostenlos spielen, kostenlos bauen",
       "safety": "Sicherheit",
       "parents": "Für Erwachsene",
       "builders": "Für Spielemacher"
@@ -70,8 +76,8 @@
       "realName": "Das sieht aus wie ein echter Name. Denk dir lieber einen lustigen Namen aus."
     },
     "text": {
-      "notAllowed": "Dieser Text ist auf Magic Cups nicht erlaubt.",
-      "personal": "Bitte keine Telefonnummern, E-Mails, Adressen oder Links auf Magic Cups."
+      "notAllowed": "Dieser Text ist auf Oomba Academy nicht erlaubt.",
+      "personal": "Bitte keine Telefonnummern, E-Mails, Adressen oder Links auf Oomba Academy."
     }
   },
   "auth": {
@@ -88,10 +94,10 @@
       "headingSignup": "Mach dir ein kostenloses Konto",
       "headingLogin": "Schön, dass du wieder da bist!",
       "introSignup": "Nur ein lustiger Name und ein Passwort. Keine E-Mail nötig.",
-      "introLogin": "Melde dich mit deinem Magic Cups Namen und Passwort an.",
+      "introLogin": "Melde dich mit deinem Oomba-Academy-Namen und Passwort an.",
       "upgradeNotice": "Du spielst als <b>{name}</b>. Alles, was du gespeichert hast, kommt mit.",
       "nameLabelSignup": "Such dir einen lustigen Namen aus",
-      "nameLabelLogin": "Dein Magic Cups Name",
+      "nameLabelLogin": "Dein Oomba-Academy-Name",
       "namePlaceholder": "zum Beispiel RocketPanda",
       "nameHint": "3 bis 16 Buchstaben oder Zahlen. Nimm nicht deinen echten Namen.",
       "passwordLabel": "Passwort",
@@ -141,9 +147,15 @@
     },
     "language": {
       "heading": "Sprache",
-      "text": "Magic Cups, die Menüs und der Baumeister benutzen diese Sprache.",
+      "text": "Oomba Academy, die Menüs und der Baumeister benutzen diese Sprache.",
       "label": "Sprache",
       "save": "Speichern"
+    },
+    "theme": {
+      "heading": "Aussehen",
+      "text": "Wähle einen hellen oder dunklen Bildschirm oder den gleichen wie auf deinem Gerät.",
+      "save": "Speichern",
+      "invalid": "Such dir eines der Designs aus."
     },
     "chat": {
       "heading": "Chat",
@@ -158,7 +170,7 @@
     },
     "photo": {
       "heading": "Profilfoto",
-      "text": "Nimm ein Foto statt deines Emojis. Nur du, deine Freunde und das Magic-Cups-Team sehen es. Alle anderen sehen dein Emoji.",
+      "text": "Nimm ein Foto statt deines Emojis. Nur du, deine Freunde und das Oomba-Academy-Team sehen es. Alle anderen sehen dein Emoji.",
       "guest": "Leg ein kostenloses Konto an, um ein Profilfoto hinzuzufügen.",
       "upload": "Foto hochladen",
       "change": "Foto ändern",
@@ -167,7 +179,7 @@
         "guest": "Leg ein kostenloses Konto an, um ein Profilfoto hinzuzufügen.",
         "badType": "Diese Datei ist kein Foto, das wir verwenden können. Probier ein anderes.",
         "tooBig": "Das Foto ist zu groß. Probier ein anderes.",
-        "unsafe": "Dieses Foto passt nicht zu Magic Cups. Probier ein anderes.",
+        "unsafe": "Dieses Foto passt nicht zu Oomba Academy. Probier ein anderes.",
         "personal_info": "Auf dem Foto sind private Dinge wie ein Name, eine Schule oder eine Adresse zu sehen. Probier ein anderes.",
         "resting": "Fotos brauchen unsere Sicherheitsprüfung, und die macht gerade Pause. Versuch es später noch mal."
       }
@@ -266,8 +278,8 @@
   "info": {
     "safety": {
       "title": "Sicherheit",
-      "description": "So schützt Magic Cups Kinder: Spiele in einer geschlossenen Box, jedes Spiel wird geprüft, Chat nur mit Freunden aus dem echten Leben.",
-      "heading": "So bleibt Magic Cups sicher",
+      "description": "So schützt Oomba Academy Kinder: Spiele in einer geschlossenen Box, jedes Spiel wird geprüft, Chat nur mit Freunden aus dem echten Leben.",
+      "heading": "So bleibt Oomba Academy sicher",
       "box": {
         "h": "Spiele bleiben in einer Box",
         "p1": "Jedes Spiel läuft in einer geschlossenen Box (einer Sandbox). Spiele können nicht ins Internet, können dein Konto nicht sehen und können keine anderen Seiten öffnen."
@@ -288,15 +300,15 @@
       },
       "ads": {
         "h": "Keine Werbung",
-        "p1": "Auf Magic Cups gibt es keine Werbung. Nichts ist zu kaufen, und nichts springt über einem Spiel auf."
+        "p1": "Auf Oomba Academy gibt es keine Werbung. Nichts ist zu kaufen, und nichts springt über einem Spiel auf."
       }
     },
     "parents": {
       "title": "Für Erwachsene",
-      "description": "Was Magic Cups ist, welche Daten gespeichert werden, wie Freunde und Chat funktionieren und wie der KI-Baumeister kindersicher bleibt.",
+      "description": "Was Oomba Academy ist, welche Daten gespeichert werden, wie Freunde und Chat funktionieren und wie der KI-Baumeister kindersicher bleibt.",
       "heading": "Für Erwachsene",
       "what": {
-        "h": "Was ist Magic Cups?",
+        "h": "Was ist Oomba Academy?",
         "p1": "Eine kostenlose Website, auf der Kinder Browserspiele spielen und eigene Spiele bauen, indem sie sie einem KI-Baumeister beschreiben. Keine Downloads, keine Käufe, keine Lootboxen, kein Spielgeld, das echtes Geld kostet."
       },
       "data": {
@@ -318,7 +330,7 @@
     },
     "sdk": {
       "title": "Für Spielemacher",
-      "description": "Der kleine Helfer, den jedes Magic Cups Spiel bekommt: Speichern, Punkte, Effekte, Sounds und die Sprache der Spieler.",
+      "description": "Der kleine Helfer, den jedes Oomba-Academy-Spiel bekommt: Speichern, Punkte, Effekte, Sounds und die Sprache der Spieler.",
       "heading": "Spiele-SDK",
       "brb": {
         "p1": "Jedes Spiel bekommt einen kleinen Helfer namens BRB. {get} und {set} speichern den Fortschritt für jeden Spieler. localStorage funktioniert auch und wird in der Cloud gespeichert.",
@@ -376,7 +388,7 @@
     },
     "shareText": {
       "private": "Nur du kannst dieses Spiel öffnen. Stell es auf Freunde oder Alle, um es zu teilen.",
-      "friends": "Nur deine Freunde auf Magic Cups können diesen Link öffnen.",
+      "friends": "Nur deine Freunde auf Oomba Academy können diesen Link öffnen.",
       "public": "Alle mit dem Link können dieses Spiel spielen.",
       "school": "Alle an deiner Schule können es finden und spielen."
     },
@@ -480,8 +492,8 @@
   },
   "profile": {
     "notFound": "Diesen Spieler haben wir nicht gefunden.",
-    "description": "{name} auf Magic Cups",
-    "team": "Magic Cups Team",
+    "description": "{name} auf Oomba Academy",
+    "team": "Oomba-Academy-Team",
     "yourFriend": "Dein Freund",
     "badgesLabel": "Abzeichen",
     "changeLook": "Meinen Look ändern",
@@ -576,7 +588,7 @@
     "cant": {
       "guest": "Mach dir ein kostenloses Konto, um mit Freunden zu chatten.",
       "banned": "Dein Konto ist pausiert, deshalb ist der Chat aus.",
-      "missing": "Diesen Spieler gibt es gerade nicht auf Magic Cups.",
+      "missing": "Diesen Spieler gibt es gerade nicht auf Oomba Academy.",
       "self": "Mit dir selbst kannst du nicht chatten. Such dir einen Freund aus!",
       "guest_other": "Du kannst nur mit Freunden chatten, die ein kostenloses Konto haben.",
       "not_friends": "Du kannst nur mit Freunden chatten. Füg {name} zuerst mit dem Freundescode hinzu, dann muss {name} Ja sagen.",
@@ -601,12 +613,12 @@
     },
     "blocked": {
       "words": "Hoppla! In dieser Nachricht sind Wörter, die wir nicht erlauben. Versuch es mal netter zu sagen.",
-      "phone": "Das haben wir nicht gesendet. Telefonnummern bleiben auf Magic Cups geheim, auch unter Freunden.",
-      "email": "Das haben wir nicht gesendet. E-Mail-Adressen bleiben auf Magic Cups geheim.",
+      "phone": "Das haben wir nicht gesendet. Telefonnummern bleiben auf Oomba Academy geheim, auch unter Freunden.",
+      "email": "Das haben wir nicht gesendet. E-Mail-Adressen bleiben auf Oomba Academy geheim.",
       "link": "Das haben wir nicht gesendet. Links sind im Chat nicht erlaubt. Teil lieber ein Spiel mit dem 🎮-Knopf.",
       "address": "Das haben wir nicht gesendet. Adressen bleiben geheim. Verrate nie, wo du wohnst.",
-      "contact": "Das haben wir nicht gesendet. Bleib mit dem Chat auf Magic Cups: keine anderen Apps, keine Schulen, keine Treffen.",
-      "handle": "Das haben wir nicht gesendet. Bleib mit dem Chat auf Magic Cups: keine Namen aus anderen Apps."
+      "contact": "Das haben wir nicht gesendet. Bleib mit dem Chat auf Oomba Academy: keine anderen Apps, keine Schulen, keine Treffen.",
+      "handle": "Das haben wir nicht gesendet. Bleib mit dem Chat auf Oomba Academy: keine Namen aus anderen Apps."
     },
     "report": {
       "thanks": "Danke, dass du es uns sagst. Wir haben die Nachricht versteckt, und ein Erwachsener aus unserem Team sieht sie sich an.",
@@ -643,8 +655,8 @@
     "startedFrom": "Mit der Vorlage {title} angefangen",
     "shareText": {
       "private": "Nur du kannst es spielen.",
-      "friends": "Nur du und deine Freunde auf Magic Cups können es spielen.",
-      "public": "Alle auf Magic Cups können es finden und spielen, nach einem kurzen Sicherheitscheck.",
+      "friends": "Nur du und deine Freunde auf Oomba Academy können es spielen.",
+      "public": "Alle auf Oomba Academy können es finden und spielen, nach einem kurzen Sicherheitscheck.",
       "school": "Alle an deiner Schule können es finden und spielen."
     },
     "status": {
@@ -760,27 +772,27 @@
     "refusals": {
       "tryThese": "Willst du eins davon ausprobieren?",
       "rules": {
-        "message": "Ich halte mich immer an die Regeln von Magic Cups, und niemand kann sie ändern. Aber ich würde sehr gern ein Spiel mit dir bauen!",
+        "message": "Ich halte mich immer an die Regeln von Oomba Academy, und niemand kann sie ändern. Aber ich würde sehr gern ein Spiel mit dir bauen!",
         "suggestion": "Erzähl mir von einem Spiel, das du dir wünschst, zum Beispiel „ein Fuchs, der über Flüsse springt“."
       },
       "links": {
-        "message": "Spiele auf Magic Cups bleiben im Spiel. Deshalb können sie nicht auf Websites, Videos oder Kanäle verlinken.",
+        "message": "Spiele auf Oomba Academy bleiben im Spiel. Deshalb können sie nicht auf Websites, Videos oder Kanäle verlinken.",
         "suggestion": "Wie wäre es mit einer Geheimtür im Spiel, die zu einem Bonus-Level führt?"
       },
       "chat": {
-        "message": "Spiele auf Magic Cups haben keinen Chat zwischen Spielern. So bleiben alle sicher.",
+        "message": "Spiele auf Oomba Academy haben keinen Chat zwischen Spielern. So bleiben alle sicher.",
         "suggestion": "Wie wäre es, wenn sich die Spieler stattdessen mit großen Emoji-Knöpfen anfeuern?"
       },
       "personal": {
-        "message": "Spiele auf Magic Cups fragen nie nach Namen, Adressen, Schulen, Geburtstagen oder anderen privaten Sachen. Das bleibt unser Geheimnis!",
+        "message": "Spiele auf Oomba Academy fragen nie nach Namen, Adressen, Schulen, Geburtstagen oder anderen privaten Sachen. Das bleibt unser Geheimnis!",
         "suggestion": "Wie wäre es mit einem Spiel, in dem du dir einen lustigen Heldennamen aus einer Liste aussuchst?"
       },
       "profanity": {
-        "message": "Lass uns auf Magic Cups nette Wörter benutzen.",
+        "message": "Lass uns auf Oomba Academy nette Wörter benutzen.",
         "suggestion": "Was für ein Spiel wollen wir bauen? Vielleicht einen lustigen Roboter, der Socken sammelt?"
       },
       "sexual": {
-        "message": "Das kann ich nicht machen. Magic Cups Spiele sind für Kinder und Familien.",
+        "message": "Das kann ich nicht machen. Oomba-Academy-Spiele sind für Kinder und Familien.",
         "suggestion": "Wie wäre es mit einem Tanzparty-Spiel mit lustigen Bewegungen?"
       },
       "selfharm": {
@@ -788,15 +800,15 @@
         "suggestion": "Ich bin immer für dich da, wenn du ein fröhliches Spiel bauen willst, zum Beispiel mit einem kuscheligen Hündchen, das Sterne sammelt."
       },
       "hate": {
-        "message": "Magic Cups ist für alle da. Deshalb kann ich keine Spiele machen, die gemein zu Menschen sind.",
+        "message": "Oomba Academy ist für alle da. Deshalb kann ich keine Spiele machen, die gemein zu Menschen sind.",
         "suggestion": "Wie wäre es mit einem Teamspiel, in dem sich alle gegenseitig helfen, um zu gewinnen?"
       },
       "violence": {
-        "message": "Das ist zu wild für Magic Cups. Comic-Plopps sind okay, aber kein Blut und niemand, der echten Menschen wehtut.",
+        "message": "Das ist zu wild für Oomba Academy. Comic-Plopps sind okay, aber kein Blut und niemand, der echten Menschen wehtut.",
         "suggestion": "Wie wäre es, lustige Roboter mit Kissen anzustupsen oder Schleim mit einem Seifenblasen-Blaster wegzupusten?"
       },
       "scary": {
-        "message": "Lass es uns lustig machen, nicht gruselig. Auf Magic Cups gibt es keinen Horror und keine Schreckmomente.",
+        "message": "Lass es uns lustig machen, nicht gruselig. Auf Oomba Academy gibt es keinen Horror und keine Schreckmomente.",
         "suggestion": "Wie wäre es mit einem lustigen, freundlichen Gespenst, das Süßigkeiten sammelt?"
       },
       "drugs": {
@@ -804,7 +816,7 @@
         "suggestion": "Wie wäre es mit einem Zaubertrank-Labor, in dem du sprudelnde Farben mischst?"
       },
       "gambling": {
-        "message": "Auf Magic Cups gibt es keine Wetten, keine Casinos und keine Lootboxen.",
+        "message": "Auf Oomba Academy gibt es keine Wetten, keine Casinos und keine Lootboxen.",
         "suggestion": "Wie wäre es mit einer Schatzsuche, bei der du Sterne fürs Schlausein bekommst?"
       },
       "real_people": {
@@ -816,7 +828,7 @@
         "suggestion": "Wie wäre es mit einem ganz eigenen Helden, zum Beispiel einem springenden Fuchs namens Flitz? 🦊"
       },
       "other": {
-        "message": "Das kann ich auf Magic Cups nicht bauen.",
+        "message": "Das kann ich auf Oomba Academy nicht bauen.",
         "suggestion": "Wie wäre es mit einem Spiel über einen mutigen kleinen Roboter auf Abenteuerreise?"
       },
       "chips": {
@@ -863,9 +875,9 @@
     "textTooBig": "Textdateien dürfen bis zu 200 KB groß sein.",
     "fileTooBig": "Bilder und PDFs dürfen bis zu 5 MB groß sein.",
     "image": {
-      "real_faces": "Auf dem Bild ist ein echter Mensch, deshalb kann ich es nicht behalten. Echte Gesichter bleiben auf Magic Cups privat. Probier lieber eine Zeichnung oder ein Spielzeug!",
+      "real_faces": "Auf dem Bild ist ein echter Mensch, deshalb kann ich es nicht behalten. Echte Gesichter bleiben auf Oomba Academy privat. Probier lieber eine Zeichnung oder ein Spielzeug!",
       "personal_info": "Auf dem Bild sind private Sachen wie ein Name, eine Schule oder eine Adresse, deshalb kann ich es nicht behalten. Probier lieber eine Zeichnung!",
-      "unsafe": "Dieses Bild passt nicht zu Magic Cups, deshalb kann ich es nicht behalten. Probier ein anderes Bild!",
+      "unsafe": "Dieses Bild passt nicht zu Oomba Academy, deshalb kann ich es nicht behalten. Probier ein anderes Bild!",
       "resting": "Bilder brauchen unseren Sicherheitscheck, und der ruht sich bis morgen aus. Versuch das Bild später noch mal oder beschreib deine Idee mit Worten!"
     }
   },
@@ -968,7 +980,7 @@
       "cancel": "Abbrechen"
     },
     "studio": {
-      "docTitle": "Studio: {title} · Magic Cups",
+      "docTitle": "Studio: {title} · Oomba Academy",
       "turns": "Heute noch {left} von {total} Nachrichten",
       "fixButton": "Baumeister soll's reparieren",
       "fixMessage": "Bitte repariere die Probleme beim Sicherheitscheck in Version {number}:",
@@ -1199,7 +1211,7 @@
       "newCodeConfirm": "Einen neuen Code erstellen? Der alte funktioniert dann nicht mehr.",
       "noStudents": "Noch keine Schüler",
       "newAccounts": "Neue Schulkonten",
-      "newAccountsHint": "Jeder Schüler erhält einen Magic Cups Namen und ein Passwort zum Ausdrucken auf einer Anmeldekarte. Echte Namen sehen nur Lehrkräfte.",
+      "newAccountsHint": "Jeder Schüler erhält einen Oomba-Academy-Namen und ein Passwort zum Ausdrucken auf einer Anmeldekarte. Echte Namen sehen nur Lehrkräfte.",
       "addTeacher": "Lehrkraft hinzufügen",
       "moveTo": "In Klasse verschieben",
       "move": "Verschieben",
@@ -1231,7 +1243,7 @@
       "moved": "{name} in {class} verschoben",
       "reprint": "Neue Anmeldekarten für die Klasse",
       "reprintConfirm": "{count, plural, one {Ein neues Passwort für # Schüler mit Schulkonto erstellen? Das alte Passwort funktioniert dann nicht mehr, und der Schüler wird abgemeldet.} other {Neue Passwörter für # Schüler mit Schulkonto erstellen? Die alten Passwörter funktionieren dann nicht mehr, und die Schüler werden abgemeldet.}}",
-      "joinCodeTextOn": "Die Schüler geben diesen Code auf ihrer Seite „Meine Klassen“ ein (Ich → Meine Klassen). Schüler mit einem Schulkonto von {school} sind sofort dabei; Schüler mit eigenem Konto bei Magic Cups warten, bis Sie sie annehmen.",
+      "joinCodeTextOn": "Die Schüler geben diesen Code auf ihrer Seite „Meine Klassen“ ein (Ich → Meine Klassen). Schüler mit einem Schulkonto von {school} sind sofort dabei; Schüler mit eigenem Konto bei Oomba Academy warten, bis Sie sie annehmen.",
       "joinCodeTextOff": "Schüler mit einem Schulkonto von {school} geben diesen Code auf ihrer Seite „Meine Klassen“ ein und sind sofort dabei.",
       "noTeacher": "Diese Klasse hat noch keine Lehrkraft. Fügen Sie unten eine hinzu.",
       "removeTeacherConfirm": "{name} aus dieser Klasse entfernen? Die Klasse verschwindet dann aus „Meine Klassen“ von {name}.",
@@ -1241,7 +1253,7 @@
       "onlyStaff": "Nur Mitglieder des Kollegiums von {school} können hinzugefügt werden.",
       "askAdmin": "Bitten Sie den Schuladmin ({admins}), die Person auf der Schulseite unter „Personen“ hinzuzufügen.",
       "addStaffLink": "Unter „Personen“ zum Kollegium hinzufügen",
-      "askNoAdmin": "{school} hat noch keinen Schuladmin. Bitten Sie das Magic Cups Team, einen zu ernennen; diese Person kann dann auf der Schulseite unter „Personen“ das Kollegium eintragen.",
+      "askNoAdmin": "{school} hat noch keinen Schuladmin. Bitten Sie das Oomba-Academy-Team, einen zu ernennen; diese Person kann dann auf der Schulseite unter „Personen“ das Kollegium eintragen.",
       "archivedToast": "{name} archiviert",
       "lessons": "Lektionen",
       "lastActivity": "Zuletzt aktiv",
@@ -1266,7 +1278,7 @@
       "staff": "Kollegium",
       "students": "Schüler",
       "name": "Name",
-      "username": "Magic Cups Name",
+      "username": "Oomba-Academy-Name",
       "role": "Rolle",
       "grade": "Klassenstufe",
       "schoolAccount": "Schulkonto",
@@ -1274,7 +1286,7 @@
       "addStaff": "Lehrkraft oder Schuladmin hinzufügen",
       "addStaffText": "Verwenden Sie den echten Namen, unter dem Schüler und Kollegium die Person kennen. Schulkonten folgen den Sicherheitsregeln der Schule; wer Spiele öffentlich teilen möchte, sollte ein eigenes Konto verwenden.",
       "realName": "Echter Name",
-      "existing": "Magic Cups Name der Person",
+      "existing": "Oomba-Academy-Name der Person",
       "existingPlaceholder": "z. B. FrauWeber",
       "addStudents": "Schüler zur Schule hinzufügen",
       "addStudentsText": "Ein Name pro Zeile. Jeder Schüler erhält ein Schulkonto und eine Anmeldekarte zum Ausdrucken.",
@@ -1292,7 +1304,7 @@
       "newSchool": "Als Nächstes: Ernennen Sie den Schuladmin. Diese Person kann dann Lehrkräfte, Klassen und Schüler hinzufügen.",
       "account": "Wie meldet sich die Person an?",
       "accountNew": "Ein Schulkonto für die Person erstellen",
-      "accountExisting": "Die Person hat schon ein Konto bei Magic Cups",
+      "accountExisting": "Die Person hat schon ein Konto bei Oomba Academy",
       "createStaff": "Konto und Anmeldekarte erstellen",
       "addToSchool": "Zur Schule hinzufügen",
       "added": "{name} als {role} hinzugefügt",
@@ -1305,7 +1317,7 @@
       "saved": "Einstellungen gespeichert",
       "teachersCreate": "Lehrkräfte können eigene Klassen anlegen",
       "ownAccounts": "Schüler können mit eigenem Konto beitreten",
-      "ownAccountsHint": "Schüler, die Magic Cups schon nutzen, geben einen Klassencode ein; eine Lehrkraft bestätigt jeden einzeln. Ist die Option aus, funktionieren Klassencodes nur mit Schulkonten.",
+      "ownAccountsHint": "Schüler, die Oomba Academy schon nutzen, geben einen Klassencode ein; eine Lehrkraft bestätigt jeden einzeln. Ist die Option aus, funktionieren Klassencodes nur mit Schulkonten.",
       "gameSite": "Schulkonten auf der Spieleseite",
       "gameSiteText": "Diese Regeln gelten für Konten, die die Schule angelegt hat (Schüler und Kollegium). Schüler, die mit ihrem eigenen Konto beigetreten sind, behalten ihre eigenen Einstellungen.",
       "chat": "Chat",
@@ -1326,7 +1338,7 @@
       "print": "Drucken",
       "once": "Drucken Sie diese jetzt aus, oder schreiben Sie sie ab. Passwörter werden nur einmal angezeigt. Falls eines verloren geht, können Sie später ein neues erstellen.",
       "site": "Website",
-      "username": "Magic Cups Name",
+      "username": "Oomba-Academy-Name",
       "password": "Passwort",
       "gone": "Diese Anmeldekarten sind nicht mehr verfügbar. Erstellen Sie ein neues Passwort auf der Klassenseite unter „Schüler“ oder auf der Schulseite unter „Personen“.",
       "backPeople": "Zurück zu „Personen“",
@@ -1343,7 +1355,7 @@
       "badRole": "Diese Rolle ist hier nicht erlaubt.",
       "ownRole": "Sie können Ihre eigene Admin-Rolle nicht ändern oder entfernen.",
       "noAccount": "Mach dir zuerst ein kostenloses Konto.",
-      "noSuchUser": "Es gibt kein Konto mit diesem Magic Cups Namen.",
+      "noSuchUser": "Es gibt kein Konto mit diesem Oomba-Academy-Namen.",
       "otherSchoolAccount": "Dieses Konto gehört zu einer anderen Schule.",
       "notSchoolAccount": "Nur Schulkonten können hier ein neues Passwort bekommen. Schüler mit eigenem Konto setzen es selbst zurück.",
       "classHasStudents": "Diese Klasse hatte bereits Schüler und kann daher nicht gelöscht werden. Archivieren Sie sie stattdessen.",
@@ -1354,14 +1366,14 @@
       "ownAccountsOff": "Diese Schule nutzt nur Schulkonten. Frag deine Lehrkraft nach einer Anmeldekarte.",
       "lastTeacher": "Eine Klasse braucht mindestens eine Lehrkraft.",
       "staffName": "Geben Sie den Namen ein.",
-      "username": "Geben Sie den Magic Cups Namen ein.",
+      "username": "Geben Sie den Oomba-Academy-Namen ein.",
       "alreadyStaff": "{name} gehört hier schon zum Kollegium ({role}).",
       "sameName": "{count, plural, one {Diesen Namen gibt es schon bei {school}: {names}. Nehmen Sie ihn aus der Liste, oder ergänzen Sie einen Anfangsbuchstaben, damit man die Schüler unterscheiden kann.} other {Diese Namen gibt es schon bei {school}: {names}. Nehmen Sie sie aus der Liste, oder ergänzen Sie einen Anfangsbuchstaben, damit man die Schüler unterscheiden kann.}} Um vorhandene Schüler in eine Klasse aufzunehmen, haken Sie sie auf der Klassenseite unter „Schüler“ an.",
       "chooseTeacher": "Wählen Sie eine Lehrkraft.",
       "chooseClass": "Wählen Sie eine Klasse.",
       "noSchoolAccounts": "Kein Schüler in dieser Klasse hat ein Schulkonto.",
       "badTeacher": "Wählen Sie jemanden aus dem Kollegium der Schule.",
-      "adminNotStudent": "Du kümmerst dich um Magic Cups, deshalb kannst du keiner Klasse als Schüler beitreten.",
+      "adminNotStudent": "Du kümmerst dich um Oomba Academy, deshalb kannst du keiner Klasse als Schüler beitreten.",
       "isStudent": "{name} ist hier Schüler und kann deshalb nicht zum Kollegium hinzugefügt werden.",
       "tickStudents": "Haken Sie mindestens einen Schüler an.",
       "badZone": "Wählen Sie eine Zeitzone aus der Liste."
@@ -1439,7 +1451,7 @@
       "game": "Spiel",
       "myGames": "Meine Spiele",
       "schoolGames": "In meiner Schule geteilt",
-      "siteGames": "Magic-Cups-Spiele",
+      "siteGames": "Oomba-Academy-Spiele",
       "minutes": "Minuten",
       "edit": "Schritt bearbeiten",
       "delete": "Schritt löschen",

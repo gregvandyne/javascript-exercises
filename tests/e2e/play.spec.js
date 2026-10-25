@@ -82,8 +82,8 @@ test('search by title and by builder name', async ({ page }) => {
   await page.fill('#q', 'rumble');
   await expect(page.locator('#results').getByText('Ring Rumble')).toBeVisible();
   await expect(page.locator('#results').getByText('Shark Plank')).toHaveCount(0);
-  await page.fill('#q', 'Magic Cups');
-  await expect(page.locator('#results .person').first()).toContainText('Magic Cups');
+  await page.fill('#q', 'Oomba Academy');
+  await expect(page.locator('#results .person').first()).toContainText('Oomba Academy');
   await expect(page.locator('#results').getByText('Footy Tycoon')).toBeVisible();
 });
 

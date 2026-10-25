@@ -9,6 +9,7 @@ import { notFound, page } from './views/layout.js';
 import { html } from './views/html.js';
 import { log } from './services/log.js';
 import { middleware as i18n, tReq } from './i18n/index.js';
+import { middleware as theme } from './theme.js';
 import { router as authRoutes } from './routes/auth.js';
 import { router as discoverRoutes } from './routes/discover.js';
 import { router as gameRoutes } from './routes/games.js';
@@ -60,6 +61,7 @@ export function createApp() {
   app.use(sessionMiddleware);
   app.use(countVisits);
   app.use(i18n);
+  app.use(theme);
   app.use(csrfCheck);
 
   for (const r of [authRoutes, discoverRoutes, gameRoutes, studioRoutes, socialRoutes, chatRoutes, adminRoutes, schoolRoutes, progressRoutes, lessonRoutes, infoRoutes]) app.use(r);

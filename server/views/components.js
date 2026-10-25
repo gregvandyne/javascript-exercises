@@ -5,6 +5,8 @@ import { html, raw, esc } from './html.js';
 import { current } from '../i18n/index.js';
 import { urlFor } from '../services/shots.js';
 import { photoUrl } from '../services/photos.js';
+import { OFFICIAL } from '../auth.js';
+import { faceMark } from './brand.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -13,6 +15,8 @@ import { fileURLToPath } from 'node:url';
 const COVER_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../public/covers');
 const COVER_SHOTS = new Map();
 try { for (const f of fs.readdirSync(COVER_DIR)) if (f.endsWith('.jpg')) COVER_SHOTS.set(f.slice(0, -4), Math.round(fs.statSync(path.join(COVER_DIR, f)).mtimeMs).toString(36)); } catch { /* no covers yet */ }
+
+export { BRAND, wordmark, appMark } from './brand.js';
 
 const VIS_EMOJI = { private: '🔒', friends: '👫', school: '🏫', public: '🌍' };
 /** "🔒 Only me" / "👫 Friends" / "🌍 Everyone" in the reader's language. */
@@ -35,6 +39,8 @@ export function avatar(u, size = 40) {
   if (!u) return '';
   const a = u.avatar || u.owner_avatar || '🙂', c = u.color || u.owner_color || '#2f6bff';
   const photo = photoUrl(u);
+  // The official account's picture is Oomba.
+  if (!photo && u.username === OFFICIAL) return html`<span class="avatar" style="--s:${size}px;--c:var(--brand-mint)" aria-hidden="true">${faceMark()}</span>`;
   if (photo) return html`<span class="avatar has-photo" style="--s:${size}px;--c:${c}" aria-hidden="true"><img src="${photo}" alt="" loading="lazy" decoding="async" width="${size}" height="${size}"></span>`;
   return html`<span class="avatar" style="--s:${size}px;--c:${c}" aria-hidden="true">${a}</span>`;
 }

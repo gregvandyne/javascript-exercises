@@ -69,6 +69,11 @@ export function upgradeGuest(userId, { username, password }) {
 }
 export const getUser = id => (id ? q.get('SELECT * FROM users WHERE id=?', id) : null) || null;
 export const getUserByName = name => q.get('SELECT * FROM users WHERE username=? COLLATE NOCASE', String(name || '')) || null;
+/** The official account (its games are the launch games), and the names it had before: /u/<old name> redirects to it,
+ *  and nobody can sign up with one. */
+export const OFFICIAL = 'OombaAcademy';
+export const OFFICIAL_OLD_NAMES = ['MagicCups', 'MagicCup', 'BRBGaming'];
+export const isRetiredName = name => OFFICIAL_OLD_NAMES.some(o => o.toLowerCase() === String(name || '').toLowerCase());
 export function verifyPassword(user, password) {
   const ok = bcrypt.compareSync(String(password || '').slice(0, 72), (user && user.password_hash) || DUMMY_HASH);
   return !!(user && user.password_hash && ok);
@@ -79,7 +84,7 @@ export function setPassword(userId, password, { signOutEverywhere = false } = {}
   if (signOutEverywhere) q.run('DELETE FROM sessions WHERE user_id=?', userId);
 }
 // The most common passwords: easy to guess, so not allowed.
-const COMMON = new Set(['123456', '1234567', '12345678', '123456789', '1234567890', '111111', '000000', '654321', '123123', '121212', '112233', 'password', 'password1', 'passw0rd', 'qwerty', 'qwerty123', 'qwertyuiop', 'abc123', 'abcdef', 'abcd1234', 'letmein', 'welcome', 'iloveyou', 'monkey', 'dragon', 'football', 'baseball', 'soccer', 'princess', 'sunshine', 'superman', 'batman', 'pokemon', 'minecraft', 'fortnite', 'roblox', 'secret', 'master', 'shadow', 'starwars', 'trustno1', 'hello1', 'hello123', 'computer', 'freedom', 'whatever', 'asdfgh', 'zxcvbn', 'aaaaaa', 'gaming', 'brbgaming', 'magiccup', 'magiccups', 'magic123']);
+const COMMON = new Set(['123456', '1234567', '12345678', '123456789', '1234567890', '111111', '000000', '654321', '123123', '121212', '112233', 'password', 'password1', 'passw0rd', 'qwerty', 'qwerty123', 'qwertyuiop', 'abc123', 'abcdef', 'abcd1234', 'letmein', 'welcome', 'iloveyou', 'monkey', 'dragon', 'football', 'baseball', 'soccer', 'princess', 'sunshine', 'superman', 'batman', 'pokemon', 'minecraft', 'fortnite', 'roblox', 'secret', 'master', 'shadow', 'starwars', 'trustno1', 'hello1', 'hello123', 'computer', 'freedom', 'whatever', 'asdfgh', 'zxcvbn', 'aaaaaa', 'gaming', 'brbgaming', 'magiccup', 'magiccups', 'magic123', 'oomba123', 'oombaacademy', 'academy']);
 /** -> null when fine, otherwise a kid-friendly message (in the language of t). */
 export function checkPassword(p, username = '', t = tEn) {
   p = String(p || '');

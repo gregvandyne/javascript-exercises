@@ -222,7 +222,7 @@ export function fmt(code) {
 // ---------------------------------------------------------------- per-request middleware
 export const COOKIE = 'lang';
 const ONE_YEAR = 365 * 86400;
-function readCookie(req, name) {
+export function readCookie(req, name) {
   const h = req.headers.cookie; if (!h) return null;
   for (const part of h.split(';')) { const i = part.indexOf('='); if (i > 0 && part.slice(0, i).trim() === name) { try { return decodeURIComponent(part.slice(i + 1).trim()); } catch { return null; } } }
   return null;
@@ -237,12 +237,26 @@ export function saveUserLang(user, code) {
   q.run('UPDATE users SET lang=? WHERE id=?', code, user.id);
   user.lang = code;
 }
-/** The same URL without ?lang= (for the redirect after a choice). */
-export function withoutLang(originalUrl) {
+/** A request's path, always starting with exactly one '/': URL parsing turns '/.//evil.com' into '//evil.com', which a
+ *  browser would read as another site. */
+export const localPath = u => '/' + u.pathname.replace(/^\/+/, '');
+/** The same URL without ?<name>= (for the redirect after a choice). */
+export function withoutParam(originalUrl, name) {
   const u = new URL(originalUrl, 'http://x');
-  u.searchParams.delete('lang');
-  return u.pathname + (u.searchParams.toString() ? '?' + u.searchParams : '');
+  u.searchParams.delete(name);
+  return localPath(u) + (u.searchParams.toString() ? '?' + u.searchParams : '');
 }
+export const withoutLang = originalUrl => withoutParam(originalUrl, 'lang');
+/** Settings picked with a plain GET link (?lang=, ?theme=) are not guarded by csrfCheck, so they are only SAVED for a
+ *  same-origin or direct request: a cross-site link can't silently change a signed-in user's settings. */
+export function sameOrigin(req) {
+  const site = req.headers['sec-fetch-site']; const origin = req.headers.origin;
+  if (site) return site === 'same-origin' || site === 'none';
+  if (origin && origin !== 'null') { try { return new URL(origin).host === req.headers.host; } catch { return false; } }
+  return true;
+}
+/** A GET for a page (not an API call or a game frame): these redirect after a ?lang= or ?theme= choice. */
+export const isPageGet = req => req.method === 'GET' && !req.path.startsWith('/api/') && !req.path.startsWith('/frame/');
 /**
  * Runs after the session middleware. Sets req.locale, req.dir, req.t, req.fmt and res.locals.t.
  * A GET page with a valid ?lang= stores the choice (cookie for a year + the signed-in account) and redirects to the
@@ -257,15 +271,9 @@ export function middleware(req, res, next) {
   res.vary('Accept-Language'); res.vary('Cookie');
   res.set('Content-Language', code);
   if (picked.source === 'query') {
-    // The language picker is a plain GET (works without JS), so csrfCheck doesn't guard it. Only PERSIST the choice
-    // for a same-origin / direct request, so a cross-site link can't silently change a signed-in user's saved language.
-    const site = req.headers['sec-fetch-site']; const origin = req.headers.origin;
-    let sameOrigin = true;
-    if (site) sameOrigin = site === 'same-origin' || site === 'none';
-    else if (origin && origin !== 'null') { try { sameOrigin = new URL(origin).host === req.headers.host; } catch { sameOrigin = false; } }
-    if (sameOrigin) { setLangCookie(res, code); saveUserLang(req.user, code); }
-    const isPage = req.method === 'GET' && !req.path.startsWith('/api/') && !req.path.startsWith('/frame/');
-    if (isPage) return res.redirect(303, withoutLang(req.originalUrl));
+    // The language picker is a plain GET (works without JS): see sameOrigin() for why only some requests save it.
+    if (sameOrigin(req)) { setLangCookie(res, code); saveUserLang(req.user, code); }
+    if (isPageGet(req)) return res.redirect(303, withoutLang(req.originalUrl));
   }
   als.run({ t: req.t, fmt: req.fmt, locale: code }, next);
 }

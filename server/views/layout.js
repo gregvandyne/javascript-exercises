@@ -5,10 +5,12 @@
 //   scripts: ['/js/foo.js'] (ES modules)   bare: true = no nav/footer (play page)
 //   i18n: extra key prefixes to embed for the browser. Every page gets 'js.app' plus 'js.<name>' for each /js/<name>.js.
 import { html, raw, esc, jsonData } from './html.js';
-import { avatar } from './components.js';
+import { avatar, BRAND, wordmark, appMark } from './components.js';
+import { ICONS_V } from './brand.js';
 import { navBadges } from '../services/badges.js';
 import { inAnySchool, isSchoolStaff, isPlatformAdmin } from '../services/schools.js';
-import { availableLocales, localeInfo, tReq, clientStrings, DEFAULT_LOCALE } from '../i18n/index.js';
+import { availableLocales, localeInfo, tReq, clientStrings, DEFAULT_LOCALE, localPath } from '../i18n/index.js';
+import { THEMES, THEME_ICONS, BAR_COLORS } from '../theme.js';
 
 const NAV = [
   ['home', '/', '🏠'],
@@ -18,12 +20,13 @@ const NAV = [
 ];
 export const VERSION = Date.now().toString(36); // cache-buster per boot
 
-/** URL of the current page with ?lang=<code> (the server stores the choice and redirects back without it). */
-function langHref(req, code) {
+/** URL of the current page with ?lang=<code> or ?theme=<theme> (the server stores the choice and redirects back without it). */
+function choiceHref(req, name, value) {
   const u = new URL(req.originalUrl || '/', 'http://x');
-  u.searchParams.set('lang', code);
-  return u.pathname + '?' + u.searchParams;
+  u.searchParams.set(name, value);
+  return localPath(u) + '?' + u.searchParams;
 }
+const langHref = (req, code) => choiceHref(req, 'lang', code);
 /** The 🌐 language picker: a <details> menu of plain links, so it works with no JavaScript (app.js adds keys and outside-click). */
 export function langPicker(req) {
   const t = tReq(req); const cur = req.locale || DEFAULT_LOCALE; const info = localeInfo(cur);
@@ -34,6 +37,20 @@ export function langPicker(req) {
     <div class="lang-menu">
       <p class="lang-head" id="lang-head">${t('layout.lang.title')}</p>
       <ul class="lang-list" aria-labelledby="lang-head">${langs.map(l => html`<li><a href="${langHref(req, l.code)}" hreflang="${l.code}" ${l.code === cur ? raw('aria-current="true"') : ''}><span class="lang-check" aria-hidden="true">${l.code === cur ? '✓' : ''}</span><span class="lang-name" lang="${l.code}" dir="${l.dir}">${l.name}</span></a></li>`)}</ul>
+    </div>
+  </details>`;
+}
+
+/** The theme menu (☀️ Light, 🌙 Dark, 🌓 Same as my device), built like the language picker: plain links that work with no
+ *  JavaScript. app.js switches at once instead, using data-theme-choice and data-label. */
+export function themePicker(req) {
+  const t = tReq(req); const cur = THEMES.includes(req.theme) ? req.theme : 'system';
+  const label = th => t('layout.theme.button', { theme: t(`layout.theme.${th}`) });
+  return html`<details class="themepick" data-themepick>
+    <summary class="theme-btn" aria-label="${label(cur)}" title="${t('layout.theme.title')}"><span class="theme-ico" aria-hidden="true">${THEME_ICONS[cur]}</span></summary>
+    <div class="theme-menu">
+      <p class="lang-head" id="theme-head">${t('layout.theme.title')}</p>
+      <ul class="theme-list" aria-labelledby="theme-head">${THEMES.map(th => html`<li><a href="${choiceHref(req, 'theme', th)}" rel="nofollow" data-theme-choice="${th}" data-label="${label(th)}" ${th === cur ? raw('aria-current="true"') : ''}><span class="lang-check" aria-hidden="true">${th === cur ? '✓' : ''}</span><span class="theme-ico" aria-hidden="true">${THEME_ICONS[th]}</span><span>${t(`layout.theme.${th}`)}</span></a></li>`)}</ul>
     </div>
   </details>`;
 }
@@ -58,17 +75,19 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
   const nav = bare ? '' : html`
   <a class="skip" href="#main">${t('layout.skip')}</a>
   <header class="topbar">
-    <a class="logo" href="/" aria-label="${t('layout.logoLabel')}"><span class="logo-mark" aria-hidden="true">🏆</span><span class="logo-text" dir="ltr">Magic <span>Cups</span></span></a>
+    <a class="logo" href="/" aria-label="${BRAND}">${appMark()}<span class="logo-lockup" dir="ltr" aria-hidden="true">${wordmark()}<span class="logo-sub">Academy</span></span></a>
     <form class="topsearch" role="search" action="/search" method="get">
       <span class="ico" aria-hidden="true">🔎</span>
       <label class="sr-only" for="topq">${t('layout.search.label')}</label>
-      <input id="topq" name="q" type="search" placeholder="${t('layout.search.placeholder')}" autocomplete="off" value="${active === 'search' ? (req.query.q || '') : ''}">
+      <input id="topq" name="q" type="search" placeholder="${t('layout.search.placeholder')}" data-short="${t('nav.search')}" autocomplete="off" value="${active === 'search' ? (req.query.q || '') : ''}">
     </form>
+    <a class="topsearch-btn" href="/search" aria-label="${t('layout.search.label')}"><span aria-hidden="true">🔎</span></a>
     <nav class="topnav" aria-label="${t('layout.mainNav')}">
       ${navItems.map(([k, href, emo]) => html`<a class="navlink" href="${href}" ${cur(k)}><span class="emo" aria-hidden="true">${emo}</span>${t(`nav.${k}`)}${badge(k)}</a>`)}
     </nav>
     ${langPicker(req)}
-    <a class="me-btn" href="${meHref}" ${cur('me')} aria-label="${u ? t('layout.meLabel', { name: u.display_name }) : signIn}">${u ? avatar(u, 38) : html`<span class="avatar" style="--s:38px;--c:#94a3b8" aria-hidden="true">🙂</span>`}<span class="name">${u ? u.display_name : signIn}</span></a>
+    ${themePicker(req)}
+    <a class="me-btn" href="${meHref}" ${cur('me')} aria-label="${u ? t('layout.meLabel', { name: u.display_name }) : signIn}">${u ? avatar(u, 38) : html`<span class="avatar" style="--s:38px;--c:var(--hover)" aria-hidden="true">🙂</span>`}<span class="name">${u ? u.display_name : signIn}</span></a>
   </header>
   <nav class="tabbar" aria-label="${t('layout.mainNav')}">
     ${navItems.map(([k, href, emo]) => html`<a class="tab" href="${href}" ${cur(k)}><span class="emo" aria-hidden="true">${emo}</span>${t(`nav.${k}`)}${badge(k)}</a>`)}
@@ -77,18 +96,27 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
   const foot = bare ? '' : html`<footer class="foot"><span>${t('layout.footer.tagline')}</span><a href="/safety">${t('layout.footer.safety')}</a><a href="/parents">${t('layout.footer.parents')}</a><a href="/sdk">${t('layout.footer.builders')}</a><a href="/me#language" class="foot-lang"><span aria-hidden="true">🌐</span> ${info.name}</a></footer>`;
   const backHtml = back ? html`<a class="backlink" href="${back}"><span class="flip" aria-hidden="true">←</span> ${backLabel || t('layout.back')}</a>` : '';
   const prefixes = ['js.app', ...scripts.map(s => (s.match(/^\/js\/([\w-]+)\.js$/) || [])[1]).filter(Boolean).map(n => `js.${n}`), ...i18n];
+  // An explicit Light or Dark choice is on <html> before any CSS loads, so the first paint is right (no flash, no JS).
+  const theme = req.theme === 'light' || req.theme === 'dark' ? req.theme : null;
+  // The browser's toolbar takes the top bar's colour: one value for a chosen theme, one per device scheme otherwise. The
+  // play page's bar is Ink in both themes.
+  const themeColor = bare || theme ? `<meta name="theme-color" content="${BAR_COLORS[bare ? 'dark' : theme]}">`
+    : `<meta name="theme-color" content="${BAR_COLORS.light}" media="(prefers-color-scheme: light)">\n<meta name="theme-color" content="${BAR_COLORS.dark}" media="(prefers-color-scheme: dark)">`;
   const strings = jsonData('i18n', { lang: locale, dir: info.dir, intl: info.intl, strings: clientStrings(locale, [...new Set(prefixes)]) });
   return `<!doctype html>
-<html lang="${esc(locale)}" dir="${esc(info.dir)}">
+<html lang="${esc(locale)}" dir="${esc(info.dir)}"${theme ? ` data-theme="${theme}"` : ''}>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="${theme || 'light dark'}">
 <title>${esc(title ? t('layout.titleWith', { title }) : t('layout.titleHome'))}</title>
 <meta name="description" content="${esc(description || t('layout.description'))}">
-<meta name="theme-color" content="#2f6bff">
-<link rel="icon" href="/icons/icon.svg" type="image/svg+xml">
-<link rel="manifest" href="/manifest.webmanifest">
-<link rel="preload" href="/fonts/nunito-latin-800-normal.woff2" as="font" type="font/woff2" crossorigin>
+${themeColor}
+<link rel="icon" href="/favicon.ico?v=${ICONS_V}" sizes="32x32">
+<link rel="icon" href="/icons/icon.svg?v=${ICONS_V}" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png?v=${ICONS_V}">
+<link rel="manifest" href="/manifest.webmanifest?v=${ICONS_V}">
+<link rel="preload" href="/fonts/bricolage-grotesque-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/css/app.css?v=${VERSION}">
 ${head}
 </head>

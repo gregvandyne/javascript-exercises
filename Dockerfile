@@ -1,4 +1,4 @@
-# Magic Cups: Node 22 + SQLite on a persistent disk.
+# Oomba Academy: Node 22 + SQLite on a persistent disk.
 ARG NODE_IMAGE=node:22-bookworm-slim
 FROM ${NODE_IMAGE} AS deps
 WORKDIR /app

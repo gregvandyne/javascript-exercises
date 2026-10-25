@@ -79,7 +79,7 @@ test('every shipped blocklist file parses and carries the header', () => {
   assert.equal(files.length, 13, 'one file per site language');
   for (const f of files) {
     const text = fs.readFileSync(path.join(tf.BLOCKLIST_DIR, f), 'utf8');
-    assert.match(text, /^# Magic Cups word blocklist/, f);
+    assert.match(text, /^# Oomba Academy word blocklist/, f);
     assert.doesNotThrow(() => tf.parseBlocklist(text), f);
   }
 });

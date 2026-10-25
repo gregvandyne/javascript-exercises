@@ -28,7 +28,7 @@ function renderTop() {
   const pb = $('#st-publish');
   const canUpdate = S.live && S.current && S.current.id !== S.live.id && !(S.pending && S.pending.id === S.current.id);
   pb.classList.toggle('st-update', !!canUpdate);
-  pb.classList.toggle('btn-coral', !S.live || !!canUpdate);
+  pb.classList.toggle('btn-hot', !S.live || !!canUpdate);
   pb.textContent = !S.live ? (S.pending ? `⏳ ${t('js.studio.top.inReview')}` : `🚀 ${t('js.studio.top.publish')}`) : canUpdate ? `⬆️ ${t('js.studio.top.update')}` : `✅ ${t('js.studio.top.live')}`;
   document.title = t('js.studio.docTitle', { title: S.game.title });
 }
@@ -42,7 +42,7 @@ function renderLive() {
     const [e, w] = VIS[S.live.visibility] || ['', S.live.visibility];
     parts.push(`<span class="stchip good">🟢 ${E('js.studio.live.liveVersion', { number: S.live.number, who: `${e} ${w}` })}</span><span class="vtag">${cur}</span>`);
     const canUpdate = S.current && S.current.id !== S.live.id && !(S.pending && S.pending.id === S.current.id);
-    if (canUpdate) parts.push(`<button class="btn btn-coral btn-sm st-update" type="button" data-act="update">⬆️ ${E('js.studio.live.updateTo', { number: S.current.number })}</button>`);
+    if (canUpdate) parts.push(`<button class="btn btn-hot btn-sm st-update" type="button" data-act="update">⬆️ ${E('js.studio.live.updateTo', { number: S.current.number })}</button>`);
     if (S.pending && S.pending.id === S.live.id) parts.push(`<p class="note">⏳ ${E(S.live.visibility === 'friends' ? 'js.studio.live.waitingFriends' : 'js.studio.live.waitingYou')}</p>`);
     else if (S.pending) parts.push(`<p class="note">⏳ ${E('js.studio.live.pendingUpdate', { pending: S.pending.number, live: S.live.number })}</p>`);
     else if (canUpdate) parts.push(`<p class="note info">${E('js.studio.live.playersOn', { live: S.live.number, number: S.current.number })}${S.live.visibility === 'public' ? ' ' + E('js.studio.live.publicCheck') : ''}</p>`);
@@ -361,7 +361,7 @@ function shareSheet(mode) {
 async function updateLive() {
   if (!S.live || !S.current) return;
   const pub = S.live.visibility === 'public';
-  const s = sheet({ title: `⬆️ ${t('js.studio.update.title')}`, content: `<p>${t('js.studio.update.text', { live: `<b>${E('js.studio.update.version', { number: S.live.number })}</b>`, number: `<b>${E('js.studio.update.version', { number: S.current.number })}</b>` })}</p><p>${pub ? E('js.studio.update.publicText', { live: S.live.number }) : E('js.studio.update.now')}</p><div class="sheet-actions"><button class="btn" type="button" data-close>${E('js.studio.update.notYet')}</button><button class="btn btn-coral" type="button" id="upd-go">⬆️ ${E('js.studio.update.button')}</button></div>` });
+  const s = sheet({ title: `⬆️ ${t('js.studio.update.title')}`, content: `<p>${t('js.studio.update.text', { live: `<b>${E('js.studio.update.version', { number: S.live.number })}</b>`, number: `<b>${E('js.studio.update.version', { number: S.current.number })}</b>` })}</p><p>${pub ? E('js.studio.update.publicText', { live: S.live.number }) : E('js.studio.update.now')}</p><div class="sheet-actions"><button class="btn" type="button" data-close>${E('js.studio.update.notYet')}</button><button class="btn btn-hot" type="button" id="upd-go">⬆️ ${E('js.studio.update.button')}</button></div>` });
   s.el.querySelector('[data-close]').addEventListener('click', s.close);
   $('#upd-go', s.el).addEventListener('click', async e => {
     e.target.disabled = true;

@@ -1,18 +1,17 @@
-/* Admin stats dashboard. One measure per chart; bars in the reference blue (validated on both surfaces). */
+/* Admin stats dashboard. One measure per chart; bars in Leaf (light) and Mint (dark), 3:1 or more on cards. */
 .stats-h{margin:32px 0 12px}
 .kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px}
 .kpi{display:flex;flex-direction:column;gap:2px;padding:14px 16px}
-.kpi-l{font-size:.85rem;font-weight:800;color:var(--muted)}
-.kpi-v{font-size:1.9rem;line-height:1.15;color:var(--ink);font-variant-numeric:tabular-nums}
-.kpi-s{font-size:.85rem;color:var(--ink-2)}
-.kpi.warn{box-shadow:inset 0 0 0 2px var(--sun)}
+.kpi-l{font-size:.85rem;font-weight:700;color:var(--muted)}
+.kpi-v{font-size:1.9rem;line-height:1.15;color:var(--text);font-variant-numeric:tabular-nums}
+.kpi-s{font-size:.85rem;color:var(--text-2)}
+.kpi.warn{box-shadow:inset 0 0 0 2px var(--spark-press)}
 .kpi.bad{box-shadow:inset 0 0 0 2px var(--danger)}
 .charts{display:grid;grid-template-columns:1fr;gap:16px}
-.chart{margin:0;padding:20px;--viz-1:#2a78d6}
-@media (prefers-color-scheme:dark){.chart{--viz-1:#3987e5}}
+.chart{margin:0;padding:20px}
 .chart figcaption{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
 .chart h3{margin:0;font-size:1.05rem}
-.chart-sum{font-size:.9rem;color:var(--ink-2)}
+.chart-sum{font-size:.9rem;color:var(--text-2)}
 .chart-read{margin:4px 0 8px;font-size:.88rem;color:var(--muted);min-height:1.3em}
 .plot{display:grid;grid-template-columns:auto 1fr;gap:8px;height:150px}
 .yaxis{display:flex;flex-direction:column;justify-content:space-between;font-size:.75rem;color:var(--muted);text-align:end;font-variant-numeric:tabular-nums;margin:-.5em 0}
@@ -24,10 +23,10 @@
 .bar:hover,.bar.on{background:color-mix(in srgb,var(--viz-1) 10%,transparent)}
 .xaxis{display:flex;justify-content:space-between;font-size:.75rem;color:var(--muted);margin:4px 0 0 34px}
 .chart details{margin-top:8px;font-size:.9rem}
-.chart summary{cursor:pointer;color:var(--ink-2);font-weight:700}
-.stats-grid{display:grid;grid-template-columns:1fr;gap:16px;margin-top:24px;align-items:start}
+.chart summary{cursor:pointer;color:var(--text-2);font-weight:600}
+.stats-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;margin-top:24px;align-items:start}
 .stats-grid h2{font-size:1.1rem;margin:0 0 8px}
-.chip-s{display:inline-block;padding:1px 8px;border-radius:999px;background:var(--card-2);box-shadow:inset 0 0 0 1px var(--line);font-size:.75rem;font-weight:800;color:var(--muted)}
+.chip-s{display:inline-block;padding:1px 8px;border-radius:999px;background:var(--card-2);box-shadow:inset 0 0 0 1px var(--line);font-size:.75rem;font-weight:700;color:var(--muted)}
 @media (max-width:520px){.kpis{grid-template-columns:1fr 1fr;gap:12px}.kpi{padding:12px}.kpi-v{font-size:1.5rem}.kpi-s,.kpi-l{font-size:.8rem}}
 .kpis>.kpi,.charts>.chart,.stats-grid>.panel{margin:0}
 @media (min-width:700px){.charts,.stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}

@@ -1,4 +1,4 @@
-// Magic Cups database: SQLite via better-sqlite3. One file, WAL mode, versioned migrations.
+// Oomba Academy database: SQLite via better-sqlite3. One file, WAL mode, versioned migrations.
 // Reused from the starter with chat tables and update-review fields added.
 // Everything else talks to the DB through `q` (and the service modules), so a Postgres swap is a repository-layer change.
 import Database from 'better-sqlite3';
@@ -132,6 +132,8 @@ const MIGRATIONS = [
   // work, if the lesson is assigned to that class again).
   ['0012_class_lesson_removed', `ALTER TABLE class_lessons ADD COLUMN removed_at INTEGER;`],
   ['0013_orphan_class_rows', `DELETE FROM class_lessons WHERE class_id NOT IN (SELECT id FROM classrooms); DELETE FROM class_units WHERE class_id NOT IN (SELECT id FROM classrooms);`],
+  // The site theme a signed-in player picked: '' = same as the device, 'light' or 'dark' (see server/theme.js).
+  ['0014_user_theme', `ALTER TABLE users ADD COLUMN theme TEXT NOT NULL DEFAULT '';`],
 ];
 
 db.exec('CREATE TABLE IF NOT EXISTS migrations (name TEXT PRIMARY KEY, applied_at INTEGER NOT NULL)');
