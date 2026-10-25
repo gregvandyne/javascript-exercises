@@ -8,7 +8,7 @@ import * as auth from '../auth.js';
 import { q, audit } from '../db.js';
 import * as photos from '../services/photos.js';
 import { isSchoolStaff, isPlatformAdmin } from '../services/schools.js';
-import { rateLimit, allow, count } from '../services/ratelimit.js';
+import { rateLimit, allow, count, ipOf, loginLockKey, GUESTS_PER_IP_HOUR } from '../services/ratelimit.js';
 import { availableLocales, normalizeCode, tHtml, setLangCookie, saveUserLang } from '../i18n/index.js';
 
 export const router = Router();
@@ -59,14 +59,15 @@ function authPage(req, res, mode) {
 router.get('/login', (req, res) => authPage(req, res, 'login'));
 router.get('/signup', (req, res) => authPage(req, res, 'signup'));
 
-router.post('/api/auth/guest', rateLimit('guest', 30, 3600e3), (req, res) => {
+router.post('/api/auth/guest', (req, res) => {
   if (req.user) return res.json({ ok: true, user: auth.publicUser(req.user) });
-  if (!allow(`guestip:${req.ip}`, 60, 3600e3)) return res.status(429).json({ error: req.t('auth.api.tooManyGuests') });
+  if (!allow(`guestip:${ipOf(req)}`, GUESTS_PER_IP_HOUR, 3600e3)) return res.status(429).json({ error: req.t('auth.api.tooManyGuests') });
   const u = auth.createGuest(); auth.startSession(res, u.id, req.headers['user-agent']);
   if (req.localeSource === 'cookie') saveUserLang(u, req.locale);
   res.json({ ok: true, user: auth.publicUser(u) });
 });
-router.post('/api/auth/signup', rateLimit('signup', 10, 3600e3), (req, res) => {
+// Per address, not per session (a guest cookie is free). 30 an hour leaves room for a class making accounts together.
+router.post('/api/auth/signup', rateLimit('signup', 30, 3600e3, undefined, { byIp: true }), (req, res) => {
   const t = req.t;
   const { username, password } = req.body || {};
   const n = auth.cleanName(username, t); if (!n.ok) return res.status(400).json({ error: n.error, field: 'username' });
@@ -86,14 +87,24 @@ router.post('/api/auth/signup', rateLimit('signup', 10, 3600e3), (req, res) => {
   if (req.localeSource === 'cookie') saveUserLang(u, req.locale); // a language picked before signing up comes along
   res.json({ ok: true, user: auth.publicUser(u) });
 });
-router.post('/api/auth/login', rateLimit('login', 20, 900e3, 'auth.api.tooManyTries'), (req, res) => {
+// Sign-in limits. A whole class signs in at once from one school address, so successful sign-ins never count against
+// the address; only failures do. Everything is keyed on the address or the username, never the session, so fresh
+// guest cookies can't buy more guesses.
+//   per address: 100 failed sign-ins and 600 tries in all (each try costs a bcrypt check) per 15 min
+//   per username: 10 failed guesses per 15 min, from any address
+export const LOGIN = { ipFails: 100, ipTries: 600, userFails: 10, window: 900e3 };
+router.post('/api/auth/login', (req, res) => {
   const { username, password } = req.body || {};
-  // Per-account backstop: at most 10 FAILED guesses per username / 15 min, independent of source IP (a spoofed/rotated
-  // IP can't widen it). Successful logins never count, so normal use is unaffected.
-  const uname = String(username || '').toLowerCase().slice(0, 64);
-  if (uname && count(`login-user:${uname}`) >= 10) return res.status(429).json({ error: req.t('auth.api.tooManyTries') });
+  const ip = ipOf(req); const lockKey = String(username || '').trim() ? loginLockKey(username) : '';
+  const tooMany = () => res.status(429).json({ error: req.t('auth.api.tooManyTries') });
+  if (count(`login-ip-fail:${ip}`) >= LOGIN.ipFails || !allow(`login-ip:${ip}`, LOGIN.ipTries, LOGIN.window)) return tooMany();
+  if (lockKey && count(lockKey) >= LOGIN.userFails) return tooMany();
   const u = auth.getUserByName(username);
-  if (!u || !auth.verifyPassword(u, password)) { if (uname) allow(`login-user:${uname}`, 10, 900e3); return res.status(400).json({ error: req.t('auth.api.wrongLogin'), field: 'password' }); }
+  if (!u || !auth.verifyPassword(u, password)) {
+    allow(`login-ip-fail:${ip}`, LOGIN.ipFails, LOGIN.window);
+    if (lockKey) allow(lockKey, LOGIN.userFails, LOGIN.window);
+    return res.status(400).json({ error: req.t('auth.api.wrongLogin'), field: 'password' });
+  }
   if (u.banned) return res.status(403).json({ error: req.t('auth.api.paused') });
   if (req.user) auth.endSession(req, res);
   auth.startSession(res, u.id, req.headers['user-agent']);

@@ -16,6 +16,7 @@
 import crypto from 'node:crypto';
 import { q, uid, now, tx, audit } from '../db.js';
 import { createUser, setPassword, getUser } from '../auth.js';
+import { clear, loginLockKey } from './ratelimit.js';
 
 export const ROLES = ['admin', 'teacher', 'student'];
 export const DEFAULT_SETTINGS = {
@@ -174,6 +175,7 @@ export function resetSchoolPassword(by, schoolId, userId) {
   if (m.role !== 'student' && !canManageSchool(by, schoolId)) return fail('notSchoolAccount');
   const password = newPassword();
   setPassword(u.id, password, { signOutEverywhere: true });
+  clear(loginLockKey(u.username)); // a child locked out by wrong guesses can sign in with the new password straight away
   audit(by.id, 'school.password_reset', schoolId, { user: u.id });
   return ok({ user: u, username: u.username, password });
 }

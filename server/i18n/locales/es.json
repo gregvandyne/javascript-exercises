@@ -375,7 +375,8 @@
     "shareText": {
       "private": "Solo tú puedes abrir este juego. Cámbialo a Amigos o Todos para compartirlo.",
       "friends": "Solo tus amigos de Magic Cups pueden abrir este enlace.",
-      "public": "Cualquiera que tenga el enlace puede jugar este juego."
+      "public": "Cualquiera que tenga el enlace puede jugar este juego.",
+      "school": "Todos en tu escuela pueden encontrarlo y jugarlo."
     },
     "report": {
       "button": "Reportar",

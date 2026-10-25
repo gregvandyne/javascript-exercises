@@ -242,3 +242,18 @@ test('only finished translations are offered (picker and Accept-Language)', () =
     assert.equal(i18n.availableCodes().length, i18n.CODES.length);
   } finally { if (saved === undefined) delete process.env.BRB_ALL_LOCALES; else process.env.BRB_ALL_LOCALES = saved; }
 });
+
+test('every sharing level has its share-sheet text (the key is built at run time, so i18n:check cannot see a gap)', async () => {
+  const { VISIBILITIES } = await import('../../server/services/games.js');
+  const en = JSON.parse(fs.readFileSync(new URL('../../server/i18n/locales/en.json', import.meta.url), 'utf8'));
+  for (const v of VISIBILITIES) { assert.ok(en.game.shareText[v], `game.shareText.${v}`); assert.ok(en.studio.shareText[v], `studio.shareText.${v}`); }
+});
+
+test('rate limits use the client address without a port (some proxies append one)', async () => {
+  const { ipOf } = await import('../../server/services/ratelimit.js');
+  assert.equal(ipOf({ ip: '203.0.113.7:51234' }), '203.0.113.7');
+  assert.equal(ipOf({ ip: '[2001:db8::1]:443' }), '2001:db8::1');
+  assert.equal(ipOf({ ip: '2001:db8::1' }), '2001:db8::1');
+  assert.equal(ipOf({ ip: '::ffff:10.0.0.1' }), '::ffff:10.0.0.1');
+  assert.equal(ipOf({ ip: '198.51.100.4' }), '198.51.100.4');
+});
