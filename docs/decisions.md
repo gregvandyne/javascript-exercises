@@ -331,7 +331,9 @@ The mascot is Oomba: the two o's of the wordmark are its eyes, looking up at a s
   local disk; a VM is also the cheapest and simplest to reason about.
 - **One instance, no autoscaling**, written in README, the compose file and both guides. — Rate limits, presence and
   one-time login cards are in memory; SQLite has one writer. Redis/Postgres later, not now.
-- **Container start** (`scripts/entrypoint.sh`): tini is PID 1; the data folder (and only the entries directly in it)
+- **Container start** (`scripts/entrypoint.sh`): tini becomes PID 1 *after* the drop to the `node` user, so it runs as
+  the same user as the app (Render's containers have no CAP_KILL, and a root tini there could not pass SIGTERM on:
+  "Unexpected error when forwarding signal: 'Operation not permitted'", which killed the app without a drain); the data folder (and only the entries directly in it)
   gets `chown -h` to uid 1000 only when not already writable, symbolic links are skipped (a link planted by the app user
   must never make root hand it `/etc/passwd`), and a failed chown is a warning, not a crash (Azure Files); privileges
   drop with `setpriv --no-new-privs` via `exec`, so no parent shell lingers (the old `su` killed node ~2 s after SIGTERM

@@ -473,3 +473,13 @@ test('entrypoint.sh as root: fixes the data folder\'s owner but never follows a 
   assert.equal(fs.statSync(data).uid, 1000); assert.equal(fs.statSync(path.join(data, 'uploads')).uid, 1000);
   assert.equal(fs.statSync(victim).uid, 0, 'the link target keeps its owner');
 });
+
+test('tini runs as the app user, not root: the image starts with the entrypoint, which execs tini after the privilege drop', () => {
+  // A root tini can't signal uid 1000 in a container without CAP_KILL (Render): it dies instead of passing SIGTERM on.
+  const df = fs.readFileSync(path.join(ROOT, 'Dockerfile'), 'utf8');
+  assert.match(df, /^ENTRYPOINT \["\/app\/scripts\/entrypoint\.sh"\]$/m);
+  const ep = fs.readFileSync(path.join(ROOT, 'scripts/entrypoint.sh'), 'utf8');
+  const drop = ep.indexOf('exec setpriv'), tini = ep.indexOf('exec /usr/bin/tini');
+  assert.ok(drop > 0 && tini > drop, 'tini is exec\'d after setpriv drops to node');
+  assert.match(ep, /if \[ "\$\$" = 1 \] && \[ -x \/usr\/bin\/tini \]; then exec \/usr\/bin\/tini -- "\$0" "\$@"; fi/);
+});

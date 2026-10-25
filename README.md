@@ -177,9 +177,10 @@ login cards are kept in memory, and SQLite takes one writer. (More instances wou
   has the restore steps and a restore drill. `npm run backup` (online SQLite copy into `<data>/backups`, keeps 14)
   still works.
 - **Plain Docker**: `docker build -t oomba-academy . && docker run -p 3000:3000 -v brb-data:/data -e ADMIN_PASSWORD=... -e SESSION_SECRET=... --stop-timeout 30 oomba-academy`.
-  The image runs tini as PID 1, seeds on boot (idempotent) and keeps everything in `/data`. Chromium then runs inside
-  the app; to move it out, run the same image again as the worker (command `node server/shots-worker.js`, settings as
-  in the compose file's `shots` service) and give the app `SNAPSHOT_URL` and the same `SHOTS_TOKEN`.
+  The image runs tini as PID 1 (as the unprivileged `node` user, so signals reach the app even without CAP_KILL), seeds
+  on boot (idempotent) and keeps everything in `/data`. Chromium then runs inside the app; to move it out, run the same
+  image again as the worker (command `node server/shots-worker.js`, settings as in the compose file's `shots` service)
+  and give the app `SNAPSHOT_URL` and the same `SHOTS_TOKEN`.
 - **Ops**: `GET /health` answers 503 when the database doesn't answer or its file was deleted or replaced under the
   running app, when the data disk is full (under 100 MB free, or 2 % on a small disk) or takes no new file, and while
   shutting down. The disk part runs at most every 2 seconds; probes are never logged. JSON logs on stdout; site stats
