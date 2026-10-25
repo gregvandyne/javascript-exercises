@@ -67,8 +67,8 @@ router.post('/api/auth/guest', (req, res) => {
   res.json({ ok: true, user: auth.publicUser(u) });
 });
 // Sign-up limits, per address (never per session: a guest cookie is free). Only accounts actually made count toward the
-// 30 an hour, so a class fixing typos and taken names isn't locked out; 300 tries an hour stops a flood.
-export const SIGNUP = { perHour: 30, triesPerHour: 300 };
+// 30 an hour, so a class fixing typos and taken names isn't locked out; 2000 tries an hour stops a flood.
+export const SIGNUP = { perHour: 30, triesPerHour: 2000 };
 router.post('/api/auth/signup', (req, res) => {
   const t = req.t;
   const ip = ipOf(req);
@@ -93,25 +93,26 @@ router.post('/api/auth/signup', (req, res) => {
   if (req.localeSource === 'cookie') saveUserLang(u, req.locale); // a language picked before signing up comes along
   res.json({ ok: true, user: auth.publicUser(u) });
 });
-// Sign-in limits. A whole school can sign in at once from one address, so successful sign-ins never count; only failures
-// do. Everything is keyed on the address or the username, never the session, so fresh guest cookies can't buy more
+// Sign-in limits. A whole school can sign in at once from one address, so successful sign-ins don't count as failures.
+// Everything is keyed on the address or the username, never the session, so fresh guest cookies can't buy more
 // guesses. Generated school passwords have ~31 bits (schools.js newPassword), so a loose per-address cap is still safe.
 //   per username: 10 failed guesses per 15 min, from any address (a teacher's password reset clears it)
-//   per address: 1000 failed sign-ins per 15 min (a flood guard; a school morning with typos stays far below it)
-export const LOGIN = { ipFails: 1000, userFails: 10, window: 900e3 };
+//   per address:  1000 failed sign-ins per 15 min, and 3000 tries in all (each costs a bcrypt check; a school of
+//                 1000 children signing in three times fits)
+export const LOGIN = { ipFails: 1000, ipTries: 3000, userFails: 10, window: 900e3 };
 router.post('/api/auth/login', (req, res) => {
   const { password } = req.body || {};
   const username = String((req.body || {}).username || '').trim();
   const ip = ipOf(req); const lockKey = username ? loginLockKey(username) : '';
+  const failKey = `login-ip-fail:${ip}`;
   const tooMany = () => res.status(429).json({ error: req.t('auth.api.tooManyTries') });
-  if (count(`login-ip-fail:${ip}`) >= LOGIN.ipFails) return tooMany();
-  if (lockKey && count(lockKey) >= LOGIN.userFails) return tooMany();
+  if (count(failKey) >= LOGIN.ipFails || (lockKey && count(lockKey) >= LOGIN.userFails)) return tooMany();
+  if (!allow(`login-ip:${ip}`, LOGIN.ipTries, LOGIN.window)) return tooMany();
   const u = username ? auth.getUserByName(username) : null;
   // Always run the password check (against a dummy hash for an unknown name), so the response time doesn't reveal
-  // which names exist.
+  // which names exist. It is synchronous, so the check-then-count above can't race with other tries.
   if (!auth.verifyPassword(u, password)) {
-    allow(`login-ip-fail:${ip}`, LOGIN.ipFails, LOGIN.window);
-    if (lockKey) allow(lockKey, LOGIN.userFails, LOGIN.window);
+    allow(failKey, LOGIN.ipFails, LOGIN.window); if (lockKey) allow(lockKey, LOGIN.userFails, LOGIN.window);
     return res.status(400).json({ error: req.t('auth.api.wrongLogin'), field: 'password' });
   }
   if (u.banned) return res.status(403).json({ error: req.t('auth.api.paused') });

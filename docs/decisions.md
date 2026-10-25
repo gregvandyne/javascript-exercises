@@ -242,7 +242,9 @@ A defensive security review (8 areas, each finding independently verified agains
   Later (rating review): per-address limits count only failures and are keyed on the address, never the session (fresh
   guest cookies no longer buy guesses), so a whole school behind one address can sign in at once; school passwords now
   use a 273-word list (~1.8 billion combinations); a teacher's reset clears the per-username lock; the login check
-  always runs bcrypt so timing doesn't reveal which names exist.
+  always runs bcrypt so timing doesn't reveal which names exist; 3000 tries per address per 15 min caps bcrypt work.
+  Known limit: bcrypt (bcryptjs, ~170 ms) runs on the main thread, so a big sign-in rush slows other pages for a few
+  seconds (bcryptjs's async mode doesn't help under concurrency). Move it to a worker thread or native bcrypt later.
 - **Report griefing.** Auto-hide now counts only distinct non-guest, non-owner reporters, so a few throwaway guest
   reports can't silently take a game down (guest reports are still queued for admin review).
 - **Cross-teacher account merge.** Approving a join request "same student as" an existing account now requires the

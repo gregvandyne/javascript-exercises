@@ -51,6 +51,18 @@ test('spaces around the name are ignored, share one lock, and a teacher reset li
   assert.equal((await login(`${k.username} `, r.password)).status, 200);
 });
 
+test('many tries at once cannot slip past the per-name limit while passwords are being checked', async () => {
+  const k = kids[2];
+  const codes = (await Promise.all(Array.from({ length: 15 }, () => login(k.username, 'wrong')))).map(r => r.status);
+  assert.equal(codes.filter(c => c === 400).length, LOGIN.userFails, codes.join(','));
+  assert.equal(codes.filter(c => c === 429).length, 15 - LOGIN.userFails);
+  // and correct sign-ins at once give their reservations back
+  RL._reset();
+  const ok = await Promise.all(Array.from({ length: 8 }, () => login(kids[3].username, kids[3].password)));
+  assert.ok(ok.every(r => r.status === 200));
+  assert.equal(RL.count(RL.loginLockKey(kids[3].username)), 0);
+});
+
 test('sign-up: only accounts made count toward the hourly cap, with an hour-long message', async () => {
   const keep = SIGNUP.perHour; SIGNUP.perHour = 2;
   try {
