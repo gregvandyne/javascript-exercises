@@ -1,0 +1,939 @@
+<title>Star Island</title>
+<style>
+/* Layout: one full-screen 3D canvas, a DOM HUD on top, overlay screens, and touch controls (joystick + jump). */
+:root{--ink:#1d2340;--soft:#55607a;--panel:rgba(255,255,255,.92);--gold-dark:#c98a00;--pink:#ff5c9e;--pink-dark:#c23a74}
+[hidden]{display:none!important}
+html,body{height:100%;overflow:hidden;background:#9fe0ff;touch-action:none;user-select:none;-webkit-user-select:none}
+body{margin:0;font-family:system-ui,"Segoe UI",Roboto,sans-serif;color:var(--ink)}
+#view{position:fixed;inset:0;width:100%;height:100%;display:block;outline:none}
+button{font-family:inherit;cursor:pointer}
+button:focus-visible{outline:4px solid #fff;outline-offset:2px}
+.hud{position:fixed;top:max(10px,env(safe-area-inset-top));left:max(10px,env(safe-area-inset-left));right:max(10px,env(safe-area-inset-right));display:flex;gap:8px;align-items:center;pointer-events:none;z-index:5;direction:ltr}
+.pill{background:var(--panel);font:800 20px/1 system-ui,sans-serif;padding:12px 16px;border-radius:999px;box-shadow:0 3px 0 rgba(0,0,0,.15);white-space:nowrap}
+.pill.late{background:#ffe1c2;color:#b4470a}
+.spacer{flex:1}
+.ibtn{pointer-events:auto;width:52px;height:52px;flex:none;border-radius:50%;border:0;background:var(--panel);font-size:24px;line-height:1;box-shadow:0 4px 0 rgba(0,0,0,.2);display:grid;place-items:center;padding:0}
+.ibtn:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.2)}
+.screen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:20px;z-index:10;background:radial-gradient(circle at 50% 40%,rgba(255,255,255,.12),rgba(20,40,90,.45))}
+.card{background:#fff;border-radius:28px;padding:24px 22px 22px;max-width:420px;width:100%;max-height:100%;overflow:auto;text-align:center;box-shadow:0 10px 0 rgba(0,0,0,.12),0 20px 50px rgba(0,0,0,.25)}
+.card .emo{font-size:46px;line-height:1.1}
+h1{margin:6px 0;font:900 clamp(30px,8vw,42px)/1.05 system-ui,sans-serif;letter-spacing:-.5px}
+.sub{margin:0 0 18px;color:var(--soft);font:700 17px/1.35 system-ui,sans-serif}
+.big{font:900 26px/1 system-ui,sans-serif;color:#5a3b00;background:linear-gradient(#ffe066,#ffbf1f);border:0;border-radius:20px;padding:18px 40px;min-height:64px;min-width:200px;box-shadow:0 7px 0 var(--gold-dark)}
+.big:active{transform:translateY(5px);box-shadow:0 2px 0 var(--gold-dark)}
+.big:disabled{filter:grayscale(.6);cursor:default}
+.hint{color:var(--soft);font:600 15px/1.4 system-ui,sans-serif;margin:16px 0 0}
+.best{color:var(--gold-dark);font:800 16px system-ui,sans-serif;margin:10px 0 0;min-height:1em}
+#stickBase{position:fixed;width:132px;height:132px;border-radius:50%;background:rgba(255,255,255,.25);border:3px solid rgba(255,255,255,.75);display:none;z-index:6;pointer-events:none;transform:translate(-50%,-50%)}
+#stickKnob{position:absolute;left:50%;top:50%;width:60px;height:60px;margin:-30px 0 0 -30px;border-radius:50%;background:rgba(255,255,255,.95);box-shadow:0 3px 0 rgba(0,0,0,.2)}
+#stickHint{position:fixed;left:24px;right:130px;bottom:max(26px,env(safe-area-inset-bottom));z-index:6;pointer-events:none;color:#fff;font:800 15px system-ui,sans-serif;text-shadow:0 2px 4px rgba(0,0,0,.35);display:none}
+#jumpBtn{position:fixed;right:max(18px,env(safe-area-inset-right));bottom:max(22px,env(safe-area-inset-bottom));width:92px;height:92px;border-radius:50%;border:0;font:900 17px system-ui,sans-serif;color:#fff;background:linear-gradient(#ff9ac6,var(--pink));box-shadow:0 6px 0 var(--pink-dark);z-index:6;display:none;touch-action:none;padding:0 6px;overflow:hidden}
+#jumpBtn:active,#jumpBtn.down{transform:translateY(4px);box-shadow:0 2px 0 var(--pink-dark)}
+body.touch.playing #jumpBtn,body.touch.playing #stickHint{display:block}
+.tip{position:fixed;left:50%;top:max(78px,calc(env(safe-area-inset-top) + 68px));transform:translateX(-50%);z-index:5;background:var(--panel);border-radius:999px;padding:10px 18px;font:800 16px/1.3 system-ui,sans-serif;text-align:center;width:max-content;max-width:calc(100% - 32px);pointer-events:none;box-shadow:0 4px 0 rgba(0,0,0,.15)}
+.pop{position:fixed;z-index:7;pointer-events:none;font:900 28px system-ui,sans-serif;color:#fff;text-shadow:0 3px 0 var(--gold-dark),0 0 14px #ffcf3f;animation:pop .9s ease-out forwards}
+@keyframes pop{from{transform:translate(-50%,-50%) scale(.6)}30%{transform:translate(-50%,-90%) scale(1.25)}to{transform:translate(-50%,-170%) scale(1);opacity:0}}
+@media (prefers-reduced-motion:reduce){.pop{animation:fade 1s linear forwards;transform:translate(-50%,-50%)}}
+@keyframes fade{to{opacity:0}}
+</style>
+
+<canvas id="view"></canvas>
+<div class="hud" id="hud" hidden>
+  <div class="pill" id="starPill" role="status">⭐ 0/12</div>
+  <div class="pill" id="timePill">⏱ 90</div>
+  <div class="spacer"></div>
+  <button class="ibtn" id="pauseBtn" type="button">⏸</button>
+  <button class="ibtn" id="muteBtn" type="button">🔊</button>
+</div>
+<div class="tip" id="tip" hidden></div>
+<div id="stickBase"><div id="stickKnob"></div></div>
+<div id="stickHint"></div>
+<button id="jumpBtn" type="button"></button>
+
+<section class="screen" id="titleScreen">
+  <div class="card">
+    <div class="emo" aria-hidden="true">🌟🐣🌴</div>
+    <h1 id="titleText">Star Island</h1>
+    <p class="sub" id="subText"></p>
+    <button class="big" id="playBtn" type="button" disabled></button>
+    <p class="best" id="bestLine"></p>
+    <p class="hint" id="hintLine"></p>
+  </div>
+</section>
+<section class="screen" id="pauseScreen" hidden>
+  <div class="card">
+    <div class="emo" aria-hidden="true">😴</div>
+    <h1 id="pausedText"></h1>
+    <p class="sub" id="restText"></p>
+    <button class="big" id="resumeBtn" type="button"></button>
+  </div>
+</section>
+<section class="screen" id="endScreen" hidden>
+  <div class="card">
+    <div class="emo" id="endEmo" aria-hidden="true">🎉</div>
+    <h1 id="endTitle"></h1>
+    <p class="sub" id="endText"></p>
+    <button class="big" id="againBtn" type="button"></button>
+    <p class="best" id="endBest"></p>
+  </div>
+</section>
+
+<script>
+/* =====================================================================================
+   I18N: every word the player sees, in the 13 site languages. BRB.user.lang picks the table;
+   missing keys fall back to the base language (en-GB -> en), then to English.
+   {hero} is CONFIG.heroName, {title} is CONFIG.title; other {names} are numbers.
+   ===================================================================================== */
+const I18N = {
+  en: {
+    name: 'Star Island',
+    subtitle: 'Help {hero} find all the shiny stars before time runs out!', loading: 'Loading…', play: 'Play',
+    tryLater: 'Try again later', loadFail: "The 3D world didn't load. Open the game again in a moment.",
+    hintKeys: 'Walk: arrow keys or WASD · Jump: Space', hintTouch: 'Drag anywhere to walk · Tap JUMP to hop',
+    best: 'Best score: {n}', paused: 'Paused', resting: '{hero} is having a little rest.', keepGoing: 'Keep going',
+    winTitle: 'You did it!', loseTitle: "Time's up!", winText: '{hero} found every star! Time left: {s}',
+    loseText: 'Stars found: {got}/{total}. Can you find them all next time?', scoreLine: 'Score: {score} · Best: {best}',
+    newBest: 'New best score: {score}! ⭐', again: 'Play again', jump: 'JUMP', drag: '👆 Drag anywhere to walk',
+    tip: 'Hop up the floating rocks for sky stars!', pause: 'Pause', sound: 'Sound on or off', world: '{title}: a 3D island with stars to find',
+  },
+  'en-GB': {},
+  pt: {
+    name: 'Ilha das Estrelas',
+    subtitle: 'Ajude {hero} a encontrar todas as estrelas brilhantes antes que o tempo acabe!', loading: 'Carregando…', play: 'Jogar',
+    tryLater: 'Tente mais tarde', loadFail: 'O mundo 3D não carregou. Abra o jogo de novo daqui a pouco.',
+    hintKeys: 'Andar: setas ou WASD · Pular: Espaço', hintTouch: 'Arraste para andar · Toque em PULAR para saltar',
+    best: 'Melhor pontuação: {n}', paused: 'Pausado', resting: '{hero} está descansando um pouquinho.', keepGoing: 'Continuar',
+    winTitle: 'Você conseguiu!', loseTitle: 'Acabou o tempo!', winText: '{hero} encontrou todas as estrelas! Tempo restante: {s}',
+    loseText: 'Estrelas encontradas: {got}/{total}. Será que você acha todas da próxima vez?', scoreLine: 'Pontos: {score} · Recorde: {best}',
+    newBest: 'Novo recorde: {score}! ⭐', again: 'Jogar de novo', jump: 'PULAR', drag: '👆 Arraste para andar',
+    tip: 'Suba nas pedras flutuantes para pegar as estrelas do céu!', pause: 'Pausar', sound: 'Ligar ou desligar o som', world: '{title}: uma ilha 3D com estrelas para encontrar',
+  },
+  fr: {
+    name: 'L\'île aux étoiles',
+    subtitle: 'Aide {hero} à trouver toutes les étoiles brillantes avant la fin du temps !', loading: 'Chargement…', play: 'Jouer',
+    tryLater: 'Réessaie plus tard', loadFail: "Le monde en 3D ne s'est pas chargé. Rouvre le jeu dans un petit moment.",
+    hintKeys: 'Marcher : flèches ou WASD · Sauter : Espace', hintTouch: 'Glisse le doigt pour marcher · Touche SAUTER pour bondir',
+    best: 'Meilleur score : {n}', paused: 'Pause', resting: '{hero} se repose un peu.', keepGoing: 'Continuer',
+    winTitle: 'Bravo, tu as réussi !', loseTitle: 'Temps écoulé !', winText: '{hero} a trouvé toutes les étoiles ! Temps restant : {s}',
+    loseText: 'Étoiles trouvées : {got}/{total}. Tu les trouveras toutes la prochaine fois ?', scoreLine: 'Score : {score} · Record : {best}',
+    newBest: 'Nouveau record : {score} ! ⭐', again: 'Rejouer', jump: 'SAUTER', drag: '👆 Glisse le doigt pour marcher',
+    tip: 'Grimpe sur les rochers volants pour attraper les étoiles du ciel !', pause: 'Pause', sound: 'Son activé ou coupé', world: '{title} : une île en 3D avec des étoiles à trouver',
+  },
+  es: {
+    name: 'Isla de las Estrellas',
+    subtitle: '¡Ayuda a {hero} a encontrar todas las estrellas brillantes antes de que se acabe el tiempo!', loading: 'Cargando…', play: 'Jugar',
+    tryLater: 'Inténtalo más tarde', loadFail: 'El mundo 3D no se cargó. Vuelve a abrir el juego en un ratito.',
+    hintKeys: 'Caminar: flechas o WASD · Saltar: Espacio', hintTouch: 'Arrastra para caminar · Toca SALTAR para brincar',
+    best: 'Mejor puntuación: {n}', paused: 'En pausa', resting: '{hero} está descansando un poquito.', keepGoing: 'Seguir',
+    winTitle: '¡Lo lograste!', loseTitle: '¡Se acabó el tiempo!', winText: '¡{hero} encontró todas las estrellas! Tiempo restante: {s}',
+    loseText: 'Estrellas encontradas: {got}/{total}. ¿Las encontrarás todas la próxima vez?', scoreLine: 'Puntos: {score} · Récord: {best}',
+    newBest: '¡Nuevo récord: {score}! ⭐', again: 'Jugar otra vez', jump: 'SALTAR', drag: '👆 Arrastra para caminar',
+    tip: '¡Sube por las rocas flotantes para alcanzar las estrellas del cielo!', pause: 'Pausa', sound: 'Activar o quitar el sonido', world: '{title}: una isla en 3D con estrellas para encontrar',
+  },
+  de: {
+    name: 'Sterneninsel',
+    subtitle: 'Hilf {hero}, alle funkelnden Sterne zu finden, bevor die Zeit um ist!', loading: 'Lädt…', play: 'Spielen',
+    tryLater: 'Versuch es später noch mal', loadFail: 'Die 3D-Welt wurde nicht geladen. Öffne das Spiel gleich noch einmal.',
+    hintKeys: 'Laufen: Pfeiltasten oder WASD · Springen: Leertaste', hintTouch: 'Zum Laufen ziehen · SPRING tippen zum Hüpfen',
+    best: 'Bestes Ergebnis: {n}', paused: 'Pause', resting: '{hero} ruht sich kurz aus.', keepGoing: 'Weiter',
+    winTitle: 'Geschafft!', loseTitle: 'Die Zeit ist um!', winText: '{hero} hat alle Sterne gefunden! Restzeit: {s}',
+    loseText: 'Gefundene Sterne: {got}/{total}. Findest du nächstes Mal alle?', scoreLine: 'Punkte: {score} · Rekord: {best}',
+    newBest: 'Neuer Rekord: {score}! ⭐', again: 'Nochmal spielen', jump: 'SPRING', drag: '👆 Zum Laufen ziehen',
+    tip: 'Hüpf auf die schwebenden Felsen und hol dir die Himmelssterne!', pause: 'Pause', sound: 'Ton an oder aus', world: '{title}: eine 3D-Insel mit Sternen zum Finden',
+  },
+  he: {
+    name: 'אי הכוכבים',
+    subtitle: 'עזרו ל-{hero} למצוא את כל הכוכבים הנוצצים לפני שהזמן נגמר!', loading: 'טוען…', play: 'שחקו',
+    tryLater: 'נסו שוב מאוחר יותר', loadFail: 'העולם התלת־ממדי לא נטען. פתחו את המשחק שוב בעוד רגע.',
+    hintKeys: 'הליכה: חיצים או WASD · קפיצה: רווח', hintTouch: 'גררו כדי ללכת · הקישו על קפיצה כדי לקפוץ',
+    best: 'השיא: {n}', paused: 'הפסקה', resting: '{hero} נח קצת.', keepGoing: 'ממשיכים',
+    winTitle: 'הצלחתם!', loseTitle: 'הזמן נגמר!', winText: '{hero} מצא את כל הכוכבים! זמן שנשאר: {s}',
+    loseText: 'כוכבים שנמצאו: {got}/{total}. תמצאו את כולם בפעם הבאה?', scoreLine: 'ניקוד: {score} · שיא: {best}',
+    newBest: 'שיא חדש: {score}! ⭐', again: 'שחקו שוב', jump: 'קפיצה', drag: '👆 גררו כדי ללכת',
+    tip: 'קפצו על הסלעים המרחפים כדי לאסוף את כוכבי השמיים!', pause: 'הפסקה', sound: 'הפעלה או השתקה של הצליל', world: '{title}: אי תלת־ממדי עם כוכבים למצוא',
+  },
+  ja: {
+    name: 'ほしのしま',
+    subtitle: 'じかんが なくなるまえに、{hero}と キラキラの ほしを ぜんぶ みつけよう！', loading: 'よみこみちゅう…', play: 'あそぶ',
+    tryLater: 'あとで もういちど ためしてね', loadFail: '3Dの せかいを よみこめませんでした。すこし してから もういちど ひらいてね。',
+    hintKeys: 'あるく：やじるしキー か WASD ・ ジャンプ：スペース', hintTouch: 'ドラッグで あるく ・ ジャンプを タップ',
+    best: 'ハイスコア：{n}', paused: 'ひとやすみ', resting: '{hero}は ちょっと きゅうけいちゅう。', keepGoing: 'つづける',
+    winTitle: 'やったね！', loseTitle: 'じかんぎれ！', winText: '{hero}は ほしを ぜんぶ みつけたよ！ のこりじかん：{s}',
+    loseText: 'みつけた ほし：{got}/{total}。つぎは ぜんぶ みつけられるかな？', scoreLine: 'スコア：{score} ・ ハイスコア：{best}',
+    newBest: 'ハイスコア こうしん：{score}！ ⭐', again: 'もういちど', jump: 'ジャンプ', drag: '👆 ドラッグで あるこう',
+    tip: 'ういている いわに のぼって、そらの ほしを とろう！', pause: 'ひとやすみ', sound: 'おとの オン・オフ', world: '{title}：ほしを さがす 3Dの しま',
+  },
+  ar: {
+    name: 'جزيرة النجوم',
+    subtitle: 'ساعد {hero} في إيجاد كل النجوم اللامعة قبل أن ينتهي الوقت!', loading: 'جارٍ التحميل…', play: 'العب',
+    tryLater: 'حاول مرة أخرى لاحقًا', loadFail: 'لم يتم تحميل العالم ثلاثي الأبعاد. افتح اللعبة مرة أخرى بعد قليل.',
+    hintKeys: 'المشي: الأسهم أو WASD · القفز: زر المسافة', hintTouch: 'اسحب للمشي · اضغط «اقفز» للقفز',
+    best: 'أفضل نتيجة: {n}', paused: 'توقف مؤقت', resting: '{hero} يرتاح قليلًا.', keepGoing: 'تابع',
+    winTitle: 'أحسنت!', loseTitle: 'انتهى الوقت!', winText: 'وجد {hero} كل النجوم! الوقت المتبقي: {s}',
+    loseText: 'النجوم التي وجدتها: {got}/{total}. هل تجدها كلها في المرة القادمة؟', scoreLine: 'النقاط: {score} · الأفضل: {best}',
+    newBest: 'رقم قياسي جديد: {score}! ⭐', again: 'العب مرة أخرى', jump: 'اقفز', drag: '👆 اسحب للمشي',
+    tip: 'اقفز فوق الصخور الطائرة لتجمع نجوم السماء!', pause: 'إيقاف مؤقت', sound: 'تشغيل الصوت أو إيقافه', world: '{title}: جزيرة ثلاثية الأبعاد فيها نجوم لتجدها',
+  },
+  ru: {
+    name: 'Звёздный остров',
+    subtitle: 'Помоги {hero} найти все сияющие звёзды, пока не кончилось время!', loading: 'Загрузка…', play: 'Играть',
+    tryLater: 'Попробуй позже', loadFail: 'Трёхмерный мир не загрузился. Открой игру ещё раз чуть позже.',
+    hintKeys: 'Ходить: стрелки или WASD · Прыжок: пробел', hintTouch: 'Води пальцем, чтобы ходить · Жми ПРЫЖОК',
+    best: 'Лучший счёт: {n}', paused: 'Пауза', resting: '{hero} немного отдыхает.', keepGoing: 'Дальше',
+    winTitle: 'Получилось!', loseTitle: 'Время вышло!', winText: 'Все звёзды найдены! Осталось времени: {s}',
+    loseText: 'Найдено звёзд: {got}/{total}. Сможешь найти все в следующий раз?', scoreLine: 'Очки: {score} · Рекорд: {best}',
+    newBest: 'Новый рекорд: {score}! ⭐', again: 'Ещё раз', jump: 'ПРЫЖОК', drag: '👆 Води пальцем, чтобы ходить',
+    tip: 'Запрыгивай на летающие камни за небесными звёздами!', pause: 'Пауза', sound: 'Включить или выключить звук', world: '{title}: трёхмерный остров со звёздами',
+  },
+  it: {
+    name: 'L\'isola delle stelle',
+    subtitle: 'Aiuta {hero} a trovare tutte le stelle scintillanti prima che finisca il tempo!', loading: 'Caricamento…', play: 'Gioca',
+    tryLater: 'Riprova più tardi', loadFail: 'Il mondo 3D non si è caricato. Riapri il gioco tra un momento.',
+    hintKeys: 'Cammina: frecce o WASD · Salta: Spazio', hintTouch: 'Trascina per camminare · Tocca SALTA per saltare',
+    best: 'Record: {n}', paused: 'In pausa', resting: '{hero} si sta riposando un po’.', keepGoing: 'Continua',
+    winTitle: 'Ce l’hai fatta!', loseTitle: 'Tempo scaduto!', winText: '{hero} ha trovato tutte le stelle! Tempo rimasto: {s}',
+    loseText: 'Stelle trovate: {got}/{total}. Le troverai tutte la prossima volta?', scoreLine: 'Punti: {score} · Record: {best}',
+    newBest: 'Nuovo record: {score}! ⭐', again: 'Gioca ancora', jump: 'SALTA', drag: '👆 Trascina per camminare',
+    tip: 'Salta sulle rocce volanti per prendere le stelle del cielo!', pause: 'Pausa', sound: 'Audio sì o no', world: '{title}: un’isola in 3D con stelle da trovare',
+  },
+  'zh-Hant': {
+    name: '星星島',
+    subtitle: '幫 {hero} 在時間用完前找到所有閃亮的星星！', loading: '載入中…', play: '開始玩',
+    tryLater: '請稍後再試', loadFail: '3D 世界沒有載入。請過一下再打開遊戲。',
+    hintKeys: '走路：方向鍵或 WASD · 跳：空白鍵', hintTouch: '在畫面上拖曳來走路 · 點「跳」來跳躍',
+    best: '最高分：{n}', paused: '暫停', resting: '{hero} 正在休息一下。', keepGoing: '繼續',
+    winTitle: '你成功了！', loseTitle: '時間到！', winText: '{hero} 找到所有星星了！剩下時間：{s}',
+    loseText: '找到的星星：{got}/{total}。下次能全部找到嗎？', scoreLine: '分數：{score} · 最高分：{best}',
+    newBest: '新紀錄：{score}！⭐', again: '再玩一次', jump: '跳', drag: '👆 在畫面上拖曳來走路',
+    tip: '跳上漂浮的石頭，拿天上的星星！', pause: '暫停', sound: '開關聲音', world: '{title}：可以找星星的 3D 小島',
+  },
+  nl: {
+    name: 'Sterreneiland',
+    subtitle: 'Help {hero} alle glimmende sterren te vinden voordat de tijd op is!', loading: 'Laden…', play: 'Spelen',
+    tryLater: 'Probeer het later nog eens', loadFail: 'De 3D-wereld is niet geladen. Open het spel zo nog een keer.',
+    hintKeys: 'Lopen: pijltjes of WASD · Springen: spatie', hintTouch: 'Sleep om te lopen · Tik op SPRING om te springen',
+    best: 'Beste score: {n}', paused: 'Pauze', resting: '{hero} rust even uit.', keepGoing: 'Verder',
+    winTitle: 'Het is gelukt!', loseTitle: 'De tijd is op!', winText: '{hero} heeft alle sterren gevonden! Tijd over: {s}',
+    loseText: 'Sterren gevonden: {got}/{total}. Vind je ze de volgende keer allemaal?', scoreLine: 'Score: {score} · Record: {best}',
+    newBest: 'Nieuw record: {score}! ⭐', again: 'Nog een keer', jump: 'SPRING', drag: '👆 Sleep om te lopen',
+    tip: 'Spring op de zwevende rotsen voor de hemelsterren!', pause: 'Pauze', sound: 'Geluid aan of uit', world: '{title}: een 3D-eiland met sterren om te vinden',
+  },
+};
+const LANG = (window.BRB && BRB.user && BRB.user.lang) || 'en';
+const RTL = (window.BRB && BRB.user && BRB.user.dir) === 'rtl';
+const I18N_CHAIN = [I18N[LANG], I18N[String(LANG).split('-')[0]], I18N.en].filter(Boolean);
+let NUMF = null; try { NUMF = new Intl.NumberFormat(String(LANG).split('-')[0] === 'ar' ? 'ar-u-nu-latn' : LANG); } catch (e) { /* old browser */ }
+/** t('key', { n: 3 }): this language's words with {name} filled in. Looked up on screen changes, never per frame. */
+function t(key, vars) {
+  let s; for (let i = 0; i < I18N_CHAIN.length && s === undefined; i++) s = I18N_CHAIN[i][key];
+  if (s === undefined) return key;
+  return vars ? s.replace(/\{(\w+)\}/g, (m, k) => (vars[k] === undefined ? m : typeof vars[k] === 'number' && NUMF ? NUMF.format(vars[k]) : String(vars[k]))) : s;
+}
+// Until the 3D world is ready, a start() from the platform is remembered and done as soon as it is.
+window.__brbTest = { state: () => ({ screen: 'loading', ready: false }), start() { window.__islandStartWanted = true; } };
+document.getElementById('playBtn').textContent = t('loading');
+// If the 3D library can't load at all (offline, a school filter), say so kindly instead of "Loading…" forever.
+setTimeout(function () {
+  if (window.__islandReady) return;
+  const b = document.getElementById('playBtn'); b.textContent = t('tryLater'); b.disabled = true;
+  document.getElementById('hintLine').textContent = t('loadFail');
+}, 20000);
+</script>
+<script type="importmap">
+{ "imports": { "three": "/vendor/three/0.185.1/three.module.min.js" },
+  "integrity": {
+    "/vendor/three/0.185.1/three.module.min.js": "sha384-QHQk1LzjJlJYNdthXjKCmffpDRZL3EqJ7LfqBzyKyvGgjAYM2ZVuYtFGg42NcAJ/",
+    "/vendor/three/0.185.1/three.core.min.js": "sha384-rx+KIp/9ptjArhnFAcpVoOc/ynktDsRtRJKIbC7YVKylEvFu8sgmzk9RmQ+CIV48" } }
+</script>
+<script type="module">
+import * as THREE from 'three';
+
+/* =====================================================================
+   CONFIG: change these to make the island your own!
+   ===================================================================== */
+const CONFIG = {
+  hero: '🐣',            // the hero: 🐣 🐦 🦉 🐧 🦊 🐱 🐶 🐰 🐻 🐼 🐵 🦁 🐸 🐉 🦖 🦄 🐴 🤖 👽 👻 🦈 🐠 🐙 🐝 🦋 🐢 ⛄ 🧙 👸 🥷 🛡️ (others get a round friend)
+  heroName: 'Pip',
+  heroColor: '',          // body colour, e.g. '#ff6fa8' ('' = the hero's own colour)
+  title: 'Star Island',
+  sky: 'day',             // 'day', 'sunset' or 'night'
+  colors: { grass: '#8fe05c', grassDark: '#56bb48', sand: '#f4dca0', water: '', rock: '#a3abb5', star: '#ffd23f' },   // water '' = the sky's own
+  stars: 12,              // stars to find (up to 20)
+  platforms: 4,           // floating rocks to hop up (each has a star on top), 0 to 10
+  roundSeconds: 90,       // time to find them all
+  speed: 6.2,             // walking speed
+  jump: 8,                // jump power
+  gravity: 22,
+  islandRadius: 30,
+  trees: 44, rocks: 16, flowers: 150, clouds: 8,
+  saveKey: 'star-island-best',
+};
+
+const SKIES = {
+  day: { stops: [[0, '#4fb8ff'], [0.55, '#a6e3ff'], [1, '#fff3d9']], fog: 0xd6f0ff, hemi: [0xd7efff, 0x5d8a3c, 1.7], sun: [0xfff0d2, 2.6], water: '#38b6f2', glow: 0.9 },
+  sunset: { stops: [[0, '#3d3f9e'], [0.5, '#ff8a65'], [1, '#ffd29a']], fog: 0xffc4a0, hemi: [0xffd6c0, 0x6a5a3c, 1.45], sun: [0xffb37a, 2.2], water: '#5a7fd6', glow: 1.1 },
+  night: { stops: [[0, '#0b1440'], [0.6, '#27306e'], [1, '#4a4f8f']], fog: 0x2a3266, hemi: [0x8fa0ff, 0x223322, 1.1], sun: [0xbcd0ff, 1.2], water: '#22407a', glow: 1.5 },
+};
+const SKY = SKIES[CONFIG.sky] || SKIES.day;
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const $ = id => document.getElementById(id);
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const smooth = (a, b, x) => { const k = clamp((x - a) / (b - a), 0, 1); return k * k * (3 - 2 * k); };
+const damp = (dt, rate) => 1 - Math.exp(-rate * dt);
+const col = c => new THREE.Color(c);
+let seed = 20261025;
+const rnd = () => { seed = (seed + 0x6D2B79F5) | 0; let k = Math.imul(seed ^ (seed >>> 15), 1 | seed); k = (k + Math.imul(k ^ (k >>> 7), 61 | k)) ^ k; return ((k ^ (k >>> 14)) >>> 0) / 4294967296; };
+// Builder tune-ups (BRB_TUNE.hero = [from, to]) can swap the hero without touching CONFIG.
+const TUNE = window.BRB_TUNE || {};
+const HERO = Array.isArray(TUNE.hero) && TUNE.hero[1] && TUNE.hero[0] === CONFIG.hero ? TUNE.hero[1] : CONFIG.hero;
+// The title the player sees. If the Builder never renamed it (still the default 'Star Island'), show the
+// name in the player's language; a title the Builder chose is shown as given.
+const TITLE = CONFIG.title === 'Star Island' ? t('name') : CONFIG.title;
+const NAMES = { hero: CONFIG.heroName, title: TITLE };
+
+/* ===== Words on screen (once) ===== */
+document.title = TITLE;
+try { document.documentElement.lang = LANG; } catch (e) { /* ignore */ }
+if (RTL) document.querySelectorAll('.card, .tip, #stickHint').forEach(el => { el.dir = 'rtl'; });
+$('titleText').textContent = TITLE;
+$('subText').textContent = t('subtitle', NAMES);
+$('pausedText').textContent = t('paused');
+$('restText').textContent = t('resting', NAMES);
+$('resumeBtn').textContent = t('keepGoing');
+$('againBtn').textContent = t('again');
+$('jumpBtn').textContent = t('jump'); if (t('jump').length > 6) $('jumpBtn').style.fontSize = '14px';
+$('jumpBtn').setAttribute('aria-label', t('jump'));
+$('stickHint').textContent = t('drag');
+$('pauseBtn').setAttribute('aria-label', t('pause'));
+$('muteBtn').setAttribute('aria-label', t('sound'));
+$('view').setAttribute('aria-label', t('world', NAMES));
+$('hintLine').textContent = t('hintKeys');
+
+/* ===== Game state ===== */
+const S = { screen: 'title', ready: false, got: 0, timeLeft: CONFIG.roundSeconds, fps: 0, quality: 0, frames: 0, best: 0, lost: false };
+try { S.best = +(BRB.storage.get(CONFIG.saveKey) || 0); } catch (e) { S.best = 0; }
+if (S.best) $('bestLine').textContent = t('best', { n: S.best });
+
+/* ===== Renderer (the platform shows a friendly message if this device can't do 3D) ===== */
+const canvas = $('view');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: (devicePixelRatio || 1) < 1.5, powerPreference: 'high-performance' });
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFShadowMap;
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(60, 1, 0.1, 300);
+// Comfort: a wider view in portrait (60-75 degrees), and the camera sits closer.
+const camOffset = new THREE.Vector3(0, 7, 9.5);
+const fitter = BRB.fx.fit3d(renderer, camera, { maxDpr: 1.5, onResize(w, h) {
+  const tall = w / h < 0.8;
+  camera.fov = tall ? 70 : 60; camOffset.set(0, tall ? 8 : 6, tall ? 9 : 8.5); camera.updateProjectionMatrix();
+} });
+
+/* ===== Sky, light, fog ===== */
+function gradientTexture(stops) {
+  const c = document.createElement('canvas'); c.width = 2; c.height = 256;
+  const g = c.getContext('2d'), gr = g.createLinearGradient(0, 0, 0, 256);
+  stops.forEach(([at, colr]) => gr.addColorStop(at, colr)); g.fillStyle = gr; g.fillRect(0, 0, 2, 256);
+  const tx = new THREE.CanvasTexture(c); tx.colorSpace = THREE.SRGBColorSpace; return tx;
+}
+function dotTexture(inner, outer) {
+  const c = document.createElement('canvas'); c.width = c.height = 64;
+  const g = c.getContext('2d'), gr = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+  gr.addColorStop(0, inner); gr.addColorStop(1, outer); g.fillStyle = gr; g.fillRect(0, 0, 64, 64);
+  const tx = new THREE.CanvasTexture(c); tx.colorSpace = THREE.SRGBColorSpace; return tx;
+}
+scene.background = gradientTexture(SKY.stops);
+scene.fog = new THREE.Fog(SKY.fog, 38, 115);
+const hemi = new THREE.HemisphereLight(SKY.hemi[0], SKY.hemi[1], SKY.hemi[2]);
+const sun = new THREE.DirectionalLight(SKY.sun[0], SKY.sun[1]);
+sun.castShadow = true; sun.shadow.mapSize.set(1024, 1024);
+Object.assign(sun.shadow.camera, { left: -16, right: 16, top: 16, bottom: -16, near: 1, far: 70 });
+sun.shadow.bias = -0.0006; sun.shadow.normalBias = 0.03;
+scene.add(hemi, sun, sun.target);
+const SUN_OFFSET = new THREE.Vector3(12, 24, 9);
+let skyDots = null;
+if (CONFIG.sky === 'night') {   // a few hundred far-away stars that twinkle very gently (no flashing)
+  const n = 320, arr = new Float32Array(n * 3);
+  for (let i = 0; i < n; i++) { const a = rnd() * 6.283, y = 0.15 + rnd() * 0.85, r = Math.sqrt(1 - y * y); arr.set([Math.cos(a) * r * 200, y * 200, Math.sin(a) * r * 200], i * 3); }
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(arr, 3));
+  skyDots = new THREE.Points(g, new THREE.PointsMaterial({ color: 0xffffff, size: 2.5, sizeAttenuation: false, fog: false, transparent: true, opacity: 0.85 }));
+  scene.add(skyDots);
+}
+
+/* ===== The island ===== */
+const R = CONFIG.islandRadius;
+function heightAt(x, z) {
+  const r = Math.hypot(x, z) / R, mask = 1 - smooth(0.6, 1.0, r);
+  const hills = 1.3 * Math.sin(x * 0.17 + 0.6) * Math.cos(z * 0.15 - 0.4) + 0.7 * Math.sin(x * 0.37 + z * 0.21) + 0.35 * Math.cos(z * 0.5 - x * 0.12);
+  return -1.6 + mask * (2.4 + Math.max(-0.6, hills) * 0.85 * smooth(0.05, 0.3, r));
+}
+{
+  const geo = new THREE.PlaneGeometry(R * 2.6, R * 2.6, 96, 96); geo.rotateX(-Math.PI / 2);
+  const pos = geo.attributes.position, cols = [], c = new THREE.Color();
+  const SAND = col(CONFIG.colors.sand), WET = SAND.clone().multiplyScalar(0.84), G1 = col(CONFIG.colors.grass), G2 = col(CONFIG.colors.grassDark), TOP = G1.clone().lerp(new THREE.Color(0xffffff), 0.3);
+  for (let i = 0; i < pos.count; i++) {
+    const x = pos.getX(i), z = pos.getZ(i), y = heightAt(x, z);
+    pos.setY(i, y);
+    if (y < -0.15) c.copy(WET); else if (y < 0.3) c.copy(SAND);
+    else { c.copy(G1).lerp(G2, 0.5 + 0.5 * Math.sin(x * 0.7) * Math.cos(z * 0.6)); if (y > 1.9) c.lerp(TOP, smooth(1.9, 2.6, y)); }
+    cols.push(c.r, c.g, c.b);
+  }
+  geo.setAttribute('color', new THREE.Float32BufferAttribute(cols, 3)); geo.computeVertexNormals();
+  const ground = new THREE.Mesh(geo, new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true }));
+  ground.receiveShadow = true; scene.add(ground);
+}
+const water = new THREE.Mesh(new THREE.PlaneGeometry(500, 500), new THREE.MeshLambertMaterial({ color: col(CONFIG.colors.water || SKY.water), transparent: true, opacity: 0.82 }));
+water.rotation.x = -Math.PI / 2; scene.add(water);
+
+/* ===== Floating rocks to hop up: a chain on the flattest stretch of land, one step higher each ===== */
+const plats = [];
+{
+  const n = clamp(Math.round(CONFIG.platforms) || 0, 0, 10), ring = R * 0.42, step = 2 * Math.asin(3.2 / (2 * ring));
+  let bestA = 0, bestSpread = Infinity;
+  for (let k = 0; k < 24; k++) {
+    const a0 = k / 24 * Math.PI * 2; let lo = Infinity, hi = -Infinity;
+    for (let i = 0; i < Math.max(1, n); i++) { const h = heightAt(Math.cos(a0 + i * step) * ring, Math.sin(a0 + i * step) * ring); lo = Math.min(lo, h); hi = Math.max(hi, h); }
+    if (lo > 0.5 && hi - lo < bestSpread) { bestSpread = hi - lo; bestA = a0; }
+  }
+  let top = 0;
+  for (let i = 0; i < n; i++) {
+    const a = bestA + i * step, x = Math.cos(a) * ring, z = Math.sin(a) * ring;
+    top = i ? top + 1.05 : heightAt(x, z) + 1.05;
+    top = Math.max(top, heightAt(x, z) + 0.9);
+    plats.push({ x, z, top, bottom: top - 0.5, r: 1.35 });
+  }
+  const side = new THREE.MeshLambertMaterial({ color: col(CONFIG.colors.rock), flatShading: true });
+  const grass = new THREE.MeshLambertMaterial({ color: col(CONFIG.colors.grass) });
+  const slabGeo = new THREE.CylinderGeometry(1.35, 1.15, 0.5, 9), capGeo = new THREE.CylinderGeometry(1.36, 1.36, 0.12, 9), tipGeo = new THREE.ConeGeometry(1.05, 1.1, 9);
+  for (const p of plats) {
+    const g = new THREE.Group(); g.position.set(p.x, p.top, p.z);
+    const slab = new THREE.Mesh(slabGeo, side); slab.position.y = -0.25; slab.castShadow = slab.receiveShadow = true;
+    const cap = new THREE.Mesh(capGeo, grass); cap.position.y = -0.05; cap.receiveShadow = true;
+    const tip = new THREE.Mesh(tipGeo, side); tip.rotation.x = Math.PI; tip.position.y = -1.05; tip.castShadow = true;
+    g.add(slab, cap, tip); g.rotation.y = rnd() * 6.28; scene.add(g); p.mesh = g; p.phase = rnd() * 6.28;
+  }
+}
+
+/* ===== Trees, rocks and flowers: instanced, one draw call each however many there are ===== */
+const obstacles = [], crownData = [];
+let crowns = null, trunks = null, flowers = null;
+function placeOnLand(minDist, avoid, tries = 400) {
+  for (let i = 0; i < tries; i++) {
+    const a = rnd() * Math.PI * 2, d = Math.sqrt(rnd()) * R * 0.82, x = Math.cos(a) * d, z = Math.sin(a) * d;
+    if (heightAt(x, z) < 0.45 || Math.hypot(x, z) < 4) continue;
+    if (avoid.some(p => Math.hypot(p.x - x, p.z - z) < minDist + (p.r || 0))) continue;
+    return { x, z };
+  }
+  return null;
+}
+{
+  const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), s = new THREE.Vector3(), p = new THREE.Vector3(), c = new THREE.Color(), up = new THREE.Vector3(0, 1, 0);
+  const nTrees = Math.max(0, CONFIG.trees | 0), nRocks = Math.max(0, CONFIG.rocks | 0), nFlowers = Math.max(0, CONFIG.flowers | 0);
+  trunks = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.17, 0.26, 1.3, 6).translate(0, 0.65, 0), new THREE.MeshLambertMaterial({ color: 0x8b5a2b }), Math.max(1, nTrees));
+  crowns = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1, 0), new THREE.MeshLambertMaterial({ flatShading: true }), Math.max(1, nTrees));
+  trunks.count = crowns.count = 0;
+  const greens = [0x3fae49, 0x58c75a, 0x2e9a4a, 0x7bd35a], trees = [];
+  for (let i = 0; i < nTrees; i++) {
+    const at = placeOnLand(2.4, trees.concat(plats)); if (!at) break;
+    const y = heightAt(at.x, at.z), k = 0.8 + rnd() * 0.6;
+    trees.push(at); obstacles.push({ x: at.x, z: at.z, r: 0.6 });
+    q.setFromAxisAngle(up, rnd() * 6.28);
+    trunks.setMatrixAt(i, m4.compose(p.set(at.x, y - 0.1, at.z), q, s.set(k, k, k)));
+    const trunkPos = p.clone();
+    crowns.setMatrixAt(i, m4.compose(p.set(at.x, y + 1.75 * k, at.z), q, s.set(k * 1.05, k * 1.15, k * 1.05)));
+    crownData.push({ pos: p.clone(), trunkPos, q: q.clone(), k, fade: 1 });
+    crowns.setColorAt(i, c.setHex(greens[i % greens.length]));
+    trunks.count = crowns.count = i + 1;
+  }
+  trunks.castShadow = crowns.castShadow = true;
+  scene.add(trunks, crowns);
+  const rocks = new THREE.InstancedMesh(new THREE.DodecahedronGeometry(0.6, 0), new THREE.MeshLambertMaterial({ color: col(CONFIG.colors.rock), flatShading: true }), Math.max(1, nRocks));
+  rocks.count = 0; const rockSpots = [];
+  for (let i = 0; i < nRocks; i++) {
+    const at = placeOnLand(3, rockSpots.concat(trees, plats)); if (!at) break;
+    rockSpots.push(at); obstacles.push({ x: at.x, z: at.z, r: 0.95 }); const k = 0.5 + rnd() * 0.9;
+    q.setFromEuler(new THREE.Euler(rnd() * 3, rnd() * 3, rnd() * 3));
+    rocks.setMatrixAt(i, m4.compose(p.set(at.x, heightAt(at.x, at.z) + 0.1, at.z), q, s.set(k, k * 0.7, k)));
+    rocks.count = i + 1;
+  }
+  rocks.castShadow = rocks.receiveShadow = true; scene.add(rocks);
+  flowers = new THREE.InstancedMesh(new THREE.SphereGeometry(0.12, 6, 4), new THREE.MeshLambertMaterial(), Math.max(1, nFlowers));
+  flowers.count = nFlowers;
+  const petals = [0xff7eb6, 0xffd84a, 0xffffff, 0xb388ff, 0xff9f43];
+  for (let i = 0; i < nFlowers; i++) {
+    let x = 0, z = 0;
+    for (let k = 0; k < 30; k++) { const a = rnd() * 6.28, d = Math.sqrt(rnd()) * R * 0.8; x = Math.cos(a) * d; z = Math.sin(a) * d; if (heightAt(x, z) > 0.4) break; }
+    flowers.setMatrixAt(i, m4.compose(p.set(x, heightAt(x, z) + 0.1, z), q.identity(), s.set(1, 1, 1)));
+    flowers.setColorAt(i, c.setHex(petals[i % petals.length]));
+  }
+  scene.add(flowers);
+}
+// Fluffy clouds drifting around the island.
+const clouds = new THREE.Group();
+{
+  const mat = new THREE.MeshLambertMaterial({ color: 0xffffff, emissive: CONFIG.sky === 'night' ? 0x2a3266 : 0x9aa7b8, fog: false });
+  const ball = new THREE.SphereGeometry(1, 12, 8), n = Math.max(0, CONFIG.clouds | 0);
+  for (let i = 0; i < n; i++) {
+    const cl = new THREE.Group(), a = (i / n) * Math.PI * 2, d = 45 + rnd() * 25;
+    for (let j = 0; j < 5; j++) { const b = new THREE.Mesh(ball, mat); b.position.set((j - 2) * 1.6, Math.sin(j) * 0.5, rnd() * 1.5); b.scale.setScalar(1.6 + rnd() * 1.4); cl.add(b); }
+    cl.position.set(Math.cos(a) * d, 16 + rnd() * 8, Math.sin(a) * d); cl.lookAt(0, cl.position.y, 0);
+    clouds.add(cl);
+  }
+  scene.add(clouds);
+}
+
+/* ===== The hero: a round friend, dressed up from the emoji in CONFIG.hero ===== */
+// emoji -> [kit, body colour, belly colour]. Unknown emoji get the round antenna friend.
+const HEROES = {
+  '🐣': ['chick', 0xffd84a, 0xfff2b0], '🐥': ['chick', 0xffd84a, 0xfff2b0], '🐤': ['chick', 0xffd84a, 0xfff2b0], '🐦': ['bird', 0x4aa8ff, 0xd8ecff],
+  '🦉': ['owl', 0xa8754a, 0xf2dcc0], '🐧': ['penguin', 0x2b3550, 0xffffff], '🦊': ['fox', 0xff8a3d, 0xffffff], '🐱': ['cat', 0xffb347, 0xfff0dc],
+  '🐈': ['cat', 0xffb347, 0xfff0dc], '🐶': ['dog', 0xe0a96d, 0xfff0dc], '🐕': ['dog', 0xe0a96d, 0xfff0dc], '🐰': ['bunny', 0xf7f3f0, 0xffe0ea],
+  '🐇': ['bunny', 0xf7f3f0, 0xffe0ea], '🐻': ['bear', 0xa86b3c, 0xe8c9a0], '🧸': ['bear', 0xc98a52, 0xf0d2b0], '🐼': ['panda', 0xffffff, 0xffffff],
+  '🐵': ['monkey', 0x9b6b43, 0xf0d2b0], '🐒': ['monkey', 0x9b6b43, 0xf0d2b0], '🦁': ['lion', 0xffb52e, 0xffe6a8], '🐸': ['frog', 0x5ccf4f, 0xd6f5b8],
+  '🐉': ['dragon', 0x4cc26a, 0xffe08a], '🐲': ['dragon', 0x4cc26a, 0xffe08a], '🦖': ['dino', 0x58c75a, 0xd9f2a8], '🦕': ['dino', 0x6fbf9a, 0xd9f2c8],
+  '🦄': ['unicorn', 0xfff7fb, 0xffe3f1], '🐴': ['horse', 0xb57a4a, 0xf0d2b0], '🤖': ['robot', 0xb8c4d6, 0xe8eef6], '👽': ['alien', 0x8fe36a, 0xd6f7c4],
+  '👻': ['ghost', 0xffffff, 0xf2f4ff], '🦈': ['shark', 0x7d9bb8, 0xffffff], '🐠': ['fish', 0xff9f43, 0xfff0d0], '🐟': ['fish', 0x6fb7ff, 0xe0f0ff],
+  '🐙': ['octopus', 0xb070e0, 0xe8d0ff], '🐝': ['bee', 0xffcf3f, 0xffe58a], '🦋': ['butterfly', 0x6fb7ff, 0xe0f0ff], '🐢': ['turtle', 0x7bc96f, 0xe8f2b0],
+  '⛄': ['snowman', 0xffffff, 0xffffff], '☃️': ['snowman', 0xffffff, 0xffffff], '🧙': ['wizard', 0x8a6bff, 0xe6dcff], '👸': ['princess', 0xff9ec4, 0xffe3ef],
+  '🥷': ['ninja', 0x2b2f45, 0x3a3f5c], '🛡️': ['knight', 0xc0c8d4, 0xe8eef6], '🏴‍☠️': ['pirate', 0xff6f61, 0xffe3d8],
+};
+const KITS = {
+  pip: ['antenna'], chick: ['beak', 'tuft', 'wings'], bird: ['beak', 'tuft', 'wings'], owl: ['beak', 'tufts', 'wings', 'bigEyes'],
+  penguin: ['beak', 'flippers', 'bigBelly'], fox: ['earsPointy', 'tailBushy'], cat: ['earsPointy', 'tailThin', 'whiskers'], dog: ['earsFloppy', 'tailThin', 'nose'],
+  bunny: ['earsLong', 'tailPuff'], bear: ['earsRound', 'muzzle'], panda: ['earsRound', 'patches', 'darkFeet'], monkey: ['earsSide', 'muzzle', 'tailThin'],
+  lion: ['mane', 'earsRound', 'tailThin'], frog: ['eyesTop'], dragon: ['horns', 'wingsBat', 'spikes', 'tailThick'], dino: ['spikes', 'tailThick'],
+  unicorn: ['horn', 'maneRainbow', 'tailThin'], horse: ['earsPointy', 'maneDark', 'tailThin'], robot: ['antenna', 'panel', 'shiny'], alien: ['antennae', 'bigEyes'],
+  ghost: ['ghost'], shark: ['finTop', 'tailFin'], fish: ['finTop', 'tailFin'], octopus: ['tentacles'], bee: ['stripes', 'wingsClear', 'antennae'],
+  butterfly: ['wingsButterfly', 'antennae'], turtle: ['shell'], snowman: ['hatTop', 'carrot'], wizard: ['hatWizard'], princess: ['crown'],
+  ninja: ['headband'], knight: ['helmet', 'shiny'], pirate: ['hatPirate', 'eyePatch'],
+};
+const MATS = new Map();
+const phong = (color, shininess = 40, extra) => {
+  const key = color + '|' + shininess + '|' + JSON.stringify(extra || {});
+  if (!MATS.has(key)) MATS.set(key, new THREE.MeshPhongMaterial({ color, shininess, ...(extra || {}) }));
+  return MATS.get(key);
+};
+const sphere = (r, color, x, y, z, sx = 1, sy = 1, sz = 1, mat) => { const m = new THREE.Mesh(new THREE.SphereGeometry(r, 16, 12), mat || phong(color)); m.position.set(x, y, z); m.scale.set(sx, sy, sz); return m; };
+const cone = (r, h, color, x, y, z, rx = 0, rz = 0, seg = 10) => { const m = new THREE.Mesh(new THREE.ConeGeometry(r, h, seg), phong(color)); m.position.set(x, y, z); m.rotation.set(rx, 0, rz); return m; };
+function makeHero(emoji) {
+  const [kit, baseColor, bellyColor] = HEROES[emoji] || ['pip', 0xff6fa8, 0xffe3ef];
+  const color = /^#[0-9a-f]{6}$/i.test(CONFIG.heroColor) ? col(CONFIG.heroColor).getHex() : baseColor;
+  const dark = col(color).multiplyScalar(0.7).getHex(), parts = KITS[kit] || [];
+  const has = p => parts.includes(p);
+  const group = new THREE.Group(), body = new THREE.Group();
+  const shine = has('shiny') ? { specular: 0xffffff } : { specular: 0x664455 };
+  const skin = has('ghost') ? phong(color, 30, { transparent: true, opacity: 0.92 }) : phong(color, has('shiny') ? 120 : 70, shine);
+  const blob = sphere(0.6, color, 0, 0, 0, 1, 1, 1, skin); blob.castShadow = true; body.add(blob);
+  body.add(sphere(0.42, bellyColor, 0, -0.12, 0.27, has('bigBelly') ? 1.2 : 1, has('bigBelly') ? 1.15 : 0.95, 0.6));
+  const eyes = [], eyeK = has('bigEyes') ? 1.35 : 1, eyeY = has('eyesTop') ? 0.42 : 0.14, eyeZ = has('eyesTop') ? 0.36 : 0.5;
+  for (const sx of [-1, 1]) {
+    if (has('patches')) body.add(sphere(0.17, 0x1d2340, sx * 0.22, 0.13, 0.46, 1, 1.2, 0.5));
+    const eye = sphere(0.15 * eyeK, 0xffffff, sx * 0.21 * (has('eyesTop') ? 1.2 : 1), eyeY, eyeZ, 1, 1, 1, phong(0xffffff, 100));
+    const pupil = sphere(0.085, 0x1d2340, 0, 0, 0.09, 1, 1, 1, phong(0x1d2340, 120));
+    pupil.add(sphere(0.03, 0xffffff, 0.03, 0.04, 0.075, 1, 1, 1, new THREE.MeshBasicMaterial({ color: 0xffffff })));
+    eye.add(pupil); body.add(eye); eyes.push(eye);
+    if (sx > 0 && has('eyePatch')) { body.add(sphere(0.16, 0x1d2340, 0.21, eyeY, eyeZ + 0.06, 1, 1, 0.35)); }
+    body.add(sphere(0.075, 0xff9ec4, sx * 0.37, -0.03, 0.44, 1, 0.6, 0.4, new THREE.MeshBasicMaterial({ color: 0xff9ec4 })));
+  }
+  if (has('eyePatch')) eyes[1].visible = false;
+  const smile = new THREE.Mesh(new THREE.TorusGeometry(has('eyesTop') ? 0.16 : 0.075, 0.02, 6, 14, Math.PI), new THREE.MeshBasicMaterial({ color: 0x1d2340 }));
+  smile.position.set(0, -0.04, 0.565); smile.rotation.z = Math.PI; if (!has('beak') && !has('muzzle')) body.add(smile);
+  const glow = () => new THREE.MeshStandardMaterial({ color: 0xffe066, emissive: 0xffc21f, emissiveIntensity: 0.9 });
+  for (const p of parts) {
+    if (p === 'antenna' || p === 'antennae') {
+      for (const sx of p === 'antenna' ? [0] : [-1, 1]) {
+        const st = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.36, 6), phong(0x1d2340)); st.position.set(sx * 0.2, 0.72, 0); st.rotation.z = -sx * 0.3; body.add(st);
+        body.add(sphere(0.1, 0, sx * 0.26, 0.92, 0, 1, 1, 1, kit === 'robot' ? new THREE.MeshStandardMaterial({ color: 0xff5c5c, emissive: 0xc21f1f }) : glow()));
+      }
+    } else if (p === 'beak') body.add(cone(0.1, 0.24, 0xffa53d, 0, 0, 0.66, Math.PI / 2));
+    else if (p === 'tuft') for (const a of [-0.35, 0, 0.35]) body.add(cone(0.05, 0.22, color, a * 0.25, 0.66, 0, 0, a));
+    else if (p === 'tufts') for (const sx of [-1, 1]) body.add(cone(0.08, 0.24, dark, sx * 0.32, 0.55, 0.05, 0, -sx * 0.5));
+    else if (p === 'wings' || p === 'flippers') for (const sx of [-1, 1]) { const w = sphere(0.3, p === 'flippers' ? dark : color, sx * 0.6, -0.08, -0.02, 0.28, p === 'flippers' ? 0.7 : 0.5, 0.5); w.rotation.z = sx * 0.35; body.add(w); }
+    else if (p === 'earsPointy') for (const sx of [-1, 1]) { body.add(cone(0.15, 0.34, color, sx * 0.3, 0.55, 0, 0, -sx * 0.35)); body.add(cone(0.08, 0.2, 0xffb6c8, sx * 0.29, 0.53, 0.07, 0, -sx * 0.35)); }
+    else if (p === 'earsRound') for (const sx of [-1, 1]) body.add(sphere(0.16, kit === 'panda' ? 0x1d2340 : dark, sx * 0.36, 0.46, 0, 1, 1, 0.6));
+    else if (p === 'earsLong') for (const sx of [-1, 1]) { const e = sphere(0.11, color, sx * 0.17, 0.88, -0.05, 1, 3.6, 0.7); e.rotation.z = -sx * 0.18; body.add(e); const n = sphere(0.06, 0xffb6c8, sx * 0.17, 0.88, 0.01, 1, 5, 0.5); n.rotation.z = -sx * 0.18; body.add(n); }
+    else if (p === 'earsFloppy') for (const sx of [-1, 1]) { const e = sphere(0.15, dark, sx * 0.52, 0.18, 0, 0.55, 1.6, 0.9); e.rotation.z = sx * 0.35; body.add(e); }
+    else if (p === 'earsSide') for (const sx of [-1, 1]) body.add(sphere(0.17, dark, sx * 0.6, 0.12, 0, 0.5, 1, 1));
+    else if (p === 'tailBushy') { const tl = sphere(0.22, color, 0, -0.18, -0.78, 1, 1, 2.4); tl.rotation.x = -0.6; body.add(tl); body.add(sphere(0.14, 0xffffff, 0, 0.08, -1.12)); }
+    else if (p === 'tailThin') { const tl = new THREE.Mesh(new THREE.TorusGeometry(0.28, 0.045, 6, 12, Math.PI), phong(dark)); tl.position.set(0, -0.05, -0.75); tl.rotation.y = Math.PI / 2; body.add(tl); }
+    else if (p === 'tailPuff') body.add(sphere(0.16, 0xffffff, 0, -0.25, -0.58));
+    else if (p === 'tailThick') body.add(cone(0.22, 0.8, color, 0, -0.25, -0.8, -Math.PI / 2 - 0.35));
+    else if (p === 'tailFin') body.add(cone(0.24, 0.5, dark, 0, 0, -0.75, -Math.PI / 2, 0, 3));
+    else if (p === 'finTop') { const f = cone(0.2, 0.42, dark, 0, 0.66, -0.12, -0.3, 0, 3); f.scale.z = 0.35; body.add(f); }
+    else if (p === 'whiskers') for (const sx of [-1, 1]) for (const k of [-1, 1]) { const w = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, 0.34, 4), phong(0x1d2340)); w.position.set(sx * 0.36, -0.08 + k * 0.04, 0.47); w.rotation.z = Math.PI / 2 + k * 0.15 * sx; body.add(w); }
+    else if (p === 'nose') body.add(sphere(0.07, 0x1d2340, 0, 0.02, 0.6));
+    else if (p === 'muzzle') { body.add(sphere(0.22, bellyColor, 0, -0.08, 0.48, 1, 0.75, 0.6)); body.add(sphere(0.06, 0x1d2340, 0, -0.02, 0.62)); }
+    else if (p === 'mane') { const m = new THREE.Mesh(new THREE.TorusGeometry(0.55, 0.17, 8, 16), phong(0xd9851c)); m.position.set(0, 0.05, 0.05); body.add(m); }
+    else if (p === 'maneRainbow') [0xff7eb6, 0xffd84a, 0x7bd35a, 0x6fb7ff, 0xb388ff].forEach((c, i) => body.add(sphere(0.1, c, 0, 0.55 - i * 0.14, -0.38 - i * 0.04)));
+    else if (p === 'maneDark') for (let i = 0; i < 4; i++) body.add(sphere(0.1, dark, 0, 0.58 - i * 0.14, -0.3 - i * 0.07));
+    else if (p === 'horns') for (const sx of [-1, 1]) body.add(cone(0.07, 0.28, 0xfff2cc, sx * 0.22, 0.62, -0.05, 0, -sx * 0.25));
+    else if (p === 'horn') body.add(cone(0.08, 0.4, 0xffcf3f, 0, 0.7, 0.22, 0.5));
+    else if (p === 'wingsBat') for (const sx of [-1, 1]) { const w = cone(0.36, 0.55, dark, sx * 0.62, 0.3, -0.35, 0, -sx * 1.1, 3); w.scale.z = 0.15; body.add(w); }
+    else if (p === 'spikes') for (let i = 0; i < 4; i++) body.add(cone(0.08, 0.22, dark, 0, 0.55 - i * 0.22, -0.32 - i * 0.1, -0.9 - i * 0.25));
+    else if (p === 'tentacles') for (let i = 0; i < 6; i++) { const a = i / 6 * Math.PI * 2; body.add(sphere(0.12, color, Math.sin(a) * 0.4, -0.52, Math.cos(a) * 0.4, 1, 1.6, 1)); }
+    else if (p === 'stripes') for (const y of [-0.12, 0.14]) { const r = new THREE.Mesh(new THREE.TorusGeometry(Math.sqrt(0.36 - y * y) - 0.01, 0.05, 6, 20), phong(0x1d2340)); r.position.y = y; r.rotation.x = Math.PI / 2; body.add(r); }
+    else if (p === 'wingsClear' || p === 'wingsButterfly') for (const sx of [-1, 1]) {
+      const w = sphere(0.3, p === 'wingsClear' ? 0xffffff : (sx < 0 ? 0xff7eb6 : 0xffb84a), sx * 0.42, 0.42, -0.42, 1.2, 0.8, 0.15, p === 'wingsClear' ? phong(0xffffff, 60, { transparent: true, opacity: 0.6 }) : undefined);
+      w.rotation.y = sx * 0.5; body.add(w);
+    }
+    else if (p === 'shell') { const sh = new THREE.Mesh(new THREE.SphereGeometry(0.62, 12, 8, 0, Math.PI * 2, 0, Math.PI / 2), phong(0x3f8f4a, 30, { flatShading: true })); sh.position.set(0, -0.05, -0.12); sh.rotation.x = -0.5; body.add(sh); }
+    else if (p === 'hatTop') { body.add(new THREE.Mesh(new THREE.CylinderGeometry(0.36, 0.36, 0.04, 16), phong(0x1d2340)).translateY(0.52)); body.add(new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.24, 0.34, 16), phong(0x1d2340)).translateY(0.7)); }
+    else if (p === 'carrot') body.add(cone(0.06, 0.3, 0xff8a1f, 0, 0.0, 0.7, Math.PI / 2));
+    else if (p === 'hatWizard') { body.add(cone(0.4, 0.75, 0x5a3bd6, 0, 0.82, -0.05, -0.15, 0, 16)); body.add(sphere(0.07, 0, 0.1, 0.92, 0.12, 1, 1, 1, glow())); }
+    else if (p === 'crown') for (let i = 0; i < 5; i++) { const a = i / 5 * Math.PI * 2; body.add(cone(0.06, 0.2, 0xffcf3f, Math.sin(a) * 0.2, 0.66, Math.cos(a) * 0.2)); }
+    else if (p === 'headband') { const hb = new THREE.Mesh(new THREE.TorusGeometry(0.5, 0.05, 6, 20), phong(0xff3d5a)); hb.position.y = 0.3; hb.rotation.x = Math.PI / 2; body.add(hb); }
+    else if (p === 'hatPirate') { const h = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 0.06, 16), phong(0x1d2340)); h.position.y = 0.5; h.scale.z = 0.55; body.add(h); body.add(sphere(0.32, 0x1d2340, 0, 0.55, 0, 1, 0.6, 0.7)); }
+    else if (p === 'helmet') body.add(new THREE.Mesh(new THREE.SphereGeometry(0.64, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2.4), phong(0x9aa6b8, 120, { specular: 0xffffff })));
+    else if (p === 'ghost') { const sk = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 0.66, 0.45, 16, 1, true), skin); sk.position.y = -0.3; body.add(sk); }
+  }
+  body.position.y = 0.62;
+  const feet = [];
+  if (!has('ghost') && !has('tentacles')) for (const sx of [-1, 1]) {
+    const f = sphere(0.17, has('darkFeet') ? 0x1d2340 : 0xffa94d, sx * 0.26, 0.08, 0.05, 1, 0.6, 1.4, phong(has('darkFeet') ? 0x1d2340 : 0xffa94d, 30));
+    f.castShadow = true; group.add(f); feet.push(f);
+  }
+  const shade = new THREE.Mesh(new THREE.CircleGeometry(0.7, 24), new THREE.MeshBasicMaterial({ map: dotTexture('rgba(0,0,0,.35)', 'rgba(0,0,0,0)'), transparent: true, depthWrite: false }));
+  shade.rotation.x = -Math.PI / 2; shade.visible = false; scene.add(shade);
+  group.add(body); scene.add(group);
+  return { group, body, eyes, feet, shade, float: has('ghost') ? 0.25 : 0, pos: new THREE.Vector3(0, heightAt(0, 0), 0), vel: new THREE.Vector3(), vy: 0, onGround: true, yaw: 0, squash: 0, squashV: 0, walk: 0, blinkIn: 2 };
+}
+const hero = makeHero(HERO);
+
+/* ===== Stars: one on top of each floating rock, the rest around the island (some float high: hop!) ===== */
+const starGeo = (() => {
+  const sh = new THREE.Shape();
+  for (let i = 0; i < 10; i++) { const a = Math.PI / 2 + i * Math.PI / 5, r = i % 2 ? 0.22 : 0.5; i ? sh.lineTo(Math.cos(a) * r, Math.sin(a) * r) : sh.moveTo(Math.cos(a) * r, Math.sin(a) * r); }
+  const g = new THREE.ExtrudeGeometry(sh, { depth: 0.14, bevelEnabled: true, bevelThickness: 0.06, bevelSize: 0.05, bevelSegments: 2 }); g.center(); return g;
+})();
+const starMat = new THREE.MeshPhongMaterial({ color: col(CONFIG.colors.star), emissive: col(CONFIG.colors.star).multiplyScalar(0.45), shininess: 90, specular: 0xffffff });
+const glowMat = new THREE.SpriteMaterial({ map: dotTexture('rgba(255,236,140,.9)', 'rgba(255,220,90,0)'), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending });
+const stars = [];
+function buildStars() {
+  stars.forEach(st => scene.remove(st.mesh, st.glow)); stars.length = 0;
+  const total = clamp(Math.round(CONFIG.stars) || 1, 1, 20), spots = plats.map(p => ({ x: p.x, z: p.z }));
+  const addStar = (x, y, z) => {
+    // Stars don't cast shadows: each shadow caster adds a draw call in the shadow pass, and with up to 20
+    // stars (plus glows) that keeps the whole scene inside the ~100 draw-call budget for school laptops.
+    const mesh = new THREE.Mesh(starGeo, starMat); mesh.castShadow = false; mesh.position.set(x, y, z);
+    const glow = new THREE.Sprite(glowMat); glow.scale.setScalar(1.9 * SKY.glow); glow.position.copy(mesh.position);
+    scene.add(mesh, glow); stars.push({ mesh, glow, base: y, phase: rnd() * 6.28, taken: false });
+  };
+  plats.slice(0, total).forEach(p => addStar(p.x, p.top + 1.0, p.z));
+  for (let i = stars.length; i < total; i++) {
+    let at = null;
+    for (let k = 0; k < 300 && !at; k++) {
+      const a = rnd() * 6.28, d = 5 + Math.sqrt(rnd()) * (R * 0.76 - 5), x = Math.cos(a) * d, z = Math.sin(a) * d;
+      if (heightAt(x, z) < 0.4 || spots.some(p => Math.hypot(p.x - x, p.z - z) < 4) || obstacles.some(p => Math.hypot(p.x - x, p.z - z) < p.r + 1)) continue;
+      at = { x, z };
+    }
+    if (!at) continue;
+    spots.push(at);
+    addStar(at.x, heightAt(at.x, at.z) + (i % 4 === 3 ? 2.35 : 1.05), at.z);
+  }
+}
+// Sparkle bursts when a star is collected.
+const bursts = [];
+const sparkMat = new THREE.PointsMaterial({ size: 0.32, map: dotTexture('rgba(255,255,255,1)', 'rgba(255,220,90,0)'), color: 0xffe066, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending });
+function burst(at) {
+  const n = REDUCED ? 8 : 28, g = new THREE.BufferGeometry(), arr = new Float32Array(n * 3), vel = [];
+  for (let i = 0; i < n; i++) { arr.set([at.x, at.y, at.z], i * 3); vel.push(new THREE.Vector3(rnd() - 0.5, rnd() * 0.9 + 0.2, rnd() - 0.5).normalize().multiplyScalar(REDUCED ? 0.6 : 3 + rnd() * 3)); }
+  g.setAttribute('position', new THREE.BufferAttribute(arr, 3));
+  const pts = new THREE.Points(g, sparkMat.clone()); scene.add(pts); bursts.push({ pts, vel, life: 0 });
+}
+function popText(worldPos, text) {
+  const v = worldPos.clone().project(camera), el = document.createElement('div');
+  el.className = 'pop'; el.textContent = text;
+  el.style.left = ((v.x + 1) / 2 * innerWidth) + 'px'; el.style.top = ((1 - v.y) / 2 * innerHeight) + 'px';
+  document.body.appendChild(el); setTimeout(() => el.remove(), 1000);
+}
+
+/* ===== Input: keyboard, a floating touch joystick and a jump button ===== */
+const keys = new Set();
+const stick = { id: null, x0: 0, y0: 0, x: 0, y: 0 };
+let jumpQueued = false;
+addEventListener('keydown', e => {
+  if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(e.key)) e.preventDefault();
+  if (e.repeat) return;
+  keys.add(e.key.toLowerCase());
+  if (e.key === ' ' || e.key === 'Enter') { if (S.screen === 'play') jumpQueued = true; else if (S.screen === 'title' || S.screen === 'end') startGame(); }
+  if ((e.key === 'p' || e.key === 'Escape') && (S.screen === 'play' || S.screen === 'pause')) togglePause();
+  if (e.key === 'm') toggleMute();
+});
+addEventListener('keyup', e => keys.delete(e.key.toLowerCase()));
+addEventListener('blur', () => keys.clear());
+const base = $('stickBase'), knob = $('stickKnob');
+canvas.addEventListener('pointerdown', e => {
+  if (e.pointerType !== 'mouse') document.body.classList.add('touch');
+  if (S.screen !== 'play' || stick.id !== null) return;
+  stick.id = e.pointerId; stick.x0 = stick.x = e.clientX; stick.y0 = stick.y = e.clientY;
+  base.style.left = e.clientX + 'px'; base.style.top = e.clientY + 'px'; base.style.display = 'block'; knob.style.transform = '';
+  $('stickHint').style.visibility = 'hidden';
+  try { canvas.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
+});
+canvas.addEventListener('pointermove', e => {
+  if (e.pointerId !== stick.id) return;
+  stick.x = e.clientX; stick.y = e.clientY;
+  const dx = stick.x - stick.x0, dy = stick.y - stick.y0, d = Math.hypot(dx, dy), k = d > 52 ? 52 / d : 1;
+  knob.style.transform = `translate(${dx * k}px, ${dy * k}px)`;
+});
+const endStick = e => { if (e.pointerId !== stick.id) return; stick.id = null; stick.x = stick.x0; stick.y = stick.y0; base.style.display = 'none'; };
+canvas.addEventListener('pointerup', endStick); canvas.addEventListener('pointercancel', endStick);
+const jumpBtn = $('jumpBtn');
+jumpBtn.addEventListener('pointerdown', e => { e.preventDefault(); jumpQueued = true; jumpBtn.classList.add('down'); });
+['pointerup', 'pointercancel', 'pointerleave'].forEach(n => jumpBtn.addEventListener(n, () => jumpBtn.classList.remove('down')));
+if (matchMedia('(pointer: coarse)').matches) { document.body.classList.add('touch'); $('hintLine').textContent = t('hintTouch'); }
+function inputVector() {
+  let x = 0, z = 0;
+  if (keys.has('arrowleft') || keys.has('a')) x -= 1;
+  if (keys.has('arrowright') || keys.has('d')) x += 1;
+  if (keys.has('arrowup') || keys.has('w')) z -= 1;
+  if (keys.has('arrowdown') || keys.has('s')) z += 1;
+  if (stick.id !== null) { const dx = (stick.x - stick.x0) / 52, dy = (stick.y - stick.y0) / 52; if (Math.hypot(dx, dy) > 0.15) { x += dx; z += dy; } }
+  const len = Math.hypot(x, z); if (len > 1) { x /= len; z /= len; }
+  return { x, z };
+}
+
+/* ===== Screens and buttons ===== */
+function show(id) { ['titleScreen', 'pauseScreen', 'endScreen'].forEach(s => { $(s).hidden = s !== id; }); }
+function setMuteIcon() { $('muteBtn').textContent = BRB.sfx.muted ? '🔇' : '🔊'; }
+function toggleMute() { BRB.sfx.mute(); setMuteIcon(); }
+function togglePause() {
+  if (S.screen === 'play') { S.screen = 'pause'; show('pauseScreen'); stick.id = null; base.style.display = 'none'; keys.clear(); }
+  else if (S.screen === 'pause') { S.screen = 'play'; show(null); BRB.sfx.play('click'); }
+}
+$('playBtn').addEventListener('click', () => startGame());
+$('againBtn').addEventListener('click', () => startGame());
+$('resumeBtn').addEventListener('click', () => togglePause());
+$('pauseBtn').addEventListener('click', () => togglePause());
+$('muteBtn').addEventListener('click', () => toggleMute());
+setMuteIcon();
+document.addEventListener('visibilitychange', () => { if (document.hidden && S.screen === 'play') togglePause(); });
+// The 3D picture can be lost (the device needed the graphics chip back): pause and wait for it. The platform
+// tells the player kindly if it does not come back.
+canvas.addEventListener('webglcontextlost', e => { e.preventDefault(); S.lost = true; if (S.screen === 'play') togglePause(); });
+canvas.addEventListener('webglcontextrestored', () => { S.lost = false; });
+
+let tipTimer = 0;
+function startGame() {
+  if (!S.ready) return;
+  seed = 20261025 + Math.floor(Math.random() * 1000);
+  buildStars();
+  Object.assign(S, { screen: 'play', got: 0, timeLeft: CONFIG.roundSeconds, frames: 0 });
+  hero.pos.set(0, heightAt(0, 0), 0); hero.vel.set(0, 0, 0); hero.vy = 0; hero.onGround = true; hero.yaw = 0;
+  camPos.copy(hero.pos).add(camOffset);
+  document.body.classList.add('playing');
+  $('hud').hidden = false; show(null); updateHud(true);
+  if (plats.length) { $('tip').textContent = t('tip'); $('tip').hidden = false; clearTimeout(tipTimer); tipTimer = setTimeout(() => { $('tip').hidden = true; }, 3500); }
+  BRB.sfx.play('click');
+}
+function endGame(won) {
+  S.screen = 'end'; document.body.classList.remove('playing'); stick.id = null; base.style.display = 'none'; $('tip').hidden = true;
+  const score = S.got * 100 + (won ? Math.ceil(S.timeLeft) * 10 : 0);
+  const newBest = score > S.best; if (newBest) { S.best = score; try { BRB.storage.set(CONFIG.saveKey, score); } catch (e) { /* ignore */ } }
+  $('endEmo').textContent = won ? '🎉' : '⏰';
+  $('endTitle').textContent = won ? t('winTitle') : t('loseTitle');
+  $('endText').textContent = won ? t('winText', { ...NAMES, s: Math.ceil(S.timeLeft) }) : t('loseText', { got: S.got, total: stars.length });
+  $('endBest').textContent = newBest ? t('newBest', { score }) : t('scoreLine', { score, best: S.best });
+  show('endScreen');
+  if (won) { BRB.sfx.play('win'); BRB.fx.confetti(); } else BRB.sfx.play('lose');
+  BRB.gameOver({ won, score });
+}
+let shownSecs = -1;
+function updateHud(force) {
+  $('starPill').textContent = `⭐ ${S.got}/${stars.length}`;
+  const secs = Math.ceil(S.timeLeft);
+  if (force || secs !== shownSecs) { shownSecs = secs; $('timePill').textContent = `⏱ ${secs}`; $('timePill').classList.toggle('late', secs <= 10); }
+}
+
+/* ===== Quality ladder: watch the frame rate and step down on slow devices (school laptops, older tablets) ===== */
+const LEVELS = [
+  { dpr: 1.5, shadows: true, map: 1024, decor: true },
+  { dpr: 1.25, shadows: true, map: 512, decor: true },
+  { dpr: 1, shadows: false, map: 512, decor: true },
+  { dpr: 0.75, shadows: false, map: 512, decor: false },
+];
+const perf = { t0: 0, n: 0, worst: 0, skip: 1, history: [] };
+function setQuality(i) {
+  const L = LEVELS[i]; S.quality = i;
+  fitter.maxDpr(L.dpr);
+  if (renderer.shadowMap.enabled !== L.shadows) { renderer.shadowMap.enabled = L.shadows; scene.traverse(o => { if (o.material) o.material.needsUpdate = true; }); }
+  if (sun.shadow.mapSize.x !== L.map) { sun.shadow.mapSize.set(L.map, L.map); if (sun.shadow.map) { sun.shadow.map.dispose(); sun.shadow.map = null; } }
+  hero.shade.visible = !L.shadows;
+  flowers.visible = clouds.visible = L.decor;
+}
+function watchFps(now, dt) {
+  if (!perf.t0) { perf.t0 = now; perf.n = 0; perf.worst = 0; return; }
+  perf.n++; perf.worst = Math.max(perf.worst, dt);
+  if (now - perf.t0 < 2000 || !perf.n) return;
+  const elapsed = now - perf.t0, fps = Math.round(perf.n * 1000 / elapsed);
+  const avgMs = elapsed / perf.n, worstMs = perf.worst * 1000;
+  // A real pause or stall (tab switch, a GC spike) is ONE very long frame, not a steadily slow device:
+  // the worst frame is over a second, or far longer than this window's typical frame. A device that just
+  // runs slowly (every frame ~200 ms) must not be mistaken for a pause, or it never steps down.
+  const paused = worstMs > 1000 || worstMs > avgMs * 4;
+  perf.t0 = now; perf.n = 0; perf.worst = 0;
+  S.fps = fps;   // report every window (even skipped ones), so state().fps is never 0 while playing
+  if (S.screen === 'pause' || S.screen === 'end') return;
+  perf.history.push([S.quality, fps]); if (perf.history.length > 20) perf.history.shift();
+  if (perf.skip > 0) { perf.skip--; return; }                         // the first seconds compile shaders
+  // Step down on a slow window. Ignore a one-off stall, unless the device is clearly struggling (under ~20 fps).
+  if (S.quality < LEVELS.length - 1 && (fps < 20 || (fps < 45 && !paused))) { setQuality(S.quality + 1); perf.skip = 1; }
+}
+
+/* ===== Camera ===== */
+const camPos = new THREE.Vector3(), lookAt = new THREE.Vector3();
+
+/* ===== The game loop ===== */
+const tmp = new THREE.Vector3();
+let last = 0, clock = 0;
+function frame(now) {
+  const raw = last ? (now - last) / 1000 : 0.016, dt = Math.min(0.05, raw); last = now; clock += dt;
+  watchFps(now, raw); S.frames++;
+  if (S.lost) return;
+  if (S.screen === 'play') step(dt);
+  animateWorld(dt);
+  if (S.screen === 'title') {   // a slow orbit on the title screen (a still view with reduced motion)
+    const a = REDUCED ? 0.6 : clock * 0.12;
+    camera.position.set(Math.sin(a) * 26, 13, Math.cos(a) * 26); camera.lookAt(0, 1, 0);
+  } else {                      // follow the hero smoothly; never shake or roll
+    tmp.copy(hero.pos).add(camOffset);
+    camPos.lerp(tmp, damp(dt, 4));
+    camera.position.copy(camPos);
+    lookAt.lerp(tmp.set(hero.pos.x + hero.vel.x * 0.15, hero.pos.y + 1, hero.pos.z - 1.5 + hero.vel.z * 0.15), damp(dt, 6));
+    camera.lookAt(lookAt);
+  }
+  fadeTrees(dt);
+  const focus = S.screen === 'title' ? tmp.set(0, 0, 0) : hero.pos;
+  sun.target.position.copy(focus); sun.position.copy(focus).add(SUN_OFFSET);
+  renderer.render(scene, camera);
+}
+
+// Trees standing between the camera and the hero shrink away so the hero is never hidden.
+const segA = new THREE.Vector3(), segB = new THREE.Vector3(), closest = new THREE.Vector3(), line = new THREE.Line3(), tm = new THREE.Matrix4(), ts = new THREE.Vector3();
+function fadeTrees(dt) {
+  if (!crownData.length || S.screen === 'title') return;
+  segA.copy(camera.position); segB.set(hero.pos.x, hero.pos.y + 0.6, hero.pos.z); line.set(segA, segB);
+  let changed = false;
+  crownData.forEach((c, i) => {
+    line.closestPointToPoint(c.pos, true, closest);
+    const inWay = closest.distanceTo(c.pos) < 1.3 * c.k + 0.5 && closest.distanceToSquared(segB) > 0.5;
+    const want = inWay ? 0.12 : 1, f = c.fade + (want - c.fade) * damp(dt, REDUCED ? 30 : 10);
+    if (Math.abs(f - c.fade) > 0.002) { c.fade = f; changed = true; crowns.setMatrixAt(i, tm.compose(c.pos, c.q, ts.set(c.k * 1.05 * f, c.k * 1.15 * f, c.k * 1.05 * f))); trunks.setMatrixAt(i, tm.compose(c.trunkPos, c.q, ts.set(c.k, c.k * f, c.k))); }
+  });
+  if (changed) { crowns.instanceMatrix.needsUpdate = true; trunks.instanceMatrix.needsUpdate = true; }
+}
+
+/* ===== Moving the hero: walk, bump around trees and rocks, jump, land on the ground or a floating rock ===== */
+const HEAD = 1.2;
+/** The highest thing under (x, z) the hero can stand on, coming from height y. */
+function supportAt(x, z, y) {
+  let g = heightAt(x, z);
+  for (const p of plats) if ((x - p.x) ** 2 + (z - p.z) ** 2 < p.r * p.r && p.top <= y + 0.35 && p.top > g) g = p.top;
+  return g;
+}
+const offLand = (x, z) => heightAt(x, z) < 0.08 || Math.hypot(x, z) > R * 0.93;
+function step(dt) {
+  S.timeLeft -= dt;
+  const inp = inputVector();
+  hero.vel.x += (inp.x * CONFIG.speed - hero.vel.x) * damp(dt, 10);
+  hero.vel.z += (inp.z * CONFIG.speed - hero.vel.z) * damp(dt, 10);
+  let nx = hero.pos.x + hero.vel.x * dt, nz = hero.pos.z + hero.vel.z * dt;
+  if (hero.pos.y < 0.6 && offLand(nx, nz)) { if (!offLand(nx, hero.pos.z)) nz = hero.pos.z; else if (!offLand(hero.pos.x, nz)) nx = hero.pos.x; else { nx = hero.pos.x; nz = hero.pos.z; } }
+  if (Math.hypot(nx, nz) > R * 0.93) { const k = R * 0.93 / Math.hypot(nx, nz); nx *= k; nz *= k; }
+  for (const o of obstacles) {   // trunks and rocks
+    if (hero.pos.y > heightAt(o.x, o.z) + 1.4) continue;
+    const dx = nx - o.x, dz = nz - o.z, d = Math.hypot(dx, dz);
+    if (d < o.r && d > 0.0001) { nx = o.x + dx / d * o.r; nz = o.z + dz / d * o.r; }
+  }
+  for (const p of plats) {       // the sides of the floating rocks are solid; their bottoms bump heads
+    const dx = nx - p.x, dz = nz - p.z, d = Math.hypot(dx, dz), y = hero.pos.y;
+    if (d < p.r + 0.3 && y < p.top - 0.35 && y + HEAD > p.bottom && d > 0.0001) {
+      if (hero.vy > 0 && y + HEAD - hero.vy * dt <= p.bottom + 0.05 && d < p.r) { hero.vy = 0; }
+      else { nx = p.x + dx / d * (p.r + 0.3); nz = p.z + dz / d * (p.r + 0.3); }
+    }
+  }
+  hero.pos.x = nx; hero.pos.z = nz;
+  if (jumpQueued && hero.onGround) { hero.vy = CONFIG.jump; hero.onGround = false; hero.squashV = -6; BRB.sfx.play('jump'); }
+  jumpQueued = false;
+  let ground = supportAt(nx, nz, hero.pos.y);
+  if (hero.onGround && ground < hero.pos.y - 0.35) hero.onGround = false;   // walked off an edge
+  if (!hero.onGround) {
+    const before = hero.pos.y;
+    hero.vy -= CONFIG.gravity * dt; hero.pos.y += hero.vy * dt;
+    ground = supportAt(nx, nz, before);
+    if (hero.pos.y <= ground) { hero.pos.y = ground; hero.onGround = true; hero.squashV = 5 + Math.min(6, -hero.vy * 0.4); hero.vy = 0; }
+  } else hero.pos.y = ground;
+  // Stars
+  const centre = tmp.set(hero.pos.x, hero.pos.y + 0.62, hero.pos.z);
+  for (const st of stars) {
+    if (st.taken || st.mesh.position.distanceTo(centre) > 1.15) continue;
+    st.taken = true; st.mesh.visible = st.glow.visible = false; S.got++;
+    burst(st.mesh.position); popText(st.mesh.position, '+1 ⭐'); BRB.sfx.play('coin');
+    updateHud(true);
+    if (S.got >= stars.length) { BRB.score.submit(S.got * 100 + Math.ceil(S.timeLeft) * 10); endGame(true); return; }
+  }
+  if (S.timeLeft <= 0) { S.timeLeft = 0; updateHud(); endGame(false); return; }
+  updateHud();
+}
+
+function animateWorld(dt) {
+  const speed = Math.hypot(hero.vel.x, hero.vel.z);
+  // The hero: face the way we walk, waddle, bob, blink, squash and stretch (calmer with reduced motion).
+  if (speed > 0.3) { const want = Math.atan2(hero.vel.x, hero.vel.z); let d = want - hero.yaw; d = Math.atan2(Math.sin(d), Math.cos(d)); hero.yaw += d * damp(dt, 12); }
+  hero.walk += dt * (speed > 0.3 && hero.onGround ? speed * 2.2 : 0);
+  const sw = Math.sin(hero.walk * 2);
+  if (hero.feet.length) { hero.feet[0].position.z = 0.05 + sw * 0.14 * Math.min(1, speed / 3); hero.feet[1].position.z = 0.05 - sw * 0.14 * Math.min(1, speed / 3); }
+  hero.squashV += (-hero.squash * 120 - hero.squashV * 10) * dt; hero.squash += hero.squashV * dt;
+  const sq = REDUCED ? 0 : clamp(hero.squash * 0.08, -0.25, 0.25);
+  hero.body.scale.set(1 + sq, 1 - sq, 1 + sq);
+  const bob = REDUCED ? 0 : (speed > 0.3 && hero.onGround ? Math.abs(Math.sin(hero.walk * 2)) * 0.07 : Math.sin(clock * 3) * 0.02);
+  hero.body.position.y = 0.62 + hero.float + bob - sq * 0.3;
+  hero.body.rotation.z = REDUCED ? 0 : sw * 0.06 * Math.min(1, speed / 3);
+  hero.blinkIn -= dt; const blink = hero.blinkIn < 0.12; if (hero.blinkIn < 0) hero.blinkIn = 2 + rnd() * 3;
+  hero.eyes.forEach(e => { e.scale.y = blink ? 0.12 : 1; });
+  hero.group.position.copy(hero.pos); hero.group.rotation.y = hero.yaw;
+  hero.shade.position.set(hero.pos.x, supportAt(hero.pos.x, hero.pos.z, hero.pos.y) + 0.03, hero.pos.z);
+  // Stars spin and bob; sparkles fly and fade; floating rocks drift a tiny bit.
+  for (const st of stars) {
+    if (st.taken) continue;
+    st.mesh.rotation.y += dt * (REDUCED ? 0.5 : 2.2);
+    st.mesh.position.y = st.base + (REDUCED ? 0 : Math.sin(clock * 2 + st.phase) * 0.15);
+    st.glow.position.copy(st.mesh.position);
+  }
+  for (let i = bursts.length - 1; i >= 0; i--) {
+    const b = bursts[i], arr = b.pts.geometry.attributes.position.array; b.life += dt;
+    b.vel.forEach((v, j) => { v.y -= 6 * dt; arr[j * 3] += v.x * dt; arr[j * 3 + 1] += v.y * dt; arr[j * 3 + 2] += v.z * dt; });
+    b.pts.geometry.attributes.position.needsUpdate = true; b.pts.material.opacity = 1 - b.life / 0.8;
+    if (b.life > 0.8) { scene.remove(b.pts); b.pts.geometry.dispose(); b.pts.material.dispose(); bursts.splice(i, 1); }
+  }
+  if (!REDUCED) {
+    clouds.rotation.y += dt * 0.01; water.position.y = Math.sin(clock * 0.8) * 0.04;
+    for (const p of plats) p.mesh.rotation.y += dt * 0.05;
+    if (skyDots) skyDots.material.opacity = 0.75 + Math.sin(clock * 0.6) * 0.15;   // slow, gentle twinkle
+  }
+}
+
+/* ===== Ready: show the island behind the title card and enable Play ===== */
+buildStars();
+setQuality(0);
+renderer.setAnimationLoop(frame);
+S.ready = true; window.__islandReady = true;
+$('playBtn').disabled = false; $('playBtn').textContent = t('play');
+
+// Test hook used by the platform's playtests and cover pictures. start() begins play without the start tip or
+// touch hint, so a cover picture shows the island and hero, not the "Hop up the floating rocks…" bubble.
+function testStart() {
+  startGame();
+  clearTimeout(tipTimer); const tipEl = $('tip'); if (tipEl) tipEl.hidden = true;
+  const sh = $('stickHint'); if (sh) sh.style.visibility = 'hidden';
+}
+window.__brbTest = {
+  state() {
+    return { screen: S.screen, ready: S.ready, stars: S.got, total: stars.length, platforms: plats.length, hero: HERO, timeLeft: Math.ceil(S.timeLeft),
+      fps: S.fps, quality: S.quality, pixelRatio: renderer.getPixelRatio(), shadows: renderer.shadowMap.enabled, frames: S.frames,
+      pos: { x: +hero.pos.x.toFixed(2), y: +hero.pos.y.toFixed(2), z: +hero.pos.z.toFixed(2) }, onGround: hero.onGround, reducedMotion: REDUCED,
+      drawCalls: renderer.info.render.calls, triangles: renderer.info.render.triangles };
+  },
+  start() { testStart(); },
+};
+if (window.__islandStartWanted) testStart();
+</script>

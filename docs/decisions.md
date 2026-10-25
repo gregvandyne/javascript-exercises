@@ -460,3 +460,102 @@ store one.
   - an **admin "reset password" for own accounts**, with an ownership check (for example the account's games or friend
     code described by the grown-up), so the team can actually help when a grown-up writes about a lost password: today
     only school accounts can be reset (by their school), and the seed script only resets the platform admin.
+
+## 3D games, step 1 (Star Island and a self-hosted Three.js)
+Games can now be real 3D worlds. The sandbox does not change (opaque-origin iframe, the frame CSP, the SDK lockdown).
+- **One pinned Three.js, self-hosted: r185.1** in `public/vendor/three/0.185.1/` (`three.module.min.js`, `three.core.min.js`
+  and the MIT `LICENSE`, copied from the npm package `three@0.185.1`, tarball integrity
+  `sha512-5aojFCXKwnjBRZvUnt3WFfEcvUJgkN5LlijRFN95hMy8WVkG4I0QNcJE+OuWvuJ0bOdStrbfXn0pkd6/QyiAlg==`). — No third-party request
+  from a child's browser (like the self-hosted font), works offline and behind school filters that block CDNs, one version
+  to review, and cdnjs has no Three.js add-ons anyway. Loading Three.js from cdnjs (the earlier plan, r186.1) now fails the
+  scan; the cdnjs allow-list is empty, and any other cdnjs library is still flagged for a person.
+- **Exactly one import map, with relative URLs and SRI** for both files (the text is `threeImportMap()` in
+  `server/services/vendor.js`). — Relative URLs resolve against the frame's own address, so the same game works on any domain
+  (Render, AWS, Azure, localhost); `integrity` pins the bytes in Chrome 127+, Safari 18+ and Firefox 138+ (older browsers
+  ignore it). The scanner accepts that exact form (any whitespace or key order) and fails every other way of loading
+  Three.js, with a message the Builder can act on.
+- **Frame CSP: the site's origin plus `/vendor/three/`**, worked out per request from `req.protocol` and `req.host` (both
+  honour `TRUST_PROXY`); when the `PUBLIC_URL` setting lands it should be used instead (comment in `requestOrigin`). —
+  `'self'` was tested in Chromium: it does match in a CSP-sandboxed opaque-origin frame, but it would also let every other
+  script on the site run inside a game, and Safari and Firefox could not be checked here. The path covers every vendored
+  version, so published games keep working after a bump. An odd `Host` header just leaves the vendor source out.
+- `/vendor` is served with `Cache-Control: public, max-age=31536000, immutable`, `Access-Control-Allow-Origin: *` and
+  `Cross-Origin-Resource-Policy: cross-origin`, and answers CORS preflights. — Module scripts from an opaque-origin frame are
+  CORS requests; a versioned folder never changes. The screenshot service (local and worker) answers `/vendor/three/` from
+  the code's own files, so covers and playtests of 3D games work with no network.
+- **Device check.** The frame marks 3D games (`init.device`: WebGL 2 and import maps, with the message in the game's
+  language); the SDK shows a kid-sized "This game needs a newer device or browser" card when `HTMLScriptElement.supports('importmap')`
+  is false, no WebGL 2 context can be made, or a lost WebGL context is not asked back / not restored within 4 s (and hides it
+  if it comes back). — A blank screen is the worst outcome for a child; games should not each write their own.
+- **SDK.** `BRB.fx.fit()` never creates a 2D context any more: it scales a 2D context the game already has, or the one it
+  makes later (the SDK notes which kind of context each canvas gets). It used to call `getContext('2d')`, which made the canvas
+  useless for WebGL. New `BRB.fx.fit3d(renderer, camera, { maxDpr = 1.5, onResize })`: pixel ratio first, then size, then
+  camera aspect, on every resize; `maxDpr(n)` for quality ladders. The touch joystick stays in the template (games want
+  different controls), not in the SDK.
+- **Star Island** (`server/builder/templates/island.html`, key `island`, the 8th "Start from" card): run and jump around an
+  island, hop up floating rocks, find the stars before the timer ends. Field of view 60 (landscape) / 70 (portrait), pixel
+  ratio capped at 1.5, a quality ladder (pixel ratio 1.5 → 1.25 → 1 → 0.75, shadows off, then decoration off when frames
+  stay under 45 fps, ignoring pauses and shader warm-up), context loss handled, reduced motion respected (no orbit, bob or
+  squash), no flashing, keyboard + floating joystick + jump button, BRB sound, score and save, and every word in the 13
+  languages. Builder tunables are CONFIG lines: `hero` (one of ~30 emoji, each dressed as a 3D character; any other emoji gets a
+  round friend), `heroName`, `heroColor`, `title`, `sky` (day/sunset/night), `colors`, `stars`, `platforms`, `roundSeconds`,
+  `speed`, `jump`. It also reads the tune-up layer's `BRB_TUNE.hero`, so "change the hero to a dragon" works without an API key.
+- **Builder.** The 3D rules are their own fixed system block (`THREE_D_RULES` in `server/builder/prompt.js`), sent only once
+  the builder asks for 3D (the word "3D" or its translation in the site's languages; remembered for the chat) or when the game
+  is already 3D; the main system prompt stays byte-identical, so 2D builds keep the same cached prefix. The rules: the pinned
+  import map only, nothing loaded by URL, no add-ons (`GLTFLoader.parse` of inline data is the only way a model could ever be
+  read, and it is not available), the fit order, comfort, the performance budget for school Chromebooks and iPads (≤ 100 draw
+  calls, ≤ 150k triangles, one 1024 shadow map, InstancedMesh, no post-processing), and to start from Star Island. A new tool,
+  `start_from_template("island")`, copies Star Island in as a new version on the server (no 70 KB of output tokens); the
+  Builder then edits its CONFIG. The mock Builder picks Star Island for 3D requests (a new "🏝️ A 3D island adventure" chip
+  replaces "🃏 A memory match", which is still there by asking), and in a 3D game changes the stars, floating rocks and sky
+  (`stars`, `platforms`, `sky` lines); there "stars" are things to collect, not a new hero.
+- **How to bump Three.js**
+  1. `npm pack three@<version>` into a scratch folder and check the tarball against `npm view three@<version> dist.integrity`.
+  2. Copy `build/three.module.min.js`, `build/three.core.min.js` and `LICENSE` into `public/vendor/three/<version>/`. Keep the
+     old folder: published games keep loading it.
+  3. Check the files: no dynamic `import(`, the module still imports `./three.core.min.js`, and the release notes for breaking
+     changes (r163 dropped WebGL 1, for example).
+  4. In `server/services/vendor.js` set `THREE_VERSION` and the two sha384 hashes
+     (`openssl dgst -sha384 -binary <file> | openssl base64 -A`). Update the import map in
+     `server/builder/templates/island.html` and `docs/sdk.md` (tests check the template carries `threeImportMap()`).
+  5. `npm test` (`tests/unit/vendor.test.js` checks the hashes against the files and the scanner rules) and the e2e
+     `three.spec.js`; play Star Island on a phone and a school laptop.
+  6. New versions must use the new build; versions already scanned keep their result. Remove an old folder only when no
+     version uses it (`SELECT count(*) FROM game_versions WHERE html LIKE '%/vendor/three/<old>/%'`).
+- **Older iPads are not supported for 3D**: iPadOS 15 has WebGL 2 but no import maps, so those devices get the "newer
+  device" card. Supporting them would need a non-module Three.js build, which stopped shipping after r160. **Please confirm.**
+
+## 3D step 1 review fixes (sandbox, worker, template, i18n)
+A review of the 3D batch led to these fixes (smallest correct change each):
+- **Sandbox window-borrowing holes closed.** The SDK lockdown now rejects/scrubs two more DOM-insertion paths a frame
+  could ride in on — `insertAdjacentElement` (and a plain wrapper that hides a frame among its descendants, which
+  `isFrameish` now detects) and `Range.insertNode`/`surroundContents` — and a `MutationObserver` backstop removes any
+  frame that still reaches the document. The scanner also *flags* `insertAdjacentElement`, `Range.insertNode`/
+  `surroundContents` and `window[<number>]`, and runs the frame rules against the de-obfuscated copy too (so an
+  assembled `createElement('i'+'frame')` is flagged). The real guarantee is still that no nested browsing context is
+  ever created, so there is no second window with live WebRTC. `public/sdk/brb-sdk.js`, `server/services/scanner.js`.
+- **A game navigating its own frame away** (phishing/exfiltration in the URL) is undone by the play page: it pins the
+  frame back to the game on any unexpected `load`. The first off-site request still leaves once — documented as a known
+  limit in `docs/safety.md` §9, since no CSP directive restricts a frame navigating itself. `public/js/play.js`.
+- **Screenshot worker.** WebRTC is removed in the screenshot browser (local and worker), the one outbound path
+  Playwright's route cannot abort. The worker must be deployed with no database and no secret env vars (it imports
+  `config.js`, which reads all of `process.env`) — documented in the README env table. `server/services/snapshot.js`.
+- **Quality ladder.** `watchFps()` now only ignores a window for a real stall (one frame over a second, or far longer
+  than the window's typical frame), steps down whenever average fps is under ~20 even with a hitch, and reports fps for
+  every window — so a 4–6 fps device actually drops quality and `state().fps` is never 0 while playing.
+- **Lost-3D-picture card.** A lost WebGL context (which also happens on new phones/tablets) gets its own translated
+  message and a big "Try again" button that reloads the frame; the "needs a newer device" wording is kept only for
+  missing import maps / WebGL 2. Two new locale keys (`play.device.lostTitle`, `lostText`, `retry`) × 13 languages.
+- **3D template:** stars capped at 20 (template clamp, mock and the 3D rules) and stars no longer cast shadows, to stay
+  inside the ~100 draw-call budget; covers start play with the tip and touch hint hidden; the in-game title shows in the
+  player's language when it is still the default, and the mock keeps `CONFIG.title` in step with a Studio rename.
+- **Mock Builder:** "call it Moon Hop" no longer turns the sky to night (the name is dropped before matching sky words),
+  and version notes keep their brackets and numbers (only trailing emoji are stripped now).
+- **Build page:** the 3D "Start from" card is marked "Needs a newer device" when import maps or WebGL 2 are missing,
+  before the child makes the game; a browser with no `HTMLScriptElement.supports()` is treated as unknown and left alone.
+- **ja/ar wording:** the ja "newer device" title avoids the 機械化 misreading; the ar jump hint reads "زر المسافة".
+- **PUBLIC_URL (for AWS/Azure).** `requestOrigin()` (frame CSP origin) now uses `config.publicUrl` when it is set,
+  instead of `req.host`, so a CDN/gateway that rewrites Host (CloudFront, Front Door) names the public origin and the
+  browser can load `/vendor/three/`. `PUBLIC_URL` is the migration team's setting (parsed to an origin in `config.js`);
+  on Render, where Host is preserved, the request's Host is still correct. Settle before the AWS/Azure move.

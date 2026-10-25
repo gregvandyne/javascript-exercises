@@ -7,7 +7,7 @@
 import { config } from '../config.js';
 import { anthropic } from './anthropic.js';
 import * as aiBudget from '../services/ai-budget.js';
-import { SYSTEM_PROMPT, TOOLS, sourceBlock, languageBlock } from './prompt.js';
+import { SYSTEM_PROMPT, TOOLS, THREE_D_RULES, sourceBlock, languageBlock, wants3d } from './prompt.js';
 import { tEn } from '../i18n/index.js';
 import { summariseEvents } from './chat.js';
 import { modelBlocks, transcriptNote } from './uploads.js';
@@ -46,9 +46,11 @@ export async function run(ctx) {
     // The AI budget can run out in the middle of a turn: finish what we have instead of starting another call.
     if (step && !aiBudget.ok()) { ctx.emit('text', { text: '\n\n' + t('builder.budgetResting') }); break; }
     const cur = ctx.tools.current();
-    // The short language block goes last, after both cache points, so the cached prefix is the same for every language.
+    // The short language block goes last, after the cache points, so the cached prefix is the same for every language.
+    // The fixed 3D rules sit between the system prompt and the game, only for 3D requests and 3D games.
     const system = [
       { type: 'text', text: SYSTEM_PROMPT, cache_control: { type: 'ephemeral' } },
+      ...(wants3d(ctx.state || {}, ctx.text, cur) ? [{ type: 'text', text: THREE_D_RULES, cache_control: { type: 'ephemeral' } }] : []),
       { type: 'text', text: sourceBlock(cur, ctx.tools.game()), cache_control: { type: 'ephemeral' } },
       { type: 'text', text: languageBlock(ctx.locale || 'en') },
     ];

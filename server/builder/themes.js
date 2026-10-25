@@ -3,6 +3,8 @@
 const norm = s => String(s || '').toLowerCase().normalize('NFKD').replace(/[̀-ͯ]/g, '');
 
 export const KIND_WORDS = [
+  // 3D first: "a 3D racing game" still means the 3D template (the only 3D one).
+  ['island', /\b3 ?-?d\b|\bthree[- ]?d\b|\bthree[- ]dimension|\b3d\b|\bisland adventure\b|\bopen world\b/],
   ['duel', /\b(two|2)[ -]?players?\b|\bduel\b|\bversus\b|\bvs\.?\b|\bagainst (a|my) (friend|brother|sister)|\bone screen\b|\bhead to head\b|\bpong\b/],
   ['board', /\bboard ?games?\b|\bdice\b|\bsnakes and ladders\b|\bludo\b|\bspaces?\b.*\bboard\b|\btycoon\b/],
   ['quiz', /\bquiz|\btrivia\b|\bquestions?\b|\bmaths?\b|\bmath\b|\btimes tables?\b|\bgeography\b|\bcapitals?\b|\bflags?\b|\bfacts?\b|\bsums\b/],
@@ -91,15 +93,15 @@ export function detectColor(text) {
 export const nextColor = current => CYCLE[(CYCLE.indexOf(current) + 1) % CYCLE.length];
 export const tintFor = cover => COVER_TINT[cover] || '';
 
-const SUFFIX = { quiz: 'Quiz', runner: 'Dash', catch: 'Catch', memory: 'Memory', word: 'Words', duel: 'Duel', board: 'Race' };
+const SUFFIX = { quiz: 'Quiz', runner: 'Dash', catch: 'Catch', memory: 'Memory', word: 'Words', duel: 'Duel', board: 'Race', island: 'Island' };
 export function titleFor(kind, theme) {
   const s = SUFFIX[kind] || 'Game';
-  return theme ? `${theme.name} ${s}` : ({ quiz: 'Super Quiz', runner: 'Super Dash', catch: 'Catch It!', memory: 'Memory Match', word: 'Word Wizard', duel: 'Duel Time', board: 'Race Board' }[kind] || 'My Game');
+  return theme ? `${theme.name} ${s}` : ({ quiz: 'Super Quiz', runner: 'Super Dash', catch: 'Catch It!', memory: 'Memory Match', word: 'Word Wizard', duel: 'Duel Time', board: 'Race Board', island: 'Star Island' }[kind] || 'My Game');
 }
-export const CATEGORY_FOR = { quiz: 'learning', runner: 'arcade', catch: 'arcade', memory: 'puzzle', word: 'words', duel: 'silly', board: 'board' };
+export const CATEGORY_FOR = { quiz: 'learning', runner: 'arcade', catch: 'arcade', memory: 'puzzle', word: 'words', duel: 'silly', board: 'board', island: 'adventure' };
 
-// Chips the Builder offers.
-export const KIND_CHIPS = ['🏃 A running and jumping game', '🧺 Catch the falling things', '❓ A quiz game', '🃏 A memory match', '🔤 A word game', '⚔️ Two players on one phone', '🎲 A board game', '✨ Surprise me!'];
+// Chips the Builder offers (at most 8).
+export const KIND_CHIPS = ['🏃 A running and jumping game', '🧺 Catch the falling things', '❓ A quiz game', '🏝️ A 3D island adventure', '🔤 A word game', '⚔️ Two players on one phone', '🎲 A board game', '✨ Surprise me!'];
 export const THEME_CHIPS = ['🦈 Sharks', '🐉 Dragons', '🤖 Robots', '🦄 Unicorns', '🦖 Dinosaurs', '🚀 Space', '🐱 Cats', '🍕 Pizza'];
 export const LEARN_CHIPS = ['🔤 Spelling', '➕ Maths', '🌍 Geography', '🎵 Music', '🎉 Just for fun'];
 export const PLAYER_CHIPS = ['👤 Just me', '📱 Pass the phone', '👫 Two on one screen'];

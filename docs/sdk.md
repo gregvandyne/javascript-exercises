@@ -21,8 +21,9 @@ A game is **one self-contained HTML document** that starts with `<title>` and th
 - **No** `<!doctype>`, `<html>`, `<head>` or `<body>` tags. The platform wraps the document with a charset, the viewport tag,
   a small CSS reset and the SDK script, then serves it inside the sandbox (see `docs/safety.md`).
 - Under **2 MB**.
-- Allowed from outside: fonts from `fonts.googleapis.com` / `fonts.gstatic.com`, scripts from `https://cdnjs.cloudflare.com`.
-  Nothing else.
+- Allowed from outside: fonts from `fonts.googleapis.com` / `fonts.gstatic.com`. Scripts from `https://cdnjs.cloudflare.com`
+  load, but any library not on the scanner's short reviewed list is *flagged* (a person looks before it can go Public).
+  3D games use the site's own pinned Three.js through one exact import map (see [3D games](#3d-games)). Nothing else.
 - Not allowed (the scanner rejects it): `fetch`, `XMLHttpRequest`, `WebSocket`, `EventSource`, `navigator.sendBeacon`,
   `import()`, `eval`, `new Function`, string timers, `window.top`, `parent.location` / `parent.document`, `window.open`,
   navigating away, `document.cookie`, forms that submit, links that leave the game, camera, microphone, location,
@@ -59,11 +60,47 @@ The SDK (`public/sdk/brb-sdk.js`) is loaded before the game's own code and is fr
 | `BRB.fx.shake(element, strength?)` | A short shake. |
 | `BRB.fx.flash(color?)` | One gentle flash (never repeat it quickly). |
 | `BRB.fx.tween(from, to, ms, onUpdate, ease?)` | Returns a Promise when done. |
-| `BRB.fx.fit(canvas, width, height)` | Crisp canvas scaling to the screen (handles device pixel ratio and resizes). |
+| `BRB.fx.fit(canvas, width, height)` | Crisp scaling of a **2D** canvas to the screen (device pixel ratio, resizes). It only sets the transform of a 2D context the game made (or starts the one it makes later at that scale) and never creates a context, so it is harmless on a WebGL canvas. |
+| `BRB.fx.fit3d(renderer, camera, opts?)` | Fits a 3D renderer (e.g. a Three.js `WebGLRenderer`) to the screen: pixel ratio first (capped, `opts.maxDpr`, default 1.5), then the size, then `camera.aspect`, again on every resize and rotate. `opts.element` fits an element instead of the window; `opts.onResize(w, h, dpr)` runs after each fit. Returns `{ resize(), maxDpr(n), stop() }` (`maxDpr(n)` is for quality ladders). |
 | `BRB.sfx.play(name)` | `'jump' \| 'hit' \| 'coin' \| 'win' \| 'lose' \| 'click' \| 'powerup'`, synthesised with WebAudio. |
 | `BRB.sfx.mute(on?)` | Toggle or set mute; returns the new state. `BRB.sfx.muted` reads it. The choice is saved. |
 
 There is no network and no way to reach the page around the game.
+
+## 3D games
+
+A game is a 3D game when it uses an import map or imports `three` (`server/services/vendor.js`, `isThreeGame`). Three.js
+**0.185.1** is served by the site itself from `/vendor/three/0.185.1/` and is loaded with exactly this import map (the
+relative URLs resolve against the frame's own address; the integrity lines pin both files):
+
+```html
+<script type="importmap">
+{ "imports": { "three": "/vendor/three/0.185.1/three.module.min.js" },
+  "integrity": {
+    "/vendor/three/0.185.1/three.module.min.js": "sha384-QHQk1LzjJlJYNdthXjKCmffpDRZL3EqJ7LfqBzyKyvGgjAYM2ZVuYtFGg42NcAJ/",
+    "/vendor/three/0.185.1/three.core.min.js": "sha384-rx+KIp/9ptjArhnFAcpVoOc/ynktDsRtRJKIbC7YVKylEvFu8sgmzk9RmQ+CIV48" } }
+</script>
+<script type="module">
+  import * as THREE from 'three';
+  const renderer = new THREE.WebGLRenderer({ canvas: document.querySelector('canvas') });
+  const camera = new THREE.PerspectiveCamera(65, 1, 0.1, 300);
+  BRB.fx.fit3d(renderer, camera, { maxDpr: 1.5 });
+</script>
+```
+
+- The scanner passes exactly this form. Any other Three.js (another version, another host, the files without the map or
+  without the integrity lines, add-ons such as `three/addons/...`) **fails**.
+- There are no add-ons (no GLTFLoader, OrbitControls...) and nothing can be loaded by URL: build models from Three.js shapes
+  and make textures with `CanvasTexture`.
+- **Device check.** For a 3D game the frame tells the SDK what it needs (`window.__BRB_INIT__.device`: WebGL 2 and import
+  maps). If the browser has no import maps (`HTMLScriptElement.supports('importmap')`, e.g. iPads on iPadOS 15) or cannot
+  make a WebGL 2 context, the SDK covers the game with a friendly, translated message ("This game needs a newer device or
+  browser") instead of a blank screen. It does the same when the 3D picture is lost (`webglcontextlost`) and is not
+  restored within 4 seconds, or the game did not ask for it back (`preventDefault()`); the message goes away if it comes back.
+  Games should not show their own.
+- The **Star Island** template (`server/builder/templates/island.html`) is the reference: comfort (field of view 60-75,
+  a smooth follow camera, no shake), a pixel-ratio cap of 1.5 and an automatic quality ladder, context-loss handling,
+  reduced motion, keyboard + touch joystick, and every word in the 13 languages.
 
 ## Messages to the page (for platform developers)
 
@@ -85,13 +122,17 @@ and the server validates and rate-limits every resulting API call (`public/js/pl
 
 The AI Builder works with these tools: `ask_user(question, options)`, `write_game(html, notes)` (a whole new version),
 `edit_game(edits[{find, replace}], notes)` (each `find` must appear exactly once in the current game, otherwise nothing
-changes and the Builder is told why), `set_game(title, icon, description, category, tags, orientation, players)` and
-`test_notes(checklist)`. Every `write_game` / `edit_game` makes a new, safety-scanned version.
+changes and the Builder is told why), `set_game(title, icon, description, category, tags, orientation, players)`,
+`playtest_game()`, `start_from_template(template, notes)` (3D only: copies Star Island in as a new version on the server)
+and `test_notes(checklist)`. Every `write_game` / `edit_game` / `start_from_template` makes a new, safety-scanned version.
+The 3D rules are a separate fixed system block, sent only when the builder asks for 3D or the game is already 3D.
 
 Without an API key a deterministic mock Builder is used. It adapts the "Start from" templates and makes changes like
 "make it harder", "change the colour", "change the hero to a dragon" or "add a second level" through a small
 "tune-up" script (`server/builder/layer.js`) whose settings are single lines such as `BRB_TUNE.speed = 1.25;`,
-so every change is a real `edit_game` find/replace and a new version.
+so every change is a real `edit_game` find/replace and a new version. Asked for a 3D game, it starts from Star Island,
+and in a 3D game it also changes the number of stars, the floating rocks and the sky (`stars`, `platforms`, `sky` lines in
+CONFIG); Star Island reads `BRB_TUNE.hero` to pick its 3D hero.
 
 ## Languages
 

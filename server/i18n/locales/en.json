@@ -474,7 +474,14 @@
       "ok": "Play anyway"
     },
     "frameExpired": "This game link expired. Go back and press Play again.",
-    "defaultPlayer": "Player"
+    "defaultPlayer": "Player",
+    "device": {
+      "title": "This game needs a newer device or browser",
+      "text": "Try it on a newer tablet or computer, or update the browser. There are lots of other games to play too!",
+      "lostTitle": "Oops, the 3D picture stopped",
+      "lostText": "That can happen sometimes. Tap Try again to start the game over.",
+      "retry": "Try again"
+    }
   },
   "friends": {
     "title": "Friends",
@@ -771,6 +778,10 @@
       "board": {
         "title": "Race Board Game",
         "description": "Roll the die and race along a winding path with rocket boosts and slides. Play a friend or the bot."
+      },
+      "island": {
+        "title": "Star Island",
+        "description": "A 3D island to explore: run, jump up floating rocks and find every shiny star before time runs out."
       }
     },
     "api": {
@@ -983,6 +994,7 @@
     },
     "build": {
       "gettingReady": "Getting ready…",
+      "needsNewer": "Needs a newer device",
       "renameTitle": "Rename game",
       "nameLabel": "Game name",
       "save": "Save",

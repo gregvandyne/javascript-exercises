@@ -237,5 +237,12 @@
   "layout.signedOut": "Shown once at the top of the next page after a sign-in ended (timed out, or signed out on another device). Keep the <a href=\"{href}\">…</a> around the words that sign in again. Kid reading level, calm: nothing went wrong.",
   "layout.shortPassword": "Shown on every page to teachers, school admins and the platform admin whose password is shorter than {min} characters, until they change it. Keep the <a href=\"{href}\">…</a> around the words that open the change-password form. Adult reader.",
   "js.app.signedOut": "Pop-up or chat message when something was sent after the sign-in ended (timed out, or signed out on another device). Kid reading level, calm.",
-  "info.parents.contact.p1": "For grown-ups. {email} is the team's email address (a link)."
+  "info.parents.contact.p1": "For grown-ups. {email} is the team's email address (a link).",
+  "play.device.title": "Inside a 3D game, when the phone, tablet or computer cannot show 3D (too old: no WebGL 2 or import maps). Big heading on a card, kid-friendly, max ~50 chars.",
+  "play.device.text": "Under play.device.title: what to do instead (newer device, update the browser) and that there are other games. One or two short sentences.",
+  "play.device.lostTitle": "Inside a 3D game when the 3D picture is lost (a GPU reset, memory pressure, coming back from the background) — happens on new devices too, not only old ones. Big heading on a card, kid-friendly, max ~40 chars.",
+  "play.device.lostText": "Under play.device.lostTitle: says it sometimes happens and to tap the Try again button to start over. One or two short sentences.",
+  "play.device.retry": "Label on a big button that reloads the game to start it over. Very short (1-2 words), e.g. \"Try again\".",
+  "studio.templates.island.title": "Name of the 3D \"Start from\" template on the Build page: an island with stars to collect. Short, max ~22 chars.",
+  "studio.templates.island.description": "One-line description of the 3D island template card on the Build page."
 }

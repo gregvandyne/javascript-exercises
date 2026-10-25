@@ -11,6 +11,7 @@ import { detectKind, detectTheme, themeByKey, detectPlayers, detectLearn, detect
   KIND_CHIPS, THEME_CHIPS, LEARN_CHIPS, PLAYER_CHIPS, NEXT_CHIPS } from './themes.js';
 import { withLayer, readTune, tuneEdits, hasLayer, guessHero, shownTitle, LAYER_ID } from './layer.js';
 import { cleanText } from '../services/textfilter.js';
+import { isThreeGame } from '../services/vendor.js';
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const delay = () => { const d = +process.env.BRB_MOCK_DELAY_MS; return Number.isFinite(d) ? d : 12; };
@@ -31,10 +32,12 @@ const PLANS = {
   word: 'Pick the missing letters with big friendly buttons. Every word you finish earns a star, and the words get a little longer.',
   duel: 'Two players share one screen: each one gets a big button. Wait for the signal, then tap first. Best of five wins.',
   board: 'Roll the die and race along the path with boosts and slides. Play with a friend on one phone or against the bot.',
+  island: 'Walk around a 3D island with the arrow keys or by dragging, hop up the floating rocks and find every star before time runs out. Some stars float high, so jump!',
 };
 const CHECK = {
   catch: ['Catch three good things in a row', 'Bump into a bad one and watch a heart go', 'Press ⏸ to pause, then keep going', 'Tap 🔊 to switch the sound off and on'],
   runner: ['Jump over the first few bumps', 'Grab some coins', 'Crash on purpose and press Play again', 'Tap 🔊 to switch the sound off and on'],
+  island: ['Walk with the arrow keys, or drag on the screen', 'Hop up the floating rocks to the top star', 'Jump to grab a star that floats high', 'Tap 🔊 to switch the sound off and on'],
   default: ['Play a whole round from start to finish', 'Try it with taps and with the keyboard', 'Press Play again at the end', 'Tap 🔊 to switch the sound off and on'],
 };
 const POLISH = ['Words are easy to read on a small phone', 'Every screen has a way forward (no dead ends)', 'Play again restarts cleanly', 'The mute button works', 'Nothing is mean or scary', 'It runs smoothly'];
@@ -85,7 +88,7 @@ async function build(ctx, m) {
   const theme = a.theme ? themeByKey(a.theme) : null;
   const info = await templateInfo(kind);
   const { html: base, fallback } = await templateHtml(kind);
-  const realKind = fallback ? 'catch' : kind;
+  const realKind = fallback ? 'catch' : kind;   // 'island' is the 3D template (Star Island)
   const title = titleFor(kind, theme);
   const heroFrom = guessHero(base, info.icon);
   const oldTitle = shownTitle(base);
@@ -129,36 +132,89 @@ async function followUp(ctx, m, cur) {
     changes.speed = Math.max(0.5, Math.round(((tune.speed || 1) * 0.8) * 100) / 100); said.push('made it a bit slower and easier 🐢');
   }
   if (/\b(second|2nd|another|new|next|more) levels?\b|\blevel (2|two)\b/.test(t)) { changes.level2 = true; said.push('added Level 2: after 40 seconds it speeds up with a big banner 🚀'); }
-  const theme = detectTheme(text);
+  let theme = detectTheme(text);
+  // In a 3D game "stars" are the things to collect, not a new hero (unless they say so).
+  if (theme && theme.key === 'star' && isThreeGame(cur.html) && !/\b(hero|player|character)\b/.test(t)) theme = null;
   if (theme && (/\b(hero|player|character|guy|main)\b|\bchange\b|\bturn\b|\bmake (it|him|her|them)\b|\binstead\b|\binto\b|\babout\b/.test(t))) {
     const from = (tune.hero && tune.hero[0]) || guessHero(cur.html, g.icon);
     if (from) { changes.hero = [from, theme.emoji]; said.push(`swapped in a ${theme.name.toLowerCase()} ${theme.emoji}`); }
   }
+  // 3D games (Star Island): the stars, floating rocks and sky are lines in CONFIG, changed in place.
+  const conf = isThreeGame(cur.html) ? threeDChanges(t, cur.html, said) : {};
   const col = detectColor(text);
-  if (col || /\bcolou?rs?\b/.test(t)) { changes.tint = col ? col.hex : nextColor(tune.tint); said.push(col ? `gave it a ${col.name} colour splash 🎨` : 'gave it new colours 🎨'); }
+  const skyWord = conf.sky && col && ['night', 'dark'].includes(col.name);
+  if (!skyWord && (col || (/\bcolou?rs?\b/.test(t) && !conf.sky))) { changes.tint = col ? col.hex : nextColor(tune.tint); said.push(col ? `gave it a ${col.name} colour splash 🎨` : 'gave it new colours 🎨'); }
   const rename = text.match(/\b(?:call it|name it|rename it(?: to)?|title it)\s+["“']?([^"”'\n]{2,40})/i);
   if (rename) {
     const c = cleanText(rename[1].trim(), 40);
-    if (c.ok && c.value) { tools.exec('set_game', { title: c.value }); said.push(`renamed it “${c.value}”`); }
+    if (c.ok && c.value) {
+      tools.exec('set_game', { title: c.value }); said.push(`renamed it “${c.value}”`);
+      // In a 3D game the title also shows inside the game (the title card), so keep CONFIG.title in step.
+      if (isThreeGame(cur.html) && readConfig(cur.html, 'title') !== undefined) conf.title = c.value;
+    }
   }
-  if (!Object.keys(changes).length) {
+  if (!Object.keys(changes).length && !Object.keys(conf).length) {
     if (said.length) { await say(ctx, `Done! I ${said.join(' and ')}.`); return; }
     await say(ctx, 'I can change lots of things! Try one of these, or tell me in your own words.');
     tools.exec('ask_user', { question: 'What should we change?', options: [...nextChips(tune), 'Make it easier', 'Change the colours', '✨ Polish it'] });
     return;
   }
   if (theme && changes.hero) tools.exec('set_game', { icon: theme.emoji });
-  const edits = tuneEdits(cur.html, changes);
-  const notes = said.join(', ').replace(/ [^\w\s,:]+/gu, '').replace(/^./, c => c.toUpperCase()).slice(0, 120);
+  const confEdits = configEdits(cur.html, conf);
+  const edits = Object.keys(changes).length ? tuneEdits(cur.html, changes) : [];
+  // Tidy the version note: drop only the trailing emoji from each phrase, keeping brackets, numbers and quotes
+  // (so "added more stars (16) ⭐" becomes "added more stars (16)", not "added more stars16)").
+  const notes = said.join(', ').replace(/\s*\p{Extended_Pictographic}️?/gu, '').replace(/^./, c => c.toUpperCase()).slice(0, 120);
   let r;
-  if (edits && edits.length) r = tools.exec('edit_game', { edits, notes });
-  else r = tools.exec('write_game', { html: withLayer(stripLayer(cur.html), { ...tune, ...changes }), notes });
+  if (edits && confEdits && edits.length + confEdits.length) r = tools.exec('edit_game', { edits: [...confEdits, ...edits], notes });
+  else r = tools.exec('write_game', { html: applyConfig(withLayer(stripLayer(cur.html), { ...tune, ...changes }), conf), notes });
   if (!r.ok) { await say(ctx, 'Hmm, that change did not work. Try asking in a different way!'); return; }
   await say(ctx, `Done! I ${said.join(' and ')}. Press Play to try version ${r.version.number}.`);
   tools.exec('test_notes', { checklist: ['Play a round and see the change', 'Check it is still fair and fun', 'Press Play again at the end'] });
   tools.exec('ask_user', { question: 'What next?', options: nextChips({ ...tune, ...changes }) });
 }
 const stripLayer = html => String(html).replace(new RegExp(`\\n?<script id="${LAYER_ID}">[\\s\\S]*?<\\/script>`), '');
+
+// ---- 3D games: CONFIG lines (stars, platforms, sky) --------------------------------------------
+const configBlock = html => (String(html).match(/const CONFIG\s*=\s*\{[\s\S]*?\n\};/) || [])[0] || '';
+const configLine = (html, key) => configBlock(html).match(new RegExp(`\\n(\\s*${key}:\\s*)([^,\\n]+),`));
+const literal = v => (typeof v === 'number' ? String(v) : `'${String(v).replace(/[^a-z]/gi, '')}'`);
+// The title can be any cleaned text (spaces, digits, other scripts), so it is escaped as a whole, not reduced to letters.
+const titleLiteral = v => `'${String(v).replace(/\\/g, '\\\\').replace(/'/g, "\\'")}'`;
+export function readConfig(html, key) {
+  const m = configLine(html, key); if (!m) return undefined;
+  const v = m[2].trim(); return /^-?\d+(\.\d+)?$/.test(v) ? +v : v.replace(/^['"]|['"]$/g, '');
+}
+/** find/replace edits for CONFIG values, each on its own unique line; null if one cannot be found exactly once. */
+export function configEdits(html, changes) {
+  const edits = [];
+  for (const [k, v] of Object.entries(changes || {})) {
+    const m = configLine(html, k); if (!m) return null;
+    const find = `\n${m[1]}${m[2]},`, replace = `\n${m[1]}${k === 'title' ? titleLiteral(v) : literal(v)},`;
+    if (String(html).split(find).length !== 2) return null;
+    if (find !== replace) edits.push({ find, replace });
+  }
+  return edits;
+}
+const applyConfig = (html, changes) => { const e = configEdits(html, changes) || []; return e.reduce((h, x) => h.replace(x.find, x.replace), html); };
+function threeDChanges(t, html, said) {
+  const out = {};
+  const stars = readConfig(html, 'stars'), plats = readConfig(html, 'platforms');
+  const n = t.match(/\b(\d{1,2}) stars\b/);
+  if (typeof stars === 'number') {
+    if (n) { out.stars = Math.max(1, Math.min(20, +n[1])); said.push(`set it to ${out.stars} stars ⭐`); }
+    else if (/\b(more|extra|lots of|loads of) stars\b/.test(t)) { out.stars = Math.min(20, stars + 4); said.push(`added more stars (${out.stars}) ⭐`); }
+    else if (/\b(fewer|less|not so many) stars\b/.test(t)) { out.stars = Math.max(3, stars - 4); said.push(`made it ${out.stars} stars ⭐`); }
+  }
+  if (typeof plats === 'number' && /\b(more|extra|higher|taller|bigger)\b.*\b(platforms?|floating rocks?|rocks to (jump|hop)|steps)\b|\badd (some )?(platforms|floating rocks)\b/.test(t)) {
+    out.platforms = Math.min(10, plats + 2); said.push(`added more floating rocks to hop up (${out.platforms}) 🪨`);
+  }
+  // Match the sky on the text WITHOUT the new name, so "call it Moon Hop" doesn't turn the sky to night.
+  const skyText = t.replace(/\b(?:call it|name it|rename it(?: to)?|title it)\b[\s\S]*$/, '');
+  const sky = /\bnight|\bdark sky\b|\bmoon\b/.test(skyText) ? 'night' : /\bsunset\b|\bevening\b|\bdusk\b/.test(skyText) ? 'sunset' : /\b(day ?time|morning|sunny|daylight)\b/.test(skyText) ? 'day' : null;
+  if (sky && readConfig(html, 'sky') !== undefined) { out.sky = sky; said.push({ night: 'made it night time with twinkly stars 🌙', sunset: 'made it a sunset sky 🌅', day: 'made it a sunny day ☀️' }[sky]); }
+  return out;
+}
 
 async function fixSafety(ctx, m, cur) {
   const kind = m.answers.kind || DEFAULT_KIND;

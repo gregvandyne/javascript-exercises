@@ -9,6 +9,10 @@ import { cleanText } from '../services/textfilter.js';
 import { signToken } from '../auth.js';
 import * as snapshot from '../services/snapshot.js';
 import { localeInfo } from '../i18n/index.js';
+import { templateHtml, templateInfo } from './catalog.js';
+
+// Templates the Builder may start from with start_from_template (the 3D one; 2D games are written fresh).
+const STARTERS = ['island'];
 
 const CATS = games.CATEGORY_KEYS;
 /** A Studio preview link (signed, short-lived). lang: the builder's language, passed to the game as BRB.user.lang. */
@@ -130,6 +134,16 @@ export function toolbox(ctx) {
       const img = buf => ({ type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: buf.toString('base64') } });
       const content = [{ type: 'text', text }, img(r.title), ...(r.play ? [img(r.play)] : [])];
       return { ok: true, forModel: content, event: ['playtest', { version: cur.number, problems: problems.length }] };
+    },
+    // A ready-made game saved as a new version on the server, so the model does not have to write it out.
+    async start_from_template(input) {
+      const key = String((input && input.template) || '');
+      if (!STARTERS.includes(key)) return { ok: false, forModel: `Unknown template. Use one of: ${STARTERS.join(', ')}.` };
+      const [{ html, fallback }, info] = await Promise.all([templateHtml(key), templateInfo(key)]);
+      if (fallback) return { ok: false, forModel: 'That template is not available right now. Write the game with write_game instead.' };
+      const r = saveVersion(html, (input && input.notes) || `Started from ${info ? info.title : key}`);
+      if (r.ok) r.forModel += ` It is ${info ? info.title : key}. Now make it theirs with edit_game: change the CONFIG block near the top of the module script (and the I18N table for words), following the 3D RULES.`;
+      return r;
     },
     test_notes(input) {
       const list = (Array.isArray(input && input.checklist) ? input.checklist : []).map(s => String(s).trim().slice(0, 140)).filter(Boolean).slice(0, 8);

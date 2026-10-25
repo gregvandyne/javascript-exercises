@@ -72,6 +72,46 @@ test('mock flow: questions -> write_game v1 -> edit v2 -> restore v3 = copy of v
   assert.ok(t.of('notes')[0].checklist.length >= 5);
 });
 
+test('mock: a 3D request builds from Star Island offline, and stars, floating rocks, sky and hero change in place', async () => {
+  const { threeImportMap } = await import('../../server/services/vendor.js');
+  const u = newUser(); const g = games.createGame(u.id, {});
+  let t = await turn(u, g.id, 'can we make a 3D game?');
+  assert.equal(t.of('version').length, 0); assert.equal(t.of('ask').length, 1, 'asks who the hero is');
+  t = await turn(u, g.id, '🦊 a fox');
+  const v1 = games.getVersion(games.getGame(g.id).current_version_id);
+  assert.equal(v1.safety_status, 'pass', v1.safety_report);
+  assert.ok(v1.html.includes(threeImportMap()), 'built from the 3D template');
+  assert.match(v1.html, /BRB_TUNE\.hero = \["🐣","🦊"\];/u); assert.equal(games.getGame(g.id).title, 'Fox Island');
+  assert.equal(games.getGame(g.id).category, 'adventure');
+  t = await turn(u, g.id, 'more stars and make it night time');
+  const v2 = games.getVersion(games.getGame(g.id).current_version_id);
+  assert.equal(v2.number, 2); assert.equal(v2.safety_status, 'pass');
+  assert.match(v2.html, /\n {2}stars: 16,/); assert.match(v2.html, /\n {2}sky: 'night',/);
+  assert.match(v2.html, /BRB_TUNE\.hero = \["🐣","🦊"\];/u, '"stars" is not a new hero in a 3D game');
+  assert.match(v2.html, /BRB_TUNE\.tint = "";/, '"night" changes the sky, not a colour wash');
+  t = await turn(u, g.id, 'add more floating rocks');
+  assert.match(games.getVersion(games.getGame(g.id).current_version_id).html, /\n {2}platforms: 6,/);
+  t = await turn(u, g.id, 'change the hero to a dragon');
+  assert.match(games.getVersion(games.getGame(g.id).current_version_id).html, /BRB_TUNE\.hero = \["🐣","🐉"\];/u);
+  // Finding 10b: the version note keeps its brackets and number (not "added more stars16)").
+  assert.match(games.getVersion(games.getGame(g.id).current_version_id).html, /\n {2}stars: 16,/);
+  const notes2 = games.getVersion(v2.id).notes;
+  assert.match(notes2, /\(16\)/, `version note keeps brackets: ${notes2}`);
+  assert.doesNotMatch(notes2, /⭐|🌙/u, 'version note has no leftover emoji');
+});
+
+test('mock 3D: renaming keeps the sky and updates the in-game title (not just the metadata)', async () => {
+  const u = newUser(); const g = games.createGame(u.id, {});
+  await turn(u, g.id, 'make a 3D game'); await turn(u, g.id, '🦊 a fox');
+  const before = games.getVersion(games.getGame(g.id).current_version_id).html;
+  assert.match(before, /\n {2}sky: 'day',/, 'starts on a day sky');
+  await turn(u, g.id, 'call it Moon Hop');
+  const v = games.getVersion(games.getGame(g.id).current_version_id);
+  assert.match(v.html, /\n {2}sky: 'day',/, 'the name "Moon" does not turn the sky to night');
+  assert.match(v.html, /\n {2}title: 'Moon Hop',/, 'the in-game title follows the rename');
+  assert.equal(games.getGame(g.id).title, 'Moon Hop');
+});
+
 test('mock asks at most three questions and skips what the message already says', async () => {
   const u = newUser();
   const g1 = games.createGame(u.id, {});
@@ -171,7 +211,7 @@ test('the stored transcript never contains game source; the model gets it as a s
 
 test('system prompt and tools are fixed and cover the kid rules and the contract', () => {
   for (const s of ['No chat or messaging between players', 'personal details', 'No links', 'real brands', 'jump-scares', 'gambling', 'Cartoon slapstick', 'Educational', 'window.BRB', '<title>', 'BRB.sfx', 'three short questions', 'never put the uploaded photo', 'playtest_game', '__brbTest', 'Art direction', 'start()']) assert.ok(SYSTEM_PROMPT.toLowerCase().includes(s.toLowerCase()), s);
-  assert.deepEqual(TOOLS.map(t => t.name), ['ask_user', 'write_game', 'edit_game', 'set_game', 'playtest_game', 'test_notes']);
+  assert.deepEqual(TOOLS.map(t => t.name), ['ask_user', 'write_game', 'edit_game', 'set_game', 'playtest_game', 'start_from_template', 'test_notes']);
   assert.doesNotMatch(SYSTEM_PROMPT, /\$\{/);
 });
 
