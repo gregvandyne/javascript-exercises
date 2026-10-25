@@ -10,6 +10,8 @@ export function allow(key, max, windowMs) {
 /** The client key for anonymous limits: the real socket address, not a client-supplied header. X-Forwarded-For is only
  *  trusted when `trust proxy` is set to a real proxy, so this can't be reset by a spoofed header on a direct connection. */
 export const clientKey = req => (req.socket && req.socket.remoteAddress) || req.ip || 'anon';
+/** Current count in a window without incrementing it (for "check, then only penalise failures" flows like login). */
+export function count(key) { const b = buckets.get(key); return b && b.reset > Date.now() ? b.n : 0; }
 export function rateLimit(name, max, windowMs, msgKey = 'errors.api.slowDown') {
   return (req, res, next) => {
     const who = req.user ? req.user.id : clientKey(req);
