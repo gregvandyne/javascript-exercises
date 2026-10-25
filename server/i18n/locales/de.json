@@ -1471,7 +1471,8 @@
       "done": "Der Klasse {class} zugewiesen",
       "restored": "Wieder der Klasse {class} zugewiesen. Die früheren Arbeiten der Schüler sind wieder da.",
       "changeDates": "Termine ändern",
-      "allClasses": "Diese Lektion ist in all Ihren Klassen."
+      "allClasses": "Diese Lektion ist in all Ihren Klassen.",
+      "zoneNote": "{zone, select, none {Die Tage werden in UTC gezählt, und niemand ist zu spät, bis 36 Stunden nach Beginn des Fälligkeitstags vergangen sind. Ein Schuladmin kann die Zeitzone der Schule in den Einstellungen festlegen.} other {Lektionen beginnen und Fälligkeitstermine enden um Mitternacht in {zone}.}}"
     },
     "class": {
       "title": "Lektionen",

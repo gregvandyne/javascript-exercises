@@ -1470,7 +1470,8 @@
       "done": "Attribuée à {class}",
       "restored": "Attribuée de nouveau à {class}. Le travail précédent des élèves est de retour.",
       "changeDates": "Modifier les dates",
-      "allClasses": "Cette leçon est dans toutes vos classes."
+      "allClasses": "Cette leçon est dans toutes vos classes.",
+      "zoneNote": "{zone, select, none {Les jours sont comptés en UTC et personne n’est en retard avant 36 heures après le début du jour de l’échéance. Un admin de l’école peut définir le fuseau horaire de l’école dans les Paramètres.} other {Les leçons ouvrent et les dates limites se terminent à minuit dans {zone}.}}"
     },
     "class": {
       "title": "Leçons",

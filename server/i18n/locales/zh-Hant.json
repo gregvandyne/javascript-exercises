@@ -1470,7 +1470,8 @@
       "done": "已指派給 {class}",
       "restored": "已重新指派給 {class}，學生先前的作品也回來了。",
       "changeDates": "變更日期",
-      "allClasses": "這堂課程已指派給你所有的班級。"
+      "allClasses": "這堂課程已指派給你所有的班級。",
+      "zoneNote": "{zone, select, none {日期以 UTC 計算，在截止日開始後的 36 小時內都不算遲交。校務管理員可以在設定中指定學校的時區。} other {課程會在 {zone} 時區的午夜開放，截止日期也會在午夜結束。}}"
     },
     "class": {
       "title": "課程",

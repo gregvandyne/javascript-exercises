@@ -1470,7 +1470,8 @@
       "done": "Asignada a {class}",
       "restored": "Asignada de nuevo a {class}. Se recuperó el trabajo anterior de los estudiantes.",
       "changeDates": "Cambiar fechas",
-      "allClasses": "Esta lección ya está en todas sus clases."
+      "allClasses": "Esta lección ya está en todas sus clases.",
+      "zoneNote": "{zone, select, none {Los días se cuentan en UTC y nadie va con retraso hasta 36 horas después de que empieza el día de entrega. Un admin de la escuela puede establecer la zona horaria de la escuela en Configuración.} other {Las lecciones se abren y las fechas de entrega terminan a medianoche en {zone}.}}"
     },
     "class": {
       "title": "Lecciones",

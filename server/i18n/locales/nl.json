@@ -1471,7 +1471,8 @@
       "done": "Toegewezen aan {class}",
       "restored": "Opnieuw toegewezen aan {class}. Het eerdere werk van leerlingen is terug.",
       "changeDates": "Datums wijzigen",
-      "allClasses": "Deze les staat in al je klassen."
+      "allClasses": "Deze les staat in al je klassen.",
+      "zoneNote": "{zone, select, none {De dagen worden in UTC geteld en niemand is te laat tot 36 uur na het begin van de inleverdag. Een schoolbeheerder kan in Instellingen de tijdzone van de school instellen.} other {Lessen worden zichtbaar en inleverdata eindigen om middernacht in {zone}.}}"
     },
     "class": {
       "title": "Lessen",

@@ -1471,7 +1471,8 @@
       "done": "Atribuída a {class}",
       "restored": "Atribuída de novo a {class}. Os trabalhos anteriores dos alunos voltaram.",
       "changeDates": "Mudar datas",
-      "allClasses": "Esta aula já está em todas as suas turmas."
+      "allClasses": "Esta aula já está em todas as suas turmas.",
+      "zoneNote": "{zone, select, none {Os dias são contados em UTC e ninguém fica em atraso até 36 horas após o início do dia de entrega. Um admin da escola pode definir o fuso horário da escola nas Configurações.} other {As aulas abrem e os prazos terminam à meia-noite em {zone}.}}"
     },
     "class": {
       "title": "Aulas",

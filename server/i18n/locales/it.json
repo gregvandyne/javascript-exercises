@@ -1471,7 +1471,8 @@
       "done": "Assegnata a {class}",
       "restored": "Assegnata di nuovo a {class}. I lavori precedenti degli studenti sono tornati.",
       "changeDates": "Modifica date",
-      "allClasses": "Questa lezione è in tutte le sue classi."
+      "allClasses": "Questa lezione è in tutte le sue classi.",
+      "zoneNote": "{zone, select, none {I giorni sono contati in UTC e nessuno è in ritardo fino a 36 ore dopo l'inizio del giorno di scadenza. Un admin della scuola può impostare il fuso orario della scuola nelle Impostazioni.} other {Le lezioni diventano disponibili e le scadenze terminano a mezzanotte in {zone}.}}"
     },
     "class": {
       "title": "Lezioni",
