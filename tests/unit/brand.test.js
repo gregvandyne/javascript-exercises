@@ -40,7 +40,7 @@ test('no locale string, translator note or page text names the old brand; the ne
   assert.equal(manifest.background_color, '#F4F1E6');
   // Icons the manifest and layout point at exist at their stated sizes (PNG width/height live at bytes 16-23).
   for (const { src, sizes } of manifest.icons) {
-    const png = fs.readFileSync(path.join(ROOT, 'public', src));
+    const png = fs.readFileSync(path.join(ROOT, 'public', src.split('?')[0]));
     assert.equal(`${png.readUInt32BE(16)}x${png.readUInt32BE(20)}`, sizes, src);
   }
   assert.ok(manifest.icons.some(i => i.purpose === 'maskable'));
@@ -60,8 +60,10 @@ test('pages: the logo link is named Oomba Academy, with the wordmark; icons, fon
     assert.match(body, /<span class="logo-sub">Academy<\/span>/);
     assert.match(body, /<svg class="appmark" viewBox="0 0 240 240"/, 'the app-icon mark for narrow screens');
     assert.match(body, /<title>Oomba Academy · /);
-    assert.match(body, /<link rel="apple-touch-icon" href="\/icons\/apple-touch-icon.png">/);
-    assert.match(body, /<link rel="icon" href="\/favicon.ico" sizes="32x32">\n<link rel="icon" href="\/icons\/icon.svg" type="image\/svg\+xml">/, 'the board favicon, not the app icon, for the tab');
+    // Icon links carry ?v= so browsers drop the old cached icons when they change.
+    assert.match(body, /<link rel="apple-touch-icon" href="\/icons\/apple-touch-icon.png\?v=\w+">/);
+    assert.match(body, /<link rel="icon" href="\/favicon.ico\?v=\w+" sizes="32x32">\n<link rel="icon" href="\/icons\/icon.svg\?v=\w+" type="image\/svg\+xml">/, 'the board favicon, not the app icon, for the tab');
+    assert.match(body, /<link rel="manifest" href="\/manifest.webmanifest\?v=\w+">/);
     const fav = await s.get('/favicon.ico');
     assert.equal(fav.status, 200); assert.match(fav.headers.get('content-type'), /icon/);
     assert.match(body, /<link rel="preload" href="\/fonts\/bricolage-grotesque-latin-opsz-normal.woff2" as="font"/);

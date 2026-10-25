@@ -5,6 +5,8 @@ import { Raw } from './html.js';
 /** The product's name. A brand: never translated, always in Latin letters. */
 export const BRAND = 'Oomba Academy';
 export const SHORT_NAME = 'Oomba';
+/** Added to icon URLs so browsers fetch new icons instead of their cached ones. Bump it whenever scripts/icons.js output changes. */
+export const ICONS_V = '2';
 const INK = '#141414', CREAM = '#FFFDF2', MINT = '#66C792', SPARK = '#FFD23F';
 
 const WORD = '<g fill="none" stroke="currentColor" stroke-width="28" stroke-linecap="round" stroke-linejoin="round"><circle cx="60" cy="100" r="36"/><circle cx="172" cy="100" r="36"/><path d="M248 136 V95 A30 30 0 0 1 308 95 V136 M308 95 A30 30 0 0 1 368 95 V136"/><path d="M408 14 V136"/><circle cx="444" cy="100" r="36"/><circle cx="556" cy="100" r="36"/><path d="M592 64 V136"/></g><g fill="currentColor"><circle cx="67" cy="94" r="12"/><circle cx="179" cy="94" r="12"/></g>';

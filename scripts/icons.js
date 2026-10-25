@@ -5,6 +5,7 @@
 //   apple-touch-icon.png   180px Mint, full bleed (iOS rounds the corners itself)
 //   ../favicon.ico         the favicon at 16, 32 and 48px (PNGs inside an .ico), for browsers without SVG icons
 // Usage: node scripts/icons.js   (PNGs are rendered by headless Chromium, like scripts/covers.js)
+// After changing the icons, bump ICONS_V in server/views/brand.js (and the ?v= in public/manifest.webmanifest) so browsers refetch them.
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';

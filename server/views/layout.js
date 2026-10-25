@@ -6,6 +6,7 @@
 //   i18n: extra key prefixes to embed for the browser. Every page gets 'js.app' plus 'js.<name>' for each /js/<name>.js.
 import { html, raw, esc, jsonData } from './html.js';
 import { avatar, BRAND, wordmark, appMark } from './components.js';
+import { ICONS_V } from './brand.js';
 import { navBadges } from '../services/badges.js';
 import { inAnySchool, isSchoolStaff, isPlatformAdmin } from '../services/schools.js';
 import { availableLocales, localeInfo, tReq, clientStrings, DEFAULT_LOCALE, localPath } from '../i18n/index.js';
@@ -111,10 +112,10 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
 <title>${esc(title ? t('layout.titleWith', { title }) : t('layout.titleHome'))}</title>
 <meta name="description" content="${esc(description || t('layout.description'))}">
 ${themeColor}
-<link rel="icon" href="/favicon.ico" sizes="32x32">
-<link rel="icon" href="/icons/icon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
-<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/favicon.ico?v=${ICONS_V}" sizes="32x32">
+<link rel="icon" href="/icons/icon.svg?v=${ICONS_V}" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png?v=${ICONS_V}">
+<link rel="manifest" href="/manifest.webmanifest?v=${ICONS_V}">
 <link rel="preload" href="/fonts/bricolage-grotesque-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/css/app.css?v=${VERSION}">
 ${head}
