@@ -1239,7 +1239,10 @@
       "askAdmin": "Pida al admin de su escuela ({admins}) que agregue a esa persona en la pestaña Personas de la escuela.",
       "addStaffLink": "Agregar personal en la pestaña Personas",
       "askNoAdmin": "{school} todavía no tiene admin de la escuela. Pida al equipo de Magic Cups que designe uno; después, esa persona podrá agregar personal en la pestaña Personas de la escuela.",
-      "archivedToast": "Clase {name} archivada"
+      "archivedToast": "Clase {name} archivada",
+      "lessons": "Lecciones",
+      "lastActivity": "Última actividad",
+      "noActivity": "nada aún"
     },
     "requests": {
       "title": "{count, plural, one {# estudiante quiere unirse} other {# estudiantes quieren unirse}}",
@@ -1309,7 +1312,11 @@
       "publishSchool": "Solo dentro de la escuela",
       "publishPublic": "También pueden compartir con todos",
       "photos": "Las fotos de perfil de las cuentas escolares solo las ven sus compañeros de clase, sus docentes y sus amigos.",
-      "chatHint": "Las cuentas escolares solo pueden agregar compañeros de clase como amigos."
+      "chatHint": "Las cuentas escolares solo pueden agregar compañeros de clase como amigos.",
+      "timeZone": "Zona horaria",
+      "timeZoneNone": "Sin definir (los días se cuentan en UTC)",
+      "timeZoneUnset": "Establezca la zona horaria de su escuela para que las lecciones se abran a medianoche y las fechas de entrega terminen a medianoche donde esté. Hasta entonces, nadie va con retraso hasta 36 horas después de que empieza el día de entrega.",
+      "timeZoneHint": "Las lecciones se abren y las fechas de entrega terminan a medianoche en esta zona. Allí ahora son las {time}."
     },
     "cards": {
       "title": "Tarjetas de acceso",
@@ -1353,7 +1360,8 @@
       "badTeacher": "Elija a alguien del personal de la escuela.",
       "adminNotStudent": "Cuidas de Magic Cups, así que no puedes unirte a una clase como estudiante.",
       "isStudent": "{name} es estudiante aquí, así que no se puede agregar al personal.",
-      "tickStudents": "Marque al menos a un estudiante."
+      "tickStudents": "Marque al menos a un estudiante.",
+      "badZone": "Elija una zona horaria de la lista."
     },
     "classTabs": {
       "lessons": "Lecciones",

@@ -1240,7 +1240,10 @@
       "askAdmin": "Chieda all'admin della scuola ({admins}) di aggiungere la persona nella sezione Persone della scuola.",
       "addStaffLink": "Aggiungi personale nella sezione Persone",
       "askNoAdmin": "{school} non ha ancora un admin della scuola. Chieda al team di Magic Cups di nominarne uno; questa persona potrà poi aggiungere il personale nella sezione Persone della scuola.",
-      "archivedToast": "{name} archiviata"
+      "archivedToast": "{name} archiviata",
+      "lessons": "Lezioni",
+      "lastActivity": "Ultima attività",
+      "noActivity": "ancora nulla"
     },
     "requests": {
       "title": "{count, plural, one {# studente vuole entrare} other {# studenti vogliono entrare}}",
@@ -1310,7 +1313,11 @@
       "publishSchool": "Solo all'interno della scuola",
       "publishPublic": "Anche con tutti",
       "photos": "Le foto del profilo degli account scolastici sono visibili solo ai compagni di classe, agli insegnanti e agli amici.",
-      "chatHint": "Gli account scolastici possono aggiungere come amici solo i compagni di classe."
+      "chatHint": "Gli account scolastici possono aggiungere come amici solo i compagni di classe.",
+      "timeZone": "Fuso orario",
+      "timeZoneNone": "Non impostato (i giorni sono contati in UTC)",
+      "timeZoneUnset": "Imposti il fuso orario della sua scuola così le lezioni diventano disponibili a mezzanotte e le scadenze terminano a mezzanotte dove si trova. Fino ad allora, nessuno è in ritardo fino a 36 ore dopo l'inizio del giorno di scadenza.",
+      "timeZoneHint": "Le lezioni diventano disponibili e le scadenze terminano a mezzanotte in questo fuso. Lì ora sono le {time}."
     },
     "cards": {
       "title": "Schede di accesso",
@@ -1354,7 +1361,8 @@
       "badTeacher": "Scelga una persona del personale della scuola.",
       "adminNotStudent": "Ti occupi di Magic Cups, quindi non puoi entrare in una classe come studente.",
       "isStudent": "{name} è tra gli studenti di questa scuola, quindi non si può aggiungere al personale.",
-      "tickStudents": "Spunti almeno uno studente."
+      "tickStudents": "Spunti almeno uno studente.",
+      "badZone": "Scelga un fuso orario dalla lista."
     },
     "classTabs": {
       "lessons": "Lezioni",

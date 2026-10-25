@@ -1239,7 +1239,10 @@
       "askAdmin": "Demandez à l’admin de votre école ({admins}) de l’ajouter dans l’onglet Personnes de l’école.",
       "addStaffLink": "Ajouter du personnel dans l’onglet Personnes",
       "askNoAdmin": "{school} n’a pas encore d’admin de l’école. Demandez à l’équipe Magic Cups d’en nommer un ; cette personne pourra ensuite ajouter du personnel dans l’onglet Personnes de l’école.",
-      "archivedToast": "Classe {name} archivée"
+      "archivedToast": "Classe {name} archivée",
+      "lessons": "Leçons",
+      "lastActivity": "Dernière activité",
+      "noActivity": "rien encore"
     },
     "requests": {
       "title": "{count, plural, one {# élève veut rejoindre la classe} other {# élèves veulent rejoindre la classe}}",
@@ -1309,7 +1312,11 @@
       "publishSchool": "Uniquement dans l’école",
       "publishPublic": "Peuvent aussi partager avec tout le monde",
       "photos": "Les photos de profil des comptes école ne sont visibles que par leurs camarades de classe, leurs enseignants et leurs amis.",
-      "chatHint": "Les comptes école ne peuvent ajouter comme amis que des camarades de classe."
+      "chatHint": "Les comptes école ne peuvent ajouter comme amis que des camarades de classe.",
+      "timeZone": "Fuseau horaire",
+      "timeZoneNone": "Non défini (les jours sont comptés en UTC)",
+      "timeZoneUnset": "Définissez le fuseau horaire de votre école pour que les leçons ouvrent à minuit et que les dates limites se terminent à minuit là où vous êtes. En attendant, personne n’est en retard avant 36 heures après le début du jour de l’échéance.",
+      "timeZoneHint": "Les leçons ouvrent et les dates limites se terminent à minuit dans ce fuseau. Il est actuellement {time} là-bas."
     },
     "cards": {
       "title": "Cartes de connexion",
@@ -1353,7 +1360,8 @@
       "badTeacher": "Choisissez quelqu’un parmi le personnel de l’école.",
       "adminNotStudent": "Tu t’occupes de Magic Cups, alors tu ne peux pas rejoindre une classe comme élève.",
       "isStudent": "{name} est élève ici, il n’est donc pas possible de l’ajouter au personnel.",
-      "tickStudents": "Cochez au moins un élève."
+      "tickStudents": "Cochez au moins un élève.",
+      "badZone": "Choisissez un fuseau horaire dans la liste."
     },
     "classTabs": {
       "lessons": "Leçons",

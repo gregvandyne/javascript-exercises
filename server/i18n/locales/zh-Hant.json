@@ -1239,7 +1239,10 @@
       "askAdmin": "請校務管理員（{admins}）在學校的「成員」分頁新增對方。",
       "addStaffLink": "在「成員」分頁新增教職員",
       "askNoAdmin": "{school} 還沒有校務管理員。請 Magic Cups 團隊指派一位；之後校務管理員就能在學校的「成員」分頁新增教職員。",
-      "archivedToast": "已封存 {name}"
+      "archivedToast": "已封存 {name}",
+      "lessons": "課程",
+      "lastActivity": "最近活動",
+      "noActivity": "尚無"
     },
     "requests": {
       "title": "{count, plural, other {# 位學生想加入}}",
@@ -1309,7 +1312,11 @@
       "publishSchool": "僅限校內",
       "publishPublic": "也可以分享給所有人",
       "photos": "學校帳號的個人照片只有同班同學、老師和好友看得到。",
-      "chatHint": "學校帳號只能把同班同學加為好友。"
+      "chatHint": "學校帳號只能把同班同學加為好友。",
+      "timeZone": "時區",
+      "timeZoneNone": "未設定（日期以 UTC 計算）",
+      "timeZoneUnset": "設定學校的時區後，課程會在您所在地區的午夜開放，截止日期也會在午夜結束。在此之前，截止日開始後的 36 小時內都不算遲交。",
+      "timeZoneHint": "課程會在這個時區的午夜開放，截止日期也會在午夜結束。當地現在是 {time}。"
     },
     "cards": {
       "title": "登入卡",
@@ -1353,7 +1360,8 @@
       "badTeacher": "請選擇學校的教職員。",
       "adminNotStudent": "你負責管理 Magic Cups，所以不能用學生身分加入班級。",
       "isStudent": "{name} 是這裡的學生，因此無法新增為教職員。",
-      "tickStudents": "請至少勾選一位學生。"
+      "tickStudents": "請至少勾選一位學生。",
+      "badZone": "請從清單中選擇時區。"
     },
     "classTabs": {
       "lessons": "課程",
