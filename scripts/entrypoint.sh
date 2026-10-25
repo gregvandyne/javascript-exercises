@@ -1,6 +1,8 @@
 #!/bin/sh
-# Container start (the image's ENTRYPOINT, under tini as PID 1). Every step ends in exec, so no shell stays behind
-# as a parent and SIGTERM reaches the app (or Litestream, which passes it on) directly.
+# Container start (the image's ENTRYPOINT, PID 1). Every step ends in exec, so no shell stays behind as a parent.
+# tini (passes signals on, reaps zombies) is started only after dropping to the "node" user, so it runs as the same
+# user as the app: a container without CAP_KILL (Render's) doesn't let root signal another user's process, and a root
+# tini then dies with "Unexpected error when forwarding signal: 'Operation not permitted'" instead of passing SIGTERM on.
 #
 # No arguments (the web app):
 #   as root  - make the data folder usable by the "node" user (uid 1000): only the folder and the entries directly in
@@ -34,6 +36,10 @@ if [ "$(id -u)" = 0 ]; then
   export HOME=/home/node USER="$APP_USER"
   exec setpriv --reuid="$APP_USER" --regid="$APP_USER" --init-groups --no-new-privs -- "$0" "$@"
 fi
+
+# As "node" and still PID 1 (straight from the root step above, or a container started as uid 1000): hand PID 1 to
+# tini, which runs this script again as its child.
+if [ "$$" = 1 ] && [ -x /usr/bin/tini ]; then exec /usr/bin/tini -- "$0" "$@"; fi
 
 cd /app
 [ "$#" -gt 0 ] && exec "$@"
