@@ -21,7 +21,7 @@ const LANGS = { en: 'English (US)', 'en-GB': 'British English', pt: 'Brazilian P
 export async function draftLesson({ topic, grade = '', subject = '', minutes = 40, locale = 'en', t = tEn }, catalog = []) {
   const ids = new Set(catalog.map(g => g.id));
   const client = anthropic();
-  if (!client) return { draft: templateDraft({ topic, grade, subject }, catalog, t), ai: false };
+  if (!client) return { draft: templateDraft({ topic, grade, subject, minutes }, catalog, t), ai: false };
   const lang = LANGS[localeInfo(locale).code] || 'English (US)';
   const games = catalog.slice(0, 80).map(g => `- ${g.id}: ${g.title}${g.description ? ` — ${String(g.description).slice(0, 120)}` : ''}${g.tags ? ` [${String(g.tags).slice(0, 60)}]` : ''}`).join('\n');
   const res = await client.messages.create({
@@ -41,21 +41,36 @@ Objectives: 2 to 4 short lines, one per line.`,
   aiBudget.recordUsage(res.model || config.builderModel, res.usage);
   const block = (res.content || []).find(c => c.type === 'text');
   let d; try { d = JSON.parse(block ? block.text : '{}'); } catch { d = null; }
-  if (!d || !Array.isArray(d.steps)) return { draft: templateDraft({ topic, grade, subject }, catalog, t), ai: false };
+  if (!d || !Array.isArray(d.steps)) return { draft: templateDraft({ topic, grade, subject, minutes }, catalog, t), ai: false };
   d.steps = d.steps.slice(0, 10).map(s => ({ ...s, gameId: s.kind === 'game' && ids.has(s.gameId) ? s.gameId : '' }))
     .map(s => (s.kind === 'game' && !s.gameId ? { ...s, kind: 'text' } : s));
   return { draft: d, ai: true };
 }
 
-/** A plain starting point without the AI: warm-up, a matching game if one is found, a build activity, wrap-up. */
-export function templateDraft({ topic, grade, subject }, catalog = [], t = tEn) {
-  // Topic words, with a simple plural trim ("planets" also finds "Planet Quiz").
-  const words = String(topic || '').toLowerCase().split(/[^\p{L}\p{N}]+/u).filter(w => w.length > 2).map(w => (w.length > 4 ? w.replace(/(es|s)$/, '') : w));
-  const match = catalog.find(g => words.some(w => `${g.title} ${g.description || ''} ${g.tags || ''}`.toLowerCase().includes(w)));
-  const steps = [{ kind: 'text', title: t('lessons.template.warmup'), body: t('lessons.template.warmupText', { topic }), minutes: 5, gameId: '' }];
-  if (match) steps.push({ kind: 'game', title: t('lessons.template.play', { title: match.title }), body: '', minutes: 10, gameId: match.id });
-  steps.push({ kind: 'build', title: t('lessons.template.build'), body: t('lessons.template.buildText', { topic }), minutes: 20, gameId: '' });
-  steps.push({ kind: 'question', title: t('lessons.template.exit'), body: t('lessons.template.exitText', { topic }), minutes: 5, gameId: '' });
-  steps.push({ kind: 'text', title: t('lessons.template.wrapup'), body: t('lessons.template.wrapupText'), minutes: 5, gameId: '' });
-  return { title: String(topic || '').slice(0, 100), summary: '', objectives: '', steps, grade, subject };
+/** Small words that say nothing about the topic (they matched unrelated games before). */
+const STOP = new Set(['and', 'the', 'for', 'with', 'about', 'from', 'into', 'what', 'how', 'this', 'that', 'your']);
+/** Words of a text, lower case, with a simple plural trim ("planets" also finds "Planet Quiz"). */
+const wordsOf = s => String(s || '').toLowerCase().split(/[^\p{L}\p{N}]+/u).filter(w => w.length > 2 && !STOP.has(w)).map(w => (w.length > 3 ? w.replace(/(?<!s)s$/, '').replace(/e$/, '') : w));
+
+/** A plain starting point without the AI: warm-up, a matching game if one is found, a build activity, an exit ticket.
+ *  A game matches on its tags first, then its title (topic words before subject words), never on its description alone.
+ *  Step minutes are scaled to the length asked for (weights 1 · 2 · 4 · 1). */
+export function templateDraft({ topic, grade, subject, minutes = 40 }, catalog = [], t = tEn) {
+  const find = words => {
+    if (!words.length) return null;
+    const hit = field => catalog.find(g => wordsOf(g[field]).some(w => words.includes(w)));
+    return hit('tags') || hit('title');
+  };
+  const match = find(wordsOf(topic)) || find(wordsOf(subject));
+  const steps = [
+    { kind: 'text', title: t('lessons.template.warmup'), body: t('lessons.template.warmupText', { topic }), w: 1, gameId: '' },
+    match && { kind: 'game', title: t('lessons.template.play', { title: match.title }), body: '', w: 2, gameId: match.id },
+    { kind: 'build', title: t('lessons.template.build'), body: t('lessons.template.buildText', { topic }), w: 4, gameId: '' },
+    { kind: 'question', title: t('lessons.template.exit'), body: t('lessons.template.exitText', { topic }), w: 1, gameId: '' },
+  ].filter(Boolean);
+  const total = Math.max(steps.length, Math.round(+minutes || 40)), weight = steps.reduce((n, s) => n + s.w, 0);
+  for (const s of steps) s.minutes = Math.max(1, Math.round((total * s.w) / weight));
+  const build = steps.find(s => s.kind === 'build');
+  build.minutes = Math.max(1, build.minutes + total - steps.reduce((n, s) => n + s.minutes, 0)); // rounding: the totals add up
+  return { title: String(topic || '').slice(0, 100), summary: '', objectives: '', steps: steps.map(({ w, ...s }) => s), grade, subject };
 }

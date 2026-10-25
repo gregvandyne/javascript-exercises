@@ -170,11 +170,59 @@ The game site stays as it is; schools are a layer on the same app and the same a
   the class, on open lessons, and only for that step's game.
 - **Written answers:** a new step type, "Answer a question". Answers are seen only by the class's teachers and school
   admins. Feedback marks an answer read; a changed answer goes back to the teacher's "to read" list. Counts of
-  answers to read show on My teaching, on the class's Progress tab and on the lesson.
+  answers to review show on My classes, on the class's Progress tab and on the lesson.
 - **Build steps** make one Studio game per student (reopened later, not a new game each time).
 - **Class page tabs:** Lessons, Progress (the gradebook: students × lessons, steps done, past-due and to-read marks,
   CSV download), Students (join requests, roster, add students, class code) and Settings (details, co-teachers,
   archive). New classes open on Students. One lesson's progress page shows every student × step (scores, answers,
   handed-in games) and the answers with feedback forms.
-- **Privacy:** progress for a lesson is deleted when it is unassigned or deleted (with the step, for a step).
+- **Keeping work:** removing a lesson from a class keeps its students' work (assigning it again brings it back); deleting
+  a step or a lesson deletes its work, and the confirm says how much (see the UX deep dive below).
 - Not yet: grading scales/marks, rubrics, parent views, LMS grade sync (step 5).
+
+## Teacher and admin UX deep dive
+A review of every teacher, school-admin and platform-admin flow (plan with teacher and engineer verdicts kept in the
+session notes), done in three batches. The main decisions:
+- **One name per thing** (glossary): "My classes" is the teacher's home (/teach) and the student's (/classes); the
+  platform admin has "Schools"; the school page is reached with "Manage {school}"; "Lesson library" / "My lessons" /
+  "Shared by colleagues"; teachers *review* answers (not "read"); "Class code"; "Make a copy".
+- **Sign-in home:** staff land on My classes, school-account students on their classes, the platform admin on Admin,
+  everyone else on the game home (an explicit ?next= still wins). The platform admin who isn't staff of a school is
+  sent from /teach, /teach/lessons and /classes to Schools; staff with no student classes are sent from /classes to
+  /teach; the platform admin can't join a class as a student.
+- **Student work is never lost by tidying:** class lessons are soft-removed (`class_lessons.removed_at`, migration
+  0012); every query skips removed rows, a removed lesson takes no more work, and assigning it again revives the row
+  with its work. A lesson can be in a class only once. Colleagues' shared lessons must be copied before they are
+  assigned (so a colleague's edits or delete can't change another teacher's class).
+- **Due dates:** nobody is late on the due day (late = 36 hours after the start of the due date in UTC, so the whole
+  due day counts in every time zone); lessons that haven't opened are greyed out in the gradebook and don't count
+  towards Overall (page and CSV agree).
+- **Counts lead somewhere:** class cards link "✋ requests" to the Students tab's requests and "✍️ to review" to the
+  gradebook's review list; gradebook cells with new answers open the first new answer; class lesson rows open that
+  lesson's progress. All "to review" counts only count current students, so they always agree.
+- **School page:** a new class asks who teaches it (a staff member, or "No teacher yet"); the admin no longer becomes
+  everyone's teacher. Archive/Delete sit in a ⋯ menu per row (and in class Settings); Delete only for classes no
+  student ever joined. A new school opens on People to appoint its school admin; /admin/schools shows each school's
+  admins or "None yet".
+- **Adding people:** staff are added with an explicit "school account" / "existing Magic Cups account" choice (a toast
+  or a clear error either way; usernames are never made from real names). Students are added either as new school
+  accounts (names) or by ticking students already at the school; a typed name that exactly matches an existing
+  student is refused (all matches listed, nothing created). People-tab students can go straight into a class.
+- **Login cards** name the school (and class, and role for staff), say where to sign in (`<host>/login`), use the
+  sign-in page's "Magic Cups name", and go back to the page they came from. "New login cards for the class" resets
+  every school account in a class at once (confirm says they'll be signed out; own accounts are listed as skipped).
+- **Roster rows:** "New password" stays visible (the most common daily request); Move and Remove live in a ⋯ menu;
+  Move starts on "Move to…" and asks first. Teachers can leave a class they co-teach.
+- **Lesson editor:** Assign / Make a copy / Share at the top; details folded under "Edit details"; a live notice says
+  which classes have the lesson and how many students started; the step form shows only the fields for its type;
+  a copy opens straight away in the original's folder. Delete confirms say how much student work goes.
+- **Offline lesson drafts** (no API key) say so honestly, match games by tags then titles, and scale step minutes to
+  the requested length.
+- **Who can reset or merge accounts** (found by the adversarial review): from a class, teachers reset passwords of
+  students only; staff passwords are reset by school admins on People (never your own: it would sign you out).
+  Approving a join request "same as" a school account only takes a student school account, never into someone who is
+  now staff; the account's lesson work moves with it. Someone made staff has their old join requests closed.
+- **Top bar on small laptops and landscape tablets** (821–1180px): the profile name and logo text hide and nav links
+  tighten, so the bar fits with the Classes or Schools tab in every language. app.js adds its page-wide listeners once
+  even when a page module imports it a second time (one click, one request).
+- Left for later: activity columns on the school page, names instead of ids in admin lookups, time zones per school.

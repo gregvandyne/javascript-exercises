@@ -3,7 +3,7 @@
 // Permissions come from services/progress.js (students: only their own steps) and services/schools.js (teachers).
 import { Router } from 'express';
 import { html, raw } from '../views/html.js';
-import { page, notFound } from '../views/layout.js';
+import { page, notFound, VERSION } from '../views/layout.js';
 import { avatar, emptyState } from '../views/components.js';
 import { requireUser } from '../auth.js';
 import { rateLimit } from '../services/ratelimit.js';
@@ -12,10 +12,10 @@ import * as L from '../services/lessons.js';
 import * as P from '../services/progress.js';
 import * as games from '../services/games.js';
 import { publish } from '../services/publish.js';
-import { classHeader } from './schools.js';
+import { classHeader, classBack } from './schools.js';
 
 export const router = Router();
-const CSS = raw('<link rel="stylesheet" href="/css/community.css"><link rel="stylesheet" href="/css/schools.css">');
+const CSS = raw(`<link rel="stylesheet" href="/css/community.css?v=${VERSION}"><link rel="stylesheet" href="/css/schools.css?v=${VERSION}">`);
 const b = req => req.body || {};
 const nameOf = r => r.roster_name || r.display_name;
 const KIND_ICON = { game: '🎮', build: '🛠️', text: '📖', question: '✍️' };
@@ -56,64 +56,90 @@ function bar(d, t) {
   const p = pct(d, t);
   return html`<span class="pbar" aria-hidden="true"><span style="width:${p}%"></span></span>`;
 }
+const SHORT = { month: 'short', day: 'numeric' };
+/** An assigned lesson's dates as chips: '🔒 Opens {date}' before it opens, '📅 Due today' (amber) on the due day, else
+ *  '📅 Due {date}' ('📅 {date}' when short, for gradebook columns), and '⏰ Late' when late is set. */
+function dateChips(t, f, cl, { late = false, short = false } = {}) {
+  const open = L.isOpen(cl), due = L.dueState(cl);
+  return [
+    !open ? html`<span class="chip-s">🔒 ${t('lessons.class.opensOn', { date: f.date(cl.opens_at, SHORT) })}</span>` : '',
+    open && due === 'today' ? html`<span class="chip-s warn">📅 ${t('lessons.class.dueToday')}</span>`
+      : cl.due_at ? html`<span class="nw">📅 ${short ? f.date(cl.due_at, SHORT) : t('lessons.class.dueOn', { date: f.date(cl.due_at) })}</span>` : '',
+    late ? html`<span class="chip-s bad">⏰ ${t('lessons.class.late')}</span>` : '',
+  ].filter(Boolean);
+}
+/** Overall for a gradebook row: '–' while none of the class's lessons has opened (nothing to count yet). */
+const overallOf = p => (p.cells.some(x => !x.locked && x.total) ? `${p.overall}%` : null);
 
-/** The gradebook: students down the side, assigned lessons across the top. */
+/** The gradebook: students down the side, assigned lessons across the top. Lessons that haven't opened are greyed out
+ *  and left out of Overall; cells with answers to review go straight to the student's first one. */
 router.get('/class/:id/progress', requireUser, (req, res) => {
   const c = loadClass(req, res); if (!c) return;
   const t = req.t, f = req.fmt;
   const gb = P.classProgress(c.id);
-  const allSteps = gb.lessons.reduce((n, l) => n + l.steps, 0);
+  const firstNew = P.firstNewAnswers(c.id);
+  const col = new Map(gb.lessons.map((l, i) => [l.id, i]));
+  const toReview = P.toReadByLesson(c.id).filter(r => col.has(r.cl)).sort((a, b) => col.get(a.cl) - col.get(b.cl));
+  const anyLate = gb.lessons.map((l, i) => gb.students.some(p => p.cells[i].late));
   const table = html`<div class="gbwrap" tabindex="0" role="region" aria-label="${t('progress.gradebook.title')}"><table class="tbl gradebook">
     <thead><tr><th scope="col" class="gb-name">${t('school.people.name')}</th>
-      ${gb.lessons.map(l => html`<th scope="col"><a href="/class/${c.id}/progress/${l.id}" dir="auto">${l.title}</a>${l.due_at ? html`<span class="gb-due">📅 ${f.date(l.due_at, { month: 'short', day: 'numeric' })}</span>` : ''}</th>`)}
+      ${gb.lessons.map((l, i) => { const chips = dateChips(t, f, l, { late: anyLate[i], short: true });
+        return html`<th scope="col" class="${l.locked ? 'gb-locked' : ''}"><a href="/class/${c.id}/progress/${l.id}" dir="auto">${l.title}</a>${chips.length ? html`<span class="gb-dates">${chips}</span>` : ''}</th>`; })}
       <th scope="col">${t('progress.gradebook.overall')}</th></tr></thead>
     <tbody>${gb.students.map(p => {
-      const done = p.cells.reduce((n, x) => n + Math.min(x.done, x.total), 0);
+      const all = overallOf(p);
       return html`<tr><th scope="row" class="gb-name"><span class="pp">${avatar(p, 28)}<b>${nameOf(p)}</b></span></th>
-        ${p.cells.map((x, i) => html`<td class="${x.total && x.done >= x.total ? 'gb-done' : x.overdue ? 'gb-late' : ''}"><a class="gb-cell" href="/class/${c.id}/progress/${gb.lessons[i].id}#s-${p.id}">
-          <span class="gb-num">${x.total && x.done >= x.total ? '✅' : `${Math.min(x.done, x.total)}/${x.total}`}</span>${bar(Math.min(x.done, x.total), x.total)}
-          ${x.toRead ? html`<span class="chip-s warn">✍️ ${x.toRead}</span>` : ''}${x.overdue ? html`<span class="sr-only">${t('progress.gradebook.late')}</span>` : ''}</a></td>`)}
-        <td class="gb-all"><b>${pct(done, allSteps)}%</b></td></tr>`;
+        ${p.cells.map((x, i) => {
+          const l = gb.lessons[i];
+          if (x.locked) return html`<td class="gb-locked"><span aria-hidden="true">–</span><span class="sr-only">${t('lessons.class.opensOn', { date: f.date(l.opens_at, SHORT) })}</span></td>`;
+          const full = x.total && x.done >= x.total;
+          const first = x.toRead ? firstNew[`${p.id}:${l.id}`] : null;
+          return html`<td class="${full ? 'gb-done' : x.late ? 'gb-late' : ''}"><a class="gb-cell" href="/class/${c.id}/progress/${l.id}#${first ? `a-${first}-${p.id}` : `s-${p.id}`}">
+          <span class="gb-num">${full ? '✅' : `${x.done}/${x.total}`}</span>${bar(x.done, x.total)}
+          ${x.toRead ? html`<span class="chip-s warn">✍️ ${x.toRead}</span>` : ''}${x.late ? html`<span class="sr-only">${t('lessons.class.late')}</span>` : ''}</a></td>`;
+        })}
+        <td class="gb-all">${all ? html`<b>${all}</b>` : html`<span class="muted">–</span>`}</td></tr>`;
     })}</tbody></table></div>`;
   const body = html`${classHeader(req, c, 'progress')}
   ${gb.lessons.length && gb.students.length ? html`<div class="row gb-tools"><p class="muted grow">${t('progress.gradebook.text')}</p><a class="btn btn-sm" href="/class/${c.id}/progress.csv" download>⬇️ ${t('progress.gradebook.csv')}</a></div>` : ''}
-  ${gb.toRead ? html`<p class="notice">✍️ ${t('progress.gradebook.toRead', { count: gb.toRead })}</p>` : ''}
+  ${toReview.length ? html`<p class="notice gb-review" id="to-review">✍️ <b>${t('progress.gradebook.toReviewList')}</b> ${toReview.map((r, i) => html`${i ? ' · ' : ''}<a href="/class/${c.id}/progress/${r.cl}#answers" dir="auto">${t('progress.gradebook.reviewLink', { title: r.title, count: r.n })}</a>`)}</p>` : ''}
   ${!gb.lessons.length ? html`<section class="panel">${emptyState({ emoji: '📚', title: t('progress.gradebook.noLessons'), text: t('progress.gradebook.noLessonsText') })}</section>`
     : !gb.students.length ? html`<section class="panel">${emptyState({ emoji: '👩‍🎓', title: t('progress.gradebook.noStudents'), text: t('progress.gradebook.noStudentsText') })}</section>`
     : html`<section class="panel">${table}<p class="small muted gb-key"><span>✅ ${t('progress.key.done')}</span><span><span class="pbar"><span style="width:60%"></span></span> ${t('progress.key.steps')}</span><span class="gb-late-key">⏰ ${t('progress.key.late')}</span><span>✍️ ${t('progress.key.toRead')}</span></p></section>`}`;
-  page(req, res, { title: `${t('progress.gradebook.title')} · ${c.name}`, active: 'classes', body, head: CSS, back: '/teach', backLabel: t('school.teach.title') });
+  page(req, res, { title: `${t('progress.gradebook.title')} · ${c.name}`, active: 'classes', body, head: CSS, ...classBack(req, c) });
 });
 
-/** CSV: one row per student, one column per lesson (steps done of total), then the overall percentage. */
+/** CSV: one row per student, one column per lesson (steps done of total, '–' before it opens), then Overall (the same
+ *  figure as the page: lessons that haven't opened are left out). */
 router.get('/class/:id/progress.csv', requireUser, (req, res) => {
   const c = loadClass(req, res); if (!c) return;
   const t = req.t;
   const gb = P.classProgress(c.id);
   const cell = v => { const s = String(v == null ? '' : v); return /[",\n;]/.test(s) || /^[=+\-@]/.test(s) ? `"${s.replace(/^([=+\-@])/, "'$1").replace(/"/g, '""')}"` : s; };
-  const allSteps = gb.lessons.reduce((n, l) => n + l.steps, 0);
   const lines = [[t('school.people.name'), t('school.people.username'), ...gb.lessons.map(l => l.title), t('progress.gradebook.overall')].map(cell).join(',')];
   for (const p of gb.students) {
-    const done = p.cells.reduce((n, x) => n + Math.min(x.done, x.total), 0);
-    lines.push([nameOf(p), p.username, ...p.cells.map(x => `${Math.min(x.done, x.total)}/${x.total}`), `${pct(done, allSteps)}%`].map(cell).join(','));
+    lines.push([nameOf(p), p.username, ...p.cells.map(x => (x.locked ? '–' : `${x.done}/${x.total}`)), overallOf(p) || ''].map(cell).join(','));
   }
   const file = `${c.name.replace(/[^\p{L}\p{N}]+/gu, '-').replace(/^-|-$/g, '') || 'class'}-progress.csv`;
   res.set('Content-Type', 'text/csv; charset=utf-8').set('Content-Disposition', `attachment; filename="progress.csv"; filename*=UTF-8''${encodeURIComponent(file)}`).send(`﻿${lines.join('\r\n')}\r\n`);
 });
 
-/** One lesson: every student × every step, then the written answers with feedback forms. */
+/** One lesson, under the class tabs: every student × every step, then the written answers with feedback forms. */
 router.get('/class/:cid/progress/:clid', requireUser, (req, res) => {
   const c = loadClass(req, res); if (!c) return;
   const lp = P.lessonProgress(req.params.clid);
   if (!lp || lp.cl.class_id !== c.id) return no(req, res);
   const t = req.t, f = req.fmt;
   const l = L.getLesson(lp.cl.lesson_id);
-  const finished = lp.students.filter(p => p.total && p.done >= p.total).length;
+  const doneN = lp.students.filter(p => p.total && p.done >= p.total).length;
   const toRead = lp.students.reduce((n, p) => n + p.toRead, 0);
+  const lateFor = L.isOpen(lp.cl) && L.dueState(lp.cl) === 'late' ? p => p.done < p.total : () => false;
   const icon = (s, x) => {
     if (!x) return html`<span class="st-none" title="${t('progress.status.none')}">–</span><span class="sr-only">${t('progress.status.none')}</span>`;
     const isDone = x.status === 'done';
+    const reviewed = x.reviewed_at ? t('progress.lesson.read') : t('progress.lesson.new');
     const extra = s.kind === 'game' && x.score !== null ? html`<span class="st-score" dir="ltr">${f.int(x.score)}${x.label ? ` ${x.label}` : ''}</span>`
-      : s.kind === 'question' && x.answer ? html`<span class="${x.reviewed_at ? 'st-read' : 'chip-s warn'}">${x.reviewed_at ? '💬' : '✍️'}</span>` : '';
+      : s.kind === 'question' && x.answer ? html`<span class="${x.reviewed_at ? 'st-read' : 'chip-s warn'}" title="${reviewed}"><span aria-hidden="true">${x.reviewed_at ? '✔️' : '✍️'}</span><span class="sr-only">${reviewed}</span></span>` : '';
     return html`<span class="${isDone ? 'st-done' : 'st-started'}" title="${isDone ? t('progress.status.done') : t('progress.status.started')}">${isDone ? '✅' : '◐'}</span><span class="sr-only">${isDone ? t('progress.status.done') : t('progress.status.started')}</span>${extra}`;
   };
   const games_ = new Map(lp.steps.filter(s => s.kind === 'build').flatMap(s => lp.students.map(p => p.cells[lp.steps.indexOf(s)])).filter(x => x && x.game_id).map(x => [x.game_id, games.getGame(x.game_id)]));
@@ -125,7 +151,7 @@ router.get('/class/:cid/progress/:clid', requireUser, (req, res) => {
     return html`<section class="panel answers" aria-labelledby="q-${s.id}"><h2 id="q-${s.id}">✍️ ${t('progress.lesson.question', { n: i + 1 })}</h2>
       <p class="q-text" dir="auto">${q ? q.body : ''}</p>
       ${list.length ? html`<ul class="plain answerlist">${list.map(({ p, x }) => html`<li class="answercard ${x.reviewed_at ? 'is-read' : ''}" id="a-${s.id}-${p.id}">
-        <div class="ac-head"><span class="pp">${avatar(p, 28)}<b>${nameOf(p)}</b></span><span class="small muted">${f.ago(x.updated_at)}</span>${x.reviewed_at ? html`<span class="chip-s">💬 ${t('progress.lesson.read')}</span>` : html`<span class="chip-s warn">✍️ ${t('progress.lesson.new')}</span>`}</div>
+        <div class="ac-head"><span class="pp">${avatar(p, 28)}<b>${nameOf(p)}</b></span><span class="small muted">${f.ago(x.updated_at)}</span>${x.reviewed_at ? html`<span class="chip-s">✔️ ${t('progress.lesson.read')}</span>` : html`<span class="chip-s warn">✍️ ${t('progress.lesson.new')}</span>`}</div>
         <p class="ac-answer" dir="auto">${x.answer}</p>
         <form class="ac-form" data-api="/api/progress/${lp.cl.id}/${s.id}/${p.id}/review" data-reload novalidate>
           <label class="sr-only" for="fb-${s.id}-${p.id}">${t('progress.lesson.feedback')}</label>
@@ -134,16 +160,17 @@ router.get('/class/:cid/progress/:clid', requireUser, (req, res) => {
         </form></li>`)}</ul>` : html`<p class="muted">${t('progress.lesson.noAnswers')}</p>`}
     </section>`;
   });
-  const body = html`
-  <div class="pagehead"><div><span class="small muted">${c.name}</span><h1 dir="auto">${l.title}</h1>
-    <p class="muted">${[t('progress.lesson.finished', { done: finished, total: lp.students.length }), lp.cl.due_at ? t('lessons.class.dueOn', { date: f.date(lp.cl.due_at) }) : ''].filter(Boolean).join(' · ')}</p></div>
-    <div class="row"><a class="btn" href="/class/${c.id}/lessons/${lp.cl.id}">👀 ${t('progress.lesson.studentView')}</a>${L.canEditLesson(req.user, l) ? html`<a class="btn" href="/teach/lessons/${l.id}">✏️ ${t('lessons.class.editLesson')}</a>` : ''}</div></div>
-  ${toRead ? html`<p class="notice">✍️ ${t('progress.gradebook.toRead', { count: toRead })} <a href="#answers">${t('progress.lesson.jump')}</a></p>` : ''}
+  const lateN = lp.students.filter(lateFor).length;
+  const body = html`${classHeader(req, c, 'progress')}
+  <div class="lphead"><div><h2 dir="auto">${l.title}</h2>
+    <p class="muted lp-meta"><span>${t('progress.lesson.finished', { done: doneN, total: lp.students.length })}</span>${dateChips(t, f, lp.cl, { late: lateN > 0 })}</p></div>
+    <div class="row"><a class="btn" href="/class/${c.id}/lessons/${lp.cl.id}">👀 ${t('progress.lesson.studentView')}</a>${L.canEditLesson(req.user, l) ? html`<a class="btn" href="/teach/lessons/${l.id}?from=${c.id}">✏️ ${t('lessons.class.editLesson')}</a>` : ''}</div></div>
+  ${toRead ? html`<p class="notice" id="to-review">✍️ ${t('progress.gradebook.toRead', { count: toRead })} · <a href="#answers">${t('progress.lesson.jump')}</a></p>` : ''}
   ${!lp.students.length ? html`<section class="panel">${emptyState({ emoji: '👩‍🎓', title: t('progress.gradebook.noStudents'), text: t('progress.gradebook.noStudentsText') })}</section>`
     : !lp.steps.length ? html`<section class="panel"><p class="muted">${t('lessons.lesson.noSteps')}</p></section>`
     : html`<section class="panel"><div class="gbwrap" tabindex="0" role="region" aria-label="${l.title}"><table class="tbl gradebook steps">
       <thead><tr><th scope="col" class="gb-name">${t('school.people.name')}</th>${lp.steps.map((s, i) => html`<th scope="col" title="${s.title || t(`lessons.kinds.${s.kind}`)}"><span aria-hidden="true">${KIND_ICON[s.kind]}</span> ${i + 1}<span class="gb-step">${s.title || t(`lessons.kinds.${s.kind}`)}</span></th>`)}<th scope="col">${t('progress.lesson.lastActive')}</th></tr></thead>
-      <tbody>${lp.students.map(p => html`<tr id="s-${p.id}"><th scope="row" class="gb-name"><span class="pp">${avatar(p, 28)}<b>${nameOf(p)}</b></span><span class="small muted">${p.done}/${p.total}</span></th>
+      <tbody>${lp.students.map(p => html`<tr id="s-${p.id}"><th scope="row" class="gb-name"><span class="pp">${avatar(p, 28)}<b>${nameOf(p)}</b></span><span class="small muted gb-sub"><span>${p.done}/${p.total}</span>${lateFor(p) ? html`<span class="gb-late-mark" title="${t('lessons.class.late')}"><span aria-hidden="true">⏰</span><span class="sr-only">${t('lessons.class.late')}</span></span>` : ''}${p.toRead && p.firstNew ? html`<a class="chip-s warn" href="#a-${p.firstNew}-${p.id}" title="${t('progress.gradebook.toRead', { count: p.toRead })}">✍️ ${p.toRead}<span class="sr-only"> ${t('progress.gradebook.toRead', { count: p.toRead })}</span></a>` : ''}</span></th>
         ${lp.steps.map((s, i) => { const x = p.cells[i]; const g = s.kind === 'build' && x && x.game_id ? games_.get(x.game_id) : null;
           return html`<td><span class="st">${icon(s, x)}</span>${g && g.status === 'published' && ['school', 'public'].includes(g.visibility) ? html`<a class="small" href="/g/${g.slug}">${t('progress.lesson.openGame')}</a>` : ''}${s.kind === 'question' && x && x.answer ? html`<a class="small" href="#a-${s.id}-${p.id}">${t('progress.lesson.readAnswer')}</a>` : ''}</td>`; })}
         <td class="small muted">${p.last ? f.ago(p.last) : '–'}</td></tr>`)}</tbody></table></div></section>`}
@@ -195,10 +222,15 @@ router.get('/class/:cid/lessons/:clid', requireUser, (req, res) => {
       ${x && x.reviewed_at ? html`<div class="feedback"><b>💬 ${t('progress.student.feedback')}</b>${x.feedback ? html`<p dir="auto">${x.feedback}</p>` : html`<p class="muted">${t('progress.student.readNoFeedback')}</p>`}</div>` : ''}`;
     return '';
   };
+  // Teachers see the lesson as students do, with nothing that saves work; a game step gets a plain Play link (no lesson
+  // tracking), so they can try the game.
+  const preview = s => (s.kind !== 'game' ? '' : !L.playableBy(s, c.school_id) ? html`<p class="notice warn">${t('lessons.view.notReady')}</p>`
+    : s.game_slug ? html`<div class="row"><a class="btn" href="/play/${s.game_slug}">▶ ${t('lessons.view.play', { title: s.game_title })}</a></div>` : '');
+  const late = student && L.isOpen(cl) && L.dueState(cl) === 'late' && doneN < st.length;
   const body = html`
   <div class="pagehead"><div><h1 dir="auto">${l.title}</h1>
-    <p class="muted">${[t('lessons.stepsN', { count: st.length }), cl.due_at ? t('lessons.class.dueOn', { date: f.date(cl.due_at) }) : ''].filter(Boolean).join(' · ')}</p></div>
-    ${teacher ? html`<div class="row"><a class="btn" href="/class/${c.id}/progress/${cl.id}">📊 ${t('progress.lesson.seeProgress')}</a>${L.canEditLesson(u, l) ? html`<a class="btn" href="/teach/lessons/${l.id}">✏️ ${t('lessons.class.editLesson')}</a>` : ''}</div>` : ''}</div>
+    <p class="muted lp-meta"><span>${t('lessons.stepsN', { count: st.length })}</span>${dateChips(t, f, cl, { late })}</p></div>
+    ${teacher ? html`<div class="row"><a class="btn" href="/class/${c.id}/progress/${cl.id}">📊 ${t('progress.lesson.seeProgress')}</a>${L.canEditLesson(u, l) ? html`<a class="btn" href="/teach/lessons/${l.id}?from=${c.id}">✏️ ${t('lessons.class.editLesson')}</a>` : ''}</div>` : ''}</div>
   ${teacher ? html`<p class="notice">👀 ${t('lessons.view.teacherPreview')}</p>` : ''}
   ${student && st.length ? html`<div class="lessonprogress ${doneN >= st.length ? 'all' : ''}" role="status"><span>${doneN >= st.length ? `🎉 ${t('progress.student.allDone')}` : t('progress.student.doneOf', { done: doneN, total: st.length })}</span>${bar(doneN, st.length)}</div>` : ''}
   ${l.summary ? html`<div class="panel">${paras(l.summary)}</div>` : ''}
@@ -206,7 +238,7 @@ router.get('/class/:cid/lessons/:clid', requireUser, (req, res) => {
     <div class="sc-head"><span class="sc-num">${x && x.status === 'done' ? '✓' : i + 1}</span><span class="sc-kind" aria-hidden="true">${KIND_ICON[s.kind]}</span>
       <div class="sc-title"><b dir="auto">${s.title || t(`lessons.kinds.${s.kind}`)}</b>${s.minutes ? html`<span class="small muted">${t('lessons.minutesN', { count: s.minutes })}</span>` : ''}</div>${status(x)}</div>
     ${s.kind === 'build' ? html`<p class="sc-build" dir="auto">💬 “${s.body}”</p>` : s.kind === 'question' ? html`<div class="sc-body q-text">${paras(s.body)}</div>` : s.body ? html`<div class="sc-body">${paras(s.body)}</div>` : ''}
-    ${student ? actions(s, x) : s.kind === 'game' && !L.playableBy(s, c.school_id) ? html`<p class="notice warn">${t('lessons.view.notReady')}</p>` : ''}
+    ${student ? actions(s, x) : teacher ? preview(s) : s.kind === 'game' && !L.playableBy(s, c.school_id) ? html`<p class="notice warn">${t('lessons.view.notReady')}</p>` : ''}
   </li>`; })}</ol>`;
   page(req, res, { title: l.title, active: 'classes', mid: true, body, head: CSS, back: `/class/${c.id}`, backLabel: c.name });
 });

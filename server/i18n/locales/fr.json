@@ -31,7 +31,8 @@
     "build": "Créer",
     "friends": "Amis",
     "me": "Moi",
-    "classes": "Classes"
+    "classes": "Classes",
+    "schools": "Écoles"
   },
   "errors": {
     "goHome": "Retour à l’accueil",
@@ -1137,7 +1138,7 @@
     "guest": "Crée d’abord un compte gratuit, puis rejoins ta classe avec le code de ton prof.",
     "waiting": "En attente de ton prof",
     "join": "Rejoindre une classe",
-    "joinText": "Tape le code que ton prof t’a donné. Quand ton prof dit oui, la classe apparaît ici.",
+    "joinText": "Tape le code que ton prof t’a donné.",
     "code": "Code de classe",
     "joinButton": "Rejoindre",
     "sent": "Demande envoyée pour rejoindre {name}. Ton prof va bientôt dire oui !",
@@ -1146,9 +1147,6 @@
     "noLessonsText": "Ton prof ajoutera des leçons et des jeux ici."
   },
   "school": {
-    "nav": {
-      "teach": "Espace enseignant"
-    },
     "tabs": {
       "classes": "Classes",
       "people": "Personnes",
@@ -1162,10 +1160,13 @@
       "student": "Élève"
     },
     "teach": {
-      "title": "Espace enseignant",
+      "title": "Mes classes",
       "none": "Pas encore de classe",
       "noneText": "Créez votre première classe ci-dessous. Vous recevrez un code à partager avec vos élèves.",
-      "noneAsk": "Demandez à l’admin de votre école de vous ajouter à une classe."
+      "noneAsk": "Demandez à l’admin de votre école de vous ajouter à une classe.",
+      "manage": "Gérer {school}",
+      "noneAdmin": "Vous n’enseignez encore dans aucune classe",
+      "noneAdminText": "Les classes où vous enseignez apparaissent ici. Toutes les classes de {school} se trouvent dans Gérer {school}, plus haut."
     },
     "class": {
       "new": "Nouvelle classe",
@@ -1178,79 +1179,118 @@
       "teachers": "Enseignants",
       "students": "Élèves",
       "classes": "Classes",
-      "code": "Code",
+      "code": "Code de classe",
       "gradeN": "Niveau {grade}",
       "studentsN": "{count, plural, one {# élève} other {# élèves}}",
       "requestsN": "{count, plural, one {# demande} other {# demandes}}",
       "none": "Pas encore de classe",
       "noneText": "Créez une classe ci-dessus, ou laissez les enseignants créer les leurs.",
       "archived": "{count, plural, one {# classe archivée} other {# classes archivées}}",
-      "isArchived": "Archivée",
       "archive": "Archiver",
       "restore": "Restaurer",
       "delete": "Supprimer",
       "archiveConfirm": "Archiver {name} ? Les élèves ne la verront plus, mais son historique est conservé. Vous pourrez la restaurer plus tard.",
       "deleteConfirm": "Supprimer {name} ? Cette action est irréversible.",
       "joinCode": "Code de classe",
-      "joinCodeText": "Les élèves qui ont leur propre compte Magic Cups tapent ce code sur leur page Classes. Vous validez chaque demande.",
       "newCode": "Nouveau code",
       "newCodeConfirm": "Créer un nouveau code ? L’ancien ne fonctionnera plus.",
-      "noStudents": "Pas encore d’élèves. Ajoutez-les ci-dessous ou partagez le code de classe.",
-      "addStudents": "Ajouter des élèves",
-      "newAccounts": "Nouveaux comptes école (un nom par ligne)",
-      "newAccountsHint": "Chaque élève reçoit un nom d’utilisateur et un mot de passe à imprimer sur une carte de connexion. Seuls les enseignants voient les vrais noms.",
-      "fromSchool": "Ou ajoutez un élève de votre école",
-      "add": "Ajouter",
+      "noStudents": "Pas encore d’élèves",
+      "newAccounts": "Nouveaux comptes école",
+      "newAccountsHint": "Chaque élève reçoit un nom Magic Cups et un mot de passe à imprimer sur une carte de connexion. Seuls les enseignants voient les vrais noms.",
       "addTeacher": "Ajouter un enseignant",
       "moveTo": "Déplacer vers la classe",
       "move": "Déplacer",
       "removeStudent": "Retirer",
       "removeConfirm": "Retirer {name} de cette classe ? Son travail dans cette classe est conservé.",
-      "noStudentsText": "Ajoutez ci-dessous des élèves avec des comptes école, ou donnez le code de classe aux élèves qui ont leur propre compte.",
+      "noStudentsText": "Saisissez leurs noms ci-dessous pour créer des comptes école et des cartes de connexion.",
       "details": "Détails de la classe",
       "teachersText": "Les co-enseignants peuvent gérer cette classe avec vous : leçons, élèves et progression.",
       "removeTeacher": "Retirer {name} de cette classe",
       "archiveTitle": "Archiver cette classe",
-      "archiveText": "Les classes archivées sont masquées pour les élèves et dans votre liste. Tout est conservé, et vous pouvez restaurer la classe à tout moment.",
-      "restoreTitle": "Réactiver cette classe",
-      "restoreText": "Cette classe est archivée. Restaurez-la pour l’utiliser à nouveau."
+      "archiveText": "Les classes archivées sont masquées pour les élèves et passent dans Classes archivées, en bas de Mes classes. Tout est conservé, et vous pouvez restaurer la classe à tout moment.",
+      "teacher": "Enseignant",
+      "teacherChoose": "Choisissez un enseignant…",
+      "teacherNone": "Pas encore d’enseignant",
+      "noTeacherChip": "Sans enseignant",
+      "created": "Classe créée : {name}",
+      "restored": "Classe {name} restaurée",
+      "deleted": "Classe {name} supprimée",
+      "archivedBanner": "Cette classe est archivée. Les élèves ne la voient pas.",
+      "deleteTitle": "Supprimer cette classe",
+      "deleteText": "Aucun élève n’a jamais rejoint cette classe, vous pouvez donc la supprimer définitivement.",
+      "noStudentsCode": "Ou partagez le code de classe avec les élèves qui ont leur propre compte.",
+      "createCards": "Créer les comptes et les cartes de connexion",
+      "alreadyAt": "Élèves déjà inscrits à {school} ({count})",
+      "addToClass": "Ajouter à la classe",
+      "addedN": "{count, plural, one {# élève ajouté} other {# élèves ajoutés}}",
+      "moveChoose": "Déplacer vers…",
+      "moveConfirm": "Déplacer {name} vers la classe choisie ? Son travail ici reste dans cette classe, et l’élève repart de zéro dans la nouvelle.",
+      "moved": "{name} est maintenant dans {class}",
+      "reprint": "Nouvelles cartes de connexion pour la classe",
+      "reprintConfirm": "{count, plural, one {Créer un nouveau mot de passe pour # élève avec un compte école ?} other {Créer de nouveaux mots de passe pour # élèves avec un compte école ?}} Les anciens mots de passe ne fonctionneront plus et les élèves seront déconnectés.",
+      "joinCodeTextOn": "Les élèves tapent ce code sur leur page Mes classes (Moi → Mes classes). Ceux qui ont un compte école {school} rejoignent la classe tout de suite ; ceux qui ont leur propre compte Magic Cups attendent votre validation.",
+      "joinCodeTextOff": "Les élèves qui ont un compte école {school} tapent ce code sur leur page Mes classes pour rejoindre la classe tout de suite.",
+      "noTeacher": "Cette classe n’a pas encore d’enseignant. Ajoutez-en un ci-dessous.",
+      "removeTeacherConfirm": "Retirer {name} de cette classe ? La classe disparaîtra de sa page Mes classes.",
+      "leave": "Quitter cette classe",
+      "leaveConfirm": "Quitter {name} ? La classe disparaîtra de votre page Mes classes. Les autres enseignants continuent de la gérer.",
+      "left": "Vous avez quitté {name}",
+      "onlyStaff": "Seul le personnel de {school} peut être ajouté.",
+      "askAdmin": "Demandez à l’admin de votre école ({admins}) de l’ajouter dans l’onglet Personnes de l’école.",
+      "addStaffLink": "Ajouter du personnel dans l’onglet Personnes",
+      "askNoAdmin": "{school} n’a pas encore d’admin de l’école. Demandez à l’équipe Magic Cups d’en nommer un ; cette personne pourra ensuite ajouter du personnel dans l’onglet Personnes de l’école.",
+      "archivedToast": "Classe {name} archivée"
     },
     "requests": {
       "title": "{count, plural, one {# élève veut rejoindre la classe} other {# élèves veulent rejoindre la classe}}",
       "text": "Ces élèves ont utilisé le code de classe avec leur propre compte. Saisissez leur vrai nom pour votre liste de classe. Si l’école leur a déjà créé un compte, sélectionnez-le pour y transférer leur historique de classe.",
       "realName": "Vrai nom (visible uniquement par les enseignants)",
-      "sameAs": "Même élève que le compte école",
+      "sameAs": "L’école a-t-elle déjà un compte pour cet élève ?",
       "sameAsNone": "Non, c’est un nouvel élève",
       "approve": "Accepter",
       "decline": "Refuser",
-      "declineConfirm": "Refuser @{name} ?"
+      "declineConfirm": "Refuser @{name} ?",
+      "inClass": "Dans cette classe",
+      "otherAccounts": "Autres comptes école",
+      "mergeHint": "Si vous en choisissez un, il sera fusionné avec @{name} : le compte école ne fonctionnera plus, et ses classes et ses jeux seront transférés.",
+      "mergeConfirm": "Fusionner @{account} avec @{name} ? @{account} ne fonctionnera plus.",
+      "approved": "@{name} a rejoint la classe"
     },
     "people": {
       "staff": "Personnel",
       "students": "Élèves",
       "name": "Nom",
-      "username": "Nom d’utilisateur",
+      "username": "Nom Magic Cups",
       "role": "Rôle",
       "grade": "Niveau",
       "schoolAccount": "compte école",
       "ownAccount": "compte personnel",
       "addStaff": "Ajouter un enseignant ou un admin de l’école",
-      "addStaffText": "Saisissez son nom. Laissez le nom d’utilisateur vide pour créer un compte école (vous recevrez une carte de connexion), ou saisissez le nom d’utilisateur d’un compte que la personne a déjà.",
+      "addStaffText": "Utilisez son vrai nom, celui que connaissent les élèves et les collègues. Les comptes école suivent les règles de sécurité de l’école ; le personnel qui veut partager des jeux publiquement doit utiliser son propre compte.",
       "realName": "Vrai nom",
-      "existing": "Nom d’utilisateur existant (facultatif)",
+      "existing": "Son nom Magic Cups",
       "existingPlaceholder": "ex. MmeRivera",
-      "add": "Ajouter",
       "addStudents": "Ajouter des élèves à l’école",
-      "addStudentsText": "Un nom par ligne. Chaque élève reçoit un compte école et une carte de connexion à imprimer. Placez-les dans des classes depuis la page de chaque classe.",
+      "addStudentsText": "Un nom par ligne. Chaque élève reçoit un compte école et une carte de connexion à imprimer.",
       "names": "Noms des élèves",
-      "namesPlaceholder": "Léa Martin\nHugo Bernard\nChloé Dubois",
-      "createAccounts": "Créer les comptes",
+      "namesPlaceholder": "Prénom Nom, un par ligne",
+      "createAccounts": "Créer les comptes et les cartes de connexion",
       "noStaff": "Pas encore de personnel.",
       "noStudents": "Pas encore d’élèves.",
       "reset": "Nouveau mot de passe",
-      "resetConfirm": "Créer un nouveau mot de passe pour {name} ? L’ancien ne fonctionnera plus.",
+      "resetConfirm": "Créer un nouveau mot de passe pour {name} ? L’ancien ne fonctionnera plus et cette personne sera déconnectée.",
       "remove": "Retirer de l’école",
-      "removeConfirm": "Retirer {name} de l’école ? Cette personne quitte toutes les classes de l’école. Les comptes école sont désactivés."
+      "removeConfirm": "Retirer {name} de l’école ? Cette personne quitte toutes les classes de l’école. Les comptes école sont désactivés.",
+      "you": "{role} · vous",
+      "noClass": "Sans classe",
+      "newSchool": "Prochaine étape : nommez l’admin de l’école. Cette personne pourra ensuite ajouter des enseignants, des classes et des élèves.",
+      "account": "Comment se connectera cette personne ?",
+      "accountNew": "Lui créer un compte école",
+      "accountExisting": "Cette personne a déjà un compte Magic Cups",
+      "createStaff": "Créer le compte et la carte de connexion",
+      "addToSchool": "Ajouter à l’école",
+      "added": "{name} fait maintenant partie du personnel ({role})",
+      "putInClass": "Classe"
     },
     "settings": {
       "name": "Nom de l’école",
@@ -1259,26 +1299,29 @@
       "saved": "Paramètres enregistrés",
       "teachersCreate": "Les enseignants peuvent créer leurs propres classes",
       "ownAccounts": "Les élèves peuvent rejoindre une classe avec leur propre compte",
-      "ownAccountsHint": "Les élèves qui utilisent déjà Magic Cups tapent un code de classe ; un enseignant valide chaque demande. Désactivez cette option pour utiliser uniquement des comptes école.",
+      "ownAccountsHint": "Les élèves qui utilisent déjà Magic Cups tapent un code de classe ; un enseignant valide chaque demande. Si l’option est désactivée, les codes de classe ne marchent que pour les comptes école.",
       "gameSite": "Comptes école sur le site de jeux",
-      "gameSiteText": "Les comptes école peuvent jouer et créer des jeux. Ces règles les protègent. Les comptes personnels des élèves gardent leurs réglages habituels en dehors de la classe.",
+      "gameSiteText": "Ces règles s’appliquent aux comptes créés par l’école (élèves et personnel). Les élèves qui ont rejoint la classe avec leur propre compte gardent leurs propres réglages.",
       "chat": "Chat",
-      "chatClassmates": "Chat uniquement avec les amis de la classe",
+      "chatClassmates": "Chat avec les amis de leurs classes",
       "chatOff": "Pas de chat",
       "publishing": "Partage des jeux",
       "publishSchool": "Uniquement dans l’école",
       "publishPublic": "Peuvent aussi partager avec tout le monde",
-      "photos": "Les photos de profil des comptes école ne sont visibles que par leurs camarades de classe, leurs enseignants et leurs amis."
+      "photos": "Les photos de profil des comptes école ne sont visibles que par leurs camarades de classe, leurs enseignants et leurs amis.",
+      "chatHint": "Les comptes école ne peuvent ajouter comme amis que des camarades de classe."
     },
     "cards": {
       "title": "Cartes de connexion",
       "print": "Imprimer",
-      "done": "Terminé",
       "once": "Imprimez-les ou notez-les maintenant. Les mots de passe ne s’affichent qu’une seule fois. En cas de perte, vous pourrez créer un nouveau mot de passe plus tard.",
       "site": "Site web",
-      "username": "Nom d’utilisateur",
+      "username": "Nom Magic Cups",
       "password": "Mot de passe",
-      "gone": "Ces cartes de connexion ne sont plus disponibles. Créez un nouveau mot de passe depuis la page de la classe."
+      "gone": "Ces cartes de connexion ne sont plus disponibles. Créez un nouveau mot de passe depuis l’onglet Élèves de la classe ou l’onglet Personnes de l’école.",
+      "backPeople": "Retour à Personnes",
+      "backClass": "Retour à {name}",
+      "skipped": "{count, plural, one {# élève utilise son propre compte et garde son mot de passe} other {# élèves utilisent leur propre compte et gardent leur mot de passe}} : {names}."
     },
     "errors": {
       "notFound": "Nous n’avons pas trouvé cette page, ou elle n’est pas accessible.",
@@ -1290,23 +1333,37 @@
       "badRole": "Ce rôle n’est pas autorisé ici.",
       "ownRole": "Vous ne pouvez pas modifier ni retirer votre propre rôle d’admin.",
       "noAccount": "Crée d’abord un compte gratuit.",
-      "noSuchUser": "Aucun compte avec ce nom d’utilisateur.",
+      "noSuchUser": "Aucun compte avec ce nom Magic Cups.",
       "otherSchoolAccount": "Ce compte appartient à une autre école.",
       "notSchoolAccount": "Seuls les comptes école peuvent recevoir un nouveau mot de passe ici. Les élèves qui ont leur propre compte le réinitialisent eux-mêmes.",
       "classHasStudents": "Cette classe a déjà eu des élèves, elle ne peut donc pas être supprimée. Archivez-la plutôt.",
       "notInSchool": "Cette personne ne fait pas partie de cette école.",
       "otherSchool": "Vous pouvez seulement déplacer des élèves entre les classes d’une même école.",
       "badCode": "Ce code de classe ne marche pas. Vérifie-le avec ton prof.",
-      "staffUseTeach": "Vous êtes enseignant dans cette école. Ouvrez plutôt l’Espace enseignant.",
+      "staffUseTeach": "Vous êtes enseignant dans cette école. Ouvrez plutôt Mes classes.",
       "ownAccountsOff": "Cette école utilise uniquement des comptes école. Demande une carte de connexion à ton prof.",
-      "lastTeacher": "Une classe doit avoir au moins un enseignant."
+      "lastTeacher": "Une classe doit avoir au moins un enseignant.",
+      "staffName": "Saisissez son nom.",
+      "username": "Saisissez son nom Magic Cups.",
+      "alreadyStaff": "{name} fait déjà partie du personnel ({role}).",
+      "sameName": "{count, plural, one {Ce nom existe déjà à {school}} other {Ces noms existent déjà à {school}}} : {names}. Retirez-les de la liste, ou ajoutez une initiale pour les distinguer. Pour mettre des élèves existants dans une classe, cochez-les dans l’onglet Élèves de la classe.",
+      "chooseTeacher": "Choisissez un enseignant.",
+      "chooseClass": "Choisissez une classe.",
+      "noSchoolAccounts": "Aucun élève de cette classe n’a de compte école.",
+      "badTeacher": "Choisissez quelqu’un parmi le personnel de l’école.",
+      "adminNotStudent": "Tu t’occupes de Magic Cups, alors tu ne peux pas rejoindre une classe comme élève.",
+      "isStudent": "{name} est élève ici, il n’est donc pas possible de l’ajouter au personnel.",
+      "tickStudents": "Cochez au moins un élève."
     },
     "classTabs": {
       "lessons": "Leçons",
       "progress": "Progression",
       "students": "Élèves",
       "settings": "Paramètres"
-    }
+    },
+    "optional": "(facultatif)",
+    "me": "vous",
+    "moreFor": "Plus d’options pour {name}"
   },
   "lessons": {
     "up": "Monter",
@@ -1325,8 +1382,8 @@
     "library": {
       "title": "Bibliothèque de leçons",
       "mine": "Mes leçons",
-      "shared": "Partagées dans mon école",
-      "top": "Bibliothèque",
+      "shared": "Partagées par des collègues",
+      "top": "Bibliothèque de leçons",
       "path": "Dossiers",
       "newLesson": "Nouvelle leçon",
       "newLessonPlaceholder": "Titre de la leçon, ex. Échauffement sur les fractions",
@@ -1336,9 +1393,10 @@
     "folder": {
       "name": "Nom du dossier",
       "new": "Nouveau dossier",
-      "newPlaceholder": "Nouveau dossier, ex. 1er trimestre",
+      "newPlaceholder": "Nouveau dossier, ex. Fractions",
       "delete": "Supprimer le dossier",
-      "deleteConfirm": "Supprimer le dossier {name} ? Les leçons et dossiers qu’il contient remontent d’un niveau."
+      "deleteConfirm": "Supprimer le dossier {name} ? Les leçons et dossiers qu’il contient remontent d’un niveau.",
+      "hint": "Les dossiers ne sont que pour vous. Les élèves ne les voient jamais."
     },
     "lesson": {
       "title": "Titre de la leçon",
@@ -1347,16 +1405,20 @@
       "objectivesHint": "Un objectif par ligne",
       "steps": "Étapes",
       "noSteps": "Pas encore d’étape. Ajoutez la première ci-dessous.",
-      "details": "Détails de la leçon",
       "share": "Partager avec mon école",
-      "shareNo": "Non, juste moi",
-      "shareYes": "Oui, les autres enseignants peuvent la copier",
       "sharedChip": "Partagée",
       "duplicate": "Faire une copie",
-      "duplicated": "Copie créée. Vous la trouverez dans votre bibliothèque.",
       "delete": "Supprimer la leçon",
       "deleteConfirm": "Supprimer la leçon {name} ? Cette action est irréversible.",
-      "deleteAssignedConfirm": "Supprimer la leçon {name} ? Elle sera aussi retirée de {count, plural, one {# classe} other {# classes}}. Cette action est irréversible."
+      "deleteAssignedConfirm": "Supprimer la leçon {name} ? Elle sera aussi retirée de {count, plural, one {# classe} other {# classes}}. Cette action est irréversible.",
+      "unshare": "Ne plus partager",
+      "sharedToast": "Partagée avec votre école. Vos collègues peuvent maintenant la copier.",
+      "unsharedToast": "Elle n’est plus partagée.",
+      "sharedStatus": "Partagée avec votre école",
+      "editDetails": "Modifier les détails",
+      "copiedNotice": "Ceci est votre copie. Renommez-la dans Modifier les détails.",
+      "deleteWorkConfirm": "Supprimer la leçon {name} ? {n, plural, one {Le travail de # élève dans cette leçon sera supprimé.} other {Le travail de # élèves dans cette leçon sera supprimé.}} Cette action est irréversible.",
+      "deleteLiveConfirm": "Supprimer la leçon {name} ? Elle est dans {count, plural, one {# classe} other {# classes}}, et le travail de {n, plural, one {# élève} other {# élèves}} sera supprimé. Cette action est irréversible. Pour garder leur travail, retirez-la plutôt de la classe."
     },
     "step": {
       "add": "Ajouter une étape",
@@ -1368,8 +1430,6 @@
       "schoolGames": "Partagés dans mon école",
       "siteGames": "Jeux Magic Cups",
       "minutes": "Minutes",
-      "body": "Consignes",
-      "bodyHint": "Ce que les élèves doivent faire. Pour « Créer un jeu », c’est l’idée qu’ils donnent au Constructeur, ex. « un quiz de 8 questions sur les planètes ».",
       "edit": "Modifier l’étape",
       "delete": "Supprimer l’étape",
       "deleteConfirm": "Supprimer cette étape ?",
@@ -1377,11 +1437,17 @@
       "notSharedHint": "Partagez-le d’abord avec votre école, ou ouvrez-le dans le Studio et appuyez sur Publier.",
       "shareGame": "Partager avec mon école",
       "openStudio": "Ouvrir dans le Studio",
-      "newGame": "Créer un nouveau jeu pour cette leçon avec le Constructeur",
       "newGameIdea": "Votre idée de jeu",
       "newGamePlaceholder": "ex. un quiz de 10 questions sur les fractions pour le CM1",
       "newGameButton": "Ouvrir le Constructeur",
-      "newGameNote": "Une étape de jeu est ajoutée à cette leçon, et le Studio s’ouvre avec votre idée prête. Une fois le jeu terminé, publiez-le pour votre école."
+      "newGameNote": "Une étape de jeu est ajoutée à cette leçon, et le Studio s’ouvre avec votre idée prête. Une fois le jeu terminé, publiez-le pour votre école.",
+      "bodyText": "Ce que les élèves lisent ou font",
+      "bodyQuestion": "La question",
+      "bodyBuild": "Idée que les élèves donnent au Constructeur",
+      "bodyGame": "Consignes (facultatif)",
+      "buildHint": "ex. « un quiz de 8 questions sur les planètes »",
+      "newGameLink": "Créer un nouveau jeu pour les élèves",
+      "deleteWorkConfirm": "Supprimer cette étape ? {n, plural, one {Le travail de # élève sur cette étape sera supprimé.} other {Le travail de # élèves sur cette étape sera supprimé.}} Cette action est irréversible."
     },
     "ai": {
       "button": "Rédiger avec l’IA",
@@ -1391,7 +1457,7 @@
       "make": "Rédiger l’ébauche",
       "note": "Claude rédige une ébauche de leçon avec des étapes et des jeux adaptés. Vous pouvez tout modifier avant de l’utiliser.",
       "done": "Voici votre ébauche. Vérifiez chaque étape et modifiez ce que vous voulez.",
-      "template": "Voici un point de départ. Ajoutez vos propres étapes et jeux."
+      "template": "L’IA n’est pas disponible pour le moment, alors voici un modèle simple pour commencer. Modifiez ce que vous voulez."
     },
     "assign": {
       "title": "Attribuer à une classe",
@@ -1399,13 +1465,15 @@
       "opens": "Date d’ouverture (facultatif)",
       "due": "Date limite (facultatif)",
       "button": "Attribuer",
-      "already": "Attribuée à :",
       "noClasses": "Vous n’enseignez encore dans aucune classe de cette école.",
-      "note": "Les élèves voient la leçon à partir de sa date d’ouverture. Les modifications que vous faites ensuite s’appliquent à toutes les classes."
+      "note": "Les élèves voient la leçon à partir de sa date d’ouverture. Les modifications que vous faites ensuite s’appliquent à toutes les classes.",
+      "done": "Attribuée à {class}",
+      "restored": "Attribuée de nouveau à {class}. Le travail précédent des élèves est de retour.",
+      "changeDates": "Modifier les dates",
+      "allClasses": "Cette leçon est dans toutes vos classes."
     },
     "class": {
       "title": "Leçons",
-      "none": "Pas encore de leçon. Attribuez-en une depuis votre bibliothèque.",
       "assign": "Attribuer une leçon",
       "library": "Bibliothèque de leçons",
       "unit": "Unité",
@@ -1419,19 +1487,28 @@
       "dueOn": "À faire pour le {date}",
       "editLesson": "Modifier la leçon",
       "unassign": "Retirer de la classe",
-      "unassignConfirm": "Retirer {name} de cette classe ? La leçon reste dans votre bibliothèque."
+      "unassignConfirm": "Retirer {name} de cette classe ? Les élèves ne la verront plus. Leur travail est conservé et revient si vous l’attribuez de nouveau.",
+      "empty": "Pas encore de leçon",
+      "emptyText": "Créez une nouvelle leçon pour cette classe, ou laissez l’IA en rédiger une ébauche que vous vérifierez.",
+      "allIn": "Toutes vos leçons sont dans cette classe.",
+      "sharedHint": "Vous voulez la leçon d’un collègue ? Faites-en d’abord une copie depuis {tab}.",
+      "unitHint": "Les unités regroupent les leçons de cette classe. Les élèves les voient.",
+      "doneOf": "{done} sur {students} ont terminé",
+      "toReview": "{count} à corriger",
+      "dueToday": "À faire pour aujourd’hui",
+      "late": "En retard",
+      "removedGroup": "Retirées de cette classe"
     },
     "view": {
-      "teacherPreview": "Voici ce que voient vos élèves.",
+      "teacherPreview": "Vue élève. Les boutons qui enregistrent le travail sont désactivés pour vous.",
       "play": "Jouer à {title}",
       "build": "Commencer à créer",
       "notReady": "Ce jeu n’est pas encore prêt. Demande à ton prof."
     },
     "shared": {
       "copy": "Copier dans ma bibliothèque",
-      "copied": "Copiée dans votre bibliothèque !",
-      "empty": "Rien de partagé pour l’instant",
-      "emptyText": "Quand des enseignants de votre école partagent une leçon, elle apparaît ici."
+      "empty": "Rien de partagé par vos collègues pour l’instant",
+      "emptyText": "Les leçons partagées par d’autres enseignants apparaissent ici. Celles que vous partagez portent la mention 🏫 Partagée dans Mes leçons."
     },
     "template": {
       "warmup": "Mise en route",
@@ -1439,8 +1516,6 @@
       "play": "Jouer à {title}",
       "build": "Crée ton propre jeu",
       "buildText": "Un quiz de 6 questions sur {topic}",
-      "wrapup": "Bilan",
-      "wrapupText": "Dis une chose que tu as apprise aujourd’hui.",
       "exit": "Ticket de sortie",
       "exitText": "En deux ou trois phrases : quelle est la chose la plus importante que tu as apprise sur {topic} aujourd’hui ?"
     },
@@ -1458,7 +1533,11 @@
       "badDate": "Cette date ne semble pas correcte.",
       "topic": "Indiquez le sujet de la leçon.",
       "aiFailed": "L’IA n’a pas pu rédiger cette ébauche pour le moment. Réessayez dans une minute, ou créez la leçon vous-même.",
-      "questionText": "Écrivez la question à laquelle les élèves répondront."
+      "questionText": "Écrivez la question à laquelle les élèves répondront.",
+      "alreadyAssigned": "Cette leçon est déjà dans {class}. Modifiez ses dates depuis le menu ⋯ de l’onglet Leçons de la classe."
+    },
+    "editor": {
+      "live": "Utilisée dans {classes}. {count, plural, =0 {Aucun élève n’a encore commencé.} one {# élève a commencé.} other {# élèves ont commencé.}} Les modifications s’affichent pour eux tout de suite."
     }
   },
   "progress": {
@@ -1480,38 +1559,39 @@
     "key": {
       "done": "terminé",
       "steps": "étapes faites",
-      "late": "date limite dépassée",
-      "toRead": "réponses à lire"
+      "late": "en retard",
+      "toRead": "réponses à corriger"
     },
     "teach": {
-      "toRead": "{count, plural, one {# réponse à lire} other {# réponses à lire}}"
+      "toRead": "{count, plural, one {# réponse à corriger} other {# réponses à corriger}}"
     },
     "gradebook": {
       "title": "Progression",
-      "text": "Étapes terminées par chaque élève dans chaque leçon. Ouvrez une leçon pour voir les scores et lire les réponses.",
+      "text": "Étapes terminées par chaque élève dans chaque leçon. Ouvrez une leçon pour voir les scores et corriger les réponses.",
       "csv": "Télécharger (CSV)",
       "overall": "Global",
-      "late": "Date limite dépassée",
-      "toRead": "{count, plural, one {Vous avez # réponse à lire.} other {Vous avez # réponses à lire.}}",
+      "toRead": "{count, plural, one {# réponse à corriger} other {# réponses à corriger}}",
       "noLessons": "Pas encore de leçon",
       "noLessonsText": "Attribuez une leçon dans l’onglet Leçons, et vous verrez ici où en est chaque élève.",
       "noStudents": "Pas encore d’élèves",
-      "noStudentsText": "Ajoutez des élèves dans l’onglet Élèves, et leur progression s’affichera ici."
+      "noStudentsText": "Ajoutez des élèves dans l’onglet Élèves, et leur progression s’affichera ici.",
+      "toReviewList": "Réponses à corriger :",
+      "reviewLink": "{title} ({count})"
     },
     "lesson": {
       "finished": "Élèves ayant terminé : {done} sur {total}",
       "studentView": "Vue élève",
-      "seeProgress": "Progression de la classe",
-      "jump": "Les lire",
+      "seeProgress": "Progression",
+      "jump": "Aller aux réponses",
       "lastActive": "Dernière activité",
       "openGame": "Jouer à son jeu",
-      "readAnswer": "Lire",
+      "readAnswer": "Voir la réponse",
       "question": "Question de l’étape {n}",
-      "read": "Lue",
+      "read": "Corrigée",
       "new": "Nouvelle",
       "feedback": "Commentaire pour l’élève",
       "feedbackPlaceholder": "Commentaire pour l’élève (facultatif)",
-      "send": "Enregistrer et marquer comme lue",
+      "send": "Enregistrer et marquer comme corrigée",
       "update": "Modifier le commentaire",
       "noAnswers": "Pas encore de réponse."
     },
@@ -1535,7 +1615,7 @@
       "updateAnswer": "Modifier ma réponse",
       "sentAgo": "Envoyée {when}",
       "feedback": "De ton prof",
-      "readNoFeedback": "Ton prof a lu ta réponse."
+      "readNoFeedback": "Ton prof a vu ta réponse."
     }
   }
 }

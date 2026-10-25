@@ -12,7 +12,10 @@ test('school -> teacher -> class -> login cards -> own-account student joins wit
   await Promise.all([admin.waitForURL(/\/school\//), admin.click('form[data-api="/api/admin/schools"] button[type=submit]')]);
   await expect(admin.locator('h1')).toContainText(schoolName);
   // a teacher with a school account: the login card shows their username and password once
-  await admin.click('a[href$="?tab=people"]');
+  // a new school opens on People: the first staff member defaults to School admin, so pick Teacher here
+  await expect(admin.locator('.notice')).toContainText('appoint the school admin');
+  await expect(admin.locator('#st-r')).toHaveValue('admin');
+  await admin.selectOption('#st-r', 'teacher');
   await admin.fill('#st-n', 'Maria Rivera');
   await Promise.all([admin.waitForURL(/\/cards\//), admin.click('form[data-api$="/staff"] button[type=submit]')]);
   const tUser = (await admin.locator('.logincard dd b').nth(0).textContent()).trim();
@@ -30,6 +33,12 @@ test('school -> teacher -> class -> login cards -> own-account student joins wit
   await Promise.all([teacher.waitForURL(/\/cards\//), teacher.click('form[data-api$="/students"] button[type=submit]')]);
   await expect(teacher.locator('.logincard')).toHaveCount(2);
   await expect(teacher.locator('.logincard').first()).toContainText('Ana Silva');
+  await expect(teacher.locator('.logincard').first()).toContainText(schoolName);
+  // the same name again is caught instead of making a second account
+  await teacher.click('a:has-text("Back to 4B Math")');
+  await teacher.fill('#as-n', 'Ana Silva');
+  await teacher.click('form[data-api$="/students"]:has(#as-n) button[type=submit]');
+  await expect(teacher.locator('#as-n-err')).toContainText('Ana Silva (@');
 
   // a student who already plays on Magic Cups joins with the code
   const sctx = await browser.newContext(); const kid = await sctx.newPage();

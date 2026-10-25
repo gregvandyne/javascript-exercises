@@ -40,6 +40,22 @@ export function settingsOf(school) {
   let s = {}; try { s = JSON.parse((school && school.settings) || '{}'); } catch { /* bad json */ }
   return { ...DEFAULT_SETTINGS, ...s };
 }
+/** Each school's admins' real names (for the platform admin's list): { schoolId: 'Ana Silva, Ben Okafor' }. */
+export function schoolAdminNames() {
+  const out = {};
+  for (const r of q.all(`SELECT m.school_id sid, COALESCE(NULLIF(m.roster_name,''), u.display_name) name FROM school_members m JOIN users u ON u.id=m.user_id
+    WHERE m.role='admin' AND m.status='active' ORDER BY name COLLATE NOCASE`)) (out[r.sid] = out[r.sid] || []).push(r.name);
+  return Object.fromEntries(Object.entries(out).map(([k, v]) => [k, v.join(', ')]));
+}
+/** Each member's live classes in a school: { userId: [{ id, name, role }] }. */
+export function memberClasses(schoolId) {
+  const out = {};
+  for (const r of q.all(`SELECT cm.user_id u, c.id, c.name, cm.role FROM class_members cm JOIN classrooms c ON c.id=cm.class_id
+    WHERE c.school_id=? AND cm.status='active' AND c.archived_at IS NULL ORDER BY c.name COLLATE NOCASE`, schoolId)) (out[r.u] = out[r.u] || []).push({ id: r.id, name: r.name, role: r.role });
+  return out;
+}
+/** Staff of a school (not only the platform admin's all-access). */
+export const isSchoolStaff = u => !!u && !!q.get("SELECT 1 FROM school_members WHERE user_id=? AND status='active' AND role!='student'", u.id);
 export function listSchools() {
   return q.all(`SELECT s.*, (SELECT COUNT(*) FROM school_members m WHERE m.school_id=s.id AND m.status='active' AND m.role='student') students,
       (SELECT COUNT(*) FROM school_members m WHERE m.school_id=s.id AND m.status='active' AND m.role!='student') staff,
@@ -90,6 +106,8 @@ export function addMember(by, schoolId, userId, role, { rosterName = '', grade =
   const gr = clip(grade, 12) || (old && old.grade) || '';
   if (old) q.run("UPDATE school_members SET role=?, roster_name=?, grade=?, status='active', left_at=NULL, joined_at=CASE WHEN status='active' THEN joined_at ELSE ? END WHERE school_id=? AND user_id=?", role, rn, gr, now(), s.id, u.id);
   else q.run("INSERT INTO school_members(school_id, user_id, role, roster_name, grade, status, joined_at) VALUES (?,?,?,?,?,'active',?)", s.id, u.id, role, rn, gr, now());
+  // Now staff here: their old requests to join a class of this school as a student are closed.
+  if (role !== 'student') q.run("UPDATE join_requests SET status='declined', decided_by=?, decided_at=? WHERE user_id=? AND status='pending' AND class_id IN (SELECT id FROM classrooms WHERE school_id=?)", by.id, now(), u.id, s.id);
   audit(by.id, 'school.member_add', s.id, { user: u.id, role });
   return ok({ user: u });
 }
@@ -140,7 +158,10 @@ export function createSchoolAccount(by, schoolId, { rosterName, role = 'student'
 /** New password for a school account (personal accounts keep their own passwords). */
 export function resetSchoolPassword(by, schoolId, userId) {
   const u = getUser(userId);
-  if (!u || u.managed_school !== schoolId || !membership(schoolId, userId)) return fail('notSchoolAccount');
+  const m = membership(schoolId, userId);
+  if (!u || u.managed_school !== schoolId || !m) return fail('notSchoolAccount');
+  // Only school admins reset a staff member's password (teachers reset their students' only).
+  if (m.role !== 'student' && !canManageSchool(by, schoolId)) return fail('notSchoolAccount');
   const password = newPassword();
   setPassword(u.id, password, { signOutEverywhere: true });
   audit(by.id, 'school.password_reset', schoolId, { user: u.id });
@@ -163,16 +184,23 @@ const CLASS_COLS = `c.*, s.name school_name, s.slug school_slug,
 export const classesOfSchool = (schoolId, { archived = false } = {}) => q.all(`SELECT ${CLASS_COLS} FROM classrooms c JOIN schools s ON s.id=c.school_id
   WHERE c.school_id=? AND c.archived_at IS ${archived ? 'NOT ' : ''}NULL ORDER BY c.name COLLATE NOCASE`, schoolId);
 /** Active classes a user is in, as teacher or student. */
-export const classesOf = (userId, role = null) => (userId ? q.all(`SELECT ${CLASS_COLS}, m.role my_role FROM class_members m JOIN classrooms c ON c.id=m.class_id JOIN schools s ON s.id=c.school_id
-  WHERE m.user_id=? AND m.status='active' AND c.archived_at IS NULL AND s.archived_at IS NULL ${role ? 'AND m.role=?' : ''} ORDER BY s.name, c.name COLLATE NOCASE`, userId, ...(role ? [role] : [])) : []);
-export function createClass(by, schoolId, { name, subject = '', grade = '' }) {
+export const classesOf = (userId, role = null, { archived = false } = {}) => (userId ? q.all(`SELECT ${CLASS_COLS}, m.role my_role FROM class_members m JOIN classrooms c ON c.id=m.class_id JOIN schools s ON s.id=c.school_id
+  WHERE m.user_id=? AND m.status='active' AND c.archived_at IS ${archived ? 'NOT ' : ''}NULL AND s.archived_at IS NULL ${role ? 'AND m.role=?' : ''} ORDER BY s.name, c.name COLLATE NOCASE`, userId, ...(role ? [role] : [])) : []);
+/** teacherId: who teaches it (from the school page: a staff member's id, or 'none'). Without it (a teacher's own
+ *  "New class"), the creator teaches the class. */
+export function createClass(by, schoolId, { name, subject = '', grade = '', teacherId } = {}) {
   if (!getSchool(schoolId)) return fail('notFound');
   const n = clip(name, 60); if (n.length < 1) return fail('className');
+  let teacher = teacherId === undefined ? (membership(schoolId, by.id) ? by.id : null) : null;
+  if (teacherId !== undefined && teacherId !== 'none') {
+    const m = membership(schoolId, teacherId);
+    if (!m || m.role === 'student') return fail('badTeacher');
+    teacher = m.user_id;
+  }
   const id = uid(10);
   tx(() => {
     q.run('INSERT INTO classrooms(id, school_id, name, subject, grade, join_code, created_by, created_at) VALUES (?,?,?,?,?,?,?,?)', id, schoolId, n, clip(subject, 40), clip(grade, 12), newJoinCode(), by.id, now());
-    // A teacher who makes a class teaches it.
-    if (membership(schoolId, by.id)) q.run("INSERT INTO class_members(class_id, user_id, role, status, joined_at) VALUES (?,?,'teacher','active',?)", id, by.id, now());
+    if (teacher) q.run("INSERT INTO class_members(class_id, user_id, role, status, joined_at) VALUES (?,?,'teacher','active',?)", id, teacher, now());
   });
   audit(by.id, 'class.create', id, { school: schoolId, name: n });
   return ok({ class: getClass(id) });
@@ -191,10 +219,16 @@ export function archiveClass(by, classId, archived = true) {
   return ok();
 }
 /** Delete only an empty class (no students ever); otherwise archive it, which keeps its history. */
+/** A class that never had a student can be deleted (it has no student work); otherwise it can only be archived. */
+export const everHadStudents = classId => !!q.get("SELECT 1 FROM class_members WHERE class_id=? AND role='student'", classId);
 export function deleteClass(by, classId) {
   const c = getClass(classId); if (!c) return fail('notFound');
-  if (q.get("SELECT 1 FROM class_members WHERE class_id=? AND role='student'", c.id)) return fail('classHasStudents');
-  tx(() => { q.run('DELETE FROM class_members WHERE class_id=?', c.id); q.run('DELETE FROM join_requests WHERE class_id=?', c.id); q.run('DELETE FROM classrooms WHERE id=?', c.id); });
+  if (everHadStudents(c.id)) return fail('classHasStudents');
+  tx(() => {
+    q.run('DELETE FROM class_members WHERE class_id=?', c.id); q.run('DELETE FROM join_requests WHERE class_id=?', c.id);
+    q.run('DELETE FROM class_lessons WHERE class_id=?', c.id); q.run('DELETE FROM class_units WHERE class_id=?', c.id);
+    q.run('DELETE FROM classrooms WHERE id=?', c.id);
+  });
   audit(by.id, 'class.delete', c.id, { name: c.name });
   return ok();
 }
@@ -252,6 +286,7 @@ export function requestJoin(user, code) {
   const m = membership(s.id, user.id);
   if (m && m.role === 'student') { addToClass(user, c.id, user.id, 'student'); return ok({ state: 'joined', class: c }); }
   if (m) return fail('staffUseTeach');
+  if (isPlatformAdmin(user)) return fail('adminNotStudent');
   if (!settingsOf(s).allowOwnAccounts) return fail('ownAccountsOff');
   if (q.get("SELECT 1 FROM join_requests WHERE class_id=? AND user_id=? AND status='pending'", c.id, user.id)) return ok({ state: 'pending', class: c });
   q.run("INSERT INTO join_requests(id, class_id, user_id, status, created_at) VALUES (?,?,?,'pending',?)", uid(10), c.id, user.id, now());
@@ -259,7 +294,9 @@ export function requestJoin(user, code) {
   return ok({ state: 'pending', class: c });
 }
 export const pendingRequests = classId => q.all(`SELECT r.id, r.created_at, u.id user_id, u.username, u.display_name, u.avatar, u.color, u.photo_at
-  FROM join_requests r JOIN users u ON u.id=r.user_id WHERE r.class_id=? AND r.status='pending' AND u.banned=0 ORDER BY r.created_at`, classId);
+  FROM join_requests r JOIN users u ON u.id=r.user_id WHERE r.class_id=? AND r.status='pending' AND u.banned=0
+    AND NOT EXISTS (SELECT 1 FROM school_members sm JOIN classrooms k ON k.school_id=sm.school_id WHERE k.id=r.class_id AND sm.user_id=r.user_id AND sm.status='active' AND sm.role!='student')
+  ORDER BY r.created_at`, classId);
 export const myPendingRequests = userId => q.all(`SELECT r.id, c.name class_name, s.name school_name FROM join_requests r JOIN classrooms c ON c.id=r.class_id JOIN schools s ON s.id=c.school_id
   WHERE r.user_id=? AND r.status='pending' ORDER BY r.created_at DESC`, userId);
 const getRequest = id => q.get('SELECT * FROM join_requests WHERE id=?', String(id || '')) || null;
@@ -272,6 +309,9 @@ export function approveRequest(by, requestId, { rosterName = '', sameAs = null }
   const r = getRequest(requestId); if (!r || r.status !== 'pending') return fail('notFound');
   const c = getClass(r.class_id); const u = getUser(r.user_id);
   if (!c || !u || u.banned) return fail('notFound');
+  // Asked before they became staff here: the old request no longer applies (approving it would make them a student).
+  const cur = membership(c.school_id, u.id);
+  if (cur && cur.role !== 'student') return fail('notFound');
   let res = ok();
   tx(() => {
     if (sameAs) { res = mergeSchoolAccount(by, c.school_id, sameAs, u.id); if (!res.ok) return; }
@@ -293,8 +333,11 @@ export function declineRequest(by, requestId) {
 /** Move a school account's school records (membership, classes, games) onto the student's own account, then remove it. */
 export function mergeSchoolAccount(by, schoolId, schoolAccountId, intoUserId) {
   const a = getUser(schoolAccountId);
-  if (!a || a.managed_school !== schoolId || a.id === intoUserId) return fail('notSchoolAccount');
-  const old = q.get('SELECT * FROM school_members WHERE school_id=? AND user_id=?', schoolId, a.id);
+  // Only a student school account of this school can be merged (never a teacher's or school admin's account).
+  const old = a && membership(schoolId, a.id);
+  if (!a || a.managed_school !== schoolId || a.id === intoUserId || !old || old.role !== 'student') return fail('notSchoolAccount');
+  const into = membership(schoolId, intoUserId);
+  if (into && into.role !== 'student') return fail('notSchoolAccount');
   tx(() => {
     if (old) {
       q.run('DELETE FROM school_members WHERE school_id=? AND user_id=?', schoolId, intoUserId);
@@ -305,6 +348,9 @@ export function mergeSchoolAccount(by, schoolId, schoolAccountId, intoUserId) {
       q.run('UPDATE class_members SET user_id=? WHERE class_id=? AND user_id=?', intoUserId, cm.class_id, a.id);
     }
     q.run('UPDATE games SET owner_id=? WHERE owner_id=?', intoUserId, a.id);
+    // Lesson work moves too (if both accounts did the same step, the student's own account keeps theirs).
+    q.run('UPDATE OR IGNORE step_progress SET user_id=? WHERE user_id=?', intoUserId, a.id);
+    q.run('DELETE FROM step_progress WHERE user_id=?', a.id);
     for (const t of ['sessions', 'friends', 'join_requests']) q.run(`DELETE FROM ${t} WHERE user_id=?`, a.id);
     q.run('DELETE FROM friends WHERE friend_id=?', a.id);
     q.run("UPDATE users SET banned=1, password_hash=NULL, managed_school='', username=? WHERE id=?", `merged_${a.id}`, a.id);

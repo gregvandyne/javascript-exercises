@@ -3,6 +3,10 @@
 // Text for the reader's language comes from /js/i18n.js (t, fmtNum).
 import { t, fmtNum, RTL } from '/js/i18n.js';
 export { t };
+// The page loads /js/app.js?v=… and page scripts import '/js/app.js': two copies of this module. Only the first one
+// adds the page-wide listeners below, so one click or one form submit is handled once.
+const FIRST = !globalThis.__brbAppStarted; globalThis.__brbAppStarted = true;
+const on = (target, ...args) => { if (FIRST) target.addEventListener(...args); };
 export const $ = (s, el = document) => el.querySelector(s);
 export const $$ = (s, el = document) => Array.from(el.querySelectorAll(s));
 export const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -43,7 +47,7 @@ export async function copyText(text) {
 }
 
 // ---- Rail arrows (desktop) ----
-document.addEventListener('click', e => {
+on(document, 'click', e => {
   const b = e.target.closest('[data-rail]'); if (!b) return;
   const track = document.getElementById(b.dataset.rail); if (!track) return;
   // In right-to-left pages "forward" scrolls toward the left.
@@ -64,30 +68,42 @@ export async function refreshLive() {
     }
   } catch { /* offline: try again later */ }
 }
-if (document.querySelector('[data-live]')) setInterval(() => { if (!document.hidden) refreshLive(); }, 30000);
+if (FIRST && document.querySelector('[data-live]')) setInterval(() => { if (!document.hidden) refreshLive(); }, 30000);
 
 // ---- Forms with data-api: submit as JSON, show inline errors, then redirect/reload ----
-document.addEventListener('submit', async e => {
+on(document, 'submit', async e => {
   const f = e.target.closest('form[data-api]'); if (!f) return;
   e.preventDefault();
-  if (f.dataset.confirm && !window.confirm(f.dataset.confirm)) return;
-  const btn = f.querySelector('[type=submit]'); if (btn) btn.disabled = true;
+  // A chosen <option data-confirm> (e.g. merging accounts) asks its own question, read at submit time.
+  const ask = (f.querySelector('select option:checked[data-confirm]') || {}).dataset?.confirm || f.dataset.confirm;
+  if (ask && !window.confirm(ask)) return;
+  // The clicked button (it may sit outside the form, with form="…") stays disabled until the reply, so a double click posts once.
+  const btn = e.submitter || f.querySelector('[type=submit]'); if (btn) { btn.disabled = true; btn.dataset.busy = '1'; }
   $$('.err', f).forEach(x => (x.textContent = '')); $$('[aria-invalid]', f).forEach(x => x.removeAttribute('aria-invalid'));
-  const body = Object.fromEntries(new FormData(f).entries());
+  // Fields that repeat (a list of checkboxes with one name) are sent as arrays.
+  const body = {};
+  for (const [k, v] of new FormData(f).entries()) body[k] = k in body ? [].concat(body[k], v) : v;
+  let left = false;
   try {
     const r = await api(f.dataset.api, { method: f.dataset.method || 'POST', body });
-    if (f.dataset.toast) toast(f.dataset.toast);
+    const msg = (r && r.toast) || f.dataset.toast;
     const next = (r && r.redirect) || f.dataset.next;
+    const leaving = next || f.dataset.reload !== undefined;
+    // A confirmation shown just before a reload would vanish: keep it for the next page instead.
+    if (msg) { if (leaving) { try { sessionStorage.setItem('brb-toast', msg); } catch { toast(msg); } } else toast(msg); }
+    left = !!leaving;
     if (next) location.href = next; else if (f.dataset.reload !== undefined) location.reload();
   } catch (err) {
     const field = err.data && err.data.field; const target = field && f.querySelector(`[name="${field}"]`);
     if (target) { target.setAttribute('aria-invalid', 'true'); const er = f.querySelector(`#${target.id}-err`); if (er) er.textContent = err.message; else toast(err.message, { bad: true }); target.focus(); }
     else { const er = f.querySelector('.form-err'); if (er) er.textContent = err.message; else toast(err.message, { bad: true }); }
-  } finally { if (btn) btn.disabled = false; }
+  } finally { if (btn && !left) { btn.disabled = false; delete btn.dataset.busy; } }   // leaving: stays disabled until the next page
 });
+// Back to a page kept in the browser's cache: buttons we disabled while leaving work again.
+on(window, 'pageshow', e => { if (e.persisted) $$('[data-busy]').forEach(b => { b.disabled = false; delete b.dataset.busy; }); });
 
 // ---- 🌐 language menu: a <details> of plain links (works without JS); here we add Escape, outside-click and arrow keys ----
-for (const d of $$('[data-langpick]')) {
+if (FIRST) for (const d of $$('[data-langpick]')) {
   const links = () => $$('.lang-list a', d);
   const close = (focus = true) => { if (!d.open) return; d.open = false; if (focus) $('summary', d).focus(); };
   d.addEventListener('toggle', () => { if (d.open) { const cur = links().find(a => a.getAttribute('aria-current') === 'true') || links()[0]; if (cur) cur.focus(); } });
@@ -104,12 +120,15 @@ for (const d of $$('[data-langpick]')) {
 }
 // The Me page's language form saves as soon as a language is picked.
 const langSel = document.getElementById('lang-select');
-if (langSel) langSel.addEventListener('change', () => langSel.form.submit());
+if (FIRST && langSel) langSel.addEventListener('change', () => langSel.form.submit());
 
 // ---- "Play as guest" buttons anywhere ----
-document.addEventListener('click', async e => {
+on(document, 'click', async e => {
   const b = e.target.closest('[data-guest-play]'); if (!b) return;
   e.preventDefault(); b.disabled = true;
   try { await api('/api/auth/guest', { method: 'POST', body: {} }); location.href = b.dataset.guestPlay || location.href; }
   catch (err) { toast(err.message, { bad: true }); b.disabled = false; }
 });
+
+// A confirmation saved by a form just before it reloaded or moved to another page.
+if (FIRST) try { const m = sessionStorage.getItem('brb-toast'); if (m) { sessionStorage.removeItem('brb-toast'); toast(m); } } catch { /* storage off */ }

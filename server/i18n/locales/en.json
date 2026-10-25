@@ -32,7 +32,8 @@
     "build": "Build",
     "friends": "Friends",
     "me": "Me",
-    "classes": "Classes"
+    "classes": "Classes",
+    "schools": "Schools"
   },
   "errors": {
     "goHome": "Go home",
@@ -1138,7 +1139,7 @@
     "guest": "Make a free account first, then join your class with the code from your teacher.",
     "waiting": "Waiting for your teacher",
     "join": "Join a class",
-    "joinText": "Type the code your teacher gave you. Your teacher says yes, then the class shows up here.",
+    "joinText": "Type the code your teacher gave you.",
     "code": "Class code",
     "joinButton": "Join",
     "sent": "Asked to join {name}. Your teacher will say yes soon!",
@@ -1147,9 +1148,7 @@
     "noLessonsText": "Your teacher will add lessons and games here."
   },
   "school": {
-    "nav": {
-      "teach": "My teaching"
-    },
+    "nav": {},
     "tabs": {
       "classes": "Classes",
       "people": "People",
@@ -1163,10 +1162,13 @@
       "student": "Student"
     },
     "teach": {
-      "title": "My teaching",
+      "title": "My classes",
       "none": "No classes yet",
       "noneText": "Create your first class below. You'll get a code to share with students.",
-      "noneAsk": "Ask your school admin to add you to a class."
+      "noneAsk": "Ask your school admin to add you to a class.",
+      "manage": "Manage {school}",
+      "noneAdmin": "You don't teach any classes yet",
+      "noneAdminText": "Classes you teach show up here. All of {school}'s classes are under Manage {school} above."
     },
     "class": {
       "new": "New class",
@@ -1179,79 +1181,118 @@
       "teachers": "Teachers",
       "students": "Students",
       "classes": "Classes",
-      "code": "Code",
+      "code": "Class code",
       "gradeN": "Grade {grade}",
       "studentsN": "{count, plural, one {# student} other {# students}}",
       "requestsN": "{count, plural, one {# request} other {# requests}}",
       "none": "No classes yet",
       "noneText": "Create a class above, or let teachers create their own.",
       "archived": "{count, plural, one {# archived class} other {# archived classes}}",
-      "isArchived": "Archived",
       "archive": "Archive",
       "restore": "Restore",
       "delete": "Delete",
       "archiveConfirm": "Archive {name}? Students won't see it, but its history is kept. You can restore it later.",
       "deleteConfirm": "Delete {name}? This can't be undone.",
       "joinCode": "Class code",
-      "joinCodeText": "Students with their own Magic Cups account type this code on their Classes page. You approve each one.",
       "newCode": "New code",
       "newCodeConfirm": "Make a new code? The old one stops working.",
-      "noStudents": "No students yet. Add them below, or share the class code.",
-      "addStudents": "Add students",
-      "newAccounts": "New school accounts (one name per line)",
-      "newAccountsHint": "Each student gets a username and password to print on a login card. Real names are only seen by teachers.",
-      "fromSchool": "Or add a student from your school",
-      "add": "Add",
+      "noStudents": "No students yet",
+      "newAccounts": "New school accounts",
+      "newAccountsHint": "Each student gets a Magic Cups name and password to print on a login card. Real names are only seen by teachers.",
       "addTeacher": "Add a teacher",
       "moveTo": "Move to class",
       "move": "Move",
       "removeStudent": "Remove",
       "removeConfirm": "Remove {name} from this class? Their work in this class is kept.",
-      "noStudentsText": "Add students below with school accounts, or give students who have their own account the class code.",
+      "noStudentsText": "Type their names below to make school accounts and login cards.",
       "details": "Class details",
       "teachersText": "Co-teachers can run this class with you: lessons, students and progress.",
       "removeTeacher": "Remove {name} from this class",
       "archiveTitle": "Archive this class",
-      "archiveText": "Archived classes are hidden from students and from your list. Everything is kept, and you can bring the class back at any time.",
-      "restoreTitle": "Bring this class back",
-      "restoreText": "This class is archived. Restore it to use it again."
+      "archiveText": "Archived classes are hidden from students and move to Archived classes at the bottom of My classes. Everything is kept, and you can restore it any time.",
+      "teacher": "Teacher",
+      "teacherChoose": "Choose a teacher…",
+      "teacherNone": "No teacher yet",
+      "noTeacherChip": "No teacher",
+      "created": "Class created: {name}",
+      "restored": "{name} restored",
+      "deleted": "{name} deleted",
+      "archivedBanner": "This class is archived. Students can't see it.",
+      "deleteTitle": "Delete this class",
+      "deleteText": "No student has ever joined this class, so you can delete it for good.",
+      "noStudentsCode": "Or share the class code with students who have their own account.",
+      "createCards": "Create accounts and login cards",
+      "alreadyAt": "Students already at {school} ({count})",
+      "addToClass": "Add to class",
+      "addedN": "{count, plural, one {# student added} other {# students added}}",
+      "moveChoose": "Move to…",
+      "moveConfirm": "Move {name} to the chosen class? Their work here stays with this class, and they start fresh in the new one.",
+      "moved": "{name} moved to {class}",
+      "reprint": "New login cards for the class",
+      "reprintConfirm": "{count, plural, one {Make a new password for # student with a school account?} other {Make new passwords for # students with school accounts?}} Their old passwords stop working and they'll be signed out.",
+      "joinCodeTextOn": "Students type this code on their My classes page (Me → My classes). Students with a {school} school account join straight away; students with their own Magic Cups account wait for you to approve them.",
+      "joinCodeTextOff": "Students with a {school} school account type this code on their My classes page to join straight away.",
+      "noTeacher": "This class has no teacher yet. Add one below.",
+      "removeTeacherConfirm": "Take {name} off this class? It leaves their My classes.",
+      "leave": "Leave this class",
+      "leaveConfirm": "Leave {name}? It leaves your My classes. The other teachers keep running it.",
+      "left": "You left {name}",
+      "onlyStaff": "Only staff of {school} can be added.",
+      "askAdmin": "Ask your school admin ({admins}) to add them on the school's People tab.",
+      "addStaffLink": "Add staff on the People tab",
+      "askNoAdmin": "{school} has no school admin yet. Ask the Magic Cups team to appoint one; they can then add staff on the school's People tab.",
+      "archivedToast": "{name} archived"
     },
     "requests": {
       "title": "{count, plural, one {# student wants to join} other {# students want to join}}",
       "text": "These students used the class code with their own account. Type their real name for your class list. If the school already made an account for them, pick it so their class records move over.",
       "realName": "Real name (only teachers see it)",
-      "sameAs": "Same student as school account",
-      "sameAsNone": "No, a new student",
+      "sameAs": "Does the school already have an account for this student?",
+      "sameAsNone": "No, this is a new student",
       "approve": "Approve",
       "decline": "Decline",
-      "declineConfirm": "Decline @{name}?"
+      "declineConfirm": "Decline @{name}?",
+      "inClass": "In this class",
+      "otherAccounts": "Other school accounts",
+      "mergeHint": "Picking one merges it into @{name}: the school account stops working, and its classes and games move over.",
+      "mergeConfirm": "Merge @{account} into @{name}? @{account} stops working.",
+      "approved": "@{name} joined the class"
     },
     "people": {
       "staff": "Staff",
       "students": "Students",
       "name": "Name",
-      "username": "Username",
+      "username": "Magic Cups name",
       "role": "Role",
       "grade": "Grade",
       "schoolAccount": "school account",
       "ownAccount": "own account",
       "addStaff": "Add a teacher or school admin",
-      "addStaffText": "Type their name. Leave the username empty to create a school account (you'll get a login card), or type the username of an account they already have.",
+      "addStaffText": "Use their real name, as students and colleagues know them. School accounts follow the school's safety rules; staff who want to share games publicly should use their own account.",
       "realName": "Real name",
-      "existing": "Existing username (optional)",
+      "existing": "Their Magic Cups name",
       "existingPlaceholder": "e.g. MsRivera",
-      "add": "Add",
       "addStudents": "Add students to the school",
-      "addStudentsText": "One name per line. Each student gets a school account and a printable login card. Put them in classes from each class page.",
+      "addStudentsText": "One name per line. Each student gets a school account and a printable login card.",
       "names": "Student names",
-      "namesPlaceholder": "Ana Silva\nBen Okafor\nChloe Martin",
-      "createAccounts": "Create accounts",
+      "namesPlaceholder": "First Last, one per line",
+      "createAccounts": "Create accounts and login cards",
       "noStaff": "No staff yet.",
       "noStudents": "No students yet.",
       "reset": "New password",
-      "resetConfirm": "Make a new password for {name}? The old one stops working.",
+      "resetConfirm": "Make a new password for {name}? The old one stops working and they'll be signed out.",
       "remove": "Remove from school",
-      "removeConfirm": "Remove {name} from the school? They leave all classes here. School accounts are switched off."
+      "removeConfirm": "Remove {name} from the school? They leave all classes here. School accounts are switched off.",
+      "you": "{role} · you",
+      "noClass": "Not in a class",
+      "newSchool": "Next: appoint the school admin. They can then add teachers, classes and students.",
+      "account": "How will they sign in?",
+      "accountNew": "Make a school account for them",
+      "accountExisting": "They already have a Magic Cups account",
+      "createStaff": "Create account and login card",
+      "addToSchool": "Add to school",
+      "added": "{name} added as {role}",
+      "putInClass": "Class"
     },
     "settings": {
       "name": "School name",
@@ -1260,26 +1301,29 @@
       "saved": "Settings saved",
       "teachersCreate": "Teachers can create their own classes",
       "ownAccounts": "Students can join with their own account",
-      "ownAccountsHint": "Students who already use Magic Cups type a class code; a teacher approves each one. Turn off to use school accounts only.",
+      "ownAccountsHint": "Students who already use Magic Cups type a class code; a teacher approves each one. When off, class codes only work for school accounts.",
       "gameSite": "School accounts on the game site",
-      "gameSiteText": "School accounts can play and build games. These rules keep them safe. Students' own accounts keep their normal settings outside class.",
+      "gameSiteText": "These rules apply to accounts the school created (students and staff). Students who joined with their own account keep their own settings.",
       "chat": "Chat",
-      "chatClassmates": "Chat with classmate friends only",
+      "chatClassmates": "Chat with friends from their classes",
       "chatOff": "No chat",
       "publishing": "Sharing games",
       "publishSchool": "Inside the school only",
       "publishPublic": "Can also share with everyone",
-      "photos": "Profile photos of school accounts are seen only by their classmates, teachers and friends."
+      "photos": "Profile photos of school accounts are seen only by their classmates, teachers and friends.",
+      "chatHint": "School accounts can only add classmates as friends."
     },
     "cards": {
       "title": "Login cards",
       "print": "Print",
-      "done": "Done",
       "once": "Print or write these down now. Passwords are only shown once. You can make a new password later if one gets lost.",
       "site": "Website",
-      "username": "Username",
+      "username": "Magic Cups name",
       "password": "Password",
-      "gone": "These login cards are gone. Make a new password from the class page."
+      "gone": "These login cards are gone. Make a new password from the class's Students tab or the school's People tab.",
+      "backPeople": "Back to People",
+      "backClass": "Back to {name}",
+      "skipped": "{count, plural, one {# student uses their own account and keeps their password} other {# students use their own account and keep their passwords}}: {names}."
     },
     "errors": {
       "notFound": "We couldn't find that, or you can't open it.",
@@ -1291,23 +1335,37 @@
       "badRole": "That role isn't allowed here.",
       "ownRole": "You can't change or remove your own admin role.",
       "noAccount": "Make a free account first.",
-      "noSuchUser": "No account with that username.",
+      "noSuchUser": "No account with that Magic Cups name.",
       "otherSchoolAccount": "That account belongs to another school.",
       "notSchoolAccount": "Only school accounts can get a new password here. Students with their own account reset it themselves.",
       "classHasStudents": "This class has had students, so it can't be deleted. Archive it instead.",
       "notInSchool": "That person isn't in this school.",
       "otherSchool": "You can only move students between classes of the same school.",
       "badCode": "That class code doesn't work. Check it with your teacher.",
-      "staffUseTeach": "You're a teacher at this school. Open My teaching instead.",
+      "staffUseTeach": "You're a teacher at this school. Open My classes instead.",
       "ownAccountsOff": "This school uses school accounts only. Ask your teacher for a login card.",
-      "lastTeacher": "A class needs at least one teacher."
+      "lastTeacher": "A class needs at least one teacher.",
+      "staffName": "Type their name.",
+      "username": "Type their Magic Cups name.",
+      "alreadyStaff": "{name} is already staff here ({role}).",
+      "sameName": "{count, plural, one {This name is already at {school}} other {These names are already at {school}}}: {names}. Take them out of the list, or add an initial to tell them apart. To put existing students in a class, tick them on the class's Students tab.",
+      "chooseTeacher": "Choose a teacher.",
+      "chooseClass": "Choose a class.",
+      "noSchoolAccounts": "No students in this class have school accounts.",
+      "badTeacher": "Choose someone on the school's staff.",
+      "adminNotStudent": "You look after Magic Cups, so you can't join a class as a student.",
+      "isStudent": "{name} is a student here, so they can't be added as staff.",
+      "tickStudents": "Tick at least one student."
     },
     "classTabs": {
       "lessons": "Lessons",
       "progress": "Progress",
       "students": "Students",
       "settings": "Settings"
-    }
+    },
+    "optional": "(optional)",
+    "me": "me",
+    "moreFor": "More for {name}"
   },
   "lessons": {
     "up": "Move up",
@@ -1326,8 +1384,8 @@
     "library": {
       "title": "Lesson library",
       "mine": "My lessons",
-      "shared": "Shared in my school",
-      "top": "Library",
+      "shared": "Shared by colleagues",
+      "top": "Lesson library",
       "path": "Folders",
       "newLesson": "New lesson",
       "newLessonPlaceholder": "Lesson title, e.g. Fractions warm-up",
@@ -1337,9 +1395,10 @@
     "folder": {
       "name": "Folder name",
       "new": "New folder",
-      "newPlaceholder": "New folder, e.g. Term 1",
+      "newPlaceholder": "New folder, e.g. Fractions",
       "delete": "Delete folder",
-      "deleteConfirm": "Delete the folder {name}? The lessons and folders inside move up one level."
+      "deleteConfirm": "Delete the folder {name}? The lessons and folders inside move up one level.",
+      "hint": "Folders are only for you. Students never see them."
     },
     "lesson": {
       "title": "Lesson title",
@@ -1348,16 +1407,20 @@
       "objectivesHint": "One objective per line",
       "steps": "Steps",
       "noSteps": "No steps yet. Add the first one below.",
-      "details": "Lesson details",
       "share": "Share with my school",
-      "shareNo": "No, only me",
-      "shareYes": "Yes, other teachers can copy it",
       "sharedChip": "Shared",
       "duplicate": "Make a copy",
-      "duplicated": "Copy made. Find it in your library.",
       "delete": "Delete lesson",
       "deleteConfirm": "Delete the lesson {name}? This can't be undone.",
-      "deleteAssignedConfirm": "Delete the lesson {name}? It will also be removed from {count, plural, one {# class} other {# classes}}. This can't be undone."
+      "deleteAssignedConfirm": "Delete the lesson {name}? It will also be removed from {count, plural, one {# class} other {# classes}}. This can't be undone.",
+      "unshare": "Stop sharing",
+      "sharedToast": "Shared with your school. Colleagues can now copy it.",
+      "unsharedToast": "Not shared any more.",
+      "sharedStatus": "Shared with your school",
+      "editDetails": "Edit details",
+      "copiedNotice": "This is your copy. Rename it in Edit details.",
+      "deleteWorkConfirm": "Delete the lesson {name}? {n, plural, one {# student's work} other {# students' work}} in it will be deleted. This can't be undone.",
+      "deleteLiveConfirm": "Delete the lesson {name}? It is in {count, plural, one {# class} other {# classes}}, and {n, plural, one {# student's work} other {# students' work}} in it will be deleted. This can't be undone. To keep their work, remove it from the class instead."
     },
     "step": {
       "add": "Add a step",
@@ -1369,8 +1432,6 @@
       "schoolGames": "Shared in my school",
       "siteGames": "Magic Cups games",
       "minutes": "Minutes",
-      "body": "Instructions",
-      "bodyHint": "What students should do. For “Build a game”, this is the idea they give the Builder, e.g. “a quiz with 8 questions about the planets”.",
       "edit": "Edit step",
       "delete": "Delete step",
       "deleteConfirm": "Delete this step?",
@@ -1378,11 +1439,17 @@
       "notSharedHint": "Share it with your school first, or open it in the Studio and press Publish.",
       "shareGame": "Share with my school",
       "openStudio": "Open in the Studio",
-      "newGame": "Make a new game for this lesson with the Builder",
       "newGameIdea": "Your idea for the game",
       "newGamePlaceholder": "e.g. a quiz with 10 questions about fractions for grade 4",
       "newGameButton": "Open the Builder",
-      "newGameNote": "A game step is added to this lesson, and the Studio opens with your idea ready. Publish it to your school when it's done."
+      "newGameNote": "A game step is added to this lesson, and the Studio opens with your idea ready. Publish it to your school when it's done.",
+      "bodyText": "What students read or do",
+      "bodyQuestion": "The question",
+      "bodyBuild": "Idea students give the Builder",
+      "bodyGame": "Instructions (optional)",
+      "buildHint": "e.g. “a quiz with 8 questions about the planets”",
+      "newGameLink": "Make a new game for students to play",
+      "deleteWorkConfirm": "Delete this step? {n, plural, one {# student's work} other {# students' work}} on it will be deleted. This can't be undone."
     },
     "ai": {
       "button": "Draft with AI",
@@ -1392,7 +1459,7 @@
       "make": "Draft the lesson",
       "note": "Claude drafts a lesson with steps and matching games. You can change everything before you use it.",
       "done": "Here is your draft. Check every step and change anything you like.",
-      "template": "Here is a starting point. Add your own steps and games."
+      "template": "The AI isn't available right now, so here's a simple template to start from. Change anything you like."
     },
     "assign": {
       "title": "Assign to a class",
@@ -1400,13 +1467,15 @@
       "opens": "Opens on (optional)",
       "due": "Due on (optional)",
       "button": "Assign",
-      "already": "Assigned to:",
       "noClasses": "You don't teach a class in this school yet.",
-      "note": "Students see the lesson from the day it opens. Changes you make later show up for every class."
+      "note": "Students see the lesson from the day it opens. Changes you make later show up for every class.",
+      "done": "Assigned to {class}",
+      "restored": "Assigned to {class} again. Students' earlier work is back.",
+      "changeDates": "Change dates",
+      "allClasses": "This lesson is in all your classes."
     },
     "class": {
       "title": "Lessons",
-      "none": "No lessons yet. Assign one from your library.",
       "assign": "Assign a lesson",
       "library": "Lesson library",
       "unit": "Unit",
@@ -1420,19 +1489,28 @@
       "dueOn": "Due {date}",
       "editLesson": "Edit lesson",
       "unassign": "Remove from class",
-      "unassignConfirm": "Remove {name} from this class? The lesson stays in your library."
+      "unassignConfirm": "Remove {name} from this class? Students won't see it any more. Their work is kept and comes back if you assign it again.",
+      "empty": "No lessons yet",
+      "emptyText": "Make a new lesson for this class, or let the AI draft one for you to check.",
+      "allIn": "All your lessons are in this class.",
+      "sharedHint": "Want a colleague's lesson? Make a copy of it from {tab} first.",
+      "unitHint": "Units group this class's lessons. Students see them.",
+      "doneOf": "{done} of {students} done",
+      "toReview": "{count} to review",
+      "dueToday": "Due today",
+      "late": "Late",
+      "removedGroup": "Removed from this class"
     },
     "view": {
-      "teacherPreview": "This is what your students see.",
+      "teacherPreview": "Student view. Buttons that save work are turned off for you.",
       "play": "Play {title}",
       "build": "Start building",
       "notReady": "This game isn't ready yet. Ask your teacher."
     },
     "shared": {
       "copy": "Copy to my library",
-      "copied": "Copied to your library!",
-      "empty": "Nothing shared yet",
-      "emptyText": "When teachers in your school share a lesson, it shows up here."
+      "empty": "Nothing shared by colleagues yet",
+      "emptyText": "Lessons other teachers share show up here. Lessons you share are marked 🏫 Shared in My lessons."
     },
     "template": {
       "warmup": "Warm-up",
@@ -1440,8 +1518,6 @@
       "play": "Play {title}",
       "build": "Build your own game",
       "buildText": "A quiz game with 6 questions about {topic}",
-      "wrapup": "Wrap-up",
-      "wrapupText": "Share one thing you learned today.",
       "exit": "Exit ticket",
       "exitText": "In two or three sentences: what is the most important thing you learned about {topic} today?"
     },
@@ -1459,7 +1535,11 @@
       "badDate": "That date doesn't look right.",
       "topic": "Type what the lesson is about.",
       "aiFailed": "The AI couldn't draft this right now. Try again in a minute, or make the lesson yourself.",
-      "questionText": "Write the question students will answer."
+      "questionText": "Write the question students will answer.",
+      "alreadyAssigned": "This lesson is already in {class}. Change its dates from the ⋯ menu on the class's Lessons tab."
+    },
+    "editor": {
+      "live": "Live in {classes}. {count, plural, =0 {No students have started yet.} one {# student has started.} other {# students have started.}} Changes show up for them right away."
     }
   },
   "progress": {
@@ -1479,40 +1559,41 @@
       "none": "Not started"
     },
     "key": {
-      "done": "finished",
+      "done": "done",
       "steps": "steps done",
-      "late": "past the due date",
-      "toRead": "answers to read"
+      "late": "late",
+      "toRead": "answers to review"
     },
     "teach": {
-      "toRead": "{count, plural, one {# answer to read} other {# answers to read}}"
+      "toRead": "{count, plural, one {# answer to review} other {# answers to review}}"
     },
     "gradebook": {
       "title": "Progress",
-      "text": "Steps each student has finished in each lesson. Open a lesson to see scores and read answers.",
+      "text": "Steps each student has done in each lesson. Open a lesson to see scores and review answers.",
       "csv": "Download (CSV)",
       "overall": "Overall",
-      "late": "Past the due date",
-      "toRead": "{count, plural, one {# answer is waiting for you to read.} other {# answers are waiting for you to read.}}",
+      "toRead": "{count, plural, one {# answer to review} other {# answers to review}}",
       "noLessons": "No lessons yet",
       "noLessonsText": "Assign a lesson on the Lessons tab, and you'll see how each student is doing here.",
       "noStudents": "No students yet",
-      "noStudentsText": "Add students on the Students tab, and their progress shows up here."
+      "noStudentsText": "Add students on the Students tab, and their progress shows up here.",
+      "toReviewList": "Answers to review:",
+      "reviewLink": "{title} ({count})"
     },
     "lesson": {
-      "finished": "{done} of {total} students finished",
+      "finished": "{done} of {total} students done",
       "studentView": "Student view",
-      "seeProgress": "Class progress",
-      "jump": "Read them",
+      "seeProgress": "Progress",
+      "jump": "Go to answers",
       "lastActive": "Last active",
       "openGame": "Play their game",
-      "readAnswer": "Read",
+      "readAnswer": "See answer",
       "question": "Question in step {n}",
-      "read": "Read",
+      "read": "Reviewed",
       "new": "New",
       "feedback": "Feedback for the student",
       "feedbackPlaceholder": "Feedback for the student (optional)",
-      "send": "Save and mark as read",
+      "send": "Save and mark reviewed",
       "update": "Update feedback",
       "noAnswers": "No answers yet."
     },
@@ -1536,7 +1617,7 @@
       "updateAnswer": "Change my answer",
       "sentAgo": "Sent {when}",
       "feedback": "From your teacher",
-      "readNoFeedback": "Your teacher has read your answer."
+      "readNoFeedback": "Your teacher has seen your answer."
     }
   }
 }

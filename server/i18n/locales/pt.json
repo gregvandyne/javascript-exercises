@@ -32,7 +32,8 @@
     "build": "Criar",
     "friends": "Amigos",
     "me": "Eu",
-    "classes": "Turmas"
+    "classes": "Turmas",
+    "schools": "Escolas"
   },
   "errors": {
     "goHome": "Ir para o início",
@@ -1138,7 +1139,7 @@
     "guest": "Crie uma conta grátis primeiro e depois entre na sua turma com o código do seu professor.",
     "waiting": "Esperando o professor",
     "join": "Entrar em uma turma",
-    "joinText": "Digite o código que o seu professor deu. Quando o professor disser sim, a turma aparece aqui.",
+    "joinText": "Digite o código que o seu professor deu.",
     "code": "Código da turma",
     "joinButton": "Entrar",
     "sent": "Você pediu para entrar em {name}. Seu professor vai dizer sim logo!",
@@ -1147,9 +1148,6 @@
     "noLessonsText": "Seu professor vai colocar aulas e jogos aqui."
   },
   "school": {
-    "nav": {
-      "teach": "Área do professor"
-    },
     "tabs": {
       "classes": "Turmas",
       "people": "Pessoas",
@@ -1163,10 +1161,13 @@
       "student": "Aluno"
     },
     "teach": {
-      "title": "Área do professor",
+      "title": "Minhas turmas",
       "none": "Nenhuma turma ainda",
       "noneText": "Crie sua primeira turma abaixo. Você vai receber um código para compartilhar com os alunos.",
-      "noneAsk": "Peça ao admin da escola para adicionar você a uma turma."
+      "noneAsk": "Peça ao admin da escola para adicionar você a uma turma.",
+      "manage": "Gerenciar {school}",
+      "noneAdmin": "Você ainda não dá aula para nenhuma turma",
+      "noneAdminText": "As turmas em que você dá aula aparecem aqui. Todas as turmas de {school} estão em Gerenciar {school}, logo acima."
     },
     "class": {
       "new": "Nova turma",
@@ -1179,79 +1180,118 @@
       "teachers": "Professores",
       "students": "Alunos",
       "classes": "Turmas",
-      "code": "Código",
+      "code": "Código da turma",
       "gradeN": "Ano: {grade}",
       "studentsN": "{count, plural, one {# aluno} other {# alunos}}",
       "requestsN": "{count, plural, one {# pedido} other {# pedidos}}",
       "none": "Nenhuma turma ainda",
       "noneText": "Crie uma turma acima ou deixe os professores criarem as suas.",
       "archived": "{count, plural, one {# turma arquivada} other {# turmas arquivadas}}",
-      "isArchived": "Arquivada",
       "archive": "Arquivar",
       "restore": "Restaurar",
       "delete": "Excluir",
       "archiveConfirm": "Arquivar {name}? Os alunos não vão mais vê-la, mas o histórico fica guardado. Você pode restaurá-la depois.",
       "deleteConfirm": "Excluir {name}? Isso não pode ser desfeito.",
       "joinCode": "Código da turma",
-      "joinCodeText": "Alunos com uma conta própria no Magic Cups digitam este código na página Turmas. Você aprova cada um.",
       "newCode": "Novo código",
       "newCodeConfirm": "Gerar um novo código? O antigo deixa de funcionar.",
-      "noStudents": "Ainda não há alunos. Adicione abaixo ou compartilhe o código da turma.",
-      "addStudents": "Adicionar alunos",
-      "newAccounts": "Novas contas da escola (um nome por linha)",
-      "newAccountsHint": "Cada aluno recebe um nome de usuário e uma senha para imprimir em um cartão de acesso. Os nomes reais só são vistos pelos professores.",
-      "fromSchool": "Ou adicione um aluno da sua escola",
-      "add": "Adicionar",
+      "noStudents": "Nenhum aluno ainda",
+      "newAccounts": "Novas contas da escola",
+      "newAccountsHint": "Cada aluno recebe um nome no Magic Cups e uma senha para imprimir em um cartão de acesso. Os nomes reais só são vistos pelos professores.",
       "addTeacher": "Adicionar um professor",
       "moveTo": "Mover para a turma",
       "move": "Mover",
       "removeStudent": "Remover",
       "removeConfirm": "Remover {name} desta turma? Os trabalhos feitos nesta turma ficam guardados.",
-      "noStudentsText": "Adicione alunos abaixo com contas da escola, ou dê o código da turma aos alunos que têm conta própria.",
+      "noStudentsText": "Digite os nomes abaixo para criar contas da escola e cartões de acesso.",
       "details": "Detalhes da turma",
       "teachersText": "Outros professores podem cuidar desta turma com você: aulas, alunos e progresso.",
       "removeTeacher": "Remover {name} desta turma",
       "archiveTitle": "Arquivar esta turma",
-      "archiveText": "Turmas arquivadas ficam escondidas dos alunos e da sua lista. Tudo fica guardado, e você pode trazer a turma de volta quando quiser.",
-      "restoreTitle": "Trazer esta turma de volta",
-      "restoreText": "Esta turma está arquivada. Restaure-a para usá-la de novo."
+      "archiveText": "Turmas arquivadas ficam escondidas dos alunos e vão para Turmas arquivadas, no fim de Minhas turmas. Tudo fica guardado, e você pode restaurar a turma quando quiser.",
+      "teacher": "Professor",
+      "teacherChoose": "Escolha um professor…",
+      "teacherNone": "Ainda sem professor",
+      "noTeacherChip": "Sem professor",
+      "created": "Turma criada: {name}",
+      "restored": "Turma {name} restaurada",
+      "deleted": "Turma {name} excluída",
+      "archivedBanner": "Esta turma está arquivada. Os alunos não podem vê-la.",
+      "deleteTitle": "Excluir esta turma",
+      "deleteText": "Nenhum aluno entrou nesta turma até agora, então você pode excluí-la de vez.",
+      "noStudentsCode": "Ou compartilhe o código da turma com os alunos que têm conta própria.",
+      "createCards": "Criar contas e cartões de acesso",
+      "alreadyAt": "Alunos já matriculados em {school} ({count})",
+      "addToClass": "Adicionar à turma",
+      "addedN": "{count, plural, one {# aluno adicionado} other {# alunos adicionados}}",
+      "moveChoose": "Mover para…",
+      "moveConfirm": "Mover {name} para a turma escolhida? Os trabalhos feitos aqui ficam nesta turma, e o aluno começa do zero na nova.",
+      "moved": "{name} agora está em {class}",
+      "reprint": "Novos cartões de acesso para a turma",
+      "reprintConfirm": "{count, plural, one {Gerar uma nova senha para # aluno com conta da escola?} other {Gerar novas senhas para # alunos com contas da escola?}} As senhas antigas deixam de funcionar, e as sessões abertas são encerradas.",
+      "joinCodeTextOn": "Os alunos digitam este código na página Minhas turmas (Eu → Minhas turmas). Alunos com conta da escola {school} entram na hora; alunos com conta própria no Magic Cups esperam a sua aprovação.",
+      "joinCodeTextOff": "Alunos com conta da escola {school} digitam este código na página Minhas turmas para entrar na hora.",
+      "noTeacher": "Esta turma ainda não tem professor. Adicione um abaixo.",
+      "removeTeacherConfirm": "Tirar {name} desta turma? A turma sai da página Minhas turmas dessa pessoa.",
+      "leave": "Sair desta turma",
+      "leaveConfirm": "Sair de {name}? A turma sai da sua página Minhas turmas. Os outros professores continuam cuidando dela.",
+      "left": "Você saiu de {name}",
+      "onlyStaff": "Só é possível adicionar pessoas da equipe de {school}.",
+      "askAdmin": "Peça ao admin da escola ({admins}) para adicionar a pessoa na aba Pessoas da escola.",
+      "addStaffLink": "Adicionar à equipe na aba Pessoas",
+      "askNoAdmin": "{school} ainda não tem admin da escola. Peça à equipe do Magic Cups para nomear um; depois, essa pessoa poderá adicionar membros à equipe na aba Pessoas da escola.",
+      "archivedToast": "Turma {name} arquivada"
     },
     "requests": {
       "title": "{count, plural, one {# aluno quer entrar} other {# alunos querem entrar}}",
       "text": "Estes alunos usaram o código da turma com a própria conta. Digite o nome real de cada um para a lista da turma. Se a escola já criou uma conta para o aluno, selecione essa conta para transferir os registros da turma.",
       "realName": "Nome real (só os professores veem)",
-      "sameAs": "Mesmo aluno da conta da escola",
+      "sameAs": "A escola já tem uma conta para este aluno?",
       "sameAsNone": "Não, é um aluno novo",
       "approve": "Aprovar",
       "decline": "Recusar",
-      "declineConfirm": "Recusar @{name}?"
+      "declineConfirm": "Recusar @{name}?",
+      "inClass": "Nesta turma",
+      "otherAccounts": "Outras contas da escola",
+      "mergeHint": "Se você escolher uma, ela será mesclada com @{name}: a conta da escola deixa de funcionar, e as turmas e os jogos dela são transferidos.",
+      "mergeConfirm": "Mesclar @{account} na conta @{name}? A conta @{account} deixa de funcionar.",
+      "approved": "@{name} entrou na turma"
     },
     "people": {
       "staff": "Equipe",
       "students": "Alunos",
       "name": "Nome",
-      "username": "Nome de usuário",
+      "username": "Nome no Magic Cups",
       "role": "Função",
       "grade": "Ano",
       "schoolAccount": "conta da escola",
       "ownAccount": "conta própria",
       "addStaff": "Adicionar um professor ou admin da escola",
-      "addStaffText": "Digite o nome da pessoa. Deixe o nome de usuário em branco para criar uma conta da escola (você vai receber um cartão de acesso) ou digite o nome de usuário de uma conta que a pessoa já tem.",
+      "addStaffText": "Use o nome real, como alunos e colegas conhecem a pessoa. As contas da escola seguem as regras de segurança da escola; quem quiser compartilhar jogos com todos deve usar a própria conta.",
       "realName": "Nome real",
-      "existing": "Nome de usuário existente (opcional)",
+      "existing": "Nome da pessoa no Magic Cups",
       "existingPlaceholder": "ex.: ProfRibeiro",
-      "add": "Adicionar",
       "addStudents": "Adicionar alunos à escola",
-      "addStudentsText": "Um nome por linha. Cada aluno recebe uma conta da escola e um cartão de acesso para imprimir. Coloque os alunos nas turmas pela página de cada turma.",
+      "addStudentsText": "Um nome por linha. Cada aluno recebe uma conta da escola e um cartão de acesso para imprimir.",
       "names": "Nomes dos alunos",
-      "namesPlaceholder": "Ana Souza\nBruno Oliveira\nCarla Santos",
-      "createAccounts": "Criar contas",
+      "namesPlaceholder": "Nome Sobrenome, um por linha",
+      "createAccounts": "Criar contas e cartões de acesso",
       "noStaff": "Ninguém na equipe ainda.",
       "noStudents": "Nenhum aluno ainda.",
       "reset": "Nova senha",
-      "resetConfirm": "Gerar uma nova senha para {name}? A antiga deixa de funcionar.",
+      "resetConfirm": "Gerar uma nova senha para {name}? A antiga deixa de funcionar, e as sessões abertas são encerradas.",
       "remove": "Remover da escola",
-      "removeConfirm": "Remover {name} da escola? A pessoa sai de todas as turmas desta escola. As contas da escola são desativadas."
+      "removeConfirm": "Remover {name} da escola? A pessoa sai de todas as turmas desta escola. As contas da escola são desativadas.",
+      "you": "{role} · você",
+      "noClass": "Sem turma",
+      "newSchool": "Próximo passo: nomeie o admin da escola. Depois, essa pessoa pode adicionar professores, turmas e alunos.",
+      "account": "Como a pessoa vai entrar?",
+      "accountNew": "Criar uma conta da escola para a pessoa",
+      "accountExisting": "A pessoa já tem uma conta no Magic Cups",
+      "createStaff": "Criar conta e cartão de acesso",
+      "addToSchool": "Adicionar à escola",
+      "added": "{name} entrou na equipe como {role}",
+      "putInClass": "Turma"
     },
     "settings": {
       "name": "Nome da escola",
@@ -1260,26 +1300,29 @@
       "saved": "Configurações salvas",
       "teachersCreate": "Os professores podem criar as próprias turmas",
       "ownAccounts": "Os alunos podem entrar com a própria conta",
-      "ownAccountsHint": "Alunos que já usam o Magic Cups digitam um código de turma; um professor aprova cada um. Desative para usar só contas da escola.",
+      "ownAccountsHint": "Alunos que já usam o Magic Cups digitam um código de turma; um professor aprova cada um. Se estiver desativado, os códigos de turma só funcionam para contas da escola.",
       "gameSite": "Contas da escola no site de jogos",
-      "gameSiteText": "As contas da escola podem jogar e criar jogos. Estas regras mantêm essas contas seguras. As contas próprias dos alunos mantêm as configurações normais fora da turma.",
+      "gameSiteText": "Estas regras valem para as contas que a escola criou (alunos e equipe). Alunos que entraram com a própria conta mantêm as próprias configurações.",
       "chat": "Chat",
-      "chatClassmates": "Chat só com amigos da turma",
+      "chatClassmates": "Chat com amigos das próprias turmas",
       "chatOff": "Sem chat",
       "publishing": "Compartilhar jogos",
       "publishSchool": "Só dentro da escola",
       "publishPublic": "Também podem compartilhar com todos",
-      "photos": "As fotos de perfil das contas da escola só são vistas pelos colegas de turma, professores e amigos."
+      "photos": "As fotos de perfil das contas da escola só são vistas pelos colegas de turma, professores e amigos.",
+      "chatHint": "As contas da escola só podem adicionar colegas de turma como amigos."
     },
     "cards": {
       "title": "Cartões de acesso",
       "print": "Imprimir",
-      "done": "Pronto",
       "once": "Imprima ou anote agora. As senhas só aparecem uma vez. Se alguém perder a senha, você pode gerar uma nova depois.",
       "site": "Site",
-      "username": "Nome de usuário",
+      "username": "Nome no Magic Cups",
       "password": "Senha",
-      "gone": "Estes cartões de acesso não estão mais disponíveis. Gere uma nova senha na página da turma."
+      "gone": "Estes cartões de acesso não estão mais disponíveis. Gere uma nova senha na aba Alunos da turma ou na aba Pessoas da escola.",
+      "backPeople": "Voltar para Pessoas",
+      "backClass": "Voltar para {name}",
+      "skipped": "{count, plural, one {# aluno usa a própria conta e mantém a senha} other {# alunos usam a própria conta e mantêm a senha}}: {names}."
     },
     "errors": {
       "notFound": "Não encontramos isso, ou não é possível abrir.",
@@ -1291,23 +1334,37 @@
       "badRole": "Essa função não é permitida aqui.",
       "ownRole": "Você não pode mudar nem remover sua própria função de admin.",
       "noAccount": "Crie uma conta grátis primeiro.",
-      "noSuchUser": "Não há nenhuma conta com esse nome de usuário.",
+      "noSuchUser": "Não há nenhuma conta com esse nome no Magic Cups.",
       "otherSchoolAccount": "Essa conta pertence a outra escola.",
       "notSchoolAccount": "Só contas da escola podem receber uma nova senha aqui. Alunos com conta própria trocam a senha eles mesmos.",
       "classHasStudents": "Esta turma já teve alunos, então não pode ser excluída. Arquive a turma em vez disso.",
       "notInSchool": "Essa pessoa não está nesta escola.",
       "otherSchool": "Você só pode mover alunos entre turmas da mesma escola.",
       "badCode": "Esse código de turma não funciona. Confira com seu professor.",
-      "staffUseTeach": "Você é professor nesta escola. Abra a Área do professor.",
+      "staffUseTeach": "Você é professor nesta escola. Abra Minhas turmas.",
       "ownAccountsOff": "Esta escola usa só contas da escola. Peça um cartão de acesso ao seu professor.",
-      "lastTeacher": "Uma turma precisa de pelo menos um professor."
+      "lastTeacher": "Uma turma precisa de pelo menos um professor.",
+      "staffName": "Digite o nome da pessoa.",
+      "username": "Digite o nome da pessoa no Magic Cups.",
+      "alreadyStaff": "{name} já faz parte da equipe ({role}).",
+      "sameName": "{count, plural, one {Este nome já existe em {school}} other {Estes nomes já existem em {school}}}: {names}. Tire-os da lista ou acrescente uma inicial para diferenciar. Para colocar alunos que já existem em uma turma, marque-os na aba Alunos da turma.",
+      "chooseTeacher": "Escolha um professor.",
+      "chooseClass": "Escolha uma turma.",
+      "noSchoolAccounts": "Nenhum aluno desta turma tem conta da escola.",
+      "badTeacher": "Escolha alguém da equipe da escola.",
+      "adminNotStudent": "Você cuida do Magic Cups, então não pode entrar em uma turma como aluno.",
+      "isStudent": "{name} tem conta de aluno aqui, por isso não pode entrar na equipe.",
+      "tickStudents": "Marque pelo menos um aluno."
     },
     "classTabs": {
       "lessons": "Aulas",
       "progress": "Progresso",
       "students": "Alunos",
       "settings": "Configurações"
-    }
+    },
+    "optional": "(opcional)",
+    "me": "você",
+    "moreFor": "Mais opções para {name}"
   },
   "lessons": {
     "up": "Mover para cima",
@@ -1326,8 +1383,8 @@
     "library": {
       "title": "Biblioteca de aulas",
       "mine": "Minhas aulas",
-      "shared": "Compartilhadas na minha escola",
-      "top": "Biblioteca",
+      "shared": "Compartilhadas por colegas",
+      "top": "Biblioteca de aulas",
       "path": "Pastas",
       "newLesson": "Nova aula",
       "newLessonPlaceholder": "Título da aula, ex.: Aquecimento de frações",
@@ -1337,9 +1394,10 @@
     "folder": {
       "name": "Nome da pasta",
       "new": "Nova pasta",
-      "newPlaceholder": "Nova pasta, ex.: 1º bimestre",
+      "newPlaceholder": "Nova pasta, ex.: Frações",
       "delete": "Excluir pasta",
-      "deleteConfirm": "Excluir a pasta {name}? As aulas e pastas que estão dentro dela sobem um nível."
+      "deleteConfirm": "Excluir a pasta {name}? As aulas e pastas que estão dentro dela sobem um nível.",
+      "hint": "As pastas são só para você. Os alunos nunca as veem."
     },
     "lesson": {
       "title": "Título da aula",
@@ -1348,16 +1406,20 @@
       "objectivesHint": "Um objetivo por linha",
       "steps": "Etapas",
       "noSteps": "Ainda não há etapas. Adicione a primeira abaixo.",
-      "details": "Detalhes da aula",
       "share": "Compartilhar com a minha escola",
-      "shareNo": "Não, só eu",
-      "shareYes": "Sim, outros professores podem copiá-la",
       "sharedChip": "Compartilhada",
       "duplicate": "Fazer uma cópia",
-      "duplicated": "Cópia feita. Ela está na sua biblioteca.",
       "delete": "Excluir aula",
       "deleteConfirm": "Excluir a aula {name}? Isso não pode ser desfeito.",
-      "deleteAssignedConfirm": "Excluir a aula {name}? Ela também será removida de {count, plural, one {# turma} other {# turmas}}. Isso não pode ser desfeito."
+      "deleteAssignedConfirm": "Excluir a aula {name}? Ela também será removida de {count, plural, one {# turma} other {# turmas}}. Isso não pode ser desfeito.",
+      "unshare": "Parar de compartilhar",
+      "sharedToast": "Compartilhada com a sua escola. Os colegas já podem copiá-la.",
+      "unsharedToast": "Não está mais compartilhada.",
+      "sharedStatus": "Compartilhada com a sua escola",
+      "editDetails": "Editar detalhes",
+      "copiedNotice": "Esta é a sua cópia. Mude o nome em Editar detalhes.",
+      "deleteWorkConfirm": "Excluir a aula {name}? {n, plural, one {O trabalho de # aluno nela será excluído.} other {Os trabalhos de # alunos nela serão excluídos.}} Isso não pode ser desfeito.",
+      "deleteLiveConfirm": "Excluir a aula {name}? Ela está em {count, plural, one {# turma} other {# turmas}}, e {n, plural, one {o trabalho de # aluno nela será excluído} other {os trabalhos de # alunos nela serão excluídos}}. Isso não pode ser desfeito. Para manter os trabalhos, remova a aula da turma em vez de excluí-la."
     },
     "step": {
       "add": "Adicionar uma etapa",
@@ -1369,8 +1431,6 @@
       "schoolGames": "Compartilhados na minha escola",
       "siteGames": "Jogos do Magic Cups",
       "minutes": "Minutos",
-      "body": "Instruções",
-      "bodyHint": "O que os alunos devem fazer. Em “Criar um jogo”, é a ideia que eles dão ao Construtor, ex.: “um quiz com 8 perguntas sobre os planetas”.",
       "edit": "Editar etapa",
       "delete": "Excluir etapa",
       "deleteConfirm": "Excluir esta etapa?",
@@ -1378,11 +1438,17 @@
       "notSharedHint": "Primeiro compartilhe o jogo com a sua escola, ou abra-o no Estúdio e toque em Publicar.",
       "shareGame": "Compartilhar com a minha escola",
       "openStudio": "Abrir no Estúdio",
-      "newGame": "Criar um novo jogo para esta aula com o Construtor",
       "newGameIdea": "Sua ideia para o jogo",
       "newGamePlaceholder": "ex.: um quiz com 10 perguntas sobre frações para o 4º ano",
       "newGameButton": "Abrir o Construtor",
-      "newGameNote": "Uma etapa de jogo é adicionada a esta aula, e o Estúdio abre com a sua ideia pronta. Quando o jogo estiver pronto, publique-o para a sua escola."
+      "newGameNote": "Uma etapa de jogo é adicionada a esta aula, e o Estúdio abre com a sua ideia pronta. Quando o jogo estiver pronto, publique-o para a sua escola.",
+      "bodyText": "O que os alunos leem ou fazem",
+      "bodyQuestion": "A pergunta",
+      "bodyBuild": "Ideia que os alunos dão ao Construtor",
+      "bodyGame": "Instruções (opcional)",
+      "buildHint": "ex.: “um quiz com 8 perguntas sobre os planetas”",
+      "newGameLink": "Criar um novo jogo para os alunos jogarem",
+      "deleteWorkConfirm": "Excluir esta etapa? {n, plural, one {O trabalho de # aluno nela será excluído.} other {Os trabalhos de # alunos nela serão excluídos.}} Isso não pode ser desfeito."
     },
     "ai": {
       "button": "Criar rascunho com IA",
@@ -1392,7 +1458,7 @@
       "make": "Criar o rascunho da aula",
       "note": "O Claude cria o rascunho de uma aula com etapas e jogos relacionados. Você pode mudar tudo antes de usar.",
       "done": "Aqui está o seu rascunho. Confira cada etapa e mude o que quiser.",
-      "template": "Aqui está um ponto de partida. Adicione suas próprias etapas e jogos."
+      "template": "A IA não está disponível agora, então aqui está um modelo simples para começar. Mude o que quiser."
     },
     "assign": {
       "title": "Atribuir a uma turma",
@@ -1400,13 +1466,15 @@
       "opens": "Abre em (opcional)",
       "due": "Prazo (opcional)",
       "button": "Atribuir",
-      "already": "Atribuída a:",
       "noClasses": "Você ainda não dá aula para nenhuma turma nesta escola.",
-      "note": "Os alunos veem a aula a partir do dia em que ela abre. As mudanças que você fizer depois aparecem para todas as turmas."
+      "note": "Os alunos veem a aula a partir do dia em que ela abre. As mudanças que você fizer depois aparecem para todas as turmas.",
+      "done": "Atribuída a {class}",
+      "restored": "Atribuída de novo a {class}. Os trabalhos anteriores dos alunos voltaram.",
+      "changeDates": "Mudar datas",
+      "allClasses": "Esta aula já está em todas as suas turmas."
     },
     "class": {
       "title": "Aulas",
-      "none": "Ainda não há aulas. Atribua uma da sua biblioteca.",
       "assign": "Atribuir uma aula",
       "library": "Biblioteca de aulas",
       "unit": "Unidade",
@@ -1420,19 +1488,28 @@
       "dueOn": "Entregar até {date}",
       "editLesson": "Editar aula",
       "unassign": "Remover da turma",
-      "unassignConfirm": "Remover {name} desta turma? A aula continua na sua biblioteca."
+      "unassignConfirm": "Remover {name} desta turma? Os alunos não vão mais vê-la. Os trabalhos ficam guardados e voltam se você atribuir a aula de novo.",
+      "empty": "Nenhuma aula ainda",
+      "emptyText": "Crie uma nova aula para esta turma ou deixe a IA fazer um rascunho para você conferir.",
+      "allIn": "Todas as suas aulas já estão nesta turma.",
+      "sharedHint": "Quer usar a aula de um colega? Primeiro faça uma cópia em {tab}.",
+      "unitHint": "As unidades agrupam as aulas desta turma. Os alunos veem as unidades.",
+      "doneOf": "{done} de {students} concluíram",
+      "toReview": "{count} para revisar",
+      "dueToday": "Entregar hoje",
+      "late": "Em atraso",
+      "removedGroup": "Removidas desta turma"
     },
     "view": {
-      "teacherPreview": "É isto que os seus alunos veem.",
+      "teacherPreview": "Visão do aluno. Os botões que salvam trabalhos estão desativados para você.",
       "play": "Jogar {title}",
       "build": "Começar a criar",
       "notReady": "Este jogo ainda não está pronto. Pergunte ao seu professor."
     },
     "shared": {
       "copy": "Copiar para a minha biblioteca",
-      "copied": "Copiada para a sua biblioteca!",
-      "empty": "Nada compartilhado ainda",
-      "emptyText": "Quando os professores da sua escola compartilharem uma aula, ela vai aparecer aqui."
+      "empty": "Nada compartilhado por colegas ainda",
+      "emptyText": "As aulas que outros professores compartilham aparecem aqui. As aulas que você compartilha aparecem marcadas como 🏫 Compartilhada em Minhas aulas."
     },
     "template": {
       "warmup": "Aquecimento",
@@ -1440,8 +1517,6 @@
       "play": "Jogar {title}",
       "build": "Crie o seu próprio jogo",
       "buildText": "Um quiz com 6 perguntas sobre {topic}",
-      "wrapup": "Fechamento",
-      "wrapupText": "Conte uma coisa que você aprendeu hoje.",
       "exit": "Bilhete de saída",
       "exitText": "Em duas ou três frases: qual é a coisa mais importante que você aprendeu sobre {topic} hoje?"
     },
@@ -1459,7 +1534,11 @@
       "badDate": "Essa data não parece certa.",
       "topic": "Digite sobre o que é a aula.",
       "aiFailed": "A IA não conseguiu criar o rascunho agora. Tente de novo daqui a um minuto ou crie a aula você mesmo.",
-      "questionText": "Escreva a pergunta que os alunos vão responder."
+      "questionText": "Escreva a pergunta que os alunos vão responder.",
+      "alreadyAssigned": "Esta aula já está em {class}. Mude as datas pelo menu ⋯ na aba Aulas da turma."
+    },
+    "editor": {
+      "live": "Ativa em {classes}. {count, plural, =0 {Nenhum aluno começou ainda.} one {# aluno já começou.} other {# alunos já começaram.}} As mudanças aparecem para eles na hora."
     }
   },
   "progress": {
@@ -1481,38 +1560,39 @@
     "key": {
       "done": "concluído",
       "steps": "etapas feitas",
-      "late": "prazo vencido",
-      "toRead": "respostas para ler"
+      "late": "em atraso",
+      "toRead": "respostas para revisar"
     },
     "teach": {
-      "toRead": "{count, plural, one {# resposta para ler} other {# respostas para ler}}"
+      "toRead": "{count, plural, one {# resposta para revisar} other {# respostas para revisar}}"
     },
     "gradebook": {
       "title": "Progresso",
-      "text": "Etapas que cada aluno concluiu em cada aula. Abra uma aula para ver as pontuações e ler as respostas.",
+      "text": "Etapas que cada aluno concluiu em cada aula. Abra uma aula para ver as pontuações e revisar as respostas.",
       "csv": "Baixar (CSV)",
       "overall": "Geral",
-      "late": "Prazo vencido",
-      "toRead": "{count, plural, one {Você tem # resposta para ler.} other {Você tem # respostas para ler.}}",
+      "toRead": "{count, plural, one {# resposta para revisar} other {# respostas para revisar}}",
       "noLessons": "Nenhuma aula ainda",
       "noLessonsText": "Atribua uma aula na aba Aulas para ver aqui como cada aluno está indo.",
       "noStudents": "Nenhum aluno ainda",
-      "noStudentsText": "Adicione alunos na aba Alunos, e o progresso deles vai aparecer aqui."
+      "noStudentsText": "Adicione alunos na aba Alunos, e o progresso deles vai aparecer aqui.",
+      "toReviewList": "Respostas para revisar:",
+      "reviewLink": "{title} ({count})"
     },
     "lesson": {
       "finished": "{done} de {total} alunos concluíram",
       "studentView": "Visão do aluno",
-      "seeProgress": "Progresso da turma",
-      "jump": "Ler agora",
+      "seeProgress": "Progresso",
+      "jump": "Ir para as respostas",
       "lastActive": "Última atividade",
       "openGame": "Jogar o jogo",
-      "readAnswer": "Ler",
+      "readAnswer": "Ver resposta",
       "question": "Pergunta da etapa {n}",
-      "read": "Lida",
+      "read": "Revisada",
       "new": "Nova",
       "feedback": "Comentário para o aluno",
       "feedbackPlaceholder": "Comentário para o aluno (opcional)",
-      "send": "Salvar e marcar como lida",
+      "send": "Salvar e marcar como revisada",
       "update": "Atualizar comentário",
       "noAnswers": "Nenhuma resposta ainda."
     },
@@ -1536,7 +1616,7 @@
       "updateAnswer": "Mudar minha resposta",
       "sentAgo": "Enviada {when}",
       "feedback": "Do seu professor",
-      "readNoFeedback": "Seu professor leu sua resposta."
+      "readNoFeedback": "Seu professor viu sua resposta."
     }
   }
 }

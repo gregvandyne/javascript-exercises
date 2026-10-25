@@ -31,7 +31,8 @@
     "build": "製作",
     "friends": "好友",
     "me": "我的",
-    "classes": "班級"
+    "classes": "班級",
+    "schools": "學校"
   },
   "errors": {
     "goHome": "回首頁",
@@ -1137,7 +1138,7 @@
     "guest": "先建立免費帳號，再用老師給你的代碼加入班級。",
     "waiting": "等老師答應",
     "join": "加入班級",
-    "joinText": "輸入老師給你的代碼。老師答應後，班級就會出現在這裡。",
+    "joinText": "輸入老師給你的代碼。",
     "code": "班級代碼",
     "joinButton": "加入",
     "sent": "已申請加入 {name}。老師很快就會答應！",
@@ -1146,9 +1147,6 @@
     "noLessonsText": "老師會在這裡放上課程和遊戲。"
   },
   "school": {
-    "nav": {
-      "teach": "我的教學"
-    },
     "tabs": {
       "classes": "班級",
       "people": "成員",
@@ -1162,10 +1160,13 @@
       "student": "學生"
     },
     "teach": {
-      "title": "我的教學",
+      "title": "我的班級",
       "none": "還沒有班級",
       "noneText": "在下方建立你的第一個班級。你會取得一組代碼，可以分享給學生。",
-      "noneAsk": "請校務管理員將你加入班級。"
+      "noneAsk": "請校務管理員將你加入班級。",
+      "manage": "管理 {school}",
+      "noneAdmin": "你還沒有任教的班級",
+      "noneAdminText": "你任教的班級會顯示在這裡。{school} 的所有班級都在上方的「管理 {school}」中。"
     },
     "class": {
       "new": "新增班級",
@@ -1178,79 +1179,118 @@
       "teachers": "老師",
       "students": "學生",
       "classes": "班級",
-      "code": "代碼",
+      "code": "班級代碼",
       "gradeN": "{grade} 年級",
       "studentsN": "{count, plural, other {# 位學生}}",
       "requestsN": "{count, plural, other {# 筆申請}}",
       "none": "還沒有班級",
       "noneText": "在上方建立班級，或讓老師自行建立。",
       "archived": "{count, plural, other {# 個已封存的班級}}",
-      "isArchived": "已封存",
       "archive": "封存",
       "restore": "還原",
       "delete": "刪除",
       "archiveConfirm": "要封存 {name} 嗎？學生將看不到這個班級，但紀錄會保留。之後可以還原。",
       "deleteConfirm": "要刪除 {name} 嗎？此動作無法復原。",
       "joinCode": "班級代碼",
-      "joinCodeText": "擁有自己 Magic Cups 帳號的學生，可在「班級」頁面輸入這組代碼。每位學生都需要你核准。",
       "newCode": "新代碼",
       "newCodeConfirm": "要產生新代碼嗎？舊代碼將會失效。",
-      "noStudents": "還沒有學生。請在下方新增，或分享班級代碼。",
-      "addStudents": "新增學生",
-      "newAccounts": "新的學校帳號（每行一個名字）",
-      "newAccountsHint": "每位學生會取得一組使用者名稱和密碼，可印成登入卡。真實姓名只有老師看得到。",
-      "fromSchool": "或從你的學校新增學生",
-      "add": "新增",
+      "noStudents": "還沒有學生",
+      "newAccounts": "新的學校帳號",
+      "newAccountsHint": "每位學生會取得一組 Magic Cups 名字和密碼，可印成登入卡。真實姓名只有老師看得到。",
       "addTeacher": "新增老師",
       "moveTo": "移到班級",
       "move": "移動",
       "removeStudent": "移除",
       "removeConfirm": "要將 {name} 從這個班級移除嗎？他們在這個班級的作品會保留。",
-      "noStudentsText": "請在下方用學校帳號新增學生，或把班級代碼給擁有個人帳號的學生。",
+      "noStudentsText": "在下方輸入學生的姓名，即可建立學校帳號和登入卡。",
       "details": "班級詳細資料",
       "teachersText": "協同老師可以和你一起管理這個班級：課程、學生和進度。",
       "removeTeacher": "將 {name} 從這個班級移除",
       "archiveTitle": "封存這個班級",
-      "archiveText": "封存的班級不會顯示給學生，也不會出現在你的清單中。所有內容都會保留，你隨時可以還原這個班級。",
-      "restoreTitle": "還原這個班級",
-      "restoreText": "這個班級已封存。還原後即可再次使用。"
+      "archiveText": "封存的班級不會顯示給學生，並會移到「我的班級」最下方的「已封存的班級」。所有內容都會保留，你隨時可以還原。",
+      "teacher": "老師",
+      "teacherChoose": "選擇老師…",
+      "teacherNone": "還沒有老師",
+      "noTeacherChip": "尚無老師",
+      "created": "已建立班級：{name}",
+      "restored": "已還原 {name}",
+      "deleted": "已刪除 {name}",
+      "archivedBanner": "這個班級已封存，學生看不到。",
+      "deleteTitle": "刪除這個班級",
+      "deleteText": "這個班級從來沒有學生加入過，所以可以永久刪除。",
+      "noStudentsCode": "或是把班級代碼分享給擁有個人帳號的學生。",
+      "createCards": "建立帳號和登入卡",
+      "alreadyAt": "{school} 現有的學生（{count}）",
+      "addToClass": "加入班級",
+      "addedN": "{count, plural, other {已新增 # 位學生}}",
+      "moveChoose": "移到…",
+      "moveConfirm": "要將 {name} 移到選擇的班級嗎？他們在這裡的作品會留在這個班級，到新班級後會重新開始。",
+      "moved": "已將 {name} 移到 {class}",
+      "reprint": "重新產生全班的登入卡",
+      "reprintConfirm": "{count, plural, other {要為 # 位使用學校帳號的學生產生新密碼嗎？}}舊密碼將會失效，他們也會被登出。",
+      "joinCodeTextOn": "學生在「我的班級」頁面（我的 → 我的班級）輸入這組代碼。擁有 {school} 學校帳號的學生會立即加入；使用自己 Magic Cups 帳號的學生則需等你核准。",
+      "joinCodeTextOff": "擁有 {school} 學校帳號的學生在「我的班級」頁面輸入這組代碼，就能立即加入。",
+      "noTeacher": "這個班級還沒有老師，請在下方新增。",
+      "removeTeacherConfirm": "要將 {name} 從這個班級移除嗎？這個班級會從對方的「我的班級」中消失。",
+      "leave": "退出這個班級",
+      "leaveConfirm": "要退出 {name} 嗎？它會從你的「我的班級」中消失，其他老師會繼續管理這個班級。",
+      "left": "你已退出 {name}",
+      "onlyStaff": "只能新增 {school} 的教職員。",
+      "askAdmin": "請校務管理員（{admins}）在學校的「成員」分頁新增對方。",
+      "addStaffLink": "在「成員」分頁新增教職員",
+      "askNoAdmin": "{school} 還沒有校務管理員。請 Magic Cups 團隊指派一位；之後校務管理員就能在學校的「成員」分頁新增教職員。",
+      "archivedToast": "已封存 {name}"
     },
     "requests": {
       "title": "{count, plural, other {# 位學生想加入}}",
       "text": "這些學生用自己的帳號輸入了班級代碼。請輸入他們的真實姓名，以列入班級名單。如果學校已經為他們建立帳號，請選擇該帳號，讓班級紀錄一併轉移。",
       "realName": "真實姓名（只有老師看得到）",
-      "sameAs": "與此學校帳號為同一位學生",
-      "sameAsNone": "不是，這是新學生",
+      "sameAs": "學校是否已經為這位學生建立帳號？",
+      "sameAsNone": "沒有，這是新學生",
       "approve": "核准",
       "decline": "拒絕",
-      "declineConfirm": "要拒絕 @{name} 嗎？"
+      "declineConfirm": "要拒絕 @{name} 嗎？",
+      "inClass": "這個班級內",
+      "otherAccounts": "其他的學校帳號",
+      "mergeHint": "選擇後，該帳號會合併到 @{name}：學校帳號將會停用，其班級和遊戲會一併轉移過去。",
+      "mergeConfirm": "要將 @{account} 合併到 @{name} 嗎？@{account} 將會停用。",
+      "approved": "@{name} 已加入班級"
     },
     "people": {
       "staff": "教職員",
       "students": "學生",
       "name": "姓名",
-      "username": "使用者名稱",
+      "username": "Magic Cups 名字",
       "role": "身分",
       "grade": "年級",
       "schoolAccount": "學校帳號",
       "ownAccount": "個人帳號",
       "addStaff": "新增老師或校務管理員",
-      "addStaffText": "輸入對方的姓名。使用者名稱留空會建立學校帳號（你會取得登入卡）；若對方已有帳號，請輸入該帳號的使用者名稱。",
+      "addStaffText": "請使用學生和同事熟知的真實姓名。學校帳號會遵守學校的安全規則；想公開分享遊戲的教職員請使用個人帳號。",
       "realName": "真實姓名",
-      "existing": "現有使用者名稱（選填）",
+      "existing": "對方的 Magic Cups 名字",
       "existingPlaceholder": "例如：TeacherLin",
-      "add": "新增",
       "addStudents": "將學生加入學校",
-      "addStudentsText": "每行一個名字。每位學生會取得一個學校帳號和可列印的登入卡。請在各班級頁面將他們加入班級。",
+      "addStudentsText": "每行一個名字。每位學生會取得一個學校帳號和可列印的登入卡。",
       "names": "學生姓名",
-      "namesPlaceholder": "陳宥廷\n林芯妤\n王柏翰",
-      "createAccounts": "建立帳號",
+      "namesPlaceholder": "姓名，每行一個",
+      "createAccounts": "建立帳號和登入卡",
       "noStaff": "還沒有教職員。",
       "noStudents": "還沒有學生。",
       "reset": "新密碼",
-      "resetConfirm": "要為 {name} 產生新密碼嗎？舊密碼將會失效。",
+      "resetConfirm": "要為 {name} 產生新密碼嗎？舊密碼將會失效，對方也會被登出。",
       "remove": "從學校移除",
-      "removeConfirm": "要將 {name} 從學校移除嗎？對方會離開這所學校的所有班級，學校帳號也會停用。"
+      "removeConfirm": "要將 {name} 從學校移除嗎？對方會離開這所學校的所有班級，學校帳號也會停用。",
+      "you": "{role} · 我",
+      "noClass": "未加入班級",
+      "newSchool": "下一步：指派校務管理員。之後校務管理員就能新增老師、班級和學生。",
+      "account": "對方要如何登入？",
+      "accountNew": "為對方建立學校帳號",
+      "accountExisting": "對方已經有 Magic Cups 帳號",
+      "createStaff": "建立帳號和登入卡",
+      "addToSchool": "加入學校",
+      "added": "已將 {name} 新增為{role}",
+      "putInClass": "班級"
     },
     "settings": {
       "name": "學校名稱",
@@ -1259,26 +1299,29 @@
       "saved": "設定已儲存",
       "teachersCreate": "老師可以自行建立班級",
       "ownAccounts": "學生可以用個人帳號加入",
-      "ownAccountsHint": "已經在使用 Magic Cups 的學生輸入班級代碼後，由老師逐一核准。關閉此選項即只使用學校帳號。",
+      "ownAccountsHint": "已經在使用 Magic Cups 的學生輸入班級代碼後，由老師逐一核准。關閉時，班級代碼只適用於學校帳號。",
       "gameSite": "學校帳號在遊戲網站上的設定",
-      "gameSiteText": "學校帳號可以玩遊戲和製作遊戲，以下規則能確保他們的安全。學生的個人帳號在課堂之外會維持原本的設定。",
+      "gameSiteText": "這些規則適用於學校建立的帳號（學生和教職員）。用個人帳號加入的學生會保留自己的設定。",
       "chat": "聊天",
-      "chatClassmates": "只能和同班的好友聊天",
+      "chatClassmates": "可以和同班的好友聊天",
       "chatOff": "不開放聊天",
       "publishing": "分享遊戲",
       "publishSchool": "僅限校內",
       "publishPublic": "也可以分享給所有人",
-      "photos": "學校帳號的個人照片只有同班同學、老師和好友看得到。"
+      "photos": "學校帳號的個人照片只有同班同學、老師和好友看得到。",
+      "chatHint": "學校帳號只能把同班同學加為好友。"
     },
     "cards": {
       "title": "登入卡",
       "print": "列印",
-      "done": "完成",
       "once": "請現在列印或抄寫下來。密碼只會顯示一次。如果遺失，之後可以再產生新密碼。",
       "site": "網站",
-      "username": "使用者名稱",
+      "username": "Magic Cups 名字",
       "password": "密碼",
-      "gone": "這些登入卡已無法再顯示。請到班級頁面產生新密碼。"
+      "gone": "這些登入卡已無法再顯示。請到班級的「學生」分頁或學校的「成員」分頁產生新密碼。",
+      "backPeople": "回到「成員」",
+      "backClass": "回到 {name}",
+      "skipped": "{count, plural, other {# 位學生使用個人帳號，密碼維持不變}}：{names}。"
     },
     "errors": {
       "notFound": "找不到該項目，或你沒有權限開啟。",
@@ -1290,23 +1333,37 @@
       "badRole": "這裡不允許設定這個身分。",
       "ownRole": "你無法變更或移除自己的管理員身分。",
       "noAccount": "請先建立免費帳號。",
-      "noSuchUser": "沒有這個使用者名稱的帳號。",
+      "noSuchUser": "沒有使用這個 Magic Cups 名字的帳號。",
       "otherSchoolAccount": "這個帳號屬於其他學校。",
       "notSchoolAccount": "這裡只能為學校帳號產生新密碼。使用個人帳號的學生請自行重設密碼。",
       "classHasStudents": "這個班級曾經有學生，所以無法刪除。請改為封存。",
       "notInSchool": "此人不在這所學校。",
       "otherSchool": "只能在同一所學校的班級之間移動學生。",
       "badCode": "這個班級代碼不能用。請和老師確認一下。",
-      "staffUseTeach": "你是這所學校的老師。請改為開啟「我的教學」。",
+      "staffUseTeach": "你是這所學校的老師。請改為開啟「我的班級」。",
       "ownAccountsOff": "這所學校只使用學校帳號。請向老師拿登入卡。",
-      "lastTeacher": "每個班級至少需要一位老師。"
+      "lastTeacher": "每個班級至少需要一位老師。",
+      "staffName": "請輸入對方的姓名。",
+      "username": "請輸入對方的 Magic Cups 名字。",
+      "alreadyStaff": "{name} 已經是這裡的教職員（{role}）。",
+      "sameName": "{count, plural, other {{school} 已經有以下名字}}：{names}。請從清單中移除，或在名字後加註以便區分。若要把現有學生加入班級，請在班級的「學生」分頁勾選他們。",
+      "chooseTeacher": "請選擇老師。",
+      "chooseClass": "請選擇班級。",
+      "noSchoolAccounts": "這個班級沒有使用學校帳號的學生。",
+      "badTeacher": "請選擇學校的教職員。",
+      "adminNotStudent": "你負責管理 Magic Cups，所以不能用學生身分加入班級。",
+      "isStudent": "{name} 是這裡的學生，因此無法新增為教職員。",
+      "tickStudents": "請至少勾選一位學生。"
     },
     "classTabs": {
       "lessons": "課程",
       "progress": "進度",
       "students": "學生",
       "settings": "設定"
-    }
+    },
+    "optional": "（選填）",
+    "me": "我",
+    "moreFor": "{name} 的更多選項"
   },
   "lessons": {
     "up": "上移",
@@ -1325,7 +1382,7 @@
     "library": {
       "title": "課程庫",
       "mine": "我的課程",
-      "shared": "校內分享",
+      "shared": "同事分享的課程",
       "top": "課程庫",
       "path": "資料夾",
       "newLesson": "新增課程",
@@ -1336,9 +1393,10 @@
     "folder": {
       "name": "資料夾名稱",
       "new": "新增資料夾",
-      "newPlaceholder": "新增資料夾，例如：上學期",
+      "newPlaceholder": "新增資料夾，例如：分數",
       "delete": "刪除資料夾",
-      "deleteConfirm": "要刪除資料夾 {name} 嗎？裡面的課程和資料夾會移到上一層。"
+      "deleteConfirm": "要刪除資料夾 {name} 嗎？裡面的課程和資料夾會移到上一層。",
+      "hint": "資料夾只有你看得到，學生永遠看不到。"
     },
     "lesson": {
       "title": "課程名稱",
@@ -1347,16 +1405,20 @@
       "objectivesHint": "每行一個目標",
       "steps": "步驟",
       "noSteps": "還沒有步驟。請在下方新增第一個步驟。",
-      "details": "課程詳細資料",
       "share": "分享給我的學校",
-      "shareNo": "不要，只有我",
-      "shareYes": "要，其他老師可以複製",
       "sharedChip": "已分享",
       "duplicate": "建立副本",
-      "duplicated": "已建立副本，可在你的課程庫中找到。",
       "delete": "刪除課程",
       "deleteConfirm": "要刪除課程 {name} 嗎？此動作無法復原。",
-      "deleteAssignedConfirm": "要刪除課程 {name} 嗎？它也會從 {count, plural, other {# 個班級}}中移除。此動作無法復原。"
+      "deleteAssignedConfirm": "要刪除課程 {name} 嗎？它也會從 {count, plural, other {# 個班級}}中移除。此動作無法復原。",
+      "unshare": "停止分享",
+      "sharedToast": "已分享給你的學校，同事現在可以複製這堂課程。",
+      "unsharedToast": "已停止分享。",
+      "sharedStatus": "已分享給你的學校",
+      "editDetails": "編輯詳細資料",
+      "copiedNotice": "這是你的副本。可在「編輯詳細資料」中重新命名。",
+      "deleteWorkConfirm": "要刪除課程 {name} 嗎？其中 {n, plural, other {# 位學生的作品}}也會一併刪除。此動作無法復原。",
+      "deleteLiveConfirm": "要刪除課程 {name} 嗎？這堂課程已指派給 {count, plural, other {# 個班級}}，其中 {n, plural, other {# 位學生的作品}}也會一併刪除。此動作無法復原。若要保留學生的作品，請改為將課程從班級移除。"
     },
     "step": {
       "add": "新增步驟",
@@ -1368,8 +1430,6 @@
       "schoolGames": "校內分享",
       "siteGames": "Magic Cups 遊戲",
       "minutes": "分鐘",
-      "body": "說明",
-      "bodyHint": "學生要做的事。若是「做遊戲」步驟，這就是他們要告訴小幫手的點子，例如：「一個關於行星、有 8 題的問答遊戲」。",
       "edit": "編輯步驟",
       "delete": "刪除步驟",
       "deleteConfirm": "要刪除這個步驟嗎？",
@@ -1377,11 +1437,17 @@
       "notSharedHint": "請先分享給你的學校，或在工作室中開啟並按「發布」。",
       "shareGame": "分享給我的學校",
       "openStudio": "在工作室中開啟",
-      "newGame": "用小幫手為這堂課程製作新遊戲",
       "newGameIdea": "你的遊戲點子",
       "newGamePlaceholder": "例如：給四年級、有 10 題關於分數的問答遊戲",
       "newGameButton": "開啟小幫手",
-      "newGameNote": "這堂課程會新增一個遊戲步驟，工作室也會開啟並填好你的點子。完成後請發布到你的學校。"
+      "newGameNote": "這堂課程會新增一個遊戲步驟，工作室也會開啟並填好你的點子。完成後請發布到你的學校。",
+      "bodyText": "學生要讀或做的內容",
+      "bodyQuestion": "問題",
+      "bodyBuild": "學生要告訴小幫手的點子",
+      "bodyGame": "說明（選填）",
+      "buildHint": "例如：「一個有 8 題關於行星的問答遊戲」",
+      "newGameLink": "製作新遊戲給學生玩",
+      "deleteWorkConfirm": "要刪除這個步驟嗎？這個步驟中 {n, plural, other {# 位學生的作品}}也會一併刪除。此動作無法復原。"
     },
     "ai": {
       "button": "用 AI 擬草稿",
@@ -1391,7 +1457,7 @@
       "make": "擬定課程草稿",
       "note": "Claude 會擬出一份包含步驟和相關遊戲的課程草稿。使用前，你可以修改任何內容。",
       "done": "這是你的草稿。請檢查每個步驟，並依需要修改。",
-      "template": "這是一個起點。請加入你自己的步驟和遊戲。"
+      "template": "AI 目前無法使用，所以先提供一個簡單的範本讓你開始。你可以任意修改。"
     },
     "assign": {
       "title": "指派給班級",
@@ -1399,13 +1465,15 @@
       "opens": "開放日期（選填）",
       "due": "截止日期（選填）",
       "button": "指派",
-      "already": "已指派給：",
       "noClasses": "你在這所學校還沒有任教的班級。",
-      "note": "學生從開放日期起就能看到課程。之後所做的修改會同步到每個班級。"
+      "note": "學生從開放日期起就能看到課程。之後所做的修改會同步到每個班級。",
+      "done": "已指派給 {class}",
+      "restored": "已重新指派給 {class}，學生先前的作品也回來了。",
+      "changeDates": "變更日期",
+      "allClasses": "這堂課程已指派給你所有的班級。"
     },
     "class": {
       "title": "課程",
-      "none": "還沒有課程。請從你的課程庫指派。",
       "assign": "指派課程",
       "library": "課程庫",
       "unit": "單元",
@@ -1419,19 +1487,28 @@
       "dueOn": "{date} 前完成",
       "editLesson": "編輯課程",
       "unassign": "從班級移除",
-      "unassignConfirm": "要將 {name} 從這個班級移除嗎？課程仍會保留在你的課程庫中。"
+      "unassignConfirm": "要將 {name} 從這個班級移除嗎？學生將不會再看到它。學生的作品會保留，再次指派時就會回來。",
+      "empty": "還沒有課程",
+      "emptyText": "為這個班級建立新課程，或讓 AI 擬一份草稿供你檢查。",
+      "allIn": "你所有的課程都已在這個班級中。",
+      "sharedHint": "想使用同事的課程嗎？請先從「{tab}」建立副本。",
+      "unitHint": "單元用來將這個班級的課程分組，學生也看得到。",
+      "doneOf": "{students} 人中 {done} 人完成",
+      "toReview": "{count} 份待批閱",
+      "dueToday": "今天截止",
+      "late": "逾期",
+      "removedGroup": "已從這個班級移除"
     },
     "view": {
-      "teacherPreview": "這就是學生看到的畫面。",
+      "teacherPreview": "這是學生畫面。儲存作品的按鈕已為你停用。",
       "play": "玩 {title}",
       "build": "開始做遊戲",
       "notReady": "這個遊戲還沒準備好，問問老師吧。"
     },
     "shared": {
       "copy": "複製到我的課程庫",
-      "copied": "已複製到你的課程庫！",
-      "empty": "還沒有分享的課程",
-      "emptyText": "當學校裡的老師分享課程時，就會出現在這裡。"
+      "empty": "同事還沒有分享任何課程",
+      "emptyText": "其他老師分享的課程會顯示在這裡。你分享的課程在「我的課程」中會標示為 🏫 已分享。"
     },
     "template": {
       "warmup": "暖身",
@@ -1439,8 +1516,6 @@
       "play": "玩 {title}",
       "build": "做出你自己的遊戲",
       "buildText": "一個關於{topic}、有 6 題的問答遊戲",
-      "wrapup": "總結",
-      "wrapupText": "說一說你今天學到的一件事。",
       "exit": "今日小回顧",
       "exitText": "用兩、三句話寫一寫：今天關於{topic}，你學到最重要的事是什麼？"
     },
@@ -1458,7 +1533,11 @@
       "badDate": "這個日期看起來不太對。",
       "topic": "請輸入這堂課程的主題。",
       "aiFailed": "AI 目前無法擬定草稿。請過一分鐘再試一次，或自己建立課程。",
-      "questionText": "請寫下學生要回答的問題。"
+      "questionText": "請寫下學生要回答的問題。",
+      "alreadyAssigned": "這堂課程已經在 {class} 中。請從班級「課程」分頁的 ⋯ 選單變更日期。"
+    },
+    "editor": {
+      "live": "已在 {classes} 開放。{count, plural, =0 {還沒有學生開始。} other {已有 # 位學生開始。}}修改會立即同步給學生。"
     }
   },
   "progress": {
@@ -1480,38 +1559,39 @@
     "key": {
       "done": "已完成",
       "steps": "已完成的步驟",
-      "late": "已過截止日期",
-      "toRead": "待閱讀的答案"
+      "late": "逾期",
+      "toRead": "待批閱的答案"
     },
     "teach": {
-      "toRead": "{count, plural, other {# 份答案待閱讀}}"
+      "toRead": "{count, plural, other {# 份答案待批閱}}"
     },
     "gradebook": {
       "title": "進度",
-      "text": "每位學生在各課程中已完成的步驟。開啟課程即可查看分數並閱讀答案。",
+      "text": "每位學生在各課程中已完成的步驟。開啟課程即可查看分數並批閱答案。",
       "csv": "下載（CSV）",
       "overall": "整體",
-      "late": "已過截止日期",
-      "toRead": "{count, plural, other {有 # 份答案等你閱讀。}}",
+      "toRead": "{count, plural, other {# 份答案待批閱}}",
       "noLessons": "還沒有課程",
       "noLessonsText": "在「課程」分頁指派課程後，就能在這裡看到每位學生的學習情形。",
       "noStudents": "還沒有學生",
-      "noStudentsText": "在「學生」分頁新增學生後，他們的進度就會顯示在這裡。"
+      "noStudentsText": "在「學生」分頁新增學生後，他們的進度就會顯示在這裡。",
+      "toReviewList": "待批閱的答案：",
+      "reviewLink": "{title}（{count}）"
     },
     "lesson": {
       "finished": "{total} 位學生中有 {done} 位完成",
       "studentView": "學生畫面",
-      "seeProgress": "班級進度",
-      "jump": "前往閱讀",
+      "seeProgress": "進度",
+      "jump": "前往答案",
       "lastActive": "最後活動",
       "openGame": "玩學生的遊戲",
-      "readAnswer": "閱讀",
+      "readAnswer": "查看答案",
       "question": "步驟 {n} 的問題",
-      "read": "已讀",
+      "read": "已批閱",
       "new": "新",
       "feedback": "給學生的回饋",
       "feedbackPlaceholder": "給學生的回饋（選填）",
-      "send": "儲存並標為已讀",
+      "send": "儲存並標為已批閱",
       "update": "更新回饋",
       "noAnswers": "還沒有答案。"
     },

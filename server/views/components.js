@@ -19,6 +19,9 @@ const VIS_EMOJI = { private: '🔒', friends: '👫', school: '🏫', public: '�
 export function visLabel(v, t = current().t) { return VIS_EMOJI[v] ? `${VIS_EMOJI[v]} ${t(`vis.${v}`)}` : v; }
 /** A category's label in the reader's language. */
 export const categoryLabel = (key, t = current().t) => t(`categories.${key}`);
+/** A class or lesson grade as the teacher typed it: a plain number gets the word ('Grade 4' / 'Year 4'), anything
+ *  else ('Year 4', 'K', '4–5') is shown as typed, so it never reads 'Grade Year 4'. */
+export const gradeLabel = (t, g) => (!g ? '' : /^\d{1,2}$/.test(String(g).trim()) ? t('school.class.gradeN', { grade: String(g).trim() }) : String(g));
 
 export function stars(rating, count) {
   const { t } = current();
