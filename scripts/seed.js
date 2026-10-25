@@ -4,9 +4,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
-import { q, audit } from '../server/db.js';
+import { q, audit, setting } from '../server/db.js';
 import { config } from '../server/config.js';
-import { createUser, getUserByName, setPassword, OFFICIAL, OFFICIAL_OLD_NAMES } from '../server/auth.js';
+import { createUser, getUserByName, setPassword, verifyPassword, OFFICIAL, OFFICIAL_OLD_NAMES } from '../server/auth.js';
 import { BRAND } from '../server/views/brand.js';
 import { importGame } from './import-game.js';
 import * as schools from '../server/services/schools.js';
@@ -26,9 +26,10 @@ export function seed({ quiet = false } = {}) {
     const pw = config.adminPassword || crypto.randomBytes(9).toString('base64url');
     admin = createUser({ username: config.adminUsername, password: pw, displayName: 'Admin', role: 'admin', avatar: '🛡️', color: '#141414' });
     say(`Created admin "${config.adminUsername}"${config.adminPassword ? '' : ` with password: ${pw}  (set ADMIN_PASSWORD to choose one)`}`);
+    if (config.adminPassword) applyAdminPassword(admin, config.adminPassword);
   } else {
     if (admin.role !== 'admin') q.run("UPDATE users SET role='admin' WHERE id=?", admin.id);
-    if (config.adminPassword) setPassword(admin.id, config.adminPassword);
+    if (config.adminPassword && applyAdminPassword(admin, config.adminPassword)) say(`Set the admin's password from ADMIN_PASSWORD`);
   }
   const official = seedOfficial(say);
   const dir = path.join(ROOT, 'seed-games');
@@ -39,6 +40,19 @@ export function seed({ quiet = false } = {}) {
   const demo = seedDemoTeacher(admin, say);
   const bootstrapped = seedSchools(admin, config.bootstrapSchools, say);
   return { admin, official, demo, bootstrapped };
+}
+
+/**
+ * ADMIN_PASSWORD is applied when it is new or has changed, not on every start, so a password the admin changes on the Me
+ * page survives restarts and deploys. A bcrypt hash of the value last applied is kept in settings; to reset a forgotten
+ * password, set ADMIN_PASSWORD to a new value. -> true when the password was set.
+ */
+export function applyAdminPassword(admin, password) {
+  const last = setting('admin_password_applied');
+  if (last && verifyPassword({ password_hash: last }, password)) return false;
+  setPassword(admin.id, password);
+  setting('admin_password_applied', q.get('SELECT password_hash FROM users WHERE id=?', admin.id).password_hash);
+  return true;
 }
 
 /**

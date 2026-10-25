@@ -1,5 +1,5 @@
 // The Studio: chat with the Builder (SSE over fetch), live preview in the player sandbox, versions, sharing and publishing.
-import { api, toast, sheet, pageData, signedOut, $, $$, esc, copyText, t } from '/js/app.js';
+import { api, toast, sheet, pageData, signedOut, tappedJustNow, $, $$, esc, copyText, t } from '/js/app.js';
 import { INTL } from '/js/i18n.js';
 
 let S = pageData();
@@ -83,13 +83,21 @@ function setPreview(url) {
   S.preview = url; $('#st-empty').hidden = true;
   frame.src = url;
 }
-$('#st-reload').addEventListener('click', () => { if (!S.preview) return toast(t('js.studio.buildFirst')); frame.src = 'about:blank'; setTimeout(() => (frame.src = S.preview), 30); });
+const reloadPreview = () => { frame.src = 'about:blank'; setTimeout(() => (frame.src = S.preview), 30); };
+$('#st-reload').addEventListener('click', () => { if (!S.preview) return toast(t('js.studio.buildFirst')); reloadPreview(); });
+// "Try again" in a game (brb:retry): reload the preview from here, with a fresh link (a reload the frame starts itself
+// has no sign-in cookie, so the server refuses it).
+async function retryPreview() {
+  try { const st = await api(`/api/studio/${ID}`); if (st.preview) S.preview = st.preview; } catch { /* keep the old link */ }
+  if (S.preview) reloadPreview();
+}
 const full = () => { if (document.fullscreenElement) document.exitFullscreen(); else if (stage.requestFullscreen) stage.requestFullscreen().catch(() => toast(t('js.studio.noFullscreen'), { bad: true })); };
 $('#st-full').addEventListener('click', full);
 addEventListener('message', e => {
   if (e.source !== frame.contentWindow || !e.data || e.data.brb !== 1) return; // only our sandboxed preview
   if (e.data.type === 'brb:fullscreen') { if (!!e.data.on !== !!document.fullscreenElement) full(); }
   else if (e.data.type === 'brb:gameover' && typeof e.data.score === 'number') toast(t('js.studio.roundOver', { score: e.data.score }));
+  else if (e.data.type === 'brb:retry' && tappedJustNow()) retryPreview();
 });
 
 // ---------------------------------------------------------------- chat log

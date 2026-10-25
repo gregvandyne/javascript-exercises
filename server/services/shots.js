@@ -64,8 +64,10 @@ export async function takeShot(versionId) {
     cache.set(v.id, at);
     return true;
   } catch (e) {
-    q.run('UPDATE game_versions SET shot_tries=shot_tries+1 WHERE id=?', v.id);
-    log('warn', 'cover picture failed', { version: v.id, error: String(e.message || e).split('\n')[0] });
+    // A screenshot worker that is down, busy or misconfigured is not the game's fault: no try is used up, and the
+    // sweeper asks again in a couple of minutes.
+    if (!e.workerDown) q.run('UPDATE game_versions SET shot_tries=shot_tries+1 WHERE id=?', v.id);
+    log('warn', e.workerDown ? 'cover picture waiting for the screenshot worker' : 'cover picture failed', { version: v.id, error: String(e.message || e).split('\n')[0] });
     return false;
   }
 }

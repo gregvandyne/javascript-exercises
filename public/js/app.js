@@ -10,6 +10,13 @@ const on = (target, ...args) => { if (FIRST) target.addEventListener(...args); }
 export const $ = (s, el = document) => el.querySelector(s);
 export const $$ = (s, el = document) => Array.from(el.querySelectorAll(s));
 export const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+/** For a game's "Try again" (brb:retry): true only right after a tap or key press (one inside the game frame counts
+ *  too), so a game can't reload itself over and over. A browser that can't tell gets one a minute. */
+export function tappedJustNow() {
+  const ua = navigator.userActivation;
+  if (ua) return ua.isActive;
+  try { const last = +sessionStorage.getItem('brb-retry-at') || 0; if (Date.now() - last < 60e3) return false; sessionStorage.setItem('brb-retry-at', String(Date.now())); return true; } catch { return false; }
+}
 export function pageData(id = 'page-data') { const el = document.getElementById(id); if (!el) return {}; try { return JSON.parse(el.textContent); } catch { return {}; } }
 
 /** fetch JSON with same-origin credentials. Throws Error(message) with .status on failure, and .signedOut when the

@@ -60,6 +60,11 @@
       "heading": "Er ging iets kapot",
       "text": "Ons team weet het al. Probeer het zo nog eens."
     },
+    "moving": {
+      "title": "Zo terug",
+      "heading": "Oomba Academy verhuist naar een nieuw huis",
+      "text": "Over een paar minuten zijn we terug. Je spellen en opgeslagen voortgang zijn veilig."
+    },
     "api": {
       "notFound": "Niet gevonden",
       "tooBig": "Dat is te groot.",
@@ -978,7 +983,9 @@
       "rateTitle": "Beoordeel {title}",
       "stars": "Sterren",
       "starsLabel": "{count, plural, one {# ster} other {# sterren}}",
-      "thanksRating": "Bedankt voor je beoordeling!"
+      "thanksRating": "Bedankt voor je beoordeling!",
+      "stopped": "Dit spel werkt niet meer.",
+      "restart": "Opnieuw beginnen"
     },
     "friends": {
       "codeCopied": "Code gekopieerd! Geef hem aan een vriend die je kent.",

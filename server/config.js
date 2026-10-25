@@ -74,6 +74,8 @@ export const config = {
   aiMonthlyBudgetUsd: posNum(process.env.AI_MONTHLY_BUDGET_USD, 50),
   // Headless Chromium for game screenshots (cover pictures, Builder playtests). On in production; BRB_SNAPSHOTS=1/0 forces it.
   snapshots: process.env.BRB_SNAPSHOTS ? process.env.BRB_SNAPSHOTS === '1' : (process.env.NODE_ENV || 'development') === 'production',
+  // BRB_SNAPSHOTS=0 turns screenshots off even when SNAPSHOT_URL names a worker.
+  snapshotsOff: process.env.BRB_SNAPSHOTS === '0',
   chromiumPath: process.env.BRB_CHROMIUM || '',
   // Remote screenshot worker. When SNAPSHOT_URL is set, the app sends every screenshot/playtest job to
   // that worker over HTTP instead of launching Chromium itself, so the browser can run in a separate

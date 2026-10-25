@@ -39,6 +39,13 @@ test('needs a correct bearer token', async () => {
   assert.equal((await run('{}', null)).status, 401);
   assert.equal((await run('{}', 'nope')).status, 401);
 });
+test('refuses to start without SHOTS_TOKEN, and says so', async () => {
+  const env = { PATH: process.env.PATH, SHOTS_PORT: String(PORT + 1) };
+  const c = spawn(process.execPath, ['server/shots-worker.js'], { cwd: ROOT, env, stdio: ['ignore', 'ignore', 'pipe'] });
+  let err = ''; c.stderr.on('data', d => { err += d; });
+  const code = await new Promise(r => c.on('exit', r));
+  assert.equal(code, 1); assert.match(err, /SHOTS_TOKEN is required/);
+});
 test('unknown routes 404', async () => { assert.equal((await fetch(base() + '/')).status, 404); });
 test('rejects an oversize body', async () => {
   const big = '{"html":"' + 'x'.repeat(5 * 1024 * 1024) + '"}';

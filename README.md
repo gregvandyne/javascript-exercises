@@ -51,7 +51,7 @@ container start (`scripts/entrypoint.sh`) reads the Litestream ones; `deploy/doc
 | `BRB_DATA_DIR` | `./data` (`/data` in Docker) | The SQLite file (`brb.db`), cover pictures (`shots/`), profile photos (`avatars/`), Builder uploads (`uploads/`) and `npm run backup` copies (`backups/`). Must be a persistent **block** disk; see `BRB_JOURNAL_MODE`. |
 | `BRB_JOURNAL_MODE` | `WAL` | SQLite journal mode: `WAL` on a local/block disk (EBS, Azure managed disk, Render disk). `DELETE` on a network file system (EFS/NFS, Azure Files/SMB), where WAL's shared memory doesn't work. Also accepted: `TRUNCATE`, `PERSIST`. Either way: **one app instance, one writer**. |
 | `PUBLIC_URL` | unset | The site's public address, e.g. `https://play.example.com` (origin only). Login cards print it, and the same-origin checks accept it, so a CDN or gateway that rewrites the Host header (CloudFront, Front Door, Application Gateway) works. Unset: the Host header, as before. |
-| `TRUST_PROXY` | off | How many proxies in front of the app to trust for the client's IP (rate limits): see [the table below](#trust_proxy-per-platform). Leave off when the app is reached directly. If a proxy's `X-Forwarded-For` arrives while it is off, the log warns once. |
+| `TRUST_PROXY` | off | How many proxies in front of the app to trust for the client's IP (rate limits): see [the table below](#trust_proxy-per-platform). Leave off when the app is reached directly. If a proxy's `X-Forwarded-For` arrives while it is off, the log warns once. The compose stack sets it to Caddy's network, `172.30.42.0/24`; `2` in `deploy/.env` with a CDN in front of Caddy. |
 | `SESSION_SECRET` | stored in the DB | Signs sign-in cookies and game-frame tokens. Unset, the app makes one and keeps it in the database (`settings` table) and **warns at every production start**. Moving hosts: `node scripts/export-session-secret.js` copies the current one into a file so nobody is signed out. |
 | `REQUIRE_SESSION_SECRET` | off | `1`: refuse to start without `SESSION_SECRET` (no database fallback), or with one shorter than 32 characters. Set it on new hosts. |
 | `SHUTDOWN_GRACE_SECONDS` | `25` | After SIGTERM, how long open requests and running Builder turns get to finish before the process exits. Keep it below the platform's kill timeout (Render ~30 s; Docker 10 s unless `stop_grace_period`/`--stop-timeout` is raised; ECS `stopTimeout`). |
@@ -69,7 +69,7 @@ On/off settings (`REQUIRE_SESSION_SECRET`, `MAINTENANCE_MODE`, `MOVED_PERMANENTL
 | Variable | Default | What it does |
 |---|---|---|
 | `ADMIN_USERNAME` | `admin` | Admin account made by the seed (every container start runs it). |
-| `ADMIN_PASSWORD` | random | The admin's password, reset to this on every start; unset, the first seed prints a random one. |
+| `ADMIN_PASSWORD` | random | The admin's password, set when the seed first sees this value (every container start runs the seed): a password the admin then changes on the Me page survives restarts, until `ADMIN_PASSWORD` itself changes (set a new value to reset a forgotten one). Unset, the first seed prints a random one. |
 | `DEMO_TEACHER_PASSWORD` | unset | Demo school for showing schools: creates "Oomba Academy Demo School" (at `/school/magic-cups-demo-school`) with `DemoTeacher` and `DemoStudent` (this password, reset on every boot), four classmates, a Demo Class and sample lessons (added again only if the teacher's library is empty). |
 | `ANTHROPIC_API_KEY` | – | Enables the real Builder, input screening classifier and model review. Without it the built-in mock Builder runs. |
 | `BUILDER_MODEL` | built in (`server/config.js`) | Model for normal Builder turns (and public reviews unless `REVIEW_MODEL` is set). |
@@ -92,11 +92,17 @@ On/off settings (`REQUIRE_SESSION_SECRET`, `MAINTENANCE_MODE`, `MOVED_PERMANENTL
 
 | Variable | Default | What it does |
 |---|---|---|
-| `BRB_SNAPSHOTS` | on in production | Game screenshots: cover pictures of Studio games and the Builder's `playtest_game` tool. `0` off, `1` on in development. Chromium needs about 1 GB of RAM on top of the app: plan **2 GB+** per server. |
+| `BRB_SNAPSHOTS` | on in production | Game screenshots: cover pictures of Studio games, the Builder's `playtest_game` tool and the pictures for the public review. `1` on in development; `0` off, also when `SNAPSHOT_URL` is set. Without a worker, Chromium runs inside the app (Render today) and needs about 1 GB of RAM on top of it: plan **2 GB+** for that server. |
 | `BRB_CHROMIUM` | Playwright's | Path to a Chromium / headless-shell binary, if not the one Playwright installed. |
-| `SNAPSHOT_URL` | unset | With the screenshot worker (a separate change, `server/shots-worker.js`, **not merged yet**): its address, e.g. `http://shots:4900`, so Chromium runs in its own container instead of next to the data. |
-| `SHOTS_TOKEN` | – | Shared secret between the app and the screenshot worker. |
+| `SNAPSHOT_URL` | unset | The screenshot worker's address (`server/shots-worker.js`), e.g. `http://shots:4900`: the app then sends every screenshot job there and never starts Chromium itself. The compose stack sets it (the worker runs by default there). Unset: Chromium in the app (Render). If the worker is down, busy or refuses the token, nothing breaks: covers wait and are taken when it is back, playtests and reviews go ahead without pictures. |
+| `SHOTS_TOKEN` | – | Shared secret between the app and the worker (`openssl rand -hex 32`); set the same value on both. The worker refuses to start without it. Required in `deploy/.env`: the compose file hands it to the app and to the worker (`shots`), which always runs. |
 | `SHOTS_PORT` | `4900` | The worker's port (set on the worker). |
+
+The worker is the same image started as `node server/shots-worker.js`. Give it **only** `SHOTS_TOKEN` and `SHOTS_PORT`
+(plus `HOME=/tmp` with a read-only file system):
+it reads its settings from the same `config.js`, which reads every variable it is given, so never hand it the app's
+environment file, the session secret, the AI key or the data disk. It needs no internet: the 3D library comes from the
+image's own `public/vendor/three/`. Each job writes one JSON log line (`job done` / `job failed`, never the game).
 
 **Off-host backups with Litestream (container only)**
 
@@ -122,8 +128,6 @@ app: bucket versioning / soft delete is what protects the backups.)
 | `ACME_EMAIL` | – (required) | Email Let's Encrypt writes to about certificate problems. |
 | `DATA_DIR` | `/srv/oomba/data` | Host folder on the block disk that becomes `/data`. |
 | `OOMBA_IMAGE` | `oomba-academy:latest` | A pre-built image to run instead of building on the server. |
-| `TRUST_PROXY` | `172.30.42.0/24` | Set in the compose file to Caddy's network (only Caddy and the app are on it). `2` with a CDN in front of Caddy. |
-| `COMPOSE_PROFILES` | – | `worker` starts the screenshot worker (`shots`), once that change is merged; set `SNAPSHOT_URL=http://shots:4900` and `SHOTS_TOKEN` with it. |
 
 **Development and tests only**
 
@@ -166,14 +170,16 @@ login cards are kept in memory, and SQLite takes one writer. (More instances wou
   (never through a symbolic link), drops to the `node` user for good (no-new-privs), seeds and starts; SIGTERM lets
   requests and Builder turns finish (25 s).
 - **AWS**: [`docs/deploy-aws.md`](docs/deploy-aws.md). **Azure**: [`docs/deploy-azure.md`](docs/deploy-azure.md).
-  Recommended on both: one VM with a block disk running `deploy/docker-compose.yml` (app + Caddy for HTTPS, plus
-  the screenshot worker once that change is merged). Managed-container options and their catches are in the same
-  documents.
+  Recommended on both: one VM with a block disk running `deploy/docker-compose.yml`: the app, the screenshot worker
+  (Chromium in its own container with no data, no secrets and no internet) and Caddy for HTTPS. Managed-container
+  options and their catches are in the same documents.
 - **Backups**: set `LITESTREAM_REPLICA_URL` for continuous off-host copies; [`docs/runbook-restore.md`](docs/runbook-restore.md)
   has the restore steps and a restore drill. `npm run backup` (online SQLite copy into `<data>/backups`, keeps 14)
   still works.
 - **Plain Docker**: `docker build -t oomba-academy . && docker run -p 3000:3000 -v brb-data:/data -e ADMIN_PASSWORD=... -e SESSION_SECRET=... --stop-timeout 30 oomba-academy`.
-  The image runs tini as PID 1, seeds on boot (idempotent) and keeps everything in `/data`.
+  The image runs tini as PID 1, seeds on boot (idempotent) and keeps everything in `/data`. Chromium then runs inside
+  the app; to move it out, run the same image again as the worker (command `node server/shots-worker.js`, settings as
+  in the compose file's `shots` service) and give the app `SNAPSHOT_URL` and the same `SHOTS_TOKEN`.
 - **Ops**: `GET /health` answers 503 when the database doesn't answer or its file was deleted or replaced under the
   running app, when the data disk is full (under 100 MB free, or 2 % on a small disk) or takes no new file, and while
   shutting down. The disk part runs at most every 2 seconds; probes are never logged. JSON logs on stdout; site stats
@@ -182,7 +188,7 @@ login cards are kept in memory, and SQLite takes one writer. (More instances wou
 ## Layout
 
 ```
-server/            app factory (app.js), entry (index.js), shutdown.js, site.js (PUBLIC_URL), db.js, auth.js, config.js
+server/            app factory (app.js), entry (index.js), shutdown.js, site.js (PUBLIC_URL), db.js, auth.js, config.js, shots-worker.js (screenshot worker)
   routes/          auth, discover (home/search), games (game/play/frame/APIs), studio, social, chat, admin (incl. stats), schools (school page, My classes, class pages, login cards), lessons (library, editor, class lessons), progress (lesson pages for students, gradebook, answers), info
   services/        games, publish, scanner, sanitize, frame, presence, textfilter, ratelimit, review, chat, friends, moderation, schools, lessons, lesson-ai, progress, photos, stats, traffic, shots, snapshot, ai-budget, jobs, log, health
   builder/         Builder agent loop, providers (Claude + mock), screening, templates/
@@ -192,7 +198,7 @@ public/            css/app.css (design system), js/ (one small module per page),
 seed-games/        the launch games (HTML + metadata JSON)
 scripts/           seed.js, import-game.js, backup.js, rollup.js, screenshots.js, icons.js (the logo icons in public/icons), contrast.js (colour contrast of the design tokens),
                    entrypoint.sh (container start), export-session-secret.js, export-data.js and upload-file.js (moving hosts)
-deploy/            docker-compose.yml (app + Caddy on one server, screenshot worker ready), Caddyfile, .env.example, litestream.yml
+deploy/            docker-compose.yml (app + screenshot worker + Caddy on one server), Caddyfile, .env.example, litestream.yml
 tests/             unit/, safety/, e2e/
 docs/              build-graph.md, decisions.md, status.md, safety.md, sdk.md, deploy-aws.md, deploy-azure.md, runbook-restore.md, brief/
 ```

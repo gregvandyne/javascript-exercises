@@ -5,9 +5,9 @@ are references: backups, monitoring, security, managed-container alternatives, a
 
 **What you get with Part 1:** one Azure virtual machine with a separate managed data disk, running the app and Caddy
 (which gets HTTPS certificates by itself) with Docker Compose. Backups go continuously to Blob storage (Litestream)
-plus a daily Azure Backup of the VM. A third container, the screenshot worker, will take headless Chromium out of the
-app once that separate change is merged; until then Chromium runs inside the app container, and the compose file
-leaves the worker off (`deploy/docker-compose.yml`, service `shots`).
+plus a daily Azure Backup of the VM. A third container, the screenshot worker, runs the headless Chromium that takes
+cover pictures, away from the data: no database, no disk, no secrets but its own token, and no internet
+(`deploy/docker-compose.yml`, service `shots`).
 
 **Ground rules that come from how the app works** (they apply to every option below):
 
@@ -16,7 +16,9 @@ leaves the worker off (`deploy/docker-compose.yml`, service `shots`).
   one server would mean Redis and Postgres first; that is not needed now.)
 - **The database wants a block disk** (a managed disk), not a network file share. On Azure Files you must set
   `BRB_JOURNAL_MODE=DELETE`, writes get slower, and Litestream can't be used.
-- **2 GB of memory at the very least**, 4 GB recommended: Chromium takes about 1 GB when it takes pictures.
+- **2 GB of memory at the very least**, 4 GB recommended. Chromium takes up to about 1 GB while it takes a picture;
+  the compose file caps the app and the screenshot worker at 1 GB each, so a heavy game can stall the worker, never
+  the site.
 
 Contents: [1. Recommended: one VM](#1-recommended-one-vm-with-a-managed-data-disk) · [2. Backups](#2-backups) ·
 [3. Monitoring and alerts](#3-monitoring-and-alerts) · [4. Sizing](#4-sizing) · [5. Secrets (Key Vault)](#5-secrets-key-vault) ·
@@ -142,10 +144,8 @@ nano .env                                  # Ctrl+O to save, Ctrl+X to quit
 | `ACME_EMAIL` | your email |
 | `SESSION_SECRET` | moving from Render: the exported one ([section 9](#9-moving-from-render-cut-over-checklist)); brand-new site: output of `openssl rand -hex 32` |
 | `ADMIN_PASSWORD`, `ANTHROPIC_API_KEY` | the same as on Render today |
+| `SHOTS_TOKEN` | output of `openssl rand -hex 32` (a new one: it is only shared between the app and the screenshot worker) |
 | `LITESTREAM_REPLICA_URL` | `abs://oombabackups123@litestream/oomba` (storage account `@` container `/` folder). Leave `LITESTREAM_AZURE_SAS_TOKEN` empty: Litestream uses the VM's managed identity (1.2). Leave the URL empty while you prepare a move from Render; see section 9. |
-
-Leave the screenshot-worker lines (`COMPOSE_PROFILES`, `SNAPSHOT_URL`, `SHOTS_TOKEN`) commented out until that change
-is merged; `.env.example` says what to set then.
 
 Keep the master copy of the secrets in Key Vault (section 5).
 
@@ -161,12 +161,13 @@ IP.
 ```bash
 cd /srv/oomba/app/deploy
 docker compose up -d --build              # the first build takes several minutes
-docker compose ps                         # app and caddy "running"; app becomes "healthy"
+docker compose ps                         # app, shots and caddy "running"; app and shots become "healthy"
 docker compose logs -f app                # Ctrl+C to stop watching
 ```
 
 The app log shows `"msg":"listening"` with `"sessionSecret":"env"` and `"journalMode":"wal"`, and with Litestream on,
-`starting with Litestream replication`. Caddy's log (`docker compose logs caddy`) says `certificate obtained
+`starting with Litestream replication`. The worker's log (`docker compose logs shots`) says `shots-worker listening`
+with `"three":"0.185.1"` (the 3D library is in the image), then `job done` for each cover. Caddy's log (`docker compose logs caddy`) says `certificate obtained
 successfully`. Open `https://play.example.com`, sign in as admin and open a game.
 
 ### 1.11 Updating to a new version
@@ -237,7 +238,8 @@ back from Azure Backup: *VM → Backup → Restore VM → Restore disks*, then a
 | Small and recommended start | **Standard_B2ls_v2** (2 vCPU / 4 GiB; there is no 2 GiB `_v2` size worth using) | 32 GiB Standard SSD |
 | Busy (many schools, Builder used all day) | Standard_B2s_v2 (2 vCPU / 8 GiB) or Standard_D2s_v5 / D2as_v5 | 64 GiB Premium SSD |
 
-Memory runs out first (Chromium). B-series VMs earn CPU credits while idle; if *CPU Credits Remaining* keeps hitting
+Memory runs out first (Chromium, in the `shots` container; `BRB_SNAPSHOTS=0` in `.env` turns cover pictures off if
+the VM is short of memory). B-series VMs earn CPU credits while idle; if *CPU Credits Remaining* keeps hitting
 zero, pick a D-series size. Growing the disk: stop the VM, *Disks → the data disk → Size*, start, then
 `sudo resize2fs /dev/sdc`.
 
@@ -245,8 +247,8 @@ zero, pick a D-series size. Growing the disk: stop the VM, *Disks → the data d
 
 ## 5. Secrets (Key Vault)
 
-The secrets are `SESSION_SECRET`, `ADMIN_PASSWORD`, `ANTHROPIC_API_KEY` and, once the screenshot worker is merged,
-`SHOTS_TOKEN` (the backups need no secret: the VM's managed identity is used). On the VM they live only in
+The secrets are `SESSION_SECRET`, `ADMIN_PASSWORD`, `ANTHROPIC_API_KEY` and `SHOTS_TOKEN` (the backups need no
+secret: the VM's managed identity is used). On the VM they live only in
 `deploy/.env` (mode 600). Keep the master copy in Key
 Vault so a lost VM doesn't lose them:
 
@@ -254,12 +256,12 @@ Vault so a lost VM doesn't lose them:
    role *Key Vault Secrets Officer* on it, and the VM's managed identity *Key Vault Secrets User*
    (**Access control (IAM) → Add role assignment**).
 2. **Secrets → Generate/Import** one secret per value. Key Vault names allow dashes but not underscores:
-   `SESSION-SECRET`, `ADMIN-PASSWORD`, `ANTHROPIC-API-KEY` (later `SHOTS-TOKEN`).
+   `SESSION-SECRET`, `ADMIN-PASSWORD`, `ANTHROPIC-API-KEY`, `SHOTS-TOKEN`.
 3. To rebuild the secrets on a new VM (install the CLI once: `curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash`):
    ```bash
    az login --identity
    cd /srv/oomba/app/deploy && umask 077
-   for s in SESSION-SECRET ADMIN-PASSWORD ANTHROPIC-API-KEY; do
+   for s in SESSION-SECRET ADMIN-PASSWORD ANTHROPIC-API-KEY SHOTS-TOKEN; do
      echo "$(echo $s | tr - _)=$(az keyvault secret show --vault-name oomba-kv-<unique> --name $s --query value -o tsv)"
    done > secrets.env
    # then copy those lines into .env (or add "- secrets.env" under env_file for the app in docker-compose.yml)
@@ -274,7 +276,7 @@ instead of quietly using a different one.
 
 Already there: HTTPS everywhere (Caddy, HSTS), the app's own security headers and per-user / per-address rate limits
 (sign-in, sign-up, Builder, chat, uploads), port 3000 closed, the app running as an unprivileged user that can't regain
-privileges, and (once the worker lands) Chromium isolated from the data and the secrets.
+privileges, and Chromium isolated in the screenshot worker (no data, no secrets, no internet, read-only).
 
 **Azure Front Door with a WAF policy** adds bot protection and edge rate limits in front of the VM. Worth it if you
 see abuse; a bigger change, fine to add after launch:
@@ -349,10 +351,11 @@ Build the image in Azure without Docker on your computer: create an **Azure Cont
   `BRB_DATA_DIR=/data`, `BRB_JOURNAL_MODE=DELETE`, `TRUST_PROXY=1`, `PUBLIC_URL`, `REQUIRE_SESSION_SECRET=1`,
   secrets as **Key Vault references** (managed identity) mapped to `SESSION_SECRET`, `ADMIN_PASSWORD`,
   `ANTHROPIC_API_KEY`; liveness and readiness probes on HTTP `/health` port 3000 (startup probe with 60 s of grace:
-  the seed runs at every start). Until the screenshot worker is merged, Chromium runs in this container.
-- **Screenshot worker**, once merged, as a second container in the same app: same image, command
-  `node server/shots-worker.js`, 0.5 vCPU / 1 Gi, environment `SHOTS_PORT=4900`, `HOME=/tmp`, secret `SHOTS_TOKEN`,
-  no volume. Then add `SNAPSHOT_URL=http://localhost:4900` and the secret `SHOTS_TOKEN` to the app container.
+  the seed runs at every start). Also `SNAPSHOT_URL=http://localhost:4900` and the secret `SHOTS_TOKEN`.
+- **Screenshot worker** as a second container in the same app: same image, command `node server/shots-worker.js`,
+  0.5 vCPU / 1 Gi, environment `SHOTS_PORT=4900`, `HOME=/tmp`, secret `SHOTS_TOKEN` and nothing else, no volume.
+  Containers in one app share its network, so unlike the compose stack the worker can reach the internet; it still
+  has no data or secrets.
 - **Limits to know:** ingress cuts requests at 240 seconds, so a very long Builder reply can be cut off (the turn keeps
   running and the Studio shows the result when it's done). Container Apps waits 30 s after SIGTERM by default, which
   fits the app's 25 s.
@@ -363,7 +366,7 @@ Possible, but the weakest fit: Microsoft advises against SQLite on App Service's
 briefly run the old and new container together.
 
 - Plan with at least 2 GiB (e.g. B2 or P0v3), **instance count 1**, no autoscale, **no deployment slots** (a swap
-  runs two copies).
+  runs two copies). Chromium runs inside the app container here (no `SNAPSHOT_URL`), as on Render.
 - App settings: `WEBSITES_PORT=3000`, `WEBSITES_ENABLE_APP_SERVICE_STORAGE=true`, `BRB_DATA_DIR=/home/data` (the
   persistent `/home` share), `BRB_JOURNAL_MODE=DELETE`, `TRUST_PROXY=1`, `PUBLIC_URL`, `REQUIRE_SESSION_SECRET=1`,
   secrets as Key Vault references (`@Microsoft.KeyVault(SecretUri=...)`). *Health check* path `/health`; *Always on*.
@@ -487,3 +490,4 @@ there is no DNS switch. Steps marked **(a)** are for the first case only.
 | Builder replies arrive all at once at the end | Something in front buffers responses (Application Gateway: turn response buffering off). Caddy is set not to. |
 | Everyone shares one rate limit ("slow down" for all) | `TRUST_PROXY` missing or too low (section 7). |
 | Out of memory | Bigger VM (section 4); `docker stats` shows which container uses it. |
+| No cover pictures for new games | App log `cover picture waiting for the screenshot worker`: `refused SHOTS_TOKEN` means `.env` changed without a restart of both (`docker compose up -d`); `unreachable` means `docker compose ps shots` is not running (`docker compose logs shots`). Covers are taken once it works again. `cover picture failed` names a game that would not run. |

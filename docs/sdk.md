@@ -114,9 +114,10 @@ The SDK talks to the page with `postMessage`. Every message is `{ brb: 1, type, 
 | `brb:gameover` | `{ won, score }` | round finished |
 | `brb:fullscreen` | `{ on }` | toggles full screen on the game area |
 | `brb:orientation` | `{ value }` | orientation hint |
+| `brb:retry` | – | the 3D card's "Try again": the page reloads the game, only right after a tap (a reload started inside the frame has no sign-in cookie, so the server refuses it) |
 
 The parent checks that each message comes from its own game frame (`event.source`), has the expected shape,
-and the server validates and rate-limits every resulting API call (`public/js/play.js`, `public/js/studio.js`).
+and the server validates and rate-limits every resulting API call (`public/js/play.js`, `public/js/studio.js`, `public/js/admin.js`).
 
 ## How the Builder edits games
 

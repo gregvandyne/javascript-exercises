@@ -1,5 +1,5 @@
 // Admin panel actions. Every button posts to /api/admin/... and reloads; risky ones ask first.
-import { api, toast, sheet, esc, $ } from '/js/app.js';
+import { api, toast, sheet, esc, tappedJustNow, $ } from '/js/app.js';
 
 const ROUTES = {
   approve: id => `/api/admin/games/${id}/approve`, reject: id => `/api/admin/games/${id}/reject`,
@@ -38,3 +38,12 @@ document.addEventListener('click', e => {
 // On phones the tab row scrolls: keep the current tab in view.
 const cur = document.querySelector('.tabs [aria-current]');
 if (cur) cur.scrollIntoView({ block: 'nearest', inline: 'center' });
+
+// A game preview's "Try again" (brb:retry): reload that preview from here (a reload the frame starts itself has no
+// sign-in cookie, so the server refuses it).
+addEventListener('message', e => {
+  if (!e.data || e.data.brb !== 1 || e.data.type !== 'brb:retry') return;
+  const f = [...document.querySelectorAll('.rc-preview iframe')].find(x => x.contentWindow === e.source);
+  if (!f || !tappedJustNow()) return;
+  const src = f.getAttribute('src'); f.src = 'about:blank'; setTimeout(() => { f.src = src; }, 30);
+});

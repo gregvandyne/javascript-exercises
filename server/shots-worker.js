@@ -12,7 +12,9 @@
 import http from 'node:http';
 import crypto from 'node:crypto';
 import { config } from './config.js';
-import { runLocal, resultToJson, closeBrowser } from './services/snapshot.js';
+import { runLocal, resultToJson, closeBrowser, threeReady } from './services/snapshot.js';
+import { THREE_VERSION } from './services/vendor.js';
+import { log } from './services/log.js';   // JSON lines like the app's; never the game's code or pictures
 
 const TOKEN = config.shotsToken;
 if (!TOKEN) { console.error('shots-worker: SHOTS_TOKEN is required; refusing to start.'); process.exit(1); }
@@ -43,15 +45,18 @@ const server = http.createServer(async (req, res) => {
   try {
     if (req.method === 'GET' && req.url === '/health') { res.writeHead(200, { 'content-type': 'text/plain' }); return res.end('ok'); }
     if (req.method !== 'POST' || req.url !== '/run') return send(res, 404, { error: 'not found' });
-    if (!bearer(req)) return send(res, 401, { error: 'unauthorized' });
-    if (inflight >= MAX_INFLIGHT) return send(res, 503, { error: 'busy' });
+    if (!bearer(req)) { log('warn', 'refused a job: wrong or missing SHOTS_TOKEN'); return send(res, 401, { error: 'unauthorized' }); }
+    if (inflight >= MAX_INFLIGHT) { log('warn', 'busy: job refused'); return send(res, 503, { error: 'busy' }); }
     inflight++;
     try {
       const body = await readBody(req);
       let job; try { job = JSON.parse(body.toString('utf8')); } catch { return send(res, 400, { error: 'bad json' }); }
       if (!job || typeof job.html !== 'string') return send(res, 400, { error: 'html required' });
       const opts = job.opts && typeof job.opts === 'object' ? job.opts : {};
-      const r = await runLocal(job.html, opts);
+      const t0 = Date.now();
+      let r;
+      try { r = await runLocal(job.html, opts); } catch (e) { log('warn', 'job failed', { ms: Date.now() - t0, error: String((e && e.message) || e).split('\n')[0].slice(0, 200) }); throw e; }
+      log('info', 'job done', { ms: Date.now() - t0, size: opts.size || 'cover', bytes: (r.title ? r.title.length : 0) + (r.play ? r.play.length : 0), errors: r.errors.length });
       return send(res, 200, resultToJson(r));
     } finally { inflight--; }
   } catch (e) {
@@ -61,7 +66,11 @@ const server = http.createServer(async (req, res) => {
 });
 server.requestTimeout = 90_000;
 server.headersTimeout = 20_000;
-server.listen(config.shotsPort, () => console.log(JSON.stringify({ level: 'info', msg: 'shots-worker listening', port: config.shotsPort })));
+server.listen(config.shotsPort, () => {
+  log('info', 'shots-worker listening', { port: config.shotsPort, three: threeReady() ? THREE_VERSION : null });
+  // The worker answers 3D games' /vendor/three/ requests from its own public/vendor folder (same image as the app).
+  if (!threeReady()) log('warn', `Three.js ${THREE_VERSION} is missing from public/vendor/three: covers of 3D games will fail`);
+});
 
 function shutdown() { server.close(() => closeBrowser().finally(() => process.exit(0))); setTimeout(() => process.exit(1), 10_000).unref(); }
 process.on('SIGTERM', shutdown);
