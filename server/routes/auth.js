@@ -8,7 +8,7 @@ import * as auth from '../auth.js';
 import { q, audit } from '../db.js';
 import * as photos from '../services/photos.js';
 import { isSchoolStaff, isPlatformAdmin } from '../services/schools.js';
-import { rateLimit, allow, count } from '../services/ratelimit.js';
+import { rateLimit, allow, count, ipOf, loginLockKey, GUESTS_PER_IP_HOUR } from '../services/ratelimit.js';
 import { availableLocales, normalizeCode, tHtml, setLangCookie, saveUserLang } from '../i18n/index.js';
 
 export const router = Router();
@@ -59,15 +59,21 @@ function authPage(req, res, mode) {
 router.get('/login', (req, res) => authPage(req, res, 'login'));
 router.get('/signup', (req, res) => authPage(req, res, 'signup'));
 
-router.post('/api/auth/guest', rateLimit('guest', 30, 3600e3), (req, res) => {
+router.post('/api/auth/guest', (req, res) => {
   if (req.user) return res.json({ ok: true, user: auth.publicUser(req.user) });
-  if (!allow(`guestip:${req.ip}`, 60, 3600e3)) return res.status(429).json({ error: req.t('auth.api.tooManyGuests') });
+  if (!allow(`guestip:${ipOf(req)}`, GUESTS_PER_IP_HOUR, 3600e3)) return res.status(429).json({ error: req.t('auth.api.tooManyGuests') });
   const u = auth.createGuest(); auth.startSession(res, u.id, req.headers['user-agent']);
   if (req.localeSource === 'cookie') saveUserLang(u, req.locale);
   res.json({ ok: true, user: auth.publicUser(u) });
 });
-router.post('/api/auth/signup', rateLimit('signup', 10, 3600e3), (req, res) => {
+// Sign-up limits, per address (never per session: a guest cookie is free). Only accounts actually made count toward the
+// 30 an hour, so a class fixing typos and taken names isn't locked out; 2000 tries an hour stops a flood.
+export const SIGNUP = { perHour: 30, triesPerHour: 2000 };
+router.post('/api/auth/signup', (req, res) => {
   const t = req.t;
+  const ip = ipOf(req);
+  if (!allow(`signup-try:${ip}`, SIGNUP.triesPerHour, 3600e3)) return res.status(429).json({ error: t('errors.api.slowDown') });
+  if (count(`signup:${ip}`) >= SIGNUP.perHour) return res.status(429).json({ error: t('auth.api.tooManySignups') });
   const { username, password } = req.body || {};
   const n = auth.cleanName(username, t); if (!n.ok) return res.status(400).json({ error: n.error, field: 'username' });
   const pe = auth.checkPassword(password, n.value, t); if (pe) return res.status(400).json({ error: pe, field: 'password' });
@@ -83,17 +89,32 @@ router.post('/api/auth/signup', rateLimit('signup', 10, 3600e3), (req, res) => {
     catch (e) { if (/UNIQUE/.test(e.message)) return res.status(400).json({ error: t('auth.api.nameTaken'), field: 'username' }); throw e; }
     auth.startSession(res, u.id, req.headers['user-agent']); audit(u.id, 'user.signup', u.id);
   }
+  allow(`signup:${ip}`, SIGNUP.perHour, 3600e3);
   if (req.localeSource === 'cookie') saveUserLang(u, req.locale); // a language picked before signing up comes along
   res.json({ ok: true, user: auth.publicUser(u) });
 });
-router.post('/api/auth/login', rateLimit('login', 20, 900e3, 'auth.api.tooManyTries'), (req, res) => {
-  const { username, password } = req.body || {};
-  // Per-account backstop: at most 10 FAILED guesses per username / 15 min, independent of source IP (a spoofed/rotated
-  // IP can't widen it). Successful logins never count, so normal use is unaffected.
-  const uname = String(username || '').toLowerCase().slice(0, 64);
-  if (uname && count(`login-user:${uname}`) >= 10) return res.status(429).json({ error: req.t('auth.api.tooManyTries') });
-  const u = auth.getUserByName(username);
-  if (!u || !auth.verifyPassword(u, password)) { if (uname) allow(`login-user:${uname}`, 10, 900e3); return res.status(400).json({ error: req.t('auth.api.wrongLogin'), field: 'password' }); }
+// Sign-in limits. A whole school can sign in at once from one address, so successful sign-ins don't count as failures.
+// Everything is keyed on the address or the username, never the session, so fresh guest cookies can't buy more
+// guesses. Generated school passwords have ~31 bits (schools.js newPassword), so a loose per-address cap is still safe.
+//   per username: 10 failed guesses per 15 min, from any address (a teacher's password reset clears it)
+//   per address:  1000 failed sign-ins per 15 min, and 3000 tries in all (each costs a bcrypt check; a school of
+//                 1000 children signing in three times fits)
+export const LOGIN = { ipFails: 1000, ipTries: 3000, userFails: 10, window: 900e3 };
+router.post('/api/auth/login', (req, res) => {
+  const { password } = req.body || {};
+  const username = String((req.body || {}).username || '').trim();
+  const ip = ipOf(req); const lockKey = username ? loginLockKey(username) : '';
+  const failKey = `login-ip-fail:${ip}`;
+  const tooMany = () => res.status(429).json({ error: req.t('auth.api.tooManyTries') });
+  if (count(failKey) >= LOGIN.ipFails || (lockKey && count(lockKey) >= LOGIN.userFails)) return tooMany();
+  if (!allow(`login-ip:${ip}`, LOGIN.ipTries, LOGIN.window)) return tooMany();
+  const u = username ? auth.getUserByName(username) : null;
+  // Always run the password check (against a dummy hash for an unknown name), so the response time doesn't reveal
+  // which names exist. It is synchronous, so the check-then-count above can't race with other tries.
+  if (!auth.verifyPassword(u, password)) {
+    allow(failKey, LOGIN.ipFails, LOGIN.window); if (lockKey) allow(lockKey, LOGIN.userFails, LOGIN.window);
+    return res.status(400).json({ error: req.t('auth.api.wrongLogin'), field: 'password' });
+  }
   if (u.banned) return res.status(403).json({ error: req.t('auth.api.paused') });
   if (req.user) auth.endSession(req, res);
   auth.startSession(res, u.id, req.headers['user-agent']);

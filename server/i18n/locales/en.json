@@ -107,6 +107,7 @@
     },
     "api": {
       "tooManyGuests": "Too many guests from here. Try again later.",
+      "tooManySignups": "Too many new accounts from here. Try again in an hour.",
       "nameTaken": "That name is taken. Try adding a number or another word.",
       "tooManyTries": "Too many tries. Wait a few minutes and try again.",
       "wrongLogin": "That name and password don't match.",
@@ -376,7 +377,8 @@
     "shareText": {
       "private": "Only you can open this game. Change it to Friends or Everyone to share it.",
       "friends": "Only your friends on Magic Cups can open this link.",
-      "public": "Anyone with the link can play this game."
+      "public": "Anyone with the link can play this game.",
+      "school": "Everyone at your school can find and play it."
     },
     "report": {
       "button": "Report",

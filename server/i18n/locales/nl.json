@@ -107,6 +107,7 @@
     },
     "api": {
       "tooManyGuests": "Te veel gasten vanaf hier. Probeer het later nog eens.",
+      "tooManySignups": "Te veel nieuwe accounts vanaf hier. Probeer het over een uur nog eens.",
       "nameTaken": "Die naam is al bezet. Zet er een cijfer of een ander woord bij.",
       "tooManyTries": "Te veel pogingen. Wacht een paar minuten en probeer het dan opnieuw.",
       "wrongLogin": "Die naam en dat wachtwoord passen niet bij elkaar.",
@@ -376,7 +377,8 @@
     "shareText": {
       "private": "Alleen jij kunt deze game openen. Zet hem op Vrienden of Iedereen om hem te delen.",
       "friends": "Alleen je vrienden op Magic Cups kunnen deze link openen.",
-      "public": "Iedereen met de link kan deze game spelen."
+      "public": "Iedereen met de link kan deze game spelen.",
+      "school": "Iedereen op je school kan hem vinden en spelen."
     },
     "report": {
       "button": "Melden",

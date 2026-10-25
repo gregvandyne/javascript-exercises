@@ -157,9 +157,10 @@ form.inline{display:inline-flex;gap:var(--s2);align-items:center;margin:0}
 .logincard{border:2px dashed var(--line);border-radius:16px;padding:var(--s4);background:var(--card);break-inside:avoid}
 .lc-top{font-weight:900;color:var(--muted);font-size:.9rem}
 .lc-name{font-size:1.35rem;font-weight:900;margin:6px 0 10px}
-.logincard dl{display:grid;grid-template-columns:auto 1fr;gap:var(--s1) var(--s3);margin:0}
-.logincard dt{color:var(--muted);font-size:.9rem}
-.logincard dd{margin:0;font-family:ui-monospace,Menlo,monospace;overflow-wrap:anywhere}
+.logincard dl{display:grid;grid-template-columns:1fr;gap:0;margin:0}
+.logincard dt{color:var(--muted);font-size:.9rem;margin-top:var(--s2)}
+.logincard dt:first-child{margin-top:0}
+.logincard dd{margin:0;font-family:ui-monospace,Menlo,monospace;overflow-wrap:break-word}
 @media print{
   .topbar,.tabbar,.foot,.noprint,.backlink,.skip{display:none!important}
   body{background:#fff;color:#000}

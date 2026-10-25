@@ -179,8 +179,18 @@ who-can-see-what are enforced on the server and are not self-reported. Teachers 
 score the way they would treat a child saying "I got 100".
 
 A note for whoever deploys the site: the per-IP rate limits (and the visitor count) are only as trustworthy as the real
-client IP. Set `TRUST_PROXY` to match your proxy (see the README) so a request can't spoof its address; the login
-brute-force limit is additionally enforced per account so it holds even if the IP is wrong.
+client IP. Set `TRUST_PROXY` to match your proxy (see the README), and make sure the proxy's edge **overwrites**
+`X-Forwarded-For` rather than appending to it, so a request can't spoof its address; the login brute-force limit is
+additionally enforced per account so it holds even if the IP is wrong.
+
+Sign-in limits are tuned for schools, where a whole school shares one address: successful sign-ins never count as
+failures; per address we allow 1000 failed sign-ins and 3000 tries in all per 15 minutes (flood guards), plus 10 failed
+guesses per username per 15 minutes from any address. Generated school passwords have about 31 bits (three words from a
+273-word list plus two digits), which keeps guessing hopeless under those limits. Trade-offs we accept: anyone who knows
+a username can lock that account for 15 minutes with 10 wrong guesses (a teacher's password reset unlocks it straight
+away), and someone inside a school who scripts 1000 wrong sign-ins can block sign-in for that whole school address for
+up to 15 minutes. At the edge (AWS WAF / Azure Front Door rate rules) such floods should be stopped before they reach
+the app.
 
 ## 10. What we do not do
 
