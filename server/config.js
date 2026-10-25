@@ -27,6 +27,8 @@ export const config = {
   adIpDailyCap: num(process.env.AD_IP_DAILY_CAP, 200),
   chatDailyLimit: num(process.env.CHAT_DAILY_LIMIT, 300),
   reportsToHide: num(process.env.REPORTS_TO_HIDE, 3),
+  // Where grown-ups write to us (deletion, export, a lost password): shown on /parents and in the footer when set.
+  contactEmail: process.env.CONTACT_EMAIL || '',
   posthogKey: process.env.POSTHOG_KEY || '',
   posthogHost: process.env.POSTHOG_HOST || 'https://us.i.posthog.com',
   logRequests: process.env.LOG_REQUESTS !== '0',

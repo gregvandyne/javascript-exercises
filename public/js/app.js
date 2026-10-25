@@ -12,11 +12,19 @@ export const $$ = (s, el = document) => Array.from(el.querySelectorAll(s));
 export const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 export function pageData(id = 'page-data') { const el = document.getElementById(id); if (!el) return {}; try { return JSON.parse(el.textContent); } catch { return {}; } }
 
-/** fetch JSON with same-origin credentials. Throws Error(message) with .status on failure. */
-export async function api(url, { method = 'GET', body, signal } = {}) {
-  const res = await fetch(url, { method, signal, credentials: 'same-origin', headers: body !== undefined ? { 'Content-Type': 'application/json' } : {}, body: body !== undefined ? JSON.stringify(body) : undefined });
+/** fetch JSON with same-origin credentials. Throws Error(message) with .status on failure, and .signedOut when the
+ *  sign-in this page was opened with has ended (timed out, or signed out on another device).
+ *  background: a refresh nobody asked for (live counts, polling): never keeps a sign-in awake (server/auth.js decides).
+ *  active: a game page's own call made just after the player pressed or tapped something (public/js/play.js). */
+export async function api(url, { method = 'GET', body, signal, background = false, active = false } = {}) {
+  const headers = { ...(body !== undefined ? { 'Content-Type': 'application/json' } : {}), ...(background ? { 'X-Brb-Background': '1' } : {}), ...(active ? { 'X-Brb-Active': '1' } : {}) };
+  const res = await fetch(url, { method, signal, credentials: 'same-origin', headers, body: body !== undefined ? JSON.stringify(body) : undefined });
   let data = null; try { data = await res.json(); } catch { /* no body */ }
-  if (!res.ok) { const e = new Error((data && data.error) || t('js.app.wentWrong')); e.status = res.status; e.data = data; throw e; }
+  if (!res.ok) {
+    // Only the first request after the end hears it from the server, so the page says it the same way every time.
+    const out = res.status === 401 && !!document.body.dataset.user;
+    const e = new Error(out ? t('js.app.signedOut') : (data && data.error) || t('js.app.wentWrong')); e.status = res.status; e.data = data; e.signedOut = out; throw e;
+  }
   return data;
 }
 export function toast(msg, { bad = false, ms = 2800 } = {}) {
@@ -39,6 +47,13 @@ export function sheet({ title, content, onClose } = {}) {
   setTimeout(() => { const f = $('.sheet-body input,.sheet-body button,.sheet-body a', bg) || $('.close', bg); f.focus(); }, 30);
   return { el: bg, close };
 }
+/** The sign-in ended while on this page (timed out, or signed out on another device). What was typed in the given
+ *  fields is kept for the same person on this page, then the sign-in page brings them back here. */
+export function signedOut(fields = []) {
+  const who = document.body.dataset.user || '';
+  try { for (const el of fields) if (el && el.id && el.value.trim()) sessionStorage.setItem(`brb-draft:${who}:${location.pathname}:${el.id}`, el.value); } catch { /* storage off */ }
+  location.href = `/login?next=${encodeURIComponent(location.pathname + location.search)}&signedout=1`;
+}
 export async function copyText(text) {
   try { await navigator.clipboard.writeText(text); return true; } catch {
     const ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select();
@@ -59,7 +74,7 @@ export async function refreshLive() {
   const els = $$('[data-live]'); if (!els.length) return;
   const ids = [...new Set(els.map(e => e.dataset.live))].slice(0, 100);
   try {
-    const { counts } = await api('/api/live?ids=' + encodeURIComponent(ids.join(',')));
+    const { counts } = await api('/api/live?ids=' + encodeURIComponent(ids.join(',')), { background: true });
     for (const el of els) {
       const n = counts[el.dataset.live] || 0; const f = el.dataset.liveFormat || 'pill'; el.dataset.count = String(n);
       if (f === 'pill') { el.textContent = t('js.app.playing', { n: fmtNum(n) }); el.hidden = !n; }
@@ -93,7 +108,10 @@ on(document, 'submit', async e => {
     if (msg) { if (leaving) { try { sessionStorage.setItem('brb-toast', msg); } catch { toast(msg); } } else toast(msg); }
     left = !!leaving;
     if (next) location.href = next; else if (f.dataset.reload !== undefined) location.reload();
+    else if (f.dataset.reset !== undefined) f.reset();
   } catch (err) {
+    // Signed out meanwhile: keep what was typed on the page (never passwords) and come back here after signing in.
+    if (err.signedOut) { left = true; signedOut($$('textarea,input[type=text]')); return; }
     const field = err.data && err.data.field; const target = field && f.querySelector(`[name="${field}"]`);
     if (target) { target.setAttribute('aria-invalid', 'true'); const er = f.querySelector(`#${target.id}-err`); if (er) er.textContent = err.message; else toast(err.message, { bad: true }); target.focus(); }
     else {
@@ -193,5 +211,16 @@ on(document, 'click', async e => {
   catch (err) { toast(err.message, { bad: true }); b.disabled = false; }
 });
 
+// Text kept by signedOut() for the person now signed in comes back into its field. Drafts of anyone else are dropped
+// (a shared classroom device): only kept while nobody is signed in, for the sign-in page.
+if (FIRST) try {
+  const who = document.body.dataset.user, here = `brb-draft:${who}:${location.pathname}:`; let kept = false;
+  for (const k of Object.keys(sessionStorage).filter(k => k.startsWith('brb-draft:'))) {
+    if (!who) continue;
+    if (k.startsWith(here)) { const el = document.getElementById(k.slice(here.length)); if (el && 'value' in el) { el.value = sessionStorage.getItem(k); kept = true; } }
+    if (k.startsWith(here) || !k.startsWith(`brb-draft:${who}:`)) sessionStorage.removeItem(k);
+  }
+  if (kept) setTimeout(() => toast(t('js.app.draftKept')), 300);
+} catch { /* storage off */ }
 // A confirmation saved by a form just before it reloaded or moved to another page.
 if (FIRST) try { const m = sessionStorage.getItem('brb-toast'); if (m) { sessionStorage.removeItem('brb-toast'); toast(m); } } catch { /* storage off */ }

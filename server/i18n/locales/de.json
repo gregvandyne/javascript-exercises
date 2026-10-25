@@ -8,6 +8,12 @@
     "mainNav": "Hauptmenü",
     "signIn": "Anmelden",
     "meLabel": "Ich: {name}",
+    "notYou": {
+      "signedInAs": "Angemeldet als {name}.",
+      "button": "Nicht du? Abmelden"
+    },
+    "signedOut": "Du wurdest abgemeldet. <a href=\"{href}\">Melde dich wieder an</a>, um weiterzumachen.",
+    "shortPassword": "Das Passwort ist kürzer als {min} Zeichen. Konten des Kollegiums können die Arbeiten von Kindern sehen, deshalb bitte <a href=\"{href}\">ein längeres wählen</a>.",
     "back": "Zurück",
     "badgeNew": "{count} neu",
     "search": {
@@ -29,6 +35,7 @@
       "tagline": "© Oomba Academy · Kostenlos spielen, kostenlos bauen",
       "safety": "Sicherheit",
       "parents": "Für Erwachsene",
+      "contact": "Kontakt",
       "builders": "Für Spielemacher"
     }
   },
@@ -61,6 +68,7 @@
       "slowDown": "Huch, nicht so schnell! Versuch es in einer Minute noch mal.",
       "signInFirst": "Bitte melde dich an oder spiel zuerst als Gast.",
       "needAccount": "Mach dir dafür ein kostenloses Konto.",
+      "signedOut": "Du wurdest abgemeldet. Bitte melde dich wieder an.",
       "crossSite": "Anfrage von einer anderen Website blockiert."
     }
   },
@@ -95,6 +103,7 @@
       "headingLogin": "Schön, dass du wieder da bist!",
       "introSignup": "Nur ein lustiger Name und ein Passwort. Keine E-Mail nötig.",
       "introLogin": "Melde dich mit deinem Oomba-Academy-Namen und Passwort an.",
+      "signedOut": "Du wurdest abgemeldet. Melde dich wieder an, um weiterzumachen.",
       "upgradeNotice": "Du spielst als <b>{name}</b>. Alles, was du gespeichert hast, kommt mit.",
       "nameLabelSignup": "Such dir einen lustigen Namen aus",
       "nameLabelLogin": "Dein Oomba-Academy-Name",
@@ -104,6 +113,9 @@
       "passwordHint": "Mindestens 6 Zeichen. Ein Erwachsener kann dir helfen, es dir zu merken.",
       "submitSignup": "Konto erstellen",
       "submitLogin": "Anmelden",
+      "forgotHeading": "Passwort vergessen?",
+      "forgotSchool": "Schulkonto? Frag deine Lehrkraft nach einer neuen Anmeldekarte. Lehrkräfte wenden sich an den Schuladmin.",
+      "forgotOwn": "Eigenes Konto? Wir fragen nie nach einer E-Mail, deshalb können wir dir kein neues Passwort schicken. Bewahre es zu Hause gut auf. Wenn es verloren ist, kann uns ein Erwachsener schreiben.",
       "or": "oder",
       "playAsGuest": "🎮 Als Gast spielen",
       "haveAccount": "Du hast schon ein Konto?",
@@ -162,11 +174,32 @@
       "text": "Im Chat kannst du Freunden schreiben, die du mit einem Freundescode hinzugefügt hast. Erwachsene: Hier können Sie den Chat ausschalten.",
       "toggle": "Chat mit meinen Freunden ist an"
     },
+    "password": {
+      "heading": "Passwort",
+      "text": "Ändere das Passwort, mit dem du dich anmeldest. Hier bleibst du angemeldet, auf allen anderen Geräten wirst du abgemeldet.",
+      "current": "Aktuelles Passwort",
+      "new": "Neues Passwort",
+      "hint": "Mindestens {min} Zeichen. Nimm nicht deinen Namen.",
+      "hintStaff": "Mindestens {min} Zeichen, weil Konten des Kollegiums die Arbeiten von Kindern sehen können.",
+      "confirm": "Neues Passwort noch mal",
+      "button": "Passwort ändern",
+      "changed": "Passwort geändert. Auf allen anderen Geräten bist du jetzt abgemeldet.",
+      "needCurrent": "Gib dein aktuelles Passwort ein.",
+      "wrongCurrent": "Das ist nicht dein aktuelles Passwort.",
+      "mismatch": "Die beiden neuen Passwörter sind nicht gleich.",
+      "same": "Das ist dein jetziges Passwort. Denk dir ein neues aus.",
+      "staffShort": "Das {n, plural, one {ist erst # Zeichen} other {sind erst # Zeichen}}. Nötig sind mindestens {min}.",
+      "school": "Um dein Passwort kümmert sich deine Lehrkraft. Frag sie, wenn du es vergisst."
+    },
     "signOut": {
       "heading": "Abmelden",
       "guest": "Gäste verlieren ihren Fortschritt, wenn sie sich abmelden.",
       "account": "Bis bald!",
-      "button": "Abmelden"
+      "button": "Abmelden",
+      "everywhereText": "Auf allen Geräten abmelden, auch auf diesem. Nutze das, wenn du dich auf einem Computer angemeldet hast, den auch andere benutzen.",
+      "everywhereButton": "Überall abmelden",
+      "everywhereConfirm": "Auf allen Geräten abmelden, auch auf diesem?",
+      "everywhereDone": "Du bist jetzt auf allen Geräten abgemeldet."
     },
     "photo": {
       "heading": "Profilfoto",
@@ -296,7 +329,7 @@
       },
       "personal": {
         "h": "Keine persönlichen Daten",
-        "p1": "Wir fragen nie nach deiner E-Mail, deinem echten Namen, deinem Alter oder deiner Adresse. Denk dir einen lustigen Namen aus."
+        "p1": "Wir fragen dich nie nach deiner E-Mail, deinem Alter oder deiner Adresse und auch nicht nach deinem echten Namen (deine Schule trägt ihn vielleicht in ihre Klassenliste ein). Denk dir einen lustigen Namen aus."
       },
       "ads": {
         "h": "Keine Werbung",
@@ -311,9 +344,23 @@
         "h": "Was ist Oomba Academy?",
         "p1": "Eine kostenlose Website, auf der Kinder Browserspiele spielen und eigene Spiele bauen, indem sie sie einem KI-Baumeister beschreiben. Keine Downloads, keine Käufe, keine Lootboxen, kein Spielgeld, das echtes Geld kostet."
       },
-      "data": {
-        "h": "Welche Daten wir speichern",
-        "p1": "Einen Benutzernamen, ein Passwort (nur unkenntlich gemacht gespeichert), Spielstände, Punkte, Bewertungen, Likes und die Sprache, die Ihr Kind gewählt hat. Keine E-Mail, kein echter Name, kein Alter, kein Standort. Keine Tracker von Drittanbietern."
+      "stored": {
+        "h": "Was wir speichern",
+        "p1": "Bei eigenen Konten speichern wir einen ausgedachten Namen, ein Passwort (unkenntlich gemacht gespeichert) und das, was Ihr Kind hier tut: die Spiele, die es baut, seine Chats mit dem Baumeister und alle Bilder oder Dateien, die es hinzufügt, Spielstände, Punkte, Bewertungen, Favoriten, Freunde, Chatnachrichten, ein Profilfoto, falls es eines hochlädt, und Einstellungen wie Sprache und Aussehen. Beim Spielen als Gast speichern wir einen ausgedachten Namen, Spielstände, Punkte, Bewertungen und Favoriten.",
+        "p2": "Ein Schulkonto ist ein Konto, bei dem sich Ihr Kind mit einer Anmeldekarte der Schule anmeldet. Es wird von der Schule angelegt und gehört ihr. Dabei speichern wir dasselbe und zusätzlich den echten Namen des Schülers, so wie die Schule ihn für die Klassenliste eingetragen hat (nur das Kollegium der Schule und unser Team sehen ihn), seine Klassen, seinen Fortschritt in den Lektionen, schriftliche Antworten und das Feedback seiner Lehrkraft. Tritt Ihr Kind mit seinem eigenen Konto und einem Klassencode einer Klasse bei, speichert die Schule für diese Klasse dasselbe, auch seinen echten Namen, falls die Lehrkraft ihn einträgt."
+      },
+      "never": {
+        "h": "Was wir nie erfassen",
+        "p1": "Wir fragen nie nach einer E-Mail-Adresse, dem Alter, der Wohnadresse, dem Standort oder Zahlungsdaten, und es gibt nichts zu kaufen. Versteckte Standortdaten werden aus Fotos und Bildern entfernt, bevor sie gespeichert werden. Es gibt keine Werbung und keine Werbe- oder Tracking-Cookies."
+      },
+      "ai": {
+        "h": "Was die KI sieht",
+        "p1": "Damit ein Spiel entsteht, werden die Nachrichten, Bilder und Dateien, die Ihr Kind dem Baumeister gibt, an Claude geschickt, eine vom Unternehmen Anthropic entwickelte KI, die das Spiel schreibt. Name und Benutzername Ihres Kindes werden dabei nicht mitgeschickt. Auch Profilfotos werden an Claude geschickt und geprüft, bevor jemand sie sieht. Claude überprüft Spiele, bevor sie mit allen geteilt werden können, und unser Team sieht sich jedes an, bei dem Claude unsicher ist. Chats zwischen Freunden und Antworten in Lektionen werden nicht an die KI geschickt."
+      },
+      "keep": {
+        "h": "Wie lange wir Daten speichern",
+        "p1": "Wir speichern die Daten eines Kontos, solange es das Konto gibt. Bisher wird nichts davon nach einer bestimmten Zeit automatisch gelöscht. Ein Spiel, das Ihr Kind löscht, verschwindet für alle von der Website, aber eine Kopie bleibt auf unserem Server.",
+        "p2": "Noch gibt es keinen Knopf, um ein Konto zu löschen oder seine Daten herunterzuladen. Um eines davon zu beantragen, kann ein Erwachsener uns schreiben. Bei einem Schulkonto fragen Sie bitte die Schule; sie kann sich an uns wenden."
       },
       "friends": {
         "h": "Freunde und Chat",
@@ -326,6 +373,10 @@
       "languages": {
         "h": "Sprachen",
         "p1": "Wählen Sie eine Sprache mit dem 🌐-Knopf oben auf jeder Seite oder auf der Seite „Ich“. Der Baumeister antwortet in dieser Sprache und schreibt auch die Texte in neuen Spielen in dieser Sprache. Dieselben Sicherheitsfilter prüfen jede Nachricht, in jeder Sprache."
+      },
+      "contact": {
+        "h": "Kontakt",
+        "p1": "Erwachsene erreichen uns per E-Mail unter {email}."
       }
     },
     "sdk": {
@@ -884,6 +935,8 @@
   "js": {
     "app": {
       "wentWrong": "Etwas ist schiefgelaufen. Bitte versuch es noch mal.",
+      "signedOut": "Du wurdest abgemeldet. Bitte melde dich wieder an.",
+      "draftKept": "Was du getippt hast, haben wir aufgehoben.",
       "close": "Schließen",
       "playing": "{n} spielen",
       "justNow": "gerade eben"
@@ -994,6 +1047,7 @@
       "building": "Dein Spiel wird gebaut…",
       "editing": "Änderungen werden gemacht…",
       "noAnswer": "Der Baumeister konnte nicht antworten. Bitte versuch es noch mal.",
+      "signInAgain": "Wieder anmelden",
       "dropped": "Hoppla, die Verbindung ist abgebrochen. Bitte versuch es noch mal.",
       "proOn": "Profi-Qualität an: langsamer, aber tollere Spiele.",
       "proOff": "Profi-Qualität aus: schnell gebaut.",

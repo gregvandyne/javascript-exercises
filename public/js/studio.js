@@ -1,5 +1,5 @@
 // The Studio: chat with the Builder (SSE over fetch), live preview in the player sandbox, versions, sharing and publishing.
-import { api, toast, sheet, pageData, $, $$, esc, copyText, t } from '/js/app.js';
+import { api, toast, sheet, pageData, signedOut, $, $$, esc, copyText, t } from '/js/app.js';
 import { INTL } from '/js/i18n.js';
 
 let S = pageData();
@@ -144,16 +144,27 @@ function renderLog() {
 }
 
 // After a dropped connection (or a reload mid-build) the server finishes the turn on its own: poll until it's
-// done, then redraw the chat and preview from the saved state. -> true once the Builder is free again.
+// done, then redraw the chat and preview from the saved state. -> true once the Builder is free again, false when it
+// took too long, SIGNED_OUT when the sign-in ended meanwhile.
+const SIGNED_OUT = 'signed-out';
 async function waitForBuilder(maxMs = 10 * 60e3) {
   const end = Date.now() + maxMs;
   while (Date.now() < end) {
     await new Promise(r => setTimeout(r, 3000));
-    let st; try { st = await api(`/api/studio/${ID}`); } catch { continue; }
+    let st; try { st = await api(`/api/studio/${ID}`); } catch (err) { if (err.signedOut) return SIGNED_OUT; continue; }
     if (!st.busy) { S = { ...S, ...st }; renderLog(); if (S.preview) setPreview(S.preview); return true; }
   }
   return false;
 }
+/** Signed out meanwhile (timed out, or on another device; the game itself is saved): say so in the chat, with a button
+ *  that signs in again and comes back here with the unsent message. */
+function signInAgainBubble() {
+  const b = bubble('err', t('js.app.signedOut')); const go = document.createElement('button');
+  go.type = 'button'; go.className = 'btn btn-sm btn-primary'; go.textContent = t('js.studio.signInAgain');
+  go.addEventListener('click', () => signedOut([input])); b.append(' ', go); scrollDown();
+}
+/** A failed Studio action: signed out goes to the sign-in page (keeping the unsent message), anything else is a toast. */
+function failed(err) { if (err.signedOut) signedOut([input]); else toast(err.message, { bad: true }); }
 
 // ---------------------------------------------------------------- sending (SSE over fetch)
 let pending = []; // uploads waiting to be sent: { id, name, kind, url }
@@ -165,7 +176,7 @@ async function send(text) {
   busy = true; $('#st-send').disabled = true;
   const savedBefore = (S.chat || []).length;   // to tell, after a dropped connection, whether the server got the message
   $$('.qchips').forEach(c => c.classList.add('used'));
-  userBubble(text, ups); input.value = ''; autosize();
+  const mine = userBubble(text, ups); input.value = ''; autosize();
   pending = []; renderAttach();
   let cur = bubble('bot', ''); cur.innerHTML = `<span class="typing" aria-label="${E('js.studio.thinking')}"><i></i><i></i><i></i></span>`;
   let typing = true; scrollDown();
@@ -186,7 +197,7 @@ async function send(text) {
   };
   try {
     const res = await fetch(`/api/studio/${ID}/chat`, { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json', Accept: 'text/event-stream' }, body: JSON.stringify({ text, pro, uploads: ups.map(u => u.id) }) });
-    if (!res.ok || !res.body) { let msg = t('js.studio.noAnswer'); try { msg = (await res.json()).error || msg; } catch { /* not JSON */ } const err = new Error(msg); err.fromServer = true; throw err; }
+    if (!res.ok || !res.body) { let msg = t('js.studio.noAnswer'); try { msg = (await res.json()).error || msg; } catch { /* not JSON */ } const err = new Error(msg); err.fromServer = true; err.signedOut = res.status === 401; throw err; }
     const reader = res.body.getReader(); const dec = new TextDecoder(); let buf = ''; let finished = false;
     for (;;) {
       const { value, done } = await reader.read(); if (done) break;
@@ -203,12 +214,18 @@ async function send(text) {
     if (!finished) throw new Error('stream ended early');
   } catch (e) {
     endBubble();
-    if (e.fromServer) bubble('err', e.message);
+    if (e.signedOut) {
+      // The message never reached the Builder: it goes back in the box, and signing in again brings it back here.
+      mine.remove(); input.value = text; autosize(); signInAgainBubble();
+    }
+    else if (e.fromServer) bubble('err', e.message);
     else {
       // The connection dropped, but the Builder keeps going on the server: wait for it, then show what it made.
       status.textContent = `📶 ${t('js.studio.reconnecting')}`;
       // If the message never reached the server, nothing new was saved: say so, so it can be sent again.
-      if (!(await waitForBuilder()) || (S.chat || []).length <= savedBefore) bubble('err', t('js.studio.dropped'));
+      const back = await waitForBuilder();
+      if (back === SIGNED_OUT) signInAgainBubble();
+      else if (!back || (S.chat || []).length <= savedBefore) bubble('err', t('js.studio.dropped'));
     }
   }
   finally {
@@ -253,9 +270,9 @@ async function addFiles(files) {
     try {
       const res = await fetch(`/api/studio/${ID}/uploads?name=${encodeURIComponent(f.name)}`, { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/octet-stream' }, body: f });
       const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.error || t('js.studio.uploads.failed'));
+      if (!res.ok) throw Object.assign(new Error(data.error || t('js.studio.uploads.failed')), { signedOut: res.status === 401 });
       Object.assign(item, data.upload);
-    } catch (e) { pending = pending.filter(x => x !== item); toast(e.message, { bad: true }); }
+    } catch (e) { pending = pending.filter(x => x !== item); if (e.signedOut) { renderAttach(); return failed(e); } toast(e.message, { bad: true }); }
     renderAttach();
   }
 }
@@ -277,7 +294,7 @@ input.addEventListener('paste', e => { const files = [...(e.clipboardData && e.c
 const titleIn = $('#st-title');
 async function saveMeta(body, okMsg) {
   try { const r = await api(`/api/studio/${ID}/meta`, { method: 'POST', body }); applyState(r.state); if (okMsg) toast(okMsg); return true; }
-  catch (e) { toast(e.message, { bad: true }); return false; }
+  catch (e) { failed(e); return false; }
 }
 titleIn.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); titleIn.blur(); } if (e.key === 'Escape') { titleIn.value = S.game.title; titleIn.blur(); } });
 titleIn.addEventListener('change', async () => { const v = titleIn.value.trim(); if (!v || v === S.game.title) { titleIn.value = S.game.title; return; } if (!(await saveMeta({ title: v }, t('js.studio.nameSaved')))) titleIn.value = S.game.title; });
@@ -307,7 +324,7 @@ $('#st-settings').addEventListener('click', () => {
       applyState(r.state); toast(t('js.studio.settings.saved')); s.close();
     } catch (err) {
       const f = err.data && err.data.field; const el = f && $(`#set-${f === 'description' ? 'desc' : f}-err`, s.el);
-      if (el) el.textContent = err.message; else toast(err.message, { bad: true });
+      if (el && !err.signedOut) el.textContent = err.message; else failed(err);
     }
   });
 });
@@ -319,7 +336,7 @@ $('#st-save').addEventListener('click', () => {
   $('#saveform', s.el).addEventListener('submit', async e => {
     e.preventDefault();
     try { const r = await api(`/api/studio/${ID}/save`, { method: 'POST', body: { note: $('#save-note', s.el).value } }); applyState(r.state); toast(r.message); s.close(); }
-    catch (err) { toast(err.message, { bad: true }); }
+    catch (err) { failed(err); }
   });
 });
 $('#st-history').addEventListener('click', () => {
@@ -331,7 +348,7 @@ $('#st-history').addEventListener('click', () => {
   s.el.addEventListener('click', async e => {
     const b = e.target.closest('[data-restore]'); if (!b) return; b.disabled = true;
     try { const r = await api(`/api/studio/${ID}/restore`, { method: 'POST', body: { versionId: b.dataset.restore } }); applyState(r.state); setPreview(r.state.preview); toast(r.message); s.close(); }
-    catch (err) { toast(err.message, { bad: true }); b.disabled = false; }
+    catch (err) { failed(err); b.disabled = false; }
   });
 });
 
@@ -355,7 +372,10 @@ function shareSheet(mode) {
     try {
       const r = await api(`/api/studio/${ID}/${live ? 'visibility' : 'publish'}`, { method: 'POST', body: { visibility: pick } });
       applyState(r.state); toast(r.message, { ms: 5000 }); s.close();
-    } catch (err) { applyState(err.data && err.data.state); toast(err.message + (err.data && err.data.reasons && err.data.reasons.length ? ' ' + err.data.reasons.join(' ') : ''), { bad: true, ms: 6000 }); go.disabled = false; }
+    } catch (err) {
+      if (err.signedOut) return failed(err);
+      applyState(err.data && err.data.state); toast(err.message + (err.data && err.data.reasons && err.data.reasons.length ? ' ' + err.data.reasons.join(' ') : ''), { bad: true, ms: 6000 }); go.disabled = false;
+    }
   });
 }
 async function updateLive() {
@@ -366,7 +386,7 @@ async function updateLive() {
   $('#upd-go', s.el).addEventListener('click', async e => {
     e.target.disabled = true;
     try { const r = await api(`/api/studio/${ID}/update`, { method: 'POST', body: {} }); applyState(r.state); toast(r.message, { ms: 5000 }); s.close(); }
-    catch (err) { applyState(err.data && err.data.state); toast(err.message, { bad: true, ms: 6000 }); e.target.disabled = false; }
+    catch (err) { if (err.signedOut) return failed(err); applyState(err.data && err.data.state); toast(err.message, { bad: true, ms: 6000 }); e.target.disabled = false; }
   });
 }
 $('#st-share').addEventListener('click', () => shareSheet('share'));
@@ -382,5 +402,5 @@ if (ask && !input.value) { input.value = ask.slice(0, 600); autosize(); input.fo
 if (S.busy) {
   toast(t('js.studio.stillFinishing'));
   busy = true; $('#st-send').disabled = true;
-  waitForBuilder().then(() => { busy = false; $('#st-send').disabled = false; return refresh(); });
+  waitForBuilder().then(back => { busy = false; $('#st-send').disabled = false; if (back === SIGNED_OUT) signInAgainBubble(); return refresh(); });
 }

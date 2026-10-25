@@ -9,6 +9,8 @@ import { closeBrowser } from './services/snapshot.js';
 
 const app = createApp();
 const server = app.listen(config.port, () => log('info', 'listening', { port: config.port, builder: config.anthropicKey ? 'claude' : 'mock' }));
+// The site tells grown-ups they can contact us (deletion, export, a lost password); without an address that leads nowhere.
+if (config.env === 'production' && !config.contactEmail) log('warn', 'CONTACT_EMAIL is not set: /parents has no way to contact the team');
 const stopJobs = startJobs();
 startSweeper();
 function shutdown(sig) {

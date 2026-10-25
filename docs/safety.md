@@ -192,7 +192,30 @@ away), and someone inside a school who scripts 1000 wrong sign-ins can block sig
 up to 15 minutes. At the edge (AWS WAF / Azure Front Door rate rules) such floods should be stopped before they reach
 the app.
 
-## 10. What we do not do
+## 10. Data, and what we do not do
 
-No real-money purchases, loot boxes or paid boosts. No third-party trackers and no ads of any kind.
-No collecting emails, real names, ages or locations.
+The same facts as the grown-ups page (`/parents`, text in `info.parents.*`), kept to what is true today:
+
+- **Never asked for:** email addresses, ages, home addresses, locations or payment details. Nothing is for sale: no
+  real-money purchases, loot boxes or paid boosts. No ads, and no advertising or tracking cookies (the only cookies are
+  the sign-in, language and theme, and for a day after a sign-in ends on a device, a signed note of whose it was, so the
+  next person isn't sent to that page). The optional PostHog hook (`POSTHOG_KEY`) is off unless set and nothing calls it.
+- **Stored for own accounts:** a made-up username, a bcrypt password hash, the games they make with their Builder chats
+  and uploads, saves, scores, ratings, favorites, friends, chat messages, a profile photo if uploaded, and settings
+  (language, theme). Each sign-in keeps the browser's name (user agent). Guests: a made-up name, saves, scores, ratings
+  and favorites.
+- **Stored for school accounts** (made and owned by a school, signed in to with a login card): the same, plus the
+  student's real name as the school typed it (`school_members.roster_name`, seen by the school's staff and the platform
+  admin, printed on login cards), classes, lesson progress, written answers and teacher feedback. An own account that
+  joins a class with a class code gets the same school records for that class, with a real name if the teacher types
+  one. So "no real names" is not true for school accounts; the kid-facing /safety page says the school may add one.
+- **Sent to Anthropic (Claude):** a child's Builder messages, pictures and files (to make the game, and to screen them),
+  profile photos (safety check) and a game's text and code for the public review (a person checks any game the review
+  is unsure about, or when it is unavailable). No names or usernames are sent with them. Teachers' "Draft with AI"
+  topics go too. Friends' chat messages and lesson answers are never sent to the AI.
+- **Kept for how long:** as long as the account exists. Nothing is deleted on a timer yet: a deleted game is taken off
+  the site for everyone but stays in the database, and people who leave a school are marked 'left'. The daily visitor
+  codes are deleted after two days.
+- **Deleting or exporting:** there is no feature yet. The grown-ups page says a grown-up can contact us (school accounts:
+  ask the school, which can ask us); the address is `CONTACT_EMAIL`, shown on /parents once it is set. See
+  docs/decisions.md for what is still missing.

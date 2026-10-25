@@ -224,5 +224,18 @@
   "builder.budgetResting": "Shown in the Builder chat when the site's daily/monthly AI spending cap is reached; the offline builder takes over. Kid reading level.",
   "uploads.image.resting": "Shown when a child uploads a picture while the AI spending cap is reached, so the picture can't be safety-checked. Kid reading level.",
   "js.studio.reconnecting": "Status line in the Studio when the phone's connection to the Builder dropped mid-build; the Builder keeps working and the page waits for it. Kid reading level.",
-  "me.theme.heading": "Me page panel with the theme choice, next to the Language panel."
+  "me.theme.heading": "Me page panel with the theme choice, next to the Language panel.",
+  "auth.page.forgotOwn": "Sign-in page, under the form. Keep it honest: there is no email recovery and no way to look a password up.",
+  "layout.notYou.signedInAs": "On students' class, lesson and My classes pages (shared classroom devices). {name} is the player's display name, shown in bold.",
+  "layout.notYou.button": "Small button after \"Signed in as …\", max ~24 chars. One tap signs out and opens the sign-in page.",
+  "me.password.hint": "{min} is a number of characters.",
+  "me.password.hintStaff": "{min} is a number of characters. For teachers and school admins.",
+  "me.password.staffShort": "{n} is how many characters were typed (fewer than {min}), with plural forms; {min} is a number of characters. For teachers and school admins.",
+  "me.password.school": "Shown to school-account students instead of the change-password form.",
+  "info.parents.ai.p1": "For grown-ups. Keep \"Claude\" and \"Anthropic\" as they are: a product name and a company name.",
+  "auth.page.forgotSchool": "Sign-in page, under the form. Students get new login cards from their teacher; teachers and other staff from their school admin.",
+  "layout.signedOut": "Shown once at the top of the next page after a sign-in ended (timed out, or signed out on another device). Keep the <a href=\"{href}\">…</a> around the words that sign in again. Kid reading level, calm: nothing went wrong.",
+  "layout.shortPassword": "Shown on every page to teachers, school admins and the platform admin whose password is shorter than {min} characters, until they change it. Keep the <a href=\"{href}\">…</a> around the words that open the change-password form. Adult reader.",
+  "js.app.signedOut": "Pop-up or chat message when something was sent after the sign-in ended (timed out, or signed out on another device). Kid reading level, calm.",
+  "info.parents.contact.p1": "For grown-ups. {email} is the team's email address (a link)."
 }

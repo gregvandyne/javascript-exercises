@@ -58,6 +58,7 @@ In environments with a pre-installed Chromium at `/opt/pw-browsers`, the e2e con
 | `AD_IP_DAILY_CAP` | `200` | Max counted ad impressions per IP per day. |
 | `CHAT_DAILY_LIMIT` | `300` | Max chat messages per user per day. |
 | `REPORTS_TO_HIDE` | `3` | Open reports from different players that auto-hide a game. |
+| `CONTACT_EMAIL` | – | Where grown-ups write to the team (deletion, export, a lost password). Shown on `/parents` and in the footer; set it before launch (production logs a warning without it). |
 | `POSTHOG_KEY` / `POSTHOG_HOST` | – | Optional product analytics (off unless set; never sends usernames or text). |
 | `LOG_REQUESTS` | `1` | `0` turns off the JSON request log. |
 | `BRB_LOCALES_DIR` | `server/i18n/locales` | Another folder of locale files (the e2e tests use one with stub translations). |
