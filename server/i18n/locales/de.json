@@ -19,6 +19,13 @@
       "title": "Sprache",
       "button": "Sprache: {language}"
     },
+    "theme": {
+      "title": "Design",
+      "button": "Design: {theme}",
+      "system": "Wie mein Gerät",
+      "light": "Hell",
+      "dark": "Dunkel"
+    },
     "footer": {
       "tagline": "© Magic Cups · Kostenlos spielen, kostenlos bauen",
       "safety": "Sicherheit",
@@ -143,6 +150,12 @@
       "text": "Magic Cups, die Menüs und der Baumeister benutzen diese Sprache.",
       "label": "Sprache",
       "save": "Speichern"
+    },
+    "theme": {
+      "heading": "Aussehen",
+      "text": "Wähle einen hellen oder dunklen Bildschirm oder einen, der zu deinem Gerät passt.",
+      "save": "Speichern",
+      "invalid": "Such dir eines der Designs aus."
     },
     "chat": {
       "heading": "Chat",

@@ -1,6 +1,6 @@
 # Status
 
-_Last updated: 2026-10-24_
+_Last updated: 2026-10-25_
 
 ## How to run
 `npm install && npm run seed && npm start` → http://localhost:3000 (Node 22, no API key needed). Tests: `npm test` (unit + safety), `npm run test:e2e` (Playwright). Details in README.
@@ -28,6 +28,7 @@ _Last updated: 2026-10-24_
 | Layout: no two boxes touch on the main pages (phone, tablet, desktop; light and dark; sections opened) | e2e `layout.spec.js`; `scripts/layout-audit.js` for the whole site |
 | Admin stats: visits (no tracking), accounts, plays, games, AI cost and tokens; admin-only | unit `stats.test.js` |
 | Safety suite: 76 adversarial prompts refused, 40 kid prompts allowed; scanner fails fetch/links/eval, flags flashing | `tests/safety/` |
+| **Light / dark / same as my device**: ☀️/🌙/🌓 menu (mouse, keyboard, no-JS links) and Me page form, instant switch, `?theme=` → cookie → account → device, saved to the account, no flash on first paint, prints in light, dark colours only in two identical token blocks | unit `theme.test.js`, e2e `theme.spec.js`, `layout.spec.js` (Dark picked on a light device), screenshots at 320/390/820/1280 in both themes |
 | **13 site languages**: 🌐 picker (mouse, keyboard, phone, no-JS links), `?lang=` → cookie → account → Accept-Language → en, choice saved to the account, `<html lang dir>`, RTL for he/ar, English fallback per key, `BRB.user.lang` in games | unit `i18n.test.js`, e2e `i18n.spec.js`, RTL screenshots of home, game, play, Studio, chat, friends and Me |
 | Locale-file guard for translators: no extra keys, placeholders kept, code keys exist, notes valid (`npm run i18n:check`) | unit `i18n.test.js` |
 | Phone numbers and emails in full-width or Arabic-Indic digits/letters are refused; per-language word lists apply to everyone | safety `i18n-filters.test.js` |
@@ -35,7 +36,7 @@ _Last updated: 2026-10-24_
 | Every page at 390 px and 1280 px, light and dark: no horizontal overflow, reviewed by eye | `npm run screenshots` |
 | Docker: image boots, seeds, serves `/health`, home and game pages | built locally with pre-installed deps (see limits) |
 
-Counts at this commit: unit + safety 156/156, e2e 28/28.
+Counts at this commit: unit + safety 199/199, e2e 48/48.
 
 ## Not verified / known limits
 - **Real Claude calls are untested** (no `ANTHROPIC_API_KEY` here). Request shapes (cache_control, tools, models, review schema) are tested against a local fake Messages API. Set the key and try one Studio game before launch.

@@ -94,8 +94,7 @@ form.inline{display:inline-flex;gap:var(--s2);align-items:center;margin:0}
 .chips-list{display:flex;flex-wrap:wrap;gap:var(--s3) var(--s5);margin:0;padding:0;list-style:none}
 .linkbtn{border:0;background:none;color:var(--muted);cursor:pointer;min-width:32px;min-height:32px;font-size:.9rem}
 .chip-s{display:inline-block;padding:1px 8px;border-radius:999px;background:var(--card-2);box-shadow:inset 0 0 0 1px var(--line);font-size:.75rem;font-weight:800;color:var(--muted);white-space:nowrap}
-.chip-s.warn{background:#fff4d6;color:#7a5200;box-shadow:none}
-@media (prefers-color-scheme:dark){.chip-s.warn{background:#3a2e10;color:#ffd25e}}
+.chip-s.warn{background:var(--warn-bg);color:var(--warn-ink);box-shadow:none}
 
 /* ---------- Class cards (My teaching, My classes) ---------- */
 .classgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr));grid-auto-rows:1fr;gap:var(--s4)}
@@ -115,7 +114,7 @@ form.inline{display:inline-flex;gap:var(--s2);align-items:center;margin:0}
 .reqhead{display:flex;align-items:center;justify-content:space-between;gap:var(--s3);flex-wrap:wrap}
 .reqhead>form{margin:0}
 .classtabs a{gap:2px}
-.tabbadge{display:inline-grid;place-items:center;min-width:22px;height:22px;padding:0 6px;margin-inline-start:6px;border-radius:999px;background:var(--coral);color:#fff;font-size:.78rem;font-weight:900}
+.tabbadge{display:inline-grid;place-items:center;min-width:22px;height:22px;padding:0 6px;margin-inline-start:6px;border-radius:999px;background:var(--coral);color:var(--on-accent);font-size:.78rem;font-weight:900}
 /* Phones: the four class tabs share the width evenly, icon above the label, so none is cut off. */
 @media (max-width:600px){
   .classtabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;overflow:visible}
@@ -354,8 +353,7 @@ fieldset.picklist input{width:20px;height:20px;flex:none}
 
 /* ---- Progress pages (batch 2) ---- */
 /* Date chips: '🔒 Opens …' (plain), '📅 Due today' (.warn, amber) and '⏰ Late' (.bad, red). */
-.chip-s.bad{background:color-mix(in srgb,var(--danger) 14%,var(--card));color:#b42318;box-shadow:none}
-@media (prefers-color-scheme:dark){.chip-s.bad{color:var(--danger)}}
+.chip-s.bad{background:color-mix(in srgb,var(--danger) 14%,var(--card));color:var(--bad-ink);box-shadow:none}
 .lp-meta{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s1) var(--s3)}
 /* Gradebook column heads: the lesson's dates under its title; lessons that haven't opened are greyed out. */
 .gb-dates{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:var(--s1) 6px;margin-top:var(--s1);font-weight:700;color:var(--muted)}

@@ -9,6 +9,8 @@
   --coral:#ff6b5c; --coral-600:#e5483a; --lime:#65a30d; --lime-bg:#ecfccb; --sun:#ffc83d; --sun-600:#e0a500;
   --ink:#152036; --ink-2:#3c4a66; --muted:#5d6b85; --line:#dfe5f0; --bg:#f4f7fc; --card:#ffffff; --card-2:#f8faff;
   --danger:#d92d20; --ok:#15803d;
+  /* text on accent fills (blue, coral, danger), the amber and red status chips, the stats chart bars */
+  --on-accent:#fff; --warn-bg:#fff4d6; --warn-ink:#7a5200; --bad-ink:#b42318; --viz-1:#2a78d6;
   --shadow:0 2px 0 rgba(21,32,54,.06),0 6px 20px rgba(21,32,54,.08);
   --shadow-lg:0 10px 40px rgba(21,32,54,.18);
   --r:18px; --r-sm:12px; --r-lg:26px;
@@ -17,11 +19,25 @@
   --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px;
   color-scheme:light;
 }
-@media (prefers-color-scheme:dark){:root{
+/* Dark palette, written twice with the same body: when following a dark device (unless Light was picked), and when Dark
+   was picked (<html data-theme>, set by server/views/layout.js). Every colour that differs between the themes is a token,
+   and these two blocks are the only place dark values live: no other prefers-color-scheme rules in public/css
+   (tests/unit/theme.test.js checks). Screen only, so printing always uses the light palette. */
+@media screen and (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --blue:#5b8cff; --blue-600:#7aa2ff; --blue-700:#9db9ff; --blue-50:#18264a;
   --coral:#ff8577; --coral-600:#ff9c90; --lime:#a3e635; --lime-bg:#1f2e0f; --sun:#ffd25e; --sun-600:#ffd25e;
   --ink:#eef2fb; --ink-2:#c6cfe2; --muted:#9aa6c0; --line:#26314a; --bg:#0d1324; --card:#151d33; --card-2:#1b2540;
   --danger:#ff7a6e; --ok:#4ade80;
+  --on-accent:#07122e; --warn-bg:#3a2e10; --warn-ink:#ffd25e; --bad-ink:#ff7a6e; --viz-1:#3987e5;
+  --shadow:0 2px 0 rgba(0,0,0,.25),0 6px 20px rgba(0,0,0,.3); --shadow-lg:0 10px 40px rgba(0,0,0,.55);
+  color-scheme:dark;
+}}
+@media screen{:root[data-theme="dark"]{
+  --blue:#5b8cff; --blue-600:#7aa2ff; --blue-700:#9db9ff; --blue-50:#18264a;
+  --coral:#ff8577; --coral-600:#ff9c90; --lime:#a3e635; --lime-bg:#1f2e0f; --sun:#ffd25e; --sun-600:#ffd25e;
+  --ink:#eef2fb; --ink-2:#c6cfe2; --muted:#9aa6c0; --line:#26314a; --bg:#0d1324; --card:#151d33; --card-2:#1b2540;
+  --danger:#ff7a6e; --ok:#4ade80;
+  --on-accent:#07122e; --warn-bg:#3a2e10; --warn-ink:#ffd25e; --bad-ink:#ff7a6e; --viz-1:#3987e5;
   --shadow:0 2px 0 rgba(0,0,0,.25),0 6px 20px rgba(0,0,0,.3); --shadow-lg:0 10px 40px rgba(0,0,0,.55);
   color-scheme:dark;
 }}
@@ -46,27 +62,32 @@ p{margin:0 0 .8em}
 .logo:hover{text-decoration:none}
 .logo-mark{display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,var(--blue),#7c4dff);color:#fff;font-size:1.3rem;line-height:1;box-shadow:0 3px 0 var(--blue-700)}
 .logo-text span{color:var(--coral)}
-.topsearch{flex:1;max-width:460px;position:relative}
+.topsearch{flex:1;max-width:460px;position:relative;container-type:inline-size}
 .topsearch input{width:100%;height:44px;border-radius:999px;border:2px solid var(--line);background:var(--card-2);padding-block:0;padding-inline:42px 16px;font:inherit;color:var(--ink)}
 .topsearch input:focus{border-color:var(--blue);outline:none}
 .topsearch .ico{position:absolute;inset-inline-start:14px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--muted)}
 .topnav{display:flex;gap:4px;margin-inline-start:auto}
 .navlink{display:flex;align-items:center;gap:6px;min-height:44px;padding:0 14px;border-radius:999px;color:var(--ink-2);font-weight:800;position:relative}
 .navlink:hover{background:var(--blue-50);text-decoration:none}
-.navlink[aria-current="page"]{background:var(--blue);color:#fff}
+.navlink[aria-current="page"]{background:var(--blue);color:var(--on-accent)}
 .navlink .emo{font-size:1.15rem}
-.badge{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:var(--coral);color:#fff;font-size:.75rem;font-weight:900;line-height:1}
+.badge{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:var(--coral);color:var(--on-accent);font-size:.75rem;font-weight:900;line-height:1}
 .navlink .badge,.tab .badge{position:absolute;top:2px;inset-inline-end:2px}
 .me-btn{display:flex;align-items:center;gap:8px;min-height:44px;padding-block:0;padding-inline:4px 6px;border-radius:999px;font-weight:800;color:var(--ink)}
 .me-btn:hover{background:var(--blue-50);text-decoration:none}
 .tabbar{display:none}
 /* Small laptops and landscape tablets: the full nav (with Classes or Schools) plus the profile name don't fit. */
 @media (min-width:821px) and (max-width:1180px){
-  .topbar .me-btn .name{display:none}
+  .topbar{gap:8px}
+  .topbar .me-btn .name,.topbar .langpick .lang-code{display:none}
   .navlink{padding:0 9px}
   .topsearch{min-width:0}
+  .langpick > summary,.themepick > summary{padding:0 6px}
 }
 @media (min-width:821px) and (max-width:1000px){.logo-text{display:none}}
+/* Long nav labels (Russian, French, Dutch) can squeeze the search box to nothing just above 820px: then it hides
+   instead of showing a sliver (Search is in the nav). */
+@container (max-width:60px){.topsearch .ico,.topsearch input{visibility:hidden}}
 @media (max-width:820px){
   .topnav,.topbar .me-btn .name{display:none}
   .topsearch{max-width:none}
@@ -92,11 +113,10 @@ p{margin:0 0 .8em}
 .btn:hover{text-decoration:none;background:var(--card-2)}
 .btn:active{transform:translateY(2px)}
 .btn:disabled,.btn[aria-disabled="true"]{opacity:.55;cursor:not-allowed;transform:none}
-.btn-primary{background:var(--blue);color:#fff;box-shadow:0 4px 0 var(--blue-700)}
+.btn-primary{background:var(--blue);color:var(--on-accent);box-shadow:0 4px 0 var(--blue-700)}
 .btn-primary:hover{background:var(--blue-600)}
 .btn-primary:active{box-shadow:0 1px 0 var(--blue-700)}
-@media (prefers-color-scheme:dark){.btn-primary{color:#07122e}}
-.btn-coral{background:var(--coral);color:#fff;box-shadow:0 4px 0 #b8362a} .btn-coral:hover{background:var(--coral-600)}
+.btn-coral{background:var(--coral);color:var(--on-accent);box-shadow:0 4px 0 #b8362a} .btn-coral:hover{background:var(--coral-600)}
 .btn-ghost{background:transparent;box-shadow:none} .btn-ghost:hover{background:var(--blue-50)}
 .btn-danger{color:var(--danger);box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--danger) 35%,transparent)}
 .btn-big{min-height:64px;padding:0 36px;font-size:1.35rem;border-radius:22px}
@@ -111,8 +131,7 @@ p{margin:0 0 .8em}
 .chips.scroll::-webkit-scrollbar{display:none}
 .chip{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 16px;border-radius:999px;border:2px solid var(--line);background:var(--card);color:var(--ink);font:800 .95rem var(--font);cursor:pointer;white-space:nowrap}
 .chip:hover{border-color:var(--blue);text-decoration:none}
-.chip[aria-pressed="true"],.chip.on{background:var(--blue);border-color:var(--blue);color:#fff}
-@media (prefers-color-scheme:dark){.chip[aria-pressed="true"],.chip.on{color:#07122e}}
+.chip[aria-pressed="true"],.chip.on{background:var(--blue);border-color:var(--blue);color:var(--on-accent)}
 .field{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
 .field label{font-weight:800}
 .field .hint{font-size:.9rem;color:var(--muted)}
@@ -124,8 +143,7 @@ textarea.input{min-height:96px;resize:vertical}
 .input[aria-invalid="true"]{border-color:var(--danger)}
 .seg{display:inline-flex;background:var(--card-2);border:2px solid var(--line);border-radius:999px;padding:3px;gap:2px}
 .seg button,.seg>a{min-height:38px;padding:0 14px;border:0;border-radius:999px;background:transparent;font:800 .9rem var(--font);color:var(--ink-2);cursor:pointer;display:inline-flex;align-items:center;text-decoration:none}
-.seg button[aria-pressed="true"],.seg>a[aria-current="page"]{background:var(--blue);color:#fff}
-@media (prefers-color-scheme:dark){.seg>a[aria-current="page"]{color:#07122e}}
+.seg button[aria-pressed="true"],.seg>a[aria-current="page"]{background:var(--blue);color:var(--on-accent)}
 
 /* ---------- Cards and panels ---------- */
 .panel{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);padding:20px}
@@ -148,8 +166,6 @@ textarea.input{min-height:96px;resize:vertical}
 .cover-lava{background:linear-gradient(140deg,#ffd43b,#ff7a1a 45%,#d6203a)}
 .cover-mint{background:linear-gradient(140deg,#b6f7e0,#36d1b0 55%,#138a8a)}
 .cover-gold{background:linear-gradient(140deg,#fff3a6,#ffc83d 50%,#e08a00)}
-.cover-ad{background:linear-gradient(140deg,#e9eef8,#d5ddef)}
-@media (prefers-color-scheme:dark){.cover-ad{background:linear-gradient(140deg,#25304d,#1b2440)}}
 .coverart{position:relative;overflow:hidden}
 .coverart::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 20% 15%,rgba(255,255,255,.45),transparent 40%),radial-gradient(circle at 85% 90%,rgba(0,0,0,.18),transparent 50%)}
 .coverart::after{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.18) 2px,transparent 2.5px);background-size:22px 22px;opacity:.6}
@@ -218,7 +234,7 @@ textarea.input{min-height:96px;resize:vertical}
 .toasts{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--tabbar) + 16px);z-index:90;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none;width:min(92vw,440px)}
 @media (min-width:821px){.toasts{bottom:24px}}
 .toast{background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:16px;font-weight:800;box-shadow:var(--shadow-lg);animation:tin .25s ease-out;pointer-events:auto;text-align:center}
-.toast.bad{background:var(--danger);color:#fff}
+.toast.bad{background:var(--danger);color:var(--on-accent)}
 @keyframes tin{from{transform:translateY(12px);opacity:0}}
 
 /* modal sheet */
@@ -247,7 +263,6 @@ textarea.input{min-height:96px;resize:vertical}
 @media (max-width:640px){.gamehero .actions{grid-column:1/-1}.playbig{width:100%}}
 .taglist{display:flex;gap:8px;flex-wrap:wrap}
 .tag{padding:4px 12px;border-radius:999px;background:var(--blue-50);color:var(--blue-700);font-size:.85rem;font-weight:800}
-@media (prefers-color-scheme:dark){.tag{color:var(--blue-700)}}
 .lb{list-style:none;margin:0;padding:0;counter-reset:lb}
 .lb li{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);counter-increment:lb}
 .lb li::before{content:counter(lb);width:26px;font-weight:900;color:var(--muted);text-align:center}
@@ -314,25 +329,28 @@ table.tbl{width:100%;border-collapse:collapse;font-size:.95rem}
 .buildbanner p{margin:0;color:var(--ink-2)}
 @media (max-width:640px){.buildbanner .btn{width:100%}}
 
-/* ---------- Languages: the 🌐 picker, right-to-left pages ---------- */
-.langpick{position:relative;flex:none}
-.langpick > summary{list-style:none;display:flex;align-items:center;justify-content:center;gap:4px;min-height:44px;min-width:44px;padding:0 10px;border-radius:999px;font-weight:800;color:var(--ink-2);cursor:pointer;user-select:none;-webkit-user-select:none}
-.langpick > summary::-webkit-details-marker{display:none}
-.langpick > summary:hover,.langpick[open] > summary{background:var(--blue-50)}
-.langpick .globe{font-size:1.3rem;line-height:1}
+/* ---------- Languages and theme: the 🌐 and ☀️/🌙/🌓 menus, right-to-left pages ---------- */
+.langpick,.themepick{position:relative;flex:none}
+.langpick > summary,.themepick > summary{list-style:none;display:flex;align-items:center;justify-content:center;gap:4px;min-height:44px;min-width:44px;padding:0 10px;border-radius:999px;font-weight:800;color:var(--ink-2);cursor:pointer;user-select:none;-webkit-user-select:none}
+.langpick > summary::-webkit-details-marker,.themepick > summary::-webkit-details-marker{display:none}
+.langpick > summary:hover,.langpick[open] > summary,.themepick > summary:hover,.themepick[open] > summary{background:var(--blue-50)}
+.langpick .globe,.themepick > summary .theme-ico{font-size:1.3rem;line-height:1}
 .langpick .lang-code{font-size:.82rem;letter-spacing:.04em}
-.lang-menu{position:absolute;inset-inline-end:0;top:calc(100% + 8px);z-index:60;width:min(250px,calc(100vw - 24px));max-height:calc(100vh - var(--top) - 24px);overflow:auto;overscroll-behavior:contain;background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow-lg);padding:8px}
+.lang-menu,.theme-menu{position:absolute;inset-inline-end:0;top:calc(100% + 8px);z-index:60;width:min(250px,calc(100vw - 24px));max-height:calc(100vh - var(--top) - 24px);overflow:auto;overscroll-behavior:contain;background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow-lg);padding:8px}
+.theme-menu{width:min(270px,calc(100vw - 24px))}
 .lang-head{margin:4px 10px 6px;font-size:.78rem;font-weight:900;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
-.lang-list{list-style:none;margin:0;padding:0}
-.lang-list a{display:flex;align-items:center;gap:10px;min-height:44px;padding:0 12px;border-radius:12px;color:var(--ink);font-weight:800}
-.lang-list a:hover,.lang-list a:focus-visible{background:var(--blue-50);text-decoration:none}
-.lang-list a[aria-current="true"]{color:var(--blue);background:color-mix(in srgb,var(--blue) 8%,transparent)}
+.lang-list,.theme-list{list-style:none;margin:0;padding:0}
+.lang-list a,.theme-list a{display:flex;align-items:center;gap:10px;min-height:44px;padding:0 12px;border-radius:12px;color:var(--ink);font-weight:800}
+.lang-list a:hover,.lang-list a:focus-visible,.theme-list a:hover,.theme-list a:focus-visible{background:var(--blue-50);text-decoration:none}
+.lang-list a[aria-current="true"],.theme-list a[aria-current="true"]{color:var(--blue);background:color-mix(in srgb,var(--blue) 8%,transparent)}
 .lang-check{flex:none;width:1.2em;text-align:center;font-weight:900}
 @media (max-width:820px){
-  .langpick > summary{padding:0 6px}
+  .langpick > summary,.themepick > summary{padding:0 6px}
   .langpick .lang-code{display:none}
-  .lang-menu{position:fixed;top:calc(var(--top) + 6px);inset-inline-end:12px;max-height:calc(100vh - var(--top) - var(--tabbar) - 24px - env(safe-area-inset-bottom))}
+  .lang-menu,.theme-menu{position:fixed;top:calc(var(--top) + 6px);inset-inline-end:12px;max-height:calc(100vh - var(--top) - var(--tabbar) - 24px - env(safe-area-inset-bottom))}
 }
+/* The narrowest phones keep today's top bar (the search box would get too small): the Me page has the theme choice. */
+@media (max-width:359px){.topbar .themepick{display:none}}
 .foot-lang{margin-inline-start:auto}
 .langselect{width:auto;min-width:200px;flex:0 1 260px}
 .searchbig{font-size:1.15rem;min-height:56px;border-radius:999px;padding-inline-start:20px}
@@ -381,6 +399,17 @@ code{overflow-wrap:anywhere}
 .photo-ctl{flex:1;min-width:200px}
 .photo-ctl h3{margin:0 0 4px}
 .photo-ctl p{margin:0 0 10px}
+/* Me page: Language and Appearance side by side when there is room. */
+.mesettings{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:16px;margin-block:16px}
+.mesettings>.panel{margin:0}
+.themechoices{display:flex;flex-wrap:wrap;gap:var(--s2);margin:0;padding:0;border:0;min-width:0}
+.themechoice{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding-block:0;padding-inline:12px 16px;border-radius:999px;border:2px solid var(--line);background:var(--card);color:var(--ink);font-weight:800;cursor:pointer}
+.themechoice:hover{border-color:var(--blue)}
+.themechoice:has(input:checked){border-color:var(--blue);background:var(--blue-50)}
+.themechoice:has(input:focus-visible){outline:3px solid var(--sun);outline-offset:2px}
+.themechoice input{width:20px;height:20px;margin:0;flex:none;accent-color:var(--blue)}
+.themechoice input:focus-visible{outline:0}
+#themeform>.btn{margin-top:var(--s3)}
 
 /* iPhone and iPad: date and time fields otherwise keep a minimum width that spills out of their card, and collapse when empty. */
 @supports (-webkit-touch-callout:none){

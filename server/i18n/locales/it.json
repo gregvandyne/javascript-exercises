@@ -19,6 +19,13 @@
       "title": "Lingua",
       "button": "Lingua: {language}"
     },
+    "theme": {
+      "title": "Tema",
+      "button": "Tema: {theme}",
+      "system": "Come il mio dispositivo",
+      "light": "Chiaro",
+      "dark": "Scuro"
+    },
     "footer": {
       "tagline": "© Magic Cups · Gratis per giocare, gratis per creare",
       "safety": "Sicurezza",
@@ -143,6 +150,12 @@
       "text": "Magic Cups, i menu e il Costruttore usano questa lingua.",
       "label": "Lingua",
       "save": "Salva"
+    },
+    "theme": {
+      "heading": "Aspetto",
+      "text": "Scegli uno schermo chiaro o scuro, oppure uno che segue il tuo dispositivo.",
+      "save": "Salva",
+      "invalid": "Scegli uno dei temi."
     },
     "chat": {
       "heading": "Chat",

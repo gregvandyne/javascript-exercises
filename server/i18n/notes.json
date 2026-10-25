@@ -13,6 +13,11 @@
   "layout.search.placeholder": "Placeholder in the search box in the header, max ~26 chars.",
   "layout.lang.title": "Heading of the language menu (the 🌐 button).",
   "layout.lang.button": "Screen-reader label of the 🌐 button. {language} is the current language's own name, e.g. \"Français\".",
+  "layout.theme.title": "Heading of the theme menu (the ☀️/🌙/🌓 button next to 🌐): light or dark colours for the site.",
+  "layout.theme.button": "Screen-reader label of the theme button. {theme} is one of layout.theme.system, .light or .dark.",
+  "layout.theme.system": "Theme choice that follows the phone or computer's own light/dark setting. Short, max ~24 chars.",
+  "layout.theme.light": "Theme choice: light colours (dark text on a light screen). One word.",
+  "layout.theme.dark": "Theme choice: dark colours (light text on a dark screen). One word.",
   "layout.footer.tagline": "Footer line. Keep \"Magic Cups\".",
   "layout.footer.parents": "Footer link to the page for parents, teachers and carers.",
   "layout.footer.builders": "Footer link to the game SDK page for kids who build games.",
@@ -219,5 +224,6 @@
   "js.studio.update.publicText": "{live} is a version number.",
   "builder.budgetResting": "Shown in the Builder chat when the site's daily/monthly AI spending cap is reached; the offline builder takes over. Kid reading level.",
   "uploads.image.resting": "Shown when a child uploads a picture while the AI spending cap is reached, so the picture can't be safety-checked. Kid reading level.",
-  "js.studio.reconnecting": "Status line in the Studio when the phone's connection to the Builder dropped mid-build; the Builder keeps working and the page waits for it. Kid reading level."
+  "js.studio.reconnecting": "Status line in the Studio when the phone's connection to the Builder dropped mid-build; the Builder keeps working and the page waits for it. Kid reading level.",
+  "me.theme.heading": "Me page panel with the theme choice, next to the Language panel."
 }

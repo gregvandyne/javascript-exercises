@@ -18,6 +18,13 @@
       "title": "語言",
       "button": "語言：{language}"
     },
+    "theme": {
+      "title": "主題",
+      "button": "主題：{theme}",
+      "system": "跟我的裝置一樣",
+      "light": "淺色",
+      "dark": "深色"
+    },
     "footer": {
       "tagline": "© Magic Cups · 免費玩、免費做",
       "safety": "安全",
@@ -142,6 +149,12 @@
       "text": "Magic Cups 的選單和小幫手都會使用這種語言。",
       "label": "語言",
       "save": "儲存"
+    },
+    "theme": {
+      "heading": "外觀",
+      "text": "選擇淺色或深色畫面，或跟著你的裝置。",
+      "save": "儲存",
+      "invalid": "請選一種主題。"
     },
     "chat": {
       "heading": "聊天",

@@ -78,8 +78,7 @@
 .st-pro[aria-pressed="true"]{background:linear-gradient(135deg,#7c4dff,var(--blue));border-color:transparent;color:#fff}
 .st-log{flex:1;overflow-y:auto;padding:14px 12px;display:flex;flex-direction:column;gap:10px;overscroll-behavior:contain}
 .msg{max-width:88%;padding:10px 14px;border-radius:18px;line-height:1.45;overflow-wrap:anywhere;white-space:pre-wrap}
-.msg.me{align-self:flex-end;background:var(--blue);color:#fff;border-end-end-radius:6px}
-@media (prefers-color-scheme:dark){.msg.me{color:#07122e}}
+.msg.me{align-self:flex-end;background:var(--blue);color:var(--on-accent);border-end-end-radius:6px}
 .msg.bot{align-self:flex-start;background:var(--card-2);box-shadow:inset 0 0 0 2px var(--line);border-end-start-radius:6px}
 .msg.bot.refused{background:color-mix(in srgb,var(--sun) 20%,var(--card))}
 .msg.err{align-self:center;background:color-mix(in srgb,var(--danger) 14%,var(--card));font-weight:700;text-align:center}

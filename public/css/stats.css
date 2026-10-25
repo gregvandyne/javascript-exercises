@@ -8,8 +8,7 @@
 .kpi.warn{box-shadow:inset 0 0 0 2px var(--sun)}
 .kpi.bad{box-shadow:inset 0 0 0 2px var(--danger)}
 .charts{display:grid;grid-template-columns:1fr;gap:16px}
-.chart{margin:0;padding:20px;--viz-1:#2a78d6}
-@media (prefers-color-scheme:dark){.chart{--viz-1:#3987e5}}
+.chart{margin:0;padding:20px}
 .chart figcaption{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
 .chart h3{margin:0;font-size:1.05rem}
 .chart-sum{font-size:.9rem;color:var(--ink-2)}

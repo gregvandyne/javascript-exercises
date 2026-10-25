@@ -74,7 +74,7 @@ details.chatsafety p{margin:6px 0 0}
 .msg{display:flex;align-items:flex-end;gap:6px;max-width:85%}
 .msg.mine{align-self:flex-end;flex-direction:row-reverse}
 .bubble{padding:9px 14px;border-radius:20px 20px 20px 6px;background:var(--card-2);border:1px solid var(--line);color:var(--ink);overflow-wrap:anywhere;font-size:1.02rem;line-height:1.35}
-.msg.mine .bubble{background:var(--blue);border-color:var(--blue);color:#fff;border-radius:20px 20px 6px 20px}
+.msg.mine .bubble{background:var(--blue);border-color:var(--blue);color:var(--on-accent);border-radius:20px 20px 6px 20px}
 .msg.quick .bubble{font-weight:800}
 .msg.emoji .bubble{font-size:2rem;background:transparent;border-color:transparent;padding:0 4px;line-height:1.1}
 .msg .when{font-size:.72rem;color:var(--muted);white-space:nowrap;margin-bottom:4px}

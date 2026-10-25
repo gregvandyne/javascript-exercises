@@ -18,6 +18,13 @@
       "title": "ことば",
       "button": "ことば：{language}"
     },
+    "theme": {
+      "title": "テーマ",
+      "button": "テーマ：{theme}",
+      "system": "きかいとおなじ",
+      "light": "ライト",
+      "dark": "ダーク"
+    },
     "footer": {
       "tagline": "© Magic Cups · あそぶのも、つくるのも、むりょう",
       "safety": "あんぜん",
@@ -142,6 +149,12 @@
       "text": "Magic Cups、メニュー、ビルダーがこのことばをつかいます。",
       "label": "ことば",
       "save": "ほぞん"
+    },
+    "theme": {
+      "heading": "みため",
+      "text": "あかるいがめんか、くらいがめんをえらべます。きかいにあわせることもできます。",
+      "save": "ほぞん",
+      "invalid": "テーマをひとつえらんでください。"
     },
     "chat": {
       "heading": "チャット",

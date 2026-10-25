@@ -81,7 +81,7 @@ async function check(user, paths) {
           await page.goto(BASE + p, { waitUntil: 'load', timeout: 20000 });
           await page.waitForTimeout(250);
           const states = [['closed', null]];
-          if (OPEN) states.push(['open', () => page.evaluate(() => document.querySelectorAll('details:not(.inline-menu):not(.langpick)').forEach(d => { d.open = true; }))]);
+          if (OPEN) states.push(['open', () => page.evaluate(() => document.querySelectorAll('details:not(.inline-menu):not(.langpick):not(.themepick)').forEach(d => { d.open = true; }))]);
           for (const [state, prep] of states) {
             if (prep) { await prep(); await page.waitForTimeout(100); }
             for (const t of await findTouching(page)) found.push({ role: user.role, path: p, pattern: pattern(BASE + p), size: `${size.width}`, scheme, state, ...t });

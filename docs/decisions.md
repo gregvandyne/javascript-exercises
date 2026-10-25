@@ -249,3 +249,25 @@ A defensive security review (8 areas, each finding independently verified agains
   minutes, and the frame CSP carries a `sandbox` directive so a leaked frame URL is opaque-origin even if opened top-level.
 - **Smaller fixes.** `?lang=` only persists for same-origin requests; play/heartbeat need a session; a score only counts
   after a recorded play; the chat/text link filter detects any TLD (not a short allowlist) without flagging filenames.
+
+## Light, dark or "same as my device"
+Players pick a theme from a ☀️/🌙/🌓 menu next to 🌐 in the top bar, or in the Appearance panel on the Me page. The
+default, "Same as my device", follows the phone or computer's own setting, as the site always did.
+- **Choosing works like choosing a language:** `?theme=` → `theme` cookie (1 year, SameSite=Lax) → the signed-in player's
+  saved choice (`users.theme`, migration `0014_user_theme`, `''` = same as the device) → the device. A `?theme=` link only
+  saves for same-origin or direct requests and then redirects to the page without it, so the menu and the Me page form
+  work with no JavaScript; with JavaScript the switch is instant and `POST /api/me/theme` saves it (signed out: cookie
+  only). A choice made before signing up comes along to the new account; a new device with no cookie uses the account's.
+- **No flash:** the server writes `<html data-theme="light|dark">` (only for an explicit choice) and a matching
+  `<meta name="color-scheme">` (`light dark` when following the device), so the first paint is right before any script runs.
+- **Two-block rule for CSS:** every colour that differs between the themes is a token on `:root` in `public/css/app.css`
+  (including `--on-accent` for text on blue, coral and red fills, `--warn-bg`/`--warn-ink`, `--bad-ink`, `--viz-1`). The dark
+  values live in exactly two blocks with the same body: `@media screen and (prefers-color-scheme:dark){:root:not([data-theme="light"]){…}}`
+  and `@media screen{:root[data-theme="dark"]{…}}`. No other `prefers-color-scheme` or `[data-theme]` rules anywhere in
+  `public/css`: a component that needs a different dark colour gets a token instead. `tests/unit/theme.test.js` checks
+  this. The `screen` wrapper means printing (login cards) always uses the light palette.
+- In dark mode, text on blue, coral and red fills is now dark (it was white on a few of them: the current nav tab, badges,
+  the coral buttons, the friends-chat bubble, error toasts), because white on the lighter dark-mode accents was below 3:1.
+- The narrowest phones (under 360px) keep today's top bar, since the search box would get too small; they choose on the Me
+  page (signed-out visitors there follow their device). From 821 to 1180px the bar's gaps tighten and 🌐 drops its "EN" so
+  the extra button fits in every language. Game frames and games keep their own colours.

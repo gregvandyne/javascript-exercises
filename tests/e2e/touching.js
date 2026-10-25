@@ -12,7 +12,7 @@
 /** Returns a list of touching or overlapping pairs: [{ a, b, gap, dir }]. */
 export async function findTouching(page, { gap = 8, controlGap = 4 } = {}) {
   return page.evaluate(({ gap, controlGap }) => {
-    const SKIP_INSIDE = '.topbar,.tabbar,.toasts,.sheet-bg,.stage,.seg,.sr-only,[aria-hidden="true"],.playbar,.lang-menu,.inline-menu .menu,.coverart,.heroart';
+    const SKIP_INSIDE = '.topbar,.tabbar,.toasts,.sheet-bg,.stage,.seg,.sr-only,[aria-hidden="true"],.playbar,.lang-menu,.theme-menu,.inline-menu .menu,.coverart,.heroart';
     const CONTROL = 'button,.btn,input,select,textarea,.chip,.iconbtn,.tab,summary.btn';
     const transparent = c => !c || c === 'transparent' || /rgba\(.*,\s*0\)$/.test(c);
     const bgBehind = el => {

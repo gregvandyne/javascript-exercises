@@ -10,6 +10,7 @@ import * as photos from '../services/photos.js';
 import { isSchoolStaff, isPlatformAdmin } from '../services/schools.js';
 import { rateLimit, allow, count } from '../services/ratelimit.js';
 import { availableLocales, normalizeCode, tHtml, setLangCookie, saveUserLang } from '../i18n/index.js';
+import { THEMES, THEME_ICONS, normalizeTheme, setThemeCookie, saveUserTheme } from '../theme.js';
 
 export const router = Router();
 const safeNext = n => (typeof n === 'string' && /^\/(?!\/)[\w\-/?=&%.#]*$/.test(n) ? n : '/');
@@ -64,6 +65,7 @@ router.post('/api/auth/guest', rateLimit('guest', 30, 3600e3), (req, res) => {
   if (!allow(`guestip:${req.ip}`, 60, 3600e3)) return res.status(429).json({ error: req.t('auth.api.tooManyGuests') });
   const u = auth.createGuest(); auth.startSession(res, u.id, req.headers['user-agent']);
   if (req.localeSource === 'cookie') saveUserLang(u, req.locale);
+  if (req.themeSource === 'cookie') saveUserTheme(u, req.theme);
   res.json({ ok: true, user: auth.publicUser(u) });
 });
 router.post('/api/auth/signup', rateLimit('signup', 10, 3600e3), (req, res) => {
@@ -84,6 +86,7 @@ router.post('/api/auth/signup', rateLimit('signup', 10, 3600e3), (req, res) => {
     auth.startSession(res, u.id, req.headers['user-agent']); audit(u.id, 'user.signup', u.id);
   }
   if (req.localeSource === 'cookie') saveUserLang(u, req.locale); // a language picked before signing up comes along
+  if (req.themeSource === 'cookie') saveUserTheme(u, req.theme);   // and so does a theme
   res.json({ ok: true, user: auth.publicUser(u) });
 });
 router.post('/api/auth/login', rateLimit('login', 20, 900e3, 'auth.api.tooManyTries'), (req, res) => {
@@ -101,6 +104,13 @@ router.post('/api/auth/login', rateLimit('login', 20, 900e3, 'auth.api.tooManyTr
 });
 router.post('/api/auth/logout', (req, res) => { auth.endSession(req, res); res.json({ ok: true, redirect: '/' }); });
 router.get('/api/me', (req, res) => res.json({ user: auth.publicUser(req.user) }));
+// The theme menu and the Me page switch at once with this; signed out it only sets the cookie.
+router.post('/api/me/theme', rateLimit('theme', 30, 60e3), (req, res) => {
+  const theme = normalizeTheme((req.body || {}).theme);
+  if (!theme) return res.status(400).json({ error: req.t('me.theme.invalid') });
+  setThemeCookie(res, theme); saveUserTheme(req.user, theme);
+  res.json({ ok: true, theme });
+});
 // ---- Profile photo. Raw body: a JPEG the browser already shrank to a 512px square.
 router.post('/api/me/photo', auth.requireUser, rateLimit('me-photo', 10, 3600e3), express.raw({ type: () => true, limit: '1mb' }), async (req, res) => {
   const t = req.t;
@@ -151,6 +161,21 @@ export function languagePanel(req) {
   </section>`;
 }
 
+/** The theme choice on the Me page: radio buttons in a plain GET form (?theme=), so it works without JavaScript;
+ *  app.js applies a pick at once and hides the Save button. */
+export function appearancePanel(req) {
+  const t = req.t; const cur = THEMES.includes(req.theme) ? req.theme : 'system';
+  return html`<section class="panel" id="appearance" aria-labelledby="theme-h"><h2 id="theme-h"><span aria-hidden="true">🎨</span> ${t('me.theme.heading')}</h2>
+    <p class="muted">${t('me.theme.text')}</p>
+    <form action="${req.path}#appearance" method="get" id="themeform">
+      <fieldset class="themechoices"><legend class="sr-only">${t('layout.theme.title')}</legend>
+        ${THEMES.map(th => html`<label class="themechoice"><input type="radio" name="theme" value="${th}" ${th === cur ? raw('checked') : ''}><span class="theme-ico" aria-hidden="true">${THEME_ICONS[th]}</span><span>${t(`layout.theme.${th}`)}</span></label>`)}
+      </fieldset>
+      <button class="btn btn-primary" type="submit">${t('me.theme.save')}</button>
+    </form>
+  </section>`;
+}
+
 router.get('/me', (req, res) => {
   const t = req.t;
   const u = req.user;
@@ -188,7 +213,7 @@ router.get('/me', (req, res) => {
     <h3 style="margin-top:16px">${t('me.look.colorHeading')}</h3>
     <div class="chips" role="group" aria-label="${t('me.look.colorGroup')}">${auth.COLORS.map(c => html`<button class="chip" type="button" data-color="${c}" aria-pressed="${c === u.color}" aria-label="${t('me.look.colorLabel', { color: c })}"><span class="avatar" style="--s:26px;--c:${c}"></span></button>`)}</div>
   </section>
-  ${languagePanel(req)}
+  <div class="mesettings">${languagePanel(req)}${appearancePanel(req)}</div>
   ${!u.is_guest ? html`<section class="panel"><h2>${t('me.chat.heading')}</h2>
     <p class="muted">${t('me.chat.text')}</p>
     <label class="row" style="font-weight:800"><input type="checkbox" id="chat-toggle" ${u.chat_enabled ? raw('checked') : ''} style="width:24px;height:24px"> ${t('me.chat.toggle')}</label>

@@ -19,6 +19,13 @@
       "title": "Taal",
       "button": "Taal: {language}"
     },
+    "theme": {
+      "title": "Thema",
+      "button": "Thema: {theme}",
+      "system": "Zoals mijn apparaat",
+      "light": "Licht",
+      "dark": "Donker"
+    },
     "footer": {
       "tagline": "© Magic Cups · Gratis spelen, gratis bouwen",
       "safety": "Veiligheid",
@@ -143,6 +150,12 @@
       "text": "Magic Cups, de menu's en de Bouwer gebruiken deze taal.",
       "label": "Taal",
       "save": "Opslaan"
+    },
+    "theme": {
+      "heading": "Uiterlijk",
+      "text": "Kies een licht of donker scherm, of een scherm dat je apparaat volgt.",
+      "save": "Opslaan",
+      "invalid": "Kies een van de thema's."
     },
     "chat": {
       "heading": "Chat",

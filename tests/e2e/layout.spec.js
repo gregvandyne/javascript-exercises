@@ -1,5 +1,5 @@
 // Layout: panels, cards, lists and buttons never touch and pages never scroll sideways, on phones, tablets, small
-// laptops and desktops, in light and dark mode, with collapsible sections closed and opened. Uses the demo school seeded by DEMO_TEACHER_PASSWORD (see
+// laptops and desktops, in light and dark mode (following the device, and Dark picked on a light device), with collapsible sections closed and opened. Uses the demo school seeded by DEMO_TEACHER_PASSWORD (see
 // playwright.config.js). scripts/layout-audit.js runs the same check over every page it can reach.
 import { test, expect } from '@playwright/test';
 import { findTouching } from './touching.js';
@@ -10,6 +10,7 @@ const VIEWS = [
   { width: 390, height: 844, scheme: 'dark' }, { width: 390, height: 844, scheme: 'light' },
   { width: 820, height: 1180, scheme: 'light' }, { width: 1024, height: 768, scheme: 'dark' },
   { width: 1280, height: 860, scheme: 'dark' }, { width: 1280, height: 860, scheme: 'light' },
+  { width: 390, height: 844, scheme: 'light', theme: 'dark' },
 ];
 
 async function signIn(browser, username, password) {
@@ -31,13 +32,14 @@ async function checkPages(browser, state, paths) {
   const problems = [];
   for (const v of VIEWS) {
     const ctx = await browser.newContext({ viewport: { width: v.width, height: v.height }, colorScheme: v.scheme, storageState: state });
+    if (v.theme) await ctx.addCookies([{ name: 'theme', value: v.theme, url: test.info().project.use.baseURL }]);
     const page = await ctx.newPage();
     for (const p of paths) {
       await page.goto(p);
-      for (const t of await findTouching(page)) problems.push(`${p} @${v.width}/${v.scheme}: ${t.a}  ⟷  ${t.b} (${t.dir} ${t.gap}px)`);
+      for (const t of await findTouching(page)) problems.push(`${p} @${v.width}/${v.theme || v.scheme}: ${t.a}  ⟷  ${t.b} (${t.dir} ${t.gap}px)`);
       const wide = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
       if (wide > 1) problems.push(`${p} @${v.width}: the page scrolls sideways by ${wide}px`);
-      await page.evaluate(() => document.querySelectorAll('details:not(.inline-menu):not(.langpick)').forEach(d => { d.open = true; }));
+      await page.evaluate(() => document.querySelectorAll('details:not(.inline-menu):not(.langpick):not(.themepick)').forEach(d => { d.open = true; }));
       for (const t of await findTouching(page)) problems.push(`${p} [opened] @${v.width}/${v.scheme}: ${t.a}  ⟷  ${t.b} (${t.dir} ${t.gap}px)`);
     }
     await ctx.close();

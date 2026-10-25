@@ -102,9 +102,9 @@ on(document, 'submit', async e => {
 // Back to a page kept in the browser's cache: buttons we disabled while leaving work again.
 on(window, 'pageshow', e => { if (e.persisted) $$('[data-busy]').forEach(b => { b.disabled = false; delete b.dataset.busy; }); });
 
-// ---- 🌐 language menu: a <details> of plain links (works without JS); here we add Escape, outside-click and arrow keys ----
-if (FIRST) for (const d of $$('[data-langpick]')) {
-  const links = () => $$('.lang-list a', d);
+// ---- 🌐 language and ☀️/🌙/🌓 theme menus: a <details> of plain links (works without JS); here we add Escape, outside-click and arrow keys ----
+if (FIRST) for (const d of $$('[data-langpick],[data-themepick]')) {
+  const links = () => $$('li > a', d);
   const close = (focus = true) => { if (!d.open) return; d.open = false; if (focus) $('summary', d).focus(); };
   d.addEventListener('toggle', () => { if (d.open) { const cur = links().find(a => a.getAttribute('aria-current') === 'true') || links()[0]; if (cur) cur.focus(); } });
   d.addEventListener('keydown', e => {
@@ -121,6 +121,38 @@ if (FIRST) for (const d of $$('[data-langpick]')) {
 // The Me page's language form saves as soon as a language is picked.
 const langSel = document.getElementById('lang-select');
 if (FIRST && langSel) langSel.addEventListener('change', () => langSel.form.submit());
+
+// ---- Theme: Same as my device / Light / Dark. The menu links and the Me page form work without JS (?theme=); here a pick
+// applies at once: <html data-theme> and the color-scheme meta change, the menus follow, and the server saves it.
+function applyTheme(theme) {
+  const pinned = theme === 'light' || theme === 'dark';
+  if (pinned) document.documentElement.dataset.theme = theme; else delete document.documentElement.dataset.theme;
+  const meta = $('meta[name="color-scheme"]'); if (meta) meta.content = pinned ? theme : 'light dark';
+  for (const a of $$('a[data-theme-choice]')) {
+    const on = a.dataset.themeChoice === theme;
+    if (on) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current');
+    const check = $('.lang-check', a); if (check) check.textContent = on ? '✓' : '';
+    if (on) for (const s of $$('[data-themepick] > summary')) { s.setAttribute('aria-label', a.dataset.label); $('.theme-ico', s).textContent = $('.theme-ico', a).textContent; }
+  }
+  for (const r of $$('#themeform input[name="theme"]')) r.checked = r.value === theme;
+}
+let themeSaving = Promise.resolve();   // one save at a time, so the last pick is the one kept
+function chooseTheme(theme, fallback) {
+  applyTheme(theme);
+  themeSaving = themeSaving.then(() => api('/api/me/theme', { method: 'POST', body: { theme } })).catch(fallback);
+}
+on(document, 'click', e => {
+  const a = e.target.closest('a[data-theme-choice]');
+  if (!a || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+  e.preventDefault();
+  const d = a.closest('details'); if (d) { d.open = false; $('summary', d).focus(); }
+  chooseTheme(a.dataset.themeChoice, () => { location.href = a.href; });   // saving failed: the plain link saves it instead
+});
+const themeForm = document.getElementById('themeform');
+if (FIRST && themeForm) {
+  themeForm.addEventListener('change', e => { if (e.target.name === 'theme') chooseTheme(e.target.value, () => themeForm.submit()); });
+  const save = $('[type=submit]', themeForm); if (save) save.hidden = true;   // picks apply at once
+}
 
 // ---- "Play as guest" buttons anywhere ----
 on(document, 'click', async e => {
