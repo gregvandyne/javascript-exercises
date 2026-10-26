@@ -66,10 +66,10 @@ test('avatars render the photo URL wherever a row carries it; the Me page offers
   assert.doesNotMatch(String(avatar(q.get('SELECT id, avatar, color, photo_at FROM users WHERE id=?', pal.id), 40)), /<img/);
   assert.match(String(avatar({ owner_id: kid.id, owner_avatar: '🦊', owner_photo_at: row.photo_at }, 32)), /\/avatars\//);
   const me = await (await fetch(base + '/me', { headers: { cookie: cookieFor(kid.id) } })).text();
-  assert.match(me, /id="photo-pick"/); assert.match(me, /id="photo-remove"/); assert.match(me, /Only you, your friends/);
+  assert.match(me, /data-photo-pick/); assert.match(me, /data-photo-remove/); assert.match(me, /id="look-edit"/); assert.match(me, /Only you, your friends/);
   const guestCookie = cookieFor(createGuest().id);
   const gm = await (await fetch(base + '/me', { headers: { cookie: guestCookie } })).text();
-  assert.doesNotMatch(gm, /id="photo-pick"/); assert.match(gm, /Make a free account to add a profile photo/);
+  assert.doesNotMatch(gm, /data-photo-pick/); assert.match(gm, /Make a free account to add a profile photo/);
 });
 
 test('upload API: no safety check means no photo; guests refused; remove works; admins can remove a photo', async () => {

@@ -223,7 +223,6 @@
   "js.studio.update.text": "{live} and {number} become bold text like \"version 3\" (js.studio.update.version).",
   "js.studio.update.version": "Used inside js.studio.update.text. {number} is a version number.",
   "js.studio.update.publicText": "{live} is a version number.",
-  "builder.budgetResting": "Shown in the Builder chat when the site's daily/monthly AI spending cap is reached; the offline builder takes over. Kid reading level.",
   "uploads.image.resting": "Shown when a child uploads a picture while the AI spending cap is reached, so the picture can't be safety-checked. Kid reading level.",
   "me.theme.heading": "Me page panel with the theme choice, next to the Language panel.",
   "auth.page.forgotOwn": "Sign-in page, under the form. Keep it honest: there is no email recovery and no way to look a password up.",
@@ -320,5 +319,7 @@
   "js.studio.eta.big": "Replaces js.studio.eta.longer when the build goes on much longer. Calm, not alarming.",
   "js.studio.eta.newMsg": "Shown after the Builder starts reading a message the child sent while it works.",
   "js.studio.eta.learnAi": "'Tokens' as in js.studio.steps.tokens (small pieces of words). Learning line: one short sentence.",
-  "js.studio.eta.learnBlocks": "'Building blocks' as in js.studio.steps.blocks.now and builder.budgetResting. Learning line: one short sentence."
+  "js.studio.eta.learnBlocks": "'Building blocks' as in js.studio.steps.blocks.now and builder.budgetResting. Learning line: one short sentence.",
+  "js.studio.resting.text": "Shown in the Builder chat when the site's daily AI spending limit is reached. {when} is one of resting.today / resting.tomorrow / resting.date, already translated. Must stay true: turns are not used while it rests.",
+  "js.studio.resting.date": "{date} is a weekday and date in the reader's language, like 'Saturday, Nov 1'. {time} is a clock time."
 }

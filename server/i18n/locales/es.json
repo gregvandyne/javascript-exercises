@@ -174,7 +174,8 @@
       "colorHeading": "Color",
       "colorGroup": "Color",
       "colorLabel": "Color {color}",
-      "avatarHeading": "O elige un emoji"
+      "avatarHeading": "O elige un emoji",
+      "edit": "Editar foto"
     },
     "language": {
       "heading": "Idioma",
@@ -872,7 +873,8 @@
       "busy": "El Constructor todavía está trabajando en tu último mensaje. ¡Un momento!",
       "limit": "Ya usaste tus {count} turnos con el Constructor por hoy. ¡Vuelve mañana para tener más!",
       "muddled": "El Constructor se confundió un poco. Inténtalo de nuevo en un momento.",
-      "tooMany": "Ya tienes 2 juegos en construcción. Espera a que uno termine y vuelve a intentarlo."
+      "tooMany": "Ya tienes 2 juegos en construcción. Espera a que uno termine y vuelve a intentarlo.",
+      "resting": "El Constructor de IA está descansando ahora. Tu juego y tus turnos están guardados, ¡vuelve un poco más tarde!"
     },
     "refusals": {
       "tryThese": "¿Quieres probar una de estas ideas?",
@@ -969,10 +971,10 @@
         }
       }
     },
-    "budgetResting": "El Constructor de IA está descansando hasta mañana, así que por ahora usaré mis bloques sencillos.",
     "turnTimeout": "⏱️ Esta construcción tardó más que nuestro límite de tiempo, así que me detuve. Tu versión más nueva está guardada. ¡Dime qué cambiar ahora!",
     "turnTimeoutNothing": "⏱️ Esta construcción tardó más que nuestro límite de tiempo, así que me detuve antes de poder guardar nada. No gastó ningún turno, así que puedes intentarlo de nuevo.",
-    "cutOffNothing": "El Constructor pasó tanto tiempo planeando que se quedó sin espacio antes de poder construir algo. No se usó tu turno. Prueba a pedir uno o dos cambios a la vez."
+    "cutOffNothing": "El Constructor pasó tanto tiempo planeando que se quedó sin espacio antes de poder construir algo. No se usó tu turno. Prueba a pedir uno o dos cambios a la vez.",
+    "budgetStop": "El Constructor de IA tiene que descansar ahora, así que paré aquí. Todo lo que hice hasta ahora está guardado."
   },
   "uploads": {
     "tooFast": "¡Son muchos archivos! Espera un minuto y vuelve a intentarlo.",
@@ -1062,7 +1064,8 @@
       "photoChecking": "Revisando tu foto…",
       "photoSaved": "¡Foto guardada!",
       "photoRemoved": "Foto quitada",
-      "photoBad": "Ese archivo no es una foto que podamos usar. Prueba con otra."
+      "photoBad": "Ese archivo no es una foto que podamos usar. Prueba con otra.",
+      "lookTitle": "Elige tu estilo"
     },
     "profile": {
       "linkCopied": "¡Enlace del perfil copiado!"
@@ -1433,6 +1436,12 @@
       "gameGone": "Este juego se borró, así que el Constructor se detuvo.",
       "followups": {
         "putBack": "Volver a ponerlo en el cuadro"
+      },
+      "resting": {
+        "text": "😴 El Constructor de IA está descansando ahora. Volverá {when}. Tu juego y tus turnos están guardados, ¡vuelve entonces!",
+        "today": "hoy a las {time}",
+        "tomorrow": "mañana a las {time}",
+        "date": "el {date} a las {time}"
       }
     }
   },

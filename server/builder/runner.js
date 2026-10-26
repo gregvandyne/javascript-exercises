@@ -29,6 +29,7 @@ import * as turns from './turns.js';
 import * as eta from './eta.js';
 import { stepRecorder } from './steps.js';
 import { previewUrl } from './tools.js';
+import { restingUntil } from './anthropic.js';
 import { turnsLeft, takeTurn } from './usage.js';
 import { loadChat, appendChat, updateChat } from './chat.js';
 import { getUpload, LIMITS as UPLOADS } from './uploads.js';
@@ -138,6 +139,10 @@ function begin({ user, game, text, pro, wanted, cid, continueOf, t, provider, co
   // 3b. Builds no longer need an open tab: at most 2 at once per builder.
   let mine = 0; for (const j of jobs.values()) if (j.userId === user.id) mine++;
   if (mine >= LIMITS.maxPerUser) return err(429, 'builder.errors.tooMany', 'tooMany');
+  // The site's AI budget is spent for today (or this month): no build at all (the simple building blocks would ask
+  // questions it can't follow up on). Nothing is stored or charged; the page says when the AI is back, in local time.
+  const until = provider ? null : restingUntil();
+  if (until) return { status: 503, body: { error: t('builder.errors.resting'), code: 'resting', resting: { until } }, code: 'resting' };
   // No turns left today: said before anything is stored, so the page puts the message back in the box (the charge
   // itself is still checked when screening passes). The streamed POST keeps its old order: screening first.
   if (!compat && turnsLeft(user.id) <= 0) return err(429, 'builder.errors.limit', 'limit', { count: config.builderDailyTurns });

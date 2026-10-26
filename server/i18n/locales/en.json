@@ -175,7 +175,8 @@
       "colorHeading": "Color",
       "colorGroup": "Color",
       "colorLabel": "Color {color}",
-      "avatarHeading": "Or pick an emoji"
+      "avatarHeading": "Or pick an emoji",
+      "edit": "Edit photo"
     },
     "language": {
       "heading": "Language",
@@ -875,7 +876,8 @@
       "busy": "The Builder is still working on your last message. One moment!",
       "tooMany": "You already have 2 games building. Wait until one is done, then try again.",
       "limit": "You have used all {count} Builder turns for today. Come back tomorrow for more!",
-      "muddled": "The Builder got muddled. Please try again in a moment."
+      "muddled": "The Builder got muddled. Please try again in a moment.",
+      "resting": "The AI Builder is resting right now. Your game and your turns are saved, so come back a bit later!"
     },
     "refusals": {
       "tryThese": "Want to try one of these?",
@@ -972,14 +974,14 @@
         }
       }
     },
-    "budgetResting": "The AI Builder is resting until tomorrow, so I'll use my simple building blocks for now.",
     "cutOffNothing": "The Builder spent so long planning that it ran out of room before it could build anything. Your turn wasn’t used. Try asking for one or two changes at a time.",
     "followUps": {
       "cap": "You’ve sent {max, plural, one {# extra message} other {# extra messages}} during this build. Wait until it’s done, then tell me more!",
       "refusedCap": "Let’s wait for the Builder to finish this build first.",
       "noUploads": "Pictures and files can be added when this build is done. Send your words now, or wait a moment.",
       "notYours": "Someone else started this build. Wait until it’s done."
-    }
+    },
+    "budgetStop": "The AI Builder has to rest now, so I stopped here. Everything I made so far is saved."
   },
   "uploads": {
     "tooFast": "That is a lot of files! Wait a minute and try again.",
@@ -1069,7 +1071,8 @@
       "photoChecking": "Checking your photo…",
       "photoSaved": "Photo saved!",
       "photoRemoved": "Photo removed",
-      "photoBad": "That file isn’t a photo we can use. Try another one."
+      "photoBad": "That file isn’t a photo we can use. Try another one.",
+      "lookTitle": "Pick your look"
     },
     "profile": {
       "linkCopied": "Profile link copied!"
@@ -1491,6 +1494,13 @@
         "newMsg": "Reading your new message can add a little time",
         "learnAi": "Bigger games take longer, because the AI writes more tokens, one after another.",
         "learnBlocks": "The building blocks follow fixed rules, so they take about the same time every time."
+      },
+      "stillWorking": "One moment, the Builder is still working!",
+      "resting": {
+        "text": "😴 The AI Builder is resting right now. It will be back {when}. Your game and your turns are saved, so come back then!",
+        "today": "today at {time}",
+        "tomorrow": "tomorrow at {time}",
+        "date": "on {date} at {time}"
       }
     }
   },

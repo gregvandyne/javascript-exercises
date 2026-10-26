@@ -216,7 +216,24 @@ function drawLastTurn(msgs) {
   if (lt.putBack) row.insertAdjacentHTML('beforeend', `<button class="btn st-contbtn" type="button" data-act="putback">✏️ ${E('js.studio.followups.putBack')}</button>`);
   place(row);
 }
+/** "The AI Builder is resting… back tomorrow at 1:00 AM" in the reader's own time zone and language. */
+function restingText(until) {
+  const d = new Date(until), now = new Date();
+  const time = d.toLocaleTimeString(INTL, { hour: 'numeric', minute: '2-digit' });
+  const day0 = x => new Date(x.getFullYear(), x.getMonth(), x.getDate()).getTime();
+  const days = Math.round((day0(d) - day0(now)) / 864e5);
+  const when = days <= 0 ? t('js.studio.resting.today', { time }) : days === 1 ? t('js.studio.resting.tomorrow', { time })
+    : t('js.studio.resting.date', { date: d.toLocaleDateString(INTL, { weekday: 'long', month: 'short', day: 'numeric' }), time });
+  return t('js.studio.resting.text', { when });
+}
+/** The resting note, once: sending again while it rests moves the same note to the bottom instead of repeating it. */
+let restingEl = null;
+function restingNote() {
+  if (restingEl && restingEl.isConnected) { log.appendChild(restingEl); return; }
+  restingEl = bubble('bot', restingText(S.resting));
+}
 function renderLog() {
+  restingEl = null;
   if (live) live.remove();
   const flying = $$('.msg.fu', log).filter(e => FLYING.has(e.dataset.state));   // follow-ups whose answer hasn't come
   log.innerHTML = '';
@@ -227,7 +244,9 @@ function renderLog() {
   try {
     msgs.forEach((m, i) => drawEntry(m, i === msgs.length - 1 && !tid));
     drawLastTurn(msgs);
-    if (!msgs.length && !S.turn) {
+    // The site's AI budget is spent for now: say when the Builder is back instead of asking what to build.
+    if (S.resting && !S.turn) restingNote();
+    else if (!msgs.length && !S.turn) {
       if (!S.current) { askBlock({ question: t('js.studio.log.whatKind') }, true, bubble('bot', t('js.studio.log.hello'))); chips(START_CHIPS, true); }
       else { bubble('bot', t('js.studio.log.readyToPlay', { title: S.game.title })); chips(NEXT_CHIPS, true); }
     }
@@ -1172,6 +1191,7 @@ async function send(text, { continueOf = null } = {}) {
     resync(); return;
   }
   if (res && res.status === 401) { giveBack(chk); signInAgainBubble(); syncCompose(); return; }
+  if (res && data && data.resting) { giveBack(chk); S.resting = data.resting.until; restingNote(); syncCompose(); scrollDown(); return; }
   if (res && data && data.error) { giveBack(chk); bubble('err', data.error); syncCompose(); scrollDown(); return; }
   arrived(chk);   // no answer: offline, or the server is restarting (the platform may answer for it, without JSON)
 }

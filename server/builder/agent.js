@@ -100,7 +100,6 @@ export async function executeTurn(job, { user, game, text = '', pro = false, wan
   const history = runner.historyFor(job, chat.messages);
   const state = { ...chat.state, scanFails: 0 }; job.state = state;
   const tb = toolbox({ user, gameId: game.id, emit, state, locale, steps, signal: job.ac.signal });
-  if (!provider && name === 'mock' && resting()) emit('text', { text: t('builder.budgetResting') + '\n\n' });
   // The time estimate, once the build is charged and before the provider starts (a follow-on build's words are its
   // carried messages). Resumed attempts get a fresh one from now.
   const words = text || job.waiting.map(e => e.text).join('\n');

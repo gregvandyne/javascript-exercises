@@ -175,7 +175,8 @@
       "colorHeading": "Kleur",
       "colorGroup": "Kleur",
       "colorLabel": "Kleur {color}",
-      "avatarHeading": "Of kies een emoji"
+      "avatarHeading": "Of kies een emoji",
+      "edit": "Foto aanpassen"
     },
     "language": {
       "heading": "Taal",
@@ -873,7 +874,8 @@
       "busy": "De Bouwer is nog bezig met je vorige bericht. Even geduld!",
       "limit": "Je hebt vandaag al je {count} berichten aan de Bouwer gebruikt. Kom morgen terug voor meer!",
       "muddled": "De Bouwer raakte in de war. Probeer het zo nog eens.",
-      "tooMany": "Er worden al 2 games van je gebouwd. Wacht tot er een klaar is en probeer het dan nog eens."
+      "tooMany": "Er worden al 2 games van je gebouwd. Wacht tot er een klaar is en probeer het dan nog eens.",
+      "resting": "De AI-Bouwer rust nu even uit. Je game en je berichten zijn bewaard, dus kom straks terug!"
     },
     "refusals": {
       "tryThese": "Wil je een van deze proberen?",
@@ -970,10 +972,10 @@
         }
       }
     },
-    "budgetResting": "De AI-Bouwer rust uit tot morgen, dus ik gebruik nu mijn simpele bouwblokken.",
     "turnTimeout": "⏱️ Dit bouwen duurde langer dan onze tijdslimiet, dus ik ben gestopt. Je nieuwste versie is bewaard. Vertel me wat ik nu moet veranderen!",
     "turnTimeoutNothing": "⏱️ Dit bouwen duurde langer dan onze tijdslimiet, dus ik ben gestopt voordat ik iets kon bewaren. Dit bericht telt niet mee, dus je kunt het nog eens proberen.",
-    "cutOffNothing": "De Bouwer was zo lang aan het plannen dat er geen ruimte meer over was om iets te bouwen. Dit bericht telt niet mee. Vraag om één of twee veranderingen tegelijk."
+    "cutOffNothing": "De Bouwer was zo lang aan het plannen dat er geen ruimte meer over was om iets te bouwen. Dit bericht telt niet mee. Vraag om één of twee veranderingen tegelijk.",
+    "budgetStop": "De AI-Bouwer moet nu even rusten, dus ik ben hier gestopt. Alles wat ik tot nu toe heb gemaakt is bewaard."
   },
   "uploads": {
     "tooFast": "Dat zijn veel bestanden! Wacht een minuutje en probeer het opnieuw.",
@@ -1063,7 +1065,8 @@
       "photoChecking": "Je foto wordt gecheckt…",
       "photoSaved": "Foto opgeslagen!",
       "photoRemoved": "Foto weggehaald",
-      "photoBad": "Dat bestand is geen foto die we kunnen gebruiken. Probeer een andere."
+      "photoBad": "Dat bestand is geen foto die we kunnen gebruiken. Probeer een andere.",
+      "lookTitle": "Kies je look"
     },
     "profile": {
       "linkCopied": "Profiellink gekopieerd!"
@@ -1434,6 +1437,12 @@
       "gameGone": "Deze game is verwijderd, dus de Bouwer is gestopt.",
       "followups": {
         "putBack": "Zet het terug in het vak"
+      },
+      "resting": {
+        "text": "😴 De AI-Bouwer rust nu even uit. Hij is {when} terug. Je game en je berichten zijn bewaard, dus kom dan terug!",
+        "today": "vandaag om {time}",
+        "tomorrow": "morgen om {time}",
+        "date": "op {date} om {time}"
       }
     }
   },

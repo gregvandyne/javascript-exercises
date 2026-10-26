@@ -174,7 +174,8 @@
       "colorHeading": "Couleur",
       "colorGroup": "Couleur",
       "colorLabel": "Couleur {color}",
-      "avatarHeading": "Ou choisis un emoji"
+      "avatarHeading": "Ou choisis un emoji",
+      "edit": "Modifier la photo"
     },
     "language": {
       "heading": "Langue",
@@ -872,7 +873,8 @@
       "busy": "Le Constructeur travaille encore sur ton dernier message. Un instant !",
       "limit": "Tu as utilisé tes {count} tours avec le Constructeur pour aujourd’hui. Reviens demain pour en avoir d’autres !",
       "muddled": "Le Constructeur s’est un peu emmêlé. Réessaie dans un moment.",
-      "tooMany": "Tu as déjà 2 jeux en construction. Attends que l’un d’eux soit fini, puis réessaie."
+      "tooMany": "Tu as déjà 2 jeux en construction. Attends que l’un d’eux soit fini, puis réessaie.",
+      "resting": "Le Constructeur IA se repose en ce moment. Ton jeu et tes tours sont enregistrés, alors reviens un peu plus tard !"
     },
     "refusals": {
       "tryThese": "Tu veux essayer une de ces idées ?",
@@ -969,10 +971,10 @@
         }
       }
     },
-    "budgetResting": "Le Constructeur IA se repose jusqu’à demain, alors j’utilise mes blocs simples pour l’instant.",
     "turnTimeout": "⏱️ Cette construction a dépassé notre limite de temps, alors je me suis arrêté. Ta version la plus récente est enregistrée. Dis-moi ce qu’il faut changer maintenant !",
     "turnTimeoutNothing": "⏱️ Cette construction a dépassé notre limite de temps, alors je me suis arrêté avant de pouvoir enregistrer quoi que ce soit. Ça ne t’a pas coûté de tour, donc tu peux réessayer.",
-    "cutOffNothing": "Le Constructeur a passé tellement de temps à planifier qu’il a manqué de place avant de pouvoir construire quoi que ce soit. Ton tour n’a pas été utilisé. Essaie de demander un ou deux changements à la fois."
+    "cutOffNothing": "Le Constructeur a passé tellement de temps à planifier qu’il a manqué de place avant de pouvoir construire quoi que ce soit. Ton tour n’a pas été utilisé. Essaie de demander un ou deux changements à la fois.",
+    "budgetStop": "Le Constructeur IA doit se reposer maintenant, alors je me suis arrêté ici. Tout ce que j’ai fait jusqu’ici est enregistré."
   },
   "uploads": {
     "tooFast": "Ça fait beaucoup de fichiers ! Attends une minute et réessaie.",
@@ -1062,7 +1064,8 @@
       "photoChecking": "Je vérifie ta photo…",
       "photoSaved": "Photo enregistrée !",
       "photoRemoved": "Photo enlevée",
-      "photoBad": "Ce fichier n’est pas une photo qu’on peut utiliser. Essaie-en une autre."
+      "photoBad": "Ce fichier n’est pas une photo qu’on peut utiliser. Essaie-en une autre.",
+      "lookTitle": "Choisis ton look"
     },
     "profile": {
       "linkCopied": "Lien du profil copié !"
@@ -1433,6 +1436,12 @@
       "gameGone": "Ce jeu a été supprimé, alors le Constructeur s’est arrêté.",
       "followups": {
         "putBack": "Le remettre dans la zone de texte"
+      },
+      "resting": {
+        "text": "😴 Le Constructeur IA se repose en ce moment. Il revient {when}. Ton jeu et tes tours sont enregistrés, alors reviens à ce moment-là !",
+        "today": "aujourd’hui à {time}",
+        "tomorrow": "demain à {time}",
+        "date": "le {date} à {time}"
       }
     }
   },

@@ -15,3 +15,5 @@ export function anthropic() {
 export const hasModel = () => !!config.anthropicKey;
 /** A key is set but the AI budget is used up for now. */
 export const resting = () => !!config.anthropicKey && !aiBudget.ok();
+/** While resting: when the AI is back (ms), else null. */
+export const restingUntil = () => (resting() ? aiBudget.resetsAt() : null);
