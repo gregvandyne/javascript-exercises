@@ -1,5 +1,5 @@
 // The domain move in a real browser: cookies are per site, so 127.0.0.1 stands in for the old name
-// (magic-cup.onrender.com) and localhost for the new one (oomba.ai). This spec runs its own server on E2E_PORT + 1,
+// (magic-cup.onrender.com) and localhost for the new one (oomba.ai). This spec runs its own server on E2E_PORT + 2,
 // first without PUBLIC_URL (today), then restarted with PUBLIC_URL=http://localhost:<port> and the old name listed.
 import { test, expect } from '@playwright/test';
 import { spawn, execFileSync } from 'node:child_process';
@@ -8,10 +8,11 @@ import os from 'node:os';
 import path from 'node:path';
 import { uniq } from './helpers.js';
 
-const PORT = +(process.env.E2E_PORT || 4310) + 1;
+const PORT = +(process.env.E2E_PORT || 4310) + 2; // + 1 is the fake Google
 const OLD = `http://127.0.0.1:${PORT}`, NEW = `http://localhost:${PORT}`;
 const DATA = fs.mkdtempSync(path.join(os.tmpdir(), 'brb-move-'));
 const ENV = { ...process.env, PORT: String(PORT), BRB_DATA_DIR: DATA, BRB_SILENT: '1', LOG_REQUESTS: '0', BRB_SNAPSHOTS: '0', SESSION_SECRET: 'move-test-secret-0123456789abcdef0123456789', ADMIN_PASSWORD: 'admin-pass-123', NODE_ENV: 'development' };
+delete ENV.GOOGLE_CLIENT_ID; delete ENV.GOOGLE_CLIENT_SECRET; delete ENV.GOOGLE_OIDC_BASE;
 delete ENV.PUBLIC_URL; delete ENV.REDIRECT_HOSTS; delete ENV.RENDER_EXTERNAL_HOSTNAME; delete ENV.BRB_DB;
 let proc = null;
 async function start(extra = {}) {

@@ -974,7 +974,8 @@
       "draftKept": "Guardamos o que você digitou.",
       "close": "Fechar",
       "playing": "{n} jogando",
-      "justNow": "agora mesmo"
+      "justNow": "agora mesmo",
+      "copied": "Copiado!"
     },
     "game": {
       "needSignIn": "Toque em “Jogar como convidado” ou entre primeiro.",
@@ -1907,6 +1908,184 @@
       "sentAgo": "Enviada {when}",
       "feedback": "Do seu professor",
       "readNoFeedback": "Seu professor viu sua resposta."
+    }
+  },
+  "google": {
+    "button": {
+      "signIn": "Fazer login com o Google",
+      "hint": "Para contas Google da escola, como em um Chromebook."
+    },
+    "login": {
+      "orName": "ou use seu nome na Oomba Academy",
+      "joinLink": "Tem um código da turma? {link}",
+      "joinLinkText": "Entre na sua turma"
+    },
+    "errors": {
+      "expired": "Isso demorou um pouco demais. Tente de novo.",
+      "denied": "O Google não fez seu login. Se você tocou em Cancelar, é só tentar de novo. Está na escola? Talvez a sua escola precise liberar a Oomba Academy primeiro: pergunte ao seu professor.",
+      "schoolBlocked": "Sua escola ainda não liberou a Oomba Academy para o login com o Google. Peça ao seu professor para mostrar isto ao admin do Google da sua escola.",
+      "unknown": "Ainda não conhecemos esta conta Google. Está na escola? Peça ao seu professor para convidar você ou para dar o código da turma. Você também pode criar uma conta com um nome divertido.",
+      "joinNoWay": "Esta conta Google não pode entrar com esse código. Confira o código ou peça ao seu professor para convidar você.",
+      "schoolOnly": "Só uma conta Google da escola pode ser conectada aqui.",
+      "wrongDomain": "Essa conta Google não é da sua escola. Escolha a conta da escola e tente de novo.",
+      "inUse": "Essa conta Google já está conectada a outra conta da Oomba Academy.",
+      "alreadyLinked": "Esta conta já tem uma conta Google conectada. Desconecte essa primeiro.",
+      "unverified": "O Google ainda não confirmou o e-mail desta conta, então não podemos usá-la.",
+      "schoolOff": "O login com o Google está desligado na sua escola agora. Use seu cartão de acesso ou pergunte ao seu professor.",
+      "googleDown": "Não conseguimos falar com o Google agora. Tente de novo daqui a um minuto.",
+      "browser": "O login com o Google não funciona dentro deste app. Abra o site no Chrome ou em outro navegador.",
+      "notSetUp": "O login com o Google ainda não está configurado direito. Um adulto pode avisar a gente.",
+      "tooManyJoins": "Muita gente acabou de entrar nesta turma. Tente de novo daqui a pouco.",
+      "setupLink": "O que a sua escola precisa fazer"
+    },
+    "me": {
+      "heading": "Login com o Google",
+      "textStaff": "Conecte sua conta Google para entrar com um toque. Sua senha continua funcionando.",
+      "textStudent": "Conecte sua conta Google da escola para entrar em um Chromebook com um toque. Sua senha continua funcionando.",
+      "password": "Sua senha (para confirmar que é você)",
+      "connect": "Conectar o Google",
+      "connected": "Conectado a {email}",
+      "connectedHint": "Você pode entrar com o Google ou com a sua senha.",
+      "connectedToast": "Google conectado 🎉",
+      "disconnect": "Desconectar o Google",
+      "disconnectConfirm": "Desconectar o Google? Você vai entrar com seu nome e sua senha da Oomba Academy.",
+      "disconnectedToast": "Google desconectado",
+      "schoolAccount": "Quem cuida do login com o Google desta conta é o seu professor.",
+      "needCard": "Você só entra com o Google. Peça um cartão de acesso ao admin da escola antes de desconectar.",
+      "noPasswordStaff": "Você entra com o Google, então não há senha para trocar. Se um dia precisar de uma, o admin da escola pode dar um cartão de acesso para você.",
+      "noPasswordStudent": "Você entra com o Google. Se um dia precisar de um cartão de acesso, peça ao seu professor."
+    },
+    "join": {
+      "title": "Entre na sua turma",
+      "heading": "Entre na sua turma",
+      "intro": "Digite o código da turma que o seu professor deu.",
+      "codeLabel": "Código da turma",
+      "next": "Avançar",
+      "codeIs": "Código da turma {code}",
+      "change": "Trocar",
+      "how": "Como você entra na escola?",
+      "googleHint": "Chromebook da escola? Use sua conta Google da escola.",
+      "card": "🪪 Tenho um cartão de acesso ou uma conta da Oomba Academy",
+      "signup": "Ainda não tem conta? {link}",
+      "signupLink": "Crie uma com um nome divertido",
+      "joinButton": "✅ Entrar na turma",
+      "badCode": "Isso não parece um código da turma. Ele tem 6 letras e números, como ABC123."
+    },
+    "invites": {
+      "heading": "Convidar com contas Google da escola",
+      "text": "Cole os e-mails da escola dos seus alunos, um por linha. Você pode colocar o nome depois de uma vírgula. Quando um aluno fizer login com o Google, ele entra nesta turma.",
+      "label": "E-mails da escola",
+      "placeholder": "ana.silva@{domain}, Ana Silva",
+      "placeholderOne": "nome@{domain}",
+      "hint": "Só endereços {domains}. Um nome igual ao de um aluno que já está nesta turma conecta a conta dele, em vez de criar uma nova.",
+      "submit": "➕ Convidar",
+      "none": "Cole pelo menos um e-mail da escola.",
+      "badLines": "Nada foi adicionado. Corrija estas linhas: {lines}",
+      "notEmail": "“{line}” não é um endereço de e-mail",
+      "notSchool": "{email} não é um endereço {domains}",
+      "tooMany": "No máximo 100 endereços de cada vez.",
+      "tooManyOpen": "Esta turma tem convites abertos demais. Remova os antigos primeiro.",
+      "ambiguous": "Mais de um aluno aqui se chama {name}. Conecte um de cada vez pela lista de alunos.",
+      "ownAccount": "{name} usa a própria conta da Oomba Academy. O aluno pode conectar o Google na página Eu.",
+      "noDomains": "Sua escola ainda não adicionou o domínio do Google dela.",
+      "resultInvited": "{count, plural, one {# convidado} other {# convidados}}",
+      "resultConnected": "{count, plural, one {# vai se conectar a um aluno que já está aqui} other {# vão se conectar a alunos que já estão aqui}}",
+      "resultRenewed": "{count, plural, one {# renovado} other {# renovados}}",
+      "resultAlready": "{count, plural, one {# já está na turma} other {# já estão na turma}}",
+      "listHeading": "{count, plural, one {Convite (#)} other {Convites (#)}}",
+      "waiting": "⏳ Aguardando · termina em {date}",
+      "joined": "✅ Entrou como @{username}",
+      "expired": "⌛ Expirado",
+      "connectsTo": "Conecta a @{username}",
+      "renew": "Renovar",
+      "renewed": "Convite renovado por 30 dias",
+      "revoke": "Remover",
+      "revokeConfirm": "Remover o convite de {email}?",
+      "revoked": "Convite removido",
+      "noDomainsAdmin": "Para convidar alunos pelas contas Google da escola, primeiro adicione o domínio do Google da sua escola em {link}.",
+      "noDomainsTeacher": "Para convidar alunos pelas contas Google da escola, o admin da escola primeiro adiciona o domínio do Google da escola nas configurações da escola.",
+      "settingsLink": "configurações da escola",
+      "howTo": "Depois, diga à turma: abram o site e toquem em “Fazer login com o Google”.",
+      "setupLink": "O login com o Google está bloqueado na sua escola?",
+      "attachWaiting": "Esse endereço já está aguardando para ser conectado a uma conta existente aqui. Remova esse convite primeiro."
+    },
+    "attach": {
+      "heading": "Conectar uma conta Google da escola",
+      "label": "E-mail Google da escola de {name}",
+      "placeholder": "nome@escola.org",
+      "connect": "Conectar",
+      "saved": "Salvo. A conexão acontece na próxima vez que o aluno fizer login com essa conta Google.",
+      "remove": "Remover login com o Google",
+      "removeConfirm": "Remover o login com o Google de {name}? Se a pessoa ainda não tiver senha, você recebe um cartão de acesso para ela.",
+      "removed": "Login com o Google removido",
+      "notConnected": "Esta conta não tem login com o Google.",
+      "notSchoolAccount": "Só contas desta escola podem ser conectadas aqui."
+    },
+    "roster": {
+      "connected": "Google: {email}",
+      "waiting": "Google: aguardando ({email})"
+    },
+    "classJoin": {
+      "isOff": "Alunos com uma conta Google {domains} ainda não podem entrar com este código.",
+      "isOn": "✅ Alunos com uma conta Google {domains} podem entrar com este código.",
+      "turnOn": "Permitir entrar com o Google",
+      "turnOff": "Desligar",
+      "onToast": "Agora os alunos podem entrar com a conta Google da escola e este código.",
+      "offToast": "Entrar com o Google e este código está desligado.",
+      "address": "Os alunos acessam {url} e digitam o código."
+    },
+    "staff": {
+      "heading": "Convidar equipe com uma conta Google da escola",
+      "text": "A pessoa entra como professor ou admin da escola na primeira vez que fizer login com essa conta Google. Nenhum e-mail é enviado.",
+      "email": "E-mail Google da escola",
+      "submit": "➕ Convidar",
+      "saved": "Convite salvo. {name} entra como {role} ao fazer login com o Google."
+    },
+    "settings": {
+      "heading": "Login com o Google",
+      "text": "Adicione o domínio do Google Workspace da sua escola para que alunos e equipe façam login com as contas Google da escola (por exemplo, em Chromebooks). Deixe em branco para manter o login com o Google desligado.",
+      "label": "Domínios do Google da sua escola",
+      "placeholder": "escola.org, alunos.escola.org",
+      "hint": "Separe vários com vírgulas. Os alunos usam outro domínio (como alunos.escola.org)? Coloque esse também.",
+      "badDomain": "“{value}” não é um domínio como escola.org",
+      "personalDomain": "{value} é um serviço de e-mail pessoal. Use o domínio do Google Workspace da própria escola.",
+      "tooManyDomains": "No máximo {max} domínios.",
+      "lostAccounts": "{count, plural, one {Salvo. # conta que entra com o Google não está mais nesta lista e vai precisar de um cartão de acesso.} other {Salvo. # contas que entram com o Google não estão mais nesta lista e vão precisar de cartões de acesso.}}",
+      "trustHeading": "Libere a entrada dos alunos (para o admin do Google)",
+      "forward": "Uma página que você pode enviar para o admin de TI",
+      "domainTaken": "{value} já é usado por outra escola na Oomba Academy. Se for o domínio da sua escola, fale conosco."
+    },
+    "setup": {
+      "title": "Login com o Google para escolas",
+      "heading": "Login com o Google para escolas",
+      "copy": "Copiar",
+      "what": {
+        "h": "O que é",
+        "p1": "Alunos e equipe podem entrar na Oomba Academy com a conta Google da escola, por exemplo em um Chromebook. A Oomba Academy só pede ao Google as informações básicas de login: o nome e o endereço de e-mail da conta."
+      },
+      "turnOn": {
+        "h": "Ative para a sua escola",
+        "p1": "Um admin da escola adiciona o domínio do Google Workspace da escola na aba Configurações da escola. Até lá, ninguém da escola consegue usar o login com o Google."
+      },
+      "trust": {
+        "h": "Libere a entrada dos alunos",
+        "p1": "O Google só deixa alunos menores de 18 anos usarem um app depois que o admin do Google da escola permite. Caso contrário, eles veem “Acesso bloqueado”. O admin do Google pode permitir a Oomba Academy assim (os nomes dos menus podem variar um pouco):"
+      },
+      "step1": "Faça login no Google Admin Console (admin.google.com) como administrador.",
+      "step2": "Acesse Segurança → Acesso e controle de dados → Controles de API → Gerenciar o acesso de apps de terceiros.",
+      "step3": "Adicione um app e pesquise este ID do cliente: {id}",
+      "step4": "Escolha as unidades organizacionais com alunos (e equipe), selecione Confiável ou Limitado e salve.",
+      "step5": "Ou: para usuários menores de 18 anos, permita apps que só pedem as informações básicas necessárias para o Login com o Google.",
+      "step6": "Pode levar um tempinho para valer. Depois, peça a um aluno para tentar “Fazer login com o Google” de novo.",
+      "invite": {
+        "h": "Convide alunos",
+        "p1": "Na aba Alunos de uma turma, cole os e-mails da escola dos alunos. Quando um aluno fizer login com essa conta Google, ele entra na turma. Nenhum e-mail é enviado.",
+        "p2": "Ou ative “entrar com o Google” ao lado do código da turma: alunos com uma conta Google da escola digitam o código e entram na hora."
+      },
+      "privacy": {
+        "h": "Privacidade",
+        "p1": "Enquanto a conta Google estiver conectada, guardamos o ID, o endereço de e-mail e o domínio da escola dela, para reconhecê-la no login. Nunca guardamos a foto do Google, nunca mostramos o nome do Google de um aluno no site de jogos e nunca usamos a conta para ler mais nada do Google."
+      }
     }
   }
 }

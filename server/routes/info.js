@@ -1,6 +1,7 @@
 // Plain-language info pages: safety, for grown-ups, and the builder SDK summary.
 // Text lives in the locale files under info.<page>.<section>.{h,p1,p2...}.
 import { Router } from 'express';
+import { googleEnabled } from '../oidc.js';
 import { html } from '../views/html.js';
 import { page } from '../views/layout.js';
 import { tHtml } from '../i18n/index.js';
@@ -18,7 +19,9 @@ router.get('/safety', (req, res) => page(req, res, { title: req.t('info.safety.t
 // "Contact us" (CONTACT_EMAIL): where the page's "a grown-up can contact us" leads. Not shown until it is set.
 const contact = req => (config.contactEmail ? html`<section class="panel" id="contact"><h2>${req.t('info.parents.contact.h')}</h2>
   <p>${tHtml(req.t, 'info.parents.contact.p1', { email: html`<a href="mailto:${config.contactEmail}" dir="ltr">${config.contactEmail}</a>` })}</p></section>` : '');
-router.get('/parents', (req, res) => page(req, res, { title: req.t('info.parents.title'), back: '/', description: req.t('info.parents.description'), body: info(req, 'parents', '👪', [['what', 1], ['stored', 2], ['never', 1], ['ai', 1], ['keep', 2], ['friends', 1], ['builder', 1], ['languages', 1]], contact(req)) }));
+// With Sign in with Google on, what the site keeps from a school Google account (nothing while it is off).
+const googlePrivacy = req => (googleEnabled() ? html`<section class="panel" id="google"><h2>${req.t('google.setup.privacy.h')}</h2><p>${req.t('google.setup.privacy.p1')}</p></section>` : '');
+router.get('/parents', (req, res) => page(req, res, { title: req.t('info.parents.title'), back: '/', description: req.t('info.parents.description'), body: info(req, 'parents', '👪', [['what', 1], ['stored', 2], ['never', 1], ['ai', 1], ['keep', 2], ['friends', 1], ['builder', 1], ['languages', 1]], html`${googlePrivacy(req)}${contact(req)}`) }));
 router.get('/sdk', (req, res) => {
   const t = req.t;
   // The SDK names (BRB.storage.get...) are code and stay as they are in every language.

@@ -974,7 +974,8 @@
       "draftKept": "We hebben bewaard wat je had getypt.",
       "close": "Sluiten",
       "playing": "{n} spelen",
-      "justNow": "zojuist"
+      "justNow": "zojuist",
+      "copied": "Gekopieerd!"
     },
     "game": {
       "needSignIn": "Tik eerst op “Speel als gast” of log in.",
@@ -1907,6 +1908,184 @@
       "sentAgo": "Verstuurd {when}",
       "feedback": "Van je leerkracht",
       "readNoFeedback": "Je leerkracht heeft je antwoord gezien."
+    }
+  },
+  "google": {
+    "button": {
+      "signIn": "Inloggen met Google",
+      "hint": "Voor Google-accounts van school, zoals op een Chromebook."
+    },
+    "login": {
+      "orName": "of gebruik je Oomba Academy-naam",
+      "joinLink": "Heb je een klascode? {link}",
+      "joinLinkText": "Doe mee met je klas"
+    },
+    "errors": {
+      "expired": "Dat duurde iets te lang. Probeer het nog eens.",
+      "denied": "Google heeft je niet ingelogd. Heb je op Annuleren gedrukt? Probeer het dan gewoon nog eens. Ben je op school? Misschien moet je school Oomba Academy eerst aanzetten: vraag het je leerkracht.",
+      "schoolBlocked": "Je school heeft Oomba Academy nog niet aangezet voor inloggen met Google. Vraag je leerkracht om dit aan de Google-beheerder van je school te laten zien.",
+      "unknown": "We kennen dit Google-account nog niet. Ben je op school? Vraag je leerkracht om je uit te nodigen, of om je klascode. Je kunt ook een account maken met een leuke naam.",
+      "joinNoWay": "Met dit Google-account kun je niet meedoen met die code. Check de code, of vraag je leerkracht om je uit te nodigen.",
+      "schoolOnly": "Hier kun je alleen een Google-account van school koppelen.",
+      "wrongDomain": "Dat Google-account is niet van je school. Kies je schoolaccount en probeer het nog eens.",
+      "inUse": "Dat Google-account is al gekoppeld aan een ander Oomba Academy-account.",
+      "alreadyLinked": "Aan dit account is al een Google-account gekoppeld. Ontkoppel dat eerst.",
+      "unverified": "Google heeft het e-mailadres van dit account nog niet gecontroleerd, dus we kunnen het niet gebruiken.",
+      "schoolOff": "Inloggen met Google staat nu uit voor je school. Gebruik je inlogkaart, of vraag het je leerkracht.",
+      "googleDown": "We konden Google net niet bereiken. Probeer het over een minuutje nog eens.",
+      "browser": "Inloggen met Google werkt niet in deze app. Open de site in Chrome of een andere browser.",
+      "notSetUp": "Inloggen met Google is nog niet goed ingesteld. Een volwassene kan het ons laten weten.",
+      "tooManyJoins": "Er zijn net heel veel mensen bij deze klas gekomen. Probeer het iets later nog eens.",
+      "setupLink": "Wat je school moet doen"
+    },
+    "me": {
+      "heading": "Inloggen met Google",
+      "textStaff": "Koppel je Google-account om met één tik in te loggen. Je wachtwoord blijft gewoon werken.",
+      "textStudent": "Koppel je Google-account van school om op een Chromebook met één tik in te loggen. Je wachtwoord blijft gewoon werken.",
+      "password": "Je wachtwoord (om te checken dat jij het bent)",
+      "connect": "Google koppelen",
+      "connected": "Gekoppeld aan {email}",
+      "connectedHint": "Je kunt inloggen met Google of met je wachtwoord.",
+      "connectedToast": "Google gekoppeld 🎉",
+      "disconnect": "Google ontkoppelen",
+      "disconnectConfirm": "Google ontkoppelen? Je logt dan in met je Oomba Academy-naam en wachtwoord.",
+      "disconnectedToast": "Google ontkoppeld",
+      "schoolAccount": "Je leerkracht beheert inloggen met Google voor dit account.",
+      "needCard": "Je logt alleen in met Google. Vraag je schoolbeheerder om een inlogkaart voordat je het ontkoppelt.",
+      "noPasswordStaff": "Je logt in met Google, dus er is geen wachtwoord om te veranderen. Heb je er ooit een nodig? Dan kan je schoolbeheerder je een inlogkaart geven.",
+      "noPasswordStudent": "Je logt in met Google. Heb je ooit een inlogkaart nodig? Vraag het je leerkracht."
+    },
+    "join": {
+      "title": "Doe mee met je klas",
+      "heading": "Doe mee met je klas",
+      "intro": "Typ de klascode die je van je leerkracht hebt gekregen.",
+      "codeLabel": "Klascode",
+      "next": "Verder",
+      "codeIs": "Klascode {code}",
+      "change": "Wijzigen",
+      "how": "Hoe log je in op school?",
+      "googleHint": "Chromebook van school? Gebruik je Google-account van school.",
+      "card": "🪪 Ik heb een inlogkaart of een Oomba Academy-account",
+      "signup": "Nog geen account? {link}",
+      "signupLink": "Maak er een met een leuke naam",
+      "joinButton": "✅ Doe mee met de klas",
+      "badCode": "Dat lijkt niet op een klascode. Die heeft 6 letters en cijfers, zoals ABC123."
+    },
+    "invites": {
+      "heading": "Uitnodigen met Google-accounts van school",
+      "text": "Plak de e-mailadressen van school van je leerlingen, één per regel. Na een komma kun je hun naam toevoegen. Logt een leerling in met Google, dan komt die in deze klas.",
+      "label": "E-mailadressen van school",
+      "placeholder": "sanne.dejong@{domain}, Sanne de Jong",
+      "placeholderOne": "naam@{domain}",
+      "hint": "Alleen adressen van {domains}. Een naam die past bij een leerling die al in deze klas zit, koppelt het account van die leerling in plaats van een nieuw account te maken.",
+      "submit": "➕ Uitnodigen",
+      "none": "Plak minstens één e-mailadres van school.",
+      "badLines": "Er is niets toegevoegd. Verbeter deze regels: {lines}",
+      "notEmail": "“{line}” is geen e-mailadres",
+      "notSchool": "{email} is geen adres van {domains}",
+      "tooMany": "Maximaal 100 adressen tegelijk.",
+      "tooManyOpen": "Deze klas heeft te veel openstaande uitnodigingen. Verwijder eerst oude uitnodigingen.",
+      "ambiguous": "Er zit hier meer dan één leerling die {name} heet. Koppel ze een voor een via de leerlingenlijst.",
+      "ownAccount": "{name} gebruikt een eigen Oomba Academy-account. Die leerling kan Google koppelen op de eigen pagina Ik.",
+      "noDomains": "Je school heeft haar Google-domein nog niet toegevoegd.",
+      "resultInvited": "{count, plural, one {# uitgenodigd} other {# uitgenodigd}}",
+      "resultConnected": "{count, plural, one {# wordt gekoppeld aan een leerling die er al is} other {# worden gekoppeld aan leerlingen die er al zijn}}",
+      "resultRenewed": "{count, plural, one {# verlengd} other {# verlengd}}",
+      "resultAlready": "{count, plural, one {# zit al in de klas} other {# zitten al in de klas}}",
+      "listHeading": "{count, plural, one {Uitnodiging (#)} other {Uitnodigingen (#)}}",
+      "waiting": "⏳ Wacht · verloopt {date}",
+      "joined": "✅ Meegedaan als @{username}",
+      "expired": "⌛ Verlopen",
+      "connectsTo": "Koppelt aan @{username}",
+      "renew": "Verlengen",
+      "renewed": "Uitnodiging met 30 dagen verlengd",
+      "revoke": "Verwijderen",
+      "revokeConfirm": "De uitnodiging voor {email} verwijderen?",
+      "revoked": "Uitnodiging verwijderd",
+      "noDomainsAdmin": "Wil je leerlingen uitnodigen met hun Google-account van school? Voeg dan eerst het Google-domein van je school toe in {link}.",
+      "noDomainsTeacher": "Wil je leerlingen uitnodigen met hun Google-account van school? Dan moet je schoolbeheerder eerst het Google-domein van de school toevoegen in de instellingen van de school.",
+      "settingsLink": "de instellingen van de school",
+      "howTo": "Vertel de klas daarna: open de site en druk op “Inloggen met Google”.",
+      "setupLink": "Is inloggen met Google geblokkeerd op je school?",
+      "attachWaiting": "Dit adres wacht al om aan een bestaand account hier gekoppeld te worden. Verwijder eerst die uitnodiging."
+    },
+    "attach": {
+      "heading": "Een Google-account van school koppelen",
+      "label": "Google-e-mailadres van school voor {name}",
+      "placeholder": "naam@school.nl",
+      "connect": "Koppelen",
+      "saved": "Opgeslagen. Het account wordt gekoppeld zodra diegene inlogt met dat Google-account.",
+      "remove": "Inloggen met Google verwijderen",
+      "removeConfirm": "Inloggen met Google verwijderen voor {name}? Heeft diegene nog geen wachtwoord, dan krijg je een inlogkaart voor diegene.",
+      "removed": "Inloggen met Google verwijderd",
+      "notConnected": "Dit account heeft geen inloggen met Google.",
+      "notSchoolAccount": "Hier kun je alleen schoolaccounts van deze school koppelen."
+    },
+    "roster": {
+      "connected": "Google: {email}",
+      "waiting": "Google: wacht ({email})"
+    },
+    "classJoin": {
+      "isOff": "Leerlingen met een Google-account van {domains} kunnen nog niet meedoen met deze code.",
+      "isOn": "✅ Leerlingen met een Google-account van {domains} kunnen meedoen met deze code.",
+      "turnOn": "Laat ze meedoen met Google",
+      "turnOff": "Uitzetten",
+      "onToast": "Leerlingen kunnen nu meedoen met hun Google-account van school en deze code.",
+      "offToast": "Meedoen met Google en deze code staat uit.",
+      "address": "Leerlingen gaan naar {url} en typen de code."
+    },
+    "staff": {
+      "heading": "Personeel uitnodigen met een Google-account van school",
+      "text": "Ze komen erbij als leerkracht of schoolbeheerder zodra ze voor het eerst inloggen met dat Google-account. Er wordt niets gemaild.",
+      "email": "Google-e-mailadres van school",
+      "submit": "➕ Uitnodigen",
+      "saved": "Uitnodiging opgeslagen. {name} komt erbij als {role} bij het inloggen met Google."
+    },
+    "settings": {
+      "heading": "Inloggen met Google",
+      "text": "Voeg het Google Workspace-domein van je school toe, zodat leerlingen en personeel kunnen inloggen met hun Google-account van school (bijvoorbeeld op Chromebooks). Laat het leeg om inloggen met Google uit te laten.",
+      "label": "Google-domeinen van je school",
+      "placeholder": "school.nl, leerlingen.school.nl",
+      "hint": "Scheid meerdere domeinen met komma's. Hebben leerlingen een ander domein (zoals leerlingen.school.nl)? Zet dat er ook bij.",
+      "badDomain": "“{value}” is geen domein zoals school.nl",
+      "personalDomain": "{value} is een persoonlijke e-maildienst. Gebruik het eigen Google Workspace-domein van je school.",
+      "tooManyDomains": "Maximaal {max} domeinen.",
+      "lostAccounts": "{count, plural, one {Opgeslagen. # account dat inlogt met Google staat niet meer op deze lijst en heeft een inlogkaart nodig.} other {Opgeslagen. # accounts die inloggen met Google staan niet meer op deze lijst en hebben inlogkaarten nodig.}}",
+      "trustHeading": "Laat je leerlingen binnen (voor je Google-beheerder)",
+      "forward": "Een pagina die je naar je IT-beheerder kunt sturen",
+      "domainTaken": "{value} wordt al gebruikt door een andere school op Oomba Academy. Is het het domein van jouw school? Neem dan contact met ons op."
+    },
+    "setup": {
+      "title": "Inloggen met Google voor scholen",
+      "heading": "Inloggen met Google voor scholen",
+      "copy": "Kopieer",
+      "what": {
+        "h": "Wat het is",
+        "p1": "Leerlingen en personeel kunnen bij Oomba Academy inloggen met hun Google-account van school, bijvoorbeeld op een Chromebook. Oomba Academy vraagt Google alleen om basisgegevens voor het inloggen: de naam en het e-mailadres van het account."
+      },
+      "turnOn": {
+        "h": "Zet het aan voor je school",
+        "p1": "Een schoolbeheerder voegt het Google Workspace-domein van de school toe op het tabblad Instellingen van de school. Tot die tijd kan niemand op de school inloggen met Google."
+      },
+      "trust": {
+        "h": "Laat leerlingen binnen",
+        "p1": "Google laat leerlingen onder de 18 een app pas gebruiken als de Google-beheerder van de school dat toestaat. Anders zien ze “Toegang geblokkeerd”. Je Google-beheerder kan Oomba Academy zo toestaan (menunamen kunnen iets afwijken):"
+      },
+      "step1": "Log als beheerder in op de Google Beheerdersconsole (admin.google.com).",
+      "step2": "Ga naar Beveiliging → Toegangs- en gegevensbeheer → API-beheer → Toegang van apps van derden beheren.",
+      "step3": "Voeg een app toe en zoek op deze client-ID: {id}",
+      "step4": "Kies de organisatie-eenheden met leerlingen (en personeel), kies Vertrouwd of Beperkt en sla op.",
+      "step5": "Of: sta voor gebruikers onder de 18 apps toe die alleen de basisgegevens vragen die nodig zijn voor Inloggen met Google.",
+      "step6": "Het kan even duren voordat dit werkt. Vraag daarna een leerling om opnieuw “Inloggen met Google” te proberen.",
+      "invite": {
+        "h": "Leerlingen uitnodigen",
+        "p1": "Plak op het tabblad Leerlingen van een klas de e-mailadressen van school van de leerlingen. Logt een leerling in met dat Google-account, dan komt die in de klas. Er wordt niets gemaild.",
+        "p2": "Of zet “meedoen met Google” aan naast de klascode: leerlingen met een Google-account van school typen de code en doen meteen mee."
+      },
+      "privacy": {
+        "h": "Privacy",
+        "p1": "Zolang het Google-account gekoppeld is, bewaren we de id, het e-mailadres en het schooldomein van het account, zodat we het herkennen bij het inloggen. We bewaren nooit de Google-foto, laten nooit de Google-naam van een leerling zien op de gamesite en gebruiken het account nooit om iets anders bij Google te lezen."
+      }
     }
   }
 }

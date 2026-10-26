@@ -973,7 +973,8 @@
       "draftKept": "Nous avons gardé ce que tu as tapé.",
       "close": "Fermer",
       "playing": "{n} en jeu",
-      "justNow": "à l’instant"
+      "justNow": "à l’instant",
+      "copied": "Copié !"
     },
     "game": {
       "needSignIn": "Touche « Jouer en invité » ou connecte-toi d’abord.",
@@ -1906,6 +1907,184 @@
       "sentAgo": "Envoyée {when}",
       "feedback": "De ton prof",
       "readNoFeedback": "Ton prof a vu ta réponse."
+    }
+  },
+  "google": {
+    "button": {
+      "signIn": "Se connecter avec Google",
+      "hint": "Pour les comptes Google de l’école, comme sur un Chromebook."
+    },
+    "login": {
+      "orName": "ou utilise ton nom Oomba Academy",
+      "joinLink": "Tu as un code de classe ? {link}",
+      "joinLinkText": "Rejoins ta classe"
+    },
+    "errors": {
+      "expired": "Ça a pris un peu trop de temps. Réessaie, s’il te plaît.",
+      "denied": "Google ne t’a pas connecté. Si tu as appuyé sur Annuler, réessaie simplement. Tu es à l’école ? Ton école doit peut-être d’abord activer Oomba Academy : demande à ton prof.",
+      "schoolBlocked": "Ton école n’a pas encore activé Oomba Academy pour la connexion avec Google. Demande à ton prof de montrer ce message à l’admin Google de ton école.",
+      "unknown": "Nous ne connaissons pas encore ce compte Google. Tu es à l’école ? Demande à ton prof de t’inviter ou de te donner le code de classe. Tu peux aussi créer un compte avec un nom rigolo.",
+      "joinNoWay": "Ce compte Google ne peut pas rejoindre la classe avec ce code. Vérifie le code, ou demande à ton prof de t’inviter.",
+      "schoolOnly": "Seul un compte Google de l’école peut être associé ici.",
+      "wrongDomain": "Ce compte Google ne vient pas de ton école. Choisis ton compte école et réessaie.",
+      "inUse": "Ce compte Google est déjà associé à un autre compte Oomba Academy.",
+      "alreadyLinked": "Ce compte a déjà un compte Google associé. Dissocie-le d’abord.",
+      "unverified": "Google n’a pas encore vérifié l’adresse e-mail de ce compte, alors nous ne pouvons pas l’utiliser.",
+      "schoolOff": "La connexion avec Google est désactivée pour ton école en ce moment. Utilise ta carte de connexion, ou demande à ton prof.",
+      "googleDown": "Impossible de joindre Google pour l’instant. Réessaie dans une minute.",
+      "browser": "La connexion avec Google ne marche pas dans cette appli. Ouvre le site dans Chrome ou dans un autre navigateur.",
+      "notSetUp": "La connexion avec Google n’est pas encore bien configurée. Un adulte peut nous prévenir.",
+      "tooManyJoins": "Beaucoup de personnes viennent de rejoindre cette classe. Réessaie un peu plus tard.",
+      "setupLink": "Ce que ton école doit faire"
+    },
+    "me": {
+      "heading": "Se connecter avec Google",
+      "textStaff": "Associez votre compte Google pour vous connecter en un seul geste. Votre mot de passe continue de fonctionner.",
+      "textStudent": "Associe le compte Google de ton école pour te connecter sur un Chromebook en un seul geste. Ton mot de passe continue de marcher.",
+      "password": "Ton mot de passe (pour vérifier que c’est bien toi)",
+      "connect": "Associer Google",
+      "connected": "Associé à {email}",
+      "connectedHint": "Tu peux te connecter avec Google ou avec ton mot de passe.",
+      "connectedToast": "Google associé 🎉",
+      "disconnect": "Dissocier Google",
+      "disconnectConfirm": "Dissocier Google ? Tu te connecteras avec ton nom Oomba Academy et ton mot de passe.",
+      "disconnectedToast": "Google dissocié",
+      "schoolAccount": "C’est ton prof qui s’occupe de la connexion avec Google pour ce compte.",
+      "needCard": "Vous vous connectez uniquement avec Google. Demandez une carte de connexion à l’admin de votre école avant de le dissocier.",
+      "noPasswordStaff": "Vous vous connectez avec Google, il n’y a donc pas de mot de passe à changer. Si vous en avez besoin un jour, l’admin de votre école peut vous donner une carte de connexion.",
+      "noPasswordStudent": "Tu te connectes avec Google. Si un jour tu as besoin d’une carte de connexion, demande à ton prof."
+    },
+    "join": {
+      "title": "Rejoins ta classe",
+      "heading": "Rejoins ta classe",
+      "intro": "Tape le code de classe que ton prof t’a donné.",
+      "codeLabel": "Code de classe",
+      "next": "Suivant",
+      "codeIs": "Code de classe {code}",
+      "change": "Modifier",
+      "how": "Comment tu te connectes à l’école ?",
+      "googleHint": "Chromebook de l’école ? Utilise le compte Google de ton école.",
+      "card": "🪪 J’ai une carte de connexion ou un compte Oomba Academy",
+      "signup": "Pas encore de compte ? {link}",
+      "signupLink": "Crée-en un avec un nom rigolo",
+      "joinButton": "✅ Rejoindre la classe",
+      "badCode": "Ça ne ressemble pas à un code de classe. Il a 6 lettres et chiffres, comme ABC123."
+    },
+    "invites": {
+      "heading": "Inviter avec les comptes Google de l’école",
+      "text": "Collez les adresses e-mail scolaires de vos élèves, une par ligne. Vous pouvez ajouter leur nom après une virgule. Quand un élève se connecte avec Google, il rejoint cette classe.",
+      "label": "Adresses e-mail scolaires",
+      "placeholder": "lea.martin@{domain}, Léa Martin",
+      "placeholderOne": "nom@{domain}",
+      "hint": "Uniquement des adresses {domains}. Si un nom correspond à un élève déjà dans cette classe, son compte est associé au lieu d’en créer un nouveau.",
+      "submit": "➕ Inviter",
+      "none": "Collez au moins une adresse e-mail scolaire.",
+      "badLines": "Rien n’a été ajouté. Corrigez ces lignes : {lines}",
+      "notEmail": "« {line} » n’est pas une adresse e-mail",
+      "notSchool": "{email} n’est pas une adresse {domains}",
+      "tooMany": "100 adresses au maximum à la fois.",
+      "tooManyOpen": "Cette classe a trop d’invitations en attente. Supprimez d’abord les anciennes.",
+      "ambiguous": "Plusieurs élèves de cette classe s’appellent {name}. Associez-les un par un depuis la liste des élèves.",
+      "ownAccount": "{name} utilise son propre compte Oomba Academy et peut associer Google depuis sa page Moi.",
+      "noDomains": "Votre école n’a pas encore ajouté son domaine Google.",
+      "resultInvited": "{count, plural, one {# invité} other {# invités}}",
+      "resultConnected": "{count, plural, one {# sera associé à un élève déjà présent} other {# seront associés à des élèves déjà présents}}",
+      "resultRenewed": "{count, plural, one {# invitation renouvelée} other {# invitations renouvelées}}",
+      "resultAlready": "{count, plural, one {# déjà dans la classe} other {# déjà dans la classe}}",
+      "listHeading": "{count, plural, one {Invitation (#)} other {Invitations (#)}}",
+      "waiting": "⏳ En attente · expire le {date}",
+      "joined": "✅ A rejoint la classe : @{username}",
+      "expired": "⌛ Expirée",
+      "connectsTo": "Sera associée à @{username}",
+      "renew": "Renouveler",
+      "renewed": "Invitation renouvelée pour 30 jours",
+      "revoke": "Supprimer",
+      "revokeConfirm": "Supprimer l’invitation de {email} ?",
+      "revoked": "Invitation supprimée",
+      "noDomainsAdmin": "Pour inviter des élèves avec leur compte Google de l’école, ajoutez d’abord le domaine Google de votre école dans {link}.",
+      "noDomainsTeacher": "Pour inviter des élèves avec leur compte Google de l’école, l’admin de votre école doit d’abord ajouter le domaine Google de l’école dans les paramètres de l’école.",
+      "settingsLink": "les paramètres de l’école",
+      "howTo": "Ensuite, dites à la classe : ouvrez le site et appuyez sur « Se connecter avec Google ».",
+      "setupLink": "La connexion avec Google est bloquée dans votre école ?",
+      "attachWaiting": "Cette adresse attend déjà d’être associée à un compte existant ici. Retirez d’abord cette invitation."
+    },
+    "attach": {
+      "heading": "Associer un compte Google de l’école",
+      "label": "E-mail Google de l’école pour {name}",
+      "placeholder": "nom@ecole.org",
+      "connect": "Associer",
+      "saved": "Enregistré. Le compte sera associé la prochaine fois que cette personne se connectera avec ce compte Google.",
+      "remove": "Supprimer la connexion avec Google",
+      "removeConfirm": "Supprimer la connexion avec Google pour {name} ? Si cette personne n’a pas encore de mot de passe, vous recevrez une carte de connexion pour elle.",
+      "removed": "Connexion avec Google supprimée",
+      "notConnected": "Ce compte n’a pas de connexion avec Google.",
+      "notSchoolAccount": "Seuls les comptes école de cette école peuvent être associés ici."
+    },
+    "roster": {
+      "connected": "Google : {email}",
+      "waiting": "Google : en attente ({email})"
+    },
+    "classJoin": {
+      "isOff": "Les élèves qui ont un compte Google {domains} ne peuvent pas encore rejoindre la classe avec ce code.",
+      "isOn": "✅ Les élèves qui ont un compte Google {domains} peuvent rejoindre la classe avec ce code.",
+      "turnOn": "Les laisser rejoindre avec Google",
+      "turnOff": "Désactiver",
+      "onToast": "Les élèves peuvent maintenant rejoindre la classe avec leur compte Google de l’école et ce code.",
+      "offToast": "Rejoindre avec Google et ce code est désactivé.",
+      "address": "Les élèves vont sur {url} et tapent le code."
+    },
+    "staff": {
+      "heading": "Inviter du personnel avec un compte Google de l’école",
+      "text": "Ces personnes arrivent comme enseignant ou admin de l’école la première fois qu’elles se connectent avec ce compte Google. Aucun e-mail n’est envoyé.",
+      "email": "E-mail Google de l’école",
+      "submit": "➕ Inviter",
+      "saved": "Invitation enregistrée. {name} arrivera comme {role} en se connectant avec Google."
+    },
+    "settings": {
+      "heading": "Se connecter avec Google",
+      "text": "Ajoutez le domaine Google Workspace de votre école pour permettre aux élèves et au personnel de se connecter avec leur compte Google de l’école (par exemple sur des Chromebooks). Laissez vide pour garder la connexion avec Google désactivée.",
+      "label": "Domaines Google de votre école",
+      "placeholder": "ecole.org, eleves.ecole.org",
+      "hint": "Séparez-les par des virgules. Vos élèves ont un autre domaine (comme eleves.ecole.org) ? Ajoutez-le aussi.",
+      "badDomain": "« {value} » n’est pas un domaine comme ecole.org",
+      "personalDomain": "{value} est un service d’e-mail personnel. Utilisez le domaine Google Workspace de votre école.",
+      "tooManyDomains": "{max} domaines au maximum.",
+      "lostAccounts": "{count, plural, one {Enregistré. # compte qui se connecte avec Google n’est plus dans cette liste et aura besoin d’une carte de connexion.} other {Enregistré. # comptes qui se connectent avec Google ne sont plus dans cette liste et auront besoin de cartes de connexion.}}",
+      "trustHeading": "Laisser entrer vos élèves (pour votre admin Google)",
+      "forward": "Une page à envoyer à votre responsable informatique",
+      "domainTaken": "{value} est déjà utilisé par une autre école sur Oomba Academy. S’il s’agit du domaine de votre école, contactez-nous."
+    },
+    "setup": {
+      "title": "Se connecter avec Google pour les écoles",
+      "heading": "Se connecter avec Google pour les écoles",
+      "copy": "Copier",
+      "what": {
+        "h": "De quoi s’agit-il ?",
+        "p1": "Les élèves et le personnel peuvent se connecter à Oomba Academy avec leur compte Google de l’école, par exemple sur un Chromebook. Oomba Academy ne demande à Google que les informations de connexion de base : le nom et l’adresse e-mail du compte."
+      },
+      "turnOn": {
+        "h": "L’activer pour votre école",
+        "p1": "Un admin de l’école ajoute le domaine Google Workspace de l’école dans l’onglet Paramètres de l’école. D’ici là, personne dans l’école ne peut utiliser la connexion avec Google."
+      },
+      "trust": {
+        "h": "Laisser entrer les élèves",
+        "p1": "Google ne permet aux élèves de moins de 18 ans d’utiliser une application qu’après l’autorisation de l’admin Google de l’école. Sinon, ils voient « Accès bloqué ». Votre admin Google peut autoriser Oomba Academy ainsi (les noms des menus peuvent varier légèrement) :"
+      },
+      "step1": "Connectez-vous à la console d’administration Google (admin.google.com) avec un compte administrateur.",
+      "step2": "Accédez à Sécurité → Accès et contrôle des données → Commandes des API → Gérer l’accès des applications tierces.",
+      "step3": "Ajoutez une application, puis recherchez cet ID client : {id}",
+      "step4": "Choisissez les unités organisationnelles qui contiennent des élèves (et du personnel), sélectionnez « Fiable » ou « Limité », puis enregistrez.",
+      "step5": "Ou : pour les utilisateurs de moins de 18 ans, autorisez les applications qui ne demandent que les informations de base nécessaires à « Se connecter avec Google ».",
+      "step6": "L’application du réglage peut prendre un peu de temps. Ensuite, demandez à un élève de réessayer « Se connecter avec Google ».",
+      "invite": {
+        "h": "Inviter les élèves",
+        "p1": "Dans l’onglet Élèves d’une classe, collez les adresses e-mail scolaires des élèves. Quand un élève se connecte avec ce compte Google, il rejoint la classe. Aucun e-mail n’est envoyé.",
+        "p2": "Ou activez « rejoindre avec Google » à côté du code de classe : les élèves qui ont un compte Google de l’école tapent le code et rejoignent la classe tout de suite."
+      },
+      "privacy": {
+        "h": "Confidentialité",
+        "p1": "Tant que le compte Google est associé, nous conservons son identifiant, son adresse e-mail et le domaine de l’école, pour le reconnaître à la connexion. Nous ne conservons jamais la photo Google, n’affichons jamais le nom Google d’un élève sur le site de jeux et n’utilisons jamais le compte pour lire quoi que ce soit d’autre chez Google."
+      }
     }
   }
 }
