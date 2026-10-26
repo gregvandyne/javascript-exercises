@@ -570,3 +570,12 @@ ol.steps li{margin-bottom:var(--s2)}
 .lead{font-size:1.1rem}
 .me-btn{position:relative}
 .me-btn .badge{position:absolute;top:0;inset-inline-start:30px;box-shadow:0 0 0 2px var(--bar)}
+/* Legal pages (/terms, /refunds, /privacy): long text in panels, with sub-headings and lists. */
+.legal .legal-updated{margin-top:var(--s2)}
+.legal .legal-notyet{margin-top:var(--s3)}
+.legal .legal-updated+.panel,.legal .legal-notyet+.panel{margin-top:16px}
+.legal .panel h3{font-size:1.05rem;margin:var(--s4) 0 0}
+.legal .panel p,.legal .panel ul{margin:var(--s3) 0 0}
+.legal .panel ul{padding-inline-start:1.4em}
+.legal .panel li+li{margin-top:var(--s2)}
+.legal .panel a:not(.btn){overflow-wrap:anywhere}

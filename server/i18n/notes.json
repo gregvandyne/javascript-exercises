@@ -482,5 +482,20 @@
   "school.billing.errors.country": "For school admins (adults; billing for the school). Keep \"US\" as is.",
   "school.billing.errors.noRequest": "For school admins (adults; billing for the school).",
   "school.billing.errors.noCustomer": "For school admins (adults; billing for the school).",
-  "school.billing.priceLessons": "For school admins (adults; billing for the school). Follows school.billing.price. {count} is a number. A Builder lesson: one class session where every student builds with the Builder (about 10 messages each)."
+  "school.billing.priceLessons": "For school admins (adults; billing for the school). Follows school.billing.price. {count} is a number. A Builder lesson: one class session where every student builds with the Builder (about 10 messages each).",
+  "layout.footer.terms": "Footer link to the Terms of Service page (/terms). Short.",
+  "layout.footer.privacy": "Footer link to the Privacy Policy page (/privacy). Short.",
+  "info.legal.updated": "Shown under the heading of the Terms, Refunds and Privacy pages. {date} is a date already written in your language.",
+  "info.legal.notYet": "For adults. Shown on the Terms, Refunds and Privacy pages until paid plans are on sale.",
+  "info.terms.heading": "The Terms of Service page. Legal page for adults (parents, guardians, school admins): normal adult language, close to the English meaning. Keep the HTML tags (<b>, <a href=\"...\">) around the matching words and keep the href values exactly. {email} is the contact address (keep it).",
+  "info.refunds.heading": "The Refund and Cancellation Policy page. Legal page for adults (parents, guardians, school admins): normal adult language, close to the English meaning. Keep the HTML tags (<b>, <a href=\"...\">) around the matching words and keep the href values exactly. {email} is the contact address (keep it).",
+  "info.privacy.heading": "The Privacy Policy page. Legal page for adults (parents, guardians, school admins): normal adult language, close to the English meaning. Keep the HTML tags (<b>, <a href=\"...\">) around the matching words and keep the href values exactly. {email} is the contact address (keep it). Sections from the For grown-ups page (info.parents.*) are shown on it too.",
+  "info.terms.plans.li20": "OOMBA ACADEMY is the exact text on bank statements: keep it in Latin capitals.",
+  "info.terms.ai.li1": "Keep \"Claude\" and \"Anthropic\" as they are: a product name and a company name.",
+  "info.privacy.payments.p1": "Keep \"Stripe, Inc.\" and the link text stripe.com/privacy as they are.",
+  "info.parents.what.paid1": "For grown-ups. Replaces info.parents.what.p1 once paid plans are on sale.",
+  "info.parents.never.paid1": "For grown-ups. Replaces info.parents.never.p1 once paid plans are on sale. Keep \"Stripe\" (a company name).",
+  "info.parents.keep.paid1": "For grown-ups. Replaces info.parents.keep.p1 once paid plans are on sale. Keep the <a href=\"/privacy#billingKeep\"> link around the matching words.",
+  "info.parents.stored.paid3": "For grown-ups. Added to What we keep once paid plans are on sale.",
+  "info.safety.ads.paid1": "Read by kids (7-year-old reading level). Replaces info.safety.ads.p1 once paid plans are on sale."
 }

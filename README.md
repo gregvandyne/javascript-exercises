@@ -88,7 +88,7 @@ On/off settings (`REQUIRE_SESSION_SECRET`, `MAINTENANCE_MODE`, `MOVED_PERMANENTL
 | `AI_MONTHLY_BUDGET_USD` | `150` | Same, per calendar month (the free budget; keep the daily cap at about monthly ÷ 30 so it lasts the month). Today's and this month's spend show on `/admin`. Also set a spend limit in the Anthropic Console as the hard backstop. |
 | `CHAT_DAILY_LIMIT` | `300` | Max chat messages per user per day. |
 | `REPORTS_TO_HIDE` | `3` | Open reports from different players that auto-hide a game. |
-| `CONTACT_EMAIL` | – | Where grown-ups write to the team (deletion, export, a lost password). Shown on `/parents` and in the footer; set it before launch (production logs a warning without it). oomba.ai uses `greg@oomba.ai` (`render.yaml`), also the support email in Stripe. |
+| `CONTACT_EMAIL` | – | Where grown-ups write to the team (deletion, export, a lost password). Shown on `/parents`, on `/terms`, `/refunds` and `/privacy` (which fall back to greg@oomba.ai without it) and in the footer; set it before launch (production logs a warning without it). oomba.ai uses `greg@oomba.ai` (`render.yaml`), also the support email in Stripe. |
 | `BOOTSTRAP_SCHOOLS` | unset | Schools to set up at start-up without the admin pages, each with an existing account as its school admin: `[{"name":"Oak Hill Primary","admin":"MsSmith"}]`. Safe to leave set (done steps are skipped); a bad value or a missing account is logged and skipped. A school admin can also create classes and teaches the ones they create. |
 | `POSTHOG_KEY` | – | Optional product analytics (off unless set; never sends usernames or text). |
 | `POSTHOG_HOST` | `https://us.i.posthog.com` | PostHog address. |
@@ -128,7 +128,7 @@ logged, audited and flagged `unknown_price`.
 | `SCHOOL_MIN_SEATS` | `25` | The fewest students a school plan can have (card, seat changes and invoices). |
 | `SCHOOL_DAILY_CAP_DEFAULT` | `30` | Default Builder messages per person per day from a school's pool (the school's Billing tab can change it; never below `BUILDER_DAILY_TURNS`). |
 | `SCHOOL_SEAT_AI_USD` | `10` | AI cost (US dollars) a paid student may use per year: the paid AI pool's ceiling adds paid students × this ÷ 12 each month. |
-| `TERMS_PUBLISHED` | off | `1` once /terms is on the site: family Checkout then asks the buyer to agree to it (set the Terms URL in Stripe's public details first) and /family links to it. |
+| `TERMS_PUBLISHED` | off | /terms, /refunds and /privacy are always on the site; `1` makes family Checkout ask the buyer to agree to /terms (set the Terms URL in Stripe's public details first) and /family link to it. The owner's choice, after the legal review (docs/legal-review.md). |
 
 Family checkout (chunk 4): a grown-up with a confirmed child subscribes on /family (monthly or yearly), after typing
 their password again (valid 10 minutes on that sign-in); Stripe's hosted Checkout takes the payment and the webhook

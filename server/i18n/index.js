@@ -80,12 +80,16 @@ export const dictionary = code => dicts.get(code) || {};
  *  its differences, so it counts once it has any). The picker and Accept-Language matching only use these, so a
  *  half-done translation never shows up as a choice. BRB_ALL_LOCALES=1 offers every locale (tests, translators). */
 export const READY_SHARE = 0.9;
+/** Long legal text (the /terms, /refunds and /privacy pages) is not counted for that share: it is translated last, after
+ *  the legal review, and shows in English until then, so adding it never takes a language out of the picker. */
+export const UNCOUNTED_PREFIXES = ['info.terms.', 'info.refunds.', 'info.privacy.'];
+const counted = code => Object.keys(dictionary(code)).filter(k => !UNCOUNTED_PREFIXES.some(p => k.startsWith(p))).length;
 export function availableCodes() {
   if (process.env.BRB_ALL_LOCALES === '1') return CODES.slice();
-  const total = Object.keys(dictionary(DEFAULT_LOCALE)).length || 1;
+  const total = counted(DEFAULT_LOCALE) || 1;
   return CODES.filter(c => {
     if (c === DEFAULT_LOCALE) return true;
-    const n = Object.keys(dictionary(c)).length;
+    const n = counted(c);
     return c === 'en-GB' ? n > 0 : n / total >= READY_SHARE;
   });
 }

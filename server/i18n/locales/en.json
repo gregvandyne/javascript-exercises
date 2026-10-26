@@ -36,7 +36,9 @@
       "safety": "Safety",
       "parents": "For grown-ups",
       "contact": "Contact us",
-      "builders": "For builders"
+      "builders": "For builders",
+      "terms": "Terms",
+      "privacy": "Privacy"
     },
     "build": {
       "ready": "✨ Your game “{title}” is ready! <a href=\"{href}\">Open it</a>",
@@ -392,7 +394,8 @@
       },
       "ads": {
         "h": "No ads",
-        "p1": "There are no ads on Oomba Academy. Nothing is for sale, and nothing pops up over a game."
+        "p1": "There are no ads on Oomba Academy. Nothing is for sale, and nothing pops up over a game.",
+        "paid1": "There are no ads on Oomba Academy. Playing is always free. You never have to pay for anything here, and nothing pops up over a game."
       }
     },
     "parents": {
@@ -401,16 +404,19 @@
       "heading": "For grown-ups",
       "what": {
         "h": "What is Oomba Academy?",
-        "p1": "A free website where kids play web games and build their own by describing them to an AI Builder. No downloads, no purchases, no loot boxes, no in-game money that costs money."
+        "p1": "A free website where kids play web games and build their own by describing them to an AI Builder. No downloads, no purchases, no loot boxes, no in-game money that costs money.",
+        "paid1": "A website where kids play web games and build their own by describing them to an AI Builder. Playing is free, and so is a daily allowance of Builder messages. Families and schools can buy extra Builder messages. There are no in-game purchases, no loot boxes and no in-game money that costs money."
       },
       "stored": {
         "h": "What we keep",
         "p1": "Own accounts keep a made-up name, a password (stored scrambled) and what your child does here: the games they make, their chats with the Builder and any pictures or files they add, saves, scores, ratings, favorites, friends, chat messages, a profile photo if they upload one, and settings such as language and theme. Guest play keeps a made-up name, saves, scores, ratings and favorites.",
-        "p2": "A school account is one your child signs in to with a login card from school. It is made and owned by the school, and keeps the same things plus the student's real name as the school typed it for the class list (only the school's staff and our team see it), their classes, lesson progress, written answers and their teacher's feedback. If your child joins a class with their own account and a class code, the school keeps the same things for that class, including their real name if the teacher types one."
+        "p2": "A school account is one your child signs in to with a login card from school. It is made and owned by the school, and keeps the same things plus the student's real name as the school typed it for the class list (only the school's staff and our team see it), their classes, lesson progress, written answers and their teacher's feedback. If your child joins a class with their own account and a class code, the school keeps the same things for that class, including their real name if the teacher types one.",
+        "paid3": "Family plans never see class activity: a grown-up linked to a student sees only that student's family extra messages."
       },
       "never": {
         "h": "What we never collect",
-        "p1": "We never ask for an email address, age, home address, location or payment details, and there is nothing to buy. Hidden location data is removed from photos and pictures before they are kept. There are no ads, and no advertising or tracking cookies."
+        "p1": "We never ask for an email address, age, home address, location or payment details, and there is nothing to buy. Hidden location data is removed from photos and pictures before they are kept. There are no ads, and no advertising or tracking cookies.",
+        "paid1": "We never ask children for an email address, age, home address, location or payment details, and children are never asked to pay. A grown-up can choose a plan, and payment goes through Stripe; we never see card numbers. Hidden location data is removed from photos and pictures before they are kept. There are no ads, and no advertising or tracking cookies."
       },
       "ai": {
         "h": "What the AI sees",
@@ -419,7 +425,8 @@
       "keep": {
         "h": "How long we keep it",
         "p1": "We keep an account's data for as long as the account exists. None of it is deleted on a timer yet. A game your child deletes is taken off the site for everyone, but a copy stays on our server.",
-        "p2": "There is no button yet to delete an account or download its data. To ask for either, a grown-up can contact us. For a school account, ask the school; it can ask us."
+        "p2": "There is no button yet to delete an account or download its data. To ask for either, a grown-up can contact us. For a school account, ask the school; it can ask us.",
+        "paid1": "We keep an account's own data for as long as the account exists, and none of it is deleted on a timer yet. A game your child deletes is taken off the site for everyone, but a copy stays on our server. Family links, link codes and billing records have their own timers: see <a href=\"/privacy#billingKeep\">how long we keep billing information</a>."
       },
       "friends": {
         "h": "Friends and chat",
@@ -457,6 +464,322 @@
       "rules": {
         "h": "Rules",
         "p1": "Games cannot use the internet, cookies, forms, pop-ups or links. Fonts from Google Fonts and libraries from cdnjs are allowed. Keep each game under 2 MB."
+      }
+    },
+    "legal": {
+      "updated": "Last updated: {date}",
+      "notYet": "Paid plans are not on sale yet. The parts of this page about them apply once they are."
+    },
+    "terms": {
+      "title": "Terms of Service",
+      "description": "The rules for using Oomba Academy: accounts, safety rules, games you make, paid plans and billing.",
+      "heading": "Terms of Service",
+      "who": {
+        "h": "1. Who we are and what these terms cover",
+        "p1": "Oomba Academy (oomba.ai) is an educational website where kids aged 8 to 14, their families and their teachers play web games and build their own games with an AI \"Builder\".",
+        "p2": "The service is run by Oomba Academy (\"Oomba Academy\", \"we\", \"us\"). You can reach us at <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a>.",
+        "p3": "These terms are the rules for using the site. They apply to everyone who uses it. Our <a href=\"/privacy\">Privacy Policy</a> and our <a href=\"/refunds\">Refund and Cancellation Policy</a> are part of these terms.",
+        "p4": "<b>A note for kids:</b> these terms are written for grown-ups. The short version for you is on the <a href=\"/safety\">Safety page</a>: be kind, keep personal details private, only build games that follow the Builder's rules, and tell a grown-up you trust if anything worries you."
+      },
+      "accounts": {
+        "h": "2. Who can use Oomba Academy",
+        "s1": "Kinds of accounts",
+        "li1": "<b>Guest:</b> for anyone who wants to play. Made with one tap on a game. Keeps a made-up name, saves, scores, ratings and favorites.",
+        "li2": "<b>Own account:</b> for a child (or anyone) who wants to build, keep games and add friends. Made on the site with a made-up username and a password.",
+        "li3": "<b>School account:</b> for a student in a school that uses Oomba Academy. Made and owned by the school. The student signs in with a login card (or, if the school turns it on, a school Google account).",
+        "li4": "<b>Teacher and school admin:</b> for school staff. Set up by the school or by us.",
+        "li5": "<b>Grown-up account:</b> for a parent or legal guardian who wants to link to their child's account or buy a Family plan. Made with a name and a password of at least 12 characters.",
+        "s2": "Children",
+        "p1": "Oomba Academy is made for children aged 8 to 14.",
+        "li6": "If you are under 18, a parent or legal guardian must agree to these terms for you, and they are responsible for how you use the site. Paying for a plan is not how a parent gives permission for a child's account (see section 7.9).",
+        "li7": "A school account is created by the school. The school is responsible for having the right to create it and for telling parents about it (see section 3).",
+        "s3": "Grown-up accounts",
+        "li8": "You must be <b>18 or older</b> and the <b>parent or legal guardian</b> of every child you link to. When you sign up you confirm this with a checkbox. We do not check it, so please be honest: linking to a child who is not yours breaks these terms, and we will end the link and may close your account.",
+        "li9": "A grown-up account can play games. It <b>cannot</b> build games, use the Builder, chat, add friends, post, or have a public profile.",
+        "li10": "Keep your password private. You are responsible for what happens in your grown-up account, including purchases.",
+        "li11": "To protect against a child buying something on a shared device, we ask for your password again before you start or change a plan.",
+        "s4": "Linking a grown-up to a child",
+        "li12": "The child gets a short code on their own Me page. It works once, for 1 hour.",
+        "li13": "You enter the code on your family page.",
+        "li14": "The child must say <b>Yes</b> on their own page. They can also say <b>No</b> or <b>Report</b>.",
+        "li15": "The child can <b>Unlink</b> or <b>Report</b> at any time. A report ends the link at once and goes to our team.",
+        "p2": "A linked grown-up sees the child's username and display name, and how many of the family's extra Builder messages the child used yesterday and this month. A linked grown-up does <b>not</b> see the child's chats, friends, games, live activity or anything about their school.",
+        "p3": "School accounts cannot be linked to a grown-up account."
+      },
+      "schools": {
+        "h": "3. Schools",
+        "p1": "If you use Oomba Academy for a school, these terms apply to the school, its staff and its students, together with any written agreement we sign with the school (for example a student data privacy agreement). If the two conflict, the signed agreement wins.",
+        "p2": "The school:",
+        "li1": "confirms it has the authority to accept these terms and to create accounts for its students;",
+        "li2": "is responsible for telling parents about its use of Oomba Academy, and for any consent it needs from them under laws such as COPPA, FERPA and state student-privacy laws;",
+        "li3": "owns its class lists and student records. We use them only to run the service for the school.",
+        "p3": "Only school admins see the school's billing. Teachers and students never see prices."
+      },
+      "rules": {
+        "h": "4. Using Oomba Academy safely: the rules",
+        "p1": "These rules apply to everyone, including what you type into the Builder, the games you make, chat messages, pictures you upload and your profile.",
+        "s1": "Do not:",
+        "li1": "share personal details (yours or anyone else's): real full names, addresses, phone numbers, emails, school names in public places, or social media handles;",
+        "li2": "bully, threaten, harass or be mean to anyone;",
+        "li3": "make or share anything with gore, horror jump-scares, adult content, hate, gambling, drugs, or real weapons used to hurt people;",
+        "li4": "use real brands, real people, or other people's characters, music or art you don't have the right to use;",
+        "li5": "try to get around the safety filters, the Builder's rules, the game sandbox, or the message limits (for example with many accounts);",
+        "li6": "make games that collect data, chat, or link out of the site;",
+        "li7": "try to break, overload, scrape or attack the site, or get into accounts that are not yours;",
+        "li8": "buy or try to buy a plan with a payment card you are not allowed to use.",
+        "s2": "How we check things (moderation)",
+        "li9": "Every Builder message is screened before the AI sees it. Messages that break the rules are kindly refused.",
+        "li10": "A robot checker reads every version of every game. Games shared with everyone also get a careful review by an AI model, and a person on our team checks any game it is unsure about. Games shared with a class or school are checked before they reach that audience.",
+        "li11": "Chat is text only, only between friends who added each other by friend code, and filtered for bad language and personal details.",
+        "li12": "Anyone signed in can report a game. When three people report a game, it is hidden until our team looks. Anyone can block or report a chat partner.",
+        "li13": "Our team can approve, reject, hide or take down games, and pause, suspend or ban accounts. We log every moderation action.",
+        "p2": "No checking is perfect. If you see something wrong, please report it or email <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a>."
+      },
+      "ai": {
+        "h": "5. AI-made content",
+        "li1": "The Builder uses Claude, an AI made by Anthropic, to write games from what you describe. What the AI makes can be wrong, buggy, or unexpectedly similar to something that already exists.",
+        "li2": "We check games before they are shared widely (section 4), but we do not promise that every game is free of mistakes.",
+        "li3": "Do not rely on games or AI answers for anything important (health, safety, money, homework answers you have not checked).",
+        "li4": "What you send to the Builder (messages, pictures, files) is sent to Anthropic to make the game. See our <a href=\"/privacy\">Privacy Policy</a> for details."
+      },
+      "games": {
+        "h": "6. Games you make: who owns them",
+        "s1": "What you own",
+        "p1": "You (or, for a school account, you and your school as the school's policies say) keep whatever rights you have in the games you make here: your ideas, your words, your pictures and your designs.",
+        "p2": "Some parts of a game are not yours alone:",
+        "li1": "the game engine, the site's sound effects, the starter templates, the Three.js library and other building blocks belong to us or our licensors;",
+        "li2": "parts written by the AI may not be protected by copyright at all.",
+        "s2": "The licence you give us",
+        "p3": "So we can run the site, you give Oomba Academy a worldwide, non-exclusive, royalty-free licence to store, copy, run, show, take screenshots of, check (with people and AI tools, including sending the game to Anthropic for review), and make small technical changes to (for example to fit a screen or fix a safety problem) the games, pictures and text you put on the site, <b>only to run, protect and improve Oomba Academy</b> and only to show them to the people you chose (only me, friends, your classes, your school, or everyone).",
+        "li3": "This licence ends when you delete the game, except that: a deleted game is taken off the site for everyone, but a copy stays on our server so reports and safety records still point to something; we may keep backup copies for a limited time; and games other people already saved scores in keep those scores.",
+        "li4": "We will not sell your games or use them in ads, and we don't use them in our marketing without asking.",
+        "li5": "Other players can play games you share with them. They do not get the right to copy or remix them. If remixing is ever added, we will update these terms first.",
+        "s3": "Respecting other people's work",
+        "p4": "Only upload or describe things you have the right to use. If you think something on Oomba Academy copies your work, email <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a> with what it is and where it is. We take down infringing material and close the accounts of people who do it again and again."
+      },
+      "plans": {
+        "h": "7. Paid plans and billing",
+        "s1": "7.1 What is free and what you pay for",
+        "li1": "<b>Playing is free</b> for everyone, and so is a <b>free daily allowance of Builder messages</b>.",
+        "li2": "Paid plans <b>only add more Builder messages</b>. Paying never unlocks a feature that free users don't have.",
+        "li3": "<b>Children never see prices</b> or plans, and are never asked to pay. Only grown-up accounts and school admins can buy a plan.",
+        "li4": "We can change the size of the free allowance at any time. We will announce a change on the <a href=\"/parents\">For grown-ups page</a> before it applies.",
+        "s2": "7.2 Family plan",
+        "li5": "Bought by a <b>grown-up account</b> for <b>up to 4 linked children</b> (each child must have confirmed the link).",
+        "li6": "Monthly or yearly, at the price shown to the grown-up before they buy.",
+        "li7": "It gives the family a set number of <b>extra Builder messages each month</b>, shared by the linked children, on top of each child's free daily messages. The number is shown before you buy and on your family page afterwards.",
+        "li8": "Each child uses their free daily messages first; extras are used after that, or when the free Builder is resting.",
+        "li9": "Extras reset at the start of each calendar month (UTC) and do not roll over. A \"Pro quality\" message counts as 2. A message that fails to build is given back.",
+        "li10": "To stop one child using the whole month in a day, there is a limit on how many extra messages one child can use in a day, and a limit on unusually expensive use.",
+        "li11": "A child in a school with a paid School plan builds from the school's allowance in class, never from the family's extras.",
+        "li12": "<b>Family plans are for US families for now.</b> You need a US billing address and a US payment card (or Apple Pay or Google Pay).",
+        "s3": "7.3 School plan",
+        "li13": "Priced <b>per student per year</b>, with a <b>minimum of 25 students</b>. The price is shown to the school's admins on the school's Billing tab.",
+        "li14": "The school gets a shared pool of Builder messages for its students and teachers each year. The size is shown on the school's Billing tab. Students always get at least the free daily amount. When the pool runs out, students use the free allowance until the next year starts.",
+        "li15": "Paid seats count active students. If you add students during the year, you can add seats: you pay a prorated amount for the rest of the year right away. You can lower the number of seats for the next year; the change applies at renewal, never below 25.",
+        "li16": "<b>Paying:</b> by card online, or by invoice (a purchase order is fine). Invoices are due <b>30 days</b> after they are sent (net 30) and can be paid by card, bank transfer or ACH, or by check (email us for the mailing address).",
+        "li17": "Tax-exempt schools can send us their exemption certificate.",
+        "s4": "7.4 Payments, Stripe and taxes",
+        "li18": "Payments are processed by <b>Stripe</b>. You pay on Stripe's own page. We never see or store your card number.",
+        "li19": "Prices are in US dollars and <b>don't include sales tax</b>. Where the law requires it, tax is added at checkout or on the invoice.",
+        "li20": "Stripe sends your receipts. The charge shows on your statement as <b>OOMBA ACADEMY</b>.",
+        "s5": "7.5 Automatic renewal",
+        "p1": "<b>Plans renew automatically until you cancel.</b>",
+        "li21": "A monthly Family plan renews every month, and a yearly plan every year, at the price then in effect (see 7.7), charged to the payment method on file.",
+        "li22": "Before you pay, the checkout page shows the price, how often you'll be charged, and that it renews until you cancel. By paying, you agree to the automatic renewal.",
+        "li23": "We send a reminder before a yearly plan renews.",
+        "li24": "School invoice plans renew each year with a new invoice. The school's Billing tab shows a reminder 30 days before.",
+        "s6": "7.6 Cancelling",
+        "li25": "<b>Cancel anytime</b> online: on your family page, choose <b>Manage plan</b>, then cancel. Schools: <b>Manage billing</b> on the Billing tab, or email us.",
+        "li26": "Cancelling stops the next renewal. <b>The plan keeps working until the end of the period you paid for</b>, then your family or school goes back to the free allowance.",
+        "li27": "Nothing is deleted when a plan ends.",
+        "li28": "Refunds are covered by our <a href=\"/refunds\">Refund and Cancellation Policy</a>: in short, a full refund if you ask within 14 days of the payment that starts a plan or of a yearly renewal. Monthly renewals are not refunded, and there are no partial refunds otherwise.",
+        "s7": "7.7 Price and plan changes",
+        "li29": "We may change prices or what a plan includes. We will tell you <b>before</b> the change applies to you, by a notice on your family page (or the school's Billing tab) and by email to the address you gave Stripe, at least 7 and no more than 30 days before the renewal it applies to.",
+        "li30": "A new price applies from your next renewal, never to a period you already paid for. If you don't want the new price, cancel before that renewal.",
+        "li31": "We won't reduce the number of extra messages in a period you have already paid for.",
+        "s8": "7.8 Late or failed payments",
+        "li32": "<b>Card payments:</b> if a payment fails, the plan keeps working for <b>7 days</b> while the payment is retried. Please update your card on your family page. If it still hasn't gone through, the plan ends.",
+        "li33": "<b>Invoices:</b> if an invoice isn't paid, the plan keeps working until <b>30 days after the due date</b>. Then the plan ends.",
+        "li34": "When a plan ends this way, the family or school simply goes back to the free allowance. <b>Nothing is deleted or locked,</b> and school classes keep working.",
+        "li35": "If a payment is disputed with the bank (a chargeback) or the bank warns it may be fraud, we end the plan right away so the card is not charged again. Please email us if this was a mistake.",
+        "s9": "7.9 Paying is not parental consent",
+        "p2": "Buying a plan does not change what we do with a child's data or what a parent has agreed to about it. How parents are told about their child's use of Oomba Academy is a separate matter, covered in our <a href=\"/privacy\">Privacy Policy</a>."
+      },
+      "ending": {
+        "h": "8. Suspending and ending accounts",
+        "li1": "<b>You</b> can stop using Oomba Academy at any time. There is no delete button yet: to delete an account or get a copy of its data, email <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a> (school accounts: ask the school, which can ask us). If a grown-up account with a plan is deleted, we cancel the plan first.",
+        "li2": "<b>We</b> may pause, limit or close an account, take down a game, or end a family link if someone breaks these terms, puts a child at risk, or if the law requires it. We'll explain why when we can, unless that would put someone at risk.",
+        "li3": "If a child's account is suspended, the family plan keeps working for the other linked children. A suspension alone is not a reason for a refund.",
+        "li4": "If we close a grown-up account for fraud or serious misuse, the plan ends and is not refunded, unless the law requires it.",
+        "li5": "If <b>we</b> end a paid plan for a reason that is not your fault, or we shut down Oomba Academy, we refund the unused part of the period you paid for."
+      },
+      "disclaimers": {
+        "h": "9. Disclaimers",
+        "p1": "We work hard to make Oomba Academy safe, fun and available, but:",
+        "li1": "the site and the Builder are provided <b>\"as is\" and \"as available\"</b>. They may sometimes be down, slow or changed. The Builder can \"rest\" when our safety spending limits are reached or our AI provider is unavailable, and in rare cases this can affect paid plans too;",
+        "li2": "we don't promise that games (ours, AI-made or made by other players) are free of mistakes;",
+        "li3": "to the extent the law allows, we disclaim implied warranties such as merchantability, fitness for a particular purpose and non-infringement.",
+        "p2": "Some states don't allow some of these disclaimers, so they may not apply to you. Nothing here takes away rights you have under consumer law that can't be waived."
+      },
+      "liability": {
+        "h": "10. Limits on our liability",
+        "p1": "To the extent the law allows:",
+        "li1": "we are not liable for indirect, incidental, special or consequential losses (for example lost data you didn't save elsewhere);",
+        "li2": "our total liability for any claim about Oomba Academy is limited to the <b>greater of</b> what you paid us in the 12 months before the claim, or <b>100 US dollars</b>.",
+        "p2": "These limits do <b>not</b> apply to liability that can't be limited by law, including for our gross negligence, willful misconduct, fraud, or personal injury caused by our negligence."
+      },
+      "disputes": {
+        "h": "11. Disputes and governing law",
+        "li1": "<b>Talk to us first.</b> Most problems can be fixed by email. Please write to <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a> and give us 30 days to try to sort it out.",
+        "li2": "These terms are governed by the laws of the US state where Oomba Academy is based and by US federal law, without regard to conflict-of-laws rules.",
+        "li3": "Disputes go to the state or federal courts where Oomba Academy is based, <b>or</b> to small-claims court where you live if your claim qualifies.",
+        "li4": "If you live in a state whose consumer-protection law gives you rights that these terms can't take away, you keep them."
+      },
+      "changes": {
+        "h": "12. Changes to these terms",
+        "li1": "We may update these terms. We'll change the \"Last updated\" date.",
+        "li2": "For important changes we will give notice <b>at least 30 days before</b> they apply: on the For grown-ups page, on the family page and the school Billing tab, and by email to paying grown-ups and school billing contacts.",
+        "li3": "Changes don't apply to a dispute that started before the change.",
+        "li4": "If you don't agree to a change, you can stop using the site and cancel your plan before it applies. Continuing after that means you accept the new terms."
+      },
+      "other": {
+        "h": "13. Other legal bits",
+        "li1": "If a court finds part of these terms can't be enforced, the rest still applies.",
+        "li2": "If we don't enforce a rule right away, we haven't given up the right to do so later.",
+        "li3": "You may not transfer your account or these terms to someone else. We may transfer them if Oomba Academy is sold or reorganized, and we will tell you.",
+        "li4": "These terms, our Privacy Policy and our Refund and Cancellation Policy are the whole agreement between you and us about the site (plus any signed school agreement, section 3)."
+      },
+      "contact": {
+        "h": "14. Contact",
+        "p1": "Oomba Academy · <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a>"
+      }
+    },
+    "refunds": {
+      "title": "Refunds and cancelling",
+      "description": "How to cancel an Oomba Academy Family or School plan, and when you can get your money back.",
+      "heading": "Refund and Cancellation Policy",
+      "intro": {
+        "h": "About this policy",
+        "p1": "This page explains how to cancel an Oomba Academy plan and when you can get your money back. It is part of our <a href=\"/terms\">Terms of Service</a>.",
+        "p2": "Playing and the free daily Builder messages are always free. This policy is only about the paid <b>Family</b> and <b>School</b> plans, which add more Builder messages."
+      },
+      "cancel": {
+        "h": "Cancelling",
+        "li1": "<b>Cancel anytime.</b> There is no cancellation fee.",
+        "li2": "<b>Families:</b> sign in to your grown-up account, open your family page, choose <b>Manage plan</b>, then <b>Cancel plan</b>. We ask for your password first.",
+        "li3": "<b>Schools:</b> a school admin opens the school's <b>Billing</b> tab and chooses <b>Manage billing</b>, or emails <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a> (invoice schools).",
+        "li4": "<b>When it takes effect:</b> at the end of the month or year you already paid for. Until then the plan keeps working. After that, your family or school goes back to the free allowance.",
+        "li5": "<b>Nothing is deleted.</b> Games, saves and classes stay exactly as they are."
+      },
+      "refunds": {
+        "h": "Refunds",
+        "p1": "<b>Full refund within 14 days.</b> If you ask within <b>14 days</b> of the payment that starts a plan, or of a <b>yearly</b> renewal, we refund that payment in full, including any tax charged.",
+        "p2": "<b>Monthly renewals are not refunded.</b> You can cancel a monthly plan at any time so the next renewal doesn't happen.",
+        "p3": "<b>Otherwise, no partial refunds.</b> If you cancel later, the plan simply runs to the end of the period you paid for. We don't refund unused days or unused messages.",
+        "p4": "<b>What a refund does:</b> a refund ends the plan straight away (we cancel it first, then refund), so the extra messages stop at once.",
+        "p5": "<b>How to ask:</b> email <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a> from any address. Tell us the name of your grown-up account (or school), and the date and amount from your Stripe receipt. We'll reply within 3 business days.",
+        "p6": "<b>When you get the money:</b> the refund goes back to the card or account you paid with. Banks usually take 5 to 10 business days to show it.",
+        "p7": "<b>Schools paying by invoice:</b> the 14 days start on the date the payment reaches us. Paid by check? We refund by check or bank transfer."
+      },
+      "special": {
+        "h": "Special cases",
+        "li1": "<b>Paid twice by mistake?</b> If two plans start for the same family or school, we cancel the extra one and refund it automatically.",
+        "li2": "<b>Payment didn't go through?</b> Cards: the plan keeps working for <b>7 days</b> while the payment is retried. Invoices: until <b>30 days after the due date</b>. After that the plan ends and you're back on the free allowance. Nothing is deleted.",
+        "li3": "<b>A child used your card without asking?</b> Email us right away. We will cancel the plan and, if you ask within 14 days of the payment, refund it in full.",
+        "li4": "<b>Disputed the charge with your bank?</b> We end the plan straight away so the card isn't charged again. Please email us first; we can usually fix it faster.",
+        "li5": "<b>If we end your plan for a reason that isn't your fault,</b> or we close Oomba Academy, we refund the unused part of the period you paid for.",
+        "li6": "We may give a refund in other cases if we choose. Doing so once doesn't mean we must do it again."
+      },
+      "rights": {
+        "h": "Your legal rights",
+        "p1": "This policy doesn't take away any refund rights you have under the law where you live."
+      },
+      "contact": {
+        "h": "Contact",
+        "p1": "Oomba Academy · <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a>"
+      }
+    },
+    "privacy": {
+      "title": "Privacy Policy",
+      "description": "What Oomba Academy keeps, what it never collects, what the AI sees, and how grown-up accounts, payments and school billing work.",
+      "heading": "Privacy Policy",
+      "intro": {
+        "h": "About this policy",
+        "p1": "This policy explains what Oomba Academy (oomba.ai, \"we\", \"us\") keeps about the people who use it, what we never collect, and how grown-up accounts, family links, payments and school billing work. The same facts about children's accounts are on the <a href=\"/parents\">For grown-ups page</a>. Questions: <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a>."
+      },
+      "grownups": {
+        "h": "Grown-up accounts",
+        "s1": "What we keep",
+        "li1": "the name you type when you sign up (it can be a first name or nickname; children never see it: they see only \"your grown-up\");",
+        "li2": "your password, stored scrambled (we can't read it);",
+        "li3": "that you ticked \"I am a parent or guardian, 18 or older\" (we don't check this);",
+        "li4": "your sign-in sessions, including your browser's name (user agent), and when you last re-entered your password for a billing step;",
+        "li5": "which children you linked, when, and whether a link is pending, linked or ended;",
+        "li6": "your plan: Stripe's customer and subscription numbers, plan type, monthly or yearly, status, seats, dates and amounts;",
+        "li7": "a record of important actions (for example \"plan started\", \"child linked\", \"refund\"). These records never contain card details or email addresses.",
+        "p1": "<b>What we don't ask for:</b> your email, phone number, home address or age. (Stripe asks for some of these when you pay: see Payments below.)",
+        "p2": "A grown-up account can't build, chat, add friends or have a public profile, and doesn't appear in search."
+      },
+      "linking": {
+        "h": "Linking to a child",
+        "li1": "<b>The code:</b> your child gets a short code on their Me page. We store it scrambled. It works once, for 1 hour.",
+        "li2": "<b>The child says yes:</b> the link only starts when your child confirms it on their own page. They can say No, or Report it to our team. Reports are kept while open and deleted 1 year after we close them.",
+        "li3": "<b>What you see about your child:</b> their username and display name, how many of the family's extra Builder messages they used yesterday and so far this month, and whether they are building on the Family plan or the free allowance.",
+        "li4": "<b>What you don't see:</b> today's live activity (so you can't tell when they're online), their chats, friends or games, any messages charged to a school, or whether they are in a school at all.",
+        "li5": "<b>What your child sees about you:</b> only the words \"your grown-up\", never the name you typed.",
+        "li6": "<b>Counting messages:</b> to count the family's extras, we record for each Builder message which allowance paid for it (free, family or school), how many messages it counted as, and its AI cost."
+      },
+      "payments": {
+        "h": "Payments",
+        "s1": "Stripe processes payments",
+        "p1": "Payments are handled by <b>Stripe, Inc.</b> You pay on Stripe's own page, not on ours. Stripe's privacy policy is at <a href=\"https://stripe.com/privacy\" rel=\"noopener\" dir=\"ltr\">stripe.com/privacy</a>.",
+        "p2": "<b>What Stripe collects from you</b> (on Stripe's pages):",
+        "li1": "your email address (Stripe sends receipts, failed-payment notices and renewal reminders to it, and uses it for the \"Manage plan\" sign-in link);",
+        "li2": "your card details, or your Apple Pay or Google Pay wallet;",
+        "li3": "your billing address (needed for sales tax and to check that family plans are for US families);",
+        "li4": "information Stripe uses to prevent fraud, such as details about your device and connection.",
+        "p3": "<b>What we send to Stripe:</b> a random family or school number so we can match the payment to your plan. We do <b>not</b> send Stripe your name, your child's name or username, or anything about how your child uses the site.",
+        "p4": "<b>What we get back and keep:</b> Stripe's customer and subscription numbers, the plan, status (active, past due, cancelled), dates, amounts, seat count, and whether a payment was paid, failed, refunded or disputed.",
+        "p5": "<b>What we never see or keep:</b> your full card number or security code. Our own database does not store your email or billing address. Stripe's messages to our server can include them, but we don't save them.",
+        "p6": "<b>Who on our side can see more:</b> the owner can see your email, billing address, receipts and the last 4 digits of your card in Stripe's dashboard. We use them only to run your plan: to answer your questions, give refunds, and tell you about important changes to your plan, price or our terms. The site has no email system of its own, so these notices are sent from <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a> to the email Stripe holds. We never use it for marketing.",
+        "p7": "<b>Fraud and disputes:</b> if your bank reports a payment as disputed or likely fraud, Stripe tells us. We end the plan and keep a record of what happened.",
+        "p8": "<b>Sales tax:</b> Stripe calculates sales tax from your billing address where we are required to collect it.",
+        "p9": "<b>Cookies:</b> our site adds no new cookies for payments. Stripe's pages are run by Stripe and follow Stripe's policy."
+      },
+      "schoolBilling": {
+        "h": "School billing",
+        "li1": "<b>Who sees it:</b> only the school's admins and our team. Teachers and students never see billing.",
+        "li2": "<b>What we keep when a school asks for an invoice:</b> the number of seats, purchase order number, the billing contact's name and email, the school's billing address, whether the school says it is tax-exempt, and any note. This is also saved with Stripe, which sends the invoices.",
+        "li3": "<b>How long:</b> the contact's name, email and the address in our database are deleted <b>2 years</b> after the request is closed. Stripe keeps the school's address with its invoices (see below).",
+        "li4": "<b>Seats</b> are counted from the number of active students. Billing does not use students' names or work.",
+        "li5": "<b>Families never see class activity:</b> a grown-up linked to a student sees only that student's family extra messages."
+      },
+      "children": {
+        "h": "Children's data",
+        "p1": "<b>Children never see prices,</b> plans or a \"buy\" button, and are never asked to pay or to ask a grown-up to pay.",
+        "p2": "<b>Paying is not how we ask a parent for permission.</b> Buying a plan doesn't change what we collect about a child, what we use it for, or what a parent has agreed to.",
+        "p3": "<b>Your rights as a parent (own accounts):</b> you can ask us to show you what we keep about your child, to delete it, or to stop collecting more. Email <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a>. There is no delete or download button yet, so we handle these requests by hand, and we will need to check that you are the parent before we act. Unlinking or cancelling a plan does not delete your child's account.",
+        "p4": "<b>School accounts:</b> a school account is made and owned by the school. For those accounts we act on the school's behalf and under its direction: we use student information only to provide Oomba Academy to the school, never for advertising, and we don't sell it. Parents of school accounts should ask the school to see or delete records; the school can ask us. A data agreement the school has signed with us comes first.",
+        "p5": "<b>No selling, no ads:</b> we don't sell anyone's personal information, show ads, or use advertising or tracking cookies."
+      },
+      "billingKeep": {
+        "h": "How long we keep billing information",
+        "li1": "<b>Link codes:</b> deleted 30 days after they are used or expire.",
+        "li2": "<b>Pending links:</b> deleted when they expire (24 hours) or the child says No.",
+        "li3": "<b>Ended links:</b> deleted 90 days after they end (a record with account numbers only stays in our action log).",
+        "li4": "<b>Link reports:</b> kept while open, then 1 year after they are closed.",
+        "li5": "<b>Plan and payment records</b> (Stripe numbers, amounts, dates) and Stripe's invoices: 7 years, for tax law, even after an account is deleted.",
+        "li6": "<b>School invoice request contact details and address:</b> 2 years after the request is closed.",
+        "li7": "<b>Grown-up account, family and links:</b> until you ask us to delete the account. We cancel any plan first."
+      },
+      "where": {
+        "h": "Where this applies",
+        "p1": "Family plans are for US families for now."
+      },
+      "contact": {
+        "h": "Questions",
+        "p1": "Oomba Academy · <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a>"
       }
     }
   },

@@ -515,7 +515,9 @@ test('/family: Subscribe buttons with prices, what to read before paying, the pa
   assert.match(page, /within 14 days of your first payment or of a yearly renewal/);
   assert.match(page, /One child can use up to 4 extra messages a day/);
   assert.match(page, /id="pw-checkout"/);
-  assert.doesNotMatch(page, /href="\/terms"/, 'no Terms link until /terms is published');
+  // The footer links /terms on every page; the agreement line above the Subscribe buttons only once it is published.
+  const body = p => p.slice(0, p.indexOf('<footer'));
+  assert.doesNotMatch(body(page), /href="\/terms"/, 'no Terms link in the page until /terms is published');
   assert.match(page, /<div class="field" data-reauth >/, 'shown while not fresh');
   C.markReauth(f.who.sid);
   config.termsPublished = true;
@@ -524,7 +526,7 @@ test('/family: Subscribe buttons with prices, what to read before paying, the pa
   assert.match(page, /<div class="field" data-reauth hidden>/);
   assert.match(page, /id="pw-checkout"/);
   assert.doesNotMatch(page.match(/<input[^>]*id="pw-checkout"[^>]*>/)[0], /required/);
-  assert.match(page, /href="\/terms"/);
+  assert.match(body(page), /href="\/terms"/);
   // /grown-ups: the limits are stated before buying; "not on sale yet" only for those who can't buy.
   const landing = (await call(f.who, '/grown-ups')).text;
   assert.match(landing, /One child can use up to 4 extra messages a day/);

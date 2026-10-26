@@ -229,10 +229,14 @@ test('only finished translations are offered (picker and Accept-Language)', () =
   const saved = process.env.BRB_ALL_LOCALES;
   try {
     delete process.env.BRB_ALL_LOCALES;
-    const en = i18n.dictionary('en'); const total = Object.keys(en).length;
+    // The legal pages' long text (UNCOUNTED_PREFIXES) is left out of the share, so adding it takes no language away.
+    const counted = code => Object.keys(i18n.dictionary(code)).filter(k => !i18n.UNCOUNTED_PREFIXES.some(p => k.startsWith(p))).length;
+    const total = counted('en');
+    assert.ok(Object.keys(i18n.dictionary('en')).some(k => k.startsWith('info.terms.')), 'the legal text is in en.json');
+    for (const code of ['he', 'ar', 'de', 'fr']) assert.ok(i18n.availableCodes().includes(code), `${code} is still offered with the legal text untranslated`);
     for (const code of i18n.availableCodes()) {
       if (code === 'en') continue;
-      const n = Object.keys(i18n.dictionary(code)).length;
+      const n = counted(code);
       assert.ok(code === 'en-GB' ? n > 0 : n / total >= i18n.READY_SHARE, `${code} offered with ${n}/${total} keys`);
     }
     assert.ok(i18n.availableCodes().includes('en'));

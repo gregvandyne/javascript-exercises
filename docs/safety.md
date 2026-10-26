@@ -316,7 +316,11 @@ the app.
 
 ## 11. Data, and what we do not do
 
-The same facts as the grown-ups page (`/parents`, text in `info.parents.*`), kept to what is true today:
+The same facts as the grown-ups page (`/parents`, text in `info.parents.*`) and the Privacy Policy (`/privacy`), kept to
+what is true today. Once paid plans are public (billing on and `BILLING_PUBLIC=1`), "nothing is for sale" below no longer
+holds: children are still never asked to pay or shown prices, a grown-up or school admin can buy extra Builder messages
+through Stripe (we never see card numbers), and the site's wording switches with it (the `paidN` strings, see
+docs/legal-review.md). Billing data and its timers are on `/privacy`.
 
 - **Never asked for:** email addresses, ages, home addresses, locations or payment details. Nothing is for sale: no
   real-money purchases, loot boxes or paid boosts. No ads, and no advertising or tracking cookies (the only cookies are

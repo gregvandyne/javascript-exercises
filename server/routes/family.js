@@ -38,7 +38,7 @@ const nope = (req, res) => (isApi(req) ? res.status(404).json({ error: req.t('er
 // password and theme, and the family routes. Game calls a play page makes (save, score, ...) are allowed; a grown-up's
 // score is never stored (routes/games.js), so they are on no leaderboard.
 const GROWNUP_GET = [/^\/$/, /^\/search$/, /^\/api\/(search|live|me|billing\/status)$/, /^\/(g|play)\/[^/]+$/, /^\/(frame|shots|avatars)\/[^/]+$/,
-  /^\/(parents|safety)$/, /^\/grown-ups(\/(signup|login))?$/, /^\/family(\/link)?$/, /^\/(login|signup)$/, /^\/api\/games\/[^/]+\/(save|leaderboard)$/];
+  /^\/(parents|safety|terms|refunds|privacy)$/, /^\/grown-ups(\/(signup|login))?$/, /^\/family(\/link)?$/, /^\/(login|signup)$/, /^\/api\/games\/[^/]+\/(save|leaderboard)$/];
 const GROWNUP_POST = [/^\/api\/auth\/(login|logout|logout-everywhere)$/, /^\/api\/me\/(password|theme)$/, /^\/api\/family\/(link|children\/[^/]+\/remove)$/,
   /^\/api\/billing\/(family\/checkout|portal)$/,
   /^\/api\/games\/[^/]+\/(play|heartbeat|leave|save|score|report)$/];
