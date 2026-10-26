@@ -37,6 +37,12 @@
       "parents": "Für Erwachsene",
       "contact": "Kontakt",
       "builders": "Für Spielemacher"
+    },
+    "build": {
+      "ready": "✨ Dein Spiel „{title}“ ist fertig! <a href=\"{href}\">Öffnen</a>",
+      "question": "💬 Der Baumeister hat eine Frage zu „{title}“. <a href=\"{href}\">Öffnen</a>",
+      "stopped": "⚠️ „{title}“ wurde gestoppt, bevor es fertig war. <a href=\"{href}\">Öffne es, um weiterzumachen</a>",
+      "many": "✨ Der Baumeister hat Neuigkeiten zu einigen deiner Spiele. <a href=\"{href}\">Zu „Meine Spiele“</a>"
     }
   },
   "nav": {
@@ -158,7 +164,9 @@
       "chat": "Chat",
       "admin": "Admin",
       "favorites": "Meine Favoriten",
-      "classes": "Meine Klassen"
+      "classes": "Meine Klassen",
+      "building": "{count, plural, one {# Spiel wird gebaut} other {# Spiele werden gebaut}}",
+      "ready": "{count, plural, one {# Spiel fertig} other {# Spiele fertig}}"
     },
     "look": {
       "heading": "Such dir deinen Look aus",
@@ -722,7 +730,13 @@
     "changed": "Geändert {when}",
     "empty": "Tipp auf „Neues Spiel“ oder such dir oben eine Vorlage aus. Deine Spiele erscheinen dann hier.",
     "rename": "Umbenennen",
-    "delete": "Löschen"
+    "delete": "Löschen",
+    "status": {
+      "building": "🛠️ Wird gebaut…",
+      "ready": "✨ Fertig",
+      "question": "💬 Hat eine Frage",
+      "stopped": "⚠️ Gestoppt"
+    }
   },
   "studio": {
     "title": "Studio: {title}",
@@ -828,7 +842,11 @@
       "pickClass": "Wähle mindestens eine deiner Klassen aus.",
       "classGone": "Du kannst nur mit Klassen teilen, in denen du gerade bist.",
       "classRemoved": "Deine Lehrkraft hat dieses Spiel aus {name} herausgenommen, darum kann es dort nicht wieder hin.",
-      "updatedNowWaiting": "Aktualisiert! Die neue Version wartet auch noch auf einen kurzen Check, bevor mehr Leute spielen können."
+      "updatedNowWaiting": "Aktualisiert! Die neue Version wartet auch noch auf einen kurzen Check, bevor mehr Leute spielen können.",
+      "builderWorking": "Der Baumeister arbeitet gerade an diesem Spiel. Versuch es noch mal, wenn er fertig ist.",
+      "cantContinue": "Dieser Bau kann nicht mehr fortgesetzt werden. Schick stattdessen eine neue Nachricht.",
+      "restarting": "Unser Server startet gerade neu. Versuch es gleich noch mal.",
+      "liveBusy": "Dieses Spiel ist in zu vielen Tabs offen. Schließ ein paar und versuch es noch mal."
     }
   },
   "publish": {
@@ -853,7 +871,8 @@
       "empty": "Schreib zuerst eine Nachricht oder tipp auf eine Idee.",
       "busy": "Der Baumeister arbeitet noch an deiner letzten Nachricht. Einen Moment!",
       "limit": "Du hast heute alle {count} Nachrichten an den Baumeister verbraucht. Komm morgen wieder, dann gibt es neue!",
-      "muddled": "Der Baumeister ist durcheinandergekommen. Bitte versuch es gleich noch mal."
+      "muddled": "Der Baumeister ist durcheinandergekommen. Bitte versuch es gleich noch mal.",
+      "tooMany": "Bei dir werden schon 2 Spiele gebaut. Warte, bis eins fertig ist, und versuch es dann noch mal."
     },
     "refusals": {
       "tryThese": "Willst du eins davon ausprobieren?",
@@ -950,7 +969,9 @@
         }
       }
     },
-    "budgetResting": "Der KI-Baumeister ruht sich bis morgen aus, deshalb nehme ich jetzt meine einfachen Bausteine."
+    "budgetResting": "Der KI-Baumeister ruht sich bis morgen aus, deshalb nehme ich jetzt meine einfachen Bausteine.",
+    "turnTimeout": "⏱️ Dieser Bau hat länger gedauert als unser Zeitlimit, deshalb habe ich aufgehört. Deine neueste Version ist gespeichert. Sag mir, was ich als Nächstes ändern soll!",
+    "turnTimeoutNothing": "⏱️ Dieser Bau hat länger gedauert als unser Zeitlimit, deshalb habe ich aufgehört, bevor ich etwas speichern konnte. Dafür wurde keine Nachricht verbraucht, du kannst es also noch mal versuchen."
   },
   "uploads": {
     "tooFast": "Das sind ganz schön viele Dateien! Warte eine Minute und versuch es noch mal.",
@@ -1293,7 +1314,9 @@
             "look": "Runde {n}: schaut sich die Bilder an",
             "scan": "Runde {n}: liest den Sicherheitsbericht",
             "retry": "Runde {n}: findet heraus, was schiefging",
-            "next": "Runde {n}: entscheidet, was als Nächstes kommt"
+            "next": "Runde {n}: entscheidet, was als Nächstes kommt",
+            "plan": "Runde {n}: plant, wie es gebaut wird",
+            "planGame": "Runde {n}: plant die Änderungen"
           },
           "done": {
             "start": "Runde {n}: hat deine Nachricht gelesen",
@@ -1301,7 +1324,9 @@
             "look": "Runde {n}: hat sich die Bilder angeschaut",
             "scan": "Runde {n}: hat den Sicherheitsbericht gelesen",
             "retry": "Runde {n}: hat herausgefunden, was schiefging",
-            "next": "Runde {n}: hat entschieden, was als Nächstes kommt"
+            "next": "Runde {n}: hat entschieden, was als Nächstes kommt",
+            "plan": "Runde {n}: hat geplant, wie es gebaut wird",
+            "planGame": "Runde {n}: hat die Änderungen geplant"
           },
           "learn": {
             "start": "Eine Runde ist jedes Mal, wenn die App die KI fragt. Die KI merkt sich nichts, also schickt die App ihr den Chat noch einmal.",
@@ -1309,7 +1334,8 @@
             "scan": "Das Sicherheitsprogramm sagt genau, was falsch war. So kann die KI nur diesen Teil reparieren.",
             "retry": "Wenn ein Werkzeug meldet, dass etwas nicht geklappt hat, liest die KI, warum, und versucht es anders.",
             "next": "Nach jedem Werkzeug liest die KI das Ergebnis und wählt den nächsten Schritt. Diese Schleife macht sie zu einem Agenten.",
-            "thinking": "Bevor sie antwortet, denkt diese KI erst still nach, ein bisschen so, wie du etwas im Kopf ausrechnest."
+            "thinking": "Bevor sie antwortet, denkt diese KI erst still nach, ein bisschen so, wie du etwas im Kopf ausrechnest.",
+            "long": "Bei großen Ideen plant die KI manchmal ein oder zwei Minuten, bevor sie Code schreibt. Sie macht weiter, auch wenn du diese Seite verlässt."
           }
         },
         "write": {
@@ -1379,7 +1405,34 @@
           "h": "KI kann sehr sicher klingen und trotzdem falschliegen. Darum prüft auch ein Sicherheitsprogramm den Code.",
           "i": "✨ Profi-Qualität nutzt eine größere KI, die länger nachdenkt: langsamer, aber oft besser bei kniffligen Spielen.",
           "j": "Spiel dein Spiel immer selbst. Auch eine schlaue KI übersieht Dinge, die echten Spielern auffallen würden."
-        }
+        },
+        "leave": "Du kannst diese Seite schließen, deinen Computer zuklappen oder dich abmelden. Der Oomba-Baumeister arbeitet auf unserem Server weiter, und dein Spiel ist da, wenn du zurückkommst.",
+        "restart": {
+          "now": "Unser Server startet neu. Dein Bau ist gespeichert und sollte von selbst weitergehen",
+          "saved": "Unser Server startet neu. Deine bisherige Arbeit ist gespeichert",
+          "learn": "Server starten ab und zu neu, für Updates oder Reparaturen. Der Baumeister speichert vorher seine Arbeit, darum geht nichts verloren."
+        },
+        "resume": {
+          "done": "Nach dem Server-Neustart weitergemacht",
+          "doneV": "Nach dem Server-Neustart bei Version {v} weitergemacht",
+          "learn": "Der Baumeister hat deine Nachricht und deine neueste Version gespeichert. Darum macht er dort weiter, statt von vorn anzufangen."
+        },
+        "stopRestart": "durch einen Server-Neustart gestoppt",
+        "stopTime": "gestoppt: es hat zu lange gedauert"
+      },
+      "resumed": "🔄 Der Server wurde neu gestartet, darum hat der Baumeister dort weitergemacht, wo er war.",
+      "resumedV": "🔄 Der Server wurde neu gestartet, darum hat der Baumeister bei Version {v} weitergemacht.",
+      "stopped": {
+        "restart": "Der Baumeister hat aufgehört, als unser Server neu gestartet ist. Alles, was er gemacht hat, ist gespeichert.",
+        "ai": "Der Baumeister hat aufgehört, als unser Server neu gestartet ist, und der KI-Baumeister ruht sich gerade aus. Alles, was er gemacht hat, ist gespeichert."
+      },
+      "continue": "Weiterbauen",
+      "continueMessage": "Bitte mach mit meiner letzten Nachricht weiter.",
+      "notCounted": "Dafür wurde keine Nachricht verbraucht.",
+      "signedOutBuilding": "Du wurdest abgemeldet. Der Baumeister arbeitet weiter an deinem Spiel: Melde dich wieder an, um es zu sehen.",
+      "gameGone": "Dieses Spiel wurde gelöscht, darum hat der Baumeister aufgehört.",
+      "followups": {
+        "putBack": "Zurück ins Textfeld"
       }
     }
   },

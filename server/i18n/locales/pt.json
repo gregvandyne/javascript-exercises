@@ -37,6 +37,12 @@
       "parents": "Para adultos",
       "contact": "Fale com a gente",
       "builders": "Para criadores"
+    },
+    "build": {
+      "ready": "✨ Seu jogo “{title}” está pronto! <a href=\"{href}\">Abra o jogo</a>",
+      "question": "💬 O Construtor tem uma pergunta sobre “{title}”. <a href=\"{href}\">Abra o jogo</a>",
+      "stopped": "⚠️ “{title}” parou antes de terminar. <a href=\"{href}\">Abra para continuar</a>",
+      "many": "✨ Alguns dos seus jogos têm novidades do Construtor. <a href=\"{href}\">Ver Meus jogos</a>"
     }
   },
   "nav": {
@@ -158,7 +164,9 @@
       "chat": "Chat",
       "admin": "Admin",
       "favorites": "Meus favoritos",
-      "classes": "Minhas turmas"
+      "classes": "Minhas turmas",
+      "building": "{count, plural, one {# jogo sendo criado} other {# jogos sendo criados}}",
+      "ready": "{count, plural, one {# jogo pronto} other {# jogos prontos}}"
     },
     "look": {
       "heading": "Escolha seu visual",
@@ -722,7 +730,13 @@
     "changed": "Alterado {when}",
     "empty": "Toque em “Novo jogo” ou escolha um modelo acima. Seus jogos vão aparecer aqui.",
     "rename": "Renomear",
-    "delete": "Apagar"
+    "delete": "Apagar",
+    "status": {
+      "building": "🛠️ Criando…",
+      "ready": "✨ Pronto",
+      "question": "💬 Tem uma dúvida",
+      "stopped": "⚠️ Parou"
+    }
   },
   "studio": {
     "title": "Estúdio: {title}",
@@ -828,7 +842,11 @@
       "pickClass": "Escolha pelo menos uma das suas turmas.",
       "classGone": "Você só pode compartilhar com turmas em que está agora.",
       "classRemoved": "Seu professor tirou este jogo de {name}, então ele não pode voltar para lá.",
-      "updatedNowWaiting": "Atualizado! A nova versão também está esperando uma verificação rápida antes que mais gente possa jogar."
+      "updatedNowWaiting": "Atualizado! A nova versão também está esperando uma verificação rápida antes que mais gente possa jogar.",
+      "builderWorking": "O Construtor está trabalhando neste jogo agora. Tente de novo quando ele terminar.",
+      "cantContinue": "Não dá mais para continuar essa criação. Mande uma mensagem nova.",
+      "restarting": "Nosso servidor está reiniciando. Tente de novo daqui a pouco.",
+      "liveBusy": "Este jogo está aberto em abas demais. Feche algumas e tente de novo."
     }
   },
   "publish": {
@@ -853,7 +871,8 @@
       "empty": "Digite uma mensagem ou toque em uma ideia primeiro.",
       "busy": "O Construtor ainda está trabalhando na sua última mensagem. Só um momento!",
       "limit": "Você usou todas as {count} mensagens do Construtor de hoje. Volte amanhã para mais!",
-      "muddled": "O Construtor se confundiu. Tente de novo daqui a pouco."
+      "muddled": "O Construtor se confundiu. Tente de novo daqui a pouco.",
+      "tooMany": "Você já tem 2 jogos sendo criados. Espere um terminar e tente de novo."
     },
     "refusals": {
       "tryThese": "Quer tentar uma destas?",
@@ -950,7 +969,9 @@
         }
       }
     },
-    "budgetResting": "O Construtor de IA está descansando até amanhã, então vou usar meus blocos simples por enquanto."
+    "budgetResting": "O Construtor de IA está descansando até amanhã, então vou usar meus blocos simples por enquanto.",
+    "turnTimeout": "⏱️ Esta criação passou do nosso tempo limite, então eu parei. Sua versão mais nova está salva. Me diga o que mudar agora!",
+    "turnTimeoutNothing": "⏱️ Esta criação passou do nosso tempo limite, então eu parei antes de conseguir salvar alguma coisa. Ela não gastou nenhuma das suas mensagens, então você pode tentar de novo."
   },
   "uploads": {
     "tooFast": "Quantos arquivos! Espere um minuto e tente de novo.",
@@ -1293,7 +1314,9 @@
             "look": "Rodada {n}: olhando as imagens",
             "scan": "Rodada {n}: lendo o relatório de segurança",
             "retry": "Rodada {n}: descobrindo o que deu errado",
-            "next": "Rodada {n}: decidindo o que fazer agora"
+            "next": "Rodada {n}: decidindo o que fazer agora",
+            "plan": "Rodada {n}: planejando como criar",
+            "planGame": "Rodada {n}: planejando as mudanças"
           },
           "done": {
             "start": "Rodada {n}: leu sua mensagem",
@@ -1301,7 +1324,9 @@
             "look": "Rodada {n}: olhou as imagens",
             "scan": "Rodada {n}: leu o relatório de segurança",
             "retry": "Rodada {n}: descobriu o que deu errado",
-            "next": "Rodada {n}: decidiu o que fazer agora"
+            "next": "Rodada {n}: decidiu o que fazer agora",
+            "plan": "Rodada {n}: planejou como criar",
+            "planGame": "Rodada {n}: planejou as mudanças"
           },
           "learn": {
             "start": "Uma rodada é cada vez que o app pergunta à IA. Ela não se lembra, então o app envia a conversa de novo.",
@@ -1309,7 +1334,8 @@
             "scan": "O programa de segurança diz exatamente o que estava errado, então a IA pode consertar só essa parte.",
             "retry": "Quando uma ferramenta avisa que algo não funcionou, a IA lê o motivo e tenta de outro jeito.",
             "next": "Depois de cada ferramenta, a IA lê o resultado e escolhe o próximo passo. Esse ciclo faz dela um agente.",
-            "thinking": "Antes de responder, esta IA pensa em silêncio, um pouco como quando você resolve algo de cabeça."
+            "thinking": "Antes de responder, esta IA pensa em silêncio, um pouco como quando você resolve algo de cabeça.",
+            "long": "Com ideias grandes, a IA pode levar um ou dois minutos planejando antes de escrever qualquer código. Ela continua mesmo se você sair desta página."
           }
         },
         "write": {
@@ -1379,7 +1405,34 @@
           "h": "A IA pode parecer segura e mesmo assim errar. Por isso um programa de segurança também confere o código.",
           "i": "✨ A qualidade Pro usa uma IA maior que pensa por mais tempo: mais lenta, mas muitas vezes melhor em jogos difíceis.",
           "j": "Sempre jogue seu jogo você mesmo. Até uma IA esperta deixa passar coisas que um jogador de verdade perceberia."
-        }
+        },
+        "leave": "Você pode fechar esta página ou o computador, ou sair da conta. O Construtor Oomba continua trabalhando no nosso servidor, e seu jogo vai estar aqui quando você voltar.",
+        "restart": {
+          "now": "Nosso servidor está reiniciando. Sua criação está salva e deve continuar sozinha",
+          "saved": "Nosso servidor está reiniciando. O que foi feito até agora está salvo",
+          "learn": "Servidores reiniciam de vez em quando, para atualizações ou consertos. O Construtor salva o trabalho antes, então nada se perde."
+        },
+        "resume": {
+          "done": "Continuou depois que o servidor reiniciou",
+          "doneV": "Continuou da versão {v} depois que o servidor reiniciou",
+          "learn": "O Construtor salvou sua mensagem e sua versão mais nova, então ele continua dali em vez de começar do zero."
+        },
+        "stopRestart": "parou porque o servidor reiniciou",
+        "stopTime": "parou: demorou demais"
+      },
+      "resumed": "🔄 O servidor reiniciou, então o Construtor continuou de onde estava.",
+      "resumedV": "🔄 O servidor reiniciou, então o Construtor continuou a partir da versão {v}.",
+      "stopped": {
+        "restart": "O Construtor parou quando nosso servidor reiniciou. Tudo o que ele fez está salvo.",
+        "ai": "O Construtor parou quando nosso servidor reiniciou, e o Construtor de IA está descansando agora. Tudo o que ele fez está salvo."
+      },
+      "continue": "Continuar criando",
+      "continueMessage": "Por favor, continue com a minha última mensagem.",
+      "notCounted": "Esta não gastou nenhuma das suas mensagens.",
+      "signedOutBuilding": "Sua sessão foi encerrada. O Construtor continua trabalhando no seu jogo: entre de novo para ver.",
+      "gameGone": "Este jogo foi apagado, então o Construtor parou.",
+      "followups": {
+        "putBack": "Pôr de volta na caixa de mensagem"
       }
     }
   },

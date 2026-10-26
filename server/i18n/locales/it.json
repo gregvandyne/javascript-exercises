@@ -37,6 +37,12 @@
       "parents": "Per gli adulti",
       "contact": "Contattaci",
       "builders": "Per i creatori"
+    },
+    "build": {
+      "ready": "✨ Il tuo gioco “{title}” è pronto! <a href=\"{href}\">Aprilo</a>",
+      "question": "💬 Il Costruttore ha una domanda su “{title}”. <a href=\"{href}\">Aprilo</a>",
+      "stopped": "⚠️ “{title}” si è fermato prima di essere finito. <a href=\"{href}\">Aprilo per continuare</a>",
+      "many": "✨ Il Costruttore ha novità su alcuni dei tuoi giochi. <a href=\"{href}\">Vai a I miei giochi</a>"
     }
   },
   "nav": {
@@ -158,7 +164,9 @@
       "chat": "Chat",
       "admin": "Admin",
       "favorites": "I miei preferiti",
-      "classes": "Le mie classi"
+      "classes": "Le mie classi",
+      "building": "{count, plural, one {# gioco in costruzione} other {# giochi in costruzione}}",
+      "ready": "{count, plural, one {# gioco pronto} other {# giochi pronti}}"
     },
     "look": {
       "heading": "Scegli il tuo look",
@@ -722,7 +730,13 @@
     "changed": "Modificato {when}",
     "empty": "Tocca «Nuovo gioco» o scegli un modello qui sopra. I tuoi giochi compariranno qui.",
     "rename": "Rinomina",
-    "delete": "Elimina"
+    "delete": "Elimina",
+    "status": {
+      "building": "🛠️ Costruisce…",
+      "ready": "✨ Pronto",
+      "question": "💬 Ha una domanda",
+      "stopped": "⚠️ Fermato"
+    }
   },
   "studio": {
     "title": "Studio: {title}",
@@ -828,7 +842,11 @@
       "pickClass": "Scegli almeno una delle tue classi.",
       "classGone": "Puoi condividere solo con le classi in cui sei adesso.",
       "classRemoved": "L'insegnante ha tolto questo gioco da {name}, quindi non può tornarci.",
-      "updatedNowWaiting": "Aggiornato! Anche la nuova versione aspetta un rapido controllo prima che più persone possano giocare."
+      "updatedNowWaiting": "Aggiornato! Anche la nuova versione aspetta un rapido controllo prima che più persone possano giocare.",
+      "builderWorking": "Il Costruttore sta lavorando a questo gioco proprio adesso. Riprova quando ha finito.",
+      "cantContinue": "Il Costruttore non può più continuare questa costruzione. Manda invece un nuovo messaggio.",
+      "restarting": "Il nostro server si sta riavviando. Riprova tra un attimo.",
+      "liveBusy": "Questo gioco è aperto in troppe schede. Chiudine qualcuna e riprova."
     }
   },
   "publish": {
@@ -853,7 +871,8 @@
       "empty": "Prima scrivi un messaggio o tocca un'idea.",
       "busy": "Il Costruttore sta ancora lavorando al tuo ultimo messaggio. Un attimo!",
       "limit": "Hai usato tutti i {count} messaggi al Costruttore di oggi. Torna domani per averne altri!",
-      "muddled": "Il Costruttore si è confuso. Riprova tra un attimo."
+      "muddled": "Il Costruttore si è confuso. Riprova tra un attimo.",
+      "tooMany": "Hai già 2 giochi in costruzione. Aspetta che uno sia finito, poi riprova."
     },
     "refusals": {
       "tryThese": "Vuoi provare una di queste?",
@@ -950,7 +969,9 @@
         }
       }
     },
-    "budgetResting": "Il Costruttore IA si riposa fino a domani, quindi per ora uso i miei blocchi semplici."
+    "budgetResting": "Il Costruttore IA si riposa fino a domani, quindi per ora uso i miei blocchi semplici.",
+    "turnTimeout": "⏱️ Questa costruzione è durata più del nostro tempo massimo, quindi mi sono fermato. La tua versione più nuova è salvata. Dimmi cosa cambiare adesso!",
+    "turnTimeoutNothing": "⏱️ Questa costruzione è durata più del nostro tempo massimo, quindi mi sono fermato prima di riuscire a salvare qualcosa. Non conta tra i tuoi messaggi di oggi, quindi puoi riprovare."
   },
   "uploads": {
     "tooFast": "Quanti file! Aspetta un minuto e riprova.",
@@ -1293,7 +1314,9 @@
             "look": "Giro {n}: guarda le immagini",
             "scan": "Giro {n}: legge il rapporto di sicurezza",
             "retry": "Giro {n}: capisce cosa non ha funzionato",
-            "next": "Giro {n}: decide cosa fare dopo"
+            "next": "Giro {n}: decide cosa fare dopo",
+            "plan": "Giro {n}: fa un piano per costruirlo",
+            "planGame": "Giro {n}: fa un piano delle modifiche"
           },
           "done": {
             "start": "Giro {n}: ha letto il tuo messaggio",
@@ -1301,7 +1324,9 @@
             "look": "Giro {n}: ha guardato le immagini",
             "scan": "Giro {n}: ha letto il rapporto di sicurezza",
             "retry": "Giro {n}: ha capito cosa non ha funzionato",
-            "next": "Giro {n}: ha deciso cosa fare dopo"
+            "next": "Giro {n}: ha deciso cosa fare dopo",
+            "plan": "Giro {n}: ha fatto un piano per costruirlo",
+            "planGame": "Giro {n}: ha fatto un piano delle modifiche"
           },
           "learn": {
             "start": "Un giro è ogni volta che l’app chiede qualcosa all’IA. L’IA non ricorda nulla, quindi l’app le rimanda la chat.",
@@ -1309,7 +1334,8 @@
             "scan": "Il programma di sicurezza dice esattamente cosa non andava, così l’IA può sistemare solo quella parte.",
             "retry": "Quando uno strumento dice che qualcosa non ha funzionato, l’IA legge il perché e prova in un altro modo.",
             "next": "Dopo ogni strumento, l’IA legge il risultato e sceglie il passo successivo. Questo ciclo la rende un agente.",
-            "thinking": "Prima di rispondere, questa IA pensa in silenzio, un po’ come quando risolvi qualcosa a mente."
+            "thinking": "Prima di rispondere, questa IA pensa in silenzio, un po’ come quando risolvi qualcosa a mente.",
+            "long": "Con le idee grandi, l’IA può metterci un minuto o due a fare un piano prima di scrivere il codice. Continua anche se lasci questa pagina."
           }
         },
         "write": {
@@ -1379,7 +1405,34 @@
           "h": "L’IA può sembrare sicura e sbagliare lo stesso. Per questo anche un programma di sicurezza controlla il codice.",
           "i": "✨ La qualità Pro usa un’IA più grande che pensa più a lungo: più lenta, ma spesso migliore nei giochi difficili.",
           "j": "Gioca sempre al tuo gioco anche tu. Perfino un’IA intelligente non nota cose che un vero giocatore vedrebbe."
-        }
+        },
+        "leave": "Puoi chiudere questa pagina o il computer, oppure uscire. Il Costruttore Oomba continua a lavorare sul nostro server e il tuo gioco sarà qui quando torni.",
+        "restart": {
+          "now": "Il nostro server si sta riavviando. La tua costruzione è salvata e dovrebbe ripartire da sola",
+          "saved": "Il nostro server si sta riavviando. Il lavoro fatto finora è salvato",
+          "learn": "I server si riavviano ogni tanto, per aggiornamenti o correzioni. Il Costruttore salva prima il suo lavoro, così non si perde niente."
+        },
+        "resume": {
+          "done": "Ha continuato dopo il riavvio del server",
+          "doneV": "Ha continuato dalla versione {v} dopo il riavvio del server",
+          "learn": "Il Costruttore ha salvato il tuo messaggio e la tua versione più nuova, quindi riparte da lì invece di ricominciare da capo."
+        },
+        "stopRestart": "fermato da un riavvio del server",
+        "stopTime": "fermato: ci ha messo troppo"
+      },
+      "resumed": "🔄 Il server si è riavviato, quindi il Costruttore ha continuato da dove era rimasto.",
+      "resumedV": "🔄 Il server si è riavviato, quindi il Costruttore ha continuato dalla versione {v}.",
+      "stopped": {
+        "restart": "Il Costruttore si è fermato quando il nostro server si è riavviato. Tutto quello che ha creato è salvato.",
+        "ai": "Il Costruttore si è fermato quando il nostro server si è riavviato, e il Costruttore IA adesso si riposa. Tutto quello che ha creato è salvato."
+      },
+      "continue": "Continua a costruire",
+      "continueMessage": "Continua con il mio ultimo messaggio, per favore.",
+      "notCounted": "Questo non conta tra i tuoi messaggi di oggi.",
+      "signedOutBuilding": "La tua sessione è stata chiusa. Il Costruttore continua a lavorare al tuo gioco: accedi di nuovo per vederlo.",
+      "gameGone": "Questo gioco è stato eliminato, quindi il Costruttore si è fermato.",
+      "followups": {
+        "putBack": "Rimettilo nella casella"
       }
     }
   },
