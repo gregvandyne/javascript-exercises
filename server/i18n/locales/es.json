@@ -1071,11 +1071,6 @@
       "noFullscreen": "La pantalla completa no está permitida aquí.",
       "roundOver": "¡Terminó la ronda! Puntos: {score}",
       "stillWorking": "¡Un momento, el Constructor todavía está trabajando!",
-      "stillFinishing": "El Constructor todavía está terminando tu último mensaje…",
-      "thinking": "El Constructor está pensando",
-      "working": "El Constructor está trabajando…",
-      "building": "Creando tu juego…",
-      "editing": "Haciendo cambios…",
       "noAnswer": "El Constructor no pudo responder. Inténtalo de nuevo, por favor.",
       "signInAgain": "Volver a entrar",
       "dropped": "Uy, se cortó la conexión. Inténtalo de nuevo, por favor.",
@@ -1242,8 +1237,141 @@
         "button": "Actualizar",
         "groupText": "El robot revisor notó algo en esta versión, así que un adulto de nuestro equipo la revisa primero. Mientras tanto, los jugadores siguen con la versión {live}."
       },
-      "reconnecting": "Se cortó la conexión, pero el Constructor sigue trabajando. Espera un poco…",
-      "testing": "Jugando tu juego para revisarlo…"
+      "steps": {
+        "title": "Detrás de escena",
+        "tipsOn": "Consejos: sí",
+        "tipsOff": "Consejos: no",
+        "tipsHint": "Mostrar u ocultar los consejos para aprender",
+        "earlier": "{count, plural, one {# paso anterior} other {# pasos anteriores}}",
+        "hideEarlier": "Ver menos pasos",
+        "showLess": "Ver menos",
+        "sending": "Enviando tu mensaje",
+        "summaryAi": "Cómo lo hizo la IA · {count, plural, one {# paso} other {# pasos}} · {time}",
+        "summaryBlocks": "Cómo lo hicieron los bloques sencillos · {count, plural, one {# paso} other {# pasos}} · {time}",
+        "stopped": "se detuvo antes",
+        "stoppedHere": "Se detuvo aquí",
+        "srDone": "listo",
+        "srNow": "trabajando",
+        "srWarn": "problema",
+        "srPaused": "sin noticias todavía",
+        "planLabel": "Plan:",
+        "thoughtFirst": "primero pensó",
+        "thinkingNow": "pensando",
+        "factLabel": "¿Lo sabías?",
+        "justNow": "Hace un momento:",
+        "tokens": "La IA leyó {read} tokens y escribió {wrote}. Un token es un pedacito de una palabra. El número es grande porque en cada ronda la IA vuelve a leer sus instrucciones, el chat y el juego.",
+        "loopAi": "La IA trabajó en {count, plural, one {# ronda} other {# rondas}}. En cada ronda: leer, pensar, usar una herramienta, revisar y decidir qué sigue.",
+        "loopBlocks": "Los bloques sencillos siguen reglas fijas. El Constructor de IA planea, usa herramientas y revisa su propio trabajo.",
+        "lines": "{count, plural, one {# línea} other {# líneas}}",
+        "edits": "{count, plural, one {# cambio} other {# cambios}}",
+        "pics": "{count, plural, one {# imagen} other {# imágenes}}",
+        "probs": "{count, plural, =0 {ningún problema encontrado} one {# problema encontrado} other {# problemas encontrados}}",
+        "cut": "Era demasiado largo y se cortó",
+        "screen": {
+          "now": "Revisando que tu mensaje sea seguro",
+          "done": "Mensaje revisado",
+          "learn": "Antes de que el Constructor vea tu mensaje, una revisión de seguridad comprueba que sea apto para un sitio de juegos para niños."
+        },
+        "blocks": {
+          "now": "Usando los bloques sencillos",
+          "done": "Usó los bloques sencillos",
+          "learn": "Estos bloques no son IA. Siguen reglas fijas, como buscar ciertas palabras en tu mensaje."
+        },
+        "think": {
+          "now": {
+            "start": "Ronda {n}: leyendo tu mensaje",
+            "startGame": "Ronda {n}: leyendo tu mensaje y tu juego",
+            "look": "Ronda {n}: mirando las imágenes",
+            "scan": "Ronda {n}: leyendo el informe de seguridad",
+            "retry": "Ronda {n}: averiguando qué salió mal",
+            "next": "Ronda {n}: decidiendo qué hacer ahora"
+          },
+          "done": {
+            "start": "Ronda {n}: leyó tu mensaje",
+            "startGame": "Ronda {n}: leyó tu mensaje y tu juego",
+            "look": "Ronda {n}: miró las imágenes",
+            "scan": "Ronda {n}: leyó el informe de seguridad",
+            "retry": "Ronda {n}: averiguó qué salió mal",
+            "next": "Ronda {n}: decidió qué hacer ahora"
+          },
+          "learn": {
+            "start": "Una ronda es cada vez que la app le pregunta a la IA. No recuerda nada, así que la app le vuelve a enviar el chat.",
+            "look": "Esta IA puede leer imágenes, así que revisa las capturas para ver si algo está roto, vacío o desordenado.",
+            "scan": "El programa de seguridad dice exactamente qué estaba mal, así que la IA puede arreglar solo esa parte.",
+            "retry": "Cuando una herramienta dice que algo no funcionó, la IA lee por qué y prueba de otra forma.",
+            "next": "Después de cada herramienta, la IA lee el resultado y elige el siguiente paso. Ese ciclo la convierte en un agente.",
+            "thinking": "Antes de responder, esta IA piensa en silencio, un poco como cuando resuelves algo en tu cabeza."
+          }
+        },
+        "write": {
+          "now": "Escribiendo el código del juego",
+          "done": "Escribió el código del juego",
+          "failed": "Esa versión no funcionó",
+          "learn": "La IA escribe el código de a poquito, y cada vez predice lo que debería venir después."
+        },
+        "edit": {
+          "now": "Cambiando solo las partes necesarias",
+          "done": "Cambió solo las partes necesarias",
+          "failed": "Ese cambio no encajó en el código",
+          "learn": "Para cambios pequeños, la IA reemplaza trozos exactos del código en vez de escribirlo todo otra vez."
+        },
+        "fix": {
+          "now": "Arreglando los problemas que encontró",
+          "done": "Hizo cambios para arreglar los problemas",
+          "learn": "Encontrar y arreglar errores es una parte normal de construir, para las personas y para la IA."
+        },
+        "template": {
+          "done": "Empezó con un mundo 3D ya hecho",
+          "learn": "En vez de escribir todo un mundo 3D desde cero, la IA parte de uno terminado y lo cambia."
+        },
+        "check": {
+          "pass": "Programa de seguridad: todo bien · guardado como versión {v}",
+          "flag": "Programa de seguridad: {k, plural, =1 {una cosa} other {# cosas}} para revisar · guardado como versión {v}",
+          "fail": "El programa de seguridad encontró {k, plural, =1 {un problema} other {# problemas}} · guardado como versión {v}",
+          "learn": "Un programa de seguridad, no una IA, revisa cada versión nueva en busca de código peligroso, porque la IA puede equivocarse."
+        },
+        "name": {
+          "title": "Lo llamó “{title}”",
+          "titleIcon": "Lo llamó “{title}” {icon}",
+          "icon": "Eligió el ícono {icon}",
+          "details": "Completó los datos del juego",
+          "learn": "El Constructor no puede tocar botones, así que usa herramientas: pequeñas órdenes que la app ejecuta por él, como ponerle nombre al juego."
+        },
+        "playtest": {
+          "now": "Jugando tu juego en un teléfono de mentira",
+          "done": "Lo probó en un teléfono de mentira",
+          "failed": "Esta vez no se pudo hacer la prueba",
+          "learn": "La app juega tu juego en un teléfono de mentira, busca errores y toma imágenes para la IA."
+        },
+        "notes": {
+          "done": "Hizo una lista de cosas para probar",
+          "learn": "Aun después de todas estas revisiones, una persona también debe jugar. Esta lista te dice qué probar."
+        },
+        "ask": {
+          "done": "Te hizo una pregunta",
+          "learn": "Cuando el Constructor necesita saber algo, te pregunta y luego espera tu respuesta."
+        },
+        "offline": {
+          "now": "Se perdió la conexión. El Constructor sigue en el servidor",
+          "check": "Se perdió la conexión. Comprobando si el Constructor recibió tu mensaje…",
+          "learn": "Tu juego se construye en nuestra computadora, llamada servidor, no en tu dispositivo, así que sigue adelante."
+        },
+        "waiting": {
+          "now": "El Constructor sigue trabajando en el servidor"
+        },
+        "facts": {
+          "a": "La IA lee y escribe en tokens, que son pedacitos de palabras. Una palabra larga puede ser varios tokens.",
+          "b": "Una IA escribe prediciendo el siguiente token, una y otra vez, muy rápido.",
+          "c": "Si preguntas lo mismo dos veces, puedes recibir otra respuesta, porque la IA elige entre palabras probables.",
+          "d": "En cada ronda, la IA vuelve a leer el chat reciente. Por eso los chats largos usan más tokens.",
+          "e": "Un agente es una IA que usa herramientas en un ciclo. Este Constructor puede hacer hasta 14 rondas por mensaje.",
+          "f": "El Constructor de IA no puede usar internet. Construye con lo que aprendió y con lo que tú le dices.",
+          "g": "Los modelos de IA aprenden patrones de enormes cantidades de textos y código hechos por personas.",
+          "h": "La IA puede sonar segura y aun así equivocarse. Por eso un programa de seguridad también revisa el código.",
+          "i": "✨ La calidad pro usa una IA más grande que piensa por más tiempo: es más lenta, pero a menudo mejor para juegos difíciles.",
+          "j": "Juega siempre tu juego tú mismo. Hasta una IA lista se pierde cosas que un jugador de verdad notaría."
+        }
+      }
     }
   },
   "favorites": {

@@ -1072,11 +1072,6 @@
       "noFullscreen": "Full screen is not allowed here.",
       "roundOver": "Round over! Score: {score}",
       "stillWorking": "One moment, the Builder is still working!",
-      "stillFinishing": "The Builder is still finishing your last message…",
-      "thinking": "The Builder is thinking",
-      "working": "The Builder is working…",
-      "building": "Building your game…",
-      "editing": "Making changes…",
       "noAnswer": "The Builder could not answer. Please try again.",
       "signInAgain": "Sign in again",
       "dropped": "Oops, the connection dropped. Please try again.",
@@ -1243,8 +1238,141 @@
         "notYet": "Not yet",
         "button": "Update"
       },
-      "reconnecting": "The connection dropped, but the Builder is still working. Hang on…",
-      "testing": "Playing your game to check it…"
+      "steps": {
+        "title": "Behind the scenes",
+        "tipsOn": "Tips: on",
+        "tipsOff": "Tips: off",
+        "tipsHint": "Show or hide the learning tips",
+        "earlier": "{count, plural, one {# earlier step} other {# earlier steps}}",
+        "hideEarlier": "Show fewer steps",
+        "showLess": "Show less",
+        "sending": "Sending your message",
+        "summaryAi": "How the AI did this · {count, plural, one {# step} other {# steps}} · {time}",
+        "summaryBlocks": "How the building blocks did this · {count, plural, one {# step} other {# steps}} · {time}",
+        "stopped": "stopped early",
+        "stoppedHere": "Stopped here",
+        "srDone": "done",
+        "srNow": "working on it",
+        "srWarn": "problem",
+        "srPaused": "no news yet",
+        "planLabel": "Plan:",
+        "thoughtFirst": "thought first",
+        "thinkingNow": "thinking",
+        "factLabel": "Did you know?",
+        "justNow": "Just now:",
+        "tokens": "The AI read {read} tokens and wrote {wrote}. A token is a small piece of a word. The number is big because every round, the AI reads its instructions, the chat and the game again.",
+        "loopAi": "The AI worked in {count, plural, one {# round} other {# rounds}}. Each round: read, think, use a tool, check, decide what’s next.",
+        "loopBlocks": "The building blocks follow fixed rules. The AI Builder plans, uses tools and checks its own work.",
+        "lines": "{count, plural, one {# line} other {# lines}}",
+        "edits": "{count, plural, one {# change} other {# changes}}",
+        "pics": "{count, plural, one {# picture} other {# pictures}}",
+        "probs": "{count, plural, =0 {no problems found} one {# problem found} other {# problems found}}",
+        "cut": "It got too long and was cut off",
+        "screen": {
+          "now": "Checking your message is safe",
+          "done": "Checked your message",
+          "learn": "Before the Builder sees your message, a safety check makes sure it’s OK for a kids’ game site."
+        },
+        "blocks": {
+          "now": "Using the simple building blocks",
+          "done": "Used the simple building blocks",
+          "learn": "These building blocks aren’t AI. They follow fixed rules, like spotting certain words in your message."
+        },
+        "think": {
+          "now": {
+            "start": "Round {n}: reading your message",
+            "startGame": "Round {n}: reading your message and your game",
+            "look": "Round {n}: looking at the pictures",
+            "scan": "Round {n}: reading the safety report",
+            "retry": "Round {n}: working out what went wrong",
+            "next": "Round {n}: deciding what to do next"
+          },
+          "done": {
+            "start": "Round {n}: read your message",
+            "startGame": "Round {n}: read your message and your game",
+            "look": "Round {n}: looked at the pictures",
+            "scan": "Round {n}: read the safety report",
+            "retry": "Round {n}: worked out what went wrong",
+            "next": "Round {n}: decided what to do next"
+          },
+          "learn": {
+            "start": "A round is each time the app asks the AI. It doesn’t remember, so the app sends it the chat again.",
+            "look": "This AI can read pictures, so it checks the screenshots for anything broken, blank or messy.",
+            "scan": "The safety program says exactly what was wrong, so the AI can fix just that part.",
+            "retry": "When a tool says something didn’t work, the AI reads why and tries another way.",
+            "next": "After each tool, the AI reads the result and picks the next step. That loop makes it an agent.",
+            "thinking": "Before it answers, this AI thinks quietly first, a bit like working something out in your head."
+          }
+        },
+        "write": {
+          "now": "Writing the game code",
+          "done": "Wrote the game code",
+          "failed": "That version didn’t work out",
+          "learn": "The AI writes code one small piece at a time, each time predicting what should come next."
+        },
+        "edit": {
+          "now": "Changing just the parts that need it",
+          "done": "Changed just the parts that needed it",
+          "failed": "That change didn’t fit the code",
+          "learn": "For small changes, the AI swaps exact bits of the code instead of writing it all again."
+        },
+        "fix": {
+          "now": "Fixing the problems it found",
+          "done": "Made changes to fix the problems",
+          "learn": "Finding and fixing mistakes is a normal part of building, for people and for AI."
+        },
+        "template": {
+          "done": "Started from a ready-made 3D world",
+          "learn": "Instead of writing a whole 3D world from scratch, the AI starts from a finished one and changes it."
+        },
+        "check": {
+          "pass": "Safety program: all clear · saved as version {v}",
+          "flag": "Safety program: {k, plural, =1 {one thing} other {# things}} to look at · saved as version {v}",
+          "fail": "Safety program found {k, plural, =1 {a problem} other {# problems}} · saved as version {v}",
+          "learn": "A safety program, not an AI, checks every new version for unsafe code, because AI can make mistakes."
+        },
+        "name": {
+          "title": "Named it “{title}”",
+          "titleIcon": "Named it “{title}” {icon}",
+          "icon": "Picked the icon {icon}",
+          "details": "Filled in the game details",
+          "learn": "The Builder can’t click buttons, so it uses tools: little commands the app runs for it, like naming the game."
+        },
+        "playtest": {
+          "now": "Playing your game on a pretend phone",
+          "done": "Tested it on a pretend phone",
+          "failed": "Couldn’t run the test this time",
+          "learn": "The app plays your game on a pretend phone, checks for errors and takes pictures for the AI."
+        },
+        "notes": {
+          "done": "Made a checklist for you to try",
+          "learn": "Even after all these checks, a person should play the game too. This list shows what to try."
+        },
+        "ask": {
+          "done": "Asked you a question",
+          "learn": "When the Builder needs to know something, it asks you, then waits for your answer."
+        },
+        "offline": {
+          "now": "Connection lost. The Builder keeps going on the server",
+          "check": "Connection lost. Checking if the Builder got your message…",
+          "learn": "Your game is built on our computer, called a server, not on your device, so it keeps going."
+        },
+        "waiting": {
+          "now": "The Builder is still working on the server"
+        },
+        "facts": {
+          "a": "AI reads and writes in tokens, which are small pieces of words. A long word can be several tokens.",
+          "b": "An AI writes by predicting the next token, again and again, very fast.",
+          "c": "Ask the same thing twice and you may get a different answer, because the AI picks from likely next words.",
+          "d": "Every round, the AI reads the recent chat again. That’s why long chats use more tokens.",
+          "e": "An agent is an AI that uses tools in a loop. This Builder can take up to 14 rounds per message.",
+          "f": "The Builder AI can’t use the internet. It builds from what it learned and what you tell it.",
+          "g": "AI models learn patterns from huge amounts of writing and code made by people.",
+          "h": "AI can sound sure and still be wrong. That’s why a safety program checks the code too.",
+          "i": "✨ Pro quality uses a bigger AI that thinks for longer: slower, but often better at tricky games.",
+          "j": "Always play your game yourself. Even clever AI misses things a real player would notice."
+        }
+      }
     }
   },
   "favorites": {

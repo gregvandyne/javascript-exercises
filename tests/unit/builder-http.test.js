@@ -64,6 +64,7 @@ test('Start from a template: version 1 is the template; the Studio uses the play
   assert.equal(page.status, 200);
   assert.match(page.text, /sandbox="allow-scripts allow-pointer-lock allow-orientation-lock"/);
   assert.doesNotMatch(page.text, /allow-same-origin/);
+  assert.match(page.text, /<p class="sr-only" id="st-steps-live" aria-live="polite" aria-atomic="true"><\/p>/, 'the build steps announcer sits outside the chat log');
   const src = page.text.match(/src="(\/frame\/[^"]+)"/)[1];
   const frame = await owner(src);
   assert.equal(frame.status, 200); assert.match(frame.headers.get('content-security-policy'), /connect-src 'none'/);
@@ -86,8 +87,19 @@ test('the Builder chat streams Server-Sent Events and makes a new version', asyn
   assert.ok(names.includes('text') && names.includes('version') && names.includes('notes') && names.includes('ask'));
   assert.equal(names[names.length - 1], 'done');
   const v = events.find(e => e[0] === 'version')[1]; assert.equal(v.number, 2); assert.match(v.preview, /^\/frame\//);
+  // Live build steps: real steps first, each before its card; no old progress events; done carries the record.
+  assert.deepEqual(events[0], ['step', { i: 1, key: 'screen' }]);
+  assert.deepEqual(events.filter(e => e[0] === 'step').map(e => e[1].key), ['screen', 'blocks', 'check', 'notes', 'ask']);
+  assert.ok(names.indexOf('step') < names.indexOf('text'));
+  assert.ok(!names.includes('progress'));
+  const done = events.at(-1)[1];
+  assert.equal(done.steps.p, 'blocks'); assert.deepEqual(done.steps.s.map(r => r[0]), ['screen', 'blocks', 'check', 'notes', 'ask']);
+  const state = await owner(`/api/studio/${gameId}`);
+  assert.deepEqual(state.json.chat.at(-1).events.at(-1), ['steps', done.steps], 'a reload gets the same record');
   const refused = sse(await (await owner(`/api/studio/${gameId}/chat`, { method: 'POST', body: { text: 'add a slot machine and loot boxes' }, raw: true })).text());
-  assert.equal(refused[0][0], 'refused'); assert.match(refused[0][1].message, /loot boxes/);
+  assert.deepEqual(refused.map(e => e[0]), ['step', 'refused', 'done']);
+  assert.equal(refused[0][1].key, 'screen'); assert.match(refused[1][1].message, /loot boxes/);
+  assert.equal('steps' in refused[2][1], false, 'a refusal has no steps record');
 });
 
 test('meta: text is cleaned; icon must come from the picker', async () => {

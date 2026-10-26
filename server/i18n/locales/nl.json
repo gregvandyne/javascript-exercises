@@ -1072,11 +1072,6 @@
       "noFullscreen": "Volledig scherm mag hier niet.",
       "roundOver": "Ronde voorbij! Score: {score}",
       "stillWorking": "Even geduld, de Bouwer is nog bezig!",
-      "stillFinishing": "De Bouwer is je vorige bericht nog aan het afmaken…",
-      "thinking": "De Bouwer denkt na",
-      "working": "De Bouwer is bezig…",
-      "building": "Je game wordt gebouwd…",
-      "editing": "Veranderingen maken…",
       "noAnswer": "De Bouwer kon geen antwoord geven. Probeer het nog eens.",
       "signInAgain": "Opnieuw inloggen",
       "dropped": "Oeps, de verbinding viel weg. Probeer het nog eens.",
@@ -1243,8 +1238,141 @@
         "button": "Bijwerken",
         "groupText": "De controle-robot zag iets in deze versie, dus een volwassene uit ons team kijkt er eerst naar. Tot die tijd houden spelers versie {live}."
       },
-      "reconnecting": "De verbinding viel weg, maar de Bouwer is nog bezig. Even geduld…",
-      "testing": "Ik speel je game om hem te testen…"
+      "steps": {
+        "title": "Achter de schermen",
+        "tipsOn": "Tips: aan",
+        "tipsOff": "Tips: uit",
+        "tipsHint": "Leertips tonen of verbergen",
+        "earlier": "{count, plural, one {# eerdere stap} other {# eerdere stappen}}",
+        "hideEarlier": "Minder stappen tonen",
+        "showLess": "Minder tonen",
+        "sending": "Je bericht wordt verstuurd",
+        "summaryAi": "Zo deed de AI het · {count, plural, one {# stap} other {# stappen}} · {time}",
+        "summaryBlocks": "Zo deden de simpele bouwblokken het · {count, plural, one {# stap} other {# stappen}} · {time}",
+        "stopped": "eerder gestopt",
+        "stoppedHere": "Hier gestopt",
+        "srDone": "klaar",
+        "srNow": "bezig",
+        "srWarn": "probleem",
+        "srPaused": "nog geen nieuws",
+        "planLabel": "Plan:",
+        "thoughtFirst": "eerst nagedacht",
+        "thinkingNow": "denkt na",
+        "factLabel": "Wist je dat?",
+        "justNow": "Zojuist:",
+        "tokens": "De AI las {read} tokens en schreef er {wrote}. Een token is een klein stukje van een woord. Het getal is groot omdat de AI elke ronde zijn instructies, de chat en de game opnieuw leest.",
+        "loopAi": "De AI werkte in {count, plural, one {# ronde} other {# rondes}}. Elke ronde: lezen, denken, een hulpmiddel gebruiken, controleren, beslissen wat er nu komt.",
+        "loopBlocks": "De simpele bouwblokken volgen vaste regels. De AI-Bouwer maakt een plan, gebruikt hulpmiddelen en controleert zijn eigen werk.",
+        "lines": "{count, plural, one {# regel} other {# regels}}",
+        "edits": "{count, plural, one {# wijziging} other {# wijzigingen}}",
+        "pics": "{count, plural, one {# plaatje} other {# plaatjes}}",
+        "probs": "{count, plural, =0 {geen problemen gevonden} one {# probleem gevonden} other {# problemen gevonden}}",
+        "cut": "Het werd te lang en is afgebroken",
+        "screen": {
+          "now": "Controleren of je bericht veilig is",
+          "done": "Je bericht is gecontroleerd",
+          "learn": "Voordat de Bouwer je bericht ziet, kijkt een veiligheidscheck of het past bij een gamesite voor kinderen."
+        },
+        "blocks": {
+          "now": "De simpele bouwblokken gebruiken",
+          "done": "De simpele bouwblokken gebruikt",
+          "learn": "Deze bouwblokken zijn geen AI. Ze volgen vaste regels, zoals letten op bepaalde woorden in je bericht."
+        },
+        "think": {
+          "now": {
+            "start": "Ronde {n}: leest je bericht",
+            "startGame": "Ronde {n}: leest je bericht en je game",
+            "look": "Ronde {n}: bekijkt de plaatjes",
+            "scan": "Ronde {n}: leest het veiligheidsrapport",
+            "retry": "Ronde {n}: zoekt uit wat er misging",
+            "next": "Ronde {n}: beslist wat er nu moet gebeuren"
+          },
+          "done": {
+            "start": "Ronde {n}: las je bericht",
+            "startGame": "Ronde {n}: las je bericht en je game",
+            "look": "Ronde {n}: bekeek de plaatjes",
+            "scan": "Ronde {n}: las het veiligheidsrapport",
+            "retry": "Ronde {n}: zocht uit wat er misging",
+            "next": "Ronde {n}: besliste wat er nu moest gebeuren"
+          },
+          "learn": {
+            "start": "Een ronde is elke keer dat de app de AI iets vraagt. De AI onthoudt niets, dus de app stuurt de chat steeds opnieuw.",
+            "look": "Deze AI kan plaatjes lezen, dus hij kijkt op de schermafbeeldingen of iets kapot, leeg of rommelig is.",
+            "scan": "Het veiligheidsprogramma zegt precies wat er mis was, zodat de AI alleen dat stukje kan repareren.",
+            "retry": "Als een hulpmiddel zegt dat iets niet lukte, leest de AI waarom en probeert het op een andere manier.",
+            "next": "Na elk hulpmiddel leest de AI het resultaat en kiest de volgende stap. Door die lus is het een agent.",
+            "thinking": "Voordat hij antwoordt, denkt deze AI eerst stil na, een beetje zoals jij iets in je hoofd uitrekent."
+          }
+        },
+        "write": {
+          "now": "De gamecode schrijven",
+          "done": "De gamecode geschreven",
+          "failed": "Die versie lukte niet",
+          "learn": "De AI schrijft code stukje voor stukje en voorspelt steeds wat er daarna moet komen."
+        },
+        "edit": {
+          "now": "Alleen de nodige stukjes veranderen",
+          "done": "Alleen de nodige stukjes veranderd",
+          "failed": "Die wijziging paste niet in de code",
+          "learn": "Bij kleine wijzigingen vervangt de AI precies bepaalde stukjes code, in plaats van alles opnieuw te schrijven."
+        },
+        "fix": {
+          "now": "De gevonden problemen oplossen",
+          "done": "Wijzigingen gemaakt om de problemen op te lossen",
+          "learn": "Fouten vinden en oplossen hoort gewoon bij bouwen, voor mensen en voor AI."
+        },
+        "template": {
+          "done": "Begonnen met een kant-en-klare 3D-wereld",
+          "learn": "In plaats van een hele 3D-wereld vanaf nul te schrijven, begint de AI met een kant-en-klare en past die aan."
+        },
+        "check": {
+          "pass": "Veiligheidsprogramma: alles in orde · bewaard als versie {v}",
+          "flag": "Veiligheidsprogramma: {k, plural, =1 {één ding} other {# dingen}} om naar te kijken · bewaard als versie {v}",
+          "fail": "Veiligheidsprogramma vond {k, plural, =1 {een probleem} other {# problemen}} · bewaard als versie {v}",
+          "learn": "Een veiligheidsprogramma, geen AI, controleert elke nieuwe versie op onveilige code, want AI kan fouten maken."
+        },
+        "name": {
+          "title": "Noemde het “{title}”",
+          "titleIcon": "Noemde het “{title}” {icon}",
+          "icon": "Koos het icoon {icon}",
+          "details": "Vulde de gamegegevens in",
+          "learn": "De Bouwer kan niet op knoppen klikken, dus gebruikt hij hulpmiddelen: kleine opdrachten die de app voor hem uitvoert, zoals de game een naam geven."
+        },
+        "playtest": {
+          "now": "Je game spelen op een nep-telefoon",
+          "done": "Getest op een nep-telefoon",
+          "failed": "De test kon deze keer niet draaien",
+          "learn": "De app speelt je game op een nep-telefoon, zoekt naar fouten en maakt plaatjes voor de AI."
+        },
+        "notes": {
+          "done": "Een lijstje gemaakt om uit te proberen",
+          "learn": "Ook na al deze checks moet een mens de game spelen. Dit lijstje laat zien wat je kunt proberen."
+        },
+        "ask": {
+          "done": "Je een vraag gesteld",
+          "learn": "Als de Bouwer iets moet weten, vraagt hij het je en wacht dan op je antwoord."
+        },
+        "offline": {
+          "now": "Verbinding kwijt. De Bouwer gaat door op de server",
+          "check": "Verbinding kwijt. We kijken of de Bouwer je bericht heeft gekregen…",
+          "learn": "Je game wordt gebouwd op onze computer, de server, niet op jouw apparaat, dus het gaat gewoon door."
+        },
+        "waiting": {
+          "now": "De Bouwer is nog bezig op de server"
+        },
+        "facts": {
+          "a": "AI leest en schrijft in tokens: kleine stukjes van woorden. Een lang woord kan uit meerdere tokens bestaan.",
+          "b": "Een AI schrijft door steeds het volgende token te voorspellen, heel snel achter elkaar.",
+          "c": "Vraag twee keer hetzelfde en je krijgt misschien een ander antwoord, want de AI kiest uit waarschijnlijke woorden.",
+          "d": "Elke ronde leest de AI het laatste stuk van de chat opnieuw. Daarom gebruiken lange chats meer tokens.",
+          "e": "Een agent is een AI die hulpmiddelen in een lus gebruikt. Deze Bouwer kan tot 14 rondes per bericht doen.",
+          "f": "De AI-Bouwer kan niet op internet. Hij bouwt met wat hij geleerd heeft en wat jij hem vertelt.",
+          "g": "AI-modellen leren patronen uit enorm veel teksten en code die door mensen zijn gemaakt.",
+          "h": "AI kan heel zeker klinken en toch fout zitten. Daarom controleert een veiligheidsprogramma de code ook.",
+          "i": "✨ Pro-kwaliteit gebruikt een grotere AI die langer nadenkt: langzamer, maar vaak beter bij lastige games.",
+          "j": "Speel je game altijd zelf. Zelfs een slimme AI mist dingen die een echte speler zou zien."
+        }
+      }
     }
   },
   "favorites": {
