@@ -1461,7 +1461,7 @@
         "readingAi": "De AI leest het nu",
         "readAi": "De AI heeft dit gelezen",
         "readBlocks": "De Bouwer heeft dit gelezen",
-        "nextBuild": "Hiermee gaat de Bouwer daarna weer aan de slag",
+        "nextBuild": "Hiermee gaat de Bouwer daarna verder",
         "failed": "Versturen lukte niet.",
         "retry": "Opnieuw proberen",
         "putBack": "Zet het terug in het vak",
@@ -1474,7 +1474,7 @@
         "gotAi": "{count, plural, one {Je bericht is binnen. De AI leest het na deze stap.} other {Je # berichten zijn binnen. De AI leest ze na deze stap.}}",
         "gotBlocks": "{count, plural, one {Je bericht is binnen. De Bouwer leest het na deze stap.} other {Je # berichten zijn binnen. De Bouwer leest ze na deze stap.}}",
         "writingNow": "Hij schrijft nu code, dus dat maakt hij eerst af.",
-        "turnNote": "Extra berichten terwijl de Bouwer bezig is, tellen niet mee. Is de Bouwer al klaar, dan gaat hij met je bericht opnieuw aan de slag en telt het als 1 bericht.",
+        "turnNote": "Extra berichten terwijl de Bouwer bezig is, tellen niet mee. Is de Bouwer al klaar, dan begint hij met je bericht een nieuwe bouw en telt het als 1 bericht.",
         "noUploadsHint": "Voeg plaatjes toe na het bouwen",
         "announceRead": "De Bouwer leest je nieuwe bericht",
         "carriedNote": "Je bericht zette de Bouwer opnieuw aan het werk (telt als 1 bericht)"

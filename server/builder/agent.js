@@ -10,7 +10,7 @@ import * as games from '../services/games.js';
 import { audit, tx, today } from '../db.js';
 import { config } from '../config.js';
 import { screenInput } from './screen.js';
-import { takeTurn, turnsLeft } from './usage.js';
+import { takeTurn, turnsLeft, allowanceFor } from './usage.js';
 import { loadChat, appendChat } from './chat.js';
 import { toolbox } from './tools.js';
 import { takeForTurn } from './uploads.js';
@@ -78,15 +78,17 @@ export async function executeTurn(job, { user, game, text = '', pro = false, wan
     //    message is durable (a restart carries the build on).
     name = provider || providerName(); const day = today();
     const taken = tx(() => {
-      if (!takeTurn(user.id, day)) return null;
+      const charge = takeTurn(user, day, { pro: !!pro });
+      if (!charge) return null;
       const ups = takeForTurn(game.id, wanted.map(u => u.id));
       appendChat(game.id, user.id, [{ role: 'user', text, at: Date.now(), uploads: ups.map(uploadMeta), turn: job.id }]);
       job.base = turns.newestVersion(game.id);
-      turns.markRunning(job.id, { chargedDay: day, provider: providerKind(name), attempt: 1, baseVersion: job.base });
+      turns.markRunning(job.id, { chargedDay: day, provider: providerKind(name), attempt: 1, baseVersion: job.base, chargedTo: charge.source, weight: charge.weight });
+      job.pool = charge.pool;
       return ups;
     });
     if (!taken) {
-      emit('error', { message: t('builder.errors.limit', { count: config.builderDailyTurns }), code: 'limit' });
+      emit('error', { message: t('builder.errors.limit', { count: allowanceFor(user).daily }), code: 'limit' });
       return endUncharged(job, 'limit');
     }
     uploads = taken; job.attempt = 1; job.phase = 'running'; job.resolveScreened(true);
@@ -109,10 +111,15 @@ export async function executeTurn(job, { user, game, text = '', pro = false, wan
   const carry = resume || (continueOf ? { versions: turns.versionsSince(game.id, continueOf.base_version), original: continueOf.request.text, cont: true } : null);
   let usage = { tokensIn: 0, tokensOut: 0, model: name };
   job.usage = usage;
+  // Each model call's cost (US dollars) goes on the row as soon as it is paid (turns.addCost), so a crash, a hand-off
+  // or a call that finishes after the backstop closed the build loses nothing. A resumed attempt pays from the pool
+  // its message was charged to (only 'free' exists today).
+  job.pool = job.pool || allowanceFor(user).pool;
   try {
     usage = { ...usage, ...(await PROVIDERS[name].run({
       user, game, text, pro: !!pro, history, uploads, state, tools: tb, emit, steps, signal: job.ac.signal, locale, t,
       between: (round, o) => runner.between(job, round, o), settle: () => runner.settle(job), pending: () => job.waiting.length,
+      pool: job.pool, cost: usd => { try { turns.addCost(job.id, usd); } catch { /* the database is closing */ } },
       resume: carry, maxRounds,
     })) };
   } catch (e) {

@@ -21,7 +21,7 @@ import { restingUntil } from '../builder/anthropic.js';
 import { isBusy, cancel as cancelBuild, life as builderLife, submit, publicTurn, lastTurn } from '../builder/runner.js';
 import * as live from '../builder/live.js';
 import * as turns from '../builder/turns.js';
-import { turnsLeft, dailyTurns } from '../builder/usage.js';
+import { turnsLeft, allowanceFor } from '../builder/usage.js';
 import { loadChat } from '../builder/chat.js';
 import { previewUrl } from '../builder/tools.js';
 import { saveUpload, getUpload, deleteUpload, readUploadBytes, listUploads, LIMITS, UploadError } from '../builder/uploads.js';
@@ -85,7 +85,7 @@ export function studioState(user, gameId, t = tEn) {
     pending: g.pending_version_id ? { number: num(g.pending_version_id), id: g.pending_version_id, visibility: g.pending_visibility || 'public' } : null,
     preview: cur ? previewUrl(cur, g, user.id, t.locale) : null,
     chat: chat.messages,
-    turnsLeft: turnsLeft(user.id), dailyTurns: dailyTurns(), provider: providerName(), resting: restingUntil(), busy: isBusy(g.id),
+    turnsLeft: turnsLeft(user), dailyTurns: allowanceFor(user).daily, provider: providerName(), resting: restingUntil(), busy: isBusy(g.id),
     // The running build as this viewer sees it (its message and what it said so far), and how the last one ended.
     turn: publicTurn(g.id, user), lastTurn: lastTurn(g.id, user),
     shareText: shareText(t), shareUrl: `/g/${g.slug}`, shareOptions: sharingOptions(getUser(g.owner_id)), classShare: classShare(g, g.owner_id),

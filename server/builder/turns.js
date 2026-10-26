@@ -19,14 +19,18 @@ export const lastEnded = gameId => row(q.get(`SELECT * FROM builder_turns WHERE 
 export const hasNewer = (gameId, r) => !!q.get('SELECT 1 FROM builder_turns WHERE game_id=? AND id!=? AND (created_at>? OR (created_at=? AND rowid>(SELECT rowid FROM builder_turns WHERE id=?)))', gameId, r.id, r.created_at, r.created_at, r.id);
 
 /** Insert a row. Throws when the game already has an unfinished build (unique index builder_turns_one_live). */
-export function create({ id = uid(16), gameId, userId, status = 'queued', request = {}, locale = 'en', pro = false, chain = 0, attempt = 0, chargedDay = null, provider = '', baseVersion = null, startedAt = null }) {
-  q.run('INSERT INTO builder_turns(id, game_id, user_id, status, request, locale, pro, chain, attempt, charged_day, provider, base_version, created_at, started_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
-    id, gameId, userId, status, JSON.stringify(request || {}), locale, pro ? 1 : 0, chain, attempt, chargedDay, provider, baseVersion, now(), startedAt);
+export function create({ id = uid(16), gameId, userId, status = 'queued', request = {}, locale = 'en', pro = false, chain = 0, attempt = 0, chargedDay = null, provider = '', baseVersion = null, startedAt = null, chargedTo = 'free', weight = 1 }) {
+  // A row created already charged (a follow-up build, runner.carryOver) is measured from the start, like markRunning.
+  q.run('INSERT INTO builder_turns(id, game_id, user_id, status, request, locale, pro, chain, attempt, charged_day, provider, base_version, created_at, started_at, charged_to, weight, usd_known) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+    id, gameId, userId, status, JSON.stringify(request || {}), locale, pro ? 1 : 0, chain, attempt, chargedDay, provider, baseVersion, now(), startedAt, chargedTo, weight, chargedDay ? 1 : 0);
   return get(id);
 }
-/** Screened and charged: the provider starts (the same transaction as the charge and the user entry, agent.js). */
-export function markRunning(id, { chargedDay, provider, attempt = 1, baseVersion = null, startedAt = now() }) {
-  q.run("UPDATE builder_turns SET status='running', charged_day=?, provider=?, attempt=?, base_version=?, started_at=? WHERE id=?", chargedDay, provider, attempt, baseVersion, startedAt, id);
+/** Screened and charged: the provider starts (the same transaction as the charge and the user entry, agent.js).
+ *  chargedTo / weight: the allowance source that paid and the turns it used (usage.takeTurn). From here the row's
+ *  cost is measured (usd_known). */
+export function markRunning(id, { chargedDay, provider, attempt = 1, baseVersion = null, startedAt = now(), chargedTo = 'free', weight = 1 }) {
+  q.run("UPDATE builder_turns SET status='running', charged_day=?, provider=?, attempt=?, base_version=?, started_at=?, charged_to=?, weight=?, usd_known=1 WHERE id=?",
+    chargedDay, provider, attempt, baseVersion, startedAt, chargedTo, weight, id);
 }
 /** One more go at this row, written before it runs, so a crash during the run still counts (runner.recover). */
 export const bump = id => q.run('UPDATE builder_turns SET attempt=attempt+1 WHERE id=?', id);
@@ -36,18 +40,23 @@ export const resumeRow = (id, provider) => q.run("UPDATE builder_turns SET statu
 export function interrupt(id, { durationMs = 0, modelCalls = 0, versions = 0 } = {}) {
   q.run("UPDATE builder_turns SET status='interrupted', end_reason='restart', duration_ms=?, model_calls=model_calls+?, versions=? WHERE id=?", durationMs, modelCalls, versions, id);
 }
-/** The build ended. model_calls adds up over attempts (a resume gets the rounds that are left). */
+/** One model call of this build was paid (US dollars): written at once, so a crash, a hand-off or a call that ends
+ *  after the build was closed keeps every cost, added up over attempts. */
+export const addCost = (id, usd) => { if (+usd > 0) q.run('UPDATE builder_turns SET usd=usd+? WHERE id=?', +usd, id); };
+/** The build ended. model_calls adds up over attempts (a resume gets the rounds that are left); the cost is written
+ *  per call (addCost). */
 export function finish(id, { status, end, versions = 0, modelCalls = 0, tokensIn = 0, tokensOut = 0, durationMs = 0, canContinue = 0 }) {
   q.run('UPDATE builder_turns SET status=?, end_reason=?, versions=?, model_calls=model_calls+?, tokens_in=tokens_in+?, tokens_out=tokens_out+?, duration_ms=?, can_continue=?, ended_at=? WHERE id=?',
     status, end, versions, modelCalls, tokensIn, tokensOut, durationMs, canContinue ? 1 : 0, now(), id);
 }
 export const setContinue = (id, on) => q.run('UPDATE builder_turns SET can_continue=? WHERE id=?', on ? 1 : 0, id);
-/** Give the build's turn back, once (idempotent; uses the day it was charged to). -> true when it gave one back now. */
+/** Give the build's turns back, once (idempotent; the day and the weight it was charged with, to the source that paid:
+ *  only 'free' exists today). -> true when it gave them back now. */
 export function refund(id) {
   return tx(() => {
-    const r = q.get('SELECT user_id, charged_day, refunded FROM builder_turns WHERE id=?', id);
+    const r = q.get('SELECT user_id, charged_day, refunded, weight FROM builder_turns WHERE id=?', id);
     if (!r || r.refunded || !r.charged_day) return false;
-    refundTurn(r.user_id, r.charged_day);
+    refundTurn(r.user_id, r.charged_day, r.weight);
     q.run('UPDATE builder_turns SET refunded=1 WHERE id=?', id);
     return true;
   });

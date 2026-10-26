@@ -30,7 +30,7 @@ import * as eta from './eta.js';
 import { stepRecorder } from './steps.js';
 import { previewUrl } from './tools.js';
 import { restingUntil } from './anthropic.js';
-import { turnsLeft, takeTurn } from './usage.js';
+import { turnsLeft, takeTurn, allowanceFor } from './usage.js';
 import { loadChat, appendChat, updateChat } from './chat.js';
 import { getUpload, LIMITS as UPLOADS } from './uploads.js';
 import { MAX_STEPS } from './claude.js';
@@ -148,7 +148,7 @@ function begin({ user, game, text, pro, wanted, cid, continueOf, t, provider, co
   if (until) return { status: 503, body: { error: t('builder.errors.resting'), code: 'resting', resting: { until } }, code: 'resting' };
   // No turns left today: said before anything is stored, so the page puts the message back in the box (the charge
   // itself is still checked when screening passes). The streamed POST keeps its old order: screening first.
-  if (!compat && turnsLeft(user.id) <= 0) return err(429, 'builder.errors.limit', 'limit', { count: config.builderDailyTurns });
+  if (!compat && turnsLeft(user) <= 0) return err(429, 'builder.errors.limit', 'limit', { count: allowanceFor(user).daily });
   // 4. "Carry on building": only the game's last build, only when it offers it, only once.
   let orig = null;
   if (continueOf) {
@@ -345,10 +345,12 @@ function carryOver(job) {
   let row = null;
   if (!why) {
     const day = today();
-    row = tx(() => (takeTurn(job.userId, day)
-      ? turns.create({ gameId: job.gameId, userId: job.userId, status: 'running', request: { followUpIds: [...ids] }, locale: job.locale, pro: job.pro,
-        chain: job.chain + 1, attempt: 1, chargedDay: day, provider: job.provider, baseVersion: turns.newestVersion(job.gameId), startedAt: Date.now() })
-      : null));
+    row = tx(() => {
+      const charge = takeTurn(job.userId, day, { pro: !!job.pro });
+      return charge ? turns.create({ gameId: job.gameId, userId: job.userId, status: 'running', request: { followUpIds: [...ids] }, locale: job.locale, pro: job.pro,
+        chain: job.chain + 1, attempt: 1, chargedDay: day, provider: job.provider, baseVersion: turns.newestVersion(job.gameId), startedAt: Date.now(),
+        chargedTo: charge.source, weight: charge.weight }) : null;
+    });
     if (!row) why = 'limit';
   }
   const clear = { round: undefined, readTurn: undefined, by: undefined };

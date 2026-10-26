@@ -101,12 +101,15 @@ export const config = {
   builderModel: process.env.BUILDER_MODEL || 'claude-sonnet-5-5',
   builderProModel: process.env.BUILDER_PRO_MODEL || 'claude-opus-5-5',
   builderDailyTurns: num(process.env.BUILDER_DAILY_TURNS, 60),
+  // Turns one "Pro quality" message uses (server/builder/usage.js). 1 = the same as a normal message (today); paid
+  // plans set 2 (docs/decisions.md "Paid plans", D5). Whole numbers from 1 to 10.
+  proTurnWeight: Math.min(10, Math.max(1, Math.floor(num(process.env.PRO_TURN_WEIGHT, 1)) || 1)),
   builderMaxTokens: num(process.env.BUILDER_MAX_TOKENS, 64000),   // the models think first: room for thinking plus a whole game
   // Hard cap on one Builder build attempt (server/builder/runner.js): it is stopped after this long, whoever watches.
   builderTurnMaxMs: Math.max(1, num(process.env.BUILDER_TURN_MAX_SECONDS, 1200)) * 1000,
   // AI spending cap in US dollars (see server/services/ai-budget.js). Calls stop once either is reached.
   aiDailyBudgetUsd: posNum(process.env.AI_DAILY_BUDGET_USD, 5),
-  aiMonthlyBudgetUsd: posNum(process.env.AI_MONTHLY_BUDGET_USD, 50),
+  aiMonthlyBudgetUsd: posNum(process.env.AI_MONTHLY_BUDGET_USD, 150),
   // Headless Chromium for game screenshots (cover pictures, Builder playtests). On in production; BRB_SNAPSHOTS=1/0 forces it.
   snapshots: process.env.BRB_SNAPSHOTS ? process.env.BRB_SNAPSHOTS === '1' : (process.env.NODE_ENV || 'development') === 'production',
   // BRB_SNAPSHOTS=0 turns screenshots off even when SNAPSHOT_URL names a worker.

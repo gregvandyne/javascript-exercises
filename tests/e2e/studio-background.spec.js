@@ -11,6 +11,9 @@ import { spawn, execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { signup, login, uniq, ADMIN } from './helpers.js';
 
+/** "Usually less than a minute" as the given language writes it. */
+const etaUnder = lang => JSON.parse(fs.readFileSync(new URL(`../../server/i18n/locales/${lang}.json`, import.meta.url), 'utf8')).js.studio.eta.under;
+
 const PORT = +(process.env.E2E_BG_PORT || 5914);
 const BG = `http://localhost:${PORT}`;
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
@@ -218,9 +221,9 @@ test('BG-12 right to left at 360 px: the live card with the estimate and the lea
     await page.context().clearCookies();   // a new builder for each language
     await newGame(page, lang);
     await startBuild(page);
-    // This server's building blocks are slow (0.9 s a chunk): their own timing says less than a minute.
+    // This server's building blocks are slow (0.9 s a chunk): their own timing says less than a minute, in this language.
     const line = live(page).locator('.stp-eta-line');
-    await expect(line).toContainText('less than a minute', { timeout: 12_000 });
+    await expect(line).toContainText(etaUnder(lang), { timeout: 12_000 });
     await expect(live(page).locator('.stp-leave')).toBeVisible();
     await noOverflow(page);
     for (const sel of ['.stp-eta-line', '.stp-leave']) {

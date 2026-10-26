@@ -122,32 +122,42 @@ export async function run(ctx) {
     const authorRow = new Map();   // tool_use id -> its write/edit/fix row, so results mark the right row later
     let building = null, thought = false;
     let answering = false;
-    for await (const ev of stream) {
-      // The first event means the AI has read everything and is now working on its answer: the round is no longer
-      // "reading", it is planning (a big new game can take a minute or two here before any code appears).
-      if (!answering && steps.current() === 'think') { answering = true; steps.info({ a: 1 }); }
-      if (ev.type === 'content_block_start' && ev.content_block) {
-        const cb = ev.content_block; building = null;
-        // A thinking block really streamed (its text is never read or shown): the round is "thinking it through".
-        if ((cb.type === 'thinking' || cb.type === 'redacted_thinking') && !thought && steps.current() === 'think') { thought = true; steps.info({ th: 1 }); }
-        else if (cb.type === 'tool_use' && AUTHORING[cb.name]) {
-          const via = AUTHORING[cb.name];
-          const key = prev.fixing ? 'fix' : via;
-          building = { via, i: steps.start(key, key === 'fix' ? { via } : {}), scan: inputScanner(), plan: null, n: 0, sent: 0, at: 0 };
-          if (cb.id) authorRow.set(cb.id, building);
+    let streamed = 0;   // characters of text, thinking and tool input received, for the cost of a cut-off round
+    let msg;
+    try {
+      for await (const ev of stream) {
+        // The first event means the AI has read everything and is now working on its answer: the round is no longer
+        // "reading", it is planning (a big new game can take a minute or two here before any code appears).
+        if (!answering && steps.current() === 'think') { answering = true; steps.info({ a: 1 }); }
+        if (ev.type === 'content_block_start' && ev.content_block) {
+          const cb = ev.content_block; building = null;
+          // A thinking block really streamed (its text is never read or shown): the round is "thinking it through".
+          if ((cb.type === 'thinking' || cb.type === 'redacted_thinking') && !thought && steps.current() === 'think') { thought = true; steps.info({ th: 1 }); }
+          else if (cb.type === 'tool_use' && AUTHORING[cb.name]) {
+            const via = AUTHORING[cb.name];
+            const key = prev.fixing ? 'fix' : via;
+            building = { via, i: steps.start(key, key === 'fix' ? { via } : {}), scan: inputScanner(), plan: null, n: 0, sent: 0, at: 0 };
+            if (cb.id) authorRow.set(cb.id, building);
+          }
+        } else if (ev.type === 'content_block_delta') {
+          streamed += (ev.delta.text || ev.delta.thinking || ev.delta.partial_json || '').length;
+          if (ev.delta.type === 'text_delta') ctx.emit('text', { text: ev.delta.text });
+          else if (ev.delta.type === 'input_json_delta' && building) liveInput(steps, building, ev.delta.partial_json);
+        } else if (ev.type === 'content_block_stop') {
+          if (building && building.n !== building.sent) steps.info({ [building.via === 'write' ? 'l' : 'e']: building.n }, building.i);
+          building = null;
         }
-      } else if (ev.type === 'content_block_delta') {
-        if (ev.delta.type === 'text_delta') ctx.emit('text', { text: ev.delta.text });
-        else if (ev.delta.type === 'input_json_delta' && building) liveInput(steps, building, ev.delta.partial_json);
-      } else if (ev.type === 'content_block_stop') {
-        if (building && building.n !== building.sent) steps.info({ [building.via === 'write' ? 'l' : 'e']: building.n }, building.i);
-        building = null;
       }
+      msg = await stream.finalMessage();
+    } catch (e) {
+      // The round was cut off (time cap, stop, delete, ban, hand-off, a broken stream): it was still paid for.
+      payCutOff(stream, model, streamed, ctx);
+      throw e;
     }
-    const msg = await stream.finalMessage();
     if (ctx.settle) ctx.settle();   // the model answered this request
     const u = msg.usage || {};
-    aiBudget.recordUsage(msg.model || model, u);
+    const usd = aiBudget.recordUsage(msg.model || model, u, undefined, ctx.pool || 'free');
+    if (ctx.cost) ctx.cost(usd);   // the build's own cost (builder_turns.usd, /admin/stats cost per message)
     tokensIn += (u.input_tokens || 0) + (u.cache_read_input_tokens || 0) + (u.cache_creation_input_tokens || 0);
     tokensOut += u.output_tokens || 0;
     if (msg.stop_reason === 'refusal') { ctx.emit('text', { text: (step ? '\n\n' : '') + t('builder.kindRefusal') }); break; }
@@ -199,6 +209,23 @@ export async function run(ctx) {
     messages.push({ role: 'user', content: results });
   }
   return { model, tokensIn, tokensOut };
+}
+
+/**
+ * The cost of a round whose stream ended before the final message: its input and cache tokens came with the first
+ * event; the output count only comes at the end, so it is estimated from what streamed (about 4 characters a token).
+ * Nothing streamed at all: nothing is known, nothing is recorded. Never throws (the caller rethrows the real error).
+ */
+export function payCutOff(stream, model, chars, ctx) {
+  try {
+    // A message that arrived whole just before the stop has its real counts; else the one still streaming.
+    const m = stream && (stream.currentMessage || (stream.receivedMessages || []).at(-1));
+    if (!m || !m.usage) return 0;
+    const u = { ...m.usage, output_tokens: Math.max(m.usage.output_tokens || 0, Math.ceil(chars / 4)) };
+    const usd = aiBudget.recordUsage(m.model || model, u, undefined, ctx.pool || 'free');
+    if (ctx.cost) ctx.cost(usd);
+    return usd;
+  } catch { return 0; }
 }
 
 /** Streamed write/edit input -> the row's plan (sent as soon as it is complete) and a throttled lines/changes count. */

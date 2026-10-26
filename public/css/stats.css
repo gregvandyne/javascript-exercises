@@ -36,3 +36,9 @@
 .chart-sum:empty::before{content:"\00a0"}
 .stats-grid .tbl th,.stats-grid .tbl td:not(:first-child){white-space:nowrap}
 @media (max-width:520px){.stats-grid .tbl{font-size:.88rem}.stats-grid .tbl th,.stats-grid .tbl td{padding:8px 6px}}
+/* Cost per Builder message: the table under its tiles. */
+.kpis+.stats-cost{margin-top:16px}
+.stats-cost>*+*{margin-top:12px}
+.stats-cost>:last-child{margin-bottom:0}
+.stats-cost .tbl th,.stats-cost .tbl td:not(:first-child){white-space:nowrap}
+@media (max-width:520px){.stats-cost .tbl{font-size:.88rem}.stats-cost .tbl th,.stats-cost .tbl td{padding:8px 6px}}
