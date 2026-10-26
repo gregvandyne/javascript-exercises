@@ -64,6 +64,12 @@
       "heading": "Oomba Academy はあたらしいおうちにおひっこし中です",
       "text": "あと数分でもどります。ゲームとセーブデータはだいじょうぶです。"
     },
+    "moved": {
+      "title": "おひっこししました！",
+      "heading": "Oomba Academy のアドレスがかわりました",
+      "text": "{site} へ いどうしています…",
+      "link": "{site} へすすむ"
+    },
     "api": {
       "notFound": "見つかりません",
       "tooBig": "大きすぎます。",
@@ -108,6 +114,7 @@
       "introSignup": "たのしい名前とパスワードだけでOK。メールアドレスはいりません。",
       "introLogin": "Oomba Academyの名前とパスワードでログインしてください。",
       "signedOut": "ログアウトしました。つづけるには、もう一度ログインしてください。",
+      "moved": "Oomba Academy のアドレスが {site} にかわりました。もう一度ログインしてください。",
       "upgradeNotice": "いまは<b>{name}</b>としてあそんでいます。ほぞんしたものは、ぜんぶそのままつかえます。",
       "nameLabelSignup": "たのしい名前をきめよう",
       "nameLabelLogin": "Oomba Academyの名前",
@@ -966,7 +973,8 @@
       "draftKept": "入力した文字はのこしてあります。",
       "close": "とじる",
       "playing": "{n}人プレイ中",
-      "justNow": "たった今"
+      "justNow": "たった今",
+      "copied": "コピーしました！"
     },
     "game": {
       "needSignIn": "「ゲストであそぶ」をタップするか、先にログインしてください。",
@@ -1899,6 +1907,184 @@
       "sentAgo": "{when}におくりました",
       "feedback": "先生から",
       "readNoFeedback": "先生がきみのこたえを見ました。"
+    }
+  },
+  "google": {
+    "button": {
+      "signIn": "Googleでログイン",
+      "hint": "学校のGoogleアカウント用です（Chromebookなど）。"
+    },
+    "login": {
+      "orName": "または、Oomba Academyの名前でログイン",
+      "joinLink": "クラスコードをもっていますか？ {link}",
+      "joinLinkText": "クラスに入る"
+    },
+    "errors": {
+      "expired": "じかんがかかりすぎました。もう一度ためしてください。",
+      "denied": "Googleでログインできませんでした。「キャンセル」をおした場合は、もう一度ためしてね。学校でつかっている？ 学校がさきにOomba Academyをオンにする必要があるかもしれません。先生に聞いてください。",
+      "schoolBlocked": "あなたの学校では、まだGoogleログインでOomba Academyがつかえるようになっていません。この画面を学校のGoogle管理者に見せてもらうよう、先生にたのんでください。",
+      "unknown": "このGoogleアカウントは、まだ登録されていません。学校でつかっている？ 先生に招待してもらうか、クラスコードを聞いてください。たのしい名前でアカウントをつくることもできます。",
+      "joinNoWay": "このGoogleアカウントでは、そのコードでクラスに入れません。コードをたしかめるか、先生に招待してもらってください。",
+      "schoolOnly": "ここでつなげられるのは、学校のGoogleアカウントだけです。",
+      "wrongDomain": "そのGoogleアカウントは、あなたの学校のものではありません。学校のアカウントをえらんで、もう一度ためしてください。",
+      "inUse": "そのGoogleアカウントは、ほかのOomba Academyアカウントにもうつながっています。",
+      "alreadyLinked": "このアカウントには、もうGoogleアカウントがつながっています。さきに連携を解除してください。",
+      "unverified": "このアカウントのメールアドレスは、まだGoogleで確認されていないので、つかえません。",
+      "schoolOff": "いま、あなたの学校ではGoogleログインがオフになっています。ログインカードをつかうか、先生に聞いてください。",
+      "googleDown": "いまGoogleにつながりませんでした。1分くらいしてから、もう一度ためしてください。",
+      "browser": "このアプリの中では、Googleログインはつかえません。Chromeなどのブラウザでサイトをひらいてください。",
+      "notSetUp": "Googleログインの設定がまだ正しくできていません。おとなの人に知らせてもらってね。",
+      "tooManyJoins": "このクラスに、いまたくさんの人が入ったところです。少したってから、もう一度ためしてください。",
+      "setupLink": "学校がすること"
+    },
+    "me": {
+      "heading": "Googleでログイン",
+      "textStaff": "Googleアカウントを連携すると、ワンタップでログインできます。パスワードもそのままつかえます。",
+      "textStudent": "学校のGoogleアカウントをつなげると、Chromebookでワンタップでログインできます。パスワードもそのままつかえます。",
+      "password": "パスワード（本人かたしかめるため）",
+      "connect": "Googleをつなげる",
+      "connected": "{email} とつながっています",
+      "connectedHint": "Googleでも、パスワードでもログインできます。",
+      "connectedToast": "Googleとつながりました 🎉",
+      "disconnect": "Googleの連携を解除",
+      "disconnectConfirm": "Googleの連携を解除しますか？ これからはOomba Academyの名前とパスワードでログインします。",
+      "disconnectedToast": "Googleの連携を解除しました",
+      "schoolAccount": "このアカウントのGoogleログインは、先生がかんりしています。",
+      "needCard": "このアカウントはGoogleでしかログインできません。連携を解除する前に、学校管理者にログインカードをもらってください。",
+      "noPasswordStaff": "Googleでログインしているので、変更するパスワードはありません。パスワードが必要になったときは、学校管理者からログインカードを受け取れます。",
+      "noPasswordStudent": "Googleでログインしています。ログインカードが必要になったら、先生に聞いてください。"
+    },
+    "join": {
+      "title": "クラスに入る",
+      "heading": "クラスに入る",
+      "intro": "先生にもらったクラスコードを入力してください。",
+      "codeLabel": "クラスコード",
+      "next": "つぎへ",
+      "codeIs": "クラスコード {code}",
+      "change": "かえる",
+      "how": "学校ではどうやってログインしている？",
+      "googleHint": "学校のChromebook？ 学校のGoogleアカウントをつかってね。",
+      "card": "🪪 ログインカードかOomba Academyのアカウントをもっている",
+      "signup": "まだアカウントがない？ {link}",
+      "signupLink": "たのしい名前でつくろう",
+      "joinButton": "✅ クラスに入る",
+      "badCode": "クラスコードではないみたいです。ABC123のように、英字と数字の6文字です。"
+    },
+    "invites": {
+      "heading": "学校のGoogleアカウントで招待",
+      "text": "生徒の学校のメールアドレスを1行に1つずつ貼り付けてください。カンマのあとに名前を追加することもできます。生徒がGoogleでログインすると、このクラスに参加します。",
+      "label": "学校のメールアドレス",
+      "placeholder": "hanako.yamada@{domain}, 山田 花子",
+      "placeholderOne": "name@{domain}",
+      "hint": "{domains} のアドレスのみ。このクラスにすでにいる生徒と名前が一致した場合は、新しいアカウントを作らず、その生徒のアカウントに連携します。",
+      "submit": "➕ 招待",
+      "none": "学校のメールアドレスを1つ以上貼り付けてください。",
+      "badLines": "何も追加されませんでした。次の行を修正してください：{lines}",
+      "notEmail": "「{line}」はメールアドレスではありません",
+      "notSchool": "{email} は {domains} のアドレスではありません",
+      "tooMany": "一度に追加できるのは100件までです。",
+      "tooManyOpen": "このクラスには未処理の招待が多すぎます。先に古い招待を削除してください。",
+      "ambiguous": "このクラスには「{name}」という名前の生徒が複数います。生徒リストから1人ずつ連携してください。",
+      "ownAccount": "{name}さんは自分のOomba Academyアカウントを使っています。本人がマイページでGoogleを連携できます。",
+      "noDomains": "学校のGoogleドメインがまだ追加されていません。",
+      "resultInvited": "{count}人を招待しました",
+      "resultConnected": "{count}人はクラスにいる生徒と連携されます",
+      "resultRenewed": "{count}件を更新しました",
+      "resultAlready": "{count}人はすでにクラスにいます",
+      "listHeading": "招待（{count}）",
+      "waiting": "⏳ 待機中 · {date}まで",
+      "joined": "✅ @{username} として参加",
+      "expired": "⌛ 期限切れ",
+      "connectsTo": "@{username} に連携",
+      "renew": "更新",
+      "renewed": "招待を30日間延長しました",
+      "revoke": "削除",
+      "revokeConfirm": "{email} への招待を削除しますか？",
+      "revoked": "招待を削除しました",
+      "noDomainsAdmin": "学校のGoogleアカウントで生徒を招待するには、まず{link}で学校のGoogleドメインを追加してください。",
+      "noDomainsTeacher": "学校のGoogleアカウントで生徒を招待するには、まず学校管理者が学校の設定で学校のGoogleドメインを追加する必要があります。",
+      "settingsLink": "学校の設定",
+      "howTo": "そのあと、クラスに「サイトをひらいて『Googleでログイン』をおしてね」と伝えてください。",
+      "setupLink": "学校でGoogleログインがブロックされていますか？",
+      "attachWaiting": "このアドレスは、ここにある既存のアカウントとの連携を待っています。先にその招待を削除してください。"
+    },
+    "attach": {
+      "heading": "学校のGoogleアカウントを連携",
+      "label": "{name}さんの学校のGoogleメールアドレス",
+      "placeholder": "name@school.ed.jp",
+      "connect": "連携",
+      "saved": "保存しました。次にそのGoogleアカウントでログインしたときに連携されます。",
+      "remove": "Googleログインを解除",
+      "removeConfirm": "{name}さんのGoogleログインを解除しますか？ まだパスワードがない場合は、その人のログインカードが発行されます。",
+      "removed": "Googleログインを解除しました",
+      "notConnected": "このアカウントにはGoogleログインが設定されていません。",
+      "notSchoolAccount": "ここで連携できるのは、この学校の学校アカウントだけです。"
+    },
+    "roster": {
+      "connected": "Google：{email}",
+      "waiting": "Google：待機中（{email}）"
+    },
+    "classJoin": {
+      "isOff": "{domains} のGoogleアカウントを持つ生徒は、まだこのコードで参加できません。",
+      "isOn": "✅ {domains} のGoogleアカウントを持つ生徒は、このコードで参加できます。",
+      "turnOn": "Googleでの参加を許可",
+      "turnOff": "オフにする",
+      "onToast": "生徒は学校のGoogleアカウントとこのコードで参加できるようになりました。",
+      "offToast": "Googleとこのコードでの参加をオフにしました。",
+      "address": "生徒は {url} にアクセスしてコードを入力します。"
+    },
+    "staff": {
+      "heading": "学校のGoogleアカウントで教職員を招待",
+      "text": "そのGoogleアカウントで初めてログインしたときに、教員または学校管理者として参加します。メールは送信されません。",
+      "email": "学校のGoogleメールアドレス",
+      "submit": "➕ 招待",
+      "saved": "招待を保存しました。{name}さんはGoogleでログインすると「{role}」として参加します。"
+    },
+    "settings": {
+      "heading": "Googleでログイン",
+      "text": "学校のGoogle Workspaceドメインを追加すると、生徒と教職員が学校のGoogleアカウントでログインできるようになります（Chromebookなど）。空欄のままにすると、Googleログインはオフのままです。",
+      "label": "学校のGoogleドメイン",
+      "placeholder": "school.ed.jp, students.school.ed.jp",
+      "hint": "複数ある場合はカンマで区切ってください。生徒が別のドメイン（students.school.ed.jpなど）を使っている場合は、そのドメインも追加してください。",
+      "badDomain": "「{value}」は school.ed.jp のようなドメインではありません",
+      "personalDomain": "{value} は個人向けのメールサービスです。学校のGoogle Workspaceドメインを使ってください。",
+      "tooManyDomains": "ドメインは{max}個までです。",
+      "lostAccounts": "保存しました。Googleでログインしている{count}件のアカウントがこのリストの対象外になったため、ログインカードが必要になります。",
+      "trustHeading": "生徒がログインできるようにする（Google管理者向け）",
+      "forward": "IT管理者に送れるページ",
+      "domainTaken": "{value} はすでに Oomba Academy の別の学校で使われています。あなたの学校のドメインであれば、お問い合わせください。"
+    },
+    "setup": {
+      "title": "学校向け Googleでログイン",
+      "heading": "学校向け Googleでログイン",
+      "copy": "コピー",
+      "what": {
+        "h": "概要",
+        "p1": "生徒と教職員は、学校のGoogleアカウントでOomba Academyにログインできます（Chromebookなど）。Oomba AcademyがGoogleに求めるのは、ログインに必要な基本情報（アカウントの名前とメールアドレス）だけです。"
+      },
+      "turnOn": {
+        "h": "学校で有効にする",
+        "p1": "学校管理者が、学校の「設定」タブで学校のGoogle Workspaceドメインを追加します。追加するまでは、その学校のだれもGoogleログインを使えません。"
+      },
+      "trust": {
+        "h": "生徒がログインできるようにする",
+        "p1": "Googleでは、18歳未満の生徒がアプリを使えるのは、学校のGoogle管理者が許可した場合だけです。許可されていないと「アクセスをブロック」と表示されます。Google管理者は、次の手順でOomba Academyを許可できます（メニュー名は多少異なる場合があります）。"
+      },
+      "step1": "管理者としてGoogle管理コンソール（admin.google.com）にログインします。",
+      "step2": "［セキュリティ］→［アクセスとデータ管理］→［API の制御］→［サードパーティ製アプリのアクセスを管理］に移動します。",
+      "step3": "アプリを追加し、次のクライアントIDを検索します：{id}",
+      "step4": "生徒（と教職員）がいる組織部門を選び、［信頼できる］または［制限付き］を選択して保存します。",
+      "step5": "または、18歳未満のユーザーに対して、Googleログインに必要な基本情報のみをリクエストするアプリへのアクセスを許可します。",
+      "step6": "反映されるまで少し時間がかかることがあります。そのあと、生徒にもう一度「Googleでログイン」を試してもらってください。",
+      "invite": {
+        "h": "生徒を招待する",
+        "p1": "クラスの「生徒」タブで、生徒の学校のメールアドレスを貼り付けます。生徒がそのGoogleアカウントでログインすると、クラスに参加します。メールは送信されません。",
+        "p2": "または、クラスコードの横にある「Googleでの参加」をオンにします。学校のGoogleアカウントを持つ生徒は、コードを入力するとすぐに参加できます。"
+      },
+      "privacy": {
+        "h": "プライバシー",
+        "p1": "Googleアカウントが連携されている間、ログイン時に識別するため、そのアカウントのID、メールアドレス、学校のドメインを保存します。Googleのプロフィール写真は保存せず、生徒のGoogle上の名前をゲームサイトに表示することもありません。また、このアカウントを使ってGoogleからほかの情報を読み取ることもありません。"
+      }
     }
   }
 }

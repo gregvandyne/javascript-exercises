@@ -15,6 +15,7 @@ import { teacherLessonsPanel, studentLessonsPanel } from './lessons.js';
 import * as P from '../services/progress.js';
 import * as games from '../services/games.js';
 import { siteHost } from '../site.js';
+import { cardsHook, classInvitesPanel, classGoogleJoin, googleRosterInfo, googleRosterLine, googleRowMenu, schoolGoogleSettings, staffGoogleInvites } from './google.js';
 
 export const router = Router();
 const CSS = raw(`<link rel="stylesheet" href="/css/community.css?v=${VERSION}"><link rel="stylesheet" href="/css/schools.css?v=${VERSION}">`);
@@ -69,6 +70,7 @@ function keepCards(by, cards, { schoolId, classId = null, back = classId ? 'clas
   CARDS.set(k, { by: by.id, schoolId, classId, back, cards, skipped, exp: Date.now() + 30 * 60e3 });
   return k;
 }
+cardsHook.keep = keepCards; // Google sign-in removal prints a login card (routes/google.js)
 const card = (r, role = null) => ({ name: r.rosterName || r.user.display_name, username: r.username, password: r.password, role: role && role !== 'student' ? role : null });
 
 /** Typed names that exactly match a student who already has an account at the school (so we don't make a second one). */
@@ -173,18 +175,20 @@ function classLinks(t, rows, student) {
   if (!rows || !rows.length) return html`<span class="muted">${t('school.people.noClass')}</span>`;
   return rows.map((c, i) => html`${i ? ', ' : ''}<a href="/class/${c.id}${student ? '?tab=students' : ''}">${c.name}</a>`);
 }
-function personRow(t, s, p, me, classes) {
+function personRow(req, s, p, me, classes, ginfo) {
+  const t = req.t;
   const mine = p.id === me.id; const student = p.role === 'student';
   const second = student
     ? html`<form class="inline" data-api="/api/schools/${s.id}/members/${p.id}" data-reload data-toast="${t('school.settings.saved')}"><label class="sr-only" for="g-${p.id}">${t('school.people.grade')}</label><input class="input input-sm" id="g-${p.id}" name="grade" value="${p.grade}" maxlength="12" placeholder="${t('school.people.grade')}"><button class="btn btn-sm" type="submit">${t('school.save')}</button></form>`
     : mine ? html`<span>${t('school.people.you', { role: t(`school.roles.${p.role}`) })}</span>`
       : html`<form class="inline" data-api="/api/schools/${s.id}/members/${p.id}" data-reload data-toast="${t('school.settings.saved')}"><label class="sr-only" for="r-${p.id}">${t('school.people.role')}</label><select class="input input-sm" id="r-${p.id}" name="role">${['teacher', 'admin'].map(r => html`<option value="${r}" ${selected(p.role === r)}>${t(`school.roles.${r}`)}</option>`)}</select><button class="btn btn-sm" type="submit">${t('school.save')}</button></form>`;
-  return html`<tr><td><span class="pp">${avatar(p, 32)}<span><b>${nameOf(p)}</b><span class="small muted"><bdi>@${p.username}</bdi> · ${p.managed_school === s.id ? t('school.people.schoolAccount') : t('school.people.ownAccount')}</span></span></span></td>
+  return html`<tr><td><span class="pp">${avatar(p, 32)}<span><b>${nameOf(p)}</b><span class="small muted"><bdi>@${p.username}</bdi> · ${p.managed_school === s.id ? t('school.people.schoolAccount') : t('school.people.ownAccount')}</span>${googleRosterLine(req, ginfo, p)}</span></span></td>
     <td class="edit">${second}</td>
     <td data-label="${t('school.class.classes')}">${classLinks(t, classes[p.id], student)}</td>
     <td class="tacts"><div class="acts">
       ${p.managed_school === s.id && !mine ? html`<form data-api="/api/schools/${s.id}/members/${p.id}/password" data-confirm="${t('school.people.resetConfirm', { name: nameOf(p) })}"><button class="btn btn-sm" type="submit">🔑 ${t('school.people.reset')}</button></form>` : ''}
       ${mine ? '' : html`<details class="inline-menu"><summary class="btn btn-sm" aria-label="${t('school.moreFor', { name: nameOf(p) })}">⋯</summary><div class="menu">
+        ${googleRowMenu(req, ginfo, p, { s, connectApi: `/api/schools/${s.id}/members/${p.id}/google`, removeApi: `/api/schools/${s.id}/members/${p.id}/google/remove` })}
         <form data-api="/api/schools/${s.id}/members/${p.id}/remove" data-reload data-confirm="${t('school.people.removeConfirm', { name: nameOf(p) })}"><button class="btn btn-sm btn-danger" type="submit">${t('school.people.remove')}</button></form></div></details>`}
     </div></td></tr>`;
 }
@@ -193,7 +197,8 @@ function schoolPeople(req, s) {
   // Students who aren't in a class yet come first: they are the ones who still need placing.
   const students = S.members(s.id, 'student').map((p, i) => ({ p, i, placed: classes[p.id] ? 1 : 0 })).sort((a, z) => a.placed - z.placed || a.i - z.i).map(x => x.p);
   const live = S.classesOfSchool(s.id);
-  const table = (rows, second, empty) => rows.length ? html`<div class="panel tblwrap"><table class="tbl rtable people"><thead><tr><th>${t('school.people.name')}</th><th>${second}</th><th>${t('school.class.classes')}</th><th><span class="sr-only">${t('school.actions')}</span></th></tr></thead><tbody>${rows.map(p => personRow(t, s, p, req.user, classes))}</tbody></table></div>` : html`<p class="muted">${empty}</p>`;
+  const ginfo = googleRosterInfo([...staff, ...students].map(p => p.id));
+  const table = (rows, second, empty) => rows.length ? html`<div class="panel tblwrap"><table class="tbl rtable people"><thead><tr><th>${t('school.people.name')}</th><th>${second}</th><th>${t('school.class.classes')}</th><th><span class="sr-only">${t('school.actions')}</span></th></tr></thead><tbody>${rows.map(p => personRow(req, s, p, req.user, classes, ginfo))}</tbody></table></div>` : html`<p class="muted">${empty}</p>`;
   return html`
   ${req.query.new && !staff.some(p => p.role === 'admin') ? html`<p class="notice good">👋 ${t('school.people.newSchool')}</p>` : ''}
   <h2 class="sec-h">🍎 ${t('school.people.staff')}</h2>
@@ -209,6 +214,7 @@ function schoolPeople(req, s) {
       <div class="field" data-account="existing"><label for="st-u">${t('school.people.existing')}</label><input class="input" id="st-u" name="username" maxlength="16" dir="ltr" autocomplete="off" placeholder="${t('school.people.existingPlaceholder')}"><span class="err" id="st-u-err"></span></div>
       <div class="formacts"><button class="btn btn-primary" type="submit" data-new="🪪 ${t('school.people.createStaff')}" data-existing="➕ ${t('school.people.addToSchool')}">🪪 ${t('school.people.createStaff')}</button></div>
     </form></section>
+  ${staffGoogleInvites(req, s)}
   <h2 class="sec-h">👩‍🎓 ${t('school.people.students')}</h2>
   ${table(students, t('school.people.grade'), t('school.people.noStudents'))}
   <section class="panel"><h3>➕ ${t('school.people.addStudents')}</h3>
@@ -236,7 +242,8 @@ function schoolSettings(req, s) {
     <div class="field"><label for="set-publishing">${t('school.settings.publishing')}</label><select class="input" id="set-publishing" name="publishing" aria-describedby="set-publishing-hint"><option value="school" ${selected(st.publishing === 'school')}>${t('school.settings.publishSchool')}</option><option value="public" ${selected(st.publishing === 'public')}>${t('school.settings.publishPublic')}</option></select><span class="hint" id="set-publishing-hint">${t('school.settings.publishingHint')}</span></div>
     <p class="small muted">${t('school.settings.photos')}</p>
     <div><button class="btn btn-primary" type="submit">${t('school.save')}</button></div>
-  </form></section>`;
+  </form></section>
+  ${schoolGoogleSettings(req, s)}`;
 }
 
 // ---- school page APIs
@@ -395,13 +402,15 @@ function requestsPanel(req, c, s, people) {
       </form>
     </li>`)}</ul></section>`;
 }
-function studentRow(t, c, s, p, others) {
-  return html`<tr><td><span class="pp">${avatar(p, 30)}<b>${nameOf(p)}</b></span></td><td data-label="${t('school.cards.username')}"><bdi>@${p.username}</bdi> <span class="small muted">· ${p.managed_school === s.id ? t('school.people.schoolAccount') : t('school.people.ownAccount')}</span></td><td data-label="${t('school.people.grade')}">${p.grade || '–'}</td>
+function studentRow(req, c, s, p, others, ginfo) {
+  const t = req.t;
+  return html`<tr><td><span class="pp">${avatar(p, 30)}<span><b>${nameOf(p)}</b>${googleRosterLine(req, ginfo, p)}</span></span></td><td data-label="${t('school.cards.username')}"><bdi>@${p.username}</bdi> <span class="small muted">· ${p.managed_school === s.id ? t('school.people.schoolAccount') : t('school.people.ownAccount')}</span></td><td data-label="${t('school.people.grade')}">${p.grade || '–'}</td>
     <td class="tacts"><div class="acts">
       ${p.managed_school === s.id ? html`<form data-api="/api/classes/${c.id}/students/${p.id}/password" data-confirm="${t('school.people.resetConfirm', { name: nameOf(p) })}"><button class="btn btn-sm" type="submit">🔑 ${t('school.people.reset')}</button></form>` : ''}
       <details class="inline-menu"><summary class="btn btn-sm" aria-label="${t('school.moreFor', { name: nameOf(p) })}">⋯</summary><div class="menu">
         ${others.length ? html`<span class="lbl" aria-hidden="true">${t('school.class.moveTo')}</span>
         <form class="row" data-api="/api/classes/${c.id}/students/${p.id}/move" data-reload data-confirm="${t('school.class.moveConfirm', { name: nameOf(p) })}"><select class="input input-sm grow" name="to" required aria-label="${t('school.class.moveTo')}"><option value="">${t('school.class.moveChoose')}</option>${others.map(o => html`<option value="${o.id}">${o.name}</option>`)}</select><button class="btn btn-sm" type="submit">${t('school.class.move')}</button></form>` : ''}
+        ${googleRowMenu(req, ginfo, p, { s, connectApi: `/api/classes/${c.id}/students/${p.id}/google`, removeApi: `/api/classes/${c.id}/students/${p.id}/google/remove` })}
         <form data-api="/api/classes/${c.id}/students/${p.id}/remove" data-reload data-confirm="${t('school.class.removeConfirm', { name: nameOf(p) })}"><button class="btn btn-sm btn-danger" type="submit">${t('school.class.removeStudent')}</button></form>
       </div></details>
     </div></td></tr>`;
@@ -439,15 +448,17 @@ function teacherClass(req, res, c) {
   const schoolStaff = S.members(s.id, 'staff').filter(p => !inClass.has(p.id));
   const cardable = students.filter(p => p.managed_school === s.id).length;
   const manager = S.canManageSchool(req.user, s.id);
+  const ginfo = googleRosterInfo(students.map(p => p.id));
 
   const studentsTab = html`
   ${requestsPanel(req, c, s, people)}
   ${students.length ? html`<section class="panel" aria-labelledby="stu-h"><div class="panelhead"><h2 id="stu-h">👩‍🎓 ${t('school.class.studentsN', { count: students.length })}</h2>
       ${cardable ? html`<form data-api="/api/classes/${c.id}/cards" data-confirm="${t('school.class.reprintConfirm', { count: cardable })}"><button class="btn btn-sm" type="submit">🪪 ${t('school.class.reprint')}</button></form>` : ''}</div>
     <div class="tblwrap"><table class="tbl rtable roster"><thead><tr><th>${t('school.people.name')}</th><th>${t('school.cards.username')}</th><th>${t('school.people.grade')}</th><th><span class="sr-only">${t('school.actions')}</span></th></tr></thead><tbody>
-      ${students.map(p => studentRow(t, c, s, p, others))}
+      ${students.map(p => studentRow(req, c, s, p, others, ginfo))}
     </tbody></table></div></section>`
     : emptyState({ emoji: '👩‍🎓', title: t('school.class.noStudents'), text: `${t('school.class.noStudentsText')}${st.allowOwnAccounts ? ` ${t('school.class.noStudentsCode')}` : ''}` })}
+  ${classInvitesPanel(req, c, s)}
   <section class="panel"><h2>🪪 ${t('school.class.newAccounts')}</h2>
     <form class="formgrid" data-api="/api/classes/${c.id}/students" novalidate>
       <div class="field wide"><label for="as-n">${t('school.people.names')}</label><textarea class="input" id="as-n" name="names" rows="4" required placeholder="${t('school.people.namesPlaceholder')}"></textarea><span class="err" id="as-n-err"></span><span class="hint">${t('school.class.newAccountsHint')}</span></div>
@@ -463,7 +474,8 @@ function teacherClass(req, res, c) {
     </form></details>` : ''}
   <section class="panel joincode"><div><h2>🔑 ${t('school.class.joinCode')}</h2><p class="small muted">${st.allowOwnAccounts ? t('school.class.joinCodeTextOn', { school: s.name }) : t('school.class.joinCodeTextOff', { school: s.name })}</p></div>
     <div class="jc-code" dir="ltr">${c.join_code}</div>
-    <form data-api="/api/classes/${c.id}/code" data-reload data-confirm="${t('school.class.newCodeConfirm')}"><button class="btn btn-sm" type="submit">🔄 ${t('school.class.newCode')}</button></form></section>`;
+    <form data-api="/api/classes/${c.id}/code" data-reload data-confirm="${t('school.class.newCodeConfirm')}"><button class="btn btn-sm" type="submit">🔄 ${t('school.class.newCode')}</button></form>
+    ${classGoogleJoin(req, c, s)}</section>`;
 
   const admins = S.members(s.id, 'staff').filter(p => p.role === 'admin').map(nameOf).join(', ');
   const iTeach = teachers.some(p => p.id === req.user.id);

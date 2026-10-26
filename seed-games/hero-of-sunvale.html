@@ -10,7 +10,7 @@ html,body{height:100%;overflow:hidden;background:#9fd8ff;touch-action:none;user-
 body{margin:0;font-family:var(--font);color:var(--ink)}
 #view{position:fixed;inset:0;width:100%;height:100%;display:block;outline:none}
 button{font-family:inherit;cursor:pointer;color:inherit}
-button:focus-visible{outline:4px solid #fff;outline-offset:2px;box-shadow:0 0 0 7px var(--blue)}
+button:focus-visible{outline:4px solid var(--blue)!important;outline-offset:3px}
 kbd{display:inline-block;min-width:26px;padding:3px 7px;border-radius:8px;background:var(--ink);color:#fff;font:800 15px/1.2 var(--font);text-align:center}
 .fade{position:fixed;inset:0;background:#10142a;opacity:0;pointer-events:none;transition:opacity .25s linear;z-index:30}
 .fade.on{opacity:1}
@@ -474,7 +474,7 @@ const I18N = {
     'water.deep':'Brr! Too deep. Find the bridge!', 'shop.h':'Potion Shop', 'shop.buy':'Buy', 'shop.price':'{n} coins', 'shop.poor':'Not enough coins.', 'shop.bought':'Bought {item}!',
     'ko.h':'Whoops! You got knocked out!', 'ko.back':'Back to the waystone…', 'help.h':'Want a helping hand?',
     'help.text':'Get 2 Heart Potions, a Shield Potion and gentler foes for this battle.', 'help.yes':'Yes, please!', 'help.no':"No thanks, I've got this!",
-    'boss.name':'Lord Snarlwick & Cinder', 'boss.p1':'The Sky Rider', 'boss.p2':'Dragon Stomp', 'boss.p3':"Snarlwick's Tantrum", 'boss.swing':'Swing!',
+    'boss.name':'Lord Snarlwick & Cinder', 'boss.p1':'The Sky Rider', 'boss.p2':'Dragon Stomp', 'boss.p3':"Snarlwick's Tantrum", 'boss.swing':'Swing!', 'boss.hitHere':'Hit the crystal!', 'score.label':'hero points', 'tip.stump':'Bounce on the red mushroom to get up the stump!',
     'sw.intro':'Mwah-ha-ha! Welcome to my gloomy home, tiny hero!', 'sw.ride':'Cinder, my scaly sofa! Toast them a little!',
     'sw.ouch':'Ow! My magnificent mustache!', 'sw.angry':'Stop being so… HEROIC!', 'sw.p3':"Fine! I'll do it myself!", 'sw.lose':'No! My beautiful gloom!',
     'sw.end':'Fine. FINE! But I am NOT dancing at your silly festival.',
@@ -513,7 +513,7 @@ const I18N = {
     'd.oakley.3':'You saved the courtyard! The Queen is waiting in the keep.', 'd.queen.idle':'Sunvale is proud of you, hero.', 'd.queen.4':'You brought my Marigold home! Thank you, hero of Sunvale.',
     'd.marigold.idle':'Cinder snores like a happy kettle. Shh!', 'd.chief.idle':'No more grumbling for me! Only singing now. La la la!',
     'd.plum.2':'You climbed the Sunflower Tower! You are the bravest climber in Meadowbrook.', 'd.bo.done':'That gear looks shiny on you, hero!',
-    'd.door.open':'The gloom dome popped! The door to the Throne Courtyard is open.', 'd.snarl.idle':'Hmph. The festival is... a tiny bit fun. Do not tell anyone.',
+    'd.door.open':'The gloom dome popped! The door to the Throne Courtyard is open.', 'd.snarl.idle':'Hmph. The festival is... a tiny bit fun. Just a TINY bit!',
     'hint.m1':'Granny Fern wants to see you practise in her garden.', 'hint.m2':'Farmer Tilly needs help at Sunny Farm, to the east.', 'hint.m3':"Farmer Tilly's sheep ran away. Look around the farm!",
     'hint.m4':'Ranger Ivy lives in Whisperwood Forest, to the west.', 'hint.m5':'The Grumblin camp is deep in Whisperwood Forest.', 'hint.m6':'Carpenter Hazel lives by the crossroads, north of the village.',
     'hint.m7':'Riverbend Village is across the bridge, to the east.', 'hint.m8':'Sunvale Castle is across the bridge, to the west.', 'hint.m9':'Frostpeak Pass climbs the snowy mountains to the north.',
@@ -701,7 +701,9 @@ function readSave() { const s = store.get(CONFIG.saveKey); return s && typeof s 
 const S = { screen: 'loading', ready: false, paused: false, manual: false, simTime: 0, frames: 0, fps: 0, quality: COARSE ? 1 : 0, qualityPinned: null,
   lost: false, zone: null, zoneT: 0, prompt: null, popping: 0, popTo: null, building: 0, playSec: 0, autosave: 0, gloom: 0, coverMode: false };
 const canvas = $('view');
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: (devicePixelRatio || 1) < 1.5, powerPreference: 'high-performance' });
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: (devicePixelRatio || 1) < 1.5 && (navigator.hardwareConcurrency || 4) > 4, powerPreference: 'high-performance' });
+/** Drawing with the processor instead of a graphics chip (no GPU, or it is blocked): start at the lightest level. */
+const SOFTWARE_GL = (() => { try { const gl = renderer.getContext(), ext = gl.getExtension('WEBGL_debug_renderer_info'); return /SwiftShader|llvmpipe|softpipe|Software|Basic Render/i.test(String(ext ? gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) : '')); } catch (e) { return false; } })();
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFShadowMap;
 const scene = new THREE.Scene();
@@ -760,6 +762,8 @@ function setQuality(i, pin) {
   if (changed) GAME.emit('quality', i);
 }
 const perfW = { t0: 0, n: 0, worst: 0, skip: 1, good: 0, upDone: false };
+/** The automatic level this device settled on, so the next visit starts there instead of at High. */
+function rememberLevel() { if (S.qualityPinned === null && SET.autoLevel !== S.quality) { SET.autoLevel = S.quality; try { saveSettings(); } catch (e) { /* ignore */ } } }
 function watchFps(now, dt) {
   if (!perfW.t0) { perfW.t0 = now; perfW.n = 0; perfW.worst = 0; return; }
   perfW.n++; perfW.worst = Math.max(perfW.worst, dt);
@@ -771,9 +775,9 @@ function watchFps(now, dt) {
   S.fps = fps;
   if (S.qualityPinned !== null || S.screen !== 'play' || UI.blocking()) return;
   if (perfW.skip > 0) { perfW.skip--; return; }     // the first seconds compile shaders
-  if (S.quality < CONFIG.levels.length - 1 && (fps < 20 || (fps < 45 && !stalled))) { setQuality(S.quality + 1); perfW.skip = 1; perfW.good = 0; return; }
+  if (S.quality < CONFIG.levels.length - 1 && (fps < 20 || (fps < 45 && !stalled))) { setQuality(S.quality + (fps < 15 ? 2 : 1)); perfW.skip = 1; perfW.good = 0; rememberLevel(); return; }
   // Step back up once, after 20 s of smooth frames.
-  if (!perfW.upDone && S.quality > 0 && fps > 58) { perfW.good += elapsed; if (perfW.good > 20000) { perfW.upDone = true; perfW.good = 0; setQuality(S.quality - 1); perfW.skip = 1; } }
+  if (!perfW.upDone && S.quality > 0 && fps > 58) { perfW.good += elapsed; if (perfW.good > 20000) { perfW.upDone = true; perfW.good = 0; setQuality(S.quality - 1); perfW.skip = 1; rememberLevel(); } }
   else perfW.good = 0;
 }
 
@@ -1327,6 +1331,13 @@ function solidAt(x, y, z) {
   for (let i = 0; i < cs.length; i++) { const c = cs[i]; if (c.enabled && y >= c.bottom && y <= c.top && c.kind !== 'soft' && insideXZ(c, x, z, 0.25)) return true; }
   return false;
 }
+/** Thin things (fence posts, trunks, barrels, rails) never pull the camera into the hero's face. */
+const thinCol = c => c.kind === 'rail' || (c.t === 0 ? c.r < 0.7 : Math.min(c.hx, c.hz) < 0.6);
+function camSolidAt(x, y, z) {
+  const cs = queryCols(x, z, 0.3);
+  for (let i = 0; i < cs.length; i++) { const c = cs[i]; if (c.enabled && y >= c.bottom && y <= c.top && c.kind !== 'soft' && !thinCol(c) && insideXZ(c, x, z, 0.25)) return true; }
+  return false;
+}
 
 /* ==== 7b. LANDMARKS ==== */
 // Every zone is one Kit (1-2 draw calls), shown only within camera.far + its radius. Moving parts (windmill blades,
@@ -1825,7 +1836,7 @@ function buildPass() {
   }
   for (const [x, z, r] of [[24, -210, 0.3], [70, -236, -0.6], [10, -258, 2.2]]) { const y = gy(x, z); k.cyl(x, y, z, 0.12, 0.14, 2.2, PAL.woodD, 5, { col: true }); k.box(x, y + 1.7, z, 1.4, 0.4, 0.1, PAL.woodL, r); }
   for (const [x, z, s] of [[30, -226, 1.2], [8, -248, 1.0], [74, -262, 1.3], [40, -276, 1.1]]) k.sphere(x, gy(x, z) + 0.3, z, s, PAL.stoneD, 0, 0.7);
-  spot('pass1', 72, -236); spot('pass2', 6, -262); spot('pass3', 64, -284); spot('pass4', 30, -296);
+  spot('pass1', 72, -236); spot('pass2', 6, -262); spot('pass3', 64, -284); spot('pass4', 30, -292.5);
   return k.build('pass', 35, -255, 70);
 }
 
@@ -1854,6 +1865,9 @@ function buildFortress() {
   const dbMesh = new THREE.Mesh(db.geometry('lit'), MAT.lit); const dbPivot = new THREE.Group(); dbPivot.add(dbMesh); dbPivot.position.set(0, Y, -309.6); dbMesh.rotation.y = Math.PI; scene.add(dbPivot);
   const dbCol = addBox(0, -302.6, 2.8, 7.2, 0, Y - 0.5, Y, { enabled: false }), dbUp = addBox(0, -309.2, 2.9, 0.45, 0, Y - 1, Y + 14.5);
   WORLD.dyn.drawbridge = { pivot: dbPivot, col: dbCol, up: dbUp, k: 0 };
+  // An invisible rail along the near lip of the chasm (the drawbridge gap stays open), so a fight near the edge can't
+  // push the hero down the slope into the chasm.
+  for (const s of [-1, 1]) addBox(s * 41.7, -295.0, 38.3, 0.3, 0, Y - 3, Y + 6, { kind: 'rail' });
   for (const s of [-1, 1]) { k.cyl(s * 3.6, Y - 0.2, -296.2, 0.25, 0.25, 3, '#3b2a1e', 6); k.cyl(s * 3.6, Y - 0.2, -310.4, 0.3, 0.3, 9, '#3b2a1e', 6); }
   // Fortress walls: south (archway), sides, north; corner towers with glowing windows
   const W = (x, z, sx, sz, h) => k.box(x, Y - 2, z, sx, h + 2, sz, dark, 0, { col: true });
@@ -2372,6 +2386,7 @@ addEventListener('keydown', e => {
   }
   const n = KEYMAP[e.code]; if (!n) return;
   if (S.screen !== 'play' && !UI.dialog.open) return;
+  if (UI.dialog.open && (e.code === 'Enter' || e.code === 'NumpadEnter')) e.preventDefault();   // one Enter = one line
   if (e.code.startsWith('Arrow') || e.code === 'Space') e.preventDefault();
   if (e.repeat) return;
   document.body.classList.remove('touch');
@@ -2513,17 +2528,33 @@ function heroStep(dt) {
   for (let i = 0; i < PITS.length; i++) { const p = PITS[i]; if (hero.pos.x > p.x0 && hero.pos.x < p.x1 && hero.pos.z > p.z0 && hero.pos.z < p.z1 && hero.pos.y < p.y) { popBack('whoops'); return; } }
   if (hero.pos.y < -6) { popBack('whoops'); return; }
   hero.safeT -= dt;
-  if (hero.onGround && depth < -0.25 && hero.safeT <= 0 && !(hero.lastSupport && hero.lastSupport.bounce) && hero.rolling <= 0) { hero.safe.copy(hero.pos); hero.safeT = 0.5; }
+  if (hero.onGround && depth < -0.25 && hero.safeT <= 0 && !(hero.lastSupport && hero.lastSupport.bounce) && hero.rolling <= 0 && safeGround(hero.pos.x, hero.pos.z)) { hero.safe.copy(hero.pos); hero.safeT = 0.5; }
+}
+/** Is (x, z) a good place to come back to? Standing on something, or gentle ground at least 3 m from any pit. */
+function nearPit(x, z, pad) { for (const p of PITS) if (x > p.x0 - pad && x < p.x1 + pad && z > p.z0 - pad && z < p.z1 + pad) return true; return false; }
+function safeGround(x, z) {
+  if (hero.lastSupport) return true;
+  if (nearPit(x, z, 3)) return false;
+  gradAt(x, z); return GRAD.s <= CONFIG.hero.maxSlope * 0.85;
 }
 /** Back to the last safe ground under a quick fade (deep water, a pit). */
 function popBack(key) {
   if (S.popping > 0) return;
+  // Popped back twice in a few seconds: the "safe" spot isn't safe. Go somewhere that surely is.
+  const now = S.simTime; hero.pops = now - (hero.lastPop === undefined ? -99 : hero.lastPop) < 4 ? (hero.pops || 0) + 1 : 1; hero.lastPop = now;
+  S.popRescue = hero.pops >= 2;
   S.popping = 0.8; S.popTo = key; hero.vel.set(0, 0, 0); hero.vy = 0; $('fade').classList.add('on');
   UI.toast(t(key)); GAME.emit('popback', key);
 }
 function popStep(dt) {
   const before = S.popping; S.popping -= dt;
-  if (before > 0.4 && S.popping <= 0.4) placeHero(hero.safe.x, hero.safe.z, undefined, hero.safe.y);
+  if (before > 0.4 && S.popping <= 0.4) {
+    if (S.popRescue) {
+      const e = activeEnc(), w = POINTS[G.checkpoint];
+      if (e && !nearPit(e.x, e.z, 3)) placeHero(e.x, e.z); else if (w) placeHero(w[0], w[1], w[2]); else placeHero(hero.safe.x, hero.safe.z, undefined, hero.safe.y);
+      hero.safe.copy(hero.pos); S.popRescue = false; hero.pops = 0;
+    } else placeHero(hero.safe.x, hero.safe.z, undefined, hero.safe.y);
+  }
   if (S.popping <= 0) { S.popping = 0; $('fade').classList.remove('on'); }
 }
 /** Put the hero at (x, z) standing on whatever is there (ground, or a roof/deck under y). */
@@ -2618,7 +2649,7 @@ function updateCamera(dt, now) {
   const cp = Math.cos(pitch), dx = Math.sin(CAM.yaw) * cp, dy = -Math.sin(pitch), dz = Math.cos(CAM.yaw) * cp;
   // pull the boom in front of walls and houses (fast in, slow out)
   let hit = dist;
-  for (let d = 0.9; d <= dist; d += 0.45) { if (solidAt(CAM.target.x + dx * d, CAM.target.y + dy * d, CAM.target.z + dz * d)) { hit = Math.max(0.9, d - 0.45); break; } }
+  for (let d = 0.9; d <= dist; d += 0.45) { if (camSolidAt(CAM.target.x + dx * d, CAM.target.y + dy * d, CAM.target.z + dz * d)) { hit = Math.max(1.6, d - 0.45); break; } }
   CAM.boom = CAM.cutNext ? hit : hit < CAM.boom ? lerp(CAM.boom, hit, damp(dt, 25)) : lerp(CAM.boom, hit, damp(dt, 3));
   CAM.want.set(CAM.target.x + dx * CAM.boom, CAM.target.y + dy * CAM.boom, CAM.target.z + dz * CAM.boom);
   const floor = heightAt(CAM.want.x, CAM.want.z) + 0.8; if (CAM.want.y < floor) CAM.want.y = floor;
@@ -2712,7 +2743,7 @@ RESIZE_HOOKS.push((w, h) => UI.onResize(w, h));
 // Pooled floating words ("POOF!", "+3") and name tags over people.
 const POPS = [], TAGS = [];
 for (let i = 0; i < 12; i++) { const d = document.createElement('div'); d.className = 'wpop'; d.hidden = true; $('worldUi').appendChild(d); POPS.push({ el: d, x: 0, y: 0, z: 0, life: 0 }); }
-for (let i = 0; i < 6; i++) { const d = document.createElement('div'); d.className = 'wtag'; d.hidden = true; $('worldUi').appendChild(d); TAGS.push({ el: d, used: false, text: '' }); }
+for (let i = 0; i < 7; i++) { const d = document.createElement('div'); d.className = 'wtag'; d.hidden = true; $('worldUi').appendChild(d); TAGS.push({ el: d, used: false, text: '' }); }
 UI.pop = (x, y, z, text) => { let p = POPS[0]; for (const q of POPS) if (q.life <= 0) { p = q; break; } p.x = x; p.y = y; p.z = z; p.life = 0.9; p.el.textContent = text; p.el.hidden = false; };
 UI.tag = (slot, text, x, y, z) => {
   const tg = TAGS[slot]; if (!tg) return; tg.used = true; if (tg.text !== text) { tg.text = text; tg.el.textContent = text; }
@@ -2889,7 +2920,7 @@ $('makerGo').addEventListener('click', () => { sfx('click'); UI.close('heroScree
 $('makerBack').addEventListener('click', () => { sfx('click'); UI.close('heroScreen'); showTitle(); });
 const INTRO_EMO = ['🌻', '😠', '🐉', '🗡️'];
 let introI = 0;
-function introStart() { introI = 0; introShow(); UI.open('introScreen'); }
+function introStart() { introI = 0; introShow(); UI.open('introScreen'); try { $('introNext').focus({ preventScroll: true }); } catch (e) { /* ignore */ } }
 function introShow() { $('introEmo').textContent = INTRO_EMO[introI]; $('introText').textContent = t('intro.' + (introI + 1)); $('introNext').textContent = introI === 3 ? t('start') : t('next'); }
 function introFinish() { UI.close('introScreen'); startPlay('new', { look: MAKER.look, difficulty: MAKER.difficulty }); }
 $('introNext').addEventListener('click', () => { sfx('click'); if (introI < 3) { introI++; introShow(); try { $('introNext').focus({ preventScroll: true }); } catch (e) { /* ignore */ } } else introFinish(); });
@@ -2985,8 +3016,17 @@ function wayFrame(dt, now) {
   ROUTEWAY.t -= dt;
   if (ROUTEWAY.dirty || ROUTEWAY.t <= 0) { ROUTEWAY.t = 1; ROUTEWAY.dirty = false; ROUTEWAY.path = ROUTE.path(hero.pos.x, hero.pos.z, tg.x, tg.z); }
   const p = ROUTEWAY.path; let nx = tg.x, nz = tg.z;
-  for (let i = 0; i < p.length; i++) { if (hyp(p[i][0] - hero.pos.x, p[i][1] - hero.pos.z) > 5) { nx = p[i][0]; nz = p[i][1]; break; } }
-  ROUTEWAY.arrow.position.set(hero.pos.x, hero.pos.y + 0.12, hero.pos.z); ROUTEWAY.arrow.rotation.y = Math.atan2(nx - hero.pos.x, nz - hero.pos.z);
+  // The path starts at the nearest road node, which is often already behind the hero: skip every node the hero has
+  // passed along its segment, so the arrow never points back.
+  let i0 = 0;
+  while (i0 + 1 < p.length) {
+    const ax = p[i0][0], az = p[i0][1], sx = p[i0 + 1][0] - ax, sz = p[i0 + 1][1] - az, L2 = sx * sx + sz * sz;
+    if (L2 > 0 && ((hero.pos.x - ax) * sx + (hero.pos.z - az) * sz) / L2 > 0) i0++; else break;
+  }
+  for (let i = i0; i < p.length; i++) { if (hyp(p[i][0] - hero.pos.x, p[i][1] - hero.pos.z) > 5) { nx = p[i][0]; nz = p[i][1]; break; } }
+  // Drawn a little ahead of the hero, where the camera can see it.
+  const ang = Math.atan2(nx - hero.pos.x, nz - hero.pos.z), axp = hero.pos.x + Math.sin(ang) * 1.8, azp = hero.pos.z + Math.cos(ang) * 1.8;
+  ROUTEWAY.arrow.position.set(axp, (hero.lastSupport ? hero.pos.y : Math.max(heightAt(axp, azp), hero.pos.y - 1.5)) + 0.12, azp); ROUTEWAY.arrow.rotation.y = ang;
 }
 
 /* =====================================================================================================================
@@ -4024,7 +4064,8 @@ const DUMMY = {
     pts.forEach((p, i) => {
       const y = heightAt(p[0], p[1]), yaw = Math.atan2(-27 - p[0], 336 - p[1]) + Math.PI, d = { i, x: p[0], z: p[1], y, yaw, wob: 0, wobV: 0, ax: 1, az: 0, hits: 0 };
       this.list.push(d); addCircle(p[0], p[1], 0.35, y, y + 1.9, { stand: false });
-      TARGETS.add({ id: 'dummy' + i, x: p[0], y, z: p[1], r: 0.45, h: 2.6, aim: true, hit: (dmg, dx, dz) => this.hit(d, dx, dz) });
+      // The aim helper skips a dummy that already counts, so mashing Attack moves on to the next one.
+      TARGETS.add({ id: 'dummy' + i, x: p[0], y, z: p[1], r: 0.45, h: 2.6, get aim() { return !dummyDone(d.i); }, hit: (dmg, dx, dz) => this.hit(d, dx, dz) });
     });
   },
   hit(d, dx, dz) {
@@ -4040,10 +4081,15 @@ const DUMMY = {
       const a = calm() ? d.wob * 0.4 : d.wob; FV.set(d.ax, 0, d.az); if (FV.lengthSq() < 1e-6) FV.set(1, 0, 0); FV.normalize();
       FQ.setFromAxisAngle(FV, a * 0.35); FQ2.setFromAxisAngle(UP, d.yaw); FQ.multiply(FQ2); FS.set(1, 1, 1); FV.set(d.x, d.y, d.z);
       FM.compose(FV, FQ, FS); this.mesh.setMatrixAt(d.i, FM);
+      // A dummy that already counts turns golden, so it is clear which ones are left.
+      const done = dummyDone(d.i); if (d.gold !== done) { d.gold = done; this.mesh.setColorAt(d.i, done ? DUMMY_GOLD : DUMMY_PLAIN); if (this.mesh.instanceColor) this.mesh.instanceColor.needsUpdate = true; }
     }
     this.mesh.instanceMatrix.needsUpdate = true;
   },
 };
+const DUMMY_GOLD = new THREE.Color(1, 0.82, 0.35), DUMMY_PLAIN = new THREE.Color(1, 1, 1);
+/** Does training dummy i already count for the first mission? */
+function dummyDone(i) { if (!questActive('m1', 1)) return false; const q = QP(); return !!(q && q.dummies && q.dummies.indexOf(i) >= 0); }
 
 /* Breakables: crates, barrels and pots round the villages, camp, castle and fortress. One hit: POOF + 1-3 coins.
    They come back after 5 minutes (when nobody is looking: the hero is 30 m away) or on Continue / New game. */
@@ -4245,7 +4291,7 @@ function encStep(dt) {
     if (e.state === 'idle') { if (d < e.r && dy < 8 && !KO.on && (!e.when || e.when()) && !activeEnc()) startEnc(e); }
     else if (e.state === 'paused') { if (d < e.r && dy < 8 && !KO.on && !activeEnc()) resumeEnc(e); }
     else if (e.state === 'active') {
-      if (d > e.r * 1.8 || dy > 16) { stopEnc(e); continue; }
+      if (d > e.r * 1.8 || (dy > 16 && !(S.popping > 0) && !nearPit(hero.pos.x, hero.pos.z, 1.5))) { stopEnc(e); continue; }
       if (e.alive <= 0) {
         if (e.nextT <= 0) e.nextT = e.wave < e.waves.length - 1 ? 1.5 : 0.6;
         e.nextT -= dt;
@@ -5150,7 +5196,7 @@ function sheepStep(dt) {
       if (d > 0.4) { const sp = Math.min(12, 2 + d * 2.2), st = Math.min(d, sp * dt); s.x += dx / d * st; s.z += dz / d * st; s.speed = sp; s.yaw += wrapA(Math.atan2(dx, dz) - s.yaw) * damp(dt, 8); s.walk += dt * 9; } else s.speed = 0;
       PV.set(s.x, 0, s.z); pushOut(PV, 0.45, s.y, 1); s.x = PV.x; s.z = PV.z;
       if (hyp(hero.pos.x - s.x, hero.pos.z - s.z) > 30) { s.catch += dt; if (s.catch > 2) { s.catch = 0; FX.puffs(s.x, s.y + 0.4, s.z, 4, FXC.white, 0.6); s.x = hero.pos.x - Math.sin(hero.yaw) * 2; s.z = hero.pos.z - Math.cos(hero.yaw) * 2; FX.puffs(s.x, s.y + 0.4, s.z, 4, FXC.white, 0.6); } } else s.catch = 0;
-      if (hyp(s.x - pen[0], s.z - pen[1]) < 5.2) penSheep(s);
+      if (hyp(s.x - pen[0], s.z - pen[1]) < 8) penSheep(s);   // within 8 m: a sheep led over the fence (not through the gate) still counts, and trots in
     } else if (s.state === 'pen' || s.state === 'graze') {
       const hx = s.state === 'pen' ? pen[0] : s.homeX, hz = s.state === 'pen' ? pen[1] : s.homeZ, rad = s.state === 'pen' ? 3.5 : 5;
       s.wait -= dt; const dx = s.tx - s.x, dz = s.tz - s.z, d = hyp(dx, dz);
@@ -5266,7 +5312,7 @@ function nearestOf(list, skip) {
 const MISSIONS = [
   { id: 'm1', icon: '🗡️', steps: [
     talk('granny', ['d.granny.1', 'd.granny.2'], { enter: () => { showTip(COARSE ? 'tip.moveTouch' : 'tip.move'); } }),
-    counter('dummy', 3, () => QP().dummies.length, () => pt(POINTS.trainingYard[0], POINTS.trainingYard[1]), { enter: () => showTip('tip.attack') }),
+    counter('dummy', 3, () => QP().dummies.length, () => { const d = DUMMY.list.find(q => QP().dummies.indexOf(q.i) < 0); return d ? pt(d.x, d.z) : pt(POINTS.trainingYard[0], POINTS.trainingYard[1]); }, { enter: () => showTip('tip.attack') }),
     talk('granny', ['d.granny.3', 'd.granny.4'], { enter: () => showTip('tip.spin') }),
   ], reward: [['potion.heart', 3], ['coins', 10]], done: () => { showTip('tip.roll'); } },
   { id: 'm2', icon: '🥬', steps: [
@@ -5284,7 +5330,15 @@ const MISSIONS = [
   ], reward: [['armor.leather.head', 1], ['coins', 25]], done: () => { if (QP().m3t < 240) { badgeOnce('sheep'); giveItem('hat.sheep', 1); } } },
   { id: 'm4', icon: '🏮', steps: [
     talk('ivy', ['d.ivy.1', 'd.ivy.2']),
-    counter('lantern', 3, () => QP().lanterns.length, () => { const l = nearestOf(LANTERNS, q => QP().lanterns.indexOf(q.id) >= 0); return l ? pt(l.x, l.z, l.y) : null; }, { enter: () => showTip('tip.bounce') }),
+    counter('lantern', 3, () => QP().lanterns.length, () => {
+      const l = nearestOf(LANTERNS, q => QP().lanterns.indexOf(q.id) >= 0); if (!l) return null;
+      // The lantern on top of the Giant Stump: from down below, point at the red bounce mushroom instead.
+      const st = POINTS.stumpTop, m = POINTS.stumpMushroom;
+      if (st && m && hyp(l.x - st.x, l.z - st.z) < 4 && hero.pos.y < st.y - 3) {
+        const dh = hyp(hero.pos.x - st.x, hero.pos.z - st.z); if (dh < 25) { if (dh < 12) showTip('tip.stump'); return pt(m[0], m[1]); }
+      }
+      return pt(l.x, l.z, l.y);
+    }, { enter: () => showTip('tip.bounce') }),
     talk('ivy', ['d.ivy.3']),
   ], reward: [['armor.leather.chest', 1], ['potion.zoom', 1], ['coins', 20]], done: () => { showTip('tip.s1'); } },
   { id: 'm5', icon: '⛺', steps: [
@@ -5352,7 +5406,7 @@ function completeMission(m) {
   QUEST.dirty = true; saveGame('mission'); scoreSubmit();
   GAME.emit('missionDone', m.id);
 }
-function scoreSubmit() { try { BRB.score.submit(G.points, 'hero points'); } catch (e) { /* ignore */ } }
+function scoreSubmit() { try { BRB.score.submit(G.points, t('score.label')); } catch (e) { /* ignore */ } }
 function badgeOnce(id) {
   if (G.badges.indexOf(id) >= 0) return false;
   G.badges.push(id); UI.badge(t('badge.got', { name: t('badge.' + id) })); sfx('powerup'); saveGame('badge'); return true;
@@ -6015,7 +6069,9 @@ function buildBossWorld() {
   BPX.waveM = new THREE.Mesh(new THREE.TorusGeometry(1, 0.07, 4, 64).rotateX(Math.PI / 2), new THREE.MeshBasicMaterial({ color: 0xc27bff, transparent: true, opacity: 0.85 })); BPX.waveM.visible = false; scene.add(BPX.waveM);
   for (let i = 0; i < 14; i++) BP.push({ on: false, kind: '', x: 0, y: 0, z: 0, x0: 0, y0: 0, z0: 0, tx: 0, ty: 0, tz: 0, vx: 0, vy: 0, vz: 0, t: 0, dur: 1, ret: false, home: 0, tel: { kind: 'disc', x: 0, y: 0, z: 0, r: 1.6, yaw: 0, prog: 0, low: true, c: null }, id: i });
   for (let i = 0; i < 6; i++) { const p = BP[i]; TARGETS.add({ id: 'bossBolt' + i, x: 0, y: 0, z: 0, r: 1.2, h: 2.6, aim: true, when: () => p.on && p.kind === 'bolt' && !p.ret && hyp(p.x - hero.pos.x, p.z - hero.pos.z) < 4, hit: () => returnBolt(p) }); p.tgt = TARGETS.list[TARGETS.list.length - 1]; }
-  BOSS.tCollar = TARGETS.add({ id: 'bossCollar', x: 0, y: 0, z: 0, r: 1.3, h: 3.2, aim: true, when: () => BOSS.active && collarOpen(), hit: () => hitCollar() });
+  BOSS.tCollar = TARGETS.add({ id: 'bossCollar', x: 0, y: 0, z: 0, r: 2.4, h: 4, aim: true, when: () => BOSS.active && collarOpen(), hit: () => hitCollar() });
+  // While the collar is open, a swing at Cinder's head or chest counts too (children aim at the dragon, not a spot).
+  BOSS.tFront = TARGETS.add({ id: 'bossFront', x: 0, y: 0, z: 0, r: 2.3, h: 4.5, aim: false, when: () => BOSS.active && collarOpen(), hit: () => hitCollar() });
   BOSS.tSnarl = TARGETS.add({ id: 'bossSnarl', x: 0, y: 0, z: 0, r: 0.9, h: 3, aim: true, when: () => BOSS.active && BOSS.sw.mode === 'stun', hit: () => hitSnarl() });
   BOSS.iStaff = INTERACT.add({ id: 'bossStaff', x: 0, z: 0, y: AY, r: 3, label: 'btn.use', icon: '✨', when: () => BOSS.active && BOSS.sw.mode === 'dazed', use: () => bossFinale() });
   INTERACT.add({ id: 'cage', x: CAGE.x, z: CAGE.z, y: AY, r: 3.2, label: 'btn.open', icon: '🔓', when: () => questActive('m11', 1) && CAGE.k >= 1, use: () => endingStart() });
@@ -6139,13 +6195,16 @@ function bossUpdate(dt) {
   if (s.mode !== 'ride' && s.vis > 0.5 && s.mode !== 'jump') { const dx = hero.pos.x - s.x, dz = hero.pos.z - s.z, d = hyp(dx, dz); if (d < 0.9 && d > 1e-3) { hero.pos.x = s.x + dx / d * 0.9; hero.pos.z = s.z + dz / d * 0.9; } }
   // aim targets follow the bodies
   const cp = collarPos(); BOSS.tCollar.x = cp.x; BOSS.tCollar.z = cp.z; BOSS.tCollar.y = cp.y - 1.4;
+  { const c = BOSS.cd; BOSS.tFront.x = c.x + Math.sin(c.yaw) * 0.6; BOSS.tFront.z = c.z + Math.cos(c.yaw) * 0.6; BOSS.tFront.y = c.y; }
   BOSS.tSnarl.x = s.x; BOSS.tSnarl.z = s.z; BOSS.tSnarl.y = s.y; BOSS.iStaff.x = s.x; BOSS.iStaff.z = s.z;
 }
 const CPOS = { x: 0, y: 0, z: 0 };
 /** Where the collar crystal is (head low: dizzy / panting). */
-function collarPos() { const c = BOSS.cd, f = c.mode === 'dizzy' ? 3.2 : 3.0, y = c.mode === 'dizzy' ? 1.4 : 1.9; CPOS.x = c.x + Math.sin(c.yaw) * f; CPOS.z = c.z + Math.cos(c.yaw) * f; CPOS.y = c.y + y; return CPOS; }
+function collarPos() { const c = BOSS.cd, f = c.mode === 'dizzy' ? 2.7 : 2.6, y = c.mode === 'dizzy' ? 1.4 : 1.9; CPOS.x = c.x + Math.sin(c.yaw) * f; CPOS.z = c.z + Math.cos(c.yaw) * f; CPOS.y = c.y + y; return CPOS; }
 const collarOpen = () => BOSS.cd.mode === 'dizzy' || BOSS.cd.mode === 'pant';
 function hitCollar() {
+  // One swing can touch both the collar and the chest target: count it once.
+  if (S.simTime - (BOSS.lastCollarHit || -9) < 0.2) return; BOSS.lastCollarHit = S.simTime;
   const c = BOSS.cd, cp = collarPos(); BOSS.cHits++; SND.play('crack'); FX.sparkle(cp.x, cp.y, cp.z, 12, FXC.purple, 3); FX.stars(cp.x, cp.y + 0.6, cp.z, 2); c.wob = 0.3;
   if (BOSS.cHits >= BD().hits) breakCrystal();
 }
@@ -6520,13 +6579,15 @@ function bossDecals() {
   const s = BOSS.sw;
   if (s.mode === 'stomp' && BOSS.stompTel) { const tl = BOSS.stompTel; DECAL.ring(tl.x, tl.y, tl.z, 2.2 + tl.prog * 1.2, DCOL.purple); DECAL.disc(tl.x, tl.y, tl.z, Math.max(0.05, 2.2 * tl.prog), DCOL.purple); }
   if (BOSS.wave) DECAL.ring(BOSS.wave.x, AY + 0.07, BOSS.wave.z, BOSS.wave.r, DCOL.purple);
-  if (collarOpen()) { const cp = collarPos(); DECAL.ring(cp.x, AY + 0.08, cp.z, 1.3, DCOL.gold); }
+  if (collarOpen()) { const cp = collarPos(); DECAL.ring(cp.x, AY + 0.08, cp.z, 2.4, DCOL.gold); }
   if (s.mode === 'stun' || s.mode === 'dazed') DECAL.ring(s.x, AY + 0.08, s.z, 1.2, DCOL.gold);
 }
 /** "Swing!" over a bolt that is close enough to send back. */
 function bossLate() {
   if (!BOSS.active || UI.blocking()) return;
   for (const p of BP) if (p.on && p.kind === 'bolt' && !p.ret && hyp(p.x - hero.pos.x, p.z - hero.pos.z) < 4.2) { UI.tag(5, t('boss.swing'), p.x, p.y + 1.0, p.z); break; }
+  // While Cinder is dizzy or panting, a big label shows exactly where to hit.
+  if (collarOpen()) { const cp = collarPos(); UI.tag(6, t('boss.hitHere'), cp.x, cp.y + 1.3 + (calm() ? 0 : Math.sin(performance.now() * 0.006) * 0.15), cp.z); }
 }
 GAME.on('foeDefeated', f => { if (f.enc === BOSS.enc) PICK.spawn('heart', f.x, f.y + 0.3, f.z, 1); });
 
@@ -7194,7 +7255,8 @@ function runBuild() {
   if (r.done) onBuilt(); else setTimeout(runBuild, 0);
 }
 function onBuilt() {
-  setQuality(SET.quality !== 'auto' && SET.quality !== undefined ? +SET.quality : S.quality, SET.quality !== 'auto' ? true : null);
+  const autoStart = SOFTWARE_GL ? CONFIG.levels.length - 1 : Number.isInteger(SET.autoLevel) ? SET.autoLevel : S.quality;
+  setQuality(SET.quality !== 'auto' && SET.quality !== undefined ? +SET.quality : autoStart, SET.quality !== 'auto' ? true : null);
   S.ready = true; window.__hosReady = true;
   for (const s of GAME.systems) if (s.init) { try { s.init(); } catch (e) { console.error(e); } }
   installTestHooks();

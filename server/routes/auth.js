@@ -12,11 +12,13 @@ import { rateLimit, allow, count, ipOf, loginLockKey, GUESTS_PER_IP_HOUR } from 
 import { availableLocales, normalizeCode, tHtml, setLangCookie, saveUserLang } from '../i18n/index.js';
 import { THEMES, THEME_ICONS, normalizeTheme, setThemeCookie, saveUserTheme } from '../theme.js';
 import { buildStatus } from '../builder/turns.js';
+import { publicHost } from '../site.js';
+import { loginGoogle, googleNotice, loginJoinLink, meGooglePanel, noPasswordText } from './google.js';
 
 export const router = Router();
-const safeNext = n => (typeof n === 'string' && /^\/(?!\/)[\w\-/?=&%.#]*$/.test(n) ? n : '/');
+export const safeNext = n => (typeof n === 'string' && /^\/(?!\/)[\w\-/?=&%.#]*$/.test(n) ? n : '/');
 /** A ?next= that asks for a real page (not missing, unsafe or just '/'), else null so people land on their own home. */
-const wantedNext = n => { const s = safeNext(n); return s === '/' ? null : s; };
+export const wantedNext = n => { const s = safeNext(n); return s === '/' ? null : s; };
 /** Where someone lands after signing in: teachers and school admins on My classes, school-account students on their
  *  classes, the platform admin on the admin area; everyone else on the game site. */
 export function homeFor(u) {
@@ -40,6 +42,9 @@ function authPage(req, res, mode) {
       <h1 class="center">${isSignup ? (upgrading ? t('auth.page.headingUpgrade') : t('auth.page.headingSignup')) : t('auth.page.headingLogin')}</h1>
       <p class="center muted">${isSignup ? t('auth.page.introSignup') : t('auth.page.introLogin')}</p>
       ${!isSignup && (req.query.signedout === '1' || req.sessionEnded) ? html`<p class="notice warn" role="status">${t('auth.page.signedOut')}</p>` : ''}
+      ${!isSignup && req.query.moved === '1' && publicHost() ? html`<p class="notice" role="status">${t('auth.page.moved', { site: publicHost() })}</p>` : ''}
+      ${isSignup ? '' : googleNotice(req)}
+      ${isSignup ? '' : loginGoogle(req, next)}
       ${upgrading ? html`<p class="notice good">${tHtml(t, 'auth.page.upgradeNotice', { name: u.display_name })}</p>` : ''}
       <form data-api="/api/auth/${isSignup ? 'signup' : 'login'}" ${isSignup ? raw(`data-next="${next.replace(/"/g, '&quot;')}"`) : ''} novalidate>
         ${!isSignup && wantedNext(req.query.next) ? html`<input type="hidden" name="next" value="${next}">` : ''}
@@ -59,6 +64,7 @@ function authPage(req, res, mode) {
         <p><span aria-hidden="true">🙂</span> ${t('auth.page.forgotOwn')}</p></div>`}
       ${!u ? html`<div class="divider">${t('auth.page.or')}</div><button class="btn btn-block" type="button" data-guest-play="${next}">${t('auth.page.playAsGuest')}</button>` : ''}
       <p class="center small" style="margin-top:16px">${isSignup ? html`${t('auth.page.haveAccount')} <a href="/login?next=${encodeURIComponent(next)}">${t('auth.page.signInLink')}</a>` : html`${t('auth.page.newHere')} <a href="/signup?next=${encodeURIComponent(next)}">${t('auth.page.signupLink')}</a>`}</p>
+      ${isSignup ? '' : loginJoinLink(req)}
     </div></div>`;
   page(req, res, { title: isSignup ? t('auth.page.titleSignup') : t('auth.page.titleLogin'), active: 'me', body });
 }
@@ -249,6 +255,8 @@ function passwordPanel(req) {
   const t = req.t, u = req.user;
   if (u.is_guest) return '';
   const head = html`<h2 id="pw-h"><span aria-hidden="true">🔑</span> ${t('me.password.heading')}</h2>`;
+  const gOnly = noPasswordText(req);
+  if (gOnly) return html`<section class="panel" id="password" aria-labelledby="pw-h">${head}<p class="muted">${gOnly}</p></section>`;
   if (!auth.canChangePassword(u)) return html`<section class="panel" id="password" aria-labelledby="pw-h">${head}<p class="muted">${t('me.password.school')}</p></section>`;
   const staff = auth.accountKind(u) === 'staff', min = staff ? auth.STAFF_PASSWORD_MIN : 6;
   return html`<section class="panel" id="password" aria-labelledby="pw-h">${head}
@@ -311,16 +319,18 @@ router.get('/me', auth.requireUser, (req, res) => {
         </div>`}
       </div>
     </div>
-    <h3 style="margin-top:16px">${t('me.look.avatarHeading')}</h3>
-    <div class="chips" role="group" aria-label="${t('me.look.avatarGroup')}">${auth.AVATARS.map(a => html`<button class="chip" type="button" data-avatar="${a}" aria-pressed="${a === u.avatar}" aria-label="${t('me.look.avatarLabel', { emoji: a })}" style="font-size:1.4rem;padding:0 12px">${a}</button>`)}</div>
-    <h3 style="margin-top:16px">${t('me.look.colorHeading')}</h3>
-    <div class="chips" role="group" aria-label="${t('me.look.colorGroup')}">${auth.COLORS.map(c => html`<button class="chip" type="button" data-color="${c}" aria-pressed="${c === u.color}" aria-label="${t('me.look.colorLabel', { color: c })}"><span class="avatar" style="--s:26px;--c:${c}"></span></button>`)}</div>
+    <div class="lookpicks">
+      <details class="lookdrop" data-lookpick><summary class="btn"><span>${t('me.look.avatarHeading')}</span><span class="lookcur" aria-hidden="true">${u.avatar}</span><span class="lookcaret" aria-hidden="true">▾</span></summary>
+        <div class="lookmenu" role="group" aria-label="${t('me.look.avatarGroup')}">${auth.AVATARS.map(a => html`<button class="chip lookemoji" type="button" data-avatar="${a}" aria-pressed="${a === u.avatar}" aria-label="${t('me.look.avatarLabel', { emoji: a })}">${a}</button>`)}</div></details>
+      <details class="lookdrop" data-lookpick><summary class="btn"><span>${t('me.look.colorHeading')}</span><span class="avatar lookcur" style="--s:22px;--c:${u.color}" aria-hidden="true"></span><span class="lookcaret" aria-hidden="true">▾</span></summary>
+        <div class="lookmenu" role="group" aria-label="${t('me.look.colorGroup')}">${auth.COLORS.map(c => html`<button class="chip" type="button" data-color="${c}" aria-pressed="${c === u.color}" aria-label="${t('me.look.colorLabel', { color: c })}"><span class="avatar" style="--s:26px;--c:${c}"></span></button>`)}</div></details>
+    </div>
   </section>
   <div class="mesettings">${languagePanel(req)}${appearancePanel(req)}</div>
   ${!u.is_guest ? html`<section class="panel"><h2>${t('me.chat.heading')}</h2>
     <p class="muted">${t('me.chat.text')}</p>
     <label class="row" style="font-weight:700"><input type="checkbox" id="chat-toggle" ${u.chat_enabled ? raw('checked') : ''} style="width:24px;height:24px"> ${t('me.chat.toggle')}</label>
   </section>` : ''}
-  <div class="mesettings">${passwordPanel(req)}${signOutPanel(req)}</div>`;
+  <div class="mesettings">${passwordPanel(req)}${meGooglePanel(req)}${signOutPanel(req)}</div>`;
   page(req, res, { title: t('me.title'), active: 'me', body, scripts: ['/js/me.js'] });
 });

@@ -24,6 +24,7 @@ export const DEFAULT_SETTINGS = {
   allowOwnAccounts: true,        // students may join with their personal account (teacher approves)
   chat: 'classmates',            // school accounts: 'classmates' (chat with classmate friends) | 'off'
   publishing: 'school',          // school accounts: 'school' (share games within the school) | 'public' (allowed to go public)
+  googleDomains: [],             // the school's Google Workspace domains, for Sign in with Google (services/google.js); [] = off
   timeZone: '',                  // IANA zone, e.g. 'Europe/London': lessons open and fall due at the school's midnight; '' = not set
 };
 /** Time zones a school can pick (IANA names Node knows). */
@@ -77,6 +78,26 @@ export function createSchool(by, { name }) {
   audit(by.id, 'school.create', id, { name: n });
   return ok({ school: getSchool(id) });
 }
+// Google Workspace domains a school lists for Sign in with Google. Personal mail services are refused: their accounts
+// aren't managed by a school (no hd), so they would never match anyway.
+export const CONSUMER_DOMAINS = new Set(['gmail.com', 'googlemail.com', 'outlook.com', 'hotmail.com', 'live.com', 'msn.com', 'yahoo.com',
+  'ymail.com', 'icloud.com', 'me.com', 'mac.com', 'aol.com', 'proton.me', 'protonmail.com', 'gmx.com', 'gmx.de', 'web.de', 'mail.com',
+  'yandex.ru', 'qq.com', '163.com']);
+const DOMAIN_RE = /^(?=.{3,253}$)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z][a-z0-9-]{1,62}$/;
+export const MAX_DOMAINS = 10;
+/** "@dwes.org, https://students.dwes.org/" -> { ok, domains } or { ok:false, code, value }. */
+export function parseDomains(text) {
+  const out = [];
+  for (const raw of String(text || '').split(/[\s,;]+/)) {
+    const d = raw.toLowerCase().replace(/^@/, '').replace(/^https?:\/\//, '').replace(/[/?#].*$/, '').replace(/\.$/, '');
+    if (!d) continue;
+    if (!DOMAIN_RE.test(d)) return { ok: false, code: 'badDomain', value: raw.slice(0, 60) };
+    if (CONSUMER_DOMAINS.has(d)) return { ok: false, code: 'personalDomain', value: d };
+    if (!out.includes(d)) out.push(d);
+  }
+  if (out.length > MAX_DOMAINS) return { ok: false, code: 'tooManyDomains' };
+  return { ok: true, domains: out };
+}
 export function updateSchool(by, schoolId, { name, settings } = {}) {
   const s = getSchool(schoolId); if (!s) return fail('notFound');
   if (name !== undefined) { const n = clip(name, 80); if (n.length < 2) return fail('schoolName'); q.run('UPDATE schools SET name=? WHERE id=?', n, s.id); }
@@ -85,6 +106,7 @@ export function updateSchool(by, schoolId, { name, settings } = {}) {
     for (const k of ['teachersCreateClasses', 'allowOwnAccounts']) if (settings[k] !== undefined) next[k] = !!settings[k];
     if (['classmates', 'off'].includes(settings.chat)) next.chat = settings.chat;
     if (['school', 'public'].includes(settings.publishing)) next.publishing = settings.publishing;
+    if (Array.isArray(settings.googleDomains)) next.googleDomains = settings.googleDomains.slice(0, MAX_DOMAINS);
     if (settings.timeZone !== undefined) { if (settings.timeZone !== '' && !isZone(settings.timeZone)) return fail('badZone'); next.timeZone = settings.timeZone; }
     q.run('UPDATE schools SET settings=? WHERE id=?', JSON.stringify(next), s.id);
   }
@@ -137,7 +159,12 @@ export function removeMember(by, schoolId, userId) {
     // Their games stop being shared with this school's classes (the rule already hides them; coming back re-shares nothing).
     pruneGameClasses(userId, q.all('SELECT id FROM classrooms WHERE school_id=?', schoolId).map(r => r.id));
     const u = getUser(userId);
-    if (u && u.managed_school === schoolId) { q.run('UPDATE users SET banned=1 WHERE id=?', userId); q.run('DELETE FROM sessions WHERE user_id=?', userId); }
+    if (u && u.managed_school === schoolId) {
+      q.run('UPDATE users SET banned=1 WHERE id=?', userId); q.run('DELETE FROM sessions WHERE user_id=?', userId);
+      // Its Google sign-in goes too, so a later invite of the same Google account makes a fresh account.
+      q.run('DELETE FROM google_identities WHERE user_id=?', userId);
+      q.run("UPDATE google_invites SET status='revoked', revoked_at=? WHERE user_id=? AND status='open'", now(), userId);
+    }
   });
   audit(by.id, 'school.member_remove', schoolId, { user: userId });
   return ok();
@@ -403,7 +430,8 @@ export function mergeSchoolAccount(by, schoolId, schoolAccountId, intoUserId) {
     // Lesson work moves too (if both accounts did the same step, the student's own account keeps theirs).
     q.run('UPDATE OR IGNORE step_progress SET user_id=? WHERE user_id=?', intoUserId, a.id);
     q.run('DELETE FROM step_progress WHERE user_id=?', a.id);
-    for (const t of ['sessions', 'friends', 'join_requests']) q.run(`DELETE FROM ${t} WHERE user_id=?`, a.id);
+    for (const t of ['sessions', 'friends', 'join_requests', 'google_identities']) q.run(`DELETE FROM ${t} WHERE user_id=?`, a.id);
+    q.run("UPDATE google_invites SET status='revoked', revoked_at=? WHERE user_id=? AND status='open'", now(), a.id);
     q.run('DELETE FROM friends WHERE friend_id=?', a.id);
     q.run("UPDATE users SET banned=1, password_hash=NULL, managed_school='', username=? WHERE id=?", `merged_${a.id}`, a.id);
   });

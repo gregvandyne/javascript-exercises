@@ -321,7 +321,12 @@ The same facts as the grown-ups page (`/parents`, text in `info.parents.*`), kep
 - **Never asked for:** email addresses, ages, home addresses, locations or payment details. Nothing is for sale: no
   real-money purchases, loot boxes or paid boosts. No ads, and no advertising or tracking cookies (the only cookies are
   the sign-in, language and theme, and for a day after a sign-in ends on a device, a signed note of whose it was, so the
-  next person isn't sent to that page). The optional PostHog hook (`POSTHOG_KEY`) is off unless set and nothing calls it.
+  next person isn't sent to that page; and, for two minutes while moving from an old web address to the new one, a
+  random one-time code; and, while Sign in with Google runs, a 10-minute code for that one sign-in). Sign in with Google
+  is for school Google accounts only: a Google account is matched by its id, never by email, and a new one gets an
+  account only through its school (a teacher's invite by school email, or the class code with the school's own Google
+  domain). We keep the Google account's id, email and school domain while it is connected; never its photo, and its
+  name only as the staff-only class-list name. The optional PostHog hook (`POSTHOG_KEY`) is off unless set and nothing calls it.
 - **Stored for own accounts:** a made-up username, a bcrypt password hash, the games they make with their Builder chats
   and uploads, saves, scores, ratings, favorites, friends, chat messages, a profile photo if uploaded, and settings
   (language, theme). Each sign-in keeps the browser's name (user agent). Guests: a made-up name, saves, scores, ratings

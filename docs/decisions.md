@@ -353,7 +353,8 @@ The mascot is Oomba: the two o's of the wordmark are its eyes, looking up at a s
 - **`SESSION_SECRET`**: production warns at every start while it comes from the database; `REQUIRE_SESSION_SECRET=1`
   refuses to start (not set on Render, so Render is unaffected). `scripts/export-session-secret.js` writes the current
   secret to a mode-600 file and never prints it. Note for the owner: carrying it over keeps people signed in only if the
-  web address stays the same; a move from `magic-cup.onrender.com` to a new domain signs everyone in once anyway.
+  web address stays the same; a move to a new domain *on another server* (`MOVED_TO_URL`) signs everyone in once. A
+  new domain on the same server keeps everyone signed in (see "Moving to oomba.ai").
 - **Litestream 0.5.17** (binary copied from the official image, pinned by digest) runs only when `LITESTREAM_REPLICA_URL` is set.
   On an empty disk the container restores the latest backup first (`LITESTREAM_AUTO_RESTORE=1`), and refuses to start
   if that restore fails, so an empty database is never backed up over a good one. It covers the database only; disk
@@ -726,3 +727,60 @@ A review of the three batches together found these; each got the smallest correc
   message…" until a step or a busy poll confirms the server has it, then "…The Builder keeps going on the server",
   until the saved reply (with its summary) is redrawn. The opened summary can be folded again from its bottom too. —
   Calm and honest beats busy: one card, one current step, no fake progress bar.
+
+## Moving to oomba.ai (one server, two names)
+- **`PUBLIC_URL` is the switch.** Unset, nothing changes. Set, old names redirect only after a self-check: the server
+  fetches `PUBLIC_URL/.well-known/oomba-host-check/<boot id>` and must get its own 204 back (retried with backoff
+  until it does). — A typo, DNS that hasn't spread, a missing certificate or an edge redirect would otherwise send
+  everyone to a dead address or round a loop.
+- **Only listed names redirect:** `RENDER_EXTERNAL_HOSTNAME`, the `www.` twin of `PUBLIC_URL` and `REDIRECT_HOSTS`;
+  never "any other host". — The AWS/Azure guides use `PUBLIC_URL` behind gateways that rewrite the Host header, and a
+  rehearsal on a temporary name; redirecting every other host would loop there.
+- **Only page loads redirect** (Fetch Metadata `Sec-Fetch-Dest: document`, or page-looking paths without it). API
+  calls, the Builder stream, game frames and files are answered on the old name. Non-GET is never redirected. — A
+  redirected POST loses its cookies and fails the same-origin check; open tabs must keep saving. Same server, same
+  database, so serving both names is safe.
+- **How each case is answered:** no cookies → 301 (`max-age=86400`, `Vary: Cookie`, so a rollback heals in a day);
+  a sign-in, language or theme cookie → 302 into the hand-off; a page load from inside an old tab
+  (`Sec-Fetch-Site: same-origin`) → a 200 "we moved" page that refreshes to the new address. — The old pages' own CSP
+  `form-action 'self'` blocks a 30x after a form (search, language and theme pickers).
+- **Hand-off keeps the same session:** the new name sets a 2-minute `__Host-` nonce cookie and sends the browser to
+  the old name, which makes a 60-second single-use token (in memory, tied to the nonce) and sends it back; the new
+  name checks token + nonce and gives a cookie for **the same session row**. — Same idle/maximum limits, sign out
+  everywhere and bans keep working; only random values ever appear in a URL; the nonce stops login CSRF. Language
+  and theme are carried when the new name doesn't have them yet.
+- **HSTS is not sent when `PUBLIC_URL` is http.** Cookies stay host-only. Tests: `tests/unit/domain.test.js`,
+  `tests/e2e/domain-move.spec.js` (127.0.0.1 plays the old name, localhost the new one).
+
+## Sign in with Google (school Google accounts, Chromebooks)
+- **Off until `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` are set** (and `PUBLIC_URL` in production). While off,
+  every new route answers like an unknown page and no panel, privacy text or header changes; migration 0020 only adds
+  empty tables and a column.
+- **OpenID Connect code flow, server side**: PKCE (S256), `state`, `nonce`, `prompt=select_account` (shared
+  Chromebooks always show the chooser), scopes `openid email profile` only (no Google app verification needed). The ID
+  token's RS256 signature is checked against Google's keys with Node's crypto (no dependency), plus issuer, audience,
+  times, nonce and `email_verified`. The access token is thrown away. A signed, HttpOnly, 10-minute cookie scoped to
+  `/auth/google` holds the flow; a used `state` is refused. The same per-address sign-in limits as passwords apply.
+- **Matching is by Google's account id (`sub`) only; an email never links an account.** A new Google account gets an
+  Oomba account only through its school: a teacher's invite (bound to a school email, no link or token, 30 days), or
+  the class code when the teacher turned on "join with Google". Both need the school's Google Workspace domains, and
+  the token's `hd` and email domain must both be in them, so a personal Gmail with the same address never claims an
+  invite. Anyone else is turned away kindly; no own account is made from Google (keeps the "no email" promise).
+- **A Google domain belongs to one school.** Saving a domain another live school lists is refused ("contact us").
+  Otherwise another school could invite, and so claim, this school's students first. If two schools somehow share a
+  domain (set before this rule), the oldest invite's school decides a first sign-in and only its invites apply; a
+  later "connect this account" invite from another school can't jump ahead. A re-pasted list only renews an invite:
+  a waiting "connect this account" invite stays one. The class-code Google join is instant only for the school's own
+  people; anyone else follows the usual class-code rules (own accounts wait, or are refused when the school says so).
+- **School accounts made through Google have no password**; removing Google from one prints a login card at once.
+  Clearing the school's domains turns Google off for its own accounts. Staff and own-account students in a school with
+  domains can connect Google on the Me page after re-entering their password; school-account students can't (their
+  teacher connects it).
+- **The Google name is never public**: it is only the staff-only class-list name when the teacher typed none; the
+  username is generated. The photo is never stored.
+- **The class-code option** is off per class by default, limited to 100 new accounts a class a day and 300 an hour
+  from one address, and says the same thing for a wrong code and for the option being off.
+- Tests: `tests/unit/google-signin.test.js` (protocol, tampered tokens, key cache), `google-invites.test.js`
+  (domains, invites, attach, staff, class code, Me page, clean-up, off), `tests/e2e/google.spec.js` against the fake
+  Google in `tests/support/fake-google.js`.
+

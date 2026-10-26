@@ -293,5 +293,8 @@
   "me.tiles.building": "Small line under “My games” on the Me page. {count} is a number of games.",
   "layout.build.ready": "One-time note at the top of the next page. Keep the <a href=\"{href}\"> link and {title}.",
   "layout.build.many": "One-time note at the top of the next page when several games have news. Keep the <a href=\"{href}\"> link.",
-  "studio.api.liveBusy": "The same game is open in many browser tabs at once."
+  "studio.api.liveBusy": "The same game is open in many browser tabs at once.",
+  "errors.moved.text": "Shown for a moment while the browser goes to the site's new address. {site} is the new address, like oomba.ai: keep it as is.",
+  "errors.moved.link": "Link to the site's new address, in case the page doesn't move on by itself. {site} is the new address, like oomba.ai.",
+  "auth.page.moved": "Sign-in page, after the site moved to a new address and the sign-in could not come along. {site} is the new address, like oomba.ai."
 }

@@ -259,3 +259,7 @@ export function publicUser(u) {
   if (!u) return null;
   return { id: u.id, username: u.username, displayName: u.display_name, avatar: u.avatar, color: u.color, isGuest: !!u.is_guest, role: u.role, lang: u.lang || '' };
 }
+/** The domain move (routes/handoff.js): the same session, now also on this host, for as long as it has left. */
+export function attachSession(res, sessionId, expiresAt) {
+  setCookie(res, COOKIE, pack(sessionId), Math.max(0, Math.floor((expiresAt - now()) / 1000)) + COOKIE_GRACE);
+}
