@@ -116,12 +116,14 @@ export function translate(code, key, vars) {
   }
   return format(msg, vars, localeInfo(code).intl);
 }
-/** A t() bound to one locale. t.locale, t.dir and t.has(key) are there for callers that need them. */
+/** A t() bound to one locale. t.locale, t.dir, t.has(key) and t.own(key) are there for callers that need them. */
 export function makeT(code) {
   code = BY_CODE.has(code) ? code : DEFAULT_LOCALE;
   const t = (key, vars) => translate(code, key, vars);
   t.locale = code; t.dir = localeInfo(code).dir; t.intl = localeInfo(code).intl;
   t.has = key => lookup(code, key) !== undefined;
+  // Is the key written in this language (not the English fallback)? English and en-GB always are.
+  t.own = key => code.split('-')[0] === 'en' || chain(code).some(c => c !== DEFAULT_LOCALE && typeof dicts.get(c)?.[key] === 'string' && dicts.get(c)[key] !== '');
   return t;
 }
 /** A translation that contains a little markup (<b>, <a href="{href}">): values are escaped, the result is trusted HTML. */

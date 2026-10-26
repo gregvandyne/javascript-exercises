@@ -18,7 +18,8 @@ export function addByCode(user, code, tr = tEn) {
   if (!c) return fail(tr('friends.api.typeCode'));
   if (c.length !== 6) return fail(tr('friends.api.codeLength'));
   const t = q.get('SELECT * FROM users WHERE friend_code=?', c);
-  if (!t || t.banned) return fail(tr('friends.api.codeNotFound'));
+  // Grown-up accounts have no friend code; an old one would find nobody either.
+  if (!t || t.banned || t.account_type === 'grownup') return fail(tr('friends.api.codeNotFound'));
   if (t.id === user.id) return fail(tr('friends.api.ownCode'));
   if (t.is_guest) return fail(tr('friends.api.guest'));
   // School accounts make friends with classmates only (the school's safe default).

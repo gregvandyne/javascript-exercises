@@ -45,3 +45,17 @@ document.addEventListener('click', async e => {
   try { await api('/api/me/photo', { method: 'DELETE' }); toast(t('js.me.photoRemoved')); setTimeout(() => location.reload(), 400); }
   catch (err) { toast(err.message, { bad: true }); }
 });
+
+// "For grown-ups" (server/routes/family.js): Get a code shows the new code here. Only an HMAC of it is kept, so it is
+// shown once; Get a new code replaces it.
+document.addEventListener('click', async e => {
+  const b = e.target.closest('[data-family-code]'); if (!b) return;
+  b.disabled = true;
+  try {
+    const r = await api('/api/me/family/code', { method: 'POST', body: {} });
+    const box = document.getElementById('famcode'), val = document.getElementById('famcode-value');
+    if (box && val) { val.textContent = r.code; box.hidden = false; }
+    const was = document.getElementById('famcode-open'); if (was) was.hidden = true;   // "Lost it? Get a new one" no longer fits
+    b.remove();
+  } catch (err) { toast(err.message, { bad: true }); b.disabled = false; }
+});

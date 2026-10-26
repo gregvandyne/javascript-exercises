@@ -5,6 +5,7 @@ import { q, uid, now, tx } from '../db.js';
 import * as presence from './presence.js';
 import { current } from '../i18n/index.js';
 import { queueShot } from './shots.js';
+import { hasProfanity, personalInfo, looksLikeLinkCode } from './textfilter.js';
 
 export const CATEGORIES = [
   ['arcade', '🕹️', 'Arcade'], ['sports', '⚽', 'Sports'], ['puzzle', '🧩', 'Puzzle'], ['words', '🔤', 'Words'],
@@ -186,7 +187,7 @@ export function searchBuilders(user, text, limit = 8) {
   const t = String(text || '').trim().slice(0, 40); if (t.length < 2) return [];
   const v = visibleWhere(user); const like = likeEsc(t);
   return q.all(`SELECT u.id, u.username, u.display_name, u.avatar, u.color, u.photo_at, COUNT(g.id) AS games, COALESCE(SUM(g.plays),0) AS plays
-    FROM users u JOIN games g ON g.owner_id=u.id WHERE ${v.sql} AND (u.username LIKE ? OR u.display_name LIKE ?) GROUP BY u.id ORDER BY plays DESC LIMIT ?`, ...v.params, like, like, limit);
+    FROM users u JOIN games g ON g.owner_id=u.id WHERE ${v.sql} AND u.account_type!='grownup' AND (u.username LIKE ? OR u.display_name LIKE ?) GROUP BY u.id ORDER BY plays DESC LIMIT ?`, ...v.params, like, like, limit);
 }
 export function similar(user, game, limit = 6) {
   const rows = listVisible(user, { category: game.category, limit: limit + 1 }).filter(g => g.id !== game.id);
@@ -273,7 +274,14 @@ export function endPlay(playId, userId) {
   const t = now(); q.run('UPDATE plays SET ended_at=?, seconds=? WHERE id=?', t, Math.min(6 * 3600, Math.round((t - p.started_at) / 1000)), playId);
 }
 export function leaderboard(gameId, limit = 10) {
-  return q.all(`SELECT s.score, s.label, s.created_at, u.id, u.username, u.display_name, u.avatar, u.color, u.photo_at FROM scores s JOIN users u ON u.id=s.user_id WHERE s.game_id=? AND u.banned=0 ORDER BY s.score DESC, s.created_at ASC LIMIT ?`, gameId, limit);
+  return q.all(`SELECT s.score, s.label, s.created_at, u.id, u.username, u.display_name, u.avatar, u.color, u.photo_at FROM scores s JOIN users u ON u.id=s.user_id WHERE s.game_id=? AND u.banned=0 AND u.account_type!='grownup' ORDER BY s.score DESC, s.created_at ASC LIMIT ?`, gameId, limit);
+}
+/** A score's label ("3 stars", "lap 2") is shown on the public leaderboard, so a game can't use it to publish what a
+ *  player typed: anything with blocked words, personal details or a family link code is dropped. */
+export function cleanScoreLabel(label) {
+  const v = String(label ?? '').replace(/[\u0000-\u001f\u202a-\u202e\u2066-\u2069]/g, '').trim().slice(0, 40);
+  if (!v || hasProfanity(v) || personalInfo(v) || looksLikeLinkCode(v)) return '';
+  return v;
 }
 export function submitScore(gameId, userId, score, label = '') {
   score = Math.max(0, Math.min(1e9, Math.floor(+score || 0)));
@@ -281,7 +289,7 @@ export function submitScore(gameId, userId, score, label = '') {
   if (best && best.score >= score) return { best: best.score, improved: false };
   tx(() => {
     q.run('DELETE FROM scores WHERE game_id=? AND user_id=?', gameId, userId);
-    q.run('INSERT INTO scores(id, game_id, user_id, score, label, created_at) VALUES (?,?,?,?,?,?)', uid(), gameId, userId, score, String(label || '').slice(0, 40), now());
+    q.run('INSERT INTO scores(id, game_id, user_id, score, label, created_at) VALUES (?,?,?,?,?,?)', uid(), gameId, userId, score, cleanScoreLabel(label), now());
   });
   return { best: score, improved: true };
 }

@@ -886,3 +886,24 @@ the earliest open invoice's due date, whatever the status. A Checkout paid by a 
 money arrives. Every entitlement query filters on the key's mode. Prices are found by lookup key. The jobs runner now
 awaits async jobs, logs a rejection instead of crashing, and never overlaps two runs of one job. Cancelling on a
 dispute or fraud warning, refunding duplicates and the school seat pool come with checkout (chunks 4 and 5).
+
+**Chunk 3: grown-up accounts and family links (no payments).** On only while billing is on; grown-up accounts stay
+fenced in either way. `users.account_type` is `kid` or `grownup`. Grown-ups sign up at `/grown-ups/signup` (the kids'
+sign-up limits and buckets, a password of at least 12 characters, a "parent or guardian, 18 or older" box that is a
+statement, never a check, audit `user.signup {grownup:true}`), never from a guest or a kid account, get no friend
+code, use the staff session rules (12 hours idle, 7 days at most) and land on `/family`. A fence before every route
+(`routes/family.js` `grownupGuard`) lists what a grown-up may open (game pages and play, search, info pages, signing in
+and out, their password and theme, the family pages); everything else, the Builder, Studio, friends, chat, profiles,
+classes, schools and admin included, is a 404, and `requireAccount` itself refuses them too. They are on no
+leaderboard (their scores aren't stored), in no builder search, have no profile and can't join a school. Linking: the
+child (an own kid account; never a guest, a school account or staff, whose code endpoints 404) gets a code like
+`K7Q-4MZ9` on /me (only an HMAC is stored; 1 hour, single use, one open per child, rate-limited), the grown-up types
+it on `/family/link` (10 wrong codes per 15 minutes), and the child answers Yes / No / Report on /me (a badge on Me
+while a request waits; it ends after 24 hours). The child only ever sees "your grown-up". One live row per child
+(pending or linked) and up to `FAMILY_MAX_CHILDREN`. A Report (on a request or a link) leaves no link and goes to the
+admin's Link reports tab (done, ban the grown-up); the admin's user lookup shows links with Break link. /family shows
+each child's family-charged extra messages for yesterday and this month up to yesterday, never today, school-charged
+messages or anything about school. Chat refuses messages shaped like a code. A ban ends the account's links in the
+same transaction. A daily job deletes codes 30 days after use or expiry, unanswered requests after 24 hours, unlinked
+rows 90 days after unlinking and resolved reports after a year. Families are registered as billing owners (a family
+whose grown-up isn't banned). Linking and plans are never consent (/grown-ups says so).

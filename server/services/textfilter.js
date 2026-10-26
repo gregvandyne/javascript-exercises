@@ -97,6 +97,30 @@ function listHit(s, { names = false } = {}) {
 }
 
 function stripSafe(t) { for (const w of SAFE) t = t.split(w).join(' '); return t; }
+// ---------------------------------------------------------------- family link codes
+/** The alphabet of family link codes (services/family.js): no look-alikes (0 O 1 I L). */
+export const LINK_CODE_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+const LC = 'A-HJKMNP-Z2-9';
+const SEP = '[^\\p{L}\\p{N}]';   // anything that isn't a letter or a digit: spaces, any dash, slashes, dots, symbols
+const LINK_CODE_RES = [
+  // 3 + 4 with up to 3 separators of any kind between the halves: "K7Q-4MZ9", "k7q 4mz9", "K7Q / 4MZ9", "K7Q — 4MZ9"
+  `[${LC}]{3}${SEP}{0,3}[${LC}]{4}`,
+  // 7 single characters, each followed by 1-3 separators: "K 7 Q 4 M Z 9", "K-7-Q-4-M-Z-9", "K.7.Q.4.M.Z.9"
+  `(?:[${LC}]${SEP}{1,3}){6}[${LC}]`,
+].map(body => new RegExp(`(?<![\\p{L}\\p{N}])(?=(${body})(?![\\p{L}\\p{N}]))`, 'gu'));   // a lookahead, so matches may overlap
+// The code at the end of a longer word ("codeK7Q4MZ9"): 7 code characters with at least 2 digits, a digit before a
+// letter (codes are random; "Panda482" or "THANKS2U" are not codes).
+const LINK_CODE_TAIL = new RegExp(`[\\p{L}\\p{N}]([${LC}]{7})(?![\\p{L}\\p{N}])`, 'gu');
+/** Does the text carry something shaped like a family link code (K7Q-4MZ9), however it is spaced or punctuated? Only 7
+ *  characters from the code alphabet with a digit and a letter in them count, so ordinary words (which almost always
+ *  have an O, I or L, or no digit) and plain numbers pass. Used by friends chat, names, game text and score labels. */
+export function looksLikeLinkCode(text) {
+  const s = normalizeText(String(text ?? '').slice(0, 20000)).toUpperCase();
+  for (const re of LINK_CODE_RES) for (const m of s.matchAll(re)) if (/[2-9]/.test(m[1]) && /[A-Z]/.test(m[1])) return true;
+  for (const m of s.matchAll(LINK_CODE_TAIL)) { const c = m[1]; if ((c.match(/[2-9]/g) || []).length >= 2 && /[2-9][A-Z]/.test(c)) return true; }
+  return false;
+}
+
 /** true if the text contains blocked words (any language list), including spaced-out or leetspeak versions. */
 export function hasProfanity(s, { names = false } = {}) {
   s = String(s || '').slice(0, 200000);
@@ -133,6 +157,8 @@ export function cleanName(s, t = tEn) {
   if (!/^[A-Za-z0-9_]{3,16}$/.test(v)) return { ok: false, error: t('textfilter.name.chars') };
   if (hasProfanity(v, { names: true })) return { ok: false, error: t('textfilter.name.notAllowed') };
   if (/\d{5,}/.test(v)) return { ok: false, error: t('textfilter.name.numbers') };
+  // A family link code as a name would show on leaderboards, search and profiles (services/family.js).
+  if (looksLikeLinkCode(v)) return { ok: false, error: t('textfilter.name.notAllowed') };
   if (/^(19|20)\d\d|(19|20)\d\d$/.test(v) && /[a-z]{3,}/i.test(v)) return { ok: false, error: t('textfilter.name.birthYear') };
   if (/^[A-Z][a-z]{2,}_?[A-Z][a-z]{2,}\d*$/.test(v) && REALNAME.test(v)) return { ok: false, error: t('textfilter.name.realName') };
   return { ok: true, value: v };
@@ -146,5 +172,6 @@ export function cleanText(s, max = 200, t = tEn) {
   if (hasProfanity(v)) return { ok: false, error: t('textfilter.text.notAllowed') };
   const pi = personalInfo(v);
   if (pi && pi !== 'handle') return { ok: false, error: t('textfilter.text.personal') };
+  if (looksLikeLinkCode(v)) return { ok: false, error: t('textfilter.text.personal') };
   return { ok: true, value: v };
 }

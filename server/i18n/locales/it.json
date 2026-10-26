@@ -43,7 +43,8 @@
       "question": "💬 Il Costruttore ha una domanda su “{title}”. <a href=\"{href}\">Aprilo</a>",
       "stopped": "⚠️ “{title}” si è fermato prima di essere finito. <a href=\"{href}\">Aprilo per continuare</a>",
       "many": "✨ Il Costruttore ha novità su alcuni dei tuoi giochi. <a href=\"{href}\">Vai a I miei giochi</a>"
-    }
+    },
+    "shortPasswordGrownup": "La password ha meno di {min} caratteri. È meglio <a href=\"{href}\">sceglierne una più lunga</a>."
   },
   "nav": {
     "home": "Home",
@@ -52,7 +53,8 @@
     "friends": "Amici",
     "me": "Io",
     "classes": "Classi",
-    "schools": "Scuole"
+    "schools": "Scuole",
+    "family": "Famiglia"
   },
   "errors": {
     "goHome": "Torna alla home",
@@ -210,7 +212,8 @@
       "mismatch": "Le due nuove password non sono uguali.",
       "same": "Questa è la password che hai già. Scegline una nuova.",
       "staffShort": "{n, plural, one {È solo # carattere.} other {Sono solo # caratteri.}} Ne servono almeno {min}.",
-      "school": "La tua password la gestisce l'insegnante: se la dimentichi, chiedi a lui o a lei."
+      "school": "La tua password la gestisce l'insegnante: se la dimentichi, chiedi a lui o a lei.",
+      "hintGrownup": "Almeno {min} caratteri, perché questo account si occupa di una famiglia."
     },
     "signOut": {
       "heading": "Esci",
@@ -236,6 +239,38 @@
         "unsafe": "Questa foto non va bene per Oomba Academy. Provane un’altra.",
         "personal_info": "Questa foto mostra dati privati come un nome, una scuola o un indirizzo. Provane un’altra.",
         "resting": "Le foto passano il nostro controllo di sicurezza, che adesso sta riposando. Riprova più tardi."
+      }
+    },
+    "family": {
+      "heading": "Per gli adulti",
+      "text": "Un adulto può collegarsi al tuo account.",
+      "getCode": "Ottieni un codice",
+      "newCode": "Ottieni un nuovo codice",
+      "codeOpen": "Hai un codice che funziona ancora. L'hai perso? Prendine uno nuovo e quello vecchio smetterà di funzionare.",
+      "codeLabel": "Il tuo codice",
+      "codeHow": "Funziona una volta sola, per 1 ora. Con questo codice un adulto può collegarsi al tuo account su {where}.",
+      "codeWarn": "Dai questo codice solo a un tuo genitore o all'adulto che si occupa di te, di persona. Non scriverlo mai in chat o in un gioco, e non darlo mai a qualcuno online.",
+      "pending": "<b>Un adulto</b> vuole collegarsi al tuo account. Di' di sì solo se è un tuo genitore o l'adulto che si occupa di te. Se non sai chi è, dillo a un adulto di cui ti fidi.",
+      "pendingCheck": "Il codice l'hai dato tu, di persona, a un tuo genitore o all'adulto che si occupa di te? Se no, tocca Segnala.",
+      "yes": "Sì",
+      "no": "No",
+      "report": "Segnala",
+      "reportConfirm": "Vuoi segnalarlo? Non verrà collegato niente e il team di Oomba Academy darà un'occhiata.",
+      "linked": "Il tuo account è collegato a <b>un adulto</b>.",
+      "unlink": "Scollega",
+      "unlinkConfirm": "Vuoi scollegare questo adulto?",
+      "reportLinkedConfirm": "Vuoi segnalarlo? Il collegamento finisce subito e il team di Oomba Academy darà un'occhiata.",
+      "done": {
+        "yes": "Fatto! Il tuo account ora è collegato a questo adulto.",
+        "no": "Ok. Non è stato collegato niente.",
+        "report": "Grazie per avercelo detto. Non è stato collegato niente e daremo un'occhiata.",
+        "unlink": "Collegamento tolto.",
+        "reportLinked": "Grazie per avercelo detto. Il collegamento è finito e daremo un'occhiata."
+      },
+      "errors": {
+        "linked": "Il tuo account è già collegato a un adulto.",
+        "pending": "Prima rispondi alla domanda in questa pagina.",
+        "nothing": "Per ora qui non c'è niente da fare. Prova a ricaricare la pagina."
       }
     }
   },
@@ -401,6 +436,11 @@
       "contact": {
         "h": "Contattaci",
         "p1": "Gli adulti possono scriverci a {email}."
+      },
+      "families": {
+        "h": "Account famiglia",
+        "p1": "Un genitore o tutore può creare un proprio account genitore e collegarlo all'account del figlio o della figlia. Vostro figlio o figlia deve dire di sì nella propria pagina.",
+        "link": "Informazioni sugli account famiglia"
       }
     },
     "sdk": {
@@ -2207,6 +2247,127 @@
         "h": "Privacy",
         "p1": "Finché l'account Google è collegato, conserviamo il suo id, l'indirizzo email e il dominio della scuola, per riconoscerlo all'accesso. Non salviamo mai la foto Google, non mostriamo mai il nome Google di uno studente sul sito dei giochi e non usiamo mai l'account per leggere altro da Google."
       }
+    }
+  },
+  "family": {
+    "landing": {
+      "title": "Account famiglia",
+      "description": "Account genitore per genitori e tutori su Oomba Academy: come collegare i vostri figli e cosa aggiunge un piano famiglia.",
+      "heading": "Oomba Academy per le famiglie",
+      "intro": "Giocare e creare giochi su Oomba Academy è gratis. Con un account genitore, un genitore o tutore può collegarsi ai propri figli, e un piano famiglia aggiunge per loro messaggi extra al Costruttore.",
+      "signup": "Crea un account genitore",
+      "login": "Accedi",
+      "toFamily": "Vai alla pagina della vostra famiglia",
+      "what": {
+        "h": "Cosa aggiunge un piano famiglia",
+        "p1": "{extra, plural, one {# messaggio extra al Costruttore} other {# messaggi extra al Costruttore}} al mese, da condividere tra un massimo di {max} figli, in aggiunta ai messaggi gratuiti che ogni giocatore riceve ogni giorno.",
+        "p2": "Pagare non sblocca mai niente che manchi a chi gioca gratis, e ai bambini non viene mai chiesto di pagare."
+      },
+      "price": {
+        "h": "Prezzo",
+        "p1": "{monthly} al mese o {yearly} all'anno, più l'imposta sulle vendite dove prevista. Potete disdire in qualsiasi momento: il piano resta attivo fino alla fine del periodo già pagato.",
+        "soon": "I piani famiglia non sono ancora in vendita. Potete già creare un account genitore e collegare i vostri figli.",
+        "us": "Per ora i piani famiglia sono disponibili solo per le famiglie degli Stati Uniti."
+      },
+      "how": {
+        "h": "Come funziona il collegamento",
+        "p1": "Create un account genitore: bastano un nome e una password di almeno 12 caratteri. Non serve l'email.",
+        "p2": "Vostro figlio o figlia accede, apre <b>Io</b>, poi <b>Per gli adulti</b>, e tocca <b>Ottieni un codice</b>.",
+        "p3": "Voi scrivete il codice nella pagina della vostra famiglia, e vostro figlio o figlia dice di sì nella propria pagina."
+      },
+      "faq": {
+        "h": "Domande",
+        "cancel": {
+          "q": "Posso disdire?",
+          "a": "Sì, in qualsiasi momento. Il piano resta attivo fino alla fine del periodo già pagato, poi i vostri figli tornano ai messaggi gratuiti. Non viene cancellato niente di quello che hanno creato."
+        },
+        "store": {
+          "q": "Cosa conservate su di me?",
+          "a": "Il nome del vostro account, una password salvata in forma illeggibile (hash) e quali figli sono collegati. Non vi chiediamo l'email. Quando pagate, il pagamento lo gestisce Stripe, che conserva la vostra email per le ricevute: noi non vediamo mai i numeri delle carte."
+        },
+        "see": {
+          "q": "Cosa posso vedere di mio figlio o mia figlia?",
+          "a": "Il nome e quanti messaggi extra della famiglia ha usato fino a ieri. Mai le chat, gli amici, i giochi, la scuola o quello che sta facendo in questo momento."
+        },
+        "reset": {
+          "q": "Quando si azzerano i messaggi gratuiti?",
+          "a": "Ogni giorno alle 00:00 UTC.",
+          "local": "Cioè alle {time} nel vostro fuso orario."
+        },
+        "consent": {
+          "q": "Collegarsi o pagare vale come consenso dei genitori?",
+          "a": "No. Il collegamento e i piani famiglia riguardano solo i messaggi extra al Costruttore. Non sono il modo in cui il sito chiede o registra il consenso."
+        }
+      }
+    },
+    "signup": {
+      "title": "Registrazione account genitore",
+      "heading": "Crea un account genitore",
+      "intro": "Per genitori e tutori. Un account genitore può giocare e occuparsi di una famiglia. Non può creare giochi, chattare o aggiungere amici.",
+      "nameLabel": "Nome dell'account",
+      "nameHint": "Da 3 a 16 lettere o numeri. I bambini non vedono mai questo nome.",
+      "passwordHint": "Almeno {min} caratteri.",
+      "confirmLabel": "Ripeti la password",
+      "adult": "Sono un genitore o tutore e ho almeno 18 anni.",
+      "submit": "Crea account",
+      "haveAccount": "Avete già un account genitore?",
+      "signedIn": "Accesso effettuato come {name}. Per usare qui un account genitore, prima uscite da questo account.",
+      "signOutFirst": "Prima uscite dall'account aperto su questo dispositivo.",
+      "needAdult": "Spuntate la casella per confermare che siete un genitore o tutore e avete almeno 18 anni.",
+      "short": "Usate almeno {min} caratteri."
+    },
+    "login": {
+      "title": "Accesso genitore",
+      "heading": "Accedi come genitore",
+      "intro": "Con il nome e la password del vostro account genitore.",
+      "submit": "Accedi",
+      "newHere": "Non avete ancora un account genitore?",
+      "forgot": "Avete dimenticato la password? Scrivete a {email} dall'indirizzo email a cui volete che rispondiamo."
+    },
+    "page": {
+      "title": "La vostra famiglia",
+      "heading": "La vostra famiglia",
+      "children": "Figli",
+      "none": "Ancora nessun figlio collegato.",
+      "add": "Collega un figlio o una figlia",
+      "full": "Avete collegato {max} figli, il massimo per una famiglia.",
+      "pending": "In attesa che vostro figlio o figlia dica di sì",
+      "pendingSent": "Richiesta inviata {when}. La richiesta scade dopo 24 ore.",
+      "yesterday": "Messaggi extra della famiglia ieri: {n}",
+      "month": "questo mese fino a ieri: {n}",
+      "sourceFamily": "I messaggi extra arrivano dal vostro piano famiglia.",
+      "sourceFree": "Usa i messaggi gratuiti di ogni giorno.",
+      "usageNote": "I conteggi arrivano fino alla fine di ieri (UTC), quindi questa pagina non mostra mai cosa sta facendo vostro figlio o figlia in questo momento.",
+      "remove": "Scollega",
+      "removeConfirm": "Scollegare {name}?",
+      "removed": "Fatto.",
+      "cancel": "Annulla richiesta",
+      "cancelConfirm": "Annullare questa richiesta?",
+      "planHeading": "Piano famiglia",
+      "planActive": "Il vostro piano famiglia è attivo.",
+      "planNone": "Nessun piano famiglia. Collegare i figli è gratis e per loro non cambia niente.",
+      "planMore": "Informazioni sui piani famiglia",
+      "helpHeading": "Aiuto",
+      "help": "Avete domande o un problema con il vostro account? Scrivete a {email}.",
+      "off": "Per ora gli account famiglia sono disattivati. Qui potete comunque giocare, cambiare lingua o password e uscire."
+    },
+    "link": {
+      "title": "Collega un figlio o una figlia",
+      "heading": "Collega un figlio o una figlia",
+      "step1": "Vostro figlio o figlia accede, apre <b>Io</b>, poi <b>Per gli adulti</b>, e tocca <b>Ottieni un codice</b>.",
+      "step2": "Scrivete qui il codice. Funziona una volta sola, per 1 ora.",
+      "step3": "Vostro figlio o figlia dice di sì nella propria pagina Io. Fino ad allora il collegamento resta in attesa (per un massimo di 24 ore).",
+      "label": "Il codice di vostro figlio o figlia",
+      "submit": "Invia richiesta di collegamento",
+      "sent": "Richiesta inviata. Vostro figlio o figlia deve dire di sì nella propria pagina Io."
+    },
+    "errors": {
+      "badCode": "Questo codice non funziona. Un codice funziona una volta sola, per 1 ora: chiedetene uno nuovo a vostro figlio o figlia.",
+      "already": "Avete già chiesto di collegare questo figlio o figlia, oppure il collegamento c'è già.",
+      "full": "Una famiglia può collegare al massimo {max} figli.",
+      "typeCode": "Scrivete il codice che vi ha dato vostro figlio o figlia.",
+      "tooMany": "Troppi tentativi. Aspettate 15 minuti e poi riprovate.",
+      "notFound": "Questo figlio o figlia non fa parte della vostra famiglia."
     }
   }
 }

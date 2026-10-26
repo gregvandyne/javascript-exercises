@@ -48,13 +48,18 @@ export const COLORS = ['#2f6bff', '#ff5c5c', '#16a34a', '#f59e0b', '#8b5cf6', '#
 const pick = a => a[Math.floor(Math.random() * a.length)];
 function friendCode() { for (;;) { const c = Array.from({ length: 6 }, () => 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'[crypto.randomInt(31)]).join(''); if (!q.get('SELECT 1 FROM users WHERE friend_code=?', c)) return c; } }
 
-export function createUser({ username, password, displayName, role = 'player', isGuest = false, avatar, color }) {
+/** accountType: 'kid' (every player, guest and school account) or 'grownup' (a parent's account: docs/decisions.md
+ *  "Paid plans"). Grown-ups get no friend code: nobody can add them as a friend. */
+export function createUser({ username, password, displayName, role = 'player', isGuest = false, avatar, color, accountType = 'kid' }) {
   const id = uid(10);
   const hash = password ? bcrypt.hashSync(password, BCRYPT_COST) : null;
-  q.run('INSERT INTO users(id, username, display_name, password_hash, role, is_guest, avatar, color, friend_code, created_at, last_seen) VALUES (?,?,?,?,?,?,?,?,?,?,?)',
-    id, username, displayName || username, hash, role, isGuest ? 1 : 0, avatar || pick(AVATARS), color || pick(COLORS), friendCode(), now(), now());
+  const grownup = accountType === 'grownup' && !isGuest;
+  q.run('INSERT INTO users(id, username, display_name, password_hash, role, is_guest, avatar, color, friend_code, created_at, last_seen, account_type) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)',
+    id, username, displayName || username, hash, grownup ? 'player' : role, isGuest ? 1 : 0, avatar || pick(AVATARS), color || pick(COLORS), grownup ? null : friendCode(), now(), now(), grownup ? 'grownup' : 'kid');
   return getUser(id);
 }
+/** A grown-up account (users.account_type): it can play games and look after a family, nothing else (server/routes/family.js). */
+export const isGrownup = u => !!u && !u.is_guest && u.account_type === 'grownup';
 export function createGuest() {
   for (let i = 0; i < 40; i++) {
     const animal = pick(ANIMALS), n = Math.floor(100 + Math.random() * 900);
@@ -90,7 +95,7 @@ export function setPassword(userId, password, { signOutEverywhere = false } = {}
 /** At sign-in (the only time the password itself is known): staff and the platform admin whose password is shorter than
  *  STAFF_PASSWORD_MIN are asked to choose a longer one until they do (users.password_short, shown by views/layout.js). */
 export function notePasswordLength(u, password) {
-  const short = accountKind(u) === 'staff' && String(password || '').length < STAFF_PASSWORD_MIN ? 1 : 0;
+  const short = longPasswordKind(u) && String(password || '').length < STAFF_PASSWORD_MIN ? 1 : 0;
   if (short !== (u.password_short || 0)) q.run('UPDATE users SET password_short=? WHERE id=?', short, u.id);
 }
 // The most common passwords: easy to guess, so not allowed.
@@ -110,10 +115,12 @@ export function checkPassword(p, username = '', t = tEn) {
 // (0 = no idle limit); max: signed out this long after signing in, whatever happens.
 //   student   school accounts of students (shared classroom devices)              1 hour idle, 10 hours at most
 //   staff     teachers and admins of any school, and the platform admin            12 hours idle, 7 days at most
+//   grownup   grown-up (parent) accounts: like staff, they can change a plan       12 hours idle, 7 days at most
 //   standard  own accounts and guests                                              60 days
 export const SESSION_RULES = {
   student: { idle: 3600e3, max: 10 * 3600e3 },
   staff: { idle: 12 * 3600e3, max: 7 * 86400e3 },
+  grownup: { idle: 12 * 3600e3, max: 7 * 86400e3 },
   standard: { idle: 0, max: 60 * 86400e3 },
 };
 /** Activity is written to a session at most this often, so most requests don't write to the database. */
@@ -136,17 +143,21 @@ export function isActivity(req) {
   }
   return !PASSIVE.test(req.path) || h['x-brb-active'] === '1';
 }
-/** 'student' | 'staff' | 'standard' (the rows of SESSION_RULES). Staff is the same test as services/schools.js isStaff,
- *  written out here because that module imports this one. */
+/** 'student' | 'staff' | 'grownup' | 'standard' (the rows of SESSION_RULES). Staff is the same test as
+ *  services/schools.js isStaff, written out here because that module imports this one. */
 export function accountKind(u) {
   if (!u || u.is_guest) return 'standard';
+  if (u.account_type === 'grownup') return 'grownup';
   if (u.role === 'admin' || q.get("SELECT 1 FROM school_members WHERE user_id=? AND status='active' AND role!='student'", u.id)) return 'staff';
   return u.managed_school ? 'student' : 'standard';
 }
 /** School students' passwords are looked after by their teacher, and guests have none. */
 export const canChangePassword = u => !!u && !u.is_guest && accountKind(u) !== 'student';
-/** Staff and the platform admin can see children's data, so their new passwords are longer. */
+/** Staff and the platform admin can see children's data, and grown-ups look after a family, so their new passwords are
+ *  longer. */
 export const STAFF_PASSWORD_MIN = 12;
+/** Accounts whose passwords must be at least STAFF_PASSWORD_MIN characters. */
+export const longPasswordKind = u => ['staff', 'grownup'].includes(accountKind(u));
 
 // The cookie outlives its session by a day, so a device that comes back to an ended sign-in (even the next morning) is
 // told so, and the next person to sign in there isn't sent to the last one's page.
@@ -232,10 +243,19 @@ export function requireUser(req, res, next) {
   if (isApi(req)) return res.status(401).json(signedOutReply(req, 'errors.api.signInFirst'));
   res.redirect(signInAgain(req));
 }
-export function requireAccount(req, res, next) { // a real (non-guest) account
+/** A real (non-guest) kid account: the Builder, Studio, friends and chat. Grown-ups get a 404, like a page that isn't
+ *  there (server/routes/family.js also turns them away from everything they don't need, before any route). */
+export function requireAccount(req, res, next) {
+  if (isGrownup(req.user)) return isApi(req) ? res.status(404).json({ error: tReq(req)('errors.api.notFound') }) : res.status(404).send('Not found');
   if (req.user && !req.user.is_guest) return next();
   if (isApi(req)) return req.user ? res.status(403).json({ error: tReq(req)('errors.api.needAccount') }) : res.status(401).json(signedOutReply(req, 'errors.api.needAccount'));
   res.redirect(req.sessionEnded ? signInAgain(req) : '/signup?next=' + encodeURIComponent(req.originalUrl));
+}
+/** Any real account, grown-ups too (signing out everywhere, changing the password). */
+export function requireAnyAccount(req, res, next) {
+  if (req.user && !req.user.is_guest) return next();
+  if (isApi(req)) return req.user ? res.status(403).json({ error: tReq(req)('errors.api.needAccount') }) : res.status(401).json(signedOutReply(req, 'errors.api.needAccount'));
+  res.redirect(req.sessionEnded ? signInAgain(req) : '/login?next=' + encodeURIComponent(req.originalUrl));
 }
 export function requireAdmin(req, res, next) {
   if (req.user && req.user.role === 'admin') return next();
