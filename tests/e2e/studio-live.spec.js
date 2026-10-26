@@ -231,7 +231,7 @@ test('LV-6 too late for the build: "This starts the next build", then the next b
   await routeState(page, id, json => {
     if (stage !== 2) return json;
     t2 = true;
-    return { ...json, chat: [...json.chat, user, fuEntry('carried'), { role: 'assistant', text: 'Here is your fox!', events: [['steps', REC1]], turn: 'T1' }], turn: T2, busy: true, turnsLeft: 57 };
+    return { ...json, chat: [...json.chat, user, fuEntry('carried'), { role: 'assistant', text: 'Here is your fox!', events: [['steps', REC1]], turn: 'T1' }], turn: T2, busy: true, turnsLeft: 57, freeLeft: 57 };
   });
   await page.reload();
   await expect(page.locator('#st-log .msg.fu .fu-st')).toContainText('This starts the next build');

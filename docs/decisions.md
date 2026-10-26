@@ -919,17 +919,26 @@ test key only grown-ups marked billing tester on /admin may use them (`users.bil
 the Customer made first (metadata only) and reused, `client_reference_id` and metadata the family id,
 `subscription_data.billing_mode=flexible`, `integration_identifier` `oomba_family_<8 letters>`, address required with
 `customer_update[address]=auto`, promotion codes, `automatic_tax` only with `STRIPE_TAX=1`,
-`payment_method_configuration` only when `STRIPE_PMC_FAMILY` is set (never `payment_method_types`), and Terms consent
+`payment_method_configuration` = `STRIPE_PMC_FAMILY` (never `payment_method_types`; unset, family plans are not on sale at
+all, a start-up warning and an /admin/billing banner say so: no fallback to the account's default configuration, which
+may have Link on), and Terms consent
 only once `/terms` is published (`TERMS_PUBLISHED=1`). One open session per family (an earlier one is expired; one paid
 meanwhile stops a new one). The return page waits for the webhook and asks the shared sync's fallback, which takes the
-owner only from the session. A second plan paid for the same family is cancelled and refunded at once (flag
-`duplicate`, audit `billing.duplicate`); completions run one at a time. A full refund of the latest payment ends a live
+owner only from the session; until the plan is on it shows only the wait (no Subscribe). A new Checkout is refused
+('fixPayment', Manage billing instead) while the family has a plan that isn't entitled but Stripe may still charge
+(past_due after grace, unpaid, incomplete, paused, or a delayed payment). A subscription that starts to entitle its owner
+(a second Checkout, or an old plan's card retry succeeding late) while another plan of the same owner is entitled is
+cancelled and its latest payment refunded at once (flag `duplicate`, audit `billing.duplicate`); those syncs run one at
+a time. The step-up's wrong passwords also count toward the account's sign-in lock, and a locked account can't step up. A full refund of the latest payment ends a live
 plan; another refund flags `refunded_active`; a dispute or an early fraud warning ends the plan (flags `dispute`/`efw`,
 refunding stays the owner's choice). Family extra messages (`usage.allowanceFor`): the free daily ones first, then
 `FAMILY_EXTRA_MESSAGES` a UTC month shared by the family's confirmed children (Pro weight counted, refunds given back),
 or the extras right away while the free AI pool rests; they stop at `FAMILY_CHILD_DAILY_MAX` for a child's day, at
 `FAMILY_MONTHLY_AI_USD` of AI cost for the family's month, or when the paid pool is spent. The paid pool's ceiling is
-families with a plan × `FAMILY_MONTHLY_AI_USD` (capped by `AI_PAID_MONTHLY_BUDGET_USD`); `AI_HARD_MONTHLY_USD` stops
-both pools. The child's Studio shows "+N extra this month" (numbers only) and the limit says "More tomorrow!" with no
+families with a plan, or whose extras were used this UTC month (a family that stops paying keeps its share until the
+month ends, as its spend stays in the pool), × `FAMILY_MONTHLY_AI_USD` (capped by `AI_PAID_MONTHLY_BUDGET_USD`); `AI_HARD_MONTHLY_USD` stops
+both pools. A child in any active school gets no family extras (and no "+N" counter) until
+builds know whether they come from class (chunk 5): family money is never used in class. The child's Studio shows "+N
+extra this month" (numbers only) and the limit says "More tomorrow!" with no
 number; /family shows extras left counted up to yesterday (never today). /admin/billing (read-only) lists subscriptions
 (filters by status and flag), refund windows, webhook problems and recent events, and the Stripe Tax banner.

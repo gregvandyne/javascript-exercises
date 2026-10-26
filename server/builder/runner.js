@@ -350,8 +350,10 @@ function carryOver(job) {
     const day = today();
     row = tx(() => {
       const charge = takeTurn(job.userId, day, { pro: !!job.pro });
+      // The provider follows the pool this message is charged to (a forced provider, e.g. in tests, stays).
+      const kind = job.providerArg ? job.provider : providerKind(providerName(charge ? charge.pool : 'free'));
       return charge ? turns.create({ gameId: job.gameId, userId: job.userId, status: 'running', request: { followUpIds: [...ids] }, locale: job.locale, pro: job.pro,
-        chain: job.chain + 1, attempt: 1, chargedDay: day, provider: job.provider, baseVersion: turns.newestVersion(job.gameId), startedAt: Date.now(),
+        chain: job.chain + 1, attempt: 1, chargedDay: day, provider: kind, baseVersion: turns.newestVersion(job.gameId), startedAt: Date.now(),
         chargedTo: charge.source, weight: charge.weight }) : null;
     });
     if (!row) why = 'limit';
@@ -368,7 +370,7 @@ function carryOver(job) {
   // The next build: no screening (each message was screened when it arrived), no second charge; round 1 reads them.
   const next = newJob(row);
   next.phase = 'running'; next.resolveScreened(true);
-  next.provider = job.provider; next.providerArg = job.providerArg;
+  next.provider = job.providerArg ? job.provider : providerKind(providerName(next.pool)); next.providerArg = job.providerArg;
   next.carried = list.length; next.lead = [['carried', { n: list.length }]];
   next.waiting = list.map(e => ({ ...e, status: 'carried' }));
   job.next = next; jobs.set(job.gameId, next);

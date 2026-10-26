@@ -42,6 +42,6 @@ services:
         sync: false
       - key: STRIPE_WEBHOOK_SECRET
         sync: false
-      # The "Family" payment method configuration (pmc_…, Link off); optional.
+      # The "Family" payment method configuration (pmc_…, Link off); required for family checkout.
       - key: STRIPE_PMC_FAMILY
         sync: false

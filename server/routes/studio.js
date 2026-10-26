@@ -21,7 +21,7 @@ import { restingUntil } from '../builder/anthropic.js';
 import { isBusy, cancel as cancelBuild, life as builderLife, submit, publicTurn, lastTurn } from '../builder/runner.js';
 import * as live from '../builder/live.js';
 import * as turns from '../builder/turns.js';
-import { turnsLeft, allowanceFor, counter } from '../builder/usage.js';
+import { allowanceFor, counter } from '../builder/usage.js';
 import { loadChat } from '../builder/chat.js';
 import { previewUrl } from '../builder/tools.js';
 import { saveUpload, getUpload, deleteUpload, readUploadBytes, listUploads, LIMITS, UploadError } from '../builder/uploads.js';
@@ -255,7 +255,7 @@ router.post('/api/studio/:id/chat', requireAccount, rateLimit('builder', 20, 60e
   } catch {
     send('error', { message: req.t('studio.api.wentWrong') });
   }
-  send('done', { turnsLeft: turnsLeft(req.user.id) }); res.end();
+  send('done', counter(req.user.id)); res.end();
 });
 
 // The live view of this game's builds for one Studio tab (builder/live.js): hello { now, turn }, the replay of the running

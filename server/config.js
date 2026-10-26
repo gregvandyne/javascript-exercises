@@ -61,8 +61,9 @@ export function parseStripe(env = process.env, nodeEnv = env.NODE_ENV || 'develo
   const tax = parseFlag(env.STRIPE_TAX, 'STRIPE_TAX');
   const apiVersion = String(env.STRIPE_API_VERSION || STRIPE_API_VERSION).trim();
   const base = parsePublicUrl(env.STRIPE_API_BASE, 'STRIPE_API_BASE');
-  // The "Family" payment method configuration (cards, Apple Pay, Google Pay; Link off). Optional: unset, family
-  // Checkout uses the account's default configuration. Never a list of payment_method_types.
+  // The "Family" payment method configuration (cards, Apple Pay, Google Pay; Link off, so a saved Link wallet can't be
+  // filled in on a shared device). Required for family Checkout: unset, family plans are not on sale (never a fallback
+  // to the account's default configuration). Never a list of payment_method_types.
   const pmcFamily = String(env.STRIPE_PMC_FAMILY || '').trim();
   const terms = parseFlag(env.TERMS_PUBLISHED, 'TERMS_PUBLISHED');
   for (const e of [liveOk.error, tax.error, base.error, terms.error]) if (e) errors.push(e);
@@ -86,6 +87,7 @@ export function parseStripe(env = process.env, nodeEnv = env.NODE_ENV || 'develo
   if (apiKey && !webhookSecret && !errors.length) warnings.push('Billing stays off: STRIPE_API_KEY is set but STRIPE_WEBHOOK_SECRET is not');
   if (!apiKey && webhookSecret) warnings.push('Billing stays off: STRIPE_WEBHOOK_SECRET is set but STRIPE_API_KEY is not');
   if (errors.length || !apiKey || !webhookSecret) mode = 'off';
+  if (mode !== 'off' && !pmcFamily) warnings.push('STRIPE_PMC_FAMILY is not set: family plans are not on sale until it names the "Family" payment method configuration (Link off)');
   return { apiKey, webhookSecret, webhookSecretOld, apiVersion, apiBase: base.url, liveOk: liveOk.on, tax: tax.on, pmcFamily, termsPublished: terms.on, mode, errors, warnings };
 }
 /** Shortest SESSION_SECRET accepted when REQUIRE_SESSION_SECRET is on (openssl rand -hex 32 gives 64). */
@@ -192,7 +194,7 @@ export const config = {
   stripeApiVersion: stripe.apiVersion,
   stripeApiBase: stripe.apiBase,                     // tests only: a local fake Stripe (tests/support/fake-stripe.js)
   stripeTax: stripe.tax,
-  stripePmcFamily: stripe.pmcFamily,                 // pmc_…: family Checkout's payment method configuration (optional)
+  stripePmcFamily: stripe.pmcFamily,                 // pmc_…: family Checkout's payment method configuration (required to sell family plans)
   // TERMS_PUBLISHED=1 once /terms is on the site: family Checkout then asks the buyer to agree to it (Stripe's own
   // checkbox, which also needs the Terms URL in the Stripe Dashboard's public details) and /family links to it.
   termsPublished: stripe.termsPublished,

@@ -28,10 +28,11 @@ export function mayBill(u) {
 /** The site's address for Stripe's return links: PUBLIC_URL, else this request's own origin. */
 export const baseUrl = req => config.publicUrl || `${req.protocol}://${req.get('host')}`;
 
-/** The family prices, found by lookup key: { month: { id, unitAmount }, year: {…} }, or null when either is missing
- *  or Stripe can't be read. */
+/** The family prices, found by lookup key: { month: { id, unitAmount }, year: {…} }, or null when either is missing,
+ *  Stripe can't be read, or STRIPE_PMC_FAMILY isn't set (family plans are then not on sale anywhere: the "Family" payment
+ *  method configuration keeps Link off, and there is no fallback to the account's default one). */
 export async function familyPrices() {
-  if (!S.billingOn()) return null;
+  if (!S.billingOn() || !config.stripePmcFamily) return null;
   try {
     const p = await S.prices();
     const m = p[S.PRICE_LOOKUP_KEYS.familyMonthly], y = p[S.PRICE_LOOKUP_KEYS.familyYearly];
@@ -43,6 +44,13 @@ export async function familyPrices() {
 }
 
 const ownerKey = fid => `family:${fid}`;
+/** Statuses of a plan that isn't entitled now but that Stripe may still charge or bring back (a card retry that
+ *  succeeds later): a new Checkout would make two plans, so the grown-up fixes the payment in Manage billing instead. */
+const STALE_STATUSES = ['past_due', 'unpaid', 'incomplete', 'paused'];
+/** The family's subscription that still waits for a payment (or a delayed payment still processing), or null. */
+export const unsettledPlan = fid => q.all(`SELECT * FROM billing_subscriptions WHERE owner_kind='family' AND owner_id=? AND plan='family' AND livemode=?
+    AND orphaned_at IS NULL`, fid, S.currentLivemode())
+  .find(r => STALE_STATUSES.includes(r.status) || (r.payment_pending && ['active', 'trialing'].includes(r.status))) || null;
 const openSession = fid => q.get("SELECT * FROM billing_checkouts WHERE owner_kind='family' AND owner_id=? AND livemode=?", fid, S.currentLivemode()) || null;
 
 /** The owner's Stripe Customer, made the first time (metadata only: no name or email from us) and reused after. */
@@ -76,12 +84,16 @@ async function endOpenSession(fid) {
 /**
  * A Checkout Session for a family plan. family: the families row; user: the grown-up; interval: 'month' | 'year';
  * base: the site's address. One at a time per family (an earlier open session is expired first).
- * -> { ok: true, url } | { ok: false, code: 'entitled' | 'paying' | 'noPrice' }
+ * A plan that isn't entitled but is still unsettled at Stripe (past_due after grace, unpaid, incomplete, paused, or a
+ * delayed payment) refuses with 'fixPayment' (Manage billing), so a late card retry can't leave two plans billed.
+ * -> { ok: true, url } | { ok: false, code: 'entitled' | 'fixPayment' | 'paying' | 'noPrice' }
  */
 export function startFamilyCheckout({ family, user, interval, base }) {
   const fid = family.id;
   return B.serialize(`checkout-start:family:${fid}`, async () => {
     if (B.ownerPlan('family', fid).entitled) return { ok: false, code: 'entitled' };
+    if (unsettledPlan(fid)) return { ok: false, code: 'fixPayment' };
+    if (!config.stripePmcFamily) return { ok: false, code: 'noPrice' };
     const prices = await familyPrices();
     const price = prices && prices[interval];
     if (!price) return { ok: false, code: 'noPrice' };
@@ -104,7 +116,7 @@ export function startFamilyCheckout({ family, user, interval, base }) {
       cancel_url: `${base}/family`,
     };
     // Which ways to pay is the "Family" payment method configuration's job (Link off), never payment_method_types.
-    if (config.stripePmcFamily) params.payment_method_configuration = config.stripePmcFamily;
+    params.payment_method_configuration = config.stripePmcFamily;
     // Stripe Tax only when the owner turned it on (and /admin/billing says whether it really collects anywhere).
     if (config.stripeTax) params.automatic_tax = { enabled: true };
     if (config.termsPublished) {

@@ -961,7 +961,7 @@ function onEvent(ev, d) {
   else if (ev === 'error') { endBubble(); bubble('err', d.message); if (live) live.stop(); LIVE.lastErr = d.message; }
   else if (ev === 'done') {
     endBubble();
-    if (typeof d.turnsLeft === 'number') { S.turnsLeft = d.turnsLeft; if (typeof d.freeLeft === 'number') S.freeLeft = d.freeLeft; if ('extraLeft' in d) S.extraLeft = d.extraLeft; renderTurns(); }
+    if (typeof d.turnsLeft === 'number') { S.turnsLeft = d.turnsLeft; S.freeLeft = typeof d.freeLeft === 'number' ? d.freeLeft : d.turnsLeft; if ('extraLeft' in d) S.extraLeft = d.extraLeft; renderTurns(); }
     // Ended before it was charged with an error (no turns left): nothing was saved, so after the redraw the error stays
     // and the message goes back in the box.
     const first = S.turn && (S.turn.entries || []).find(m => m.role === 'user');

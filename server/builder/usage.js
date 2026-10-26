@@ -25,9 +25,13 @@ const idOf = user => (user && typeof user === 'object' ? user.id : user);
 const monthRange = day => [day.slice(0, 8) + '01', day.slice(0, 8) + '31'];
 
 /** The family whose plan pays a child's extra messages: the child's confirmed (linked) family, when it has a plan
- *  (billing off: never). -> family id or null. */
+ *  (billing off: never). -> family id or null.
+ *  Never for a member of a school (docs/decisions.md "Paid plans" §3.1, §4.3): class contexts show only "{left} left
+ *  today" and family money is never used in class. Until builds know whether they come from class (chunk 5), a child
+ *  in any active school builds from the free daily messages only, with no "+N extra" counter. */
 export function familyOf(userId) {
   if (!userId) return null;
+  if (q.get("SELECT 1 FROM school_members m JOIN schools s ON s.id=m.school_id WHERE m.user_id=? AND m.status='active' AND s.archived_at IS NULL", userId)) return null;
   const r = q.get("SELECT family_id FROM family_children WHERE child_id=? AND status='linked' AND unlinked_at IS NULL", userId);
   return r && ownerPlan('family', r.family_id).entitled ? r.family_id : null;
 }

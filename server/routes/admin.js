@@ -19,6 +19,7 @@ import * as family from '../services/family.js';
 import * as billing from '../services/billing.js';
 import * as stripe from '../services/stripe.js';
 import { audit, q } from '../db.js';
+import { config } from '../config.js';
 
 export const router = Router();
 router.use('/admin', requireAdmin);
@@ -373,6 +374,7 @@ router.get('/admin/billing', (req, res) => {
   const body = html`
   <div class="pagehead"><h1>💳 Billing</h1><span class="chip-s ${mode === 'live' ? 'good' : mode === 'test' ? 'warn' : ''}">Stripe: ${mode}</span></div>
   ${mode === 'off' ? html`<p class="notice">Billing is off: set STRIPE_API_KEY and STRIPE_WEBHOOK_SECRET (see the README). Rows from an earlier key still show below.</p>` : ''}
+  ${mode !== 'off' && !config.stripePmcFamily ? html`<p class="notice bad" role="alert"><b>Family checkout is off: STRIPE_PMC_FAMILY is not set.</b> Create the "Family" payment method configuration in Stripe (cards, Apple Pay, Google Pay on; Link off) and put its pmc_… id in STRIPE_PMC_FAMILY. Until then family plans are not on sale.</p>` : ''}
   ${tax && tax.on && !tax.ok ? html`<p class="notice bad" role="alert"><b>${tax.problem === 'settings_pending' ? 'Stripe Tax is on but its settings are pending' : 'Stripe Tax is on but is collecting in no state'}.</b> No tax is collected. ${tax.problem === 'settings_pending' ? 'Set the head office address in Stripe (Tax → Settings).' : 'Add a registration in Stripe (Tax → Registrations).'} Checked ${timeAgo(tax.checkedAt)}.</p>` : ''}
   <div class="kpis" style="margin-bottom:var(--s4)">
     ${tile('👪 Families with a plan', int(families), mode === 'test' ? 'test mode: billing testers only' : '')}

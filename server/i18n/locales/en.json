@@ -2265,7 +2265,9 @@
         "h": "What a family plan adds",
         "p1": "{extra, plural, one {# extra Builder message} other {# extra Builder messages}} a month, shared by up to {max} children, on top of the free messages every player gets each day.",
         "p2": "Paying never unlocks anything free players lack, and children are never asked to pay.",
-        "limits": "Limits: one child can use up to {daily, plural, one {# extra message} other {# extra messages}} a day, and a family's extras also stop for the month if they get unusually expensive to run. Extras start again on the 1st of each month (UTC) and don't roll over."
+        "limitDaily": "One child can use up to {daily, plural, one {# extra message} other {# extra messages}} a day.",
+        "limitCost": "A family's extras also stop for the month if they get unusually expensive to run.",
+        "limitReset": "Extras start again on the 1st of each month (UTC) and don't roll over."
       },
       "price": {
         "h": "Price",
@@ -2384,6 +2386,7 @@
       "welcome": "Your family plan is on. Thank you!",
       "waiting": "Setting up your plan… This page updates by itself.",
       "slow": "This is taking longer than usual. Your payment is safe: reload this page in a few minutes, and if the plan still doesn't show, write to us.",
+      "back": "Back to your family page",
       "grant": "Free plan until {date}.",
       "pastDue": "Your last payment didn't go through. Update your card in Manage billing, or the plan ends on {date}.",
       "ends": "It ends on {date} and won't renew. Your children keep the extra messages until then.",
@@ -2407,6 +2410,7 @@
       "errors": {
         "notOpen": "Family plans aren't on sale yet.",
         "entitled": "Your family already has a plan. Use Manage billing to change it.",
+        "fixPayment": "Your family's last payment didn't go through. Update your card in Manage billing instead of starting a new plan.",
         "paying": "Your last payment just went through. Wait a minute, then reload this page.",
         "noPrice": "Family plans can't be bought right now. Please try again later.",
         "noCustomer": "There is nothing to manage yet: start a plan first.",

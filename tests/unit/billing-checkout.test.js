@@ -28,7 +28,8 @@ const turns = await import('../../server/builder/turns.js');
 const aiBudget = await import('../../server/services/ai-budget.js');
 const anthropic = await import('../../server/builder/anthropic.js');
 const { grownupMay } = await import('../../server/routes/family.js');
-const { _reset: resetLimits } = await import('../../server/services/ratelimit.js');
+const { _reset: resetLimits, allow, count, loginLockKey } = await import('../../server/services/ratelimit.js');
+const { LOGIN } = await import('../../server/routes/auth.js');
 
 const DAY = 86400e3;
 const PW = 'a-long-password-1';
@@ -39,7 +40,7 @@ test.before(async () => {
   fake.webhookUrl = base + B.WEBHOOK_PATH;
 });
 test.after(async () => { server.close(); await fake.close(); });
-const defaults = { stripeApiKey: 'rk_test_fake', stripeWebhookSecret: SECRET, stripeApiBase: fake.url, stripeTax: false, stripePmcFamily: '', termsPublished: false, billingPublic: true, builderDailyTurns: 3, familyExtraMessages: 5, familyChildDailyMax: 4, familyMonthlyAiUsd: 4, proTurnWeight: 1, anthropicKey: '', aiPaidMonthlyBudgetUsd: null, aiHardMonthlyUsd: null };
+const defaults = { stripeApiKey: 'rk_test_fake', stripeWebhookSecret: SECRET, stripeApiBase: fake.url, stripeTax: false, stripePmcFamily: 'pmc_fakefamily', termsPublished: false, billingPublic: true, builderDailyTurns: 3, familyExtraMessages: 5, familyChildDailyMax: 4, familyMonthlyAiUsd: 4, proTurnWeight: 1, anthropicKey: '', aiPaidMonthlyBudgetUsd: null, aiHardMonthlyUsd: null };
 test.beforeEach(() => { Object.assign(config, defaults); resetLimits(); fake.violations.length = 0; });
 
 // ---------------------------------------------------------------- helpers
@@ -194,7 +195,8 @@ test('the Checkout Session: hosted, subscription mode, prices by lookup key, fle
   assert.match(p.integration_identifier, /^oomba_family_[a-z]{8}$/);
   assert.equal(p.success_url, `${base}/family?checkout={CHECKOUT_SESSION_ID}`);
   assert.equal(p.cancel_url, `${base}/family`);
-  for (const k of ['payment_method_types', 'payment_method_configuration', 'automatic_tax', 'consent_collection', 'custom_text']) assert.equal(p[k], undefined, k);
+  assert.equal(p.payment_method_configuration, 'pmc_fakefamily', 'the Family configuration (Link off), always');
+  for (const k of ['payment_method_types', 'automatic_tax', 'consent_collection', 'custom_text']) assert.equal(p[k], undefined, k);
   assert.ok(fake.requests.slice(before).filter(x => x.method === 'POST').every(x => x.idempotencyKey), 'every POST has an idempotency key');
   assert.deepEqual(fake.violations, []);
   assert.equal(audits('billing.checkout.start', `family:${fam.id}`).length, 1);
@@ -204,8 +206,8 @@ test('the Checkout Session: hosted, subscription mode, prices by lookup key, fle
   await checkout(who, { interval: 'year' });
   assert.deepEqual(lastCheckoutParams().params.line_items, [{ price: 'price_fake_family_yearly', quantity: '1' }]);
   assert.equal(fake.requests.slice(before).filter(x => x.method === 'POST' && x.path === '/v1/customers').length, 1);
-  // The settings that switch extras on: the Family payment method configuration, Stripe Tax, the Terms.
-  Object.assign(config, { stripePmcFamily: 'pmc_fakefamily', stripeTax: true, termsPublished: true });
+  // The settings that switch extras on: Stripe Tax, the Terms.
+  Object.assign(config, { stripeTax: true, termsPublished: true });
   await checkout(who);
   const p2 = lastCheckoutParams().params;
   assert.equal(p2.payment_method_configuration, 'pmc_fakefamily');
@@ -289,9 +291,12 @@ test('the return page\'s fallback: syncs from the session itself; another family
   const c = family(); const sid2 = (await checkout(c.who)).json.redirect.split('/pay/')[1];
   assert.equal((await call(c.who, `/api/billing/status?checkout=${sid2}`)).json.state, 'processing');
   assert.equal(B.ownerPlan('family', c.fam.id).entitled, false);
-  // The return page itself waits for it.
+  // The return page itself waits for it, and offers nothing to pay meanwhile.
   const page = await call(c.who, `/family?checkout=${sid2}`);
   assert.match(page.text, new RegExp(`data-checkout-wait="${sid2}"`));
+  assert.doesNotMatch(page.text, /No family plan/);
+  assert.doesNotMatch(page.text, /data-api="\/api\/billing\/family\/checkout"|id="pw-checkout"/);
+  assert.match(page.text, /<a href="\/family">Back to your family page<\/a>/);
 });
 
 test('two Checkouts paid: the second plan is cancelled and refunded, flagged duplicate, one plan stays', async () => {
@@ -508,17 +513,21 @@ test('/family: Subscribe buttons with prices, what to read before paying, the pa
   assert.match(page, /renews automatically/);
   assert.match(page, /Cancel anytime/);
   assert.match(page, /within 14 days of your first payment or of a yearly renewal/);
-  assert.match(page, /one child can use up to 4 extra messages a day/);
+  assert.match(page, /One child can use up to 4 extra messages a day/);
   assert.match(page, /id="pw-checkout"/);
   assert.doesNotMatch(page, /href="\/terms"/, 'no Terms link until /terms is published');
+  assert.match(page, /<div class="field" data-reauth >/, 'shown while not fresh');
   C.markReauth(f.who.sid);
   config.termsPublished = true;
   page = (await call(f.who, '/family')).text;
-  assert.doesNotMatch(page, /id="pw-checkout"/);
+  // Fresh: the field is still in the form, hidden and not required, so a page left open past 10 minutes can ask for it.
+  assert.match(page, /<div class="field" data-reauth hidden>/);
+  assert.match(page, /id="pw-checkout"/);
+  assert.doesNotMatch(page.match(/<input[^>]*id="pw-checkout"[^>]*>/)[0], /required/);
   assert.match(page, /href="\/terms"/);
   // /grown-ups: the limits are stated before buying; "not on sale yet" only for those who can't buy.
   const landing = (await call(f.who, '/grown-ups')).text;
-  assert.match(landing, /one child can use up to 4 extra messages a day/);
+  assert.match(landing, /One child can use up to 4 extra messages a day/);
   assert.doesNotMatch(landing, /aren&#39;t on sale yet|aren't on sale yet/);
   assert.match((await call(null, '/grown-ups')).text, /aren&#39;t on sale yet|aren't on sale yet/);
 });
@@ -603,4 +612,107 @@ test('a Builder message of a family child past the free ones: charged to the fam
   assert.equal(r2.ok, false);
   const err = ev2.find(e => e[0] === 'error')[1].message;
   assert.equal(err, "You've used today's Builder messages. More tomorrow!");
+});
+
+// ---------------------------------------------------------------- review fixes
+test('step-up: a locked account (the sign-in lock) takes no password here, and wrong ones count toward that lock', async () => {
+  const { who, g } = family({ fresh: false });
+  const lockKey = loginLockKey(g.username);
+  assert.equal((await checkout(who, { interval: 'month', password: 'wrong-1' })).status, 403);
+  assert.equal(count(lockKey), 1, 'a wrong step-up password counts like a sign-in failure');
+  for (let i = 1; i < LOGIN.userFails; i++) allow(lockKey, LOGIN.userFails, LOGIN.window);
+  assert.equal((await checkout(who, { interval: 'month', password: PW })).status, 429, 'locked: even the right password');
+  assert.equal((await call(who, '/api/billing/portal', { method: 'POST', body: { password: PW } })).status, 429);
+  assert.equal(C.reauthFresh(who.sid), false);
+  assert.equal(count(lockKey), LOGIN.userFails, 'refused tries add nothing more');
+});
+
+test('without STRIPE_PMC_FAMILY family plans are not on sale: no Subscribe, no Checkout, a start-up warning and an admin banner', async () => {
+  const f = family();
+  config.stripePmcFamily = '';
+  const before = fake.requests.length;
+  const r = await checkout(f.who);
+  assert.equal(r.status, 409); assert.match(r.json.error, /can't be bought right now/);
+  assert.equal(fake.requests.slice(before).filter(x => x.method === 'POST' && x.path === '/v1/checkout/sessions').length, 0, 'never a session without the Family configuration');
+  const page = (await call(f.who, '/family')).text;
+  assert.doesNotMatch(page, /data-api="\/api\/billing\/family\/checkout"/);
+  assert.match(page, /aren&#39;t on sale yet|aren't on sale yet/);
+  assert.match((await call(f.who, '/grown-ups')).text, /aren&#39;t on sale yet|aren't on sale yet/);
+  assert.match(parseStripe({ STRIPE_API_KEY: 'rk_test_x', STRIPE_WEBHOOK_SECRET: 'whsec_x' }).warnings.join(), /STRIPE_PMC_FAMILY is not set/);
+  assert.doesNotMatch(parseStripe({ STRIPE_API_KEY: 'rk_test_x', STRIPE_WEBHOOK_SECRET: 'whsec_x', STRIPE_PMC_FAMILY: 'pmc_1AbC' }).warnings.join(), /STRIPE_PMC_FAMILY/);
+  const admin = auth.createUser({ username: `Adm${uid(4)}`, password: 'admin-password-1', role: 'admin' });
+  assert.match((await call(signIn(admin), '/admin/billing')).text, /Family checkout is off: STRIPE_PMC_FAMILY is not set/);
+  config.stripePmcFamily = 'pmc_fakefamily';
+  assert.doesNotMatch((await call(signIn(admin), '/admin/billing')).text, /Family checkout is off/);
+});
+
+test('a plan stuck past its grace stops a new Checkout (fix the payment instead); an old plan recovering late is cancelled and refunded', async () => {
+  const a = await payingFamily();
+  fake.update(a.subId, { status: 'past_due' });
+  await fake.emit('customer.subscription.updated', a.subId);
+  assert.equal(B.ownerPlan('family', a.fam.id).entitled, true, 'inside the grace');
+  q.run('UPDATE billing_subscriptions SET grace_until=? WHERE stripe_subscription_id=?', Date.now() - 1000, a.subId);
+  assert.equal(B.ownerPlan('family', a.fam.id).entitled, false);
+  const r = await checkout(a.who);
+  assert.equal(r.status, 409); assert.match(r.json.error, /didn't go through\. Update your card in Manage billing/);
+  const page = (await call(a.who, '/family')).text;
+  assert.doesNotMatch(page, /data-api="\/api\/billing\/family\/checkout"/);
+  assert.match(page, /data-api="\/api\/billing\/portal"/);
+  // A second plan starts anyway (e.g. a Checkout opened earlier in another tab): it is the family's plan now.
+  const cus = B.customerOf('family', a.fam.id);
+  const subB = fake.subscription({ customer: cus, metadata: { owner_kind: 'family', owner_id: a.fam.id } });
+  await fake.emit('customer.subscription.created', subB.id);
+  assert.equal(B.ownerPlan('family', a.fam.id).subscription.stripe_subscription_id, subB.id);
+  assert.equal(subRow(subB.id).flag, null);
+  // Then the old card's retry succeeds: the old plan is ended and that payment refunded; one plan stays.
+  const inv = fake.invoice({ subscription: a.subId, customer: cus, billingReason: 'subscription_cycle' });
+  fake.update(a.subId, { status: 'active', latestInvoice: inv.id });
+  await fake.emit('invoice.paid', inv.id);
+  assert.equal(fake.st.subscriptions.get(a.subId).status, 'canceled');
+  assert.ok([...fake.st.refunds.values()].find(x => x.payment_intent === fake.chargeOf(inv.id).payment_intent), 'the late payment is refunded');
+  assert.equal(subRow(a.subId).flag, 'duplicate'); assert.equal(subRow(a.subId).status, 'canceled');
+  assert.equal(subRow(subB.id).status, 'active'); assert.equal(subRow(subB.id).flag, null);
+  assert.equal(B.ownerPlan('family', a.fam.id).subscription.stripe_subscription_id, subB.id);
+  const dup = audits('billing.duplicate', `family:${a.fam.id}`);
+  assert.equal(dup.length, 1); assert.equal(JSON.parse(dup[0].details).kept, subB.id);
+  // A plan that recovers with no other plan stays, as before.
+  const c = await payingFamily();
+  fake.update(c.subId, { status: 'past_due' }); await fake.emit('customer.subscription.updated', c.subId);
+  q.run('UPDATE billing_subscriptions SET grace_until=? WHERE stripe_subscription_id=?', Date.now() - 1000, c.subId);
+  fake.update(c.subId, { status: 'active' }); await fake.emit('customer.subscription.updated', c.subId);
+  assert.equal(subRow(c.subId).flag, null); assert.equal(B.ownerPlan('family', c.fam.id).entitled, true);
+});
+
+test('the paid pool keeps a family\'s share for the month after it stops paying: the others keep their extras', async () => {
+  q.run("DELETE FROM ai_spend_pool"); q.run('DELETE FROM ai_spend');
+  try {
+    const a = await payingFamily(), b = await payingFamily();
+    for (let i = 0; i < 3; i++) build(a.child);
+    assert.equal(build(a.child, { usd: 0.01 }).source, `family:${a.fam.id}`);
+    const ceiling = aiBudget.paidMonthly();
+    assert.ok(ceiling >= 8);
+    // Paid spend this month: $2 short of the ceiling (more than a lapsed family's $4 share would leave).
+    aiBudget.recordUsage('claude-sonnet-5-5', { output_tokens: Math.round((ceiling - 2) * 1e5) }, today(), 'paid');
+    fake.update(a.subId, { status: 'canceled' });
+    await fake.emit('customer.subscription.deleted', a.subId);
+    assert.equal(B.ownerPlan('family', a.fam.id).entitled, false);
+    assert.equal(aiBudget.paidMonthly(), ceiling, 'the lapsed family still counts this month');
+    assert.equal(aiBudget.ok('paid'), true);
+    for (let i = 0; i < 3; i++) build(b.child);
+    const al = usage.allowanceFor(b.child);
+    assert.equal(al.extraLeft, 5); assert.equal(al.source, `family:${b.fam.id}`);
+  } finally { q.run("DELETE FROM ai_spend_pool"); q.run('DELETE FROM ai_spend'); }
+});
+
+test('a family child who is in a school gets no family extras and no "+N" counter (class contexts, until chunk 5)', async () => {
+  const a = await payingFamily();
+  assert.equal(usage.allowanceFor(a.child).familyId, a.fam.id);
+  const boss = auth.createUser({ username: `Boss${uid(4)}`, password: 'boss-password-1', role: 'admin' });
+  const school = SC.createSchool(boss, { name: `Chk School ${uid(4)}` }).school;
+  q.run("INSERT INTO school_members(school_id, user_id, role, status, joined_at) VALUES (?,?,'student','active',?)", school.id, a.child.id, Date.now());
+  const al = usage.allowanceFor(a.child);
+  assert.equal(al.familyId, null); assert.equal(al.extraLeft, null); assert.equal(al.source, 'free');
+  assert.deepEqual(usage.counter(a.child), { turnsLeft: 3, freeLeft: 3, extraLeft: null });
+  q.run("UPDATE school_members SET status='left', left_at=? WHERE school_id=? AND user_id=?", Date.now(), school.id, a.child.id);
+  assert.equal(usage.allowanceFor(a.child).familyId, a.fam.id, 'out of school: the family extras again');
 });

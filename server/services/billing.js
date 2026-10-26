@@ -10,7 +10,7 @@
 // a newer one. There is no ordering by event time: the re-fetch always gives Stripe's current state. Single process
 // only (docs/status.md).
 import { config } from '../config.js';
-import { q, tx, audit, now } from '../db.js';
+import { q, tx, audit, now, today } from '../db.js';
 import { log } from './log.js';
 import { register } from './jobs.js';
 import * as S from './stripe.js';
@@ -90,16 +90,28 @@ export function ownerPlan(kind, id, t = now()) {
   if (grant) return { entitled: true, via: 'grant', subscription: null, grant };
   return { ...none, subscription: subs[0] || null };
 }
-/** How many owners of a kind are entitled right now (current mode): the paid AI pool's ceiling counts families. */
-export function entitledOwnerCount(kind, t = now()) {
-  if (!S.billingOn()) return 0;
+/** The owners of a kind entitled right now (current mode): a Set of owner ids. */
+function entitledOwners(kind, t = now()) {
+  if (!S.billingOn()) return new Set();
   const owners = new Set(q.all('SELECT * FROM billing_subscriptions WHERE owner_kind=? AND plan=? AND livemode=?', kind, kind, S.currentLivemode())
     .filter(r => entitledRow(r, t)).map(r => r.owner_id));
   for (const g of q.all('SELECT owner_id FROM billing_grants WHERE owner_kind=? AND revoked_at IS NULL AND until > ?', kind, t)) owners.add(g.owner_id);
-  return owners.size;
+  return owners;
 }
-// The paid AI pool's monthly ceiling (services/ai-budget.js): FAMILY_MONTHLY_AI_USD for each family with a plan.
-registerPaidBudget('family', () => entitledOwnerCount('family') * config.familyMonthlyAiUsd);
+/** How many owners of a kind are entitled right now (current mode). */
+export const entitledOwnerCount = (kind, t = now()) => entitledOwners(kind, t).size;
+/** The families that count toward the paid AI pool's ceiling this UTC month: those entitled now, and those whose
+ *  children's extra messages were charged to them this month (a family that stops paying mid-month keeps its share
+ *  until the month ends, because its spend stays in the paid pool's month). */
+export function paidFamiliesThisMonth(day = today()) {
+  if (!S.billingOn()) return 0;
+  const fams = entitledOwners('family');
+  for (const r of q.all("SELECT DISTINCT charged_to FROM builder_turns WHERE charged_to LIKE 'family:%' AND charged_day BETWEEN ? AND ?",
+    day.slice(0, 8) + '01', day.slice(0, 8) + '31')) fams.add(r.charged_to.slice('family:'.length));
+  return fams.size;
+}
+// The paid AI pool's monthly ceiling (services/ai-budget.js): FAMILY_MONTHLY_AI_USD for each family counted above.
+registerPaidBudget('family', () => paidFamiliesThisMonth() * config.familyMonthlyAiUsd);
 /** The owner's Stripe Customer in the current mode, or null. */
 export const customerOf = (kind, id) => q.get('SELECT stripe_customer_id FROM billing_customers WHERE owner_kind=? AND owner_id=? AND livemode=?', kind, String(id), S.currentLivemode())?.stripe_customer_id || null;
 
@@ -271,16 +283,19 @@ function applySubscription(sub, { event = null, session = null, openInvoices = [
  * in one transaction. `event` (a verified webhook event) is recorded in the same transaction; `session` is a re-fetched
  * Checkout Session. A subscription Stripe doesn't know (404) is marked orphaned. Other Stripe errors are thrown
  * (StripeCallError): nothing is written, and a webhook answers 500 so Stripe sends it again.
+ * A subscription that starts to entitle its owner (new, paid at last, or back from past_due / unpaid) while the owner
+ * already has another entitled plan of the same kind is a duplicate: see duplicateRisk.
  * -> { result: 'ok'|'duplicate'|'unlinked'|'missing', row? }
  */
 export function syncSubscription(subId, { event = null, session = null, risk = null } = {}) {
   return serialize(subId, async () => {
     let sub, openInvoices = [], productPlans = null;
-    try {
+    const read = async () => {
       sub = await S.getSubscription(subId);
       if (sub.collection_method === 'send_invoice') openInvoices = await S.openInvoices(sub.id);
       productPlans = await productPlansFor(sub.items?.data?.[0]?.price);
-    } catch (e) {
+    };
+    try { await read(); } catch (e) {
       if (!(e instanceof S.StripeCallError) || !e.missing) throw e;
       tx(() => {
         q.run('UPDATE billing_subscriptions SET orphaned_at=?, updated_at=? WHERE stripe_subscription_id=? AND orphaned_at IS NULL', now(), now(), subId);
@@ -289,8 +304,48 @@ export function syncSubscription(subId, { event = null, session = null, risk = n
       log('warn', 'billing: Stripe has no such subscription', { subscription: subId, event: event?.id });
       return { result: 'missing' };
     }
-    return tx(() => applySubscription(sub, { event, session, openInvoices, productPlans, risk }));
+    if (risk?.flag || !mayDuplicate(sub, session)) return tx(() => applySubscription(sub, { event, session, openInvoices, productPlans, risk }));
+    // One owner's plans become entitled one at a time (a single chain), so two can't each see the other as not yet
+    // entitled and both stay.
+    return serialize('owner-entitled', async () => {
+      const dup = await duplicateRisk(sub, session);
+      if (dup?.cancelled) await read();   // write the cancelled state Stripe now has
+      return tx(() => applySubscription(sub, { event, session, openInvoices, productPlans, risk: dup || risk }));
+    });
   });
+}
+/** Could this fetched subscription be a second plan? A completed Checkout's (live or incomplete), or one that is
+ *  active/trialing now while our row of it wasn't entitled (new, a delayed payment arrived, a card retry succeeded). */
+function mayDuplicate(sub, session) {
+  if (session) return LIVE_STATUSES.has(sub.status) || sub.status === 'incomplete';
+  if (sub.status !== 'active' && sub.status !== 'trialing') return false;
+  const prev = q.get('SELECT * FROM billing_subscriptions WHERE stripe_subscription_id=?', sub.id);
+  return !prev || !entitledRow(prev);
+}
+/**
+ * The duplicate guard (docs/decisions.md "Paid plans" §6.2): when the owner already has another entitled subscription
+ * of the same plan (two Checkouts paid, or an old plan's card retry succeeded after a new plan started), the one that
+ * became entitled second is ended now and its latest payment refunded; it is flagged 'duplicate' (billing.duplicate is
+ * audited). Done once: a row already flagged makes no Stripe writes again. -> risk { flag, kept, refunded, cancelled }
+ * or null
+ */
+async function duplicateRisk(sub, session) {
+  const owner = ownerOfCustomer(idOf(sub.customer), sub.livemode ? 1 : 0) || ownerFromMetadata(session?.metadata, sub.metadata);
+  const plan = planOfPrice(sub.items?.data?.[0]?.price);
+  const kept = owner && plan ? q.all(`SELECT * FROM billing_subscriptions WHERE owner_kind=? AND owner_id=? AND livemode=? AND plan=? AND stripe_subscription_id!=?`,
+    owner.owner_kind, owner.owner_id, sub.livemode ? 1 : 0, plan, sub.id).find(r => entitledRow(r)) : null;
+  if (!kept) return null;
+  if (q.get("SELECT 1 FROM billing_subscriptions WHERE stripe_subscription_id=? AND flag='duplicate'", sub.id)) return { flag: 'duplicate', kept: kept.stripe_subscription_id };
+  if (LIVE_STATUSES.has(sub.status) || sub.status === 'incomplete') await S.cancelSubscriptionNow(sub.id, 'duplicate');
+  const inv = idOf(sub.latest_invoice);
+  const pi = inv ? await S.paymentIntentOfInvoice(inv) : null;
+  if (pi) {
+    try { await S.refundPaymentIntent(pi, `duplicate-${sub.id}-${inv}`); } catch (e) {
+      if (!(e instanceof S.StripeCallError) || e.code !== 'charge_already_refunded') throw e;   // refunded already: fine
+    }
+  }
+  log('warn', 'billing: a second subscription for the same owner was cancelled and refunded', { subscription: sub.id, kept: kept.stripe_subscription_id });
+  return { flag: 'duplicate', kept: kept.stripe_subscription_id, refunded: !!pi, cancelled: true };
 }
 
 /** fn's result, or null when Stripe has no such object (other errors are thrown). */
@@ -387,38 +442,10 @@ async function riskAction(event, { subId, charge = null, invoice = null, payment
   return { flag: kind === 'charge.dispute.created' ? 'dispute' : 'efw', paymentIntent, cancelled: live };
 }
 
-/**
- * A completed Checkout (its webhook, or the return page's fallback): sync the new subscription, but if the owner already
- * has another entitled subscription of the same plan (two Checkouts paid), end the new one now and refund its first
- * payment, flag it 'duplicate' and audit billing.duplicate. One completion at a time (a single chain), so two
- * completions can't each keep the other's subscription and both be cancelled.
- */
+/** A completed Checkout (its webhook, or the return page's fallback): the shared sync, whose duplicate guard ends and
+ *  refunds a second plan of the same owner (see duplicateRisk). */
 export function finishCheckout({ subId, session = null, event = null }) {
-  return serialize('checkout-completed', async () => {
-    const sub = await reread(() => S.getSubscription(subId));
-    let risk = null;
-    if (sub) {
-      const owner = ownerOfCustomer(idOf(sub.customer), sub.livemode ? 1 : 0) || ownerFromMetadata(session?.metadata, sub.metadata);
-      const plan = planOfPrice(sub.items?.data?.[0]?.price);
-      const kept = owner && plan ? q.all(`SELECT * FROM billing_subscriptions WHERE owner_kind=? AND owner_id=? AND livemode=? AND plan=? AND stripe_subscription_id!=?`,
-        owner.owner_kind, owner.owner_id, sub.livemode ? 1 : 0, plan, sub.id).find(r => entitledRow(r)) : null;
-      const done = q.get("SELECT 1 FROM billing_subscriptions WHERE stripe_subscription_id=? AND flag='duplicate'", sub.id);
-      if (kept && done) risk = { flag: 'duplicate', kept: kept.stripe_subscription_id };   // handled before: no Stripe writes again
-      else if (kept) {
-        if (LIVE_STATUSES.has(sub.status) || sub.status === 'incomplete') await S.cancelSubscriptionNow(sub.id, 'duplicate');
-        const inv = idOf(sub.latest_invoice);
-        const pi = inv ? await S.paymentIntentOfInvoice(inv) : null;
-        if (pi) {
-          try { await S.refundPaymentIntent(pi, `duplicate-${sub.id}`); } catch (e) {
-            if (!(e instanceof S.StripeCallError) || e.code !== 'charge_already_refunded') throw e;   // refunded already: fine
-          }
-        }
-        log('warn', 'billing: a second subscription for the same owner was cancelled and refunded', { subscription: sub.id, kept: kept.stripe_subscription_id });
-        risk = { flag: 'duplicate', kept: kept.stripe_subscription_id, refunded: !!pi, cancelled: true };
-      }
-    }
-    return syncSubscription(subId, { event, session, risk });
-  });
+  return syncSubscription(subId, { event, session });
 }
 
 /** POST /api/billing/webhook (mounted in app.js before the request log, maintenance and JSON parsing; raw body). The

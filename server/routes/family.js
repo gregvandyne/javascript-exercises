@@ -23,11 +23,11 @@ import * as C from '../services/checkout.js';
 import { log } from '../services/log.js';
 import { familyMonth } from '../builder/usage.js';
 import { customerOf } from '../services/billing.js';
-import { rateLimit, allow, count, ipOf } from '../services/ratelimit.js';
+import { rateLimit, allow, count, ipOf, loginLockKey } from '../services/ratelimit.js';
 import { tHtml, saveUserLang } from '../i18n/index.js';
 import { saveUserTheme } from '../theme.js';
 import { siteHost } from '../site.js';
-import { SIGNUP, wantedNext, passwordPanel, signOutPanel, languagePanel } from './auth.js';
+import { SIGNUP, LOGIN, wantedNext, passwordPanel, signOutPanel, languagePanel } from './auth.js';
 
 export const router = Router();
 const isApi = req => req.originalUrl.startsWith('/api/');
@@ -150,6 +150,15 @@ async function familyPrices() {
   const p = await C.familyPrices();
   return p ? { monthly: p.month.unitAmount, yearly: p.year.unitAmount } : null;
 }
+/** The family plan's limits, stated before buying: the per-child daily ceiling (only when it is below the monthly extras:
+ *  a bigger number would read like a promise of that many a day), the cost backstop, and (reset) when extras start again. */
+function limitsText(t, { reset = true } = {}) {
+  const parts = [];
+  if (config.familyChildDailyMax < config.familyExtraMessages) parts.push(t('family.landing.what.limitDaily', { daily: config.familyChildDailyMax }));
+  parts.push(t('family.landing.what.limitCost'));
+  if (reset) parts.push(t('family.landing.what.limitReset'));
+  return parts.join(' ');
+}
 /** Are family plans on sale to this visitor? With a live key, yes; with a test key, only to billing testers (D14). */
 const onSale = u => S.billingMode() === 'live' || (auth.isGrownup(u) && C.mayBill(u));
 router.get('/grown-ups', on, async (req, res) => {
@@ -165,7 +174,7 @@ router.get('/grown-ups', on, async (req, res) => {
     <section class="panel"><h2>${t('family.landing.what.h')}</h2>
       <p>${t('family.landing.what.p1', { extra: config.familyExtraMessages, max: config.familyMaxChildren })}</p>
       <p>${t('family.landing.what.p2')}</p>
-      <p class="small muted">${t('family.landing.what.limits', { daily: config.familyChildDailyMax })}</p></section>
+      <p class="small muted">${limitsText(t)}</p></section>
     <section class="panel"><h2>${t('family.landing.price.h')}</h2>
       ${prices ? html`<p>${t('family.landing.price.p1', { monthly: f.money(prices.monthly), yearly: f.money(prices.yearly) })}</p>` : ''}
       ${prices && onSale(u) ? '' : html`<p>${t('family.landing.price.soon')}</p>`}
@@ -294,12 +303,13 @@ router.get('/family', grownupOnly, async (req, res) => {
   page(req, res, { title: t('family.page.title'), active: 'family', body, scripts: ['/js/family.js'] });
 });
 
-/** The password typed again, inside a payment form (only when this sign-in hasn't typed it in the last 10 minutes). */
+/** The password typed again, inside a payment form. Always there: hidden (and not required) while this sign-in typed it
+ *  in the last 10 minutes, so a page left open longer (or brought back from Stripe with Back) can still ask for it: the
+ *  server's 403 needPassword makes app.js show it ([data-reauth]). */
 function passwordField(req, id) {
-  if (C.reauthFresh(req.sessionId)) return '';
-  const t = req.t;
-  return html`<div class="field"><label for="${id}">${t('family.billing.password.label')}</label>
-    <input class="input" id="${id}" name="password" type="password" dir="ltr" autocomplete="current-password" required maxlength="72" aria-describedby="${id}-hint">
+  const t = req.t, fresh = C.reauthFresh(req.sessionId);
+  return html`<div class="field" data-reauth ${fresh ? 'hidden' : ''}><label for="${id}">${t('family.billing.password.label')}</label>
+    <input class="input" id="${id}" name="password" type="password" dir="ltr" autocomplete="current-password" ${fresh ? '' : 'required'} maxlength="72" aria-describedby="${id}-hint">
     <span class="hint" id="${id}-hint">${t('family.billing.password.hint')}</span><span class="err" id="${id}-err" aria-live="polite"></span></div>`;
 }
 /** The first day of next month (UTC): when a family's extra messages start again. */
@@ -319,10 +329,13 @@ async function planPanel(req, fam, plan, kids) {
       <button class="btn" type="submit">${t('family.billing.manage')}</button></form>` : '';
   const checkoutId = typeof req.query.checkout === 'string' ? req.query.checkout.slice(0, 200) : '';
   const parts = [];
+  // Back from Checkout and the plan isn't on yet: only the wait (no "No family plan", no Subscribe: they just paid).
   if (checkoutId && !plan.entitled) {
-    parts.push(html`<div class="notice" role="status" data-checkout-wait="${checkoutId}" data-done="${t('family.billing.welcome')}">
-      <p style="margin:0"><span aria-hidden="true">⏳</span> ${t('family.billing.waiting')}</p>
-      <p class="small" style="margin:.5em 0 0" data-slow hidden>${t('family.billing.slow')}</p></div>`);
+    return html`<section class="panel" aria-labelledby="plan-h" id="plan"><h2 id="plan-h">${t('family.page.planHeading')}</h2>
+      <div class="notice" role="status" data-checkout-wait="${checkoutId}" data-done="${t('family.billing.welcome')}">
+        <p style="margin:0"><span aria-hidden="true">⏳</span> ${t('family.billing.waiting')}</p>
+        <div data-slow hidden><p class="small" style="margin:.5em 0 0">${t('family.billing.slow')}</p>
+          <p class="small" style="margin:.5em 0 0"><a href="/family">${t('family.billing.back')}</a></p></div></div></section>`;
   }
   if (checkoutId && plan.entitled) parts.push(html`<p class="notice good" role="status"><span aria-hidden="true">🎉</span> ${t('family.billing.welcome')}</p>`);
   if (plan.entitled) {
@@ -336,12 +349,14 @@ async function planPanel(req, fam, plan, kids) {
     parts.push(html`<p><b>${t('family.page.planActive')}</b> ${state}</p>
       <p class="planextras"><b>${t('family.billing.extrasLeft', { left, total: config.familyExtraMessages })}</b><br>
         <span class="small muted">${t('family.billing.extrasReset', { date: f.day(nextMonthUtc()) })}</span></p>
-      <p class="small muted">${t('family.landing.what.limits', { daily: config.familyChildDailyMax })}</p>
+      <p class="small muted">${limitsText(t, { reset: false })}</p>
       ${portal}`);
   } else {
     parts.push(html`<p>${t('family.page.planNone')}</p>`);
-    const prices = C.mayBill(u) ? await C.familyPrices() : null;
-    if (!prices) parts.push(html`<p class="small muted">${t('family.landing.price.soon')}</p>`);
+    const unsettled = C.mayBill(u) && C.unsettledPlan(fam.id);
+    const prices = C.mayBill(u) && !unsettled ? await C.familyPrices() : null;
+    if (unsettled) parts.push(html`<p class="notice warn">${t('family.billing.errors.fixPayment')}</p>`);
+    else if (!prices) parts.push(html`<p class="small muted">${t('family.landing.price.soon')}</p>`);
     else if (!linked) parts.push(html`<p class="small">${t('family.billing.linkFirst')}</p>`);
     else {
       parts.push(html`<form data-api="/api/billing/family/checkout" class="planform">
@@ -350,7 +365,7 @@ async function planPanel(req, fam, plan, kids) {
           <li>${t('family.billing.terms.renew')}</li>
           <li>${t('family.billing.terms.cancel')}</li>
           <li>${t('family.billing.terms.refund')}</li>
-          <li>${t('family.landing.what.limits', { daily: config.familyChildDailyMax })}</li>
+          <li>${limitsText(t)}</li>
           <li>${t('family.billing.terms.tax')}</li>
         </ul>
         ${config.termsPublished ? html`<p class="small">${tHtml(t, 'family.billing.terms.agree', { terms: html`<a href="/terms">${t('family.billing.terms.link')}</a>` })}</p>` : ''}
@@ -377,16 +392,18 @@ const billingGate = (req, res, next) => (F.familiesOn(req) && auth.isGrownup(req
 /** With a test key only billing testers may pay or open the Portal (D14). */
 const testerGate = (req, res, next) => (C.mayBill(req.user) ? next() : res.status(403).json({ error: req.t('family.billing.errors.notOpen') }));
 /** The password typed again within the last 10 minutes (sessions.reauth_at), or in this very request. Wrong
- *  passwords count like sign-in failures: 5 per 15 minutes per account. */
+ *  passwords are limited to 5 per 15 minutes per account here, and also count toward the account's sign-in lock
+ *  (LOGIN.userFails, like /api/me/password): a locked account takes no password here either, so a device left signed
+ *  in gives no more guesses than the sign-in page. */
 export const REAUTH_TRIES = { fails: 5, window: 900e3 };
 function stepUp(req, res, next) {
   if (C.reauthFresh(req.sessionId)) return next();
-  const t = req.t, key = `reauth-fail:${req.user.id}`;
-  if (count(key) >= REAUTH_TRIES.fails) return res.status(429).json({ error: t('family.errors.tooMany') });
+  const t = req.t, key = `reauth-fail:${req.user.id}`, lockKey = loginLockKey(req.user.username);
+  if (count(key) >= REAUTH_TRIES.fails || count(lockKey) >= LOGIN.userFails) return res.status(429).json({ error: t('family.errors.tooMany') });
   const pw = String((req.body || {}).password ?? '');
   if (!pw) return res.status(403).json({ error: t('family.billing.password.needed'), field: 'password', needPassword: true });
   if (!auth.verifyPassword(req.user, pw)) {
-    allow(key, REAUTH_TRIES.fails, REAUTH_TRIES.window);
+    allow(key, REAUTH_TRIES.fails, REAUTH_TRIES.window); allow(lockKey, LOGIN.userFails, LOGIN.window);
     return res.status(403).json({ error: t('family.billing.password.wrong'), field: 'password', needPassword: true });
   }
   C.markReauth(req.sessionId);

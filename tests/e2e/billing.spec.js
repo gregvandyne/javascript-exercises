@@ -25,7 +25,7 @@ const env = () => ({
   DEMO_TEACHER_PASSWORD: DEMO_PW, ANTHROPIC_API_KEY: '', BRB_SILENT: '1', TRUST_PROXY: '1', BRB_ALL_LOCALES: '1', BRB_SNAPSHOTS: '0', BRB_MOCK_DELAY_MS: '0',
   CONTACT_EMAIL: 'help@example.com', BUILDER_DAILY_TURNS: '2', FAMILY_EXTRA_MESSAGES: '3', FAMILY_CHILD_DAILY_MAX: '3',
   STRIPE_API_KEY: 'rk_test_fake', STRIPE_WEBHOOK_SECRET: 'whsec_fake_e2e_bill', STRIPE_API_BASE: STRIPE, STRIPE_API_VERSION: '', STRIPE_TAX: '', STRIPE_LIVE_OK: '',
-  STRIPE_WEBHOOK_SECRET_OLD: '', STRIPE_PMC_FAMILY: '', TERMS_PUBLISHED: '', BILLING_PUBLIC: '1', BILLING_PREVIEW_TOKEN: '',
+  STRIPE_WEBHOOK_SECRET_OLD: '', STRIPE_PMC_FAMILY: 'pmc_fakefamily', TERMS_PUBLISHED: '', BILLING_PUBLIC: '1', BILLING_PREVIEW_TOKEN: '',
 });
 async function up(url) {
   const t0 = Date.now();
@@ -150,6 +150,33 @@ test('subscribe → webhook → the child\'s extra messages → Manage billing c
   await a.goto('/admin/billing?status=canceled');
   await expect(a.locator('main')).toContainText('Family of @' + mumName);
   expect(st.violations).toEqual([]);
+});
+
+test('a payment form left open past the 10 minutes asks for the password again; the return page offers nothing to pay', async ({ browser }) => {
+  const { mum, mumName } = await linkedFamily(browser);
+  await makeTester(browser, mumName);
+  await subscribe(mum);
+  // The password was typed a moment ago: Manage billing's field is there but hidden.
+  await expect(mum.locator('#pw-portal')).toBeHidden();
+  // The page stays open while the re-entry stops counting (here: a new sign-in in the same browser, which hasn't typed
+  // the password again, like the 10 minutes running out).
+  expect((await mum.request.post('/api/auth/login', { data: { username: mumName, password: PW } })).ok()).toBe(true);
+  const manage = mum.locator('#plan button', { hasText: 'Manage billing' });
+  await manage.click();
+  await expect(mum.locator('#pw-portal')).toBeVisible();
+  await expect(mum.locator('#pw-portal-err')).toHaveText('Type your password to continue.');
+  await expect(mum.locator('#pw-portal')).toBeFocused();
+  await mum.fill('#pw-portal', PW);
+  await Promise.all([mum.waitForURL(new RegExp(`${STRIPE}/portal/`), { timeout: 15_000 }), manage.click()]);
+  // Coming back from Checkout before the plan is on: only the wait, no Subscribe or password.
+  const other = await linkedFamily(browser);
+  await makeTester(browser, other.mumName);
+  await other.mum.goto('/family?checkout=cs_test_notyetpaid12345');
+  const plan = other.mum.locator('#plan');
+  await expect(plan).toContainText('Setting up your plan');
+  await expect(plan).not.toContainText('No family plan');
+  await expect(plan.locator('button[value="month"], #pw-checkout')).toHaveCount(0);
+  await expect(plan.locator('a[href="/family"]')).toBeVisible({ timeout: 10_000 });   // not this family's session: the slow message
 });
 
 // ---------------------------------------------------------------- the kid-page crawl

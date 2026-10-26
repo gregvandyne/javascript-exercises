@@ -59,7 +59,9 @@ export async function executeTurn(job, { user, game, text = '', pro = false, wan
   const emit = job.emit, steps = job.steps;
   job.ctx = { user, t, pro: !!pro, name: null };
   // Chosen after screening (the classifier can spend the last of the AI budget), and recorded on the row as it runs.
-  let name = provider || providerName(allowanceFor(user).pool);
+  // A resumed or carried build was charged already: its own pool (job.pool, from the row's charged_to) picks the provider,
+  // not what the allowance says now (the carried message may have used the family's last extra).
+  let name = provider || providerName((resume || carried) && job.pool ? job.pool : allowanceFor(user).pool);
   if (!resume && !carried) {
     // 1. Screening, before any model sees the message.
     let s = prescreened;
