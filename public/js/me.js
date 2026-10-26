@@ -5,6 +5,17 @@ document.addEventListener('click', async e => {
   try { await api('/api/me', { method: 'POST', body }); $$(b.dataset.avatar ? '[data-avatar]' : '[data-color]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); toast(t('js.me.lookingGood')); setTimeout(() => location.reload(), 400); }
   catch (err) { toast(err.message, { bad: true }); }
 });
+// The emoji and colour dropdowns: one open at a time; Escape or a click outside closes them.
+const picks = [...document.querySelectorAll('[data-lookpick]')];
+for (const d of picks) {
+  d.addEventListener('toggle', () => {
+    if (!d.open) return;
+    for (const o of picks) if (o !== d) o.open = false;
+    const cur = d.querySelector('[aria-pressed="true"]') || d.querySelector('.lookmenu button'); if (cur) cur.focus();
+  });
+  d.addEventListener('keydown', e => { if (e.key === 'Escape' && d.open) { e.preventDefault(); d.open = false; d.querySelector('summary').focus(); } });
+}
+document.addEventListener('click', e => { for (const d of picks) if (d.open && !d.contains(e.target)) d.open = false; });
 const tg = document.getElementById('chat-toggle');
 if (tg) tg.addEventListener('change', async () => { try { await api('/api/me', { method: 'POST', body: { chatEnabled: tg.checked } }); toast(tg.checked ? t('js.me.chatOn') : t('js.me.chatOff')); } catch (err) { toast(err.message, { bad: true }); tg.checked = !tg.checked; } });
 
