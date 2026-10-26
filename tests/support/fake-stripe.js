@@ -38,7 +38,7 @@ export async function startFakeStripe({ port = 0, host = '127.0.0.1', apiVersion
   const st = {
     customers: new Map(), subscriptions: new Map(), invoices: new Map(), charges: new Map(), invoicePayments: new Map(),
     sessions: new Map(), disputes: new Map(), efws: new Map(), refunds: new Map(),
-    prices: new Map(), tax: { status: 'active', registrations: [] },
+    prices: new Map(), products: new Map(), tax: { status: 'active', registrations: [] },
   };
   const chargeOfInvoice = new Map();   // invoice id -> charge id (bookkeeping, not part of Stripe's shapes)
   const sessionExtra = new Map();      // session id -> what the fake hosted page needs to make the subscription
@@ -46,6 +46,8 @@ export async function startFakeStripe({ port = 0, host = '127.0.0.1', apiVersion
 
   // ---- Catalogue: the three prices, found by lookup key (like the sandbox) ----
   const addPrice = (lookup, amount, interval, product) => st.prices.set(lookup, { id: 'price_fake_' + lookup.replace(/^oomba_/, ''), object: 'price', active: true, currency: 'usd', lookup_key: lookup, product, recurring: { interval, interval_count: 1, usage_type: 'licensed' }, tax_behavior: 'exclusive', type: 'recurring', unit_amount: amount, livemode });
+  // Products carry oomba_plan metadata (docs/decisions.md "Paid plans": the plan survives a new Price).
+  for (const [id, plan] of [['prod_fake_family', 'family'], ['prod_fake_school', 'school'], ['prod_fake_other', null]]) st.products.set(id, { id, object: 'product', active: true, livemode, metadata: plan ? { oomba_plan: plan } : {}, name: id });
   addPrice('oomba_family_monthly', 799, 'month', 'prod_fake_family');
   addPrice('oomba_family_yearly', 6900, 'year', 'prod_fake_family');
   addPrice('oomba_school_seat_yearly', 2000, 'year', 'prod_fake_school');
@@ -86,7 +88,7 @@ export async function startFakeStripe({ port = 0, host = '127.0.0.1', apiVersion
   /** A subscription with one item and a latest invoice. invoice: 'paid' | 'open' | 'draft' | null; dueDate (ms) for open send_invoice ones. */
   fake.subscription = ({ customer = null, lookupKey = 'oomba_family_monthly', status = 'active', collectionMethod = 'charge_automatically', metadata = {}, quantity = 1, cancelAtPeriodEnd = false, periodStart = Date.now(), invoice = 'paid', dueDate = null, customerMetadata = {} } = {}) => {
     const cus = customer || fake.customer({ metadata: customerMetadata }).id;
-    const price = st.prices.get(lookupKey) || { id: 'price_fake_other', object: 'price', lookup_key: null, recurring: { interval: 'month', interval_count: 1 }, unit_amount: 100, currency: 'usd', livemode };
+    const price = st.prices.get(lookupKey) || { id: 'price_fake_other', object: 'price', lookup_key: null, product: 'prod_fake_other', recurring: { interval: 'month', interval_count: 1 }, unit_amount: 100, currency: 'usd', livemode };
     const start = sec(periodStart); const end = start + (price.recurring.interval === 'year' ? 365 : 30) * DAY;
     const sub = {
       id: rid('sub_'), object: 'subscription', billing_mode: { type: 'flexible' }, cancel_at: cancelAtPeriodEnd ? end : null, cancel_at_period_end: cancelAtPeriodEnd,
@@ -120,6 +122,7 @@ export async function startFakeStripe({ port = 0, host = '127.0.0.1', apiVersion
     const o = structuredClone(s);
     if (expand.includes('latest_invoice') && o.latest_invoice) o.latest_invoice = structuredClone(st.invoices.get(o.latest_invoice));
     if (expand.includes('customer')) o.customer = structuredClone(st.customers.get(o.customer)) || o.customer;
+    if (expand.includes('items.data.price.product')) for (const it of o.items.data) if (typeof it.price?.product === 'string') it.price.product = structuredClone(st.products.get(it.price.product)) || it.price.product;
     return o;
   };
   /** The object an event carries (the current state, as Stripe sends it). */

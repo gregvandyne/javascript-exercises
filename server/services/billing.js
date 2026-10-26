@@ -116,6 +116,8 @@ const setEventResult = (event, result, extra = {}) => q.run('UPDATE billing_even
  *  active clears it. Invoices (send_invoice): the earliest open invoice past its due date + SCHOOL_INVOICE_GRACE_DAYS,
  *  whatever the status (Stripe may leave the subscription active); none overdue clears it. */
 export function graceFor(sub, prev, openInvoices, t = now()) {
+  // Ended for good: no grace, so the row drops out of the reconcile after this last sync.
+  if (sub.status === 'canceled' || sub.status === 'incomplete_expired') return null;
   if (sub.collection_method === 'send_invoice') {
     const due = openInvoices.filter(i => i.status === 'open' && i.due_date && i.due_date * 1000 <= t).map(i => i.due_date * 1000);
     return due.length ? Math.min(...due) + config.schoolInvoiceGraceDays * DAY : null;
@@ -124,8 +126,33 @@ export function graceFor(sub, prev, openInvoices, t = now()) {
   return null;
 }
 
+/** The plan a price sells, from what survives a price change: its lookup key, else its Product (the oomba_plan
+ *  metadata of an expanded Product, else the plan of one of our lookup-keyed prices on the same Product). A new Price
+ *  that took over the lookup key (transfer_lookup_key) leaves the old Price, which existing subscribers stay on,
+ *  without one. -> 'family' | 'school' | null */
+export function planOfPrice(price, productPlans = null) {
+  if (!price) return null;
+  const byKey = S.planOfLookupKey(price.lookup_key);
+  if (byKey) return byKey;
+  const meta = price.product && typeof price.product === 'object' ? price.product.metadata?.oomba_plan : null;
+  if (meta === 'family' || meta === 'school') return meta;
+  return productPlans?.[idOf(price.product)] || null;
+}
+/** { productId: plan } from our lookup-keyed prices (cached by stripe.js). Only read when a price has no lookup key. */
+async function productPlansFor(price) {
+  if (!price || S.planOfLookupKey(price.lookup_key)) return null;
+  try {
+    const out = {};
+    for (const [k, p] of Object.entries(await S.prices())) if (p.product && S.planOfLookupKey(k)) out[p.product] = S.planOfLookupKey(k);
+    return out;
+  } catch (e) {
+    log('warn', 'billing: prices not read', e instanceof S.StripeCallError ? e.fields : { error: e.message });
+    return null;
+  }
+}
+
 /** Writes one fetched subscription. Synchronous: runs inside tx(). -> { result, row? } */
-function applySubscription(sub, { event = null, session = null, openInvoices = [] } = {}) {
+function applySubscription(sub, { event = null, session = null, openInvoices = [], productPlans = null } = {}) {
   const t = now();
   const livemode = sub.livemode ? 1 : 0;
   const customerId = idOf(sub.customer);
@@ -147,12 +174,23 @@ function applySubscription(sub, { event = null, session = null, openInvoices = [
   const item = sub.items?.data?.[0] || {};
   const price = item.price || {};
   const lookupKey = price.lookup_key || null;
-  const plan = S.planOfLookupKey(lookupKey) || 'unknown';
+  // The plan never silently drops to 'unknown' for a known row (e.g. its Price lost the lookup key): keep the plan it
+  // had, but say so. A new row we can't place is 'unknown' (entitles nobody), flagged, logged and audited.
+  const resolved = planOfPrice(price, productPlans);
+  const plan = resolved || (prev?.plan && prev.plan !== 'unknown' ? prev.plan : 'unknown');
+  if (!resolved) {
+    log('warn', 'billing: a subscription\'s price sells no known plan; set the lookup keys (oomba_family_monthly, oomba_family_yearly, oomba_school_seat_yearly) on the Prices, or oomba_plan metadata on the Product', { subscription: sub.id, price: price.id || null, product: idOf(price.product), kept: plan });
+    if (!prev || prev.price_id !== (price.id || null) || prev.price_lookup_key !== lookupKey || (plan === 'unknown' && prev.flag !== 'unknown_price')) audit(null, 'billing.unknown_price', `${owner.owner_kind}:${owner.owner_id}`, { subscription: sub.id, price: price.id || null, plan });
+  }
   const li = sub.latest_invoice && typeof sub.latest_invoice === 'object' ? sub.latest_invoice : null;
   const latestPaid = li?.status === 'paid';
   // A delayed payment (ACH) completes Checkout unpaid: no plan until the money arrives (async_payment_succeeded, or
-  // the invoice is paid). The session is re-fetched, so its events can arrive in any order.
+  // the invoice is paid). The session is re-fetched, so its events can arrive in any order. A new subscription synced
+  // before its Checkout Session (customer.subscription.created first, or checkout.session.completed never processed)
+  // is pending too while its first invoice is unpaid: Stripe may show it 'active' while the payment is processing.
   let pending = prev?.payment_pending ? 1 : 0;
+  if (!prev && !session && sub.collection_method === 'charge_automatically' && (sub.status === 'active' || sub.status === 'trialing')
+    && li && li.status !== 'paid' && (li.amount_due ?? 0) > 0) pending = 1;
   if (session) pending = session.payment_status === 'unpaid' ? 1 : 0;
   if (latestPaid) pending = 0;
   const grace = graceFor(sub, prev, openInvoices, t);
@@ -161,6 +199,8 @@ function applySubscription(sub, { event = null, session = null, openInvoices = [
   else if (flag === 'async_failed' && !pending) flag = null;
   if (sub.collection_method === 'send_invoice' && grace != null && !flag) flag = 'overdue';
   else if (flag === 'overdue' && grace == null) flag = null;
+  if (plan === 'unknown') flag = 'unknown_price';
+  else if (flag === 'unknown_price') flag = null;
   const row = {
     stripe_subscription_id: sub.id, stripe_customer_id: customerId, owner_kind: owner.owner_kind, owner_id: owner.owner_id,
     plan, price_id: price.id || null, price_lookup_key: lookupKey, interval: price.recurring?.interval || null,
@@ -198,10 +238,11 @@ function applySubscription(sub, { event = null, session = null, openInvoices = [
  */
 export function syncSubscription(subId, { event = null, session = null } = {}) {
   return serialize(subId, async () => {
-    let sub, openInvoices = [];
+    let sub, openInvoices = [], productPlans = null;
     try {
       sub = await S.getSubscription(subId);
       if (sub.collection_method === 'send_invoice') openInvoices = await S.openInvoices(sub.id);
+      productPlans = await productPlansFor(sub.items?.data?.[0]?.price);
     } catch (e) {
       if (!(e instanceof S.StripeCallError) || !e.missing) throw e;
       tx(() => {
@@ -211,10 +252,14 @@ export function syncSubscription(subId, { event = null, session = null } = {}) {
       log('warn', 'billing: Stripe has no such subscription', { subscription: subId, event: event?.id });
       return { result: 'missing' };
     }
-    return tx(() => applySubscription(sub, { event, session, openInvoices }));
+    return tx(() => applySubscription(sub, { event, session, openInvoices, productPlans }));
   });
 }
 
+/** fn's result, or null when Stripe has no such object (other errors are thrown). */
+async function reread(fn) {
+  try { return await fn(); } catch (e) { if (e instanceof S.StripeCallError && e.missing) return null; throw e; }
+}
 /** The subscription an event is about, following Stripe's objects (outside any transaction). -> { subId, session } */
 async function resolveEvent(event) {
   const o = event.data?.object || {};
@@ -226,10 +271,14 @@ async function resolveEvent(event) {
     }
     case 'customer.subscription.created': case 'customer.subscription.updated': case 'customer.subscription.deleted':
       return { subId: o.id };
-    case 'invoice.paid': case 'invoice.payment_failed': case 'invoice.finalized': case 'invoice.overdue':
-      return { subId: S.subscriptionOfInvoice(o) };
-    case 'charge.refunded':
-      return { subId: S.subscriptionOfInvoice(await S.invoiceForCharge(o)) };
+    case 'invoice.paid': case 'invoice.payment_failed': case 'invoice.finalized': case 'invoice.overdue': {
+      // The payload has the endpoint's API version, which may not be ours (no invoice.parent before basil): read the
+      // invoice again under the pinned version. Pre-basil payloads' own `subscription` is the last fallback.
+      const inv = await reread(() => S.getInvoice(o.id));
+      return { subId: S.subscriptionOfInvoice(inv) || S.subscriptionOfInvoice(o) || idOf(o.subscription) };
+    }
+    case 'charge.refunded':   // re-read the charge too (the payload's shape follows the endpoint's version)
+      return { subId: S.subscriptionOfInvoice(await S.invoiceForCharge((o.id && await reread(() => S.getCharge(o.id))) || o)) };
     case 'charge.dispute.created': case 'radar.early_fraud_warning.created': {
       const inv = o.payment_intent ? await S.invoiceForPaymentIntent(idOf(o.payment_intent)) : await S.invoiceForCharge(idOf(o.charge));
       return { subId: S.subscriptionOfInvoice(inv) };
@@ -253,8 +302,12 @@ export async function processEvent(event) {
   if (!HANDLED.has(event.type)) { insertEvent(event, 'ignored'); return { result: 'ignored' }; }
   const { subId, session } = await resolveEvent(event);
   if (!subId) {
+    // Not about one of our subscriptions. When the event came in another API version, say so in its result rather than
+    // a plain 'ignored', so a wrongly made endpoint shows up.
+    const otherVersion = event.api_version && event.api_version !== config.stripeApiVersion && /^(invoice|charge)\./.test(event.type);
+    if (otherVersion) log('warn', 'billing: an event of another API version names no subscription', { event: event.id, type: event.type, eventVersion: event.api_version });
     return tx(() => {
-      if (!insertEvent(event, 'ignored')) return { result: 'duplicate' };
+      if (!insertEvent(event, otherVersion ? 'unresolved_version' : 'ignored')) return { result: 'duplicate' };
       // An expired Checkout: the owner may start again (billing_checkouts holds one open session per owner).
       if (event.type === 'checkout.session.expired' && q.run('DELETE FROM billing_checkouts WHERE session_id=?', idOf(event.data?.object)).changes) setEventResult(event, 'ok');
       return { result: q.get('SELECT result FROM billing_events WHERE event_id=?', event.id).result };
@@ -304,8 +357,10 @@ export async function syncCheckoutReturn(sessionId, expected) {
  *  shared sync path (a missed webhook can't keep or drop a plan). Errors are caught per subscription. */
 export async function reconcile() {
   if (!S.billingOn()) return { skipped: true };
+  // Ended rows (canceled, incomplete_expired: every abandoned first payment) are not read again, except once more after
+  // their grace ends; graceFor clears grace for them, so that is the last time.
   const rows = q.all(`SELECT stripe_subscription_id AS id FROM billing_subscriptions WHERE livemode=? AND orphaned_at IS NULL
-    AND (status <> 'canceled' OR (grace_until IS NOT NULL AND grace_until < ?))`, S.currentLivemode(), now());
+    AND (status NOT IN ('canceled', 'incomplete_expired') OR (grace_until IS NOT NULL AND grace_until < ?))`, S.currentLivemode(), now());
   const out = { checked: 0, errors: 0, orphaned: 0 };
   for (const { id } of rows) {
     try {
@@ -317,9 +372,20 @@ export async function reconcile() {
       log('warn', 'billing reconcile: subscription not synced', { subscription: id, ...(e instanceof S.StripeCallError ? e.fields : { error: e.message }) });
     }
   }
-  try { await S.prices({ refresh: true }); } catch (e) { log('warn', 'billing: prices not read', e instanceof S.StripeCallError ? e.fields : { error: e.message }); }
+  await checkPrices({ refresh: true });
   await checkTax();
   return out;
+}
+/** Logs a warning when Stripe doesn't return an active Price for each of our lookup keys (e.g. live Prices made
+ *  without them). Checked at start-up and by the reconcile job. -> the missing lookup keys, or null when unread. */
+export async function checkPrices({ refresh = false } = {}) {
+  if (!S.billingOn()) return null;
+  try {
+    const p = await S.prices({ refresh });
+    const missing = Object.values(S.PRICE_LOOKUP_KEYS).filter(k => !p[k]);
+    if (missing.length) log('warn', 'billing: no active Stripe Price has these lookup keys: set them on the Prices (Product catalog → Price → Lookup key)', { missing });
+    return missing;
+  } catch (e) { log('warn', 'billing: prices not read', e instanceof S.StripeCallError ? e.fields : { error: e.message }); return null; }
 }
 /** Logs a warning when STRIPE_TAX=1 but Stripe Tax isn't collecting anywhere (BP-6). */
 export async function checkTax() {
@@ -330,7 +396,8 @@ export async function checkTax() {
     return r;
   } catch (e) { log('warn', 'billing: tax settings not read', e instanceof S.StripeCallError ? e.fields : { error: e.message }); return null; }
 }
-register('billing-reconcile', 6 * 3600e3, reconcile);
+// Also once two minutes after start-up: every deploy restarts the process (and this timer).
+register('billing-reconcile', 6 * 3600e3, reconcile, { firstAfterMs: 2 * 60e3 });
 
 /** Tests only. */
 export function _reset() { chains.clear(); warnedVersion = ''; }

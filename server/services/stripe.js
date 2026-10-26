@@ -73,8 +73,9 @@ async function call(fn) {
 
 // ---- Reads used by the sync path (server/services/billing.js) ----
 
-/** A subscription with its latest invoice and its customer expanded (one request). */
-export const getSubscription = id => call(s => s.subscriptions.retrieve(id, { expand: ['latest_invoice', 'customer'] }));
+/** A subscription with its latest invoice, its customer and its price's Product expanded (one request; the Product's
+ *  oomba_plan metadata names the plan when a Price has lost its lookup key). */
+export const getSubscription = id => call(s => s.subscriptions.retrieve(id, { expand: ['latest_invoice', 'customer', 'items.data.price.product'] }));
 export const getInvoice = id => call(s => s.invoices.retrieve(id));
 /** A subscription's open invoices (send_invoice grace looks at every one, not only the latest). */
 export const openInvoices = subscriptionId => call(async s => (await s.invoices.list({ subscription: subscriptionId, status: 'open', limit: 100 })).data);

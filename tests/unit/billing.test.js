@@ -544,3 +544,116 @@ test('a Stripe error never carries the key: StripeCallError has only type, code,
     assert.deepEqual(Object.keys(e.fields).sort(), ['code', 'requestId', 'statusCode', 'type']);
   } finally { config.stripeApiKey = 'rk_test_fake'; }
 });
+
+test('a Price that lost its lookup key (a new Price took it over) keeps its subscribers on their plan', async () => {
+  const { fam, sub } = familySub();
+  await B.syncSubscription(sub.id);
+  assert.equal(row(sub.id).plan, 'family');
+  // transfer_lookup_key: the Price existing subscribers stay on now has none. The Product still says which plan.
+  const item = fake.st.subscriptions.get(sub.id).items.data[0];
+  item.price = { ...structuredClone(item.price), id: 'price_fake_old_family', lookup_key: null };
+  await B.reconcile();
+  assert.equal(row(sub.id).plan, 'family', 'from the Product\'s oomba_plan metadata');
+  assert.equal(row(sub.id).flag, null);
+  assert.equal(B.ownerPlan('family', fam).entitled, true);
+  // A Product without the metadata: the plan of our lookup-keyed prices on the same Product.
+  const prod = fake.st.products.get('prod_fake_family'); const meta = prod.metadata; prod.metadata = {};
+  try {
+    assert.equal(B.planOfPrice({ lookup_key: null, product: { id: 'prod_fake_family', metadata: {} } }, { prod_fake_family: 'family' }), 'family');
+    await B.syncSubscription(sub.id);
+    assert.equal(row(sub.id).plan, 'family', 'from the price catalogue');
+  } finally { prod.metadata = meta; }
+  // A Price nothing places: a known row keeps its plan, and it is logged and audited (once).
+  item.price = { ...structuredClone(item.price), id: 'price_fake_stray', lookup_key: null, product: 'prod_fake_other' };
+  const logs = await logsOf(async () => { await B.syncSubscription(sub.id); await B.syncSubscription(sub.id); });
+  assert.match(logs, /sells no known plan/);
+  assert.equal(row(sub.id).plan, 'family');
+  assert.equal(B.ownerPlan('family', fam).entitled, true, 'grandfathered customers never silently lose their plan');
+  assert.equal(audits('billing.unknown_price', `family:${fam}`).length, 1);
+  // A new subscription on such a price: 'unknown' (entitles nobody), flagged and audited.
+  const fam2 = family(); const cus2 = fake.customer().id; B.linkCustomer(cus2, 'family', fam2);
+  const sub2 = fake.subscription({ customer: cus2, lookupKey: 'no_such_key' });
+  await logsOf(() => B.syncSubscription(sub2.id));
+  assert.equal(row(sub2.id).plan, 'unknown'); assert.equal(row(sub2.id).flag, 'unknown_price');
+  assert.equal(audits('billing.unknown_price', `family:${fam2}`).length, 1);
+  assert.equal(B.ownerPlan('family', fam2).entitled, false);
+});
+
+test('missing lookup keys on the Prices are a warning at start-up and in the reconcile job', async () => {
+  const saved = fake.st.prices.get('oomba_school_seat_yearly');
+  fake.st.prices.delete('oomba_school_seat_yearly');
+  try {
+    let missing;
+    const logs = await logsOf(async () => { missing = await B.checkPrices({ refresh: true }); });
+    assert.deepEqual(missing, ['oomba_school_seat_yearly']);
+    assert.match(logs, /no active Stripe Price has these lookup keys/);
+  } finally { fake.st.prices.set('oomba_school_seat_yearly', saved); await S.prices({ refresh: true }); }
+  assert.deepEqual(await B.checkPrices(), []);
+});
+
+test('a subscription synced before its Checkout Session (first invoice unpaid) grants nothing until the payment arrives', async () => {
+  const fam = family(); const cus = fake.customer().id; B.linkCustomer(cus, 'family', fam);
+  const sub = fake.subscription({ customer: cus, invoice: 'open' });   // ACH processing: Stripe may show it active
+  assert.equal((await deliver('customer.subscription.created', sub.id)).status, 200);
+  assert.equal(row(sub.id).payment_pending, 1);
+  assert.equal(B.ownerPlan('family', fam).entitled, false);
+  await B.reconcile();
+  assert.equal(B.ownerPlan('family', fam).entitled, false, 'a reconcile (no session) keeps it pending');
+  fake.payInvoice(fake.st.subscriptions.get(sub.id).latest_invoice);
+  await B.reconcile();
+  assert.equal(row(sub.id).payment_pending, 0);
+  assert.equal(B.ownerPlan('family', fam).entitled, true, 'paid: the plan starts');
+  // A card subscription whose first invoice is paid grants at once.
+  const { fam: fam2, sub: sub2 } = familySub();
+  await deliver('customer.subscription.created', sub2.id);
+  assert.equal(B.ownerPlan('family', fam2).entitled, true);
+});
+
+test('invoice events of an older API version (no invoice.parent) still find their subscription', async () => {
+  const { fam, sub } = familySub();
+  fake.update(sub.id, { status: 'past_due' });
+  await B.syncSubscription(sub.id);
+  fake.update(sub.id, { status: 'active' });
+  const inv = structuredClone(fake.st.invoices.get(fake.st.subscriptions.get(sub.id).latest_invoice));
+  delete inv.parent; inv.subscription = sub.id;   // the pre-basil shape
+  const r = await logsOf(async () => {
+    const d = await deliver('invoice.paid', inv, { api_version: '2024-06-20' });
+    assert.equal(d.status, 200);
+    assert.equal(evRow(d.ev.id).result, 'ok');
+    assert.equal(evRow(d.ev.id).stripe_subscription_id, sub.id);
+  });
+  assert.match(r, /different API version/);
+  assert.equal(row(sub.id).status, 'active');
+  assert.equal(row(sub.id).grace_until, null);
+  assert.ok(fake.requests.some(x => x.path === `/v1/invoices/${inv.id}`), 'the invoice is read again under the pinned version');
+  assert.equal(B.ownerPlan('family', fam).entitled, true);
+  // An invoice Stripe no longer has: the payload's own subscription field is the fallback.
+  const gone = { ...inv, id: 'in_gone' };
+  const d2 = await deliver('invoice.payment_failed', gone, { api_version: '2024-06-20' });
+  assert.equal(d2.status, 200); assert.equal(evRow(d2.ev.id).stripe_subscription_id, sub.id);
+  // Nothing names a subscription and the version differs: not a silent 'ignored'.
+  const lone = { ...inv, id: 'in_lone' }; delete lone.subscription;
+  const d3 = await logsOf(async () => { const d = await deliver('invoice.paid', lone, { api_version: '2024-06-20' }); assert.equal(evRow(d.ev.id).result, 'unresolved_version'); });
+  assert.match(d3, /names no subscription/);
+});
+
+test('reconcile: ended subscriptions (incomplete_expired, canceled after grace) are not read again and again', async () => {
+  const fam = family(); const cus = fake.customer().id; B.linkCustomer(cus, 'family', fam);
+  const expired = fake.subscription({ customer: cus, status: 'incomplete_expired', invoice: 'open' });
+  await B.syncSubscription(expired.id);
+  // An invoice school canceled with an overdue invoice: one last sync after its grace, then never again.
+  const sch = school(); const scus = fake.customer().id; B.linkCustomer(scus, 'school', sch);
+  const ssub = fake.subscription({ customer: scus, lookupKey: 'oomba_school_seat_yearly', collectionMethod: 'send_invoice', invoice: 'open', dueDate: Date.now() - 40 * DAY });
+  await B.syncSubscription(ssub.id);
+  assert.ok(row(ssub.id).grace_until < Date.now());
+  fake.update(ssub.id, { status: 'canceled' });
+  const reads = id => fake.requests.filter(x => x.method === 'GET' && x.path === `/v1/subscriptions/${id}`).length;
+  const e0 = reads(expired.id); const s0 = reads(ssub.id);
+  await B.reconcile();
+  assert.equal(reads(expired.id), e0, 'incomplete_expired is never read again');
+  assert.equal(reads(ssub.id), s0 + 1, 'the canceled school is read once more after its grace');
+  assert.equal(row(ssub.id).status, 'canceled'); assert.equal(row(ssub.id).grace_until, null);
+  await B.reconcile();
+  assert.equal(reads(ssub.id), s0 + 1, 'and then no more');
+  assert.equal(B.ownerPlan('school', sch).entitled, false);
+});

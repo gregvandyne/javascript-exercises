@@ -107,6 +107,23 @@ test('jobs: a job that rejects or throws is logged and the process stays up; a s
   } finally { stop(); process.stderr.write = ew; process.env.BRB_SILENT = silent; process.off('unhandledRejection', onU); release?.(); }
 });
 
+test('jobs: firstAfterMs runs a job once soon after start-up, not only after its first full interval', async () => {
+  const { register, startJobs, job } = await import('../../server/services/jobs.js');
+  let soon = 0; let plain = 0;
+  register('t-boot', 3600e3, () => { soon++; }, { firstAfterMs: 10 });
+  register('t-plain', 3600e3, () => { plain++; });
+  const stop = startJobs();
+  try {
+    await new Promise(r => setTimeout(r, 60));
+    assert.equal(soon, 1, 'ran once at start-up');
+    assert.equal(plain, 0, 'without firstAfterMs a job waits for its interval');
+  } finally { stop(); }
+  // The billing reconcile job asks for it (a deploy restarts the process and its 6-hour timer).
+  await import('../../server/services/billing.js');
+  const r = job('billing-reconcile');
+  assert.ok(r.firstAfterMs > 0 && r.firstAfterMs <= 5 * 60e3);
+});
+
 test('key scan: real-looking keys and webhook secrets are found; short dummies pass; the repository is clean', async () => {
   const { findKeys, scan, KEY_RE } = await import('../../scripts/check-keys.js');
   const fakeLong = n => 'x'.repeat(n).replace(/x/g, (_, i) => 'aB3'[i % 3]);
@@ -128,6 +145,26 @@ test('key scan: real-looking keys and webhook secrets are found; short dummies p
   assert.equal(r.status, 1);
   assert.match(r.stderr, /leak\.js:2: looks like a Stripe key/);
   assert.ok(!r.stderr.includes(fakeLong(30)));
+  // From a checkout whose path has a space and a non-ASCII letter, and through a symlink, it still scans (it used to
+  // compare a percent-encoded file:// URL with the raw path and exit 0 without scanning).
+  const odd = path.join(dir, 'sp ace é'); fs.mkdirSync(path.join(odd, 'scripts'), { recursive: true });
+  fs.copyFileSync(path.join(ROOT, 'scripts/check-keys.js'), path.join(odd, 'scripts/check-keys.js'));
+  fs.symlinkSync(odd, path.join(dir, 'link'));
+  for (const script of [path.join(odd, 'scripts/check-keys.js'), path.join(dir, 'link', 'scripts/check-keys.js')]) {
+    const r2 = spawnSync(process.execPath, [script, f], { encoding: 'utf8' });
+    assert.equal(r2.status, 1, script);
+    assert.match(r2.stderr, /leak\.js:2: looks like a Stripe key/);
+  }
   fs.rmSync(dir, { recursive: true, force: true });
   assert.ok(fs.statSync(path.join(ROOT, 'scripts/hooks/pre-commit')).mode & 0o100, 'the hook is executable');
+});
+
+test('servers started by tests never inherit exported Stripe settings', async () => {
+  const { NO_STRIPE_ENV } = await import('../support/no-stripe-env.js');
+  const read = f => fs.readFileSync(path.join(ROOT, f), 'utf8');
+  const used = [...new Set([...read('server/config.js').matchAll(/env\.(STRIPE_[A-Z_]+)/g)].map(m => m[1]))];
+  assert.ok(used.length >= 7);
+  for (const k of used) assert.equal(NO_STRIPE_ENV[k], '', `${k} is blanked`);
+  for (const f of ['playwright.config.js', 'tests/unit/accounts.test.js', 'tests/e2e/domain-move.spec.js']) assert.match(read(f), /\.\.\.NO_STRIPE_ENV/, f);
+  for (const k of Object.keys(NO_STRIPE_ENV)) assert.equal(process.env[k], undefined, `_setup.js clears ${k}`);
 });

@@ -12,14 +12,14 @@ try {
     ...(await import('./app.js')), ...(await import('./db.js')), ...(await import('./auth.js')), ...(await import('./services/jobs.js')),
     ...(await import('./services/shots.js')), ...(await import('./services/snapshot.js')), ...(await import('./builder/runner.js')), ...(await import('./shutdown.js')),
     ...(await import('./domain.js')), ...(await import('./site.js')), ...(await import('./oidc.js')),
-    billingMode: (await import('./services/stripe.js')).billingMode, checkTax: (await import('./services/billing.js')).checkTax,
+    billingMode: (await import('./services/stripe.js')).billingMode, checkTax: (await import('./services/billing.js')).checkTax, checkPrices: (await import('./services/billing.js')).checkPrices,
   };
 } catch (e) {
   // e.g. REQUIRE_SESSION_SECRET=1 without SESSION_SECRET, an unwritable data folder, a bad BRB_JOURNAL_MODE.
   log('error', 'startup failed', { error: e.message });
   process.exit(1);
 }
-const { createApp, trustProxySetting, db, JOURNAL_MODE, secretSource, startJobs, startSweeper, stopSweeper, closeBrowser, busyCount, makeShutdown, recover, startRunner, drain, handOff, startHostCheck, stopHostCheck, legacyHosts, googleEnabled, billingMode, checkTax } = mods;
+const { createApp, trustProxySetting, db, JOURNAL_MODE, secretSource, startJobs, startSweeper, stopSweeper, closeBrowser, busyCount, makeShutdown, recover, startRunner, drain, handOff, startHostCheck, stopHostCheck, legacyHosts, googleEnabled, billingMode, checkTax, checkPrices } = mods;
 
 if (secretSource !== 'env' && config.env === 'production') {
   log('warn', 'SESSION_SECRET is not set: sessions are signed with a secret stored in the database. Set SESSION_SECRET (scripts/export-session-secret.js copies the current one, so nobody is signed out) and REQUIRE_SESSION_SECRET=1.', { secretSource });
@@ -47,9 +47,10 @@ server.headersTimeout = config.keepAliveTimeoutMs + 1000;
 if (!!config.googleClientId !== !!config.googleClientSecret) log('warn', 'Google sign-in stays off: set both GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET');
 else if (config.googleClientId && config.env === 'production' && !config.publicUrl) log('warn', 'Google sign-in stays off until PUBLIC_URL is set (its redirect address is PUBLIC_URL/auth/google/callback)');
 // Billing (docs/decisions.md "Paid plans"): a half-done or test-key setup is a warning (config.js refuses the unsafe ones).
-// The messages never include a key. With STRIPE_TAX=1, check that Stripe Tax really collects somewhere.
+// The messages never include a key. With STRIPE_TAX=1, check that Stripe Tax really collects somewhere; warn when a
+// Price lookup key has no active Price (e.g. live Prices made without them).
 for (const w of config.stripeWarnings) log('warn', w);
-if (billingMode() !== 'off') checkTax().catch(() => {});
+if (billingMode() !== 'off') { checkTax().catch(() => {}); checkPrices().catch(() => {}); }
 // The site tells grown-ups they can contact us (deletion, export, a lost password); without an address that leads nowhere.
 if (config.env === 'production' && !config.contactEmail) log('warn', 'CONTACT_EMAIL is not set: /parents has no way to contact the team');
 startRunner();

@@ -98,7 +98,11 @@ On/off settings (`REQUIRE_SESSION_SECRET`, `MAINTENANCE_MODE`, `MOVED_PERMANENTL
 Billing is built in steps (docs/decisions.md "Paid plans"). With `STRIPE_API_KEY` unset nothing changes: no billing
 route answers and nobody is on a plan. Keys and secrets go in the host's secret settings (Render dashboard), never in a
 file; the app never logs them. Prices are found by their lookup keys (`oomba_family_monthly`, `oomba_family_yearly`,
-`oomba_school_seat_yearly`), so the same code works in the sandbox and live.
+`oomba_school_seat_yearly`), so the same code works in the sandbox and live: **set these lookup keys on the live
+Prices too** (and `oomba_plan` = `family` / `school` metadata on each Product). Start-up and the 6-hourly reconcile log a
+warning when a lookup key has no active Price. A subscription's plan comes from its Price's lookup key, else its
+Product, so moving a lookup key to a new Price keeps existing subscribers on their plan; a price that names no plan is
+logged, audited and flagged `unknown_price`.
 
 | Variable | Default | What it does |
 |---|---|---|

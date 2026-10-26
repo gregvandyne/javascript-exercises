@@ -7,11 +7,12 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { uniq } from './helpers.js';
+import { NO_STRIPE_ENV } from '../support/no-stripe-env.js';
 
 const PORT = +(process.env.E2E_PORT || 4310) + 2; // + 1 is the fake Google
 const OLD = `http://127.0.0.1:${PORT}`, NEW = `http://localhost:${PORT}`;
 const DATA = fs.mkdtempSync(path.join(os.tmpdir(), 'brb-move-'));
-const ENV = { ...process.env, PORT: String(PORT), BRB_DATA_DIR: DATA, BRB_SILENT: '1', LOG_REQUESTS: '0', BRB_SNAPSHOTS: '0', SESSION_SECRET: 'move-test-secret-0123456789abcdef0123456789', ADMIN_PASSWORD: 'admin-pass-123', NODE_ENV: 'development' };
+const ENV = { ...process.env, ...NO_STRIPE_ENV, PORT: String(PORT), BRB_DATA_DIR: DATA, BRB_SILENT: '1', LOG_REQUESTS: '0', BRB_SNAPSHOTS: '0', SESSION_SECRET: 'move-test-secret-0123456789abcdef0123456789', ADMIN_PASSWORD: 'admin-pass-123', NODE_ENV: 'development' };
 delete ENV.GOOGLE_CLIENT_ID; delete ENV.GOOGLE_CLIENT_SECRET; delete ENV.GOOGLE_OIDC_BASE;
 delete ENV.PUBLIC_URL; delete ENV.REDIRECT_HOSTS; delete ENV.RENDER_EXTERNAL_HOSTNAME; delete ENV.BRB_DB;
 let proc = null;

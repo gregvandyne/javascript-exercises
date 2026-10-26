@@ -7,6 +7,7 @@
 // Turn the hook on once per clone: npm run hooks
 import fs from 'node:fs';
 import { execFileSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 
 export const KEY_RE = /\b(?:[sr]k_(?:live|test)_|whsec_)[A-Za-z0-9]{20,}/g;
 /** -> [{ line, kind }] for every key-looking string in text (the key itself is never returned or printed). */
@@ -29,7 +30,11 @@ export function scan({ staged = false, files = null } = {}) {
   return hits;
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+// Run as a script? Real paths, not a hand-built file:// URL: a path with a space or non-ASCII letters is percent-encoded
+// in import.meta.url, Windows paths differ and a symlinked path differs, and then the scan silently never ran.
+const realOr = p => { try { return fs.realpathSync(p); } catch { return p; } };
+export const isMain = (argv1 = process.argv[1]) => !!argv1 && realOr(fileURLToPath(import.meta.url)) === realOr(argv1);
+if (isMain()) {
   const args = process.argv.slice(2);
   const staged = args.includes('--staged');
   const files = args.filter(a => !a.startsWith('--'));
