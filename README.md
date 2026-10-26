@@ -114,6 +114,8 @@ logged, audited and flagged `unknown_price`.
 | `STRIPE_TAX` | off | `1` turns on Stripe Tax. Checked at start-up and every 6 hours: a warning says when Stripe Tax collects in no state (settings pending, or no registration). |
 | `BILLING_GRACE_DAYS` | `7` | Days a card plan stays on while Stripe retries a failed payment. |
 | `SCHOOL_INVOICE_GRACE_DAYS` | `30` | Days after an unpaid invoice's due date before an invoice school's plan ends. |
+| `BILLING_PUBLIC` | `0` | `1` shows the paid-plan pages (grown-up accounts, family links, checkout) to everyone. Until then billing runs but those pages are hidden. |
+| `BILLING_PREVIEW_TOKEN` | — | 24+ characters. Before `BILLING_PUBLIC`, visiting any page with `?bpreview=<token>` lets that browser see the paid-plan pages for 12 hours (`?bpreview=off` stops it). |
 | `FAMILY_MAX_CHILDREN` | `4` | Children one grown-up account can link (pending requests count). |
 | `FAMILY_EXTRA_MESSAGES` | `40` | Extra Builder messages a family plan adds each month (shown on /grown-ups). |
 
