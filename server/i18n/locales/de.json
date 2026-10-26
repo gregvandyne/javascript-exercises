@@ -873,7 +873,8 @@
       "busy": "Der Baumeister arbeitet noch an deiner letzten Nachricht. Einen Moment!",
       "limit": "Du hast heute alle {count} Nachrichten an den Baumeister verbraucht. Komm morgen wieder, dann gibt es neue!",
       "muddled": "Der Baumeister ist durcheinandergekommen. Bitte versuch es gleich noch mal.",
-      "tooMany": "Bei dir werden schon 2 Spiele gebaut. Warte, bis eins fertig ist, und versuch es dann noch mal."
+      "tooMany": "Bei dir werden schon 2 Spiele gebaut. Warte, bis eins fertig ist, und versuch es dann noch mal.",
+      "resting": "Der KI-Baumeister ruht sich gerade aus. Dein Spiel und deine Nachrichten sind gespeichert, also komm etwas später wieder!"
     },
     "refusals": {
       "tryThese": "Willst du eins davon ausprobieren?",
@@ -970,10 +971,10 @@
         }
       }
     },
-    "budgetResting": "Der KI-Baumeister ruht sich bis morgen aus, deshalb nehme ich jetzt meine einfachen Bausteine.",
     "turnTimeout": "⏱️ Dieser Bau hat länger gedauert als unser Zeitlimit, deshalb habe ich aufgehört. Deine neueste Version ist gespeichert. Sag mir, was ich als Nächstes ändern soll!",
     "turnTimeoutNothing": "⏱️ Dieser Bau hat länger gedauert als unser Zeitlimit, deshalb habe ich aufgehört, bevor ich etwas speichern konnte. Dafür wurde keine Nachricht verbraucht, du kannst es also noch mal versuchen.",
-    "cutOffNothing": "Der Baumeister hat so lange geplant, dass ihm der Platz ausging, bevor er etwas bauen konnte. Diese Nachricht wurde nicht gezählt. Bitte um ein oder zwei Änderungen auf einmal."
+    "cutOffNothing": "Der Baumeister hat so lange geplant, dass ihm der Platz ausging, bevor er etwas bauen konnte. Diese Nachricht wurde nicht gezählt. Bitte um ein oder zwei Änderungen auf einmal.",
+    "budgetStop": "Der KI-Baumeister muss sich jetzt ausruhen, deshalb habe ich hier aufgehört. Alles, was ich bisher gemacht habe, ist gespeichert."
   },
   "uploads": {
     "tooFast": "Das sind ganz schön viele Dateien! Warte eine Minute und versuch es noch mal.",
@@ -1435,6 +1436,12 @@
       "gameGone": "Dieses Spiel wurde gelöscht, darum hat der Baumeister aufgehört.",
       "followups": {
         "putBack": "Zurück ins Textfeld"
+      },
+      "resting": {
+        "text": "😴 Der KI-Baumeister ruht sich gerade aus. Er ist {when} wieder da. Dein Spiel und deine Nachrichten sind gespeichert, komm dann einfach wieder!",
+        "today": "heute um {time}",
+        "tomorrow": "morgen um {time}",
+        "date": "am {date} um {time}"
       }
     }
   },

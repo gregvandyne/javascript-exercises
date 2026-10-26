@@ -875,7 +875,8 @@
       "busy": "The Builder is still working on your last message. One moment!",
       "tooMany": "You already have 2 games building. Wait until one is done, then try again.",
       "limit": "You have used all {count} Builder turns for today. Come back tomorrow for more!",
-      "muddled": "The Builder got muddled. Please try again in a moment."
+      "muddled": "The Builder got muddled. Please try again in a moment.",
+      "resting": "The AI Builder is resting right now. Your game and your turns are saved, so come back a bit later!"
     },
     "refusals": {
       "tryThese": "Want to try one of these?",
@@ -972,8 +973,8 @@
         }
       }
     },
-    "budgetResting": "The AI Builder is resting until tomorrow, so I'll use my simple building blocks for now.",
-    "cutOffNothing": "The Builder spent so long planning that it ran out of room before it could build anything. Your turn wasn’t used. Try asking for one or two changes at a time."
+    "cutOffNothing": "The Builder spent so long planning that it ran out of room before it could build anything. Your turn wasn’t used. Try asking for one or two changes at a time.",
+    "budgetStop": "The AI Builder has to rest now, so I stopped here. Everything I made so far is saved."
   },
   "uploads": {
     "tooFast": "That is a lot of files! Wait a minute and try again.",
@@ -1435,6 +1436,12 @@
       "gameGone": "This game was deleted, so the Builder stopped.",
       "followups": {
         "putBack": "Put it back in the box"
+      },
+      "resting": {
+        "text": "😴 The AI Builder is resting right now. It will be back {when}. Your game and your turns are saved, so come back then!",
+        "today": "today at {time}",
+        "tomorrow": "tomorrow at {time}",
+        "date": "on {date} at {time}"
       }
     }
   },

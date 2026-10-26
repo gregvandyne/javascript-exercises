@@ -60,3 +60,10 @@ export function status(day = today()) {
   return { ok: !reason, reason, ...s, ...l };
 }
 export const ok = () => status().ok;
+/** When the AI is back (ms): the next UTC midnight for the daily limit, the 1st of next month (UTC) for the monthly
+ *  one, or null while the budget isn't spent. */
+export function resetsAt(now = Date.now()) {
+  const s = status(new Date(now).toISOString().slice(0, 10)); if (s.ok) return null;
+  const d = new Date(now);
+  return s.reason === 'monthly' ? Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 1) : Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() + 1);
+}

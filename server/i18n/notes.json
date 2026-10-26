@@ -223,7 +223,6 @@
   "js.studio.update.text": "{live} and {number} become bold text like \"version 3\" (js.studio.update.version).",
   "js.studio.update.version": "Used inside js.studio.update.text. {number} is a version number.",
   "js.studio.update.publicText": "{live} is a version number.",
-  "builder.budgetResting": "Shown in the Builder chat when the site's daily/monthly AI spending cap is reached; the offline builder takes over. Kid reading level.",
   "uploads.image.resting": "Shown when a child uploads a picture while the AI spending cap is reached, so the picture can't be safety-checked. Kid reading level.",
   "me.theme.heading": "Me page panel with the theme choice, next to the Language panel.",
   "auth.page.forgotOwn": "Sign-in page, under the form. Keep it honest: there is no email recovery and no way to look a password up.",
@@ -298,5 +297,7 @@
   "errors.moved.link": "Link to the site's new address, in case the page doesn't move on by itself. {site} is the new address, like oomba.ai.",
   "auth.page.moved": "Sign-in page, after the site moved to a new address and the sign-in could not come along. {site} is the new address, like oomba.ai.",
   "js.studio.steps.think.now.plan": "Round 1 after the AI has read the message and is working out its answer (it may be thinking quietly). Same word for “round” as the other think.* labels.",
-  "js.studio.steps.think.learn.long": "Shown when the first round has been planning for 45 seconds. Must stay true: the build continues after leaving the page."
+  "js.studio.steps.think.learn.long": "Shown when the first round has been planning for 45 seconds. Must stay true: the build continues after leaving the page.",
+  "js.studio.resting.text": "Shown in the Builder chat when the site's daily AI spending limit is reached. {when} is one of resting.today / resting.tomorrow / resting.date, already translated. Must stay true: turns are not used while it rests.",
+  "js.studio.resting.date": "{date} is a weekday and date in the reader's language, like 'Saturday, Nov 1'. {time} is a clock time."
 }
