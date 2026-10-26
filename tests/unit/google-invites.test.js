@@ -105,7 +105,7 @@ test('a teacher invites by school email; the student signs in with Google, gets 
   assert.equal(loc(await google({ email: 'eli@dwes.test' })), '/classes');
   // The teacher sees the Google line and the invite list.
   const page = await (await get(`/class/${c.id}?tab=students`, teacherCookie)).text();
-  assert.match(page, /Google: eli@dwes\.test/); assert.match(page, /Joined as @/); assert.match(page, /gus@dwes\.test/);
+  assert.match(page, /Google: ⁦?eli@dwes\.test/); assert.match(page, /Joined as @/); assert.match(page, /gus@dwes\.test/);
 });
 
 test('a name in the paste that matches a school account in the class connects that account instead', async () => {
@@ -141,7 +141,7 @@ test('a teacher connects one existing student by email from the roster menu', as
   const wrong = await post(`/api/classes/${c.id}/students/${made.user.id}/google`, { email: 'jon@other.test' }, teacherCookie);
   assert.equal(wrong.status, 400);
   assert.equal((await post(`/api/classes/${c.id}/students/${made.user.id}/google`, { email: 'jon@dwes.test' }, teacherCookie)).status, 200);
-  assert.match(await (await get(`/class/${c.id}?tab=students`, teacherCookie)).text(), /Google: waiting \(jon@dwes\.test\)/);
+  assert.match(await (await get(`/class/${c.id}?tab=students`, teacherCookie)).text(), /Google: waiting \(⁦?jon@dwes\.test⁩?\)/);
   await google({ email: 'jon@dwes.test' });
   assert.equal(identity('jon@dwes.test').user_id, made.user.id);
 });
@@ -243,6 +243,55 @@ test('invites expire, can be renewed and removed, and old ones are swept', async
   assert.ok(G.sweepInvites() >= 1);
   assert.equal(G.getInvite(inv.id), null);
   assert.ok(s);
+});
+
+test('review fixes: a re-paste keeps a connect invite; staff invite does not overwrite a connect; one school per domain', async () => {
+  const { c, s, admin, adminCookie, teacherCookie } = school({ domains: ['rp.test'] });
+  const made = S.createSchoolAccount({ id: admin.id }, s.id, { rosterName: 'Uma Ray' });
+  S.addToClass({ id: admin.id }, c.id, made.user.id, 'student');
+  await post(`/api/classes/${c.id}/students/${made.user.id}/google`, { email: 'uma@rp.test' }, teacherCookie);
+  await post(`/api/classes/${c.id}/google-invites`, { emails: 'uma@rp.test' }, teacherCookie);   // bare re-paste
+  const users = q.get('SELECT COUNT(*) n FROM users').n;
+  await google({ email: 'uma@rp.test' });
+  assert.equal(identity('uma@rp.test').user_id, made.user.id, 'still connects the existing account');
+  assert.equal(q.get('SELECT COUNT(*) n FROM users').n, users);
+
+  const staff = S.createSchoolAccount({ id: admin.id }, s.id, { rosterName: 'Mr Vo', role: 'teacher' });
+  await post(`/api/schools/${s.id}/members/${staff.user.id}/google`, { email: 'vo@rp.test' }, adminCookie);
+  const r = await post(`/api/schools/${s.id}/google-invites`, { email: 'vo@rp.test', rosterName: 'Mr Vo', role: 'teacher' }, adminCookie);
+  assert.equal(r.status, 400);
+  await google({ email: 'vo@rp.test' });
+  assert.equal(identity('vo@rp.test').user_id, staff.user.id);
+
+  // Another school can't list rp.test.
+  const other = school({ domains: [] });
+  const taken = await post(`/api/schools/${other.s.id}/google`, { domains: 'rp.test' }, other.adminCookie);
+  assert.equal(taken.status, 400); assert.match((await taken.json()).error, /another school/);
+});
+
+test('review fixes: invites from two schools for one address: the oldest school wins, a later attach cannot jump ahead', async () => {
+  const a = school({ domains: ['two.test'] });
+  const b = school({ domains: [] });
+  q.run('UPDATE schools SET settings=? WHERE id=?', JSON.stringify({ googleDomains: ['two.test'] }), b.s.id); // as if both had it before the rule
+  await post(`/api/classes/${a.c.id}/google-invites`, { emails: 'wes@two.test' }, a.teacherCookie);
+  const decoy = S.createSchoolAccount({ id: b.admin.id }, b.s.id, { rosterName: 'Decoy' });
+  await post(`/api/schools/${b.s.id}/members/${decoy.user.id}/google`, { email: 'wes@two.test' }, b.adminCookie);
+  await google({ email: 'wes@two.test' });
+  const u = getUser(identity('wes@two.test').user_id);
+  assert.equal(u.managed_school, a.s.id); assert.notEqual(u.id, decoy.user.id);
+});
+
+test('review fixes: the class-code Google join respects "own accounts off" for people from outside the school', async () => {
+  const a = school({ domains: ['own.test'] });
+  const own = createUser({ username: uname('Own'), password: 'own-pass-123' });
+  S.addMember({ id: a.admin.id }, a.s.id, own.id, 'student', { rosterName: 'Xia' });
+  q.run('INSERT INTO google_identities(sub, user_id, email, hd, created_at) VALUES (?,?,?,?,?)', 'own-sub-1', own.id, 'xia@own.test', 'own.test', Date.now());
+  const b = school({ domains: [] });
+  q.run('UPDATE schools SET settings=? WHERE id=?', JSON.stringify({ googleDomains: ['own.test'], allowOwnAccounts: false }), b.s.id);
+  q.run('UPDATE classrooms SET google_join=1 WHERE id=?', b.c.id);
+  const r = await google({ intent: 'join', code: b.c.join_code, email: 'xia@own.test', sub: 'own-sub-1' });
+  assert.match(loc(r), /jerr=ownAccountsOff/);
+  assert.equal(S.membership(b.s.id, own.id), null);
 });
 
 test('off: no Google panels or routes anywhere', async () => {

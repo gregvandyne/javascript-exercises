@@ -125,6 +125,9 @@ router.post('/api/schools/:id/google', on, auth.requireUser, (req, res) => {
   const s = schoolApi(req, res); if (!s) return;
   const t = req.t; const p = S.parseDomains(b(req).domains);
   if (!p.ok) return res.status(400).json({ field: 'domains', error: t(`google.settings.${p.code}`, { value: p.value || '', max: S.MAX_DOMAINS }) });
+  // One school per Google domain: otherwise another school could invite (and so claim) this school's students first.
+  const taken = G.domainTakenBy(s.id, p.domains);
+  if (taken) return res.status(400).json({ field: 'domains', error: t('google.settings.domainTaken', { value: taken }) });
   const lost = G.lostWithDomains(s.id, p.domains);
   const r = S.updateSchool(req.user, s.id, { settings: { googleDomains: p.domains } });
   if (!r.ok) return res.status(400).json({ error: t(`school.errors.${r.code}`) });
@@ -137,7 +140,7 @@ router.post('/api/schools/:id/google-invites', on, auth.requireUser, rateLimit('
   if (!r.ok) {
     if (r.code === 'rosterName') return res.status(400).json({ field: 'rosterName', error: t('school.errors.staffName') });
     if (r.code === 'notEmail') return res.status(400).json({ field: 'email', error: t('google.invites.notEmail', { line: String(email || '').slice(0, 60) }) });
-    if (r.code === 'notSchool') return res.status(400).json({ field: 'email', error: t('google.invites.notSchool', { email: r.email, domains: domainList(req, G.schoolDomains(s)) }) });
+    if (r.code === 'notSchool') return res.status(400).json({ field: 'email', error: t('google.invites.notSchool', { email: ltr(r.email), domains: domainList(req, G.schoolDomains(s)) }) });
     return res.status(400).json({ error: t(r.code === 'badRole' ? 'school.errors.badRole' : `google.invites.${r.code}`) });
   }
   res.json({ ok: true, toast: t('google.staff.saved', { name: r.name, role: t(`school.roles.${r.role}`) }) });
@@ -160,7 +163,7 @@ router.post('/api/classes/:id/google-invites', on, auth.requireUser, rateLimit('
   if (!r.ok) {
     const domains = domainList(req, G.schoolDomains(s));
     if (r.code === 'badLines') {
-      const lines = [...r.bad.map(line => t('google.invites.notEmail', { line })), ...r.notSchool.map(email => t('google.invites.notSchool', { email, domains }))].slice(0, 10).join(' · ');
+      const lines = [...r.bad.map(line => t('google.invites.notEmail', { line })), ...r.notSchool.map(email => t('google.invites.notSchool', { email: ltr(email), domains }))].slice(0, 10).join(' · ');
       return res.status(400).json({ field: 'emails', error: t('google.invites.badLines', { lines }) });
     }
     return res.status(400).json({ field: 'emails', error: t(`google.invites.${r.code}`, { name: r.name || '' }) });
@@ -203,7 +206,7 @@ function attachReply(req, res, r, s) {
   const t = req.t;
   if (r.ok) return res.json({ ok: true, toast: t('google.attach.saved') });
   if (r.code === 'notEmail') return res.status(400).json({ field: 'email', error: t('google.invites.notEmail', { line: String(b(req).email || '').slice(0, 60) }) });
-  if (r.code === 'notSchool') return res.status(400).json({ field: 'email', error: t('google.invites.notSchool', { email: r.email, domains: domainList(req, G.schoolDomains(s)) }) });
+  if (r.code === 'notSchool') return res.status(400).json({ field: 'email', error: t('google.invites.notSchool', { email: ltr(r.email), domains: domainList(req, G.schoolDomains(s)) }) });
   if (r.code === 'noDomains') return res.status(400).json({ error: t('google.invites.noDomains') });
   return res.status(400).json({ error: t('google.attach.notSchoolAccount') });
 }
@@ -270,8 +273,10 @@ const clientIdBox = req => html`<code dir="ltr" class="gclient">${config.googleC
 const G_LOGO = raw(`<svg class="gbtn-g" viewBox="0 0 48 48" aria-hidden="true" focusable="false"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>`);
 export const googleButton = (req, href) => html`<a class="gbtn" href="${href}">${G_LOGO}<span>${req.t('google.button.signIn')}</span></a>`;
 /** "@dwes.org or @students.dwes.org" in the reader's language. */
+// Addresses and domains are wrapped in Unicode left-to-right isolates, so in Hebrew and Arabic "@dwes.org" keeps its @ in front.
+const ltr = s => `\u2066${s}\u2069`;
 function domainList(req, domains) {
-  const at = domains.map(d => `@${d}`);
+  const at = domains.map(d => ltr(`@${d}`));
   try { return new Intl.ListFormat(req.fmt.intl, { type: 'disjunction' }).format(at); } catch { return at.join(', '); }
 }
 
@@ -289,7 +294,7 @@ export function loginGoogle(req, next) {
   if (!googleEnabled()) return '';
   const href = `/auth/google/start${next && next !== '/' ? `?next=${encodeURIComponent(next)}` : ''}`;
   return html`<div class="gsign">${googleButton(req, href)}<p class="center small muted gsign-hint">${req.t('google.button.hint')}</p></div>
-    <div class="divider">${req.t('google.login.orName')}</div>`;
+    <div class="divider">${req.t('auth.page.or')}</div><p class="center small muted gsign-or">${req.t('google.login.orName')}</p>`;
 }
 export const loginJoinLink = req => (googleEnabled() ? html`<p class="center small">${tHtml(req.t, 'google.login.joinLink', { link: html`<a href="/join">${req.t('google.login.joinLinkText')}</a>` })}</p>` : '');
 
@@ -301,10 +306,10 @@ export function meGooglePanel(req) {
   const head = html`<h2 id="g-h"><span aria-hidden="true">🔐</span> ${t('google.me.heading')}</h2>`;
   const flash = req.query.google === 'connected' ? html`<p class="notice good" role="status">${t('google.me.connectedToast')}</p>` : '';
   const notice = googleNotice(req);
-  if (kind === 'student') return ident ? html`<section class="panel" id="google" aria-labelledby="g-h">${head}${flash}<p>${t('google.me.connected', { email: ident.email })}</p><p class="small muted">${t('google.me.schoolAccount')}</p></section>` : '';
+  if (kind === 'student') return ident ? html`<section class="panel" id="google" aria-labelledby="g-h">${head}${flash}<p>${t('google.me.connected', { email: ltr(ident.email) })}</p><p class="small muted">${t('google.me.schoolAccount')}</p></section>` : '';
   if (ident) {
     return html`<section class="panel" id="google" aria-labelledby="g-h">${head}${flash}${notice}
-      <p><b>${t('google.me.connected', { email: ident.email })}</b></p>
+      <p><b>${t('google.me.connected', { email: ltr(ident.email) })}</b></p>
       ${u.password_hash ? html`<p class="small muted">${t('google.me.connectedHint')}</p>
         <form data-api="/api/me/google/disconnect" data-reload data-confirm="${t('google.me.disconnectConfirm')}"><button class="btn" type="submit">${t('google.me.disconnect')}</button></form>`
       : html`<p class="small muted">${t('google.me.needCard')}</p>`}</section>`;
@@ -328,7 +333,7 @@ function inviteLine(req, inv) {
   const t = req.t; const st = G.inviteState(inv);
   const label = st === 'waiting' ? t('google.invites.waiting', { date: req.fmt.date(inv.expires_at, { month: 'short', day: 'numeric' }) })
     : st === 'joined' ? t('google.invites.joined', { username: inv.used_username || '' }) : t('google.invites.expired');
-  return html`<li class="ginv ginv-${st}"><span class="ginv-who"><bdi dir="ltr">${inv.email}</bdi>${inv.roster_name ? html` <span class="muted">· ${inv.roster_name}</span>` : ''}${inv.target_username && st !== 'joined' ? html` <span class="small muted">· ${t('google.invites.connectsTo', { username: inv.target_username })}</span>` : ''}</span>
+  return html`<li class="ginv ginv-${st}"><span class="ginv-who"><bdi class="ginv-email" dir="ltr">${inv.email}</bdi>${inv.roster_name || (inv.target_username && st !== 'joined') ? html`<span class="small muted">${inv.roster_name}${inv.roster_name && inv.target_username && st !== 'joined' ? ' · ' : ''}${inv.target_username && st !== 'joined' ? t('google.invites.connectsTo', { username: inv.target_username }) : ''}</span>` : ''}</span>
     <span class="chip-s">${label}</span>
     ${st === 'joined' ? '' : html`<span class="acts">${st === 'expired' ? html`<form class="inline" data-api="/api/google-invites/${inv.id}/renew" data-reload><button class="btn btn-sm" type="submit">${t('google.invites.renew')}</button></form>` : ''}
       <form class="inline" data-api="/api/google-invites/${inv.id}/revoke" data-reload data-confirm="${t('google.invites.revokeConfirm', { email: inv.email })}"><button class="btn btn-sm" type="submit">${t('google.invites.revoke')}</button></form></span>`}</li>`;
@@ -380,8 +385,8 @@ export function googleRosterInfo(ids) {
 export function googleRosterLine(req, info, p) {
   if (!info) return '';
   const ident = info.ids.get(p.id); const w = info.waiting.get(p.id);
-  if (ident) return html`<span class="gline small muted">${req.t('google.roster.connected', { email: ident.email })}</span>`;
-  if (w) return html`<span class="gline small muted">${req.t('google.roster.waiting', { email: w })}</span>`;
+  if (ident) return html`<span class="gline small muted">${req.t('google.roster.connected', { email: ltr(ident.email) })}</span>`;
+  if (w) return html`<span class="gline small muted">${req.t('google.roster.waiting', { email: ltr(w) })}</span>`;
   return '';
 }
 /** Row-menu items for a school account: connect a school Google account, or remove Google sign-in. */

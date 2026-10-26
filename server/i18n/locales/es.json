@@ -2005,7 +2005,8 @@
       "noDomainsTeacher": "Para invitar a estudiantes con sus cuentas de Google de la escuela, primero el admin de su escuela agrega el dominio de Google de la escuela en la configuración de la escuela.",
       "settingsLink": "la configuración de la escuela",
       "howTo": "Después, dígale a la clase: abran el sitio y toquen “Iniciar sesión con Google”.",
-      "setupLink": "¿Entrar con Google está bloqueado en su escuela?"
+      "setupLink": "¿Entrar con Google está bloqueado en su escuela?",
+      "attachWaiting": "Esa dirección ya está esperando para conectarse a una cuenta existente aquí. Quite primero esa invitación."
     },
     "attach": {
       "heading": "Conectar una cuenta de Google de la escuela",
@@ -2050,7 +2051,8 @@
       "tooManyDomains": "Como máximo {max} dominios.",
       "lostAccounts": "{count, plural, one {Guardado. # cuenta que entra con Google ya no está en esta lista y necesitará una tarjeta de acceso.} other {Guardado. # cuentas que entran con Google ya no están en esta lista y necesitarán tarjetas de acceso.}}",
       "trustHeading": "Deje entrar a sus estudiantes (para su admin de Google)",
-      "forward": "Una página que puede enviar a su admin de TI"
+      "forward": "Una página que puede enviar a su admin de TI",
+      "domainTaken": "{value} ya lo usa otra escuela en Oomba Academy. Si es el dominio de su escuela, contáctenos."
     },
     "setup": {
       "title": "Iniciar sesión con Google para escuelas",

@@ -2006,7 +2006,8 @@
       "noDomainsTeacher": "Para convidar alunos pelas contas Google da escola, o admin da escola primeiro adiciona o domínio do Google da escola nas configurações da escola.",
       "settingsLink": "configurações da escola",
       "howTo": "Depois, diga à turma: abram o site e toquem em “Fazer login com o Google”.",
-      "setupLink": "O login com o Google está bloqueado na sua escola?"
+      "setupLink": "O login com o Google está bloqueado na sua escola?",
+      "attachWaiting": "Esse endereço já está aguardando para ser conectado a uma conta existente aqui. Remova esse convite primeiro."
     },
     "attach": {
       "heading": "Conectar uma conta Google da escola",
@@ -2051,7 +2052,8 @@
       "tooManyDomains": "No máximo {max} domínios.",
       "lostAccounts": "{count, plural, one {Salvo. # conta que entra com o Google não está mais nesta lista e vai precisar de um cartão de acesso.} other {Salvo. # contas que entram com o Google não estão mais nesta lista e vão precisar de cartões de acesso.}}",
       "trustHeading": "Libere a entrada dos alunos (para o admin do Google)",
-      "forward": "Uma página que você pode enviar para o admin de TI"
+      "forward": "Uma página que você pode enviar para o admin de TI",
+      "domainTaken": "{value} já é usado por outra escola na Oomba Academy. Se for o domínio da sua escola, fale conosco."
     },
     "setup": {
       "title": "Login com o Google para escolas",

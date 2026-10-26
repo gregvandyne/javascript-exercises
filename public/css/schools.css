@@ -457,7 +457,8 @@ fieldset.picklist>label>span{flex:1;min-width:0}
 .ginvites{margin-top:14px}
 .ginvites ul{display:flex;flex-direction:column;gap:8px;margin-top:8px}
 .ginv{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--line);border-radius:var(--r-sm)}
-.ginv-who{flex:1 1 220px;min-width:0;overflow-wrap:anywhere}
+.ginv-who{flex:1 1 220px;min-width:0;display:flex;flex-direction:column;gap:2px}
+.ginv-email{display:block;overflow-wrap:anywhere}
 .ginv .acts{display:flex;gap:6px}
 .gline{display:block;overflow-wrap:anywhere}
 .gjoin{margin-top:12px;display:flex;flex-direction:column;align-items:flex-start;gap:6px;flex-basis:100%}

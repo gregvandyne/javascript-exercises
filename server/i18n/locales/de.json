@@ -2006,7 +2006,8 @@
       "noDomainsTeacher": "Um Schüler über ihre Google-Konten der Schule einzuladen, muss der Schuladmin zuerst die Google-Domain der Schule in den Schuleinstellungen eintragen.",
       "settingsLink": "den Schuleinstellungen",
       "howTo": "Sagen Sie dann der Klasse: Website öffnen und auf „Über Google anmelden“ drücken.",
-      "setupLink": "Anmeldung mit Google an Ihrer Schule blockiert?"
+      "setupLink": "Anmeldung mit Google an Ihrer Schule blockiert?",
+      "attachWaiting": "Diese Adresse wartet schon darauf, mit einem bestehenden Konto hier verbunden zu werden. Entfernen Sie zuerst diese Einladung."
     },
     "attach": {
       "heading": "Google-Konto der Schule verbinden",
@@ -2051,7 +2052,8 @@
       "tooManyDomains": "Höchstens {max} Domains.",
       "lostAccounts": "{count, plural, one {Gespeichert. # Konto, das sich über Google anmeldet, steht nicht mehr auf dieser Liste und braucht eine Anmeldekarte.} other {Gespeichert. # Konten, die sich über Google anmelden, stehen nicht mehr auf dieser Liste und brauchen Anmeldekarten.}}",
       "trustHeading": "Schüler zulassen (für Ihren Google-Admin)",
-      "forward": "Eine Seite, die Sie an Ihre IT-Administration schicken können"
+      "forward": "Eine Seite, die Sie an Ihre IT-Administration schicken können",
+      "domainTaken": "{value} wird schon von einer anderen Schule auf Oomba Academy verwendet. Wenn es die Domain Ihrer Schule ist, schreiben Sie uns."
     },
     "setup": {
       "title": "Über Google anmelden für Schulen",

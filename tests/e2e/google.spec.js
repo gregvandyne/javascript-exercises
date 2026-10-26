@@ -74,7 +74,7 @@ test('the school admin adds the Google domain; the teacher invites by school ema
 
   await teacher.reload();
   await expect(teacher.locator('table.roster')).toContainText('Ana Silva');
-  await expect(teacher.locator('table.roster')).toContainText('Google: ana.silva@dwes.test');
+  await expect(teacher.locator('table.roster')).toContainText(/Google: \u2066?ana\.silva@dwes\.test/);
   await expect(teacher.locator('.ginvites')).toContainText('Joined as @');
 });
 

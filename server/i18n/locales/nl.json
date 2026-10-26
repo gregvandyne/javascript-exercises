@@ -2006,7 +2006,8 @@
       "noDomainsTeacher": "Wil je leerlingen uitnodigen met hun Google-account van school? Dan moet je schoolbeheerder eerst het Google-domein van de school toevoegen in de instellingen van de school.",
       "settingsLink": "de instellingen van de school",
       "howTo": "Vertel de klas daarna: open de site en druk op “Inloggen met Google”.",
-      "setupLink": "Is inloggen met Google geblokkeerd op je school?"
+      "setupLink": "Is inloggen met Google geblokkeerd op je school?",
+      "attachWaiting": "Dit adres wacht al om aan een bestaand account hier gekoppeld te worden. Verwijder eerst die uitnodiging."
     },
     "attach": {
       "heading": "Een Google-account van school koppelen",
@@ -2051,7 +2052,8 @@
       "tooManyDomains": "Maximaal {max} domeinen.",
       "lostAccounts": "{count, plural, one {Opgeslagen. # account dat inlogt met Google staat niet meer op deze lijst en heeft een inlogkaart nodig.} other {Opgeslagen. # accounts die inloggen met Google staan niet meer op deze lijst en hebben inlogkaarten nodig.}}",
       "trustHeading": "Laat je leerlingen binnen (voor je Google-beheerder)",
-      "forward": "Een pagina die je naar je IT-beheerder kunt sturen"
+      "forward": "Een pagina die je naar je IT-beheerder kunt sturen",
+      "domainTaken": "{value} wordt al gebruikt door een andere school op Oomba Academy. Is het het domein van jouw school? Neem dan contact met ons op."
     },
     "setup": {
       "title": "Inloggen met Google voor scholen",

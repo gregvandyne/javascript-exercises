@@ -2007,7 +2007,8 @@
       "noDomainsTeacher": "To invite students by their school Google accounts, your school admin first adds the school's Google domain in the school settings.",
       "settingsLink": "the school settings",
       "howTo": "Then tell the class: open the site and press “Sign in with Google”.",
-      "setupLink": "Google sign-in blocked at your school?"
+      "setupLink": "Google sign-in blocked at your school?",
+      "attachWaiting": "That address is already waiting to connect to an existing account here. Remove that invite first."
     },
     "attach": {
       "heading": "Connect a school Google account",
@@ -2052,7 +2053,8 @@
       "tooManyDomains": "At most {max} domains.",
       "lostAccounts": "{count, plural, one {Saved. # account that signs in with Google isn't on this list any more and will need a login card.} other {Saved. # accounts that sign in with Google aren't on this list any more and will need login cards.}}",
       "trustHeading": "Let your students in (for your Google admin)",
-      "forward": "A page you can send to your IT admin"
+      "forward": "A page you can send to your IT admin",
+      "domainTaken": "{value} is already used by another school on Oomba Academy. If it's your school's domain, contact us."
     },
     "setup": {
       "title": "Sign in with Google for schools",

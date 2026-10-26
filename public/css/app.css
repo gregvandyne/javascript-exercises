@@ -381,6 +381,7 @@ body.playmode{background:#000;padding-bottom:0;overflow:hidden}
 .gbtn:hover{text-decoration:none;filter:brightness(.97)}
 .gbtn-g{width:18px;height:18px;flex:none}
 .gsign-hint{margin:0}
+.gsign-or{margin:-8px 0 8px}
 .jc-input{font:800 1.6rem/1.2 ui-monospace,Menlo,monospace;letter-spacing:.18em;text-transform:uppercase;text-align:center}
 .jc-chosen{font-weight:700}
 /* A long button label ("I have a login card or an Oomba Academy account") wraps instead of widening the page. */

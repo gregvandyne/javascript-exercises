@@ -2005,7 +2005,8 @@
       "noDomainsTeacher": "学校のGoogleアカウントで生徒を招待するには、まず学校管理者が学校の設定で学校のGoogleドメインを追加する必要があります。",
       "settingsLink": "学校の設定",
       "howTo": "そのあと、クラスに「サイトをひらいて『Googleでログイン』をおしてね」と伝えてください。",
-      "setupLink": "学校でGoogleログインがブロックされていますか？"
+      "setupLink": "学校でGoogleログインがブロックされていますか？",
+      "attachWaiting": "このアドレスは、ここにある既存のアカウントとの連携を待っています。先にその招待を削除してください。"
     },
     "attach": {
       "heading": "学校のGoogleアカウントを連携",
@@ -2050,7 +2051,8 @@
       "tooManyDomains": "ドメインは{max}個までです。",
       "lostAccounts": "保存しました。Googleでログインしている{count}件のアカウントがこのリストの対象外になったため、ログインカードが必要になります。",
       "trustHeading": "生徒がログインできるようにする（Google管理者向け）",
-      "forward": "IT管理者に送れるページ"
+      "forward": "IT管理者に送れるページ",
+      "domainTaken": "{value} はすでに Oomba Academy の別の学校で使われています。あなたの学校のドメインであれば、お問い合わせください。"
     },
     "setup": {
       "title": "学校向け Googleでログイン",

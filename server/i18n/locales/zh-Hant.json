@@ -2005,7 +2005,8 @@
       "noDomainsTeacher": "若要用學校的 Google 帳戶邀請學生，校務管理員需要先在學校設定中新增學校的 Google 網域。",
       "settingsLink": "學校設定",
       "howTo": "接著告訴全班：打開網站，按下「使用 Google 帳戶登入」。",
-      "setupLink": "你的學校封鎖了 Google 登入嗎？"
+      "setupLink": "你的學校封鎖了 Google 登入嗎？",
+      "attachWaiting": "這個地址已在等待連結到這裡現有的帳號。請先移除那份邀請。"
     },
     "attach": {
       "heading": "連結學校的 Google 帳戶",
@@ -2050,7 +2051,8 @@
       "tooManyDomains": "最多 {max} 個網域。",
       "lostAccounts": "{count, plural, other {已儲存。有 # 個用 Google 登入的帳號已不在這份清單上，需要使用登入卡。}}",
       "trustHeading": "讓學生可以登入（給 Google 管理員）",
-      "forward": "可以轉寄給 IT 管理員的頁面"
+      "forward": "可以轉寄給 IT 管理員的頁面",
+      "domainTaken": "{value} 已被 Oomba Academy 上的另一所學校使用。如果這是貴校的網域，請與我們聯絡。"
     },
     "setup": {
       "title": "學校專用的 Google 帳戶登入",

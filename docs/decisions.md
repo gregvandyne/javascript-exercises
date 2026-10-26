@@ -766,6 +766,12 @@ A review of the three batches together found these; each got the smallest correc
   the class code when the teacher turned on "join with Google". Both need the school's Google Workspace domains, and
   the token's `hd` and email domain must both be in them, so a personal Gmail with the same address never claims an
   invite. Anyone else is turned away kindly; no own account is made from Google (keeps the "no email" promise).
+- **A Google domain belongs to one school.** Saving a domain another live school lists is refused ("contact us").
+  Otherwise another school could invite, and so claim, this school's students first. If two schools somehow share a
+  domain (set before this rule), the oldest invite's school decides a first sign-in and only its invites apply; a
+  later "connect this account" invite from another school can't jump ahead. A re-pasted list only renews an invite:
+  a waiting "connect this account" invite stays one. The class-code Google join is instant only for the school's own
+  people; anyone else follows the usual class-code rules (own accounts wait, or are refused when the school says so).
 - **School accounts made through Google have no password**; removing Google from one prints a login card at once.
   Clearing the school's domains turns Google off for its own accounts. Staff and own-account students in a school with
   domains can connect Google on the Me page after re-entering their password; school-account students can't (their

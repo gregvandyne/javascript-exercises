@@ -49,6 +49,14 @@ export function schoolDomains(school) {
 /** Both the account's Workspace (hd: managed by that school) and its email domain must be listed. */
 export const inSchoolDomains = (domains, { email, hd }) =>
   domains.length > 0 && !!hd && domains.includes(hd) && domains.includes(emailDomain(email));
+/** A domain another live school already lists (a Google domain belongs to one school), or null. */
+export function domainTakenBy(schoolId, domains) {
+  for (const s of q.all("SELECT * FROM schools WHERE id<>? AND archived_at IS NULL AND settings LIKE '%googleDomains%'", schoolId)) {
+    const theirs = schoolDomains(s); const hit = domains.find(d => theirs.includes(d));
+    if (hit) return hit;
+  }
+  return null;
+}
 /** How many accounts owned by this school sign in with Google but wouldn't match these domains any more. */
 export function lostWithDomains(schoolId, domains) {
   return q.all('SELECT g.email, g.hd FROM google_identities g JOIN users u ON u.id=g.user_id WHERE u.managed_school=? AND u.banned=0', schoolId)
@@ -126,8 +134,10 @@ const openCount = (col, v) => q.get(`SELECT COUNT(*) n FROM google_invites WHERE
 function upsertInvite(by, { schoolId, classId = null, role, email, rosterName = '', grade = '', userId = null }) {
   const old = q.get("SELECT * FROM google_invites WHERE school_id=? AND IFNULL(class_id,'')=? AND email=? AND status='open'", schoolId, classId || '', email);
   if (old) {
-    q.run('UPDATE google_invites SET expires_at=?, roster_name=CASE WHEN ?<>\'\' THEN ? ELSE roster_name END, user_id=?, role=? WHERE id=?',
-      now() + INVITE_DAYS * DAY, rosterName, rosterName, userId, role, old.id);
+    // A renew only extends the invite (and takes a new roster name): an open "connect this account" invite stays one,
+    // unless this entry is itself a connect for a (new) account.
+    q.run('UPDATE google_invites SET expires_at=?, roster_name=CASE WHEN ?<>\'\' THEN ? ELSE roster_name END, user_id=COALESCE(?, user_id), role=CASE WHEN ? IS NULL THEN role ELSE ? END WHERE id=?',
+      now() + INVITE_DAYS * DAY, rosterName, rosterName, userId, userId, role, old.id);
     return 'renewed';
   }
   q.run(`INSERT INTO google_invites(id, school_id, class_id, role, email, roster_name, grade, user_id, status, created_by, created_at, expires_at)
@@ -183,6 +193,8 @@ export function createStaffInvite(by, schoolId, { email, rosterName, role }) {
   const rn = clip(rosterName, 60); if (!rn) return fail('rosterName');
   if (!['teacher', 'admin'].includes(role)) return fail('badRole');
   if (openCount('school_id', s.id) >= MAX_OPEN_PER_SCHOOL) return fail('tooManyOpen');
+  // That address is already waiting to connect an existing account here: a staff invite would turn it into a new one.
+  if (q.get("SELECT 1 FROM google_invites WHERE school_id=? AND class_id IS NULL AND email=? AND user_id IS NOT NULL AND status='open'", s.id, e)) return fail('attachWaiting');
   const r = upsertInvite(by, { schoolId: s.id, role, email: e, rosterName: rn });
   audit(by.id, 'school.google_staff_invite', s.id, { role, renewed: r === 'renewed' });
   return ok({ state: r, name: rn, role });
@@ -303,7 +315,10 @@ export function joinWithCode(user, code, claims) {
   const { c, s } = found;
   if (S.classMember(c.id, user.id)) return { landing: `/class/${c.id}` };
   const m = S.membership(s.id, user.id);
-  if (googleJoinOpen(found, claims) && !(user.managed_school && user.managed_school !== s.id) && !(m && m.role !== 'student') && !S.isPlatformAdmin(user)) {
+  // Joining at once is for the school's own people (its accounts, or students already in it); anyone else goes through
+  // the usual class-code rules (own accounts wait for the teacher, or are refused when the school turned them off).
+  const ofSchool = user.managed_school === s.id || (m && m.role === 'student');
+  if (googleJoinOpen(found, claims) && ofSchool && !(m && m.role !== 'student')) {
     if (!m) S.addMember({ id: firstTeacher(c.id) }, s.id, user.id, 'student', { rosterName: claims.name, grade: c.grade || '' });
     S.addToClass(user, c.id, user.id, 'student');
     audit(user.id, 'class.google_join', c.id, { user: user.id });
@@ -360,7 +375,10 @@ function decide({ claims, flow, currentUser, ip }) {
     if (joined.length) landing = `/class/${joined[0]}`;
     via = 'sub';
   } else {
-    const list = validInvites(claims);
+    // Invites from more than one school for the same address (schools that list the same domain): the oldest invite's
+    // school decides, and only that school's invites apply. A later invite from another school can't jump ahead.
+    const all = validInvites(claims);
+    const list = all.length ? all.filter(i => i.school_id === all[0].school_id) : all;
     const attach = list.find(i => i.user_id);
     const staff = list.find(i => !i.user_id && !i.class_id);
     const student = list.find(i => !i.user_id && i.class_id);
