@@ -43,7 +43,7 @@ function build({ ago = 0, pro = false, usd = null, tin = 0, tout = 0, provider =
 test('allowanceFor: the free allowance today, by user row or id; turnsLeft and takeTurn read it', () => {
   const u = createUser({ username: 'AllowKid', password: 'secret123' });
   const a = usage.allowanceFor(u);
-  assert.deepEqual(a, { source: 'free', pool: 'free', daily: config.builderDailyTurns, proWeight: 1 });
+  assert.deepEqual(a, { source: 'free', pool: 'free', daily: config.builderDailyTurns, proWeight: 1, left: config.builderDailyTurns, freeLeft: config.builderDailyTurns, familyId: null, extraLeft: null, extraToday: 0 });
   assert.deepEqual(usage.allowanceFor(u.id), a);
   const saved = config.builderDailyTurns; config.builderDailyTurns = 2;
   try {

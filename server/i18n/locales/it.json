@@ -917,7 +917,8 @@
       "tooMany": "Hai già 2 giochi in costruzione. Aspetta che uno sia finito, poi riprova.",
       "limit": "Hai usato tutti i {count} messaggi al Costruttore di oggi. Torna domani per averne altri!",
       "muddled": "Il Costruttore si è confuso. Riprova tra un attimo.",
-      "resting": "Il Costruttore IA si sta riposando. Il tuo gioco e i tuoi messaggi sono salvati, torna un po’ più tardi!"
+      "resting": "Il Costruttore IA si sta riposando. Il tuo gioco e i tuoi messaggi sono salvati, torna un po’ più tardi!",
+      "limitToday": "Hai usato tutti i messaggi al Costruttore di oggi. Domani ne avrai altri!"
     },
     "refusals": {
       "tryThese": "Vuoi provare una di queste?",
@@ -1541,7 +1542,8 @@
         "today": "oggi alle {time}",
         "tomorrow": "domani alle {time}",
         "date": "{date} alle {time}"
-      }
+      },
+      "extra": "+{n} extra questo mese"
     }
   },
   "favorites": {
@@ -2261,7 +2263,10 @@
       "what": {
         "h": "Cosa aggiunge un piano famiglia",
         "p1": "{extra, plural, one {# messaggio extra al Costruttore} other {# messaggi extra al Costruttore}} al mese, da condividere tra un massimo di {max} figli, in aggiunta ai messaggi gratuiti che ogni giocatore riceve ogni giorno.",
-        "p2": "Pagare non sblocca mai niente che manchi a chi gioca gratis, e ai bambini non viene mai chiesto di pagare."
+        "p2": "Pagare non sblocca mai niente che manchi a chi gioca gratis, e ai bambini non viene mai chiesto di pagare.",
+        "limitDaily": "Ogni figlio o figlia può usare al massimo {daily, plural, one {# messaggio extra} other {# messaggi extra}} al giorno.",
+        "limitCost": "I messaggi extra di una famiglia si fermano fino alla fine del mese anche se il loro costo di funzionamento diventa insolitamente alto.",
+        "limitReset": "I messaggi extra ripartono il 1° di ogni mese (UTC) e quelli non usati non passano al mese successivo."
       },
       "price": {
         "h": "Prezzo",
@@ -2368,6 +2373,48 @@
       "typeCode": "Scrivete il codice che vi ha dato vostro figlio o figlia.",
       "tooMany": "Troppi tentativi. Aspettate 15 minuti e poi riprovate.",
       "notFound": "Questo figlio o figlia non fa parte della vostra famiglia."
+    },
+    "billing": {
+      "password": {
+        "label": "La vostra password",
+        "hint": "Ve la chiediamo di nuovo prima di ogni pagamento o cambio di piano.",
+        "needed": "Scrivete la password per continuare.",
+        "wrong": "La password non è corretta."
+      },
+      "manage": "Gestisci pagamenti",
+      "welcome": "Il vostro piano famiglia è attivo. Grazie!",
+      "waiting": "Stiamo attivando il vostro piano… Questa pagina si aggiorna da sola.",
+      "slow": "Ci vuole più tempo del solito. Il vostro pagamento è al sicuro: ricaricate questa pagina tra qualche minuto e, se il piano ancora non compare, scriveteci.",
+      "back": "Torna alla pagina della vostra famiglia",
+      "grant": "Piano gratuito fino al {date}.",
+      "pastDue": "Il vostro ultimo pagamento non è andato a buon fine. Aggiornate la carta in Gestisci pagamenti, altrimenti il piano termina il {date}.",
+      "ends": "Il piano termina il {date} e non si rinnova. Fino ad allora i vostri figli mantengono i messaggi extra.",
+      "renewsMonthly": "Mensile, si rinnova il {date}.",
+      "renewsYearly": "Annuale, si rinnova il {date}.",
+      "extrasLeft": "{left} su {total, plural, one {# messaggio extra} other {# messaggi extra}} ancora disponibili questo mese, contati fino a ieri",
+      "extrasReset": "Ripartono il {date} (UTC). Quelli non usati non passano al mese successivo.",
+      "linkFirst": "Prima collegate un figlio o una figlia (che dice di sì nella propria pagina), poi potete attivare un piano.",
+      "terms": {
+        "renew": "Il piano si rinnova automaticamente ogni mese o ogni anno finché non lo disdite.",
+        "cancel": "Potete disdire in qualsiasi momento in Gestisci pagamenti. Il piano resta attivo fino alla fine del periodo già pagato.",
+        "refund": "Rimborso completo se lo chiedete entro 14 giorni dal primo pagamento o da un rinnovo annuale.",
+        "tax": "I prezzi sono in dollari statunitensi, più l'imposta sulle vendite dove prevista. Per ora i piani famiglia sono disponibili solo per le famiglie degli Stati Uniti.",
+        "agree": "Abbonandovi, accettate i nostri {terms}.",
+        "link": "Termini di servizio"
+      },
+      "subscribeMonthly": "Abbonati: {price} al mese",
+      "subscribeYearly": "Abbonati: {price} all'anno",
+      "stripe": "Pagate sulla pagina sicura di Stripe. Noi non vediamo mai il numero della vostra carta.",
+      "history": "Le vostre ricevute e i piani precedenti sono in Gestisci pagamenti.",
+      "errors": {
+        "notOpen": "I piani famiglia non sono ancora in vendita.",
+        "entitled": "La vostra famiglia ha già un piano. Usate Gestisci pagamenti per modificarlo.",
+        "fixPayment": "L'ultimo pagamento della vostra famiglia non è andato a buon fine. Aggiornate la carta in Gestisci pagamenti invece di attivare un nuovo piano.",
+        "paying": "Il vostro ultimo pagamento è appena andato a buon fine. Aspettate un minuto, poi ricaricate questa pagina.",
+        "noPrice": "Al momento non è possibile acquistare i piani famiglia. Riprovate più tardi.",
+        "noCustomer": "Non c'è ancora niente da gestire: prima attivate un piano.",
+        "stripe": "Non siamo riusciti a contattare il nostro fornitore di pagamenti. Riprovate tra un minuto."
+      }
     }
   }
 }

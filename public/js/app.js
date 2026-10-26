@@ -111,6 +111,8 @@ on(document, 'submit', async e => {
   // Fields that repeat (a list of checkboxes with one name) are sent as arrays.
   const body = {};
   for (const [k, v] of new FormData(f).entries()) body[k] = k in body ? [].concat(body[k], v) : v;
+  // A named submit button sends its value (e.g. two "Subscribe" buttons, one per billing interval).
+  if (btn && btn.name && !(btn.name in body)) body[btn.name] = btn.value;
   let left = false;
   try {
     const r = await api(f.dataset.api, { method: f.dataset.method || 'POST', body });
@@ -125,6 +127,8 @@ on(document, 'submit', async e => {
   } catch (err) {
     // Signed out meanwhile: keep what was typed on the page (never passwords) and come back here after signing in.
     if (err.signedOut) { left = true; signedOut($$('textarea,input[type=text]')); return; }
+    // The password asked again (a payment form left open past its 10 minutes): show its hidden field.
+    if (err.data && err.data.needPassword) for (const box of $$('[data-reauth][hidden]', f)) { box.hidden = false; $$('input', box).forEach(i => (i.required = true)); }
     const field = err.data && err.data.field; const target = field && f.querySelector(`[name="${field}"]`);
     if (target) { target.setAttribute('aria-invalid', 'true'); const er = f.querySelector(`#${target.id}-err`); if (er) er.textContent = err.message; else toast(err.message, { bad: true }); target.focus(); }
     else {

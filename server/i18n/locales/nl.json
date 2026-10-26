@@ -917,7 +917,8 @@
       "tooMany": "Er worden al 2 games van je gebouwd. Wacht tot er een klaar is en probeer het dan nog eens.",
       "limit": "Je hebt vandaag al je {count} berichten aan de Bouwer gebruikt. Kom morgen terug voor meer!",
       "muddled": "De Bouwer raakte in de war. Probeer het zo nog eens.",
-      "resting": "De AI-Bouwer rust nu even uit. Je game en je berichten zijn bewaard, dus kom straks terug!"
+      "resting": "De AI-Bouwer rust nu even uit. Je game en je berichten zijn bewaard, dus kom straks terug!",
+      "limitToday": "Je hebt al je berichten aan de Bouwer voor vandaag gebruikt. Morgen krijg je er weer nieuwe!"
     },
     "refusals": {
       "tryThese": "Wil je een van deze proberen?",
@@ -1541,7 +1542,8 @@
         "today": "vandaag om {time}",
         "tomorrow": "morgen om {time}",
         "date": "op {date} om {time}"
-      }
+      },
+      "extra": "+{n} extra deze maand"
     }
   },
   "favorites": {
@@ -2261,7 +2263,10 @@
       "what": {
         "h": "Wat een gezinsabonnement toevoegt",
         "p1": "{extra, plural, one {# extra bericht aan de Bouwer} other {# extra berichten aan de Bouwer}} per maand, te delen door maximaal {max} kinderen, bovenop de gratis berichten die elke speler elke dag krijgt.",
-        "p2": "Betalen geeft nooit toegang tot iets wat gratis spelers niet hebben, en kinderen wordt nooit gevraagd om te betalen."
+        "p2": "Betalen geeft nooit toegang tot iets wat gratis spelers niet hebben, en kinderen wordt nooit gevraagd om te betalen.",
+        "limitDaily": "Eén kind kan maximaal {daily, plural, one {# extra bericht} other {# extra berichten}} per dag gebruiken.",
+        "limitCost": "De extra berichten van een gezin stoppen ook voor de rest van de maand als ze ongewoon duur worden om te leveren.",
+        "limitReset": "Extra berichten beginnen op de 1e van elke maand (UTC) opnieuw en worden niet meegenomen naar de volgende maand."
       },
       "price": {
         "h": "Prijs",
@@ -2368,6 +2373,48 @@
       "typeCode": "Typ de code die je van je kind hebt gekregen.",
       "tooMany": "Te veel pogingen. Wacht 15 minuten en probeer het dan opnieuw.",
       "notFound": "Dat kind hoort niet bij je gezin."
+    },
+    "billing": {
+      "password": {
+        "label": "Je wachtwoord",
+        "hint": "We vragen het opnieuw vóór elke betaling of wijziging van je abonnement.",
+        "needed": "Typ je wachtwoord om verder te gaan.",
+        "wrong": "Dat wachtwoord klopt niet."
+      },
+      "manage": "Abonnement beheren",
+      "welcome": "Je gezinsabonnement is actief. Bedankt!",
+      "waiting": "Je abonnement wordt ingesteld… Deze pagina werkt zichzelf bij.",
+      "slow": "Dit duurt langer dan normaal. Je betaling is veilig: laad deze pagina over een paar minuten opnieuw, en als het abonnement er dan nog steeds niet staat, mail ons.",
+      "back": "Terug naar je gezinspagina",
+      "grant": "Gratis abonnement tot {date}.",
+      "pastDue": "Je laatste betaling is niet gelukt. Werk je kaart bij via Abonnement beheren, anders stopt het abonnement op {date}.",
+      "ends": "Het abonnement stopt op {date} en wordt niet verlengd. Tot dan houden je kinderen de extra berichten.",
+      "renewsMonthly": "Maandelijks, wordt verlengd op {date}.",
+      "renewsYearly": "Jaarlijks, wordt verlengd op {date}.",
+      "extrasLeft": "Nog {left} van {total, plural, one {# extra bericht} other {# extra berichten}} over deze maand, geteld tot en met gisteren",
+      "extrasReset": "Ze beginnen op {date} (UTC) opnieuw. Ongebruikte berichten worden niet meegenomen.",
+      "linkFirst": "Koppel eerst een kind (dat zegt ja op de eigen pagina), daarna kun je een abonnement nemen.",
+      "terms": {
+        "renew": "Het abonnement wordt elke maand of elk jaar automatisch verlengd totdat je het opzegt.",
+        "cancel": "Altijd opzegbaar via Abonnement beheren. Het abonnement blijft werken tot het einde van de periode waarvoor je hebt betaald.",
+        "refund": "Je krijgt je geld volledig terug als je erom vraagt binnen 14 dagen na je eerste betaling of na een jaarlijkse verlenging.",
+        "tax": "Prijzen zijn in Amerikaanse dollars, plus omzetbelasting (sales tax) waar die geldt. Gezinsabonnementen zijn voorlopig alleen voor gezinnen in de Verenigde Staten.",
+        "agree": "Door je te abonneren, ga je akkoord met onze {terms}.",
+        "link": "Servicevoorwaarden"
+      },
+      "subscribeMonthly": "Abonneren: {price} per maand",
+      "subscribeYearly": "Abonneren: {price} per jaar",
+      "stripe": "Je betaalt op de beveiligde pagina van Stripe. Wij zien nooit je kaartnummer.",
+      "history": "Je betaalbewijzen en eerdere abonnementen vind je via Abonnement beheren.",
+      "errors": {
+        "notOpen": "Gezinsabonnementen zijn nog niet te koop.",
+        "entitled": "Je gezin heeft al een abonnement. Gebruik Abonnement beheren om het te wijzigen.",
+        "fixPayment": "De laatste betaling van je gezin is niet gelukt. Werk je kaart bij via Abonnement beheren in plaats van een nieuw abonnement te nemen.",
+        "paying": "Je laatste betaling is net gelukt. Wacht een minuut en laad deze pagina dan opnieuw.",
+        "noPrice": "Gezinsabonnementen kunnen nu niet worden gekocht. Probeer het later opnieuw.",
+        "noCustomer": "Er valt nog niets te beheren: neem eerst een abonnement.",
+        "stripe": "We konden onze betaalprovider niet bereiken. Probeer het over een minuut opnieuw."
+      }
     }
   }
 }

@@ -101,6 +101,31 @@ export const subscriptionOfInvoice = inv => {
   return (typeof sub === 'object' ? sub?.id : sub) || null;
 };
 
+// ---- Writes (chunk 4: family checkout). Every POST carries an idempotency key made from our own ids and the action,
+// so a retry never repeats it and one key never goes with other parameters. Never `payment_method_types` (BP-4). ----
+
+/** integration_identifier of each Checkout flow (API dahlia and later), so the Dashboard can compare them: made once,
+ *  with 8 random letters as Stripe asks. Never change them (the Dashboard groups sessions by them). */
+export const INTEGRATION_IDS = Object.freeze({ family: 'oomba_family_qhzvtrkm', school: 'oomba_school_wbnxjfpd' });
+
+/** A Customer for an owner, with no name or email from us (Checkout asks for the email; Stripe keeps it). */
+export const createCustomer = (params, idempotencyKey) => call(s => s.customers.create(params, { idempotencyKey }));
+export const createCheckoutSession = (params, idempotencyKey) => call(s => s.checkout.sessions.create(params, { idempotencyKey }));
+export const expireCheckoutSession = id => call(s => s.checkout.sessions.expire(id, {}, { idempotencyKey: `expire-${id}` }));
+/** A Customer Portal session (the sandbox's default Portal configuration). */
+export const createPortalSession = (params, idempotencyKey) => call(s => s.billingPortal.sessions.create(params, { idempotencyKey }));
+/** Ends a subscription now, with no proration credit (a refund, a dispute, a fraud warning or a duplicate). */
+export const cancelSubscriptionNow = (id, why) => call(s => s.subscriptions.cancel(id, { prorate: false, invoice_now: false }, { idempotencyKey: `cancel-${why}-${id}` }));
+/** The PaymentIntent that paid an invoice (through its invoice payments), or null. */
+export const paymentIntentOfInvoice = invoiceId => call(async s => {
+  const list = await s.invoicePayments.list({ invoice: invoiceId, limit: 10 });
+  const ip = list.data.find(p => p.status === 'paid') || list.data[0];
+  const pi = ip?.payment?.payment_intent;
+  return (typeof pi === 'object' ? pi?.id : pi) || null;
+});
+/** A full refund of one payment. key: our id and the action (e.g. "duplicate-<subscription id>"). */
+export const refundPaymentIntent = (paymentIntentId, key) => call(s => s.refunds.create({ payment_intent: paymentIntentId }, { idempotencyKey: `refund-${key}` }));
+
 /** Our prices, found by lookup key: { [lookupKey]: { id, interval, unitAmount, currency, product } }. Cached; the
  *  reconcile job refreshes it. */
 let priceCache = null;

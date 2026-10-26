@@ -117,7 +117,20 @@ logged, audited and flagged `unknown_price`.
 | `BILLING_PUBLIC` | `0` | `1` shows the paid-plan pages (grown-up accounts, family links, checkout) to everyone. Until then billing runs but those pages are hidden. |
 | `BILLING_PREVIEW_TOKEN` | — | 24+ characters. Before `BILLING_PUBLIC`, visiting any page with `?bpreview=<token>` lets that browser see the paid-plan pages for 12 hours (`?bpreview=off` stops it). |
 | `FAMILY_MAX_CHILDREN` | `4` | Children one grown-up account can link (pending requests count). |
-| `FAMILY_EXTRA_MESSAGES` | `40` | Extra Builder messages a family plan adds each month (shown on /grown-ups). |
+| `FAMILY_EXTRA_MESSAGES` | `40` | Extra Builder messages a family plan adds each month, shared by its children and used only after each child's free daily ones (or while the free AI budget rests). Shown on /grown-ups and /family. |
+| `FAMILY_CHILD_DAILY_MAX` | `60` | Extra messages one child may use in a UTC day (stated on /grown-ups and /family). |
+| `FAMILY_MONTHLY_AI_USD` | `4` | AI cost (US dollars) one family's extra messages may reach in a UTC month before they stop (stated as a limit on unusually expensive use). Also sets the paid AI pool: families with a plan, or with extra messages used this month, × this. |
+| `AI_PAID_MONTHLY_BUDGET_USD` | computed | A cap on the paid AI pool (family extra messages). Unset: families with a plan (or with extra messages used this month) × `FAMILY_MONTHLY_AI_USD`. |
+| `AI_HARD_MONTHLY_USD` | free + paid | Stops every AI call site-wide for the rest of the UTC month. Default: `AI_MONTHLY_BUDGET_USD` + the paid pool. |
+| `STRIPE_PMC_FAMILY` | – | `pmc_…`: the "Family" payment method configuration (cards, Apple Pay, Google Pay; Link off) for family Checkout. Required to sell family plans: unset, family plans are not on sale (never a fallback to the account's default configuration, which may have Link on); start-up logs a warning and /admin/billing shows a banner. Never a list of payment method types. |
+| `TERMS_PUBLISHED` | off | `1` once /terms is on the site: family Checkout then asks the buyer to agree to it (set the Terms URL in Stripe's public details first) and /family links to it. |
+
+Family checkout (chunk 4): a grown-up with a confirmed child subscribes on /family (monthly or yearly), after typing
+their password again (valid 10 minutes on that sign-in); Stripe's hosted Checkout takes the payment and the webhook
+turns the plan on. **Manage billing** opens Stripe's Customer Portal (its default configuration). While the key is a test
+key only grown-ups marked **billing tester** on /admin (Users) can check out. A full refund of the latest payment, a
+dispute or an early fraud warning ends the plan at once; a second plan paid by mistake is cancelled and refunded
+automatically. /admin/billing lists subscriptions, flags, refund windows and webhook problems (read-only).
 
 Stripe webhook events to send (14): `checkout.session.completed`, `checkout.session.async_payment_succeeded`,
 `checkout.session.async_payment_failed`, `checkout.session.expired`, `customer.subscription.created`,

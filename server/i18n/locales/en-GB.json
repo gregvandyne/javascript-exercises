@@ -135,6 +135,11 @@
           "a": "Yes, any time. The plan runs to the end of the period you paid for, then your children go back to the free messages. Nothing they made is deleted."
         }
       }
+    },
+    "billing": {
+      "terms": {
+        "cancel": "Cancel any time in Manage billing. The plan keeps working until the end of the period you paid for."
+      }
     }
   }
 }

@@ -2,26 +2,32 @@
 //   /grown-ups              public page about family accounts (linked only from /parents), sign-up and sign-in
 //   /family, /family/link   the grown-up's own pages
 //   /api/me/family/*        the child's side, from the "For grown-ups" panel on /me
+//   /api/billing/*          the grown-up's plan (chunk 4): Checkout, the Customer Portal and the return page's status
 // Everything here answers 404 while billing is off (no STRIPE_API_KEY), except that grown-up accounts stay fenced in and
 // keep a small /family page with their language, password and Sign out (so a grown-up can always sign out).
 //
 // The fence (grownupGuard, before every other route): a grown-up account can play games and look after its family,
 // nothing else. It is a list of what they may open; everything else (the Builder, Studio, friends, chat, profiles,
-// classes, schools, admin, ...) is a 404, as if the page weren't there. No payments in this chunk.
+// classes, schools, admin, ...) is a 404, as if the page weren't there. Paying (chunk 4) is for grown-ups only, behind
+// the same families gate, the billing tester rule while the key is a test key, and the password typed again.
 import { Router } from 'express';
 import { html, raw } from '../views/html.js';
 import { page, notFound } from '../views/layout.js';
 import { avatar, notYou } from '../views/components.js';
 import * as auth from '../auth.js';
-import { audit, tx } from '../db.js';
+import { audit, tx, today } from '../db.js';
 import { config } from '../config.js';
 import * as F from '../services/family.js';
 import * as S from '../services/stripe.js';
-import { rateLimit, allow, count, ipOf } from '../services/ratelimit.js';
+import * as C from '../services/checkout.js';
+import { log } from '../services/log.js';
+import { familyMonth } from '../builder/usage.js';
+import { customerOf } from '../services/billing.js';
+import { rateLimit, allow, count, ipOf, loginLockKey } from '../services/ratelimit.js';
 import { tHtml, saveUserLang } from '../i18n/index.js';
 import { saveUserTheme } from '../theme.js';
 import { siteHost } from '../site.js';
-import { SIGNUP, wantedNext, passwordPanel, signOutPanel, languagePanel } from './auth.js';
+import { SIGNUP, LOGIN, wantedNext, passwordPanel, signOutPanel, languagePanel } from './auth.js';
 
 export const router = Router();
 const isApi = req => req.originalUrl.startsWith('/api/');
@@ -31,9 +37,10 @@ const nope = (req, res) => (isApi(req) ? res.status(404).json({ error: req.t('er
 // What a grown-up may open: game pages and play, search, the grown-up and info pages, signing in and out, their own
 // password and theme, and the family routes. Game calls a play page makes (save, score, ...) are allowed; a grown-up's
 // score is never stored (routes/games.js), so they are on no leaderboard.
-const GROWNUP_GET = [/^\/$/, /^\/search$/, /^\/api\/(search|live|me)$/, /^\/(g|play)\/[^/]+$/, /^\/(frame|shots|avatars)\/[^/]+$/,
+const GROWNUP_GET = [/^\/$/, /^\/search$/, /^\/api\/(search|live|me|billing\/status)$/, /^\/(g|play)\/[^/]+$/, /^\/(frame|shots|avatars)\/[^/]+$/,
   /^\/(parents|safety)$/, /^\/grown-ups(\/(signup|login))?$/, /^\/family(\/link)?$/, /^\/(login|signup)$/, /^\/api\/games\/[^/]+\/(save|leaderboard)$/];
 const GROWNUP_POST = [/^\/api\/auth\/(login|logout|logout-everywhere)$/, /^\/api\/me\/(password|theme)$/, /^\/api\/family\/(link|children\/[^/]+\/remove)$/,
+  /^\/api\/billing\/(family\/checkout|portal)$/,
   /^\/api\/games\/[^/]+\/(play|heartbeat|leave|save|score|report)$/];
 /** May a grown-up account use this method and path? */
 export function grownupMay(method, path) {
@@ -140,13 +147,20 @@ router.post('/api/me/family/report', childOnly, rateLimit('family-answer', 30, 6
 // ---------------------------------------------------------------- /grown-ups (public)
 const PANEL_STYLE = 'wrap narrow';
 async function familyPrices() {
-  if (!S.billingOn()) return null;
-  try {
-    const p = await S.prices();
-    const m = p[S.PRICE_LOOKUP_KEYS.familyMonthly], y = p[S.PRICE_LOOKUP_KEYS.familyYearly];
-    return m && y ? { monthly: m.unitAmount, yearly: y.unitAmount } : null;
-  } catch { return null; }
+  const p = await C.familyPrices();
+  return p ? { monthly: p.month.unitAmount, yearly: p.year.unitAmount } : null;
 }
+/** The family plan's limits, stated before buying: the per-child daily ceiling (only when it is below the monthly extras:
+ *  a bigger number would read like a promise of that many a day), the cost backstop, and (reset) when extras start again. */
+function limitsText(t, { reset = true } = {}) {
+  const parts = [];
+  if (config.familyChildDailyMax < config.familyExtraMessages) parts.push(t('family.landing.what.limitDaily', { daily: config.familyChildDailyMax }));
+  parts.push(t('family.landing.what.limitCost'));
+  if (reset) parts.push(t('family.landing.what.limitReset'));
+  return parts.join(' ');
+}
+/** Are family plans on sale to this visitor? With a live key, yes; with a test key, only to billing testers (D14). */
+const onSale = u => S.billingMode() === 'live' || (auth.isGrownup(u) && C.mayBill(u));
 router.get('/grown-ups', on, async (req, res) => {
   const t = req.t, f = req.fmt, u = req.user;
   const prices = await familyPrices();
@@ -159,10 +173,11 @@ router.get('/grown-ups', on, async (req, res) => {
     <div class="row" style="margin-bottom:16px">${actions}</div>
     <section class="panel"><h2>${t('family.landing.what.h')}</h2>
       <p>${t('family.landing.what.p1', { extra: config.familyExtraMessages, max: config.familyMaxChildren })}</p>
-      <p>${t('family.landing.what.p2')}</p></section>
+      <p>${t('family.landing.what.p2')}</p>
+      <p class="small muted">${limitsText(t)}</p></section>
     <section class="panel"><h2>${t('family.landing.price.h')}</h2>
       ${prices ? html`<p>${t('family.landing.price.p1', { monthly: f.money(prices.monthly), yearly: f.money(prices.yearly) })}</p>` : ''}
-      <p>${t('family.landing.price.soon')}</p>
+      ${prices && onSale(u) ? '' : html`<p>${t('family.landing.price.soon')}</p>`}
       <p class="muted">${t('family.landing.price.us')}</p></section>
     <section class="panel"><h2>${t('family.landing.how.h')}</h2>
       <ol class="steps"><li>${t('family.landing.how.p1')}</li><li>${tHtml(t, 'family.landing.how.p2')}</li><li>${t('family.landing.how.p3')}</li></ol></section>
@@ -246,7 +261,7 @@ router.post('/api/grown-ups/signup', on, (req, res) => {
 });
 
 // ---------------------------------------------------------------- /family (the grown-up's pages)
-router.get('/family', grownupOnly, (req, res) => {
+router.get('/family', grownupOnly, async (req, res) => {
   const t = req.t, f = req.fmt, u = req.user;
   // Families off (billing off): no children, links or plans, but the grown-up can still change their language and
   // password and sign out.
@@ -259,6 +274,7 @@ router.get('/family', grownupOnly, (req, res) => {
   const fam = F.ensureFamily(u);
   const kids = F.childrenOf(fam.id);
   const plan = F.familyPlan(fam.id);
+  const planBox = await planPanel(req, fam, plan, kids);
   const linkedN = kids.length;
   const removeForm = (k, label, confirm) => html`<form data-api="/api/family/children/${F.requestToken(fam.id, k.child_id)}/remove" data-reload data-confirm="${confirm}"><button class="btn" type="submit">${label}</button></form>`;
   const rows = kids.map(k => {
@@ -280,14 +296,151 @@ router.get('/family', grownupOnly, (req, res) => {
     ${kids.length ? html`<ul class="famkids">${rows}</ul><p class="small muted">${t('family.page.usageNote')}</p>` : html`<p class="muted">${t('family.page.none')}</p>`}
     ${linkedN < config.familyMaxChildren ? html`<a class="btn btn-primary" href="/family/link">➕ ${t('family.page.add')}</a>` : html`<p class="small">${t('family.page.full', { max: config.familyMaxChildren })}</p>`}
   </section>
-  <section class="panel" aria-labelledby="plan-h"><h2 id="plan-h">${t('family.page.planHeading')}</h2>
-    <p>${plan.entitled ? t('family.page.planActive') : t('family.page.planNone')}</p>
-    <a href="/grown-ups">${t('family.page.planMore')}</a></section>
+  ${planBox}
   ${config.contactEmail ? html`<section class="panel" aria-labelledby="help-h"><h2 id="help-h">${t('family.page.helpHeading')}</h2>
     <p>${tHtml(t, 'family.page.help', { email: html`<a href="mailto:${config.contactEmail}" dir="ltr">${config.contactEmail}</a>` })}</p></section>` : ''}
   <div class="mesettings">${languagePanel(req)}${passwordPanel(req)}${signOutPanel(req)}</div>`;
-  page(req, res, { title: t('family.page.title'), active: 'family', body });
+  page(req, res, { title: t('family.page.title'), active: 'family', body, scripts: ['/js/family.js'] });
 });
+
+/** The password typed again, inside a payment form. Always there: hidden (and not required) while this sign-in typed it
+ *  in the last 10 minutes, so a page left open longer (or brought back from Stripe with Back) can still ask for it: the
+ *  server's 403 needPassword makes app.js show it ([data-reauth]). */
+function passwordField(req, id) {
+  const t = req.t, fresh = C.reauthFresh(req.sessionId);
+  return html`<div class="field" data-reauth ${fresh ? 'hidden' : ''}><label for="${id}">${t('family.billing.password.label')}</label>
+    <input class="input" id="${id}" name="password" type="password" dir="ltr" autocomplete="current-password" ${fresh ? '' : 'required'} maxlength="72" aria-describedby="${id}-hint">
+    <span class="hint" id="${id}-hint">${t('family.billing.password.hint')}</span><span class="err" id="${id}-err" aria-live="polite"></span></div>`;
+}
+/** The first day of next month (UTC): when a family's extra messages start again. */
+const nextMonthUtc = (t0 = Date.now()) => { const d = new Date(t0); return Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 1); };
+
+/**
+ * The plan panel of /family: the plan's state, extra messages left this month, Manage billing (the Customer Portal),
+ * and, without a plan, the two Subscribe buttons with everything a grown-up should read before paying (renewal,
+ * cancelling, refunds, the plan's limits, tax, US only). Coming back from Checkout (?checkout=…) it waits for the plan.
+ */
+async function planPanel(req, fam, plan, kids) {
+  const t = req.t, f = req.fmt, u = req.user;
+  const sub = plan.subscription;
+  const linked = kids.filter(k => k.status === 'linked').length;
+  const customer = C.mayBill(u) ? customerOf('family', fam.id) : null;
+  const portal = customer ? html`<form data-api="/api/billing/portal" class="planform">${passwordField(req, 'pw-portal')}<p class="err form-err" aria-live="polite"></p>
+      <button class="btn" type="submit">${t('family.billing.manage')}</button></form>` : '';
+  const checkoutId = typeof req.query.checkout === 'string' ? req.query.checkout.slice(0, 200) : '';
+  const parts = [];
+  // Back from Checkout and the plan isn't on yet: only the wait (no "No family plan", no Subscribe: they just paid).
+  if (checkoutId && !plan.entitled) {
+    return html`<section class="panel" aria-labelledby="plan-h" id="plan"><h2 id="plan-h">${t('family.page.planHeading')}</h2>
+      <div class="notice" role="status" data-checkout-wait="${checkoutId}" data-done="${t('family.billing.welcome')}">
+        <p style="margin:0"><span aria-hidden="true">⏳</span> ${t('family.billing.waiting')}</p>
+        <div data-slow hidden><p class="small" style="margin:.5em 0 0">${t('family.billing.slow')}</p>
+          <p class="small" style="margin:.5em 0 0"><a href="/family">${t('family.billing.back')}</a></p></div></div></section>`;
+  }
+  if (checkoutId && plan.entitled) parts.push(html`<p class="notice good" role="status"><span aria-hidden="true">🎉</span> ${t('family.billing.welcome')}</p>`);
+  if (plan.entitled) {
+    const month = familyMonth(fam.id, today(), { beforeDay: true });
+    const left = Math.max(0, config.familyExtraMessages - month.used);
+    let state;
+    if (plan.via === 'grant') state = t('family.billing.grant', { date: f.date(plan.grant.until) });
+    else if (sub.status === 'past_due') state = t('family.billing.pastDue', { date: f.date(sub.grace_until) });
+    else if (sub.cancel_at_period_end) state = t('family.billing.ends', { date: f.date(sub.current_period_end) });
+    else state = t(sub.interval === 'year' ? 'family.billing.renewsYearly' : 'family.billing.renewsMonthly', { date: f.date(sub.current_period_end) });
+    parts.push(html`<p><b>${t('family.page.planActive')}</b> ${state}</p>
+      <p class="planextras"><b>${t('family.billing.extrasLeft', { left, total: config.familyExtraMessages })}</b><br>
+        <span class="small muted">${t('family.billing.extrasReset', { date: f.day(nextMonthUtc()) })}</span></p>
+      <p class="small muted">${limitsText(t, { reset: false })}</p>
+      ${portal}`);
+  } else {
+    parts.push(html`<p>${t('family.page.planNone')}</p>`);
+    const unsettled = C.mayBill(u) && C.unsettledPlan(fam.id);
+    const prices = C.mayBill(u) && !unsettled ? await C.familyPrices() : null;
+    if (unsettled) parts.push(html`<p class="notice warn">${t('family.billing.errors.fixPayment')}</p>`);
+    else if (!prices) parts.push(html`<p class="small muted">${t('family.landing.price.soon')}</p>`);
+    else if (!linked) parts.push(html`<p class="small">${t('family.billing.linkFirst')}</p>`);
+    else {
+      parts.push(html`<form data-api="/api/billing/family/checkout" class="planform">
+        <p>${t('family.landing.what.p1', { extra: config.familyExtraMessages, max: config.familyMaxChildren })}</p>
+        <ul class="small planterms">
+          <li>${t('family.billing.terms.renew')}</li>
+          <li>${t('family.billing.terms.cancel')}</li>
+          <li>${t('family.billing.terms.refund')}</li>
+          <li>${limitsText(t)}</li>
+          <li>${t('family.billing.terms.tax')}</li>
+        </ul>
+        ${config.termsPublished ? html`<p class="small">${tHtml(t, 'family.billing.terms.agree', { terms: html`<a href="/terms">${t('family.billing.terms.link')}</a>` })}</p>` : ''}
+        ${passwordField(req, 'pw-checkout')}
+        <p class="err form-err" aria-live="polite"></p>
+        <div class="row planbtns">
+          <button class="btn btn-primary" type="submit" name="interval" value="month">${t('family.billing.subscribeMonthly', { price: f.money(prices.month.unitAmount) })}</button>
+          <button class="btn btn-primary" type="submit" name="interval" value="year">${t('family.billing.subscribeYearly', { price: f.money(prices.year.unitAmount) })}</button>
+        </div>
+        <p class="small muted" style="margin-bottom:0">${t('family.billing.stripe')}</p>
+      </form>`);
+    }
+    if (portal) parts.push(html`<p class="small muted">${t('family.billing.history')}</p>${portal}`);
+  }
+  return html`<section class="panel" aria-labelledby="plan-h" id="plan"><h2 id="plan-h">${t('family.page.planHeading')}</h2>
+    ${parts}
+    <p style="margin-bottom:0"><a href="/grown-ups">${t('family.page.planMore')}</a></p></section>`;
+}
+
+// ---------------------------------------------------------------- paying (chunk 4)
+/** Billing APIs: families on for this request (BILLING_PUBLIC or the preview cookie) and a grown-up account; anyone
+ *  else gets a 404, as if the address weren't there. */
+const billingGate = (req, res, next) => (F.familiesOn(req) && auth.isGrownup(req.user) && !req.user.banned ? next() : nope(req, res));
+/** With a test key only billing testers may pay or open the Portal (D14). */
+const testerGate = (req, res, next) => (C.mayBill(req.user) ? next() : res.status(403).json({ error: req.t('family.billing.errors.notOpen') }));
+/** The password typed again within the last 10 minutes (sessions.reauth_at), or in this very request. Wrong
+ *  passwords are limited to 5 per 15 minutes per account here, and also count toward the account's sign-in lock
+ *  (LOGIN.userFails, like /api/me/password): a locked account takes no password here either, so a device left signed
+ *  in gives no more guesses than the sign-in page. */
+export const REAUTH_TRIES = { fails: 5, window: 900e3 };
+function stepUp(req, res, next) {
+  if (C.reauthFresh(req.sessionId)) return next();
+  const t = req.t, key = `reauth-fail:${req.user.id}`, lockKey = loginLockKey(req.user.username);
+  if (count(key) >= REAUTH_TRIES.fails || count(lockKey) >= LOGIN.userFails) return res.status(429).json({ error: t('family.errors.tooMany') });
+  const pw = String((req.body || {}).password ?? '');
+  if (!pw) return res.status(403).json({ error: t('family.billing.password.needed'), field: 'password', needPassword: true });
+  if (!auth.verifyPassword(req.user, pw)) {
+    allow(key, REAUTH_TRIES.fails, REAUTH_TRIES.window); allow(lockKey, LOGIN.userFails, LOGIN.window);
+    return res.status(403).json({ error: t('family.billing.password.wrong'), field: 'password', needPassword: true });
+  }
+  C.markReauth(req.sessionId);
+  next();
+}
+const stripeTrouble = (req, res, e) => {
+  log('warn', 'billing: Stripe call failed', e instanceof S.StripeCallError ? e.fields : { error: e.message });
+  res.status(502).json({ error: req.t('family.billing.errors.stripe') });
+};
+router.post('/api/billing/family/checkout', billingGate, rateLimit('billing-checkout', 10, 600e3), testerGate, stepUp, async (req, res) => {
+  const t = req.t, interval = (req.body || {}).interval;
+  if (interval !== 'month' && interval !== 'year') return res.status(400).json({ error: t('errors.api.badRequest') });
+  const fam = F.ensureFamily(req.user);
+  if (!F.childrenOf(fam.id).some(k => k.status === 'linked')) return res.status(409).json({ error: t('family.billing.linkFirst') });
+  try {
+    const r = await C.startFamilyCheckout({ family: fam, user: req.user, interval, base: C.baseUrl(req) });
+    if (!r.ok) return res.status(409).json({ error: t(`family.billing.errors.${r.code}`) });
+    res.json({ ok: true, redirect: r.url });
+  } catch (e) { stripeTrouble(req, res, e); }
+});
+router.post('/api/billing/portal', billingGate, rateLimit('billing-portal', 20, 600e3), testerGate, stepUp, async (req, res) => {
+  const fam = F.ensureFamily(req.user);
+  try {
+    const r = await C.startPortal({ family: fam, user: req.user, base: C.baseUrl(req) });
+    if (!r.ok) return res.status(409).json({ error: req.t(`family.billing.errors.${r.code}`) });
+    res.json({ ok: true, redirect: r.url });
+  } catch (e) { stripeTrouble(req, res, e); }
+});
+/** The return page's poll: { state: 'active' | 'processing' | 'not_yours' | 'none' }. With ?checkout=<session id> it
+ *  also runs the shared sync's fallback, which only trusts the session's own owner. */
+router.get('/api/billing/status', billingGate, rateLimit('billing-status', 60, 60e3), async (req, res) => {
+  const fam = F.ensureFamily(req.user);
+  const id = typeof req.query.checkout === 'string' ? req.query.checkout : '';
+  const state = id ? await C.checkoutReturn(fam, id) : F.familyPlan(fam.id).entitled ? 'active' : 'none';
+  res.set('Cache-Control', 'no-store').json({ state });
+});
+
 router.get('/family/link', grownupOnly, (req, res) => {
   const t = req.t;
   const body = html`<div class="authbox"><div class="panel">

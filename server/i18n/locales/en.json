@@ -917,7 +917,8 @@
       "tooMany": "You already have 2 games building. Wait until one is done, then try again.",
       "limit": "You have used all {count} Builder turns for today. Come back tomorrow for more!",
       "muddled": "The Builder got muddled. Please try again in a moment.",
-      "resting": "The AI Builder is resting right now. Your game and your turns are saved, so come back a bit later!"
+      "resting": "The AI Builder is resting right now. Your game and your turns are saved, so come back a bit later!",
+      "limitToday": "You've used today's Builder messages. More tomorrow!"
     },
     "refusals": {
       "tryThese": "Want to try one of these?",
@@ -1541,7 +1542,8 @@
         "today": "today at {time}",
         "tomorrow": "tomorrow at {time}",
         "date": "on {date} at {time}"
-      }
+      },
+      "extra": "+{n} extra this month"
     }
   },
   "favorites": {
@@ -2262,7 +2264,10 @@
       "what": {
         "h": "What a family plan adds",
         "p1": "{extra, plural, one {# extra Builder message} other {# extra Builder messages}} a month, shared by up to {max} children, on top of the free messages every player gets each day.",
-        "p2": "Paying never unlocks anything free players lack, and children are never asked to pay."
+        "p2": "Paying never unlocks anything free players lack, and children are never asked to pay.",
+        "limitDaily": "One child can use up to {daily, plural, one {# extra message} other {# extra messages}} a day.",
+        "limitCost": "A family's extras also stop for the month if they get unusually expensive to run.",
+        "limitReset": "Extras start again on the 1st of each month (UTC) and don't roll over."
       },
       "price": {
         "h": "Price",
@@ -2369,6 +2374,48 @@
       "typeCode": "Type the code your child gave you.",
       "tooMany": "Too many tries. Wait 15 minutes, then try again.",
       "notFound": "That child isn't in your family."
+    },
+    "billing": {
+      "password": {
+        "label": "Your password",
+        "hint": "We ask for it again before any payment or plan change.",
+        "needed": "Type your password to continue.",
+        "wrong": "That password isn't right."
+      },
+      "manage": "Manage billing",
+      "welcome": "Your family plan is on. Thank you!",
+      "waiting": "Setting up your plan… This page updates by itself.",
+      "slow": "This is taking longer than usual. Your payment is safe: reload this page in a few minutes, and if the plan still doesn't show, write to us.",
+      "back": "Back to your family page",
+      "grant": "Free plan until {date}.",
+      "pastDue": "Your last payment didn't go through. Update your card in Manage billing, or the plan ends on {date}.",
+      "ends": "It ends on {date} and won't renew. Your children keep the extra messages until then.",
+      "renewsMonthly": "Monthly, renews on {date}.",
+      "renewsYearly": "Yearly, renews on {date}.",
+      "extrasLeft": "{left} of {total, plural, one {# extra message} other {# extra messages}} left this month, counted up to yesterday",
+      "extrasReset": "They start again on {date} (UTC). Unused ones don't roll over.",
+      "linkFirst": "Link a child first (they say yes on their own page), then you can start a plan.",
+      "terms": {
+        "renew": "The plan renews automatically every month or year until you cancel it.",
+        "cancel": "Cancel anytime in Manage billing. The plan keeps working until the end of the period you paid for.",
+        "refund": "Full refund if you ask within 14 days of your first payment or of a yearly renewal.",
+        "tax": "Prices are in US dollars, plus sales tax where it applies. Family plans are for US families for now.",
+        "agree": "By subscribing, you agree to our {terms}.",
+        "link": "Terms of Service"
+      },
+      "subscribeMonthly": "Subscribe: {price} a month",
+      "subscribeYearly": "Subscribe: {price} a year",
+      "stripe": "You pay on Stripe's secure page. We never see your card number.",
+      "history": "Your receipts and past plans are in Manage billing.",
+      "errors": {
+        "notOpen": "Family plans aren't on sale yet.",
+        "entitled": "Your family already has a plan. Use Manage billing to change it.",
+        "fixPayment": "Your family's last payment didn't go through. Update your card in Manage billing instead of starting a new plan.",
+        "paying": "Your last payment just went through. Wait a minute, then reload this page.",
+        "noPrice": "Family plans can't be bought right now. Please try again later.",
+        "noCustomer": "There is nothing to manage yet: start a plan first.",
+        "stripe": "We couldn't reach our payment provider. Please try again in a minute."
+      }
     }
   }
 }

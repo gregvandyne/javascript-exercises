@@ -30,7 +30,7 @@ import * as eta from './eta.js';
 import { stepRecorder } from './steps.js';
 import { previewUrl } from './tools.js';
 import { restingUntil } from './anthropic.js';
-import { turnsLeft, takeTurn, allowanceFor } from './usage.js';
+import { turnsLeft, takeTurn, allowanceFor, limitMessage, counter } from './usage.js';
 import { loadChat, appendChat, updateChat } from './chat.js';
 import { getUpload, LIMITS as UPLOADS } from './uploads.js';
 import { MAX_STEPS } from './claude.js';
@@ -64,6 +64,8 @@ export const busyCount = () => jobs.size;
 export const jobFor = gameId => jobs.get(gameId) || null;
 
 // ---------------------------------------------------------------------------------------------------- jobs
+/** The AI money pool a charged row's message is paid from (builder_turns.charged_to): 'free', else 'paid'. */
+export const poolOf = chargedTo => (chargedTo && chargedTo !== 'free' ? 'paid' : 'free');
 function newJob(row, { attempt = row.attempt } = {}) {
   const t0 = Date.now();
   const request = row.request || {};
@@ -76,7 +78,7 @@ function newJob(row, { attempt = row.attempt } = {}) {
     open: false, hold: null,                               // text is streaming; the follow-up the open reply goes before
     waiting: [], reading: [], fu: { accepted: 0, refused: 0 }, read: 0, waiters: [],   // follow-ups (see the header)
     accepting: Promise.resolve(), inflight: 0,             // follow-ups are accepted one at a time, in arrival order
-    est: null, firstV: 0, versions: 0, state: null, usage: null, ctx: null, provider: providerKind(providerName()),
+    est: null, firstV: 0, versions: 0, state: null, usage: null, ctx: null, provider: providerKind(providerName(poolOf(row.charged_to))), pool: poolOf(row.charged_to),
     handedOff: false, ended: false, next: null,
   };
   job.screened = new Promise(r => { job.resolveScreened = r; });
@@ -144,11 +146,12 @@ function begin({ user, game, text, pro, wanted, cid, continueOf, t, provider, co
   if (mine >= LIMITS.maxPerUser) return err(429, 'builder.errors.tooMany', 'tooMany');
   // The site's AI budget is spent for today (or this month): no build at all (the simple building blocks would ask
   // questions it can't follow up on). Nothing is stored or charged; the page says when the AI is back, in local time.
-  const until = provider ? null : restingUntil();
+  const allowance = allowanceFor(user);
+  const until = provider ? null : restingUntil(allowance.pool);
   if (until) return { status: 503, body: { error: t('builder.errors.resting'), code: 'resting', resting: { until } }, code: 'resting' };
   // No turns left today: said before anything is stored, so the page puts the message back in the box (the charge
   // itself is still checked when screening passes). The streamed POST keeps its old order: screening first.
-  if (!compat && turnsLeft(user) <= 0) return err(429, 'builder.errors.limit', 'limit', { count: allowanceFor(user).daily });
+  if (!compat && allowance.left <= 0) return err(429, allowance.familyId ? 'builder.errors.limitToday' : 'builder.errors.limit', 'limit', { count: allowance.daily });
   // 4. "Carry on building": only the game's last build, only when it offers it, only once.
   let orig = null;
   if (continueOf) {
@@ -166,7 +169,7 @@ function begin({ user, game, text, pro, wanted, cid, continueOf, t, provider, co
   if (orig) turns.setContinue(orig.id, 0);
   // 6-7. The job; executeTurn starts on the next turn of the event loop, after the caller attached its subscriber.
   const job = newJob(row);
-  job.provider = providerKind(provider || providerName()); job.providerArg = provider;
+  job.provider = providerKind(provider || providerName(allowance.pool)); job.providerArg = provider;
   jobs.set(game.id, job);
   job.emit('turn', {});
   start(job, { user, game, text, pro, wanted, t, provider, continueOf: orig, prescreened });
@@ -347,8 +350,10 @@ function carryOver(job) {
     const day = today();
     row = tx(() => {
       const charge = takeTurn(job.userId, day, { pro: !!job.pro });
+      // The provider follows the pool this message is charged to (a forced provider, e.g. in tests, stays).
+      const kind = job.providerArg ? job.provider : providerKind(providerName(charge ? charge.pool : 'free'));
       return charge ? turns.create({ gameId: job.gameId, userId: job.userId, status: 'running', request: { followUpIds: [...ids] }, locale: job.locale, pro: job.pro,
-        chain: job.chain + 1, attempt: 1, chargedDay: day, provider: job.provider, baseVersion: turns.newestVersion(job.gameId), startedAt: Date.now(),
+        chain: job.chain + 1, attempt: 1, chargedDay: day, provider: kind, baseVersion: turns.newestVersion(job.gameId), startedAt: Date.now(),
         chargedTo: charge.source, weight: charge.weight }) : null;
     });
     if (!row) why = 'limit';
@@ -357,7 +362,7 @@ function carryOver(job) {
   if (why) {
     mark(job.gameId, ids, { ...clear, status: 'dropped', why });
     publish(job.gameId, 'inbox', { status: 'dropped', ids: [...ids], why }, null);
-    if (why === 'limit') publish(job.gameId, 'error', { message: tFor(job.locale)('builder.errors.limit', { count: config.builderDailyTurns }), code: 'limit' }, null);
+    if (why === 'limit') publish(job.gameId, 'error', { message: limitMessage(job.userId, tFor(job.locale)), code: 'limit' }, null);
     return;
   }
   mark(job.gameId, ids, { ...clear, status: 'carried' });
@@ -365,7 +370,7 @@ function carryOver(job) {
   // The next build: no screening (each message was screened when it arrived), no second charge; round 1 reads them.
   const next = newJob(row);
   next.phase = 'running'; next.resolveScreened(true);
-  next.provider = job.provider; next.providerArg = job.providerArg;
+  next.provider = job.providerArg ? job.provider : providerKind(providerName(next.pool)); next.providerArg = job.providerArg;
   next.carried = list.length; next.lead = [['carried', { n: list.length }]];
   next.waiting = list.map(e => ({ ...e, status: 'carried' }));
   job.next = next; jobs.set(job.gameId, next);
@@ -468,7 +473,7 @@ function tailor(name, data, sub, job) {
     const v = games.getVersion(data.id); const g = v && games.getGame(v.game_id);
     return { ...data, preview: v && g ? previewUrl(v, g, sub.userId, sub.locale) : undefined };
   }
-  if (name === 'done') return { ...data, turnsLeft: turnsLeft(sub.userId) };
+  if (name === 'done') return { ...data, ...counter(sub.userId) };
   if (name === 'turn') return publicTurn(job, sub);
   if (name === 'inbox' && data.left !== undefined && !(job && sub.userId === job.userId)) return { ...data, left: 0 };
   if (name === 'step' && sub.compat) { const { at, ...rest } = data; void at; return rest; }
@@ -615,7 +620,7 @@ export function recover() {
       const why = !g || g.status === 'deleted' ? 'deleted' : !u || u.banned ? 'banned' : !u.builder_enabled ? 'disabled'
         : row.attempt >= 2 ? 'restart'                                          // carried on once already
         : Date.now() - row.created_at > LIMITS.resumeWithinMs ? 'restart'
-        : row.provider === 'ai' && providerName() !== 'claude' ? 'ai'          // the AI is resting or its key is gone
+        : row.provider === 'ai' && providerName(poolOf(row.charged_to)) !== 'claude' ? 'ai'          // the AI is resting or its key is gone
         : null;
       if (why) { stopRow(row, why); out[why === 'restart' || why === 'ai' ? 'stopped' : 'cancelled']++; } else { resume(row, g, u); out.resumed++; }
     } catch (e) {
@@ -673,7 +678,7 @@ function followUpsOf(row) {
   return out;
 }
 function resume(row, g, u) {
-  const name = providerName();
+  const name = providerName(poolOf(row.charged_to));
   turns.resumeRow(row.id, providerKind(name));                              // the attempt is counted first
   const job = newJob(row, { attempt: row.attempt + 1 });
   job.provider = providerKind(name); job.phase = 'running'; job.resolveScreened(true);

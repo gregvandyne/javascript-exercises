@@ -917,7 +917,8 @@
       "tooMany": "Bei dir werden schon 2 Spiele gebaut. Warte, bis eins fertig ist, und versuch es dann noch mal.",
       "limit": "Du hast heute alle {count} Nachrichten an den Baumeister verbraucht. Komm morgen wieder, dann gibt es neue!",
       "muddled": "Der Baumeister ist durcheinandergekommen. Bitte versuch es gleich noch mal.",
-      "resting": "Der KI-Baumeister ruht sich gerade aus. Dein Spiel und deine Nachrichten sind gespeichert, also komm etwas später wieder!"
+      "resting": "Der KI-Baumeister ruht sich gerade aus. Dein Spiel und deine Nachrichten sind gespeichert, also komm etwas später wieder!",
+      "limitToday": "Du hast deine Nachrichten an den Baumeister für heute verbraucht. Morgen gibt es neue!"
     },
     "refusals": {
       "tryThese": "Willst du eins davon ausprobieren?",
@@ -1541,7 +1542,8 @@
         "today": "heute um {time}",
         "tomorrow": "morgen um {time}",
         "date": "am {date} um {time}"
-      }
+      },
+      "extra": "+{n} extra diesen Monat"
     }
   },
   "favorites": {
@@ -2261,7 +2263,10 @@
       "what": {
         "h": "Was ein Familienabo bietet",
         "p1": "{extra, plural, one {# zusätzliche Nachricht an den Baumeister} other {# zusätzliche Nachrichten an den Baumeister}} pro Monat, geteilt von bis zu {max} Kindern, zusätzlich zu den kostenlosen Nachrichten, die alle Spieler jeden Tag bekommen.",
-        "p2": "Bezahlen schaltet nie etwas frei, das kostenlose Spieler nicht haben, und Kinder werden nie zum Bezahlen aufgefordert."
+        "p2": "Bezahlen schaltet nie etwas frei, das kostenlose Spieler nicht haben, und Kinder werden nie zum Bezahlen aufgefordert.",
+        "limitDaily": "Ein Kind kann bis zu {daily, plural, one {# zusätzliche Nachricht} other {# zusätzliche Nachrichten}} pro Tag nutzen.",
+        "limitCost": "Die zusätzlichen Nachrichten einer Familie enden außerdem für den Rest des Monats, wenn sie ungewöhnlich teuer im Betrieb werden.",
+        "limitReset": "Die zusätzlichen Nachrichten starten am 1. jedes Monats (UTC) neu. Nicht genutzte werden nicht übernommen."
       },
       "price": {
         "h": "Preis",
@@ -2368,6 +2373,48 @@
       "typeCode": "Geben Sie den Code ein, den Ihr Kind Ihnen gegeben hat.",
       "tooMany": "Zu viele Versuche. Warten Sie 15 Minuten und versuchen Sie es dann noch einmal.",
       "notFound": "Dieses Kind gehört nicht zu Ihrer Familie."
+    },
+    "billing": {
+      "password": {
+        "label": "Ihr Passwort",
+        "hint": "Wir fragen vor jeder Zahlung oder Änderung am Abo erneut danach.",
+        "needed": "Geben Sie Ihr Passwort ein, um fortzufahren.",
+        "wrong": "Das Passwort stimmt nicht."
+      },
+      "manage": "Abrechnung verwalten",
+      "welcome": "Ihr Familienabo ist aktiv. Vielen Dank!",
+      "waiting": "Ihr Abo wird eingerichtet… Diese Seite aktualisiert sich von selbst.",
+      "slow": "Das dauert länger als sonst. Ihre Zahlung ist sicher: Laden Sie diese Seite in ein paar Minuten neu, und wenn das Abo dann immer noch nicht angezeigt wird, schreiben Sie uns.",
+      "back": "Zurück zu Ihrer Familienseite",
+      "grant": "Kostenloses Abo bis {date}.",
+      "pastDue": "Ihre letzte Zahlung ist nicht durchgegangen. Aktualisieren Sie Ihre Karte unter „Abrechnung verwalten“, sonst endet das Abo am {date}.",
+      "ends": "Das Abo endet am {date} und verlängert sich nicht. Ihre Kinder behalten die zusätzlichen Nachrichten bis dahin.",
+      "renewsMonthly": "Monatlich, verlängert sich am {date}.",
+      "renewsYearly": "Jährlich, verlängert sich am {date}.",
+      "extrasLeft": "Noch {left} von {total, plural, one {# zusätzlichen Nachricht} other {# zusätzlichen Nachrichten}} diesen Monat, gezählt bis gestern",
+      "extrasReset": "Sie starten am {date} (UTC) neu. Nicht genutzte werden nicht übernommen.",
+      "linkFirst": "Verbinden Sie zuerst ein Kind (es stimmt auf seiner eigenen Seite zu), dann können Sie ein Abo abschließen.",
+      "terms": {
+        "renew": "Das Abo verlängert sich automatisch jeden Monat bzw. jedes Jahr, bis Sie es kündigen.",
+        "cancel": "Jederzeit kündbar unter „Abrechnung verwalten“. Das Abo läuft bis zum Ende des bezahlten Zeitraums.",
+        "refund": "Volle Erstattung, wenn Sie innerhalb von 14 Tagen nach Ihrer ersten Zahlung oder nach einer jährlichen Verlängerung darum bitten.",
+        "tax": "Die Preise sind in US-Dollar, zzgl. Umsatzsteuer, wo sie anfällt. Familienabos gibt es vorerst nur für Familien in den USA.",
+        "agree": "Mit dem Abschluss des Abos stimmen Sie unseren {terms} zu.",
+        "link": "Nutzungsbedingungen"
+      },
+      "subscribeMonthly": "Abonnieren: {price} pro Monat",
+      "subscribeYearly": "Abonnieren: {price} pro Jahr",
+      "stripe": "Sie bezahlen auf der sicheren Seite von Stripe. Ihre Kartennummer sehen wir nie.",
+      "history": "Ihre Belege und früheren Abos finden Sie unter „Abrechnung verwalten“.",
+      "errors": {
+        "notOpen": "Familienabos gibt es noch nicht zu kaufen.",
+        "entitled": "Ihre Familie hat schon ein Abo. Ändern Sie es unter „Abrechnung verwalten“.",
+        "fixPayment": "Die letzte Zahlung Ihrer Familie ist nicht durchgegangen. Aktualisieren Sie Ihre Karte unter „Abrechnung verwalten“, statt ein neues Abo abzuschließen.",
+        "paying": "Ihre letzte Zahlung ist gerade durchgegangen. Warten Sie eine Minute und laden Sie diese Seite dann neu.",
+        "noPrice": "Familienabos können gerade nicht gekauft werden. Bitte versuchen Sie es später noch einmal.",
+        "noCustomer": "Es gibt noch nichts zu verwalten: Schließen Sie zuerst ein Abo ab.",
+        "stripe": "Wir konnten unseren Zahlungsanbieter nicht erreichen. Bitte versuchen Sie es in einer Minute noch einmal."
+      }
     }
   }
 }
