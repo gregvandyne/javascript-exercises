@@ -13,6 +13,7 @@ import { navBadges } from '../services/badges.js';
 import { inAnySchool, isSchoolStaff, isPlatformAdmin } from '../services/schools.js';
 import { availableLocales, localeInfo, tReq, tHtml, clientStrings, DEFAULT_LOCALE, localPath } from '../i18n/index.js';
 import { THEMES, THEME_ICONS, BAR_COLORS } from '../theme.js';
+import { notices, markNotified } from '../builder/turns.js';
 
 const NAV = [
   ['home', '/', '🏠'],
@@ -100,6 +101,9 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
   // A sign-in that just ended (timed out, or ended on another device) is mentioned once, on whatever page comes next; the
   // sign-in page says it itself.
   const ended = !bare && req.sessionEnded && req.path !== '/login' ? html`<p class="notice warn pagenote" role="status">${tHtml(t, 'layout.signedOut', { href: `/login?next=${encodeURIComponent(req.originalUrl)}` })}</p>` : '';
+  // A build that ended while the builder was away (the page was closed, or they signed out) is mentioned once, on the next
+  // page they open. Only for builds they sent themselves; opening that game's Studio first counts as seeing it.
+  const news = !bare && u && !u.is_guest ? buildNews(t, u) : '';
   // Staff (and the platform admin) who signed in with a short password are asked for a longer one on every page.
   const shortPw = !bare && u && u.password_short && accountKind(u) === 'staff' ? html`<p class="notice warn pagenote">${tHtml(t, 'layout.shortPassword', { min: STAFF_PASSWORD_MIN, href: '/me#password' })}</p>` : '';
   const prefixes = ['js.app', ...scripts.map(s => (s.match(/^\/js\/([\w-]+)\.js$/) || [])[1]).filter(Boolean).map(n => `js.${n}`), ...i18n];
@@ -129,7 +133,7 @@ ${head}
 </head>
 <body class="${esc(bodyClass)}" data-user="${u ? esc(u.id) : ''}" data-guest="${u && u.is_guest ? '1' : ''}">
 ${nav}
-<main id="main"${bare ? '' : mid ? ' class="wrap mid"' : ' class="wrap"'}>${ended}${shortPw}${backHtml}${body}</main>
+<main id="main"${bare ? '' : mid ? ' class="wrap mid"' : ' class="wrap"'}>${ended}${news}${shortPw}${backHtml}${body}</main>
 ${foot}
 <div class="toasts" role="status" aria-live="polite" id="toasts"></div>
 ${strings}
@@ -137,6 +141,16 @@ ${strings}
 ${scripts.map(s => `<script type="module" src="${esc(s)}?v=${VERSION}"></script>`).join('\n')}
 </body>
 </html>`;
+}
+/** The one-time "✨ Your game “X” is ready!" note (builder/turns.js notices), marked as told once drawn. */
+function buildNews(t, u) {
+  let list = [];
+  try { list = notices(u.id); } catch { return ''; }   // never break a page over a note
+  if (!list.length) return '';
+  markNotified(list.map(n => n.id));
+  const one = list.length === 1 ? list[0] : null;
+  const msg = one ? tHtml(t, `layout.build.${one.kind}`, { title: `\u2068${one.title}\u2069`, href: `/studio/${one.gameId}` }) : tHtml(t, 'layout.build.many', { href: '/build' });
+  return html`<p class="notice ${one && one.kind === 'stopped' ? 'warn' : 'good'} pagenote" role="status">${msg}</p>`;
 }
 export const page = (req, res, opts, status = 200) => res.status(status).type('html').send(layout(req, opts));
 export function notFound(req, res, msg = null) {

@@ -15,7 +15,9 @@ const { parseNames } = await import('../../server/routes/schools.js');
 const { createApp } = await import('../../server/app.js');
 
 let server, base;
-test.before(async () => { server = createApp().listen(0); await new Promise(r => server.once('listening', r)); base = `http://127.0.0.1:${server.address().port}`; });
+// keepAliveTimeout 0: bcrypt-heavy steps can hold the event loop past the default 5 s idle timer, which would then close a
+// kept-alive socket just as the next fetch reuses it (ECONNRESET, "fetch failed"), as in class-sharing.test.js.
+test.before(async () => { server = createApp().listen(0); server.keepAliveTimeout = 0; await new Promise(r => server.once('listening', r)); base = `http://127.0.0.1:${server.address().port}`; });
 test.after(() => server.close());
 const cookieFor = id => { let c = ''; startSession({ append: (k, v) => { c = v.split(';')[0]; } }, id); return c; };
 const as = who => async (path, { method = 'GET', body } = {}) => {

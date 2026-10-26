@@ -37,6 +37,12 @@
       "parents": "Voor volwassenen",
       "contact": "Contact",
       "builders": "Voor makers"
+    },
+    "build": {
+      "ready": "✨ Je game “{title}” is klaar! <a href=\"{href}\">Open hem</a>",
+      "question": "💬 De Bouwer heeft een vraag over “{title}”. <a href=\"{href}\">Open hem</a>",
+      "stopped": "⚠️ “{title}” is gestopt voordat hij af was. <a href=\"{href}\">Open hem om verder te gaan</a>",
+      "many": "✨ De Bouwer heeft nieuws over een paar van je games. <a href=\"{href}\">Bekijk Mijn games</a>"
     }
   },
   "nav": {
@@ -158,7 +164,9 @@
       "chat": "Chat",
       "admin": "Beheer",
       "favorites": "Mijn favorieten",
-      "classes": "Mijn klassen"
+      "classes": "Mijn klassen",
+      "building": "{count, plural, one {# game in aanbouw} other {# games in aanbouw}}",
+      "ready": "{count, plural, one {# game klaar} other {# games klaar}}"
     },
     "look": {
       "heading": "Kies je look",
@@ -722,7 +730,13 @@
     "changed": "Veranderd {when}",
     "empty": "Tik op “Nieuwe game” of kies hierboven een voorbeeld. Je games verschijnen dan hier.",
     "rename": "Naam wijzigen",
-    "delete": "Verwijderen"
+    "delete": "Verwijderen",
+    "status": {
+      "building": "🛠️ Bouwen…",
+      "ready": "✨ Klaar",
+      "question": "💬 Heeft een vraag",
+      "stopped": "⚠️ Gestopt"
+    }
   },
   "studio": {
     "title": "Studio: {title}",
@@ -828,7 +842,11 @@
       "pickClass": "Kies minstens een van je klassen.",
       "classGone": "Je kunt alleen delen met klassen waar je nu in zit.",
       "classRemoved": "Je leerkracht heeft deze game uit {name} gehaald, dus hij kan daar niet terug.",
-      "updatedNowWaiting": "Bijgewerkt! De nieuwe versie wacht ook nog op een snelle check voordat meer mensen kunnen spelen."
+      "updatedNowWaiting": "Bijgewerkt! De nieuwe versie wacht ook nog op een snelle check voordat meer mensen kunnen spelen.",
+      "builderWorking": "De Bouwer is nu met deze game bezig. Probeer het nog eens als hij klaar is.",
+      "cantContinue": "Hier kan de Bouwer niet meer mee verder. Stuur liever een nieuw bericht.",
+      "restarting": "Onze server start opnieuw op. Probeer het zo nog eens.",
+      "liveBusy": "Deze game staat open in te veel tabbladen. Sluit er een paar en probeer het nog eens."
     }
   },
   "publish": {
@@ -853,7 +871,8 @@
       "empty": "Typ eerst een bericht of tik op een idee.",
       "busy": "De Bouwer is nog bezig met je vorige bericht. Even geduld!",
       "limit": "Je hebt vandaag al je {count} berichten aan de Bouwer gebruikt. Kom morgen terug voor meer!",
-      "muddled": "De Bouwer raakte in de war. Probeer het zo nog eens."
+      "muddled": "De Bouwer raakte in de war. Probeer het zo nog eens.",
+      "tooMany": "Er worden al 2 games van je gebouwd. Wacht tot er een klaar is en probeer het dan nog eens."
     },
     "refusals": {
       "tryThese": "Wil je een van deze proberen?",
@@ -950,7 +969,9 @@
         }
       }
     },
-    "budgetResting": "De AI-Bouwer rust uit tot morgen, dus ik gebruik nu mijn simpele bouwblokken."
+    "budgetResting": "De AI-Bouwer rust uit tot morgen, dus ik gebruik nu mijn simpele bouwblokken.",
+    "turnTimeout": "⏱️ Dit bouwen duurde langer dan onze tijdslimiet, dus ik ben gestopt. Je nieuwste versie is bewaard. Vertel me wat ik nu moet veranderen!",
+    "turnTimeoutNothing": "⏱️ Dit bouwen duurde langer dan onze tijdslimiet, dus ik ben gestopt voordat ik iets kon bewaren. Dit bericht telt niet mee, dus je kunt het nog eens proberen."
   },
   "uploads": {
     "tooFast": "Dat zijn veel bestanden! Wacht een minuutje en probeer het opnieuw.",
@@ -1293,7 +1314,9 @@
             "look": "Ronde {n}: bekijkt de plaatjes",
             "scan": "Ronde {n}: leest het veiligheidsrapport",
             "retry": "Ronde {n}: zoekt uit wat er misging",
-            "next": "Ronde {n}: beslist wat er nu moet gebeuren"
+            "next": "Ronde {n}: beslist wat er nu moet gebeuren",
+            "plan": "Ronde {n}: maakt een plan om het te bouwen",
+            "planGame": "Ronde {n}: maakt een plan voor de veranderingen"
           },
           "done": {
             "start": "Ronde {n}: las je bericht",
@@ -1301,7 +1324,9 @@
             "look": "Ronde {n}: bekeek de plaatjes",
             "scan": "Ronde {n}: las het veiligheidsrapport",
             "retry": "Ronde {n}: zocht uit wat er misging",
-            "next": "Ronde {n}: besliste wat er nu moest gebeuren"
+            "next": "Ronde {n}: besliste wat er nu moest gebeuren",
+            "plan": "Ronde {n}: maakte een plan om het te bouwen",
+            "planGame": "Ronde {n}: maakte een plan voor de veranderingen"
           },
           "learn": {
             "start": "Een ronde is elke keer dat de app de AI iets vraagt. De AI onthoudt niets, dus de app stuurt de chat steeds opnieuw.",
@@ -1309,7 +1334,8 @@
             "scan": "Het veiligheidsprogramma zegt precies wat er mis was, zodat de AI alleen dat stukje kan repareren.",
             "retry": "Als een hulpmiddel zegt dat iets niet lukte, leest de AI waarom en probeert het op een andere manier.",
             "next": "Na elk hulpmiddel leest de AI het resultaat en kiest de volgende stap. Door die lus is het een agent.",
-            "thinking": "Voordat hij antwoordt, denkt deze AI eerst stil na, een beetje zoals jij iets in je hoofd uitrekent."
+            "thinking": "Voordat hij antwoordt, denkt deze AI eerst stil na, een beetje zoals jij iets in je hoofd uitrekent.",
+            "long": "Bij grote ideeën kan de AI een minuut of twee bezig zijn met plannen voordat hij code schrijft. Hij gaat door, ook als je deze pagina verlaat."
           }
         },
         "write": {
@@ -1379,7 +1405,34 @@
           "h": "AI kan heel zeker klinken en toch fout zitten. Daarom controleert een veiligheidsprogramma de code ook.",
           "i": "✨ Pro-kwaliteit gebruikt een grotere AI die langer nadenkt: langzamer, maar vaak beter bij lastige games.",
           "j": "Speel je game altijd zelf. Zelfs een slimme AI mist dingen die een echte speler zou zien."
-        }
+        },
+        "leave": "Je mag deze pagina of je computer dichtdoen, of uitloggen. De Oomba-Bouwer werkt gewoon door op onze server, en je game staat hier als je terugkomt.",
+        "restart": {
+          "now": "Onze server start opnieuw op. Je game is bewaard en het bouwen zou vanzelf verder moeten gaan",
+          "saved": "Onze server start opnieuw op. Je werk tot nu toe is bewaard",
+          "learn": "Servers starten af en toe opnieuw op, voor updates of reparaties. De Bouwer bewaart eerst zijn werk, dus er gaat niets verloren."
+        },
+        "resume": {
+          "done": "Ging verder nadat de server opnieuw opstartte",
+          "doneV": "Ging verder vanaf versie {v} nadat de server opnieuw opstartte",
+          "learn": "De Bouwer had je bericht en je nieuwste versie bewaard, dus hij gaat daar verder in plaats van opnieuw te beginnen."
+        },
+        "stopRestart": "gestopt door een herstart van de server",
+        "stopTime": "gestopt: het duurde te lang"
+      },
+      "resumed": "🔄 De server is opnieuw opgestart, dus de Bouwer ging verder waar hij was.",
+      "resumedV": "🔄 De server is opnieuw opgestart, dus de Bouwer ging verder vanaf versie {v}.",
+      "stopped": {
+        "restart": "De Bouwer stopte toen onze server opnieuw opstartte. Alles wat hij gemaakt heeft, is bewaard.",
+        "ai": "De Bouwer stopte toen onze server opnieuw opstartte, en de AI-Bouwer rust nu even uit. Alles wat hij gemaakt heeft, is bewaard."
+      },
+      "continue": "Verder bouwen",
+      "continueMessage": "Ga alsjeblieft verder met mijn laatste bericht.",
+      "notCounted": "Deze telt niet mee voor je berichten van vandaag.",
+      "signedOutBuilding": "Je bent uitgelogd. De Bouwer werkt verder aan je game: log opnieuw in om hem te zien.",
+      "gameGone": "Deze game is verwijderd, dus de Bouwer is gestopt.",
+      "followups": {
+        "putBack": "Zet het terug in het vak"
       }
     }
   },

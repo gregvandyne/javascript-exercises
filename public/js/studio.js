@@ -1,11 +1,18 @@
-// The Studio: chat with the Builder (SSE over fetch), live preview in the player sandbox, versions, sharing and publishing.
+// The Studio: chat with the Builder, live preview in the player sandbox, versions, sharing and publishing.
+// A build runs on the server whether or not this page is open: Send starts it (POST /chat answers at once) and the page
+// follows it on one live stream (GET /live, "live stream" below), which replays a running build in full every time it
+// connects, so a reload, another tab or another device shows the same build. After every build the page reads the
+// Studio state again and redraws the chat from the saved transcript.
 import { api, toast, sheet, pageData, signedOut, tappedJustNow, $, $$, esc, copyText, t } from '/js/app.js';
 import { INTL } from '/js/i18n.js';
 
 let S = pageData();
 const ID = S.game.id;
+/** The live stream and the build this page shows (section "live stream"). turnId: the running build drawn now;
+ *  pendingCid: a message this tab sent that hasn't shown up as a build yet; check: a send whose answer never came. */
+const LIVE = { ctrl: null, tries: 0, retry: 0, turnId: null, replaying: false, replayVersion: null, stopped: null, restart: false, hidden: false, pendingCid: null, posting: false, check: null, lastErr: null, carry: null };
 const log = $('#st-log'), input = $('#st-input'), frame = $('#st-frame'), stage = $('#st-stage'), device = $('#st-device');
-let busy = false, pro = false;
+let pro = false;
 try { pro = localStorage.getItem('brb-pro') === '1'; } catch { /* private mode */ }
 const SIZES = { phone: [390, 760], tablet: [820, 1100], landscape: [844, 390] };
 const VIS = { private: ['🔒', t('js.studio.vis.private')], friends: ['👫', t('js.studio.vis.friends')], class: ['🎒', t('js.studio.vis.class', { count: 2 })], school: ['🏫', t('js.studio.vis.school')], public: ['🌍', t('js.studio.vis.public')] };
@@ -19,10 +26,6 @@ const when = at => { const d = new Date(at); return d.toLocaleDateString(INTL, {
 const safetyChip = s => ({ pass: `<span class="stchip good">✅ ${esc(t('js.studio.safety.chipPass'))}</span>`, flag: `<span class="stchip warn">⚠️ ${esc(t('js.studio.safety.chipFlag'))}</span>`, fail: `<span class="stchip bad">⛔ ${esc(t('js.studio.safety.chipFail'))}</span>` }[s] || '<span class="stchip">…</span>');
 
 // ---------------------------------------------------------------- state + top
-async function refresh() {
-  try { S = { ...S, ...(await api(`/api/studio/${ID}`)) }; } catch { return; }
-  renderTop(); renderLive(); renderSafety(); renderTurns();
-}
 function applyState(st) { if (st) { S = { ...S, ...st }; renderTop(); renderLive(); renderSafety(); renderTurns(); } }
 function renderTop() {
   $('#st-icon').textContent = S.game.icon;
@@ -114,9 +117,11 @@ function fit() {
 $$('.st-prev-head [data-size]').forEach(b => b.addEventListener('click', () => { size = b.dataset.size; try { localStorage.setItem('brb-prev-size', size); } catch { /* ignore */ } fit(); }));
 if (window.ResizeObserver) new ResizeObserver(fit).observe(stage); else addEventListener('resize', fit);
 fit();
-function setPreview(url) {
+let shownVersion = S.current ? S.current.id : null;   // the version in the preview frame now
+/** Show a version in the preview (vid: its id, so the same version isn't loaded twice). */
+function setPreview(url, vid = null) {
   if (!url) return;
-  S.preview = url; $('#st-empty').hidden = true;
+  S.preview = url; $('#st-empty').hidden = true; shownVersion = vid;
   frame.src = url;
 }
 const reloadPreview = () => { frame.src = 'about:blank'; setTimeout(() => (frame.src = S.preview), 30); };
@@ -140,8 +145,13 @@ addEventListener('message', e => {
 const scrollDown = () => { log.scrollTop = log.scrollHeight; };
 const nearBottom = () => log.scrollHeight - log.scrollTop - log.clientHeight < 80;
 /** Add to the chat. While a turn runs its steps card stays last, so replies and cards build up above it (renderLog()
- *  empties the log and leaves the card detached, hence the parentNode check). */
-function place(el) { log.insertBefore(el, live && live.el.parentNode === log ? live.el : null); return el; }
+ *  empties the log and leaves the card detached, hence the parentNode check). What is drawn for the running build is
+ *  marked with its id (data-live), so a full replay can take away exactly what it draws again. */
+let drawingLog = false;
+function place(el) {
+  if (LIVE.turnId && !drawingLog && !el.dataset.live) el.dataset.live = LIVE.turnId;
+  log.insertBefore(el, live && live.el.parentNode === log ? live.el : null); return el;
+}
 function bubble(cls, text) { const d = document.createElement('div'); d.className = `msg ${cls}`; d.dir = 'auto'; d.textContent = text || ''; return place(d); }
 function attHtml(list) {
   return `<div class="att-list">${list.map(u => `<span class="att">${u.kind === 'image' ? `<img src="/api/studio/${ID}/uploads/${esc(u.id)}" alt="">` : `<span class="fi" aria-hidden="true">${u.kind === 'pdf' ? '📄' : '📝'}</span>`}<span class="nm">${esc(u.name)}</span></span>`).join('')}</div>`;
@@ -170,26 +180,52 @@ function askBlock(a, active, into) {
   const q = document.createElement('span'); q.className = 'q'; q.textContent = a.question; b.appendChild(q);
   if (a.options && a.options.length) chips(a.options, active);
 }
+const note = (text, cls = '') => bubble(`note${cls ? ' ' + cls : ''}`, text);
+/** One saved transcript entry (renderLog, and a running build's own entries in startTurnUI). last: its question's
+ *  chips can still be tapped. */
+function drawEntry(m, last = false) {
+  if (m.role === 'user') { userBubble(m.text, m.uploads || []); return; }
+  const events = m.events || [];
+  // A note that belongs before the reply: the server restarted and the Builder carried on.
+  for (const [name, d] of events) if (name === 'resumed') note(d && d.v ? t('js.studio.resumedV', { v: d.v }) : t('js.studio.resumed'));
+  const b = m.text ? bubble('bot' + (m.refused ? ' refused' : ''), m.text) : null;
+  for (const [name, d] of events) {
+    if (name === 'version') versionCard(d, false);
+    else if (name === 'notes') notesCard(d.checklist);
+    else if (name === 'meta') metaCard(d);
+    else if (name === 'ask') askBlock(d, last, b && !b.nextSibling ? b : null);
+    else if (name === 'error') bubble('err', d.message);
+    else if (name === 'stopped') note(t(`js.studio.stopped.${d && d.why === 'ai' ? 'ai' : 'restart'}`), 'stopped');
+    else if (name === 'steps') { const c = stepsCard(d); if (c) place(c); }   // folded; rows are built when opened
+  }
+}
+/** Under the last build when it ended early: whether it used a turn, "Carry on building", and the words of a message
+ *  that never reached the Builder ("Put it back in the box"). */
+function drawLastTurn(msgs) {
+  const lt = S.lastTurn; if (!lt || S.turn) return;
+  if (!msgs.length || msgs[msgs.length - 1].turn !== lt.id) return;   // only right after that build's own entries
+  if (lt.refunded) note(t('js.studio.notCounted'));
+  if (!lt.cont && !lt.putBack) return;
+  const row = document.createElement('div'); row.className = 'st-cont';
+  if (lt.cont) row.insertAdjacentHTML('beforeend', `<button class="btn btn-primary st-contbtn" type="button" data-act="continue">▶️ ${E('js.studio.continue')}</button>`);
+  if (lt.putBack) row.insertAdjacentHTML('beforeend', `<button class="btn st-contbtn" type="button" data-act="putback">✏️ ${E('js.studio.followups.putBack')}</button>`);
+  place(row);
+}
 function renderLog() {
   if (live) live.remove();
   log.innerHTML = '';
-  const msgs = S.chat || [];
-  msgs.forEach((m, i) => {
-    const last = i === msgs.length - 1;
-    if (m.role === 'user') { userBubble(m.text, m.uploads || []); return; }
-    const b = m.text ? bubble('bot' + (m.refused ? ' refused' : ''), m.text) : null;
-    for (const [name, d] of m.events || []) {
-      if (name === 'version') versionCard(d, false);
-      else if (name === 'notes') notesCard(d.checklist);
-      else if (name === 'meta') metaCard(d);
-      else if (name === 'ask') askBlock(d, last, b && !b.nextSibling ? b : null);
-      else if (name === 'steps') { const c = stepsCard(d); if (c) place(c); }   // folded; rows are built when opened
+  // The running build's own entries are drawn by startTurnUI, with its live card.
+  const tid = S.turn && S.turn.id;
+  const msgs = (S.chat || []).filter(m => !tid || m.turn !== tid);
+  drawingLog = true;
+  try {
+    msgs.forEach((m, i) => drawEntry(m, i === msgs.length - 1 && !tid));
+    drawLastTurn(msgs);
+    if (!msgs.length && !S.turn) {
+      if (!S.current) { askBlock({ question: t('js.studio.log.whatKind') }, true, bubble('bot', t('js.studio.log.hello'))); chips(START_CHIPS, true); }
+      else { bubble('bot', t('js.studio.log.readyToPlay', { title: S.game.title })); chips(NEXT_CHIPS, true); }
     }
-  });
-  if (!msgs.length) {
-    if (!S.current) { askBlock({ question: t('js.studio.log.whatKind') }, true, bubble('bot', t('js.studio.log.hello'))); chips(START_CHIPS, true); }
-    else { bubble('bot', t('js.studio.log.readyToPlay', { title: S.game.title })); chips(NEXT_CHIPS, true); }
-  }
+  } finally { drawingLog = false; }
   scrollDown();
 }
 
@@ -202,21 +238,24 @@ function renderLog() {
 // drawn from the record that 'done' carries, which is also saved as the reply's last event, so a reload draws the same.
 // Model text (the AI's plan, a game title) is only ever set with textContent. Nothing here is timer-driven except the
 // seconds, the order of the 💡 lines and when the card appears: every row is a real server step (or the page's own
-// sending/offline/waiting).
-const STEP_ICON = { screen: '🛡️', blocks: '🧱', think: '🧠', write: '✍️', edit: '✏️', fix: '🛠️', template: '🏝️', check: '🔒', name: '🏷️', playtest: '📱', notes: '🧪', ask: '💬', sending: '📨', offline: '📶', waiting: '⏳' };
-const SERVER_STEPS = new Set(['screen', 'blocks', 'think', 'write', 'edit', 'fix', 'template', 'check', 'name', 'playtest', 'notes', 'ask']);
+// sending/offline/waiting/restart). Rows carry the server's own times (step.at), so a replay shows real durations.
+// The top of the live card says the builder can close the page or sign out: shown once a build has lasted LEAVE_AT.
+const STEP_ICON = { screen: '🛡️', blocks: '🧱', think: '🧠', write: '✍️', edit: '✏️', fix: '🛠️', template: '🏝️', check: '🔒', name: '🏷️', playtest: '📱', notes: '🧪', ask: '💬', resume: '🔄', sending: '📨', offline: '📶', waiting: '⏳', restart: '🔄' };
+const SERVER_STEPS = new Set(['screen', 'blocks', 'think', 'write', 'edit', 'fix', 'template', 'check', 'name', 'playtest', 'notes', 'ask', 'resume']);
 // Timed rows run until the next row starts (spinner, seconds); the others take milliseconds and arrive done.
-const TIMED = new Set(['screen', 'blocks', 'think', 'write', 'edit', 'fix', 'playtest', 'sending', 'offline', 'waiting']);
+const TIMED = new Set(['screen', 'blocks', 'think', 'write', 'edit', 'fix', 'playtest', 'sending', 'offline', 'waiting', 'restart']);
 const AUTHOR = new Set(['write', 'edit', 'fix']);
 // An instant row's learning line is shown under the next timed row ("Just now: …"): one per row, most useful first,
 // each at most once a turn.
 const JUST_NOW = ['check', 'template', 'notes', 'name', 'ask'];
 const THINK_WHY = new Set(['start', 'look', 'scan', 'retry', 'next']);
 const FACTS = [...'abcdefghij'];
-const TIP_JUST = 6000, TIP_OWN = 8000, TIP_THINK = 8000, TIP_FACT = 11000;   // how long each 💡 line stays
+const TIP_JUST = 6000, TIP_OWN = 8000, TIP_THINK = 8000, TIP_FACT = 11000;
+const LONG_AT = 45000, TIP_LONG = 15000;   // a round still planning after 45 s says that big ideas take a while   // how long each 💡 line stays
 const SHOW_AFTER = 700;    // the live card appears once a turn has lasted this long (a quick turn goes straight to its summary)
 const MIN_SHOWN = 1200;    // once shown, it stays at least this long before it folds (no flash)
 const SEC_AFTER = 3000;    // a running step's seconds appear after 3 s ("0 sec" reads as stuck)
+const LEAVE_AT = 8000;     // "You can close this page…" appears once a build has lasted this long (a quick reply never flashes it)
 const narrow = matchMedia('(max-width: 520px)');   // phones: one finished row above the running one, not two
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 let factNext = Math.floor(Math.random() * FACTS.length);   // carries on across turns, so each turn shows new facts
@@ -259,7 +298,9 @@ function stepLabel(k, f, done) {
   if (f.ok === false && (AUTHOR.has(k) || k === 'playtest')) return ST(`${k === 'fix' ? (f.via === 'edit' ? 'edit' : 'write') : k}.failed`);
   if (k === 'think') {
     const why = THINK_WHY.has(f.c) ? f.c : 'next';
-    return ST(`think.${done ? 'done' : 'now'}.${why === 'start' && f.g ? 'startGame' : why}`, { n: f.n || 1 });
+    // Round 1 says "reading" only until the AI starts answering; after that it is planning (it may think for a while).
+    const plan = why === 'start' && (f.a || f.th);
+    return ST(`think.${done ? 'done' : 'now'}.${plan ? (f.g ? 'planGame' : 'plan') : why === 'start' && f.g ? 'startGame' : why}`, { n: f.n || 1 });
   }
   if (k === 'check') return ST(`check.${['pass', 'flag', 'fail'].includes(f.st) ? f.st : 'flag'}`, { v: f.v || 1, k: f.k || 1 });
   if (k === 'name') {
@@ -267,6 +308,8 @@ function stepLabel(k, f, done) {
     return title && icon ? ST('name.titleIcon', { title, icon }) : title ? ST('name.title', { title }) : icon ? ST('name.icon', { icon }) : ST('name.details');
   }
   if (k === 'template' || k === 'notes' || k === 'ask') return ST(`${k}.done`);
+  if (k === 'resume') return f.v ? ST('resume.doneV', { v: f.v }) : ST('resume.done');
+  if (k === 'restart') return ST(f.resume ? 'restart.now' : 'restart.saved');
   if (k === 'sending') return ST('sending');
   if (k === 'offline') return ST(f.unsure ? 'offline.check' : 'offline.now');
   if (k === 'waiting') return ST('waiting.now');
@@ -299,6 +342,7 @@ let sayQ = [], sayTimer = 0;
 /** Screen readers hear step changes only (a new step, the plan, a problem, the summary), never counters or seconds.
  *  Changes that come within 0.4 s are read as one message: at most three, and a problem is never dropped. */
 function announce(text, urgent = false) {
+  if (LIVE.replaying) return;   // a replay is caught up silently; the current step is read once at the end
   sayQ.push({ text, urgent });
   if (!sayTimer) sayTimer = setTimeout(sayNow, 400);
 }
@@ -404,19 +448,28 @@ function liveSteps() {
   const head = mk('div', 'stp-head');
   const more = mk('button', 'stp-more'); more.type = 'button'; more.hidden = true; more.setAttribute('aria-expanded', 'false');
   head.append(withIcon(mk('span', 'stp-title'), '🔎', ST('title')), more, tipsBtn());
+  // The top of the card: the builder can leave, and the build goes on (not a tip: it shows with tips off too).
+  const eta = mk('div', 'stp-eta'); eta.hidden = true;
+  eta.append(withIcon(mk('p', 'stp-leave'), '🌙', ST('leave')));
   const list = mk('ol', 'stp-list');
-  el.append(head, list);
+  el.append(head, eta, list);
   const rows = [], byI = new Map();
   const turn = { justShown: new Set(), thinkShown: false };   // 💡 lines already shown this turn
-  let expanded = false, mode = null, pillEl = null, shownAt = 0, heard = false;
+  let expanded = false, mode = null, pillEl = null, shownAt = 0, heard = false, stopped = false;
+  let t0 = Date.now();   // when the build started (anchor(): the server's clock, so a replay keeps its real times)
   const newest = () => rows[rows.length - 1];
   const paint = r => drawRow(r.li, { key: r.key, f: r.f, done: r.done, paused: r.paused, stopped: r.stopped, current: r === newest(), open: r.open, live: true, spoke: r.spoke, at: r.at, toggle: r.toggle });
   function show() {
     clearTimeout(showTimer);
     if (shownAt || !timer) return;
     const stick = nearBottom();
-    log.appendChild(el); shownAt = Date.now(); retip(newest());
+    log.appendChild(el); shownAt = Date.now(); retip(newest()); leaveTick();
     if (stick) scrollDown();
+  }
+  /** The leave line, once the build has lasted LEAVE_AT (at once on a replay of a longer build). Read out once. */
+  function leaveTick() {
+    if (!eta.hidden || stopped || Date.now() - t0 < LEAVE_AT) return;
+    eta.hidden = false; announce(ST('leave'));
   }
   function fold() {
     const hidden = Math.max(0, rows.length - 1 - (narrow.matches ? 1 : 2));
@@ -450,6 +503,7 @@ function liveSteps() {
     if (ownLearn(r.key, r.f)) items.push(['own', TIP_OWN]);
     if (r.key === 'think' && r.f.th && (!turn.thinkShown || r.thinkHere)) items.push(['think', TIP_THINK]);
     const age = Date.now() - r.at; let at = 0;
+    if (r.key === 'think' && !r.done && !r.paused && age >= LONG_AT && age < LONG_AT + TIP_LONG) return 'long';
     for (const [kind, ms] of items) { if (age < at + ms) return kind; at += ms; }
     if (!r.done && !r.paused && tipsOn && factsFit(r)) return `fact${Math.floor((age - at) / TIP_FACT)}`;
     return items.length ? items[items.length - 1][0] : '';
@@ -466,19 +520,20 @@ function liveSteps() {
     r.tipKind = kind;
     if (kind === 'just') { withIcon(tip, STEP_ICON[r.just], ST(`${r.just}.learn`), ST('justNow')); if (tipsOn) turn.justShown.add(r.just); }
     else if (kind === 'own') withIcon(tip, '💡', ownLearn(r.key, r.f));
+    else if (kind === 'long') withIcon(tip, '⏳', ST('think.learn.long'));
     else if (kind === 'think') { withIcon(tip, '🤔', ST('think.learn.thinking')); if (tipsOn) { turn.thinkShown = true; r.thinkHere = true; } }
     else if (kind) {
       if (r.factFor !== kind) { r.factFor = kind; r.factText = ST(`facts.${FACTS[factNext++ % FACTS.length]}`); }
       withIcon(tip, '🌟', r.factText, ST('factLabel'));
     } else tip.textContent = '';
   }
-  function push(key, facts, i) {
-    const now = Date.now();
+  function push(key, facts, i, at = null) {
+    const now = at != null ? Math.min(Date.now(), t0 + at) : Date.now();   // the server's time for its own steps
     const last = newest();
     if (last && last.key === 'sending') { last.li.remove(); rows.pop(); }   // the first real step replaces it
     const prev = newest();
-    // A new step ends the one before. A dropped connection doesn't: that step may still be running on the server.
-    if (prev && !prev.done && !prev.paused) { if (key === 'offline') prev.paused = true; else prev.done = true; prev.dur = now - prev.at; }
+    // A new step ends the one before. A dropped connection or a restart doesn't: that step may still be running.
+    if (prev && !prev.done && !prev.paused) { if (key === 'offline' || key === 'restart') prev.paused = true; else prev.done = true; prev.dur = Math.max(0, now - prev.at); }
     if (SERVER_STEPS.has(key)) heard = true;
     if (key === 'think') mode = 'ai'; else if (key === 'blocks') mode = 'blocks';
     const r = { key, f: { ...facts }, at: now, li: mk('li', 'stp-row'), open: false, done: !TIMED.has(key), paused: false, stopped: false, spoke: false, just: TIMED.has(key) ? justFor(key) : null };
@@ -495,7 +550,7 @@ function liveSteps() {
     const stick = nearBottom();
     const v = views.get(r.li);
     if (v && v.sec && !r.done && !r.paused) { const age = Date.now() - r.at; v.sec.textContent = fmtDur(age, true); v.sec.classList.toggle('stp-wait', age < SEC_AFTER); }
-    retip(r);
+    retip(r); leaveTick();
     if (stick) scrollDown();
   }
   let timer = setInterval(tick, 1000);
@@ -503,18 +558,23 @@ function liveSteps() {
   function stopTimers() { clearInterval(timer); timer = 0; clearTimeout(showTimer); narrow.removeEventListener('change', refold); }
   const api = {
     el,
-    add(d) { if (d && SERVER_STEPS.has(d.key)) { const { i, key, ...facts } = d; push(key, facts, i); } },
-    /** The page's own rows: offline (the stream dropped), waiting (opened while the Builder works), sending. */
-    local(key) {
+    add(d) { if (d && SERVER_STEPS.has(d.key)) { const { i, key, at, ...facts } = d; push(key, facts, i, typeof at === 'number' ? at : null); } },
+    /** The page's own rows: offline (the stream dropped), waiting (opened while the Builder works), sending, restart
+     *  (the server is restarting; facts.resume: the build will carry on by itself). */
+    local(key, facts = {}) {
       // Until a step has arrived, nobody knows whether the message reached the server: say "checking", not "keeps going".
-      push(key, key === 'offline' && !heard ? { unsure: 1 } : {}, 0);
+      push(key, key === 'offline' && !heard ? { unsure: 1 } : { ...facts }, 0);
       if (key !== 'sending') show();
     },
-    /** The server said it is busy with this turn: the offline row can say the Builder keeps going. */
-    confirm() {
-      const r = newest(); if (!r || r.key !== 'offline' || !r.f.unsure) return;
-      delete r.f.unsure; paint(r); retip(r); pill(); announce(stepLabel(r.key, r.f, false));
+    /** The build started elapsed ms ago (by the server's clock): rows and the leave line keep its real times. */
+    anchor(elapsed) {
+      t0 = Date.now() - Math.max(0, +elapsed || 0);
+      if (Date.now() - t0 >= SHOW_AFTER) show();
+      leaveTick();
     },
+    newestKey() { const r = newest(); return r ? r.key : null; },
+    /** After a replay: read the current step (and the leave line, when it shows) once. */
+    sayCurrent() { const r = newest(); if (r && r.key !== 'sending') announce(stepLabel(r.key, r.f, r.done && !r.stopped)); if (!eta.hidden) announce(ST('leave')); },
     patch(d) {
       const r = d && byI.get(d.i); if (!r) return;
       const { i, ...facts } = d; void i;
@@ -527,7 +587,7 @@ function liveSteps() {
     /** Text is streaming: a round that thought first is now answering ("🤔 thought first"). */
     spoke() { const r = newest(); if (r && r.key === 'think' && r.f.th && !r.spoke && !r.done) { r.spoke = true; paint(r); } },
     /** An error ended the turn: the current row says "Stopped here" (in its present wording: it did not finish). */
-    stop() { const r = newest(); if (!r) return; if (!r.done) { r.done = true; r.dur = Date.now() - r.at; } r.stopped = true; paint(r); pill(); },
+    stop() { stopped = true; eta.hidden = true; const r = newest(); if (!r) return; if (!r.done) { r.done = true; r.dur = Date.now() - r.at; } r.stopped = true; paint(r); pill(); },
     pill(e) { pillEl = e; pill(); },
     retip() { retip(newest()); },
     /** The turn is over: fold into the summary (the server's record), or go away (refusals, limits, early errors). */
@@ -554,7 +614,8 @@ function liveSteps() {
 const validRec = rec => !!(rec && rec.v === 1 && Array.isArray(rec.s) && rec.s.length);
 function summaryText(rec) {
   const count = rec.s.filter(r => Array.isArray(r) && SERVER_STEPS.has(r[0])).length;
-  return ST(rec.p === 'ai' ? 'summaryAi' : 'summaryBlocks', { count, time: fmtDur(rec.ms) }) + (rec.end && rec.end !== 'ok' ? ` · ${ST('stopped')}` : '');
+  const end = !rec.end || rec.end === 'ok' ? '' : ` · ${ST(rec.end === 'restart' ? 'stopRestart' : rec.end === 'timeout' ? 'stopTime' : 'stopped')}`;
+  return ST(rec.p === 'ai' ? 'summaryAi' : 'summaryBlocks', { count, time: fmtDur(rec.ms) }) + end;
 }
 /** The folded summary of a finished turn ("How the AI did this · 6 steps · 1 min 24 sec"); rows are built on first open,
  *  in the reader's language, from the stored keys, facts and times. -> element (not yet in the log), or null. */
@@ -596,107 +657,287 @@ function fillSummary(body, rec, close) {
   bar.append(tipsBtn(), less); body.append(bar);
 }
 
-// After a dropped connection (or a reload mid-build) the server finishes the turn on its own: poll until it's
-// done, then redraw the chat and preview from the saved state. onBusy() runs when a poll says it is still working.
-// -> true once the Builder is free again, false when it took too long, SIGNED_OUT when the sign-in ended meanwhile.
-const SIGNED_OUT = 'signed-out';
-async function waitForBuilder(onBusy = null, maxMs = 10 * 60e3) {
-  const end = Date.now() + maxMs;
-  while (Date.now() < end) {
-    await new Promise(r => setTimeout(r, 3000));
-    let st; try { st = await api(`/api/studio/${ID}`); } catch (err) { if (err.signedOut) return SIGNED_OUT; continue; }
-    if (!st.busy) { S = { ...S, ...st }; renderLog(); if (S.preview) setPreview(S.preview); return true; }
-    if (onBusy) onBusy();
-  }
-  return false;
-}
 /** Signed out meanwhile (timed out, or on another device; the game itself is saved): say so in the chat, with a button
  *  that signs in again and comes back here with the unsent message. */
-function signInAgainBubble() {
-  const b = bubble('err', t('js.app.signedOut')); const go = document.createElement('button');
+function signInAgainBubble(key = 'js.app.signedOut') {
+  const b = bubble('err', t(key)); const go = document.createElement('button');
   go.type = 'button'; go.className = 'btn btn-sm btn-primary'; go.textContent = t('js.studio.signInAgain');
   go.addEventListener('click', () => signedOut([input])); b.append(' ', go); scrollDown();
 }
 /** A failed Studio action: signed out goes to the sign-in page (keeping the unsent message), anything else is a toast. */
 function failed(err) { if (err.signedOut) signedOut([input]); else toast(err.message, { bad: true }); }
 
-// ---------------------------------------------------------------- sending (SSE over fetch)
+// ---------------------------------------------------------------- live stream
+// One stream per tab (GET /live) while the page is open: hello { turn } (the running build as this viewer sees it, with
+// its saved entries), the replay of what it did so far, caughtup, then live events, also for builds started in another
+// tab or on another device. Every (re)connect replays the running build in full, so the page simply draws it again from
+// hello: no cursors. It reconnects by itself (after 1, 2, 4, 8, then every 15 s, with no overall limit) and at once when
+// the page is back in view or online. restart: the server is restarting (the build is saved and carries on by itself);
+// signedout / gone: this tab may not watch any more, but the build goes on. After every 'done' the page reads the state
+// again, redraws the chat from the saved transcript and reopens the stream (resync): one way for every build to end here.
+let botCur = null;   // the bot bubble the reply is streaming into
+const endBubble = () => { botCur = null; };
+let pillEl = null;   // the pill on the preview: what the Builder is doing now
+function ensurePill() {
+  if (!pillEl) { pillEl = document.createElement('div'); pillEl.className = 'st-busy'; pillEl.dir = document.dir; stage.appendChild(pillEl); }
+  if (live) live.pill(pillEl);
+}
+function removePill() { if (pillEl) { pillEl.remove(); pillEl = null; } }
+/** Send is off while a build runs, while a message is on its way, and once the game is gone. */
+function syncCompose() {
+  const gone = LIVE.stopped === 'gone';
+  $('#st-send').disabled = gone || !!(S.turn || LIVE.pendingCid || LIVE.check);
+  input.disabled = gone; $('#st-clip').disabled = gone;
+}
+
+/** One event of the build this page shows, live or replayed (a replay doesn't scroll, speak or load the preview). */
+function onEvent(ev, d) {
+  const stick = !LIVE.replaying && nearBottom();   // follow the build only when the chat is at the bottom
+  if (ev === 'stepinfo') { if (live) live.patch(d); }
+  else if (ev === 'text') { if (!botCur) botCur = bubble('bot', ''); botCur.textContent += d.text; if (live) live.spoke(); }
+  else if (ev === 'step') { if (live) live.add(d); }
+  else if (ev === 'ask') { askBlock(d, true, botCur || bubble('bot', '')); botCur = null; }
+  else if (ev === 'version') { endBubble(); versionCard(d, true); if (LIVE.replaying) LIVE.replayVersion = d; else setPreview(d.preview, d.id); }
+  else if (ev === 'meta') { endBubble(); metaCard(d); S.game = { ...S.game, ...d }; renderTop(); }
+  else if (ev === 'notes') { endBubble(); notesCard(d.checklist); }
+  else if (ev === 'refused') { endBubble(); bubble('bot refused', `${d.message} ${d.suggestion}`); if (d.chips && d.chips.length) chips(d.chips, true); }
+  else if (ev === 'error') { endBubble(); bubble('err', d.message); if (live) live.stop(); LIVE.lastErr = d.message; }
+  else if (ev === 'done') {
+    endBubble();
+    if (typeof d.turnsLeft === 'number') { S.turnsLeft = d.turnsLeft; renderTurns(); }
+    // Ended before it was charged with an error (no turns left): nothing was saved, so after the redraw the error stays
+    // and the message goes back in the box.
+    const first = S.turn && (S.turn.entries || []).find(m => m.role === 'user');
+    LIVE.carry = !d.steps && LIVE.lastErr ? { err: LIVE.lastErr, text: first ? first.text : '' } : null;
+    LIVE.lastErr = null;
+    if (live) live.finish(d.steps || null);   // no record: refused, no turns left, an early error
+  }
+  if (stick) scrollDown();
+}
+function onLive(ev, d) {
+  if (ev === 'hello') return onHello(d);
+  if (ev === 'caughtup') return onCaughtUp();
+  if (ev === 'turn') return startTurnUI(d);
+  if (ev === 'restart') return onRestart(d);
+  if (ev === 'signedout') return onSignedOut(true);
+  if (ev === 'gone') return onGone();
+  if (!LIVE.turnId) return;                       // nothing running here (late events after 'done' are ignored)
+  onEvent(ev, d);
+  if (ev === 'done') { LIVE.turnId = null; resync(); }
+}
+/** Read a text/event-stream body: on(event, data) for each event. */
+async function readSSE(body, on) {
+  const reader = body.getReader(); const dec = new TextDecoder(); let buf = '';
+  for (;;) {
+    const { value, done } = await reader.read(); if (done) break;
+    buf += dec.decode(value, { stream: true });
+    let i; while ((i = buf.indexOf('\n\n')) >= 0) {
+      const block = buf.slice(0, i); buf = buf.slice(i + 2);
+      let ev = 'message', data = '';
+      for (const line of block.split('\n')) { if (line.startsWith('event: ')) ev = line.slice(7); else if (line.startsWith('data: ')) data += line.slice(6); }
+      if (!data) continue;
+      let d; try { d = JSON.parse(data); } catch { continue; }
+      try { on(ev, d); } catch (e) { console.error(e); }   // one bad event never stops the stream
+    }
+  }
+}
+async function openLive() {
+  if (LIVE.ctrl || LIVE.stopped || LIVE.hidden) return;
+  clearTimeout(LIVE.retry);
+  const ctrl = new AbortController(); LIVE.ctrl = ctrl;
+  let res = null;
+  try { res = await fetch(`/api/studio/${ID}/live`, { credentials: 'same-origin', headers: { Accept: 'text/event-stream', 'X-Brb-Background': '1' }, signal: ctrl.signal }); } catch { /* offline, or the server is down */ }
+  if (LIVE.ctrl !== ctrl) return;                 // closed meanwhile (a resync, a restart, signed out)
+  if (!res || !res.ok || !res.body) {
+    LIVE.ctrl = null;
+    if (res && (res.status === 401 || res.status === 403)) return onSignedOut();
+    if (res && res.status === 404) return onGone();
+    if (res && res.status === 429) return retryLive(15000);
+    return liveFailed();
+  }
+  try { await readSSE(res.body, (ev, d) => { if (LIVE.ctrl === ctrl) onLive(ev, d); }); } catch { /* the connection dropped */ }
+  if (LIVE.ctrl !== ctrl) return;
+  LIVE.ctrl = null; LIVE.replaying = false;
+  retryLive(backoff());                           // it ended on its own (a proxy, a phone asleep): back with a full replay
+}
+const BACKOFF = [1000, 2000, 4000, 8000, 15000];
+function backoff() { const b = BACKOFF[Math.min(LIVE.tries++, BACKOFF.length - 1)]; return Math.round(b * (0.8 + Math.random() * 0.4)); }
+function retryLive(ms) { clearTimeout(LIVE.retry); if (!LIVE.stopped) LIVE.retry = setTimeout(openLive, ms); }
+function closeLive() { const c = LIVE.ctrl; LIVE.ctrl = null; LIVE.replaying = false; clearTimeout(LIVE.retry); if (c) c.abort(); }
+/** A (re)connect failed: while a build is shown, say the connection dropped (unless the restart row already says why). */
+function liveFailed() {
+  if (live && (LIVE.turnId || LIVE.check) && !LIVE.restart && live.newestKey() !== 'offline') live.local('offline');
+  retryLive(backoff());
+}
+function onHello(d) {
+  LIVE.tries = 0; LIVE.restart = false;
+  const chk = LIVE.check;
+  if (d.turn) {
+    LIVE.replaying = true; LIVE.replayVersion = null;
+    startTurnUI(d.turn, { full: true });
+    if (chk && LIVE.check === chk) arrived(chk);   // a different build than the message we're unsure about
+    return;
+  }
+  if (chk) return arrived(chk);                   // a message sent while the server was down: decide now
+  if (LIVE.turnId || (LIVE.pendingCid && !LIVE.posting)) resync();   // it ended (or was refused) while we weren't connected
+}
+function onCaughtUp() {
+  if (!LIVE.replaying) return;
+  LIVE.replaying = false;
+  const v = LIVE.replayVersion; LIVE.replayVersion = null;
+  if (v && v.preview && v.id !== shownVersion) setPreview(v.preview, v.id);   // once, for the newest version replayed
+  scrollDown();
+  if (live && LIVE.turnId) live.sayCurrent();
+}
+/**
+ * Show a running build. turn: { id, attempt, cid, elapsed, entries, ... } (from hello, a turn event or the state).
+ * The card and bubble this tab drew for its own send are kept when the turn event says it is that message; otherwise
+ * (full: a replay, another tab's build, a resumed attempt) what was drawn for it is taken away and drawn again from
+ * its saved entries, with a new live card that the replay then fills. waiting: say it's working until hello comes.
+ */
+function startTurnUI(turn, { full = false, waiting = false } = {}) {
+  const mine = turn.cid ? $$('.msg.me[data-cid]', log).find(e => e.dataset.cid === turn.cid) : null;
+  const own = !full && !!mine && !!live && LIVE.pendingCid === turn.cid;
+  if (turn.cid && turn.cid === LIVE.pendingCid) LIVE.pendingCid = null;
+  if (LIVE.check && turn.cid === LIVE.check.cid) LIVE.check = null;
+  LIVE.turnId = turn.id; S.turn = turn;
+  endBubble();
+  if (own) mine.dataset.live = turn.id;
+  else {
+    if (live) live.remove();
+    $$('[data-live]', log).forEach(e => e.remove());
+    (turn.entries || []).forEach(m => drawEntry(m, false));   // place() marks them with the build's id
+    live = liveSteps();
+    if (waiting) live.local('waiting');
+  }
+  live.anchor(turn.elapsed);
+  ensurePill();
+  $$('.qchips', log).forEach(c => c.classList.add('used'));
+  syncCompose();
+  if (!LIVE.replaying) scrollDown();
+}
+function onRestart(d) {
+  closeLive();
+  if (live && (LIVE.turnId || LIVE.pendingCid)) { LIVE.restart = true; live.local('restart', d && d.resume ? { resume: 1 } : {}); }
+  retryLive(Math.max(1000, +(d && d.retryMs) || 5000));
+}
+/** The session ended. verify: told by the stream, so first check whether this browser is signed in again (a password
+ *  change gives this device a new sign-in): then carry on. */
+async function onSignedOut(verify = false) {
+  closeLive();
+  if (verify) { try { await api(`/api/studio/${ID}`, { background: true }); resync(); return; } catch { /* signed out indeed */ } }
+  if (LIVE.stopped) return;
+  LIVE.stopped = 'signedout';
+  const building = !!(LIVE.turnId || S.turn);
+  if (live) live.remove(); removePill(); endBubble();
+  signInAgainBubble(building ? 'js.studio.signedOutBuilding' : 'js.app.signedOut');
+  syncCompose();
+}
+/** The game was deleted (or this account may not edit it any more). */
+function onGone() {
+  closeLive();
+  if (LIVE.stopped === 'gone') return;
+  LIVE.stopped = 'gone';
+  if (live) live.remove(); removePill(); endBubble();
+  LIVE.turnId = null; S.turn = null;
+  bubble('err', t('js.studio.gameGone'));
+  syncCompose();
+}
+/** After a build ends (and when the stream says nothing runs that this page thought did): read the state, redraw the
+ *  chat from the transcript and the top, then reopen the stream. Waits for a message that is still on its way. */
+let resyncing = false, resyncAgain = false;
+async function resync() {
+  if (resyncing || LIVE.posting) { resyncAgain = true; return; }
+  resyncing = true; closeLive();
+  let st = null, err = null;
+  try { st = await api(`/api/studio/${ID}`, { background: true }); } catch (e) { err = e; }
+  resyncing = false;
+  if (err) {
+    if (err.status === 401) return onSignedOut();
+    if (err.status === 404) return onGone();
+    clearTimeout(LIVE.retry); LIVE.retry = setTimeout(resync, backoff()); return;   // the server is restarting
+  }
+  applyResync(st);
+  if (resyncAgain) { resyncAgain = false; resync(); }
+}
+function applyResync(st) {
+  S = { ...S, ...st };
+  if (live) live.remove(); endBubble();
+  renderTop(); renderLive(); renderSafety(); renderTurns(); renderLog();
+  if (S.current && S.preview && S.current.id !== shownVersion) setPreview(S.preview, S.current.id);
+  const carry = LIVE.carry; LIVE.carry = null;
+  if (carry) { bubble('err', carry.err); if (carry.text && !input.value.trim()) { input.value = carry.text; autosize(); } }
+  if (S.turn) startTurnUI(S.turn, { waiting: true });
+  else { LIVE.turnId = null; removePill(); if (!LIVE.posting) LIVE.pendingCid = null; }
+  syncCompose(); openLive();
+}
+const seen = (st, cid) => !!((st.turn && st.turn.cid === cid) || (st.lastTurn && st.lastTurn.cid === cid));
+/** A send whose answer never came (offline, or the server restarting): did the server get it? */
+async function arrived(chk) {
+  let st;
+  try { st = await api(`/api/studio/${ID}`, { background: true }); }
+  catch (e) {
+    if (e.status === 401) { LIVE.check = null; giveBack(chk); return onSignedOut(); }
+    // Don't decide yet: it may have been stored just before the server stopped, and then the next boot runs it. Saying
+    // "it didn't arrive" would make the child send it again and pay twice. Decide after the next good connect (hello).
+    LIVE.check = chk;
+    if (live && live.newestKey() !== 'offline') live.local('offline');
+    if (!LIVE.ctrl) retryLive(backoff());
+    syncCompose(); return;
+  }
+  LIVE.check = null;
+  if (seen(st, chk.cid)) { if (LIVE.pendingCid === chk.cid) LIVE.pendingCid = null; closeLive(); applyResync(st); return; }   // it got there
+  giveBack(chk);
+  bubble('err', t('js.studio.dropped'));
+  syncCompose(); openLive();
+}
+/** The message never reached the Builder: it goes back in the box (with its pictures). */
+function giveBack(chk) {
+  if (chk.el) chk.el.remove();
+  if (live) live.remove(); removePill();
+  if (LIVE.pendingCid === chk.cid) LIVE.pendingCid = null;
+  if (!input.value.trim()) { input.value = chk.text; autosize(); }
+  if (chk.ups.length && !pending.length) { pending = chk.ups; renderAttach(); }
+}
+
+// ---------------------------------------------------------------- sending
 let pending = []; // uploads waiting to be sent: { id, name, kind, url }
-async function send(text) {
+const newCid = () => (crypto.randomUUID ? crypto.randomUUID() : Array.from(crypto.getRandomValues(new Uint8Array(16)), b => b.toString(16).padStart(2, '0')).join(''));
+/** Send a message to the Builder. The server answers at once (the build runs on its own); the live stream shows it.
+ *  continueOf: the id of the build that stopped early ("Carry on building"). */
+async function send(text, { continueOf = null } = {}) {
   text = String(text || '').trim();
   const ups = pending.filter(u => u.id);
-  if (busy) return toast(t('js.studio.stillWorking'));
+  if (LIVE.stopped === 'gone') return;
+  if (S.turn || LIVE.pendingCid || LIVE.check) return toast(t('js.studio.stillWorking'));
   if (!text && !ups.length) { input.focus(); return; }
-  busy = true; $('#st-send').disabled = true;
-  const savedBefore = (S.chat || []).length;   // to tell, after a dropped connection, whether the server got the message
-  $$('.qchips').forEach(c => c.classList.add('used'));
-  const mine = userBubble(text, ups); input.value = ''; autosize();
+  const cid = newCid();   // the same message sent twice (a lost answer) is one build
+  LIVE.pendingCid = cid; LIVE.posting = true;
+  $$('.qchips', log).forEach(c => c.classList.add('used'));
+  endBubble();
+  const mine = userBubble(text, ups); mine.dataset.cid = cid; mine.dataset.live = 'pending';
+  input.value = ''; autosize();
   pending = []; renderAttach();
-  // The steps card takes the reply's place at the bottom until the turn ends (it appears after 0.7 s, so a quick
-  // turn goes straight to its summary); the pill on the preview says the same.
-  let cur = null;   // the bot bubble text is streaming into
-  live = liveSteps(); live.local('sending');
-  const status = document.createElement('div'); status.className = 'st-busy'; status.dir = document.dir; stage.appendChild(status);
-  live.pill(status); scrollDown();
-  const textBubble = () => { if (!cur) cur = bubble('bot', ''); return cur; };
-  const endBubble = () => { cur = null; };
-  const handle = (ev, d) => {
-    const stick = nearBottom();   // follow the turn only when the chat is at the bottom: never pull a reader back down
-    if (ev === 'stepinfo') { if (live) live.patch(d); }
-    else if (ev === 'text') { const b = textBubble(); b.textContent += d.text; if (live) live.spoke(); }
-    else if (ev === 'step') { if (live) live.add(d); }
-    else if (ev === 'ask') { askBlock(d, true, cur || bubble('bot', '')); cur = null; }
-    else if (ev === 'version') { endBubble(); versionCard(d, true); setPreview(d.preview); }
-    else if (ev === 'meta') { endBubble(); metaCard(d); S.game = { ...S.game, ...d }; renderTop(); }
-    else if (ev === 'notes') { endBubble(); notesCard(d.checklist); }
-    else if (ev === 'refused') { endBubble(); const b = bubble('bot refused', `${d.message} ${d.suggestion}`); void b; if (d.chips && d.chips.length) chips(d.chips, true); }
-    else if (ev === 'error') { endBubble(); bubble('err', d.message); if (live) live.stop(); }
-    else if (ev === 'done') {
-      if (typeof d.turnsLeft === 'number') { S.turnsLeft = d.turnsLeft; renderTurns(); }
-      if (live) live.finish(d.steps || null);   // no record: refused, limit, early error
-    }
-    if (stick) scrollDown();
-  };
+  // The steps card takes the reply's place at the bottom until the build ends (it appears after 0.7 s, so a quick
+  // build goes straight to its summary), and the pill on the preview says the same. Both are made now: the build can
+  // start before the answer to this POST arrives.
+  if (live) live.remove();
+  live = liveSteps(); live.local('sending'); ensurePill(); scrollDown(); syncCompose();
+  const chk = { cid, text, ups, el: mine };
+  let res = null, data = null;
   try {
-    const res = await fetch(`/api/studio/${ID}/chat`, { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json', Accept: 'text/event-stream' }, body: JSON.stringify({ text, pro, uploads: ups.map(u => u.id) }) });
-    if (!res.ok || !res.body) { let msg = t('js.studio.noAnswer'); try { msg = (await res.json()).error || msg; } catch { /* not JSON */ } const err = new Error(msg); err.fromServer = true; err.signedOut = res.status === 401; throw err; }
-    const reader = res.body.getReader(); const dec = new TextDecoder(); let buf = ''; let finished = false;
-    for (;;) {
-      const { value, done } = await reader.read(); if (done) break;
-      buf += dec.decode(value, { stream: true });
-      let i; while ((i = buf.indexOf('\n\n')) >= 0) {
-        const block = buf.slice(0, i); buf = buf.slice(i + 2);
-        let ev = 'message', data = '';
-        for (const line of block.split('\n')) { if (line.startsWith('event: ')) ev = line.slice(7); else if (line.startsWith('data: ')) data += line.slice(6); }
-        if (!data) continue;
-        if (ev === 'done') finished = true;
-        try { handle(ev, JSON.parse(data)); } catch { /* bad chunk */ }
-      }
-    }
-    if (!finished) throw new Error('stream ended early');
-  } catch (e) {
-    endBubble();
-    if (e.signedOut) {
-      // The message never reached the Builder: it goes back in the box, and signing in again brings it back here.
-      if (live) live.remove();
-      mine.remove(); input.value = text; autosize(); signInAgainBubble();
-    }
-    else if (e.fromServer) { if (live) live.remove(); bubble('err', e.message); }
-    else {
-      // The connection dropped, but the Builder keeps going on the server: wait for it, then show what it made
-      // (renderLog() draws the saved reply, with its steps summary, in place of this card).
-      if (live) live.local('offline');
-      // If the message never reached the server, nothing new was saved: say so, so it can be sent again.
-      const back = await waitForBuilder(() => { if (live) live.confirm(); });
-      if (live) live.remove();
-      if (back === SIGNED_OUT) signInAgainBubble();
-      else if (!back || (S.chat || []).length <= savedBefore) bubble('err', t('js.studio.dropped'));
-    }
+    res = await fetch(`/api/studio/${ID}/chat`, { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify({ text, pro, uploads: ups.map(u => u.id), cid, detach: true, ...(continueOf ? { continueOf } : {}) }) });
+    try { data = await res.json(); } catch { data = null; }
+  } catch { res = null; }
+  LIVE.posting = false;
+  if (res && res.ok && data && data.turn) {
+    openLive();                                    // the turn event (or the next hello) draws the build
+    if (resyncAgain) { resyncAgain = false; resync(); }
+    return;
   }
-  finally {
-    endBubble(); if (live) live.remove(); status.remove(); busy = false; $('#st-send').disabled = false; scrollDown();
-    await refresh();
-  }
+  if (res && res.status === 401) { giveBack(chk); signInAgainBubble(); syncCompose(); return; }
+  if (res && data && data.error) { giveBack(chk); bubble('err', data.error); syncCompose(); scrollDown(); return; }
+  arrived(chk);   // no answer: offline, or the server is restarting (the platform may answer for it, without JSON)
 }
 $('#st-compose').addEventListener('submit', e => { e.preventDefault(); send(input.value); });
 input.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); send(input.value); } });
@@ -711,6 +952,8 @@ document.addEventListener('click', e => {
   if (a.dataset.act === 'fix') send(`${t('js.studio.fixMessage', { number: S.current ? S.current.number : '' })} ${(S.current && S.current.issues || []).map(i => i.message).join(' ')}`.trim());
   else if (a.dataset.act === 'see') { $('.st-preview').scrollIntoView({ behavior: 'smooth', block: 'start' }); }
   else if (a.dataset.act === 'update') updateLive();
+  else if (a.dataset.act === 'continue' && S.lastTurn) send(t('js.studio.continueMessage'), { continueOf: S.lastTurn.id });
+  else if (a.dataset.act === 'putback' && S.lastTurn && S.lastTurn.putBack) { input.value = S.lastTurn.putBack; autosize(); input.focus(); }
 });
 const proBtn = $('#st-pro');
 const setPro = v => { pro = v; proBtn.setAttribute('aria-pressed', String(pro)); try { localStorage.setItem('brb-pro', pro ? '1' : '0'); } catch { /* ignore */ } };
@@ -809,11 +1052,11 @@ $('#st-history').addEventListener('click', () => {
   if (!S.versions.length) return toast(t('js.studio.versions.none'));
   const row = v => `<li class="vrow"><span class="vn" dir="ltr">v${v.number}</span><span><span class="vnotes" dir="auto">${esc(v.notes || t('js.studio.versions.newVersion'))}</span><br><span class="vmeta">${esc(when(v.at))}</span>
     <span class="tags">${safetyChip(v.safety)}${v.current ? `<span class="stchip">✏️ ${E('js.studio.versions.editing')}</span>` : ''}${v.live ? `<span class="stchip good">🟢 ${E('js.studio.top.live')}</span>` : ''}${v.pending ? `<span class="stchip warn">⏳ ${E('js.studio.top.inReview')}</span>` : ''}</span></span>
-    ${v.current ? '' : `<button class="btn btn-sm" type="button" data-restore="${esc(v.id)}">↩️ ${E('js.studio.versions.bringBack')}</button>`}</li>`;
+    ${v.current ? '' : `<button class="btn btn-sm" type="button" data-restore="${esc(v.id)}"${S.turn ? ' disabled' : ''}>↩️ ${E('js.studio.versions.bringBack')}</button>`}</li>`;
   const s = sheet({ title: `🕘 ${t('js.studio.versions.title')}`, content: `<p class="small muted">${E('js.studio.versions.hint')}</p><ul class="vlist">${S.versions.map(row).join('')}</ul>` });
   s.el.addEventListener('click', async e => {
     const b = e.target.closest('[data-restore]'); if (!b) return; b.disabled = true;
-    try { const r = await api(`/api/studio/${ID}/restore`, { method: 'POST', body: { versionId: b.dataset.restore } }); applyState(r.state); setPreview(r.state.preview); toast(r.message); s.close(); }
+    try { const r = await api(`/api/studio/${ID}/restore`, { method: 'POST', body: { versionId: b.dataset.restore } }); applyState(r.state); setPreview(r.state.preview, r.state.current && r.state.current.id); toast(r.message); s.close(); }
     catch (err) { failed(err); b.disabled = false; }
   });
 });
@@ -937,12 +1180,17 @@ $('#st-publish').addEventListener('click', () => {
 });
 
 renderTop(); renderLive(); renderSafety(); renderTurns(); renderLog();
+// A build running now (also one started in another tab or on another device): its message and a "still working" row
+// at once (no greeting), then the live stream replays what it did so far.
+if (S.turn) startTurnUI(S.turn, { waiting: true });
+syncCompose(); openLive();
+// A hidden page with nothing building lets its stream go; when it comes back, builds may have started or ended.
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) { if (!LIVE.turnId && !LIVE.pendingCid && !LIVE.check && !LIVE.stopped) { closeLive(); LIVE.hidden = true; } return; }
+  if (LIVE.hidden) { LIVE.hidden = false; resync(); }
+  else if (!LIVE.ctrl && !LIVE.stopped) { LIVE.tries = 0; openLive(); }
+});
+addEventListener('online', () => { if (!LIVE.ctrl && !LIVE.stopped && !LIVE.hidden) { LIVE.tries = 0; openLive(); } });
 // Opened from a lesson ("build a game about..."): the idea is ready in the box; the builder presses Send.
 const ask = new URLSearchParams(location.search).get('ask');
 if (ask && !input.value) { input.value = ask.slice(0, 600); autosize(); input.focus(); history.replaceState(null, '', location.pathname); }
-if (S.busy) {
-  // The card's "still working on the server" row says it (no toast on top of it).
-  busy = true; $('#st-send').disabled = true;
-  live = liveSteps(); live.local('waiting'); scrollDown();
-  waitForBuilder().then(back => { if (live) live.remove(); busy = false; $('#st-send').disabled = false; if (back === SIGNED_OUT) signInAgainBubble(); return refresh(); });
-}

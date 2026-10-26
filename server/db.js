@@ -1,5 +1,6 @@
 // Oomba Academy database: SQLite via better-sqlite3. One file, WAL mode (BRB_JOURNAL_MODE), versioned migrations.
-// SQLite wants a local block disk and one writing process: never two app instances on the same file.
+// SQLite wants a local block disk and one writing process: never two app instances on the same file. The same goes
+// for the Builder: one runner (server/builder/runner.js) owns every build, and boot recovery assumes it is the only one.
 // Reused from the starter with chat tables and update-review fields added.
 // Everything else talks to the DB through `q` (and the service modules), so a Postgres swap is a repository-layer change.
 import Database from 'better-sqlite3';
@@ -167,6 +168,30 @@ export const MIGRATIONS = [
     UPDATE games SET pending_visibility = CASE WHEN EXISTS (SELECT 1 FROM school_members sm WHERE sm.user_id=games.owner_id
         AND sm.status='active') THEN 'school' ELSE 'public' END
       WHERE pending_version_id IS NOT NULL;`],
+  // One row per Builder build: a message, an automatic follow-on build, or a Continue. Lifecycle for restarts and the
+  // live view (server/builder/runner.js), numbers for time estimates. Single app instance only (runner.js header).
+  // status: queued | running | interrupted | done | failed | cancelled. end_reason: ok | refused | limit | error |
+  // timeout | restart | deleted | banned | disabled | stopped. request: {text, uploadIds, cid, continueOf} (text cleared
+  // 7 days after the end). provider: 'ai' | 'blocks' (never a model id). attempt: 1 = first run, 2 = resumed after a
+  // restart; a queued row counts the boots that re-ran it. chain: 0 = from a message, 1..3 = automatic follow-on build.
+  // base_version: the newest version number when the build started (NULL = no game yet). charged_day: the builder_usage
+  // day it was charged to (NULL = not charged). can_continue: 1 = the chat offers "Carry on building" for it.
+  // sample: 1 = build sample, 2 = question sample, 0 = not used for estimates.
+  ['0019_builder_turns', `CREATE TABLE IF NOT EXISTS builder_turns (
+      id TEXT PRIMARY KEY, game_id TEXT NOT NULL, user_id TEXT NOT NULL,
+      status TEXT NOT NULL DEFAULT 'queued', end_reason TEXT NOT NULL DEFAULT '', request TEXT NOT NULL DEFAULT '{}',
+      locale TEXT NOT NULL DEFAULT 'en', pro INTEGER NOT NULL DEFAULT 0, provider TEXT NOT NULL DEFAULT '',
+      attempt INTEGER NOT NULL DEFAULT 0, chain INTEGER NOT NULL DEFAULT 0, base_version INTEGER, charged_day TEXT,
+      refunded INTEGER NOT NULL DEFAULT 0, can_continue INTEGER NOT NULL DEFAULT 0,
+      est_key TEXT NOT NULL DEFAULT '', eta_hi_ms INTEGER NOT NULL DEFAULT 0, eta_over_ms INTEGER NOT NULL DEFAULT 0,
+      kind TEXT NOT NULL DEFAULT '', duration_ms INTEGER NOT NULL DEFAULT 0, first_version_ms INTEGER NOT NULL DEFAULT 0,
+      versions INTEGER NOT NULL DEFAULT 0, model_calls INTEGER NOT NULL DEFAULT 0, tokens_in INTEGER NOT NULL DEFAULT 0,
+      tokens_out INTEGER NOT NULL DEFAULT 0, followups INTEGER NOT NULL DEFAULT 0, sample INTEGER NOT NULL DEFAULT 0,
+      created_at INTEGER NOT NULL, started_at INTEGER, ended_at INTEGER, seen_at INTEGER, notified_at INTEGER);
+    CREATE INDEX IF NOT EXISTS builder_turns_game ON builder_turns(game_id, created_at);
+    CREATE UNIQUE INDEX IF NOT EXISTS builder_turns_one_live ON builder_turns(game_id) WHERE status IN ('queued','running','interrupted');
+    CREATE INDEX IF NOT EXISTS builder_turns_owner ON builder_turns(user_id, notified_at, ended_at);
+    CREATE INDEX IF NOT EXISTS builder_turns_eta ON builder_turns(est_key, sample, ended_at) WHERE sample > 0;`],
   // Sign in with Google (docs/decisions.md "Sign in with Google"). Rows are found by Google's account id (sub), never by
   // email. One Google account per Oomba account, both ways. Invites are bound to a school email (no link or token);
   // class_id NULL = a staff invite, user_id set = connect this existing school account. 0019 is the Builder's.

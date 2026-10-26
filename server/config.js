@@ -102,6 +102,8 @@ export const config = {
   builderProModel: process.env.BUILDER_PRO_MODEL || 'claude-opus-5-5',
   builderDailyTurns: num(process.env.BUILDER_DAILY_TURNS, 60),
   builderMaxTokens: num(process.env.BUILDER_MAX_TOKENS, 32000),
+  // Hard cap on one Builder build attempt (server/builder/runner.js): it is stopped after this long, whoever watches.
+  builderTurnMaxMs: Math.max(1, num(process.env.BUILDER_TURN_MAX_SECONDS, 1200)) * 1000,
   // AI spending cap in US dollars (see server/services/ai-budget.js). Calls stop once either is reached.
   aiDailyBudgetUsd: posNum(process.env.AI_DAILY_BUDGET_USD, 5),
   aiMonthlyBudgetUsd: posNum(process.env.AI_MONTHLY_BUDGET_USD, 50),

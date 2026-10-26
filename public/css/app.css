@@ -496,6 +496,7 @@ code{overflow-wrap:anywhere}
 .metiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));grid-auto-rows:1fr;gap:14px;margin-bottom:24px}
 .metiles>.metile{margin:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:132px;padding:16px 12px;text-align:center;color:var(--text);font-weight:800;text-decoration:none}
 .metile-e{font-size:2.2rem;line-height:1}
+.metile-sub{font-size:.85rem;font-weight:700;color:var(--text-2)}
 .metile:hover{transform:translateY(-2px)}
 /* Profile photos */
 .avatar.has-photo{overflow:hidden;background:var(--card-2)}

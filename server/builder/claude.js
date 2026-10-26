@@ -1,12 +1,15 @@
 // Claude provider: the server-side agent loop for the Builder.
 // - Fixed system prompt (prompt.js), cached; the current game source goes in a SEPARATE cached system block.
-// - claude-sonnet-5-5 by default, claude-opus-5-5 for "Pro quality" (config.builderModel / builderProModel).
+// - The configured Builder model (config.builderModel), or the Pro model for "Pro quality" (config.builderProModel).
 // - Streams text to the Studio; tool calls run through tools.js (every write/edit = a new scanned version).
 // - Live build steps (steps.js): one "think" row per model call (Round N, with why it started), a write/edit/fix row
 //   while that tool's input streams (the AI's own notes as the plan, plus a lines or changes counter).
 //   The request itself is never changed for this: thinking is only noticed when a thinking block really streams.
 // - History from earlier turns is rebuilt from the stored transcript (text + one-line action summaries),
-//   so game source and upload bytes are never resent from history.
+//   so game source and upload bytes are never resent from history. Neighbours with the same role are merged.
+// - The runner's hook ctx.between(round) runs at the top of every round: it stops the loop when the build was stopped
+//   (time cap, game deleted, ban, Builder off, a restart hand-off). ctx.maxRounds is smaller for a resumed attempt,
+//   which also gets a note saying what was already done (ctx.resume).
 import { config } from '../config.js';
 import { anthropic } from './anthropic.js';
 import * as aiBudget from '../services/ai-budget.js';
@@ -16,17 +19,30 @@ import { summariseEvents } from './chat.js';
 import { modelBlocks, transcriptNote } from './uploads.js';
 import { NO_STEPS, inputScanner, cleanNote } from './steps.js';
 
-const MAX_STEPS = 14;         // model calls per turn (build, details, playtest, fixes, retest, notes, question)
+export const MAX_STEPS = 14;  // model calls per build (build, details, playtest, fixes, retest, notes, question)
 const MAX_SCAN_FIXES = 2;     // extra rounds allowed to fix a failed safety scan
 const HISTORY_MESSAGES = 40;  // earlier transcript entries sent to the model
 const FALLBACKS = process.env.BUILDER_FALLBACKS !== '0';
 const COUNT_EVERY_MS = 400;   // live lines/changes counter: at most one update this often (the plan is sent at once)
 const AUTHORING = { write_game: 'write', edit_game: 'edit' };
 
-/** Transcript -> Messages API history (plain text only). Refused messages never reach the model. */
+/** Join neighbours with the same role (the API wants user and assistant in turns): text + text with a blank line,
+ *  anything else as one block list. The last message stays a block list when it was one. */
+export function mergeRoles(msgs) {
+  const out = [];
+  const blocks = c => (typeof c === 'string' ? [{ type: 'text', text: c }] : c);
+  for (const m of msgs) {
+    const prev = out[out.length - 1];
+    if (!prev || prev.role !== m.role) { out.push({ role: m.role, content: Array.isArray(m.content) ? [...m.content] : m.content }); continue; }
+    prev.content = typeof prev.content === 'string' && typeof m.content === 'string' ? `${prev.content}\n\n${m.content}` : [...blocks(prev.content), ...blocks(m.content)];
+  }
+  return out;
+}
+/** Transcript -> Messages API history (plain text only). Refused messages and follow-ups the model never answered
+ *  never reach the model; neighbours with the same role are merged (an errored build leaves two user messages). */
 export function historyToMessages(history) {
   const out = [];
-  for (const m of history.filter(x => !x.refused).slice(-HISTORY_MESSAGES)) {
+  for (const m of history.filter(x => !x.refused && !(x.followUp && x.status !== 'read'))) {
     if (m.role === 'user') {
       const notes = (m.uploads || []).map(transcriptNote).join(' ');
       const text = [notes, m.text].filter(Boolean).join('\n') || '(sent a picture)';
@@ -36,24 +52,42 @@ export function historyToMessages(history) {
       if (text) out.push({ role: 'assistant', content: text });
     }
   }
-  while (out.length && out[0].role !== 'user') out.shift();
-  return out;
+  const merged = mergeRoles(out).slice(-HISTORY_MESSAGES);
+  while (merged.length && merged[0].role !== 'user') merged.shift();
+  return merged;
+}
+
+/** Model-facing note for an attempt carried on after a restart, or a Continue (no locale key: the model reads it). */
+export function resumeNote(resume) {
+  const done = (resume.versions || []).map(v => `Built version ${v.number}: ${v.notes} (safety check: ${v.safety_status})`).join('; ') || 'nothing saved yet';
+  const why = resume.cont && resume.original
+    ? `The builder pressed Continue after the build stopped early, so carry on with their earlier message: «${resume.original}».`
+    : 'the server restarted while you were working on this message, so your work was cut off.';
+  return `[Note from the platform: ${why} Already done in this turn: ${done}. The current game below is the newest saved version. `
+    + 'Carry on from it and finish the builder\'s request. Don\'t start over and don\'t redo finished work. '
+    + 'Start with one short, friendly sentence saying you\'re carrying on.]';
 }
 
 export async function run(ctx) {
   const client = anthropic(); if (!client) throw new Error('No API key');
   const t = ctx.t || tEn;
   const model = ctx.pro ? config.builderProModel : config.builderModel;
-  const userContent = [...modelBlocks(ctx.uploads || []), { type: 'text', text: ctx.text || 'Here is something for inspiration.' }];
-  const messages = [...historyToMessages(ctx.history), { role: 'user', content: userContent }];
+  const userContent = [...modelBlocks(ctx.uploads || []), { type: 'text', text: ctx.text || 'Here is something for inspiration.' },
+    ...(ctx.resume ? [{ type: 'text', text: resumeNote(ctx.resume) }] : [])];
+  const messages = mergeRoles([...historyToMessages(ctx.history || []), { role: 'user', content: userContent }]);
   let tokensIn = 0, tokensOut = 0, fixes = 0;
   const steps = ctx.steps || NO_STEPS;
+  const max = ctx.maxRounds || MAX_STEPS;
   // Why the next round starts (its step label) and whether its write/edit is a fix of real problems.
   let prev = { c: 'start', fixing: false };
 
-  for (let step = 0; step < MAX_STEPS; step++) {
+  for (let step = 0; step < max; step++) {
+    if (ctx.signal && ctx.signal.aborted) break;
     // The AI budget can run out in the middle of a turn: finish what we have instead of starting another call.
     if (step && !aiBudget.ok()) { ctx.emit('text', { text: '\n\n' + t('builder.budgetResting') }); break; }
+    // The runner's checkpoint: stopped, deleted, banned or switched off -> no more model calls.
+    const b = ctx.between ? await ctx.between(step + 1) : null;
+    if (b && b.stop) break;
     const cur = ctx.tools.current();
     // Every round re-sends the system prompt, the current game and the chat so far: the model keeps no memory.
     steps.start('think', { n: step + 1, c: step ? prev.c : 'start', ...(!step && cur ? { g: 1 } : {}) });
@@ -72,7 +106,11 @@ export async function run(ctx) {
       : client.messages.stream(params, opts);
     const authorRow = new Map();   // tool_use id -> its write/edit/fix row, so results mark the right row later
     let building = null, thought = false;
+    let answering = false;
     for await (const ev of stream) {
+      // The first event means the AI has read everything and is now working on its answer: the round is no longer
+      // "reading", it is planning (a big new game can take a minute or two here before any code appears).
+      if (!answering && steps.current() === 'think') { answering = true; steps.info({ a: 1 }); }
       if (ev.type === 'content_block_start' && ev.content_block) {
         const cb = ev.content_block; building = null;
         // A thinking block really streamed (its text is never read or shown): the round is "thinking it through".
@@ -92,6 +130,7 @@ export async function run(ctx) {
       }
     }
     const msg = await stream.finalMessage();
+    if (ctx.settle) ctx.settle();   // the model answered this request
     const u = msg.usage || {};
     aiBudget.recordUsage(msg.model || model, u);
     tokensIn += (u.input_tokens || 0) + (u.cache_read_input_tokens || 0) + (u.cache_creation_input_tokens || 0);

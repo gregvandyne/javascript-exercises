@@ -11,6 +11,7 @@ import { isSchoolStaff, isPlatformAdmin } from '../services/schools.js';
 import { rateLimit, allow, count, ipOf, loginLockKey, GUESTS_PER_IP_HOUR } from '../services/ratelimit.js';
 import { availableLocales, normalizeCode, tHtml, setLangCookie, saveUserLang } from '../i18n/index.js';
 import { THEMES, THEME_ICONS, normalizeTheme, setThemeCookie, saveUserTheme } from '../theme.js';
+import { buildStatus } from '../builder/turns.js';
 import { publicHost } from '../site.js';
 import { loginGoogle, googleNotice, loginJoinLink, meGooglePanel, noPasswordText } from './google.js';
 
@@ -286,11 +287,15 @@ function signOutPanel(req) {
 router.get('/me', auth.requireUser, (req, res) => {
   const t = req.t;
   const u = req.user;
+  // My games: how many are building now, and how many finished with a new version the builder hasn't opened yet.
+  const news = u.is_guest ? new Map() : buildStatus(u.id);
+  const nb = [...news.values()].filter(x => x === 'building').length, nr = [...news.values()].filter(x => x === 'ready').length;
+  const gamesSub = [nb && t('me.tiles.building', { count: nb }), nr && t('me.tiles.ready', { count: nr })].filter(Boolean).join(' · ');
   const tiles = [
     !u.is_guest && ['👤', t('me.tiles.profile'), `/u/${u.username}`],
     ['❤️', t('me.tiles.favorites'), '/favorites'],
     !u.is_guest && (isPlatformAdmin(u) && !isSchoolStaff(u) ? ['🏫', t('nav.schools'), '/admin/schools'] : ['🏫', t('me.tiles.classes'), isSchoolStaff(u) ? '/teach' : '/classes']),
-    ['🛠️', t('me.tiles.games'), '/build'],
+    ['🛠️', t('me.tiles.games'), '/build', gamesSub],
     ['👫', t('me.tiles.friends'), '/friends'],
     ['💬', t('me.tiles.chat'), '/chat'],
     u.role === 'admin' && ['🛡️', t('me.tiles.admin'), '/admin'],
@@ -299,7 +304,7 @@ router.get('/me', auth.requireUser, (req, res) => {
   <div class="pagehead">${avatar(u, 72)}<div style="flex:1;min-width:0"><h1 style="margin:0">${u.display_name}</h1><div class="muted"><bdi>@${u.username}</bdi>${u.is_guest ? ` · ${t('me.guestTag')}` : ''}</div>${u.is_guest ? '' : notYou(req, { withName: false, plain: auth.accountKind(u) !== 'student' })}</div></div>
   ${u.is_guest ? html`<div class="notice warn" style="margin-bottom:16px">${tHtml(t, 'me.guestNotice', { href: '/signup?next=/me' })}</div>` : ''}
   <nav class="metiles" aria-label="${t('me.title')}">
-    ${tiles.map(([e, l, h]) => html`<a class="panel metile" href="${h}"><span class="metile-e" aria-hidden="true">${e}</span><span>${l}</span></a>`)}
+    ${tiles.map(([e, l, h, sub]) => html`<a class="panel metile" href="${h}"><span class="metile-e" aria-hidden="true">${e}</span><span>${l}</span>${sub ? html`<span class="metile-sub">${sub}</span>` : ''}</a>`)}
   </nav>
   <section class="panel" aria-labelledby="av-h"><h2 id="av-h">${t('me.look.heading')}</h2>
     <div class="photo-row">

@@ -36,6 +36,12 @@
       "parents": "Para las familias",
       "contact": "Contacto",
       "builders": "Para creadores"
+    },
+    "build": {
+      "ready": "✨ ¡Tu juego “{title}” está listo! <a href=\"{href}\">Ábrelo</a>",
+      "question": "💬 El Constructor tiene una pregunta sobre “{title}”. <a href=\"{href}\">Ábrelo</a>",
+      "stopped": "⚠️ “{title}” se detuvo antes de terminar. <a href=\"{href}\">Ábrelo para seguir</a>",
+      "many": "✨ Algunos de tus juegos tienen noticias del Constructor. <a href=\"{href}\">Ver Mis juegos</a>"
     }
   },
   "nav": {
@@ -157,7 +163,9 @@
       "chat": "Chat",
       "admin": "Admin",
       "favorites": "Mis favoritos",
-      "classes": "Mis clases"
+      "classes": "Mis clases",
+      "building": "{count, plural, one {# juego en construcción} other {# juegos en construcción}}",
+      "ready": "{count, plural, one {# juego listo} other {# juegos listos}}"
     },
     "look": {
       "heading": "Elige tu estilo",
@@ -721,7 +729,13 @@
     "changed": "Cambiado {when}",
     "empty": "Toca “Juego nuevo” o elige un modelo de arriba. Tus juegos aparecerán aquí.",
     "rename": "Renombrar",
-    "delete": "Borrar"
+    "delete": "Borrar",
+    "status": {
+      "building": "🛠️ Creando…",
+      "ready": "✨ Listo",
+      "question": "💬 Una pregunta",
+      "stopped": "⚠️ Detenido"
+    }
   },
   "studio": {
     "title": "Estudio: {title}",
@@ -827,7 +841,11 @@
       "pickClass": "Elige al menos una de tus clases.",
       "classGone": "Solo puedes compartir con las clases en las que estás ahora.",
       "classRemoved": "Tu profe quitó este juego de {name}, así que no puede volver ahí.",
-      "updatedNowWaiting": "¡Actualizado! La nueva versión también espera una revisión rápida antes de que más personas puedan jugar."
+      "updatedNowWaiting": "¡Actualizado! La nueva versión también espera una revisión rápida antes de que más personas puedan jugar.",
+      "builderWorking": "El Constructor está trabajando en este juego ahora mismo. Inténtalo de nuevo cuando termine.",
+      "cantContinue": "Ya no se puede seguir con esa construcción. Mejor envía un mensaje nuevo.",
+      "restarting": "Nuestro servidor se está reiniciando. Inténtalo de nuevo en un momento.",
+      "liveBusy": "Este juego está abierto en demasiadas pestañas. Cierra algunas e inténtalo de nuevo."
     }
   },
   "publish": {
@@ -852,7 +870,8 @@
       "empty": "Primero escribe un mensaje o toca una idea.",
       "busy": "El Constructor todavía está trabajando en tu último mensaje. ¡Un momento!",
       "limit": "Ya usaste tus {count} turnos con el Constructor por hoy. ¡Vuelve mañana para tener más!",
-      "muddled": "El Constructor se confundió un poco. Inténtalo de nuevo en un momento."
+      "muddled": "El Constructor se confundió un poco. Inténtalo de nuevo en un momento.",
+      "tooMany": "Ya tienes 2 juegos en construcción. Espera a que uno termine y vuelve a intentarlo."
     },
     "refusals": {
       "tryThese": "¿Quieres probar una de estas ideas?",
@@ -949,7 +968,9 @@
         }
       }
     },
-    "budgetResting": "El Constructor de IA está descansando hasta mañana, así que por ahora usaré mis bloques sencillos."
+    "budgetResting": "El Constructor de IA está descansando hasta mañana, así que por ahora usaré mis bloques sencillos.",
+    "turnTimeout": "⏱️ Esta construcción tardó más que nuestro límite de tiempo, así que me detuve. Tu versión más nueva está guardada. ¡Dime qué cambiar ahora!",
+    "turnTimeoutNothing": "⏱️ Esta construcción tardó más que nuestro límite de tiempo, así que me detuve antes de poder guardar nada. No gastó ningún turno, así que puedes intentarlo de nuevo."
   },
   "uploads": {
     "tooFast": "¡Son muchos archivos! Espera un minuto y vuelve a intentarlo.",
@@ -1292,7 +1313,9 @@
             "look": "Ronda {n}: mirando las imágenes",
             "scan": "Ronda {n}: leyendo el informe de seguridad",
             "retry": "Ronda {n}: averiguando qué salió mal",
-            "next": "Ronda {n}: decidiendo qué hacer ahora"
+            "next": "Ronda {n}: decidiendo qué hacer ahora",
+            "plan": "Ronda {n}: planeando cómo construirlo",
+            "planGame": "Ronda {n}: planeando los cambios"
           },
           "done": {
             "start": "Ronda {n}: leyó tu mensaje",
@@ -1300,7 +1323,9 @@
             "look": "Ronda {n}: miró las imágenes",
             "scan": "Ronda {n}: leyó el informe de seguridad",
             "retry": "Ronda {n}: averiguó qué salió mal",
-            "next": "Ronda {n}: decidió qué hacer ahora"
+            "next": "Ronda {n}: decidió qué hacer ahora",
+            "plan": "Ronda {n}: planeó cómo construirlo",
+            "planGame": "Ronda {n}: planeó los cambios"
           },
           "learn": {
             "start": "Una ronda es cada vez que la app le pregunta a la IA. No recuerda nada, así que la app le vuelve a enviar el chat.",
@@ -1308,7 +1333,8 @@
             "scan": "El programa de seguridad dice exactamente qué estaba mal, así que la IA puede arreglar solo esa parte.",
             "retry": "Cuando una herramienta dice que algo no funcionó, la IA lee por qué y prueba de otra forma.",
             "next": "Después de cada herramienta, la IA lee el resultado y elige el siguiente paso. Ese ciclo la convierte en un agente.",
-            "thinking": "Antes de responder, esta IA piensa en silencio, un poco como cuando resuelves algo en tu cabeza."
+            "thinking": "Antes de responder, esta IA piensa en silencio, un poco como cuando resuelves algo en tu cabeza.",
+            "long": "Con las ideas grandes, la IA puede tardar un minuto o dos en planear antes de escribir código. Sigue trabajando aunque salgas de esta página."
           }
         },
         "write": {
@@ -1378,7 +1404,34 @@
           "h": "La IA puede sonar segura y aun así equivocarse. Por eso un programa de seguridad también revisa el código.",
           "i": "✨ La calidad pro usa una IA más grande que piensa por más tiempo: es más lenta, pero a menudo mejor para juegos difíciles.",
           "j": "Juega siempre tu juego tú mismo. Hasta una IA lista se pierde cosas que un jugador de verdad notaría."
-        }
+        },
+        "leave": "Puedes cerrar esta página o tu computadora, o cerrar tu sesión. El Constructor de Oomba sigue trabajando en nuestro servidor, y tu juego estará aquí cuando vuelvas.",
+        "restart": {
+          "now": "Nuestro servidor se está reiniciando. Tu construcción está guardada y debería seguir sola",
+          "saved": "Nuestro servidor se está reiniciando. Tu trabajo hasta ahora está guardado",
+          "learn": "Los servidores se reinician de vez en cuando, para actualizaciones o arreglos. El Constructor guarda su trabajo antes, así que no se pierde nada."
+        },
+        "resume": {
+          "done": "Siguió después de que el servidor se reinició",
+          "doneV": "Siguió desde la versión {v} después de que el servidor se reinició",
+          "learn": "El Constructor guardó tu mensaje y tu versión más nueva, así que sigue desde ahí en vez de empezar de cero."
+        },
+        "stopRestart": "se detuvo por un reinicio del servidor",
+        "stopTime": "se detuvo: tardó demasiado"
+      },
+      "resumed": "🔄 El servidor se reinició, así que el Constructor siguió desde donde estaba.",
+      "resumedV": "🔄 El servidor se reinició, así que el Constructor siguió desde la versión {v}.",
+      "stopped": {
+        "restart": "El Constructor se detuvo cuando nuestro servidor se reinició. Todo lo que hizo está guardado.",
+        "ai": "El Constructor se detuvo cuando nuestro servidor se reinició, y el Constructor de IA está descansando ahora. Todo lo que hizo está guardado."
+      },
+      "continue": "Seguir creando",
+      "continueMessage": "Por favor, sigue con mi último mensaje.",
+      "notCounted": "Esta vez no se gastó ningún turno.",
+      "signedOutBuilding": "Se cerró tu sesión. El Constructor sigue trabajando en tu juego: vuelve a entrar para verlo.",
+      "gameGone": "Este juego se borró, así que el Constructor se detuvo.",
+      "followups": {
+        "putBack": "Volver a ponerlo en el cuadro"
       }
     }
   },

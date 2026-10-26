@@ -37,6 +37,12 @@
       "parents": "For grown-ups",
       "contact": "Contact us",
       "builders": "For builders"
+    },
+    "build": {
+      "ready": "✨ Your game “{title}” is ready! <a href=\"{href}\">Open it</a>",
+      "question": "💬 The Builder has a question about “{title}”. <a href=\"{href}\">Open it</a>",
+      "stopped": "⚠️ “{title}” stopped before it was finished. <a href=\"{href}\">Open it to carry on</a>",
+      "many": "✨ Some of your games have news from the Builder. <a href=\"{href}\">See My games</a>"
     }
   },
   "nav": {
@@ -158,7 +164,9 @@
       "chat": "Chat",
       "admin": "Admin",
       "favorites": "My favorites",
-      "classes": "My classes"
+      "classes": "My classes",
+      "building": "{count, plural, one {# game building} other {# games building}}",
+      "ready": "{count, plural, one {# game ready} other {# games ready}}"
     },
     "look": {
       "heading": "Pick your look",
@@ -722,7 +730,13 @@
     "changed": "Changed {when}",
     "empty": "Tap “New game” or pick a starter above. Your games will show up here.",
     "rename": "Rename",
-    "delete": "Delete"
+    "delete": "Delete",
+    "status": {
+      "building": "🛠️ Building…",
+      "ready": "✨ Ready",
+      "question": "💬 Has a question",
+      "stopped": "⚠️ Stopped"
+    }
   },
   "studio": {
     "title": "Studio: {title}",
@@ -828,7 +842,11 @@
       "updatedFriends": "Updated for your friends! The new version is also waiting for its check before everyone can play.",
       "updatedYou": "Updated for you! The new version is also waiting for its check before everyone can play.",
       "updatedNowWaiting": "Updated! The new version is also waiting for a quick check before more people can play.",
-      "cantDeleteStarter": "Starter games can’t be deleted."
+      "cantDeleteStarter": "Starter games can’t be deleted.",
+      "builderWorking": "The Builder is working on this game right now. Try again when it’s done.",
+      "cantContinue": "That build can’t be continued any more. Send a new message instead.",
+      "restarting": "Our server is restarting. Try again in a moment.",
+      "liveBusy": "This game is open in too many tabs. Close some and try again."
     }
   },
   "publish": {
@@ -848,10 +866,13 @@
   "builder": {
     "kindRefusal": "I can’t help with that one. Let’s build something fun instead. What kind of game would you like?",
     "scanStillFailing": "The safety check still is not happy. Tap “Ask the Builder to fix it” to try again.",
+    "turnTimeout": "⏱️ This build took longer than our time limit, so I stopped. Your newest version is saved. Tell me what to change next!",
+    "turnTimeoutNothing": "⏱️ This build took longer than our time limit, so I stopped before I could save anything. It didn’t use up a turn, so you can try again.",
     "errors": {
       "disabled": "Building is switched off for this account. A grown-up can ask us to turn it back on.",
       "empty": "Type a message or tap an idea first.",
       "busy": "The Builder is still working on your last message. One moment!",
+      "tooMany": "You already have 2 games building. Wait until one is done, then try again.",
       "limit": "You have used all {count} Builder turns for today. Come back tomorrow for more!",
       "muddled": "The Builder got muddled. Please try again in a moment."
     },
@@ -1293,7 +1314,9 @@
             "look": "Round {n}: looking at the pictures",
             "scan": "Round {n}: reading the safety report",
             "retry": "Round {n}: working out what went wrong",
-            "next": "Round {n}: deciding what to do next"
+            "next": "Round {n}: deciding what to do next",
+            "plan": "Round {n}: planning how to build it",
+            "planGame": "Round {n}: planning the changes"
           },
           "done": {
             "start": "Round {n}: read your message",
@@ -1301,7 +1324,9 @@
             "look": "Round {n}: looked at the pictures",
             "scan": "Round {n}: read the safety report",
             "retry": "Round {n}: worked out what went wrong",
-            "next": "Round {n}: decided what to do next"
+            "next": "Round {n}: decided what to do next",
+            "plan": "Round {n}: planned how to build it",
+            "planGame": "Round {n}: planned the changes"
           },
           "learn": {
             "start": "A round is each time the app asks the AI. It doesn’t remember, so the app sends it the chat again.",
@@ -1309,7 +1334,8 @@
             "scan": "The safety program says exactly what was wrong, so the AI can fix just that part.",
             "retry": "When a tool says something didn’t work, the AI reads why and tries another way.",
             "next": "After each tool, the AI reads the result and picks the next step. That loop makes it an agent.",
-            "thinking": "Before it answers, this AI thinks quietly first, a bit like working something out in your head."
+            "thinking": "Before it answers, this AI thinks quietly first, a bit like working something out in your head.",
+            "long": "Big ideas can take the AI a minute or two to plan before it writes any code. It keeps going even if you leave this page."
           }
         },
         "write": {
@@ -1379,7 +1405,34 @@
           "h": "AI can sound sure and still be wrong. That’s why a safety program checks the code too.",
           "i": "✨ Pro quality uses a bigger AI that thinks for longer: slower, but often better at tricky games.",
           "j": "Always play your game yourself. Even clever AI misses things a real player would notice."
-        }
+        },
+        "leave": "You can close this page or your computer, or sign out. The Oomba Builder keeps working on our server, and your game will be here when you come back.",
+        "restart": {
+          "now": "Our server is restarting. Your build is saved and should carry on by itself",
+          "saved": "Our server is restarting. Your work so far is saved",
+          "learn": "Servers restart now and then, for updates or fixes. The Builder saves its work first, so nothing is lost."
+        },
+        "resume": {
+          "done": "Carried on after the server restarted",
+          "doneV": "Carried on from version {v} after the server restarted",
+          "learn": "The Builder saved your message and your newest version, so it picks up from there instead of starting over."
+        },
+        "stopRestart": "stopped by a server restart",
+        "stopTime": "stopped: it took too long"
+      },
+      "resumed": "🔄 The server restarted, so the Builder carried on from where it was.",
+      "resumedV": "🔄 The server restarted, so the Builder carried on from version {v}.",
+      "stopped": {
+        "restart": "The Builder stopped when our server restarted. Anything it made is saved.",
+        "ai": "The Builder stopped when our server restarted, and the AI Builder is resting right now. Anything it made is saved."
+      },
+      "continue": "Carry on building",
+      "continueMessage": "Please carry on with my last message.",
+      "notCounted": "This one didn’t use up a turn.",
+      "signedOutBuilding": "You were signed out. The Builder keeps working on your game: sign in again to see it.",
+      "gameGone": "This game was deleted, so the Builder stopped.",
+      "followups": {
+        "putBack": "Put it back in the box"
       }
     }
   },
