@@ -39,8 +39,10 @@ function renderTop() {
   document.title = t('js.studio.docTitle', { title: S.game.title });
 }
 // Free messages left today of the daily ones; a child whose family plan pays extra messages also sees how many are left
-// this month (a number only: no plan or money words on a child's page).
+// this month (a number only: no plan or money words on a child's page). In a class context (a school student, or a
+// school's pool paying) only what is left today, never a total, so children in a class are never compared by plan.
 function renderTurns() {
+  if (S.classContext) { $('#st-turns').textContent = `🔋 ${t('js.studio.turnsLeftToday', { left: Math.max(0, S.turnsLeft | 0) })}`; return; }
   const free = typeof S.freeLeft === 'number' ? S.freeLeft : S.turnsLeft;
   $('#st-turns').textContent = `🔋 ${t('js.studio.turns', { left: free, total: S.dailyTurns })}${typeof S.extraLeft === 'number' ? ` · ${t('js.studio.extra', { n: S.extraLeft })}` : ''}`;
 }
@@ -961,7 +963,7 @@ function onEvent(ev, d) {
   else if (ev === 'error') { endBubble(); bubble('err', d.message); if (live) live.stop(); LIVE.lastErr = d.message; }
   else if (ev === 'done') {
     endBubble();
-    if (typeof d.turnsLeft === 'number') { S.turnsLeft = d.turnsLeft; S.freeLeft = typeof d.freeLeft === 'number' ? d.freeLeft : d.turnsLeft; if ('extraLeft' in d) S.extraLeft = d.extraLeft; renderTurns(); }
+    if (typeof d.turnsLeft === 'number') { S.turnsLeft = d.turnsLeft; S.freeLeft = typeof d.freeLeft === 'number' ? d.freeLeft : d.turnsLeft; if ('extraLeft' in d) S.extraLeft = d.extraLeft; if ('classContext' in d) S.classContext = d.classContext; renderTurns(); }
     // Ended before it was charged with an error (no turns left): nothing was saved, so after the redraw the error stays
     // and the message goes back in the box.
     const first = S.turn && (S.turn.entries || []).find(m => m.role === 'user');

@@ -45,3 +45,6 @@ services:
       # The "Family" payment method configuration (pmc_…, Link off); required for family checkout.
       - key: STRIPE_PMC_FAMILY
         sync: false
+      # Optional "School" payment method configuration (pmc_…: cards, Link, ACH); unset = the account's default.
+      - key: STRIPE_PMC_SCHOOL
+        sync: false

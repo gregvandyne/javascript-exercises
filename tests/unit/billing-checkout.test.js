@@ -500,8 +500,8 @@ test('while the free AI pool rests, a family child builds from the extras (paid 
 
 test('the Studio counter: free left of the daily ones, plus the extras this month (numbers only)', async () => {
   const a = await payingFamily();
-  assert.deepEqual(usage.counter(a.child), { turnsLeft: 7, freeLeft: 3, extraLeft: 5 });
-  assert.deepEqual(usage.counter(kid()), { turnsLeft: 3, freeLeft: 3, extraLeft: null });
+  assert.deepEqual(usage.counter(a.child), { turnsLeft: 7, freeLeft: 3, extraLeft: 5, classContext: false });
+  assert.deepEqual(usage.counter(kid()), { turnsLeft: 3, freeLeft: 3, extraLeft: null, classContext: false });
 });
 
 // ---------------------------------------------------------------- pages
@@ -704,15 +704,15 @@ test('the paid pool keeps a family\'s share for the month after it stops paying:
   } finally { q.run("DELETE FROM ai_spend_pool"); q.run('DELETE FROM ai_spend'); }
 });
 
-test('a family child who is in a school gets no family extras and no "+N" counter (class contexts, until chunk 5)', async () => {
+test('a family child in a school without a plan keeps the extras but sees only "{left} left today" (a class context)', async () => {
   const a = await payingFamily();
   assert.equal(usage.allowanceFor(a.child).familyId, a.fam.id);
   const boss = auth.createUser({ username: `Boss${uid(4)}`, password: 'boss-password-1', role: 'admin' });
   const school = SC.createSchool(boss, { name: `Chk School ${uid(4)}` }).school;
   q.run("INSERT INTO school_members(school_id, user_id, role, status, joined_at) VALUES (?,?,'student','active',?)", school.id, a.child.id, Date.now());
   const al = usage.allowanceFor(a.child);
-  assert.equal(al.familyId, null); assert.equal(al.extraLeft, null); assert.equal(al.source, 'free');
-  assert.deepEqual(usage.counter(a.child), { turnsLeft: 3, freeLeft: 3, extraLeft: null });
+  assert.equal(al.familyId, a.fam.id); assert.equal(al.extraLeft, null); assert.equal(al.classContext, true);
+  assert.deepEqual(usage.counter(a.child), { turnsLeft: 7, freeLeft: 7, extraLeft: null, classContext: true });
   q.run("UPDATE school_members SET status='left', left_at=? WHERE school_id=? AND user_id=?", Date.now(), school.id, a.child.id);
-  assert.equal(usage.allowanceFor(a.child).familyId, a.fam.id, 'out of school: the family extras again');
+  assert.deepEqual(usage.counter(a.child), { turnsLeft: 7, freeLeft: 3, extraLeft: 5, classContext: false }, 'out of school: the "+N" counter again');
 });

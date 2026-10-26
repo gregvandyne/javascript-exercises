@@ -123,6 +123,11 @@ logged, audited and flagged `unknown_price`.
 | `AI_PAID_MONTHLY_BUDGET_USD` | computed | A cap on the paid AI pool (family extra messages). Unset: families with a plan (or with extra messages used this month) × `FAMILY_MONTHLY_AI_USD`. |
 | `AI_HARD_MONTHLY_USD` | free + paid | Stops every AI call site-wide for the rest of the UTC month. Default: `AI_MONTHLY_BUDGET_USD` + the paid pool. |
 | `STRIPE_PMC_FAMILY` | – | `pmc_…`: the "Family" payment method configuration (cards, Apple Pay, Google Pay; Link off) for family Checkout. Required to sell family plans: unset, family plans are not on sale (never a fallback to the account's default configuration, which may have Link on); start-up logs a warning and /admin/billing shows a banner. Never a list of payment method types. |
+| `STRIPE_PMC_SCHOOL` | – | `pmc_…`: an optional "School" payment method configuration (cards, Link, ACH Direct Debit) for school Checkout. Unset: the account's default payment methods. Never a list of payment method types. |
+| `SCHOOL_TURNS_PER_SEAT` | `100` | Builder messages each paid student adds to the school's shared pool per billing year (D6). Students and staff of a school with a plan build from the pool. |
+| `SCHOOL_MIN_SEATS` | `25` | The fewest students a school plan can have (card, seat changes and invoices). |
+| `SCHOOL_DAILY_CAP_DEFAULT` | `30` | Default Builder messages per person per day from a school's pool (the school's Billing tab can change it; never below `BUILDER_DAILY_TURNS`). |
+| `SCHOOL_SEAT_AI_USD` | `10` | AI cost (US dollars) a paid student may use per year: the paid AI pool's ceiling adds paid students × this ÷ 12 each month. |
 | `TERMS_PUBLISHED` | off | `1` once /terms is on the site: family Checkout then asks the buyer to agree to it (set the Terms URL in Stripe's public details first) and /family links to it. |
 
 Family checkout (chunk 4): a grown-up with a confirmed child subscribes on /family (monthly or yearly), after typing
@@ -131,6 +136,15 @@ turns the plan on. **Manage billing** opens Stripe's Customer Portal (its defaul
 key only grown-ups marked **billing tester** on /admin (Users) can check out. A full refund of the latest payment, a
 dispute or an early fraud warning ends the plan at once; a second plan paid by mistake is cancelled and refunded
 automatically. /admin/billing lists subscriptions, flags, refund windows and webhook problems (read-only).
+
+School plans (chunk 5): a school admin opens the school page's **Billing** tab (shown only to school admins and the
+platform admin, and only with `BILLING_PUBLIC=1` or the preview cookie). **Pay by card** opens Stripe's Checkout for the
+number of students (at least `SCHOOL_MIN_SEATS`). More students are billed at once (a prorated invoice) and added to the
+pool once paid; fewer take effect at the renewal. **Request an invoice** stores the PO number, billing contact, address
+and a tax-exempt claim; the owner then clicks **Create invoice subscription** on /admin/billing (net 30, Stripe emails the
+invoice) and can **Mark paid by check**. An invoice school keeps its plan until `SCHOOL_INVOICE_GRACE_DAYS` after the due
+date; when a plan ends everyone goes back to the free Builder messages, and nothing is removed. In test mode only
+billing testers (grown-ups or school staff, set on /admin) and the platform admin can pay.
 
 Stripe webhook events to send (14): `checkout.session.completed`, `checkout.session.async_payment_succeeded`,
 `checkout.session.async_payment_failed`, `checkout.session.expired`, `customer.subscription.created`,

@@ -54,8 +54,8 @@ export async function startFakeStripe({ port = 0, host = '127.0.0.1', apiVersion
   const priceById = id => [...st.prices.values()].find(p => p.id === id);
 
   // ---- Object makers (pinned shapes) ----
-  fake.customer = ({ metadata = {}, address = null } = {}) => {
-    const c = { id: rid('cus_'), object: 'customer', address, created: sec(), email: null, livemode, metadata: { ...metadata }, name: null, tax_exempt: 'none' };
+  fake.customer = ({ metadata = {}, address = null, email = null, name = null, taxExempt = 'none', invoiceSettings = null } = {}) => {
+    const c = { id: rid('cus_'), object: 'customer', address, created: sec(), email, livemode, metadata: { ...metadata }, name, tax_exempt: taxExempt, invoice_settings: { custom_fields: invoiceSettings?.custom_fields || null } };
     st.customers.set(c.id, c); return c;
   };
   fake.invoice = ({ subscription = null, customer, status = 'paid', collectionMethod = 'charge_automatically', dueDate = null, amount = 799, created = Date.now(), billingReason = subscription ? 'subscription_create' : 'manual' } = {}) => {
@@ -80,18 +80,54 @@ export async function startFakeStripe({ port = 0, host = '127.0.0.1', apiVersion
     chargeOfInvoice.set(inv.id, ch.id);
     return ch;
   }
-  fake.payInvoice = (invId) => {
+  fake.payInvoice = (invId, { outOfBand = false } = {}) => {
     const inv = st.invoices.get(invId); inv.status = 'paid'; inv.amount_paid = inv.amount_due; inv.amount_remaining = 0; inv.status_transitions.paid_at = sec();
-    if (!chargeOfInvoice.has(inv.id)) payment(inv);
+    if (outOfBand) inv.paid_out_of_band = true;
+    else if (!chargeOfInvoice.has(inv.id)) payment(inv);
     return inv;
   };
+  /** The next card payment for a seat change fails (the subscription keeps its quantity, with a pending_update). */
+  fake.failNextPayment = (n = 1) => { fake.failPayments = (fake.failPayments || 0) + n; };
+  /** A seat change (POST /v1/subscriptions/:id with items[0][quantity]), the way Stripe does it for our parameters:
+   *  always_invoice bills the difference at once (a card payment that fails leaves the quantity, pending_if_incomplete);
+   *  none just changes the quantity. */
+  fake.changeQuantity = (s, quantity, { proration = 'create_prorations', paymentBehavior = null } = {}) => {
+    const item = s.items.data[0]; const old = item.quantity;
+    if (proration !== 'always_invoice' || quantity <= old) { item.quantity = quantity; return s; }
+    const amount = (item.price.unit_amount || 0) * (quantity - old);
+    if (s.collection_method === 'send_invoice') {
+      const inv = fake.invoice({ subscription: s.id, customer: s.customer, status: 'open', collectionMethod: 'send_invoice', dueDate: Date.now() + 30 * DAY * 1000, amount, billingReason: 'subscription_update' });
+      s.latest_invoice = inv.id; item.quantity = quantity; return s;
+    }
+    const fails = (fake.failPayments || 0) > 0;
+    if (fails) fake.failPayments--;
+    const inv = fake.invoice({ subscription: s.id, customer: s.customer, status: fails ? 'open' : 'paid', amount, billingReason: 'subscription_update' });
+    if (fails && paymentBehavior === 'pending_if_incomplete') {
+      s.pending_update = { expires_at: sec() + DAY, subscription_items: [{ id: item.id, quantity, price: item.price.id }] };
+      s.pending_update_invoice = inv.id;   // bookkeeping only
+      return s;
+    }
+    s.latest_invoice = inv.id; item.quantity = quantity; s.pending_update = null;
+    return s;
+  };
+  /** A new billing period (the yearly renewal): the period moves on and a renewal invoice is made for the quantity. */
+  fake.renew = (subId, { paid = true } = {}) => {
+    const s = st.subscriptions.get(subId); const item = s.items.data[0];
+    const len = item.current_period_end - item.current_period_start;
+    item.current_period_start = item.current_period_end; item.current_period_end += len;
+    const send = s.collection_method === 'send_invoice';
+    const inv = fake.invoice({ subscription: s.id, customer: s.customer, status: send ? 'open' : paid ? 'paid' : 'open', collectionMethod: s.collection_method, dueDate: send ? Date.now() + 30 * DAY * 1000 : null, amount: (item.price.unit_amount || 0) * item.quantity, billingReason: 'subscription_cycle' });
+    s.latest_invoice = inv.id;
+    if (!send && !paid) s.status = 'past_due';
+    return s;
+  };
   /** A subscription with one item and a latest invoice. invoice: 'paid' | 'open' | 'draft' | null; dueDate (ms) for open send_invoice ones. */
-  fake.subscription = ({ customer = null, lookupKey = 'oomba_family_monthly', status = 'active', collectionMethod = 'charge_automatically', metadata = {}, quantity = 1, cancelAtPeriodEnd = false, periodStart = Date.now(), invoice = 'paid', dueDate = null, customerMetadata = {} } = {}) => {
+  fake.subscription = ({ description = null, customer = null, lookupKey = 'oomba_family_monthly', status = 'active', collectionMethod = 'charge_automatically', metadata = {}, quantity = 1, cancelAtPeriodEnd = false, periodStart = Date.now(), invoice = 'paid', dueDate = null, customerMetadata = {} } = {}) => {
     const cus = customer || fake.customer({ metadata: customerMetadata }).id;
     const price = st.prices.get(lookupKey) || { id: 'price_fake_other', object: 'price', lookup_key: null, product: 'prod_fake_other', recurring: { interval: 'month', interval_count: 1 }, unit_amount: 100, currency: 'usd', livemode };
     const start = sec(periodStart); const end = start + (price.recurring.interval === 'year' ? 365 : 30) * DAY;
     const sub = {
-      id: rid('sub_'), object: 'subscription', billing_mode: { type: 'flexible' }, cancel_at: cancelAtPeriodEnd ? end : null, cancel_at_period_end: cancelAtPeriodEnd,
+      id: rid('sub_'), object: 'subscription', billing_mode: { type: 'flexible' }, description, pending_update: null, cancel_at: cancelAtPeriodEnd ? end : null, cancel_at_period_end: cancelAtPeriodEnd,
       canceled_at: null, collection_method: collectionMethod, created: start, currency: 'usd', customer: cus,
       days_until_due: collectionMethod === 'send_invoice' ? 30 : null, ended_at: null, latest_invoice: null, livemode, metadata: { ...metadata },
       status, items: { object: 'list', data: [{ id: rid('si_'), object: 'subscription_item', current_period_start: start, current_period_end: end, price, quantity, metadata: {} }], has_more: false, url: '/v1/subscription_items' },
@@ -173,6 +209,13 @@ export async function startFakeStripe({ port = 0, host = '127.0.0.1', apiVersion
         // The period ends (a plan cancelled at the period end): canceled, and Stripe's customer.subscription.deleted.
         if (p === '/_test/end-period') { fake.update(b.subscription, { status: 'canceled' }); return ok(res, await fake.emit('customer.subscription.deleted', b.subscription)); }
         // The owner refunds the latest payment in the Dashboard: a full refund and charge.refunded.
+        // An invoice school's open invoices fall due (b.days ago, default 1) and Stripe sends invoice.overdue.
+        if (p === '/_test/overdue') {
+          const open = [...st.invoices.values()].filter(i => i.parent?.subscription_details?.subscription === b.subscription && i.status === 'open');
+          for (const i of open) i.due_date = sec(Date.now() - (b.days ?? 1) * DAY * 1000);
+          return ok(res, open.length ? await fake.emit('invoice.overdue', open[0].id) : { status: 404 });
+        }
+        if (p === '/_test/fail-next-payment') { fake.failNextPayment(b.n || 1); return ok(res, { ok: true }); }
         if (p === '/_test/refund-latest') { const sub = st.subscriptions.get(b.subscription); const ch = fake.chargeOf(sub.latest_invoice); fake.refund(ch.id, b.amount ?? null); return ok(res, await fake.emit('charge.refunded', ch.id)); }
       } catch (e) { return err(res, 400, 'invalid_request_error', null, e.message); }
       return err(res, 404, 'invalid_request_error', null, 'unknown control endpoint');
@@ -241,8 +284,14 @@ export async function startFakeStripe({ port = 0, host = '127.0.0.1', apiVersion
       fake.update(s.id, { status: 'canceled' }); return ok(res, s);
     }
     if (req.method === 'POST') {
-      if (p === '/v1/customers') return ok(res, fake.customer({ metadata: params.metadata || {}, address: params.address || null }));
-      if ((m = p.match(/^\/v1\/customers\/([\w]+)$/))) { const c = st.customers.get(m[1]); if (!c) return missing(res, 'customer', m[1]); Object.assign(c.metadata, params.metadata || {}); if (params.address) c.address = params.address; if (params.tax_exempt) c.tax_exempt = params.tax_exempt; return ok(res, c); }
+      if (p === '/v1/customers') return ok(res, fake.customer({ metadata: params.metadata || {}, address: params.address || null, email: params.email || null, name: params.name || null, taxExempt: params.tax_exempt || 'none', invoiceSettings: params.invoice_settings || null }));
+      if ((m = p.match(/^\/v1\/customers\/([\w]+)$/))) {
+        const c = st.customers.get(m[1]); if (!c) return missing(res, 'customer', m[1]);
+        Object.assign(c.metadata, params.metadata || {});
+        for (const k of ['address', 'email', 'name', 'tax_exempt']) if (params[k]) c[k] = params[k];
+        if (params.invoice_settings) c.invoice_settings = { custom_fields: params.invoice_settings.custom_fields || null };
+        return ok(res, c);
+      }
       if (p === '/v1/checkout/sessions') {
         const item = (params.line_items || [])[0] || {};
         const price = priceById(item.price);
@@ -254,16 +303,19 @@ export async function startFakeStripe({ port = 0, host = '127.0.0.1', apiVersion
       }
       if ((m = p.match(/^\/v1\/checkout\/sessions\/([\w]+)\/expire$/))) { const s = st.sessions.get(m[1]); if (!s) return missing(res, 'checkout.session', m[1]); if (s.status !== 'open') return err(res, 400, 'invalid_request_error', 'checkout_session_not_open', `This Checkout Session is ${s.status}`); s.status = 'expired'; return ok(res, s); }
       if (p === '/v1/billing_portal/sessions') { const ps = { id: rid('bps_'), object: 'billing_portal.session', customer: params.customer, livemode, return_url: params.return_url || null, configuration: params.configuration || null }; ps.url = `${fake.url}/portal/${ps.id}`; st.portals.set(ps.id, ps); return ok(res, ps); }
-      if (p === '/v1/subscriptions') { const s = fake.subscription({ customer: params.customer, lookupKey: [...st.prices.values()].find(x => x.id === params.items?.[0]?.price)?.lookup_key, collectionMethod: params.collection_method || 'charge_automatically', metadata: params.metadata || {}, quantity: Number(params.items?.[0]?.quantity) || 1, invoice: params.collection_method === 'send_invoice' ? 'open' : 'paid', dueDate: params.collection_method === 'send_invoice' ? Date.now() + 30 * DAY * 1000 : null }); return ok(res, s); }
+      if (p === '/v1/subscriptions') { const s = fake.subscription({ description: params.description || null, customer: params.customer, lookupKey: [...st.prices.values()].find(x => x.id === params.items?.[0]?.price)?.lookup_key, collectionMethod: params.collection_method || 'charge_automatically', metadata: params.metadata || {}, quantity: Number(params.items?.[0]?.quantity) || 1, invoice: params.collection_method === 'send_invoice' ? 'open' : 'paid', dueDate: params.collection_method === 'send_invoice' ? Date.now() + 30 * DAY * 1000 : null }); return ok(res, s); }
       if ((m = p.match(/^\/v1\/subscriptions\/([\w]+)$/))) {
         const s = st.subscriptions.get(m[1]); if (!s) return missing(res, 'subscription', m[1]);
         if ('cancel_at_period_end' in params) fake.update(s.id, { cancelAtPeriodEnd: params.cancel_at_period_end === 'true' });
-        if (params.items?.[0]?.quantity) s.items.data[0].quantity = Number(params.items[0].quantity);
+        if (params.items?.[0]?.quantity) {
+          if (params.items[0].id && params.items[0].id !== s.items.data[0].id) return err(res, 400, 'invalid_request_error', 'resource_missing', 'No such subscription item', 'items[0][id]');
+          fake.changeQuantity(s, Number(params.items[0].quantity), { proration: params.proration_behavior || 'create_prorations', paymentBehavior: params.payment_behavior || null });
+        }
         if (params.metadata) Object.assign(s.metadata, params.metadata);
         return ok(res, s);
       }
       if (p === '/v1/refunds') { const ch = [...st.charges.values()].find(c => c.payment_intent === params.payment_intent); if (!ch) return missing(res, 'payment_intent', params.payment_intent); if (ch.refunded) return err(res, 400, 'invalid_request_error', 'charge_already_refunded', 'Charge has already been refunded.'); fake.refund(ch.id, params.amount ? Number(params.amount) : null); const r = { id: rid('re_'), object: 'refund', amount: ch.amount_refunded, charge: ch.id, payment_intent: ch.payment_intent, status: 'succeeded' }; st.refunds.set(r.id, r); return ok(res, r); }
-      if ((m = p.match(/^\/v1\/invoices\/([\w]+)\/pay$/))) { const i = st.invoices.get(m[1]); if (!i) return missing(res, 'invoice', m[1]); return ok(res, fake.payInvoice(i.id)); }
+      if ((m = p.match(/^\/v1\/invoices\/([\w]+)\/pay$/))) { const i = st.invoices.get(m[1]); if (!i) return missing(res, 'invoice', m[1]); if (i.status !== 'open') return err(res, 400, 'invalid_request_error', 'invoice_not_open', 'Invoice is not open'); return ok(res, fake.payInvoice(i.id, { outOfBand: params.paid_out_of_band === 'true' })); }
     }
     return err(res, 404, 'invalid_request_error', null, `Unrecognized request URL (${req.method}: ${p})`);
   });

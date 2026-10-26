@@ -14,7 +14,8 @@ import * as mod from '../services/moderation.js';
 import * as chat from '../services/chat.js';
 import { COMMUNITY_CSS } from './social.js';
 import { tEn } from '../i18n/index.js';
-import { schoolsOf, getSchool } from '../services/schools.js';
+import { schoolsOf, getSchool, isStaff } from '../services/schools.js';
+import * as schoolBilling from '../services/school-billing.js';
 import * as family from '../services/family.js';
 import * as billing from '../services/billing.js';
 import * as stripe from '../services/stripe.js';
@@ -167,7 +168,7 @@ function usersTab(req) {
       <tr><th scope="row">Site role</th><td>${u.role}</td></tr>
       <tr><th scope="row">Schools</th><td>${schoolsCell(u)}</td></tr>
       <tr><th scope="row">Family</th><td>${familyCell(u)}</td></tr>
-      ${u.account_type === 'grownup' ? html`<tr><th scope="row">Billing tester</th><td>${u.billing_tester ? 'yes: may check out while the Stripe key is a test key' : 'no'}
+      ${u.account_type === 'grownup' || isStaff(u) ? html`<tr><th scope="row">Billing tester</th><td>${u.billing_tester ? 'yes: may check out while the Stripe key is a test key' : 'no'}
         <button class="btn" type="button" data-act="tester" data-id="${u.id}" data-on="${u.billing_tester ? '0' : '1'}">${u.billing_tester ? 'Remove tester' : 'Make billing tester'}</button></td></tr>` : ''}
       <tr><th scope="row">Created</th><td>${new Date(u.created_at).toISOString().slice(0, 10)} (${timeAgo(u.created_at)})</td></tr>
       <tr><th scope="row">Last seen</th><td>${u.last_seen ? timeAgo(u.last_seen) : 'never'}</td></tr>
@@ -341,8 +342,9 @@ router.get('/admin/stats', (req, res) => {
 });
 
 // ---- Billing (read-only, chunk 4): subscriptions with their flags, recent webhook events and failures, unlinked
-// events, and the Stripe Tax banner. Refunds, cancels and links are done in the Stripe Dashboard for now (each row
-// links there); grants, school requests and family links come in later chunks. ----
+// events, the Stripe Tax banner, and (chunk 5) school invoice requests with Create invoice subscription and unpaid
+// school invoices with Mark paid by check. Refunds, cancels and links are done in the Stripe Dashboard for now (each
+// row links there); grants and family links come in later chunks. ----
 const BILLING_FLAGS = { duplicate: 'Paid twice: cancelled and refunded', refunded_active: 'Refunded but still active', dispute: 'Disputed: cancelled', efw: 'Fraud warning: cancelled, consider a refund', overdue: 'Invoice overdue', async_failed: 'Delayed payment failed', unknown_price: 'Price sells no known plan' };
 const SUB_STATUSES = ['active', 'trialing', 'past_due', 'canceled', 'incomplete', 'incomplete_expired', 'unpaid', 'paused'];
 const dash = (path) => `https://dashboard.stripe.com/${stripe.billingMode() === 'live' ? '' : 'test/'}${path}`;
@@ -370,6 +372,10 @@ router.get('/admin/billing', (req, res) => {
   const open = q.get('SELECT COUNT(*) n FROM billing_checkouts WHERE livemode=?', lm).n;
   const tax = stripe.lastTaxReadiness();
   const families = billing.entitledOwnerCount('family');
+  const schools = billing.entitledOwnerCount('school');
+  const requests = schoolBilling.openRequests();
+  const unpaid = q.all("SELECT * FROM billing_subscriptions WHERE livemode=? AND owner_kind='school' AND collection_method='send_invoice' AND open_invoices IS NOT NULL AND open_invoices != '[]' ORDER BY updated_at DESC", lm)
+    .flatMap(r => schoolBilling.openInvoicesOf(r).map(i => ({ ...i, row: r })));
   const sel = (name, value, opts) => html`<label class="sr-only" for="f-${name}">${name}</label><select class="input" id="f-${name}" name="${name}">${opts.map(([v, l]) => html`<option value="${v}" ${v === value ? raw('selected') : ''}>${l}</option>`)}</select>`;
   const body = html`
   <div class="pagehead"><h1>💳 Billing</h1><span class="chip-s ${mode === 'live' ? 'good' : mode === 'test' ? 'warn' : ''}">Stripe: ${mode}</span></div>
@@ -378,6 +384,7 @@ router.get('/admin/billing', (req, res) => {
   ${tax && tax.on && !tax.ok ? html`<p class="notice bad" role="alert"><b>${tax.problem === 'settings_pending' ? 'Stripe Tax is on but its settings are pending' : 'Stripe Tax is on but is collecting in no state'}.</b> No tax is collected. ${tax.problem === 'settings_pending' ? 'Set the head office address in Stripe (Tax → Settings).' : 'Add a registration in Stripe (Tax → Registrations).'} Checked ${timeAgo(tax.checkedAt)}.</p>` : ''}
   <div class="kpis" style="margin-bottom:var(--s4)">
     ${tile('👪 Families with a plan', int(families), mode === 'test' ? 'test mode: billing testers only' : '')}
+    ${tile('🏫 Schools with a plan', int(schools), requests.length ? html`<a href="#requests">${int(requests.length)} invoice request${requests.length === 1 ? '' : 's'}</a>` : '')}
     ${tile('🛒 Open checkouts', int(open))}
     ${tile('⚠️ Flagged', int(q.get('SELECT COUNT(*) n FROM billing_subscriptions WHERE livemode=? AND flag IS NOT NULL', lm).n), html`<a href="/admin/billing?flag=any">Show</a>`)}
     ${tile('📨 Event problems', int(problems.length), 'unlinked, other mode or version, failed')}
@@ -390,7 +397,7 @@ router.get('/admin/billing', (req, res) => {
     ${subs.length ? html`<div class="tblwrap"><table class="tbl small" style="margin-top:12px"><thead><tr><th>Owner</th><th>Plan</th><th>Status</th><th>Period end</th><th>Last payment</th><th>Refund window</th><th>Flag</th><th>Stripe</th></tr></thead><tbody>
       ${subs.map(r => { const rw = billing.refundWindow(r); return html`<tr>
         <td>${ownerCell(r)}</td>
-        <td>${r.plan}${r.interval ? ` · ${r.interval}ly` : ''}${r.quantity > 1 ? ` × ${r.quantity}` : ''}</td>
+        <td>${r.plan}${r.interval ? ` · ${r.interval}ly` : ''}${r.quantity > 1 ? ` × ${r.quantity}` : ''}${r.plan === 'school' ? html`<div class="small muted">${r.collection_method === 'send_invoice' ? 'invoice' : 'card'} · pool ${r.pool_quantity || 0} paid${r.next_quantity ? ` · next year ${r.next_quantity}` : ''}</div>` : ''}</td>
         <td>${r.status}${billing.entitledRow(r) ? ' ✅' : ''}${r.cancel_at_period_end ? ' · ends at period end' : ''}${r.grace_until ? ` · grace to ${day(r.grace_until)}` : ''}${r.payment_pending ? ' · payment pending' : ''}${r.orphaned_at ? ' · not at Stripe' : ''}</td>
         <td>${day(r.current_period_end)}</td>
         <td>${r.latest_paid_at ? html`${day(r.latest_paid_at)} · $${((r.latest_amount_paid || 0) / 100).toFixed(2)}${r.latest_billing_reason ? html` <span class="muted">(${r.latest_billing_reason.replace('subscription_', '')})</span>` : ''}` : '–'}</td>
@@ -399,6 +406,32 @@ router.get('/admin/billing', (req, res) => {
         <td><a href="${dash(`subscriptions/${r.stripe_subscription_id}`)}" rel="noopener noreferrer" target="_blank"><code>${r.stripe_subscription_id}</code></a></td></tr>`; })}
     </tbody></table></div>` : html`<p class="muted">No subscriptions${status || flag ? ' match' : ' yet'}.</p>`}
     <p class="small muted">Refunds (D10): a full refund on request within ${billing.REFUND_DAYS} days of a payment that started a plan or renewed a yearly plan; monthly renewals are not refunded. Cancel first, then refund, in the Stripe Dashboard: a full refund of the latest payment also ends the plan here.</p>
+  </section>
+  <section class="panel" id="requests"><h2>School invoice requests</h2>
+    ${requests.length ? html`<div class="stack">${requests.map(r => html`<div class="panel" style="margin:0">
+      <p style="margin-top:0"><b><a href="/school/${r.school_slug}?tab=billing">${r.school_name}</a></b> · ${int(r.seats)} students · asked ${when(r.created_at)}${r.livemode !== lm ? html` <span class="chip-s warn">other Stripe mode</span>` : ''}</p>
+      <div class="tblwrap"><table class="tbl small"><tbody>
+        <tr><th scope="row">PO number</th><td>${r.po || '–'}</td></tr>
+        <tr><th scope="row">Billing contact</th><td>${r.contact_name || '–'} · <span dir="ltr">${r.contact_email || '–'}</span></td></tr>
+        <tr><th scope="row">Billing address</th><td>${[r.address.line1, r.address.line2, r.address.city, r.address.state, r.address.postal_code, r.address.country].filter(Boolean).join(', ') || '–'}</td></tr>
+        <tr><th scope="row">Tax-exempt</th><td>${r.tax_exempt_claimed ? 'they say so: wait for the exemption certificate before ticking the box below' : 'no'}</td></tr>
+        ${r.note ? html`<tr><th scope="row">Note</th><td>${r.note}</td></tr>` : ''}
+      </tbody></table></div>
+      <form class="row" data-api="/api/admin/billing/requests/${r.id}/invoice-subscription" data-reload data-toast="Invoice subscription created. Stripe sends the invoice to the contact." data-confirm="Create a yearly invoice subscription (net 30) for ${r.school_name}?" style="margin-top:12px">
+        <label for="seats-${r.id}">Students</label><input class="input" id="seats-${r.id}" name="seats" type="number" min="${config.schoolMinSeats}" step="1" value="${r.seats}" style="max-width:8em">
+        <label class="checkline"><input type="checkbox" name="exempt" value="1"> <span>Exemption certificate received: mark the customer tax-exempt</span></label>
+        <button class="btn btn-primary" type="submit">Create invoice subscription</button></form>
+      <form data-api="/api/admin/billing/requests/${r.id}/close" data-reload data-confirm="Close this request without an invoice?" style="margin-top:8px"><button class="btn btn-sm" type="submit">Close without invoice</button></form>
+    </div>`)}</div>
+    <p class="small muted">Create invoice subscription: the school's Stripe Customer gets the school's name, the contact's email (Stripe emails the invoice there), the address and the PO number; then a yearly send_invoice subscription, due in 30 days${config.stripeTax ? ', with Stripe Tax' : ''}. How a school may pay an invoice (card, ACH, bank transfer) is set in the Stripe Dashboard.</p>` : html`<p class="muted">No open requests.</p>`}
+  </section>
+  <section class="panel" id="unpaid"><h2>Unpaid school invoices</h2>
+    ${unpaid.length ? html`<div class="tblwrap"><table class="tbl small"><thead><tr><th>School</th><th>Invoice</th><th>Amount</th><th>Due</th><th></th></tr></thead><tbody>
+      ${unpaid.map(i => html`<tr><td>${ownerCell(i.row)}${i.row.flag === 'overdue' ? html` <span class="chip-s bad">overdue</span>` : ''}</td>
+        <td><a href="${dash(`invoices/${i.id}`)}" rel="noopener noreferrer" target="_blank"><code>${i.number || i.id}</code></a> · <a href="${dash(`customers/${i.row.stripe_customer_id}`)}" rel="noopener noreferrer" target="_blank">customer (cash balance)</a></td>
+        <td>$${((i.amount_due || 0) / 100).toFixed(2)}</td><td>${day(i.due_date)}</td>
+        <td><form data-api="/api/admin/billing/invoices/${i.id}/paid-by-check" data-reload data-toast="Marked paid." data-confirm="Mark invoice ${i.number || i.id} as paid by check?"><button class="btn btn-sm" type="submit">Mark paid by check</button></form></td></tr>`)}
+    </tbody></table></div><p class="small muted">An invoice school stays on its plan until ${config.schoolInvoiceGraceDays} days after the due date. A bank transfer that doesn't match the invoice waits in the customer's cash balance until you apply it in Stripe.</p>` : html`<p class="muted">None.</p>`}
   </section>
   <section class="panel"><h2>Event problems</h2>
     ${problems.length ? html`<div class="tblwrap"><table class="tbl small"><thead><tr><th>When</th><th>Event</th><th>Result</th><th>Customer</th><th>Subscription</th></tr></thead><tbody>
@@ -444,10 +477,42 @@ router.post('/api/admin/link-reports/:id/ban', (req, res) => {
   family.resolveReport(req.user, r.id);
   res.json({ ok: true });
 });
+// School plans (chunk 5): the owner turns an invoice request into a send_invoice subscription, closes one, or marks an
+// open invoice paid by check (paid_out_of_band).
+const billingTrouble = (res, e) => {
+  if (e instanceof stripe.StripeCallError) return res.status(502).json({ error: `Stripe refused or couldn't be reached (${e.type}${e.code ? ` ${e.code}` : ''}).` });
+  throw e;
+};
+const REQUEST_ERRORS = { noRequest: 'That request is not open any more.', noSchool: 'The school is gone.', entitled: 'This school already has a plan (or one waiting for a payment).', noPrice: 'No active Stripe Price has the lookup key oomba_school_seat_yearly.', minSeats: `At least ${config.schoolMinSeats} students.`, noInvoice: 'No open invoice of a school plan has that id.' };
+const requestFail = (res, r) => res.status(r.code === 'noRequest' || r.code === 'noInvoice' ? 404 : 409).json({ error: REQUEST_ERRORS[r.code] || r.code, ...(r.field ? { field: r.field } : {}) });
+router.post('/api/admin/billing/requests/:id/invoice-subscription', async (req, res) => {
+  if (!stripe.billingOn()) return res.status(409).json({ error: 'Billing is off.' });
+  const b = req.body || {};
+  const seats = b.seats === undefined || b.seats === '' ? undefined : (schoolBilling.seatsFrom(b.seats) ?? -1);
+  try {
+    const r = await schoolBilling.createInvoiceSubscription(req.user, req.params.id, { seats, exempt: b.exempt === true || b.exempt === '1' });
+    if (!r.ok) return requestFail(res, r);
+    res.json({ ok: true });
+  } catch (e) { billingTrouble(res, e); }
+});
+router.post('/api/admin/billing/requests/:id/close', (req, res) => {
+  const r = schoolBilling.closeRequest(req.user, req.params.id);
+  if (!r.ok) return requestFail(res, r);
+  res.json({ ok: true });
+});
+router.post('/api/admin/billing/invoices/:id/paid-by-check', async (req, res) => {
+  if (!stripe.billingOn()) return res.status(409).json({ error: 'Billing is off.' });
+  try {
+    const r = await schoolBilling.markPaidByCheck(req.user, req.params.id);
+    if (!r.ok) return requestFail(res, r);
+    res.json({ ok: true });
+  } catch (e) { billingTrouble(res, e); }
+});
 // Billing testers (D14): while the Stripe key is a test key, only these grown-up accounts may check out.
 router.post('/api/admin/users/:id/billing-tester', (req, res) => {
   const u = q.get('SELECT id, username, account_type FROM users WHERE id=?', String(req.params.id));
-  if (!u || u.account_type !== 'grownup') return res.status(404).json({ error: 'Only grown-up accounts can be billing testers.' });
+  // Grown-ups (family plans) and school staff (school plans: only a school admin can pay).
+  if (!u || (u.account_type !== 'grownup' && !isStaff(u))) return res.status(404).json({ error: 'Only grown-up accounts and school staff can be billing testers.' });
   const on = (req.body || {}).on === true || (req.body || {}).on === '1' ? 1 : 0;
   q.run('UPDATE users SET billing_tester=? WHERE id=?', on, u.id);
   audit(req.user.id, 'admin.billing.tester', u.id, { username: u.username, on: !!on });

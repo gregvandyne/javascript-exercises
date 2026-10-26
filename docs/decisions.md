@@ -942,3 +942,32 @@ builds know whether they come from class (chunk 5): family money is never used i
 extra this month" (numbers only) and the limit says "More tomorrow!" with no
 number; /family shows extras left counted up to yesterday (never today). /admin/billing (read-only) lists subscriptions
 (filters by status and flag), refund windows, webhook problems and recent events, and the Stripe Tax banner.
+
+**Chunk 5: school plans.** A Billing tab on the school page, for school admins and the platform admin only and only
+behind the families gate (`familiesOn(req)`); teachers and students never see billing, and every
+`/api/billing/school/:id/*` route is a 404 for anyone else. With a test key only billing testers (grown-ups or school
+staff, set on /admin) and the platform admin may pay. Pay by card: Stripe-hosted Checkout, `quantity` = students (at
+least `SCHOOL_MIN_SEATS`), the price by lookup key `oomba_school_seat_yearly`, `payment_method_configuration` only when
+`STRIPE_PMC_SCHOOL` is set (else the account default; never `payment_method_types`), flexible billing, `integration_identifier`
+`oomba_school_<8 letters>`, the same one-open-session, return-page and duplicate rules as families. Delayed (ACH) payments
+grant nothing until they arrive. More students: `proration_behavior=always_invoice` (card schools with
+`payment_behavior=pending_if_incomplete`, so the quantity changes only once paid); fewer students are next year's seats
+(`next_quantity`), set at Stripe with no proration by a 6-hourly job in the two days before the renewal; the tab shows a
+renewal reminder 30 days ahead with today's student count proposed. The pool (`pool_quantity`) is the highest quantity
+paid (card) or invoiced (send_invoice) in the period and never shrinks within it; a grant's pool runs a year from its
+date and each anniversary. Messages charged to a school are counted from `builder_turns` (`charged_to='school:<id>'`,
+refunds given back) rather than a separate `school_builder_usage` table, the same way as family extras. Invoices (D7):
+the school admin's request (seats, PO, billing contact, billing address, a tax-exempt claim; one open per school; audited
+with ids only; contact details deleted 2 years after it closes) shows on /admin/billing, where the owner clicks
+**Create invoice subscription**: the school's Customer gets its name, the contact's email, the address and the PO as an
+invoice field (`tax_exempt=exempt` only when the owner ticks that the certificate arrived), then a `send_invoice`
+subscription, `days_until_due=30`, metadata with the school id and PO, flexible billing, `automatic_tax` only with
+`STRIPE_TAX=1`, no payment method list. **Mark paid by check** pays an open invoice out of band. An overdue invoice
+keeps the plan until `SCHOOL_INVOICE_GRACE_DAYS` after its due date (flag `overdue`). The school source in
+`usage.allowanceFor`: an active student or staff member of a school with a plan and messages left builds from its pool
+(paid AI pool, so never resting with free users), up to the school's daily cap (`builderDailyCap`, default
+`SCHOOL_DAILY_CAP_DEFAULT`, never below the free messages); with the pool empty, the free messages and never a family's
+extras. Class contexts (a student of any school, or anyone paid by a school) see only "{left} left today" and a limit
+message that names the class; a family child in a school without a plan keeps the family's extras but sees no "+N"
+counter. The paid AI pool adds paid students × `SCHOOL_SEAT_AI_USD` ÷ 12 a month. When a plan ends everyone is back on
+the free allowance; nothing is removed or archived.

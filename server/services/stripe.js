@@ -126,6 +126,28 @@ export const paymentIntentOfInvoice = invoiceId => call(async s => {
 /** A full refund of one payment. key: our id and the action (e.g. "duplicate-<subscription id>"). */
 export const refundPaymentIntent = (paymentIntentId, key) => call(s => s.refunds.create({ payment_intent: paymentIntentId }, { idempotencyKey: `refund-${key}` }));
 
+// ---- Writes for school plans (chunk 5) ----
+
+/** Changes a Customer (a school's billing address, name, billing email, tax-exempt status). */
+export const updateCustomer = (id, params, idempotencyKey) => call(s => s.customers.update(id, params, { idempotencyKey }));
+/**
+ * Changes a school subscription's seats (its one item's quantity).
+ *   now: an increase, billed straight away (proration_behavior=always_invoice). A card school's change waits for the
+ *        payment (payment_behavior=pending_if_incomplete: the quantity stays until it is paid); an invoice school gets
+ *        the proration invoice at once.
+ *   renewal: next year's seats, set just before the renewal with no proration.
+ */
+export function updateSeats(sub, quantity, { when = 'now', key }) {
+  const item = sub.items?.data?.[0];
+  const params = { items: [{ id: item.id, quantity }], proration_behavior: when === 'now' ? 'always_invoice' : 'none' };
+  if (when === 'now' && sub.collection_method !== 'send_invoice') params.payment_behavior = 'pending_if_incomplete';
+  return call(s => s.subscriptions.update(sub.id, params, { idempotencyKey: `seats-${when}-${sub.id}-${quantity}-${key}` }));
+}
+/** A send_invoice subscription made by the owner on /admin/billing (D7). */
+export const createSubscription = (params, idempotencyKey) => call(s => s.subscriptions.create(params, { idempotencyKey }));
+/** An open invoice paid outside Stripe (a paper check, BP-8): Stripe then sends invoice.paid as usual. */
+export const payInvoiceOutOfBand = id => call(s => s.invoices.pay(id, { paid_out_of_band: true }, { idempotencyKey: `oob-${id}` }));
+
 /** Our prices, found by lookup key: { [lookupKey]: { id, interval, unitAmount, currency, product } }. Cached; the
  *  reconcile job refreshes it. */
 let priceCache = null;

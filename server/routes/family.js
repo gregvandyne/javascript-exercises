@@ -306,7 +306,7 @@ router.get('/family', grownupOnly, async (req, res) => {
 /** The password typed again, inside a payment form. Always there: hidden (and not required) while this sign-in typed it
  *  in the last 10 minutes, so a page left open longer (or brought back from Stripe with Back) can still ask for it: the
  *  server's 403 needPassword makes app.js show it ([data-reauth]). */
-function passwordField(req, id) {
+export function passwordField(req, id) {
   const t = req.t, fresh = C.reauthFresh(req.sessionId);
   return html`<div class="field" data-reauth ${fresh ? 'hidden' : ''}><label for="${id}">${t('family.billing.password.label')}</label>
     <input class="input" id="${id}" name="password" type="password" dir="ltr" autocomplete="current-password" ${fresh ? '' : 'required'} maxlength="72" aria-describedby="${id}-hint">
@@ -396,7 +396,7 @@ const testerGate = (req, res, next) => (C.mayBill(req.user) ? next() : res.statu
  *  (LOGIN.userFails, like /api/me/password): a locked account takes no password here either, so a device left signed
  *  in gives no more guesses than the sign-in page. */
 export const REAUTH_TRIES = { fails: 5, window: 900e3 };
-function stepUp(req, res, next) {
+export function stepUp(req, res, next) {
   if (C.reauthFresh(req.sessionId)) return next();
   const t = req.t, key = `reauth-fail:${req.user.id}`, lockKey = loginLockKey(req.user.username);
   if (count(key) >= REAUTH_TRIES.fails || count(lockKey) >= LOGIN.userFails) return res.status(429).json({ error: t('family.errors.tooMany') });
@@ -409,7 +409,7 @@ function stepUp(req, res, next) {
   C.markReauth(req.sessionId);
   next();
 }
-const stripeTrouble = (req, res, e) => {
+export const stripeTrouble = (req, res, e) => {
   log('warn', 'billing: Stripe call failed', e instanceof S.StripeCallError ? e.fields : { error: e.message });
   res.status(502).json({ error: req.t('family.billing.errors.stripe') });
 };

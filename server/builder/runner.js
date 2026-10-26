@@ -30,7 +30,7 @@ import * as eta from './eta.js';
 import { stepRecorder } from './steps.js';
 import { previewUrl } from './tools.js';
 import { restingUntil } from './anthropic.js';
-import { turnsLeft, takeTurn, allowanceFor, limitMessage, counter } from './usage.js';
+import { turnsLeft, takeTurn, allowanceFor, limitMessage, limitKey, counter } from './usage.js';
 import { loadChat, appendChat, updateChat } from './chat.js';
 import { getUpload, LIMITS as UPLOADS } from './uploads.js';
 import { MAX_STEPS } from './claude.js';
@@ -151,7 +151,7 @@ function begin({ user, game, text, pro, wanted, cid, continueOf, t, provider, co
   if (until) return { status: 503, body: { error: t('builder.errors.resting'), code: 'resting', resting: { until } }, code: 'resting' };
   // No turns left today: said before anything is stored, so the page puts the message back in the box (the charge
   // itself is still checked when screening passes). The streamed POST keeps its old order: screening first.
-  if (!compat && allowance.left <= 0) return err(429, allowance.familyId ? 'builder.errors.limitToday' : 'builder.errors.limit', 'limit', { count: allowance.daily });
+  if (!compat && allowance.left <= 0) { const [key, vars] = limitKey(allowance); return err(429, key, 'limit', vars); }
   // 4. "Carry on building": only the game's last build, only when it offers it, only once.
   let orig = null;
   if (continueOf) {

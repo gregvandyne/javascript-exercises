@@ -918,7 +918,8 @@
       "limit": "You have used all {count} Builder turns for today. Come back tomorrow for more!",
       "muddled": "The Builder got muddled. Please try again in a moment.",
       "resting": "The AI Builder is resting right now. Your game and your turns are saved, so come back a bit later!",
-      "limitToday": "You've used today's Builder messages. More tomorrow!"
+      "limitToday": "You've used today's Builder messages. More tomorrow!",
+      "limitClass": "Your class has used today's Builder messages. More tomorrow!"
     },
     "refusals": {
       "tryThese": "Want to try one of these?",
@@ -1543,7 +1544,8 @@
         "tomorrow": "tomorrow at {time}",
         "date": "on {date} at {time}"
       },
-      "extra": "+{n} extra this month"
+      "extra": "+{n} extra this month",
+      "turnsLeftToday": "{left} left today"
     }
   },
   "favorites": {
@@ -1578,7 +1580,8 @@
     "tabs": {
       "classes": "Classes",
       "people": "People",
-      "settings": "Settings"
+      "settings": "Settings",
+      "billing": "Billing"
     },
     "actions": "Actions",
     "save": "Save",
@@ -1791,7 +1794,8 @@
       "adminNotStudent": "You look after Oomba Academy, so you can't join a class as a student.",
       "isStudent": "{name} is a student here, so they can't be added as staff.",
       "tickStudents": "Tick at least one student.",
-      "badZone": "Pick a time zone from the list."
+      "badZone": "Pick a time zone from the list.",
+      "badCap": "Type a whole number from 1 to {max}."
     },
     "classTabs": {
       "lessons": "Lessons",
@@ -1815,7 +1819,110 @@
     },
     "optional": "(optional)",
     "me": "me",
-    "moreFor": "More for {name}"
+    "moreFor": "More for {name}",
+    "billing": {
+      "heading": "School plan",
+      "none": "No school plan. Students and teachers use the free Builder messages, like everyone.",
+      "active": "{count, plural, one {School plan for # student.} other {School plan for # students.}}",
+      "renews": "Renews on {date}.",
+      "ends": "Ends on {date} and won't renew.",
+      "grant": "A free plan from Oomba Academy until {date}, for {count, plural, one {# student} other {# students}}.",
+      "pastDue": "The last card payment didn't go through. Update the card in Manage billing, or the plan ends on {date}.",
+      "overdue": "An invoice is overdue. Pay it by {date} to keep the plan.",
+      "invoiceOpen": "Invoice for {amount}, due on {date}.",
+      "invoiceView": "View and pay",
+      "pool": "{left} of {total} Builder messages left until {date}",
+      "lessons": "About {count, plural, one {# Builder lesson} other {# Builder lessons}} for your paid students",
+      "poolWaits": "The new students are added to the pool once their payment goes through.",
+      "over": "You have {students}, {seats} paid.",
+      "studentsN": "{count, plural, one {# student} other {# students}}",
+      "daily": "Each student and teacher can send up to {cap} Builder messages a day from the school plan.",
+      "price": "{price} per student per year, for at least {min} students. Each paid student adds {perSeat} Builder messages a year to a pool the whole school shares.",
+      "priceLessons": "That is about {count, plural, one {# Builder lesson} other {# Builder lessons}} a year for each paid student.",
+      "asyncFailed": "The bank payment didn't go through. Try again with Pay by card, or request an invoice.",
+      "pending": "The payment is on its way (a bank payment can take a few days). The plan starts when it arrives.",
+      "notOpen": "School plans aren't on sale yet.",
+      "waiting": "Setting up your school plan…",
+      "welcome": "Your school plan is active. Thank you!",
+      "slow": "This is taking longer than usual. Your payment is safe: the plan shows here as soon as Stripe confirms it.",
+      "back": "Back to Billing",
+      "help": "Questions about billing? Write to {email}.",
+      "seatsLabel": "Number of students",
+      "seatsHint": "At least {min}. You have {students} now.",
+      "pay": {
+        "heading": "Pay by card",
+        "renew": "The plan renews every year until it is cancelled.",
+        "cancel": "Cancel anytime in Manage billing: the plan runs to the end of the paid year.",
+        "tax": "Prices are in US dollars. Sales tax may be added.",
+        "button": "Pay by card",
+        "stripe": "Payment happens on Stripe's secure page. We never see card numbers."
+      },
+      "change": {
+        "heading": "Change the number of students",
+        "text": "More students are billed now, for the rest of this year. Fewer students take effect when the plan renews.",
+        "button": "Change students"
+      },
+      "renewal": {
+        "heading": "Renewal",
+        "text": "Your plan renews on {date} for {seats}. You have {students} now.",
+        "next": "Next year: {seats}.",
+        "hint": "At least {min}. Applied when the plan renews.",
+        "button": "Set next year's students"
+      },
+      "manage": {
+        "heading": "Manage billing",
+        "text": "Update the card, see receipts and invoices, or cancel the plan.",
+        "button": "Manage billing"
+      },
+      "invoice": {
+        "heading": "Request an invoice",
+        "text": "For a purchase order, or a school that pays by bank transfer or check. We send a yearly invoice by email, due in 30 days.",
+        "po": "Purchase order (PO) number",
+        "contactName": "Billing contact's name",
+        "contactEmail": "Billing contact's email",
+        "line1": "School address",
+        "line2": "Address line 2",
+        "city": "City",
+        "state": "State or region",
+        "postal": "ZIP or postal code",
+        "country": "Country (2 letters, like US)",
+        "taxExempt": "We are tax-exempt (we'll send the exemption certificate)",
+        "note": "Anything else we should know",
+        "button": "Request an invoice",
+        "sent": "Thanks! We'll send the invoice soon.",
+        "requested": "Invoice requested on {date} for {seats}. We will send it to {email}.",
+        "cancel": "Withdraw the request",
+        "cancelConfirm": "Withdraw this invoice request?",
+        "cancelled": "Request withdrawn."
+      },
+      "cap": {
+        "heading": "Builder messages per day",
+        "label": "Messages each student and teacher can send a day",
+        "hint": "From the school plan. Never fewer than the free {free} a day: now {cap}."
+      },
+      "seats": {
+        "raised": "Done: {seats} students.",
+        "pending": "The card payment didn't go through, so the number of students stays the same. Update the card in Manage billing and try again.",
+        "scheduled": "Next year: {seats} students.",
+        "cleared": "Next year stays at {seats} students."
+      },
+      "errors": {
+        "entitled": "Your school already has a plan. Change the number of students instead.",
+        "fixPayment": "A payment for your school plan is still open. Fix it in Manage billing first.",
+        "paying": "A payment just went through. Wait a moment, then reload the page.",
+        "noPrice": "School plans can't be bought right now. Try again later.",
+        "minSeats": "Type a whole number from {min} to {max}.",
+        "sameSeats": "That's the number you have already.",
+        "noPlan": "Your school has no plan to change.",
+        "requestOpen": "You already asked for an invoice. Withdraw that request first to change it.",
+        "contactName": "Type the billing contact's name.",
+        "contactEmail": "Type a valid email address.",
+        "address": "Fill in the address.",
+        "country": "Use the 2-letter country code, like US.",
+        "noRequest": "There is no open request.",
+        "noCustomer": "Your school has no billing account yet."
+      }
+    }
   },
   "lessons": {
     "up": "Move up",

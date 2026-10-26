@@ -187,6 +187,22 @@ async function productPlansFor(price) {
   }
 }
 
+/**
+ * A school plan's pool (docs/decisions.md "Paid plans" §5): the seats whose Builder messages the school may use this
+ * period. It is the highest quantity paid for (a card school: the latest invoice is paid; a seat increase waits for its
+ * payment, pending_if_incomplete) or invoiced (a send_invoice school: the latest invoice is finalized, open or paid) in
+ * the period, and never goes down within it. A new period starts from the seats paid for it; until its invoice is
+ * paid, the old pool carries over (never above the new quantity). -> { quantity, periodStart }
+ */
+export function poolFor({ plan, sub, li, quantity, periodStart, prev }) {
+  if (plan !== 'school') return { quantity: prev?.pool_quantity ?? 0, periodStart: prev?.pool_period_start ?? null };
+  const samePeriod = prev && prev.pool_period_start != null && prev.pool_period_start === periodStart;
+  const carried = samePeriod ? (prev.pool_quantity || 0) : Math.min(prev?.pool_quantity || 0, quantity);
+  const invoiced = sub.collection_method === 'send_invoice' ? ['open', 'paid'].includes(li?.status) : li?.status === 'paid';
+  const paid = invoiced && !sub.pending_update ? quantity : 0;
+  return { quantity: Math.max(carried, paid), periodStart };
+}
+
 /** Writes one fetched subscription. Synchronous: runs inside tx(). risk: { flag, paymentIntent, cancelled } from
  *  riskAction or a duplicate Checkout (the flag wins over the others). -> { result, row? } */
 function applySubscription(sub, { event = null, session = null, openInvoices = [], productPlans = null, risk = null } = {}) {
@@ -239,11 +255,14 @@ function applySubscription(sub, { event = null, session = null, openInvoices = [
   if (plan === 'unknown') flag = 'unknown_price';
   else if (flag === 'unknown_price') flag = null;
   if (risk?.flag) flag = risk.flag;
+  const quantity = item.quantity ?? 1;
+  const periodStart = item.current_period_start ? item.current_period_start * 1000 : null;
+  const pool = poolFor({ plan, sub, li, quantity, periodStart, prev });
   const row = {
     stripe_subscription_id: sub.id, stripe_customer_id: customerId, owner_kind: owner.owner_kind, owner_id: owner.owner_id,
     plan, price_id: price.id || null, price_lookup_key: lookupKey, interval: price.recurring?.interval || null,
-    quantity: item.quantity ?? 1, status: String(sub.status), collection_method: sub.collection_method || null,
-    current_period_start: item.current_period_start ? item.current_period_start * 1000 : null,
+    quantity, status: String(sub.status), collection_method: sub.collection_method || null,
+    current_period_start: periodStart,
     current_period_end: item.current_period_end ? item.current_period_end * 1000 : null,
     cancel_at_period_end: sub.cancel_at_period_end ? 1 : 0, grace_until: grace, payment_pending: pending, flag, livemode,
     // The latest invoice: what was paid, when and why (the refund window on /admin/billing).
@@ -252,15 +271,20 @@ function applySubscription(sub, { event = null, session = null, openInvoices = [
     latest_billing_reason: li?.billing_reason || (li ? null : prev?.latest_billing_reason ?? null),
     latest_amount_paid: li ? (li.amount_paid ?? null) : prev?.latest_amount_paid ?? null,
     risk_payment_intent: risk?.paymentIntent || prev?.risk_payment_intent || null,
+    pool_quantity: pool.quantity, pool_period_start: pool.periodStart,
+    latest_invoice_status: li?.status || (li ? null : prev?.latest_invoice_status ?? null),
+    // What an invoice school still owes (the Billing tab and /admin/billing's "Mark paid by check").
+    open_invoices: sub.collection_method === 'send_invoice' ? JSON.stringify(openInvoices.filter(i => i.status === 'open')
+      .map(i => ({ id: i.id, amount_due: i.amount_due ?? 0, due_date: i.due_date ? i.due_date * 1000 : null, number: i.number || null, url: i.hosted_invoice_url || null }))) : null,
   };
   q.run(`INSERT INTO billing_subscriptions(stripe_subscription_id, stripe_customer_id, owner_kind, owner_id, plan, price_id,
       price_lookup_key, interval, quantity, status, collection_method, current_period_start, current_period_end,
       cancel_at_period_end, grace_until, payment_pending, flag, livemode, latest_invoice_id, latest_paid_at, latest_billing_reason,
-      latest_amount_paid, risk_payment_intent, created_at, updated_at)
+      latest_amount_paid, risk_payment_intent, pool_quantity, pool_period_start, latest_invoice_status, open_invoices, created_at, updated_at)
     VALUES (@stripe_subscription_id, @stripe_customer_id, @owner_kind, @owner_id, @plan, @price_id, @price_lookup_key, @interval,
       @quantity, @status, @collection_method, @current_period_start, @current_period_end, @cancel_at_period_end, @grace_until,
       @payment_pending, @flag, @livemode, @latest_invoice_id, @latest_paid_at, @latest_billing_reason, @latest_amount_paid,
-      @risk_payment_intent, @t, @t)
+      @risk_payment_intent, @pool_quantity, @pool_period_start, @latest_invoice_status, @open_invoices, @t, @t)
     ON CONFLICT(stripe_subscription_id) DO UPDATE SET stripe_customer_id=excluded.stripe_customer_id, owner_kind=excluded.owner_kind,
       owner_id=excluded.owner_id, plan=excluded.plan, price_id=excluded.price_id, price_lookup_key=excluded.price_lookup_key,
       interval=excluded.interval, quantity=excluded.quantity, status=excluded.status, collection_method=excluded.collection_method,
@@ -268,7 +292,10 @@ function applySubscription(sub, { event = null, session = null, openInvoices = [
       cancel_at_period_end=excluded.cancel_at_period_end, grace_until=excluded.grace_until, payment_pending=excluded.payment_pending,
       flag=excluded.flag, livemode=excluded.livemode, latest_invoice_id=excluded.latest_invoice_id, latest_paid_at=excluded.latest_paid_at,
       latest_billing_reason=excluded.latest_billing_reason, latest_amount_paid=excluded.latest_amount_paid,
-      risk_payment_intent=excluded.risk_payment_intent, orphaned_at=NULL, updated_at=excluded.updated_at`, { ...row, t });
+      risk_payment_intent=excluded.risk_payment_intent, pool_quantity=excluded.pool_quantity, pool_period_start=excluded.pool_period_start,
+      latest_invoice_status=excluded.latest_invoice_status, open_invoices=excluded.open_invoices, orphaned_at=NULL, updated_at=excluded.updated_at`, { ...row, t });
+  // A school whose pool grew (seats paid for, or a new year): audited with ids and numbers only.
+  if (plan === 'school' && pool.quantity !== (prev?.pool_quantity ?? 0)) audit(null, 'billing.school.pool', `${owner.owner_kind}:${owner.owner_id}`, { subscription: sub.id, seats: pool.quantity, from: prev?.pool_quantity ?? 0 });
   const target = `${owner.owner_kind}:${owner.owner_id}`;
   if (!prev || prev.status !== row.status) audit(null, `billing.subscription.${row.status}`, target, { subscription: sub.id, from: prev?.status || null, event: event?.id || null });
   if (event && EVENT_AUDIT[event.type]) audit(null, EVENT_AUDIT[event.type], target, { subscription: sub.id, event: event.id, ...(risk?.cancelled ? { cancelled: true } : {}) });

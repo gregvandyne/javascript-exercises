@@ -27,7 +27,11 @@ export const DEFAULT_SETTINGS = {
   publishing: 'school',          // school accounts: 'school' (share games within the school) | 'public' (allowed to go public)
   googleDomains: [],             // the school's Google Workspace domains, for Sign in with Google (services/google.js); [] = off
   timeZone: '',                  // IANA zone, e.g. 'Europe/London': lessons open and fall due at the school's midnight; '' = not set
+  builderDailyCap: null,         // school plans: Builder messages per person per day from the pool; null = SCHOOL_DAILY_CAP_DEFAULT
+                                 // (never below the free daily messages: services/school-billing.js effectiveCap)
 };
+/** The highest daily Builder cap a school can set. */
+export const MAX_DAILY_CAP = 500;
 /** Time zones a school can pick (IANA names Node knows). */
 export const ZONES = Intl.supportedValuesOf('timeZone');
 const ZONE_SET = new Set(ZONES);
@@ -109,6 +113,11 @@ export function updateSchool(by, schoolId, { name, settings } = {}) {
     if (['school', 'public'].includes(settings.publishing)) next.publishing = settings.publishing;
     if (Array.isArray(settings.googleDomains)) next.googleDomains = settings.googleDomains.slice(0, MAX_DOMAINS);
     if (settings.timeZone !== undefined) { if (settings.timeZone !== '' && !isZone(settings.timeZone)) return fail('badZone'); next.timeZone = settings.timeZone; }
+    if (settings.builderDailyCap !== undefined && settings.builderDailyCap !== null && settings.builderDailyCap !== '') {
+      const n = Number(settings.builderDailyCap);
+      if (!Number.isInteger(n) || n < 1 || n > MAX_DAILY_CAP) return fail('badCap');
+      next.builderDailyCap = n;
+    }
     q.run('UPDATE schools SET settings=? WHERE id=?', JSON.stringify(next), s.id);
   }
   audit(by.id, 'school.update', s.id, { name, settings });
