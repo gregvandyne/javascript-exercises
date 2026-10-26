@@ -6,6 +6,9 @@
 //                   "call it X" -> edit_game with real find/replace edits (a new version)
 //                -> "it's ready" / "polish" -> polish pass with a checklist
 // Text is streamed in small chunks so the SSE path is exercised.
+// The runner's checkpoint (ctx.between) runs before it starts, so a stopped build (deleted, banned, Builder off) does
+// nothing. Carried on after a restart (ctx.resume) with a version already saved, it says so and asks what's next
+// instead of building again; with nothing saved yet it runs the builder's message again from the start.
 // Live build steps: one "blocks" row (the simple building blocks, never described as an AI); its tool calls add
 // the same name / check / notes / ask rows as Claude's, from tools.js. It never gets AI rows (rounds, playtests).
 import { templateHtml, templateInfo } from './catalog.js';
@@ -17,13 +20,14 @@ import { isThreeGame } from '../services/vendor.js';
 import { NO_STEPS } from './steps.js';
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
-const delay = () => { const d = +process.env.BRB_MOCK_DELAY_MS; return Number.isFinite(d) ? d : 12; };
+/** Milliseconds between streamed chunks of three words (BRB_MOCK_DELAY_MS, 12 by default). */
+export const chunkDelay = () => { const d = +process.env.BRB_MOCK_DELAY_MS; return Number.isFinite(d) ? d : 12; };
 async function say(ctx, text) {
   const parts = String(text).match(/\S+\s*/g) || [];
   for (let i = 0; i < parts.length; i += 3) {
     if (ctx.signal && ctx.signal.aborted) return;
     ctx.emit('text', { text: parts.slice(i, i + 3).join('') });
-    if (delay()) await sleep(delay());
+    if (chunkDelay()) await sleep(chunkDelay());
   }
 }
 
@@ -232,10 +236,21 @@ export async function run(ctx) {
   (ctx.steps || NO_STEPS).start('blocks');
   const st = ctx.state; st.mock = st.mock || { asked: [], answers: {} };
   const m = st.mock;
+  const b = ctx.between ? await ctx.between(1) : null;
+  if (b && b.stop) return { model: 'mock' };
   await acknowledgeUploads(ctx);
   const cur = ctx.tools.current();
-  if (!ctx.text) { if (!cur) await ctx.tools.exec('ask_user', { question: 'What kind of game should we make?', options: KIND_CHIPS }); return { model: 'mock' }; }
-  if (cur) await followUp(ctx, m, cur); else await plan(ctx, m);
+  // Carried on after a restart, or a Continue: the message is the earlier one.
+  const text = (ctx.resume && ctx.resume.original) || ctx.text;
+  if (ctx.resume && ctx.resume.versions && ctx.resume.versions.length && cur) {
+    const v = ctx.resume.versions.at(-1).number;
+    await say(ctx, `I'm back! Your game is saved as version ${v}, so I carried on from there.`);
+    ctx.tools.exec('test_notes', { checklist: CHECK.default });
+    ctx.tools.exec('ask_user', { question: 'What should we change next?', options: nextChips(readTune(cur.html)) });
+    return { model: 'mock', tokensIn: 0, tokensOut: 0 };
+  }
+  if (!text) { if (!cur) await ctx.tools.exec('ask_user', { question: 'What kind of game should we make?', options: KIND_CHIPS }); return { model: 'mock' }; }
+  if (cur) await followUp({ ...ctx, text }, m, cur); else await plan({ ...ctx, text }, m);
   return { model: 'mock', tokensIn: 0, tokensOut: 0 };
 }
 export { hasLayer };

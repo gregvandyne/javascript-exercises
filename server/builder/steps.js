@@ -1,12 +1,16 @@
 // Live build steps ("Behind the scenes" in the Studio): what the Builder is really doing, one row per step.
 // Rows come only from real server events, in the order they happen (agent.js, claude.js, tools.js, mock.js).
-// Over SSE:  step {i, key, ...facts}  starts row i (1-based within the turn; the row before it is finished)
+// Over SSE:  step {i, key, at, ...facts}  starts row i (1-based within the turn; the row before it is finished);
+//                                      at = ms since this attempt started (structural, like i: not a fact, not stored
+//                                      as one), so a page that joins mid-build replays real durations
 //            stepinfo {i, ...facts}   updates row i (not always the newest row: a failed edit marks its own row)
+// The record's end is ok, error, timeout, restart, deleted, banned, disabled or stopped (runner.js).
 // When the turn ends, a compact record (keys, numbers and the AI's short plan only, never any label or learning
 // text) is sent with 'done' and stored in the transcript as ['steps', rec]. summariseEvents ignores it, so it never
 // reaches the model. Labels and learning lines are drawn by the Studio in the viewer's language.
 
-export const STEP_KEYS = ['screen', 'blocks', 'think', 'write', 'edit', 'fix', 'template', 'check', 'name', 'playtest', 'notes', 'ask'];
+// resume: instant, fact v (the newest saved version): the build carried on after a server restart (runner.js).
+export const STEP_KEYS = ['screen', 'blocks', 'think', 'write', 'edit', 'fix', 'template', 'check', 'name', 'playtest', 'notes', 'ask', 'resume'];
 const MAX_ROWS = 80;
 
 /** One line of model or player text, safe to show: control and bidi-override characters become spaces, whitespace
@@ -35,7 +39,7 @@ const FACTS = {
   why: oneOf(['cut']),                                   // the tool call was cut off at max_tokens
   st: oneOf(['pass', 'flag', 'fail']),                   // check: safety scan result
   k: int(1, 99),                                         // check (flag/fail): how many things the safety program listed
-  v: int(1, 999999),                                     // check, playtest: version number
+  v: int(1, 999999),                                     // check, playtest, resume: version number
   title: x => (typeof x === 'string' ? cut(x, 60) || undefined : undefined),        // name
   icon: x => (typeof x === 'string' ? cut(x, 8) || undefined : undefined),          // name
   pics: int(0, 2),                                       // playtest: pictures taken
@@ -58,8 +62,8 @@ export function stepRecorder(emit, t0 = Date.now()) {
     /** Start a new row; returns its number i (0 when the key is unknown or the row cap is reached). */
     start(key, facts = {}) {
       if (!STEP_KEYS.includes(key) || list.length >= MAX_ROWS) return 0;
-      const f = keep(facts); list.push([key, Date.now() - t0, f]);
-      emit('step', { i: list.length, key, ...f });
+      const f = keep(facts); const at = Date.now() - t0; list.push([key, at, f]);
+      emit('step', { i: list.length, key, at, ...f });
       return list.length;
     },
     /** Add facts to row i (default: the newest row). Unknown rows and empty patches are ignored. */

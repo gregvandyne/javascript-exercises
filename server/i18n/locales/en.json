@@ -821,7 +821,10 @@
       "updatedFriends": "Updated for your friends! The new version is also waiting for its check before everyone can play.",
       "updatedYou": "Updated for you! The new version is also waiting for its check before everyone can play.",
       "updatedNowWaiting": "Updated! The new version is also waiting for a quick check before more people can play.",
-      "cantDeleteStarter": "Starter games can’t be deleted."
+      "cantDeleteStarter": "Starter games can’t be deleted.",
+      "builderWorking": "The Builder is working on this game right now. Try again when it’s done.",
+      "cantContinue": "That build can’t be continued any more. Send a new message instead.",
+      "restarting": "Our server is restarting. Try again in a moment."
     }
   },
   "publish": {
@@ -841,10 +844,13 @@
   "builder": {
     "kindRefusal": "I can’t help with that one. Let’s build something fun instead. What kind of game would you like?",
     "scanStillFailing": "The safety check still is not happy. Tap “Ask the Builder to fix it” to try again.",
+    "turnTimeout": "⏱️ This build took longer than our time limit, so I stopped. Your newest version is saved. Tell me what to change next!",
+    "turnTimeoutNothing": "⏱️ This build took longer than our time limit, so I stopped before I could save anything. It didn’t use up a turn, so you can try again.",
     "errors": {
       "disabled": "Building is switched off for this account. A grown-up can ask us to turn it back on.",
       "empty": "Type a message or tap an idea first.",
       "busy": "The Builder is still working on your last message. One moment!",
+      "tooMany": "You already have 2 games building. Wait until one is done, then try again.",
       "limit": "You have used all {count} Builder turns for today. Come back tomorrow for more!",
       "muddled": "The Builder got muddled. Please try again in a moment."
     },

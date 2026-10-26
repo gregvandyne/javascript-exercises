@@ -1,5 +1,6 @@
 // Build mode: the /build page (my games + "Start from" templates), the Studio (/studio/:id) and its APIs.
-// Owner or admin only for everything under a game id (404 otherwise). The Builder chat streams over SSE.
+// Owner or admin only for everything under a game id (404 otherwise). The Builder chat streams over SSE; the build
+// itself runs in the Builder runner (builder/runner.js), so a closed page or a sign-out never stops it.
 import express, { Router } from 'express';
 import { html, raw, jsonData } from '../views/html.js';
 import { page, notFound } from '../views/layout.js';
@@ -14,7 +15,8 @@ import { listTemplates, templateHtml, templateInfo, TEMPLATE_KEYS } from '../bui
 import { scanVersion } from '../services/scanner.js';
 import { SANDBOX } from '../services/frame.js'; // the SAME sandbox players get (never allow-same-origin)
 import { sanitizeGameHtml } from '../services/sanitize.js';
-import { runTurn, providerName, isBusy } from '../builder/agent.js';
+import { runTurn, providerName } from '../builder/agent.js';
+import { isBusy, cancel as cancelBuild, life as builderLife } from '../builder/runner.js';
 import { turnsLeft, dailyTurns } from '../builder/usage.js';
 import { loadChat } from '../builder/chat.js';
 import { previewUrl } from '../builder/tools.js';
@@ -216,17 +218,19 @@ router.get('/api/studio/:id', requireAccount, (req, res) => {
 router.post('/api/studio/:id/chat', requireAccount, rateLimit('builder', 20, 60e3, 'studio.api.builderBreak'), async (req, res) => {
   const g = loadEditable(req, res); if (!g) return;
   const b = req.body || {};
+  // Shutting down: nothing is stored, and the page keeps the message (runner.drain).
+  if (builderLife.draining) return res.status(503).json({ error: req.t('studio.api.restarting') });
   res.writeHead(200, { 'Content-Type': 'text/event-stream; charset=utf-8', 'Cache-Control': 'no-cache, no-transform', 'X-Accel-Buffering': 'no', Connection: 'keep-alive' });
   res.flushHeaders && res.flushHeaders();
-  // If the connection drops (a phone locks, switches apps or loses signal), the turn keeps running and is saved:
-  // the Studio sees state.busy, waits, and then shows the result. So we only stop writing, never abort the Builder.
+  // If the connection drops (a phone locks, switches apps or loses signal), the build keeps running in the runner and
+  // is saved: the Studio sees state.busy, waits, and then shows the result. So we only stop writing, never abort it.
   let gone = false;
   res.on('close', () => { if (!res.writableFinished) gone = true; });
   res.on('error', () => { gone = true; });
   const send = (event, data) => { if (!gone && !res.writableEnded) res.write(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`); };
   const ping = setInterval(() => { if (!gone && !res.writableEnded) res.write(': ping\n\n'); }, 15000);
   try {
-    await runTurn({ user: req.user, gameId: g.id, text: b.text, pro: !!b.pro, uploadIds: b.uploads, emit: send, t: req.t });
+    await runTurn({ user: req.user, gameId: g.id, text: b.text, pro: !!b.pro, uploadIds: b.uploads, cid: b.cid, continueOf: b.continueOf, emit: send, t: req.t });
   } catch {
     send('error', { message: req.t('studio.api.wentWrong') }); send('done', { turnsLeft: turnsLeft(req.user.id) });
   } finally { clearInterval(ping); res.end(); }
@@ -260,12 +264,16 @@ router.post('/api/studio/:id/delete', requireAccount, rateLimit('studio-delete',
   const g = loadEditable(req, res); if (!g) return;
   if (g.source === 'seed') return res.status(400).json({ error: req.t('studio.api.cantDeleteStarter') });
   games.deleteGame(g.id);
+  cancelBuild(g.id, 'deleted');   // a build in this game stops at once
   audit(req.user.id, 'game.delete', g.id, { title: g.title, wasLive: g.status === 'published' });
   res.json({ ok: true });
 });
 
+// Restore and Save version wait while the Builder works, so its edits never land on a swapped version.
+const builderWorking = (req, res, g) => { if (!isBusy(g.id)) return false; res.status(409).json({ error: req.t('studio.api.builderWorking') }); return true; };
 router.post('/api/studio/:id/restore', requireAccount, rateLimit('studio-restore', 30, 60e3), (req, res) => {
   const g = loadEditable(req, res); if (!g) return;
+  if (builderWorking(req, res, g)) return;
   const v = games.restoreVersion(g.id, String((req.body || {}).versionId || ''), req.user.id);
   if (!v) return res.status(404).json({ error: req.t('studio.api.versionNotFound') });
   res.json({ ok: true, message: req.t('studio.api.restored', { number: v.number }), state: studioState(req.user, g.id, req.t) });
@@ -274,6 +282,7 @@ router.post('/api/studio/:id/restore', requireAccount, rateLimit('studio-restore
 // "Save version": a named checkpoint (a copy of the current version with the builder's note). History is never rewritten.
 router.post('/api/studio/:id/save', requireAccount, rateLimit('studio-save', 30, 60e3), (req, res) => {
   const g = loadEditable(req, res); if (!g) return;
+  if (builderWorking(req, res, g)) return;
   const cur = games.getVersion(g.current_version_id);
   const t = req.t;
   if (!cur) return res.status(400).json({ error: t('studio.api.buildFirst') });

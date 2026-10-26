@@ -103,6 +103,8 @@ test('stepRecorder: numbers rows, patches the right row, keeps only allowed fact
   s.info({ l: 5 }, 0); s.info({ l: 5 }, 99);                            // no such row: ignored
   assert.equal(s.start('made-up'), 0, 'unknown keys are refused');
   assert.equal(s.current(), 'name');
+  // step carries at (ms since the attempt started) for pages that join mid-build; it is structural, never a fact.
+  for (const [n, d] of out) if (n === 'step') { assert.ok(Number.isInteger(d.at) && d.at >= 0, 'step has at'); delete d.at; }
   assert.deepEqual(out, [
     ['step', { i: 1, key: 'screen' }],
     ['step', { i: 2, key: 'think', n: 1, c: 'start', g: 1 }],
@@ -128,6 +130,9 @@ test('stepRecorder: numbers rows, patches the right row, keeps only allowed fact
   assert.deepEqual(rec.s[2][2], { plan: 'p'.repeat(120), l: 13, ok: false, why: 'cut' });
   assert.ok(rec.s.every(r => Number.isInteger(r[1]) && r[1] >= 0));
   assert.equal(STEP_KEYS.includes('sending') || STEP_KEYS.includes('offline') || STEP_KEYS.includes('waiting'), false, 'client-only rows are never sent');
+  assert.ok(STEP_KEYS.includes('resume'), 'a build carried on after a restart has a resume row');
+  assert.ok(!rec.s.some(r => r[2] && 'at' in r[2]), 'at is not stored as a fact');
+  const r2 = stepRecorder(() => {}); r2.start('resume', { v: 3 }); assert.deepEqual(r2.record({ p: 'blocks', end: 'restart' }).s[0][2], { v: 3 });
 });
 
 test('stepRecorder: no record when only screening happened; tokens left out when 0; at most 80 rows', () => {
@@ -155,6 +160,7 @@ test('the steps record never reaches the model', () => {
   assert.deepEqual(b, a);
   const json = JSON.stringify(b);
   for (const s of ['"steps"', 'steps', 'plan', 'Secret plan words', '"th"', 'think']) assert.ok(!json.includes(s), s);
-  // A steps-only assistant message (e.g. a turn with no words) adds nothing either.
-  assert.deepEqual(historyToMessages([base[0], { role: 'assistant', text: '', events: [['steps', rec]] }, base[2]]), [{ role: 'user', content: 'a fox game' }, { role: 'user', content: 'thanks' }]);
+  // A steps-only assistant message (e.g. a turn with no words) adds nothing either; the two user messages it leaves
+  // side by side are joined (the API wants the roles in turns).
+  assert.deepEqual(historyToMessages([base[0], { role: 'assistant', text: '', events: [['steps', rec]] }, base[2]]), [{ role: 'user', content: 'a fox game\n\nthanks' }]);
 });

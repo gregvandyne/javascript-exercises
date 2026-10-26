@@ -13,7 +13,9 @@ const { PASSWORD_CHANGE, LOGIN } = await import('../../server/routes/auth.js');
 const { createApp } = await import('../../server/app.js');
 
 let server, base;
-test.before(async () => { server = createApp().listen(0, '127.0.0.1'); await new Promise(r => server.once('listening', r)); base = `http://127.0.0.1:${server.address().port}`; });
+// keepAliveTimeout 0: bcrypt-heavy steps can hold the event loop past the default 5 s idle timer, which would then close a
+// kept-alive socket just as the next fetch reuses it (ECONNRESET, "fetch failed"), as in class-sharing.test.js.
+test.before(async () => { server = createApp().listen(0, '127.0.0.1'); server.keepAliveTimeout = 0; await new Promise(r => server.once('listening', r)); base = `http://127.0.0.1:${server.address().port}`; });
 test.after(() => server.close());
 test.beforeEach(() => RL._reset());
 test.afterEach(() => mock.timers.reset());

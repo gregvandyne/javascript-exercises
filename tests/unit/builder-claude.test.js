@@ -20,12 +20,14 @@ const fake = http.createServer((req, res) => {
       res.setHeader('content-type', 'application/json');
       return res.end(JSON.stringify({ id: 'msg_x', type: 'message', role: 'assistant', model: b.model, content: [{ type: 'text', text }], stop_reason: 'end_turn', stop_sequence: null, usage: { input_tokens: 10, output_tokens: 5 } }));
     }
-    // A script entry is a list of blocks, { blocks, stop } (to force a stop_reason such as 'max_tokens'), or 'error400'.
+    // A script entry is a list of blocks, { blocks, stop } (to force a stop_reason such as 'max_tokens'),
+    // { blocks, hold: ms } (the stream pauses after the first block's first piece, e.g. so a test can abort), or 'error400'.
     const entry = script.shift() || [{ type: 'text', text: 'Done.' }];
     if (entry === 'error400') { res.writeHead(400, { 'content-type': 'application/json' }); return res.end(JSON.stringify({ type: 'error', error: { type: 'invalid_request_error', message: 'x' } })); }
     const blocks = Array.isArray(entry) ? entry : entry.blocks;
     res.writeHead(200, { 'content-type': 'text/event-stream' });
-    const ev = (name, data) => res.write(`event: ${name}\ndata: ${JSON.stringify({ type: name, ...data })}\n\n`);
+    const out = []; let closed = false; res.on('close', () => { closed = true; });
+    const ev = (name, data) => out.push(`event: ${name}\ndata: ${JSON.stringify({ type: name, ...data })}\n\n`);
     ev('message_start', { message: { id: 'msg_s', type: 'message', role: 'assistant', model: b.model, content: [], stop_reason: null, stop_sequence: null, usage: { input_tokens: 100, output_tokens: 0, cache_read_input_tokens: 50 } } });
     blocks.forEach((blk, i) => {
       if (blk.type === 'text') { ev('content_block_start', { index: i, content_block: { type: 'text', text: '' } }); for (const part of blk.text.match(/.{1,8}/gs)) ev('content_block_delta', { index: i, delta: { type: 'text_delta', text: part } }); }
@@ -36,7 +38,10 @@ const fake = http.createServer((req, res) => {
       ev('content_block_stop', { index: i });
     });
     ev('message_delta', { delta: { stop_reason: entry.stop || (blocks.some(x => x.type === 'tool_use') ? 'tool_use' : 'end_turn'), stop_sequence: null }, usage: { output_tokens: 42 } });
-    ev('message_stop', {}); res.end();
+    ev('message_stop', {});
+    if (!entry.hold) { res.end(out.join('')); return; }
+    res.write(out.slice(0, 3).join(''));   // message_start, the first block's start and first piece
+    setTimeout(() => { if (!closed) res.end(out.slice(3).join('')); }, entry.hold);
   });
 });
 await new Promise(r => fake.listen(0, r));
@@ -54,6 +59,14 @@ const { loadChat } = await import('../../server/builder/chat.js');
 const { reviewVersion } = await import('../../server/services/review.js');
 const { SYSTEM_PROMPT, THREE_D_RULES } = await import('../../server/builder/prompt.js');
 const { threeImportMap } = await import('../../server/services/vendor.js');
+// Every import before the first test: test.after (which closes the fake API) runs once the tests registered so far
+// are done, so a top-level await between tests would close it early when only some tests are picked.
+const { TOOLS } = await import('../../server/builder/prompt.js');
+const { tEn } = await import('../../server/i18n/index.js');
+const runner = await import('../../server/builder/runner.js');
+const turns = await import('../../server/builder/turns.js');
+const { appendChat } = await import('../../server/builder/chat.js');
+const { q, today } = await import('../../server/db.js');
 
 const GAME = '<title>Fox Hop</title><style>body{margin:0}</style><canvas id="c"></canvas><script>const CONFIG = { speed: 1 }; BRB.sfx.play("jump");</script>';
 
@@ -172,8 +185,6 @@ test('review attaches game pictures when screenshots are available', { skip: !ex
 });
 
 // ---- Live build steps (steps.js) with the Claude provider ----------------------------------------------------
-const { TOOLS } = await import('../../server/builder/prompt.js');
-const { tEn } = await import('../../server/i18n/index.js');
 /** step + stepinfo events -> one object per row (without i), in row order. */
 const rowsOf = events => { const rows = []; for (const [n, d] of events) { if (n === 'step') rows[d.i - 1] = { ...d }; else if (n === 'stepinfo') Object.assign(rows[d.i - 1], d); } return rows.map(({ i, ...r }) => r); };
 const recRows = rec => rec.s.map(([key, , f]) => ({ key, ...(f || {}) }));
@@ -345,4 +356,79 @@ test('build steps: starting from the ready-made 3D world gives a template row, t
   ]);
   assert.deepEqual(rows, [{ key: 'screen' }, { key: 'think', n: 1, c: 'start' }, { key: 'template' }, { key: 'check', st: 'pass', v: 1 }, { key: 'think', n: 2, c: 'next' }]);
   assert.ok(idx(events, 'step', s => s.key === 'check') < idx(events, 'version'));
+});
+
+// ---- Builds that carry on after a restart, a stop mid-stream, and no model ids in comments (runner.js) ------------
+const streamed = () => requests.filter(x => x.body.stream);
+
+test('CL-10 resume: the note says what was already done, the rounds left are honoured, and a Continue quotes the earlier message', async () => {
+  const u = auth.createUser({ username: 'ResumeKid', password: 'secret1' }); const g = games.createGame(u.id, {});
+  // Handed off after it saved version 1, with 12 of its 14 model calls used.
+  const row = turns.create({ gameId: g.id, userId: u.id, status: 'interrupted', request: { text: 'a fox game' }, attempt: 1, chargedDay: today(), provider: 'ai' });
+  q.run('UPDATE builder_turns SET model_calls=12 WHERE id=?', row.id);
+  appendChat(g.id, u.id, [{ role: 'user', text: 'a fox game', at: Date.now(), turn: row.id }]);
+  games.addVersion(g.id, GAME, { notes: 'First version', createdBy: u.id, safetyStatus: 'pass' });
+  const before = streamed().length;
+  script.push(...Array.from({ length: 6 }, () => [{ type: 'tool_use', name: 'test_notes', input: { checklist: ['Hop over a log'] } }]));
+  assert.equal(runner.recover().resumed, 1);
+  await runner.idle(runner.jobFor(g.id));
+  const calls = streamed().slice(before);
+  script.length = 0;
+  assert.equal(calls.length, 4, 'max(4, 14 - 12) model calls');
+  const msgs = calls[0].body.messages; const last = msgs.at(-1);
+  assert.equal(last.role, 'user');
+  assert.deepEqual(last.content.slice(0, -1), [{ type: 'text', text: 'a fox game' }], 'the message itself, then the note');
+  const note = last.content.at(-1).text;
+  assert.match(note, /^\[Note from the platform: the server restarted while you were working on this message, so your work was cut off\./);
+  assert.match(note, /Already done in this turn: Built version 1: First version \(safety check: pass\)\./);
+  assert.match(note, /Don't start over and don't redo finished work\./);
+  assert.ok(!msgs.slice(0, -1).some(m => JSON.stringify(m).includes('a fox game')), 'the build\'s own message is not in the history too');
+  assert.equal(turns.get(row.id).status, 'done'); assert.equal(turns.get(row.id).attempt, 2); assert.equal(turns.get(row.id).model_calls, 16);
+
+  // Continue after a build that stopped with nothing saved.
+  const g2 = games.createGame(u.id, {});
+  const old = turns.create({ gameId: g2.id, userId: u.id, status: 'failed', request: { text: 'a dragon game' } });
+  q.run("UPDATE builder_turns SET end_reason='restart', can_continue=1, ended_at=? WHERE id=?", Date.now(), old.id);
+  script.push([{ type: 'text', text: 'Carrying on!' }]);
+  const r = await runTurn({ user: u, gameId: g2.id, text: 'Please carry on with my last message.', continueOf: old.id, emit: () => {} });
+  assert.equal(r.ok, true);
+  const content = streamed().at(-1).body.messages.at(-1).content;
+  assert.equal(content[0].text, 'Please carry on with my last message.');
+  assert.match(content.at(-1).text, /The builder pressed Continue after the build stopped early, so carry on with their earlier message: «a dragon game»\./);
+  assert.match(content.at(-1).text, /Already done in this turn: nothing saved yet\./);
+});
+
+test('CL-11 a stop in the middle of a stream ends the build at once: no more requests, no tools, no "muddled" error', async () => {
+  const u = auth.createUser({ username: 'AbortKid', password: 'secret1' }); const g = games.createGame(u.id, {});
+  script.push({ hold: 1500, blocks: [{ type: 'text', text: 'Let me build that for you right away.' }, { type: 'tool_use', name: 'write_game', input: { notes: 'First', html: GAME } }] });
+  const ac = new AbortController(); const events = []; const before = streamed().length;
+  const r = await runTurn({ user: u, gameId: g.id, text: 'a fox game', signal: ac.signal, emit: (n, d) => { events.push([n, d]); if (n === 'text' && !ac.signal.aborted) ac.abort(); } });
+  assert.equal(streamed().length - before, 1, 'no more requests');
+  assert.deepEqual(events.filter(e => e[0] === 'error'), [], 'a stop is not the Builder getting muddled');
+  const done = events.find(e => e[0] === 'done')[1];
+  assert.equal(done.end, 'stopped'); assert.equal(done.steps.end, 'stopped');
+  assert.equal(games.listVersions(g.id).length, 0, 'the tool after the stop never ran');
+  assert.deepEqual([r.ok, r.error], [false, 'stopped']);
+  assert.equal(script.length, 0);
+});
+
+test('CL-12 no model identifiers in code comments (code values like config defaults are fine)', async () => {
+  const fs = await import('node:fs'); const path = await import('node:path');
+  const ROOT = path.resolve(import.meta.dirname, '../..');
+  const files = [
+    ...fs.readdirSync(path.join(ROOT, 'server'), { recursive: true }).filter(f => f.endsWith('.js')).map(f => path.join(ROOT, 'server', f)),
+    ...fs.readdirSync(path.join(ROOT, 'public/js')).filter(f => f.endsWith('.js')).map(f => path.join(ROOT, 'public/js', f)),
+  ];
+  const MODEL = /\bclaude-[a-z]+-\d|\b(sonnet|opus|haiku)\b/i;
+  const even = (s, ch) => (s.split(ch).length - 1) % 2 === 0;
+  const bad = [];
+  for (const f of files) {
+    fs.readFileSync(f, 'utf8').split('\n').forEach((line, k) => {
+      let comment = /^\s*(\/\/|\/\*|\*)/.test(line) ? line : null;
+      if (!comment) { const m = line.match(/\s\/\/\s.*$/); if (m && ["'", '"', '`'].every(ch => even(line.slice(0, m.index), ch))) comment = m[0]; }
+      if (comment && MODEL.test(comment)) bad.push(`${path.relative(ROOT, f)}:${k + 1}: ${line.trim()}`);
+    });
+  }
+  assert.ok(files.length > 50);
+  assert.deepEqual(bad, []);
 });

@@ -3,6 +3,8 @@
 // forModel goes back to the model as the tool result; event is streamed to the Studio over SSE.
 // write_game / edit_game always create a NEW version (history is never rewritten) after sanitize + static scan.
 // Each tool starts its live build step (steps.js) before exec() streams its event, so the row comes before its card.
+// Once the build's signal is aborted (time cap, game deleted, ban, a restart hand-off: runner.js), exec() refuses every
+// tool and saveVersion() writes nothing, so no version can land after a build ended or was handed off.
 import * as games from '../services/games.js';
 import { sanitizeGameHtml, MAX_GAME_BYTES } from '../services/sanitize.js';
 import { scanVersion } from '../services/scanner.js';
@@ -39,13 +41,17 @@ export function applyEdits(html, edits) {
   return { ok: true, html: out };
 }
 
-/** ctx: { user, gameId, emit(name, data), state, locale, steps? } — state.scanFails counts failed scans this turn. */
+/** ctx: { user, gameId, emit(name, data), state, locale, steps?, signal? } — state.scanFails counts failed scans this turn. */
 export function toolbox(ctx) {
   const steps = ctx.steps || NO_STEPS;
   const game = () => games.getGame(ctx.gameId);
   const current = () => { const g = game(); return g && g.current_version_id ? games.getVersion(g.current_version_id) : null; };
 
+  const stopped = () => !!(ctx.signal && ctx.signal.aborted);
   function saveVersion(rawHtml, notes) {
+    // Checked here, not only in exec(): start_from_template awaits the template files before it saves.
+    if (stopped()) return { ok: false, forModel: 'Stopped.', stop: true };
+    const g0 = game(); if (!g0 || g0.status === 'deleted') return { ok: false, forModel: 'The game was deleted.', stop: true };
     if (typeof rawHtml !== 'string' || rawHtml.trim().length < 20) return { ok: false, forModel: 'The game was empty. Send the complete game document.' };
     if (Buffer.byteLength(rawHtml) > MAX_GAME_BYTES) return { ok: false, forModel: 'The game is bigger than 2 MB. Make it smaller.' };
     const { html, removed } = sanitizeGameHtml(rawHtml.replace(/^\s*<!doctype[^>]*>/i, ''));
@@ -155,6 +161,7 @@ export function toolbox(ctx) {
       if (!STARTERS.includes(key)) return { ok: false, forModel: `Unknown template. Use one of: ${STARTERS.join(', ')}.` };
       const [{ html, fallback }, info] = await Promise.all([templateHtml(key), templateInfo(key)]);
       if (fallback) return { ok: false, forModel: 'That template is not available right now. Write the game with write_game instead.' };
+      if (stopped()) return { ok: false, forModel: 'Stopped.', stop: true };   // stopped while the files were read
       steps.start('template');
       const r = saveVersion(html, (input && input.notes) || `Started from ${info ? info.title : key}`);
       if (r.ok) r.forModel += ` It is ${info ? info.title : key}. Now make it theirs with edit_game: change the CONFIG block near the top of the module script (and the I18N table for words), following the 3D RULES.`;
@@ -173,10 +180,12 @@ export function toolbox(ctx) {
     game,
     /** Run a tool by name; streams its event; returns the tool result (a promise for playtest_game). */
     exec(name, input) {
+      if (stopped()) return { ok: false, forModel: 'Stopped.' };
       const fn = tools[name];
       const r = fn ? fn(input) : { ok: false, forModel: `Unknown tool "${name}".` };
       const done = x => { if (x.event) ctx.emit(x.event[0], x.event[1]); return x; };
-      return r && typeof r.then === 'function' ? r.then(done) : done(r);
+      // A tool that awaited (playtest, template) checks again: the build may have ended meanwhile.
+      return r && typeof r.then === 'function' ? r.then(x => (stopped() && !x.version ? { ok: false, forModel: 'Stopped.' } : done(x))) : done(r);
     },
   };
 }

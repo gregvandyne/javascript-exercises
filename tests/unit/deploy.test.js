@@ -4,8 +4,7 @@ import os from 'node:os';
 import fs from 'node:fs';
 import path from 'node:path';
 import http from 'node:http';
-import net from 'node:net';
-import { spawn, execFileSync } from 'node:child_process';
+import { execFileSync } from 'node:child_process';
 const TMP = fs.mkdtempSync(path.join(os.tmpdir(), 'brb-deploy-test-'));
 process.env.BRB_DB = ':memory:'; process.env.BRB_SILENT = '1'; process.env.LOG_REQUESTS = '0';
 process.env.BRB_DATA_DIR = path.join(TMP, 'data');
@@ -14,7 +13,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import zlib from 'node:zlib';
 
-const ROOT = path.resolve(import.meta.dirname, '../..');
+const { ROOT, lines, startServer: start } = await import('./_proc.js');
+/** A server process with its data folder under this test's temp folder. */
+const startServer = (env = {}, opts = {}) => start(env, { tmp: TMP, ...opts });
 const { config } = await import('../../server/config.js');
 const { createApp, _proxyWarning } = await import('../../server/app.js');
 const health = await import('../../server/services/health.js');
@@ -47,7 +48,6 @@ async function captureLogs(fn) {
   return lines;
 }
 const cookieFor = id => { let c = ''; startSession({ append: (k, v) => { c = v.split(';')[0]; } }, id); return c; };
-const freePort = () => new Promise(r => { const s = net.createServer().listen(0, () => { const p = s.address().port; s.close(() => r(p)); }); });
 
 // ---------------------------------------------------------------------------------------------------- /health
 const leftovers = dir => fs.readdirSync(dir).filter(f => f.startsWith('.health-check'));
@@ -299,6 +299,31 @@ test('shutdown waits for open requests and Builder turns, then closes and exits 
   assert.ok(server.idleClosed > 0, 'idle keep-alive connections were closed');
   health.lifecycle.draining = false;
 });
+test('DEP-1/2/3 shutdown: the Builder drains right after stop, hands off once at grace minus handoffMs, then exits 0', async () => {
+  const server = fakeServer(); const events = []; let turns = 1; const t0 = Date.now(); let handedAt = 0;
+  const code = await new Promise(resolve => {
+    const shutdown = makeShutdown({
+      server, graceMs: 400, handoffMs: 250, tickMs: 10, busy: () => turns, log: (l, m, f) => events.push(m === 'handed off Builder turns' ? `log ${f.turns}` : m),
+      stop: () => events.push('stop'), drain: () => events.push('drain'),
+      handOff: () => { events.push('handOff'); handedAt = Date.now() - t0; turns = 0; return 1; },
+      close: () => events.push('close'), exit: resolve,
+    });
+    shutdown('SIGTERM');
+    assert.deepEqual(events.filter(e => e === 'stop' || e === 'drain'), ['stop', 'drain'], 'drain right after stop, before any wait');
+    setTimeout(() => server.cb(), 30);   // the open requests finish (a handed-off build's stream ends)
+  });
+  assert.equal(code, 0, 'exit 0 after a hand-off with no open requests');
+  assert.equal(events.filter(e => e === 'handOff').length, 1, 'handed off once');
+  assert.ok(handedAt >= 150 && handedAt < 400, `at grace - handoffMs (${handedAt} ms)`);
+  assert.ok(events.includes('log 1'));
+  assert.ok(events.indexOf('handOff') < events.indexOf('close'));
+  health.lifecycle.draining = false;
+  // A request still open past the grace: exit 1, even after a hand-off.
+  const s2 = fakeServer(); let t2 = 1; let calls = 0;
+  const code2 = await new Promise(resolve => makeShutdown({ server: s2, graceMs: 120, handoffMs: 3000, tickMs: 10, busy: () => t2, log: () => {}, handOff: () => { calls++; t2 = 0; return 1; }, exit: resolve })('SIGTERM'));
+  assert.equal(code2, 1); assert.equal(calls, 1, 'a short grace hands off at once');
+  health.lifecycle.draining = false;
+});
 test('shutdown gives up after the grace period (exit 1); a second Ctrl+C exits at once', async () => {
   let server = fakeServer(); const logs = [];
   const code = await new Promise(resolve => makeShutdown({ server, graceMs: 120, tickMs: 10, busy: () => 1, log: (l, m) => logs.push(m), exit: resolve })('SIGTERM'));
@@ -311,24 +336,7 @@ test('shutdown gives up after the grace period (exit 1); a second Ctrl+C exits a
 });
 
 // ---------------------------------------------------------------------------------------------------- real processes
-/** Start node server/index.js with env; resolves { child, port, out(), exited } once it listens (or exits). */
-async function startServer(env = {}, { wait = true } = {}) {
-  const port = await freePort();
-  const dataDir = fs.mkdtempSync(path.join(TMP, 'srv-'));
-  const childEnv = { PATH: process.env.PATH, HOME: process.env.HOME, PORT: String(port), BRB_DATA_DIR: dataDir, BRB_SNAPSHOTS: '0', LOG_REQUESTS: '0', BRB_MOCK_DELAY_MS: '0', ...env };
-  const child = spawn(process.execPath, ['server/index.js'], { cwd: ROOT, env: childEnv, stdio: ['ignore', 'pipe', 'pipe'] });
-  let out = ''; child.stdout.on('data', d => { out += d; }); child.stderr.on('data', d => { out += d; });
-  const exited = new Promise(r => child.on('exit', code => r(code)));
-  if (wait) {
-    const t0 = Date.now();
-    while (!/"listening"/.test(out)) {
-      if (child.exitCode !== null || Date.now() - t0 > 15000) break;
-      await new Promise(r => setTimeout(r, 50));
-    }
-  }
-  return { child, port, dataDir, out: () => out, exited };
-}
-const lines = text => text.split('\n').filter(l => l.startsWith('{')).map(l => JSON.parse(l));
+// (startServer, freePort and lines: tests/unit/_proc.js; Builder restarts: builder-restart.test.js)
 
 test('index.js: SIGTERM lets a running Builder turn finish its stream, refuses new connections, then exits 0', async () => {
   const s = await startServer({ BRB_MOCK_DELAY_MS: '700' });

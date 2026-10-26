@@ -102,6 +102,35 @@ test('the Builder chat streams Server-Sent Events and makes a new version', asyn
   assert.equal('steps' in refused[2][1], false, 'a refusal has no steps record');
 });
 
+test('HTTP-9/11: Restore and Save version wait while the Builder works (409); deleting the game stops its build; 503 while restarting', async () => {
+  const agent = await import('../../server/builder/agent.js');
+  const runner = await import('../../server/builder/runner.js');
+  const r0 = await owner('/api/studio/new', { method: 'POST', body: { template: 'catch' } }); const id = r0.json.id;
+  const v1 = (await owner(`/api/studio/${id}`)).json.versions[0];
+  let release; const slow = new Promise(r => { release = r; }); const real = agent.hooks.screen;
+  agent.hooks.screen = async (text, o) => { await slow; return real(text, o); };   // the build waits in screening
+  try {
+    const res = await owner(`/api/studio/${id}/chat`, { method: 'POST', body: { text: 'Make it harder' }, raw: true });
+    assert.equal((await owner(`/api/studio/${id}`)).json.busy, true);
+    let r = await owner(`/api/studio/${id}/restore`, { method: 'POST', body: { versionId: v1.id } });
+    assert.equal(r.status, 409); assert.equal(r.json.error, 'The Builder is working on this game right now. Try again when it’s done.');
+    r = await owner(`/api/studio/${id}/save`, { method: 'POST', body: { note: 'mine' } }); assert.equal(r.status, 409);
+    r = await owner(`/api/studio/${id}/delete`, { method: 'POST', body: {} }); assert.equal(r.status, 200);
+    release();
+    const events = sse(await res.text()); const names = events.map(e => e[0]);
+    assert.equal(names.at(-1), 'done'); assert.ok(names.includes('gone'), 'the stream hears the game is gone');
+    for (const x of ['hello', 'caughtup', 'turn']) assert.ok(!names.includes(x), `the streamed POST has no ${x}`);
+    const row = q.get('SELECT status, end_reason, charged_day FROM builder_turns WHERE game_id=?', id);
+    assert.deepEqual([row.status, row.end_reason, row.charged_day], ['cancelled', 'deleted', null]);
+    assert.equal(games.listVersions(id).length, 1, 'nothing more was built');
+  } finally { agent.hooks.screen = real; }
+  runner.life.draining = true;
+  try {
+    const r = await owner(`/api/studio/${gameId}/chat`, { method: 'POST', body: { text: 'Make it harder' } });
+    assert.equal(r.status, 503); assert.equal(r.json.error, 'Our server is restarting. Try again in a moment.');
+  } finally { runner.life.draining = false; }
+});
+
 test('meta: text is cleaned; icon must come from the picker', async () => {
   let r = await owner(`/api/studio/${gameId}/meta`, { method: 'POST', body: { title: 'fuck this' } }); assert.equal(r.status, 400); assert.equal(r.json.field, 'title');
   r = await owner(`/api/studio/${gameId}/meta`, { method: 'POST', body: { description: 'email me at kid@example.com' } }); assert.equal(r.status, 400);
