@@ -153,17 +153,18 @@ if (FIRST) for (const d of $$('[data-langpick],[data-themepick]')) {
   document.addEventListener('click', e => { if (d.open && !d.contains(e.target)) close(false); });
   d.addEventListener('focusout', e => { if (d.open && e.relatedTarget && !d.contains(e.relatedTarget)) close(false); });
 }
-// ---- Top-bar search: the short placeholder ("Search") when the long one would be cut off ----
-const topq = document.getElementById('topq');
-if (FIRST && topq && topq.dataset.short) {
-  const long = topq.placeholder, ctx = document.createElement('canvas').getContext('2d');
+// ---- A short placeholder when the long one would be cut off or wrap (top-bar search, the Builder's message box) ----
+if (FIRST) for (const el of $$('input[data-short],textarea[data-short]')) {
+  const long = el.placeholder, ctx = document.createElement('canvas').getContext('2d');
   const fit = () => {
-    const cs = getComputedStyle(topq); ctx.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
-    const room = topq.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
-    topq.placeholder = ctx.measureText(long).width + 4 <= room ? long : topq.dataset.short;   // 4px: rounding between canvas and layout
+    const cs = getComputedStyle(el); ctx.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+    const room = el.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+    if (room <= 0) return;
+    const want = ctx.measureText(long).width + 4 <= room ? long : el.dataset.short;   // 4px: rounding between canvas and layout
+    if (el.placeholder !== want) { el.placeholder = want; el.dispatchEvent(new Event('placeholderfit')); }
   };
   fit(); document.fonts.ready.then(fit);
-  if (window.ResizeObserver) new ResizeObserver(fit).observe(topq);
+  if (window.ResizeObserver) new ResizeObserver(fit).observe(el);
 }
 // The Me page's language form saves as soon as a language is picked.
 const langSel = document.getElementById('lang-select');

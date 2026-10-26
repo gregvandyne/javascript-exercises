@@ -943,6 +943,8 @@ $('#st-compose').addEventListener('submit', e => { e.preventDefault(); send(inpu
 input.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); send(input.value); } });
 function autosize() { input.style.height = 'auto'; input.style.height = Math.min(140, input.scrollHeight + 4) + 'px'; }
 input.addEventListener('input', autosize);
+// A shorter placeholder was swapped in (app.js data-short): an empty box shrinks back to one line.
+input.addEventListener('placeholderfit', () => { if (!input.value) autosize(); });
 log.addEventListener('click', e => {
   const c = e.target.closest('[data-chip]'); if (c) { send(c.dataset.chip); return; }
   if (e.target.closest('.stp-tips')) setTips(!tipsOn);   // "💡 Tips: on/off" in any steps card (one setting for all)

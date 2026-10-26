@@ -771,7 +771,8 @@
       "proTitle": "A qualidade Pro demora mais, mas cria jogos mais caprichados",
       "attach": "Adicionar uma imagem ou um arquivo",
       "inputLabel": "Mensagem para o Construtor",
-      "placeholder": "Conte sua ideia ao Construtor…"
+      "placeholder": "Conte sua ideia ao Construtor…",
+      "placeholderShort": "Sua ideia…"
     },
     "preview": {
       "label": "Prévia do jogo",
@@ -971,7 +972,8 @@
     },
     "budgetResting": "O Construtor de IA está descansando até amanhã, então vou usar meus blocos simples por enquanto.",
     "turnTimeout": "⏱️ Esta criação passou do nosso tempo limite, então eu parei. Sua versão mais nova está salva. Me diga o que mudar agora!",
-    "turnTimeoutNothing": "⏱️ Esta criação passou do nosso tempo limite, então eu parei antes de conseguir salvar alguma coisa. Ela não gastou nenhuma das suas mensagens, então você pode tentar de novo."
+    "turnTimeoutNothing": "⏱️ Esta criação passou do nosso tempo limite, então eu parei antes de conseguir salvar alguma coisa. Ela não gastou nenhuma das suas mensagens, então você pode tentar de novo.",
+    "cutOffNothing": "O Construtor passou tanto tempo planejando que ficou sem espaço antes de conseguir construir algo. Seu turno não foi usado. Tente pedir uma ou duas mudanças de cada vez."
   },
   "uploads": {
     "tooFast": "Quantos arquivos! Espere um minuto e tente de novo.",

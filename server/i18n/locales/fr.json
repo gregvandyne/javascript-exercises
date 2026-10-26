@@ -770,7 +770,8 @@
       "proTitle": "La qualité pro prend plus de temps, mais crée des jeux plus beaux",
       "attach": "Ajouter une image ou un fichier",
       "inputLabel": "Message au Constructeur",
-      "placeholder": "Dis ton idée au Constructeur…"
+      "placeholder": "Dis ton idée au Constructeur…",
+      "placeholderShort": "Ton idée…"
     },
     "preview": {
       "label": "Aperçu du jeu",
@@ -970,7 +971,8 @@
     },
     "budgetResting": "Le Constructeur IA se repose jusqu’à demain, alors j’utilise mes blocs simples pour l’instant.",
     "turnTimeout": "⏱️ Cette construction a dépassé notre limite de temps, alors je me suis arrêté. Ta version la plus récente est enregistrée. Dis-moi ce qu’il faut changer maintenant !",
-    "turnTimeoutNothing": "⏱️ Cette construction a dépassé notre limite de temps, alors je me suis arrêté avant de pouvoir enregistrer quoi que ce soit. Ça ne t’a pas coûté de tour, donc tu peux réessayer."
+    "turnTimeoutNothing": "⏱️ Cette construction a dépassé notre limite de temps, alors je me suis arrêté avant de pouvoir enregistrer quoi que ce soit. Ça ne t’a pas coûté de tour, donc tu peux réessayer.",
+    "cutOffNothing": "Le Constructeur a passé tellement de temps à planifier qu’il a manqué de place avant de pouvoir construire quoi que ce soit. Ton tour n’a pas été utilisé. Essaie de demander un ou deux changements à la fois."
   },
   "uploads": {
     "tooFast": "Ça fait beaucoup de fichiers ! Attends une minute et réessaie.",

@@ -96,7 +96,7 @@ test('Claude provider: streams text, runs tools, makes versions, caches the syst
   assert.match(first.system[1].text, /CURRENT GAME: none yet/); assert.deepEqual(first.system[1].cache_control, { type: 'ephemeral' });
   assert.match(calls[1].body.system[1].text, /<current_game>[\s\S]*speed: 1/, 'the new source is passed as its own block');
   assert.ok(first.tools.find(t => t.name === 'write_game').eager_input_streaming);
-  assert.equal(first.max_tokens, config.builderMaxTokens);
+  assert.equal(first.max_tokens, config.builderMaxTokens); assert.equal(config.builderMaxTokens, 64000);
   assert.match(calls[0].headers['anthropic-beta'] || '', /server-side-fallback-2026-07-01/); assert.equal(first.fallbacks, 'default');
   assert.equal(first.temperature, undefined); assert.equal(first.tool_choice, undefined, 'no forced tool use');
   const failed = calls[2].body.messages.at(-1).content[0];
@@ -198,6 +198,33 @@ async function stepTurn(u, g, text, rounds) {
   assert.equal(script.length, 0, 'every scripted round was used');
   return { r, events, rows: rowsOf(events), done: events.find(e => e[0] === 'done')[1] };
 }
+
+test('a round that runs out of room while planning: one retry that thinks less, then a clear error and the turn back', async () => {
+  const u = auth.createUser({ username: 'CutKid1', password: 'secret1' }); const g = games.createGame(u.id, {});
+  // Once: the next round is asked to write now, with less thinking, and builds.
+  let from = requests.length;
+  const ok = await stepTurn(u, g, 'a huge stadium game', [
+    { blocks: [{ type: 'thinking' }], stop: 'max_tokens' },
+    [{ type: 'tool_use', name: 'write_game', input: { notes: 'Stadium', html: BIG } }],
+    [{ type: 'text', text: 'Done!' }],
+  ]);
+  assert.equal(ok.r.ok, true);
+  const sent = requests.slice(from).filter(r => r.body.stream).map(r => r.body);
+  assert.equal(sent[0].max_tokens, 64000);
+  assert.equal(sent[1].output_config.effort, 'low', 'the retry thinks less');
+  assert.match(JSON.stringify(sent[1].messages.at(-1)), /ran out of room/);
+  assert.ok(ok.rows.some(x => x.key === 'write'));
+  // Twice: no silent empty reply. An error says so, and the turn is given back.
+  const before = ok.done.turnsLeft;
+  from = requests.length;
+  const bad = await stepTurn(u, g, 'an even bigger game', [
+    { blocks: [{ type: 'thinking' }], stop: 'max_tokens' },
+    { blocks: [{ type: 'thinking' }], stop: 'max_tokens' },
+  ]);
+  assert.equal(bad.r.ok, false);
+  assert.ok(bad.events.some(([n, d]) => n === 'error' && /ran out of room before it could build anything/.test(d.message)));
+  assert.equal(bad.done.turnsLeft, before, 'the turn was given back');
+});
 
 test('tool schema: notes comes first in write_game and edit_game, and both fields are required', () => {
   for (const [name, other] of [['write_game', 'html'], ['edit_game', 'edits']]) {

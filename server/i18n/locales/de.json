@@ -771,7 +771,8 @@
       "proTitle": "Profi-Qualität dauert länger, baut aber tollere Spiele",
       "attach": "Bild oder Datei hinzufügen",
       "inputLabel": "Nachricht an den Baumeister",
-      "placeholder": "Erzähl deine Idee…"
+      "placeholder": "Erzähl deine Idee…",
+      "placeholderShort": "Deine Idee…"
     },
     "preview": {
       "label": "Spielvorschau",
@@ -971,7 +972,8 @@
     },
     "budgetResting": "Der KI-Baumeister ruht sich bis morgen aus, deshalb nehme ich jetzt meine einfachen Bausteine.",
     "turnTimeout": "⏱️ Dieser Bau hat länger gedauert als unser Zeitlimit, deshalb habe ich aufgehört. Deine neueste Version ist gespeichert. Sag mir, was ich als Nächstes ändern soll!",
-    "turnTimeoutNothing": "⏱️ Dieser Bau hat länger gedauert als unser Zeitlimit, deshalb habe ich aufgehört, bevor ich etwas speichern konnte. Dafür wurde keine Nachricht verbraucht, du kannst es also noch mal versuchen."
+    "turnTimeoutNothing": "⏱️ Dieser Bau hat länger gedauert als unser Zeitlimit, deshalb habe ich aufgehört, bevor ich etwas speichern konnte. Dafür wurde keine Nachricht verbraucht, du kannst es also noch mal versuchen.",
+    "cutOffNothing": "Der Baumeister hat so lange geplant, dass ihm der Platz ausging, bevor er etwas bauen konnte. Diese Nachricht wurde nicht gezählt. Bitte um ein oder zwei Änderungen auf einmal."
   },
   "uploads": {
     "tooFast": "Das sind ganz schön viele Dateien! Warte eine Minute und versuch es noch mal.",

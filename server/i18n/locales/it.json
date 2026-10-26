@@ -771,7 +771,8 @@
       "proTitle": "La qualità Pro ci mette di più, ma crea giochi più belli",
       "attach": "Aggiungi un'immagine o un file",
       "inputLabel": "Messaggio per il Costruttore",
-      "placeholder": "Racconta la tua idea al Costruttore…"
+      "placeholder": "Racconta la tua idea al Costruttore…",
+      "placeholderShort": "La tua idea…"
     },
     "preview": {
       "label": "Anteprima del gioco",
@@ -971,7 +972,8 @@
     },
     "budgetResting": "Il Costruttore IA si riposa fino a domani, quindi per ora uso i miei blocchi semplici.",
     "turnTimeout": "⏱️ Questa costruzione è durata più del nostro tempo massimo, quindi mi sono fermato. La tua versione più nuova è salvata. Dimmi cosa cambiare adesso!",
-    "turnTimeoutNothing": "⏱️ Questa costruzione è durata più del nostro tempo massimo, quindi mi sono fermato prima di riuscire a salvare qualcosa. Non conta tra i tuoi messaggi di oggi, quindi puoi riprovare."
+    "turnTimeoutNothing": "⏱️ Questa costruzione è durata più del nostro tempo massimo, quindi mi sono fermato prima di riuscire a salvare qualcosa. Non conta tra i tuoi messaggi di oggi, quindi puoi riprovare.",
+    "cutOffNothing": "Il Costruttore ha passato così tanto tempo a pianificare che ha finito lo spazio prima di poter costruire qualcosa. Questo messaggio non è stato contato. Prova a chiedere una o due modifiche alla volta."
   },
   "uploads": {
     "tooFast": "Quanti file! Aspetta un minuto e riprova.",
