@@ -142,7 +142,7 @@ function inputRate(model, from) {
  * What one Builder message costs, from builder_turns (rows are kept 35 days, so at most the last 30 days count).
  * A message = a charged build the AI ran (charged_day set, provider 'ai', ended), refunded or not: its model calls were
  * paid either way. Builds from before costs were stored are estimated from their token counts (estimated).
- * -> { days, from, normal, pro, all: { n, estimated, total, avg, median, p90 }, perDay, perDay7, builderUsd, otherUsd,
+ * -> { days, from, activeDays, spendDays, normal, pro, all: { n, estimated, total, avg, median, p90 }, perDay, perDay7, builderUsd, otherUsd,
  *      spentUsd, monthly, daily, expectedPerMonth, expectedPerMonthAll, perDayCap, projectedMonth }
  */
 export function messageCosts(days = 30, end = today()) {
@@ -158,22 +158,29 @@ export function messageCosts(days = 30, end = today()) {
   };
   const costs = rows.map(r => ({ pro: !!r.pro, estimated: !r.usd_known, usd: r.usd_known ? r.usd : estimate(r) }));
   const normal = summary(costs.filter(c => !c.pro)), pro = summary(costs.filter(c => c.pro)), all = summary(costs);
-  // Messages per day: charged turns (net of refunds), over the days since the first message in the window.
-  const usage = q.all('SELECT day, SUM(turns) n FROM builder_usage WHERE day>=? AND day<=? GROUP BY day', from, end);
+  // Messages per day: charged builds that were not given back (a Pro message is one message, whatever turns it used),
+  // over the days since the first message in the window.
+  const usage = q.all(`SELECT charged_day day, COUNT(*) n FROM builder_turns WHERE charged_day>=? AND charged_day<=? AND refunded=0
+    GROUP BY charged_day`, from, end);
+  const since = day => (day ? Math.round((startOf(end) - startOf(day)) / DAY) + 1 : days);
   const firstDay = usage.filter(u => u.n > 0).map(u => u.day).sort()[0];
-  const activeDays = firstDay ? Math.round((startOf(end) - startOf(firstDay)) / DAY) + 1 : days;
+  const activeDays = since(firstDay);
   const turns = usage.reduce((a, u) => a + (u.n || 0), 0);
   const last7 = lastDays(7, end)[0];
   const turns7 = usage.filter(u => u.day >= last7).reduce((a, u) => a + (u.n || 0), 0);
   // The free budget also pays for screening, picture checks, reviews and lesson help: what those cost over the same
-  // days, per month, comes off the top before Builder messages.
+  // days, per month, comes off the top before Builder messages. Spend is paced over the days since the first free
+  // spend or the first message, whichever came first (screening and reviews often run before anyone builds).
   const spentUsd = one('SELECT COALESCE(SUM(usd),0) FROM ai_spend_pool WHERE pool=? AND day>=? AND day<=?', 'free', from, end);
+  const firstSpend = q.get("SELECT MIN(day) day FROM ai_spend_pool WHERE pool='free' AND usd>0 AND day>=? AND day<=?", from, end);
+  const spendFrom = [firstSpend && firstSpend.day, firstDay].filter(Boolean).sort()[0];
+  const spendDays = since(spendFrom);
   const builderUsd = all.total, otherUsd = Math.max(0, spentUsd - builderUsd);
   const { daily, monthly } = aiBudget.limits();
-  const perMonth = usd => (usd / activeDays) * 30;
+  const perMonth = usd => (usd / spendDays) * 30;
   const per = usd => (all.avg > 0 ? Math.floor(usd / all.avg) : null);
   return {
-    days, from, activeDays, normal, pro, all, rows: costs.length,
+    days, from, activeDays, spendDays, normal, pro, all, rows: costs.length,
     perDay: turns / activeDays, perDay7: turns7 / Math.min(7, activeDays),
     builderUsd, otherUsd, spentUsd, monthly, daily,
     expectedPerMonthAll: per(monthly),                                         // if the whole budget went to Builder messages

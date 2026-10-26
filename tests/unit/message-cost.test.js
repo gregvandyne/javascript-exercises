@@ -30,10 +30,13 @@ function build({ ago = 0, pro = false, usd = null, tin = 0, tout = 0, provider =
     q.run("UPDATE builder_turns SET status='done', end_reason='ok', charged_day=?, provider=?, tokens_in=?, tokens_out=?, ended_at=? WHERE id=?", day(ago), provider, tin, tout, Date.now(), r.id);
   } else {
     turns.markRunning(r.id, { chargedDay: day(ago), provider, chargedTo: 'free', weight: pro ? 2 : 1 });
-    turns.finish(r.id, { status: 'done', end: 'ok', usd, tokensIn: tin, tokensOut: tout });
+    turns.addCost(r.id, usd);
+    turns.finish(r.id, { status: 'done', end: 'ok', tokensIn: tin, tokensOut: tout });
   }
   if (refunded) q.run('UPDATE builder_turns SET refunded=1 WHERE id=?', r.id);
-  q.run('INSERT INTO builder_usage(user_id, day, turns) VALUES (?,?,1) ON CONFLICT(user_id, day) DO UPDATE SET turns=turns+1', kid.id, day(ago));
+  // builder_usage holds weighted turns: a Pro message uses PRO_TURN_WEIGHT of them (2 here), a refund gives them back.
+  const w = refunded ? 0 : pro ? 2 : 1;
+  q.run('INSERT INTO builder_usage(user_id, day, turns) VALUES (?,?,?) ON CONFLICT(user_id, day) DO UPDATE SET turns=turns+excluded.turns', kid.id, day(ago), w);
   return r.id;
 }
 
@@ -57,8 +60,8 @@ test('allowanceFor: the free allowance today, by user row or id; turnsLeft and t
 test('a build\'s cost adds up over attempts (hand-off at a restart, then the resumed attempt)', () => {
   const r = turns.create({ gameId: game.id, userId: kid.id });
   turns.markRunning(r.id, { chargedDay: today(), provider: 'ai' });
-  turns.interrupt(r.id, { usd: 0.25 });
-  turns.finish(r.id, { status: 'done', end: 'ok', usd: 0.5 });
+  turns.addCost(r.id, 0.25); turns.interrupt(r.id, {});
+  turns.addCost(r.id, 0.5); turns.finish(r.id, { status: 'done', end: 'ok' });
   const row = q.get('SELECT usd, usd_known FROM builder_turns WHERE id=?', r.id);
   near(row.usd, 0.75); assert.equal(row.usd_known, 1);
   q.run('DELETE FROM builder_turns WHERE id=?', r.id);
@@ -103,14 +106,40 @@ test('messageCosts: average, median and 90th percentile per quality; older build
   near(c.normal.median, 0.15);
   near(c.normal.p90, Math.max(0.20, est));
   near(c.pro.avg, 0.40); near(c.pro.median, 0.30); near(c.pro.p90, 0.50);
-  // Messages per day: the 8 charged turns in builder_usage over the 4 days since the first message.
-  assert.equal(c.activeDays, 4); near(c.perDay, 8 / 4);
+  // Messages per day: charged builds not given back (3 normal, 2 Pro counted once each though they used 2 turns, the
+  // offline one, the older one and the one still running = 8) over the 4 days since the first message.
+  assert.equal(c.activeDays, 4); near(c.perDay, 8 / 4); assert.equal(c.spendDays, 4);
   // The budget: $3 spent over 4 days, builds cost all.total, the rest is other AI use, scaled to 30 days.
   near(c.otherUsd, 3 - c.all.total);
   near(c.projectedMonth, 3 / 4 * 30);
   assert.equal(c.expectedPerMonthAll, Math.floor(config.aiMonthlyBudgetUsd / c.all.avg));
   assert.equal(c.expectedPerMonth, Math.floor(Math.max(0, config.aiMonthlyBudgetUsd - c.otherUsd / 4 * 30) / c.all.avg));
   assert.equal(c.perDayCap, Math.floor(config.aiDailyBudgetUsd / c.all.avg));
+});
+
+test('messageCosts: other AI use that started before the first Builder message is paced over its own days', () => {
+  q.run('DELETE FROM builder_turns'); q.run('DELETE FROM builder_usage'); q.run('DELETE FROM ai_spend_pool'); q.run('DELETE FROM ai_usage');
+  // $1 a day of screening, reviews and photo checks for 30 days; one $0.10 Builder message yesterday.
+  for (let i = 0; i < 30; i++) q.run("INSERT INTO ai_spend_pool(day, pool, usd, calls) VALUES (?, 'free', ?, 1)", day(i), i === 1 ? 1.1 : 1);
+  build({ ago: 1, usd: 0.10 });
+  const c = stats.messageCosts(30);
+  assert.equal(c.activeDays, 2); near(c.perDay, 1 / 2);
+  assert.equal(c.spendDays, 30);
+  near(c.otherUsd, 30); near(c.projectedMonth, 30.1);
+  assert.equal(c.expectedPerMonth, Math.floor((config.aiMonthlyBudgetUsd - 30) / 0.10 + 1e-9));
+  assert.ok(c.expectedPerMonth > 0);
+});
+
+test('a crash mid-build keeps the cost of every model call already paid', async () => {
+  const runner = await import('../../server/builder/runner.js');
+  const g = games.createGame(kid.id, { title: 'Crash Game' });
+  const r = turns.create({ gameId: g.id, userId: kid.id, request: { text: 'a game' } });
+  turns.markRunning(r.id, { chargedDay: today(), provider: 'ai', attempt: 2 });   // carried on once already: stopped at boot
+  turns.addCost(r.id, 0.2);                                                         // what agent.js writes per paid call
+  // The process dies: no finish, no hand-off. The next boot stops the row.
+  runner.recover();
+  const row = q.get('SELECT status, usd, usd_known FROM builder_turns WHERE id=?', r.id);
+  assert.equal(row.status, 'failed'); near(row.usd, 0.2); assert.equal(row.usd_known, 1);
 });
 
 test('messageCosts with no messages yet: nothing divides by zero', () => {

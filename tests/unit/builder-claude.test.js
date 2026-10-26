@@ -471,6 +471,12 @@ test('CL-11 a stop in the middle of a stream ends the build at once: no more req
   assert.equal(games.listVersions(g.id).length, 0, 'the tool after the stop never ran');
   assert.deepEqual([r.ok, r.error], [false, 'stopped']);
   assert.equal(script.length, 0);
+  // The cut-off round was still paid for: its input and cache tokens from the first event, its output estimated from
+  // what streamed (one 8-character piece, about 2 tokens), on the row and in the free pool.
+  const aiBudget = await import('../../server/services/ai-budget.js');
+  const want = aiBudget.costOf(config.builderModel, { input_tokens: 100, cache_read_input_tokens: 50, output_tokens: 2 });
+  const row = q.get('SELECT usd FROM builder_turns WHERE game_id=? AND charged_day IS NOT NULL', g.id);
+  assert.ok(want > 0 && Math.abs(row.usd - want) < 1e-12, `${row.usd} vs ${want}`);
 });
 
 test('CL-12 no model identifiers in code comments (code values like config defaults are fine)', async () => {

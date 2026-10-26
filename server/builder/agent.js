@@ -99,14 +99,15 @@ export async function executeTurn(job, { user, game, text = '', pro = false, wan
   const carry = resume || (continueOf ? { versions: turns.versionsSince(game.id, continueOf.base_version), original: continueOf.request.text, cont: true } : null);
   let usage = { tokensIn: 0, tokensOut: 0, model: name };
   job.usage = usage;
-  // What this attempt's model calls cost (US dollars), added to the row when it ends or is handed off. A resumed
-  // attempt pays from the pool its message was charged to (only 'free' exists today).
-  job.usd = 0; job.pool = job.pool || allowanceFor(user).pool;
+  // Each model call's cost (US dollars) goes on the row as soon as it is paid (turns.addCost), so a crash, a hand-off
+  // or a call that finishes after the backstop closed the build loses nothing. A resumed attempt pays from the pool
+  // its message was charged to (only 'free' exists today).
+  job.pool = job.pool || allowanceFor(user).pool;
   try {
     usage = { ...usage, ...(await PROVIDERS[name].run({
       user, game, text, pro: !!pro, history, uploads, state, tools: tb, emit, steps, signal: job.ac.signal, locale, t,
       between: (round, o) => runner.between(job, round, o), settle: () => runner.settle(job), pending: () => job.waiting.length,
-      pool: job.pool, cost: usd => { job.usd += +usd || 0; },
+      pool: job.pool, cost: usd => { try { turns.addCost(job.id, usd); } catch { /* the database is closing */ } },
       resume: carry, maxRounds,
     })) };
   } catch (e) {
@@ -149,7 +150,7 @@ export function endBuild(job, { usage = job.usage || {} } = {}) {
   appendChat(job.gameId, job.userId, [{ role: 'assistant', text: job.seg.text.trim(), at: Date.now(), events, model: usage.model || name, pro: !!pro, turn: job.id, ...(job.attempt > 1 ? { resumed: true } : {}) }],
     { ...(state ? { state } : {}), tokensIn: usage.tokensIn || 0, tokensOut: usage.tokensOut || 0 });
   const status = statusOf(end);
-  turns.finish(job.id, { status, end, versions, modelCalls: rec ? rec.r : 0, tokensIn: usage.tokensIn || 0, tokensOut: usage.tokensOut || 0, durationMs: Date.now() - job.t0, canContinue: end === 'timeout' && !!job.request.text, usd: job.usd || 0 });
+  turns.finish(job.id, { status, end, versions, modelCalls: rec ? rec.r : 0, tokensIn: usage.tokensIn || 0, tokensOut: usage.tokensOut || 0, durationMs: Date.now() - job.t0, canContinue: end === 'timeout' && !!job.request.text });
   const refunded = refundable(status, end, versions) && turns.refund(job.id);
   const left = turnsLeft(job.userId);
   job.emit('done', { turnsLeft: left, ...(rec ? { steps: rec } : {}), ...(refunded ? { refunded: true } : {}), end });

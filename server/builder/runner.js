@@ -374,7 +374,7 @@ export function handOff() {
         const state = job.state ? { ...job.state } : undefined; if (state) delete state.scanFails;
         const entries = text || job.seg.events.length ? [{ role: 'assistant', text, at: Date.now(), events: [...job.lead, ...job.seg.events, ...(rec ? [['steps', rec]] : [])], turn: job.id, interrupted: true }] : [];
         if (entries.length || state) appendChat(job.gameId, job.userId, entries, state ? { state } : {});
-        turns.interrupt(job.id, { durationMs: Date.now() - job.t0, modelCalls: rec ? rec.r : 0, versions: turns.versionsSince(job.gameId, job.base).length, usd: job.usd || 0 });
+        turns.interrupt(job.id, { durationMs: Date.now() - job.t0, modelCalls: rec ? rec.r : 0, versions: turns.versionsSince(job.gameId, job.base).length });
       }
     } catch (e) { log('error', 'builder hand-off failed', { turn: job.id, error: e.message }); }
     job.ac.abort('restart');

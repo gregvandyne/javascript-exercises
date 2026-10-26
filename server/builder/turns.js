@@ -36,14 +36,17 @@ export const bump = id => q.run('UPDATE builder_turns SET attempt=attempt+1 WHER
 /** A resumed attempt starts: running again, one attempt more, on the provider that runs it now. */
 export const resumeRow = (id, provider) => q.run("UPDATE builder_turns SET status='running', attempt=attempt+1, provider=? WHERE id=?", provider, id);
 /** Handed off at shutdown: decided at the next boot. */
-export function interrupt(id, { durationMs = 0, modelCalls = 0, versions = 0, usd = 0 } = {}) {
-  q.run("UPDATE builder_turns SET status='interrupted', end_reason='restart', duration_ms=?, model_calls=model_calls+?, versions=?, usd=usd+? WHERE id=?", durationMs, modelCalls, versions, usd || 0, id);
+export function interrupt(id, { durationMs = 0, modelCalls = 0, versions = 0 } = {}) {
+  q.run("UPDATE builder_turns SET status='interrupted', end_reason='restart', duration_ms=?, model_calls=model_calls+?, versions=? WHERE id=?", durationMs, modelCalls, versions, id);
 }
-/** The build ended. model_calls and usd (what this attempt's model calls cost) add up over attempts (a resume gets the
- *  rounds that are left). */
-export function finish(id, { status, end, versions = 0, modelCalls = 0, tokensIn = 0, tokensOut = 0, durationMs = 0, canContinue = 0, usd = 0 }) {
-  q.run('UPDATE builder_turns SET status=?, end_reason=?, versions=?, model_calls=model_calls+?, tokens_in=tokens_in+?, tokens_out=tokens_out+?, duration_ms=?, can_continue=?, usd=usd+?, ended_at=? WHERE id=?',
-    status, end, versions, modelCalls, tokensIn, tokensOut, durationMs, canContinue ? 1 : 0, usd || 0, now(), id);
+/** One model call of this build was paid (US dollars): written at once, so a crash, a hand-off or a call that ends
+ *  after the build was closed keeps every cost, added up over attempts. */
+export const addCost = (id, usd) => { if (+usd > 0) q.run('UPDATE builder_turns SET usd=usd+? WHERE id=?', +usd, id); };
+/** The build ended. model_calls adds up over attempts (a resume gets the rounds that are left); the cost is written
+ *  per call (addCost). */
+export function finish(id, { status, end, versions = 0, modelCalls = 0, tokensIn = 0, tokensOut = 0, durationMs = 0, canContinue = 0 }) {
+  q.run('UPDATE builder_turns SET status=?, end_reason=?, versions=?, model_calls=model_calls+?, tokens_in=tokens_in+?, tokens_out=tokens_out+?, duration_ms=?, can_continue=?, ended_at=? WHERE id=?',
+    status, end, versions, modelCalls, tokensIn, tokensOut, durationMs, canContinue ? 1 : 0, now(), id);
 }
 export const setContinue = (id, on) => q.run('UPDATE builder_turns SET can_continue=? WHERE id=?', on ? 1 : 0, id);
 /** Give the build's turns back, once (idempotent; the day and the weight it was charged with, to the source that paid:

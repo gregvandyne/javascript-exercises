@@ -852,7 +852,8 @@ about 20 games, read the cost per message on /admin/stats).
 - **Support email:** `CONTACT_EMAIL=greg@oomba.ai` (in `render.yaml`), also the support email in Stripe.
 
 **Chunk 1: cost per message.** Each Builder build records what its own model calls cost (`builder_turns.usd`, from
-the same prices as the AI cap), who paid (`charged_to`, today always `free`) and its weight (`weight`). One function,
+the same prices as the AI cap, written as each call is paid, so a crash or a stop keeps it; a round cut off mid-stream
+counts its input tokens and an estimate of what it streamed), who paid (`charged_to`, today always `free`) and its weight (`weight`). One function,
 `usage.allowanceFor(user)` (`server/builder/usage.js`), says how many messages a user gets today and from which source;
 every limit check and every "{count} messages" reads it, so family and school sources plug in there later. Spend is
 also kept per money pool (`ai_spend_pool`, today only `free`; earlier days were copied in as `free`). /admin/stats
@@ -861,4 +862,6 @@ messages per month the budget pays for. Builds from before this update have no s
 from their stored token counts, with the input price blended from that model's real calls in `ai_usage` (cached
 prompt tokens are cheaper), and the page says how many were estimated. Builder rows are kept 35 days, so the numbers
 cover at most the last 30 days. Screening, picture checks and reviews are not part of a message's cost; the expected
-free messages per month subtract what they cost over the same days.
+free messages per month subtract what they cost, paced over the days since the first free spend or the first
+message, whichever came first. Messages per day counts charged builds not given back (a Pro message is one message,
+whatever turns it used).
