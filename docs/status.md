@@ -8,6 +8,7 @@ _Last updated: 2026-10-25_
 ## Verified working (exercised, not just written)
 | Area | Proof |
 |---|---|
+| **Hero of Sunvale** (official 3D launch game, the home-page hero): 11 story missions, friendly battles with fixed chest rewards, visible armor, the Snarlwick and Cinder boss; a test bot plays New game to The End on all three difficulties with no errors; scanner pass, pinned Three.js only | e2e `seeds.spec.js` (loads in the sandbox, shows on Home); the builders' play-through bot; unit `vendor.test.js`, `scanner.test.js` |
 | Guest play in one tap, cloud saves via the localStorage shim, guest → account keeps saves | e2e `play.spec.js` |
 | Seed games: Shark Plank, Ring Rumble (fullscreen via SDK; two players on one keyboard with on-screen key guides on desktop), Footy Tycoon (trophy wallet persists; doubles roll again; $200 for passing Kick Off) | e2e `play.spec.js`, `seeds.spec.js` |
 | Drop Four (connect-four, 2 players or a three-level robot) and Happy Putt (18-hole mini golf homage to Happy Gilmore): each built, then verified over several rounds by independent playtest, visual and code review agents in the real sandbox | e2e `seeds.spec.js`, scanner tests, workflow verification logs |
@@ -57,6 +58,7 @@ design); e2e (`E2E_PORT=5881`) the Builder/Studio specs (`studio-steps`, `studio
 `BRB_SNAPSHOTS=1` and the headless shell (`BRB_CHROMIUM`) 3 passed.
 
 ## Not verified / known limits
+- **Hero of Sunvale's in-game text is English only for now** (its listing is translated; other languages fall back to English inside the game). Its separate play, performance and kid-safety reviews were cut short by a usage limit and are still to do; the builders' own checks (full play-through bot, draw-call budgets, scanner) passed.
 - **Real Claude calls are untested** (no `ANTHROPIC_API_KEY` here). Request shapes (cache_control, tools, models, review schema) are tested against a local fake Messages API. Set the key and try one Studio game before launch.
 - **Build steps against the real API:** when a thinking block starts during the model's pause, and whether the model really writes `notes` (the plan) first, are tested against the fake Messages API only. The AI-path steps card was checked with scripted event streams, not a live model.
 - **Full `docker build` not run here**: this sandbox blocks Debian package mirrors and Playwright's download site, so the `apt-get` (tini, Chromium's libraries) + `npm ci` steps could not run. The container tests used a copy of the Dockerfile where only those steps are swapped (worktree `node_modules`, Docker's bundled tini 0.19.0, no Chromium); everything else, including the entrypoint and Litestream, is the real thing. Render/any normal network should build it as-is.
