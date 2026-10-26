@@ -1,0 +1,14 @@
+{
+  "slug": "hero-of-sunvale",
+  "title": "Hero of Sunvale",
+  "icon": "🐉",
+  "cover": "forest",
+  "category": "adventure",
+  "tags": "3d,adventure,hero,princess,dragon,castle,quest,open world",
+  "description": "Make your own blocky hero and explore a big 3D kingdom of villages, forests, castles and snowy mountains. Help the people of Sunvale on missions, win friendly battles for treasure chests full of potions and armor, and free Princess Marigold from grumpy Lord Snarlwick and his dragon.",
+  "orientation": "any",
+  "players_max": 1,
+  "age_rating": "everyone",
+  "featured": true,
+  "notes": "3D with the built-in Three.js 0.185.1 (pinned import map with integrity). 11 story missions (training, slimes, sheep, fairy lanterns, Grumblin camp, bridge escort, Riverbend bubbles, the Queen's castle, Frostpeak Pass and the Gloom Gate, the gloom crystals, Lord Snarlwick and Cinder) plus Smith Bo's Sunblade, the Sunflower Tower, 30 Sun Gems and 5 Heart Crystals. Saves the adventure in 'hero-of-sunvale-v1' and settings in 'hero-of-sunvale-settings-v1' (signed-in players). Score: BRB.score.submit(points, 'hero points') after every mission; BRB.gameOver({ won: true, score }) at The End. Test hooks: window.__brbTest (state, start, manual, step, teleport, press, hold, move, moveTo, talk, startMission, setMission, completeObjective, bossPhase, bossOpen, win, ending, skipCutscene, play (an input-only quest bot), save, load, perf, setQuality...)."
+}
