@@ -174,7 +174,8 @@
       "colorHeading": "色",
       "colorGroup": "色",
       "colorLabel": "色 {color}",
-      "avatarHeading": "または えもじを えらぶ"
+      "avatarHeading": "または えもじを えらぶ",
+      "edit": "しゃしんをかえる"
     },
     "language": {
       "heading": "ことば",
@@ -1063,7 +1064,8 @@
       "photoChecking": "しゃしんを チェックしています…",
       "photoSaved": "しゃしんを ほぞんしました！",
       "photoRemoved": "しゃしんを けしました",
-      "photoBad": "その ファイルは つかえる しゃしんでは ありません。べつのを えらんでね。"
+      "photoBad": "その ファイルは つかえる しゃしんでは ありません。べつのを えらんでね。",
+      "lookTitle": "見た目をえらぼう"
     },
     "profile": {
       "linkCopied": "プロフィールのリンクをコピーしました！"

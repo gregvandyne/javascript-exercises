@@ -175,7 +175,8 @@
       "colorHeading": "اللون",
       "colorGroup": "اللون",
       "colorLabel": "اللون {color}",
-      "avatarHeading": "أو اختر رمزًا تعبيريًا"
+      "avatarHeading": "أو اختر رمزًا تعبيريًا",
+      "edit": "تعديل الصورة"
     },
     "language": {
       "heading": "اللغة",
@@ -1064,7 +1065,8 @@
       "photoChecking": "نفحص صورتك…",
       "photoSaved": "حُفظت الصورة!",
       "photoRemoved": "أُزيلت الصورة",
-      "photoBad": "هذا الملف ليس صورة يمكننا استخدامها. جرّب صورة أخرى."
+      "photoBad": "هذا الملف ليس صورة يمكننا استخدامها. جرّب صورة أخرى.",
+      "lookTitle": "اختر شكلك"
     },
     "profile": {
       "linkCopied": "تم نسخ رابط الملف الشخصي!"

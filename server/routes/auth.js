@@ -306,25 +306,22 @@ router.get('/me', auth.requireUser, (req, res) => {
   <nav class="metiles" aria-label="${t('me.title')}">
     ${tiles.map(([e, l, h, sub]) => html`<a class="panel metile" href="${h}"><span class="metile-e" aria-hidden="true">${e}</span><span>${l}</span>${sub ? html`<span class="metile-sub">${sub}</span>` : ''}</a>`)}
   </nav>
-  <section class="panel" aria-labelledby="av-h"><h2 id="av-h">${t('me.look.heading')}</h2>
-    <div class="photo-row">
-      ${avatar(u, 84)}
-      <div class="photo-ctl">
-        <h3>${t('me.photo.heading')}</h3>
+  <section class="panel lookpanel" aria-labelledby="av-h"><h2 id="av-h">${t('me.look.heading')}</h2>
+    <div class="lookme">${avatar(u, 96)}
+      <button class="btn" type="button" id="look-edit" aria-haspopup="dialog">✏️ ${t('me.look.edit')}</button></div>
+    ${u.is_guest ? '' : html`<input type="file" id="photo-file" accept="image/*" hidden>`}
+    <template id="look-sheet">
+      <section class="looksec"><h3>📷 ${t('me.photo.heading')}</h3>
         <p class="muted small">${u.is_guest ? t('me.photo.guest') : t('me.photo.text')}</p>
         ${u.is_guest ? '' : html`<div class="row">
-          <button class="btn btn-primary" type="button" id="photo-pick">📷 ${u.photo_at ? t('me.photo.change') : t('me.photo.upload')}</button>
-          ${u.photo_at ? html`<button class="btn" type="button" id="photo-remove">${t('me.photo.remove')}</button>` : ''}
-          <input type="file" id="photo-file" accept="image/*" hidden>
-        </div>`}
-      </div>
-    </div>
-    <div class="lookpicks">
-      <details class="lookdrop" data-lookpick><summary class="btn"><span>${t('me.look.avatarHeading')}</span><span class="lookcur" aria-hidden="true">${u.avatar}</span><span class="lookcaret" aria-hidden="true">▾</span></summary>
-        <div class="lookmenu" role="group" aria-label="${t('me.look.avatarGroup')}">${auth.AVATARS.map(a => html`<button class="chip lookemoji" type="button" data-avatar="${a}" aria-pressed="${a === u.avatar}" aria-label="${t('me.look.avatarLabel', { emoji: a })}">${a}</button>`)}</div></details>
-      <details class="lookdrop" data-lookpick><summary class="btn"><span>${t('me.look.colorHeading')}</span><span class="avatar lookcur" style="--s:22px;--c:${u.color}" aria-hidden="true"></span><span class="lookcaret" aria-hidden="true">▾</span></summary>
-        <div class="lookmenu" role="group" aria-label="${t('me.look.colorGroup')}">${auth.COLORS.map(c => html`<button class="chip" type="button" data-color="${c}" aria-pressed="${c === u.color}" aria-label="${t('me.look.colorLabel', { color: c })}"><span class="avatar" style="--s:26px;--c:${c}"></span></button>`)}</div></details>
-    </div>
+          <button class="btn btn-primary" type="button" data-photo-pick>📷 ${u.photo_at ? t('me.photo.change') : t('me.photo.upload')}</button>
+          ${u.photo_at ? html`<button class="btn" type="button" data-photo-remove>${t('me.photo.remove')}</button>` : ''}
+        </div>`}</section>
+      <section class="looksec"><h3>${t('me.look.avatarHeading')}</h3>
+        <div class="lookmenu" role="group" aria-label="${t('me.look.avatarGroup')}">${auth.AVATARS.map(a => html`<button class="chip lookemoji" type="button" data-avatar="${a}" aria-pressed="${a === u.avatar}" aria-label="${t('me.look.avatarLabel', { emoji: a })}">${a}</button>`)}</div></section>
+      <section class="looksec"><h3>${t('me.look.colorHeading')}</h3>
+        <div class="lookmenu" role="group" aria-label="${t('me.look.colorGroup')}">${auth.COLORS.map(c => html`<button class="chip" type="button" data-color="${c}" aria-pressed="${c === u.color}" aria-label="${t('me.look.colorLabel', { color: c })}"><span class="avatar" style="--s:26px;--c:${c}"></span></button>`)}</div></section>
+    </template>
   </section>
   <div class="mesettings">${languagePanel(req)}${appearancePanel(req)}</div>
   ${!u.is_guest ? html`<section class="panel"><h2>${t('me.chat.heading')}</h2>

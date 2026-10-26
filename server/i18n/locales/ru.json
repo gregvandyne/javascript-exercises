@@ -174,7 +174,8 @@
       "colorHeading": "Цвет",
       "colorGroup": "Цвет",
       "colorLabel": "Цвет {color}",
-      "avatarHeading": "Или выбери эмодзи"
+      "avatarHeading": "Или выбери эмодзи",
+      "edit": "Изменить фото"
     },
     "language": {
       "heading": "Язык",
@@ -1063,7 +1064,8 @@
       "photoChecking": "Проверяем фото…",
       "photoSaved": "Фото сохранено!",
       "photoRemoved": "Фото убрано",
-      "photoBad": "Этот файл не подходит как фото. Попробуй другой."
+      "photoBad": "Этот файл не подходит как фото. Попробуй другой.",
+      "lookTitle": "Выбери свой вид"
     },
     "profile": {
       "linkCopied": "Ссылка на профиль скопирована!"

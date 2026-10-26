@@ -175,7 +175,8 @@
       "colorHeading": "צבע",
       "colorGroup": "צבע",
       "colorLabel": "צבע {color}",
-      "avatarHeading": "או בחרו אימוג׳י"
+      "avatarHeading": "או בחרו אימוג׳י",
+      "edit": "עריכת תמונה"
     },
     "language": {
       "heading": "שפה",
@@ -1064,7 +1065,8 @@
       "photoChecking": "בודקים את התמונה…",
       "photoSaved": "התמונה נשמרה!",
       "photoRemoved": "התמונה הוסרה",
-      "photoBad": "הקובץ הזה הוא לא תמונה שאפשר להשתמש בה. נסו אחרת."
+      "photoBad": "הקובץ הזה הוא לא תמונה שאפשר להשתמש בה. נסו אחרת.",
+      "lookTitle": "בחרו איך תיראו"
     },
     "profile": {
       "linkCopied": "הקישור לפרופיל הועתק!"
