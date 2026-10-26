@@ -164,3 +164,17 @@ test('the steps record never reaches the model', () => {
   // side by side are joined (the API wants the roles in turns).
   assert.deepEqual(historyToMessages([base[0], { role: 'assistant', text: '', events: [['steps', rec]] }, base[2]]), [{ role: 'user', content: 'a fox game\n\nthanks' }]);
 });
+
+test('follow-up facts: a round started by new messages (c msg, m 1-9), the read row, and fu in the record only when above 0', () => {
+  assert.ok(STEP_KEYS.includes('read') && STEP_KEYS.includes('resume'));
+  assert.deepEqual(keep({ c: 'msg', m: 2, n: 3 }), { c: 'msg', m: 2, n: 3 });
+  assert.deepEqual(keep({ m: 0 }), {}); assert.deepEqual(keep({ m: 10 }), {}); assert.deepEqual(keep({ m: 1.5 }), {});
+  const out = [];
+  const rec = stepRecorder((name, d) => out.push([name, d]));
+  rec.start('blocks'); rec.start('read', { m: 1 });
+  assert.deepEqual(out[1][1], { i: 2, key: 'read', at: out[1][1].at, m: 1 });
+  assert.equal(typeof out[1][1].at, 'number');
+  assert.equal(rec.record({ p: 'blocks' }).fu, undefined);
+  assert.equal(rec.record({ p: 'blocks', fu: 0 }).fu, undefined);
+  assert.equal(rec.record({ p: 'blocks', fu: 2 }).fu, 2);
+});

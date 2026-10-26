@@ -6,9 +6,13 @@
 //                   "call it X" -> edit_game with real find/replace edits (a new version)
 //                -> "it's ready" / "polish" -> polish pass with a checklist
 // Text is streamed in small chunks so the SSE path is exercised.
-// The runner's checkpoint (ctx.between) runs before it starts, so a stopped build (deleted, banned, Builder off) does
-// nothing. Carried on after a restart (ctx.resume) with a version already saved, it says so and asks what's next
-// instead of building again; with nothing saved yet it runs the builder's message again from the start.
+// The runner's checkpoint (ctx.between) runs before it starts (a stopped build does nothing) and after each pass (a
+// question, or a version with its notes): new messages the builder sent meanwhile are used right away, as the answer
+// to the question or as a change to the new version, then the pass repeats (at most 4 passes). Messages that arrive
+// after the last checkpoint are carried into the next build by the runner. BRB_MOCK_INBOX_WAIT_MS (tests and demos
+// only) makes the end-of-pass checkpoint wait that long for a message.
+// Carried on after a restart (ctx.resume) with a version already saved, it says so and asks what's next instead of
+// building again (or applies the new messages it carries); with nothing saved yet it runs the message again.
 // Live build steps: one "blocks" row (the simple building blocks, never described as an AI); its tool calls add
 // the same name / check / notes / ask rows as Claude's, from tools.js. It never gets AI rows (rounds, playtests).
 import { templateHtml, templateInfo } from './catalog.js';
@@ -22,6 +26,7 @@ import { NO_STEPS } from './steps.js';
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 /** Milliseconds between streamed chunks of three words (BRB_MOCK_DELAY_MS, 12 by default). */
 export const chunkDelay = () => { const d = +process.env.BRB_MOCK_DELAY_MS; return Number.isFinite(d) ? d : 12; };
+const inboxWait = () => Math.max(0, +process.env.BRB_MOCK_INBOX_WAIT_MS || 0);
 async function say(ctx, text) {
   const parts = String(text).match(/\S+\s*/g) || [];
   for (let i = 0; i < parts.length; i += 3) {
@@ -232,25 +237,44 @@ async function fixSafety(ctx, m, cur) {
   if (r.ok) ctx.tools.exec('ask_user', { question: 'All fixed! What next?', options: nextChips(tune) });
 }
 
+/** The runner's checkpoint: null when the build was stopped, else the new messages (read and used at once). */
+async function readNew(ctx, round, wait = false) {
+  const b = ctx.between ? await ctx.between(round, { waitMs: wait ? inboxWait() : 0 }) : { add: [] };
+  if (b.stop) return null;
+  if (b.add.length) { (ctx.steps || NO_STEPS).start('read', { m: b.add.length }); if (ctx.settle) ctx.settle(); }
+  return b.add;
+}
+
 export async function run(ctx) {
   (ctx.steps || NO_STEPS).start('blocks');
   const st = ctx.state; st.mock = st.mock || { asked: [], answers: {} };
   const m = st.mock;
-  const b = ctx.between ? await ctx.between(1) : null;
-  if (b && b.stop) return { model: 'mock' };
+  const early = await readNew(ctx, 1);   // also the messages a follow-on build starts with
+  if (early === null) return { model: 'mock' };
   await acknowledgeUploads(ctx);
-  const cur = ctx.tools.current();
   // Carried on after a restart, or a Continue: the message is the earlier one.
-  const text = (ctx.resume && ctx.resume.original) || ctx.text;
-  if (ctx.resume && ctx.resume.versions && ctx.resume.versions.length && cur) {
+  const base = (ctx.resume && ctx.resume.original) || ctx.text;
+  const saved = !!(ctx.resume && ctx.resume.versions && ctx.resume.versions.length && ctx.tools.current());
+  if (saved && !early.length) {
     const v = ctx.resume.versions.at(-1).number;
     await say(ctx, `I'm back! Your game is saved as version ${v}, so I carried on from there.`);
     ctx.tools.exec('test_notes', { checklist: CHECK.default });
-    ctx.tools.exec('ask_user', { question: 'What should we change next?', options: nextChips(readTune(cur.html)) });
+    ctx.tools.exec('ask_user', { question: 'What should we change next?', options: nextChips(readTune(ctx.tools.current().html)) });
     return { model: 'mock', tokensIn: 0, tokensOut: 0 };
   }
-  if (!text) { if (!cur) await ctx.tools.exec('ask_user', { question: 'What kind of game should we make?', options: KIND_CHIPS }); return { model: 'mock' }; }
-  if (cur) await followUp({ ...ctx, text }, m, cur); else await plan({ ...ctx, text }, m);
+  // With a version saved before the restart, only the new messages are still to do.
+  let text = [saved ? '' : base, ...early.map(e => e.text)].filter(Boolean).join('\n');
+  if (early.length && base) await say(ctx, ctx.resume ? "I'm back, and I got your new message! " : 'Got your new message too! ');
+  for (let pass = 0; pass < 4; pass++) {
+    const cur = ctx.tools.current();
+    if (!text) { if (!cur) ctx.tools.exec('ask_user', { question: 'What kind of game should we make?', options: KIND_CHIPS }); }
+    else if (cur) await followUp({ ...ctx, text }, m, cur);
+    else await plan({ ...ctx, text }, m);
+    const fu = await readNew(ctx, pass + 2, true);   // after a question (the answer) or a version (a change)
+    if (!fu || !fu.length) break;
+    await say(ctx, 'Got your new message! ');
+    text = fu.map(e => e.text).join('\n');
+  }
   return { model: 'mock', tokensIn: 0, tokensOut: 0 };
 }
 export { hasLayer };

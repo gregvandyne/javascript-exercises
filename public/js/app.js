@@ -154,17 +154,29 @@ if (FIRST) for (const d of $$('[data-langpick],[data-themepick]')) {
   d.addEventListener('focusout', e => { if (d.open && e.relatedTarget && !d.contains(e.relatedTarget)) close(false); });
 }
 // ---- A short placeholder when the long one would be cut off or wrap (top-bar search, the Builder's message box) ----
+// data-long (the full text, taken from the placeholder) and data-short; setPlaceholder() changes both later. The fit is
+// measured from the element itself, so it works from either copy of this module (studio.js calls the second one).
+let fitCtx = null;
+function fitPlaceholder(el) {
+  fitCtx = fitCtx || document.createElement('canvas').getContext('2d');
+  const cs = getComputedStyle(el); fitCtx.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+  const room = el.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+  const long = el.dataset.long, short = el.dataset.short || long;
+  // Hidden (no room yet): the long one, until the ResizeObserver below fits it.
+  const want = room <= 0 || fitCtx.measureText(long).width + 4 <= room ? long : short;   // 4px: rounding between canvas and layout
+  if (el.placeholder !== want) { el.placeholder = want; el.dispatchEvent(new Event('placeholderfit')); }
+}
 if (FIRST) for (const el of $$('input[data-short],textarea[data-short]')) {
-  const long = el.placeholder, ctx = document.createElement('canvas').getContext('2d');
-  const fit = () => {
-    const cs = getComputedStyle(el); ctx.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
-    const room = el.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
-    if (room <= 0) return;
-    const want = ctx.measureText(long).width + 4 <= room ? long : el.dataset.short;   // 4px: rounding between canvas and layout
-    if (el.placeholder !== want) { el.placeholder = want; el.dispatchEvent(new Event('placeholderfit')); }
-  };
+  el.dataset.long = el.placeholder;
+  const fit = () => fitPlaceholder(el);
   fit(); document.fonts.ready.then(fit);
   if (window.ResizeObserver) new ResizeObserver(fit).observe(el);
+}
+/** Change a box's placeholder: long, or short when long doesn't fit on one line (a box without data-short gets long). */
+export function setPlaceholder(el, long, short = long) {
+  if (el.dataset.long === long && el.dataset.short === short) return;
+  el.dataset.long = long; el.dataset.short = short;
+  fitPlaceholder(el);
 }
 // The Me page's language form saves as soon as a language is picked.
 const langSel = document.getElementById('lang-select');

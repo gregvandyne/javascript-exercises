@@ -19,9 +19,10 @@ export const lastEnded = gameId => row(q.get(`SELECT * FROM builder_turns WHERE 
 export const hasNewer = (gameId, r) => !!q.get('SELECT 1 FROM builder_turns WHERE game_id=? AND id!=? AND (created_at>? OR (created_at=? AND rowid>(SELECT rowid FROM builder_turns WHERE id=?)))', gameId, r.id, r.created_at, r.created_at, r.id);
 
 /** Insert a row. Throws when the game already has an unfinished build (unique index builder_turns_one_live). */
-export function create({ id = uid(16), gameId, userId, status = 'queued', request = {}, locale = 'en', pro = false, chain = 0, attempt = 0, chargedDay = null, provider = '', baseVersion = null, startedAt = null }) {
-  q.run('INSERT INTO builder_turns(id, game_id, user_id, status, request, locale, pro, chain, attempt, charged_day, provider, base_version, created_at, started_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
-    id, gameId, userId, status, JSON.stringify(request || {}), locale, pro ? 1 : 0, chain, attempt, chargedDay, provider, baseVersion, now(), startedAt);
+export function create({ id = uid(16), gameId, userId, status = 'queued', request = {}, locale = 'en', pro = false, chain = 0, attempt = 0, chargedDay = null, provider = '', baseVersion = null, startedAt = null, chargedTo = 'free', weight = 1 }) {
+  // A row created already charged (a follow-up build, runner.carryOver) is measured from the start, like markRunning.
+  q.run('INSERT INTO builder_turns(id, game_id, user_id, status, request, locale, pro, chain, attempt, charged_day, provider, base_version, created_at, started_at, charged_to, weight, usd_known) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+    id, gameId, userId, status, JSON.stringify(request || {}), locale, pro ? 1 : 0, chain, attempt, chargedDay, provider, baseVersion, now(), startedAt, chargedTo, weight, chargedDay ? 1 : 0);
   return get(id);
 }
 /** Screened and charged: the provider starts (the same transaction as the charge and the user entry, agent.js).

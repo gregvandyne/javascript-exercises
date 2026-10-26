@@ -10,7 +10,8 @@
 // reaches the model. Labels and learning lines are drawn by the Studio in the viewer's language.
 
 // resume: instant, fact v (the newest saved version): the build carried on after a server restart (runner.js).
-export const STEP_KEYS = ['screen', 'blocks', 'think', 'write', 'edit', 'fix', 'template', 'check', 'name', 'playtest', 'notes', 'ask', 'resume'];
+// read: instant, fact m: the building blocks read m new messages the builder sent while they worked (mock.js).
+export const STEP_KEYS = ['screen', 'blocks', 'think', 'write', 'edit', 'fix', 'template', 'check', 'name', 'playtest', 'notes', 'ask', 'resume', 'read'];
 const MAX_ROWS = 80;
 
 /** One line of model or player text, safe to show: control and bidi-override characters become spaces, whitespace
@@ -28,7 +29,8 @@ const flag = x => (x === 1 || x === true ? 1 : undefined);
 /** The only facts a row may carry (SSE and storage alike). Anything else is dropped. */
 const FACTS = {
   n: int(1, 99),                                         // think: round number (one model call)
-  c: oneOf(['start', 'look', 'scan', 'retry', 'next']),  // think: why the round started
+  c: oneOf(['start', 'look', 'scan', 'retry', 'next', 'msg']),   // think: why the round started (msg: new messages)
+  m: x => (Number.isInteger(x) && x >= 1 && x <= 9 ? x : undefined),   // think (msg), read: how many new messages (1-9)
   g: flag,                                               // think (start): a game already exists, so the round reads it too
   th: flag,                                              // think: a thinking block really streamed in this round
   a: flag,                                               // think: the AI has the message and started answering (first stream event)
@@ -74,12 +76,13 @@ export function stepRecorder(emit, t0 = Date.now()) {
       Object.assign(row[2], f); emit('stepinfo', { i, ...f });
     },
     current: () => (list.length ? list[list.length - 1][0] : null),
-    /** The compact record for 'done' and the transcript, or null when nothing past screening happened. */
-    record({ p, ti = 0, to = 0, end = 'ok' }) {
+    /** The compact record for 'done' and the transcript, or null when nothing past screening happened.
+     *  fu: new messages the builder sent during the build that were read (only when above 0). */
+    record({ p, ti = 0, to = 0, end = 'ok', fu = 0 }) {
       if (!list.some(r => r[0] !== 'screen')) return null;
       return {
         v: 1, p, ms: Date.now() - t0, r: list.filter(r => r[0] === 'think').length,
-        ...(ti > 0 ? { ti: Math.round(ti) } : {}), ...(to > 0 ? { to: Math.round(to) } : {}), end,
+        ...(ti > 0 ? { ti: Math.round(ti) } : {}), ...(to > 0 ? { to: Math.round(to) } : {}), ...(fu > 0 ? { fu } : {}), end,
         s: list.map(([k, at, f]) => (Object.keys(f).length ? [k, at, { ...f }] : [k, at])),
       };
     },
