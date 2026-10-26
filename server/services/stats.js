@@ -2,6 +2,7 @@
 // ai_usage tables. Days are UTC, like the rest of the site.
 import { q, today } from '../db.js';
 import * as aiBudget from './ai-budget.js';
+import { config } from '../config.js';
 
 const DAY = 86400e3;
 const startOf = day => Date.parse(day + 'T00:00:00Z');
@@ -117,4 +118,67 @@ export function aiByModel(days = 30, end = today()) {
 /** The newest accounts. */
 export function newestUsers(limit = 10) {
   return q.all('SELECT id, username, display_name, avatar, color, photo_at, is_guest, created_at, last_seen FROM users WHERE is_guest=0 ORDER BY created_at DESC LIMIT ?', limit);
+}
+
+// ---- Cost per Builder message (docs/decisions.md "Paid plans", chunk 1)
+const LIVE_TURN = "('queued','running','interrupted')";
+/** The value at fraction p of a sorted list (nearest rank). */
+const quantile = (sorted, p) => (sorted.length ? sorted[Math.min(sorted.length - 1, Math.max(0, Math.ceil(p * sorted.length) - 1))] : 0);
+function summary(costs) {
+  const s = costs.map(c => c.usd).sort((a, b) => a - b), total = s.reduce((a, b) => a + b, 0);
+  return { n: s.length, estimated: costs.filter(c => c.estimated).length, total, avg: s.length ? total / s.length : 0, median: quantile(s, 0.5), p90: quantile(s, 0.9) };
+}
+/** $ per input token for a model over the window, from its real calls in ai_usage (cached prompt tokens are cheaper
+ *  than fresh ones, so this blends them as the Builder really used them). No calls: the list input price. */
+function inputRate(model, from) {
+  const outPerToken = aiBudget.costOf(model, { output_tokens: 1 });
+  const listIn = aiBudget.costOf(model, { input_tokens: 1 });
+  const r = q.get('SELECT COALESCE(SUM(input+cache_read+cache_write),0) tin, COALESCE(SUM(output),0) tout, COALESCE(SUM(usd),0) usd FROM ai_usage WHERE model=? AND day>=?', model, from);
+  if (!r || !r.tin) return listIn;
+  const rate = (r.usd - r.tout * outPerToken) / r.tin;
+  return Number.isFinite(rate) && rate > 0 ? Math.min(rate, listIn * 1.25) : listIn;
+}
+/**
+ * What one Builder message costs, from builder_turns (rows are kept 35 days, so at most the last 30 days count).
+ * A message = a charged build the AI ran (charged_day set, provider 'ai', ended), refunded or not: its model calls were
+ * paid either way. Builds from before costs were stored are estimated from their token counts (estimated).
+ * -> { days, from, normal, pro, all: { n, estimated, total, avg, median, p90 }, perDay, perDay7, builderUsd, otherUsd,
+ *      spentUsd, monthly, daily, expectedPerMonth, expectedPerMonthAll, perDayCap, projectedMonth }
+ */
+export function messageCosts(days = 30, end = today()) {
+  days = Math.max(1, Math.min(30, days | 0));
+  const list = lastDays(days, end), from = list[0];
+  const rows = q.all(`SELECT pro, usd, usd_known, tokens_in, tokens_out FROM builder_turns
+    WHERE charged_day>=? AND charged_day<=? AND provider='ai' AND status NOT IN ${LIVE_TURN}`, from, end);
+  const rates = {};
+  const estimate = r => {
+    const model = r.pro ? config.builderProModel : config.builderModel;
+    if (!(model in rates)) rates[model] = inputRate(model, from);
+    return (r.tokens_in || 0) * rates[model] + aiBudget.costOf(model, { output_tokens: r.tokens_out || 0 });
+  };
+  const costs = rows.map(r => ({ pro: !!r.pro, estimated: !r.usd_known, usd: r.usd_known ? r.usd : estimate(r) }));
+  const normal = summary(costs.filter(c => !c.pro)), pro = summary(costs.filter(c => c.pro)), all = summary(costs);
+  // Messages per day: charged turns (net of refunds), over the days since the first message in the window.
+  const usage = q.all('SELECT day, SUM(turns) n FROM builder_usage WHERE day>=? AND day<=? GROUP BY day', from, end);
+  const firstDay = usage.filter(u => u.n > 0).map(u => u.day).sort()[0];
+  const activeDays = firstDay ? Math.round((startOf(end) - startOf(firstDay)) / DAY) + 1 : days;
+  const turns = usage.reduce((a, u) => a + (u.n || 0), 0);
+  const last7 = lastDays(7, end)[0];
+  const turns7 = usage.filter(u => u.day >= last7).reduce((a, u) => a + (u.n || 0), 0);
+  // The free budget also pays for screening, picture checks, reviews and lesson help: what those cost over the same
+  // days, per month, comes off the top before Builder messages.
+  const spentUsd = one('SELECT COALESCE(SUM(usd),0) FROM ai_spend_pool WHERE pool=? AND day>=? AND day<=?', 'free', from, end);
+  const builderUsd = all.total, otherUsd = Math.max(0, spentUsd - builderUsd);
+  const { daily, monthly } = aiBudget.limits();
+  const perMonth = usd => (usd / activeDays) * 30;
+  const per = usd => (all.avg > 0 ? Math.floor(usd / all.avg) : null);
+  return {
+    days, from, activeDays, normal, pro, all, rows: costs.length,
+    perDay: turns / activeDays, perDay7: turns7 / Math.min(7, activeDays),
+    builderUsd, otherUsd, spentUsd, monthly, daily,
+    expectedPerMonthAll: per(monthly),                                         // if the whole budget went to Builder messages
+    expectedPerMonth: per(Math.max(0, monthly - perMonth(otherUsd))),          // after the other AI use at its current pace
+    perDayCap: per(daily),                                                     // what the daily cap allows
+    projectedMonth: perMonth(spentUsd),                                        // a 30-day month at the current pace
+  };
 }

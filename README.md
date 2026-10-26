@@ -79,13 +79,14 @@ On/off settings (`REQUIRE_SESSION_SECRET`, `MAINTENANCE_MODE`, `MOVED_PERMANENTL
 | `BUILDER_SCREEN_MODEL` | built in | Small model for input screening and picture checks. |
 | `REVIEW_MODEL` | `BUILDER_MODEL` | Model for the automatic review of public games. |
 | `BUILDER_FALLBACKS` | on | `0` turns off the API's server-side model fallback for Builder turns (used when the first model is overloaded). |
-| `BUILDER_DAILY_TURNS` | `60` | Builder turns per user per day. |
-| `BUILDER_MAX_TOKENS` | `32000` | Max output tokens per Builder turn. |
+| `BUILDER_DAILY_TURNS` | `60` | Builder messages per user per UTC day (the free allowance; `server/builder/usage.js` `allowanceFor`). |
+| `PRO_TURN_WEIGHT` | `1` | Messages one "Pro quality" message counts as (1 to 10). Paid plans will set `2` (docs/decisions.md "Paid plans", D5). |
+| `BUILDER_MAX_TOKENS` | `64000` | Max output tokens per Builder turn. |
 | `AI_DAILY_BUDGET_USD` | `5` | Most the site spends on the AI per UTC day. At the cap the Builder goes offline (mock builder), picture uploads pause and public reviews wait for a person. `0` turns the AI off. |
-| `AI_MONTHLY_BUDGET_USD` | `50` | Same, per calendar month. Today's and this month's spend show on `/admin`. Also set a spend limit in the Anthropic Console as the hard backstop. |
+| `AI_MONTHLY_BUDGET_USD` | `150` | Same, per calendar month (the free budget; keep the daily cap at about monthly ÷ 30 so it lasts the month). Today's and this month's spend show on `/admin`. Also set a spend limit in the Anthropic Console as the hard backstop. |
 | `CHAT_DAILY_LIMIT` | `300` | Max chat messages per user per day. |
 | `REPORTS_TO_HIDE` | `3` | Open reports from different players that auto-hide a game. |
-| `CONTACT_EMAIL` | – | Where grown-ups write to the team (deletion, export, a lost password). Shown on `/parents` and in the footer; set it before launch (production logs a warning without it). |
+| `CONTACT_EMAIL` | – | Where grown-ups write to the team (deletion, export, a lost password). Shown on `/parents` and in the footer; set it before launch (production logs a warning without it). oomba.ai uses `greg@oomba.ai` (`render.yaml`), also the support email in Stripe. |
 | `BOOTSTRAP_SCHOOLS` | unset | Schools to set up at start-up without the admin pages, each with an existing account as its school admin: `[{"name":"Oak Hill Primary","admin":"MsSmith"}]`. Safe to leave set (done steps are skipped); a bad value or a missing account is logged and skipped. A school admin can also create classes and teaches the ones they create. |
 | `POSTHOG_KEY` | – | Optional product analytics (off unless set; never sends usernames or text). |
 | `POSTHOG_HOST` | `https://us.i.posthog.com` | PostHog address. |

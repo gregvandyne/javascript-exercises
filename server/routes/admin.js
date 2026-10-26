@@ -211,11 +211,36 @@ function barChart({ title, rows, key, fmt = int, unit, tip, total = true }) {
 }
 /** Readable names for services/traffic.js areas. */
 const AREA_LABELS = { home: 'Home', game: 'Game pages', play: 'Play', build: 'Studio', search: 'Search', favorites: 'Favorites', friends: 'Friends & chat', profile: 'Profiles', me: 'Me', signup: 'Sign up & log in', school: 'Schools', other: 'Other' };
+/** Cost per Builder message, messages per day and what the free budget pays for (docs/decisions.md "Paid plans"). */
+function costSection(c) {
+  const cents = n => (n >= 1 ? usd(n) : `${(n * 100).toFixed(n * 100 >= 10 ? 0 : 1)}¢`);
+  const row = (label, s) => html`<tr><td>${label}</td><td>${int(s.n)}${s.estimated ? html` <span class="muted small">(${int(s.estimated)} estimated)</span>` : ''}</td>
+    <td>${s.n ? cents(s.avg) : '–'}</td><td>${s.n ? cents(s.median) : '–'}</td><td>${s.n ? cents(s.p90) : '–'}</td><td>${usd(s.total)}</td></tr>`;
+  const est = c.all.estimated;
+  return html`
+  <h2 class="stats-h">Cost per Builder message, last ${c.days} days</h2>
+  <div class="kpis">
+    ${tile('💵 Average per message', c.all.n ? cents(c.all.avg) : '–', c.all.n ? `median ${cents(c.all.median)} · ${int(c.all.n)} messages` : 'no AI-built messages yet')}
+    ${tile('📨 Messages per day', fmtNum(Math.round(c.perDay * 10) / 10), `${fmtNum(Math.round(c.perDay7 * 10) / 10)} a day over the last 7 days`)}
+    ${tile('🎁 Free messages per month', c.expectedPerMonth === null ? '–' : int(c.expectedPerMonth), c.expectedPerMonth === null ? `the ${usd(c.monthly)} budget, once messages have a cost` : `the ${usd(c.monthly)} budget after other AI use · ${int(c.expectedPerMonthAll)} if it all went to the Builder`)}
+    ${tile('📆 Free messages per day', c.perDayCap === null ? '–' : int(c.perDayCap), `what the ${usd(c.daily)} daily cap pays for`)}
+    ${tile('📈 This month at this pace', usd(c.projectedMonth), `free AI spend for 30 days · budget ${usd(c.monthly)}`, c.projectedMonth > c.monthly ? 'warn' : '')}
+  </div>
+  <section class="panel stats-cost"><div class="tblwrap"><table class="tbl"><thead><tr><th>Quality</th><th>Messages</th><th>Average</th><th>Median</th><th>90% under</th><th>Total</th></tr></thead><tbody>
+    ${row('Normal', c.normal)}${row('Pro', c.pro)}${row('All', c.all)}</tbody></table></div>
+    <p class="small muted">A message is one Builder build the AI ran, counted on the day it was charged (refunded builds too: their AI calls were paid).
+    Its cost is what its own model calls cost; screening, picture checks, reviews and lesson help are the "other AI use"
+    (${usd(c.otherUsd)} of ${usd(c.spentUsd)} free AI spend over these days), taken off the monthly budget at the same pace
+    before dividing by the average cost.${est ? ` ${int(est)} older builds have no stored cost: they are estimated from their token counts.` : ''}
+    Builder rows are kept 35 days.</p>
+  </section>`;
+}
 const gameLink = g => html`<a href="/g/${g.slug}">${g.icon} ${g.title}</a>${g.source === 'seed' ? html` <span class="chip-s">launch</span>` : ''}`;
 
 router.get('/admin/stats', (req, res) => {
   const days = [7, 30, 90].includes(+req.query.days) ? +req.query.days : 30;
   const k = stats.kpis(), rows = stats.daily(days);
+  const cost = stats.messageCosts(Math.min(days, 30));
   const top7 = stats.topGames(7), topAll = stats.topGamesAllTime(10), builders = stats.topBuilders(10), areas = stats.areas(7), models = stats.aiByModel(30), fresh = stats.newestUsers(8);
   const tok = t => int((t.input || 0) + (t.output || 0));
   const body = html`
@@ -236,6 +261,7 @@ router.get('/admin/stats', (req, res) => {
     ${tile('💬 Builder messages', int(k.ai.turnsToday), `today · from ${int(k.ai.buildersToday)} builder${k.ai.buildersToday === 1 ? '' : 's'}`)}
   </div>
   ${k.ai.ok ? '' : html`<p class="notice warn">The AI ${k.ai.reason} cap is reached: the Builder is using the offline builder until it resets.</p>`}
+  ${costSection(cost)}
 
   <h2 class="stats-h">Last ${days} days</h2>
   <div class="charts">

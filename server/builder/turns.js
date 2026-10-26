@@ -24,30 +24,35 @@ export function create({ id = uid(16), gameId, userId, status = 'queued', reques
     id, gameId, userId, status, JSON.stringify(request || {}), locale, pro ? 1 : 0, chain, attempt, chargedDay, provider, baseVersion, now(), startedAt);
   return get(id);
 }
-/** Screened and charged: the provider starts (the same transaction as the charge and the user entry, agent.js). */
-export function markRunning(id, { chargedDay, provider, attempt = 1, baseVersion = null, startedAt = now() }) {
-  q.run("UPDATE builder_turns SET status='running', charged_day=?, provider=?, attempt=?, base_version=?, started_at=? WHERE id=?", chargedDay, provider, attempt, baseVersion, startedAt, id);
+/** Screened and charged: the provider starts (the same transaction as the charge and the user entry, agent.js).
+ *  chargedTo / weight: the allowance source that paid and the turns it used (usage.takeTurn). From here the row's
+ *  cost is measured (usd_known). */
+export function markRunning(id, { chargedDay, provider, attempt = 1, baseVersion = null, startedAt = now(), chargedTo = 'free', weight = 1 }) {
+  q.run("UPDATE builder_turns SET status='running', charged_day=?, provider=?, attempt=?, base_version=?, started_at=?, charged_to=?, weight=?, usd_known=1 WHERE id=?",
+    chargedDay, provider, attempt, baseVersion, startedAt, chargedTo, weight, id);
 }
 /** One more go at this row, written before it runs, so a crash during the run still counts (runner.recover). */
 export const bump = id => q.run('UPDATE builder_turns SET attempt=attempt+1 WHERE id=?', id);
 /** A resumed attempt starts: running again, one attempt more, on the provider that runs it now. */
 export const resumeRow = (id, provider) => q.run("UPDATE builder_turns SET status='running', attempt=attempt+1, provider=? WHERE id=?", provider, id);
 /** Handed off at shutdown: decided at the next boot. */
-export function interrupt(id, { durationMs = 0, modelCalls = 0, versions = 0 } = {}) {
-  q.run("UPDATE builder_turns SET status='interrupted', end_reason='restart', duration_ms=?, model_calls=model_calls+?, versions=? WHERE id=?", durationMs, modelCalls, versions, id);
+export function interrupt(id, { durationMs = 0, modelCalls = 0, versions = 0, usd = 0 } = {}) {
+  q.run("UPDATE builder_turns SET status='interrupted', end_reason='restart', duration_ms=?, model_calls=model_calls+?, versions=?, usd=usd+? WHERE id=?", durationMs, modelCalls, versions, usd || 0, id);
 }
-/** The build ended. model_calls adds up over attempts (a resume gets the rounds that are left). */
-export function finish(id, { status, end, versions = 0, modelCalls = 0, tokensIn = 0, tokensOut = 0, durationMs = 0, canContinue = 0 }) {
-  q.run('UPDATE builder_turns SET status=?, end_reason=?, versions=?, model_calls=model_calls+?, tokens_in=tokens_in+?, tokens_out=tokens_out+?, duration_ms=?, can_continue=?, ended_at=? WHERE id=?',
-    status, end, versions, modelCalls, tokensIn, tokensOut, durationMs, canContinue ? 1 : 0, now(), id);
+/** The build ended. model_calls and usd (what this attempt's model calls cost) add up over attempts (a resume gets the
+ *  rounds that are left). */
+export function finish(id, { status, end, versions = 0, modelCalls = 0, tokensIn = 0, tokensOut = 0, durationMs = 0, canContinue = 0, usd = 0 }) {
+  q.run('UPDATE builder_turns SET status=?, end_reason=?, versions=?, model_calls=model_calls+?, tokens_in=tokens_in+?, tokens_out=tokens_out+?, duration_ms=?, can_continue=?, usd=usd+?, ended_at=? WHERE id=?',
+    status, end, versions, modelCalls, tokensIn, tokensOut, durationMs, canContinue ? 1 : 0, usd || 0, now(), id);
 }
 export const setContinue = (id, on) => q.run('UPDATE builder_turns SET can_continue=? WHERE id=?', on ? 1 : 0, id);
-/** Give the build's turn back, once (idempotent; uses the day it was charged to). -> true when it gave one back now. */
+/** Give the build's turns back, once (idempotent; the day and the weight it was charged with, to the source that paid:
+ *  only 'free' exists today). -> true when it gave them back now. */
 export function refund(id) {
   return tx(() => {
-    const r = q.get('SELECT user_id, charged_day, refunded FROM builder_turns WHERE id=?', id);
+    const r = q.get('SELECT user_id, charged_day, refunded, weight FROM builder_turns WHERE id=?', id);
     if (!r || r.refunded || !r.charged_day) return false;
-    refundTurn(r.user_id, r.charged_day);
+    refundTurn(r.user_id, r.charged_day, r.weight);
     q.run('UPDATE builder_turns SET refunded=1 WHERE id=?', id);
     return true;
   });

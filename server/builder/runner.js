@@ -24,7 +24,7 @@ import * as turns from './turns.js';
 import { stepRecorder } from './steps.js';
 import { previewUrl } from './tools.js';
 import { restingUntil } from './anthropic.js';
-import { turnsLeft } from './usage.js';
+import { turnsLeft, allowanceFor } from './usage.js';
 import { loadChat, appendChat } from './chat.js';
 import { getUpload, LIMITS as UPLOADS } from './uploads.js';
 import { MAX_STEPS } from './claude.js';
@@ -126,7 +126,7 @@ export async function submit({ user, game, text = '', pro = false, uploadIds = [
   if (until) return { status: 503, body: { error: t('builder.errors.resting'), code: 'resting', resting: { until } }, code: 'resting' };
   // No turns left today: said before anything is stored, so the page puts the message back in the box (the charge
   // itself is still checked when screening passes). The streamed POST keeps its old order: screening first.
-  if (!compat && turnsLeft(user.id) <= 0) return err(429, 'builder.errors.limit', 'limit', { count: config.builderDailyTurns });
+  if (!compat && turnsLeft(user) <= 0) return err(429, 'builder.errors.limit', 'limit', { count: allowanceFor(user).daily });
   // 4. "Carry on building": only the game's last build, only when it offers it, only once.
   let orig = null;
   if (continueOf) {
@@ -374,7 +374,7 @@ export function handOff() {
         const state = job.state ? { ...job.state } : undefined; if (state) delete state.scanFails;
         const entries = text || job.seg.events.length ? [{ role: 'assistant', text, at: Date.now(), events: [...job.lead, ...job.seg.events, ...(rec ? [['steps', rec]] : [])], turn: job.id, interrupted: true }] : [];
         if (entries.length || state) appendChat(job.gameId, job.userId, entries, state ? { state } : {});
-        turns.interrupt(job.id, { durationMs: Date.now() - job.t0, modelCalls: rec ? rec.r : 0, versions: turns.versionsSince(job.gameId, job.base).length });
+        turns.interrupt(job.id, { durationMs: Date.now() - job.t0, modelCalls: rec ? rec.r : 0, versions: turns.versionsSince(job.gameId, job.base).length, usd: job.usd || 0 });
       }
     } catch (e) { log('error', 'builder hand-off failed', { turn: job.id, error: e.message }); }
     job.ac.abort('restart');

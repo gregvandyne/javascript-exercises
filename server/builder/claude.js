@@ -137,7 +137,8 @@ export async function run(ctx) {
     const msg = await stream.finalMessage();
     if (ctx.settle) ctx.settle();   // the model answered this request
     const u = msg.usage || {};
-    aiBudget.recordUsage(msg.model || model, u);
+    const usd = aiBudget.recordUsage(msg.model || model, u, undefined, ctx.pool || 'free');
+    if (ctx.cost) ctx.cost(usd);   // the build's own cost (builder_turns.usd, /admin/stats cost per message)
     tokensIn += (u.input_tokens || 0) + (u.cache_read_input_tokens || 0) + (u.cache_creation_input_tokens || 0);
     tokensOut += u.output_tokens || 0;
     if (msg.stop_reason === 'refusal') { ctx.emit('text', { text: (step ? '\n\n' : '') + t('builder.kindRefusal') }); break; }

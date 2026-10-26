@@ -63,7 +63,7 @@ The whole site is available in English (US, default), English (UK), Brazilian Po
 The 🌐 picker, the account language setting and browser-language matching only offer English plus locales that have at least 90% of the English keys (`en-GB` counts once it has any, since it only lists UK differences). A half-done translation never appears as a choice; an explicit `?lang=` or an old cookie still works and falls back to English for missing keys. With only English ready, the picker is hidden. `BRB_ALL_LOCALES=1` offers every locale (used by the e2e tests and by translators checking their work).
 
 ## AI spending cap
-Every Claude API call (Builder, chat classifier, picture check, public review) records its cost from the response's `usage` (list prices per model in `server/services/ai-budget.js`; an unknown model is priced like the most expensive one). Once today's spend reaches `AI_DAILY_BUDGET_USD` (default $5) or this month's reaches `AI_MONTHLY_BUDGET_USD` (default $50), the shared client stops being handed out: the Builder switches to the offline builder and says it's resting, picture uploads are refused (they can't be safety-checked), the chat classifier steps aside (word filters still run) and public reviews go to the human queue. A Builder turn already running finishes its current call and stops. Spend is kept per UTC day in the `ai_spend` table (so it only survives deploys once the service has a disk) and shown on `/admin`. This is the site's own guard; the Anthropic Console spend limit is the hard backstop.
+Every Claude API call (Builder, chat classifier, picture check, public review) records its cost from the response's `usage` (list prices per model in `server/services/ai-budget.js`; an unknown model is priced like the most expensive one). Once today's spend reaches `AI_DAILY_BUDGET_USD` (default $5) or this month's reaches `AI_MONTHLY_BUDGET_USD` (default $150, "Paid plans" D0), the shared client stops being handed out: the Builder switches to the offline builder and says it's resting, picture uploads are refused (they can't be safety-checked), the chat classifier steps aside (word filters still run) and public reviews go to the human queue. A Builder turn already running finishes its current call and stops. Spend is kept per UTC day in the `ai_spend` table (so it only survives deploys once the service has a disk) and shown on `/admin`. This is the site's own guard; the Anthropic Console spend limit is the hard backstop.
 
 ## Real people: facts yes, characters no
 Kid feedback showed the Builder refusing a soccer quiz about famous players and World Cup records. The rule is now: true, kind, well-established facts about well-known public figures are fine in quiz, trivia and learning games; a real person as a character, hero, enemy or picture, any jokes or made-up things about them, and any private person the child knows stay refused. The model classifier, the Builder's system prompt and public review all use this wording; the offline name list skips its real-people rule for quiz/trivia/facts requests unless they mock someone.
@@ -803,3 +803,62 @@ A review of the three batches together found these; each got the smallest correc
   questions they couldn't follow up on, which was misleading. A build already running stops at its next round and
   says so (`builder.budgetStop`).
 
+## Paid plans (billing decisions D0-D16)
+The owner approved every recommendation of the billing design (October 2026). The full design (allowance sources,
+Stripe integration, data model, tests and the owner's setup steps) is built in chunks: 0 settings and docs, 1 cost per
+message, 2 Stripe plumbing, 3 grown-up accounts and family links, 4 family checkout, 5 school plans, 6 admin billing,
+7 copy and policy, 8 going live. Billing stays off until the Stripe keys are set; without them the site works as before.
+All numbers below are settings, tuned once the real cost per message is measured (owner Step 0: set the AI key, build
+about 20 games, read the cost per message on /admin/stats).
+
+- **What is for sale:** more Builder messages, never a feature. Playing stays free, the free daily allowance stays.
+- **D0. Free AI budget:** $150 a month (`AI_MONTHLY_BUDGET_USD=150`), $5 a day (`AI_DAILY_BUDGET_USD=5`, about
+  monthly ÷ 30) so it lasts the month. No higher daily override on the dashboard. `render.yaml` holds the same values
+  (a blueprint sync resets the dashboard to the file). /admin/stats shows the expected free messages per month.
+- **D1. Who pays:** a separate grown-up account (name and a 12+ character password) that links to a child with a short
+  code the child confirms on their own page (Yes / No / Report).
+- **D2. Children per family plan:** up to 4.
+- **D3. Free daily allowance:** stays 60 for now. Any change is decided from the cost data (with D0) and ships on its
+  own, weeks before paid plans, never in the same release.
+- **D4. Family allowance:** the free daily messages plus a shared pool of extra messages each month (start: 40, about
+  half the net price ÷ cost per message). Only messages beyond the free daily ones use extras; when the free Builder is
+  resting, family children build from the extras. A hidden $4/month AI-cost backstop. Never advertised as "per day".
+- **D5. Pro quality:** 2 messages per Pro message for everyone (`PRO_TURN_WEIGHT`); still open to free users. Chunk 1
+  ships the weight at 1 (no change) and the switch to 2 ships with paid plans.
+- **D6. School price:** $20 per student per year, minimum 25 students ($500/year), 100 messages per paid student per
+  year shared by the school (about 10 Builder lessons a student; the Billing tab says it in lessons). Students get at
+  least the free daily amount (school setting, default 30/day). Teachers use the same pool.
+- **D7. Invoice / PO schools:** yes, through Stripe Invoicing (net 30). The school admin asks on the Billing tab; the
+  owner creates the invoice subscription on /admin/billing. Card checkout for small schools.
+- **D8. Free trial:** none at launch. The free allowance is the trial.
+- **D9. Countries and tax:** family plans for US families only at launch (billing address, a Radar rule blocks non-US
+  cards, Stripe Tax for US sales tax). Worldwide later through a merchant of record. Invoice schools are handled deal
+  by deal.
+- **D10. Refunds:** cancel anytime from "Manage plan" (the plan runs to the end of the paid period); a full refund on
+  request within 14 days of a first payment or yearly renewal. Always cancel first, then refund.
+- **D11. Late payment:** cards get 7 days of grace while Stripe retries; invoice schools 30 days after the due date.
+  Then back to free. Nothing is deleted or locked.
+- **D12. A school stops paying:** students go back to the free allowance. Never banned or removed; classes keep working.
+- **D13. Coupons:** yes, Stripe promotion codes for schools (pilots) and testers; the owner can also grant a free plan
+  from /admin.
+- **D14. Testing on the real site in test mode:** only the owner and accounts marked "billing tester" on /admin see
+  billing.
+- **D15. Legal before going live:** Terms of Service, a refund and cancellation policy, privacy text for grown-ups and
+  payments, and the COPPA/GDPR review. Paying is never "parental consent"; the legal review decides the consent model
+  for every child account.
+- **D16. Site wording:** the footer and kid pages keep "Free to play, free to build". The plans sentence goes only on
+  /parents and /grown-ups. Kid pages never show prices, plans or a nudge to ask a grown-up; at the limit the Builder
+  says "More tomorrow!".
+- **Support email:** `CONTACT_EMAIL=greg@oomba.ai` (in `render.yaml`), also the support email in Stripe.
+
+**Chunk 1: cost per message.** Each Builder build records what its own model calls cost (`builder_turns.usd`, from
+the same prices as the AI cap), who paid (`charged_to`, today always `free`) and its weight (`weight`). One function,
+`usage.allowanceFor(user)` (`server/builder/usage.js`), says how many messages a user gets today and from which source;
+every limit check and every "{count} messages" reads it, so family and school sources plug in there later. Spend is
+also kept per money pool (`ai_spend_pool`, today only `free`; earlier days were copied in as `free`). /admin/stats
+shows the average, median and 90th-percentile cost per message (normal and Pro), messages per day, and the free
+messages per month the budget pays for. Builds from before this update have no stored cost: their cost is estimated
+from their stored token counts, with the input price blended from that model's real calls in `ai_usage` (cached
+prompt tokens are cheaper), and the page says how many were estimated. Builder rows are kept 35 days, so the numbers
+cover at most the last 30 days. Screening, picture checks and reviews are not part of a message's cost; the expected
+free messages per month subtract what they cost over the same days.
