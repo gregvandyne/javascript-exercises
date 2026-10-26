@@ -54,6 +54,7 @@ const runner = await import('../../server/builder/runner.js');
 const live = await import('../../server/builder/live.js');
 const mock = await import('../../server/builder/mock.js');
 const turns = await import('../../server/builder/turns.js');
+const { tEn } = await import('../../server/i18n/index.js');
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 async function until(fn, ms = 4000, what = 'the condition') {
   const t0 = Date.now();
@@ -429,13 +430,47 @@ test('HTTP-12 the state mid-build (the page and the API) has the running build w
     assert.equal(st.turn.mine, true); assert.equal(st.turn.attempt, 1); assert.equal(st.turn.provider, 'blocks'); assert.ok(st.turn.elapsed >= 0);
     const pd = pageData((await kid(`/studio/${id}`)).text);
     assert.equal(pd.busy, true); assert.equal(pd.turn.entries[0].text, 'Make a jumping frog game. Just build it.');
-    // Send stays one message at a time in this version: a second detached message while it builds is refused.
+    // A second message while it builds is a follow-up (HTTP-13 has the details).
     const r = await build(kid, id, 'make it harder');
-    assert.equal(r.status, 409); assert.equal(r.json.code, 'busy');
+    assert.equal(r.status, 200); assert.equal(r.json.followUp.status, 'waiting');
     gate.open.resolve(); await idleGame(id);
   } finally { realBuilder(); }
   const st = (await kid(`/api/studio/${id}`)).json;
   assert.equal(st.turn, null); assert.equal(st.busy, false); assert.equal(st.lastTurn.end, 'ok');
+});
+
+test('HTTP-13 follow-ups over HTTP: 200 with the follow-up, the live stream hears it, the transcript has it after a part; uploads, an admin and a 4th are refused; the old streamed POST still says busy', async () => {
+  const kid = await signup('HttpFollow');
+  const id = await newGameFor(kid);
+  const gate = holdBuilder({ save: false });
+  const w = liveOf(kid, id); await w.opened;
+  try {
+    await build(kid, id); await gate.started;
+    const r = await build(kid, id, 'make it harder', { cid: 'http-fu-0001' });
+    assert.equal(r.status, 200, r.text); assert.equal(r.json.followUp.status, 'waiting'); assert.equal(r.json.followUp.cid, 'http-fu-0001');
+    assert.equal(r.json.left, 2); assert.equal(typeof r.json.turnsLeft, 'number');
+    await w.until(s => s.of('inbox').length >= 1);
+    const inbox = w.of('inbox')[0];
+    assert.deepEqual([inbox.status, inbox.entry.text, inbox.entry.id, inbox.left], ['waiting', 'make it harder', r.json.followUp.id, 2]);
+    const chat = (await kid(`/api/studio/${id}`)).json.chat;
+    assert.deepEqual(chat.map(m => (m.followUp ? `fu:${m.status}` : m.part ? 'part' : m.role)), ['user', 'part', 'fu:waiting']);
+    assert.equal(chat[1].text, 'Working on it.');
+    const up = (await kid(`/api/studio/${id}/uploads?name=notes.txt`, { method: 'POST', body: Buffer.from('a fox who hops'), headers: { 'content-type': 'application/octet-stream' } })).json.upload;
+    const withUp = await build(kid, id, 'use my notes', { uploads: [up.id] });
+    assert.deepEqual([withUp.status, withUp.json.code], [409, 'uploads']);
+    assert.equal(q.get('SELECT used_at FROM builder_uploads WHERE id=?', up.id).used_at, null, 'the upload stays unused');
+    const admin = await signup('HttpFuAdmin'); q.run("UPDATE users SET role='admin' WHERE username='HttpFuAdmin'");
+    const a = await build(admin, id, 'make it blue');
+    assert.deepEqual([a.status, a.json.code], [409, 'notYours']);
+    for (const text of ['make it red', 'add a second level']) assert.equal((await build(kid, id, text)).status, 200);
+    const cap = await build(kid, id, 'one more');
+    assert.deepEqual([cap.status, cap.json.code], [429, 'cap']);
+    const old = stream(kid, `/api/studio/${id}/chat`, { method: 'POST', body: { text: 'make it purple' } });
+    await old.opened; await old.done;
+    assert.deepEqual(old.names(), ['error', 'done']); assert.equal(old.of('error')[0].message, tEn('builder.errors.busy'));
+    assert.equal((await kid(`/api/studio/${id}`)).json.chat.filter(m => m.followUp).length, 3, 'nothing stored by the old POST');
+    gate.open.resolve(); await idleGame(id);
+  } finally { w.close(); realBuilder(); }
 });
 
 test('HTTP-15 list rules: a build stopped by the time cap after saving is "Stopped", never "Ready"; an admin\'s build shows Building… but tells the child nothing', async () => {

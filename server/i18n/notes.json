@@ -298,5 +298,14 @@
   "errors.moved.link": "Link to the site's new address, in case the page doesn't move on by itself. {site} is the new address, like oomba.ai.",
   "auth.page.moved": "Sign-in page, after the site moved to a new address and the sign-in could not come along. {site} is the new address, like oomba.ai.",
   "js.studio.steps.think.now.plan": "Round 1 after the AI has read the message and is working out its answer (it may be thinking quietly). Same word for “round” as the other think.* labels.",
-  "js.studio.steps.think.learn.long": "Shown when the first round has been planning for 45 seconds. Must stay true: the build continues after leaving the page."
+  "js.studio.steps.think.learn.long": "Shown when the first round has been planning for 45 seconds. Must stay true: the build continues after leaving the page.",
+  "js.studio.followups.gotAi": "'Step' as in the steps card. Shown in a small strip while the AI works.",
+  "js.studio.followups.turnNote": "'Turn' as in js.studio.turns (the daily Builder turns).",
+  "js.studio.steps.think.now.msg": "'Round' is the same word as in the other think.* keys.",
+  "builder.followUps.cap": "Said by the Builder to a child aged 8–12. Friendly, not a telling-off. {max} is the number of extra messages allowed (3).",
+  "js.studio.followups.readingAi": "Under a message the child sent while the AI works: the AI has just been given it.",
+  "js.studio.followups.placeholderAi": "Placeholder in the message box while the AI builds. Must fit on one line of a wide box (about 55 characters); placeholderShort is used when it doesn’t fit.",
+  "js.studio.followups.placeholderShort": "Short placeholder in the message box while the Builder builds, used on phones. Max ~22 characters, one line.",
+  "js.studio.followups.capPlaceholder": "Placeholder in the message box once 3 extra messages were sent during a build (Send is off). About 45 characters; capShort is used when it doesn’t fit.",
+  "js.studio.followups.capShort": "Short form of capPlaceholder for phones. Max ~22 characters, one line."
 }

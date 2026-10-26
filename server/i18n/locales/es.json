@@ -1101,7 +1101,6 @@
       "buildFirst": "¡Primero crea algo!",
       "noFullscreen": "La pantalla completa no está permitida aquí.",
       "roundOver": "¡Terminó la ronda! Puntos: {score}",
-      "stillWorking": "¡Un momento, el Constructor todavía está trabajando!",
       "noAnswer": "El Constructor no pudo responder. Inténtalo de nuevo, por favor.",
       "signInAgain": "Volver a entrar",
       "dropped": "Uy, se cortó la conexión. Inténtalo de nuevo, por favor.",

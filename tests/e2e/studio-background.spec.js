@@ -1,7 +1,8 @@
-// Builds keep working when the builder leaves: a real server of its own (port 5914, slow building blocks so a build
-// lasts about 27 s), which the tests stop and start again for real. Leave and come back, reload, two tabs, sign out and
-// sign in again (the one-time "ready" note), a deploy in the middle of a build (it carries on by itself), and a build
-// interrupted twice (stopped, the turn given back, "Carry on building").
+// Builds keep working when the builder leaves: a real server of its own (port 5914, or E2E_BG_PORT; slow building
+// blocks so a build lasts about 27 s), which the tests stop and start again for real. Leave and come back, reload, two
+// tabs, sign out and sign in again (the one-time "ready" note), a deploy in the middle of a build (it carries on by
+// itself), a build interrupted twice (stopped, the turn given back, "Carry on building"), and messages sent while it
+// builds (follow-ups: read and applied, refused, capped, from a second tab).
 import { test, expect } from '@playwright/test';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -10,7 +11,7 @@ import { spawn, execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { signup, login, uniq, ADMIN } from './helpers.js';
 
-const PORT = 5914;
+const PORT = +(process.env.E2E_BG_PORT || 5914);
 const BG = `http://localhost:${PORT}`;
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const FOX = 'Make a catch game about a fox. Just build it.';
@@ -18,7 +19,7 @@ let DATA = null, proc = null, exited = null;
 const env = () => ({
   PATH: process.env.PATH, HOME: process.env.HOME, PORT: String(PORT), BRB_DATA_DIR: DATA, ADMIN_USERNAME: ADMIN.username, ADMIN_PASSWORD: ADMIN.password,
   DEMO_TEACHER_PASSWORD: 'demo-pass-123', ANTHROPIC_API_KEY: '', BRB_SILENT: '1', TRUST_PROXY: '1', BRB_ALL_LOCALES: '1', BRB_SNAPSHOTS: '0',
-  BRB_MOCK_DELAY_MS: '900', SHUTDOWN_GRACE_SECONDS: '2',
+  BRB_MOCK_DELAY_MS: '900', BRB_MOCK_INBOX_WAIT_MS: '2000', SHUTDOWN_GRACE_SECONDS: '2',
 });
 async function startServer() {
   proc = spawn(process.execPath, ['server/index.js'], { cwd: ROOT, env: env(), stdio: 'ignore' });
@@ -222,4 +223,93 @@ test('BG-12 (part) right to left at 360 px: the live card with the leave line re
   expect(leave.x).toBeGreaterThanOrEqual(card.x); expect(leave.x + leave.width).toBeLessThanOrEqual(card.x + card.width + 1);
   await settled(page);
   await noOverflow(page);
+});
+
+// ---- Follow-ups: Send stays on while the Builder works. This server's building blocks wait up to 2 s after each pass
+// for a new message (BRB_MOCK_INBOX_WAIT_MS), so a message sent after a version is read in the same build.
+const fuBubble = page => page.locator('#st-log .msg.fu');
+async function sendNow(page, text) { await page.fill('#st-input', text); await page.press('#st-input', 'Enter'); }
+
+test('BG-7 a follow-up changes the build: sent after version 1, read, applied as version 2, and in order after a reload', async ({ page }) => {
+  test.setTimeout(120_000);
+  await newGame(page);
+  const before = await turnsLeft(page);
+  await startBuild(page);
+  await expect(page.locator('#st-log .ev.version')).toHaveCount(1, { timeout: 40_000 });
+  await expect(page.locator('#st-send')).toBeEnabled();
+  await sendNow(page, 'make it harder');
+  await expect(fuBubble(page).locator('.fu-st')).toContainText('Waiting for the Builder to read it');
+  await expect(live(page).locator('.stp-inbox')).toBeVisible();
+  await expect(live(page).locator('.stp-inbox')).toContainText('Got your message. The Builder will read it after this step.');
+  await expect(fuBubble(page).locator('.fu-st')).toContainText('The Builder read this', { timeout: 20_000 });
+  await expect(page.locator('#st-log .ev.version')).toHaveCount(2, { timeout: 30_000 });
+  await settled(page, 60_000);
+  await expect(page.locator('.stp-sum').last()).toContainText('read 1 new message');
+  expect(await turnsLeft(page)).toBe(before - 1);
+  await page.reload();
+  const order = await page.locator('#st-log').evaluate(log => [...log.children].map(e => (
+    e.matches('.msg.fu') ? 'fu' : e.matches('.msg.me') ? 'me' : e.matches('.ev.version') ? `v${(e.textContent.match(/\d+/) || [])[0]}`
+      : e.matches('.msg.bot') && /Here's my plan/.test(e.textContent) ? 'plan' : e.matches('.msg.bot') && /Got your new message!/.test(e.textContent) ? 'got' : null)).filter(Boolean));
+  expect(order).toEqual(['me', 'plan', 'v1', 'fu', 'got', 'v2']);
+  await expect(fuBubble(page).locator('.fu-st')).toContainText('The Builder read this');
+  await expect(page.locator('.st-busy')).toHaveCount(0);
+});
+
+test('BG-8 a refused follow-up: the kind reply without idea chips, no error, the build finishes, one turn', async ({ page }) => {
+  test.setTimeout(90_000);
+  await newGame(page);
+  const before = await turnsLeft(page);
+  await startBuild(page);
+  await sendNow(page, 'put pikachu in it');
+  await expect(page.locator('#st-log .msg.fu.refused')).toHaveText('put pikachu in it');
+  const reply = page.locator('#st-log .msg.bot.refused');
+  await expect(reply).toHaveCount(1);
+  await expect(page.locator('#st-log .msg.bot.refused + .qchips')).toHaveCount(0);
+  await expect(page.locator('#st-log .err')).toHaveCount(0);
+  await settled(page, 60_000);
+  await expect(page.locator('#st-log .ev.version')).toHaveCount(1);
+  await expect(page.locator('#st-log .msg.bot.refused')).toHaveCount(1);
+  expect(await turnsLeft(page)).toBe(before - 1);
+});
+
+test('BG-9 at most 3 extra messages: the 4th says so, goes back in the box, and the box says to wait', async ({ page }) => {
+  test.setTimeout(120_000);
+  await newGame(page);
+  await startBuild(page);
+  for (const text of ['make it harder', 'make it faster', 'add a second level', 'make it purple']) await sendNow(page, text);
+  await expect(page.locator('.toast').last()).toContainText('You’ve sent 3 extra messages during this build');
+  await expect(page.locator('#st-input')).toHaveValue('make it purple');
+  await expect(page.locator('#st-input')).toHaveAttribute('data-long', 'You can add more when this build is done');
+  await expect(page.locator('#st-input')).toHaveAttribute('placeholder', /^(You can add more when this build is done|More when it’s done)$/);
+  await expect(page.locator('#st-send')).toBeDisabled();
+  await expect(fuBubble(page)).toHaveCount(3);
+  await settled(page, 90_000);
+});
+
+test('BG-10 a second tab sends during the build: it becomes a follow-up there, is read, and both tabs show it', async ({ page }) => {
+  test.setTimeout(120_000);
+  const { id } = await newGame(page);
+  const b = await page.context().newPage();
+  await b.goto(`/studio/${id}`);
+  await page.waitForTimeout(500);   // b's stream is open
+  await startBuild(page);
+  await expect(b.locator('#st-log .msg.me')).toHaveText(FOX);
+  await sendNow(b, 'make it harder');
+  await expect(fuBubble(b).locator('.fu-st')).toContainText('Waiting for the Builder to read it');
+  await expect(fuBubble(page).locator('.fu-text')).toHaveText('make it harder');
+  await expect(fuBubble(b).locator('.fu-st')).toContainText('The Builder read this', { timeout: 40_000 });
+  await settled(page, 60_000); await settled(b, 60_000);
+  for (const p of [page, b]) { await expect(fuBubble(p)).toHaveCount(1); await expect(fuBubble(p).locator('.fu-st')).toContainText('The Builder read this'); }
+  await b.close();
+});
+
+test('BG-11 📎 is off while the Builder works and back on afterwards', async ({ page }) => {
+  test.setTimeout(90_000);
+  await newGame(page);
+  await expect(page.locator('#st-clip')).toBeEnabled();
+  await startBuild(page);
+  await expect(page.locator('#st-clip')).toBeDisabled();
+  await expect(page.locator('#st-clip')).toHaveAttribute('title', 'Add pictures after this build');
+  await settled(page, 60_000);
+  await expect(page.locator('#st-clip')).toBeEnabled();
 });

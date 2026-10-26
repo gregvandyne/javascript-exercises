@@ -439,8 +439,10 @@ test('RUN-18 one unfinished build per game: a second row throws, and two sends a
   assert.throws(() => turns.create({ gameId: g.id, userId: u.id }), /UNIQUE/);
   const g2 = newGame(u); const gate = hold();
   const [a, b] = await Promise.all([build(u, g2), build(u, g2, 'make it harder')]);
-  assert.deepEqual([a.status, b.status], [202, 409]); assert.equal(b.code, 'busy'); assert.equal(b.body.error, tEn('builder.errors.busy'));
+  assert.deepEqual([a.status, b.status], [202, 200]); assert.ok(b.body.followUp, 'the second one is a follow-up of the first');
   assert.equal(q.get('SELECT COUNT(*) n FROM builder_turns WHERE game_id=?', g2.id).n, 1);
+  const old = await build(u, g2, 'make it harder', { compat: true });   // the streamed POST of old pages: busy, as before
+  assert.equal(old.status, 409); assert.equal(old.code, 'busy'); assert.equal(old.body.error, tEn('builder.errors.busy'));
   await gate.started; gate.open.resolve(); await runner.idle(a.job);
 });
 
@@ -591,7 +593,7 @@ test('RUN-27 a retried first message (same cid) gets the same build, not a secon
   assert.equal(loadChat(g.id).messages.length, 1);
   assert.equal(runner.publicTurn(r.job, u).cid, 'abcdefgh1234');
   const other = await build(u, g, 'make it harder', { cid: 'zzzzzzzz9999' });
-  assert.equal(other.status, 409, 'another message while building: busy (until follow-ups)');
+  assert.equal(other.status, 200, 'another message while building: a follow-up'); assert.equal(other.body.followUp.cid, 'zzzzzzzz9999');
   const junk = await build(u, newGame(u), FOX, { cid: 'bad cid!' });
   assert.equal(junk.job.cid, null, 'a malformed cid is dropped');
   gate.open.resolve(); await runner.idle(r.job);

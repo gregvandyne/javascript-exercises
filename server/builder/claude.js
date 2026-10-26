@@ -8,8 +8,11 @@
 // - History from earlier turns is rebuilt from the stored transcript (text + one-line action summaries),
 //   so game source and upload bytes are never resent from history. Neighbours with the same role are merged.
 // - The runner's hook ctx.between(round) runs at the top of every round: it stops the loop when the build was stopped
-//   (time cap, game deleted, ban, Builder off, a restart hand-off). ctx.maxRounds is smaller for a resumed attempt,
-//   which also gets a note saying what was already done (ctx.resume).
+//   (time cap, game deleted, ban, Builder off, a restart hand-off), and hands over the builder's new messages (sent
+//   while the AI works). They go, as the builder's own words, into the user turn about to be sent: after its
+//   tool_result blocks, never inside one, so messages already sent never change. ctx.settle() after the answer is
+//   complete marks them read; ctx.pending() keeps the loop going for messages that arrive while it would end.
+//   ctx.maxRounds is smaller for a resumed attempt, which also gets a note saying what was already done (ctx.resume).
 import { config } from '../config.js';
 import { anthropic } from './anthropic.js';
 import * as aiBudget from '../services/ai-budget.js';
@@ -75,7 +78,7 @@ export async function run(ctx) {
   const client = anthropic(); if (!client) throw new Error('No API key');
   const t = ctx.t || tEn;
   const model = ctx.pro ? config.builderProModel : config.builderModel;
-  const userContent = [...modelBlocks(ctx.uploads || []), { type: 'text', text: ctx.text || 'Here is something for inspiration.' },
+  const userContent = [...modelBlocks(ctx.uploads || []), ...(ctx.text ? [{ type: 'text', text: ctx.text }] : []),
     ...(ctx.resume ? [{ type: 'text', text: resumeNote(ctx.resume) }] : [])];
   const messages = mergeRoles([...historyToMessages(ctx.history || []), { role: 'user', content: userContent }]);
   let tokensIn = 0, tokensOut = 0, fixes = 0;
@@ -89,12 +92,19 @@ export async function run(ctx) {
     if (ctx.signal && ctx.signal.aborted) break;
     // The AI budget can run out in the middle of a turn: finish what we have instead of starting another call.
     if (step && !aiBudget.ok()) { ctx.emit('text', { text: '\n\n' + t('builder.budgetResting') }); break; }
-    // The runner's checkpoint: stopped, deleted, banned or switched off -> no more model calls.
+    // The runner's checkpoint: stopped, deleted, banned or switched off -> no more model calls. Otherwise it hands over
+    // the builder's new messages (after the budget check above, so none is handed over and then not sent).
     const b = ctx.between ? await ctx.between(step + 1) : null;
     if (b && b.stop) break;
+    const fresh = (b && b.add) || [];
+    const last = messages[messages.length - 1];   // the user turn not sent yet (always a block list)
+    if (fresh.length) last.content.push(...fresh.map(e => ({ type: 'text', text: e.text })));
+    if (!step && !last.content.some(x => x.type === 'text')) last.content.push({ type: 'text', text: 'Here is something for inspiration.' });
+    if (!last.content.length) break;              // never send an empty user turn
+    const c = !step ? (fresh.length && !ctx.text ? 'msg' : 'start') : fresh.length ? 'msg' : prev.c;
     const cur = ctx.tools.current();
     // Every round re-sends the system prompt, the current game and the chat so far: the model keeps no memory.
-    steps.start('think', { n: step + 1, c: step ? prev.c : 'start', ...(!step && cur ? { g: 1 } : {}) });
+    steps.start('think', { n: step + 1, c, ...(c === 'msg' ? { m: fresh.length } : {}), ...(!step && cur ? { g: 1 } : {}) });
     // The short language block goes last, after the cache points, so the cached prefix is the same for every language.
     // The fixed 3D rules sit between the system prompt and the game, only for 3D requests and 3D games.
     const system = [
@@ -143,6 +153,8 @@ export async function run(ctx) {
     if (msg.stop_reason === 'refusal') { ctx.emit('text', { text: (step ? '\n\n' : '') + t('builder.kindRefusal') }); break; }
     messages.push({ role: 'assistant', content: msg.content });
     const uses = msg.content.filter(b => b.type === 'tool_use');
+    // A message from the builder is waiting and there are rounds left: the loop goes on, so the AI reads it now.
+    const more = () => (ctx.pending ? ctx.pending() : 0) > 0 && step + 1 < max;
     if (!uses.length) {
       // The AI used its whole output allowance (mostly thinking) before it used a tool, so nothing was made. Once, ask
       // it to plan briefly and start writing; a second time, say so and end with an error (the turn is given back
@@ -156,6 +168,7 @@ export async function run(ctx) {
         ctx.emit('error', { message: t('builder.cutOffNothing') });
         return { model, tokensIn, tokensOut, error: 'cut_off' };
       }
+      if (more()) { messages.push({ role: 'user', content: [] }); prev = { c: 'msg', fixing: false }; continue; }
       break;
     }
     const results = []; let stop = false; let failedScan = false;
@@ -181,7 +194,7 @@ export async function run(ctx) {
       results.push({ type: 'tool_result', tool_use_id: tu.id, content: r.forModel, ...(r.ok ? {} : { is_error: true }) });
     }
     prev = { c: playtested ? 'look' : failedScan ? 'scan' : shownErr ? 'retry' : 'next', fixing: failedScan || probs > 0 };
-    if (stop) break;
+    if (stop && !more()) break;   // ask_user waits for the answer, unless it may be here already
     if (failedScan && ++fixes > MAX_SCAN_FIXES) { ctx.emit('text', { text: '\n\n' + t('builder.scanStillFailing') }); break; }
     messages.push({ role: 'user', content: results });
   }
