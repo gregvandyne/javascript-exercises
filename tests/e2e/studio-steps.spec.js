@@ -1,6 +1,7 @@
 // The Studio's "Behind the scenes" steps card: real steps in order (mock Builder), the AI path drawn from a scripted
-// event stream (the plan is text, never HTML), the live card fed step by step, the summary after a reload, the tips
+// live stream (the plan is text, never HTML), the live card fed step by step, the summary after a reload, the tips
 // toggle, "Did you know?" facts on a long step, a dropped connection, refusals, RTL and 360 px phones.
+// The page sends with POST /chat (answered at once) and follows the build on GET /live; scriptLive() plays both.
 import { test, expect } from '@playwright/test';
 import { signup, uniq } from './helpers.js';
 
@@ -21,7 +22,39 @@ async function buildWithChips(page) {
   await expect(page.locator('#st-log .ev.version')).toHaveCount(1);
 }
 const sse = events => events.map(([e, d]) => `event: ${e}\ndata: ${JSON.stringify(d)}\n\n`).join('');
-const fulfillChat = (page, events) => page.route('**/api/studio/*/chat', route => route.fulfill({ status: 200, headers: { 'Content-Type': 'text/event-stream; charset=utf-8' }, body: sse(events) }));
+const SSE = { 'Content-Type': 'text/event-stream; charset=utf-8' };
+/**
+ * Script a build: POST /chat answers 202 { turn: T1 }; the first /live after it gets hello { turn: T1 } (with the page's
+ * own message and cid), caughtup and events; other /live connects get hello { turn: null } (failAfter: they fail
+ * instead, a dropped connection). reply: the build's saved final entry, added to the Studio state the page reads after
+ * 'done' (as the server would have saved it). provider: what the state says runs the Builder. Reloads the page.
+ */
+async function scriptLive(page, gameId, { events = [], reply = null, failAfter = false, provider = null } = {}) {
+  const sent = { cid: null, text: '' }; let served = false;
+  await page.route('**/api/studio/*/chat', async route => {
+    const b = JSON.parse(route.request().postData() || '{}'); sent.cid = b.cid; sent.text = b.text;
+    await route.fulfill({ status: 202, json: { ok: true, turn: { id: 'T1', status: 'queued' } } });
+  });
+  const user = () => ({ role: 'user', text: sent.text, at: Date.now(), uploads: [], turn: 'T1' });
+  await page.route('**/api/studio/*/live', async route => {
+    if (sent.cid && !served) {
+      served = true;
+      const turn = { id: 'T1', attempt: 1, chain: 0, carried: 0, provider: 'ai', mine: true, cid: sent.cid, elapsed: 0, entries: [user()], waiting: 0, left: 0 };
+      return route.fulfill({ status: 200, headers: SSE, body: sse([['hello', { now: Date.now(), turn }], ['caughtup', {}], ...events]) });
+    }
+    if (sent.cid && failAfter) return route.abort('connectionreset');
+    return route.fulfill({ status: 200, headers: SSE, body: sse([['hello', { now: Date.now(), turn: null }], ['caughtup', {}]]) });
+  });
+  await page.route(u => u.pathname === `/api/studio/${gameId}`, async route => {
+    const res = await route.fetch(); const json = await res.json();
+    if (sent.cid && reply) json.chat = [...json.chat, user(), { role: 'assistant', at: Date.now(), turn: 'T1', ...reply }];
+    if (provider) json.provider = provider;
+    await route.fulfill({ response: res, json });
+  });
+  await page.reload();   // the page's live stream now goes through these routes
+  return sent;
+}
+const unscript = async (page, gameId) => { await page.unroute('**/api/studio/*/chat'); await page.unroute('**/api/studio/*/live'); await page.unroute(u => u.pathname === `/api/studio/${gameId}`); };
 /** The record 'done' carries, built from the same steps (times are made up). */
 function record(steps, extra = {}) {
   const s = []; let at = 0;
@@ -31,14 +64,21 @@ function record(steps, extra = {}) {
   }
   return { v: 1, p: 'ai', ms: at + 500, r: s.filter(r => r[0] === 'think').length, end: 'ok', s, ...extra };
 }
-/** Replace the chat POST with a stream the test pushes events into (window.__sse.push / .fail). */
-const pushableChat = () => {
+/** Replace the live stream with one the test pushes events into (window.__sse.push / .end: the newest stream), and
+ *  answer the chat POST with 202 (window.__cid: the message's id). */
+const pushableLive = () => {
   const real = window.fetch.bind(window);
   window.fetch = (url, opts = {}) => {
-    if (!/\/api\/studio\/[^/]+\/chat$/.test(String(url)) || (opts.method || 'GET') !== 'POST') return real(url, opts);
+    const u = String(url);
+    if (/\/api\/studio\/[^/]+\/chat$/.test(u) && (opts.method || 'GET') === 'POST') {
+      const b = JSON.parse(opts.body); window.__cid = b.cid; window.__text = b.text;
+      return Promise.resolve(new Response(JSON.stringify({ ok: true, turn: { id: 'T1', status: 'queued' } }), { status: 202, headers: { 'Content-Type': 'application/json' } }));
+    }
+    if (!/\/api\/studio\/[^/]+\/live$/.test(u)) return real(url, opts);
     let ctl; const enc = new TextEncoder();
     const body = new ReadableStream({ start(c) { ctl = c; } });
     window.__sse = { push: (e, d) => ctl.enqueue(enc.encode(`event: ${e}\ndata: ${JSON.stringify(d)}\n\n`)), end: () => ctl.close() };
+    if (opts.signal) opts.signal.addEventListener('abort', () => { try { ctl.error(new DOMException('aborted', 'AbortError')); } catch { /* closed */ } });
     return Promise.resolve(new Response(body, { status: 200, headers: { 'Content-Type': 'text/event-stream' } }));
   };
 };
@@ -101,7 +141,7 @@ test('the steps card replaces the dots, shows the real steps in order, and folds
 });
 
 test('the AI path: rounds, thinking, the plan as plain text, playtest, fix, tokens and the agent loop', async ({ page }) => {
-  await newGame(page);
+  const id = await newGame(page);
   const steps = [
     ['step', { i: 1, key: 'screen' }],
     ['step', { i: 2, key: 'think', n: 1, c: 'start' }], ['stepinfo', { i: 2, th: 1 }],
@@ -119,7 +159,7 @@ test('the AI path: rounds, thinking, the plan as plain text, playtest, fix, toke
     ['step', { i: 14, key: 'ask' }],
   ];
   const rec = record(steps, { ti: 48210, to: 6320 });
-  await fulfillChat(page, [...steps, ['text', { text: 'Here you go!' }], ['done', { turnsLeft: 59, steps: rec }]]);
+  await scriptLive(page, id, { events: [...steps, ['text', { text: 'Here you go!' }], ['done', { turnsLeft: 59, steps: rec }]], reply: { text: 'Here you go!', events: [['steps', rec]] } });
   page.on('dialog', d => { throw new Error(`unexpected dialog ${d.message()}`); });
   await page.fill('#st-input', 'A fox game'); await page.press('#st-input', 'Enter');
   await settled(page);
@@ -143,9 +183,11 @@ test('the AI path: rounds, thinking, the plan as plain text, playtest, fix, toke
 });
 
 test('an error marks the step it stopped on and the summary says it stopped early', async ({ page }) => {
-  await newGame(page);
+  const id = await newGame(page);
   const steps = [['step', { i: 1, key: 'screen' }], ['step', { i: 2, key: 'think', n: 1, c: 'start' }]];
-  await fulfillChat(page, [...steps, ['error', { message: 'The Builder got muddled.' }], ['done', { turnsLeft: 59, steps: record(steps, { end: 'error' }) }]]);
+  const rec = record(steps, { end: 'error' });
+  await scriptLive(page, id, { events: [...steps, ['error', { message: 'The Builder got muddled.' }], ['done', { turnsLeft: 59, steps: rec }]],
+    reply: { text: '', events: [['error', { message: 'The Builder got muddled.' }], ['steps', rec]] } });
   await page.fill('#st-input', 'A fox game'); await page.press('#st-input', 'Enter');
   await settled(page);
   await expect(page.locator('#st-log .msg.err')).toContainText('muddled');
@@ -162,14 +204,20 @@ test('an error marks the step it stopped on and the summary says it stopped earl
 });
 
 test('the live card, fed step by step: thinking is a chip, "Just now" lines, a late failure marks its own row, nothing after done', async ({ page }) => {
-  await page.addInitScript(pushableChat);
-  await newGame(page);
-  await page.fill('#st-input', 'A fox game'); await page.press('#st-input', 'Enter');
+  await page.addInitScript(pushableLive);
+  const id = await newGame(page);
   await page.waitForFunction(() => window.__sse);
   const push = (e, d) => page.evaluate(([e, d]) => window.__sse.push(e, d), [e, d]);
+  await push('hello', { now: Date.now(), turn: null }); await push('caughtup', {});
+  await page.fill('#st-input', 'A fox game'); await page.press('#st-input', 'Enter');
+  await page.waitForFunction(() => window.__cid);
   const live = page.locator('.stp[data-state="live"]');
   const cur = live.locator('li.stp-cur');
-  await push('step', { i: 1, key: 'screen' });
+  // The build starts: this tab's own card (with its "Sending" row) is kept and the server's steps follow in it.
+  const cid = await page.evaluate(() => window.__cid);
+  await push('turn', { id: 'T1', attempt: 1, chain: 0, carried: 0, provider: 'ai', mine: true, cid, elapsed: 0, entries: [{ role: 'user', text: 'A fox game', at: Date.now(), uploads: [], turn: 'T1' }], waiting: 0, left: 0 });
+  await expect(page.locator('#st-log .msg.me')).toHaveCount(1);
+  await push('step', { i: 1, key: 'screen', at: 0 });
   await push('step', { i: 2, key: 'think', n: 1, c: 'start' }); await push('stepinfo', { i: 2, th: 1 });
   // The round keeps its reason and its own learning line while it thinks; thinking is a word next to it.
   await expect(cur).toHaveAttribute('data-step', 'think');
@@ -192,9 +240,16 @@ test('the live card, fed step by step: thinking is a chip, "Just now" lines, a l
   await expect(cur.locator('.stp-tip')).toContainText('Just now: A safety program, not an AI, checks every new version');
   await expect(live.locator('li.stp-row[data-step="check"]')).toContainText('Safety program: 2 things to look at · saved as version 1');
   const s = [['screen', 0], ['think', 300, { n: 1, c: 'start', th: 1 }], ['write', 900, { plan: 'A fox and a dragon', l: 40, ok: false }], ['name', 1500, { title: 'Fox Hop', icon: '🦊' }], ['check', 1501, { st: 'flag', v: 1, k: 2 }], ['think', 1502, { n: 2, c: 'next' }]];
-  await push('done', { turnsLeft: 59, steps: { v: 1, p: 'ai', ms: 2500, r: 2, end: 'ok', s } });
-  await push('step', { i: 7, key: 'ask' });             // after done: ignored
-  await page.evaluate(() => window.__sse.end());
+  const rec = { v: 1, p: 'ai', ms: 2500, r: 2, end: 'ok', s };
+  // After 'done' the page reads the state again and redraws the chat from the saved transcript.
+  await page.route(u => u.pathname === `/api/studio/${id}`, async route => {
+    const res = await route.fetch(); const json = await res.json();
+    json.chat = [...json.chat, { role: 'user', text: 'A fox game', turn: 'T1' }, { role: 'assistant', text: 'Great idea! ', events: [['steps', rec]], turn: 'T1' }];
+    await route.fulfill({ response: res, json });
+  });
+  await push('done', { turnsLeft: 59, steps: rec });
+  // After done: ignored (the page may already have closed this stream to open a fresh one).
+  await page.evaluate(() => { try { window.__sse.push('step', { i: 7, key: 'ask' }); window.__sse.end(); } catch { /* closed */ } });
   await settled(page);
   await expect(live).toHaveCount(0);
   await expect(page.locator('.stp-sum')).toContainText('How the AI did this · 6 steps');
@@ -228,13 +283,8 @@ test('a long AI step shows "Did you know?" facts; a dropped connection says the 
   const id = await newGame(page);
   await page.clock.install();
   await page.reload();
-  // The stream stops after round 1 with no 'done' (a dropped connection); the server still says it is busy.
-  await fulfillChat(page, [['step', { i: 1, key: 'screen' }], ['step', { i: 2, key: 'think', n: 1, c: 'start' }], ['step', { i: 3, key: 'write' }], ['stepinfo', { i: 3, plan: 'A fox who hops', l: 30 }]]);
-  const isState = u => u.pathname === `/api/studio/${id}`;
-  await page.route(isState, async route => {
-    const res = await route.fetch(); const json = await res.json();
-    await route.fulfill({ response: res, json: { ...json, busy: true, provider: 'claude' } });
-  });
+  // The stream stops after round 1 with no 'done', and reconnecting fails (a dropped connection).
+  await scriptLive(page, id, { events: [['step', { i: 1, key: 'screen', at: 0 }], ['step', { i: 2, key: 'think', n: 1, c: 'start', at: 100 }], ['step', { i: 3, key: 'write', at: 200 }], ['stepinfo', { i: 3, plan: 'A fox who hops', l: 30 }]], failAfter: true, provider: 'claude' });
   await page.fill('#st-input', 'A fox game'); await page.press('#st-input', 'Enter');
   const live = page.locator('.stp[data-state="live"]');
   const cur = live.locator('li.stp-row.stp-cur');
@@ -259,11 +309,11 @@ test('a long AI step shows "Did you know?" facts; a dropped connection says the 
   await live.locator('.stp-tips').click();
   await expect(tip).toBeHidden();
   await live.locator('.stp-tips').click();
-  // The server finishes (here: nothing was saved): the next poll redraws the chat and the card goes away.
-  await page.unroute(isState);
-  await page.clock.fastForward(3500);
+  // The connection comes back and nothing is running any more: the page redraws the chat and the card goes away.
+  await unscript(page, id);
+  await page.evaluate(() => dispatchEvent(new Event('online')));
   await expect(live).toHaveCount(0);
-  await expect(page.locator('#st-log .msg.err')).toBeVisible();
+  await expect(page.locator('.st-busy')).toHaveCount(0);
   await idle(page);
 });
 
@@ -303,12 +353,8 @@ test('360 px phone: no sideways scroll while live or folded; reduced motion stil
   await page.setViewportSize({ width: 360, height: 740 });
   await page.emulateMedia({ reducedMotion: 'reduce' });
   const id = await newGame(page);
-  await fulfillChat(page, [['step', { i: 1, key: 'screen' }], ['step', { i: 2, key: 'think', n: 1, c: 'start' }], ['stepinfo', { i: 2, th: 1 }],
-    ['step', { i: 3, key: 'write' }], ['stepinfo', { i: 3, plan: 'A very long plan '.repeat(8).trim(), l: 3000 }]]);
-  const isState = u => u.pathname === `/api/studio/${id}`;
-  await page.route(isState, async route => {
-    const res = await route.fetch(); await route.fulfill({ response: res, json: { ...(await res.json()), busy: true } });
-  });
+  await scriptLive(page, id, { events: [['step', { i: 1, key: 'screen' }], ['step', { i: 2, key: 'think', n: 1, c: 'start' }], ['stepinfo', { i: 2, th: 1 }],
+    ['step', { i: 3, key: 'write' }], ['stepinfo', { i: 3, plan: 'A very long plan '.repeat(8).trim(), l: 3000 }]], failAfter: true });
   await page.fill('#st-input', 'A fox game'); await page.press('#st-input', 'Enter');
   const live = page.locator('.stp[data-state="live"]');
   await expect(live.locator('li.stp-cur')).toHaveAttribute('data-step', 'offline');
@@ -317,8 +363,8 @@ test('360 px phone: no sideways scroll while live or folded; reduced motion stil
   await noOverflow(page);
   expect(await live.locator('.stp-spin').evaluate(e => getComputedStyle(e).animationName)).toBe('none');
   for (const b of await live.locator('button.stp-line, .stp-more, .stp-tips').all()) expect((await b.boundingBox()).height).toBeGreaterThanOrEqual(40);
-  await page.unroute('**/api/studio/*/chat');
-  await page.unroute(isState);
+  await unscript(page, id);
+  await page.evaluate(() => dispatchEvent(new Event('online')));
   await expect(live).toHaveCount(0, { timeout: 15000 });
   await idle(page);
   await buildWithChips(page);

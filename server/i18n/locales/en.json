@@ -37,6 +37,12 @@
       "parents": "For grown-ups",
       "contact": "Contact us",
       "builders": "For builders"
+    },
+    "build": {
+      "ready": "✨ Your game “{title}” is ready! <a href=\"{href}\">Open it</a>",
+      "question": "💬 The Builder has a question about “{title}”. <a href=\"{href}\">Open it</a>",
+      "stopped": "⚠️ “{title}” stopped before it was finished. <a href=\"{href}\">Open it to carry on</a>",
+      "many": "✨ Some of your games have news from the Builder. <a href=\"{href}\">See My games</a>"
     }
   },
   "nav": {
@@ -151,7 +157,9 @@
       "chat": "Chat",
       "admin": "Admin",
       "favorites": "My favorites",
-      "classes": "My classes"
+      "classes": "My classes",
+      "building": "{count, plural, one {# game building} other {# games building}}",
+      "ready": "{count, plural, one {# game ready} other {# games ready}}"
     },
     "look": {
       "heading": "Pick your look",
@@ -715,7 +723,13 @@
     "changed": "Changed {when}",
     "empty": "Tap “New game” or pick a starter above. Your games will show up here.",
     "rename": "Rename",
-    "delete": "Delete"
+    "delete": "Delete",
+    "status": {
+      "building": "🛠️ Building…",
+      "ready": "✨ Ready",
+      "question": "💬 Has a question",
+      "stopped": "⚠️ Stopped"
+    }
   },
   "studio": {
     "title": "Studio: {title}",
@@ -824,7 +838,8 @@
       "cantDeleteStarter": "Starter games can’t be deleted.",
       "builderWorking": "The Builder is working on this game right now. Try again when it’s done.",
       "cantContinue": "That build can’t be continued any more. Send a new message instead.",
-      "restarting": "Our server is restarting. Try again in a moment."
+      "restarting": "Our server is restarting. Try again in a moment.",
+      "liveBusy": "This game is open in too many tabs. Close some and try again."
     }
   },
   "publish": {
@@ -1377,7 +1392,34 @@
           "h": "AI can sound sure and still be wrong. That’s why a safety program checks the code too.",
           "i": "✨ Pro quality uses a bigger AI that thinks for longer: slower, but often better at tricky games.",
           "j": "Always play your game yourself. Even clever AI misses things a real player would notice."
-        }
+        },
+        "leave": "You can close this page or your computer, or sign out. The Oomba Builder keeps working on our server, and your game will be here when you come back.",
+        "restart": {
+          "now": "Our server is restarting. Your build is saved and should carry on by itself",
+          "saved": "Our server is restarting. Your work so far is saved",
+          "learn": "Servers restart now and then, for updates or fixes. The Builder saves its work first, so nothing is lost."
+        },
+        "resume": {
+          "done": "Carried on after the server restarted",
+          "doneV": "Carried on from version {v} after the server restarted",
+          "learn": "The Builder saved your message and your newest version, so it picks up from there instead of starting over."
+        },
+        "stopRestart": "stopped by a server restart",
+        "stopTime": "stopped: it took too long"
+      },
+      "resumed": "🔄 The server restarted, so the Builder carried on from where it was.",
+      "resumedV": "🔄 The server restarted, so the Builder carried on from version {v}.",
+      "stopped": {
+        "restart": "The Builder stopped when our server restarted. Anything it made is saved.",
+        "ai": "The Builder stopped when our server restarted, and the AI Builder is resting right now. Anything it made is saved."
+      },
+      "continue": "Carry on building",
+      "continueMessage": "Please carry on with my last message.",
+      "notCounted": "This one didn’t use up a turn.",
+      "signedOutBuilding": "You were signed out. The Builder keeps working on your game: sign in again to see it.",
+      "gameGone": "This game was deleted, so the Builder stopped.",
+      "followups": {
+        "putBack": "Put it back in the box"
       }
     }
   },

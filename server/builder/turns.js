@@ -57,6 +57,45 @@ export const newestVersion = gameId => q.get('SELECT MAX(number) n FROM game_ver
 /** Versions saved since base (all when base is NULL), oldest first. */
 export const versionsSince = (gameId, base) => q.all('SELECT id, number, notes, safety_status FROM game_versions WHERE game_id=? AND number>? ORDER BY number', gameId, base ?? 0);
 
+// ---- What the owner's lists say (/build, the Me page) and the one-time "ready" note (views/layout.js).
+const WEEK = 7 * 86400e3;
+// The newest build of each game (a newer build replaces what an older one said).
+const NEWEST = 't.rowid = (SELECT t2.rowid FROM builder_turns t2 WHERE t2.game_id = t.game_id ORDER BY t2.created_at DESC, t2.rowid DESC LIMIT 1)';
+/** How a build ended, for the owner: 'building' | 'stopped' (time cap, or a restart it couldn't carry on from, even when
+ *  versions were saved: it didn't finish) | 'ready' (finished with a new version) | 'question' (finished without one) |
+ *  null (refused, no turns left, cancelled, or an error: nothing to tell). First match wins. */
+export function statusOf(r) {
+  if (['queued', 'running', 'interrupted'].includes(r.status)) return 'building';
+  if (r.status === 'failed' && r.can_continue) return 'stopped';
+  if (r.status === 'done' && r.end_reason === 'ok') return r.versions > 0 ? 'ready' : 'question';
+  return null;
+}
+/** The owner's games with news: Map gameId -> 'building' | 'stopped' | 'ready' | 'question'. Builds an admin runs in the
+ *  owner's game count too (the game is joined on its owner). An ended build stays news for 7 days, until the owner sees
+ *  it (markSeen). */
+export function buildStatus(ownerId, t = now()) {
+  const rows = q.all(`SELECT t.game_id, t.status, t.end_reason, t.versions, t.can_continue FROM builder_turns t JOIN games g ON g.id = t.game_id
+    WHERE g.owner_id = ? AND g.status != 'deleted' AND ${NEWEST} AND (t.status IN ${LIVE} OR (t.ended_at >= ? AND t.seen_at IS NULL))`, ownerId, t - WEEK);
+  const out = new Map();
+  for (const r of rows) { const st = statusOf(r); if (st) out.set(r.game_id, st); }
+  return out;
+}
+/** The owner saw how the game's builds ended (opened its Studio, or watched one end on a live stream). */
+export const markSeen = gameId => q.run('UPDATE builder_turns SET seen_at=? WHERE game_id=? AND seen_at IS NULL AND ended_at IS NOT NULL', now(), gameId);
+/** The one-time note: builds the owner sent themselves (an admin's test build never tells the child) that ended with
+ *  news in the last 7 days, not seen and not told yet. -> [{ id, gameId, title, kind: 'ready'|'question'|'stopped' }] */
+export function notices(userId, t = now()) {
+  return q.all(`SELECT t.id, t.game_id, t.status, t.end_reason, t.versions, t.can_continue, g.title FROM builder_turns t JOIN games g ON g.id = t.game_id
+    WHERE t.user_id = ? AND g.owner_id = t.user_id AND g.status != 'deleted' AND t.notified_at IS NULL AND t.seen_at IS NULL AND t.ended_at >= ? AND ${NEWEST}
+    ORDER BY t.ended_at DESC LIMIT 20`, userId, t - WEEK)
+    .map(r => ({ id: r.id, gameId: r.game_id, title: r.title, kind: statusOf(r) })).filter(r => r.kind && r.kind !== 'building');
+}
+/** The note was shown (on this page view only). */
+export function markNotified(ids) {
+  if (!ids.length) return;
+  const t = now(); tx(() => { for (const id of ids) q.run('UPDATE builder_turns SET notified_at=? WHERE id=? AND notified_at IS NULL', t, id); });
+}
+
 /** Retention (a scheduled job, runner.startRunner): the message text goes 7 days after the end, the row after 35. */
 export function forget(t = now()) {
   q.run("UPDATE builder_turns SET request='{}' WHERE ended_at IS NOT NULL AND ended_at<? AND request!='{}'", t - 7 * 86400e3);

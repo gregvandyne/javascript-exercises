@@ -166,18 +166,39 @@ export function endedUser(req) {
   return v === null || v === undefined ? null : v === '-' ? '' : v;
 }
 export function clearEnded(req, res) { if (req.sessionEnded || parseCookies(req)[ENDED]) setCookie(res, ENDED, '', 0); }
+// Told when sessions end here (sign out, sign out everywhere, a password change), so open live streams can close at once
+// (builder/live.js). Sessions deleted elsewhere (a ban, a school removal, an account merge) are noticed by the stream's
+// own 15-second check instead.
+const endedListeners = [];
+/** fn({ sessionId }) after one session ended, or fn({ userId, except }) after all of a user's sessions (but except). */
+export function onSessionsEnded(fn) { endedListeners.push(fn); }
+function sessionsEnded(what) { for (const fn of endedListeners) { try { fn(what); } catch { /* a listener never stops a sign-out */ } } }
 export function endSession(req, res) {
   const id = unpack(parseCookies(req)[COOKIE]);
   if (id) q.run('DELETE FROM sessions WHERE id=?', id);
   setCookie(res, COOKIE, '', 0);
+  if (id) sessionsEnded({ sessionId: id });
 }
 /** End someone's sessions on every device, or all but one (except: a session id). -> how many ended. They are marked
  *  ended rather than deleted, so a device that comes back to one still knows whose it was (see ENDED). */
 export function endSessions(userId, { except = null } = {}) {
   const t = now();
-  return (except ? q.run('UPDATE sessions SET expires_at=? WHERE user_id=? AND expires_at>? AND id!=?', t, userId, t, except)
+  const n = (except ? q.run('UPDATE sessions SET expires_at=? WHERE user_id=? AND expires_at>? AND id!=?', t, userId, t, except)
     : q.run('UPDATE sessions SET expires_at=? WHERE user_id=? AND expires_at>?', t, userId, t)).changes;
+  sessionsEnded({ userId, except });
+  return n;
 }
+/** A session row and its user when the sign-in still counts: not ended, not past its idle limit or its maximum length,
+ *  and the user is not banned. -> { s, u } or { s } (s: the row, if any). */
+function liveSession(id, t) {
+  const s = q.get('SELECT * FROM sessions WHERE id=?', id);
+  const u = s && s.expires_at > t ? getUser(s.user_id) : null;
+  const rule = u && SESSION_RULES[accountKind(u)];
+  return u && !u.banned && !(rule.idle && t - (s.last_active || s.created_at) > rule.idle) && t - s.created_at <= rule.max ? { s, u } : { s };
+}
+/** The user signed in with a session id, by the same rules as every request (sessionMiddleware), or null. Read-only:
+ *  it never ends a session or counts as activity (builder/live.js re-checks open streams with it). */
+export function sessionUser(id) { return id ? liveSession(id, now()).u || null : null; }
 let lastSweep = 0;
 export function sessionMiddleware(req, res, next) {
   const t = now();
@@ -186,10 +207,8 @@ export function sessionMiddleware(req, res, next) {
   req.user = null; req.sessionId = null; req.sessionEnded = false;
   const id = unpack(parseCookies(req)[COOKIE]);
   if (id) {
-    const s = q.get('SELECT * FROM sessions WHERE id=?', id);
-    const u = s && s.expires_at > t ? getUser(s.user_id) : null;
-    const rule = u && SESSION_RULES[accountKind(u)];
-    if (u && !u.banned && !(rule.idle && t - (s.last_active || s.created_at) > rule.idle) && t - s.created_at <= rule.max) {
+    const { s, u } = liveSession(id, t);
+    if (u) {
       req.user = u; req.sessionId = id;
       if (t - s.last_active > ACTIVITY_EVERY && isActivity(req)) q.run('UPDATE sessions SET last_active=? WHERE id=?', t, id);
       if (t - u.last_seen > 60e3) q.run('UPDATE users SET last_seen=? WHERE id=?', t, u.id);

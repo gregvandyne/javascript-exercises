@@ -278,5 +278,20 @@
   "js.studio.steps.offline.check": "The connection dropped before the page heard back from the Builder, so it is checking whether the message arrived. Kid reading level.",
   "js.studio.steps.check.flag": "{k} is how many things the safety program listed (1 or more): use the plural forms your language needs, and keep =1 for the one-thing wording. {v} is a version number.",
   "js.studio.steps.showLess": "Button at the bottom of the opened steps summary that folds it again. Shown after ▴. Short.",
-  "js.studio.steps.think.learn.start": "Explains a “round” to kids: one time the app asks the AI. Use the same word for “round” as in the think.* labels and loopAi."
+  "js.studio.steps.think.learn.start": "Explains a “round” to kids: one time the app asks the AI. Use the same word for “round” as in the think.* labels and loopAi.",
+  "js.studio.steps.leave": "Top of the live build card. 'Oomba Builder' is the product name: keep 'Oomba'. Must stay true: the build really goes on after closing the page or signing out. 'Close your computer' means shutting a laptop or turning a tablet off, said the way a child would.",
+  "js.studio.steps.restart.now": "'Server' = the computer that runs the website. Short; also shown as the status pill on the preview.",
+  "js.studio.steps.resume.doneV": "{v} is a version number. A row in the live build steps card, past tense.",
+  "js.studio.steps.stopRestart": "Ends the one-line summary of a build, after ' · ' (like js.studio.steps.stopped). Lower case start.",
+  "js.studio.steps.stopTime": "Ends the one-line summary of a build, after ' · ' (like js.studio.steps.stopped). Lower case start.",
+  "js.studio.resumedV": "{v} is a version number. A small note in the chat above the Builder’s reply.",
+  "js.studio.continue": "Button under a build that stopped early: the Builder carries on with the same message. Max ~24 chars.",
+  "js.studio.continueMessage": "Sent as the child’s chat message when they tap “Carry on building” (js.studio.continue).",
+  "js.studio.notCounted": "'Turn' as in js.studio.turns (the daily Builder turns).",
+  "js.studio.followups.putBack": "Button: puts the message back in the typing box so it can be sent again. 'Box' = the message box.",
+  "build.status.building": "A small chip on the 'My games' list. At most about 14 characters.",
+  "me.tiles.building": "Small line under “My games” on the Me page. {count} is a number of games.",
+  "layout.build.ready": "One-time note at the top of the next page. Keep the <a href=\"{href}\"> link and {title}.",
+  "layout.build.many": "One-time note at the top of the next page when several games have news. Keep the <a href=\"{href}\"> link.",
+  "studio.api.liveBusy": "The same game is open in many browser tabs at once."
 }

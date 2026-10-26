@@ -89,6 +89,11 @@
 .msg.bot.refused{background:var(--spark-soft)}
 .msg.err{align-self:center;background:var(--bad-bg);font-weight:600;text-align:center}
 .msg .q{display:block;font-weight:800;margin-top:6px}
+/* Small notes from the Studio itself: the server restarted, a build stopped, a turn not counted. */
+.msg.note{align-self:center;max-width:92%;padding:6px 12px;background:transparent;box-shadow:inset 0 0 0 2px var(--line);color:var(--text-2);font-size:.9rem;font-weight:600;text-align:center}
+.msg.note.stopped{background:var(--warn-bg);box-shadow:none;color:var(--warn-ink)}
+.st-cont{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;align-self:stretch}
+.st-contbtn{min-height:44px}
 .ev{align-self:flex-start;max-width:92%;display:flex;flex-direction:column;gap:6px;padding:10px 12px;border-radius:var(--r-sm);background:var(--card);box-shadow:inset 0 0 0 2px var(--line);font-size:.95rem}
 .ev.version{box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--ok) 45%,var(--line))}
 .ev.version.fail{box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--danger) 50%,var(--line))}
@@ -144,6 +149,12 @@ button.stp-line{cursor:pointer}
 .stp-learn{font-size:.88rem;color:var(--text-2)}
 .stp-learn b{color:var(--text)}
 .stp-tip:empty{display:none}
+/* The top of the live card: the builder can close the page or sign out (not a tip: shown with tips off too). */
+.stp-eta{margin:2px 8px 4px}
+.stp-eta p{margin:0}
+.stp-leave{font-size:.88rem;color:var(--text-2);line-height:1.4;overflow-wrap:anywhere}
+.stp-row[data-step="restart"]{background:var(--warn-bg)}
+.stp-row[data-step="restart"] .stp-line{color:var(--warn-ink)}
 /* While it runs, the plan keeps to two lines (all of it is in the summary). */
 .stp-cur .stp-plan{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden}
 /* Tips off stops the automatic lines; a row someone taps open still shows its own. */

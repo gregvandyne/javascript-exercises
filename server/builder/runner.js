@@ -101,7 +101,7 @@ const wake = job => { const w = job.waiters.splice(0); for (const f of w) f(); }
  * once can never start two builds: the second one sees the first job.
  */
 export async function submit({ user, game, text = '', pro = false, uploadIds = [], cid = null, continueOf = null, t = tEn, provider = null, compat = false }) {
-  const err = (status, key, code, vars) => ({ status, body: { error: t(key, vars) }, code });
+  const err = (status, key, code, vars) => ({ status, body: { error: t(key, vars), code }, code });
   // 1. Checks, in the order the Builder always had.
   if (!user.builder_enabled) return err(403, 'builder.errors.disabled', 'disabled');
   text = String(text || '').replace(/\r\n/g, '\n').trim().slice(0, MAX_INPUT);
@@ -119,6 +119,9 @@ export async function submit({ user, game, text = '', pro = false, uploadIds = [
   // 3b. Builds no longer need an open tab: at most 2 at once per builder.
   let mine = 0; for (const j of jobs.values()) if (j.userId === user.id) mine++;
   if (mine >= LIMITS.maxPerUser) return err(429, 'builder.errors.tooMany', 'tooMany');
+  // No turns left today: said before anything is stored, so the page puts the message back in the box (the charge
+  // itself is still checked when screening passes). The streamed POST keeps its old order: screening first.
+  if (!compat && turnsLeft(user.id) <= 0) return err(429, 'builder.errors.limit', 'limit', { count: config.builderDailyTurns });
   // 4. "Carry on building": only the game's last build, only when it offers it, only once.
   let orig = null;
   if (continueOf) {
@@ -208,6 +211,7 @@ function backstop(job) {
 // ---------------------------------------------------------------------------------------------------- events
 function capture(job, name, data) {
   if (name === 'text') job.seg.text += data.text || '';
+  else if (name === 'error') job.seg.events.push(['error', { message: data.message }]);   // kept, so a redraw still says it
   else if (CARDS.has(name)) {
     job.seg.events.push([name, name === 'version' ? { ...data, preview: undefined } : data]);
     if (name === 'version') { job.versions++; if (!job.firstV) job.firstV = Date.now() - job.t0; }

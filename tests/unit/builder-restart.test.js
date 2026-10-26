@@ -32,11 +32,12 @@ async function setup(s, name) {
   const { id } = await (await fetch(base + '/api/studio/new', { method: 'POST', headers: { ...H, cookie }, body: '{}' })).json();
   return { cookie, id };
 }
-/** The streamed POST, read in the background: { text, done } (done resolves with all of it). */
-function chat(s, cookie, id, body) {
+/** A streamed request read in the background: { text, done } (done resolves with all of it). The streamed POST by
+ *  default; path: another stream (GET /live). */
+function chat(s, cookie, id, body, { path = `/api/studio/${id}/chat`, method = 'POST' } = {}) {
   const st = { text: '', status: 0 };
   st.done = (async () => {
-    const res = await fetch(`http://127.0.0.1:${s.port}/api/studio/${id}/chat`, { method: 'POST', headers: { ...H, cookie }, body: JSON.stringify(body) });
+    const res = await fetch(`http://127.0.0.1:${s.port}${path}`, { method, headers: { ...H, cookie }, body: method === 'POST' ? JSON.stringify(body) : undefined });
     st.status = res.status;
     const reader = res.body.getReader(); const dec = new TextDecoder();
     try { for (;;) { const { value, done } = await reader.read(); if (done) break; st.text += dec.decode(value); } } catch { /* the server went away */ }
@@ -76,7 +77,12 @@ test('PROC-1 SIGTERM mid-build: handed off, exit 0, and after the restart the bu
   let s = await boot(); const { dataDir } = s;
   try {
     const { cookie, id } = await setup(s, 'RestartKid1');
-    const st = await midBuild(s, cookie, id);
+    // The Studio page: its live stream is open, and Send starts the build (answered at once).
+    const st = chat(s, cookie, id, null, { path: `/api/studio/${id}/live`, method: 'GET' });
+    await untilText(st, /event: caughtup/);
+    const r = await fetch(`http://127.0.0.1:${s.port}/api/studio/${id}/chat`, { method: 'POST', headers: { ...H, cookie }, body: JSON.stringify({ text: FOX, detach: true }) });
+    assert.equal(r.status, 202);
+    await untilText(st, /"key":"blocks"/); await sleep(700);
     const t0 = Date.now(); s.child.kill('SIGTERM');
     assert.equal(await s.exited, 0);
     assert.ok(Date.now() - t0 < 4000, `exit took ${Date.now() - t0} ms`);
@@ -88,6 +94,11 @@ test('PROC-1 SIGTERM mid-build: handed off, exit 0, and after the restart the bu
 
     s = await boot(dataDir);
     assert.ok(lines(s.out()).some(l => l.msg === 'recovered Builder turns' && l.resumed === 1));
+    // The page reconnects: hello carries attempt 2, and the replay starts with the resume step.
+    const again = chat(s, cookie, id, null, { path: `/api/studio/${id}/live`, method: 'GET' });
+    await untilText(again, /event: caughtup/);
+    const hello = JSON.parse(again.text.match(/event: hello\ndata: (.*)/)[1]);
+    if (hello.turn) { assert.equal(hello.turn.attempt, 2); assert.match(again.text, /"key":"resume"/); }   // (or it already finished)
     const after = await untilIdle(s, cookie, id);
     const kinds = after.chat.map(m => (m.role === 'user' ? 'user' : m.interrupted ? 'interrupted' : m.resumed ? 'resumed' : 'other'));
     assert.deepEqual(kinds.filter(k => k !== 'interrupted'), ['user', 'resumed']);

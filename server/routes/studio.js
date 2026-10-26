@@ -1,6 +1,7 @@
 // Build mode: the /build page (my games + "Start from" templates), the Studio (/studio/:id) and its APIs.
-// Owner or admin only for everything under a game id (404 otherwise). The Builder chat streams over SSE; the build
-// itself runs in the Builder runner (builder/runner.js), so a closed page or a sign-out never stops it.
+// Owner or admin only for everything under a game id (404 otherwise). A Builder build runs in the Builder runner
+// (builder/runner.js), apart from any request, so a closed page or a sign-out never stops it: POST /chat starts it and
+// answers at once, and each Studio tab follows it on GET /live (builder/live.js), which replays a running build in full.
 import express, { Router } from 'express';
 import { html, raw, jsonData } from '../views/html.js';
 import { page, notFound } from '../views/layout.js';
@@ -15,8 +16,10 @@ import { listTemplates, templateHtml, templateInfo, TEMPLATE_KEYS } from '../bui
 import { scanVersion } from '../services/scanner.js';
 import { SANDBOX } from '../services/frame.js'; // the SAME sandbox players get (never allow-same-origin)
 import { sanitizeGameHtml } from '../services/sanitize.js';
-import { runTurn, providerName } from '../builder/agent.js';
-import { isBusy, cancel as cancelBuild, life as builderLife } from '../builder/runner.js';
+import { providerName } from '../builder/agent.js';
+import { isBusy, cancel as cancelBuild, life as builderLife, submit, publicTurn, lastTurn } from '../builder/runner.js';
+import * as live from '../builder/live.js';
+import * as turns from '../builder/turns.js';
 import { turnsLeft, dailyTurns } from '../builder/usage.js';
 import { loadChat } from '../builder/chat.js';
 import { previewUrl } from '../builder/tools.js';
@@ -82,15 +85,22 @@ export function studioState(user, gameId, t = tEn) {
     preview: cur ? previewUrl(cur, g, user.id, t.locale) : null,
     chat: chat.messages,
     turnsLeft: turnsLeft(user.id), dailyTurns: dailyTurns(), provider: providerName(), busy: isBusy(g.id),
+    // The running build as this viewer sees it (its message and what it said so far), and how the last one ended.
+    turn: publicTurn(g.id, user), lastTurn: lastTurn(g.id, user),
     shareText: shareText(t), shareUrl: `/g/${g.slug}`, shareOptions: sharingOptions(getUser(g.owner_id)), classShare: classShare(g, g.owner_id),
     uploads: { limits: LIMITS, used: listUploads(g.id).length },
   };
 }
 
 // ---------------------------------------------------------------- pages
+/** The Builder chip on a "My games" card: building, ready, a question, or stopped (text and emoji, never colour alone). */
+const BUILD_TONE = { building: 'warn', ready: 'good', question: 'good', stopped: 'bad' };
+const buildChip = (st, t) => (st ? html`<span class="stchip ${BUILD_TONE[st]}">${t(`build.status.${st}`)}</span>` : '');
+
 router.get('/build', requireAccount, async (req, res) => {
   const t = req.t;
   const mine = games.myGames(req.user.id, 100);
+  const news = turns.buildStatus(req.user.id);
   const templates = await listTemplates();
   const tpl = (k, field, fallback) => (t.has(`studio.templates.${k}.${field}`) ? t(`studio.templates.${k}.${field}`) : fallback);
   const body = html`
@@ -111,7 +121,7 @@ router.get('/build', requireAccount, async (req, res) => {
       <a class="mg-cover" href="/studio/${g.id}" tabindex="-1" aria-hidden="true">${coverArt(g, '', { draft: true })}</a>
       <div class="mg-body">
         <h3><a href="/studio/${g.id}">${g.title}</a></h3>
-        <div class="mg-status"><span class="stchip ${s.tone}">${s.label}</span>${g.pending_version_id ? html`<span class="stchip warn">⏳ ${t('build.updateWaiting')}</span>` : ''}</div>
+        <div class="mg-status"><span class="stchip ${s.tone}">${s.label}</span>${buildChip(news.get(g.id), t)}${g.pending_version_id ? html`<span class="stchip warn">⏳ ${t('build.updateWaiting')}</span>` : ''}</div>
         ${g.review_note ? html`<p class="mg-note">💬 ${t('game.reviewer', { note: g.review_note })}</p>` : ''}
         <p class="small muted">${t('build.changed', { when: req.fmt.ago(g.updated_at) })}</p>
       </div>
@@ -133,6 +143,7 @@ router.get('/build', requireAccount, async (req, res) => {
 router.get('/studio/:id', requireAccount, (req, res) => {
   const t = req.t;
   const g = loadEditable(req, res, { api: false }); if (!g) return;
+  if (req.user.id === g.owner_id) turns.markSeen(g.id);   // the owner sees how the last build ended: no more "Ready" news
   const state = studioState(req.user, g.id, t);
   const body = html`
   <div class="studio" id="studio">
@@ -214,26 +225,40 @@ router.get('/api/studio/:id', requireAccount, (req, res) => {
   res.json(studioState(req.user, g.id, req.t));
 });
 
-// The Builder chat: POST, answered as text/event-stream (the client reads it with fetch + ReadableStream).
+// The Builder chat. Body: { text, pro, uploads, cid, continueOf?, detach? }.
+//   detach: true (the Studio page): starts the build and answers at once, 202 { ok, turn: { id, status } }, or an error
+//     as JSON ({ error, code }: 400 empty, 403 disabled, 409 busy / cantContinue, 429 tooMany / limit, 503 restarting).
+//     The page follows the build on GET /live. A retried message (the same cid) gets the same build back.
+//   no detach (pages loaded before builds ran on their own, and scripts): text/event-stream with every event of the
+//     build, ending after 'done'. A game that is already building answers builder.errors.busy, as it always did.
+// The build never stops when the request does: a page closed while its POST is on the way still gets its message built.
 router.post('/api/studio/:id/chat', requireAccount, rateLimit('builder', 20, 60e3, 'studio.api.builderBreak'), async (req, res) => {
   const g = loadEditable(req, res); if (!g) return;
   const b = req.body || {};
   // Shutting down: nothing is stored, and the page keeps the message (runner.drain).
-  if (builderLife.draining) return res.status(503).json({ error: req.t('studio.api.restarting') });
-  res.writeHead(200, { 'Content-Type': 'text/event-stream; charset=utf-8', 'Cache-Control': 'no-cache, no-transform', 'X-Accel-Buffering': 'no', Connection: 'keep-alive' });
-  res.flushHeaders && res.flushHeaders();
-  // If the connection drops (a phone locks, switches apps or loses signal), the build keeps running in the runner and
-  // is saved: the Studio sees state.busy, waits, and then shows the result. So we only stop writing, never abort it.
-  let gone = false;
-  res.on('close', () => { if (!res.writableFinished) gone = true; });
-  res.on('error', () => { gone = true; });
-  const send = (event, data) => { if (!gone && !res.writableEnded) res.write(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`); };
-  const ping = setInterval(() => { if (!gone && !res.writableEnded) res.write(': ping\n\n'); }, 15000);
+  if (builderLife.draining) return res.status(503).json({ error: req.t('studio.api.restarting'), code: 'restarting' });
+  const opts = { user: req.user, game: g, text: b.text, pro: !!b.pro, uploadIds: b.uploads, cid: b.cid, continueOf: b.continueOf, t: req.t };
+  if (b.detach) {
+    const r = await submit(opts);
+    return res.status(r.status).json(r.body);
+  }
+  live.sseHeaders(res);
+  const send = (event, data) => { if (!res.writableEnded) res.write(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`); };
   try {
-    await runTurn({ user: req.user, gameId: g.id, text: b.text, pro: !!b.pro, uploadIds: b.uploads, cid: b.cid, continueOf: b.continueOf, emit: send, t: req.t });
+    const r = await submit({ ...opts, compat: true });
+    if (r.job) { live.open(req, res, g, { compat: true, job: r.job }); return; }   // ends after 'done' (or at sign-out)
+    send('error', { message: r.body.error });
   } catch {
-    send('error', { message: req.t('studio.api.wentWrong') }); send('done', { turnsLeft: turnsLeft(req.user.id) });
-  } finally { clearInterval(ping); res.end(); }
+    send('error', { message: req.t('studio.api.wentWrong') });
+  }
+  send('done', { turnsLeft: turnsLeft(req.user.id) }); res.end();
+});
+
+// The live view of this game's builds for one Studio tab (builder/live.js): hello { now, turn }, the replay of the running
+// build, caughtup, then live events; it stays open between builds. A background request: it never keeps a sign-in awake.
+router.get('/api/studio/:id/live', requireAccount, rateLimit('studio-live', 40, 60e3), (req, res) => {
+  const g = loadEditable(req, res); if (!g) return;
+  live.open(req, res, g);
 });
 
 router.post('/api/studio/:id/meta', requireAccount, rateLimit('studio-meta', 60, 60e3), (req, res) => {
