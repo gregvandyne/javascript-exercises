@@ -42,7 +42,8 @@
       "question": "💬 Le Constructeur a une question sur « {title} ». <a href=\"{href}\">Ouvre-le</a>",
       "stopped": "⚠️ « {title} » s’est arrêté avant la fin. <a href=\"{href}\">Ouvre-le pour continuer</a>",
       "many": "✨ Certains de tes jeux ont des nouvelles du Constructeur. <a href=\"{href}\">Voir Mes jeux</a>"
-    }
+    },
+    "shortPasswordGrownup": "Votre mot de passe fait moins de {min} caractères. Merci d’<a href=\"{href}\">en choisir un plus long</a>."
   },
   "nav": {
     "home": "Accueil",
@@ -51,7 +52,8 @@
     "friends": "Amis",
     "me": "Moi",
     "classes": "Classes",
-    "schools": "Écoles"
+    "schools": "Écoles",
+    "family": "Famille"
   },
   "errors": {
     "goHome": "Retour à l’accueil",
@@ -209,7 +211,8 @@
       "mismatch": "Les deux nouveaux mots de passe ne sont pas pareils.",
       "same": "C’est déjà ton mot de passe. Choisis-en un nouveau.",
       "staffShort": "{n, plural, one {Ça ne fait que # caractère.} other {Ça ne fait que # caractères.}} Il en faut au moins {min}.",
-      "school": "C’est ton prof qui s’occupe de ton mot de passe : demande-lui si tu l’oublies."
+      "school": "C’est ton prof qui s’occupe de ton mot de passe : demande-lui si tu l’oublies.",
+      "hintGrownup": "Au moins {min} caractères, car ce compte s’occupe d’une famille."
     },
     "signOut": {
       "heading": "Se déconnecter",
@@ -235,6 +238,38 @@
         "unsafe": "Cette photo ne convient pas à Oomba Academy. Essaie-en une autre.",
         "personal_info": "Cette photo montre des détails privés comme un nom, une école ou une adresse. Essaie-en une autre.",
         "resting": "Les photos passent par notre vérification de sécurité, et elle se repose en ce moment. Réessaie plus tard."
+      }
+    },
+    "family": {
+      "heading": "Pour les parents",
+      "text": "Un adulte peut relier son compte au tien.",
+      "getCode": "Obtenir un code",
+      "newCode": "Obtenir un nouveau code",
+      "codeOpen": "Tu as un code qui marche encore. Tu l’as perdu ? Demandes-en un nouveau, et l’ancien ne marchera plus.",
+      "codeLabel": "Ton code",
+      "codeHow": "Il marche une seule fois, pendant 1 heure. Avec ce code, un adulte peut relier son compte au tien sur {where}.",
+      "codeWarn": "Donne ce code seulement à ton parent ou à l’adulte qui s’occupe de toi, en personne. Ne le tape jamais dans le chat ou dans un jeu, et ne le donne jamais à quelqu’un en ligne.",
+      "pending": "<b>Un adulte</b> veut relier son compte au tien. Dis oui seulement si c’est ton parent ou l’adulte qui s’occupe de toi. Si tu ne le connais pas, parles-en à un adulte en qui tu as confiance.",
+      "pendingCheck": "Est-ce que tu as donné ton code toi-même à ton parent ou à l’adulte qui s’occupe de toi, en personne ? Sinon, touche Signaler.",
+      "yes": "Oui",
+      "no": "Non",
+      "report": "Signaler",
+      "reportConfirm": "Signaler ça ? Rien ne sera relié, et l’équipe Oomba Academy va regarder.",
+      "linked": "Ton compte est relié à <b>un adulte</b>.",
+      "unlink": "Retirer le lien",
+      "unlinkConfirm": "Retirer le lien avec cet adulte ?",
+      "reportLinkedConfirm": "Signaler ça ? Le lien s’arrête tout de suite, et l’équipe Oomba Academy va regarder.",
+      "done": {
+        "yes": "Ton compte est maintenant relié à cet adulte.",
+        "no": "D’accord. Rien n’a été relié.",
+        "report": "Merci de nous avoir prévenus. Rien n’a été relié, et nous allons regarder.",
+        "unlink": "Lien retiré.",
+        "reportLinked": "Merci de nous avoir prévenus. Le lien est retiré, et nous allons regarder."
+      },
+      "errors": {
+        "linked": "Ton compte est déjà relié à un adulte.",
+        "pending": "Réponds d’abord à la question sur cette page.",
+        "nothing": "Il n’y a rien à faire ici pour l’instant. Essaie de recharger la page."
       }
     }
   },
@@ -400,6 +435,11 @@
       "contact": {
         "h": "Nous contacter",
         "p1": "Les adultes peuvent nous écrire à {email}."
+      },
+      "families": {
+        "h": "Comptes familiaux",
+        "p1": "Un parent ou un tuteur peut créer son propre compte adulte et le relier au compte de son enfant. Votre enfant doit dire oui sur sa propre page.",
+        "link": "À propos des comptes familiaux"
       }
     },
     "sdk": {
@@ -2206,6 +2246,127 @@
         "h": "Confidentialité",
         "p1": "Tant que le compte Google est associé, nous conservons son identifiant, son adresse e-mail et le domaine de l’école, pour le reconnaître à la connexion. Nous ne conservons jamais la photo Google, n’affichons jamais le nom Google d’un élève sur le site de jeux et n’utilisons jamais le compte pour lire quoi que ce soit d’autre chez Google."
       }
+    }
+  },
+  "family": {
+    "landing": {
+      "title": "Comptes familiaux",
+      "description": "Comptes adultes pour parents et tuteurs sur Oomba Academy : reliez vos enfants et découvrez ce qu’apporte un abonnement famille.",
+      "heading": "Oomba Academy pour les familles",
+      "intro": "Jouer et créer des jeux sur Oomba Academy est gratuit. Un compte adulte permet à un parent ou un tuteur de se relier à ses enfants, et un abonnement famille leur ajoute des messages supplémentaires pour le Constructeur.",
+      "signup": "Créer un compte adulte",
+      "login": "Se connecter",
+      "toFamily": "Aller à votre page famille",
+      "what": {
+        "h": "Ce qu’apporte un abonnement famille",
+        "p1": "{extra, plural, one {# message supplémentaire pour le Constructeur} other {# messages supplémentaires pour le Constructeur}} par mois, à partager entre {max} enfants au maximum, en plus des messages gratuits que chaque joueur reçoit tous les jours.",
+        "p2": "Payer ne débloque jamais rien qui manque aux joueurs gratuits, et on ne demande jamais aux enfants de payer."
+      },
+      "price": {
+        "h": "Prix",
+        "p1": "{monthly} par mois ou {yearly} par an, plus la taxe sur les ventes là où elle s’applique. Résiliable à tout moment : l’abonnement continue jusqu’à la fin de la période payée.",
+        "soon": "Les abonnements famille ne sont pas encore en vente. Vous pouvez déjà créer un compte adulte et relier vos enfants.",
+        "us": "Pour l’instant, les abonnements famille sont réservés aux familles des États-Unis."
+      },
+      "how": {
+        "h": "Comment fonctionne le lien",
+        "p1": "Créez un compte adulte : un nom et un mot de passe d’au moins 12 caractères. Pas besoin d’e-mail.",
+        "p2": "Votre enfant se connecte, ouvre <b>Moi</b>, puis <b>Pour les parents</b>, et touche <b>Obtenir un code</b>.",
+        "p3": "Vous tapez le code sur votre page famille, et votre enfant dit oui sur sa propre page."
+      },
+      "faq": {
+        "h": "Questions",
+        "cancel": {
+          "q": "Puis-je résilier ?",
+          "a": "Oui, à tout moment. L’abonnement continue jusqu’à la fin de la période payée, puis vos enfants reviennent aux messages gratuits. Rien de ce qu’ils ont créé n’est supprimé."
+        },
+        "store": {
+          "q": "Que conservez-vous à mon sujet ?",
+          "a": "Le nom de votre compte, un mot de passe enregistré sous une forme illisible (haché) et la liste des enfants reliés. Nous ne demandons pas votre e-mail. Quand vous payez, Stripe gère le paiement et conserve votre e-mail pour les reçus : nous ne voyons jamais les numéros de carte."
+        },
+        "see": {
+          "q": "Que puis-je voir de mon enfant ?",
+          "a": "Son nom, et combien de messages supplémentaires de la famille il a utilisés jusqu’à hier. Jamais ses discussions, ses amis, ses jeux, son école ni ce qu’il fait en ce moment."
+        },
+        "reset": {
+          "q": "Quand les messages gratuits sont-ils remis à zéro ?",
+          "a": "Tous les jours à 00:00 UTC.",
+          "local": "Soit {time} chez vous."
+        },
+        "consent": {
+          "q": "Relier un compte ou payer, est-ce une forme de consentement parental ?",
+          "a": "Non. Le lien et les abonnements famille concernent uniquement les messages supplémentaires pour le Constructeur. Ce n’est pas ainsi que le site demande ou enregistre un consentement."
+        }
+      }
+    },
+    "signup": {
+      "title": "Inscription adulte",
+      "heading": "Créer un compte adulte",
+      "intro": "Pour les parents et les tuteurs. Un compte adulte peut jouer et s’occuper d’une famille. Il ne peut pas créer de jeux, discuter dans le chat ni ajouter d’amis.",
+      "nameLabel": "Nom du compte",
+      "nameHint": "3 à 16 lettres ou chiffres. Les enfants ne voient jamais ce nom.",
+      "passwordHint": "Au moins {min} caractères.",
+      "confirmLabel": "Répétez le mot de passe",
+      "adult": "Je suis parent ou tuteur, et j’ai 18 ans ou plus.",
+      "submit": "Créer le compte",
+      "haveAccount": "Vous avez déjà un compte adulte ?",
+      "signedIn": "Session ouverte : {name}. Déconnectez-vous d’abord pour utiliser un compte adulte ici.",
+      "signOutFirst": "Déconnectez d’abord le compte ouvert sur cet appareil.",
+      "needAdult": "Cochez la case pour indiquer que vous êtes parent ou tuteur et que vous avez 18 ans ou plus.",
+      "short": "Utilisez au moins {min} caractères."
+    },
+    "login": {
+      "title": "Connexion adulte",
+      "heading": "Se connecter en tant qu’adulte",
+      "intro": "Avec le nom et le mot de passe de votre compte adulte.",
+      "submit": "Se connecter",
+      "newHere": "Pas encore de compte adulte ?",
+      "forgot": "Mot de passe oublié ? Écrivez à {email} depuis l’adresse e-mail à laquelle vous voulez que nous répondions."
+    },
+    "page": {
+      "title": "Votre famille",
+      "heading": "Votre famille",
+      "children": "Enfants",
+      "none": "Aucun enfant relié pour l’instant.",
+      "add": "Relier un enfant",
+      "full": "Vous avez relié {max} enfants, le maximum pour une famille.",
+      "pending": "En attente du oui de votre enfant",
+      "pendingSent": "Demande envoyée {when}. Elle expire au bout de 24 heures.",
+      "yesterday": "Messages supplémentaires de la famille hier : {n}",
+      "month": "ce mois-ci jusqu’à hier : {n}",
+      "sourceFamily": "Les messages supplémentaires viennent de votre abonnement famille.",
+      "sourceFree": "Utilise les messages gratuits du jour.",
+      "usageNote": "Les chiffres vont jusqu’à la fin de la journée d’hier (UTC) : cette page ne montre donc jamais ce que fait votre enfant en ce moment.",
+      "remove": "Retirer le lien",
+      "removeConfirm": "Retirer le lien avec {name} ?",
+      "removed": "C’est fait.",
+      "cancel": "Annuler la demande",
+      "cancelConfirm": "Annuler cette demande ?",
+      "planHeading": "Abonnement famille",
+      "planActive": "Votre abonnement famille est actif.",
+      "planNone": "Pas d’abonnement famille. Relier vos enfants est gratuit et ne change rien pour eux.",
+      "planMore": "À propos des abonnements famille",
+      "helpHeading": "Aide",
+      "help": "Une question, ou un problème avec votre compte ? Écrivez à {email}.",
+      "off": "Les comptes familiaux sont désactivés pour le moment. Ici, vous pouvez toujours jouer, changer de langue ou de mot de passe, et vous déconnecter."
+    },
+    "link": {
+      "title": "Relier un enfant",
+      "heading": "Relier un enfant",
+      "step1": "Votre enfant se connecte, ouvre <b>Moi</b>, puis <b>Pour les parents</b>, et touche <b>Obtenir un code</b>.",
+      "step2": "Tapez le code ici. Il fonctionne une seule fois, pendant 1 heure.",
+      "step3": "Votre enfant dit oui sur sa propre page Moi. En attendant, la demande reste en attente (jusqu’à 24 heures).",
+      "label": "Code de votre enfant",
+      "submit": "Envoyer la demande",
+      "sent": "Demande envoyée. Votre enfant doit dire oui sur sa page Moi."
+    },
+    "errors": {
+      "badCode": "Ce code ne fonctionne pas. Un code fonctionne une seule fois, pendant 1 heure : demandez-en un nouveau à votre enfant.",
+      "already": "Vous avez déjà demandé à relier cet enfant, ou il est déjà relié.",
+      "full": "Une famille peut relier jusqu’à {max} enfants.",
+      "typeCode": "Tapez le code que votre enfant vous a donné.",
+      "tooMany": "Trop d’essais. Attendez 15 minutes, puis réessayez.",
+      "notFound": "Cet enfant ne fait pas partie de votre famille."
     }
   }
 }

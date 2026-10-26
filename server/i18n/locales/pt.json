@@ -43,7 +43,8 @@
       "question": "💬 O Construtor tem uma pergunta sobre “{title}”. <a href=\"{href}\">Abra o jogo</a>",
       "stopped": "⚠️ “{title}” parou antes de terminar. <a href=\"{href}\">Abra para continuar</a>",
       "many": "✨ Alguns dos seus jogos têm novidades do Construtor. <a href=\"{href}\">Ver Meus jogos</a>"
-    }
+    },
+    "shortPasswordGrownup": "A senha tem menos de {min} caracteres. Por favor, <a href=\"{href}\">escolha uma senha mais longa</a>."
   },
   "nav": {
     "home": "Início",
@@ -52,7 +53,8 @@
     "friends": "Amigos",
     "me": "Eu",
     "classes": "Turmas",
-    "schools": "Escolas"
+    "schools": "Escolas",
+    "family": "Família"
   },
   "errors": {
     "goHome": "Ir para o início",
@@ -210,7 +212,8 @@
       "mismatch": "As duas novas senhas não são iguais.",
       "same": "Essa é a senha que você já tem. Escolha uma nova.",
       "staffShort": "{n, plural, one {É só # caractere.} other {São só # caracteres.}} Use pelo menos {min}.",
-      "school": "Quem cuida da sua senha é o seu professor. Se você esquecer, peça ajuda a ele."
+      "school": "Quem cuida da sua senha é o seu professor. Se você esquecer, peça ajuda a ele.",
+      "hintGrownup": "Pelo menos {min} caracteres, porque esta conta cuida de uma família."
     },
     "signOut": {
       "heading": "Sair",
@@ -236,6 +239,38 @@
         "unsafe": "Essa foto não combina com a Oomba Academy. Tente outra.",
         "personal_info": "Essa foto mostra detalhes pessoais, como nome, escola ou endereço. Tente outra.",
         "resting": "As fotos precisam da nossa checagem de segurança, e ela está descansando agora. Tente mais tarde."
+      }
+    },
+    "family": {
+      "heading": "Para adultos",
+      "text": "Um adulto pode vincular a conta dele à sua.",
+      "getCode": "Pegar um código",
+      "newCode": "Pegar um código novo",
+      "codeOpen": "Você tem um código que ainda funciona. Perdeu? Pegue um novo, e o antigo para de funcionar.",
+      "codeLabel": "Seu código",
+      "codeHow": "Ele funciona uma vez só, durante 1 hora. Com este código, um adulto pode se vincular à sua conta em {where}.",
+      "codeWarn": "Só dê este código para o seu pai, sua mãe ou seu responsável, pessoalmente. Nunca escreva o código no chat ou em um jogo, e nunca dê para alguém na internet.",
+      "pending": "<b>Um adulto</b> quer se vincular à sua conta. Só diga sim se for o seu pai, sua mãe ou seu responsável. Se você não conhece essa pessoa, conte para um adulto em quem você confia.",
+      "pendingCheck": "Foi você mesmo que deu o seu código, pessoalmente, para o seu pai, sua mãe ou seu responsável? Se não foi, toque em Denunciar.",
+      "yes": "Sim",
+      "no": "Não",
+      "report": "Denunciar",
+      "reportConfirm": "Denunciar? Nada é vinculado, e a equipe da Oomba Academy vai dar uma olhada.",
+      "linked": "Sua conta está vinculada a <b>um adulto</b>.",
+      "unlink": "Desvincular",
+      "unlinkConfirm": "Desvincular o adulto?",
+      "reportLinkedConfirm": "Denunciar? O vínculo termina agora, e a equipe da Oomba Academy vai dar uma olhada.",
+      "done": {
+        "yes": "Pronto! Sua conta está vinculada ao adulto.",
+        "no": "Tudo bem. Nada foi vinculado.",
+        "report": "Obrigado por nos contar. Nada foi vinculado, e vamos dar uma olhada.",
+        "unlink": "Desvinculado.",
+        "reportLinked": "Obrigado por nos contar. O vínculo terminou, e vamos dar uma olhada."
+      },
+      "errors": {
+        "linked": "Sua conta já está vinculada a um adulto.",
+        "pending": "Primeiro responda à pergunta desta página.",
+        "nothing": "Não há nada para fazer aqui agora. Tente recarregar a página."
       }
     }
   },
@@ -401,6 +436,11 @@
       "contact": {
         "h": "Fale com a gente",
         "p1": "Adultos podem escrever para {email}."
+      },
+      "families": {
+        "h": "Contas de família",
+        "p1": "Pais, mães e responsáveis podem criar uma conta de adulto própria e vinculá-la à conta da criança. A criança precisa dizer sim na própria página.",
+        "link": "Sobre as contas de família"
       }
     },
     "sdk": {
@@ -2207,6 +2247,127 @@
         "h": "Privacidade",
         "p1": "Enquanto a conta Google estiver conectada, guardamos o ID, o endereço de e-mail e o domínio da escola dela, para reconhecê-la no login. Nunca guardamos a foto do Google, nunca mostramos o nome do Google de um aluno no site de jogos e nunca usamos a conta para ler mais nada do Google."
       }
+    }
+  },
+  "family": {
+    "landing": {
+      "title": "Contas de família",
+      "description": "Contas de adulto para pais, mães e responsáveis na Oomba Academy: vincule seus filhos e veja o que um plano família oferece.",
+      "heading": "Oomba Academy para famílias",
+      "intro": "Jogar e criar jogos na Oomba Academy é grátis. Com uma conta de adulto, pais, mães e responsáveis podem se vincular às crianças, e um plano família dá a elas mensagens extras para o Construtor.",
+      "signup": "Criar uma conta de adulto",
+      "login": "Entrar",
+      "toFamily": "Ir para a página da sua família",
+      "what": {
+        "h": "O que um plano família oferece",
+        "p1": "{extra, plural, one {# mensagem extra para o Construtor} other {# mensagens extras para o Construtor}} por mês, compartilhadas por até {max} crianças, além das mensagens grátis que todo jogador recebe a cada dia.",
+        "p2": "Pagar nunca libera nada que os jogadores gratuitos não tenham, e as crianças nunca são convidadas a pagar."
+      },
+      "price": {
+        "h": "Preço",
+        "p1": "{monthly} por mês ou {yearly} por ano, mais o imposto sobre vendas onde ele se aplica. Cancele quando quiser: o plano continua até o fim do período que você pagou.",
+        "soon": "Os planos família ainda não estão à venda. Você já pode criar uma conta de adulto e vincular seus filhos.",
+        "us": "Por enquanto, os planos família são só para famílias dos Estados Unidos."
+      },
+      "how": {
+        "h": "Como funciona o vínculo",
+        "p1": "Crie uma conta de adulto: um nome e uma senha com pelo menos 12 caracteres. Não precisa de e-mail.",
+        "p2": "A criança entra na conta, abre <b>Eu</b>, depois <b>Para adultos</b>, e toca em <b>Pegar um código</b>.",
+        "p3": "Você digita o código na página da sua família, e a criança diz sim na própria página."
+      },
+      "faq": {
+        "h": "Perguntas",
+        "cancel": {
+          "q": "Posso cancelar?",
+          "a": "Sim, quando quiser. O plano continua até o fim do período que você pagou, e depois as crianças voltam para as mensagens grátis. Nada do que elas criaram é apagado."
+        },
+        "store": {
+          "q": "O que vocês guardam sobre mim?",
+          "a": "O nome da sua conta, a senha embaralhada (com hash) e quais crianças estão vinculadas. Não pedimos seu e-mail. Quando você paga, a Stripe cuida do pagamento e guarda seu e-mail para enviar os recibos: nós nunca vemos números de cartão."
+        },
+        "see": {
+          "q": "O que posso ver sobre meu filho ou minha filha?",
+          "a": "O nome e quantas mensagens extras da família a criança usou até ontem. Nunca os chats, os amigos, os jogos, a escola ou o que ela está fazendo agora."
+        },
+        "reset": {
+          "q": "Quando as mensagens grátis são renovadas?",
+          "a": "Todos os dias às 00:00 UTC.",
+          "local": "Ou seja, às {time} no seu horário."
+        },
+        "consent": {
+          "q": "Vincular ou pagar é uma forma de consentimento dos pais?",
+          "a": "Não. O vínculo e os planos família tratam só de mensagens extras para o Construtor. Eles não são a forma como o site pede ou registra consentimento."
+        }
+      }
+    },
+    "signup": {
+      "title": "Cadastro de adulto",
+      "heading": "Criar uma conta de adulto",
+      "intro": "Para pais, mães e responsáveis. Uma conta de adulto pode jogar e cuidar de uma família. Ela não pode criar jogos, usar o chat nem adicionar amigos.",
+      "nameLabel": "Nome da conta",
+      "nameHint": "De 3 a 16 letras ou números. As crianças nunca veem este nome.",
+      "passwordHint": "Pelo menos {min} caracteres.",
+      "confirmLabel": "Repita a senha",
+      "adult": "Sou pai, mãe ou responsável e tenho 18 anos ou mais.",
+      "submit": "Criar conta",
+      "haveAccount": "Já tem uma conta de adulto?",
+      "signedIn": "Você entrou como {name}. Saia dessa conta primeiro para usar uma conta de adulto aqui.",
+      "signOutFirst": "Primeiro saia da conta que está aberta neste aparelho.",
+      "needAdult": "Marque a caixa para confirmar que você é pai, mãe ou responsável e tem 18 anos ou mais.",
+      "short": "Use pelo menos {min} caracteres."
+    },
+    "login": {
+      "title": "Entrada de adulto",
+      "heading": "Entrar como adulto",
+      "intro": "Com o nome e a senha da sua conta de adulto.",
+      "submit": "Entrar",
+      "newHere": "Ainda não tem uma conta de adulto?",
+      "forgot": "Esqueceu a senha? Escreva para {email} usando o e-mail em que você quer receber a resposta."
+    },
+    "page": {
+      "title": "Sua família",
+      "heading": "Sua família",
+      "children": "Crianças",
+      "none": "Nenhuma criança vinculada ainda.",
+      "add": "Vincular uma criança",
+      "full": "Você já vinculou {max} crianças, o máximo para uma família.",
+      "pending": "Esperando a criança dizer sim",
+      "pendingSent": "Pedido feito {when}. O pedido expira depois de 24 horas.",
+      "yesterday": "Mensagens extras da família ontem: {n}",
+      "month": "este mês até ontem: {n}",
+      "sourceFamily": "As mensagens extras vêm do seu plano família.",
+      "sourceFree": "Usa as mensagens grátis diárias.",
+      "usageNote": "As contagens vão até o fim do dia de ontem (UTC), então esta página nunca mostra o que a criança está fazendo agora.",
+      "remove": "Desvincular",
+      "removeConfirm": "Desvincular {name}?",
+      "removed": "Pronto.",
+      "cancel": "Cancelar pedido",
+      "cancelConfirm": "Cancelar este pedido?",
+      "planHeading": "Plano família",
+      "planActive": "Seu plano família está ativo.",
+      "planNone": "Sem plano família. Vincular crianças é grátis e não muda nada para elas.",
+      "planMore": "Sobre os planos família",
+      "helpHeading": "Ajuda",
+      "help": "Tem dúvidas ou algum problema com a sua conta? Escreva para {email}.",
+      "off": "As contas de família estão desligadas no momento. Aqui você ainda pode jogar, trocar o idioma ou a senha e sair."
+    },
+    "link": {
+      "title": "Vincular uma criança",
+      "heading": "Vincular uma criança",
+      "step1": "A criança entra na conta, abre <b>Eu</b>, depois <b>Para adultos</b>, e toca em <b>Pegar um código</b>.",
+      "step2": "Digite o código aqui. Ele funciona uma vez só, durante 1 hora.",
+      "step3": "A criança diz sim na própria página Eu. Até lá, o vínculo fica esperando (por até 24 horas).",
+      "label": "Código da criança",
+      "submit": "Enviar pedido de vínculo",
+      "sent": "Pedido enviado. A criança precisa dizer sim na página Eu."
+    },
+    "errors": {
+      "badCode": "Esse código não funciona. Um código funciona uma vez só, durante 1 hora: peça um novo para a criança.",
+      "already": "Você já pediu para vincular esta criança, ou ela já está vinculada.",
+      "full": "Uma família pode vincular até {max} crianças.",
+      "typeCode": "Digite o código que a criança deu para você.",
+      "tooMany": "Tentativas demais. Espere 15 minutos e tente de novo.",
+      "notFound": "Essa criança não faz parte da sua família."
     }
   }
 }

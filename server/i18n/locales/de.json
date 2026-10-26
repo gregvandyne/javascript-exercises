@@ -43,7 +43,8 @@
       "question": "💬 Der Baumeister hat eine Frage zu „{title}“. <a href=\"{href}\">Öffnen</a>",
       "stopped": "⚠️ „{title}“ wurde gestoppt, bevor es fertig war. <a href=\"{href}\">Öffne es, um weiterzumachen</a>",
       "many": "✨ Der Baumeister hat Neuigkeiten zu einigen deiner Spiele. <a href=\"{href}\">Zu „Meine Spiele“</a>"
-    }
+    },
+    "shortPasswordGrownup": "Ihr Passwort ist kürzer als {min} Zeichen. Bitte <a href=\"{href}\">wählen Sie ein längeres</a>."
   },
   "nav": {
     "home": "Start",
@@ -52,7 +53,8 @@
     "friends": "Freunde",
     "me": "Ich",
     "classes": "Klassen",
-    "schools": "Schulen"
+    "schools": "Schulen",
+    "family": "Familie"
   },
   "errors": {
     "goHome": "Zur Startseite",
@@ -210,7 +212,8 @@
       "mismatch": "Die beiden neuen Passwörter sind nicht gleich.",
       "same": "Das ist dein jetziges Passwort. Denk dir ein neues aus.",
       "staffShort": "Das {n, plural, one {ist erst # Zeichen} other {sind erst # Zeichen}}. Nötig sind mindestens {min}.",
-      "school": "Um dein Passwort kümmert sich deine Lehrkraft. Frag sie, wenn du es vergisst."
+      "school": "Um dein Passwort kümmert sich deine Lehrkraft. Frag sie, wenn du es vergisst.",
+      "hintGrownup": "Mindestens {min} Zeichen, weil dieses Konto eine Familie verwaltet."
     },
     "signOut": {
       "heading": "Abmelden",
@@ -236,6 +239,38 @@
         "unsafe": "Dieses Foto passt nicht zu Oomba Academy. Probier ein anderes.",
         "personal_info": "Auf dem Foto sind private Dinge wie ein Name, eine Schule oder eine Adresse zu sehen. Probier ein anderes.",
         "resting": "Fotos brauchen unsere Sicherheitsprüfung, und die macht gerade Pause. Versuch es später noch mal."
+      }
+    },
+    "family": {
+      "heading": "Für Erwachsene",
+      "text": "Ein Erwachsener kann sich mit deinem Konto verbinden.",
+      "getCode": "Code holen",
+      "newCode": "Neuen Code holen",
+      "codeOpen": "Du hast noch einen Code, der funktioniert. Verloren? Hol dir einen neuen, dann funktioniert der alte nicht mehr.",
+      "codeLabel": "Dein Code",
+      "codeHow": "Er funktioniert einmal, 1 Stunde lang. Mit diesem Code kann sich ein Erwachsener unter {where} mit deinem Konto verbinden.",
+      "codeWarn": "Gib diesen Code nur deinen Eltern oder der Person, die für dich sorgt, und zwar persönlich. Schreib ihn nie in einen Chat oder ein Spiel, und gib ihn nie jemandem im Internet.",
+      "pending": "<b>Dein Erwachsener</b> möchte sich mit deinem Konto verbinden. Sag nur Ja, wenn das deine Eltern oder die Person sind, die für dich sorgt. Wenn du die Person nicht kennst, sag einem Erwachsenen Bescheid, dem du vertraust.",
+      "pendingCheck": "Hast du deinen Code selbst und persönlich deinen Eltern oder der Person gegeben, die für dich sorgt? Wenn nicht, tipp auf Melden.",
+      "yes": "Ja",
+      "no": "Nein",
+      "report": "Melden",
+      "reportConfirm": "Melden? Es wird nichts verbunden, und das Oomba-Academy-Team sieht es sich an.",
+      "linked": "Verbunden mit <b>deinem Erwachsenen</b>.",
+      "unlink": "Trennen",
+      "unlinkConfirm": "Verbindung mit deinem Erwachsenen trennen?",
+      "reportLinkedConfirm": "Melden? Die Verbindung endet sofort, und das Oomba-Academy-Team sieht es sich an.",
+      "done": {
+        "yes": "Du bist jetzt mit deinem Erwachsenen verbunden.",
+        "no": "Okay. Es wurde nichts verbunden.",
+        "report": "Danke, dass du es uns sagst. Es wurde nichts verbunden, und wir sehen es uns an.",
+        "unlink": "Getrennt.",
+        "reportLinked": "Danke, dass du es uns sagst. Die Verbindung ist beendet, und wir sehen es uns an."
+      },
+      "errors": {
+        "linked": "Du bist schon mit einem Erwachsenen verbunden.",
+        "pending": "Beantworte zuerst die Frage auf dieser Seite.",
+        "nothing": "Hier gibt es gerade nichts zu tun. Lade die Seite neu."
       }
     }
   },
@@ -401,6 +436,11 @@
       "contact": {
         "h": "Kontakt",
         "p1": "Erwachsene erreichen uns per E-Mail unter {email}."
+      },
+      "families": {
+        "h": "Familienkonten",
+        "p1": "Eltern und Erziehungsberechtigte können ein eigenes Erwachsenenkonto erstellen und es mit dem Konto ihres Kindes verbinden. Ihr Kind muss auf seiner eigenen Seite zustimmen.",
+        "link": "Mehr über Familienkonten"
       }
     },
     "sdk": {
@@ -2207,6 +2247,127 @@
         "h": "Datenschutz",
         "p1": "Solange das Google-Konto verbunden ist, speichern wir seine ID, seine E-Mail-Adresse und die Domain der Schule, um es bei der Anmeldung zu erkennen. Wir speichern nie das Google-Profilbild, zeigen den Google-Namen eines Schülers nie auf der Spieleseite an und nutzen das Konto nie, um sonst etwas von Google abzurufen."
       }
+    }
+  },
+  "family": {
+    "landing": {
+      "title": "Familienkonten",
+      "description": "Erwachsenenkonten für Eltern und Erziehungsberechtigte bei Oomba Academy: Kinder verbinden, und was ein Familienabo zusätzlich bietet.",
+      "heading": "Oomba Academy für Familien",
+      "intro": "Spiele spielen und bauen ist bei Oomba Academy kostenlos. Mit einem Erwachsenenkonto können sich Eltern und Erziehungsberechtigte mit ihren Kindern verbinden, und ein Familienabo gibt den Kindern zusätzliche Nachrichten an den Baumeister.",
+      "signup": "Erwachsenenkonto erstellen",
+      "login": "Anmelden",
+      "toFamily": "Zu Ihrer Familienseite",
+      "what": {
+        "h": "Was ein Familienabo bietet",
+        "p1": "{extra, plural, one {# zusätzliche Nachricht an den Baumeister} other {# zusätzliche Nachrichten an den Baumeister}} pro Monat, geteilt von bis zu {max} Kindern, zusätzlich zu den kostenlosen Nachrichten, die alle Spieler jeden Tag bekommen.",
+        "p2": "Bezahlen schaltet nie etwas frei, das kostenlose Spieler nicht haben, und Kinder werden nie zum Bezahlen aufgefordert."
+      },
+      "price": {
+        "h": "Preis",
+        "p1": "{monthly} pro Monat oder {yearly} pro Jahr, zzgl. Umsatzsteuer, wo sie anfällt. Jederzeit kündbar: Das Abo läuft bis zum Ende des bezahlten Zeitraums.",
+        "soon": "Familienabos gibt es noch nicht zu kaufen. Sie können aber schon jetzt ein Erwachsenenkonto erstellen und Ihre Kinder verbinden.",
+        "us": "Familienabos gibt es vorerst nur für Familien in den USA."
+      },
+      "how": {
+        "h": "So funktioniert das Verbinden",
+        "p1": "Erstellen Sie ein Erwachsenenkonto: ein Name und ein Passwort mit mindestens 12 Zeichen. Keine E-Mail nötig.",
+        "p2": "Ihr Kind meldet sich an, öffnet <b>Ich</b>, dann <b>Für Erwachsene</b>, und tippt auf <b>Code holen</b>.",
+        "p3": "Sie geben den Code auf Ihrer Familienseite ein, und Ihr Kind stimmt auf seiner eigenen Seite zu."
+      },
+      "faq": {
+        "h": "Fragen",
+        "cancel": {
+          "q": "Kann ich kündigen?",
+          "a": "Ja, jederzeit. Das Abo läuft bis zum Ende des bezahlten Zeitraums, danach haben Ihre Kinder wieder die kostenlosen Nachrichten. Nichts, was sie gebaut haben, wird gelöscht."
+        },
+        "store": {
+          "q": "Was speichern Sie über mich?",
+          "a": "Den Namen Ihres Kontos, ein unkenntlich gemachtes (gehashtes) Passwort und welche Kinder verbunden sind. Wir fragen nicht nach Ihrer E-Mail-Adresse. Wenn Sie bezahlen, wickelt Stripe die Zahlung ab und speichert Ihre E-Mail-Adresse für Belege: Kartennummern sehen wir nie."
+        },
+        "see": {
+          "q": "Was kann ich über mein Kind sehen?",
+          "a": "Seinen Namen und wie viele der zusätzlichen Nachrichten der Familie es bis gestern verbraucht hat. Nie seine Chats, Freunde, Spiele, Schule oder was es gerade tut."
+        },
+        "reset": {
+          "q": "Wann werden die kostenlosen Nachrichten zurückgesetzt?",
+          "a": "Jeden Tag um 00:00 UTC.",
+          "local": "Bei Ihnen ist das {time}."
+        },
+        "consent": {
+          "q": "Ist das Verbinden oder Bezahlen eine Form der elterlichen Einwilligung?",
+          "a": "Nein. Beim Verbinden und bei Familienabos geht es nur um zusätzliche Nachrichten an den Baumeister. Die Website holt darüber keine Einwilligung ein und hält auch keine fest."
+        }
+      }
+    },
+    "signup": {
+      "title": "Registrierung für Erwachsene",
+      "heading": "Erwachsenenkonto erstellen",
+      "intro": "Für Eltern und Erziehungsberechtigte. Mit einem Erwachsenenkonto können Sie Spiele spielen und eine Familie verwalten. Spiele bauen, chatten oder Freunde hinzufügen geht damit nicht.",
+      "nameLabel": "Kontoname",
+      "nameHint": "3 bis 16 Buchstaben oder Zahlen. Kinder sehen diesen Namen nie.",
+      "passwordHint": "Mindestens {min} Zeichen.",
+      "confirmLabel": "Passwort wiederholen",
+      "adult": "Ich bin Elternteil oder erziehungsberechtigt und mindestens 18 Jahre alt.",
+      "submit": "Konto erstellen",
+      "haveAccount": "Sie haben schon ein Erwachsenenkonto?",
+      "signedIn": "Sie sind als {name} angemeldet. Melden Sie sich zuerst ab, um hier ein Erwachsenenkonto zu nutzen.",
+      "signOutFirst": "Melden Sie sich zuerst auf diesem Gerät vom Konto ab.",
+      "needAdult": "Setzen Sie das Häkchen, um zu bestätigen, dass Sie Elternteil oder erziehungsberechtigt und mindestens 18 Jahre alt sind.",
+      "short": "Verwenden Sie mindestens {min} Zeichen."
+    },
+    "login": {
+      "title": "Anmeldung für Erwachsene",
+      "heading": "Als Erwachsener anmelden",
+      "intro": "Mit dem Namen und Passwort Ihres Erwachsenenkontos.",
+      "submit": "Anmelden",
+      "newHere": "Noch kein Erwachsenenkonto?",
+      "forgot": "Passwort vergessen? Schreiben Sie an {email}, und zwar von der E-Mail-Adresse, an die wir antworten sollen."
+    },
+    "page": {
+      "title": "Ihre Familie",
+      "heading": "Ihre Familie",
+      "children": "Kinder",
+      "none": "Noch keine Kinder verbunden.",
+      "add": "Kind verbinden",
+      "full": "Sie haben {max} Kinder verbunden, das Maximum für eine Familie.",
+      "pending": "Wartet auf die Zustimmung Ihres Kindes",
+      "pendingSent": "Angefragt {when}. Die Anfrage endet nach 24 Stunden.",
+      "yesterday": "Zusätzliche Familiennachrichten gestern: {n}",
+      "month": "diesen Monat bis gestern: {n}",
+      "sourceFamily": "Zusätzliche Nachrichten kommen aus Ihrem Familienabo.",
+      "sourceFree": "Nutzt die kostenlosen täglichen Nachrichten.",
+      "usageNote": "Die Zahlen reichen bis zum Ende des gestrigen Tages (UTC). Diese Seite zeigt also nie, was Ihr Kind gerade tut.",
+      "remove": "Trennen",
+      "removeConfirm": "Verbindung mit {name} trennen?",
+      "removed": "Erledigt.",
+      "cancel": "Anfrage zurückziehen",
+      "cancelConfirm": "Diese Anfrage zurückziehen?",
+      "planHeading": "Familienabo",
+      "planActive": "Ihr Familienabo ist aktiv.",
+      "planNone": "Kein Familienabo. Kinder zu verbinden ist kostenlos und ändert für sie nichts.",
+      "planMore": "Mehr über Familienabos",
+      "helpHeading": "Hilfe",
+      "help": "Fragen oder ein Problem mit Ihrem Konto? Schreiben Sie an {email}.",
+      "off": "Familienkonten sind gerade ausgeschaltet. Hier können Sie trotzdem Spiele spielen, Ihre Sprache oder Ihr Passwort ändern und sich abmelden."
+    },
+    "link": {
+      "title": "Kind verbinden",
+      "heading": "Kind verbinden",
+      "step1": "Ihr Kind meldet sich an, öffnet <b>Ich</b>, dann <b>Für Erwachsene</b>, und tippt auf <b>Code holen</b>.",
+      "step2": "Geben Sie den Code hier ein. Er funktioniert einmal, 1 Stunde lang.",
+      "step3": "Ihr Kind stimmt auf seiner eigenen Seite „Ich“ zu. Bis dahin wartet die Verbindung (höchstens 24 Stunden).",
+      "label": "Code Ihres Kindes",
+      "submit": "Anfrage senden",
+      "sent": "Anfrage gesendet. Ihr Kind muss auf seiner Seite „Ich“ zustimmen."
+    },
+    "errors": {
+      "badCode": "Dieser Code funktioniert nicht. Ein Code gilt einmal, 1 Stunde lang: Bitten Sie Ihr Kind um einen neuen.",
+      "already": "Sie haben schon angefragt, dieses Kind zu verbinden, oder es ist bereits verbunden.",
+      "full": "Eine Familie kann bis zu {max} Kinder verbinden.",
+      "typeCode": "Geben Sie den Code ein, den Ihr Kind Ihnen gegeben hat.",
+      "tooMany": "Zu viele Versuche. Warten Sie 15 Minuten und versuchen Sie es dann noch einmal.",
+      "notFound": "Dieses Kind gehört nicht zu Ihrer Familie."
     }
   }
 }

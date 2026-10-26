@@ -43,7 +43,8 @@
       "question": "💬 De Bouwer heeft een vraag over “{title}”. <a href=\"{href}\">Open hem</a>",
       "stopped": "⚠️ “{title}” is gestopt voordat hij af was. <a href=\"{href}\">Open hem om verder te gaan</a>",
       "many": "✨ De Bouwer heeft nieuws over een paar van je games. <a href=\"{href}\">Bekijk Mijn games</a>"
-    }
+    },
+    "shortPasswordGrownup": "Het wachtwoord is korter dan {min} tekens. <a href=\"{href}\">Kies een langer wachtwoord</a>."
   },
   "nav": {
     "home": "Start",
@@ -52,7 +53,8 @@
     "friends": "Vrienden",
     "me": "Ik",
     "classes": "Klassen",
-    "schools": "Scholen"
+    "schools": "Scholen",
+    "family": "Gezin"
   },
   "errors": {
     "goHome": "Naar de start",
@@ -210,7 +212,8 @@
       "mismatch": "De twee nieuwe wachtwoorden zijn niet hetzelfde.",
       "same": "Dat is je huidige wachtwoord. Kies een nieuw wachtwoord.",
       "staffShort": "{n, plural, one {Dat is maar # teken.} other {Dat zijn maar # tekens.}} Er zijn er minstens {min} nodig.",
-      "school": "Je leerkracht beheert je wachtwoord. Vraag het je leerkracht als je het vergeet."
+      "school": "Je leerkracht beheert je wachtwoord. Vraag het je leerkracht als je het vergeet.",
+      "hintGrownup": "Minstens {min} tekens, omdat dit account een gezin beheert."
     },
     "signOut": {
       "heading": "Uitloggen",
@@ -236,6 +239,38 @@
         "unsafe": "Die foto past niet bij Oomba Academy. Probeer een andere.",
         "personal_info": "Op die foto staan privégegevens zoals een naam, school of adres. Probeer een andere.",
         "resting": "Foto’s gaan door onze veiligheidscheck, en die rust nu even. Probeer het later nog eens."
+      }
+    },
+    "family": {
+      "heading": "Voor volwassenen",
+      "text": "Een volwassene kan zich aan je account koppelen.",
+      "getCode": "Code maken",
+      "newCode": "Nieuwe code maken",
+      "codeOpen": "Je hebt een code die nog werkt. Ben je hem kwijt? Maak een nieuwe, dan werkt de oude niet meer.",
+      "codeLabel": "Jouw code",
+      "codeHow": "Hij werkt één keer, 1 uur lang. Met deze code kan een volwassene zich aan je account koppelen op {where}.",
+      "codeWarn": "Geef deze code alleen aan je ouder of verzorger, in het echt. Typ hem nooit in een chat of een game, en geef hem nooit aan iemand online.",
+      "pending": "<b>Een volwassene</b> wil zich aan je account koppelen. Zeg alleen ja als dit je ouder of verzorger is. Ken je deze persoon niet? Vertel het dan aan een volwassene die je vertrouwt.",
+      "pendingCheck": "Heb je je code zelf aan je ouder of verzorger gegeven, in het echt? Zo niet, tik dan op Melden.",
+      "yes": "Ja",
+      "no": "Nee",
+      "report": "Melden",
+      "reportConfirm": "Melden? Er wordt niets gekoppeld, en het Oomba Academy-team gaat ernaar kijken.",
+      "linked": "Gekoppeld aan <b>een volwassene</b>.",
+      "unlink": "Ontkoppelen",
+      "unlinkConfirm": "Deze volwassene ontkoppelen?",
+      "reportLinkedConfirm": "Melden? De koppeling stopt meteen, en het Oomba Academy-team gaat ernaar kijken.",
+      "done": {
+        "yes": "Je bent nu gekoppeld aan deze volwassene.",
+        "no": "Oké. Er is niets gekoppeld.",
+        "report": "Bedankt dat je het ons vertelt. Er is niets gekoppeld, en we gaan ernaar kijken.",
+        "unlink": "Ontkoppeld.",
+        "reportLinked": "Bedankt dat je het ons vertelt. De koppeling is gestopt, en we gaan ernaar kijken."
+      },
+      "errors": {
+        "linked": "Je bent al gekoppeld aan een volwassene.",
+        "pending": "Beantwoord eerst de vraag op deze pagina.",
+        "nothing": "Er is hier nu niets te doen. Probeer de pagina opnieuw te laden."
       }
     }
   },
@@ -401,6 +436,11 @@
       "contact": {
         "h": "Contact",
         "p1": "Volwassenen kunnen ons mailen via {email}."
+      },
+      "families": {
+        "h": "Gezinsaccounts",
+        "p1": "Een ouder of verzorger kan een eigen ouderaccount maken en dat koppelen aan het account van zijn of haar kind. Je kind moet daar op de eigen pagina ja op zeggen.",
+        "link": "Over gezinsaccounts"
       }
     },
     "sdk": {
@@ -2207,6 +2247,127 @@
         "h": "Privacy",
         "p1": "Zolang het Google-account gekoppeld is, bewaren we de id, het e-mailadres en het schooldomein van het account, zodat we het herkennen bij het inloggen. We bewaren nooit de Google-foto, laten nooit de Google-naam van een leerling zien op de gamesite en gebruiken het account nooit om iets anders bij Google te lezen."
       }
+    }
+  },
+  "family": {
+    "landing": {
+      "title": "Gezinsaccounts",
+      "description": "Ouderaccounts voor ouders en verzorgers op Oomba Academy: koppel je kinderen en lees wat een gezinsabonnement toevoegt.",
+      "heading": "Oomba Academy voor gezinnen",
+      "intro": "Games spelen en bouwen op Oomba Academy is gratis. Met een ouderaccount kan een ouder of verzorger zich aan zijn of haar kinderen koppelen, en een gezinsabonnement geeft hun extra berichten aan de Bouwer.",
+      "signup": "Maak een ouderaccount",
+      "login": "Inloggen",
+      "toFamily": "Naar je gezinspagina",
+      "what": {
+        "h": "Wat een gezinsabonnement toevoegt",
+        "p1": "{extra, plural, one {# extra bericht aan de Bouwer} other {# extra berichten aan de Bouwer}} per maand, te delen door maximaal {max} kinderen, bovenop de gratis berichten die elke speler elke dag krijgt.",
+        "p2": "Betalen geeft nooit toegang tot iets wat gratis spelers niet hebben, en kinderen wordt nooit gevraagd om te betalen."
+      },
+      "price": {
+        "h": "Prijs",
+        "p1": "{monthly} per maand of {yearly} per jaar, plus omzetbelasting (sales tax) waar die geldt. Altijd opzegbaar: het abonnement loopt door tot het einde van de periode waarvoor je hebt betaald.",
+        "soon": "Gezinsabonnementen zijn nog niet te koop. Je kunt nu al een ouderaccount maken en je kinderen koppelen.",
+        "us": "Gezinsabonnementen zijn voorlopig alleen voor gezinnen in de Verenigde Staten."
+      },
+      "how": {
+        "h": "Zo werkt koppelen",
+        "p1": "Maak een ouderaccount: een naam en een wachtwoord van minstens 12 tekens. Geen e-mail nodig.",
+        "p2": "Je kind logt in, opent <b>Ik</b>, dan <b>Voor volwassenen</b>, en tikt op <b>Code maken</b>.",
+        "p3": "Jij typt de code op je gezinspagina, en je kind zegt ja op de eigen pagina."
+      },
+      "faq": {
+        "h": "Vragen",
+        "cancel": {
+          "q": "Kan ik opzeggen?",
+          "a": "Ja, op elk moment. Het abonnement loopt door tot het einde van de periode waarvoor je hebt betaald; daarna gaan je kinderen terug naar de gratis berichten. Niets van wat ze hebben gemaakt, wordt verwijderd."
+        },
+        "store": {
+          "q": "Wat bewaren jullie over mij?",
+          "a": "De naam van je account, een onleesbaar opgeslagen (gehasht) wachtwoord en welke kinderen gekoppeld zijn. We vragen niet om je e-mailadres. Als je betaalt, regelt Stripe de betaling en bewaart Stripe je e-mailadres voor betaalbewijzen: wij zien nooit kaartnummers."
+        },
+        "see": {
+          "q": "Wat kan ik over mijn kind zien?",
+          "a": "De naam, en hoeveel van de extra gezinsberichten je kind tot en met gisteren heeft gebruikt. Nooit de chats, vrienden, games, school of wat je kind op dit moment doet."
+        },
+        "reset": {
+          "q": "Wanneer krijgt mijn kind weer nieuwe gratis berichten?",
+          "a": "Elke dag om 00:00 UTC.",
+          "local": "Bij jou is dat om {time}."
+        },
+        "consent": {
+          "q": "Is koppelen of betalen een vorm van ouderlijke toestemming?",
+          "a": "Nee. Koppelen en gezinsabonnementen gaan alleen over extra berichten aan de Bouwer. Zo vraagt de site geen toestemming en legt de site ook geen toestemming vast."
+        }
+      }
+    },
+    "signup": {
+      "title": "Aanmelden voor ouders",
+      "heading": "Maak een ouderaccount",
+      "intro": "Voor ouders en verzorgers. Met een ouderaccount kun je games spelen en een gezin beheren. Je kunt er geen games mee bouwen, chatten of vrienden toevoegen.",
+      "nameLabel": "Accountnaam",
+      "nameHint": "3 tot 16 letters of cijfers. Kinderen zien deze naam nooit.",
+      "passwordHint": "Minstens {min} tekens.",
+      "confirmLabel": "Wachtwoord nog een keer",
+      "adult": "Ik ben ouder of verzorger, en 18 jaar of ouder.",
+      "submit": "Account maken",
+      "haveAccount": "Heb je al een ouderaccount?",
+      "signedIn": "Je bent ingelogd als {name}. Log eerst uit om hier een ouderaccount te gebruiken.",
+      "signOutFirst": "Log eerst uit bij het account op dit apparaat.",
+      "needAdult": "Vink het vakje aan om te laten weten dat je ouder of verzorger bent, en 18 jaar of ouder.",
+      "short": "Gebruik minstens {min} tekens."
+    },
+    "login": {
+      "title": "Inloggen voor ouders",
+      "heading": "Inloggen als ouder",
+      "intro": "Met de naam en het wachtwoord van je ouderaccount.",
+      "submit": "Inloggen",
+      "newHere": "Nog geen ouderaccount?",
+      "forgot": "Wachtwoord vergeten? Mail naar {email} vanaf het e-mailadres waarop je antwoord wilt krijgen."
+    },
+    "page": {
+      "title": "Je gezin",
+      "heading": "Je gezin",
+      "children": "Kinderen",
+      "none": "Nog geen kinderen gekoppeld.",
+      "add": "Kind koppelen",
+      "full": "Je hebt {max} kinderen gekoppeld, het maximum voor één gezin.",
+      "pending": "Wacht tot je kind ja zegt",
+      "pendingSent": "{when} gevraagd. Het verzoek vervalt na 24 uur.",
+      "yesterday": "Extra gezinsberichten gisteren: {n}",
+      "month": "deze maand tot en met gisteren: {n}",
+      "sourceFamily": "Extra berichten komen uit je gezinsabonnement.",
+      "sourceFree": "Gebruikt de gratis berichten van elke dag.",
+      "usageNote": "De tellingen lopen tot het einde van gisteren (UTC), dus deze pagina laat nooit zien wat je kind op dit moment doet.",
+      "remove": "Ontkoppelen",
+      "removeConfirm": "{name} ontkoppelen?",
+      "removed": "Klaar.",
+      "cancel": "Verzoek annuleren",
+      "cancelConfirm": "Dit verzoek annuleren?",
+      "planHeading": "Gezinsabonnement",
+      "planActive": "Je gezinsabonnement is actief.",
+      "planNone": "Geen gezinsabonnement. Kinderen koppelen is gratis en verandert niets voor hen.",
+      "planMore": "Over gezinsabonnementen",
+      "helpHeading": "Hulp",
+      "help": "Vragen, of een probleem met je account? Mail naar {email}.",
+      "off": "Gezinsaccounts staan nu uit. Je kunt hier nog wel games spelen, je taal of wachtwoord veranderen en uitloggen."
+    },
+    "link": {
+      "title": "Kind koppelen",
+      "heading": "Kind koppelen",
+      "step1": "Je kind logt in, opent <b>Ik</b>, dan <b>Voor volwassenen</b>, en tikt op <b>Code maken</b>.",
+      "step2": "Typ hier de code. Die werkt één keer, 1 uur lang.",
+      "step3": "Je kind zegt ja op de eigen pagina Ik. Tot dan wacht de koppeling (maximaal 24 uur).",
+      "label": "Code van je kind",
+      "submit": "Koppelverzoek sturen",
+      "sent": "Verzoek verstuurd. Je kind moet nog ja zeggen op de pagina Ik."
+    },
+    "errors": {
+      "badCode": "Die code werkt niet. Een code werkt één keer, 1 uur lang: vraag je kind om een nieuwe.",
+      "already": "Je hebt al gevraagd om dit kind te koppelen, of het is al gekoppeld.",
+      "full": "Een gezin kan maximaal {max} kinderen koppelen.",
+      "typeCode": "Typ de code die je van je kind hebt gekregen.",
+      "tooMany": "Te veel pogingen. Wacht 15 minuten en probeer het dan opnieuw.",
+      "notFound": "Dat kind hoort niet bij je gezin."
     }
   }
 }
