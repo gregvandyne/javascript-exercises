@@ -973,7 +973,8 @@
       "draftKept": "你輸入的內容已幫你保留。",
       "close": "關閉",
       "playing": "{n} 人在玩",
-      "justNow": "剛剛"
+      "justNow": "剛剛",
+      "copied": "已複製！"
     },
     "game": {
       "needSignIn": "請點「用訪客身分玩」或先登入。",
@@ -1906,6 +1907,182 @@
       "sentAgo": "已於 {when} 送出",
       "feedback": "老師的話",
       "readNoFeedback": "老師已經看過你的答案了。"
+    }
+  },
+  "google": {
+    "button": {
+      "signIn": "使用 Google 帳戶登入",
+      "hint": "適用於學校的 Google 帳戶，例如在 Chromebook 上。"
+    },
+    "login": {
+      "orName": "或使用你的 Oomba Academy 名字",
+      "joinLink": "有班級代碼嗎？{link}",
+      "joinLinkText": "加入你的班級"
+    },
+    "errors": {
+      "expired": "花的時間有點太久了，請再試一次。",
+      "denied": "Google 沒有讓你登入。如果你按了「取消」，再試一次就好。在學校嗎？你的學校可能要先開放 Oomba Academy，請問問老師。",
+      "schoolBlocked": "你的學校還沒有開放用 Google 登入 Oomba Academy。請老師把這個畫面給學校的 Google 管理員看。",
+      "unknown": "我們還不認識這個 Google 帳戶。在學校嗎？請老師邀請你，或向老師要班級代碼。你也可以用好玩的名字建立帳號。",
+      "joinNoWay": "這個 Google 帳戶不能用那組代碼加入。請檢查代碼，或請老師邀請你。",
+      "schoolOnly": "這裡只能連結學校的 Google 帳戶。",
+      "wrongDomain": "那個 Google 帳戶不是你學校的。請選擇你的學校帳戶，再試一次。",
+      "inUse": "那個 Google 帳戶已經連結到另一個 Oomba Academy 帳號了。",
+      "alreadyLinked": "這個帳號已經連結了 Google 帳戶。請先中斷連結。",
+      "unverified": "Google 還沒有驗證這個帳戶的電子郵件地址，所以我們不能使用它。",
+      "schoolOff": "你的學校目前關閉了 Google 登入。請使用你的登入卡，或問問老師。",
+      "googleDown": "我們現在連不上 Google。請過一分鐘再試一次。",
+      "browser": "在這個應用程式裡無法使用 Google 登入。請用 Chrome 或其他瀏覽器打開網站。",
+      "notSetUp": "Google 登入還沒有設定好。可以請大人告訴我們。",
+      "tooManyJoins": "剛剛有很多人加入這個班級。請等一下再試。",
+      "setupLink": "你的學校需要做什麼"
+    },
+    "me": {
+      "heading": "使用 Google 帳戶登入",
+      "textStaff": "連結你的 Google 帳戶，按一下就能登入。你的密碼仍然可以使用。",
+      "textStudent": "連結你學校的 Google 帳戶，在 Chromebook 上按一下就能登入。你的密碼仍然可以使用。",
+      "password": "你的密碼（確認是你本人）",
+      "connect": "連結 Google",
+      "connected": "已連結到 {email}",
+      "connectedHint": "你可以用 Google 或密碼登入。",
+      "connectedToast": "已連結 Google 🎉",
+      "disconnect": "中斷與 Google 的連結",
+      "disconnectConfirm": "要中斷與 Google 的連結嗎？之後你要用 Oomba Academy 名字和密碼登入。",
+      "disconnectedToast": "已中斷與 Google 的連結",
+      "schoolAccount": "這個帳號的 Google 登入由你的老師管理。",
+      "needCard": "你只能用 Google 登入。中斷連結之前，請先向校務管理員拿一張登入卡。",
+      "noPasswordStaff": "你是用 Google 登入的，所以沒有密碼可以更改。如果需要密碼，校務管理員可以給你一張登入卡。",
+      "noPasswordStudent": "你是用 Google 登入的。如果需要登入卡，請問老師。"
+    },
+    "join": {
+      "title": "加入你的班級",
+      "heading": "加入你的班級",
+      "intro": "輸入老師給你的班級代碼。",
+      "codeLabel": "班級代碼",
+      "next": "下一步",
+      "codeIs": "班級代碼 {code}",
+      "change": "更改",
+      "how": "你在學校是怎麼登入的？",
+      "googleHint": "學校的 Chromebook？請使用你學校的 Google 帳戶。",
+      "card": "🪪 我有登入卡或 Oomba Academy 帳號",
+      "signup": "還沒有帳號嗎？{link}",
+      "signupLink": "用好玩的名字建立一個",
+      "joinButton": "✅ 加入班級",
+      "badCode": "這看起來不像班級代碼。班級代碼有 6 個字母和數字，例如 ABC123。"
+    },
+    "invites": {
+      "heading": "用學校的 Google 帳戶邀請",
+      "text": "貼上學生的學校電子郵件地址，每行一個。可以在逗號後面加上姓名。學生用 Google 登入時，就會加入這個班級。",
+      "label": "學校電子郵件地址",
+      "placeholder": "ana.silva@{domain}, Ana Silva",
+      "placeholderOne": "name@{domain}",
+      "hint": "只限 {domains} 的地址。如果姓名和這個班級裡已有的學生相同，就會連結到該學生的帳號，而不會建立新帳號。",
+      "submit": "➕ 邀請",
+      "none": "請至少貼上一個學校電子郵件地址。",
+      "badLines": "沒有新增任何內容。請修正這幾行：{lines}",
+      "notEmail": "「{line}」不是電子郵件地址",
+      "notSchool": "{email} 不是 {domains} 的地址",
+      "tooMany": "一次最多 100 個地址。",
+      "tooManyOpen": "這個班級的未使用邀請太多了。請先移除舊的邀請。",
+      "ambiguous": "這裡有不只一位學生叫做 {name}。請從學生名單中逐一連結。",
+      "ownAccount": "{name} 使用的是自己的 Oomba Academy 帳號。對方可以在「我的」頁面連結 Google。",
+      "noDomains": "你的學校還沒有新增 Google 網域。",
+      "resultInvited": "{count, plural, other {已邀請 # 人}}",
+      "resultConnected": "{count, plural, other {# 人將連結到班上已有的學生}}",
+      "resultRenewed": "{count, plural, other {已續期 # 個}}",
+      "resultAlready": "{count, plural, other {# 人已經在班上}}",
+      "listHeading": "{count, plural, other {邀請（#）}}",
+      "waiting": "⏳ 等待中 · {date} 到期",
+      "joined": "✅ 已加入，帳號為 @{username}",
+      "expired": "⌛ 已過期",
+      "connectsTo": "將連結到 @{username}",
+      "renew": "續期",
+      "renewed": "邀請已續期 30 天",
+      "revoke": "移除",
+      "revokeConfirm": "要移除 {email} 的邀請嗎？",
+      "revoked": "已移除邀請",
+      "noDomainsAdmin": "若要用學校的 Google 帳戶邀請學生，請先在{link}中新增學校的 Google 網域。",
+      "noDomainsTeacher": "若要用學校的 Google 帳戶邀請學生，校務管理員需要先在學校設定中新增學校的 Google 網域。",
+      "settingsLink": "學校設定",
+      "howTo": "接著告訴全班：打開網站，按下「使用 Google 帳戶登入」。",
+      "setupLink": "你的學校封鎖了 Google 登入嗎？"
+    },
+    "attach": {
+      "heading": "連結學校的 Google 帳戶",
+      "label": "{name} 的學校 Google 電子郵件",
+      "placeholder": "name@school.org",
+      "connect": "連結",
+      "saved": "已儲存。對方下次用這個 Google 帳戶登入時就會連結。",
+      "remove": "移除 Google 登入",
+      "removeConfirm": "要移除 {name} 的 Google 登入嗎？如果對方還沒有密碼，你會拿到一張給對方的登入卡。",
+      "removed": "已移除 Google 登入",
+      "notConnected": "這個帳號沒有 Google 登入。",
+      "notSchoolAccount": "這裡只能連結本校的學校帳號。"
+    },
+    "roster": {
+      "connected": "Google：{email}",
+      "waiting": "Google：等待中（{email}）"
+    },
+    "classJoin": {
+      "isOff": "擁有 {domains} Google 帳戶的學生目前還不能用這組代碼加入。",
+      "isOn": "✅ 擁有 {domains} Google 帳戶的學生可以用這組代碼加入。",
+      "turnOn": "允許用 Google 加入",
+      "turnOff": "關閉",
+      "onToast": "學生現在可以用學校的 Google 帳戶和這組代碼加入。",
+      "offToast": "已關閉用 Google 和這組代碼加入。",
+      "address": "學生前往 {url} 並輸入代碼。"
+    },
+    "staff": {
+      "heading": "用學校的 Google 帳戶邀請教職員",
+      "text": "對方第一次用這個 Google 帳戶登入時，就會以老師或校務管理員身分加入。不會寄出任何電子郵件。",
+      "email": "學校 Google 電子郵件",
+      "submit": "➕ 邀請",
+      "saved": "邀請已儲存。{name} 用 Google 登入時會以{role}身分加入。"
+    },
+    "settings": {
+      "heading": "使用 Google 帳戶登入",
+      "text": "新增學校的 Google Workspace 網域，讓學生和教職員可以用學校的 Google 帳戶登入（例如在 Chromebook 上）。留白則維持關閉 Google 登入。",
+      "label": "學校的 Google 網域",
+      "placeholder": "school.org, students.school.org",
+      "hint": "多個網域請用逗號分隔。學生使用不同的網域（例如 students.school.org）嗎？請一併列出。",
+      "badDomain": "「{value}」不是像 school.org 這樣的網域",
+      "personalDomain": "{value} 是個人電子郵件服務。請使用學校自己的 Google Workspace 網域。",
+      "tooManyDomains": "最多 {max} 個網域。",
+      "lostAccounts": "{count, plural, other {已儲存。有 # 個用 Google 登入的帳號已不在這份清單上，需要使用登入卡。}}",
+      "trustHeading": "讓學生可以登入（給 Google 管理員）",
+      "forward": "可以轉寄給 IT 管理員的頁面"
+    },
+    "setup": {
+      "title": "學校專用的 Google 帳戶登入",
+      "heading": "學校專用的 Google 帳戶登入",
+      "copy": "複製",
+      "what": {
+        "h": "這是什麼",
+        "p1": "學生和教職員可以用學校的 Google 帳戶登入 Oomba Academy，例如在 Chromebook 上。Oomba Academy 只會向 Google 要求基本的登入資訊：帳戶的名稱和電子郵件地址。"
+      },
+      "turnOn": {
+        "h": "為你的學校啟用",
+        "p1": "校務管理員在學校的「設定」分頁新增學校的 Google Workspace 網域。在那之前，學校裡沒有人能使用 Google 登入。"
+      },
+      "trust": {
+        "h": "讓學生可以登入",
+        "p1": "未滿 18 歲的學生必須等學校的 Google 管理員允許後，才能使用應用程式，否則會看到「存取遭封鎖」。你的 Google 管理員可以這樣允許 Oomba Academy（選單名稱可能略有不同）："
+      },
+      "step1": "以管理員身分登入 Google 管理控制台 (admin.google.com)。",
+      "step2": "前往「安全性」→「存取權和資料控管」→「API 控制項」→「管理第三方應用程式存取權」。",
+      "step3": "新增應用程式，並搜尋這個用戶端 ID：{id}",
+      "step4": "選擇有學生（和教職員）的機構單位，選擇「信任」或「受限」，然後儲存。",
+      "step5": "或者：針對未滿 18 歲的使用者，允許只要求「使用 Google 帳戶登入」所需基本資訊的應用程式。",
+      "step6": "設定可能需要一段時間才會生效。之後請學生再試一次「使用 Google 帳戶登入」。",
+      "invite": {
+        "h": "邀請學生",
+        "p1": "在班級的「學生」分頁貼上學生的學校電子郵件地址。學生用那個 Google 帳戶登入時，就會加入班級。不會寄出任何電子郵件。",
+        "p2": "或在班級代碼旁開啟「用 Google 加入」：擁有學校 Google 帳戶的學生輸入代碼就能立即加入。"
+      },
+      "privacy": {
+        "h": "隱私權",
+        "p1": "Google 帳戶連結期間，我們會保存帳戶的 ID、電子郵件地址和學校網域，以便在登入時辨識。我們絕不保存 Google 相片，絕不在遊戲網站上顯示學生的 Google 名稱，也絕不使用該帳戶讀取 Google 上的任何其他資料。"
+      }
     }
   }
 }
