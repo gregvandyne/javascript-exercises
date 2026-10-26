@@ -12,7 +12,7 @@ import { rateLimit, allow, count, ipOf, loginLockKey, GUESTS_PER_IP_HOUR } from 
 import { availableLocales, normalizeCode, tHtml, setLangCookie, saveUserLang } from '../i18n/index.js';
 import { THEMES, THEME_ICONS, normalizeTheme, setThemeCookie, saveUserTheme } from '../theme.js';
 import { publicHost } from '../site.js';
-import { loginGoogle, googleNotice } from './google.js';
+import { loginGoogle, googleNotice, loginJoinLink, meGooglePanel, noPasswordText } from './google.js';
 
 export const router = Router();
 export const safeNext = n => (typeof n === 'string' && /^\/(?!\/)[\w\-/?=&%.#]*$/.test(n) ? n : '/');
@@ -63,6 +63,7 @@ function authPage(req, res, mode) {
         <p><span aria-hidden="true">🙂</span> ${t('auth.page.forgotOwn')}</p></div>`}
       ${!u ? html`<div class="divider">${t('auth.page.or')}</div><button class="btn btn-block" type="button" data-guest-play="${next}">${t('auth.page.playAsGuest')}</button>` : ''}
       <p class="center small" style="margin-top:16px">${isSignup ? html`${t('auth.page.haveAccount')} <a href="/login?next=${encodeURIComponent(next)}">${t('auth.page.signInLink')}</a>` : html`${t('auth.page.newHere')} <a href="/signup?next=${encodeURIComponent(next)}">${t('auth.page.signupLink')}</a>`}</p>
+      ${isSignup ? '' : loginJoinLink(req)}
     </div></div>`;
   page(req, res, { title: isSignup ? t('auth.page.titleSignup') : t('auth.page.titleLogin'), active: 'me', body });
 }
@@ -253,6 +254,8 @@ function passwordPanel(req) {
   const t = req.t, u = req.user;
   if (u.is_guest) return '';
   const head = html`<h2 id="pw-h"><span aria-hidden="true">🔑</span> ${t('me.password.heading')}</h2>`;
+  const gOnly = noPasswordText(req);
+  if (gOnly) return html`<section class="panel" id="password" aria-labelledby="pw-h">${head}<p class="muted">${gOnly}</p></section>`;
   if (!auth.canChangePassword(u)) return html`<section class="panel" id="password" aria-labelledby="pw-h">${head}<p class="muted">${t('me.password.school')}</p></section>`;
   const staff = auth.accountKind(u) === 'staff', min = staff ? auth.STAFF_PASSWORD_MIN : 6;
   return html`<section class="panel" id="password" aria-labelledby="pw-h">${head}
@@ -321,6 +324,6 @@ router.get('/me', auth.requireUser, (req, res) => {
     <p class="muted">${t('me.chat.text')}</p>
     <label class="row" style="font-weight:700"><input type="checkbox" id="chat-toggle" ${u.chat_enabled ? raw('checked') : ''} style="width:24px;height:24px"> ${t('me.chat.toggle')}</label>
   </section>` : ''}
-  <div class="mesettings">${passwordPanel(req)}${signOutPanel(req)}</div>`;
+  <div class="mesettings">${passwordPanel(req)}${meGooglePanel(req)}${signOutPanel(req)}</div>`;
   page(req, res, { title: t('me.title'), active: 'me', body, scripts: ['/js/me.js'] });
 });

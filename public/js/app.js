@@ -68,6 +68,12 @@ export async function copyText(text) {
   }
 }
 
+// ---- [data-copy] buttons copy their text (e.g. the Google client ID on a school's settings) ----
+on(document, 'click', async e => {
+  const b = e.target.closest('[data-copy]'); if (!b) return;
+  if (await copyText(b.dataset.copy)) toast(t('js.app.copied'));
+});
+
 // ---- Rail arrows (desktop) ----
 on(document, 'click', e => {
   const b = e.target.closest('[data-rail]'); if (!b) return;

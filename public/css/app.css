@@ -381,6 +381,11 @@ body.playmode{background:#000;padding-bottom:0;overflow:hidden}
 .gbtn:hover{text-decoration:none;filter:brightness(.97)}
 .gbtn-g{width:18px;height:18px;flex:none}
 .gsign-hint{margin:0}
+.jc-input{font:800 1.6rem/1.2 ui-monospace,Menlo,monospace;letter-spacing:.18em;text-transform:uppercase;text-align:center}
+.jc-chosen{font-weight:700}
+.jc-how{font-size:1.1rem;margin-top:14px}
+.gsteps{padding-inline-start:20px;display:flex;flex-direction:column;gap:6px}
+.gclient{overflow-wrap:anywhere}
 
 /* profile + people */
 .person{display:flex;align-items:center;gap:12px;padding:10px;border-radius:var(--r-sm);color:var(--text)}

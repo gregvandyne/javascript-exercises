@@ -452,3 +452,14 @@ fieldset.picklist>label>span{flex:1;min-width:0}
   .cg-act{grid-column:1/-1}
   .cg-act .btn{width:100%;min-height:44px}
 }
+
+/* Sign in with Google: invite lists, the roster's Google line, the class-code option, the trust-app steps. */
+.ginvites{margin-top:14px}
+.ginvites ul{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.ginv{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--line);border-radius:var(--r-sm)}
+.ginv-who{flex:1 1 220px;min-width:0;overflow-wrap:anywhere}
+.ginv .acts{display:flex;gap:6px}
+.gline{display:block;overflow-wrap:anywhere}
+.gjoin{margin-top:12px;display:flex;flex-direction:column;align-items:flex-start;gap:6px;flex-basis:100%}
+.gsteps{padding-inline-start:20px;display:flex;flex-direction:column;gap:6px}
+.gclient{overflow-wrap:anywhere}

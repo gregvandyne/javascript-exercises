@@ -974,7 +974,8 @@
       "draftKept": "We kept what you typed.",
       "close": "Close",
       "playing": "{n} playing",
-      "justNow": "just now"
+      "justNow": "just now",
+      "copied": "Copied!"
     },
     "game": {
       "needSignIn": "Tap “Play as guest” or sign in first.",
@@ -1916,7 +1917,9 @@
       "hint": "For school Google accounts, like on a Chromebook."
     },
     "login": {
-      "orName": "or use your Oomba Academy name"
+      "orName": "or use your Oomba Academy name",
+      "joinLink": "Got a class code? {link}",
+      "joinLinkText": "Join your class"
     },
     "errors": {
       "expired": "That took a little too long. Please try again.",
@@ -1932,7 +1935,156 @@
       "schoolOff": "Google sign-in is off for your school right now. Use your login card, or ask your teacher.",
       "googleDown": "We couldn't reach Google just now. Please try again in a minute.",
       "browser": "Google sign-in doesn't work inside this app. Open the site in Chrome or another browser.",
-      "notSetUp": "Google sign-in isn't set up right yet. A grown-up can tell us."
+      "notSetUp": "Google sign-in isn't set up right yet. A grown-up can tell us.",
+      "tooManyJoins": "Lots of people just joined this class. Try again a bit later.",
+      "setupLink": "What your school needs to do"
+    },
+    "me": {
+      "heading": "Sign in with Google",
+      "textStaff": "Connect your Google account to sign in with one tap. Your password keeps working.",
+      "textStudent": "Connect your school Google account to sign in on a Chromebook with one tap. Your password keeps working.",
+      "password": "Your password (to check it's you)",
+      "connect": "Connect Google",
+      "connected": "Connected to {email}",
+      "connectedHint": "You can sign in with Google or with your password.",
+      "connectedToast": "Google connected 🎉",
+      "disconnect": "Disconnect Google",
+      "disconnectConfirm": "Disconnect Google? You'll sign in with your Oomba Academy name and password.",
+      "disconnectedToast": "Google disconnected",
+      "schoolAccount": "Your teacher looks after Google sign-in for this account.",
+      "needCard": "You sign in only with Google. Ask your school admin for a login card before you disconnect it.",
+      "noPasswordStaff": "You sign in with Google, so there's no password to change. If you ever need one, your school admin can give you a login card.",
+      "noPasswordStudent": "You sign in with Google. If you ever need a login card, ask your teacher."
+    },
+    "join": {
+      "title": "Join your class",
+      "heading": "Join your class",
+      "intro": "Type the class code your teacher gave you.",
+      "codeLabel": "Class code",
+      "next": "Next",
+      "codeIs": "Class code {code}",
+      "change": "Change",
+      "how": "How do you sign in at school?",
+      "googleHint": "School Chromebook? Use your school Google account.",
+      "card": "🪪 I have a login card or an Oomba Academy account",
+      "signup": "No account yet? {link}",
+      "signupLink": "Make one with a fun name",
+      "joinButton": "✅ Join the class",
+      "badCode": "That doesn't look like a class code. It has 6 letters and numbers, like ABC123."
+    },
+    "invites": {
+      "heading": "Invite with school Google accounts",
+      "text": "Paste your students' school email addresses, one per line. You can add their name after a comma. When a student signs in with Google, they join this class.",
+      "label": "School email addresses",
+      "placeholder": "ana.silva@{domain}, Ana Silva",
+      "placeholderOne": "name@{domain}",
+      "hint": "Only {domains} addresses. A name that matches a student already in this class connects their account instead of making a new one.",
+      "submit": "➕ Invite",
+      "none": "Paste at least one school email address.",
+      "badLines": "Nothing was added. Please fix these lines: {lines}",
+      "notEmail": "“{line}” isn't an email address",
+      "notSchool": "{email} isn't a {domains} address",
+      "tooMany": "At most 100 addresses at a time.",
+      "tooManyOpen": "This class has too many open invites. Remove old ones first.",
+      "ambiguous": "More than one student here is called {name}. Connect them one at a time from the student list.",
+      "ownAccount": "{name} uses their own Oomba Academy account. They can connect Google on their Me page.",
+      "noDomains": "Your school hasn't added its Google domain yet.",
+      "resultInvited": "{count, plural, one {# invited} other {# invited}}",
+      "resultConnected": "{count, plural, one {# will connect to a student already here} other {# will connect to students already here}}",
+      "resultRenewed": "{count, plural, one {# renewed} other {# renewed}}",
+      "resultAlready": "{count, plural, one {# already in the class} other {# already in the class}}",
+      "listHeading": "{count, plural, one {Invite (#)} other {Invites (#)}}",
+      "waiting": "⏳ Waiting · ends {date}",
+      "joined": "✅ Joined as @{username}",
+      "expired": "⌛ Expired",
+      "connectsTo": "Connects to @{username}",
+      "renew": "Renew",
+      "renewed": "Invite renewed for 30 days",
+      "revoke": "Remove",
+      "revokeConfirm": "Remove the invite for {email}?",
+      "revoked": "Invite removed",
+      "noDomainsAdmin": "To invite students by their school Google accounts, first add your school's Google domain in {link}.",
+      "noDomainsTeacher": "To invite students by their school Google accounts, your school admin first adds the school's Google domain in the school settings.",
+      "settingsLink": "the school settings",
+      "howTo": "Then tell the class: open the site and press “Sign in with Google”.",
+      "setupLink": "Google sign-in blocked at your school?"
+    },
+    "attach": {
+      "heading": "Connect a school Google account",
+      "label": "School Google email for {name}",
+      "placeholder": "name@school.org",
+      "connect": "Connect",
+      "saved": "Saved. It connects the next time they sign in with that Google account.",
+      "remove": "Remove Google sign-in",
+      "removeConfirm": "Remove Google sign-in for {name}? If they have no password yet, you'll get a login card for them.",
+      "removed": "Google sign-in removed",
+      "notConnected": "This account has no Google sign-in.",
+      "notSchoolAccount": "Only school accounts of this school can be connected here."
+    },
+    "roster": {
+      "connected": "Google: {email}",
+      "waiting": "Google: waiting ({email})"
+    },
+    "classJoin": {
+      "isOff": "Students with a {domains} Google account can't join with this code yet.",
+      "isOn": "✅ Students with a {domains} Google account can join with this code.",
+      "turnOn": "Let them join with Google",
+      "turnOff": "Turn off",
+      "onToast": "Students can now join with their school Google account and this code.",
+      "offToast": "Joining with Google and this code is off.",
+      "address": "Students go to {url} and type the code."
+    },
+    "staff": {
+      "heading": "Invite staff with a school Google account",
+      "text": "They join as a teacher or school admin the first time they sign in with that Google account. Nothing is emailed.",
+      "email": "School Google email",
+      "submit": "➕ Invite",
+      "saved": "Invite saved. {name} joins as {role} when they sign in with Google."
+    },
+    "settings": {
+      "heading": "Sign in with Google",
+      "text": "Add your school's Google Workspace domain to let students and staff sign in with their school Google accounts (for example on Chromebooks). Leave it empty to keep Google sign-in off.",
+      "label": "Your school's Google domains",
+      "placeholder": "school.org, students.school.org",
+      "hint": "Separate several with commas. Students on a different domain (like students.school.org)? List that one too.",
+      "badDomain": "“{value}” isn't a domain like school.org",
+      "personalDomain": "{value} is a personal email service. Use your school's own Google Workspace domain.",
+      "tooManyDomains": "At most {max} domains.",
+      "lostAccounts": "{count, plural, one {Saved. # account that signs in with Google isn't on this list any more and will need a login card.} other {Saved. # accounts that sign in with Google aren't on this list any more and will need login cards.}}",
+      "trustHeading": "Let your students in (for your Google admin)",
+      "forward": "A page you can send to your IT admin"
+    },
+    "setup": {
+      "title": "Sign in with Google for schools",
+      "heading": "Sign in with Google for schools",
+      "copy": "Copy",
+      "what": {
+        "h": "What it is",
+        "p1": "Students and staff can sign in to Oomba Academy with their school Google account, for example on a Chromebook. Oomba Academy only asks Google for basic sign-in information: the account's name and email address."
+      },
+      "turnOn": {
+        "h": "Turn it on for your school",
+        "p1": "A school admin adds the school's Google Workspace domain on the school's Settings tab. Until then, nobody at the school can use Google sign-in."
+      },
+      "trust": {
+        "h": "Let students in",
+        "p1": "Google lets students who are under 18 use an app only after the school's Google admin allows it. Otherwise they see “Access blocked”. Your Google admin can allow Oomba Academy like this (menu names may differ slightly):"
+      },
+      "step1": "Sign in to the Google Admin console (admin.google.com) as an admin.",
+      "step2": "Go to Security → Access and data control → API controls → Manage third-party app access.",
+      "step3": "Add an app, and search for this client ID: {id}",
+      "step4": "Pick the organisational units with students (and staff), choose Trusted or Limited, and save.",
+      "step5": "Or: for users under 18, allow apps that only ask for the basic information needed for Sign in with Google.",
+      "step6": "It can take a little while to apply. Then ask a student to try “Sign in with Google” again.",
+      "invite": {
+        "h": "Invite students",
+        "p1": "On a class's Students tab, paste the students' school email addresses. When a student signs in with that Google account, they join the class. Nothing is emailed.",
+        "p2": "Or turn on “join with Google” next to the class code: students with a school Google account type the code and join at once."
+      },
+      "privacy": {
+        "h": "Privacy",
+        "p1": "We keep the Google account's id, email address and school domain while it is connected, to recognise it at sign-in. We never store the Google photo, never show a student's Google name on the game site, and never use the account to read anything else from Google."
+      }
     }
   }
 }
