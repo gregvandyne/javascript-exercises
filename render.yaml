@@ -29,5 +29,10 @@ services:
         value: "60"
       - key: AI_DAILY_BUDGET_USD
         value: "5"
+      # The free AI budget (docs/decisions.md "Paid plans", D0): $150 a month, $5 a day (about monthly ÷ 30) so it
+      # lasts the whole month. Keep these the same as the dashboard: a blueprint sync resets the dashboard to this file.
       - key: AI_MONTHLY_BUDGET_USD
-        value: "50"
+        value: "150"
+      # Where grown-ups write to the team (/parents, the footer); also the support email in Stripe.
+      - key: CONTACT_EMAIL
+        value: greg@oomba.ai

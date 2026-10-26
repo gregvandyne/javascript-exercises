@@ -78,11 +78,12 @@ design); e2e (`E2E_PORT=5881`) the Builder/Studio specs (`studio-steps`, `studio
 - Chat uses polling every ~3.5 s, not WebSockets.
 - No ads and no creator payouts: removed when Oomba Academy became an ed-tech product. Old ad/earnings tables are left untouched in existing databases.
 - The mock Builder makes real games from templates and real find/replace edits, but it is not creative. The real Builder needs the API key.
-- **Only English is written so far**: `server/i18n/locales/en.json` has every string (832 keys); the other 12 locale files are `{}` stubs waiting for translators, and the per-language word lists are empty. Until then those languages show English text (in the right direction for he/ar). The Builder already replies in the kid's language when an API key is set; the offline mock Builder speaks English.
+- **Translations are machine-made, not yet checked by native speakers**: all 13 locales are filled (`npm run i18n:check` shows the counts; `en-GB` lists only UK differences). A new English key shows in English in the other languages until it is translated. The Builder replies in the kid's language when an API key is set; the offline mock Builder speaks English.
 - Without an API key, Builder input screening for non-English messages relies on the word lists only (the keyword rules are English).
 
 ## Recommended next steps
+0. **Paid plans, owner Step 0** (docs/decisions.md "Paid plans"): set `ANTHROPIC_API_KEY`, build about 20 games (normal and Pro), then read the cost per message on `/admin/stats` and settle D0, D3, D4 and D6 before Stripe work goes further.
 1. Add `ANTHROPIC_API_KEY`, build a few games end to end, tune the system prompt.
-1. Fill the 12 locale files and word lists (see `server/i18n/README.md`; `npm run i18n:check` shows progress), then let the launch games read `BRB.user.lang`.
+1. Have native speakers check the 12 translated locales and word lists (see `server/i18n/README.md`; `npm run i18n:check` shows progress).
 2. Real-time multiplayer and live chat over WebSockets (plus Redis for presence/rate limits).
 5. Builder analytics (retention, where players quit), game remixing, and more 3D templates (3D step 2).

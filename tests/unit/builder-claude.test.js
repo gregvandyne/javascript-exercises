@@ -226,6 +226,40 @@ test('a round that runs out of room while planning: one retry that thinks less, 
   assert.equal(bad.done.turnsLeft, before, 'the turn was given back');
 });
 
+test('cost per message: each build stores what its own model calls cost, who paid and its weight; Pro weight and refunds', async () => {
+  const aiBudget = await import('../../server/services/ai-budget.js');
+  const usage = await import('../../server/builder/usage.js');
+  const u = auth.createUser({ username: 'CostKid', password: 'secret1' }); const g = games.createGame(u.id, {});
+  const pool0 = (q.get("SELECT usd FROM ai_spend_pool WHERE day=? AND pool='free'", today()) || { usd: 0 }).usd;
+  const from = requests.length;
+  script.push([{ type: 'tool_use', name: 'write_game', input: { notes: 'Fox', html: GAME } }], [{ type: 'text', text: 'Done!' }]);
+  const r = await runTurn({ user: u, gameId: g.id, text: 'a fox game', emit: () => {} });
+  assert.equal(r.ok, true);
+  const calls = requests.slice(from).filter(x => x.body.stream).length;
+  assert.equal(calls, 2);
+  // The fake API answers every streamed call with 100 input, 50 cached and 42 output tokens.
+  const each = aiBudget.costOf(config.builderModel, { input_tokens: 100, cache_read_input_tokens: 50, output_tokens: 42 });
+  const row = q.get("SELECT usd, usd_known, charged_to, weight FROM builder_turns WHERE game_id=? AND charged_day IS NOT NULL", g.id);
+  assert.ok(Math.abs(row.usd - calls * each) < 1e-9, `${row.usd} vs ${calls * each}`);
+  assert.equal(row.usd_known, 1); assert.equal(row.charged_to, 'free'); assert.equal(row.weight, 1);
+  const pool1 = q.get("SELECT usd FROM ai_spend_pool WHERE day=? AND pool='free'", today()).usd;
+  assert.ok(pool1 - pool0 >= row.usd - 1e-9, 'the free pool paid for it (plus screening)');
+  assert.deepEqual(usage.allowanceFor(u), { source: 'free', pool: 'free', daily: config.builderDailyTurns, proWeight: 1 });
+
+  // PRO_TURN_WEIGHT=2: a Pro message uses two turns, and a refund gives both back.
+  const saved = config.proTurnWeight; config.proTurnWeight = 2;
+  try {
+    const left0 = usage.turnsLeft(u);
+    script.push([{ type: 'text', text: 'Done.' }]);
+    await runTurn({ user: u, gameId: g.id, text: 'make it pro', pro: true, emit: () => {} });
+    assert.equal(usage.turnsLeft(u), left0 - 2);
+    const pro = q.get("SELECT id, weight FROM builder_turns WHERE game_id=? AND pro=1", g.id);
+    assert.equal(pro.weight, 2);
+    assert.equal(turns.refund(pro.id), true); assert.equal(usage.turnsLeft(u), left0);
+    assert.equal(turns.refund(pro.id), false, 'once only'); assert.equal(usage.turnsLeft(u), left0);
+  } finally { config.proTurnWeight = saved; }
+});
+
 test('tool schema: notes comes first in write_game and edit_game, and both fields are required', () => {
   for (const [name, other] of [['write_game', 'html'], ['edit_game', 'edits']]) {
     const tool = TOOLS.find(t => t.name === name);
@@ -437,6 +471,12 @@ test('CL-11 a stop in the middle of a stream ends the build at once: no more req
   assert.equal(games.listVersions(g.id).length, 0, 'the tool after the stop never ran');
   assert.deepEqual([r.ok, r.error], [false, 'stopped']);
   assert.equal(script.length, 0);
+  // The cut-off round was still paid for: its input and cache tokens from the first event, its output estimated from
+  // what streamed (one 8-character piece, about 2 tokens), on the row and in the free pool.
+  const aiBudget = await import('../../server/services/ai-budget.js');
+  const want = aiBudget.costOf(config.builderModel, { input_tokens: 100, cache_read_input_tokens: 50, output_tokens: 2 });
+  const row = q.get('SELECT usd FROM builder_turns WHERE game_id=? AND charged_day IS NOT NULL', g.id);
+  assert.ok(want > 0 && Math.abs(row.usd - want) < 1e-12, `${row.usd} vs ${want}`);
 });
 
 test('CL-12 no model identifiers in code comments (code values like config defaults are fine)', async () => {

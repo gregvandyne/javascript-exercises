@@ -4,7 +4,7 @@
 //   - picture uploads are refused (they can't be safety-checked without the model),
 //   - the Builder chat classifier steps aside (the word filters still run, like when no key is set),
 //   - public game reviews wait for a human.
-// Limits: AI_DAILY_BUDGET_USD (default 5) and AI_MONTHLY_BUDGET_USD (default 50). Days and months are UTC.
+// Limits: AI_DAILY_BUDGET_USD (default 5) and AI_MONTHLY_BUDGET_USD (default 150). Days and months are UTC.
 // This is the site's own guard; also set a spend limit in the Anthropic Console as the hard backstop.
 import { q, today } from '../db.js';
 import { config } from '../config.js';
@@ -33,10 +33,14 @@ export function costOf(model, usage = {}) {
   return Number.isFinite(usd) ? usd : 0;
 }
 
-/** Record one API response. model: the model that served it (res.model) or the one requested. Returns the cost. */
-export function recordUsage(model, usage, day = today()) {
+export const POOLS = ['free', 'paid'];
+/** Record one API response. model: the model that served it (res.model) or the one requested. pool: the money pool
+ *  that pays ('free' for everything today; paid plans add 'paid'). Returns the cost. */
+export function recordUsage(model, usage, day = today(), pool = 'free') {
   const usd = costOf(model, usage);
   q.run('INSERT INTO ai_spend(day, usd, calls) VALUES (?,?,1) ON CONFLICT(day) DO UPDATE SET usd=usd+excluded.usd, calls=calls+1', day, usd);
+  q.run('INSERT INTO ai_spend_pool(day, pool, usd, calls) VALUES (?,?,?,1) ON CONFLICT(day, pool) DO UPDATE SET usd=usd+excluded.usd, calls=calls+1',
+    day, POOLS.includes(pool) ? pool : 'free', usd);
   // Token counts per model, for the admin stats page.
   const u = usage || {}, m = String(model || 'unknown').replace(/-\d{8}$/, '').slice(0, 60);
   q.run(`INSERT INTO ai_usage(day, model, calls, input, output, cache_read, cache_write, usd) VALUES (?,?,1,?,?,?,?,?)

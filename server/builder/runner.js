@@ -24,7 +24,7 @@ import * as turns from './turns.js';
 import { stepRecorder } from './steps.js';
 import { previewUrl } from './tools.js';
 import { restingUntil } from './anthropic.js';
-import { turnsLeft } from './usage.js';
+import { turnsLeft, allowanceFor } from './usage.js';
 import { loadChat, appendChat } from './chat.js';
 import { getUpload, LIMITS as UPLOADS } from './uploads.js';
 import { MAX_STEPS } from './claude.js';
@@ -126,7 +126,7 @@ export async function submit({ user, game, text = '', pro = false, uploadIds = [
   if (until) return { status: 503, body: { error: t('builder.errors.resting'), code: 'resting', resting: { until } }, code: 'resting' };
   // No turns left today: said before anything is stored, so the page puts the message back in the box (the charge
   // itself is still checked when screening passes). The streamed POST keeps its old order: screening first.
-  if (!compat && turnsLeft(user.id) <= 0) return err(429, 'builder.errors.limit', 'limit', { count: config.builderDailyTurns });
+  if (!compat && turnsLeft(user) <= 0) return err(429, 'builder.errors.limit', 'limit', { count: allowanceFor(user).daily });
   // 4. "Carry on building": only the game's last build, only when it offers it, only once.
   let orig = null;
   if (continueOf) {

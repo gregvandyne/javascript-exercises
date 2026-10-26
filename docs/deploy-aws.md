@@ -145,6 +145,7 @@ Fill in at least:
 | `ACME_EMAIL` | your email |
 | `SESSION_SECRET` | moving from Render: the exported one ([section 9](#9-moving-from-render-cut-over-checklist)); brand-new site: output of `openssl rand -hex 32` |
 | `ADMIN_PASSWORD`, `ANTHROPIC_API_KEY` | the same as on Render today |
+| `CONTACT_EMAIL`, `AI_DAILY_BUDGET_USD`, `AI_MONTHLY_BUDGET_USD` | the same as on Render today (`render.yaml`: `greg@oomba.ai`, `5`, `150`) |
 | `SHOTS_TOKEN` | output of `openssl rand -hex 32` (a new one: it is only shared between the app and the screenshot worker) |
 | `LITESTREAM_REPLICA_URL` | `s3://oomba-backups-<...>/oomba` (leave the two key lines empty: the role is used). Add a line `AWS_REGION=us-east-1` (your region). Leave it empty while you prepare a move from Render; see section 9. |
 

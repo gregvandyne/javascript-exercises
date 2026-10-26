@@ -208,6 +208,19 @@ export const MIGRATIONS = [
     CREATE INDEX IF NOT EXISTS google_invites_school ON google_invites(school_id, status);
     CREATE UNIQUE INDEX IF NOT EXISTS google_invites_open ON google_invites(school_id, IFNULL(class_id, ''), email) WHERE status='open';
     ALTER TABLE classrooms ADD COLUMN google_join INTEGER NOT NULL DEFAULT 0;`],
+  // What each Builder message cost and who paid (docs/decisions.md "Paid plans", chunk 1). charged_to: the allowance
+  // source that paid ('free' today; later 'family:<id>' | 'school:<id>'), weight: the turns it used (Pro may count
+  // more), usd: what the build's own model calls cost, usd_known: 1 when usd was measured (builds from before this
+  // migration have 0: /admin/stats estimates them from their token counts). ai_spend_pool: spend per UTC day and money pool
+  // ('free' | 'paid'); ai_spend keeps the site total. All spend so far was the free pool's.
+  ['0021_turn_cost', `ALTER TABLE builder_turns ADD COLUMN charged_to TEXT NOT NULL DEFAULT 'free';
+    ALTER TABLE builder_turns ADD COLUMN weight INTEGER NOT NULL DEFAULT 1;
+    ALTER TABLE builder_turns ADD COLUMN usd REAL NOT NULL DEFAULT 0;
+    ALTER TABLE builder_turns ADD COLUMN usd_known INTEGER NOT NULL DEFAULT 0;
+    CREATE INDEX IF NOT EXISTS builder_turns_charged ON builder_turns(charged_day) WHERE charged_day IS NOT NULL;
+    CREATE TABLE IF NOT EXISTS ai_spend_pool (day TEXT NOT NULL, pool TEXT NOT NULL, usd REAL NOT NULL DEFAULT 0,
+      calls INTEGER NOT NULL DEFAULT 0, PRIMARY KEY (day, pool));
+    INSERT OR IGNORE INTO ai_spend_pool(day, pool, usd, calls) SELECT day, 'free', usd, calls FROM ai_spend;`],
 ];
 
 db.exec('CREATE TABLE IF NOT EXISTS migrations (name TEXT PRIMARY KEY, applied_at INTEGER NOT NULL)');
