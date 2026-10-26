@@ -167,7 +167,7 @@ test('the AI path: rounds, thinking, the plan as plain text, playtest, fix, toke
   await expect(sum).toContainText('How the AI did this · 14 steps');
   await sum.click();
   const card = page.locator('.stp[data-state="done"]').last();
-  for (const s of ['Round 1: read your message', 'Wrote the game code', '120 lines', 'Round 3: looked at the pictures', '2 pictures · 1 problem found',
+  for (const s of ['Round 1: planned how to build it', 'Wrote the game code', '120 lines', 'Round 3: looked at the pictures', '2 pictures · 1 problem found',
     'Made changes to fix the problems', '2 changes', 'Safety program: all clear · saved as version 2',
     'The AI read 48,210 tokens and wrote 6,320.', 'The AI worked in 5 rounds.']) await expect(card).toContainText(s);
   // The game title keeps its own direction (bidi isolates) inside the sentence.
