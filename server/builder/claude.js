@@ -88,7 +88,7 @@ export async function run(ctx) {
   for (let step = 0; step < max; step++) {
     if (ctx.signal && ctx.signal.aborted) break;
     // The AI budget can run out in the middle of a turn: finish what we have instead of starting another call.
-    if (step && !aiBudget.ok()) { ctx.emit('text', { text: '\n\n' + t('builder.budgetResting') }); break; }
+    if (step && !aiBudget.ok()) { ctx.emit('text', { text: '\n\n' + t('builder.budgetStop') }); break; }
     // The runner's checkpoint: stopped, deleted, banned or switched off -> no more model calls.
     const b = ctx.between ? await ctx.between(step + 1) : null;
     if (b && b.stop) break;

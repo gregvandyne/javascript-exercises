@@ -873,7 +873,8 @@
       "busy": "O Construtor ainda está trabalhando na sua última mensagem. Só um momento!",
       "limit": "Você usou todas as {count} mensagens do Construtor de hoje. Volte amanhã para mais!",
       "muddled": "O Construtor se confundiu. Tente de novo daqui a pouco.",
-      "tooMany": "Você já tem 2 jogos sendo criados. Espere um terminar e tente de novo."
+      "tooMany": "Você já tem 2 jogos sendo criados. Espere um terminar e tente de novo.",
+      "resting": "O Construtor de IA está descansando agora. Seu jogo e suas mensagens estão salvos, então volte um pouco mais tarde!"
     },
     "refusals": {
       "tryThese": "Quer tentar uma destas?",
@@ -970,10 +971,10 @@
         }
       }
     },
-    "budgetResting": "O Construtor de IA está descansando até amanhã, então vou usar meus blocos simples por enquanto.",
     "turnTimeout": "⏱️ Esta criação passou do nosso tempo limite, então eu parei. Sua versão mais nova está salva. Me diga o que mudar agora!",
     "turnTimeoutNothing": "⏱️ Esta criação passou do nosso tempo limite, então eu parei antes de conseguir salvar alguma coisa. Ela não gastou nenhuma das suas mensagens, então você pode tentar de novo.",
-    "cutOffNothing": "O Construtor passou tanto tempo planejando que ficou sem espaço antes de conseguir construir algo. Seu turno não foi usado. Tente pedir uma ou duas mudanças de cada vez."
+    "cutOffNothing": "O Construtor passou tanto tempo planejando que ficou sem espaço antes de conseguir construir algo. Seu turno não foi usado. Tente pedir uma ou duas mudanças de cada vez.",
+    "budgetStop": "O Construtor de IA precisa descansar agora, então parei aqui. Tudo o que fiz até agora está salvo."
   },
   "uploads": {
     "tooFast": "Quantos arquivos! Espere um minuto e tente de novo.",
@@ -1435,6 +1436,12 @@
       "gameGone": "Este jogo foi apagado, então o Construtor parou.",
       "followups": {
         "putBack": "Pôr de volta na caixa de mensagem"
+      },
+      "resting": {
+        "text": "😴 O Construtor de IA está descansando agora. Ele volta {when}. Seu jogo e suas mensagens estão salvos, então volte nessa hora!",
+        "today": "hoje às {time}",
+        "tomorrow": "amanhã às {time}",
+        "date": "em {date} às {time}"
       }
     }
   },

@@ -873,7 +873,8 @@
       "busy": "Il Costruttore sta ancora lavorando al tuo ultimo messaggio. Un attimo!",
       "limit": "Hai usato tutti i {count} messaggi al Costruttore di oggi. Torna domani per averne altri!",
       "muddled": "Il Costruttore si è confuso. Riprova tra un attimo.",
-      "tooMany": "Hai già 2 giochi in costruzione. Aspetta che uno sia finito, poi riprova."
+      "tooMany": "Hai già 2 giochi in costruzione. Aspetta che uno sia finito, poi riprova.",
+      "resting": "Il Costruttore IA si sta riposando. Il tuo gioco e i tuoi messaggi sono salvati, torna un po’ più tardi!"
     },
     "refusals": {
       "tryThese": "Vuoi provare una di queste?",
@@ -970,10 +971,10 @@
         }
       }
     },
-    "budgetResting": "Il Costruttore IA si riposa fino a domani, quindi per ora uso i miei blocchi semplici.",
     "turnTimeout": "⏱️ Questa costruzione è durata più del nostro tempo massimo, quindi mi sono fermato. La tua versione più nuova è salvata. Dimmi cosa cambiare adesso!",
     "turnTimeoutNothing": "⏱️ Questa costruzione è durata più del nostro tempo massimo, quindi mi sono fermato prima di riuscire a salvare qualcosa. Non conta tra i tuoi messaggi di oggi, quindi puoi riprovare.",
-    "cutOffNothing": "Il Costruttore ha passato così tanto tempo a pianificare che ha finito lo spazio prima di poter costruire qualcosa. Questo messaggio non è stato contato. Prova a chiedere una o due modifiche alla volta."
+    "cutOffNothing": "Il Costruttore ha passato così tanto tempo a pianificare che ha finito lo spazio prima di poter costruire qualcosa. Questo messaggio non è stato contato. Prova a chiedere una o due modifiche alla volta.",
+    "budgetStop": "Il Costruttore IA deve riposarsi adesso, quindi mi sono fermato qui. Tutto quello che ho fatto finora è salvato."
   },
   "uploads": {
     "tooFast": "Quanti file! Aspetta un minuto e riprova.",
@@ -1435,6 +1436,12 @@
       "gameGone": "Questo gioco è stato eliminato, quindi il Costruttore si è fermato.",
       "followups": {
         "putBack": "Rimettilo nella casella"
+      },
+      "resting": {
+        "text": "😴 Il Costruttore IA si sta riposando. Tornerà {when}. Il tuo gioco e i tuoi messaggi sono salvati, torna allora!",
+        "today": "oggi alle {time}",
+        "tomorrow": "domani alle {time}",
+        "date": "{date} alle {time}"
       }
     }
   },

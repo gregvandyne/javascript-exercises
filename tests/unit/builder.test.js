@@ -309,18 +309,20 @@ test('build steps: a refusal or the turn limit ends with no record, and nothing 
   assert.deepEqual(t.events.map(e => e[0]), ['error', 'done']);
 });
 
-test('build steps: while the AI budget rests, the building blocks take over (screen, the resting message, blocks)', async () => {
+test('while the AI budget rests, no build starts: it says when the AI is back, and no turn is used', async () => {
   const saved = { key: config.anthropicKey, d: config.aiDailyBudgetUsd };
   try {
     config.anthropicKey = 'sk-test-not-real'; config.aiDailyBudgetUsd = 0;
     const u = newUser(); const g = games.createGame(u.id, {});
+    const { turnsLeft } = await import('../../server/builder/usage.js'); const left = turnsLeft(u.id);
     const t = await turn(u, g.id, 'hi');
-    assert.deepEqual(keys(t), ['screen', 'blocks', 'ask']);
-    const resting = at(t, 'text', d => /resting/.test(d.text));
-    assert.ok(resting > 0, 'the resting message was said');
-    assert.ok(at(t, 'step', s => s.key === 'screen') < resting && resting < at(t, 'step', s => s.key === 'blocks'), 'screen, then the message, then blocks');
-    assert.match(t.text, /simple building blocks/);
-    assert.equal(t.of('done')[0].steps.p, 'blocks');
+    assert.deepEqual(keys(t), [], 'no steps: the simple building blocks do not take over');
+    assert.equal(t.of('error')[0].code ?? 'resting', 'resting');
+    assert.match(t.of('error')[0].message, /resting right now/);
+    assert.equal(turnsLeft(u.id), left, 'no turn used');
+    const { resetsAt } = await import('../../server/services/ai-budget.js');
+    const until = resetsAt(Date.UTC(2026, 9, 26, 13, 41));
+    assert.equal(until, Date.UTC(2026, 9, 27), 'back at the next UTC midnight');
   } finally { config.anthropicKey = saved.key; config.aiDailyBudgetUsd = saved.d; }
 });
 

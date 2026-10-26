@@ -93,7 +93,6 @@ export async function executeTurn(job, { user, game, text = '', pro = false, wan
   const history = runner.historyFor(job, chat.messages);
   const state = { ...chat.state, scanFails: 0 }; job.state = state;
   const tb = toolbox({ user, gameId: game.id, emit, state, locale, steps, signal: job.ac.signal });
-  if (!provider && name === 'mock' && resting()) emit('text', { text: t('builder.budgetResting') + '\n\n' });
   // A Continue carries on an earlier build that stopped: the provider gets what it saved and its message.
   const carry = resume || (continueOf ? { versions: turns.versionsSince(game.id, continueOf.base_version), original: continueOf.request.text, cont: true } : null);
   let usage = { tokensIn: 0, tokensOut: 0, model: name };

@@ -797,4 +797,9 @@ A review of the three batches together found these; each got the smallest correc
 - **Round 1 says "planning how to build it" once the AI starts answering** (the first stream event, fact `a`), not
   "reading your message"; after 45 s a line says big ideas can take a minute or two to plan. — A new game can spend
   most of its first minute or two planning before any code streams, and "reading" for two minutes looked stuck.
+- **When the site's AI budget is spent, the Builder rests instead of falling back.** No build starts (nothing stored or
+  charged); the Studio says when the AI is back (the next UTC midnight, or the 1st for the monthly limit), shown in the
+  reader's own time zone, and the message stays in the box. — The simple building blocks used to take over and ask
+  questions they couldn't follow up on, which was misleading. A build already running stops at its next round and
+  says so (`builder.budgetStop`).
 
