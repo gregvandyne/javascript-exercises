@@ -14,6 +14,7 @@ import { q, tx, audit, now } from '../db.js';
 import { log } from './log.js';
 import { register } from './jobs.js';
 import * as S from './stripe.js';
+import { registerPaidBudget } from './ai-budget.js';
 
 const DAY = 86400e3;
 export const WEBHOOK_PATH = '/api/billing/webhook';
@@ -89,6 +90,29 @@ export function ownerPlan(kind, id, t = now()) {
   if (grant) return { entitled: true, via: 'grant', subscription: null, grant };
   return { ...none, subscription: subs[0] || null };
 }
+/** How many owners of a kind are entitled right now (current mode): the paid AI pool's ceiling counts families. */
+export function entitledOwnerCount(kind, t = now()) {
+  if (!S.billingOn()) return 0;
+  const owners = new Set(q.all('SELECT * FROM billing_subscriptions WHERE owner_kind=? AND plan=? AND livemode=?', kind, kind, S.currentLivemode())
+    .filter(r => entitledRow(r, t)).map(r => r.owner_id));
+  for (const g of q.all('SELECT owner_id FROM billing_grants WHERE owner_kind=? AND revoked_at IS NULL AND until > ?', kind, t)) owners.add(g.owner_id);
+  return owners.size;
+}
+// The paid AI pool's monthly ceiling (services/ai-budget.js): FAMILY_MONTHLY_AI_USD for each family with a plan.
+registerPaidBudget('family', () => entitledOwnerCount('family') * config.familyMonthlyAiUsd);
+/** The owner's Stripe Customer in the current mode, or null. */
+export const customerOf = (kind, id) => q.get('SELECT stripe_customer_id FROM billing_customers WHERE owner_kind=? AND owner_id=? AND livemode=?', kind, String(id), S.currentLivemode())?.stripe_customer_id || null;
+
+/** The refund window of a subscription row (D10 and the owner's decision of 2026-10-26): a full refund on request within
+ *  14 days of a payment that started the plan or renewed a yearly plan; monthly renewals are not refunded. -> the end
+ *  of the window (ms) while it is open, else null. Shown on /admin/billing; refunds themselves are made in Stripe. */
+export const REFUND_DAYS = 14;
+export function refundWindow(r, t = now()) {
+  if (!r || !r.latest_paid_at || !(r.latest_amount_paid > 0)) return null;
+  const starts = r.latest_billing_reason === 'subscription_create' || (r.latest_billing_reason === 'subscription_cycle' && r.interval === 'year');
+  const until = r.latest_paid_at + REFUND_DAYS * DAY;
+  return starts && t < until ? until : null;
+}
 
 // ---- The shared sync path ----
 
@@ -151,8 +175,9 @@ async function productPlansFor(price) {
   }
 }
 
-/** Writes one fetched subscription. Synchronous: runs inside tx(). -> { result, row? } */
-function applySubscription(sub, { event = null, session = null, openInvoices = [], productPlans = null } = {}) {
+/** Writes one fetched subscription. Synchronous: runs inside tx(). risk: { flag, paymentIntent, cancelled } from
+ *  riskAction or a duplicate Checkout (the flag wins over the others). -> { result, row? } */
+function applySubscription(sub, { event = null, session = null, openInvoices = [], productPlans = null, risk = null } = {}) {
   const t = now();
   const livemode = sub.livemode ? 1 : 0;
   const customerId = idOf(sub.customer);
@@ -201,6 +226,7 @@ function applySubscription(sub, { event = null, session = null, openInvoices = [
   else if (flag === 'overdue' && grace == null) flag = null;
   if (plan === 'unknown') flag = 'unknown_price';
   else if (flag === 'unknown_price') flag = null;
+  if (risk?.flag) flag = risk.flag;
   const row = {
     stripe_subscription_id: sub.id, stripe_customer_id: customerId, owner_kind: owner.owner_kind, owner_id: owner.owner_id,
     plan, price_id: price.id || null, price_lookup_key: lookupKey, interval: price.recurring?.interval || null,
@@ -208,22 +234,33 @@ function applySubscription(sub, { event = null, session = null, openInvoices = [
     current_period_start: item.current_period_start ? item.current_period_start * 1000 : null,
     current_period_end: item.current_period_end ? item.current_period_end * 1000 : null,
     cancel_at_period_end: sub.cancel_at_period_end ? 1 : 0, grace_until: grace, payment_pending: pending, flag, livemode,
+    // The latest invoice: what was paid, when and why (the refund window on /admin/billing).
+    latest_invoice_id: li?.id || idOf(sub.latest_invoice) || null,
+    latest_paid_at: li?.status === 'paid' && li.status_transitions?.paid_at ? li.status_transitions.paid_at * 1000 : (li ? null : prev?.latest_paid_at ?? null),
+    latest_billing_reason: li?.billing_reason || (li ? null : prev?.latest_billing_reason ?? null),
+    latest_amount_paid: li ? (li.amount_paid ?? null) : prev?.latest_amount_paid ?? null,
+    risk_payment_intent: risk?.paymentIntent || prev?.risk_payment_intent || null,
   };
   q.run(`INSERT INTO billing_subscriptions(stripe_subscription_id, stripe_customer_id, owner_kind, owner_id, plan, price_id,
       price_lookup_key, interval, quantity, status, collection_method, current_period_start, current_period_end,
-      cancel_at_period_end, grace_until, payment_pending, flag, livemode, created_at, updated_at)
+      cancel_at_period_end, grace_until, payment_pending, flag, livemode, latest_invoice_id, latest_paid_at, latest_billing_reason,
+      latest_amount_paid, risk_payment_intent, created_at, updated_at)
     VALUES (@stripe_subscription_id, @stripe_customer_id, @owner_kind, @owner_id, @plan, @price_id, @price_lookup_key, @interval,
       @quantity, @status, @collection_method, @current_period_start, @current_period_end, @cancel_at_period_end, @grace_until,
-      @payment_pending, @flag, @livemode, @t, @t)
+      @payment_pending, @flag, @livemode, @latest_invoice_id, @latest_paid_at, @latest_billing_reason, @latest_amount_paid,
+      @risk_payment_intent, @t, @t)
     ON CONFLICT(stripe_subscription_id) DO UPDATE SET stripe_customer_id=excluded.stripe_customer_id, owner_kind=excluded.owner_kind,
       owner_id=excluded.owner_id, plan=excluded.plan, price_id=excluded.price_id, price_lookup_key=excluded.price_lookup_key,
       interval=excluded.interval, quantity=excluded.quantity, status=excluded.status, collection_method=excluded.collection_method,
       current_period_start=excluded.current_period_start, current_period_end=excluded.current_period_end,
       cancel_at_period_end=excluded.cancel_at_period_end, grace_until=excluded.grace_until, payment_pending=excluded.payment_pending,
-      flag=excluded.flag, livemode=excluded.livemode, orphaned_at=NULL, updated_at=excluded.updated_at`, { ...row, t });
+      flag=excluded.flag, livemode=excluded.livemode, latest_invoice_id=excluded.latest_invoice_id, latest_paid_at=excluded.latest_paid_at,
+      latest_billing_reason=excluded.latest_billing_reason, latest_amount_paid=excluded.latest_amount_paid,
+      risk_payment_intent=excluded.risk_payment_intent, orphaned_at=NULL, updated_at=excluded.updated_at`, { ...row, t });
   const target = `${owner.owner_kind}:${owner.owner_id}`;
   if (!prev || prev.status !== row.status) audit(null, `billing.subscription.${row.status}`, target, { subscription: sub.id, from: prev?.status || null, event: event?.id || null });
-  if (event && EVENT_AUDIT[event.type]) audit(null, EVENT_AUDIT[event.type], target, { subscription: sub.id, event: event.id });
+  if (event && EVENT_AUDIT[event.type]) audit(null, EVENT_AUDIT[event.type], target, { subscription: sub.id, event: event.id, ...(risk?.cancelled ? { cancelled: true } : {}) });
+  if (risk?.flag === 'duplicate' && prev?.flag !== 'duplicate') audit(null, 'billing.duplicate', target, { subscription: sub.id, kept: risk.kept || null, refunded: !!risk.refunded });
   if (session) q.run('DELETE FROM billing_checkouts WHERE session_id=?', session.id);
   if (event) setEventResult(event, 'ok');
   return { result: 'ok', row: q.get('SELECT * FROM billing_subscriptions WHERE stripe_subscription_id=?', sub.id) };
@@ -236,7 +273,7 @@ function applySubscription(sub, { event = null, session = null, openInvoices = [
  * (StripeCallError): nothing is written, and a webhook answers 500 so Stripe sends it again.
  * -> { result: 'ok'|'duplicate'|'unlinked'|'missing', row? }
  */
-export function syncSubscription(subId, { event = null, session = null } = {}) {
+export function syncSubscription(subId, { event = null, session = null, risk = null } = {}) {
   return serialize(subId, async () => {
     let sub, openInvoices = [], productPlans = null;
     try {
@@ -252,7 +289,7 @@ export function syncSubscription(subId, { event = null, session = null } = {}) {
       log('warn', 'billing: Stripe has no such subscription', { subscription: subId, event: event?.id });
       return { result: 'missing' };
     }
-    return tx(() => applySubscription(sub, { event, session, openInvoices, productPlans }));
+    return tx(() => applySubscription(sub, { event, session, openInvoices, productPlans, risk }));
   });
 }
 
@@ -277,11 +314,15 @@ async function resolveEvent(event) {
       const inv = await reread(() => S.getInvoice(o.id));
       return { subId: S.subscriptionOfInvoice(inv) || S.subscriptionOfInvoice(o) || idOf(o.subscription) };
     }
-    case 'charge.refunded':   // re-read the charge too (the payload's shape follows the endpoint's version)
-      return { subId: S.subscriptionOfInvoice(await S.invoiceForCharge((o.id && await reread(() => S.getCharge(o.id))) || o)) };
+    case 'charge.refunded': { // re-read the charge too (the payload's shape follows the endpoint's version)
+      const charge = (o.id && await reread(() => S.getCharge(o.id))) || o;
+      const invoice = await S.invoiceForCharge(charge);
+      return { subId: S.subscriptionOfInvoice(invoice), charge, invoice };
+    }
     case 'charge.dispute.created': case 'radar.early_fraud_warning.created': {
-      const inv = o.payment_intent ? await S.invoiceForPaymentIntent(idOf(o.payment_intent)) : await S.invoiceForCharge(idOf(o.charge));
-      return { subId: S.subscriptionOfInvoice(inv) };
+      const pi = idOf(o.payment_intent) || (o.charge ? idOf((await S.getCharge(idOf(o.charge))).payment_intent) : null);
+      const invoice = pi ? await S.invoiceForPaymentIntent(pi) : null;
+      return { subId: S.subscriptionOfInvoice(invoice), invoice, paymentIntent: pi };
     }
     default: return { subId: null };
   }
@@ -300,7 +341,8 @@ export async function processEvent(event) {
   }
   if (q.get('SELECT 1 FROM billing_events WHERE event_id=?', event.id)) return { result: 'duplicate' };
   if (!HANDLED.has(event.type)) { insertEvent(event, 'ignored'); return { result: 'ignored' }; }
-  const { subId, session } = await resolveEvent(event);
+  const resolved = await resolveEvent(event);
+  const { subId, session } = resolved;
   if (!subId) {
     // Not about one of our subscriptions. When the event came in another API version, say so in its result rather than
     // a plain 'ignored', so a wrongly made endpoint shows up.
@@ -313,7 +355,70 @@ export async function processEvent(event) {
       return { result: q.get('SELECT result FROM billing_events WHERE event_id=?', event.id).result };
     });
   }
-  return syncSubscription(subId, { event, session });
+  if (event.type === 'checkout.session.completed') return finishCheckout({ subId, session, event });
+  const risk = await riskAction(event, resolved);
+  return syncSubscription(subId, { event, session, risk });
+}
+
+const LIVE_STATUSES = new Set(['active', 'trialing', 'past_due']);
+/**
+ * Refunds, disputes and early fraud warnings (docs/decisions.md "Paid plans" §6.4). Runs before the sync, outside any
+ * transaction; every Stripe write is idempotent, so a webhook retried after a failure here does no harm.
+ *   - charge.refunded: a refund of the whole latest invoice ends a live plan now (we cancel first, then refund; a full
+ *     refund made the other way round cancels too). Any other refund of a live plan: flag 'refunded_active'.
+ *   - charge.dispute.created, radar.early_fraud_warning.created: the plan ends now, so the card isn't charged again
+ *     (a child using a parent's card often shows up this way). Flag 'dispute' / 'efw'; refunding is the owner's choice.
+ * -> { flag, paymentIntent, cancelled } or null
+ */
+async function riskAction(event, { subId, charge = null, invoice = null, paymentIntent = null }) {
+  const kind = event.type;
+  if (!['charge.refunded', 'charge.dispute.created', 'radar.early_fraud_warning.created'].includes(kind)) return null;
+  const sub = await reread(() => S.getSubscription(subId));
+  if (!sub) return null;
+  const live = LIVE_STATUSES.has(sub.status);
+  if (kind === 'charge.refunded') {
+    const paid = invoice?.amount_paid ?? charge?.amount ?? 0;
+    const full = !!charge && charge.amount_refunded > 0 && charge.amount_refunded >= paid;
+    if (!live) return null;
+    if (full && invoice && invoice.id === idOf(sub.latest_invoice)) { await S.cancelSubscriptionNow(sub.id, 'refund'); return { cancelled: true }; }
+    return { flag: 'refunded_active' };
+  }
+  if (live) await S.cancelSubscriptionNow(sub.id, kind === 'charge.dispute.created' ? 'dispute' : 'efw');
+  return { flag: kind === 'charge.dispute.created' ? 'dispute' : 'efw', paymentIntent, cancelled: live };
+}
+
+/**
+ * A completed Checkout (its webhook, or the return page's fallback): sync the new subscription, but if the owner already
+ * has another entitled subscription of the same plan (two Checkouts paid), end the new one now and refund its first
+ * payment, flag it 'duplicate' and audit billing.duplicate. One completion at a time (a single chain), so two
+ * completions can't each keep the other's subscription and both be cancelled.
+ */
+export function finishCheckout({ subId, session = null, event = null }) {
+  return serialize('checkout-completed', async () => {
+    const sub = await reread(() => S.getSubscription(subId));
+    let risk = null;
+    if (sub) {
+      const owner = ownerOfCustomer(idOf(sub.customer), sub.livemode ? 1 : 0) || ownerFromMetadata(session?.metadata, sub.metadata);
+      const plan = planOfPrice(sub.items?.data?.[0]?.price);
+      const kept = owner && plan ? q.all(`SELECT * FROM billing_subscriptions WHERE owner_kind=? AND owner_id=? AND livemode=? AND plan=? AND stripe_subscription_id!=?`,
+        owner.owner_kind, owner.owner_id, sub.livemode ? 1 : 0, plan, sub.id).find(r => entitledRow(r)) : null;
+      const done = q.get("SELECT 1 FROM billing_subscriptions WHERE stripe_subscription_id=? AND flag='duplicate'", sub.id);
+      if (kept && done) risk = { flag: 'duplicate', kept: kept.stripe_subscription_id };   // handled before: no Stripe writes again
+      else if (kept) {
+        if (LIVE_STATUSES.has(sub.status) || sub.status === 'incomplete') await S.cancelSubscriptionNow(sub.id, 'duplicate');
+        const inv = idOf(sub.latest_invoice);
+        const pi = inv ? await S.paymentIntentOfInvoice(inv) : null;
+        if (pi) {
+          try { await S.refundPaymentIntent(pi, `duplicate-${sub.id}`); } catch (e) {
+            if (!(e instanceof S.StripeCallError) || e.code !== 'charge_already_refunded') throw e;   // refunded already: fine
+          }
+        }
+        log('warn', 'billing: a second subscription for the same owner was cancelled and refunded', { subscription: sub.id, kept: kept.stripe_subscription_id });
+        risk = { flag: 'duplicate', kept: kept.stripe_subscription_id, refunded: !!pi, cancelled: true };
+      }
+    }
+    return syncSubscription(subId, { event, session, risk });
+  });
 }
 
 /** POST /api/billing/webhook (mounted in app.js before the request log, maintenance and JSON parsing; raw body). The
@@ -348,7 +453,7 @@ export async function syncCheckoutReturn(sessionId, expected) {
   const known = ownerOfCustomer(idOf(session.customer));
   if (known && (known.owner_kind !== expected.kind || known.owner_id !== String(expected.id))) return { result: 'not_yours' };
   if (session.status !== 'complete' || !idOf(session.subscription)) return { result: 'processing' };
-  return syncSubscription(idOf(session.subscription), { session });
+  return finishCheckout({ subId: idOf(session.subscription), session });
 }
 
 // ---- The reconcile job ----

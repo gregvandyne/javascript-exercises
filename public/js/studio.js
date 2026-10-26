@@ -38,7 +38,12 @@ function renderTop() {
   pb.textContent = !S.live ? (S.pending ? `⏳ ${t('js.studio.top.inReview')}` : `🚀 ${t('js.studio.top.publish')}`) : canUpdate ? `⬆️ ${t('js.studio.top.update')}` : `✅ ${t('js.studio.top.live')}`;
   document.title = t('js.studio.docTitle', { title: S.game.title });
 }
-function renderTurns() { $('#st-turns').textContent = `🔋 ${t('js.studio.turns', { left: S.turnsLeft, total: S.dailyTurns })}`; }
+// Free messages left today of the daily ones; a child whose family plan pays extra messages also sees how many are left
+// this month (a number only: no plan or money words on a child's page).
+function renderTurns() {
+  const free = typeof S.freeLeft === 'number' ? S.freeLeft : S.turnsLeft;
+  $('#st-turns').textContent = `🔋 ${t('js.studio.turns', { left: free, total: S.dailyTurns })}${typeof S.extraLeft === 'number' ? ` · ${t('js.studio.extra', { n: S.extraLeft })}` : ''}`;
+}
 const E = (key, vars) => esc(t(key, vars));
 function renderLive() {
   const box = $('#st-live'); const parts = [];
@@ -956,7 +961,7 @@ function onEvent(ev, d) {
   else if (ev === 'error') { endBubble(); bubble('err', d.message); if (live) live.stop(); LIVE.lastErr = d.message; }
   else if (ev === 'done') {
     endBubble();
-    if (typeof d.turnsLeft === 'number') { S.turnsLeft = d.turnsLeft; renderTurns(); }
+    if (typeof d.turnsLeft === 'number') { S.turnsLeft = d.turnsLeft; if (typeof d.freeLeft === 'number') S.freeLeft = d.freeLeft; if ('extraLeft' in d) S.extraLeft = d.extraLeft; renderTurns(); }
     // Ended before it was charged with an error (no turns left): nothing was saved, so after the redraw the error stays
     // and the message goes back in the box.
     const first = S.turn && (S.turn.entries || []).find(m => m.role === 'user');

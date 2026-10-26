@@ -10,7 +10,7 @@ import * as games from '../services/games.js';
 import { audit, tx, today } from '../db.js';
 import { config } from '../config.js';
 import { screenInput } from './screen.js';
-import { takeTurn, turnsLeft, allowanceFor } from './usage.js';
+import { takeTurn, turnsLeft, allowanceFor, limitMessage } from './usage.js';
 import { loadChat, appendChat } from './chat.js';
 import { toolbox } from './tools.js';
 import { takeForTurn } from './uploads.js';
@@ -24,10 +24,11 @@ import * as runner from './runner.js';
 export { isBusy, busyCount } from './runner.js';
 
 export const MAX_INPUT = 2000;
-/** Which provider runs the Builder: Claude when a key is set, the mock otherwise (BRB_BUILDER_PROVIDER=mock forces the mock). */
-export function providerName() {
+/** Which provider runs the Builder: Claude when a key is set, the mock otherwise (BRB_BUILDER_PROVIDER=mock forces the mock).
+ *  pool: the AI money pool that pays the message ('free', or 'paid' for a family's extra messages). */
+export function providerName(pool = 'free') {
   if (process.env.BRB_BUILDER_PROVIDER === 'mock' || !config.anthropicKey) return 'mock';
-  if (resting()) return 'mock';   // the AI budget is spent for today or this month
+  if (resting(pool)) return 'mock';   // that pool's AI budget is spent for today or this month
   return 'claude';
 }
 /** What a provider is, for rows, records and the page: 'ai' or 'blocks' (never a model id). */
@@ -58,7 +59,7 @@ export async function executeTurn(job, { user, game, text = '', pro = false, wan
   const emit = job.emit, steps = job.steps;
   job.ctx = { user, t, pro: !!pro, name: null };
   // Chosen after screening (the classifier can spend the last of the AI budget), and recorded on the row as it runs.
-  let name = provider || providerName();
+  let name = provider || providerName(allowanceFor(user).pool);
   if (!resume && !carried) {
     // 1. Screening, before any model sees the message.
     let s = prescreened;
@@ -76,10 +77,11 @@ export async function executeTurn(job, { user, game, text = '', pro = false, wan
     }
     // 2. The daily turn limit. Charge, save the message and mark the build running in one transaction: from here the
     //    message is durable (a restart carries the build on).
-    name = provider || providerName(); const day = today();
+    name = provider || providerName(allowanceFor(user).pool); const day = today();
     const taken = tx(() => {
       const charge = takeTurn(user, day, { pro: !!pro });
       if (!charge) return null;
+      if (!provider) name = providerName(charge.pool);   // the pool that pays this very message
       const ups = takeForTurn(game.id, wanted.map(u => u.id));
       appendChat(game.id, user.id, [{ role: 'user', text, at: Date.now(), uploads: ups.map(uploadMeta), turn: job.id }]);
       job.base = turns.newestVersion(game.id);
@@ -88,7 +90,7 @@ export async function executeTurn(job, { user, game, text = '', pro = false, wan
       return ups;
     });
     if (!taken) {
-      emit('error', { message: t('builder.errors.limit', { count: allowanceFor(user).daily }), code: 'limit' });
+      emit('error', { message: limitMessage(user, t), code: 'limit' });
       return endUncharged(job, 'limit');
     }
     uploads = taken; job.attempt = 1; job.phase = 'running'; job.resolveScreened(true);

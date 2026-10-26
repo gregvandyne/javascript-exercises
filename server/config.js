@@ -49,7 +49,7 @@ export const STRIPE_MIN_API_VERSION = '2025-03-31';
 /**
  * Billing settings (docs/decisions.md "Paid plans", BP-11). Billing is off unless STRIPE_API_KEY and
  * STRIPE_WEBHOOK_SECRET are both set and nothing below is an error. Keys and secrets are never echoed in a message.
- * -> { apiKey, webhookSecret, webhookSecretOld, apiVersion, apiBase, liveOk, tax, mode: 'off'|'test'|'live',
+ * -> { apiKey, webhookSecret, webhookSecretOld, apiVersion, apiBase, liveOk, tax, pmcFamily, termsPublished, mode: 'off'|'test'|'live',
  *      errors: [], warnings: [] }
  */
 export function parseStripe(env = process.env, nodeEnv = env.NODE_ENV || 'development') {
@@ -61,7 +61,12 @@ export function parseStripe(env = process.env, nodeEnv = env.NODE_ENV || 'develo
   const tax = parseFlag(env.STRIPE_TAX, 'STRIPE_TAX');
   const apiVersion = String(env.STRIPE_API_VERSION || STRIPE_API_VERSION).trim();
   const base = parsePublicUrl(env.STRIPE_API_BASE, 'STRIPE_API_BASE');
-  for (const e of [liveOk.error, tax.error, base.error]) if (e) errors.push(e);
+  // The "Family" payment method configuration (cards, Apple Pay, Google Pay; Link off). Optional: unset, family
+  // Checkout uses the account's default configuration. Never a list of payment_method_types.
+  const pmcFamily = String(env.STRIPE_PMC_FAMILY || '').trim();
+  const terms = parseFlag(env.TERMS_PUBLISHED, 'TERMS_PUBLISHED');
+  for (const e of [liveOk.error, tax.error, base.error, terms.error]) if (e) errors.push(e);
+  if (pmcFamily && !/^pmc_[A-Za-z0-9]+$/.test(pmcFamily)) errors.push('STRIPE_PMC_FAMILY must look like pmc_…');
   let mode = 'off';
   if (apiKey) {
     if (/^sk_live_/.test(apiKey)) errors.push('STRIPE_API_KEY is a live secret key (sk_live_): use a restricted key (rk_live_) with only the permissions billing needs');
@@ -81,7 +86,7 @@ export function parseStripe(env = process.env, nodeEnv = env.NODE_ENV || 'develo
   if (apiKey && !webhookSecret && !errors.length) warnings.push('Billing stays off: STRIPE_API_KEY is set but STRIPE_WEBHOOK_SECRET is not');
   if (!apiKey && webhookSecret) warnings.push('Billing stays off: STRIPE_WEBHOOK_SECRET is set but STRIPE_API_KEY is not');
   if (errors.length || !apiKey || !webhookSecret) mode = 'off';
-  return { apiKey, webhookSecret, webhookSecretOld, apiVersion, apiBase: base.url, liveOk: liveOk.on, tax: tax.on, mode, errors, warnings };
+  return { apiKey, webhookSecret, webhookSecretOld, apiVersion, apiBase: base.url, liveOk: liveOk.on, tax: tax.on, pmcFamily, termsPublished: terms.on, mode, errors, warnings };
 }
 /** Shortest SESSION_SECRET accepted when REQUIRE_SESSION_SECRET is on (openssl rand -hex 32 gives 64). */
 export const MIN_SECRET_LENGTH = 32;
@@ -187,6 +192,10 @@ export const config = {
   stripeApiVersion: stripe.apiVersion,
   stripeApiBase: stripe.apiBase,                     // tests only: a local fake Stripe (tests/support/fake-stripe.js)
   stripeTax: stripe.tax,
+  stripePmcFamily: stripe.pmcFamily,                 // pmc_…: family Checkout's payment method configuration (optional)
+  // TERMS_PUBLISHED=1 once /terms is on the site: family Checkout then asks the buyer to agree to it (Stripe's own
+  // checkbox, which also needs the Terms URL in the Stripe Dashboard's public details) and /family links to it.
+  termsPublished: stripe.termsPublished,
   stripeWarnings: stripe.warnings,                   // logged at start-up (server/index.js)
   // Days a card plan stays on while Stripe retries a failed payment; days after an invoice's due date for schools.
   billingGraceDays: Math.max(0, num(process.env.BILLING_GRACE_DAYS, 7)),
@@ -200,4 +209,13 @@ export const config = {
   billingPreviewToken: (process.env.BILLING_PREVIEW_TOKEN || '').length >= 24 ? process.env.BILLING_PREVIEW_TOKEN : '',
   familyMaxChildren: Math.max(1, num(process.env.FAMILY_MAX_CHILDREN, 4)),
   familyExtraMessages: Math.max(0, num(process.env.FAMILY_EXTRA_MESSAGES, 40)),
+  // The family plan's limits besides the monthly count (server/builder/usage.js; disclosed on /grown-ups and /family):
+  // extra messages one child may use in a UTC day, and the AI cost (US dollars) of one family's extra messages in a UTC
+  // month, a backstop against unusually expensive messages.
+  familyChildDailyMax: Math.max(0, Math.floor(num(process.env.FAMILY_CHILD_DAILY_MAX, 60))),
+  familyMonthlyAiUsd: posNum(process.env.FAMILY_MONTHLY_AI_USD, 4),
+  // The paid AI pool (services/ai-budget.js): its monthly ceiling is computed (entitled families x FAMILY_MONTHLY_AI_USD);
+  // AI_PAID_MONTHLY_BUDGET_USD caps it. AI_HARD_MONTHLY_USD stops every AI call site-wide (default: free + paid monthly).
+  aiPaidMonthlyBudgetUsd: process.env.AI_PAID_MONTHLY_BUDGET_USD ? posNum(process.env.AI_PAID_MONTHLY_BUDGET_USD, null) : null,
+  aiHardMonthlyUsd: process.env.AI_HARD_MONTHLY_USD ? posNum(process.env.AI_HARD_MONTHLY_USD, null) : null,
 };

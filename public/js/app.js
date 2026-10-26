@@ -111,6 +111,8 @@ on(document, 'submit', async e => {
   // Fields that repeat (a list of checkboxes with one name) are sent as arrays.
   const body = {};
   for (const [k, v] of new FormData(f).entries()) body[k] = k in body ? [].concat(body[k], v) : v;
+  // A named submit button sends its value (e.g. two "Subscribe" buttons, one per billing interval).
+  if (btn && btn.name && !(btn.name in body)) body[btn.name] = btn.value;
   let left = false;
   try {
     const r = await api(f.dataset.api, { method: f.dataset.method || 'POST', body });

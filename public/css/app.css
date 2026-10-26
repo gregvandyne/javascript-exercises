@@ -558,6 +558,12 @@ code{overflow-wrap:anywhere}
 .checkline input{width:22px;height:22px;flex:none;margin-top:2px}
 ol.steps{padding-inline-start:1.4em;margin:0 0 var(--s4)}
 ol.steps li{margin-bottom:var(--s2)}
+/* The family plan panel on /family (chunk 4): what to read before paying, the Subscribe buttons, extras left. */
+.planform{margin:var(--s3) 0}
+.planterms{padding-inline-start:1.2em;margin:0 0 var(--s3)}
+.planterms li{margin-bottom:var(--s1)}
+.planbtns .btn{flex:1 1 220px}
+.planextras{padding:var(--s3);border-radius:var(--r-sm);background:var(--card-2)}
 .faq h3{font-size:1rem;margin:var(--s4) 0 var(--s1)}
 .faq h3:first-of-type{margin-top:0}
 .faq p{margin:0}

@@ -264,6 +264,20 @@ export const MIGRATIONS = [
     CREATE TABLE IF NOT EXISTS link_reports (id TEXT PRIMARY KEY, child_id TEXT NOT NULL, family_id TEXT NOT NULL,
       status TEXT NOT NULL DEFAULT 'open', created_at INTEGER NOT NULL, resolved_by TEXT, resolved_at INTEGER);
     CREATE INDEX IF NOT EXISTS link_reports_status ON link_reports(status, created_at);`],
+  // Paid plans, chunk 4: family checkout (docs/decisions.md "Paid plans"). users.billing_tester: while the Stripe key is
+  // a test key, only these accounts may check out (set on /admin, D14). sessions.reauth_at: when the password was last
+  // typed again on this sign-in (checkout and the Customer Portal need it within 10 minutes). The latest invoice of a
+  // subscription (for /admin/billing: what was paid, when and why, so the refund window shows) and the payment a dispute
+  // or an early fraud warning was about (risk_payment_intent, for the Refund link). builder_turns_charged_to: the family
+  // month's sums.
+  ['0024_family_checkout', `ALTER TABLE users ADD COLUMN billing_tester INTEGER NOT NULL DEFAULT 0;
+    ALTER TABLE sessions ADD COLUMN reauth_at INTEGER;
+    ALTER TABLE billing_subscriptions ADD COLUMN latest_invoice_id TEXT;
+    ALTER TABLE billing_subscriptions ADD COLUMN latest_paid_at INTEGER;
+    ALTER TABLE billing_subscriptions ADD COLUMN latest_billing_reason TEXT;
+    ALTER TABLE billing_subscriptions ADD COLUMN latest_amount_paid INTEGER;
+    ALTER TABLE billing_subscriptions ADD COLUMN risk_payment_intent TEXT;
+    CREATE INDEX IF NOT EXISTS builder_turns_charged_to ON builder_turns(charged_to, charged_day);`],
 ];
 
 db.exec('CREATE TABLE IF NOT EXISTS migrations (name TEXT PRIMARY KEY, applied_at INTEGER NOT NULL)');

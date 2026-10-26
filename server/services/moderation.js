@@ -113,7 +113,7 @@ export function findUser(username) {
   const games = q.get('SELECT COUNT(*) n FROM games WHERE owner_id=?', u.id).n;
   const friendsN = q.get("SELECT COUNT(*) n FROM friends WHERE user_id=? AND status='accepted'", u.id).n;
   const reportsAgainst = q.get('SELECT COUNT(*) n FROM chat_reports r JOIN chat_messages m ON m.id=r.message_id WHERE m.from_id=?', u.id).n;
-  return { id: u.id, username: u.username, display_name: u.display_name, avatar: u.avatar, color: u.color, photo_at: u.photo_at, role: u.role, managed_school: u.managed_school || '', is_guest: !!u.is_guest, account_type: u.account_type || 'kid', banned: !!u.banned, chat_enabled: !!u.chat_enabled, created_at: u.created_at, last_seen: u.last_seen, games, friends: friendsN, chatReports: reportsAgainst };
+  return { id: u.id, username: u.username, display_name: u.display_name, avatar: u.avatar, color: u.color, photo_at: u.photo_at, role: u.role, managed_school: u.managed_school || '', is_guest: !!u.is_guest, account_type: u.account_type || 'kid', billing_tester: !!u.billing_tester, banned: !!u.banned, chat_enabled: !!u.chat_enabled, created_at: u.created_at, last_seen: u.last_seen, games, friends: friendsN, chatReports: reportsAgainst };
 }
 /** Ban: account paused, every session ended. Admins cannot be banned from here. */
 export function banUser(admin, userId, reason = '') {

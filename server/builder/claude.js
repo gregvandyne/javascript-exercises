@@ -75,7 +75,7 @@ export function resumeNote(resume) {
 const CUT_OFF_NUDGE = 'You ran out of room before calling a tool, so nothing was built yet. Keep your planning very short now and call write_game (or edit_game for a change to the current game) right away. If the request is big, build the most important part first; the player can ask for the rest next.';
 
 export async function run(ctx) {
-  const client = anthropic(); if (!client) throw new Error('No API key');
+  const client = anthropic(ctx.pool || 'free'); if (!client) throw new Error('No API key');
   const t = ctx.t || tEn;
   const model = ctx.pro ? config.builderProModel : config.builderModel;
   const userContent = [...modelBlocks(ctx.uploads || []), ...(ctx.text ? [{ type: 'text', text: ctx.text }] : []),
@@ -91,7 +91,7 @@ export async function run(ctx) {
   for (let step = 0; step < max; step++) {
     if (ctx.signal && ctx.signal.aborted) break;
     // The AI budget can run out in the middle of a turn: finish what we have instead of starting another call.
-    if (step && !aiBudget.ok()) { ctx.emit('text', { text: '\n\n' + t('builder.budgetStop') }); break; }
+    if (step && !aiBudget.ok(ctx.pool || 'free')) { ctx.emit('text', { text: '\n\n' + t('builder.budgetStop') }); break; }
     // The runner's checkpoint: stopped, deleted, banned or switched off -> no more model calls. Otherwise it hands over
     // the builder's new messages (after the budget check above, so none is handed over and then not sent).
     const b = ctx.between ? await ctx.between(step + 1) : null;

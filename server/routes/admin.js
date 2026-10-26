@@ -16,6 +16,9 @@ import { COMMUNITY_CSS } from './social.js';
 import { tEn } from '../i18n/index.js';
 import { schoolsOf, getSchool } from '../services/schools.js';
 import * as family from '../services/family.js';
+import * as billing from '../services/billing.js';
+import * as stripe from '../services/stripe.js';
+import { audit, q } from '../db.js';
 
 export const router = Router();
 router.use('/admin', requireAdmin);
@@ -163,6 +166,8 @@ function usersTab(req) {
       <tr><th scope="row">Site role</th><td>${u.role}</td></tr>
       <tr><th scope="row">Schools</th><td>${schoolsCell(u)}</td></tr>
       <tr><th scope="row">Family</th><td>${familyCell(u)}</td></tr>
+      ${u.account_type === 'grownup' ? html`<tr><th scope="row">Billing tester</th><td>${u.billing_tester ? 'yes: may check out while the Stripe key is a test key' : 'no'}
+        <button class="btn" type="button" data-act="tester" data-id="${u.id}" data-on="${u.billing_tester ? '0' : '1'}">${u.billing_tester ? 'Remove tester' : 'Make billing tester'}</button></td></tr>` : ''}
       <tr><th scope="row">Created</th><td>${new Date(u.created_at).toISOString().slice(0, 10)} (${timeAgo(u.created_at)})</td></tr>
       <tr><th scope="row">Last seen</th><td>${u.last_seen ? timeAgo(u.last_seen) : 'never'}</td></tr>
       <tr><th scope="row">Games</th><td>${u.games}</td></tr>
@@ -197,7 +202,7 @@ router.get('/admin', (req, res) => {
   const n = { queue: c.queue, reports: c.reports, chat: c.chat, links: family.openReportCount() };
   const content = { queue: queueTab, reports: reportsTab, chat: chatTab, links: linksTab, users: usersTab, audit: auditTab }[tab](req);
   const body = html`
-  <div class="pagehead"><h1>🛡️ Admin</h1><div class="row"><a class="btn btn-primary" href="/admin/stats"><span aria-hidden="true">📊</span> Stats</a><a class="btn" href="/admin/schools"><span aria-hidden="true">🏫</span> Schools</a></div></div>
+  <div class="pagehead"><h1>🛡️ Admin</h1><div class="row"><a class="btn btn-primary" href="/admin/stats"><span aria-hidden="true">📊</span> Stats</a><a class="btn" href="/admin/schools"><span aria-hidden="true">🏫</span> Schools</a><a class="btn" href="/admin/billing"><span aria-hidden="true">💳</span> Billing</a></div></div>
   ${aiSpendPanel()}
   <nav class="tabs" aria-label="Admin sections">${TABS.map(([k, e, l]) => html`<a href="/admin?tab=${k}" ${k === tab ? raw('aria-current="page"') : ''}><span aria-hidden="true">${e}</span>&nbsp;${l}${n[k] ? html`&nbsp;<span class="badge">${n[k]}</span>` : ''}</a>`)}</nav>
   ${content}
@@ -334,6 +339,79 @@ router.get('/admin/stats', (req, res) => {
   page(req, res, { title: 'Stats', active: 'me', body, head: raw('<link rel="stylesheet" href="/css/community.css"><link rel="stylesheet" href="/css/stats.css">'), scripts: ['/js/admin-stats.js'], back: '/admin', backLabel: 'Admin' });
 });
 
+// ---- Billing (read-only, chunk 4): subscriptions with their flags, recent webhook events and failures, unlinked
+// events, and the Stripe Tax banner. Refunds, cancels and links are done in the Stripe Dashboard for now (each row
+// links there); grants, school requests and family links come in later chunks. ----
+const BILLING_FLAGS = { duplicate: 'Paid twice: cancelled and refunded', refunded_active: 'Refunded but still active', dispute: 'Disputed: cancelled', efw: 'Fraud warning: cancelled, consider a refund', overdue: 'Invoice overdue', async_failed: 'Delayed payment failed', unknown_price: 'Price sells no known plan' };
+const SUB_STATUSES = ['active', 'trialing', 'past_due', 'canceled', 'incomplete', 'incomplete_expired', 'unpaid', 'paused'];
+const dash = (path) => `https://dashboard.stripe.com/${stripe.billingMode() === 'live' ? '' : 'test/'}${path}`;
+const day = t => (t ? new Date(t).toISOString().slice(0, 10) : '–');
+function ownerCell(r) {
+  if (r.owner_kind === 'family') {
+    const o = q.get('SELECT u.username FROM families f JOIN users u ON u.id=f.owner_id WHERE f.id=?', r.owner_id);
+    return o ? html`Family of <a href="/admin?tab=users&amp;username=${encodeURIComponent(o.username)}">@${o.username}</a>` : html`Family ${r.owner_id} (gone)`;
+  }
+  const sc = getSchool(r.owner_id);
+  return sc ? html`School <a href="/school/${sc.slug}">${sc.name}</a>` : html`${r.owner_kind} ${r.owner_id}`;
+}
+router.get('/admin/billing', (req, res) => {
+  const mode = stripe.billingMode();
+  const status = SUB_STATUSES.includes(req.query.status) || req.query.status === 'entitled' ? req.query.status : '';
+  const flag = Object.hasOwn(BILLING_FLAGS, req.query.flag) || req.query.flag === 'any' ? req.query.flag : '';
+  const lm = stripe.currentLivemode();
+  let subs = q.all('SELECT * FROM billing_subscriptions WHERE livemode=? ORDER BY updated_at DESC LIMIT 500', lm);
+  if (status === 'entitled') subs = subs.filter(r => billing.entitledRow(r));
+  else if (status) subs = subs.filter(r => r.status === status);
+  if (flag === 'any') subs = subs.filter(r => r.flag); else if (flag) subs = subs.filter(r => r.flag === flag);
+  const events = q.all('SELECT * FROM billing_events ORDER BY received_at DESC LIMIT 50');
+  const problems = q.all("SELECT * FROM billing_events WHERE result IS NULL OR result NOT IN ('ok','ignored','duplicate') ORDER BY received_at DESC LIMIT 50");
+  const orphaned = q.all('SELECT * FROM billing_subscriptions WHERE livemode=? AND orphaned_at IS NOT NULL ORDER BY orphaned_at DESC LIMIT 50', lm);
+  const open = q.get('SELECT COUNT(*) n FROM billing_checkouts WHERE livemode=?', lm).n;
+  const tax = stripe.lastTaxReadiness();
+  const families = billing.entitledOwnerCount('family');
+  const sel = (name, value, opts) => html`<label class="sr-only" for="f-${name}">${name}</label><select class="input" id="f-${name}" name="${name}">${opts.map(([v, l]) => html`<option value="${v}" ${v === value ? raw('selected') : ''}>${l}</option>`)}</select>`;
+  const body = html`
+  <div class="pagehead"><h1>💳 Billing</h1><span class="chip-s ${mode === 'live' ? 'good' : mode === 'test' ? 'warn' : ''}">Stripe: ${mode}</span></div>
+  ${mode === 'off' ? html`<p class="notice">Billing is off: set STRIPE_API_KEY and STRIPE_WEBHOOK_SECRET (see the README). Rows from an earlier key still show below.</p>` : ''}
+  ${tax && tax.on && !tax.ok ? html`<p class="notice bad" role="alert"><b>${tax.problem === 'settings_pending' ? 'Stripe Tax is on but its settings are pending' : 'Stripe Tax is on but is collecting in no state'}.</b> No tax is collected. ${tax.problem === 'settings_pending' ? 'Set the head office address in Stripe (Tax → Settings).' : 'Add a registration in Stripe (Tax → Registrations).'} Checked ${timeAgo(tax.checkedAt)}.</p>` : ''}
+  <div class="kpis" style="margin-bottom:var(--s4)">
+    ${tile('👪 Families with a plan', int(families), mode === 'test' ? 'test mode: billing testers only' : '')}
+    ${tile('🛒 Open checkouts', int(open))}
+    ${tile('⚠️ Flagged', int(q.get('SELECT COUNT(*) n FROM billing_subscriptions WHERE livemode=? AND flag IS NOT NULL', lm).n), html`<a href="/admin/billing?flag=any">Show</a>`)}
+    ${tile('📨 Event problems', int(problems.length), 'unlinked, other mode or version, failed')}
+  </div>
+  <section class="panel"><h2>Subscriptions</h2>
+    <form method="get" action="/admin/billing" class="row" role="search">
+      ${sel('status', status, [['', 'Any status'], ['entitled', 'Entitled now'], ...SUB_STATUSES.map(x => [x, x])])}
+      ${sel('flag', flag, [['', 'Any or no flag'], ['any', 'Flagged'], ...Object.entries(BILLING_FLAGS)])}
+      <button class="btn" type="submit">Filter</button></form>
+    ${subs.length ? html`<div class="tblwrap"><table class="tbl small" style="margin-top:12px"><thead><tr><th>Owner</th><th>Plan</th><th>Status</th><th>Period end</th><th>Last payment</th><th>Refund window</th><th>Flag</th><th>Stripe</th></tr></thead><tbody>
+      ${subs.map(r => { const rw = billing.refundWindow(r); return html`<tr>
+        <td>${ownerCell(r)}</td>
+        <td>${r.plan}${r.interval ? ` · ${r.interval}ly` : ''}${r.quantity > 1 ? ` × ${r.quantity}` : ''}</td>
+        <td>${r.status}${billing.entitledRow(r) ? ' ✅' : ''}${r.cancel_at_period_end ? ' · ends at period end' : ''}${r.grace_until ? ` · grace to ${day(r.grace_until)}` : ''}${r.payment_pending ? ' · payment pending' : ''}${r.orphaned_at ? ' · not at Stripe' : ''}</td>
+        <td>${day(r.current_period_end)}</td>
+        <td>${r.latest_paid_at ? html`${day(r.latest_paid_at)} · $${((r.latest_amount_paid || 0) / 100).toFixed(2)}${r.latest_billing_reason ? html` <span class="muted">(${r.latest_billing_reason.replace('subscription_', '')})</span>` : ''}` : '–'}</td>
+        <td>${rw ? `open until ${day(rw)}` : '–'}</td>
+        <td>${r.flag ? html`<span class="chip-s bad">${BILLING_FLAGS[r.flag] || r.flag}</span>` : ''}${r.risk_payment_intent ? html` <a href="${dash(`payments/${r.risk_payment_intent}`)}" rel="noopener noreferrer" target="_blank">Refund in Stripe</a>` : ''}</td>
+        <td><a href="${dash(`subscriptions/${r.stripe_subscription_id}`)}" rel="noopener noreferrer" target="_blank"><code>${r.stripe_subscription_id}</code></a></td></tr>`; })}
+    </tbody></table></div>` : html`<p class="muted">No subscriptions${status || flag ? ' match' : ' yet'}.</p>`}
+    <p class="small muted">Refunds (D10): a full refund on request within ${billing.REFUND_DAYS} days of a payment that started a plan or renewed a yearly plan; monthly renewals are not refunded. Cancel first, then refund, in the Stripe Dashboard: a full refund of the latest payment also ends the plan here.</p>
+  </section>
+  <section class="panel"><h2>Event problems</h2>
+    ${problems.length ? html`<div class="tblwrap"><table class="tbl small"><thead><tr><th>When</th><th>Event</th><th>Result</th><th>Customer</th><th>Subscription</th></tr></thead><tbody>
+      ${problems.map(e => html`<tr><td>${when(e.received_at)}</td><td><code>${e.type}</code> <span class="muted">${e.event_id}</span></td><td>${e.result || 'not finished'}</td><td>${e.stripe_customer_id || '–'}</td><td>${e.stripe_subscription_id || '–'}</td></tr>`)}
+    </tbody></table></div><p class="small muted">"unlinked": a subscription of a Stripe Customer we don't know (made in the Dashboard?). Linking it to a family or school comes with the next billing update; until then it entitles nobody.</p>` : html`<p class="muted">None.</p>`}
+    ${orphaned.length ? html`<p>Subscriptions Stripe no longer knows: ${orphaned.map(r => html`<code>${r.stripe_subscription_id}</code> `)}</p>` : ''}
+  </section>
+  <section class="panel"><h2>Recent webhook events</h2>
+    ${events.length ? html`<div class="tblwrap"><table class="tbl small"><thead><tr><th>When</th><th>Event</th><th>Mode</th><th>Result</th><th>Subscription</th></tr></thead><tbody>
+      ${events.map(e => html`<tr><td>${when(e.received_at)}</td><td><code>${e.type}</code></td><td>${e.livemode ? 'live' : 'test'}</td><td>${e.result || 'not finished'}</td><td>${e.stripe_subscription_id || '–'}</td></tr>`)}
+    </tbody></table></div>` : html`<p class="muted">No webhook events yet.</p>`}
+  </section>`;
+  page(req, res, { title: 'Billing', active: 'me', body, head: raw('<link rel="stylesheet" href="/css/community.css"><link rel="stylesheet" href="/css/stats.css">'), back: '/admin', backLabel: 'Admin' });
+});
+
 // ---- APIs ----
 const note = req => String((req.body || {}).note || '').slice(0, 500);
 const gameAct = fn => (req, res) => {
@@ -362,6 +440,15 @@ router.post('/api/admin/link-reports/:id/ban', (req, res) => {
   const out = mod.banUser(req.user, fam.owner_id, `link report ${r.id}`);
   if (!out.ok) return res.status(400).json(out);
   family.resolveReport(req.user, r.id);
+  res.json({ ok: true });
+});
+// Billing testers (D14): while the Stripe key is a test key, only these grown-up accounts may check out.
+router.post('/api/admin/users/:id/billing-tester', (req, res) => {
+  const u = q.get('SELECT id, username, account_type FROM users WHERE id=?', String(req.params.id));
+  if (!u || u.account_type !== 'grownup') return res.status(404).json({ error: 'Only grown-up accounts can be billing testers.' });
+  const on = (req.body || {}).on === true || (req.body || {}).on === '1' ? 1 : 0;
+  q.run('UPDATE users SET billing_tester=? WHERE id=?', on, u.id);
+  audit(req.user.id, 'admin.billing.tester', u.id, { username: u.username, on: !!on });
   res.json({ ok: true });
 });
 router.post('/api/admin/family/:fid/children/:cid/unlink', (req, res) => (family.adminUnlink(req.user, req.params.fid, req.params.cid) ? res.json({ ok: true }) : res.status(404).json({ error: 'No such link.' })));

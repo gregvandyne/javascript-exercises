@@ -8,8 +8,9 @@ const ROUTES = {
   ban: id => `/api/admin/users/${id}/ban`, unban: id => `/api/admin/users/${id}/unban`, unphoto: id => `/api/admin/users/${id}/photo/remove`,
   resolvelink: id => `/api/admin/link-reports/${id}/resolve`, banlink: id => `/api/admin/link-reports/${id}/ban`,
   unlinkfamily: (id, b) => `/api/admin/family/${id}/children/${encodeURIComponent(b.dataset.child)}/unlink`,
+  tester: id => `/api/admin/users/${id}/billing-tester`,
 };
-const DONE = { approve: 'Approved. It is public now.', reject: 'Sent back with your note.', restore: 'Restored and reports dismissed.', suspend: 'Game suspended.', unsuspend: 'Game is back.', hide: 'Message hidden.', dismiss: 'Report dismissed.', bansender: 'Sender banned.', ban: 'User banned.', unban: 'User unbanned.', unphoto: 'Photo removed.', resolvelink: 'Report done.', banlink: 'Grown-up banned. Their links have ended.', unlinkfamily: 'Link broken.' };
+const DONE = { approve: 'Approved. It is public now.', reject: 'Sent back with your note.', restore: 'Restored and reports dismissed.', suspend: 'Game suspended.', unsuspend: 'Game is back.', hide: 'Message hidden.', dismiss: 'Report dismissed.', bansender: 'Sender banned.', ban: 'User banned.', unban: 'User unbanned.', unphoto: 'Photo removed.', resolvelink: 'Report done.', banlink: 'Grown-up banned. Their links have ended.', unlinkfamily: 'Link broken.', tester: 'Billing tester changed.' };
 const CONFIRM = {
   suspend: () => ['Suspend this game?', 'Nobody but the builder and admins can open it until you unsuspend it.', '⛔ Suspend'],
   bansender: b => [`Ban @${b.dataset.name}?`, 'Their account is paused, they are signed out everywhere, and the message is hidden.', '⛔ Ban'],
@@ -25,6 +26,7 @@ async function run(b) {
     const f = b.closest('form'); body.note = f ? f.note.value.trim() : '';
     if (act === 'reject' && !body.note) { toast('Write a short note so the builder knows what to change.', { bad: true }); f && f.note.focus(); return; }
   }
+  if (act === 'tester') body.on = b.dataset.on === '1';
   b.disabled = true;
   try { await api(ROUTES[act](id, b), { method: 'POST', body }); toast(DONE[act] || 'Done.'); setTimeout(() => location.reload(), 600); }
   catch (ex) { toast(ex.message, { bad: true }); b.disabled = false; }

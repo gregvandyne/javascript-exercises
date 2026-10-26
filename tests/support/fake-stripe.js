@@ -37,7 +37,7 @@ const list = (data, url) => ({ object: 'list', data, has_more: false, url });
 export async function startFakeStripe({ port = 0, host = '127.0.0.1', apiVersion = FAKE_API_VERSION, apiKey = null, webhookSecret = 'whsec_fake', webhookUrl = '', livemode = false } = {}) {
   const st = {
     customers: new Map(), subscriptions: new Map(), invoices: new Map(), charges: new Map(), invoicePayments: new Map(),
-    sessions: new Map(), disputes: new Map(), efws: new Map(), refunds: new Map(),
+    sessions: new Map(), disputes: new Map(), efws: new Map(), refunds: new Map(), portals: new Map(),
     prices: new Map(), products: new Map(), tax: { status: 'active', registrations: [] },
   };
   const chargeOfInvoice = new Map();   // invoice id -> charge id (bookkeeping, not part of Stripe's shapes)
@@ -58,9 +58,9 @@ export async function startFakeStripe({ port = 0, host = '127.0.0.1', apiVersion
     const c = { id: rid('cus_'), object: 'customer', address, created: sec(), email: null, livemode, metadata: { ...metadata }, name: null, tax_exempt: 'none' };
     st.customers.set(c.id, c); return c;
   };
-  fake.invoice = ({ subscription = null, customer, status = 'paid', collectionMethod = 'charge_automatically', dueDate = null, amount = 799, created = Date.now() } = {}) => {
+  fake.invoice = ({ subscription = null, customer, status = 'paid', collectionMethod = 'charge_automatically', dueDate = null, amount = 799, created = Date.now(), billingReason = subscription ? 'subscription_create' : 'manual' } = {}) => {
     const inv = {
-      id: rid('in_'), object: 'invoice', customer, status, collection_method: collectionMethod, livemode, created: sec(created),
+      id: rid('in_'), object: 'invoice', customer, status, collection_method: collectionMethod, livemode, created: sec(created), billing_reason: billingReason,
       currency: 'usd', amount_due: amount, amount_paid: status === 'paid' ? amount : 0, amount_remaining: status === 'paid' ? 0 : amount,
       due_date: dueDate ? sec(dueDate) : null, hosted_invoice_url: null, metadata: {},
       parent: subscription ? { type: 'subscription_details', quote_details: null, subscription_details: { subscription, metadata: {} } } : null,
@@ -153,7 +153,8 @@ export async function startFakeStripe({ port = 0, host = '127.0.0.1', apiVersion
   const err = (res, status, type, code, message, param) => { res.writeHead(status, { 'content-type': 'application/json', 'request-id': rid('req_'), 'stripe-should-retry': 'false' }); res.end(JSON.stringify({ error: { type, code, message, param } })); };
   // A delayed answer is computed now (the state as it is) and sent later: an "older" read arriving after a newer one.
   const ok = (res, obj) => (res.delayMs ? setTimeout(() => send(res, obj), res.delayMs) : send(res, obj));
-  const send = (res, obj) => { res.writeHead(200, { 'content-type': 'application/json', 'request-id': rid('req_'), 'stripe-version': apiVersion }); res.end(JSON.stringify(obj)); };
+  const idem = new Map();   // Idempotency-Key -> the first answer (Stripe replays it for a retried POST)
+  const send = (res, obj) => { if (res.idemKey) idem.set(res.idemKey, obj); res.writeHead(200, { 'content-type': 'application/json', 'request-id': rid('req_'), 'stripe-version': apiVersion }); res.end(JSON.stringify(obj)); };
   const missing = (res, what, id) => err(res, 404, 'invalid_request_error', 'resource_missing', `No such ${what}: '${id}'`, 'id');
   const readBody = req => new Promise(r => { let d = ''; req.on('data', c => { d += c; }); req.on('end', () => r(d)); });
 
@@ -168,9 +169,27 @@ export async function startFakeStripe({ port = 0, host = '127.0.0.1', apiVersion
         const b = JSON.parse(raw || '{}');
         if (p === '/_test/fail-next-get') { fake.failNextGet(b.n || 1, b.status || 500); return ok(res, { ok: true }); }
         if (p === '/_test/emit') return ok(res, await fake.emit(b.type, b.id, b));
-        if (p === '/_test/state') return ok(res, { subscriptions: [...st.subscriptions.values()], requests: fake.requests.length, violations: fake.violations });
+        if (p === '/_test/state') return ok(res, { subscriptions: [...st.subscriptions.values()], requests: fake.requests.length, violations: fake.violations, checkouts: fake.requests.filter(r => r.path === '/v1/checkout/sessions').map(r => r.params) });
+        // The period ends (a plan cancelled at the period end): canceled, and Stripe's customer.subscription.deleted.
+        if (p === '/_test/end-period') { fake.update(b.subscription, { status: 'canceled' }); return ok(res, await fake.emit('customer.subscription.deleted', b.subscription)); }
+        // The owner refunds the latest payment in the Dashboard: a full refund and charge.refunded.
+        if (p === '/_test/refund-latest') { const sub = st.subscriptions.get(b.subscription); const ch = fake.chargeOf(sub.latest_invoice); fake.refund(ch.id, b.amount ?? null); return ok(res, await fake.emit('charge.refunded', ch.id)); }
       } catch (e) { return err(res, 400, 'invalid_request_error', null, e.message); }
       return err(res, 404, 'invalid_request_error', null, 'unknown control endpoint');
+    }
+    // The fake Customer Portal: one "Cancel plan" button (cancel at the period end, like the sandbox's Portal), then back.
+    if (p.startsWith('/portal/')) {
+      const [, , id, action] = p.split('/');
+      const ps = st.portals.get(id);
+      if (!ps) return err(res, 404, 'invalid_request_error', null, 'no portal session');
+      const sub = [...st.subscriptions.values()].find(x => x.customer === ps.customer && ['active', 'trialing', 'past_due'].includes(x.status));
+      if (req.method === 'POST' && action === 'cancel' && sub) {
+        fake.update(sub.id, { cancelAtPeriodEnd: true });
+        await fake.emit('customer.subscription.updated', sub.id);
+        res.writeHead(303, { location: ps.return_url || '/' }); return res.end();
+      }
+      res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' });
+      return res.end(`<!doctype html><title>Fake portal</title><h1>Fake Stripe portal</h1>${sub ? `<p id="plan">Plan ${sub.id}: ${sub.status}${sub.cancel_at_period_end ? ', ends at the period end' : ''}</p><form method="post" action="/portal/${id}/cancel"><button id="cancel">Cancel plan</button></form>` : '<p>No plan</p>'}<p><a id="back" href="${ps.return_url || '/'}">Return</a></p>`);
     }
     // The fake hosted Checkout page: completes the session, then sends the webhooks Stripe would.
     if (req.method === 'GET' && p.startsWith('/pay/')) {
@@ -194,6 +213,11 @@ export async function startFakeStripe({ port = 0, host = '127.0.0.1', apiVersion
     if (req.method === 'GET' && fake.slowGets.length) res.delayMs = fake.slowGets.shift();
     if (req.method === 'GET' && fake.failGets.length) { const s = fake.failGets.shift(); return err(res, s, 'api_error', null, 'fake failure'); }
     const expand = params.expand || [];
+    if (req.method === 'POST' && req.headers['idempotency-key']) {
+      const k = req.headers['idempotency-key'];
+      if (idem.has(k)) return send(res, idem.get(k));
+      res.idemKey = k;
+    }
     let m;
     // GETs
     if (req.method === 'GET') {
@@ -228,8 +252,8 @@ export async function startFakeStripe({ port = 0, host = '127.0.0.1', apiVersion
         sessionExtra.set(s.id, { successUrl: params.success_url, paymentMethodConfiguration: params.payment_method_configuration || null, subscriptionMetadata: params.subscription_data?.metadata || {}, lookupKey: price.lookup_key, quantity: Number(item.quantity) || 1 });
         return ok(res, s);
       }
-      if ((m = p.match(/^\/v1\/checkout\/sessions\/([\w]+)\/expire$/))) { const s = st.sessions.get(m[1]); if (!s) return missing(res, 'checkout.session', m[1]); s.status = 'expired'; return ok(res, s); }
-      if (p === '/v1/billing_portal/sessions') return ok(res, { id: rid('bps_'), object: 'billing_portal.session', customer: params.customer, livemode, return_url: params.return_url || null, url: `${fake.url}/portal/${params.customer}` });
+      if ((m = p.match(/^\/v1\/checkout\/sessions\/([\w]+)\/expire$/))) { const s = st.sessions.get(m[1]); if (!s) return missing(res, 'checkout.session', m[1]); if (s.status !== 'open') return err(res, 400, 'invalid_request_error', 'checkout_session_not_open', `This Checkout Session is ${s.status}`); s.status = 'expired'; return ok(res, s); }
+      if (p === '/v1/billing_portal/sessions') { const ps = { id: rid('bps_'), object: 'billing_portal.session', customer: params.customer, livemode, return_url: params.return_url || null, configuration: params.configuration || null }; ps.url = `${fake.url}/portal/${ps.id}`; st.portals.set(ps.id, ps); return ok(res, ps); }
       if (p === '/v1/subscriptions') { const s = fake.subscription({ customer: params.customer, lookupKey: [...st.prices.values()].find(x => x.id === params.items?.[0]?.price)?.lookup_key, collectionMethod: params.collection_method || 'charge_automatically', metadata: params.metadata || {}, quantity: Number(params.items?.[0]?.quantity) || 1, invoice: params.collection_method === 'send_invoice' ? 'open' : 'paid', dueDate: params.collection_method === 'send_invoice' ? Date.now() + 30 * DAY * 1000 : null }); return ok(res, s); }
       if ((m = p.match(/^\/v1\/subscriptions\/([\w]+)$/))) {
         const s = st.subscriptions.get(m[1]); if (!s) return missing(res, 'subscription', m[1]);
@@ -238,7 +262,7 @@ export async function startFakeStripe({ port = 0, host = '127.0.0.1', apiVersion
         if (params.metadata) Object.assign(s.metadata, params.metadata);
         return ok(res, s);
       }
-      if (p === '/v1/refunds') { const ch = [...st.charges.values()].find(c => c.payment_intent === params.payment_intent); if (!ch) return missing(res, 'payment_intent', params.payment_intent); fake.refund(ch.id, params.amount ? Number(params.amount) : null); const r = { id: rid('re_'), object: 'refund', amount: ch.amount_refunded, charge: ch.id, payment_intent: ch.payment_intent, status: 'succeeded' }; st.refunds.set(r.id, r); return ok(res, r); }
+      if (p === '/v1/refunds') { const ch = [...st.charges.values()].find(c => c.payment_intent === params.payment_intent); if (!ch) return missing(res, 'payment_intent', params.payment_intent); if (ch.refunded) return err(res, 400, 'invalid_request_error', 'charge_already_refunded', 'Charge has already been refunded.'); fake.refund(ch.id, params.amount ? Number(params.amount) : null); const r = { id: rid('re_'), object: 'refund', amount: ch.amount_refunded, charge: ch.id, payment_intent: ch.payment_intent, status: 'succeeded' }; st.refunds.set(r.id, r); return ok(res, r); }
       if ((m = p.match(/^\/v1\/invoices\/([\w]+)\/pay$/))) { const i = st.invoices.get(m[1]); if (!i) return missing(res, 'invoice', m[1]); return ok(res, fake.payInvoice(i.id)); }
     }
     return err(res, 404, 'invalid_request_error', null, `Unrecognized request URL (${req.method}: ${p})`);

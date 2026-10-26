@@ -907,3 +907,29 @@ messages or anything about school. Chat refuses messages shaped like a code. A b
 same transaction. A daily job deletes codes 30 days after use or expiry, unanswered requests after 24 hours, unlinked
 rows 90 days after unlinking and resolved reports after a year. Families are registered as billing owners (a family
 whose grown-up isn't banned). Linking and plans are never consent (/grown-ups says so).
+
+**Chunk 4: family checkout.** Everything behind the families gate (`familiesOn(req)`: BILLING_PUBLIC or the preview
+cookie). A grown-up with at least one confirmed child subscribes on /family (two buttons, monthly and yearly, prices read
+by lookup key); before paying the page lists renewal, cancelling, the refund rule (first payment and yearly renewals,
+14 days), the limits (`FAMILY_CHILD_DAILY_MAX` a day per child, and a monthly cap on unusually expensive use, as the
+legal draft asks), tax and US-only. Checkout and Manage billing (the Customer Portal, its default configuration) need
+the password typed again within 10 minutes on that sign-in (`sessions.reauth_at`; 5 wrong tries per 15 minutes); with a
+test key only grown-ups marked billing tester on /admin may use them (`users.billing_tester`, audit
+`admin.billing.tester`). Checkout is Stripe-hosted (a top-level redirect: no Stripe.js, no CSP change), `mode=subscription`,
+the Customer made first (metadata only) and reused, `client_reference_id` and metadata the family id,
+`subscription_data.billing_mode=flexible`, `integration_identifier` `oomba_family_<8 letters>`, address required with
+`customer_update[address]=auto`, promotion codes, `automatic_tax` only with `STRIPE_TAX=1`,
+`payment_method_configuration` only when `STRIPE_PMC_FAMILY` is set (never `payment_method_types`), and Terms consent
+only once `/terms` is published (`TERMS_PUBLISHED=1`). One open session per family (an earlier one is expired; one paid
+meanwhile stops a new one). The return page waits for the webhook and asks the shared sync's fallback, which takes the
+owner only from the session. A second plan paid for the same family is cancelled and refunded at once (flag
+`duplicate`, audit `billing.duplicate`); completions run one at a time. A full refund of the latest payment ends a live
+plan; another refund flags `refunded_active`; a dispute or an early fraud warning ends the plan (flags `dispute`/`efw`,
+refunding stays the owner's choice). Family extra messages (`usage.allowanceFor`): the free daily ones first, then
+`FAMILY_EXTRA_MESSAGES` a UTC month shared by the family's confirmed children (Pro weight counted, refunds given back),
+or the extras right away while the free AI pool rests; they stop at `FAMILY_CHILD_DAILY_MAX` for a child's day, at
+`FAMILY_MONTHLY_AI_USD` of AI cost for the family's month, or when the paid pool is spent. The paid pool's ceiling is
+families with a plan × `FAMILY_MONTHLY_AI_USD` (capped by `AI_PAID_MONTHLY_BUDGET_USD`); `AI_HARD_MONTHLY_USD` stops
+both pools. The child's Studio shows "+N extra this month" (numbers only) and the limit says "More tomorrow!" with no
+number; /family shows extras left counted up to yesterday (never today). /admin/billing (read-only) lists subscriptions
+(filters by status and flag), refund windows, webhook problems and recent events, and the Stripe Tax banner.

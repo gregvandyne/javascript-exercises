@@ -244,7 +244,8 @@ test('cost per message: each build stores what its own model calls cost, who pai
   assert.equal(row.usd_known, 1); assert.equal(row.charged_to, 'free'); assert.equal(row.weight, 1);
   const pool1 = q.get("SELECT usd FROM ai_spend_pool WHERE day=? AND pool='free'", today()).usd;
   assert.ok(pool1 - pool0 >= row.usd - 1e-9, 'the free pool paid for it (plus screening)');
-  assert.deepEqual(usage.allowanceFor(u), { source: 'free', pool: 'free', daily: config.builderDailyTurns, proWeight: 1 });
+  const { source, pool, daily, proWeight, familyId } = usage.allowanceFor(u);
+  assert.deepEqual({ source, pool, daily, proWeight, familyId }, { source: 'free', pool: 'free', daily: config.builderDailyTurns, proWeight: 1, familyId: null });
 
   // PRO_TURN_WEIGHT=2: a Pro message uses two turns, and a refund gives both back.
   const saved = config.proTurnWeight; config.proTurnWeight = 2;
