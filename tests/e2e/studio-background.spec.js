@@ -211,18 +211,48 @@ test('BG-6 interrupted twice: stopped, the turn given back, and "Carry on buildi
   expect(await turnsLeft(page)).toBe(before - 1);
 });
 
-test('BG-12 (part) right to left at 360 px: the live card with the leave line reads right to left and nothing spills sideways', async ({ page }) => {
-  test.setTimeout(90_000);
+test('BG-12 right to left at 360 px: the live card with the estimate and the leave line reads right to left and nothing spills sideways', async ({ page }) => {
+  test.setTimeout(150_000);
   await page.setViewportSize({ width: 360, height: 740 });
-  await newGame(page, 'ar');
+  for (const lang of ['ar', 'he']) {
+    await page.context().clearCookies();   // a new builder for each language
+    await newGame(page, lang);
+    await startBuild(page);
+    // This server's building blocks are slow (0.9 s a chunk): their own timing says less than a minute.
+    const line = live(page).locator('.stp-eta-line');
+    await expect(line).toContainText('less than a minute', { timeout: 12_000 });
+    await expect(live(page).locator('.stp-leave')).toBeVisible();
+    await noOverflow(page);
+    for (const sel of ['.stp-eta-line', '.stp-leave']) {
+      expect(await live(page).locator(sel).evaluate(e => getComputedStyle(e).direction), sel).toBe('rtl');
+      const box = await live(page).locator(sel).boundingBox(), card = await live(page).boundingBox();
+      expect(box.x).toBeGreaterThanOrEqual(card.x); expect(box.x + box.width).toBeLessThanOrEqual(card.x + card.width + 1);
+    }
+    await settled(page);
+    await noOverflow(page);
+  }
+});
+
+test('BG-12 dark: a build that takes longer than usual says so in words, with ⏳ and the warning colours', async ({ page }) => {
+  test.setTimeout(90_000);
+  await page.emulateMedia({ colorScheme: 'dark' });
+  await page.clock.install();
+  await newGame(page);
   await startBuild(page);
-  await expect(live(page).locator('.stp-leave')).toBeVisible({ timeout: 12_000 });
-  await noOverflow(page);
-  expect(await live(page).evaluate(e => getComputedStyle(e).direction)).toBe('rtl');
-  const leave = await live(page).locator('.stp-leave').boundingBox(), card = await live(page).boundingBox();
-  expect(leave.x).toBeGreaterThanOrEqual(card.x); expect(leave.x + leave.width).toBeLessThanOrEqual(card.x + card.width + 1);
+  const top = live(page).locator('.stp-eta'), line = top.locator('.stp-eta-line');
+  await expect(line).toHaveText('⏱ Usually less than a minute', { timeout: 12_000 });
+  // The page's clock jumps past "longer than usual" (75 s for this server's estimate) while the build goes on.
+  await page.clock.fastForward(80_000);
+  await expect(top).toHaveAttribute('data-state', 'longer');
+  await expect(line).toContainText('⏳ Taking a bit longer than usual');
+  const c = await line.evaluate(e => {
+    const probe = document.createElement('span'); probe.style.cssText = 'background:var(--warn-bg);color:var(--warn-ink)'; document.body.append(probe);
+    const want = getComputedStyle(probe); const got = getComputedStyle(e);
+    const out = { bg: got.backgroundColor, ink: got.color, wantBg: want.backgroundColor, wantInk: want.color }; probe.remove(); return out;
+  });
+  expect([c.bg, c.ink]).toEqual([c.wantBg, c.wantInk]);
+  expect(c.bg).toBe('rgb(58, 49, 19)');   // the dark warning background, not the light one
   await settled(page);
-  await noOverflow(page);
 });
 
 // ---- Follow-ups: Send stays on while the Builder works. This server's building blocks wait up to 2 s after each pass

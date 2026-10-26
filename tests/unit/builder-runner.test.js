@@ -194,7 +194,7 @@ test('RUN-5 bounded memory: 50,000 text chunks and 10,000 stepinfo keep the repl
   assert.ok(Buffer.byteLength(JSON.stringify(buf)) <= runner.LIMITS.bufBytes, `${Buffer.byteLength(JSON.stringify(buf))} bytes`);
   assert.deepEqual(buf.filter(e => e[0] === 'step').map(e => e[1].key), ['screen', 'blocks', 'write', 'notes', 'check']);
   assert.equal(buf.find(e => e[0] === 'step' && e[1].key === 'write')[1].l, 49995, 'stepinfo merged into its row');
-  assert.deepEqual(buf.filter(e => !['step', 'text'].includes(e[0])).map(e => e[0]), ['notes', 'version']);
+  assert.deepEqual(buf.filter(e => !['step', 'text'].includes(e[0])).map(e => e[0]), ['eta', 'notes', 'version'], 'the estimate stays with the steps');
   const late = watch(g.id, u.id);
   const replayed = textOf(late.ev);
   assert.ok(replayed.endsWith('chunk 49999 '), 'the replayed text ends with the last chunk');

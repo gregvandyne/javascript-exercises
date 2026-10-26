@@ -246,7 +246,9 @@ function renderLog() {
 // Model text (the AI's plan, a game title) is only ever set with textContent. Nothing here is timer-driven except the
 // seconds, the order of the 💡 lines and when the card appears: every row is a real server step (or the page's own
 // sending/offline/waiting/restart). Rows carry the server's own times (step.at), so a replay shows real durations.
-// The top of the live card says the builder can close the page or sign out: shown once a build has lasted LEAVE_AT.
+// The top of the live card ("eta" below): how long builds like this usually take, from the server's numbers (eta.js),
+// and that the builder can close the page or sign out. Both appear at the first real authoring step or once the build
+// has lasted the estimate's showAt (LEAVE_AT without one), so a quick question reply never flashes them.
 const STEP_ICON = { screen: '🛡️', blocks: '🧱', think: '🧠', write: '✍️', edit: '✏️', fix: '🛠️', template: '🏝️', check: '🔒', name: '🏷️', playtest: '📱', notes: '🧪', ask: '💬', resume: '🔄', read: '📬', sending: '📨', offline: '📶', waiting: '⏳', restart: '🔄' };
 const SERVER_STEPS = new Set(['screen', 'blocks', 'think', 'write', 'edit', 'fix', 'template', 'check', 'name', 'playtest', 'notes', 'ask', 'resume', 'read']);
 // Timed rows run until the next row starts (spinner, seconds); the others take milliseconds and arrive done.
@@ -262,7 +264,8 @@ const LONG_AT = 45000, TIP_LONG = 15000;   // a round still planning after 45 s 
 const SHOW_AFTER = 700;    // the live card appears once a turn has lasted this long (a quick turn goes straight to its summary)
 const MIN_SHOWN = 1200;    // once shown, it stays at least this long before it folds (no flash)
 const SEC_AFTER = 3000;    // a running step's seconds appear after 3 s ("0 sec" reads as stuck)
-const LEAVE_AT = 8000;     // "You can close this page…" appears once a build has lasted this long (a quick reply never flashes it)
+const LEAVE_AT = 8000;     // with no estimate: "You can close this page…" appears once a build has lasted this long
+const ETA_AUTHOR = new Set(['write', 'edit', 'fix', 'template', 'check']);   // real building: the estimate shows at once
 const narrow = matchMedia('(max-width: 520px)');   // phones: one finished row above the running one, not two
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 let factNext = Math.floor(Math.random() * FACTS.length);   // carries on across turns, so each turn shows new facts
@@ -347,19 +350,20 @@ function setTips(on) {
   if (live) live.retip();
 }
 let sayQ = [], sayTimer = 0;
-/** Screen readers hear step changes only (a new step, the plan, a problem, the summary), never counters or seconds.
- *  Changes that come within 0.4 s are read as one message: at most three, and a problem is never dropped. */
-function announce(text, urgent = false) {
+/** Screen readers hear step changes only (a new step, the plan, a problem, the estimate, the summary), never counters
+ *  or seconds. Changes that come within 0.4 s are read as one message: at most three steps, and a problem is never
+ *  dropped. add: joined to whatever else is said then, never dropped (the estimate, so a step can't swallow it). */
+function announce(text, urgent = false, add = false) {
   if (LIVE.replaying) return;   // a replay is caught up silently; the current step is read once at the end
-  sayQ.push({ text, urgent });
+  sayQ.push({ text, urgent, add });
   if (!sayTimer) sayTimer = setTimeout(sayNow, 400);
 }
 function sayNow() {
   sayTimer = 0;
   const box = $('#st-steps-live'), q = sayQ; sayQ = [];
   if (!box || !q.length) return;
-  const urgent = q.filter(x => x.urgent).slice(-2), rest = q.filter(x => !x.urgent).slice(urgent.length - 3);
-  box.textContent = q.filter(x => urgent.includes(x) || rest.includes(x)).map(x => x.text).join('. ');
+  const urgent = q.filter(x => x.urgent).slice(-2), rest = q.filter(x => !x.urgent && !x.add).slice(urgent.length - 3);
+  box.textContent = q.filter(x => x.add || urgent.includes(x) || rest.includes(x)).map(x => x.text).join('. ');
 }
 /** Forget what was waiting to be read (keepUrgent: but not the problems). */
 function hush(keepUrgent = false) {
@@ -372,6 +376,27 @@ function reveal(el) {
   let dy = er.bottom > lr.bottom ? er.bottom - lr.bottom : 0;
   if (er.top - dy < lr.top) dy = er.top - lr.top;
   if (dy) log.scrollBy({ top: dy, behavior: reducedMotion.matches ? 'auto' : 'smooth' });
+}
+
+const ETA = (k, vars) => t(`js.studio.eta.${k}`, vars);
+let minutesF = null;
+/** 2 -> "2 minutes", (1, 2) -> "1–2 minutes", in the reader's language (the browser's own plurals and ranges). */
+function minutes(lo, hi = lo) {
+  try {
+    if (!minutesF) minutesF = new Intl.NumberFormat(INTL, { style: 'unit', unit: 'minute', unitDisplay: 'long' });
+    if (lo === hi) return minutesF.format(hi);
+    return typeof minutesF.formatRange === 'function' ? minutesF.formatRange(lo, hi) : `${new Intl.NumberFormat(INTL).format(lo)}–${minutesF.format(hi)}`;
+  } catch { return lo === hi ? `${hi} min` : `${lo}–${hi} min`; }
+}
+/** The estimate line for a state. e: { s: the start payload, tail }. "Usually" only when the numbers come from timed
+ *  builds (src 'data'); a first guess says "About" and "may". */
+function etaWords(state, e) {
+  const s = e.s, guess = s.src !== 'data';
+  if (state === 'big' || state === 'longer') return ETA(state);
+  if (state === 'msg') return ETA('newMsg');
+  if (state === 'tail') return e.tail.show === 'under' ? ETA(guess ? 'tailGuessUnder' : 'tailUnder') : ETA(guess ? 'tailGuessAbout' : 'tailAbout', { time: minutes(e.tail.n || 1) });
+  if (guess) return ETA('guess', { time: s.show === 'range' ? minutes(s.lo, s.hi) : minutes(s.hi || 1) });
+  return s.show === 'under' ? ETA('under') : s.show === 'about' ? ETA('about', { time: minutes(s.hi) }) : ETA('range', { time: minutes(s.lo, s.hi) });
 }
 
 const views = new WeakMap();   // <li> -> the parts of the row that live updates change in place
@@ -456,9 +481,12 @@ function liveSteps() {
   const head = mk('div', 'stp-head');
   const more = mk('button', 'stp-more'); more.type = 'button'; more.hidden = true; more.setAttribute('aria-expanded', 'false');
   head.append(withIcon(mk('span', 'stp-title'), '🔎', ST('title')), more, tipsBtn());
-  // The top of the card: the builder can leave, and the build goes on (not a tip: it shows with tips off too).
+  // The top of the card: the estimate (its learning line is a tip), and that the builder can leave while the build goes
+  // on (not a tip: it shows with tips off too).
   const eta = mk('div', 'stp-eta'); eta.hidden = true;
-  eta.append(withIcon(mk('p', 'stp-leave'), '🌙', ST('leave')));
+  const etaLine = mk('p', 'stp-eta-line'), etaLearn = mk('p', 'stp-learn stp-eta-learn');
+  etaLine.hidden = etaLearn.hidden = true;
+  eta.append(etaLine, etaLearn, withIcon(mk('p', 'stp-leave'), '🌙', ST('leave')));
   // Follow-ups waiting to be read: what happens to them, and what they cost (not tips: shown with tips off too).
   const strip = mk('div', 'stp-inbox'); strip.hidden = true;
   const list = mk('ol', 'stp-list');
@@ -467,19 +495,51 @@ function liveSteps() {
   const turn = { justShown: new Set(), thinkShown: false };   // 💡 lines already shown this turn
   let expanded = false, mode = null, pillEl = null, shownAt = 0, heard = false, stopped = false;
   let t0 = Date.now();   // when the build started (anchor(): the server's clock, so a replay keeps its real times)
+  // The estimate: est = { s: start payload, overAt, bigAt (only ever later), tail, msg }; authoring: a real build step
+  // came; said: what was last read out (the line and the leave line are read once together, then each change once).
+  let est = null, authoring = false, said = '', leaveSaid = false;
   const newest = () => rows[rows.length - 1];
   const paint = r => drawRow(r.li, { key: r.key, f: r.f, done: r.done, paused: r.paused, stopped: r.stopped, current: r === newest(), open: r.open, live: true, spoke: r.spoke, at: r.at, toggle: r.toggle });
   function show() {
     clearTimeout(showTimer);
     if (shownAt || !timer) return;
     const stick = nearBottom();
-    log.appendChild(el); shownAt = Date.now(); retip(newest()); leaveTick();
+    log.appendChild(el); shownAt = Date.now(); retip(newest()); etaTick();
     if (stick) scrollDown();
   }
-  /** The leave line, once the build has lasted LEAVE_AT (at once on a replay of a longer build). Read out once. */
-  function leaveTick() {
-    if (!eta.hidden || stopped || Date.now() - t0 < LEAVE_AT) return;
-    eta.hidden = false; announce(ST('leave'));
+  /** The estimate and leave lines now (on the page's clock, anchored to the build's start): which state, what it says.
+   *  -> { on, line, state, text, so } */
+  function etaNow() {
+    const el = Date.now() - t0, s = est && est.s;
+    const over = !!s && el >= est.overAt;
+    const line = !!s && ((s.show !== 'none' && (authoring || el >= s.showAt)) || over);   // a quick build that hangs is told too
+    const on = line || el >= (s ? s.showAt : LEAVE_AT);
+    const state = !s ? 'start' : el >= est.bigAt ? 'big' : over ? 'longer' : est.msg ? 'msg' : est.tail ? 'tail' : 'start';
+    return { on, line, state, text: line ? etaWords(state, est) : '', so: line && el >= 60e3 ? ETA('soFar', { time: minutes(Math.floor(el / 60e3)) }) : '' };
+  }
+  /** What to read out now: the line (with the leave line the first time), or '' when nothing changed. */
+  function etaSay(n, force = false) {
+    const key = `${n.line}|${n.state}`;
+    if (!n.on || (key === said && !force)) return '';
+    said = key;
+    const text = [n.text, leaveSaid && !force ? '' : ST('leave')].filter(Boolean).join('. ');
+    leaveSaid = true;
+    return text;
+  }
+  /** Draw the top of the card (it changes only when its words do) and read out a new state once. */
+  function etaTick() {
+    if (stopped) return;
+    const n = etaNow();
+    eta.hidden = !n.on; eta.dataset.state = n.state;
+    etaLine.hidden = etaLearn.hidden = !n.line;
+    const sig = `${n.state}|${n.text}|${n.so}`;
+    if (n.line && etaLine.dataset.sig !== sig) {
+      etaLine.dataset.sig = sig; etaLine.textContent = '';
+      etaLine.append(hide(mk('span', null, n.state === 'longer' || n.state === 'big' ? '⏳' : '⏱')), ' ', mk('span', 'stp-eta-t', n.text));
+      if (n.so) etaLine.append(' ', hide(mk('span', 'stp-eta-so', `· ${n.so}`)));   // whole minutes, never read out
+    }
+    if (n.line && !etaLearn.firstChild) withIcon(etaLearn, '💡', ETA(est.s.p === 'ai' ? 'learnAi' : 'learnBlocks'));
+    if (shownAt) { const say = etaSay(n); if (say) announce(say, false, true); }
   }
   function fold() {
     const hidden = Math.max(0, rows.length - 1 - (narrow.matches ? 1 : 2));
@@ -546,6 +606,7 @@ function liveSteps() {
     if (prev && !prev.done && !prev.paused) { if (key === 'offline' || key === 'restart') prev.paused = true; else prev.done = true; prev.dur = Math.max(0, now - prev.at); }
     if (SERVER_STEPS.has(key)) heard = true;
     if (key === 'think') mode = 'ai'; else if (key === 'blocks') mode = 'blocks';
+    if (ETA_AUTHOR.has(key)) authoring = true;
     const r = { key, f: { ...facts }, at: now, li: mk('li', 'stp-row'), open: false, done: !TIMED.has(key), paused: false, stopped: false, spoke: false, just: TIMED.has(key) ? justFor(key) : null };
     r.li.dataset.step = key;
     r.toggle = () => { r.open = !r.open; paint(r); };
@@ -554,13 +615,15 @@ function liveSteps() {
     if (prev) paint(prev);
     paint(r); retip(r); fold(); pill();
     if (key !== 'sending') announce(stepLabel(key, r.f, r.done), r.f.ok === false || (key === 'check' && r.f.st === 'fail'));
+    etaTick();
   }
   function tick() {
+    etaTick();
     const r = newest(); if (!r || !shownAt) return;
     const stick = nearBottom();
     const v = views.get(r.li);
     if (v && v.sec && !r.done && !r.paused) { const age = Date.now() - r.at; v.sec.textContent = fmtDur(age, true); v.sec.classList.toggle('stp-wait', age < SEC_AFTER); }
-    retip(r); leaveTick();
+    retip(r);
     if (stick) scrollDown();
   }
   let timer = setInterval(tick, 1000);
@@ -576,15 +639,30 @@ function liveSteps() {
       push(key, key === 'offline' && !heard ? { unsure: 1 } : { ...facts }, 0);
       if (key !== 'sending') show();
     },
-    /** The build started elapsed ms ago (by the server's clock): rows and the leave line keep its real times. */
+    /** The build started elapsed ms ago (by the server's clock): rows and the estimate keep its real times. */
     anchor(elapsed) {
       t0 = Date.now() - Math.max(0, +elapsed || 0);
       if (Date.now() - t0 >= SHOW_AFTER) show();
-      leaveTick();
+      etaTick();
+    },
+    /** The server's estimate (eta.js): start, then tail (the first version) and msg (a follow-up read), which only ever
+     *  move "longer than usual" and "a big job" later. */
+    eta(d) {
+      if (!d || d.v !== 1) return;
+      if (d.phase === 'start') est = { s: d, overAt: d.overAt, bigAt: d.bigAt, tail: null, msg: false };
+      else if (!est) return;
+      else {
+        est.overAt = Math.max(est.overAt, +d.overAt || 0); est.bigAt = Math.max(est.bigAt, +d.bigAt || 0);
+        if (d.phase === 'tail') est.tail = d; else if (d.phase === 'msg') est.msg = true;
+      }
+      etaTick();
     },
     newestKey() { const r = newest(); return r ? r.key : null; },
-    /** After a replay: read the current step (and the leave line, when it shows) once. */
-    sayCurrent() { const r = newest(); if (r && r.key !== 'sending') announce(stepLabel(r.key, r.f, r.done && !r.stopped)); if (!eta.hidden) announce(ST('leave')); },
+    /** After a replay: read the current step, and the estimate with the leave line when they show, once. */
+    sayCurrent() {
+      const r = newest(); if (r && r.key !== 'sending') announce(stepLabel(r.key, r.f, r.done && !r.stopped));
+      const say = !stopped && etaSay(etaNow(), true); if (say) announce(say, false, true);
+    },
     patch(d) {
       const r = d && byI.get(d.i); if (!r) return;
       const { i, ...facts } = d; void i;
@@ -832,6 +910,7 @@ function syncCompose() {
 function onEvent(ev, d) {
   const stick = !LIVE.replaying && nearBottom();   // follow the build only when the chat is at the bottom
   if (ev === 'stepinfo') { if (live) live.patch(d); }
+  else if (ev === 'eta') { if (live) live.eta(d); }
   else if (ev === 'text') { if (!botCur) botCur = bubble('bot', ''); botCur.textContent += d.text; if (live) live.spoke(); }
   else if (ev === 'step') {
     if (live) live.add(d);

@@ -1475,6 +1475,22 @@
         "noUploadsHint": "Add pictures after this build",
         "announceRead": "The Builder is reading your new message",
         "carriedNote": "Your message started a new build (1 turn)"
+      },
+      "eta": {
+        "about": "Usually about {time}",
+        "range": "Usually {time}",
+        "under": "Usually less than a minute",
+        "guess": "About {time}",
+        "soFar": "{time} so far",
+        "tailAbout": "Saved! Finishing up usually takes about {time} more",
+        "tailUnder": "Saved! Finishing up usually takes less than a minute more",
+        "tailGuessAbout": "Saved! Finishing up may take about {time} more",
+        "tailGuessUnder": "Saved! Finishing up may take less than a minute more",
+        "longer": "Taking a bit longer than usual",
+        "big": "This one is a big job, and it’s still going",
+        "newMsg": "Reading your new message can add a little time",
+        "learnAi": "Bigger games take longer, because the AI writes more tokens, one after another.",
+        "learnBlocks": "The building blocks follow fixed rules, so they take about the same time every time."
       }
     }
   },

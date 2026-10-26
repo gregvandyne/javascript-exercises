@@ -502,6 +502,30 @@ test('HTTP-15 list rules: a build stopped by the time cap after saving is "Stopp
   r = await kid('/build'); assert.doesNotMatch(r.text, /is ready!|has news/);
 });
 
+test('HTTP-14 the estimate on the wire: after the screening row and before the next one (streamed POST and live replay); none for a refusal', async () => {
+  const id = await newGameFor(owner);
+  const text = await (await owner(`/api/studio/${id}/chat`, { method: 'POST', body: { text: 'Make a catch game about a fox. Just build it.' }, raw: true })).text();
+  assert.match(text, /event: eta\ndata: \{[^\n]*"phase":"start"/);
+  const events = sse(text); const names = events.map(e => e[0]);
+  assert.deepEqual(names.slice(0, 3), ['step', 'eta', 'step']);
+  assert.deepEqual([events[0][1].key, events[2][1].key], ['screen', 'blocks']);
+  assert.ok(Number.isInteger(events[1][1].el) && !/claude|sonnet|opus|haiku/i.test(JSON.stringify(events[1][1])));
+  const refused = sse(await (await owner(`/api/studio/${id}/chat`, { method: 'POST', body: { text: 'make a pokemon game' }, raw: true })).text());
+  assert.ok(!refused.some(e => e[0] === 'eta'));
+  // A page that comes back mid-build gets the estimate in the replay, with the screening row before it.
+  const g = holdBuilder();
+  try {
+    assert.equal((await build(owner, id, 'Make it harder')).status, 202);
+    await g.started;
+    const l = liveOf(owner, id); await l.opened;
+    await l.until(s => s.names().includes('caughtup'));
+    const replay = l.names().slice(0, l.names().indexOf('caughtup'));
+    assert.deepEqual(replay.slice(1, 4), ['step', 'eta', 'step']);
+    assert.equal(l.of('eta')[0].phase, 'start');
+    l.close(); g.open.resolve(); await idleGame(id);
+  } finally { realBuilder(); }
+});
+
 test('detached POST errors are JSON with a code: empty, no turns left, 2 builds at once', async () => {
   const kid = await signup('HttpErrors');
   const id = await newGameFor(kid);

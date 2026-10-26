@@ -622,3 +622,27 @@ test('CL-14 "read" only when the model answered: a failed round drops it (put ba
   assert.deepEqual([fuOf(g2.id)[0].status, fuOf(g2.id)[0].readTurn], ['read', job.id]);
   assert.equal(script.length, 0);
 });
+
+test('CL-13 estimates for the AI: a Pro build is in the Pro bucket with its rounds and tokens; an error still had its estimate', async () => {
+  const u = auth.createUser({ username: 'EtaKid1', password: 'secret1' }); const g = games.createGame(u.id, {});
+  const row = () => q.get('SELECT * FROM builder_turns WHERE game_id=? ORDER BY created_at DESC, rowid DESC LIMIT 1', g.id);
+  script.push(
+    [{ type: 'tool_use', name: 'write_game', input: { html: GAME, notes: 'First version' } }],
+    [{ type: 'tool_use', name: 'test_notes', input: { checklist: ['Hop'] } }, { type: 'tool_use', name: 'ask_user', input: { question: 'What next?', options: ['Make it harder'] } }],
+  );
+  const events = [];
+  await runTurn({ user: u, gameId: g.id, text: 'a fox jumping game', pro: true, emit: (n, d) => events.push([n, d]) });
+  const start = events.find(e => e[0] === 'eta')[1], done = events.find(e => e[0] === 'done')[1];
+  assert.deepEqual([start.phase, start.p, start.src, start.show, start.lo, start.hi], ['start', 'ai', 'default', 'range', 2, 4], 'Pro: about 2–4 minutes, a first guess');
+  let r = row();
+  assert.deepEqual(['est_key', 'kind', 'end_reason', 'versions'].map(k => r[k]), ['ai:pro:new:2d', 'new', 'ok', 1]);
+  assert.equal(r.model_calls, done.steps.r); assert.equal(r.model_calls, 2);
+  assert.equal(r.tokens_out, done.steps.to); assert.equal(r.tokens_out, 2 * 42, 'what the fake API said it wrote');
+  assert.equal(r.eta_hi_ms, 4 * 60e3);
+  assert.ok(!/claude|sonnet|opus|haiku/i.test(JSON.stringify(events.filter(e => e[0] === 'eta'))), 'no model name');
+  // An error: charged, so it had its estimate; never a sample.
+  const err = await stepTurn(u, g, 'make it harder', ['error400']);
+  assert.equal(err.events.filter(e => e[0] === 'eta').length, 1);
+  r = row();
+  assert.deepEqual(['end_reason', 'sample', 'est_key'].map(k => r[k]), ['error', 0, 'ai:std:change:2d']);
+});

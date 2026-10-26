@@ -2,9 +2,10 @@
 // provider agent loop (Claude or mock) -> final reply saved. It runs inside a runner Job (runner.js), apart from any
 // HTTP request, so closing the page or signing out never stops it.
 // Events (job.emit, see runner.js): text, ask, version, meta, notes, refused, step, stepinfo, playtest, error, done,
-// plus turn (a build started), inbox (follow-ups: waiting, refused, reading, read, carried, dropped) and restart (the
-// server is restarting); step/stepinfo are the live build steps (steps.js), and 'done' carries their compact record
-// when the build got past screening.
+// plus turn (a build started), inbox (follow-ups: waiting, refused, reading, read, carried, dropped), eta (the time
+// estimate: start, then tail at the first version and msg when a follow-up is read; eta.js) and restart (the server is
+// restarting); step/stepinfo are the live build steps (steps.js), and 'done' carries their compact record when the
+// build got past screening.
 import * as games from '../services/games.js';
 import { audit, tx, today } from '../db.js';
 import { config } from '../config.js';
@@ -18,6 +19,7 @@ import * as claude from './claude.js';
 import { resting } from './anthropic.js';
 import { tEn } from '../i18n/index.js';
 import * as turns from './turns.js';
+import * as eta from './eta.js';
 import * as runner from './runner.js';
 export { isBusy, busyCount } from './runner.js';
 
@@ -99,6 +101,11 @@ export async function executeTurn(job, { user, game, text = '', pro = false, wan
   const state = { ...chat.state, scanFails: 0 }; job.state = state;
   const tb = toolbox({ user, gameId: game.id, emit, state, locale, steps, signal: job.ac.signal });
   if (!provider && name === 'mock' && resting()) emit('text', { text: t('builder.budgetResting') + '\n\n' });
+  // The time estimate, once the build is charged and before the provider starts (a follow-on build's words are its
+  // carried messages). Resumed attempts get a fresh one from now.
+  const words = text || job.waiting.map(e => e.text).join('\n');
+  job.est = eta.estimate(eta.predict({ provider: name, pro, cur: tb.current(), state, text: words }), { capMs: config.builderTurnMaxMs });
+  if (job.est) emit('eta', { ...job.est.start, el: Date.now() - job.t0 });
   // A Continue carries on an earlier build that stopped: the provider gets what it saved and its message.
   const carry = resume || (continueOf ? { versions: turns.versionsSince(game.id, continueOf.base_version), original: continueOf.request.text, cont: true } : null);
   let usage = { tokensIn: 0, tokensOut: 0, model: name };
@@ -150,8 +157,9 @@ export function endBuild(job, { usage = job.usage || {} } = {}) {
   appendChat(job.gameId, job.userId, [{ role: 'assistant', text: job.seg.text.trim(), at: Date.now(), events, model: usage.model || name, pro: !!pro, turn: job.id, ...(job.attempt > 1 ? { resumed: true } : {}) }],
     { ...(state ? { state } : {}), tokensIn: usage.tokensIn || 0, tokensOut: usage.tokensOut || 0 });
   job.seg = { text: '', events: [] }; job.lead = [];   // written: nothing of it may be written again
-  const status = statusOf(end); job.end = end;
-  turns.finish(job.id, { status, end, versions, modelCalls: rec ? rec.r : 0, tokensIn: usage.tokensIn || 0, tokensOut: usage.tokensOut || 0, durationMs: Date.now() - job.t0, canContinue: end === 'timeout' && !!job.request.text });
+  const status = statusOf(end); job.end = end; const durationMs = Date.now() - job.t0;
+  turns.finish(job.id, { status, end, versions, modelCalls: rec ? rec.r : 0, tokensIn: usage.tokensIn || 0, tokensOut: usage.tokensOut || 0, durationMs, canContinue: end === 'timeout' && !!job.request.text });
+  eta.finish({ id: job.id, est: job.est, versions, base: job.base, firstVersionMs: job.firstV, followups: job.read, end, attempt: job.attempt, chain: job.chain, durationMs, capMs: config.builderTurnMaxMs });
   const refunded = refundable(status, end, versions) && turns.refund(job.id);
   const left = turnsLeft(job.userId);
   job.emit('done', { turnsLeft: left, ...(rec ? { steps: rec } : {}), ...(refunded ? { refunded: true } : {}), end });

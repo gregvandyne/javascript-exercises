@@ -16,11 +16,13 @@ async function newGame(page) {
 const turnOf = (extra = {}) => ({ id: 'T1', attempt: 1, chain: 0, carried: 0, provider: 'blocks', mine: true, cid: 'cid-live-0001', elapsed: 2000,
   entries: [{ role: 'user', text: FOX, at: Date.now(), uploads: [], turn: 'T1' }], waiting: 0, left: 3, ...extra });
 const STEPS = [['step', { i: 1, key: 'screen', at: 0 }], ['step', { i: 2, key: 'blocks', at: 300 }], ['text', { text: 'Ooh, a fox! ' }]];
-/** Route GET /live: serve(n, req) -> { events } | { abort: true } | { status, json } for the nth connect (from 1). */
+/** Route GET /live: serve(n, req) -> { events } | { abort: true } | { status, json } | { hang: true } (an open stream
+ *  that says nothing more) for the nth connect (from 1). */
 async function routeLive(page, serve) {
   const seen = { n: 0 };
   await page.route('**/api/studio/*/live', async route => {
     const r = await serve(++seen.n, route.request());
+    if (r.hang) return new Promise(() => {});
     if (r.abort) return route.abort('connectionrefused');
     if (r.status) return route.fulfill({ status: r.status, json: r.json || {} });
     return route.fulfill({ status: 200, headers: SSE, body: sse(r.events) });
@@ -324,5 +326,126 @@ test('the message box placeholder stays on one line on phones and computers, idl
     await expect(page.locator('.st-busy')).toBeVisible();
     const ph = await oneLine(`${w}px building`);
     expect(['Add to your idea. The AI reads it after its current step', 'Add to your idea…']).toContain(ph);
+  }
+});
+
+// ---- Time estimates: the top of the live card. The stream is served once and then stays open with nothing more to
+// say (later connects never answer), so time is the only thing that changes; the page's clock is driven by the test.
+const ETA_START = { v: 1, phase: 'start', el: 400, p: 'blocks', src: 'data', n: 23, show: 'range', lo: 1, hi: 2, overAt: 138000, bigAt: 240000, showAt: 8000 };
+/** Load the Studio with a running build: hello (elapsed), the events, then silence. -> the read-out recorder. */
+async function etaBuild(page, events, { elapsed = 2000, lang = null, id = null } = {}) {
+  await routeLive(page, n => (n === 1 ? { events: [...hello(turnOf({ elapsed })), ...events] } : { hang: true }));
+  await page.clock.install();
+  await (id ? page.goto(`/studio/${id}${lang ? `?lang=${lang}` : ''}`) : page.reload());
+  await expect(live(page)).toBeVisible();
+  await page.evaluate(() => {
+    window.__said = [];
+    new MutationObserver(() => window.__said.push(document.getElementById('st-steps-live').textContent))
+      .observe(document.getElementById('st-steps-live'), { childList: true, characterData: true, subtree: true });
+  });
+}
+const said = page => page.evaluate(() => window.__said);
+const saidTimes = async (page, text) => (await said(page)).filter(s => s.includes(text)).length;
+/** The page's own words for a range of minutes, in its language. */
+const range = (page, lo, hi) => page.evaluate(([a, b]) => new Intl.NumberFormat(JSON.parse(document.getElementById('i18n').textContent).intl, { style: 'unit', unit: 'minute', unitDisplay: 'long' }).formatRange(a, b), [lo, hi]);
+const LEAVE = 'You can close this page or your computer, or sign out';
+
+test.describe('LV-2 the estimate: when it shows, what it says, and that it is read out once per state', () => {
+  test('from timed builds: "Usually 1–2 minutes" at showAt with the leave line, then so far, longer and big', async ({ page }) => {
+    await newGame(page);
+    await etaBuild(page, [...STEPS.slice(0, 1), ['eta', ETA_START], ...STEPS.slice(1)]);
+    const top = live(page).locator('.stp-eta'), line = top.locator('.stp-eta-line');
+    await expect(top).toBeHidden();
+    await page.clock.fastForward(6500);
+    const want = `Usually ${await range(page, 1, 2)}`;
+    await expect(line).toHaveText(`⏱ ${want}`);
+    await expect(top.locator('.stp-leave')).toContainText(LEAVE);
+    await expect(top.locator('.stp-eta-learn')).toContainText('The building blocks follow fixed rules');
+    await expect.poll(() => saidTimes(page, want)).toBe(1);
+    expect((await said(page)).find(s => s.includes(want))).toContain(LEAVE);   // read out together
+    await page.clock.fastForward(52_000);
+    await expect(line).toContainText('· 1 minute so far');
+    await page.clock.fastForward(79_000);   // 139 s
+    await expect(top).toHaveAttribute('data-state', 'longer');
+    await expect(line).toHaveText(/^⏳ Taking a bit longer than usual · 2 minutes so far$/);
+    await page.clock.fastForward(102_000);  // 241 s
+    await expect(top).toHaveAttribute('data-state', 'big');
+    await expect(line).toContainText('This one is a big job, and it’s still going');
+    await page.clock.fastForward(2000);
+    for (const x of [want, 'Taking a bit longer than usual', 'This one is a big job']) expect(await saidTimes(page, x), x).toBe(1);
+    expect(await saidTimes(page, 'so far'), 'minutes are never read out').toBe(0);
+    expect(await saidTimes(page, LEAVE), 'the leave line once').toBe(1);
+  });
+
+  test('a real building step shows it at once, before showAt', async ({ page }) => {
+    await newGame(page);
+    await etaBuild(page, [['step', { i: 1, key: 'screen', at: 0 }], ['eta', ETA_START], ['step', { i: 2, key: 'think', n: 1, c: 'start', at: 300 }], ['step', { i: 3, key: 'write', at: 1200 }]]);
+    await expect(live(page).locator('.stp-eta-line')).toHaveText(`⏱ Usually ${await range(page, 1, 2)}`);
+  });
+
+  test('the first version says what is left: "Saved! Finishing up…"', async ({ page }) => {
+    await newGame(page);
+    await etaBuild(page, [['step', { i: 1, key: 'screen', at: 0 }], ['eta', ETA_START], ['step', { i: 2, key: 'check', st: 'pass', v: 1, at: 1500 }],
+      ['eta', { v: 1, phase: 'tail', el: 1500, show: 'about', n: 1, overAt: 138000, bigAt: 240000 }]]);
+    await expect(live(page).locator('.stp-eta-line')).toHaveText('⏱ Saved! Finishing up usually takes about 1 minute more');
+  });
+
+  test('a quick kind of build shows no number: only the leave line, then plainly "longer than usual" if it hangs', async ({ page }) => {
+    await newGame(page);
+    await etaBuild(page, [STEPS[0], ['eta', { ...ETA_START, show: 'none', lo: undefined, hi: undefined, overAt: 35000, bigAt: 95000 }], ...STEPS.slice(1)]);
+    const top = live(page).locator('.stp-eta');
+    await page.clock.fastForward(6500);
+    await expect(top.locator('.stp-leave')).toBeVisible();
+    await expect(top.locator('.stp-eta-line')).toBeHidden();
+    await page.clock.fastForward(20_000);
+    await expect(top.locator('.stp-eta-line')).toBeHidden();
+    await page.clock.fastForward(7000);   // 35.5 s
+    await expect(top.locator('.stp-eta-line')).toHaveText('⏳ Taking a bit longer than usual');
+  });
+
+  test('a first guess (not enough timed builds yet) says "About", never "Usually"', async ({ page }) => {
+    await newGame(page);
+    await etaBuild(page, [STEPS[0], ['eta', { ...ETA_START, src: 'default', n: 0 }], ...STEPS.slice(1)]);
+    await page.clock.fastForward(6500);
+    await expect(live(page).locator('.stp-eta-line')).toHaveText(`⏱ About ${await range(page, 1, 2)}`);
+    await expect(live(page)).not.toContainText('Usually');
+  });
+
+  test('with tips off the learning line goes, the estimate and the leave line stay', async ({ page }) => {
+    await newGame(page);
+    await page.addInitScript(() => { try { localStorage.setItem('brb-tips', '0'); } catch { /* ignore */ } });
+    await etaBuild(page, [STEPS[0], ['eta', ETA_START], ...STEPS.slice(1)]);
+    await page.clock.fastForward(6500);
+    await expect(live(page).locator('.stp-eta-line')).toBeVisible();
+    await expect(live(page).locator('.stp-leave')).toBeVisible();
+    await expect(live(page).locator('.stp-eta-learn')).toBeHidden();
+  });
+});
+
+test('LV-3 coming back 5 minutes into a build: straight away "a big job" (never "Usually"), read out once after the replay', async ({ page }) => {
+  await newGame(page);
+  await etaBuild(page, [STEPS[0], ['eta', ETA_START], ...STEPS.slice(1)], { elapsed: 300_000 });
+  const line = live(page).locator('.stp-eta-line');
+  await expect(line).toContainText('This one is a big job, and it’s still going');
+  await expect(line).toContainText('5 minutes so far');
+  await expect(live(page).locator('.stp-eta')).toHaveAttribute('data-state', 'big');
+  await page.clock.fastForward(3000);
+  expect(await saidTimes(page, 'This one is a big job')).toBe(1);
+  expect(await saidTimes(page, 'Usually')).toBe(0);
+});
+
+test('LV-4 the estimate in Arabic, Japanese and Russian at 360 px: the browser\'s own minutes, right to left in Arabic, nothing spills', async ({ page }) => {
+  const id = await newGame(page);
+  await page.setViewportSize({ width: 360, height: 740 });
+  for (const lang of ['ar', 'ja', 'ru']) {
+    await page.unrouteAll({ behavior: 'ignoreErrors' });
+    await etaBuild(page, [STEPS[0], ['eta', ETA_START], ['step', { i: 2, key: 'write', at: 300 }]], { lang, id });
+    const line = live(page).locator('.stp-eta-line');
+    await expect(line).toBeVisible();
+    expect(await line.textContent()).toContain(await range(page, 1, 2));
+    expect(await live(page).evaluate(e => getComputedStyle(e).direction)).toBe(lang === 'ar' ? 'rtl' : 'ltr');
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    const box = await live(page).locator('.stp-eta').boundingBox(), card = await live(page).boundingBox();
+    expect(box.x).toBeGreaterThanOrEqual(card.x - 1); expect(box.x + box.width).toBeLessThanOrEqual(card.x + card.width + 1);
   }
 });

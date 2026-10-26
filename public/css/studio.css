@@ -154,9 +154,16 @@ button.stp-line{cursor:pointer}
 .stp-learn{font-size:.88rem;color:var(--text-2)}
 .stp-learn b{color:var(--text)}
 .stp-tip:empty{display:none}
-/* The top of the live card: the builder can close the page or sign out (not a tip: shown with tips off too). */
-.stp-eta{margin:2px 8px 4px}
+/* The top of the live card: the estimate, then that the builder can close the page or sign out (not a tip: shown with
+   tips off too). Longer than usual is said in words and with ⏳, and also in the warning colours. */
+.stp-eta{display:flex;flex-direction:column;gap:2px;margin:2px 8px 4px}
 .stp-eta p{margin:0}
+.stp-eta-line{padding:4px 8px;margin-inline:-8px;border-radius:var(--r-sm);font-weight:700;font-size:.92rem;color:var(--text);line-height:1.4;overflow-wrap:anywhere}
+.stp-eta-so{font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums}
+.stp-eta[data-state="longer"] .stp-eta-line,.stp-eta[data-state="big"] .stp-eta-line{background:var(--warn-bg);color:var(--warn-ink)}
+.stp-eta[data-state="longer"] .stp-eta-so,.stp-eta[data-state="big"] .stp-eta-so{color:inherit}
+.stp-learn.stp-eta-learn{margin:0}
+.tips-off .stp-eta-learn{display:none}
 .stp-leave{font-size:.88rem;color:var(--text-2);line-height:1.4;overflow-wrap:anywhere}
 .stp-inbox{margin:2px 8px 4px;font-size:.88rem;color:var(--text-2);line-height:1.4;overflow-wrap:anywhere}
 .stp-inbox p{margin:0}

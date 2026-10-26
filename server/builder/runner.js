@@ -26,6 +26,7 @@ import { log } from '../services/log.js';
 import { audit, tx, today, uid } from '../db.js';
 import { tEn, tFor } from '../i18n/index.js';
 import * as turns from './turns.js';
+import * as eta from './eta.js';
 import { stepRecorder } from './steps.js';
 import { previewUrl } from './tools.js';
 import { turnsLeft, takeTurn } from './usage.js';
@@ -73,12 +74,16 @@ function newJob(row, { attempt = row.attempt } = {}) {
     seg: { text: '', events: [] }, lead: [],              // the open reply; lead = events the final entry starts with
     waiting: [], reading: [], fu: { accepted: 0, refused: 0 }, read: 0, waiters: [],   // follow-ups (see the header)
     accepting: Promise.resolve(), inflight: 0,             // follow-ups are accepted one at a time, in arrival order
-    firstV: 0, versions: 0, state: null, usage: null, ctx: null, provider: providerKind(providerName()),
+    est: null, firstV: 0, versions: 0, state: null, usage: null, ctx: null, provider: providerKind(providerName()),
     handedOff: false, ended: false, next: null,
   };
   job.screened = new Promise(r => { job.resolveScreened = r; });
   job.done = new Promise(r => { job.resolveDone = r; });
-  job.emit = (name, data) => { if (job.ended || job.handedOff) return; capture(job, name, data); publish(job.gameId, name, data, job); };
+  job.emit = (name, data) => {
+    if (job.ended || job.handedOff) return;
+    capture(job, name, data); publish(job.gameId, name, data, job);
+    if (name === 'version' && job.versions === 1) { const tl = eta.tail(job.est, job.firstV); if (tl) job.emit('eta', tl); }   // "Saved! Finishing up…"
+  };
   job.steps = stepRecorder((n, d) => job.emit(n, d), t0);
   // Not unref'd: every way a build ends clears its timers, and a build must not be dropped because nothing else runs.
   job.timers.cap = setTimeout(() => cancel(job, 'timeout'), Math.max(1, config.builderTurnMaxMs));
@@ -276,6 +281,9 @@ export async function between(job, round, { waitMs = 0 } = {}) {
     job.reading.push(...add);
     mark(job.gameId, new Set(add.map(e => e.id)), { status: 'reading', round, readTurn: job.id });
     job.emit('inbox', { status: 'reading', ids: add.map(e => e.id), n: round });
+    // A change takes a little longer. Round 1's messages were there when the estimate was made (a follow-on or resumed
+    // build's own messages), so they don't move it.
+    const m = round > 1 && eta.onFollowUp(job.est, Date.now() - job.t0); if (m) job.emit('eta', m);
   }
   return { stop: null, add };
 }
@@ -383,7 +391,7 @@ function capture(job, name, data) {
   else if (name === 'error') job.seg.events.push(['error', { message: data.message }]);   // kept, so a redraw still says it
   else if (CARDS.has(name)) {
     job.seg.events.push([name, name === 'version' ? { ...data, preview: undefined } : data]);
-    if (name === 'version') { job.versions++; if (!job.firstV) job.firstV = Date.now() - job.t0; }
+    if (name === 'version') { job.versions++; if (!job.firstV) job.firstV = Math.max(1, Date.now() - job.t0); }
   }
   if (name === 'step') { const e = ['step', { ...data }]; job.stepAt.set(data.i, e); bufPush(job, e); }
   else if (name === 'stepinfo') {

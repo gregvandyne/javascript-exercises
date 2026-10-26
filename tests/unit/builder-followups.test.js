@@ -393,3 +393,28 @@ test('FU-18 no follow-on build for a builder who was banned (or switched off) du
     assert.equal(used(u.id), 1, col);
   }
 });
+
+test('FU-14 estimates: a follow-up read moves "longer than usual" later (never earlier) and the build is no sample; a carried build has its own', async () => {
+  const u = newUser(); const g = newGame(u);
+  const w = watch(g.id, u.id, (name, d) => { if (name === 'version' && d.number === 1) runner._acceptScreened(g.id, fresh(u), 'make it harder'); });
+  const r = await send(u, g, FOX, { provider: null });
+  await idle(g.id);
+  const at = w.ev.findIndex(e => e[0] === 'inbox' && e[1].status === 'reading');
+  assert.equal(w.ev[at + 1][0], 'eta', 'the estimate follows the reading');
+  const [start, msg] = w.of('eta').filter(d => d.phase !== 'tail');
+  assert.deepEqual([start.phase, msg.phase], ['start', 'msg']);
+  assert.ok(msg.overAt >= start.overAt && msg.bigAt >= start.bigAt && msg.el >= 0);
+  const row = turns.get(r.job.id);
+  assert.deepEqual([row.followups, row.sample, row.kind], [1, 0, 'new']);
+  // Too late for the build: the follow-on build gets its own estimate and row (and its own message moves nothing).
+  const u2 = newUser(); const g2 = newGame(u2);
+  let done = false;
+  const w2 = watch(g2.id, u2.id, name => { if (name === 'done' && !done) { done = true; runner._acceptScreened(g2.id, fresh(u2), 'make it harder'); } });
+  await send(u2, g2, FOX, { provider: null });
+  await idle(g2.id);
+  const t2 = w2.of('turn')[1];
+  const after = w2.ev.findIndex(e => e[0] === 'turn' && e[1].id === t2.id);
+  assert.deepEqual(w2.ev.slice(after).filter(e => e[0] === 'eta').map(e => e[1].phase), ['start']);
+  const row2 = turns.get(t2.id);
+  assert.deepEqual([row2.est_key, row2.kind, row2.followups, row2.sample, row2.chain], ['blocks:std:change:2d', 'change', 1, 0, 1]);
+});
