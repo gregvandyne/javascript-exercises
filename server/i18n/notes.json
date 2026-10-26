@@ -274,5 +274,8 @@
   "js.studio.steps.offline.check": "The connection dropped before the page heard back from the Builder, so it is checking whether the message arrived. Kid reading level.",
   "js.studio.steps.check.flag": "{k} is how many things the safety program listed (1 or more): use the plural forms your language needs, and keep =1 for the one-thing wording. {v} is a version number.",
   "js.studio.steps.showLess": "Button at the bottom of the opened steps summary that folds it again. Shown after ▴. Short.",
-  "js.studio.steps.think.learn.start": "Explains a “round” to kids: one time the app asks the AI. Use the same word for “round” as in the think.* labels and loopAi."
+  "js.studio.steps.think.learn.start": "Explains a “round” to kids: one time the app asks the AI. Use the same word for “round” as in the think.* labels and loopAi.",
+  "errors.moved.text": "Shown for a moment while the browser goes to the site's new address. {site} is the new address, like oomba.ai: keep it as is.",
+  "errors.moved.link": "Link to the site's new address, in case the page doesn't move on by itself. {site} is the new address, like oomba.ai.",
+  "auth.page.moved": "Sign-in page, after the site moved to a new address and the sign-in could not come along. {site} is the new address, like oomba.ai."
 }

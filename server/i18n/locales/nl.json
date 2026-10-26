@@ -65,6 +65,12 @@
       "heading": "Oomba Academy verhuist naar een nieuw huis",
       "text": "Over een paar minuten zijn we terug. Je spellen en opgeslagen voortgang zijn veilig."
     },
+    "moved": {
+      "title": "We zijn verhuisd!",
+      "heading": "Oomba Academy heeft een nieuw adres",
+      "text": "We brengen je naar {site}…",
+      "link": "Naar {site}"
+    },
     "api": {
       "notFound": "Niet gevonden",
       "tooBig": "Dat is te groot.",
@@ -109,6 +115,7 @@
       "introSignup": "Alleen een leuke naam en een wachtwoord. Geen e-mail nodig.",
       "introLogin": "Log in met je Oomba Academy-naam en wachtwoord.",
       "signedOut": "Je bent uitgelogd. Log opnieuw in om verder te gaan.",
+      "moved": "Oomba Academy heeft een nieuw adres: {site}. Log nog één keer in.",
       "upgradeNotice": "Je speelt als <b>{name}</b>. Alles wat je hebt bewaard, gaat mee.",
       "nameLabelSignup": "Kies een leuke naam",
       "nameLabelLogin": "Je Oomba Academy-naam",

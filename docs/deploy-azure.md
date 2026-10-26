@@ -377,8 +377,9 @@ briefly run the old and new container together.
 ## 9. Moving from Render: cut-over checklist
 
 **About staying signed in:** browsers keep sign-in cookies per web address. Carrying `SESSION_SECRET` over keeps
-everyone signed in **if the address stays the same** (your own domain moves from Render to Azure). If the site moves
-from `magic-cup.onrender.com` to a new domain, people sign in once on the new address whatever you do. Carry the
+everyone signed in **if the address stays the same** (your own domain moves from Render to Azure). Once the site lives at
+its own domain (`oomba.ai`, via `PUBLIC_URL` on Render), moving that domain keeps everyone signed in (case (a) below).
+Only a move to a new domain on a new server signs people in once. Carry the
 secret over anyway: it costs nothing and keeps game links and future moves smooth.
 
 **Which case are you?** (a) Your own domain (say `play.example.com`) points at Render today: the VM uses a temporary

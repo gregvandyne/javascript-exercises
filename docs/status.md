@@ -57,7 +57,10 @@ design); e2e (`E2E_PORT=5881`) the Builder/Studio specs (`studio-steps`, `studio
 `accounts`) 24 passed, 0 failed, 1 skipped (the Star Island cover needs screenshots), and `three.spec.js` with
 `BRB_SNAPSHOTS=1` and the headless shell (`BRB_CHROMIUM`) 3 passed.
 
+- **Moving to oomba.ai** is built and tested but off: it turns on when `PUBLIC_URL=https://oomba.ai` is set on Render after the domain shows "Verified". Unit tests (`domain.test.js`) and a real-browser switch-day test (`domain-move.spec.js`: signed-in, language, theme and an old open tab all land on the new name; signed-out gets one 301) pass.
+
 ## Not verified / known limits
+- **The oomba.ai move hasn't run on the real domain yet** (DNS and Render's certificate are the owner's step). Home-screen apps installed from the old name keep opening it and get redirected; reinstall from oomba.ai. Builder "pro" switch, dismissed tips and preview size are per address and reset once.
 - **Hero of Sunvale's in-game text is English only for now** (its listing is translated; other languages fall back to English inside the game). Its separate play, performance and kid-safety reviews were cut short by a usage limit and are still to do; the builders' own checks (full play-through bot, draw-call budgets, scanner) passed.
 - **Real Claude calls are untested** (no `ANTHROPIC_API_KEY` here). Request shapes (cache_control, tools, models, review schema) are tested against a local fake Messages API. Set the key and try one Studio game before launch.
 - **Build steps against the real API:** when a thinking block starts during the model's pause, and whether the model really writes `notes` (the plan) first, are tested against the fake Messages API only. The AI-path steps card was checked with scripted event streams, not a live model.

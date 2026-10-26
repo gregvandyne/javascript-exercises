@@ -64,6 +64,12 @@
       "heading": "Oomba Academy はあたらしいおうちにおひっこし中です",
       "text": "あと数分でもどります。ゲームとセーブデータはだいじょうぶです。"
     },
+    "moved": {
+      "title": "おひっこししました！",
+      "heading": "Oomba Academy のアドレスがかわりました",
+      "text": "{site} へ いどうしています…",
+      "link": "{site} へすすむ"
+    },
     "api": {
       "notFound": "見つかりません",
       "tooBig": "大きすぎます。",
@@ -108,6 +114,7 @@
       "introSignup": "たのしい名前とパスワードだけでOK。メールアドレスはいりません。",
       "introLogin": "Oomba Academyの名前とパスワードでログインしてください。",
       "signedOut": "ログアウトしました。つづけるには、もう一度ログインしてください。",
+      "moved": "Oomba Academy のアドレスが {site} にかわりました。もう一度ログインしてください。",
       "upgradeNotice": "いまは<b>{name}</b>としてあそんでいます。ほぞんしたものは、ぜんぶそのままつかえます。",
       "nameLabelSignup": "たのしい名前をきめよう",
       "nameLabelLogin": "Oomba Academyの名前",
