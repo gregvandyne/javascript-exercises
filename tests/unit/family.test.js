@@ -11,6 +11,7 @@ const fake = await startFakeStripe({ webhookSecret: 'whsec_fake_fam', apiKey: 'r
 process.env.STRIPE_API_KEY = 'rk_test_fake';
 process.env.STRIPE_WEBHOOK_SECRET = 'whsec_fake_fam';
 process.env.STRIPE_API_BASE = fake.url;
+process.env.BILLING_PUBLIC = '1';   // the family pages for everyone; the preview gate has its own test
 const { config } = await import('../../server/config.js');
 const { createApp } = await import('../../server/app.js');
 const { q, uid, today } = await import('../../server/db.js');
@@ -538,4 +539,34 @@ test('the child\'s panel: a safety line next to the code; an English fallback is
       else assert.ok(r.text.includes(`<span lang="en" dir="ltr">${s.replace(/'/g, '&#39;')}</span>`) || r.text.includes(`<span lang="en" dir="ltr">${s}</span>`), `${code} ${key}: English, marked as English`);
     }
   }
+});
+
+test('before BILLING_PUBLIC: family pages only for a browser with the preview cookie; ?bpreview sets it, a wrong token never does', async () => {
+  const keep = { pub: config.billingPublic, tok: config.billingPreviewToken };
+  try {
+    config.billingPublic = false; config.billingPreviewToken = 'p'.repeat(32);
+    const child = kid();
+    assert.equal((await call('', '/grown-ups')).status, 404);
+    assert.doesNotMatch((await call('', '/parents')).text, /href="\/grown-ups"/);
+    assert.doesNotMatch((await as(child)('/me')).text, /famcode|me-family/);
+    assert.equal((await as(child)('/api/me/family/code', { method: 'POST', body: {} })).status, 404);
+    // A wrong token: no cookie, just the clean address back.
+    const bad = await call('', '/grown-ups?bpreview=nope&x=1');
+    assert.equal(bad.status, 302); assert.equal(bad.location, '/grown-ups?x=1');
+    // The right token sets an HttpOnly cookie and drops the token from the URL.
+    const r = await fetch(`${base}/parents?bpreview=${'p'.repeat(32)}`, { redirect: 'manual' });
+    assert.equal(r.status, 302); assert.equal(r.headers.get('location'), '/parents');
+    const c = r.headers.getSetCookie().find(x => x.startsWith(`${F.PREVIEW_COOKIE}=`));
+    assert.match(c, /HttpOnly/); const pc = c.split(';')[0];
+    assert.equal((await call(pc, '/grown-ups')).status, 200);
+    assert.match((await call(pc, '/parents')).text, /href="\/grown-ups"/);
+    assert.equal((await call(`${cookieFor(child.id)}; ${pc}`, '/api/me/family/code', { method: 'POST', body: {} })).status, 200);
+    // A cookie with another value counts for nothing; no token configured means no preview at all.
+    assert.equal((await call(`${F.PREVIEW_COOKIE}=${'q'.repeat(32)}`, '/grown-ups')).status, 404);
+    config.billingPreviewToken = '';
+    assert.equal((await call(pc, '/grown-ups')).status, 404);
+    // Open to everyone.
+    config.billingPublic = true;
+    assert.equal((await call('', '/grown-ups')).status, 200);
+  } finally { config.billingPublic = keep.pub; config.billingPreviewToken = keep.tok; }
 });

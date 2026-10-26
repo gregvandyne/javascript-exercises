@@ -92,6 +92,7 @@ const redirectHosts = parseRedirectHosts(process.env.REDIRECT_HOSTS, publicUrl.u
 const renderHost = hostOnly(process.env.RENDER_EXTERNAL_HOSTNAME);
 const requireSecret = parseFlag(process.env.REQUIRE_SESSION_SECRET, 'REQUIRE_SESSION_SECRET');
 const maintenance = parseFlag(process.env.MAINTENANCE_MODE, 'MAINTENANCE_MODE');
+const billingPublic = parseFlag(process.env.BILLING_PUBLIC, 'BILLING_PUBLIC');
 const movedPermanently = parseFlag(process.env.MOVED_PERMANENTLY, 'MOVED_PERMANENTLY');
 const sessionSecret = process.env.SESSION_SECRET || '';
 /** SQLite journal modes that keep data safe after a crash (MEMORY and OFF don't). */
@@ -192,6 +193,11 @@ export const config = {
   schoolInvoiceGraceDays: Math.max(0, num(process.env.SCHOOL_INVOICE_GRACE_DAYS, 30)),
   // Families (server/services/family.js): children one grown-up can link, and the extra Builder messages a family plan
   // adds each month (shown on /grown-ups; counted from chunk 4 on).
+  // Paid-plan pages (grown-up accounts, family links, later checkout) for everyone: off until the owner opens them.
+  // Before that, only a browser holding the preview cookie sees them (BILLING_PREVIEW_TOKEN, 24+ characters; visit
+  // any page with ?bpreview=<token> once). Billing itself (webhooks, sync) runs either way when the Stripe keys are set.
+  billingPublic: billingPublic.on,
+  billingPreviewToken: (process.env.BILLING_PREVIEW_TOKEN || '').length >= 24 ? process.env.BILLING_PREVIEW_TOKEN : '',
   familyMaxChildren: Math.max(1, num(process.env.FAMILY_MAX_CHILDREN, 4)),
   familyExtraMessages: Math.max(0, num(process.env.FAMILY_EXTRA_MESSAGES, 40)),
 };

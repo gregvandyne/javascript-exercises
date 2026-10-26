@@ -55,24 +55,36 @@ export function nextFor(u, next) {
   return /^\/(family|grown-ups)(\/|$)/.test(path) ? null : next;
 }
 
+// ---------------------------------------------------------------- preview (before BILLING_PUBLIC)
+// ?bpreview=<BILLING_PREVIEW_TOKEN> on any page sets the preview cookie (12 hours) and comes back without it in the URL.
+router.use((req, res, next) => {
+  const want = req.method === 'GET' && typeof req.query.bpreview === 'string' ? req.query.bpreview : null;
+  if (want === null) return next();
+  const u = new URL(req.originalUrl, 'http://x'); u.searchParams.delete('bpreview');
+  const secure = config.env === 'production' ? '; Secure' : '';
+  if (config.billingPreviewToken && want === config.billingPreviewToken) res.append('Set-Cookie', `${F.PREVIEW_COOKIE}=${want}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${12 * 3600}${secure}`);
+  else if (want === 'off') res.append('Set-Cookie', `${F.PREVIEW_COOKIE}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0${secure}`);
+  res.redirect(302, u.pathname + u.search);
+});
+
 // ---------------------------------------------------------------- gates
-const on = (req, res, next) => (F.familiesOn() ? next() : nope(req, res));
+const on = (req, res, next) => (F.familiesOn(req) ? next() : nope(req, res));
 /** The grown-up's pages: signed out -> the grown-up sign-in; anyone else -> 404. While families are off, only a
  *  grown-up's own /family page is there (to sign out and change the password); /family/link and the APIs are 404. */
 function grownupOnly(req, res, next) {
-  if (!F.familiesOn() && !(auth.isGrownup(req.user) && req.method === 'GET' && req.path === '/family')) return nope(req, res);
+  if (!F.familiesOn(req) && !(auth.isGrownup(req.user) && req.method === 'GET' && req.path === '/family')) return nope(req, res);
   if (auth.isGrownup(req.user)) return next();
   if (!isApi(req) && (!req.user || req.user.is_guest)) return res.redirect(`/grown-ups/login?next=${encodeURIComponent(req.originalUrl)}${req.sessionEnded ? '&signedout=1' : ''}`);
   nope(req, res);
 }
 /** The child's side: only own kid accounts (never guests, school accounts, staff or grown-ups). */
-const childOnly = (req, res, next) => (F.familiesOn() && F.isChildAccount(req.user) ? next() : nope(req, res));
+const childOnly = (req, res, next) => (F.familiesOn(req) && F.isChildAccount(req.user) ? next() : nope(req, res));
 
 // ---------------------------------------------------------------- the child's "For grown-ups" panel on /me
 /** Neutral and always there for own accounts: no plans, messages or money. Empty for everyone else. */
 export function meFamilyPanel(req) {
   const t = req.t, u = req.user;
-  if (!F.familiesOn() || !F.isChildAccount(u)) return '';
+  if (!F.familiesOn(req) || !F.isChildAccount(u)) return '';
   // Safety words a child must be able to read: until a language has them, the English is marked as English (lang, and
   // left to right so its full stops land on the right side on a right-to-left page).
   const say = (key, s) => (t.own(key) ? s : html`<span lang="en" dir="ltr">${s}</span>`);
@@ -238,7 +250,7 @@ router.get('/family', grownupOnly, (req, res) => {
   const t = req.t, f = req.fmt, u = req.user;
   // Families off (billing off): no children, links or plans, but the grown-up can still change their language and
   // password and sign out.
-  if (!F.familiesOn()) {
+  if (!F.familiesOn(req)) {
     const body = html`<div class="pagehead"><h1>👪 ${t('family.page.heading')}</h1>${notYou(req, { plain: true })}</div>
     <section class="panel"><p class="muted" style="margin:0">${t('family.page.off')}</p></section>
     <div class="mesettings">${languagePanel(req)}${passwordPanel(req)}${signOutPanel(req)}</div>`;

@@ -23,7 +23,7 @@ const contact = req => (config.contactEmail ? html`<section class="panel" id="co
 // With Sign in with Google on, what the site keeps from a school Google account (nothing while it is off).
 const googlePrivacy = req => (googleEnabled() ? html`<section class="panel" id="google"><h2>${req.t('google.setup.privacy.h')}</h2><p>${req.t('google.setup.privacy.p1')}</p></section>` : '');
 // Family accounts (routes/family.js): /grown-ups is linked from here only, and only while families are on.
-const families = req => (familiesOn() ? html`<section class="panel" id="families"><h2>${req.t('info.parents.families.h')}</h2>
+const families = req => (familiesOn(req) ? html`<section class="panel" id="families"><h2>${req.t('info.parents.families.h')}</h2>
   <p>${req.t('info.parents.families.p1')}</p><p><a class="btn" href="/grown-ups">${req.t('info.parents.families.link')}</a></p></section>` : '');
 router.get('/parents', (req, res) => page(req, res, { title: req.t('info.parents.title'), back: '/', description: req.t('info.parents.description'), body: info(req, 'parents', '👪', [['what', 1], ['stored', 2], ['never', 1], ['ai', 1], ['keep', 2], ['friends', 1], ['builder', 1], ['languages', 1]], html`${families(req)}${googlePrivacy(req)}${contact(req)}`) }));
 router.get('/sdk', (req, res) => {

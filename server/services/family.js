@@ -15,7 +15,7 @@
 import crypto from 'node:crypto';
 import { q, tx, uid, now, audit, today } from '../db.js';
 import { config } from '../config.js';
-import { sign, accountKind, getUser, isGrownup } from '../auth.js';
+import { sign, accountKind, getUser, isGrownup, parseCookies } from '../auth.js';
 import { billingOn } from './stripe.js';
 import { registerOwnerKind, ownerPlan } from './billing.js';
 import { register } from './jobs.js';
@@ -30,7 +30,16 @@ export const CODE_ALPHABET = LINK_CODE_ALPHABET;
 const CLASS = 'A-HJKMNP-Z2-9';
 
 /** Families (and so grown-up sign-up, the /me panel and every family route) are on exactly when billing is. */
-export const familiesOn = () => billingOn();
+export const PREVIEW_COOKIE = 'brb_bpreview';
+const same = (a, b) => { const x = Buffer.from(String(a)), y = Buffer.from(String(b)); return x.length === y.length && crypto.timingSafeEqual(x, y); };
+/** Does this request carry the paid-plan preview cookie (config.billingPreviewToken)? */
+export function previewing(req) {
+  const tok = config.billingPreviewToken, c = req && req.headers ? parseCookies(req)[PREVIEW_COOKIE] : null;
+  return !!(tok && c && same(c, tok));
+}
+/** Are family accounts on for this request? Billing must be on, and either open to everyone (BILLING_PUBLIC=1) or this
+ *  browser holds the preview cookie. Without a request (jobs, counts) only the billing switch counts. */
+export const familiesOn = req => billingOn() && (config.billingPublic || req === undefined || previewing(req));
 
 const fail = code => ({ ok: false, code });
 const ok = (v = {}) => ({ ok: true, ...v });

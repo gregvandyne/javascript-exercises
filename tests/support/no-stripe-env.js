@@ -3,5 +3,5 @@
 // tests/support/fake-stripe.js on purpose instead.
 export const NO_STRIPE_ENV = Object.freeze({
   STRIPE_API_KEY: '', STRIPE_WEBHOOK_SECRET: '', STRIPE_WEBHOOK_SECRET_OLD: '', STRIPE_LIVE_OK: '', STRIPE_TAX: '',
-  STRIPE_API_BASE: '', STRIPE_API_VERSION: '',
+  STRIPE_API_BASE: '', STRIPE_API_VERSION: '', BILLING_PUBLIC: '', BILLING_PREVIEW_TOKEN: '',
 });
