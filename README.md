@@ -33,6 +33,8 @@ npm run screenshots  # BASE=http://localhost:3000 ADMIN_PASSWORD=... → screens
 node scripts/layout-audit.js  # BASE=... AUDIT_USERS="guest,teacher:name:pass" → boxes that touch, on every page it can reach
 node scripts/contrast.js      # every text/background token pair, light and dark, against WCAG AA
 npm run i18n:check   # per language: missing / extra keys and placeholder problems
+npm run check-keys   # no real-looking Stripe key or webhook secret in any tracked file
+npm run hooks        # once per clone: a pre-commit hook runs the same key check on staged files
 ```
 
 In environments with a pre-installed Chromium at `/opt/pw-browsers`, the e2e config uses it automatically; otherwise run `npx playwright install chromium` once.
@@ -91,6 +93,34 @@ On/off settings (`REQUIRE_SESSION_SECRET`, `MAINTENANCE_MODE`, `MOVED_PERMANENTL
 | `POSTHOG_KEY` | – | Optional product analytics (off unless set; never sends usernames or text). |
 | `POSTHOG_HOST` | `https://us.i.posthog.com` | PostHog address. |
 
+**Paid plans (Stripe; off until the key and webhook secret are set)**
+
+Billing is built in steps (docs/decisions.md "Paid plans"). With `STRIPE_API_KEY` unset nothing changes: no billing
+route answers and nobody is on a plan. Keys and secrets go in the host's secret settings (Render dashboard), never in a
+file; the app never logs them. Prices are found by their lookup keys (`oomba_family_monthly`, `oomba_family_yearly`,
+`oomba_school_seat_yearly`), so the same code works in the sandbox and live: **set these lookup keys on the live
+Prices too** (and `oomba_plan` = `family` / `school` metadata on each Product). Start-up and the 6-hourly reconcile log a
+warning when a lookup key has no active Price. A subscription's plan comes from its Price's lookup key, else its
+Product, so moving a lookup key to a new Price keeps existing subscribers on their plan; a price that names no plan is
+logged, audited and flagged `unknown_price`.
+
+| Variable | Default | What it does |
+|---|---|---|
+| `STRIPE_API_KEY` | – | A **restricted** key (`rk_test_…` in the sandbox, `rk_live_…` live), one per environment. `sk_live_…` stops the start; `sk_test_…` works with a warning; a live key also needs `STRIPE_LIVE_OK=1`. Permissions: Checkout Sessions, Customers, Subscriptions, Customer portal, Invoices (write); Charges, Disputes, Prices, Tax settings, Tax registrations (read); Refunds (write). |
+| `STRIPE_WEBHOOK_SECRET` | – | The `whsec_…` signing secret of the webhook endpoint `https://<site>/api/billing/webhook`. Billing stays off (with a warning) until both this and the key are set. |
+| `STRIPE_WEBHOOK_SECRET_OLD` | – | The previous signing secret, accepted too while rotating it or replacing the endpoint (e.g. for a new API version). Remove it afterwards. |
+| `STRIPE_API_VERSION` | `2026-09-30.endive` | The Stripe API version of every call (also the stripe SDK's default, pinned in `package.json`). Create the webhook endpoint with the same version. `2025-03-31.basil` or later. |
+| `STRIPE_LIVE_OK` | off | `1` allows a live key, once the going-live checklist is done. |
+| `STRIPE_TAX` | off | `1` turns on Stripe Tax. Checked at start-up and every 6 hours: a warning says when Stripe Tax collects in no state (settings pending, or no registration). |
+| `BILLING_GRACE_DAYS` | `7` | Days a card plan stays on while Stripe retries a failed payment. |
+| `SCHOOL_INVOICE_GRACE_DAYS` | `30` | Days after an unpaid invoice's due date before an invoice school's plan ends. |
+
+Stripe webhook events to send (14): `checkout.session.completed`, `checkout.session.async_payment_succeeded`,
+`checkout.session.async_payment_failed`, `checkout.session.expired`, `customer.subscription.created`,
+`customer.subscription.updated`, `customer.subscription.deleted`, `invoice.paid`, `invoice.payment_failed`,
+`invoice.finalized`, `invoice.overdue`, `charge.refunded`, `charge.dispute.created`,
+`radar.early_fraud_warning.created`.
+
 **Screenshots (headless Chromium)**
 
 | Variable | Default | What it does |
@@ -142,6 +172,7 @@ app: bucket versioning / soft delete is what protects the backups.)
 | `BRB_SILENT` | off | `1` hides info/warn log lines (tests). |
 | `BRB_BUILDER_PROVIDER` | – | `mock` forces the mock Builder even with an API key. |
 | `BRB_MOCK_DELAY_MS` | `12` | Delay between the mock Builder's streamed chunks. |
+| `STRIPE_API_BASE` | `https://api.stripe.com` | Another Stripe address: the fake Stripe of the tests (`tests/support/fake-stripe.js`). Refused in production. |
 
 ### TRUST_PROXY per platform
 

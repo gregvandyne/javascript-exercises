@@ -40,6 +40,49 @@ export function parseFlag(v, name, fallback = false) {
   // The value isn't echoed: a secret pasted into the wrong variable must not reach the log.
   return { on: fallback, error: `${name} must be 1 or 0` };
 }
+/** The Stripe API version every call and the webhook endpoint use (docs/decisions.md "Paid plans", BP-2). It is also the
+ *  default of the pinned stripe SDK (package.json, exact version), but is always passed explicitly. */
+export const STRIPE_API_VERSION = '2026-09-30.endive';
+/** Oldest accepted STRIPE_API_VERSION: the field shapes we read (period dates on items, invoice.parent, invoice
+ *  payments) start at basil. */
+export const STRIPE_MIN_API_VERSION = '2025-03-31';
+/**
+ * Billing settings (docs/decisions.md "Paid plans", BP-11). Billing is off unless STRIPE_API_KEY and
+ * STRIPE_WEBHOOK_SECRET are both set and nothing below is an error. Keys and secrets are never echoed in a message.
+ * -> { apiKey, webhookSecret, webhookSecretOld, apiVersion, apiBase, liveOk, tax, mode: 'off'|'test'|'live',
+ *      errors: [], warnings: [] }
+ */
+export function parseStripe(env = process.env, nodeEnv = env.NODE_ENV || 'development') {
+  const errors = []; const warnings = [];
+  const apiKey = String(env.STRIPE_API_KEY || '').trim();
+  const webhookSecret = String(env.STRIPE_WEBHOOK_SECRET || '').trim();
+  const webhookSecretOld = String(env.STRIPE_WEBHOOK_SECRET_OLD || '').trim();
+  const liveOk = parseFlag(env.STRIPE_LIVE_OK, 'STRIPE_LIVE_OK');
+  const tax = parseFlag(env.STRIPE_TAX, 'STRIPE_TAX');
+  const apiVersion = String(env.STRIPE_API_VERSION || STRIPE_API_VERSION).trim();
+  const base = parsePublicUrl(env.STRIPE_API_BASE, 'STRIPE_API_BASE');
+  for (const e of [liveOk.error, tax.error, base.error]) if (e) errors.push(e);
+  let mode = 'off';
+  if (apiKey) {
+    if (/^sk_live_/.test(apiKey)) errors.push('STRIPE_API_KEY is a live secret key (sk_live_): use a restricted key (rk_live_) with only the permissions billing needs');
+    else if (/^rk_live_/.test(apiKey)) { mode = 'live'; if (!liveOk.on) errors.push('STRIPE_API_KEY is a live key: set STRIPE_LIVE_OK=1 once the going-live checklist is done'); }
+    else if (/^rk_test_/.test(apiKey)) mode = 'test';
+    else if (/^sk_test_/.test(apiKey)) { mode = 'test'; warnings.push('STRIPE_API_KEY is a secret key (sk_test_): use a restricted key (rk_test_) instead'); }
+    else errors.push('STRIPE_API_KEY must be a restricted key (rk_test_… or rk_live_…)');
+    if (/\s/.test(apiKey)) errors.push('STRIPE_API_KEY contains a space or line break');
+  }
+  for (const [name, v] of [['STRIPE_WEBHOOK_SECRET', webhookSecret], ['STRIPE_WEBHOOK_SECRET_OLD', webhookSecretOld]]) {
+    if (v && !/^whsec_\S+$/.test(v)) errors.push(`${name} must look like whsec_…`);
+  }
+  const m = /^(\d{4}-\d{2}-\d{2})\.[a-z]+$/.exec(apiVersion);
+  if (!m) errors.push('STRIPE_API_VERSION must look like 2026-09-30.endive');
+  else if (m[1] < STRIPE_MIN_API_VERSION) errors.push(`STRIPE_API_VERSION must be ${STRIPE_MIN_API_VERSION}.basil or later`);
+  if (base.url && nodeEnv === 'production') errors.push("STRIPE_API_BASE is for tests and can't be used in production");
+  if (apiKey && !webhookSecret && !errors.length) warnings.push('Billing stays off: STRIPE_API_KEY is set but STRIPE_WEBHOOK_SECRET is not');
+  if (!apiKey && webhookSecret) warnings.push('Billing stays off: STRIPE_WEBHOOK_SECRET is set but STRIPE_API_KEY is not');
+  if (errors.length || !apiKey || !webhookSecret) mode = 'off';
+  return { apiKey, webhookSecret, webhookSecretOld, apiVersion, apiBase: base.url, liveOk: liveOk.on, tax: tax.on, mode, errors, warnings };
+}
 /** Shortest SESSION_SECRET accepted when REQUIRE_SESSION_SECRET is on (openssl rand -hex 32 gives 64). */
 export const MIN_SECRET_LENGTH = 32;
 const publicUrl = parsePublicUrl(process.env.PUBLIC_URL);
@@ -58,6 +101,7 @@ const journalMode = (process.env.BRB_JOURNAL_MODE || 'WAL').toUpperCase();
 const GOOGLE_ID_RE = /^[0-9a-z-]+\.apps\.googleusercontent\.com$/i;
 const googleClientId = (process.env.GOOGLE_CLIENT_ID || '').trim();
 const oidcBase = parsePublicUrl(process.env.GOOGLE_OIDC_BASE, 'GOOGLE_OIDC_BASE');
+const stripe = parseStripe(process.env);
 
 export const config = {
   port: num(process.env.PORT, 3000),
@@ -81,6 +125,7 @@ export const config = {
   configErrors: [
     googleClientId && !GOOGLE_ID_RE.test(googleClientId) && 'GOOGLE_CLIENT_ID must look like 1234-abc.apps.googleusercontent.com',
     oidcBase.error, oidcBase.url && (process.env.NODE_ENV || 'development') === 'production' && "GOOGLE_OIDC_BASE is for tests and can't be used in production",
+    ...stripe.errors,
     publicUrl.error, movedTo.error, redirectHosts.error, requireSecret.error, maintenance.error, movedPermanently.error,
     !JOURNAL_MODES.includes(journalMode) && `BRB_JOURNAL_MODE must be one of ${JOURNAL_MODES.join(', ')}`,
     requireSecret.on && sessionSecret && sessionSecret.length < MIN_SECRET_LENGTH
@@ -133,4 +178,16 @@ export const config = {
   posthogKey: process.env.POSTHOG_KEY || '',
   posthogHost: process.env.POSTHOG_HOST || 'https://us.i.posthog.com',
   logRequests: process.env.LOG_REQUESTS !== '0',
+  // Paid plans (server/services/stripe.js, server/services/billing.js; docs/decisions.md "Paid plans"). Off unless the
+  // key and the webhook secret are both set: no billing route answers and the site works as before.
+  stripeApiKey: stripe.apiKey,
+  stripeWebhookSecret: stripe.webhookSecret,
+  stripeWebhookSecretOld: stripe.webhookSecretOld,   // the previous secret, during a rotation or an endpoint change
+  stripeApiVersion: stripe.apiVersion,
+  stripeApiBase: stripe.apiBase,                     // tests only: a local fake Stripe (tests/support/fake-stripe.js)
+  stripeTax: stripe.tax,
+  stripeWarnings: stripe.warnings,                   // logged at start-up (server/index.js)
+  // Days a card plan stays on while Stripe retries a failed payment; days after an invoice's due date for schools.
+  billingGraceDays: Math.max(0, num(process.env.BILLING_GRACE_DAYS, 7)),
+  schoolInvoiceGraceDays: Math.max(0, num(process.env.SCHOOL_INVOICE_GRACE_DAYS, 30)),
 };

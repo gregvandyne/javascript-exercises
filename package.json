@@ -20,14 +20,17 @@
     "test:e2e": "playwright test",
     "screenshots": "node scripts/screenshots.js",
     "covers": "BRB_DB=:memory: BRB_SILENT=1 node scripts/covers.js",
-    "i18n:check": "node scripts/i18n-check.js"
+    "i18n:check": "node scripts/i18n-check.js",
+    "hooks": "git config core.hooksPath scripts/hooks",
+    "check-keys": "node scripts/check-keys.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.1.0",
     "bcryptjs": "^3.0.3",
     "better-sqlite3": "^13.0.3",
     "express": "^5.3.0",
-    "playwright-core": "1.64.1"
+    "playwright-core": "1.64.1",
+    "stripe": "23.0.0"
   },
   "devDependencies": {
     "@playwright/test": "^1.64.1"

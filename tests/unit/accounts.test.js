@@ -8,11 +8,12 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import Database from 'better-sqlite3';
+import { NO_STRIPE_ENV } from '../support/no-stripe-env.js';
 
 const DATA = fs.mkdtempSync(path.join(os.tmpdir(), 'brb-accounts-'));
 const PORT = 4500 + Math.floor(Math.random() * 400);
 const BASE = `http://127.0.0.1:${PORT}`;
-const env = { ...process.env, BRB_DATA_DIR: DATA, BRB_DB: '', PORT: String(PORT), BRB_SILENT: '1', LOG_REQUESTS: '0' };
+const env = { ...process.env, ...NO_STRIPE_ENV, BRB_DATA_DIR: DATA, BRB_DB: '', PORT: String(PORT), BRB_SILENT: '1', LOG_REQUESTS: '0' };
 
 async function boot() {
   const child = spawn(process.execPath, ['server/index.js'], { env, stdio: 'ignore' });

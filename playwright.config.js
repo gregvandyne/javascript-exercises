@@ -3,6 +3,7 @@ import { defineConfig } from '@playwright/test';
 import os from 'node:os';
 import path from 'node:path';
 import fs from 'node:fs';
+import { NO_STRIPE_ENV } from './tests/support/no-stripe-env.js';
 
 const PORT = +(process.env.E2E_PORT || 4310);
 const DATA = process.env.E2E_DATA || fs.mkdtempSync(path.join(os.tmpdir(), 'brb-e2e-'));
@@ -41,7 +42,8 @@ export default defineConfig({
     url: `http://localhost:${PORT}/health`,
     reuseExistingServer: false,
     timeout: 30_000,
-    env: { PORT: String(PORT), BRB_DATA_DIR: DATA, BRB_LOCALES_DIR: LOCALES, BRB_ALL_LOCALES: '1', ADMIN_USERNAME: 'admin', ADMIN_PASSWORD: 'admin-pass-123', DEMO_TEACHER_PASSWORD: 'demo-pass-123', ANTHROPIC_API_KEY: '', BRB_SILENT: '1', REPORTS_TO_HIDE: '3', TRUST_PROXY: '1',
+    // Billing off: Playwright merges process.env under this, so exported STRIPE_* settings are blanked like ANTHROPIC_API_KEY.
+    env: { ...NO_STRIPE_ENV, PORT: String(PORT), BRB_DATA_DIR: DATA, BRB_LOCALES_DIR: LOCALES, BRB_ALL_LOCALES: '1', ADMIN_USERNAME: 'admin', ADMIN_PASSWORD: 'admin-pass-123', DEMO_TEACHER_PASSWORD: 'demo-pass-123', ANTHROPIC_API_KEY: '', BRB_SILENT: '1', REPORTS_TO_HIDE: '3', TRUST_PROXY: '1',
       GOOGLE_CLIENT_ID: 'test-client.apps.googleusercontent.com', GOOGLE_CLIENT_SECRET: 'fake-test-secret', GOOGLE_OIDC_BASE: `http://127.0.0.1:${PORT + 1}` },
   }],
 });

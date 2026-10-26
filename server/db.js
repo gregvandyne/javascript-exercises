@@ -221,6 +221,32 @@ export const MIGRATIONS = [
     CREATE TABLE IF NOT EXISTS ai_spend_pool (day TEXT NOT NULL, pool TEXT NOT NULL, usd REAL NOT NULL DEFAULT 0,
       calls INTEGER NOT NULL DEFAULT 0, PRIMARY KEY (day, pool));
     INSERT OR IGNORE INTO ai_spend_pool(day, pool, usd, calls) SELECT day, 'free', usd, calls FROM ai_spend;`],
+  // Paid plans, chunk 2: the Stripe mirror (docs/decisions.md "Paid plans"). Owners are ('family'|'school', id); every
+  // row carries livemode and every query filters on the current key's mode. Stripe ids are case-sensitive TEXT. Times
+  // are ms like the rest of the database (Stripe's seconds are converted). Grown-up accounts and family links (chunk 3)
+  // add their own migration. billing_subscriptions.payment_pending: a Checkout completed with a delayed payment (ACH)
+  // that hasn't arrived yet. billing_events.stripe_customer_id / stripe_object_id: for linking an 'unlinked' event later.
+  ['0022_billing_core', `CREATE TABLE IF NOT EXISTS billing_customers (stripe_customer_id TEXT PRIMARY KEY,
+      owner_kind TEXT NOT NULL, owner_id TEXT NOT NULL, livemode INTEGER NOT NULL, created_at INTEGER NOT NULL,
+      UNIQUE (owner_kind, owner_id, livemode));
+    CREATE TABLE IF NOT EXISTS billing_checkouts (owner_kind TEXT NOT NULL, owner_id TEXT NOT NULL, livemode INTEGER NOT NULL,
+      session_id TEXT NOT NULL, created_at INTEGER NOT NULL, PRIMARY KEY (owner_kind, owner_id, livemode));
+    CREATE TABLE IF NOT EXISTS billing_subscriptions (stripe_subscription_id TEXT PRIMARY KEY, stripe_customer_id TEXT NOT NULL,
+      owner_kind TEXT NOT NULL, owner_id TEXT NOT NULL, plan TEXT NOT NULL, price_id TEXT, price_lookup_key TEXT, interval TEXT,
+      quantity INTEGER DEFAULT 1, pool_quantity INTEGER DEFAULT 0, next_quantity INTEGER,
+      status TEXT NOT NULL, collection_method TEXT, current_period_start INTEGER, current_period_end INTEGER,
+      cancel_at_period_end INTEGER NOT NULL DEFAULT 0, grace_until INTEGER, payment_pending INTEGER NOT NULL DEFAULT 0,
+      orphaned_at INTEGER, flag TEXT, livemode INTEGER NOT NULL, created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL);
+    CREATE INDEX IF NOT EXISTS billing_subs_owner ON billing_subscriptions(owner_kind, owner_id, livemode);
+    CREATE INDEX IF NOT EXISTS billing_subs_status ON billing_subscriptions(livemode, status);
+    CREATE TABLE IF NOT EXISTS billing_events (event_id TEXT PRIMARY KEY, type TEXT NOT NULL, livemode INTEGER,
+      api_version TEXT, stripe_created INTEGER, received_at INTEGER NOT NULL, result TEXT,
+      stripe_object_id TEXT, stripe_subscription_id TEXT, stripe_customer_id TEXT);
+    CREATE INDEX IF NOT EXISTS billing_events_result ON billing_events(result, received_at);
+    CREATE TABLE IF NOT EXISTS billing_grants (id TEXT PRIMARY KEY, owner_kind TEXT NOT NULL, owner_id TEXT NOT NULL,
+      plan TEXT NOT NULL, seats INTEGER, until INTEGER NOT NULL, reason TEXT, granted_by TEXT, created_at INTEGER NOT NULL,
+      revoked_at INTEGER);
+    CREATE INDEX IF NOT EXISTS billing_grants_owner ON billing_grants(owner_kind, owner_id);`],
 ];
 
 db.exec('CREATE TABLE IF NOT EXISTS migrations (name TEXT PRIMARY KEY, applied_at INTEGER NOT NULL)');

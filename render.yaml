@@ -36,3 +36,9 @@ services:
       # Where grown-ups write to the team (/parents, the footer); also the support email in Stripe.
       - key: CONTACT_EMAIL
         value: greg@oomba.ai
+      # Paid plans (README "Paid plans"): off until both are set in the dashboard. A restricted key (rk_…), never the
+      # sk_ secret key; never put either value in this file.
+      - key: STRIPE_API_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
