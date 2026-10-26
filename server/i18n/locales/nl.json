@@ -771,7 +771,8 @@
       "proTitle": "Pro-kwaliteit duurt langer, maar bouwt mooiere games",
       "attach": "Voeg een plaatje of bestand toe",
       "inputLabel": "Bericht aan de Bouwer",
-      "placeholder": "Vertel je idee…"
+      "placeholder": "Vertel je idee…",
+      "placeholderShort": "Jouw idee…"
     },
     "preview": {
       "label": "Voorbeeld van de game",
@@ -971,7 +972,8 @@
     },
     "budgetResting": "De AI-Bouwer rust uit tot morgen, dus ik gebruik nu mijn simpele bouwblokken.",
     "turnTimeout": "⏱️ Dit bouwen duurde langer dan onze tijdslimiet, dus ik ben gestopt. Je nieuwste versie is bewaard. Vertel me wat ik nu moet veranderen!",
-    "turnTimeoutNothing": "⏱️ Dit bouwen duurde langer dan onze tijdslimiet, dus ik ben gestopt voordat ik iets kon bewaren. Dit bericht telt niet mee, dus je kunt het nog eens proberen."
+    "turnTimeoutNothing": "⏱️ Dit bouwen duurde langer dan onze tijdslimiet, dus ik ben gestopt voordat ik iets kon bewaren. Dit bericht telt niet mee, dus je kunt het nog eens proberen.",
+    "cutOffNothing": "De Bouwer was zo lang aan het plannen dat er geen ruimte meer over was om iets te bouwen. Dit bericht telt niet mee. Vraag om één of twee veranderingen tegelijk."
   },
   "uploads": {
     "tooFast": "Dat zijn veel bestanden! Wacht een minuutje en probeer het opnieuw.",

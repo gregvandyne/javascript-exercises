@@ -175,7 +175,7 @@ router.get('/studio/:id', requireAccount, (req, res) => {
             <button class="st-clip" type="button" id="st-clip" aria-label="${t('studio.chat.attach')}" title="${t('studio.chat.attach')}">📎</button>
             <input type="file" id="st-file" hidden multiple accept="image/png,image/jpeg,image/webp,image/gif,application/pdf,.txt,.md,.csv,.json,text/plain,text/markdown,text/csv,application/json">
             <label class="sr-only" for="st-input">${t('studio.chat.inputLabel')}</label>
-            <textarea class="st-input" id="st-input" rows="1" maxlength="2000" dir="auto" placeholder="${t('studio.chat.placeholder')}"></textarea>
+            <textarea class="st-input" id="st-input" rows="1" maxlength="2000" dir="auto" placeholder="${t('studio.chat.placeholder')}" data-short="${t('studio.chat.placeholderShort')}"></textarea>
             <button class="btn btn-primary st-send" type="submit" id="st-send">${t('chat.thread.send')}</button>
           </div>
         </form>

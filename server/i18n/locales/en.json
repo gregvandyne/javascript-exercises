@@ -771,7 +771,8 @@
       "proTitle": "Pro quality takes longer but builds fancier games",
       "attach": "Add a picture or file",
       "inputLabel": "Message to the Builder",
-      "placeholder": "Tell the Builder your idea…"
+      "placeholder": "Tell the Builder your idea…",
+      "placeholderShort": "Your idea…"
     },
     "preview": {
       "label": "Game preview",
@@ -971,7 +972,8 @@
         }
       }
     },
-    "budgetResting": "The AI Builder is resting until tomorrow, so I'll use my simple building blocks for now."
+    "budgetResting": "The AI Builder is resting until tomorrow, so I'll use my simple building blocks for now.",
+    "cutOffNothing": "The Builder spent so long planning that it ran out of room before it could build anything. Your turn wasn’t used. Try asking for one or two changes at a time."
   },
   "uploads": {
     "tooFast": "That is a lot of files! Wait a minute and try again.",

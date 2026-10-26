@@ -68,6 +68,9 @@ export function resumeNote(resume) {
     + 'Start with one short, friendly sentence saying you\'re carrying on.]';
 }
 
+// Sent when a round used all its output on planning: the next round should write, not plan again.
+const CUT_OFF_NUDGE = 'You ran out of room before calling a tool, so nothing was built yet. Keep your planning very short now and call write_game (or edit_game for a change to the current game) right away. If the request is big, build the most important part first; the player can ask for the rest next.';
+
 export async function run(ctx) {
   const client = anthropic(); if (!client) throw new Error('No API key');
   const t = ctx.t || tEn;
@@ -80,6 +83,7 @@ export async function run(ctx) {
   const max = ctx.maxRounds || MAX_STEPS;
   // Why the next round starts (its step label) and whether its write/edit is a fix of real problems.
   let prev = { c: 'start', fixing: false };
+  let cutOff = false;   // a round already ran out of room before using a tool
 
   for (let step = 0; step < max; step++) {
     if (ctx.signal && ctx.signal.aborted) break;
@@ -99,7 +103,8 @@ export async function run(ctx) {
       { type: 'text', text: sourceBlock(cur, ctx.tools.game()), cache_control: { type: 'ephemeral' } },
       { type: 'text', text: languageBlock(ctx.locale || 'en') },
     ];
-    const params = { model, max_tokens: config.builderMaxTokens, system, tools: TOOLS, messages, output_config: { effort: ctx.pro ? 'high' : 'medium' } };
+    // After a round that ran out of room before using a tool, the next one thinks less (see cutOff below).
+    const params = { model, max_tokens: config.builderMaxTokens, system, tools: TOOLS, messages, output_config: { effort: cutOff ? 'low' : ctx.pro ? 'high' : 'medium' } };
     const opts = { signal: ctx.signal || undefined };
     const stream = FALLBACKS
       ? client.beta.messages.stream({ ...params, betas: ['server-side-fallback-2026-07-01'], fallbacks: 'default' }, opts)
@@ -138,7 +143,21 @@ export async function run(ctx) {
     if (msg.stop_reason === 'refusal') { ctx.emit('text', { text: (step ? '\n\n' : '') + t('builder.kindRefusal') }); break; }
     messages.push({ role: 'assistant', content: msg.content });
     const uses = msg.content.filter(b => b.type === 'tool_use');
-    if (!uses.length) break;
+    if (!uses.length) {
+      // The AI used its whole output allowance (mostly thinking) before it used a tool, so nothing was made. Once, ask
+      // it to plan briefly and start writing; a second time, say so and end with an error (the turn is given back
+      // when nothing was saved, agent.js refundable). Never a silent, empty reply.
+      if (msg.stop_reason === 'max_tokens') {
+        if (!cutOff) {
+          cutOff = true; prev = { c: 'next', fixing: prev.fixing };
+          messages.push({ role: 'user', content: [{ type: 'text', text: CUT_OFF_NUDGE }] });
+          continue;
+        }
+        ctx.emit('error', { message: t('builder.cutOffNothing') });
+        return { model, tokensIn, tokensOut, error: 'cut_off' };
+      }
+      break;
+    }
     const results = []; let stop = false; let failedScan = false;
     let playtested = false, probs = 0, shownErr = false;
     for (const tu of uses) {
