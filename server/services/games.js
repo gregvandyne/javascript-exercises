@@ -186,7 +186,7 @@ export function searchBuilders(user, text, limit = 8) {
   const t = String(text || '').trim().slice(0, 40); if (t.length < 2) return [];
   const v = visibleWhere(user); const like = likeEsc(t);
   return q.all(`SELECT u.id, u.username, u.display_name, u.avatar, u.color, u.photo_at, COUNT(g.id) AS games, COALESCE(SUM(g.plays),0) AS plays
-    FROM users u JOIN games g ON g.owner_id=u.id WHERE ${v.sql} AND (u.username LIKE ? OR u.display_name LIKE ?) GROUP BY u.id ORDER BY plays DESC LIMIT ?`, ...v.params, like, like, limit);
+    FROM users u JOIN games g ON g.owner_id=u.id WHERE ${v.sql} AND u.account_type!='grownup' AND (u.username LIKE ? OR u.display_name LIKE ?) GROUP BY u.id ORDER BY plays DESC LIMIT ?`, ...v.params, like, like, limit);
 }
 export function similar(user, game, limit = 6) {
   const rows = listVisible(user, { category: game.category, limit: limit + 1 }).filter(g => g.id !== game.id);
@@ -273,7 +273,7 @@ export function endPlay(playId, userId) {
   const t = now(); q.run('UPDATE plays SET ended_at=?, seconds=? WHERE id=?', t, Math.min(6 * 3600, Math.round((t - p.started_at) / 1000)), playId);
 }
 export function leaderboard(gameId, limit = 10) {
-  return q.all(`SELECT s.score, s.label, s.created_at, u.id, u.username, u.display_name, u.avatar, u.color, u.photo_at FROM scores s JOIN users u ON u.id=s.user_id WHERE s.game_id=? AND u.banned=0 ORDER BY s.score DESC, s.created_at ASC LIMIT ?`, gameId, limit);
+  return q.all(`SELECT s.score, s.label, s.created_at, u.id, u.username, u.display_name, u.avatar, u.color, u.photo_at FROM scores s JOIN users u ON u.id=s.user_id WHERE s.game_id=? AND u.banned=0 AND u.account_type!='grownup' ORDER BY s.score DESC, s.created_at ASC LIMIT ?`, gameId, limit);
 }
 export function submitScore(gameId, userId, score, label = '') {
   score = Math.max(0, Math.min(1e9, Math.floor(+score || 0)));

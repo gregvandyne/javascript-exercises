@@ -547,3 +547,20 @@ code{overflow-wrap:anywhere}
 
 /* Phones: page tab strips bleed to the screen edge, so a clipped tab reads as "scroll for more". */
 @media (max-width:600px){main.wrap>.tabs:not(.classtabs){margin-inline:-16px;padding-inline:16px;scroll-padding-inline:16px}}
+
+/* Families (routes/family.js): the child's "For grown-ups" panel on Me, and the grown-up's pages. */
+.famcode{margin-bottom:var(--s3)}
+.famkids{list-style:none;margin:0 0 var(--s3);padding:0;display:flex;flex-direction:column;gap:var(--s3)}
+.famkid{display:flex;align-items:center;gap:var(--s3);flex-wrap:wrap;padding:var(--s3);border-radius:var(--r-sm);background:var(--card-2)}
+.famkid-main{flex:1;min-width:180px}
+.famkid form{margin:0}
+.checkline{display:flex;align-items:flex-start;gap:10px;font-weight:600}
+.checkline input{width:22px;height:22px;flex:none;margin-top:2px}
+ol.steps{padding-inline-start:1.4em;margin:0 0 var(--s4)}
+ol.steps li{margin-bottom:var(--s2)}
+.faq h3{font-size:1rem;margin:var(--s4) 0 var(--s1)}
+.faq h3:first-of-type{margin-top:0}
+.faq p{margin:0}
+.lead{font-size:1.1rem}
+.me-btn{position:relative}
+.me-btn .badge{position:absolute;top:0;inset-inline-start:30px;box-shadow:0 0 0 2px var(--bar)}

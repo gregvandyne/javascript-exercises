@@ -6,7 +6,7 @@ import { coverArt, avatar, cardGrid, statusLabel, categoryLabel } from '../views
 import * as games from '../services/games.js';
 import * as presence from '../services/presence.js';
 import { frameDocument, sendFrame, sendFrameText, frameOrigins, SANDBOX } from '../services/frame.js';
-import { signToken, readToken, requireUser, getUser, createGuest, startSession } from '../auth.js';
+import { signToken, readToken, requireUser, getUser, createGuest, startSession, isGrownup } from '../auth.js';
 import { rateLimit, allow, ipOf, GUESTS_PER_IP_HOUR } from '../services/ratelimit.js';
 import { q, uid, now, audit } from '../db.js';
 import { config } from '../config.js';
@@ -226,6 +226,8 @@ router.post('/api/games/:id/score', requireUser, rateLimit('score', 30, 60e3), (
   // A score only counts after the player actually opened the game (a recorded play in the last 24h): this stops a
   // script from poisoning a leaderboard without ever loading the game. Scores are still client-reported (see docs/safety.md).
   if (!games.hasRecentPlay(g.id, req.user.id)) return res.status(400).json({ error: req.t('game.api.badScore') });
+  // Grown-up accounts play, but are on no leaderboard: their scores are never stored.
+  if (isGrownup(req.user)) return res.json({ ok: true, best: Math.max(0, Math.floor(+score)), improved: false });
   res.json({ ok: true, ...games.submitScore(g.id, req.user.id, +score, label) });
 });
 router.get('/api/games/:id/leaderboard', (req, res) => {

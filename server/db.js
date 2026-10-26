@@ -247,6 +247,23 @@ export const MIGRATIONS = [
       plan TEXT NOT NULL, seats INTEGER, until INTEGER NOT NULL, reason TEXT, granted_by TEXT, created_at INTEGER NOT NULL,
       revoked_at INTEGER);
     CREATE INDEX IF NOT EXISTS billing_grants_owner ON billing_grants(owner_kind, owner_id);`],
+  // Paid plans, chunk 3: grown-up accounts and family links (docs/decisions.md "Paid plans"; server/services/family.js).
+  // users.account_type: 'kid' (every account so far) or 'grownup'. A family belongs to one grown-up. family_children:
+  // 'pending' until the child says yes, then 'linked'; unlinked rows keep unlinked_at (deleted 90 days later). At most
+  // one live row per child (pending or linked), so a child is in one family and answers one request at a time.
+  // family_link_codes: only an HMAC of the code is stored; valid 1 hour, single use, one open per child.
+  // link_reports: a child's Report, for the platform admin's queue (no free text).
+  ['0023_families', `ALTER TABLE users ADD COLUMN account_type TEXT NOT NULL DEFAULT 'kid';
+    CREATE TABLE IF NOT EXISTS families (id TEXT PRIMARY KEY, owner_id TEXT NOT NULL UNIQUE REFERENCES users(id), created_at INTEGER NOT NULL);
+    CREATE TABLE IF NOT EXISTS family_children (family_id TEXT NOT NULL REFERENCES families(id), child_id TEXT NOT NULL REFERENCES users(id),
+      status TEXT NOT NULL, requested_at INTEGER NOT NULL, linked_at INTEGER, unlinked_at INTEGER, PRIMARY KEY (family_id, child_id));
+    CREATE UNIQUE INDEX IF NOT EXISTS family_children_live ON family_children(child_id) WHERE unlinked_at IS NULL;
+    CREATE TABLE IF NOT EXISTS family_link_codes (code_hash TEXT PRIMARY KEY, child_id TEXT NOT NULL, created_at INTEGER NOT NULL,
+      expires_at INTEGER NOT NULL, used_at INTEGER, used_by TEXT);
+    CREATE INDEX IF NOT EXISTS family_link_codes_child ON family_link_codes(child_id, expires_at);
+    CREATE TABLE IF NOT EXISTS link_reports (id TEXT PRIMARY KEY, child_id TEXT NOT NULL, family_id TEXT NOT NULL,
+      status TEXT NOT NULL DEFAULT 'open', created_at INTEGER NOT NULL, resolved_by TEXT, resolved_at INTEGER);
+    CREATE INDEX IF NOT EXISTS link_reports_status ON link_reports(status, created_at);`],
 ];
 
 db.exec('CREATE TABLE IF NOT EXISTS migrations (name TEXT PRIMARY KEY, applied_at INTEGER NOT NULL)');

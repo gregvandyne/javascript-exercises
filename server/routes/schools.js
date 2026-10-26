@@ -262,7 +262,7 @@ router.post('/api/schools/:id/staff', requireUser, rateLimit('school-add', 120, 
     // They already have an Oomba Academy account: add it (no login card).
     if (!String(username || '').trim()) return fieldErr(res, 'username', t('school.errors.username'));
     const u = getUserByName(username);
-    if (!u || u.is_guest || u.banned) return fieldErr(res, 'username', t('school.errors.noSuchUser'));
+    if (!u || u.is_guest || u.banned || u.account_type === 'grownup') return fieldErr(res, 'username', t('school.errors.noSuchUser'));
     const m = S.membership(s.id, u.id);
     if (m && m.role === 'student') return fieldErr(res, 'username', t('school.errors.isStudent', { name: nameOf({ ...u, roster_name: m.roster_name }) }));
     if (m) return fieldErr(res, 'username', t('school.errors.alreadyStaff', { name: nameOf({ ...u, roster_name: m.roster_name }), role: t(`school.roles.${m.role}`) }));

@@ -16,6 +16,7 @@
 import crypto from 'node:crypto';
 import { q, uid, now, tx, audit } from '../db.js';
 import { createUser, setPassword, getUser } from '../auth.js';
+import { unlinkAll } from './family.js';
 import { clear, loginLockKey } from './ratelimit.js';
 
 export const ROLES = ['admin', 'teacher', 'student'];
@@ -130,7 +131,7 @@ export function addMember(by, schoolId, userId, role, { rosterName = '', grade =
   if (!ROLES.includes(role)) return fail('badRole');
   const s = getSchool(schoolId); const u = getUser(userId);
   if (!s) return fail('notFound');
-  if (!u || u.is_guest) return fail('noAccount');
+  if (!u || u.is_guest || u.account_type === 'grownup') return fail('noAccount');   // grown-up accounts never join a school
   if (u.managed_school && u.managed_school !== s.id) return fail('otherSchoolAccount');
   const old = q.get('SELECT * FROM school_members WHERE school_id=? AND user_id=?', s.id, u.id);
   const rn = clip(rosterName, 60) || (old && old.roster_name) || '';
@@ -161,6 +162,7 @@ export function removeMember(by, schoolId, userId) {
     const u = getUser(userId);
     if (u && u.managed_school === schoolId) {
       q.run('UPDATE users SET banned=1 WHERE id=?', userId); q.run('DELETE FROM sessions WHERE user_id=?', userId);
+      unlinkAll(userId, by.id, 'school_remove');
       // Its Google sign-in goes too, so a later invite of the same Google account makes a fresh account.
       q.run('DELETE FROM google_identities WHERE user_id=?', userId);
       q.run("UPDATE google_invites SET status='revoked', revoked_at=? WHERE user_id=? AND status='open'", now(), userId);
@@ -434,6 +436,7 @@ export function mergeSchoolAccount(by, schoolId, schoolAccountId, intoUserId) {
     q.run("UPDATE google_invites SET status='revoked', revoked_at=? WHERE user_id=? AND status='open'", now(), a.id);
     q.run('DELETE FROM friends WHERE friend_id=?', a.id);
     q.run("UPDATE users SET banned=1, password_hash=NULL, managed_school='', username=? WHERE id=?", `merged_${a.id}`, a.id);
+    unlinkAll(a.id, by.id, 'merge');
   });
   audit(by.id, 'school.account_merge', schoolId, { from: a.id, into: intoUserId });
   return ok();

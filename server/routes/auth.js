@@ -14,6 +14,7 @@ import { THEMES, THEME_ICONS, normalizeTheme, setThemeCookie, saveUserTheme } fr
 import { buildStatus } from '../builder/turns.js';
 import { publicHost } from '../site.js';
 import { loginGoogle, googleNotice, loginJoinLink, meGooglePanel, noPasswordText } from './google.js';
+import { meFamilyPanel, nextFor } from './family.js';
 
 export const router = Router();
 export const safeNext = n => (typeof n === 'string' && /^\/(?!\/)[\w\-/?=&%.#]*$/.test(n) ? n : '/');
@@ -23,6 +24,7 @@ export const wantedNext = n => { const s = safeNext(n); return s === '/' ? null 
  *  classes, the platform admin on the admin area; everyone else on the game site. */
 export function homeFor(u) {
   if (!u || u.is_guest) return '/';
+  if (auth.isGrownup(u)) return '/family';
   if (isSchoolStaff(u)) return '/teach';
   if (isPlatformAdmin(u)) return '/admin';
   if (u.managed_school) return '/classes';
@@ -35,7 +37,7 @@ function authPage(req, res, mode) {
   const u = req.user;
   const isSignup = mode === 'signup';
   const upgrading = isSignup && u && u.is_guest;
-  if (u && !u.is_guest) return res.redirect(wantedNext(req.query.next) || homeFor(u));
+  if (u && !u.is_guest) return res.redirect(nextFor(u, wantedNext(req.query.next)) || homeFor(u));
   const body = html`<div class="authbox">
     <div class="panel">
       <div class="center" style="font-size:3rem" aria-hidden="true">${isSignup ? '🎉' : '👋'}</div>
@@ -136,14 +138,15 @@ router.post('/api/auth/login', (req, res) => {
   // After a sign-in ended on this device, its page (?next=) is only reopened for the same person: on a shared classroom
   // device the next child goes to their own home, not to the last child's lesson.
   const was = auth.endedUser(req); auth.clearEnded(req, res);
-  const next = was === null || was === u.id ? wantedNext((req.body || {}).next) : null;
+  // A grown-up only goes back to a grown-up page, and a child never to one (server/routes/family.js).
+  const next = was === null || was === u.id ? nextFor(u, wantedNext((req.body || {}).next)) : null;
   res.json({ ok: true, user: auth.publicUser(u), redirect: next || homeFor(u) });
 });
 // next: where to go afterwards ("Not you? Sign out" goes to the sign-in page).
 router.post('/api/auth/logout', (req, res) => { auth.endSession(req, res); res.json({ ok: true, redirect: wantedNext((req.body || {}).next) || '/' }); });
 // Sign out everywhere ends every session, this one too: one clear promise for a lost device or a shared password
 // (changing the password is the way to end the others and stay signed in here).
-router.post('/api/auth/logout-everywhere', auth.requireAccount, (req, res) => {
+router.post('/api/auth/logout-everywhere', auth.requireAnyAccount, (req, res) => {
   const n = auth.endSessions(req.user.id); auth.endSession(req, res);
   audit(req.user.id, 'user.signout_everywhere', req.user.id, { sessions: n });
   res.json({ ok: true, redirect: '/login', toast: req.t('me.signOut.everywhereDone') });
@@ -154,7 +157,7 @@ router.post('/api/auth/logout-everywhere', auth.requireAccount, (req, res) => {
 // left signed in gets no more guesses than at the sign-in page. A flood guard caps every try. On success every session
 // ends, this one too, and this device gets a fresh one: it stays signed in, and a copied cookie is no use any more.
 export const PASSWORD_CHANGE = { fails: 5, tries: 20, window: 900e3 };
-router.post('/api/me/password', auth.requireAccount, rateLimit('me-password', PASSWORD_CHANGE.tries, PASSWORD_CHANGE.window), (req, res) => {
+router.post('/api/me/password', auth.requireAnyAccount, rateLimit('me-password', PASSWORD_CHANGE.tries, PASSWORD_CHANGE.window), (req, res) => {
   const t = req.t, u = req.user;
   if (!auth.canChangePassword(u)) return res.status(403).json({ error: t('me.password.school') });
   const { current, password, confirm } = req.body || {};
@@ -162,8 +165,8 @@ router.post('/api/me/password', auth.requireAccount, rateLimit('me-password', PA
   const failKey = `pw-change-fail:${u.id}`, lockKey = loginLockKey(u.username);
   if (count(failKey) >= PASSWORD_CHANGE.fails || count(lockKey) >= LOGIN.userFails) return res.status(429).json({ error: t('auth.api.tooManyTries') });
   if (!current) return bad('current', t('me.password.needCurrent'));
-  const staff = auth.accountKind(u) === 'staff', n = String(password || '').length;
-  const rule = auth.checkPassword(password, u.username, t) || (staff && n < auth.STAFF_PASSWORD_MIN ? t('me.password.staffShort', { n, min: auth.STAFF_PASSWORD_MIN }) : null);
+  const long = auth.longPasswordKind(u), n = String(password || '').length;
+  const rule = auth.checkPassword(password, u.username, t) || (long && n < auth.STAFF_PASSWORD_MIN ? t('me.password.staffShort', { n, min: auth.STAFF_PASSWORD_MIN }) : null);
   if (rule) return bad('password', rule);
   if (String(confirm || '') !== String(password)) return bad('confirm', t('me.password.mismatch'));
   if (!auth.verifyPassword(u, current)) {
@@ -250,15 +253,16 @@ export function appearancePanel(req) {
   </section>`;
 }
 
-/** Change password (own accounts, school staff, the platform admin), or who looks after it (school students). Guests: nothing. */
-function passwordPanel(req) {
+/** Change password (own accounts, school staff, the platform admin, grown-ups), or who looks after it (school students).
+ *  Guests: nothing. */
+export function passwordPanel(req) {
   const t = req.t, u = req.user;
   if (u.is_guest) return '';
   const head = html`<h2 id="pw-h"><span aria-hidden="true">🔑</span> ${t('me.password.heading')}</h2>`;
   const gOnly = noPasswordText(req);
   if (gOnly) return html`<section class="panel" id="password" aria-labelledby="pw-h">${head}<p class="muted">${gOnly}</p></section>`;
   if (!auth.canChangePassword(u)) return html`<section class="panel" id="password" aria-labelledby="pw-h">${head}<p class="muted">${t('me.password.school')}</p></section>`;
-  const staff = auth.accountKind(u) === 'staff', min = staff ? auth.STAFF_PASSWORD_MIN : 6;
+  const kind = auth.accountKind(u), min = auth.longPasswordKind(u) ? auth.STAFF_PASSWORD_MIN : 6;
   return html`<section class="panel" id="password" aria-labelledby="pw-h">${head}
     <p class="muted">${t('me.password.text')}</p>
     <form class="pwform" data-api="/api/me/password" data-reset novalidate>
@@ -266,7 +270,7 @@ function passwordPanel(req) {
         <input class="input" id="pw-current" name="current" type="password" dir="ltr" autocomplete="current-password" required><span class="err" id="pw-current-err" aria-live="polite"></span></div>
       <div class="field"><label for="pw-new">${t('me.password.new')}</label>
         <input class="input" id="pw-new" name="password" type="password" dir="ltr" autocomplete="new-password" required minlength="${min}" maxlength="72" aria-describedby="pw-new-hint">
-        <span class="hint" id="pw-new-hint">${staff ? t('me.password.hintStaff', { min }) : t('me.password.hint', { min })}</span><span class="err" id="pw-new-err" aria-live="polite"></span></div>
+        <span class="hint" id="pw-new-hint">${kind === 'staff' ? t('me.password.hintStaff', { min }) : kind === 'grownup' ? t('me.password.hintGrownup', { min }) : t('me.password.hint', { min })}</span><span class="err" id="pw-new-err" aria-live="polite"></span></div>
       <div class="field"><label for="pw-confirm">${t('me.password.confirm')}</label>
         <input class="input" id="pw-confirm" name="confirm" type="password" dir="ltr" autocomplete="new-password" required maxlength="72"><span class="err" id="pw-confirm-err" aria-live="polite"></span></div>
       <p class="err form-err" aria-live="polite"></p>
@@ -275,7 +279,7 @@ function passwordPanel(req) {
   </section>`;
 }
 /** Sign out (here), and for accounts Sign out everywhere. */
-function signOutPanel(req) {
+export function signOutPanel(req) {
   const t = req.t, u = req.user;
   return html`<section class="panel" id="signout" aria-labelledby="so-h"><h2 id="so-h">${t('me.signOut.heading')}</h2><p class="muted">${u.is_guest ? t('me.signOut.guest') : t('me.signOut.account')}</p>
     <form data-api="/api/auth/logout" data-next="/"><button class="btn btn-danger" type="submit">${t('me.signOut.button')}</button></form>
@@ -328,6 +332,6 @@ router.get('/me', auth.requireUser, (req, res) => {
     <p class="muted">${t('me.chat.text')}</p>
     <label class="row" style="font-weight:700"><input type="checkbox" id="chat-toggle" ${u.chat_enabled ? raw('checked') : ''} style="width:24px;height:24px"> ${t('me.chat.toggle')}</label>
   </section>` : ''}
-  <div class="mesettings">${passwordPanel(req)}${meGooglePanel(req)}${signOutPanel(req)}</div>`;
+  <div class="mesettings">${passwordPanel(req)}${meGooglePanel(req)}${meFamilyPanel(req)}${signOutPanel(req)}</div>`;
   page(req, res, { title: t('me.title'), active: 'me', body, scripts: ['/js/me.js'] });
 });

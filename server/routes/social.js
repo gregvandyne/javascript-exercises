@@ -5,7 +5,7 @@ import { Router } from 'express';
 import { html, raw, jsonData } from '../views/html.js';
 import { page, notFound } from '../views/layout.js';
 import { avatar, cardGrid, emptyState } from '../views/components.js';
-import { requireAccount, getUserByName, getUser, isRetiredName, OFFICIAL } from '../auth.js';
+import { requireAccount, getUserByName, getUser, isRetiredName, OFFICIAL, isGrownup } from '../auth.js';
 import { rateLimit } from '../services/ratelimit.js';
 import * as friends from '../services/friends.js';
 import * as chat from '../services/chat.js';
@@ -141,7 +141,8 @@ router.get('/u/:username', (req, res) => {
   const p = getUserByName(req.params.username);
   // The official account's old names (MagicCups, …) point to its profile now.
   if (!p && isRetiredName(req.params.username)) return res.redirect(301, `/u/${OFFICIAL}`);
-  if (!p || p.banned) return notFound(req, res, t('profile.notFound'));
+  // Grown-up accounts have no public profile.
+  if (!p || p.banned || isGrownup(p)) return notFound(req, res, t('profile.notFound'));
   const viewer = req.user;
   if (p.is_guest) {
     const body = html`<div class="empty">${avatar(p, 96)}<h1 style="margin-top:12px">${p.display_name}</h1><p class="muted">${t('profile.guest.tag')}</p><p>${t('profile.guest.text')}</p><a class="btn btn-primary" href="/">${t('profile.guest.action')}</a></div>`;

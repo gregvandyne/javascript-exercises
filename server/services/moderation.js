@@ -1,6 +1,7 @@
 // Admin moderation: review queue, game reports, chat reports, users, audit log. Every action is audited.
 // Approve/reject go through services/publish.js (the only place that moves a version live).
 import { q, now, tx, audit } from '../db.js';
+import { unlinkAll } from './family.js';
 import { getGame, getVersion, liveClasses } from './games.js';
 import * as publish from './publish.js';
 
@@ -112,14 +113,15 @@ export function findUser(username) {
   const games = q.get('SELECT COUNT(*) n FROM games WHERE owner_id=?', u.id).n;
   const friendsN = q.get("SELECT COUNT(*) n FROM friends WHERE user_id=? AND status='accepted'", u.id).n;
   const reportsAgainst = q.get('SELECT COUNT(*) n FROM chat_reports r JOIN chat_messages m ON m.id=r.message_id WHERE m.from_id=?', u.id).n;
-  return { id: u.id, username: u.username, display_name: u.display_name, avatar: u.avatar, color: u.color, photo_at: u.photo_at, role: u.role, managed_school: u.managed_school || '', is_guest: !!u.is_guest, banned: !!u.banned, chat_enabled: !!u.chat_enabled, created_at: u.created_at, last_seen: u.last_seen, games, friends: friendsN, chatReports: reportsAgainst };
+  return { id: u.id, username: u.username, display_name: u.display_name, avatar: u.avatar, color: u.color, photo_at: u.photo_at, role: u.role, managed_school: u.managed_school || '', is_guest: !!u.is_guest, account_type: u.account_type || 'kid', banned: !!u.banned, chat_enabled: !!u.chat_enabled, created_at: u.created_at, last_seen: u.last_seen, games, friends: friendsN, chatReports: reportsAgainst };
 }
 /** Ban: account paused, every session ended. Admins cannot be banned from here. */
 export function banUser(admin, userId, reason = '') {
   const u = q.get('SELECT * FROM users WHERE id=?', userId);
   if (!u) return { ok: false, error: 'User not found.' };
   if (u.role === 'admin') return { ok: false, error: 'Admins cannot be banned here.' };
-  tx(() => { q.run('UPDATE users SET banned=1 WHERE id=?', u.id); q.run('DELETE FROM sessions WHERE user_id=?', u.id); });
+  // Family links and requests of a banned account (as a child or a grown-up) end in the same transaction.
+  tx(() => { q.run('UPDATE users SET banned=1 WHERE id=?', u.id); q.run('DELETE FROM sessions WHERE user_id=?', u.id); unlinkAll(u.id, admin.id, 'ban'); });
   audit(admin.id, 'admin.ban', u.id, { username: u.username, reason });
   return { ok: true };
 }

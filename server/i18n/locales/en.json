@@ -43,7 +43,8 @@
       "question": "💬 The Builder has a question about “{title}”. <a href=\"{href}\">Open it</a>",
       "stopped": "⚠️ “{title}” stopped before it was finished. <a href=\"{href}\">Open it to carry on</a>",
       "many": "✨ Some of your games have news from the Builder. <a href=\"{href}\">See My games</a>"
-    }
+    },
+    "shortPasswordGrownup": "Your password is shorter than {min} characters. Please <a href=\"{href}\">choose a longer one</a>."
   },
   "nav": {
     "home": "Home",
@@ -52,7 +53,8 @@
     "friends": "Friends",
     "me": "Me",
     "classes": "Classes",
-    "schools": "Schools"
+    "schools": "Schools",
+    "family": "Family"
   },
   "errors": {
     "goHome": "Go home",
@@ -210,7 +212,8 @@
       "mismatch": "The two new passwords don't match.",
       "same": "That's the password you have now. Pick a new one.",
       "staffShort": "That's only {n, plural, one {# character} other {# characters}}. Use at least {min}.",
-      "school": "Your teacher looks after your password — ask them if you forget it."
+      "school": "Your teacher looks after your password — ask them if you forget it.",
+      "hintGrownup": "At least {min} characters, because this account looks after a family."
     },
     "signOut": {
       "heading": "Sign out",
@@ -236,6 +239,36 @@
         "unsafe": "That photo isn’t right for Oomba Academy. Try a different one.",
         "personal_info": "That photo shows private details like a name, school or address. Try a different one.",
         "resting": "Photos need our safety check, and it’s resting right now. Try again later."
+      }
+    },
+    "family": {
+      "heading": "For grown-ups",
+      "text": "A grown-up can link to your account.",
+      "getCode": "Get a code",
+      "newCode": "Get a new code",
+      "codeOpen": "You have a code that still works. Lost it? Get a new one, and the old one stops working.",
+      "codeLabel": "Your code",
+      "codeHow": "It works once, for 1 hour. A grown-up can link to your account with this code at {where}.",
+      "pending": "<b>Your grown-up</b> wants to link to your account. Only say yes if this is your parent or guardian. If you don't know them, tell an adult you trust.",
+      "yes": "Yes",
+      "no": "No",
+      "report": "Report",
+      "reportConfirm": "Report this? Nothing gets linked, and the Oomba Academy team will take a look.",
+      "linked": "Linked to <b>your grown-up</b>.",
+      "unlink": "Unlink",
+      "unlinkConfirm": "Unlink your grown-up?",
+      "reportLinkedConfirm": "Report this? The link ends now, and the Oomba Academy team will take a look.",
+      "done": {
+        "yes": "You're linked to your grown-up.",
+        "no": "OK. Nothing was linked.",
+        "report": "Thanks for telling us. Nothing was linked, and we'll take a look.",
+        "unlink": "Unlinked.",
+        "reportLinked": "Thanks for telling us. The link has ended, and we'll take a look."
+      },
+      "errors": {
+        "linked": "You're already linked to a grown-up.",
+        "pending": "Answer the question on this page first.",
+        "nothing": "There's nothing to do here right now. Try reloading the page."
       }
     }
   },
@@ -401,6 +434,11 @@
       "contact": {
         "h": "Contact us",
         "p1": "Grown-ups can email us at {email}."
+      },
+      "families": {
+        "h": "Family accounts",
+        "p1": "A parent or guardian can make their own grown-up account and link it to their child's account. Your child has to say yes on their own page.",
+        "link": "About family accounts"
       }
     },
     "sdk": {
@@ -2208,6 +2246,126 @@
         "h": "Privacy",
         "p1": "We keep the Google account's id, email address and school domain while it is connected, to recognise it at sign-in. We never store the Google photo, never show a student's Google name on the game site, and never use the account to read anything else from Google."
       }
+    }
+  },
+  "family": {
+    "landing": {
+      "title": "Family accounts",
+      "description": "Grown-up accounts for parents and guardians on Oomba Academy: link your children, and what a family plan adds.",
+      "heading": "Oomba Academy for families",
+      "intro": "Playing and building games on Oomba Academy is free. A grown-up account lets a parent or guardian link to their children, and a family plan adds extra Builder messages for them.",
+      "signup": "Make a grown-up account",
+      "login": "Sign in",
+      "toFamily": "Go to your family page",
+      "what": {
+        "h": "What a family plan adds",
+        "p1": "{extra, plural, one {# extra Builder message} other {# extra Builder messages}} a month, shared by up to {max} children, on top of the free messages every player gets each day.",
+        "p2": "Paying never unlocks anything free players lack, and children are never asked to pay."
+      },
+      "price": {
+        "h": "Price",
+        "p1": "{monthly} a month or {yearly} a year, plus sales tax where it applies. Cancel anytime: the plan runs to the end of the period you paid for.",
+        "soon": "Family plans aren't on sale yet. You can make a grown-up account and link your children now.",
+        "us": "Family plans are for US families for now."
+      },
+      "how": {
+        "h": "How linking works",
+        "p1": "Make a grown-up account: a name and a password of at least 12 characters. No email needed.",
+        "p2": "Your child signs in, opens <b>Me</b>, then <b>For grown-ups</b>, and taps <b>Get a code</b>.",
+        "p3": "You type the code on your family page, and your child says yes on their own page."
+      },
+      "faq": {
+        "h": "Questions",
+        "cancel": {
+          "q": "Can I cancel?",
+          "a": "Yes, anytime. The plan runs to the end of the period you paid for, then your children go back to the free messages. Nothing they made is deleted."
+        },
+        "store": {
+          "q": "What do you keep about me?",
+          "a": "Your account name, a scrambled (hashed) password and which children are linked. We don't ask for your email. When you pay, Stripe handles the payment and keeps your email for receipts: we never see card numbers."
+        },
+        "see": {
+          "q": "What can I see about my child?",
+          "a": "Their name, and how many of the family's extra messages they used up to yesterday. Never their chats, friends, games, school or what they are doing right now."
+        },
+        "reset": {
+          "q": "When do the free messages reset?",
+          "a": "Every day at 00:00 UTC.",
+          "local": "That's {time} where you are."
+        },
+        "consent": {
+          "q": "Is linking or paying a form of parental consent?",
+          "a": "No. Linking and family plans are only about extra Builder messages. They are not how the site asks for or records consent."
+        }
+      }
+    },
+    "signup": {
+      "title": "Grown-up sign-up",
+      "heading": "Make a grown-up account",
+      "intro": "For parents and guardians. A grown-up account can play games and look after a family. It can't build games, chat or add friends.",
+      "nameLabel": "Account name",
+      "nameHint": "3 to 16 letters or numbers. Children never see this name.",
+      "passwordHint": "At least {min} characters.",
+      "confirmLabel": "Password again",
+      "adult": "I am a parent or guardian, 18 or older.",
+      "submit": "Make account",
+      "haveAccount": "Already have a grown-up account?",
+      "signedIn": "You're signed in as {name}. Sign out first to use a grown-up account here.",
+      "signOutFirst": "Sign out of the account on this device first.",
+      "needAdult": "Tick the box to say you are a parent or guardian, 18 or older.",
+      "short": "Use at least {min} characters."
+    },
+    "login": {
+      "title": "Grown-up sign-in",
+      "heading": "Sign in as a grown-up",
+      "intro": "With the name and password of your grown-up account.",
+      "submit": "Sign in",
+      "newHere": "No grown-up account yet?",
+      "forgot": "Forgot your password? Write to {email} from the email you want us to answer."
+    },
+    "page": {
+      "title": "Your family",
+      "heading": "Your family",
+      "children": "Children",
+      "none": "No children linked yet.",
+      "add": "Link a child",
+      "full": "You have linked {max} children, the most for one family.",
+      "pending": "Waiting for your child to say yes",
+      "pendingSent": "Asked {when}. The request ends after 24 hours.",
+      "yesterday": "Family extra messages yesterday: {n}",
+      "month": "this month up to yesterday: {n}",
+      "sourceFamily": "Extra messages come from your family plan.",
+      "sourceFree": "Uses the free daily messages.",
+      "usageNote": "Counts go up to the end of yesterday (UTC), so this page never shows what your child is doing right now.",
+      "remove": "Unlink",
+      "removeConfirm": "Unlink {name}?",
+      "removed": "Done.",
+      "cancel": "Cancel request",
+      "cancelConfirm": "Cancel this request?",
+      "planHeading": "Family plan",
+      "planActive": "Your family plan is active.",
+      "planNone": "No family plan. Linking children is free and changes nothing for them.",
+      "planMore": "About family plans",
+      "helpHeading": "Help",
+      "help": "Questions, or a problem with your account? Write to {email}."
+    },
+    "link": {
+      "title": "Link a child",
+      "heading": "Link a child",
+      "step1": "Your child signs in, opens <b>Me</b>, then <b>For grown-ups</b>, and taps <b>Get a code</b>.",
+      "step2": "Type the code here. It works once, for 1 hour.",
+      "step3": "Your child says yes on their own Me page. Until then the link waits (for up to 24 hours).",
+      "label": "Your child's code",
+      "submit": "Send link request",
+      "sent": "Request sent. Your child needs to say yes on their Me page."
+    },
+    "errors": {
+      "badCode": "That code doesn't work. A code works once, for 1 hour: ask your child for a new one.",
+      "already": "You already asked to link this child, or they are already linked.",
+      "full": "A family can link up to {max} children.",
+      "typeCode": "Type the code your child gave you.",
+      "tooMany": "Too many tries. Wait 15 minutes, then try again.",
+      "notFound": "That child isn't in your family."
     }
   }
 }

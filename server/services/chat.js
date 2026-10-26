@@ -15,6 +15,7 @@ import { config } from '../config.js';
 import { hasProfanity, personalInfo, foldDigits } from './textfilter.js';
 import { tEn } from '../i18n/index.js';
 import { getGame, canView } from './games.js';
+import { looksLikeLinkCode } from './family.js';
 
 migrate([['0002_community', 'ALTER TABLE chat_usage ADD COLUMN paused_until INTEGER NOT NULL DEFAULT 0; CREATE INDEX IF NOT EXISTS chat_reports_msg ON chat_reports(message_id, reporter_id);']]);
 
@@ -49,10 +50,11 @@ export function canChat(me, other, t = tEn) {
   me = me && userById(me.id); other = other && userById(other.id);
   const no = (code, vars) => ({ ok: false, code, reason: t(`chat.cant.${code}`, vars) });
   if (!me || me.is_guest) return no('guest');
+  if (me.account_type === 'grownup') return no('guest');
   if (me.banned) return no('banned');
   if (!other || other.banned) return no('missing');
   if (other.id === me.id) return no('self');
-  if (other.is_guest) return no('guest_other');
+  if (other.is_guest || other.account_type === 'grownup') return no('guest_other');
   const name = other.display_name;
   if (!accepted(me.id, other.id) || !accepted(other.id, me.id)) return no('not_friends', { name });
   if (schoolChatOff(me)) return no('school_off_me');
@@ -102,6 +104,8 @@ function extraPersonal(t) {
   if (/\b(add|follow|find|dm|message|text|call)\s+me\s+(on|at|in)\b/i.test(t)) return 'contact';
   if (/\b(what|which)\s+(school|town|city|street)\b|\bwhere\s+(do\s+)?(you|u)\s+(live|go to school)\b|\bhow\s+old\s+(are\s+)?(you|u)\b|\byour\s+(real\s+name|address|password|last\s+name|age)\b/i.test(t)) return 'contact';
   if (/\b(my|our)\s+(address|password|school)\s+is\b/i.test(t)) return 'contact';
+  // A family link code (K7Q-4MZ9): codes are for a child's own grown-up, never passed around in chat.
+  if (looksLikeLinkCode(t)) return 'contact';
   // digits spelled with spaces or words ("five five five one two ..."), in any script (full-width, Arabic-Indic...)
   const digits = foldDigits(t.normalize('NFKC')).replace(/\b(zero|oh|one|two|three|four|five|six|seven|eight|nine)\b/gi, '1');
   if (/(\d[\s.\-_,/()]*){7,}/.test(digits)) return 'phone';

@@ -6,7 +6,7 @@
 //   i18n: extra key prefixes to embed for the browser. Every page gets 'js.app' plus 'js.<name>' for each /js/<name>.js.
 import { html, raw, esc, jsonData } from './html.js';
 import { avatar, BRAND, wordmark, appMark } from './components.js';
-import { accountKind, STAFF_PASSWORD_MIN } from '../auth.js';
+import { accountKind, STAFF_PASSWORD_MIN, isGrownup, longPasswordKind } from '../auth.js';
 import { config } from '../config.js';
 import { ICONS_V } from './brand.js';
 import { navBadges } from '../services/badges.js';
@@ -64,11 +64,14 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
   const u = req.user;
   const badges = u ? navBadges(u) : { friends: 0 };
   const badge = k => (badges[k] ? html`<span class="badge" aria-label="${t('layout.badgeNew', { count: badges[k] })}">${badges[k] > 9 ? '9+' : badges[k]}</span>` : '');
-  const meHref = u ? '/me' : '/login';
+  // Grown-up accounts (routes/family.js) get Home, Search and their family page, and no Me tab.
+  const grownup = isGrownup(u);
+  const meHref = grownup ? '/family' : u ? '/me' : '/login';
   // People in a school get a Classes tab (teachers land on /teach, students on /classes); the platform admin, when not
   // staff of a school, gets Schools instead.
   const staff = u && isSchoolStaff(u);
-  const navItems = u && staff ? [...NAV, ['classes', '/teach', '🏫']]
+  const navItems = grownup ? [NAV[0], NAV[1], ['family', '/family', '👪']]
+    : u && staff ? [...NAV, ['classes', '/teach', '🏫']]
     : u && isPlatformAdmin(u) ? [...NAV, ['schools', '/admin/schools', '🏫']]
     : u && inAnySchool(u) ? [...NAV, ['classes', '/classes', '🏫']] : NAV;
   // Pages in the Classes area highlight Schools for the platform admin, whose nav has Schools instead of Classes.
@@ -90,13 +93,13 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
     </nav>
     ${langPicker(req)}
     ${themePicker(req)}
-    <a class="me-btn" href="${meHref}" ${cur('me')} aria-label="${u ? t('layout.meLabel', { name: u.display_name }) : signIn}">${u ? avatar(u, 38) : html`<span class="avatar" style="--s:38px;--c:var(--hover)" aria-hidden="true">🙂</span>`}<span class="name">${u ? u.display_name : signIn}</span></a>
+    <a class="me-btn" href="${meHref}" ${cur(grownup ? 'family' : 'me')} aria-label="${u ? t('layout.meLabel', { name: u.display_name }) : signIn}">${u ? avatar(u, 38) : html`<span class="avatar" style="--s:38px;--c:var(--hover)" aria-hidden="true">🙂</span>`}<span class="name">${u ? u.display_name : signIn}</span>${badge('me')}</a>
   </header>
   <nav class="tabbar" aria-label="${t('layout.mainNav')}">
     ${navItems.map(([k, href, emo]) => html`<a class="tab" href="${href}" ${cur(k)}><span class="emo" aria-hidden="true">${emo}</span>${t(`nav.${k}`)}${badge(k)}</a>`)}
-    <a class="tab" href="${meHref}" ${cur('me')}>${u && u.photo_at ? html`<span class="emo">${avatar(u, 28)}</span>` : html`<span class="emo" aria-hidden="true">${u ? u.avatar : '🙂'}</span>`}${u ? t('nav.me') : signIn}</a>
+    ${grownup ? '' : html`<a class="tab" href="${meHref}" ${cur('me')}>${u && u.photo_at ? html`<span class="emo">${avatar(u, 28)}</span>` : html`<span class="emo" aria-hidden="true">${u ? u.avatar : '🙂'}</span>`}${u ? t('nav.me') : signIn}${badge('me')}</a>`}
   </nav>`;
-  const foot = bare ? '' : html`<footer class="foot"><span>${t('layout.footer.tagline')}</span><a href="/safety">${t('layout.footer.safety')}</a><a href="/parents">${t('layout.footer.parents')}</a>${config.contactEmail ? html`<a href="/parents#contact">${t('layout.footer.contact')}</a>` : ''}<a href="/sdk">${t('layout.footer.builders')}</a><a href="/me#language" class="foot-lang"><span aria-hidden="true">🌐</span> ${info.name}</a></footer>`;
+  const foot = bare ? '' : html`<footer class="foot"><span>${t('layout.footer.tagline')}</span><a href="/safety">${t('layout.footer.safety')}</a><a href="/parents">${t('layout.footer.parents')}</a>${config.contactEmail ? html`<a href="/parents#contact">${t('layout.footer.contact')}</a>` : ''}${grownup ? '' : html`<a href="/sdk">${t('layout.footer.builders')}</a>`}<a href="/me#language" class="foot-lang"><span aria-hidden="true">🌐</span> ${info.name}</a></footer>`;
   const backHtml = back ? html`<a class="backlink" href="${back}"><span class="flip" aria-hidden="true">←</span> ${backLabel || t('layout.back')}</a>` : '';
   // A sign-in that just ended (timed out, or ended on another device) is mentioned once, on whatever page comes next; the
   // sign-in page says it itself.
@@ -105,7 +108,7 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
   // page they open. Only for builds they sent themselves; opening that game's Studio first counts as seeing it.
   const news = !bare && u && !u.is_guest ? buildNews(t, u) : '';
   // Staff (and the platform admin) who signed in with a short password are asked for a longer one on every page.
-  const shortPw = !bare && u && u.password_short && accountKind(u) === 'staff' ? html`<p class="notice warn pagenote">${tHtml(t, 'layout.shortPassword', { min: STAFF_PASSWORD_MIN, href: '/me#password' })}</p>` : '';
+  const shortPw = !bare && u && u.password_short && longPasswordKind(u) ? html`<p class="notice warn pagenote">${tHtml(t, accountKind(u) === 'grownup' ? 'layout.shortPasswordGrownup' : 'layout.shortPassword', { min: STAFF_PASSWORD_MIN, href: grownup ? '/family#password' : '/me#password' })}</p>` : '';
   const prefixes = ['js.app', ...scripts.map(s => (s.match(/^\/js\/([\w-]+)\.js$/) || [])[1]).filter(Boolean).map(n => `js.${n}`), ...i18n];
   // An explicit Light or Dark choice is on <html> before any CSS loads, so the first paint is right (no flash, no JS).
   const theme = req.theme === 'light' || req.theme === 'dark' ? req.theme : null;

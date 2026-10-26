@@ -15,12 +15,13 @@ import * as chat from '../services/chat.js';
 import { COMMUNITY_CSS } from './social.js';
 import { tEn } from '../i18n/index.js';
 import { schoolsOf, getSchool } from '../services/schools.js';
+import * as family from '../services/family.js';
 
 export const router = Router();
 router.use('/admin', requireAdmin);
 router.use('/api/admin', requireAdmin);
 
-const TABS = [['queue', '⏳', 'Review queue'], ['reports', '🚩', 'Reports'], ['chat', '💬', 'Chat reports'], ['users', '👤', 'Users'], ['audit', '📜', 'Audit log']];
+const TABS = [['queue', '⏳', 'Review queue'], ['reports', '🚩', 'Reports'], ['chat', '💬', 'Chat reports'], ['links', '🧑‍🧒', 'Link reports'], ['users', '👤', 'Users'], ['audit', '📜', 'Audit log']];
 const gameReason = k => (GAME_REASONS.find(r => r[0] === k) || [k, k])[1];
 const chatReason = k => (chat.REPORT_REASONS.find(r => r[0] === k) || [k, k])[1];
 const when = t => html`<time datetime="${new Date(t).toISOString()}" title="${new Date(t).toISOString().replace('T', ' ').slice(0, 16)} UTC">${timeAgo(t)}</time>`;
@@ -104,6 +105,33 @@ function chatTab() {
   </article>`)}</div>`;
 }
 
+/** Children's Reports on a grown-up's link request or link (services/family.js). The report itself already ended the
+ *  link; here the admin looks at the grown-up account, bans it if needed, and marks the report done. */
+function linksTab() {
+  const list = family.openReports();
+  if (!list.length) return emptyState({ emoji: '🧑‍🧒', title: 'No link reports', text: 'When a child reports a grown-up who asked to link to their account, it shows up here. The report already ended any link.' });
+  return html`<div class="stack">${list.map(r => html`<article class="panel">
+    <p class="row small" style="gap:6px"><span class="chip-s bad">Reported</span> ${when(r.created_at)}</p>
+    <p class="small" style="margin:0">Child: ${avatar({ id: r.child_id, avatar: r.child_avatar, color: r.child_color, photo_at: r.child_photo_at }, 26)} <b>${r.child_display}</b> <a href="/admin?tab=users&amp;username=${encodeURIComponent(r.child_name)}">@${r.child_name}</a>${r.child_banned ? ' · banned' : ''}</p>
+    <p class="small">Grown-up: ${r.owner_name ? html`<a href="/admin?tab=users&amp;username=${encodeURIComponent(r.owner_name)}">@${r.owner_name}</a> · account made ${when(r.owner_created)}${r.owner_banned ? ' · banned' : ''}` : 'account gone'} · ${r.family_reports} report${r.family_reports === 1 ? '' : 's'} against this family</p>
+    <div class="row">
+      <button class="btn" type="button" data-act="resolvelink" data-id="${r.id}">👍 Done</button>
+      ${r.owner_id && !r.owner_banned ? html`<button class="btn btn-danger" type="button" data-act="banlink" data-id="${r.id}" data-name="${r.owner_name}">⛔ Ban grown-up</button>` : ''}
+    </div>
+  </article>`)}</div>`;
+}
+/** The Family row of the users tab: a child's family, or a grown-up's children, each with Break link. */
+function familyCell(u) {
+  const l = family.adminLinks(u.id);
+  const brk = (fid, cid, label) => html` <button class="btn" type="button" data-act="unlinkfamily" data-id="${fid}" data-child="${cid}" data-name="${label}">Break link</button>`;
+  const st = r => (r.status === 'pending' ? 'asked' : 'linked');
+  if (u.account_type === 'grownup') {
+    return html`Grown-up account${l.children.length ? html`${l.children.map(c => html`<div>${st(c)}: <a href="/admin?tab=users&amp;username=${encodeURIComponent(c.child_name)}">@${c.child_name}</a>${brk(c.family_id, c.child_id, c.child_name)}</div>`)}` : ' · no children'}`;
+  }
+  if (!l.asChild.length) return 'none';
+  return html`${l.asChild.map(r => html`<div>${st(r)} with grown-up <a href="/admin?tab=users&amp;username=${encodeURIComponent(r.owner_name)}">@${r.owner_name}</a>${brk(r.family_id, r.child_id, u.username)}</div>`)}`;
+}
+
 const SCHOOL_ROLE = { admin: 'School admin', teacher: 'Teacher', student: 'Student' };
 const schoolLink = s => html`<a href="/school/${s.slug}?tab=people">${s.name}</a>`;
 /** The Schools row of the users tab: who owns the account (school accounts) and every active membership with its role.
@@ -134,6 +162,7 @@ function usersTab(req) {
     <div class="tblwrap"><table class="tbl" style="margin-top:12px"><tbody>
       <tr><th scope="row">Site role</th><td>${u.role}</td></tr>
       <tr><th scope="row">Schools</th><td>${schoolsCell(u)}</td></tr>
+      <tr><th scope="row">Family</th><td>${familyCell(u)}</td></tr>
       <tr><th scope="row">Created</th><td>${new Date(u.created_at).toISOString().slice(0, 10)} (${timeAgo(u.created_at)})</td></tr>
       <tr><th scope="row">Last seen</th><td>${u.last_seen ? timeAgo(u.last_seen) : 'never'}</td></tr>
       <tr><th scope="row">Games</th><td>${u.games}</td></tr>
@@ -165,8 +194,8 @@ function aiSpendPanel() {
 router.get('/admin', (req, res) => {
   const tab = TABS.some(t => t[0] === req.query.tab) ? req.query.tab : 'queue';
   const c = mod.counts();
-  const n = { queue: c.queue, reports: c.reports, chat: c.chat };
-  const content = { queue: queueTab, reports: reportsTab, chat: chatTab, users: usersTab, audit: auditTab }[tab](req);
+  const n = { queue: c.queue, reports: c.reports, chat: c.chat, links: family.openReportCount() };
+  const content = { queue: queueTab, reports: reportsTab, chat: chatTab, links: linksTab, users: usersTab, audit: auditTab }[tab](req);
   const body = html`
   <div class="pagehead"><h1>🛡️ Admin</h1><div class="row"><a class="btn btn-primary" href="/admin/stats"><span aria-hidden="true">📊</span> Stats</a><a class="btn" href="/admin/schools"><span aria-hidden="true">🏫</span> Schools</a></div></div>
   ${aiSpendPanel()}
@@ -325,3 +354,14 @@ router.post('/api/admin/users/:id/ban', (req, res) => { const r = mod.banUser(re
 router.post('/api/admin/users/:id/photo/remove', (req, res) => (photos.removePhoto(req.params.id, req.user.id) ? res.json({ ok: true }) : res.status(404).json({ error: 'That player has no photo.' })));
 router.post('/api/admin/users/:id/unban', (req, res) => { const r = mod.unbanUser(req.user, req.params.id); res.status(r.ok ? 200 : 400).json(r); });
 router.get('/api/admin/audit', (req, res) => res.json({ rows: mod.auditLog(200) }));
+// Family links (services/family.js): a link report done, its grown-up banned (every link of theirs ends), a link broken.
+router.post('/api/admin/link-reports/:id/resolve', (req, res) => (family.resolveReport(req.user, req.params.id) ? res.json({ ok: true }) : res.status(404).json({ error: 'Report not found.' })));
+router.post('/api/admin/link-reports/:id/ban', (req, res) => {
+  const r = family.reportById(req.params.id); const fam = r && family.familyById(r.family_id);
+  if (!fam) return res.status(404).json({ error: 'Report not found.' });
+  const out = mod.banUser(req.user, fam.owner_id, `link report ${r.id}`);
+  if (!out.ok) return res.status(400).json(out);
+  family.resolveReport(req.user, r.id);
+  res.json({ ok: true });
+});
+router.post('/api/admin/family/:fid/children/:cid/unlink', (req, res) => (family.adminUnlink(req.user, req.params.fid, req.params.cid) ? res.json({ ok: true }) : res.status(404).json({ error: 'No such link.' })));

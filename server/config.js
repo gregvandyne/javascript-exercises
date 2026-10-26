@@ -190,4 +190,8 @@ export const config = {
   // Days a card plan stays on while Stripe retries a failed payment; days after an invoice's due date for schools.
   billingGraceDays: Math.max(0, num(process.env.BILLING_GRACE_DAYS, 7)),
   schoolInvoiceGraceDays: Math.max(0, num(process.env.SCHOOL_INVOICE_GRACE_DAYS, 30)),
+  // Families (server/services/family.js): children one grown-up can link, and the extra Builder messages a family plan
+  // adds each month (shown on /grown-ups; counted from chunk 4 on).
+  familyMaxChildren: Math.max(1, num(process.env.FAMILY_MAX_CHILDREN, 4)),
+  familyExtraMessages: Math.max(0, num(process.env.FAMILY_EXTRA_MESSAGES, 40)),
 };
