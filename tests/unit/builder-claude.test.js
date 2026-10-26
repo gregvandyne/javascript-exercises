@@ -224,16 +224,16 @@ test('build steps: rounds, a real thinking block, the AI\'s plan streamed first,
   assert.equal(r.ok, true, JSON.stringify(events.filter(e => e[0] === 'error')));
   assert.deepEqual(rows.map(x => x.key), ['screen', 'think', 'write', 'name', 'check', 'think', 'edit', 'think', 'edit', 'check', 'think', 'notes', 'ask']);
   assert.deepEqual(rows[0], { key: 'screen' });
-  assert.deepEqual(rows[1], { key: 'think', n: 1, c: 'start', th: 1 }, 'round 1: first message, a thinking block really streamed, no game yet');
+  assert.deepEqual(rows[1], { key: 'think', n: 1, c: 'start', a: 1, th: 1 }, 'round 1: first message, a thinking block really streamed, no game yet');
   assert.deepEqual(rows[2], { key: 'write', plan: 'First version', l: 100 });
   assert.deepEqual(rows[3], { key: 'name', title: 'Fox Hop', icon: '🦊' }, 'set_game runs first (block order), after the write row started');
   assert.equal(rows[4].key, 'check'); assert.equal(rows[4].v, 1); assert.ok(['pass', 'flag'].includes(rows[4].st), rows[4].st);
-  assert.deepEqual(rows[5], { key: 'think', n: 2, c: 'next' }, 'no thinking block: no th');
+  assert.deepEqual(rows[5], { key: 'think', n: 2, c: 'next', a: 1 }, 'no thinking block: no th');
   assert.deepEqual(rows[6], { key: 'edit', plan: 'Oops', e: 1, ok: false }, 'the failed edit is marked');
-  assert.deepEqual(rows[7], { key: 'think', n: 3, c: 'retry' });
+  assert.deepEqual(rows[7], { key: 'think', n: 3, c: 'retry', a: 1 });
   assert.deepEqual(rows[8], { key: 'edit', plan: 'Faster and bigger fox', e: 2 });
   assert.equal(rows[9].key, 'check'); assert.equal(rows[9].v, 2);
-  assert.deepEqual(rows[10], { key: 'think', n: 4, c: 'next' });
+  assert.deepEqual(rows[10], { key: 'think', n: 4, c: 'next', a: 1 });
   // The plan streamed before the code finished (notes first), and the lines counter ended exact.
   const infos = events.map((e, k) => [k, e[0], e[1]]).filter(([, n, d]) => n === 'stepinfo' && d.i === 3);
   const plan = infos.find(([, , d]) => d.plan); const lastL = infos.filter(([, , d]) => 'l' in d).at(-1);
@@ -255,7 +255,7 @@ test('build steps: rounds, a real thinking block, the AI\'s plan streamed first,
   for (const c of requests.filter(x => x.body.stream).slice(before)) { assert.equal(c.body.thinking, undefined); assert.equal(c.body.temperature, undefined); }
   // Next turn: round 1 also reads the game (g), and the model never sees the steps record.
   const next = await stepTurn(u, g, 'thanks', [[{ type: 'text', text: 'Sure!' }]]);
-  assert.deepEqual(next.rows, [{ key: 'screen' }, { key: 'think', n: 1, c: 'start', g: 1 }]);
+  assert.deepEqual(next.rows, [{ key: 'screen' }, { key: 'think', n: 1, c: 'start', a: 1, g: 1 }]);
   const sent = JSON.stringify(requests.filter(x => x.body.stream).at(-1).body.messages);
   assert.match(sent, /Built version 2: Faster and bigger fox/);
   assert.doesNotMatch(sent, /"steps"|"th":|\["screen"|"plan"/);
@@ -274,13 +274,13 @@ test('build steps: notes after html still give the plan; long notes come from th
   assert.deepEqual(rows[2], { key: 'write', l: 100, plan: 'Old order notes' }, 'old key order: the plan arrives at the end');
   assert.deepEqual(rows[5], { key: 'edit', e: 1, plan: 'Z' + 'z'.repeat(119) }, 'notes too long to stream: the plan is the real notes, cleaned and capped');
   assert.ok(idx(events, 'stepinfo', d => d.i === 6 && d.plan) > idx(events, 'step', s => s.key === 'check' && s.v === 2), 'set after the tool ran');
-  assert.deepEqual(rows[7], { key: 'think', n: 3, c: 'next' });
+  assert.deepEqual(rows[7], { key: 'think', n: 3, c: 'next', a: 1 });
   // Playtesting is off in unit tests: the AI asked for one, so the row is there, marked as not run (never as a test).
   assert.deepEqual(rows[8], { key: 'playtest', v: 2, ok: false }, 'an attempted playtest says it could not run');
   assert.equal(idx(events, 'playtest'), -1, 'no playtest card: nothing was tested');
-  assert.deepEqual(rows[9], { key: 'think', n: 4, c: 'retry' }, 'the next round reads that error, and the card shows it');
+  assert.deepEqual(rows[9], { key: 'think', n: 4, c: 'retry', a: 1 }, 'the next round reads that error, and the card shows it');
   assert.deepEqual(rows[10], { key: 'write', plan: 'Too long', l: 100, ok: false, why: 'cut' });
-  assert.deepEqual(rows[11], { key: 'think', n: 5, c: 'retry', th: 1 }, 'redacted thinking counts as thinking too');
+  assert.deepEqual(rows[11], { key: 'think', n: 5, c: 'retry', a: 1, th: 1 }, 'redacted thinking counts as thinking too');
   assert.equal(done.steps.end, 'ok'); assert.equal(done.steps.r, 5);
 });
 
@@ -292,9 +292,9 @@ test('build steps: a failed safety scan gives "reading the safety report" rounds
   const k = events.find(e => e[0] === 'version')[1].issues.filter(x => x.startsWith('Must fix')).length;
   assert.ok(k >= 1);
   assert.deepEqual(rows, [
-    { key: 'screen' }, { key: 'think', n: 1, c: 'start' }, { key: 'write', plan: 'Try 1', l: 1 }, { key: 'check', st: 'fail', v: 1, k },
-    { key: 'think', n: 2, c: 'scan' }, { key: 'fix', via: 'write', plan: 'Try 2', l: 1 }, { key: 'check', st: 'fail', v: 2, k },
-    { key: 'think', n: 3, c: 'scan' }, { key: 'fix', via: 'write', plan: 'Try 3', l: 1 }, { key: 'check', st: 'fail', v: 3, k },
+    { key: 'screen' }, { key: 'think', n: 1, c: 'start', a: 1 }, { key: 'write', plan: 'Try 1', l: 1 }, { key: 'check', st: 'fail', v: 1, k },
+    { key: 'think', n: 2, c: 'scan', a: 1 }, { key: 'fix', via: 'write', plan: 'Try 2', l: 1 }, { key: 'check', st: 'fail', v: 2, k },
+    { key: 'think', n: 3, c: 'scan', a: 1 }, { key: 'fix', via: 'write', plan: 'Try 3', l: 1 }, { key: 'check', st: 'fail', v: 3, k },
   ]);
   assert.ok(events.filter(e => e[0] === 'text').map(e => e[1].text).join('').includes(tEn('builder.scanStillFailing')));
 });
@@ -309,7 +309,7 @@ test('build steps: a tool that failed without a row of its own leads to "what\'s
     [{ type: 'text', text: 'Done!' }],
   ]);
   assert.deepEqual(rows.map(x => x.key), ['screen', 'think', 'think', 'write', 'check', 'think']);
-  assert.deepEqual(rows[2], { key: 'think', n: 2, c: 'next' }, 'set_game changed nothing and has no row: no "went wrong" round');
+  assert.deepEqual(rows[2], { key: 'think', n: 2, c: 'next', a: 1 }, 'set_game changed nothing and has no row: no "went wrong" round');
   const v = events.find(e => e[0] === 'version')[1];
   assert.equal(v.status, 'flag'); assert.equal(rows[4].st, 'flag');
   assert.equal(rows[4].k, v.issues.length, 'the check row counts the same issues the version card lists');
@@ -342,9 +342,9 @@ test('build steps: a real playtest with problems gives "looking at the pictures"
     assert.equal(pt.v, 1); assert.ok(pt.pics >= 1 && pt.pics <= 2, `pictures: ${pt.pics}`); assert.ok(pt.probs >= 1, 'the missing __brbTest hook is a problem');
     assert.equal(pt.probs, events.find(e => e[0] === 'playtest')[1].problems, 'the same count as the playtest card');
     assert.ok(idx(events, 'step', s => s.key === 'playtest') < idx(events, 'playtest'));
-    assert.deepEqual(rows[6], { key: 'think', n: 3, c: 'look' });
+    assert.deepEqual(rows[6], { key: 'think', n: 3, c: 'look', a: 1 });
     assert.deepEqual(rows[7], { key: 'fix', via: 'edit', plan: 'Faster fox', e: 1 });
-    assert.deepEqual(rows[9], { key: 'think', n: 4, c: 'next' });
+    assert.deepEqual(rows[9], { key: 'think', n: 4, c: 'next', a: 1 });
   } finally { config.snapshots = false; config.chromiumPath = ''; await snapshot.closeBrowser(); }
 });
 
@@ -354,7 +354,7 @@ test('build steps: starting from the ready-made 3D world gives a template row, t
     [{ type: 'tool_use', name: 'start_from_template', input: { template: 'island', notes: 'Started a 3D island' } }],
     [{ type: 'text', text: 'Your 3D island is ready!' }],
   ]);
-  assert.deepEqual(rows, [{ key: 'screen' }, { key: 'think', n: 1, c: 'start' }, { key: 'template' }, { key: 'check', st: 'pass', v: 1 }, { key: 'think', n: 2, c: 'next' }]);
+  assert.deepEqual(rows, [{ key: 'screen' }, { key: 'think', n: 1, c: 'start', a: 1 }, { key: 'template' }, { key: 'check', st: 'pass', v: 1 }, { key: 'think', n: 2, c: 'next', a: 1 }]);
   assert.ok(idx(events, 'step', s => s.key === 'check') < idx(events, 'version'));
 });
 

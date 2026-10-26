@@ -296,5 +296,7 @@
   "studio.api.liveBusy": "The same game is open in many browser tabs at once.",
   "errors.moved.text": "Shown for a moment while the browser goes to the site's new address. {site} is the new address, like oomba.ai: keep it as is.",
   "errors.moved.link": "Link to the site's new address, in case the page doesn't move on by itself. {site} is the new address, like oomba.ai.",
-  "auth.page.moved": "Sign-in page, after the site moved to a new address and the sign-in could not come along. {site} is the new address, like oomba.ai."
+  "auth.page.moved": "Sign-in page, after the site moved to a new address and the sign-in could not come along. {site} is the new address, like oomba.ai.",
+  "js.studio.steps.think.now.plan": "Round 1 after the AI has read the message and is working out its answer (it may be thinking quietly). Same word for “round” as the other think.* labels.",
+  "js.studio.steps.think.learn.long": "Shown when the first round has been planning for 45 seconds. Must stay true: the build continues after leaving the page."
 }

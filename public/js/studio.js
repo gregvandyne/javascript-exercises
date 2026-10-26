@@ -250,7 +250,8 @@ const AUTHOR = new Set(['write', 'edit', 'fix']);
 const JUST_NOW = ['check', 'template', 'notes', 'name', 'ask'];
 const THINK_WHY = new Set(['start', 'look', 'scan', 'retry', 'next']);
 const FACTS = [...'abcdefghij'];
-const TIP_JUST = 6000, TIP_OWN = 8000, TIP_THINK = 8000, TIP_FACT = 11000;   // how long each 💡 line stays
+const TIP_JUST = 6000, TIP_OWN = 8000, TIP_THINK = 8000, TIP_FACT = 11000;
+const LONG_AT = 45000, TIP_LONG = 15000;   // a round still planning after 45 s says that big ideas take a while   // how long each 💡 line stays
 const SHOW_AFTER = 700;    // the live card appears once a turn has lasted this long (a quick turn goes straight to its summary)
 const MIN_SHOWN = 1200;    // once shown, it stays at least this long before it folds (no flash)
 const SEC_AFTER = 3000;    // a running step's seconds appear after 3 s ("0 sec" reads as stuck)
@@ -297,7 +298,9 @@ function stepLabel(k, f, done) {
   if (f.ok === false && (AUTHOR.has(k) || k === 'playtest')) return ST(`${k === 'fix' ? (f.via === 'edit' ? 'edit' : 'write') : k}.failed`);
   if (k === 'think') {
     const why = THINK_WHY.has(f.c) ? f.c : 'next';
-    return ST(`think.${done ? 'done' : 'now'}.${why === 'start' && f.g ? 'startGame' : why}`, { n: f.n || 1 });
+    // Round 1 says "reading" only until the AI starts answering; after that it is planning (it may think for a while).
+    const plan = why === 'start' && (f.a || f.th);
+    return ST(`think.${done ? 'done' : 'now'}.${plan ? (f.g ? 'planGame' : 'plan') : why === 'start' && f.g ? 'startGame' : why}`, { n: f.n || 1 });
   }
   if (k === 'check') return ST(`check.${['pass', 'flag', 'fail'].includes(f.st) ? f.st : 'flag'}`, { v: f.v || 1, k: f.k || 1 });
   if (k === 'name') {
@@ -500,6 +503,7 @@ function liveSteps() {
     if (ownLearn(r.key, r.f)) items.push(['own', TIP_OWN]);
     if (r.key === 'think' && r.f.th && (!turn.thinkShown || r.thinkHere)) items.push(['think', TIP_THINK]);
     const age = Date.now() - r.at; let at = 0;
+    if (r.key === 'think' && !r.done && !r.paused && age >= LONG_AT && age < LONG_AT + TIP_LONG) return 'long';
     for (const [kind, ms] of items) { if (age < at + ms) return kind; at += ms; }
     if (!r.done && !r.paused && tipsOn && factsFit(r)) return `fact${Math.floor((age - at) / TIP_FACT)}`;
     return items.length ? items[items.length - 1][0] : '';
@@ -516,6 +520,7 @@ function liveSteps() {
     r.tipKind = kind;
     if (kind === 'just') { withIcon(tip, STEP_ICON[r.just], ST(`${r.just}.learn`), ST('justNow')); if (tipsOn) turn.justShown.add(r.just); }
     else if (kind === 'own') withIcon(tip, '💡', ownLearn(r.key, r.f));
+    else if (kind === 'long') withIcon(tip, '⏳', ST('think.learn.long'));
     else if (kind === 'think') { withIcon(tip, '🤔', ST('think.learn.thinking')); if (tipsOn) { turn.thinkShown = true; r.thinkHere = true; } }
     else if (kind) {
       if (r.factFor !== kind) { r.factFor = kind; r.factText = ST(`facts.${FACTS[factNext++ % FACTS.length]}`); }

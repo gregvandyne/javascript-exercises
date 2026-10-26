@@ -218,10 +218,12 @@ test('the live card, fed step by step: thinking is a chip, "Just now" lines, a l
   await push('turn', { id: 'T1', attempt: 1, chain: 0, carried: 0, provider: 'ai', mine: true, cid, elapsed: 0, entries: [{ role: 'user', text: 'A fox game', at: Date.now(), uploads: [], turn: 'T1' }], waiting: 0, left: 0 });
   await expect(page.locator('#st-log .msg.me')).toHaveCount(1);
   await push('step', { i: 1, key: 'screen', at: 0 });
-  await push('step', { i: 2, key: 'think', n: 1, c: 'start' }); await push('stepinfo', { i: 2, th: 1 });
-  // The round keeps its reason and its own learning line while it thinks; thinking is a word next to it.
-  await expect(cur).toHaveAttribute('data-step', 'think');
+  await push('step', { i: 2, key: 'think', n: 1, c: 'start' });
   await expect(cur.locator('.stp-label')).toHaveText('Round 1: reading your message');
+  // Once the AI starts answering, round 1 is planning, not reading; thinking is a word next to it.
+  await push('stepinfo', { i: 2, a: 1, th: 1 });
+  await expect(cur).toHaveAttribute('data-step', 'think');
+  await expect(cur.locator('.stp-label')).toHaveText('Round 1: planning how to build it');
   await expect(cur.locator('.stp-th')).toHaveText('🤔 thinking');
   await expect(cur.locator('.stp-tip')).toContainText('A round is each time the app asks the AI');
   await push('text', { text: 'Great idea! ' });

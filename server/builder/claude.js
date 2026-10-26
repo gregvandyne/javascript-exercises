@@ -106,7 +106,11 @@ export async function run(ctx) {
       : client.messages.stream(params, opts);
     const authorRow = new Map();   // tool_use id -> its write/edit/fix row, so results mark the right row later
     let building = null, thought = false;
+    let answering = false;
     for await (const ev of stream) {
+      // The first event means the AI has read everything and is now working on its answer: the round is no longer
+      // "reading", it is planning (a big new game can take a minute or two here before any code appears).
+      if (!answering && steps.current() === 'think') { answering = true; steps.info({ a: 1 }); }
       if (ev.type === 'content_block_start' && ev.content_block) {
         const cb = ev.content_block; building = null;
         // A thinking block really streamed (its text is never read or shown): the round is "thinking it through".

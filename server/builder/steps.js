@@ -31,6 +31,7 @@ const FACTS = {
   c: oneOf(['start', 'look', 'scan', 'retry', 'next']),  // think: why the round started
   g: flag,                                               // think (start): a game already exists, so the round reads it too
   th: flag,                                              // think: a thinking block really streamed in this round
+  a: flag,                                               // think: the AI has the message and started answering (first stream event)
   via: oneOf(['write', 'edit']),                         // fix: the tool the fix used
   plan: x => (typeof x === 'string' ? cleanNote(x, 120) || undefined : undefined),   // write/edit/fix: the AI's own notes
   l: int(0, 999999),                                     // write, fix via write: lines of code written so far

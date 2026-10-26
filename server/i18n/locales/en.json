@@ -1314,7 +1314,9 @@
             "look": "Round {n}: looking at the pictures",
             "scan": "Round {n}: reading the safety report",
             "retry": "Round {n}: working out what went wrong",
-            "next": "Round {n}: deciding what to do next"
+            "next": "Round {n}: deciding what to do next",
+            "plan": "Round {n}: planning how to build it",
+            "planGame": "Round {n}: planning the changes"
           },
           "done": {
             "start": "Round {n}: read your message",
@@ -1322,7 +1324,9 @@
             "look": "Round {n}: looked at the pictures",
             "scan": "Round {n}: read the safety report",
             "retry": "Round {n}: worked out what went wrong",
-            "next": "Round {n}: decided what to do next"
+            "next": "Round {n}: decided what to do next",
+            "plan": "Round {n}: planned how to build it",
+            "planGame": "Round {n}: planned the changes"
           },
           "learn": {
             "start": "A round is each time the app asks the AI. It doesn’t remember, so the app sends it the chat again.",
@@ -1330,7 +1334,8 @@
             "scan": "The safety program says exactly what was wrong, so the AI can fix just that part.",
             "retry": "When a tool says something didn’t work, the AI reads why and tries another way.",
             "next": "After each tool, the AI reads the result and picks the next step. That loop makes it an agent.",
-            "thinking": "Before it answers, this AI thinks quietly first, a bit like working something out in your head."
+            "thinking": "Before it answers, this AI thinks quietly first, a bit like working something out in your head.",
+            "long": "Big ideas can take the AI a minute or two to plan before it writes any code. It keeps going even if you leave this page."
           }
         },
         "write": {
