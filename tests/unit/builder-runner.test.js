@@ -105,7 +105,8 @@ test('RUN-1 lifecycle: queued, then running (charged, attempt 1, blocks, no base
   assert.equal(res.ok, true); assert.equal(res.turnsLeft, usage.dailyTurns() - 1);
   assert.equal(w.of('turn').length, 1); assert.equal(w.of('turn')[0].id, r.job.id); assert.equal(w.of('turn')[0].mine, true);
   const msgs = loadChat(g.id).messages;
-  assert.deepEqual(msgs.map(m => [m.role, m.turn]), [['user', r.job.id], ['assistant', r.job.id]]);
+  // The reply is saved in parts where the page splits it: the plan with version 1, then what it said after the card.
+  assert.deepEqual(msgs.map(m => [m.role, !!m.part, m.turn]), [['user', false, r.job.id], ['assistant', true, r.job.id], ['assistant', false, r.job.id]]);
 });
 
 test('RUN-2 the message is saved when the build starts; while screening, the turn shows it from the request', async () => {
@@ -194,8 +195,11 @@ test('RUN-5 bounded memory: 50,000 text chunks and 10,000 stepinfo keep the repl
   assert.ok(Buffer.byteLength(JSON.stringify(buf)) <= runner.LIMITS.bufBytes, `${Buffer.byteLength(JSON.stringify(buf))} bytes`);
   assert.deepEqual(buf.filter(e => e[0] === 'step').map(e => e[1].key), ['screen', 'blocks', 'write', 'notes', 'check']);
   assert.equal(buf.find(e => e[0] === 'step' && e[1].key === 'write')[1].l, 49995, 'stepinfo merged into its row');
-  assert.deepEqual(buf.filter(e => !['step', 'text'].includes(e[0])).map(e => e[0]), ['eta', 'notes', 'version'], 'the estimate stays with the steps');
+  // The notes card came before the text, so it is saved in a part (text after a card starts a new one): a late page
+  // gets it in hello, and the replay has the rest.
+  assert.deepEqual(buf.filter(e => !['step', 'text'].includes(e[0])).map(e => e[0]), ['eta', 'version'], 'the estimate stays with the steps');
   const late = watch(g.id, u.id);
+  assert.deepEqual(late.of('hello')[0].turn.entries.flatMap(m => (m.events || []).map(e => e[0])), ['notes']);
   const replayed = textOf(late.ev);
   assert.ok(replayed.endsWith('chunk 49999 '), 'the replayed text ends with the last chunk');
   assert.ok(replayed.startsWith('…'), 'the start was trimmed');
@@ -319,12 +323,13 @@ test('RUN-11 resume: carried on once at boot, from the resume row; one version a
     assert.equal(first.key, 'resume'); assert.equal(first.v, saved ? 1 : undefined);
     await runner.idle(job);
     assert.equal(row(job.id).status, 'done'); assert.equal(row(job.id).end_reason, 'ok');
-    const msgs = loadChat(g.id).messages;
-    assert.deepEqual(msgs.map(m => m.role), ['user', 'assistant', 'assistant']);
-    assert.equal(msgs[1].interrupted, true); assert.equal(msgs[2].resumed, true); assert.equal(msgs[2].events[0][0], 'resumed');
+    const msgs = loadChat(g.id).messages; const again = msgs.slice(2);   // the resumed attempt: its parts, then its reply
+    assert.deepEqual(msgs.slice(0, 2).map(m => m.role), ['user', 'assistant']); assert.equal(msgs[1].interrupted, true);
+    assert.ok(again.length && again.every(m => m.role === 'assistant'));
+    assert.equal(again.at(-1).resumed, true); assert.equal(again[0].events[0][0], 'resumed');
     assert.equal(used(u.id), 1, 'charged once'); assert.equal(versions(g.id), 1, `exactly one version (saved before the hand-off: ${saved})`);
-    if (saved) assert.match(msgs[2].text, /I'm back!/);
-    assert.equal(msgs[2].events.at(-1)[1].s[0][0], 'resume');
+    if (saved) assert.match(again[0].text, /I'm back!/);
+    assert.equal(again.at(-1).events.at(-1)[1].s[0][0], 'resume');
   }
 });
 
@@ -366,7 +371,8 @@ test('RUN-13 crash: a running row with no job is carried on at boot (no interrup
   await runner.idle(runner.jobFor(g.id));
   assert.deepEqual([row(x.id).status, row(x.id).attempt], ['done', 2]);
   const msgs = loadChat(g.id).messages;
-  assert.deepEqual(msgs.map(m => m.role), ['user', 'assistant']); assert.equal(msgs[1].resumed, true);
+  assert.equal(msgs[0].role, 'user'); assert.ok(msgs.slice(1).every(m => m.role === 'assistant' && !m.interrupted));
+  assert.equal(msgs[1].events[0][0], 'resumed'); assert.equal(msgs.at(-1).resumed, true);
   assert.equal(versions(g.id), 1); assert.equal(used(u.id), 1);
 });
 

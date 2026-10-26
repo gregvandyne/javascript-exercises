@@ -266,7 +266,8 @@ test('HTTP-3 nobody watching (a closed tab, a locked phone): a detached build st
   const row = turns.lastEnded(id);
   assert.deepEqual([row.status, row.end_reason, row.versions], ['done', 'ok', 1]);
   const st = (await kid(`/api/studio/${id}`)).json;
-  assert.deepEqual(st.chat.map(m => m.role), ['user', 'assistant']); assert.equal(st.versions.length, 1);
+  // The plan and version 1, then what it said after the card (saved as its own part, as the page draws it).
+  assert.deepEqual(st.chat.map(m => (m.part ? 'part' : m.role)), ['user', 'part', 'assistant']); assert.equal(st.versions.length, 1);
   assert.equal(st.turnsLeft, before - 1); assert.equal(st.turn, null); assert.equal(st.busy, false);
   assert.equal(st.lastTurn.id, row.id); assert.equal(st.lastTurn.end, 'ok');
 });
@@ -439,7 +440,7 @@ test('HTTP-12 the state mid-build (the page and the API) has the running build w
   assert.equal(st.turn, null); assert.equal(st.busy, false); assert.equal(st.lastTurn.end, 'ok');
 });
 
-test('HTTP-13 follow-ups over HTTP: 200 with the follow-up, the live stream hears it, the transcript has it after a part; uploads, an admin and a 4th are refused; the old streamed POST still says busy', async () => {
+test('HTTP-13 follow-ups over HTTP: 200 with the follow-up, the live stream hears it, the transcript has it after the open text; uploads, an admin and a 4th are refused; the old streamed POST still says busy', async () => {
   const kid = await signup('HttpFollow');
   const id = await newGameFor(kid);
   const gate = holdBuilder({ save: false });
@@ -452,9 +453,11 @@ test('HTTP-13 follow-ups over HTTP: 200 with the follow-up, the live stream hear
     await w.until(s => s.of('inbox').length >= 1);
     const inbox = w.of('inbox')[0];
     assert.deepEqual([inbox.status, inbox.entry.text, inbox.entry.id, inbox.left], ['waiting', 'make it harder', r.json.followUp.id, 2]);
-    const chat = (await kid(`/api/studio/${id}`)).json.chat;
-    assert.deepEqual(chat.map(m => (m.followUp ? `fu:${m.status}` : m.part ? 'part' : m.role)), ['user', 'part', 'fu:waiting']);
-    assert.equal(chat[1].text, 'Working on it.');
+    // It came right after 'Working on it. ' (mid-sentence for all the page knows): that text is saved above it once
+    // something else comes; until then the state has it as the open part above the message.
+    const st = (await kid(`/api/studio/${id}`)).json;
+    assert.deepEqual(st.chat.map(m => (m.followUp ? `fu:${m.status}` : m.part ? 'part' : m.role)), ['user', 'fu:waiting']);
+    assert.deepEqual(st.turn.entries.map(m => (m.followUp ? `fu:${m.status}` : m.open ? `open:${m.text}` : m.role)), ['user', 'open:Working on it. ', 'fu:waiting']);
     const up = (await kid(`/api/studio/${id}/uploads?name=notes.txt`, { method: 'POST', body: Buffer.from('a fox who hops'), headers: { 'content-type': 'application/octet-stream' } })).json.upload;
     const withUp = await build(kid, id, 'use my notes', { uploads: [up.id] });
     assert.deepEqual([withUp.status, withUp.json.code], [409, 'uploads']);

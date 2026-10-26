@@ -154,8 +154,8 @@ export function endBuild(job, { usage = job.usage || {} } = {}) {
   const rec = job.steps.record({ p: providerKind(name), ti: usage.tokensIn || 0, to: usage.tokensOut || 0, end, fu: job.read });
   const events = [...job.lead, ...job.seg.events, ...(rec ? [['steps', rec]] : [])];
   appendChat(job.gameId, job.userId, [{ role: 'assistant', text: job.seg.text.trim(), at: Date.now(), events, model: usage.model || name, pro: !!pro, turn: job.id, ...(job.attempt > 1 ? { resumed: true } : {}) }],
-    { ...(state ? { state } : {}), tokensIn: usage.tokensIn || 0, tokensOut: usage.tokensOut || 0 });
-  job.seg = { text: '', events: [] }; job.lead = [];   // written: nothing of it may be written again
+    { ...(state ? { state } : {}), tokensIn: usage.tokensIn || 0, tokensOut: usage.tokensOut || 0, before: job.hold });   // above a follow-up that came mid-sentence
+  job.seg = { text: '', events: [] }; job.lead = []; job.hold = null;   // written: nothing of it may be written again
   const status = statusOf(end); job.end = end; const durationMs = Date.now() - job.t0;
   turns.finish(job.id, { status, end, versions, modelCalls: rec ? rec.r : 0, tokensIn: usage.tokensIn || 0, tokensOut: usage.tokensOut || 0, durationMs, canContinue: end === 'timeout' && !!job.request.text });
   eta.finish({ id: job.id, est: job.est, versions, base: job.base, firstVersionMs: job.firstV, followups: job.read, end, attempt: job.attempt, chain: job.chain, durationMs, capMs: config.builderTurnMaxMs });

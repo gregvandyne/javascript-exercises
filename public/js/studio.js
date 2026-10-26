@@ -193,7 +193,9 @@ function drawEntry(m, last = false) {
     if (name === 'resumed') note(d && d.v ? t('js.studio.resumedV', { v: d.v }) : t('js.studio.resumed'));
     else if (name === 'carried') carriedNote();
   }
-  const b = m.text ? bubble('bot' + (m.refused ? ' refused' : ''), m.text) : null;
+  const b = m.text || m.open ? bubble('bot' + (m.refused ? ' refused' : ''), m.text) : null;
+  // The running build's sentence a follow-up came in the middle of (it sits below): the reply streams on into it.
+  if (m.open) { botCur = b; botOpen = fuHeld = true; }
   for (const [name, d] of events) {
     if (name === 'version') versionCard(d, false);
     else if (name === 'notes') notesCard(d.checklist);
@@ -827,7 +829,7 @@ function fuState(b, state, { why = null, by = null } = {}) {
 function fuRefused(cid, text, reply) {
   let b = fuFind(null, cid);
   if (b && b.dataset.state === 'refused') return;
-  endBubble();
+  fuArrives();
   if (b) place(b); else b = fuBubble(text, { cid, state: 'refused' });
   fuState(b, 'refused');
   bubble('bot refused', reply);
@@ -838,11 +840,11 @@ function carriedNote() { return card('carried', `<span>🔁 ${E('js.studio.follo
 function syncStrip() { if (live) live.inbox($$('.msg.fu[data-state="waiting"]', log).length); }
 function onInbox(d) {
   if (d.status === 'waiting' && d.entry) {
-    endBubble();   // the reply goes on below the message, as the server split it
+    fuArrives();
     fuBubble(d.entry.text, { id: d.entry.id, cid: d.entry.cid, state: 'waiting', move: true });
     if (S.turn && S.turn.mine && typeof d.left === 'number') S.turn.left = d.left;
   } else if (d.status === 'refused') fuRefused(d.cid, d.text, `${d.message} ${d.suggestion}`.trim());
-  else for (const id of d.ids || []) fuState(fuFind(id), d.status, { why: d.why });
+  else { textEnds(); for (const id of d.ids || []) fuState(fuFind(id), d.status, { why: d.why }); }
   if (d.status === 'reading') announce(FU('announceRead'));
   syncStrip(); syncCompose();
   if (!LIVE.replaying && nearBottom()) scrollDown();
@@ -853,7 +855,7 @@ async function sendFollowUp(text, { cid = null, el = null } = {}) {
   if (!text) { input.focus(); return; }
   if (pending.length) { toast(FU('noUploadsHint')); return; }   // pictures wait for the next build
   cid = cid || newCid();
-  endBubble();
+  // Where the reply goes on (above or below it) is decided when the server stores it (onInbox).
   const b = el || fuBubble(text, { cid, state: 'checking' });
   if (el) { place(el); fuState(el, 'checking'); }
   else { input.value = ''; autosize(); }
@@ -902,7 +904,15 @@ function failed(err) { if (err.signedOut) signedOut([input]); else toast(err.mes
 // signedout / gone: this tab may not watch any more, but the build goes on. After every 'done' the page reads the state
 // again, redraws the chat from the saved transcript and reopens the stream (resync): one way for every build to end here.
 let botCur = null;   // the bot bubble the reply is streaming into
-const endBubble = () => { botCur = null; };
+// botOpen: text is streaming into it now. fuHeld: a follow-up came in the middle of that sentence, so it sits below the
+// bubble while the sentence goes on in it, until something other than text comes; runner.js splits the saved reply at
+// the same events, so a reload draws what was seen.
+let botOpen = false, fuHeld = false;
+const endBubble = () => { botCur = null; botOpen = false; fuHeld = false; };
+/** The sentence ended. A replay never ends a held one: the steps it replays came before it. */
+function textEnds() { if (LIVE.replaying && fuHeld) return; botOpen = false; if (fuHeld) endBubble(); }
+/** A follow-up was stored: below the sentence it came in the middle of, otherwise the reply goes on below it. */
+function fuArrives() { if (botCur && botOpen) fuHeld = true; else endBubble(); }
 let pillEl = null;   // the pill on the preview: what the Builder is doing now
 function ensurePill() {
   if (!pillEl) { pillEl = document.createElement('div'); pillEl.className = 'st-busy'; pillEl.dir = document.dir; stage.appendChild(pillEl); }
@@ -928,9 +938,10 @@ function syncCompose() {
 /** One event of the build this page shows, live or replayed (a replay doesn't scroll, speak or load the preview). */
 function onEvent(ev, d) {
   const stick = !LIVE.replaying && nearBottom();   // follow the build only when the chat is at the bottom
+  if (ev !== 'text' && ev !== 'stepinfo' && ev !== 'eta') textEnds();
   if (ev === 'stepinfo') { if (live) live.patch(d); }
   else if (ev === 'eta') { if (live) live.eta(d); }
-  else if (ev === 'text') { if (!botCur) botCur = bubble('bot', ''); botCur.textContent += d.text; if (live) live.spoke(); }
+  else if (ev === 'text') { if (!botCur) botCur = bubble('bot', ''); botCur.textContent += d.text; botOpen = true; if (live) live.spoke(); }
   else if (ev === 'step') {
     if (live) live.add(d);
     $$('.qchips:not(.used)', log).forEach(c => c.classList.add('used'));   // it went on (a new message answered the question)
@@ -940,6 +951,7 @@ function onEvent(ev, d) {
   else if (ev === 'version') { endBubble(); versionCard(d, true); if (LIVE.replaying) LIVE.replayVersion = d; else setPreview(d.preview, d.id); }
   else if (ev === 'meta') { endBubble(); metaCard(d); S.game = { ...S.game, ...d }; renderTop(); }
   else if (ev === 'notes') { endBubble(); notesCard(d.checklist); }
+  else if (ev === 'playtest') endBubble();   // not drawn, but the saved reply starts a new part after it, as after any card
   else if (ev === 'refused') { endBubble(); bubble('bot refused', `${d.message} ${d.suggestion}`); if (d.chips && d.chips.length) chips(d.chips, true); }
   else if (ev === 'error') { endBubble(); bubble('err', d.message); if (live) live.stop(); LIVE.lastErr = d.message; }
   else if (ev === 'done') {

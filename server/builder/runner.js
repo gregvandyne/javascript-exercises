@@ -73,6 +73,7 @@ function newJob(row, { attempt = row.attempt } = {}) {
     ac: new AbortController(), timers: {}, phase: 'screening',
     buf: [], bytes: 0, textChars: 0, stepAt: new Map(),   // replay buffer
     seg: { text: '', events: [] }, lead: [],              // the open reply; lead = events the final entry starts with
+    open: false, hold: null,                               // text is streaming; the follow-up the open reply goes before
     waiting: [], reading: [], fu: { accepted: 0, refused: 0 }, read: 0, waiters: [],   // follow-ups (see the header)
     accepting: Promise.resolve(), inflight: 0,             // follow-ups are accepted one at a time, in arrival order
     est: null, firstV: 0, versions: 0, state: null, usage: null, ctx: null, provider: providerKind(providerName()),
@@ -131,6 +132,8 @@ export async function submit({ user, game, text = '', pro = false, uploadIds = [
     if (compat) return err(409, 'builder.errors.busy', 'busy');
     return followUp(cur, { user, game, text, cid, wanted, pro, t, provider });
   }
+  // A follow-up sent again after its build ended (its answer was lost): it was stored then, so it gets that answer.
+  const had = cid && !compat && sent(game.id, cid, user.id); if (had) return had;
   return begin({ user, game, text, pro, wanted, cid, continueOf, t, provider, compat });
 }
 /** submit steps 3b-8: a new build for an idle game. prescreened: a follow-up's screening, when its build ended meanwhile. */
@@ -186,30 +189,33 @@ async function accept(job, o) {
   const early = check(job, o); if (early) return early;
   // A message sent while the first one is still being screened waits for it, so it lands after it in the chat.
   await job.screened;
-  const s = await hooks.screen(o.text, { t: o.t });
+  const s = o.screened || await hooks.screen(o.text, { t: o.t });
   // The build may have ended, been handed off or carried on into a new build during the two awaits.
   if (life.draining) return fail(o.t, 503, 'studio.api.restarting', 'restarting');
   const cur = jobs.get(o.game.id);
   if (!cur) return begin({ ...o, continueOf: null, compat: false, prescreened: s });   // it ended: this message is the next build
+  // A newer build (carried on, or started by another message, maybe still screening): join it like any follow-up, after
+  // its screening. If it ends before that, this message is the next build (above), screened only once.
+  if (cur !== job) return followUp(cur, { ...o, screened: s });
   return check(cur, o) || store(cur, o.user, o.text, o.cid, s);
 }
 /** Who may add to this build, and how many more. -> an answer, or null to go on. */
 function check(job, { user, cid, wanted, t }) {
   if (job.userId !== user.id) return fail(t, 409, 'builder.followUps.notYours', 'notYours');   // an admin can't spend a child's turns
   if (wanted.length) return fail(t, 409, 'builder.followUps.noUploads', 'uploads');
-  const had = cid && sent(job, cid); if (had) return had;                                     // a retry: no second screening
+  const had = cid && sent(job.gameId, cid, job.userId, job); if (had) return had;            // a retry: no second screening
   if (job.fu.accepted >= LIMITS.maxFollowUps) return fail(t, 429, 'builder.followUps.cap', 'cap', { max: LIMITS.maxFollowUps });
   if (job.fu.refused >= LIMITS.maxRefused) return fail(t, 429, 'builder.followUps.refusedCap', 'refusedCap');
   return null;
 }
 const leftFor = job => Math.max(0, LIMITS.maxFollowUps - job.fu.accepted);
-/** The follow-up already stored with this cid (its answer was lost), as it was answered then. */
-function sent(job, cid) {
-  const msgs = loadChat(job.gameId).messages;
+/** The follow-up already stored with this cid (its answer was lost), as it was answered then. job: the running build. */
+function sent(gameId, cid, userId, job = null) {
+  const msgs = loadChat(gameId).messages;
   const k = msgs.findIndex(m => m.followUp && m.cid === cid); if (k < 0) return null;
   const m = msgs[k];
   if (m.refused) return { status: 200, body: { refused: { message: (msgs[k + 1] && msgs[k + 1].refused && msgs[k + 1].text) || '', suggestion: '' } } };
-  return { status: 200, body: { followUp: { id: m.id, cid, status: m.status }, left: leftFor(job), turnsLeft: turnsLeft(job.userId) } };
+  return { status: 200, body: { followUp: { id: m.id, cid, status: m.status }, left: job ? leftFor(job) : 0, turnsLeft: turnsLeft(userId) } };
 }
 /** Store a screened follow-up (synchronous, so its place in the transcript is exact). s: the screening result. */
 function store(job, user, text, cid, s) {
@@ -219,32 +225,38 @@ function store(job, user, text, cid, s) {
     // sent to the model, no turn used.
     audit(user.id, 'builder.refused', job.gameId, { category: s.category, by: s.by, followUp: true, text: text.slice(0, 300) });
     job.fu.refused++;
-    flush(job);
+    const id = uid(12); below(job, id);
     appendChat(job.gameId, job.userId, [
-      { role: 'user', cid, text, at, followUp: true, refused: true, turn: job.id },
+      { role: 'user', id, cid, text, at, followUp: true, refused: true, turn: job.id },
       { role: 'assistant', text: `${s.message} ${s.suggestion}`, at, refused: true, events: [], turn: job.id },
     ]);
     job.emit('inbox', { status: 'refused', cid, text, message: s.message, suggestion: s.suggestion });
     return { status: 200, body: { refused: { category: s.category, message: s.message, suggestion: s.suggestion } } };
   }
   job.fu.accepted++;
-  flush(job);
   const entry = { role: 'user', id: uid(12), cid, text, at, followUp: true, status: 'waiting', turn: job.id };
+  below(job, entry.id);
   appendChat(job.gameId, job.userId, [entry]);
   job.waiting.push({ ...entry });
   job.emit('inbox', { status: 'waiting', entry, left: leftFor(job) });
   wake(job);
   return { status: 200, body: { followUp: { id: entry.id, cid, status: 'waiting' }, left: leftFor(job), turnsLeft: turnsLeft(user.id) } };
 }
+/** A follow-up (entry id) goes after the reply so far. In the middle of a sentence it waits below it instead, and the
+ *  reply is written in front of it once the sentence ends (capture), so a sentence is never cut in two. */
+function below(job, id) {
+  if (!job.open) flush(job);
+  else if (!job.hold) job.hold = id;
+}
 /** The reply so far goes into the transcript as a part (so a follow-up sits after what the builder saw when they sent
  *  it), and its text and cards leave the replay buffer (steps and estimates stay). */
 function flush(job) {
   const text = job.seg.text.trim();
   if (text || job.seg.events.length) {
-    appendChat(job.gameId, job.userId, [{ role: 'assistant', text, at: Date.now(), events: [...job.lead, ...job.seg.events], part: true, turn: job.id }]);
+    appendChat(job.gameId, job.userId, [{ role: 'assistant', text, at: Date.now(), events: [...job.lead, ...job.seg.events], part: true, turn: job.id }], { before: job.hold });
     job.lead = [];
   }
-  job.seg = { text: '', events: [] };
+  job.seg = { text: '', events: [] }; job.hold = null;
   job.buf = job.buf.filter(e => e[0] === 'step' || e[0] === 'eta');
   job.bytes = job.buf.reduce((n, e) => n + e[2], 0); job.textChars = 0;
 }
@@ -326,7 +338,8 @@ function carryOver(job) {
   const list = job.waiting.splice(0); const ids = new Set(list.map(e => e.id));
   const end = job.end || 'error';
   const g = games.getGame(job.gameId), u = getUser(job.userId);
-  let why = end !== 'ok' ? (end === 'error' ? 'error' : 'stopped')
+  // A refused first message doesn't stop the follow-ups that passed: they are the next build (spec decision 21).
+  let why = end !== 'ok' && end !== 'refused' ? (end === 'error' ? 'error' : 'stopped')
     : job.chain >= LIMITS.maxChain ? 'chain'
     : !g || g.status === 'deleted' || !u || u.banned || !u.builder_enabled ? 'stopped' : null;
   let row = null;
@@ -391,7 +404,13 @@ function backstop(job) {
 }
 
 // ---------------------------------------------------------------------------------------------------- events
+/** Does this event end the streaming text? Not the card's updates (stepinfo, eta), nor a follow-up arriving. */
+const endsText = (name, d) => name !== 'text' && name !== 'stepinfo' && name !== 'eta' && !(name === 'inbox' && (d.status === 'waiting' || d.status === 'refused'));
 function capture(job, name, data) {
+  // The reply is saved in parts split where the page splits it (studio.js onEvent), so a reload shows what was seen:
+  // text after a card starts a new part, and the sentence a follow-up interrupted ends first (below).
+  if (name === 'text') { if (job.seg.events.length) flush(job); job.open = true; }
+  else if (endsText(name, data)) { if (job.hold) flush(job); job.open = false; }
   if (name === 'text') job.seg.text += data.text || '';
   else if (name === 'error') job.seg.events.push(['error', { message: data.message }]);   // kept, so a redraw still says it
   else if (CARDS.has(name)) {
@@ -480,7 +499,7 @@ export function attach(gameId, sub) {
   const job = jobs.get(gameId);
   if (!sub.compat) {
     sub.send('hello', { now: Date.now(), turn: job ? publicTurn(job, sub) : null });
-    if (job) for (const [n, d] of job.buf) sub.send(n, tailor(n, d, sub, job));
+    if (job) for (const [n, d] of job.buf) if (!(job.hold && n === 'text')) sub.send(n, tailor(n, d, sub, job));   // held: in hello
     sub.send('caughtup', {});
   }
   let set = channels.get(gameId); if (!set) channels.set(gameId, (set = new Set()));
@@ -511,6 +530,13 @@ export function publicTurn(target, viewer = null) {
   if (job.phase === 'screening' && !entries.some(m => m.role === 'user')) {
     const uploads = (job.request.uploadIds || []).map(getUpload).filter(Boolean).map(u => ({ id: u.id, name: u.name, kind: u.kind, mime: u.mime }));
     entries = [{ role: 'user', text: job.request.text || '', at: job.createdAt, uploads, turn: job.id }, ...entries];
+  }
+  if (job.hold) {
+    // The sentence a follow-up came in the middle of is still streaming: it goes above that message (open: the page
+    // streams on into it), and attach() leaves its text out of the replay.
+    const k = entries.findIndex(m => m.id === job.hold);
+    const text = job.buf.filter(e => e[0] === 'text').map(e => e[1].text).join('');
+    entries.splice(k < 0 ? entries.length : k, 0, { role: 'assistant', text, at: Date.now(), events: [], part: true, open: true, turn: job.id });
   }
   return {
     id: job.id, attempt: job.attempt, chain: job.chain, carried: job.carried || 0, provider: job.provider, mine, cid: job.cid,
@@ -551,7 +577,7 @@ export function handOff() {
         const text = job.seg.text.trim();
         const state = job.state ? { ...job.state } : undefined; if (state) delete state.scanFails;
         const entries = text || job.seg.events.length ? [{ role: 'assistant', text, at: Date.now(), events: [...job.lead, ...job.seg.events, ...(rec ? [['steps', rec]] : [])], turn: job.id, interrupted: true }] : [];
-        if (entries.length || state) appendChat(job.gameId, job.userId, entries, state ? { state } : {});
+        if (entries.length || state) appendChat(job.gameId, job.userId, entries, { ...(state ? { state } : {}), before: job.hold });
         turns.interrupt(job.id, { durationMs: Date.now() - job.t0, modelCalls: rec ? rec.r : 0, versions: turns.versionsSince(job.gameId, job.base).length });
       }
     } catch (e) { log('error', 'builder hand-off failed', { turn: job.id, error: e.message }); }
@@ -602,8 +628,11 @@ export function recover() {
 function runQueued(row) {
   const g = games.getGame(row.game_id), u = getUser(row.user_id);
   const why = !g || g.status === 'deleted' ? 'deleted' : !u || u.banned ? 'banned' : !u.builder_enabled ? 'disabled' : null;
-  if (why) { turns.finish(row.id, { status: 'cancelled', end: why }); return false; }   // never charged: nothing to give back
+  if (why) { turns.finish(row.id, { status: 'cancelled', end: why }); dropUnread(row); return false; }   // never charged: nothing to give back
   const job = newJob(row);
+  // Follow-ups stored while it was screening wait again (read in round 1, or carried on if it is refused now).
+  job.waiting = followUpsOf(row).map(m => ({ ...m, status: 'waiting' }));
+  job.fu.accepted = job.waiting.length;
   jobs.set(row.game_id, job);
   job.emit('turn', {});
   const wanted = (row.request.uploadIds || []).map(getUpload).filter(x => x && x.game_id === row.game_id && !x.used_at);
@@ -615,6 +644,7 @@ function giveUpQueued(row) {
   // Never screened, so never written as a user entry: the owner gets "Put it back in the box" (lastTurn.putBack).
   turns.finish(row.id, { status: 'failed', end: 'restart' });
   appendChat(row.game_id, row.user_id, [{ role: 'assistant', text: '', at: Date.now(), events: [['stopped', { why: 'restart' }]], turn: row.id }]);
+  dropUnread(row);
 }
 function stopRow(row, why) {
   const versions = turns.versionsSince(row.game_id, row.base_version).length;
@@ -623,6 +653,10 @@ function stopRow(row, why) {
   turns.finish(row.id, { status, end, versions, durationMs: row.duration_ms || 0, canContinue: !cancelled && !!row.request.text });
   if (!cancelled) appendChat(row.game_id, row.user_id, [{ role: 'assistant', text: '', at: Date.now(), events: [['stopped', { why }]], turn: row.id }]);
   if (refundable(status, end, versions)) turns.refund(row.id);
+  dropUnread(row);
+}
+/** A build that won't run again: its follow-ups not read yet are dropped (stopped), never left waiting. */
+function dropUnread(row) {
   const unread = followUpsOf(row).filter(m => m.status !== 'read');
   if (unread.length) mark(row.game_id, new Set(unread.map(m => m.id)), { status: 'dropped', why: 'stopped', round: undefined, readTurn: undefined, by: undefined });
 }

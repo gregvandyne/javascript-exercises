@@ -308,6 +308,27 @@ test.describe('LV-12 sends that become follow-ups', () => {
   });
 });
 
+/** The running build's part of the chat as drawn: 'me', 'fu:<text>' and 'bot:<text>' in page order. */
+const chatOrder = page => page.locator('#st-log .msg[data-live]').evaluateAll(els => els.map(e => (e.classList.contains('fu') ? `fu:${e.querySelector('.fu-text').textContent}`
+  : e.classList.contains('me') ? 'me' : `bot:${e.textContent}`)));
+
+test('LV-13 a follow-up in the middle of a sentence: the sentence stays whole above it (live, and when the page opens mid-sentence), the reply goes on below it', async ({ page }) => {
+  await newGame(page);
+  const user = turnOf().entries[0];
+  const rest = [['text', { text: 'things.' }], ['step', { i: 3, key: 'read', at: 4000 }], ['text', { text: 'Got your message!' }]];
+  let opened = false;
+  await routeLive(page, () => (opened
+    // The page opens while the sentence is held: hello has it as the open part above the message, the replay has no text.
+    ? { events: [['hello', { now: Date.now(), turn: turnOf({ entries: [user, { role: 'assistant', text: 'Ooh, a fox! Catch the good ', events: [], part: true, open: true, turn: 'T1' }, fuEntry('waiting')] }) }],
+      ...STEPS.slice(0, 2), ['caughtup', {}], ...rest] }
+    : { events: [...hello(turnOf()), ...STEPS, ['text', { text: 'Catch the good ' }], ['inbox', { status: 'waiting', entry: fuEntry('waiting'), left: 2 }], ...rest] }));
+  const want = ['me', 'bot:Ooh, a fox! Catch the good things.', `fu:${DRAGON}`, 'bot:Got your message!'];
+  await page.reload();
+  await expect.poll(() => chatOrder(page)).toEqual(want);
+  opened = true; await page.reload();
+  await expect.poll(() => chatOrder(page)).toEqual(want);
+});
+
 test('the message box placeholder stays on one line on phones and computers, idle and while the Builder works', async ({ page }) => {
   await newGame(page);
   let building = false;
@@ -326,6 +347,38 @@ test('the message box placeholder stays on one line on phones and computers, idl
     await expect(page.locator('.st-busy')).toBeVisible();
     const ph = await oneLine(`${w}px building`);
     expect(['Add to your idea. The AI reads it after its current step', 'Add to your idea…']).toContain(ph);
+  }
+});
+
+test('the placeholder text fits inside the message box (measured, not only one line) at 390 and 1280 px: idle, while building and after the build', async ({ page }) => {
+  await newGame(page);
+  let stage = 'idle';
+  await routeLive(page, () => {
+    if (stage === 'building') return { events: [...hello(turnOf({ provider: 'ai' })), ...STEPS] };
+    if (stage === 'done') { stage = 'idle'; return { events: [...hello(turnOf({ provider: 'ai' })), ...STEPS, ['done', { turnsLeft: 59 }]] }; }
+    return { events: hello(null) };
+  });
+  const box = page.locator('#st-input');
+  const fits = async label => {
+    await page.evaluate(() => document.fonts.ready);
+    const m = await box.evaluate(el => {
+      const cs = getComputedStyle(el); const cx = document.createElement('canvas').getContext('2d');
+      cx.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+      return { ph: el.placeholder, w: Math.round(cx.measureText(el.placeholder).width), room: el.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight) };
+    });
+    expect(m.w, `${label}: "${m.ph}" is ${m.w}px in a ${m.room}px box`).toBeLessThanOrEqual(m.room);
+  };
+  for (const w of [390, 1280]) {
+    await page.setViewportSize({ width: w, height: 800 });
+    stage = 'idle'; await page.reload();
+    await fits(`${w}px idle`);
+    stage = 'building'; await page.reload();
+    await expect(box).toHaveAttribute('placeholder', /Add to your idea/);
+    await fits(`${w}px building`);
+    stage = 'done'; await page.reload();
+    await expect(page.locator('.st-busy')).toHaveCount(0, { timeout: 10_000 });
+    await expect(box).not.toHaveAttribute('placeholder', /Add to your idea/);
+    await fits(`${w}px after the build`);
   }
 });
 

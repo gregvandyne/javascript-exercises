@@ -86,16 +86,21 @@ test('FU-1 the transcript is the queue: part + waiting entry; between hands it o
   const a = await send(u, g, 'make it harder', { cid: 'fu-one-00001' });
   assert.equal(a.status, 200); assert.equal(a.body.followUp.status, 'waiting'); assert.equal(a.body.left, 2);
   assert.equal(a.body.turnsLeft, usage.dailyTurns() - 1, 'a follow-up uses no turn');
+  // It came while 'Working on it. ' was the last thing said: that sentence is written above it once something else
+  // comes (here the checkpoint that reads it); until then a viewer gets it as the open part above the message.
   const msgs = chat(g.id);
-  assert.deepEqual(msgs.map(m => [m.role, !!m.part, m.followUp ? m.status : null]), [['user', false, null], ['assistant', true, null], ['user', false, 'waiting']]);
-  assert.equal(msgs[1].text, 'Working on it.'); assert.equal(msgs[2].turn, r.job.id); assert.equal(msgs[2].cid, 'fu-one-00001');
-  assert.equal(runner.publicTurn(r.job, u).waiting, 1);
+  assert.deepEqual(msgs.map(m => [m.role, !!m.part, m.followUp ? m.status : null]), [['user', false, null], ['user', false, 'waiting']]);
+  assert.equal(msgs[1].turn, r.job.id); assert.equal(msgs[1].cid, 'fu-one-00001');
+  const pt = runner.publicTurn(r.job, u);
+  assert.equal(pt.waiting, 1);
+  assert.deepEqual(pt.entries.map(m => [m.role, !!m.open, m.text]), [['user', false, FOX], ['assistant', true, 'Working on it. '], ['user', false, 'make it harder']]);
   const again = await send(u, g, 'make it harder', { cid: 'fu-one-00001' });
   assert.deepEqual(again.body.followUp, a.body.followUp); assert.equal(screens, 1, 'the retry was not screened again');
   assert.equal(fus(g.id).length, 1);
 
   const b1 = await runner.between(r.job, 2);
   assert.deepEqual(b1.add.map(e => e.text), ['make it harder']);
+  assert.deepEqual(chat(g.id).map(m => [m.role, !!m.part, m.text]), [['user', false, FOX], ['assistant', true, 'Working on it.'], ['user', false, 'make it harder']]);
   assert.deepEqual([fus(g.id)[0].status, fus(g.id)[0].round, fus(g.id)[0].readTurn], ['reading', 2, r.job.id]);
   assert.deepEqual((await runner.between(r.job, 3)).add, [], 'handed over once');
   runner.settle(r.job);
@@ -119,7 +124,7 @@ test('FU-2 after a version: "make it harder" is applied as an edit in the same b
   assert.equal(w.of('done')[0].steps.fu, 1);
   assert.equal(used(u.id), 1);
   const msgs = chat(g.id);
-  assert.deepEqual(msgs.map(m => (m.followUp ? `fu:${m.status}:${m.by}` : m.part ? 'part' : m.role)), ['user', 'part', 'fu:read:blocks', 'assistant']);
+  assert.deepEqual(msgs.map(m => (m.followUp ? `fu:${m.status}:${m.by}` : m.part ? 'part' : m.role)), ['user', 'part', 'fu:read:blocks', 'part', 'part', 'assistant']);
   assert.deepEqual(msgs[1].events.filter(e => e[0] === 'version').map(e => e[1].number), [1], 'v1 is in the part before the message');
 });
 
@@ -149,7 +154,7 @@ test('FU-4 sent during the first message\'s screening: it waits for it, lands af
   assert.equal((await fu).status, 200);
   await idle(g.id);
   assert.match(textOf(w.ev), /^Got your new message too! /);
-  assert.deepEqual(chat(g.id).map(m => (m.followUp ? `fu:${m.status}` : m.role)), ['user', 'fu:read', 'assistant']);
+  assert.deepEqual(chat(g.id).map(m => (m.followUp ? `fu:${m.status}` : m.part ? 'part' : m.role)), ['user', 'fu:read', 'part', 'assistant']);
   assert.equal(keysOf(w.ev).slice(0, 3).join(), 'screen,blocks,read');
 });
 
@@ -169,8 +174,8 @@ test('FU-5 too late for this build: it starts the next build by itself (no scree
   assert.equal(readTune(newest(g.id).html).speed, 1.25);
   assert.equal(used(u.id), 2, 'the follow-on build used one turn');
   const msgs = chat(g.id);
-  const final2 = msgs.filter(m => m.turn === t2.id && m.role === 'assistant').at(-1);
-  assert.deepEqual(final2.events[0], ['carried', { n: 1 }]);
+  const first2 = msgs.find(m => m.turn === t2.id && m.role === 'assistant');
+  assert.deepEqual(first2.events[0], ['carried', { n: 1 }]);
   assert.deepEqual([fus(g.id)[0].status, fus(g.id)[0].readTurn, fus(g.id)[0].turn], ['read', t2.id, t1]);
   const row2 = turns.get(t2.id);
   assert.deepEqual([row2.chain, row2.status, row2.end_reason, row2.charged_day], [1, 'done', 'ok', today()]);
@@ -417,4 +422,154 @@ test('FU-14 estimates: a follow-up read moves "longer than usual" later (never e
   assert.deepEqual(w2.ev.slice(after).filter(e => e[0] === 'eta').map(e => e[1].phase), ['start']);
   const row2 = turns.get(t2.id);
   assert.deepEqual([row2.est_key, row2.kind, row2.followups, row2.sample, row2.chain], ['blocks:std:change:2d', 'change', 1, 0, 1]);
+});
+
+/** The chat as the page draws it: bubbles of text, version cards and follow-ups, from the saved transcript ... */
+const savedOrder = msgs => msgs.flatMap(m => (m.followUp ? [`fu:${m.text}`]
+  : m.role === 'user' ? ['me'] : [...(m.text ? [`bot:${m.text}`] : []), ...(m.events || []).filter(e => e[0] === 'version').map(e => `v${e[1].number}`)]));
+/** ... and live, the way studio.js onEvent does: text streams into one bubble until a card, or until something other
+ *  than text ends the sentence a follow-up arrived in the middle of (the message stays below that sentence). openText:
+ *  hello's open part (a page that came while a sentence was held), which the page streams on into. */
+function liveOrder(ev, openText = null) {
+  const out = openText === null ? [] : [`bot:${openText}`];
+  let cur = openText === null ? null : 0, open = cur !== null, held = open, replaying = false;
+  const ends = (name, d) => name !== 'text' && name !== 'stepinfo' && name !== 'eta' && !(name === 'inbox' && ['waiting', 'refused'].includes(d.status));
+  for (const [name, d] of ev) {
+    if (name === 'hello' || name === 'caughtup') { replaying = name === 'hello'; continue; }
+    if (ends(name, d) && !(replaying && held)) { open = false; if (held) { held = false; cur = null; } }
+    if (name === 'text') { if (cur === null) { cur = out.length; out.push('bot:'); } out[cur] += d.text; open = true; }
+    else if (name === 'version') { cur = null; out.push(`v${d.number}`); }
+    else if (['ask', 'meta', 'notes', 'error'].includes(name)) cur = null;
+    else if (name === 'inbox' && d.status === 'waiting') { if (cur !== null && open) held = true; else cur = null; out.push(`fu:${d.entry.text}`); }
+  }
+  return out.map(x => (x.startsWith('bot:') ? `bot:${x.slice(4).trim()}` : x));
+}
+
+test('FU-19 two follow-ups in one build: the saved chat is in the live order (text, version 1, message, text, version 2, ...), with no sentences glued together', async () => {
+  const u = newUser(); const g = newGame(u);
+  let k = 0;
+  const w = watch(g.id, u.id, (name, d) => { if (name === 'version' && ++k <= 2) runner._acceptScreened(g.id, fresh(u), k === 1 ? 'make it harder' : 'make it bigger'); });
+  await send(u, g, FOX, { provider: null });
+  await idle(g.id);
+  const saved = savedOrder(chat(g.id));
+  assert.deepEqual(saved, ['me', ...liveOrder(w.ev)], 'a reload draws what was seen live');
+  const at = x => saved.findIndex(s => s.startsWith(x));
+  assert.ok(at('v1') < at('fu:make it harder') && at('fu:make it harder') < at('v2') && at('v2') < at('fu:make it bigger'));
+  assert.ok(at('bot:Here\'s my plan') < at('v1'));
+  assert.ok(at('bot:Got your new message!') > at('fu:make it harder'), 'the reply to a message is below it');
+  for (const s of saved) assert.doesNotMatch(s, /[.!?][A-Z]/, `nothing glued: ${s}`);
+});
+
+test('FU-20 a follow-up in the middle of a sentence: the sentence stays whole above it, live, after a reload and saved; the reply goes on below it', async () => {
+  const u = newUser(); const g = newGame(u);
+  const go = deferred(), mid = deferred();
+  gateImpl = async ctx => {
+    ctx.steps.start('blocks');
+    ctx.emit('text', { text: 'Slide to catch the good things ' }); mid.resolve();
+    await go;
+    ctx.emit('text', { text: 'and dodge the bad ones. ' });
+    ctx.emit('text', { text: 'Then 3.' });
+    await ctx.between(2); ctx.settle();
+    ctx.emit('text', { text: 'Made it harder!' });
+    return { model: 'gate' };
+  };
+  const w = watch(g.id, u.id);
+  const r = await send(u, g); await mid;
+  assert.equal((await send(u, g, 'make it harder')).status, 200);
+  assert.deepEqual(chat(g.id).map(m => m.role), ['user', 'user'], 'not cut yet');
+  // A page that opens now: the open sentence above the message (it streams on into it), and no text in the replay.
+  const late = watch(g.id, u.id);
+  assert.deepEqual(late.of('hello')[0].turn.entries.map(m => (m.open ? `open:${m.text}` : m.text)), [FOX, 'open:Slide to catch the good things ', 'make it harder']);
+  assert.equal(textOf(late.ev), '');
+  go.resolve(); await idle(g.id);
+  const saved = savedOrder(chat(g.id));
+  assert.deepEqual(saved, ['me', 'bot:Slide to catch the good things and dodge the bad ones. Then 3.', 'fu:make it harder', 'bot:Made it harder!']);
+  assert.deepEqual(saved, ['me', ...liveOrder(w.ev)], 'as seen live');
+  assert.deepEqual(liveOrder(late.ev, 'Slide to catch the good things '), ['bot:Slide to catch the good things and dodge the bad ones. Then 3.', 'bot:Made it harder!'], 'the late page streams on into the open sentence, then below the message');
+  assert.equal(r.status, 202);
+});
+
+test('FU-21 the build ends in the middle of the sentence a follow-up interrupted: its reply is saved above the message, which starts the next build', async () => {
+  const u = newUser(); const g = newGame(u);
+  const go = deferred(), mid = deferred();
+  gateImpl = async ctx => {
+    if (ctx.text) { ctx.emit('text', { text: 'All done, have ' }); mid.resolve(); await go; ctx.emit('text', { text: 'fun!' }); }
+    else { await ctx.between(1); ctx.settle(); ctx.emit('text', { text: 'Made it harder!' }); }
+    return { model: 'gate' };
+  };
+  await send(u, g); await mid;
+  await send(u, g, 'make it harder');
+  go.resolve(); await idle(g.id);
+  assert.deepEqual(savedOrder(chat(g.id)), ['me', 'bot:All done, have fun!', 'fu:make it harder', 'bot:Made it harder!']);
+  assert.deepEqual([fus(g.id)[0].status, fus(g.id)[0].why], ['read', undefined]);
+  assert.notEqual(fus(g.id)[0].readTurn, fus(g.id)[0].turn, 'read by the next build');
+});
+
+test('FU-22 a follow-up still being screened when its build ends, while a new message starts the next build: it joins that build after its screening, or is the build after it when that one is refused', async () => {
+  for (const refuse of [true, false]) {
+    const u = newUser(); const g = newGame(u); const gate = hold();
+    await send(u, g); await gate.started;
+    const slowF = deferred(), slowM = deferred(); let screensF = 0;
+    agent.hooks.screen = async (text, o) => {
+      if (text === 'make it a dragon') { screensF++; await slowF; }
+      if (text === 'NEXT') { await slowM; if (refuse) return { ok: false, category: 'x', by: 'test', message: 'No.', suggestion: 'Try this.', chips: [] }; }
+      return SCREEN(text, o);
+    };
+    const fu = send(u, g, 'make it a dragon');
+    await sleep(10);
+    gate.open.resolve(); await idle(g.id);
+    gateImpl = async ctx => { const b = await ctx.between(1); if (b.add.length) ctx.settle(); return { model: 'gate' }; };
+    const b = await send(u, g, 'NEXT');
+    assert.equal(b.status, 202);
+    slowF.resolve(); await sleep(10);
+    assert.equal(fus(g.id).length, 0, 'it waits for the new build\'s screening');
+    slowM.resolve();
+    const r = await fu;
+    await idle(g.id);
+    assert.equal(screensF, 1, 'screened once');
+    if (refuse) {
+      assert.equal(r.status, 202, 'it started the build after the refused one');
+      assert.deepEqual(chat(g.id).filter(m => m.role === 'user').map(m => [m.text, !!m.refused]), [[FOX, false], ['NEXT', true], ['make it a dragon', false]]);
+    } else {
+      assert.equal(r.status, 200);
+      assert.deepEqual(fus(g.id).map(m => [m.text, m.status, m.turn, m.readTurn]), [['make it a dragon', 'read', b.job.id, b.job.id]]);
+    }
+    assert.equal(used(u.id), 2, 'the first build, and the one this message is in');
+    agent.hooks.screen = SCREEN;
+  }
+});
+
+test('FU-23 a build handed off while screening keeps the follow-ups stored for it: the next boot screens it again and reads them', async () => {
+  const u = newUser(); const g = newGame(u);
+  const slow = deferred();
+  agent.hooks.screen = async (text, o) => { if (text === FOX) await slow; return SCREEN(text, o); };
+  gateImpl = async ctx => { const b = await ctx.between(1); if (b.add.length) ctx.settle(); return { model: 'gate' }; };
+  const r = await send(u, g); await sleep(10);
+  assert.equal(r.job.phase, 'screening');
+  runner._acceptScreened(g.id, fresh(u), 'make it harder');
+  assert.equal(runner.handOff(), 1);
+  assert.equal(turns.get(r.job.id).status, 'queued');
+  agent.hooks.screen = SCREEN; slow.resolve();
+  const w = watch(g.id, u.id);
+  assert.equal(runner.recover().rerun, 1);
+  await idle(g.id);
+  assert.deepEqual(fus(g.id).map(m => [m.status, m.readTurn]), [['read', r.job.id]]);
+  assert.deepEqual(w.of('inbox').map(d => d.status), ['reading', 'read']);
+  assert.equal(used(u.id), 1);
+});
+
+test('FU-24 a stored follow-up sent again (same id) after the game went idle gets its answer: no second build, no turn', async () => {
+  const u = newUser(); const g = newGame(u); const gate = hold();
+  await send(u, g); await gate.started;
+  const a = await send(u, g, 'make it harder', { cid: 'fu-dup-000001' });
+  gateImpl = async ctx => { const b = await ctx.between(1); if (b.add.length) ctx.settle(); return { model: 'gate' }; };
+  gate.open.resolve(); await idle(g.id);
+  const before = used(u.id);
+  const again = await send(u, g, 'make it harder', { cid: 'fu-dup-000001' });
+  assert.equal(again.status, 200); assert.ok(!again.job);
+  assert.deepEqual(again.body.followUp, { id: a.body.followUp.id, cid: 'fu-dup-000001', status: fus(g.id)[0].status });
+  assert.equal(again.body.turnsLeft, usage.dailyTurns() - before);
+  assert.ok(!runner.isBusy(g.id));
+  assert.equal(used(u.id), before);
+  assert.equal(chat(g.id).filter(m => m.role === 'user').length, 2);
 });
