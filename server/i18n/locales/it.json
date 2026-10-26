@@ -60,6 +60,11 @@
       "heading": "Si è rotto qualcosa",
       "text": "Il nostro team è già stato avvisato. Riprova tra un attimo."
     },
+    "moving": {
+      "title": "Torniamo presto",
+      "heading": "Oomba Academy si trasferisce in una nuova casa",
+      "text": "Torniamo tra pochi minuti. I tuoi giochi e i tuoi salvataggi sono al sicuro."
+    },
     "api": {
       "notFound": "Non trovato",
       "tooBig": "È troppo grande.",
@@ -228,13 +233,16 @@
     "plays": "{count, plural, one {{n} partita} other {{n} partite}}",
     "seeAll": "Vedi tutti",
     "scrollBack": "Scorri {title} indietro",
-    "scrollForward": "Scorri {title} avanti"
+    "scrollForward": "Scorri {title} avanti",
+    "classOnly": "Solo la classe"
   },
   "vis": {
     "private": "Solo io",
     "friends": "Amici",
     "public": "Tutti",
-    "school": "La mia scuola"
+    "school": "La mia scuola",
+    "class": "{count, plural, one {La mia classe} other {Le mie classi}}",
+    "onlyYouNow": "Per ora solo tu"
   },
   "status": {
     "hidden": "Nascosto",
@@ -441,7 +449,8 @@
       "private": "Solo tu puoi aprire questo gioco. Cambia in Amici o Tutti per condividerlo.",
       "friends": "Solo i tuoi amici su Oomba Academy possono aprire questo link.",
       "public": "Chiunque abbia il link può giocare a questo gioco.",
-      "school": "Tutti nella tua scuola possono trovarlo e giocarci."
+      "school": "Tutti nella tua scuola possono trovarlo e giocarci.",
+      "class": "Solo le classi con cui è condiviso questo gioco possono aprire questo link."
     },
     "report": {
       "button": "Segnala",
@@ -462,7 +471,9 @@
       "saveFailed": "Non siamo riusciti a salvarlo.",
       "badScore": "Punteggio non valido.",
       "pickReason": "Scegli un motivo."
-    }
+    },
+    "sharedWith": "Condiviso con:",
+    "sharedWithMore": "{count, plural, one {e # altra classe} other {e altre # classi}}"
   },
   "play": {
     "backTo": "Torna a {title}",
@@ -715,7 +726,8 @@
       "private": "Solo tu puoi giocarci.",
       "friends": "Solo tu e i tuoi amici su Oomba Academy potete giocarci.",
       "public": "Tutti su Oomba Academy possono trovarlo e giocarci, dopo un rapido controllo di sicurezza.",
-      "school": "Tutti nella tua scuola possono trovarlo e giocarci."
+      "school": "Tutti nella tua scuola possono trovarlo e giocarci.",
+      "class": "Solo le classi che hai scelto possono giocarci."
     },
     "status": {
       "hidden": "Nascosto per ora",
@@ -805,7 +817,11 @@
       "notLive": "Questo gioco non è ancora online. Prima usa Pubblica.",
       "updatedFriends": "Aggiornato per i tuoi amici! La nuova versione aspetta anche il suo controllo prima che tutti possano giocarci.",
       "updatedYou": "Aggiornato per te! La nuova versione aspetta anche il suo controllo prima che tutti possano giocarci.",
-      "cantDeleteStarter": "I giochi iniziali non si possono eliminare."
+      "cantDeleteStarter": "I giochi iniziali non si possono eliminare.",
+      "pickClass": "Scegli almeno una delle tue classi.",
+      "classGone": "Puoi condividere solo con le classi in cui sei adesso.",
+      "classRemoved": "L'insegnante ha tolto questo gioco da {name}, quindi non può tornarci.",
+      "updatedNowWaiting": "Aggiornato! Anche la nuova versione aspetta un rapido controllo prima che più persone possano giocare."
     }
   },
   "publish": {
@@ -819,7 +835,8 @@
     "updateWaiting": "Il tuo aggiornamento aspetta un rapido controllo. Fino ad allora i giocatori usano la versione vecchia.",
     "waiting": "Il tuo gioco aspetta un rapido controllo di sicurezza. Lo condivideremo appena lo supera.",
     "school": "Online per la tua scuola! Tutti nella tua scuola possono trovarlo e giocarci.",
-    "schoolOnly": "La tua scuola tiene i giochi dentro la scuola. Condividilo con la tua scuola."
+    "schoolOnly": "La tua scuola tiene i giochi dentro la scuola. Condividilo con la tua scuola.",
+    "class": "{count, plural, one {Online per {name}! Tutti nella tua classe possono trovarlo e giocarci.} other {Online per le tue classi! Tutti lì possono trovarlo e giocarci.}}"
   },
   "builder": {
     "kindRefusal": "Con questo non posso aiutarti. Creiamo invece qualcosa di divertente! Che tipo di gioco ti piacerebbe?",
@@ -978,7 +995,9 @@
       "rateTitle": "Vota {title}",
       "stars": "Stelle",
       "starsLabel": "{count, plural, one {# stella} other {# stelle}}",
-      "thanksRating": "Grazie per il voto!"
+      "thanksRating": "Grazie per il voto!",
+      "stopped": "Questo gioco si è fermato.",
+      "restart": "Ricomincia"
     },
     "friends": {
       "codeCopied": "Codice copiato! Dallo a un amico che conosci.",
@@ -1053,11 +1072,6 @@
       "noFullscreen": "Lo schermo intero non è permesso qui.",
       "roundOver": "Partita finita! Punti: {score}",
       "stillWorking": "Un attimo, il Costruttore sta ancora lavorando!",
-      "stillFinishing": "Il Costruttore sta finendo il tuo ultimo messaggio…",
-      "thinking": "Il Costruttore sta pensando",
-      "working": "Il Costruttore sta lavorando…",
-      "building": "Sto creando il tuo gioco…",
-      "editing": "Sto facendo le modifiche…",
       "noAnswer": "Il Costruttore non è riuscito a rispondere. Riprova.",
       "signInAgain": "Accedi di nuovo",
       "dropped": "Ops, la connessione si è interrotta. Riprova.",
@@ -1069,7 +1083,8 @@
         "private": "Solo io",
         "friends": "Amici",
         "public": "Tutti",
-        "school": "La mia scuola"
+        "school": "La mia scuola",
+        "class": "{count, plural, one {La mia classe} other {Le mie classi}}"
       },
       "top": {
         "inReview": "In revisione",
@@ -1090,7 +1105,16 @@
         "publicCheck": "I giochi per tutti passano prima un rapido controllo di sicurezza, e i giocatori tengono la versione vecchia finché non lo supera.",
         "onlyYou": "solo tu puoi vederlo",
         "pendingNew": "La versione {number} aspetta un rapido controllo di sicurezza. La condivideremo appena lo supera.",
-        "reviewer": "Il revisore dice: «{note}» Chiedi al Costruttore di cambiarlo, poi premi di nuovo Aggiorna o Pubblica."
+        "reviewer": "Il revisore dice: «{note}» Chiedi al Costruttore di cambiarlo, poi premi di nuovo Aggiorna o Pubblica.",
+        "sharedWith": "Condiviso con: {names}",
+        "takenOff": "L'insegnante ha tolto questo gioco da {names}, quindi per ora puoi giocarci solo tu.",
+        "takenOffSome": "L'insegnante l'ha tolto da {names}.",
+        "leftClass": "Non sei più nella classe con cui l'hai condiviso, quindi per ora puoi giocarci solo tu.",
+        "pickAgain": "Tocca Condividi per scegliere chi può giocarci.",
+        "onlyYouNow": "Per ora solo tu",
+        "waitingPublic": "In attesa di un rapido controllo di sicurezza prima che tutti possano giocare. Fino ad allora resta condiviso come adesso.",
+        "waitingSchool": "In attesa di un rapido controllo di sicurezza prima che la tua scuola possa giocare. Fino ad allora resta condiviso come adesso.",
+        "waitingClass": "{count, plural, one {In attesa di un rapido controllo di sicurezza prima che la tua classe possa giocare.} other {In attesa di un rapido controllo di sicurezza prima che le tue classi possano giocare.}} Fino ad allora resta condiviso come adesso."
       },
       "safety": {
         "chipPass": "Sicuro",
@@ -1191,7 +1215,18 @@
         "save": "Salva",
         "publicHint": "I giochi per tutti passano prima un rapido controllo di sicurezza.",
         "copied": "Link copiato!",
-        "copyFailed": "Non è stato possibile copiare."
+        "copyFailed": "Non è stato possibile copiare.",
+        "groupHint": "Il robot controllore ha notato qualcosa, quindi prima lo guarda un adulto del nostro team.",
+        "classOne": "Solo i ragazzi e gli insegnanti di {name} possono trovarlo e giocarci.",
+        "classMany": "Solo i ragazzi e gli insegnanti delle classi che scegli possono trovarlo e giocarci.",
+        "classesLegend": "Quali classi?",
+        "allClasses": "Tutte le mie classi",
+        "allOpenClasses": "Tutte le classi che posso scegliere",
+        "classInSchool": "{class} · {school}",
+        "classLater": "Le classi in cui entri più tardi non vengono aggiunte da sole. Torna qui per aggiungerle.",
+        "pickClass": "Scegli almeno una classe.",
+        "classRemoved": "L'insegnante l'ha tolto da questa classe.",
+        "allRemoved": "{count, plural, one {L'insegnante ha tolto questo gioco dalla tua classe.} other {Gli insegnanti hanno tolto questo gioco dalle tue classi.}}"
       },
       "update": {
         "title": "Aggiorna il tuo gioco online",
@@ -1200,10 +1235,144 @@
         "publicText": "Visto che tutti possono giocarci, l'aggiornamento passa prima un rapido controllo di sicurezza. I giocatori tengono la versione {live} finché non lo supera.",
         "now": "Si aggiorna subito.",
         "notYet": "Non ancora",
-        "button": "Aggiorna"
+        "button": "Aggiorna",
+        "groupText": "Il robot controllore ha notato qualcosa in questa versione, quindi prima la guarda un adulto del nostro team. Fino ad allora i giocatori tengono la versione {live}."
       },
-      "reconnecting": "La connessione è caduta, ma il Costruttore sta ancora lavorando. Aspetta un attimo…",
-      "testing": "Gioco al tuo gioco per controllarlo…"
+      "steps": {
+        "title": "Dietro le quinte",
+        "tipsOn": "Consigli: sì",
+        "tipsOff": "Consigli: no",
+        "tipsHint": "Mostra o nascondi i consigli per imparare",
+        "earlier": "{count, plural, one {# passaggio precedente} other {# passaggi precedenti}}",
+        "hideEarlier": "Mostra meno passaggi",
+        "showLess": "Mostra meno",
+        "sending": "Invio del tuo messaggio",
+        "summaryAi": "Come ha fatto l’IA · {count, plural, one {# passaggio} other {# passaggi}} · {time}",
+        "summaryBlocks": "Come hanno fatto i blocchi semplici · {count, plural, one {# passaggio} other {# passaggi}} · {time}",
+        "stopped": "fermato prima della fine",
+        "stoppedHere": "Fermato qui",
+        "srDone": "fatto",
+        "srNow": "in corso",
+        "srWarn": "problema",
+        "srPaused": "nessuna notizia per ora",
+        "planLabel": "Piano:",
+        "thoughtFirst": "prima ha pensato",
+        "thinkingNow": "sta pensando",
+        "factLabel": "Lo sapevi?",
+        "justNow": "Poco fa:",
+        "tokens": "L’IA ha letto {read} token e ne ha scritti {wrote}. Un token è un pezzetto di parola. Il numero è grande perché a ogni giro l’IA rilegge le sue istruzioni, la chat e il gioco.",
+        "loopAi": "L’IA ha lavorato in {count, plural, one {# giro} other {# giri}}. A ogni giro: leggere, pensare, usare uno strumento, controllare, decidere cosa fare dopo.",
+        "loopBlocks": "I blocchi semplici seguono regole fisse. Il Costruttore IA fa un piano, usa strumenti e controlla il proprio lavoro.",
+        "lines": "{count, plural, one {# riga} other {# righe}}",
+        "edits": "{count, plural, one {# modifica} other {# modifiche}}",
+        "pics": "{count, plural, one {# immagine} other {# immagini}}",
+        "probs": "{count, plural, =0 {nessun problema trovato} one {# problema trovato} other {# problemi trovati}}",
+        "cut": "Era troppo lungo ed è stato tagliato",
+        "screen": {
+          "now": "Controllo di sicurezza del tuo messaggio",
+          "done": "Messaggio controllato",
+          "learn": "Prima che il Costruttore veda il tuo messaggio, un controllo di sicurezza verifica che vada bene per un sito di giochi per bambini."
+        },
+        "blocks": {
+          "now": "Uso dei blocchi semplici",
+          "done": "Blocchi semplici usati",
+          "learn": "Questi blocchi non sono IA. Seguono regole fisse, come riconoscere certe parole nel tuo messaggio."
+        },
+        "think": {
+          "now": {
+            "start": "Giro {n}: legge il tuo messaggio",
+            "startGame": "Giro {n}: legge il tuo messaggio e il tuo gioco",
+            "look": "Giro {n}: guarda le immagini",
+            "scan": "Giro {n}: legge il rapporto di sicurezza",
+            "retry": "Giro {n}: capisce cosa non ha funzionato",
+            "next": "Giro {n}: decide cosa fare dopo"
+          },
+          "done": {
+            "start": "Giro {n}: ha letto il tuo messaggio",
+            "startGame": "Giro {n}: ha letto il tuo messaggio e il tuo gioco",
+            "look": "Giro {n}: ha guardato le immagini",
+            "scan": "Giro {n}: ha letto il rapporto di sicurezza",
+            "retry": "Giro {n}: ha capito cosa non ha funzionato",
+            "next": "Giro {n}: ha deciso cosa fare dopo"
+          },
+          "learn": {
+            "start": "Un giro è ogni volta che l’app chiede qualcosa all’IA. L’IA non ricorda nulla, quindi l’app le rimanda la chat.",
+            "look": "Questa IA sa leggere le immagini, quindi controlla le schermate per trovare cose rotte, vuote o disordinate.",
+            "scan": "Il programma di sicurezza dice esattamente cosa non andava, così l’IA può sistemare solo quella parte.",
+            "retry": "Quando uno strumento dice che qualcosa non ha funzionato, l’IA legge il perché e prova in un altro modo.",
+            "next": "Dopo ogni strumento, l’IA legge il risultato e sceglie il passo successivo. Questo ciclo la rende un agente.",
+            "thinking": "Prima di rispondere, questa IA pensa in silenzio, un po’ come quando risolvi qualcosa a mente."
+          }
+        },
+        "write": {
+          "now": "Scrittura del codice del gioco",
+          "done": "Codice del gioco scritto",
+          "failed": "Quella versione non è venuta bene",
+          "learn": "L’IA scrive il codice un pezzetto alla volta, prevedendo ogni volta cosa dovrebbe venire dopo."
+        },
+        "edit": {
+          "now": "Modifica solo delle parti necessarie",
+          "done": "Cambiate solo le parti necessarie",
+          "failed": "Quella modifica non si adattava al codice",
+          "learn": "Per le piccole modifiche, l’IA sostituisce pezzi precisi del codice invece di riscriverlo tutto."
+        },
+        "fix": {
+          "now": "Correzione dei problemi trovati",
+          "done": "Fatte modifiche per sistemare i problemi",
+          "learn": "Trovare e correggere gli errori è una parte normale del costruire, per le persone e per l’IA."
+        },
+        "template": {
+          "done": "Partito da un mondo 3D già pronto",
+          "learn": "Invece di scrivere da zero un intero mondo 3D, l’IA parte da uno finito e lo cambia."
+        },
+        "check": {
+          "pass": "Programma di sicurezza: tutto a posto · salvato come versione {v}",
+          "flag": "Programma di sicurezza: {k, plural, =1 {una cosa} other {# cose}} da guardare · salvato come versione {v}",
+          "fail": "Il programma di sicurezza ha trovato {k, plural, =1 {un problema} other {# problemi}} · salvato come versione {v}",
+          "learn": "Un programma di sicurezza, non un’IA, cerca codice non sicuro in ogni nuova versione, perché l’IA può sbagliare."
+        },
+        "name": {
+          "title": "Chiamato «{title}»",
+          "titleIcon": "Chiamato «{title}» {icon}",
+          "icon": "Icona scelta: {icon}",
+          "details": "Dettagli del gioco compilati",
+          "learn": "Il Costruttore non può premere pulsanti, quindi usa degli strumenti: piccoli comandi che l’app esegue per lui, come dare il nome al gioco."
+        },
+        "playtest": {
+          "now": "Prova del tuo gioco su un telefono finto",
+          "done": "Provato su un telefono finto",
+          "failed": "Questa volta la prova non è riuscita",
+          "learn": "L’app gioca al tuo gioco su un telefono finto, cerca errori e scatta immagini per l’IA."
+        },
+        "notes": {
+          "done": "Fatta una lista di cose da provare",
+          "learn": "Anche dopo tutti questi controlli, una persona dovrebbe giocare. Questa lista ti dice cosa provare."
+        },
+        "ask": {
+          "done": "Ti ha fatto una domanda",
+          "learn": "Quando il Costruttore ha bisogno di sapere qualcosa, te lo chiede e poi aspetta la tua risposta."
+        },
+        "offline": {
+          "now": "Connessione persa. Il Costruttore continua sul server",
+          "check": "Connessione persa. Controlliamo se il Costruttore ha ricevuto il tuo messaggio…",
+          "learn": "Il tuo gioco viene costruito sul nostro computer, chiamato server, non sul tuo dispositivo, quindi va avanti."
+        },
+        "waiting": {
+          "now": "Il Costruttore sta ancora lavorando sul server"
+        },
+        "facts": {
+          "a": "L’IA legge e scrive in token, cioè pezzetti di parole. Una parola lunga può essere fatta di più token.",
+          "b": "Un’IA scrive prevedendo il token successivo, ancora e ancora, velocissima.",
+          "c": "Se chiedi due volte la stessa cosa, puoi avere una risposta diversa, perché l’IA sceglie tra parole probabili.",
+          "d": "A ogni giro, l’IA rilegge la chat recente. Per questo le chat lunghe usano più token.",
+          "e": "Un agente è un’IA che usa strumenti in un ciclo. Questo Costruttore può fare fino a 14 giri per messaggio.",
+          "f": "Il Costruttore IA non può usare internet. Costruisce con quello che ha imparato e con quello che gli dici tu.",
+          "g": "I modelli di IA imparano schemi da enormi quantità di testi e codice scritti da persone.",
+          "h": "L’IA può sembrare sicura e sbagliare lo stesso. Per questo anche un programma di sicurezza controlla il codice.",
+          "i": "✨ La qualità Pro usa un’IA più grande che pensa più a lungo: più lenta, ma spesso migliore nei giochi difficili.",
+          "j": "Gioca sempre al tuo gioco anche tu. Perfino un’IA intelligente non nota cose che un vero giocatore vedrebbe."
+        }
+      }
     }
   },
   "favorites": {
@@ -1225,7 +1394,13 @@
     "sent": "Hai chiesto di entrare in {name}. Presto l'insegnante ti dirà di sì!",
     "classmates": "{count, plural, one {# compagno di classe} other {# compagni di classe}}",
     "noLessons": "Ancora nessuna lezione",
-    "noLessonsText": "L'insegnante aggiungerà qui lezioni e giochi."
+    "noLessonsText": "L'insegnante aggiungerà qui lezioni e giochi.",
+    "games": {
+      "heading": "Giochi della nostra classe",
+      "emptyTitle": "Ancora nessun gioco della classe",
+      "emptyText": "Crea un gioco e condividilo con la tua classe quando lo pubblichi.",
+      "emptyAction": "Crea un gioco"
+    }
   },
   "school": {
     "tabs": {
@@ -1397,7 +1572,8 @@
       "timeZone": "Fuso orario",
       "timeZoneNone": "Non impostato (i giorni sono contati in UTC)",
       "timeZoneUnset": "Imposti il fuso orario della sua scuola così le lezioni diventano disponibili a mezzanotte e le scadenze terminano a mezzanotte dove si trova. Fino ad allora, nessuno è in ritardo fino a 36 ore dopo l'inizio del giorno di scadenza.",
-      "timeZoneHint": "Le lezioni diventano disponibili e le scadenze terminano a mezzanotte in questo fuso. Lì ora sono le {time}."
+      "timeZoneHint": "Le lezioni diventano disponibili e le scadenze terminano a mezzanotte in questo fuso. Lì ora sono le {time}.",
+      "publishingHint": "Gli studenti di una classe possono anche condividere un gioco solo con le loro classi."
     },
     "cards": {
       "title": "Schede di accesso",
@@ -1442,17 +1618,32 @@
       "adminNotStudent": "Ti occupi di Oomba Academy, quindi non puoi entrare in una classe come studente.",
       "isStudent": "{name} è tra gli studenti di questa scuola, quindi non si può aggiungere al personale.",
       "tickStudents": "Spunti almeno uno studente.",
-      "badZone": "Scelga un fuso orario dalla lista."
+      "badZone": "Scelga un fuso orario dalla lista.",
+      "gameNotHere": "Quel gioco non è condiviso con questa classe."
     },
     "classTabs": {
       "lessons": "Lezioni",
       "progress": "Progressi",
       "students": "Studenti",
-      "settings": "Impostazioni"
+      "settings": "Impostazioni",
+      "games": "Giochi"
     },
     "optional": "(facoltativo)",
     "me": "io",
-    "moreFor": "Altre opzioni per {name}"
+    "moreFor": "Altre opzioni per {name}",
+    "classGames": {
+      "text": "Giochi condivisi con questa classe. Se uno non va bene per la classe, toglilo: non potrà essere condiviso di nuovo qui a meno che tu non lo permetta.",
+      "by": "di {name}",
+      "sharedAgo": "condiviso {when}",
+      "remove": "Togli da questa classe",
+      "removeConfirm": "Togliere {title} da {class}? Gli studenti di questa classe non lo vedranno più.",
+      "removed": "Tolto da {class}.",
+      "removedHeading": "{count, plural, one {# gioco tolto} other {# giochi tolti}}",
+      "restore": "Consenti di nuovo",
+      "restored": "Chi l'ha creato può condividerlo di nuovo con {class}, se vuole.",
+      "hiddenGame": "Un gioco che ora non puoi aprire",
+      "empty": "Ancora nessun gioco condiviso con questa classe."
+    }
   },
   "lessons": {
     "up": "Sposta su",
@@ -1536,7 +1727,10 @@
       "bodyGame": "Istruzioni (facoltative)",
       "buildHint": "es. «un quiz con 8 domande sui pianeti»",
       "newGameLink": "Crea un nuovo gioco per gli studenti",
-      "deleteWorkConfirm": "Eliminare questo passaggio? Verranno eliminati i lavori di {n, plural, one {# studente} other {# studenti}} in questo passaggio. L'operazione non si può annullare."
+      "deleteWorkConfirm": "Eliminare questo passaggio? Verranno eliminati i lavori di {n, plural, one {# studente} other {# studenti}} in questo passaggio. L'operazione non si può annullare.",
+      "classGames": "Condivisi con le mie classi",
+      "classOnly": "Solo le classi con cui è condiviso possono giocarci",
+      "hiddenGame": "Un gioco che non puoi aprire"
     },
     "ai": {
       "button": "Bozza con l'IA",
@@ -1695,7 +1889,7 @@
       "played": "Ci ho giocato",
       "keepBuilding": "Continua a creare",
       "handIn": "Consegna il mio gioco",
-      "handInConfirm": "Vuoi consegnare il tuo gioco? L'insegnante e la tua scuola potranno giocarci.",
+      "handInConfirm": "Vuoi consegnare il tuo gioco? L'insegnante e la tua classe potranno giocarci.",
       "handInHint": "Quando il tuo gioco è pronto, consegnalo così l'insegnante può giocarci.",
       "handedInText": "Hai consegnato il tuo gioco.",
       "seeGame": "Vedi il mio gioco",

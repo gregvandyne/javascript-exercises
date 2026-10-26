@@ -2,6 +2,7 @@
 //   { ok, forModel: string, event?: [name, data] }
 // forModel goes back to the model as the tool result; event is streamed to the Studio over SSE.
 // write_game / edit_game always create a NEW version (history is never rewritten) after sanitize + static scan.
+// Each tool starts its live build step (steps.js) before exec() streams its event, so the row comes before its card.
 import * as games from '../services/games.js';
 import { sanitizeGameHtml, MAX_GAME_BYTES } from '../services/sanitize.js';
 import { scanVersion } from '../services/scanner.js';
@@ -10,6 +11,7 @@ import { signToken } from '../auth.js';
 import * as snapshot from '../services/snapshot.js';
 import { localeInfo } from '../i18n/index.js';
 import { templateHtml, templateInfo } from './catalog.js';
+import { NO_STEPS, cleanNote } from './steps.js';
 
 // Templates the Builder may start from with start_from_template (the 3D one; 2D games are written fresh).
 const STARTERS = ['island'];
@@ -37,8 +39,9 @@ export function applyEdits(html, edits) {
   return { ok: true, html: out };
 }
 
-/** ctx: { user, gameId, emit(name, data), state, locale } — state.scanFails counts failed scans this turn. */
+/** ctx: { user, gameId, emit(name, data), state, locale, steps? } — state.scanFails counts failed scans this turn. */
 export function toolbox(ctx) {
+  const steps = ctx.steps || NO_STEPS;
   const game = () => games.getGame(ctx.gameId);
   const current = () => { const g = game(); return g && g.current_version_id ? games.getVersion(g.current_version_id) : null; };
 
@@ -47,8 +50,11 @@ export function toolbox(ctx) {
     if (Buffer.byteLength(rawHtml) > MAX_GAME_BYTES) return { ok: false, forModel: 'The game is bigger than 2 MB. Make it smaller.' };
     const { html, removed } = sanitizeGameHtml(rawHtml.replace(/^\s*<!doctype[^>]*>/i, ''));
     const report = scanVersion(html);
-    const note = String(notes || '').replace(/\s+/g, ' ').trim().slice(0, 200) || 'New version';
+    const note = cleanNote(notes, 200) || 'New version';
     const v = games.addVersion(ctx.gameId, html, { notes: note, createdBy: ctx.user.id, safetyStatus: report.status, safetyReport: report });
+    // The safety program (not AI) ran, and the version is saved. k (flag/fail): how many things it listed at that level.
+    const listed = (report.issues || []).filter(i => i.level === report.status).length;
+    steps.start('check', { st: report.status, v: v.number, ...(listed ? { k: listed } : {}) });
     const g = game();
     const event = ['version', { id: v.id, number: v.number, notes: v.notes, status: report.status, issues: plainIssues(report), preview: previewUrl(v, g, ctx.user.id, ctx.locale), created_at: v.created_at }];
     let forModel = `Saved as version ${v.number}. Safety scan: ${report.status}.`;
@@ -67,6 +73,7 @@ export function toolbox(ctx) {
       const question = String((input && input.question) || '').trim().slice(0, 200);
       const options = (Array.isArray(input && input.options) ? input.options : []).map(o => String(o).trim().slice(0, 48)).filter(o => o && cleanText(o, 48).ok).slice(0, 8);
       if (!question) return { ok: false, forModel: 'ask_user needs a question.' };
+      steps.start('ask');
       return { ok: true, forModel: 'The question is on screen. Stop now and wait for the builder to answer.', event: ['ask', { question, options }], stop: true };
     },
     write_game(input) {
@@ -92,6 +99,7 @@ export function toolbox(ctx) {
       if (input.cover && games.COVERS.includes(input.cover)) fields.cover = input.cover;
       if (!Object.keys(fields).length) return { ok: false, forModel: `Nothing was changed. ${problems.join('; ')}` };
       const g = games.updateMeta(ctx.gameId, fields);
+      steps.start('name', { title: fields.title, icon: fields.icon });
       const out = { title: g.title, icon: g.icon, description: g.description, category: g.category, tags: g.tags, orientation: g.orientation, players_max: g.players_max, cover: g.cover };
       return { ok: true, forModel: `Game details saved.${problems.length ? ' Skipped: ' + problems.join('; ') + '.' : ''}`, event: ['meta', out] };
     },
@@ -100,14 +108,19 @@ export function toolbox(ctx) {
     async playtest_game() {
       const cur = current(); const g = game();
       if (!cur) return { ok: false, forModel: 'There is no game yet. Build it with write_game first.' };
-      if (!snapshot.enabled()) return { ok: false, forModel: 'Playtesting is not available on this server right now. Re-read the game carefully instead.' };
-      ctx.emit('progress', { stage: 'testing' });
+      // The AI really asked for a playtest, so it gets a row; without screenshots that row says it couldn't run
+      // (ok:false) and never claims a test happened. shown: the failure is on the card (the next round reads it).
+      const row = steps.start('playtest', { v: cur.number });
+      if (!snapshot.enabled()) { steps.info({ ok: false }, row); return { ok: false, shown: true, forModel: 'Playtesting is not available on this server right now. Re-read the game carefully instead.' }; }
       const orientation = g.orientation === 'landscape' ? 'landscape' : 'portrait';
       let r;
       try {
         r = await snapshot.runGame(cur.html, { size: 'phone', orientation, lang: ctx.locale || 'en', dir: localeInfo(ctx.locale || 'en').dir, title: g.title, scale: 1, quality: 62, titleMs: 1500, playMs: 2500 });
       } catch (e) {
-        return { ok: false, forModel: `The playtest could not run (${String(e.message || e).split('\n')[0]}). The game may freeze or loop forever while loading: check the start-up code.` };
+        steps.info({ ok: false }, row);
+        // The screenshot worker is down or busy: say so, rather than blame the game.
+        if (e.workerDown) return { ok: false, shown: true, forModel: 'Playtesting is not available on this server right now. Re-read the game carefully instead.' };
+        return { ok: false, shown: true, forModel: `The playtest could not run (${String(e.message || e).split('\n')[0]}). The game may freeze or loop forever while loading: check the start-up code.` };
       }
       const a = r.after || {}, b = r.before || {};
       const problems = [];
@@ -121,6 +134,7 @@ export function toolbox(ctx) {
       const small = [...new Set([...(b.smallButtons || []), ...(a.smallButtons || [])])];
       if (small.length) problems.push(`Buttons smaller than 40px (hard for small fingers): ${small.map(x => `"${x}"`).join(', ')}.`);
       if (!a.testHook) problems.push('window.__brbTest is missing (add state() and start(), see the Game Contract).');
+      steps.info({ pics: (r.title ? 1 : 0) + (r.play ? 1 : 0), probs: problems.length }, row);
       const size = orientation === 'landscape' ? '844x390 landscape' : '390x700 portrait';
       const text = [
         `Playtest of version ${cur.number} on a phone (${size}), in the builder's language.`,
@@ -141,6 +155,7 @@ export function toolbox(ctx) {
       if (!STARTERS.includes(key)) return { ok: false, forModel: `Unknown template. Use one of: ${STARTERS.join(', ')}.` };
       const [{ html, fallback }, info] = await Promise.all([templateHtml(key), templateInfo(key)]);
       if (fallback) return { ok: false, forModel: 'That template is not available right now. Write the game with write_game instead.' };
+      steps.start('template');
       const r = saveVersion(html, (input && input.notes) || `Started from ${info ? info.title : key}`);
       if (r.ok) r.forModel += ` It is ${info ? info.title : key}. Now make it theirs with edit_game: change the CONFIG block near the top of the module script (and the I18N table for words), following the 3D RULES.`;
       return r;
@@ -148,6 +163,7 @@ export function toolbox(ctx) {
     test_notes(input) {
       const list = (Array.isArray(input && input.checklist) ? input.checklist : []).map(s => String(s).trim().slice(0, 140)).filter(Boolean).slice(0, 8);
       if (!list.length) return { ok: false, forModel: 'checklist must list a few things to try.' };
+      steps.start('notes');
       return { ok: true, forModel: 'Shown to the builder.', event: ['notes', { checklist: list }] };
     },
   };

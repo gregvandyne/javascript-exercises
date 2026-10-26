@@ -7,7 +7,7 @@ const exe = process.env.BRB_CHROMIUM || LOCAL.find(f => fs.existsSync(f));
 process.env.BRB_DB = ':memory:'; process.env.BRB_SILENT = '1'; process.env.LOG_REQUESTS = '0';
 process.env.BRB_SNAPSHOTS = '1'; if (exe) process.env.BRB_CHROMIUM = exe;
 process.env.BRB_DATA_DIR = fs.mkdtempSync(os.tmpdir() + '/brb-shots-');
-import test from 'node:test';
+import test, { mock } from 'node:test';
 import assert from 'node:assert/strict';
 const { q } = await import('../../server/db.js');
 const { createUser, startSession } = await import('../../server/auth.js');
@@ -15,8 +15,11 @@ const games = await import('../../server/services/games.js');
 const shots = await import('../../server/services/shots.js');
 const snapshot = await import('../../server/services/snapshot.js');
 const { toolbox } = await import('../../server/builder/tools.js');
+const { stepRecorder } = await import('../../server/builder/steps.js');
 const { createApp } = await import('../../server/app.js');
 const { templateHtml } = await import('../../server/builder/catalog.js');
+const { config } = await import('../../server/config.js');
+const http = await import('node:http');
 
 const skip = !exe && !process.env.PLAYWRIGHT_BROWSERS_PATH ? 'no Chromium on this machine' : false;
 let server, base;
@@ -78,7 +81,8 @@ test('playtest_game shows the model two pictures, the errors and the layout prob
     <button style="width:20px;height:20px">x</button><button id="go" style="width:200px;height:80px" onclick="boom()">Play</button>
     <script>setTimeout(()=>{ undefinedThing.call(); }, 100)</script>`, { createdBy: owner.id, safetyStatus: 'pass' });
   const events = [];
-  const tb = toolbox({ user: owner, gameId: g.id, emit: (n, d) => events.push([n, d]), state: {}, locale: 'en' });
+  const emit = (n, d) => events.push([n, d]);
+  const tb = toolbox({ user: owner, gameId: g.id, emit, state: {}, locale: 'en', steps: stepRecorder(emit) });
   const r = await tb.exec('playtest_game', {});
   assert.equal(r.ok, true);
   assert.ok(Array.isArray(r.forModel)); assert.equal(r.forModel.filter(b => b.type === 'image').length, 2);
@@ -86,5 +90,52 @@ test('playtest_game shows the model two pictures, the errors and the layout prob
   assert.match(text, /undefinedThing/); assert.match(text, /boom/);
   assert.match(text, /wider than the phone/); assert.match(text, /div\.wide> from x=0 to x=900/); assert.match(text, /smaller than 40px/); assert.match(text, /__brbTest is missing/);
   assert.match(text, /tapped "Play"/);
-  assert.deepEqual(events.map(e => e[0]), ['progress', 'playtest']);
+  // The live build step: started only once playtesting really runs, then the pictures and problem count.
+  assert.deepEqual(events.map(e => e[0]), ['step', 'stepinfo', 'playtest']);
+  assert.equal(events[0][1].key, 'playtest'); assert.equal(events[1][1].pics, 2); assert.ok(events[1][1].probs >= 4);
+  assert.equal(events[1][1].probs, events[2][1].problems);
+});
+
+test('screenshot worker down, busy or refusing the token: no try is used up (covers come later); a game it cannot run uses one', async () => {
+  let status = 401;
+  const fake = http.createServer((req, res) => { req.resume(); req.on('end', () => { res.writeHead(status, { 'content-type': 'application/json' }); res.end('{"error":"x"}'); }); }).listen(0);
+  await new Promise(r => fake.once('listening', r));
+  const saved = { url: config.snapshotUrl, token: config.shotsToken };
+  const g = games.createGame(owner.id, { title: 'Waits' });
+  const v = games.addVersion(g.id, '<title>w</title><p>hi</p>', { createdBy: owner.id, safetyStatus: 'pass' });
+  const tries = () => q.get('SELECT shot_tries FROM game_versions WHERE id=?', v.id).shot_tries;
+  try {
+    config.snapshotUrl = `http://127.0.0.1:${fake.address().port}`; config.shotsToken = 'not-the-workers';
+    await assert.rejects(snapshot.runGame('<p>x</p>'), e => e.workerDown === true && /refused SHOTS_TOKEN \(401\)/.test(e.message));
+    assert.equal(await shots.takeShot(v.id), false); assert.equal(tries(), 0, 'wrong token');
+    status = 503;
+    assert.equal(await shots.takeShot(v.id), false); assert.equal(tries(), 0, 'busy');
+    status = 500;   // the worker ran the game and it failed (froze, never loaded): that counts
+    assert.equal(await shots.takeShot(v.id), false); assert.equal(tries(), 1);
+    await new Promise(r => fake.close(r));
+    await assert.rejects(snapshot.runGame('<p>x</p>'), e => e.workerDown === true && /^screenshot worker unreachable \((ECONNREFUSED|UND_ERR_SOCKET)\)$/.test(e.message));
+    assert.equal(await shots.takeShot(v.id), false); assert.equal(tries(), 1, 'worker down');
+    // The Builder's playtest says playtesting is unavailable instead of blaming the game.
+    const tb = toolbox({ user: owner, gameId: g.id, emit: () => {}, state: {}, locale: 'en' });
+    const pt = await tb.exec('playtest_game', {});
+    assert.equal(pt.ok, false); assert.match(pt.forModel, /not available on this server right now/);
+    // BRB_SNAPSHOTS=0 turns screenshots off even with a worker named.
+    assert.equal(snapshot.enabled(), true);
+    config.snapshotsOff = true;
+    assert.equal(snapshot.enabled(), false);
+  } finally { config.snapshotUrl = saved.url; config.shotsToken = saved.token; config.snapshotsOff = false; fake.close(); }
+});
+
+test('a job that runs past the time limit waited in the worker\'s queue: busy, so no try is used up', async () => {
+  const fake = http.createServer(() => {}).listen(0);   // takes the job and never answers
+  await new Promise(r => fake.once('listening', r));
+  const saved = { url: config.snapshotUrl, token: config.shotsToken };
+  mock.timers.enable({ apis: ['setTimeout'] });
+  try {
+    config.snapshotUrl = `http://127.0.0.1:${fake.address().port}`; config.shotsToken = 'tok';
+    const p = snapshot.runGame('<p>x</p>');
+    await new Promise(r => setImmediate(r)); await new Promise(r => setImmediate(r));
+    mock.timers.tick(56_000);
+    await assert.rejects(p, e => e.workerDown === true && /timed out \(busy\)/.test(e.message));
+  } finally { mock.timers.reset(); config.snapshotUrl = saved.url; config.shotsToken = saved.token; fake.closeAllConnections(); fake.close(); }
 });

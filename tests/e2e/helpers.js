@@ -1,6 +1,24 @@
 import { expect } from '@playwright/test';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+// Words the server refuses in names: the lists in server/i18n/blocklists (ROT13) and in server/services/textfilter.js.
+// Random consonants spell one of their abbreviations about once in a hundred names, which made sign-ups fail at random.
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+const rot13 = s => s.replace(/[a-z]/gi, c => { const b = c <= 'Z' ? 65 : 97; return String.fromCharCode((c.charCodeAt(0) - b + 13) % 26 + b); });
+const LISTS = path.join(ROOT, 'server/i18n/blocklists');
+const REFUSED = fs.readdirSync(LISTS).filter(f => f.endsWith('.txt'))
+  .flatMap(f => fs.readFileSync(path.join(LISTS, f), 'utf8').split('\n')).map(l => l.trim())
+  .filter(l => l && !l.startsWith('#') && !l.startsWith('!')).map(l => rot13(l.replace(/^=/, '').trim()).toLowerCase())
+  .filter(w => /^[a-z]{2,}$/.test(w))
+  .concat(...[...fs.readFileSync(path.join(ROOT, 'server/services/textfilter.js'), 'utf8').matchAll(/^(?:export )?const (?:BLOCK|NAME_ONLY) = \[([^\]]*)\]/gm)].map(m => m[1].match(/[a-z]+/g)));
 // Consonants only: names with long digit runs are refused (they look like phone numbers), and no vowels means no rude words by chance.
-export const uniq = (p = 'U') => p + Array.from({ length: 6 }, () => 'bcdfghjkmnpqrstvwxz'[Math.floor(Math.random() * 19)]).join('');
+export function uniq(p = 'U') {
+  for (;;) {
+    const n = p + Array.from({ length: 6 }, () => 'bcdfghjkmnpqrstvwxz'[Math.floor(Math.random() * 19)]).join('');
+    if (!REFUSED.some(w => n.toLowerCase().includes(w))) return n;
+  }
+}
 export async function gameFrame(page) {
   await expect.poll(() => page.frames().some(f => f.url().includes('/frame/')), { timeout: 15000 }).toBe(true);
   const f = page.frames().find(f => f.url().includes('/frame/'));

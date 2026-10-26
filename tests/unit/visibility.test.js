@@ -136,4 +136,11 @@ test('frame token is bound to its viewer: another account (or none) cannot repla
   assert.equal((await fetch(url, { headers: { cookie: cookieFor(owner.id) } })).status, 200, 'the minter can load it');
   assert.equal((await fetch(url, { headers: { cookie: cookieFor(other.id) } })).status, 403, 'another account cannot');
   assert.equal((await fetch(url)).status, 403, 'and neither can an anonymous request');
+  // The refusal shows inside the game frame (a reload the frame starts itself has no cookie): the site's own pages may
+  // frame it, so the player reads "link expired" instead of the browser's "refused to connect".
+  for (const r of [await fetch(url), await fetch(`${base}/frame/nonsense`)]) {
+    assert.equal(r.status, 403); assert.equal(r.headers.get('x-frame-options'), null);
+    assert.match(r.headers.get('content-security-policy'), /^sandbox; default-src 'none'; style-src 'unsafe-inline'; frame-ancestors 'self'$/);
+    assert.match(await r.text(), /expired/);
+  }
 });

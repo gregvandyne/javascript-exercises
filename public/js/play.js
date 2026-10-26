@@ -1,8 +1,9 @@
 // Parent side of the game sandbox. Validates every message from the frame (source, origin, shape)
 // and turns allowed ones into server calls. Docs: docs/sdk.md
-import { api, toast, sheet, pageData, refreshLive, $, t, esc } from '/js/app.js';
+import { api, toast, sheet, pageData, refreshLive, tappedJustNow, $, t, esc } from '/js/app.js';
 const d = pageData();
-const frame = $('#gameframe'), stage = $('#stage');
+// The game frame waits in a <template> until its 'load' listener is on (below), so its first load is never missed.
+const frame = document.importNode($('#gameframe-tpl').content.firstElementChild, true), stage = $('#stage');
 let playId = null;
 
 // ---- is someone playing? ----
@@ -15,17 +16,32 @@ const ua = navigator.userActivation;
 if (ua) setInterval(() => { if (ua.isActive) lastInput = Date.now(); }, 1000);
 for (const ev of ['pointerdown', 'keydown']) addEventListener(ev, () => { lastInput = Date.now(); }, { capture: true, passive: true });
 const playing = () => Date.now() - lastInput < ACTIVE_FOR;
-// A game must never point its own frame at another website (for phishing or to carry data out in the URL).
-// No CSP directive stops a frame navigating itself, so we watch: the game's own document loads once, and any
-// later 'load' is an unexpected navigation, which we undo by pinning the frame straight back to the game.
-// (The very first off-site request still leaves once before we can react — a known limit, see docs/safety.md.)
-const frameSrc = frame.getAttribute('src');
-let frameSettled = false, framePins = 0;
+// A game that points its own frame somewhere else: this page's CSP (frame-src 'self') refuses any other website before
+// a request leaves, and a reload the game starts itself is refused by the server (no sign-in cookie on it). Either way
+// the frame would be stuck on an error page, so the game's own document loads once and any later 'load' pins the
+// frame straight back to the game (docs/safety.md, section 9).
+const frameSrc = frame.dataset.src;
+let frameSettled = false, framePins = 0, pinnedAt = [], stopped = false;
 frame.addEventListener('load', () => {
+  if (stopped) return;
   if (framePins > 0) { framePins--; return; }   // a reload we triggered below
   if (!frameSettled) { frameSettled = true; return; }   // the game's own first load
+  // A game that keeps reloading itself with no tap from the player: after two pins in 30 s, stop instead of looping.
+  if (!(ua && ua.isActive)) {
+    const now = Date.now(); pinnedAt = pinnedAt.filter(at => now - at < 30e3);
+    if (pinnedAt.length >= 2) return stopGame();
+    pinnedAt.push(now);
+  }
   framePins = 2; frame.src = 'about:blank'; setTimeout(() => { frame.src = frameSrc; }, 30);
 });
+frame.src = frameSrc; stage.prepend(frame);
+function stopGame() {
+  stopped = true; frame.src = 'about:blank';
+  const box = document.createElement('div'); box.className = 'game-stopped'; box.setAttribute('role', 'alert'); box.dir = document.documentElement.dir || 'ltr';
+  box.innerHTML = `<div><p>${esc(t('js.play.stopped'))}</p><button class="btn btn-primary" type="button">${esc(t('js.play.restart'))}</button></div>`;
+  box.querySelector('button').addEventListener('click', () => location.reload());
+  stage.appendChild(box);
+}
 
 // ---- presence + play counting ----
 async function start() {
@@ -50,6 +66,7 @@ const TYPES = {
   'brb:gameover': m => typeof m.won === 'boolean' && (m.score === null || Number.isFinite(m.score)),
   'brb:fullscreen': m => typeof m.on === 'boolean',
   'brb:orientation': m => typeof m.value === 'string' && m.value.length < 40,
+  'brb:retry': m => true,
 };
 export function validMessage(e, frameWin) {
   if (e.source !== frameWin) return null;            // only our game frame
@@ -76,6 +93,8 @@ addEventListener('message', e => {
     case 'brb:gameover': lessonEvent({ event: 'end', score: m.score }); break;
     case 'brb:fullscreen': m.on ? goFull() : (document.fullscreenElement && document.exitFullscreen().catch(() => {})); break;
     case 'brb:orientation': if (m.value.startsWith('landscape')) $('#orient').classList.add('show'); break;
+    // "Try again" on the 3D card: reload the page, which makes a fresh frame link and sends the sign-in cookie.
+    case 'brb:retry': if (tappedJustNow()) location.reload(); break;
   }
 });
 addEventListener('pagehide', () => { if (pendingSave) { navigator.sendBeacon && fetch(`/api/games/${d.gameId}/save`, { method: 'POST', keepalive: true, credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ data: pendingSave }) }); } });

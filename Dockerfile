@@ -17,7 +17,7 @@ ENV NODE_ENV=production PORT=3000 BRB_DATA_DIR=/data PLAYWRIGHT_BROWSERS_PATH=/m
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 # tini (PID 1: passes signals on, reaps zombies) and headless Chromium (plus its fonts, emoji included) for game
-# screenshots: cover pictures and the Builder's playtests.
+# screenshots: cover pictures and the Builder's playtests (in the app on Render, in the worker container elsewhere).
 RUN apt-get update && apt-get install -y --no-install-recommends tini \
   && node node_modules/playwright-core/cli.js install --with-deps --only-shell chromium \
   && rm -rf /var/lib/apt/lists/* /tmp/*
@@ -25,6 +25,8 @@ COPY --from=litestream /usr/local/bin/litestream /usr/local/bin/litestream
 COPY deploy/litestream.yml /etc/litestream.yml
 COPY package.json ./
 COPY server ./server
+# public/ includes vendor/three/ (the pinned Three.js): the app serves it to players, and the screenshot worker, the
+# same image started as `node server/shots-worker.js`, answers 3D games' requests for it from these files.
 COPY public ./public
 COPY scripts ./scripts
 COPY seed-games ./seed-games

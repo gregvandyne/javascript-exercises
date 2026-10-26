@@ -179,7 +179,7 @@
   function deviceMessage(why) {
     if (!DEV || devBox) return;
     // A lost 3D picture happens on new phones and tablets too (GPU reset, memory pressure, coming back from
-    // the background), so it gets its own message and a "Try again" button that reloads the frame. The
+    // the background), so it gets its own message and a "Try again" button that asks the page to reload the game. The
     // "needs a newer device" wording is only for a browser that truly can't run the game (no import maps / WebGL 2).
     var lost = why === 'lost';
     function show() {
@@ -204,7 +204,8 @@
         var btn = document.createElement('button'); btn.type = 'button';
         btn.textContent = typeof DEV.retry === 'string' && DEV.retry ? DEV.retry : 'Try again';
         btn.style.cssText = 'margin-top:20px;min-height:52px;padding:0 28px;border:0;border-radius:16px;background:#2f6bff;color:#fff;font:800 20px system-ui,sans-serif;cursor:pointer;box-shadow:0 5px 0 #1b47c7';
-        btn.addEventListener('click', function () { try { location.reload(); } catch (e) { /* ignore */ } });
+        // The page reloads the game: a reload started in here goes without the sign-in cookie, so the server refuses it.
+        btn.addEventListener('click', function () { send('brb:retry'); });
         card.appendChild(btn);
       }
       devBox.appendChild(card);

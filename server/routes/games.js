@@ -5,7 +5,7 @@ import { page, notFound } from '../views/layout.js';
 import { coverArt, avatar, cardGrid, statusLabel, categoryLabel } from '../views/components.js';
 import * as games from '../services/games.js';
 import * as presence from '../services/presence.js';
-import { frameDocument, sendFrame, requestOrigin, SANDBOX } from '../services/frame.js';
+import { frameDocument, sendFrame, sendFrameText, frameOrigins, SANDBOX } from '../services/frame.js';
 import { signToken, readToken, requireUser, getUser, createGuest, startSession } from '../auth.js';
 import { rateLimit, allow, ipOf, GUESTS_PER_IP_HOUR } from '../services/ratelimit.js';
 import { q, uid, now, audit } from '../db.js';
@@ -40,6 +40,9 @@ router.get('/g/:slug', (req, res) => {
   const cat = games.categoryInfo(g.category);
   const playable = !!g.published_version_id || (isOwner && g.current_version_id);
   const players = g.players_max > 1 ? `👥 ${t('game.about.players', { count: g.players_max })} · ` : `👤 ${t('game.about.onePlayer')} · `;
+  // "Shared with: 5B, Art Club" (only reached after canView). The owner and admins see every class; anyone else sees
+  // the classes they are in and a count of the others.
+  const shared = games.classNamesFor(g, u);
   const body = html`
   <article>
     <div class="gamehero">
@@ -47,6 +50,7 @@ router.get('/g/:slug', (req, res) => {
       <div>
         <h1>${g.title}</h1>
         <a class="person ownerchip" href="/u/${owner.username}">${avatar(owner, 32)}<span class="nm">${owner.display_name}</span></a>
+        ${shared && shared.names.length ? html`<div class="sharedwith small"><span>🎒 ${t('game.sharedWith')}</span> <ul class="chips-inline">${shared.names.map(n => html`<li dir="auto">${n}</li>`)}</ul>${shared.others ? html` <span class="muted">${t('game.sharedWithMore', { count: shared.others })}</span>` : ''}</div>` : ''}
         <div class="statrow">
           <div class="stat"><b>${d.rating_count ? d.rating.toFixed(1) + ' ★' : t('cards.new')}</b>${d.rating_count ? t('game.stats.ratings', { count: d.rating_count, n: f.num(d.rating_count) }) : t('game.stats.noRatings')}</div>
           <div class="stat"><b data-live="${g.id}" data-live-format="number">${d.playing}</b>${t('game.stats.playingNow')}</div>
@@ -59,7 +63,7 @@ router.get('/g/:slug', (req, res) => {
           <button class="iconbtn" type="button" id="sharebtn"><span class="emo" aria-hidden="true">🔗</span>${t('game.share')}</button>
           ${isOwner ? html`<a class="iconbtn" href="/studio/${g.id}"><span class="emo" aria-hidden="true">🛠️</span>${t('game.edit')}</a>` : html`<button class="iconbtn" type="button" id="reportbtn"><span class="emo" aria-hidden="true">🚩</span>${t('game.report.button')}</button>`}
         </div>
-        ${isOwner ? html`<p class="small muted" style="margin-top:8px">${statusLabel(g, t)}${g.pending_version_id ? ` · ${t('game.updateWaiting')}` : ''}${g.review_note ? html` · ${t('game.reviewer', { note: g.review_note })}` : ''}</p>` : ''}
+        ${isOwner ? html`<p class="small muted" style="margin-top:8px">${statusLabel(g, t, shared ? shared.names.length : 1)}${g.pending_version_id ? ` · ${t('game.updateWaiting')}` : ''}${g.review_note ? html` · ${t('game.reviewer', { note: g.review_note })}` : ''}</p>` : ''}
       </div>
     </div>
     <div class="grid2">
@@ -114,7 +118,7 @@ router.get('/play/:slug', (req, res) => {
     <button class="iconbtn" type="button" id="p-full" aria-label="${t('play.fullScreen')}"><span class="emo" aria-hidden="true">⛶</span><span class="lbl">${t('play.fullScreen')}</span></button>
   </div>
   <div class="stage" id="stage" dir="ltr">
-    <iframe id="gameframe" title="${g.title}" src="/frame/${token}" sandbox="${SANDBOX}" allow="fullscreen; autoplay" allowfullscreen referrerpolicy="no-referrer"></iframe>
+    <template id="gameframe-tpl"><iframe id="gameframe" title="${g.title}" data-src="/frame/${token}" sandbox="${SANDBOX}" allow="fullscreen; autoplay" allowfullscreen referrerpolicy="no-referrer"></iframe></template>
   </div>
   <div class="orient-hint ${g.orientation === 'landscape' ? 'show' : ''}" id="orient"><div><div class="emo" aria-hidden="true">📱</div><h2>${t('play.turn.heading')}</h2><p>${t('play.turn.text')}</p><button class="btn" type="button" id="orient-ok">${t('play.turn.ok')}</button></div></div>
   ${jsonData('page-data', { gameId: g.id, slug: g.slug, title: g.title, signedIn: !!u, myStars: games.userRating(g.id, u && u.id), canSave: !!u, lesson })}`;
@@ -142,16 +146,17 @@ router.get('/shots/:file', (req, res) => {
 router.get('/frame/:token', (req, res) => {
   const t = req.t;
   const tok = readToken(req.params.token);
-  if (!tok) return res.status(403).type('text').send(t('play.frameExpired'));
+  if (!tok) return sendFrameText(res, 403, t('play.frameExpired'));
   const v = games.getVersion(tok.v); const g = v && games.getGame(v.game_id);
-  if (!v || !g || g.id !== tok.g) return res.status(404).type('text').send(t('errors.api.notFound'));
+  if (!v || !g || g.id !== tok.g) return sendFrameText(res, 404, t('errors.api.notFound'));
   const preview = !!tok.p;
   // Bind the token to the viewer so a leaked frame URL is useless to anyone else: the sandboxed iframe is same-site, so
   // the SameSite=Lax session cookie rides along and req.user is the minter (guest-play sets its cookie before the frame loads).
+  // Only when the page loads the frame: a reload the frame starts itself has no cookie, so the SDK's "Try again" asks the page.
   const u = req.user;
-  if (tok.u && (!u || u.id !== tok.u)) return res.status(403).type('text').send(t('play.frameExpired'));
+  if (tok.u && (!u || u.id !== tok.u)) return sendFrameText(res, 403, t('play.frameExpired'));
   // Re-check the live game against the viewer (catches a game since hidden, unpublished or made private); preview is owner/admin-only at mint.
-  if (!preview && !games.canView(u, g)) return res.status(404).type('text').send(t('errors.api.notFound'));
+  if (!preview && !games.canView(u, g)) return sendFrameText(res, 404, t('errors.api.notFound'));
   const lang = normalizeCode(tok.l) || req.locale;
   const init = {
     user: { ...(u ? { displayName: u.display_name, avatar: u.avatar, isGuest: !!u.is_guest } : { displayName: t('play.defaultPlayer'), avatar: '🙂', isGuest: true }), lang, dir: localeInfo(lang).dir },
@@ -166,7 +171,7 @@ router.get('/frame/:token', (req, res) => {
       lostTitle: tFor(lang)('play.device.lostTitle'), lostText: tFor(lang)('play.device.lostText'), retry: tFor(lang)('play.device.retry'),
     },
   };
-  sendFrame(res, frameDocument(v.html, init), requestOrigin(req));
+  sendFrame(res, frameDocument(v.html, init), frameOrigins(req));
 });
 
 // ---- APIs used by game.js / play.js ----

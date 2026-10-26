@@ -60,6 +60,11 @@
       "heading": "Something broke",
       "text": "Our team has been told. Try again in a moment."
     },
+    "moving": {
+      "title": "Back soon",
+      "heading": "Oomba Academy is moving to a new home",
+      "text": "We'll be back in a few minutes. Your games and saves are safe."
+    },
     "api": {
       "notFound": "Not found",
       "tooBig": "That is too big.",
@@ -224,6 +229,7 @@
     "starsLabel": "{stars} out of 5 stars from {count, plural, one {# rating} other {# ratings}}",
     "playing": "{count} playing",
     "gameBy": "{title}, by {name}",
+    "classOnly": "Class only",
     "by": "by {name}",
     "plays": "{count, plural, one {{n} play} other {{n} plays}}",
     "seeAll": "See all",
@@ -233,6 +239,8 @@
   "vis": {
     "private": "Only me",
     "friends": "Friends",
+    "class": "{count, plural, one {My class} other {My classes}}",
+    "onlyYouNow": "Only you right now",
     "public": "Everyone",
     "school": "My school"
   },
@@ -440,9 +448,12 @@
     "shareText": {
       "private": "Only you can open this game. Change it to Friends or Everyone to share it.",
       "friends": "Only your friends on Oomba Academy can open this link.",
+      "class": "Only the classes this game is shared with can open this link.",
       "public": "Anyone with the link can play this game.",
       "school": "Everyone at your school can find and play it."
     },
+    "sharedWith": "Shared with:",
+    "sharedWithMore": "{count, plural, one {and # other class} other {and # other classes}}",
     "report": {
       "button": "Report",
       "already": "Thanks, we already have your report.",
@@ -714,6 +725,7 @@
     "shareText": {
       "private": "Only you can play it.",
       "friends": "Only you and your friends on Oomba Academy can play it.",
+      "class": "Only the classes you picked can play it.",
       "public": "Everyone on Oomba Academy can find and play it, after a quick safety check.",
       "school": "Everyone at your school can find and play it."
     },
@@ -802,9 +814,13 @@
       "savedDefault": "my favorite so far",
       "saved": "Saved as version {number}.",
       "pickWho": "Pick who can play.",
+      "pickClass": "Pick at least one of your classes.",
+      "classGone": "You can only share with classes you're in right now.",
+      "classRemoved": "Your teacher took this game off {name}, so it can't go back there.",
       "notLive": "This game is not live yet. Use Publish first.",
       "updatedFriends": "Updated for your friends! The new version is also waiting for its check before everyone can play.",
       "updatedYou": "Updated for you! The new version is also waiting for its check before everyone can play.",
+      "updatedNowWaiting": "Updated! The new version is also waiting for a quick check before more people can play.",
       "cantDeleteStarter": "Starter games can’t be deleted."
     }
   },
@@ -819,6 +835,7 @@
     "updateWaiting": "Your update is waiting for a quick check. Players keep the old version until then.",
     "waiting": "Your game is waiting for a quick safety check. We will share it as soon as it passes.",
     "school": "Live for your school! Everyone at your school can find and play it.",
+    "class": "{count, plural, one {Live for {name}! Everyone in your class can find and play it.} other {Live for your classes! Everyone in them can find and play it.}}",
     "schoolOnly": "Your school keeps games inside the school. Share it with your school instead."
   },
   "builder": {
@@ -978,7 +995,9 @@
       "rateTitle": "Rate {title}",
       "stars": "Stars",
       "starsLabel": "{count, plural, one {# star} other {# stars}}",
-      "thanksRating": "Thanks for rating!"
+      "thanksRating": "Thanks for rating!",
+      "stopped": "This game stopped working.",
+      "restart": "Start again"
     },
     "friends": {
       "codeCopied": "Code copied! Give it to a friend you know.",
@@ -1053,11 +1072,6 @@
       "noFullscreen": "Full screen is not allowed here.",
       "roundOver": "Round over! Score: {score}",
       "stillWorking": "One moment, the Builder is still working!",
-      "stillFinishing": "The Builder is still finishing your last message…",
-      "thinking": "The Builder is thinking",
-      "working": "The Builder is working…",
-      "building": "Building your game…",
-      "editing": "Making changes…",
       "noAnswer": "The Builder could not answer. Please try again.",
       "signInAgain": "Sign in again",
       "dropped": "Oops, the connection dropped. Please try again.",
@@ -1068,6 +1082,7 @@
       "vis": {
         "private": "Only me",
         "friends": "Friends",
+        "class": "{count, plural, one {My class} other {My classes}}",
         "public": "Everyone",
         "school": "My school"
       },
@@ -1082,9 +1097,18 @@
         "nothingYet": "Nothing built yet",
         "hidden": "This game is hidden for now because players reported it. A grown-up on our team will look at it soon.",
         "liveVersion": "Live: version {number} · {who}",
+        "sharedWith": "Shared with: {names}",
+        "takenOff": "Your teacher took this game off {names}, so only you can play it now.",
+        "takenOffSome": "Your teacher took it off {names}.",
+        "leftClass": "You're not in the class you shared it with any more, so only you can play it now.",
+        "pickAgain": "Tap Share to choose who can play it.",
+        "onlyYouNow": "Only you right now",
         "updateTo": "Update live game to version {number}",
         "waitingFriends": "Waiting for a quick safety check before everyone can play. Until then: your friends can play it.",
         "waitingYou": "Waiting for a quick safety check before everyone can play. Until then: only you can play it.",
+        "waitingPublic": "Waiting for a quick safety check before everyone can play. Until then, it stays shared the way it is now.",
+        "waitingSchool": "Waiting for a quick safety check before your school can play. Until then, it stays shared the way it is now.",
+        "waitingClass": "{count, plural, one {Waiting for a quick safety check before your class can play.} other {Waiting for a quick safety check before your classes can play.}} Until then, it stays shared the way it is now.",
         "pendingUpdate": "Version {pending} is waiting for a quick safety check. Players keep playing version {live} until it passes.",
         "playersOn": "Players are playing version {live}. Press “Update live game” to give them version {number}.",
         "publicCheck": "Games for everyone get a quick safety check first, and players keep the old version until it passes.",
@@ -1190,6 +1214,17 @@
         "whoLabel": "Who can play",
         "save": "Save",
         "publicHint": "Games for everyone get a quick safety check first.",
+        "groupHint": "The safety robot spotted something, so a grown-up on our team checks it first.",
+        "classOne": "Only the kids and teachers in {name} can find and play it.",
+        "classMany": "Only the kids and teachers in the classes you pick can find and play it.",
+        "classesLegend": "Which classes?",
+        "allClasses": "All my classes",
+        "allOpenClasses": "All the classes I can pick",
+        "classInSchool": "{class} · {school}",
+        "classLater": "Classes you join later aren't added by themselves. Come back here to add them.",
+        "pickClass": "Pick at least one class.",
+        "classRemoved": "Your teacher took it off this class.",
+        "allRemoved": "{count, plural, one {Your teacher took this game off your class.} other {Your teachers took this game off your classes.}}",
         "copied": "Link copied!",
         "copyFailed": "Could not copy."
       },
@@ -1198,12 +1233,146 @@
         "text": "Players are playing {live}. This gives them {number}.",
         "version": "version {number}",
         "publicText": "Because everyone can play it, the update gets a quick safety check first. Players keep version {live} until it passes.",
+        "groupText": "The safety robot spotted something in this version, so a grown-up on our team checks it first. Players keep version {live} until then.",
         "now": "It updates straight away.",
         "notYet": "Not yet",
         "button": "Update"
       },
-      "reconnecting": "The connection dropped, but the Builder is still working. Hang on…",
-      "testing": "Playing your game to check it…"
+      "steps": {
+        "title": "Behind the scenes",
+        "tipsOn": "Tips: on",
+        "tipsOff": "Tips: off",
+        "tipsHint": "Show or hide the learning tips",
+        "earlier": "{count, plural, one {# earlier step} other {# earlier steps}}",
+        "hideEarlier": "Show fewer steps",
+        "showLess": "Show less",
+        "sending": "Sending your message",
+        "summaryAi": "How the AI did this · {count, plural, one {# step} other {# steps}} · {time}",
+        "summaryBlocks": "How the building blocks did this · {count, plural, one {# step} other {# steps}} · {time}",
+        "stopped": "stopped early",
+        "stoppedHere": "Stopped here",
+        "srDone": "done",
+        "srNow": "working on it",
+        "srWarn": "problem",
+        "srPaused": "no news yet",
+        "planLabel": "Plan:",
+        "thoughtFirst": "thought first",
+        "thinkingNow": "thinking",
+        "factLabel": "Did you know?",
+        "justNow": "Just now:",
+        "tokens": "The AI read {read} tokens and wrote {wrote}. A token is a small piece of a word. The number is big because every round, the AI reads its instructions, the chat and the game again.",
+        "loopAi": "The AI worked in {count, plural, one {# round} other {# rounds}}. Each round: read, think, use a tool, check, decide what’s next.",
+        "loopBlocks": "The building blocks follow fixed rules. The AI Builder plans, uses tools and checks its own work.",
+        "lines": "{count, plural, one {# line} other {# lines}}",
+        "edits": "{count, plural, one {# change} other {# changes}}",
+        "pics": "{count, plural, one {# picture} other {# pictures}}",
+        "probs": "{count, plural, =0 {no problems found} one {# problem found} other {# problems found}}",
+        "cut": "It got too long and was cut off",
+        "screen": {
+          "now": "Checking your message is safe",
+          "done": "Checked your message",
+          "learn": "Before the Builder sees your message, a safety check makes sure it’s OK for a kids’ game site."
+        },
+        "blocks": {
+          "now": "Using the simple building blocks",
+          "done": "Used the simple building blocks",
+          "learn": "These building blocks aren’t AI. They follow fixed rules, like spotting certain words in your message."
+        },
+        "think": {
+          "now": {
+            "start": "Round {n}: reading your message",
+            "startGame": "Round {n}: reading your message and your game",
+            "look": "Round {n}: looking at the pictures",
+            "scan": "Round {n}: reading the safety report",
+            "retry": "Round {n}: working out what went wrong",
+            "next": "Round {n}: deciding what to do next"
+          },
+          "done": {
+            "start": "Round {n}: read your message",
+            "startGame": "Round {n}: read your message and your game",
+            "look": "Round {n}: looked at the pictures",
+            "scan": "Round {n}: read the safety report",
+            "retry": "Round {n}: worked out what went wrong",
+            "next": "Round {n}: decided what to do next"
+          },
+          "learn": {
+            "start": "A round is each time the app asks the AI. It doesn’t remember, so the app sends it the chat again.",
+            "look": "This AI can read pictures, so it checks the screenshots for anything broken, blank or messy.",
+            "scan": "The safety program says exactly what was wrong, so the AI can fix just that part.",
+            "retry": "When a tool says something didn’t work, the AI reads why and tries another way.",
+            "next": "After each tool, the AI reads the result and picks the next step. That loop makes it an agent.",
+            "thinking": "Before it answers, this AI thinks quietly first, a bit like working something out in your head."
+          }
+        },
+        "write": {
+          "now": "Writing the game code",
+          "done": "Wrote the game code",
+          "failed": "That version didn’t work out",
+          "learn": "The AI writes code one small piece at a time, each time predicting what should come next."
+        },
+        "edit": {
+          "now": "Changing just the parts that need it",
+          "done": "Changed just the parts that needed it",
+          "failed": "That change didn’t fit the code",
+          "learn": "For small changes, the AI swaps exact bits of the code instead of writing it all again."
+        },
+        "fix": {
+          "now": "Fixing the problems it found",
+          "done": "Made changes to fix the problems",
+          "learn": "Finding and fixing mistakes is a normal part of building, for people and for AI."
+        },
+        "template": {
+          "done": "Started from a ready-made 3D world",
+          "learn": "Instead of writing a whole 3D world from scratch, the AI starts from a finished one and changes it."
+        },
+        "check": {
+          "pass": "Safety program: all clear · saved as version {v}",
+          "flag": "Safety program: {k, plural, =1 {one thing} other {# things}} to look at · saved as version {v}",
+          "fail": "Safety program found {k, plural, =1 {a problem} other {# problems}} · saved as version {v}",
+          "learn": "A safety program, not an AI, checks every new version for unsafe code, because AI can make mistakes."
+        },
+        "name": {
+          "title": "Named it “{title}”",
+          "titleIcon": "Named it “{title}” {icon}",
+          "icon": "Picked the icon {icon}",
+          "details": "Filled in the game details",
+          "learn": "The Builder can’t click buttons, so it uses tools: little commands the app runs for it, like naming the game."
+        },
+        "playtest": {
+          "now": "Playing your game on a pretend phone",
+          "done": "Tested it on a pretend phone",
+          "failed": "Couldn’t run the test this time",
+          "learn": "The app plays your game on a pretend phone, checks for errors and takes pictures for the AI."
+        },
+        "notes": {
+          "done": "Made a checklist for you to try",
+          "learn": "Even after all these checks, a person should play the game too. This list shows what to try."
+        },
+        "ask": {
+          "done": "Asked you a question",
+          "learn": "When the Builder needs to know something, it asks you, then waits for your answer."
+        },
+        "offline": {
+          "now": "Connection lost. The Builder keeps going on the server",
+          "check": "Connection lost. Checking if the Builder got your message…",
+          "learn": "Your game is built on our computer, called a server, not on your device, so it keeps going."
+        },
+        "waiting": {
+          "now": "The Builder is still working on the server"
+        },
+        "facts": {
+          "a": "AI reads and writes in tokens, which are small pieces of words. A long word can be several tokens.",
+          "b": "An AI writes by predicting the next token, again and again, very fast.",
+          "c": "Ask the same thing twice and you may get a different answer, because the AI picks from likely next words.",
+          "d": "Every round, the AI reads the recent chat again. That’s why long chats use more tokens.",
+          "e": "An agent is an AI that uses tools in a loop. This Builder can take up to 14 rounds per message.",
+          "f": "The Builder AI can’t use the internet. It builds from what it learned and what you tell it.",
+          "g": "AI models learn patterns from huge amounts of writing and code made by people.",
+          "h": "AI can sound sure and still be wrong. That’s why a safety program checks the code too.",
+          "i": "✨ Pro quality uses a bigger AI that thinks for longer: slower, but often better at tricky games.",
+          "j": "Always play your game yourself. Even clever AI misses things a real player would notice."
+        }
+      }
     }
   },
   "favorites": {
@@ -1225,7 +1394,13 @@
     "sent": "Asked to join {name}. Your teacher will say yes soon!",
     "classmates": "{count, plural, one {# classmate} other {# classmates}}",
     "noLessons": "No lessons yet",
-    "noLessonsText": "Your teacher will add lessons and games here."
+    "noLessonsText": "Your teacher will add lessons and games here.",
+    "games": {
+      "heading": "Games from our class",
+      "emptyTitle": "No class games yet",
+      "emptyText": "Build a game and share it with your class when you publish.",
+      "emptyAction": "Build a game"
+    }
   },
   "school": {
     "nav": {},
@@ -1393,6 +1568,7 @@
       "publishing": "Sharing games",
       "publishSchool": "Inside the school only",
       "publishPublic": "Can also share with everyone",
+      "publishingHint": "Students in a class can also share a game with just their classes.",
       "photos": "Profile photos of school accounts are seen only by their classmates, teachers and friends.",
       "chatHint": "School accounts can only add classmates as friends.",
       "timeZone": "Time zone",
@@ -1438,6 +1614,7 @@
       "sameName": "{count, plural, one {This name is already at {school}} other {These names are already at {school}}}: {names}. Take them out of the list, or add an initial to tell them apart. To put existing students in a class, tick them on the class's Students tab.",
       "chooseTeacher": "Choose a teacher.",
       "chooseClass": "Choose a class.",
+      "gameNotHere": "That game isn't shared with this class.",
       "noSchoolAccounts": "No students in this class have school accounts.",
       "badTeacher": "Choose someone on the school's staff.",
       "adminNotStudent": "You look after Oomba Academy, so you can't join a class as a student.",
@@ -1448,8 +1625,22 @@
     "classTabs": {
       "lessons": "Lessons",
       "progress": "Progress",
+      "games": "Games",
       "students": "Students",
       "settings": "Settings"
+    },
+    "classGames": {
+      "text": "Games shared with this class. If one isn't right for the class, take it off: its builder can't share it here again unless you allow it.",
+      "by": "by {name}",
+      "sharedAgo": "shared {when}",
+      "remove": "Take off this class",
+      "removeConfirm": "Take {title} off {class}? Students in this class won't see it any more.",
+      "removed": "Taken off {class}.",
+      "removedHeading": "{count, plural, one {# game taken off} other {# games taken off}}",
+      "restore": "Allow again",
+      "restored": "Its builder can share it with {class} again if they want to.",
+      "hiddenGame": "A game you can't open right now",
+      "empty": "No games shared with this class yet."
     },
     "optional": "(optional)",
     "me": "me",
@@ -1518,6 +1709,7 @@
       "game": "Game",
       "myGames": "My games",
       "schoolGames": "Shared in my school",
+      "classGames": "Shared with my classes",
       "siteGames": "Oomba Academy games",
       "minutes": "Minutes",
       "edit": "Edit step",
@@ -1525,6 +1717,8 @@
       "deleteConfirm": "Delete this step?",
       "notShared": "Your class can't open this game yet",
       "notSharedHint": "Share it with your school first, or open it in the Studio and press Publish.",
+      "classOnly": "Only the classes it's shared with can play it",
+      "hiddenGame": "A game you can't open",
       "shareGame": "Share with my school",
       "openStudio": "Open in the Studio",
       "newGameIdea": "Your idea for the game",
@@ -1696,7 +1890,7 @@
       "played": "I've played it",
       "keepBuilding": "Keep building",
       "handIn": "Hand in my game",
-      "handInConfirm": "Hand in your game? Your teacher and your school will be able to play it.",
+      "handInConfirm": "Hand in your game? Your teacher and your class will be able to play it.",
       "handInHint": "When your game is ready, hand it in so your teacher can play it.",
       "handedInText": "You handed in your game.",
       "seeGame": "See my game",

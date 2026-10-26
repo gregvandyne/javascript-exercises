@@ -227,3 +227,107 @@ test('model review: unavailable without a key, never auto-approves a flagged ver
     assert.equal(r.verdict, 'blocked');
   } finally { config.anthropicKey = old; }
 });
+
+// ---- Live build steps (steps.js) with the simple building blocks --------------------------------------------
+const keys = t => t.of('step').map(s => s.key);
+const stepOf = (t, key) => t.of('step').find(s => s.key === key);
+const at = (t, name, pred = () => true) => t.events.findIndex(([n, d]) => n === name && pred(d));
+
+test('build steps: the building blocks stream real steps in order, each before its card, and save a compact record', async () => {
+  const u = newUser(); const g = games.createGame(u.id, {});
+  const seen = [];
+  const check = (t, want) => {
+    assert.deepEqual(keys(t), want);
+    assert.deepEqual(t.of('step').map(s => s.i), want.map((_, k) => k + 1), 'rows are numbered 1..n within the turn');
+    assert.equal(t.of('progress').length, 0, 'the old progress event is gone');
+    const done = t.of('done')[0];
+    assert.equal(done.steps.p, 'blocks'); assert.equal(done.steps.end, 'ok'); assert.equal(done.steps.r, 0);
+    assert.equal('ti' in done.steps, false, 'no tokens for the building blocks'); assert.equal('to' in done.steps, false);
+    assert.deepEqual(done.steps.s.map(r => r[0]), want, 'the record has the streamed keys, in order');
+    const last = loadChat(g.id).messages.at(-1);
+    assert.equal(last.role, 'assistant');
+    assert.deepEqual(last.events.at(-1), ['steps', done.steps], 'stored as the last event, equal to done.steps');
+    const json = JSON.stringify(done.steps);
+    assert.ok(Buffer.byteLength(json) < 1500, `small: ${json.length} bytes`);
+    assert.doesNotMatch(json, /learn|Checking|Round|safety program|building blocks/i, 'no labels or learning text are stored');
+    seen.push(done.steps);
+  };
+  let t = await turn(u, g.id, 'hi');
+  check(t, ['screen', 'blocks', 'ask']);
+  assert.ok(at(t, 'step', s => s.key === 'ask') < at(t, 'ask'), 'the ask row comes before the question card');
+  t = await turn(u, g.id, t.of('ask')[0].options.find(k => /catch/i.test(k)));
+  check(t, ['screen', 'blocks', 'ask']);
+  t = await turn(u, g.id, '🦈 Sharks');
+  check(t, ['screen', 'blocks', 'name', 'check', 'notes', 'ask']);
+  assert.deepEqual(stepOf(t, 'check'), { i: 4, key: 'check', st: 'pass', v: 1 });
+  assert.equal(stepOf(t, 'name').title, 'Shark Catch'); assert.equal(stepOf(t, 'name').icon, '🦈');
+  assert.ok(at(t, 'step', s => s.key === 'name') < at(t, 'meta'), 'name row before the meta card');
+  assert.ok(at(t, 'step', s => s.key === 'check') < at(t, 'version'), 'check row before the version card');
+  assert.ok(at(t, 'step', s => s.key === 'notes') < at(t, 'notes'), 'notes row before the checklist card');
+  assert.ok(at(t, 'step', s => s.key === 'blocks') < at(t, 'text'), 'the blocks row starts before the Builder talks');
+  t = await turn(u, g.id, 'Make it harder');
+  check(t, ['screen', 'blocks', 'check', 'notes', 'ask']);
+  assert.equal(stepOf(t, 'check').v, 2);
+  t = await turn(u, g.id, 'change the hero to a dragon');
+  check(t, ['screen', 'blocks', 'name', 'check', 'notes', 'ask']);
+  assert.equal(stepOf(t, 'name').icon, '🐉'); assert.equal('title' in stepOf(t, 'name'), false, 'only what changed');
+  t = await turn(u, g.id, "it's ready!");
+  check(t, ['screen', 'blocks', 'notes', 'ask']);
+  // The building blocks are never shown as an AI: no rounds, writing, playtests or 3D template rows.
+  for (const rec of seen) for (const [k] of rec.s) assert.ok(['screen', 'blocks', 'name', 'check', 'notes', 'ask'].includes(k), k);
+  // Each reply keeps its own record; the model never sees them.
+  const chat = loadChat(g.id);
+  assert.equal(chat.messages.filter(m => m.role === 'assistant' && m.events.some(e => e[0] === 'steps')).length, 6);
+  assert.doesNotMatch(JSON.stringify(historyToMessages(chat.messages)), /steps|"s":|blocks/);
+});
+
+test('build steps: an uploads-only message has no screening row', async () => {
+  const U = await import('../../server/builder/uploads.js');
+  const u = newUser(); const g = games.createGame(u.id, {});
+  const up = await U.saveUpload({ user: u, game: g, name: 'idea.txt', bytes: Buffer.from('A game where a fox collects apples.') });
+  const t = await turn(u, g.id, '', { uploadIds: [up.id] });
+  assert.deepEqual(keys(t), ['blocks', 'ask']);
+  assert.deepEqual(t.of('done')[0].steps.s.map(r => r[0]), ['blocks', 'ask']);
+});
+
+test('build steps: a refusal or the turn limit ends with no record, and nothing is stored', async () => {
+  const u = newUser(); const g = games.createGame(u.id, {});
+  let t = await turn(u, g.id, 'make a pokemon game');
+  assert.deepEqual(t.events.map(e => e[0]), ['step', 'refused', 'done']);
+  assert.deepEqual(t.of('step'), [{ i: 1, key: 'screen' }]);
+  assert.equal('steps' in t.of('done')[0], false);
+  const refused = loadChat(g.id).messages.at(-1);
+  assert.equal(refused.refused, true); assert.ok(!refused.events.some(e => e[0] === 'steps'));
+  const old = config.builderDailyTurns; config.builderDailyTurns = 0;
+  try {
+    t = await turn(u, g.id, 'a catch game with robots');
+    assert.deepEqual(t.events.map(e => e[0]), ['step', 'error', 'done']);
+    assert.equal(t.of('error')[0].code, 'limit'); assert.equal('steps' in t.of('done')[0], false);
+  } finally { config.builderDailyTurns = old; }
+  // Early errors come before any step.
+  t = await turn(u, g.id, '   ');
+  assert.deepEqual(t.events.map(e => e[0]), ['error', 'done']);
+});
+
+test('build steps: while the AI budget rests, the building blocks take over (screen, the resting message, blocks)', async () => {
+  const saved = { key: config.anthropicKey, d: config.aiDailyBudgetUsd };
+  try {
+    config.anthropicKey = 'sk-test-not-real'; config.aiDailyBudgetUsd = 0;
+    const u = newUser(); const g = games.createGame(u.id, {});
+    const t = await turn(u, g.id, 'hi');
+    assert.deepEqual(keys(t), ['screen', 'blocks', 'ask']);
+    const resting = at(t, 'text', d => /resting/.test(d.text));
+    assert.ok(resting > 0, 'the resting message was said');
+    assert.ok(at(t, 'step', s => s.key === 'screen') < resting && resting < at(t, 'step', s => s.key === 'blocks'), 'screen, then the message, then blocks');
+    assert.match(t.text, /simple building blocks/);
+    assert.equal(t.of('done')[0].steps.p, 'blocks');
+  } finally { config.anthropicKey = saved.key; config.aiDailyBudgetUsd = saved.d; }
+});
+
+test('toolbox without a recorder still works (scripts, direct callers)', () => {
+  const u = newUser(); const g = games.createGame(u.id, {});
+  const events = []; const tb = toolbox({ user: u, gameId: g.id, emit: (a, b) => events.push([a, b]), state: {} });
+  const r = tb.exec('write_game', { html: '<title>T</title><style>b{}</style><canvas></canvas><script>let s = 1;</script>', notes: 'One‮\nline  note' });
+  assert.equal(r.ok, true); assert.equal(r.version.notes, 'One line note', 'version notes use the shared cleaner');
+  assert.deepEqual(events.map(e => e[0]), ['version'], 'no step events without a recorder');
+});

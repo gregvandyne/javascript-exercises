@@ -52,8 +52,10 @@ Every game, whether it came from our team or from a kid, runs the same way.
 - Each version must be under 2 MB.
 - **Cover pictures and playtests run the game in a throwaway browser.** The headless Chromium that takes screenshots
   runs the game in the very same wrapper players get (sandboxed iframe + the frame CSP), launched from a scrubbed
-  environment and an empty temp working directory so it never sees the server's secrets or folder. It can also run in
-  a **separate container with no database and no secrets** (`server/shots-worker.js`, used when `SNAPSHOT_URL` is set).
+  environment and an empty temp working directory so it never sees the server's secrets or folder. On the recommended
+  AWS/Azure setup (`deploy/docker-compose.yml`) it always runs in the **screenshot worker**, a separate container with
+  no database, no data disk, no secrets but its own token, no internet and a read-only file system
+  (`server/shots-worker.js`, used when `SNAPSHOT_URL` is set); on Render today it runs inside the app's container.
   The 3D library is answered from the code's own `public/vendor` files in both cases, never fetched from anywhere.
   Every other request is aborted, and WebRTC is removed in the screenshot browser (the one outbound path routing
   cannot abort), so a game it renders has no way out of that container.
@@ -144,6 +146,11 @@ no gambling mechanics, no fast flashing; cartoon slapstick is fine; learning twi
 Every game the Builder writes goes through the sanitizer and scanner. If the scan fails, the problems go straight back
 to the Builder to fix (a limited number of times). Every change is a new version; history is never rewritten.
 
+The Studio's "Behind the scenes" steps card shows the AI's one-line plan (the notes it writes for the version, shown
+while the code is still coming, so also for an edit that then fails; written in the child's language, cleaned and
+capped like version notes, rendered as text). The model's internal thinking is never shown or stored; the card only
+notes that a thinking block happened.
+
 Limits: 60 Builder turns per person per day by default (`BUILDER_DAILY_TURNS`), a maximum length per turn, and a rate
 limit on the chat endpoint. Accounts can have building switched off.
 
@@ -179,7 +186,21 @@ Builders pick who can play:
 |---|---|---|
 | 🔒 Only me | the builder (and admins) | the scan must not fail |
 | 👫 Friends | the builder's accepted friends | the scan must not fail |
+| 🎒 My class(es) | students and teachers of the classes the builder picked (and that school's admins), only while the builder is still in each class and it isn't archived | a clean scan, or a person's approval **for that audience** |
+| 🏫 My school | everyone in the builder's schools | a clean scan, or a person's approval for the school (or wider) |
 | 🌍 Everyone | everybody | the scan must not fail **and** a review |
+
+**Class and school sharing** reach children who didn't choose it (a class page lists every class game for the whole
+class), so a flagged version waits for a person, like "Everyone". An approval is stored with the audience it was given
+for (`review_report.for`, and the class list for a class approval) and never stretches to a wider one: approved for 5A
+covers 5A only, not 5B, the school or everyone. A builder's new class list for a game already live for some classes
+waits in `games.pending_classes` until that approval, so nobody new can play it before a person looked. What a waiting
+review is for is kept in `games.pending_visibility`, so approving it never makes a game public that was asked for a
+class or school (this closed an older leak where every admin approval went public). One SQL rule (`CLASS_SQL` in
+`server/services/games.js`) decides who can see a class game for both the single-game check and every listing, and a
+unit test compares the two across a matrix of viewers and games. Teachers (and school admins) can take a game off their
+class; its builder can't share it there again unless the teacher allows it, and "Allow again" only makes the class
+pickable again (it never re-shares by itself).
 
 **Review for "Everyone"** (`server/services/review.js`): a model reads the game's title, description and tags, the scan
 result, its visible text, its code (the whole game for anything under ~60 KB, head + tail for bigger ones) **and one or
@@ -229,13 +250,18 @@ reach the website's origin, read its cookies or storage, open a window, start a 
 `fetch`/`XHR`/`WebSocket`/`EventSource` call. It can draw, play sound, use WebGL (so real 3D works), and talk to the
 page only through `postMessage`, which both the page and the server re-check.
 
-**One thing even the CSP does not fully contain: a frame navigating *itself*.** No CSP directive restricts where a
-frame may send *itself* (there is no `navigate-to`/`form-action` for this any more), so a game can point its own
-`location` at an outside URL. That makes **one** request leave, with anything the game put in the URL — so the frame
-is **not** a perfect network jail. We bound it: the play page watches the frame and, on any unexpected navigation,
-pins it straight back to the game (`public/js/play.js`), so an attacker page never stays on screen; but the first
-request still leaks once. Everything else — `fetch`, `XHR`, `WebSocket`, `EventSource`, `sendBeacon`, images, CSS
-`@import`/`url()`, fonts, `data:`/`blob:` — is blocked by the CSP (verified in real Chromium, zero egress).
+**A frame navigating *itself*.** The frame's own CSP has no directive for where a frame may send *itself* (there is
+no `navigate-to` any more), so a game can point its own `location` at an outside URL. What stops it is the **page's**
+CSP: every page that shows a game frame (play, the Studio preview, the admin review queue) has `frame-src 'self'`, and
+the browser checks that before the frame's navigation makes any request — so no off-site request leaves (verified in
+real Chromium: the outside address is never contacted; `tests/e2e/play.spec.js` asserts it, so a CSP change can't undo
+it quietly). The frame is left on the browser's error page, so the play page pins it straight back to the game on any
+unexpected `load` (`public/js/play.js`) — that part is for the player, not for safety. A game that keeps reloading
+itself is pinned twice in 30 seconds and then stopped with a short message, never looped. (A reload the game starts
+itself is refused by the server: it carries no sign-in cookie, so the viewer-bound frame link doesn't match. The 3D
+card's "Try again" therefore asks the page to do the reload.) Everything else — `fetch`, `XHR`, `WebSocket`,
+`EventSource`, `sendBeacon`, images, CSS `@import`/`url()`, fonts, `data:`/`blob:` — is blocked by the frame's CSP
+(verified in real Chromium, zero egress).
 
 **Two more things the CSP does not cover, closed in the SDK** (verified in real Chromium against a hostile game — see
 `tests/unit/sandbox-lockdown.test.js`): WebRTC (removed; no browser has a CSP directive for it) and borrowing a
@@ -261,8 +287,9 @@ unreviewed cdnjs bundle never goes Public on its own. The scanner itself is a st
 sees through the common ways to hide a name but is not a guarantee on its own — it decides pass vs. "a person looks",
 and the CSP + lockdown are what actually contain the code. The headless Chromium that makes covers and playtests runs
 with `--no-sandbox` (the container has no user namespaces), but the game is still inside the iframe sandbox + CSP, and
-the browser is launched from a scrubbed environment and an empty working directory (or a separate container with no
-database or secrets), so a game it runs cannot read anything that matters.
+the browser is launched from a scrubbed environment and an empty working directory (and on the AWS/Azure setup in a
+separate container with no database, data disk, secrets or internet), so a game it runs cannot read anything that
+matters.
 
 ## 10. Honest limits of what the browser can prove
 

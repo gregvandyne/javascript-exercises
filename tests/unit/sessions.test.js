@@ -81,6 +81,20 @@ test('change password: rules, current password, confirm; every session ends, thi
   assert.ok(!JSON.stringify(log).includes('green-panda-77'), 'the password is never logged');
 });
 
+test('ADMIN_PASSWORD is applied when it is new or changed, so a password the admin changes on the Me page survives restarts', async () => {
+  const { applyAdminPassword } = await import('../../scripts/seed.js');
+  const a = auth.createUser({ username: 'EnvAdmin', password: 'first-start-pass-1', role: 'admin' });
+  assert.equal(applyAdminPassword(a, 'env-pass-123456'), true, 'first start with it: applied');
+  assert.ok(auth.verifyPassword(auth.getUser(a.id), 'env-pass-123456'));
+  assert.equal(applyAdminPassword(a, 'env-pass-123456'), false, 'the same value at the next start: nothing to do');
+  assert.equal((await change(cookieFor(a.id), 'env-pass-123456', 'rotated-on-me-page-9')).status, 200);
+  assert.equal(applyAdminPassword(a, 'env-pass-123456'), false, 'a restart keeps the password changed on the Me page');
+  assert.ok(auth.verifyPassword(auth.getUser(a.id), 'rotated-on-me-page-9'));
+  assert.equal(applyAdminPassword(a, 'new-env-pass-7890'), true, 'a new ADMIN_PASSWORD resets it (a forgotten password)');
+  assert.ok(auth.verifyPassword(auth.getUser(a.id), 'new-env-pass-7890'));
+  assert.ok(!JSON.stringify(q.all('SELECT * FROM settings')).includes('env-pass'), 'only a hash is kept');
+});
+
 test('staff and the platform admin need 12 characters; own accounts 6', async () => {
   for (const [u, pw] of [[teacher, teacherCard.password], [ownTeacher, 'blue-otter-42'], [boss, 'boss-pass-1234']]) {
     const c = cookieFor(u.id);

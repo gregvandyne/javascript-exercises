@@ -35,7 +35,9 @@ router.post('/api/progress/:clid/:sid/game', requireUser, rateLimit('progress', 
     : event === 'score' ? P.gameScore(u, clid, sid, score, label) : event === 'end' ? P.gameScore(u, clid, sid, Number.isFinite(+score) && score !== null ? score : null) : { ok: false, code: 'notFound' };
   send(req, res, r);
 });
-/** Hand in a build step: the game is shared with the school (so the teacher can play it) and the step is done. */
+/** Hand in a build step: the game is shared with the lesson's class (so the teacher and the class can play it) and the
+ *  step is done. A game the class can already open (school, public, or a class game live in this class) is left as it
+ *  is; a class game gets this class added to its list. It never widens a game beyond the class. */
 router.post('/api/progress/:clid/:sid/hand-in', requireUser, rateLimit('progress', 60, 60e3), async (req, res) => {
   const c = P.context(req.user, req.params.clid, req.params.sid);
   if (!c.ok || c.step.kind !== 'build') return no(req, res);
@@ -43,8 +45,12 @@ router.post('/api/progress/:clid/:sid/hand-in', requireUser, rateLimit('progress
   const g = row && row.game_id && games.getGame(row.game_id);
   if (!g || g.owner_id !== req.user.id || g.status === 'deleted') return err(req, res, 'noGame');
   if (!g.current_version_id) return err(req, res, 'emptyGame');
-  if (g.status !== 'published' || !['school', 'public'].includes(g.visibility)) {
-    const r = await publish(req.user, g.id, 'school', { t: req.t });
+  const classId = c.cl.class_id;
+  const reaches = g.status === 'published' && (['school', 'public'].includes(g.visibility) || (g.visibility === 'class' && games.gameLiveInClass(g.id, classId)));
+  if (!reaches) {
+    const mine = new Set(S.shareableClasses(req.user.id).map(x => x.id));
+    const keep = g.visibility === 'class' ? S.gameClassIds(g.id).filter(id => mine.has(id)) : [];
+    const r = await publish(req.user, g.id, 'class', { t: req.t, classIds: [...keep, classId] });
     if (!r.ok) return res.status(400).json({ error: r.message });
   }
   send(req, res, P.markDone(req.user, req.params.clid, req.params.sid, true));
@@ -174,7 +180,7 @@ router.get('/class/:cid/progress/:clid', requireUser, (req, res) => {
       <thead><tr><th scope="col" class="gb-name">${t('school.people.name')}</th>${lp.steps.map((s, i) => html`<th scope="col" title="${s.title || t(`lessons.kinds.${s.kind}`)}"><span aria-hidden="true">${KIND_ICON[s.kind]}</span> ${i + 1}<span class="gb-step">${s.title || t(`lessons.kinds.${s.kind}`)}</span></th>`)}<th scope="col">${t('progress.lesson.lastActive')}</th></tr></thead>
       <tbody>${lp.students.map(p => html`<tr id="s-${p.id}"><th scope="row" class="gb-name"><span class="pp">${avatar(p, 28)}<b>${nameOf(p)}</b></span><span class="small muted gb-sub"><span>${p.done}/${p.total}</span>${lateFor(p) ? html`<span class="gb-late-mark" title="${t('lessons.class.late')}"><span aria-hidden="true">⏰</span><span class="sr-only">${t('lessons.class.late')}</span></span>` : ''}${p.toRead && p.firstNew ? html`<a class="chip-s warn" href="#a-${p.firstNew}-${p.id}" title="${t('progress.gradebook.toRead', { count: p.toRead })}">✍️ ${p.toRead}<span class="sr-only"> ${t('progress.gradebook.toRead', { count: p.toRead })}</span></a>` : ''}</span></th>
         ${lp.steps.map((s, i) => { const x = p.cells[i]; const g = s.kind === 'build' && x && x.game_id ? games_.get(x.game_id) : null;
-          return html`<td><span class="st">${icon(s, x)}</span>${g && g.status === 'published' && ['school', 'public'].includes(g.visibility) ? html`<a class="small" href="/g/${g.slug}">${t('progress.lesson.openGame')}</a>` : ''}${s.kind === 'question' && x && x.answer ? html`<a class="small" href="#a-${s.id}-${p.id}">${t('progress.lesson.readAnswer')}</a>` : ''}</td>`; })}
+          return html`<td><span class="st">${icon(s, x)}</span>${g && g.status === 'published' && games.canView(req.user, g) ? html`<a class="small" href="/g/${g.slug}">${t('progress.lesson.openGame')}</a>` : ''}${s.kind === 'question' && x && x.answer ? html`<a class="small" href="#a-${s.id}-${p.id}">${t('progress.lesson.readAnswer')}</a>` : ''}</td>`; })}
         <td class="small muted">${p.last ? f.ago(p.last) : '–'}</td></tr>`)}</tbody></table></div></section>`}
   ${questions.length ? html`<div id="answers">${answers}</div>` : ''}`;
   page(req, res, { title: `${l.title} · ${c.name}`, active: 'classes', body, head: CSS, back: `/class/${c.id}/progress`, backLabel: t('progress.gradebook.title') });
@@ -202,7 +208,7 @@ router.get('/class/:cid/lessons/:clid', requireUser, (req, res) => {
       ? html`<form data-api="${api(s)}/done" data-reload><input type="hidden" name="done" value="0"><button class="btn btn-sm btn-ghost" type="submit">↩️ ${t('progress.student.undo')}</button></form>`
       : html`<form data-api="${api(s)}/done" data-reload><input type="hidden" name="done" value="1"><button class="btn btn-primary" type="submit">✅ ${t('progress.student.markDone')}</button></form>`;
     if (s.kind === 'game') {
-      if (!L.playableBy(s, c.school_id)) return html`<p class="notice warn">${t('lessons.view.notReady')}</p>`;
+      if (!L.playableBy(s, c.school_id, c.id)) return html`<p class="notice warn">${t('lessons.view.notReady')}</p>`;
       return html`<div class="row"><a class="btn btn-primary btn-big" href="/play/${s.game_slug}?lesson=${cl.id}&step=${s.id}">▶ ${t('lessons.view.play', { title: s.game_title })}</a></div>
         ${x && x.score !== null ? html`<p class="sc-score">🏆 ${t('progress.student.best', { score: f.int(x.score) })}</p>` : ''}
         ${isDone ? '' : html`<p class="small muted">${t('progress.student.gameHint')}</p><form data-api="${api(s)}/done" data-reload><input type="hidden" name="done" value="1"><button class="btn btn-sm" type="submit">✅ ${t('progress.student.played')}</button></form>`}`;
@@ -226,7 +232,7 @@ router.get('/class/:cid/lessons/:clid', requireUser, (req, res) => {
   };
   // Teachers see the lesson as students do, with nothing that saves work; a game step gets a plain Play link (no lesson
   // tracking), so they can try the game.
-  const preview = s => (s.kind !== 'game' ? '' : !L.playableBy(s, c.school_id) ? html`<p class="notice warn">${t('lessons.view.notReady')}</p>`
+  const preview = s => (s.kind !== 'game' ? '' : !L.playableBy(s, c.school_id, c.id) ? html`<p class="notice warn">${t('lessons.view.notReady')}</p>`
     : s.game_slug ? html`<div class="row"><a class="btn" href="/play/${s.game_slug}">▶ ${t('lessons.view.play', { title: s.game_title })}</a></div>` : '');
   const late = student && L.isOpen(cl) && L.dueState(cl) === 'late' && doneN < st.length;
   const body = html`
@@ -241,7 +247,7 @@ router.get('/class/:cid/lessons/:clid', requireUser, (req, res) => {
     <div class="sc-head"><span class="sc-num">${x && x.status === 'done' ? '✓' : i + 1}</span><span class="sc-kind" aria-hidden="true">${KIND_ICON[s.kind]}</span>
       <div class="sc-title"><b dir="auto">${s.title || t(`lessons.kinds.${s.kind}`)}</b>${s.minutes ? html`<span class="small muted">${t('lessons.minutesN', { count: s.minutes })}</span>` : ''}</div>${status(x)}</div>
     ${s.kind === 'build' ? html`<p class="sc-build" dir="auto">💬 “${s.body}”</p>` : s.kind === 'question' ? html`<div class="sc-body q-text">${paras(s.body)}</div>` : s.body ? html`<div class="sc-body">${paras(s.body)}</div>` : ''}
-    ${student ? actions(s, x) : teacher ? preview(s) : s.kind === 'game' && !L.playableBy(s, c.school_id) ? html`<p class="notice warn">${t('lessons.view.notReady')}</p>` : ''}
+    ${student ? actions(s, x) : teacher ? preview(s) : s.kind === 'game' && !L.playableBy(s, c.school_id, c.id) ? html`<p class="notice warn">${t('lessons.view.notReady')}</p>` : ''}
   </li>`; })}</ol>`;
   page(req, res, { title: l.title, active: 'classes', mid: true, body, head: CSS, back: `/class/${c.id}`, backLabel: c.name });
 });

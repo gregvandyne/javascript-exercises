@@ -18,9 +18,14 @@ try { for (const f of fs.readdirSync(COVER_DIR)) if (f.endsWith('.jpg')) COVER_S
 
 export { BRAND, wordmark, appMark } from './brand.js';
 
-const VIS_EMOJI = { private: '🔒', friends: '👫', school: '🏫', public: '🌍' };
-/** "🔒 Only me" / "👫 Friends" / "🌍 Everyone" in the reader's language. */
-export function visLabel(v, t = current().t) { return VIS_EMOJI[v] ? `${VIS_EMOJI[v]} ${t(`vis.${v}`)}` : v; }
+const VIS_EMOJI = { private: '🔒', friends: '👫', class: '🎒', school: '🏫', public: '🌍' };
+/** "🔒 Only me" / "👫 Friends" / "🎒 My class(es)" / "🏫 My school" / "🌍 Everyone" in the reader's language.
+ *  count: how many classes a 'class' game is shared with ("My class" for one, "My classes" otherwise). */
+export function visLabel(v, t = current().t, count = 1) {
+  // A class game that reaches no class right now (its builder left, or a teacher took it off): in effect only them.
+  if (v === 'class' && count === 0) return `🔒 ${t('vis.onlyYouNow')}`;
+  return VIS_EMOJI[v] ? `${VIS_EMOJI[v]} ${t(`vis.${v}`, { count })}` : v;
+}
 /** A category's label in the reader's language. */
 export const categoryLabel = (key, t = current().t) => t(`categories.${key}`);
 /** A class or lesson grade as the teacher typed it: a plain number gets the word ('Grade 4' / 'Year 4'), anything
@@ -62,23 +67,28 @@ export function coverArt(g, extra = '', { draft = false } = {}) {
   if (src) return html`<div class="coverart has-shot cover-${g.cover || 'sunset'} ${extra}"><img src="${src}" alt="" loading="lazy" decoding="async"><span class="shot-icon" aria-hidden="true">${g.icon || '🎮'}</span></div>`;
   return html`<div class="coverart cover-${g.cover || 'sunset'} ${extra}"><div class="art" aria-hidden="true">${g.icon || '🎮'}</div></div>`;
 }
-export function gameCard(g, { showVis = false } = {}) {
+/** classPill: false inside a list that is all class games (the class page), where the "Class only" tag is just noise.
+ *  byName: a name to credit instead of the owner's display name (the class page shows a teacher's real name). */
+export function gameCard(g, { showVis = false, classPill = true, byName = null } = {}) {
   const { t, fmt } = current();
-  const by = g.owner_display || g.owner_name || '';
-  return html`<a class="gcard" href="/g/${g.slug}" aria-label="${by ? t('cards.gameBy', { title: g.title, name: by }) : g.title}">
-    <div style="position:relative">${coverArt(g)}${livePill(g)}${showVis ? html`<span class="vis-pill">${statusLabel(g)}</span>` : ''}</div>
+  const by = byName || g.owner_display || g.owner_name || '';
+  const label = by ? t('cards.gameBy', { title: g.title, name: by }) : g.title;
+  const pill = g.visibility === 'class' && classPill && !showVis;
+  return html`<a class="gcard" href="/g/${g.slug}" aria-label="${pill ? `${label} · ${t('cards.classOnly')}` : label}">
+    <div style="position:relative">${coverArt(g)}${livePill(g)}${showVis ? html`<span class="vis-pill">${statusLabel(g)}</span>` : pill ? html`<span class="vis-pill vis-class">🎒 ${t('cards.classOnly')}</span>` : ''}</div>
     <div class="t">${g.title}</div>
     ${by ? html`<div class="by">${t('cards.by', { name: by })}</div>` : ''}
     <div class="meta">${stars(g.rating, g.rating_count)}<span class="muted">· ${t('cards.plays', { count: +g.plays || 0, n: fmt.num(g.plays) })}</span></div>
   </a>`;
 }
-export function statusLabel(g, t = current().t) {
+/** count: for a 'class' game, how many classes it is shared with ("My class" / "My classes"). */
+export function statusLabel(g, t = current().t, count = 1) {
   if (g.hidden_reason) return `⚠️ ${t('status.hidden')}`;
   if (g.status === 'in_review') return `⏳ ${t('status.inReview')}`;
   if (g.status === 'rejected') return `✏️ ${t('status.needsChanges')}`;
   if (g.status === 'suspended') return `⛔ ${t('status.suspended')}`;
   if (g.status !== 'published') return `📝 ${t('status.draft')}`;
-  return visLabel(g.visibility, t);
+  return visLabel(g.visibility, t, count);
 }
 export function rail({ title, games, more = null, id = null, emoji = '' }) {
   if (!games || !games.length) return '';
@@ -93,8 +103,8 @@ export function rail({ title, games, more = null, id = null, emoji = '' }) {
     <div class="rail-track" id="${rid}" role="list">${cards.map(c => html`<div role="listitem">${c}</div>`)}</div>
   </section>`;
 }
-export function cardGrid(games, { showVis = false } = {}) {
-  const cards = games.map(g => gameCard(g, { showVis }));
+export function cardGrid(games, { showVis = false, classPill = true, byName = null } = {}) {
+  const cards = games.map(g => gameCard(g, { showVis, classPill, byName: byName ? byName(g) : null }));
   return html`<div class="cardgrid">${cards}</div>`;
 }
 export function emptyState({ emoji = '🌈', title, text = '', action = null }) {

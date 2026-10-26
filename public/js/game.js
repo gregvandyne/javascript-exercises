@@ -27,7 +27,7 @@ if (like) like.addEventListener('click', async () => {
 const share = $('#sharebtn');
 if (share) share.addEventListener('click', () => {
   const url = `${location.origin}/g/${d.slug}`;
-  const icon = { private: '🔒', friends: '👫', public: '🌍' }[d.visibility] || '🔗';
+  const icon = { private: '🔒', friends: '👫', class: '🎒', school: '🏫', public: '🌍' }[d.visibility] || '🔗';
   const s = sheet({ title: t('js.game.shareTitle'), content: `<p class="notice">${icon} ${esc(d.shareText)}</p><div class="field"><label for="shareurl">${esc(t('js.game.link'))}</label><input class="input" id="shareurl" dir="ltr" readonly value="${esc(url)}"></div><button class="btn btn-primary btn-block" type="button" id="copylink">${esc(t('js.game.copyLink'))}</button>` });
   s.el.querySelector('#copylink').addEventListener('click', async () => { if (await copyText(url)) { toast(t('js.game.linkCopied')); s.close(); } else { s.el.querySelector('#shareurl').select(); toast(t('js.game.holdToCopy')); } });
 });

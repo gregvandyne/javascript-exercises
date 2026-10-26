@@ -68,6 +68,7 @@
 .st-live .vtag{font-weight:700;color:var(--text-2)}
 .st-live .note{flex-basis:100%;margin:0;padding:10px 14px;border-radius:var(--r-sm);font-weight:600;background:var(--spark-soft);color:var(--text)}
 .st-live .note.info{background:var(--accent-soft)}
+.st-live .st-shared{flex-basis:100%;margin:0;font-weight:700;color:var(--text-2);overflow-wrap:anywhere}
 .st-update{animation:nudge 2.4s ease-in-out 2}
 @keyframes nudge{0%,100%{transform:none}10%{transform:translateY(-3px)}20%{transform:none}}
 
@@ -87,10 +88,6 @@
 .msg.bot{align-self:flex-start;background:var(--card-2);box-shadow:inset 0 0 0 2px var(--line);border-end-start-radius:6px}
 .msg.bot.refused{background:var(--spark-soft)}
 .msg.err{align-self:center;background:var(--bad-bg);font-weight:600;text-align:center}
-.msg .typing{display:inline-flex;gap:4px}
-.msg .typing i{width:8px;height:8px;border-radius:50%;background:var(--muted);animation:blink 1.2s infinite}
-.msg .typing i:nth-child(2){animation-delay:.2s}.msg .typing i:nth-child(3){animation-delay:.4s}
-@keyframes blink{50%{opacity:.25}}
 .msg .q{display:block;font-weight:800;margin-top:6px}
 .ev{align-self:flex-start;max-width:92%;display:flex;flex-direction:column;gap:6px;padding:10px 12px;border-radius:var(--r-sm);background:var(--card);box-shadow:inset 0 0 0 2px var(--line);font-size:.95rem}
 .ev.version{box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--ok) 45%,var(--line))}
@@ -110,6 +107,65 @@
 .att .rm{width:32px;height:32px;border:0;border-radius:50%;background:transparent;color:var(--text-2);font-size:1rem;cursor:pointer}
 .att .rm:hover{background:var(--hover)}
 .att.loading{opacity:.6}
+/* Behind the scenes: the live build steps card, then its folded summary (studio.js "build steps card").
+   Logical properties only (RTL), tokens only (dark), nothing fixed-width (360 px phones). On a phone the live card keeps
+   to the header, one finished row (one line) and the running row, so the AI's reply above it stays in view. */
+.ev.stp{align-self:stretch;max-width:100%;min-width:0;gap:2px;padding:4px 6px 6px}
+.ev.stp[data-state="done"]{padding:2px}
+.stp-head{display:flex;align-items:center;gap:0 8px;flex-wrap:wrap;padding-inline-start:4px}
+.stp-title{flex:1 1 auto;min-width:0;font-weight:800;font-size:.85rem;color:var(--text-2)}
+.stp-tips{min-height:44px;margin-inline-start:auto;padding:0 12px;border-radius:999px;border:2px solid var(--line);background:var(--card);color:var(--text-2);font:700 .85rem var(--font);cursor:pointer}
+.stp-more,.stp-less{min-height:44px;padding:0 8px;border:0;border-radius:var(--r-sm);background:transparent;color:var(--link);font:700 .85rem var(--font);text-align:start;cursor:pointer}
+.stp-tips:hover,.stp-more:hover,.stp-less:hover,.stp-sum:hover,button.stp-line:hover{background:var(--hover)}
+.stp-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px;min-width:0}
+.stp-row{min-width:0;border-radius:var(--r-sm)}
+.stp-row.stp-pad{padding-block-end:8px}
+.stp-row.stp-cur{background:var(--accent-soft)}
+.stp-row[data-state="warn"],.stp-row[data-step="offline"]{background:var(--bad-bg)}
+.stp-line{display:flex;align-items:flex-start;gap:8px;width:100%;min-height:40px;padding:8px;border:0;border-radius:var(--r-sm);background:transparent;color:var(--text);font:inherit;font-size:.92rem;line-height:1.35;text-align:start}
+button.stp-line{cursor:pointer}
+.stp-ico{flex:none;width:1.5em;text-align:center}
+.stp-text{flex:1 1 auto;min-width:0;overflow-wrap:anywhere}
+.stp-label{font-weight:700}
+.stp-row:not(.stp-cur) .stp-label{font-weight:600;color:var(--text-2)}
+.stp-detail{display:inline-block;color:var(--muted);font-size:.86rem;font-weight:600;font-variant-numeric:tabular-nums}
+.stp-detail>*+*::before{content:" · "}
+.stp-th{white-space:nowrap}
+/* A running step's seconds wait 3 s (studio.js SEC_AFTER): a short step never shows "0 sec". */
+.stp-wait,.stp-detail:not(:has(>:not(.stp-wait))){display:none}
+.stp-stop{display:inline-block;font-weight:800}
+.stp-mark{flex:none;min-width:1.5em;display:flex;justify-content:center;color:var(--ok);font-weight:800}
+.stp-row[data-state="warn"] .stp-mark{color:var(--text)}
+.stp-row[data-state="paused"] .stp-mark{color:var(--muted)}
+.stp-spin{width:16px;height:16px;margin-block-start:2px;border-radius:50%;border:3px solid color-mix(in srgb,var(--accent-line) 25%,transparent);border-top-color:var(--accent-line);animation:stp-spin .9s linear infinite}
+@keyframes stp-spin{to{transform:rotate(360deg)}}
+.stp-plan,.stp-learn{margin:4px 8px 0;margin-inline-start:calc(1.38rem + 16px);overflow-wrap:anywhere;line-height:1.4}
+.stp-plan{font-size:.9rem;color:var(--text)}
+.stp-learn{font-size:.88rem;color:var(--text-2)}
+.stp-learn b{color:var(--text)}
+.stp-tip:empty{display:none}
+/* While it runs, the plan keeps to two lines (all of it is in the summary). */
+.stp-cur .stp-plan{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden}
+/* Tips off stops the automatic lines; a row someone taps open still shows its own. */
+.tips-off .stp-tip,.tips-off .stp-loop{display:none}
+/* Finished rows in the live card: one line each (tap one for its learning line; the summary has everything). */
+.stp[data-state="live"] .stp-row:not(.stp-cur) .stp-text{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stp-sum{position:sticky;top:0;z-index:1;display:flex;align-items:center;gap:8px;width:100%;min-height:44px;padding:6px 10px;border:0;border-radius:var(--r-sm);background:var(--card);color:var(--text);font:700 .9rem var(--font);line-height:1.3;text-align:start;cursor:pointer}
+.stp-sum-t{flex:1 1 auto;min-width:0;overflow-wrap:anywhere}
+.stp-arrow{flex:none;color:var(--muted)}
+.stp-body{display:flex;flex-direction:column;gap:4px;padding:0 4px 4px}
+.stp-foot{margin:4px 8px 0;font-size:.86rem;color:var(--text-2);overflow-wrap:anywhere}
+.stp-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:4px 8px;padding-inline:4px}
+.stp-bar .stp-tips{margin-inline-start:0}
+@media (max-width:520px){
+  /* Phones: the "N earlier steps" button takes the title's place, so the header stays one row. */
+  .stp-head:has(>.stp-more:not([hidden]))>.stp-title{display:none}
+  .stp-plan,.stp-learn{margin-inline-start:12px}
+  .stp[data-state="live"] .stp-row:not(.stp-cur) .stp-detail{display:none}
+}
+/* The global reduced-motion rule makes an endless spin flicker: a still ring instead. */
+@media (prefers-reduced-motion:reduce){.stp-spin{animation:none;border-color:var(--accent-line)}}
+
 .st-compose{border-top:1px solid var(--line);padding:10px}
 .st-compose.drag{outline:3px dashed var(--accent-line);outline-offset:-6px;border-radius:0 0 var(--r) var(--r)}
 .st-attach{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
@@ -137,7 +193,7 @@
 .st-empty{font-size:1.5rem}
 .st-empty .emo{font-size:5rem}
 .st-empty p{margin:0}
-.st-busy{position:absolute;inset-inline-start:12px;bottom:12px;z-index:3;padding:8px 14px;border-radius:999px;background:var(--text);color:var(--bg);font-weight:700;font-size:.9rem;box-shadow:var(--shadow-lg)}
+.st-busy{position:absolute;inset-inline-start:12px;bottom:12px;z-index:3;max-width:calc(100% - 24px);padding:8px 14px;border-radius:999px;background:var(--text);color:var(--bg);font-weight:700;font-size:.9rem;box-shadow:var(--shadow-lg);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .st-safety{padding:8px 10px;border-top:1px solid var(--line);display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-weight:600;font-size:.95rem}
 .st-safety:empty{display:none}
 .st-safety ul{margin:0;padding-inline-start:20px;flex-basis:100%;font-weight:500}
@@ -154,6 +210,25 @@
 .vischoice button b{font-size:1.05rem}
 .vischoice button span{color:var(--muted);font-size:.92rem}
 .vischoice button[aria-pressed="true"]{border-color:var(--accent-line);background:var(--accent-soft)}
+/* "My classes" when a teacher took the game off every class: it says so, and can't be picked. */
+.vischoice button[aria-disabled="true"]{border-style:dashed;cursor:not-allowed}
+.vischoice button[aria-disabled="true"] b{color:var(--muted)}
+/* "Which classes?": shown under the picked "My classes" option, joined to it by a rail on the reading-start side.
+   Real checkboxes in 48px rows (the look of fieldset.picklist in schools.css). */
+.classpick{min-width:0;margin:0;margin-inline-start:10px;padding:2px 0;padding-inline-start:14px;border:0;border-inline-start:3px solid var(--accent-line)}
+.classpick legend{padding:0;margin:0 0 8px;font-weight:800}
+.cp-list{display:flex;flex-direction:column;gap:8px}
+.cp-row{display:flex;align-items:flex-start;gap:12px;min-height:48px;padding:12px 14px;border-radius:var(--r-sm);background:var(--card);box-shadow:inset 0 0 0 2px var(--line);font-weight:600;line-height:1.3;cursor:pointer}
+.cp-row:has(input:checked){background:var(--accent-soft);box-shadow:inset 0 0 0 2px var(--accent-line)}
+.cp-row:has(input:focus-visible){outline:3px solid var(--focus);outline-offset:2px}
+.cp-row input{width:22px;height:22px;flex:none;margin:0}
+.cp-row>span{flex:1;min-width:0;overflow-wrap:anywhere}
+.cp-row.is-off{cursor:not-allowed;color:var(--muted);box-shadow:inset 0 0 0 2px var(--line);background:var(--card-2)}
+.cp-off{display:block;margin-top:2px;font-size:.88rem}
+.cp-all{font-weight:800}
+.cp-later{margin:8px 0 0;font-size:.9rem;color:var(--muted)}
+.cp-err{margin:8px 0 0;font-weight:700;color:var(--danger)}
+.cp-err:empty{display:none}
 .emojigrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(52px,1fr));gap:6px}
 .emojigrid button{height:52px;border-radius:var(--r-sm);border:2px solid var(--line);background:var(--card);font-size:1.7rem;cursor:pointer}
 .emojigrid button[aria-pressed="true"]{border-color:var(--accent-line);background:var(--accent-soft)}

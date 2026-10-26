@@ -1,5 +1,5 @@
 // The Studio: chat with the Builder (SSE over fetch), live preview in the player sandbox, versions, sharing and publishing.
-import { api, toast, sheet, pageData, signedOut, $, $$, esc, copyText, t } from '/js/app.js';
+import { api, toast, sheet, pageData, signedOut, tappedJustNow, $, $$, esc, copyText, t } from '/js/app.js';
 import { INTL } from '/js/i18n.js';
 
 let S = pageData();
@@ -8,7 +8,9 @@ const log = $('#st-log'), input = $('#st-input'), frame = $('#st-frame'), stage 
 let busy = false, pro = false;
 try { pro = localStorage.getItem('brb-pro') === '1'; } catch { /* private mode */ }
 const SIZES = { phone: [390, 760], tablet: [820, 1100], landscape: [844, 390] };
-const VIS = { private: ['🔒', t('js.studio.vis.private')], friends: ['👫', t('js.studio.vis.friends')], school: ['🏫', t('js.studio.vis.school')], public: ['🌍', t('js.studio.vis.public')] };
+const VIS = { private: ['🔒', t('js.studio.vis.private')], friends: ['👫', t('js.studio.vis.friends')], class: ['🎒', t('js.studio.vis.class', { count: 2 })], school: ['🏫', t('js.studio.vis.school')], public: ['🌍', t('js.studio.vis.public')] };
+/** [emoji, label] for a sharing level. 'class' says "My class" for one class and "My classes" for several. */
+const visOf = (k, count = 1) => (k === 'class' ? ['🎒', t('js.studio.vis.class', { count })] : VIS[k] || ['', k]);
 // Idea chips: keys a, b, c... under a prefix (missing letters are skipped).
 const chipList = prefix => [...'abcdefgh'].map(k => t(`${prefix}.${k}`)).filter(x => !x.startsWith(prefix));
 const START_CHIPS = chipList('js.studio.startChips');
@@ -39,19 +41,53 @@ function renderLive() {
   const cur = S.current ? `✏️ ${E('js.studio.live.editing', { number: S.current.number })}` : `✏️ ${E('js.studio.live.nothingYet')}`;
   if (S.game.hidden_reason) parts.push(`<p class="note">⚠️ ${E('js.studio.live.hidden')}</p>`);
   if (S.live) {
-    const [e, w] = VIS[S.live.visibility] || ['', S.live.visibility];
+    // A class game: the classes it reaches right now (a class it was shared with stops counting when the builder leaves
+    // it or a teacher takes the game off it).
+    const reach = S.live.visibility === 'class' ? classShare().live : null;
+    // A class game that reaches no class right now is, in effect, only for its builder: say so, and why.
+    const [e, w] = reach && !reach.length ? ['🔒', t('js.studio.live.onlyYouNow')] : visOf(S.live.visibility, reach ? reach.length : 1);
     parts.push(`<span class="stchip good">🟢 ${E('js.studio.live.liveVersion', { number: S.live.number, who: `${e} ${w}` })}</span><span class="vtag">${cur}</span>`);
+    if (reach) {
+      const off = classShare().classes.filter(c => c.removed).map(c => c.name);
+      if (reach.length) {
+        parts.push(`<p class="st-shared">🎒 ${t('js.studio.live.sharedWith', { names: nameList(reach.map(c => c.name)) })}</p>`);
+        if (off.length) parts.push(`<p class="note">🎒 ${t('js.studio.live.takenOffSome', { names: nameList(off) })}</p>`);
+      } else {
+        const why = off.length ? t('js.studio.live.takenOff', { names: nameList(off) }) : E('js.studio.live.leftClass');
+        parts.push(`<p class="note">🎒 ${why} ${E('js.studio.live.pickAgain')}</p>`);
+      }
+    }
     const canUpdate = S.current && S.current.id !== S.live.id && !(S.pending && S.pending.id === S.current.id);
     if (canUpdate) parts.push(`<button class="btn btn-hot btn-sm st-update" type="button" data-act="update">⬆️ ${E('js.studio.live.updateTo', { number: S.current.number })}</button>`);
-    if (S.pending && S.pending.id === S.live.id) parts.push(`<p class="note">⏳ ${E(S.live.visibility === 'friends' ? 'js.studio.live.waitingFriends' : 'js.studio.live.waitingYou')}</p>`);
+    if (S.pending && S.pending.id === S.live.id) parts.push(`<p class="note">⏳ ${waitingText()}</p>`);
     else if (S.pending) parts.push(`<p class="note">⏳ ${E('js.studio.live.pendingUpdate', { pending: S.pending.number, live: S.live.number })}</p>`);
-    else if (canUpdate) parts.push(`<p class="note info">${E('js.studio.live.playersOn', { live: S.live.number, number: S.current.number })}${S.live.visibility === 'public' ? ' ' + E('js.studio.live.publicCheck') : ''}</p>`);
+    else if (canUpdate) parts.push(`<p class="note info">${E('js.studio.live.playersOn', { live: S.live.number, number: S.current.number })}${S.live.visibility === 'public' ? ' ' + E('js.studio.live.publicCheck') : isGroup(S.live.visibility) && needsCheck(S.current.id) ? ' ' + E('js.studio.share.groupHint') : ''}</p>`);
   } else {
     parts.push(`<span class="stchip">${esc(S.status.label)}${S.status.code === 'draft' ? ' · ' + E('js.studio.live.onlyYou') : ''}</span><span class="vtag">${cur}</span>`);
     if (S.pending) parts.push(`<p class="note">⏳ ${E('js.studio.live.pendingNew', { number: S.pending.number })}</p>`);
   }
   if (S.game.review_note) parts.push(`<p class="note">💬 ${E('js.studio.live.reviewer', { note: S.game.review_note })}</p>`);
   box.innerHTML = parts.join('');
+}
+// ---- "Share with my classes": S.classShare comes from the server (server/routes/studio.js classShare):
+// classes: the builder's classes now [{ id, name, school, chosen, removed }] (removed: a teacher took this game off that
+// class, so it can't be picked), multiSchool: show school names, live: the classes a class game reaches right now.
+const classShare = () => S.classShare || { classes: [], multiSchool: false, live: [], lost: 0 };
+const LIST = typeof Intl.ListFormat === 'function' ? new Intl.ListFormat(INTL, { type: 'conjunction' }) : null;
+/** "5B, Art Club and Chess Club" in the reader's language. Class names are typed by teachers: escaped, and each kept
+ *  whole inside right-to-left text. */
+const nameList = names => (LIST ? LIST.formatToParts(names).map(p => (p.type === 'element' ? `<bdi>${esc(p.value)}</bdi>` : esc(p.value))).join('') : names.map(n => `<bdi>${esc(n)}</bdi>`).join(', '));
+const isGroup = v => v === 'class' || v === 'school';
+/** Would sharing this version with a class or the school wait for a person? Only a clean or approved version goes
+ *  straight out (server/services/publish.js). */
+const needsCheck = id => { const v = (S.versions || []).find(x => x.id === id); return !!v && v.safety === 'flag' && v.review !== 'approved'; };
+/** The live version itself is waiting to be shared more widely: say with whom, and that nothing changes until then. */
+function waitingText() {
+  const want = S.pending.visibility || 'public';
+  if (want === 'school') return E('js.studio.live.waitingSchool');
+  if (want === 'class') return E('js.studio.live.waitingClass', { count: Math.max(1, classShare().classes.filter(c => c.chosen && !c.removed).length) });
+  if (isGroup(S.live.visibility)) return E('js.studio.live.waitingPublic');
+  return E(S.live.visibility === 'friends' ? 'js.studio.live.waitingFriends' : 'js.studio.live.waitingYou');
 }
 function renderSafety() {
   const box = $('#st-safety'); const c = S.current;
@@ -83,18 +119,30 @@ function setPreview(url) {
   S.preview = url; $('#st-empty').hidden = true;
   frame.src = url;
 }
-$('#st-reload').addEventListener('click', () => { if (!S.preview) return toast(t('js.studio.buildFirst')); frame.src = 'about:blank'; setTimeout(() => (frame.src = S.preview), 30); });
+const reloadPreview = () => { frame.src = 'about:blank'; setTimeout(() => (frame.src = S.preview), 30); };
+$('#st-reload').addEventListener('click', () => { if (!S.preview) return toast(t('js.studio.buildFirst')); reloadPreview(); });
+// "Try again" in a game (brb:retry): reload the preview from here, with a fresh link (a reload the frame starts itself
+// has no sign-in cookie, so the server refuses it).
+async function retryPreview() {
+  try { const st = await api(`/api/studio/${ID}`); if (st.preview) S.preview = st.preview; } catch { /* keep the old link */ }
+  if (S.preview) reloadPreview();
+}
 const full = () => { if (document.fullscreenElement) document.exitFullscreen(); else if (stage.requestFullscreen) stage.requestFullscreen().catch(() => toast(t('js.studio.noFullscreen'), { bad: true })); };
 $('#st-full').addEventListener('click', full);
 addEventListener('message', e => {
   if (e.source !== frame.contentWindow || !e.data || e.data.brb !== 1) return; // only our sandboxed preview
   if (e.data.type === 'brb:fullscreen') { if (!!e.data.on !== !!document.fullscreenElement) full(); }
   else if (e.data.type === 'brb:gameover' && typeof e.data.score === 'number') toast(t('js.studio.roundOver', { score: e.data.score }));
+  else if (e.data.type === 'brb:retry' && tappedJustNow()) retryPreview();
 });
 
 // ---------------------------------------------------------------- chat log
 const scrollDown = () => { log.scrollTop = log.scrollHeight; };
-function bubble(cls, text) { const d = document.createElement('div'); d.className = `msg ${cls}`; d.dir = 'auto'; d.textContent = text || ''; log.appendChild(d); return d; }
+const nearBottom = () => log.scrollHeight - log.scrollTop - log.clientHeight < 80;
+/** Add to the chat. While a turn runs its steps card stays last, so replies and cards build up above it (renderLog()
+ *  empties the log and leaves the card detached, hence the parentNode check). */
+function place(el) { log.insertBefore(el, live && live.el.parentNode === log ? live.el : null); return el; }
+function bubble(cls, text) { const d = document.createElement('div'); d.className = `msg ${cls}`; d.dir = 'auto'; d.textContent = text || ''; return place(d); }
 function attHtml(list) {
   return `<div class="att-list">${list.map(u => `<span class="att">${u.kind === 'image' ? `<img src="/api/studio/${ID}/uploads/${esc(u.id)}" alt="">` : `<span class="fi" aria-hidden="true">${u.kind === 'pdf' ? '📄' : '📝'}</span>`}<span class="nm">${esc(u.name)}</span></span>`).join('')}</div>`;
 }
@@ -103,7 +151,7 @@ function userBubble(text, uploads = []) {
   if (uploads.length) d.insertAdjacentHTML('beforeend', attHtml(uploads));
   return d;
 }
-function card(cls, inner) { const d = document.createElement('div'); d.className = `ev ${cls}`; d.innerHTML = inner; log.appendChild(d); return d; }
+function card(cls, inner) { const d = document.createElement('div'); d.className = `ev ${cls}`; d.innerHTML = inner; return place(d); }
 function versionCard(v, live = false) {
   const fail = v.status === 'fail';
   const d = card(`version ${fail ? 'fail' : ''}`, `<span class="evh">🎮 ${E(fail ? 'js.studio.log.versionFailed' : 'js.studio.log.versionReady', { number: v.number })}</span><span dir="auto">${esc(v.notes)}</span>
@@ -115,7 +163,7 @@ function metaCard(m) { return card('meta', `<span>${esc(m.icon)} ${t('js.studio.
 function chips(options, active) {
   const d = document.createElement('div'); d.className = 'qchips' + (active ? '' : ' used');
   d.innerHTML = options.map(o => `<button class="chip" type="button" data-chip="${esc(o)}">${esc(o)}</button>`).join('');
-  log.appendChild(d); return d;
+  return place(d);
 }
 function askBlock(a, active, into) {
   const b = into || bubble('bot', '');
@@ -123,6 +171,7 @@ function askBlock(a, active, into) {
   if (a.options && a.options.length) chips(a.options, active);
 }
 function renderLog() {
+  if (live) live.remove();
   log.innerHTML = '';
   const msgs = S.chat || [];
   msgs.forEach((m, i) => {
@@ -134,6 +183,7 @@ function renderLog() {
       else if (name === 'notes') notesCard(d.checklist);
       else if (name === 'meta') metaCard(d);
       else if (name === 'ask') askBlock(d, last, b && !b.nextSibling ? b : null);
+      else if (name === 'steps') { const c = stepsCard(d); if (c) place(c); }   // folded; rows are built when opened
     }
   });
   if (!msgs.length) {
@@ -143,16 +193,420 @@ function renderLog() {
   scrollDown();
 }
 
+// ---------------------------------------------------------------- build steps card ("Behind the scenes")
+// What the Builder is really doing, from the server's own events, in the order they happen: step {i, key, ...facts}
+// starts row i, stepinfo {i, ...facts} updates row i (not always the newest: a failed edit marks its own row later).
+// While the turn runs, the card shows the latest rows. The running row has ONE 💡 line: a "Just now" line for a step
+// that was over in a flash (the safety program, naming the game…), then the step's own line, then (once a turn) what
+// thinking is, then on a long AI step a "Did you know?" fact. When the turn ends the card folds into a one-line summary
+// drawn from the record that 'done' carries, which is also saved as the reply's last event, so a reload draws the same.
+// Model text (the AI's plan, a game title) is only ever set with textContent. Nothing here is timer-driven except the
+// seconds, the order of the 💡 lines and when the card appears: every row is a real server step (or the page's own
+// sending/offline/waiting).
+const STEP_ICON = { screen: '🛡️', blocks: '🧱', think: '🧠', write: '✍️', edit: '✏️', fix: '🛠️', template: '🏝️', check: '🔒', name: '🏷️', playtest: '📱', notes: '🧪', ask: '💬', sending: '📨', offline: '📶', waiting: '⏳' };
+const SERVER_STEPS = new Set(['screen', 'blocks', 'think', 'write', 'edit', 'fix', 'template', 'check', 'name', 'playtest', 'notes', 'ask']);
+// Timed rows run until the next row starts (spinner, seconds); the others take milliseconds and arrive done.
+const TIMED = new Set(['screen', 'blocks', 'think', 'write', 'edit', 'fix', 'playtest', 'sending', 'offline', 'waiting']);
+const AUTHOR = new Set(['write', 'edit', 'fix']);
+// An instant row's learning line is shown under the next timed row ("Just now: …"): one per row, most useful first,
+// each at most once a turn.
+const JUST_NOW = ['check', 'template', 'notes', 'name', 'ask'];
+const THINK_WHY = new Set(['start', 'look', 'scan', 'retry', 'next']);
+const FACTS = [...'abcdefghij'];
+const TIP_JUST = 6000, TIP_OWN = 8000, TIP_THINK = 8000, TIP_FACT = 11000;   // how long each 💡 line stays
+const SHOW_AFTER = 700;    // the live card appears once a turn has lasted this long (a quick turn goes straight to its summary)
+const MIN_SHOWN = 1200;    // once shown, it stays at least this long before it folds (no flash)
+const SEC_AFTER = 3000;    // a running step's seconds appear after 3 s ("0 sec" reads as stuck)
+const narrow = matchMedia('(max-width: 520px)');   // phones: one finished row above the running one, not two
+const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+let factNext = Math.floor(Math.random() * FACTS.length);   // carries on across turns, so each turn shows new facts
+let live = null;                                // the steps card of the turn in progress
+let stepSeq = 0;
+let tipsOn = true;
+try { tipsOn = localStorage.getItem('brb-tips') !== '0'; } catch { /* private mode: tips stay on */ }
+log.classList.toggle('tips-off', !tipsOn);
+
+const ST = (k, vars) => t(`js.studio.steps.${k}`, vars);
+const mk = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; };
+const hide = e => { e.setAttribute('aria-hidden', 'true'); return e; };
+/** An element with a decorative emoji (hidden from screen readers) before its text, and an optional bold lead-in. */
+const withIcon = (el, icon, text, lead) => { el.textContent = ''; el.append(hide(mk('span', null, icon)), ' '); if (lead) el.append(mk('b', null, lead), ' '); el.append(text); return el; };
+const units = new Map();
+const unit = (u, n, digits) => {
+  const k = `${u}${digits}`; let f = units.get(k);
+  if (!f) { f = new Intl.NumberFormat(INTL, { style: 'unit', unit: u, unitDisplay: 'short', maximumFractionDigits: digits }); units.set(k, f); }
+  return f.format(n);
+};
+/** 600 -> "0.6 sec", 38000 -> "38 sec", 84000 -> "1 min 24 sec", in the reader's language, never broken across lines.
+ *  whole: no tenths (live). */
+function fmtDur(ms, whole = false) {
+  const s = Math.max(0, +ms || 0) / 1000;
+  let out;
+  try {
+    if (s < 60) out = s < 10 && !whole ? unit('second', s, 1) : unit('second', Math.floor(s), 0);
+    else {
+      const m = Math.floor(s / 60), r = Math.floor(s % 60);
+      const parts = [unit('minute', m, 0)]; if (r) parts.push(unit('second', r, 0));
+      out = new Intl.ListFormat(INTL, { type: 'unit', style: 'narrow' }).format(parts);
+    }
+  } catch { out = `${Math.round(s)}s`; }
+  return out.replace(/ /g, ' ');
+}
+const isolate = s => `⁨${s}⁩`;   // a game title in the reader's sentence keeps its own direction
+/** done: past wording ("Wrote the game code"); a running, stopped or interrupted row keeps the present wording. */
+function stepLabel(k, f, done) {
+  if (f.why === 'cut') return ST('cut');
+  if (f.ok === false && (AUTHOR.has(k) || k === 'playtest')) return ST(`${k === 'fix' ? (f.via === 'edit' ? 'edit' : 'write') : k}.failed`);
+  if (k === 'think') {
+    const why = THINK_WHY.has(f.c) ? f.c : 'next';
+    return ST(`think.${done ? 'done' : 'now'}.${why === 'start' && f.g ? 'startGame' : why}`, { n: f.n || 1 });
+  }
+  if (k === 'check') return ST(`check.${['pass', 'flag', 'fail'].includes(f.st) ? f.st : 'flag'}`, { v: f.v || 1, k: f.k || 1 });
+  if (k === 'name') {
+    const title = f.title ? isolate(f.title) : '', icon = f.icon || '';
+    return title && icon ? ST('name.titleIcon', { title, icon }) : title ? ST('name.title', { title }) : icon ? ST('name.icon', { icon }) : ST('name.details');
+  }
+  if (k === 'template' || k === 'notes' || k === 'ask') return ST(`${k}.done`);
+  if (k === 'sending') return ST('sending');
+  if (k === 'offline') return ST(f.unsure ? 'offline.check' : 'offline.now');
+  if (k === 'waiting') return ST('waiting.now');
+  return ST(`${k}.${done ? 'done' : 'now'}`);   // screen, blocks, write, edit, fix, playtest
+}
+/** The facts worth showing next to the label: lines or changes written, pictures and problems. Never seconds. */
+function stepDetail(k, f) {
+  const out = [];
+  if ((k === 'write' || k === 'fix') && f.l) out.push(ST('lines', { count: f.l }));
+  if ((k === 'edit' || k === 'fix') && f.e) out.push(ST('edits', { count: f.e }));
+  if (k === 'playtest' && typeof f.pics === 'number') { out.push(ST('pics', { count: f.pics })); if (typeof f.probs === 'number') out.push(ST('probs', { count: f.probs })); }
+  return out.join(' · ');
+}
+/** A row's own learning line ('' for none). A round's line follows why it started, never the thinking. */
+function ownLearn(k, f) {
+  if (k === 'sending' || (k === 'offline' && f.unsure)) return '';
+  if (k === 'offline' || k === 'waiting') return ST('offline.learn');
+  if (k === 'think') return ST(`think.learn.${THINK_WHY.has(f.c) ? f.c : 'next'}`);
+  return ST(`${k}.learn`);
+}
+const tipsLabel = b => withIcon(b, '💡', ST(tipsOn ? 'tipsOn' : 'tipsOff'));
+function tipsBtn() { const b = tipsLabel(mk('button', 'stp-tips')); b.type = 'button'; b.title = ST('tipsHint'); return b; }
+function setTips(on) {
+  tipsOn = on; log.classList.toggle('tips-off', !on);
+  try { localStorage.setItem('brb-tips', on ? '1' : '0'); } catch { /* not saved: still works for this page */ }
+  $$('.stp-tips', log).forEach(tipsLabel);
+  if (live) live.retip();
+}
+let sayQ = [], sayTimer = 0;
+/** Screen readers hear step changes only (a new step, the plan, a problem, the summary), never counters or seconds.
+ *  Changes that come within 0.4 s are read as one message: at most three, and a problem is never dropped. */
+function announce(text, urgent = false) {
+  sayQ.push({ text, urgent });
+  if (!sayTimer) sayTimer = setTimeout(sayNow, 400);
+}
+function sayNow() {
+  sayTimer = 0;
+  const box = $('#st-steps-live'), q = sayQ; sayQ = [];
+  if (!box || !q.length) return;
+  const urgent = q.filter(x => x.urgent).slice(-2), rest = q.filter(x => !x.urgent).slice(urgent.length - 3);
+  box.textContent = q.filter(x => urgent.includes(x) || rest.includes(x)).map(x => x.text).join('. ');
+}
+/** Forget what was waiting to be read (keepUrgent: but not the problems). */
+function hush(keepUrgent = false) {
+  sayQ = keepUrgent ? sayQ.filter(x => x.urgent) : [];
+  if (!sayQ.length) { clearTimeout(sayTimer); sayTimer = 0; }
+}
+/** Scroll the chat just enough to show el (its top first when it is taller than the chat). */
+function reveal(el) {
+  const lr = log.getBoundingClientRect(), er = el.getBoundingClientRect();
+  let dy = er.bottom > lr.bottom ? er.bottom - lr.bottom : 0;
+  if (er.top - dy < lr.top) dy = er.top - lr.top;
+  if (dy) log.scrollBy({ top: dy, behavior: reducedMotion.matches ? 'auto' : 'smooth' });
+}
+
+const views = new WeakMap();   // <li> -> the parts of the row that live updates change in place
+/**
+ * Draw one row into its <li>. o: { key, f, done, paused, stopped, current, open, live, spoke, showPlan, dur, toggle }
+ *   current: the newest row of a live card (a plain line with the 💡 slot; not a button)
+ *   done:    finished (a running timed row has done = false: spinner, live seconds)
+ *   paused:  the connection dropped while it ran, so nobody here knows how it ended: present wording, no spinner, no ✓
+ *   open:    a finished row tapped open (its learning lines, and its plan)
+ *   live:    in the live card (finished rows there are one short line, without seconds)
+ * The row is rebuilt only when its shape changes; words and numbers are updated in place, so the spinner keeps turning
+ * and a text selection or a screen reader's place survives the live counters. -> the row's parts.
+ */
+function drawRow(li, o) {
+  const { key: k, f } = o;
+  const running = !o.done && !o.paused;
+  const warn = o.stopped || f.ok === false || (k === 'check' && f.st === 'fail');
+  const state = running ? 'now' : o.paused ? 'paused' : warn ? 'warn' : 'done';
+  const label = stepLabel(k, f, !running && !o.paused && !o.stopped);
+  const facts = stepDetail(k, f);
+  const th = k === 'think' && f.th ? ST(running && !o.spoke ? 'thinkingNow' : 'thoughtFirst') : '';
+  const sec = TIMED.has(k) && k !== 'sending' && (running || (!o.live && o.dur >= 100));
+  const plan = AUTHOR.has(k) && f.plan && (o.current || o.open || o.showPlan) ? f.plan : '';
+  const asked = o.open ? [ownLearn(k, f), k === 'think' && f.th ? ST('think.learn.thinking') : ''].filter(Boolean) : [];
+  const button = !o.current && !!(asked.length || plan || ownLearn(k, f) || (AUTHOR.has(k) && f.plan));
+  const sig = state + [o.current, o.open, button, plan, th, facts, sec, o.stopped].map(x => +!!x).join('');
+  let v = views.get(li);
+  if (v && v.sig === sig) {   // same shape: only words and numbers change
+    if (v.label.textContent !== label) v.label.textContent = label;
+    if (v.facts && v.facts.textContent !== facts) v.facts.textContent = facts;
+    if (v.th && v.th.lastChild.textContent !== th) v.th.lastChild.textContent = th;
+    if (v.plan && v.plan.textContent !== plan) v.plan.textContent = plan;
+    return v;
+  }
+  const hadFocus = li.contains(document.activeElement);
+  li.dataset.state = state;
+  li.classList.toggle('stp-cur', !!o.current);
+  if (o.current) li.setAttribute('aria-current', 'step'); else li.removeAttribute('aria-current');
+  li.textContent = '';
+  v = { sig, label: mk('span', 'stp-label', label) };
+  const line = mk(button ? 'button' : 'div', 'stp-line');
+  if (button) { line.type = 'button'; line.setAttribute('aria-expanded', String(!!o.open)); if (o.toggle) line.addEventListener('click', o.toggle); }
+  const text = mk('span', 'stp-text');
+  text.append(v.label);
+  if (th || facts || sec) {
+    // Parts are separated by " · " in CSS. The 🤔 is a visible word too (no tooltip on phones).
+    const d = mk('span', 'stp-detail');
+    if (th) { v.th = mk('span', 'stp-th'); v.th.append(hide(mk('span', null, '🤔')), ' ', mk('span', null, th)); d.append(v.th); }
+    if (facts) { v.facts = mk('span', null, facts); d.append(v.facts); }
+    if (sec) {
+      v.sec = mk('span', 'stp-sec', running ? fmtDur(Date.now() - o.at, true) : fmtDur(o.dur));
+      if (running) { hide(v.sec); v.sec.classList.toggle('stp-wait', Date.now() - o.at < SEC_AFTER); }   // seconds tick: not for screen readers
+      d.append(v.sec);
+    }
+    text.append(' ', d);
+  }
+  if (o.stopped) text.append(' ', mk('span', 'stp-stop', ST('stoppedHere')));
+  const mark = mk('span', 'stp-mark');
+  if (running) { if (o.current) mark.append(hide(mk('span', 'stp-spin'))); mark.append(mk('span', 'sr-only', ST('srNow'))); }
+  else if (o.paused) mark.append(hide(mk('span', null, '…')), mk('span', 'sr-only', ST('srPaused')));
+  else if (warn) mark.append(hide(mk('span', null, '⚠️')), mk('span', 'sr-only', ST('srWarn')));
+  else mark.append(hide(mk('span', null, '✓')), mk('span', 'sr-only', ST('srDone')));
+  line.append(hide(mk('span', 'stp-ico', STEP_ICON[k] || '•')), text, mark);
+  li.append(line);
+  if (plan) {
+    const p = mk('p', 'stp-plan'); v.plan = mk('span', null, plan); v.plan.dir = 'auto';
+    p.append(mk('b', null, ST('planLabel')), ' ', v.plan); li.append(p);
+  }
+  // A tapped row always shows its lines (Tips off only stops the automatic ones).
+  for (const x of asked) li.append(withIcon(mk('p', 'stp-learn stp-asked'), '💡', x));
+  if (o.current) { v.tip = mk('p', 'stp-learn stp-tip'); li.append(v.tip); }
+  li.classList.toggle('stp-pad', !!(plan || asked.length || o.current));
+  if (hadFocus && button) line.focus({ preventScroll: true });
+  views.set(li, v);
+  return v;
+}
+
+/** The live card for one turn. add/patch take the server's step/stepinfo; local() adds the page's own rows. */
+function liveSteps() {
+  const el = mk('div', 'ev stp'); el.dataset.state = 'live';
+  el.setAttribute('aria-live', 'off');   // inside the role=log region: announced through #st-steps-live instead
+  const head = mk('div', 'stp-head');
+  const more = mk('button', 'stp-more'); more.type = 'button'; more.hidden = true; more.setAttribute('aria-expanded', 'false');
+  head.append(withIcon(mk('span', 'stp-title'), '🔎', ST('title')), more, tipsBtn());
+  const list = mk('ol', 'stp-list');
+  el.append(head, list);
+  const rows = [], byI = new Map();
+  const turn = { justShown: new Set(), thinkShown: false };   // 💡 lines already shown this turn
+  let expanded = false, mode = null, pillEl = null, shownAt = 0, heard = false;
+  const newest = () => rows[rows.length - 1];
+  const paint = r => drawRow(r.li, { key: r.key, f: r.f, done: r.done, paused: r.paused, stopped: r.stopped, current: r === newest(), open: r.open, live: true, spoke: r.spoke, at: r.at, toggle: r.toggle });
+  function show() {
+    clearTimeout(showTimer);
+    if (shownAt || !timer) return;
+    const stick = nearBottom();
+    log.appendChild(el); shownAt = Date.now(); retip(newest());
+    if (stick) scrollDown();
+  }
+  function fold() {
+    const hidden = Math.max(0, rows.length - 1 - (narrow.matches ? 1 : 2));
+    const focused = document.activeElement;
+    rows.forEach((r, n) => { r.li.hidden = !expanded && n < hidden && !r.li.contains(focused); });   // never hide the focus
+    more.hidden = hidden === 0;
+    withIcon(more, expanded ? '▴' : '▾', expanded ? ST('hideEarlier') : ST('earlier', { count: hidden }));
+    more.setAttribute('aria-expanded', String(expanded));
+  }
+  more.addEventListener('click', () => { expanded = !expanded; fold(); });
+  const refold = () => fold();
+  narrow.addEventListener('change', refold);
+  function pill() {
+    const r = newest(); if (!pillEl || !r) return;
+    const det = AUTHOR.has(r.key) ? stepDetail(r.key, r.f) : '';
+    pillEl.textContent = `${STEP_ICON[r.key] || ''} ${stepLabel(r.key, r.f, r.done && !r.stopped)}${det ? ` · ${det}` : ''}`;
+  }
+  /** The "Just now" line for a new timed row: an instant row that came right before it, not shown yet this turn. */
+  function justFor(key) {
+    if (!SERVER_STEPS.has(key)) return null;
+    const recent = new Set();
+    for (let n = rows.length - 1; n >= 0 && !TIMED.has(rows[n].key); n--) recent.add(rows[n].key);
+    return JUST_NOW.find(k => recent.has(k) && !turn.justShown.has(k)) || null;
+  }
+  // "Did you know?": only on an AI step (or, before any round, while waiting for the AI on the server).
+  const factsFit = r => mode === 'ai' || (!mode && S.provider === 'claude' && (r.key === 'waiting' || (r.key === 'offline' && !r.f.unsure)));
+  /** What the running row's 💡 line shows now: 'just', 'own', 'think' or 'fact<N>' (each stays a while). */
+  function tipKind(r) {
+    const items = [];
+    if (r.just) items.push(['just', TIP_JUST]);
+    if (ownLearn(r.key, r.f)) items.push(['own', TIP_OWN]);
+    if (r.key === 'think' && r.f.th && (!turn.thinkShown || r.thinkHere)) items.push(['think', TIP_THINK]);
+    const age = Date.now() - r.at; let at = 0;
+    for (const [kind, ms] of items) { if (age < at + ms) return kind; at += ms; }
+    if (!r.done && !r.paused && tipsOn && factsFit(r)) return `fact${Math.floor((age - at) / TIP_FACT)}`;
+    return items.length ? items[items.length - 1][0] : '';
+  }
+  function retip(r) {
+    const v = r && views.get(r.li); if (!v || !v.tip) return;
+    const kind = tipKind(r);
+    if (kind !== r.tipKind || !v.tip.firstChild) fillTip(r, v.tip, kind);
+    // The line only grows within one step, so changing lines never makes the card jump up and down.
+    if (r.tipMin) v.tip.style.minHeight = `${r.tipMin}px`;
+    const h = v.tip.offsetHeight; if (h > (r.tipMin || 0)) { r.tipMin = h; v.tip.style.minHeight = `${h}px`; }
+  }
+  function fillTip(r, tip, kind) {
+    r.tipKind = kind;
+    if (kind === 'just') { withIcon(tip, STEP_ICON[r.just], ST(`${r.just}.learn`), ST('justNow')); if (tipsOn) turn.justShown.add(r.just); }
+    else if (kind === 'own') withIcon(tip, '💡', ownLearn(r.key, r.f));
+    else if (kind === 'think') { withIcon(tip, '🤔', ST('think.learn.thinking')); if (tipsOn) { turn.thinkShown = true; r.thinkHere = true; } }
+    else if (kind) {
+      if (r.factFor !== kind) { r.factFor = kind; r.factText = ST(`facts.${FACTS[factNext++ % FACTS.length]}`); }
+      withIcon(tip, '🌟', r.factText, ST('factLabel'));
+    } else tip.textContent = '';
+  }
+  function push(key, facts, i) {
+    const now = Date.now();
+    const last = newest();
+    if (last && last.key === 'sending') { last.li.remove(); rows.pop(); }   // the first real step replaces it
+    const prev = newest();
+    // A new step ends the one before. A dropped connection doesn't: that step may still be running on the server.
+    if (prev && !prev.done && !prev.paused) { if (key === 'offline') prev.paused = true; else prev.done = true; prev.dur = now - prev.at; }
+    if (SERVER_STEPS.has(key)) heard = true;
+    if (key === 'think') mode = 'ai'; else if (key === 'blocks') mode = 'blocks';
+    const r = { key, f: { ...facts }, at: now, li: mk('li', 'stp-row'), open: false, done: !TIMED.has(key), paused: false, stopped: false, spoke: false, just: TIMED.has(key) ? justFor(key) : null };
+    r.li.dataset.step = key;
+    r.toggle = () => { r.open = !r.open; paint(r); };
+    rows.push(r); if (i) byI.set(i, r);
+    list.appendChild(r.li);
+    if (prev) paint(prev);
+    paint(r); retip(r); fold(); pill();
+    if (key !== 'sending') announce(stepLabel(key, r.f, r.done), r.f.ok === false || (key === 'check' && r.f.st === 'fail'));
+  }
+  function tick() {
+    const r = newest(); if (!r || !shownAt) return;
+    const stick = nearBottom();
+    const v = views.get(r.li);
+    if (v && v.sec && !r.done && !r.paused) { const age = Date.now() - r.at; v.sec.textContent = fmtDur(age, true); v.sec.classList.toggle('stp-wait', age < SEC_AFTER); }
+    retip(r);
+    if (stick) scrollDown();
+  }
+  let timer = setInterval(tick, 1000);
+  const showTimer = setTimeout(show, SHOW_AFTER);
+  function stopTimers() { clearInterval(timer); timer = 0; clearTimeout(showTimer); narrow.removeEventListener('change', refold); }
+  const api = {
+    el,
+    add(d) { if (d && SERVER_STEPS.has(d.key)) { const { i, key, ...facts } = d; push(key, facts, i); } },
+    /** The page's own rows: offline (the stream dropped), waiting (opened while the Builder works), sending. */
+    local(key) {
+      // Until a step has arrived, nobody knows whether the message reached the server: say "checking", not "keeps going".
+      push(key, key === 'offline' && !heard ? { unsure: 1 } : {}, 0);
+      if (key !== 'sending') show();
+    },
+    /** The server said it is busy with this turn: the offline row can say the Builder keeps going. */
+    confirm() {
+      const r = newest(); if (!r || r.key !== 'offline' || !r.f.unsure) return;
+      delete r.f.unsure; paint(r); retip(r); pill(); announce(stepLabel(r.key, r.f, false));
+    },
+    patch(d) {
+      const r = d && byI.get(d.i); if (!r) return;
+      const { i, ...facts } = d; void i;
+      const firstPlan = facts.plan && !r.f.plan, failed = facts.ok === false && r.f.ok !== false;
+      Object.assign(r.f, facts); paint(r);
+      if (r === newest()) { retip(r); pill(); }
+      if (firstPlan && r === newest() && !r.done) announce(`${ST('planLabel')} ${r.f.plan}`);
+      if (failed) announce(stepLabel(r.key, r.f, true), true);   // a late failure mark on its own row
+    },
+    /** Text is streaming: a round that thought first is now answering ("🤔 thought first"). */
+    spoke() { const r = newest(); if (r && r.key === 'think' && r.f.th && !r.spoke && !r.done) { r.spoke = true; paint(r); } },
+    /** An error ended the turn: the current row says "Stopped here" (in its present wording: it did not finish). */
+    stop() { const r = newest(); if (!r) return; if (!r.done) { r.done = true; r.dur = Date.now() - r.at; } r.stopped = true; paint(r); pill(); },
+    pill(e) { pillEl = e; pill(); },
+    retip() { retip(newest()); },
+    /** The turn is over: fold into the summary (the server's record), or go away (refusals, limits, early errors). */
+    finish(rec) {
+      const card = stepsCard(rec);
+      stopTimers(); if (live === api) live = null;
+      hush(true); if (card) announce(summaryText(rec));
+      if (!card) { el.remove(); return; }                // refused, limit, early error: nothing stays under that bubble
+      if (!shownAt) { place(card); return; }             // a quick turn: straight to the summary, no flash
+      const swap = () => {
+        if (!el.parentNode) return;   // the chat was redrawn meanwhile
+        const hadFocus = el.contains(document.activeElement);
+        el.replaceWith(card);
+        if (hadFocus) card.querySelector('.stp-sum').focus({ preventScroll: true });
+      };
+      const wait = MIN_SHOWN - (Date.now() - shownAt);
+      if (wait > 0) setTimeout(swap, wait); else swap();
+    },
+    remove() { stopTimers(); hush(); if (live === api) live = null; el.remove(); },
+  };
+  return api;
+}
+
+const validRec = rec => !!(rec && rec.v === 1 && Array.isArray(rec.s) && rec.s.length);
+function summaryText(rec) {
+  const count = rec.s.filter(r => Array.isArray(r) && SERVER_STEPS.has(r[0])).length;
+  return ST(rec.p === 'ai' ? 'summaryAi' : 'summaryBlocks', { count, time: fmtDur(rec.ms) }) + (rec.end && rec.end !== 'ok' ? ` · ${ST('stopped')}` : '');
+}
+/** The folded summary of a finished turn ("How the AI did this · 6 steps · 1 min 24 sec"); rows are built on first open,
+ *  in the reader's language, from the stored keys, facts and times. -> element (not yet in the log), or null. */
+function stepsCard(rec) {
+  if (!validRec(rec)) return null;
+  const d = mk('div', 'ev stp'); d.dataset.state = 'done'; d.setAttribute('aria-live', 'off');
+  const id = `stp-${++stepSeq}`;
+  const btn = mk('button', 'stp-sum'); btn.type = 'button'; btn.setAttribute('aria-expanded', 'false'); btn.setAttribute('aria-controls', id);
+  const arrow = hide(mk('span', 'stp-arrow', '▾'));
+  btn.append(hide(mk('span', 'stp-ico', rec.p === 'ai' ? '🧠' : '🧱')), mk('span', 'stp-sum-t', summaryText(rec)), arrow);
+  const body = mk('div', 'stp-body'); body.id = id; body.hidden = true;
+  const setOpen = open => {
+    if (open && !body.firstChild) fillSummary(body, rec, () => { setOpen(false); btn.focus({ preventScroll: true }); });
+    body.hidden = !open;
+    btn.setAttribute('aria-expanded', String(open)); arrow.textContent = open ? '▴' : '▾';
+    reveal(d);   // opening at the bottom of the chat: show the steps, not just the line
+  };
+  btn.addEventListener('click', () => setOpen(body.hidden));
+  d.append(btn, body);
+  return d;
+}
+function fillSummary(body, rec, close) {
+  const list = mk('ol', 'stp-list');
+  const rows = rec.s.filter(r => Array.isArray(r) && SERVER_STEPS.has(r[0]));
+  rows.forEach((row, n) => {
+    const [key, at] = row; const f = row[2] && typeof row[2] === 'object' ? row[2] : {};
+    const next = rows[n + 1];
+    const o = { key, f, done: true, current: false, open: false, showPlan: true, stopped: !!rec.end && rec.end !== 'ok' && n === rows.length - 1, dur: (next ? next[1] : rec.ms) - at };
+    const li = mk('li', 'stp-row'); li.dataset.step = key;
+    o.toggle = () => { o.open = !o.open; drawRow(li, o); };
+    drawRow(li, o); list.append(li);
+  });
+  body.append(list);
+  if (rec.ti > 0) body.append(withIcon(mk('p', 'stp-foot'), '🔢', ST('tokens', { read: rec.ti, wrote: rec.to || 0 })));
+  body.append(withIcon(mk('p', 'stp-foot stp-loop'), '💡', rec.p === 'ai' ? ST('loopAi', { count: rec.r || 0 }) : ST('loopBlocks')));
+  // At the bottom of a long list: the tips switch, and a way to fold it again without scrolling back up.
+  const bar = mk('div', 'stp-bar'); const less = mk('button', 'stp-less'); less.type = 'button';
+  withIcon(less, '▴', ST('showLess')); less.addEventListener('click', close);
+  bar.append(tipsBtn(), less); body.append(bar);
+}
+
 // After a dropped connection (or a reload mid-build) the server finishes the turn on its own: poll until it's
-// done, then redraw the chat and preview from the saved state. -> true once the Builder is free again, false when it
-// took too long, SIGNED_OUT when the sign-in ended meanwhile.
+// done, then redraw the chat and preview from the saved state. onBusy() runs when a poll says it is still working.
+// -> true once the Builder is free again, false when it took too long, SIGNED_OUT when the sign-in ended meanwhile.
 const SIGNED_OUT = 'signed-out';
-async function waitForBuilder(maxMs = 10 * 60e3) {
+async function waitForBuilder(onBusy = null, maxMs = 10 * 60e3) {
   const end = Date.now() + maxMs;
   while (Date.now() < end) {
     await new Promise(r => setTimeout(r, 3000));
     let st; try { st = await api(`/api/studio/${ID}`); } catch (err) { if (err.signedOut) return SIGNED_OUT; continue; }
     if (!st.busy) { S = { ...S, ...st }; renderLog(); if (S.preview) setPreview(S.preview); return true; }
+    if (onBusy) onBusy();
   }
   return false;
 }
@@ -178,22 +632,30 @@ async function send(text) {
   $$('.qchips').forEach(c => c.classList.add('used'));
   const mine = userBubble(text, ups); input.value = ''; autosize();
   pending = []; renderAttach();
-  let cur = bubble('bot', ''); cur.innerHTML = `<span class="typing" aria-label="${E('js.studio.thinking')}"><i></i><i></i><i></i></span>`;
-  let typing = true; scrollDown();
-  const status = document.createElement('div'); status.className = 'st-busy'; status.dir = document.dir; status.textContent = `🤖 ${t('js.studio.working')}`; stage.appendChild(status);
-  const textBubble = () => { if (!cur) cur = bubble('bot', ''); if (typing) { cur.textContent = ''; typing = false; } return cur; };
-  const endBubble = () => { if (cur && typing) { cur.remove(); } cur = null; typing = false; };
+  // The steps card takes the reply's place at the bottom until the turn ends (it appears after 0.7 s, so a quick
+  // turn goes straight to its summary); the pill on the preview says the same.
+  let cur = null;   // the bot bubble text is streaming into
+  live = liveSteps(); live.local('sending');
+  const status = document.createElement('div'); status.className = 'st-busy'; status.dir = document.dir; stage.appendChild(status);
+  live.pill(status); scrollDown();
+  const textBubble = () => { if (!cur) cur = bubble('bot', ''); return cur; };
+  const endBubble = () => { cur = null; };
   const handle = (ev, d) => {
-    if (ev === 'text') { const b = textBubble(); b.textContent += d.text; }
-    else if (ev === 'ask') { const b = cur && !typing ? cur : (endBubble(), bubble('bot', '')); askBlock(d, true, b); cur = null; }
-    else if (ev === 'version') { endBubble(); versionCard(d, true); setPreview(d.preview); status.textContent = `🎮 ${t('js.studio.log.versionReady', { number: d.number })}`; }
+    const stick = nearBottom();   // follow the turn only when the chat is at the bottom: never pull a reader back down
+    if (ev === 'stepinfo') { if (live) live.patch(d); }
+    else if (ev === 'text') { const b = textBubble(); b.textContent += d.text; if (live) live.spoke(); }
+    else if (ev === 'step') { if (live) live.add(d); }
+    else if (ev === 'ask') { askBlock(d, true, cur || bubble('bot', '')); cur = null; }
+    else if (ev === 'version') { endBubble(); versionCard(d, true); setPreview(d.preview); }
     else if (ev === 'meta') { endBubble(); metaCard(d); S.game = { ...S.game, ...d }; renderTop(); }
     else if (ev === 'notes') { endBubble(); notesCard(d.checklist); }
-    else if (ev === 'progress') { status.textContent = d.stage === 'building' ? `🔨 ${t('js.studio.building')} ${d.bytes ? Math.round(d.bytes / 1024) + ' KB' : ''}` : d.stage === 'testing' ? `🔍 ${t('js.studio.testing')}` : `✏️ ${t('js.studio.editing')}`; }
     else if (ev === 'refused') { endBubble(); const b = bubble('bot refused', `${d.message} ${d.suggestion}`); void b; if (d.chips && d.chips.length) chips(d.chips, true); }
-    else if (ev === 'error') { endBubble(); bubble('err', d.message); }
-    else if (ev === 'done') { if (typeof d.turnsLeft === 'number') { S.turnsLeft = d.turnsLeft; renderTurns(); } }
-    scrollDown();
+    else if (ev === 'error') { endBubble(); bubble('err', d.message); if (live) live.stop(); }
+    else if (ev === 'done') {
+      if (typeof d.turnsLeft === 'number') { S.turnsLeft = d.turnsLeft; renderTurns(); }
+      if (live) live.finish(d.steps || null);   // no record: refused, limit, early error
+    }
+    if (stick) scrollDown();
   };
   try {
     const res = await fetch(`/api/studio/${ID}/chat`, { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json', Accept: 'text/event-stream' }, body: JSON.stringify({ text, pro, uploads: ups.map(u => u.id) }) });
@@ -216,20 +678,23 @@ async function send(text) {
     endBubble();
     if (e.signedOut) {
       // The message never reached the Builder: it goes back in the box, and signing in again brings it back here.
+      if (live) live.remove();
       mine.remove(); input.value = text; autosize(); signInAgainBubble();
     }
-    else if (e.fromServer) bubble('err', e.message);
+    else if (e.fromServer) { if (live) live.remove(); bubble('err', e.message); }
     else {
-      // The connection dropped, but the Builder keeps going on the server: wait for it, then show what it made.
-      status.textContent = `📶 ${t('js.studio.reconnecting')}`;
+      // The connection dropped, but the Builder keeps going on the server: wait for it, then show what it made
+      // (renderLog() draws the saved reply, with its steps summary, in place of this card).
+      if (live) live.local('offline');
       // If the message never reached the server, nothing new was saved: say so, so it can be sent again.
-      const back = await waitForBuilder();
+      const back = await waitForBuilder(() => { if (live) live.confirm(); });
+      if (live) live.remove();
       if (back === SIGNED_OUT) signInAgainBubble();
       else if (!back || (S.chat || []).length <= savedBefore) bubble('err', t('js.studio.dropped'));
     }
   }
   finally {
-    endBubble(); status.remove(); busy = false; $('#st-send').disabled = false; scrollDown();
+    endBubble(); if (live) live.remove(); status.remove(); busy = false; $('#st-send').disabled = false; scrollDown();
     await refresh();
   }
 }
@@ -239,6 +704,7 @@ function autosize() { input.style.height = 'auto'; input.style.height = Math.min
 input.addEventListener('input', autosize);
 log.addEventListener('click', e => {
   const c = e.target.closest('[data-chip]'); if (c) { send(c.dataset.chip); return; }
+  if (e.target.closest('.stp-tips')) setTips(!tipsOn);   // "💡 Tips: on/off" in any steps card (one setting for all)
 });
 document.addEventListener('click', e => {
   const a = e.target.closest('[data-act]'); if (!a) return;
@@ -353,35 +819,110 @@ $('#st-history').addEventListener('click', () => {
 });
 
 // ---------------------------------------------------------------- share, publish, update
+const CLASS_CODES = ['pickClass', 'classGone', 'classRemoved'];
 function shareSheet(mode) {
   if (!S.current) return toast(t('js.studio.share.buildFirst'));
-  const live = S.live; let pick = live ? live.visibility : (S.game.visibility || 'private');
-  const opts = (S.shareOptions || ['private', 'friends', 'public']).map(k => `<button type="button" data-vis="${k}" aria-pressed="${k === pick}"><b>${VIS[k][0]} ${VIS[k][1]}</b><span>${esc(S.shareText[k])}</span></button>`).join('');
+  const live = S.live;
+  const options = () => S.shareOptions || ['private', 'friends', 'public'];   // read again after a refused request
+  // Before it is live, the dialog opens on what is waiting for a check (if anything), else on the game's level.
+  let pick = live ? live.visibility : (S.pending && S.pending.visibility) || S.game.visibility || 'private';
+  if (!live && !options().includes(pick)) pick = 'private';
+  // Classes: ticked = the game's list (classes a teacher took it off can't be ticked). The first time nothing is
+  // ticked: sharing with a class is the builder's own choice, and "All my classes" is one tap.
+  const ticked = new Set(classShare().classes.filter(c => c.chosen && !c.removed).map(c => c.id));
+  const cls = () => classShare().classes, open = () => cls().filter(c => !c.removed);
+  // One class (and not taken off): the option says which, and there is nothing to tick. Several: a list to tick.
+  const single = () => (cls().length === 1 && open().length === 1 ? open()[0] : null);
+  const many = () => cls().length > 1;
+  const classOption = k => {
+    const one = single(), none = !open().length;
+    const text = none ? E('js.studio.share.allRemoved', { count: cls().length }) : one ? t('js.studio.share.classOne', { name: `<bdi>${esc(one.name)}</bdi>` }) : E('js.studio.share.classMany');
+    const [e, w] = visOf(k, many() ? cls().length : 1);
+    return `<button type="button" data-vis="${k}" aria-pressed="${k === pick}"${none ? ' aria-disabled="true"' : ''}${many() && !none ? ` aria-controls="cp" aria-expanded="${k === pick}"` : ''}><b>${e} ${esc(w)}</b><span>${text}</span></button>${many() ? classPick() : ''}`;
+  };
+  const classPick = () => {
+    const boxes = cls().map((c, i) => {
+      const name = classShare().multiSchool ? t('js.studio.share.classInSchool', { class: `<bdi>${esc(c.name)}</bdi>`, school: `<span class="muted"><bdi>${esc(c.school)}</bdi></span>` }) : `<bdi>${esc(c.name)}</bdi>`;
+      return `<label class="cp-row${c.removed ? ' is-off' : ''}"><input type="checkbox" id="cp-${i}" value="${esc(c.id)}" data-class${c.removed ? ` disabled aria-describedby="cp-${i}-off"` : ticked.has(c.id) ? ' checked' : ''}><span>${name}${c.removed ? `<span class="cp-off" id="cp-${i}-off">${E('js.studio.share.classRemoved')}</span>` : ''}</span></label>`;
+    });
+    const ids = cls().map((c, i) => (c.removed ? '' : `cp-${i}`)).filter(Boolean).join(' ');
+    return `<fieldset class="classpick" id="cp"${pick === 'class' ? '' : ' hidden'}><legend>${E('js.studio.share.classesLegend')}</legend>
+      <div class="cp-list"><label class="cp-row cp-all"><input type="checkbox" id="cp-all" aria-controls="${ids}"><span><b>${E(cls().some(c => c.removed) ? 'js.studio.share.allOpenClasses' : 'js.studio.share.allClasses')}</b></span></label>${boxes.join('')}</div>
+      <p class="cp-later">${E('js.studio.share.classLater')}</p><p class="cp-err" id="cp-err" role="alert"></p></fieldset>`;
+  };
+  const optsHtml = () => options().filter(k => VIS[k] && (k !== 'class' || cls().length))
+    .map(k => (k === 'class' ? classOption(k) : `<button type="button" data-vis="${k}" aria-pressed="${k === pick}"><b>${VIS[k][0]} ${esc(VIS[k][1])}</b><span>${esc(S.shareText[k])}</span></button>`)).join('');
   const link = live ? `<div class="field"><label for="share-link">${E('js.studio.share.link')}</label><div class="row"><input class="input" id="share-link" dir="ltr" readonly value="${esc(location.origin + S.shareUrl)}" style="flex:1;min-width:0"><button class="btn" type="button" id="share-copy">📋 ${E('js.studio.share.copy')}</button></div></div>` : '';
   const title = live ? `🔗 ${t('js.studio.share.titleLive')}` : mode === 'publish' ? `🚀 ${t('js.studio.share.titlePublish')}` : `🔗 ${t('js.studio.share.titleWho')}`;
-  const s = sheet({ title, content: `${live ? `<p>${E('js.studio.share.playersGet', { number: live.number })}</p>` : `<p>${E('js.studio.share.pickWho', { number: S.current.number })}</p>`}<div class="vischoice" role="group" aria-label="${E('js.studio.share.whoLabel')}">${opts}</div><p class="small muted" id="vis-hint"></p>${link}<div class="sheet-actions"><button class="btn btn-primary" type="button" id="vis-go">${live ? E('js.studio.share.save') : E('js.studio.top.publish')}</button></div>` });
-  const hint = () => { $('#vis-hint', s.el).textContent = pick === 'public' ? t('js.studio.share.publicHint') : ''; };
-  hint();
+  const s = sheet({ title, content: `${live ? `<p>${E('js.studio.share.playersGet', { number: live.number })}</p>` : `<p>${E('js.studio.share.pickWho', { number: S.current.number })}</p>`}<div class="vischoice" role="group" aria-label="${E('js.studio.share.whoLabel')}">${optsHtml()}</div><p class="small muted" id="vis-hint"></p>${link}<div class="sheet-actions"><button class="btn btn-primary" type="button" id="vis-go">${live ? E('js.studio.share.save') : E('js.studio.top.publish')}</button></div>` });
+  const choice = $('.vischoice', s.el);
+  // Changing who can play a live game shares its live version; publishing shares the version being edited.
+  const hint = () => { $('#vis-hint', s.el).textContent = pick === 'public' ? t('js.studio.share.publicHint') : isGroup(pick) && needsCheck(live ? live.id : S.current.id) ? t('js.studio.share.groupHint') : ''; };
+  const boxes = () => $$('input[data-class]', s.el);
+  const err = msg => { const el = $('#cp-err', s.el); if (el) el.textContent = msg || ''; };
+  const focusFirst = () => { const f = [$('#cp-all', s.el), ...boxes()].find(x => x && !x.disabled); if (f) f.focus(); };
+  // "All my classes": ticked when every class that can be picked is, half-ticked when only some are.
+  const syncAll = () => {
+    const all = $('#cp-all', s.el); if (!all) return;
+    const on = boxes().filter(b => !b.disabled), n = on.filter(b => b.checked).length;
+    all.checked = !!on.length && n === on.length; all.indeterminate = n > 0 && n < on.length; all.disabled = !on.length;
+  };
+  const redraw = () => { choice.innerHTML = optsHtml(); syncAll(); };
+  syncAll(); hint();
+  // Keyboard and switch users start on what is chosen now, not on the first option.
+  { const on = $('[data-vis][aria-pressed="true"]', s.el); if (on) on.focus(); }
+  s.el.addEventListener('change', e => {
+    const b = e.target;
+    if (b.id === 'cp-all') boxes().forEach(x => { if (!x.disabled) x.checked = b.checked; });
+    if (b.id !== 'cp-all' && !b.matches('input[data-class]')) return;
+    ticked.clear(); boxes().filter(x => x.checked).forEach(x => ticked.add(x.value));
+    syncAll(); err('');
+  });
   s.el.addEventListener('click', async e => {
     const v = e.target.closest('[data-vis]');
-    if (v) { pick = v.dataset.vis; $$('[data-vis]', s.el).forEach(b => b.setAttribute('aria-pressed', String(b === v))); hint(); return; }
+    if (v) {
+      if (v.getAttribute('aria-disabled') === 'true') return;   // every class took this game off: nothing to pick
+      pick = v.dataset.vis; $$('[data-vis]', s.el).forEach(b => b.setAttribute('aria-pressed', String(b === v)));
+      const cp = $('#cp', s.el); if (cp) cp.hidden = pick !== 'class';
+      const cb = $('[data-vis="class"][aria-controls]', s.el); if (cb) cb.setAttribute('aria-expanded', String(pick === 'class'));
+      hint(); return;
+    }
     if (e.target.closest('#share-copy')) { (await copyText(location.origin + S.shareUrl)) ? toast(`${t('js.studio.share.copied')} ${S.shareText[S.live.visibility]}`) : toast(t('js.studio.share.copyFailed'), { bad: true }); return; }
     const go = e.target.closest('#vis-go'); if (!go) return;
-    if (live && pick === live.visibility) { s.close(); return; }
+    let classIds;
+    if (pick === 'class') {
+      // Nothing to send when the builder is in no class it can share with (every one left, or took the game off).
+      if (!open().length) { toast(t('js.studio.share.allRemoved', { count: cls().length }), { bad: true }); return; }
+      classIds = single() ? [single().id] : [...ticked];
+      if (!classIds.length) { err(t('js.studio.share.pickClass')); focusFirst(); return; }
+      const now = new Set(classShare().live.map(c => c.id));
+      if (live && live.visibility === 'class' && classIds.length === now.size && classIds.every(id => now.has(id))) { s.close(); return; }
+    } else if (live && pick === live.visibility) { s.close(); return; }
     go.disabled = true;
     try {
-      const r = await api(`/api/studio/${ID}/${live ? 'visibility' : 'publish'}`, { method: 'POST', body: { visibility: pick } });
+      const r = await api(`/api/studio/${ID}/${live ? 'visibility' : 'publish'}`, { method: 'POST', body: { visibility: pick, ...(classIds ? { classIds } : {}) } });
       applyState(r.state); toast(r.message, { ms: 5000 }); s.close();
-    } catch (err) {
-      if (err.signedOut) return failed(err);
-      applyState(err.data && err.data.state); toast(err.message + (err.data && err.data.reasons && err.data.reasons.length ? ' ' + err.data.reasons.join(' ') : ''), { bad: true, ms: 6000 }); go.disabled = false;
+    } catch (er) {
+      if (er.signedOut) return failed(er);
+      applyState(er.data && er.data.state); go.disabled = false;
+      // A class can't be picked any more (left it, or a teacher took the game off it): show the list as it is now and
+      // say why next to it.
+      if (pick === 'class' && CLASS_CODES.includes(er.data && er.data.code) && many()) {
+        for (const id of [...ticked]) if (!open().some(c => c.id === id)) ticked.delete(id);
+        redraw(); err(er.message); focusFirst();
+        return;
+      }
+      if (pick === 'class' && CLASS_CODES.includes(er.data && er.data.code)) redraw();
+      toast(er.message + (er.data && er.data.reasons && er.data.reasons.length ? ' ' + er.data.reasons.join(' ') : ''), { bad: true, ms: 6000 });
     }
   });
 }
 async function updateLive() {
   if (!S.live || !S.current) return;
   const pub = S.live.visibility === 'public';
-  const s = sheet({ title: `⬆️ ${t('js.studio.update.title')}`, content: `<p>${t('js.studio.update.text', { live: `<b>${E('js.studio.update.version', { number: S.live.number })}</b>`, number: `<b>${E('js.studio.update.version', { number: S.current.number })}</b>` })}</p><p>${pub ? E('js.studio.update.publicText', { live: S.live.number }) : E('js.studio.update.now')}</p><div class="sheet-actions"><button class="btn" type="button" data-close>${E('js.studio.update.notYet')}</button><button class="btn btn-hot" type="button" id="upd-go">⬆️ ${E('js.studio.update.button')}</button></div>` });
+  // A class or school game updates at once unless the safety robot flagged the new version (then a person checks it).
+  const text = pub ? E('js.studio.update.publicText', { live: S.live.number }) : isGroup(S.live.visibility) && needsCheck(S.current.id) ? E('js.studio.update.groupText', { live: S.live.number }) : E('js.studio.update.now');
+  const s = sheet({ title: `⬆️ ${t('js.studio.update.title')}`, content: `<p>${t('js.studio.update.text', { live: `<b>${E('js.studio.update.version', { number: S.live.number })}</b>`, number: `<b>${E('js.studio.update.version', { number: S.current.number })}</b>` })}</p><p>${text}</p><div class="sheet-actions"><button class="btn" type="button" data-close>${E('js.studio.update.notYet')}</button><button class="btn btn-hot" type="button" id="upd-go">⬆️ ${E('js.studio.update.button')}</button></div>` });
   s.el.querySelector('[data-close]').addEventListener('click', s.close);
   $('#upd-go', s.el).addEventListener('click', async e => {
     e.target.disabled = true;
@@ -400,7 +941,8 @@ renderTop(); renderLive(); renderSafety(); renderTurns(); renderLog();
 const ask = new URLSearchParams(location.search).get('ask');
 if (ask && !input.value) { input.value = ask.slice(0, 600); autosize(); input.focus(); history.replaceState(null, '', location.pathname); }
 if (S.busy) {
-  toast(t('js.studio.stillFinishing'));
+  // The card's "still working on the server" row says it (no toast on top of it).
   busy = true; $('#st-send').disabled = true;
-  waitForBuilder().then(back => { busy = false; $('#st-send').disabled = false; if (back === SIGNED_OUT) signInAgainBubble(); return refresh(); });
+  live = liveSteps(); live.local('waiting'); scrollDown();
+  waitForBuilder().then(back => { if (live) live.remove(); busy = false; $('#st-send').disabled = false; if (back === SIGNED_OUT) signInAgainBubble(); return refresh(); });
 }

@@ -6,12 +6,15 @@
 //                   "call it X" -> edit_game with real find/replace edits (a new version)
 //                -> "it's ready" / "polish" -> polish pass with a checklist
 // Text is streamed in small chunks so the SSE path is exercised.
+// Live build steps: one "blocks" row (the simple building blocks, never described as an AI); its tool calls add
+// the same name / check / notes / ask rows as Claude's, from tools.js. It never gets AI rows (rounds, playtests).
 import { templateHtml, templateInfo } from './catalog.js';
 import { detectKind, detectTheme, themeByKey, detectPlayers, detectLearn, detectColor, nextColor, titleFor, CATEGORY_FOR, DEFAULT_KIND,
   KIND_CHIPS, THEME_CHIPS, LEARN_CHIPS, PLAYER_CHIPS, NEXT_CHIPS } from './themes.js';
 import { withLayer, readTune, tuneEdits, hasLayer, guessHero, shownTitle, LAYER_ID } from './layer.js';
 import { cleanText } from '../services/textfilter.js';
 import { isThreeGame } from '../services/vendor.js';
+import { NO_STEPS } from './steps.js';
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const delay = () => { const d = +process.env.BRB_MOCK_DELAY_MS; return Number.isFinite(d) ? d : 12; };
@@ -121,7 +124,7 @@ async function followUp(ctx, m, cur) {
   const tune = readTune(cur.html); const changes = {}; const said = [];
   if (/\b(fix|repair)\b/.test(t) && cur.safety_status === 'fail') return fixSafety(ctx, m, cur);
   if (/\b(ready|polish|finished|all done|it'?s done|publish|perfect|looks good)\b/.test(t)) {
-    await say(ctx, 'Polish time! ✨ I checked the game for readable words, dead ends, restart, sound and speed. Everything looks good to me. Try the checklist, then press Publish when you are happy!');
+    await say(ctx, 'Polish time! ✨ Here is a checklist of things to try in your game. Press Publish when you are happy with it!');
     tools.exec('test_notes', { checklist: POLISH });
     tools.exec('ask_user', { question: 'Anything else before you publish?', options: ['🚀 It is ready!', ...nextChips(tune).slice(0, 2)] });
     return;
@@ -226,6 +229,7 @@ async function fixSafety(ctx, m, cur) {
 }
 
 export async function run(ctx) {
+  (ctx.steps || NO_STEPS).start('blocks');
   const st = ctx.state; st.mock = st.mock || { asked: [], answers: {} };
   const m = st.mock;
   await acknowledgeUploads(ctx);

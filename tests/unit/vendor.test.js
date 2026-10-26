@@ -20,7 +20,7 @@ config.anthropicKey = '';
 const V = await import('../../server/services/vendor.js');
 const { scanVersion } = await import('../../server/services/scanner.js');
 const { sanitizeGameHtml } = await import('../../server/services/sanitize.js');
-const { frameDocument, frameCsp, FRAME_CSP, requestOrigin } = await import('../../server/services/frame.js');
+const { frameDocument, frameCsp, FRAME_CSP, requestOrigin, frameOrigins } = await import('../../server/services/frame.js');
 const { loadTemplate } = await import('../../server/builder/templates/index.js');
 const { createApp } = await import('../../server/app.js');
 
@@ -116,6 +116,24 @@ test('the frame CSP allows only the site\'s own /vendor/three/ path, never other
   assert.equal(requestOrigin({ protocol: 'https', host: 'oomba.example' }), 'https://oomba.example');
   assert.equal(requestOrigin({ protocol: 'http', host: 'localhost:5810' }), 'http://localhost:5810');
   assert.equal(requestOrigin({ protocol: 'http', host: 'evil.example;script-src *' }), '');
+  // A list: each plain origin once; odd ones are left out.
+  assert.match(frameCsp(['https://play.example.com', 'http://internal:3000', 'HTTPS://PLAY.EXAMPLE.COM', 'https://x.example; script-src *']),
+    /script-src 'unsafe-inline' https:\/\/cdnjs\.cloudflare\.com https:\/\/play\.example\.com\/vendor\/three\/ http:\/\/internal:3000\/vendor\/three\/;/);
+});
+
+test('PUBLIC_URL: the frame CSP names the public origin (a CDN rewrites Host) and still the name the request came in on', () => {
+  const saved = config.publicUrl;
+  try {
+    config.publicUrl = 'https://play.example.com';   // config.js has already turned PUBLIC_URL into an origin
+    const behindCdn = { protocol: 'https', host: 'origin-alb.internal' };
+    assert.equal(requestOrigin(behindCdn), 'https://play.example.com', 'PUBLIC_URL wins over the Host header');
+    assert.deepEqual(frameOrigins(behindCdn), ['https://play.example.com', 'https://origin-alb.internal']);
+    assert.deepEqual(frameOrigins({ protocol: 'https', host: 'play.example.com' }), ['https://play.example.com'], 'no duplicate');
+    assert.deepEqual(frameOrigins({ protocol: 'http', host: 'evil.example;script-src *' }), ['https://play.example.com'], 'an odd Host is left out');
+    config.publicUrl = '';
+    assert.equal(requestOrigin(behindCdn), 'https://origin-alb.internal', 'unset: the request, as before');
+    assert.deepEqual(frameOrigins(behindCdn), ['https://origin-alb.internal']);
+  } finally { config.publicUrl = saved; }
 });
 
 const server = createApp().listen(0);
@@ -133,6 +151,8 @@ test('/vendor is served with a year of immutable caching and CORS; a 3D frame ge
   assert.equal(res.headers.get('x-content-type-options'), 'nosniff');
   assert.equal(sri(path.join(DIR, MODULE)), 'sha384-' + crypto.createHash('sha384').update(Buffer.from(await res.arrayBuffer())).digest('base64'));
   res = await fetch(`${BASE}/vendor/three/${V.THREE_VERSION}/nope.js`); assert.equal(res.status, 404);
+  // A malformed escape is answered by express.static (404), never a server error (with or without compression asked for).
+  for (const enc of ['', 'gzip, br']) { res = await fetch(`${BASE}/vendor/three/%E0%A4%A.js`, { headers: enc ? { 'accept-encoding': enc } : {} }); assert.equal(res.status, 404, enc); }
   res = await fetch(`${BASE}/vendor/three/${V.THREE_VERSION}/${MODULE}`, { method: 'OPTIONS', headers: { origin: 'null', 'access-control-request-method': 'GET', 'access-control-request-headers': 'x-forwarded-for' } });
   assert.equal(res.status, 204, 'a preflight is answered');
   assert.equal(res.headers.get('access-control-allow-origin'), '*'); assert.equal(res.headers.get('access-control-allow-headers'), 'x-forwarded-for');
@@ -165,4 +185,29 @@ test('/vendor is served with a year of immutable caching and CORS; a 3D frame ge
   const play = await (await call(`/play/${pj.state.game.slug}`)).text();
   const live = await (await call(play.match(/src="(\/frame\/[^"]+)"/)[1])).text();
   assert.match(live, /"device":\{"webgl2":true,"importmap":true/);
+});
+
+test('PUBLIC_URL over HTTP: a temporary name before moving day and a Host-rewriting CDN both get a working 3D frame', async () => {
+  let cookie = '';
+  const call = async (p, opts = {}) => {
+    const r = await fetch(BASE + p, { ...opts, headers: { ...(opts.headers || {}), ...(cookie ? { cookie } : {}), ...(opts.body ? { 'content-type': 'application/json' } : {}) }, redirect: 'manual' });
+    for (const c of r.headers.getSetCookie()) if (c.startsWith('brb_session=')) cookie = c.split(';')[0];
+    return r;
+  };
+  assert.equal((await call('/api/auth/signup', { method: 'POST', body: JSON.stringify({ username: 'VendorKidTwo', password: 'secret12' }) })).status, 200);
+  const made = await (await call('/api/studio/new', { method: 'POST', body: JSON.stringify({ template: 'island' }) })).json();
+  const src = (await (await call(`/studio/${made.id}`)).text()).match(/src="(\/frame\/[^"]+)"/)[1];
+  const saved = config.publicUrl;
+  config.publicUrl = 'https://play.example.com';
+  try {
+    const scripts = async headers => (await call(src, { headers })).headers.get('content-security-policy').match(/script-src[^;]*/)[0];
+    // Caddy on the temporary name (Host kept): the page loads /vendor/three/ from new.example.com.
+    assert.equal(await scripts({ 'x-forwarded-proto': 'https', 'x-forwarded-host': 'new.example.com' }),
+      "script-src 'unsafe-inline' https://cdnjs.cloudflare.com https://play.example.com/vendor/three/ https://new.example.com/vendor/three/");
+    // Front Door / CloudFront rewrote Host to the origin's name: the browser is on PUBLIC_URL.
+    assert.equal(await scripts({ 'x-forwarded-proto': 'https', 'x-forwarded-host': 'origin.play.example.com' }),
+      "script-src 'unsafe-inline' https://cdnjs.cloudflare.com https://play.example.com/vendor/three/ https://origin.play.example.com/vendor/three/");
+    assert.equal(await scripts({ 'x-forwarded-proto': 'https', 'x-forwarded-host': 'play.example.com' }),
+      "script-src 'unsafe-inline' https://cdnjs.cloudflare.com https://play.example.com/vendor/three/");
+  } finally { config.publicUrl = saved; }
 });

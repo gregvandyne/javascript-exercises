@@ -240,6 +240,11 @@ test('MAINTENANCE_MODE answers 503 "back soon" (health still 200); MOVED_TO_URL 
       r = await request(port, { method: 'POST', path: '/api/auth/login', headers: { 'content-type': 'application/json' }, body: '{}' });
       assert.equal(r.status, 503); assert.ok(r.json.error);
       assert.equal((await request(port, { path: '/health' })).status, 200);
+      // In the visitor's language; a game frame that reloads meanwhile shows the message, not "refused to connect".
+      r = await request(port, { path: '/', headers: { 'accept-language': 'fr-FR,fr;q=0.9' } });
+      assert.equal(r.status, 503); assert.match(r.text, /<html lang="fr"/); assert.match(r.text, /déménage/);
+      r = await request(port, { path: '/frame/abc' });
+      assert.equal(r.status, 503); assert.equal(r.headers['x-frame-options'], undefined); assert.match(r.headers['content-security-policy'], /frame-ancestors 'self'/);
     });
   } finally { config.maintenance = false; }
   config.movedTo = 'https://play.example.com';
@@ -417,6 +422,30 @@ test('scripts/export-data.js: one 600 archive with a consistent database copy an
   const list = execFileSync('tar', ['-tzf', out], { encoding: 'utf8' }).split('\n');
   assert.ok(list.includes('brb.db')); assert.ok(list.includes('shots/v1.jpg'));
   assert.ok(!fs.readdirSync(path.dirname(out)).some(f => f.startsWith('.stage-')), 'the staging folder is cleaned up');
+});
+
+// ---------------------------------------------------------------------------------------------------- deploy kit
+test('deploy kit: the screenshot worker runs by default, with no data, no secrets but its token, and the image carries Three.js', () => {
+  const compose = fs.readFileSync(path.join(ROOT, 'deploy/docker-compose.yml'), 'utf8');
+  // Each service's block (two-space indent under services:).
+  const services = compose.split(/^services:\n/m)[1].split(/^\S/m)[0];
+  const block = name => (services.match(new RegExp(`^  ${name}:\\n([\\s\\S]*?)(?=^  [a-z]+:\\n|(?![\\s\\S]))`, 'm')) || [])[1] || '';
+  const app = block('app'), shots = block('shots');
+  assert.ok(app && shots, 'app and shots services');
+  assert.doesNotMatch(shots, /profiles:/, 'on by default, no profile to turn on');
+  assert.match(app, /SNAPSHOT_URL: http:\/\/shots:4900/);
+  assert.match(app, /SHOTS_TOKEN: \$\{SHOTS_TOKEN:\?/); assert.match(shots, /SHOTS_TOKEN: \$\{SHOTS_TOKEN:\?/);
+  assert.match(shots, /command: \["node", "server\/shots-worker\.js"\]/);
+  assert.doesNotMatch(shots, /env_file|volumes:|SESSION_SECRET|ANTHROPIC|BRB_DATA_DIR/, 'nothing but its token');
+  assert.match(shots, /read_only: true/); assert.match(shots, /user: "1000:1000"/); assert.match(shots, /networks: \[shots\]/);
+  assert.match(shots, /tmpfs: \[.*"\/data:ro,/, 'a read-only /data, so the image\'s VOLUME gives the worker no disk');
+  assert.match(compose, /^  shots:\n    internal: true/m, 'the worker network has no way out');
+  assert.match(app, /mem_limit: 1g/); assert.match(shots, /mem_limit: 1g/);
+  // The worker answers /vendor/three/ from the image's own files: the Dockerfile copies public/, .dockerignore keeps it.
+  assert.match(fs.readFileSync(path.join(ROOT, 'Dockerfile'), 'utf8'), /^COPY public \.\/public$/m);
+  const ignored = fs.readFileSync(path.join(ROOT, '.dockerignore'), 'utf8').split('\n').map(l => l.trim()).filter(l => l && !l.startsWith('#'));
+  for (const l of ignored) assert.ok(!/^(\*\*\/)?(public|vendor|three)(\/|$)|^public\/vendor/.test(l), `.dockerignore drops ${l}`);
+  assert.equal(fs.readFileSync(path.join(ROOT, 'render.yaml'), 'utf8').includes('SNAPSHOT_URL'), false, 'Render keeps Chromium in the app');
 });
 
 test('scripts/upload-file.js: without the link on the command line it reads it from stdin', () => {

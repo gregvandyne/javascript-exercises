@@ -1,5 +1,5 @@
-# Oomba Academy on one server (a VM with a block disk): the app and Caddy for HTTPS, plus the screenshot worker once
-# that change is merged (see "shots" below).
+# Oomba Academy on one server (a VM with a block disk): the app, the screenshot worker (headless Chromium in its own
+# container, away from the data) and Caddy for HTTPS.
 #   cd deploy && cp .env.example .env   (fill it in, chmod 600 .env)
 #   docker compose up -d --build
 # Docs: docs/deploy-aws.md, docs/deploy-azure.md. ONE app container only: the app keeps rate limits, presence and
@@ -24,7 +24,9 @@ services:
       # the "web" network, so a request from the screenshot worker's network can't pick its own X-Forwarded-For.
       # With a CDN in front of Caddy (guides, section 6) set TRUST_PROXY=2 in .env.
       TRUST_PROXY: ${TRUST_PROXY:-172.30.42.0/24}
-      # The screenshot worker's address (SNAPSHOT_URL) and SHOTS_TOKEN come from .env.
+      # Cover pictures and the Builder's playtests go to the screenshot worker below; Chromium never runs in here.
+      SNAPSHOT_URL: http://shots:4900
+      SHOTS_TOKEN: ${SHOTS_TOKEN:?set SHOTS_TOKEN in deploy/.env (openssl rand -hex 32)}
     volumes:
       # The block disk (EBS / Azure managed disk), mounted on the host at /srv/oomba. If it isn't mounted (a boot
       # problem), the app refuses to start instead of starting an empty site on the root disk.
@@ -37,8 +39,8 @@ services:
     networks: [web, shots]
     # SIGTERM first: the app finishes requests and Builder turns (up to 25 s), Litestream ships its last changes.
     stop_grace_period: 40s
-    # 2g while Chromium runs inside the app (until the screenshot worker is turned on; then 1g is plenty).
-    mem_limit: 2g
+    # Node and SQLite without Chromium (that is in "shots", with its own limit, so it can never take the app's memory).
+    mem_limit: 1g
     security_opt: ["no-new-privileges:true"]
     # Enough to fix the data folder's owner and switch to the "node" user at start, and for tini (root) to pass
     # SIGTERM on to the app (uid 1000): without KILL a stop cuts the app off instead of letting it finish.
@@ -46,14 +48,11 @@ services:
     cap_add: [CHOWN, SETUID, SETGID, KILL]
     logging: *logging
 
-  # Headless Chromium for cover pictures and the Builder's playtests, away from the data and the secrets.
-  # Same image, run as the screenshot worker (server/shots-worker.js): no data volume, read-only, no internet,
-  # its own token and nothing else from .env.
-  # NOT YET: the worker is a separate change. Until it is merged, Chromium runs inside the app and this service stays
-  # off. Once it is merged, turn it on in .env: COMPOSE_PROFILES=worker, SNAPSHOT_URL=http://shots:4900 and a
-  # SHOTS_TOKEN (openssl rand -hex 32), then docker compose up -d --build.
+  # The screenshot worker (server/shots-worker.js): headless Chromium for cover pictures and the Builder's playtests,
+  # away from the data and the secrets. Same image as the app (it answers 3D games' Three.js from the image's own
+  # public/vendor folder), but no data volume, a read-only file system, no internet, and only its token from .env
+  # (no env_file: it must never see the session secret or the AI key).
   shots:
-    profiles: [worker]
     image: ${OOMBA_IMAGE:-oomba-academy:latest}
     command: ["node", "server/shots-worker.js"]
     restart: unless-stopped
@@ -61,20 +60,23 @@ services:
     environment:
       NODE_ENV: production
       SHOTS_PORT: "4900"
-      SHOTS_TOKEN: ${SHOTS_TOKEN:-}
+      SHOTS_TOKEN: ${SHOTS_TOKEN:?set SHOTS_TOKEN in deploy/.env (openssl rand -hex 32)}
       HOME: /tmp
     read_only: true
-    tmpfs: ["/tmp:size=512m"]
+    # /tmp for Chromium. The image declares /data a volume, so without the tiny read-only /data here Docker would give
+    # the worker an empty but writable volume of its own (kept across restarts).
+    tmpfs: ["/tmp:size=512m", "/data:ro,size=64k"]
     expose: ["4900"]
-    # Internal network only: the worker can't reach the internet, and only the app can reach it.
-    # (Games that load fonts or libraries from Google Fonts or cdnjs then get screenshots without them. To allow
-    # those two sites, also add the "web" network here.)
+    # Internal network only: the worker can't reach the internet, and only the app can reach it. Three.js comes from
+    # the image; games that use Google Fonts are photographed with the fallback font, and an admin-approved game that
+    # loads a cdnjs library without it (docs/decisions.md).
     networks: [shots]
     healthcheck:
       test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:'+(process.env.SHOTS_PORT||4900)+'/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
       interval: 30s
       timeout: 5s
       start_period: 20s
+    # One game at a time, Chromium closed when idle. A game that blows this limit kills the worker's browser, never the app.
     mem_limit: 1g
     security_opt: ["no-new-privileges:true"]
     cap_drop: [ALL]

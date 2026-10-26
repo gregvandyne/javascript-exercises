@@ -218,6 +218,7 @@ function stepFields(t, pick, s = {}, idp, { newGameLink = false } = {}) {
     <div class="field f-g"><label for="${idp}-g">${t('lessons.step.game')}</label><select class="input" id="${idp}-g" name="gameId"><option value="">–</option>
       ${pick.mine.length ? html`<optgroup label="${t('lessons.step.myGames')}">${pick.mine.map(opt)}</optgroup>` : ''}
       ${pick.school.length ? html`<optgroup label="${t('lessons.step.schoolGames')}">${pick.school.map(opt)}</optgroup>` : ''}
+      ${pick.classes && pick.classes.length ? html`<optgroup label="${t('lessons.step.classGames')}">${pick.classes.map(opt)}</optgroup>` : ''}
       <optgroup label="${t('lessons.step.siteGames')}">${pick.site.map(opt)}</optgroup></select><span class="err" id="${idp}-g-err"></span>
       ${newGameLink ? html`<a class="small f-glink" href="#ng-i">➕ ${t('lessons.step.newGameLink')}</a>` : ''}</div>
     <div class="field f-m"><label for="${idp}-m">${t('lessons.step.minutes')}</label><input class="input" id="${idp}-m" name="minutes" type="number" min="0" max="240" value="${s.minutes || ''}"></div>
@@ -242,14 +243,18 @@ router.get('/teach/lessons/:id', requireUser, (req, res) => {
   const started = L.startedIn(assigned.map(a => a.id));
   const stepView = (s, i) => {
     const playable = L.playableBy(s, l.school_id);
+    // A game the viewer can't open (a colleague's class game, say): no title and no link, just that it is there.
+    const hidden = s.kind === 'game' && s.game_id && s.game_owner !== u.id && !games.canView(u, games.getGame(s.game_id));
+    const classOnly = s.game_visibility === 'class';
     const work = edit ? L.stepWork(s.id) : 0;
     return html`<li class="panel stepcard">
       <div class="sc-head"><span class="sc-num">${i + 1}</span><span class="sc-kind" aria-hidden="true">${KIND_ICON[s.kind]}</span>
         <div class="sc-title"><b dir="auto">${s.title || t(`lessons.kinds.${s.kind}`)}</b><span class="small muted">${t(`lessons.kinds.${s.kind}`)}${s.minutes ? ` · ${t('lessons.minutesN', { count: s.minutes })}` : ''}</span></div>
         ${edit ? html`<span class="acts">${i ? html`<form data-api="/api/lesson-steps/${s.id}/up" data-reload><button class="btn btn-sm" type="submit" aria-label="${t('lessons.up')}">↑</button></form>` : ''}${i < st.length - 1 ? html`<form data-api="/api/lesson-steps/${s.id}/down" data-reload><button class="btn btn-sm" type="submit" aria-label="${t('lessons.down')}">↓</button></form>` : ''}</span>` : ''}</div>
-      ${s.kind === 'game' ? html`<p class="sc-game">${s.game_icon} <a href="/g/${s.game_slug}">${s.game_title}</a>${playable ? '' : html` <span class="chip-s warn">⚠️ ${t('lessons.step.notShared')}</span>`}</p>
-        ${!playable && edit && s.game_owner === u.id ? html`<form data-api="/api/lesson-steps/${s.id}/share-game" data-reload><button class="btn btn-sm" type="submit">🏫 ${t('lessons.step.shareGame')}</button></form>` : ''}
-        ${!playable && s.game_owner === u.id ? html`<p class="small muted">${t('lessons.step.notSharedHint')} <a href="/studio/${s.game_id}">${t('lessons.step.openStudio')}</a></p>` : ''}` : ''}
+      ${s.kind === 'game' ? html`<p class="sc-game">${hidden ? html`🔒 <span class="muted">${t('lessons.step.hiddenGame')}</span>`
+          : html`${s.game_icon} <a href="/g/${s.game_slug}">${s.game_title}</a>${classOnly ? html` <span class="chip-s">🎒 ${t('lessons.step.classOnly')}</span>` : playable ? '' : html` <span class="chip-s warn">⚠️ ${t('lessons.step.notShared')}</span>`}`}</p>
+        ${!playable && !classOnly && edit && s.game_owner === u.id ? html`<form data-api="/api/lesson-steps/${s.id}/share-game" data-reload><button class="btn btn-sm" type="submit">🏫 ${t('lessons.step.shareGame')}</button></form>` : ''}
+        ${!playable && !classOnly && s.game_owner === u.id ? html`<p class="small muted">${t('lessons.step.notSharedHint')} <a href="/studio/${s.game_id}">${t('lessons.step.openStudio')}</a></p>` : ''}` : ''}
       ${s.kind === 'build' ? html`<p class="sc-build" dir="auto">💬 “${s.body}”</p>` : s.body ? html`<div class="sc-body ${s.kind === 'question' ? 'q-text' : ''}">${paras(s.body)}</div>` : ''}
       ${edit ? html`<details><summary class="small">✏️ ${t('lessons.step.edit')}</summary>
         <form class="formgrid stepgrid" data-kind="${s.kind}" data-api="/api/lesson-steps/${s.id}" data-reload novalidate>${stepFields(t, pick, s, `s${s.id}`)}

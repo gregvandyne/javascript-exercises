@@ -324,8 +324,7 @@ The mascot is Oomba: the two o's of the wordmark are its eyes, looking up at a s
 ## Ready to leave Render (AWS / Azure)
 
 - **Recommended host: one VM with a block disk** (EC2 + EBS, Azure VM + managed disk) running `deploy/docker-compose.yml`
-  (app and Caddy for HTTPS; the screenshot worker sits behind the compose profile `worker` until that change is merged,
-  and the app gets `mem_limit: 2g` meanwhile because Chromium runs inside it). Managed containers (ECS Fargate + EFS,
+  (the app, the screenshot worker and Caddy for HTTPS; see "Screenshot worker on by default" below). Managed containers (ECS Fargate + EFS,
   Container Apps / App Service + Azure Files) are documented as alternatives with their catches: a network share needs
   `BRB_JOURNAL_MODE=DELETE`, rules out Litestream and makes deploys stop-before-start. App Runner is closed to new AWS
   accounts (30 Apr 2026) and ECS Express Mode has no block disk. — SQLite and the in-memory state want one process on a
@@ -374,8 +373,11 @@ The mascot is Oomba: the two o's of the wordmark are its eyes, looking up at a s
   0/false/no/off; anything else stops the start. With `REQUIRE_SESSION_SECRET` on, a `SESSION_SECRET` under 32
   characters is refused; otherwise production only warns. Rejected values are never echoed with credentials.
 - **Screenshot worker network**: in the compose file the worker is on an internal network with no internet, as asked.
-  Consequence: games that load fonts or libraries from Google Fonts or cdnjs (3D games using a library from cdnjs, for
-  example) are photographed without them. Adding the `web` network to the worker allows them. **Owner to decide.**
+  Since Three.js became self-hosted (answered from the image) the costs are small: covers of games that use Google
+  Fonts show the fallback font, and a game that loads a cdnjs library (the scanner flags those for an admin, it doesn't
+  fail them, and the allow-list is empty) is photographed without it, so an approved one's cover and review pictures
+  are likely blank or broken. An internal network fails the lookup at once, so nothing waits. Kept that way; adding
+  the `web` network to the worker would allow both.
 - **Request bodies**: `inflate: false` on every body parser (browsers never compress uploads; a compressed body gets
   415), and `body-parser` 2.4.0 in the lockfile (GHSA-27r3-jxmh-p828).
 - Caddy is pinned to the 2.11 line (`caddy:2.11-alpine`) so `docker compose pull` brings security fixes; it replaces any
@@ -476,8 +478,8 @@ Games can now be real 3D worlds. The sandbox does not change (opaque-origin ifra
   (Render, AWS, Azure, localhost); `integrity` pins the bytes in Chrome 127+, Safari 18+ and Firefox 138+ (older browsers
   ignore it). The scanner accepts that exact form (any whitespace or key order) and fails every other way of loading
   Three.js, with a message the Builder can act on.
-- **Frame CSP: the site's origin plus `/vendor/three/`**, worked out per request from `req.protocol` and `req.host` (both
-  honour `TRUST_PROXY`); when the `PUBLIC_URL` setting lands it should be used instead (comment in `requestOrigin`). —
+- **Frame CSP: the site's origin plus `/vendor/three/`**: `PUBLIC_URL`'s origin and the origin the request came in on
+  (`req.protocol` and `req.host`, both honour `TRUST_PROXY`); see "PUBLIC_URL" in the review fixes below. —
   `'self'` was tested in Chromium: it does match in a CSP-sandboxed opaque-origin frame, but it would also let every other
   script on the site run inside a game, and Safari and Firefox could not be checked here. The path covers every vendored
   version, so published games keep working after a bump. An odd `Host` header just leaves the vendor source out.
@@ -538,8 +540,9 @@ A review of the 3D batch led to these fixes (smallest correct change each):
   assembled `createElement('i'+'frame')` is flagged). The real guarantee is still that no nested browsing context is
   ever created, so there is no second window with live WebRTC. `public/sdk/brb-sdk.js`, `server/services/scanner.js`.
 - **A game navigating its own frame away** (phishing/exfiltration in the URL) is undone by the play page: it pins the
-  frame back to the game on any unexpected `load`. The first off-site request still leaves once — documented as a known
-  limit in `docs/safety.md` §9, since no CSP directive restricts a frame navigating itself. `public/js/play.js`.
+  frame back to the game on any unexpected `load`. `public/js/play.js`. (Corrected at the merge review: no off-site
+  request leaves at all, because the page's own CSP, `frame-src 'self'`, refuses the navigation before any request;
+  pinning only swaps the browser's error page back to the game. See `docs/safety.md` §9.)
 - **Screenshot worker.** WebRTC is removed in the screenshot browser (local and worker), the one outbound path
   Playwright's route cannot abort. The worker must be deployed with no database and no secret env vars (it imports
   `config.js`, which reads all of `process.env`) — documented in the README env table. `server/services/snapshot.js`.
@@ -547,8 +550,8 @@ A review of the 3D batch led to these fixes (smallest correct change each):
   than the window's typical frame), steps down whenever average fps is under ~20 even with a hitch, and reports fps for
   every window — so a 4–6 fps device actually drops quality and `state().fps` is never 0 while playing.
 - **Lost-3D-picture card.** A lost WebGL context (which also happens on new phones/tablets) gets its own translated
-  message and a big "Try again" button that reloads the frame; the "needs a newer device" wording is kept only for
-  missing import maps / WebGL 2. Two new locale keys (`play.device.lostTitle`, `lostText`, `retry`) × 13 languages.
+  message and a big "Try again" button that reloads the game (through the page: see the merge review fixes); the
+  "needs a newer device" wording is kept only for missing import maps / WebGL 2. Two new locale keys (`play.device.lostTitle`, `lostText`, `retry`) × 13 languages.
 - **3D template:** stars capped at 20 (template clamp, mock and the 3D rules) and stars no longer cast shadows, to stay
   inside the ~100 draw-call budget; covers start play with the tip and touch hint hidden; the in-game title shows in the
   player's language when it is still the default, and the mock keeps `CONFIG.title` in step with a Studio rename.
@@ -557,7 +560,165 @@ A review of the 3D batch led to these fixes (smallest correct change each):
 - **Build page:** the 3D "Start from" card is marked "Needs a newer device" when import maps or WebGL 2 are missing,
   before the child makes the game; a browser with no `HTMLScriptElement.supports()` is treated as unknown and left alone.
 - **ja/ar wording:** the ja "newer device" title avoids the 機械化 misreading; the ar jump hint reads "زر المسافة".
-- **PUBLIC_URL (for AWS/Azure).** `requestOrigin()` (frame CSP origin) now uses `config.publicUrl` when it is set,
-  instead of `req.host`, so a CDN/gateway that rewrites Host (CloudFront, Front Door) names the public origin and the
-  browser can load `/vendor/three/`. `PUBLIC_URL` is the migration team's setting (parsed to an origin in `config.js`);
-  on Render, where Host is preserved, the request's Host is still correct. Settle before the AWS/Azure move.
+- **PUBLIC_URL (for AWS/Azure).** `requestOrigin()` is `config.publicUrl` when it is set (a CDN/gateway that rewrites
+  Host, like CloudFront or Front Door, leaves an internal name in `req.host`), else the request's origin. The frame CSP
+  allows `/vendor/three/` from **both** (`frameOrigins()`): the import map is relative, so the browser loads Three.js
+  from whatever name it used, and the guides have people test on a temporary name (`SITE_DOMAIN=new.example.com`)
+  while `PUBLIC_URL` is already the final address; with `PUBLIC_URL` alone 3D games would not load there (nor on any
+  other name that reaches the app directly). The request's origin was already what the CSP used without `PUBLIC_URL`,
+  so this allows nothing new. On Render (no `PUBLIC_URL`) nothing changes. `tests/unit/vendor.test.js`.
+
+## Screenshot worker on by default (compose stack)
+The migration kit was written before the worker existed, so the compose file kept it behind a `worker` profile and gave
+the app 2 GB for Chromium. Now that `server/shots-worker.js` is merged:
+- **The compose stack always runs the worker** (`shots`, no profile) and the app always uses it (`SNAPSHOT_URL:
+  http://shots:4900` in the compose file; `SHOTS_TOKEN` is required in `deploy/.env`, and compose refuses to start
+  without it). — The security reviewers asked for Chromium to be kept away from the data: the browser that runs
+  children's untrusted games then has no database, no data disk, no session secret or AI key, no internet, a read-only
+  file system and uid 1000. Opting in would leave the safer setup to whoever reads the comments. The image declares
+  `/data` a volume, so the worker gets a tiny read-only tmpfs there; otherwise Docker hands it an empty, writable
+  volume of its own that survives restarts (found in the container test).
+- **Memory: app 1 GB, worker 1 GB** (was app 2 GB with Chromium inside). — Node and SQLite stay well under 1 GB; Chromium
+  runs one game at a time and closes when idle. A game that blows the worker's limit kills its browser, never the app, so
+  a 2 GB server is now a safe minimum rather than a gamble (`BRB_SNAPSHOTS=0` remains the way to turn covers off).
+- **Render stays on local mode** (`render.yaml` has no `SNAPSHOT_URL`; one container, Chromium launched from a scrubbed
+  environment and an empty temp folder as before). App Service is documented the same way; ECS Fargate and Container
+  Apps run the worker as a second container, where it shares the app's network (so it can reach the internet there) and
+  must be non-essential so a crash restarts it instead of stopping the task.
+- **A worker that is down, busy or refuses the token does not use up a cover's tries.** Before, every failure counted, so
+  covers made during a worker outage of more than three sweeps (about 6 minutes) were never taken. Now such errors are
+  marked `workerDown`: the app logs `cover picture waiting for the screenshot worker` with the reason
+  (`unreachable (ECONNREFUSED)`, `refused SHOTS_TOKEN (401)`, `busy`, `timed out (busy)`) and the sweeper takes the
+  cover when the worker is back; a game that fails inside the worker still counts. A job the app gives up on (after
+  55 s) is marked busy too: the worker cuts every job off at 40 s, so running past that means it waited in the worker's
+  queue (a classroom building at once), not that the game froze. The Builder's playtest then says playtesting is unavailable
+  instead of blaming the game, and the public review goes ahead without pictures as before.
+- **`BRB_SNAPSHOTS=0` now wins over `SNAPSHOT_URL`**, so the README's "0 off" is true with a worker too.
+- **The worker logs** one JSON line per job (`job done` with time and size, `job failed`, `refused a job`), never the
+  game, and at start says whether the pinned Three.js is in its own `public/vendor` (`"three":"0.185.1"`, or a
+  warning that covers of 3D games will fail). The Dockerfile copies `public/` and `.dockerignore` does not drop it
+  (checked by `tests/unit/deploy.test.js`).
+- **Checked live (25 Oct):** a worker started from a scrubbed environment (only `SHOTS_TOKEN`, `SHOTS_PORT`, `PATH`,
+  `HOME`) in an empty folder, and the app with its own data folder, `SNAPSHOT_URL` and no Chromium of its own. A player
+  started Star Island and Catch in the Studio and published them: both covers came from the worker (`job done` lines;
+  the app never started a child process) and the 3D cover shows the island (3,700 colours, nothing blank). A wrong,
+  missing or partial token gets 401; the worker exits 1 without `SHOTS_TOKEN`; with the worker stopped, and then
+  running with another token, the app kept serving and the version made meanwhile got its cover at the next sweep
+  after the worker came back. Then the same with the real compose file (`docker compose config` passes, worker on
+  without a profile) on a test copy of the image built from the real Dockerfile and `.dockerignore` (only the blocked
+  downloads swapped, Chromium and its libraries mounted from the host into `shots`): the worker container, read-only,
+  uid 1000, no internet and only the internal network, rendered Star Island's cover from the image's own Three.js.
+
+## Share with my classes (visibility 'class')
+Students (and teachers) in a class can share a game with just their class, or pick several of their classes, besides
+Only me, Friends, My school and Everyone.
+- **An explicit list, not "all my classes, always".** "All my classes" ticks every class the builder can pick now;
+  classes joined later are not added by themselves (the dialog says so). An audience only grows when its builder
+  chooses it: leaving a class stops sharing there at once, and joining it again shares nothing by itself.
+- **Who sees it:** the builder, platform admins, live members (students and teachers) of a chosen class, and the admins
+  of that class's school (safeguarding leads who already run every class). Teachers of other classes don't.
+- **One rule for every path.** `CLASS_SQL` is used by `canView` and `visibleWhere`. It starts from the viewer's own
+  classes (a non-correlated subquery SQLite builds once per query), so a listing's cost follows the viewer's classes,
+  not the number of class games on the site.
+- **Review like My school.** Clean or approved versions go live at once, flagged ones wait for a person. An approval
+  covers only the audience it was given for (see docs/safety.md §6), and a new, wider class list waits in
+  `games.pending_classes` until then.
+- **School rules.** 'class' is narrower than both school settings ("inside the school" and "everyone"), so every school
+  allows it; a future "private only" setting must turn it off too.
+- **Teachers can take a game off their class** (audited). Its builder can't share it there again; "Allow again" lifts
+  that block without re-sharing. A taken-off game the teacher can't open now shows as "A game you can't open right now".
+- **Hand-in shares with the lesson's class** instead of the whole school, so it never widens a child's "My class" choice.
+- **Migration 0018** fills `pending_visibility` for reviews already waiting with the narrowest audience they could have
+  meant: 'school' for anyone in a school (the builder can ask for public again), 'public' only for people in no school.
+
+## Merge review fixes (accounts + migration + 3D)
+A review of the three batches together found these; each got the smallest correct change:
+- **"Try again" on the lost-3D-picture card is done by the page.** The SDK used `location.reload()` inside the frame, but
+  a navigation the opaque-origin frame starts itself carries no `SameSite=Lax` cookie, so the viewer-bound frame link
+  was refused (403, shown as "refused to connect"). The button now posts `brb:retry`; the play page reloads itself
+  (a fresh link, sent with the cookie), the Studio fetches a fresh preview link, the admin queue reloads that preview.
+  Each only acts right after a real tap (`navigator.userActivation`, which a game can't fake; one a minute where a
+  browser can't tell). `/frame`'s refusals (403/404, and the "moving" 503) are now sent so the site's own pages may
+  frame them, so a player reads "This game link expired" instead of the browser's error.
+- **Frame pinning is armed before the frame's first load.** The play page's module script often attached its `load`
+  listener after the game had loaded, so the first unexpected navigation was taken for the game's own load. The frame
+  now waits in a `<template>` and `play.js` adds it after the listener (a frame created without `src` would fire an
+  `about:blank` load at a time that differs between browsers).
+- **A game that keeps reloading itself is stopped, not looped.** Each refused reload was pinned back and reloaded again,
+  forever (and each cycle cost the server a frame render). After two pins in 30 s without a tap from the player, the
+  play page stops and shows "This game stopped working." with a Start again button. Pins right after a tap don't count,
+  so a "Play again" button that calls `location.reload()` keeps working. The scanner does not flag `location.reload()`
+  (too many honest games use it).
+- **ADMIN_PASSWORD is applied when it changes, not on every start** (`applyAdminPassword` in `scripts/seed.js`, a bcrypt
+  hash of the last applied value in `settings`). Before, an admin who followed the "choose a longer password" nudge, or
+  rotated a leaked password on the Me page, was silently reverted at the next deploy. To reset a forgotten password,
+  set a new `ADMIN_PASSWORD`.
+- **Smaller ones:** a malformed `%` escape under `/vendor` gets express.static's 404 instead of a 500 with an error
+  log; the "moving to a new home" page is in the visitor's language; the self-navigation docs now say what really
+  stops it (the page's `frame-src 'self'`, asserted in `tests/e2e/play.spec.js`); the README env tables are one row per
+  variable again; the compose and decisions notes say that an approved cdnjs game is photographed without its library.
+- **Test helper:** `uniq()` in `tests/e2e/helpers.js` skips the ~1% of random consonant names that spell a refused
+  abbreviation, which made sign-ups (and so random e2e tests) fail now and then.
+
+## Live build steps ("Behind the scenes")
+- **The Studio shows what the Builder is really doing, step by step, with a short learning line** (owner request:
+  the three dots looked like nothing was happening, and kids should learn what an AI does behind the scenes). A calm
+  card at the bottom of the chat lists each step as it happens and folds into "How the AI did this · N steps · time"
+  at the end; "💡 Tips" hides the learning lines per viewer (default on, for lessons).
+- **Steps come only from real server events** (`step`/`stepinfo` over SSE, `server/builder/steps.js`): screening, each
+  model call ("Round N", with why it started: the first message, looking at playtest pictures, reading a failed safety
+  report, a tool error, or deciding what's next), a thinking block that really streamed, writing or changing code, the
+  safety program and the new version, a playtest that really ran, naming, the checklist, a question. Nothing is
+  timer-driven. The practice builder is "the simple building blocks", never an AI, and never gets AI rows. A playtest
+  the AI asks for always gets a row, but without screenshots that row says "Couldn't run the test this time" and never
+  claims a test. "Working out what went wrong" only follows a failure the card shows (a write/edit or playtest row); a
+  tool that failed without a row of its own leads to a plain "deciding what to do next". The safety program's row
+  counts what it listed ("2 things to look at"), like the version card. — Honest is the point: a step that did not
+  happen would teach the wrong thing.
+- "Round N" instead of "AI step N", one row per model call, and the scan and the new version share one row. Thinking is
+  a small "🤔 thinking" / "🤔 thought first" note on the round (it turns to "thought first" when the answer starts to
+  stream), never its own row or label: the round keeps saying why it started, because that reason is the lesson (the
+  models think before almost every reply, so a "thinking" label would hide it every round). A write or edit counts as a "fix" only after a failed scan or a playtest
+  whose automatic checks found problems, and its done label says "made changes", not "fixed": only the next check can
+  say whether it worked. — The summary counts steps; the Builder's models think before almost every reply, so separate
+  rows would double the list.
+- **The AI's own plan is shown, its raw thinking is not.** The `notes` of write_game/edit_game now come first in the
+  tool schema (and the prompt says to write them first, as a short line naming what the version adds, e.g. "A dragon
+  hero and a lava level", which reads right both as "Plan: …" while the code streams and in the version history), so
+  they stream before the code and are shown as "Plan: …" while it is written (read from the streaming input by a one-pass scanner; replaced by the real notes once the tool
+  runs; model text, cleaned like version notes, capped at 120 characters, rendered as text only). Raw thinking is not
+  shown because: on the Builder's models thinking text is omitted by default (the blocks stream empty), so showing it
+  would need a request change (`thinking.display`) that we chose not to make, and the request is unchanged by this
+  feature; it would be unscreened model text shown to children and would need its own screening calls (cost); it is
+  long and technical (code, not kid words) and is not written in the child's language; and the system prompt asks the
+  model to decide the design privately. The plan is written for the child, in their language, as one sentence.
+- **One 💡 line under the running step**, in this order: a "Just now" line for a step that was over in a flash (the
+  safety program, a ready-made world, the checklist, naming the game, a question: one per step, each once a turn), the
+  step's own line, once a turn what thinking is, then "Did you know?" facts. Each stays a while (6 s, 8 s, 8 s, 11 s)
+  and the line only grows within a step. — Instant steps last milliseconds, so their lessons (like "a safety program,
+  not an AI, checks every version") were never seen live; three stacked blocks made the card taller than a phone's chat.
+- "Did you know?" facts appear only after the step's own line (8 s) on an AI step and only when true for every server (no playtest fact,
+  because playtesting is off without screenshots; no "a small AI screens messages" fact, because it doesn't without a
+  key). — Facts must stay accurate everywhere.
+- A compact record (`['steps', …]`: step keys, start times, numbers and the short plan; no labels or learning text)
+  is saved as the last event of the reply and sent with `done`, so the summary survives a reload and is drawn in the
+  reader's language. `summariseEvents` ignores it, so it never reaches the model. Refusals, the turn limit and early
+  errors have no record (no learning card under a refusal). The old `progress` SSE event is gone.
+- **The card in the chat (client):** it sits where the reply is being written and stays last while the turn runs
+  (replies, cards and chips build up above it), then folds in place into the reply's footer. It appears once a turn
+  has lasted 0.7 s (a quick turn, like most practice-builder turns, goes straight to its summary) and, once shown,
+  stays at least 1.2 s, so it never flashes. While live it shows the running step plus one finished step on a phone
+  (two on wider screens), each finished step one line without seconds; older ones fold behind "N earlier steps", which
+  takes the title's place on a phone, so the card stays shorter than the chat and the AI's reply stays in view. The
+  running step's seconds appear after 3 s; the plan keeps to two lines while it runs. Rows are updated in place (the
+  spinner keeps turning, a selection survives the counters). The chat only follows new steps when the reader is at the
+  bottom, a focused step is never folded away, and focus moves to the summary when the card folds. A ✓, a spinner,
+  ⚠️ or "…" sits at the line's end, always with a screen-reader word too. Tips off stops the automatic lines; a step
+  someone taps open still shows its own. Screen readers hear step changes, the plan, problems and the summary through
+  one polite region outside the chat log: changes within 0.4 s are read together (at most three, a problem is never
+  dropped), never the ticking seconds. The preview pill mirrors the current step. An error leaves the step it stopped
+  on in its present wording with "Stopped here". A dropped connection leaves the interrupted step in its present
+  wording with "…" (nobody here knows how it ended) and shows "Connection lost. Checking if the Builder got your
+  message…" until a step or a busy poll confirms the server has it, then "…The Builder keeps going on the server",
+  until the saved reply (with its summary) is redrawn. The opened summary can be folded again from its bottom too. —
+  Calm and honest beats busy: one card, one current step, no fake progress bar.
