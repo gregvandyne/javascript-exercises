@@ -784,3 +784,17 @@ A review of the three batches together found these; each got the smallest correc
   (domains, invites, attach, staff, class code, Me page, clean-up, off), `tests/e2e/google.spec.js` against the fake
   Google in `tests/support/fake-google.js`.
 
+## Builds run apart from the page (runner, live stream)
+- **A build is a server job, not a request.** `server/builder/runner.js` runs each build; `builder_turns` (migration
+  0019) records it. Closing the tab, reloading, signing out or a second tab never stops it. A deploy hands running
+  builds off and the next process carries them on (`recover()` before `listen`); a build interrupted twice stops, gives
+  the turn back and offers "Carry on building". Single app instance only, like the rest of the in-memory state.
+- **The Studio follows a build over `GET /api/studio/:id/live`** (server-sent events): `hello` with the running
+  turn (the user's message, the steps so far, the text so far), then live events, so a reload or another tab shows the
+  chat, the message being worked on and the steps card at once and keeps updating. Sending a message answers 202 and
+  the result arrives on the same stream. — Before this, a reload showed only the saved chat, and the message being
+  built wasn't saved until the build ended, so it looked lost.
+- **Round 1 says "planning how to build it" once the AI starts answering** (the first stream event, fact `a`), not
+  "reading your message"; after 45 s a line says big ideas can take a minute or two to plan. — A new game can spend
+  most of its first minute or two planning before any code streams, and "reading" for two minutes looked stuck.
+
