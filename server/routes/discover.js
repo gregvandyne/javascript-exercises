@@ -6,13 +6,14 @@ import { rail, cardGrid, emptyState, avatar, coverArt, categoryLabel } from '../
 import * as games from '../services/games.js';
 import * as presence from '../services/presence.js';
 import { rateLimit } from '../services/ratelimit.js';
-import { requireUser } from '../auth.js';
+import { requireUser, isGrownup } from '../auth.js';
 
 export const router = Router();
 
 // "Build your own game" lives in its own banner, separate from the featured-game hero.
 function buildBanner(req) {
   const t = req.t; const u = req.user;
+  if (isGrownup(u)) return '';   // no Builder for grown-up accounts (routes/family.js)
   const mine = u && !u.is_guest;
   return html`<section class="buildbanner" aria-labelledby="bb-h">
     <div class="bb-art" aria-hidden="true">🛠️</div>
@@ -64,7 +65,7 @@ router.get('/', (req, res) => {
   <div class="chips scroll" role="list" aria-label="${t('home.categories')}" style="margin-bottom:18px">
     ${games.CATEGORIES.map(([k, e]) => html`<a class="chip" role="listitem" href="/search?cat=${k}"><span aria-hidden="true">${e}</span>${categoryLabel(k, t)}</a>`)}
   </div>
-  ${rails.some(r => r) ? rails : emptyState({ emoji: '🎮', title: t('home.empty.title'), text: t('home.empty.text'), action: { href: '/build', label: t('home.empty.action') } })}`;
+  ${rails.some(r => r) ? rails : emptyState({ emoji: '🎮', title: t('home.empty.title'), text: t('home.empty.text'), action: isGrownup(u) ? null : { href: '/build', label: t('home.empty.action') } })}`;
   page(req, res, { title: '', active: 'home', body });
 });
 
@@ -78,7 +79,7 @@ function searchResults(req) {
   const builders = text ? games.searchBuilders(u, text) : [];
   const markup = html`
     ${builders.length ? html`<section aria-labelledby="bh" style="margin-bottom:20px"><h2 id="bh" class="small muted" style="text-transform:uppercase;letter-spacing:.05em">${t('search.builders')}</h2>
-      <div class="cardgrid" style="grid-template-columns:repeat(auto-fill,minmax(220px,1fr))">${builders.map(b => html`<a class="person panel" style="padding:12px" href="/u/${b.username}">${avatar(b, 48)}<span style="flex:1;min-width:0"><span class="nm">${b.display_name}</span><br><span class="sub"><bdi>@${b.username}</bdi> · ${t('search.gameCount', { count: b.games })}</span></span></a>`)}</div></section>` : ''}
+      <div class="cardgrid" style="grid-template-columns:repeat(auto-fill,minmax(220px,1fr))">${builders.map(b => { const inner = html`${avatar(b, 48)}<span style="flex:1;min-width:0"><span class="nm">${b.display_name}</span><br><span class="sub"><bdi>@${b.username}</bdi> · ${t('search.gameCount', { count: b.games })}</span></span>`; return isGrownup(u) ? html`<div class="person panel" style="padding:12px">${inner}</div>` : html`<a class="person panel" style="padding:12px" href="/u/${b.username}">${inner}</a>`; })}</div></section>` : ''}
     ${list.length ? html`<h2 class="sr-only">${t('search.games')}</h2>${cardGrid(list, { user: u, category: cat })}` :
       html`${emptyState({ emoji: '🔭', title: text ? t('search.noMatch', { text }) : t('search.noneYet'), text: t('search.tryCategory') })}
       <div class="chips" style="justify-content:center">${games.CATEGORIES.map(([k, e]) => html`<a class="chip" href="/search?cat=${k}">${e} ${categoryLabel(k, t)}</a>`)}</div>`}`;

@@ -249,7 +249,9 @@
       "codeOpen": "You have a code that still works. Lost it? Get a new one, and the old one stops working.",
       "codeLabel": "Your code",
       "codeHow": "It works once, for 1 hour. A grown-up can link to your account with this code at {where}.",
+      "codeWarn": "Only give this code to your parent or guardian, face to face. Never type it in chat or a game, or give it to someone online.",
       "pending": "<b>Your grown-up</b> wants to link to your account. Only say yes if this is your parent or guardian. If you don't know them, tell an adult you trust.",
+      "pendingCheck": "Did you give your code to your parent or guardian yourself, face to face? If you didn't, tap Report.",
       "yes": "Yes",
       "no": "No",
       "report": "Report",
@@ -2347,7 +2349,8 @@
       "planNone": "No family plan. Linking children is free and changes nothing for them.",
       "planMore": "About family plans",
       "helpHeading": "Help",
-      "help": "Questions, or a problem with your account? Write to {email}."
+      "help": "Questions, or a problem with your account? Write to {email}.",
+      "off": "Family accounts are switched off right now. You can still play games, change your language or password, and sign out here."
     },
     "link": {
       "title": "Link a child",

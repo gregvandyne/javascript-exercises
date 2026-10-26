@@ -107,11 +107,11 @@ function goFull() {
 }
 $('#p-full').addEventListener('click', goFull);
 $('#orient-ok') && $('#orient-ok').addEventListener('click', () => $('#orient').classList.remove('show'));
-$('#p-like').addEventListener('click', async () => {
+$('#p-like') && $('#p-like').addEventListener('click', async () => {
   if (!d.signedIn) return toast(t('js.play.signInToLike'));
   try { const r = await api(`/api/games/${d.gameId}/like`, { method: 'POST', body: {} }); const b = $('#p-like'); b.setAttribute('aria-pressed', String(r.liked)); b.querySelector('.emo').textContent = r.liked ? '❤️' : '🤍'; toast(r.liked ? t('js.play.liked') : t('js.play.unliked')); } catch (err) { toast(err.message, { bad: true }); }
 });
-$('#p-rate').addEventListener('click', () => {
+$('#p-rate') && $('#p-rate').addEventListener('click', () => {
   if (!d.signedIn) return toast(t('js.play.signInToRate'));
   const s = sheet({ title: t('js.play.rateTitle', { title: d.title }), content: `<div class="rate" role="radiogroup" aria-label="${esc(t('js.play.stars'))}">${[1, 2, 3, 4, 5].map(n => `<button type="button" role="radio" aria-checked="${n === d.myStars}" aria-label="${esc(t('js.play.starsLabel', { count: n }))}" data-stars="${n}" class="${n <= d.myStars ? 'on' : ''}">★</button>`).join('')}</div>` });
   s.el.addEventListener('click', async e => {

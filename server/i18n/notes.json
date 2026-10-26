@@ -328,7 +328,9 @@
   "me.family.heading": "Kid page: heading of a small panel on the child's own Me page that lets a parent link to the account. Neutral: never mention money, plans or paying.",
   "me.family.text": "Kid page, plain words. Never mention money, plans or paying.",
   "me.family.codeHow": "Kid page. {where} is the web address a grown-up types the code at (e.g. oomba.ai/family/link); it is plain text, not a link.",
+  "me.family.codeWarn": "Kid page, a safety line shown right under a new link code. Plain, calm words a 6-year-old can follow: give the code only to your own parent or guardian, in person; never in chat, in a game or online.",
   "me.family.pending": "Kid page, a safety question. Keep the <b> tags around \"Your grown-up\": it is a fixed label, never a name. Calm, clear words.",
+  "me.family.pendingCheck": "Kid page, shown under me.family.pending. \"Report\" is the button label me.family.report: use the same word.",
   "me.family.linked": "Kid page. Keep the <b> tags; \"your grown-up\" is a fixed label, never a name.",
   "me.family.report": "Kid page: button to report a grown-up the child doesn't know. Short (one word if possible).",
   "info.parents.families.h": "For adults: section of the page for parents about grown-up (parent) accounts.",
@@ -349,6 +351,7 @@
   "family.page.removeConfirm": "For adults: a confirmation box. {name} is the child's display name.",
   "family.page.full": "For adults. {max} is a number (4).",
   "family.page.help": "For adults. {email} is our support email address (a link).",
+  "family.page.off": "For adults: shown on the grown-up's own page while family accounts are switched off on this site (only language, password and Sign out are there).",
   "family.link.step1": "For adults. Keep the <b> tags; \"Me\", \"For grown-ups\" and \"Get a code\" must match the words the child sees (nav.me, me.family.heading, me.family.getCode).",
   "family.errors.full": "For adults. {max} is a number (4).",
   "family.landing.title": "For adults: everything under family.* is for parents and guardians (plain adult tone, never shown to children). Page title."

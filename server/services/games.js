@@ -5,6 +5,7 @@ import { q, uid, now, tx } from '../db.js';
 import * as presence from './presence.js';
 import { current } from '../i18n/index.js';
 import { queueShot } from './shots.js';
+import { hasProfanity, personalInfo, looksLikeLinkCode } from './textfilter.js';
 
 export const CATEGORIES = [
   ['arcade', '🕹️', 'Arcade'], ['sports', '⚽', 'Sports'], ['puzzle', '🧩', 'Puzzle'], ['words', '🔤', 'Words'],
@@ -275,13 +276,20 @@ export function endPlay(playId, userId) {
 export function leaderboard(gameId, limit = 10) {
   return q.all(`SELECT s.score, s.label, s.created_at, u.id, u.username, u.display_name, u.avatar, u.color, u.photo_at FROM scores s JOIN users u ON u.id=s.user_id WHERE s.game_id=? AND u.banned=0 AND u.account_type!='grownup' ORDER BY s.score DESC, s.created_at ASC LIMIT ?`, gameId, limit);
 }
+/** A score's label ("3 stars", "lap 2") is shown on the public leaderboard, so a game can't use it to publish what a
+ *  player typed: anything with blocked words, personal details or a family link code is dropped. */
+export function cleanScoreLabel(label) {
+  const v = String(label ?? '').replace(/[\u0000-\u001f\u202a-\u202e\u2066-\u2069]/g, '').trim().slice(0, 40);
+  if (!v || hasProfanity(v) || personalInfo(v) || looksLikeLinkCode(v)) return '';
+  return v;
+}
 export function submitScore(gameId, userId, score, label = '') {
   score = Math.max(0, Math.min(1e9, Math.floor(+score || 0)));
   const best = q.get('SELECT score FROM scores WHERE game_id=? AND user_id=? ORDER BY score DESC LIMIT 1', gameId, userId);
   if (best && best.score >= score) return { best: best.score, improved: false };
   tx(() => {
     q.run('DELETE FROM scores WHERE game_id=? AND user_id=?', gameId, userId);
-    q.run('INSERT INTO scores(id, game_id, user_id, score, label, created_at) VALUES (?,?,?,?,?,?)', uid(), gameId, userId, score, String(label || '').slice(0, 40), now());
+    q.run('INSERT INTO scores(id, game_id, user_id, score, label, created_at) VALUES (?,?,?,?,?,?)', uid(), gameId, userId, score, cleanScoreLabel(label), now());
   });
   return { best: score, improved: true };
 }

@@ -34,6 +34,8 @@ router.get('/g/:slug', (req, res) => {
   const [d] = games.decorate([{ ...g, ...(() => { const o = games.getOwner(g); return { owner_name: o.username, owner_display: o.display_name, owner_avatar: o.avatar, owner_color: o.color }; })() }]);
   const owner = games.getOwner(g);
   const isOwner = u && u.id === g.owner_id;
+  // Grown-up accounts (routes/family.js) play, but don't like, rate or open profiles.
+  const grownup = isGrownup(u);
   const myStars = games.userRating(g.id, u && u.id), liked = games.userLiked(g.id, u && u.id);
   const lb = games.leaderboard(g.id, 10);
   const more = games.similar(u, g, 6);
@@ -49,7 +51,7 @@ router.get('/g/:slug', (req, res) => {
       <div style="position:relative">${coverArt(d)}</div>
       <div>
         <h1>${g.title}</h1>
-        <a class="person ownerchip" href="/u/${owner.username}">${avatar(owner, 32)}<span class="nm">${owner.display_name}</span></a>
+        ${grownup ? html`<span class="person ownerchip">${avatar(owner, 32)}<span class="nm">${owner.display_name}</span></span>` : html`<a class="person ownerchip" href="/u/${owner.username}">${avatar(owner, 32)}<span class="nm">${owner.display_name}</span></a>`}
         ${shared && shared.names.length ? html`<div class="sharedwith small"><span>🎒 ${t('game.sharedWith')}</span> <ul class="chips-inline">${shared.names.map(n => html`<li dir="auto">${n}</li>`)}</ul>${shared.others ? html` <span class="muted">${t('game.sharedWithMore', { count: shared.others })}</span>` : ''}</div>` : ''}
         <div class="statrow">
           <div class="stat"><b>${d.rating_count ? d.rating.toFixed(1) + ' ★' : t('cards.new')}</b>${d.rating_count ? t('game.stats.ratings', { count: d.rating_count, n: f.num(d.rating_count) }) : t('game.stats.noRatings')}</div>
@@ -59,7 +61,7 @@ router.get('/g/:slug', (req, res) => {
         </div>
         <div class="row actions">
           ${playable ? html`<a class="btn btn-primary btn-big playbig" href="/play/${g.slug}" id="playbtn">▶ ${t('game.play')}</a>` : html`<span class="notice">${t('game.notReady')}</span>`}
-          <button class="iconbtn" type="button" id="likebtn" aria-pressed="${String(!!liked)}"><span class="emo" aria-hidden="true">${liked ? '❤️' : '🤍'}</span>${t('game.like')}</button>
+          ${grownup ? '' : html`<button class="iconbtn" type="button" id="likebtn" aria-pressed="${String(!!liked)}"><span class="emo" aria-hidden="true">${liked ? '❤️' : '🤍'}</span>${t('game.like')}</button>`}
           <button class="iconbtn" type="button" id="sharebtn"><span class="emo" aria-hidden="true">🔗</span>${t('game.share')}</button>
           ${isOwner ? html`<a class="iconbtn" href="/studio/${g.id}"><span class="emo" aria-hidden="true">🛠️</span>${t('game.edit')}</a>` : html`<button class="iconbtn" type="button" id="reportbtn"><span class="emo" aria-hidden="true">🚩</span>${t('game.report.button')}</button>`}
         </div>
@@ -73,11 +75,11 @@ router.get('/g/:slug', (req, res) => {
           <div class="taglist"><a class="tag" href="/search?cat=${cat.key}">${cat.icon} ${categoryLabel(cat.key, t)}</a>${d.tagList.map(tag => html`<a class="tag" href="/search?q=${encodeURIComponent(tag)}">#${tag}</a>`)}</div>
           <p class="small muted" style="margin:12px 0 0">${players}${g.orientation === 'landscape' ? `📱↔️ ${t('game.about.sideways')} · ` : ''}${t('game.about.updated', { when: f.ago(g.updated_at) })}</p>
         </section>
-        <section class="panel" aria-labelledby="rate-h"><h2 id="rate-h">${t('game.rate.heading')}</h2>
+        ${grownup ? '' : html`<section class="panel" aria-labelledby="rate-h"><h2 id="rate-h">${t('game.rate.heading')}</h2>
           ${u ? html`<div class="rate" role="radiogroup" aria-label="${t('game.rate.yourRating')}" id="rate">${[1, 2, 3, 4, 5].map(n => html`<button type="button" role="radio" aria-checked="${myStars === n}" aria-label="${t('game.rate.stars', { count: n })}" data-stars="${n}" class="${n <= myStars ? 'on' : ''}">★</button>`)}</div>
             <p class="small muted" id="ratemsg">${myStars ? t('game.rate.thanks') : t('game.rate.tap')}</p>`
           : html`<p><button class="btn" type="button" data-guest-play="">${t('game.rate.guest')}</button></p>`}
-        </section>
+        </section>`}
         <section class="panel" aria-labelledby="lb-h"><h2 id="lb-h">🏆 ${t('game.leaderboard.heading')}</h2>
           ${lb.length ? html`<ol class="lb">${lb.map(r => html`<li>${avatar(r, 30)}<span>${r.display_name}</span><span class="sc" dir="ltr">${f.int(r.score)}${r.label ? ' ' + r.label : ''}</span></li>`)}</ol>` : html`<p class="muted">${t('game.leaderboard.empty')}</p>`}
         </section>
@@ -105,6 +107,7 @@ router.get('/play/:slug', (req, res) => {
   if (!versionId) return notFound(req, res, t('game.notReadyYet'));
   const token = signToken({ v: versionId, g: g.id, u: u ? u.id : null, l: req.locale }, 15 * 60);
   const liked = games.userLiked(g.id, u && u.id);
+  const grownup = isGrownup(u);   // no Like or Rate for grown-up accounts
   // Opened from a lesson step (?lesson=<class lesson>&step=<step>): play time and scores count for that step.
   const lc = req.query.lesson && req.query.step && u ? progress.context(u, String(req.query.lesson), String(req.query.step)) : null;
   const lesson = lc && lc.ok && lc.step.kind === 'game' && lc.step.game_id === g.id ? { cl: lc.cl.id, step: lc.step.id, back: `/class/${lc.cl.class_id}/lessons/${lc.cl.id}` } : null;
@@ -113,8 +116,8 @@ router.get('/play/:slug', (req, res) => {
     <a class="iconbtn" href="${lesson ? lesson.back : `/g/${g.slug}`}" aria-label="${lesson ? t('progress.play.backToLesson') : t('play.backTo', { title: g.title })}"><span class="emo flip" aria-hidden="true">←</span><span class="lbl">${t('layout.back')}</span></a>
     <span class="ptitle">${g.icon} ${g.title}</span>
     <span class="livecount" data-live="${g.id}" data-live-format="bar"></span>
-    <button class="iconbtn" type="button" id="p-like" aria-pressed="${String(!!liked)}" aria-label="${t('game.like')}"><span class="emo" aria-hidden="true">${liked ? '❤️' : '🤍'}</span><span class="lbl">${t('game.like')}</span></button>
-    <button class="iconbtn" type="button" id="p-rate" aria-label="${t('play.rate')}"><span class="emo" aria-hidden="true">⭐</span><span class="lbl">${t('play.rate')}</span></button>
+    ${grownup ? '' : html`<button class="iconbtn" type="button" id="p-like" aria-pressed="${String(!!liked)}" aria-label="${t('game.like')}"><span class="emo" aria-hidden="true">${liked ? '❤️' : '🤍'}</span><span class="lbl">${t('game.like')}</span></button>
+    <button class="iconbtn" type="button" id="p-rate" aria-label="${t('play.rate')}"><span class="emo" aria-hidden="true">⭐</span><span class="lbl">${t('play.rate')}</span></button>`}
     <button class="iconbtn" type="button" id="p-full" aria-label="${t('play.fullScreen')}"><span class="emo" aria-hidden="true">⛶</span><span class="lbl">${t('play.fullScreen')}</span></button>
   </div>
   <div class="stage" id="stage" dir="ltr">

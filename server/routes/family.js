@@ -2,7 +2,8 @@
 //   /grown-ups              public page about family accounts (linked only from /parents), sign-up and sign-in
 //   /family, /family/link   the grown-up's own pages
 //   /api/me/family/*        the child's side, from the "For grown-ups" panel on /me
-// Everything here answers 404 while billing is off (no STRIPE_API_KEY), except that grown-up accounts stay fenced in.
+// Everything here answers 404 while billing is off (no STRIPE_API_KEY), except that grown-up accounts stay fenced in and
+// keep a small /family page with their language, password and Sign out (so a grown-up can always sign out).
 //
 // The fence (grownupGuard, before every other route): a grown-up account can play games and look after its family,
 // nothing else. It is a list of what they may open; everything else (the Builder, Studio, friends, chat, profiles,
@@ -20,7 +21,7 @@ import { rateLimit, allow, count, ipOf } from '../services/ratelimit.js';
 import { tHtml, saveUserLang } from '../i18n/index.js';
 import { saveUserTheme } from '../theme.js';
 import { siteHost } from '../site.js';
-import { SIGNUP, wantedNext, passwordPanel, signOutPanel } from './auth.js';
+import { SIGNUP, wantedNext, passwordPanel, signOutPanel, languagePanel } from './auth.js';
 
 export const router = Router();
 const isApi = req => req.originalUrl.startsWith('/api/');
@@ -56,9 +57,10 @@ export function nextFor(u, next) {
 
 // ---------------------------------------------------------------- gates
 const on = (req, res, next) => (F.familiesOn() ? next() : nope(req, res));
-/** The grown-up's pages: signed out -> the grown-up sign-in; anyone else -> 404. */
+/** The grown-up's pages: signed out -> the grown-up sign-in; anyone else -> 404. While families are off, only a
+ *  grown-up's own /family page is there (to sign out and change the password); /family/link and the APIs are 404. */
 function grownupOnly(req, res, next) {
-  if (!F.familiesOn()) return nope(req, res);
+  if (!F.familiesOn() && !(auth.isGrownup(req.user) && req.method === 'GET' && req.path === '/family')) return nope(req, res);
   if (auth.isGrownup(req.user)) return next();
   if (!isApi(req) && (!req.user || req.user.is_guest)) return res.redirect(`/grown-ups/login?next=${encodeURIComponent(req.originalUrl)}${req.sessionEnded ? '&signedout=1' : ''}`);
   nope(req, res);
@@ -71,26 +73,32 @@ const childOnly = (req, res, next) => (F.familiesOn() && F.isChildAccount(req.us
 export function meFamilyPanel(req) {
   const t = req.t, u = req.user;
   if (!F.familiesOn() || !F.isChildAccount(u)) return '';
-  const head = html`<h2 id="fam-h"><span aria-hidden="true">🧑‍🧒</span> ${t('me.family.heading')}</h2>`;
+  // Safety words a child must be able to read: until a language has them, the English is marked as English (lang, and
+  // left to right so its full stops land on the right side on a right-to-left page).
+  const say = (key, s) => (t.own(key) ? s : html`<span lang="en" dir="ltr">${s}</span>`);
+  const k = (key, vars) => say(key, t(key, vars));
+  const kh = (key, vars) => say(key, tHtml(t, key, vars));
+  const head = html`<h2 id="fam-h"><span aria-hidden="true">🧑‍🧒</span> ${k('me.family.heading')}</h2>`;
   const form = (action, label, { cls = 'btn', confirm = '', extra = '' } = {}) => html`<form data-api="/api/me/family/${action}" data-reload data-confirm="${confirm}">${extra}<button class="${cls}" type="submit">${label}</button></form>`;
   const r = F.liveRowOf(u.id);
   let inner;
   if (r && r.status === 'linked') {
-    inner = html`<p>${tHtml(t, 'me.family.linked')}</p>
-      <div class="row">${form('unlink', t('me.family.unlink'), { confirm: t('me.family.unlinkConfirm') })}${form('report', `🚩 ${t('me.family.report')}`, { confirm: t('me.family.reportLinkedConfirm') })}</div>`;
+    inner = html`<p>${kh('me.family.linked')}</p>
+      <div class="row">${form('unlink', k('me.family.unlink'), { confirm: t('me.family.unlinkConfirm') })}${form('report', html`🚩 ${k('me.family.report')}`, { confirm: t('me.family.reportLinkedConfirm') })}</div>`;
   } else if (r) {
     const ans = v => html`<input type="hidden" name="answer" value="${v}">`;
-    inner = html`<p class="notice warn" role="status">${tHtml(t, 'me.family.pending')}</p>
-      <div class="row">${form('answer', `✅ ${t('me.family.yes')}`, { cls: 'btn btn-primary', extra: ans('yes') })}${form('answer', t('me.family.no'), { extra: ans('no') })}${form('answer', `🚩 ${t('me.family.report')}`, { extra: ans('report'), confirm: t('me.family.reportConfirm') })}</div>`;
+    inner = html`<div class="notice warn" role="status" style="margin-bottom:.8em"><p style="margin-top:0">${kh('me.family.pending')}</p><p style="margin-bottom:0">${k('me.family.pendingCheck')}</p></div>
+      <div class="row">${form('answer', html`✅ ${k('me.family.yes')}`, { cls: 'btn btn-primary', extra: ans('yes') })}${form('answer', k('me.family.no'), { extra: ans('no') })}${form('answer', html`🚩 ${k('me.family.report')}`, { extra: ans('report'), confirm: t('me.family.reportConfirm') })}</div>`;
   } else {
     const open = F.openCode(u.id);
     const where = `${siteHost(req)}/family/link`;
-    inner = html`<p class="muted">${t('me.family.text')}</p>
-      ${open ? html`<p class="small">${t('me.family.codeOpen')}</p>` : ''}
-      <div id="famcode" class="famcode" hidden><p class="small muted" style="margin:0">${t('me.family.codeLabel')}</p>
+    inner = html`<p class="muted">${k('me.family.text')}</p>
+      ${open ? html`<p class="small" id="famcode-open">${k('me.family.codeOpen')}</p>` : ''}
+      <div id="famcode" class="famcode" hidden><p class="small muted" style="margin:0">${k('me.family.codeLabel')}</p>
         <p style="margin:6px 0"><span class="bigcode" id="famcode-value" dir="ltr"></span></p>
-        <p class="small">${tHtml(t, 'me.family.codeHow', { where: html`<bdi dir="ltr">${where}</bdi>` })}</p></div>
-      <button class="btn btn-primary" type="button" data-family-code>${open ? t('me.family.newCode') : t('me.family.getCode')}</button>`;
+        <p class="small">${kh('me.family.codeHow', { where: html`<bdi dir="ltr">${where}</bdi>` })}</p>
+        <p class="small"><strong><span aria-hidden="true">🔒</span> ${k('me.family.codeWarn')}</strong></p></div>
+      <button class="btn btn-primary" type="button" data-family-code>${open ? k('me.family.newCode') : k('me.family.getCode')}</button>`;
   }
   return html`<section class="panel" id="grownups" aria-labelledby="fam-h">${head}${inner}</section>`;
 }
@@ -228,11 +236,19 @@ router.post('/api/grown-ups/signup', on, (req, res) => {
 // ---------------------------------------------------------------- /family (the grown-up's pages)
 router.get('/family', grownupOnly, (req, res) => {
   const t = req.t, f = req.fmt, u = req.user;
+  // Families off (billing off): no children, links or plans, but the grown-up can still change their language and
+  // password and sign out.
+  if (!F.familiesOn()) {
+    const body = html`<div class="pagehead"><h1>👪 ${t('family.page.heading')}</h1>${notYou(req, { plain: true })}</div>
+    <section class="panel"><p class="muted" style="margin:0">${t('family.page.off')}</p></section>
+    <div class="mesettings">${languagePanel(req)}${passwordPanel(req)}${signOutPanel(req)}</div>`;
+    return page(req, res, { title: t('family.page.title'), active: 'family', body });
+  }
   const fam = F.ensureFamily(u);
   const kids = F.childrenOf(fam.id);
   const plan = F.familyPlan(fam.id);
   const linkedN = kids.length;
-  const removeForm = (k, label, confirm) => html`<form data-api="/api/family/children/${k.child_id}/remove" data-reload data-confirm="${confirm}"><button class="btn" type="submit">${label}</button></form>`;
+  const removeForm = (k, label, confirm) => html`<form data-api="/api/family/children/${F.requestToken(fam.id, k.child_id)}/remove" data-reload data-confirm="${confirm}"><button class="btn" type="submit">${label}</button></form>`;
   const rows = kids.map(k => {
     if (k.status === 'pending') {
       return html`<li class="famkid pending"><span class="avatar" style="--s:44px;--c:var(--hover)" aria-hidden="true">⏳</span>
@@ -257,7 +273,7 @@ router.get('/family', grownupOnly, (req, res) => {
     <a href="/grown-ups">${t('family.page.planMore')}</a></section>
   ${config.contactEmail ? html`<section class="panel" aria-labelledby="help-h"><h2 id="help-h">${t('family.page.helpHeading')}</h2>
     <p>${tHtml(t, 'family.page.help', { email: html`<a href="mailto:${config.contactEmail}" dir="ltr">${config.contactEmail}</a>` })}</p></section>` : ''}
-  <div class="mesettings">${passwordPanel(req)}${signOutPanel(req)}</div>`;
+  <div class="mesettings">${languagePanel(req)}${passwordPanel(req)}${signOutPanel(req)}</div>`;
   page(req, res, { title: t('family.page.title'), active: 'family', body });
 });
 router.get('/family/link', grownupOnly, (req, res) => {

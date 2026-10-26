@@ -1,6 +1,6 @@
 // Static safety scan for every game version. Pure function; see tests/unit/scanner.test.js and tests/safety/.
 // status: 'pass' (fine), 'flag' (allowed for Private/Friends, needs a human look before Public), 'fail' (cannot be shared).
-import { hasProfanity, personalInfo } from './textfilter.js';
+import { hasProfanity, personalInfo, looksLikeLinkCode } from './textfilter.js';
 import { MAX_GAME_BYTES } from './sanitize.js';
 import { checkThree } from './vendor.js';
 
@@ -39,6 +39,9 @@ const FAIL_RULES = [
 ];
 // Kid rules: asking players for personal details inside a game.
 const PERSONAL_PROMPT = /\b(enter|type|what'?s|tell us)\s+(your|ur)\s+(real name|full name|address|phone|email|school|age|birthday|password)\b/i;
+// A child's family link code (services/family.js) is only for their own grown-up, face to face: a game that mentions a
+// code together with a grown-up, parent or family in the same sentence ("type your grown-up code to win") fails.
+const LINK_CODE_PROMPT = /\b(grown[\s-]?ups?|parents?|guardians?|family|families|mum|mom|dad|link(ing)?)\b[^.!?\n]{0,40}\bcodes?\b|\bcodes?\b[^.!?\n]{0,40}\b(grown[\s-]?ups?|parents?|guardians?|family|families|mum|mom|dad)\b/i;
 
 function visibleText(html) {
   return html.replace(/<script\b[\s\S]*?<\/script>/gi, ' ').replace(/<style\b[\s\S]*?<\/style>/gi, ' ').replace(/<[^>]+>/g, ' ')
@@ -160,6 +163,7 @@ export function scanVersion(html) {
   if (bad) issues.push({ level: 'fail', code: 'profanity', message: 'Has words that are not allowed.' });
   const askPI = [text, ...literals].find(s => PERSONAL_PROMPT.test(s));
   if (askPI) issues.push({ level: 'fail', code: 'personal_info', message: 'Asks players for personal details.' });
+  if ([text, ...literals].some(s => LINK_CODE_PROMPT.test(s)) || looksLikeLinkCode(text)) issues.push({ level: 'fail', code: 'link_code', message: 'Asks for or shows a family link code.' });
   if ([text, ...literals].some(s => personalInfo(s) === 'email' || personalInfo(s) === 'phone')) issues.push({ level: 'flag', code: 'contact_info', message: 'Shows something that looks like an email or phone number.' });
   // Hidden text: zero-size or invisible text blocks with words in them.
   if (/<[^>]+style\s*=\s*["'][^"']*(font-size\s*:\s*0(px)?\b|opacity\s*:\s*0(\.0+)?\s*[;"']|color\s*:\s*transparent)[^"']*["'][^>]*>\s*[A-Za-z]{3,}/i.test(src)) issues.push({ level: 'flag', code: 'hidden_text', message: 'Has hidden text.' });

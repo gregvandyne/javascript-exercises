@@ -199,3 +199,42 @@ test('the new pages: nothing touches, no sideways scroll (360 / 1280, light / da
   }
   expect([...new Set(problems)]).toEqual([]);
 });
+
+test('a grown-up meets no dead ends: every same-site link and form on their pages answers (no 404)', async ({ browser }) => {
+  const mum = await person(browser);
+  await grownupSignup(mum, uniq('Mum'));
+  await mum.goto('/');
+  const game = await mum.locator('a[href^="/g/"]').first().getAttribute('href');
+  const seeds = ['/', '/search', '/search?q=a', '/family', '/family/link', '/parents', '/safety', '/grown-ups', game, game.replace('/g/', '/play/')];
+  const hrefs = new Set(), apis = new Set();
+  for (const p of seeds) {
+    await mum.goto(p);
+    for (const h of await mum.locator('a[href^="/"]').evaluateAll(as => as.map(a => a.getAttribute('href')))) hrefs.add(h.split('#')[0] || '/');
+    for (const a of await mum.locator('[data-api]').evaluateAll(es => es.map(e => e.getAttribute('data-api')))) apis.add(a);
+  }
+  const dead = [];
+  for (const h of [...hrefs].slice(0, 120)) { const r = await mum.request.get(h); if (r.status() === 404) dead.push(`GET ${h}`); }
+  // Forms: sent empty (a 400 is fine, a 404 is a dead end). Signing out is left for last.
+  for (const a of apis) {
+    if (/\/api\/auth\/logout/.test(a)) continue;
+    const r = await mum.request.post(a, { data: {} }); if (r.status() === 404) dead.push(`POST ${a}`);
+  }
+  // The game page's own buttons: Like and Rate are not shown to a grown-up.
+  await mum.goto(game);
+  await expect(mum.locator('#likebtn, #rate')).toHaveCount(0);
+  await expect(mum.locator('a[href^="/u/"]')).toHaveCount(0);
+  expect(dead).toEqual([]);
+});
+
+test('the code panel: a safety line next to the code; a new code hides "Lost it? Get a new one"', async ({ browser }) => {
+  const kidPage = await person(browser);
+  await signup(kidPage, uniq('Kid'));
+  await getCode(kidPage);
+  await expect(kidPage.locator('#famcode')).toContainText('Only give this code to your parent or guardian, face to face.');
+  await kidPage.reload();
+  await expect(kidPage.locator('#famcode-open')).toBeVisible();
+  await kidPage.locator('[data-family-code]').click();
+  await expect(kidPage.locator('#famcode')).toBeVisible();
+  await expect(kidPage.locator('#famcode-open')).toBeHidden();
+  await expect(kidPage.locator('[data-family-code]')).toHaveCount(0);
+});

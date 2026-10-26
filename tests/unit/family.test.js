@@ -24,6 +24,9 @@ const games = await import('../../server/services/games.js');
 const mod = await import('../../server/services/moderation.js');
 const { job } = await import('../../server/services/jobs.js');
 const { _reset: resetLimits } = await import('../../server/services/ratelimit.js');
+const TF = await import('../../server/services/textfilter.js');
+const { scanVersion } = await import('../../server/services/scanner.js');
+const i18n = await import('../../server/i18n/index.js');
 
 const DAY = 86400e3, HOUR = 3600e3;
 let server, base;
@@ -52,6 +55,14 @@ const linkUp = async (g, child) => {
   assert.equal((await as(child)('/api/me/family/answer', { method: 'POST', body: { answer: 'yes' } })).status, 200);
 };
 
+/** A published public game with a published version (so /g and /play work), owned by u: tests never depend on seed games. */
+function publicGame(u) {
+  const id = uid(), vid = uid(), slug = `fam-${id.toLowerCase()}`, t = Date.now();
+  q.run("INSERT INTO games(id, slug, owner_id, title, status, visibility, created_at, updated_at) VALUES (?,?,?,?,'published','public',?,?)", id, slug, u.id, 'Family test game', t, t);
+  q.run('INSERT INTO game_versions(id, game_id, number, html, created_at) VALUES (?,?,?,?,?)', vid, id, 1, '<!doctype html><p>hi</p>', t);
+  q.run('UPDATE games SET published_version_id=?, current_version_id=? WHERE id=?', vid, vid, id);
+  return q.get('SELECT * FROM games WHERE id=?', id);
+}
 const boss = auth.createUser({ username: 'FamBoss', password: 'boss-password-1', role: 'admin' });
 const oak = S.createSchool(boss, { name: 'Acorn Valley School' }).school;
 const teacher = S.createSchoolAccount(boss, oak.id, { rosterName: 'Ms Teach', role: 'teacher' }).user;
@@ -194,7 +205,18 @@ test('billing off: no family pages, no panel, no /parents link; grown-ups stay f
   assert.equal((await as(k)('/api/me/family/code', { method: 'POST', body: {} })).status, 404);
   const me = await as(k)('/me'); assert.equal(me.status, 200); assert.doesNotMatch(me.text, /id="grownups"/);
   assert.doesNotMatch((await call(null, '/parents')).text, /href="\/grown-ups"/);
-  assert.equal((await as(g)('/family')).status, 404);
+  // A grown-up who already has an account keeps a small /family page: language, password and Sign out, nothing else.
+  const li = await call(null, '/api/auth/login', { method: 'POST', body: { username: g.username, password: 'a-long-password-1' } });
+  assert.equal(li.status, 200, li.text);
+  const home = await call(li.cookie, li.json.redirect);
+  assert.equal(home.status, 200, `${li.json.redirect} -> ${home.status}`);
+  assert.match(home.text, /data-api="\/api\/auth\/logout"/); assert.match(home.text, /data-api="\/api\/me\/password"/); assert.match(home.text, /id="lang-select"|id="language"|availableLocales/);
+  assert.match(home.text, /switched off/); assert.doesNotMatch(home.text, /href="\/family\/link"/);
+  for (const [method, path] of [['GET', '/family/link'], ['POST', '/api/family/link'], ['POST', '/api/family/children/x/remove']]) {
+    assert.equal((await as(g)(path, { method, body: method === 'POST' ? { code: 'ABC-2345' } : undefined })).status, 404, `off: ${method} ${path}`);
+  }
+  assert.equal((await as(k)('/family')).status, 404, 'off: still no /family for a kid');
+  assert.equal((await call(li.cookie, '/api/auth/logout', { method: 'POST', body: {} })).status, 200, 'the grown-up can sign out');
   assert.equal((await as(g)('/build')).status, 404, 'still no Builder for a grown-up');
   config.stripeApiKey = 'rk_test_fake';
   assert.match((await call(null, '/parents')).text, /href="\/grown-ups"/, 'on: /parents links to /grown-ups');
@@ -241,6 +263,13 @@ test('the child says Yes, No or Report; the child sees only "your grown-up"; one
   // The family page shows a waiting request without the child's name.
   let fp = await as(g)('/family');
   assert.match(fp.text, /Waiting for your child to say yes/); assert.doesNotMatch(fp.text, new RegExp(a.username));
+  assert.ok(!fp.text.includes(a.id), 'nor the child\'s user id (it shows in public photo URLs)');
+  // The child is reminded who a code is for, and asked if they gave it in person.
+  assert.match(me.text, /did you give your code to your parent or guardian yourself/i);
+  // Cancelling the request uses the token.
+  assert.equal((await as(g)(`/api/family/children/${F.requestToken(fam.id, a.id)}/remove`, { method: 'POST', body: {} })).status, 200);
+  assert.equal(F.liveRowOf(a.id), null);
+  await as(g)('/api/family/link', { method: 'POST', body: { code: await codeFor(a) } });
   assert.equal((await as(a)('/api/me/family/answer', { method: 'POST', body: { answer: 'no' } })).status, 200);
   assert.equal(F.liveRowOf(a.id), null);
   // Yes
@@ -283,9 +312,15 @@ test('unlink by the child or the grown-up; relinking later works; school student
   assert.equal(F.linkOf(k.id), null);
   await linkUp(g, k);   // the old unlinked row of the same pair is reused
   assert.equal(F.linkOf(k.id).family_id, fam.id);
-  assert.equal((await as(g)(`/api/family/children/${k.id}/remove`, { method: 'POST', body: {} })).status, 200);
-  assert.equal(F.linkOf(k.id), null);
+  // The grown-up's page names rows by a token, never the child's user id; the id itself does nothing.
   assert.equal((await as(g)(`/api/family/children/${k.id}/remove`, { method: 'POST', body: {} })).status, 404);
+  const tok = F.requestToken(fam.id, k.id);
+  assert.match((await as(g)('/family')).text, new RegExp(`/api/family/children/${tok}/remove`));
+  assert.equal((await as(grownup())(`/api/family/children/${tok}/remove`, { method: 'POST', body: {} })).status, 404, "another family's token does nothing");
+  assert.ok(F.linkOf(k.id));
+  assert.equal((await as(g)(`/api/family/children/${tok}/remove`, { method: 'POST', body: {} })).status, 200);
+  assert.equal(F.linkOf(k.id), null);
+  assert.equal((await as(g)(`/api/family/children/${tok}/remove`, { method: 'POST', body: {} })).status, 404);
   assert.equal(F.isChildAccount(auth.getUser(student.id)), false);
   assert.equal(F.createCode(auth.getUser(student.id)).ok, false);
   assert.equal(F.isChildAccount(auth.getUser(teacher.id)), false);
@@ -335,15 +370,16 @@ test('billing owner registry: a family is a plan owner while its grown-up exists
 // ---------------------------------------------------------------- the rest of the site
 test('grown-ups are on no leaderboard, in no builder search, found by no friend code, have no profile, cannot chat or join a school', async () => {
   const g = grownup('VisibleParent'); const k = kid();
-  const gid = q.get("SELECT id FROM games WHERE status='published' LIMIT 1")?.id;
-  if (gid) {
-    q.run('INSERT INTO plays(id, game_id, user_id, started_at) VALUES (?,?,?,?)', uid(), gid, g.id, Date.now());
-    const r = await as(g)(`/api/games/${gid}/score`, { method: 'POST', body: { score: 999999 } });
-    assert.equal(r.status, 200);
-    assert.equal(q.get('SELECT COUNT(*) n FROM scores WHERE user_id=?', g.id).n, 0, 'a grown-up score is never stored');
-    q.run('INSERT INTO scores(id, game_id, user_id, score, created_at) VALUES (?,?,?,?,?)', uid(), gid, g.id, 5, Date.now());
-    assert.ok(!games.leaderboard(gid, 50).some(r2 => r2.id === g.id));
-  }
+  const gid = publicGame(kid()).id;
+  q.run('INSERT INTO plays(id, game_id, user_id, started_at) VALUES (?,?,?,?)', uid(), gid, g.id, Date.now());
+  const r = await as(g)(`/api/games/${gid}/score`, { method: 'POST', body: { score: 999999 } });
+  assert.equal(r.status, 200, r.text);
+  assert.equal(q.get('SELECT COUNT(*) n FROM scores WHERE user_id=?', g.id).n, 0, 'a grown-up score is never stored');
+  q.run('INSERT INTO scores(id, game_id, user_id, score, created_at) VALUES (?,?,?,?,?)', uid(), gid, g.id, 5, Date.now());
+  q.run('INSERT INTO scores(id, game_id, user_id, score, created_at) VALUES (?,?,?,?,?)', uid(), gid, k.id, 3, Date.now());
+  const lb = games.leaderboard(gid, 50);
+  assert.ok(lb.some(r2 => r2.id === k.id), 'the leaderboard works (a kid is on it)');
+  assert.ok(!lb.some(r2 => r2.id === g.id), 'a grown-up is not');
   q.run("INSERT INTO games(id, slug, owner_id, title, status, visibility, created_at, updated_at) VALUES (?,?,?,?,'published','public',?,?)", uid(), `vp-${uid()}`, g.id, 'Parent game', Date.now(), Date.now());
   assert.ok(!games.searchBuilders(null, 'VisibleParent').length);
   assert.equal(friends.addByCode(k, 'ABCDEF').ok, false);
@@ -355,11 +391,14 @@ test('grown-ups are on no leaderboard, in no builder search, found by no friend 
 });
 
 test('chat filter: the code shape is refused, ordinary words are not', () => {
-  for (const s of ['K7Q-4MZ9', 'my code is k7q 4mz9', 'K7Q4MZ9', 'k7q_4mz9!', 'ＫＷＱ－４ＭＺ９']) {
+  for (const s of ['K7Q-4MZ9', 'my code is k7q 4mz9', 'K7Q4MZ9', 'k7q_4mz9!', 'ＫＷＱ－４ＭＺ９',
+    // any separators, spaced-out characters, a word stuck in front
+    'K 4 P 5 7 6 U', 'K-4-P-5-7-6-U', 'K4P — 576U', 'K4P / 576U', 'K4P...576U', 'K7Q,4MZ9', 'K7Q+4MZ9', 'K7Q—4MZ9', 'k.7.q.4.m.z.9', 'codeK7Q4MZ9']) {
     assert.ok(F.looksLikeLinkCode(s), s);
     const r = chat.checkText(s); assert.equal(r.ok, false, s); assert.equal(r.code, 'contact');
   }
-  for (const s of ['hello there', 'good game!', 'play again?', 'level 25 is hard', 'see you at 3', 'wow 2fun', 'I got 9999 points', 'abcdefg', 'ABC-DEFG', 'lol 2222', 'GG EASY', 'brb', 'snake-game rocks']) {
+  assert.equal(F.looksLikeLinkCode('2 2 2 2 2 2 2'), false, 'plain numbers are not codes (the phone rule has them)');
+  for (const s of ['hello there', 'good game!', 'play again?', 'level 25 is hard', 'see you at 3', 'wow 2fun', 'I got 9999 points', 'abcdefg', 'ABC-DEFG', 'lol 2222', 'GG EASY', 'brb', 'snake-game rocks', 'Panda482', 'THANKS2U', 'we have 2 cats', 'the best 3 games']) {
     assert.equal(F.looksLikeLinkCode(s), false, s);
     assert.equal(chat.checkText(s).ok, true, s);
   }
@@ -429,6 +468,74 @@ test('kid pages carry no link to /grown-ups or /family, no price and no plan wor
       if (r.status !== 200) continue;
       assert.doesNotMatch(r.text, /href="\/(grown-ups|family)/, `${who} ${p}`);
       assert.doesNotMatch(r.text, /\$\d|family plan|Family plan|per month|a month/, `${who} ${p}`);
+    }
+  }
+});
+
+test('a code can\'t be published elsewhere either: names, game text, score labels and game files', async () => {
+  for (const name of ['K4P576U', 'K4P_576U', 'k4p-576u']) assert.equal(TF.cleanName(name).ok, false, name);
+  for (const name of ['Panda482', 'SuperKat25', 'Tiger734']) assert.equal(TF.cleanName(name).ok, true, name);
+  const k = kid();
+  const r = await as(k)('/api/me', { method: 'POST', body: { displayName: 'K4P576U' } });
+  assert.equal(r.status, 400); assert.equal(r.json.field, 'displayName');
+  for (const text of ['Win! Type K4P 576U', 'code: K-4-P-5-7-6-U']) assert.equal(TF.cleanText(text).ok, false, text);
+  assert.equal(TF.cleanText('Level 2: the best 3 games').ok, true);
+  // Score labels: shown on the public leaderboard, so a code (or personal details) is dropped, the score stays.
+  assert.equal(games.cleanScoreLabel('K4P-576U'), '');
+  assert.equal(games.cleanScoreLabel('call 555 123 4567'), '');
+  assert.equal(games.cleanScoreLabel('3 stars'), '3 stars');
+  const gm = publicGame(kid());
+  q.run('INSERT INTO plays(id, game_id, user_id, started_at) VALUES (?,?,?,?)', uid(), gm.id, k.id, Date.now());
+  const sc = await as(k)(`/api/games/${gm.id}/score`, { method: 'POST', body: { score: 10, label: 'K4P-576U' } });
+  assert.equal(sc.status, 200, sc.text);
+  assert.equal(q.get('SELECT label FROM scores WHERE game_id=? AND user_id=?', gm.id, k.id).label, '');
+  const lb = await call(null, `/api/games/${gm.id}/leaderboard`);
+  assert.ok(!lb.text.includes('K4P'), 'no code on the public leaderboard');
+  // The scanner fails a game that asks for a grown-up's code or shows a code.
+  const scan = body => scanVersion(`<!doctype html><html><body>${body}</body></html>`).issues.map(i => i.code);
+  assert.ok(scan('<p>Type your grown-up code to win a prize!</p>').includes('link_code'));
+  assert.ok(scan('<script>const msg = "Ask your parent for their family code";</script>').includes('link_code'));
+  assert.ok(scan('<p>Secret: K4P 576U</p>').includes('link_code'));
+  assert.ok(!scan('<p>Find the secret code to open the door. Level 2!</p>').includes('link_code'));
+});
+
+test('grown-up pages only show what a grown-up can use: no Studio button, profile links, Like or Rate', async () => {
+  const g = grownup(); const owner = kid();
+  const gm = publicGame(owner);
+  const go = as(g);
+  const home = await go('/');
+  assert.doesNotMatch(home.text, /href="\/build"/, 'no Open my Studio button');
+  assert.match(home.text, /href="\/family#language"/, 'the footer language link goes to their own page');
+  const gp = await go(`/g/${gm.slug}`);
+  assert.equal(gp.status, 200);
+  assert.doesNotMatch(gp.text, /href="\/u\//); assert.doesNotMatch(gp.text, /id="likebtn"/); assert.doesNotMatch(gp.text, /id="rate"/);
+  const pp = await go(`/play/${gm.slug}`);
+  assert.equal(pp.status, 200); assert.doesNotMatch(pp.text, /id="p-like"|id="p-rate"/);
+  const fam = await go('/family');
+  assert.match(fam.text, /id="language"/, 'a language choice on the family page');
+  // Kids still get them all.
+  const kp = await as(kid())(`/g/${gm.slug}`);
+  assert.match(kp.text, /href="\/u\//); assert.match(kp.text, /id="likebtn"/); assert.match(kp.text, /id="rate"/);
+  assert.match((await as(kid())('/')).text, /href="\/me#language"/);
+});
+
+test('the child\'s panel: a safety line next to the code; an English fallback is marked as English', async () => {
+  const k = kid();
+  await codeFor(k);
+  const me = await as(k)('/me');
+  assert.match(me.text, /Only give this code to your parent or guardian, face to face/);
+  assert.match(me.text, /id="famcode-open"/, 'the "Lost it?" line can be hidden by me.js once a new code shows');
+  // In every language the site offers, each kid-facing panel string is either translated or marked lang="en" dir="ltr".
+  const g = grownup();
+  await as(g)('/api/family/link', { method: 'POST', body: { code: await codeFor(k) } });
+  for (const { code } of i18n.availableLocales()) {
+    const t = i18n.tFor(code);
+    const page = await as(k)(`/me?lang=${code}`);
+    const r = page.location ? await call(cookieFor(k.id), page.location) : page;
+    for (const key of ['me.family.heading', 'me.family.pendingCheck', 'me.family.yes', 'me.family.report']) {
+      const s = t(key);
+      if (t.own(key)) assert.ok(r.text.includes(s.replace(/'/g, '&#39;')) || r.text.includes(s), `${code} ${key}`);
+      else assert.ok(r.text.includes(`<span lang="en" dir="ltr">${s.replace(/'/g, '&#39;')}</span>`) || r.text.includes(`<span lang="en" dir="ltr">${s}</span>`), `${code} ${key}: English, marked as English`);
     }
   }
 });

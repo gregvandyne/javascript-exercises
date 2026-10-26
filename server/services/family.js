@@ -19,14 +19,14 @@ import { sign, accountKind, getUser, isGrownup } from '../auth.js';
 import { billingOn } from './stripe.js';
 import { registerOwnerKind, ownerPlan } from './billing.js';
 import { register } from './jobs.js';
-import { foldDigits } from './textfilter.js';
+import { looksLikeLinkCode, LINK_CODE_ALPHABET } from './textfilter.js';
 
 const DAY = 86400e3;
 export const CODE_TTL = 3600e3;
 export const PENDING_TTL = DAY;
 /** How long rows are kept (the privacy text lists these). */
 export const KEEP = { codes: 30 * DAY, unlinked: 90 * DAY, reports: 365 * DAY };
-export const CODE_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+export const CODE_ALPHABET = LINK_CODE_ALPHABET;
 const CLASS = 'A-HJKMNP-Z2-9';
 
 /** Families (and so grown-up sign-up, the /me panel and every family route) are on exactly when billing is. */
@@ -49,15 +49,9 @@ export const isCodeShape = c => new RegExp(`^[${CLASS}]{7}$`).test(c) && /[2-9]/
 // Keyed with the session secret, so a copy of the database alone can't be searched for codes.
 const hashCode = c => sign(`family-link:${c}`);
 
-/** Does a chat message carry something shaped like a link code ("K7Q-4MZ9", "k7q 4mz9", "K7Q4MZ9")? Only runs of
- *  exactly 3 + 4 characters from the code alphabet with a digit in them count, so ordinary words (which almost always
- *  have an O, I or L, or no digit) pass. Used by services/chat.js. */
-export function looksLikeLinkCode(text) {
-  const s = foldDigits(String(text ?? '').normalize('NFKC'));
-  const re = new RegExp(`(?<![\\p{L}\\p{N}])([${CLASS}]{3})[\\s._\\-]{0,2}([${CLASS}]{4})(?![\\p{L}\\p{N}])`, 'giu');
-  for (const m of s.matchAll(re)) if (/[2-9]/.test(m[1] + m[2])) return true;
-  return false;
-}
+/** Something shaped like a link code, however it is spaced or punctuated (services/textfilter.js): friends chat, names,
+ *  game text and score labels refuse it, so a code can't easily be passed on anywhere but face to face. */
+export { looksLikeLinkCode };
 
 // ---------------------------------------------------------------- who is who
 /** An account that can be linked to a family: an own kid account (not a guest, a school account, staff, the platform
@@ -190,11 +184,16 @@ export function redeem(grownup, typed) {
   });
   return used ? ok() : fail('badCode');
 }
-/** The grown-up cancels a request or unlinks a child. */
-export function removeChild(grownup, childId) {
+/** What the grown-up's page uses to name one of their rows (a request or a linked child) in its Cancel or Remove
+ *  button: a keyed hash of the family and the child, so the page never carries a child's user id (user ids show in
+ *  public photo URLs, so an id would tell a grown-up who a child is before the child said yes). */
+export const requestToken = (familyId, childId) => sign(`fam-req:${familyId}:${childId}`).slice(0, 24);
+/** The grown-up cancels a request or unlinks a child, named by requestToken (only rows of their own family). */
+export function removeChild(grownup, token) {
   const fam = isGrownup(grownup) ? familyOfOwner(grownup.id) : null;
   if (!fam) return fail('nothing');
-  const r = q.get('SELECT * FROM family_children WHERE family_id=? AND child_id=? AND unlinked_at IS NULL', fam.id, String(childId || ''));
+  const want = String(token || '');
+  const r = q.all('SELECT * FROM family_children WHERE family_id=? AND unlinked_at IS NULL', fam.id).find(x => requestToken(fam.id, x.child_id) === want);
   if (!r) return fail('nothing');
   tx(() => {
     if (r.status === 'pending') {
