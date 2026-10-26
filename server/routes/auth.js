@@ -12,11 +12,12 @@ import { rateLimit, allow, count, ipOf, loginLockKey, GUESTS_PER_IP_HOUR } from 
 import { availableLocales, normalizeCode, tHtml, setLangCookie, saveUserLang } from '../i18n/index.js';
 import { THEMES, THEME_ICONS, normalizeTheme, setThemeCookie, saveUserTheme } from '../theme.js';
 import { publicHost } from '../site.js';
+import { loginGoogle, googleNotice } from './google.js';
 
 export const router = Router();
-const safeNext = n => (typeof n === 'string' && /^\/(?!\/)[\w\-/?=&%.#]*$/.test(n) ? n : '/');
+export const safeNext = n => (typeof n === 'string' && /^\/(?!\/)[\w\-/?=&%.#]*$/.test(n) ? n : '/');
 /** A ?next= that asks for a real page (not missing, unsafe or just '/'), else null so people land on their own home. */
-const wantedNext = n => { const s = safeNext(n); return s === '/' ? null : s; };
+export const wantedNext = n => { const s = safeNext(n); return s === '/' ? null : s; };
 /** Where someone lands after signing in: teachers and school admins on My classes, school-account students on their
  *  classes, the platform admin on the admin area; everyone else on the game site. */
 export function homeFor(u) {
@@ -41,6 +42,8 @@ function authPage(req, res, mode) {
       <p class="center muted">${isSignup ? t('auth.page.introSignup') : t('auth.page.introLogin')}</p>
       ${!isSignup && (req.query.signedout === '1' || req.sessionEnded) ? html`<p class="notice warn" role="status">${t('auth.page.signedOut')}</p>` : ''}
       ${!isSignup && req.query.moved === '1' && publicHost() ? html`<p class="notice" role="status">${t('auth.page.moved', { site: publicHost() })}</p>` : ''}
+      ${isSignup ? '' : googleNotice(req)}
+      ${isSignup ? '' : loginGoogle(req, next)}
       ${upgrading ? html`<p class="notice good">${tHtml(t, 'auth.page.upgradeNotice', { name: u.display_name })}</p>` : ''}
       <form data-api="/api/auth/${isSignup ? 'signup' : 'login'}" ${isSignup ? raw(`data-next="${next.replace(/"/g, '&quot;')}"`) : ''} novalidate>
         ${!isSignup && wantedNext(req.query.next) ? html`<input type="hidden" name="next" value="${next}">` : ''}

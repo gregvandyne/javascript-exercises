@@ -9,6 +9,8 @@
 :root{
   /* The brand palette from the logo board, the same in both themes (logo marks, the play bar, the Build hero). */
   --brand-ink:#141414; --brand-cream:#FFFDF2; --brand-mint:#66C792; --brand-leaf:#1F9D63; --brand-spark:#FFD23F;
+  /* Sign in with Google button: Google's own colours (their branding rules), light here and dark in the two dark blocks. */
+  --gbtn-bg:#FFFFFF; --gbtn-border:#747775; --gbtn-text:#1F1F1F;
   /* Surfaces: page, cards, soft surfaces and fields, top and tab bars, hover fills, hairlines, field edges (3:1). */
   --bg:#F4F1E6; --card:#FFFDF2; --card-2:#F9F6EB; --bar:#FFFDF2; --hover:#EFEBDC; --line:#E2DDCB; --edge:#8A8573;
   /* Text: main, secondary, hints and captions. */
@@ -39,6 +41,7 @@
    between the themes is a token, and these two blocks are the only place dark values live: no other prefers-color-scheme
    rules in public/css (tests/unit/theme.test.js checks). Screen only, so printing always uses the light palette. */
 @media screen and (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --gbtn-bg:#131314; --gbtn-border:#8E918F; --gbtn-text:#E3E3E3;
   --bg:#141414; --card:#1E1E1B; --card-2:#262622; --bar:#141414; --hover:#2C2C27; --line:#36352F; --edge:#7E796C;
   --text:#FFFDF2; --text-2:#E3DED0; --muted:#B8B3A1;
   --accent-hover:#7DD2A4; --accent-soft:#1E3326; --accent-ink:#9EDDBA; --accent-line:#66C792; --link:#66C792;
@@ -50,6 +53,7 @@
   color-scheme:dark;
 }}
 @media screen{:root[data-theme="dark"]{
+  --gbtn-bg:#131314; --gbtn-border:#8E918F; --gbtn-text:#E3E3E3;
   --bg:#141414; --card:#1E1E1B; --card-2:#262622; --bar:#141414; --hover:#2C2C27; --line:#36352F; --edge:#7E796C;
   --text:#FFFDF2; --text-2:#E3DED0; --muted:#B8B3A1;
   --accent-hover:#7DD2A4; --accent-soft:#1E3326; --accent-ink:#9EDDBA; --accent-line:#66C792; --link:#66C792;
@@ -369,6 +373,14 @@ body.playmode{background:#000;padding-bottom:0;overflow:hidden}
 .authbox .panel{padding:28px 24px}
 .divider{display:flex;align-items:center;gap:12px;color:var(--muted);font-weight:700;margin:18px 0}
 .divider::before,.divider::after{content:"";flex:1;height:2px;background:var(--line)}
+/* Sign in with Google (Google's branding: multicolour G, 40px pill, Roboto Medium where the device has it, e.g. Chromebooks). */
+.gsign{display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:14px}
+.gbtn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;max-width:400px;min-height:40px;padding:0 12px;
+  border-radius:20px;background:var(--gbtn-bg);color:var(--gbtn-text);box-shadow:inset 0 0 0 1px var(--gbtn-border);
+  font:500 14px/20px Roboto,system-ui,sans-serif;text-decoration:none}
+.gbtn:hover{text-decoration:none;filter:brightness(.97)}
+.gbtn-g{width:18px;height:18px;flex:none}
+.gsign-hint{margin:0}
 
 /* profile + people */
 .person{display:flex;align-items:center;gap:12px;padding:10px;border-radius:var(--r-sm);color:var(--text)}

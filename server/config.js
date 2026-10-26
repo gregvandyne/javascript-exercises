@@ -55,6 +55,10 @@ const sessionSecret = process.env.SESSION_SECRET || '';
 export const JOURNAL_MODES = ['WAL', 'DELETE', 'TRUNCATE', 'PERSIST'];
 const journalMode = (process.env.BRB_JOURNAL_MODE || 'WAL').toUpperCase();
 
+const GOOGLE_ID_RE = /^[0-9a-z-]+\.apps\.googleusercontent\.com$/i;
+const googleClientId = (process.env.GOOGLE_CLIENT_ID || '').trim();
+const oidcBase = parsePublicUrl(process.env.GOOGLE_OIDC_BASE, 'GOOGLE_OIDC_BASE');
+
 export const config = {
   port: num(process.env.PORT, 3000),
   env: process.env.NODE_ENV || 'development',
@@ -69,8 +73,14 @@ export const config = {
   // PUBLIC_URL, signed in. Render's own name (RENDER_EXTERNAL_HOSTNAME), PUBLIC_URL's www. twin and REDIRECT_HOSTS.
   renderHost: HOST_RE.test(renderHost) ? renderHost : '',
   redirectHosts: redirectHosts.hosts,
+  // Sign in with Google (server/oidc.js): on only when both are set, and in production also PUBLIC_URL.
+  googleClientId,
+  googleClientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
+  googleOidcBase: oidcBase.url, // tests only: a local fake Google (tests/support/fake-google.js)
   // Startup refuses a malformed setting instead of silently ignoring it (server/index.js).
   configErrors: [
+    googleClientId && !GOOGLE_ID_RE.test(googleClientId) && 'GOOGLE_CLIENT_ID must look like 1234-abc.apps.googleusercontent.com',
+    oidcBase.error, oidcBase.url && (process.env.NODE_ENV || 'development') === 'production' && "GOOGLE_OIDC_BASE is for tests and can't be used in production",
     publicUrl.error, movedTo.error, redirectHosts.error, requireSecret.error, maintenance.error, movedPermanently.error,
     !JOURNAL_MODES.includes(journalMode) && `BRB_JOURNAL_MODE must be one of ${JOURNAL_MODES.join(', ')}`,
     requireSecret.on && sessionSecret && sessionSecret.length < MIN_SECRET_LENGTH

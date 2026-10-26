@@ -1909,5 +1909,30 @@
       "feedback": "From your teacher",
       "readNoFeedback": "Your teacher has seen your answer."
     }
+  },
+  "google": {
+    "button": {
+      "signIn": "Sign in with Google",
+      "hint": "For school Google accounts, like on a Chromebook."
+    },
+    "login": {
+      "orName": "or use your Oomba Academy name"
+    },
+    "errors": {
+      "expired": "That took a little too long. Please try again.",
+      "denied": "Google didn't sign you in. If you pressed Cancel, just try again. At school? Your school may need to turn on Oomba Academy first: ask your teacher.",
+      "schoolBlocked": "Your school hasn't turned on Oomba Academy for Google sign-in yet. Ask your teacher to show this to your school's Google admin.",
+      "unknown": "We don't know this Google account yet. At school? Ask your teacher to invite you, or for your class code. You can also make an account with a fun name.",
+      "joinNoWay": "This Google account can't join with that code. Check the code, or ask your teacher to invite you.",
+      "schoolOnly": "Only a school Google account can be connected here.",
+      "wrongDomain": "That Google account isn't from your school. Pick your school account and try again.",
+      "inUse": "That Google account is already connected to another Oomba Academy account.",
+      "alreadyLinked": "This account already has a Google account connected. Disconnect it first.",
+      "unverified": "Google hasn't checked this account's email address yet, so we can't use it.",
+      "schoolOff": "Google sign-in is off for your school right now. Use your login card, or ask your teacher.",
+      "googleDown": "We couldn't reach Google just now. Please try again in a minute.",
+      "browser": "Google sign-in doesn't work inside this app. Open the site in Chrome or another browser.",
+      "notSetUp": "Google sign-in isn't set up right yet. A grown-up can tell us."
+    }
   }
 }

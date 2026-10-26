@@ -167,6 +167,22 @@ export const MIGRATIONS = [
     UPDATE games SET pending_visibility = CASE WHEN EXISTS (SELECT 1 FROM school_members sm WHERE sm.user_id=games.owner_id
         AND sm.status='active') THEN 'school' ELSE 'public' END
       WHERE pending_version_id IS NOT NULL;`],
+  // Sign in with Google (docs/decisions.md "Sign in with Google"). Rows are found by Google's account id (sub), never by
+  // email. One Google account per Oomba account, both ways. Invites are bound to a school email (no link or token);
+  // class_id NULL = a staff invite, user_id set = connect this existing school account. 0019 is the Builder's.
+  ['0020_google_sign_in', `CREATE TABLE IF NOT EXISTS google_identities (sub TEXT PRIMARY KEY, user_id TEXT NOT NULL UNIQUE,
+      email TEXT NOT NULL DEFAULT '', hd TEXT NOT NULL DEFAULT '', linked_by TEXT, created_at INTEGER NOT NULL,
+      last_used_at INTEGER NOT NULL DEFAULT 0);
+    CREATE TABLE IF NOT EXISTS google_invites (id TEXT PRIMARY KEY, school_id TEXT NOT NULL, class_id TEXT,
+      role TEXT NOT NULL DEFAULT 'student', email TEXT NOT NULL, roster_name TEXT NOT NULL DEFAULT '',
+      grade TEXT NOT NULL DEFAULT '', user_id TEXT, status TEXT NOT NULL DEFAULT 'open', created_by TEXT,
+      created_at INTEGER NOT NULL, expires_at INTEGER NOT NULL, used_by TEXT, used_at INTEGER, revoked_by TEXT,
+      revoked_at INTEGER);
+    CREATE INDEX IF NOT EXISTS google_invites_email ON google_invites(email, status);
+    CREATE INDEX IF NOT EXISTS google_invites_class ON google_invites(class_id, status);
+    CREATE INDEX IF NOT EXISTS google_invites_school ON google_invites(school_id, status);
+    CREATE UNIQUE INDEX IF NOT EXISTS google_invites_open ON google_invites(school_id, IFNULL(class_id, ''), email) WHERE status='open';
+    ALTER TABLE classrooms ADD COLUMN google_join INTEGER NOT NULL DEFAULT 0;`],
 ];
 
 db.exec('CREATE TABLE IF NOT EXISTS migrations (name TEXT PRIMARY KEY, applied_at INTEGER NOT NULL)');
