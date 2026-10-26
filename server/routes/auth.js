@@ -314,10 +314,12 @@ router.get('/me', auth.requireUser, (req, res) => {
         </div>`}
       </div>
     </div>
-    <h3 style="margin-top:16px">${t('me.look.avatarHeading')}</h3>
-    <div class="chips" role="group" aria-label="${t('me.look.avatarGroup')}">${auth.AVATARS.map(a => html`<button class="chip" type="button" data-avatar="${a}" aria-pressed="${a === u.avatar}" aria-label="${t('me.look.avatarLabel', { emoji: a })}" style="font-size:1.4rem;padding:0 12px">${a}</button>`)}</div>
-    <h3 style="margin-top:16px">${t('me.look.colorHeading')}</h3>
-    <div class="chips" role="group" aria-label="${t('me.look.colorGroup')}">${auth.COLORS.map(c => html`<button class="chip" type="button" data-color="${c}" aria-pressed="${c === u.color}" aria-label="${t('me.look.colorLabel', { color: c })}"><span class="avatar" style="--s:26px;--c:${c}"></span></button>`)}</div>
+    <div class="lookpicks">
+      <details class="lookdrop" data-lookpick><summary class="btn"><span>${t('me.look.avatarHeading')}</span><span class="lookcur" aria-hidden="true">${u.avatar}</span><span class="lookcaret" aria-hidden="true">▾</span></summary>
+        <div class="lookmenu" role="group" aria-label="${t('me.look.avatarGroup')}">${auth.AVATARS.map(a => html`<button class="chip lookemoji" type="button" data-avatar="${a}" aria-pressed="${a === u.avatar}" aria-label="${t('me.look.avatarLabel', { emoji: a })}">${a}</button>`)}</div></details>
+      <details class="lookdrop" data-lookpick><summary class="btn"><span>${t('me.look.colorHeading')}</span><span class="avatar lookcur" style="--s:22px;--c:${u.color}" aria-hidden="true"></span><span class="lookcaret" aria-hidden="true">▾</span></summary>
+        <div class="lookmenu" role="group" aria-label="${t('me.look.colorGroup')}">${auth.COLORS.map(c => html`<button class="chip" type="button" data-color="${c}" aria-pressed="${c === u.color}" aria-label="${t('me.look.colorLabel', { color: c })}"><span class="avatar" style="--s:26px;--c:${c}"></span></button>`)}</div></details>
+    </div>
   </section>
   <div class="mesettings">${languagePanel(req)}${appearancePanel(req)}</div>
   ${!u.is_guest ? html`<section class="panel"><h2>${t('me.chat.heading')}</h2>
