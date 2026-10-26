@@ -61,7 +61,7 @@ design); e2e (`E2E_PORT=5881`) the Builder/Studio specs (`studio-steps`, `studio
 
 - **Sign in with Google** is built and tested against a local fake Google (unit + browser tests), and off until `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` are set on Render (with `PUBLIC_URL`). School admins add their Google domain on the school's Settings tab; teachers paste school emails on a class's Students tab, or turn on "join with Google" next to the class code.
 
-- **Builds keep going without the page:** reload, a second tab, closing the computer or signing out never stops a build; coming back shows the chat and the live steps (unit tests; e2e `studio-background`, `studio-live`). Follow-up messages during a build and time estimates are the next steps (docs: bg-work spec chunks 3-4).
+- **Builds keep going without the page:** reload, a second tab, closing the computer or signing out never stops a build; coming back shows the chat and the live steps (unit tests; e2e `studio-background`, `studio-live`). Follow-up messages during a build and time estimates are the next steps.
 
 ## Not verified / known limits
 - **Sign in with Google hasn't run against real Google yet.** Under-18 students also need their school's Google admin to allow Oomba Academy (steps on /google-setup). A Google domain belongs to one school (a district with one domain for several schools needs us to change that). A legal review of school-directed Google sign-in (COPPA/GDPR) is recommended before a wide launch.
