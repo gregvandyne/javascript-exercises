@@ -82,10 +82,10 @@ test('the scanner rejects other versions, other hosts and unpinned forms of Thre
   // Words in an ordinary script are not an import.
   const quiz = '<title>Q</title><canvas></canvas><script>const Q = "Count from \'three\' to \'ten\'"; const R = "import \'three\' cats";</script>';
   assert.equal(V.isThreeGame(quiz), false); assert.equal(scanVersion(quiz).status, 'pass', JSON.stringify(scanVersion(quiz).issues));
-  // Ordinary 2D games and every launch game are not 3D and are untouched.
+  // Ordinary 2D games and every launch game are untouched; the one 3D launch game uses exactly the pinned form.
   for (const f of fs.readdirSync(path.join(ROOT, 'seed-games')).filter(x => x.endsWith('.html'))) {
     const html = fs.readFileSync(path.join(ROOT, 'seed-games', f), 'utf8');
-    assert.equal(V.isThreeGame(html), false, f); assert.deepEqual(V.checkThree(html), [], f);
+    assert.equal(V.isThreeGame(html), f === 'hero-of-sunvale.html', f); assert.deepEqual(V.checkThree(html), [], f);
   }
 });
 

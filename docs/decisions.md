@@ -609,6 +609,10 @@ the app 2 GB for Chromium. Now that `server/shots-worker.js` is merged:
   downloads swapped, Chromium and its libraries mounted from the host into `shots`): the worker container, read-only,
   uid 1000, no internet and only the internal network, rendered Star Island's cover from the image's own Three.js.
 
+## The home-page hero
+The big hero on Home is the featured game marked `"hero": true` in its seed JSON (stored as `featured=2`), else the
+most played featured game. Before, it was always the most played one, so a new official game could never take the spot.
+
 ## Share with my classes (visibility 'class')
 Students (and teachers) in a class can share a game with just their class, or pick several of their classes, besides
 Only me, Friends, My school and Everyone.

@@ -140,7 +140,7 @@ export function listVisible(user, { order = 'popular', limit = 24, category = nu
   const v = visibleWhere(user); const params = [...v.params]; let where = v.sql;
   if (category) { where += ' AND g.category=?'; params.push(category); }
   if (ownerId) { where += ' AND g.owner_id=?'; params.push(ownerId); }
-  if (featured) where += ' AND g.featured=1';
+  if (featured) where += ' AND g.featured>0';   // 1 = featured, 2 = also the home-page hero (seed JSON "hero": true)
   return decorate(q.all(`${SELECT} WHERE ${where} ORDER BY ${ORDERS[order] || ORDERS.popular} LIMIT ? OFFSET ?`, ...params, limit, offset));
 }
 export function playingNow(user, limit = 12) {

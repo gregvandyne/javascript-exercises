@@ -1,0 +1,61 @@
+{
+  "slug": "hero-of-sunvale",
+  "title": "Hero of Sunvale",
+  "icon": "🐉",
+  "cover": "forest",
+  "category": "adventure",
+  "tags": "3d,adventure,hero,princess,dragon,castle,quest,open world",
+  "description": "Make your own blocky hero and explore a big 3D kingdom of villages, forests, castles and snowy mountains. Help the people of Sunvale on missions, win friendly battles for treasure chests full of potions and armor, and free Princess Marigold from grumpy Lord Snarlwick and his dragon.",
+  "orientation": "any",
+  "players_max": 1,
+  "age_rating": "everyone",
+  "featured": true,
+  "hero": true,
+  "notes": "3D with the built-in Three.js 0.185.1 (pinned import map with integrity). 11 story missions (training, slimes, sheep, fairy lanterns, Grumblin camp, bridge escort, Riverbend bubbles, the Queen's castle, Frostpeak Pass and the Gloom Gate, the gloom crystals, Lord Snarlwick and Cinder) plus Smith Bo's Sunblade, the Sunflower Tower, 30 Sun Gems and 5 Heart Crystals. Saves the adventure in 'hero-of-sunvale-v1' and settings in 'hero-of-sunvale-settings-v1' (signed-in players). Score: BRB.score.submit(points, 'hero points') after every mission; BRB.gameOver({ won: true, score }) at The End. Test hooks: window.__brbTest (state, start, manual, step, teleport, press, hold, move, moveTo, talk, startMission, setMission, completeObjective, bossPhase, bossOpen, win, ending, skipCutscene, play (an input-only quest bot), save, load, perf, setQuality...).",
+  "l10n": {
+    "pt": {
+      "description": "Crie seu próprio herói de blocos e explore um grande reino 3D com vilas, florestas, castelos e montanhas nevadas. Ajude o povo de Sunvale em missões, vença batalhas amigáveis para ganhar baús cheios de poções e armaduras e liberte a Princesa Marigold do rabugento Lorde Snarlwick e seu dragão.",
+      "tags": "3d,aventura,herói,princesa,dragão,castelo,missão,mundo aberto"
+    },
+    "fr": {
+      "description": "Crée ton propre héros en blocs et explore un grand royaume en 3D avec des villages, des forêts, des châteaux et des montagnes enneigées. Aide les habitants de Sunvale dans leurs missions, gagne des combats amicaux pour des coffres pleins de potions et d’armures, et libère la princesse Marigold du grincheux Lord Snarlwick et de son dragon.",
+      "tags": "3d,aventure,héros,princesse,dragon,château,quête,monde ouvert"
+    },
+    "es": {
+      "description": "Crea tu propio héroe de bloques y explora un gran reino en 3D con aldeas, bosques, castillos y montañas nevadas. Ayuda a la gente de Sunvale en misiones, gana batallas amistosas para conseguir cofres llenos de pociones y armaduras, y libera a la princesa Marigold del gruñón Lord Snarlwick y su dragón.",
+      "tags": "3d,aventura,héroe,princesa,dragón,castillo,misión,mundo abierto"
+    },
+    "de": {
+      "description": "Bau dir deinen eigenen Klötzchen-Helden und erkunde ein großes 3D-Königreich mit Dörfern, Wäldern, Burgen und verschneiten Bergen. Hilf den Leuten von Sunvale bei Missionen, gewinne freundliche Kämpfe für Truhen voller Tränke und Rüstungen und befreie Prinzessin Marigold vom grummeligen Lord Snarlwick und seinem Drachen.",
+      "tags": "3D,Abenteuer,Held,Prinzessin,Drache,Burg,Mission,offene Welt"
+    },
+    "he": {
+      "description": "בנו גיבור קוביות משלכם וגלו ממלכה גדולה בתלת־ממד עם כפרים, יערות, טירות והרים מושלגים. עזרו לאנשי סאנוויל במשימות, נצחו בקרבות ידידותיים כדי לזכות בתיבות מלאות שיקויים ושריון, ושחררו את הנסיכה מריגולד מלורד סנרלוויק הרטנוני ומהדרקון שלו.",
+      "tags": "תלת־ממד,הרפתקה,גיבור,נסיכה,דרקון,טירה,משימה,עולם פתוח"
+    },
+    "ja": {
+      "description": "ブロックの勇者を自分でつくって、村や森、お城、雪の山がある大きな3Dの王国をたんけんしよう。サンベールの人たちのミッションを手伝い、なかよしバトルに勝ってポーションやよろいが入った宝箱をゲット。きげんの悪いスナールウィック卿とドラゴンから、マリーゴールド姫を助け出そう。",
+      "tags": "3D,アドベンチャー,勇者,お姫さま,ドラゴン,お城,クエスト,オープンワールド"
+    },
+    "ar": {
+      "description": "اصنع بطلك المكعّب الخاص واستكشف مملكة كبيرة ثلاثية الأبعاد فيها قرى وغابات وقلاع وجبال مكسوّة بالثلج. ساعد أهل صنفيل في المهمات، واربح معارك ودّية لتحصل على صناديق مليئة بالجرعات والدروع، وحرّر الأميرة ماريغولد من اللورد سنارلويك العابس وتنّينه.",
+      "tags": "ثلاثي الأبعاد,مغامرة,بطل,أميرة,تنين,قلعة,مهمة,عالم مفتوح"
+    },
+    "ru": {
+      "description": "Создай своего героя из кубиков и исследуй большое 3D-королевство с деревнями, лесами, замками и снежными горами. Помогай жителям Санвейла на заданиях, побеждай в дружеских битвах ради сундуков с зельями и доспехами и освободи принцессу Мэриголд от ворчливого лорда Снарлвика и его дракона.",
+      "tags": "3D,приключения,герой,принцесса,дракон,замок,квест,открытый мир"
+    },
+    "it": {
+      "description": "Crea il tuo eroe a blocchi ed esplora un grande regno in 3D con villaggi, foreste, castelli e montagne innevate. Aiuta gli abitanti di Sunvale nelle missioni, vinci battaglie amichevoli per forzieri pieni di pozioni e armature e libera la principessa Marigold dal brontolone Lord Snarlwick e dal suo drago.",
+      "tags": "3d,avventura,eroe,principessa,drago,castello,missione,mondo aperto"
+    },
+    "zh-Hant": {
+      "description": "打造你自己的方塊英雄，探索有村莊、森林、城堡和雪山的巨大 3D 王國。在任務中幫助 Sunvale 的居民，贏得友善的戰鬥，拿到裝滿藥水和盔甲的寶箱，並從脾氣暴躁的史納威克大人和他的龍手中救出瑪莉金公主。",
+      "tags": "3D,冒險,英雄,公主,龍,城堡,任務,開放世界"
+    },
+    "nl": {
+      "description": "Maak je eigen blokjesheld en verken een groot 3D-koninkrijk met dorpen, bossen, kastelen en besneeuwde bergen. Help de mensen van Sunvale met missies, win vriendelijke gevechten voor kisten vol drankjes en harnassen, en bevrijd prinses Marigold van de chagrijnige Lord Snarlwick en zijn draak.",
+      "tags": "3d,avontuur,held,prinses,draak,kasteel,missie,open wereld"
+    }
+  }
+}
