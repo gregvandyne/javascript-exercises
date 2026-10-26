@@ -245,20 +245,20 @@
     "starsLabel": "{stars} von 5 Sternen aus {count, plural, one {# Bewertung} other {# Bewertungen}}",
     "playing": "{count} spielen",
     "gameBy": "{title}, von {name}",
+    "classOnly": "Nur Klasse",
     "by": "von {name}",
     "plays": "{count, plural, one {{n}× gespielt} other {{n}× gespielt}}",
     "seeAll": "Alle zeigen",
     "scrollBack": "{title} zurückblättern",
-    "scrollForward": "{title} weiterblättern",
-    "classOnly": "Nur Klasse"
+    "scrollForward": "{title} weiterblättern"
   },
   "vis": {
     "private": "Nur ich",
     "friends": "Freunde",
-    "public": "Alle",
-    "school": "Meine Schule",
     "class": "{count, plural, one {Meine Klasse} other {Meine Klassen}}",
-    "onlyYouNow": "Gerade nur du"
+    "onlyYouNow": "Gerade nur du",
+    "public": "Alle",
+    "school": "Meine Schule"
   },
   "status": {
     "hidden": "Versteckt",
@@ -464,10 +464,12 @@
     "shareText": {
       "private": "Nur du kannst dieses Spiel öffnen. Stell es auf Freunde oder Alle, um es zu teilen.",
       "friends": "Nur deine Freunde auf Oomba Academy können diesen Link öffnen.",
+      "class": "Nur die Klassen, mit denen dieses Spiel geteilt ist, können diesen Link öffnen.",
       "public": "Alle mit dem Link können dieses Spiel spielen.",
-      "school": "Alle an deiner Schule können es finden und spielen.",
-      "class": "Nur die Klassen, mit denen dieses Spiel geteilt ist, können diesen Link öffnen."
+      "school": "Alle an deiner Schule können es finden und spielen."
     },
+    "sharedWith": "Geteilt mit:",
+    "sharedWithMore": "{count, plural, one {und # weitere Klasse} other {und # weitere Klassen}}",
     "report": {
       "button": "Melden",
       "already": "Danke, deine Meldung haben wir schon.",
@@ -487,9 +489,7 @@
       "saveFailed": "Das konnten wir nicht speichern.",
       "badScore": "Ungültiger Punktestand.",
       "pickReason": "Wähl einen Grund."
-    },
-    "sharedWith": "Geteilt mit:",
-    "sharedWithMore": "{count, plural, one {und # weitere Klasse} other {und # weitere Klassen}}"
+    }
   },
   "play": {
     "backTo": "Zurück zu {title}",
@@ -747,9 +747,9 @@
     "shareText": {
       "private": "Nur du kannst es spielen.",
       "friends": "Nur du und deine Freunde auf Oomba Academy können es spielen.",
+      "class": "Nur die Klassen, die du ausgewählt hast, können es spielen.",
       "public": "Alle auf Oomba Academy können es finden und spielen, nach einem kurzen Sicherheitscheck.",
-      "school": "Alle an deiner Schule können es finden und spielen.",
-      "class": "Nur die Klassen, die du ausgewählt hast, können es spielen."
+      "school": "Alle an deiner Schule können es finden und spielen."
     },
     "status": {
       "hidden": "Gerade versteckt",
@@ -837,14 +837,14 @@
       "savedDefault": "mein Liebling bis jetzt",
       "saved": "Als Version {number} gespeichert.",
       "pickWho": "Wähl aus, wer spielen darf.",
-      "notLive": "Dieses Spiel ist noch nicht online. Tipp zuerst auf Freigeben.",
-      "updatedFriends": "Für deine Freunde aktualisiert! Die neue Version wartet auch noch auf ihre Prüfung, bevor alle sie spielen können.",
-      "updatedYou": "Für dich aktualisiert! Die neue Version wartet auch noch auf ihre Prüfung, bevor alle sie spielen können.",
-      "cantDeleteStarter": "Startspiele können nicht gelöscht werden.",
       "pickClass": "Wähle mindestens eine deiner Klassen aus.",
       "classGone": "Du kannst nur mit Klassen teilen, in denen du gerade bist.",
       "classRemoved": "Deine Lehrkraft hat dieses Spiel aus {name} herausgenommen, darum kann es dort nicht wieder hin.",
+      "notLive": "Dieses Spiel ist noch nicht online. Tipp zuerst auf Freigeben.",
+      "updatedFriends": "Für deine Freunde aktualisiert! Die neue Version wartet auch noch auf ihre Prüfung, bevor alle sie spielen können.",
+      "updatedYou": "Für dich aktualisiert! Die neue Version wartet auch noch auf ihre Prüfung, bevor alle sie spielen können.",
       "updatedNowWaiting": "Aktualisiert! Die neue Version wartet auch noch auf einen kurzen Check, bevor mehr Leute spielen können.",
+      "cantDeleteStarter": "Startspiele können nicht gelöscht werden.",
       "builderWorking": "Der Baumeister arbeitet gerade an diesem Spiel. Versuch es noch mal, wenn er fertig ist.",
       "cantContinue": "Dieser Bau kann nicht mehr fortgesetzt werden. Schick stattdessen eine neue Nachricht.",
       "restarting": "Unser Server startet gerade neu. Versuch es gleich noch mal.",
@@ -862,19 +862,21 @@
     "updateWaiting": "Dein Update wartet auf einen kurzen Check. Bis dahin spielen alle die alte Version.",
     "waiting": "Dein Spiel wartet auf einen kurzen Sicherheitscheck. Sobald es geprüft ist, teilen wir es.",
     "school": "Online für deine Schule! Alle an deiner Schule können es finden und spielen.",
-    "schoolOnly": "Deine Schule behält Spiele in der Schule. Teile es stattdessen mit deiner Schule.",
-    "class": "{count, plural, one {Online für {name}! Alle in deiner Klasse können es finden und spielen.} other {Online für deine Klassen! Alle darin können es finden und spielen.}}"
+    "class": "{count, plural, one {Online für {name}! Alle in deiner Klasse können es finden und spielen.} other {Online für deine Klassen! Alle darin können es finden und spielen.}}",
+    "schoolOnly": "Deine Schule behält Spiele in der Schule. Teile es stattdessen mit deiner Schule."
   },
   "builder": {
     "kindRefusal": "Dabei kann ich leider nicht helfen. Lass uns lieber etwas Lustiges bauen. Was für ein Spiel hättest du gern?",
     "scanStillFailing": "Der Sicherheitscheck ist noch nicht zufrieden. Tipp auf „Baumeister soll's reparieren“, um es noch mal zu versuchen.",
+    "turnTimeout": "⏱️ Dieser Bau hat länger gedauert als unser Zeitlimit, deshalb habe ich aufgehört. Deine neueste Version ist gespeichert. Sag mir, was ich als Nächstes ändern soll!",
+    "turnTimeoutNothing": "⏱️ Dieser Bau hat länger gedauert als unser Zeitlimit, deshalb habe ich aufgehört, bevor ich etwas speichern konnte. Dafür wurde keine Nachricht verbraucht, du kannst es also noch mal versuchen.",
     "errors": {
       "disabled": "Bauen ist für dieses Konto ausgeschaltet. Ein Erwachsener kann uns bitten, es wieder einzuschalten.",
       "empty": "Schreib zuerst eine Nachricht oder tipp auf eine Idee.",
       "busy": "Der Baumeister arbeitet noch an deiner letzten Nachricht. Einen Moment!",
+      "tooMany": "Bei dir werden schon 2 Spiele gebaut. Warte, bis eins fertig ist, und versuch es dann noch mal.",
       "limit": "Du hast heute alle {count} Nachrichten an den Baumeister verbraucht. Komm morgen wieder, dann gibt es neue!",
       "muddled": "Der Baumeister ist durcheinandergekommen. Bitte versuch es gleich noch mal.",
-      "tooMany": "Bei dir werden schon 2 Spiele gebaut. Warte, bis eins fertig ist, und versuch es dann noch mal.",
       "resting": "Der KI-Baumeister ruht sich gerade aus. Dein Spiel und deine Nachrichten sind gespeichert, also komm etwas später wieder!"
     },
     "refusals": {
@@ -972,9 +974,13 @@
         }
       }
     },
-    "turnTimeout": "⏱️ Dieser Bau hat länger gedauert als unser Zeitlimit, deshalb habe ich aufgehört. Deine neueste Version ist gespeichert. Sag mir, was ich als Nächstes ändern soll!",
-    "turnTimeoutNothing": "⏱️ Dieser Bau hat länger gedauert als unser Zeitlimit, deshalb habe ich aufgehört, bevor ich etwas speichern konnte. Dafür wurde keine Nachricht verbraucht, du kannst es also noch mal versuchen.",
     "cutOffNothing": "Der Baumeister hat so lange geplant, dass ihm der Platz ausging, bevor er etwas bauen konnte. Diese Nachricht wurde nicht gezählt. Bitte um ein oder zwei Änderungen auf einmal.",
+    "followUps": {
+      "cap": "Du hast während dieses Baus schon {max, plural, one {# zusätzliche Nachricht} other {# zusätzliche Nachrichten}} geschickt. Warte, bis er fertig ist, und erzähl mir dann mehr!",
+      "refusedCap": "Lass uns warten, bis der Baumeister mit diesem Bau fertig ist.",
+      "noUploads": "Bilder und Dateien kannst du hinzufügen, wenn dieser Bau fertig ist. Schick deine Worte jetzt oder warte einen Moment.",
+      "notYours": "Jemand anderes hat diesen Bau gestartet. Warte, bis er fertig ist."
+    },
     "budgetStop": "Der KI-Baumeister muss sich jetzt ausruhen, deshalb habe ich hier aufgehört. Alles, was ich bisher gemacht habe, ist gespeichert."
   },
   "uploads": {
@@ -1115,9 +1121,9 @@
       "vis": {
         "private": "Nur ich",
         "friends": "Freunde",
+        "class": "{count, plural, one {Meine Klasse} other {Meine Klassen}}",
         "public": "Alle",
-        "school": "Meine Schule",
-        "class": "{count, plural, one {Meine Klasse} other {Meine Klassen}}"
+        "school": "Meine Schule"
       },
       "top": {
         "inReview": "Wird geprüft",
@@ -1130,24 +1136,24 @@
         "nothingYet": "Noch nichts gebaut",
         "hidden": "Dieses Spiel ist gerade versteckt, weil Spieler es gemeldet haben. Ein Erwachsener aus unserem Team sieht es sich bald an.",
         "liveVersion": "Online: Version {number} · {who}",
-        "updateTo": "Spiel auf Version {number} aktualisieren",
-        "waitingFriends": "Wartet auf einen kurzen Sicherheitscheck, bevor alle es spielen können. Bis dahin können deine Freunde es spielen.",
-        "waitingYou": "Wartet auf einen kurzen Sicherheitscheck, bevor alle es spielen können. Bis dahin kannst nur du es spielen.",
-        "pendingUpdate": "Version {pending} wartet auf einen kurzen Sicherheitscheck. Bis sie geprüft ist, spielen alle weiter Version {live}.",
-        "playersOn": "Die Spieler spielen Version {live}. Tipp auf „Spiel aktualisieren“, um ihnen Version {number} zu geben.",
-        "publicCheck": "Spiele für alle bekommen zuerst einen kurzen Sicherheitscheck, und bis er bestanden ist, spielen alle die alte Version.",
-        "onlyYou": "nur du kannst es sehen",
-        "pendingNew": "Version {number} wartet auf einen kurzen Sicherheitscheck. Sobald sie geprüft ist, teilen wir sie.",
-        "reviewer": "Der Prüfer sagt: „{note}“ Bitte den Baumeister, das zu ändern, und tipp dann noch mal auf Aktualisieren oder Freigeben.",
         "sharedWith": "Geteilt mit: {names}",
         "takenOff": "Deine Lehrkraft hat dieses Spiel aus {names} herausgenommen, darum kannst gerade nur du es spielen.",
         "takenOffSome": "Deine Lehrkraft hat es aus {names} herausgenommen.",
         "leftClass": "Du bist nicht mehr in der Klasse, mit der du es geteilt hast, darum kannst gerade nur du es spielen.",
         "pickAgain": "Tippe auf Teilen, um auszuwählen, wer es spielen darf.",
         "onlyYouNow": "Gerade nur du",
+        "updateTo": "Spiel auf Version {number} aktualisieren",
+        "waitingFriends": "Wartet auf einen kurzen Sicherheitscheck, bevor alle es spielen können. Bis dahin können deine Freunde es spielen.",
+        "waitingYou": "Wartet auf einen kurzen Sicherheitscheck, bevor alle es spielen können. Bis dahin kannst nur du es spielen.",
         "waitingPublic": "Wartet auf einen kurzen Sicherheitscheck, bevor alle es spielen können. Bis dahin bleibt es so geteilt wie jetzt.",
         "waitingSchool": "Wartet auf einen kurzen Sicherheitscheck, bevor deine Schule es spielen kann. Bis dahin bleibt es so geteilt wie jetzt.",
-        "waitingClass": "{count, plural, one {Wartet auf einen kurzen Sicherheitscheck, bevor deine Klasse es spielen kann.} other {Wartet auf einen kurzen Sicherheitscheck, bevor deine Klassen es spielen können.}} Bis dahin bleibt es so geteilt wie jetzt."
+        "waitingClass": "{count, plural, one {Wartet auf einen kurzen Sicherheitscheck, bevor deine Klasse es spielen kann.} other {Wartet auf einen kurzen Sicherheitscheck, bevor deine Klassen es spielen können.}} Bis dahin bleibt es so geteilt wie jetzt.",
+        "pendingUpdate": "Version {pending} wartet auf einen kurzen Sicherheitscheck. Bis sie geprüft ist, spielen alle weiter Version {live}.",
+        "playersOn": "Die Spieler spielen Version {live}. Tipp auf „Spiel aktualisieren“, um ihnen Version {number} zu geben.",
+        "publicCheck": "Spiele für alle bekommen zuerst einen kurzen Sicherheitscheck, und bis er bestanden ist, spielen alle die alte Version.",
+        "onlyYou": "nur du kannst es sehen",
+        "pendingNew": "Version {number} wartet auf einen kurzen Sicherheitscheck. Sobald sie geprüft ist, teilen wir sie.",
+        "reviewer": "Der Prüfer sagt: „{note}“ Bitte den Baumeister, das zu ändern, und tipp dann noch mal auf Aktualisieren oder Freigeben."
       },
       "safety": {
         "chipPass": "Sicher",
@@ -1247,8 +1253,6 @@
         "whoLabel": "Wer darf spielen",
         "save": "Speichern",
         "publicHint": "Spiele für alle bekommen zuerst einen kurzen Sicherheitscheck.",
-        "copied": "Link kopiert!",
-        "copyFailed": "Kopieren hat nicht geklappt.",
         "groupHint": "Der Prüf-Roboter hat etwas bemerkt, darum sieht es sich zuerst ein Erwachsener aus unserem Team an.",
         "classOne": "Nur die Kinder und Lehrkräfte in {name} können es finden und spielen.",
         "classMany": "Nur die Kinder und Lehrkräfte in den Klassen, die du auswählst, können es finden und spielen.",
@@ -1259,17 +1263,19 @@
         "classLater": "Klassen, in die du später kommst, werden nicht von selbst hinzugefügt. Komm dann hierher zurück, um sie hinzuzufügen.",
         "pickClass": "Wähle mindestens eine Klasse aus.",
         "classRemoved": "Deine Lehrkraft hat es aus dieser Klasse herausgenommen.",
-        "allRemoved": "{count, plural, one {Deine Lehrkraft hat dieses Spiel aus deiner Klasse herausgenommen.} other {Deine Lehrkräfte haben dieses Spiel aus deinen Klassen herausgenommen.}}"
+        "allRemoved": "{count, plural, one {Deine Lehrkraft hat dieses Spiel aus deiner Klasse herausgenommen.} other {Deine Lehrkräfte haben dieses Spiel aus deinen Klassen herausgenommen.}}",
+        "copied": "Link kopiert!",
+        "copyFailed": "Kopieren hat nicht geklappt."
       },
       "update": {
         "title": "Dein Spiel aktualisieren",
         "text": "Die Spieler spielen {live}. Damit bekommen sie {number}.",
         "version": "Version {number}",
         "publicText": "Weil alle es spielen können, bekommt das Update zuerst einen kurzen Sicherheitscheck. Bis er bestanden ist, spielen alle Version {live}.",
+        "groupText": "Der Prüf-Roboter hat in dieser Version etwas bemerkt, darum sieht sie sich zuerst ein Erwachsener aus unserem Team an. Bis dahin behalten die Spieler Version {live}.",
         "now": "Es wird sofort aktualisiert.",
         "notYet": "Noch nicht",
-        "button": "Aktualisieren",
-        "groupText": "Der Prüf-Roboter hat in dieser Version etwas bemerkt, darum sieht sie sich zuerst ein Erwachsener aus unserem Team an. Bis dahin behalten die Spieler Version {live}."
+        "button": "Aktualisieren"
       },
       "steps": {
         "title": "Hinter den Kulissen",
@@ -1320,7 +1326,8 @@
             "retry": "Runde {n}: findet heraus, was schiefging",
             "next": "Runde {n}: entscheidet, was als Nächstes kommt",
             "plan": "Runde {n}: plant, wie es gebaut wird",
-            "planGame": "Runde {n}: plant die Änderungen"
+            "planGame": "Runde {n}: plant die Änderungen",
+            "msg": "Runde {n}: {m, plural, one {liest deine neue Nachricht} other {liest deine # neuen Nachrichten}}"
           },
           "done": {
             "start": "Runde {n}: hat deine Nachricht gelesen",
@@ -1330,7 +1337,8 @@
             "retry": "Runde {n}: hat herausgefunden, was schiefging",
             "next": "Runde {n}: hat entschieden, was als Nächstes kommt",
             "plan": "Runde {n}: hat geplant, wie es gebaut wird",
-            "planGame": "Runde {n}: hat die Änderungen geplant"
+            "planGame": "Runde {n}: hat die Änderungen geplant",
+            "msg": "Runde {n}: {m, plural, one {hat deine neue Nachricht gelesen} other {hat deine # neuen Nachrichten gelesen}}"
           },
           "learn": {
             "start": "Eine Runde ist jedes Mal, wenn die App die KI fragt. Die KI merkt sich nichts, also schickt die App ihr den Chat noch einmal.",
@@ -1339,7 +1347,8 @@
             "retry": "Wenn ein Werkzeug meldet, dass etwas nicht geklappt hat, liest die KI, warum, und versucht es anders.",
             "next": "Nach jedem Werkzeug liest die KI das Ergebnis und wählt den nächsten Schritt. Diese Schleife macht sie zu einem Agenten.",
             "thinking": "Bevor sie antwortet, denkt diese KI erst still nach, ein bisschen so, wie du etwas im Kopf ausrechnest.",
-            "long": "Bei großen Ideen plant die KI manchmal ein oder zwei Minuten, bevor sie Code schreibt. Sie macht weiter, auch wenn du diese Seite verlässt."
+            "long": "Bei großen Ideen plant die KI manchmal ein oder zwei Minuten, bevor sie Code schreibt. Sie macht weiter, auch wenn du diese Seite verlässt.",
+            "msg": "Diese KI liest neue Nachrichten zwischen den Schritten, nicht mitten in einem. Dann kann sie ihren Plan ändern."
           }
         },
         "write": {
@@ -1408,7 +1417,8 @@
           "g": "KI-Modelle lernen Muster aus riesigen Mengen an Texten und Code, die Menschen geschrieben haben.",
           "h": "KI kann sehr sicher klingen und trotzdem falschliegen. Darum prüft auch ein Sicherheitsprogramm den Code.",
           "i": "✨ Profi-Qualität nutzt eine größere KI, die länger nachdenkt: langsamer, aber oft besser bei kniffligen Spielen.",
-          "j": "Spiel dein Spiel immer selbst. Auch eine schlaue KI übersieht Dinge, die echten Spielern auffallen würden."
+          "j": "Spiel dein Spiel immer selbst. Auch eine schlaue KI übersieht Dinge, die echten Spielern auffallen würden.",
+          "k": "Du kannst neue Ideen schicken, während die KI arbeitet. Sie liest sie zwischen ihren Schritten."
         },
         "leave": "Du kannst diese Seite schließen, deinen Computer zuklappen oder dich abmelden. Der Oomba-Baumeister arbeitet auf unserem Server weiter, und dein Spiel ist da, wenn du zurückkommst.",
         "restart": {
@@ -1422,7 +1432,12 @@
           "learn": "Der Baumeister hat deine Nachricht und deine neueste Version gespeichert. Darum macht er dort weiter, statt von vorn anzufangen."
         },
         "stopRestart": "durch einen Server-Neustart gestoppt",
-        "stopTime": "gestoppt: es hat zu lange gedauert"
+        "stopTime": "gestoppt: es hat zu lange gedauert",
+        "read": {
+          "done": "{m, plural, one {Deine neue Nachricht gelesen} other {Deine # neuen Nachrichten gelesen}}",
+          "learn": "Die einfachen Bausteine schauen zwischen den Schritten nach neuen Nachrichten und wenden dann ihre Regeln darauf an."
+        },
+        "fuRead": "{count, plural, one {# neue Nachricht gelesen} other {# neue Nachrichten gelesen}}"
       },
       "resumed": "🔄 Der Server wurde neu gestartet, darum hat der Baumeister dort weitergemacht, wo er war.",
       "resumedV": "🔄 Der Server wurde neu gestartet, darum hat der Baumeister bei Version {v} weitergemacht.",
@@ -1436,8 +1451,51 @@
       "signedOutBuilding": "Du wurdest abgemeldet. Der Baumeister arbeitet weiter an deinem Spiel: Melde dich wieder an, um es zu sehen.",
       "gameGone": "Dieses Spiel wurde gelöscht, darum hat der Baumeister aufgehört.",
       "followups": {
-        "putBack": "Zurück ins Textfeld"
+        "placeholderAi": "Ergänz deine Idee. Die KI liest das nach diesem Schritt",
+        "placeholderBlocks": "Ergänz deine Idee. Der Baumeister liest es nach dem Schritt",
+        "placeholderShort": "Ergänz deine Idee…",
+        "capPlaceholder": "Mehr geht, wenn dieser Bau fertig ist",
+        "capShort": "Mehr, sobald fertig",
+        "waitingAi": "Wartet, bis die KI sie liest",
+        "waitingBlocks": "Wartet, bis der Baumeister sie liest",
+        "readingAi": "Die KI liest sie gerade",
+        "readAi": "Die KI hat das gelesen",
+        "readBlocks": "Der Baumeister hat das gelesen",
+        "nextBuild": "Damit startet der nächste Bau",
+        "failed": "Senden hat nicht geklappt.",
+        "retry": "Nochmal versuchen",
+        "putBack": "Zurück ins Textfeld",
+        "notRead": {
+          "limit": "Nicht gelesen: heute keine Nachrichten mehr übrig",
+          "error": "Nicht gelesen: Der Baumeister ist durcheinandergekommen",
+          "stopped": "Nicht gelesen: Der Bau wurde gestoppt",
+          "chain": "Noch nicht gelesen. Schick sie noch mal, wenn der Baumeister frei ist"
+        },
+        "gotAi": "{count, plural, one {Deine Nachricht ist angekommen. Die KI liest sie nach diesem Schritt.} other {Deine # Nachrichten sind angekommen. Die KI liest sie nach diesem Schritt.}}",
+        "gotBlocks": "{count, plural, one {Deine Nachricht ist angekommen. Der Baumeister liest sie nach diesem Schritt.} other {Deine # Nachrichten sind angekommen. Der Baumeister liest sie nach diesem Schritt.}}",
+        "writingNow": "Sie schreibt gerade Code und macht das zuerst fertig.",
+        "turnNote": "Zusätzliche Nachrichten während eines Baus werden nicht gezählt. Ist der Baumeister schon fertig, startet deine Nachricht einen neuen Bau und zählt als 1 Nachricht.",
+        "noUploadsHint": "Bilder nach diesem Bau hinzufügen",
+        "announceRead": "Der Baumeister liest deine neue Nachricht",
+        "carriedNote": "Deine Nachricht hat einen neuen Bau gestartet (zählt als 1 Nachricht)"
       },
+      "eta": {
+        "about": "Normalerweise etwa {time}",
+        "range": "Normalerweise {time}",
+        "under": "Normalerweise weniger als eine Minute",
+        "guess": "Etwa {time}",
+        "soFar": "bisher {time}",
+        "tailAbout": "Gespeichert! Der letzte Schliff dauert normalerweise noch etwa {time}",
+        "tailUnder": "Gespeichert! Der letzte Schliff dauert normalerweise noch weniger als eine Minute",
+        "tailGuessAbout": "Gespeichert! Der letzte Schliff kann noch etwa {time} dauern",
+        "tailGuessUnder": "Gespeichert! Der letzte Schliff kann noch weniger als eine Minute dauern",
+        "longer": "Dauert etwas länger als sonst",
+        "big": "Das ist eine große Aufgabe, und sie läuft noch",
+        "newMsg": "Deine neue Nachricht zu lesen kann etwas länger dauern",
+        "learnAi": "Größere Spiele dauern länger, weil die KI mehr Tokens schreibt, eins nach dem anderen.",
+        "learnBlocks": "Die einfachen Bausteine folgen festen Regeln, darum brauchen sie jedes Mal ungefähr gleich lang."
+      },
+      "stillWorking": "Einen Moment, der Baumeister arbeitet noch!",
       "resting": {
         "text": "😴 Der KI-Baumeister ruht sich gerade aus. Er ist {when} wieder da. Dein Spiel und deine Nachrichten sind gespeichert, komm dann einfach wieder!",
         "today": "heute um {time}",
@@ -1638,13 +1696,13 @@
       "publishing": "Spiele teilen",
       "publishSchool": "Nur innerhalb der Schule",
       "publishPublic": "Auch mit allen teilen",
+      "publishingHint": "Schüler in einer Klasse können ein Spiel auch nur mit ihren Klassen teilen.",
       "photos": "Profilfotos von Schulkonten sehen nur Klassenkameraden, Lehrkräfte und Freunde.",
       "chatHint": "Schulkonten können nur Klassenkameraden als Freunde hinzufügen.",
       "timeZone": "Zeitzone",
       "timeZoneNone": "Nicht festgelegt (die Tage werden in UTC gezählt)",
       "timeZoneUnset": "Legen Sie die Zeitzone Ihrer Schule fest, damit Lektionen um Mitternacht beginnen und Fälligkeitstermine bei Ihnen um Mitternacht enden. Bis dahin ist niemand zu spät, bis 36 Stunden nach Beginn des Fälligkeitstags vergangen sind.",
-      "timeZoneHint": "Lektionen beginnen und Fälligkeitstermine enden um Mitternacht in dieser Zeitzone. Dort ist es jetzt {time}.",
-      "publishingHint": "Schüler in einer Klasse können ein Spiel auch nur mit ihren Klassen teilen."
+      "timeZoneHint": "Lektionen beginnen und Fälligkeitstermine enden um Mitternacht in dieser Zeitzone. Dort ist es jetzt {time}."
     },
     "cards": {
       "title": "Anmeldekarten",
@@ -1684,24 +1742,21 @@
       "sameName": "{count, plural, one {Diesen Namen gibt es schon bei {school}: {names}. Nehmen Sie ihn aus der Liste, oder ergänzen Sie einen Anfangsbuchstaben, damit man die Schüler unterscheiden kann.} other {Diese Namen gibt es schon bei {school}: {names}. Nehmen Sie sie aus der Liste, oder ergänzen Sie einen Anfangsbuchstaben, damit man die Schüler unterscheiden kann.}} Um vorhandene Schüler in eine Klasse aufzunehmen, haken Sie sie auf der Klassenseite unter „Schüler“ an.",
       "chooseTeacher": "Wählen Sie eine Lehrkraft.",
       "chooseClass": "Wählen Sie eine Klasse.",
+      "gameNotHere": "Dieses Spiel ist nicht mit dieser Klasse geteilt.",
       "noSchoolAccounts": "Kein Schüler in dieser Klasse hat ein Schulkonto.",
       "badTeacher": "Wählen Sie jemanden aus dem Kollegium der Schule.",
       "adminNotStudent": "Du kümmerst dich um Oomba Academy, deshalb kannst du keiner Klasse als Schüler beitreten.",
       "isStudent": "{name} ist hier Schüler und kann deshalb nicht zum Kollegium hinzugefügt werden.",
       "tickStudents": "Haken Sie mindestens einen Schüler an.",
-      "badZone": "Wählen Sie eine Zeitzone aus der Liste.",
-      "gameNotHere": "Dieses Spiel ist nicht mit dieser Klasse geteilt."
+      "badZone": "Wählen Sie eine Zeitzone aus der Liste."
     },
     "classTabs": {
       "lessons": "Lektionen",
       "progress": "Fortschritt",
+      "games": "Spiele",
       "students": "Schüler",
-      "settings": "Einstellungen",
-      "games": "Spiele"
+      "settings": "Einstellungen"
     },
-    "optional": "(optional)",
-    "me": "ich",
-    "moreFor": "Weitere Optionen für {name}",
     "classGames": {
       "text": "Spiele, die mit dieser Klasse geteilt sind. Wenn eins nicht passt, nimm es heraus: Dann kann es hier nicht wieder geteilt werden, außer du erlaubst es.",
       "by": "von {name}",
@@ -1714,7 +1769,10 @@
       "restored": "Es darf wieder mit {class} geteilt werden, wenn das Kind, das es gebaut hat, das möchte.",
       "hiddenGame": "Ein Spiel, das du gerade nicht öffnen kannst",
       "empty": "Noch keine Spiele mit dieser Klasse geteilt."
-    }
+    },
+    "optional": "(optional)",
+    "me": "ich",
+    "moreFor": "Weitere Optionen für {name}"
   },
   "lessons": {
     "up": "Nach oben",
@@ -1779,6 +1837,7 @@
       "game": "Spiel",
       "myGames": "Meine Spiele",
       "schoolGames": "In meiner Schule geteilt",
+      "classGames": "Mit meinen Klassen geteilt",
       "siteGames": "Oomba-Academy-Spiele",
       "minutes": "Minuten",
       "edit": "Schritt bearbeiten",
@@ -1786,6 +1845,8 @@
       "deleteConfirm": "Diesen Schritt löschen?",
       "notShared": "Ihre Klasse kann dieses Spiel noch nicht öffnen",
       "notSharedHint": "Teilen Sie es zuerst mit Ihrer Schule, oder öffnen Sie es im Studio und tippen Sie auf „Freigeben“.",
+      "classOnly": "Nur die Klassen, mit denen es geteilt ist, können es spielen",
+      "hiddenGame": "Ein Spiel, das du nicht öffnen kannst",
       "shareGame": "Mit meiner Schule teilen",
       "openStudio": "Im Studio öffnen",
       "newGameIdea": "Ihre Idee für das Spiel",
@@ -1798,10 +1859,7 @@
       "bodyGame": "Anleitung (optional)",
       "buildHint": "z. B. „ein Quiz mit 8 Fragen über die Planeten“",
       "newGameLink": "Ein neues Spiel für die Schüler bauen",
-      "deleteWorkConfirm": "Diesen Schritt löschen? Die Arbeiten von {n, plural, one {# Schüler} other {# Schülern}} dazu werden gelöscht. Das kann nicht rückgängig gemacht werden.",
-      "classGames": "Mit meinen Klassen geteilt",
-      "classOnly": "Nur die Klassen, mit denen es geteilt ist, können es spielen",
-      "hiddenGame": "Ein Spiel, das du nicht öffnen kannst"
+      "deleteWorkConfirm": "Diesen Schritt löschen? Die Arbeiten von {n, plural, one {# Schüler} other {# Schülern}} dazu werden gelöscht. Das kann nicht rückgängig gemacht werden."
     },
     "ai": {
       "button": "Mit KI entwerfen",

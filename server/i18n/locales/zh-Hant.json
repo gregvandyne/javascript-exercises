@@ -244,20 +244,20 @@
     "starsLabel": "{count} 個評分，平均 {stars} 顆星（滿分 5 顆）",
     "playing": "{count} 人在玩",
     "gameBy": "{title}，作者：{name}",
+    "classOnly": "僅限班級",
     "by": "作者：{name}",
     "plays": "{n} 次遊玩",
     "seeAll": "看全部",
     "scrollBack": "往回捲動「{title}」",
-    "scrollForward": "往前捲動「{title}」",
-    "classOnly": "僅限班級"
+    "scrollForward": "往前捲動「{title}」"
   },
   "vis": {
     "private": "只有我",
     "friends": "好友",
-    "public": "所有人",
-    "school": "我的學校",
     "class": "{count, plural, other {我的班級}}",
-    "onlyYouNow": "目前只有你"
+    "onlyYouNow": "目前只有你",
+    "public": "所有人",
+    "school": "我的學校"
   },
   "status": {
     "hidden": "已隱藏",
@@ -463,10 +463,12 @@
     "shareText": {
       "private": "只有你能打開這個遊戲。改成「好友」或「所有人」就能分享。",
       "friends": "只有你在 Oomba Academy 上的好友能打開這個連結。",
+      "class": "只有這個遊戲分享到的班級可以開啟這個連結。",
       "public": "任何拿到連結的人都能玩這個遊戲。",
-      "school": "學校裡的每個人都能找到並玩它。",
-      "class": "只有這個遊戲分享到的班級可以開啟這個連結。"
+      "school": "學校裡的每個人都能找到並玩它。"
     },
+    "sharedWith": "分享給：",
+    "sharedWithMore": "{count, plural, other {和另外 # 個班級}}",
     "report": {
       "button": "檢舉",
       "already": "謝謝，我們已經收到你的檢舉了。",
@@ -486,9 +488,7 @@
       "saveFailed": "我們沒辦法儲存。",
       "badScore": "分數有誤。",
       "pickReason": "請選一個原因。"
-    },
-    "sharedWith": "分享給：",
-    "sharedWithMore": "{count, plural, other {和另外 # 個班級}}"
+    }
   },
   "play": {
     "backTo": "回到 {title}",
@@ -746,9 +746,9 @@
     "shareText": {
       "private": "只有你能玩。",
       "friends": "只有你和你在 Oomba Academy 上的好友能玩。",
+      "class": "只有你選的班級可以玩。",
       "public": "經過快速安全檢查後，Oomba Academy 上的所有人都能找到並玩它。",
-      "school": "學校裡的每個人都能找到並玩它。",
-      "class": "只有你選的班級可以玩。"
+      "school": "學校裡的每個人都能找到並玩它。"
     },
     "status": {
       "hidden": "暫時隱藏",
@@ -836,14 +836,14 @@
       "savedDefault": "目前最喜歡的",
       "saved": "已儲存為版本 {number}。",
       "pickWho": "請選擇誰可以玩。",
-      "notLive": "這個遊戲還沒上線。請先按「發布」。",
-      "updatedFriends": "已為你的好友更新！新版本也在等待檢查，通過後所有人才能玩。",
-      "updatedYou": "已為你更新！新版本也在等待檢查，通過後所有人才能玩。",
-      "cantDeleteStarter": "入門遊戲無法刪除。",
       "pickClass": "至少選一個你的班級。",
       "classGone": "你只能分享給你現在所在的班級。",
       "classRemoved": "老師已把這個遊戲從 {name} 移除，所以不能再放回去。",
+      "notLive": "這個遊戲還沒上線。請先按「發布」。",
+      "updatedFriends": "已為你的好友更新！新版本也在等待檢查，通過後所有人才能玩。",
+      "updatedYou": "已為你更新！新版本也在等待檢查，通過後所有人才能玩。",
       "updatedNowWaiting": "更新好了！新版本也在等待快速檢查，通過後更多人才能玩。",
+      "cantDeleteStarter": "入門遊戲無法刪除。",
       "builderWorking": "小幫手正在做這個遊戲。等它做完再試一次。",
       "cantContinue": "這次製作已經沒辦法繼續了。請改傳一則新訊息。",
       "restarting": "我們的伺服器正在重新啟動。請等一下再試一次。",
@@ -861,19 +861,21 @@
     "updateWaiting": "你的更新正在等待快速檢查。在那之前，玩家會繼續玩舊版本。",
     "waiting": "你的遊戲正在等待快速安全檢查。一通過我們就會分享出去。",
     "school": "已在你的學校上線！學校裡的每個人都能找到並玩它。",
-    "schoolOnly": "你的學校讓遊戲只留在學校裡。改成分享給你的學校吧。",
-    "class": "{count, plural, =1 {已在 {name} 上線！班上每個人都能找到並玩它。} other {已在你的班級上線！班上每個人都能找到並玩它。}}"
+    "class": "{count, plural, =1 {已在 {name} 上線！班上每個人都能找到並玩它。} other {已在你的班級上線！班上每個人都能找到並玩它。}}",
+    "schoolOnly": "你的學校讓遊戲只留在學校裡。改成分享給你的學校吧。"
   },
   "builder": {
     "kindRefusal": "這個我沒辦法幫忙。我們來做點好玩的東西吧！你想做什麼樣的遊戲？",
     "scanStillFailing": "安全檢查還是沒通過。點「請小幫手修好」再試一次。",
+    "turnTimeout": "⏱️ 這次製作超過了我們的時間限制，所以我停下來了。你最新的版本已經存好了。告訴我接下來要改什麼吧！",
+    "turnTimeoutNothing": "⏱️ 這次製作超過了我們的時間限制，所以我還沒存到任何東西就停下來了。這次不會用掉你的機會，你可以再試一次。",
     "errors": {
       "disabled": "這個帳號的製作功能已關閉。大人可以請我們重新打開。",
       "empty": "請先輸入訊息或點一個點子。",
       "busy": "小幫手還在處理你上一則訊息。等一下喔！",
+      "tooMany": "你已經有 2 個遊戲在製作中了。等其中一個做好，再試一次。",
       "limit": "你今天的 {count} 次小幫手機會都用完了。明天再來吧！",
       "muddled": "小幫手搞糊塗了。請等一下再試一次。",
-      "tooMany": "你已經有 2 個遊戲在製作中了。等其中一個做好，再試一次。",
       "resting": "AI 小幫手正在休息。你的遊戲和次數都保存好了，晚一點再來吧！"
     },
     "refusals": {
@@ -971,9 +973,13 @@
         }
       }
     },
-    "turnTimeout": "⏱️ 這次製作超過了我們的時間限制，所以我停下來了。你最新的版本已經存好了。告訴我接下來要改什麼吧！",
-    "turnTimeoutNothing": "⏱️ 這次製作超過了我們的時間限制，所以我還沒存到任何東西就停下來了。這次不會用掉你的機會，你可以再試一次。",
     "cutOffNothing": "建造師規劃太久，還沒開始建造就用完了空間。這次沒有用掉你的次數。試試一次只要求一兩個改變。",
+    "followUps": {
+      "cap": "這次製作中，你已經傳了 {max, plural, other {# 則額外的訊息}}。等它做好，再告訴我更多吧！",
+      "refusedCap": "我們先等小幫手把這次製作完成吧。",
+      "noUploads": "這次製作完成後，就能加入圖片和檔案。你可以現在先傳文字，或稍等一下。",
+      "notYours": "這次製作是別人開始的。請等它完成。"
+    },
     "budgetStop": "AI 小幫手現在得休息了，所以我先停在這裡。目前做好的東西都已保存。"
   },
   "uploads": {
@@ -1114,9 +1120,9 @@
       "vis": {
         "private": "只有我",
         "friends": "好友",
+        "class": "{count, plural, other {我的班級}}",
         "public": "所有人",
-        "school": "我的學校",
-        "class": "{count, plural, other {我的班級}}"
+        "school": "我的學校"
       },
       "top": {
         "inReview": "審核中",
@@ -1129,24 +1135,24 @@
         "nothingYet": "還沒有做出任何東西",
         "hidden": "因為有玩家檢舉，這個遊戲暫時被隱藏。我們團隊裡的大人很快就會去看看。",
         "liveVersion": "已上線：版本 {number} · {who}",
-        "updateTo": "把上線遊戲更新到版本 {number}",
-        "waitingFriends": "正在等待快速安全檢查，通過後所有人才能玩。在那之前：你的好友可以玩。",
-        "waitingYou": "正在等待快速安全檢查，通過後所有人才能玩。在那之前：只有你能玩。",
-        "pendingUpdate": "版本 {pending} 正在等待快速安全檢查。通過之前，玩家會繼續玩版本 {live}。",
-        "playersOn": "玩家正在玩版本 {live}。按「更新上線遊戲」讓他們玩到版本 {number}。",
-        "publicCheck": "給所有人玩的遊戲會先經過快速安全檢查，通過之前玩家會繼續玩舊版本。",
-        "onlyYou": "只有你看得到",
-        "pendingNew": "版本 {number} 正在等待快速安全檢查。一通過我們就會分享出去。",
-        "reviewer": "審核員說：「{note}」請小幫手修改，然後再按一次「更新」或「發布」。",
         "sharedWith": "分享給：{names}",
         "takenOff": "老師已把這個遊戲從 {names} 移除，所以目前只有你能玩。",
         "takenOffSome": "老師已把它從 {names} 移除。",
         "leftClass": "你已經不在分享的班級裡了，所以目前只有你能玩。",
         "pickAgain": "點「分享」來選擇誰可以玩。",
         "onlyYouNow": "目前只有你",
+        "updateTo": "把上線遊戲更新到版本 {number}",
+        "waitingFriends": "正在等待快速安全檢查，通過後所有人才能玩。在那之前：你的好友可以玩。",
+        "waitingYou": "正在等待快速安全檢查，通過後所有人才能玩。在那之前：只有你能玩。",
         "waitingPublic": "正在等待快速安全檢查，通過後所有人才能玩。在那之前，分享方式維持現在這樣。",
         "waitingSchool": "正在等待快速安全檢查，通過後你的學校才能玩。在那之前，分享方式維持現在這樣。",
-        "waitingClass": "{count, plural, =1 {正在等待快速安全檢查，通過後你的班級才能玩。} other {正在等待快速安全檢查，通過後你的班級們才能玩。}}在那之前，分享方式維持現在這樣。"
+        "waitingClass": "{count, plural, =1 {正在等待快速安全檢查，通過後你的班級才能玩。} other {正在等待快速安全檢查，通過後你的班級們才能玩。}}在那之前，分享方式維持現在這樣。",
+        "pendingUpdate": "版本 {pending} 正在等待快速安全檢查。通過之前，玩家會繼續玩版本 {live}。",
+        "playersOn": "玩家正在玩版本 {live}。按「更新上線遊戲」讓他們玩到版本 {number}。",
+        "publicCheck": "給所有人玩的遊戲會先經過快速安全檢查，通過之前玩家會繼續玩舊版本。",
+        "onlyYou": "只有你看得到",
+        "pendingNew": "版本 {number} 正在等待快速安全檢查。一通過我們就會分享出去。",
+        "reviewer": "審核員說：「{note}」請小幫手修改，然後再按一次「更新」或「發布」。"
       },
       "safety": {
         "chipPass": "安全",
@@ -1246,8 +1252,6 @@
         "whoLabel": "誰可以玩",
         "save": "儲存",
         "publicHint": "給所有人玩的遊戲會先經過快速安全檢查。",
-        "copied": "已複製連結！",
-        "copyFailed": "無法複製。",
         "groupHint": "機器人檢查員發現了一些地方，所以會先請我們團隊裡的大人看看。",
         "classOne": "只有 {name} 的同學和老師可以找到並玩它。",
         "classMany": "只有你選的班級裡的同學和老師可以找到並玩它。",
@@ -1258,17 +1262,19 @@
         "classLater": "之後加入的班級不會自動加進來。記得回到這裡把它們加上。",
         "pickClass": "至少選一個班級。",
         "classRemoved": "老師已把它從這個班級移除。",
-        "allRemoved": "{count, plural, =1 {老師已把這個遊戲從你的班級移除。} other {老師們已把這個遊戲從你的班級移除。}}"
+        "allRemoved": "{count, plural, =1 {老師已把這個遊戲從你的班級移除。} other {老師們已把這個遊戲從你的班級移除。}}",
+        "copied": "已複製連結！",
+        "copyFailed": "無法複製。"
       },
       "update": {
         "title": "更新你的上線遊戲",
         "text": "玩家正在玩 {live}。這會讓他們玩到 {number}。",
         "version": "版本 {number}",
         "publicText": "因為所有人都能玩，這次更新會先經過快速安全檢查。通過之前，玩家會繼續玩版本 {live}。",
+        "groupText": "機器人檢查員在這個版本裡發現了一些地方，所以會先請我們團隊裡的大人看看。在那之前，玩家會繼續玩版本 {live}。",
         "now": "會立刻更新。",
         "notYet": "先不要",
-        "button": "更新",
-        "groupText": "機器人檢查員在這個版本裡發現了一些地方，所以會先請我們團隊裡的大人看看。在那之前，玩家會繼續玩版本 {live}。"
+        "button": "更新"
       },
       "steps": {
         "title": "幕後大公開",
@@ -1319,7 +1325,8 @@
             "retry": "第 {n} 回合：正在找出哪裡出錯",
             "next": "第 {n} 回合：正在決定下一步",
             "plan": "第 {n} 回合：正在計畫怎麼做",
-            "planGame": "第 {n} 回合：正在計畫要改哪些地方"
+            "planGame": "第 {n} 回合：正在計畫要改哪些地方",
+            "msg": "第 {n} 回合：{m, plural, =1 {正在讀你的新訊息} other {正在讀你的 # 則新訊息}}"
           },
           "done": {
             "start": "第 {n} 回合：讀完你的訊息",
@@ -1329,7 +1336,8 @@
             "retry": "第 {n} 回合：找出了哪裡出錯",
             "next": "第 {n} 回合：決定好下一步",
             "plan": "第 {n} 回合：計畫好怎麼做",
-            "planGame": "第 {n} 回合：計畫好要改哪些地方"
+            "planGame": "第 {n} 回合：計畫好要改哪些地方",
+            "msg": "第 {n} 回合：{m, plural, =1 {讀完你的新訊息} other {讀完你的 # 則新訊息}}"
           },
           "learn": {
             "start": "一個回合，就是 App 問 AI 一次。AI 不會記得，所以 App 每次都會把聊天內容再傳給它。",
@@ -1338,7 +1346,8 @@
             "retry": "當工具說有東西沒成功時，AI 會讀原因，再換個方法試試。",
             "next": "每用完一個工具，AI 會讀結果，再選下一步。像這樣一直循環，就叫做 AI 代理。",
             "thinking": "回答之前，這個 AI 會先安靜地想一想，有點像你在腦袋裡算題目。",
-            "long": "點子很大的時候，AI 可能要花一兩分鐘計畫，才開始寫程式碼。就算你離開這個頁面，它也會繼續做。"
+            "long": "點子很大的時候，AI 可能要花一兩分鐘計畫，才開始寫程式碼。就算你離開這個頁面，它也會繼續做。",
+            "msg": "這個 AI 會在兩個步驟之間讀新訊息，不會在步驟做到一半時讀。讀完後，它可以改變計畫。"
           }
         },
         "write": {
@@ -1407,7 +1416,8 @@
           "g": "AI 模型從人們寫的大量文字和程式碼裡學習規律。",
           "h": "AI 聽起來很有把握，也可能是錯的。所以還有安全程式會檢查程式碼。",
           "i": "✨ 專業品質用的是更大、想得更久的 AI：比較慢，但做困難的遊戲常常更好。",
-          "j": "一定要自己玩玩看你的遊戲。就算是聰明的 AI，也會漏掉真正玩家會注意到的事。"
+          "j": "一定要自己玩玩看你的遊戲。就算是聰明的 AI，也會漏掉真正玩家會注意到的事。",
+          "k": "AI 工作的時候，你也可以傳新點子給它。它會在步驟之間讀。"
         },
         "leave": "你可以關掉這個頁面、關上電腦，或是登出。Oomba 小幫手會在我們的伺服器上繼續工作，你回來的時候，遊戲就會在這裡。",
         "restart": {
@@ -1421,7 +1431,12 @@
           "learn": "小幫手存好了你的訊息和最新的版本，所以會從那裡接著做，不用從頭開始。"
         },
         "stopRestart": "因為伺服器重新啟動而停止",
-        "stopTime": "停止了：花了太久時間"
+        "stopTime": "停止了：花了太久時間",
+        "read": {
+          "done": "{m, plural, =1 {讀完你的新訊息} other {讀完你的 # 則新訊息}}",
+          "learn": "簡單積木會在步驟之間檢查有沒有新訊息，再用它們的規則來處理。"
+        },
+        "fuRead": "{count, plural, other {讀了 # 則新訊息}}"
       },
       "resumed": "🔄 伺服器重新啟動了，所以小幫手從剛才的地方繼續做。",
       "resumedV": "🔄 伺服器重新啟動了，所以小幫手從版本 {v} 繼續做。",
@@ -1435,8 +1450,51 @@
       "signedOutBuilding": "你已被登出。小幫手還在繼續做你的遊戲：重新登入就能看到。",
       "gameGone": "這個遊戲已被刪除，所以小幫手停下來了。",
       "followups": {
-        "putBack": "放回輸入框"
+        "placeholderAi": "補充你的點子。AI 會在目前的步驟做完後讀",
+        "placeholderBlocks": "補充你的點子。小幫手會在目前的步驟做完後讀",
+        "placeholderShort": "補充你的點子…",
+        "capPlaceholder": "這次製作完成後，就能再補充",
+        "capShort": "做好後再補充",
+        "waitingAi": "等 AI 來讀",
+        "waitingBlocks": "等小幫手來讀",
+        "readingAi": "AI 正在讀",
+        "readAi": "AI 讀過了",
+        "readBlocks": "小幫手讀過了",
+        "nextBuild": "這會開始下一次製作",
+        "failed": "沒辦法傳送。",
+        "retry": "再試一次",
+        "putBack": "放回輸入框",
+        "notRead": {
+          "limit": "沒有讀到：今天的次數用完了",
+          "error": "沒有讀到：小幫手搞糊塗了",
+          "stopped": "沒有讀到：製作停止了",
+          "chain": "還沒讀到。等小幫手有空時再傳一次"
+        },
+        "gotAi": "{count, plural, =1 {收到你的訊息了。AI 會在這個步驟後讀它。} other {收到你的 # 則訊息了。AI 會在這個步驟後讀它們。}}",
+        "gotBlocks": "{count, plural, =1 {收到你的訊息了。小幫手會在這個步驟後讀它。} other {收到你的 # 則訊息了。小幫手會在這個步驟後讀它們。}}",
+        "writingNow": "它現在正在寫程式碼，所以會先把這部分寫完。",
+        "turnNote": "額外的訊息不會用掉次數。如果小幫手已經做完了，你的訊息會開始新的製作，並用掉 1 次。",
+        "noUploadsHint": "這次製作完成後再加圖片",
+        "announceRead": "小幫手正在讀你的新訊息",
+        "carriedNote": "你的訊息開始了新的製作（用掉 1 次）"
       },
+      "eta": {
+        "about": "通常大約要 {time}",
+        "range": "通常要 {time}",
+        "under": "通常不到一分鐘",
+        "guess": "大約 {time}",
+        "soFar": "已過 {time}",
+        "tailAbout": "存好了！收尾通常還要大約 {time}",
+        "tailUnder": "存好了！收尾通常不到一分鐘",
+        "tailGuessAbout": "存好了！收尾可能還要大約 {time}",
+        "tailGuessUnder": "存好了！收尾可能不到一分鐘",
+        "longer": "比平常多花了一點時間",
+        "big": "這次的工作比較大，還在進行中",
+        "newMsg": "讀你的新訊息可能會多花一點時間",
+        "learnAi": "遊戲越大，花的時間越久，因為 AI 要一個接一個寫出更多 token。",
+        "learnBlocks": "簡單積木照著固定的規則做事，所以每次花的時間都差不多。"
+      },
+      "stillWorking": "等一下，小幫手還在工作喔！",
       "resting": {
         "text": "😴 AI 小幫手正在休息，會在{when}回來。你的遊戲和次數都保存好了，到時候再來吧！",
         "today": "今天 {time}",
@@ -1637,13 +1695,13 @@
       "publishing": "分享遊戲",
       "publishSchool": "僅限校內",
       "publishPublic": "也可以分享給所有人",
+      "publishingHint": "班上的學生也可以只把遊戲分享給自己的班級。",
       "photos": "學校帳號的個人照片只有同班同學、老師和好友看得到。",
       "chatHint": "學校帳號只能把同班同學加為好友。",
       "timeZone": "時區",
       "timeZoneNone": "未設定（日期以 UTC 計算）",
       "timeZoneUnset": "設定學校的時區後，課程會在您所在地區的午夜開放，截止日期也會在午夜結束。在此之前，截止日開始後的 36 小時內都不算遲交。",
-      "timeZoneHint": "課程會在這個時區的午夜開放，截止日期也會在午夜結束。當地現在是 {time}。",
-      "publishingHint": "班上的學生也可以只把遊戲分享給自己的班級。"
+      "timeZoneHint": "課程會在這個時區的午夜開放，截止日期也會在午夜結束。當地現在是 {time}。"
     },
     "cards": {
       "title": "登入卡",
@@ -1683,24 +1741,21 @@
       "sameName": "{count, plural, other {{school} 已經有以下名字}}：{names}。請從清單中移除，或在名字後加註以便區分。若要把現有學生加入班級，請在班級的「學生」分頁勾選他們。",
       "chooseTeacher": "請選擇老師。",
       "chooseClass": "請選擇班級。",
+      "gameNotHere": "那個遊戲沒有分享給這個班級。",
       "noSchoolAccounts": "這個班級沒有使用學校帳號的學生。",
       "badTeacher": "請選擇學校的教職員。",
       "adminNotStudent": "你負責管理 Oomba Academy，所以不能用學生身分加入班級。",
       "isStudent": "{name} 是這裡的學生，因此無法新增為教職員。",
       "tickStudents": "請至少勾選一位學生。",
-      "badZone": "請從清單中選擇時區。",
-      "gameNotHere": "那個遊戲沒有分享給這個班級。"
+      "badZone": "請從清單中選擇時區。"
     },
     "classTabs": {
       "lessons": "課程",
       "progress": "進度",
+      "games": "遊戲",
       "students": "學生",
-      "settings": "設定",
-      "games": "遊戲"
+      "settings": "設定"
     },
-    "optional": "（選填）",
-    "me": "我",
-    "moreFor": "{name} 的更多選項",
     "classGames": {
       "text": "分享給這個班級的遊戲。如果有不適合班級的，請把它移除：除非你允許，否則它不能再分享到這裡。",
       "by": "作者：{name}",
@@ -1713,7 +1768,10 @@
       "restored": "製作者如果想要，可以再分享給 {class}。",
       "hiddenGame": "一個你現在無法開啟的遊戲",
       "empty": "還沒有分享給這個班級的遊戲。"
-    }
+    },
+    "optional": "（選填）",
+    "me": "我",
+    "moreFor": "{name} 的更多選項"
   },
   "lessons": {
     "up": "上移",
@@ -1778,6 +1836,7 @@
       "game": "遊戲",
       "myGames": "我的遊戲",
       "schoolGames": "校內分享",
+      "classGames": "分享給我的班級",
       "siteGames": "Oomba Academy 遊戲",
       "minutes": "分鐘",
       "edit": "編輯步驟",
@@ -1785,6 +1844,8 @@
       "deleteConfirm": "要刪除這個步驟嗎？",
       "notShared": "你的班級還不能開啟這個遊戲",
       "notSharedHint": "請先分享給你的學校，或在工作室中開啟並按「發布」。",
+      "classOnly": "只有分享到的班級可以玩",
+      "hiddenGame": "一個你無法開啟的遊戲",
       "shareGame": "分享給我的學校",
       "openStudio": "在工作室中開啟",
       "newGameIdea": "你的遊戲點子",
@@ -1797,10 +1858,7 @@
       "bodyGame": "說明（選填）",
       "buildHint": "例如：「一個有 8 題關於行星的問答遊戲」",
       "newGameLink": "製作新遊戲給學生玩",
-      "deleteWorkConfirm": "要刪除這個步驟嗎？這個步驟中 {n, plural, other {# 位學生的作品}}也會一併刪除。此動作無法復原。",
-      "classGames": "分享給我的班級",
-      "classOnly": "只有分享到的班級可以玩",
-      "hiddenGame": "一個你無法開啟的遊戲"
+      "deleteWorkConfirm": "要刪除這個步驟嗎？這個步驟中 {n, plural, other {# 位學生的作品}}也會一併刪除。此動作無法復原。"
     },
     "ai": {
       "button": "用 AI 擬草稿",
