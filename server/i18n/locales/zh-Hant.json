@@ -174,7 +174,8 @@
       "colorHeading": "顏色",
       "colorGroup": "顏色",
       "colorLabel": "顏色 {color}",
-      "avatarHeading": "或選一個表情符號"
+      "avatarHeading": "或選一個表情符號",
+      "edit": "編輯照片"
     },
     "language": {
       "heading": "語言",
@@ -1063,7 +1064,8 @@
       "photoChecking": "正在檢查你的照片…",
       "photoSaved": "照片已儲存！",
       "photoRemoved": "照片已移除",
-      "photoBad": "這個檔案不是能用的照片，換一張試試。"
+      "photoBad": "這個檔案不是能用的照片，換一張試試。",
+      "lookTitle": "選擇你的造型"
     },
     "profile": {
       "linkCopied": "已複製個人檔案連結！"

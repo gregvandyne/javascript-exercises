@@ -175,7 +175,8 @@
       "colorHeading": "Kleur",
       "colorGroup": "Kleur",
       "colorLabel": "Kleur {color}",
-      "avatarHeading": "Of kies een emoji"
+      "avatarHeading": "Of kies een emoji",
+      "edit": "Foto aanpassen"
     },
     "language": {
       "heading": "Taal",
@@ -1064,7 +1065,8 @@
       "photoChecking": "Je foto wordt gecheckt…",
       "photoSaved": "Foto opgeslagen!",
       "photoRemoved": "Foto weggehaald",
-      "photoBad": "Dat bestand is geen foto die we kunnen gebruiken. Probeer een andere."
+      "photoBad": "Dat bestand is geen foto die we kunnen gebruiken. Probeer een andere.",
+      "lookTitle": "Kies je look"
     },
     "profile": {
       "linkCopied": "Profiellink gekopieerd!"

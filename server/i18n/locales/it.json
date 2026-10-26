@@ -175,7 +175,8 @@
       "colorHeading": "Colore",
       "colorGroup": "Colore",
       "colorLabel": "Colore {color}",
-      "avatarHeading": "Oppure scegli un’emoji"
+      "avatarHeading": "Oppure scegli un’emoji",
+      "edit": "Modifica foto"
     },
     "language": {
       "heading": "Lingua",
@@ -1064,7 +1065,8 @@
       "photoChecking": "Controllo la tua foto…",
       "photoSaved": "Foto salvata!",
       "photoRemoved": "Foto tolta",
-      "photoBad": "Questo file non è una foto che possiamo usare. Provane un’altra."
+      "photoBad": "Questo file non è una foto che possiamo usare. Provane un’altra.",
+      "lookTitle": "Scegli il tuo look"
     },
     "profile": {
       "linkCopied": "Link del profilo copiato!"

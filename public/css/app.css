@@ -374,6 +374,15 @@ body.playmode{background:#000;padding-bottom:0;overflow:hidden}
 .divider{display:flex;align-items:center;gap:12px;color:var(--muted);font-weight:700;margin:18px 0}
 .divider::before,.divider::after{content:"";flex:1;height:2px;background:var(--line)}
 /* Sign in with Google (Google's branding: multicolour G, 40px pill, Roboto Medium where the device has it, e.g. Chromebooks). */
+/* Me page: the picture with "Edit photo" under it; the sheet holds the photo, the emoji and the colour. */
+.lookme{display:flex;flex-direction:column;align-items:center;gap:12px;margin-top:8px}
+.looksec+.looksec{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+.looksec h3{margin:0 0 6px}
+.looksec p{margin:0 0 10px}
+.lookmenu{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
+.lookmenu .chip{justify-content:center;padding:0;min-width:0;width:100%}
+.lookemoji{font-size:1.4rem}
+@media (max-width:420px){.lookmenu{grid-template-columns:repeat(5,minmax(0,1fr))}}
 .gsign{display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:14px}
 .gbtn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;max-width:400px;min-height:40px;padding:0 12px;
   border-radius:20px;background:var(--gbtn-bg);color:var(--gbtn-text);box-shadow:inset 0 0 0 1px var(--gbtn-border);
@@ -501,24 +510,6 @@ code{overflow-wrap:anywhere}
 /* Profile photos */
 .avatar.has-photo{overflow:hidden;background:var(--card-2)}
 .avatar.has-photo img{width:100%;height:100%;object-fit:cover;display:block;border-radius:50%}
-.photo-row{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
-/* Me page: the emoji and colour pickers are dropdowns (a <details> each) instead of long open lists. */
-.lookpicks{display:flex;flex-wrap:wrap;gap:12px;margin-top:16px}
-.lookdrop{min-width:0;max-width:100%}
-.lookdrop[open]{flex-basis:100%}
-.lookdrop>summary{list-style:none;gap:10px}
-.lookdrop>summary::-webkit-details-marker{display:none}
-.lookcur{font-size:1.4rem;line-height:1}
-.lookcaret{font-size:.8rem;color:var(--muted);transition:transform .15s}
-.lookdrop[open] .lookcaret{transform:rotate(180deg)}
-.lookmenu{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;max-width:420px;margin-top:10px;
-  padding:12px;border-radius:var(--r-sm);background:var(--card-2)}
-.lookmenu .chip{justify-content:center;padding:0;min-width:0;width:100%}
-.lookemoji{font-size:1.4rem}
-@media (prefers-reduced-motion:reduce){.lookcaret{transition:none}}
-.photo-ctl{flex:1;min-width:200px}
-.photo-ctl h3{margin:0 0 4px}
-.photo-ctl p{margin:0 0 10px}
 /* Me page: Language and Appearance side by side when there is room. */
 .mesettings{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:16px;margin-block:16px}
 .mesettings>.panel{margin:0}
