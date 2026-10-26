@@ -15,6 +15,22 @@ export function parsePublicUrl(v, name = 'PUBLIC_URL') {
   if (u) { u.username = ''; u.password = ''; u.search = ''; u.hash = ''; shown = ` (got "${u.href}")`; }
   return { url: '', error: `${name} must look like https://play.example.com, with no path, user name or password${shown}` };
 }
+/** A Host header or host name for comparing: lower case, no :80 / :443, no trailing dot ("Old.Example.com.:443" ->
+ *  "old.example.com"). Other ports stay ("localhost:3000"). */
+export const hostOnly = h => String(h || '').trim().toLowerCase().replace(/:(80|443)$/, '').replace(/\.$/, '');
+/** A host name, with an optional port. */
+export const HOST_RE = /^[a-z0-9]([a-z0-9.-]*[a-z0-9])?(:\d{1,5})?$/;
+/** REDIRECT_HOSTS: more old names that redirect to PUBLIC_URL (comma list of host or host:port), or an error message.
+ *  The value is never echoed, and PUBLIC_URL's own host can't be listed (it would redirect to itself). */
+export function parseRedirectHosts(v, publicUrl) {
+  const list = String(v || '').split(',').map(hostOnly).filter(Boolean);
+  if (!list.length) return { hosts: [] };
+  if (list.some(h => !HOST_RE.test(h))) return { hosts: [], error: 'REDIRECT_HOSTS must be a comma-separated list of host names, like old.example.com or old.example.com:8080' };
+  if (!publicUrl) return { hosts: [], error: 'REDIRECT_HOSTS is set but PUBLIC_URL is not: there is nothing to redirect to' };
+  const own = hostOnly(new URL(publicUrl).host);
+  if (list.includes(own)) return { hosts: [], error: `REDIRECT_HOSTS lists PUBLIC_URL's own host (${own}): it would redirect to itself` };
+  return { hosts: [...new Set(list)] };
+}
 /** An on/off variable: unset or '' -> fallback; 1/true/yes/on and 0/false/no/off (any case); anything else -> error. */
 export function parseFlag(v, name, fallback = false) {
   if (v === undefined || v === '') return { on: fallback };
@@ -28,6 +44,9 @@ export function parseFlag(v, name, fallback = false) {
 export const MIN_SECRET_LENGTH = 32;
 const publicUrl = parsePublicUrl(process.env.PUBLIC_URL);
 const movedTo = parsePublicUrl(process.env.MOVED_TO_URL, 'MOVED_TO_URL');
+const redirectHosts = parseRedirectHosts(process.env.REDIRECT_HOSTS, publicUrl.url);
+// Set by Render itself (the service's onrender.com name); anything that doesn't look like a host name is ignored.
+const renderHost = hostOnly(process.env.RENDER_EXTERNAL_HOSTNAME);
 const requireSecret = parseFlag(process.env.REQUIRE_SESSION_SECRET, 'REQUIRE_SESSION_SECRET');
 const maintenance = parseFlag(process.env.MAINTENANCE_MODE, 'MAINTENANCE_MODE');
 const movedPermanently = parseFlag(process.env.MOVED_PERMANENTLY, 'MOVED_PERMANENTLY');
@@ -46,9 +65,13 @@ export const config = {
   requireSessionSecret: requireSecret.on,
   // The site's public address, for login cards and same-origin checks behind a proxy that rewrites Host.
   publicUrl: publicUrl.url,
+  // The domain move (server/domain.js): with PUBLIC_URL set, page loads on these old names go to the same page on
+  // PUBLIC_URL, signed in. Render's own name (RENDER_EXTERNAL_HOSTNAME), PUBLIC_URL's www. twin and REDIRECT_HOSTS.
+  renderHost: HOST_RE.test(renderHost) ? renderHost : '',
+  redirectHosts: redirectHosts.hosts,
   // Startup refuses a malformed setting instead of silently ignoring it (server/index.js).
   configErrors: [
-    publicUrl.error, movedTo.error, requireSecret.error, maintenance.error, movedPermanently.error,
+    publicUrl.error, movedTo.error, redirectHosts.error, requireSecret.error, maintenance.error, movedPermanently.error,
     !JOURNAL_MODES.includes(journalMode) && `BRB_JOURNAL_MODE must be one of ${JOURNAL_MODES.join(', ')}`,
     requireSecret.on && sessionSecret && sessionSecret.length < MIN_SECRET_LENGTH
       && `SESSION_SECRET is shorter than ${MIN_SECRET_LENGTH} characters, which REQUIRE_SESSION_SECRET=1 refuses (make one with: openssl rand -hex 32)`,

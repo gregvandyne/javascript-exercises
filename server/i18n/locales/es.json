@@ -64,6 +64,12 @@
       "heading": "Oomba Academy se muda a una casa nueva",
       "text": "Volvemos en unos minutos. Tus juegos y partidas guardadas están a salvo."
     },
+    "moved": {
+      "title": "¡Nos mudamos!",
+      "heading": "Oomba Academy tiene una dirección nueva",
+      "text": "Te llevamos a {site}…",
+      "link": "Ir a {site}"
+    },
     "api": {
       "notFound": "No encontrado",
       "tooBig": "Eso es demasiado grande.",
@@ -108,6 +114,7 @@
       "introSignup": "Solo un nombre divertido y una contraseña. No hace falta correo.",
       "introLogin": "Entra con tu nombre de Oomba Academy y tu contraseña.",
       "signedOut": "Se cerró tu sesión. Vuelve a entrar para seguir.",
+      "moved": "Oomba Academy tiene una dirección nueva: {site}. Por favor, vuelve a entrar.",
       "upgradeNotice": "Estás jugando como <b>{name}</b>. Todo lo que guardaste viene contigo.",
       "nameLabelSignup": "Elige un nombre divertido",
       "nameLabelLogin": "Tu nombre de Oomba Academy",

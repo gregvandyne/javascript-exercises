@@ -65,6 +65,12 @@
       "heading": "Oomba Academy עוברת לבית חדש",
       "text": "נחזור בעוד כמה דקות. המשחקים והשמירות שלכם בטוחים."
     },
+    "moved": {
+      "title": "עברנו!",
+      "heading": "ל-Oomba Academy יש כתובת חדשה",
+      "text": "מעבירים אתכם אל {site}…",
+      "link": "מעבר אל {site}"
+    },
     "api": {
       "notFound": "לא נמצא",
       "tooBig": "זה גדול מדי.",
@@ -109,6 +115,7 @@
       "introSignup": "רק שם כיפי וסיסמה. לא צריך מייל.",
       "introLogin": "התחברו עם השם והסיסמה שלכם ב-Oomba Academy.",
       "signedOut": "נותקתם. התחברו שוב כדי להמשיך.",
+      "moved": "ל-Oomba Academy יש כתובת חדשה: {site}. התחברו שוב, בבקשה.",
       "upgradeNotice": "אתם משחקים בתור <b>{name}</b>. כל מה ששמרתם עובר איתכם.",
       "nameLabelSignup": "בחרו שם כיפי",
       "nameLabelLogin": "השם שלכם ב-Oomba Academy",

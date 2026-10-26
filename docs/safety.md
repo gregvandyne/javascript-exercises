@@ -321,7 +321,8 @@ The same facts as the grown-ups page (`/parents`, text in `info.parents.*`), kep
 - **Never asked for:** email addresses, ages, home addresses, locations or payment details. Nothing is for sale: no
   real-money purchases, loot boxes or paid boosts. No ads, and no advertising or tracking cookies (the only cookies are
   the sign-in, language and theme, and for a day after a sign-in ends on a device, a signed note of whose it was, so the
-  next person isn't sent to that page). The optional PostHog hook (`POSTHOG_KEY`) is off unless set and nothing calls it.
+  next person isn't sent to that page; and, for two minutes while moving from an old web address to the new one, a
+  random one-time code). The optional PostHog hook (`POSTHOG_KEY`) is off unless set and nothing calls it.
 - **Stored for own accounts:** a made-up username, a bcrypt password hash, the games they make with their Builder chats
   and uploads, saves, scores, ratings, favorites, friends, chat messages, a profile photo if uploaded, and settings
   (language, theme). Each sign-in keeps the browser's name (user agent). Guests: a made-up name, saves, scores, ratings

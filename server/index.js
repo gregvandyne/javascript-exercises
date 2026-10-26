@@ -11,13 +11,14 @@ try {
   mods = {
     ...(await import('./app.js')), ...(await import('./db.js')), ...(await import('./auth.js')), ...(await import('./services/jobs.js')),
     ...(await import('./services/shots.js')), ...(await import('./services/snapshot.js')), ...(await import('./builder/agent.js')), ...(await import('./shutdown.js')),
+    ...(await import('./domain.js')), ...(await import('./site.js')),
   };
 } catch (e) {
   // e.g. REQUIRE_SESSION_SECRET=1 without SESSION_SECRET, an unwritable data folder, a bad BRB_JOURNAL_MODE.
   log('error', 'startup failed', { error: e.message });
   process.exit(1);
 }
-const { createApp, trustProxySetting, db, JOURNAL_MODE, secretSource, startJobs, startSweeper, stopSweeper, closeBrowser, busyCount, makeShutdown } = mods;
+const { createApp, trustProxySetting, db, JOURNAL_MODE, secretSource, startJobs, startSweeper, stopSweeper, closeBrowser, busyCount, makeShutdown, startHostCheck, stopHostCheck, legacyHosts } = mods;
 
 if (secretSource !== 'env' && config.env === 'production') {
   log('warn', 'SESSION_SECRET is not set: sessions are signed with a secret stored in the database. Set SESSION_SECRET (scripts/export-session-secret.js copies the current one, so nobody is signed out) and REQUIRE_SESSION_SECRET=1.', { secretSource });
@@ -26,11 +27,15 @@ if (secretSource !== 'env' && config.env === 'production') {
 }
 
 const app = createApp();
-const server = app.listen(config.port, () => log('info', 'listening', {
-  port: config.port, builder: config.anthropicKey ? 'claude' : 'mock', journalMode: JOURNAL_MODE, trustProxy: trustProxySetting(),
-  publicUrl: config.publicUrl || null, sessionSecret: secretSource, maintenance: config.maintenance || undefined, movedTo: config.movedTo || undefined,
-  movedPermanently: config.movedTo ? config.movedPermanently : undefined,
-}));
+const server = app.listen(config.port, () => {
+  log('info', 'listening', {
+    port: config.port, builder: config.anthropicKey ? 'claude' : 'mock', journalMode: JOURNAL_MODE, trustProxy: trustProxySetting(),
+    // redirectHosts: the old names that will go to PUBLIC_URL once its self-check passes (server/domain.js).
+    publicUrl: config.publicUrl || null, redirectHosts: [...legacyHosts()], sessionSecret: secretSource, maintenance: config.maintenance || undefined,
+    movedTo: config.movedTo || undefined, movedPermanently: config.movedTo ? config.movedPermanently : undefined,
+  });
+  startHostCheck();
+});
 // Keep idle connections open longer than the load balancer does (ALB: 60 s), or it may reuse one we just closed: a 502.
 server.keepAliveTimeout = config.keepAliveTimeoutMs;
 server.headersTimeout = config.keepAliveTimeoutMs + 1000;
@@ -40,7 +45,7 @@ const stopJobs = startJobs();
 startSweeper();
 const shutdown = makeShutdown({
   server, graceMs: config.shutdownGraceMs, busy: busyCount, log,
-  stop: () => { stopJobs(); stopSweeper(); },
+  stop: () => { stopJobs(); stopSweeper(); stopHostCheck(); },
   close: () => { closeBrowser(); db.close(); },
 });
 process.on('SIGTERM', () => shutdown('SIGTERM'));

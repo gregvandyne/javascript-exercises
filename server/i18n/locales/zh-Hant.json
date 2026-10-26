@@ -64,6 +64,12 @@
       "heading": "Oomba Academy 正在搬新家",
       "text": "幾分鐘後就回來。你的遊戲和存檔都很安全。"
     },
+    "moved": {
+      "title": "我們搬家了！",
+      "heading": "Oomba Academy 有新網址了",
+      "text": "正在帶你前往 {site}…",
+      "link": "前往 {site}"
+    },
     "api": {
       "notFound": "找不到",
       "tooBig": "太大了。",
@@ -108,6 +114,7 @@
       "introSignup": "只要一個好玩的名字和密碼，不需要電子郵件。",
       "introLogin": "用你的 Oomba Academy 名字和密碼登入。",
       "signedOut": "你已被登出。請重新登入後繼續。",
+      "moved": "Oomba Academy 有新網址了：{site}。請再登入一次。",
       "upgradeNotice": "你現在以 <b>{name}</b> 的身分在玩。你存下來的東西都會一起帶過去。",
       "nameLabelSignup": "取一個好玩的名字",
       "nameLabelLogin": "你的 Oomba Academy 名字",

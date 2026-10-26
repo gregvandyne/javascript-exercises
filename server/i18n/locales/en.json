@@ -65,6 +65,12 @@
       "heading": "Oomba Academy is moving to a new home",
       "text": "We'll be back in a few minutes. Your games and saves are safe."
     },
+    "moved": {
+      "title": "We've moved!",
+      "heading": "Oomba Academy has a new address",
+      "text": "Taking you to {site}…",
+      "link": "Go to {site}"
+    },
     "api": {
       "notFound": "Not found",
       "tooBig": "That is too big.",
@@ -109,6 +115,7 @@
       "introSignup": "Just a fun name and a password. No email needed.",
       "introLogin": "Sign in with your Oomba Academy name and password.",
       "signedOut": "You were signed out. Sign in again to carry on.",
+      "moved": "Oomba Academy has a new address: {site}. Please sign in once more.",
       "upgradeNotice": "You are playing as <b>{name}</b>. Everything you saved comes with you.",
       "nameLabelSignup": "Pick a fun name",
       "nameLabelLogin": "Your Oomba Academy name",

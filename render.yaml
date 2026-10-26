@@ -9,6 +9,9 @@ services:
       name: brb-data
       mountPath: /data
       sizeGB: 2
+    # Moving to your own domain (oomba.ai): add the domain under Settings → Custom Domains, wait for "Verified",
+    # then set PUBLIC_URL=https://oomba.ai in the dashboard. Old names move over once the server checks it can be reached
+    # there (README: PUBLIC_URL). Sign in with Google later needs GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET (dashboard).
     envVars:
       - key: NODE_ENV
         value: production

@@ -25,6 +25,9 @@ import { router as schoolRoutes } from './routes/schools.js';
 import { router as lessonRoutes } from './routes/lessons.js';
 import { router as progressRoutes } from './routes/progress.js';
 import { router as infoRoutes } from './routes/info.js';
+import { router as handoffRoutes } from './routes/handoff.js';
+import { canonicalRedirect, hostCheckRoute, HOST_CHECK_PATH } from './domain.js';
+import { hostOnly } from './site.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 export const SITE_CSP = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; frame-src 'self'; media-src 'self' data: blob:; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'";
@@ -50,6 +53,8 @@ export function createApp() {
   app.use((req, res, next) => { if (lifecycle.draining) res.set('Connection', 'close'); next(); });
   // Health first: no request log line per probe, no session, works in maintenance mode.
   app.get('/health', health);
+  // The domain move's self-check (server/domain.js): PUBLIC_URL reaches this very process. Same treatment as /health.
+  app.get(HOST_CHECK_PATH + ':id', hostCheckRoute);
   if (!trust) {
     app.use((req, res, next) => {
       if (!warned.xff && req.headers['x-forwarded-for']) {
@@ -79,12 +84,16 @@ export function createApp() {
   // Security headers for the site (the game frame overrides CSP with its own, stricter one).
   app.use((req, res, next) => {
     res.set({ 'Content-Security-Policy': SITE_CSP, 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'same-origin', 'X-Frame-Options': 'DENY', 'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), payment=(), interest-cohort=()', 'Cross-Origin-Opener-Policy': 'same-origin' });
-    if (config.env === 'production') res.set('Strict-Transport-Security', 'max-age=31536000');
+    // Not when PUBLIC_URL says the site is plain http (a test or an internal name): HSTS there would lock browsers out.
+    if (config.env === 'production' && !config.publicUrl.startsWith('http:')) res.set('Strict-Transport-Security', 'max-age=31536000');
     next();
   });
   // Moving day (see docs/deploy-aws.md / deploy-azure.md, cut-over): the old host redirects, or says "back soon".
   if (config.movedTo) app.use(movedTo);
   if (config.maintenance) app.use(maintenancePage);
+  // The domain move: page loads on an old name (magic-cup.onrender.com) go to PUBLIC_URL. Off until PUBLIC_URL is set
+  // and its self-check passed; MOVED_TO_URL and MAINTENANCE_MODE above still win.
+  app.use(canonicalRedirect);
   // Self-hosted game libraries (public/vendor/three/<version>/ for 3D games). A versioned folder never changes, so it is
   // cached for a year. Game frames are opaque-origin and load these as module scripts, which needs CORS.
   // A CORS preflight (only sent if something adds request headers, e.g. a test harness) is answered too: public files, no credentials.
@@ -129,6 +138,7 @@ export function createApp() {
   app.use(express.json({ limit: '3mb', ...NO_INFLATE }));
   app.use(express.text({ type: 'text/plain', limit: '64kb', ...NO_INFLATE }));
   app.use(sessionMiddleware);
+  app.use(handoffRoutes);   // before countVisits: hand-off hops are never counted as visits
   app.use(countVisits);
   app.use(i18n);
   app.use(theme);
@@ -151,7 +161,6 @@ export function createApp() {
   return app;
 }
 
-const hostOnly = h => String(h || '').toLowerCase().replace(/:(80|443)$/, '').replace(/\.$/, '');
 /** MOVED_TO_URL: the same path on the new site. A request that already arrives on the new site's name (DNS still
  *  pointing here during a move) gets the "moving" page: redirecting it to itself would loop. */
 function movedTo(req, res) {
