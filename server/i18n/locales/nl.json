@@ -233,13 +233,16 @@
     "plays": "{count, plural, one {{n}× gespeeld} other {{n}× gespeeld}}",
     "seeAll": "Alles zien",
     "scrollBack": "{title} terug scrollen",
-    "scrollForward": "{title} verder scrollen"
+    "scrollForward": "{title} verder scrollen",
+    "classOnly": "Alleen de klas"
   },
   "vis": {
     "private": "Alleen ik",
     "friends": "Vrienden",
     "public": "Iedereen",
-    "school": "Mijn school"
+    "school": "Mijn school",
+    "class": "{count, plural, one {Mijn klas} other {Mijn klassen}}",
+    "onlyYouNow": "Nu alleen jij"
   },
   "status": {
     "hidden": "Verborgen",
@@ -446,7 +449,8 @@
       "private": "Alleen jij kunt deze game openen. Zet hem op Vrienden of Iedereen om hem te delen.",
       "friends": "Alleen je vrienden op Oomba Academy kunnen deze link openen.",
       "public": "Iedereen met de link kan deze game spelen.",
-      "school": "Iedereen op je school kan hem vinden en spelen."
+      "school": "Iedereen op je school kan hem vinden en spelen.",
+      "class": "Alleen de klassen waarmee deze game is gedeeld kunnen deze link openen."
     },
     "report": {
       "button": "Melden",
@@ -467,7 +471,9 @@
       "saveFailed": "We konden dat niet opslaan.",
       "badScore": "Ongeldige score.",
       "pickReason": "Kies een reden."
-    }
+    },
+    "sharedWith": "Gedeeld met:",
+    "sharedWithMore": "{count, plural, one {en # andere klas} other {en # andere klassen}}"
   },
   "play": {
     "backTo": "Terug naar {title}",
@@ -720,7 +726,8 @@
       "private": "Alleen jij kunt hem spelen.",
       "friends": "Alleen jij en je vrienden op Oomba Academy kunnen hem spelen.",
       "public": "Iedereen op Oomba Academy kan hem vinden en spelen, na een snelle veiligheidscheck.",
-      "school": "Iedereen op je school kan hem vinden en spelen."
+      "school": "Iedereen op je school kan hem vinden en spelen.",
+      "class": "Alleen de klassen die je hebt gekozen kunnen hem spelen."
     },
     "status": {
       "hidden": "Even verborgen",
@@ -810,7 +817,11 @@
       "notLive": "Deze game staat nog niet online. Gebruik eerst Publiceren.",
       "updatedFriends": "Bijgewerkt voor je vrienden! De nieuwe versie wacht ook nog op een check voordat iedereen hem kan spelen.",
       "updatedYou": "Bijgewerkt voor jou! De nieuwe versie wacht ook nog op een check voordat iedereen hem kan spelen.",
-      "cantDeleteStarter": "Startspellen kunnen niet worden verwijderd."
+      "cantDeleteStarter": "Startspellen kunnen niet worden verwijderd.",
+      "pickClass": "Kies minstens een van je klassen.",
+      "classGone": "Je kunt alleen delen met klassen waar je nu in zit.",
+      "classRemoved": "Je leerkracht heeft deze game uit {name} gehaald, dus hij kan daar niet terug.",
+      "updatedNowWaiting": "Bijgewerkt! De nieuwe versie wacht ook nog op een snelle check voordat meer mensen kunnen spelen."
     }
   },
   "publish": {
@@ -824,7 +835,8 @@
     "updateWaiting": "Je update wacht op een snelle check. Tot die tijd spelen spelers de oude versie.",
     "waiting": "Je game wacht op een snelle veiligheidscheck. We delen hem zodra hij is goedgekeurd.",
     "school": "Online voor je school! Iedereen op je school kan hem vinden en spelen.",
-    "schoolOnly": "Je school houdt games binnen de school. Deel hem dus met je school."
+    "schoolOnly": "Je school houdt games binnen de school. Deel hem dus met je school.",
+    "class": "{count, plural, one {Online voor {name}! Iedereen in je klas kan hem vinden en spelen.} other {Online voor je klassen! Iedereen daarin kan hem vinden en spelen.}}"
   },
   "builder": {
     "kindRefusal": "Daar kan ik niet mee helpen. Laten we iets leuks bouwen! Wat voor game wil je graag?",
@@ -1076,7 +1088,8 @@
         "private": "Alleen ik",
         "friends": "Vrienden",
         "public": "Iedereen",
-        "school": "Mijn school"
+        "school": "Mijn school",
+        "class": "{count, plural, one {Mijn klas} other {Mijn klassen}}"
       },
       "top": {
         "inReview": "Wordt bekeken",
@@ -1097,7 +1110,16 @@
         "publicCheck": "Games voor iedereen krijgen eerst een snelle veiligheidscheck, en spelers houden de oude versie tot hij is goedgekeurd.",
         "onlyYou": "alleen jij kunt hem zien",
         "pendingNew": "Versie {number} wacht op een snelle veiligheidscheck. We delen hem zodra hij is goedgekeurd.",
-        "reviewer": "De controleur zegt: “{note}” Vraag de Bouwer om het te veranderen en druk dan nog eens op Bijwerken of Publiceren."
+        "reviewer": "De controleur zegt: “{note}” Vraag de Bouwer om het te veranderen en druk dan nog eens op Bijwerken of Publiceren.",
+        "sharedWith": "Gedeeld met: {names}",
+        "takenOff": "Je leerkracht heeft deze game uit {names} gehaald, dus nu kun alleen jij hem spelen.",
+        "takenOffSome": "Je leerkracht heeft hem uit {names} gehaald.",
+        "leftClass": "Je zit niet meer in de klas waarmee je hem hebt gedeeld, dus nu kun alleen jij hem spelen.",
+        "pickAgain": "Tik op Delen om te kiezen wie hem mag spelen.",
+        "onlyYouNow": "Nu alleen jij",
+        "waitingPublic": "Wacht op een snelle veiligheidscheck voordat iedereen kan spelen. Tot die tijd blijft hij gedeeld zoals nu.",
+        "waitingSchool": "Wacht op een snelle veiligheidscheck voordat je school kan spelen. Tot die tijd blijft hij gedeeld zoals nu.",
+        "waitingClass": "{count, plural, one {Wacht op een snelle veiligheidscheck voordat je klas kan spelen.} other {Wacht op een snelle veiligheidscheck voordat je klassen kunnen spelen.}} Tot die tijd blijft hij gedeeld zoals nu."
       },
       "safety": {
         "chipPass": "Veilig",
@@ -1198,7 +1220,18 @@
         "save": "Opslaan",
         "publicHint": "Games voor iedereen krijgen eerst een snelle veiligheidscheck.",
         "copied": "Link gekopieerd!",
-        "copyFailed": "Kopiëren lukte niet."
+        "copyFailed": "Kopiëren lukte niet.",
+        "groupHint": "De controle-robot zag iets, dus een volwassene uit ons team kijkt er eerst naar.",
+        "classOne": "Alleen de kinderen en leerkrachten in {name} kunnen hem vinden en spelen.",
+        "classMany": "Alleen de kinderen en leerkrachten in de klassen die je kiest kunnen hem vinden en spelen.",
+        "classesLegend": "Welke klassen?",
+        "allClasses": "Al mijn klassen",
+        "allOpenClasses": "Alle klassen die ik kan kiezen",
+        "classInSchool": "{class} · {school}",
+        "classLater": "Klassen waar je later bij komt, worden niet vanzelf toegevoegd. Kom hier terug om ze toe te voegen.",
+        "pickClass": "Kies minstens één klas.",
+        "classRemoved": "Je leerkracht heeft hem uit deze klas gehaald.",
+        "allRemoved": "{count, plural, one {Je leerkracht heeft deze game uit je klas gehaald.} other {Je leerkrachten hebben deze game uit je klassen gehaald.}}"
       },
       "update": {
         "title": "Werk je online game bij",
@@ -1207,7 +1240,8 @@
         "publicText": "Omdat iedereen hem kan spelen, krijgt de update eerst een snelle veiligheidscheck. Spelers houden versie {live} tot hij is goedgekeurd.",
         "now": "Hij wordt meteen bijgewerkt.",
         "notYet": "Nog niet",
-        "button": "Bijwerken"
+        "button": "Bijwerken",
+        "groupText": "De controle-robot zag iets in deze versie, dus een volwassene uit ons team kijkt er eerst naar. Tot die tijd houden spelers versie {live}."
       },
       "reconnecting": "De verbinding viel weg, maar de Bouwer is nog bezig. Even geduld…",
       "testing": "Ik speel je game om hem te testen…"
@@ -1232,7 +1266,13 @@
     "sent": "Je hebt gevraagd om mee te doen met {name}. Je leerkracht zegt snel ja!",
     "classmates": "{count, plural, one {# klasgenoot} other {# klasgenoten}}",
     "noLessons": "Nog geen lessen",
-    "noLessonsText": "Je leerkracht zet hier lessen en games neer."
+    "noLessonsText": "Je leerkracht zet hier lessen en games neer.",
+    "games": {
+      "heading": "Games van onze klas",
+      "emptyTitle": "Nog geen klasgames",
+      "emptyText": "Bouw een game en deel hem met je klas als je hem publiceert.",
+      "emptyAction": "Bouw een game"
+    }
   },
   "school": {
     "tabs": {
@@ -1404,7 +1444,8 @@
       "timeZone": "Tijdzone",
       "timeZoneNone": "Niet ingesteld (de dagen worden in UTC geteld)",
       "timeZoneUnset": "Stel de tijdzone van je school in, zodat lessen zichtbaar worden om middernacht en inleverdata om middernacht eindigen waar jij bent. Tot die tijd is niemand te laat tot 36 uur na het begin van de inleverdag.",
-      "timeZoneHint": "Lessen worden zichtbaar en inleverdata eindigen om middernacht in deze tijdzone. Daar is het nu {time}."
+      "timeZoneHint": "Lessen worden zichtbaar en inleverdata eindigen om middernacht in deze tijdzone. Daar is het nu {time}.",
+      "publishingHint": "Leerlingen in een klas kunnen een game ook alleen met hun klassen delen."
     },
     "cards": {
       "title": "Inlogkaarten",
@@ -1449,17 +1490,32 @@
       "adminNotStudent": "Jij zorgt voor Oomba Academy, dus je kunt niet als leerling meedoen met een klas.",
       "isStudent": "{name} is hier leerling en kan dus niet aan het personeel worden toegevoegd.",
       "tickStudents": "Vink minstens één leerling aan.",
-      "badZone": "Kies een tijdzone uit de lijst."
+      "badZone": "Kies een tijdzone uit de lijst.",
+      "gameNotHere": "Die game is niet met deze klas gedeeld."
     },
     "classTabs": {
       "lessons": "Lessen",
       "progress": "Voortgang",
       "students": "Leerlingen",
-      "settings": "Instellingen"
+      "settings": "Instellingen",
+      "games": "Games"
     },
     "optional": "(optioneel)",
     "me": "ik",
-    "moreFor": "Meer opties voor {name}"
+    "moreFor": "Meer opties voor {name}",
+    "classGames": {
+      "text": "Games die met deze klas zijn gedeeld. Past er een niet bij de klas, haal hem er dan uit: hij kan hier dan niet opnieuw gedeeld worden, tenzij jij dat toestaat.",
+      "by": "door {name}",
+      "sharedAgo": "gedeeld {when}",
+      "remove": "Uit deze klas halen",
+      "removeConfirm": "{title} uit {class} halen? Leerlingen in deze klas zien hem dan niet meer.",
+      "removed": "Uit {class} gehaald.",
+      "removedHeading": "{count, plural, one {# game eruit gehaald} other {# games eruit gehaald}}",
+      "restore": "Weer toestaan",
+      "restored": "De maker mag hem weer met {class} delen als die dat wil.",
+      "hiddenGame": "Een game die je nu niet kunt openen",
+      "empty": "Nog geen games met deze klas gedeeld."
+    }
   },
   "lessons": {
     "up": "Omhoog",
@@ -1543,7 +1599,10 @@
       "bodyGame": "Instructies (optioneel)",
       "buildHint": "bijv. “een quiz met 8 vragen over de planeten”",
       "newGameLink": "Maak een nieuwe game voor leerlingen",
-      "deleteWorkConfirm": "Deze stap verwijderen? Het werk van {n, plural, one {# leerling} other {# leerlingen}} aan deze stap wordt verwijderd. Dit kan niet ongedaan worden gemaakt."
+      "deleteWorkConfirm": "Deze stap verwijderen? Het werk van {n, plural, one {# leerling} other {# leerlingen}} aan deze stap wordt verwijderd. Dit kan niet ongedaan worden gemaakt.",
+      "classGames": "Gedeeld met mijn klassen",
+      "classOnly": "Alleen de klassen waarmee hij is gedeeld kunnen hem spelen",
+      "hiddenGame": "Een game die je niet kunt openen"
     },
     "ai": {
       "button": "Opzet met AI",
@@ -1702,7 +1761,7 @@
       "played": "Ik heb het gespeeld",
       "keepBuilding": "Verder bouwen",
       "handIn": "Mijn game inleveren",
-      "handInConfirm": "Je game inleveren? Je leerkracht en je school kunnen hem dan spelen.",
+      "handInConfirm": "Je game inleveren? Je leerkracht en je klas kunnen hem dan spelen.",
       "handInHint": "Is je game klaar? Lever hem dan in, zodat je leerkracht hem kan spelen.",
       "handedInText": "Je hebt je game ingeleverd.",
       "seeGame": "Bekijk mijn game",

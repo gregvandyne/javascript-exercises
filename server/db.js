@@ -150,6 +150,23 @@ export const MIGRATIONS = [
   // 1 when a staff member or the platform admin last signed in with a password shorter than 12 characters: they are asked
   // to choose a longer one (auth.notePasswordLength). Changing the password clears it.
   ['0016_password_short', `ALTER TABLE users ADD COLUMN password_short INTEGER NOT NULL DEFAULT 0;`],
+  // "Share with my classes": games shared with chosen classes (visibility 'class'), one row per (game, class). The list
+  // is the owner's explicit choice and only counts while games.visibility='class' and the rule in services/games.js
+  // (CLASS_SQL) holds. removed_at/removed_by: a teacher (or school admin) took the game off that class, and the owner
+  // can't add it back. games.pending_visibility: what a waiting review is for ('public' | 'school' | 'class'; '' when
+  // nothing waits), so an approval applies the audience the builder asked for instead of always 'public'.
+  // games.pending_classes: for a waiting 'class' request on a game already live for some classes, the new class list
+  // (JSON), applied only when a person approves it. Reviews already waiting at upgrade time get the narrowest audience
+  // they could have meant: 'school' for anyone in a school (the old code queued flagged school requests too; a builder
+  // can ask for public again), 'public' only for people in no school.
+  ['0018_class_sharing', `CREATE TABLE IF NOT EXISTS game_classes (game_id TEXT NOT NULL, class_id TEXT NOT NULL,
+      added_by TEXT, added_at INTEGER NOT NULL, removed_by TEXT, removed_at INTEGER, PRIMARY KEY (game_id, class_id));
+    CREATE INDEX IF NOT EXISTS game_classes_class ON game_classes(class_id, removed_at);
+    ALTER TABLE games ADD COLUMN pending_visibility TEXT NOT NULL DEFAULT '';
+    ALTER TABLE games ADD COLUMN pending_classes TEXT NOT NULL DEFAULT '';
+    UPDATE games SET pending_visibility = CASE WHEN EXISTS (SELECT 1 FROM school_members sm WHERE sm.user_id=games.owner_id
+        AND sm.status='active') THEN 'school' ELSE 'public' END
+      WHERE pending_version_id IS NOT NULL;`],
 ];
 
 db.exec('CREATE TABLE IF NOT EXISTS migrations (name TEXT PRIMARY KEY, applied_at INTEGER NOT NULL)');

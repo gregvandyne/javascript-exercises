@@ -239,23 +239,27 @@ export function reorderStep(u, stepId, dir) {
 }
 
 // ---------------------------------------------------------------- games for steps
-/** Can the class's students open this game? Live, not hidden, and public or shared with this school. */
-export function playableBy(step, schoolId) {
+/** Can the class's students open this game? Live, not hidden, and public, shared with this school, or (classId)
+ *  shared with this class ('class' games are never playable without knowing the class). */
+export function playableBy(step, schoolId, classId = null) {
   if (!step.game_id) return true;
   if (step.game_status !== 'published' || !step.game_live || step.game_hidden) return false;
   if (step.game_visibility === 'public') return true;
   if (step.game_visibility === 'school') return !!S.membership(schoolId, step.game_owner);
+  if (step.game_visibility === 'class') return !!classId && games.gameLiveInClass(step.game_id, classId);
   return false;
 }
-/** Games a teacher can put in a lesson: their own, ones shared in the school, and the site's public games. */
+/** Games a teacher can put in a lesson: their own, ones shared in the school, ones shared with a class they teach
+ *  (classes), and the site's public games. Only school + site go to the AI lesson-draft catalog. */
 export function gamesForPicker(u, schoolId) {
   const sel = 'SELECT g.id, g.title, g.icon, g.slug, g.status, g.visibility, g.source FROM games g';
   const mine = q.all(`${sel} WHERE g.owner_id=? AND g.status!='deleted' AND g.current_version_id IS NOT NULL ORDER BY g.updated_at DESC LIMIT 100`, u.id);
   const school = q.all(`${sel} WHERE g.status='published' AND g.hidden_reason='' AND g.visibility IN ('school','public') AND g.owner_id!=?
     AND g.owner_id IN (SELECT user_id FROM school_members WHERE school_id=? AND status='active') ORDER BY g.published_at DESC LIMIT 100`, u.id, schoolId);
-  const seen = new Set([...mine, ...school].map(g => g.id));
+  const classes = games.classGamesForTeacher(u.id, schoolId).map(({ published_at, ...g }) => g);
+  const seen = new Set([...mine, ...school, ...classes].map(g => g.id));
   const site = q.all(`${sel} WHERE g.status='published' AND g.visibility='public' AND g.hidden_reason='' ORDER BY g.featured DESC, g.plays DESC LIMIT 150`).filter(g => !seen.has(g.id));
-  return { mine, school, site };
+  return { mine, school, classes, site };
 }
 
 // ---------------------------------------------------------------- class lessons

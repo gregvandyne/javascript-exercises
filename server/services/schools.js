@@ -134,6 +134,8 @@ export function removeMember(by, schoolId, userId) {
   tx(() => {
     q.run("UPDATE school_members SET status='left', left_at=? WHERE school_id=? AND user_id=?", now(), schoolId, userId);
     q.run("UPDATE class_members SET status='left', left_at=? WHERE user_id=? AND status='active' AND class_id IN (SELECT id FROM classrooms WHERE school_id=?)", now(), userId, schoolId);
+    // Their games stop being shared with this school's classes (the rule already hides them; coming back re-shares nothing).
+    pruneGameClasses(userId, q.all('SELECT id FROM classrooms WHERE school_id=?', schoolId).map(r => r.id));
     const u = getUser(userId);
     if (u && u.managed_school === schoolId) { q.run('UPDATE users SET banned=1 WHERE id=?', userId); q.run('DELETE FROM sessions WHERE user_id=?', userId); }
   });
@@ -248,6 +250,8 @@ export function updateClass(by, classId, { name, subject, grade } = {}) {
   audit(by.id, 'class.update', c.id, { name: n });
   return ok({ class: getClass(c.id) });
 }
+/** Archive (or restore) a class. Games shared with it stop reaching it while it is archived (the rule checks
+ *  archived_at) and come back on restore: archiving keeps everything. */
 export function archiveClass(by, classId, archived = true) {
   const c = getClass(classId); if (!c) return fail('notFound');
   q.run('UPDATE classrooms SET archived_at=? WHERE id=?', archived ? now() : null, c.id);
@@ -263,6 +267,7 @@ export function deleteClass(by, classId) {
   tx(() => {
     q.run('DELETE FROM class_members WHERE class_id=?', c.id); q.run('DELETE FROM join_requests WHERE class_id=?', c.id);
     q.run('DELETE FROM class_lessons WHERE class_id=?', c.id); q.run('DELETE FROM class_units WHERE class_id=?', c.id);
+    q.run('DELETE FROM game_classes WHERE class_id=?', c.id);
     q.run('DELETE FROM classrooms WHERE id=?', c.id);
   });
   audit(by.id, 'class.delete', c.id, { name: c.name });
@@ -293,8 +298,14 @@ export function addToClass(by, classId, userId, role = null) {
   audit(by.id, 'class.member_add', c.id, { user: userId, role: r });
   return ok();
 }
+/** Take someone out of a class (a teacher removing a student, a co-teacher leaving, a student moved). Their games stop
+ *  being shared with it at once, and coming back later doesn't re-share them (explicit lists). */
 export function removeFromClass(by, classId, userId) {
-  const r = q.run("UPDATE class_members SET status='left', left_at=? WHERE class_id=? AND user_id=? AND status='active'", now(), classId, userId);
+  let r;
+  tx(() => {
+    r = q.run("UPDATE class_members SET status='left', left_at=? WHERE class_id=? AND user_id=? AND status='active'", now(), classId, userId);
+    if (r.changes) pruneGameClasses(userId, [classId]);
+  });
   if (!r.changes) return fail('notFound');
   audit(by.id, 'class.member_remove', classId, { user: userId });
   return ok();
@@ -387,6 +398,8 @@ export function mergeSchoolAccount(by, schoolId, schoolAccountId, intoUserId) {
       q.run('UPDATE class_members SET user_id=? WHERE class_id=? AND user_id=?', intoUserId, cm.class_id, a.id);
     }
     q.run('UPDATE games SET owner_id=? WHERE owner_id=?', intoUserId, a.id);
+    // Games stay shared with the classes the student is still in; links to classes the merged places say they left go.
+    pruneGameClasses(intoUserId, q.all("SELECT class_id FROM class_members WHERE user_id=? AND status!='active'", intoUserId).map(r => r.class_id));
     // Lesson work moves too (if both accounts did the same step, the student's own account keeps theirs).
     q.run('UPDATE OR IGNORE step_progress SET user_id=? WHERE user_id=?', intoUserId, a.id);
     q.run('DELETE FROM step_progress WHERE user_id=?', a.id);
@@ -449,12 +462,80 @@ export function accountRules(u) {
 }
 export const inAnySchool = u => !!(u && q.get("SELECT 1 FROM school_members WHERE user_id=? AND status='active'", u.id));
 
-/** Who a game can be shared with, for its owner: private and friends always; 'school' for school members; 'public'
- *  unless the owner is a school account whose school keeps games inside the school. */
+/** Who a game can be shared with, for its owner (in games.VISIBILITIES order): private and friends always; 'class'
+ *  for an active member (student or teacher) of at least one live class; 'school' for school members; 'public' unless
+ *  the owner is a school account whose school keeps games inside the school. 'class' is narrower than both school
+ *  settings ('school' and 'public'), so every school allows it; a future "private only" setting must turn it off too. */
 export function sharingOptions(owner) {
   const opts = ['private', 'friends'];
+  if (owner && shareableClasses(owner.id).length) opts.push('class');
   if (inAnySchool(owner)) opts.push('school');
   const rules = accountRules(owner);
   if (!rules || rules.publishing === 'public') opts.push('public');
   return opts;
+}
+
+// ---------------------------------------------------------------- "Share with my classes" (game_classes)
+// Who sees a 'class' game is decided by the rule in services/games.js (CLASS_SQL); these write the owner's list.
+/** Classes a person can share a game with: active member (any role) of a non-archived class of a non-archived school,
+ *  and still an active member of that school. [{ id, name, school_id, school_name }] ordered by school, then name. */
+export const shareableClasses = userId => (userId ? q.all(`SELECT c.id, c.name, c.school_id, s.name school_name FROM class_members m
+  JOIN classrooms c ON c.id=m.class_id AND c.archived_at IS NULL JOIN schools s ON s.id=c.school_id AND s.archived_at IS NULL
+  JOIN school_members sm ON sm.school_id=c.school_id AND sm.user_id=m.user_id AND sm.status='active'
+  WHERE m.user_id=? AND m.status='active' ORDER BY s.name COLLATE NOCASE, c.name COLLATE NOCASE`, userId) : []);
+/** The classes a game is shared with (the owner's list, not taken off by a teacher), whether or not they count now. */
+export const gameClassIds = gameId => q.all('SELECT class_id FROM game_classes WHERE game_id=? AND removed_at IS NULL ORDER BY added_at, class_id', gameId).map(r => r.class_id);
+/** The classes a teacher took this game off (the owner can't add them back). */
+export const removedClassIds = gameId => q.all('SELECT class_id FROM game_classes WHERE game_id=? AND removed_at IS NOT NULL', gameId).map(r => r.class_id);
+export const MAX_CLASS_PICK = 50;
+/** Check the classes an owner picked for a game. classIds: an array of class ids (strings); trimmed and de-duplicated.
+ *  -> { ok: true, ids } or { ok: false, code: 'pickClass' | 'classGone' | 'classRemoved', name? }. 'classGone' is the
+ *  same answer for an unknown class, another school's, one the owner left and an archived one (no existence oracle). */
+export function validateClassPick(owner, gameId, classIds) {
+  if (!Array.isArray(classIds) || classIds.some(x => typeof x !== 'string')) return fail('pickClass');
+  const ids = [...new Set(classIds.map(x => x.trim()).filter(Boolean))];
+  if (!ids.length || ids.length > MAX_CLASS_PICK) return fail('pickClass');
+  const mine = new Map(shareableClasses(owner && owner.id).map(c => [c.id, c]));
+  if (ids.some(id => !mine.has(id))) return fail('classGone');
+  const removed = new Set(removedClassIds(gameId));
+  const blocked = ids.find(id => removed.has(id));
+  if (blocked) return { ok: false, code: 'classRemoved', name: mine.get(blocked).name };
+  return ok({ ids });
+}
+/** Replace a game's list with these (already validated) classes. Classes kept keep their added_at; teacher-removed
+ *  rows stay as they are (validation never lets them back in). Call inside the publish transaction. */
+export function setGameClasses(gameId, ids, by) {
+  tx(() => {
+    const keep = ids.length ? ` AND class_id NOT IN (${ids.map(() => '?').join(',')})` : '';
+    q.run(`DELETE FROM game_classes WHERE game_id=? AND removed_at IS NULL${keep}`, gameId, ...ids);
+    const t = now();
+    for (const id of ids) q.run('INSERT INTO game_classes(game_id, class_id, added_by, added_at) VALUES (?,?,?,?) ON CONFLICT(game_id, class_id) DO NOTHING', gameId, id, by || null, t);
+  });
+}
+/** A person left (or was removed from) these classes: their games' links to them go (teacher-removed rows stay, as the
+ *  record that the game may not come back there). */
+export function pruneGameClasses(userId, classIds) {
+  if (!userId || !classIds || !classIds.length) return;
+  for (let i = 0; i < classIds.length; i += 500) {
+    const part = classIds.slice(i, i + 500);
+    q.run(`DELETE FROM game_classes WHERE removed_at IS NULL AND class_id IN (${part.map(() => '?').join(',')}) AND game_id IN (SELECT id FROM games WHERE owner_id=?)`, ...part, userId);
+  }
+}
+const gameOwner = gameId => (q.get('SELECT owner_id FROM games WHERE id=?', gameId) || {}).owner_id || null;
+/** A class's teacher (or a school admin) takes a game off the class: it stops reaching the class at once, and its
+ *  owner can't add the class back for that game. The route has checked canManageClass. Audited. */
+export function removeClassGame(by, classId, gameId) {
+  const r = q.run('UPDATE game_classes SET removed_at=?, removed_by=? WHERE class_id=? AND game_id=? AND removed_at IS NULL', now(), by.id, classId, gameId);
+  if (!r.changes) return fail('gameNotHere');
+  audit(by.id, 'class.game_remove', classId, { game: gameId, owner: gameOwner(gameId) });
+  return ok();
+}
+/** "Put back": lift a teacher's block. The game does NOT start reaching the class again by itself: the class just becomes
+ *  pickable again in its owner's Studio, and the owner adds it back if they want to (an audience only ever grows when
+ *  its owner chooses it). */
+export function restoreClassGame(by, classId, gameId) {
+  const r = q.run('DELETE FROM game_classes WHERE class_id=? AND game_id=? AND removed_at IS NOT NULL', classId, gameId);
+  if (!r.changes) return fail('gameNotHere');
+  audit(by.id, 'class.game_restore', classId, { game: gameId, owner: gameOwner(gameId) });
+  return ok();
 }

@@ -1,12 +1,21 @@
 // Admin moderation: review queue, game reports, chat reports, users, audit log. Every action is audited.
 // Approve/reject go through services/publish.js (the only place that moves a version live).
 import { q, now, tx, audit } from '../db.js';
-import { getGame, getVersion } from './games.js';
+import { getGame, getVersion, liveClasses } from './games.js';
 import * as publish from './publish.js';
+
+/** The names of the classes a waiting 'class' request would reach: the waiting list if there is one, else the current. */
+function classesAsked(g) {
+  if (g.pending_visibility !== 'class') return [];
+  const ids = publish.pendingClasses(g);
+  if (!ids || !ids.length) return liveClasses(g.id).map(c => c.name);
+  return q.all(`SELECT name FROM classrooms WHERE id IN (${ids.map(() => '?').join(',')}) ORDER BY name COLLATE NOCASE`, ...ids).map(c => c.name);
+}
 
 const parse = s => { try { return JSON.parse(s || '{}'); } catch { return {}; } };
 
-/** Games waiting for a human: pending_version_id set. */
+/** Games waiting for a human: pending_version_id set. audience: what the review is for ('public' | 'school' | 'class',
+ *  from pending_version_id's pending_visibility); classes: for 'class', the names of the classes it would reach. */
 export function reviewQueue() {
   const rows = q.all(`SELECT g.*, u.username AS owner_name, u.display_name AS owner_display, u.avatar AS owner_avatar, u.photo_at AS owner_photo_at, u.color AS owner_color
     FROM games g JOIN users u ON u.id=g.owner_id WHERE g.pending_version_id IS NOT NULL ORDER BY g.updated_at ASC LIMIT 100`);
@@ -16,6 +25,7 @@ export function reviewQueue() {
     return {
       game: g, version: { id: v.id, number: v.number, notes: v.notes, created_at: v.created_at, safety_status: v.safety_status, size: v.html ? Buffer.byteLength(v.html) : 0 },
       isUpdate: g.status === 'published' && !!g.published_version_id, liveNumber: live ? live.number : null,
+      audience: g.pending_visibility || 'public', classes: classesAsked(g),
       safety: parse(v.safety_report), review: parse(v.review_report),
     };
   });
@@ -141,7 +151,7 @@ export function auditLog(limit = 200) {
   const ids = new Set();
   rows.forEach((r, i) => {
     if (r.target && ID_SHAPE.test(r.target)) ids.add(r.target);
-    for (const v of Object.values(parsed[i] || {})) if (typeof v === 'string' && ID_SHAPE.test(v)) ids.add(v);
+    for (const v of Object.values(parsed[i] || {})) for (const x of Array.isArray(v) ? v : [v]) if (typeof x === 'string' && ID_SHAPE.test(x)) ids.add(x);
   });
   const all = [...ids];
   // 2. at most one query per table
@@ -160,6 +170,8 @@ export function auditLog(limit = 200) {
   const value = v => {
     if (v === null || v === undefined) return '';
     if (typeof v === 'string') return plain(v) || clipText(v, 80);
+    // A list (e.g. the classes a game was shared with): each id as its name.
+    if (Array.isArray(v) && v.every(x => typeof x === 'string')) return clipText(v.map(x => plain(x) || x).join(', '), 120);
     if (typeof v === 'object') return clipText(JSON.stringify(v), 80);
     return String(v);
   };

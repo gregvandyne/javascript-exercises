@@ -118,7 +118,7 @@ test('game-site rules: school accounts befriend classmates only, chat can be off
   assert.equal(chat.canChat(a, b2).code, 'school_off_me');
   S.updateSchool(head, oak.id, { settings: { chat: 'classmates' } });
   // sharing
-  assert.deepEqual(S.sharingOptions(a), ['private', 'friends', 'school']);
+  assert.deepEqual(S.sharingOptions(a), ['private', 'friends', 'class', 'school'], 'in a class: My class too (narrower than the school)');
   assert.deepEqual(S.sharingOptions(outsider), ['private', 'friends', 'public']);
   const g = games.createGame(a.id, { title: 'Class Game' });
   games.addVersion(g.id, '<title>x</title><p>hi</p><script>1</script>', { createdBy: a.id, safetyStatus: 'pass' });

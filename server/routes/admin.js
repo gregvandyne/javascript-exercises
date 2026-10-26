@@ -28,7 +28,9 @@ const when = t => html`<time datetime="${new Date(t).toISOString()}" title="${ne
 function queueTab(req) {
   const items = mod.reviewQueue();
   if (!items.length) return emptyState({ emoji: '✅', title: 'Nothing to review', text: 'Games waiting for a human check show up here.' });
-  return html`<div class="stack">${items.map(({ game: g, version: v, isUpdate, liveNumber, safety, review }) => {
+  // What the builder asked for: approving applies exactly this audience (never more).
+  const audience = (a, classes) => (a === 'class' ? `🎒 ${classes.length ? classes.join(', ') : 'their classes (none live right now)'}` : a === 'school' ? '🏫 the school' : '🌍 everyone');
+  return html`<div class="stack">${items.map(({ game: g, version: v, isUpdate, liveNumber, safety, review, audience: aud, classes }) => {
     const token = signToken({ v: v.id, g: g.id, u: req.user.id, p: 1 }, 3600);
     const issues = safety.issues || [];
     return html`<article class="panel reviewcard" aria-label="Review ${g.title}">
@@ -37,7 +39,8 @@ function queueTab(req) {
         <div class="rc-info">
           <h2>${g.title}</h2>
           <p class="muted small">by <a href="/u/${g.owner_name}">${g.owner_display}</a> (@${g.owner_name}) · version ${v.number} · ${fmtNum(Math.round((v.size || 0) / 1024))} KB · sent ${when(g.updated_at)}</p>
-          <p>${isUpdate ? html`<span class="chip-s warn">🔁 Update to a live game</span> Players keep version ${liveNumber} until you approve.` : html`<span class="chip-s">🆕 New public game</span>`}</p>
+          <p>${isUpdate ? html`<span class="chip-s warn">🔁 Update to a live game</span> Players keep version ${liveNumber} until you approve.` : html`<span class="chip-s">🆕 New game</span>`}</p>
+          <p class="small">Waiting to share with: <b>${audience(aud, classes)}</b></p>
           ${g.description ? html`<p class="small">${g.description}</p>` : ''}
           ${v.notes ? html`<p class="small muted">Builder notes: ${v.notes}</p>` : ''}
         </div>

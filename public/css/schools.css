@@ -115,13 +115,15 @@ form.inline{display:inline-flex;gap:var(--s2);align-items:center;margin:0}
 .reqhead>form{margin:0}
 .classtabs a{gap:2px}
 .tabbadge{display:inline-grid;place-items:center;min-width:22px;height:22px;padding:0 6px;margin-inline-start:6px;border-radius:999px;background:var(--spark);color:var(--on-accent);font-size:.78rem;font-weight:800}
-/* Phones: the four class tabs share the width evenly, icon above the label, so none is cut off. */
+/* Phones: the five class tabs share the width, icon above the label. Words are never broken: a tab is at least as
+   wide as its longest word (German "Einstellungen"), and on the narrowest phones the row scrolls instead. */
 @media (max-width:600px){
-  .classtabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;overflow:visible}
-  .classtabs a{flex-direction:column;justify-content:center;gap:2px;padding:6px 2px;min-height:56px;font-size:.8rem;text-align:center;white-space:normal;line-height:1.15;position:relative}
+  .classtabs{display:grid;grid-template-columns:repeat(5,minmax(min-content,1fr));gap:0}
+  .classtabs a{flex-direction:column;justify-content:center;gap:2px;padding:6px 3px;min-height:56px;font-size:.78rem;text-align:center;white-space:normal;line-height:1.15;position:relative}
   .classtabs a>[aria-hidden]{font-size:1.2rem}
   .classtabs .tabbadge{position:absolute;top:2px;inset-inline-end:calc(50% - 26px);margin:0;min-width:18px;height:18px;font-size:.7rem}
 }
+@media (max-width:400px){.classtabs a{font-size:.72rem;padding-inline:1px}}
 
 /* ---------- Tables; on phones and tablets they become stacked cards (label: value) ---------- */
 .rtable td{vertical-align:middle}
@@ -433,3 +435,20 @@ fieldset.picklist>label>span{flex:1;min-width:0}
 :where(section.panel)>.sr-only:first-child+*{margin-top:0}
 /* "Make a new game" only with the Add form's "Play a game" type (no-JS: when that option is picked). */
 .stepgrid[data-kind]:not([data-kind="game"]):not(:has(>.f-k option[value="game"]:checked)) ~ .newgame{display:none}
+/* Class Games tab (teachers): games shared only with this class, each with "Take off this class"; the ones taken off
+   fold away with "Put back". Rows stack on phones. */
+.cg-list{display:grid;gap:var(--s3)}
+.cg-row{display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:var(--s3);align-items:center;padding:var(--s3);border-radius:var(--r-sm);box-shadow:inset 0 0 0 2px var(--line)}
+.cg-off .cg-row{grid-template-columns:minmax(0,1fr) auto}
+.cg-cover{display:block;width:64px;height:64px}
+.cg-thumb{width:64px;height:64px;border-radius:var(--r-sm);--art:2rem}
+.cg-thumb .shot-icon{display:none}
+.cg-body{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-width:0}
+.cg-body b{overflow-wrap:anywhere}
+@media (max-width:560px){
+  .cg-row{grid-template-columns:56px minmax(0,1fr)}
+  .cg-cover,.cg-thumb{width:56px;height:56px}
+  .cg-off .cg-row{grid-template-columns:minmax(0,1fr)}
+  .cg-act{grid-column:1/-1}
+  .cg-act .btn{width:100%;min-height:44px}
+}

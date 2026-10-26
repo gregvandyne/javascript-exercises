@@ -609,6 +609,28 @@ the app 2 GB for Chromium. Now that `server/shots-worker.js` is merged:
   downloads swapped, Chromium and its libraries mounted from the host into `shots`): the worker container, read-only,
   uid 1000, no internet and only the internal network, rendered Star Island's cover from the image's own Three.js.
 
+## Share with my classes (visibility 'class')
+Students (and teachers) in a class can share a game with just their class, or pick several of their classes, besides
+Only me, Friends, My school and Everyone.
+- **An explicit list, not "all my classes, always".** "All my classes" ticks every class the builder can pick now;
+  classes joined later are not added by themselves (the dialog says so). An audience only grows when its builder
+  chooses it: leaving a class stops sharing there at once, and joining it again shares nothing by itself.
+- **Who sees it:** the builder, platform admins, live members (students and teachers) of a chosen class, and the admins
+  of that class's school (safeguarding leads who already run every class). Teachers of other classes don't.
+- **One rule for every path.** `CLASS_SQL` is used by `canView` and `visibleWhere`. It starts from the viewer's own
+  classes (a non-correlated subquery SQLite builds once per query), so a listing's cost follows the viewer's classes,
+  not the number of class games on the site.
+- **Review like My school.** Clean or approved versions go live at once, flagged ones wait for a person. An approval
+  covers only the audience it was given for (see docs/safety.md §6), and a new, wider class list waits in
+  `games.pending_classes` until then.
+- **School rules.** 'class' is narrower than both school settings ("inside the school" and "everyone"), so every school
+  allows it; a future "private only" setting must turn it off too.
+- **Teachers can take a game off their class** (audited). Its builder can't share it there again; "Allow again" lifts
+  that block without re-sharing. A taken-off game the teacher can't open now shows as "A game you can't open right now".
+- **Hand-in shares with the lesson's class** instead of the whole school, so it never widens a child's "My class" choice.
+- **Migration 0018** fills `pending_visibility` for reviews already waiting with the narrowest audience they could have
+  meant: 'school' for anyone in a school (the builder can ask for public again), 'public' only for people in no school.
+
 ## Merge review fixes (accounts + migration + 3D)
 A review of the three batches together found these; each got the smallest correct change:
 - **"Try again" on the lost-3D-picture card is done by the page.** The SDK used `location.reload()` inside the frame, but

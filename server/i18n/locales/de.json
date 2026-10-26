@@ -233,13 +233,16 @@
     "plays": "{count, plural, one {{n}× gespielt} other {{n}× gespielt}}",
     "seeAll": "Alle zeigen",
     "scrollBack": "{title} zurückblättern",
-    "scrollForward": "{title} weiterblättern"
+    "scrollForward": "{title} weiterblättern",
+    "classOnly": "Nur Klasse"
   },
   "vis": {
     "private": "Nur ich",
     "friends": "Freunde",
     "public": "Alle",
-    "school": "Meine Schule"
+    "school": "Meine Schule",
+    "class": "{count, plural, one {Meine Klasse} other {Meine Klassen}}",
+    "onlyYouNow": "Gerade nur du"
   },
   "status": {
     "hidden": "Versteckt",
@@ -446,7 +449,8 @@
       "private": "Nur du kannst dieses Spiel öffnen. Stell es auf Freunde oder Alle, um es zu teilen.",
       "friends": "Nur deine Freunde auf Oomba Academy können diesen Link öffnen.",
       "public": "Alle mit dem Link können dieses Spiel spielen.",
-      "school": "Alle an deiner Schule können es finden und spielen."
+      "school": "Alle an deiner Schule können es finden und spielen.",
+      "class": "Nur die Klassen, mit denen dieses Spiel geteilt ist, können diesen Link öffnen."
     },
     "report": {
       "button": "Melden",
@@ -467,7 +471,9 @@
       "saveFailed": "Das konnten wir nicht speichern.",
       "badScore": "Ungültiger Punktestand.",
       "pickReason": "Wähl einen Grund."
-    }
+    },
+    "sharedWith": "Geteilt mit:",
+    "sharedWithMore": "{count, plural, one {und # weitere Klasse} other {und # weitere Klassen}}"
   },
   "play": {
     "backTo": "Zurück zu {title}",
@@ -720,7 +726,8 @@
       "private": "Nur du kannst es spielen.",
       "friends": "Nur du und deine Freunde auf Oomba Academy können es spielen.",
       "public": "Alle auf Oomba Academy können es finden und spielen, nach einem kurzen Sicherheitscheck.",
-      "school": "Alle an deiner Schule können es finden und spielen."
+      "school": "Alle an deiner Schule können es finden und spielen.",
+      "class": "Nur die Klassen, die du ausgewählt hast, können es spielen."
     },
     "status": {
       "hidden": "Gerade versteckt",
@@ -810,7 +817,11 @@
       "notLive": "Dieses Spiel ist noch nicht online. Tipp zuerst auf Freigeben.",
       "updatedFriends": "Für deine Freunde aktualisiert! Die neue Version wartet auch noch auf ihre Prüfung, bevor alle sie spielen können.",
       "updatedYou": "Für dich aktualisiert! Die neue Version wartet auch noch auf ihre Prüfung, bevor alle sie spielen können.",
-      "cantDeleteStarter": "Startspiele können nicht gelöscht werden."
+      "cantDeleteStarter": "Startspiele können nicht gelöscht werden.",
+      "pickClass": "Wähle mindestens eine deiner Klassen aus.",
+      "classGone": "Du kannst nur mit Klassen teilen, in denen du gerade bist.",
+      "classRemoved": "Deine Lehrkraft hat dieses Spiel aus {name} herausgenommen, darum kann es dort nicht wieder hin.",
+      "updatedNowWaiting": "Aktualisiert! Die neue Version wartet auch noch auf einen kurzen Check, bevor mehr Leute spielen können."
     }
   },
   "publish": {
@@ -824,7 +835,8 @@
     "updateWaiting": "Dein Update wartet auf einen kurzen Check. Bis dahin spielen alle die alte Version.",
     "waiting": "Dein Spiel wartet auf einen kurzen Sicherheitscheck. Sobald es geprüft ist, teilen wir es.",
     "school": "Online für deine Schule! Alle an deiner Schule können es finden und spielen.",
-    "schoolOnly": "Deine Schule behält Spiele in der Schule. Teile es stattdessen mit deiner Schule."
+    "schoolOnly": "Deine Schule behält Spiele in der Schule. Teile es stattdessen mit deiner Schule.",
+    "class": "{count, plural, one {Online für {name}! Alle in deiner Klasse können es finden und spielen.} other {Online für deine Klassen! Alle darin können es finden und spielen.}}"
   },
   "builder": {
     "kindRefusal": "Dabei kann ich leider nicht helfen. Lass uns lieber etwas Lustiges bauen. Was für ein Spiel hättest du gern?",
@@ -1076,7 +1088,8 @@
         "private": "Nur ich",
         "friends": "Freunde",
         "public": "Alle",
-        "school": "Meine Schule"
+        "school": "Meine Schule",
+        "class": "{count, plural, one {Meine Klasse} other {Meine Klassen}}"
       },
       "top": {
         "inReview": "Wird geprüft",
@@ -1097,7 +1110,16 @@
         "publicCheck": "Spiele für alle bekommen zuerst einen kurzen Sicherheitscheck, und bis er bestanden ist, spielen alle die alte Version.",
         "onlyYou": "nur du kannst es sehen",
         "pendingNew": "Version {number} wartet auf einen kurzen Sicherheitscheck. Sobald sie geprüft ist, teilen wir sie.",
-        "reviewer": "Der Prüfer sagt: „{note}“ Bitte den Baumeister, das zu ändern, und tipp dann noch mal auf Aktualisieren oder Freigeben."
+        "reviewer": "Der Prüfer sagt: „{note}“ Bitte den Baumeister, das zu ändern, und tipp dann noch mal auf Aktualisieren oder Freigeben.",
+        "sharedWith": "Geteilt mit: {names}",
+        "takenOff": "Deine Lehrkraft hat dieses Spiel aus {names} herausgenommen, darum kannst gerade nur du es spielen.",
+        "takenOffSome": "Deine Lehrkraft hat es aus {names} herausgenommen.",
+        "leftClass": "Du bist nicht mehr in der Klasse, mit der du es geteilt hast, darum kannst gerade nur du es spielen.",
+        "pickAgain": "Tippe auf Teilen, um auszuwählen, wer es spielen darf.",
+        "onlyYouNow": "Gerade nur du",
+        "waitingPublic": "Wartet auf einen kurzen Sicherheitscheck, bevor alle es spielen können. Bis dahin bleibt es so geteilt wie jetzt.",
+        "waitingSchool": "Wartet auf einen kurzen Sicherheitscheck, bevor deine Schule es spielen kann. Bis dahin bleibt es so geteilt wie jetzt.",
+        "waitingClass": "{count, plural, one {Wartet auf einen kurzen Sicherheitscheck, bevor deine Klasse es spielen kann.} other {Wartet auf einen kurzen Sicherheitscheck, bevor deine Klassen es spielen können.}} Bis dahin bleibt es so geteilt wie jetzt."
       },
       "safety": {
         "chipPass": "Sicher",
@@ -1198,7 +1220,18 @@
         "save": "Speichern",
         "publicHint": "Spiele für alle bekommen zuerst einen kurzen Sicherheitscheck.",
         "copied": "Link kopiert!",
-        "copyFailed": "Kopieren hat nicht geklappt."
+        "copyFailed": "Kopieren hat nicht geklappt.",
+        "groupHint": "Der Prüf-Roboter hat etwas bemerkt, darum sieht es sich zuerst ein Erwachsener aus unserem Team an.",
+        "classOne": "Nur die Kinder und Lehrkräfte in {name} können es finden und spielen.",
+        "classMany": "Nur die Kinder und Lehrkräfte in den Klassen, die du auswählst, können es finden und spielen.",
+        "classesLegend": "Welche Klassen?",
+        "allClasses": "Alle meine Klassen",
+        "allOpenClasses": "Alle Klassen, die ich wählen kann",
+        "classInSchool": "{class} · {school}",
+        "classLater": "Klassen, in die du später kommst, werden nicht von selbst hinzugefügt. Komm dann hierher zurück, um sie hinzuzufügen.",
+        "pickClass": "Wähle mindestens eine Klasse aus.",
+        "classRemoved": "Deine Lehrkraft hat es aus dieser Klasse herausgenommen.",
+        "allRemoved": "{count, plural, one {Deine Lehrkraft hat dieses Spiel aus deiner Klasse herausgenommen.} other {Deine Lehrkräfte haben dieses Spiel aus deinen Klassen herausgenommen.}}"
       },
       "update": {
         "title": "Dein Spiel aktualisieren",
@@ -1207,7 +1240,8 @@
         "publicText": "Weil alle es spielen können, bekommt das Update zuerst einen kurzen Sicherheitscheck. Bis er bestanden ist, spielen alle Version {live}.",
         "now": "Es wird sofort aktualisiert.",
         "notYet": "Noch nicht",
-        "button": "Aktualisieren"
+        "button": "Aktualisieren",
+        "groupText": "Der Prüf-Roboter hat in dieser Version etwas bemerkt, darum sieht sie sich zuerst ein Erwachsener aus unserem Team an. Bis dahin behalten die Spieler Version {live}."
       },
       "reconnecting": "Die Verbindung ist weg, aber der Baumeister arbeitet weiter. Kurz warten…",
       "testing": "Ich spiele dein Spiel zum Testen…"
@@ -1232,7 +1266,13 @@
     "sent": "Du hast gefragt, ob du {name} beitreten darfst. Deine Lehrkraft sagt bald Ja!",
     "classmates": "{count, plural, one {# Klassenkamerad} other {# Klassenkameraden}}",
     "noLessons": "Noch keine Lektionen",
-    "noLessonsText": "Deine Lehrkraft fügt hier Lektionen und Spiele hinzu."
+    "noLessonsText": "Deine Lehrkraft fügt hier Lektionen und Spiele hinzu.",
+    "games": {
+      "heading": "Spiele aus unserer Klasse",
+      "emptyTitle": "Noch keine Klassenspiele",
+      "emptyText": "Bau ein Spiel und teile es beim Freigeben mit deiner Klasse.",
+      "emptyAction": "Ein Spiel bauen"
+    }
   },
   "school": {
     "tabs": {
@@ -1404,7 +1444,8 @@
       "timeZone": "Zeitzone",
       "timeZoneNone": "Nicht festgelegt (die Tage werden in UTC gezählt)",
       "timeZoneUnset": "Legen Sie die Zeitzone Ihrer Schule fest, damit Lektionen um Mitternacht beginnen und Fälligkeitstermine bei Ihnen um Mitternacht enden. Bis dahin ist niemand zu spät, bis 36 Stunden nach Beginn des Fälligkeitstags vergangen sind.",
-      "timeZoneHint": "Lektionen beginnen und Fälligkeitstermine enden um Mitternacht in dieser Zeitzone. Dort ist es jetzt {time}."
+      "timeZoneHint": "Lektionen beginnen und Fälligkeitstermine enden um Mitternacht in dieser Zeitzone. Dort ist es jetzt {time}.",
+      "publishingHint": "Schüler in einer Klasse können ein Spiel auch nur mit ihren Klassen teilen."
     },
     "cards": {
       "title": "Anmeldekarten",
@@ -1449,17 +1490,32 @@
       "adminNotStudent": "Du kümmerst dich um Oomba Academy, deshalb kannst du keiner Klasse als Schüler beitreten.",
       "isStudent": "{name} ist hier Schüler und kann deshalb nicht zum Kollegium hinzugefügt werden.",
       "tickStudents": "Haken Sie mindestens einen Schüler an.",
-      "badZone": "Wählen Sie eine Zeitzone aus der Liste."
+      "badZone": "Wählen Sie eine Zeitzone aus der Liste.",
+      "gameNotHere": "Dieses Spiel ist nicht mit dieser Klasse geteilt."
     },
     "classTabs": {
       "lessons": "Lektionen",
       "progress": "Fortschritt",
       "students": "Schüler",
-      "settings": "Einstellungen"
+      "settings": "Einstellungen",
+      "games": "Spiele"
     },
     "optional": "(optional)",
     "me": "ich",
-    "moreFor": "Weitere Optionen für {name}"
+    "moreFor": "Weitere Optionen für {name}",
+    "classGames": {
+      "text": "Spiele, die mit dieser Klasse geteilt sind. Wenn eins nicht passt, nimm es heraus: Dann kann es hier nicht wieder geteilt werden, außer du erlaubst es.",
+      "by": "von {name}",
+      "sharedAgo": "geteilt {when}",
+      "remove": "Aus dieser Klasse nehmen",
+      "removeConfirm": "{title} aus {class} nehmen? Die Schüler dieser Klasse sehen es dann nicht mehr.",
+      "removed": "Aus {class} herausgenommen.",
+      "removedHeading": "{count, plural, one {# Spiel herausgenommen} other {# Spiele herausgenommen}}",
+      "restore": "Wieder erlauben",
+      "restored": "Es darf wieder mit {class} geteilt werden, wenn das Kind, das es gebaut hat, das möchte.",
+      "hiddenGame": "Ein Spiel, das du gerade nicht öffnen kannst",
+      "empty": "Noch keine Spiele mit dieser Klasse geteilt."
+    }
   },
   "lessons": {
     "up": "Nach oben",
@@ -1543,7 +1599,10 @@
       "bodyGame": "Anleitung (optional)",
       "buildHint": "z. B. „ein Quiz mit 8 Fragen über die Planeten“",
       "newGameLink": "Ein neues Spiel für die Schüler bauen",
-      "deleteWorkConfirm": "Diesen Schritt löschen? Die Arbeiten von {n, plural, one {# Schüler} other {# Schülern}} dazu werden gelöscht. Das kann nicht rückgängig gemacht werden."
+      "deleteWorkConfirm": "Diesen Schritt löschen? Die Arbeiten von {n, plural, one {# Schüler} other {# Schülern}} dazu werden gelöscht. Das kann nicht rückgängig gemacht werden.",
+      "classGames": "Mit meinen Klassen geteilt",
+      "classOnly": "Nur die Klassen, mit denen es geteilt ist, können es spielen",
+      "hiddenGame": "Ein Spiel, das du nicht öffnen kannst"
     },
     "ai": {
       "button": "Mit KI entwerfen",
@@ -1702,7 +1761,7 @@
       "played": "Hab ich gespielt",
       "keepBuilding": "Weiterbauen",
       "handIn": "Mein Spiel abgeben",
-      "handInConfirm": "Dein Spiel abgeben? Deine Lehrkraft und deine Schule können es dann spielen.",
+      "handInConfirm": "Dein Spiel abgeben? Deine Lehrkraft und deine Klasse können es dann spielen.",
       "handInHint": "Wenn dein Spiel fertig ist, gib es ab, damit deine Lehrkraft es spielen kann.",
       "handedInText": "Du hast dein Spiel abgegeben.",
       "seeGame": "Mein Spiel ansehen",
