@@ -15,6 +15,7 @@ const games = await import('../../server/services/games.js');
 const shots = await import('../../server/services/shots.js');
 const snapshot = await import('../../server/services/snapshot.js');
 const { toolbox } = await import('../../server/builder/tools.js');
+const { stepRecorder } = await import('../../server/builder/steps.js');
 const { createApp } = await import('../../server/app.js');
 const { templateHtml } = await import('../../server/builder/catalog.js');
 const { config } = await import('../../server/config.js');
@@ -80,7 +81,8 @@ test('playtest_game shows the model two pictures, the errors and the layout prob
     <button style="width:20px;height:20px">x</button><button id="go" style="width:200px;height:80px" onclick="boom()">Play</button>
     <script>setTimeout(()=>{ undefinedThing.call(); }, 100)</script>`, { createdBy: owner.id, safetyStatus: 'pass' });
   const events = [];
-  const tb = toolbox({ user: owner, gameId: g.id, emit: (n, d) => events.push([n, d]), state: {}, locale: 'en' });
+  const emit = (n, d) => events.push([n, d]);
+  const tb = toolbox({ user: owner, gameId: g.id, emit, state: {}, locale: 'en', steps: stepRecorder(emit) });
   const r = await tb.exec('playtest_game', {});
   assert.equal(r.ok, true);
   assert.ok(Array.isArray(r.forModel)); assert.equal(r.forModel.filter(b => b.type === 'image').length, 2);
@@ -88,7 +90,10 @@ test('playtest_game shows the model two pictures, the errors and the layout prob
   assert.match(text, /undefinedThing/); assert.match(text, /boom/);
   assert.match(text, /wider than the phone/); assert.match(text, /div\.wide> from x=0 to x=900/); assert.match(text, /smaller than 40px/); assert.match(text, /__brbTest is missing/);
   assert.match(text, /tapped "Play"/);
-  assert.deepEqual(events.map(e => e[0]), ['progress', 'playtest']);
+  // The live build step: started only once playtesting really runs, then the pictures and problem count.
+  assert.deepEqual(events.map(e => e[0]), ['step', 'stepinfo', 'playtest']);
+  assert.equal(events[0][1].key, 'playtest'); assert.equal(events[1][1].pics, 2); assert.ok(events[1][1].probs >= 4);
+  assert.equal(events[1][1].probs, events[2][1].problems);
 });
 
 test('screenshot worker down, busy or refusing the token: no try is used up (covers come later); a game it cannot run uses one', async () => {

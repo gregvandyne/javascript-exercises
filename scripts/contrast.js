@@ -11,13 +11,13 @@ const TEXT = 4.5, UI = 3;
 // [foreground, [backgrounds], minimum, what it is]
 export const PAIRS = [
   ['--text', ['--bg', '--card', '--card-2', '--bar', '--hover', '--accent-soft', '--ok-bg', '--warn-bg', '--spark-soft', '--bad-bg'], TEXT, 'body text'],
-  ['--text-2', ['--bg', '--card', '--card-2', '--bar', '--hover', '--accent-soft'], TEXT, 'secondary text'],
-  ['--muted', ['--bg', '--card', '--card-2', '--bar', '--hover', '--accent-soft'], TEXT, 'hints, captions'],
+  ['--text-2', ['--bg', '--card', '--card-2', '--bar', '--hover', '--accent-soft', '--bad-bg'], TEXT, 'secondary text (also on a Studio step that hit a problem)'],
+  ['--muted', ['--bg', '--card', '--card-2', '--bar', '--hover', '--accent-soft', '--bad-bg'], TEXT, 'hints, captions'],
   ['--link', ['--bg', '--card', '--card-2', '--bar', '--hover', '--accent-soft', '--ok-bg', '--warn-bg', '--bad-bg', '--spark-soft'], TEXT, 'links, accent text (also inside notices)'],
   ['--on-accent', ['--accent', '--accent-hover', '--spark', '--spark-hover'], TEXT, 'primary buttons, badges'],
   ['--on-current', ['--current'], TEXT, 'current nav item, pressed chips'],
   ['--accent-ink', ['--accent-soft'], TEXT, 'tags'],
-  ['--ok', ['--bg', '--card', '--card-2', '--ok-bg'], TEXT, 'success text'],
+  ['--ok', ['--bg', '--card', '--card-2', '--ok-bg', '--accent-soft'], TEXT, 'success text, the ✓ of a Studio step'],
   ['--danger', ['--bg', '--card', '--card-2', '--hover', '--bad-bg'], TEXT, 'errors, danger buttons'],
   ['--on-danger', ['--danger'], TEXT, 'error toast'],
   ['--warn-ink', ['--warn-bg', '--card', '--card-2'], TEXT, 'amber chip, flagged scan'],

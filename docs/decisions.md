@@ -637,3 +637,66 @@ A review of the three batches together found these; each got the smallest correc
   variable again; the compose and decisions notes say that an approved cdnjs game is photographed without its library.
 - **Test helper:** `uniq()` in `tests/e2e/helpers.js` skips the ~1% of random consonant names that spell a refused
   abbreviation, which made sign-ups (and so random e2e tests) fail now and then.
+
+## Live build steps ("Behind the scenes")
+- **The Studio shows what the Builder is really doing, step by step, with a short learning line** (owner request:
+  the three dots looked like nothing was happening, and kids should learn what an AI does behind the scenes). A calm
+  card at the bottom of the chat lists each step as it happens and folds into "How the AI did this · N steps · time"
+  at the end; "💡 Tips" hides the learning lines per viewer (default on, for lessons).
+- **Steps come only from real server events** (`step`/`stepinfo` over SSE, `server/builder/steps.js`): screening, each
+  model call ("Round N", with why it started: the first message, looking at playtest pictures, reading a failed safety
+  report, a tool error, or deciding what's next), a thinking block that really streamed, writing or changing code, the
+  safety program and the new version, a playtest that really ran, naming, the checklist, a question. Nothing is
+  timer-driven. The practice builder is "the simple building blocks", never an AI, and never gets AI rows. A playtest
+  the AI asks for always gets a row, but without screenshots that row says "Couldn't run the test this time" and never
+  claims a test. "Working out what went wrong" only follows a failure the card shows (a write/edit or playtest row); a
+  tool that failed without a row of its own leads to a plain "deciding what to do next". The safety program's row
+  counts what it listed ("2 things to look at"), like the version card. — Honest is the point: a step that did not
+  happen would teach the wrong thing.
+- "Round N" instead of "AI step N", one row per model call, and the scan and the new version share one row. Thinking is
+  a small "🤔 thinking" / "🤔 thought first" note on the round (it turns to "thought first" when the answer starts to
+  stream), never its own row or label: the round keeps saying why it started, because that reason is the lesson (the
+  models think before almost every reply, so a "thinking" label would hide it every round). A write or edit counts as a "fix" only after a failed scan or a playtest
+  whose automatic checks found problems, and its done label says "made changes", not "fixed": only the next check can
+  say whether it worked. — The summary counts steps; the Builder's models think before almost every reply, so separate
+  rows would double the list.
+- **The AI's own plan is shown, its raw thinking is not.** The `notes` of write_game/edit_game now come first in the
+  tool schema (and the prompt says to write them first, as a short line naming what the version adds, e.g. "A dragon
+  hero and a lava level", which reads right both as "Plan: …" while the code streams and in the version history), so
+  they stream before the code and are shown as "Plan: …" while it is written (read from the streaming input by a one-pass scanner; replaced by the real notes once the tool
+  runs; model text, cleaned like version notes, capped at 120 characters, rendered as text only). Raw thinking is not
+  shown because: on the Builder's models thinking text is omitted by default (the blocks stream empty), so showing it
+  would need a request change (`thinking.display`) that we chose not to make, and the request is unchanged by this
+  feature; it would be unscreened model text shown to children and would need its own screening calls (cost); it is
+  long and technical (code, not kid words) and is not written in the child's language; and the system prompt asks the
+  model to decide the design privately. The plan is written for the child, in their language, as one sentence.
+- **One 💡 line under the running step**, in this order: a "Just now" line for a step that was over in a flash (the
+  safety program, a ready-made world, the checklist, naming the game, a question: one per step, each once a turn), the
+  step's own line, once a turn what thinking is, then "Did you know?" facts. Each stays a while (6 s, 8 s, 8 s, 11 s)
+  and the line only grows within a step. — Instant steps last milliseconds, so their lessons (like "a safety program,
+  not an AI, checks every version") were never seen live; three stacked blocks made the card taller than a phone's chat.
+- "Did you know?" facts appear only after the step's own line (8 s) on an AI step and only when true for every server (no playtest fact,
+  because playtesting is off without screenshots; no "a small AI screens messages" fact, because it doesn't without a
+  key). — Facts must stay accurate everywhere.
+- A compact record (`['steps', …]`: step keys, start times, numbers and the short plan; no labels or learning text)
+  is saved as the last event of the reply and sent with `done`, so the summary survives a reload and is drawn in the
+  reader's language. `summariseEvents` ignores it, so it never reaches the model. Refusals, the turn limit and early
+  errors have no record (no learning card under a refusal). The old `progress` SSE event is gone.
+- **The card in the chat (client):** it sits where the reply is being written and stays last while the turn runs
+  (replies, cards and chips build up above it), then folds in place into the reply's footer. It appears once a turn
+  has lasted 0.7 s (a quick turn, like most practice-builder turns, goes straight to its summary) and, once shown,
+  stays at least 1.2 s, so it never flashes. While live it shows the running step plus one finished step on a phone
+  (two on wider screens), each finished step one line without seconds; older ones fold behind "N earlier steps", which
+  takes the title's place on a phone, so the card stays shorter than the chat and the AI's reply stays in view. The
+  running step's seconds appear after 3 s; the plan keeps to two lines while it runs. Rows are updated in place (the
+  spinner keeps turning, a selection survives the counters). The chat only follows new steps when the reader is at the
+  bottom, a focused step is never folded away, and focus moves to the summary when the card folds. A ✓, a spinner,
+  ⚠️ or "…" sits at the line's end, always with a screen-reader word too. Tips off stops the automatic lines; a step
+  someone taps open still shows its own. Screen readers hear step changes, the plan, problems and the summary through
+  one polite region outside the chat log: changes within 0.4 s are read together (at most three, a problem is never
+  dropped), never the ticking seconds. The preview pill mirrors the current step. An error leaves the step it stopped
+  on in its present wording with "Stopped here". A dropped connection leaves the interrupted step in its present
+  wording with "…" (nobody here knows how it ended) and shows "Connection lost. Checking if the Builder got your
+  message…" until a step or a busy poll confirms the server has it, then "…The Builder keeps going on the server",
+  until the saved reply (with its summary) is redrawn. The opened summary can be folded again from its bottom too. —
+  Calm and honest beats busy: one card, one current step, no fake progress bar.

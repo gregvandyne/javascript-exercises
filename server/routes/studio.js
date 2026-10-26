@@ -132,6 +132,7 @@ router.get('/studio/:id', requireAccount, (req, res) => {
       </div>
     </div>
     <div class="st-live" id="st-live" aria-live="polite"></div>
+    <p class="sr-only" id="st-steps-live" aria-live="polite" aria-atomic="true"></p>
     <div class="st-main">
       <section class="st-chat" aria-label="${t('studio.chat.label')}">
         <div class="st-chat-head">

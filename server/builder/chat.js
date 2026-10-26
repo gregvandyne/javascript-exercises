@@ -18,7 +18,9 @@ export function saveChat(gameId, userId, { messages, state, tokensIn = 0, tokens
   else q.run('INSERT INTO builder_chats(id, game_id, user_id, messages, state, tokens_in, tokens_out, created_at, updated_at) VALUES (?,?,?,?,?,?,?,?,?)', uid(), gameId, userId, msgs, st, tokensIn, tokensOut, t, t);
 }
 
-/** One line per Builder action, for the transcript the model sees on later turns. */
+/** One line per Builder action, for the transcript the model sees on later turns.
+ *  Anything else gives '' and is dropped: ['steps', rec] (the live build steps record, steps.js) is for the Studio
+ *  only and must never reach the model. */
 export function summariseEvents(events) {
   return (events || []).map(([name, d]) => {
     if (name === 'version') return `[Built version ${d.number}: ${d.notes} (safety check: ${d.status})]`;

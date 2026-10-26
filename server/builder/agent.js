@@ -1,5 +1,6 @@
 // One Builder turn: screening -> turn limit -> provider agent loop (Claude or mock) -> transcript.
-// emit(name, data) streams to the Studio (SSE): text, ask, version, meta, notes, refused, progress, error, done.
+// emit(name, data) streams to the Studio (SSE): text, ask, version, meta, notes, refused, step, stepinfo, playtest, error, done.
+// step/stepinfo are the live build steps (steps.js); 'done' carries their compact record when the turn got past screening.
 import * as games from '../services/games.js';
 import { audit } from '../db.js';
 import { config } from '../config.js';
@@ -12,6 +13,7 @@ import * as mock from './mock.js';
 import * as claude from './claude.js';
 import { resting } from './anthropic.js';
 import { tEn } from '../i18n/index.js';
+import { stepRecorder } from './steps.js';
 
 export const MAX_INPUT = 2000;
 /** Which provider runs the Builder: Claude when a key is set, the mock otherwise (BRB_BUILDER_PROVIDER=mock forces the mock). */
@@ -35,17 +37,20 @@ export async function runTurn({ user, gameId, text = '', pro = false, uploadIds 
   const locale = t.locale || 'en';
   const game = games.getGame(gameId);
   if (!game) { emit('error', { message: t('game.api.notFound') }); return { ok: false, error: 'not_found' }; }
-  const done = r => { const left = turnsLeft(user.id); emit('done', { turnsLeft: left }); return { ...r, turnsLeft: left }; };
+  const done = (r, rec = null) => { const left = turnsLeft(user.id); emit('done', { turnsLeft: left, ...(rec ? { steps: rec } : {}) }); return { ...r, turnsLeft: left }; };
   if (!user.builder_enabled) { emit('error', { message: t('builder.errors.disabled') }); return done({ ok: false, error: 'disabled' }); }
   text = String(text || '').replace(/\r\n/g, '\n').trim().slice(0, MAX_INPUT);
   const wanted = (Array.isArray(uploadIds) ? uploadIds : []).slice(0, LIMITS.perMessage).map(getUpload).filter(u => u && u.game_id === gameId && !u.used_at);
   if (!text && !wanted.length) { emit('error', { message: t('builder.errors.empty') }); return done({ ok: false, error: 'empty' }); }
   if (busy.has(gameId)) { emit('error', { message: t('builder.errors.busy') }); return done({ ok: false, error: 'busy' }); }
   busy.add(gameId);
+  // Live build steps go straight to the Studio (raw emit, not relay): they are not card events.
+  const t0 = Date.now(); const steps = stepRecorder(emit, t0);
   try {
     const chat = loadChat(gameId);
     // 1. Screening, before any model sees the message.
     if (text) {
+      steps.start('screen');
       const s = await screenInput(text, { t });
       if (!s.ok) {
         audit(user.id, 'builder.refused', gameId, { category: s.category, by: s.by, text: text.slice(0, 300) });
@@ -73,21 +78,25 @@ export async function runTurn({ user, gameId, text = '', pro = false, uploadIds 
       emit(name, data);
     };
     const state = { ...chat.state, scanFails: 0 };
-    const tb = toolbox({ user, gameId, emit: relay, state, locale });
+    const tb = toolbox({ user, gameId, emit: relay, state, locale, steps });
     const name = provider || providerName();
     if (!provider && name === 'mock' && resting()) relay('text', { text: t('builder.budgetResting') + '\n\n' });
     let usage = { tokensIn: 0, tokensOut: 0, model: name };
     try {
-      usage = { ...usage, ...(await PROVIDERS[name].run({ user, game, text, pro: !!pro, history, uploads, state, tools: tb, emit: relay, signal, locale, t })) };
+      usage = { ...usage, ...(await PROVIDERS[name].run({ user, game, text, pro: !!pro, history, uploads, state, tools: tb, emit: relay, steps, signal, locale, t })) };
     } catch (e) {
       if (!(signal && signal.aborted)) emit('error', { message: t('builder.errors.muddled') });
       usage.error = e.message;
     }
     delete state.scanFails;
+    // The steps record (keys, numbers and the AI's short plan; no text) goes last, so a reload shows the same summary.
+    const end = signal && signal.aborted ? 'stopped' : usage.error ? 'error' : 'ok';
+    const rec = steps.record({ p: name === 'claude' ? 'ai' : 'blocks', ti: usage.tokensIn || 0, to: usage.tokensOut || 0, end });
+    if (rec) events.push(['steps', rec]);
     chat.messages.push({ role: 'assistant', text: said.trim(), at: Date.now(), events, model: usage.model, pro: !!pro });
     chat.state = state;
     saveChat(gameId, user.id, { ...chat, tokensIn: usage.tokensIn || 0, tokensOut: usage.tokensOut || 0 });
-    return done({ ok: !usage.error, error: usage.error });
+    return done({ ok: !usage.error, error: usage.error }, rec);
   } finally {
     busy.delete(gameId);
   }
