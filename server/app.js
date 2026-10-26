@@ -29,6 +29,8 @@ import { router as handoffRoutes } from './routes/handoff.js';
 import { router as googleRoutes } from './routes/google.js';
 import { canonicalRedirect, hostCheckRoute, HOST_CHECK_PATH } from './domain.js';
 import { hostOnly } from './site.js';
+import { WEBHOOK_PATH as BILLING_WEBHOOK_PATH, webhookHandler as billingWebhook } from './services/billing.js';
+import { billingOn } from './services/stripe.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 export const SITE_CSP = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; frame-src 'self'; media-src 'self' data: blob:; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'";
@@ -56,6 +58,11 @@ export function createApp() {
   app.get('/health', health);
   // The domain move's self-check (server/domain.js): PUBLIC_URL reaches this very process. Same treatment as /health.
   app.get(HOST_CHECK_PATH + ':id', hostCheckRoute);
+  // Stripe's webhook (server/services/billing.js): before the request log, MOVED_TO_URL, maintenance and the JSON
+  // parser, with the raw body its signature is computed over. No session, no CSRF: the signature is the check. Billing
+  // off (no STRIPE_API_KEY): this route steps aside and the request goes on exactly as before this route existed.
+  app.post(BILLING_WEBHOOK_PATH, (req, res, next) => next(billingOn() ? undefined : 'route'),
+    express.raw({ type: 'application/json', limit: '1mb', ...NO_INFLATE }), billingWebhook);
   if (!trust) {
     app.use((req, res, next) => {
       if (!warned.xff && req.headers['x-forwarded-for']) {

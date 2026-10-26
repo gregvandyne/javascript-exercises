@@ -865,3 +865,24 @@ cover at most the last 30 days. Screening, picture checks and reviews are not pa
 free messages per month subtract what they cost, paced over the days since the first free spend or the first
 message, whichever came first. Messages per day counts charged builds not given back (a Pro message is one message,
 whatever turns it used).
+
+**Chunk 2: Stripe plumbing (nothing visible).** The official `stripe` Node SDK, pinned to an exact version
+(`23.0.0`), is the one new dependency: unlike Google sign-in (no dependency), it gives Stripe's own webhook signature
+check (`constructEvent`), retries with idempotency keys and request shapes that match the API version. Only
+`server/services/stripe.js` imports it, makes one client (never a global key) and loads it only when billing is on.
+`STRIPE_API_VERSION` defaults to `2026-09-30.endive` (the SDK's own default, passed explicitly). Keys: a restricted
+key is expected, `sk_live_` stops the start, a live key needs `STRIPE_LIVE_OK=1`, `sk_test_` warns; keys and secrets
+are never logged (Stripe errors are logged as type, code, status and request id only), and `npm run check-keys` plus a
+pre-commit hook refuse real-looking keys in the repository. The webhook `POST /api/billing/webhook` sits before the
+request log, maintenance and the JSON parser (raw body), checks the signature first (current or previous secret),
+drops events of the other mode, and is idempotent on the event id. One shared sync path (webhooks, the 6-hourly
+`billing-reconcile` job, later the Checkout return page) reads Stripe first, outside any transaction (a failed read
+answers 500 so Stripe retries), then writes in one transaction; syncs of one subscription run one after another, and
+there is no ordering by event time (the re-fetch is the current state). Owners come from the Stripe Customer id,
+metadata only as a checked fallback; an unknown customer is stored as an `unlinked` event and answered 200. Refunds,
+disputes and early fraud warnings find their subscription through invoice payments (a Charge no longer names its
+invoice). Grace: cards get `BILLING_GRACE_DAYS` once past_due; invoice schools get `SCHOOL_INVOICE_GRACE_DAYS` after
+the earliest open invoice's due date, whatever the status. A Checkout paid by a delayed method grants nothing until the
+money arrives. Every entitlement query filters on the key's mode. Prices are found by lookup key. The jobs runner now
+awaits async jobs, logs a rejection instead of crashing, and never overlaps two runs of one job. Cancelling on a
+dispute or fraud warning, refunding duplicates and the school seat pool come with checkout (chunks 4 and 5).

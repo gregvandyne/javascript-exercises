@@ -1,0 +1,4 @@
+#!/bin/sh
+# Refuses a commit that contains a real-looking Stripe key or webhook secret (scripts/check-keys.js).
+# Turn on once per clone: npm run hooks
+exec node scripts/check-keys.js --staged
