@@ -916,7 +916,8 @@
       "tooMany": "Tu as déjà 2 jeux en construction. Attends que l’un d’eux soit fini, puis réessaie.",
       "limit": "Tu as utilisé tes {count} tours avec le Constructeur pour aujourd’hui. Reviens demain pour en avoir d’autres !",
       "muddled": "Le Constructeur s’est un peu emmêlé. Réessaie dans un moment.",
-      "resting": "Le Constructeur IA se repose en ce moment. Ton jeu et tes tours sont enregistrés, alors reviens un peu plus tard !"
+      "resting": "Le Constructeur IA se repose en ce moment. Ton jeu et tes tours sont enregistrés, alors reviens un peu plus tard !",
+      "limitToday": "Tu as utilisé tous tes tours avec le Constructeur pour aujourd’hui. Il y en aura d’autres demain !"
     },
     "refusals": {
       "tryThese": "Tu veux essayer une de ces idées ?",
@@ -1540,7 +1541,8 @@
         "today": "aujourd’hui à {time}",
         "tomorrow": "demain à {time}",
         "date": "le {date} à {time}"
-      }
+      },
+      "extra": "+{n} en plus ce mois-ci"
     }
   },
   "favorites": {
@@ -2260,7 +2262,10 @@
       "what": {
         "h": "Ce qu’apporte un abonnement famille",
         "p1": "{extra, plural, one {# message supplémentaire pour le Constructeur} other {# messages supplémentaires pour le Constructeur}} par mois, à partager entre {max} enfants au maximum, en plus des messages gratuits que chaque joueur reçoit tous les jours.",
-        "p2": "Payer ne débloque jamais rien qui manque aux joueurs gratuits, et on ne demande jamais aux enfants de payer."
+        "p2": "Payer ne débloque jamais rien qui manque aux joueurs gratuits, et on ne demande jamais aux enfants de payer.",
+        "limitDaily": "Chaque enfant peut utiliser jusqu’à {daily, plural, one {# message supplémentaire} other {# messages supplémentaires}} par jour.",
+        "limitCost": "Les messages supplémentaires d’une famille s’arrêtent aussi jusqu’à la fin du mois s’ils deviennent inhabituellement coûteux à faire fonctionner.",
+        "limitReset": "Les messages supplémentaires sont renouvelés le 1er de chaque mois (UTC) et ne sont pas reportés d’un mois sur l’autre."
       },
       "price": {
         "h": "Prix",
@@ -2367,6 +2372,48 @@
       "typeCode": "Tapez le code que votre enfant vous a donné.",
       "tooMany": "Trop d’essais. Attendez 15 minutes, puis réessayez.",
       "notFound": "Cet enfant ne fait pas partie de votre famille."
+    },
+    "billing": {
+      "password": {
+        "label": "Votre mot de passe",
+        "hint": "Nous vous le redemandons avant tout paiement ou changement d’abonnement.",
+        "needed": "Tapez votre mot de passe pour continuer.",
+        "wrong": "Ce mot de passe n’est pas le bon."
+      },
+      "manage": "Gérer l’abonnement",
+      "welcome": "Votre abonnement famille est activé. Merci !",
+      "waiting": "Activation de votre abonnement… Cette page se met à jour toute seule.",
+      "slow": "Cela prend plus de temps que d’habitude. Votre paiement est en sécurité : rechargez cette page dans quelques minutes et, si l’abonnement n’apparaît toujours pas, écrivez-nous.",
+      "back": "Retour à votre page famille",
+      "grant": "Abonnement offert jusqu’au {date}.",
+      "pastDue": "Votre dernier paiement n’a pas abouti. Mettez à jour votre carte dans « Gérer l’abonnement », sinon votre abonnement prendra fin le {date}.",
+      "ends": "L’abonnement prendra fin le {date} et ne sera pas renouvelé. Vos enfants gardent les messages supplémentaires jusque-là.",
+      "renewsMonthly": "Abonnement mensuel, renouvelé le {date}.",
+      "renewsYearly": "Abonnement annuel, renouvelé le {date}.",
+      "extrasLeft": "Il reste {left} sur {total, plural, one {# message supplémentaire} other {# messages supplémentaires}} ce mois-ci, en comptant jusqu’à hier",
+      "extrasReset": "Ils seront renouvelés le {date} (UTC). Ceux qui ne sont pas utilisés ne sont pas reportés.",
+      "linkFirst": "Reliez d’abord un enfant (il dit oui sur sa propre page), puis vous pourrez souscrire un abonnement.",
+      "terms": {
+        "renew": "L’abonnement est renouvelé automatiquement chaque mois ou chaque année jusqu’à ce que vous le résiliiez.",
+        "cancel": "Résiliable à tout moment dans « Gérer l’abonnement ». L’abonnement continue jusqu’à la fin de la période payée.",
+        "refund": "Remboursement intégral si vous le demandez dans les 14 jours suivant votre premier paiement ou un renouvellement annuel.",
+        "tax": "Les prix sont en dollars américains, plus la taxe sur les ventes là où elle s’applique. Pour l’instant, les abonnements famille sont réservés aux familles des États-Unis.",
+        "agree": "En vous abonnant, vous acceptez nos {terms}.",
+        "link": "Conditions d’utilisation"
+      },
+      "subscribeMonthly": "S’abonner : {price} par mois",
+      "subscribeYearly": "S’abonner : {price} par an",
+      "stripe": "Vous payez sur la page sécurisée de Stripe. Nous ne voyons jamais votre numéro de carte.",
+      "history": "Vos reçus et vos anciens abonnements se trouvent dans « Gérer l’abonnement ».",
+      "errors": {
+        "notOpen": "Les abonnements famille ne sont pas encore en vente.",
+        "entitled": "Votre famille a déjà un abonnement. Utilisez « Gérer l’abonnement » pour le modifier.",
+        "fixPayment": "Le dernier paiement de votre famille n’a pas abouti. Mettez à jour votre carte dans « Gérer l’abonnement » au lieu de souscrire un nouvel abonnement.",
+        "paying": "Votre dernier paiement vient d’être accepté. Attendez une minute, puis rechargez cette page.",
+        "noPrice": "Les abonnements famille ne peuvent pas être achetés pour le moment. Réessayez plus tard.",
+        "noCustomer": "Il n’y a encore rien à gérer : souscrivez d’abord un abonnement.",
+        "stripe": "Impossible de joindre notre prestataire de paiement. Réessayez dans une minute."
+      }
     }
   }
 }
