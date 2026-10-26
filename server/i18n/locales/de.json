@@ -1060,11 +1060,6 @@
       "noFullscreen": "Vollbild ist hier nicht erlaubt.",
       "roundOver": "Runde vorbei! Punkte: {score}",
       "stillWorking": "Einen Moment, der Baumeister arbeitet noch!",
-      "stillFinishing": "Der Baumeister ist noch mit deiner letzten Nachricht beschäftigt…",
-      "thinking": "Der Baumeister denkt nach",
-      "working": "Der Baumeister arbeitet…",
-      "building": "Dein Spiel wird gebaut…",
-      "editing": "Änderungen werden gemacht…",
       "noAnswer": "Der Baumeister konnte nicht antworten. Bitte versuch es noch mal.",
       "signInAgain": "Wieder anmelden",
       "dropped": "Hoppla, die Verbindung ist abgebrochen. Bitte versuch es noch mal.",
@@ -1209,8 +1204,141 @@
         "notYet": "Noch nicht",
         "button": "Aktualisieren"
       },
-      "reconnecting": "Die Verbindung ist weg, aber der Baumeister arbeitet weiter. Kurz warten…",
-      "testing": "Ich spiele dein Spiel zum Testen…"
+      "steps": {
+        "title": "Hinter den Kulissen",
+        "tipsOn": "Tipps: an",
+        "tipsOff": "Tipps: aus",
+        "tipsHint": "Lern-Tipps zeigen oder verstecken",
+        "earlier": "{count, plural, one {# früherer Schritt} other {# frühere Schritte}}",
+        "hideEarlier": "Weniger Schritte zeigen",
+        "showLess": "Weniger zeigen",
+        "sending": "Deine Nachricht wird gesendet",
+        "summaryAi": "So hat die KI das gemacht · {count, plural, one {# Schritt} other {# Schritte}} · {time}",
+        "summaryBlocks": "So haben die einfachen Bausteine das gemacht · {count, plural, one {# Schritt} other {# Schritte}} · {time}",
+        "stopped": "vorzeitig gestoppt",
+        "stoppedHere": "Hier gestoppt",
+        "srDone": "fertig",
+        "srNow": "läuft gerade",
+        "srWarn": "Problem",
+        "srPaused": "noch keine Neuigkeiten",
+        "planLabel": "Plan:",
+        "thoughtFirst": "erst nachgedacht",
+        "thinkingNow": "denkt nach",
+        "factLabel": "Wusstest du schon?",
+        "justNow": "Gerade eben:",
+        "tokens": "Die KI hat {read} Tokens gelesen und {wrote} geschrieben. Ein Token ist ein kleines Stück von einem Wort. Die Zahl ist so groß, weil die KI in jeder Runde ihre Anweisungen, den Chat und das Spiel noch einmal liest.",
+        "loopAi": "Die KI hat in {count, plural, one {# Runde} other {# Runden}} gearbeitet. Jede Runde: lesen, nachdenken, ein Werkzeug benutzen, prüfen, das Nächste entscheiden.",
+        "loopBlocks": "Die einfachen Bausteine folgen festen Regeln. Der KI-Baumeister plant, benutzt Werkzeuge und prüft seine eigene Arbeit.",
+        "lines": "{count, plural, one {# Zeile} other {# Zeilen}}",
+        "edits": "{count, plural, one {# Änderung} other {# Änderungen}}",
+        "pics": "{count, plural, one {# Bild} other {# Bilder}}",
+        "probs": "{count, plural, =0 {keine Probleme gefunden} one {# Problem gefunden} other {# Probleme gefunden}}",
+        "cut": "Es wurde zu lang und abgeschnitten",
+        "screen": {
+          "now": "Deine Nachricht wird auf Sicherheit geprüft",
+          "done": "Nachricht geprüft",
+          "learn": "Bevor der Baumeister deine Nachricht sieht, prüft ein Sicherheitscheck, ob sie zu einer Spieleseite für Kinder passt."
+        },
+        "blocks": {
+          "now": "Die einfachen Bausteine sind dran",
+          "done": "Die einfachen Bausteine benutzt",
+          "learn": "Diese Bausteine sind keine KI. Sie folgen festen Regeln und achten zum Beispiel auf bestimmte Wörter in deiner Nachricht."
+        },
+        "think": {
+          "now": {
+            "start": "Runde {n}: liest deine Nachricht",
+            "startGame": "Runde {n}: liest deine Nachricht und dein Spiel",
+            "look": "Runde {n}: schaut sich die Bilder an",
+            "scan": "Runde {n}: liest den Sicherheitsbericht",
+            "retry": "Runde {n}: findet heraus, was schiefging",
+            "next": "Runde {n}: entscheidet, was als Nächstes kommt"
+          },
+          "done": {
+            "start": "Runde {n}: hat deine Nachricht gelesen",
+            "startGame": "Runde {n}: hat deine Nachricht und dein Spiel gelesen",
+            "look": "Runde {n}: hat sich die Bilder angeschaut",
+            "scan": "Runde {n}: hat den Sicherheitsbericht gelesen",
+            "retry": "Runde {n}: hat herausgefunden, was schiefging",
+            "next": "Runde {n}: hat entschieden, was als Nächstes kommt"
+          },
+          "learn": {
+            "start": "Eine Runde ist jedes Mal, wenn die App die KI fragt. Die KI merkt sich nichts, also schickt die App ihr den Chat noch einmal.",
+            "look": "Diese KI kann Bilder lesen. Sie sucht auf den Bildschirmfotos nach allem, was kaputt, leer oder durcheinander ist.",
+            "scan": "Das Sicherheitsprogramm sagt genau, was falsch war. So kann die KI nur diesen Teil reparieren.",
+            "retry": "Wenn ein Werkzeug meldet, dass etwas nicht geklappt hat, liest die KI, warum, und versucht es anders.",
+            "next": "Nach jedem Werkzeug liest die KI das Ergebnis und wählt den nächsten Schritt. Diese Schleife macht sie zu einem Agenten.",
+            "thinking": "Bevor sie antwortet, denkt diese KI erst still nach, ein bisschen so, wie du etwas im Kopf ausrechnest."
+          }
+        },
+        "write": {
+          "now": "Schreibt den Spielcode",
+          "done": "Hat den Spielcode geschrieben",
+          "failed": "Diese Version hat nicht geklappt",
+          "learn": "Die KI schreibt Code Stück für Stück und sagt dabei jedes Mal voraus, was als Nächstes kommen sollte."
+        },
+        "edit": {
+          "now": "Ändert nur die Teile, die es brauchen",
+          "done": "Hat nur die nötigen Teile geändert",
+          "failed": "Diese Änderung passte nicht zum Code",
+          "learn": "Bei kleinen Änderungen tauscht die KI genau bestimmte Stücke im Code aus, statt alles neu zu schreiben."
+        },
+        "fix": {
+          "now": "Repariert die gefundenen Probleme",
+          "done": "Hat Änderungen gemacht, um die Probleme zu beheben",
+          "learn": "Fehler finden und beheben gehört ganz normal zum Bauen dazu, für Menschen und für KI."
+        },
+        "template": {
+          "done": "Hat mit einer fertigen 3D-Welt angefangen",
+          "learn": "Statt eine ganze 3D-Welt ganz neu zu schreiben, nimmt die KI eine fertige und ändert sie."
+        },
+        "check": {
+          "pass": "Sicherheitsprogramm: alles okay · als Version {v} gespeichert",
+          "flag": "Sicherheitsprogramm: {k, plural, =1 {eine Sache} other {# Sachen}} zum Anschauen · als Version {v} gespeichert",
+          "fail": "Sicherheitsprogramm hat {k, plural, =1 {ein Problem} other {# Probleme}} gefunden · als Version {v} gespeichert",
+          "learn": "Ein Sicherheitsprogramm, keine KI, prüft jede neue Version auf unsicheren Code, denn KI kann Fehler machen."
+        },
+        "name": {
+          "title": "Name: „{title}“",
+          "titleIcon": "Name: „{title}“ {icon}",
+          "icon": "Symbol gewählt: {icon}",
+          "details": "Spieldetails ausgefüllt",
+          "learn": "Der Baumeister kann keine Knöpfe drücken. Darum nutzt er Werkzeuge: kleine Befehle, die die App für ihn ausführt, zum Beispiel „Spiel benennen“."
+        },
+        "playtest": {
+          "now": "Spielt dein Spiel auf einem simulierten Handy",
+          "done": "Auf einem simulierten Handy getestet",
+          "failed": "Der Test hat diesmal nicht geklappt",
+          "learn": "Die App spielt dein Spiel auf einem simulierten Handy, sucht nach Fehlern und macht Bilder für die KI."
+        },
+        "notes": {
+          "done": "Hat eine Liste zum Ausprobieren gemacht",
+          "learn": "Auch nach all diesen Prüfungen sollte ein Mensch das Spiel spielen. Diese Liste zeigt, was du ausprobieren kannst."
+        },
+        "ask": {
+          "done": "Hat dir eine Frage gestellt",
+          "learn": "Wenn der Baumeister etwas wissen muss, fragt er dich und wartet dann auf deine Antwort."
+        },
+        "offline": {
+          "now": "Verbindung weg. Der Baumeister arbeitet auf dem Server weiter",
+          "check": "Verbindung weg. Wir schauen, ob der Baumeister deine Nachricht bekommen hat…",
+          "learn": "Dein Spiel wird auf unserem Computer gebaut, dem Server, nicht auf deinem Gerät. Deshalb geht es weiter."
+        },
+        "waiting": {
+          "now": "Der Baumeister arbeitet noch auf dem Server"
+        },
+        "facts": {
+          "a": "KI liest und schreibt in Tokens, das sind kleine Stücke von Wörtern. Ein langes Wort kann aus mehreren Tokens bestehen.",
+          "b": "Eine KI schreibt, indem sie das nächste Token vorhersagt, immer wieder, sehr schnell.",
+          "c": "Fragst du zweimal dasselbe, bekommst du vielleicht eine andere Antwort, weil die KI aus wahrscheinlichen Wörtern auswählt.",
+          "d": "In jeder Runde liest die KI den letzten Chat noch einmal. Darum brauchen lange Chats mehr Tokens.",
+          "e": "Ein Agent ist eine KI, die Werkzeuge in einer Schleife benutzt. Dieser Baumeister kann bis zu 14 Runden pro Nachricht machen.",
+          "f": "Der KI-Baumeister kann nicht ins Internet. Er baut mit dem, was er gelernt hat und was du ihm sagst.",
+          "g": "KI-Modelle lernen Muster aus riesigen Mengen an Texten und Code, die Menschen geschrieben haben.",
+          "h": "KI kann sehr sicher klingen und trotzdem falschliegen. Darum prüft auch ein Sicherheitsprogramm den Code.",
+          "i": "✨ Profi-Qualität nutzt eine größere KI, die länger nachdenkt: langsamer, aber oft besser bei kniffligen Spielen.",
+          "j": "Spiel dein Spiel immer selbst. Auch eine schlaue KI übersieht Dinge, die echten Spielern auffallen würden."
+        }
+      }
     }
   },
   "favorites": {

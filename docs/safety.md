@@ -146,6 +146,11 @@ no gambling mechanics, no fast flashing; cartoon slapstick is fine; learning twi
 Every game the Builder writes goes through the sanitizer and scanner. If the scan fails, the problems go straight back
 to the Builder to fix (a limited number of times). Every change is a new version; history is never rewritten.
 
+The Studio's "Behind the scenes" steps card shows the AI's one-line plan (the notes it writes for the version, shown
+while the code is still coming, so also for an edit that then fails; written in the child's language, cleaned and
+capped like version notes, rendered as text). The model's internal thinking is never shown or stored; the card only
+notes that a thinking block happened.
+
 Limits: 60 Builder turns per person per day by default (`BUILDER_DAILY_TURNS`), a maximum length per turn, and a rate
 limit on the chat endpoint. Accounts can have building switched off.
 
