@@ -975,6 +975,12 @@
       }
     },
     "cutOffNothing": "The Builder spent so long planning that it ran out of room before it could build anything. Your turn wasn’t used. Try asking for one or two changes at a time.",
+    "followUps": {
+      "cap": "You’ve sent {max, plural, one {# extra message} other {# extra messages}} during this build. Wait until it’s done, then tell me more!",
+      "refusedCap": "Let’s wait for the Builder to finish this build first.",
+      "noUploads": "Pictures and files can be added when this build is done. Send your words now, or wait a moment.",
+      "notYours": "Someone else started this build. Wait until it’s done."
+    },
     "budgetStop": "The AI Builder has to rest now, so I stopped here. Everything I made so far is saved."
   },
   "uploads": {
@@ -1105,7 +1111,6 @@
       "buildFirst": "Build something first!",
       "noFullscreen": "Full screen is not allowed here.",
       "roundOver": "Round over! Score: {score}",
-      "stillWorking": "One moment, the Builder is still working!",
       "noAnswer": "The Builder could not answer. Please try again.",
       "signInAgain": "Sign in again",
       "dropped": "Oops, the connection dropped. Please try again.",
@@ -1321,7 +1326,8 @@
             "retry": "Round {n}: working out what went wrong",
             "next": "Round {n}: deciding what to do next",
             "plan": "Round {n}: planning how to build it",
-            "planGame": "Round {n}: planning the changes"
+            "planGame": "Round {n}: planning the changes",
+            "msg": "Round {n}: {m, plural, one {reading your new message} other {reading your # new messages}}"
           },
           "done": {
             "start": "Round {n}: read your message",
@@ -1331,7 +1337,8 @@
             "retry": "Round {n}: worked out what went wrong",
             "next": "Round {n}: decided what to do next",
             "plan": "Round {n}: planned how to build it",
-            "planGame": "Round {n}: planned the changes"
+            "planGame": "Round {n}: planned the changes",
+            "msg": "Round {n}: {m, plural, one {read your new message} other {read your # new messages}}"
           },
           "learn": {
             "start": "A round is each time the app asks the AI. It doesn’t remember, so the app sends it the chat again.",
@@ -1340,7 +1347,8 @@
             "retry": "When a tool says something didn’t work, the AI reads why and tries another way.",
             "next": "After each tool, the AI reads the result and picks the next step. That loop makes it an agent.",
             "thinking": "Before it answers, this AI thinks quietly first, a bit like working something out in your head.",
-            "long": "Big ideas can take the AI a minute or two to plan before it writes any code. It keeps going even if you leave this page."
+            "long": "Big ideas can take the AI a minute or two to plan before it writes any code. It keeps going even if you leave this page.",
+            "msg": "This AI reads new messages between steps, not in the middle of one. Then it can change its plan."
           }
         },
         "write": {
@@ -1404,12 +1412,13 @@
           "b": "An AI writes by predicting the next token, again and again, very fast.",
           "c": "Ask the same thing twice and you may get a different answer, because the AI picks from likely next words.",
           "d": "Every round, the AI reads the recent chat again. That’s why long chats use more tokens.",
-          "e": "An agent is an AI that uses tools in a loop. This Builder can take up to 14 rounds per message.",
+          "e": "An agent is an AI that uses tools in a loop. This Builder can take up to 14 rounds for each build.",
           "f": "The Builder AI can’t use the internet. It builds from what it learned and what you tell it.",
           "g": "AI models learn patterns from huge amounts of writing and code made by people.",
           "h": "AI can sound sure and still be wrong. That’s why a safety program checks the code too.",
           "i": "✨ Pro quality uses a bigger AI that thinks for longer: slower, but often better at tricky games.",
-          "j": "Always play your game yourself. Even clever AI misses things a real player would notice."
+          "j": "Always play your game yourself. Even clever AI misses things a real player would notice.",
+          "k": "You can send new ideas while the AI works. It reads them between its steps."
         },
         "leave": "You can close this page or your computer, or sign out. The Oomba Builder keeps working on our server, and your game will be here when you come back.",
         "restart": {
@@ -1423,7 +1432,12 @@
           "learn": "The Builder saved your message and your newest version, so it picks up from there instead of starting over."
         },
         "stopRestart": "stopped by a server restart",
-        "stopTime": "stopped: it took too long"
+        "stopTime": "stopped: it took too long",
+        "read": {
+          "done": "{m, plural, one {Read your new message} other {Read your # new messages}}",
+          "learn": "The building blocks check for new messages between steps, then use their rules on them."
+        },
+        "fuRead": "{count, plural, one {read # new message} other {read # new messages}}"
       },
       "resumed": "🔄 The server restarted, so the Builder carried on from where it was.",
       "resumedV": "🔄 The server restarted, so the Builder carried on from version {v}.",
@@ -1437,8 +1451,51 @@
       "signedOutBuilding": "You were signed out. The Builder keeps working on your game: sign in again to see it.",
       "gameGone": "This game was deleted, so the Builder stopped.",
       "followups": {
-        "putBack": "Put it back in the box"
+        "placeholderAi": "Add to your idea. The AI reads it after its current step",
+        "placeholderBlocks": "Add to your idea. The Builder reads it after its current step",
+        "placeholderShort": "Add to your idea…",
+        "capPlaceholder": "You can add more when this build is done",
+        "capShort": "More when it’s done",
+        "waitingAi": "Waiting for the AI to read it",
+        "waitingBlocks": "Waiting for the Builder to read it",
+        "readingAi": "The AI is reading it now",
+        "readAi": "The AI read this",
+        "readBlocks": "The Builder read this",
+        "nextBuild": "This starts the next build",
+        "failed": "Couldn’t send.",
+        "retry": "Try again",
+        "putBack": "Put it back in the box",
+        "notRead": {
+          "limit": "Not read: no turns left today",
+          "error": "Not read: the Builder got muddled",
+          "stopped": "Not read: the build stopped",
+          "chain": "Not read yet. Send it again when the Builder is free"
+        },
+        "gotAi": "{count, plural, one {Got your message. The AI will read it after this step.} other {Got your # messages. The AI will read them after this step.}}",
+        "gotBlocks": "{count, plural, one {Got your message. The Builder will read it after this step.} other {Got your # messages. The Builder will read them after this step.}}",
+        "writingNow": "It’s writing code right now, so it finishes that first.",
+        "turnNote": "Extra messages don’t use a turn. If the Builder has already finished, your message starts a new build and uses 1 turn.",
+        "noUploadsHint": "Add pictures after this build",
+        "announceRead": "The Builder is reading your new message",
+        "carriedNote": "Your message started a new build (1 turn)"
       },
+      "eta": {
+        "about": "Usually about {time}",
+        "range": "Usually {time}",
+        "under": "Usually less than a minute",
+        "guess": "About {time}",
+        "soFar": "{time} so far",
+        "tailAbout": "Saved! Finishing up usually takes about {time} more",
+        "tailUnder": "Saved! Finishing up usually takes less than a minute more",
+        "tailGuessAbout": "Saved! Finishing up may take about {time} more",
+        "tailGuessUnder": "Saved! Finishing up may take less than a minute more",
+        "longer": "Taking a bit longer than usual",
+        "big": "This one is a big job, and it’s still going",
+        "newMsg": "Reading your new message can add a little time",
+        "learnAi": "Bigger games take longer, because the AI writes more tokens, one after another.",
+        "learnBlocks": "The building blocks follow fixed rules, so they take about the same time every time."
+      },
+      "stillWorking": "One moment, the Builder is still working!",
       "resting": {
         "text": "😴 The AI Builder is resting right now. It will be back {when}. Your game and your turns are saved, so come back then!",
         "today": "today at {time}",

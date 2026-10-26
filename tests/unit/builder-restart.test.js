@@ -100,10 +100,10 @@ test('PROC-1 SIGTERM mid-build: handed off, exit 0, and after the restart the bu
     const hello = JSON.parse(again.text.match(/event: hello\ndata: (.*)/)[1]);
     if (hello.turn) { assert.equal(hello.turn.attempt, 2); assert.match(again.text, /"key":"resume"/); }   // (or it already finished)
     const after = await untilIdle(s, cookie, id);
-    const kinds = after.chat.map(m => (m.role === 'user' ? 'user' : m.interrupted ? 'interrupted' : m.resumed ? 'resumed' : 'other'));
-    assert.deepEqual(kinds.filter(k => k !== 'interrupted'), ['user', 'resumed']);
+    const kinds = after.chat.map(m => (m.role === 'user' ? 'user' : m.interrupted ? 'interrupted' : m.part ? 'part' : m.resumed ? 'resumed' : 'other'));
+    assert.deepEqual(kinds.filter(k => k !== 'interrupted' && k !== 'part'), ['user', 'resumed']);
     assert.equal(after.chat[0].text, FOX, 'the message was kept');
-    assert.equal(after.chat.at(-1).events[0][0], 'resumed');
+    assert.equal(after.chat.find(m => m.role === 'assistant' && !m.interrupted).events[0][0], 'resumed', 'the resumed attempt starts with the note');
     assert.equal(after.versions.length, 1, 'exactly one version');
     assert.equal(after.turnsLeft, DAILY - 1, 'charged once');
     assert.deepEqual(turnRow(dataDir).map(r => [r.status, r.end_reason, r.attempt]), [['done', 'ok', 2]]);
@@ -118,7 +118,8 @@ test('PROC-2 SIGKILL mid-build: carried on at the next boot and finished, charge
     s.child.kill('SIGKILL'); await s.exited; await st.done;
     s = await boot(dataDir);
     const after = await untilIdle(s, cookie, id);
-    assert.deepEqual(after.chat.map(m => [m.role, !!m.resumed]), [['user', false], ['assistant', true]], 'no interrupted reply after a crash');
+    assert.deepEqual(after.chat.filter(m => !m.part).map(m => [m.role, !!m.resumed]), [['user', false], ['assistant', true]]);
+    assert.ok(!after.chat.some(m => m.interrupted), 'no interrupted reply after a crash');
     assert.equal(after.versions.length, 1); assert.equal(after.turnsLeft, DAILY - 1);
     assert.deepEqual(turnRow(dataDir).map(r => [r.status, r.attempt]), [['done', 2]]);
   } finally { await stop(s); }

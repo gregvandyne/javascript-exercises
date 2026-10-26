@@ -2,8 +2,9 @@
 // A build runs on the server whether or not this page is open: Send starts it (POST /chat answers at once) and the page
 // follows it on one live stream (GET /live, "live stream" below), which replays a running build in full every time it
 // connects, so a reload, another tab or another device shows the same build. After every build the page reads the
-// Studio state again and redraws the chat from the saved transcript.
-import { api, toast, sheet, pageData, signedOut, tappedJustNow, $, $$, esc, copyText, t } from '/js/app.js';
+// Studio state again and redraws the chat from the saved transcript. Send stays on while a build runs: the message is
+// a follow-up ("follow-ups" below) that the Builder reads at its next step.
+import { api, toast, sheet, pageData, signedOut, tappedJustNow, setPlaceholder, $, $$, esc, copyText, t } from '/js/app.js';
 import { INTL } from '/js/i18n.js';
 
 let S = pageData();
@@ -184,11 +185,17 @@ const note = (text, cls = '') => bubble(`note${cls ? ' ' + cls : ''}`, text);
 /** One saved transcript entry (renderLog, and a running build's own entries in startTurnUI). last: its question's
  *  chips can still be tapped. */
 function drawEntry(m, last = false) {
+  if (m.role === 'user' && m.followUp) { fuBubble(m.text, { id: m.id, cid: m.cid, state: m.refused ? 'refused' : m.status, why: m.why, by: m.by, move: true }); return; }
   if (m.role === 'user') { userBubble(m.text, m.uploads || []); return; }
   const events = m.events || [];
-  // A note that belongs before the reply: the server restarted and the Builder carried on.
-  for (const [name, d] of events) if (name === 'resumed') note(d && d.v ? t('js.studio.resumedV', { v: d.v }) : t('js.studio.resumed'));
-  const b = m.text ? bubble('bot' + (m.refused ? ' refused' : ''), m.text) : null;
+  // Notes that belong before the reply: the server restarted and the Builder carried on; follow-ups started this build.
+  for (const [name, d] of events) {
+    if (name === 'resumed') note(d && d.v ? t('js.studio.resumedV', { v: d.v }) : t('js.studio.resumed'));
+    else if (name === 'carried') carriedNote();
+  }
+  const b = m.text || m.open ? bubble('bot' + (m.refused ? ' refused' : ''), m.text) : null;
+  // The running build's sentence a follow-up came in the middle of (it sits below): the reply streams on into it.
+  if (m.open) { botCur = b; botOpen = fuHeld = true; }
   for (const [name, d] of events) {
     if (name === 'version') versionCard(d, false);
     else if (name === 'notes') notesCard(d.checklist);
@@ -230,6 +237,7 @@ function restingNote() {
 function renderLog() {
   restingEl = null;
   if (live) live.remove();
+  const flying = $$('.msg.fu', log).filter(e => FLYING.has(e.dataset.state));   // follow-ups whose answer hasn't come
   log.innerHTML = '';
   // The running build's own entries are drawn by startTurnUI, with its live card.
   const tid = S.turn && S.turn.id;
@@ -245,6 +253,7 @@ function renderLog() {
       else { bubble('bot', t('js.studio.log.readyToPlay', { title: S.game.title })); chips(NEXT_CHIPS, true); }
     }
   } finally { drawingLog = false; }
+  for (const b of flying) if (!fuFind(b.dataset.fu, b.dataset.cid)) place(b);
   scrollDown();
 }
 
@@ -258,23 +267,26 @@ function renderLog() {
 // Model text (the AI's plan, a game title) is only ever set with textContent. Nothing here is timer-driven except the
 // seconds, the order of the 💡 lines and when the card appears: every row is a real server step (or the page's own
 // sending/offline/waiting/restart). Rows carry the server's own times (step.at), so a replay shows real durations.
-// The top of the live card says the builder can close the page or sign out: shown once a build has lasted LEAVE_AT.
-const STEP_ICON = { screen: '🛡️', blocks: '🧱', think: '🧠', write: '✍️', edit: '✏️', fix: '🛠️', template: '🏝️', check: '🔒', name: '🏷️', playtest: '📱', notes: '🧪', ask: '💬', resume: '🔄', sending: '📨', offline: '📶', waiting: '⏳', restart: '🔄' };
-const SERVER_STEPS = new Set(['screen', 'blocks', 'think', 'write', 'edit', 'fix', 'template', 'check', 'name', 'playtest', 'notes', 'ask', 'resume']);
+// The top of the live card ("eta" below): how long builds like this usually take, from the server's numbers (eta.js),
+// and that the builder can close the page or sign out. Both appear at the first real authoring step or once the build
+// has lasted the estimate's showAt (LEAVE_AT without one), so a quick question reply never flashes them.
+const STEP_ICON = { screen: '🛡️', blocks: '🧱', think: '🧠', write: '✍️', edit: '✏️', fix: '🛠️', template: '🏝️', check: '🔒', name: '🏷️', playtest: '📱', notes: '🧪', ask: '💬', resume: '🔄', read: '📬', sending: '📨', offline: '📶', waiting: '⏳', restart: '🔄' };
+const SERVER_STEPS = new Set(['screen', 'blocks', 'think', 'write', 'edit', 'fix', 'template', 'check', 'name', 'playtest', 'notes', 'ask', 'resume', 'read']);
 // Timed rows run until the next row starts (spinner, seconds); the others take milliseconds and arrive done.
 const TIMED = new Set(['screen', 'blocks', 'think', 'write', 'edit', 'fix', 'playtest', 'sending', 'offline', 'waiting', 'restart']);
 const AUTHOR = new Set(['write', 'edit', 'fix']);
 // An instant row's learning line is shown under the next timed row ("Just now: …"): one per row, most useful first,
 // each at most once a turn.
-const JUST_NOW = ['check', 'template', 'notes', 'name', 'ask'];
-const THINK_WHY = new Set(['start', 'look', 'scan', 'retry', 'next']);
-const FACTS = [...'abcdefghij'];
+const JUST_NOW = ['check', 'read', 'template', 'notes', 'name', 'ask'];
+const THINK_WHY = new Set(['start', 'look', 'scan', 'retry', 'next', 'msg']);
+const FACTS = [...'abcdefghijk'];
 const TIP_JUST = 6000, TIP_OWN = 8000, TIP_THINK = 8000, TIP_FACT = 11000;
 const LONG_AT = 45000, TIP_LONG = 15000;   // a round still planning after 45 s says that big ideas take a while   // how long each 💡 line stays
 const SHOW_AFTER = 700;    // the live card appears once a turn has lasted this long (a quick turn goes straight to its summary)
 const MIN_SHOWN = 1200;    // once shown, it stays at least this long before it folds (no flash)
 const SEC_AFTER = 3000;    // a running step's seconds appear after 3 s ("0 sec" reads as stuck)
-const LEAVE_AT = 8000;     // "You can close this page…" appears once a build has lasted this long (a quick reply never flashes it)
+const LEAVE_AT = 8000;     // with no estimate: "You can close this page…" appears once a build has lasted this long
+const ETA_AUTHOR = new Set(['write', 'edit', 'fix', 'template', 'check']);   // real building: the estimate shows at once
 const narrow = matchMedia('(max-width: 520px)');   // phones: one finished row above the running one, not two
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 let factNext = Math.floor(Math.random() * FACTS.length);   // carries on across turns, so each turn shows new facts
@@ -319,7 +331,7 @@ function stepLabel(k, f, done) {
     const why = THINK_WHY.has(f.c) ? f.c : 'next';
     // Round 1 says "reading" only until the AI starts answering; after that it is planning (it may think for a while).
     const plan = why === 'start' && (f.a || f.th);
-    return ST(`think.${done ? 'done' : 'now'}.${plan ? (f.g ? 'planGame' : 'plan') : why === 'start' && f.g ? 'startGame' : why}`, { n: f.n || 1 });
+    return ST(`think.${done ? 'done' : 'now'}.${plan ? (f.g ? 'planGame' : 'plan') : why === 'start' && f.g ? 'startGame' : why}`, { n: f.n || 1, m: f.m || 1 });
   }
   if (k === 'check') return ST(`check.${['pass', 'flag', 'fail'].includes(f.st) ? f.st : 'flag'}`, { v: f.v || 1, k: f.k || 1 });
   if (k === 'name') {
@@ -328,6 +340,7 @@ function stepLabel(k, f, done) {
   }
   if (k === 'template' || k === 'notes' || k === 'ask') return ST(`${k}.done`);
   if (k === 'resume') return f.v ? ST('resume.doneV', { v: f.v }) : ST('resume.done');
+  if (k === 'read') return ST('read.done', { m: f.m || 1 });
   if (k === 'restart') return ST(f.resume ? 'restart.now' : 'restart.saved');
   if (k === 'sending') return ST('sending');
   if (k === 'offline') return ST(f.unsure ? 'offline.check' : 'offline.now');
@@ -358,19 +371,20 @@ function setTips(on) {
   if (live) live.retip();
 }
 let sayQ = [], sayTimer = 0;
-/** Screen readers hear step changes only (a new step, the plan, a problem, the summary), never counters or seconds.
- *  Changes that come within 0.4 s are read as one message: at most three, and a problem is never dropped. */
-function announce(text, urgent = false) {
+/** Screen readers hear step changes only (a new step, the plan, a problem, the estimate, the summary), never counters
+ *  or seconds. Changes that come within 0.4 s are read as one message: at most three steps, and a problem is never
+ *  dropped. add: joined to whatever else is said then, never dropped (the estimate, so a step can't swallow it). */
+function announce(text, urgent = false, add = false) {
   if (LIVE.replaying) return;   // a replay is caught up silently; the current step is read once at the end
-  sayQ.push({ text, urgent });
+  sayQ.push({ text, urgent, add });
   if (!sayTimer) sayTimer = setTimeout(sayNow, 400);
 }
 function sayNow() {
   sayTimer = 0;
   const box = $('#st-steps-live'), q = sayQ; sayQ = [];
   if (!box || !q.length) return;
-  const urgent = q.filter(x => x.urgent).slice(-2), rest = q.filter(x => !x.urgent).slice(urgent.length - 3);
-  box.textContent = q.filter(x => urgent.includes(x) || rest.includes(x)).map(x => x.text).join('. ');
+  const urgent = q.filter(x => x.urgent).slice(-2), rest = q.filter(x => !x.urgent && !x.add).slice(urgent.length - 3);
+  box.textContent = q.filter(x => x.add || urgent.includes(x) || rest.includes(x)).map(x => x.text).join('. ');
 }
 /** Forget what was waiting to be read (keepUrgent: but not the problems). */
 function hush(keepUrgent = false) {
@@ -383,6 +397,27 @@ function reveal(el) {
   let dy = er.bottom > lr.bottom ? er.bottom - lr.bottom : 0;
   if (er.top - dy < lr.top) dy = er.top - lr.top;
   if (dy) log.scrollBy({ top: dy, behavior: reducedMotion.matches ? 'auto' : 'smooth' });
+}
+
+const ETA = (k, vars) => t(`js.studio.eta.${k}`, vars);
+let minutesF = null;
+/** 2 -> "2 minutes", (1, 2) -> "1–2 minutes", in the reader's language (the browser's own plurals and ranges). */
+function minutes(lo, hi = lo) {
+  try {
+    if (!minutesF) minutesF = new Intl.NumberFormat(INTL, { style: 'unit', unit: 'minute', unitDisplay: 'long' });
+    if (lo === hi) return minutesF.format(hi);
+    return typeof minutesF.formatRange === 'function' ? minutesF.formatRange(lo, hi) : `${new Intl.NumberFormat(INTL).format(lo)}–${minutesF.format(hi)}`;
+  } catch { return lo === hi ? `${hi} min` : `${lo}–${hi} min`; }
+}
+/** The estimate line for a state. e: { s: the start payload, tail }. "Usually" only when the numbers come from timed
+ *  builds (src 'data'); a first guess says "About" and "may". */
+function etaWords(state, e) {
+  const s = e.s, guess = s.src !== 'data';
+  if (state === 'big' || state === 'longer') return ETA(state);
+  if (state === 'msg') return ETA('newMsg');
+  if (state === 'tail') return e.tail.show === 'under' ? ETA(guess ? 'tailGuessUnder' : 'tailUnder') : ETA(guess ? 'tailGuessAbout' : 'tailAbout', { time: minutes(e.tail.n || 1) });
+  if (guess) return ETA('guess', { time: s.show === 'range' ? minutes(s.lo, s.hi) : minutes(s.hi || 1) });
+  return s.show === 'under' ? ETA('under') : s.show === 'about' ? ETA('about', { time: minutes(s.hi) }) : ETA('range', { time: minutes(s.lo, s.hi) });
 }
 
 const views = new WeakMap();   // <li> -> the parts of the row that live updates change in place
@@ -467,28 +502,65 @@ function liveSteps() {
   const head = mk('div', 'stp-head');
   const more = mk('button', 'stp-more'); more.type = 'button'; more.hidden = true; more.setAttribute('aria-expanded', 'false');
   head.append(withIcon(mk('span', 'stp-title'), '🔎', ST('title')), more, tipsBtn());
-  // The top of the card: the builder can leave, and the build goes on (not a tip: it shows with tips off too).
+  // The top of the card: the estimate (its learning line is a tip), and that the builder can leave while the build goes
+  // on (not a tip: it shows with tips off too).
   const eta = mk('div', 'stp-eta'); eta.hidden = true;
-  eta.append(withIcon(mk('p', 'stp-leave'), '🌙', ST('leave')));
+  const etaLine = mk('p', 'stp-eta-line'), etaLearn = mk('p', 'stp-learn stp-eta-learn');
+  etaLine.hidden = etaLearn.hidden = true;
+  eta.append(etaLine, etaLearn, withIcon(mk('p', 'stp-leave'), '🌙', ST('leave')));
+  // Follow-ups waiting to be read: what happens to them, and what they cost (not tips: shown with tips off too).
+  const strip = mk('div', 'stp-inbox'); strip.hidden = true;
   const list = mk('ol', 'stp-list');
-  el.append(head, eta, list);
+  el.append(head, eta, strip, list);
   const rows = [], byI = new Map();
   const turn = { justShown: new Set(), thinkShown: false };   // 💡 lines already shown this turn
   let expanded = false, mode = null, pillEl = null, shownAt = 0, heard = false, stopped = false;
   let t0 = Date.now();   // when the build started (anchor(): the server's clock, so a replay keeps its real times)
+  // The estimate: est = { s: start payload, overAt, bigAt (only ever later), tail, msg }; authoring: a real build step
+  // came; said: what was last read out (the line and the leave line are read once together, then each change once).
+  let est = null, authoring = false, said = '', leaveSaid = false;
   const newest = () => rows[rows.length - 1];
   const paint = r => drawRow(r.li, { key: r.key, f: r.f, done: r.done, paused: r.paused, stopped: r.stopped, current: r === newest(), open: r.open, live: true, spoke: r.spoke, at: r.at, toggle: r.toggle });
   function show() {
     clearTimeout(showTimer);
     if (shownAt || !timer) return;
     const stick = nearBottom();
-    log.appendChild(el); shownAt = Date.now(); retip(newest()); leaveTick();
+    log.appendChild(el); shownAt = Date.now(); retip(newest()); etaTick();
     if (stick) scrollDown();
   }
-  /** The leave line, once the build has lasted LEAVE_AT (at once on a replay of a longer build). Read out once. */
-  function leaveTick() {
-    if (!eta.hidden || stopped || Date.now() - t0 < LEAVE_AT) return;
-    eta.hidden = false; announce(ST('leave'));
+  /** The estimate and leave lines now (on the page's clock, anchored to the build's start): which state, what it says.
+   *  -> { on, line, state, text, so } */
+  function etaNow() {
+    const el = Date.now() - t0, s = est && est.s;
+    const over = !!s && el >= est.overAt;
+    const line = !!s && ((s.show !== 'none' && (authoring || el >= s.showAt)) || over);   // a quick build that hangs is told too
+    const on = line || el >= (s ? s.showAt : LEAVE_AT);
+    const state = !s ? 'start' : el >= est.bigAt ? 'big' : over ? 'longer' : est.msg ? 'msg' : est.tail ? 'tail' : 'start';
+    return { on, line, state, text: line ? etaWords(state, est) : '', so: line && el >= 60e3 ? ETA('soFar', { time: minutes(Math.floor(el / 60e3)) }) : '' };
+  }
+  /** What to read out now: the line (with the leave line the first time), or '' when nothing changed. */
+  function etaSay(n, force = false) {
+    const key = `${n.line}|${n.state}`;
+    if (!n.on || (key === said && !force)) return '';
+    said = key;
+    const text = [n.text, leaveSaid && !force ? '' : ST('leave')].filter(Boolean).join('. ');
+    leaveSaid = true;
+    return text;
+  }
+  /** Draw the top of the card (it changes only when its words do) and read out a new state once. */
+  function etaTick() {
+    if (stopped) return;
+    const n = etaNow();
+    eta.hidden = !n.on; eta.dataset.state = n.state;
+    etaLine.hidden = etaLearn.hidden = !n.line;
+    const sig = `${n.state}|${n.text}|${n.so}`;
+    if (n.line && etaLine.dataset.sig !== sig) {
+      etaLine.dataset.sig = sig; etaLine.textContent = '';
+      etaLine.append(hide(mk('span', null, n.state === 'longer' || n.state === 'big' ? '⏳' : '⏱')), ' ', mk('span', 'stp-eta-t', n.text));
+      if (n.so) etaLine.append(' ', hide(mk('span', 'stp-eta-so', `· ${n.so}`)));   // whole minutes, never read out
+    }
+    if (n.line && !etaLearn.firstChild) withIcon(etaLearn, '💡', ETA(est.s.p === 'ai' ? 'learnAi' : 'learnBlocks'));
+    if (shownAt) { const say = etaSay(n); if (say) announce(say, false, true); }
   }
   function fold() {
     const hidden = Math.max(0, rows.length - 1 - (narrow.matches ? 1 : 2));
@@ -555,6 +627,7 @@ function liveSteps() {
     if (prev && !prev.done && !prev.paused) { if (key === 'offline' || key === 'restart') prev.paused = true; else prev.done = true; prev.dur = Math.max(0, now - prev.at); }
     if (SERVER_STEPS.has(key)) heard = true;
     if (key === 'think') mode = 'ai'; else if (key === 'blocks') mode = 'blocks';
+    if (ETA_AUTHOR.has(key)) authoring = true;
     const r = { key, f: { ...facts }, at: now, li: mk('li', 'stp-row'), open: false, done: !TIMED.has(key), paused: false, stopped: false, spoke: false, just: TIMED.has(key) ? justFor(key) : null };
     r.li.dataset.step = key;
     r.toggle = () => { r.open = !r.open; paint(r); };
@@ -563,13 +636,15 @@ function liveSteps() {
     if (prev) paint(prev);
     paint(r); retip(r); fold(); pill();
     if (key !== 'sending') announce(stepLabel(key, r.f, r.done), r.f.ok === false || (key === 'check' && r.f.st === 'fail'));
+    etaTick();
   }
   function tick() {
+    etaTick();
     const r = newest(); if (!r || !shownAt) return;
     const stick = nearBottom();
     const v = views.get(r.li);
     if (v && v.sec && !r.done && !r.paused) { const age = Date.now() - r.at; v.sec.textContent = fmtDur(age, true); v.sec.classList.toggle('stp-wait', age < SEC_AFTER); }
-    retip(r); leaveTick();
+    retip(r);
     if (stick) scrollDown();
   }
   let timer = setInterval(tick, 1000);
@@ -585,15 +660,30 @@ function liveSteps() {
       push(key, key === 'offline' && !heard ? { unsure: 1 } : { ...facts }, 0);
       if (key !== 'sending') show();
     },
-    /** The build started elapsed ms ago (by the server's clock): rows and the leave line keep its real times. */
+    /** The build started elapsed ms ago (by the server's clock): rows and the estimate keep its real times. */
     anchor(elapsed) {
       t0 = Date.now() - Math.max(0, +elapsed || 0);
       if (Date.now() - t0 >= SHOW_AFTER) show();
-      leaveTick();
+      etaTick();
+    },
+    /** The server's estimate (eta.js): start, then tail (the first version) and msg (a follow-up read), which only ever
+     *  move "longer than usual" and "a big job" later. */
+    eta(d) {
+      if (!d || d.v !== 1) return;
+      if (d.phase === 'start') est = { s: d, overAt: d.overAt, bigAt: d.bigAt, tail: null, msg: false };
+      else if (!est) return;
+      else {
+        est.overAt = Math.max(est.overAt, +d.overAt || 0); est.bigAt = Math.max(est.bigAt, +d.bigAt || 0);
+        if (d.phase === 'tail') est.tail = d; else if (d.phase === 'msg') est.msg = true;
+      }
+      etaTick();
     },
     newestKey() { const r = newest(); return r ? r.key : null; },
-    /** After a replay: read the current step (and the leave line, when it shows) once. */
-    sayCurrent() { const r = newest(); if (r && r.key !== 'sending') announce(stepLabel(r.key, r.f, r.done && !r.stopped)); if (!eta.hidden) announce(ST('leave')); },
+    /** After a replay: read the current step, and the estimate with the leave line when they show, once. */
+    sayCurrent() {
+      const r = newest(); if (r && r.key !== 'sending') announce(stepLabel(r.key, r.f, r.done && !r.stopped));
+      const say = !stopped && etaSay(etaNow(), true); if (say) announce(say, false, true);
+    },
     patch(d) {
       const r = d && byI.get(d.i); if (!r) return;
       const { i, ...facts } = d; void i;
@@ -606,9 +696,22 @@ function liveSteps() {
     /** Text is streaming: a round that thought first is now answering ("🤔 thought first"). */
     spoke() { const r = newest(); if (r && r.key === 'think' && r.f.th && !r.spoke && !r.done) { r.spoke = true; paint(r); } },
     /** An error ended the turn: the current row says "Stopped here" (in its present wording: it did not finish). */
-    stop() { stopped = true; eta.hidden = true; const r = newest(); if (!r) return; if (!r.done) { r.done = true; r.dur = Date.now() - r.at; } r.stopped = true; paint(r); pill(); },
+    stop() { stopped = true; eta.hidden = true; strip.hidden = true; const r = newest(); if (!r) return; if (!r.done) { r.done = true; r.dur = Date.now() - r.at; } r.stopped = true; paint(r); pill(); },
     pill(e) { pillEl = e; pill(); },
     retip() { retip(newest()); },
+    /** n follow-ups are waiting: "Got your message…", whether the AI is busy writing code (it reads them only when that
+     *  step ends), and the turn note. */
+    inbox(n) {
+      strip.hidden = !n || stopped; if (strip.hidden) return;
+      const ai = fuAi(), r = newest();
+      const lines = [['📨', FU(ai ? 'gotAi' : 'gotBlocks', { count: n })]];
+      if (ai && r && AUTHOR.has(r.key) && !r.done) lines.push(['✍️', FU('writingNow')]);
+      lines.push(['🔋', FU('turnNote')]);
+      const text = lines.map(x => x[1]).join(' ');
+      if (strip.dataset.text === text) return;
+      strip.dataset.text = text; strip.textContent = '';
+      for (const [icon, x] of lines) strip.append(withIcon(mk('p'), icon, x));
+    },
     /** The turn is over: fold into the summary (the server's record), or go away (refusals, limits, early errors). */
     finish(rec) {
       const card = stepsCard(rec);
@@ -634,7 +737,8 @@ const validRec = rec => !!(rec && rec.v === 1 && Array.isArray(rec.s) && rec.s.l
 function summaryText(rec) {
   const count = rec.s.filter(r => Array.isArray(r) && SERVER_STEPS.has(r[0])).length;
   const end = !rec.end || rec.end === 'ok' ? '' : ` · ${ST(rec.end === 'restart' ? 'stopRestart' : rec.end === 'timeout' ? 'stopTime' : 'stopped')}`;
-  return ST(rec.p === 'ai' ? 'summaryAi' : 'summaryBlocks', { count, time: fmtDur(rec.ms) }) + end;
+  const fu = rec.fu > 0 ? ` · ${ST('fuRead', { count: rec.fu })}` : '';
+  return ST(rec.p === 'ai' ? 'summaryAi' : 'summaryBlocks', { count, time: fmtDur(rec.ms) }) + fu + end;
 }
 /** The folded summary of a finished turn ("How the AI did this · 6 steps · 1 min 24 sec"); rows are built on first open,
  *  in the reader's language, from the stored keys, facts and times. -> element (not yet in the log), or null. */
@@ -676,6 +780,111 @@ function fillSummary(body, rec, close) {
   bar.append(tipsBtn(), less); body.append(bar);
 }
 
+// ---------------------------------------------------------------- follow-ups
+// A message sent while a build runs: screened like any message, then waiting until the Builder reads it at its next
+// step (the AI between rounds, the building blocks after a question or a version). Its bubble says where it is, from
+// the server's inbox events and the saved transcript: checking -> waiting -> reading (AI only) -> read, or carried (it
+// starts the next build), dropped (with "Put it back in the box"), refused (the kind reply follows), failed (no answer:
+// "Try again" sends it again with the same id, which the server never stores twice).
+const FU = (k, vars) => t(`js.studio.followups.${k}`, vars);
+const FLYING = new Set(['checking', 'failed']);
+const NOT_READ = ['limit', 'error', 'stopped', 'chain'];
+/** Is the running build (or the next one) made by the AI? */
+const fuAi = () => (S.turn ? S.turn.provider === 'ai' : S.provider === 'claude');
+const fuFind = (id, cid) => $$('.msg.fu', log).find(e => (id && e.dataset.fu === id) || (cid && e.dataset.cid === cid)) || null;
+/** Draw (or find, and with move: put at the end) a follow-up bubble. o: { id, cid, state, why, by, move } */
+function fuBubble(text, o = {}) {
+  let b = fuFind(o.id, o.cid);
+  if (!b) { b = mk('div', 'msg me fu'); b.dir = 'auto'; b.append(mk('span', 'fu-text', text)); place(b); }
+  else if (o.move) place(b);
+  b.dataset.text = text;
+  if (o.id) b.dataset.fu = o.id;
+  if (o.cid) b.dataset.cid = o.cid;
+  fuState(b, o.state || 'waiting', o);
+  return b;
+}
+function fuState(b, state, { why = null, by = null } = {}) {
+  if (!b) return;
+  b.dataset.state = state;
+  b.classList.toggle('refused', state === 'refused');
+  let line = $('.fu-st', b);
+  if (state === 'refused') { if (line) line.remove(); return; }
+  if (!line) { line = mk('p', 'fu-st'); line.setAttribute('aria-live', 'off'); b.append(line); }
+  line.dataset.state = state;
+  const ai = by ? by === 'ai' : fuAi();
+  const [icon, text] = {
+    checking: ['🛡️', ST('screen.now')],
+    waiting: ['📨', FU(ai ? 'waitingAi' : 'waitingBlocks')],
+    reading: ['📬', FU(ai ? 'readingAi' : 'waitingBlocks')],   // the building blocks read and use it at once
+    read: ['✓', FU(ai ? 'readAi' : 'readBlocks')],
+    carried: ['🔁', FU('nextBuild')],
+    dropped: ['⚠️', FU(`notRead.${NOT_READ.includes(why) ? why : 'stopped'}`)],
+    failed: ['⚠️', FU('failed')],
+  }[state] || ['📨', FU(ai ? 'waitingAi' : 'waitingBlocks')];
+  withIcon(line, icon, text);
+  const act = state === 'dropped' ? ['fu-putback', '✏️', FU('putBack')] : state === 'failed' ? ['fu-retry', '↻', FU('retry')] : null;
+  if (act) { const btn = withIcon(mk('button', 'btn btn-sm fu-btn'), act[1], act[2]); btn.type = 'button'; btn.dataset.act = act[0]; line.append(' ', btn); }
+}
+/** A follow-up the screening refused: its bubble (moved to where the server put it), then the kind reply. Once. */
+function fuRefused(cid, text, reply) {
+  let b = fuFind(null, cid);
+  if (b && b.dataset.state === 'refused') return;
+  fuArrives();
+  if (b) place(b); else b = fuBubble(text, { cid, state: 'refused' });
+  fuState(b, 'refused');
+  bubble('bot refused', reply);
+}
+/** "Your message started a new build (1 turn)". */
+function carriedNote() { return card('carried', `<span>🔁 ${E('js.studio.followups.carriedNote')}</span>`); }
+/** The strip in the live card follows the follow-ups waiting now. */
+function syncStrip() { if (live) live.inbox($$('.msg.fu[data-state="waiting"]', log).length); }
+function onInbox(d) {
+  if (d.status === 'waiting' && d.entry) {
+    fuArrives();
+    fuBubble(d.entry.text, { id: d.entry.id, cid: d.entry.cid, state: 'waiting', move: true });
+    if (S.turn && S.turn.mine && typeof d.left === 'number') S.turn.left = d.left;
+  } else if (d.status === 'refused') fuRefused(d.cid, d.text, `${d.message} ${d.suggestion}`.trim());
+  else { textEnds(); for (const id of d.ids || []) fuState(fuFind(id), d.status, { why: d.why }); }
+  if (d.status === 'reading') announce(FU('announceRead'));
+  syncStrip(); syncCompose();
+  if (!LIVE.replaying && nearBottom()) scrollDown();
+}
+const putBack = text => { if (text && !input.value.trim()) { input.value = text; autosize(); } };
+/** Send a follow-up (el: a failed one, sent again with its cid). */
+async function sendFollowUp(text, { cid = null, el = null } = {}) {
+  if (!text) { input.focus(); return; }
+  if (pending.length) { toast(FU('noUploadsHint')); return; }   // pictures wait for the next build
+  cid = cid || newCid();
+  // Where the reply goes on (above or below it) is decided when the server stores it (onInbox).
+  const b = el || fuBubble(text, { cid, state: 'checking' });
+  if (el) { place(el); fuState(el, 'checking'); }
+  else { input.value = ''; autosize(); }
+  scrollDown();
+  let res = null, data = null;
+  try {
+    res = await fetch(`/api/studio/${ID}/chat`, { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify({ text, pro, uploads: [], cid, detach: true }) });
+    try { data = await res.json(); } catch { data = null; }
+  } catch { res = null; }
+  if (res && res.ok && data && data.followUp) {
+    b.dataset.fu = data.followUp.id;
+    if (b.dataset.state === 'checking') fuState(b, data.followUp.status || 'waiting');
+    if (S.turn && typeof data.left === 'number') S.turn.left = data.left;
+    syncStrip(); syncCompose(); return;
+  }
+  if (res && res.ok && data && data.refused) { fuRefused(cid, text, `${data.refused.message} ${data.refused.suggestion || ''}`.trim()); syncStrip(); return; }
+  if (res && res.ok && data && data.turn) {
+    // The build ended while this was on its way: it starts the next build, which draws it as its message.
+    b.remove(); LIVE.pendingCid = cid; syncCompose(); openLive(); return;
+  }
+  if (res && res.status === 401) { b.remove(); putBack(text); signInAgainBubble(); return; }
+  if (res && data && data.error) {
+    b.remove(); putBack(text); toast(data.error, { bad: true, ms: 5000 });
+    if (data.code === 'cap' && S.turn) S.turn.left = 0;
+    syncStrip(); syncCompose(); return;
+  }
+  fuState(b, 'failed');   // no answer (offline, or the server restarting)
+}
+
 /** Signed out meanwhile (timed out, or on another device; the game itself is saved): say so in the chat, with a button
  *  that signs in again and comes back here with the unsent message. */
 function signInAgainBubble(key = 'js.app.signedOut') {
@@ -695,30 +904,54 @@ function failed(err) { if (err.signedOut) signedOut([input]); else toast(err.mes
 // signedout / gone: this tab may not watch any more, but the build goes on. After every 'done' the page reads the state
 // again, redraws the chat from the saved transcript and reopens the stream (resync): one way for every build to end here.
 let botCur = null;   // the bot bubble the reply is streaming into
-const endBubble = () => { botCur = null; };
+// botOpen: text is streaming into it now. fuHeld: a follow-up came in the middle of that sentence, so it sits below the
+// bubble while the sentence goes on in it, until something other than text comes; runner.js splits the saved reply at
+// the same events, so a reload draws what was seen.
+let botOpen = false, fuHeld = false;
+const endBubble = () => { botCur = null; botOpen = false; fuHeld = false; };
+/** The sentence ended. A replay never ends a held one: the steps it replays came before it. */
+function textEnds() { if (LIVE.replaying && fuHeld) return; botOpen = false; if (fuHeld) endBubble(); }
+/** A follow-up was stored: below the sentence it came in the middle of, otherwise the reply goes on below it. */
+function fuArrives() { if (botCur && botOpen) fuHeld = true; else endBubble(); }
 let pillEl = null;   // the pill on the preview: what the Builder is doing now
 function ensurePill() {
   if (!pillEl) { pillEl = document.createElement('div'); pillEl.className = 'st-busy'; pillEl.dir = document.dir; stage.appendChild(pillEl); }
   if (live) live.pill(pillEl);
 }
 function removePill() { if (pillEl) { pillEl.remove(); pillEl = null; } }
-/** Send is off while a build runs, while a message is on its way, and once the game is gone. */
+/** While a build runs, Send adds to it (until this build's extra messages are used up), pictures wait for the next
+ *  build, and the box says so. Everything is off once the game is gone. */
+const clip = $('#st-clip'), CLIP_TITLE = clip.title;
+const PLACEHOLDER = { long: input.dataset.long || input.placeholder, short: input.dataset.short };
 function syncCompose() {
   const gone = LIVE.stopped === 'gone';
-  $('#st-send').disabled = gone || !!(S.turn || LIVE.pendingCid || LIVE.check);
-  input.disabled = gone; $('#st-clip').disabled = gone;
+  const building = !!(S.turn || LIVE.pendingCid || LIVE.check);
+  const full = !!(S.turn && S.turn.mine && S.turn.left === 0);
+  $('#st-send').disabled = gone || (building && full);
+  input.disabled = gone; clip.disabled = gone || building;
+  clip.title = building ? FU('noUploadsHint') : CLIP_TITLE;
+  if (!building) setPlaceholder(input, PLACEHOLDER.long, PLACEHOLDER.short);
+  else if (full) setPlaceholder(input, FU('capPlaceholder'), FU('capShort'));
+  else setPlaceholder(input, FU(fuAi() ? 'placeholderAi' : 'placeholderBlocks'), FU('placeholderShort'));
 }
 
 /** One event of the build this page shows, live or replayed (a replay doesn't scroll, speak or load the preview). */
 function onEvent(ev, d) {
   const stick = !LIVE.replaying && nearBottom();   // follow the build only when the chat is at the bottom
+  if (ev !== 'text' && ev !== 'stepinfo' && ev !== 'eta') textEnds();
   if (ev === 'stepinfo') { if (live) live.patch(d); }
-  else if (ev === 'text') { if (!botCur) botCur = bubble('bot', ''); botCur.textContent += d.text; if (live) live.spoke(); }
-  else if (ev === 'step') { if (live) live.add(d); }
+  else if (ev === 'eta') { if (live) live.eta(d); }
+  else if (ev === 'text') { if (!botCur) botCur = bubble('bot', ''); botCur.textContent += d.text; botOpen = true; if (live) live.spoke(); }
+  else if (ev === 'step') {
+    if (live) live.add(d);
+    $$('.qchips:not(.used)', log).forEach(c => c.classList.add('used'));   // it went on (a new message answered the question)
+    syncStrip();
+  }
   else if (ev === 'ask') { askBlock(d, true, botCur || bubble('bot', '')); botCur = null; }
   else if (ev === 'version') { endBubble(); versionCard(d, true); if (LIVE.replaying) LIVE.replayVersion = d; else setPreview(d.preview, d.id); }
   else if (ev === 'meta') { endBubble(); metaCard(d); S.game = { ...S.game, ...d }; renderTop(); }
   else if (ev === 'notes') { endBubble(); notesCard(d.checklist); }
+  else if (ev === 'playtest') endBubble();   // not drawn, but the saved reply starts a new part after it, as after any card
   else if (ev === 'refused') { endBubble(); bubble('bot refused', `${d.message} ${d.suggestion}`); if (d.chips && d.chips.length) chips(d.chips, true); }
   else if (ev === 'error') { endBubble(); bubble('err', d.message); if (live) live.stop(); LIVE.lastErr = d.message; }
   else if (ev === 'done') {
@@ -737,6 +970,7 @@ function onLive(ev, d) {
   if (ev === 'hello') return onHello(d);
   if (ev === 'caughtup') return onCaughtUp();
   if (ev === 'turn') return startTurnUI(d);
+  if (ev === 'inbox') return onInbox(d);
   if (ev === 'restart') return onRestart(d);
   if (ev === 'signedout') return onSignedOut(true);
   if (ev === 'gone') return onGone();
@@ -824,15 +1058,19 @@ function startTurnUI(turn, { full = false, waiting = false } = {}) {
   if (own) mine.dataset.live = turn.id;
   else {
     if (live) live.remove();
-    $$('[data-live]', log).forEach(e => e.remove());
-    (turn.entries || []).forEach(m => drawEntry(m, false));   // place() marks them with the build's id
+    const flying = $$('.msg.fu', log).filter(e => FLYING.has(e.dataset.state));   // follow-ups on their way stay
+    $$('[data-live]', log).filter(e => !flying.includes(e)).forEach(e => e.remove());
+    const entries = turn.entries || [];
+    if (turn.carried && !entries.some(m => (m.events || []).some(e => e[0] === 'carried'))) carriedNote();
+    entries.forEach(m => drawEntry(m, false));   // place() marks them with the build's id
+    for (const b of flying) if (b.isConnected && FLYING.has(b.dataset.state)) place(b);
     live = liveSteps();
     if (waiting) live.local('waiting');
   }
   live.anchor(turn.elapsed);
   ensurePill();
   $$('.qchips', log).forEach(c => c.classList.add('used'));
-  syncCompose();
+  syncStrip(); syncCompose();
   if (!LIVE.replaying) scrollDown();
 }
 function onRestart(d) {
@@ -928,7 +1166,8 @@ async function send(text, { continueOf = null } = {}) {
   text = String(text || '').trim();
   const ups = pending.filter(u => u.id);
   if (LIVE.stopped === 'gone') return;
-  if (S.turn || LIVE.pendingCid || LIVE.check) return toast(t('js.studio.stillWorking'));
+  // A build is running (or this tab's message is on its way to start one): this message adds to it.
+  if (S.turn || LIVE.pendingCid || LIVE.check) return sendFollowUp(text);
   if (!text && !ups.length) { input.focus(); return; }
   const cid = newCid();   // the same message sent twice (a lost answer) is one build
   LIVE.pendingCid = cid; LIVE.posting = true;
@@ -954,6 +1193,15 @@ async function send(text, { continueOf = null } = {}) {
     if (resyncAgain) { resyncAgain = false; resync(); }
     return;
   }
+  if (res && res.ok && data && (data.followUp || data.refused)) {
+    // This tab didn't know a build was running: the message was added to it. Its bubble becomes a follow-up, the card
+    // and pill it made go, and the state draws the running build.
+    if (live) live.remove(); removePill(); mine.remove();
+    if (LIVE.pendingCid === cid) LIVE.pendingCid = null;
+    if (data.followUp) fuBubble(text, { id: data.followUp.id, cid, state: data.followUp.status || 'waiting' });
+    else fuRefused(cid, text, `${data.refused.message} ${data.refused.suggestion || ''}`.trim());
+    resync(); return;
+  }
   if (res && res.status === 401) { giveBack(chk); signInAgainBubble(); syncCompose(); return; }
   if (res && data && data.resting) { giveBack(chk); S.resting = data.resting.until; restingNote(); syncCompose(); scrollDown(); return; }
   if (res && data && data.error) { giveBack(chk); bubble('err', data.error); syncCompose(); scrollDown(); return; }
@@ -976,6 +1224,8 @@ document.addEventListener('click', e => {
   else if (a.dataset.act === 'update') updateLive();
   else if (a.dataset.act === 'continue' && S.lastTurn) send(t('js.studio.continueMessage'), { continueOf: S.lastTurn.id });
   else if (a.dataset.act === 'putback' && S.lastTurn && S.lastTurn.putBack) { input.value = S.lastTurn.putBack; autosize(); input.focus(); }
+  else if (a.dataset.act === 'fu-putback') { const b = a.closest('.msg.fu'); if (b) { input.value = b.dataset.text || ''; autosize(); input.focus(); } }
+  else if (a.dataset.act === 'fu-retry') { const b = a.closest('.msg.fu'); if (b) sendFollowUp(b.dataset.text || '', { cid: b.dataset.cid, el: b }); }
 });
 const proBtn = $('#st-pro');
 const setPro = v => { pro = v; proBtn.setAttribute('aria-pressed', String(pro)); try { localStorage.setItem('brb-pro', pro ? '1' : '0'); } catch { /* ignore */ } };

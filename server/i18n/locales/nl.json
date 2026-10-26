@@ -245,20 +245,20 @@
     "starsLabel": "{stars} van de 5 sterren uit {count, plural, one {# beoordeling} other {# beoordelingen}}",
     "playing": "{count} spelen",
     "gameBy": "{title}, door {name}",
+    "classOnly": "Alleen de klas",
     "by": "door {name}",
     "plays": "{count, plural, one {{n}× gespeeld} other {{n}× gespeeld}}",
     "seeAll": "Alles zien",
     "scrollBack": "{title} terug scrollen",
-    "scrollForward": "{title} verder scrollen",
-    "classOnly": "Alleen de klas"
+    "scrollForward": "{title} verder scrollen"
   },
   "vis": {
     "private": "Alleen ik",
     "friends": "Vrienden",
-    "public": "Iedereen",
-    "school": "Mijn school",
     "class": "{count, plural, one {Mijn klas} other {Mijn klassen}}",
-    "onlyYouNow": "Nu alleen jij"
+    "onlyYouNow": "Nu alleen jij",
+    "public": "Iedereen",
+    "school": "Mijn school"
   },
   "status": {
     "hidden": "Verborgen",
@@ -464,10 +464,12 @@
     "shareText": {
       "private": "Alleen jij kunt deze game openen. Zet hem op Vrienden of Iedereen om hem te delen.",
       "friends": "Alleen je vrienden op Oomba Academy kunnen deze link openen.",
+      "class": "Alleen de klassen waarmee deze game is gedeeld kunnen deze link openen.",
       "public": "Iedereen met de link kan deze game spelen.",
-      "school": "Iedereen op je school kan hem vinden en spelen.",
-      "class": "Alleen de klassen waarmee deze game is gedeeld kunnen deze link openen."
+      "school": "Iedereen op je school kan hem vinden en spelen."
     },
+    "sharedWith": "Gedeeld met:",
+    "sharedWithMore": "{count, plural, one {en # andere klas} other {en # andere klassen}}",
     "report": {
       "button": "Melden",
       "already": "Bedankt, we hebben je melding al.",
@@ -487,9 +489,7 @@
       "saveFailed": "We konden dat niet opslaan.",
       "badScore": "Ongeldige score.",
       "pickReason": "Kies een reden."
-    },
-    "sharedWith": "Gedeeld met:",
-    "sharedWithMore": "{count, plural, one {en # andere klas} other {en # andere klassen}}"
+    }
   },
   "play": {
     "backTo": "Terug naar {title}",
@@ -747,9 +747,9 @@
     "shareText": {
       "private": "Alleen jij kunt hem spelen.",
       "friends": "Alleen jij en je vrienden op Oomba Academy kunnen hem spelen.",
+      "class": "Alleen de klassen die je hebt gekozen kunnen hem spelen.",
       "public": "Iedereen op Oomba Academy kan hem vinden en spelen, na een snelle veiligheidscheck.",
-      "school": "Iedereen op je school kan hem vinden en spelen.",
-      "class": "Alleen de klassen die je hebt gekozen kunnen hem spelen."
+      "school": "Iedereen op je school kan hem vinden en spelen."
     },
     "status": {
       "hidden": "Even verborgen",
@@ -837,14 +837,14 @@
       "savedDefault": "mijn favoriet tot nu toe",
       "saved": "Opgeslagen als versie {number}.",
       "pickWho": "Kies wie mag spelen.",
-      "notLive": "Deze game staat nog niet online. Gebruik eerst Publiceren.",
-      "updatedFriends": "Bijgewerkt voor je vrienden! De nieuwe versie wacht ook nog op een check voordat iedereen hem kan spelen.",
-      "updatedYou": "Bijgewerkt voor jou! De nieuwe versie wacht ook nog op een check voordat iedereen hem kan spelen.",
-      "cantDeleteStarter": "Startspellen kunnen niet worden verwijderd.",
       "pickClass": "Kies minstens een van je klassen.",
       "classGone": "Je kunt alleen delen met klassen waar je nu in zit.",
       "classRemoved": "Je leerkracht heeft deze game uit {name} gehaald, dus hij kan daar niet terug.",
+      "notLive": "Deze game staat nog niet online. Gebruik eerst Publiceren.",
+      "updatedFriends": "Bijgewerkt voor je vrienden! De nieuwe versie wacht ook nog op een check voordat iedereen hem kan spelen.",
+      "updatedYou": "Bijgewerkt voor jou! De nieuwe versie wacht ook nog op een check voordat iedereen hem kan spelen.",
       "updatedNowWaiting": "Bijgewerkt! De nieuwe versie wacht ook nog op een snelle check voordat meer mensen kunnen spelen.",
+      "cantDeleteStarter": "Startspellen kunnen niet worden verwijderd.",
       "builderWorking": "De Bouwer is nu met deze game bezig. Probeer het nog eens als hij klaar is.",
       "cantContinue": "Hier kan de Bouwer niet meer mee verder. Stuur liever een nieuw bericht.",
       "restarting": "Onze server start opnieuw op. Probeer het zo nog eens.",
@@ -862,19 +862,21 @@
     "updateWaiting": "Je update wacht op een snelle check. Tot die tijd spelen spelers de oude versie.",
     "waiting": "Je game wacht op een snelle veiligheidscheck. We delen hem zodra hij is goedgekeurd.",
     "school": "Online voor je school! Iedereen op je school kan hem vinden en spelen.",
-    "schoolOnly": "Je school houdt games binnen de school. Deel hem dus met je school.",
-    "class": "{count, plural, one {Online voor {name}! Iedereen in je klas kan hem vinden en spelen.} other {Online voor je klassen! Iedereen daarin kan hem vinden en spelen.}}"
+    "class": "{count, plural, one {Online voor {name}! Iedereen in je klas kan hem vinden en spelen.} other {Online voor je klassen! Iedereen daarin kan hem vinden en spelen.}}",
+    "schoolOnly": "Je school houdt games binnen de school. Deel hem dus met je school."
   },
   "builder": {
     "kindRefusal": "Daar kan ik niet mee helpen. Laten we iets leuks bouwen! Wat voor game wil je graag?",
     "scanStillFailing": "De veiligheidscheck is nog niet tevreden. Tik op “Laat de Bouwer het repareren” om het opnieuw te proberen.",
+    "turnTimeout": "⏱️ Dit bouwen duurde langer dan onze tijdslimiet, dus ik ben gestopt. Je nieuwste versie is bewaard. Vertel me wat ik nu moet veranderen!",
+    "turnTimeoutNothing": "⏱️ Dit bouwen duurde langer dan onze tijdslimiet, dus ik ben gestopt voordat ik iets kon bewaren. Dit bericht telt niet mee, dus je kunt het nog eens proberen.",
     "errors": {
       "disabled": "Bouwen staat uit voor dit account. Een volwassene kan ons vragen het weer aan te zetten.",
       "empty": "Typ eerst een bericht of tik op een idee.",
       "busy": "De Bouwer is nog bezig met je vorige bericht. Even geduld!",
+      "tooMany": "Er worden al 2 games van je gebouwd. Wacht tot er een klaar is en probeer het dan nog eens.",
       "limit": "Je hebt vandaag al je {count} berichten aan de Bouwer gebruikt. Kom morgen terug voor meer!",
       "muddled": "De Bouwer raakte in de war. Probeer het zo nog eens.",
-      "tooMany": "Er worden al 2 games van je gebouwd. Wacht tot er een klaar is en probeer het dan nog eens.",
       "resting": "De AI-Bouwer rust nu even uit. Je game en je berichten zijn bewaard, dus kom straks terug!"
     },
     "refusals": {
@@ -972,9 +974,13 @@
         }
       }
     },
-    "turnTimeout": "⏱️ Dit bouwen duurde langer dan onze tijdslimiet, dus ik ben gestopt. Je nieuwste versie is bewaard. Vertel me wat ik nu moet veranderen!",
-    "turnTimeoutNothing": "⏱️ Dit bouwen duurde langer dan onze tijdslimiet, dus ik ben gestopt voordat ik iets kon bewaren. Dit bericht telt niet mee, dus je kunt het nog eens proberen.",
     "cutOffNothing": "De Bouwer was zo lang aan het plannen dat er geen ruimte meer over was om iets te bouwen. Dit bericht telt niet mee. Vraag om één of twee veranderingen tegelijk.",
+    "followUps": {
+      "cap": "Je hebt tijdens het bouwen {max, plural, one {# extra bericht} other {# extra berichten}} gestuurd. Wacht tot ik klaar ben en vertel me dan meer!",
+      "refusedCap": "Laten we eerst wachten tot de Bouwer klaar is met bouwen.",
+      "noUploads": "Plaatjes en bestanden kun je toevoegen als het bouwen klaar is. Stuur nu alleen je tekst, of wacht even.",
+      "notYours": "Iemand anders heeft de Bouwer hier aan het werk gezet. Wacht tot hij klaar is."
+    },
     "budgetStop": "De AI-Bouwer moet nu even rusten, dus ik ben hier gestopt. Alles wat ik tot nu toe heb gemaakt is bewaard."
   },
   "uploads": {
@@ -1105,7 +1111,6 @@
       "buildFirst": "Bouw eerst iets!",
       "noFullscreen": "Volledig scherm mag hier niet.",
       "roundOver": "Ronde voorbij! Score: {score}",
-      "stillWorking": "Even geduld, de Bouwer is nog bezig!",
       "noAnswer": "De Bouwer kon geen antwoord geven. Probeer het nog eens.",
       "signInAgain": "Opnieuw inloggen",
       "dropped": "Oeps, de verbinding viel weg. Probeer het nog eens.",
@@ -1116,9 +1121,9 @@
       "vis": {
         "private": "Alleen ik",
         "friends": "Vrienden",
+        "class": "{count, plural, one {Mijn klas} other {Mijn klassen}}",
         "public": "Iedereen",
-        "school": "Mijn school",
-        "class": "{count, plural, one {Mijn klas} other {Mijn klassen}}"
+        "school": "Mijn school"
       },
       "top": {
         "inReview": "Wordt bekeken",
@@ -1131,24 +1136,24 @@
         "nothingYet": "Nog niets gebouwd",
         "hidden": "Deze game is even verborgen omdat spelers hem hebben gemeld. Een volwassene uit ons team kijkt er snel naar.",
         "liveVersion": "Online: versie {number} · {who}",
-        "updateTo": "Game bijwerken naar versie {number}",
-        "waitingFriends": "Wacht op een snelle veiligheidscheck voordat iedereen kan spelen. Tot die tijd kunnen je vrienden hem spelen.",
-        "waitingYou": "Wacht op een snelle veiligheidscheck voordat iedereen kan spelen. Tot die tijd kun alleen jij hem spelen.",
-        "pendingUpdate": "Versie {pending} wacht op een snelle veiligheidscheck. Spelers spelen versie {live} tot hij is goedgekeurd.",
-        "playersOn": "Spelers spelen versie {live}. Druk op “Game bijwerken” om ze versie {number} te geven.",
-        "publicCheck": "Games voor iedereen krijgen eerst een snelle veiligheidscheck, en spelers houden de oude versie tot hij is goedgekeurd.",
-        "onlyYou": "alleen jij kunt hem zien",
-        "pendingNew": "Versie {number} wacht op een snelle veiligheidscheck. We delen hem zodra hij is goedgekeurd.",
-        "reviewer": "De controleur zegt: “{note}” Vraag de Bouwer om het te veranderen en druk dan nog eens op Bijwerken of Publiceren.",
         "sharedWith": "Gedeeld met: {names}",
         "takenOff": "Je leerkracht heeft deze game uit {names} gehaald, dus nu kun alleen jij hem spelen.",
         "takenOffSome": "Je leerkracht heeft hem uit {names} gehaald.",
         "leftClass": "Je zit niet meer in de klas waarmee je hem hebt gedeeld, dus nu kun alleen jij hem spelen.",
         "pickAgain": "Tik op Delen om te kiezen wie hem mag spelen.",
         "onlyYouNow": "Nu alleen jij",
+        "updateTo": "Game bijwerken naar versie {number}",
+        "waitingFriends": "Wacht op een snelle veiligheidscheck voordat iedereen kan spelen. Tot die tijd kunnen je vrienden hem spelen.",
+        "waitingYou": "Wacht op een snelle veiligheidscheck voordat iedereen kan spelen. Tot die tijd kun alleen jij hem spelen.",
         "waitingPublic": "Wacht op een snelle veiligheidscheck voordat iedereen kan spelen. Tot die tijd blijft hij gedeeld zoals nu.",
         "waitingSchool": "Wacht op een snelle veiligheidscheck voordat je school kan spelen. Tot die tijd blijft hij gedeeld zoals nu.",
-        "waitingClass": "{count, plural, one {Wacht op een snelle veiligheidscheck voordat je klas kan spelen.} other {Wacht op een snelle veiligheidscheck voordat je klassen kunnen spelen.}} Tot die tijd blijft hij gedeeld zoals nu."
+        "waitingClass": "{count, plural, one {Wacht op een snelle veiligheidscheck voordat je klas kan spelen.} other {Wacht op een snelle veiligheidscheck voordat je klassen kunnen spelen.}} Tot die tijd blijft hij gedeeld zoals nu.",
+        "pendingUpdate": "Versie {pending} wacht op een snelle veiligheidscheck. Spelers spelen versie {live} tot hij is goedgekeurd.",
+        "playersOn": "Spelers spelen versie {live}. Druk op “Game bijwerken” om ze versie {number} te geven.",
+        "publicCheck": "Games voor iedereen krijgen eerst een snelle veiligheidscheck, en spelers houden de oude versie tot hij is goedgekeurd.",
+        "onlyYou": "alleen jij kunt hem zien",
+        "pendingNew": "Versie {number} wacht op een snelle veiligheidscheck. We delen hem zodra hij is goedgekeurd.",
+        "reviewer": "De controleur zegt: “{note}” Vraag de Bouwer om het te veranderen en druk dan nog eens op Bijwerken of Publiceren."
       },
       "safety": {
         "chipPass": "Veilig",
@@ -1248,8 +1253,6 @@
         "whoLabel": "Wie mag spelen",
         "save": "Opslaan",
         "publicHint": "Games voor iedereen krijgen eerst een snelle veiligheidscheck.",
-        "copied": "Link gekopieerd!",
-        "copyFailed": "Kopiëren lukte niet.",
         "groupHint": "De controle-robot zag iets, dus een volwassene uit ons team kijkt er eerst naar.",
         "classOne": "Alleen de kinderen en leerkrachten in {name} kunnen hem vinden en spelen.",
         "classMany": "Alleen de kinderen en leerkrachten in de klassen die je kiest kunnen hem vinden en spelen.",
@@ -1260,17 +1263,19 @@
         "classLater": "Klassen waar je later bij komt, worden niet vanzelf toegevoegd. Kom hier terug om ze toe te voegen.",
         "pickClass": "Kies minstens één klas.",
         "classRemoved": "Je leerkracht heeft hem uit deze klas gehaald.",
-        "allRemoved": "{count, plural, one {Je leerkracht heeft deze game uit je klas gehaald.} other {Je leerkrachten hebben deze game uit je klassen gehaald.}}"
+        "allRemoved": "{count, plural, one {Je leerkracht heeft deze game uit je klas gehaald.} other {Je leerkrachten hebben deze game uit je klassen gehaald.}}",
+        "copied": "Link gekopieerd!",
+        "copyFailed": "Kopiëren lukte niet."
       },
       "update": {
         "title": "Werk je online game bij",
         "text": "Spelers spelen {live}. Hiermee krijgen ze {number}.",
         "version": "versie {number}",
         "publicText": "Omdat iedereen hem kan spelen, krijgt de update eerst een snelle veiligheidscheck. Spelers houden versie {live} tot hij is goedgekeurd.",
+        "groupText": "De controle-robot zag iets in deze versie, dus een volwassene uit ons team kijkt er eerst naar. Tot die tijd houden spelers versie {live}.",
         "now": "Hij wordt meteen bijgewerkt.",
         "notYet": "Nog niet",
-        "button": "Bijwerken",
-        "groupText": "De controle-robot zag iets in deze versie, dus een volwassene uit ons team kijkt er eerst naar. Tot die tijd houden spelers versie {live}."
+        "button": "Bijwerken"
       },
       "steps": {
         "title": "Achter de schermen",
@@ -1321,7 +1326,8 @@
             "retry": "Ronde {n}: zoekt uit wat er misging",
             "next": "Ronde {n}: beslist wat er nu moet gebeuren",
             "plan": "Ronde {n}: maakt een plan om het te bouwen",
-            "planGame": "Ronde {n}: maakt een plan voor de veranderingen"
+            "planGame": "Ronde {n}: maakt een plan voor de veranderingen",
+            "msg": "Ronde {n}: {m, plural, one {leest je nieuwe bericht} other {leest je # nieuwe berichten}}"
           },
           "done": {
             "start": "Ronde {n}: las je bericht",
@@ -1331,7 +1337,8 @@
             "retry": "Ronde {n}: zocht uit wat er misging",
             "next": "Ronde {n}: besliste wat er nu moest gebeuren",
             "plan": "Ronde {n}: maakte een plan om het te bouwen",
-            "planGame": "Ronde {n}: maakte een plan voor de veranderingen"
+            "planGame": "Ronde {n}: maakte een plan voor de veranderingen",
+            "msg": "Ronde {n}: {m, plural, one {las je nieuwe bericht} other {las je # nieuwe berichten}}"
           },
           "learn": {
             "start": "Een ronde is elke keer dat de app de AI iets vraagt. De AI onthoudt niets, dus de app stuurt de chat steeds opnieuw.",
@@ -1340,7 +1347,8 @@
             "retry": "Als een hulpmiddel zegt dat iets niet lukte, leest de AI waarom en probeert het op een andere manier.",
             "next": "Na elk hulpmiddel leest de AI het resultaat en kiest de volgende stap. Door die lus is het een agent.",
             "thinking": "Voordat hij antwoordt, denkt deze AI eerst stil na, een beetje zoals jij iets in je hoofd uitrekent.",
-            "long": "Bij grote ideeën kan de AI een minuut of twee bezig zijn met plannen voordat hij code schrijft. Hij gaat door, ook als je deze pagina verlaat."
+            "long": "Bij grote ideeën kan de AI een minuut of twee bezig zijn met plannen voordat hij code schrijft. Hij gaat door, ook als je deze pagina verlaat.",
+            "msg": "Deze AI leest nieuwe berichten tussen de stappen door, niet midden in een stap. Daarna kan hij zijn plan aanpassen."
           }
         },
         "write": {
@@ -1409,7 +1417,8 @@
           "g": "AI-modellen leren patronen uit enorm veel teksten en code die door mensen zijn gemaakt.",
           "h": "AI kan heel zeker klinken en toch fout zitten. Daarom controleert een veiligheidsprogramma de code ook.",
           "i": "✨ Pro-kwaliteit gebruikt een grotere AI die langer nadenkt: langzamer, maar vaak beter bij lastige games.",
-          "j": "Speel je game altijd zelf. Zelfs een slimme AI mist dingen die een echte speler zou zien."
+          "j": "Speel je game altijd zelf. Zelfs een slimme AI mist dingen die een echte speler zou zien.",
+          "k": "Je kunt nieuwe ideeën sturen terwijl de AI werkt. Hij leest ze tussen zijn stappen door."
         },
         "leave": "Je mag deze pagina of je computer dichtdoen, of uitloggen. De Oomba-Bouwer werkt gewoon door op onze server, en je game staat hier als je terugkomt.",
         "restart": {
@@ -1423,7 +1432,12 @@
           "learn": "De Bouwer had je bericht en je nieuwste versie bewaard, dus hij gaat daar verder in plaats van opnieuw te beginnen."
         },
         "stopRestart": "gestopt door een herstart van de server",
-        "stopTime": "gestopt: het duurde te lang"
+        "stopTime": "gestopt: het duurde te lang",
+        "read": {
+          "done": "{m, plural, one {Je nieuwe bericht gelezen} other {Je # nieuwe berichten gelezen}}",
+          "learn": "De simpele bouwblokken kijken tussen de stappen door of er nieuwe berichten zijn, en gebruiken daar dan hun regels op."
+        },
+        "fuRead": "{count, plural, one {# nieuw bericht gelezen} other {# nieuwe berichten gelezen}}"
       },
       "resumed": "🔄 De server is opnieuw opgestart, dus de Bouwer ging verder waar hij was.",
       "resumedV": "🔄 De server is opnieuw opgestart, dus de Bouwer ging verder vanaf versie {v}.",
@@ -1437,8 +1451,51 @@
       "signedOutBuilding": "Je bent uitgelogd. De Bouwer werkt verder aan je game: log opnieuw in om hem te zien.",
       "gameGone": "Deze game is verwijderd, dus de Bouwer is gestopt.",
       "followups": {
-        "putBack": "Zet het terug in het vak"
+        "placeholderAi": "Vul je idee aan. De AI leest het na deze stap",
+        "placeholderBlocks": "Vul je idee aan. De Bouwer leest het na deze stap",
+        "placeholderShort": "Vul je idee aan…",
+        "capPlaceholder": "Je kunt meer toevoegen als het bouwen klaar is",
+        "capShort": "Meer als het klaar is",
+        "waitingAi": "Wacht tot de AI het leest",
+        "waitingBlocks": "Wacht tot de Bouwer het leest",
+        "readingAi": "De AI leest het nu",
+        "readAi": "De AI heeft dit gelezen",
+        "readBlocks": "De Bouwer heeft dit gelezen",
+        "nextBuild": "Hiermee gaat de Bouwer daarna verder",
+        "failed": "Versturen lukte niet.",
+        "retry": "Opnieuw proberen",
+        "putBack": "Zet het terug in het vak",
+        "notRead": {
+          "limit": "Niet gelezen: geen berichten meer vandaag",
+          "error": "Niet gelezen: de Bouwer raakte in de war",
+          "stopped": "Niet gelezen: het bouwen is gestopt",
+          "chain": "Nog niet gelezen. Stuur het opnieuw als de Bouwer weer vrij is"
+        },
+        "gotAi": "{count, plural, one {Je bericht is binnen. De AI leest het na deze stap.} other {Je # berichten zijn binnen. De AI leest ze na deze stap.}}",
+        "gotBlocks": "{count, plural, one {Je bericht is binnen. De Bouwer leest het na deze stap.} other {Je # berichten zijn binnen. De Bouwer leest ze na deze stap.}}",
+        "writingNow": "Hij schrijft nu code, dus dat maakt hij eerst af.",
+        "turnNote": "Extra berichten terwijl de Bouwer bezig is, tellen niet mee. Is de Bouwer al klaar, dan begint hij met je bericht een nieuwe bouw en telt het als 1 bericht.",
+        "noUploadsHint": "Voeg plaatjes toe na het bouwen",
+        "announceRead": "De Bouwer leest je nieuwe bericht",
+        "carriedNote": "Je bericht zette de Bouwer opnieuw aan het werk (telt als 1 bericht)"
       },
+      "eta": {
+        "about": "Meestal ongeveer {time}",
+        "range": "Meestal {time}",
+        "under": "Meestal minder dan een minuut",
+        "guess": "Ongeveer {time}",
+        "soFar": "{time} tot nu toe",
+        "tailAbout": "Bewaard! Afronden duurt meestal nog ongeveer {time}",
+        "tailUnder": "Bewaard! Afronden duurt meestal nog minder dan een minuut",
+        "tailGuessAbout": "Bewaard! Afronden duurt misschien nog ongeveer {time}",
+        "tailGuessUnder": "Bewaard! Afronden duurt misschien nog minder dan een minuut",
+        "longer": "Het duurt iets langer dan normaal",
+        "big": "Dit is een grote klus, en hij is nog bezig",
+        "newMsg": "Je nieuwe bericht lezen kan wat extra tijd kosten",
+        "learnAi": "Grotere games duren langer, omdat de AI meer tokens schrijft, één voor één.",
+        "learnBlocks": "De simpele bouwblokken volgen vaste regels, dus ze doen er elke keer ongeveer even lang over."
+      },
+      "stillWorking": "Even geduld, de Bouwer is nog bezig!",
       "resting": {
         "text": "😴 De AI-Bouwer rust nu even uit. Hij is {when} terug. Je game en je berichten zijn bewaard, dus kom dan terug!",
         "today": "vandaag om {time}",
@@ -1639,13 +1696,13 @@
       "publishing": "Games delen",
       "publishSchool": "Alleen binnen de school",
       "publishPublic": "Ook met iedereen delen",
+      "publishingHint": "Leerlingen in een klas kunnen een game ook alleen met hun klassen delen.",
       "photos": "Profielfoto’s van schoolaccounts zijn alleen zichtbaar voor klasgenoten, leerkrachten en vrienden.",
       "chatHint": "Schoolaccounts kunnen alleen klasgenoten als vrienden toevoegen.",
       "timeZone": "Tijdzone",
       "timeZoneNone": "Niet ingesteld (de dagen worden in UTC geteld)",
       "timeZoneUnset": "Stel de tijdzone van je school in, zodat lessen zichtbaar worden om middernacht en inleverdata om middernacht eindigen waar jij bent. Tot die tijd is niemand te laat tot 36 uur na het begin van de inleverdag.",
-      "timeZoneHint": "Lessen worden zichtbaar en inleverdata eindigen om middernacht in deze tijdzone. Daar is het nu {time}.",
-      "publishingHint": "Leerlingen in een klas kunnen een game ook alleen met hun klassen delen."
+      "timeZoneHint": "Lessen worden zichtbaar en inleverdata eindigen om middernacht in deze tijdzone. Daar is het nu {time}."
     },
     "cards": {
       "title": "Inlogkaarten",
@@ -1685,24 +1742,21 @@
       "sameName": "{count, plural, one {Deze naam bestaat al op {school}: {names}. Haal de naam uit de lijst, of voeg een initiaal toe om de leerlingen uit elkaar te houden.} other {Deze namen bestaan al op {school}: {names}. Haal ze uit de lijst, of voeg een initiaal toe om de leerlingen uit elkaar te houden.}} Wil je leerlingen die er al zijn in een klas zetten? Vink ze dan aan op het tabblad Leerlingen van de klas.",
       "chooseTeacher": "Kies een leerkracht.",
       "chooseClass": "Kies een klas.",
+      "gameNotHere": "Die game is niet met deze klas gedeeld.",
       "noSchoolAccounts": "Geen enkele leerling in deze klas heeft een schoolaccount.",
       "badTeacher": "Kies iemand van het personeel van de school.",
       "adminNotStudent": "Jij zorgt voor Oomba Academy, dus je kunt niet als leerling meedoen met een klas.",
       "isStudent": "{name} is hier leerling en kan dus niet aan het personeel worden toegevoegd.",
       "tickStudents": "Vink minstens één leerling aan.",
-      "badZone": "Kies een tijdzone uit de lijst.",
-      "gameNotHere": "Die game is niet met deze klas gedeeld."
+      "badZone": "Kies een tijdzone uit de lijst."
     },
     "classTabs": {
       "lessons": "Lessen",
       "progress": "Voortgang",
+      "games": "Games",
       "students": "Leerlingen",
-      "settings": "Instellingen",
-      "games": "Games"
+      "settings": "Instellingen"
     },
-    "optional": "(optioneel)",
-    "me": "ik",
-    "moreFor": "Meer opties voor {name}",
     "classGames": {
       "text": "Games die met deze klas zijn gedeeld. Past er een niet bij de klas, haal hem er dan uit: hij kan hier dan niet opnieuw gedeeld worden, tenzij jij dat toestaat.",
       "by": "door {name}",
@@ -1715,7 +1769,10 @@
       "restored": "De maker mag hem weer met {class} delen als die dat wil.",
       "hiddenGame": "Een game die je nu niet kunt openen",
       "empty": "Nog geen games met deze klas gedeeld."
-    }
+    },
+    "optional": "(optioneel)",
+    "me": "ik",
+    "moreFor": "Meer opties voor {name}"
   },
   "lessons": {
     "up": "Omhoog",
@@ -1780,6 +1837,7 @@
       "game": "Game",
       "myGames": "Mijn games",
       "schoolGames": "Gedeeld op mijn school",
+      "classGames": "Gedeeld met mijn klassen",
       "siteGames": "Oomba Academy-games",
       "minutes": "Minuten",
       "edit": "Stap bewerken",
@@ -1787,6 +1845,8 @@
       "deleteConfirm": "Deze stap verwijderen?",
       "notShared": "Je klas kan deze game nog niet openen",
       "notSharedHint": "Deel hem eerst met je school, of open hem in de Studio en klik op Publiceren.",
+      "classOnly": "Alleen de klassen waarmee hij is gedeeld kunnen hem spelen",
+      "hiddenGame": "Een game die je niet kunt openen",
       "shareGame": "Delen met mijn school",
       "openStudio": "Openen in de Studio",
       "newGameIdea": "Jouw idee voor de game",
@@ -1799,10 +1859,7 @@
       "bodyGame": "Instructies (optioneel)",
       "buildHint": "bijv. “een quiz met 8 vragen over de planeten”",
       "newGameLink": "Maak een nieuwe game voor leerlingen",
-      "deleteWorkConfirm": "Deze stap verwijderen? Het werk van {n, plural, one {# leerling} other {# leerlingen}} aan deze stap wordt verwijderd. Dit kan niet ongedaan worden gemaakt.",
-      "classGames": "Gedeeld met mijn klassen",
-      "classOnly": "Alleen de klassen waarmee hij is gedeeld kunnen hem spelen",
-      "hiddenGame": "Een game die je niet kunt openen"
+      "deleteWorkConfirm": "Deze stap verwijderen? Het werk van {n, plural, one {# leerling} other {# leerlingen}} aan deze stap wordt verwijderd. Dit kan niet ongedaan worden gemaakt."
     },
     "ai": {
       "button": "Opzet met AI",

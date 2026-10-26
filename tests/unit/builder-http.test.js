@@ -54,6 +54,7 @@ const runner = await import('../../server/builder/runner.js');
 const live = await import('../../server/builder/live.js');
 const mock = await import('../../server/builder/mock.js');
 const turns = await import('../../server/builder/turns.js');
+const { tEn } = await import('../../server/i18n/index.js');
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 async function until(fn, ms = 4000, what = 'the condition') {
   const t0 = Date.now();
@@ -265,7 +266,8 @@ test('HTTP-3 nobody watching (a closed tab, a locked phone): a detached build st
   const row = turns.lastEnded(id);
   assert.deepEqual([row.status, row.end_reason, row.versions], ['done', 'ok', 1]);
   const st = (await kid(`/api/studio/${id}`)).json;
-  assert.deepEqual(st.chat.map(m => m.role), ['user', 'assistant']); assert.equal(st.versions.length, 1);
+  // The plan and version 1, then what it said after the card (saved as its own part, as the page draws it).
+  assert.deepEqual(st.chat.map(m => (m.part ? 'part' : m.role)), ['user', 'part', 'assistant']); assert.equal(st.versions.length, 1);
   assert.equal(st.turnsLeft, before - 1); assert.equal(st.turn, null); assert.equal(st.busy, false);
   assert.equal(st.lastTurn.id, row.id); assert.equal(st.lastTurn.end, 'ok');
 });
@@ -429,13 +431,49 @@ test('HTTP-12 the state mid-build (the page and the API) has the running build w
     assert.equal(st.turn.mine, true); assert.equal(st.turn.attempt, 1); assert.equal(st.turn.provider, 'blocks'); assert.ok(st.turn.elapsed >= 0);
     const pd = pageData((await kid(`/studio/${id}`)).text);
     assert.equal(pd.busy, true); assert.equal(pd.turn.entries[0].text, 'Make a jumping frog game. Just build it.');
-    // Send stays one message at a time in this version: a second detached message while it builds is refused.
+    // A second message while it builds is a follow-up (HTTP-13 has the details).
     const r = await build(kid, id, 'make it harder');
-    assert.equal(r.status, 409); assert.equal(r.json.code, 'busy');
+    assert.equal(r.status, 200); assert.equal(r.json.followUp.status, 'waiting');
     gate.open.resolve(); await idleGame(id);
   } finally { realBuilder(); }
   const st = (await kid(`/api/studio/${id}`)).json;
   assert.equal(st.turn, null); assert.equal(st.busy, false); assert.equal(st.lastTurn.end, 'ok');
+});
+
+test('HTTP-13 follow-ups over HTTP: 200 with the follow-up, the live stream hears it, the transcript has it after the open text; uploads, an admin and a 4th are refused; the old streamed POST still says busy', async () => {
+  const kid = await signup('HttpFollow');
+  const id = await newGameFor(kid);
+  const gate = holdBuilder({ save: false });
+  const w = liveOf(kid, id); await w.opened;
+  try {
+    await build(kid, id); await gate.started;
+    const r = await build(kid, id, 'make it harder', { cid: 'http-fu-0001' });
+    assert.equal(r.status, 200, r.text); assert.equal(r.json.followUp.status, 'waiting'); assert.equal(r.json.followUp.cid, 'http-fu-0001');
+    assert.equal(r.json.left, 2); assert.equal(typeof r.json.turnsLeft, 'number');
+    await w.until(s => s.of('inbox').length >= 1);
+    const inbox = w.of('inbox')[0];
+    assert.deepEqual([inbox.status, inbox.entry.text, inbox.entry.id, inbox.left], ['waiting', 'make it harder', r.json.followUp.id, 2]);
+    // It came right after 'Working on it. ' (mid-sentence for all the page knows): that text is saved above it once
+    // something else comes; until then the state has it as the open part above the message.
+    const st = (await kid(`/api/studio/${id}`)).json;
+    assert.deepEqual(st.chat.map(m => (m.followUp ? `fu:${m.status}` : m.part ? 'part' : m.role)), ['user', 'fu:waiting']);
+    assert.deepEqual(st.turn.entries.map(m => (m.followUp ? `fu:${m.status}` : m.open ? `open:${m.text}` : m.role)), ['user', 'open:Working on it. ', 'fu:waiting']);
+    const up = (await kid(`/api/studio/${id}/uploads?name=notes.txt`, { method: 'POST', body: Buffer.from('a fox who hops'), headers: { 'content-type': 'application/octet-stream' } })).json.upload;
+    const withUp = await build(kid, id, 'use my notes', { uploads: [up.id] });
+    assert.deepEqual([withUp.status, withUp.json.code], [409, 'uploads']);
+    assert.equal(q.get('SELECT used_at FROM builder_uploads WHERE id=?', up.id).used_at, null, 'the upload stays unused');
+    const admin = await signup('HttpFuAdmin'); q.run("UPDATE users SET role='admin' WHERE username='HttpFuAdmin'");
+    const a = await build(admin, id, 'make it blue');
+    assert.deepEqual([a.status, a.json.code], [409, 'notYours']);
+    for (const text of ['make it red', 'add a second level']) assert.equal((await build(kid, id, text)).status, 200);
+    const cap = await build(kid, id, 'one more');
+    assert.deepEqual([cap.status, cap.json.code], [429, 'cap']);
+    const old = stream(kid, `/api/studio/${id}/chat`, { method: 'POST', body: { text: 'make it purple' } });
+    await old.opened; await old.done;
+    assert.deepEqual(old.names(), ['error', 'done']); assert.equal(old.of('error')[0].message, tEn('builder.errors.busy'));
+    assert.equal((await kid(`/api/studio/${id}`)).json.chat.filter(m => m.followUp).length, 3, 'nothing stored by the old POST');
+    gate.open.resolve(); await idleGame(id);
+  } finally { w.close(); realBuilder(); }
 });
 
 test('HTTP-15 list rules: a build stopped by the time cap after saving is "Stopped", never "Ready"; an admin\'s build shows Building… but tells the child nothing', async () => {
@@ -465,6 +503,30 @@ test('HTTP-15 list rules: a build stopped by the time cap after saving is "Stopp
     gate.open.resolve(); await idleGame(id);
   } finally { realBuilder(); }
   r = await kid('/build'); assert.doesNotMatch(r.text, /is ready!|has news/);
+});
+
+test('HTTP-14 the estimate on the wire: after the screening row and before the next one (streamed POST and live replay); none for a refusal', async () => {
+  const id = await newGameFor(owner);
+  const text = await (await owner(`/api/studio/${id}/chat`, { method: 'POST', body: { text: 'Make a catch game about a fox. Just build it.' }, raw: true })).text();
+  assert.match(text, /event: eta\ndata: \{[^\n]*"phase":"start"/);
+  const events = sse(text); const names = events.map(e => e[0]);
+  assert.deepEqual(names.slice(0, 3), ['step', 'eta', 'step']);
+  assert.deepEqual([events[0][1].key, events[2][1].key], ['screen', 'blocks']);
+  assert.ok(Number.isInteger(events[1][1].el) && !/claude|sonnet|opus|haiku/i.test(JSON.stringify(events[1][1])));
+  const refused = sse(await (await owner(`/api/studio/${id}/chat`, { method: 'POST', body: { text: 'make a pokemon game' }, raw: true })).text());
+  assert.ok(!refused.some(e => e[0] === 'eta'));
+  // A page that comes back mid-build gets the estimate in the replay, with the screening row before it.
+  const g = holdBuilder();
+  try {
+    assert.equal((await build(owner, id, 'Make it harder')).status, 202);
+    await g.started;
+    const l = liveOf(owner, id); await l.opened;
+    await l.until(s => s.names().includes('caughtup'));
+    const replay = l.names().slice(0, l.names().indexOf('caughtup'));
+    assert.deepEqual(replay.slice(1, 4), ['step', 'eta', 'step']);
+    assert.equal(l.of('eta')[0].phase, 'start');
+    l.close(); g.open.resolve(); await idleGame(id);
+  } finally { realBuilder(); }
 });
 
 test('detached POST errors are JSON with a code: empty, no turns left, 2 builds at once', async () => {

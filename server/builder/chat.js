@@ -21,11 +21,14 @@ export function saveChat(gameId, userId, { messages, state, tokensIn = 0, tokens
 }
 
 /** Append entries in one transaction, always to the fresh row (others may have written during the build). Inserts the
- *  row for a brand-new game, like saveChat. state: replaces the stored Builder state when given. */
-export function appendChat(gameId, userId, entries, { state, tokensIn = 0, tokensOut = 0 } = {}) {
+ *  row for a brand-new game, like saveChat. state: replaces the stored Builder state when given. before: the id of an
+ *  entry they go in front of (a follow-up that came mid-sentence, runner.js); at the end when it is not there. */
+export function appendChat(gameId, userId, entries, { state, tokensIn = 0, tokensOut = 0, before = null } = {}) {
   tx(() => {
-    const chat = loadChat(gameId);
-    saveChat(gameId, userId, { messages: [...chat.messages, ...(entries || [])], state: state === undefined ? chat.state : state, tokensIn, tokensOut });
+    const chat = loadChat(gameId); const messages = [...chat.messages];
+    const k = before ? messages.findIndex(m => m.id === before) : -1;
+    messages.splice(k < 0 ? messages.length : k, 0, ...(entries || []));
+    saveChat(gameId, userId, { messages, state: state === undefined ? chat.state : state, tokensIn, tokensOut });
   });
 }
 /** Change entries in place (e.g. statuses), in one transaction, on the fresh row. fn(messages) mutates the list. */

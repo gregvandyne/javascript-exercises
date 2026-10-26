@@ -333,3 +333,82 @@ test('toolbox without a recorder still works (scripts, direct callers)', () => {
   assert.equal(r.ok, true); assert.equal(r.version.notes, 'One line note', 'version notes use the shared cleaner');
   assert.deepEqual(events.map(e => e[0]), ['version'], 'no step events without a recorder');
 });
+
+// ---- Time estimates (eta.js). The mock runs at delay 0 here, so the 1 s minimum for a sample is lowered.
+const eta = await import('../../server/builder/eta.js');
+const lastRow = gameId => q.get('SELECT * FROM builder_turns WHERE game_id=? ORDER BY created_at DESC, rowid DESC LIMIT 1', gameId);
+async function quickSamples(fn) { const old = eta.ETA.MIN_MS; eta.ETA.MIN_MS = 0; try { return await fn(); } finally { eta.ETA.MIN_MS = old; } }
+
+test('BT-1 one estimate per build: after the screening row, before the building blocks start', async () => {
+  const u = newUser(); const g = games.createGame(u.id, {});
+  const t = await turn(u, g.id, 'Make a catch game about a fox. Just build it.');
+  const e = t.of('eta');
+  assert.equal(e.length, 1);
+  assert.deepEqual([e[0].phase, e[0].p, e[0].show, e[0].src], ['start', 'blocks', 'none', 'data'], 'at delay 0 a build is too quick to show a time');
+  assert.ok(Number.isInteger(e[0].el) && e[0].showAt >= 6000 && e[0].overAt > 0 && e[0].bigAt > e[0].overAt);
+  assert.ok(at(t, 'step', s => s.key === 'screen') < at(t, 'eta') && at(t, 'eta') < at(t, 'step', s => s.key === 'blocks'));
+  assert.ok(!JSON.stringify(loadChat(g.id).messages).includes('"eta"'), 'never stored in the transcript');
+});
+
+test('BT-2 a refusal or no turns left: no estimate, and the row is not charged', async () => {
+  const u = newUser(); const g = games.createGame(u.id, {});
+  let t = await turn(u, g.id, 'make a pokemon game');
+  assert.equal(t.of('eta').length, 0);
+  assert.deepEqual(['status', 'end_reason', 'charged_day', 'sample'].map(k => lastRow(g.id)[k]), ['done', 'refused', null, 0]);
+  const old = config.builderDailyTurns; config.builderDailyTurns = 0;
+  try {
+    t = await turn(u, g.id, 'a catch game with robots');
+    assert.equal(t.of('eta').length, 0);
+    assert.deepEqual(['status', 'end_reason', 'charged_day', 'sample'].map(k => lastRow(g.id)[k]), ['done', 'limit', null, 0]);
+  } finally { config.builderDailyTurns = old; }
+});
+
+test('BT-3 every build records what it was: question, new or change, its bucket, and when the first version came', () => quickSamples(async () => {
+  const u = newUser(); const g = games.createGame(u.id, {});
+  const row = () => lastRow(g.id);
+  await turn(u, g.id, 'hi');
+  assert.deepEqual(['kind', 'sample', 'est_key', 'versions'].map(k => row()[k]), ['question', 2, 'blocks:std:new:2d', 0]);
+  await turn(u, g.id, '🎯 Catch');
+  await turn(u, g.id, '🦈 Sharks');
+  let r = row();
+  assert.deepEqual(['kind', 'versions', 'sample', 'est_key', 'followups'].map(k => r[k]), ['new', 1, 1, 'blocks:std:new:2d', 0]);
+  assert.ok(r.first_version_ms > 0 && r.first_version_ms <= r.duration_ms, `${r.first_version_ms} ≤ ${r.duration_ms}`);
+  assert.ok(r.eta_over_ms > 0, 'when "longer than usual" would have shown');
+  await turn(u, g.id, 'Make it harder');
+  assert.deepEqual(['kind', 'est_key'].map(k => row()[k]), ['change', 'blocks:std:change:2d']);
+  await turn(u, g.id, "it's ready!");
+  assert.equal(row().kind, 'question', 'a polish pass saves no version');
+  const g3 = games.createGame(u.id, {});
+  await turn(u, g3.id, 'Make a 3D island game. Just build it.');
+  assert.deepEqual(['est_key', 'kind'].map(k => lastRow(g3.id)[k]), ['blocks:std:new:3d', 'new']);
+}));
+
+test('BT-4 "Saved! Finishing up…": one tail estimate right after the first version, from the timed builds', async () => {
+  const key = 'blocks:std:change:2d';
+  q.run('DELETE FROM builder_turns WHERE est_key=?', key); eta._reset();
+  for (let k = 0; k < 10; k++) {
+    q.run("INSERT INTO builder_turns(id, game_id, user_id, status, end_reason, est_key, sample, duration_ms, first_version_ms, created_at, ended_at) VALUES (?,?,?,'done','ok',?,1,?,?,?,?)",
+      `bt4-${k}`, 'g-bt4', 'u', key, 60e3, 30e3, Date.now() - 3600e3, Date.now() - 3600e3 + k);
+  }
+  try {
+    const u = newUser(); const g = games.createGame(u.id, {});
+    await turn(u, g.id, 'Make a catch game about a fox. Just build it.');
+    const t = await turn(u, g.id, 'Make it harder');
+    const all = t.of('eta');
+    assert.deepEqual(all.map(e => e.phase), ['start', 'tail']);
+    assert.deepEqual([all[0].src, all[0].n, all[0].show, all[0].lo], ['data', 10, 'about', 1]);
+    assert.equal(at(t, 'eta', d => d.phase === 'tail'), at(t, 'version') + 1, 'right after the version');
+    assert.deepEqual([all[1].show, all[1].overAt >= all[0].overAt], ['under', true]);
+  } finally { q.run("DELETE FROM builder_turns WHERE game_id='g-bt4'"); eta._reset(); }
+});
+
+test('BT-5 estimates learn: after 10 timed builds of one kind, they come from those builds', () => quickSamples(async () => {
+  q.run("DELETE FROM builder_turns WHERE est_key='blocks:std:new:3d'"); eta._reset();
+  const u = newUser();
+  for (let k = 0; k < 10; k++) {
+    const g = games.createGame(u.id, {});
+    await turn(u, g.id, 'Make a 3D island game with stars. Just build it.');
+  }
+  const est = eta.estimate({ p: 'blocks', pro: false, k: 'new', d3: true });
+  assert.deepEqual([est.start.src, est.start.n], ['data', 10]);
+}));

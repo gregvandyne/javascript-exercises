@@ -5,20 +5,38 @@
     }
   },
   "me": {
+    "tiles": {
+      "favorites": "My favourites"
+    },
     "look": {
       "colorHeading": "Colour",
       "colorGroup": "Colour",
       "colorLabel": "Colour {color}"
-    },
-    "tiles": {
-      "favorites": "My favourites"
     }
   },
   "categories": {
     "sports": "Sport"
   },
+  "home": {
+    "rails": {
+      "favorites": "My favourites"
+    }
+  },
   "search": {
     "placeholder": "Try “shark”, “football” or a builder’s name"
+  },
+  "info": {
+    "parents": {
+      "stored": {
+        "p1": "Own accounts keep a made-up name, a password (stored scrambled) and what your child does here: the games they make, their chats with the Builder and any pictures or files they add, saves, scores, ratings, favourites, friends, chat messages, a profile photo if they upload one, and settings such as language and theme. Guest play keeps a made-up name, saves, scores, ratings and favourites."
+      }
+    }
+  },
+  "game": {
+    "like": "Favourite",
+    "stats": {
+      "likes": "{count, plural, one {favourite} other {favourites}}"
+    }
   },
   "friends": {
     "api": {
@@ -53,6 +71,15 @@
     }
   },
   "js": {
+    "game": {
+      "liked": "Added to your favourites!",
+      "unliked": "Removed from your favourites"
+    },
+    "play": {
+      "signInToLike": "Sign in or play as a guest to save favourites.",
+      "liked": "Added to your favourites!",
+      "unliked": "Removed from your favourites"
+    },
     "studio": {
       "settings": {
         "color": "Card colour"
@@ -60,26 +87,6 @@
       "save": {
         "placeholder": "My favourite so far"
       }
-    },
-    "game": {
-      "liked": "Added to your favourites!",
-      "unliked": "Removed from your favourites"
-    },
-    "play": {
-      "liked": "Added to your favourites!",
-      "unliked": "Removed from your favourites",
-      "signInToLike": "Sign in or play as a guest to save favourites."
-    }
-  },
-  "game": {
-    "like": "Favourite",
-    "stats": {
-      "likes": "{count, plural, one {favourite} other {favourites}}"
-    }
-  },
-  "home": {
-    "rails": {
-      "favorites": "My favourites"
     }
   },
   "favorites": {
@@ -90,9 +97,9 @@
   },
   "school": {
     "class": {
+      "namePlaceholder": "e.g. 4B Maths",
       "grade": "Year",
       "gradeN": "Year {grade}",
-      "namePlaceholder": "e.g. 4B Maths",
       "lessons": "Lessons",
       "lastActivity": "Last activity",
       "noActivity": "none yet"
@@ -116,13 +123,6 @@
     },
     "assign": {
       "zoneNote": "{zone, select, none {Days are counted in UTC and nobody is late until 36 hours after the due day starts. A school admin can set the school's time zone in Settings.} other {Lessons open and due dates end at midnight in {zone}.}}"
-    }
-  },
-  "info": {
-    "parents": {
-      "stored": {
-        "p1": "Own accounts keep a made-up name, a password (stored scrambled) and what your child does here: the games they make, their chats with the Builder and any pictures or files they add, saves, scores, ratings, favourites, friends, chat messages, a profile photo if they upload one, and settings such as language and theme. Guest play keeps a made-up name, saves, scores, ratings and favourites."
-      }
     }
   }
 }

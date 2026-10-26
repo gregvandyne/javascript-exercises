@@ -228,8 +228,11 @@ router.get('/api/studio/:id', requireAccount, (req, res) => {
 
 // The Builder chat. Body: { text, pro, uploads, cid, continueOf?, detach? }.
 //   detach: true (the Studio page): starts the build and answers at once, 202 { ok, turn: { id, status } }, or an error
-//     as JSON ({ error, code }: 400 empty, 403 disabled, 409 busy / cantContinue, 429 tooMany / limit, 503 restarting).
+//     as JSON ({ error, code }: 400 empty, 403 disabled, 409 cantContinue, 429 tooMany / limit, 503 restarting).
 //     The page follows the build on GET /live. A retried message (the same cid) gets the same build back.
+//     While the game builds, a message is a follow-up of that build (runner.js): 200 { followUp: { id, cid, status },
+//     left, turnsLeft } or 200 { refused: { category, message, suggestion } }; 409 notYours / uploads, 429 cap /
+//     refusedCap. If the build ended meanwhile, the message starts the next build (202).
 //   no detach (pages loaded before builds ran on their own, and scripts): text/event-stream with every event of the
 //     build, ending after 'done'. A game that is already building answers builder.errors.busy, as it always did.
 // The build never stops when the request does: a page closed while its POST is on the way still gets its message built.
