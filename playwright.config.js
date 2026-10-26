@@ -30,11 +30,18 @@ export default defineConfig({
     trace: 'retain-on-failure',
     locale: 'en-US',
   },
-  webServer: {
+  // A fake Google (tests/support/fake-google.js) on E2E_PORT + 1, so Sign in with Google is on for the whole run.
+  webServer: [{
+    command: `node tests/support/fake-google.js --port ${PORT + 1}`,
+    url: `http://127.0.0.1:${PORT + 1}/.well-known/openid-configuration`,
+    reuseExistingServer: false,
+    timeout: 10_000,
+  }, {
     command: `node scripts/seed.js && node server/index.js`,
     url: `http://localhost:${PORT}/health`,
     reuseExistingServer: false,
     timeout: 30_000,
-    env: { PORT: String(PORT), BRB_DATA_DIR: DATA, BRB_LOCALES_DIR: LOCALES, BRB_ALL_LOCALES: '1', ADMIN_USERNAME: 'admin', ADMIN_PASSWORD: 'admin-pass-123', DEMO_TEACHER_PASSWORD: 'demo-pass-123', ANTHROPIC_API_KEY: '', BRB_SILENT: '1', REPORTS_TO_HIDE: '3', TRUST_PROXY: '1' },
-  },
+    env: { PORT: String(PORT), BRB_DATA_DIR: DATA, BRB_LOCALES_DIR: LOCALES, BRB_ALL_LOCALES: '1', ADMIN_USERNAME: 'admin', ADMIN_PASSWORD: 'admin-pass-123', DEMO_TEACHER_PASSWORD: 'demo-pass-123', ANTHROPIC_API_KEY: '', BRB_SILENT: '1', REPORTS_TO_HIDE: '3', TRUST_PROXY: '1',
+      GOOGLE_CLIENT_ID: 'test-client.apps.googleusercontent.com', GOOGLE_CLIENT_SECRET: 'fake-test-secret', GOOGLE_OIDC_BASE: `http://127.0.0.1:${PORT + 1}` },
+  }],
 });

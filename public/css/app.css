@@ -383,6 +383,8 @@ body.playmode{background:#000;padding-bottom:0;overflow:hidden}
 .gsign-hint{margin:0}
 .jc-input{font:800 1.6rem/1.2 ui-monospace,Menlo,monospace;letter-spacing:.18em;text-transform:uppercase;text-align:center}
 .jc-chosen{font-weight:700}
+/* A long button label ("I have a login card or an Oomba Academy account") wraps instead of widening the page. */
+.btn-wrap{white-space:normal;text-align:center;line-height:1.25;padding-block:8px}
 .jc-how{font-size:1.1rem;margin-top:14px}
 .gsteps{padding-inline-start:20px;display:flex;flex-direction:column;gap:6px}
 .gclient{overflow-wrap:anywhere}

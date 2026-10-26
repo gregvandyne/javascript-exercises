@@ -240,7 +240,7 @@ router.get('/join', on, (req, res) => {
       : html`<h2 class="center jc-how">${t('google.join.how')}</h2>
         <div class="gsign">${googleButton(req, `/auth/google/start?intent=join&code=${code}`)}<p class="center small muted gsign-hint">${t('google.join.googleHint')}</p></div>
         <div class="divider">${t('auth.page.or')}</div>
-        <a class="btn btn-block" href="/login?next=${encodeURIComponent(`/join?code=${code}`)}">${t('google.join.card')}</a>
+        <a class="btn btn-block btn-wrap" href="/login?next=${encodeURIComponent(`/join?code=${code}`)}">${t('google.join.card')}</a>
         <p class="center small">${tHtml(t, 'google.join.signup', { link: html`<a href="/signup?next=${encodeURIComponent(`/join?code=${code}`)}">${t('google.join.signupLink')}</a>` })}</p>`}`;
   const body = html`<div class="authbox"><div class="panel">
       <div class="center" style="font-size:3rem" aria-hidden="true">🏫</div>

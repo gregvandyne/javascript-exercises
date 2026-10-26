@@ -751,3 +751,30 @@ A review of the three batches together found these; each got the smallest correc
   and theme are carried when the new name doesn't have them yet.
 - **HSTS is not sent when `PUBLIC_URL` is http.** Cookies stay host-only. Tests: `tests/unit/domain.test.js`,
   `tests/e2e/domain-move.spec.js` (127.0.0.1 plays the old name, localhost the new one).
+
+## Sign in with Google (school Google accounts, Chromebooks)
+- **Off until `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` are set** (and `PUBLIC_URL` in production). While off,
+  every new route answers like an unknown page and no panel, privacy text or header changes; migration 0020 only adds
+  empty tables and a column.
+- **OpenID Connect code flow, server side**: PKCE (S256), `state`, `nonce`, `prompt=select_account` (shared
+  Chromebooks always show the chooser), scopes `openid email profile` only (no Google app verification needed). The ID
+  token's RS256 signature is checked against Google's keys with Node's crypto (no dependency), plus issuer, audience,
+  times, nonce and `email_verified`. The access token is thrown away. A signed, HttpOnly, 10-minute cookie scoped to
+  `/auth/google` holds the flow; a used `state` is refused. The same per-address sign-in limits as passwords apply.
+- **Matching is by Google's account id (`sub`) only; an email never links an account.** A new Google account gets an
+  Oomba account only through its school: a teacher's invite (bound to a school email, no link or token, 30 days), or
+  the class code when the teacher turned on "join with Google". Both need the school's Google Workspace domains, and
+  the token's `hd` and email domain must both be in them, so a personal Gmail with the same address never claims an
+  invite. Anyone else is turned away kindly; no own account is made from Google (keeps the "no email" promise).
+- **School accounts made through Google have no password**; removing Google from one prints a login card at once.
+  Clearing the school's domains turns Google off for its own accounts. Staff and own-account students in a school with
+  domains can connect Google on the Me page after re-entering their password; school-account students can't (their
+  teacher connects it).
+- **The Google name is never public**: it is only the staff-only class-list name when the teacher typed none; the
+  username is generated. The photo is never stored.
+- **The class-code option** is off per class by default, limited to 100 new accounts a class a day and 300 an hour
+  from one address, and says the same thing for a wrong code and for the option being off.
+- Tests: `tests/unit/google-signin.test.js` (protocol, tampered tokens, key cache), `google-invites.test.js`
+  (domains, invites, attach, staff, class code, Me page, clean-up, off), `tests/e2e/google.spec.js` against the fake
+  Google in `tests/support/fake-google.js`.
+
