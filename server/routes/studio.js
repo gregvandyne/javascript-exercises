@@ -7,7 +7,7 @@ import { coverArt, emptyState, visLabel, categoryLabel } from '../views/componen
 import * as games from '../services/games.js';
 import { publish, setVisibility } from '../services/publish.js';
 import { cleanText } from '../services/textfilter.js';
-import { requireAccount } from '../auth.js';
+import { requireAccount, getUser } from '../auth.js';
 import { rateLimit } from '../services/ratelimit.js';
 import { audit } from '../db.js';
 import { listTemplates, templateHtml, templateInfo, TEMPLATE_KEYS } from '../builder/catalog.js';
@@ -20,12 +20,12 @@ import { loadChat } from '../builder/chat.js';
 import { previewUrl } from '../builder/tools.js';
 import { saveUpload, getUpload, deleteUpload, readUploadBytes, listUploads, LIMITS, UploadError } from '../builder/uploads.js';
 import { tEn } from '../i18n/index.js';
-import { sharingOptions } from '../services/schools.js';
+import { sharingOptions, shareableClasses, gameClassIds, removedClassIds } from '../services/schools.js';
 
 export const router = Router();
 
 /** What each sharing level means, in the reader's language. */
-export const shareText = (t = tEn) => ({ private: t('studio.shareText.private'), friends: t('studio.shareText.friends'), school: t('studio.shareText.school'), public: t('studio.shareText.public') });
+export const shareText = (t = tEn) => ({ private: t('studio.shareText.private'), friends: t('studio.shareText.friends'), class: t('studio.shareText.class'), school: t('studio.shareText.school'), public: t('studio.shareText.public') });
 export const ICONS = ['🎮', '🦈', '🐉', '🦖', '🤖', '🦄', '🚀', '👽', '🐱', '🐶', '🦊', '🐧', '🐰', '🐸', '🐙', '🐝', '🐠', '🐵', '🦁', '🐼', '👻', '🏴‍☠️', '👸', '🧙', '🥷', '🦋', '🐢', '🦉', '🐻', '🍕', '🧁', '🍎', '⚽', '🏀', '🚗', '🚂', '⛄', '⭐', '🌈', '🌸', '🏆', '🎲', '🧩', '🔤', '❓', '🎵', '💎', '🏰'];
 
 /** One plain-words status for a builder's own game. code: hidden|suspended|in_review|rejected|draft|live */
@@ -35,7 +35,22 @@ export function studioStatus(g, t = tEn) {
   if (g.status === 'in_review') return { code: 'in_review', label: `⏳ ${t('status.inReview')}`, tone: 'warn', live: false };
   if (g.status === 'rejected') return { code: 'rejected', label: `✏️ ${t('status.needsChanges')}`, tone: 'warn', live: false };
   if (g.status !== 'published' || !g.published_version_id) return { code: 'draft', label: `📝 ${t('status.draft')}`, tone: '', live: false };
-  return { code: 'live', label: t('studio.status.live', { who: visLabel(g.visibility, t) }), tone: 'good', live: true };
+  return { code: 'live', label: t('studio.status.live', { who: visLabel(g.visibility, t, g.visibility === 'class' ? games.liveClasses(g.id).length : 1) }), tone: 'good', live: true };
+}
+
+/** The share dialog's class choices for a game's owner (see docs/decisions.md, "Share with my classes"):
+ *  classes: the owner's classes now ({ id, name, school, chosen: on the game's list, removed: a teacher took the game
+ *  off it, so it can't be picked }); multiSchool: show school names; live: the classes a 'class' game reaches now;
+ *  lost: classes on the list that no longer count (the owner left, or the class was archived). */
+export function classShare(g, ownerId) {
+  const mine = shareableClasses(ownerId);
+  const chosen = new Set(gameClassIds(g.id)), removed = new Set(removedClassIds(g.id)), have = new Set(mine.map(c => c.id));
+  return {
+    classes: mine.map(c => ({ id: c.id, name: c.name, school: c.school_name, chosen: chosen.has(c.id), removed: removed.has(c.id) })),
+    multiSchool: new Set(mine.map(c => c.school_id)).size > 1,
+    live: g.visibility === 'class' ? games.liveClasses(g.id).map(c => ({ id: c.id, name: c.name })) : [],
+    lost: [...chosen].filter(id => !have.has(id)).length,
+  };
 }
 
 function loadEditable(req, res, { api = true } = {}) {
@@ -61,11 +76,11 @@ export function studioState(user, gameId, t = tEn) {
     versions: versions.map(v => ({ id: v.id, number: v.number, notes: v.notes, safety: v.safety_status, review: v.review_status, at: v.created_at, live: v.id === g.published_version_id, pending: v.id === g.pending_version_id, current: v.id === g.current_version_id })),
     current: cur ? { id: cur.id, number: cur.number, safety: cur.safety_status, issues: (report.issues || []).map(i => ({ level: i.level, code: i.code, message: i.message })) } : null,
     live: g.status === 'published' && g.published_version_id ? { number: num(g.published_version_id), visibility: g.visibility, id: g.published_version_id } : null,
-    pending: g.pending_version_id ? { number: num(g.pending_version_id), id: g.pending_version_id } : null,
+    pending: g.pending_version_id ? { number: num(g.pending_version_id), id: g.pending_version_id, visibility: g.pending_visibility || 'public' } : null,
     preview: cur ? previewUrl(cur, g, user.id, t.locale) : null,
     chat: chat.messages,
     turnsLeft: turnsLeft(user.id), dailyTurns: dailyTurns(), provider: providerName(), busy: isBusy(g.id),
-    shareText: shareText(t), shareUrl: `/g/${g.slug}`, shareOptions: sharingOptions(games.getOwner(g)),
+    shareText: shareText(t), shareUrl: `/g/${g.slug}`, shareOptions: sharingOptions(getUser(g.owner_id)), classShare: classShare(g, g.owner_id),
     uploads: { limits: LIMITS, used: listUploads(g.id).length },
   };
 }
@@ -267,36 +282,44 @@ router.post('/api/studio/:id/save', requireAccount, rateLimit('studio-save', 30,
   res.json({ ok: true, message: t('studio.api.saved', { number: v.number }), state: studioState(req.user, g.id, t) });
 });
 
-const VIS = ['private', 'friends', 'school', 'public'];
+/** { visibility, classIds } from a publish/visibility request. classIds: for 'class' only, and then required (an array
+ *  of class ids; the one-class dialog sends that one id). -> { vis, classIds } or { error }. */
+function shareRequest(req) {
+  const body = req.body || {};
+  const vis = String(body.visibility || '');
+  if (!games.VISIBILITIES.includes(vis)) return { error: req.t('studio.api.pickWho') };
+  if (vis !== 'class') return { vis };
+  if (!Array.isArray(body.classIds)) return { error: req.t('studio.api.pickClass') };
+  return { vis, classIds: body.classIds };
+}
+const shareReply = (req, res, g, r) => res.status(r.ok ? 200 : 400).json({ ...r, game: undefined, error: r.ok ? undefined : r.message, state: studioState(req.user, g.id, req.t) });
+// Publish the version being edited. Body: { visibility, classIds? } (classIds: the chosen classes, for 'class').
 router.post('/api/studio/:id/publish', requireAccount, rateLimit('studio-publish', 20, 60e3), async (req, res) => {
   const g = loadEditable(req, res); if (!g) return;
-  const vis = String((req.body || {}).visibility || '');
-  if (!VIS.includes(vis)) return res.status(400).json({ error: req.t('studio.api.pickWho') });
-  const r = await publish(req.user, g.id, vis, { t: req.t });
-  res.status(r.ok ? 200 : 400).json({ ...r, game: undefined, error: r.ok ? undefined : r.message, state: studioState(req.user, g.id, req.t) });
+  const sr = shareRequest(req); if (sr.error) return res.status(400).json({ error: sr.error });
+  shareReply(req, res, g, await publish(req.user, g.id, sr.vis, { t: req.t, classIds: sr.classIds }));
 });
-// Update an already-live game to the version being edited, at its current sharing level.
+// Update an already-live game to the version being edited, at its current sharing level (a 'class' game keeps its classes).
 router.post('/api/studio/:id/update', requireAccount, rateLimit('studio-publish', 20, 60e3), async (req, res) => {
   const g = loadEditable(req, res); if (!g) return;
   const t = req.t;
   if (g.status !== 'published' || !g.published_version_id) return res.status(400).json({ error: t('studio.api.notLive') });
-  // A request to go public is waiting while the game is live for friends/only me: update the live game now AND
-  // send the new version for the public check, so the builder's request to share with everyone is not lost.
-  const wantsPublic = g.pending_version_id && g.visibility !== 'public';
+  // A request to share more widely is waiting (pending_visibility: public, school or class) while the game is live at
+  // its current level: update the live game now AND send the new version for that check, so the builder's request is
+  // not lost (and is never turned into a request for some other audience).
+  const want = g.pending_version_id && (g.pending_visibility || 'public') !== g.visibility ? (g.pending_visibility || 'public') : null;
   let r = await publish(req.user, g.id, g.visibility, { t });
-  if (r.ok && wantsPublic) {
-    const p = await publish(req.user, g.id, 'public', { t });
-    r = { ...p, ok: true, message: p.state === 'live' ? p.message : t(g.visibility === 'friends' ? 'studio.api.updatedFriends' : 'studio.api.updatedYou') };
+  if (r.ok && want) {
+    const p = await publish(req.user, g.id, want, { t });
+    r = { ...p, ok: true, message: p.state === 'live' ? p.message : t(want !== 'public' ? 'studio.api.updatedNowWaiting' : g.visibility === 'friends' ? 'studio.api.updatedFriends' : 'studio.api.updatedYou') };
   }
-  res.status(r.ok ? 200 : 400).json({ ...r, game: undefined, error: r.ok ? undefined : r.message, state: studioState(req.user, g.id, t) });
+  shareReply(req, res, g, r);
 });
-// Change who can play a live game (keeps the live version).
+// Change who can play a live game (keeps the live version). Body: { visibility, classIds? } as for publish.
 router.post('/api/studio/:id/visibility', requireAccount, rateLimit('studio-publish', 20, 60e3), async (req, res) => {
   const g = loadEditable(req, res); if (!g) return;
-  const vis = String((req.body || {}).visibility || '');
-  if (!VIS.includes(vis)) return res.status(400).json({ error: req.t('studio.api.pickWho') });
-  const r = await setVisibility(req.user, g.id, vis, req.t);
-  res.status(r.ok ? 200 : 400).json({ ...r, game: undefined, error: r.ok ? undefined : r.message, state: studioState(req.user, g.id, req.t) });
+  const sr = shareRequest(req); if (sr.error) return res.status(400).json({ error: sr.error });
+  shareReply(req, res, g, await setVisibility(req.user, g.id, sr.vis, req.t, sr.classIds));
 });
 
 // ---- Uploads (inspiration pictures and files). Raw body: the file bytes; ?name= the file name.

@@ -245,6 +245,9 @@ textarea.input{min-height:96px;resize:vertical}
 .live::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--brand-mint);box-shadow:0 0 0 0 rgba(102,199,146,.7);animation:pulse 1.8s infinite}
 @keyframes pulse{70%{box-shadow:0 0 0 7px rgba(102,199,146,0)}100%{box-shadow:0 0 0 0 rgba(102,199,146,0)}}
 .vis-pill{position:absolute;z-index:2;inset-inline-end:8px;top:8px;padding:3px 9px;border-radius:999px;background:rgba(255,253,242,.92);color:var(--brand-ink);font-size:.75rem;font-weight:800}
+/* "🎒 Class only" on a card: the bottom corner opposite the game's icon, so it never covers the "playing" pill at the top. */
+.vis-pill.vis-class{top:auto;bottom:8px;max-width:calc(100% - 3.3rem);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.coverart:not(.has-shot)~.vis-pill.vis-class{max-width:calc(100% - 16px)}
 /* Stars are the logo's spark: Spark yellow with an Ink outline (no outline in dark). */
 .stars{color:var(--spark);-webkit-text-stroke:1px var(--spark-edge);letter-spacing:1px;white-space:nowrap}
 .stars.muted{color:var(--muted);-webkit-text-stroke:0}
@@ -432,6 +435,10 @@ table.tbl{width:100%;border-collapse:collapse;font-size:.95rem}
 .langselect{width:auto;min-width:200px;flex:0 1 260px}
 .searchbig{font-size:1.15rem;min-height:56px;border-radius:999px;padding-inline-start:20px}
 .ownerchip{display:inline-flex;padding-block:4px;padding-inline:4px 10px;margin-inline-start:-4px}
+/* "🎒 Shared with: 5B, Art Club" under the builder on a class game's page (only people who can see the game get here). */
+.sharedwith{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;margin:8px 0 0;color:var(--text-2);font-weight:700}
+.chips-inline{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.chips-inline li{padding:2px 10px;border-radius:999px;background:var(--accent-soft);color:var(--accent-ink);font-weight:800;overflow-wrap:anywhere}
 /* Arrows that point "back" or "forward" mirror in right-to-left languages. */
 [dir="rtl"] .flip{display:inline-block;transform:scaleX(-1)}
 /* Long inline code (API names in the docs) breaks rather than pushing a phone page sideways. */

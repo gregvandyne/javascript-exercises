@@ -68,6 +68,7 @@
 .st-live .vtag{font-weight:700;color:var(--text-2)}
 .st-live .note{flex-basis:100%;margin:0;padding:10px 14px;border-radius:var(--r-sm);font-weight:600;background:var(--spark-soft);color:var(--text)}
 .st-live .note.info{background:var(--accent-soft)}
+.st-live .st-shared{flex-basis:100%;margin:0;font-weight:700;color:var(--text-2);overflow-wrap:anywhere}
 .st-update{animation:nudge 2.4s ease-in-out 2}
 @keyframes nudge{0%,100%{transform:none}10%{transform:translateY(-3px)}20%{transform:none}}
 
@@ -209,6 +210,25 @@ button.stp-line{cursor:pointer}
 .vischoice button b{font-size:1.05rem}
 .vischoice button span{color:var(--muted);font-size:.92rem}
 .vischoice button[aria-pressed="true"]{border-color:var(--accent-line);background:var(--accent-soft)}
+/* "My classes" when a teacher took the game off every class: it says so, and can't be picked. */
+.vischoice button[aria-disabled="true"]{border-style:dashed;cursor:not-allowed}
+.vischoice button[aria-disabled="true"] b{color:var(--muted)}
+/* "Which classes?": shown under the picked "My classes" option, joined to it by a rail on the reading-start side.
+   Real checkboxes in 48px rows (the look of fieldset.picklist in schools.css). */
+.classpick{min-width:0;margin:0;margin-inline-start:10px;padding:2px 0;padding-inline-start:14px;border:0;border-inline-start:3px solid var(--accent-line)}
+.classpick legend{padding:0;margin:0 0 8px;font-weight:800}
+.cp-list{display:flex;flex-direction:column;gap:8px}
+.cp-row{display:flex;align-items:flex-start;gap:12px;min-height:48px;padding:12px 14px;border-radius:var(--r-sm);background:var(--card);box-shadow:inset 0 0 0 2px var(--line);font-weight:600;line-height:1.3;cursor:pointer}
+.cp-row:has(input:checked){background:var(--accent-soft);box-shadow:inset 0 0 0 2px var(--accent-line)}
+.cp-row:has(input:focus-visible){outline:3px solid var(--focus);outline-offset:2px}
+.cp-row input{width:22px;height:22px;flex:none;margin:0}
+.cp-row>span{flex:1;min-width:0;overflow-wrap:anywhere}
+.cp-row.is-off{cursor:not-allowed;color:var(--muted);box-shadow:inset 0 0 0 2px var(--line);background:var(--card-2)}
+.cp-off{display:block;margin-top:2px;font-size:.88rem}
+.cp-all{font-weight:800}
+.cp-later{margin:8px 0 0;font-size:.9rem;color:var(--muted)}
+.cp-err{margin:8px 0 0;font-weight:700;color:var(--danger)}
+.cp-err:empty{display:none}
 .emojigrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(52px,1fr));gap:6px}
 .emojigrid button{height:52px;border-radius:var(--r-sm);border:2px solid var(--line);background:var(--card);font-size:1.7rem;cursor:pointer}
 .emojigrid button[aria-pressed="true"]{border-color:var(--accent-line);background:var(--accent-soft)}

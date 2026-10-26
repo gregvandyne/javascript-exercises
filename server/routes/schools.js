@@ -7,12 +7,13 @@ import { Router } from 'express';
 import crypto from 'node:crypto';
 import { html, raw } from '../views/html.js';
 import { page, notFound, VERSION } from '../views/layout.js';
-import { avatar, emptyState, gradeLabel, BRAND, appMark, notYou } from '../views/components.js';
+import { avatar, emptyState, gradeLabel, BRAND, appMark, notYou, coverArt, cardGrid } from '../views/components.js';
 import { requireUser, requireAdmin, getUserByName, accountKind } from '../auth.js';
 import { rateLimit } from '../services/ratelimit.js';
 import * as S from '../services/schools.js';
 import { teacherLessonsPanel, studentLessonsPanel } from './lessons.js';
 import * as P from '../services/progress.js';
+import * as games from '../services/games.js';
 import { siteHost } from '../site.js';
 
 export const router = Router();
@@ -232,7 +233,7 @@ function schoolSettings(req, s) {
       <span class="hint">${tz ? t('school.settings.timeZoneHint', { time: timeThere(tz, req.fmt.intl) }) : t('school.settings.timeZoneUnset')}</span></div>
     <h3>${t('school.settings.gameSite')}</h3><p class="small muted">${t('school.settings.gameSiteText')}</p>
     <div class="field"><label for="set-chat">${t('school.settings.chat')}</label><select class="input" id="set-chat" name="chat"><option value="classmates" ${selected(st.chat === 'classmates')}>${t('school.settings.chatClassmates')}</option><option value="off" ${selected(st.chat === 'off')}>${t('school.settings.chatOff')}</option></select><span class="hint">${t('school.settings.chatHint')}</span></div>
-    <div class="field"><label for="set-publishing">${t('school.settings.publishing')}</label><select class="input" id="set-publishing" name="publishing"><option value="school" ${selected(st.publishing === 'school')}>${t('school.settings.publishSchool')}</option><option value="public" ${selected(st.publishing === 'public')}>${t('school.settings.publishPublic')}</option></select></div>
+    <div class="field"><label for="set-publishing">${t('school.settings.publishing')}</label><select class="input" id="set-publishing" name="publishing" aria-describedby="set-publishing-hint"><option value="school" ${selected(st.publishing === 'school')}>${t('school.settings.publishSchool')}</option><option value="public" ${selected(st.publishing === 'public')}>${t('school.settings.publishPublic')}</option></select><span class="hint" id="set-publishing-hint">${t('school.settings.publishingHint')}</span></div>
     <p class="small muted">${t('school.settings.photos')}</p>
     <div><button class="btn btn-primary" type="submit">${t('school.save')}</button></div>
   </form></section>`;
@@ -354,15 +355,15 @@ router.get('/class/:id', requireUser, (req, res) => {
   if (c && S.canViewClass(req.user, c)) return studentClass(req, res, c);
   no(req, res);
 });
-const CLASS_TABS = ['lessons', 'progress', 'students', 'settings'];
-/** The class header and its tabs (Lessons, Progress, Students, Settings), shared with the progress pages. */
+const CLASS_TABS = ['lessons', 'progress', 'games', 'students', 'settings'];
+/** The class header and its tabs (Lessons, Progress, Games, Students, Settings), shared with the progress pages. */
 export function classHeader(req, c, active) {
   const t = req.t; const s = S.getSchool(c.school_id);
   const students = S.roster(c.id).filter(p => p.role === 'student').length;
   const requests = S.pendingRequests(c.id).length;
   const toRead = P.toReadByClass([c.id])[c.id] || 0;
-  const href = { lessons: `/class/${c.id}`, progress: `/class/${c.id}/progress`, students: `/class/${c.id}?tab=students`, settings: `/class/${c.id}?tab=settings` };
-  const icon = { lessons: '📚', progress: '📊', students: '👩‍🎓', settings: '⚙️' };
+  const href = { lessons: `/class/${c.id}`, progress: `/class/${c.id}/progress`, games: `/class/${c.id}?tab=games`, students: `/class/${c.id}?tab=students`, settings: `/class/${c.id}?tab=settings` };
+  const icon = { lessons: '📚', progress: '📊', games: '🎮', students: '👩‍🎓', settings: '⚙️' };
   const badge = { progress: toRead ? html` <span class="tabbadge" title="${t('progress.gradebook.toRead', { count: toRead })}">${toRead}</span>` : '', students: requests ? html` <span class="tabbadge" title="${t('school.requests.title', { count: requests })}">${requests}</span>` : '' };
   return html`
   <div class="pagehead"><div><span class="small muted">${s.name}</span><h1>${c.name}</h1>
@@ -405,9 +406,30 @@ function studentRow(t, c, s, p, others) {
       </div></details>
     </div></td></tr>`;
 }
+/** The teacher's Games tab: games shared only with this class (each can be taken off it), and the ones taken off
+ *  (each can be put back). Staff see students' real names. */
+function classGamesTab(req, c, people) {
+  const t = req.t, f = req.fmt;
+  const live = games.classGames(c.id, { limit: 200 }), off = games.removedClassGames(c.id);
+  const real = new Map(people.map(p => [p.id, nameOf(p)]));
+  const who = g => { const n = real.get(g.owner_id); return n && n !== g.owner_name ? `@${g.owner_name} (${n})` : `@${g.owner_name}`; };
+  return html`<section class="panel" aria-labelledby="cg-h"><h2 id="cg-h">🎮 ${t('school.classTabs.games')}</h2>
+    <p class="small muted">${t('school.classGames.text')}</p>
+    ${live.length ? html`<ul class="plain cg-list">${live.map(g => html`<li class="cg-row">
+      <a class="cg-cover" href="/g/${g.slug}" tabindex="-1" aria-hidden="true">${coverArt(g, 'cg-thumb')}</a>
+      <div class="cg-body"><a href="/g/${g.slug}"><b dir="auto">${g.title}</b></a>
+        <span class="small muted"><bdi>${t('school.classGames.by', { name: who(g) })}</bdi> · ${t('school.classGames.sharedAgo', { when: f.ago(g.shared_at) })}</span></div>
+      <form class="cg-act" data-api="/api/classes/${c.id}/games/${g.id}/remove" data-reload data-confirm="${t('school.classGames.removeConfirm', { title: g.title, class: c.name })}"><button class="btn btn-sm" type="submit">${t('school.classGames.remove')}</button></form>
+    </li>`)}</ul>` : html`<p class="muted">${t('school.classGames.empty')}</p>`}
+  </section>
+  ${off.length ? html`<details class="panel cg-off"><summary>${t('school.classGames.removedHeading', { count: off.length })}</summary>
+    <ul class="plain cg-list">${off.map(g => html`<li class="cg-row"><div class="cg-body">${games.canView(req.user, g) ? html`<b dir="auto">${g.icon} ${g.title}</b>` : html`<b>🎮 ${t('school.classGames.hiddenGame')}</b>`}
+      <span class="small muted"><bdi>${t('school.classGames.by', { name: who(g) })}</bdi></span></div>
+      <form class="cg-act" data-api="/api/classes/${c.id}/games/${g.id}/restore" data-reload><button class="btn btn-sm" type="submit">${t('school.classGames.restore')}</button></form></li>`)}</ul></details>` : ''}`;
+}
 function teacherClass(req, res, c) {
   const t = req.t; const s = S.getSchool(c.school_id); const st = S.settingsOf(s);
-  const tab = ['students', 'settings'].includes(req.query.tab) ? req.query.tab : 'lessons';
+  const tab = ['games', 'students', 'settings'].includes(req.query.tab) ? req.query.tab : 'lessons';
   const people = S.roster(c.id), teachers = people.filter(p => p.role === 'teacher'), students = people.filter(p => p.role === 'student');
   const others = S.classesOfSchool(s.id).filter(x => x.id !== c.id);
   const inClass = new Set(people.map(p => p.id));
@@ -470,7 +492,7 @@ function teacherClass(req, res, c) {
   </section>` : ''}`;
 
   const body = html`${classHeader(req, c, tab)}
-  ${tab === 'students' ? studentsTab : tab === 'settings' ? settingsTab : teacherLessonsPanel(req, c)}`;
+  ${tab === 'students' ? studentsTab : tab === 'settings' ? settingsTab : tab === 'games' ? classGamesTab(req, c, people) : teacherLessonsPanel(req, c)}`;
   page(req, res, { title: c.name, active: 'classes', body, head: CSS, scripts: ['/js/schools.js'], ...classBack(req, c) });
 }
 function studentClass(req, res, c) {
@@ -481,12 +503,38 @@ function studentClass(req, res, c) {
   <div class="pagehead"><div><span class="small muted">${s.name}</span><h1>${c.name}</h1>
     <p class="muted">${[c.subject, gradeLabel(t, c.grade)].filter(Boolean).join(' · ')}</p></div>${studentNotYou(req, S.classMember(c.id, req.user.id)?.role === 'student')}</div>
   ${studentLessonsPanel(req, c)}
+  ${studentGamesPanel(req, c, teachers)}
   <div class="cols2"><section class="panel"><h2>🍎 ${t('school.class.teachers')}</h2><ul class="plain chips-list">${teachers.map(p => html`<li class="pp">${avatar(p, 28)} ${nameOf(p)}</li>`)}</ul></section>
   <section class="panel"><h2>👫 ${t('classes.classmates', { count: classmates.length })}</h2>${classmates.length ? html`<ul class="plain chips-list">${classmates.map(p => html`<li class="pp">${avatar(p, 28)} ${p.display_name}</li>`)}</ul>` : ''}</section></div>`;
   page(req, res, { title: c.name, active: 'classes', body, head: CSS, back: '/classes', backLabel: t('nav.classes') });
 }
 
+/** "Games from our class" on a student's class page: games shared only with this class (everyone who can open this
+ *  page can open each of them). */
+function studentGamesPanel(req, c, teachers = []) {
+  const t = req.t; const list = games.classGames(c.id, { limit: 200 });
+  // A teacher's own game is credited with the name the class knows them by (as in the Teachers list), not a username.
+  const staff = new Map(teachers.map(p => [p.id, nameOf(p)]));
+  return html`<section class="panel" aria-labelledby="cg-h"><h2 id="cg-h">🎮 ${t('classes.games.heading')}</h2>
+    ${list.length ? cardGrid(list, { classPill: false, byName: g => staff.get(g.owner_id) || null }) : emptyState({ emoji: '🎒', title: t('classes.games.emptyTitle'), text: t('classes.games.emptyText'), action: req.user.is_guest ? null : { href: '/build', label: t('classes.games.emptyAction') } })}
+  </section>`;
+}
+
 // ---- class APIs
+// A class's teacher (or a school admin) takes a game off the class / puts it back. 404 when the game isn't on (or
+// wasn't taken off) this class's list.
+router.post('/api/classes/:id/games/:gid/remove', requireUser, (req, res) => {
+  const c = loadClass(req, res); if (!c) return;
+  const r = S.removeClassGame(req.user, c.id, String(req.params.gid));
+  if (!r.ok) return err(req, res, 'gameNotHere', 404);
+  res.json({ ok: true, toast: req.t('school.classGames.removed', { class: c.name }) });
+});
+router.post('/api/classes/:id/games/:gid/restore', requireUser, (req, res) => {
+  const c = loadClass(req, res); if (!c) return;
+  const r = S.restoreClassGame(req.user, c.id, String(req.params.gid));
+  if (!r.ok) return err(req, res, 'gameNotHere', 404);
+  res.json({ ok: true, toast: req.t('school.classGames.restored', { class: c.name }) });
+});
 // (before /api/classes/:id, which would otherwise catch 'join')
 router.post('/api/classes/join', requireUser, rateLimit('class-join', 20, 3600e3), (req, res) => {
   const r = S.requestJoin(req.user, b(req).code);

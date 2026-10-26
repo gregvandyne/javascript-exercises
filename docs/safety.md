@@ -186,7 +186,21 @@ Builders pick who can play:
 |---|---|---|
 | 🔒 Only me | the builder (and admins) | the scan must not fail |
 | 👫 Friends | the builder's accepted friends | the scan must not fail |
+| 🎒 My class(es) | students and teachers of the classes the builder picked (and that school's admins), only while the builder is still in each class and it isn't archived | a clean scan, or a person's approval **for that audience** |
+| 🏫 My school | everyone in the builder's schools | a clean scan, or a person's approval for the school (or wider) |
 | 🌍 Everyone | everybody | the scan must not fail **and** a review |
+
+**Class and school sharing** reach children who didn't choose it (a class page lists every class game for the whole
+class), so a flagged version waits for a person, like "Everyone". An approval is stored with the audience it was given
+for (`review_report.for`, and the class list for a class approval) and never stretches to a wider one: approved for 5A
+covers 5A only, not 5B, the school or everyone. A builder's new class list for a game already live for some classes
+waits in `games.pending_classes` until that approval, so nobody new can play it before a person looked. What a waiting
+review is for is kept in `games.pending_visibility`, so approving it never makes a game public that was asked for a
+class or school (this closed an older leak where every admin approval went public). One SQL rule (`CLASS_SQL` in
+`server/services/games.js`) decides who can see a class game for both the single-game check and every listing, and a
+unit test compares the two across a matrix of viewers and games. Teachers (and school admins) can take a game off their
+class; its builder can't share it there again unless the teacher allows it, and "Allow again" only makes the class
+pickable again (it never re-shares by itself).
 
 **Review for "Everyone"** (`server/services/review.js`): a model reads the game's title, description and tags, the scan
 result, its visible text, its code (the whole game for anything under ~60 KB, head + tail for bigger ones) **and one or

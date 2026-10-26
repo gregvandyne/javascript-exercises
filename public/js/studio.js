@@ -8,7 +8,9 @@ const log = $('#st-log'), input = $('#st-input'), frame = $('#st-frame'), stage 
 let busy = false, pro = false;
 try { pro = localStorage.getItem('brb-pro') === '1'; } catch { /* private mode */ }
 const SIZES = { phone: [390, 760], tablet: [820, 1100], landscape: [844, 390] };
-const VIS = { private: ['🔒', t('js.studio.vis.private')], friends: ['👫', t('js.studio.vis.friends')], school: ['🏫', t('js.studio.vis.school')], public: ['🌍', t('js.studio.vis.public')] };
+const VIS = { private: ['🔒', t('js.studio.vis.private')], friends: ['👫', t('js.studio.vis.friends')], class: ['🎒', t('js.studio.vis.class', { count: 2 })], school: ['🏫', t('js.studio.vis.school')], public: ['🌍', t('js.studio.vis.public')] };
+/** [emoji, label] for a sharing level. 'class' says "My class" for one class and "My classes" for several. */
+const visOf = (k, count = 1) => (k === 'class' ? ['🎒', t('js.studio.vis.class', { count })] : VIS[k] || ['', k]);
 // Idea chips: keys a, b, c... under a prefix (missing letters are skipped).
 const chipList = prefix => [...'abcdefgh'].map(k => t(`${prefix}.${k}`)).filter(x => !x.startsWith(prefix));
 const START_CHIPS = chipList('js.studio.startChips');
@@ -39,19 +41,53 @@ function renderLive() {
   const cur = S.current ? `✏️ ${E('js.studio.live.editing', { number: S.current.number })}` : `✏️ ${E('js.studio.live.nothingYet')}`;
   if (S.game.hidden_reason) parts.push(`<p class="note">⚠️ ${E('js.studio.live.hidden')}</p>`);
   if (S.live) {
-    const [e, w] = VIS[S.live.visibility] || ['', S.live.visibility];
+    // A class game: the classes it reaches right now (a class it was shared with stops counting when the builder leaves
+    // it or a teacher takes the game off it).
+    const reach = S.live.visibility === 'class' ? classShare().live : null;
+    // A class game that reaches no class right now is, in effect, only for its builder: say so, and why.
+    const [e, w] = reach && !reach.length ? ['🔒', t('js.studio.live.onlyYouNow')] : visOf(S.live.visibility, reach ? reach.length : 1);
     parts.push(`<span class="stchip good">🟢 ${E('js.studio.live.liveVersion', { number: S.live.number, who: `${e} ${w}` })}</span><span class="vtag">${cur}</span>`);
+    if (reach) {
+      const off = classShare().classes.filter(c => c.removed).map(c => c.name);
+      if (reach.length) {
+        parts.push(`<p class="st-shared">🎒 ${t('js.studio.live.sharedWith', { names: nameList(reach.map(c => c.name)) })}</p>`);
+        if (off.length) parts.push(`<p class="note">🎒 ${t('js.studio.live.takenOffSome', { names: nameList(off) })}</p>`);
+      } else {
+        const why = off.length ? t('js.studio.live.takenOff', { names: nameList(off) }) : E('js.studio.live.leftClass');
+        parts.push(`<p class="note">🎒 ${why} ${E('js.studio.live.pickAgain')}</p>`);
+      }
+    }
     const canUpdate = S.current && S.current.id !== S.live.id && !(S.pending && S.pending.id === S.current.id);
     if (canUpdate) parts.push(`<button class="btn btn-hot btn-sm st-update" type="button" data-act="update">⬆️ ${E('js.studio.live.updateTo', { number: S.current.number })}</button>`);
-    if (S.pending && S.pending.id === S.live.id) parts.push(`<p class="note">⏳ ${E(S.live.visibility === 'friends' ? 'js.studio.live.waitingFriends' : 'js.studio.live.waitingYou')}</p>`);
+    if (S.pending && S.pending.id === S.live.id) parts.push(`<p class="note">⏳ ${waitingText()}</p>`);
     else if (S.pending) parts.push(`<p class="note">⏳ ${E('js.studio.live.pendingUpdate', { pending: S.pending.number, live: S.live.number })}</p>`);
-    else if (canUpdate) parts.push(`<p class="note info">${E('js.studio.live.playersOn', { live: S.live.number, number: S.current.number })}${S.live.visibility === 'public' ? ' ' + E('js.studio.live.publicCheck') : ''}</p>`);
+    else if (canUpdate) parts.push(`<p class="note info">${E('js.studio.live.playersOn', { live: S.live.number, number: S.current.number })}${S.live.visibility === 'public' ? ' ' + E('js.studio.live.publicCheck') : isGroup(S.live.visibility) && needsCheck(S.current.id) ? ' ' + E('js.studio.share.groupHint') : ''}</p>`);
   } else {
     parts.push(`<span class="stchip">${esc(S.status.label)}${S.status.code === 'draft' ? ' · ' + E('js.studio.live.onlyYou') : ''}</span><span class="vtag">${cur}</span>`);
     if (S.pending) parts.push(`<p class="note">⏳ ${E('js.studio.live.pendingNew', { number: S.pending.number })}</p>`);
   }
   if (S.game.review_note) parts.push(`<p class="note">💬 ${E('js.studio.live.reviewer', { note: S.game.review_note })}</p>`);
   box.innerHTML = parts.join('');
+}
+// ---- "Share with my classes": S.classShare comes from the server (server/routes/studio.js classShare):
+// classes: the builder's classes now [{ id, name, school, chosen, removed }] (removed: a teacher took this game off that
+// class, so it can't be picked), multiSchool: show school names, live: the classes a class game reaches right now.
+const classShare = () => S.classShare || { classes: [], multiSchool: false, live: [], lost: 0 };
+const LIST = typeof Intl.ListFormat === 'function' ? new Intl.ListFormat(INTL, { type: 'conjunction' }) : null;
+/** "5B, Art Club and Chess Club" in the reader's language. Class names are typed by teachers: escaped, and each kept
+ *  whole inside right-to-left text. */
+const nameList = names => (LIST ? LIST.formatToParts(names).map(p => (p.type === 'element' ? `<bdi>${esc(p.value)}</bdi>` : esc(p.value))).join('') : names.map(n => `<bdi>${esc(n)}</bdi>`).join(', '));
+const isGroup = v => v === 'class' || v === 'school';
+/** Would sharing this version with a class or the school wait for a person? Only a clean or approved version goes
+ *  straight out (server/services/publish.js). */
+const needsCheck = id => { const v = (S.versions || []).find(x => x.id === id); return !!v && v.safety === 'flag' && v.review !== 'approved'; };
+/** The live version itself is waiting to be shared more widely: say with whom, and that nothing changes until then. */
+function waitingText() {
+  const want = S.pending.visibility || 'public';
+  if (want === 'school') return E('js.studio.live.waitingSchool');
+  if (want === 'class') return E('js.studio.live.waitingClass', { count: Math.max(1, classShare().classes.filter(c => c.chosen && !c.removed).length) });
+  if (isGroup(S.live.visibility)) return E('js.studio.live.waitingPublic');
+  return E(S.live.visibility === 'friends' ? 'js.studio.live.waitingFriends' : 'js.studio.live.waitingYou');
 }
 function renderSafety() {
   const box = $('#st-safety'); const c = S.current;
@@ -783,35 +819,110 @@ $('#st-history').addEventListener('click', () => {
 });
 
 // ---------------------------------------------------------------- share, publish, update
+const CLASS_CODES = ['pickClass', 'classGone', 'classRemoved'];
 function shareSheet(mode) {
   if (!S.current) return toast(t('js.studio.share.buildFirst'));
-  const live = S.live; let pick = live ? live.visibility : (S.game.visibility || 'private');
-  const opts = (S.shareOptions || ['private', 'friends', 'public']).map(k => `<button type="button" data-vis="${k}" aria-pressed="${k === pick}"><b>${VIS[k][0]} ${VIS[k][1]}</b><span>${esc(S.shareText[k])}</span></button>`).join('');
+  const live = S.live;
+  const options = () => S.shareOptions || ['private', 'friends', 'public'];   // read again after a refused request
+  // Before it is live, the dialog opens on what is waiting for a check (if anything), else on the game's level.
+  let pick = live ? live.visibility : (S.pending && S.pending.visibility) || S.game.visibility || 'private';
+  if (!live && !options().includes(pick)) pick = 'private';
+  // Classes: ticked = the game's list (classes a teacher took it off can't be ticked). The first time nothing is
+  // ticked: sharing with a class is the builder's own choice, and "All my classes" is one tap.
+  const ticked = new Set(classShare().classes.filter(c => c.chosen && !c.removed).map(c => c.id));
+  const cls = () => classShare().classes, open = () => cls().filter(c => !c.removed);
+  // One class (and not taken off): the option says which, and there is nothing to tick. Several: a list to tick.
+  const single = () => (cls().length === 1 && open().length === 1 ? open()[0] : null);
+  const many = () => cls().length > 1;
+  const classOption = k => {
+    const one = single(), none = !open().length;
+    const text = none ? E('js.studio.share.allRemoved', { count: cls().length }) : one ? t('js.studio.share.classOne', { name: `<bdi>${esc(one.name)}</bdi>` }) : E('js.studio.share.classMany');
+    const [e, w] = visOf(k, many() ? cls().length : 1);
+    return `<button type="button" data-vis="${k}" aria-pressed="${k === pick}"${none ? ' aria-disabled="true"' : ''}${many() && !none ? ` aria-controls="cp" aria-expanded="${k === pick}"` : ''}><b>${e} ${esc(w)}</b><span>${text}</span></button>${many() ? classPick() : ''}`;
+  };
+  const classPick = () => {
+    const boxes = cls().map((c, i) => {
+      const name = classShare().multiSchool ? t('js.studio.share.classInSchool', { class: `<bdi>${esc(c.name)}</bdi>`, school: `<span class="muted"><bdi>${esc(c.school)}</bdi></span>` }) : `<bdi>${esc(c.name)}</bdi>`;
+      return `<label class="cp-row${c.removed ? ' is-off' : ''}"><input type="checkbox" id="cp-${i}" value="${esc(c.id)}" data-class${c.removed ? ` disabled aria-describedby="cp-${i}-off"` : ticked.has(c.id) ? ' checked' : ''}><span>${name}${c.removed ? `<span class="cp-off" id="cp-${i}-off">${E('js.studio.share.classRemoved')}</span>` : ''}</span></label>`;
+    });
+    const ids = cls().map((c, i) => (c.removed ? '' : `cp-${i}`)).filter(Boolean).join(' ');
+    return `<fieldset class="classpick" id="cp"${pick === 'class' ? '' : ' hidden'}><legend>${E('js.studio.share.classesLegend')}</legend>
+      <div class="cp-list"><label class="cp-row cp-all"><input type="checkbox" id="cp-all" aria-controls="${ids}"><span><b>${E(cls().some(c => c.removed) ? 'js.studio.share.allOpenClasses' : 'js.studio.share.allClasses')}</b></span></label>${boxes.join('')}</div>
+      <p class="cp-later">${E('js.studio.share.classLater')}</p><p class="cp-err" id="cp-err" role="alert"></p></fieldset>`;
+  };
+  const optsHtml = () => options().filter(k => VIS[k] && (k !== 'class' || cls().length))
+    .map(k => (k === 'class' ? classOption(k) : `<button type="button" data-vis="${k}" aria-pressed="${k === pick}"><b>${VIS[k][0]} ${esc(VIS[k][1])}</b><span>${esc(S.shareText[k])}</span></button>`)).join('');
   const link = live ? `<div class="field"><label for="share-link">${E('js.studio.share.link')}</label><div class="row"><input class="input" id="share-link" dir="ltr" readonly value="${esc(location.origin + S.shareUrl)}" style="flex:1;min-width:0"><button class="btn" type="button" id="share-copy">📋 ${E('js.studio.share.copy')}</button></div></div>` : '';
   const title = live ? `🔗 ${t('js.studio.share.titleLive')}` : mode === 'publish' ? `🚀 ${t('js.studio.share.titlePublish')}` : `🔗 ${t('js.studio.share.titleWho')}`;
-  const s = sheet({ title, content: `${live ? `<p>${E('js.studio.share.playersGet', { number: live.number })}</p>` : `<p>${E('js.studio.share.pickWho', { number: S.current.number })}</p>`}<div class="vischoice" role="group" aria-label="${E('js.studio.share.whoLabel')}">${opts}</div><p class="small muted" id="vis-hint"></p>${link}<div class="sheet-actions"><button class="btn btn-primary" type="button" id="vis-go">${live ? E('js.studio.share.save') : E('js.studio.top.publish')}</button></div>` });
-  const hint = () => { $('#vis-hint', s.el).textContent = pick === 'public' ? t('js.studio.share.publicHint') : ''; };
-  hint();
+  const s = sheet({ title, content: `${live ? `<p>${E('js.studio.share.playersGet', { number: live.number })}</p>` : `<p>${E('js.studio.share.pickWho', { number: S.current.number })}</p>`}<div class="vischoice" role="group" aria-label="${E('js.studio.share.whoLabel')}">${optsHtml()}</div><p class="small muted" id="vis-hint"></p>${link}<div class="sheet-actions"><button class="btn btn-primary" type="button" id="vis-go">${live ? E('js.studio.share.save') : E('js.studio.top.publish')}</button></div>` });
+  const choice = $('.vischoice', s.el);
+  // Changing who can play a live game shares its live version; publishing shares the version being edited.
+  const hint = () => { $('#vis-hint', s.el).textContent = pick === 'public' ? t('js.studio.share.publicHint') : isGroup(pick) && needsCheck(live ? live.id : S.current.id) ? t('js.studio.share.groupHint') : ''; };
+  const boxes = () => $$('input[data-class]', s.el);
+  const err = msg => { const el = $('#cp-err', s.el); if (el) el.textContent = msg || ''; };
+  const focusFirst = () => { const f = [$('#cp-all', s.el), ...boxes()].find(x => x && !x.disabled); if (f) f.focus(); };
+  // "All my classes": ticked when every class that can be picked is, half-ticked when only some are.
+  const syncAll = () => {
+    const all = $('#cp-all', s.el); if (!all) return;
+    const on = boxes().filter(b => !b.disabled), n = on.filter(b => b.checked).length;
+    all.checked = !!on.length && n === on.length; all.indeterminate = n > 0 && n < on.length; all.disabled = !on.length;
+  };
+  const redraw = () => { choice.innerHTML = optsHtml(); syncAll(); };
+  syncAll(); hint();
+  // Keyboard and switch users start on what is chosen now, not on the first option.
+  { const on = $('[data-vis][aria-pressed="true"]', s.el); if (on) on.focus(); }
+  s.el.addEventListener('change', e => {
+    const b = e.target;
+    if (b.id === 'cp-all') boxes().forEach(x => { if (!x.disabled) x.checked = b.checked; });
+    if (b.id !== 'cp-all' && !b.matches('input[data-class]')) return;
+    ticked.clear(); boxes().filter(x => x.checked).forEach(x => ticked.add(x.value));
+    syncAll(); err('');
+  });
   s.el.addEventListener('click', async e => {
     const v = e.target.closest('[data-vis]');
-    if (v) { pick = v.dataset.vis; $$('[data-vis]', s.el).forEach(b => b.setAttribute('aria-pressed', String(b === v))); hint(); return; }
+    if (v) {
+      if (v.getAttribute('aria-disabled') === 'true') return;   // every class took this game off: nothing to pick
+      pick = v.dataset.vis; $$('[data-vis]', s.el).forEach(b => b.setAttribute('aria-pressed', String(b === v)));
+      const cp = $('#cp', s.el); if (cp) cp.hidden = pick !== 'class';
+      const cb = $('[data-vis="class"][aria-controls]', s.el); if (cb) cb.setAttribute('aria-expanded', String(pick === 'class'));
+      hint(); return;
+    }
     if (e.target.closest('#share-copy')) { (await copyText(location.origin + S.shareUrl)) ? toast(`${t('js.studio.share.copied')} ${S.shareText[S.live.visibility]}`) : toast(t('js.studio.share.copyFailed'), { bad: true }); return; }
     const go = e.target.closest('#vis-go'); if (!go) return;
-    if (live && pick === live.visibility) { s.close(); return; }
+    let classIds;
+    if (pick === 'class') {
+      // Nothing to send when the builder is in no class it can share with (every one left, or took the game off).
+      if (!open().length) { toast(t('js.studio.share.allRemoved', { count: cls().length }), { bad: true }); return; }
+      classIds = single() ? [single().id] : [...ticked];
+      if (!classIds.length) { err(t('js.studio.share.pickClass')); focusFirst(); return; }
+      const now = new Set(classShare().live.map(c => c.id));
+      if (live && live.visibility === 'class' && classIds.length === now.size && classIds.every(id => now.has(id))) { s.close(); return; }
+    } else if (live && pick === live.visibility) { s.close(); return; }
     go.disabled = true;
     try {
-      const r = await api(`/api/studio/${ID}/${live ? 'visibility' : 'publish'}`, { method: 'POST', body: { visibility: pick } });
+      const r = await api(`/api/studio/${ID}/${live ? 'visibility' : 'publish'}`, { method: 'POST', body: { visibility: pick, ...(classIds ? { classIds } : {}) } });
       applyState(r.state); toast(r.message, { ms: 5000 }); s.close();
-    } catch (err) {
-      if (err.signedOut) return failed(err);
-      applyState(err.data && err.data.state); toast(err.message + (err.data && err.data.reasons && err.data.reasons.length ? ' ' + err.data.reasons.join(' ') : ''), { bad: true, ms: 6000 }); go.disabled = false;
+    } catch (er) {
+      if (er.signedOut) return failed(er);
+      applyState(er.data && er.data.state); go.disabled = false;
+      // A class can't be picked any more (left it, or a teacher took the game off it): show the list as it is now and
+      // say why next to it.
+      if (pick === 'class' && CLASS_CODES.includes(er.data && er.data.code) && many()) {
+        for (const id of [...ticked]) if (!open().some(c => c.id === id)) ticked.delete(id);
+        redraw(); err(er.message); focusFirst();
+        return;
+      }
+      if (pick === 'class' && CLASS_CODES.includes(er.data && er.data.code)) redraw();
+      toast(er.message + (er.data && er.data.reasons && er.data.reasons.length ? ' ' + er.data.reasons.join(' ') : ''), { bad: true, ms: 6000 });
     }
   });
 }
 async function updateLive() {
   if (!S.live || !S.current) return;
   const pub = S.live.visibility === 'public';
-  const s = sheet({ title: `⬆️ ${t('js.studio.update.title')}`, content: `<p>${t('js.studio.update.text', { live: `<b>${E('js.studio.update.version', { number: S.live.number })}</b>`, number: `<b>${E('js.studio.update.version', { number: S.current.number })}</b>` })}</p><p>${pub ? E('js.studio.update.publicText', { live: S.live.number }) : E('js.studio.update.now')}</p><div class="sheet-actions"><button class="btn" type="button" data-close>${E('js.studio.update.notYet')}</button><button class="btn btn-hot" type="button" id="upd-go">⬆️ ${E('js.studio.update.button')}</button></div>` });
+  // A class or school game updates at once unless the safety robot flagged the new version (then a person checks it).
+  const text = pub ? E('js.studio.update.publicText', { live: S.live.number }) : isGroup(S.live.visibility) && needsCheck(S.current.id) ? E('js.studio.update.groupText', { live: S.live.number }) : E('js.studio.update.now');
+  const s = sheet({ title: `⬆️ ${t('js.studio.update.title')}`, content: `<p>${t('js.studio.update.text', { live: `<b>${E('js.studio.update.version', { number: S.live.number })}</b>`, number: `<b>${E('js.studio.update.version', { number: S.current.number })}</b>` })}</p><p>${text}</p><div class="sheet-actions"><button class="btn" type="button" data-close>${E('js.studio.update.notYet')}</button><button class="btn btn-hot" type="button" id="upd-go">⬆️ ${E('js.studio.update.button')}</button></div>` });
   s.el.querySelector('[data-close]').addEventListener('click', s.close);
   $('#upd-go', s.el).addEventListener('click', async e => {
     e.target.disabled = true;

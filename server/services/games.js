@@ -13,7 +13,8 @@ export const CATEGORIES = [
 export const CATEGORY_KEYS = CATEGORIES.map(c => c[0]);
 export const categoryInfo = k => { const c = CATEGORIES.find(x => x[0] === k) || CATEGORIES[0]; return { key: c[0], icon: c[1], label: c[2] }; };
 export const COVERS = ['sunset', 'ocean', 'forest', 'candy', 'night', 'lava', 'mint', 'gold'];
-export const VISIBILITIES = ['private', 'friends', 'school', 'public'];
+/** Sharing levels, narrow to wide (the Studio's share dialog lists them in this order). */
+export const VISIBILITIES = ['private', 'friends', 'class', 'school', 'public'];
 export const ORIENTATIONS = ['any', 'portrait', 'landscape'];
 
 export const slugify = s => String(s).toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40) || 'game';
@@ -34,8 +35,46 @@ export function areFriends(a, b) {
   if (!a || !b) return false;
   return !!q.get("SELECT 1 FROM friends WHERE user_id=? AND friend_id=? AND status='accepted'", a, b);
 }
+
+// ---------------------------------------------------------------- "Share with my classes" (visibility 'class')
+// The one place that knows the class rule. canView and visibleWhere both use CLASS_SQL, so they can't disagree
+// (tests/unit/class-sharing.test.js compares them across a matrix of viewers and games).
+
+/** "Classroom c is live for person <who>": an active member of the class (student or teacher) who is still an active
+ *  member of its school. (c must already be joined as a non-archived classroom of a non-archived school.) */
+const LIVE_IN_CLASS = who => `EXISTS (SELECT 1 FROM class_members m JOIN school_members sm ON sm.school_id=c.school_id
+    AND sm.user_id=m.user_id AND sm.status='active' WHERE m.class_id=c.id AND m.user_id=${who} AND m.status='active')`;
+/** The live classes of game g: chosen by the owner, not taken off by a teacher, class and school not archived, and the
+ *  owner still a live member of the class. A JOIN fragment on game_classes gc / classrooms c / schools s. */
+const LINK_JOINS = `JOIN classrooms c ON c.id=gc.class_id AND c.archived_at IS NULL
+    JOIN schools s ON s.id=c.school_id AND s.archived_at IS NULL`;
+const LIVE_LINK_WHERE = `gc.removed_at IS NULL AND ${LIVE_IN_CLASS('g.owner_id')}`;
+/** Is the viewer (param) an active school admin of class c's school? */
+const SCHOOL_ADMIN_OF_C = "EXISTS (SELECT 1 FROM school_members a WHERE a.school_id=c.school_id AND a.user_id=? AND a.role='admin' AND a.status='active')";
+/** The classes a viewer (param) can see class games in: the ones they are a live member of, and every class of a school
+ *  they are an active admin of. Not correlated with the outer query, so SQLite builds it once per query. Params: 2× viewer. */
+const VIEWER_CLASSES = `SELECT vm.class_id FROM class_members vm JOIN classrooms vc ON vc.id=vm.class_id
+      JOIN school_members vsm ON vsm.school_id=vc.school_id AND vsm.user_id=vm.user_id AND vsm.status='active'
+      WHERE vm.user_id=? AND vm.status='active'
+    UNION SELECT ac.id FROM school_members a JOIN classrooms ac ON ac.school_id=a.school_id
+      WHERE a.user_id=? AND a.role='admin' AND a.status='active'`;
+/** The class branch of THE rule (used by canView AND visibleWhere). Params: viewerId, viewerId.
+ *  A 'class' game reaches a viewer through any of its live classes (chosen by the owner, not taken off, class and
+ *  school not archived, owner still a live member) when the viewer is a live member of that class or a school admin of
+ *  its school (they moderate what is shared inside their classes). Driven from the viewer's own classes, so its cost
+ *  follows the viewer's classes, not the number of class games on the site. */
+export const CLASS_SQL = `(g.visibility='class' AND g.id IN (SELECT gc.game_id FROM game_classes gc ${LINK_JOINS}
+    JOIN games og ON og.id=gc.game_id
+    JOIN class_members om ON om.class_id=c.id AND om.user_id=og.owner_id AND om.status='active'
+    JOIN school_members osm ON osm.school_id=c.school_id AND osm.user_id=og.owner_id AND osm.status='active'
+    WHERE gc.removed_at IS NULL AND gc.class_id IN (${VIEWER_CLASSES})))`;
+/** Does this game reach this viewer through one of its classes? (The same SQL as listings use.) */
+const classReach = (userId, gameId) => !!q.get(`SELECT 1 FROM games g WHERE g.id=? AND ${CLASS_SQL}`, gameId, userId, userId);
+
 /** THE visibility rule. Can this user open/play this game's published version?
- *  Private: owner and admins. Friends: owner, admins, accepted friends. Public: everyone while published and not hidden. */
+ *  Private: owner and admins. Friends: owner, admins, accepted friends. School: schoolmates. Class: the members (and
+ *  school admins) of the classes the owner chose, while the owner is still in them (CLASS_SQL). Public: everyone.
+ *  Everything except owner/admin only while published and not hidden. */
 export function canView(user, game) {
   if (!game) return false;
   if (user && user.role === 'admin') return true;
@@ -45,6 +84,7 @@ export function canView(user, game) {
   if (game.visibility === 'public') return true;
   if (game.visibility === 'friends') return !!user && areFriends(game.owner_id, user.id);
   if (game.visibility === 'school') return !!user && sameSchool(game.owner_id, user.id);
+  if (game.visibility === 'class') return !!user && classReach(user.id, game.id);
   return false;
 }
 export const canEdit = (user, game) => !!user && !!game && game.status !== 'deleted' && (user.id === game.owner_id || user.role === 'admin');
@@ -52,21 +92,28 @@ export const canEdit = (user, game) => !!user && !!game && game.status !== 'dele
 /** A builder deletes their game. Kept in the database (reports and the audit trail still point at it) but gone
  *  for everyone: off every list, out of the review queue, and the Studio and play page say not found. Starter games can't be deleted. */
 export function deleteGame(gameId) {
-  q.run("UPDATE games SET status='deleted', visibility='private', pending_version_id=NULL, featured=0, updated_at=? WHERE id=?", now(), gameId);
+  tx(() => {
+    q.run("UPDATE games SET status='deleted', visibility='private', pending_version_id=NULL, pending_visibility='', pending_classes='', featured=0, updated_at=? WHERE id=?", now(), gameId);
+    q.run('DELETE FROM game_classes WHERE game_id=?', gameId);
+  });
 }
 
-/** SQL fragment + params restricting listings to games this viewer may see (mirrors canView; listings never show other people's private games). */
+/** SQL fragment + params restricting listings to games this viewer may see (mirrors canView exactly for everyone but
+ *  platform admins, whose listings follow the normal rule; listings never show other people's private games).
+ *  Signed out: public only. Any future sitemap, feed or embed list must use visibleWhere(null). */
 export function visibleWhere(user) {
   const base = "g.status='published' AND g.published_version_id IS NOT NULL AND g.hidden_reason=''";
   if (!user) return { sql: `${base} AND g.visibility='public'`, params: [] };
   return {
     sql: `${base} AND (g.visibility='public' OR g.owner_id=? OR (g.visibility='friends' AND g.owner_id IN (SELECT friend_id FROM friends WHERE user_id=? AND status='accepted'))
-      OR (g.visibility='school' AND g.owner_id IN (SELECT a.user_id FROM school_members a JOIN school_members b ON b.school_id=a.school_id WHERE b.user_id=? AND a.status='active' AND b.status='active')))`,
-    params: [user.id, user.id, user.id]
+      OR (g.visibility='school' AND g.owner_id IN (SELECT a.user_id FROM school_members a JOIN school_members b ON b.school_id=a.school_id WHERE b.user_id=? AND a.status='active' AND b.status='active'))
+      OR ${CLASS_SQL})`,
+    params: [user.id, user.id, user.id, user.id, user.id]
   };
 }
-export const SELECT = `SELECT g.id, g.slug, g.owner_id, g.title, g.description, g.icon, g.cover, g.category, g.tags, g.visibility, g.status, g.plays, g.likes, g.rating_sum, g.rating_count, g.featured, g.players_max, g.orientation, g.source, g.published_at, g.updated_at, g.created_at, g.current_version_id, g.published_version_id, g.pending_version_id, g.review_note, g.hidden_reason, g.l10n,
-  u.username AS owner_name, u.display_name AS owner_display, u.avatar AS owner_avatar, u.color AS owner_color, u.photo_at AS owner_photo_at FROM games g JOIN users u ON u.id=g.owner_id`;
+const COLS = `g.id, g.slug, g.owner_id, g.title, g.description, g.icon, g.cover, g.category, g.tags, g.visibility, g.status, g.plays, g.likes, g.rating_sum, g.rating_count, g.featured, g.players_max, g.orientation, g.source, g.published_at, g.updated_at, g.created_at, g.current_version_id, g.published_version_id, g.pending_version_id, g.review_note, g.hidden_reason, g.l10n,
+  u.username AS owner_name, u.display_name AS owner_display, u.avatar AS owner_avatar, u.color AS owner_color, u.photo_at AS owner_photo_at`;
+export const SELECT = `SELECT ${COLS} FROM games g JOIN users u ON u.id=g.owner_id`;
 
 export const avgRating = g => (g.rating_count ? g.rating_sum / g.rating_count : 0);
 /** Launch games carry translated descriptions (seed JSON "l10n"): show the one for the page's language.
@@ -145,6 +192,50 @@ export function similar(user, game, limit = 6) {
   const rows = listVisible(user, { category: game.category, limit: limit + 1 }).filter(g => g.id !== game.id);
   if (rows.length < limit) listVisible(user, { limit: limit * 2 }).forEach(g => { if (g.id !== game.id && !rows.find(r => r.id === g.id) && rows.length < limit) rows.push(g); });
   return rows.slice(0, limit);
+}
+
+// ---------------------------------------------------------------- class pages and "Shared with"
+const LIVE_CLASS_GAME = "g.status='published' AND g.published_version_id IS NOT NULL AND g.hidden_reason='' AND g.visibility='class'";
+/** Games live in this class right now (live, shared 'class' with it, owner still in it, link not taken off), newest share
+ *  first. Callers gate the class page (canViewClass / canManageClass): every viewer who passes that gate can open every
+ *  game listed (a live member of the class, or a school admin of its school). */
+export function classGames(classId, { limit = 48 } = {}) {
+  return decorate(q.all(`SELECT ${COLS}, gc.added_at AS shared_at FROM games g JOIN users u ON u.id=g.owner_id
+    JOIN game_classes gc ON gc.game_id=g.id AND gc.class_id=? ${LINK_JOINS}
+    WHERE ${LIVE_CLASS_GAME} AND ${LIVE_LINK_WHERE} ORDER BY gc.added_at DESC LIMIT ?`, classId, limit));
+}
+/** Games a teacher took off this class (the teacher's "Put back" list), newest first. Titles only: no covers or links. */
+/** Games a teacher took off this class (newest first). Callers must only show a title/icon the viewer canView now. */
+export const removedClassGames = classId => q.all(`SELECT g.*, gc.removed_at, gc.removed_by,
+    u.username AS owner_name, u.display_name AS owner_display FROM game_classes gc JOIN games g ON g.id=gc.game_id JOIN users u ON u.id=g.owner_id
+  WHERE gc.class_id=? AND gc.removed_at IS NOT NULL AND g.status!='deleted' ORDER BY gc.removed_at DESC LIMIT 100`, classId);
+/** Is this game live in this class right now? (Lessons: can the class play this game step?) */
+export const gameLiveInClass = (gameId, classId) => !!(gameId && classId && q.get(`SELECT 1 FROM games g JOIN game_classes gc ON gc.game_id=g.id AND gc.class_id=? ${LINK_JOINS}
+  WHERE g.id=? AND ${LIVE_CLASS_GAME} AND ${LIVE_LINK_WHERE}`, classId, gameId));
+/** Live class games shared with a class this person teaches in this school (not their own): the lesson editor's
+ *  "Shared with my classes" group. Never sent to the AI lesson-draft catalog. */
+export const classGamesForTeacher = (userId, schoolId, limit = 100) => q.all(`SELECT DISTINCT g.id, g.title, g.icon, g.slug, g.status, g.visibility, g.source, g.published_at
+  FROM games g JOIN game_classes gc ON gc.game_id=g.id ${LINK_JOINS}
+  WHERE ${LIVE_CLASS_GAME} AND ${LIVE_LINK_WHERE} AND c.school_id=? AND g.owner_id!=?
+    AND EXISTS (SELECT 1 FROM class_members t WHERE t.class_id=c.id AND t.user_id=? AND t.role='teacher' AND t.status='active')
+  ORDER BY g.published_at DESC LIMIT ?`, schoolId, userId, userId, limit);
+/** The classes a game reaches through its list right now (whatever its status: the Studio shows the owner where a live
+ *  'class' game is shared): [{ id, name, school_id, school_name, mine }] ordered by school and name. mine: the viewer
+ *  (viewerId) is a live member of the class or a school admin of its school. */
+export function liveClasses(gameId, viewerId = null) {
+  return q.all(`SELECT c.id, c.name, c.school_id, s.name AS school_name, (${LIVE_IN_CLASS('?')} OR ${SCHOOL_ADMIN_OF_C}) AS mine
+    FROM games g JOIN game_classes gc ON gc.game_id=g.id ${LINK_JOINS} WHERE g.id=? AND ${LIVE_LINK_WHERE}
+    ORDER BY s.name COLLATE NOCASE, c.name COLLATE NOCASE`, viewerId, viewerId, gameId).map(r => ({ ...r, mine: !!r.mine }));
+}
+/** "Shared with: 5B, Art Club" for a 'class' game, for a viewer who can already see it: the owner and platform admins
+ *  get every class name; anyone else gets the names of the classes they are in (or run as a school admin) and a count
+ *  of the others, so a child's other classes and clubs aren't shown to everyone. -> { names, others } or null. */
+export function classNamesFor(game, viewer) {
+  if (!game || game.visibility !== 'class') return null;
+  const list = liveClasses(game.id, viewer ? viewer.id : null);
+  const all = !!viewer && (viewer.id === game.owner_id || viewer.role === 'admin');
+  const shown = all ? list : list.filter(c => c.mine);
+  return { names: shown.map(c => c.name), others: list.length - shown.length };
 }
 
 export function rate(gameId, userId, stars) {

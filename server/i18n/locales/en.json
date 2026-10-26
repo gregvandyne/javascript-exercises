@@ -229,6 +229,7 @@
     "starsLabel": "{stars} out of 5 stars from {count, plural, one {# rating} other {# ratings}}",
     "playing": "{count} playing",
     "gameBy": "{title}, by {name}",
+    "classOnly": "Class only",
     "by": "by {name}",
     "plays": "{count, plural, one {{n} play} other {{n} plays}}",
     "seeAll": "See all",
@@ -238,6 +239,8 @@
   "vis": {
     "private": "Only me",
     "friends": "Friends",
+    "class": "{count, plural, one {My class} other {My classes}}",
+    "onlyYouNow": "Only you right now",
     "public": "Everyone",
     "school": "My school"
   },
@@ -445,9 +448,12 @@
     "shareText": {
       "private": "Only you can open this game. Change it to Friends or Everyone to share it.",
       "friends": "Only your friends on Oomba Academy can open this link.",
+      "class": "Only the classes this game is shared with can open this link.",
       "public": "Anyone with the link can play this game.",
       "school": "Everyone at your school can find and play it."
     },
+    "sharedWith": "Shared with:",
+    "sharedWithMore": "{count, plural, one {and # other class} other {and # other classes}}",
     "report": {
       "button": "Report",
       "already": "Thanks, we already have your report.",
@@ -719,6 +725,7 @@
     "shareText": {
       "private": "Only you can play it.",
       "friends": "Only you and your friends on Oomba Academy can play it.",
+      "class": "Only the classes you picked can play it.",
       "public": "Everyone on Oomba Academy can find and play it, after a quick safety check.",
       "school": "Everyone at your school can find and play it."
     },
@@ -807,9 +814,13 @@
       "savedDefault": "my favorite so far",
       "saved": "Saved as version {number}.",
       "pickWho": "Pick who can play.",
+      "pickClass": "Pick at least one of your classes.",
+      "classGone": "You can only share with classes you're in right now.",
+      "classRemoved": "Your teacher took this game off {name}, so it can't go back there.",
       "notLive": "This game is not live yet. Use Publish first.",
       "updatedFriends": "Updated for your friends! The new version is also waiting for its check before everyone can play.",
       "updatedYou": "Updated for you! The new version is also waiting for its check before everyone can play.",
+      "updatedNowWaiting": "Updated! The new version is also waiting for a quick check before more people can play.",
       "cantDeleteStarter": "Starter games can’t be deleted."
     }
   },
@@ -824,6 +835,7 @@
     "updateWaiting": "Your update is waiting for a quick check. Players keep the old version until then.",
     "waiting": "Your game is waiting for a quick safety check. We will share it as soon as it passes.",
     "school": "Live for your school! Everyone at your school can find and play it.",
+    "class": "{count, plural, one {Live for {name}! Everyone in your class can find and play it.} other {Live for your classes! Everyone in them can find and play it.}}",
     "schoolOnly": "Your school keeps games inside the school. Share it with your school instead."
   },
   "builder": {
@@ -1070,6 +1082,7 @@
       "vis": {
         "private": "Only me",
         "friends": "Friends",
+        "class": "{count, plural, one {My class} other {My classes}}",
         "public": "Everyone",
         "school": "My school"
       },
@@ -1084,9 +1097,18 @@
         "nothingYet": "Nothing built yet",
         "hidden": "This game is hidden for now because players reported it. A grown-up on our team will look at it soon.",
         "liveVersion": "Live: version {number} · {who}",
+        "sharedWith": "Shared with: {names}",
+        "takenOff": "Your teacher took this game off {names}, so only you can play it now.",
+        "takenOffSome": "Your teacher took it off {names}.",
+        "leftClass": "You're not in the class you shared it with any more, so only you can play it now.",
+        "pickAgain": "Tap Share to choose who can play it.",
+        "onlyYouNow": "Only you right now",
         "updateTo": "Update live game to version {number}",
         "waitingFriends": "Waiting for a quick safety check before everyone can play. Until then: your friends can play it.",
         "waitingYou": "Waiting for a quick safety check before everyone can play. Until then: only you can play it.",
+        "waitingPublic": "Waiting for a quick safety check before everyone can play. Until then, it stays shared the way it is now.",
+        "waitingSchool": "Waiting for a quick safety check before your school can play. Until then, it stays shared the way it is now.",
+        "waitingClass": "{count, plural, one {Waiting for a quick safety check before your class can play.} other {Waiting for a quick safety check before your classes can play.}} Until then, it stays shared the way it is now.",
         "pendingUpdate": "Version {pending} is waiting for a quick safety check. Players keep playing version {live} until it passes.",
         "playersOn": "Players are playing version {live}. Press “Update live game” to give them version {number}.",
         "publicCheck": "Games for everyone get a quick safety check first, and players keep the old version until it passes.",
@@ -1192,6 +1214,17 @@
         "whoLabel": "Who can play",
         "save": "Save",
         "publicHint": "Games for everyone get a quick safety check first.",
+        "groupHint": "The safety robot spotted something, so a grown-up on our team checks it first.",
+        "classOne": "Only the kids and teachers in {name} can find and play it.",
+        "classMany": "Only the kids and teachers in the classes you pick can find and play it.",
+        "classesLegend": "Which classes?",
+        "allClasses": "All my classes",
+        "allOpenClasses": "All the classes I can pick",
+        "classInSchool": "{class} · {school}",
+        "classLater": "Classes you join later aren't added by themselves. Come back here to add them.",
+        "pickClass": "Pick at least one class.",
+        "classRemoved": "Your teacher took it off this class.",
+        "allRemoved": "{count, plural, one {Your teacher took this game off your class.} other {Your teachers took this game off your classes.}}",
         "copied": "Link copied!",
         "copyFailed": "Could not copy."
       },
@@ -1200,6 +1233,7 @@
         "text": "Players are playing {live}. This gives them {number}.",
         "version": "version {number}",
         "publicText": "Because everyone can play it, the update gets a quick safety check first. Players keep version {live} until it passes.",
+        "groupText": "The safety robot spotted something in this version, so a grown-up on our team checks it first. Players keep version {live} until then.",
         "now": "It updates straight away.",
         "notYet": "Not yet",
         "button": "Update"
@@ -1360,7 +1394,13 @@
     "sent": "Asked to join {name}. Your teacher will say yes soon!",
     "classmates": "{count, plural, one {# classmate} other {# classmates}}",
     "noLessons": "No lessons yet",
-    "noLessonsText": "Your teacher will add lessons and games here."
+    "noLessonsText": "Your teacher will add lessons and games here.",
+    "games": {
+      "heading": "Games from our class",
+      "emptyTitle": "No class games yet",
+      "emptyText": "Build a game and share it with your class when you publish.",
+      "emptyAction": "Build a game"
+    }
   },
   "school": {
     "nav": {},
@@ -1528,6 +1568,7 @@
       "publishing": "Sharing games",
       "publishSchool": "Inside the school only",
       "publishPublic": "Can also share with everyone",
+      "publishingHint": "Students in a class can also share a game with just their classes.",
       "photos": "Profile photos of school accounts are seen only by their classmates, teachers and friends.",
       "chatHint": "School accounts can only add classmates as friends.",
       "timeZone": "Time zone",
@@ -1573,6 +1614,7 @@
       "sameName": "{count, plural, one {This name is already at {school}} other {These names are already at {school}}}: {names}. Take them out of the list, or add an initial to tell them apart. To put existing students in a class, tick them on the class's Students tab.",
       "chooseTeacher": "Choose a teacher.",
       "chooseClass": "Choose a class.",
+      "gameNotHere": "That game isn't shared with this class.",
       "noSchoolAccounts": "No students in this class have school accounts.",
       "badTeacher": "Choose someone on the school's staff.",
       "adminNotStudent": "You look after Oomba Academy, so you can't join a class as a student.",
@@ -1583,8 +1625,22 @@
     "classTabs": {
       "lessons": "Lessons",
       "progress": "Progress",
+      "games": "Games",
       "students": "Students",
       "settings": "Settings"
+    },
+    "classGames": {
+      "text": "Games shared with this class. If one isn't right for the class, take it off: its builder can't share it here again unless you allow it.",
+      "by": "by {name}",
+      "sharedAgo": "shared {when}",
+      "remove": "Take off this class",
+      "removeConfirm": "Take {title} off {class}? Students in this class won't see it any more.",
+      "removed": "Taken off {class}.",
+      "removedHeading": "{count, plural, one {# game taken off} other {# games taken off}}",
+      "restore": "Allow again",
+      "restored": "Its builder can share it with {class} again if they want to.",
+      "hiddenGame": "A game you can't open right now",
+      "empty": "No games shared with this class yet."
     },
     "optional": "(optional)",
     "me": "me",
@@ -1653,6 +1709,7 @@
       "game": "Game",
       "myGames": "My games",
       "schoolGames": "Shared in my school",
+      "classGames": "Shared with my classes",
       "siteGames": "Oomba Academy games",
       "minutes": "Minutes",
       "edit": "Edit step",
@@ -1660,6 +1717,8 @@
       "deleteConfirm": "Delete this step?",
       "notShared": "Your class can't open this game yet",
       "notSharedHint": "Share it with your school first, or open it in the Studio and press Publish.",
+      "classOnly": "Only the classes it's shared with can play it",
+      "hiddenGame": "A game you can't open",
       "shareGame": "Share with my school",
       "openStudio": "Open in the Studio",
       "newGameIdea": "Your idea for the game",
@@ -1831,7 +1890,7 @@
       "played": "I've played it",
       "keepBuilding": "Keep building",
       "handIn": "Hand in my game",
-      "handInConfirm": "Hand in your game? Your teacher and your school will be able to play it.",
+      "handInConfirm": "Hand in your game? Your teacher and your class will be able to play it.",
       "handInHint": "When your game is ready, hand it in so your teacher can play it.",
       "handedInText": "You handed in your game.",
       "seeGame": "See my game",
