@@ -148,6 +148,10 @@ Fill in at least:
 | `CONTACT_EMAIL`, `AI_DAILY_BUDGET_USD`, `AI_MONTHLY_BUDGET_USD` | the same as on Render today (`render.yaml`: `greg@oomba.ai`, `5`, `150`) |
 | `SHOTS_TOKEN` | output of `openssl rand -hex 32` (a new one: it is only shared between the app and the screenshot worker) |
 | `LITESTREAM_REPLICA_URL` | `s3://oomba-backups-<...>/oomba` (leave the two key lines empty: the role is used). Add a line `AWS_REGION=us-east-1` (your region). Leave it empty while you prepare a move from Render; see section 9. |
+| `STRIPE_API_KEY`, `STRIPE_WEBHOOK_SECRET` | empty until billing goes live (README "Paid plans"): a **restricted** `rk_live_…` key and the live webhook endpoint's `whsec_…` secret. Both are secrets (section 5). Unset, billing is off and the site works as before. `STRIPE_WEBHOOK_SECRET_OLD` only while rotating. |
+| `STRIPE_LIVE_OK`, `STRIPE_TAX`, `BILLING_PUBLIC`, `BILLING_PREVIEW_TOKEN` | off / empty until the going-live checklist is done (`BILLING_PREVIEW_TOKEN` is a secret) |
+| `STRIPE_PMC_FAMILY`, `STRIPE_PMC_SCHOOL` | the `pmc_…` ids of the "Family" and (optional) "School" payment method configurations in the Stripe Dashboard |
+| `SCHOOL_TURNS_PER_SEAT`, `SCHOOL_MIN_SEATS`, `SCHOOL_DAILY_CAP_DEFAULT`, `SCHOOL_SEAT_AI_USD`, `SCHOOL_INVOICE_GRACE_DAYS` | leave unset for the README defaults (school plans: messages per paid student a year, the fewest students, the default daily cap per person, the AI dollars a paid student adds a year, days an overdue invoice keeps the plan) |
 
 Keep a copy of the secrets somewhere safe outside the server too (section 5).
 
@@ -267,8 +271,8 @@ zero, move to the next size or an `m7i`/`m6i` (non-burstable) type. Growing the 
 
 ## 5. Secrets
 
-The secrets are `SESSION_SECRET`, `ADMIN_PASSWORD`, `ANTHROPIC_API_KEY`, `SHOTS_TOKEN` (and Litestream keys if you
-don't use the role). On the server they live only in `deploy/.env` (mode 600, owned by root). Keep the master copy
+The secrets are `SESSION_SECRET`, `ADMIN_PASSWORD`, `ANTHROPIC_API_KEY`, `SHOTS_TOKEN`, and once billing is on
+`STRIPE_API_KEY`, `STRIPE_WEBHOOK_SECRET` and `BILLING_PREVIEW_TOKEN` (and Litestream keys if you don't use the role). On the server they live only in `deploy/.env` (mode 600, owned by root). Keep the master copy
 in **Systems Manager → Parameter Store** as *SecureString* parameters under `/oomba/` (e.g. `/oomba/SESSION_SECRET`),
 or in **Secrets Manager**, so a lost server doesn't lose them.
 

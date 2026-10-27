@@ -15,6 +15,7 @@
 // Nothing is ever hard-deleted from a roster: people are marked 'left' with a date, so history survives moves.
 import crypto from 'node:crypto';
 import { q, uid, now, tx, audit } from '../db.js';
+import { config } from '../config.js';
 import { createUser, setPassword, getUser } from '../auth.js';
 import { unlinkAll } from './family.js';
 import { clear, loginLockKey } from './ratelimit.js';
@@ -32,6 +33,8 @@ export const DEFAULT_SETTINGS = {
 };
 /** The highest daily Builder cap a school can set. */
 export const MAX_DAILY_CAP = 500;
+/** The lowest daily cap a school can set: the free daily Builder messages (a lower cap would change nothing). */
+export const minDailyCap = () => Math.max(1, config.builderDailyTurns | 0);
 /** Time zones a school can pick (IANA names Node knows). */
 export const ZONES = Intl.supportedValuesOf('timeZone');
 const ZONE_SET = new Set(ZONES);
@@ -115,7 +118,7 @@ export function updateSchool(by, schoolId, { name, settings } = {}) {
     if (settings.timeZone !== undefined) { if (settings.timeZone !== '' && !isZone(settings.timeZone)) return fail('badZone'); next.timeZone = settings.timeZone; }
     if (settings.builderDailyCap !== undefined && settings.builderDailyCap !== null && settings.builderDailyCap !== '') {
       const n = Number(settings.builderDailyCap);
-      if (!Number.isInteger(n) || n < 1 || n > MAX_DAILY_CAP) return fail('badCap');
+      if (!Number.isInteger(n) || n < minDailyCap() || n > MAX_DAILY_CAP) return fail('badCap');
       next.builderDailyCap = n;
     }
     q.run('UPDATE schools SET settings=? WHERE id=?', JSON.stringify(next), s.id);

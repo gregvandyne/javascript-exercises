@@ -1,6 +1,6 @@
 # Status
 
-_Last updated: 2026-10-25_
+_Last updated: 2026-10-26_
 
 ## How to run
 `npm install && npm run seed && npm start` → http://localhost:3000 (Node 22, no API key needed). Tests: `npm test` (unit + safety), `npm run test:e2e` (Playwright). Details in README.
@@ -49,6 +49,7 @@ _Last updated: 2026-10-25_
 | Graceful shutdown, `/health`, `PUBLIC_URL`, TRUST_PROXY warning, secret rules, on/off settings, journal mode, maintenance / moved modes (the "moving" page in the visitor's language), export scripts | unit `deploy.test.js` |
 | **Game frame recovery** (merge review): the 3D card's "Try again" reloads the game through the page in the Studio, on the play page and in the admin queue, never a 403; `/frame` refusals read as text inside the frame; pinning armed before the frame's first load (a 2D "Play again" that calls `location.reload()` comes back); a game pointing its frame at another site sends no request (the page's `frame-src 'self'`) and is put back; a game that keeps reloading itself is stopped after two pins with a message | e2e `three.spec.js`, `play.spec.js`; unit `visibility.test.js`, `sdk-protocol.test.js`; admin queue checked by hand in Chromium |
 | **Share with my classes**: a 'class' level with all-or-some class picking; classmates find it on the class page; canView and every listing agree (matrix test); leaving a class or archiving it stops sharing; approvals cover only their audience and a wider class list waits for a person; teachers take a game off a class (audited) and "Allow again" never re-shares; the Studio says why a class game is only for its builder now | unit `class-sharing.test.js`; e2e `class-sharing.spec.js` (phone 360px, dark, RTL) |
+| **Paid plans (built, off until Stripe keys are set)**: grown-up accounts and family links, family Checkout and extra messages, school plans (Billing tab: pay by card, invoice requests, seats, renewal, the school pool), /admin/billing, and the legal pages (/terms, /refunds, /privacy; Terms linked only for grown-ups and staff, kid pages without plan names); billing off is today's behavior | unit `billing*.test.js`, `family.test.js`, `school-billing.test.js`, `legal.test.js` (fake Stripe through the real SDK, signed webhooks); e2e `billing.spec.js`, `family.spec.js`, `school-billing.spec.js`, `legal.spec.js` |
 | `ADMIN_PASSWORD` applied only when it is new or changed, so a password changed on the Me page survives restarts; a new value resets it | unit `sessions.test.js`; real seed runs on a scratch data folder |
 
 Counts with the live build steps and their review fixes (25 Oct): `npm test` 317 tests, 316 pass, 0 fail, 1 skipped
@@ -78,6 +79,7 @@ design); e2e (`E2E_PORT=5881`) the Builder/Studio specs (`studio-steps`, `studio
 - Chat uses polling every ~3.5 s, not WebSockets.
 - No ads and no creator payouts: removed when Oomba Academy became an ed-tech product. Old ad/earnings tables are left untouched in existing databases.
 - The mock Builder makes real games from templates and real find/replace edits, but it is not creative. The real Builder needs the API key.
+- **Paid-plan words are English only so far**: the keys added for paid plans (school Billing tab, Studio class counter, footer Privacy/Terms, legal pages) are not yet in the other 12 locales; they show in English, marked left to right, and must be translated before `BILLING_PUBLIC`.
 - **Translations are machine-made, not yet checked by native speakers**: all 13 locales are filled (`npm run i18n:check` shows the counts; `en-GB` lists only UK differences). A new English key shows in English in the other languages until it is translated. The Builder replies in the kid's language when an API key is set; the offline mock Builder speaks English.
 - Without an API key, Builder input screening for non-English messages relies on the word lists only (the keyword rules are English).
 

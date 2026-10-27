@@ -9,7 +9,7 @@
 //   /api/billing/school/:id/invoice-request ask for an invoice (D7); .../cancel withdraws it
 //   /api/billing/school/:id/status          the return page's poll after Checkout
 import { Router } from 'express';
-import { html } from '../views/html.js';
+import { html, raw } from '../views/html.js';
 import { isGrownup } from '../auth.js';
 import { config } from '../config.js';
 import { tHtml } from '../i18n/index.js';
@@ -107,7 +107,7 @@ export async function schoolBillingTab(req, s) {
   if (checkoutId && !plan.entitled) {
     return html`<section class="panel" aria-labelledby="bill-h" id="plan"><h2 id="bill-h">${t('school.billing.heading')}</h2>
       <div class="notice" role="status" data-checkout-wait="${checkoutId}" data-status-url="${api}/status" data-back="${tabUrl(s)}" data-done="${t('school.billing.welcome')}">
-        <p style="margin:0"><span aria-hidden="true">⏳</span> ${t('school.billing.waiting')}</p>
+        <p style="margin:0"${t.own('school.billing.waiting') ? '' : raw(' lang="en" dir="ltr"')}><span aria-hidden="true">⏳</span> ${t('school.billing.waiting')}</p>
         <div data-slow hidden><p class="small" style="margin:.5em 0 0">${t('school.billing.slow')}</p>
           <p class="small" style="margin:.5em 0 0"><a href="${tabUrl(s)}">${t('school.billing.back')}</a></p></div></div></section>`;
   }
@@ -139,7 +139,7 @@ export async function schoolBillingTab(req, s) {
     else if (v.unsettled && v.unsettled.payment_pending) parts.push(html`<p class="notice">${t('school.billing.pending')}</p>`);
     else if (v.unsettled) parts.push(html`<p class="notice warn">${t('school.billing.errors.fixPayment')}</p>`);
   }
-  parts.push(html`<p class="small muted">${t('school.billing.daily', { cap: v.cap })}</p>`);
+  if (plan.entitled) parts.push(html`<p class="small muted">${t('school.billing.daily', { cap: v.cap })}</p>`);
   if (price) parts.push(html`<p class="small muted">${t('school.billing.price', { price: f.money(price.unitAmount), min: config.schoolMinSeats, perSeat: config.schoolTurnsPerSeat })}${LESSONS_PER_SEAT() ? ` ${t('school.billing.priceLessons', { count: LESSONS_PER_SEAT() })}` : ''}</p>`);
 
   const head = html`<section class="panel" aria-labelledby="bill-h" id="plan"><h2 id="bill-h">${t('school.billing.heading')}</h2>${parts}
@@ -171,6 +171,7 @@ export async function schoolBillingTab(req, s) {
         <form data-api="${api}/checkout" class="planform" novalidate>
           ${seatsField('seats-pay', Math.max(config.schoolMinSeats, v.students), t('school.billing.seatsHint', { min: config.schoolMinSeats, students: studentsNow }))}
           <ul class="small planterms"><li>${t('school.billing.pay.renew')}</li><li>${t('school.billing.pay.cancel')}</li><li>${t('school.billing.pay.tax')}</li></ul>
+          <p class="small">${tHtml(t, 'school.billing.legal')}</p>
           ${passwordField(req, 'pw-pay')}${err}
           <button class="btn btn-primary" type="submit">${t('school.billing.pay.button')}</button>
           <p class="small muted" style="margin-bottom:0">${t('school.billing.pay.stripe')}</p></form></section>`);
@@ -192,6 +193,7 @@ export async function schoolBillingTab(req, s) {
         <input class="input" id="inv-${name}" name="${name}" type="${type}" maxlength="${max}" ${required ? 'required' : ''} ${auto ? html`autocomplete="${auto}"` : ''} ${ltr ? html`dir="ltr"` : ''} value="${value}"><span class="err" id="inv-${name}-err" aria-live="polite"></span></div>`;
       actions.push(html`<section class="panel" aria-labelledby="inv-h" id="invoice"><details><summary><h3 id="inv-h" style="display:inline">${t('school.billing.invoice.heading')}</h3></summary>
         <p class="small muted">${t('school.billing.invoice.text')}</p>
+        <p class="small">${tHtml(t, 'school.billing.legal')}</p>
         <form class="formgrid" data-api="${api}/invoice-request" data-reload novalidate>
           ${seatsField('inv-seats', Math.max(config.schoolMinSeats, v.students), t('school.billing.seatsHint', { min: config.schoolMinSeats, students: studentsNow }))}
           ${fld('po', t('school.billing.invoice.po'), { req: false, max: 60, ltr: true })}
@@ -211,13 +213,16 @@ export async function schoolBillingTab(req, s) {
     }
   }
 
-  // ---- the daily cap (a school setting)
-  const capForm = html`<section class="panel" aria-labelledby="cap-h" id="cap"><h3 id="cap-h">${t('school.billing.cap.heading')}</h3>
+  // ---- the daily cap (a school setting): only while the school has a plan (without one it changes nothing). The box
+  // shows the cap in force, and nothing below the free daily messages can be set.
+  const capForm = !plan.entitled ? '' : html`<section class="panel" aria-labelledby="cap-h" id="cap"><h3 id="cap-h">${t('school.billing.cap.heading')}</h3>
     <form class="stack" data-api="/api/schools/${s.id}/settings" data-reload data-toast="${t('school.settings.saved')}" novalidate>
       <div class="field"><label for="set-builderDailyCap">${t('school.billing.cap.label')}</label>
-        <input class="input" id="set-builderDailyCap" name="builderDailyCap" type="number" inputmode="numeric" min="1" max="500" step="1" dir="ltr" value="${v.capSetting ?? config.schoolDailyCapDefault}" aria-describedby="cap-hint">
+        <input class="input" id="set-builderDailyCap" name="builderDailyCap" type="number" inputmode="numeric" min="${SC.minDailyCap()}" max="${SC.MAX_DAILY_CAP}" step="1" dir="ltr" value="${v.cap}" aria-describedby="cap-hint">
         <span class="hint" id="cap-hint">${t('school.billing.cap.hint', { free: config.builderDailyTurns, cap: v.cap })}</span><span class="err" id="set-builderDailyCap-err" aria-live="polite"></span></div>
       <div><button class="btn" type="submit">${t('school.save')}</button></div></form></section>`;
 
-  return html`${head}${actions}${capForm}${contact}`;
+  // Until this language has the Billing tab's words, the English fallback reads left to right (also on he/ar pages).
+  const out = html`${head}${actions}${capForm}${contact}`;
+  return t.own('school.billing.heading') ? out : html`<div lang="en" dir="ltr" style="display:contents">${out}</div>`;
 }

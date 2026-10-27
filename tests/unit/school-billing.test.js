@@ -385,6 +385,76 @@ test('fewer students wait for the renewal (next_quantity); the renewal job appli
   assert.equal(audits('billing.seats.renewal', `school:${x.s.id}`).length, 1);
 });
 
+test('the pool grows only on the invoice that covers the seats (poolFor)', () => {
+  const card = { collection_method: 'charge_automatically', pending_update: null };
+  const send = { collection_method: 'send_invoice', pending_update: null };
+  const prev = { pool_quantity: 30, pool_period_start: 1000, latest_invoice_id: 'in_old', latest_invoice_status: 'paid' };
+  // The same paid invoice as last time, more seats (next year's seats applied early, a Dashboard change): no growth.
+  assert.deepEqual(B.poolFor({ plan: 'school', sub: card, li: { id: 'in_old', status: 'paid' }, quantity: 60, periodStart: 1000, prev }), { quantity: 30, periodStart: 1000 });
+  assert.deepEqual(B.poolFor({ plan: 'school', sub: send, li: { id: 'in_old', status: 'paid' }, quantity: 60, periodStart: 1000, prev }), { quantity: 30, periodStart: 1000 });
+  // A new paid invoice (the seat change's): the pool grows to the seats.
+  assert.deepEqual(B.poolFor({ plan: 'school', sub: card, li: { id: 'in_new', status: 'paid' }, quantity: 60, periodStart: 1000, prev }), { quantity: 60, periodStart: 1000 });
+  // The invoice just became paid: grows too. Unpaid, or a pending update: not yet.
+  assert.equal(B.poolFor({ plan: 'school', sub: card, li: { id: 'in_old', status: 'paid' }, quantity: 60, periodStart: 1000, prev: { ...prev, latest_invoice_status: 'open' } }).quantity, 60);
+  assert.equal(B.poolFor({ plan: 'school', sub: card, li: { id: 'in_new', status: 'open' }, quantity: 60, periodStart: 1000, prev }).quantity, 30);
+  assert.equal(B.poolFor({ plan: 'school', sub: { ...card, pending_update: { expires_at: 1 } }, li: { id: 'in_new', status: 'paid' }, quantity: 60, periodStart: 1000, prev }).quantity, 30);
+  // With the invoice's lines, their quantity decides, whatever the sync order.
+  const lines = n => ({ object: 'list', has_more: false, data: [{ quantity: n }] });
+  assert.equal(B.poolFor({ plan: 'school', sub: card, li: { id: 'in_new', status: 'paid', lines: lines(30) }, quantity: 60, periodStart: 1000, prev }).quantity, 30);
+  assert.equal(B.poolFor({ plan: 'school', sub: card, li: { id: 'in_old', status: 'paid', lines: lines(60) }, quantity: 60, periodStart: 1000, prev }).quantity, 60);
+  // Never down within a period.
+  assert.equal(B.poolFor({ plan: 'school', sub: card, li: { id: 'in_new', status: 'paid' }, quantity: 25, periodStart: 1000, prev }).quantity, 30);
+});
+
+test('a new period: until its invoice is paid the old pool carries over and keeps counting from the old start (poolFor)', () => {
+  const card = { collection_method: 'charge_automatically', pending_update: null };
+  const prev = { pool_quantity: 30, pool_period_start: 1000, latest_invoice_id: 'in_old', latest_invoice_status: 'paid' };
+  for (const status of ['open', 'draft']) assert.deepEqual(B.poolFor({ plan: 'school', sub: { ...card, status: 'past_due' }, li: { id: 'in_renew', status }, quantity: 30, periodStart: 2000, prev }), { quantity: 30, periodStart: 1000 }, status);
+  assert.deepEqual(B.poolFor({ plan: 'school', sub: card, li: { id: 'in_old', status: 'paid' }, quantity: 30, periodStart: 2000, prev }), { quantity: 30, periodStart: 1000 }, 'last year\'s invoice pays nothing this year');
+  assert.deepEqual(B.poolFor({ plan: 'school', sub: card, li: { id: 'in_renew', status: 'paid' }, quantity: 26, periodStart: 2000, prev }), { quantity: 26, periodStart: 2000 }, 'paid: the new year starts');
+  assert.deepEqual(B.poolFor({ plan: 'school', sub: card, li: { id: 'in_renew', status: 'open' }, quantity: 20, periodStart: 2000, prev }), { quantity: 20, periodStart: 1000 }, 'never above the new seats');
+  // send_invoice: a finalized renewal invoice starts the new year.
+  assert.deepEqual(B.poolFor({ plan: 'school', sub: { collection_method: 'send_invoice', pending_update: null }, li: { id: 'in_renew', status: 'open' }, quantity: 30, periodStart: 2000, prev }), { quantity: 30, periodStart: 2000 });
+  // A first sync: the period it is in.
+  assert.deepEqual(B.poolFor({ plan: 'school', sub: card, li: { id: 'in_1', status: 'open' }, quantity: 30, periodStart: 2000, prev: null }), { quantity: 0, periodStart: 2000 });
+});
+
+test('more students for next year: the renewal job applies them with no invoice, and the pool waits for the renewal invoice', async () => {
+  const x = await cardSchool({ seats: 30, students: 1 });
+  build(x.kids[0]);
+  let r = await call(x.who, `/api/billing/school/${x.s.id}/seats`, { method: 'POST', body: { seats: 40, when: 'renewal' } });
+  assert.equal(r.status, 200, r.text);
+  fake.update(x.subId, { periodEnd: Date.now() + DAY });
+  await B.syncSubscription(x.subId);
+  assert.deepEqual(await SB.renewalJob(), { applied: 1, errors: 0 });
+  let row = subRow(x.subId);
+  assert.equal(row.quantity, 40); assert.equal(row.pool_quantity, 30, 'not paid for: the pool stays');
+  await B.syncSubscription(x.subId);
+  assert.equal(subRow(x.subId).pool_quantity, 30, 'a later sync changes nothing');
+  assert.equal(SB.poolOf(x.s.id).size, 30 * 4);
+  // The renewal invoice for 40 is paid: the new year's pool.
+  fake.renew(x.subId);
+  await B.syncSubscription(x.subId);
+  row = subRow(x.subId);
+  assert.equal(row.pool_quantity, 40); assert.equal(row.pool_period_start, row.current_period_start);
+  assert.equal(SB.poolOf(x.s.id).used, 0);
+  void r;
+});
+
+test('a card renewal that fails: the past-due school keeps what was left of last year\'s pool, not a fresh one', async () => {
+  const x = await cardSchool({ seats: 25, students: 1 });
+  const before = subRow(x.subId).pool_period_start;
+  for (let i = 0; i < 2; i++) build(x.kids[0]);
+  assert.equal(SB.poolOf(x.s.id).used, 2);
+  fake.renew(x.subId, { paid: false });
+  await B.syncSubscription(x.subId);
+  const row = subRow(x.subId);
+  assert.equal(row.status, 'past_due'); assert.equal(B.ownerPlan('school', x.s.id).entitled, true, 'in grace');
+  assert.equal(row.pool_quantity, 25); assert.equal(row.pool_period_start, before, 'the old start');
+  assert.equal(SB.poolOf(x.s.id).used, 2, 'used is not reset');
+  assert.equal(SB.poolOf(x.s.id).left, 25 * 4 - 2);
+});
+
 test('the renewal reminder: 30 days ahead, next year\'s students proposed from today\'s count', async () => {
   const x = await cardSchool({ students: 28 });
   assert.doesNotMatch((await tab(x.who, x.s)).text, /id="renewal"/);
@@ -455,7 +525,8 @@ test('Create invoice subscription (owner): the Customer with address, contact an
   assert.deepEqual(p.billing_mode, { type: 'flexible' });
   assert.equal(p.automatic_tax, undefined, 'no STRIPE_TAX');
   assert.equal(p.payment_settings, undefined, 'how to pay an invoice is set in the Dashboard');
-  assert.equal(lastPost('/v1/subscriptions').idempotencyKey, `invoice-sub-${req.id}`);
+  assert.equal(lastPost('/v1/subscriptions').idempotencyKey, `invoice-sub-${req.id}-30`, 'the key carries the students');
+  assert.equal(fake.requests.filter(q2 => q2.method === 'POST' && q2.path === '/v1/customers').at(-1).idempotencyKey, `customer-invoice-create-${req.id}-0`, 'and the exemption box');
   // The plan is on (invoice sent, net 30); the pool is the invoiced students.
   const plan = B.ownerPlan('school', x.s.id);
   assert.equal(plan.entitled, true); assert.equal(plan.subscription.collection_method, 'send_invoice');
@@ -483,7 +554,8 @@ test('exempt schools, STRIPE_TAX and an existing Customer: tax_exempt only when 
   const cus = await C.ownerCustomer('school', x.s.id);   // e.g. an earlier card Checkout
   await call(x.who, `/api/billing/school/${x.s.id}/invoice-request`, { method: 'POST', body: requestBody({ po: '' }) });
   config.stripeTax = true;
-  const r = await call(signIn(boss), `/api/admin/billing/requests/${SB.openRequestOf(x.s.id).id}/invoice-subscription`, { method: 'POST', body: { exempt: '1' } });
+  const reqId = SB.openRequestOf(x.s.id).id;
+  const r = await call(signIn(boss), `/api/admin/billing/requests/${reqId}/invoice-subscription`, { method: 'POST', body: { exempt: '1' } });
   assert.equal(r.status, 200, r.text);
   const upd = lastPost(`/v1/customers/${cus}`).params;
   assert.equal(upd.tax_exempt, 'exempt'); assert.equal(upd.email, 'bursar@school.example');
@@ -491,6 +563,7 @@ test('exempt schools, STRIPE_TAX and an existing Customer: tax_exempt only when 
   const p = lastPost('/v1/subscriptions').params;
   assert.equal(p.customer, cus); assert.deepEqual(p.automatic_tax, { enabled: 'true' }); assert.equal(p.metadata.po, undefined);
   assert.equal(JSON.parse(audits('admin.billing.invoice_create', `school:${x.s.id}`)[0].details).exempt, true);
+  assert.equal(lastPost(`/v1/customers/${cus}`).idempotencyKey, `customer-invoice-update-${reqId}-1`, 'the exemption box is in the key');
 });
 
 test('Mark paid by check: paid out of band at Stripe, synced, audited; only our schools\' open invoices', async () => {
@@ -591,16 +664,20 @@ test('Manage billing: the school\'s own Customer, password again, audited; back 
   assert.equal((await call(y.who, `/api/billing/school/${y.s.id}/portal`, { method: 'POST', body: {} })).status, 409, 'no Customer yet');
 });
 
-test('the old school_members-only rule is gone: billing off means the free allowance and no class pool', () => {
+test('billing off is today\'s behavior: a school student has the free allowance, the usual counter and limit message, no class pool', () => {
   config.stripeApiKey = '';
   const x = school({ students: 1 });
   const al = usage.allowanceFor(x.kids[0]);
-  assert.equal(al.source, 'free'); assert.equal(al.classContext, true);
+  assert.equal(al.source, 'free'); assert.equal(al.classContext, false);
+  assert.deepEqual(SB.schoolSide(x.kids[0].id), { school: null, entitled: false, student: false });
+  assert.deepEqual(usage.counter(x.kids[0]), { turnsLeft: 3, freeLeft: 3, extraLeft: null, classContext: false });
+  for (let i = 0; i < 3; i++) build(x.kids[0]);
+  assert.deepEqual(usage.limitKey(usage.allowanceFor(x.kids[0])), ['builder.errors.limit', { count: 3 }]);
   assert.equal(SB.poolOf(x.s.id), null);
   assert.equal(SB.schoolsPaidMonthlyUsd(), 0);
 });
 
-test('invoice requests\' contact details are deleted 2 years after they are closed', async () => {
+test('invoice requests\' contact details, note and PO number are deleted 2 years after they are closed', async () => {
   const x = school();
   await call(x.who, `/api/billing/school/${x.s.id}/invoice-request`, { method: 'POST', body: requestBody() });
   const id = SB.openRequestOf(x.s.id).id;
@@ -609,5 +686,39 @@ test('invoice requests\' contact details are deleted 2 years after they are clos
   await SB.renewalJob();
   const r = q.get('SELECT * FROM billing_requests WHERE id=?', id);
   assert.equal(r.contact_email, null); assert.equal(r.address_json, null); assert.equal(r.contact_name, null);
+  assert.equal(r.note, '', 'the free-text note too'); assert.equal(r.po, '', 'and the PO number (it is on the Stripe invoice)');
   assert.equal(r.seats, 30, 'the numbers stay');
+  // A note alone is cleared too.
+  q.run("UPDATE billing_requests SET note='call 555-0100' WHERE id=?", id);
+  await SB.renewalJob();
+  assert.equal(q.get('SELECT note FROM billing_requests WHERE id=?', id).note, '');
+});
+
+test('invoice requests are per Stripe mode: a test-mode leftover never blocks a live request or shows as open', async () => {
+  const x = school();
+  assert.equal((await call(x.who, `/api/billing/school/${x.s.id}/invoice-request`, { method: 'POST', body: requestBody() })).status, 200);
+  const id = SB.openRequestOf(x.s.id).id;
+  assert.equal(q.get('SELECT livemode FROM billing_requests WHERE id=?', id).livemode, 0);
+  assert.ok(SB.openRequests().some(r => r.id === id));
+  // The key switches to live: the test request is not open here, and a new one can be made.
+  q.run('UPDATE billing_requests SET livemode=1 WHERE id=?', id);   // the same as switching modes, seen from the other side
+  assert.equal(SB.openRequestOf(x.s.id), null);
+  assert.ok(!SB.openRequests().some(r => r.id === id));
+  assert.equal((await call(x.who, `/api/billing/school/${x.s.id}/invoice-request`, { method: 'POST', body: requestBody() })).status, 200);
+  assert.notEqual(SB.openRequestOf(x.s.id).id, id);
+});
+
+test('the daily cap box shows the cap in force, never accepts less than the free messages, and shows only with a plan', async () => {
+  const x = school();
+  let page = (await tab(x.who, x.s)).text;
+  assert.doesNotMatch(page, /id="set-builderDailyCap"/, 'no plan: no cap box');
+  assert.doesNotMatch(page, /Each student and teacher can send up to/);
+  const y = await cardSchool();
+  page = (await tab(y.who, y.s)).text;
+  // The setting (2) is below the free 3: the box says 3, its minimum is 3.
+  assert.match(page, /id="set-builderDailyCap"[^>]*min="3"[^>]*value="3"/);
+  assert.match(page, /Each student and teacher can send up to 3 Builder messages a day/);
+  const bad = await call(y.who, `/api/schools/${y.s.id}/settings`, { method: 'POST', body: { builderDailyCap: 2 } });
+  assert.equal(bad.status, 400); assert.match(bad.text, /from 3 to 500/);
+  assert.equal((await call(y.who, `/api/schools/${y.s.id}/settings`, { method: 'POST', body: { builderDailyCap: 3 } })).status, 200);
 });

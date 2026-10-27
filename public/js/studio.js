@@ -42,6 +42,9 @@ function renderTop() {
 // this month (a number only: no plan or money words on a child's page). In a class context (a school student, or a
 // school's pool paying) only what is left today, never a total, so children in a class are never compared by plan.
 function renderTurns() {
+  // The class wording may still be the English fallback in this language (data-class-en): then it reads left to right.
+  const el = $('#st-turns'), en = S.classContext && el.hasAttribute('data-class-en');
+  if (en) { el.lang = 'en'; el.dir = 'ltr'; } else { el.removeAttribute('lang'); el.removeAttribute('dir'); }
   if (S.classContext) { $('#st-turns').textContent = `🔋 ${t('js.studio.turnsLeftToday', { left: Math.max(0, S.turnsLeft | 0) })}`; return; }
   const free = typeof S.freeLeft === 'number' ? S.freeLeft : S.turnsLeft;
   $('#st-turns').textContent = `🔋 ${t('js.studio.turns', { left: free, total: S.dailyTurns })}${typeof S.extraLeft === 'number' ? ` · ${t('js.studio.extra', { n: S.extraLeft })}` : ''}`;

@@ -971,3 +971,32 @@ extras. Class contexts (a student of any school, or anyone paid by a school) see
 message that names the class; a family child in a school without a plan keeps the family's extras but sees no "+N"
 counter. The paid AI pool adds paid students × `SCHOOL_SEAT_AI_USD` ÷ 12 a month. When a plan ends everyone is back on
 the free allowance; nothing is removed or archived.
+
+**Chunk 5 review fixes.** The pool grows only on the invoice that covers the new seats: the quantity on its lines, or
+else the quantity at the sync where the latest invoice is new or has just become paid (card) / finalized
+(send_invoice). Next year's seats applied before the renewal with no proration, or a Dashboard change whose proration
+waits for the next invoice, grow nothing until that invoice. A new period keeps last year's pool *and its start date*
+until its invoice is paid (card) or finalized (send_invoice), so a past-due card school keeps only what was left of
+last year's messages during its grace days, never a fresh year's. Billing off (no Stripe keys) means no school side at
+all: school students keep today's counter and limit message. The daily cap box shows the cap in force and refuses
+anything below `BUILDER_DAILY_TURNS`; it and the "up to N a day" line show only while the school has a plan.
+`SCHOOL_DAILY_CAP_DEFAULT` stays 30 (spec §8), so with the default 60 free messages the cap in force is 60 until a
+school sets more. Invoice requests are per Stripe mode (`livemode`) like every other billing row, so a test-mode
+leftover never blocks a live request. Create invoice subscription's idempotency keys carry what the owner may change
+between attempts (the students, the exemption box; separate create and update keys for the Customer). The 2-year purge
+of closed invoice requests also clears the note and the PO number.
+
+**Chunk 7: legal pages.** /terms, /refunds and /privacy are always public (also before `BILLING_PUBLIC`, with a "not
+on sale yet" notice), with no prices: anyone can type the address. The footer departs from spec §9 ("/parents only")
+in one way: it links **Privacy** on every page (COPPA wants a prominent link to the privacy notice), and **Terms** only
+for grown-up accounts, school staff and the platform admin (`legalReader`). For kids, students, guests and the
+signed-out, /privacy leaves out the sections that name plans (grown-up accounts, linking, payments, school billing,
+billing retention, where plans are sold); the signed-out also get a "For grown-ups and schools" link to the full text
+(`/privacy?for=grownups`), which grown-ups and staff see by default. /parents gets the D16 plans sentence and links to
+/terms, /refunds and the full /privacy once paid plans are public; /grown-ups, /family's Subscribe box and the school
+Billing tab's Pay by card and invoice panels link /terms and /refunds. Legal text is not counted in the 90% share that
+puts a language in the picker (`UNCOUNTED_PREFIXES`: `info.terms.`, `info.refunds.`, `info.privacy.`), so adding it
+takes no language away; it shows in English, marked `lang="en" dir="ltr"`, until translated. The paid-plan wording on
+/parents and /safety is `paidN` items that replace `pN` once paid plans are public (`familiesOn`). Untranslated
+footer, Studio class counter and Billing tab words get the same `lang="en" dir="ltr"` marking until their translations
+land; the new keys still have to be translated in all 12 locales before `BILLING_PUBLIC` (§9).

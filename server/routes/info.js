@@ -6,14 +6,14 @@
 import { Router } from 'express';
 import { googleEnabled } from '../oidc.js';
 import { html } from '../views/html.js';
-import { page } from '../views/layout.js';
+import { page, legalReader } from '../views/layout.js';
 import { tHtml, dictionary, DEFAULT_LOCALE, fmt } from '../i18n/index.js';
 import { config } from '../config.js';
 import { familiesOn } from '../services/family.js';
 export const router = Router();
 
 /** The legal pages' "Last updated" date (a calendar day, UTC). Change it with every change to their text. */
-export const LEGAL_UPDATED = '2026-10-26';
+export const LEGAL_UPDATED = '2026-10-27';
 /** Where the legal pages send people: CONTACT_EMAIL, else the owner's address. */
 const legalEmail = () => config.contactEmail || 'greg@oomba.ai';
 
@@ -51,7 +51,7 @@ function section(req, prefix, { id, paid = familiesOn(req) } = {}) {
 }
 /** sections: section keys under info.<pageKey>; extra: more sections after them. */
 function info(req, pageKey, emoji, sections, extra = '') {
-  return html`<div class="wrap narrow" style="padding:0"><h1>${emoji} ${req.t(`info.${pageKey}.heading`)}</h1>${sections.map(s => section(req, `info.${pageKey}.${s}`))}${extra}</div>`;
+  return html`<div class="wrap narrow" style="padding:0"><h1>${emoji} ${req.t(`info.${pageKey}.heading`)}</h1>${sections.map(s => section(req, `info.${pageKey}.${s}`, { id: s }))}${extra}</div>`;
 }
 const codeBlock = s => html`<code dir="ltr">${s}</code>`;
 
@@ -64,7 +64,8 @@ const googlePrivacy = req => (googleEnabled() ? html`<section class="panel" id="
 // Family accounts (routes/family.js): /grown-ups is linked from here only, and only while families are on.
 const families = req => (familiesOn(req) ? html`<section class="panel" id="families"><h2>${req.t('info.parents.families.h')}</h2>
   <p>${req.t('info.parents.families.p1')}</p><p><a class="btn" href="/grown-ups">${req.t('info.parents.families.link')}</a></p></section>` : '');
-router.get('/parents', (req, res) => page(req, res, { title: req.t('info.parents.title'), back: '/', description: req.t('info.parents.description'), body: info(req, 'parents', '👪', ['what', 'stored', 'never', 'ai', 'keep', 'friends', 'builder', 'languages'], html`${families(req)}${googlePrivacy(req)}${contact(req)}`) }));
+// Plans (D16), with the legal pages that cover them: only once paid plans are public.
+router.get('/parents', (req, res) => page(req, res, { title: req.t('info.parents.title'), back: '/', description: req.t('info.parents.description'), body: info(req, 'parents', '👪', ['what', ...(familiesOn(req) ? ['plans'] : []), 'stored', 'never', 'ai', 'keep', 'friends', 'builder', 'languages'], html`${families(req)}${googlePrivacy(req)}${contact(req)}`) }));
 router.get('/sdk', (req, res) => {
   const t = req.t;
   // The SDK names (BRB.storage.get...) are code and stay as they are in every language.
@@ -87,7 +88,8 @@ router.get('/sdk', (req, res) => {
 function legal(req, pageKey, emoji, sections) {
   const t = req.t;
   const date = fmt(req.locale || DEFAULT_LOCALE).day(Date.parse(`${LEGAL_UPDATED}T00:00:00Z`), { year: 'numeric', month: 'long', day: 'numeric' });
-  const notYet = familiesOn(req) ? '' : html`<p class="notice legal-notyet"${fallback(t, 'info.legal.notYet')}>${t('info.legal.notYet')}</p>`;
+  // The "not on sale yet" notice is about the billing sections, so not on the /privacy that leaves them out.
+  const notYet = familiesOn(req) || (pageKey === 'privacy' && !fullPrivacy(req)) ? '' : html`<p class="notice legal-notyet"${fallback(t, 'info.legal.notYet')}>${t('info.legal.notYet')}</p>`;
   return html`<div class="wrap narrow legal" style="padding:0"><h1${fallback(t, `info.${pageKey}.heading`)}>${emoji} ${t(`info.${pageKey}.heading`)}</h1>
     <p class="muted legal-updated"${fallback(t, 'info.legal.updated')}>${tHtml(t, 'info.legal.updated', { date: html`<time datetime="${LEGAL_UPDATED}">${date}</time>` })}</p>${notYet}
     ${sections.filter(Boolean).map(s => (typeof s === 'string' ? section(req, `info.${pageKey}.${s}`, { id: s }) : s))}</div>`;
@@ -96,7 +98,14 @@ const legalPage = (pageKey, emoji, sections) => (req, res) => page(req, res, { t
 router.get('/terms', legalPage('terms', '📜', () => ['who', 'accounts', 'schools', 'rules', 'ai', 'games', 'plans', 'ending', 'disclaimers', 'liability', 'disputes', 'changes', 'other', 'contact']));
 router.get('/refunds', legalPage('refunds', '💳', () => ['intro', 'cancel', 'refunds', 'special', 'rights', 'contact']));
 // The site's privacy text (the /parents sections, with the same paid-plan swaps) plus grown-up accounts, payments and
-// school billing.
-router.get('/privacy', legalPage('privacy', '🔒', req => ['intro',
-  ...['stored', 'never', 'ai', 'keep'].map(s => section(req, `info.parents.${s}`, { id: s })), googlePrivacy(req),
-  'grownups', 'linking', 'payments', 'schoolBilling', 'children', 'billingKeep', 'where', 'contact']));
+// school billing. The billing sections name plans, so they show only to grown-up accounts, school staff and the
+// platform admin, or with ?for=grownups. Kids, students and guests (whose footer links here) get the rest; the
+// signed-out also get a "For grown-ups and schools" link to the full text.
+export const fullPrivacy = req => legalReader(req.user) || req.query.for === 'grownups';
+router.get('/privacy', legalPage('privacy', '🔒', req => {
+  const full = fullPrivacy(req);
+  return ['intro',
+    ...['stored', 'never', 'ai', 'keep'].map(s => section(req, `info.parents.${s}`, { id: s })), googlePrivacy(req),
+    ...(full ? ['grownups', 'linking', 'payments', 'schoolBilling'] : []), 'children', ...(full ? ['billingKeep', 'where'] : []),
+    !full && !req.user ? 'more' : null, 'contact'];
+}));

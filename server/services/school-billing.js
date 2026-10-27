@@ -33,8 +33,8 @@ export const RENEWAL_NOTICE_DAYS = 30;
 export const RENEWAL_APPLY_MS = 2 * DAY;
 /** The most students one plan can have (a typo guard). */
 export const MAX_SEATS = 5000;
-/** Invoice requests' contact and address are deleted this long after the request is closed (the address also lives on
- *  the school's Stripe Customer). */
+/** Invoice requests' contact, address, note and PO number are deleted this long after the request is closed (the
+ *  address and PO number also live on the school's Stripe Customer and invoices). */
 export const KEEP_REQUESTS = 2 * YEAR;
 const fail = (code, field) => ({ ok: false, code, ...(field ? { field } : {}) });
 
@@ -80,15 +80,15 @@ export function poolOf(schoolId, t = now()) {
  * -> { school: { id, cap, pool } | null (the entitled school with messages left that pays, the one with most left),
  *      entitled: true when any of their schools has a plan (then no family extras, even with the pool empty),
  *      student: true when they are a student of any live school (a class context: counters show no totals) }
+ * Billing off (no Stripe keys): always none, so school students keep today's counter and limit message (spec §1, §10).
  */
 export function schoolSide(userId) {
   const none = { school: null, entitled: false, student: false };
-  if (!userId) return none;
+  if (!userId || !S.billingOn()) return none;
   const rows = q.all(`SELECT m.role, s.id, s.settings FROM school_members m JOIN schools s ON s.id=m.school_id
     WHERE m.user_id=? AND m.status='active' AND s.archived_at IS NULL`, userId);
   if (!rows.length) return none;
   const student = rows.some(r => r.role === 'student');
-  if (!S.billingOn()) return { ...none, student };
   let best = null, entitled = false;
   for (const r of rows) {
     const pool = poolOf(r.id);
@@ -114,8 +114,8 @@ registerPaidBudget('school', () => schoolsPaidMonthlyUsd());
 // ---------------------------------------------------------------- what the Billing tab shows
 /** Active students of a school (the seats it needs). */
 export const studentCount = schoolId => q.get("SELECT COUNT(*) n FROM school_members WHERE school_id=? AND role='student' AND status='active'", schoolId).n;
-/** The school's open invoice request, or null. */
-export const openRequestOf = schoolId => q.get("SELECT * FROM billing_requests WHERE school_id=? AND status='open' ORDER BY created_at DESC", schoolId) || null;
+/** The school's open invoice request in the current Stripe mode, or null (a test-mode leftover never blocks a live one). */
+export const openRequestOf = schoolId => q.get("SELECT * FROM billing_requests WHERE school_id=? AND status='open' AND livemode=? ORDER BY created_at DESC", schoolId, S.currentLivemode()) || null;
 const parseJson = (s, d) => { try { return s ? JSON.parse(s) : d; } catch { return d; } };
 /** The unpaid invoices of a school's subscription row: [{ id, amount_due, due_date, number, url }]. */
 export const openInvoicesOf = row => parseJson(row && row.open_invoices, []);
@@ -241,9 +241,11 @@ export function changeSeats({ school, user, seats, when = 'now' }) {
 }
 
 /** The renewal job: next year's seats (next_quantity) are set at Stripe just before the renewal, with no proration.
- *  Also deletes invoice requests' contact details KEEP_REQUESTS after they were closed. */
+ *  Also deletes invoice requests' contact details, address, note and PO number KEEP_REQUESTS after they were closed
+ *  (the PO number stays on the Stripe invoice). */
 export async function renewalJob(t = now()) {
-  q.run('UPDATE billing_requests SET contact_name=NULL, contact_email=NULL, address_json=NULL WHERE closed_at IS NOT NULL AND closed_at < ? AND (contact_email IS NOT NULL OR address_json IS NOT NULL)', t - KEEP_REQUESTS);
+  q.run(`UPDATE billing_requests SET contact_name=NULL, contact_email=NULL, address_json=NULL, note='', po='' WHERE closed_at IS NOT NULL AND closed_at < ?
+    AND (contact_name IS NOT NULL OR contact_email IS NOT NULL OR address_json IS NOT NULL OR COALESCE(note, '') != '' OR COALESCE(po, '') != '')`, t - KEEP_REQUESTS);
   if (!S.billingOn()) return { skipped: true };
   const rows = q.all(`SELECT * FROM billing_subscriptions WHERE owner_kind='school' AND plan='school' AND livemode=? AND next_quantity IS NOT NULL
     AND status IN ('active','trialing','past_due') AND cancel_at_period_end=0 AND current_period_end IS NOT NULL AND current_period_end - ? <= ? AND current_period_end > ?`,
@@ -305,8 +307,8 @@ export function cancelRequest(user, school) {
   audit(user.id, 'billing.school.request.cancel', `school:${school.id}`, { request: r.id });
   return { ok: true };
 }
-/** Open requests for /admin/billing, newest first. */
-export const openRequests = () => q.all("SELECT r.*, s.name school_name, s.slug school_slug FROM billing_requests r JOIN schools s ON s.id=r.school_id WHERE r.status='open' ORDER BY r.created_at DESC LIMIT 200")
+/** Open requests in the current Stripe mode for /admin/billing, newest first. */
+export const openRequests = () => q.all("SELECT r.*, s.name school_name, s.slug school_slug FROM billing_requests r JOIN schools s ON s.id=r.school_id WHERE r.status='open' AND r.livemode=? ORDER BY r.created_at DESC LIMIT 200", S.currentLivemode())
   .map(r => ({ ...r, address: parseJson(r.address_json, {}) }));
 /** The owner closes a request without an invoice (handled another way). */
 export function closeRequest(admin, id) {
@@ -345,11 +347,14 @@ export function createInvoiceSubscription(admin, requestId, { seats = null, exem
       ...(exempt ? { tax_exempt: 'exempt' } : {}),
     };
     const mode = S.currentLivemode();
+    // The keys carry what the owner can change between attempts (the exemption box, the number of students), so a
+    // retry with other values is a new request at Stripe rather than an idempotency_error; a plain retry still dedupes.
+    const custKey = verb => `customer-invoice-${verb}-${r.id}-${exempt ? 1 : 0}`;
     let customer = B.customerOf('school', school.id);
-    if (customer) await S.updateCustomer(customer, customerParams, `customer-invoice-${r.id}`);
+    if (customer) await S.updateCustomer(customer, customerParams, custKey('update'));
     else {
       const { invoice_settings: is, ...create } = customerParams;
-      const c = await S.createCustomer({ ...create, ...(r.po ? { invoice_settings: is } : {}) }, `customer-invoice-${r.id}`);
+      const c = await S.createCustomer({ ...create, ...(r.po ? { invoice_settings: is } : {}) }, custKey('create'));
       B.linkCustomer(c.id, 'school', school.id, mode);
       customer = B.customerOf('school', school.id) || c.id;
     }
@@ -362,7 +367,7 @@ export function createInvoiceSubscription(admin, requestId, { seats = null, exem
       billing_mode: { type: 'flexible' },
     };
     if (config.stripeTax) params.automatic_tax = { enabled: true };
-    const sub = await S.createSubscription(params, `invoice-sub-${r.id}`);
+    const sub = await S.createSubscription(params, `invoice-sub-${r.id}-${n}`);
     q.run("UPDATE billing_requests SET status='done', stripe_subscription_id=?, closed_at=?, closed_by=? WHERE id=?", sub.id, now(), admin.id, r.id);
     audit(admin.id, 'admin.billing.invoice_create', `school:${school.id}`, { request: r.id, subscription: sub.id, seats: n, exempt: !!exempt });
     await B.syncSubscription(sub.id);

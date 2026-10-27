@@ -407,6 +407,11 @@
         "p1": "A free website where kids play web games and build their own by describing them to an AI Builder. No downloads, no purchases, no loot boxes, no in-game money that costs money.",
         "paid1": "A website where kids play web games and build their own by describing them to an AI Builder. Playing is free, and so is a daily allowance of Builder messages. Families and schools can buy extra Builder messages. There are no in-game purchases, no loot boxes and no in-game money that costs money."
       },
+      "plans": {
+        "h": "Plans",
+        "p1": "Free to build, with extra Builder messages for families and schools.",
+        "p2": "Plans and payments are covered by our <a href=\"/terms\">Terms of Service</a>, our <a href=\"/refunds\">Refund and Cancellation Policy</a> and our <a href=\"/privacy?for=grownups\">Privacy Policy</a>."
+      },
       "stored": {
         "h": "What we keep",
         "p1": "Own accounts keep a made-up name, a password (stored scrambled) and what your child does here: the games they make, their chats with the Builder and any pictures or files they add, saves, scores, ratings, favorites, friends, chat messages, a profile photo if they upload one, and settings such as language and theme. Guest play keeps a made-up name, saves, scores, ratings and favorites.",
@@ -739,9 +744,9 @@
         "li2": "your card details, or your Apple Pay or Google Pay wallet;",
         "li3": "your billing address (needed for sales tax and to check that family plans are for US families);",
         "li4": "information Stripe uses to prevent fraud, such as details about your device and connection.",
-        "p3": "<b>What we send to Stripe:</b> a random family or school number so we can match the payment to your plan. We do <b>not</b> send Stripe your name, your child's name or username, or anything about how your child uses the site.",
+        "p3": "<b>What we send to Stripe for a family plan:</b> a random family number so we can match the payment to your plan. We do <b>not</b> send Stripe your name, your child's name or username, or anything about how your child uses the site. For schools, see School billing below.",
         "p4": "<b>What we get back and keep:</b> Stripe's customer and subscription numbers, the plan, status (active, past due, cancelled), dates, amounts, seat count, and whether a payment was paid, failed, refunded or disputed.",
-        "p5": "<b>What we never see or keep:</b> your full card number or security code. Our own database does not store your email or billing address. Stripe's messages to our server can include them, but we don't save them.",
+        "p5": "<b>What we never see or keep:</b> your full card number or security code. For a family plan, our own database does not store your email or billing address. Stripe's messages to our server can include them, but we don't save them. A school's invoice request is different: see School billing below.",
         "p6": "<b>Who on our side can see more:</b> the owner can see your email, billing address, receipts and the last 4 digits of your card in Stripe's dashboard. We use them only to run your plan: to answer your questions, give refunds, and tell you about important changes to your plan, price or our terms. The site has no email system of its own, so these notices are sent from <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a> to the email Stripe holds. We never use it for marketing.",
         "p7": "<b>Fraud and disputes:</b> if your bank reports a payment as disputed or likely fraud, Stripe tells us. We end the plan and keep a record of what happened.",
         "p8": "<b>Sales tax:</b> Stripe calculates sales tax from your billing address where we are required to collect it.",
@@ -750,10 +755,11 @@
       "schoolBilling": {
         "h": "School billing",
         "li1": "<b>Who sees it:</b> only the school's admins and our team. Teachers and students never see billing.",
-        "li2": "<b>What we keep when a school asks for an invoice:</b> the number of seats, purchase order number, the billing contact's name and email, the school's billing address, whether the school says it is tax-exempt, and any note. This is also saved with Stripe, which sends the invoices.",
-        "li3": "<b>How long:</b> the contact's name, email and the address in our database are deleted <b>2 years</b> after the request is closed. Stripe keeps the school's address with its invoices (see below).",
-        "li4": "<b>Seats</b> are counted from the number of active students. Billing does not use students' names or work.",
-        "li5": "<b>Families never see class activity:</b> a grown-up linked to a student sees only that student's family extra messages."
+        "li2": "<b>What we keep when a school asks for an invoice:</b> the number of seats, purchase order number, the billing contact's name and email, the school's billing address, whether the school says it is tax-exempt, and any note.",
+        "li3": "<b>What goes to Stripe:</b> when we create the school's invoices, the school's name, the billing contact's email, the billing address and the purchase order number are saved with Stripe, which sends the invoices. The contact's name, the note and the tax-exempt answer stay only with us. Nothing is sent until we create the invoices. A school that pays by card types its name and billing address on Stripe's page instead.",
+        "li4": "<b>How long:</b> the contact's name and email, the address, the note and the purchase order number in our database are deleted <b>2 years</b> after the request is closed. Stripe keeps the school's address and purchase order number with its invoices (see below).",
+        "li5": "<b>Seats</b> are counted from the number of active students. Billing does not use students' names or work.",
+        "li6": "<b>Families never see class activity:</b> a grown-up linked to a student sees only that student's family extra messages."
       },
       "children": {
         "h": "Children's data",
@@ -770,12 +776,16 @@
         "li3": "<b>Ended links:</b> deleted 90 days after they end (a record with account numbers only stays in our action log).",
         "li4": "<b>Link reports:</b> kept while open, then 1 year after they are closed.",
         "li5": "<b>Plan and payment records</b> (Stripe numbers, amounts, dates) and Stripe's invoices: 7 years, for tax law, even after an account is deleted.",
-        "li6": "<b>School invoice request contact details and address:</b> 2 years after the request is closed.",
+        "li6": "<b>School invoice requests' contact details, address, note and purchase order number:</b> 2 years after the request is closed.",
         "li7": "<b>Grown-up account, family and links:</b> until you ask us to delete the account. We cancel any plan first."
       },
       "where": {
         "h": "Where this applies",
         "p1": "Family plans are for US families for now."
+      },
+      "more": {
+        "h": "For grown-ups and schools",
+        "p1": "Grown-up accounts, family links, payments, school billing and how long we keep billing records are explained in <a href=\"/privacy?for=grownups\">the full privacy policy for grown-ups and schools</a>."
       },
       "contact": {
         "h": "Questions",
@@ -2118,7 +2128,7 @@
       "isStudent": "{name} is a student here, so they can't be added as staff.",
       "tickStudents": "Tick at least one student.",
       "badZone": "Pick a time zone from the list.",
-      "badCap": "Type a whole number from 1 to {max}."
+      "badCap": "Type a whole number from {min} to {max}."
     },
     "classTabs": {
       "lessons": "Lessons",
@@ -2244,7 +2254,8 @@
         "country": "Use the 2-letter country code, like US.",
         "noRequest": "There is no open request.",
         "noCustomer": "Your school has no billing account yet."
-      }
+      },
+      "legal": "School plans are covered by our <a href=\"/terms\">Terms of Service</a>, our <a href=\"/refunds\">Refund and Cancellation Policy</a> and our <a href=\"/privacy#schoolBilling\">Privacy Policy</a>."
     }
   },
   "lessons": {
@@ -2845,7 +2856,8 @@
         "noPrice": "Family plans can't be bought right now. Please try again later.",
         "noCustomer": "There is nothing to manage yet: start a plan first.",
         "stripe": "We couldn't reach our payment provider. Please try again in a minute."
-      }
+      },
+      "legal": "Plans are covered by our <a href=\"/terms\">Terms of Service</a> and our <a href=\"/refunds\">Refund and Cancellation Policy</a>."
     }
   }
 }

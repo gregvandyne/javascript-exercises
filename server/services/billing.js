@@ -191,16 +191,25 @@ async function productPlansFor(price) {
  * A school plan's pool (docs/decisions.md "Paid plans" §5): the seats whose Builder messages the school may use this
  * period. It is the highest quantity paid for (a card school: the latest invoice is paid; a seat increase waits for its
  * payment, pending_if_incomplete) or invoiced (a send_invoice school: the latest invoice is finalized, open or paid) in
- * the period, and never goes down within it. A new period starts from the seats paid for it; until its invoice is
- * paid, the old pool carries over (never above the new quantity). -> { quantity, periodStart }
+ * the period, and never goes down within it. Only the invoice that covers a quantity raises the pool to it: the
+ * quantity on its lines when Stripe sent them, else the quantity at the sync where that invoice is new or has just
+ * become paid/finalized. A quantity changed with no invoice (next year's seats applied before the renewal with no
+ * proration, or a Dashboard change whose proration waits for the next invoice) leaves the pool as it was.
+ * A new period starts from the seats paid for it; until its invoice is paid (card) or finalized (send_invoice), the
+ * old pool carries over (never above the new quantity) and keeps counting from the old period's start, so the school
+ * keeps only what was left of last year's pool. -> { quantity, periodStart }
  */
 export function poolFor({ plan, sub, li, quantity, periodStart, prev }) {
   if (plan !== 'school') return { quantity: prev?.pool_quantity ?? 0, periodStart: prev?.pool_period_start ?? null };
   const samePeriod = prev && prev.pool_period_start != null && prev.pool_period_start === periodStart;
   const carried = samePeriod ? (prev.pool_quantity || 0) : Math.min(prev?.pool_quantity || 0, quantity);
   const invoiced = sub.collection_method === 'send_invoice' ? ['open', 'paid'].includes(li?.status) : li?.status === 'paid';
-  const paid = invoiced && !sub.pending_update ? quantity : 0;
-  return { quantity: Math.max(carried, paid), periodStart };
+  const lines = Array.isArray(li?.lines?.data) && li.lines.data.length && !li.lines.has_more ? li.lines.data : null;
+  const fresh = !prev || (li?.id ?? null) !== (prev.latest_invoice_id ?? null) || (li?.status ?? null) !== (prev.latest_invoice_status ?? null);
+  const covered = lines ? Math.min(quantity, Math.max(0, ...lines.map(l => Number(l.quantity) || 0))) : fresh ? quantity : 0;
+  const paid = invoiced && !sub.pending_update ? covered : 0;
+  if (samePeriod || paid) return { quantity: Math.max(carried, paid), periodStart };
+  return { quantity: carried, periodStart: prev?.pool_period_start ?? periodStart };
 }
 
 /** Writes one fetched subscription. Synchronous: runs inside tx(). risk: { flag, paymentIntent, cancelled } from

@@ -409,7 +409,7 @@ router.get('/admin/billing', (req, res) => {
   </section>
   <section class="panel" id="requests"><h2>School invoice requests</h2>
     ${requests.length ? html`<div class="stack">${requests.map(r => html`<div class="panel" style="margin:0">
-      <p style="margin-top:0"><b><a href="/school/${r.school_slug}?tab=billing">${r.school_name}</a></b> · ${int(r.seats)} students · asked ${when(r.created_at)}${r.livemode !== lm ? html` <span class="chip-s warn">other Stripe mode</span>` : ''}</p>
+      <p style="margin-top:0"><b><a href="/school/${r.school_slug}?tab=billing">${r.school_name}</a></b> · ${int(r.seats)} students · asked ${when(r.created_at)}</p>
       <div class="tblwrap"><table class="tbl small"><tbody>
         <tr><th scope="row">PO number</th><td>${r.po || '–'}</td></tr>
         <tr><th scope="row">Billing contact</th><td>${r.contact_name || '–'} · <span dir="ltr">${r.contact_email || '–'}</span></td></tr>

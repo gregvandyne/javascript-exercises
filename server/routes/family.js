@@ -178,7 +178,8 @@ router.get('/grown-ups', on, async (req, res) => {
     <section class="panel"><h2>${t('family.landing.price.h')}</h2>
       ${prices ? html`<p>${t('family.landing.price.p1', { monthly: f.money(prices.monthly), yearly: f.money(prices.yearly) })}</p>` : ''}
       ${prices && onSale(u) ? '' : html`<p>${t('family.landing.price.soon')}</p>`}
-      <p class="muted">${t('family.landing.price.us')}</p></section>
+      <p class="muted">${t('family.landing.price.us')}</p>
+      <p class="small">${tHtml(t, 'family.billing.legal')}</p></section>
     <section class="panel"><h2>${t('family.landing.how.h')}</h2>
       <ol class="steps"><li>${t('family.landing.how.p1')}</li><li>${tHtml(t, 'family.landing.how.p2')}</li><li>${t('family.landing.how.p3')}</li></ol></section>
     <section class="panel faq"><h2>${t('family.landing.faq.h')}</h2>
@@ -368,7 +369,7 @@ async function planPanel(req, fam, plan, kids) {
           <li>${limitsText(t)}</li>
           <li>${t('family.billing.terms.tax')}</li>
         </ul>
-        ${config.termsPublished ? html`<p class="small">${tHtml(t, 'family.billing.terms.agree', { terms: html`<a href="/terms">${t('family.billing.terms.link')}</a>` })}</p>` : ''}
+        ${config.termsPublished ? html`<p class="small">${tHtml(t, 'family.billing.terms.agree', { terms: html`<a href="/terms">${t('family.billing.terms.link')}</a>` })}</p>` : html`<p class="small">${tHtml(t, 'family.billing.legal')}</p>`}
         ${passwordField(req, 'pw-checkout')}
         <p class="err form-err" aria-live="polite"></p>
         <div class="row planbtns">

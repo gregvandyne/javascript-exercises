@@ -125,7 +125,7 @@ router.get('/school/:slug', requireUser, async (req, res) => {
   const member = staffHere(req.user, s.id);
   const body = html`
   <div class="pagehead"><h1>🏫 ${s.name}</h1></div>
-  <nav class="tabs" aria-label="${s.name}">${tabs.map(k => html`<a href="/school/${s.slug}?tab=${k}" ${k === tab ? raw('aria-current="page"') : ''}>${t(`school.tabs.${k}`)}</a>`)}</nav>
+  <nav class="tabs" aria-label="${s.name}">${tabs.map(k => html`<a href="/school/${s.slug}?tab=${k}" ${k === tab ? raw('aria-current="page"') : ''}${t.own(`school.tabs.${k}`) ? '' : raw(' lang="en" dir="ltr"')}>${t(`school.tabs.${k}`)}</a>`)}</nav>
   ${content}`;
   page(req, res, { title: s.name, active: member ? 'classes' : S.isSchoolStaff(req.user) ? 'me' : 'schools', body, head: CSS, scripts: tab === 'billing' ? ['/js/schools.js', '/js/family.js'] : ['/js/schools.js'],
     back: member ? '/teach' : '/admin/schools', backLabel: member ? t('school.teach.title') : t('nav.schools') });
@@ -257,7 +257,7 @@ router.post('/api/schools/:id/settings', requireUser, (req, res) => {
   // The daily Builder cap (school plans) is set on the Billing tab, so only where that tab is.
   if (x.builderDailyCap !== undefined && !billingTabOn(req, s)) return no(req, res);
   const r = S.updateSchool(req.user, s.id, { name: x.name, settings: { teachersCreateClasses: x.teachersCreateClasses !== undefined ? bool(x.teachersCreateClasses) : undefined, allowOwnAccounts: x.allowOwnAccounts !== undefined ? bool(x.allowOwnAccounts) : undefined, chat: x.chat, publishing: x.publishing, timeZone: typeof x.timeZone === 'string' ? x.timeZone : undefined, builderDailyCap: x.builderDailyCap } });
-  if (!r.ok && r.code === 'badCap') return fieldErr(res, 'builderDailyCap', req.t('school.errors.badCap', { max: S.MAX_DAILY_CAP }));
+  if (!r.ok && r.code === 'badCap') return fieldErr(res, 'builderDailyCap', req.t('school.errors.badCap', { min: S.minDailyCap(), max: S.MAX_DAILY_CAP }));
   send(req, res, r);
 });
 router.post('/api/schools/:id/staff', requireUser, rateLimit('school-add', 120, 3600e3), (req, res) => {

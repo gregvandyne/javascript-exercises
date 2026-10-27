@@ -3,7 +3,7 @@
 /terms, /refunds and /privacy (server/routes/info.js, text in `info.terms.*`, `info.refunds.*`, `info.privacy.*` and the
 reused `info.parents.*` sections) are on the site for everyone, also before `BILLING_PUBLIC`. They were made from the
 drafts terms.md, refunds.md and privacy-payments.md. The public text has no drafting markers; every marker from the
-drafts is listed here with what the page says today. **Last updated: 2026-10-26** (`LEGAL_UPDATED` in
+drafts is listed here with what the page says today. **Last updated: 2026-10-27** (`LEGAL_UPDATED` in
 server/routes/info.js; change it with every change to the text).
 
 ## Turning on TERMS_PUBLISHED
@@ -39,7 +39,7 @@ Placeholders filled with neutral wording (the owner confirms or replaces them):
 | Draft | Public text today |
 |---|---|
 | Legal entity name and mailing address (terms §1, §14; refunds and privacy contact) | "Oomba Academy" and the contact email (`CONTACT_EMAIL`, else greg@oomba.ai). No postal address. |
-| Effective date / Last updated | One "Last updated" date, 2026-10-26, on all three pages. No separate effective date. |
+| Effective date / Last updated | One "Last updated" date, 2026-10-27, on all three pages. No separate effective date. |
 | Governing law state, venue county (terms §11) | "the laws of the US state where Oomba Academy is based", "the courts where Oomba Academy is based" |
 | DMCA designated agent (terms §6.3) | Sentence dropped; infringement reports go to the contact email. Register an agent. |
 | Check mailing address (terms §7.3) | "by check (email us for the mailing address)" |
@@ -50,8 +50,10 @@ Placeholders filled with neutral wording (the owner confirms or replaces them):
 
 Wording: terms §4 says "adult content" for the draft's "sexual content" (the site's word filter checks every English string).
 
-Prices: terms §7.2 and §7.3 no longer show $7.99 / $69 / $20 / $500 (the draft's own condition: /terms is now linked
-from every page's footer, kid pages included, and children never see prices). They say "at the price shown to the
+Prices: terms §7.2 and §7.3 no longer show $7.99 / $69 / $20 / $500 (children never see prices, and anyone can type
+/terms). The footer links /terms only for grown-up accounts and school staff; kids, students, guests and the
+signed-out get a Privacy link to /privacy without its billing sections (no plan names), and /parents links /terms once
+paid plans are public. They say "at the price shown to the
 grown-up before they buy" and "the price is shown to the school's admins on the school's Billing tab". The liability cap
 says "100 US dollars".
 
@@ -106,7 +108,7 @@ Draft pages to review: terms.md, refunds.md, privacy-payments.md. Every `[LEGAL 
 16. **Card retry window vs. 7-day grace.** Stripe may keep retrying a failed card after our 7-day grace ends access. Either set Stripe retries to end within 7 days or confirm the terms cover a late successful charge.
 17. **Refund rule.** Spec D10 (14 days after a first payment or yearly renewal) differs from the launch brief (14 days after **any** payment). Pick one; check any state refund-posting laws. Also decide refunds when we terminate an account and on shutdown (terms.md proposes pro-rata refunds when it isn't the customer's fault).
 18. **No outbound email.** Price-change, terms-change and ARL notices need to reach the payer. Confirm that sending by hand from greg@oomba.ai to the email Stripe holds is acceptable, and say so in the privacy text.
-19. **Kids and marketing.** Children never see prices (spec §4.1). /terms and /refunds show prices, so keep them off kid pages and out of the kid-page crawl, or remove the prices from /terms.
+19. **Kids and marketing.** Children never see prices or plan names (spec §4.1). Done: /terms and /refunds show no prices, and neither is linked from a page a child's account sees (the footer's Terms link is for grown-up accounts and school staff only; /parents links them once plans are on sale). /privacy shows a child's account only the sections without plan names. The lawyer confirms that /parents (linked from every footer, as before) may name the plans in adult text (D16), and that the kid-facing /privacy, with a "For grown-ups and schools" pointer for the signed-out, is a prominent enough notice link for COPPA.
 
 ### Tax and payments
 

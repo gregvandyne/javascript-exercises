@@ -147,6 +147,10 @@ nano .env                                  # Ctrl+O to save, Ctrl+X to quit
 | `CONTACT_EMAIL`, `AI_DAILY_BUDGET_USD`, `AI_MONTHLY_BUDGET_USD` | the same as on Render today (`render.yaml`: `greg@oomba.ai`, `5`, `150`) |
 | `SHOTS_TOKEN` | output of `openssl rand -hex 32` (a new one: it is only shared between the app and the screenshot worker) |
 | `LITESTREAM_REPLICA_URL` | `abs://oombabackups123@litestream/oomba` (storage account `@` container `/` folder). Leave `LITESTREAM_AZURE_SAS_TOKEN` empty: Litestream uses the VM's managed identity (1.2). Leave the URL empty while you prepare a move from Render; see section 9. |
+| `STRIPE_API_KEY`, `STRIPE_WEBHOOK_SECRET` | empty until billing goes live (README "Paid plans"): a **restricted** `rk_live_…` key and the live webhook endpoint's `whsec_…` secret. Both are secrets (section 5). Unset, billing is off and the site works as before. `STRIPE_WEBHOOK_SECRET_OLD` only while rotating. |
+| `STRIPE_LIVE_OK`, `STRIPE_TAX`, `BILLING_PUBLIC`, `BILLING_PREVIEW_TOKEN` | off / empty until the going-live checklist is done (`BILLING_PREVIEW_TOKEN` is a secret) |
+| `STRIPE_PMC_FAMILY`, `STRIPE_PMC_SCHOOL` | the `pmc_…` ids of the "Family" and (optional) "School" payment method configurations in the Stripe Dashboard |
+| `SCHOOL_TURNS_PER_SEAT`, `SCHOOL_MIN_SEATS`, `SCHOOL_DAILY_CAP_DEFAULT`, `SCHOOL_SEAT_AI_USD`, `SCHOOL_INVOICE_GRACE_DAYS` | leave unset for the README defaults (school plans: messages per paid student a year, the fewest students, the default daily cap per person, the AI dollars a paid student adds a year, days an overdue invoice keeps the plan) |
 
 Keep the master copy of the secrets in Key Vault (section 5).
 
@@ -248,8 +252,9 @@ zero, pick a D-series size. Growing the disk: stop the VM, *Disks → the data d
 
 ## 5. Secrets (Key Vault)
 
-The secrets are `SESSION_SECRET`, `ADMIN_PASSWORD`, `ANTHROPIC_API_KEY` and `SHOTS_TOKEN` (the backups need no
-secret: the VM's managed identity is used). On the VM they live only in
+The secrets are `SESSION_SECRET`, `ADMIN_PASSWORD`, `ANTHROPIC_API_KEY` and `SHOTS_TOKEN`, and once billing is on
+`STRIPE_API_KEY`, `STRIPE_WEBHOOK_SECRET` and `BILLING_PREVIEW_TOKEN` (the backups need no secret: the VM's managed
+identity is used). On the VM they live only in
 `deploy/.env` (mode 600). Keep the master copy in Key
 Vault so a lost VM doesn't lose them:
 
@@ -257,7 +262,8 @@ Vault so a lost VM doesn't lose them:
    role *Key Vault Secrets Officer* on it, and the VM's managed identity *Key Vault Secrets User*
    (**Access control (IAM) → Add role assignment**).
 2. **Secrets → Generate/Import** one secret per value. Key Vault names allow dashes but not underscores:
-   `SESSION-SECRET`, `ADMIN-PASSWORD`, `ANTHROPIC-API-KEY`, `SHOTS-TOKEN`.
+   `SESSION-SECRET`, `ADMIN-PASSWORD`, `ANTHROPIC-API-KEY`, `SHOTS-TOKEN` (and with billing `STRIPE-API-KEY`,
+   `STRIPE-WEBHOOK-SECRET`, `BILLING-PREVIEW-TOKEN`).
 3. To rebuild the secrets on a new VM (install the CLI once: `curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash`):
    ```bash
    az login --identity
@@ -266,6 +272,7 @@ Vault so a lost VM doesn't lose them:
      echo "$(echo $s | tr - _)=$(az keyvault secret show --vault-name oomba-kv-<unique> --name $s --query value -o tsv)"
    done > secrets.env
    # then copy those lines into .env (or add "- secrets.env" under env_file for the app in docker-compose.yml)
+   # with billing on, add STRIPE-API-KEY STRIPE-WEBHOOK-SECRET BILLING-PREVIEW-TOKEN to the list above
    ```
 
 `REQUIRE_SESSION_SECRET=1` (set in `.env.example`) makes the app refuse to start if `SESSION_SECRET` went missing,

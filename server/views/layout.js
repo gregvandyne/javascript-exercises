@@ -23,6 +23,11 @@ const NAV = [
 ];
 export const VERSION = Date.now().toString(36); // cache-buster per boot
 
+/** Grown-up accounts, school staff and the platform admin: the readers of /terms, /refunds and the billing parts of
+ *  /privacy. Kids, students, guests and the signed-out see neither a Terms link nor plan names (docs/decisions.md
+ *  "Paid plans" §4.1, §9): their footer's Privacy link opens /privacy without the billing sections. */
+export const legalReader = u => !!u && !u.is_guest && (isGrownup(u) || isPlatformAdmin(u) || isSchoolStaff(u));
+
 /** URL of the current page with ?lang=<code> or ?theme=<theme> (the server stores the choice and redirects back without it). */
 function choiceHref(req, name, value) {
   const u = new URL(req.originalUrl || '/', 'http://x');
@@ -99,7 +104,9 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
     ${navItems.map(([k, href, emo]) => html`<a class="tab" href="${href}" ${cur(k)}><span class="emo" aria-hidden="true">${emo}</span>${t(`nav.${k}`)}${badge(k)}</a>`)}
     ${grownup ? '' : html`<a class="tab" href="${meHref}" ${cur('me')}>${u && u.photo_at ? html`<span class="emo">${avatar(u, 28)}</span>` : html`<span class="emo" aria-hidden="true">${u ? u.avatar : '🙂'}</span>`}${u ? t('nav.me') : signIn}${badge('me')}</a>`}
   </nav>`;
-  const foot = bare ? '' : html`<footer class="foot"><span>${t('layout.footer.tagline')}</span><a href="/safety">${t('layout.footer.safety')}</a><a href="/parents">${t('layout.footer.parents')}</a>${config.contactEmail ? html`<a href="/parents#contact">${t('layout.footer.contact')}</a>` : ''}${grownup ? '' : html`<a href="/sdk">${t('layout.footer.builders')}</a>`}<a href="/terms">${t('layout.footer.terms')}</a><a href="/privacy">${t('layout.footer.privacy')}</a><a href="${grownup ? '/family#language' : '/me#language'}" class="foot-lang"><span aria-hidden="true">🌐</span> ${info.name}</a></footer>`;
+  // A footer word still in English on this language's page reads left to right.
+  const fb = key => (t.own(key) ? '' : raw(' lang="en" dir="ltr"'));
+  const foot = bare ? '' : html`<footer class="foot"><span>${t('layout.footer.tagline')}</span><a href="/safety">${t('layout.footer.safety')}</a><a href="/parents">${t('layout.footer.parents')}</a>${config.contactEmail ? html`<a href="/parents#contact">${t('layout.footer.contact')}</a>` : ''}${grownup ? '' : html`<a href="/sdk">${t('layout.footer.builders')}</a>`}${legalReader(u) ? html`<a href="/terms"${fb('layout.footer.terms')}>${t('layout.footer.terms')}</a>` : ''}<a href="/privacy"${fb('layout.footer.privacy')}>${t('layout.footer.privacy')}</a><a href="${grownup ? '/family#language' : '/me#language'}" class="foot-lang"><span aria-hidden="true">🌐</span> ${info.name}</a></footer>`;
   const backHtml = back ? html`<a class="backlink" href="${back}"><span class="flip" aria-hidden="true">←</span> ${backLabel || t('layout.back')}</a>` : '';
   // A sign-in that just ended (timed out, or ended on another device) is mentioned once, on whatever page comes next; the
   // sign-in page says it itself.

@@ -166,7 +166,7 @@ router.get('/studio/:id', requireAccount, (req, res) => {
       <section class="st-chat" aria-label="${t('studio.chat.label')}">
         <div class="st-chat-head">
           <span class="st-bot" aria-hidden="true">🤖</span><b>${t('studio.chat.builder')}</b>
-          <span class="st-turns" id="st-turns"></span>
+          <span class="st-turns" id="st-turns"${t.own('js.studio.turnsLeftToday') ? '' : html` data-class-en`}></span>
           <button class="st-pro" type="button" id="st-pro" aria-pressed="false" title="${t('studio.chat.proTitle')}">✨ ${t('studio.chat.pro')}</button>
         </div>
         <div class="st-log" id="st-log" role="log" aria-live="polite"></div>
