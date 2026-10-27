@@ -67,22 +67,26 @@ async function makeTester(browser, name) {
   await a.goto(`/admin?tab=users&username=${name}`);
   await Promise.all([a.waitForResponse(r => r.url().includes('/billing-tester') && r.ok()), a.locator('[data-act="tester"]').click()]);
 }
-/** From /plans, signed out: pick a plan, make a grown-up account (the plan comes along), become a billing tester,
- *  pay with the password on /family and the fake Stripe page. -> { mum, mumName } on /family after paying */
+/** From /plans, signed out: the test key means "not on sale" to a visitor (said at the top, "Coming soon" on the cards),
+ *  so make a grown-up account from there, become a billing tester, pick the plan on /plans, and pay with the password
+ *  on /family and the fake Stripe page. -> { mum, mumName } on /family after paying */
 async function buyFromPlans(browser, plan = 'family', interval = 'year') {
   const mum = await person(browser);
   await mum.goto('/plans');
-  if (interval === 'year') await Promise.all([mum.waitForURL(/interval=year/), mum.locator('.plan-seg a', { hasText: 'Yearly' }).click()]);
-  const name = plan === 'basic' ? 'Choose Basic' : 'Choose Family';
-  await Promise.all([mum.waitForURL(/\/grown-ups\/signup\?plan=/), mum.locator(`#plan-${plan} a`, { hasText: name }).click()]);
-  await expect(mum.locator('main')).toContainText(`You picked the ${plan === 'basic' ? 'Basic' : 'Family'} plan.`);
+  await expect(mum.locator('#soon')).toContainText("Basic and Family plans can't be bought yet.");
+  await expect(mum.locator(`#plan-${plan} .plan-soon`)).toHaveText('Coming soon');
+  await expect(mum.locator('main a', { hasText: /Choose (Basic|Family)/ })).toHaveCount(0);
+  await Promise.all([mum.waitForURL(/\/grown-ups\/signup$/), mum.locator('#soon a', { hasText: 'Make a grown-up account' }).click()]);
   const mumName = uniq('Mum');
   await mum.fill('#username', mumName); await mum.fill('#password', PW); await mum.fill('#confirm', PW); await mum.check('#adult');
-  await Promise.all([mum.waitForURL(new RegExp(`/family\\?plan=${plan}&interval=${interval}`)), mum.click('button[type=submit]')]);
-  // Test mode: not on sale until the admin marks this account as a billing tester.
-  await expect(mum.locator('#plan')).toContainText("aren't on sale yet");
+  await Promise.all([mum.waitForURL(/\/family$/), mum.click('button[type=submit]')]);
+  // Test mode: on sale once the admin marks this account as a billing tester.
   await makeTester(browser, mumName);
-  await mum.reload();
+  await mum.goto('/plans');
+  await expect(mum.locator('#soon')).toHaveCount(0);
+  if (interval === 'year') await Promise.all([mum.waitForURL(/interval=year/), mum.locator('.plan-seg a', { hasText: 'Yearly' }).click()]);
+  const name = plan === 'basic' ? 'Choose Basic' : 'Choose Family';
+  await Promise.all([mum.waitForURL(new RegExp(`/family\\?plan=${plan}&interval=${interval}`)), mum.locator(`#plan-${plan} a`, { hasText: name }).click()]);
   const form = mum.locator('#checkout');
   await expect(form).toContainText(`Start your ${plan === 'basic' ? 'Basic' : 'Family'} plan`);
   await expect(form).toContainText('You add your children after paying');
@@ -172,6 +176,9 @@ test('a kid on /plans: the Plans link in the menu, every plan to look at, and a 
   await Promise.all([kid.waitForURL(/\/plans$/), kid.locator('.topnav a[href="/plans"]').click()]);
   await expect(kid.locator('.plan-card')).toHaveCount(4);
   await expect(kid.locator('#plan-free .plan-yours')).toHaveText('Your plan');
+  // No sales nudging for kids: no "Recommended" badge.
+  await expect(kid.locator('.plan-badge')).toHaveCount(0);
+  await expect(kid.locator('main')).not.toContainText('Recommended');
   await expect(kid.locator('main a[href^="/grown-ups"], main a[href^="/family"]')).toHaveCount(0);
   await Promise.all([kid.waitForURL(/ask=family/), kid.locator('#plan-family a', { hasText: 'How to get it' }).click()]);
   const ask = kid.locator('#ask');
@@ -203,7 +210,7 @@ test('the pages: nothing touches, no sideways scroll (360 / 1280, light / dark, 
   const kid = await person(browser); await signup(kid, uniq('Kid'));
   const teacher = await person(browser); await login(teacher, 'DemoTeacher', 'demo-pass-123').catch(() => {});
   const sets = [
-    ['out', null, ['/plans', '/plans?interval=year', '/plans/schools', '/grown-ups/signup?plan=family&interval=year', '/grown-ups/login?plan=basic&interval=month']],
+    ['out', null, ['/plans', '/plans?interval=year', '/plans/schools', '/grown-ups', '/grown-ups/signup?plan=family&interval=year', '/grown-ups/login?plan=basic&interval=month']],
     ['kid', await kid.context().storageState(), ['/', '/plans?ask=basic']],
     ['grownup', await fresh.context().storageState(), ['/plans', '/family', '/family?plan=basic&interval=month']],
     ['basic', await paid.mum.context().storageState(), ['/plans', '/family?welcome=1']],

@@ -63,19 +63,34 @@ function currentPlan(req, who) {
   return fid ? F.familyPlan(fid).plan || 'free' : 'free';
 }
 
+/** An amount in cents for words(): formatted in the sentence's own language (see words). */
+const cents = c => ({ cents: c });
+const usd = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
 /** A string of the page in the reader's language; until a language has it, the English is marked as English (lang, and
- *  left to right, so its full stops land on the right side of a right-to-left page). Kids read this page too. */
-function words(t) {
+ *  left to right, so its full stops land on the right side of a right-to-left page), and its prices (cents(…) values)
+ *  are written the English way too ("$45.00", never "45.00 $" inside an English sentence). Kids read this page too. */
+function words(t, f) {
+  const fill = (own, vars) => (vars ? Object.fromEntries(Object.entries(vars).map(([k, v]) => [k, v && typeof v === 'object' && 'cents' in v
+    ? (own ? f.money(v.cents) : usd.format((+v.cents || 0) / 100)) : v])) : vars);
   const wrap = (key, s) => (t.own(key) ? s : html`<span lang="en" dir="ltr">${s}</span>`);
-  return { T: (key, vars) => wrap(key, t(key, vars)), TH: (key, vars) => wrap(key, tHtml(t, key, vars)) };
+  return { T: (key, vars) => wrap(key, t(key, fill(t.own(key), vars))), TH: (key, vars) => wrap(key, tHtml(t, key, fill(t.own(key), vars))) };
 }
 
 router.get('/plans', on, async (req, res) => {
-  const t = req.t, f = req.fmt, u = req.user, { T, TH } = words(t);
+  const t = req.t, f = req.fmt, u = req.user, { T, TH } = words(t, f);
   const who = viewerOf(u);
   const interval = req.query.interval === 'year' ? 'year' : 'month';
-  const prices = await C.planPrices();
+  const all = await C.planPrices();
+  // Basic and Family are on sale nowhere without the "Family" payment method configuration (C.familyPrices's rule):
+  // their cards then say "Price coming soon", like a missing price.
+  const prices = all && (config.stripePmcFamily ? all : { ...all, basic: null, family: null });
   const mine = currentPlan(req, who);
+  // Can this viewer buy Basic / Family here and now? (Kids and staff never buy; their buttons only explain.)
+  const buyer = who === 'out' || who === 'grownup';
+  const notOnSale = buyer && (!onSale(u) || !config.stripePmcFamily);
+  // A plan the platform admin gave (no Stripe customer): it is changed by writing to us, not in Manage billing.
+  const granted = who === 'grownup' && (mine === 'basic' || mine === 'family') && F.familyPlan(F.familyOfOwner(u.id).id).via === 'grant';
+  const email = config.contactEmail || 'greg@oomba.ai';
   const school = schoolTarget(req);
   const schoolPlan = school.school ? SB.schoolBilling(school.school).plan : null;
   const ask = who === 'kid' || who === 'staff' ? String(req.query.ask || '') : '';
@@ -87,15 +102,18 @@ router.get('/plans', on, async (req, res) => {
     if (!p) return html`<p class="plan-price"><span class="muted small">${T('plans.noPrice')}</span></p>`;
     const amt = p[interval].unitAmount;
     return html`<p class="plan-price"><span class="amt" dir="ltr">${f.money(amt)}</span> <span class="per">${T(interval === 'year' ? 'plans.perYear' : 'plans.perMonth')}</span></p>
-      ${interval === 'year' ? html`<p class="small muted plan-sub">${T('plans.yearAsMonth', { price: f.money(Math.round(amt / 12)) })}</p>` : html`<p class="small muted plan-sub">${T('plans.orYearly', { price: f.money(p.year.unitAmount) })}</p>`}`;
+      ${interval === 'year' ? html`<p class="small muted plan-sub">${T('plans.yearAsMonth', { price: cents(Math.round(amt / 12)) })}</p>` : html`<p class="small muted plan-sub">${T('plans.orYearly', { price: cents(p.year.unitAmount) })}</p>`}`;
   };
   /** The button of a paid family-type plan for this viewer. */
   const buyBtn = plan => {
     const label = T(plan === 'basic' ? 'plans.basic.choose' : 'plans.family.choose');
     const q2 = `plan=${plan}&interval=${interval}`;
+    // Not on sale to this visitor (or no price): no bright button that ends in "price coming soon" after signing up.
+    if (buyer && mine !== plan && (notOnSale || !(prices && prices[plan]))) return html`<p class="plan-soon muted center">${T('plans.soon')}</p>`;
     if (who === 'out') return html`<a class="btn btn-primary btn-block" href="/grown-ups/signup?${q2}">${label}</a>`;
     if (who === 'grownup') {
       if (mine === plan) return html`<a class="btn btn-block" href="/family#plan">${T('plans.manage')}</a>`;
+      if (granted) return html`<p class="small muted plan-soon">${TH('plans.grantSwitch', { email: html`<a href="mailto:${email}" dir="ltr">${email}</a>` })}</p>`;
       if (mine === 'basic' || mine === 'family') return html`<a class="btn btn-block" href="/family?${q2}#plan">${T('plans.switch')}</a>`;
       return html`<a class="btn btn-primary btn-block" href="/family?${q2}#checkout">${label}</a>`;
     }
@@ -119,7 +137,7 @@ router.get('/plans', on, async (req, res) => {
       list: [T('plans.free.li1'), T('plans.free.li2'), T('plans.free.li3')], button: mine === 'free' ? '' : freeBtn, current: mine === 'free' }),
     card({ id: 'basic', name: T('plans.basic.name'), tagline: T('plans.basic.tagline'), price: priceOf('basic'),
       list: [T('plans.basic.li1'), T('plans.extra', { extra: lim.basic.extra }), T('plans.basic.li3'), T('plans.cancel')], button: buyBtn('basic'), current: mine === 'basic' }),
-    card({ id: 'family', name: T('plans.family.name'), tagline: T('plans.family.tagline', { max: lim.family.maxChildren }), price: priceOf('family'), recommended: true,
+    card({ id: 'family', name: T('plans.family.name'), tagline: T('plans.family.tagline', { max: lim.family.maxChildren }), price: priceOf('family'), recommended: buyer,
       list: [T('plans.basic.li1'), T('plans.family.extra', { extra: lim.family.extra, max: lim.family.maxChildren }), T('plans.family.li3', { max: lim.family.maxChildren }), T('plans.cancel')], button: buyBtn('family'), current: mine === 'family' }),
     card({ id: 'school', name: T('plans.school.name'), tagline: T('plans.school.tagline'),
       price: prices && prices.school ? html`<p class="plan-price"><span class="amt" dir="ltr">${f.money(prices.school.year.unitAmount)}</span> <span class="per">${T('plans.school.per')}</span></p><p class="small muted plan-sub">${T('plans.school.min', { min: config.schoolMinSeats })}</p>`
@@ -136,13 +154,14 @@ router.get('/plans', on, async (req, res) => {
       <p class="muted" style="margin-bottom:0">${T('plans.kid.free')}</p></section>`
     : html`<section class="panel plan-ask" id="ask" role="status" aria-labelledby="ask-h"><h2 id="ask-h"><span aria-hidden="true">🏫</span> ${T('plans.staff.heading')}</h2>
       <p>${T('plans.staff.text')}</p><p style="margin-bottom:0"><a class="btn" href="#plan-school">${T('plans.staff.toSchool')}</a></p></section>`) : '';
-  const notOnSale = (who === 'grownup' || who === 'out') && !onSale(u) ? html`<p class="small muted center">${T('plans.notOnSale')}</p>` : '';
+  // Not on sale to this visitor: said at the top, before any card (a signed-out visitor may still make a grown-up account).
+  const soonPanel = notOnSale ? html`<section class="panel plan-ask" id="soon" role="status"><p${who === 'out' ? '' : raw(' style="margin-bottom:0"')}><span aria-hidden="true">⏳</span> ${T('plans.notOnSale')}</p>
+    ${who === 'out' ? html`<p style="margin-bottom:0">${T('plans.notOnSaleOut')} <a href="/grown-ups/signup">${T('family.landing.signup')}</a></p>` : ''}</section>` : '';
   const seg = html`<nav class="seg plan-seg" aria-label="${t('plans.interval.label')}">${['month', 'year'].map(iv => html`<a href="/plans?interval=${iv}" ${iv === interval ? raw('aria-current="page"') : ''}>${T(iv === 'year' ? 'plans.interval.year' : 'plans.interval.month')}</a>`)}</nav>`;
   const body = html`<div class="plans">
     <div class="plans-head"><h1>${T('plans.heading')}</h1><p class="lead">${T('plans.intro')}</p>${seg}</div>
-    ${askPanel}
+    ${askPanel}${soonPanel}
     <div class="plan-grid">${cards}</div>
-    ${notOnSale}
     <section class="panel plan-fine" aria-labelledby="fine-h"><h2 id="fine-h">${T('plans.fine.h')}</h2>
       <p class="small">${limitsText(t)}</p>
       <p class="small">${T('plans.fine.tax')}</p>
@@ -153,7 +172,7 @@ router.get('/plans', on, async (req, res) => {
 
 /** For schools: the price, what a school gets, and how a school is set up (by us, then paid from its Billing tab). */
 router.get('/plans/schools', on, async (req, res) => {
-  const t = req.t, f = req.fmt, { T, TH } = words(t);
+  const t = req.t, f = req.fmt, { T, TH } = words(t, f);
   const prices = await C.planPrices();
   const target = schoolTarget(req);
   const email = config.contactEmail || 'greg@oomba.ai';

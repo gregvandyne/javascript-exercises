@@ -129,7 +129,7 @@ test('/plans and the menu\'s Plans link: on for everyone while paid-plan pages a
 
 test('four cards like a pricing page: Free, Basic, Family (recommended), School, with prices from Stripe and a monthly / yearly switch', async () => {
   let r = decode((await call(null, '/plans')).text);
-  const m = main(r);
+  let m = main(r);
   assert.deepEqual([...m.matchAll(/<section class="plan-card[^"]*" id="plan-(\w+)"/g)].map(x => x[1]), ['free', 'basic', 'family', 'school']);
   assert.match(m, /<h2 id="plan-free-h">Free<\/h2>[\s\S]*\$0</);
   assert.match(m, /<h2 id="plan-basic-h">Basic<\/h2><p class="plan-tag muted">For one young builder<\/p>[\s\S]*\$4\.99<\/span> <span class="per">a month/);
@@ -149,11 +149,20 @@ test('four cards like a pricing page: Free, Basic, Family (recommended), School,
   assert.match(m, /<a href="\/terms">Terms of Service<\/a>/); assert.match(m, /<a href="\/refunds">Refund and Cancellation Policy<\/a>/);
   // Never "child plan" or "Plus".
   assert.doesNotMatch(m, /child plan|Plus plan|>Plus</i);
-  // Signed out: each paid plan leads to the grown-up sign-up with the plan kept; Free to the kid sign-up.
-  assert.match(m, /href="\/grown-ups\/signup\?plan=basic&interval=month">Choose Basic</);
-  assert.match(m, /href="\/grown-ups\/signup\?plan=family&interval=month">Choose Family</);
+  // Signed out with a test key (not on sale to a visitor): said at the top, before the cards; no bright Choose buttons
+  // that end in "price coming soon" after signing up; a plain way to make a grown-up account.
+  assert.ok(m.indexOf('id="soon"') > 0 && m.indexOf('id="soon"') < m.indexOf('id="plan-free"'), 'the notice comes before the cards');
+  assert.match(m, /Basic and Family plans can't be bought yet\.[\s\S]*You can make a grown-up account now and add your children\. <a href="\/grown-ups\/signup">Make a grown-up account<\/a>/);
+  assert.match(m, /id="plan-basic"[\s\S]*<p class="plan-soon muted center">Coming soon<\/p>[\s\S]*id="plan-family"[\s\S]*<p class="plan-soon muted center">Coming soon<\/p>/);
+  assert.doesNotMatch(m, /Choose Basic|Choose Family|signup\?plan=/);
   assert.match(m, /href="\/signup">Start free</);
   assert.match(m, /href="\/plans\/schools">Get a school plan</);
+  // On sale (a live key): each paid plan leads to the grown-up sign-up with the plan kept; Free to the kid sign-up.
+  config.stripeApiKey = 'rk_live_fake';
+  m = main(decode((await call(null, '/plans')).text));
+  assert.doesNotMatch(m, /id="soon"|can't be bought yet|Coming soon/);
+  assert.match(m, /href="\/grown-ups\/signup\?plan=basic&interval=month">Choose Basic</);
+  assert.match(m, /href="\/grown-ups\/signup\?plan=family&interval=month">Choose Family</);
   // Yearly.
   r = decode((await call(null, '/plans?interval=year')).text);
   assert.match(r, /<a href="\/plans\?interval=year" aria-current="page">Yearly<\/a>/);
@@ -161,6 +170,7 @@ test('four cards like a pricing page: Free, Basic, Family (recommended), School,
   assert.match(r, /\$69\.00<\/span> <span class="per">a year/);
   assert.match(r, /That's \$3\.75 a month, paid once a year\./);
   assert.match(r, /href="\/grown-ups\/signup\?plan=family&interval=year"/);
+  config.stripeApiKey = defaults.stripeApiKey;
 });
 
 test('prices follow Stripe\'s Price objects (by lookup key, cached), never a number in the code', async () => {
@@ -194,6 +204,8 @@ test('a kid sees the plans but can\'t buy: a calm "a grown-up buys plans" panel,
   assert.match(m, /They can sign up at <bdi dir="ltr"><b>127\.0\.0\.1:\d+\/plans<\/b><\/bdi>\./);
   assert.match(m, /You can keep playing and building for free\./);
   assert.doesNotMatch(m, /hurry|only \d+ left|today only|countdown|ends in/i);
+  // No sales nudging for kids: no "Recommended" badge or highlighted card (that is for people who can buy).
+  assert.doesNotMatch(m, /plan-badge|Recommended|plan-card recommended/);
   // A kid whose family pays: their plan is marked, and the buttons still don't sell.
   const f = await paying('basic');
   const c = kid(); link(f.fam, c);
@@ -208,6 +220,7 @@ test('a kid sees the plans but can\'t buy: a calm "a grown-up buys plans" panel,
   // A teacher: Basic and Family are for families; the School card.
   m = main(decode((await call(signIn(teacher), '/plans?ask=basic')).text));
   assert.match(m, /Basic and Family are for families/);
+  assert.doesNotMatch(m, /plan-badge|Recommended/);
   assert.match(m, /href="#plan-school">See the School plan</);
   assert.match(m, /href="\/plans\/schools">Get a school plan</);
 });
@@ -399,6 +412,91 @@ test('one plan per family: a Basic and a Family plan both paid → the second is
   assert.equal(B.ownerPlan('family', p.fam.id).plan, 'family');
 });
 
+// ---------------------------------------------------------------- review fixes (wording, dead ends)
+test('the Basic checkout names no other plan; more than one child already linked is said before paying', async () => {
+  // No child: the "add them after paying" line; the terms name no plan; the daily cap is stated only below the plan's
+  // own monthly extras (Basic: 2 a month, so a 4-a-day cap would read like a promise).
+  const p = parent();
+  let page = decode((await call(p.who, '/family?plan=basic&interval=month')).text);
+  assert.match(page, /Start your Basic plan/);
+  assert.match(page, /You add your children after paying/);
+  assert.match(page, /Prices are in US dollars, plus sales tax where it applies\. Plans are for US families for now\./);
+  assert.doesNotMatch(main(page), /Family plans/);
+  assert.doesNotMatch(page, /up to 4 extra messages a day/);
+  assert.doesNotMatch(page, /id="basic-many"/);
+  assert.match(decode((await call(p.who, '/family?plan=family&interval=month')).text), /One child can use up to 4 extra messages a day\./);
+  // Three children linked first, then Basic: which child it covers, the others keep the free messages, Family one tap away.
+  const kids = [kid(), kid(), kid()];
+  kids.forEach((c, i) => link(p.fam, c, Date.now() - (3 - i) * 1000));
+  page = decode((await call(p.who, '/family?plan=basic&interval=year')).text);
+  const first = auth.getUser(kids[0].id).display_name;
+  assert.match(page, new RegExp(`<div class="notice warn" id="basic-many"><p style="margin-top:0">Basic covers one child: <b><bdi>${first}</bdi></b>\\. Your other children keep only the free daily messages\\.</p><p style="margin-bottom:0"><a href="/family\\?plan=family&interval=year#checkout">Cover all your children with the Family plan</a>`));
+  assert.ok(page.indexOf('id="basic-many"') < page.indexOf('id="pw-checkout"'), 'before the password');
+  assert.doesNotMatch(page, /no need to link them first/);
+  // Not on sale (no "Family" payment method configuration): the form says so without naming a plan.
+  config.stripePmcFamily = '';
+  page = decode((await call(p.who, '/family?plan=basic&interval=month')).text);
+  assert.match(page, /This plan isn't on sale yet\. You can add your children now\./);
+  assert.doesNotMatch(main(page), /Family plans aren't on sale/);
+});
+
+test('back from Checkout: no "family plan" toast (the welcome names the plan); one Link a child button, in the welcome', async () => {
+  const s2 = parent();
+  const open = await checkout(s2.who, { plan: 'basic', interval: 'month' });
+  const sid = open.json.redirect.split('/pay/')[1];
+  const wait = (await call(s2.who, `/family?checkout=${sid}`)).text;
+  assert.match(wait, /data-checkout-wait=/);
+  assert.doesNotMatch(wait, /data-done=|Your family plan is on/);
+  await pay(open.json.redirect);
+  const done = decode((await call(s2.who, '/family?welcome=1')).text);
+  assert.match(done, /Your Basic plan is on\. Thank you!/);
+  assert.equal((main(done).match(/href="\/family\/link"/g) || []).length, 1, 'one Link a child button');
+  assert.match(done, /id="welcome"[\s\S]*href="\/family\/link"[\s\S]*id="kids-h"/);
+  // Later (no welcome), the Children panel has it again.
+  assert.match(decode((await call(s2.who, '/family')).text), /id="kids-h"[\s\S]*href="\/family\/link">➕ Link a child</);
+});
+
+test('/plans without the "Family" payment method configuration: Basic and Family are not on sale, even to a tester', async () => {
+  config.stripePmcFamily = '';
+  const p = parent();
+  const m = main(decode((await call(p.who, '/plans')).text));
+  assert.match(m, /id="soon"[\s\S]*Basic and Family plans can't be bought yet\.[\s\S]*id="plan-free"/);
+  assert.match(m, /id="plan-basic"[\s\S]*Price coming soon[\s\S]*Coming soon[\s\S]*id="plan-family"[\s\S]*Price coming soon[\s\S]*Coming soon[\s\S]*id="plan-school"/);
+  assert.doesNotMatch(m, /Choose Basic|Choose Family|\$4\.99|\$7\.99/);
+  assert.match(m, /\$20\.00/, 'the School price stays');
+  // With it, a tester can buy: no notice.
+  config.stripePmcFamily = defaults.stripePmcFamily;
+  assert.doesNotMatch(main(decode((await call(p.who, '/plans')).text)), /id="soon"|Coming soon/);
+});
+
+test('a plan we gave (a grant, no Stripe customer): no "Switch to this plan" that ends at a missing Manage billing', async () => {
+  const p = parent();
+  q.run('INSERT INTO billing_grants(id, owner_kind, owner_id, plan, until, created_at) VALUES (?,?,?,?,?,?)', uid(10), 'family', p.fam.id, 'family', Date.now() + 86400e3, Date.now());
+  const m = main(decode((await call(p.who, '/plans')).text));
+  assert.match(m, /id="plan-family"[\s\S]*plan-yours/);
+  assert.doesNotMatch(m, /Switch to this plan/);
+  assert.match(m, /id="plan-basic"[\s\S]*We gave you this plan\. To change it, write to <a href="mailto:help@example\.com" dir="ltr">help@example\.com<\/a>\.[\s\S]*id="plan-family"/);
+  const fam = decode((await call(p.who, '/family?plan=basic&interval=month')).text);
+  assert.doesNotMatch(fam, /To switch to the Basic plan, open Manage billing/);
+});
+
+test('Hebrew /plans: an English sentence (not translated yet) carries its price the English way', async () => {
+  const he = { cookie: 'lang=he' };
+  const r = decode((await call(he, '/plans?interval=year')).text);
+  // Not translated into Hebrew yet: English, marked as English, with "$3.75" (not "3.75 $").
+  assert.match(r, /<span lang="en" dir="ltr">That's \$3\.75 a month, paid once a year\.<\/span>/);
+  assert.doesNotMatch(r, /<span lang="en" dir="ltr">(That's|Or) [^<$]*\d[.,]\d\d\s*\$/);
+  // The big price (not in a sentence) stays in the page's own format.
+  const m = await call(he, '/plans');
+  assert.match(decode(m.text), /<span lang="en" dir="ltr">Or \$45\.00 a year\.<\/span>/);
+});
+
+test('/grown-ups gives both prices (Basic and Family), and Compare plans is the main button there', async () => {
+  const page = decode((await call(null, '/grown-ups')).text);
+  assert.match(page, /Basic is \$4\.99 a month, for one child\. Family is \$7\.99 a month, for up to 4 children\./);
+  assert.match(page, /<a class="btn btn-primary" href="\/plans">Compare plans and prices<\/a>/);
+});
+
 // ---------------------------------------------------------------- prices stay on /plans
 test('prices are on /plans only: kid pages (Studio, Me, games, Build, Home) carry none, only the menu\'s Plans link', async () => {
   const f = await paying('family');
@@ -419,7 +517,7 @@ test('prices are on /plans only: kid pages (Studio, Me, games, Build, Home) carr
 
 test('/parents and /grown-ups link to /plans', async () => {
   assert.match((await call(null, '/parents')).text, /<a class="btn btn-primary" href="\/plans">See plans and prices<\/a>/);
-  assert.match((await call(null, '/grown-ups')).text, /<a class="btn" href="\/plans">Compare plans and prices<\/a>/);
+  assert.match((await call(null, '/grown-ups')).text, /<a class="btn btn-primary" href="\/plans">Compare plans and prices<\/a>/);
   config.billingPublic = false;
   assert.doesNotMatch((await call(null, '/parents')).text, /href="\/plans"/);
 });

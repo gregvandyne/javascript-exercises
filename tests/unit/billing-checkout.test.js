@@ -139,7 +139,7 @@ test('test mode: only billing testers may check out or open the Portal (D14)', a
   const page = await call(who, '/family?plan=family&interval=month');
   assert.equal(page.status, 200);
   assert.doesNotMatch(page.text, /data-api="\/api\/billing\/family\/checkout"/);
-  assert.match(page.text, /aren&#39;t on sale yet|aren't on sale yet/);
+  assert.match(page.text, /isn&#39;t on sale yet|isn't on sale yet/);
 });
 
 test('step-up: the password again before checkout (10 minutes), wrong ones counted and limited', async () => {
@@ -655,7 +655,7 @@ test('without STRIPE_PMC_FAMILY family plans are not on sale: no Subscribe, no C
   assert.equal(fake.requests.slice(before).filter(x => x.method === 'POST' && x.path === '/v1/checkout/sessions').length, 0, 'never a session without the Family configuration');
   const page = (await call(f.who, '/family?plan=basic')).text;
   assert.doesNotMatch(page, /data-api="\/api\/billing\/family\/checkout"/);
-  assert.match(page, /aren&#39;t on sale yet|aren't on sale yet/);
+  assert.match(page, /This plan isn&#39;t on sale yet|This plan isn't on sale yet/);
   assert.match((await call(f.who, '/grown-ups')).text, /aren&#39;t on sale yet|aren't on sale yet/);
   assert.match(parseStripe({ STRIPE_API_KEY: 'rk_test_x', STRIPE_WEBHOOK_SECRET: 'whsec_x' }).warnings.join(), /STRIPE_PMC_FAMILY is not set/);
   assert.doesNotMatch(parseStripe({ STRIPE_API_KEY: 'rk_test_x', STRIPE_WEBHOOK_SECRET: 'whsec_x', STRIPE_PMC_FAMILY: 'pmc_1AbC' }).warnings.join(), /STRIPE_PMC_FAMILY/);

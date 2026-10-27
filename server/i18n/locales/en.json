@@ -2715,6 +2715,7 @@
       "price": {
         "h": "Price",
         "p1": "{monthly} a month or {yearly} a year, plus sales tax where it applies. Cancel anytime: the plan runs to the end of the period you paid for.",
+        "both": "Basic is {basic} a month, for one child. Family is {family} a month, for up to {max} children. Plus sales tax where it applies. Cancel anytime: the plan runs to the end of the period you paid for.",
         "soon": "Family plans aren't on sale yet. You can make a grown-up account and link your children now.",
         "us": "Family plans are for US families for now."
       },
@@ -2847,6 +2848,7 @@
         "cancel": "Cancel anytime in Manage billing. The plan keeps working until the end of the period you paid for.",
         "refund": "Full refund if you ask within 14 days of your first payment or of a yearly renewal.",
         "tax": "Prices are in US dollars, plus sales tax where it applies. Family plans are for US families for now.",
+        "taxPlans": "Prices are in US dollars, plus sales tax where it applies. Plans are for US families for now.",
         "agree": "By subscribing, you agree to our {terms}.",
         "link": "Terms of Service"
       },
@@ -2881,7 +2883,11 @@
       "headingBasic": "Start your Basic plan",
       "headingFamily": "Start your Family plan",
       "addAfter": "You add your children after paying: there is no need to link them first.",
-      "other": "Choose another plan"
+      "other": "Choose another plan",
+      "soon": "This plan isn't on sale yet. You can add your children now.",
+      "basicMany": "Basic covers one child: {name}. Your other children keep only the free daily messages.",
+      "basicManyPending": "Basic covers one child. Your other children keep only the free daily messages.",
+      "basicManyLink": "Cover all your children with the Family plan"
     }
   },
   "plans": {
@@ -2905,7 +2911,10 @@
     "cancel": "Cancel anytime",
     "manage": "Manage your plan",
     "switch": "Switch to this plan",
+    "grantSwitch": "We gave you this plan. To change it, write to {email}.",
     "notOnSale": "Basic and Family plans can't be bought yet.",
+    "soon": "Coming soon",
+    "notOnSaleOut": "You can make a grown-up account now and add your children.",
     "free": {
       "name": "Free",
       "tagline": "For everyone",

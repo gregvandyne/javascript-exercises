@@ -147,15 +147,16 @@ router.post('/api/me/family/report', childOnly, rateLimit('family-answer', 30, 6
 
 // ---------------------------------------------------------------- /grown-ups (public)
 const PANEL_STYLE = 'wrap narrow';
-async function familyPrices() {
-  const p = await C.familyPrices();
+async function familyPrices(plan = 'family') {
+  const p = await C.familyPrices(plan);
   return p ? { monthly: p.month.unitAmount, yearly: p.year.unitAmount } : null;
 }
-/** The family plan's limits, stated before buying: the per-child daily ceiling (only when it is below the monthly extras:
- *  a bigger number would read like a promise of that many a day), the cost backstop, and (reset) when extras start again. */
-export function limitsText(t, { reset = true } = {}) {
+/** A plan's limits, stated before buying: the per-child daily ceiling (only when it is below the plan's monthly extras,
+ *  `extra`, Family's by default: a bigger number would read like a promise of that many a day), the cost backstop, and
+ *  (reset) when extras start again. */
+export function limitsText(t, { reset = true, extra = config.familyExtraMessages } = {}) {
   const parts = [];
-  if (config.familyChildDailyMax < config.familyExtraMessages) parts.push(t('family.landing.what.limitDaily', { daily: config.familyChildDailyMax }));
+  if (config.familyChildDailyMax < extra) parts.push(t('family.landing.what.limitDaily', { daily: config.familyChildDailyMax }));
   parts.push(t('family.landing.what.limitCost'));
   if (reset) parts.push(t('family.landing.what.limitReset'));
   return parts.join(' ');
@@ -174,11 +175,11 @@ const choiceQuery = c => (c ? `?plan=${c.plan}&interval=${c.interval}` : '');
 export const planName = (t, plan) => t(plan === 'basic' ? 'family.plan.basic' : plan === 'family' ? 'family.plan.family' : 'family.plan.free');
 router.get('/grown-ups', on, async (req, res) => {
   const t = req.t, f = req.fmt, u = req.user;
-  const prices = await familyPrices();
+  const prices = await familyPrices(), basic = await familyPrices('basic');
   const qa = k => html`<h3>${t(`family.landing.faq.${k}.q`)}</h3><p>${t(`family.landing.faq.${k}.a`)}</p>`;
   const actions = auth.isGrownup(u) ? html`<a class="btn btn-primary" href="/family">${t('family.landing.toFamily')}</a>`
     : html`<a class="btn btn-primary" href="/grown-ups/signup">${t('family.landing.signup')}</a><a class="btn" href="/grown-ups/login">${t('family.landing.login')}</a>`;
-  const plansLink = html`<p style="margin-bottom:0"><a class="btn" href="/plans">${t('family.landing.plans')}</a></p>`;
+  const plansLink = html`<p style="margin-bottom:0"><a class="btn btn-primary" href="/plans">${t('family.landing.plans')}</a></p>`;
   const body = html`<div class="${PANEL_STYLE}" style="padding:0">
     <h1>👪 ${t('family.landing.heading')}</h1>
     <p class="lead">${t('family.landing.intro')}</p>
@@ -188,7 +189,8 @@ router.get('/grown-ups', on, async (req, res) => {
       <p>${t('family.landing.what.p2')}</p>
       <p class="small muted">${limitsText(t)}</p></section>
     <section class="panel"><h2>${t('family.landing.price.h')}</h2>
-      ${prices ? html`<p>${t('family.landing.price.p1', { monthly: f.money(prices.monthly), yearly: f.money(prices.yearly) })}</p>` : ''}
+      ${prices && basic ? html`<p>${t('family.landing.price.both', { basic: f.money(basic.monthly), family: f.money(prices.monthly), max: config.familyMaxChildren })}</p>`
+        : prices ? html`<p>${t('family.landing.price.p1', { monthly: f.money(prices.monthly), yearly: f.money(prices.yearly) })}</p>` : ''}
       ${prices && onSale(u) ? '' : html`<p>${t('family.landing.price.soon')}</p>`}
       <p class="muted">${t('family.landing.price.us')}</p>
       <p class="small">${tHtml(t, 'family.billing.legal')}</p>${plansLink}</section>
@@ -325,9 +327,11 @@ router.get('/family', grownupOnly, async (req, res) => {
       ${linked.length ? '' : html`<h2 id="welcome-h">${t('family.billing.welcomeHeading')}</h2>
       <ol class="steps"><li>${tHtml(t, 'family.link.step1')}</li><li>${t('family.billing.welcomeStep2')}</li><li>${t('family.link.step3')}</li></ol>
       ${kids.length < max ? html`<a class="btn btn-primary" href="/family/link">➕ ${t('family.page.add')}</a>` : ''}`}</section>` : '';
+  // While the welcome shows its add-a-child steps (and its own Link a child button), the Children panel adds no second one.
+  const welcomeSteps = !!welcome && !linked.length;
   const kidsBox = html`<section class="panel" aria-labelledby="kids-h"><h2 id="kids-h">${t('family.page.children')}</h2>
     ${kids.length ? html`<ul class="famkids">${rows}</ul><p class="small muted">${t('family.page.usageNote')}</p>` : html`<p class="muted">${t('family.page.none')}</p>`}
-    ${basicNote}${addBtn}
+    ${basicNote}${welcomeSteps ? '' : addBtn}
   </section>`;
   // A plan picked on /plans (and not paid yet) comes first: that is what the grown-up came here to do.
   const planFirst = (chosen && !plan.entitled) || (typeof req.query.checkout === 'string' && !plan.entitled);
@@ -370,7 +374,7 @@ async function planPanel(req, fam, plan, kids, chosen) {
   // Back from Checkout and the plan isn't on yet: only the wait (no "Free plan", no Subscribe: they just paid).
   if (checkoutId && !plan.entitled) {
     return html`<section class="panel" aria-labelledby="plan-h" id="plan">${head}
-      <div class="notice" role="status" data-checkout-wait="${checkoutId}" data-back="/family?welcome=1" data-done="${t('family.billing.welcome')}">
+      <div class="notice" role="status" data-checkout-wait="${checkoutId}" data-back="/family?welcome=1">
         <p style="margin:0"><span aria-hidden="true">⏳</span> ${t('family.billing.waiting')}</p>
         <div data-slow hidden><p class="small" style="margin:.5em 0 0">${t('family.billing.slow')}</p>
           <p class="small" style="margin:.5em 0 0"><a href="/family">${t('family.billing.back')}</a></p></div></div></section>`;
@@ -388,14 +392,14 @@ async function planPanel(req, fam, plan, kids, chosen) {
     parts.push(html`<p>${state}</p>
       <p class="planextras"><b>${t('family.billing.extrasLeft', { left, total: lim.extra })}</b><br>
         <span class="small muted">${t('family.billing.extrasReset', { date: f.day(nextMonthUtc()) })}</span></p>
-      <p class="small muted">${t(plan.plan === 'basic' ? 'family.billing.coversBasic' : 'family.billing.coversFamily', { max: lim.maxChildren })} ${limitsText(t, { reset: false })}</p>
-      ${chosen && chosen.plan !== plan.plan ? html`<p class="notice" role="status">${t('family.billing.switchHow', { plan: planName(t, chosen.plan) })}</p>` : ''}
+      <p class="small muted">${t(plan.plan === 'basic' ? 'family.billing.coversBasic' : 'family.billing.coversFamily', { max: lim.maxChildren })} ${limitsText(t, { reset: false, extra: lim.extra })}</p>
+      ${chosen && chosen.plan !== plan.plan && portal ? html`<p class="notice" role="status">${t('family.billing.switchHow', { plan: planName(t, chosen.plan) })}</p>` : ''}
       <div class="row planbtns">${portal}<a class="btn" href="/plans">${t('family.page.changePlan')}</a></div>`);
   } else {
     const unsettled = C.mayBill(u) && C.unsettledPlan(fam.id);
     parts.push(html`<p>${t('family.page.planFreeText')}</p>`);
     if (unsettled) parts.push(html`<p class="notice warn">${t('family.billing.errors.fixPayment')}</p>`);
-    else if (chosen) parts.push(await checkoutForm(req, chosen));
+    else if (chosen) parts.push(await checkoutForm(req, chosen, fam, kids));
     else parts.push(html`<p><a class="btn btn-primary" href="/plans">${t('family.page.seePlans')}</a></p>`);
     if (portal) parts.push(html`<p class="small muted">${t('family.billing.history')}</p>${portal}`);
   }
@@ -405,25 +409,36 @@ async function planPanel(req, fam, plan, kids, chosen) {
 
 /** The form that pays for a picked plan: what it gives, the terms, the password again and one button per period (the
  *  picked one first). Not on sale (a test key and not a billing tester, prices unreadable): says so instead. */
-async function checkoutForm(req, chosen) {
+async function checkoutForm(req, chosen, fam, kids = []) {
   const t = req.t, f = req.fmt, u = req.user;
   const prices = C.mayBill(u) ? await C.familyPrices(chosen.plan) : null;
   const heading = html`<h3>${t(chosen.plan === 'basic' ? 'family.checkout.headingBasic' : 'family.checkout.headingFamily')}</h3>`;
   const other = html`<p class="small" style="margin-bottom:0"><a href="/plans">${t('family.checkout.other')}</a></p>`;
-  if (!prices) return html`<div class="planpick">${heading}<p class="small muted">${t('family.landing.price.soon')}</p>${other}</div>`;
+  if (!prices) return html`<div class="planpick">${heading}<p class="small muted">${t('family.checkout.soon')}</p>${other}</div>`;
   const lim = B.planLimits(chosen.plan);
+  // Basic covers one child: with more children already linked (or asked), say before paying which one it covers (the
+  // first linked, as coveredChildren counts) and that the others keep the free messages, with the Family plan one tap away.
+  let many = '';
+  if (chosen.plan === 'basic' && kids.length > 1) {
+    const firstId = coveredChildren(fam.id, 'basic')[0];
+    const first = firstId && kids.find(k => k.child_id === firstId);
+    const toFamily = html`<a href="/family?plan=family&interval=${chosen.interval}#checkout">${t('family.checkout.basicManyLink')}</a>`;
+    many = html`<div class="notice warn" id="basic-many"><p style="margin-top:0">${first
+      ? tHtml(t, 'family.checkout.basicMany', { name: html`<b><bdi>${first.display_name}</bdi></b>` })
+      : t('family.checkout.basicManyPending')}</p><p style="margin-bottom:0">${toFamily}</p></div>`;
+  }
   const btn = iv => html`<button class="btn ${iv === chosen.interval ? 'btn-primary' : ''}" type="submit" name="interval" value="${iv}">${t(iv === 'year' ? 'family.billing.subscribeYearly' : 'family.billing.subscribeMonthly', { price: f.money(prices[iv].unitAmount) })}</button>`;
   const order = chosen.interval === 'year' ? ['year', 'month'] : ['month', 'year'];
   return html`<form data-api="/api/billing/family/checkout" class="planform planpick" id="checkout">
     ${heading}<input type="hidden" name="plan" value="${chosen.plan}">
     <p>${chosen.plan === 'basic' ? t('plans.basic.what', { extra: lim.extra }) : t('family.landing.what.p1', { extra: lim.extra, max: lim.maxChildren })}</p>
-    <p class="small">${t('family.checkout.addAfter')}</p>
+    ${many}${kids.length ? '' : html`<p class="small">${t('family.checkout.addAfter')}</p>`}
     <ul class="small planterms">
       <li>${t('family.billing.terms.renew')}</li>
       <li>${t('family.billing.terms.cancel')}</li>
       <li>${t('family.billing.terms.refund')}</li>
-      <li>${limitsText(t)}</li>
-      <li>${t('family.billing.terms.tax')}</li>
+      <li>${limitsText(t, { extra: lim.extra })}</li>
+      <li>${t('family.billing.terms.taxPlans')}</li>
     </ul>
     ${config.termsPublished ? html`<p class="small">${tHtml(t, 'family.billing.terms.agree', { terms: html`<a href="/terms">${t('family.billing.terms.link')}</a>` })}</p>` : html`<p class="small">${tHtml(t, 'family.billing.legal')}</p>`}
     ${passwordField(req, 'pw-checkout')}

@@ -530,5 +530,14 @@
   "plans.staff.text": "Shown to teachers and school admins who tapped Basic or Family.",
   "plans.schools.how.li1": "For adults. {email} is our contact email address (a link).",
   "plans.schools.contact.p1": "For adults. {email} is our contact email address (a link).",
-  "plans.fine.legal": "Keep the three <a> tags and their href values as they are."
+  "plans.fine.legal": "Keep the three <a> tags and their href values as they are.",
+  "family.billing.terms.taxPlans": "For adults, in the list of terms above the Subscribe buttons of either plan (Basic or Family), so it names no plan.",
+  "family.checkout.soon": "For adults: shown instead of the Subscribe buttons when the picked plan (Basic or Family) can't be bought yet.",
+  "family.checkout.basicMany": "For adults, before paying for Basic with more than one child linked. {name} is the child Basic will cover (a display name, in bold). Keep \"Basic\" as the plan's name.",
+  "family.checkout.basicManyPending": "For adults: like family.checkout.basicMany, when no child has said yes yet (so no name).",
+  "family.checkout.basicManyLink": "For adults: a link under family.checkout.basicMany to buy the Family plan instead.",
+  "family.landing.price.both": "For adults. {basic} and {family} are monthly prices (e.g. \"$4.99\"), {max} is a number of children. Keep \"Basic\" and \"Family\" as the plans' names.",
+  "plans.soon": "Where a plan card's buy button would be, while the plan can't be bought yet. Max ~20 chars.",
+  "plans.notOnSaleOut": "For signed-out adults, after plans.notOnSale; followed by a link \"Make a grown-up account\".",
+  "plans.grantSwitch": "For adults whose plan we gave them for free (no payment): on the other plan's card instead of \"Switch to this plan\". {email} is our contact email address (a link)."
 }
