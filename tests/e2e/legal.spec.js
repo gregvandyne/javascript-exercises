@@ -1,11 +1,14 @@
 // Legal pages (/terms, /refunds, /privacy): readable on a 360px phone and a 1280px desktop, light and dark, in English
-// and in Hebrew (right to left, the legal text in English inside it); nothing touches, nothing scrolls sideways, and the
+// and in Hebrew (right to left); nothing touches, nothing scrolls sideways, and the
 // footer leads there: Privacy for everyone, Terms only for grown-ups and school staff (never on a kid's pages). Screenshots go to the test's test-results folder for a look by eye.
 import { test, expect } from '@playwright/test';
 import { findTouching } from './touching.js';
 import { signup, uniq, ownIp, adminPage } from './helpers.js';
 
-const PAGES = [['/terms', 'Terms of Service'], ['/refunds', 'Refund and Cancellation Policy'], ['/privacy', 'Privacy Policy'], ['/privacy?for=grownups', 'Privacy Policy']];
+import fs from 'node:fs';
+/** A legal page's heading as the given language writes it. */
+const headingOf = (lang, page) => JSON.parse(fs.readFileSync(new URL(`../../server/i18n/locales/${lang}.json`, import.meta.url), 'utf8')).info[page].heading;
+const PAGES = [['/terms', 'terms'], ['/refunds', 'refunds'], ['/privacy', 'privacy'], ['/privacy?for=grownups', 'privacy']];
 const VIEWS = [{ width: 360, height: 780 }, { width: 1280, height: 860 }];
 test.describe.configure({ timeout: 180_000 });
 
@@ -16,17 +19,21 @@ for (const lang of ['en', 'he']) {
       const ctx = await browser.newContext({ viewport: v, colorScheme: scheme });
       await ctx.addCookies([{ name: 'lang', value: lang, url: test.info().project.use.baseURL }]);
       const page = await ctx.newPage();
-      for (const [path, heading] of PAGES) {
+      for (const [path, key] of PAGES) {
+        const heading = headingOf(lang, key);
         await page.goto(path); await page.evaluate(() => document.fonts.ready);
         const where = `${path} ${lang} @${v.width}/${scheme}`;
-        await expect(page.locator('h1'), where).toContainText(heading);   // the legal text is English in every language for now
+        await expect(page.locator('h1'), where).toContainText(heading);
         expect(await page.locator('html').getAttribute('dir'), where).toBe(lang === 'he' ? 'rtl' : 'ltr');
         await expect(page.locator('.legal-updated time'), where).toHaveAttribute('datetime', '2026-10-27');
         // Billing is off in this run: "not on sale yet", except on the /privacy without the billing sections.
         await expect(page.locator('.legal-notyet'), where).toHaveCount(path === '/privacy' ? 0 : 1);
         expect(await page.locator('.legal section.panel').count(), where).toBeGreaterThan(4);
-        // English text inside a Hebrew page reads left to right (its full stops at the end).
-        if (lang === 'he') expect(await page.locator('#contact p').evaluate(e => getComputedStyle(e).direction), where).toBe('ltr');
+        // The Hebrew text reads right to left; nothing is left marked as English.
+        if (lang === 'he') {
+          expect(await page.locator('#contact p').evaluate(e => getComputedStyle(e).direction), where).toBe('rtl');
+          expect(await page.locator('.legal [lang="en"]').count(), where).toBe(0);
+        }
         for (const t of await findTouching(page)) problems.push(`${where}: ${t.a} ⟷ ${t.b} (${t.dir} ${t.gap}px)`);
         const wide = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
         if (wide > 1) problems.push(`${where}: scrolls sideways by ${wide}px`);
