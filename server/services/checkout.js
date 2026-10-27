@@ -29,19 +29,34 @@ export function mayBill(u) {
 /** The site's address for Stripe's return links: PUBLIC_URL, else this request's own origin. */
 export const baseUrl = req => config.publicUrl || `${req.protocol}://${req.get('host')}`;
 
-/** The family prices, found by lookup key: { month: { id, unitAmount }, year: {…} }, or null when either is missing,
- *  Stripe can't be read, or STRIPE_PMC_FAMILY isn't set (family plans are then not on sale anywhere: the "Family" payment
- *  method configuration keeps Link off, and there is no fallback to the account's default one). */
-export async function familyPrices() {
-  if (!S.billingOn() || !config.stripePmcFamily) return null;
+/** The family-type plans a grown-up can buy: Basic (one child) and Family. */
+export const FAMILY_PLANS = Object.freeze(['basic', 'family']);
+/**
+ * Every price we sell, read from Stripe's Price objects by lookup key (cached by stripe.js; the reconcile job refreshes
+ * the cache), so what a page shows always matches what Checkout charges. -> { basic, family, school } where basic and
+ * family are { month: { id, unitAmount }, year: {…} } (null when either is missing) and school is { year } or null; or
+ * null when billing is off or Stripe can't be read.
+ */
+export async function planPrices() {
+  if (!S.billingOn()) return null;
   try {
     const p = await S.prices();
-    const m = p[S.PRICE_LOOKUP_KEYS.familyMonthly], y = p[S.PRICE_LOOKUP_KEYS.familyYearly];
-    return m && y ? { month: { id: m.id, unitAmount: m.unitAmount }, year: { id: y.id, unitAmount: y.unitAmount } } : null;
+    const one = k => (p[k] ? { id: p[k].id, unitAmount: p[k].unitAmount } : null);
+    const pair = plan => { const m = one(S.lookupKeyFor(plan, 'month')), y = one(S.lookupKeyFor(plan, 'year')); return m && y ? { month: m, year: y } : null; };
+    const seat = one(S.PRICE_LOOKUP_KEYS.schoolSeatYearly);
+    return { basic: pair('basic'), family: pair('family'), school: seat ? { year: seat } : null };
   } catch (e) {
     log('warn', 'billing: prices not read', e instanceof S.StripeCallError ? e.fields : { error: e.message });
     return null;
   }
+}
+/** A family-type plan's prices ({ month, year }), or null when they are missing, Stripe can't be read, or
+ *  STRIPE_PMC_FAMILY isn't set (family-type plans are then not on sale anywhere: the "Family" payment method
+ *  configuration keeps Link off, and there is no fallback to the account's default one). plan: 'basic' | 'family'. */
+export async function familyPrices(plan = 'family') {
+  if (!S.billingOn() || !config.stripePmcFamily || !FAMILY_PLANS.includes(plan)) return null;
+  const p = await planPrices();
+  return (p && p[plan]) || null;
 }
 
 const ownerKey = fid => `family:${fid}`;
@@ -49,8 +64,8 @@ const ownerKey = fid => `family:${fid}`;
  *  succeeds later): a new Checkout would make two plans, so the grown-up fixes the payment in Manage billing instead. */
 const STALE_STATUSES = ['past_due', 'unpaid', 'incomplete', 'paused'];
 /** An owner's subscription that still waits for a payment (or a delayed payment still processing), or null. */
-export const unsettledPlanOf = (kind, id) => q.all(`SELECT * FROM billing_subscriptions WHERE owner_kind=? AND owner_id=? AND plan=? AND livemode=?
-    AND orphaned_at IS NULL`, kind, String(id), kind, S.currentLivemode())
+export const unsettledPlanOf = (kind, id) => q.all(`SELECT * FROM billing_subscriptions WHERE owner_kind=? AND owner_id=? AND plan IN (${B.PLANS_OF[kind].map(() => '?').join(',')}) AND livemode=?
+    AND orphaned_at IS NULL`, kind, String(id), ...B.PLANS_OF[kind], S.currentLivemode())
   .find(r => STALE_STATUSES.includes(r.status) || (r.payment_pending && ['active', 'trialing'].includes(r.status))) || null;
 /** The family's subscription that still waits for a payment (or a delayed payment still processing), or null. */
 export const unsettledPlan = fid => unsettledPlanOf('family', fid);
@@ -86,19 +101,20 @@ export async function endOpenSession(fid, kind = 'family') {
 }
 
 /**
- * A Checkout Session for a family plan. family: the families row; user: the grown-up; interval: 'month' | 'year';
- * base: the site's address. One at a time per family (an earlier open session is expired first).
+ * A Checkout Session for a family-type plan. family: the families row; user: the grown-up; plan: 'basic' | 'family';
+ * interval: 'month' | 'year'; base: the site's address. One at a time per family (an earlier open session is expired
+ * first). No child needs to be linked first: the grown-up pays, then adds their children on /family.
  * A plan that isn't entitled but is still unsettled at Stripe (past_due after grace, unpaid, incomplete, paused, or a
  * delayed payment) refuses with 'fixPayment' (Manage billing), so a late card retry can't leave two plans billed.
  * -> { ok: true, url } | { ok: false, code: 'entitled' | 'fixPayment' | 'paying' | 'noPrice' }
  */
-export function startFamilyCheckout({ family, user, interval, base }) {
+export function startFamilyCheckout({ family, user, interval, base, plan = 'family' }) {
   const fid = family.id;
   return B.serialize(`checkout-start:family:${fid}`, async () => {
     if (B.ownerPlan('family', fid).entitled) return { ok: false, code: 'entitled' };
     if (unsettledPlan(fid)) return { ok: false, code: 'fixPayment' };
     if (!config.stripePmcFamily) return { ok: false, code: 'noPrice' };
-    const prices = await familyPrices();
+    const prices = await familyPrices(plan);
     const price = prices && prices[interval];
     if (!price) return { ok: false, code: 'noPrice' };
     if (await endOpenSession(fid) === 'paid') return { ok: false, code: 'paying' };
@@ -117,7 +133,7 @@ export function startFamilyCheckout({ family, user, interval, base }) {
       allow_promotion_codes: true,
       integration_identifier: S.INTEGRATION_IDS.family,
       success_url: `${base}/family?checkout={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${base}/family`,
+      cancel_url: `${base}/family?plan=${plan}&interval=${interval}`,
     };
     // Which ways to pay is the "Family" payment method configuration's job (Link off), never payment_method_types.
     params.payment_method_configuration = config.stripePmcFamily;
@@ -129,7 +145,7 @@ export function startFamilyCheckout({ family, user, interval, base }) {
     }
     const session = await S.createCheckoutSession(params, `checkout-family-${fid}-${uid(12)}`);
     rememberSession('family', fid, session.id);
-    audit(user.id, 'billing.checkout.start', ownerKey(fid), { session: session.id, interval });
+    audit(user.id, 'billing.checkout.start', ownerKey(fid), { session: session.id, plan, interval });
     return { ok: true, url: session.url };
   });
 }

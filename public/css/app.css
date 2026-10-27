@@ -133,6 +133,15 @@ a:not([class]):focus-visible{outline-offset:1px;border-radius:4px}
 /* Where the wordmark would squeeze the search box (phones, and beside the full nav on small laptops), the app-icon mark. */
 @media (min-width:821px) and (max-width:1000px),(max-width:600px){.logo-lockup{display:none}.logo .appmark{display:block}}
 @media (min-width:1001px) and (max-width:1100px){.topbar:has(.navlink:nth-child(5)) .logo-lockup{display:none}.topbar:has(.navlink:nth-child(5)) .logo .appmark{display:block}}
+/* Six menu items (Classes or Schools, and Plans): the compact top bar up to wider screens, and on small laptops the
+   items without their emoji. */
+@media (min-width:1181px) and (max-width:1400px){
+  .topbar:has(.navlink:nth-child(6)){gap:8px}
+  .topbar:has(.navlink:nth-child(6)) .me-btn .name,.topbar:has(.navlink:nth-child(6)) .langpick .lang-code{display:none}
+  .topbar:has(.navlink:nth-child(6)) .navlink{padding:0 10px}
+}
+@media (min-width:1001px) and (max-width:1400px){.topbar:has(.navlink:nth-child(6)) .logo-lockup{display:none}.topbar:has(.navlink:nth-child(6)) .logo .appmark{display:block}}
+@media (min-width:821px) and (max-width:1000px){.topbar:has(.navlink:nth-child(6)) .navlink .emo{display:none}}
 /* Phones: a little more room for the search words (app.js also swaps in the short placeholder when the long one won't fit). */
 @media (max-width:420px){.topbar{gap:8px}.topsearch input{padding-inline:36px 10px}.topsearch .ico{inset-inline-start:11px}}
 /* Long nav labels (Russian, French, Dutch) can squeeze the search box to nothing just above 820px: then it hides
@@ -564,6 +573,41 @@ ol.steps li{margin-bottom:var(--s2)}
 .planterms li{margin-bottom:var(--s1)}
 .planbtns .btn{flex:1 1 220px}
 .planextras{padding:var(--s3);border-radius:var(--r-sm);background:var(--card-2)}
+.planname{margin:0 0 var(--s2)}
+.planchip{display:inline-block;padding:4px 14px;border-radius:999px;background:var(--card-2);box-shadow:inset 0 0 0 2px var(--line);font-weight:800}
+.planchip.paid{background:var(--accent-soft);box-shadow:inset 0 0 0 2px var(--accent-line);color:var(--accent-ink)}
+.planpick{margin-top:var(--s4);padding:var(--s4);border-radius:var(--r-sm);background:var(--card-2)}
+.planpick h3{margin-top:0}
+.planbtns form.planform{margin:0;flex:1 1 220px}
+.planbtns form.planform .btn{width:100%}
+.welcome .notice{margin-bottom:var(--s4)}
+.welcome .notice:last-child{margin-bottom:0}
+/* The plans page (routes/plans.js): four cards like any pricing page, a monthly / yearly switch, then the fine print. */
+.plans-head{text-align:center;margin-bottom:var(--s5)}
+.plans-head .lead{max-width:640px;margin-inline:auto}
+.plan-seg{margin-top:var(--s2)}
+.plan-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--s4);align-items:stretch;margin-top:var(--s5)}
+@media (max-width:1100px){.plan-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:640px){.plan-grid{grid-template-columns:minmax(0,1fr)}}
+.plan-card{position:relative;display:flex;flex-direction:column;background:var(--card);border-radius:var(--r);box-shadow:var(--shadow),inset 0 0 0 2px var(--line);padding:var(--s5) 20px 20px}
+.plan-card.recommended{box-shadow:var(--shadow-lg),inset 0 0 0 3px var(--accent-line)}
+.plan-card.current{box-shadow:var(--shadow),inset 0 0 0 3px var(--current)}
+.plan-card h2{margin:0;font-size:1.4rem}
+.plan-tag{margin:var(--s1) 0 var(--s3)}
+.plan-badge{position:absolute;top:0;inset-inline-start:50%;transform:translate(-50%,-50%);padding:4px 12px;border-radius:999px;background:var(--accent);color:var(--on-accent);font-weight:800;font-size:.85rem;white-space:nowrap}
+[dir="rtl"] .plan-badge{transform:translate(50%,-50%)}
+.plan-price{margin:0;display:flex;align-items:baseline;gap:6px;flex-wrap:wrap;min-height:2.6rem}
+.plan-price .amt{font-size:2.1rem;font-weight:800;letter-spacing:-.02em;line-height:1.1}
+.plan-price .per{color:var(--muted);font-weight:700}
+.plan-sub{margin:var(--s1) 0 var(--s4);min-height:1.4em}
+.plan-list{list-style:none;padding:0;margin:0 0 var(--s4);display:flex;flex-direction:column;gap:var(--s2);flex:1}
+.plan-list li{display:flex;gap:var(--s2);align-items:flex-start}
+.plan-list .tick{color:var(--ok);font-weight:800;flex:none}
+.plan-cta{display:flex;flex-direction:column;gap:var(--s2);align-items:stretch}
+.plan-yours{display:flex;align-items:center;justify-content:center;min-height:44px;border-radius:999px;background:var(--current);color:var(--on-current);font-weight:800}
+.plan-ask{margin-top:var(--s4)}
+.plan-grid + p{margin:var(--s4) 0 0}
+.plan-fine{margin-top:var(--s5)}
 .faq h3{font-size:1rem;margin:var(--s4) 0 var(--s1)}
 .faq h3:first-of-type{margin-top:0}
 .faq p{margin:0}

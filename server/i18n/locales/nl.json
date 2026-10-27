@@ -2789,10 +2789,6 @@
       "removed": "Klaar.",
       "cancel": "Verzoek annuleren",
       "cancelConfirm": "Dit verzoek annuleren?",
-      "planHeading": "Gezinsabonnement",
-      "planActive": "Je gezinsabonnement is actief.",
-      "planNone": "Geen gezinsabonnement. Kinderen koppelen is gratis en verandert niets voor hen.",
-      "planMore": "Over gezinsabonnementen",
       "helpHeading": "Hulp",
       "help": "Vragen, of een probleem met je account? Mail naar {email}.",
       "off": "Gezinsaccounts staan nu uit. Je kunt hier nog wel games spelen, je taal of wachtwoord veranderen en uitloggen."
@@ -2834,7 +2830,6 @@
       "renewsYearly": "Jaarlijks, wordt verlengd op {date}.",
       "extrasLeft": "Nog {left} van {total, plural, one {# extra bericht} other {# extra berichten}} over deze maand, geteld tot en met gisteren",
       "extrasReset": "Ze beginnen op {date} (UTC) opnieuw. Ongebruikte berichten worden niet meegenomen.",
-      "linkFirst": "Koppel eerst een kind (dat zegt ja op de eigen pagina), daarna kun je een abonnement nemen.",
       "terms": {
         "renew": "Het abonnement wordt elke maand of elk jaar automatisch verlengd totdat je het opzegt.",
         "cancel": "Altijd opzegbaar via Abonnement beheren. Het abonnement blijft werken tot het einde van de periode waarvoor je hebt betaald.",

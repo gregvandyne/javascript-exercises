@@ -135,8 +135,8 @@ test('test mode: only billing testers may check out or open the Portal (D14)', a
   assert.equal((await call(who, '/api/billing/portal', { method: 'POST', body: {} })).status, 403);
   assert.equal(C.mayBill(g), false);
   assert.equal(C.mayBill({ ...g, billing_tester: 1 }), true);
-  // The /family page doesn't offer Subscribe to a non-tester in test mode.
-  const page = await call(who, '/family');
+  // The /family page doesn't offer Subscribe to a non-tester in test mode, even with a plan picked on /plans.
+  const page = await call(who, '/family?plan=family&interval=month');
   assert.equal(page.status, 200);
   assert.doesNotMatch(page.text, /data-api="\/api\/billing\/family\/checkout"/);
   assert.match(page.text, /aren&#39;t on sale yet|aren't on sale yet/);
@@ -163,13 +163,18 @@ test('step-up: the password again before checkout (10 minutes), wrong ones count
   assert.equal((await checkout(who, { interval: 'month', password: PW })).status, 429);
 });
 
-test('checkout needs a confirmed child and a known interval', async () => {
+test('pay first: checkout needs no linked child, only a known plan and interval', async () => {
   const g = grownup(); const who = signIn(g); C.markReauth(who.sid);
   let r = await checkout(who);
-  assert.equal(r.status, 409); assert.match(r.json.error, /Link a child first/);
-  const f = family();
-  r = await checkout(f.who, { interval: 'week' });
-  assert.equal(r.status, 400);
+  assert.equal(r.status, 200, r.text);
+  assert.match(r.json.redirect, /\/pay\/cs_test_/);
+  r = await checkout(who, { interval: 'year', plan: 'basic' });
+  assert.equal(r.status, 200, r.text);
+  assert.deepEqual(lastCheckoutParams().params.line_items, [{ price: 'price_fake_basic_yearly', quantity: '1' }]);
+  for (const body of [{ interval: 'week' }, { interval: 'month', plan: 'child' }, { interval: 'month', plan: 'plus' }, { interval: 'month', plan: 'school' }]) {
+    r = await checkout(who, body);
+    assert.equal(r.status, 400, JSON.stringify(body));
+  }
 });
 
 test('the Checkout Session: hosted, subscription mode, prices by lookup key, flexible billing, our ids, never payment_method_types', async () => {
@@ -194,7 +199,7 @@ test('the Checkout Session: hosted, subscription mode, prices by lookup key, fle
   assert.equal(p.allow_promotion_codes, 'true');
   assert.match(p.integration_identifier, /^oomba_family_[a-z]{8}$/);
   assert.equal(p.success_url, `${base}/family?checkout={CHECKOUT_SESSION_ID}`);
-  assert.equal(p.cancel_url, `${base}/family`);
+  assert.equal(p.cancel_url, `${base}/family?plan=family&interval=month`);
   assert.equal(p.payment_method_configuration, 'pmc_fakefamily', 'the Family configuration (Link off), always');
   for (const k of ['payment_method_types', 'automatic_tax', 'consent_collection', 'custom_text']) assert.equal(p[k], undefined, k);
   assert.ok(fake.requests.slice(before).filter(x => x.method === 'POST').every(x => x.idempotencyKey), 'every POST has an idempotency key');
@@ -261,13 +266,17 @@ test('paying on Stripe\'s page: webhooks turn the plan on; the return page shows
   assert.equal(audits('billing.checkout.done', `family:${f.fam.id}`).length, 1);
   assert.equal((await call(f.who, '/api/billing/status')).json.state, 'active');
   const page = await call(f.who, '/family');
-  assert.match(page.text, /Your family plan is active/);
+  assert.match(page.text, /class="planchip paid">Family plan</);
+  assert.match(page.text, /Monthly, renews on/);
+  assert.match(page.text, /<a class="btn" href="\/plans">Change plan<\/a>/);
   assert.match(page.text, /5 of 5 extra messages left this month/);
   assert.match(page.text, /data-api="\/api\/billing\/portal"/);
   assert.doesNotMatch(page.text, /data-api="\/api\/billing\/family\/checkout"/);
-  // The kid's view of the same moment: no money or plan words anywhere on /me.
+  // The kid's view of the same moment: no money or plan words anywhere on /me, besides the menu's Plans link that
+  // everyone has (docs/decisions.md "Paid plans" §17).
   const me = await call(signIn(f.child), '/me');
-  assert.doesNotMatch(me.text, /\$\d|plan|subscri|billing/i);
+  assert.match(me.text, /<a class="navlink" href="\/plans"/);
+  assert.doesNotMatch(me.text.replace(/<a [^>]*href="\/plans"[^>]*>[\s\S]*?<\/a>/g, ''), /\$\d|plan|subscri|billing/i);
 });
 
 test('the return page\'s fallback: syncs from the session itself; another family\'s session changes nothing', async () => {
@@ -507,7 +516,13 @@ test('the Studio counter: free left of the daily ones, plus the extras this mont
 // ---------------------------------------------------------------- pages
 test('/family: Subscribe buttons with prices, what to read before paying, the password field only when needed', async () => {
   const f = family({ fresh: false });
+  // No plan picked: the Free plan card and a way to the plans page, nothing to pay.
   let page = (await call(f.who, '/family')).text;
+  assert.match(page, /class="planchip">Free plan</);
+  assert.match(page, /<a class="btn btn-primary" href="\/plans">See plans<\/a>/);
+  assert.doesNotMatch(page, /data-api="\/api\/billing\/family\/checkout"/);
+  page = (await call(f.who, '/family?plan=family&interval=month')).text;
+  assert.match(page, /Start your Family plan/);
   assert.match(page, /Subscribe: \$7\.99 a month/);
   assert.match(page, /Subscribe: \$69\.00 a year/);
   assert.match(page, /renews automatically/);
@@ -522,7 +537,7 @@ test('/family: Subscribe buttons with prices, what to read before paying, the pa
   assert.match(page, /<div class="field" data-reauth >/, 'shown while not fresh');
   C.markReauth(f.who.sid);
   config.termsPublished = true;
-  page = (await call(f.who, '/family')).text;
+  page = (await call(f.who, '/family?plan=family')).text;
   // Fresh: the field is still in the form, hidden and not required, so a page left open past 10 minutes can ask for it.
   assert.match(page, /<div class="field" data-reauth hidden>/);
   assert.match(page, /id="pw-checkout"/);
@@ -638,7 +653,7 @@ test('without STRIPE_PMC_FAMILY family plans are not on sale: no Subscribe, no C
   const r = await checkout(f.who);
   assert.equal(r.status, 409); assert.match(r.json.error, /can't be bought right now/);
   assert.equal(fake.requests.slice(before).filter(x => x.method === 'POST' && x.path === '/v1/checkout/sessions').length, 0, 'never a session without the Family configuration');
-  const page = (await call(f.who, '/family')).text;
+  const page = (await call(f.who, '/family?plan=basic')).text;
   assert.doesNotMatch(page, /data-api="\/api\/billing\/family\/checkout"/);
   assert.match(page, /aren&#39;t on sale yet|aren't on sale yet/);
   assert.match((await call(f.who, '/grown-ups')).text, /aren&#39;t on sale yet|aren't on sale yet/);

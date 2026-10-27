@@ -3,7 +3,8 @@
 // Portal pages send signed webhooks back to the server.
 //   - subscribe → webhook → the child's extra messages → Manage billing (Portal) cancel → refund ends the plan;
 //   - a crawl of every kid page in every language (an entitled family child, a school student, a guest): no prices,
-//     no plan or grown-up page words, no link to /grown-ups or /family, also with the limit reached;
+//     no plan or grown-up page words, no link to /grown-ups or /family, also with the limit reached (the menu's Plans
+//     link is for everyone, docs/decisions.md "Paid plans" §17: prices are allowed on /plans itself, nowhere else);
 //   - the new pages at 360 px and 1280 px, light and dark, and right to left (he).
 import { test, expect } from '@playwright/test';
 import fs from 'node:fs';
@@ -88,9 +89,11 @@ async function makeTester(browser, name) {
   await a.reload();
   await expect(a.locator('main')).toContainText('may check out while the Stripe key is a test key');
 }
-/** The grown-up subscribes monthly on /family (password, fake Stripe page) and comes back to an active plan. */
+/** The grown-up picks the Family plan (monthly) on /plans, pays on /family (password, fake Stripe page) and comes back
+ *  to an active plan. */
 async function subscribe(mum) {
-  await mum.goto('/family');
+  await mum.goto('/plans');
+  await Promise.all([mum.waitForURL(/\/family\?plan=family&interval=month/), mum.locator('#plan-family a', { hasText: 'Choose Family' }).click()]);
   const plan = mum.locator('#plan');
   await expect(plan).toContainText('Subscribe: $7.99 a month');
   await expect(plan).toContainText('Subscribe: $69.00 a year');
@@ -98,7 +101,7 @@ async function subscribe(mum) {
   await mum.fill('#pw-checkout', PW);
   await Promise.all([mum.waitForURL(/\/family\?checkout=cs_test_/), plan.locator('button[value="month"]').click()]);
   // The webhook usually wins the race (the page then says so at once); otherwise the page waits for it.
-  await expect(mum.locator('#plan')).toContainText('Your family plan is active', { timeout: 30_000 });
+  await expect(mum.locator('#plan .planchip.paid')).toHaveText('Family plan', { timeout: 30_000 });
 }
 /** One Builder message through the Studio's API, waited for. -> the reply's status */
 async function send(page, id, text) {
@@ -110,7 +113,7 @@ async function send(page, id, text) {
 test('subscribe → webhook → the child\'s extra messages → Manage billing cancel → a refund ends the plan', async ({ browser }) => {
   const { kid, mum, mumName } = await linkedFamily(browser);
   // Not a billing tester yet: no Subscribe (test mode).
-  await mum.goto('/family');
+  await mum.goto('/family?plan=family&interval=month');
   await expect(mum.locator('#plan')).toContainText("aren't on sale yet");
   await makeTester(browser, mumName);
   await subscribe(mum);
@@ -137,14 +140,14 @@ test('subscribe → webhook → the child\'s extra messages → Manage billing c
   await Promise.all([mum.waitForURL(new RegExp(`${STRIPE}/portal/`)), mum.locator('#plan button', { hasText: 'Manage billing' }).click()]);
   await Promise.all([mum.waitForURL(/\/family$/), mum.click('#cancel')]);
   await expect(mum.locator('#plan')).toContainText("won't renew");
-  await expect(mum.locator('#plan')).toContainText('Your family plan is active');
+  await expect(mum.locator('#plan .planchip.paid')).toHaveText('Family plan');
 
   // The owner refunds the payment in Stripe: the plan ends at once, the child is back on the free messages.
   const st = await (await fetch(`${STRIPE}/_test/state`, { method: 'POST' })).json();
   const sub = st.subscriptions.find(s => s.status === 'active' && s.cancel_at_period_end);
   expect((await control('refund-latest', { subscription: sub.id })).status).toBe(200);
   await mum.reload();
-  await expect(mum.locator('#plan')).toContainText('No family plan');
+  await expect(mum.locator('#plan .planchip')).toHaveText('Free plan');
   await kid.reload();
   await expect(kid.locator('#st-turns')).not.toContainText('extra this month');
   await a.goto('/admin/billing?status=canceled');
@@ -174,7 +177,7 @@ test('a payment form left open past the 10 minutes asks for the password again; 
   await other.mum.goto('/family?checkout=cs_test_notyetpaid12345');
   const plan = other.mum.locator('#plan');
   await expect(plan).toContainText('Setting up your plan');
-  await expect(plan).not.toContainText('No family plan');
+  await expect(plan).not.toContainText('Free plan');
   await expect(plan.locator('button[value="month"], #pw-checkout')).toHaveCount(0);
   await expect(plan.locator('a[href="/family"]')).toBeVisible({ timeout: 10_000 });   // not this family's session: the slow message
 });
@@ -264,7 +267,7 @@ test('the new pages: nothing touches, no sideways scroll (360 / 1280, light / da
   const beforeState = await before.mum.context().storageState(), paidState = await paid.mum.context().storageState();
   const adminState = await (await admin(browser)).context().storageState();
   const sets = [
-    [beforeState, ['/family', '/family?checkout=cs_test_layoutcheck123']],
+    [beforeState, ['/family', '/family?plan=family&interval=year', '/family?checkout=cs_test_layoutcheck123']],
     [paidState, ['/family', '/grown-ups']],
     [adminState, ['/admin/billing']],
   ];

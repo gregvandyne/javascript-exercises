@@ -488,7 +488,8 @@ test('a subscription to a price of the other plan never entitles (a family plan 
 
 test('prices are found by lookup key', async () => {
   const p = await S.prices({ refresh: true });
-  assert.deepEqual(Object.keys(p).sort(), ['oomba_family_monthly', 'oomba_family_yearly', 'oomba_school_seat_yearly']);
+  assert.deepEqual(Object.keys(p).sort(), ['oomba_basic_monthly', 'oomba_basic_yearly', 'oomba_family_monthly', 'oomba_family_yearly', 'oomba_school_seat_yearly']);
+  assert.equal(p.oomba_basic_monthly.unitAmount, 499); assert.equal(p.oomba_basic_yearly.interval, 'year');
   assert.equal(p.oomba_family_yearly.interval, 'year');
   assert.equal(p.oomba_school_seat_yearly.unitAmount, 2000);
   const req = fake.requests.findLast(r => r.path === '/v1/prices');

@@ -2788,10 +2788,6 @@
       "removed": "C’est fait.",
       "cancel": "Annuler la demande",
       "cancelConfirm": "Annuler cette demande ?",
-      "planHeading": "Abonnement famille",
-      "planActive": "Votre abonnement famille est actif.",
-      "planNone": "Pas d’abonnement famille. Relier vos enfants est gratuit et ne change rien pour eux.",
-      "planMore": "À propos des abonnements famille",
       "helpHeading": "Aide",
       "help": "Une question, ou un problème avec votre compte ? Écrivez à {email}.",
       "off": "Les comptes familiaux sont désactivés pour le moment. Ici, vous pouvez toujours jouer, changer de langue ou de mot de passe, et vous déconnecter."
@@ -2833,7 +2829,6 @@
       "renewsYearly": "Abonnement annuel, renouvelé le {date}.",
       "extrasLeft": "Il reste {left} sur {total, plural, one {# message supplémentaire} other {# messages supplémentaires}} ce mois-ci, en comptant jusqu’à hier",
       "extrasReset": "Ils seront renouvelés le {date} (UTC). Ceux qui ne sont pas utilisés ne sont pas reportés.",
-      "linkFirst": "Reliez d’abord un enfant (il dit oui sur sa propre page), puis vous pourrez souscrire un abonnement.",
       "terms": {
         "renew": "L’abonnement est renouvelé automatiquement chaque mois ou chaque année jusqu’à ce que vous le résiliiez.",
         "cancel": "Résiliable à tout moment dans « Gérer l’abonnement ». L’abonnement continue jusqu’à la fin de la période payée.",

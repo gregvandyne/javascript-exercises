@@ -44,10 +44,12 @@ export async function startFakeStripe({ port = 0, host = '127.0.0.1', apiVersion
   const sessionExtra = new Map();      // session id -> what the fake hosted page needs to make the subscription
   const fake = { url: '', host, port: 0, apiVersion, webhookSecret, webhookUrl, livemode, requests: [], violations: [], failGets: [], slowGets: [], deliveries: [], st };
 
-  // ---- Catalogue: the three prices, found by lookup key (like the sandbox) ----
+  // ---- Catalogue: the five prices, found by lookup key (like the sandbox) ----
   const addPrice = (lookup, amount, interval, product) => st.prices.set(lookup, { id: 'price_fake_' + lookup.replace(/^oomba_/, ''), object: 'price', active: true, currency: 'usd', lookup_key: lookup, product, recurring: { interval, interval_count: 1, usage_type: 'licensed' }, tax_behavior: 'exclusive', type: 'recurring', unit_amount: amount, livemode });
   // Products carry oomba_plan metadata (docs/decisions.md "Paid plans": the plan survives a new Price).
-  for (const [id, plan] of [['prod_fake_family', 'family'], ['prod_fake_school', 'school'], ['prod_fake_other', null]]) st.products.set(id, { id, object: 'product', active: true, livemode, metadata: plan ? { oomba_plan: plan } : {}, name: id });
+  for (const [id, plan] of [['prod_fake_basic', 'basic'], ['prod_fake_family', 'family'], ['prod_fake_school', 'school'], ['prod_fake_other', null]]) st.products.set(id, { id, object: 'product', active: true, livemode, metadata: plan ? { oomba_plan: plan } : {}, name: id });
+  addPrice('oomba_basic_monthly', 499, 'month', 'prod_fake_basic');
+  addPrice('oomba_basic_yearly', 4500, 'year', 'prod_fake_basic');
   addPrice('oomba_family_monthly', 799, 'month', 'prod_fake_family');
   addPrice('oomba_family_yearly', 6900, 'year', 'prod_fake_family');
   addPrice('oomba_school_seat_yearly', 2000, 'year', 'prod_fake_school');
@@ -144,6 +146,14 @@ export async function startFakeStripe({ port = 0, host = '127.0.0.1', apiVersion
     if (patch.latestInvoice) s.latest_invoice = patch.latestInvoice;
     return s;
   };
+  /** A plan switch in the Customer Portal (Basic <-> Family, monthly <-> yearly): the same subscription gets the other
+   *  price; Stripe prorates and sends customer.subscription.updated. */
+  fake.switchPrice = (subId, lookupKey) => {
+    const s = st.subscriptions.get(subId); const price = st.prices.get(lookupKey);
+    if (!s || !price) throw new Error('no such subscription or price');
+    s.items.data[0].price = price;
+    return s;
+  };
   fake.chargeOf = invId => st.charges.get(chargeOfInvoice.get(invId));
   fake.sessionExtra = id => sessionExtra.get(id) || {};
   fake.dispute = chargeId => { const ch = st.charges.get(chargeId); const d = { id: rid('dp_'), object: 'dispute', amount: ch.amount, charge: ch.id, payment_intent: ch.payment_intent, currency: 'usd', livemode, reason: 'fraudulent', status: 'needs_response', created: sec() }; ch.disputed = true; st.disputes.set(d.id, d); return d; };
@@ -215,6 +225,8 @@ export async function startFakeStripe({ port = 0, host = '127.0.0.1', apiVersion
           for (const i of open) i.due_date = sec(Date.now() - (b.days ?? 1) * DAY * 1000);
           return ok(res, open.length ? await fake.emit('invoice.overdue', open[0].id) : { status: 404 });
         }
+        // The grown-up switches plans in the Portal (b.lookupKey, e.g. oomba_basic_monthly).
+        if (p === '/_test/switch-plan') { fake.switchPrice(b.subscription, b.lookupKey); return ok(res, await fake.emit('customer.subscription.updated', b.subscription)); }
         if (p === '/_test/fail-next-payment') { fake.failNextPayment(b.n || 1); return ok(res, { ok: true }); }
         if (p === '/_test/refund-latest') { const sub = st.subscriptions.get(b.subscription); const ch = fake.chargeOf(sub.latest_invoice); fake.refund(ch.id, b.amount ?? null); return ok(res, await fake.emit('charge.refunded', ch.id)); }
       } catch (e) { return err(res, 400, 'invalid_request_error', null, e.message); }

@@ -2788,10 +2788,6 @@
       "removed": "Listo.",
       "cancel": "Cancelar solicitud",
       "cancelConfirm": "¿Cancelar esta solicitud?",
-      "planHeading": "Plan familiar",
-      "planActive": "Su plan familiar está activo.",
-      "planNone": "Sin plan familiar. Vincular a los niños es gratis y no cambia nada para ellos.",
-      "planMore": "Sobre los planes familiares",
       "helpHeading": "Ayuda",
       "help": "¿Tiene preguntas o algún problema con su cuenta? Escriba a {email}.",
       "off": "Las cuentas familiares están desactivadas en este momento. Aquí todavía puede jugar, cambiar su idioma o su contraseña, y cerrar sesión."
@@ -2833,7 +2829,6 @@
       "renewsYearly": "Anual, se renueva el {date}.",
       "extrasLeft": "Quedan {left} de {total, plural, one {# mensaje extra} other {# mensajes extra}} este mes, contando hasta ayer",
       "extrasReset": "Se renuevan el {date} (UTC). Los que no se usen no se acumulan.",
-      "linkFirst": "Primero vincule a un hijo o hija (tiene que decir que sí en su propia página); después podrá contratar un plan.",
       "terms": {
         "renew": "El plan se renueva automáticamente cada mes o cada año hasta que lo cancele.",
         "cancel": "Puede cancelar cuando quiera en “Administrar pagos”. El plan sigue funcionando hasta el final del período que pagó.",

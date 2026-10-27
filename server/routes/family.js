@@ -21,8 +21,9 @@ import * as F from '../services/family.js';
 import * as S from '../services/stripe.js';
 import * as C from '../services/checkout.js';
 import { log } from '../services/log.js';
-import { familyMonth } from '../builder/usage.js';
-import { customerOf } from '../services/billing.js';
+import { familyMonth, coveredChildren } from '../builder/usage.js';
+import * as B from '../services/billing.js';
+const { customerOf } = B;
 import { rateLimit, allow, count, ipOf, loginLockKey } from '../services/ratelimit.js';
 import { tHtml, saveUserLang } from '../i18n/index.js';
 import { saveUserTheme } from '../theme.js';
@@ -38,7 +39,7 @@ const nope = (req, res) => (isApi(req) ? res.status(404).json({ error: req.t('er
 // password and theme, and the family routes. Game calls a play page makes (save, score, ...) are allowed; a grown-up's
 // score is never stored (routes/games.js), so they are on no leaderboard.
 const GROWNUP_GET = [/^\/$/, /^\/search$/, /^\/api\/(search|live|me|billing\/status)$/, /^\/(g|play)\/[^/]+$/, /^\/(frame|shots|avatars)\/[^/]+$/,
-  /^\/(parents|safety|terms|refunds|privacy)$/, /^\/grown-ups(\/(signup|login))?$/, /^\/family(\/link)?$/, /^\/(login|signup)$/, /^\/api\/games\/[^/]+\/(save|leaderboard)$/];
+  /^\/(parents|safety|terms|refunds|privacy)$/, /^\/plans(\/schools)?$/, /^\/grown-ups(\/(signup|login))?$/, /^\/family(\/link)?$/, /^\/(login|signup)$/, /^\/api\/games\/[^/]+\/(save|leaderboard)$/];
 const GROWNUP_POST = [/^\/api\/auth\/(login|logout|logout-everywhere)$/, /^\/api\/me\/(password|theme)$/, /^\/api\/family\/(link|children\/[^/]+\/remove)$/,
   /^\/api\/billing\/(family\/checkout|portal)$/,
   /^\/api\/games\/[^/]+\/(play|heartbeat|leave|save|score|report)$/];
@@ -152,7 +153,7 @@ async function familyPrices() {
 }
 /** The family plan's limits, stated before buying: the per-child daily ceiling (only when it is below the monthly extras:
  *  a bigger number would read like a promise of that many a day), the cost backstop, and (reset) when extras start again. */
-function limitsText(t, { reset = true } = {}) {
+export function limitsText(t, { reset = true } = {}) {
   const parts = [];
   if (config.familyChildDailyMax < config.familyExtraMessages) parts.push(t('family.landing.what.limitDaily', { daily: config.familyChildDailyMax }));
   parts.push(t('family.landing.what.limitCost'));
@@ -160,13 +161,24 @@ function limitsText(t, { reset = true } = {}) {
   return parts.join(' ');
 }
 /** Are family plans on sale to this visitor? With a live key, yes; with a test key, only to billing testers (D14). */
-const onSale = u => S.billingMode() === 'live' || (auth.isGrownup(u) && C.mayBill(u));
+export const onSale = u => S.billingMode() === 'live' || (auth.isGrownup(u) && C.mayBill(u));
+/** A plan a grown-up picked on /plans (?plan=basic|family&interval=month|year), kept through sign-up or sign-in and
+ *  shown on /family as the plan to pay for. -> { plan, interval } or null */
+export function chosenPlan(query = {}) {
+  const plan = typeof query.plan === 'string' && C.FAMILY_PLANS.includes(query.plan) ? query.plan : null;
+  if (!plan) return null;
+  return { plan, interval: query.interval === 'year' ? 'year' : 'month' };
+}
+const choiceQuery = c => (c ? `?plan=${c.plan}&interval=${c.interval}` : '');
+/** The plan's name in a sentence ("Basic plan", "Family plan", "Free plan"). */
+export const planName = (t, plan) => t(plan === 'basic' ? 'family.plan.basic' : plan === 'family' ? 'family.plan.family' : 'family.plan.free');
 router.get('/grown-ups', on, async (req, res) => {
   const t = req.t, f = req.fmt, u = req.user;
   const prices = await familyPrices();
   const qa = k => html`<h3>${t(`family.landing.faq.${k}.q`)}</h3><p>${t(`family.landing.faq.${k}.a`)}</p>`;
   const actions = auth.isGrownup(u) ? html`<a class="btn btn-primary" href="/family">${t('family.landing.toFamily')}</a>`
     : html`<a class="btn btn-primary" href="/grown-ups/signup">${t('family.landing.signup')}</a><a class="btn" href="/grown-ups/login">${t('family.landing.login')}</a>`;
+  const plansLink = html`<p style="margin-bottom:0"><a class="btn" href="/plans">${t('family.landing.plans')}</a></p>`;
   const body = html`<div class="${PANEL_STYLE}" style="padding:0">
     <h1>👪 ${t('family.landing.heading')}</h1>
     <p class="lead">${t('family.landing.intro')}</p>
@@ -179,7 +191,7 @@ router.get('/grown-ups', on, async (req, res) => {
       ${prices ? html`<p>${t('family.landing.price.p1', { monthly: f.money(prices.monthly), yearly: f.money(prices.yearly) })}</p>` : ''}
       ${prices && onSale(u) ? '' : html`<p>${t('family.landing.price.soon')}</p>`}
       <p class="muted">${t('family.landing.price.us')}</p>
-      <p class="small">${tHtml(t, 'family.billing.legal')}</p></section>
+      <p class="small">${tHtml(t, 'family.billing.legal')}</p>${plansLink}</section>
     <section class="panel"><h2>${t('family.landing.how.h')}</h2>
       <ol class="steps"><li>${t('family.landing.how.p1')}</li><li>${tHtml(t, 'family.landing.how.p2')}</li><li>${t('family.landing.how.p3')}</li></ol></section>
     <section class="panel faq"><h2>${t('family.landing.faq.h')}</h2>
@@ -193,11 +205,14 @@ router.get('/grown-ups', on, async (req, res) => {
 /** A grown-up sign-up or sign-in box. Someone signed in with a kid account is asked to sign out first. */
 function grownupAuthPage(req, res, mode) {
   const t = req.t, u = req.user, isSignup = mode === 'signup';
-  if (auth.isGrownup(u)) return res.redirect(nextFor(u, wantedNext(req.query.next)) || '/family');
-  const next = nextFor({ account_type: 'grownup' }, wantedNext(req.query.next)) || '/family';
+  const chosen = chosenPlan(req.query);
+  if (auth.isGrownup(u)) return res.redirect(nextFor(u, wantedNext(req.query.next)) || `/family${choiceQuery(chosen)}`);
+  const next = nextFor({ account_type: 'grownup' }, wantedNext(req.query.next)) || `/family${choiceQuery(chosen)}`;
   const signedInKid = u && !u.is_guest;
+  // The plan picked on /plans, named above the form and kept through sign-up or sign-in (then paid for on /family).
+  const picked = chosen ? html`<p class="notice" role="status"><span aria-hidden="true">🧾</span> ${t('family.signup.chosen', { plan: planName(t, chosen.plan) })}</p>` : '';
   const min = auth.STAFF_PASSWORD_MIN;
-  const form = isSignup ? html`<form data-api="/api/grown-ups/signup" novalidate>
+  const form = isSignup ? html`<form data-api="/api/grown-ups/signup" novalidate>${chosen ? html`<input type="hidden" name="plan" value="${chosen.plan}"><input type="hidden" name="interval" value="${chosen.interval}">` : ''}
       <div class="field"><label for="username">${t('family.signup.nameLabel')}</label>
         <input class="input" id="username" name="username" dir="ltr" autocomplete="username" required minlength="3" maxlength="16" autocapitalize="off" spellcheck="false">
         <span class="hint">${t('family.signup.nameHint')}</span><span class="err" id="username-err" aria-live="polite"></span></div>
@@ -210,7 +225,7 @@ function grownupAuthPage(req, res, mode) {
       <p class="err form-err" aria-live="polite"></p>
       <button class="btn btn-primary btn-block btn-big" type="submit">${t('family.signup.submit')}</button>
     </form>
-    <p class="center small" style="margin-top:16px">${t('family.signup.haveAccount')} <a href="/grown-ups/login">${t('family.landing.login')}</a></p>`
+    <p class="center small" style="margin-top:16px">${t('family.signup.haveAccount')} <a href="/grown-ups/login${choiceQuery(chosen)}">${t('family.landing.login')}</a></p>`
     : html`<form data-api="/api/auth/login" novalidate><input type="hidden" name="next" value="${next}">
       <div class="field"><label for="username">${t('family.signup.nameLabel')}</label>
         <input class="input" id="username" name="username" dir="ltr" autocomplete="username" required maxlength="16" autocapitalize="off" spellcheck="false"><span class="err" id="username-err" aria-live="polite"></span></div>
@@ -220,15 +235,16 @@ function grownupAuthPage(req, res, mode) {
       <button class="btn btn-primary btn-block btn-big" type="submit">${t('family.login.submit')}</button>
     </form>
     ${config.contactEmail ? html`<p class="small muted" style="margin-top:12px">${tHtml(t, 'family.login.forgot', { email: html`<a href="mailto:${config.contactEmail}" dir="ltr">${config.contactEmail}</a>` })}</p>` : ''}
-    <p class="center small" style="margin-top:16px">${t('family.login.newHere')} <a href="/grown-ups/signup">${t('family.landing.signup')}</a></p>`;
+    <p class="center small" style="margin-top:16px">${t('family.login.newHere')} <a href="/grown-ups/signup${choiceQuery(chosen)}">${t('family.landing.signup')}</a></p>`;
   const body = html`<div class="authbox"><div class="panel">
     <h1 class="center">${isSignup ? t('family.signup.heading') : t('family.login.heading')}</h1>
     <p class="center muted">${isSignup ? t('family.signup.intro') : t('family.login.intro')}</p>
     ${!isSignup && (req.query.signedout === '1' || req.sessionEnded) ? html`<p class="notice warn" role="status">${t('auth.page.signedOut')}</p>` : ''}
+    ${signedInKid ? '' : picked}
     ${signedInKid ? html`<div class="notice warn"><p style="margin-top:0">${tHtml(t, 'family.signup.signedIn', { name: html`<b><bdi>${u.display_name}</bdi></b>` })}</p>
       <form data-api="/api/auth/logout"><input type="hidden" name="next" value="${req.path}"><button class="btn" type="submit">${t('me.signOut.button')}</button></form></div>` : form}
   </div></div>`;
-  page(req, res, { title: isSignup ? t('family.signup.title') : t('family.login.title'), back: '/grown-ups', backLabel: t('family.landing.title'), body });
+  page(req, res, { title: isSignup ? t('family.signup.title') : t('family.login.title'), back: chosen ? '/plans' : '/grown-ups', backLabel: chosen ? t('plans.title') : t('family.landing.title'), body });
 }
 router.get('/grown-ups/signup', on, (req, res) => grownupAuthPage(req, res, 'signup'));
 router.get('/grown-ups/login', on, (req, res) => grownupAuthPage(req, res, 'login'));
@@ -258,7 +274,8 @@ router.post('/api/grown-ups/signup', on, (req, res) => {
   allow(`signup:${ip}`, SIGNUP.perHour, 3600e3);
   if (req.localeSource === 'cookie') saveUserLang(u, req.locale);
   if (req.themeSource === 'cookie') saveUserTheme(u, req.theme);
-  res.json({ ok: true, redirect: '/family' });
+  // A plan picked on /plans comes along: /family then asks for it (password again, then Stripe's Checkout).
+  res.json({ ok: true, redirect: `/family${choiceQuery(chosenPlan(req.body || {}))}` });
 });
 
 // ---------------------------------------------------------------- /family (the grown-up's pages)
@@ -275,8 +292,11 @@ router.get('/family', grownupOnly, async (req, res) => {
   const fam = F.ensureFamily(u);
   const kids = F.childrenOf(fam.id);
   const plan = F.familyPlan(fam.id);
-  const planBox = await planPanel(req, fam, plan, kids);
-  const linkedN = kids.length;
+  const chosen = chosenPlan(req.query);
+  // The children the plan pays extra messages for (Basic: the first linked child only).
+  const covered = new Set(plan.entitled ? coveredChildren(fam.id, plan.plan) : []);
+  const max = F.maxChildrenFor(fam.id);
+  const planBox = await planPanel(req, fam, plan, kids, chosen);
   const removeForm = (k, label, confirm) => html`<form data-api="/api/family/children/${F.requestToken(fam.id, k.child_id)}/remove" data-reload data-confirm="${confirm}"><button class="btn" type="submit">${label}</button></form>`;
   const rows = kids.map(k => {
     if (k.status === 'pending') {
@@ -285,19 +305,36 @@ router.get('/family', grownupOnly, async (req, res) => {
         ${removeForm(k, t('family.page.cancel'), t('family.page.cancelConfirm'))}</li>`;
     }
     const use = F.childUsage(fam.id, k.child_id);
+    const source = !covered.has(k.child_id) ? 'family.page.sourceFree' : plan.plan === 'basic' ? 'family.page.sourceBasic' : 'family.page.sourceFamily';
     return html`<li class="famkid">${avatar({ id: k.child_id, avatar: k.avatar, color: k.color, photo_at: 0, display_name: k.display_name }, 44)}
       <div class="famkid-main"><b><bdi>${k.display_name}</bdi></b> <span class="muted small"><bdi>@${k.username}</bdi></span>
         <div class="small">${t('family.page.yesterday', { n: use.yesterday })} · ${t('family.page.month', { n: use.month })}</div>
-        <div class="small muted">${plan.entitled ? t('family.page.sourceFamily') : t('family.page.sourceFree')}</div></div>
+        <div class="small muted">${t(source)}</div></div>
       ${removeForm(k, t('family.page.remove'), t('family.page.removeConfirm', { name: k.display_name }))}</li>`;
   });
+  const linked = kids.filter(k => k.status === 'linked');
+  // A Family plan switched to Basic keeps every link; only the first linked child gets the extra messages.
+  const firstCovered = linked.find(k => covered.has(k.child_id));
+  const basicNote = plan.entitled && plan.plan === 'basic' && linked.length > 1 && firstCovered
+    ? html`<p class="notice warn" id="basic-note">${tHtml(t, 'family.billing.basicNote', { name: html`<b><bdi>${firstCovered.display_name}</bdi></b>`, max: config.familyMaxChildren })}</p>` : '';
+  const addBtn = kids.length < max ? html`<a class="btn btn-primary" href="/family/link">➕ ${t('family.page.add')}</a>`
+    : html`<p class="small">${plan.entitled && plan.plan === 'basic' ? t('family.page.fullBasic', { max: config.familyMaxChildren }) : t('family.page.full', { max })}</p>`;
+  // Just paid (back from Checkout): the next step is adding a child, with the steps right here.
+  const welcome = plan.entitled && (req.query.welcome === '1' || typeof req.query.checkout === 'string')
+    ? html`<section class="panel welcome" aria-labelledby="welcome-h" id="welcome"><p class="notice good" role="status"><span aria-hidden="true">🎉</span> ${t('family.billing.welcomePlan', { plan: planName(t, plan.plan) })}</p>
+      ${linked.length ? '' : html`<h2 id="welcome-h">${t('family.billing.welcomeHeading')}</h2>
+      <ol class="steps"><li>${tHtml(t, 'family.link.step1')}</li><li>${t('family.billing.welcomeStep2')}</li><li>${t('family.link.step3')}</li></ol>
+      ${kids.length < max ? html`<a class="btn btn-primary" href="/family/link">➕ ${t('family.page.add')}</a>` : ''}`}</section>` : '';
+  const kidsBox = html`<section class="panel" aria-labelledby="kids-h"><h2 id="kids-h">${t('family.page.children')}</h2>
+    ${kids.length ? html`<ul class="famkids">${rows}</ul><p class="small muted">${t('family.page.usageNote')}</p>` : html`<p class="muted">${t('family.page.none')}</p>`}
+    ${basicNote}${addBtn}
+  </section>`;
+  // A plan picked on /plans (and not paid yet) comes first: that is what the grown-up came here to do.
+  const planFirst = (chosen && !plan.entitled) || (typeof req.query.checkout === 'string' && !plan.entitled);
   const body = html`
   <div class="pagehead"><h1>👪 ${t('family.page.heading')}</h1>${notYou(req, { plain: true })}</div>
-  <section class="panel" aria-labelledby="kids-h"><h2 id="kids-h">${t('family.page.children')}</h2>
-    ${kids.length ? html`<ul class="famkids">${rows}</ul><p class="small muted">${t('family.page.usageNote')}</p>` : html`<p class="muted">${t('family.page.none')}</p>`}
-    ${linkedN < config.familyMaxChildren ? html`<a class="btn btn-primary" href="/family/link">➕ ${t('family.page.add')}</a>` : html`<p class="small">${t('family.page.full', { max: config.familyMaxChildren })}</p>`}
-  </section>
-  ${planBox}
+  ${welcome}
+  ${planFirst ? html`${planBox}${kidsBox}` : html`${kidsBox}${planBox}`}
   ${config.contactEmail ? html`<section class="panel" aria-labelledby="help-h"><h2 id="help-h">${t('family.page.helpHeading')}</h2>
     <p>${tHtml(t, 'family.page.help', { email: html`<a href="mailto:${config.contactEmail}" dir="ltr">${config.contactEmail}</a>` })}</p></section>` : ''}
   <div class="mesettings">${languagePanel(req)}${passwordPanel(req)}${signOutPanel(req)}</div>`;
@@ -317,73 +354,84 @@ export function passwordField(req, id) {
 const nextMonthUtc = (t0 = Date.now()) => { const d = new Date(t0); return Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 1); };
 
 /**
- * The plan panel of /family: the plan's state, extra messages left this month, Manage billing (the Customer Portal),
- * and, without a plan, the two Subscribe buttons with everything a grown-up should read before paying (renewal,
+ * The plan card of /family: which plan the family has (Free, Basic or Family) and its state, extra messages left this
+ * month, Manage billing (the Customer Portal, where Basic and Family are switched), and Change plan (/plans). A plan
+ * picked on /plans and not paid yet is offered here, with everything a grown-up should read before paying (renewal,
  * cancelling, refunds, the plan's limits, tax, US only). Coming back from Checkout (?checkout=…) it waits for the plan.
  */
-async function planPanel(req, fam, plan, kids) {
+async function planPanel(req, fam, plan, kids, chosen) {
   const t = req.t, f = req.fmt, u = req.user;
   const sub = plan.subscription;
-  const linked = kids.filter(k => k.status === 'linked').length;
   const customer = C.mayBill(u) ? customerOf('family', fam.id) : null;
   const portal = customer ? html`<form data-api="/api/billing/portal" class="planform">${passwordField(req, 'pw-portal')}<p class="err form-err" aria-live="polite"></p>
       <button class="btn" type="submit">${t('family.billing.manage')}</button></form>` : '';
   const checkoutId = typeof req.query.checkout === 'string' ? req.query.checkout.slice(0, 200) : '';
-  const parts = [];
-  // Back from Checkout and the plan isn't on yet: only the wait (no "No family plan", no Subscribe: they just paid).
+  const head = html`<h2 id="plan-h">${t('family.page.yourPlan')}</h2>`;
+  // Back from Checkout and the plan isn't on yet: only the wait (no "Free plan", no Subscribe: they just paid).
   if (checkoutId && !plan.entitled) {
-    return html`<section class="panel" aria-labelledby="plan-h" id="plan"><h2 id="plan-h">${t('family.page.planHeading')}</h2>
-      <div class="notice" role="status" data-checkout-wait="${checkoutId}" data-done="${t('family.billing.welcome')}">
+    return html`<section class="panel" aria-labelledby="plan-h" id="plan">${head}
+      <div class="notice" role="status" data-checkout-wait="${checkoutId}" data-back="/family?welcome=1" data-done="${t('family.billing.welcome')}">
         <p style="margin:0"><span aria-hidden="true">⏳</span> ${t('family.billing.waiting')}</p>
         <div data-slow hidden><p class="small" style="margin:.5em 0 0">${t('family.billing.slow')}</p>
           <p class="small" style="margin:.5em 0 0"><a href="/family">${t('family.billing.back')}</a></p></div></div></section>`;
   }
-  if (checkoutId && plan.entitled) parts.push(html`<p class="notice good" role="status"><span aria-hidden="true">🎉</span> ${t('family.billing.welcome')}</p>`);
+  const parts = [html`<p class="planname"><span class="planchip${plan.entitled ? ' paid' : ''}">${planName(t, plan.entitled ? plan.plan : null)}</span></p>`];
   if (plan.entitled) {
+    const lim = B.planLimits(plan.plan);
     const month = familyMonth(fam.id, today(), { beforeDay: true });
-    const left = Math.max(0, config.familyExtraMessages - month.used);
+    const left = Math.max(0, lim.extra - month.used);
     let state;
     if (plan.via === 'grant') state = t('family.billing.grant', { date: f.date(plan.grant.until) });
     else if (sub.status === 'past_due') state = t('family.billing.pastDue', { date: f.date(sub.grace_until) });
     else if (sub.cancel_at_period_end) state = t('family.billing.ends', { date: f.date(sub.current_period_end) });
     else state = t(sub.interval === 'year' ? 'family.billing.renewsYearly' : 'family.billing.renewsMonthly', { date: f.date(sub.current_period_end) });
-    parts.push(html`<p><b>${t('family.page.planActive')}</b> ${state}</p>
-      <p class="planextras"><b>${t('family.billing.extrasLeft', { left, total: config.familyExtraMessages })}</b><br>
+    parts.push(html`<p>${state}</p>
+      <p class="planextras"><b>${t('family.billing.extrasLeft', { left, total: lim.extra })}</b><br>
         <span class="small muted">${t('family.billing.extrasReset', { date: f.day(nextMonthUtc()) })}</span></p>
-      <p class="small muted">${limitsText(t, { reset: false })}</p>
-      ${portal}`);
+      <p class="small muted">${t(plan.plan === 'basic' ? 'family.billing.coversBasic' : 'family.billing.coversFamily', { max: lim.maxChildren })} ${limitsText(t, { reset: false })}</p>
+      ${chosen && chosen.plan !== plan.plan ? html`<p class="notice" role="status">${t('family.billing.switchHow', { plan: planName(t, chosen.plan) })}</p>` : ''}
+      <div class="row planbtns">${portal}<a class="btn" href="/plans">${t('family.page.changePlan')}</a></div>`);
   } else {
-    parts.push(html`<p>${t('family.page.planNone')}</p>`);
     const unsettled = C.mayBill(u) && C.unsettledPlan(fam.id);
-    const prices = C.mayBill(u) && !unsettled ? await C.familyPrices() : null;
+    parts.push(html`<p>${t('family.page.planFreeText')}</p>`);
     if (unsettled) parts.push(html`<p class="notice warn">${t('family.billing.errors.fixPayment')}</p>`);
-    else if (!prices) parts.push(html`<p class="small muted">${t('family.landing.price.soon')}</p>`);
-    else if (!linked) parts.push(html`<p class="small">${t('family.billing.linkFirst')}</p>`);
-    else {
-      parts.push(html`<form data-api="/api/billing/family/checkout" class="planform">
-        <p>${t('family.landing.what.p1', { extra: config.familyExtraMessages, max: config.familyMaxChildren })}</p>
-        <ul class="small planterms">
-          <li>${t('family.billing.terms.renew')}</li>
-          <li>${t('family.billing.terms.cancel')}</li>
-          <li>${t('family.billing.terms.refund')}</li>
-          <li>${limitsText(t)}</li>
-          <li>${t('family.billing.terms.tax')}</li>
-        </ul>
-        ${config.termsPublished ? html`<p class="small">${tHtml(t, 'family.billing.terms.agree', { terms: html`<a href="/terms">${t('family.billing.terms.link')}</a>` })}</p>` : html`<p class="small">${tHtml(t, 'family.billing.legal')}</p>`}
-        ${passwordField(req, 'pw-checkout')}
-        <p class="err form-err" aria-live="polite"></p>
-        <div class="row planbtns">
-          <button class="btn btn-primary" type="submit" name="interval" value="month">${t('family.billing.subscribeMonthly', { price: f.money(prices.month.unitAmount) })}</button>
-          <button class="btn btn-primary" type="submit" name="interval" value="year">${t('family.billing.subscribeYearly', { price: f.money(prices.year.unitAmount) })}</button>
-        </div>
-        <p class="small muted" style="margin-bottom:0">${t('family.billing.stripe')}</p>
-      </form>`);
-    }
+    else if (chosen) parts.push(await checkoutForm(req, chosen));
+    else parts.push(html`<p><a class="btn btn-primary" href="/plans">${t('family.page.seePlans')}</a></p>`);
     if (portal) parts.push(html`<p class="small muted">${t('family.billing.history')}</p>${portal}`);
   }
-  return html`<section class="panel" aria-labelledby="plan-h" id="plan"><h2 id="plan-h">${t('family.page.planHeading')}</h2>
-    ${parts}
-    <p style="margin-bottom:0"><a href="/grown-ups">${t('family.page.planMore')}</a></p></section>`;
+  return html`<section class="panel" aria-labelledby="plan-h" id="plan">${head}
+    ${parts}</section>`;
+}
+
+/** The form that pays for a picked plan: what it gives, the terms, the password again and one button per period (the
+ *  picked one first). Not on sale (a test key and not a billing tester, prices unreadable): says so instead. */
+async function checkoutForm(req, chosen) {
+  const t = req.t, f = req.fmt, u = req.user;
+  const prices = C.mayBill(u) ? await C.familyPrices(chosen.plan) : null;
+  const heading = html`<h3>${t(chosen.plan === 'basic' ? 'family.checkout.headingBasic' : 'family.checkout.headingFamily')}</h3>`;
+  const other = html`<p class="small" style="margin-bottom:0"><a href="/plans">${t('family.checkout.other')}</a></p>`;
+  if (!prices) return html`<div class="planpick">${heading}<p class="small muted">${t('family.landing.price.soon')}</p>${other}</div>`;
+  const lim = B.planLimits(chosen.plan);
+  const btn = iv => html`<button class="btn ${iv === chosen.interval ? 'btn-primary' : ''}" type="submit" name="interval" value="${iv}">${t(iv === 'year' ? 'family.billing.subscribeYearly' : 'family.billing.subscribeMonthly', { price: f.money(prices[iv].unitAmount) })}</button>`;
+  const order = chosen.interval === 'year' ? ['year', 'month'] : ['month', 'year'];
+  return html`<form data-api="/api/billing/family/checkout" class="planform planpick" id="checkout">
+    ${heading}<input type="hidden" name="plan" value="${chosen.plan}">
+    <p>${chosen.plan === 'basic' ? t('plans.basic.what', { extra: lim.extra }) : t('family.landing.what.p1', { extra: lim.extra, max: lim.maxChildren })}</p>
+    <p class="small">${t('family.checkout.addAfter')}</p>
+    <ul class="small planterms">
+      <li>${t('family.billing.terms.renew')}</li>
+      <li>${t('family.billing.terms.cancel')}</li>
+      <li>${t('family.billing.terms.refund')}</li>
+      <li>${limitsText(t)}</li>
+      <li>${t('family.billing.terms.tax')}</li>
+    </ul>
+    ${config.termsPublished ? html`<p class="small">${tHtml(t, 'family.billing.terms.agree', { terms: html`<a href="/terms">${t('family.billing.terms.link')}</a>` })}</p>` : html`<p class="small">${tHtml(t, 'family.billing.legal')}</p>`}
+    ${passwordField(req, 'pw-checkout')}
+    <p class="err form-err" aria-live="polite"></p>
+    <div class="row planbtns">${order.map(btn)}</div>
+    <p class="small muted">${t('family.billing.stripe')}</p>
+    ${other}
+  </form>`;
 }
 
 // ---------------------------------------------------------------- paying (chunk 4)
@@ -415,12 +463,12 @@ export const stripeTrouble = (req, res, e) => {
   res.status(502).json({ error: req.t('family.billing.errors.stripe') });
 };
 router.post('/api/billing/family/checkout', billingGate, rateLimit('billing-checkout', 10, 600e3), testerGate, stepUp, async (req, res) => {
-  const t = req.t, interval = (req.body || {}).interval;
-  if (interval !== 'month' && interval !== 'year') return res.status(400).json({ error: t('errors.api.badRequest') });
+  const t = req.t, { interval, plan = 'family' } = req.body || {};
+  if ((interval !== 'month' && interval !== 'year') || !C.FAMILY_PLANS.includes(plan)) return res.status(400).json({ error: t('errors.api.badRequest') });
+  // Pay first, add children after: no child needs to be linked before paying.
   const fam = F.ensureFamily(req.user);
-  if (!F.childrenOf(fam.id).some(k => k.status === 'linked')) return res.status(409).json({ error: t('family.billing.linkFirst') });
   try {
-    const r = await C.startFamilyCheckout({ family: fam, user: req.user, interval, base: C.baseUrl(req) });
+    const r = await C.startFamilyCheckout({ family: fam, user: req.user, plan, interval, base: C.baseUrl(req) });
     if (!r.ok) return res.status(409).json({ error: t(`family.billing.errors.${r.code}`) });
     res.json({ ok: true, redirect: r.url });
   } catch (e) { stripeTrouble(req, res, e); }
@@ -469,7 +517,7 @@ router.post('/api/family/link', grownupOnly, (req, res) => {
   if (!r.ok) {
     if (r.code === 'badCode') { allow(uKey, LINK_TRIES.userFails, LINK_TRIES.window); allow(ipKey, LINK_TRIES.ipFails, LINK_TRIES.window); }
     const status = r.code === 'notGrownup' ? 404 : r.code === 'badCode' ? 400 : 409;
-    return res.status(status).json({ error: t(`family.errors.${r.code === 'notGrownup' ? 'badCode' : r.code}`, { max: config.familyMaxChildren }), field: 'code' });
+    return res.status(status).json({ error: t(`family.errors.${r.code === 'notGrownup' ? 'badCode' : r.code}`, { max: r.code === 'full' ? F.maxChildrenFor(F.familyOfOwner(u.id)?.id) : config.familyMaxChildren }), field: 'code' });
   }
   res.json({ ok: true, redirect: '/family', toast: t('family.link.sent') });
 });

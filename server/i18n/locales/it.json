@@ -2789,10 +2789,6 @@
       "removed": "Fatto.",
       "cancel": "Annulla richiesta",
       "cancelConfirm": "Annullare questa richiesta?",
-      "planHeading": "Piano famiglia",
-      "planActive": "Il vostro piano famiglia è attivo.",
-      "planNone": "Nessun piano famiglia. Collegare i figli è gratis e per loro non cambia niente.",
-      "planMore": "Informazioni sui piani famiglia",
       "helpHeading": "Aiuto",
       "help": "Avete domande o un problema con il vostro account? Scrivete a {email}.",
       "off": "Per ora gli account famiglia sono disattivati. Qui potete comunque giocare, cambiare lingua o password e uscire."
@@ -2834,7 +2830,6 @@
       "renewsYearly": "Annuale, si rinnova il {date}.",
       "extrasLeft": "{left} su {total, plural, one {# messaggio extra} other {# messaggi extra}} ancora disponibili questo mese, contati fino a ieri",
       "extrasReset": "Ripartono il {date} (UTC). Quelli non usati non passano al mese successivo.",
-      "linkFirst": "Prima collegate un figlio o una figlia (che dice di sì nella propria pagina), poi potete attivare un piano.",
       "terms": {
         "renew": "Il piano si rinnova automaticamente ogni mese o ogni anno finché non lo disdite.",
         "cancel": "Potete disdire in qualsiasi momento in Gestisci pagamenti. Il piano resta attivo fino alla fine del periodo già pagato.",

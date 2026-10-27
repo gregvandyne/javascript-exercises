@@ -2789,10 +2789,6 @@
       "removed": "Erledigt.",
       "cancel": "Anfrage zurückziehen",
       "cancelConfirm": "Diese Anfrage zurückziehen?",
-      "planHeading": "Familienabo",
-      "planActive": "Ihr Familienabo ist aktiv.",
-      "planNone": "Kein Familienabo. Kinder zu verbinden ist kostenlos und ändert für sie nichts.",
-      "planMore": "Mehr über Familienabos",
       "helpHeading": "Hilfe",
       "help": "Fragen oder ein Problem mit Ihrem Konto? Schreiben Sie an {email}.",
       "off": "Familienkonten sind gerade ausgeschaltet. Hier können Sie trotzdem Spiele spielen, Ihre Sprache oder Ihr Passwort ändern und sich abmelden."
@@ -2834,7 +2830,6 @@
       "renewsYearly": "Jährlich, verlängert sich am {date}.",
       "extrasLeft": "Noch {left} von {total, plural, one {# zusätzlichen Nachricht} other {# zusätzlichen Nachrichten}} diesen Monat, gezählt bis gestern",
       "extrasReset": "Sie starten am {date} (UTC) neu. Nicht genutzte werden nicht übernommen.",
-      "linkFirst": "Verbinden Sie zuerst ein Kind (es stimmt auf seiner eigenen Seite zu), dann können Sie ein Abo abschließen.",
       "terms": {
         "renew": "Das Abo verlängert sich automatisch jeden Monat bzw. jedes Jahr, bis Sie es kündigen.",
         "cancel": "Jederzeit kündbar unter „Abrechnung verwalten“. Das Abo läuft bis zum Ende des bezahlten Zeitraums.",

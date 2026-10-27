@@ -9,12 +9,17 @@ import { config } from '../config.js';
 /** Lookup keys of the prices we sell (set on the sandbox and live Prices; docs/decisions.md "Paid plans" §16). Prices
  *  are always found by these, so live mode only needs Prices with the same lookup keys. */
 export const PRICE_LOOKUP_KEYS = Object.freeze({
+  basicMonthly: 'oomba_basic_monthly',
+  basicYearly: 'oomba_basic_yearly',
   familyMonthly: 'oomba_family_monthly',
   familyYearly: 'oomba_family_yearly',
   schoolSeatYearly: 'oomba_school_seat_yearly',
 });
-/** Which plan a lookup key sells. */
-export const planOfLookupKey = k => (/^oomba_family_/.test(k || '') ? 'family' : /^oomba_school_/.test(k || '') ? 'school' : null);
+/** Which plan a lookup key sells: 'basic' (one child) and 'family' are both plans of a family (a grown-up's account),
+ *  'school' of a school. */
+export const planOfLookupKey = k => (/^oomba_basic_/.test(k || '') ? 'basic' : /^oomba_family_/.test(k || '') ? 'family' : /^oomba_school_/.test(k || '') ? 'school' : null);
+/** The lookup key of a family-type plan's price: plan 'basic' | 'family', interval 'month' | 'year'. */
+export const lookupKeyFor = (plan, interval) => `oomba_${plan}_${interval === 'year' ? 'yearly' : 'monthly'}`;
 
 /** 'off' | 'test' | 'live', read from config each time (tests change config). Billing is on with a key and a webhook
  *  secret; config.js refuses an sk_live_ key and a live key without STRIPE_LIVE_OK before the server starts. */
