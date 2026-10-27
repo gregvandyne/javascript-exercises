@@ -236,7 +236,7 @@ test('signed out → pick a plan → grown-up sign-up keeps it → /family asks 
   const li = await call(null, '/grown-ups/login?plan=basic&interval=month');
   assert.match(li.text, /<input type="hidden" name="next" value="\/family\?plan=basic&amp;interval=month">/);
   assert.match((await call(null, '/grown-ups/signup?plan=nope')).text, /<form data-api="\/api\/grown-ups\/signup" novalidate>\s*<div/, 'an unknown plan is ignored');
-  const name = `Npar${uid(5)}`;
+  const name = `Npar${Date.now() % 1e6}`;   // digits only: a random word could trip the name filter
   const r = await call(null, '/api/grown-ups/signup', { method: 'POST', body: { username: name, password: PW, confirm: PW, adult: '1', plan: 'family', interval: 'year' } });
   assert.equal(r.status, 200, r.text);
   assert.equal(r.json.redirect, '/family?plan=family&interval=year');
