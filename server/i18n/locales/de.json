@@ -56,7 +56,8 @@
     "me": "Ich",
     "classes": "Klassen",
     "schools": "Schulen",
-    "family": "Familie"
+    "family": "Familie",
+    "plans": "Abos"
   },
   "errors": {
     "goHome": "Zur Startseite",
@@ -452,7 +453,8 @@
       "families": {
         "h": "Familienkonten",
         "p1": "Eltern und Erziehungsberechtigte können ein eigenes Erwachsenenkonto erstellen und es mit dem Konto ihres Kindes verbinden. Ihr Kind muss auf seiner eigenen Seite zustimmen.",
-        "link": "Mehr über Familienkonten"
+        "link": "Mehr über Familienkonten",
+        "plans": "Abos und Preise ansehen"
       }
     },
     "sdk": {
@@ -2712,6 +2714,7 @@
       "price": {
         "h": "Preis",
         "p1": "{monthly} pro Monat oder {yearly} pro Jahr, zzgl. Umsatzsteuer, wo sie anfällt. Jederzeit kündbar: Das Abo läuft bis zum Ende des bezahlten Zeitraums.",
+        "both": "Das Basis-Abo kostet {basic} pro Monat, für ein Kind. Das Familienabo kostet {family} pro Monat, für bis zu {max} Kinder. Zzgl. Umsatzsteuer, wo sie anfällt. Jederzeit kündbar: Das Abo läuft bis zum Ende des bezahlten Zeitraums.",
         "soon": "Familienabos gibt es noch nicht zu kaufen. Sie können aber schon jetzt ein Erwachsenenkonto erstellen und Ihre Kinder verbinden.",
         "us": "Familienabos gibt es vorerst nur für Familien in den USA."
       },
@@ -2744,7 +2747,8 @@
           "q": "Ist das Verbinden oder Bezahlen eine Form der elterlichen Einwilligung?",
           "a": "Nein. Beim Verbinden und bei Familienabos geht es nur um zusätzliche Nachrichten an den Baumeister. Die Website holt darüber keine Einwilligung ein und hält auch keine fest."
         }
-      }
+      },
+      "plans": "Abos und Preise vergleichen"
     },
     "signup": {
       "title": "Registrierung für Erwachsene",
@@ -2760,7 +2764,8 @@
       "signedIn": "Sie sind als {name} angemeldet. Melden Sie sich zuerst ab, um hier ein Erwachsenenkonto zu nutzen.",
       "signOutFirst": "Melden Sie sich zuerst auf diesem Gerät vom Konto ab.",
       "needAdult": "Setzen Sie das Häkchen, um zu bestätigen, dass Sie Elternteil oder erziehungsberechtigt und mindestens 18 Jahre alt sind.",
-      "short": "Verwenden Sie mindestens {min} Zeichen."
+      "short": "Verwenden Sie mindestens {min} Zeichen.",
+      "chosen": "Sie haben das {plan} gewählt. Als Nächstes bezahlen Sie auf der sicheren Seite von Stripe, dann verbinden Sie Ihre Kinder."
     },
     "login": {
       "title": "Anmeldung für Erwachsene",
@@ -2791,7 +2796,13 @@
       "cancelConfirm": "Diese Anfrage zurückziehen?",
       "helpHeading": "Hilfe",
       "help": "Fragen oder ein Problem mit Ihrem Konto? Schreiben Sie an {email}.",
-      "off": "Familienkonten sind gerade ausgeschaltet. Hier können Sie trotzdem Spiele spielen, Ihre Sprache oder Ihr Passwort ändern und sich abmelden."
+      "off": "Familienkonten sind gerade ausgeschaltet. Hier können Sie trotzdem Spiele spielen, Ihre Sprache oder Ihr Passwort ändern und sich abmelden.",
+      "yourPlan": "Ihr Abo",
+      "planFreeText": "Ihre Kinder bauen mit den kostenlosen täglichen Nachrichten an den Baumeister.",
+      "seePlans": "Abos ansehen",
+      "changePlan": "Abo wechseln",
+      "sourceBasic": "Zusätzliche Nachrichten kommen aus Ihrem Basis-Abo.",
+      "fullBasic": "Ihr Basis-Abo gilt für 1 Kind. Um weitere Kinder zu verbinden, wechseln Sie unter „Abrechnung verwalten“ zum Familienabo (bis zu {max} Kinder)."
     },
     "link": {
       "title": "Kind verbinden",
@@ -2809,7 +2820,8 @@
       "full": "Eine Familie kann bis zu {max} Kinder verbinden.",
       "typeCode": "Geben Sie den Code ein, den Ihr Kind Ihnen gegeben hat.",
       "tooMany": "Zu viele Versuche. Warten Sie 15 Minuten und versuchen Sie es dann noch einmal.",
-      "notFound": "Dieses Kind gehört nicht zu Ihrer Familie."
+      "notFound": "Dieses Kind gehört nicht zu Ihrer Familie.",
+      "fullBasic": "Ihr Basis-Abo gilt für 1 Kind. Um weitere Kinder zu verbinden, wechseln Sie unter „Abrechnung verwalten“ zum Familienabo."
     },
     "billing": {
       "password": {
@@ -2835,6 +2847,7 @@
         "cancel": "Jederzeit kündbar unter „Abrechnung verwalten“. Das Abo läuft bis zum Ende des bezahlten Zeitraums.",
         "refund": "Volle Erstattung, wenn Sie innerhalb von 14 Tagen nach Ihrer ersten Zahlung oder nach einer jährlichen Verlängerung darum bitten.",
         "tax": "Die Preise sind in US-Dollar, zzgl. Umsatzsteuer, wo sie anfällt. Familienabos gibt es vorerst nur für Familien in den USA.",
+        "taxPlans": "Die Preise sind in US-Dollar, zzgl. Umsatzsteuer, wo sie anfällt. Die Abos gibt es vorerst nur für Familien in den USA.",
         "agree": "Mit dem Abschluss des Abos stimmen Sie unseren {terms} zu.",
         "link": "Nutzungsbedingungen"
       },
@@ -2851,7 +2864,128 @@
         "noCustomer": "Es gibt noch nichts zu verwalten: Schließen Sie zuerst ein Abo ab.",
         "stripe": "Wir konnten unseren Zahlungsanbieter nicht erreichen. Bitte versuchen Sie es in einer Minute noch einmal."
       },
-      "legal": "Für Abos gelten unsere <a href=\"/terms\">Nutzungsbedingungen</a> und unsere <a href=\"/refunds\">Erstattungs- und Kündigungsrichtlinie</a>."
+      "legal": "Für Abos gelten unsere <a href=\"/terms\">Nutzungsbedingungen</a> und unsere <a href=\"/refunds\">Erstattungs- und Kündigungsrichtlinie</a>.",
+      "welcomePlan": "Ihr {plan} ist aktiv. Vielen Dank!",
+      "welcomeHeading": "Jetzt Ihr Kind verbinden",
+      "welcomeStep2": "Tippen Sie unten auf „Kind verbinden“ und geben Sie den Code ein. Er funktioniert einmal, 1 Stunde lang.",
+      "basicNote": "Ihr Basis-Abo gilt für ein Kind: {name}. Ihre anderen verbundenen Kinder bauen mit den kostenlosen täglichen Nachrichten. Um bis zu {max} Kinder abzudecken, wechseln Sie unter „Abrechnung verwalten“ zum Familienabo.",
+      "coversBasic": "Für 1 Kind.",
+      "coversFamily": "Für bis zu {max} Kinder.",
+      "switchHow": "Um zum {plan} zu wechseln, öffnen Sie „Abrechnung verwalten“ und ändern dort Ihr Abo. Stripe passt den Preis für den Rest des Zeitraums an."
+    },
+    "plan": {
+      "free": "Kostenloses Abo",
+      "basic": "Basis-Abo",
+      "family": "Familienabo"
+    },
+    "checkout": {
+      "headingBasic": "Basis-Abo abschließen",
+      "headingFamily": "Familienabo abschließen",
+      "addAfter": "Ihre Kinder verbinden Sie nach dem Bezahlen: Sie müssen sie nicht vorher verbinden.",
+      "other": "Anderes Abo wählen",
+      "soon": "Dieses Abo gibt es noch nicht zu kaufen. Sie können Ihre Kinder aber schon jetzt verbinden.",
+      "basicMany": "Das Basis-Abo gilt für ein Kind: {name}. Ihre anderen Kinder behalten nur die kostenlosen täglichen Nachrichten.",
+      "basicManyPending": "Das Basis-Abo gilt für ein Kind. Ihre anderen Kinder behalten nur die kostenlosen täglichen Nachrichten.",
+      "basicManyLink": "Alle Ihre Kinder mit dem Familienabo abdecken"
+    }
+  },
+  "plans": {
+    "title": "Abos und Preise",
+    "description": "Die Abos von Oomba Academy: Kostenlos, Basis, Familie und Schule. Alle Spiele zu spielen ist immer kostenlos.",
+    "heading": "Abos",
+    "intro": "Alle Spiele zu spielen ist kostenlos, und mit den kostenlosen täglichen Nachrichten an den Baumeister zu bauen auch. Ein Abo bringt jeden Monat zusätzliche Nachrichten an den Baumeister.",
+    "interval": {
+      "label": "Abrechnungszeitraum",
+      "month": "Monatlich",
+      "year": "Jährlich"
+    },
+    "recommended": "Empfohlen",
+    "yours": "Ihr Abo",
+    "noPrice": "Preis folgt bald",
+    "perMonth": "pro Monat",
+    "perYear": "pro Jahr",
+    "yearAsMonth": "Das sind {price} pro Monat, einmal im Jahr bezahlt.",
+    "orYearly": "Oder {price} pro Jahr.",
+    "extra": "{extra, plural, one {# zusätzliche Nachricht an den Baumeister} other {# zusätzliche Nachrichten an den Baumeister}} pro Monat",
+    "cancel": "Jederzeit kündbar",
+    "manage": "Abo verwalten",
+    "switch": "Zu diesem Abo wechseln",
+    "grantSwitch": "Dieses Abo haben Sie von uns bekommen. Um es zu ändern, schreiben Sie an {email}.",
+    "notOnSale": "Basis- und Familienabos können noch nicht gekauft werden.",
+    "soon": "Bald verfügbar",
+    "notOnSaleOut": "Sie können aber schon jetzt ein Erwachsenenkonto erstellen und Ihre Kinder verbinden.",
+    "free": {
+      "name": "Kostenlos",
+      "tagline": "Für alle",
+      "forever": "Immer kostenlos",
+      "li1": "Alle Spiele spielen",
+      "li2": "Spiele bauen mit den kostenlosen täglichen Nachrichten an den Baumeister",
+      "li3": "Keine Karte nötig",
+      "start": "Kostenlos starten"
+    },
+    "basic": {
+      "name": "Basis",
+      "tagline": "Für einen jungen Spielemacher",
+      "li1": "Alles aus „Kostenlos“",
+      "li3": "Für 1 Kind",
+      "choose": "Basis wählen",
+      "what": "{extra, plural, one {# zusätzliche Nachricht an den Baumeister} other {# zusätzliche Nachrichten an den Baumeister}} pro Monat für ein Kind, zusätzlich zu den kostenlosen Nachrichten, die alle Spieler jeden Tag bekommen."
+    },
+    "family": {
+      "name": "Familie",
+      "tagline": "Für bis zu {max} Kinder",
+      "extra": "{extra, plural, one {# zusätzliche Nachricht an den Baumeister} other {# zusätzliche Nachrichten an den Baumeister}} pro Monat, geteilt von bis zu {max} Kindern",
+      "li3": "Bis zu {max} Kinder",
+      "choose": "Familie wählen"
+    },
+    "school": {
+      "name": "Schule",
+      "tagline": "Für Klassen und ganze Schulen",
+      "per": "pro Schüler und Jahr",
+      "min": "Ab {min} Schülern",
+      "li1": "{perSeat, plural, one {# Nachricht an den Baumeister} other {# Nachrichten an den Baumeister}} pro Jahr für jeden bezahlten Schüler, geteilt von der ganzen Schule",
+      "li2": "Klassen bauen mit dem eigenen Pool der Schule",
+      "li3": "Per Karte bezahlen oder eine Rechnung anfordern",
+      "get": "Schulabo anfragen",
+      "manage": "Schulabo verwalten"
+    },
+    "kid": {
+      "button": "So bekommst du es",
+      "heading": "Abos kauft ein Erwachsener",
+      "text": "Abos kaufen deine Eltern oder die Person, die für dich sorgt. Sie können sich unter {where} registrieren.",
+      "free": "Du kannst weiter kostenlos spielen und bauen."
+    },
+    "staff": {
+      "button": "Für Familien",
+      "heading": "Basis und Familie sind für Familien",
+      "text": "Eltern oder Erziehungsberechtigte kaufen sie mit einem Erwachsenenkonto. Für Ihre Klassen gilt ein Schulabo für alle Schüler.",
+      "toSchool": "Zum Schulabo"
+    },
+    "fine": {
+      "h": "Gut zu wissen",
+      "tax": "Die Preise sind in US-Dollar, zzgl. Umsatzsteuer, wo sie anfällt. Basis- und Familienabos gibt es vorerst nur für Familien in den USA. Ein Abo verlängert sich, bis Sie es kündigen, und Sie können jederzeit kündigen.",
+      "legal": "Für Abos gelten unsere <a href=\"/terms\">Nutzungsbedingungen</a>, unsere <a href=\"/refunds\">Erstattungs- und Kündigungsrichtlinie</a> und unsere <a href=\"/privacy?for=grownups\">Datenschutzerklärung</a>."
+    },
+    "schools": {
+      "title": "Schulabos",
+      "description": "Schulabos bei Oomba Academy: ein gemeinsamer Pool an Nachrichten an den Baumeister für Ihre Schüler und Lehrkräfte, bezahlt per Karte oder auf Rechnung.",
+      "heading": "Oomba Academy für Schulen",
+      "intro": "Mit einem Schulabo bekommen Ihre Schüler und Lehrkräfte einen gemeinsamen Pool an Nachrichten an den Baumeister, damit Klassen nie auf die kostenlosen warten müssen.",
+      "what": {
+        "h": "Was eine Schule bekommt",
+        "p1": "Schuladmins sehen das Abo, die bezahlten Schüler und den Pool auf der Registerkarte „Abrechnung“ der Schule. Familien sehen nie etwas aus dem Unterricht."
+      },
+      "how": {
+        "h": "So richten Sie eine Schule ein",
+        "li1": "Schreiben Sie an {email}: den Namen Ihrer Schule und wer sich um sie kümmert (der Schuladmin).",
+        "li2": "Wir richten die Schule und das Konto des Schuladmins ein. Der Schuladmin fügt Lehrkräfte und Schüler hinzu.",
+        "li3": "Der Schuladmin bezahlt auf der Registerkarte „Abrechnung“ der Schule: per Karte oder auf Rechnung, auch mit Purchase Order."
+      },
+      "toBilling": "Zur Registerkarte „Abrechnung“ Ihrer Schule",
+      "contact": {
+        "h": "Fragen?",
+        "p1": "Schreiben Sie an {email}."
+      }
     }
   }
 }

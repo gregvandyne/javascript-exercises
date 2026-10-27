@@ -56,7 +56,8 @@
     "me": "Ik",
     "classes": "Klassen",
     "schools": "Scholen",
-    "family": "Gezin"
+    "family": "Gezin",
+    "plans": "Prijzen"
   },
   "errors": {
     "goHome": "Naar de start",
@@ -452,7 +453,8 @@
       "families": {
         "h": "Gezinsaccounts",
         "p1": "Een ouder of verzorger kan een eigen ouderaccount maken en dat koppelen aan het account van zijn of haar kind. Je kind moet daar op de eigen pagina ja op zeggen.",
-        "link": "Over gezinsaccounts"
+        "link": "Over gezinsaccounts",
+        "plans": "Bekijk abonnementen en prijzen"
       }
     },
     "sdk": {
@@ -2712,6 +2714,7 @@
       "price": {
         "h": "Prijs",
         "p1": "{monthly} per maand of {yearly} per jaar, plus omzetbelasting (sales tax) waar die geldt. Altijd opzegbaar: het abonnement loopt door tot het einde van de periode waarvoor je hebt betaald.",
+        "both": "Basis kost {basic} per maand, voor één kind. Gezin kost {family} per maand, voor maximaal {max} kinderen. Plus omzetbelasting (sales tax) waar die geldt. Altijd opzegbaar: het abonnement loopt door tot het einde van de periode waarvoor je hebt betaald.",
         "soon": "Gezinsabonnementen zijn nog niet te koop. Je kunt nu al een ouderaccount maken en je kinderen koppelen.",
         "us": "Gezinsabonnementen zijn voorlopig alleen voor gezinnen in de Verenigde Staten."
       },
@@ -2744,7 +2747,8 @@
           "q": "Is koppelen of betalen een vorm van ouderlijke toestemming?",
           "a": "Nee. Koppelen en gezinsabonnementen gaan alleen over extra berichten aan de Bouwer. Zo vraagt de site geen toestemming en legt de site ook geen toestemming vast."
         }
-      }
+      },
+      "plans": "Vergelijk abonnementen en prijzen"
     },
     "signup": {
       "title": "Aanmelden voor ouders",
@@ -2760,7 +2764,8 @@
       "signedIn": "Je bent ingelogd als {name}. Log eerst uit om hier een ouderaccount te gebruiken.",
       "signOutFirst": "Log eerst uit bij het account op dit apparaat.",
       "needAdult": "Vink het vakje aan om te laten weten dat je ouder of verzorger bent, en 18 jaar of ouder.",
-      "short": "Gebruik minstens {min} tekens."
+      "short": "Gebruik minstens {min} tekens.",
+      "chosen": "Je hebt het {plan} gekozen. Nu betaal je op de beveiligde pagina van Stripe, en daarna voeg je je kinderen toe."
     },
     "login": {
       "title": "Inloggen voor ouders",
@@ -2791,7 +2796,13 @@
       "cancelConfirm": "Dit verzoek annuleren?",
       "helpHeading": "Hulp",
       "help": "Vragen, of een probleem met je account? Mail naar {email}.",
-      "off": "Gezinsaccounts staan nu uit. Je kunt hier nog wel games spelen, je taal of wachtwoord veranderen en uitloggen."
+      "off": "Gezinsaccounts staan nu uit. Je kunt hier nog wel games spelen, je taal of wachtwoord veranderen en uitloggen.",
+      "yourPlan": "Je abonnement",
+      "planFreeText": "Je kinderen bouwen met de gratis dagelijkse berichten aan de Bouwer.",
+      "seePlans": "Bekijk abonnementen",
+      "changePlan": "Abonnement wijzigen",
+      "sourceBasic": "Extra berichten komen uit je basisabonnement.",
+      "fullBasic": "Je basisabonnement geldt voor 1 kind. Wil je meer kinderen koppelen? Stap dan via Abonnement beheren over op het gezinsabonnement (maximaal {max} kinderen)."
     },
     "link": {
       "title": "Kind koppelen",
@@ -2809,7 +2820,8 @@
       "full": "Een gezin kan maximaal {max} kinderen koppelen.",
       "typeCode": "Typ de code die je van je kind hebt gekregen.",
       "tooMany": "Te veel pogingen. Wacht 15 minuten en probeer het dan opnieuw.",
-      "notFound": "Dat kind hoort niet bij je gezin."
+      "notFound": "Dat kind hoort niet bij je gezin.",
+      "fullBasic": "Je basisabonnement geldt voor 1 kind. Wil je meer kinderen koppelen? Stap dan via Abonnement beheren over op het gezinsabonnement."
     },
     "billing": {
       "password": {
@@ -2835,6 +2847,7 @@
         "cancel": "Altijd opzegbaar via Abonnement beheren. Het abonnement blijft werken tot het einde van de periode waarvoor je hebt betaald.",
         "refund": "Je krijgt je geld volledig terug als je erom vraagt binnen 14 dagen na je eerste betaling of na een jaarlijkse verlenging.",
         "tax": "Prijzen zijn in Amerikaanse dollars, plus omzetbelasting (sales tax) waar die geldt. Gezinsabonnementen zijn voorlopig alleen voor gezinnen in de Verenigde Staten.",
+        "taxPlans": "Prijzen zijn in Amerikaanse dollars, plus omzetbelasting (sales tax) waar die geldt. Abonnementen zijn voorlopig alleen voor gezinnen in de Verenigde Staten.",
         "agree": "Door je te abonneren, ga je akkoord met onze {terms}.",
         "link": "Servicevoorwaarden"
       },
@@ -2851,7 +2864,128 @@
         "noCustomer": "Er valt nog niets te beheren: neem eerst een abonnement.",
         "stripe": "We konden onze betaalprovider niet bereiken. Probeer het over een minuut opnieuw."
       },
-      "legal": "Voor abonnementen gelden onze <a href=\"/terms\">Servicevoorwaarden</a> en ons <a href=\"/refunds\">Beleid voor terugbetaling en opzegging</a>."
+      "legal": "Voor abonnementen gelden onze <a href=\"/terms\">Servicevoorwaarden</a> en ons <a href=\"/refunds\">Beleid voor terugbetaling en opzegging</a>.",
+      "welcomePlan": "{plan} is actief. Bedankt!",
+      "welcomeHeading": "Voeg nu je kind toe",
+      "welcomeStep2": "Tik hieronder op Kind koppelen en typ de code. Hij werkt één keer, 1 uur lang.",
+      "basicNote": "Je basisabonnement geldt voor één kind: {name}. Je andere gekoppelde kinderen bouwen met de gratis dagelijkse berichten. Wil je dat het abonnement voor maximaal {max} kinderen geldt? Stap dan via Abonnement beheren over op het gezinsabonnement.",
+      "coversBasic": "Voor 1 kind.",
+      "coversFamily": "Voor maximaal {max} kinderen.",
+      "switchHow": "Om over te stappen op het {plan} open je Abonnement beheren en kies je ervoor je abonnement bij te werken. Stripe past de prijs aan voor de rest van de periode."
+    },
+    "plan": {
+      "free": "Gratis abonnement",
+      "basic": "Basisabonnement",
+      "family": "Gezinsabonnement"
+    },
+    "checkout": {
+      "headingBasic": "Start je basisabonnement",
+      "headingFamily": "Start je gezinsabonnement",
+      "addAfter": "Je voegt je kinderen toe na het betalen: je hoeft ze niet eerst te koppelen.",
+      "other": "Kies een ander abonnement",
+      "soon": "Dit abonnement is nog niet te koop. Je kunt je kinderen nu al toevoegen.",
+      "basicMany": "Basis geldt voor één kind: {name}. Je andere kinderen houden alleen de gratis dagelijkse berichten.",
+      "basicManyPending": "Basis geldt voor één kind. Je andere kinderen houden alleen de gratis dagelijkse berichten.",
+      "basicManyLink": "Neem het gezinsabonnement voor al je kinderen"
+    }
+  },
+  "plans": {
+    "title": "Abonnementen en prijzen",
+    "description": "Abonnementen van Oomba Academy: Gratis, Basis, Gezin en School. Alle games spelen is altijd gratis.",
+    "heading": "Abonnementen",
+    "intro": "Alle games spelen is gratis, en bouwen met de gratis dagelijkse berichten aan de Bouwer ook. Een abonnement geeft elke maand extra berichten aan de Bouwer.",
+    "interval": {
+      "label": "Betaalperiode",
+      "month": "Maandelijks",
+      "year": "Jaarlijks"
+    },
+    "recommended": "Aanbevolen",
+    "yours": "Je abonnement",
+    "noPrice": "Prijs volgt binnenkort",
+    "perMonth": "per maand",
+    "perYear": "per jaar",
+    "yearAsMonth": "Dat is {price} per maand, één keer per jaar betaald.",
+    "orYearly": "Of {price} per jaar.",
+    "extra": "{extra, plural, one {# extra bericht aan de Bouwer} other {# extra berichten aan de Bouwer}} per maand",
+    "cancel": "Altijd opzegbaar",
+    "manage": "Beheer je abonnement",
+    "switch": "Overstappen op dit abonnement",
+    "grantSwitch": "Dit abonnement hebben we je gegeven. Wil je het wijzigen? Mail naar {email}.",
+    "notOnSale": "Basis- en gezinsabonnementen zijn nog niet te koop.",
+    "soon": "Binnenkort",
+    "notOnSaleOut": "Je kunt nu al een ouderaccount maken en je kinderen toevoegen.",
+    "free": {
+      "name": "Gratis",
+      "tagline": "Voor iedereen",
+      "forever": "Altijd gratis",
+      "li1": "Speel alle games",
+      "li2": "Bouw games met de gratis dagelijkse berichten aan de Bouwer",
+      "li3": "Geen kaart nodig",
+      "start": "Begin gratis"
+    },
+    "basic": {
+      "name": "Basis",
+      "tagline": "Voor één jonge gamemaker",
+      "li1": "Alles van Gratis",
+      "li3": "Voor 1 kind",
+      "choose": "Kies Basis",
+      "what": "{extra, plural, one {# extra bericht aan de Bouwer} other {# extra berichten aan de Bouwer}} per maand voor één kind, bovenop de gratis berichten die elke speler elke dag krijgt."
+    },
+    "family": {
+      "name": "Gezin",
+      "tagline": "Voor maximaal {max} kinderen",
+      "extra": "{extra, plural, one {# extra bericht aan de Bouwer} other {# extra berichten aan de Bouwer}} per maand, te delen door maximaal {max} kinderen",
+      "li3": "Maximaal {max} kinderen",
+      "choose": "Kies Gezin"
+    },
+    "school": {
+      "name": "School",
+      "tagline": "Voor klassen en hele scholen",
+      "per": "per leerling per jaar",
+      "min": "Voor minstens {min} leerlingen",
+      "li1": "{perSeat, plural, one {# bericht aan de Bouwer} other {# berichten aan de Bouwer}} per jaar voor elke betaalde leerling, gedeeld door de hele school",
+      "li2": "Klassen bouwen met de eigen pot van de school",
+      "li3": "Betaal met kaart of vraag een factuur aan",
+      "get": "Neem een schoolabonnement",
+      "manage": "Schoolabonnement beheren"
+    },
+    "kid": {
+      "button": "Hoe krijg je het?",
+      "heading": "Een volwassene koopt abonnementen",
+      "text": "Abonnementen worden gekocht door een ouder of verzorger. Die kan zich aanmelden op {where}.",
+      "free": "Je kunt gewoon gratis blijven spelen en bouwen."
+    },
+    "staff": {
+      "button": "Voor gezinnen",
+      "heading": "Basis en Gezin zijn voor gezinnen",
+      "text": "Een ouder of verzorger koopt ze met een ouderaccount. Voor je klassen is er een schoolabonnement, dat voor alle leerlingen geldt.",
+      "toSchool": "Bekijk het schoolabonnement"
+    },
+    "fine": {
+      "h": "Goed om te weten",
+      "tax": "Prijzen zijn in Amerikaanse dollars, plus omzetbelasting (sales tax) waar die geldt. Basis- en gezinsabonnementen zijn voorlopig alleen voor gezinnen in de Verenigde Staten. Een abonnement wordt verlengd totdat je het opzegt, en je kunt altijd opzeggen.",
+      "legal": "Voor abonnementen gelden onze <a href=\"/terms\">Servicevoorwaarden</a>, ons <a href=\"/refunds\">Beleid voor terugbetaling en opzegging</a> en ons <a href=\"/privacy?for=grownups\">Privacybeleid</a>."
+    },
+    "schools": {
+      "title": "Schoolabonnementen",
+      "description": "Schoolabonnementen op Oomba Academy: een gedeelde pot berichten aan de Bouwer voor je leerlingen en leerkrachten, te betalen met kaart of op factuur.",
+      "heading": "Oomba Academy voor scholen",
+      "intro": "Met een schoolabonnement krijgen je leerlingen en leerkrachten een gedeelde pot berichten aan de Bouwer, zodat klassen nooit hoeven te wachten op de gratis berichten.",
+      "what": {
+        "h": "Wat een school krijgt",
+        "p1": "Schoolbeheerders zien het abonnement, de betaalde leerlingen en de pot op het tabblad Facturatie van de school. Gezinnen zien nooit iets uit de klas."
+      },
+      "how": {
+        "h": "Zo zet je een school op",
+        "li1": "Mail naar {email} met de naam van je school en wie de school gaat beheren (de schoolbeheerder).",
+        "li2": "Wij zetten de school en het account van de schoolbeheerder op. De schoolbeheerder voegt leerkrachten en leerlingen toe.",
+        "li3": "De schoolbeheerder betaalt op het tabblad Facturatie van de school: met kaart, of door een factuur of inkooporder aan te vragen."
+      },
+      "toBilling": "Naar het tabblad Facturatie van je school",
+      "contact": {
+        "h": "Vragen?",
+        "p1": "Mail naar {email}."
+      }
     }
   }
 }

@@ -56,7 +56,8 @@
     "me": "Eu",
     "classes": "Turmas",
     "schools": "Escolas",
-    "family": "Família"
+    "family": "Família",
+    "plans": "Planos"
   },
   "errors": {
     "goHome": "Ir para o início",
@@ -452,7 +453,8 @@
       "families": {
         "h": "Contas de família",
         "p1": "Pais, mães e responsáveis podem criar uma conta de adulto própria e vinculá-la à conta da criança. A criança precisa dizer sim na própria página.",
-        "link": "Sobre as contas de família"
+        "link": "Sobre as contas de família",
+        "plans": "Ver planos e preços"
       }
     },
     "sdk": {
@@ -2712,6 +2714,7 @@
       "price": {
         "h": "Preço",
         "p1": "{monthly} por mês ou {yearly} por ano, mais o imposto sobre vendas onde ele se aplica. Cancele quando quiser: o plano continua até o fim do período que você pagou.",
+        "both": "O Básico custa {basic} por mês, para uma criança. O Família custa {family} por mês, para até {max} crianças. Mais o imposto sobre vendas onde ele se aplica. Cancele quando quiser: o plano continua até o fim do período que você pagou.",
         "soon": "Os planos família ainda não estão à venda. Você já pode criar uma conta de adulto e vincular seus filhos.",
         "us": "Por enquanto, os planos família são só para famílias dos Estados Unidos."
       },
@@ -2744,7 +2747,8 @@
           "q": "Vincular ou pagar é uma forma de consentimento dos pais?",
           "a": "Não. O vínculo e os planos família tratam só de mensagens extras para o Construtor. Eles não são a forma como o site pede ou registra consentimento."
         }
-      }
+      },
+      "plans": "Comparar planos e preços"
     },
     "signup": {
       "title": "Cadastro de adulto",
@@ -2760,7 +2764,8 @@
       "signedIn": "Você entrou como {name}. Saia dessa conta primeiro para usar uma conta de adulto aqui.",
       "signOutFirst": "Primeiro saia da conta que está aberta neste aparelho.",
       "needAdult": "Marque a caixa para confirmar que você é pai, mãe ou responsável e tem 18 anos ou mais.",
-      "short": "Use pelo menos {min} caracteres."
+      "short": "Use pelo menos {min} caracteres.",
+      "chosen": "Você escolheu o {plan}. Agora você paga na página segura da Stripe e, depois, adiciona seus filhos."
     },
     "login": {
       "title": "Entrada de adulto",
@@ -2791,7 +2796,13 @@
       "cancelConfirm": "Cancelar este pedido?",
       "helpHeading": "Ajuda",
       "help": "Tem dúvidas ou algum problema com a sua conta? Escreva para {email}.",
-      "off": "As contas de família estão desligadas no momento. Aqui você ainda pode jogar, trocar o idioma ou a senha e sair."
+      "off": "As contas de família estão desligadas no momento. Aqui você ainda pode jogar, trocar o idioma ou a senha e sair.",
+      "yourPlan": "Seu plano",
+      "planFreeText": "Seus filhos criam com as mensagens grátis diárias para o Construtor.",
+      "seePlans": "Ver planos",
+      "changePlan": "Mudar de plano",
+      "sourceBasic": "As mensagens extras vêm do seu plano Básico.",
+      "fullBasic": "Seu plano Básico cobre 1 criança. Para vincular mais, mude para o plano Família (até {max} crianças) em Gerenciar cobrança."
     },
     "link": {
       "title": "Vincular uma criança",
@@ -2809,7 +2820,8 @@
       "full": "Uma família pode vincular até {max} crianças.",
       "typeCode": "Digite o código que a criança deu para você.",
       "tooMany": "Tentativas demais. Espere 15 minutos e tente de novo.",
-      "notFound": "Essa criança não faz parte da sua família."
+      "notFound": "Essa criança não faz parte da sua família.",
+      "fullBasic": "Seu plano Básico cobre 1 criança. Para vincular mais, mude para o plano Família em Gerenciar cobrança."
     },
     "billing": {
       "password": {
@@ -2835,6 +2847,7 @@
         "cancel": "Cancele quando quiser em Gerenciar cobrança. O plano continua funcionando até o fim do período que você pagou.",
         "refund": "Reembolso total se você pedir em até 14 dias após o seu primeiro pagamento ou após uma renovação anual.",
         "tax": "Os preços são em dólares americanos, mais o imposto sobre vendas onde ele se aplica. Por enquanto, os planos família são só para famílias dos Estados Unidos.",
+        "taxPlans": "Os preços são em dólares americanos, mais o imposto sobre vendas onde ele se aplica. Por enquanto, os planos são só para famílias dos Estados Unidos.",
         "agree": "Ao assinar, você concorda com os nossos {terms}.",
         "link": "Termos de Serviço"
       },
@@ -2851,7 +2864,128 @@
         "noCustomer": "Ainda não há nada para gerenciar: comece um plano primeiro.",
         "stripe": "Não conseguimos falar com nosso processador de pagamentos. Tente de novo daqui a um minuto."
       },
-      "legal": "Os planos são regidos pelos nossos <a href=\"/terms\">Termos de Serviço</a> e pela nossa <a href=\"/refunds\">Política de Reembolso e Cancelamento</a>."
+      "legal": "Os planos são regidos pelos nossos <a href=\"/terms\">Termos de Serviço</a> e pela nossa <a href=\"/refunds\">Política de Reembolso e Cancelamento</a>.",
+      "welcomePlan": "Seu {plan} foi ativado. Obrigado!",
+      "welcomeHeading": "Agora adicione a criança",
+      "welcomeStep2": "Toque em Vincular uma criança, aqui embaixo, e digite o código. Ele funciona uma vez só, durante 1 hora.",
+      "basicNote": "Seu plano Básico cobre uma criança: {name}. As outras crianças vinculadas criam com as mensagens grátis diárias. Para cobrir até {max} crianças, mude para o plano Família em Gerenciar cobrança.",
+      "coversBasic": "Cobre 1 criança.",
+      "coversFamily": "Cobre até {max} crianças.",
+      "switchHow": "Para mudar para o {plan}, abra Gerenciar cobrança e escolha atualizar o plano. A Stripe ajusta o preço pelo resto do período."
+    },
+    "plan": {
+      "free": "plano Grátis",
+      "basic": "plano Básico",
+      "family": "plano Família"
+    },
+    "checkout": {
+      "headingBasic": "Começar o plano Básico",
+      "headingFamily": "Começar o plano Família",
+      "addAfter": "Você adiciona seus filhos depois de pagar: não precisa vinculá-los antes.",
+      "other": "Escolher outro plano",
+      "soon": "Este plano ainda não está à venda. Você já pode adicionar seus filhos.",
+      "basicMany": "O Básico cobre uma criança: {name}. Seus outros filhos continuam só com as mensagens grátis diárias.",
+      "basicManyPending": "O Básico cobre uma criança. Seus outros filhos continuam só com as mensagens grátis diárias.",
+      "basicManyLink": "Cubra todos os seus filhos com o plano Família"
+    }
+  },
+  "plans": {
+    "title": "Planos e preços",
+    "description": "Planos da Oomba Academy: Grátis, Básico, Família e Escola. Jogar todos os jogos é sempre grátis.",
+    "heading": "Planos",
+    "intro": "Jogar todos os jogos é grátis, e criar com as mensagens grátis diárias para o Construtor também. Um plano adiciona mensagens extras para o Construtor todo mês.",
+    "interval": {
+      "label": "Período de cobrança",
+      "month": "Mensal",
+      "year": "Anual"
+    },
+    "recommended": "Recomendado",
+    "yours": "Seu plano",
+    "noPrice": "Preço em breve",
+    "perMonth": "por mês",
+    "perYear": "por ano",
+    "yearAsMonth": "Dá {price} por mês, pagos uma vez por ano.",
+    "orYearly": "Ou {price} por ano.",
+    "extra": "{extra, plural, one {# mensagem extra para o Construtor} other {# mensagens extras para o Construtor}} por mês",
+    "cancel": "Cancele quando quiser",
+    "manage": "Gerenciar seu plano",
+    "switch": "Mudar para este plano",
+    "grantSwitch": "Nós demos este plano para você. Para mudá-lo, escreva para {email}.",
+    "notOnSale": "Os planos Básico e Família ainda não podem ser comprados.",
+    "soon": "Em breve",
+    "notOnSaleOut": "Você já pode criar uma conta de adulto e adicionar seus filhos.",
+    "free": {
+      "name": "Grátis",
+      "tagline": "Para todo mundo",
+      "forever": "Sempre grátis",
+      "li1": "Jogar todos os jogos",
+      "li2": "Criar jogos com as mensagens grátis diárias para o Construtor",
+      "li3": "Não precisa de cartão",
+      "start": "Começar grátis"
+    },
+    "basic": {
+      "name": "Básico",
+      "tagline": "Para uma criança que cria jogos",
+      "li1": "Tudo do Grátis",
+      "li3": "Para 1 criança",
+      "choose": "Escolher Básico",
+      "what": "{extra, plural, one {# mensagem extra para o Construtor} other {# mensagens extras para o Construtor}} por mês para uma criança, além das mensagens grátis que todo jogador recebe a cada dia."
+    },
+    "family": {
+      "name": "Família",
+      "tagline": "Para até {max} crianças",
+      "extra": "{extra, plural, one {# mensagem extra para o Construtor} other {# mensagens extras para o Construtor}} por mês, compartilhadas por até {max} crianças",
+      "li3": "Até {max} crianças",
+      "choose": "Escolher Família"
+    },
+    "school": {
+      "name": "Escola",
+      "tagline": "Para turmas e escolas inteiras",
+      "per": "por aluno por ano",
+      "min": "Para no mínimo {min} alunos",
+      "li1": "{perSeat, plural, one {# mensagem para o Construtor} other {# mensagens para o Construtor}} por ano para cada aluno com vaga paga, compartilhadas por toda a escola",
+      "li2": "As turmas criam com a cota da própria escola",
+      "li3": "Pague com cartão ou peça uma fatura",
+      "get": "Contratar um plano escolar",
+      "manage": "Gerenciar plano escolar"
+    },
+    "kid": {
+      "button": "Como conseguir",
+      "heading": "Quem compra os planos é um adulto",
+      "text": "Os planos são comprados por um pai, uma mãe ou um responsável. Eles podem se cadastrar em {where}.",
+      "free": "Você pode continuar jogando e criando de graça."
+    },
+    "staff": {
+      "button": "Para famílias",
+      "heading": "Básico e Família são para famílias",
+      "text": "Um pai, uma mãe ou um responsável compra esses planos com uma conta de adulto. Para as suas turmas, um plano escolar cobre todos os alunos.",
+      "toSchool": "Ver o plano escolar"
+    },
+    "fine": {
+      "h": "Bom saber",
+      "tax": "Os preços são em dólares americanos, mais o imposto sobre vendas onde ele se aplica. Por enquanto, os planos Básico e Família são só para famílias dos Estados Unidos. Um plano é renovado até você cancelá-lo, e você pode cancelar quando quiser.",
+      "legal": "Os planos são regidos pelos nossos <a href=\"/terms\">Termos de Serviço</a>, pela nossa <a href=\"/refunds\">Política de Reembolso e Cancelamento</a> e pela nossa <a href=\"/privacy?for=grownups\">Política de Privacidade</a>."
+    },
+    "schools": {
+      "title": "Planos escolares",
+      "description": "Planos escolares na Oomba Academy: uma cota compartilhada de mensagens para o Construtor para seus alunos e professores, paga com cartão ou por fatura.",
+      "heading": "Oomba Academy para escolas",
+      "intro": "Um plano escolar dá aos seus alunos e professores uma cota compartilhada de mensagens para o Construtor, para que as turmas nunca precisem esperar pelas mensagens grátis.",
+      "what": {
+        "h": "O que a escola recebe",
+        "p1": "Os admins da escola veem o plano, os alunos com vaga paga e a cota na aba Cobrança da escola. As famílias nunca veem nada da turma."
+      },
+      "how": {
+        "h": "Como configurar uma escola",
+        "li1": "Escreva para {email} com o nome da sua escola e quem vai cuidar dela (o admin da escola).",
+        "li2": "Nós configuramos a escola e a conta do admin da escola. O admin da escola adiciona professores e alunos.",
+        "li3": "O admin da escola paga na aba Cobrança da escola: com cartão, ou pedindo uma fatura ou uma ordem de compra."
+      },
+      "toBilling": "Ir para a aba Cobrança da sua escola",
+      "contact": {
+        "h": "Dúvidas?",
+        "p1": "Escreva para {email}."
+      }
     }
   }
 }

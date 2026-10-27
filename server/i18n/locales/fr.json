@@ -55,7 +55,8 @@
     "me": "Moi",
     "classes": "Classes",
     "schools": "Écoles",
-    "family": "Famille"
+    "family": "Famille",
+    "plans": "Offres"
   },
   "errors": {
     "goHome": "Retour à l’accueil",
@@ -451,7 +452,8 @@
       "families": {
         "h": "Comptes familiaux",
         "p1": "Un parent ou un tuteur peut créer son propre compte adulte et le relier au compte de son enfant. Votre enfant doit dire oui sur sa propre page.",
-        "link": "À propos des comptes familiaux"
+        "link": "À propos des comptes familiaux",
+        "plans": "Voir les offres et les tarifs"
       }
     },
     "sdk": {
@@ -2711,6 +2713,7 @@
       "price": {
         "h": "Prix",
         "p1": "{monthly} par mois ou {yearly} par an, plus la taxe sur les ventes là où elle s’applique. Résiliable à tout moment : l’abonnement continue jusqu’à la fin de la période payée.",
+        "both": "L’abonnement Essentiel coûte {basic} par mois, pour un enfant. L’abonnement famille coûte {family} par mois, pour {max} enfants au maximum. Plus la taxe sur les ventes là où elle s’applique. Résiliable à tout moment : l’abonnement continue jusqu’à la fin de la période payée.",
         "soon": "Les abonnements famille ne sont pas encore en vente. Vous pouvez déjà créer un compte adulte et relier vos enfants.",
         "us": "Pour l’instant, les abonnements famille sont réservés aux familles des États-Unis."
       },
@@ -2743,7 +2746,8 @@
           "q": "Relier un compte ou payer, est-ce une forme de consentement parental ?",
           "a": "Non. Le lien et les abonnements famille concernent uniquement les messages supplémentaires pour le Constructeur. Ce n’est pas ainsi que le site demande ou enregistre un consentement."
         }
-      }
+      },
+      "plans": "Comparer les offres et les tarifs"
     },
     "signup": {
       "title": "Inscription adulte",
@@ -2759,7 +2763,8 @@
       "signedIn": "Session ouverte : {name}. Déconnectez-vous d’abord pour utiliser un compte adulte ici.",
       "signOutFirst": "Déconnectez d’abord le compte ouvert sur cet appareil.",
       "needAdult": "Cochez la case pour indiquer que vous êtes parent ou tuteur et que vous avez 18 ans ou plus.",
-      "short": "Utilisez au moins {min} caractères."
+      "short": "Utilisez au moins {min} caractères.",
+      "chosen": "Abonnement choisi : {plan}. Vous payez ensuite sur la page sécurisée de Stripe, puis vous ajoutez vos enfants."
     },
     "login": {
       "title": "Connexion adulte",
@@ -2790,7 +2795,13 @@
       "cancelConfirm": "Annuler cette demande ?",
       "helpHeading": "Aide",
       "help": "Une question, ou un problème avec votre compte ? Écrivez à {email}.",
-      "off": "Les comptes familiaux sont désactivés pour le moment. Ici, vous pouvez toujours jouer, changer de langue ou de mot de passe, et vous déconnecter."
+      "off": "Les comptes familiaux sont désactivés pour le moment. Ici, vous pouvez toujours jouer, changer de langue ou de mot de passe, et vous déconnecter.",
+      "yourPlan": "Votre abonnement",
+      "planFreeText": "Vos enfants créent avec les messages gratuits du jour pour le Constructeur.",
+      "seePlans": "Voir les offres",
+      "changePlan": "Changer d’abonnement",
+      "sourceBasic": "Les messages supplémentaires viennent de votre abonnement Essentiel.",
+      "fullBasic": "Votre abonnement Essentiel couvre 1 enfant. Pour en relier d’autres, passez à l’abonnement famille ({max} enfants au maximum) dans « Gérer l’abonnement »."
     },
     "link": {
       "title": "Relier un enfant",
@@ -2808,7 +2819,8 @@
       "full": "Une famille peut relier jusqu’à {max} enfants.",
       "typeCode": "Tapez le code que votre enfant vous a donné.",
       "tooMany": "Trop d’essais. Attendez 15 minutes, puis réessayez.",
-      "notFound": "Cet enfant ne fait pas partie de votre famille."
+      "notFound": "Cet enfant ne fait pas partie de votre famille.",
+      "fullBasic": "Votre abonnement Essentiel couvre 1 enfant. Pour en relier d’autres, passez à l’abonnement famille dans « Gérer l’abonnement »."
     },
     "billing": {
       "password": {
@@ -2834,6 +2846,7 @@
         "cancel": "Résiliable à tout moment dans « Gérer l’abonnement ». L’abonnement continue jusqu’à la fin de la période payée.",
         "refund": "Remboursement intégral si vous le demandez dans les 14 jours suivant votre premier paiement ou un renouvellement annuel.",
         "tax": "Les prix sont en dollars américains, plus la taxe sur les ventes là où elle s’applique. Pour l’instant, les abonnements famille sont réservés aux familles des États-Unis.",
+        "taxPlans": "Les prix sont en dollars américains, plus la taxe sur les ventes là où elle s’applique. Pour l’instant, les abonnements sont réservés aux familles des États-Unis.",
         "agree": "En vous abonnant, vous acceptez nos {terms}.",
         "link": "Conditions d’utilisation"
       },
@@ -2850,7 +2863,128 @@
         "noCustomer": "Il n’y a encore rien à gérer : souscrivez d’abord un abonnement.",
         "stripe": "Impossible de joindre notre prestataire de paiement. Réessayez dans une minute."
       },
-      "legal": "Les abonnements sont régis par nos <a href=\"/terms\">Conditions d’utilisation</a> et notre <a href=\"/refunds\">Politique de remboursement et de résiliation</a>."
+      "legal": "Les abonnements sont régis par nos <a href=\"/terms\">Conditions d’utilisation</a> et notre <a href=\"/refunds\">Politique de remboursement et de résiliation</a>.",
+      "welcomePlan": "Votre abonnement est activé : {plan}. Merci !",
+      "welcomeHeading": "Ajoutez maintenant votre enfant",
+      "welcomeStep2": "Touchez « Relier un enfant » ci-dessous et tapez le code. Il fonctionne une seule fois, pendant 1 heure.",
+      "basicNote": "Votre abonnement Essentiel couvre un enfant : {name}. Vos autres enfants reliés créent avec les messages gratuits du jour. Pour couvrir jusqu’à {max} enfants, passez à l’abonnement famille dans « Gérer l’abonnement ».",
+      "coversBasic": "Couvre 1 enfant.",
+      "coversFamily": "Couvre jusqu’à {max} enfants.",
+      "switchHow": "Pour passer à l’offre choisie ({plan}), ouvrez « Gérer l’abonnement » et choisissez de modifier votre abonnement. Stripe ajuste le prix pour le reste de la période."
+    },
+    "plan": {
+      "free": "Abonnement gratuit",
+      "basic": "Abonnement Essentiel",
+      "family": "Abonnement famille"
+    },
+    "checkout": {
+      "headingBasic": "Souscrire l’abonnement Essentiel",
+      "headingFamily": "Souscrire l’abonnement famille",
+      "addAfter": "Vous ajoutez vos enfants après le paiement : inutile de les relier avant.",
+      "other": "Choisir un autre abonnement",
+      "soon": "Cet abonnement n’est pas encore en vente. Vous pouvez déjà ajouter vos enfants.",
+      "basicMany": "L’abonnement Essentiel couvre un enfant : {name}. Vos autres enfants gardent seulement les messages gratuits du jour.",
+      "basicManyPending": "L’abonnement Essentiel couvre un enfant. Vos autres enfants gardent seulement les messages gratuits du jour.",
+      "basicManyLink": "Couvrir tous vos enfants avec l’abonnement famille"
+    }
+  },
+  "plans": {
+    "title": "Offres et tarifs",
+    "description": "Les offres d’Oomba Academy : Gratuit, Essentiel, Famille et École. Jouer à tous les jeux est toujours gratuit.",
+    "heading": "Offres",
+    "intro": "Jouer à tous les jeux est gratuit, tout comme créer avec les messages gratuits du jour pour le Constructeur. Un abonnement ajoute des messages supplémentaires pour le Constructeur chaque mois.",
+    "interval": {
+      "label": "Période de facturation",
+      "month": "Mensuel",
+      "year": "Annuel"
+    },
+    "recommended": "Recommandé",
+    "yours": "Votre offre",
+    "noPrice": "Prix bientôt disponible",
+    "perMonth": "par mois",
+    "perYear": "par an",
+    "yearAsMonth": "Soit {price} par mois, payé une fois par an.",
+    "orYearly": "Ou {price} par an.",
+    "extra": "{extra, plural, one {# message supplémentaire pour le Constructeur} other {# messages supplémentaires pour le Constructeur}} par mois",
+    "cancel": "Résiliable à tout moment",
+    "manage": "Gérer votre abonnement",
+    "switch": "Passer à cette offre",
+    "grantSwitch": "Cet abonnement vous a été offert. Pour le changer, écrivez à {email}.",
+    "notOnSale": "Les abonnements Essentiel et famille ne sont pas encore en vente.",
+    "soon": "Bientôt disponible",
+    "notOnSaleOut": "Vous pouvez déjà créer un compte adulte et ajouter vos enfants.",
+    "free": {
+      "name": "Gratuit",
+      "tagline": "Pour tout le monde",
+      "forever": "Toujours gratuit",
+      "li1": "Jouer à tous les jeux",
+      "li2": "Créer des jeux avec les messages gratuits du jour pour le Constructeur",
+      "li3": "Pas besoin de carte",
+      "start": "Commencer gratuitement"
+    },
+    "basic": {
+      "name": "Essentiel",
+      "tagline": "Pour un jeune créateur",
+      "li1": "Tout ce qu’offre Gratuit",
+      "li3": "Pour 1 enfant",
+      "choose": "Choisir Essentiel",
+      "what": "{extra, plural, one {# message supplémentaire pour le Constructeur} other {# messages supplémentaires pour le Constructeur}} par mois pour un enfant, en plus des messages gratuits que chaque joueur reçoit tous les jours."
+    },
+    "family": {
+      "name": "Famille",
+      "tagline": "Pour {max} enfants au maximum",
+      "extra": "{extra, plural, one {# message supplémentaire pour le Constructeur} other {# messages supplémentaires pour le Constructeur}} par mois, à partager entre {max} enfants au maximum",
+      "li3": "Jusqu’à {max} enfants",
+      "choose": "Choisir Famille"
+    },
+    "school": {
+      "name": "École",
+      "tagline": "Pour les classes et les écoles entières",
+      "per": "par élève et par an",
+      "min": "Pour au moins {min} élèves",
+      "li1": "{perSeat, plural, one {# message pour le Constructeur} other {# messages pour le Constructeur}} par an pour chaque élève payé, à partager entre toute l’école",
+      "li2": "Les classes créent avec la réserve propre à l’école",
+      "li3": "Paiement par carte ou sur facture",
+      "get": "Obtenir un abonnement école",
+      "manage": "Gérer l’abonnement école"
+    },
+    "kid": {
+      "button": "Comment l’avoir",
+      "heading": "Ce sont les adultes qui achètent les abonnements",
+      "text": "Les abonnements sont achetés par ton parent ou l’adulte qui s’occupe de toi. Il peut s’inscrire sur {where}.",
+      "free": "Tu peux continuer à jouer et à créer gratuitement."
+    },
+    "staff": {
+      "button": "Pour les familles",
+      "heading": "Essentiel et Famille sont pour les familles",
+      "text": "Un parent ou un tuteur les achète avec un compte adulte. Pour vos classes, un abonnement école couvre tous les élèves.",
+      "toSchool": "Voir l’abonnement école"
+    },
+    "fine": {
+      "h": "Bon à savoir",
+      "tax": "Les prix sont en dollars américains, plus la taxe sur les ventes là où elle s’applique. Pour l’instant, les abonnements Essentiel et famille sont réservés aux familles des États-Unis. Un abonnement est renouvelé jusqu’à ce que vous le résiliiez, et vous pouvez le résilier à tout moment.",
+      "legal": "Les abonnements sont régis par nos <a href=\"/terms\">Conditions d’utilisation</a>, notre <a href=\"/refunds\">Politique de remboursement et de résiliation</a> et notre <a href=\"/privacy?for=grownups\">Politique de confidentialité</a>."
+    },
+    "schools": {
+      "title": "Abonnements école",
+      "description": "Les abonnements école d’Oomba Academy : une réserve commune de messages pour le Constructeur pour vos élèves et vos enseignants, payée par carte ou sur facture.",
+      "heading": "Oomba Academy pour les écoles",
+      "intro": "Un abonnement école donne à vos élèves et à vos enseignants une réserve commune de messages pour le Constructeur : les classes n’ont jamais à attendre les messages gratuits.",
+      "what": {
+        "h": "Ce que reçoit une école",
+        "p1": "Les admins de l’école voient l’abonnement, les élèves payés et la réserve dans l’onglet Facturation de l’école. Les familles ne voient jamais rien de ce qui se passe en classe."
+      },
+      "how": {
+        "h": "Comment inscrire une école",
+        "li1": "Écrivez à {email} en indiquant le nom de votre école et la personne qui s’en occupera (l’admin de l’école).",
+        "li2": "Nous configurons l’école et le compte de l’admin de l’école. L’admin de l’école ajoute les enseignants et les élèves.",
+        "li3": "L’admin de l’école paie dans l’onglet Facturation de l’école : par carte, ou en demandant une facture ou un bon de commande."
+      },
+      "toBilling": "Aller à l’onglet Facturation de votre école",
+      "contact": {
+        "h": "Des questions ?",
+        "p1": "Écrivez à {email}."
+      }
     }
   }
 }
