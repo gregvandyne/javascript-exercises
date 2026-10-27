@@ -1000,3 +1000,33 @@ takes no language away; it shows in English, marked `lang="en" dir="ltr"`, until
 /parents and /safety is `paidN` items that replace `pN` once paid plans are public (`familiesOn`). Untranslated
 footer, Studio class counter and Billing tab words get the same `lang="en" dir="ltr"` marking until their translations
 land; the new keys still have to be translated in all 12 locales before `BILLING_PUBLIC` (§9).
+
+**Plans page and the Basic plan (owner decisions of 2026-10-27, spec §17; they replace D16 and the "no plan words on
+kid pages" rule where they conflict).** A **Plans** link is in everyone's top menu (and phone tab bar) while paid-plan
+pages are on (`familiesOn(req)`: billing on, and `BILLING_PUBLIC` or the preview cookie). `/plans` shows four cards like
+any pricing page: **Free**, **Basic** (one young builder; never "child plan" or "Plus"), **Family** (up to
+`FAMILY_MAX_CHILDREN`, the Recommended one) and **School**, with a monthly / yearly switch (plain links, no script). Its
+prices are read from Stripe's Price objects by lookup key (`oomba_basic_monthly`, `oomba_basic_yearly`,
+`oomba_family_*`, `oomba_school_seat_yearly`; cached, refreshed by the reconcile job), so the page always says what
+Checkout charges; a price Stripe doesn't return shows "Price coming soon". Prices may appear on `/plans` (and the grown-up
+pages) only: the Studio, Me, games and limit messages stay free of them (tests: `tests/unit/plans.test.js`, the kid
+crawl in `tests/e2e/billing.spec.js`). Everyone may look; only a grown-up account (Basic, Family) or a school admin
+(School) can buy. A kid who taps a paid plan gets a calm panel ("A grown-up buys plans. They can sign up at
+oomba.ai/plans", text, not a link; no countdown or pressure); school staff are told Basic and Family are for families
+and pointed at the School card; School goes to a school admin's own Billing tab, else to `/plans/schools` (price, what a
+school gets, how a school is set up, the contact email). Untranslated words on `/plans` are marked `lang="en" dir="ltr"`
+because children read it too.
+**Pay first, link children after.** Signed out, a paid plan leads to the grown-up sign-up (or sign-in) with the plan
+kept (`?plan=basic|family&interval=month|year`), then `/family?plan=…` offers that plan (password again, then Stripe's
+Checkout; the Checkout's cancel link comes back to it), and Checkout's return shows "Now add your child" with the steps.
+No child has to be linked before paying. `/family` shows the plan card (Free, Basic or Family), its state, the extras
+left, Manage billing and Change plan (`/plans`); `/parents` and `/grown-ups` link to `/plans`.
+**The Basic plan** is a family-type plan (owner kind `family`, `billing_subscriptions.plan='basic'`, Product metadata
+`oomba_plan=basic`): `BASIC_EXTRA_MESSAGES` (25) extra messages a UTC month for **one** linked child, its own AI
+backstop `BASIC_MONTHLY_AI_USD` (2.5; also its share of the paid AI pool), the same `FAMILY_CHILD_DAILY_MAX`. A family
+holds one plan at a time: `ownerPlan('family', …)` reads Basic and Family rows, and the duplicate guard treats a Basic
+and a Family plan of one family as two plans. Switching between them happens in the Customer Portal (both Portal
+configurations allow it, prorated): the same subscription gets the other price, and the shared sync picks up the new
+plan from the price (audit `billing.plan.change`). With Basic, linking a second child is refused; a Family plan
+switched to Basic keeps every link, but only the **first linked** child gets the extras (`coveredChildren`), and
+/family names that child and says the others build with the free messages.

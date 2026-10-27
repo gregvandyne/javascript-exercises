@@ -159,7 +159,8 @@
   "family": {
     "landing": {
       "price": {
-        "p1": "{monthly} a month or {yearly} a year, plus sales tax where it applies. Cancel any time: the plan runs to the end of the period you paid for."
+        "p1": "{monthly} a month or {yearly} a year, plus sales tax where it applies. Cancel any time: the plan runs to the end of the period you paid for.",
+        "both": "Basic is {basic} a month, for one child. Family is {family} a month, for up to {max} children. Plus sales tax where it applies. Cancel any time: the plan runs to the end of the period you paid for."
       },
       "faq": {
         "cancel": {
@@ -171,6 +172,12 @@
       "terms": {
         "cancel": "Cancel any time in Manage billing. The plan keeps working until the end of the period you paid for."
       }
+    }
+  },
+  "plans": {
+    "cancel": "Cancel any time",
+    "fine": {
+      "tax": "Prices are in US dollars, plus sales tax where it applies. Basic and Family plans are for US families for now. A plan renews until you cancel it, and you can cancel any time."
     }
   }
 }

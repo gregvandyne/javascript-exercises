@@ -221,6 +221,10 @@ export const config = {
   // month, a backstop against unusually expensive messages.
   familyChildDailyMax: Math.max(0, Math.floor(num(process.env.FAMILY_CHILD_DAILY_MAX, 60))),
   familyMonthlyAiUsd: posNum(process.env.FAMILY_MONTHLY_AI_USD, 4),
+  // The Basic plan (one young builder; docs/decisions.md "Paid plans" §17): a family-type plan for 1 linked child, with
+  // its own extra messages a UTC month and its own AI cost backstop. FAMILY_CHILD_DAILY_MAX applies to it too.
+  basicExtraMessages: Math.max(0, num(process.env.BASIC_EXTRA_MESSAGES, 25)),
+  basicMonthlyAiUsd: posNum(process.env.BASIC_MONTHLY_AI_USD, 2.5),
   // The paid AI pool (services/ai-budget.js): its monthly ceiling is computed (entitled families x FAMILY_MONTHLY_AI_USD);
   // AI_PAID_MONTHLY_BUDGET_USD caps it. AI_HARD_MONTHLY_USD stops every AI call site-wide (default: free + paid monthly).
   // School plans (server/services/school-billing.js; docs/decisions.md "Paid plans" D6): Builder messages each paid

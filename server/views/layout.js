@@ -1,7 +1,7 @@
 // Page layout. Contract for every route:
 //   res.send(layout(req, { title, active, body, scripts, head, back, bodyClass, description, bare, mid, i18n }))
 //   mid: true = a medium-width page (reading pages like lessons)
-//   active: 'home'|'search'|'build'|'friends'|'me'|null   back: href for the Back link on inner pages
+//   active: 'home'|'search'|'build'|'friends'|'me'|'plans'|'family'|null   back: href for the Back link on inner pages
 //   scripts: ['/js/foo.js'] (ES modules)   bare: true = no nav/footer (play page)
 //   i18n: extra key prefixes to embed for the browser. Every page gets 'js.app' plus 'js.<name>' for each /js/<name>.js.
 import { html, raw, esc, jsonData } from './html.js';
@@ -14,6 +14,7 @@ import { inAnySchool, isSchoolStaff, isPlatformAdmin } from '../services/schools
 import { availableLocales, localeInfo, tReq, tHtml, clientStrings, DEFAULT_LOCALE, localPath } from '../i18n/index.js';
 import { THEMES, THEME_ICONS, BAR_COLORS } from '../theme.js';
 import { notices, markNotified } from '../builder/turns.js';
+import { familiesOn } from '../services/family.js';
 
 const NAV = [
   ['home', '/', '🏠'],
@@ -75,10 +76,12 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
   // People in a school get a Classes tab (teachers land on /teach, students on /classes); the platform admin, when not
   // staff of a school, gets Schools instead.
   const staff = u && isSchoolStaff(u);
-  const navItems = grownup ? [NAV[0], NAV[1], ['family', '/family', '👪']]
-    : u && staff ? [...NAV, ['classes', '/teach', '🏫']]
-    : u && isPlatformAdmin(u) ? [...NAV, ['schools', '/admin/schools', '🏫']]
-    : u && inAnySchool(u) ? [...NAV, ['classes', '/classes', '🏫']] : NAV;
+  // Plans (/plans, routes/plans.js) is in everyone's menu while paid-plan pages are on (docs/decisions.md "Paid plans" §17).
+  const plans = familiesOn(req) ? [['plans', '/plans', '⭐']] : [];
+  const navItems = grownup ? [NAV[0], NAV[1], ...plans, ['family', '/family', '👪']]
+    : u && staff ? [...NAV, ['classes', '/teach', '🏫'], ...plans]
+    : u && isPlatformAdmin(u) ? [...NAV, ['schools', '/admin/schools', '🏫'], ...plans]
+    : u && inAnySchool(u) ? [...NAV, ['classes', '/classes', '🏫'], ...plans] : [...NAV, ...plans];
   // Pages in the Classes area highlight Schools for the platform admin, whose nav has Schools instead of Classes.
   const act = active === 'classes' && !navItems.some(([k]) => k === 'classes') && navItems.some(([k]) => k === 'schools') ? 'schools' : active;
   const signIn = t('layout.signIn');

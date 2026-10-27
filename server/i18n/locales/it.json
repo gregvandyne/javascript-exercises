@@ -56,7 +56,8 @@
     "me": "Io",
     "classes": "Classi",
     "schools": "Scuole",
-    "family": "Famiglia"
+    "family": "Famiglia",
+    "plans": "Piani"
   },
   "errors": {
     "goHome": "Torna alla home",
@@ -452,7 +453,8 @@
       "families": {
         "h": "Account famiglia",
         "p1": "Un genitore o tutore può creare un proprio account genitore e collegarlo all'account del figlio o della figlia. Vostro figlio o figlia deve dire di sì nella propria pagina.",
-        "link": "Informazioni sugli account famiglia"
+        "link": "Informazioni sugli account famiglia",
+        "plans": "Vedi piani e prezzi"
       }
     },
     "sdk": {
@@ -2712,6 +2714,7 @@
       "price": {
         "h": "Prezzo",
         "p1": "{monthly} al mese o {yearly} all'anno, più l'imposta sulle vendite dove prevista. Potete disdire in qualsiasi momento: il piano resta attivo fino alla fine del periodo già pagato.",
+        "both": "Base: {basic} al mese, per un figlio o una figlia. Famiglia: {family} al mese, per un massimo di {max} figli. Più l'imposta sulle vendite dove prevista. Potete disdire in qualsiasi momento: il piano resta attivo fino alla fine del periodo già pagato.",
         "soon": "I piani famiglia non sono ancora in vendita. Potete già creare un account genitore e collegare i vostri figli.",
         "us": "Per ora i piani famiglia sono disponibili solo per le famiglie degli Stati Uniti."
       },
@@ -2744,7 +2747,8 @@
           "q": "Collegarsi o pagare vale come consenso dei genitori?",
           "a": "No. Il collegamento e i piani famiglia riguardano solo i messaggi extra al Costruttore. Non sono il modo in cui il sito chiede o registra il consenso."
         }
-      }
+      },
+      "plans": "Confronta piani e prezzi"
     },
     "signup": {
       "title": "Registrazione account genitore",
@@ -2760,7 +2764,8 @@
       "signedIn": "Accesso effettuato come {name}. Per usare qui un account genitore, prima uscite da questo account.",
       "signOutFirst": "Prima uscite dall'account aperto su questo dispositivo.",
       "needAdult": "Spuntate la casella per confermare che siete un genitore o tutore e avete almeno 18 anni.",
-      "short": "Usate almeno {min} caratteri."
+      "short": "Usate almeno {min} caratteri.",
+      "chosen": "Avete scelto il {plan}. Ora pagate sulla pagina sicura di Stripe, poi aggiungete i vostri figli."
     },
     "login": {
       "title": "Accesso genitore",
@@ -2789,13 +2794,15 @@
       "removed": "Fatto.",
       "cancel": "Annulla richiesta",
       "cancelConfirm": "Annullare questa richiesta?",
-      "planHeading": "Piano famiglia",
-      "planActive": "Il vostro piano famiglia è attivo.",
-      "planNone": "Nessun piano famiglia. Collegare i figli è gratis e per loro non cambia niente.",
-      "planMore": "Informazioni sui piani famiglia",
       "helpHeading": "Aiuto",
       "help": "Avete domande o un problema con il vostro account? Scrivete a {email}.",
-      "off": "Per ora gli account famiglia sono disattivati. Qui potete comunque giocare, cambiare lingua o password e uscire."
+      "off": "Per ora gli account famiglia sono disattivati. Qui potete comunque giocare, cambiare lingua o password e uscire.",
+      "yourPlan": "Il vostro piano",
+      "planFreeText": "I vostri figli creano con i messaggi gratuiti giornalieri al Costruttore.",
+      "seePlans": "Vedi i piani",
+      "changePlan": "Cambia piano",
+      "sourceBasic": "I messaggi extra arrivano dal vostro piano Base.",
+      "fullBasic": "Il vostro piano Base copre 1 figlio o figlia. Per collegarne altri, passate al piano famiglia (fino a {max} figli) in Gestisci pagamenti."
     },
     "link": {
       "title": "Collega un figlio o una figlia",
@@ -2813,7 +2820,8 @@
       "full": "Una famiglia può collegare al massimo {max} figli.",
       "typeCode": "Scrivete il codice che vi ha dato vostro figlio o figlia.",
       "tooMany": "Troppi tentativi. Aspettate 15 minuti e poi riprovate.",
-      "notFound": "Questo figlio o figlia non fa parte della vostra famiglia."
+      "notFound": "Questo figlio o figlia non fa parte della vostra famiglia.",
+      "fullBasic": "Il vostro piano Base copre 1 figlio o figlia. Per collegarne altri, passate al piano famiglia in Gestisci pagamenti."
     },
     "billing": {
       "password": {
@@ -2834,12 +2842,12 @@
       "renewsYearly": "Annuale, si rinnova il {date}.",
       "extrasLeft": "{left} su {total, plural, one {# messaggio extra} other {# messaggi extra}} ancora disponibili questo mese, contati fino a ieri",
       "extrasReset": "Ripartono il {date} (UTC). Quelli non usati non passano al mese successivo.",
-      "linkFirst": "Prima collegate un figlio o una figlia (che dice di sì nella propria pagina), poi potete attivare un piano.",
       "terms": {
         "renew": "Il piano si rinnova automaticamente ogni mese o ogni anno finché non lo disdite.",
         "cancel": "Potete disdire in qualsiasi momento in Gestisci pagamenti. Il piano resta attivo fino alla fine del periodo già pagato.",
         "refund": "Rimborso completo se lo chiedete entro 14 giorni dal primo pagamento o da un rinnovo annuale.",
         "tax": "I prezzi sono in dollari statunitensi, più l'imposta sulle vendite dove prevista. Per ora i piani famiglia sono disponibili solo per le famiglie degli Stati Uniti.",
+        "taxPlans": "I prezzi sono in dollari statunitensi, più l'imposta sulle vendite dove prevista. Per ora i piani sono disponibili solo per le famiglie degli Stati Uniti.",
         "agree": "Abbonandovi, accettate i nostri {terms}.",
         "link": "Termini di servizio"
       },
@@ -2856,7 +2864,128 @@
         "noCustomer": "Non c'è ancora niente da gestire: prima attivate un piano.",
         "stripe": "Non siamo riusciti a contattare il nostro fornitore di pagamenti. Riprovate tra un minuto."
       },
-      "legal": "I piani sono regolati dai nostri <a href=\"/terms\">Termini di servizio</a> e dalla nostra <a href=\"/refunds\">Politica di rimborso e disdetta</a>."
+      "legal": "I piani sono regolati dai nostri <a href=\"/terms\">Termini di servizio</a> e dalla nostra <a href=\"/refunds\">Politica di rimborso e disdetta</a>.",
+      "welcomePlan": "Il vostro {plan} è attivo. Grazie!",
+      "welcomeHeading": "Ora aggiungete vostro figlio o vostra figlia",
+      "welcomeStep2": "Toccate Collega un figlio o una figlia qui sotto e scrivete il codice. Funziona una volta sola, per 1 ora.",
+      "basicNote": "Il vostro piano Base copre un figlio o una figlia: {name}. Gli altri figli collegati creano con i messaggi gratuiti giornalieri. Per coprire fino a {max} figli, passate al piano famiglia in Gestisci pagamenti.",
+      "coversBasic": "Copre 1 figlio o figlia.",
+      "coversFamily": "Copre fino a {max} figli.",
+      "switchHow": "Per passare al {plan}, aprite Gestisci pagamenti e scegliete di aggiornare il piano. Stripe adegua il prezzo per il resto del periodo."
+    },
+    "plan": {
+      "free": "Piano gratuito",
+      "basic": "Piano Base",
+      "family": "Piano famiglia"
+    },
+    "checkout": {
+      "headingBasic": "Attiva il piano Base",
+      "headingFamily": "Attiva il piano famiglia",
+      "addAfter": "Aggiungete i vostri figli dopo il pagamento: non serve collegarli prima.",
+      "other": "Scegli un altro piano",
+      "soon": "Questo piano non è ancora in vendita. Potete già aggiungere i vostri figli.",
+      "basicMany": "Il piano Base copre un figlio o una figlia: {name}. Gli altri vostri figli avranno solo i messaggi gratuiti giornalieri.",
+      "basicManyPending": "Il piano Base copre un figlio o una figlia. Gli altri vostri figli avranno solo i messaggi gratuiti giornalieri.",
+      "basicManyLink": "Coprite tutti i vostri figli con il piano famiglia"
+    }
+  },
+  "plans": {
+    "title": "Piani e prezzi",
+    "description": "I piani di Oomba Academy: Gratis, Base, Famiglia e Scuola. Giocare a tutti i giochi è sempre gratis.",
+    "heading": "Piani",
+    "intro": "Giocare a tutti i giochi è gratis, e anche creare con i messaggi gratuiti giornalieri al Costruttore. Un piano aggiunge messaggi extra al Costruttore ogni mese.",
+    "interval": {
+      "label": "Periodo di fatturazione",
+      "month": "Mensile",
+      "year": "Annuale"
+    },
+    "recommended": "Consigliato",
+    "yours": "Piano attuale",
+    "noPrice": "Prezzo in arrivo",
+    "perMonth": "al mese",
+    "perYear": "all'anno",
+    "yearAsMonth": "Cioè {price} al mese, pagati una volta all'anno.",
+    "orYearly": "Oppure {price} all'anno.",
+    "extra": "{extra, plural, one {# messaggio extra al Costruttore} other {# messaggi extra al Costruttore}} al mese",
+    "cancel": "Disdetta in qualsiasi momento",
+    "manage": "Gestisci il piano",
+    "switch": "Passa a questo piano",
+    "grantSwitch": "Questo piano ve lo abbiamo dato noi. Per cambiarlo, scrivete a {email}.",
+    "notOnSale": "I piani Base e Famiglia non si possono ancora acquistare.",
+    "soon": "In arrivo",
+    "notOnSaleOut": "Potete già creare un account genitore e aggiungere i vostri figli.",
+    "free": {
+      "name": "Gratis",
+      "tagline": "Per tutti",
+      "forever": "Sempre gratis",
+      "li1": "Gioca a tutti i giochi",
+      "li2": "Crea giochi con i messaggi gratuiti giornalieri al Costruttore",
+      "li3": "Nessuna carta richiesta",
+      "start": "Inizia gratis"
+    },
+    "basic": {
+      "name": "Base",
+      "tagline": "Per un giovane creatore",
+      "li1": "Tutto quello che c'è in Gratis",
+      "li3": "Per 1 figlio o figlia",
+      "choose": "Scegli Base",
+      "what": "{extra, plural, one {# messaggio extra al Costruttore} other {# messaggi extra al Costruttore}} al mese per un figlio o una figlia, in aggiunta ai messaggi gratuiti che ogni giocatore riceve ogni giorno."
+    },
+    "family": {
+      "name": "Famiglia",
+      "tagline": "Per un massimo di {max} figli",
+      "extra": "{extra, plural, one {# messaggio extra al Costruttore} other {# messaggi extra al Costruttore}} al mese, da condividere tra un massimo di {max} figli",
+      "li3": "Fino a {max} figli",
+      "choose": "Scegli Famiglia"
+    },
+    "school": {
+      "name": "Scuola",
+      "tagline": "Per classi e scuole intere",
+      "per": "per studente all'anno",
+      "min": "Per almeno {min} studenti",
+      "li1": "{perSeat, plural, one {# messaggio al Costruttore} other {# messaggi al Costruttore}} all'anno per ogni studente incluso nel piano, condivisi da tutta la scuola",
+      "li2": "Le classi creano con il pacchetto della scuola",
+      "li3": "Paga con carta o richiedi una fattura",
+      "get": "Ottieni un piano scuola",
+      "manage": "Gestisci il piano scuola"
+    },
+    "kid": {
+      "button": "Come averlo",
+      "heading": "I piani li acquista un adulto",
+      "text": "I piani li acquista un tuo genitore o l'adulto che si occupa di te. Può registrarsi su {where}.",
+      "free": "Puoi continuare a giocare e a creare gratis."
+    },
+    "staff": {
+      "button": "Per le famiglie",
+      "heading": "Base e Famiglia sono per le famiglie",
+      "text": "Li acquista un genitore o tutore con un account genitore. Per le vostre classi, un piano scuola copre tutti gli studenti.",
+      "toSchool": "Vedi il piano Scuola"
+    },
+    "fine": {
+      "h": "Buono a sapersi",
+      "tax": "I prezzi sono in dollari statunitensi, più l'imposta sulle vendite dove prevista. Per ora i piani Base e Famiglia sono disponibili solo per le famiglie degli Stati Uniti. Un piano si rinnova finché non lo disdite, e potete disdirlo in qualsiasi momento.",
+      "legal": "I piani sono regolati dai nostri <a href=\"/terms\">Termini di servizio</a>, dalla nostra <a href=\"/refunds\">Politica di rimborso e disdetta</a> e dalla nostra <a href=\"/privacy?for=grownups\">Informativa sulla privacy</a>."
+    },
+    "schools": {
+      "title": "Piani scuola",
+      "description": "Piani scuola su Oomba Academy: un pacchetto condiviso di messaggi al Costruttore per studenti e insegnanti, pagato con carta o fattura.",
+      "heading": "Oomba Academy per le scuole",
+      "intro": "Un piano scuola dà ai vostri studenti e insegnanti un pacchetto condiviso di messaggi al Costruttore, così le classi non devono mai aspettare quelli gratuiti.",
+      "what": {
+        "h": "Cosa riceve una scuola",
+        "p1": "Gli admin della scuola vedono il piano, gli studenti inclusi nel piano e il pacchetto nella sezione Fatturazione della scuola. Le famiglie non vedono mai niente di quello che succede in classe."
+      },
+      "how": {
+        "h": "Come attivare una scuola",
+        "li1": "Scrivete a {email} con il nome della scuola e chi se ne occuperà (l'admin della scuola).",
+        "li2": "Noi configuriamo la scuola e l'account dell'admin della scuola. L'admin della scuola aggiunge insegnanti e studenti.",
+        "li3": "L'admin della scuola paga nella sezione Fatturazione della scuola: con carta, oppure richiedendo una fattura o usando un ordine d'acquisto."
+      },
+      "toBilling": "Vai alla sezione Fatturazione della scuola",
+      "contact": {
+        "h": "Domande?",
+        "p1": "Scrivete a {email}."
+      }
     }
   }
 }

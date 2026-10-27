@@ -29,6 +29,7 @@ import { router as handoffRoutes } from './routes/handoff.js';
 import { router as googleRoutes } from './routes/google.js';
 import { router as familyRoutes, grownupGuard } from './routes/family.js';
 import { router as schoolBillingRoutes } from './routes/school-billing.js';
+import { router as plansRoutes } from './routes/plans.js';
 import { canonicalRedirect, hostCheckRoute, HOST_CHECK_PATH } from './domain.js';
 import { hostOnly } from './site.js';
 import { WEBHOOK_PATH as BILLING_WEBHOOK_PATH, webhookHandler as billingWebhook } from './services/billing.js';
@@ -156,7 +157,7 @@ export function createApp() {
   // Grown-up accounts may only play games and look after their family: everything else is a 404 for them.
   app.use(grownupGuard);
 
-  for (const r of [authRoutes, familyRoutes, schoolBillingRoutes, googleRoutes, discoverRoutes, gameRoutes, studioRoutes, socialRoutes, chatRoutes, adminRoutes, schoolRoutes, progressRoutes, lessonRoutes, infoRoutes]) app.use(r);
+  for (const r of [authRoutes, familyRoutes, plansRoutes, schoolBillingRoutes, googleRoutes, discoverRoutes, gameRoutes, studioRoutes, socialRoutes, chatRoutes, adminRoutes, schoolRoutes, progressRoutes, lessonRoutes, infoRoutes]) app.use(r);
 
   app.use('/api', (req, res) => res.status(404).json({ error: tReq(req)('errors.api.notFound') }));
   app.use((req, res) => notFound(req, res));

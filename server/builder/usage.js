@@ -9,6 +9,9 @@
 //            free AI pool rests, the family's extra messages (FAMILY_EXTRA_MESSAGES a UTC month, shared by its children,
 //            Pro weight counted), paid by the paid pool. Limits (disclosed on /grown-ups): FAMILY_CHILD_DAILY_MAX extra
 //            messages per child per day, and FAMILY_MONTHLY_AI_USD of AI cost per family per month.
+//            The Basic plan is the same for one child: BASIC_EXTRA_MESSAGES a month and BASIC_MONTHLY_AI_USD, for the
+//            family's first linked child only (a Family plan switched to Basic keeps its links; the others use the free
+//            messages, and /family says so).
 //   school   an active student or staff member of a school with a plan whose pool has messages left: every message
 //            comes from the school's pool (paid AI pool), up to the school's daily cap per person (never below the free
 //            daily messages), so they never "rest" with free users. With the pool empty: the free messages, never the
@@ -19,7 +22,7 @@
 import { q, today } from '../db.js';
 import { config } from '../config.js';
 import * as aiBudget from '../services/ai-budget.js';
-import { ownerPlan } from '../services/billing.js';
+import { ownerPlan, planLimits } from '../services/billing.js';
 import { schoolSide } from '../services/school-billing.js';
 import { resting } from './anthropic.js';
 
@@ -30,8 +33,15 @@ const idOf = user => (user && typeof user === 'object' ? user.id : user);
 /** The first and last calendar day of day's UTC month ('YYYY-MM-01', 'YYYY-MM-31': days are compared as text). */
 const monthRange = day => [day.slice(0, 8) + '01', day.slice(0, 8) + '31'];
 
-/** The family whose plan pays a child's extra messages: the child's confirmed (linked) family, when it has a plan
- *  (billing off: never). -> family id or null.
+/** The linked children a family's plan covers, first linked first: all of them (up to the plan's maxChildren) for a
+ *  Family plan, only the first linked child for Basic. -> [child id] */
+export function coveredChildren(familyId, plan) {
+  const max = planLimits(plan).maxChildren;
+  return q.all("SELECT child_id FROM family_children WHERE family_id=? AND status='linked' AND unlinked_at IS NULL ORDER BY linked_at, requested_at, child_id", familyId)
+    .slice(0, max).map(r => r.child_id);
+}
+/** The family whose plan pays a child's extra messages: the child's confirmed (linked) family, when it has a plan that
+ *  covers this child (billing off: never). -> family id or null.
  *  Never for a member of a school with a plan (docs/decisions.md "Paid plans" §3.1, §4.3): they build from the school's
  *  pool, and family money is never used in class. A family child in a school without a plan keeps the family's extras,
  *  but as a class context sees only "{left} left today" (no "+N extra" counter). */
@@ -39,7 +49,9 @@ export function familyOf(userId, side = null) {
   if (!userId) return null;
   if ((side || schoolSide(userId)).entitled) return null;
   const r = q.get("SELECT family_id FROM family_children WHERE child_id=? AND status='linked' AND unlinked_at IS NULL", userId);
-  return r && ownerPlan('family', r.family_id).entitled ? r.family_id : null;
+  if (!r) return null;
+  const p = ownerPlan('family', r.family_id);
+  return p.entitled && coveredChildren(r.family_id, p.plan).includes(userId) ? r.family_id : null;
 }
 /** A family's extra messages this UTC month: { used (turns, Pro weight counted, refunds given back), usd (what their AI
  *  calls cost, refunded builds included: those calls were paid) }. beforeDay: only up to the end of the day before
@@ -84,9 +96,10 @@ export function allowanceFor(user, day = today()) {
     return { source: 'free', pool: 'free', daily, proWeight, left, freeLeft: left, familyId: null, extraLeft: null, extraToday: 0, schoolId: null, classContext };
   }
   const month = familyMonth(fam, day), mine = childExtrasOn(id, fam, day);
+  const lim = planLimits(ownerPlan('family', fam).plan);
   // The $ backstop and the paid pool's ceiling stop the extras (the child then has the free messages, like anyone).
-  const usable = month.usd < config.familyMonthlyAiUsd && aiBudget.ok('paid');
-  const extraLeft = usable ? Math.max(0, config.familyExtraMessages - month.used) : 0;
+  const usable = month.usd < lim.aiUsd && aiBudget.ok('paid');
+  const extraLeft = usable ? Math.max(0, lim.extra - month.used) : 0;
   const extraToday = Math.min(extraLeft, Math.max(0, config.familyChildDailyMax - mine));
   const freeLeft = Math.max(0, daily - (used - mine));
   // The free daily messages come first; extras after them, or while the free pool rests.

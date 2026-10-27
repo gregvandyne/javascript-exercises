@@ -22,7 +22,8 @@ if (wait) {
     let st = null;
     try { st = await api(`${statusUrl}?checkout=${encodeURIComponent(wait.dataset.checkoutWait)}`, { background: true }); } catch { /* try again */ }
     if (st && st.state === 'active') {
-      try { sessionStorage.setItem('brb-toast', wait.dataset.done); } catch { /* no toast */ }
+      // The page it goes back to says thank you itself (the plan's own name); a toast only when the panel brings one.
+      if (wait.dataset.done) try { sessionStorage.setItem('brb-toast', wait.dataset.done); } catch { /* no toast */ }
       location.replace(backTo);
       return;
     }

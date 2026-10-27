@@ -63,6 +63,21 @@ export function linkCustomer(customerId, kind, id, livemode = S.currentLivemode(
   return q.run('INSERT OR IGNORE INTO billing_customers(stripe_customer_id, owner_kind, owner_id, livemode, created_at) VALUES (?,?,?,?,?)', customerId, kind, String(id), livemode, now()).changes > 0;
 }
 
+// ---- Plans ----
+
+/** The plans an owner kind can hold. A family (a grown-up's account) holds one plan at a time, Basic (one child) or
+ *  Family (up to FAMILY_MAX_CHILDREN); switching between them in the Customer Portal changes the price of the same
+ *  subscription, and the sync below picks up the new plan. */
+export const PLANS_OF = Object.freeze({ family: Object.freeze(['basic', 'family']), school: Object.freeze(['school']) });
+const plansOf = kind => PLANS_OF[kind] || [kind];
+const inPlans = kind => plansOf(kind).map(() => '?').join(',');
+/** Everything a family-type plan gives (docs/decisions.md "Paid plans" §17): extra messages a UTC month, how many linked
+ *  children they cover, and the AI cost backstop a month. A grant (from /admin) without a plan name is a Family plan. */
+export function planLimits(plan) {
+  if (plan === 'basic') return { plan: 'basic', extra: config.basicExtraMessages, maxChildren: 1, aiUsd: config.basicMonthlyAiUsd };
+  return { plan: 'family', extra: config.familyExtraMessages, maxChildren: config.familyMaxChildren, aiUsd: config.familyMonthlyAiUsd };
+}
+
 // ---- Entitlement (source of truth: our synced rows, current mode only) ----
 
 /** Is one synced subscription row entitled at time t? active/trialing (inside any grace), or past_due inside its
@@ -76,24 +91,25 @@ export function entitledRow(r, t = now()) {
   return false;   // incomplete, incomplete_expired, unpaid, canceled, paused
 }
 /**
- * An owner's plan right now: { entitled, via: 'subscription'|'grant'|null, subscription, grant }. Off -> never
- * entitled. Only rows of the current key's mode, and only subscriptions whose price sells this owner's kind of plan.
+ * An owner's plan right now: { entitled, via: 'subscription'|'grant'|null, plan, subscription, grant }. Off -> never
+ * entitled. Only rows of the current key's mode, and only subscriptions whose price sells this owner's kind of plan
+ * (a family: 'basic' or 'family'). plan: the plan that entitles ('basic' | 'family' | 'school'), else null.
  */
 export function ownerPlan(kind, id, t = now()) {
-  const none = { entitled: false, via: null, subscription: null, grant: null };
+  const none = { entitled: false, via: null, plan: null, subscription: null, grant: null };
   if (!S.billingOn()) return none;
-  const subs = q.all(`SELECT * FROM billing_subscriptions WHERE owner_kind=? AND owner_id=? AND livemode=? AND plan=?
-    ORDER BY current_period_end DESC`, kind, String(id), S.currentLivemode(), kind);
+  const subs = q.all(`SELECT * FROM billing_subscriptions WHERE owner_kind=? AND owner_id=? AND livemode=? AND plan IN (${inPlans(kind)})
+    ORDER BY current_period_end DESC`, kind, String(id), S.currentLivemode(), ...plansOf(kind));
   const sub = subs.find(r => entitledRow(r, t));
-  if (sub) return { entitled: true, via: 'subscription', subscription: sub, grant: null };
+  if (sub) return { entitled: true, via: 'subscription', plan: sub.plan, subscription: sub, grant: null };
   const grant = q.get('SELECT * FROM billing_grants WHERE owner_kind=? AND owner_id=? AND revoked_at IS NULL AND until > ? ORDER BY until DESC', kind, String(id), t);
-  if (grant) return { entitled: true, via: 'grant', subscription: null, grant };
+  if (grant) return { entitled: true, via: 'grant', plan: plansOf(kind).includes(grant.plan) ? grant.plan : kind, subscription: null, grant };
   return { ...none, subscription: subs[0] || null };
 }
 /** The owners of a kind entitled right now (current mode): a Set of owner ids. */
 function entitledOwners(kind, t = now()) {
   if (!S.billingOn()) return new Set();
-  const owners = new Set(q.all('SELECT * FROM billing_subscriptions WHERE owner_kind=? AND plan=? AND livemode=?', kind, kind, S.currentLivemode())
+  const owners = new Set(q.all(`SELECT * FROM billing_subscriptions WHERE owner_kind=? AND plan IN (${inPlans(kind)}) AND livemode=?`, kind, ...plansOf(kind), S.currentLivemode())
     .filter(r => entitledRow(r, t)).map(r => r.owner_id));
   for (const g of q.all('SELECT owner_id FROM billing_grants WHERE owner_kind=? AND revoked_at IS NULL AND until > ?', kind, t)) owners.add(g.owner_id);
   return owners;
@@ -102,16 +118,27 @@ function entitledOwners(kind, t = now()) {
 export const entitledOwnerCount = (kind, t = now()) => entitledOwners(kind, t).size;
 /** The families that count toward the paid AI pool's ceiling this UTC month: those entitled now, and those whose
  *  children's extra messages were charged to them this month (a family that stops paying mid-month keeps its share
- *  until the month ends, because its spend stays in the paid pool's month). */
-export function paidFamiliesThisMonth(day = today()) {
-  if (!S.billingOn()) return 0;
+ *  until the month ends, because its spend stays in the paid pool's month). -> a Set of family ids */
+function paidFamilySet(day = today()) {
+  if (!S.billingOn()) return new Set();
   const fams = entitledOwners('family');
   for (const r of q.all("SELECT DISTINCT charged_to FROM builder_turns WHERE charged_to LIKE 'family:%' AND charged_day BETWEEN ? AND ?",
     day.slice(0, 8) + '01', day.slice(0, 8) + '31')) fams.add(r.charged_to.slice('family:'.length));
-  return fams.size;
+  return fams;
 }
-// The paid AI pool's monthly ceiling (services/ai-budget.js): FAMILY_MONTHLY_AI_USD for each family counted above.
-registerPaidBudget('family', () => paidFamiliesThisMonth() * config.familyMonthlyAiUsd);
+export const paidFamiliesThisMonth = (day = today()) => paidFamilySet(day).size;
+/** Their AI backstops added up: each family's current plan's (BASIC_MONTHLY_AI_USD or FAMILY_MONTHLY_AI_USD; a family
+ *  that no longer pays counts with the plan it had last). */
+export function paidFamiliesUsd(day = today()) {
+  let usd = 0;
+  for (const fid of paidFamilySet(day)) {
+    const p = ownerPlan('family', fid);
+    usd += planLimits(p.plan || p.subscription?.plan).aiUsd;
+  }
+  return usd;
+}
+// The paid AI pool's monthly ceiling (services/ai-budget.js): each family's plan's AI backstop, for the families above.
+registerPaidBudget('family', () => paidFamiliesUsd());
 /** The owner's Stripe Customer in the current mode, or null. */
 export const customerOf = (kind, id) => q.get('SELECT stripe_customer_id FROM billing_customers WHERE owner_kind=? AND owner_id=? AND livemode=?', kind, String(id), S.currentLivemode())?.stripe_customer_id || null;
 
@@ -171,7 +198,7 @@ export function planOfPrice(price, productPlans = null) {
   const byKey = S.planOfLookupKey(price.lookup_key);
   if (byKey) return byKey;
   const meta = price.product && typeof price.product === 'object' ? price.product.metadata?.oomba_plan : null;
-  if (meta === 'family' || meta === 'school') return meta;
+  if (meta === 'basic' || meta === 'family' || meta === 'school') return meta;
   return productPlans?.[idOf(price.product)] || null;
 }
 /** { productId: plan } from our lookup-keyed prices (cached by stripe.js). Only read when a price has no lookup key. */
@@ -241,7 +268,7 @@ function applySubscription(sub, { event = null, session = null, openInvoices = [
   const resolved = planOfPrice(price, productPlans);
   const plan = resolved || (prev?.plan && prev.plan !== 'unknown' ? prev.plan : 'unknown');
   if (!resolved) {
-    log('warn', 'billing: a subscription\'s price sells no known plan; set the lookup keys (oomba_family_monthly, oomba_family_yearly, oomba_school_seat_yearly) on the Prices, or oomba_plan metadata on the Product', { subscription: sub.id, price: price.id || null, product: idOf(price.product), kept: plan });
+    log('warn', 'billing: a subscription\'s price sells no known plan; set the lookup keys (oomba_basic_monthly, oomba_basic_yearly, oomba_family_monthly, oomba_family_yearly, oomba_school_seat_yearly) on the Prices, or oomba_plan metadata on the Product', { subscription: sub.id, price: price.id || null, product: idOf(price.product), kept: plan });
     if (!prev || prev.price_id !== (price.id || null) || prev.price_lookup_key !== lookupKey || (plan === 'unknown' && prev.flag !== 'unknown_price')) audit(null, 'billing.unknown_price', `${owner.owner_kind}:${owner.owner_id}`, { subscription: sub.id, price: price.id || null, plan });
   }
   const li = sub.latest_invoice && typeof sub.latest_invoice === 'object' ? sub.latest_invoice : null;
@@ -307,6 +334,8 @@ function applySubscription(sub, { event = null, session = null, openInvoices = [
   if (plan === 'school' && pool.quantity !== (prev?.pool_quantity ?? 0)) audit(null, 'billing.school.pool', `${owner.owner_kind}:${owner.owner_id}`, { subscription: sub.id, seats: pool.quantity, from: prev?.pool_quantity ?? 0 });
   const target = `${owner.owner_kind}:${owner.owner_id}`;
   if (!prev || prev.status !== row.status) audit(null, `billing.subscription.${row.status}`, target, { subscription: sub.id, from: prev?.status || null, event: event?.id || null });
+  // A switch in the Customer Portal (Basic <-> Family): the same subscription, a new price.
+  if (prev && prev.plan !== plan && prev.plan !== 'unknown' && plan !== 'unknown') audit(null, 'billing.plan.change', target, { subscription: sub.id, from: prev.plan, to: plan, event: event?.id || null });
   if (event && EVENT_AUDIT[event.type]) audit(null, EVENT_AUDIT[event.type], target, { subscription: sub.id, event: event.id, ...(risk?.cancelled ? { cancelled: true } : {}) });
   if (risk?.flag === 'duplicate' && prev?.flag !== 'duplicate') audit(null, 'billing.duplicate', target, { subscription: sub.id, kept: risk.kept || null, refunded: !!risk.refunded });
   if (session) q.run('DELETE FROM billing_checkouts WHERE session_id=?', session.id);
@@ -367,9 +396,11 @@ function mayDuplicate(sub, session) {
  */
 async function duplicateRisk(sub, session) {
   const owner = ownerOfCustomer(idOf(sub.customer), sub.livemode ? 1 : 0) || ownerFromMetadata(session?.metadata, sub.metadata);
+  // One plan per owner: a Basic and a Family plan of the same family are two plans too.
   const plan = planOfPrice(sub.items?.data?.[0]?.price);
-  const kept = owner && plan ? q.all(`SELECT * FROM billing_subscriptions WHERE owner_kind=? AND owner_id=? AND livemode=? AND plan=? AND stripe_subscription_id!=?`,
-    owner.owner_kind, owner.owner_id, sub.livemode ? 1 : 0, plan, sub.id).find(r => entitledRow(r)) : null;
+  const group = owner && plan && plansOf(owner.owner_kind).includes(plan) ? plansOf(owner.owner_kind) : plan ? [plan] : [];
+  const kept = owner && plan ? q.all(`SELECT * FROM billing_subscriptions WHERE owner_kind=? AND owner_id=? AND livemode=? AND plan IN (${group.map(() => '?').join(',')}) AND stripe_subscription_id!=?`,
+    owner.owner_kind, owner.owner_id, sub.livemode ? 1 : 0, ...group, sub.id).find(r => entitledRow(r)) : null;
   if (!kept) return null;
   if (q.get("SELECT 1 FROM billing_subscriptions WHERE stripe_subscription_id=? AND flag='duplicate'", sub.id)) return { flag: 'duplicate', kept: kept.stripe_subscription_id };
   if (LIVE_STATUSES.has(sub.status) || sub.status === 'incomplete') await S.cancelSubscriptionNow(sub.id, 'duplicate');

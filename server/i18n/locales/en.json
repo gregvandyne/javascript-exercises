@@ -56,7 +56,8 @@
     "me": "Me",
     "classes": "Classes",
     "schools": "Schools",
-    "family": "Family"
+    "family": "Family",
+    "plans": "Plans"
   },
   "errors": {
     "goHome": "Go home",
@@ -452,7 +453,8 @@
       "families": {
         "h": "Family accounts",
         "p1": "A parent or guardian can make their own grown-up account and link it to their child's account. Your child has to say yes on their own page.",
-        "link": "About family accounts"
+        "link": "About family accounts",
+        "plans": "See plans and prices"
       }
     },
     "sdk": {
@@ -2713,6 +2715,7 @@
       "price": {
         "h": "Price",
         "p1": "{monthly} a month or {yearly} a year, plus sales tax where it applies. Cancel anytime: the plan runs to the end of the period you paid for.",
+        "both": "Basic is {basic} a month, for one child. Family is {family} a month, for up to {max} children. Plus sales tax where it applies. Cancel anytime: the plan runs to the end of the period you paid for.",
         "soon": "Family plans aren't on sale yet. You can make a grown-up account and link your children now.",
         "us": "Family plans are for US families for now."
       },
@@ -2745,7 +2748,8 @@
           "q": "Is linking or paying a form of parental consent?",
           "a": "No. Linking and family plans are only about extra Builder messages. They are not how the site asks for or records consent."
         }
-      }
+      },
+      "plans": "Compare plans and prices"
     },
     "signup": {
       "title": "Grown-up sign-up",
@@ -2761,7 +2765,8 @@
       "signedIn": "You're signed in as {name}. Sign out first to use a grown-up account here.",
       "signOutFirst": "Sign out of the account on this device first.",
       "needAdult": "Tick the box to say you are a parent or guardian, 18 or older.",
-      "short": "Use at least {min} characters."
+      "short": "Use at least {min} characters.",
+      "chosen": "You picked the {plan}. Next you pay on Stripe's secure page, then you add your children."
     },
     "login": {
       "title": "Grown-up sign-in",
@@ -2790,13 +2795,15 @@
       "removed": "Done.",
       "cancel": "Cancel request",
       "cancelConfirm": "Cancel this request?",
-      "planHeading": "Family plan",
-      "planActive": "Your family plan is active.",
-      "planNone": "No family plan. Linking children is free and changes nothing for them.",
-      "planMore": "About family plans",
       "helpHeading": "Help",
       "help": "Questions, or a problem with your account? Write to {email}.",
-      "off": "Family accounts are switched off right now. You can still play games, change your language or password, and sign out here."
+      "off": "Family accounts are switched off right now. You can still play games, change your language or password, and sign out here.",
+      "yourPlan": "Your plan",
+      "planFreeText": "Your children build with the free daily Builder messages.",
+      "seePlans": "See plans",
+      "changePlan": "Change plan",
+      "sourceBasic": "Extra messages come from your Basic plan.",
+      "fullBasic": "Your Basic plan covers 1 child. To link more, switch to the Family plan (up to {max} children) in Manage billing."
     },
     "link": {
       "title": "Link a child",
@@ -2814,7 +2821,8 @@
       "full": "A family can link up to {max} children.",
       "typeCode": "Type the code your child gave you.",
       "tooMany": "Too many tries. Wait 15 minutes, then try again.",
-      "notFound": "That child isn't in your family."
+      "notFound": "That child isn't in your family.",
+      "fullBasic": "Your Basic plan covers 1 child. To link more, switch to the Family plan in Manage billing."
     },
     "billing": {
       "password": {
@@ -2835,12 +2843,12 @@
       "renewsYearly": "Yearly, renews on {date}.",
       "extrasLeft": "{left} of {total, plural, one {# extra message} other {# extra messages}} left this month, counted up to yesterday",
       "extrasReset": "They start again on {date} (UTC). Unused ones don't roll over.",
-      "linkFirst": "Link a child first (they say yes on their own page), then you can start a plan.",
       "terms": {
         "renew": "The plan renews automatically every month or year until you cancel it.",
         "cancel": "Cancel anytime in Manage billing. The plan keeps working until the end of the period you paid for.",
         "refund": "Full refund if you ask within 14 days of your first payment or of a yearly renewal.",
         "tax": "Prices are in US dollars, plus sales tax where it applies. Family plans are for US families for now.",
+        "taxPlans": "Prices are in US dollars, plus sales tax where it applies. Plans are for US families for now.",
         "agree": "By subscribing, you agree to our {terms}.",
         "link": "Terms of Service"
       },
@@ -2857,7 +2865,128 @@
         "noCustomer": "There is nothing to manage yet: start a plan first.",
         "stripe": "We couldn't reach our payment provider. Please try again in a minute."
       },
-      "legal": "Plans are covered by our <a href=\"/terms\">Terms of Service</a> and our <a href=\"/refunds\">Refund and Cancellation Policy</a>."
+      "legal": "Plans are covered by our <a href=\"/terms\">Terms of Service</a> and our <a href=\"/refunds\">Refund and Cancellation Policy</a>.",
+      "welcomePlan": "Your {plan} is on. Thank you!",
+      "welcomeHeading": "Now add your child",
+      "welcomeStep2": "Tap Link a child below and type the code. It works once, for 1 hour.",
+      "basicNote": "Your Basic plan covers one child: {name}. Your other linked children build with the free daily messages. To cover up to {max} children, switch to the Family plan in Manage billing.",
+      "coversBasic": "Covers 1 child.",
+      "coversFamily": "Covers up to {max} children.",
+      "switchHow": "To switch to the {plan}, open Manage billing and choose to update your plan. Stripe adjusts the price for the rest of the period."
+    },
+    "plan": {
+      "free": "Free plan",
+      "basic": "Basic plan",
+      "family": "Family plan"
+    },
+    "checkout": {
+      "headingBasic": "Start your Basic plan",
+      "headingFamily": "Start your Family plan",
+      "addAfter": "You add your children after paying: there is no need to link them first.",
+      "other": "Choose another plan",
+      "soon": "This plan isn't on sale yet. You can add your children now.",
+      "basicMany": "Basic covers one child: {name}. Your other children keep only the free daily messages.",
+      "basicManyPending": "Basic covers one child. Your other children keep only the free daily messages.",
+      "basicManyLink": "Cover all your children with the Family plan"
+    }
+  },
+  "plans": {
+    "title": "Plans and prices",
+    "description": "Oomba Academy plans: Free, Basic, Family and School. Playing every game is always free.",
+    "heading": "Plans",
+    "intro": "Playing every game is free, and so is building with the free daily Builder messages. A plan adds extra Builder messages every month.",
+    "interval": {
+      "label": "Billing period",
+      "month": "Monthly",
+      "year": "Yearly"
+    },
+    "recommended": "Recommended",
+    "yours": "Your plan",
+    "noPrice": "Price coming soon",
+    "perMonth": "a month",
+    "perYear": "a year",
+    "yearAsMonth": "That's {price} a month, paid once a year.",
+    "orYearly": "Or {price} a year.",
+    "extra": "{extra, plural, one {# extra Builder message} other {# extra Builder messages}} a month",
+    "cancel": "Cancel anytime",
+    "manage": "Manage your plan",
+    "switch": "Switch to this plan",
+    "grantSwitch": "We gave you this plan. To change it, write to {email}.",
+    "notOnSale": "Basic and Family plans can't be bought yet.",
+    "soon": "Coming soon",
+    "notOnSaleOut": "You can make a grown-up account now and add your children.",
+    "free": {
+      "name": "Free",
+      "tagline": "For everyone",
+      "forever": "Always free",
+      "li1": "Play every game",
+      "li2": "Build games with the free daily Builder messages",
+      "li3": "No card needed",
+      "start": "Start free"
+    },
+    "basic": {
+      "name": "Basic",
+      "tagline": "For one young builder",
+      "li1": "Everything in Free",
+      "li3": "For 1 child",
+      "choose": "Choose Basic",
+      "what": "{extra, plural, one {# extra Builder message} other {# extra Builder messages}} a month for one child, on top of the free messages every player gets each day."
+    },
+    "family": {
+      "name": "Family",
+      "tagline": "For up to {max} children",
+      "extra": "{extra, plural, one {# extra Builder message} other {# extra Builder messages}} a month, shared by up to {max} children",
+      "li3": "Up to {max} children",
+      "choose": "Choose Family"
+    },
+    "school": {
+      "name": "School",
+      "tagline": "For classes and whole schools",
+      "per": "per student a year",
+      "min": "For at least {min} students",
+      "li1": "{perSeat, plural, one {# Builder message} other {# Builder messages}} a year for each paid student, shared by the whole school",
+      "li2": "Classes build from the school's own pool",
+      "li3": "Pay by card, or ask for an invoice",
+      "get": "Get a school plan",
+      "manage": "Manage school plan"
+    },
+    "kid": {
+      "button": "How to get it",
+      "heading": "A grown-up buys plans",
+      "text": "Plans are bought by a parent or guardian. They can sign up at {where}.",
+      "free": "You can keep playing and building for free."
+    },
+    "staff": {
+      "button": "For families",
+      "heading": "Basic and Family are for families",
+      "text": "A parent or guardian buys them with a grown-up account. For your classes, a school plan covers every student.",
+      "toSchool": "See the School plan"
+    },
+    "fine": {
+      "h": "Good to know",
+      "tax": "Prices are in US dollars, plus sales tax where it applies. Basic and Family plans are for US families for now. A plan renews until you cancel it, and you can cancel anytime.",
+      "legal": "Plans are covered by our <a href=\"/terms\">Terms of Service</a>, our <a href=\"/refunds\">Refund and Cancellation Policy</a> and our <a href=\"/privacy?for=grownups\">Privacy Policy</a>."
+    },
+    "schools": {
+      "title": "School plans",
+      "description": "School plans on Oomba Academy: a shared pool of Builder messages for your students and teachers, paid by card or invoice.",
+      "heading": "Oomba Academy for schools",
+      "intro": "A school plan gives your students and teachers a shared pool of Builder messages, so classes never wait for the free ones.",
+      "what": {
+        "h": "What a school gets",
+        "p1": "School admins see the plan, the paid students and the pool on the school's Billing tab. Families never see anything from class."
+      },
+      "how": {
+        "h": "How to set up a school",
+        "li1": "Write to {email} with your school's name and who will look after it (the school admin).",
+        "li2": "We set up the school and the school admin's account. The school admin adds teachers and students.",
+        "li3": "The school admin pays on the school's Billing tab: by card, or by asking for an invoice or a purchase order."
+      },
+      "toBilling": "Go to your school's Billing tab",
+      "contact": {
+        "h": "Questions?",
+        "p1": "Write to {email}."
+      }
     }
   }
 }

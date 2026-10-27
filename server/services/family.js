@@ -17,7 +17,7 @@ import { q, tx, uid, now, audit, today } from '../db.js';
 import { config } from '../config.js';
 import { sign, accountKind, getUser, isGrownup, parseCookies } from '../auth.js';
 import { billingOn } from './stripe.js';
-import { registerOwnerKind, ownerPlan } from './billing.js';
+import { registerOwnerKind, ownerPlan, planLimits } from './billing.js';
 import { register } from './jobs.js';
 import { looksLikeLinkCode, LINK_CODE_ALPHABET } from './textfilter.js';
 
@@ -181,7 +181,8 @@ export function redeem(grownup, typed) {
   const live = liveRowOf(child.id, t);
   if (live && live.family_id === fam.id) return fail('already');
   if (live) return fail('badCode');
-  if (childrenOf(fam.id, t).length >= config.familyMaxChildren) return fail('full');
+  // A Basic plan covers one child: a second can't be linked while it is on (Family covers up to FAMILY_MAX_CHILDREN).
+  if (childrenOf(fam.id, t).length >= maxChildrenFor(fam.id)) return fail(familyPlan(fam.id).plan === 'basic' ? 'fullBasic' : 'full');
   let used = false;
   tx(() => {
     used = q.run('UPDATE family_link_codes SET used_at=?, used_by=? WHERE code_hash=? AND used_at IS NULL', t, fam.id, row.code_hash).changes === 1;
@@ -228,6 +229,13 @@ export function childUsage(familyId, childId, t = now()) {
   return { yesterday: sum(yesterday, day), month: monthStart < day ? sum(monthStart, day) : 0 };
 }
 export const familyPlan = familyId => ownerPlan('family', familyId);
+/** How many children (linked or asked) a family can have now: 1 with a Basic plan, else FAMILY_MAX_CHILDREN (also
+ *  before paying: a grown-up may link first or pay first). */
+export function maxChildrenFor(familyId) {
+  const p = familyPlan(familyId);
+  return p.entitled && p.plan === 'basic' ? 1 : config.familyMaxChildren;
+}
+export { planLimits };
 
 // ---------------------------------------------------------------- the platform admin
 export function openReports(limit = 100) {
