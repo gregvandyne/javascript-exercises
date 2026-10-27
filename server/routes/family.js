@@ -38,7 +38,7 @@ const nope = (req, res) => (isApi(req) ? res.status(404).json({ error: req.t('er
 // password and theme, and the family routes. Game calls a play page makes (save, score, ...) are allowed; a grown-up's
 // score is never stored (routes/games.js), so they are on no leaderboard.
 const GROWNUP_GET = [/^\/$/, /^\/search$/, /^\/api\/(search|live|me|billing\/status)$/, /^\/(g|play)\/[^/]+$/, /^\/(frame|shots|avatars)\/[^/]+$/,
-  /^\/(parents|safety)$/, /^\/grown-ups(\/(signup|login))?$/, /^\/family(\/link)?$/, /^\/(login|signup)$/, /^\/api\/games\/[^/]+\/(save|leaderboard)$/];
+  /^\/(parents|safety|terms|refunds|privacy)$/, /^\/grown-ups(\/(signup|login))?$/, /^\/family(\/link)?$/, /^\/(login|signup)$/, /^\/api\/games\/[^/]+\/(save|leaderboard)$/];
 const GROWNUP_POST = [/^\/api\/auth\/(login|logout|logout-everywhere)$/, /^\/api\/me\/(password|theme)$/, /^\/api\/family\/(link|children\/[^/]+\/remove)$/,
   /^\/api\/billing\/(family\/checkout|portal)$/,
   /^\/api\/games\/[^/]+\/(play|heartbeat|leave|save|score|report)$/];
@@ -178,7 +178,8 @@ router.get('/grown-ups', on, async (req, res) => {
     <section class="panel"><h2>${t('family.landing.price.h')}</h2>
       ${prices ? html`<p>${t('family.landing.price.p1', { monthly: f.money(prices.monthly), yearly: f.money(prices.yearly) })}</p>` : ''}
       ${prices && onSale(u) ? '' : html`<p>${t('family.landing.price.soon')}</p>`}
-      <p class="muted">${t('family.landing.price.us')}</p></section>
+      <p class="muted">${t('family.landing.price.us')}</p>
+      <p class="small">${tHtml(t, 'family.billing.legal')}</p></section>
     <section class="panel"><h2>${t('family.landing.how.h')}</h2>
       <ol class="steps"><li>${t('family.landing.how.p1')}</li><li>${tHtml(t, 'family.landing.how.p2')}</li><li>${t('family.landing.how.p3')}</li></ol></section>
     <section class="panel faq"><h2>${t('family.landing.faq.h')}</h2>
@@ -306,7 +307,7 @@ router.get('/family', grownupOnly, async (req, res) => {
 /** The password typed again, inside a payment form. Always there: hidden (and not required) while this sign-in typed it
  *  in the last 10 minutes, so a page left open longer (or brought back from Stripe with Back) can still ask for it: the
  *  server's 403 needPassword makes app.js show it ([data-reauth]). */
-function passwordField(req, id) {
+export function passwordField(req, id) {
   const t = req.t, fresh = C.reauthFresh(req.sessionId);
   return html`<div class="field" data-reauth ${fresh ? 'hidden' : ''}><label for="${id}">${t('family.billing.password.label')}</label>
     <input class="input" id="${id}" name="password" type="password" dir="ltr" autocomplete="current-password" ${fresh ? '' : 'required'} maxlength="72" aria-describedby="${id}-hint">
@@ -368,7 +369,7 @@ async function planPanel(req, fam, plan, kids) {
           <li>${limitsText(t)}</li>
           <li>${t('family.billing.terms.tax')}</li>
         </ul>
-        ${config.termsPublished ? html`<p class="small">${tHtml(t, 'family.billing.terms.agree', { terms: html`<a href="/terms">${t('family.billing.terms.link')}</a>` })}</p>` : ''}
+        ${config.termsPublished ? html`<p class="small">${tHtml(t, 'family.billing.terms.agree', { terms: html`<a href="/terms">${t('family.billing.terms.link')}</a>` })}</p>` : html`<p class="small">${tHtml(t, 'family.billing.legal')}</p>`}
         ${passwordField(req, 'pw-checkout')}
         <p class="err form-err" aria-live="polite"></p>
         <div class="row planbtns">
@@ -396,7 +397,7 @@ const testerGate = (req, res, next) => (C.mayBill(req.user) ? next() : res.statu
  *  (LOGIN.userFails, like /api/me/password): a locked account takes no password here either, so a device left signed
  *  in gives no more guesses than the sign-in page. */
 export const REAUTH_TRIES = { fails: 5, window: 900e3 };
-function stepUp(req, res, next) {
+export function stepUp(req, res, next) {
   if (C.reauthFresh(req.sessionId)) return next();
   const t = req.t, key = `reauth-fail:${req.user.id}`, lockKey = loginLockKey(req.user.username);
   if (count(key) >= REAUTH_TRIES.fails || count(lockKey) >= LOGIN.userFails) return res.status(429).json({ error: t('family.errors.tooMany') });
@@ -409,7 +410,7 @@ function stepUp(req, res, next) {
   C.markReauth(req.sessionId);
   next();
 }
-const stripeTrouble = (req, res, e) => {
+export const stripeTrouble = (req, res, e) => {
   log('warn', 'billing: Stripe call failed', e instanceof S.StripeCallError ? e.fields : { error: e.message });
   res.status(502).json({ error: req.t('family.billing.errors.stripe') });
 };

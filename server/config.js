@@ -49,7 +49,7 @@ export const STRIPE_MIN_API_VERSION = '2025-03-31';
 /**
  * Billing settings (docs/decisions.md "Paid plans", BP-11). Billing is off unless STRIPE_API_KEY and
  * STRIPE_WEBHOOK_SECRET are both set and nothing below is an error. Keys and secrets are never echoed in a message.
- * -> { apiKey, webhookSecret, webhookSecretOld, apiVersion, apiBase, liveOk, tax, pmcFamily, termsPublished, mode: 'off'|'test'|'live',
+ * -> { apiKey, webhookSecret, webhookSecretOld, apiVersion, apiBase, liveOk, tax, pmcFamily, pmcSchool, termsPublished, mode: 'off'|'test'|'live',
  *      errors: [], warnings: [] }
  */
 export function parseStripe(env = process.env, nodeEnv = env.NODE_ENV || 'development') {
@@ -65,9 +65,13 @@ export function parseStripe(env = process.env, nodeEnv = env.NODE_ENV || 'develo
   // filled in on a shared device). Required for family Checkout: unset, family plans are not on sale (never a fallback
   // to the account's default configuration). Never a list of payment_method_types.
   const pmcFamily = String(env.STRIPE_PMC_FAMILY || '').trim();
+  // Optional "School" payment method configuration (cards, Link, ACH Direct Debit) for school Checkout; unset = the
+  // account's default payment methods.
+  const pmcSchool = String(env.STRIPE_PMC_SCHOOL || '').trim();
   const terms = parseFlag(env.TERMS_PUBLISHED, 'TERMS_PUBLISHED');
   for (const e of [liveOk.error, tax.error, base.error, terms.error]) if (e) errors.push(e);
   if (pmcFamily && !/^pmc_[A-Za-z0-9]+$/.test(pmcFamily)) errors.push('STRIPE_PMC_FAMILY must look like pmc_…');
+  if (pmcSchool && !/^pmc_[A-Za-z0-9]+$/.test(pmcSchool)) errors.push('STRIPE_PMC_SCHOOL must look like pmc_…');
   let mode = 'off';
   if (apiKey) {
     if (/^sk_live_/.test(apiKey)) errors.push('STRIPE_API_KEY is a live secret key (sk_live_): use a restricted key (rk_live_) with only the permissions billing needs');
@@ -88,7 +92,7 @@ export function parseStripe(env = process.env, nodeEnv = env.NODE_ENV || 'develo
   if (!apiKey && webhookSecret) warnings.push('Billing stays off: STRIPE_WEBHOOK_SECRET is set but STRIPE_API_KEY is not');
   if (errors.length || !apiKey || !webhookSecret) mode = 'off';
   if (mode !== 'off' && !pmcFamily) warnings.push('STRIPE_PMC_FAMILY is not set: family plans are not on sale until it names the "Family" payment method configuration (Link off)');
-  return { apiKey, webhookSecret, webhookSecretOld, apiVersion, apiBase: base.url, liveOk: liveOk.on, tax: tax.on, pmcFamily, termsPublished: terms.on, mode, errors, warnings };
+  return { apiKey, webhookSecret, webhookSecretOld, apiVersion, apiBase: base.url, liveOk: liveOk.on, tax: tax.on, pmcFamily, pmcSchool, termsPublished: terms.on, mode, errors, warnings };
 }
 /** Shortest SESSION_SECRET accepted when REQUIRE_SESSION_SECRET is on (openssl rand -hex 32 gives 64). */
 export const MIN_SECRET_LENGTH = 32;
@@ -195,6 +199,7 @@ export const config = {
   stripeApiBase: stripe.apiBase,                     // tests only: a local fake Stripe (tests/support/fake-stripe.js)
   stripeTax: stripe.tax,
   stripePmcFamily: stripe.pmcFamily,                 // pmc_…: family Checkout's payment method configuration (required to sell family plans)
+  stripePmcSchool: stripe.pmcSchool,                 // pmc_…: school Checkout's payment method configuration (optional)
   // TERMS_PUBLISHED=1 once /terms is on the site: family Checkout then asks the buyer to agree to it (Stripe's own
   // checkbox, which also needs the Terms URL in the Stripe Dashboard's public details) and /family links to it.
   termsPublished: stripe.termsPublished,
@@ -218,6 +223,14 @@ export const config = {
   familyMonthlyAiUsd: posNum(process.env.FAMILY_MONTHLY_AI_USD, 4),
   // The paid AI pool (services/ai-budget.js): its monthly ceiling is computed (entitled families x FAMILY_MONTHLY_AI_USD);
   // AI_PAID_MONTHLY_BUDGET_USD caps it. AI_HARD_MONTHLY_USD stops every AI call site-wide (default: free + paid monthly).
+  // School plans (server/services/school-billing.js; docs/decisions.md "Paid plans" D6): Builder messages each paid
+  // student adds to the school's shared pool per billing year, the fewest students a plan can have, the default daily
+  // messages per person from the pool (a school setting; never below BUILDER_DAILY_TURNS), and the AI cost (US dollars)
+  // a paid student may use per year (the paid AI pool's ceiling counts paid students x this / 12 a month).
+  schoolTurnsPerSeat: Math.max(0, Math.floor(num(process.env.SCHOOL_TURNS_PER_SEAT, 100))),
+  schoolMinSeats: Math.max(1, Math.floor(num(process.env.SCHOOL_MIN_SEATS, 25))),
+  schoolDailyCapDefault: Math.max(1, Math.floor(num(process.env.SCHOOL_DAILY_CAP_DEFAULT, 30))),
+  schoolSeatAiUsd: posNum(process.env.SCHOOL_SEAT_AI_USD, 10),
   aiPaidMonthlyBudgetUsd: process.env.AI_PAID_MONTHLY_BUDGET_USD ? posNum(process.env.AI_PAID_MONTHLY_BUDGET_USD, null) : null,
   aiHardMonthlyUsd: process.env.AI_HARD_MONTHLY_USD ? posNum(process.env.AI_HARD_MONTHLY_USD, null) : null,
 };

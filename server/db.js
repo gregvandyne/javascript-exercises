@@ -278,6 +278,23 @@ export const MIGRATIONS = [
     ALTER TABLE billing_subscriptions ADD COLUMN latest_amount_paid INTEGER;
     ALTER TABLE billing_subscriptions ADD COLUMN risk_payment_intent TEXT;
     CREATE INDEX IF NOT EXISTS builder_turns_charged_to ON builder_turns(charged_to, charged_day);`],
+  // Paid plans, chunk 5: school plans (docs/decisions.md "Paid plans" §5; server/services/school-billing.js).
+  // billing_subscriptions: pool_quantity (already there) is the highest quantity paid (card) or invoiced (send_invoice)
+  // in the period that starts at pool_period_start; next_quantity (already there) is next year's seats, applied just
+  // before the renewal. latest_invoice_status and open_invoices (JSON [{id, amount_due, due_date}], send_invoice only)
+  // show what is unpaid on the Billing tab and /admin/billing ("Mark paid by check").
+  // billing_requests: a school's request for an invoice; contact_email and address_json are deleted 2 years after
+  // closed_at. The school's pool is counted from builder_turns (charged_to 'school:<id>', refunds given back), like the
+  // family's extras, so there is no separate counter table.
+  ['0025_school_billing', `ALTER TABLE billing_subscriptions ADD COLUMN pool_period_start INTEGER;
+    ALTER TABLE billing_subscriptions ADD COLUMN latest_invoice_status TEXT;
+    ALTER TABLE billing_subscriptions ADD COLUMN open_invoices TEXT;
+    CREATE TABLE IF NOT EXISTS billing_requests (id TEXT PRIMARY KEY, school_id TEXT NOT NULL, requested_by TEXT NOT NULL,
+      seats INTEGER NOT NULL, po TEXT NOT NULL DEFAULT '', contact_name TEXT, contact_email TEXT, address_json TEXT,
+      tax_exempt_claimed INTEGER NOT NULL DEFAULT 0, note TEXT NOT NULL DEFAULT '', status TEXT NOT NULL DEFAULT 'open',
+      livemode INTEGER NOT NULL DEFAULT 0, stripe_subscription_id TEXT, created_at INTEGER NOT NULL, closed_at INTEGER, closed_by TEXT);
+    CREATE INDEX IF NOT EXISTS billing_requests_school ON billing_requests(school_id, status);
+    CREATE INDEX IF NOT EXISTS billing_requests_status ON billing_requests(status, created_at);`],
 ];
 
 db.exec('CREATE TABLE IF NOT EXISTS migrations (name TEXT PRIMARY KEY, applied_at INTEGER NOT NULL)');

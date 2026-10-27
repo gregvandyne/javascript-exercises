@@ -15,6 +15,7 @@ import { teacherLessonsPanel, studentLessonsPanel } from './lessons.js';
 import * as P from '../services/progress.js';
 import * as games from '../services/games.js';
 import { siteHost } from '../site.js';
+import { billingTabOn, schoolBillingTab } from './school-billing.js';
 import { cardsHook, classInvitesPanel, classGoogleJoin, googleRosterInfo, googleRosterLine, googleRowMenu, schoolGoogleSettings, staffGoogleInvites } from './google.js';
 
 export const router = Router();
@@ -114,17 +115,19 @@ const loadSchool = (req, res) => {
   return s;
 };
 const SCHOOL_TABS = ['classes', 'people', 'settings'];
-router.get('/school/:slug', requireUser, (req, res) => {
+router.get('/school/:slug', requireUser, async (req, res) => {
   const s = loadSchool(req, res); if (!s) return;
   const t = req.t;
-  const tab = SCHOOL_TABS.includes(req.query.tab) ? req.query.tab : 'classes';
-  const content = { classes: schoolClasses, people: schoolPeople, settings: schoolSettings }[tab](req, s);
+  // Billing (school plans): school admins only, and only while paid-plan pages are on for this request.
+  const tabs = billingTabOn(req, s) && !s.archived_at ? [...SCHOOL_TABS, 'billing'] : SCHOOL_TABS;
+  const tab = tabs.includes(req.query.tab) ? req.query.tab : 'classes';
+  const content = await { classes: schoolClasses, people: schoolPeople, settings: schoolSettings, billing: schoolBillingTab }[tab](req, s);
   const member = staffHere(req.user, s.id);
   const body = html`
   <div class="pagehead"><h1>🏫 ${s.name}</h1></div>
-  <nav class="tabs" aria-label="${s.name}">${SCHOOL_TABS.map(k => html`<a href="/school/${s.slug}?tab=${k}" ${k === tab ? raw('aria-current="page"') : ''}>${t(`school.tabs.${k}`)}</a>`)}</nav>
+  <nav class="tabs" aria-label="${s.name}">${tabs.map(k => html`<a href="/school/${s.slug}?tab=${k}" ${k === tab ? raw('aria-current="page"') : ''}${t.own(`school.tabs.${k}`) ? '' : raw(' lang="en" dir="ltr"')}>${t(`school.tabs.${k}`)}</a>`)}</nav>
   ${content}`;
-  page(req, res, { title: s.name, active: member ? 'classes' : S.isSchoolStaff(req.user) ? 'me' : 'schools', body, head: CSS, scripts: ['/js/schools.js'],
+  page(req, res, { title: s.name, active: member ? 'classes' : S.isSchoolStaff(req.user) ? 'me' : 'schools', body, head: CSS, scripts: tab === 'billing' ? ['/js/schools.js', '/js/family.js'] : ['/js/schools.js'],
     back: member ? '/teach' : '/admin/schools', backLabel: member ? t('school.teach.title') : t('nav.schools') });
 });
 
@@ -251,7 +254,11 @@ const schoolApi = (req, res) => { const s = S.getSchool(req.params.id); if (!s |
 router.post('/api/schools/:id/settings', requireUser, (req, res) => {
   const s = schoolApi(req, res); if (!s) return;
   const x = b(req); const bool = v => v === true || v === '1' || v === 'true';
-  send(req, res, S.updateSchool(req.user, s.id, { name: x.name, settings: { teachersCreateClasses: x.teachersCreateClasses !== undefined ? bool(x.teachersCreateClasses) : undefined, allowOwnAccounts: x.allowOwnAccounts !== undefined ? bool(x.allowOwnAccounts) : undefined, chat: x.chat, publishing: x.publishing, timeZone: typeof x.timeZone === 'string' ? x.timeZone : undefined } }));
+  // The daily Builder cap (school plans) is set on the Billing tab, so only where that tab is.
+  if (x.builderDailyCap !== undefined && !billingTabOn(req, s)) return no(req, res);
+  const r = S.updateSchool(req.user, s.id, { name: x.name, settings: { teachersCreateClasses: x.teachersCreateClasses !== undefined ? bool(x.teachersCreateClasses) : undefined, allowOwnAccounts: x.allowOwnAccounts !== undefined ? bool(x.allowOwnAccounts) : undefined, chat: x.chat, publishing: x.publishing, timeZone: typeof x.timeZone === 'string' ? x.timeZone : undefined, builderDailyCap: x.builderDailyCap } });
+  if (!r.ok && r.code === 'badCap') return fieldErr(res, 'builderDailyCap', req.t('school.errors.badCap', { min: S.minDailyCap(), max: S.MAX_DAILY_CAP }));
+  send(req, res, r);
 });
 router.post('/api/schools/:id/staff', requireUser, rateLimit('school-add', 120, 3600e3), (req, res) => {
   const s = schoolApi(req, res); if (!s) return;

@@ -834,7 +834,7 @@ about 20 games, read the cost per message on /admin/stats).
 - **D9. Countries and tax:** family plans for US families only at launch (billing address, a Radar rule blocks non-US
   cards, Stripe Tax for US sales tax). Worldwide later through a merchant of record. Invoice schools are handled deal
   by deal.
-- **D10. Refunds:** cancel anytime from "Manage plan" (the plan runs to the end of the paid period); a full refund on
+- **D10. Refunds:** cancel anytime from "Manage billing" (the Stripe Customer Portal) (the plan runs to the end of the paid period); a full refund on
   request within 14 days of a first payment or yearly renewal. Always cancel first, then refund.
 - **D11. Late payment:** cards get 7 days of grace while Stripe retries; invoice schools 30 days after the due date.
   Then back to free. Nothing is deleted or locked.
@@ -942,3 +942,61 @@ builds know whether they come from class (chunk 5): family money is never used i
 extra this month" (numbers only) and the limit says "More tomorrow!" with no
 number; /family shows extras left counted up to yesterday (never today). /admin/billing (read-only) lists subscriptions
 (filters by status and flag), refund windows, webhook problems and recent events, and the Stripe Tax banner.
+
+**Chunk 5: school plans.** A Billing tab on the school page, for school admins and the platform admin only and only
+behind the families gate (`familiesOn(req)`); teachers and students never see billing, and every
+`/api/billing/school/:id/*` route is a 404 for anyone else. With a test key only billing testers (grown-ups or school
+staff, set on /admin) and the platform admin may pay. Pay by card: Stripe-hosted Checkout, `quantity` = students (at
+least `SCHOOL_MIN_SEATS`), the price by lookup key `oomba_school_seat_yearly`, `payment_method_configuration` only when
+`STRIPE_PMC_SCHOOL` is set (else the account default; never `payment_method_types`), flexible billing, `integration_identifier`
+`oomba_school_<8 letters>`, the same one-open-session, return-page and duplicate rules as families. Delayed (ACH) payments
+grant nothing until they arrive. More students: `proration_behavior=always_invoice` (card schools with
+`payment_behavior=pending_if_incomplete`, so the quantity changes only once paid); fewer students are next year's seats
+(`next_quantity`), set at Stripe with no proration by a 6-hourly job in the two days before the renewal; the tab shows a
+renewal reminder 30 days ahead with today's student count proposed. The pool (`pool_quantity`) is the highest quantity
+paid (card) or invoiced (send_invoice) in the period and never shrinks within it; a grant's pool runs a year from its
+date and each anniversary. Messages charged to a school are counted from `builder_turns` (`charged_to='school:<id>'`,
+refunds given back) rather than a separate `school_builder_usage` table, the same way as family extras. Invoices (D7):
+the school admin's request (seats, PO, billing contact, billing address, a tax-exempt claim; one open per school; audited
+with ids only; contact details deleted 2 years after it closes) shows on /admin/billing, where the owner clicks
+**Create invoice subscription**: the school's Customer gets its name, the contact's email, the address and the PO as an
+invoice field (`tax_exempt=exempt` only when the owner ticks that the certificate arrived), then a `send_invoice`
+subscription, `days_until_due=30`, metadata with the school id and PO, flexible billing, `automatic_tax` only with
+`STRIPE_TAX=1`, no payment method list. **Mark paid by check** pays an open invoice out of band. An overdue invoice
+keeps the plan until `SCHOOL_INVOICE_GRACE_DAYS` after its due date (flag `overdue`). The school source in
+`usage.allowanceFor`: an active student or staff member of a school with a plan and messages left builds from its pool
+(paid AI pool, so never resting with free users), up to the school's daily cap (`builderDailyCap`, default
+`SCHOOL_DAILY_CAP_DEFAULT`, never below the free messages); with the pool empty, the free messages and never a family's
+extras. Class contexts (a student of any school, or anyone paid by a school) see only "{left} left today" and a limit
+message that names the class; a family child in a school without a plan keeps the family's extras but sees no "+N"
+counter. The paid AI pool adds paid students × `SCHOOL_SEAT_AI_USD` ÷ 12 a month. When a plan ends everyone is back on
+the free allowance; nothing is removed or archived.
+
+**Chunk 5 review fixes.** The pool grows only on the invoice that covers the new seats: the quantity on its lines, or
+else the quantity at the sync where the latest invoice is new or has just become paid (card) / finalized
+(send_invoice). Next year's seats applied before the renewal with no proration, or a Dashboard change whose proration
+waits for the next invoice, grow nothing until that invoice. A new period keeps last year's pool *and its start date*
+until its invoice is paid (card) or finalized (send_invoice), so a past-due card school keeps only what was left of
+last year's messages during its grace days, never a fresh year's. Billing off (no Stripe keys) means no school side at
+all: school students keep today's counter and limit message. The daily cap box shows the cap in force and refuses
+anything below `BUILDER_DAILY_TURNS`; it and the "up to N a day" line show only while the school has a plan.
+`SCHOOL_DAILY_CAP_DEFAULT` stays 30 (spec §8), so with the default 60 free messages the cap in force is 60 until a
+school sets more. Invoice requests are per Stripe mode (`livemode`) like every other billing row, so a test-mode
+leftover never blocks a live request. Create invoice subscription's idempotency keys carry what the owner may change
+between attempts (the students, the exemption box; separate create and update keys for the Customer). The 2-year purge
+of closed invoice requests also clears the note and the PO number.
+
+**Chunk 7: legal pages.** /terms, /refunds and /privacy are always public (also before `BILLING_PUBLIC`, with a "not
+on sale yet" notice), with no prices: anyone can type the address. The footer departs from spec §9 ("/parents only")
+in one way: it links **Privacy** on every page (COPPA wants a prominent link to the privacy notice), and **Terms** only
+for grown-up accounts, school staff and the platform admin (`legalReader`). For kids, students, guests and the
+signed-out, /privacy leaves out the sections that name plans (grown-up accounts, linking, payments, school billing,
+billing retention, where plans are sold); the signed-out also get a "For grown-ups and schools" link to the full text
+(`/privacy?for=grownups`), which grown-ups and staff see by default. /parents gets the D16 plans sentence and links to
+/terms, /refunds and the full /privacy once paid plans are public; /grown-ups, /family's Subscribe box and the school
+Billing tab's Pay by card and invoice panels link /terms and /refunds. Legal text is not counted in the 90% share that
+puts a language in the picker (`UNCOUNTED_PREFIXES`: `info.terms.`, `info.refunds.`, `info.privacy.`), so adding it
+takes no language away; it shows in English, marked `lang="en" dir="ltr"`, until translated. The paid-plan wording on
+/parents and /safety is `paidN` items that replace `pN` once paid plans are public (`familiesOn`). Untranslated
+footer, Studio class counter and Billing tab words get the same `lang="en" dir="ltr"` marking until their translations
+land; the new keys still have to be translated in all 12 locales before `BILLING_PUBLIC` (§9).

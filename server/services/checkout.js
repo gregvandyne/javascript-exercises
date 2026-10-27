@@ -20,10 +20,11 @@ export function reauthFresh(sessionId, t = now()) {
 }
 export const markReauth = sessionId => q.run('UPDATE sessions SET reauth_at=? WHERE id=?', now(), sessionId);
 
-/** May this account pay or change a plan now? With a live key, any grown-up; with a test key, only billing testers. */
+/** May this account pay or change a plan now? With a live key, anyone the route lets in (a grown-up, a school admin);
+ *  with a test key, only billing testers and the platform admin (D14). */
 export function mayBill(u) {
   const mode = S.billingMode();
-  return !!u && !u.banned && (mode === 'live' || (mode === 'test' && !!u.billing_tester));
+  return !!u && !u.banned && (mode === 'live' || (mode === 'test' && (!!u.billing_tester || u.role === 'admin')));
 }
 /** The site's address for Stripe's return links: PUBLIC_URL, else this request's own origin. */
 export const baseUrl = req => config.publicUrl || `${req.protocol}://${req.get('host')}`;
@@ -47,26 +48,29 @@ const ownerKey = fid => `family:${fid}`;
 /** Statuses of a plan that isn't entitled now but that Stripe may still charge or bring back (a card retry that
  *  succeeds later): a new Checkout would make two plans, so the grown-up fixes the payment in Manage billing instead. */
 const STALE_STATUSES = ['past_due', 'unpaid', 'incomplete', 'paused'];
-/** The family's subscription that still waits for a payment (or a delayed payment still processing), or null. */
-export const unsettledPlan = fid => q.all(`SELECT * FROM billing_subscriptions WHERE owner_kind='family' AND owner_id=? AND plan='family' AND livemode=?
-    AND orphaned_at IS NULL`, fid, S.currentLivemode())
+/** An owner's subscription that still waits for a payment (or a delayed payment still processing), or null. */
+export const unsettledPlanOf = (kind, id) => q.all(`SELECT * FROM billing_subscriptions WHERE owner_kind=? AND owner_id=? AND plan=? AND livemode=?
+    AND orphaned_at IS NULL`, kind, String(id), kind, S.currentLivemode())
   .find(r => STALE_STATUSES.includes(r.status) || (r.payment_pending && ['active', 'trialing'].includes(r.status))) || null;
-const openSession = fid => q.get("SELECT * FROM billing_checkouts WHERE owner_kind='family' AND owner_id=? AND livemode=?", fid, S.currentLivemode()) || null;
+/** The family's subscription that still waits for a payment (or a delayed payment still processing), or null. */
+export const unsettledPlan = fid => unsettledPlanOf('family', fid);
+const openSession = (kind, id) => q.get('SELECT * FROM billing_checkouts WHERE owner_kind=? AND owner_id=? AND livemode=?', kind, String(id), S.currentLivemode()) || null;
 
-/** The owner's Stripe Customer, made the first time (metadata only: no name or email from us) and reused after. */
-async function familyCustomer(fid) {
-  const known = B.customerOf('family', fid);
+/** An owner's Stripe Customer, made the first time (metadata only: no name or email from us) and reused after. */
+export async function ownerCustomer(kind, id) {
+  const known = B.customerOf(kind, id);
   if (known) return known;
   const mode = S.currentLivemode();
-  const c = await S.createCustomer({ metadata: { owner_kind: 'family', owner_id: fid, family_id: fid } }, `customer-family-${fid}-${mode}`);
-  B.linkCustomer(c.id, 'family', fid, mode);
-  return B.customerOf('family', fid) || c.id;
+  const c = await S.createCustomer({ metadata: { owner_kind: kind, owner_id: id, [`${kind}_id`]: id } }, `customer-${kind}-${id}-${mode}`);
+  B.linkCustomer(c.id, kind, id, mode);
+  return B.customerOf(kind, id) || c.id;
 }
+const familyCustomer = fid => ownerCustomer('family', fid);
 
 /** Ends the owner's earlier open Checkout (one open session per owner). -> 'gone' (nothing open any more) or 'paid'
  *  (it was completed meanwhile: the plan is on its way). Other Stripe errors are thrown. */
-async function endOpenSession(fid) {
-  const row = openSession(fid);
+export async function endOpenSession(fid, kind = 'family') {
+  const row = openSession(kind, fid);
   if (!row) return 'gone';
   let state = 'gone';
   try { await S.expireCheckoutSession(row.session_id); } catch (e) {
@@ -77,7 +81,7 @@ async function endOpenSession(fid) {
       else if (s.status !== 'expired') throw e;
     }
   }
-  if (state === 'gone') q.run("DELETE FROM billing_checkouts WHERE owner_kind='family' AND owner_id=? AND session_id=?", fid, row.session_id);
+  if (state === 'gone') q.run('DELETE FROM billing_checkouts WHERE owner_kind=? AND owner_id=? AND session_id=?', kind, String(fid), row.session_id);
   return state;
 }
 
@@ -124,34 +128,44 @@ export function startFamilyCheckout({ family, user, interval, base }) {
       params.custom_text = { terms_of_service_acceptance: { message: `I agree to the [Terms of Service](${base}/terms), and that the plan renews until I cancel it.` } };
     }
     const session = await S.createCheckoutSession(params, `checkout-family-${fid}-${uid(12)}`);
-    q.run(`INSERT INTO billing_checkouts(owner_kind, owner_id, livemode, session_id, created_at) VALUES ('family',?,?,?,?)
-      ON CONFLICT(owner_kind, owner_id, livemode) DO UPDATE SET session_id=excluded.session_id, created_at=excluded.created_at`, fid, S.currentLivemode(), session.id, now());
+    rememberSession('family', fid, session.id);
     audit(user.id, 'billing.checkout.start', ownerKey(fid), { session: session.id, interval });
     return { ok: true, url: session.url };
   });
 }
 
-/** A Customer Portal session for the family's Customer. -> { ok: true, url } | { ok: false, code: 'noCustomer' } */
-export async function startPortal({ family, user, base }) {
-  const customer = B.customerOf('family', family.id);
+/** Records the owner's one open Checkout Session. */
+export function rememberSession(kind, id, sessionId) {
+  q.run(`INSERT INTO billing_checkouts(owner_kind, owner_id, livemode, session_id, created_at) VALUES (?,?,?,?,?)
+    ON CONFLICT(owner_kind, owner_id, livemode) DO UPDATE SET session_id=excluded.session_id, created_at=excluded.created_at`, kind, String(id), S.currentLivemode(), sessionId, now());
+}
+
+/** A Customer Portal session for an owner's Customer. -> { ok: true, url } | { ok: false, code: 'noCustomer' } */
+export async function startPortalFor({ kind, id, user, returnUrl }) {
+  const customer = B.customerOf(kind, id);
   if (!customer) return { ok: false, code: 'noCustomer' };
-  const p = await S.createPortalSession({ customer, return_url: `${base}/family` }, `portal-family-${family.id}-${uid(12)}`);
-  audit(user.id, 'billing.portal.open', ownerKey(family.id), {});
+  const p = await S.createPortalSession({ customer, return_url: returnUrl }, `portal-${kind}-${id}-${uid(12)}`);
+  audit(user.id, 'billing.portal.open', `${kind}:${id}`, {});
   return { ok: true, url: p.url };
 }
+/** A Customer Portal session for the family's Customer. -> { ok: true, url } | { ok: false, code: 'noCustomer' } */
+export const startPortal = ({ family, user, base }) => startPortalFor({ kind: 'family', id: family.id, user, returnUrl: `${base}/family` });
 
 const SESSION_ID = /^cs_(test|live)_[A-Za-z0-9]{8,200}$/;
 /** The return page's fallback: the session's own metadata must name this family (services/billing.js
  *  syncCheckoutReturn). -> 'active' | 'processing' | 'not_yours' */
-export async function checkoutReturn(family, sessionId) {
-  if (B.ownerPlan('family', family.id).entitled) return 'active';
+export const checkoutReturn = (family, sessionId) => checkoutReturnFor('family', family.id, sessionId);
+/** The same for any owner (a school's Billing tab). */
+export async function checkoutReturnFor(kind, ownerId, sessionId) {
+  const family = { id: ownerId };
+  if (B.ownerPlan(kind, family.id).entitled) return 'active';
   if (!SESSION_ID.test(String(sessionId || ''))) return 'not_yours';
   try {
-    const r = await B.syncCheckoutReturn(String(sessionId), { kind: 'family', id: family.id });
+    const r = await B.syncCheckoutReturn(String(sessionId), { kind, id: family.id });
     if (r.result === 'not_yours' || r.result === 'mode_mismatch') return 'not_yours';
   } catch (e) {
     if (e instanceof S.StripeCallError && e.missing) return 'not_yours';
     log('warn', 'billing: checkout return not synced', e instanceof S.StripeCallError ? e.fields : { error: e.message });
   }
-  return B.ownerPlan('family', family.id).entitled ? 'active' : 'processing';
+  return B.ownerPlan(kind, family.id).entitled ? 'active' : 'processing';
 }

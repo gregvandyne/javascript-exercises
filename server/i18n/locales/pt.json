@@ -36,7 +36,9 @@
       "safety": "Segurança",
       "parents": "Para adultos",
       "contact": "Fale com a gente",
-      "builders": "Para criadores"
+      "builders": "Para criadores",
+      "terms": "Termos",
+      "privacy": "Privacidade"
     },
     "build": {
       "ready": "✨ Seu jogo “{title}” está pronto! <a href=\"{href}\">Abra o jogo</a>",
@@ -392,7 +394,8 @@
       },
       "ads": {
         "h": "Sem anúncios",
-        "p1": "Não há anúncios na Oomba Academy. Nada está à venda e nada aparece por cima de um jogo."
+        "p1": "Não há anúncios na Oomba Academy. Nada está à venda e nada aparece por cima de um jogo.",
+        "paid1": "Não há anúncios na Oomba Academy. Jogar é sempre grátis. Você nunca precisa pagar por nada aqui, e nada aparece por cima de um jogo."
       }
     },
     "parents": {
@@ -401,16 +404,24 @@
       "heading": "Para adultos",
       "what": {
         "h": "O que é a Oomba Academy?",
-        "p1": "Um site gratuito onde crianças jogam jogos na web e criam os seus próprios descrevendo-os para um Construtor com inteligência artificial (IA). Sem downloads, sem compras, sem caixas de recompensa (loot boxes), sem moedas virtuais compradas com dinheiro de verdade."
+        "p1": "Um site gratuito onde crianças jogam jogos na web e criam os seus próprios descrevendo-os para um Construtor com inteligência artificial (IA). Sem downloads, sem compras, sem caixas de recompensa (loot boxes), sem moedas virtuais compradas com dinheiro de verdade.",
+        "paid1": "Um site onde crianças jogam jogos na web e criam os seus próprios descrevendo-os para um Construtor com inteligência artificial (IA). Jogar é grátis, e uma cota diária de mensagens para o Construtor também. Famílias e escolas podem comprar mensagens extras para o Construtor. Não há compras dentro dos jogos, nem caixas de recompensa (loot boxes), nem moedas virtuais compradas com dinheiro de verdade."
+      },
+      "plans": {
+        "h": "Planos",
+        "p1": "Criar é grátis, com mensagens extras para o Construtor para famílias e escolas.",
+        "p2": "Os planos e os pagamentos são regidos pelos nossos <a href=\"/terms\">Termos de Serviço</a>, pela nossa <a href=\"/refunds\">Política de Reembolso e Cancelamento</a> e pela nossa <a href=\"/privacy?for=grownups\">Política de Privacidade</a>."
       },
       "stored": {
         "h": "O que guardamos",
         "p1": "Nas contas próprias, guardamos um nome inventado, uma senha (armazenada de forma embaralhada) e o que a criança faz aqui: os jogos que ela cria, as conversas com o Construtor e as imagens ou arquivos que ela adiciona, jogos salvos, pontuações, avaliações, favoritos, amigos, mensagens do chat, uma foto de perfil, se ela enviar uma, e configurações como idioma e tema. No modo convidado, guardamos um nome inventado, jogos salvos, pontuações, avaliações e favoritos.",
-        "p2": "Uma conta da escola é aquela em que a criança entra com um cartão de acesso dado pela escola. Ela é criada pela escola e pertence a ela. Nela guardamos as mesmas coisas e também o nome real do aluno, como a escola o digitou para a lista da turma (só a equipe da escola e a nossa equipe veem esse nome), as turmas dele, o progresso nas aulas, as respostas escritas e os comentários do professor. Se a criança entrar em uma turma com a própria conta e um código da turma, a escola guarda as mesmas coisas para essa turma, incluindo o nome real dela, se o professor digitar."
+        "p2": "Uma conta da escola é aquela em que a criança entra com um cartão de acesso dado pela escola. Ela é criada pela escola e pertence a ela. Nela guardamos as mesmas coisas e também o nome real do aluno, como a escola o digitou para a lista da turma (só a equipe da escola e a nossa equipe veem esse nome), as turmas dele, o progresso nas aulas, as respostas escritas e os comentários do professor. Se a criança entrar em uma turma com a própria conta e um código da turma, a escola guarda as mesmas coisas para essa turma, incluindo o nome real dela, se o professor digitar.",
+        "paid3": "Os planos família nunca veem as atividades da turma: um adulto vinculado a um aluno vê apenas as mensagens extras da família usadas por esse aluno."
       },
       "never": {
         "h": "O que nunca coletamos",
-        "p1": "Nunca pedimos endereço de e-mail, idade, endereço residencial, localização nem dados de pagamento, e não há nada para comprar. Dados de localização escondidos são removidos de fotos e imagens antes de serem guardadas. Não há anúncios nem cookies de publicidade ou de rastreamento."
+        "p1": "Nunca pedimos endereço de e-mail, idade, endereço residencial, localização nem dados de pagamento, e não há nada para comprar. Dados de localização escondidos são removidos de fotos e imagens antes de serem guardadas. Não há anúncios nem cookies de publicidade ou de rastreamento.",
+        "paid1": "Nunca pedimos às crianças endereço de e-mail, idade, endereço residencial, localização nem dados de pagamento, e as crianças nunca são convidadas a pagar. Um adulto pode escolher um plano, e o pagamento passa pela Stripe; nós nunca vemos números de cartão. Dados de localização escondidos são removidos de fotos e imagens antes de serem guardadas. Não há anúncios nem cookies de publicidade ou de rastreamento."
       },
       "ai": {
         "h": "O que a IA vê",
@@ -419,7 +430,8 @@
       "keep": {
         "h": "Por quanto tempo guardamos",
         "p1": "Guardamos os dados de uma conta enquanto a conta existir. Por enquanto, nada é apagado automaticamente depois de um tempo. Um jogo que a criança apaga sai do site para todos, mas uma cópia fica no nosso servidor.",
-        "p2": "Ainda não há um botão para excluir uma conta ou baixar os dados dela. Para pedir qualquer uma das duas coisas, um adulto pode falar com a gente. No caso de uma conta da escola, fale com a escola; ela pode pedir para a gente."
+        "p2": "Ainda não há um botão para excluir uma conta ou baixar os dados dela. Para pedir qualquer uma das duas coisas, um adulto pode falar com a gente. No caso de uma conta da escola, fale com a escola; ela pode pedir para a gente.",
+        "paid1": "Guardamos os dados próprios de uma conta enquanto a conta existir, e, por enquanto, nada disso é apagado automaticamente depois de um tempo. Um jogo que a criança apaga sai do site para todos, mas uma cópia fica no nosso servidor. Os vínculos familiares, os códigos de vínculo e os registros de cobrança têm prazos próprios: veja <a href=\"/privacy#billingKeep\">por quanto tempo guardamos as informações de cobrança</a>."
       },
       "friends": {
         "h": "Amigos e chat",
@@ -457,6 +469,327 @@
       "rules": {
         "h": "Regras",
         "p1": "Os jogos não podem usar a internet, cookies, formulários, pop-ups nem links. Fontes do Google Fonts e bibliotecas do cdnjs são permitidas. Cada jogo deve ter menos de 2 MB."
+      }
+    },
+    "legal": {
+      "updated": "Última atualização: {date}",
+      "notYet": "Os planos pagos ainda não estão à venda. As partes desta página sobre eles passam a valer quando estiverem."
+    },
+    "terms": {
+      "title": "Termos de Serviço",
+      "description": "As regras para usar a Oomba Academy: contas, regras de segurança, jogos que você cria, planos pagos e cobrança.",
+      "heading": "Termos de Serviço",
+      "who": {
+        "h": "1. Quem somos e o que estes termos abrangem",
+        "p1": "A Oomba Academy (oomba.ai) é um site educativo onde crianças de 8 a 14 anos, suas famílias e seus professores jogam jogos na web e criam os seus próprios jogos com um \"Construtor\" de IA.",
+        "p2": "O serviço é operado pela Oomba Academy (\"Oomba Academy\", \"nós\"). Você pode falar com a gente em <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a>.",
+        "p3": "Estes termos são as regras para usar o site. Eles valem para todas as pessoas que o usam. A nossa <a href=\"/privacy\">Política de Privacidade</a> e a nossa <a href=\"/refunds\">Política de Reembolso e Cancelamento</a> fazem parte destes termos.",
+        "p4": "<b>Um recado para as crianças:</b> estes termos foram escritos para adultos. A versão curta para você está na <a href=\"/safety\">página Segurança</a>: seja gentil, mantenha seus dados pessoais em segredo, só crie jogos que sigam as regras do Construtor e conte para um adulto em quem você confia se algo deixar você preocupado."
+      },
+      "accounts": {
+        "h": "2. Quem pode usar a Oomba Academy",
+        "s1": "Tipos de conta",
+        "li1": "<b>Convidado:</b> para quem quer jogar. Criada com um toque em um jogo. Guarda um nome inventado, jogos salvos, pontuações, avaliações e favoritos.",
+        "li2": "<b>Conta própria:</b> para uma criança (ou qualquer pessoa) que quer criar, guardar jogos e adicionar amigos. Criada no site com um nome de usuário inventado e uma senha.",
+        "li3": "<b>Conta da escola:</b> para um aluno de uma escola que usa a Oomba Academy. Criada pela escola e pertence a ela. O aluno entra com um cartão de acesso (ou, se a escola ativar essa opção, com uma conta Google da escola).",
+        "li4": "<b>Professor e admin da escola:</b> para a equipe escolar. Configurada pela escola ou por nós.",
+        "li5": "<b>Conta de adulto:</b> para um pai, mãe ou responsável legal que quer se vincular à conta da criança ou comprar um plano família. Criada com um nome e uma senha de pelo menos 12 caracteres.",
+        "s2": "Crianças",
+        "p1": "A Oomba Academy é feita para crianças de 8 a 14 anos.",
+        "li6": "Se você tem menos de 18 anos, um pai, mãe ou responsável legal precisa aceitar estes termos por você, e é responsável pela forma como você usa o site. Pagar por um plano não é a forma de um pai, mãe ou responsável dar permissão para a conta de uma criança (veja a seção 7.9).",
+        "li7": "Uma conta da escola é criada pela escola. A escola é responsável por ter o direito de criá-la e por informar os pais e responsáveis sobre ela (veja a seção 3).",
+        "s3": "Contas de adulto",
+        "li8": "Você precisa ter <b>18 anos ou mais</b> e ser <b>pai, mãe ou responsável legal</b> de cada criança a que se vincular. Ao se cadastrar, você confirma isso marcando uma caixa. Nós não verificamos, então seja honesto: vincular-se a uma criança que não é sua viola estes termos, e nós vamos encerrar o vínculo e podemos fechar sua conta.",
+        "li9": "Uma conta de adulto pode jogar. Ela <b>não pode</b> criar jogos, usar o Construtor, usar o chat, adicionar amigos, publicar nem ter um perfil público.",
+        "li10": "Mantenha sua senha em segredo. Você é responsável pelo que acontece na sua conta de adulto, incluindo compras.",
+        "li11": "Para evitar que uma criança compre algo em um aparelho compartilhado, pedimos sua senha de novo antes de você começar ou mudar um plano.",
+        "s4": "Como vincular um adulto a uma criança",
+        "li12": "A criança recebe um código curto na própria página Eu. Ele funciona uma vez só, durante 1 hora.",
+        "li13": "Você digita o código na página da sua família.",
+        "li14": "A criança precisa dizer <b>Sim</b> na própria página. Ela também pode dizer <b>Não</b> ou <b>Denunciar</b>.",
+        "li15": "A criança pode <b>Desvincular</b> ou <b>Denunciar</b> a qualquer momento. Uma denúncia encerra o vínculo na hora e vai para a nossa equipe.",
+        "p2": "Um adulto vinculado vê o nome de usuário e o nome de exibição da criança, e quantas das mensagens extras da família para o Construtor a criança usou ontem e neste mês. Um adulto vinculado <b>não</b> vê os chats, os amigos, os jogos, a atividade em tempo real da criança nem nada sobre a escola dela.",
+        "p3": "Contas da escola não podem ser vinculadas a uma conta de adulto."
+      },
+      "schools": {
+        "h": "3. Escolas",
+        "p1": "Se você usa a Oomba Academy para uma escola, estes termos valem para a escola, a equipe escolar e os alunos, junto com qualquer acordo por escrito que assinarmos com a escola (por exemplo, um acordo de privacidade de dados dos alunos). Se os dois entrarem em conflito, vale o acordo assinado.",
+        "p2": "A escola:",
+        "li1": "confirma que tem autoridade para aceitar estes termos e para criar contas para seus alunos;",
+        "li2": "é responsável por informar os pais e responsáveis sobre o uso que faz da Oomba Academy e por obter deles qualquer consentimento necessário segundo leis como a COPPA, a FERPA e as leis estaduais de privacidade dos alunos;",
+        "li3": "é dona das suas listas de turmas e dos registros dos alunos. Nós os usamos apenas para operar o serviço para a escola.",
+        "p3": "Só os admins da escola veem a cobrança da escola. Professores e alunos nunca veem preços."
+      },
+      "rules": {
+        "h": "4. Usar a Oomba Academy com segurança: as regras",
+        "p1": "Estas regras valem para todos, incluindo o que você digita para o Construtor, os jogos que você cria, as mensagens do chat, as imagens que você envia e o seu perfil.",
+        "s1": "Não:",
+        "li1": "compartilhe dados pessoais (seus ou de outra pessoa): nomes completos reais, endereços, números de telefone, e-mails, nomes de escolas em lugares públicos ou perfis de redes sociais;",
+        "li2": "pratique bullying, ameace, assedie ou seja maldoso com ninguém;",
+        "li3": "crie ou compartilhe nada com sangue ou violência explícita, sustos de terror, conteúdo adulto, ódio, apostas, drogas ou armas reais usadas para machucar pessoas;",
+        "li4": "use marcas reais, pessoas reais ou personagens, músicas ou artes de outras pessoas que você não tem o direito de usar;",
+        "li5": "tente burlar os filtros de segurança, as regras do Construtor, a área protegida (sandbox) dos jogos ou os limites de mensagens (por exemplo, com várias contas);",
+        "li6": "crie jogos que coletem dados, tenham chat ou levem para fora do site;",
+        "li7": "tente quebrar, sobrecarregar, copiar dados em massa (scraping) ou atacar o site, ou entrar em contas que não são suas;",
+        "li8": "compre ou tente comprar um plano com um cartão de pagamento que você não tem permissão para usar.",
+        "s2": "Como verificamos as coisas (moderação)",
+        "li9": "Toda mensagem para o Construtor é verificada antes de a IA vê-la. As mensagens que quebram as regras são recusadas com gentileza.",
+        "li10": "Um verificador automático lê todas as versões de todos os jogos. Os jogos compartilhados com todos também passam por uma revisão cuidadosa feita por um modelo de IA, e uma pessoa da nossa equipe confere qualquer jogo sobre o qual ele tenha dúvida. Os jogos compartilhados com uma turma ou uma escola são verificados antes de chegarem a esse público.",
+        "li11": "O chat é só de texto, apenas entre amigos que se adicionaram pelo código de amigo, e tem filtro de linguagem imprópria e de dados pessoais.",
+        "li12": "Qualquer pessoa que entrou na conta pode denunciar um jogo. Quando três pessoas denunciam um jogo, ele fica escondido até a nossa equipe olhar. Qualquer pessoa pode bloquear ou denunciar alguém com quem conversa no chat.",
+        "li13": "A nossa equipe pode aprovar, rejeitar, esconder ou remover jogos, e pausar, suspender ou banir contas. Registramos todas as ações de moderação.",
+        "p2": "Nenhuma verificação é perfeita. Se você vir algo errado, denuncie ou escreva para <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a>."
+      },
+      "ai": {
+        "h": "5. Conteúdo feito por IA",
+        "li1": "O Construtor usa o Claude, uma IA feita pela Anthropic, para escrever jogos a partir do que você descreve. O que a IA faz pode estar errado, ter bugs ou ser inesperadamente parecido com algo que já existe.",
+        "li2": "Verificamos os jogos antes de serem compartilhados amplamente (seção 4), mas não prometemos que todo jogo esteja livre de erros.",
+        "li3": "Não confie em jogos ou respostas da IA para nada importante (saúde, segurança, dinheiro, respostas de lição de casa que você não conferiu).",
+        "li4": "O que você envia ao Construtor (mensagens, imagens, arquivos) é enviado à Anthropic para criar o jogo. Veja a nossa <a href=\"/privacy\">Política de Privacidade</a> para mais detalhes."
+      },
+      "games": {
+        "h": "6. Jogos que você cria: de quem são",
+        "s1": "O que é seu",
+        "p1": "Você (ou, no caso de uma conta da escola, você e a sua escola, conforme as regras da escola) mantém todos os direitos que tiver sobre os jogos que cria aqui: suas ideias, suas palavras, suas imagens e seus designs.",
+        "p2": "Algumas partes de um jogo não são só suas:",
+        "li1": "o motor de jogo, os efeitos sonoros do site, os modelos iniciais, a biblioteca Three.js e outros blocos de construção pertencem a nós ou aos nossos licenciadores;",
+        "li2": "as partes escritas pela IA podem nem ser protegidas por direitos autorais.",
+        "s2": "A licença que você nos dá",
+        "p3": "Para podermos operar o site, você concede à Oomba Academy uma licença mundial, não exclusiva e gratuita (sem royalties) para armazenar, copiar, executar, exibir, fazer capturas de tela, verificar (com pessoas e ferramentas de IA, incluindo o envio do jogo à Anthropic para revisão) e fazer pequenas mudanças técnicas (por exemplo, para caber em uma tela ou corrigir um problema de segurança) nos jogos, imagens e textos que você coloca no site, <b>apenas para operar, proteger e melhorar a Oomba Academy</b> e apenas para mostrá-los às pessoas que você escolheu (só eu, amigos, suas turmas, sua escola ou todos).",
+        "li3": "Esta licença termina quando você apaga o jogo, exceto que: um jogo apagado sai do site para todos, mas uma cópia fica no nosso servidor para que as denúncias e os registros de segurança ainda apontem para algo; podemos manter cópias de backup por um tempo limitado; e os jogos em que outras pessoas já salvaram pontuações mantêm essas pontuações.",
+        "li4": "Não vamos vender seus jogos nem usá-los em anúncios, e não os usamos no nosso marketing sem pedir.",
+        "li5": "Outros jogadores podem jogar os jogos que você compartilha com eles. Eles não ganham o direito de copiá-los ou remixá-los. Se um dia a opção de remixar for adicionada, vamos atualizar estes termos antes.",
+        "s3": "Respeitar o trabalho dos outros",
+        "p4": "Só envie ou descreva coisas que você tem o direito de usar. Se você acha que algo na Oomba Academy copia o seu trabalho, escreva para <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a> dizendo o que é e onde está. Removemos material que viola direitos e fechamos as contas de quem faz isso repetidamente."
+      },
+      "plans": {
+        "h": "7. Planos pagos e cobrança",
+        "s1": "7.1 O que é grátis e o que é pago",
+        "li1": "<b>Jogar é grátis</b> para todos, e uma <b>cota diária grátis de mensagens para o Construtor</b> também.",
+        "li2": "Os planos pagos <b>só adicionam mais mensagens para o Construtor</b>. Pagar nunca libera um recurso que os usuários gratuitos não têm.",
+        "li3": "<b>As crianças nunca veem preços</b> nem planos, e nunca são convidadas a pagar. Só contas de adulto e admins da escola podem comprar um plano.",
+        "li4": "Podemos mudar o tamanho da cota grátis a qualquer momento. Vamos anunciar a mudança na <a href=\"/parents\">página Para adultos</a> antes de ela entrar em vigor.",
+        "s2": "7.2 Plano família",
+        "li5": "Comprado por uma <b>conta de adulto</b> para <b>até 4 crianças vinculadas</b> (cada criança precisa ter confirmado o vínculo).",
+        "li6": "Mensal ou anual, pelo preço mostrado ao adulto antes da compra.",
+        "li7": "Ele dá à família um número fixo de <b>mensagens extras para o Construtor por mês</b>, compartilhadas pelas crianças vinculadas, além das mensagens grátis diárias de cada criança. O número é mostrado antes da compra e, depois, na página da sua família.",
+        "li8": "Cada criança usa primeiro as suas mensagens grátis diárias; as extras são usadas depois disso, ou quando o Construtor grátis está descansando.",
+        "li9": "As extras recomeçam no início de cada mês do calendário (UTC) e não se acumulam para o mês seguinte. Uma mensagem em \"Qualidade Pro\" conta como 2. Uma mensagem que não consegue criar o jogo é devolvida.",
+        "li10": "Para evitar que uma criança use o mês inteiro em um dia, há um limite de quantas mensagens extras uma criança pode usar por dia, e um limite para uso excepcionalmente caro.",
+        "li11": "Uma criança de uma escola com um plano escolar pago cria na aula usando a cota da escola, nunca as extras da família.",
+        "li12": "<b>Por enquanto, os planos família são só para famílias dos Estados Unidos.</b> Você precisa de um endereço de cobrança nos Estados Unidos e de um cartão de pagamento dos Estados Unidos (ou Apple Pay ou Google Pay).",
+        "s3": "7.3 Plano escolar",
+        "li13": "Cobrado <b>por aluno por ano</b>, com um <b>mínimo de 25 alunos</b>. O preço é mostrado aos admins da escola na aba Cobrança da escola.",
+        "li14": "A escola recebe a cada ano uma cota compartilhada de mensagens para o Construtor para seus alunos e professores. O tamanho aparece na aba Cobrança da escola. Os alunos sempre recebem pelo menos a quantidade grátis diária. Quando a cota acaba, os alunos usam a cota grátis até o começo do próximo ano.",
+        "li15": "As vagas pagas contam os alunos ativos. Se você adicionar alunos durante o ano, pode adicionar vagas: você paga na hora um valor proporcional pelo resto do ano. Você pode diminuir o número de vagas para o próximo ano; a mudança vale na renovação, nunca abaixo de 25.",
+        "li16": "<b>Pagamento:</b> com cartão on-line, ou por fatura (uma ordem de compra serve). As faturas vencem <b>30 dias</b> depois de enviadas (net 30) e podem ser pagas com cartão, transferência bancária ou ACH, ou com cheque (escreva para nós para saber o endereço postal).",
+        "li17": "Escolas isentas de impostos podem nos enviar o certificado de isenção.",
+        "s4": "7.4 Pagamentos, Stripe e impostos",
+        "li18": "Os pagamentos são processados pela <b>Stripe</b>. Você paga na própria página da Stripe. Nós nunca vemos nem guardamos o número do seu cartão.",
+        "li19": "Os preços são em dólares americanos e <b>não incluem o imposto sobre vendas</b>. Onde a lei exigir, o imposto é adicionado no pagamento ou na fatura.",
+        "li20": "A Stripe envia os seus recibos. A cobrança aparece no seu extrato como <b>OOMBA ACADEMY</b>.",
+        "s5": "7.5 Renovação automática",
+        "p1": "<b>Os planos são renovados automaticamente até você cancelar.</b>",
+        "li21": "Um plano família mensal é renovado todo mês, e um plano anual todo ano, pelo preço em vigor na época (veja 7.7), cobrado na forma de pagamento cadastrada.",
+        "li22": "Antes de você pagar, a página de pagamento mostra o preço, com que frequência você será cobrado e que o plano é renovado até você cancelar. Ao pagar, você concorda com a renovação automática.",
+        "li23": "Enviamos um lembrete antes de um plano anual ser renovado.",
+        "li24": "Os planos escolares pagos por fatura são renovados todo ano com uma nova fatura. A aba Cobrança da escola mostra um lembrete 30 dias antes.",
+        "s6": "7.6 Cancelamento",
+        "li25": "<b>Cancele quando quiser</b> on-line: na página da sua família, escolha <b>Gerenciar cobrança</b> e depois cancele na página da Stripe. Escolas: <b>Gerenciar cobrança</b> na aba Cobrança, ou escrevam para nós.",
+        "li26": "O cancelamento impede a próxima renovação. <b>O plano continua funcionando até o fim do período que você pagou</b>, e depois a sua família ou escola volta para a cota grátis.",
+        "li27": "Nada é apagado quando um plano termina.",
+        "li28": "Os reembolsos são regidos pela nossa <a href=\"/refunds\">Política de Reembolso e Cancelamento</a>: em resumo, reembolso total se você pedir em até 14 dias após o pagamento que começa um plano ou após uma renovação anual. As renovações mensais não são reembolsadas, e fora isso não há reembolsos parciais.",
+        "s7": "7.7 Mudanças de preço e de plano",
+        "li29": "Podemos mudar os preços ou o que um plano inclui. Vamos avisar você <b>antes</b> de a mudança valer para você, com um aviso na página da sua família (ou na aba Cobrança da escola) e por e-mail para o endereço que você informou à Stripe, no mínimo 7 e no máximo 30 dias antes da renovação a que ela se aplica.",
+        "li30": "Um novo preço vale a partir da sua próxima renovação, nunca para um período que você já pagou. Se você não quiser o novo preço, cancele antes dessa renovação.",
+        "li31": "Não vamos reduzir o número de mensagens extras em um período que você já pagou.",
+        "s8": "7.8 Pagamentos atrasados ou recusados",
+        "li32": "<b>Pagamentos com cartão:</b> se um pagamento for recusado, o plano continua funcionando por <b>7 dias</b> enquanto tentamos o pagamento de novo. Atualize o seu cartão na página da sua família. Se ainda assim o pagamento não for aprovado, o plano termina.",
+        "li33": "<b>Faturas:</b> se uma fatura não for paga, o plano continua funcionando até <b>30 dias depois do vencimento</b>. Depois disso, o plano termina.",
+        "li34": "Quando um plano termina dessa forma, a família ou a escola simplesmente volta para a cota grátis. <b>Nada é apagado nem bloqueado,</b> e as turmas da escola continuam funcionando.",
+        "li35": "Se um pagamento for contestado no banco (um chargeback) ou o banco avisar que pode ser fraude, encerramos o plano na hora para que o cartão não seja cobrado de novo. Se foi um engano, escreva para nós.",
+        "s9": "7.9 Pagar não é consentimento dos pais",
+        "p2": "Comprar um plano não muda o que fazemos com os dados de uma criança nem o que um pai, mãe ou responsável aceitou sobre eles. A forma como os pais e responsáveis são informados sobre o uso que a criança faz da Oomba Academy é um assunto separado, tratado na nossa <a href=\"/privacy\">Política de Privacidade</a>."
+      },
+      "ending": {
+        "h": "8. Suspensão e encerramento de contas",
+        "li1": "<b>Você</b> pode parar de usar a Oomba Academy a qualquer momento. Ainda não há um botão para excluir: para excluir uma conta ou receber uma cópia dos dados dela, escreva para <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a> (contas da escola: falem com a escola, que pode pedir para a gente). Se uma conta de adulto com um plano for excluída, cancelamos o plano antes.",
+        "li2": "<b>Nós</b> podemos pausar, limitar ou fechar uma conta, remover um jogo ou encerrar um vínculo familiar se alguém descumprir estes termos, colocar uma criança em risco, ou se a lei exigir. Vamos explicar o motivo quando pudermos, a menos que isso coloque alguém em risco.",
+        "li3": "Se a conta de uma criança for suspensa, o plano família continua funcionando para as outras crianças vinculadas. Uma suspensão, por si só, não é motivo para reembolso.",
+        "li4": "Se fecharmos uma conta de adulto por fraude ou uso indevido grave, o plano termina e não é reembolsado, a menos que a lei exija.",
+        "li5": "Se <b>nós</b> encerrarmos um plano pago por um motivo que não é culpa sua, ou se fecharmos a Oomba Academy, reembolsamos a parte não usada do período que você pagou."
+      },
+      "disclaimers": {
+        "h": "9. Isenções de responsabilidade",
+        "p1": "Nos esforçamos muito para que a Oomba Academy seja segura, divertida e esteja disponível, mas:",
+        "li1": "o site e o Construtor são fornecidos <b>\"no estado em que se encontram\" e \"conforme disponíveis\"</b>. Às vezes eles podem ficar fora do ar, lentos ou ser alterados. O Construtor pode \"descansar\" quando nossos limites de gastos de segurança são atingidos ou nosso provedor de IA está indisponível, e, em casos raros, isso também pode afetar os planos pagos;",
+        "li2": "não prometemos que os jogos (nossos, feitos por IA ou feitos por outros jogadores) estejam livres de erros;",
+        "li3": "na medida em que a lei permitir, nos isentamos de garantias implícitas, como as de comerciabilidade, adequação a uma finalidade específica e não violação de direitos.",
+        "p2": "Alguns estados não permitem algumas destas isenções, então elas podem não se aplicar a você. Nada aqui tira direitos que você tem pela lei de defesa do consumidor e dos quais não é possível abrir mão."
+      },
+      "liability": {
+        "h": "10. Limites da nossa responsabilidade",
+        "p1": "Na medida em que a lei permitir:",
+        "li1": "não somos responsáveis por perdas indiretas, incidentais, especiais ou consequentes (por exemplo, dados perdidos que você não salvou em outro lugar);",
+        "li2": "a nossa responsabilidade total por qualquer reclamação sobre a Oomba Academy é limitada ao <b>maior</b> valor entre o que você nos pagou nos 12 meses antes da reclamação e <b>100 dólares americanos</b>.",
+        "p2": "Estes limites <b>não</b> se aplicam à responsabilidade que não pode ser limitada por lei, incluindo a decorrente de negligência grave, conduta dolosa, fraude ou lesão corporal causada por negligência nossa."
+      },
+      "disputes": {
+        "h": "11. Disputas e lei aplicável",
+        "li1": "<b>Fale com a gente primeiro.</b> A maioria dos problemas pode ser resolvida por e-mail. Escreva para <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a> e nos dê 30 dias para tentar resolver.",
+        "li2": "Estes termos são regidos pelas leis do estado dos Estados Unidos onde a Oomba Academy está sediada e pela lei federal dos Estados Unidos, sem considerar as regras de conflito de leis.",
+        "li3": "As disputas vão para os tribunais estaduais ou federais do local onde a Oomba Academy está sediada, <b>ou</b> para o juizado de pequenas causas do lugar onde você mora, se a sua reclamação se qualificar.",
+        "li4": "Se você mora em um estado cuja lei de defesa do consumidor lhe dá direitos que estes termos não podem tirar, você continua com eles."
+      },
+      "changes": {
+        "h": "12. Mudanças nestes termos",
+        "li1": "Podemos atualizar estes termos. Vamos mudar a data de \"Última atualização\".",
+        "li2": "Para mudanças importantes, vamos avisar <b>pelo menos 30 dias antes</b> de elas entrarem em vigor: na página Para adultos, na página da família e na aba Cobrança da escola, e por e-mail para os adultos que pagam e para os contatos de cobrança das escolas.",
+        "li3": "As mudanças não se aplicam a uma disputa que começou antes da mudança.",
+        "li4": "Se você não concordar com uma mudança, pode parar de usar o site e cancelar o seu plano antes de ela entrar em vigor. Continuar depois disso significa que você aceita os novos termos."
+      },
+      "other": {
+        "h": "13. Outras questões legais",
+        "li1": "Se um tribunal decidir que uma parte destes termos não pode ser aplicada, o restante continua valendo.",
+        "li2": "Se não aplicarmos uma regra imediatamente, não abrimos mão do direito de aplicá-la depois.",
+        "li3": "Você não pode transferir sua conta nem estes termos para outra pessoa. Nós podemos transferi-los se a Oomba Academy for vendida ou reorganizada, e vamos avisar você.",
+        "li4": "Estes termos, a nossa Política de Privacidade e a nossa Política de Reembolso e Cancelamento são o acordo completo entre você e nós sobre o site (mais qualquer acordo assinado com a escola, seção 3)."
+      },
+      "contact": {
+        "h": "14. Contato",
+        "p1": "Oomba Academy · <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a>"
+      }
+    },
+    "refunds": {
+      "title": "Reembolsos e cancelamento",
+      "description": "Como cancelar um plano família ou um plano escolar da Oomba Academy, e quando você pode receber seu dinheiro de volta.",
+      "heading": "Política de Reembolso e Cancelamento",
+      "intro": {
+        "h": "Sobre esta política",
+        "p1": "Esta página explica como cancelar um plano da Oomba Academy e quando você pode receber seu dinheiro de volta. Ela faz parte dos nossos <a href=\"/terms\">Termos de Serviço</a>.",
+        "p2": "Jogar e as mensagens grátis diárias para o Construtor são sempre grátis. Esta política trata apenas dos planos pagos <b>família</b> e <b>escolar</b>, que adicionam mais mensagens para o Construtor."
+      },
+      "cancel": {
+        "h": "Cancelamento",
+        "li1": "<b>Cancele quando quiser.</b> Não há taxa de cancelamento.",
+        "li2": "<b>Famílias:</b> entre na sua conta de adulto, abra a página da sua família, escolha <b>Gerenciar cobrança</b> e depois cancele na página da Stripe. Antes, pedimos a sua senha.",
+        "li3": "<b>Escolas:</b> um admin da escola abre a aba <b>Cobrança</b> da escola e escolhe <b>Gerenciar cobrança</b>, ou escreve para <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a> (escolas que pagam por fatura).",
+        "li4": "<b>Quando passa a valer:</b> no fim do mês ou do ano que você já pagou. Até lá, o plano continua funcionando. Depois disso, a sua família ou escola volta para a cota grátis.",
+        "li5": "<b>Nada é apagado.</b> Jogos, jogos salvos e turmas ficam exatamente como estão."
+      },
+      "refunds": {
+        "h": "Reembolsos",
+        "p1": "<b>Reembolso total em até 14 dias.</b> Se você pedir em até <b>14 dias</b> após o pagamento que começa um plano, ou após uma renovação <b>anual</b>, reembolsamos esse pagamento integralmente, incluindo qualquer imposto cobrado.",
+        "p2": "<b>As renovações mensais não são reembolsadas.</b> Você pode cancelar um plano mensal a qualquer momento para que a próxima renovação não aconteça.",
+        "p3": "<b>Fora isso, não há reembolsos parciais.</b> Se você cancelar depois, o plano simplesmente continua até o fim do período que você pagou. Não reembolsamos dias não usados nem mensagens não usadas.",
+        "p4": "<b>O que um reembolso faz:</b> um reembolso encerra o plano imediatamente (primeiro cancelamos, depois reembolsamos), então as mensagens extras param na hora.",
+        "p5": "<b>Como pedir:</b> escreva para <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a> de qualquer endereço. Informe o nome da sua conta de adulto (ou da escola) e a data e o valor que aparecem no seu recibo da Stripe. Respondemos em até 3 dias úteis.",
+        "p6": "<b>Quando você recebe o dinheiro:</b> o reembolso volta para o cartão ou a conta que você usou para pagar. Os bancos costumam levar de 5 a 10 dias úteis para mostrá-lo.",
+        "p7": "<b>Escolas que pagam por fatura:</b> os 14 dias começam na data em que o pagamento chega até nós. Pagou com cheque? Reembolsamos com cheque ou transferência bancária."
+      },
+      "special": {
+        "h": "Casos especiais",
+        "li1": "<b>Pagou duas vezes por engano?</b> Se dois planos começarem para a mesma família ou escola, cancelamos o plano a mais e o reembolsamos automaticamente.",
+        "li2": "<b>O pagamento não foi aprovado?</b> Cartões: o plano continua funcionando por <b>7 dias</b> enquanto tentamos o pagamento de novo. Faturas: até <b>30 dias depois do vencimento</b>. Depois disso, o plano termina e você volta para a cota grátis. Nada é apagado.",
+        "li3": "<b>Uma criança usou o seu cartão sem pedir?</b> Escreva para nós imediatamente. Vamos cancelar o plano e, se você pedir em até 14 dias após o pagamento, reembolsá-lo integralmente.",
+        "li4": "<b>Contestou a cobrança no seu banco?</b> Encerramos o plano imediatamente para que o cartão não seja cobrado de novo. Escreva para nós antes; normalmente conseguimos resolver mais rápido.",
+        "li5": "<b>Se encerrarmos o seu plano por um motivo que não é culpa sua,</b> ou se fecharmos a Oomba Academy, reembolsamos a parte não usada do período que você pagou.",
+        "li6": "Podemos dar um reembolso em outros casos, se quisermos. Fazer isso uma vez não significa que temos de fazer de novo."
+      },
+      "rights": {
+        "h": "Seus direitos legais",
+        "p1": "Esta política não tira nenhum direito a reembolso que você tenha pela lei do lugar onde mora."
+      },
+      "contact": {
+        "h": "Contato",
+        "p1": "Oomba Academy · <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a>"
+      }
+    },
+    "privacy": {
+      "title": "Política de Privacidade",
+      "description": "O que a Oomba Academy guarda, o que nunca coleta, o que a IA vê e como funcionam as contas de adulto, os pagamentos e a cobrança das escolas.",
+      "heading": "Política de Privacidade",
+      "intro": {
+        "h": "Sobre esta política",
+        "p1": "Esta política explica o que a Oomba Academy (oomba.ai, \"nós\") guarda sobre as pessoas que a usam, o que nunca coletamos e como funcionam as contas de adulto, os vínculos familiares, os pagamentos e a cobrança das escolas. As mesmas informações sobre as contas das crianças estão na <a href=\"/parents\">página Para adultos</a>. Dúvidas: <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a>."
+      },
+      "grownups": {
+        "h": "Contas de adulto",
+        "s1": "O que guardamos",
+        "li1": "o nome que você digita ao se cadastrar (pode ser um primeiro nome ou apelido; as crianças nunca o veem: elas veem apenas \"um adulto\");",
+        "li2": "a sua senha, armazenada de forma embaralhada (não conseguimos lê-la);",
+        "li3": "que você marcou \"Sou pai, mãe ou responsável e tenho 18 anos ou mais\" (não verificamos isso);",
+        "li4": "as suas sessões de acesso, incluindo o nome do seu navegador (user agent), e quando você digitou a senha de novo pela última vez para uma etapa de cobrança;",
+        "li5": "quais crianças você vinculou, quando, e se um vínculo está pendente, ativo ou encerrado;",
+        "li6": "o seu plano: os números de cliente e de assinatura da Stripe, o tipo de plano, mensal ou anual, a situação, as vagas, as datas e os valores;",
+        "li7": "um registro das ações importantes (por exemplo, \"plano iniciado\", \"criança vinculada\", \"reembolso\"). Esses registros nunca contêm dados de cartão nem endereços de e-mail.",
+        "p1": "<b>O que não pedimos:</b> seu e-mail, número de telefone, endereço residencial ou idade. (A Stripe pede alguns desses dados quando você paga: veja Pagamentos abaixo.)",
+        "p2": "Uma conta de adulto não pode criar jogos, usar o chat, adicionar amigos nem ter um perfil público, e não aparece nas buscas."
+      },
+      "linking": {
+        "h": "Vínculo com uma criança",
+        "li1": "<b>O código:</b> a criança recebe um código curto na página Eu. Nós o guardamos de forma embaralhada. Ele funciona uma vez só, durante 1 hora.",
+        "li2": "<b>A criança diz sim:</b> o vínculo só começa quando a criança o confirma na própria página. Ela pode dizer Não ou Denunciar para a nossa equipe. As denúncias são guardadas enquanto estão abertas e apagadas 1 ano depois de as encerrarmos.",
+        "li3": "<b>O que você vê sobre a criança:</b> o nome de usuário e o nome de exibição, quantas das mensagens extras da família para o Construtor ela usou ontem e até agora neste mês, e se ela está criando com o plano família ou com a cota grátis.",
+        "li4": "<b>O que você não vê:</b> a atividade de hoje em tempo real (então você não consegue saber quando ela está on-line), os chats, os amigos ou os jogos dela, as mensagens cobradas de uma escola, nem se ela está em uma escola.",
+        "li5": "<b>O que a criança vê sobre você:</b> apenas as palavras \"um adulto\", nunca o nome que você digitou.",
+        "li6": "<b>Contagem de mensagens:</b> para contar as extras da família, registramos, para cada mensagem para o Construtor, qual cota pagou por ela (grátis, família ou escola), quantas mensagens ela contou e o custo de IA dela."
+      },
+      "payments": {
+        "h": "Pagamentos",
+        "s1": "A Stripe processa os pagamentos",
+        "p1": "Os pagamentos são feitos pela <b>Stripe, Inc.</b> Você paga na própria página da Stripe, não na nossa. A política de privacidade da Stripe está em <a href=\"https://stripe.com/privacy\" rel=\"noopener\" dir=\"ltr\">stripe.com/privacy</a>.",
+        "p2": "<b>O que a Stripe coleta de você</b> (nas páginas da Stripe):",
+        "li1": "o seu endereço de e-mail (a Stripe envia para ele os recibos, os avisos de pagamento recusado e os lembretes de renovação);",
+        "li2": "os dados do seu cartão, ou a sua carteira Apple Pay ou Google Pay;",
+        "li3": "o seu endereço de cobrança (necessário para o imposto sobre vendas e para verificar que os planos família são para famílias dos Estados Unidos);",
+        "li4": "informações que a Stripe usa para evitar fraudes, como dados sobre o seu aparelho e a sua conexão.",
+        "p3": "<b>O que enviamos à Stripe para um plano família:</b> um número de família aleatório, para podermos associar o pagamento ao seu plano. <b>Não</b> enviamos à Stripe o seu nome, o nome ou o nome de usuário da criança, nem nada sobre como a criança usa o site. Para escolas, veja Cobrança das escolas abaixo.",
+        "p4": "<b>O que recebemos de volta e guardamos:</b> os números de cliente e de assinatura da Stripe, o plano, a situação (ativo, em atraso, cancelado), as datas, os valores, o número de vagas e se um pagamento foi pago, recusado, reembolsado ou contestado.",
+        "p5": "<b>O que nunca vemos nem guardamos:</b> o número completo do seu cartão ou o código de segurança. Para um plano família, o nosso próprio banco de dados não guarda o seu e-mail nem o seu endereço de cobrança. As mensagens da Stripe para o nosso servidor podem incluí-los, mas não os salvamos. O pedido de fatura de uma escola é diferente: veja Cobrança das escolas abaixo.",
+        "p6": "<b>Quem do nosso lado pode ver mais:</b> o proprietário pode ver o seu e-mail, o endereço de cobrança, os recibos e os 4 últimos dígitos do seu cartão no painel da Stripe. Usamos esses dados apenas para administrar o seu plano: para responder às suas perguntas, fazer reembolsos e informar você sobre mudanças importantes no seu plano, no preço ou nos nossos termos. O site não tem um sistema de e-mail próprio, então esses avisos são enviados de <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a> para o e-mail que a Stripe tem. Nunca o usamos para marketing.",
+        "p7": "<b>Fraudes e contestações:</b> se o seu banco informar que um pagamento foi contestado ou é provável fraude, a Stripe nos avisa. Encerramos o plano e guardamos um registro do que aconteceu.",
+        "p8": "<b>Imposto sobre vendas:</b> a Stripe calcula o imposto sobre vendas a partir do seu endereço de cobrança onde somos obrigados a cobrá-lo.",
+        "p9": "<b>Cookies:</b> o nosso site não adiciona nenhum cookie novo para os pagamentos. As páginas da Stripe são operadas pela Stripe e seguem a política da Stripe."
+      },
+      "schoolBilling": {
+        "h": "Cobrança das escolas",
+        "li1": "<b>Quem vê:</b> apenas os admins da escola e a nossa equipe. Professores e alunos nunca veem a cobrança.",
+        "li2": "<b>O que guardamos quando uma escola pede uma fatura:</b> o número de vagas, o número da ordem de compra, o nome e o e-mail do contato de cobrança, o endereço de cobrança da escola, se a escola diz que é isenta de impostos e qualquer observação.",
+        "li3": "<b>O que vai para a Stripe:</b> quando criamos as faturas da escola, o nome da escola, o e-mail do contato de cobrança, o endereço de cobrança e o número da ordem de compra são salvos na Stripe, que envia as faturas. O nome do contato, a observação e a resposta sobre isenção de impostos ficam só com a gente. Nada é enviado até criarmos as faturas. Uma escola que paga com cartão digita o nome e o endereço de cobrança na página da Stripe.",
+        "li4": "<b>Por quanto tempo:</b> o nome e o e-mail do contato, o endereço, a observação e o número da ordem de compra no nosso banco de dados são apagados <b>2 anos</b> depois que o pedido é encerrado. A Stripe guarda o endereço da escola e o número da ordem de compra junto com as faturas (veja abaixo).",
+        "li5": "<b>As vagas</b> são contadas pelo número de alunos ativos. A cobrança não usa os nomes nem os trabalhos dos alunos.",
+        "li6": "<b>As famílias nunca veem as atividades da turma:</b> um adulto vinculado a um aluno vê apenas as mensagens extras da família usadas por esse aluno."
+      },
+      "children": {
+        "h": "Dados das crianças",
+        "p1": "<b>As crianças nunca veem preços,</b> planos nem um botão de \"comprar\", e nunca são convidadas a pagar nem a pedir que um adulto pague.",
+        "p2": "<b>Pagar não é a forma como pedimos permissão aos pais.</b> Comprar um plano não muda o que coletamos sobre uma criança, para que usamos esses dados nem o que um pai, mãe ou responsável aceitou.",
+        "p3": "<b>Seus direitos como pai, mãe ou responsável (contas próprias):</b> você pode nos pedir para mostrar o que guardamos sobre a criança, para apagar esses dados ou para parar de coletar mais. Escreva para <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a>. Ainda não há um botão para apagar ou baixar os dados, então atendemos esses pedidos manualmente e vamos precisar confirmar que você é o pai, a mãe ou o responsável antes de agir. Desvincular ou cancelar um plano não exclui a conta da criança.",
+        "p4": "<b>Contas da escola:</b> uma conta da escola é criada pela escola e pertence a ela. Para essas contas, agimos em nome da escola e sob a orientação dela: usamos as informações dos alunos apenas para oferecer a Oomba Academy à escola, nunca para publicidade, e não as vendemos. Os pais e responsáveis de contas da escola devem pedir à escola para ver ou apagar registros; a escola pode pedir para a gente. Um acordo de dados que a escola tenha assinado com a gente tem prioridade.",
+        "p5": "<b>Nada de venda, nada de anúncios:</b> não vendemos informações pessoais de ninguém, não mostramos anúncios e não usamos cookies de publicidade ou de rastreamento."
+      },
+      "billingKeep": {
+        "h": "Por quanto tempo guardamos as informações de cobrança",
+        "li1": "<b>Códigos de vínculo:</b> apagados 30 dias depois de serem usados ou de expirarem.",
+        "li2": "<b>Vínculos pendentes:</b> apagados quando expiram (24 horas) ou quando a criança diz Não.",
+        "li3": "<b>Vínculos encerrados:</b> apagados 90 dias depois de encerrados (um registro só com os números das contas fica no nosso registro de ações).",
+        "li4": "<b>Denúncias de vínculo:</b> guardadas enquanto estão abertas e depois por 1 ano após serem encerradas.",
+        "li5": "<b>Registros de planos e pagamentos</b> (números da Stripe, valores, datas) e as faturas da Stripe: 7 anos, por causa da legislação tributária, mesmo depois que uma conta é excluída.",
+        "li6": "<b>Dados de contato, endereço, observação e número da ordem de compra dos pedidos de fatura das escolas:</b> 2 anos depois que o pedido é encerrado.",
+        "li7": "<b>Conta de adulto, família e vínculos:</b> até você nos pedir para excluir a conta. Antes, cancelamos qualquer plano."
+      },
+      "where": {
+        "h": "Onde isto se aplica",
+        "p1": "Por enquanto, os planos família são só para famílias dos Estados Unidos."
+      },
+      "more": {
+        "h": "Para adultos e escolas",
+        "p1": "As contas de adulto, os vínculos familiares, os pagamentos, a cobrança das escolas e por quanto tempo guardamos os registros de cobrança são explicados na <a href=\"/privacy?for=grownups\">política de privacidade completa para adultos e escolas</a>."
+      },
+      "contact": {
+        "h": "Dúvidas",
+        "p1": "Oomba Academy · <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a>"
       }
     }
   },
@@ -918,7 +1251,8 @@
       "limit": "Você usou todas as {count} mensagens do Construtor de hoje. Volte amanhã para mais!",
       "muddled": "O Construtor se confundiu. Tente de novo daqui a pouco.",
       "resting": "O Construtor de IA está descansando agora. Seu jogo e suas mensagens estão salvos, então volte um pouco mais tarde!",
-      "limitToday": "Você usou as mensagens do Construtor de hoje. Amanhã tem mais!"
+      "limitToday": "Você usou as mensagens do Construtor de hoje. Amanhã tem mais!",
+      "limitClass": "Sua turma usou as mensagens do Construtor de hoje. Amanhã tem mais!"
     },
     "refusals": {
       "tryThese": "Quer tentar uma destas?",
@@ -1543,7 +1877,8 @@
         "tomorrow": "amanhã às {time}",
         "date": "em {date} às {time}"
       },
-      "extra": "+{n} extras este mês"
+      "extra": "+{n} extras este mês",
+      "turnsLeftToday": "Restam {left} hoje"
     }
   },
   "favorites": {
@@ -1577,7 +1912,8 @@
     "tabs": {
       "classes": "Turmas",
       "people": "Pessoas",
-      "settings": "Configurações"
+      "settings": "Configurações",
+      "billing": "Cobrança"
     },
     "actions": "Ações",
     "save": "Salvar",
@@ -1790,7 +2126,8 @@
       "adminNotStudent": "Você cuida da Oomba Academy, então não pode entrar em uma turma como aluno.",
       "isStudent": "{name} tem conta de aluno aqui, por isso não pode entrar na equipe.",
       "tickStudents": "Marque pelo menos um aluno.",
-      "badZone": "Escolha um fuso horário da lista."
+      "badZone": "Escolha um fuso horário da lista.",
+      "badCap": "Digite um número inteiro de {min} a {max}."
     },
     "classTabs": {
       "lessons": "Aulas",
@@ -1814,7 +2151,111 @@
     },
     "optional": "(opcional)",
     "me": "você",
-    "moreFor": "Mais opções para {name}"
+    "moreFor": "Mais opções para {name}",
+    "billing": {
+      "heading": "Plano escolar",
+      "none": "Sem plano escolar. Alunos e professores usam as mensagens grátis para o Construtor, como todo mundo.",
+      "active": "{count, plural, one {Plano escolar para # aluno.} other {Plano escolar para # alunos.}}",
+      "renews": "Renova em {date}.",
+      "ends": "Termina em {date} e não será renovado.",
+      "grant": "Um plano grátis da Oomba Academy até {date}, para {count, plural, one {# aluno} other {# alunos}}.",
+      "pastDue": "O último pagamento com cartão não foi aprovado. Atualize o cartão em Gerenciar cobrança, ou o plano termina em {date}.",
+      "overdue": "Há uma fatura vencida. Pague até {date} para manter o plano.",
+      "invoiceOpen": "Fatura de {amount}, com vencimento em {date}.",
+      "invoiceView": "Ver e pagar",
+      "pool": "Restam {left} de {total} mensagens para o Construtor até {date}",
+      "lessons": "Cerca de {count, plural, one {# aula com o Construtor} other {# aulas com o Construtor}} para os seus alunos com vaga paga",
+      "poolWaits": "Os novos alunos entram na cota assim que o pagamento deles for aprovado.",
+      "over": "Você tem {students} e {seats} vagas pagas.",
+      "studentsN": "{count, plural, one {# aluno} other {# alunos}}",
+      "daily": "Cada aluno e professor pode enviar até {cap} mensagens por dia para o Construtor pelo plano escolar.",
+      "price": "{price} por aluno por ano, com no mínimo {min} alunos. Cada aluno com vaga paga adiciona {perSeat} mensagens por ano para o Construtor a uma cota compartilhada por toda a escola.",
+      "priceLessons": "Isso dá cerca de {count, plural, one {# aula com o Construtor} other {# aulas com o Construtor}} por ano para cada aluno com vaga paga.",
+      "asyncFailed": "O pagamento bancário não foi aprovado. Tente de novo com Pagar com cartão, ou peça uma fatura.",
+      "pending": "O pagamento está a caminho (um pagamento bancário pode levar alguns dias). O plano começa quando ele chegar.",
+      "notOpen": "Os planos escolares ainda não estão à venda.",
+      "waiting": "Ativando o plano da sua escola…",
+      "welcome": "O plano da sua escola está ativo. Obrigado!",
+      "slow": "Está demorando mais que o normal. Seu pagamento está seguro: o plano aparece aqui assim que a Stripe confirmar.",
+      "back": "Voltar para Cobrança",
+      "help": "Dúvidas sobre a cobrança? Escreva para {email}.",
+      "seatsLabel": "Número de alunos",
+      "seatsHint": "No mínimo {min}. Você tem {students} agora.",
+      "pay": {
+        "heading": "Pagar com cartão",
+        "renew": "O plano é renovado todo ano até ser cancelado.",
+        "cancel": "Cancele quando quiser em Gerenciar cobrança: o plano continua até o fim do ano pago.",
+        "tax": "Os preços são em dólares americanos. Pode haver imposto sobre vendas.",
+        "button": "Pagar com cartão",
+        "stripe": "O pagamento é feito na página segura da Stripe. Nós nunca vemos números de cartão."
+      },
+      "change": {
+        "heading": "Mudar o número de alunos",
+        "text": "Alunos a mais são cobrados agora, pelo resto deste ano. Alunos a menos passam a valer quando o plano for renovado.",
+        "button": "Mudar alunos"
+      },
+      "renewal": {
+        "heading": "Renovação",
+        "text": "Seu plano será renovado em {date} para {seats}. Você tem {students} agora.",
+        "next": "Próximo ano: {seats}.",
+        "hint": "No mínimo {min}. Vale quando o plano for renovado.",
+        "button": "Alunos do próximo ano"
+      },
+      "manage": {
+        "heading": "Gerenciar cobrança",
+        "text": "Atualize o cartão, veja recibos e faturas, ou cancele o plano.",
+        "button": "Gerenciar cobrança"
+      },
+      "invoice": {
+        "heading": "Pedir uma fatura",
+        "text": "Para uma ordem de compra, ou para escolas que pagam por transferência bancária ou cheque. Enviamos uma fatura anual por e-mail, com vencimento em 30 dias.",
+        "po": "Número da ordem de compra (PO)",
+        "contactName": "Nome do contato de cobrança",
+        "contactEmail": "E-mail do contato de cobrança",
+        "line1": "Endereço da escola",
+        "line2": "Complemento",
+        "city": "Cidade",
+        "state": "Estado ou região",
+        "postal": "CEP ou código postal",
+        "country": "País (2 letras, como US)",
+        "taxExempt": "Somos isentos de impostos (vamos enviar o certificado de isenção)",
+        "note": "Mais alguma coisa que devemos saber",
+        "button": "Pedir uma fatura",
+        "sent": "Obrigado! Vamos enviar a fatura em breve.",
+        "requested": "Fatura pedida em {date} para {seats}. Vamos enviá-la para {email}.",
+        "cancel": "Retirar o pedido",
+        "cancelConfirm": "Retirar este pedido de fatura?",
+        "cancelled": "Pedido retirado."
+      },
+      "cap": {
+        "heading": "Mensagens para o Construtor por dia",
+        "label": "Mensagens que cada aluno e professor pode enviar por dia",
+        "hint": "Do plano escolar. Nunca menos que as {free} grátis por dia: agora {cap}."
+      },
+      "seats": {
+        "raised": "Pronto: {seats} alunos.",
+        "pending": "O pagamento com cartão não foi aprovado, então o número de alunos continua o mesmo. Atualize o cartão em Gerenciar cobrança e tente de novo.",
+        "scheduled": "Próximo ano: {seats} alunos.",
+        "cleared": "O próximo ano continua com {seats} alunos."
+      },
+      "errors": {
+        "entitled": "Sua escola já tem um plano. Mude o número de alunos em vez disso.",
+        "fixPayment": "Um pagamento do plano da sua escola ainda está em aberto. Resolva isso em Gerenciar cobrança primeiro.",
+        "paying": "Um pagamento acabou de ser aprovado. Espere um momento e recarregue a página.",
+        "noPrice": "Não é possível comprar planos escolares agora. Tente de novo mais tarde.",
+        "minSeats": "Digite um número inteiro de {min} a {max}.",
+        "sameSeats": "Esse já é o número que você tem.",
+        "noPlan": "Sua escola não tem um plano para mudar.",
+        "requestOpen": "Você já pediu uma fatura. Retire esse pedido primeiro para mudá-lo.",
+        "contactName": "Digite o nome do contato de cobrança.",
+        "contactEmail": "Digite um endereço de e-mail válido.",
+        "address": "Preencha o endereço.",
+        "country": "Use o código de país de 2 letras, como US.",
+        "noRequest": "Não há nenhum pedido em aberto.",
+        "noCustomer": "Sua escola ainda não tem uma conta de cobrança."
+      },
+      "legal": "Os planos escolares são regidos pelos nossos <a href=\"/terms\">Termos de Serviço</a>, pela nossa <a href=\"/refunds\">Política de Reembolso e Cancelamento</a> e pela nossa <a href=\"/privacy#schoolBilling\">Política de Privacidade</a>."
+    }
   },
   "lessons": {
     "up": "Mover para cima",
@@ -2414,7 +2855,8 @@
         "noPrice": "Não é possível comprar planos família agora. Tente de novo mais tarde.",
         "noCustomer": "Ainda não há nada para gerenciar: comece um plano primeiro.",
         "stripe": "Não conseguimos falar com nosso processador de pagamentos. Tente de novo daqui a um minuto."
-      }
+      },
+      "legal": "Os planos são regidos pelos nossos <a href=\"/terms\">Termos de Serviço</a> e pela nossa <a href=\"/refunds\">Política de Reembolso e Cancelamento</a>."
     }
   }
 }

@@ -9,12 +9,18 @@
 //            free AI pool rests, the family's extra messages (FAMILY_EXTRA_MESSAGES a UTC month, shared by its children,
 //            Pro weight counted), paid by the paid pool. Limits (disclosed on /grown-ups): FAMILY_CHILD_DAILY_MAX extra
 //            messages per child per day, and FAMILY_MONTHLY_AI_USD of AI cost per family per month.
-//   school   (chunk 5) an entitled school's students and staff build from the school's pool.
+//   school   an active student or staff member of a school with a plan whose pool has messages left: every message
+//            comes from the school's pool (paid AI pool), up to the school's daily cap per person (never below the free
+//            daily messages), so they never "rest" with free users. With the pool empty: the free messages, never the
+//            family's extras (no family money in class).
+// Class contexts (an active student of any school, or anyone building from a school's pool) see only "{left} left
+// today", never a total, and their limit message names the class: children in a class are never compared by plan.
 // builder_turns.charged_to records who paid each message; a refund gives it back to the same source (turns.refund).
 import { q, today } from '../db.js';
 import { config } from '../config.js';
 import * as aiBudget from '../services/ai-budget.js';
 import { ownerPlan } from '../services/billing.js';
+import { schoolSide } from '../services/school-billing.js';
 import { resting } from './anthropic.js';
 
 export const dailyTurns = () => Math.max(0, config.builderDailyTurns | 0);
@@ -26,12 +32,12 @@ const monthRange = day => [day.slice(0, 8) + '01', day.slice(0, 8) + '31'];
 
 /** The family whose plan pays a child's extra messages: the child's confirmed (linked) family, when it has a plan
  *  (billing off: never). -> family id or null.
- *  Never for a member of a school (docs/decisions.md "Paid plans" §3.1, §4.3): class contexts show only "{left} left
- *  today" and family money is never used in class. Until builds know whether they come from class (chunk 5), a child
- *  in any active school builds from the free daily messages only, with no "+N extra" counter. */
-export function familyOf(userId) {
+ *  Never for a member of a school with a plan (docs/decisions.md "Paid plans" §3.1, §4.3): they build from the school's
+ *  pool, and family money is never used in class. A family child in a school without a plan keeps the family's extras,
+ *  but as a class context sees only "{left} left today" (no "+N extra" counter). */
+export function familyOf(userId, side = null) {
   if (!userId) return null;
-  if (q.get("SELECT 1 FROM school_members m JOIN schools s ON s.id=m.school_id WHERE m.user_id=? AND m.status='active' AND s.archived_at IS NULL", userId)) return null;
+  if ((side || schoolSide(userId)).entitled) return null;
   const r = q.get("SELECT family_id FROM family_children WHERE child_id=? AND status='linked' AND unlinked_at IS NULL", userId);
   return r && ownerPlan('family', r.family_id).entitled ? r.family_id : null;
 }
@@ -50,21 +56,32 @@ const childExtrasOn = (userId, familyId, day) => q.get('SELECT COALESCE(SUM(weig
 
 /**
  * What a user may send to the Builder today and who pays. user: a user row or a user id.
- * -> { source, pool, daily, proWeight, left, freeLeft, familyId, extraLeft, extraToday }
- *    source: what the next message is charged to (builder_turns.charged_to): 'free' | 'family:<id>' (later 'school:<id>').
+ * -> { source, pool, daily, proWeight, left, freeLeft, familyId, extraLeft, extraToday, schoolId, classContext }
+ *    source: what the next message is charged to (builder_turns.charged_to): 'free' | 'family:<id>' | 'school:<id>'.
  *    pool: the AI money pool that pays its model calls ('free' | 'paid', services/ai-budget.js).
- *    daily: free messages per UTC day (the "{count}" of the free limit). proWeight: turns one Pro message uses.
+ *    daily: messages per UTC day (the free ones; a school's daily cap for school-paid users). proWeight: turns one Pro
+ *    message uses.
  *    left: messages that can still be sent today (free and extra). freeLeft: free messages left today.
  *    familyId: the paying family (null when none). extraLeft: the family's extra messages left this month as this child
- *    may use them (null when no family pays); extraToday: how many of them this child can still use today.
+ *    may use them (null when no family pays, and in class contexts); extraToday: how many of them this child can still
+ *    use today.
+ *    schoolId: the school whose pool pays (null when none). classContext: show "{left} left today" only (no totals).
  */
 export function allowanceFor(user, day = today()) {
   const id = idOf(user), daily = dailyTurns(), proWeight = weightOf(true);
   const used = id ? turnsUsed(id, day) : 0;
-  const fam = familyOf(id);
+  const side = schoolSide(id);
+  const classContext = side.student || !!side.school;
+  // 1. A school with a plan pays every message (its pool and the paid AI pool permitting), up to its daily cap.
+  if (side.school && aiBudget.ok('paid')) {
+    const cap = side.school.cap;
+    const left = Math.min(Math.max(0, cap - used), side.school.pool.left);
+    return { source: `school:${side.school.id}`, pool: 'paid', daily: cap, proWeight, left, freeLeft: left, familyId: null, extraLeft: null, extraToday: 0, schoolId: side.school.id, classContext: true };
+  }
+  const fam = familyOf(id, side);
   if (!fam) {
     const left = Math.max(0, daily - used);
-    return { source: 'free', pool: 'free', daily, proWeight, left, freeLeft: left, familyId: null, extraLeft: null, extraToday: 0 };
+    return { source: 'free', pool: 'free', daily, proWeight, left, freeLeft: left, familyId: null, extraLeft: null, extraToday: 0, schoolId: null, classContext };
   }
   const month = familyMonth(fam, day), mine = childExtrasOn(id, fam, day);
   // The $ backstop and the paid pool's ceiling stop the extras (the child then has the free messages, like anyone).
@@ -74,18 +91,25 @@ export function allowanceFor(user, day = today()) {
   const freeLeft = Math.max(0, daily - (used - mine));
   // The free daily messages come first; extras after them, or while the free pool rests.
   const viaFamily = extraToday > 0 && (freeLeft <= 0 || resting('free'));
-  return { source: viaFamily ? `family:${fam}` : 'free', pool: viaFamily ? 'paid' : 'free', daily, proWeight, left: freeLeft + extraToday, freeLeft, familyId: fam, extraLeft, extraToday };
+  const left = freeLeft + extraToday;
+  // In a class context the extras are not shown apart (only "{left} left today").
+  return { source: viaFamily ? `family:${fam}` : 'free', pool: viaFamily ? 'paid' : 'free', daily, proWeight, left, freeLeft: classContext ? left : freeLeft, familyId: fam, extraLeft: classContext ? null : extraLeft, extraToday, schoolId: null, classContext };
 }
-/** The Builder's "no messages left" words for this user: with a family plan, no number (they used more than the free
- *  ones, and a child is never told about plans). */
+/** The Builder's "no messages left" words for an allowance: [key, vars]. A class context names the class and no number;
+ *  with a family plan, no number either (they used more than the free ones, and a child is never told about plans). */
+export function limitKey(a) {
+  if (a.classContext) return ['builder.errors.limitClass'];
+  if (a.familyId) return ['builder.errors.limitToday'];
+  return ['builder.errors.limit', { count: a.daily }];
+}
 export function limitMessage(user, t) {
-  const a = allowanceFor(user);
-  return a.familyId ? t('builder.errors.limitToday') : t('builder.errors.limit', { count: a.daily });
+  const [key, vars] = limitKey(allowanceFor(user));
+  return vars ? t(key, vars) : t(key);
 }
-/** The Studio counter's numbers: { turnsLeft, freeLeft, extraLeft }. */
+/** The Studio counter's numbers: { turnsLeft, freeLeft, extraLeft, classContext }. */
 export function counter(user) {
   const a = allowanceFor(user);
-  return { turnsLeft: a.left, freeLeft: a.freeLeft, extraLeft: a.extraLeft };
+  return { turnsLeft: a.left, freeLeft: a.freeLeft, extraLeft: a.extraLeft, classContext: a.classContext };
 }
 
 export function turnsUsed(user, day = today()) {

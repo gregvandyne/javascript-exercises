@@ -500,8 +500,8 @@ test('while the free AI pool rests, a family child builds from the extras (paid 
 
 test('the Studio counter: free left of the daily ones, plus the extras this month (numbers only)', async () => {
   const a = await payingFamily();
-  assert.deepEqual(usage.counter(a.child), { turnsLeft: 7, freeLeft: 3, extraLeft: 5 });
-  assert.deepEqual(usage.counter(kid()), { turnsLeft: 3, freeLeft: 3, extraLeft: null });
+  assert.deepEqual(usage.counter(a.child), { turnsLeft: 7, freeLeft: 3, extraLeft: 5, classContext: false });
+  assert.deepEqual(usage.counter(kid()), { turnsLeft: 3, freeLeft: 3, extraLeft: null, classContext: false });
 });
 
 // ---------------------------------------------------------------- pages
@@ -515,7 +515,10 @@ test('/family: Subscribe buttons with prices, what to read before paying, the pa
   assert.match(page, /within 14 days of your first payment or of a yearly renewal/);
   assert.match(page, /One child can use up to 4 extra messages a day/);
   assert.match(page, /id="pw-checkout"/);
-  assert.doesNotMatch(page, /href="\/terms"/, 'no Terms link until /terms is published');
+  // The Terms and refund policy are linked above the Subscribe buttons; "By subscribing, you agree" only once published.
+  const body = p => p.slice(0, p.indexOf('<footer'));
+  assert.match(body(page), /Plans are covered by our <a href="\/terms">Terms of Service<\/a> and our <a href="\/refunds">/);
+  assert.doesNotMatch(body(page), /By subscribing, you agree/, 'no agreement line until /terms is published');
   assert.match(page, /<div class="field" data-reauth >/, 'shown while not fresh');
   C.markReauth(f.who.sid);
   config.termsPublished = true;
@@ -524,10 +527,11 @@ test('/family: Subscribe buttons with prices, what to read before paying, the pa
   assert.match(page, /<div class="field" data-reauth hidden>/);
   assert.match(page, /id="pw-checkout"/);
   assert.doesNotMatch(page.match(/<input[^>]*id="pw-checkout"[^>]*>/)[0], /required/);
-  assert.match(page, /href="\/terms"/);
+  assert.match(body(page), /By subscribing, you agree to our <a href="\/terms">/);
   // /grown-ups: the limits are stated before buying; "not on sale yet" only for those who can't buy.
   const landing = (await call(f.who, '/grown-ups')).text;
   assert.match(landing, /One child can use up to 4 extra messages a day/);
+  assert.match(landing, /<a href="\/terms">Terms of Service<\/a> and our <a href="\/refunds">Refund and Cancellation Policy<\/a>/, '/grown-ups links the terms and the refund policy');
   assert.doesNotMatch(landing, /aren&#39;t on sale yet|aren't on sale yet/);
   assert.match((await call(null, '/grown-ups')).text, /aren&#39;t on sale yet|aren't on sale yet/);
 });
@@ -704,15 +708,15 @@ test('the paid pool keeps a family\'s share for the month after it stops paying:
   } finally { q.run("DELETE FROM ai_spend_pool"); q.run('DELETE FROM ai_spend'); }
 });
 
-test('a family child who is in a school gets no family extras and no "+N" counter (class contexts, until chunk 5)', async () => {
+test('a family child in a school without a plan keeps the extras but sees only "{left} left today" (a class context)', async () => {
   const a = await payingFamily();
   assert.equal(usage.allowanceFor(a.child).familyId, a.fam.id);
   const boss = auth.createUser({ username: `Boss${uid(4)}`, password: 'boss-password-1', role: 'admin' });
   const school = SC.createSchool(boss, { name: `Chk School ${uid(4)}` }).school;
   q.run("INSERT INTO school_members(school_id, user_id, role, status, joined_at) VALUES (?,?,'student','active',?)", school.id, a.child.id, Date.now());
   const al = usage.allowanceFor(a.child);
-  assert.equal(al.familyId, null); assert.equal(al.extraLeft, null); assert.equal(al.source, 'free');
-  assert.deepEqual(usage.counter(a.child), { turnsLeft: 3, freeLeft: 3, extraLeft: null });
+  assert.equal(al.familyId, a.fam.id); assert.equal(al.extraLeft, null); assert.equal(al.classContext, true);
+  assert.deepEqual(usage.counter(a.child), { turnsLeft: 7, freeLeft: 7, extraLeft: null, classContext: true });
   q.run("UPDATE school_members SET status='left', left_at=? WHERE school_id=? AND user_id=?", Date.now(), school.id, a.child.id);
-  assert.equal(usage.allowanceFor(a.child).familyId, a.fam.id, 'out of school: the family extras again');
+  assert.deepEqual(usage.counter(a.child), { turnsLeft: 7, freeLeft: 3, extraLeft: 5, classContext: false }, 'out of school: the "+N" counter again');
 });
