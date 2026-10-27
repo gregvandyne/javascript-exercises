@@ -142,17 +142,17 @@ test('/parents and /safety: today\'s wording until paid plans are public, then t
   assert.match(decode((await get('/safety')).text), /You never have to pay for anything here/);
 });
 
-test('the legal text never takes a language out of the picker, and Hebrew pages fall back to English inside an RTL page', async () => {
+test('the legal text never takes a language out of the picker; Hebrew legal pages are fully Hebrew inside an RTL page', async () => {
   for (const code of ['he', 'ar', 'ru', 'ja']) assert.ok(i18n.availableCodes().includes(code), code);
   const r = await get('/privacy?for=grownups', { cookie: 'lang=he' });
   assert.equal(r.status, 200);
   assert.match(r.text, /<html[^>]*dir="rtl"/);
   assert.match(r.text, /<time datetime="2026-10-27">/);
-  // English fallback text is marked lang="en" dir="ltr"; the sections Hebrew already has (from /parents) are not.
-  assert.match(r.text, /<section class="panel" id="payments"><h2 lang="en" dir="ltr">/);
+  // Every section is translated now: nothing on the Hebrew pages is marked as English.
+  assert.match(r.text, /<section class="panel" id="payments"><h2>/);
   assert.match(r.text, /<section class="panel" id="stored"><h2>/);
   const t = (await get('/terms', { cookie: 'lang=he' })).text;
-  assert.match(t, /<li lang="en" dir="ltr"><b>Guest:/);
+  assert.doesNotMatch(t, /<li lang="en" dir="ltr">/);
   assert.doesNotMatch((await get('/terms')).text, /lang="en" dir="ltr"><b>Guest/, 'English pages need no marking');
 });
 

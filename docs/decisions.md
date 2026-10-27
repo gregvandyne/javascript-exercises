@@ -834,7 +834,7 @@ about 20 games, read the cost per message on /admin/stats).
 - **D9. Countries and tax:** family plans for US families only at launch (billing address, a Radar rule blocks non-US
   cards, Stripe Tax for US sales tax). Worldwide later through a merchant of record. Invoice schools are handled deal
   by deal.
-- **D10. Refunds:** cancel anytime from "Manage plan" (the plan runs to the end of the paid period); a full refund on
+- **D10. Refunds:** cancel anytime from "Manage billing" (the Stripe Customer Portal) (the plan runs to the end of the paid period); a full refund on
   request within 14 days of a first payment or yearly renewal. Always cancel first, then refund.
 - **D11. Late payment:** cards get 7 days of grace while Stripe retries; invoice schools 30 days after the due date.
   Then back to free. Nothing is deleted or locked.

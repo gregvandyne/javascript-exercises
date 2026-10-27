@@ -30,6 +30,29 @@
       "stored": {
         "p1": "Own accounts keep a made-up name, a password (stored scrambled) and what your child does here: the games they make, their chats with the Builder and any pictures or files they add, saves, scores, ratings, favourites, friends, chat messages, a profile photo if they upload one, and settings such as language and theme. Guest play keeps a made-up name, saves, scores, ratings and favourites."
       }
+    },
+    "terms": {
+      "accounts": {
+        "li1": "<b>Guest:</b> for anyone who wants to play. Made with one tap on a game. Keeps a made-up name, saves, scores, ratings and favourites."
+      },
+      "plans": {
+        "li16": "<b>Paying:</b> by card online, or by invoice (a purchase order is fine). Invoices are due <b>30 days</b> after they are sent (net 30) and can be paid by card, bank transfer or ACH, or by cheque (email us for the mailing address).",
+        "li25": "<b>Cancel any time</b> online: on your family page, choose <b>Manage billing</b>, then cancel on Stripe's page. Schools: <b>Manage billing</b> on the Billing tab, or email us."
+      },
+      "liability": {
+        "p2": "These limits do <b>not</b> apply to liability that can't be limited by law, including for our gross negligence, wilful misconduct, fraud, or personal injury caused by our negligence."
+      },
+      "other": {
+        "li3": "You may not transfer your account or these terms to someone else. We may transfer them if Oomba Academy is sold or reorganised, and we will tell you."
+      }
+    },
+    "refunds": {
+      "cancel": {
+        "li1": "<b>Cancel any time.</b> There is no cancellation fee."
+      },
+      "refunds": {
+        "p7": "<b>Schools paying by invoice:</b> the 14 days start on the date the payment reaches us. Paid by cheque? We refund by cheque or bank transfer."
+      }
     }
   },
   "game": {
@@ -115,6 +138,14 @@
     },
     "errors": {
       "badZone": "Pick a time zone from the list."
+    },
+    "billing": {
+      "pay": {
+        "cancel": "Cancel any time in Manage billing: the plan runs to the end of the paid year."
+      },
+      "invoice": {
+        "text": "For a purchase order, or a school that pays by bank transfer or cheque. We send a yearly invoice by email, due in 30 days."
+      }
     }
   },
   "lessons": {

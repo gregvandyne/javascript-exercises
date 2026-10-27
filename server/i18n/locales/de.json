@@ -36,7 +36,9 @@
       "safety": "Sicherheit",
       "parents": "Für Erwachsene",
       "contact": "Kontakt",
-      "builders": "Für Spielemacher"
+      "builders": "Für Spielemacher",
+      "terms": "Nutzungsbedingungen",
+      "privacy": "Datenschutz"
     },
     "build": {
       "ready": "✨ Dein Spiel „{title}“ ist fertig! <a href=\"{href}\">Öffnen</a>",
@@ -392,7 +394,8 @@
       },
       "ads": {
         "h": "Keine Werbung",
-        "p1": "Auf Oomba Academy gibt es keine Werbung. Nichts ist zu kaufen, und nichts springt über einem Spiel auf."
+        "p1": "Auf Oomba Academy gibt es keine Werbung. Nichts ist zu kaufen, und nichts springt über einem Spiel auf.",
+        "paid1": "Auf Oomba Academy gibt es keine Werbung. Spielen ist immer kostenlos. Du musst hier nie für etwas bezahlen, und nichts springt über einem Spiel auf."
       }
     },
     "parents": {
@@ -401,16 +404,24 @@
       "heading": "Für Erwachsene",
       "what": {
         "h": "Was ist Oomba Academy?",
-        "p1": "Eine kostenlose Website, auf der Kinder Browserspiele spielen und eigene Spiele bauen, indem sie sie einem KI-Baumeister beschreiben. Keine Downloads, keine Käufe, keine Lootboxen, kein Spielgeld, das echtes Geld kostet."
+        "p1": "Eine kostenlose Website, auf der Kinder Browserspiele spielen und eigene Spiele bauen, indem sie sie einem KI-Baumeister beschreiben. Keine Downloads, keine Käufe, keine Lootboxen, kein Spielgeld, das echtes Geld kostet.",
+        "paid1": "Eine Website, auf der Kinder Browserspiele spielen und eigene Spiele bauen, indem sie sie einem KI-Baumeister beschreiben. Spielen ist kostenlos, ebenso ein tägliches Kontingent an Nachrichten an den Baumeister. Familien und Schulen können zusätzliche Nachrichten an den Baumeister kaufen. Es gibt keine Käufe im Spiel, keine Lootboxen und kein Spielgeld, das echtes Geld kostet."
+      },
+      "plans": {
+        "h": "Abos",
+        "p1": "Bauen ist kostenlos, mit zusätzlichen Nachrichten an den Baumeister für Familien und Schulen.",
+        "p2": "Für Abos und Zahlungen gelten unsere <a href=\"/terms\">Nutzungsbedingungen</a>, unsere <a href=\"/refunds\">Erstattungs- und Kündigungsrichtlinie</a> und unsere <a href=\"/privacy?for=grownups\">Datenschutzerklärung</a>."
       },
       "stored": {
         "h": "Was wir speichern",
         "p1": "Bei eigenen Konten speichern wir einen ausgedachten Namen, ein Passwort (unkenntlich gemacht gespeichert) und das, was Ihr Kind hier tut: die Spiele, die es baut, seine Chats mit dem Baumeister und alle Bilder oder Dateien, die es hinzufügt, Spielstände, Punkte, Bewertungen, Favoriten, Freunde, Chatnachrichten, ein Profilfoto, falls es eines hochlädt, und Einstellungen wie Sprache und Aussehen. Beim Spielen als Gast speichern wir einen ausgedachten Namen, Spielstände, Punkte, Bewertungen und Favoriten.",
-        "p2": "Ein Schulkonto ist ein Konto, bei dem sich Ihr Kind mit einer Anmeldekarte der Schule anmeldet. Es wird von der Schule angelegt und gehört ihr. Dabei speichern wir dasselbe und zusätzlich den echten Namen des Schülers, so wie die Schule ihn für die Klassenliste eingetragen hat (nur das Kollegium der Schule und unser Team sehen ihn), seine Klassen, seinen Fortschritt in den Lektionen, schriftliche Antworten und das Feedback seiner Lehrkraft. Tritt Ihr Kind mit seinem eigenen Konto und einem Klassencode einer Klasse bei, speichert die Schule für diese Klasse dasselbe, auch seinen echten Namen, falls die Lehrkraft ihn einträgt."
+        "p2": "Ein Schulkonto ist ein Konto, bei dem sich Ihr Kind mit einer Anmeldekarte der Schule anmeldet. Es wird von der Schule angelegt und gehört ihr. Dabei speichern wir dasselbe und zusätzlich den echten Namen des Schülers, so wie die Schule ihn für die Klassenliste eingetragen hat (nur das Kollegium der Schule und unser Team sehen ihn), seine Klassen, seinen Fortschritt in den Lektionen, schriftliche Antworten und das Feedback seiner Lehrkraft. Tritt Ihr Kind mit seinem eigenen Konto und einem Klassencode einer Klasse bei, speichert die Schule für diese Klasse dasselbe, auch seinen echten Namen, falls die Lehrkraft ihn einträgt.",
+        "paid3": "Familienabos zeigen nie Aktivitäten aus der Klasse: Ein Erwachsener, der mit einem Schüler verbunden ist, sieht nur die zusätzlichen Familiennachrichten dieses Schülers."
       },
       "never": {
         "h": "Was wir nie erfassen",
-        "p1": "Wir fragen nie nach einer E-Mail-Adresse, dem Alter, der Wohnadresse, dem Standort oder Zahlungsdaten, und es gibt nichts zu kaufen. Versteckte Standortdaten werden aus Fotos und Bildern entfernt, bevor sie gespeichert werden. Es gibt keine Werbung und keine Werbe- oder Tracking-Cookies."
+        "p1": "Wir fragen nie nach einer E-Mail-Adresse, dem Alter, der Wohnadresse, dem Standort oder Zahlungsdaten, und es gibt nichts zu kaufen. Versteckte Standortdaten werden aus Fotos und Bildern entfernt, bevor sie gespeichert werden. Es gibt keine Werbung und keine Werbe- oder Tracking-Cookies.",
+        "paid1": "Wir fragen Kinder nie nach einer E-Mail-Adresse, dem Alter, der Wohnadresse, dem Standort oder Zahlungsdaten, und Kinder werden nie zum Bezahlen aufgefordert. Ein Erwachsener kann ein Abo wählen; die Zahlung läuft über Stripe, und Kartennummern sehen wir nie. Versteckte Standortdaten werden aus Fotos und Bildern entfernt, bevor sie gespeichert werden. Es gibt keine Werbung und keine Werbe- oder Tracking-Cookies."
       },
       "ai": {
         "h": "Was die KI sieht",
@@ -419,7 +430,8 @@
       "keep": {
         "h": "Wie lange wir Daten speichern",
         "p1": "Wir speichern die Daten eines Kontos, solange es das Konto gibt. Bisher wird nichts davon nach einer bestimmten Zeit automatisch gelöscht. Ein Spiel, das Ihr Kind löscht, verschwindet für alle von der Website, aber eine Kopie bleibt auf unserem Server.",
-        "p2": "Noch gibt es keinen Knopf, um ein Konto zu löschen oder seine Daten herunterzuladen. Um eines davon zu beantragen, kann ein Erwachsener uns schreiben. Bei einem Schulkonto fragen Sie bitte die Schule; sie kann sich an uns wenden."
+        "p2": "Noch gibt es keinen Knopf, um ein Konto zu löschen oder seine Daten herunterzuladen. Um eines davon zu beantragen, kann ein Erwachsener uns schreiben. Bei einem Schulkonto fragen Sie bitte die Schule; sie kann sich an uns wenden.",
+        "paid1": "Wir speichern die eigenen Daten eines Kontos, solange es das Konto gibt, und bisher wird nichts davon nach einer bestimmten Zeit automatisch gelöscht. Ein Spiel, das Ihr Kind löscht, verschwindet für alle von der Website, aber eine Kopie bleibt auf unserem Server. Für Familienverbindungen, Verbindungscodes und Abrechnungsdaten gelten eigene Fristen: siehe <a href=\"/privacy#billingKeep\">wie lange wir Abrechnungsdaten speichern</a>."
       },
       "friends": {
         "h": "Freunde und Chat",
@@ -457,6 +469,327 @@
       "rules": {
         "h": "Regeln",
         "p1": "Spiele dürfen kein Internet, keine Cookies, keine Formulare, keine Pop-ups und keine Links benutzen. Schriften von Google Fonts und Bibliotheken von cdnjs sind erlaubt. Jedes Spiel muss kleiner als 2 MB sein."
+      }
+    },
+    "legal": {
+      "updated": "Zuletzt aktualisiert: {date}",
+      "notYet": "Bezahlte Abos gibt es noch nicht zu kaufen. Die Teile dieser Seite, die sie betreffen, gelten, sobald es sie gibt."
+    },
+    "terms": {
+      "title": "Nutzungsbedingungen",
+      "description": "Die Regeln für die Nutzung von Oomba Academy: Konten, Sicherheitsregeln, selbst gebaute Spiele, bezahlte Abos und Abrechnung.",
+      "heading": "Nutzungsbedingungen",
+      "who": {
+        "h": "1. Wer wir sind und was diese Bedingungen regeln",
+        "p1": "Oomba Academy (oomba.ai) ist eine Lern-Website, auf der Kinder von 8 bis 14 Jahren, ihre Familien und ihre Lehrkräfte Browserspiele spielen und mit einem KI-„Baumeister“ eigene Spiele bauen.",
+        "p2": "Der Dienst wird von Oomba Academy („Oomba Academy“, „wir“, „uns“) betrieben. Sie erreichen uns unter <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a>.",
+        "p3": "Diese Bedingungen sind die Regeln für die Nutzung der Website. Sie gelten für alle, die sie nutzen. Unsere <a href=\"/privacy\">Datenschutzerklärung</a> und unsere <a href=\"/refunds\">Erstattungs- und Kündigungsrichtlinie</a> sind Teil dieser Bedingungen.",
+        "p4": "<b>Ein Hinweis für Kinder:</b> Diese Bedingungen sind für Erwachsene geschrieben. Die Kurzfassung für dich steht auf der <a href=\"/safety\">Seite „Sicherheit“</a>: Sei freundlich, behalte persönliche Daten für dich, baue nur Spiele, die den Regeln des Baumeisters folgen, und sag einem Erwachsenen, dem du vertraust, Bescheid, wenn dir etwas Sorgen macht."
+      },
+      "accounts": {
+        "h": "2. Wer Oomba Academy nutzen kann",
+        "s1": "Arten von Konten",
+        "li1": "<b>Gast:</b> für alle, die spielen möchten. Wird mit einem Tippen auf ein Spiel erstellt. Speichert einen ausgedachten Namen, Spielstände, Punkte, Bewertungen und Favoriten.",
+        "li2": "<b>Eigenes Konto:</b> für ein Kind (oder jede andere Person), das bauen, Spiele behalten und Freunde hinzufügen möchte. Wird auf der Website mit einem ausgedachten Benutzernamen und einem Passwort erstellt.",
+        "li3": "<b>Schulkonto:</b> für Schüler einer Schule, die Oomba Academy nutzt. Wird von der Schule angelegt und gehört ihr. Der Schüler meldet sich mit einer Anmeldekarte an (oder, wenn die Schule das einschaltet, mit einem Google-Konto der Schule).",
+        "li4": "<b>Lehrkraft und Schuladmin:</b> für das Kollegium der Schule. Wird von der Schule oder von uns eingerichtet.",
+        "li5": "<b>Erwachsenenkonto:</b> für Eltern oder Erziehungsberechtigte, die sich mit dem Konto ihres Kindes verbinden oder ein Familienabo kaufen möchten. Wird mit einem Namen und einem Passwort mit mindestens 12 Zeichen erstellt.",
+        "s2": "Kinder",
+        "p1": "Oomba Academy ist für Kinder von 8 bis 14 Jahren gemacht.",
+        "li6": "Für Personen unter 18 Jahren muss ein Elternteil oder Erziehungsberechtigter diesen Bedingungen zustimmen und ist dafür verantwortlich, wie sie die Website nutzen. Ein Abo zu bezahlen ist nicht der Weg, auf dem Eltern ihre Erlaubnis für das Konto eines Kindes geben (siehe Abschnitt 7.9).",
+        "li7": "Ein Schulkonto wird von der Schule angelegt. Die Schule ist dafür verantwortlich, dass sie berechtigt ist, es anzulegen, und dass sie die Eltern darüber informiert (siehe Abschnitt 3).",
+        "s3": "Erwachsenenkonten",
+        "li8": "Sie müssen <b>mindestens 18 Jahre alt</b> und <b>Elternteil oder Erziehungsberechtigter</b> jedes Kindes sein, mit dem Sie sich verbinden. Bei der Registrierung bestätigen Sie das mit einem Häkchen. Wir prüfen das nicht, also seien Sie bitte ehrlich: Wer sich mit einem Kind verbindet, das nicht das eigene ist, verstößt gegen diese Bedingungen; wir beenden dann die Verbindung und können Ihr Konto schließen.",
+        "li9": "Mit einem Erwachsenenkonto kann man Spiele spielen. Man kann damit <b>nicht</b> Spiele bauen, den Baumeister nutzen, chatten, Freunde hinzufügen, etwas posten oder ein öffentliches Profil haben.",
+        "li10": "Halten Sie Ihr Passwort geheim. Sie sind für alles verantwortlich, was in Ihrem Erwachsenenkonto passiert, auch für Käufe.",
+        "li11": "Zum Schutz davor, dass ein Kind auf einem gemeinsam genutzten Gerät etwas kauft, fragen wir erneut nach Ihrem Passwort, bevor Sie ein Abo abschließen oder ändern.",
+        "s4": "Einen Erwachsenen mit einem Kind verbinden",
+        "li12": "Das Kind bekommt auf seiner eigenen Seite „Ich“ einen kurzen Code. Er gilt einmal, 1 Stunde lang.",
+        "li13": "Sie geben den Code auf Ihrer Familienseite ein.",
+        "li14": "Das Kind muss auf seiner eigenen Seite <b>Ja</b> sagen. Es kann auch <b>Nein</b> sagen oder <b>Melden</b> wählen.",
+        "li15": "Das Kind kann jederzeit <b>Trennen</b> oder <b>Melden</b> wählen. Eine Meldung beendet die Verbindung sofort und geht an unser Team.",
+        "p2": "Ein verbundener Erwachsener sieht den Benutzernamen und den Anzeigenamen des Kindes sowie, wie viele der zusätzlichen Familiennachrichten an den Baumeister das Kind gestern und in diesem Monat genutzt hat. Ein verbundener Erwachsener sieht <b>nicht</b> die Chats, Freunde, Spiele oder aktuellen Aktivitäten des Kindes und nichts über seine Schule.",
+        "p3": "Schulkonten können nicht mit einem Erwachsenenkonto verbunden werden."
+      },
+      "schools": {
+        "h": "3. Schulen",
+        "p1": "Wenn Sie Oomba Academy für eine Schule nutzen, gelten diese Bedingungen für die Schule, ihr Kollegium und ihre Schüler, zusammen mit jeder schriftlichen Vereinbarung, die wir mit der Schule unterzeichnen (zum Beispiel einer Vereinbarung zum Schutz von Schülerdaten). Wenn sich beide widersprechen, hat die unterzeichnete Vereinbarung Vorrang.",
+        "p2": "Die Schule:",
+        "li1": "bestätigt, dass sie befugt ist, diese Bedingungen anzunehmen und Konten für ihre Schüler anzulegen;",
+        "li2": "ist dafür verantwortlich, die Eltern über ihre Nutzung von Oomba Academy zu informieren und jede Einwilligung von ihnen einzuholen, die sie nach Gesetzen wie COPPA, FERPA und den Schülerdatenschutzgesetzen der Bundesstaaten braucht;",
+        "li3": "ist Eigentümerin ihrer Klassenlisten und Schülerdaten. Wir verwenden sie nur, um den Dienst für die Schule zu betreiben.",
+        "p3": "Nur Schuladmins sehen die Abrechnung der Schule. Lehrkräfte und Schüler sehen nie Preise."
+      },
+      "rules": {
+        "h": "4. Oomba Academy sicher nutzen: die Regeln",
+        "p1": "Diese Regeln gelten für alle, auch für alles, was in den Baumeister eingegeben wird, für gebaute Spiele, Chatnachrichten, hochgeladene Bilder und das eigene Profil.",
+        "s1": "Nicht erlaubt ist:",
+        "li1": "persönliche Daten (eigene oder die anderer) zu teilen: echte vollständige Namen, Adressen, Telefonnummern, E-Mail-Adressen, Schulnamen an öffentlichen Stellen oder Social-Media-Namen;",
+        "li2": "jemanden zu mobben, zu bedrohen, zu belästigen oder gemein zu jemandem zu sein;",
+        "li3": "etwas mit Blut und Brutalität, Horror-Schreckmomenten, Inhalten für Erwachsene, Hass, Glücksspiel, Drogen oder echten Waffen, mit denen Menschen verletzt werden, zu erstellen oder zu teilen;",
+        "li4": "echte Marken, echte Personen oder Figuren, Musik oder Kunst anderer zu verwenden, wenn man nicht das Recht dazu hat;",
+        "li5": "zu versuchen, die Sicherheitsfilter, die Regeln des Baumeisters, die Spiel-Sandbox oder die Nachrichtenlimits zu umgehen (zum Beispiel mit vielen Konten);",
+        "li6": "Spiele zu bauen, die Daten sammeln, einen Chat enthalten oder aus der Website hinaus verlinken;",
+        "li7": "zu versuchen, die Website kaputtzumachen, zu überlasten, automatisch auszulesen (Scraping) oder anzugreifen oder in Konten einzudringen, die einem nicht gehören;",
+        "li8": "ein Abo mit einer Zahlungskarte zu kaufen oder kaufen zu wollen, die man nicht verwenden darf.",
+        "s2": "Wie wir prüfen (Moderation)",
+        "li9": "Jede Nachricht an den Baumeister wird geprüft, bevor die KI sie sieht. Nachrichten, die gegen die Regeln verstoßen, werden freundlich abgelehnt.",
+        "li10": "Ein automatischer Prüfer liest jede Version jedes Spiels. Spiele, die mit allen geteilt werden, werden außerdem von einem KI-Modell sorgfältig überprüft, und eine Person aus unserem Team prüft jedes Spiel, bei dem das Modell unsicher ist. Spiele, die mit einer Klasse oder Schule geteilt werden, werden geprüft, bevor sie dieses Publikum erreichen.",
+        "li11": "Der Chat ist reiner Text, nur zwischen Freunden, die sich gegenseitig per Freundescode hinzugefügt haben, und wird auf unangemessene Sprache und persönliche Daten gefiltert.",
+        "li12": "Alle, die angemeldet sind, können ein Spiel melden. Wenn drei Personen ein Spiel melden, wird es ausgeblendet, bis unser Team es sich ansieht. Alle können einen Chatpartner blockieren oder melden.",
+        "li13": "Unser Team kann Spiele annehmen, ablehnen, ausblenden oder entfernen und Konten pausieren, vorübergehend sperren oder dauerhaft sperren. Wir protokollieren jede Moderationsmaßnahme.",
+        "p2": "Keine Prüfung ist perfekt. Wenn Ihnen etwas Falsches auffällt, melden Sie es bitte oder schreiben Sie an <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a>."
+      },
+      "ai": {
+        "h": "5. Von KI erstellte Inhalte",
+        "li1": "Der Baumeister nutzt Claude, eine KI von Anthropic, um aus Ihren Beschreibungen Spiele zu schreiben. Was die KI erstellt, kann falsch oder fehlerhaft sein oder etwas schon Vorhandenem unerwartet ähneln.",
+        "li2": "Wir prüfen Spiele, bevor sie breit geteilt werden (Abschnitt 4), versprechen aber nicht, dass jedes Spiel fehlerfrei ist.",
+        "li3": "Verlassen Sie sich bei nichts Wichtigem auf Spiele oder Antworten der KI (Gesundheit, Sicherheit, Geld, Hausaufgabenlösungen, die Sie nicht geprüft haben).",
+        "li4": "Was Sie an den Baumeister schicken (Nachrichten, Bilder, Dateien), wird an Anthropic gesendet, damit das Spiel entsteht. Einzelheiten finden Sie in unserer <a href=\"/privacy\">Datenschutzerklärung</a>."
+      },
+      "games": {
+        "h": "6. Selbst gebaute Spiele: wem sie gehören",
+        "s1": "Was Ihnen gehört",
+        "p1": "Sie (oder, bei einem Schulkonto, Sie und Ihre Schule, wie es die Regeln der Schule vorsehen) behalten alle Rechte, die Sie an den hier gebauten Spielen haben: Ihre Ideen, Ihre Texte, Ihre Bilder und Ihre Designs.",
+        "p2": "Manche Teile eines Spiels gehören nicht Ihnen allein:",
+        "li1": "die Spiel-Engine, die Soundeffekte der Website, die Startvorlagen, die Bibliothek Three.js und andere Bausteine gehören uns oder unseren Lizenzgebern;",
+        "li2": "von der KI geschriebene Teile sind möglicherweise gar nicht urheberrechtlich geschützt.",
+        "s2": "Die Lizenz, die Sie uns geben",
+        "p3": "Damit wir die Website betreiben können, räumen Sie Oomba Academy eine weltweite, nicht exklusive, unentgeltliche Lizenz ein, die Spiele, Bilder und Texte, die Sie auf die Website stellen, zu speichern, zu kopieren, auszuführen, anzuzeigen, Screenshots davon zu machen, sie zu prüfen (durch Menschen und KI-Werkzeuge, einschließlich der Übermittlung des Spiels an Anthropic zur Überprüfung) und kleine technische Änderungen daran vorzunehmen (zum Beispiel, um sie an einen Bildschirm anzupassen oder ein Sicherheitsproblem zu beheben), <b>nur um Oomba Academy zu betreiben, zu schützen und zu verbessern</b>, und nur, um sie den Personen zu zeigen, die Sie ausgewählt haben (nur ich, Freunde, Ihre Klassen, Ihre Schule oder alle).",
+        "li3": "Diese Lizenz endet, wenn Sie das Spiel löschen, mit folgenden Ausnahmen: Ein gelöschtes Spiel verschwindet für alle von der Website, aber eine Kopie bleibt auf unserem Server, damit Meldungen und Sicherheitsaufzeichnungen weiterhin auf etwas verweisen; wir können Sicherungskopien für begrenzte Zeit aufbewahren; und Spiele, in denen andere bereits Punkte gespeichert haben, behalten diese Punkte.",
+        "li4": "Wir verkaufen Ihre Spiele nicht, verwenden sie nicht in Werbung und nutzen sie nicht ohne Nachfrage für unser Marketing.",
+        "li5": "Andere Spieler können Spiele spielen, die Sie mit ihnen teilen. Sie erhalten nicht das Recht, sie zu kopieren oder zu remixen. Falls Remixen jemals hinzukommt, aktualisieren wir zuerst diese Bedingungen.",
+        "s3": "Die Arbeit anderer respektieren",
+        "p4": "Laden Sie nur Dinge hoch oder beschreiben Sie nur Dinge, die Sie verwenden dürfen. Wenn Sie glauben, dass etwas auf Oomba Academy Ihre Arbeit kopiert, schreiben Sie an <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a>, was es ist und wo es sich befindet. Wir entfernen rechtsverletzendes Material und schließen die Konten von Personen, die das wiederholt tun."
+      },
+      "plans": {
+        "h": "7. Bezahlte Abos und Abrechnung",
+        "s1": "7.1 Was kostenlos ist und wofür Sie bezahlen",
+        "li1": "<b>Spielen ist kostenlos</b> für alle, ebenso ein <b>kostenloses tägliches Kontingent an Nachrichten an den Baumeister</b>.",
+        "li2": "Bezahlte Abos <b>bieten nur mehr Nachrichten an den Baumeister</b>. Bezahlen schaltet nie eine Funktion frei, die kostenlose Nutzer nicht haben.",
+        "li3": "<b>Kinder sehen nie Preise</b> oder Abos und werden nie zum Bezahlen aufgefordert. Nur Erwachsenenkonten und Schuladmins können ein Abo kaufen.",
+        "li4": "Wir können die Größe des kostenlosen Kontingents jederzeit ändern. Wir kündigen eine Änderung auf der <a href=\"/parents\">Seite „Für Erwachsene“</a> an, bevor sie gilt.",
+        "s2": "7.2 Familienabo",
+        "li5": "Wird von einem <b>Erwachsenenkonto</b> für <b>bis zu 4 verbundene Kinder</b> gekauft (jedes Kind muss die Verbindung bestätigt haben).",
+        "li6": "Monatlich oder jährlich, zu dem Preis, der dem Erwachsenen vor dem Kauf angezeigt wird.",
+        "li7": "Es gibt der Familie eine feste Anzahl <b>zusätzlicher Nachrichten an den Baumeister pro Monat</b>, die sich die verbundenen Kinder teilen, zusätzlich zu den kostenlosen täglichen Nachrichten jedes Kindes. Die Anzahl wird vor dem Kauf und danach auf Ihrer Familienseite angezeigt.",
+        "li8": "Jedes Kind nutzt zuerst seine kostenlosen täglichen Nachrichten; die zusätzlichen Nachrichten werden danach genutzt oder wenn sich der kostenlose Baumeister ausruht.",
+        "li9": "Die zusätzlichen Nachrichten werden zu Beginn jedes Kalendermonats (UTC) zurückgesetzt; nicht genutzte werden nicht übernommen. Eine Nachricht in „Profi-Qualität“ zählt als 2. Eine Nachricht, bei der das Bauen fehlschlägt, wird zurückgegeben.",
+        "li10": "Damit ein Kind nicht an einem Tag den ganzen Monat verbraucht, gibt es ein Limit, wie viele zusätzliche Nachrichten ein Kind pro Tag nutzen kann, und ein Limit für ungewöhnlich teure Nutzung.",
+        "li11": "Ein Kind an einer Schule mit einem bezahlten Schulabo baut im Unterricht mit dem Kontingent der Schule, nie mit den zusätzlichen Nachrichten der Familie.",
+        "li12": "<b>Familienabos gibt es vorerst nur für Familien in den USA.</b> Sie brauchen eine Rechnungsadresse in den USA und eine US-Zahlungskarte (oder Apple Pay oder Google Pay).",
+        "s3": "7.3 Schulabo",
+        "li13": "Der Preis gilt <b>pro Schüler und Jahr</b>, bei <b>mindestens 25 Schülern</b>. Er wird den Schuladmins auf der Registerkarte „Abrechnung“ der Schule angezeigt.",
+        "li14": "Die Schule erhält jedes Jahr einen gemeinsamen Pool an Nachrichten an den Baumeister für ihre Schüler und Lehrkräfte. Die Größe wird auf der Registerkarte „Abrechnung“ der Schule angezeigt. Schüler bekommen immer mindestens die kostenlose tägliche Menge. Wenn der Pool aufgebraucht ist, nutzen die Schüler das kostenlose Kontingent, bis das nächste Jahr beginnt.",
+        "li15": "Bezahlte Plätze zählen aktive Schüler. Wenn Sie im Laufe des Jahres Schüler hinzufügen, können Sie Plätze hinzufügen: Sie zahlen sofort einen anteiligen Betrag für den Rest des Jahres. Sie können die Zahl der Plätze für das nächste Jahr verringern; die Änderung gilt bei der Verlängerung, nie unter 25.",
+        "li16": "<b>Bezahlen:</b> per Karte online oder auf Rechnung (eine Bestellung per Purchase Order ist möglich). Rechnungen sind <b>30 Tage</b> nach Versand fällig (netto 30) und können per Karte, Banküberweisung oder ACH oder per Scheck bezahlt werden (schreiben Sie uns für die Postanschrift).",
+        "li17": "Steuerbefreite Schulen können uns ihre Befreiungsbescheinigung schicken.",
+        "s4": "7.4 Zahlungen, Stripe und Steuern",
+        "li18": "Zahlungen werden von <b>Stripe</b> abgewickelt. Sie bezahlen auf der eigenen Seite von Stripe. Wir sehen oder speichern Ihre Kartennummer nie.",
+        "li19": "Die Preise sind in US-Dollar und <b>enthalten keine Umsatzsteuer</b>. Wo das Gesetz es verlangt, wird die Steuer beim Bezahlvorgang oder auf der Rechnung hinzugefügt.",
+        "li20": "Stripe schickt Ihre Belege. Die Abbuchung erscheint auf Ihrem Kontoauszug als <b>OOMBA ACADEMY</b>.",
+        "s5": "7.5 Automatische Verlängerung",
+        "p1": "<b>Abos verlängern sich automatisch, bis Sie kündigen.</b>",
+        "li21": "Ein monatliches Familienabo verlängert sich jeden Monat, ein jährliches jedes Jahr, zum dann geltenden Preis (siehe 7.7), abgebucht von der hinterlegten Zahlungsmethode.",
+        "li22": "Vor der Zahlung zeigt die Bezahlseite den Preis, wie oft abgebucht wird und dass sich das Abo bis zur Kündigung verlängert. Mit der Zahlung stimmen Sie der automatischen Verlängerung zu.",
+        "li23": "Vor der Verlängerung eines Jahresabos schicken wir eine Erinnerung.",
+        "li24": "Schulabos auf Rechnung verlängern sich jedes Jahr mit einer neuen Rechnung. Die Registerkarte „Abrechnung“ der Schule zeigt 30 Tage vorher eine Erinnerung.",
+        "s6": "7.6 Kündigen",
+        "li25": "<b>Jederzeit online kündbar</b>: Wählen Sie auf Ihrer Familienseite <b>Abrechnung verwalten</b> und kündigen Sie dann auf der Seite von Stripe. Schulen: <b>Abrechnung verwalten</b> auf der Registerkarte „Abrechnung“, oder schreiben Sie uns eine E-Mail.",
+        "li26": "Eine Kündigung stoppt die nächste Verlängerung. <b>Das Abo läuft bis zum Ende des bezahlten Zeitraums weiter</b>, danach hat Ihre Familie oder Schule wieder das kostenlose Kontingent.",
+        "li27": "Wenn ein Abo endet, wird nichts gelöscht.",
+        "li28": "Erstattungen regelt unsere <a href=\"/refunds\">Erstattungs- und Kündigungsrichtlinie</a>. Kurz gesagt: volle Erstattung, wenn Sie innerhalb von 14 Tagen nach der Zahlung, mit der ein Abo beginnt, oder nach einer jährlichen Verlängerung darum bitten. Monatliche Verlängerungen werden nicht erstattet, und anteilige Erstattungen gibt es ansonsten nicht.",
+        "s7": "7.7 Preis- und Aboänderungen",
+        "li29": "Wir können Preise oder den Leistungsumfang eines Abos ändern. Wir informieren Sie, <b>bevor</b> die Änderung für Sie gilt, durch einen Hinweis auf Ihrer Familienseite (oder auf der Registerkarte „Abrechnung“ der Schule) und per E-Mail an die Adresse, die Sie Stripe angegeben haben, mindestens 7 und höchstens 30 Tage vor der Verlängerung, für die sie gilt.",
+        "li30": "Ein neuer Preis gilt ab Ihrer nächsten Verlängerung, nie für einen bereits bezahlten Zeitraum. Wenn Sie den neuen Preis nicht möchten, kündigen Sie vor dieser Verlängerung.",
+        "li31": "Wir verringern nicht die Zahl der zusätzlichen Nachrichten in einem Zeitraum, den Sie bereits bezahlt haben.",
+        "s8": "7.8 Verspätete oder fehlgeschlagene Zahlungen",
+        "li32": "<b>Kartenzahlungen:</b> Wenn eine Zahlung fehlschlägt, läuft das Abo <b>7 Tage</b> weiter, während die Zahlung erneut versucht wird. Bitte aktualisieren Sie Ihre Karte auf Ihrer Familienseite. Wenn die Zahlung dann immer noch nicht durchgegangen ist, endet das Abo.",
+        "li33": "<b>Rechnungen:</b> Wenn eine Rechnung nicht bezahlt wird, läuft das Abo bis <b>30 Tage nach dem Fälligkeitsdatum</b> weiter. Dann endet das Abo.",
+        "li34": "Wenn ein Abo so endet, hat die Familie oder Schule einfach wieder das kostenlose Kontingent. <b>Nichts wird gelöscht oder gesperrt,</b> und Schulklassen funktionieren weiter.",
+        "li35": "Wenn eine Zahlung bei der Bank angefochten wird (Rückbuchung) oder die Bank vor möglichem Betrug warnt, beenden wir das Abo sofort, damit die Karte nicht erneut belastet wird. Bitte schreiben Sie uns, falls das ein Irrtum war.",
+        "s9": "7.9 Bezahlen ist keine elterliche Einwilligung",
+        "p2": "Der Kauf eines Abos ändert nichts daran, was wir mit den Daten eines Kindes tun oder wozu ein Elternteil dabei eingewilligt hat. Wie Eltern über die Nutzung von Oomba Academy durch ihr Kind informiert werden, ist eine separate Angelegenheit und in unserer <a href=\"/privacy\">Datenschutzerklärung</a> geregelt."
+      },
+      "ending": {
+        "h": "8. Konten sperren und beenden",
+        "li1": "<b>Sie</b> können jederzeit aufhören, Oomba Academy zu nutzen. Einen Knopf zum Löschen gibt es noch nicht: Um ein Konto zu löschen oder eine Kopie seiner Daten zu erhalten, schreiben Sie an <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a> (Schulkonten: Fragen Sie die Schule; sie kann sich an uns wenden). Wird ein Erwachsenenkonto mit einem Abo gelöscht, kündigen wir zuerst das Abo.",
+        "li2": "<b>Wir</b> können ein Konto pausieren, einschränken oder schließen, ein Spiel entfernen oder eine Familienverbindung beenden, wenn jemand gegen diese Bedingungen verstößt, ein Kind gefährdet oder wenn das Gesetz es verlangt. Wir erklären den Grund, wenn wir können, außer das würde jemanden gefährden.",
+        "li3": "Wenn das Konto eines Kindes gesperrt wird, läuft das Familienabo für die anderen verbundenen Kinder weiter. Eine Sperre allein ist kein Grund für eine Erstattung.",
+        "li4": "Wenn wir ein Erwachsenenkonto wegen Betrugs oder schweren Missbrauchs schließen, endet das Abo und wird nicht erstattet, es sei denn, das Gesetz verlangt es.",
+        "li5": "Wenn <b>wir</b> ein bezahltes Abo aus einem Grund beenden, den Sie nicht zu vertreten haben, oder wenn wir Oomba Academy einstellen, erstatten wir den ungenutzten Teil des bezahlten Zeitraums."
+      },
+      "disclaimers": {
+        "h": "9. Haftungsausschlüsse",
+        "p1": "Wir geben uns viel Mühe, damit Oomba Academy sicher, unterhaltsam und verfügbar ist, aber:",
+        "li1": "die Website und der Baumeister werden <b>„wie besehen“ und „wie verfügbar“</b> bereitgestellt. Sie können manchmal ausfallen, langsam sein oder sich ändern. Der Baumeister kann sich „ausruhen“, wenn unsere Ausgabenlimits zur Sicherheit erreicht sind oder unser KI-Anbieter nicht verfügbar ist, und in seltenen Fällen kann das auch bezahlte Abos betreffen;",
+        "li2": "wir versprechen nicht, dass Spiele (unsere, von KI erstellte oder von anderen Spielern gebaute) fehlerfrei sind;",
+        "li3": "soweit gesetzlich zulässig, schließen wir stillschweigende Gewährleistungen aus, etwa zur Marktgängigkeit, zur Eignung für einen bestimmten Zweck und zur Nichtverletzung von Rechten Dritter.",
+        "p2": "Manche Bundesstaaten erlauben einige dieser Ausschlüsse nicht, daher gelten sie möglicherweise nicht für Sie. Nichts hier nimmt Ihnen Rechte, die Sie nach Verbraucherrecht haben und auf die nicht verzichtet werden kann."
+      },
+      "liability": {
+        "h": "10. Beschränkung unserer Haftung",
+        "p1": "Soweit gesetzlich zulässig:",
+        "li1": "haften wir nicht für indirekte, beiläufige, besondere oder Folgeschäden (zum Beispiel verlorene Daten, die Sie nicht anderswo gespeichert haben);",
+        "li2": "ist unsere Gesamthaftung für jeden Anspruch im Zusammenhang mit Oomba Academy auf den <b>höheren</b> der folgenden Beträge begrenzt: den Betrag, den Sie uns in den 12 Monaten vor dem Anspruch bezahlt haben, oder <b>100 US-Dollar</b>.",
+        "p2": "Diese Grenzen gelten <b>nicht</b> für eine Haftung, die gesetzlich nicht beschränkt werden kann, darunter für unsere grobe Fahrlässigkeit, unser vorsätzliches Fehlverhalten, Betrug oder Personenschäden, die durch unsere Fahrlässigkeit verursacht wurden."
+      },
+      "disputes": {
+        "h": "11. Streitigkeiten und anwendbares Recht",
+        "li1": "<b>Sprechen Sie zuerst mit uns.</b> Die meisten Probleme lassen sich per E-Mail lösen. Bitte schreiben Sie an <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a> und geben Sie uns 30 Tage Zeit, eine Lösung zu finden.",
+        "li2": "Diese Bedingungen unterliegen dem Recht des US-Bundesstaats, in dem Oomba Academy ansässig ist, und dem US-Bundesrecht, unter Ausschluss der Kollisionsnormen.",
+        "li3": "Für Streitigkeiten sind die staatlichen oder Bundesgerichte am Sitz von Oomba Academy zuständig, <b>oder</b> das Gericht für geringfügige Forderungen (Small Claims Court) an Ihrem Wohnort, wenn Ihr Anspruch dafür infrage kommt.",
+        "li4": "Wenn Sie in einem Bundesstaat leben, dessen Verbraucherschutzrecht Ihnen Rechte gibt, die diese Bedingungen nicht ausschließen können, behalten Sie diese Rechte."
+      },
+      "changes": {
+        "h": "12. Änderungen dieser Bedingungen",
+        "li1": "Wir können diese Bedingungen aktualisieren. Dann ändern wir das Datum „Zuletzt aktualisiert“.",
+        "li2": "Bei wichtigen Änderungen informieren wir <b>mindestens 30 Tage bevor</b> sie gelten: auf der Seite „Für Erwachsene“, auf der Familienseite und der Registerkarte „Abrechnung“ der Schule sowie per E-Mail an zahlende Erwachsene und die Abrechnungskontakte von Schulen.",
+        "li3": "Änderungen gelten nicht für einen Streit, der vor der Änderung begonnen hat.",
+        "li4": "Wenn Sie mit einer Änderung nicht einverstanden sind, können Sie die Nutzung der Website beenden und Ihr Abo kündigen, bevor sie gilt. Wenn Sie die Website danach weiter nutzen, akzeptieren Sie die neuen Bedingungen."
+      },
+      "other": {
+        "h": "13. Sonstige rechtliche Punkte",
+        "li1": "Wenn ein Gericht feststellt, dass ein Teil dieser Bedingungen nicht durchsetzbar ist, gilt der Rest weiterhin.",
+        "li2": "Wenn wir eine Regel nicht sofort durchsetzen, verzichten wir damit nicht auf das Recht, das später zu tun.",
+        "li3": "Sie dürfen Ihr Konto oder diese Bedingungen nicht auf jemand anderen übertragen. Wir dürfen sie übertragen, wenn Oomba Academy verkauft oder umstrukturiert wird, und informieren Sie dann darüber.",
+        "li4": "Diese Bedingungen, unsere Datenschutzerklärung und unsere Erstattungs- und Kündigungsrichtlinie sind die gesamte Vereinbarung zwischen Ihnen und uns über die Website (plus eine etwaige unterzeichnete Vereinbarung mit einer Schule, Abschnitt 3)."
+      },
+      "contact": {
+        "h": "14. Kontakt",
+        "p1": "Oomba Academy · <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a>"
+      }
+    },
+    "refunds": {
+      "title": "Erstattung und Kündigung",
+      "description": "Wie Sie ein Familien- oder Schulabo bei Oomba Academy kündigen und wann Sie Ihr Geld zurückbekommen.",
+      "heading": "Erstattungs- und Kündigungsrichtlinie",
+      "intro": {
+        "h": "Über diese Richtlinie",
+        "p1": "Diese Seite erklärt, wie Sie ein Abo bei Oomba Academy kündigen und wann Sie Ihr Geld zurückbekommen. Sie ist Teil unserer <a href=\"/terms\">Nutzungsbedingungen</a>.",
+        "p2": "Spielen und die kostenlosen täglichen Nachrichten an den Baumeister sind immer kostenlos. Diese Richtlinie betrifft nur die bezahlten <b>Familienabos</b> und <b>Schulabos</b>, die mehr Nachrichten an den Baumeister bieten."
+      },
+      "cancel": {
+        "h": "Kündigen",
+        "li1": "<b>Jederzeit kündbar.</b> Es gibt keine Kündigungsgebühr.",
+        "li2": "<b>Familien:</b> Melden Sie sich in Ihrem Erwachsenenkonto an, öffnen Sie Ihre Familienseite, wählen Sie <b>Abrechnung verwalten</b> und kündigen Sie dann auf der Seite von Stripe. Vorher fragen wir nach Ihrem Passwort.",
+        "li3": "<b>Schulen:</b> Ein Schuladmin öffnet die Registerkarte <b>Abrechnung</b> der Schule und wählt <b>Abrechnung verwalten</b> oder schreibt an <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a> (Schulen, die auf Rechnung zahlen).",
+        "li4": "<b>Wann die Kündigung wirksam wird:</b> am Ende des Monats oder Jahres, den Sie bereits bezahlt haben. Bis dahin läuft das Abo weiter. Danach hat Ihre Familie oder Schule wieder das kostenlose Kontingent.",
+        "li5": "<b>Nichts wird gelöscht.</b> Spiele, Spielstände und Klassen bleiben genau so, wie sie sind."
+      },
+      "refunds": {
+        "h": "Erstattungen",
+        "p1": "<b>Volle Erstattung innerhalb von 14 Tagen.</b> Wenn Sie innerhalb von <b>14 Tagen</b> nach der Zahlung, mit der ein Abo beginnt, oder nach einer <b>jährlichen</b> Verlängerung darum bitten, erstatten wir diese Zahlung vollständig, einschließlich berechneter Steuern.",
+        "p2": "<b>Monatliche Verlängerungen werden nicht erstattet.</b> Sie können ein Monatsabo jederzeit kündigen, damit die nächste Verlängerung nicht stattfindet.",
+        "p3": "<b>Ansonsten keine anteiligen Erstattungen.</b> Wenn Sie später kündigen, läuft das Abo einfach bis zum Ende des bezahlten Zeitraums. Ungenutzte Tage oder ungenutzte Nachrichten erstatten wir nicht.",
+        "p4": "<b>Was eine Erstattung bewirkt:</b> Eine Erstattung beendet das Abo sofort (wir kündigen es zuerst und erstatten dann), sodass die zusätzlichen Nachrichten sofort wegfallen.",
+        "p5": "<b>So beantragen Sie eine Erstattung:</b> Schreiben Sie von einer beliebigen Adresse an <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a>. Nennen Sie uns den Namen Ihres Erwachsenenkontos (oder der Schule) sowie Datum und Betrag von Ihrem Stripe-Beleg. Wir antworten innerhalb von 3 Werktagen.",
+        "p6": "<b>Wann Sie das Geld bekommen:</b> Die Erstattung geht zurück auf die Karte oder das Konto, mit dem Sie bezahlt haben. Banken brauchen meist 5 bis 10 Werktage, bis sie angezeigt wird.",
+        "p7": "<b>Schulen, die auf Rechnung zahlen:</b> Die 14 Tage beginnen an dem Tag, an dem die Zahlung bei uns eingeht. Per Scheck bezahlt? Dann erstatten wir per Scheck oder Banküberweisung."
+      },
+      "special": {
+        "h": "Sonderfälle",
+        "li1": "<b>Versehentlich doppelt bezahlt?</b> Wenn für dieselbe Familie oder Schule zwei Abos beginnen, kündigen wir das zusätzliche und erstatten es automatisch.",
+        "li2": "<b>Zahlung nicht durchgegangen?</b> Karten: Das Abo läuft <b>7 Tage</b> weiter, während die Zahlung erneut versucht wird. Rechnungen: bis <b>30 Tage nach dem Fälligkeitsdatum</b>. Danach endet das Abo, und Sie haben wieder das kostenlose Kontingent. Nichts wird gelöscht.",
+        "li3": "<b>Ein Kind hat Ihre Karte ohne zu fragen benutzt?</b> Schreiben Sie uns sofort. Wir kündigen das Abo und erstatten es vollständig, wenn Sie innerhalb von 14 Tagen nach der Zahlung darum bitten.",
+        "li4": "<b>Die Abbuchung bei Ihrer Bank angefochten?</b> Wir beenden das Abo sofort, damit die Karte nicht erneut belastet wird. Bitte schreiben Sie uns zuerst; meist können wir es schneller klären.",
+        "li5": "<b>Wenn wir Ihr Abo aus einem Grund beenden, den Sie nicht zu vertreten haben,</b> oder wenn wir Oomba Academy schließen, erstatten wir den ungenutzten Teil des bezahlten Zeitraums.",
+        "li6": "In anderen Fällen können wir nach eigenem Ermessen eine Erstattung gewähren. Wenn wir das einmal tun, heißt das nicht, dass wir es wieder tun müssen."
+      },
+      "rights": {
+        "h": "Ihre gesetzlichen Rechte",
+        "p1": "Diese Richtlinie nimmt Ihnen keine Erstattungsrechte, die Sie nach dem Recht Ihres Wohnorts haben."
+      },
+      "contact": {
+        "h": "Kontakt",
+        "p1": "Oomba Academy · <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a>"
+      }
+    },
+    "privacy": {
+      "title": "Datenschutzerklärung",
+      "description": "Was Oomba Academy speichert, was nie erfasst wird, was die KI sieht und wie Erwachsenenkonten, Zahlungen und die Abrechnung für Schulen funktionieren.",
+      "heading": "Datenschutzerklärung",
+      "intro": {
+        "h": "Über diese Erklärung",
+        "p1": "Diese Erklärung beschreibt, was Oomba Academy (oomba.ai, „wir“, „uns“) über die Menschen speichert, die die Website nutzen, was wir nie erfassen und wie Erwachsenenkonten, Familienverbindungen, Zahlungen und die Abrechnung für Schulen funktionieren. Dieselben Fakten zu Kinderkonten stehen auf der <a href=\"/parents\">Seite „Für Erwachsene“</a>. Fragen: <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a>."
+      },
+      "grownups": {
+        "h": "Erwachsenenkonten",
+        "s1": "Was wir speichern",
+        "li1": "den Namen, den Sie bei der Registrierung eingeben (das kann ein Vorname oder Spitzname sein; Kinder sehen ihn nie, sie sehen nur „dein Erwachsener“);",
+        "li2": "Ihr Passwort, unkenntlich gemacht gespeichert (wir können es nicht lesen);",
+        "li3": "dass Sie „Ich bin Elternteil oder erziehungsberechtigt und mindestens 18 Jahre alt“ angehakt haben (wir prüfen das nicht);",
+        "li4": "Ihre Anmeldesitzungen, einschließlich des Namens Ihres Browsers (User-Agent), und wann Sie Ihr Passwort zuletzt für einen Abrechnungsschritt erneut eingegeben haben;",
+        "li5": "welche Kinder Sie verbunden haben, wann, und ob eine Verbindung ausstehend, verbunden oder beendet ist;",
+        "li6": "Ihr Abo: die Kunden- und Abonummern von Stripe, Abotyp, monatlich oder jährlich, Status, Plätze, Daten und Beträge;",
+        "li7": "ein Protokoll wichtiger Aktionen (zum Beispiel „Abo begonnen“, „Kind verbunden“, „Erstattung“). Diese Einträge enthalten nie Kartendaten oder E-Mail-Adressen.",
+        "p1": "<b>Wonach wir nicht fragen:</b> Ihre E-Mail-Adresse, Telefonnummer, Wohnadresse oder Ihr Alter. (Stripe fragt beim Bezahlen nach einigen davon: siehe „Zahlungen“ unten.)",
+        "p2": "Ein Erwachsenenkonto kann nicht bauen, chatten, Freunde hinzufügen oder ein öffentliches Profil haben und erscheint nicht in der Suche."
+      },
+      "linking": {
+        "h": "Verbindung mit einem Kind",
+        "li1": "<b>Der Code:</b> Ihr Kind bekommt auf seiner Seite „Ich“ einen kurzen Code. Wir speichern ihn unkenntlich gemacht. Er gilt einmal, 1 Stunde lang.",
+        "li2": "<b>Das Kind sagt Ja:</b> Die Verbindung beginnt erst, wenn Ihr Kind sie auf seiner eigenen Seite bestätigt. Es kann Nein sagen oder sie unserem Team melden. Meldungen werden aufbewahrt, solange sie offen sind, und 1 Jahr nach ihrem Abschluss gelöscht.",
+        "li3": "<b>Was Sie über Ihr Kind sehen:</b> seinen Benutzernamen und Anzeigenamen, wie viele der zusätzlichen Familiennachrichten an den Baumeister es gestern und bisher in diesem Monat genutzt hat und ob es mit dem Familienabo oder dem kostenlosen Kontingent baut.",
+        "li4": "<b>Was Sie nicht sehen:</b> die heutigen aktuellen Aktivitäten (Sie können also nicht erkennen, wann es online ist), seine Chats, Freunde oder Spiele, Nachrichten, die einer Schule angerechnet werden, und auch nicht, ob es überhaupt an einer Schule ist.",
+        "li5": "<b>Was Ihr Kind über Sie sieht:</b> nur die Worte „dein Erwachsener“, nie den Namen, den Sie eingegeben haben.",
+        "li6": "<b>Nachrichten zählen:</b> Um die zusätzlichen Familiennachrichten zu zählen, speichern wir für jede Nachricht an den Baumeister, aus welchem Kontingent sie bezahlt wurde (kostenlos, Familie oder Schule), als wie viele Nachrichten sie zählte und welche KI-Kosten sie verursacht hat."
+      },
+      "payments": {
+        "h": "Zahlungen",
+        "s1": "Stripe wickelt Zahlungen ab",
+        "p1": "Zahlungen werden von <b>Stripe, Inc.</b> abgewickelt. Sie bezahlen auf der eigenen Seite von Stripe, nicht auf unserer. Die Datenschutzerklärung von Stripe finden Sie unter <a href=\"https://stripe.com/privacy\" rel=\"noopener\" dir=\"ltr\">stripe.com/privacy</a>.",
+        "p2": "<b>Was Stripe von Ihnen erfasst</b> (auf den Seiten von Stripe):",
+        "li1": "Ihre E-Mail-Adresse (Stripe schickt Belege, Hinweise zu fehlgeschlagenen Zahlungen und Verlängerungserinnerungen dorthin);",
+        "li2": "Ihre Kartendaten oder Ihr Apple-Pay- oder Google-Pay-Wallet;",
+        "li3": "Ihre Rechnungsadresse (nötig für die Umsatzsteuer und um zu prüfen, dass Familienabos für Familien in den USA sind);",
+        "li4": "Informationen, die Stripe zur Betrugsvorbeugung nutzt, etwa Angaben zu Ihrem Gerät und Ihrer Verbindung.",
+        "p3": "<b>Was wir Stripe für ein Familienabo schicken:</b> eine zufällige Familiennummer, damit wir die Zahlung Ihrem Abo zuordnen können. Wir schicken Stripe <b>nicht</b> Ihren Namen, den Namen oder Benutzernamen Ihres Kindes oder irgendetwas darüber, wie Ihr Kind die Website nutzt. Für Schulen siehe „Abrechnung für Schulen“ unten.",
+        "p4": "<b>Was wir zurückbekommen und speichern:</b> die Kunden- und Abonummern von Stripe, das Abo, den Status (aktiv, überfällig, gekündigt), Daten, Beträge, die Anzahl der Plätze und ob eine Zahlung bezahlt, fehlgeschlagen, erstattet oder angefochten wurde.",
+        "p5": "<b>Was wir nie sehen oder speichern:</b> Ihre vollständige Kartennummer oder Ihren Sicherheitscode. Bei einem Familienabo speichert unsere eigene Datenbank weder Ihre E-Mail-Adresse noch Ihre Rechnungsadresse. Die Nachrichten von Stripe an unseren Server können sie enthalten, aber wir speichern sie nicht. Bei einer Rechnungsanfrage einer Schule ist das anders: siehe „Abrechnung für Schulen“ unten.",
+        "p6": "<b>Wer bei uns mehr sehen kann:</b> Der Inhaber kann im Dashboard von Stripe Ihre E-Mail-Adresse, Rechnungsadresse, Belege und die letzten 4 Ziffern Ihrer Karte sehen. Wir nutzen sie nur, um Ihr Abo zu betreiben: um Ihre Fragen zu beantworten, Erstattungen zu leisten und Sie über wichtige Änderungen an Ihrem Abo, am Preis oder an unseren Bedingungen zu informieren. Die Website hat kein eigenes E-Mail-System, deshalb werden diese Hinweise von <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a> an die bei Stripe hinterlegte E-Mail-Adresse geschickt. Wir nutzen sie nie für Werbung.",
+        "p7": "<b>Betrug und Anfechtungen:</b> Wenn Ihre Bank eine Zahlung als angefochten oder wahrscheinlich betrügerisch meldet, informiert Stripe uns. Wir beenden das Abo und speichern einen Eintrag darüber, was passiert ist.",
+        "p8": "<b>Umsatzsteuer:</b> Stripe berechnet die Umsatzsteuer anhand Ihrer Rechnungsadresse, wo wir verpflichtet sind, sie zu erheben.",
+        "p9": "<b>Cookies:</b> Unsere Website setzt für Zahlungen keine neuen Cookies. Die Seiten von Stripe werden von Stripe betrieben und unterliegen den Richtlinien von Stripe."
+      },
+      "schoolBilling": {
+        "h": "Abrechnung für Schulen",
+        "li1": "<b>Wer sie sieht:</b> nur die Schuladmins der Schule und unser Team. Lehrkräfte und Schüler sehen die Abrechnung nie.",
+        "li2": "<b>Was wir speichern, wenn eine Schule eine Rechnung anfordert:</b> die Anzahl der Plätze, die Bestellnummer, Name und E-Mail-Adresse des Abrechnungskontakts, die Rechnungsadresse der Schule, ob die Schule angibt, steuerbefreit zu sein, und eine etwaige Anmerkung.",
+        "li3": "<b>Was an Stripe geht:</b> Wenn wir die Rechnungen der Schule erstellen, werden der Name der Schule, die E-Mail-Adresse des Abrechnungskontakts, die Rechnungsadresse und die Bestellnummer bei Stripe gespeichert, das die Rechnungen verschickt. Der Name des Kontakts, die Anmerkung und die Angabe zur Steuerbefreiung bleiben nur bei uns. Nichts wird gesendet, bevor wir die Rechnungen erstellen. Eine Schule, die per Karte zahlt, gibt ihren Namen und ihre Rechnungsadresse stattdessen auf der Seite von Stripe ein.",
+        "li4": "<b>Wie lange:</b> Name und E-Mail-Adresse des Kontakts, die Adresse, die Anmerkung und die Bestellnummer in unserer Datenbank werden <b>2 Jahre</b> nach Abschluss der Anfrage gelöscht. Stripe bewahrt die Adresse und die Bestellnummer der Schule mit ihren Rechnungen auf (siehe unten).",
+        "li5": "<b>Plätze</b> werden anhand der Anzahl aktiver Schüler gezählt. Für die Abrechnung werden keine Namen oder Arbeiten von Schülern verwendet.",
+        "li6": "<b>Familien sehen nie Aktivitäten aus der Klasse:</b> Ein Erwachsener, der mit einem Schüler verbunden ist, sieht nur die zusätzlichen Familiennachrichten dieses Schülers."
+      },
+      "children": {
+        "h": "Daten von Kindern",
+        "p1": "<b>Kinder sehen nie Preise,</b> Abos oder einen „Kaufen“-Knopf und werden nie aufgefordert, zu bezahlen oder einen Erwachsenen um Bezahlung zu bitten.",
+        "p2": "<b>Bezahlen ist nicht der Weg, auf dem wir Eltern um Erlaubnis bitten.</b> Der Kauf eines Abos ändert nichts daran, was wir über ein Kind erfassen, wofür wir es verwenden oder wozu ein Elternteil eingewilligt hat.",
+        "p3": "<b>Ihre Rechte als Elternteil (eigene Konten):</b> Sie können verlangen, dass wir Ihnen zeigen, was wir über Ihr Kind speichern, dass wir es löschen oder dass wir nichts weiter erfassen. Schreiben Sie an <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a>. Es gibt noch keinen Knopf zum Löschen oder Herunterladen, daher bearbeiten wir diese Anfragen von Hand, und wir müssen prüfen, dass Sie der Elternteil sind, bevor wir handeln. Das Trennen einer Verbindung oder das Kündigen eines Abos löscht das Konto Ihres Kindes nicht.",
+        "p4": "<b>Schulkonten:</b> Ein Schulkonto wird von der Schule angelegt und gehört ihr. Für diese Konten handeln wir im Auftrag und nach Weisung der Schule: Wir verwenden Schülerdaten nur, um der Schule Oomba Academy bereitzustellen, nie für Werbung, und wir verkaufen sie nicht. Eltern von Schulkonten sollten die Schule bitten, Daten einzusehen oder zu löschen; die Schule kann sich an uns wenden. Eine Datenvereinbarung, die die Schule mit uns unterzeichnet hat, hat Vorrang.",
+        "p5": "<b>Kein Verkauf, keine Werbung:</b> Wir verkaufen keine personenbezogenen Daten, zeigen keine Werbung und verwenden keine Werbe- oder Tracking-Cookies."
+      },
+      "billingKeep": {
+        "h": "Wie lange wir Abrechnungsdaten speichern",
+        "li1": "<b>Verbindungscodes:</b> werden 30 Tage nach ihrer Verwendung oder ihrem Ablauf gelöscht.",
+        "li2": "<b>Ausstehende Verbindungen:</b> werden gelöscht, wenn sie ablaufen (24 Stunden) oder das Kind Nein sagt.",
+        "li3": "<b>Beendete Verbindungen:</b> werden 90 Tage nach ihrem Ende gelöscht (ein Eintrag nur mit Kontonummern bleibt in unserem Aktionsprotokoll).",
+        "li4": "<b>Meldungen zu Verbindungen:</b> werden aufbewahrt, solange sie offen sind, und danach bis 1 Jahr nach ihrem Abschluss.",
+        "li5": "<b>Abo- und Zahlungsdaten</b> (Stripe-Nummern, Beträge, Daten) und die Rechnungen von Stripe: 7 Jahre, aus steuerrechtlichen Gründen, auch nachdem ein Konto gelöscht wurde.",
+        "li6": "<b>Kontaktdaten, Adresse, Anmerkung und Bestellnummer aus Rechnungsanfragen von Schulen:</b> 2 Jahre nach Abschluss der Anfrage.",
+        "li7": "<b>Erwachsenenkonto, Familie und Verbindungen:</b> bis Sie uns bitten, das Konto zu löschen. Ein etwaiges Abo kündigen wir vorher."
+      },
+      "where": {
+        "h": "Wo das gilt",
+        "p1": "Familienabos gibt es vorerst nur für Familien in den USA."
+      },
+      "more": {
+        "h": "Für Erwachsene und Schulen",
+        "p1": "Erwachsenenkonten, Familienverbindungen, Zahlungen, die Abrechnung für Schulen und wie lange wir Abrechnungsdaten speichern, erklärt <a href=\"/privacy?for=grownups\">die vollständige Datenschutzerklärung für Erwachsene und Schulen</a>."
+      },
+      "contact": {
+        "h": "Fragen",
+        "p1": "Oomba Academy · <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a>"
       }
     }
   },
@@ -918,7 +1251,8 @@
       "limit": "Du hast heute alle {count} Nachrichten an den Baumeister verbraucht. Komm morgen wieder, dann gibt es neue!",
       "muddled": "Der Baumeister ist durcheinandergekommen. Bitte versuch es gleich noch mal.",
       "resting": "Der KI-Baumeister ruht sich gerade aus. Dein Spiel und deine Nachrichten sind gespeichert, also komm etwas später wieder!",
-      "limitToday": "Du hast deine Nachrichten an den Baumeister für heute verbraucht. Morgen gibt es neue!"
+      "limitToday": "Du hast deine Nachrichten an den Baumeister für heute verbraucht. Morgen gibt es neue!",
+      "limitClass": "Deine Klasse hat die Nachrichten an den Baumeister für heute verbraucht. Morgen gibt es neue!"
     },
     "refusals": {
       "tryThese": "Willst du eins davon ausprobieren?",
@@ -1543,7 +1877,8 @@
         "tomorrow": "morgen um {time}",
         "date": "am {date} um {time}"
       },
-      "extra": "+{n} extra diesen Monat"
+      "extra": "+{n} extra diesen Monat",
+      "turnsLeftToday": "Heute noch {left}"
     }
   },
   "favorites": {
@@ -1577,7 +1912,8 @@
     "tabs": {
       "classes": "Klassen",
       "people": "Personen",
-      "settings": "Einstellungen"
+      "settings": "Einstellungen",
+      "billing": "Abrechnung"
     },
     "actions": "Aktionen",
     "save": "Speichern",
@@ -1790,7 +2126,8 @@
       "adminNotStudent": "Du kümmerst dich um Oomba Academy, deshalb kannst du keiner Klasse als Schüler beitreten.",
       "isStudent": "{name} ist hier Schüler und kann deshalb nicht zum Kollegium hinzugefügt werden.",
       "tickStudents": "Haken Sie mindestens einen Schüler an.",
-      "badZone": "Wählen Sie eine Zeitzone aus der Liste."
+      "badZone": "Wählen Sie eine Zeitzone aus der Liste.",
+      "badCap": "Geben Sie eine ganze Zahl von {min} bis {max} ein."
     },
     "classTabs": {
       "lessons": "Lektionen",
@@ -1814,7 +2151,111 @@
     },
     "optional": "(optional)",
     "me": "ich",
-    "moreFor": "Weitere Optionen für {name}"
+    "moreFor": "Weitere Optionen für {name}",
+    "billing": {
+      "heading": "Schulabo",
+      "none": "Kein Schulabo. Schüler und Lehrkräfte nutzen die kostenlosen Nachrichten an den Baumeister, wie alle anderen.",
+      "active": "{count, plural, one {Schulabo für # Schüler.} other {Schulabo für # Schüler.}}",
+      "renews": "Verlängert sich am {date}.",
+      "ends": "Endet am {date} und verlängert sich nicht.",
+      "grant": "Ein kostenloses Abo von Oomba Academy bis {date}, für {count, plural, one {# Schüler} other {# Schüler}}.",
+      "pastDue": "Die letzte Kartenzahlung ist nicht durchgegangen. Aktualisieren Sie die Karte unter „Abrechnung verwalten“, sonst endet das Abo am {date}.",
+      "overdue": "Eine Rechnung ist überfällig. Bezahlen Sie sie bis zum {date}, um das Abo zu behalten.",
+      "invoiceOpen": "Rechnung über {amount}, fällig am {date}.",
+      "invoiceView": "Ansehen & zahlen",
+      "pool": "Noch {left} von {total} Nachrichten an den Baumeister bis {date}",
+      "lessons": "Etwa {count, plural, one {# Baumeister-Lektion} other {# Baumeister-Lektionen}} für Ihre bezahlten Schüler",
+      "poolWaits": "Die neuen Schüler werden dem Pool hinzugefügt, sobald ihre Zahlung durchgegangen ist.",
+      "over": "Sie haben {students}; bezahlt sind {seats}.",
+      "studentsN": "{count, plural, one {# Schüler} other {# Schüler}}",
+      "daily": "Jeder Schüler und jede Lehrkraft kann aus dem Schulabo bis zu {cap} Nachrichten pro Tag an den Baumeister schicken.",
+      "price": "{price} pro Schüler und Jahr, für mindestens {min} Schüler. Jeder bezahlte Schüler fügt einem Pool, den die ganze Schule teilt, {perSeat} Nachrichten an den Baumeister pro Jahr hinzu.",
+      "priceLessons": "Das sind etwa {count, plural, one {# Baumeister-Lektion} other {# Baumeister-Lektionen}} pro Jahr für jeden bezahlten Schüler.",
+      "asyncFailed": "Die Bankzahlung ist nicht durchgegangen. Versuchen Sie es noch einmal mit „Per Karte bezahlen“, oder fordern Sie eine Rechnung an.",
+      "pending": "Die Zahlung ist unterwegs (eine Bankzahlung kann ein paar Tage dauern). Das Abo beginnt, wenn sie eingeht.",
+      "notOpen": "Schulabos gibt es noch nicht zu kaufen.",
+      "waiting": "Ihr Schulabo wird eingerichtet…",
+      "welcome": "Ihr Schulabo ist aktiv. Vielen Dank!",
+      "slow": "Das dauert länger als sonst. Ihre Zahlung ist sicher: Das Abo erscheint hier, sobald Stripe sie bestätigt.",
+      "back": "Zurück zur Abrechnung",
+      "help": "Fragen zur Abrechnung? Schreiben Sie an {email}.",
+      "seatsLabel": "Anzahl der Schüler",
+      "seatsHint": "Mindestens {min}. Sie haben jetzt {students}.",
+      "pay": {
+        "heading": "Per Karte bezahlen",
+        "renew": "Das Abo verlängert sich jedes Jahr, bis es gekündigt wird.",
+        "cancel": "Jederzeit kündbar unter „Abrechnung verwalten“: Das Abo läuft bis zum Ende des bezahlten Jahres.",
+        "tax": "Die Preise sind in US-Dollar. Umsatzsteuer kann hinzukommen.",
+        "button": "Per Karte bezahlen",
+        "stripe": "Die Zahlung erfolgt auf der sicheren Seite von Stripe. Kartennummern sehen wir nie."
+      },
+      "change": {
+        "heading": "Anzahl der Schüler ändern",
+        "text": "Zusätzliche Schüler werden sofort für den Rest dieses Jahres berechnet. Weniger Schüler gelten ab der Verlängerung des Abos.",
+        "button": "Schüler ändern"
+      },
+      "renewal": {
+        "heading": "Verlängerung",
+        "text": "Ihr Abo verlängert sich am {date} für {seats}. Sie haben jetzt {students}.",
+        "next": "Nächstes Jahr: {seats}.",
+        "hint": "Mindestens {min}. Gilt ab der Verlängerung.",
+        "button": "Schüler für nächstes Jahr"
+      },
+      "manage": {
+        "heading": "Abrechnung verwalten",
+        "text": "Karte aktualisieren, Belege und Rechnungen ansehen oder das Abo kündigen.",
+        "button": "Abrechnung verwalten"
+      },
+      "invoice": {
+        "heading": "Rechnung anfordern",
+        "text": "Für eine Bestellung per Purchase Order oder eine Schule, die per Banküberweisung oder Scheck zahlt. Wir schicken einmal im Jahr eine Rechnung per E-Mail, fällig innerhalb von 30 Tagen.",
+        "po": "Bestellnummer (PO)",
+        "contactName": "Name des Abrechnungskontakts",
+        "contactEmail": "E-Mail des Abrechnungskontakts",
+        "line1": "Adresse der Schule",
+        "line2": "Adresszeile 2",
+        "city": "Ort",
+        "state": "Bundesstaat oder Region",
+        "postal": "Postleitzahl (ZIP)",
+        "country": "Land (2 Buchstaben, z. B. US)",
+        "taxExempt": "Wir sind steuerbefreit (wir schicken die Befreiungsbescheinigung)",
+        "note": "Was wir sonst noch wissen sollten",
+        "button": "Rechnung anfordern",
+        "sent": "Danke! Wir schicken die Rechnung bald.",
+        "requested": "Rechnung am {date} für {seats} angefordert. Wir schicken sie an {email}.",
+        "cancel": "Anfrage zurückziehen",
+        "cancelConfirm": "Diese Rechnungsanfrage zurückziehen?",
+        "cancelled": "Anfrage zurückgezogen."
+      },
+      "cap": {
+        "heading": "Nachrichten an den Baumeister pro Tag",
+        "label": "Nachrichten, die jeder Schüler und jede Lehrkraft pro Tag schicken kann",
+        "hint": "Aus dem Schulabo. Nie weniger als die kostenlosen {free} pro Tag: jetzt {cap}."
+      },
+      "seats": {
+        "raised": "Erledigt: {seats} Schüler.",
+        "pending": "Die Kartenzahlung ist nicht durchgegangen, daher bleibt die Anzahl der Schüler gleich. Aktualisieren Sie die Karte unter „Abrechnung verwalten“ und versuchen Sie es noch einmal.",
+        "scheduled": "Nächstes Jahr: {seats} Schüler.",
+        "cleared": "Nächstes Jahr bleibt es bei {seats} Schülern."
+      },
+      "errors": {
+        "entitled": "Ihre Schule hat schon ein Abo. Ändern Sie stattdessen die Anzahl der Schüler.",
+        "fixPayment": "Eine Zahlung für Ihr Schulabo ist noch offen. Klären Sie sie zuerst unter „Abrechnung verwalten“.",
+        "paying": "Gerade ist eine Zahlung durchgegangen. Warten Sie einen Moment und laden Sie die Seite dann neu.",
+        "noPrice": "Schulabos können gerade nicht gekauft werden. Versuchen Sie es später noch einmal.",
+        "minSeats": "Geben Sie eine ganze Zahl von {min} bis {max} ein.",
+        "sameSeats": "Das ist bereits Ihre aktuelle Anzahl.",
+        "noPlan": "Ihre Schule hat kein Abo, das geändert werden kann.",
+        "requestOpen": "Sie haben bereits eine Rechnung angefordert. Ziehen Sie diese Anfrage zuerst zurück, um sie zu ändern.",
+        "contactName": "Geben Sie den Namen des Abrechnungskontakts ein.",
+        "contactEmail": "Geben Sie eine gültige E-Mail-Adresse ein.",
+        "address": "Füllen Sie die Adresse aus.",
+        "country": "Verwenden Sie den Ländercode mit 2 Buchstaben, z. B. US.",
+        "noRequest": "Es gibt keine offene Anfrage.",
+        "noCustomer": "Ihre Schule hat noch kein Abrechnungskonto."
+      },
+      "legal": "Für Schulabos gelten unsere <a href=\"/terms\">Nutzungsbedingungen</a>, unsere <a href=\"/refunds\">Erstattungs- und Kündigungsrichtlinie</a> und unsere <a href=\"/privacy#schoolBilling\">Datenschutzerklärung</a>."
+    }
   },
   "lessons": {
     "up": "Nach oben",
@@ -2414,7 +2855,8 @@
         "noPrice": "Familienabos können gerade nicht gekauft werden. Bitte versuchen Sie es später noch einmal.",
         "noCustomer": "Es gibt noch nichts zu verwalten: Schließen Sie zuerst ein Abo ab.",
         "stripe": "Wir konnten unseren Zahlungsanbieter nicht erreichen. Bitte versuchen Sie es in einer Minute noch einmal."
-      }
+      },
+      "legal": "Für Abos gelten unsere <a href=\"/terms\">Nutzungsbedingungen</a> und unsere <a href=\"/refunds\">Erstattungs- und Kündigungsrichtlinie</a>."
     }
   }
 }

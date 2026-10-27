@@ -595,7 +595,7 @@
         "li23": "We send a reminder before a yearly plan renews.",
         "li24": "School invoice plans renew each year with a new invoice. The school's Billing tab shows a reminder 30 days before.",
         "s6": "7.6 Cancelling",
-        "li25": "<b>Cancel anytime</b> online: on your family page, choose <b>Manage plan</b>, then cancel. Schools: <b>Manage billing</b> on the Billing tab, or email us.",
+        "li25": "<b>Cancel anytime</b> online: on your family page, choose <b>Manage billing</b>, then cancel on Stripe's page. Schools: <b>Manage billing</b> on the Billing tab, or email us.",
         "li26": "Cancelling stops the next renewal. <b>The plan keeps working until the end of the period you paid for</b>, then your family or school goes back to the free allowance.",
         "li27": "Nothing is deleted when a plan ends.",
         "li28": "Refunds are covered by our <a href=\"/refunds\">Refund and Cancellation Policy</a>: in short, a full refund if you ask within 14 days of the payment that starts a plan or of a yearly renewal. Monthly renewals are not refunded, and there are no partial refunds otherwise.",
@@ -672,7 +672,7 @@
       "cancel": {
         "h": "Cancelling",
         "li1": "<b>Cancel anytime.</b> There is no cancellation fee.",
-        "li2": "<b>Families:</b> sign in to your grown-up account, open your family page, choose <b>Manage plan</b>, then <b>Cancel plan</b>. We ask for your password first.",
+        "li2": "<b>Families:</b> sign in to your grown-up account, open your family page, choose <b>Manage billing</b>, then cancel on Stripe's page. We ask for your password first.",
         "li3": "<b>Schools:</b> a school admin opens the school's <b>Billing</b> tab and chooses <b>Manage billing</b>, or emails <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a> (invoice schools).",
         "li4": "<b>When it takes effect:</b> at the end of the month or year you already paid for. Until then the plan keeps working. After that, your family or school goes back to the free allowance.",
         "li5": "<b>Nothing is deleted.</b> Games, saves and classes stay exactly as they are."
@@ -740,7 +740,7 @@
         "s1": "Stripe processes payments",
         "p1": "Payments are handled by <b>Stripe, Inc.</b> You pay on Stripe's own page, not on ours. Stripe's privacy policy is at <a href=\"https://stripe.com/privacy\" rel=\"noopener\" dir=\"ltr\">stripe.com/privacy</a>.",
         "p2": "<b>What Stripe collects from you</b> (on Stripe's pages):",
-        "li1": "your email address (Stripe sends receipts, failed-payment notices and renewal reminders to it, and uses it for the \"Manage plan\" sign-in link);",
+        "li1": "your email address (Stripe sends receipts, failed-payment notices and renewal reminders to it);",
         "li2": "your card details, or your Apple Pay or Google Pay wallet;",
         "li3": "your billing address (needed for sales tax and to check that family plans are for US families);",
         "li4": "information Stripe uses to prevent fraud, such as details about your device and connection.",
