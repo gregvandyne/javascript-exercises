@@ -480,15 +480,12 @@ test('a plan we gave (a grant, no Stripe customer): no "Switch to this plan" tha
   assert.doesNotMatch(fam, /To switch to the Basic plan, open Manage billing/);
 });
 
-test('Hebrew /plans: an English sentence (not translated yet) carries its price the English way', async () => {
+test('Hebrew /plans is fully Hebrew: no sentence falls back to English, and the yearly price is there', async () => {
   const he = { cookie: 'lang=he' };
   const r = decode((await call(he, '/plans?interval=year')).text);
-  // Not translated into Hebrew yet: English, marked as English, with "$3.75" (not "3.75 $").
-  assert.match(r, /<span lang="en" dir="ltr">That's \$3\.75 a month, paid once a year\.<\/span>/);
-  assert.doesNotMatch(r, /<span lang="en" dir="ltr">(That's|Or) [^<$]*\d[.,]\d\d\s*\$/);
-  // The big price (not in a sentence) stays in the page's own format.
-  const m = await call(he, '/plans');
-  assert.match(decode(m.text), /<span lang="en" dir="ltr">Or \$45\.00 a year\.<\/span>/);
+  assert.match(r, /<html[^>]*dir="rtl"/);
+  assert.doesNotMatch(r, /<span lang="en" dir="ltr">/);
+  assert.match(r, /45/);
 });
 
 test('/grown-ups gives both prices (Basic and Family), and Compare plans is the main button there', async () => {

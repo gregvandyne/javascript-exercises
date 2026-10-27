@@ -114,7 +114,7 @@ test('subscribe → webhook → the child\'s extra messages → Manage billing c
   const { kid, mum, mumName } = await linkedFamily(browser);
   // Not a billing tester yet: no Subscribe (test mode).
   await mum.goto('/family?plan=family&interval=month');
-  await expect(mum.locator('#plan')).toContainText("aren't on sale yet");
+  await expect(mum.locator('#plan')).toContainText("isn't on sale yet");
   await makeTester(browser, mumName);
   await subscribe(mum);
   await expect(mum.locator('#plan')).toContainText('3 of 3 extra messages left this month');
