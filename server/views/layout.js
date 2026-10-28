@@ -4,6 +4,8 @@
 //   active: 'home'|'search'|'build'|'friends'|'me'|'plans'|'family'|null   back: href for the Back link on inner pages
 //   scripts: ['/js/foo.js'] (ES modules)   bare: true = no nav/footer (play page)
 //   i18n: extra key prefixes to embed for the browser. Every page gets 'js.app' plus 'js.<name>' for each /js/<name>.js.
+//   seo: { index: true, path, langs, image, imageAlt, type, jsonld } to let search engines index the page (server/seo.js).
+//        Without it a page is noindex: new pages stay out of search results until they opt in.
 import { html, raw, esc, jsonData } from './html.js';
 import { avatar, BRAND, wordmark, appMark } from './components.js';
 import { accountKind, STAFF_PASSWORD_MIN, isGrownup, longPasswordKind } from '../auth.js';
@@ -15,6 +17,7 @@ import { availableLocales, localeInfo, tReq, tHtml, clientStrings, DEFAULT_LOCAL
 import { THEMES, THEME_ICONS, BAR_COLORS } from '../theme.js';
 import { notices, markNotified } from '../builder/turns.js';
 import { familiesOn } from '../services/family.js';
+import { seoHead, localeUrl, clip } from '../seo.js';
 
 const NAV = [
   ['home', '/', '🏠'],
@@ -35,7 +38,13 @@ function choiceHref(req, name, value) {
   u.searchParams.set(name, value);
   return localPath(u) + '?' + u.searchParams;
 }
-const langHref = (req, code) => choiceHref(req, 'lang', code);
+/** On a page at a language address (/es/teachers), the other language's address keeps the choice: /fr/teachers?lang=fr. */
+function langHref(req, code) {
+  if (!req.pathLocale) return choiceHref(req, 'lang', code);
+  const u = new URL(req.url || '/', 'http://x');
+  u.searchParams.set('lang', code);
+  return localeUrl(localPath(u), code) + '?' + u.searchParams;
+}
 /** The 🌐 language picker: a <details> menu of plain links, so it works with no JavaScript (app.js adds keys and outside-click). */
 export function langPicker(req) {
   const t = tReq(req); const cur = req.locale || DEFAULT_LOCALE; const info = localeInfo(cur);
@@ -45,7 +54,7 @@ export function langPicker(req) {
     <summary class="lang-btn" aria-label="${t('layout.lang.button', { language: info.name })}" title="${t('layout.lang.title')}"><span class="globe" aria-hidden="true">🌐</span><span class="lang-code" aria-hidden="true">${cur.split('-')[0].toUpperCase()}</span></summary>
     <div class="lang-menu">
       <p class="lang-head" id="lang-head">${t('layout.lang.title')}</p>
-      <ul class="lang-list" aria-labelledby="lang-head">${langs.map(l => html`<li><a href="${langHref(req, l.code)}" hreflang="${l.code}" ${l.code === cur ? raw('aria-current="true"') : ''}><span class="lang-check" aria-hidden="true">${l.code === cur ? '✓' : ''}</span><span class="lang-name" lang="${l.code}" dir="${l.dir}">${l.name}</span></a></li>`)}</ul>
+      <ul class="lang-list" aria-labelledby="lang-head">${langs.map(l => html`<li><a href="${langHref(req, l.code)}" hreflang="${l.code}" rel="nofollow" ${l.code === cur ? raw('aria-current="true"') : ''}><span class="lang-check" aria-hidden="true">${l.code === cur ? '✓' : ''}</span><span class="lang-name" lang="${l.code}" dir="${l.dir}">${l.name}</span></a></li>`)}</ul>
     </div>
   </details>`;
 }
@@ -64,7 +73,7 @@ export function themePicker(req) {
   </details>`;
 }
 
-export function layout(req, { title = '', active = null, body = '', scripts = [], head = '', back = null, backLabel = null, bodyClass = '', description = null, bare = false, mid = false, i18n = [] } = {}) {
+export function layout(req, { title = '', active = null, body = '', scripts = [], head = '', back = null, backLabel = null, bodyClass = '', description = null, bare = false, mid = false, i18n = [], seo = null } = {}) {
   const t = tReq(req);
   const locale = req.locale || DEFAULT_LOCALE; const info = localeInfo(locale);
   const u = req.user;
@@ -82,6 +91,8 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
     : u && staff ? [...NAV, ['classes', '/teach', '🏫'], ...plans]
     : u && isPlatformAdmin(u) ? [...NAV, ['schools', '/admin/schools', '🏫'], ...plans]
     : u && inAnySchool(u) ? [...NAV, ['classes', '/classes', '🏫'], ...plans] : [...NAV, ...plans];
+  // Signed out: the teacher page in the top menu (the phone tab bar keeps its five tabs; the footer links it there).
+  const teachersNav = u ? [] : [['teachers', '/teachers', '🍎']];
   // Pages in the Classes area highlight Schools for the platform admin, whose nav has Schools instead of Classes.
   const act = active === 'classes' && !navItems.some(([k]) => k === 'classes') && navItems.some(([k]) => k === 'schools') ? 'schools' : active;
   const signIn = t('layout.signIn');
@@ -97,7 +108,7 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
     </form>
     <a class="topsearch-btn" href="/search" aria-label="${t('layout.search.label')}"><span aria-hidden="true">🔎</span></a>
     <nav class="topnav" aria-label="${t('layout.mainNav')}">
-      ${navItems.map(([k, href, emo]) => html`<a class="navlink" href="${href}" ${cur(k)}><span class="emo" aria-hidden="true">${emo}</span>${t(`nav.${k}`)}${badge(k)}</a>`)}
+      ${[...navItems, ...teachersNav].map(([k, href, emo]) => html`<a class="navlink" href="${href}" ${cur(k)}><span class="emo" aria-hidden="true">${emo}</span>${t(`nav.${k}`)}${badge(k)}</a>`)}
     </nav>
     ${langPicker(req)}
     ${themePicker(req)}
@@ -109,7 +120,7 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
   </nav>`;
   // A footer word still in English on this language's page reads left to right.
   const fb = key => (t.own(key) ? '' : raw(' lang="en" dir="ltr"'));
-  const foot = bare ? '' : html`<footer class="foot"><span>${t('layout.footer.tagline')}</span><a href="/safety">${t('layout.footer.safety')}</a><a href="/parents">${t('layout.footer.parents')}</a>${config.contactEmail ? html`<a href="/parents#contact">${t('layout.footer.contact')}</a>` : ''}${grownup ? '' : html`<a href="/sdk">${t('layout.footer.builders')}</a>`}${legalReader(u) ? html`<a href="/terms"${fb('layout.footer.terms')}>${t('layout.footer.terms')}</a>` : ''}<a href="/privacy"${fb('layout.footer.privacy')}>${t('layout.footer.privacy')}</a><a href="${grownup ? '/family#language' : '/me#language'}" class="foot-lang"><span aria-hidden="true">🌐</span> ${info.name}</a></footer>`;
+  const foot = bare ? '' : html`<footer class="foot"><span>${t('layout.footer.tagline')}</span><a href="/safety">${t('layout.footer.safety')}</a><a href="/parents">${t('layout.footer.parents')}</a>${!u || staff ? html`<a href="/teachers">${t('layout.footer.teachers')}</a>` : ''}${config.contactEmail ? html`<a href="/parents#contact">${t('layout.footer.contact')}</a>` : ''}${grownup ? '' : html`<a href="/sdk/">${t('layout.footer.builders')}</a>`}${legalReader(u) ? html`<a href="/terms"${fb('layout.footer.terms')}>${t('layout.footer.terms')}</a>` : ''}<a href="/privacy"${fb('layout.footer.privacy')}>${t('layout.footer.privacy')}</a><a href="${grownup ? '/family#language' : '/me#language'}" class="foot-lang"><span aria-hidden="true">🌐</span> ${info.name}</a></footer>`;
   const backHtml = back ? html`<a class="backlink" href="${back}"><span class="flip" aria-hidden="true">←</span> ${backLabel || t('layout.back')}</a>` : '';
   // A sign-in that just ended (timed out, or ended on another device) is mentioned once, on whatever page comes next; the
   // sign-in page says it itself.
@@ -126,6 +137,8 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
   // play page's bar is Ink in both themes.
   const themeColor = bare || theme ? `<meta name="theme-color" content="${BAR_COLORS[bare ? 'dark' : theme]}">`
     : `<meta name="theme-color" content="${BAR_COLORS.light}" media="(prefers-color-scheme: light)">\n<meta name="theme-color" content="${BAR_COLORS.dark}" media="(prefers-color-scheme: dark)">`;
+  const fullTitle = title ? t('layout.titleWith', { title }) : t('layout.titleHome');
+  const desc = clip(description || t('layout.description'), 160);
   const strings = jsonData('i18n', { lang: locale, dir: info.dir, intl: info.intl, strings: clientStrings(locale, [...new Set(prefixes)]) });
   return `<!doctype html>
 <html lang="${esc(locale)}" dir="${esc(info.dir)}"${theme ? ` data-theme="${theme}"` : ''}>
@@ -133,8 +146,9 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="${theme || 'light dark'}">
-<title>${esc(title ? t('layout.titleWith', { title }) : t('layout.titleHome'))}</title>
-<meta name="description" content="${esc(description || t('layout.description'))}">
+<title>${esc(fullTitle)}</title>
+<meta name="description" content="${esc(desc)}">
+${seoHead(req, seo, { title: fullTitle, description: desc })}
 ${themeColor}
 <link rel="icon" href="/favicon.ico?v=${ICONS_V}" sizes="32x32">
 <link rel="icon" href="/icons/icon.svg?v=${ICONS_V}" type="image/svg+xml">

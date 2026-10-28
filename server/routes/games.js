@@ -3,6 +3,9 @@ import { Router } from 'express';
 import { html, jsonData } from '../views/html.js';
 import { page, notFound } from '../views/layout.js';
 import { coverArt, avatar, cardGrid, statusLabel, categoryLabel } from '../views/components.js';
+import { OFFICIAL } from '../auth.js';
+import * as seo from '../seo.js';
+import { LEARNING, isLearningGame, HUBS } from '../learn.js';
 import * as games from '../services/games.js';
 import * as presence from '../services/presence.js';
 import { frameDocument, sendFrame, sendFrameText, frameOrigins, SANDBOX } from '../services/frame.js';
@@ -48,7 +51,7 @@ router.get('/g/:slug', (req, res) => {
   const body = html`
   <article>
     <div class="gamehero">
-      <div style="position:relative">${coverArt(d)}</div>
+      <div style="position:relative">${coverArt(d, '', { eager: true })}</div>
       <div>
         <h1>${g.title}</h1>
         ${grownup ? html`<span class="person ownerchip">${avatar(owner, 32)}<span class="nm">${owner.display_name}</span></span>` : html`<a class="person ownerchip" href="/u/${owner.username}">${avatar(owner, 32)}<span class="nm">${owner.display_name}</span></a>`}
@@ -81,7 +84,8 @@ router.get('/g/:slug', (req, res) => {
           : html`<p><button class="btn" type="button" data-guest-play="">${t('game.rate.guest')}</button></p>`}
         </section>`}
         <section class="panel" aria-labelledby="lb-h"><h2 id="lb-h">🏆 ${t('game.leaderboard.heading')}</h2>
-          ${lb.length ? html`<ol class="lb">${lb.map(r => html`<li>${avatar(r, 30)}<span>${r.display_name}</span><span class="sc" dir="ltr">${f.int(r.score)}${r.label ? ' ' + r.label : ''}</span></li>`)}</ol>` : html`<p class="muted">${t('game.leaderboard.empty')}</p>`}
+          ${lb.length ? html`<ol class="lb">${lb.map(r => html`<li>${avatar(r, 30)}<span>${u ? r.display_name : ''}</span><span class="sc" dir="ltr">${f.int(r.score)}${r.label ? ' ' + r.label : ''}</span></li>`)}</ol>
+            ${u ? '' : html`<p class="small muted" style="margin:10px 0 0">${t('game.leaderboard.signIn')}</p>`}` : html`<p class="muted">${t('game.leaderboard.empty')}</p>`}
         </section>
       </div>
       <aside class="stack" aria-label="${t('game.more.label')}">
@@ -90,15 +94,56 @@ router.get('/g/:slug', (req, res) => {
     </div>
   </article>
   ${jsonData('page-data', { gameId: g.id, slug: g.slug, title: g.title, visibility: g.visibility, shareText: t(`game.shareText.${g.visibility}`), reasons: reportReasons(t), signedIn: !!u })}`;
-  page(req, res, { title: g.title, active: 'home', back: '/', backLabel: t('nav.home'), body, description: g.description.slice(0, 160), scripts: ['/js/game.js'] });
+  // Search engines index official launch games only. A game a child made (even a published, reviewed one) is never
+  // indexed: its page carries the builder's name.
+  const official = g.source === 'seed' && owner && owner.username === OFFICIAL && g.visibility === 'public' && g.status === 'published' && !g.hidden_reason;
+  if (!official) res.set('X-Robots-Tag', 'noindex, nofollow');
+  const title = official && t.own(`seo.games.${g.slug}`) ? t(`seo.games.${g.slug}`) : official && t.own(`seo.game.kind.${cat.key}`) ? t('seo.game.title', { title: g.title, kind: t(`seo.game.kind.${cat.key}`) }) : g.title;
+  page(req, res, { title, active: 'home', back: '/', backLabel: t('nav.home'), body, description: seo.clip(g.description, 158), scripts: ['/js/game.js'],
+    seo: official ? gameSeo(req, g, d, owner) : null });
 });
+
+/** Search and sharing data of an official launch game's page: its languages, its picture, and VideoGame (plus
+ *  LearningResource for a learning game) structured data. */
+function gameSeo(req, g, d, owner) {
+  let l10n = {}; try { l10n = JSON.parse(g.l10n || '{}') || {}; } catch { /* none */ }
+  const langs = seo.pageLangs(Object.keys(l10n));
+  const path = `/g/${g.slug}`;
+  const t = req.t; const cat = games.categoryInfo(g.category);
+  const og = fs.existsSync(new URL(`../../public/og/${g.slug}.jpg`, import.meta.url)) ? `/og/${g.slug}.jpg` : null;
+  const image = og || `/covers/${g.slug}.jpg`;
+  const learn = LEARNING[g.slug];
+  const hub = HUBS.find(h => h.games.includes(g.slug) && h.slug !== 'brain-break-games');
+  const game = {
+    '@type': isLearningGame(g.slug) ? ['VideoGame', 'LearningResource'] : 'VideoGame',
+    '@id': seo.abs(req, path) + '#game',
+    name: g.title, description: g.description, url: seo.abs(req, seo.localeUrl(path, langs.includes(req.locale) ? req.locale : 'en')),
+    image: [seo.abs(req, image), seo.abs(req, `/covers/${g.slug}.jpg`)].filter((v, i, a) => a.indexOf(v) === i),
+    genre: tEn(`categories.${cat.key}`), gamePlatform: 'Web browser', applicationCategory: 'GameApplication', operatingSystem: 'Any (web browser)',
+    inLanguage: langs, isFamilyFriendly: true, isAccessibleForFree: true, typicalAgeRange: `${seo.AGE.min}-${seo.AGE.max}`,
+    audience: seo.audienceLd(),
+    numberOfPlayers: { '@type': 'QuantitativeValue', minValue: 1, maxValue: Math.max(1, +g.players_max || 1) },
+    offers: { '@type': 'Offer', price: 0, priceCurrency: 'USD', availability: 'https://schema.org/InStock' },
+    publisher: { '@id': seo.orgId(req) }, author: { '@id': seo.orgId(req) },
+    ...(g.published_at ? { datePublished: new Date(g.published_at).toISOString().slice(0, 10) } : {}),
+    ...(g.updated_at ? { dateModified: new Date(g.updated_at).toISOString().slice(0, 10) } : {}),
+    // Only real ratings, shown on the page, and only once there are enough to mean something.
+    ...(d.rating_count >= 5 ? { aggregateRating: { '@type': 'AggregateRating', ratingValue: +d.rating.toFixed(1), ratingCount: d.rating_count, bestRating: 5, worstRating: 1 } } : {}),
+    ...(learn && isLearningGame(g.slug) ? { teaches: learn.teaches, educationalLevel: learn.level, learningResourceType: 'Game', interactivityType: 'active' } : {}),
+  };
+  const crumbs = [[t('nav.home'), '/'], ...(hub ? [[t('nav.teachers'), '/teachers'], [t(`learn.hubs.${hub.key}.name`), `/learn/${hub.slug}`]] : []), [g.title, path]];
+  return {
+    index: true, path, langs, type: 'website', image, imageAlt: t('seo.game.imageAlt', { title: g.title }),
+    jsonld: [seo.graph([game, seo.breadcrumbLd(req, crumbs), seo.organizationLd(req)])],
+  };
+}
 
 router.get('/play/:slug', (req, res) => {
   const t = req.t;
   const g = games.localizeGame(games.getGameBySlug(req.params.slug), req.locale);
   if (!g || !games.canView(req.user, g)) return notFound(req, res, t('game.notShared'));
   // One tap to play: a visitor without a session becomes a guest so progress saves (rate-limited per IP).
-  if (!req.user && req.headers['sec-fetch-mode'] === 'navigate' && allow(`guestip:${ipOf(req)}`, GUESTS_PER_IP_HOUR, 3600e3)) {
+  if (!req.user && req.headers['sec-fetch-mode'] === 'navigate' && !seo.isBot(req.headers['user-agent']) && allow(`guestip:${ipOf(req)}`, GUESTS_PER_IP_HOUR, 3600e3)) {
     const guest = createGuest(); req.sessionId = startSession(res, guest.id, req.headers['user-agent']); req.user = guest;
   }
   const u = req.user;

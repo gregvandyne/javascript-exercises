@@ -30,6 +30,10 @@ import { router as googleRoutes } from './routes/google.js';
 import { router as familyRoutes, grownupGuard } from './routes/family.js';
 import { router as schoolBillingRoutes } from './routes/school-billing.js';
 import { router as plansRoutes } from './routes/plans.js';
+import { router as teacherRoutes } from './routes/teachers.js';
+import { router as seoRoutes } from './routes/seo.js';
+import { pathLocale, privateNoindex } from './seo.js';
+import { compressPublicPages, staticAssets, versionedCache } from './services/compress.js';
 import { canonicalRedirect, hostCheckRoute, HOST_CHECK_PATH } from './domain.js';
 import { hostOnly } from './site.js';
 import { WEBHOOK_PATH as BILLING_WEBHOOK_PATH, webhookHandler as billingWebhook } from './services/billing.js';
@@ -99,12 +103,17 @@ export function createApp() {
     if (config.env === 'production' && !config.publicUrl.startsWith('http:')) res.set('Strict-Transport-Security', 'max-age=31536000');
     next();
   });
+  // Search engines: private areas are never indexed (server/seo.js), whatever answers them.
+  app.use(privateNoindex);
   // Moving day (see docs/deploy-aws.md / deploy-azure.md, cut-over): the old host redirects, or says "back soon".
   if (config.movedTo) app.use(movedTo);
   if (config.maintenance) app.use(maintenancePage);
   // The domain move: page loads on an old name (magic-cup.onrender.com) go to PUBLIC_URL. Off until PUBLIC_URL is set
   // and its self-check passed; MOVED_TO_URL and MAINTENANCE_MODE above still win.
   app.use(canonicalRedirect);
+  // Signed-out pages, the sitemap and robots.txt go out compressed (services/compress.js says why not signed-in ones).
+  app.use(compressPublicPages);
+  app.use(seoRoutes);   // /robots.txt, /sitemap.xml: no session needed
   // Self-hosted game libraries (public/vendor/three/<version>/ for 3D games). A versioned folder never changes, so it is
   // cached for a year. Game frames are opaque-origin and load these as module scripts, which needs CORS.
   // A CORS preflight (only sent if something adds request headers, e.g. a test harness) is answered too: public files, no credentials.
@@ -145,7 +154,11 @@ export function createApp() {
     res.send(body);
   });
   app.use('/vendor', express.static(path.join(ROOT, 'public/vendor'), { index: false, immutable: true, maxAge: '365d', setHeaders: res => res.set({ 'Access-Control-Allow-Origin': '*', 'Cross-Origin-Resource-Policy': 'cross-origin' }) }));
-  app.use(express.static(path.join(ROOT, 'public'), { maxAge: config.env === 'production' ? '1h' : 0, index: false }));
+  app.use('/css', staticAssets(path.join(ROOT, 'public/css')));
+  app.use('/js', staticAssets(path.join(ROOT, 'public/js')));
+  app.use(express.static(path.join(ROOT, 'public'), { maxAge: config.env === 'production' ? '1h' : 0, index: false, setHeaders: versionedCache }));
+  // /es/teachers, /fr/g/sum-racer…: a public page in that language (server/seo.js), before the i18n middleware reads it.
+  app.use(pathLocale);
   app.use(express.json({ limit: '3mb', ...NO_INFLATE }));
   app.use(express.text({ type: 'text/plain', limit: '64kb', ...NO_INFLATE }));
   app.use(sessionMiddleware);
@@ -157,7 +170,7 @@ export function createApp() {
   // Grown-up accounts may only play games and look after their family: everything else is a 404 for them.
   app.use(grownupGuard);
 
-  for (const r of [authRoutes, familyRoutes, plansRoutes, schoolBillingRoutes, googleRoutes, discoverRoutes, gameRoutes, studioRoutes, socialRoutes, chatRoutes, adminRoutes, schoolRoutes, progressRoutes, lessonRoutes, infoRoutes]) app.use(r);
+  for (const r of [authRoutes, familyRoutes, plansRoutes, schoolBillingRoutes, googleRoutes, discoverRoutes, teacherRoutes, gameRoutes, studioRoutes, socialRoutes, chatRoutes, adminRoutes, schoolRoutes, progressRoutes, lessonRoutes, infoRoutes]) app.use(r);
 
   app.use('/api', (req, res) => res.status(404).json({ error: tReq(req)('errors.api.notFound') }));
   app.use((req, res) => notFound(req, res));

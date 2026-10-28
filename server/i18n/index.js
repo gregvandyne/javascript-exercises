@@ -81,8 +81,11 @@ export const dictionary = code => dicts.get(code) || {};
  *  half-done translation never shows up as a choice. BRB_ALL_LOCALES=1 offers every locale (tests, translators). */
 export const READY_SHARE = 0.9;
 /** Long legal text (the /terms, /refunds and /privacy pages) is not counted for that share: it is translated last, after
- *  the legal review, and shows in English until then, so adding it never takes a language out of the picker. */
-export const UNCOUNTED_PREFIXES = ['info.terms.', 'info.refunds.', 'info.privacy.'];
+ *  the legal review, and shows in English until then, so adding it never takes a language out of the picker. The same
+ *  goes for the long teacher and subject pages (/teachers, /learn/*) and the search-engine wording (seo.*): until a
+ *  language has them, those pages show the English, marked as English, and server/seo.js lists only the languages
+ *  that have them in hreflang and the sitemap. */
+export const UNCOUNTED_PREFIXES = ['info.terms.', 'info.refunds.', 'info.privacy.', 'teachers.', 'learn.', 'seo.'];
 const counted = code => Object.keys(dictionary(code)).filter(k => !UNCOUNTED_PREFIXES.some(p => k.startsWith(p))).length;
 export function availableCodes() {
   if (process.env.BRB_ALL_LOCALES === '1') return CODES.slice();
@@ -179,9 +182,11 @@ export function matchTag(tag) {
   if (lang === 'nb' || lang === 'no') return null;
   return normalizeCode(lang);
 }
-/** -> { locale, source: 'query'|'cookie'|'user'|'header'|'default' } */
-export function pickLocale({ query = null, cookie = null, user = null, acceptLanguage = null } = {}) {
+/** -> { locale, source: 'query'|'path'|'cookie'|'user'|'header'|'default' }. path: the language of a /<code>/… address
+ *  (server/seo.js pathLocale), which says what that page is in, whatever the visitor chose before. */
+export function pickLocale({ query = null, path = null, cookie = null, user = null, acceptLanguage = null } = {}) {
   const fromQuery = normalizeCode(query); if (fromQuery) return { locale: fromQuery, source: 'query' };
+  const fromPath = normalizeCode(path); if (fromPath) return { locale: fromPath, source: 'path' };
   const fromCookie = normalizeCode(cookie); if (fromCookie) return { locale: fromCookie, source: 'cookie' };
   const fromUser = normalizeCode(user && user.lang); if (fromUser) return { locale: fromUser, source: 'user' };
   const fromHeader = negotiate(acceptLanguage); if (fromHeader && availableCodes().includes(fromHeader)) return { locale: fromHeader, source: 'header' };
@@ -271,7 +276,7 @@ export const isPageGet = req => req.method === 'GET' && !req.path.startsWith('/a
  */
 export function middleware(req, res, next) {
   const query = typeof req.query.lang === 'string' ? req.query.lang : null;
-  const picked = pickLocale({ query, cookie: readCookie(req, COOKIE), user: req.user, acceptLanguage: req.headers['accept-language'] });
+  const picked = pickLocale({ query, path: req.pathLocale, cookie: readCookie(req, COOKIE), user: req.user, acceptLanguage: req.headers['accept-language'] });
   const code = picked.locale;
   req.locale = code; req.localeSource = picked.source; req.dir = localeInfo(code).dir; req.t = tFor(code); req.fmt = fmt(code);
   res.locals.t = req.t; res.locals.locale = code;
@@ -282,7 +287,8 @@ export function middleware(req, res, next) {
     if (sameOrigin(req)) { setLangCookie(res, code); saveUserLang(req.user, code); }
     if (isPageGet(req)) return res.redirect(303, withoutLang(req.originalUrl));
   }
-  als.run({ t: req.t, fmt: req.fmt, locale: code }, next);
+  // anon: a signed-out visitor (search engines are one). Shared view helpers leave children's names out for them.
+  als.run({ t: req.t, fmt: req.fmt, locale: code, anon: !req.user }, next);
 }
 /** t for a request, even one that failed before the middleware ran. */
 export const tReq = req => (req && req.t) || tEn;
