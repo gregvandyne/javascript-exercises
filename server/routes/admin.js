@@ -17,6 +17,8 @@ import { tEn } from '../i18n/index.js';
 import { schoolsOf, getSchool, isStaff } from '../services/schools.js';
 import * as schoolBilling from '../services/school-billing.js';
 import * as family from '../services/family.js';
+import * as schoolRequests from '../services/school-requests.js';
+import * as funnel from '../services/funnel.js';
 import * as billing from '../services/billing.js';
 import * as stripe from '../services/stripe.js';
 import { audit, q } from '../db.js';
@@ -26,7 +28,7 @@ export const router = Router();
 router.use('/admin', requireAdmin);
 router.use('/api/admin', requireAdmin);
 
-const TABS = [['queue', '⏳', 'Review queue'], ['reports', '🚩', 'Reports'], ['chat', '💬', 'Chat reports'], ['links', '🧑‍🧒', 'Link reports'], ['users', '👤', 'Users'], ['audit', '📜', 'Audit log']];
+const TABS = [['queue', '⏳', 'Review queue'], ['reports', '🚩', 'Reports'], ['chat', '💬', 'Chat reports'], ['links', '🧑‍🧒', 'Link reports'], ['schoolreq', '🏫', 'School requests'], ['users', '👤', 'Users'], ['audit', '📜', 'Audit log']];
 const gameReason = k => (GAME_REASONS.find(r => r[0] === k) || [k, k])[1];
 const chatReason = k => (chat.REPORT_REASONS.find(r => r[0] === k) || [k, k])[1];
 const when = t => html`<time datetime="${new Date(t).toISOString()}" title="${new Date(t).toISOString().replace('T', ' ').slice(0, 16)} UTC">${timeAgo(t)}</time>`;
@@ -125,6 +127,32 @@ function linksTab() {
     </div>
   </article>`)}</div>`;
 }
+const REQUEST_ROLE = { teacher: 'Teacher', leader: 'Principal / head', it: 'IT lead', district: 'District / group', other: 'Other' };
+/** "Set up my school" requests from /teachers (services/school-requests.js): open ones first, oldest on top, then the
+ *  latest closed. "Create school" opens the usual Add a school form with the name filled in; adding it closes the
+ *  request. The site sends no email: reply from your own mail. */
+function schoolRequestsTab() {
+  const { open, closed } = schoolRequests.queue();
+  const info = r => html`<p class="small" style="margin:0">${REQUEST_ROLE[r.role] || r.role} · <a href="mailto:${r.email}" dir="ltr">${r.email}</a> · about ${int(r.students)} students · ${r.country}${r.locale ? html` · page in <code>${r.locale}</code>` : ''}</p>`;
+  const act = (r, what, label, cls = 'btn', confirm = '') => html`<form data-api="/api/admin/school-requests/${r.id}/${what}" data-reload ${confirm ? html`data-confirm="${confirm}"` : ''}><button class="${cls}" type="submit">${label}</button></form>`;
+  const openList = open.length ? html`<div class="stack">${open.map(r => html`<article class="panel" aria-label="School request: ${r.school_name}">
+      <p class="row small" style="gap:6px"><span class="chip-s warn">Waiting</span> sent ${when(r.created_at)}</p>
+      <h2 style="margin:0 0 6px">${r.school_name}</h2>
+      ${info(r)}
+      <div class="row" style="margin-top:12px">
+        <a class="btn btn-primary" href="/admin/schools?request=${encodeURIComponent(r.id)}">➕ Create school</a>
+        ${act(r, 'done', '👍 Mark done')}
+        ${act(r, 'declined', 'Decline', 'btn', `Decline the request from ${r.school_name}? Remember to reply by email.`)}
+      </div></article>`)}</div>`
+    : emptyState({ emoji: '🏫', title: 'No school requests waiting', text: 'When a teacher fills in "Set up my school" on /teachers, it shows up here. The page promises an answer within 1 school day.' });
+  return html`${openList}
+    <p class="small muted">The site sends no email: reply to each request from your own mail. Requests are deleted 1 year after they are closed.</p>
+    ${closed.length ? html`<h2 class="stats-h">Recently closed</h2><div class="panel tblwrap"><table class="tbl rtable"><thead><tr><th>School</th><th>Answer</th><th>Closed</th><th></th></tr></thead><tbody>
+      ${closed.map(r => html`<tr><td><b>${r.school_name}</b> <span class="small muted">· <span dir="ltr">${r.email}</span></span></td>
+        <td data-label="Answer">${r.status === 'done' ? (r.school_slug ? html`✅ <a href="/school/${r.school_slug}?tab=people">${r.linked_school}</a>` : '✅ done') : '✖️ declined'}</td>
+        <td data-label="Closed">${when(r.closed_at)}</td><td>${act(r, 'reopen', 'Reopen', 'btn btn-sm')}</td></tr>`)}
+    </tbody></table></div>` : ''}`;
+}
 /** The Family row of the users tab: a child's family, or a grown-up's children, each with Break link. */
 function familyCell(u) {
   const l = family.adminLinks(u.id);
@@ -201,10 +229,10 @@ function aiSpendPanel() {
 router.get('/admin', (req, res) => {
   const tab = TABS.some(t => t[0] === req.query.tab) ? req.query.tab : 'queue';
   const c = mod.counts();
-  const n = { queue: c.queue, reports: c.reports, chat: c.chat, links: family.openReportCount() };
-  const content = { queue: queueTab, reports: reportsTab, chat: chatTab, links: linksTab, users: usersTab, audit: auditTab }[tab](req);
+  const n = { queue: c.queue, reports: c.reports, chat: c.chat, links: family.openReportCount(), schoolreq: schoolRequests.openCount() };
+  const content = { queue: queueTab, reports: reportsTab, chat: chatTab, links: linksTab, schoolreq: schoolRequestsTab, users: usersTab, audit: auditTab }[tab](req);
   const body = html`
-  <div class="pagehead"><h1>🛡️ Admin</h1><div class="row"><a class="btn btn-primary" href="/admin/stats"><span aria-hidden="true">📊</span> Stats</a><a class="btn" href="/admin/schools"><span aria-hidden="true">🏫</span> Schools</a><a class="btn" href="/admin/billing"><span aria-hidden="true">💳</span> Billing</a></div></div>
+  <div class="pagehead"><h1>🛡️ Admin</h1><div class="row"><a class="btn btn-primary" href="/admin/stats"><span aria-hidden="true">📊</span> Stats</a><a class="btn" href="/admin/schools"><span aria-hidden="true">🏫</span> Schools${n.schoolreq ? html`&nbsp;<span class="badge" aria-label="${n.schoolreq} school request${n.schoolreq === 1 ? '' : 's'} waiting">${n.schoolreq}</span>` : ''}</a><a class="btn" href="/admin/billing"><span aria-hidden="true">💳</span> Billing</a></div></div>
   ${aiSpendPanel()}
   <nav class="tabs" aria-label="Admin sections">${TABS.map(([k, e, l]) => html`<a href="/admin?tab=${k}" ${k === tab ? raw('aria-current="page"') : ''}><span aria-hidden="true">${e}</span>&nbsp;${l}${n[k] ? html`&nbsp;<span class="badge">${n[k]}</span>` : ''}</a>`)}</nav>
   ${content}
@@ -271,6 +299,30 @@ function costSection(c) {
     Builder rows are kept 35 days.</p>
   </section>`;
 }
+/** The funnels (services/funnel.js), weekly: the last 7 days against the 7 before, one table per funnel. */
+function funnelSection(r) {
+  const pct = c => (c === null ? '–' : `${c > 0 ? '+' : c < 0 ? '−' : ''}${Math.abs(c)}%`);
+  const changeCell = (s, guard) => {
+    if (s.change === null) return s.last ? 'new' : '–';
+    return guard && s.change < 0 ? html`<span class="chip-s warn">${pct(s.change)}</span>` : pct(s.change);
+  };
+  const range = d => `${shortDay(d.from)} – ${shortDay(d.to)}`;
+  return html`
+  <h2 class="stats-h" id="funnels">Funnels, last 7 days vs the 7 before</h2>
+  <div class="stats-grid stats-funnels">
+    ${r.funnels.map(f => html`<section class="panel" aria-labelledby="funnel-${f.key}"><h2 id="funnel-${f.key}">${f.title}</h2>
+      <div class="tblwrap"><table class="tbl"><thead><tr><th>Step</th><th title="${range(r.last)}">Last 7 days</th><th title="${range(r.prev)}">Week before</th><th>Change</th>${f.guardrail ? '' : html`<th>Of step before</th>`}</tr></thead><tbody>
+        ${f.steps.map((s, i) => html`<tr><td>${s.label}</td><td>${int(s.last)}</td><td>${int(s.prev)}</td><td>${changeCell(s, f.guardrail)}</td>${f.guardrail ? '' : html`<td>${i === 0 ? '' : s.rate === null ? '–' : `${s.rate}%`}</td>`}</tr>`)}
+      </tbody></table></div></section>`)}
+  </div>
+  <p class="small muted">Daily totals counted on the server where each step happens (no cookies, no trackers, no ids:
+  one number per step per day, so steps compare totals, not the same people). Page views are the parent pages
+  (/parents, its guides, /grown-ups) and the teacher pages (/teachers, /plans/schools), counted like visits. Paid and
+  School plan: a subscription's first invoice once it is paid (an invoiced school counts when it pays, not when the
+  invoice is sent), from Stripe's webhook (gifted plans don't count). Checkout started: once per family per try (opening
+  Checkout again within a day doesn't add to it). A teacher page reloaded after sending the form isn't a new view. Counting started
+  with this update, so the first two weeks read low. Days are UTC.</p>`;
+}
 const gameLink = g => html`<a href="/g/${g.slug}">${g.icon} ${g.title}</a>${g.source === 'seed' ? html` <span class="chip-s">launch</span>` : ''}`;
 
 router.get('/admin/stats', (req, res) => {
@@ -298,6 +350,7 @@ router.get('/admin/stats', (req, res) => {
   </div>
   ${k.ai.ok ? '' : html`<p class="notice warn">The AI ${k.ai.reason} cap is reached: the Builder is using the offline builder until it resets.</p>`}
   ${costSection(cost)}
+  ${funnelSection(funnel.weekly())}
 
   <h2 class="stats-h">Last ${days} days</h2>
   <div class="charts">
@@ -468,6 +521,11 @@ router.post('/api/admin/users/:id/photo/remove', (req, res) => (photos.removePho
 router.post('/api/admin/users/:id/unban', (req, res) => { const r = mod.unbanUser(req.user, req.params.id); res.status(r.ok ? 200 : 400).json(r); });
 router.get('/api/admin/audit', (req, res) => res.json({ rows: mod.auditLog(200) }));
 // Family links (services/family.js): a link report done, its grown-up banned (every link of theirs ends), a link broken.
+router.post('/api/admin/school-requests/:id/:what', (req, res) => {
+  const { id, what } = req.params;
+  const ok = what === 'reopen' ? schoolRequests.reopen(req.user, id) : schoolRequests.close(req.user, id, what);
+  return ok ? res.json({ ok: true }) : res.status(404).json({ error: 'That request is not waiting (or is gone).' });
+});
 router.post('/api/admin/link-reports/:id/resolve', (req, res) => (family.resolveReport(req.user, req.params.id) ? res.json({ ok: true }) : res.status(404).json({ error: 'Report not found.' })));
 router.post('/api/admin/link-reports/:id/ban', (req, res) => {
   const r = family.reportById(req.params.id); const fam = r && family.familyById(r.family_id);

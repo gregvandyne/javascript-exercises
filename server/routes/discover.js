@@ -1,7 +1,7 @@
 // Home rails, search (games + builders), live counts.
 import { Router } from 'express';
 import { html, raw } from '../views/html.js';
-import { page, parentsKey } from '../views/layout.js';
+import { page, parentsKey, signedOut } from '../views/layout.js';
 import { rail, cardGrid, emptyState, avatar, coverArt, categoryLabel } from '../views/components.js';
 import * as games from '../services/games.js';
 import * as presence from '../services/presence.js';
@@ -54,10 +54,11 @@ router.get('/', (req, res) => {
     ...games.CATEGORIES.map(([k, e]) => rail({ title: categoryLabel(k, t), emoji: e, games: games.listVisible(u, { category: k, limit: 12 }), user: u, id: `cat-${k}`, more: `/search?cat=${k}` })),
   ];
   // The page's heading says what the site is. Signed out (new visitors, teachers, search engines) it is shown with a
-  // short introduction; signed in, players know where they are, so it is only there for screen readers.
+  // short introduction; signed in, players know where they are, so it is only there for screen readers. A guest (one
+  // tap on Play) still counts as signed out: a parent who tried a game keeps the parent and teacher buttons.
   // Text still in English on this language's page is marked so (screen readers, right-to-left pages).
   const fb = key => (t.own(key) ? '' : raw(' lang="en" dir="ltr"'));
-  const intro = u ? html`<h1 class="sr-only"${fb('home.intro.heading')}>${t('home.intro.heading')}</h1>`
+  const intro = !signedOut(u) ? html`<h1 class="sr-only"${fb('home.intro.heading')}>${t('home.intro.heading')}</h1>`
     : html`<section class="home-intro" aria-labelledby="home-h1"><h1 id="home-h1"${fb('home.intro.heading')}>${t('home.intro.heading')}</h1><p${fb('home.intro.text')}>${t('home.intro.text')}</p>
       <span class="row home-who"><a class="btn" href="${lp('/parents')}"><span aria-hidden="true">👪</span> <span${fb(parentsKey(t, 'home.intro.parents'))}>${t(parentsKey(t, 'home.intro.parents'))}</span></a><a class="btn" href="${lp('/teachers')}"><span aria-hidden="true">🍎</span> <span${fb('home.intro.teachers')}>${t('home.intro.teachers')}</span></a></span>
       <ul class="chips home-subjects" aria-label="${t('teachers.subjects.h')}">${HUBS.map(h => html`<li><a class="chip" href="${lp(`/learn/${h.slug}`)}"><span aria-hidden="true">${h.emoji}</span><span${fb(`learn.hubs.${h.key}.name`)}>${t(`learn.hubs.${h.key}.name`)}</span></a></li>`)}</ul></section>`;

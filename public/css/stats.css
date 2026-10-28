@@ -42,3 +42,6 @@
 .stats-cost>:last-child{margin-bottom:0}
 .stats-cost .tbl th,.stats-cost .tbl td:not(:first-child){white-space:nowrap}
 @media (max-width:520px){.stats-cost .tbl{font-size:.88rem}.stats-cost .tbl th,.stats-cost .tbl td{padding:8px 6px}}
+/* Funnels: three small tables under their heading. */
+.stats-h+.stats-funnels{margin-top:0}
+.stats-funnels+p{margin:12px 0 0}

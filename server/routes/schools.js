@@ -11,6 +11,7 @@ import { avatar, emptyState, gradeLabel, BRAND, appMark, notYou, coverArt, cardG
 import { requireUser, requireAdmin, getUserByName, accountKind } from '../auth.js';
 import { rateLimit } from '../services/ratelimit.js';
 import * as S from '../services/schools.js';
+import * as SR from '../services/school-requests.js';
 import { teacherLessonsPanel, studentLessonsPanel } from './lessons.js';
 import * as P from '../services/progress.js';
 import * as games from '../services/games.js';
@@ -85,11 +86,18 @@ const sameNamesError = (req, s, matches) => req.t('school.errors.sameName', { co
 // ================================================================ platform admin: Schools
 router.get('/admin/schools', requireAdmin, (req, res) => {
   const list = S.listSchools(); const admins = S.schoolAdminNames();
+  // ?request=<id>: "Create school" from a "Set up my school" request (/admin?tab=schoolreq). The name is filled in, and
+  // adding the school marks the request done.
+  const reqRow = SR.getRequest(req.query.request);
+  const fromRequest = reqRow && reqRow.status === 'open' ? reqRow : null;
+  const waiting = SR.openCount();
   const body = html`
-  <div class="pagehead"><h1>🏫 Schools</h1></div>
+  <div class="pagehead"><h1>🏫 Schools</h1>${waiting ? html`<a class="btn" href="/admin?tab=schoolreq">School requests&nbsp;<span class="badge">${waiting}</span></a>` : ''}</div>
   <section class="panel"><h2>Add a school</h2>
+    ${fromRequest ? html`<p class="notice">From the request by <span dir="ltr">${fromRequest.email}</span> (${fromRequest.country}, about ${fromRequest.students} students). Adding the school marks the request done.</p>` : ''}
     <form class="row" data-api="/api/admin/schools" novalidate>
-      <label class="sr-only" for="sn">School name</label><input class="input grow" id="sn" name="name" maxlength="80" placeholder="School name" required>
+      ${fromRequest ? html`<input type="hidden" name="request" value="${fromRequest.id}">` : ''}
+      <label class="sr-only" for="sn">School name</label><input class="input grow" id="sn" name="name" maxlength="80" placeholder="School name" required value="${fromRequest ? fromRequest.school_name.slice(0, 80) : ''}">
       <button class="btn btn-primary" type="submit">➕ Add school</button>
     </form>
     <p class="small muted">Next, appoint its school admin on the school's People tab.</p>
@@ -104,6 +112,8 @@ router.get('/admin/schools', requireAdmin, (req, res) => {
 router.post('/api/admin/schools', requireAdmin, (req, res) => {
   const r = S.createSchool(req.user, { name: b(req).name });
   if (!r.ok) return err(req, res, r.code);
+  // Made from a "Set up my school" request: that request is done, and remembers the school.
+  if (b(req).request) SR.close(req.user, String(b(req).request), 'done', { schoolId: r.school.id });
   // The first job for a new school is appointing its school admin.
   res.json({ ok: true, redirect: `/school/${r.school.slug}?tab=people&new=1` });
 });

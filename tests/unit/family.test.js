@@ -17,6 +17,7 @@ const { createApp } = await import('../../server/app.js');
 const { q, uid, today } = await import('../../server/db.js');
 const auth = await import('../../server/auth.js');
 const F = await import('../../server/services/family.js');
+const funnel = await import('../../server/services/funnel.js');
 const B = await import('../../server/services/billing.js');
 const S = await import('../../server/services/schools.js');
 const chat = await import('../../server/services/chat.js');
@@ -73,6 +74,8 @@ const student = S.createSchoolAccount(teacher, oak.id, { rosterName: 'Stu Dent' 
 test('grown-up sign-up: 12+ characters, the parent-or-guardian box, no friend code, a family, audited; lands on /family', async () => {
   const bad = async (body, field, status = 400) => { const r = await call(null, '/api/grown-ups/signup', { method: 'POST', body }); assert.equal(r.status, status, r.text); assert.equal(r.json.field, field); };
   const ok = { username: 'MumOfTwo', password: 'twelve-chars-ok', confirm: 'twelve-chars-ok', adult: '1' };
+  const signups = () => (q.get("SELECT SUM(n) n FROM funnel_counts WHERE step='parent.signup'").n || 0);
+  const before = signups();
   await bad({ ...ok, password: 'short-pw-1', confirm: 'short-pw-1' }, 'password');
   await bad({ ...ok, confirm: 'something-else' }, 'confirm');
   await bad({ ...ok, adult: undefined }, 'adult');
@@ -86,6 +89,8 @@ test('grown-up sign-up: 12+ characters, the parent-or-guardian box, no friend co
   assert.deepEqual(JSON.parse(audits('user.signup', u.id)[0].details), { grownup: true });
   assert.equal(audits('family.create', F.familyOfOwner(u.id).id).length, 1);
   await bad({ ...ok }, 'username');   // taken
+  assert.equal(signups(), before + 1, 'the funnel counts the one made account (services/funnel.js), not the refused tries');
+  assert.ok(funnel.STEPS.includes('parent.signup'));
   // Signing in: a grown-up lands on /family, and a ?next= only to a page they may open.
   let li = await call(null, '/api/auth/login', { method: 'POST', body: { username: 'MumOfTwo', password: 'twelve-chars-ok' } });
   assert.equal(li.json.redirect, '/family');
@@ -142,7 +147,7 @@ test('grown-up sessions follow the staff rules (12 hours idle, 7 days at most); 
 // ---------------------------------------------------------------- the access matrix
 // Route groups and what each kind of account gets. 'ok' = 200 (or a redirect to a page they may open).
 const GROUPS = {
-  builder: [['GET', '/build'], ['POST', '/api/studio/new']],
+  builder: [['POST', '/api/studio/new']],   // GET /build is a short "the Builder is for kids' accounts" page (below)
   studio: [['GET', '/studio/abc'], ['GET', '/api/studio/abc']],
   chat: [['GET', '/chat'], ['GET', '/api/chat'], ['POST', '/api/chat/someone']],
   friends: [['GET', '/friends'], ['GET', '/api/friends'], ['POST', '/api/friends/add']],
@@ -169,6 +174,10 @@ test('access matrix: a grown-up gets 404 on every kid route group, and can play 
   for (const p of ['/', '/search', '/parents', '/safety', '/grown-ups', '/family', '/family/link', ...(slug ? [`/g/${slug}`, `/play/${slug}`] : [])]) {
     const r = await go(p); assert.equal(r.status, 200, `${p} -> ${r.status}`);
   }
+  // /build explains instead of a 404, and builds nothing.
+  const build = await go('/build');
+  assert.equal(build.status, 200); assert.match(build.text, /The Builder is for kids&#39; accounts/);
+  assert.doesNotMatch(build.text, /id="newgame"|data-template=/);
   // Nav: Home, Search and Family; no Build, Friends or Me tab.
   const home = await go('/');
   assert.match(home.text, /href="\/family"/); assert.doesNotMatch(home.text, /class="navlink" href="\/build"/); assert.doesNotMatch(home.text, /class="tab" href="\/me"/);
@@ -218,18 +227,19 @@ test('billing off: no family pages, no panel, no /parents link; grown-ups stay f
   }
   assert.equal((await as(k)('/family')).status, 404, 'off: still no /family for a kid');
   assert.equal((await call(li.cookie, '/api/auth/logout', { method: 'POST', body: {} })).status, 200, 'the grown-up can sign out');
-  assert.equal((await as(g)('/build')).status, 404, 'still no Builder for a grown-up');
+  const b = await as(g)('/build'); assert.equal(b.status, 200); assert.doesNotMatch(b.text, /id="newgame"|class="btn btn-primary" href="\/family"/, 'still no Builder for a grown-up, and no family button while families are off');
   config.stripeApiKey = 'rk_test_fake';
   assert.match((await call(null, '/parents')).text, /href="\/grown-ups"/, 'on: /parents links to /grown-ups');
 });
 
 // ---------------------------------------------------------------- codes and the child's answer
-test('codes: K7Q-4MZ9 shape with a digit, stored only as an HMAC, 1 hour, one open per child, single use', async () => {
+test('codes: K7Q-4MZ9 shape with a digit, stored only as an HMAC, 24 hours, one open per child, single use', async () => {
   for (let i = 0; i < 300; i++) { const c = F.newCodeText(); assert.match(c, /^[A-HJKMNP-Z2-9]{3}-[A-HJKMNP-Z2-9]{4}$/); assert.match(c, /[2-9]/); }
   const k = kid(); const g1 = grownup(); const g2 = grownup();
   const c1 = await codeFor(k);
   const row = q.get('SELECT * FROM family_link_codes WHERE child_id=?', k.id);
-  assert.equal(row.expires_at - row.created_at, HOUR);
+  assert.equal(row.expires_at - row.created_at, 24 * HOUR);
+  assert.equal(F.CODE_TTL, 24 * HOUR);
   assert.ok(!JSON.stringify(q.all('SELECT * FROM family_link_codes')).includes(c1.replace('-', '')), 'the code itself is never stored');
   assert.ok(F.openCode(k.id));
   // A new code ends the old one.
@@ -245,7 +255,7 @@ test('codes: K7Q-4MZ9 shape with a digit, stored only as an HMAC, 1 hour, one op
   q.run('UPDATE family_children SET requested_at=? WHERE child_id=?', Date.now() - DAY - 1000, k.id);
   assert.equal(F.pendingOf(k.id), null);
   const c3 = await codeFor(k);
-  // Expired after an hour.
+  // Expired after 24 hours.
   q.run('UPDATE family_link_codes SET expires_at=? WHERE child_id=? AND used_at IS NULL', Date.now() - 1, k.id);
   assert.equal((await as(g2)('/api/family/link', { method: 'POST', body: { code: c3 } })).status, 400);
   assert.equal((await as(g2)('/api/family/link', { method: 'POST', body: { code: 'not a code' } })).status, 400);
@@ -539,6 +549,62 @@ test('the child\'s panel: a safety line next to the code; an English fallback is
       else assert.ok(r.text.includes(`<span lang="en" dir="ltr">${s.replace(/'/g, '&#39;')}</span>`) || r.text.includes(`<span lang="en" dir="ltr">${s}</span>`), `${code} ${key}: English, marked as English`);
     }
   }
+});
+
+test('grown-up sign-up and sign-in in German: the translated sign-in name label and hint, no English left', async () => {
+  const de = i18n.tFor('de');
+  assert.ok(de.own('family.signup.signInName') && de.own('family.signup.signInNameHint'), 'German has the sign-in name label and hint');
+  for (const path of ['/grown-ups/signup', '/grown-ups/login']) {
+    const r = await call('lang=de', path);
+    assert.equal(r.status, 200, path);
+    assert.match(r.text, /<label for="username">Ihr Anmeldename<\/label>/, path);
+    assert.doesNotMatch(r.text, /Your sign-in name|Your real name is fine|<label for="username">Kontoname</, `${path}: no English, not the old label`);
+  }
+  assert.ok((await call('lang=de', '/grown-ups/signup')).text.includes(`<span class="hint">${de('family.signup.signInNameHint')}</span>`), 'the German hint');
+  assert.match((await call(null, '/grown-ups/signup')).text, /<label for="username">Your sign-in name<\/label>/, 'English has the new label');
+});
+
+test('/me: a kid\'s "For grown-ups" card comes first, above the tiles, and says the code lasts 24 hours', async () => {
+  const k = kid();
+  const me = (await as(k)('/me')).text;
+  const card = me.indexOf('id="grownups"'), tiles = me.indexOf('class="metiles"'), settings = me.indexOf('class="mesettings"');
+  assert.ok(card > 0 && tiles > 0 && card < tiles && card < settings, 'the card is above the tiles and the settings');
+  assert.equal(me.split('id="grownups"').length, 2, 'only once');
+  assert.match(me, /It works once, for 24 hours\./);
+  assert.doesNotMatch(me, /1 hour/);
+  // Not for a school student or a guest, and not while family pages are off.
+  for (const u of [auth.getUser(student.id), auth.createGuest()]) assert.doesNotMatch((await as(u)('/me')).text, /id="grownups"/);
+  config.stripeApiKey = '';
+  try { assert.doesNotMatch((await as(k)('/me')).text, /id="grownups"/); } finally { config.stripeApiKey = 'rk_test_fake'; }
+});
+
+test('Studio state: the daily-limit card may point to Me › For grown-ups only for a kid with no grown-up yet', async () => {
+  const k = kid(); const g = publicGame(k);
+  const state = async u => { const r = await as(u)(`/api/studio/${g.id}`); assert.equal(r.status, 200, r.text); return r.json; };
+  assert.equal((await state(k)).grownUpLink, true, 'a kid with no grown-up linked');
+  // The Studio page has the (empty) card, and no plan or price anywhere.
+  const page = await as(k)(`/studio/${g.id}`);
+  assert.match(page.text, /id="st-limit" role="status" hidden/);
+  const main = page.text.slice(page.text.indexOf('<main'), page.text.indexOf('</main>'));
+  assert.doesNotMatch(main, /\/plans|\/grown-ups|\/family|\$\d|family plan|Family plan|per month/, 'the Studio itself (the menu is the layout\'s)');
+  // The card's words (studio.js syncLimit): no price, plan, countdown or /plans.
+  const en = i18n.tFor('en');
+  for (const k of ['heading', 'text', 'publish', 'play', 'others', 'grownUp', 'grownUpWhere']) {
+    assert.doesNotMatch(en(`js.studio.limitCard.${k}`), /plan|price|\$|€|buy|pay|upgrade|hour|minute|\d/i, k);
+  }
+  // Asked (pending) or linked: no line. Families off: no line.
+  const mum = grownup();
+  assert.equal((await as(mum)('/api/family/link', { method: 'POST', body: { code: await codeFor(k) } })).status, 200);
+  assert.equal((await state(k)).grownUpLink, false, 'a request is waiting');
+  assert.equal((await as(k)('/api/me/family/answer', { method: 'POST', body: { answer: 'yes' } })).status, 200);
+  assert.equal((await state(k)).grownUpLink, false, 'linked');
+  const k2 = kid(); const g2 = publicGame(k2);
+  config.stripeApiKey = '';
+  try { assert.equal((await as(k2)(`/api/studio/${g2.id}`)).json.grownUpLink, false, 'family pages off'); } finally { config.stripeApiKey = 'rk_test_fake'; }
+  // A school student is never pointed there.
+  const sg = publicGame(auth.getUser(student.id));
+  const sr = await as(auth.getUser(student.id))(`/api/studio/${sg.id}`);
+  if (sr.status === 200) assert.equal(sr.json.grownUpLink, false);
 });
 
 test('before BILLING_PUBLIC: family pages only for a browser with the preview cookie; ?bpreview sets it, a wrong token never does', async () => {

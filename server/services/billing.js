@@ -15,6 +15,7 @@ import { log } from './log.js';
 import { register } from './jobs.js';
 import * as S from './stripe.js';
 import { registerPaidBudget } from './ai-budget.js';
+import * as funnel from './funnel.js';
 
 const DAY = 86400e3;
 export const WEBHOOK_PATH = '/api/billing/webhook';
@@ -340,7 +341,18 @@ function applySubscription(sub, { event = null, session = null, openInvoices = [
   if (risk?.flag === 'duplicate' && prev?.flag !== 'duplicate') audit(null, 'billing.duplicate', target, { subscription: sub.id, kept: risk.kept || null, refunded: !!risk.refunded });
   if (session) q.run('DELETE FROM billing_checkouts WHERE session_id=?', session.id);
   if (event) setEventResult(event, 'ok');
-  return { result: 'ok', row: q.get('SELECT * FROM billing_subscriptions WHERE stripe_subscription_id=?', sub.id) };
+  const saved = q.get('SELECT * FROM billing_subscriptions WHERE stripe_subscription_id=?', sub.id);
+  // Funnel counts (services/funnel.js): a subscription's first invoice (subscription_create) seen paid for the first
+  // time, while it entitles its owner. Not a school's invoice that is only issued (send_invoice: entitled before it is
+  // paid), not a renewal or a seat change, not one coming back from past_due, not a trial. Counted in this transaction,
+  // so a retried event can't count it twice.
+  const firstPaid = !!saved.latest_paid_at && saved.latest_billing_reason === 'subscription_create' && saved.status !== 'trialing'
+    && !(prev && prev.latest_paid_at && prev.latest_invoice_id === saved.latest_invoice_id);
+  if (firstPaid && entitledRow(saved, t)) {
+    if (owner.owner_kind === 'family' && PLANS_OF.family.includes(plan)) funnel.bump('parent.paid');
+    else if (owner.owner_kind === 'school' && plan === 'school') funnel.bump('teacher.plan');
+  }
+  return { result: 'ok', row: saved };
 }
 
 /**

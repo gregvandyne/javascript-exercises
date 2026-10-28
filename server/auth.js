@@ -44,6 +44,8 @@ function setCookie(res, name, value, maxAgeSec) {
 
 const ANIMALS = ['Fox', 'Panda', 'Otter', 'Koala', 'Tiger', 'Penguin', 'Dolphin', 'Falcon', 'Lynx', 'Yeti', 'Robot', 'Dragon', 'Shark', 'Wolf', 'Comet', 'Rocket'];
 export const AVATARS = ['🦊', '🐼', '🦦', '🐨', '🐯', '🐧', '🐬', '🦅', '🐱', '🦖', '🤖', '🐉', '🦈', '🐺', '☄️', '🚀', '🦁', '🐸', '🦄', '👾', '🐙', '🦋', '🐢', '🦉'];
+/** A grown-up account's picture: a plain person on a neutral colour, never a kid's animal emoji. */
+export const GROWNUP_AVATAR = '👤', GROWNUP_COLOR = '#64748b';
 export const COLORS = ['#2f6bff', '#ff5c5c', '#16a34a', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4', '#f97316'];
 const pick = a => a[Math.floor(Math.random() * a.length)];
 function friendCode() { for (;;) { const c = Array.from({ length: 6 }, () => 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'[crypto.randomInt(31)]).join(''); if (!q.get('SELECT 1 FROM users WHERE friend_code=?', c)) return c; } }
@@ -55,7 +57,7 @@ export function createUser({ username, password, displayName, role = 'player', i
   const hash = password ? bcrypt.hashSync(password, BCRYPT_COST) : null;
   const grownup = accountType === 'grownup' && !isGuest;
   q.run('INSERT INTO users(id, username, display_name, password_hash, role, is_guest, avatar, color, friend_code, created_at, last_seen, account_type) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)',
-    id, username, displayName || username, hash, grownup ? 'player' : role, isGuest ? 1 : 0, avatar || pick(AVATARS), color || pick(COLORS), grownup ? null : friendCode(), now(), now(), grownup ? 'grownup' : 'kid');
+    id, username, displayName || username, hash, grownup ? 'player' : role, isGuest ? 1 : 0, avatar || (grownup ? GROWNUP_AVATAR : pick(AVATARS)), color || (grownup ? GROWNUP_COLOR : pick(COLORS)), grownup ? null : friendCode(), now(), now(), grownup ? 'grownup' : 'kid');
   return getUser(id);
 }
 /** A grown-up account (users.account_type): it can play games and look after a family, nothing else (server/routes/family.js). */

@@ -15,6 +15,8 @@ import { buildStatus } from '../builder/turns.js';
 import { publicHost } from '../site.js';
 import { loginGoogle, googleNotice, loginJoinLink, meGooglePanel, noPasswordText } from './google.js';
 import { meFamilyPanel, nextFor } from './family.js';
+import { familiesOn } from '../services/family.js';
+import * as funnel from '../services/funnel.js';
 
 export const router = Router();
 export const safeNext = n => (typeof n === 'string' && /^\/(?!\/)[\w\-/?=&%.#]*$/.test(n) ? n : '/');
@@ -31,6 +33,17 @@ export function homeFor(u) {
   return '/';
 }
 
+/** "Grown-up or teacher?" under the kid form's heading: parents to the grown-up sign-in or sign-up (while paid-plan
+ *  pages are on; the parent page before that), teachers to /teachers. Not for a guest keeping their progress. */
+function grownupLine(req, isSignup) {
+  // Before parents' accounts open (familiesOn off) the parents' link goes to the parent page, so the sign-in line
+  // doesn't promise a sign-in page: it says "Oomba Academy for parents" instead.
+  const on = familiesOn(req);
+  const t = req.t; const key = isSignup ? 'auth.page.grownupSignup' : on ? 'auth.page.grownupLogin' : 'auth.page.grownupLoginSoon';
+  const grownup = on ? (isSignup ? '/grown-ups/signup' : '/grown-ups/login') : '/parents';
+  if (!t.own(key)) return '';   // until this language has the line
+  return html`<p class="center small grownup-line">${tHtml(t, key, { grownup, teachers: '/teachers' })}</p>`;
+}
 function authPage(req, res, mode) {
   const t = req.t;
   const next = safeNext(req.query.next);
@@ -43,6 +56,7 @@ function authPage(req, res, mode) {
       <div class="center" style="font-size:3rem" aria-hidden="true">${isSignup ? '🎉' : '👋'}</div>
       <h1 class="center">${isSignup ? (upgrading ? t('auth.page.headingUpgrade') : t('auth.page.headingSignup')) : t('auth.page.headingLogin')}</h1>
       <p class="center muted">${isSignup ? t('auth.page.introSignup') : t('auth.page.introLogin')}</p>
+      ${upgrading ? '' : grownupLine(req, isSignup)}
       ${!isSignup && (req.query.signedout === '1' || req.sessionEnded) ? html`<p class="notice warn" role="status">${t('auth.page.signedOut')}</p>` : ''}
       ${!isSignup && req.query.moved === '1' && publicHost() ? html`<p class="notice" role="status">${t('auth.page.moved', { site: publicHost() })}</p>` : ''}
       ${isSignup ? '' : googleNotice(req)}
@@ -105,6 +119,7 @@ router.post('/api/auth/signup', (req, res) => {
     auth.startSession(res, u.id, req.headers['user-agent']); audit(u.id, 'user.signup', u.id);
   }
   allow(`signup:${ip}`, SIGNUP.perHour, 3600e3);
+  funnel.bump('kid.signup');   // the guardrail: a daily total of new kid accounts (a guest keeping their progress too)
   if (req.localeSource === 'cookie') saveUserLang(u, req.locale); // a language picked before signing up comes along
   if (req.themeSource === 'cookie') saveUserTheme(u, req.theme);   // and so does a theme
   res.json({ ok: true, user: auth.publicUser(u) });
@@ -304,9 +319,13 @@ router.get('/me', auth.requireUser, (req, res) => {
     ['💬', t('me.tiles.chat'), '/chat'],
     u.role === 'admin' && ['🛡️', t('me.tiles.admin'), '/admin'],
   ].filter(Boolean);
+  // A kid's "For grown-ups" card (the link code) comes first: the Builder's daily-limit card sends kids here to show a
+  // grown-up the code. Empty for everyone else (guests, school accounts, staff) and while family pages are off.
+  const family = meFamilyPanel(req);
   const body = html`
   <div class="pagehead">${avatar(u, 72)}<div style="flex:1;min-width:0"><h1 style="margin:0">${u.display_name}</h1><div class="muted"><bdi>@${u.username}</bdi>${u.is_guest ? ` · ${t('me.guestTag')}` : ''}</div>${u.is_guest ? '' : notYou(req, { withName: false, plain: auth.accountKind(u) !== 'student' })}</div></div>
   ${u.is_guest ? html`<div class="notice warn" style="margin-bottom:16px">${tHtml(t, 'me.guestNotice', { href: '/signup?next=/me' })}</div>` : ''}
+  ${family}
   <nav class="metiles" aria-label="${t('me.title')}">
     ${tiles.map(([e, l, h, sub]) => html`<a class="panel metile" href="${h}"><span class="metile-e" aria-hidden="true">${e}</span><span>${l}</span>${sub ? html`<span class="metile-sub">${sub}</span>` : ''}</a>`)}
   </nav>
@@ -332,6 +351,6 @@ router.get('/me', auth.requireUser, (req, res) => {
     <p class="muted">${t('me.chat.text')}</p>
     <label class="row" style="font-weight:700"><input type="checkbox" id="chat-toggle" ${u.chat_enabled ? raw('checked') : ''} style="width:24px;height:24px"> ${t('me.chat.toggle')}</label>
   </section>` : ''}
-  <div class="mesettings">${passwordPanel(req)}${meGooglePanel(req)}${meFamilyPanel(req)}${signOutPanel(req)}</div>`;
+  <div class="mesettings">${passwordPanel(req)}${meGooglePanel(req)}${signOutPanel(req)}</div>`;
   page(req, res, { title: t('me.title'), active: 'me', body, scripts: ['/js/me.js'] });
 });

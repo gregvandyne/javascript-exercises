@@ -59,7 +59,8 @@
     "family": "Famille",
     "plans": "Offres",
     "teachers": "Enseignants",
-    "parents": "Parents"
+    "parents": "Parents",
+    "grownups": "Adultes"
   },
   "errors": {
     "goHome": "Retour à l’accueil",
@@ -146,7 +147,10 @@
       "haveAccount": "Tu as déjà un compte ?",
       "signInLink": "Connecte-toi",
       "newHere": "Première visite ?",
-      "signupLink": "Crée un compte gratuit"
+      "signupLink": "Crée un compte gratuit",
+      "grownupLogin": "Tu es un adulte ou un enseignant ? <a href=\"{grownup}\">Connexion des parents</a> · <a href=\"{teachers}\">Enseignants, c’est par ici</a>",
+      "grownupLoginSoon": "Tu es un adulte ou un enseignant ? <a href=\"{grownup}\">Oomba Academy pour les parents</a> · <a href=\"{teachers}\">Enseignants, c’est par ici</a>",
+      "grownupSignup": "Tu es un adulte ou un enseignant ? <a href=\"{grownup}\">Parents, c’est par ici</a> · <a href=\"{teachers}\">Enseignants, c’est par ici</a>"
     },
     "api": {
       "tooManyGuests": "Trop d’invités depuis cet endroit. Réessaie plus tard.",
@@ -253,7 +257,7 @@
       "newCode": "Obtenir un nouveau code",
       "codeOpen": "Tu as un code qui marche encore. Tu l’as perdu ? Demandes-en un nouveau, et l’ancien ne marchera plus.",
       "codeLabel": "Ton code",
-      "codeHow": "Il marche une seule fois, pendant 1 heure. Avec ce code, un adulte peut relier son compte au tien sur {where}.",
+      "codeHowDay": "Il ne marche qu’une fois, pendant 24 heures. Un adulte peut relier son compte au tien avec ce code sur {where}.",
       "codeWarn": "Donne ce code seulement à ton parent ou à l’adulte qui s’occupe de toi, en personne. Ne le tape jamais dans le chat ou dans un jeu, et ne le donne jamais à quelqu’un en ligne.",
       "pending": "<b>Un adulte</b> veut relier son compte au tien. Dis oui seulement si c’est ton parent ou l’adulte qui s’occupe de toi. Si tu ne le connais pas, parles-en à un adulte en qui tu as confiance.",
       "pendingCheck": "Est-ce que tu as donné ton code toi-même à ton parent ou à l’adulte qui s’occupe de toi, en personne ? Sinon, touche Signaler.",
@@ -405,7 +409,8 @@
         "h": "Pas de publicité",
         "p1": "Il n’y a aucune publicité sur Oomba Academy. Rien n’est à vendre et rien ne s’affiche par-dessus un jeu.",
         "paid1": "Il n’y a aucune publicité sur Oomba Academy. Jouer est toujours gratuit. Tu n’as jamais rien à payer ici, et rien ne s’affiche par-dessus un jeu."
-      }
+      },
+      "setup": "Inscrire votre enfant"
     },
     "parents": {
       "title": "Pour les parents",
@@ -514,7 +519,7 @@
         "li10": "Gardez votre mot de passe secret. Vous êtes responsable de ce qui se passe dans votre compte adulte, y compris les achats.",
         "li11": "Pour éviter qu’un enfant achète quelque chose sur un appareil partagé, nous vous redemandons votre mot de passe avant que vous souscriviez ou modifiiez un abonnement.",
         "s4": "Relier un adulte à un enfant",
-        "li12": "L’enfant obtient un code court sur sa propre page Moi. Il fonctionne une seule fois, pendant 1 heure.",
+        "li16": "L’enfant reçoit un code court sur sa propre page Moi. Il fonctionne une seule fois, pendant 24 heures.",
         "li13": "Vous saisissez le code sur votre page famille.",
         "li14": "L’enfant doit dire <b>Oui</b> sur sa propre page. Il peut aussi dire <b>Non</b> ou <b>Signaler</b>.",
         "li15": "L’enfant peut à tout moment <b>Retirer le lien</b> ou <b>Signaler</b>. Un signalement met fin au lien immédiatement et est transmis à notre équipe.",
@@ -738,7 +743,7 @@
       },
       "linking": {
         "h": "Se relier à un enfant",
-        "li1": "<b>Le code :</b> votre enfant obtient un code court sur sa page Moi. Nous l’enregistrons sous une forme illisible. Il fonctionne une seule fois, pendant 1 heure.",
+        "li7": "<b>Le code :</b> votre enfant reçoit un code court sur sa page Moi. Nous le conservons sous forme brouillée. Il fonctionne une seule fois, pendant 24 heures.",
         "li2": "<b>L’enfant dit oui :</b> le lien ne démarre que lorsque votre enfant le confirme sur sa propre page. Il peut dire Non, ou le Signaler à notre équipe. Les signalements sont conservés tant qu’ils sont ouverts et supprimés 1 an après leur clôture.",
         "li3": "<b>Ce que vous voyez de votre enfant :</b> son nom d’utilisateur et son nom affiché, le nombre de messages supplémentaires de la famille pour le Constructeur qu’il a utilisés hier et depuis le début du mois, et s’il crée avec l’abonnement famille ou avec les messages gratuits.",
         "li4": "<b>Ce que vous ne voyez pas :</b> son activité en direct du jour (vous ne pouvez donc pas savoir quand il est en ligne), ses discussions, ses amis ou ses jeux, les messages facturés à une école, ni même s’il fait partie d’une école.",
@@ -770,6 +775,13 @@
         "li4": "<b>Durée de conservation :</b> le nom et l’e-mail du contact, l’adresse, la remarque et le numéro de bon de commande figurant dans notre base de données sont supprimés <b>2 ans</b> après la clôture de la demande. Stripe conserve l’adresse de l’école et le numéro de bon de commande avec ses factures (voir ci-dessous).",
         "li5": "<b>Les places</b> sont calculées à partir du nombre d’élèves actifs. La facturation n’utilise ni les noms ni le travail des élèves.",
         "li6": "<b>Les familles ne voient jamais l’activité en classe :</b> un adulte relié à un élève voit uniquement les messages supplémentaires de la famille utilisés par cet élève."
+      },
+      "schoolSetup": {
+        "h": "Demandes d’inscription d’une école",
+        "li1": "<b>Ce que nous conservons quand un enseignant ou un membre de la direction nous demande d’inscrire une école</b> (le formulaire de notre page pour les enseignants) : le nom de l’école, son rôle, son adresse e-mail professionnelle, le nombre approximatif d’élèves, le pays, la langue de la page et la date d’envoi. S’il était connecté à un compte adulte ou à un compte du personnel de l’école, nous conservons aussi le compte qui l’a envoyée. Le compte d’un invité n’est jamais conservé avec une demande.",
+        "li2": "<b>À quoi cela sert :</b> uniquement à inscrire l’école et à répondre à la demande. Nous n’envoyons pas de newsletter, et nous ne la partageons ni avec Stripe ni avec personne d’autre.",
+        "li3": "<b>Qui la voit :</b> uniquement notre équipe.",
+        "li4": "<b>Pendant combien de temps :</b> supprimée <b>1 an</b> après la clôture de la demande (ou 1 an après son envoi, si elle n’est jamais clôturée)."
       },
       "children": {
         "h": "Données des enfants",
@@ -873,7 +885,8 @@
       "saveFailed": "Nous n’avons pas pu enregistrer ça.",
       "badScore": "Score invalide.",
       "pickReason": "Choisis une raison."
-    }
+    },
+    "makeLike": "Crée un jeu comme celui-ci"
   },
   "play": {
     "backTo": "Retour à {title}",
@@ -1121,6 +1134,13 @@
       "ready": "✨ Prêt",
       "question": "💬 Une question",
       "stopped": "⚠️ Arrêté"
+    },
+    "grownup": {
+      "title": "Le Constructeur",
+      "heading": "Le Constructeur est réservé aux comptes enfants",
+      "text": "Les enfants créent leurs propres jeux avec le Constructeur, connectés à leur propre compte. Un compte adulte peut jouer et s’occuper d’une famille, mais il ne peut pas créer de jeux.",
+      "how": "Comment créer un jeu",
+      "safety": "Le Constructeur IA est-il sûr ?"
     }
   },
   "studio": {
@@ -1253,15 +1273,15 @@
     "kindRefusal": "Je ne peux pas t’aider pour ça. Créons plutôt quelque chose d’amusant ! Quel genre de jeu aimerais-tu ?",
     "scanStillFailing": "La vérification de sécurité n’est toujours pas contente. Touche « Réparer avec le Constructeur » pour réessayer.",
     "turnTimeout": "⏱️ Cette construction a dépassé notre limite de temps, alors je me suis arrêté. Ta version la plus récente est enregistrée. Dis-moi ce qu’il faut changer maintenant !",
-    "turnTimeoutNothing": "⏱️ Cette construction a dépassé notre limite de temps, alors je me suis arrêté avant de pouvoir enregistrer quoi que ce soit. Ça ne t’a pas coûté de tour, donc tu peux réessayer.",
+    "turnTimeoutNothing": "⏱️ Cette construction a dépassé notre limite de temps, alors je me suis arrêté avant de pouvoir enregistrer quoi que ce soit. Elle n’a pas utilisé de message pour le Constructeur, donc tu peux réessayer.",
     "errors": {
       "disabled": "La création est désactivée pour ce compte. Un adulte peut nous demander de la réactiver.",
       "empty": "Écris un message ou touche une idée d’abord.",
       "busy": "Le Constructeur travaille encore sur ton dernier message. Un instant !",
       "tooMany": "Tu as déjà 2 jeux en construction. Attends que l’un d’eux soit fini, puis réessaie.",
-      "limit": "Tu as utilisé tes {count} tours avec le Constructeur pour aujourd’hui. Reviens demain pour en avoir d’autres !",
+      "limit": "{count, plural, one {Tu as utilisé ton # message pour le Constructeur d’aujourd’hui.} other {Tu as utilisé tes # messages pour le Constructeur d’aujourd’hui.}} Reviens demain pour en avoir d’autres !",
       "muddled": "Le Constructeur s’est un peu emmêlé. Réessaie dans un moment.",
-      "resting": "Le Constructeur IA se repose en ce moment. Ton jeu et tes tours sont enregistrés, alors reviens un peu plus tard !",
+      "resting": "Le Constructeur IA se repose en ce moment. Ton jeu et tes messages pour le Constructeur sont enregistrés, alors reviens un peu plus tard !",
       "limitToday": "Tu as utilisé tous tes tours avec le Constructeur pour aujourd’hui. Il y en aura d’autres demain !",
       "limitClass": "Ta classe a utilisé tous ses tours avec le Constructeur pour aujourd’hui. Il y en aura d’autres demain !"
     },
@@ -1360,7 +1380,7 @@
         }
       }
     },
-    "cutOffNothing": "Le Constructeur a passé tellement de temps à planifier qu’il a manqué de place avant de pouvoir construire quoi que ce soit. Ton tour n’a pas été utilisé. Essaie de demander un ou deux changements à la fois.",
+    "cutOffNothing": "Le Constructeur a passé tellement de temps à planifier qu’il a manqué de place avant de pouvoir construire quoi que ce soit. Ça n’a pas utilisé de message pour le Constructeur. Essaie de demander un ou deux changements à la fois.",
     "followUps": {
       "cap": "Tu as envoyé {max, plural, one {# message en plus} other {# messages en plus}} pendant cette construction. Attends qu’elle soit finie, puis dis-m’en plus !",
       "refusedCap": "Attendons d’abord que le Constructeur finisse cette construction.",
@@ -1491,7 +1511,7 @@
     },
     "studio": {
       "docTitle": "Studio : {title} · Oomba Academy",
-      "turns": "Encore {left} tours sur {total} aujourd’hui",
+      "turns": "Encore {left} messages pour le Constructeur sur {total} aujourd’hui",
       "fixButton": "Réparer avec le Constructeur",
       "fixMessage": "Répare les problèmes de sécurité de la version {number}, s’il te plaît :",
       "buildFirst": "Crée d’abord quelque chose !",
@@ -1833,7 +1853,7 @@
       },
       "continue": "Continuer à construire",
       "continueMessage": "Continue avec mon dernier message, s’il te plaît.",
-      "notCounted": "Celui-ci ne t’a pas coûté de tour.",
+      "notCounted": "Celui-ci n’a pas utilisé de message pour le Constructeur.",
       "signedOutBuilding": "Ta session a été fermée. Le Constructeur continue de travailler sur ton jeu : reconnecte-toi pour le voir.",
       "gameGone": "Ce jeu a été supprimé, alors le Constructeur s’est arrêté.",
       "followups": {
@@ -1852,7 +1872,7 @@
         "retry": "Réessayer",
         "putBack": "Le remettre dans la zone de texte",
         "notRead": {
-          "limit": "Pas lu : plus de tours aujourd’hui",
+          "limit": "Pas lu : plus de messages pour le Constructeur aujourd’hui",
           "error": "Pas lu : le Constructeur s’est emmêlé",
           "stopped": "Pas lu : la construction s’est arrêtée",
           "chain": "Pas encore lu. Renvoie-le quand le Constructeur sera libre"
@@ -1860,10 +1880,10 @@
         "gotAi": "{count, plural, one {Message reçu. L’IA le lira après cette étape.} other {# messages reçus. L’IA les lira après cette étape.}}",
         "gotBlocks": "{count, plural, one {Message reçu. Le Constructeur le lira après cette étape.} other {# messages reçus. Le Constructeur les lira après cette étape.}}",
         "writingNow": "Du code est en train de s’écrire, alors ça se termine d’abord.",
-        "turnNote": "Les messages en plus ne coûtent pas de tour. Si le Constructeur a déjà fini, ton message lance une nouvelle construction et utilise 1 tour.",
+        "turnNote": "Les messages que tu envoies pendant la construction n’utilisent pas de message pour le Constructeur. Si le Constructeur a déjà fini, ton message lance une nouvelle construction et utilise 1 message pour le Constructeur.",
         "noUploadsHint": "Ajoute des images après cette construction",
         "announceRead": "Le Constructeur lit ton nouveau message",
-        "carriedNote": "Ton message a lancé une nouvelle construction (1 tour)"
+        "carriedNote": "Ton message a lancé une nouvelle construction (1 message pour le Constructeur)"
       },
       "eta": {
         "about": "En général, environ {time}",
@@ -1883,13 +1903,23 @@
       },
       "stillWorking": "Un instant, le Constructeur travaille encore !",
       "resting": {
-        "text": "😴 Le Constructeur IA se repose en ce moment. Il revient {when}. Ton jeu et tes tours sont enregistrés, alors reviens à ce moment-là !",
+        "text": "😴 Le Constructeur IA se repose en ce moment. Il revient {when}. Ton jeu et tes messages pour le Constructeur sont enregistrés, alors reviens à ce moment-là !",
         "today": "aujourd’hui à {time}",
         "tomorrow": "demain à {time}",
         "date": "le {date} à {time}"
       },
       "extra": "+{n} en plus ce mois-ci",
-      "turnsLeftToday": "Encore {left} aujourd’hui"
+      "turnsLeftToday": "Encore {left} aujourd’hui",
+      "limitCard": {
+        "heading": "Tu as utilisé tous tes messages pour le Constructeur d’aujourd’hui",
+        "text": "Ton jeu est enregistré, et de nouveaux messages pour le Constructeur arrivent demain. En attendant, tu peux :",
+        "textEmpty": "De nouveaux messages pour le Constructeur arrivent demain. En attendant, tu peux :",
+        "publish": "Publier ton jeu",
+        "play": "Jouer à des jeux",
+        "others": "Jouer aux jeux d’autres enfants",
+        "grownUp": "Un adulte peut relier son compte au tien :",
+        "grownUpWhere": "Moi › Pour les parents"
+      }
     }
   },
   "favorites": {
@@ -2774,7 +2804,9 @@
       "signOutFirst": "Déconnectez d’abord le compte ouvert sur cet appareil.",
       "needAdult": "Cochez la case pour indiquer que vous êtes parent ou tuteur et que vous avez 18 ans ou plus.",
       "short": "Utilisez au moins {min} caractères.",
-      "chosen": "Abonnement choisi : {plan}. Vous payez ensuite sur la page sécurisée de Stripe, puis vous ajoutez vos enfants."
+      "chosen": "Abonnement choisi : {plan}. Vous payez ensuite sur la page sécurisée de Stripe, puis vous ajoutez vos enfants.",
+      "signInName": "Votre nom de connexion",
+      "signInNameHint": "Vous pouvez utiliser votre vrai nom. 3 à 16 lettres sans accents (A à Z) ou chiffres, sans espaces. Les enfants ne le voient jamais."
     },
     "login": {
       "title": "Connexion adulte",
@@ -2817,14 +2849,14 @@
       "title": "Relier un enfant",
       "heading": "Relier un enfant",
       "step1": "Votre enfant se connecte, ouvre <b>Moi</b>, puis <b>Pour les parents</b>, et touche <b>Obtenir un code</b>.",
-      "step2": "Tapez le code ici. Il fonctionne une seule fois, pendant 1 heure.",
+      "step2Day": "Tapez le code ici. Il fonctionne une seule fois, pendant 24 heures.",
       "step3": "Votre enfant dit oui sur sa propre page Moi. En attendant, la demande reste en attente (jusqu’à 24 heures).",
       "label": "Code de votre enfant",
       "submit": "Envoyer la demande",
       "sent": "Demande envoyée. Votre enfant doit dire oui sur sa page Moi."
     },
     "errors": {
-      "badCode": "Ce code ne fonctionne pas. Un code fonctionne une seule fois, pendant 1 heure : demandez-en un nouveau à votre enfant.",
+      "badCodeDay": "Ce code ne fonctionne pas. Un code fonctionne une seule fois, pendant 24 heures : demandez-en un nouveau à votre enfant.",
       "already": "Vous avez déjà demandé à relier cet enfant, ou il est déjà relié.",
       "full": "Une famille peut relier jusqu’à {max} enfants.",
       "typeCode": "Tapez le code que votre enfant vous a donné.",
@@ -2876,7 +2908,7 @@
       "legal": "Les abonnements sont régis par nos <a href=\"/terms\">Conditions d’utilisation</a> et notre <a href=\"/refunds\">Politique de remboursement et de résiliation</a>.",
       "welcomePlan": "Votre abonnement est activé : {plan}. Merci !",
       "welcomeHeading": "Ajoutez maintenant votre enfant",
-      "welcomeStep2": "Touchez « Relier un enfant » ci-dessous et tapez le code. Il fonctionne une seule fois, pendant 1 heure.",
+      "welcomeStep2Day": "Touchez Relier un enfant ci-dessous et tapez le code. Il fonctionne une seule fois, pendant 24 heures.",
       "basicNote": "Votre abonnement Essentiel couvre un enfant : {name}. Vos autres enfants reliés créent avec les messages gratuits du jour. Pour couvrir jusqu’à {max} enfants, passez à l’abonnement famille dans « Gérer l’abonnement ».",
       "coversBasic": "Couvre 1 enfant.",
       "coversFamily": "Couvre jusqu’à {max} enfants.",
@@ -2988,12 +3020,41 @@
         "h": "Comment inscrire une école",
         "li1": "Écrivez à {email} en indiquant le nom de votre école et la personne qui s’en occupera (l’admin de l’école).",
         "li2": "Nous configurons l’école et le compte de l’admin de l’école. L’admin de l’école ajoute les enseignants et les élèves.",
-        "li3": "L’admin de l’école paie dans l’onglet Facturation de l’école : par carte, ou en demandant une facture ou un bon de commande."
+        "li3": "L’admin de l’école paie dans l’onglet Facturation de l’école : par carte, ou en demandant une facture ou un bon de commande.",
+        "li1form": "Remplissez le court formulaire de <a href=\"{href}\">la page pour les enseignants</a>. Un enseignant ou un membre de la direction peut l’envoyer.",
+        "li2day": "En 1 jour d’école maximum, nous configurons l’école et le compte de l’admin de l’école. L’admin de l’école ajoute les enseignants et les élèves."
       },
       "toBilling": "Aller à l’onglet Facturation de votre école",
       "contact": {
         "h": "Des questions ?",
         "p1": "Écrivez à {email}."
+      },
+      "calc": {
+        "h": "Combien cela coûterait-il ?",
+        "label": "Nombre d’élèves",
+        "button": "Calculer",
+        "result": "{seats, plural, one {# élève} other {# élèves}} × {price} = {total} par an",
+        "min": "Une offre école couvre au moins {min} élèves : une école plus petite paie donc pour {min}.",
+        "tax": "Les prix sont en dollars américains, hors taxes.",
+        "print": "Envoyer à l’administration",
+        "printHint": "Une page avec le prix et la marche à suivre, à imprimer ou à enregistrer en PDF pour la personne qui paie dans votre école."
+      },
+      "print": {
+        "title": "Offre école : une page pour l’administration de votre école",
+        "heading": "Offre école Oomba Academy",
+        "intro": "Un enseignant de votre école souhaite une offre école sur Oomba Academy : des jeux éducatifs pour les 8-14 ans, et un Constructeur avec lequel les élèves créent leurs propres jeux. Voici ce que cela coûte et comment la mettre en place.",
+        "printButton": "Imprimer ou enregistrer en PDF",
+        "back": "Retour aux offres écoles",
+        "cost": "Ce que cela coûte",
+        "perStudent": "Prix par élève et par an",
+        "minimum": "Offre minimale",
+        "minimumN": "{min, plural, one {# élève} other {# élèves}}",
+        "students": "Élèves",
+        "total": "Total par an",
+        "estimate": "Ceci est une estimation au {date}, pas une facture. Les prix sont en dollars américains, hors taxes.",
+        "setup": "Comment la mettre en place",
+        "li1": "Inscrire l’école (gratuit) : remplissez le court formulaire sur {url}.",
+        "contact": "Des questions ? Écrivez à {email}."
       }
     }
   },
@@ -3154,6 +3215,43 @@
       "q9": "Quelles langues sont disponibles ?",
       "a9": "{count} langues, dont l’espagnol, le portugais, le français, l’allemand, l’arabe, l’hébreu et le japonais. Chaque élève choisit la sienne.",
       "a4google": "Les élèves ne saisissent jamais d’adresse e-mail, et nous ne leur demandons jamais leur âge ni leur adresse postale. Si votre école utilise Se connecter avec Google, nous conservons l’adresse Google scolaire de chaque élève uniquement pour reconnaître son compte. Il n’y a ni publicité ni cookies de suivi. Notre <a href=\"{href}\">politique de confidentialité</a> détaille exactement ce que nous conservons."
+    },
+    "setup": {
+      "lead": "Parlez-nous un peu de votre école. Nous l’inscrirons en 1 jour d’école maximum et répondrons à votre e-mail en indiquant la marche à suivre. Inscrire une école est gratuit.",
+      "school": "Nom de l’école",
+      "role": "Votre rôle",
+      "rolePick": "Choisissez",
+      "roles": {
+        "teacher": "Enseignant",
+        "leader": "Directeur ou chef d’établissement",
+        "it": "Responsable informatique ou numérique",
+        "district": "Groupe ou réseau d’écoles",
+        "other": "Autre"
+      },
+      "email": "Votre e-mail professionnel",
+      "emailHint": "Votre e-mail de l’école, pour que nous sachions que la demande vient de l’école. Nous l’utilisons uniquement pour vous répondre.",
+      "students": "Environ combien d’élèves ?",
+      "country": "Pays",
+      "submit": "Inscrire mon école",
+      "privacy": "Nous utilisons votre e-mail uniquement pour répondre à cette demande, et nous supprimons la demande 1 an après y avoir répondu. Consultez notre <a href=\"{privacy}\">Politique de confidentialité</a>.",
+      "questions": "Des questions d’abord ? Écrivez à {email}.",
+      "kid": "Un enseignant ou un membre de la direction peut nous demander d’inscrire une école ici. Montre cette page à ton enseignant !",
+      "thanks": {
+        "h": "Merci ! Nous avons bien reçu votre demande.",
+        "p1": "Nous inscrirons votre école en 1 jour d’école maximum et répondrons à l’e-mail que vous nous avez donné.",
+        "p2": "En attendant, essayez un jeu avec votre classe : les élèves peuvent jouer tout de suite, sans s’inscrire."
+      },
+      "errors": {
+        "school": "Tapez le nom de votre école (2 à 100 caractères).",
+        "role": "Choisissez votre rôle.",
+        "email": "Tapez une adresse e-mail comme nom@ecole.fr.",
+        "students": "Tapez le nombre approximatif d’élèves, en chiffres.",
+        "country": "Tapez votre pays.",
+        "slow": "Trop de demandes depuis cet endroit. Veuillez réessayer dans une heure.",
+        "busyToday": "Nous avons reçu beaucoup de demandes aujourd’hui. Veuillez réessayer demain, ou écrivez-nous.",
+        "full": "Nous ne pouvons pas accepter d’autres demandes pour le moment. Veuillez plutôt nous écrire.",
+        "again": "Un élément du formulaire est à corriger. Veuillez le vérifier et l’envoyer à nouveau."
+      }
     }
   },
   "learn": {
@@ -3459,7 +3557,18 @@
           "a4": "Non. Les enfants ne discutent qu’avec des amis ajoutés grâce à un code de 6 caractères, jamais en cherchant un nom, et ils peuvent désactiver le chat sur leur page Moi."
         }
       }
-    }
+    },
+    "index": {
+      "crumb": "Apprendre",
+      "title": "Jeux éducatifs par matière et par âge",
+      "description": "Jeux éducatifs gratuits pour les 8-14 ans, par matière (maths, mots, stratégie, musique, pauses, création de jeux) et par âge. À l’école ou à la maison.",
+      "h1": "Jeux éducatifs par matière et par âge",
+      "lead": "Des jeux gratuits pour les 8-14 ans, directement dans le navigateur. Choisissez une matière ou un âge pour voir les jeux adaptés et ce qu’ils font travailler.",
+      "subjects": "Par matière",
+      "ages": "Par âge",
+      "who": "Pour les enseignants et les parents"
+    },
+    "inClass": "Vous l’utilisez en classe ? <a href=\"{href}\">Découvrez Oomba Academy pour les enseignants</a>."
   },
   "parents": {
     "title": "Jeux éducatifs gratuits et sûrs, 8-14 ans",
@@ -3479,7 +3588,8 @@
       "start": "Commencer gratuitement",
       "try": "Essayer un jeu, sans inscription",
       "grownup": "Créer un compte adulte",
-      "lead": "Vous en avez assez vu ? Essayez un jeu avec votre enfant dès maintenant."
+      "lead": "Vous en avez assez vu ? Essayez un jeu avec votre enfant dès maintenant.",
+      "setup": "Inscrire votre enfant, gratuit"
     },
     "teachers": "Vous êtes enseignant ? Découvrez <a href=\"{href}\">Oomba Academy pour les enseignants</a>.",
     "play": {

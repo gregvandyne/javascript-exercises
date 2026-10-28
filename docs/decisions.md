@@ -897,7 +897,8 @@ and out, their password and theme, the family pages); everything else, the Build
 classes, schools and admin included, is a 404, and `requireAccount` itself refuses them too. They are on no
 leaderboard (their scores aren't stored), in no builder search, have no profile and can't join a school. Linking: the
 child (an own kid account; never a guest, a school account or staff, whose code endpoints 404) gets a code like
-`K7Q-4MZ9` on /me (only an HMAC is stored; 1 hour, single use, one open per child, rate-limited), the grown-up types
+`K7Q-4MZ9` on /me (only an HMAC is stored; 24 hours, single use, one open per child, rate-limited; it was 1 hour, but a child who hits the
+Builder's daily limit at school shows it to a grown-up that evening), the grown-up types
 it on `/family/link` (10 wrong codes per 15 minutes), and the child answers Yes / No / Report on /me (a badge on Me
 while a request waits; it ends after 24 hours). The child only ever sees "your grown-up". One live row per child
 (pending or linked) and up to `FAMILY_MAX_CHILDREN`. A Report (on a request or a link) leaves no link and goes to the
@@ -1086,3 +1087,86 @@ switched to Basic keeps every link, but only the **first linked** child gets the
 - **Not built yet:** /parents/roblox-alternative (wait for the lawyer's glance at naming Roblox) and
   /parents/summer-learning-games (publish by mid-May). The guides' external links (healthychildren.org, Common Sense
   Media, Apple, Google, Microsoft) should be checked once from a network that reaches them.
+
+## Doors for grown-ups (navigation, week 1)
+- **Signed out means signed out or a guest** (`signedOut(u)` in views/layout.js: `!u || u.is_guest`) for the menus, the
+  home intro and the footer. One tap on Play makes a guest; before, that hid the intro and both Teachers links.
+- **Signed-out tab bar:** Home · Search · Build · 👪 Grown-ups · Plans (while `familiesOn`) · Sign in. Friends waits for an
+  account (also on desktop). The Grown-ups tab opens /parents straight away rather than a chooser menu: one page, no new
+  UI to build and translate, and /parents has the teacher link right under its two buttons. The tab is current on
+  /parents and /teachers. Desktop keeps Parents and Teachers in the top bar. Signed-in kids, students, staff and
+  grown-ups keep their bars.
+- **/parents:** the first button is "Set up your child — free" (the grown-up sign-up) while plans are public, "Let your
+  child start free" (the kid sign-up) before; "▶ Try a game" next to it; the buttons come before the badges. A signed-in
+  grown-up gets "Go to your family page". The Plans card links /plans and shows no amounts.
+- **/safety** ends with "Set up your child": the set-up itself when signed out, /parents for a kid or a guest (a kid's
+  page never links a grown-up sign-up; billing.spec.js crawls /safety as a guest).
+- **/login and /signup:** "Grown-up or teacher? Parents sign in/start here · Teachers start here" (the grown-up pages
+  while plans are public). Before that the parents' link goes to /parents, and the sign-in line says "Oomba Academy for
+  parents" (`auth.page.grownupLoginSoon`) rather than promising a sign-in. Not shown to a guest keeping their progress.
+- **Tab bar details:** the signed-out Sign in tab is current on /login and /signup, never on a guest's own /me. Each tab
+  label is one line (`.tab-t`, nowrap, a smaller size under 400px), so "Grown-ups" doesn't break at its hyphen.
+- **Builder daily-limit card on a phone:** it takes the typing row's place (Send is off anyway) and scrolls past
+  ~260px, so the chat log keeps a usable height; untranslated, it is marked `lang="en" dir="ltr"`. A game with nothing
+  built yet gets "New Builder messages come tomorrow" (no "Your game is saved").
+- **/build for a grown-up** is a short page ("The Builder is for kids' accounts") instead of a 404; the Builder APIs stay
+  404. **/learn** is an indexed hub of every subject and age page (canonical, sitemap, CollectionPage).
+- **Game pages:** "🛠️ Make a game like this" (to /build) for everyone but grown-ups and the game's owner. Subject, age and
+  game pages show "Using this in class? See Oomba Academy for teachers" to signed-out visitors and guests.
+- **Grown-up names and pictures:** the grown-up sign-up's name is "Your sign-in name" and may be a real name
+  (`cleanName(…, { realNames: true })` skips the real-name and birth-year checks; profanity, digits and link codes are
+  still refused). Grown-ups get 👤 on a neutral colour, never a kid's animal; older grown-up accounts show it too
+  (components.js `avatar`). Kids' name rules are unchanged.
+- **Teachers: "Set up my school"** replaces the mailto on /teachers: school name, role (teacher, principal / head,
+  IT lead, district / group, other), a work email, about how many students, country. It is the one place the site asks
+  for an email, and only an adult's: a kid's own or school account sees "Show this page to your teacher!" instead, and
+  its POST is a 404. Stored in `school_requests` (migration 0026, `services/school-requests.js`), deleted 1 year after it
+  is closed (or made, if never closed); the audit log has ids only. The sender's account id is kept only for an adult
+  account (grown-up, school staff, platform admin): never a guest's, since a guest is often a child and signing up
+  keeps the guest's id. Same-origin only (`csrfCheck`). Limits like sign-up: only a stored request spends the 5 per
+  address per hour and the 200 a day from everyone (each with its own message: "in an hour" / "tomorrow"); any post,
+  a robot's or one with mistakes, spends a separate 100 tries per address per hour. Every field to fix comes back at
+  once. At most 500 open, a hidden field for robots (thanked, not stored). Works without JavaScript (a plain form post
+  answered with a redirect). The thank-you (`/teachers?sent=1`) shows nothing that was typed. The page promises an
+  answer "within 1 school day"; the site sends no email, so the platform admin replies by hand. The Privacy Policy
+  (full text, `?for=grownups#schoolSetup`, which the form links) lists what is kept, why, who sees it and for how long.
+- **Legal text changed on 2026-10-28 (`LEGAL_UPDATED`):** the family link code now lasts 24 hours (Terms › Accounts,
+  Privacy › Linking), and the Privacy Policy has a "School set-up requests" section. **Owner review needed before
+  this ships.** The reworded strings got new keys (`me.family.codeHowDay`, `info.terms.accounts.li16`,
+  `info.privacy.linking.li7`, `family.link.step2Day`, `family.errors.badCodeDay`, `family.billing.welcomeStep2Day`)
+  and the old "1 hour" translations were removed from the other locales, so no language states the old lifetime: they
+  show the English (marked `lang="en" dir="ltr"`) and i18n:check lists them as missing until translated. A legal list
+  is marked English only when every item in it is.
+- **/admin › School requests:** open requests oldest first, with Create school (the usual Add a school form, name
+  filled in; adding it marks the request done and links the school), Mark done, Decline, and Reopen on the latest
+  closed. The count is on the tab and on the Schools button.
+- **/plans/schools:** a seat calculator (students × Stripe's `oomba_school_seat_yearly` price, at least
+  `SCHOOL_MIN_SEATS`; a plain GET form, so no JavaScript) and "Send this to my admin": `/plans/schools/print`, a
+  noindex page with the price, the total and how to set up, and a print stylesheet that hides the menus. Both are gated
+  like /plans/schools (`familiesOn`). Setting up now points to the /teachers form, not an email.
+
+## Funnel counts (navigation, week 1: "How we'll know it worked")
+- **What is counted:** one daily total per step in `funnel_counts` (migration 0027: `day, step, n`, nothing else), from
+  `services/funnel.js`. Parents: parent page views → grown-up sign-ups → child linked (the child says yes) → checkout
+  started (a Checkout Session made) → paid. Teachers: teacher page views → school requests (stored, not robots) →
+  schools set up (Add a school on /admin) → first class with students (once per school, ever) → School plan.
+  Guardrail: kid sign-ups (new accounts and guests keeping their progress) and games played (each play started).
+- **How:** each step is counted on the server where it happens, in the same code (and transaction) as the thing itself.
+  Page views go through the visit counter (`services/traffic.js`: real GET page loads, no bots, no 404s or redirects):
+  parent pages are /parents, its guides and /grown-ups; teacher pages are /teachers and /plans/schools (after the
+  language prefix). /learn is left out: it mixes subject pages for teachers and age pages for parents.
+- **Paid / School plan:** the sync (webhook, or the Checkout return's fallback, which share one path) that first sees
+  a subscription's first invoice (`subscription_create`) paid while the plan is entitled, counted in the sync's
+  transaction, so a replayed event or a later update can't count it twice. An invoiced school (send_invoice, entitled
+  as soon as the invoice is issued) counts when it pays, not before; a school that never pays never counts. Renewals,
+  seat changes, a plan coming back from past_due, trials and gifted plans (grants) don't count.
+- **Checkout started:** a new Checkout Session counts only when the family had no session in the last day (the one
+  open session row `billing_checkouts` already keeps), so coming back from Checkout and clicking again doesn't
+  inflate it; nothing new is stored. Teacher page views
+  skip /teachers?sent=1 and ?failed=1 (the page the form returns to), which isn't a new visit.
+- **Privacy:** no cookies, no third-party trackers, no ids of anyone (user, family, school, class), no per-person rows,
+  and nothing joins one step to the next: the report compares totals, not people. Kid pages add nothing but the two
+  guardrail totals. Kept like the traffic table (daily totals, no expiry).
+- **Report:** /admin/stats › "Funnels, last 7 days vs the 7 before": one table per funnel with both weeks, the change,
+  and each step as a share of the step before (last 7 days). A guardrail that dropped is marked. Counting started with
+  this change, so the first two weeks read low; write down the baseline once the first full week is in.

@@ -131,6 +131,11 @@ on(document, 'submit', async e => {
     if (err.data && err.data.needPassword) for (const box of $$('[data-reauth][hidden]', f)) { box.hidden = false; $$('input', box).forEach(i => (i.required = true)); }
     const field = err.data && err.data.field; const target = field && f.querySelector(`[name="${field}"]`);
     if (target) { target.setAttribute('aria-invalid', 'true'); const er = f.querySelector(`#${target.id}-err`); if (er) er.textContent = err.message; else toast(err.message, { bad: true }); target.focus(); }
+    // Every field to fix at once (errors: { name: message }), the first one focused.
+    if (target && err.data.errors) for (const [name, msg] of Object.entries(err.data.errors)) {
+      const other = name !== field && f.querySelector(`[name="${name}"]`); if (!other) continue;
+      other.setAttribute('aria-invalid', 'true'); const er = f.querySelector(`#${other.id}-err`); if (er) er.textContent = msg;
+    }
     else {
       const er = f.querySelector('.form-err'); if (er) er.textContent = err.message; else toast(err.message, { bad: true });
       // A form with a single field (e.g. a class code): that field is the one to fix.

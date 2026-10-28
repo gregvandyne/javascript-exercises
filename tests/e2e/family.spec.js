@@ -3,7 +3,7 @@
 // E2E_PORT + 3 (default 4313), the fake Stripe on E2E_PORT + 2. No payments yet.
 //   - a child gets a code on /me, a grown-up signs up from /parents → /grown-ups and types it, the child says yes;
 //   - a child reports a request, the admin sees it in the link reports queue;
-//   - grown-ups are fenced in (404 on the Builder, friends, chat); kids never see a link to the grown-up pages;
+//   - grown-ups are fenced in (a "the Builder is for kids" page on /build, 404 on friends and chat); kids never see a link to the grown-up pages;
 //   - the new pages at 360 px and 1280 px, light and dark, and right to left (he): nothing touches, no sideways scroll.
 import { test, expect } from '@playwright/test';
 import fs from 'node:fs';
@@ -11,7 +11,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { spawn, execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import { signup, uniq, ownIp, ADMIN } from './helpers.js';
+import { signup, uniq, ownIp, ADMIN, templateGame, studioState } from './helpers.js';
 import { findTouching } from './touching.js';
 
 const E2E = +(process.env.E2E_PORT || 4310);
@@ -24,6 +24,7 @@ const env = () => ({
   PATH: process.env.PATH, HOME: process.env.HOME, PORT: String(PORT), BRB_DATA_DIR: DATA, ADMIN_USERNAME: ADMIN.username, ADMIN_PASSWORD: ADMIN.password,
   ANTHROPIC_API_KEY: '', BRB_SILENT: '1', TRUST_PROXY: '1', BRB_ALL_LOCALES: '1', BRB_SNAPSHOTS: '0', CONTACT_EMAIL: 'help@example.com',
   STRIPE_API_KEY: 'rk_test_fake', STRIPE_WEBHOOK_SECRET: 'whsec_fake_e2e', STRIPE_API_BASE: `http://127.0.0.1:${STRIPE_PORT}`, STRIPE_API_VERSION: '', STRIPE_TAX: '', STRIPE_LIVE_OK: '', STRIPE_WEBHOOK_SECRET_OLD: '', STRIPE_PMC_FAMILY: 'pmc_fakefamily', BILLING_PUBLIC: '1', BILLING_PREVIEW_TOKEN: '',
+  BUILDER_DAILY_TURNS: '1',   // the Builder's daily-limit card (one message, then the card)
 });
 async function up(url) {
   const t0 = Date.now();
@@ -110,7 +111,10 @@ test('a child gets a code, a grown-up signs up from /parents and links, the chil
   await expect(mum.locator('.famkid')).toContainText(kid.username);
   await expect(mum.locator('.famkid')).toContainText('Family extra messages yesterday: 0');
   // Fenced in: the Builder, friends and chat are not there for a grown-up; /me is the family page.
-  for (const p of ['/build', '/friends', '/chat', `/u/${kid.username}`]) expect((await mum.goto(p)).status(), p).toBe(404);
+  for (const p of ['/friends', '/chat', `/u/${kid.username}`]) expect((await mum.goto(p)).status(), p).toBe(404);
+  // /build is not a dead end for a grown-up: a short page saying the Builder is for kids' accounts, with no Builder.
+  expect((await mum.goto('/build')).status()).toBe(200);
+  await expect(mum.locator('#st-compose, form[data-api*="/api/studio"]')).toHaveCount(0);
   await mum.goto('/me'); await expect(mum).toHaveURL(/\/family$/);
   // The child unlinks.
   kidPage.once('dialog', d => d.accept());
@@ -140,6 +144,73 @@ test('a child reports a request; the admin sees it in the link reports queue', a
   await expect(card).toContainText(kid.username);
   await card.locator('[data-act="resolvelink"]').click();
   await expect(admin.locator('main')).toContainText('No link reports', { timeout: 10_000 });
+});
+
+test('the Builder\'s daily-limit card: stays after a reload, things to do, Me › For grown-ups, no price; Send and ideas greyed out', async ({ browser }) => {
+  const kidPage = await person(browser);
+  await signup(kidPage, uniq('Kid'));
+  const game = await templateGame(kidPage);
+  const r = await kidPage.request.post(`/api/studio/${game.id}/chat`, { data: { text: 'make it blue', detach: true } });
+  expect(r.status()).toBe(202);
+  await expect.poll(async () => (await studioState(kidPage, game.id)).busy, { timeout: 30_000 }).toBe(false);
+  // A second game, untouched: its idea chips are there, and greyed out.
+  const other = await templateGame(kidPage);
+  for (const id of [other.id, game.id]) {
+    for (let i = 0; i < 2; i++) {   // and again after a reload
+      if (i) await kidPage.reload(); else await kidPage.goto(`/studio/${id}`);
+      const card = kidPage.locator('#st-limit');
+      await expect(card).toBeVisible();
+      await expect(card).toContainText('You have used all your Builder messages for today');
+      await expect(card.locator('a[href="/"]')).toBeVisible();
+      await expect(card.locator('a[href="/search?sort=new"]')).toBeVisible();
+      await expect(card.locator('a[href="/me#grownups"]')).toHaveText('Me › For grown-ups');
+      const text = await card.innerText();
+      expect(text).not.toMatch(/\$|plan|price|upgrade|\d/i);   // no price, plan name or countdown
+      expect(await card.innerHTML()).not.toMatch(/\/plans|\/grown-ups|\/family/);
+      await expect(kidPage.locator('#st-send')).toBeDisabled();
+      await expect(kidPage.locator('#st-send')).toHaveAttribute('aria-describedby', 'st-limit-why');
+      for (const chip of await kidPage.locator('#st-log [data-chip]').all()) { await expect(chip).toBeDisabled(); await expect(chip).toHaveAttribute('aria-describedby', 'st-limit-why'); }
+    }
+  }
+  // A game not published yet can be published from the card.
+  await kidPage.goto(`/studio/${other.id}`);
+  await expect(kidPage.locator('#st-log [data-chip]').first()).toBeDisabled();
+  await expect(kidPage.locator('#st-limit [data-act="limit-publish"]')).toBeVisible();
+  // Typing and pressing Enter sends nothing.
+  await kidPage.fill('#st-input', 'one more please');
+  await kidPage.press('#st-input', 'Enter');
+  await expect(kidPage.locator('#st-log .msg.me')).toHaveCount(0);
+  // Phone width, dark and right to left: nothing touches, no sideways scroll.
+  for (const v of [{ width: 360, height: 780, scheme: 'light' }, { width: 360, height: 780, scheme: 'dark', lang: 'he' }]) {
+    await kidPage.setViewportSize({ width: v.width, height: v.height });
+    await kidPage.emulateMedia({ colorScheme: v.scheme });
+    await kidPage.goto(`/studio/${other.id}${v.lang ? `?lang=${v.lang}` : ''}`);
+    await expect(kidPage.locator('#st-limit')).toBeVisible();
+    const touching = (await findTouching(kidPage)).filter(t => /st-limit/.test(`${t.a} ${t.b}`));
+    expect(touching, JSON.stringify(touching)).toEqual([]);
+    expect(await kidPage.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);
+    // The card stays inside the chat panel (it takes the typing row's place), and the chat log keeps a usable height.
+    const geo = await kidPage.evaluate(() => {
+      const box = s => { const e = document.querySelector(s); const r = e && e.getBoundingClientRect(); return r && r.height ? r : null; };
+      return { chat: box('.st-chat').bottom, compose: box('#st-compose').bottom, send: box('#st-send')?.bottom ?? 0, log: box('#st-log').height };
+    });
+    expect(geo.compose, JSON.stringify(geo)).toBeLessThanOrEqual(geo.chat + 1);
+    expect(geo.send, JSON.stringify(geo)).toBeLessThanOrEqual(geo.chat + 1);
+    expect(geo.log, JSON.stringify(geo)).toBeGreaterThanOrEqual(120);
+    if (v.lang === 'he' && /Builder messages/.test(await kidPage.locator('#st-limit').innerText())) {
+      // Not translated yet: the card is marked as English, so it reads left to right inside the Hebrew page.
+      await expect(kidPage.locator('#st-limit')).toHaveAttribute('lang', 'en');
+      await expect(kidPage.locator('#st-limit')).toHaveAttribute('dir', 'ltr');
+    }
+  }
+  await kidPage.goto('/?lang=en');
+  // Me › For grown-ups: the code card comes first, above the tiles, and lasts 24 hours.
+  await kidPage.goto(`/studio/${other.id}`);
+  await Promise.all([kidPage.waitForURL(/\/me#grownups$/), kidPage.locator('#st-limit a[href="/me#grownups"]').click()]);
+  const top = async sel => (await kidPage.locator(sel).boundingBox()).y;
+  expect(await top('#grownups')).toBeLessThan(await top('.metiles'));
+  await kidPage.locator('[data-family-code]').click();
+  await expect(kidPage.locator('#famcode')).toContainText('It works once, for 24 hours.');
 });
 
 test('kid pages show nothing about grown-up accounts, plans or prices', async ({ browser }) => {

@@ -48,6 +48,41 @@ function renderTurns() {
   if (S.classContext) { $('#st-turns').textContent = `🔋 ${t('js.studio.turnsLeftToday', { left: Math.max(0, S.turnsLeft | 0) })}`; return; }
   const free = typeof S.freeLeft === 'number' ? S.freeLeft : S.turnsLeft;
   $('#st-turns').textContent = `🔋 ${t('js.studio.turns', { left: free, total: S.dailyTurns })}${typeof S.extraLeft === 'number' ? ` · ${t('js.studio.extra', { n: S.extraLeft })}` : ''}`;
+  syncLimit();
+}
+// ---- No Builder messages left today: the daily-limit card. It is drawn from the state (S.turnsLeft), so it is there
+// again after a reload. It offers things to do now and, for a kid's own account with no grown-up linked, a calm line
+// to Me › For grown-ups (S.grownUpLink). A kid's page: no price, no plan name, no /plans link, no countdown.
+// Send and the idea buttons (chips, Fix it, Carry on) are greyed out, described by the card's heading. A running build
+// still takes follow-ups, so the card waits until it ends.
+const outOfMessages = () => typeof S.turnsLeft === 'number' && S.turnsLeft <= 0 && !(S.turn || LIVE.pendingCid || LIVE.check) && LIVE.stopped !== 'gone';
+const LIMIT_WHY = 'st-limit-why';
+/** The buttons that would send a message to the Builder. */
+const ideaButtons = () => $$('[data-chip], [data-act="fix"], [data-act="continue"]');
+function setOff(b, off) {
+  if (off) { b.disabled = true; b.setAttribute('aria-describedby', LIMIT_WHY); b.dataset.limitOff = '1'; }
+  else if (b.dataset.limitOff) { b.disabled = false; b.removeAttribute('aria-describedby'); delete b.dataset.limitOff; }
+}
+function syncLimit() {
+  const box = $('#st-limit'); if (!box) return;
+  const out = outOfMessages();
+  if (!out) { box.hidden = true; box.textContent = ''; }
+  else {
+    const canPublish = !!S.current && !(S.pending && S.pending.id === S.current.id) && (!S.live || S.current.id !== S.live.id);
+    const html = `<p class="st-limit-h" id="${LIMIT_WHY}"><span aria-hidden="true">🌙</span> ${E('js.studio.limitCard.heading')}</p>
+      <p class="st-limit-text">${E(S.current ? 'js.studio.limitCard.text' : 'js.studio.limitCard.textEmpty')}</p>
+      <div class="st-limit-acts">${canPublish ? `<button class="btn btn-sm btn-hot" type="button" data-act="limit-publish">🚀 ${E('js.studio.limitCard.publish')}</button>` : ''}<a class="btn btn-sm" href="/">🎮 ${E('js.studio.limitCard.play')}</a><a class="btn btn-sm" href="/search?sort=new">✨ ${E('js.studio.limitCard.others')}</a></div>
+      ${S.grownUpLink ? `<p class="st-limit-gu"><span aria-hidden="true">🧑‍🧒</span> ${E('js.studio.limitCard.grownUp')} <a href="/me#grownups">${E('js.studio.limitCard.grownUpWhere')}</a></p>` : ''}`;
+    if (box.dataset.html !== html || box.hidden) { box.innerHTML = html; box.dataset.html = html; }
+    box.hidden = false;
+  }
+  if (!out) delete box.dataset.html;
+  // On a phone the card takes the typing row's place (Send is off anyway), so the chat keeps its height (studio.css).
+  $('#st-compose').classList.toggle('st-out', out);
+  const send = $('#st-send');
+  if (out) { send.disabled = true; send.setAttribute('aria-describedby', LIMIT_WHY); send.dataset.limitOff = '1'; }
+  else if (send.dataset.limitOff) { send.removeAttribute('aria-describedby'); delete send.dataset.limitOff; }
+  ideaButtons().forEach(b => setOff(b, out));
 }
 const E = (key, vars) => esc(t(key, vars));
 function renderLive() {
@@ -257,13 +292,14 @@ function renderLog() {
     msgs.forEach((m, i) => drawEntry(m, i === msgs.length - 1 && !tid));
     drawLastTurn(msgs);
     // The site's AI budget is spent for now: say when the Builder is back instead of asking what to build.
-    if (S.resting && !S.turn) restingNote();
+    if (S.resting && !S.turn && !outOfMessages()) restingNote();
     else if (!msgs.length && !S.turn) {
       if (!S.current) { askBlock({ question: t('js.studio.log.whatKind') }, true, bubble('bot', t('js.studio.log.hello'))); chips(START_CHIPS, true); }
       else { bubble('bot', t('js.studio.log.readyToPlay', { title: S.game.title })); chips(NEXT_CHIPS, true); }
     }
   } finally { drawingLog = false; }
   for (const b of flying) if (!fuFind(b.dataset.fu, b.dataset.cid)) place(b);
+  syncLimit();
   scrollDown();
 }
 
@@ -939,6 +975,7 @@ function syncCompose() {
   const full = !!(S.turn && S.turn.mine && S.turn.left === 0);
   $('#st-send').disabled = gone || (building && full);
   input.disabled = gone; clip.disabled = gone || building;
+  syncLimit();   // no Builder messages left: Send and the idea buttons are off (after the line above)
   clip.title = building ? FU('noUploadsHint') : CLIP_TITLE;
   if (!building) setPlaceholder(input, PLACEHOLDER.long, PLACEHOLDER.short);
   else if (full) setPlaceholder(input, FU('capPlaceholder'), FU('capShort'));
@@ -1178,6 +1215,7 @@ async function send(text, { continueOf = null } = {}) {
   if (LIVE.stopped === 'gone') return;
   // A build is running (or this tab's message is on its way to start one): this message adds to it.
   if (S.turn || LIVE.pendingCid || LIVE.check) return sendFollowUp(text);
+  if (outOfMessages()) { const h = $(`#${LIMIT_WHY}`); if (h) h.scrollIntoView({ block: 'nearest' }); return; }   // the card says why
   if (!text && !ups.length) { input.focus(); return; }
   const cid = newCid();   // the same message sent twice (a lost answer) is one build
   LIVE.pendingCid = cid; LIVE.posting = true;
@@ -1214,7 +1252,11 @@ async function send(text, { continueOf = null } = {}) {
   }
   if (res && res.status === 401) { giveBack(chk); signInAgainBubble(); syncCompose(); return; }
   if (res && data && data.resting) { giveBack(chk); S.resting = data.resting.until; restingNote(); syncCompose(); scrollDown(); return; }
-  if (res && data && data.error) { giveBack(chk); bubble('err', data.error); syncCompose(); scrollDown(); return; }
+  if (res && data && data.error) {
+    giveBack(chk); bubble('err', data.error);
+    if (data.code === 'limit') { S.turnsLeft = 0; S.freeLeft = 0; renderTurns(); }   // used up elsewhere: the card now
+    syncCompose(); scrollDown(); return;
+  }
   arrived(chk);   // no answer: offline, or the server is restarting (the platform may answer for it, without JSON)
 }
 $('#st-compose').addEventListener('submit', e => { e.preventDefault(); send(input.value); });
@@ -1232,6 +1274,7 @@ document.addEventListener('click', e => {
   if (a.dataset.act === 'fix') send(`${t('js.studio.fixMessage', { number: S.current ? S.current.number : '' })} ${(S.current && S.current.issues || []).map(i => i.message).join(' ')}`.trim());
   else if (a.dataset.act === 'see') { $('.st-preview').scrollIntoView({ behavior: 'smooth', block: 'start' }); }
   else if (a.dataset.act === 'update') updateLive();
+  else if (a.dataset.act === 'limit-publish') $('#st-publish').click();
   else if (a.dataset.act === 'continue' && S.lastTurn) send(t('js.studio.continueMessage'), { continueOf: S.lastTurn.id });
   else if (a.dataset.act === 'putback' && S.lastTurn && S.lastTurn.putBack) { input.value = S.lastTurn.putBack; autosize(); input.focus(); }
   else if (a.dataset.act === 'fu-putback') { const b = a.closest('.msg.fu'); if (b) { input.value = b.dataset.text || ''; autosize(); input.focus(); } }

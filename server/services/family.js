@@ -4,7 +4,8 @@
 // Linking, step by step (every step is audited, with ids only):
 //   1. The child (an own account: not a guest, not a school account, not staff) gets a code on /me. Shape K7Q-4MZ9:
 //      7 characters from an alphabet without look-alikes (no 0 O 1 I L), at least one digit. Only an HMAC of it is
-//      stored. Valid CODE_TTL (1 hour), single use, one open code per child (a new one ends the old one).
+//      stored. Valid CODE_TTL (24 hours, so a child can show it to a grown-up later that day), single use, one open
+//      code per child (a new one ends the old one).
 //   2. A signed-in grown-up types it on /family/link: a 'pending' row (family.link.request). The code is used up.
 //   3. The child answers on /me: Yes (linked), No (the row goes) or Report (no link, a link_reports row for the admin).
 //      A pending request ends by itself after PENDING_TTL (24 hours).
@@ -19,10 +20,11 @@ import { sign, accountKind, getUser, isGrownup, parseCookies } from '../auth.js'
 import { billingOn } from './stripe.js';
 import { registerOwnerKind, ownerPlan, planLimits } from './billing.js';
 import { register } from './jobs.js';
+import * as funnel from './funnel.js';
 import { looksLikeLinkCode, LINK_CODE_ALPHABET } from './textfilter.js';
 
 const DAY = 86400e3;
-export const CODE_TTL = 3600e3;
+export const CODE_TTL = 24 * 3600e3;
 export const PENDING_TTL = DAY;
 /** How long rows are kept (the privacy text lists these). */
 export const KEEP = { codes: 30 * DAY, unlinked: 90 * DAY, reports: 365 * DAY };
@@ -137,6 +139,7 @@ export function answer(child, what) {
     if (what === 'yes') {
       q.run("UPDATE family_children SET status='linked', linked_at=? WHERE family_id=? AND child_id=? AND status='pending'", t, r.family_id, child.id);
       audit(child.id, 'family.link', r.family_id, { child: child.id });
+      funnel.bump('parent.child');   // a daily total only (services/funnel.js): nothing about which child
     } else {
       q.run("DELETE FROM family_children WHERE family_id=? AND child_id=? AND status='pending'", r.family_id, child.id);
       if (what === 'report') report(child.id, r.family_id, t);

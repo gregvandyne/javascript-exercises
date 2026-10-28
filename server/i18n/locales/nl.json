@@ -60,7 +60,8 @@
     "family": "Gezin",
     "plans": "Prijzen",
     "teachers": "Leerkrachten",
-    "parents": "Ouders"
+    "parents": "Ouders",
+    "grownups": "Ouders"
   },
   "errors": {
     "goHome": "Naar de start",
@@ -147,7 +148,10 @@
       "haveAccount": "Heb je al een account?",
       "signInLink": "Inloggen",
       "newHere": "Nieuw hier?",
-      "signupLink": "Maak een gratis account"
+      "signupLink": "Maak een gratis account",
+      "grownupLogin": "Volwassene of leerkracht? <a href=\"{grownup}\">Ouders loggen hier in</a> · <a href=\"{teachers}\">Leerkrachten beginnen hier</a>",
+      "grownupLoginSoon": "Volwassene of leerkracht? <a href=\"{grownup}\">Oomba Academy voor ouders</a> · <a href=\"{teachers}\">Leerkrachten beginnen hier</a>",
+      "grownupSignup": "Volwassene of leerkracht? <a href=\"{grownup}\">Ouders beginnen hier</a> · <a href=\"{teachers}\">Leerkrachten beginnen hier</a>"
     },
     "api": {
       "tooManyGuests": "Te veel gasten vanaf hier. Probeer het later nog eens.",
@@ -254,7 +258,7 @@
       "newCode": "Nieuwe code maken",
       "codeOpen": "Je hebt een code die nog werkt. Ben je hem kwijt? Maak een nieuwe, dan werkt de oude niet meer.",
       "codeLabel": "Jouw code",
-      "codeHow": "Hij werkt één keer, 1 uur lang. Met deze code kan een volwassene zich aan je account koppelen op {where}.",
+      "codeHowDay": "Hij werkt één keer, 24 uur lang. Een volwassene kan zich met deze code aan je account koppelen op {where}.",
       "codeWarn": "Geef deze code alleen aan je ouder of verzorger, in het echt. Typ hem nooit in een chat of een game, en geef hem nooit aan iemand online.",
       "pending": "<b>Een volwassene</b> wil zich aan je account koppelen. Zeg alleen ja als dit je ouder of verzorger is. Ken je deze persoon niet? Vertel het dan aan een volwassene die je vertrouwt.",
       "pendingCheck": "Heb je je code zelf aan je ouder of verzorger gegeven, in het echt? Zo niet, tik dan op Melden.",
@@ -406,7 +410,8 @@
         "h": "Geen reclame",
         "p1": "Op Oomba Academy staat geen reclame. Er wordt niets verkocht en er springt niets over een game heen.",
         "paid1": "Op Oomba Academy staat geen reclame. Spelen is altijd gratis. Je hoeft hier nooit ergens voor te betalen, en er springt niets over een game heen."
-      }
+      },
+      "setup": "Meld je kind aan"
     },
     "parents": {
       "title": "Voor volwassenen",
@@ -515,7 +520,7 @@
         "li10": "Houd je wachtwoord geheim. Je bent verantwoordelijk voor wat er in je ouderaccount gebeurt, ook voor aankopen.",
         "li11": "Om te voorkomen dat een kind iets koopt op een gedeeld apparaat, vragen we opnieuw om je wachtwoord voordat je een abonnement neemt of wijzigt.",
         "s4": "Een volwassene aan een kind koppelen",
-        "li12": "Het kind krijgt een korte code op de eigen pagina Ik. Die werkt één keer, 1 uur lang.",
+        "li16": "Het kind krijgt een korte code op de eigen pagina Ik. Die werkt één keer, 24 uur lang.",
         "li13": "Jij vult de code in op je gezinspagina.",
         "li14": "Het kind moet <b>Ja</b> zeggen op de eigen pagina. Het kan ook <b>Nee</b> of <b>Melden</b> kiezen.",
         "li15": "Het kind kan op elk moment <b>Ontkoppelen</b> of <b>Melden</b>. Een melding beëindigt de koppeling meteen en gaat naar ons team.",
@@ -739,7 +744,7 @@
       },
       "linking": {
         "h": "Koppelen aan een kind",
-        "li1": "<b>De code:</b> je kind krijgt een korte code op de eigen pagina Ik. We slaan die onleesbaar op. Hij werkt één keer, 1 uur lang.",
+        "li7": "<b>De code:</b> je kind krijgt een korte code op de pagina Ik. We bewaren die versleuteld. Hij werkt één keer, 24 uur lang.",
         "li2": "<b>Het kind zegt ja:</b> de koppeling begint pas als je kind die op de eigen pagina bevestigt. Je kind kan Nee zeggen, of het melden bij ons team. Meldingen worden bewaard zolang ze openstaan en 1 jaar nadat we ze hebben afgesloten verwijderd.",
         "li3": "<b>Wat je over je kind ziet:</b> de gebruikersnaam en weergavenaam, hoeveel van de extra berichten aan de Bouwer van het gezin je kind gisteren en tot nu toe deze maand heeft gebruikt, en of je kind bouwt met het gezinsabonnement of met het gratis tegoed.",
         "li4": "<b>Wat je niet ziet:</b> de live activiteit van vandaag (dus je kunt niet zien wanneer je kind online is), de chats, vrienden of games, berichten die aan een school worden toegerekend, en ook niet of je kind überhaupt op een school zit.",
@@ -771,6 +776,13 @@
         "li4": "<b>Hoe lang:</b> de naam en het e-mailadres van de contactpersoon, het adres, de opmerking en het inkoopordernummer in onze database worden <b>2 jaar</b> nadat de aanvraag is afgesloten verwijderd. Stripe bewaart het adres van de school en het inkoopordernummer bij de facturen (zie hieronder).",
         "li5": "<b>Plaatsen</b> worden geteld op basis van het aantal actieve leerlingen. Voor de facturatie worden geen namen of werk van leerlingen gebruikt.",
         "li6": "<b>Gezinnen zien nooit wat er in de klas gebeurt:</b> een volwassene die aan een leerling gekoppeld is, ziet alleen de extra gezinsberichten van die leerling."
+      },
+      "schoolSetup": {
+        "h": "Aanvragen om een school op te zetten",
+        "li1": "<b>Wat we bewaren als een leerkracht of schoolleider ons vraagt een school op te zetten</b> (het formulier op onze pagina voor leerkrachten): de naam van de school, hun functie, hun werk-e-mailadres, ongeveer hoeveel leerlingen, het land, de taal van de pagina en wanneer het is verstuurd. Als ze waren ingelogd met een ouderaccount of een account van schoolpersoneel, bewaren we ook welk account het heeft verstuurd. Het account van een gast wordt nooit bij een aanvraag bewaard.",
+        "li2": "<b>Waarvoor we het gebruiken:</b> alleen om de school op te zetten en de aanvraag te beantwoorden. We sturen geen nieuwsbrieven en we delen het niet met Stripe of met iemand anders.",
+        "li3": "<b>Wie het ziet:</b> alleen ons team.",
+        "li4": "<b>Hoe lang:</b> verwijderd <b>1 jaar</b> nadat we de aanvraag hebben afgesloten (of 1 jaar nadat die is verstuurd, als hij nooit wordt afgesloten)."
       },
       "children": {
         "h": "Gegevens van kinderen",
@@ -874,7 +886,8 @@
       "saveFailed": "We konden dat niet opslaan.",
       "badScore": "Ongeldige score.",
       "pickReason": "Kies een reden."
-    }
+    },
+    "makeLike": "Maak zelf zo'n game"
   },
   "play": {
     "backTo": "Terug naar {title}",
@@ -1122,6 +1135,13 @@
       "ready": "✨ Klaar",
       "question": "💬 Heeft een vraag",
       "stopped": "⚠️ Gestopt"
+    },
+    "grownup": {
+      "title": "De Bouwer",
+      "heading": "De Bouwer is voor accounts van kinderen",
+      "text": "Kinderen maken hun eigen games met de Bouwer, ingelogd met hun eigen account. Met een ouderaccount kun je games spelen en een gezin beheren, maar niet bouwen.",
+      "how": "Zo werkt een game maken",
+      "safety": "Is de AI-Bouwer veilig?"
     }
   },
   "studio": {
@@ -1254,15 +1274,15 @@
     "kindRefusal": "Daar kan ik niet mee helpen. Laten we iets leuks bouwen! Wat voor game wil je graag?",
     "scanStillFailing": "De veiligheidscheck is nog niet tevreden. Tik op “Laat de Bouwer het repareren” om het opnieuw te proberen.",
     "turnTimeout": "⏱️ Dit bouwen duurde langer dan onze tijdslimiet, dus ik ben gestopt. Je nieuwste versie is bewaard. Vertel me wat ik nu moet veranderen!",
-    "turnTimeoutNothing": "⏱️ Dit bouwen duurde langer dan onze tijdslimiet, dus ik ben gestopt voordat ik iets kon bewaren. Dit bericht telt niet mee, dus je kunt het nog eens proberen.",
+    "turnTimeoutNothing": "⏱️ Dit bouwen duurde langer dan onze tijdslimiet, dus ik ben gestopt voordat ik iets kon bewaren. Het heeft geen bericht aan de Bouwer gekost, dus je kunt het nog eens proberen.",
     "errors": {
       "disabled": "Bouwen staat uit voor dit account. Een volwassene kan ons vragen het weer aan te zetten.",
       "empty": "Typ eerst een bericht of tik op een idee.",
       "busy": "De Bouwer is nog bezig met je vorige bericht. Even geduld!",
       "tooMany": "Er worden al 2 games van je gebouwd. Wacht tot er een klaar is en probeer het dan nog eens.",
-      "limit": "Je hebt vandaag al je {count} berichten aan de Bouwer gebruikt. Kom morgen terug voor meer!",
+      "limit": "{count, plural, one {Je hebt je # bericht aan de Bouwer voor vandaag gebruikt.} other {Je hebt al je # berichten aan de Bouwer voor vandaag gebruikt.}} Kom morgen terug voor meer!",
       "muddled": "De Bouwer raakte in de war. Probeer het zo nog eens.",
-      "resting": "De AI-Bouwer rust nu even uit. Je game en je berichten zijn bewaard, dus kom straks terug!",
+      "resting": "De AI-Bouwer rust nu even uit. Je game en je berichten aan de Bouwer zijn bewaard, dus kom straks terug!",
       "limitToday": "Je hebt al je berichten aan de Bouwer voor vandaag gebruikt. Morgen krijg je er weer nieuwe!",
       "limitClass": "Je klas heeft de berichten aan de Bouwer voor vandaag gebruikt. Morgen komen er weer nieuwe!"
     },
@@ -1361,7 +1381,7 @@
         }
       }
     },
-    "cutOffNothing": "De Bouwer was zo lang aan het plannen dat er geen ruimte meer over was om iets te bouwen. Dit bericht telt niet mee. Vraag om één of twee veranderingen tegelijk.",
+    "cutOffNothing": "De Bouwer was zo lang aan het plannen dat er geen ruimte meer over was om iets te bouwen. Het heeft geen bericht aan de Bouwer gekost. Vraag om één of twee veranderingen tegelijk.",
     "followUps": {
       "cap": "Je hebt tijdens het bouwen {max, plural, one {# extra bericht} other {# extra berichten}} gestuurd. Wacht tot ik klaar ben en vertel me dan meer!",
       "refusedCap": "Laten we eerst wachten tot de Bouwer klaar is met bouwen.",
@@ -1492,7 +1512,7 @@
     },
     "studio": {
       "docTitle": "Studio: {title} · Oomba Academy",
-      "turns": "Nog {left} van {total} berichten vandaag",
+      "turns": "Nog {left} van {total} berichten aan de Bouwer vandaag",
       "fixButton": "Laat de Bouwer het repareren",
       "fixMessage": "Repareer alsjeblieft de problemen uit de veiligheidscheck in versie {number}:",
       "buildFirst": "Bouw eerst iets!",
@@ -1834,7 +1854,7 @@
       },
       "continue": "Verder bouwen",
       "continueMessage": "Ga alsjeblieft verder met mijn laatste bericht.",
-      "notCounted": "Deze telt niet mee voor je berichten van vandaag.",
+      "notCounted": "Deze heeft geen bericht aan de Bouwer gekost.",
       "signedOutBuilding": "Je bent uitgelogd. De Bouwer werkt verder aan je game: log opnieuw in om hem te zien.",
       "gameGone": "Deze game is verwijderd, dus de Bouwer is gestopt.",
       "followups": {
@@ -1853,7 +1873,7 @@
         "retry": "Opnieuw proberen",
         "putBack": "Zet het terug in het vak",
         "notRead": {
-          "limit": "Niet gelezen: geen berichten meer vandaag",
+          "limit": "Niet gelezen: geen berichten aan de Bouwer meer vandaag",
           "error": "Niet gelezen: de Bouwer raakte in de war",
           "stopped": "Niet gelezen: het bouwen is gestopt",
           "chain": "Nog niet gelezen. Stuur het opnieuw als de Bouwer weer vrij is"
@@ -1861,10 +1881,10 @@
         "gotAi": "{count, plural, one {Je bericht is binnen. De AI leest het na deze stap.} other {Je # berichten zijn binnen. De AI leest ze na deze stap.}}",
         "gotBlocks": "{count, plural, one {Je bericht is binnen. De Bouwer leest het na deze stap.} other {Je # berichten zijn binnen. De Bouwer leest ze na deze stap.}}",
         "writingNow": "Hij schrijft nu code, dus dat maakt hij eerst af.",
-        "turnNote": "Extra berichten terwijl de Bouwer bezig is, tellen niet mee. Is de Bouwer al klaar, dan begint hij met je bericht een nieuwe bouw en telt het als 1 bericht.",
+        "turnNote": "Berichten die je stuurt terwijl de Bouwer bezig is, kosten geen bericht aan de Bouwer. Is de Bouwer al klaar, dan begint je bericht een nieuwe bouw en kost het 1 bericht aan de Bouwer.",
         "noUploadsHint": "Voeg plaatjes toe na het bouwen",
         "announceRead": "De Bouwer leest je nieuwe bericht",
-        "carriedNote": "Je bericht zette de Bouwer opnieuw aan het werk (telt als 1 bericht)"
+        "carriedNote": "Je bericht begon een nieuwe bouw (1 bericht aan de Bouwer)"
       },
       "eta": {
         "about": "Meestal ongeveer {time}",
@@ -1884,13 +1904,23 @@
       },
       "stillWorking": "Even geduld, de Bouwer is nog bezig!",
       "resting": {
-        "text": "😴 De AI-Bouwer rust nu even uit. Hij is {when} terug. Je game en je berichten zijn bewaard, dus kom dan terug!",
+        "text": "😴 De AI-Bouwer rust nu even uit. Hij is {when} terug. Je game en je berichten aan de Bouwer zijn bewaard, dus kom dan terug!",
         "today": "vandaag om {time}",
         "tomorrow": "morgen om {time}",
         "date": "op {date} om {time}"
       },
       "extra": "+{n} extra deze maand",
-      "turnsLeftToday": "Nog {left} vandaag"
+      "turnsLeftToday": "Nog {left} vandaag",
+      "limitCard": {
+        "heading": "Je hebt al je berichten aan de Bouwer voor vandaag gebruikt",
+        "text": "Je game is bewaard, en morgen krijg je nieuwe berichten aan de Bouwer. Tot dan kun je:",
+        "textEmpty": "Morgen krijg je nieuwe berichten aan de Bouwer. Tot dan kun je:",
+        "publish": "Je game publiceren",
+        "play": "Games spelen",
+        "others": "Games van andere kinderen spelen",
+        "grownUp": "Een volwassene kan zich aan je account koppelen:",
+        "grownUpWhere": "Ik › Voor volwassenen"
+      }
     }
   },
   "favorites": {
@@ -2775,7 +2805,9 @@
       "signOutFirst": "Log eerst uit bij het account op dit apparaat.",
       "needAdult": "Vink het vakje aan om te laten weten dat je ouder of verzorger bent, en 18 jaar of ouder.",
       "short": "Gebruik minstens {min} tekens.",
-      "chosen": "Je hebt het {plan} gekozen. Nu betaal je op de beveiligde pagina van Stripe, en daarna voeg je je kinderen toe."
+      "chosen": "Je hebt het {plan} gekozen. Nu betaal je op de beveiligde pagina van Stripe, en daarna voeg je je kinderen toe.",
+      "signInName": "Je inlognaam",
+      "signInNameHint": "Je echte naam mag. 3 tot 16 letters of cijfers, geen spaties. Kinderen zien deze naam nooit."
     },
     "login": {
       "title": "Inloggen voor ouders",
@@ -2818,14 +2850,14 @@
       "title": "Kind koppelen",
       "heading": "Kind koppelen",
       "step1": "Je kind logt in, opent <b>Ik</b>, dan <b>Voor volwassenen</b>, en tikt op <b>Code maken</b>.",
-      "step2": "Typ hier de code. Die werkt één keer, 1 uur lang.",
+      "step2Day": "Typ de code hier. Hij werkt één keer, 24 uur lang.",
       "step3": "Je kind zegt ja op de eigen pagina Ik. Tot dan wacht de koppeling (maximaal 24 uur).",
       "label": "Code van je kind",
       "submit": "Koppelverzoek sturen",
       "sent": "Verzoek verstuurd. Je kind moet nog ja zeggen op de pagina Ik."
     },
     "errors": {
-      "badCode": "Die code werkt niet. Een code werkt één keer, 1 uur lang: vraag je kind om een nieuwe.",
+      "badCodeDay": "Die code werkt niet. Een code werkt één keer, 24 uur lang: vraag je kind om een nieuwe.",
       "already": "Je hebt al gevraagd om dit kind te koppelen, of het is al gekoppeld.",
       "full": "Een gezin kan maximaal {max} kinderen koppelen.",
       "typeCode": "Typ de code die je van je kind hebt gekregen.",
@@ -2877,7 +2909,7 @@
       "legal": "Voor abonnementen gelden onze <a href=\"/terms\">Servicevoorwaarden</a> en ons <a href=\"/refunds\">Beleid voor terugbetaling en opzegging</a>.",
       "welcomePlan": "{plan} is actief. Bedankt!",
       "welcomeHeading": "Voeg nu je kind toe",
-      "welcomeStep2": "Tik hieronder op Kind koppelen en typ de code. Hij werkt één keer, 1 uur lang.",
+      "welcomeStep2Day": "Tik hieronder op Kind koppelen en typ de code. Die werkt één keer, 24 uur lang.",
       "basicNote": "Je basisabonnement geldt voor één kind: {name}. Je andere gekoppelde kinderen bouwen met de gratis dagelijkse berichten. Wil je dat het abonnement voor maximaal {max} kinderen geldt? Stap dan via Abonnement beheren over op het gezinsabonnement.",
       "coversBasic": "Voor 1 kind.",
       "coversFamily": "Voor maximaal {max} kinderen.",
@@ -2989,12 +3021,41 @@
         "h": "Zo zet je een school op",
         "li1": "Mail naar {email} met de naam van je school en wie de school gaat beheren (de schoolbeheerder).",
         "li2": "Wij zetten de school en het account van de schoolbeheerder op. De schoolbeheerder voegt leerkrachten en leerlingen toe.",
-        "li3": "De schoolbeheerder betaalt op het tabblad Facturatie van de school: met kaart, of door een factuur of inkooporder aan te vragen."
+        "li3": "De schoolbeheerder betaalt op het tabblad Facturatie van de school: met kaart, of door een factuur of inkooporder aan te vragen.",
+        "li1form": "Vul het korte formulier in op <a href=\"{href}\">de pagina voor leerkrachten</a>. Een leerkracht of een schoolleider kan het versturen.",
+        "li2day": "Binnen 1 schooldag zetten wij de school en het account van de schoolbeheerder op. De schoolbeheerder voegt leerkrachten en leerlingen toe."
       },
       "toBilling": "Naar het tabblad Facturatie van je school",
       "contact": {
         "h": "Vragen?",
         "p1": "Mail naar {email}."
+      },
+      "calc": {
+        "h": "Wat zou het kosten?",
+        "label": "Aantal leerlingen",
+        "button": "Reken het uit",
+        "result": "{seats, plural, one {# leerling} other {# leerlingen}} × {price} = {total} per jaar",
+        "min": "Een schoolabonnement is voor minstens {min} leerlingen, dus een kleinere school betaalt voor {min}.",
+        "tax": "Prijzen zijn in Amerikaanse dollars en exclusief btw.",
+        "print": "Stuur dit naar mijn schoolbeheerder",
+        "printHint": "Een pagina met de prijs en hoe je het opzet, om te printen of als pdf te bewaren voor wie er op je school betaalt."
+      },
+      "print": {
+        "title": "Schoolabonnement: een pagina voor de administratie van je school",
+        "heading": "Schoolabonnement Oomba Academy",
+        "intro": "Een leerkracht van je school wil graag een schoolabonnement op Oomba Academy: leerspelletjes voor 8 tot 14 jaar, en een Bouwer waarmee leerlingen hun eigen games maken. Hier lees je wat het kost en hoe je het opzet.",
+        "printButton": "Printen of als pdf bewaren",
+        "back": "Terug naar schoolabonnementen",
+        "cost": "Wat het kost",
+        "perStudent": "Prijs per leerling, per jaar",
+        "minimum": "Kleinste abonnement",
+        "minimumN": "{min, plural, one {# leerling} other {# leerlingen}}",
+        "students": "Leerlingen",
+        "total": "Totaal per jaar",
+        "estimate": "Dit is een schatting op {date}, geen factuur. Prijzen zijn in Amerikaanse dollars en exclusief btw.",
+        "setup": "Zo zet je het op",
+        "li1": "Zet de school op (gratis): vul het korte formulier in op {url}.",
+        "contact": "Vragen? Mail naar {email}."
       }
     }
   },
@@ -3155,6 +3216,43 @@
       "q9": "Welke talen zijn er?",
       "a9": "{count} talen, waaronder Spaans, Portugees, Frans, Duits, Arabisch, Hebreeuws en Japans. Elke leerling kiest een eigen taal.",
       "a4google": "Leerlingen typen nooit een e-mailadres, en we vragen nooit naar hun leeftijd of woonadres. Als je school Inloggen met Google gebruikt, bewaren we het Google-mailadres van school van elke leerling alleen om het account te herkennen. Er is geen reclame en er zijn geen trackingcookies. Onze <a href=\"{href}\">privacyverklaring</a> vermeldt precies wat we bewaren."
+    },
+    "setup": {
+      "lead": "Vertel ons iets over je school. We zetten hem binnen 1 schooldag op en sturen je per e-mail wat je daarna moet doen. Een school opzetten is gratis.",
+      "school": "Naam van de school",
+      "role": "Je functie",
+      "rolePick": "Kies er een",
+      "roles": {
+        "teacher": "Leerkracht",
+        "leader": "Directeur of schoolleider",
+        "it": "ICT-coördinator",
+        "district": "Schoolbestuur of scholengroep",
+        "other": "Iets anders"
+      },
+      "email": "Je werk-e-mailadres",
+      "emailHint": "Je e-mailadres van school, zodat we weten dat de aanvraag van de school komt. We gebruiken het alleen om te antwoorden.",
+      "students": "Ongeveer hoeveel leerlingen?",
+      "country": "Land",
+      "submit": "Zet mijn school op",
+      "privacy": "We gebruiken je e-mailadres alleen om deze aanvraag te beantwoorden, en we verwijderen de aanvraag 1 jaar nadat we hem hebben beantwoord. Zie ons <a href=\"{privacy}\">Privacybeleid</a>.",
+      "questions": "Eerst nog vragen? Mail naar {email}.",
+      "kid": "Een leerkracht of schoolleider kan ons hier vragen om een school op te zetten. Laat deze pagina aan je juf of meester zien!",
+      "thanks": {
+        "h": "Bedankt! We hebben je aanvraag ontvangen.",
+        "p1": "We zetten je school binnen 1 schooldag op en antwoorden op het e-mailadres dat je ons hebt gegeven.",
+        "p2": "Probeer intussen een game met je klas: leerlingen kunnen meteen spelen, zonder zich aan te melden."
+      },
+      "errors": {
+        "school": "Typ de naam van je school (2 tot 100 tekens).",
+        "role": "Kies je functie.",
+        "email": "Typ een e-mailadres zoals naam@school.nl.",
+        "students": "Typ ongeveer hoeveel leerlingen, als getal.",
+        "country": "Typ je land.",
+        "slow": "Te veel aanvragen vanaf hier. Probeer het over een uur opnieuw.",
+        "busyToday": "We hebben vandaag veel aanvragen gehad. Probeer het morgen opnieuw, of mail ons.",
+        "full": "We kunnen nu geen aanvragen meer aannemen. Mail ons in plaats daarvan.",
+        "again": "Er moet iets in het formulier worden verbeterd. Controleer het en verstuur het opnieuw."
+      }
     }
   },
   "learn": {
@@ -3460,7 +3558,18 @@
           "a4": "Nee. Kinderen chatten alleen met vrienden die ze met een code van 6 tekens hebben toegevoegd, nooit door op namen te zoeken, en ze kunnen de chat uitzetten op de pagina Ik."
         }
       }
-    }
+    },
+    "index": {
+      "crumb": "Leren",
+      "title": "Leerspelletjes per vak en leeftijd",
+      "description": "Gratis leerspelletjes voor kinderen van 8 tot 14 jaar, per vak (rekenen, woorden, strategie, muziek, breinpauzes, games maken) en per leeftijd. Speel in de browser, op school of thuis.",
+      "h1": "Leerspelletjes per vak en leeftijd",
+      "lead": "Gratis spelletjes voor 8 tot 14 jaar die in de browser werken. Kies een vak of een leeftijd om te zien welke games passen en wat ze oefenen.",
+      "subjects": "Per vak",
+      "ages": "Per leeftijd",
+      "who": "Voor leerkrachten en ouders"
+    },
+    "inClass": "Gebruik je dit in de klas? <a href=\"{href}\">Bekijk Oomba Academy voor leerkrachten</a>."
   },
   "parents": {
     "title": "Veilige, gratis leerspelletjes voor kinderen",
@@ -3480,7 +3589,8 @@
       "start": "Laat je kind gratis beginnen",
       "try": "Probeer nu een spel, zonder account",
       "grownup": "Maak een ouderaccount",
-      "lead": "Genoeg gezien? Probeer nu samen met je kind een spelletje."
+      "lead": "Genoeg gezien? Probeer nu samen met je kind een spelletje.",
+      "setup": "Meld je kind gratis aan"
     },
     "teachers": "Geef je les? Bekijk <a href=\"{href}\">Oomba Academy voor leerkrachten</a>.",
     "play": {

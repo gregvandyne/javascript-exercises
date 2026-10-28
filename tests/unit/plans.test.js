@@ -234,7 +234,8 @@ test('School: a school admin goes to their Billing tab; everyone else to the "fo
   assert.match(page, /Oomba Academy for schools/);
   assert.match(page, /\$20\.00 per student per year, for at least 25 students/);
   assert.match(page, /How to set up a school/);
-  assert.match(page, /<a href="mailto:help@example\.com" dir="ltr">help@example\.com<\/a>/);
+  assert.match(page, /<a href="mailto:help@example\.com" dir="ltr">help@example\.com<\/a>/, 'Questions? still names the address');
+  assert.match(page, /href="\/teachers#start"/, 'setting up is the form on the teacher page');
   assert.doesNotMatch(page, /tab=billing/, 'a teacher gets no Billing tab link');
   assert.match(decode((await call(signIn(admin), '/plans/schools')).text), new RegExp(`href="/school/${s.slug}\\?tab=billing">Go to your school's Billing tab<`));
 });

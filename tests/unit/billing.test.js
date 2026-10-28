@@ -658,3 +658,38 @@ test('reconcile: ended subscriptions (incomplete_expired, canceled after grace) 
   assert.equal(reads(ssub.id), s0 + 1, 'and then no more');
   assert.equal(B.ownerPlan('school', sch).entitled, false);
 });
+
+test('funnel counts (services/funnel.js): Paid and School plan once per subscription, when its first invoice is paid', async () => {
+  const count = step => q.get('SELECT COALESCE(SUM(n),0) n FROM funnel_counts WHERE step=?', step).n;
+  const paid0 = count('parent.paid'), plan0 = count('teacher.plan');
+  const { sub } = familySub();
+  await deliver('customer.subscription.created', sub.id);
+  assert.equal(count('parent.paid'), paid0 + 1);
+  await deliver('customer.subscription.updated', sub.id); await B.syncSubscription(sub.id);
+  assert.equal(count('parent.paid'), paid0 + 1, 'later syncs of the same plan never count again');
+  // Back from past_due: it was paid before, so not a new paying family.
+  fake.update(sub.id, { status: 'unpaid' }); await B.syncSubscription(sub.id);
+  fake.update(sub.id, { status: 'active' }); await B.syncSubscription(sub.id);
+  assert.equal(count('parent.paid'), paid0 + 1);
+  // A subscription to a price that sells no known plan never counts.
+  const { sub: other } = familySub({ lookupKey: 'nope_unknown' });
+  await B.syncSubscription(other.id);
+  assert.equal(count('parent.paid'), paid0 + 1);
+  // A school plan is the teacher funnel's last step.
+  const sch = school(); const cus = fake.customer().id; B.linkCustomer(cus, 'school', sch);
+  const ssub = fake.subscription({ customer: cus, lookupKey: 'oomba_school_seat_yearly', quantity: 40 });
+  await deliver('customer.subscription.created', ssub.id);
+  assert.equal(count('teacher.plan'), plan0 + 1); assert.equal(count('parent.paid'), paid0 + 1);
+  // An invoiced school (send_invoice, 30 days to pay) is entitled as soon as the invoice is issued, but counts only once
+  // the invoice is paid.
+  const sch2 = school(); const cus2 = fake.customer().id; B.linkCustomer(cus2, 'school', sch2);
+  const isub = fake.subscription({ customer: cus2, lookupKey: 'oomba_school_seat_yearly', quantity: 30, collectionMethod: 'send_invoice', invoice: 'open', dueDate: Date.now() + 30 * DAY });
+  await deliver('customer.subscription.created', isub.id);
+  assert.equal(B.ownerPlan('school', sch2).entitled, true);
+  assert.equal(count('teacher.plan'), plan0 + 1, 'an issued invoice is not a paid plan');
+  fake.payInvoice(fake.st.subscriptions.get(isub.id).latest_invoice); await B.syncSubscription(isub.id);
+  assert.equal(count('teacher.plan'), plan0 + 2, 'counted when the invoice is paid');
+  await B.syncSubscription(isub.id);
+  assert.equal(count('teacher.plan'), plan0 + 2);
+  assert.deepEqual(q.all("SELECT name FROM pragma_table_info('funnel_counts')").map(c => c.name).sort(), ['day', 'n', 'step'], 'no owner ids');
+});

@@ -152,13 +152,17 @@ export function personalInfo(s) {
 }
 
 /** Usernames: 3-16 chars, letters/digits/underscore, no profanity, nothing that looks like a phone number or a real full name. */
-export function cleanName(s, t = tEn) {
+/** A sign-in name. Kids' names may not look like a real name or carry a birth year (they are seen by other players);
+ *  a grown-up account's name (realNames: true) may be their real name: children never see it, and it is on no
+ *  leaderboard, profile or search (routes/family.js). */
+export function cleanName(s, t = tEn, { realNames = false } = {}) {
   const v = String(s || '').trim();
   if (!/^[A-Za-z0-9_]{3,16}$/.test(v)) return { ok: false, error: t('textfilter.name.chars') };
   if (hasProfanity(v, { names: true })) return { ok: false, error: t('textfilter.name.notAllowed') };
   if (/\d{5,}/.test(v)) return { ok: false, error: t('textfilter.name.numbers') };
   // A family link code as a name would show on leaderboards, search and profiles (services/family.js).
   if (looksLikeLinkCode(v)) return { ok: false, error: t('textfilter.name.notAllowed') };
+  if (realNames) return { ok: true, value: v };
   if (/^(19|20)\d\d|(19|20)\d\d$/.test(v) && /[a-z]{3,}/i.test(v)) return { ok: false, error: t('textfilter.name.birthYear') };
   if (/^[A-Z][a-z]{2,}_?[A-Z][a-z]{2,}\d*$/.test(v) && REALNAME.test(v)) return { ok: false, error: t('textfilter.name.realName') };
   return { ok: true, value: v };

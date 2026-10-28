@@ -26,6 +26,7 @@ import { loadChat } from '../builder/chat.js';
 import { previewUrl } from '../builder/tools.js';
 import { saveUpload, getUpload, deleteUpload, readUploadBytes, listUploads, LIMITS, UploadError } from '../builder/uploads.js';
 import { tEn } from '../i18n/index.js';
+import { familiesOn, isChildAccount, liveRowOf } from '../services/family.js';
 import { sharingOptions, shareableClasses, gameClassIds, removedClassIds } from '../services/schools.js';
 
 export const router = Router();
@@ -68,8 +69,13 @@ function loadEditable(req, res, { api = true } = {}) {
   return g;
 }
 
-/** Everything the Studio client needs, as JSON. t: the reader's language (labels, share texts, preview language). */
-export function studioState(user, gameId, t = tEn) {
+/** May the daily-limit card say "A grown-up can link to your account" (Me › For grown-ups)? Only for a kid's own
+ *  account with no grown-up linked or asked yet, and only while family pages are on for this visitor. Never a plan,
+ *  price or /plans link: this is a kid's page. */
+export const grownUpLinkHint = (req, user) => !!req && familiesOn(req) && isChildAccount(user) && !liveRowOf(user.id);
+/** Everything the Studio client needs, as JSON. t: the reader's language (labels, share texts, preview language).
+ *  req: the request, for what depends on the visitor (grownUpLink). */
+export function studioState(user, gameId, t = tEn, req = null) {
   const g = games.getGame(gameId);
   const versions = games.listVersions(g.id);
   const cur = g.current_version_id ? games.getVersion(g.current_version_id) : null;
@@ -90,6 +96,7 @@ export function studioState(user, gameId, t = tEn) {
     turn: publicTurn(g.id, user), lastTurn: lastTurn(g.id, user),
     shareText: shareText(t), shareUrl: `/g/${g.slug}`, shareOptions: sharingOptions(getUser(g.owner_id)), classShare: classShare(g, g.owner_id),
     uploads: { limits: LIMITS, used: listUploads(g.id).length },
+    grownUpLink: grownUpLinkHint(req, user),
   };
 }
 
@@ -145,7 +152,7 @@ router.get('/studio/:id', requireAccount, (req, res) => {
   const t = req.t;
   const g = loadEditable(req, res, { api: false }); if (!g) return;
   if (req.user.id === g.owner_id) turns.markSeen(g.id);   // the owner sees how the last build ended: no more "Ready" news
-  const state = studioState(req.user, g.id, t);
+  const state = studioState(req.user, g.id, t, req);
   const body = html`
   <div class="studio" id="studio">
     <div class="st-top">
@@ -171,6 +178,7 @@ router.get('/studio/:id', requireAccount, (req, res) => {
         </div>
         <div class="st-log" id="st-log" role="log" aria-live="polite"></div>
         <form class="st-compose" id="st-compose" autocomplete="off">
+          <div class="st-limit" id="st-limit" role="status"${t.own('js.studio.limitCard.heading') ? '' : html` lang="en" dir="ltr"`} hidden></div>
           <div class="st-attach" id="st-attach" hidden></div>
           <div class="st-row">
             <button class="st-clip" type="button" id="st-clip" aria-label="${t('studio.chat.attach')}" title="${t('studio.chat.attach')}">📎</button>
@@ -223,7 +231,7 @@ router.post('/api/studio/new', requireAccount, rateLimit('studio-new', 30, 3600e
 
 router.get('/api/studio/:id', requireAccount, (req, res) => {
   const g = loadEditable(req, res); if (!g) return;
-  res.json(studioState(req.user, g.id, req.t));
+  res.json(studioState(req.user, g.id, req.t, req));
 });
 
 // The Builder chat. Body: { text, pro, uploads, cid, continueOf?, detach? }.
@@ -285,7 +293,7 @@ router.post('/api/studio/:id/meta', requireAccount, rateLimit('studio-meta', 60,
   if (b.orientation !== undefined) { if (!games.ORIENTATIONS.includes(b.orientation)) return res.status(400).json({ error: t('studio.api.pickDirection') }); f.orientation = b.orientation; }
   if (b.players_max !== undefined) f.players_max = Math.max(1, Math.min(8, Math.round(+b.players_max || 1)));
   games.updateMeta(g.id, f);
-  res.json({ ok: true, state: studioState(req.user, g.id, t) });
+  res.json({ ok: true, state: studioState(req.user, g.id, t, req) });
 });
 
 // Delete from "My games". Starter (seed) games stay: they belong to the site, not a builder.
@@ -305,7 +313,7 @@ router.post('/api/studio/:id/restore', requireAccount, rateLimit('studio-restore
   if (builderWorking(req, res, g)) return;
   const v = games.restoreVersion(g.id, String((req.body || {}).versionId || ''), req.user.id);
   if (!v) return res.status(404).json({ error: req.t('studio.api.versionNotFound') });
-  res.json({ ok: true, message: req.t('studio.api.restored', { number: v.number }), state: studioState(req.user, g.id, req.t) });
+  res.json({ ok: true, message: req.t('studio.api.restored', { number: v.number }), state: studioState(req.user, g.id, req.t, req) });
 });
 
 // "Save version": a named checkpoint (a copy of the current version with the builder's note). History is never rewritten.
@@ -317,7 +325,7 @@ router.post('/api/studio/:id/save', requireAccount, rateLimit('studio-save', 30,
   if (!cur) return res.status(400).json({ error: t('studio.api.buildFirst') });
   const c = cleanText((req.body || {}).note || '', 80, t); if (!c.ok) return res.status(400).json({ error: c.error });
   const v = games.addVersion(g.id, cur.html, { notes: `⭐ ${t('studio.api.savedNote', { note: c.value || t('studio.api.savedDefault') })}`, createdBy: req.user.id, safetyStatus: cur.safety_status, safetyReport: JSON.parse(cur.safety_report || '{}') });
-  res.json({ ok: true, message: t('studio.api.saved', { number: v.number }), state: studioState(req.user, g.id, t) });
+  res.json({ ok: true, message: t('studio.api.saved', { number: v.number }), state: studioState(req.user, g.id, t, req) });
 });
 
 /** { visibility, classIds } from a publish/visibility request. classIds: for 'class' only, and then required (an array
@@ -330,7 +338,7 @@ function shareRequest(req) {
   if (!Array.isArray(body.classIds)) return { error: req.t('studio.api.pickClass') };
   return { vis, classIds: body.classIds };
 }
-const shareReply = (req, res, g, r) => res.status(r.ok ? 200 : 400).json({ ...r, game: undefined, error: r.ok ? undefined : r.message, state: studioState(req.user, g.id, req.t) });
+const shareReply = (req, res, g, r) => res.status(r.ok ? 200 : 400).json({ ...r, game: undefined, error: r.ok ? undefined : r.message, state: studioState(req.user, g.id, req.t, req) });
 // Publish the version being edited. Body: { visibility, classIds? } (classIds: the chosen classes, for 'class').
 router.post('/api/studio/:id/publish', requireAccount, rateLimit('studio-publish', 20, 60e3), async (req, res) => {
   const g = loadEditable(req, res); if (!g) return;

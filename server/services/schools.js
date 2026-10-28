@@ -18,6 +18,7 @@ import { q, uid, now, tx, audit } from '../db.js';
 import { config } from '../config.js';
 import { createUser, setPassword, getUser } from '../auth.js';
 import { unlinkAll } from './family.js';
+import * as funnel from './funnel.js';
 import { clear, loginLockKey } from './ratelimit.js';
 
 export const ROLES = ['admin', 'teacher', 'student'];
@@ -84,6 +85,7 @@ export function createSchool(by, { name }) {
   const id = uid(10);
   q.run('INSERT INTO schools(id, name, slug, settings, created_by, created_at) VALUES (?,?,?,?,?,?)', id, n, uniqueSlug(n), '{}', by.id, now());
   audit(by.id, 'school.create', id, { name: n });
+  funnel.bump('teacher.school');
   return ok({ school: getSchool(id) });
 }
 // Google Workspace domains a school lists for Sign in with Google. Personal mail services are refused: their accounts
@@ -334,9 +336,13 @@ export function addToClass(by, classId, userId, role = null) {
   const m = membership(c.school_id, userId); if (!m) return fail('notInSchool');
   const r = role || (m.role === 'student' ? 'student' : 'teacher');
   if (r === 'teacher' && m.role === 'student') return fail('badRole');
+  // Funnel counts (services/funnel.js): the school's first class with a student, once per school, ever (a student who
+  // left still counts as "had one", so moving or re-adding never counts again).
+  const firstStudent = r === 'student' && !q.get("SELECT 1 FROM class_members x JOIN classrooms k ON k.id=x.class_id WHERE k.school_id=? AND x.role='student'", c.school_id);
   q.run(`INSERT INTO class_members(class_id, user_id, role, status, joined_at) VALUES (?,?,?,'active',?)
     ON CONFLICT(class_id, user_id) DO UPDATE SET role=excluded.role, status='active', left_at=NULL, joined_at=CASE WHEN class_members.status='active' THEN class_members.joined_at ELSE excluded.joined_at END`, c.id, userId, r, now());
   audit(by.id, 'class.member_add', c.id, { user: userId, role: r });
+  if (firstStudent) funnel.bump('teacher.class');
   return ok();
 }
 /** Take someone out of a class (a teacher removing a student, a co-teacher leaving, a student moved). Their games stop

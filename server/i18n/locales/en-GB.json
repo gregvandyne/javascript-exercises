@@ -107,6 +107,9 @@
       "settings": {
         "color": "Card colour"
       },
+      "covers": {
+        "candy": "Sweets"
+      },
       "save": {
         "placeholder": "My favourite so far"
       }
@@ -204,6 +207,12 @@
       "q5": "What ages and year groups is it for?",
       "a5": "Oomba Academy is made for ages 8 to 14, roughly Years 4 to 9. Some games, such as Shark Plank and the first Sum Racer tracks, also suit younger readers.",
       "a4google": "Students never type an email address, and we never ask for their age or home address. If your school uses Sign in with Google, we keep each student’s school Google email only to recognise their account. There are no ads and no tracking cookies. Our <a href=\"{href}\">privacy notice</a> lists exactly what we keep."
+    },
+    "setup": {
+      "roles": {
+        "leader": "Head teacher or principal",
+        "district": "Multi-academy trust or school group"
+      }
     }
   },
   "learn": {
@@ -244,6 +253,7 @@
         }
       }
     },
+    "grades": "US grades {from}–{to}",
     "ages": {
       "skills": {
         "h": "Skills they practise"
@@ -251,6 +261,10 @@
       "a10": {
         "abcya": "Outgrowing ABCya? Its games are for nursery to Year 7. Oomba Academy is made for ages 8 to 14."
       }
+    },
+    "index": {
+      "description": "Free learning games for kids aged 8 to 14, by subject (maths, words, strategy, music, brain breaks, making games) and by age. Play in the browser, at school or at home.",
+      "lead": "Free games for ages 8 to 14 that play in the browser. Pick a subject or an age to see which games fit and what they practise."
     }
   },
   "parents": {

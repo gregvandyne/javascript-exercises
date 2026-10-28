@@ -251,7 +251,7 @@ export const MIGRATIONS = [
   // users.account_type: 'kid' (every account so far) or 'grownup'. A family belongs to one grown-up. family_children:
   // 'pending' until the child says yes, then 'linked'; unlinked rows keep unlinked_at (deleted 90 days later). At most
   // one live row per child (pending or linked), so a child is in one family and answers one request at a time.
-  // family_link_codes: only an HMAC of the code is stored; valid 1 hour, single use, one open per child.
+  // family_link_codes: only an HMAC of the code is stored; valid 24 hours (services/family.js CODE_TTL), single use, one open per child.
   // link_reports: a child's Report, for the platform admin's queue (no free text).
   ['0023_families', `ALTER TABLE users ADD COLUMN account_type TEXT NOT NULL DEFAULT 'kid';
     CREATE TABLE IF NOT EXISTS families (id TEXT PRIMARY KEY, owner_id TEXT NOT NULL UNIQUE REFERENCES users(id), created_at INTEGER NOT NULL);
@@ -295,6 +295,17 @@ export const MIGRATIONS = [
       livemode INTEGER NOT NULL DEFAULT 0, stripe_subscription_id TEXT, created_at INTEGER NOT NULL, closed_at INTEGER, closed_by TEXT);
     CREATE INDEX IF NOT EXISTS billing_requests_school ON billing_requests(school_id, status);
     CREATE INDEX IF NOT EXISTS billing_requests_status ON billing_requests(status, created_at);`],
+  // "Set up my school" requests from /teachers (server/services/school-requests.js; docs/decisions.md "Doors for
+  // grown-ups"). An adult's work email, kept only here and deleted 1 year after the request is closed. status: 'open',
+  // 'done' or 'declined'; school_id: the school the platform admin made for it. user_id: the sender's account, if any.
+  ['0026_school_requests', `CREATE TABLE IF NOT EXISTS school_requests (id TEXT PRIMARY KEY, school_name TEXT NOT NULL,
+      role TEXT NOT NULL, email TEXT NOT NULL, students INTEGER NOT NULL, country TEXT NOT NULL, locale TEXT NOT NULL DEFAULT '',
+      user_id TEXT, status TEXT NOT NULL DEFAULT 'open', created_at INTEGER NOT NULL, closed_at INTEGER, closed_by TEXT, school_id TEXT);
+    CREATE INDEX IF NOT EXISTS school_requests_status ON school_requests(status, created_at);`],
+  // Funnel step counts for /admin/stats (server/services/funnel.js; docs/decisions.md "Funnel counts"): one daily total
+  // per step, like the traffic table. No user, family, school or class ids: nothing here can follow a person.
+  ['0027_funnel', `CREATE TABLE IF NOT EXISTS funnel_counts (day TEXT NOT NULL, step TEXT NOT NULL, n INTEGER NOT NULL DEFAULT 0,
+      PRIMARY KEY(day, step));`],
 ];
 
 db.exec('CREATE TABLE IF NOT EXISTS migrations (name TEXT PRIMARY KEY, applied_at INTEGER NOT NULL)');

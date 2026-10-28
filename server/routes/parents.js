@@ -17,8 +17,8 @@ import { familiesOn } from '../services/family.js';
 import { isGrownup } from '../auth.js';
 import * as seo from '../seo.js';
 import { HUBS, AGES, ageBySlug, PARENT_GUIDES, guideBySlug, PARENT_GAMES, PARENTS_FAQ, TWO_PLAYER, gameKey, CONTENT_UPDATED } from '../learn.js';
-import { launchGame, faqBlock, el, fb, lp, contactEmail } from './teachers.js';
-import { section, parentSections, families, googlePrivacy, contact } from './info.js';
+import { launchGame, faqBlock, el, fb, lp, contactEmail, inClassLine } from './teachers.js';
+import { section, parentSections, families, googlePrivacy, contact, setupLink } from './info.js';
 import { howArt, howSteps, howHead, HOW_SCRIPT } from '../views/how.js';
 
 export const router = Router();
@@ -44,18 +44,16 @@ const parentAudience = () => ({ '@type': 'ParentAudience', childMinAge: seo.AGE.
 
 /** The breadcrumb as a nav (the same markup as the subject pages). */
 const crumbsNav = (req, crumbs) => html`<nav class="crumbs small" aria-label="${req.t('learn.crumbs')}"><ol>${crumbs.map(([name, p], i) => html`<li>${i < crumbs.length - 1 ? html`<a href="${lp(req, p)}">${name}</a>` : html`<span aria-current="page">${name}</span>`}</li>`)}</ol></nav>`;
-/** "Let your child start free" (a child's own account: a made-up name and a password), "Try a game now", and, while
- *  paid-plan pages are on, "Make a grown-up account". */
-function ctaRow(req, { grownup = false, game = tryGame() } = {}) {
-  const t = req.t; const g = game;
+/** The set-up button (info.js setupLink), then "Try a game now". */
+function ctaRow(req, { game = tryGame() } = {}) {
+  const t = req.t; const g = game; const setup = setupLink(req);
   return html`<div class="row lp-cta">
-    <a class="btn btn-primary btn-big" href="/signup">${t('parents.cta.start')}</a>
+    <a class="btn btn-primary btn-big" href="${setup.href}"${fb(t, setup.key)}>${setup.label}</a>
     ${g ? html`<a class="btn btn-big" href="/play/${g.slug}" rel="nofollow">▶ ${t('parents.cta.try')}</a>` : ''}
-    ${grownup && familiesOn(req) ? html`<a class="btn btn-big" href="/grown-ups">${t('parents.cta.grownup')}</a>` : ''}
   </div>`;
 }
 /** The end of a parent page, after the details and questions: a one-line lead and the same buttons. */
-const ctaEnd = req => html`<section class="lp-sec lp-end" aria-label="${req.t('parents.cta.start')}">${el(req.t, 'p', 'parents.cta.lead', {}, ' class="lead"')}${ctaRow(req)}</section>`;
+const ctaEnd = req => html`<section class="lp-sec lp-end" aria-label="${setupLink(req).label}">${el(req.t, 'p', 'parents.cta.lead', {}, ' class="lead"')}${ctaRow(req)}</section>`;
 /** Cards linking to pages: [{ href, emoji, nameKey, shortKey }]. */
 const linkCards = (t, cards) => html`<ul class="lp-hubs">${cards.map(c => html`<li><a class="lp-hub panel" href="${c.href}"><span class="lp-hub-e" aria-hidden="true">${c.emoji}</span><span>${el(t, 'span', c.name, {}, ' class="lp-hub-t"')}${el(t, 'span', c.short, {}, ' class="lp-hub-d"')}</span></a></li>`)}</ul>`;
 const ageCards = req => linkCards(req.t, AGES.map(a => ({ href: lp(req, `/learn/${a.slug}`), emoji: a.emoji, name: `learn.ages.${a.key}.name`, short: `learn.ages.${a.key}.short` })));
@@ -80,9 +78,9 @@ router.get('/parents', (req, res) => {
     ${el(t, 'p', 'parents.kicker', {}, ' class="lp-kicker"')}
     ${el(t, 'h1', 'parents.h1', {}, ' id="lp-h1"')}
     ${el(t, 'p', 'parents.lead', {}, ' class="lead"')}
-    <ul class="lp-badges">${badges.map(([e, k]) => html`<li><span aria-hidden="true">${e}</span> ${el(t, 'span', k, { count })}</li>`)}</ul>
-    ${ctaRow(req, { grownup: true })}
+    ${ctaRow(req)}
     ${el(t, 'p', 'parents.teachers', { href: lp(req, '/teachers') }, ' class="lp-aside small"')}
+    <ul class="lp-badges">${badges.map(([e, k]) => html`<li><span aria-hidden="true">${e}</span> ${el(t, 'span', k, { count })}</li>`)}</ul>
     ${howArt(req, 'parents')}
   </section>
   ${howSteps(req, 'parents')}
@@ -265,6 +263,7 @@ router.get('/learn/:slug', (req, res, next) => {
       <section class="panel" id="safe" aria-labelledby="safe-h">${el(t, 'h2', 'learn.ages.safe.h', {}, ' id="safe-h"')}${el(t, 'p', 'learn.ages.safe.p', { href: lp(req, '/parents') })}</section>
     </div>
     ${faq.markup}
+    ${inClassLine(req)}
     <section class="lp-sec" aria-labelledby="more-h">${el(t, 'h2', 'learn.ages.moreHeading', {}, ' id="more-h"')}
       <ul class="chips lp-more">${AGES.filter(a => a !== age).map(a => html`<li><a class="chip" href="${lp(req, `/learn/${a.slug}`)}"><span aria-hidden="true">${a.emoji}</span>${t(`learn.ages.${a.key}.name`)}</a></li>`)}
         <li><a class="chip" href="${lp(req, '/parents')}"><span aria-hidden="true">👪</span>${t('learn.parentsLink')}</a></li></ul>

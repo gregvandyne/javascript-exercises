@@ -200,7 +200,7 @@ test('BG-6 interrupted twice: stopped, the turn given back, and "Carry on buildi
   await stopServer(); await startServer();     // a second interruption: it stops
   await reconnectNow(page);
   await expect(page.locator('#st-log .msg.note.stopped')).toHaveText('The Builder stopped when our server restarted. Anything it made is saved.', { timeout: 30_000 });
-  await expect(page.locator('#st-log .msg.note', { hasText: 'This one didn’t use up a turn.' })).toHaveCount(1);
+  await expect(page.locator('#st-log .msg.note', { hasText: 'This one didn’t use up a Builder message.' })).toHaveCount(1);
   const cont = page.locator('#st-log [data-act="continue"]');
   await expect(cont).toHaveText('▶️ Carry on building');
   expect((await cont.boundingBox()).height).toBeGreaterThanOrEqual(44);

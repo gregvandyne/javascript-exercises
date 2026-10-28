@@ -6,6 +6,7 @@ import * as presence from './presence.js';
 import { current } from '../i18n/index.js';
 import { queueShot } from './shots.js';
 import { OFFICIAL } from '../auth.js';
+import * as funnel from './funnel.js';
 import { hasProfanity, personalInfo, looksLikeLinkCode } from './textfilter.js';
 
 export const CATEGORIES = [
@@ -269,6 +270,7 @@ export function recordPlay(gameId, userId) {
   tx(() => {
     q.run('INSERT INTO plays(id, game_id, user_id, started_at) VALUES (?,?,?,?)', id, gameId, userId || null, now());
     q.run('UPDATE games SET plays=plays+1 WHERE id=?', gameId);
+    funnel.bump('kid.play');   // the guardrail's daily total (services/funnel.js); the play row above is the game's own
   });
   return id;
 }

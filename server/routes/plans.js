@@ -170,7 +170,19 @@ router.get('/plans', on, async (req, res) => {
   page(req, res, { title: t('plans.title'), active: 'plans', description: t('plans.description'), body, seo: { index: config.billingPublic, path: '/plans' } });
 });
 
-/** For schools: the price, what a school gets, and how a school is set up (by us, then paid from its Billing tab). */
+/** The seat calculator's numbers: students as asked (1 to SEAT_CALC_MAX; null when none or not a number), the seats a
+ *  plan would have (never fewer than SCHOOL_MIN_SEATS), and the yearly total in cents (null without a Stripe price). */
+export const SEAT_CALC_MAX = 100000;
+export function seatQuote(students, seatCents) {
+  const n = Number(String(students ?? '').trim());
+  const asked = String(students ?? '').trim() !== '' && Number.isInteger(n) && n >= 1 ? Math.min(n, SEAT_CALC_MAX) : null;
+  const min = config.schoolMinSeats;
+  const seats = asked === null ? null : Math.max(asked, min);
+  return { students: asked, seats, min, unit: seatCents ?? null, total: seats !== null && Number.isInteger(seatCents) ? seats * seatCents : null };
+}
+
+/** For schools: the price, a seat calculator, what a school gets, and how a school is set up (the "Set up my school"
+ *  form on /teachers, then paid from its Billing tab). Prices are Stripe's (C.planPrices), never written here. */
 router.get('/plans/schools', on, async (req, res) => {
   const t = req.t, f = req.fmt, { T, TH } = words(t, f);
   const prices = await C.planPrices();
@@ -178,16 +190,64 @@ router.get('/plans/schools', on, async (req, res) => {
   const email = config.contactEmail || 'greg@oomba.ai';
   const mail = html`<a href="mailto:${email}" dir="ltr">${email}</a>`;
   const lessons = Math.floor(config.schoolTurnsPerSeat / SB.LESSON_MESSAGES);
+  const seat = prices && prices.school ? prices.school.year.unitAmount : null;
+  const quote = seatQuote(req.query.students, seat);
+  const shown = quote.students ?? config.schoolMinSeats;
+  const calc = seat === null ? '' : html`<section class="panel seatcalc" id="calc" aria-labelledby="calc-h"><h2 id="calc-h">${T('plans.schools.calc.h')}</h2>
+      <form method="get" action="/plans/schools#calc" class="row">
+        <div class="field"><label for="calc-students">${T('plans.schools.calc.label')}</label>
+          <input class="input" id="calc-students" name="students" type="number" inputmode="numeric" min="1" max="${SEAT_CALC_MAX}" step="1" required value="${shown}"></div>
+        <button class="btn" type="submit">${T('plans.schools.calc.button')}</button>
+      </form>
+      ${quote.total !== null ? html`<p class="seatcalc-out" role="status">${TH('plans.schools.calc.result', { seats: quote.seats, price: cents(seat), total: html`<b>${f.money(quote.total)}</b>` })}</p>` : ''}
+      ${quote.students !== null && quote.students < quote.min ? html`<p class="small">${T('plans.schools.calc.min', { min: quote.min })}</p>` : ''}
+      <p class="small muted">${T('plans.schools.calc.tax')}</p>
+      <p style="margin-bottom:0"><a class="btn btn-primary" href="/plans/schools/print?students=${shown}">🖨️ ${T('plans.schools.calc.print')}</a></p>
+      <p class="small muted" style="margin:var(--s2) 0 0">${T('plans.schools.calc.printHint')}</p></section>`;
   const body = html`<div class="wrap narrow" style="padding:0"><h1>🏫 ${T('plans.schools.heading')}</h1>
     <p class="lead">${T('plans.schools.intro')}</p>
     <section class="panel"><h2>${T('plans.schools.what.h')}</h2>
-      ${prices && prices.school ? html`<p>${t('school.billing.price', { price: f.money(prices.school.year.unitAmount), min: config.schoolMinSeats, perSeat: config.schoolTurnsPerSeat })}</p>` : ''}
+      ${seat !== null ? html`<p>${t('school.billing.price', { price: f.money(seat), min: config.schoolMinSeats, perSeat: config.schoolTurnsPerSeat })}</p>` : ''}
       <p>${t('school.billing.priceLessons', { count: lessons })}</p>
       <p>${T('plans.schools.what.p1')}</p></section>
+    ${calc}
     <section class="panel"><h2>${T('plans.schools.how.h')}</h2>
-      <ol class="steps"><li>${TH('plans.schools.how.li1', { email: mail })}</li><li>${T('plans.schools.how.li2')}</li><li>${T('plans.schools.how.li3')}</li></ol>
+      <ol class="steps"><li>${TH('plans.schools.how.li1form', { href: '/teachers#start' })}</li><li>${T('plans.schools.how.li2day')}</li><li>${T('plans.schools.how.li3')}</li></ol>
       ${target.school ? html`<p style="margin-bottom:0"><a class="btn btn-primary" href="${target.href}">${T('plans.schools.toBilling')}</a></p>` : ''}</section>
     <section class="panel" id="contact"><h2>${T('plans.schools.contact.h')}</h2><p style="margin-bottom:0">${TH('plans.schools.contact.p1', { email: mail })}</p></section>
     <p class="small">${tHtml(t, 'school.billing.legal')}</p></div>`;
   page(req, res, { title: t('plans.schools.title'), back: '/plans', backLabel: t('plans.title'), active: 'plans', description: t('plans.schools.description'), body, seo: { index: config.billingPublic, path: '/plans/schools' } });
+});
+
+/** "Send this to my admin": one printable page (the print stylesheet hides the menus) with the seat price, the total
+ *  for the students asked, and how to set up, for whoever pays at the school. Never indexed. */
+router.get('/plans/schools/print', on, async (req, res) => {
+  const t = req.t, f = req.fmt, { T, TH } = words(t, f);
+  const prices = await C.planPrices();
+  const seat = prices && prices.school ? prices.school.year.unitAmount : null;
+  const quote = seatQuote(req.query.students ?? config.schoolMinSeats, seat);
+  const email = config.contactEmail || 'greg@oomba.ai';
+  const host = siteHost(req);
+  const row = (k, v, ltr = true) => html`<tr><th scope="row">${T(k)}</th><td${ltr ? raw(' dir="ltr"') : ''}>${v}</td></tr>`;
+  const body = html`<div class="printdoc">
+    <div class="row printbar"><button class="btn btn-primary" type="button" data-print>🖨️ ${T('plans.schools.print.printButton')}</button>
+      <a class="btn" href="/plans/schools?students=${quote.students ?? config.schoolMinSeats}#calc">${T('plans.schools.print.back')}</a></div>
+    <h1>🏫 ${T('plans.schools.print.heading')}</h1>
+    <p class="lead">${T('plans.schools.print.intro')}</p>
+    <section class="panel"><h2>${T('plans.schools.print.cost')}</h2>
+      ${seat === null ? html`<p style="margin-bottom:0">${T('plans.noPrice')}</p>` : html`<div class="tblwrap"><table class="tbl"><tbody>
+        ${row('plans.schools.print.perStudent', f.money(seat))}
+        ${row('plans.schools.print.minimum', T('plans.schools.print.minimumN', { min: quote.min }), false)}
+        ${row('plans.schools.print.students', String(quote.seats))}
+        ${row('plans.schools.print.total', html`<b>${f.money(quote.total)}</b>`)}
+      </tbody></table></div>
+      <p class="small" style="margin:var(--s3) 0 0">${T('plans.schools.print.estimate', { date: f.date(Date.now()) })}</p>`}</section>
+    <section class="panel"><h2>${T('plans.schools.what.h')}</h2>
+      <p>${t('school.billing.priceLessons', { count: Math.floor(config.schoolTurnsPerSeat / SB.LESSON_MESSAGES) })}</p>
+      <p style="margin-bottom:0">${T('plans.schools.what.p1')}</p></section>
+    <section class="panel"><h2>${T('plans.schools.print.setup')}</h2>
+      <ol class="steps"><li>${TH('plans.schools.print.li1', { url: html`<bdi dir="ltr"><b>${host}/teachers</b></bdi>` })}</li><li>${T('plans.schools.how.li2day')}</li><li>${T('plans.schools.how.li3')}</li></ol>
+      <p style="margin-bottom:0">${TH('plans.schools.print.contact', { email: html`<bdi dir="ltr">${email}</bdi>` })}</p></section>
+  </div>`;
+  page(req, res, { title: t('plans.schools.print.title'), back: '/plans/schools', backLabel: t('plans.schools.title'), active: 'plans', description: t('plans.schools.description'), body, bodyClass: 'printpage', scripts: ['/js/print.js'], seo: { index: false, path: '/plans/schools/print' } });
 });

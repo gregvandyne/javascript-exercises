@@ -30,13 +30,15 @@ test.afterEach(() => paid(false));
 const en = i18n.dictionary('en');
 const plain = s => s.replace(/<[^>]+>/g, '').replace(/\{email\}/g, 'greg@oomba.ai');
 const decode = s => s.replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&amp;/g, '&');
+/** The page's own content (not the layout's language picker, whose "English" is rightly marked as English). */
+const mainOf = s => s.slice(s.indexOf('<main'), s.indexOf('</main>'));
 
 test('/terms, /refunds and /privacy are public, dated, and show every paragraph of their text', async () => {
   for (const [path, key] of [['/terms', 'terms'], ['/refunds', 'refunds'], ['/privacy?for=grownups', 'privacy']]) {
     const r = await get(path); assert.equal(r.status, 200, path);
     const text = decode(r.text);
     assert.match(text, new RegExp(`<h1>[^<]*${en[`info.${key}.heading`]}</h1>`), `${path} heading`);
-    assert.match(text, new RegExp(`Last updated: <time datetime="${LEGAL_UPDATED}">October 27, 2026</time>`), `${path} date`);
+    assert.match(text, new RegExp(`Last updated: <time datetime="${LEGAL_UPDATED}">October 28, 2026</time>`), `${path} date`);
     assert.match(text, /href="mailto:greg@oomba\.ai"/, `${path} contact`);
     for (const k of Object.keys(en).filter(k => k.startsWith(`info.${key}.`) && !k.startsWith('info.privacy.more.') && /\.(p|li|s)\d+$/.test(k))) {
       const words = plain(en[k]).slice(0, 60);
@@ -147,12 +149,15 @@ test('the legal text never takes a language out of the picker; Hebrew legal page
   const r = await get('/privacy?for=grownups', { cookie: 'lang=he' });
   assert.equal(r.status, 200);
   assert.match(r.text, /<html[^>]*dir="rtl"/);
-  assert.match(r.text, /<time datetime="2026-10-27">/);
+  assert.match(r.text, /<time datetime="2026-10-28">/);
   // Every section is translated now: nothing on the Hebrew pages is marked as English.
   assert.match(r.text, /<section class="panel" id="payments"><h2>/);
   assert.match(r.text, /<section class="panel" id="stored"><h2>/);
   const t = (await get('/terms', { cookie: 'lang=he' })).text;
-  assert.doesNotMatch(t, /<li lang="en" dir="ltr">/);
+  // The Terms are fully Hebrew too, the 24-hour link-code item included: nothing marked as English.
+  assert.ok(t.includes('<main') && t.includes('</main>'));
+  assert.doesNotMatch(mainOf(t), /lang="en" dir="ltr"/);
+  assert.ok(decode(t).includes(i18n.makeT('he')('info.terms.accounts.li16')), 'the Hebrew 24-hour link-code item');
   assert.doesNotMatch((await get('/terms')).text, /lang="en" dir="ltr"><b>Guest/, 'English pages need no marking');
 });
 
@@ -167,4 +172,25 @@ test('an untranslated footer word reads left to right on a right-to-left page', 
 test('grown-up accounts (the people who pay) can open all three legal pages', async () => {
   const { grownupMay } = await import('../../server/routes/family.js');
   for (const p of ['/terms', '/refunds', '/privacy']) assert.equal(grownupMay('GET', p), true, p);
+});
+
+test('the 24-hour link code: no language still says "1 hour"; the Privacy Policy lists school set-up requests', async () => {
+  for (const lang of ['de', 'fr', 'he']) {
+    const t = i18n.makeT(lang);
+    for (const key of ['info.terms.accounts.li16', 'info.privacy.linking.li7']) assert.ok(t.own(key), `${lang} ${key} is translated`);
+    assert.match(t('info.terms.accounts.li16'), /24/, lang);
+    const terms = decode(mainOf((await get('/terms', { cookie: `lang=${lang}` })).text));
+    assert.ok(terms.includes(t('info.terms.accounts.li16')), `${lang}: the translated 24-hour item on /terms`);
+    assert.doesNotMatch(terms, /lang="en" dir="ltr"|It works once|1 hour/, `${lang}: no English left on /terms`);
+    const pv = decode(mainOf((await get('/privacy?for=grownups', { cookie: `lang=${lang}` })).text));
+    assert.ok(pv.includes(t('info.privacy.linking.li7').replace(/<\/?b>/g, '')) || pv.includes(t('info.privacy.linking.li7')), `${lang}: the translated 24-hour code on /privacy`);
+    assert.doesNotMatch(pv, /It works once|1 hour/, `${lang}: no English 24-hour line on /privacy`);
+  }
+  // No language still says the code works for one hour (the old wording).
+  for (const { code } of i18n.availableLocales()) for (const key of ['info.terms.accounts.li16', 'info.privacy.linking.li7']) assert.doesNotMatch(i18n.makeT(code)(key), /\b1 hour|one hour/i, `${code} ${key}`);
+  const pv = (await get('/privacy?for=grownups')).text;
+  const sec = (/<section class="panel" id="schoolSetup">[\s\S]*?<\/section>/.exec(pv) || [''])[0];
+  assert.match(sec, /School set-up requests/);
+  assert.match(sec, /work email/); assert.match(sec, /<b>1 year<\/b> after we close the request/);
+  assert.match(sec, /A guest's account is never kept with a request|A guest&#39;s account is never kept with a request/);
 });

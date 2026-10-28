@@ -11,12 +11,13 @@ import { tHtml, dictionary, DEFAULT_LOCALE, fmt } from '../i18n/index.js';
 import { config } from '../config.js';
 import { familiesOn } from '../services/family.js';
 import { langsWithKey } from '../seo.js';
+import { isGrownup } from '../auth.js';
 export const router = Router();
 /** Search engines may index these pages, in the languages their heading is written in (server/seo.js). */
 const indexed = (path, key) => ({ index: true, path, langs: langsWithKey(key) });
 
 /** The legal pages' "Last updated" date (a calendar day, UTC). Change it with every change to their text. */
-export const LEGAL_UPDATED = '2026-10-27';
+export const LEGAL_UPDATED = '2026-10-28';
 /** Where the legal pages send people: CONTACT_EMAIL, else the owner's address. */
 const legalEmail = () => config.contactEmail || 'greg@oomba.ai';
 
@@ -39,7 +40,8 @@ function items(prefix, paid) {
   }
   return out;
 }
-/** One section as a panel: <h2>, then its paragraphs, sub-headings and lists. */
+/** One section as a panel: <h2>, then its paragraphs, sub-headings and lists. A list is marked English only when every
+ *  item in it is (one new item still in English is marked on its own <li>). */
 /** lang/dir for an element whose text is the English fallback (a right-to-left page keeps English sentences readable:
  *  the full stop stays at the end), nothing when the key is written in the page's language. */
 const fallback = (t, key) => (t.own(key) ? '' : html` lang="en" dir="ltr"`);
@@ -48,11 +50,11 @@ export function section(req, prefix, { id, paid = familiesOn(req), level = 2 } =
   const t = req.t; const vars = { email: legalEmail() }; const out = []; let list = null;
   const h = raw(`h${level}`), sub = raw(`h${level + 1}`);
   for (const it of items(prefix, paid)) {
-    if (it.kind === 'li') { if (!list) out.push(list = { key: it.key, items: [] }); list.items.push(html`<li${fallback(t, it.key)}>${tHtml(t, it.key, vars)}</li>`); continue; }
+    if (it.kind === 'li') { if (!list) out.push(list = { keys: [], items: [] }); list.keys.push(it.key); list.items.push(html`<li${fallback(t, it.key)}>${tHtml(t, it.key, vars)}</li>`); continue; }
     list = null;
     out.push(it.kind === 's' ? html`<${sub}${fallback(t, it.key)}>${tHtml(t, it.key, vars)}</${sub}>` : html`<p${fallback(t, it.key)}>${tHtml(t, it.key, vars)}</p>`);
   }
-  return html`<section class="panel"${id ? html` id="${id}"` : ''}><${h}${fallback(t, `${prefix}.h`)}>${t(`${prefix}.h`)}</${h}>${out.map(x => (x.items ? html`<ul${fallback(t, x.key)}>${x.items}</ul>` : x))}</section>`;
+  return html`<section class="panel"${id ? html` id="${id}"` : ''}><${h}${fallback(t, `${prefix}.h`)}>${t(`${prefix}.h`)}</${h}>${out.map(x => (x.items ? html`<ul${x.keys.every(k => !t.own(k)) ? fallback(t, x.keys[0]) : ''}>${x.items}</ul>` : x))}</section>`;
 }
 /** sections: section keys under info.<pageKey>; extra: more sections after them. */
 function info(req, pageKey, emoji, sections, extra = '') {
@@ -60,7 +62,26 @@ function info(req, pageKey, emoji, sections, extra = '') {
 }
 const codeBlock = s => html`<code dir="ltr">${s}</code>`;
 
-router.get('/safety', (req, res) => page(req, res, { title: req.t('info.safety.title'), back: '/', description: req.t('info.safety.description'), body: info(req, 'safety', '🛡️', ['box', 'checked', 'chat', 'personal', 'ads']), seo: indexed('/safety', 'info.safety.heading') }));
+/** The parent pages' first button: while paid-plan pages are on (familiesOn), "Set up your child — free", the grown-up
+ *  sign-up; before that, "Let your child start free" (a child's own account: a made-up name and a password). A
+ *  signed-in grown-up gets their family page instead. -> { href, key, label } */
+export function setupLink(req) {
+  // Until a language has "Set up your child — free", its already-translated "Make a grown-up account" stands in.
+  const [href, key] = isGrownup(req.user) ? ['/family', 'family.landing.toFamily']
+    : !familiesOn(req) ? ['/signup', 'parents.cta.start'] : ['/grown-ups/signup', req.t.own('parents.cta.setup') ? 'parents.cta.setup' : 'parents.cta.grownup'];
+  return { href, key, label: req.t(key) };
+}
+/** The end of /safety: "Set up your child". Signed out it opens the set-up (setupLink) at once; anyone signed in as a
+ *  kid, a guest included (often a child who tapped Play), gets the parent page instead, so a kid's page never links a
+ *  grown-up sign-up (tests/e2e/billing.spec.js, the kid-page crawl). */
+function safetyEnd(req) {
+  const t = req.t; const u = req.user; const s = setupLink(req);
+  const key = s.key === 'family.landing.toFamily' ? s.key : 'info.safety.setup';
+  const href = !u || isGrownup(u) ? s.href : '/parents';
+  if (!t.own(key)) return '';   // a translated page stays in one language
+  return html`<p class="row lp-cta"><a class="btn btn-primary btn-big" href="${href}">${t(key)}</a></p>`;
+}
+router.get('/safety', (req, res) => page(req, res, { title: req.t('info.safety.title'), back: '/', description: req.t('info.safety.description'), body: info(req, 'safety', '🛡️', ['box', 'checked', 'chat', 'personal', 'ads'], safetyEnd(req)), seo: indexed('/safety', 'info.safety.heading') }));
 // "Contact us" (CONTACT_EMAIL): where the page's "a grown-up can contact us" leads. Not shown until it is set.
 export const contact = (req, level = 2) => (config.contactEmail ? html`<section class="panel" id="contact">${raw(`<h${level}>`)}${req.t('info.parents.contact.h')}${raw(`</h${level}>`)}
   <p>${tHtml(req.t, 'info.parents.contact.p1', { email: html`<a href="mailto:${config.contactEmail}" dir="ltr">${config.contactEmail}</a>` })}</p></section>` : '');
@@ -113,6 +134,6 @@ router.get('/privacy', legalPage('privacy', '🔒', req => {
   const full = fullPrivacy(req);
   return ['intro',
     ...['stored', 'never', 'ai', 'keep'].map(s => section(req, `info.parents.${s}`, { id: s })), googlePrivacy(req),
-    ...(full ? ['grownups', 'linking', 'payments', 'schoolBilling'] : []), 'children', ...(full ? ['billingKeep', 'where'] : []),
+    ...(full ? ['grownups', 'linking', 'payments', 'schoolBilling', 'schoolSetup'] : []), 'children', ...(full ? ['billingKeep', 'where'] : []),
     !full && !req.user ? 'more' : null, 'contact'];
 }));
