@@ -58,7 +58,8 @@ router.get('/g/:slug', (req, res) => {
   const learn = official && LEARNING[g.slug];
   const hub = official && hubOfGame(g.slug);
   const band = learn && gradeBand([g.slug]);
-  const ages = learn && ageBand(g.slug);
+  // The age line only once this language has it, so a translated sentence never carries an unmarked English phrase.
+  const ages = learn && t.own('learn.ages.line') && ageBand(g.slug);
   const body = html`
   <article>
     ${crumbs ? html`<nav class="crumbs small" aria-label="${t('learn.crumbs')}" style="margin-bottom:var(--s3)"><ol>${crumbs.map(([name, p], i) => html`<li>${i < crumbs.length - 1 ? html`<a href="${lp(req, p)}">${name}</a>` : html`<span aria-current="page">${name}</span>`}</li>`)}</ol></nav>` : ''}

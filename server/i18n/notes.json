@@ -605,12 +605,16 @@
   "parents.faq.a9": "{count} is the number of languages (13). 🌐 is the language button.",
   "parents.faq.a10": "{screen} is the screen-time guide address; keep the <a> tag.",
   "parents.updated": "Under a guide's heading. {date} is a date already written out in the reader's language.",
-  "parents.ai.title": "Search title, max ~55 chars. \"Is AI safe for kids\" is what parents search for.",
+  "parents.ai.title": "Search title, max ~44 chars (\" · Oomba Academy\" is added). \"Is AI safe for kids\" is what parents search for.",
   "parents.ai.sees.li1": "Claude and Anthropic are names: keep them as they are.",
   "parents.ai.limits.p2": "{email} is our contact email address.",
-  "parents.screen.title": "Search title, max ~50 chars. \"Good screen time\" is what parents search for.",
+  "parents.screen.title": "Search title, max ~44 chars (\" · Oomba Academy\" is added). \"Good screen time\" is what parents search for.",
   "parents.screen.experts.p1": "The American Academy of Pediatrics and Common Sense Media are US organizations; keep their names (add a short translation in brackets if useful). {aap} and {commonsense} are their web addresses; keep both <a> tags.",
   "parents.screen.tools.li1": "Apple Screen Time is a product name: use Apple's official name in your language. {href} is Apple's page.",
   "parents.screen.tools.li2": "Google Family Link is a product name. {href} is Google's page.",
-  "parents.screen.tools.li3": "Microsoft Family Safety is a product name: use Microsoft's official name in your language. {href} is Microsoft's page."
+  "parents.screen.tools.li3": "Microsoft Family Safety is a product name: use Microsoft's official name in your language. {href} is Microsoft's page.",
+  "learn.ages.together.p": "On an age page, under \"Playing together\". {games} is a list of game names already joined for your language (e.g. \"Sum Racer, Castle Clash and Drop Four\"); {count} is how many games are in it. Keep both.",
+  "learn.ages.a10.faq.a4": "{ai} is the address of the AI Builder safety guide; keep the <a> tag.",
+  "parents.ai.faq.a3": "The link jumps to the list of rules on the same page; keep the <a href=\"#rules\"> tag.",
+  "parents.cta.lead": "One line above the \"Let your child start free\" and \"Try a game now\" buttons at the end of the parent pages."
 }

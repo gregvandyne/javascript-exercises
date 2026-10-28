@@ -75,8 +75,8 @@ export const AGES = [
 export const ageBySlug = slug => AGES.find(a => a.slug === slug) || null;
 /** Guides for parents: path /parents/<slug>; key: locale key under parents.<key>.*. */
 export const PARENT_GUIDES = [
-  { slug: 'ai-builder-safety', key: 'ai', emoji: '🤖', faq: 5 },
-  { slug: 'safety-and-screen-time', key: 'screen', emoji: '⏱️', faq: 4 },
+  { slug: 'ai-builder-safety', key: 'ai', emoji: '🤖', faq: 5, published: '2026-10-28' },
+  { slug: 'safety-and-screen-time', key: 'screen', emoji: '⏱️', faq: 4, published: '2026-10-28' },
 ];
 export const guideBySlug = slug => PARENT_GUIDES.find(g => g.slug === slug) || null;
 export const PARENTS_FAQ = 10;

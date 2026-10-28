@@ -10,12 +10,13 @@
 // fallbacks are marked lang="en", and search engines are told a page is English only until its heading is translated.
 import { Router } from 'express';
 import { html, raw } from '../views/html.js';
-import { page, notFound } from '../views/layout.js';
+import { page, notFound, parentsLabel } from '../views/layout.js';
 import { coverArt } from '../views/components.js';
-import { tHtml, availableLocales, fmt, DEFAULT_LOCALE } from '../i18n/index.js';
+import { tHtml, availableLocales, fmt, localeInfo, DEFAULT_LOCALE } from '../i18n/index.js';
 import { familiesOn } from '../services/family.js';
+import { isGrownup } from '../auth.js';
 import * as seo from '../seo.js';
-import { HUBS, LEARNING, AGES, ageBySlug, PARENT_GUIDES, guideBySlug, PARENT_GAMES, PARENTS_FAQ, TWO_PLAYER, gameKey, CONTENT_UPDATED } from '../learn.js';
+import { HUBS, AGES, ageBySlug, PARENT_GUIDES, guideBySlug, PARENT_GAMES, PARENTS_FAQ, TWO_PLAYER, gameKey, CONTENT_UPDATED } from '../learn.js';
 import { launchGame, faqBlock, el, fb, lp, contactEmail } from './teachers.js';
 import { section, parentSections, families, googlePrivacy, contact } from './info.js';
 
@@ -32,6 +33,12 @@ export const OUTSIDE = {
 /** The first game "Try a game now" opens: the first live one of these. */
 const TRY = ['sum-racer', 'word-hunt', 'castle-clash'];
 const tryGame = () => TRY.map(launchGame).find(Boolean) || null;
+/** Names joined the way the sentence's language joins a list ("A, B and C": English here has no comma before "and"). */
+function listOf(req, key, names) {
+  const code = req.t.own(key) ? req.locale || DEFAULT_LOCALE : DEFAULT_LOCALE;
+  const tag = code.startsWith('en') ? 'en-GB' : localeInfo(code).intl;
+  try { return new Intl.ListFormat(tag, { type: 'conjunction' }).format(names); } catch { return names.join(', '); }
+}
 const parentAudience = () => ({ '@type': 'ParentAudience', childMinAge: seo.AGE.min, childMaxAge: seo.AGE.max });
 
 /** The breadcrumb as a nav (the same markup as the subject pages). */
@@ -46,6 +53,8 @@ function ctaRow(req, { grownup = false, game = tryGame() } = {}) {
     ${grownup && familiesOn(req) ? html`<a class="btn btn-big" href="/grown-ups">${t('parents.cta.grownup')}</a>` : ''}
   </div>`;
 }
+/** The end of a parent page, after the details and questions: a one-line lead and the same buttons. */
+const ctaEnd = req => html`<section class="lp-sec lp-end" aria-label="${req.t('parents.cta.start')}">${el(req.t, 'p', 'parents.cta.lead', {}, ' class="lead"')}${ctaRow(req)}</section>`;
 /** Cards linking to pages: [{ href, emoji, nameKey, shortKey }]. */
 const linkCards = (t, cards) => html`<ul class="lp-hubs">${cards.map(c => html`<li><a class="lp-hub panel" href="${c.href}"><span class="lp-hub-e" aria-hidden="true">${c.emoji}</span><span>${el(t, 'span', c.name, {}, ' class="lp-hub-t"')}${el(t, 'span', c.short, {}, ' class="lp-hub-d"')}</span></a></li>`)}</ul>`;
 const ageCards = req => linkCards(req.t, AGES.map(a => ({ href: lp(req, `/learn/${a.slug}`), emoji: a.emoji, name: `learn.ages.${a.key}.name`, short: `learn.ages.${a.key}.short` })));
@@ -122,8 +131,9 @@ router.get('/parents', (req, res) => {
     ${googlePrivacy(req, 3)}${contact(req, 3)}
   </section>
   ${faq.markup}
+  ${ctaEnd(req)}
   </div>`;
-  const crumbs = [[t('nav.home'), '/'], [t('nav.parents'), '/parents']];
+  const crumbs = [[t('nav.home'), '/'], [parentsLabel(t), '/parents']];
   page(req, res, {
     title: t('parents.title'), description: t('parents.description'), body, bodyClass: 'lp-page', active: 'parents',
     seo: {
@@ -143,9 +153,9 @@ function aiGuide(req) {
   return html`<div class="lp-cols">
     <section class="panel" id="what" aria-labelledby="what-h">${el(t, 'h2', 'parents.ai.what.h', {}, ' id="what-h"')}${el(t, 'p', 'parents.ai.what.p1')}${el(t, 'p', 'parents.ai.what.p2')}</section>
     <section class="panel" id="sees" aria-labelledby="sees-h">${el(t, 'h2', 'parents.ai.sees.h', {}, ' id="sees-h"')}
-      <ul class="lp-list">${[1, 2, 3, 4].map(n => el(t, 'li', `parents.ai.sees.li${n}`))}</ul></section>
+      <ul class="lp-list">${[1, 2, 3, 4, 5, 6].map(n => el(t, 'li', `parents.ai.sees.li${n}`))}</ul></section>
     <section class="panel" id="rules" aria-labelledby="rules-h">${el(t, 'h2', 'parents.ai.rules.h', {}, ' id="rules-h"')}${el(t, 'p', 'parents.ai.rules.p')}
-      <ul class="lp-list">${[1, 2, 3, 4, 5].map(n => el(t, 'li', `parents.ai.rules.li${n}`))}</ul>${el(t, 'p', 'parents.ai.rules.p2')}</section>
+      <ul class="lp-list">${[1, 2, 3, 4, 5, 6, 7].map(n => el(t, 'li', `parents.ai.rules.li${n}`))}</ul>${el(t, 'p', 'parents.ai.rules.p2')}</section>
     <section class="panel" id="public" aria-labelledby="public-h">${el(t, 'h2', 'parents.ai.public.h', {}, ' id="public-h"')}${el(t, 'p', 'parents.ai.public.p')}
       <p><a href="${lp(req, '/safety')}">${t('learn.safetyLink')}</a></p></section>
   </div>
@@ -176,7 +186,7 @@ router.get('/parents/:guide', (req, res) => {
   if (!guide || req.params.guide !== guide.slug) return notFound(req, res);
   const t = req.t; const k = `parents.${guide.key}`; const path = `/parents/${guide.slug}`;
   const faq = faqBlock(req, Array.from({ length: guide.faq }, (_, i) => [`${k}.faq.q${i + 1}`, `${k}.faq.a${i + 1}`]), 'parents.faq.h');
-  const crumbs = [[t('nav.home'), '/'], [t('nav.parents'), '/parents'], [t(`${k}.name`), path]];
+  const crumbs = [[t('nav.home'), '/'], [parentsLabel(t), '/parents'], [t(`${k}.name`), path]];
   const body = html`<div class="lp">
     ${crumbsNav(req, crumbs)}
     <section class="lp-hero lp-hero-sm" aria-labelledby="lp-h1">
@@ -186,6 +196,7 @@ router.get('/parents/:guide', (req, res) => {
     </section>
     ${GUIDE_BODY[guide.key](req)}
     ${faq.markup}
+    ${ctaEnd(req)}
     <section class="lp-sec" aria-labelledby="more-h">${el(t, 'h2', 'parents.guides.h', {}, ' id="more-h"')}
       ${guideCards(req, guide)}
       <ul class="chips lp-more"><li><a class="chip" href="${lp(req, '/parents')}"><span aria-hidden="true">👪</span>${t('learn.parentsLink')}</a></li>
@@ -198,7 +209,7 @@ router.get('/parents/:guide', (req, res) => {
     seo: {
       index: true, path, langs: seo.langsWithKey(`${k}.h1`), image: `/og/parents-${guide.slug}.jpg`, imageAlt: t(`${k}.h1`), type: 'article',
       jsonld: [seo.graph([
-        { '@type': 'Article', '@id': seo.abs(req, path), url: seo.abs(req, path), mainEntityOfPage: seo.abs(req, path), headline: seo.plainText(t(`${k}.h1`)), description: t(`${k}.description`), dateModified: CONTENT_UPDATED, inLanguage: req.pathLocale || DEFAULT_LOCALE, author: { '@id': seo.orgId(req) }, publisher: { '@id': seo.orgId(req) }, image: seo.abs(req, `/og/parents-${guide.slug}.jpg`), audience: parentAudience(), isPartOf: { '@id': seo.abs(req, '/#website') } },
+        { '@type': 'Article', '@id': seo.abs(req, path), url: seo.abs(req, path), mainEntityOfPage: seo.abs(req, path), headline: seo.plainText(t(`${k}.h1`)), description: t(`${k}.description`), datePublished: guide.published, dateModified: CONTENT_UPDATED, inLanguage: req.pathLocale || DEFAULT_LOCALE, author: { '@id': seo.orgId(req) }, publisher: { '@id': seo.orgId(req) }, image: seo.abs(req, `/og/parents-${guide.slug}.jpg`), audience: parentAudience(), isPartOf: { '@id': seo.abs(req, '/#website') } },
         faq.ld, seo.breadcrumbLd(req, crumbs), seo.organizationLd(req),
       ])],
     },
@@ -213,23 +224,24 @@ router.get('/learn/:slug', (req, res, next) => {
   const t = req.t; const k = `learn.ages.${age.key}`; const path = `/learn/${age.slug}`;
   const list = age.games.map(launchGame).filter(Boolean);
   const range = { from: String(age.min), to: String(age.max) };
+  // "Playing together" names only the two-player games this page lists.
+  const together = list.filter(g => TWO_PLAYER.includes(g.slug));
   const gameItem = g => {
-    const key = gameKey(g.slug); const learn = LEARNING[g.slug];
+    const key = gameKey(g.slug);
     return html`<article class="panel lp-hubgame" aria-labelledby="g-${g.slug}">
       <a class="lp-hubgame-art" href="${lp(req, `/g/${g.slug}`)}" tabindex="-1" aria-hidden="true">${coverArt(g)}</a>
       <div class="lp-hubgame-text">
         <h2 id="g-${g.slug}"><a href="${lp(req, `/g/${g.slug}`)}">${g.title}</a></h2>
         ${raw(`<p class="lp-fit"${fb(t, `${k}.fit.${key}`)}><b>${tHtml(t, 'learn.ages.fit')}</b> ${tHtml(t, `${k}.fit.${key}`)}</p>`)}
-        ${learn && !learn.fun ? raw(`<p class="lp-practise"${fb(t, `learn.games.${key}`)}><b>${tHtml(t, 'learn.practise')}</b> ${tHtml(t, `learn.games.${key}`)}</p>`) : ''}
         <div class="row"><a class="btn btn-primary" href="/play/${g.slug}" rel="nofollow">▶ ${t('learn.play')}</a><a class="btn" href="${lp(req, `/g/${g.slug}`)}">${t('learn.about')}</a></div>
       </div></article>`;
   };
   const make = html`<section class="panel lp-make" id="make" aria-labelledby="make-h">${el(t, 'h2', 'learn.ages.make.h', {}, ' id="make-h"')}${el(t, 'p', `${k}.make.p`)}
-    <div class="row"><a class="btn btn-primary" href="/build">🛠️ ${t('learn.hubs.makeAGame.cta')}</a><a class="btn" href="${lp(req, '/learn/make-a-game')}">${t('learn.ages.make.link')}</a></div></section>`;
+    <div class="row">${isGrownup(req.user) ? '' : html`<a class="btn btn-primary" href="/build">🛠️ ${t('learn.hubs.makeAGame.cta')}</a>`}<a class="btn" href="${lp(req, '/learn/make-a-game')}">${t('learn.ages.make.link')}</a></div></section>`;
   // Subject pages that have some of this age's games, with those games' names.
   const skills = HUBS.filter(h => h.slug !== 'brain-break-games').map(h => [h, list.filter(g => h.games.includes(g.slug))]).filter(([h, gs]) => gs.length || (h.slug === 'make-a-game' && age.make));
-  const faq = faqBlock(req, [['learn.ages.faq.q1', 'learn.ages.faq.a1'], ...Array.from({ length: age.faq - 1 }, (_, i) => [`${k}.faq.q${i + 2}`, `${k}.faq.a${i + 2}`])], 'parents.faq.h');
-  const crumbs = [[t('nav.home'), '/'], [t('nav.parents'), '/parents'], [t(`${k}.name`), path]];
+  const faq = faqBlock(req, [['learn.ages.faq.q1', 'learn.ages.faq.a1'], ...Array.from({ length: age.faq - 1 }, (_, i) => [`${k}.faq.q${i + 2}`, `${k}.faq.a${i + 2}`])], 'parents.faq.h', { ai: lp(req, '/parents/ai-builder-safety') });
+  const crumbs = [[t('nav.home'), '/'], [parentsLabel(t), '/parents'], [t(`${k}.name`), path]];
   const body = html`<div class="lp">
     ${crumbsNav(req, crumbs)}
     <section class="lp-hero lp-hero-sm" aria-labelledby="lp-h1">
@@ -245,7 +257,7 @@ router.get('/learn/:slug', (req, res, next) => {
     <div class="lp-cols">
       <section class="panel" id="skills" aria-labelledby="skills-h">${el(t, 'h2', 'learn.ages.skills.h', {}, ' id="skills-h"')}
         <ul class="lp-list">${skills.map(([h, gs]) => html`<li><a href="${lp(req, `/learn/${h.slug}`)}"><span aria-hidden="true">${h.emoji}</span> ${t(`learn.hubs.${h.key}.name`)}</a>${gs.length ? html`: ${gs.map(g => g.title).join(', ')}` : ''}</li>`)}</ul></section>
-      ${list.some(g => TWO_PLAYER.includes(g.slug)) ? html`<section class="panel" id="together" aria-labelledby="together-h">${el(t, 'h2', 'learn.ages.together.h', {}, ' id="together-h"')}${el(t, 'p', 'learn.ages.together.p')}</section>` : ''}
+      ${together.length ? html`<section class="panel" id="together" aria-labelledby="together-h">${el(t, 'h2', 'learn.ages.together.h', {}, ' id="together-h"')}${el(t, 'p', 'learn.ages.together.p', { count: together.length, games: listOf(req, 'learn.ages.together.p', together.map(g => g.title)) })}</section>` : ''}
       <section class="panel" id="safe" aria-labelledby="safe-h">${el(t, 'h2', 'learn.ages.safe.h', {}, ' id="safe-h"')}${el(t, 'p', 'learn.ages.safe.p', { href: lp(req, '/parents') })}</section>
     </div>
     ${faq.markup}

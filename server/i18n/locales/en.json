@@ -3141,7 +3141,7 @@
     "safetyLink": "How we keep kids safe",
     "noGames": "These games are being updated. Please come back soon.",
     "games": {
-      "sumRacer": "Math facts from adding to 10 up to times tables and division, as a kart race. Two students can race on one screen.",
+      "sumRacer": "Math facts from adding to 10 up to times tables and division, as a kart race. Two players can race on one screen.",
       "wordHunt": "Themed word searches with words read aloud, a daily puzzle and a race-a-friend mode.",
       "sharkPlank": "Hangman for early readers, with every word read aloud.",
       "wordPeek": "A daily word puzzle with clues after every guess, plus 4- and 6-letter versions.",
@@ -3261,7 +3261,7 @@
       },
       "makeAGame": {
         "name": "Make your own game",
-        "short": "Students design games with the AI Builder",
+        "short": "Kids design games with the AI Builder",
         "title": "Make your own video game: AI game maker for kids",
         "description": "Kids describe a game in plain words and the Builder makes it, showing its steps. No coding needed, ad-free, for ages 8 to 14, and private until shared.",
         "h1": "Make your own game, no coding needed",
@@ -3295,8 +3295,8 @@
           "q5": "Is this real coding?",
           "a5": "Not exactly. The Builder writes the code. Your child does the design, the testing and the explaining, which are big parts of making games, and the steps it shows let curious kids see how a game is put together.",
           "q6": "How much does it cost?",
-          "a6": "Nothing. Every player gets free Builder messages each day.",
-          "a6paid": "Building is free: every player gets free Builder messages each day. Families and schools can choose an optional plan for extra messages. <a href=\"{plans}\">See the plans</a>.",
+          "a6": "Nothing. Every player with an account (just a made-up name and a password) gets free Builder messages each day.",
+          "a6paid": "Building is free: every player with an account (just a made-up name and a password) gets free Builder messages each day. Families and schools can choose an optional plan for extra messages. <a href=\"{plans}\">See the plans</a>.",
           "q7": "Is the AI Builder safe for my child?",
           "a7": "It only makes games, and it follows fixed kid-safety rules in every language. <a href=\"{ai}\">Read what it sees and the rules it follows</a>."
         },
@@ -3334,7 +3334,7 @@
       },
       "together": {
         "h": "Playing together",
-        "p": "Sum Racer, Castle Clash and Drop Four each have a two-player mode on one screen: good for siblings, friends, or a grown-up and a child."
+        "p": "{count, plural, one {{games} has a two-player mode} other {{games} each have a two-player mode}} on one screen: good for siblings, friends, or a grown-up and a child."
       },
       "safe": {
         "h": "Safety in one minute",
@@ -3357,10 +3357,10 @@
         "h1": "Learning games for 8 and 9 year olds",
         "lead": "At 8 and 9, kids are learning their times tables, reading longer words and loving games they can win. These games keep rounds short, read words aloud where it helps, and let two kids play on one screen.",
         "fit": {
-          "sumRacer": "Start with adding to 20, then move on to the 2, 5 and 10 times tables when they’re ready.",
-          "wordHunt": "Themed word searches, and they can tap any word to hear it read aloud.",
+          "sumRacer": "Start with adding to 10 or 20, then move on to the 2, 5 and 10 times tables when they’re ready.",
+          "wordHunt": "Themed word searches for growing readers: they can tap any word to hear it read aloud.",
           "sharkPlank": "Good for kids still building their reading: every word is read aloud.",
-          "castleClash": "A short lesson for each piece, then the robot at its easiest level.",
+          "castleClash": "A short lesson for each piece, then the robot at its easiest level, so a first chess game isn’t a wall of rules.",
           "connectFour": "Quick games about planning ahead, against a sibling or the robot on Easy.",
           "loopLab": "Tap squares to make a beat and hear it loop right away. No need to read music.",
           "beatLanes": "Tap in time to songs they know, starting with Twinkle Twinkle.",
@@ -3387,21 +3387,21 @@
           "p": "Kids this age love making their own games. They describe one in plain words, like “a quiz about volcanoes” or “a maze with a robot”, and the Builder makes it. Then they test it and ask for changes. It’s free every day."
         },
         "fit": {
-          "sumRacer": "All the times tables up to 12, division facts, and a mixed track with all four operations.",
-          "wordPeek": "Six guesses to find the daily word, with a clue after every guess.",
-          "castleClash": "24 checkmate puzzles and harder robot levels.",
-          "brickDrop": "Fast falling-block puzzles: see where each shape fits and clear whole rows.",
-          "loopLab": "Chain beats into a whole song and clear the 10 music challenges.",
-          "heroOfSunvale": "A 3D adventure with missions to follow and a kingdom to explore.",
-          "swishFlick": "Shoot hoops: the direction of the flick aims the ball and its speed sets how far it flies."
+          "sumRacer": "Ready for the harder facts: all the times tables up to 12, division, and a mixed track with all four operations.",
+          "wordPeek": "A daily puzzle that rewards careful thinking, with a clue after every guess, just as their vocabulary takes off.",
+          "castleClash": "Past the basics? 24 checkmate puzzles and harder robot levels give them something real to beat.",
+          "brickDrop": "Speed builds quickly, which suits kids who want a real challenge and like beating their own best.",
+          "loopLab": "Old enough to plan a whole song: chain beats together and clear the 10 music challenges.",
+          "heroOfSunvale": "Bigger than a quick game: missions to read and follow, and a 3D kingdom to explore at their own pace.",
+          "swishFlick": "A quick break with a bit of physics: the direction of the flick aims the ball and its speed sets how far it flies."
         },
         "faq": {
           "q2": "Are the games too easy for a 10 year old?",
           "a2": "No. Sum Racer goes up to all the times tables and division, Castle Clash has 24 checkmate puzzles, and Word Peek is a real daily challenge.",
           "q3": "Can my child play with a sibling or a friend?",
-          "a3": "Yes. Sum Racer, Castle Clash and Drop Four have a two-player mode on one screen.",
+          "a3": "Yes. Sum Racer and Castle Clash have a two-player mode on one screen, and Word Hunt has a pass-the-phone race.",
           "q4": "Is the AI Builder safe for an 11 year old?",
-          "a4": "The Builder only makes games, and it follows fixed kid-safety rules: no gore, no gambling, no real brands and no links out. Games stay private until your child shares them."
+          "a4": "The Builder only makes games, and it follows fixed kid-safety rules, such as no gore, no gambling, no real brands and no links out. <a href=\"{ai}\">See every rule it follows</a>. Games stay private until your child shares them."
         }
       },
       "a12": {
@@ -3415,10 +3415,10 @@
           "p": "Describe a game in plain words and the Builder makes it: a platformer, a quiz for a school topic, a puzzle for a friend. Then test it, find what’s wrong and ask for changes. It’s free every day."
         },
         "fit": {
-          "castleClash": "Real chess: puzzles and a robot at four levels, or a friend on the same screen.",
-          "wordPeek": "Big Peek with 6 letters, or set a secret word for a friend.",
+          "castleClash": "Real chess with no kiddie mode: checkmate puzzles and the robot’s hardest level are a real test, even for adults.",
+          "wordPeek": "Harder than the daily puzzle: Big Peek with 6 letters, or set a secret word for a friend to crack.",
           "brickDrop": "Race to 40 lines in Sprint, or keep going in Marathon as it gets faster.",
-          "loopLab": "Make whole songs from drums, bass and melody.",
+          "loopLab": "Teens into music can build whole songs from drums, bass and melody, not just simple beats.",
           "beatLanes": "Nine songs and long combos for quick fingers.",
           "heroOfSunvale": "A big 3D kingdom to explore, with missions and a dragon at the end."
         },
@@ -3426,7 +3426,7 @@
           "q2": "Is Oomba Academy too young for a 13 year old?",
           "a2": "It’s made for ages 8 to 14. Older kids mostly come for the Builder, real chess and music making, which grow with them.",
           "q3": "Can my teen make their own games?",
-          "a3": "Yes. They describe the game in words and the Builder makes it. A new game is private until they share it, and a game for everyone is reviewed first.",
+          "a3": "Yes. They describe the game in words and the Builder makes it. A new game is private until they share it, and a game for everyone is reviewed by Claude first, with our team checking any it is unsure about.",
           "q4": "Is there chat with strangers?",
           "a4": "No. Kids chat only with friends they added with a 6-character code, never by searching names, and they can switch chat off on their Me page."
         }
@@ -3450,7 +3450,8 @@
     "cta": {
       "start": "Let your child start free",
       "try": "Try a game now, no sign-up",
-      "grownup": "Make a grown-up account"
+      "grownup": "Make a grown-up account",
+      "lead": "Seen enough? Try a game with your child now."
     },
     "teachers": "Teaching a class? See <a href=\"{href}\">Oomba Academy for teachers</a>.",
     "play": {
@@ -3467,7 +3468,7 @@
     "make": {
       "h": "From playing to making",
       "p1": "Your child describes a game in their own words, like “a maze where a cat collects fish”, and the Builder makes it. Then they play it, notice what to change and ask for changes, one idea at a time.",
-      "p2": "That’s planning, clear writing, testing and fixing, without having to know code first. Building is free every day.",
+      "p2": "That’s planning, clear writing, testing and fixing, without having to know code first. Building is free every day for every player with an account (just a made-up name and a password).",
       "link": "How making a game works",
       "safe": "Is the AI Builder safe?"
     },
@@ -3476,14 +3477,14 @@
       "li1": "No ads, no loot boxes and nothing for kids to buy. Kids are never asked to pay.",
       "li2": "No chat with strangers. Friends are added only with a 6-character friend code, never by searching names. Chat is only between friends, filters bad words and personal details, and can be reported.",
       "li3": "We never ask kids for an email address, age, home address or location.",
-      "li4": "Games kids make are private until they share them, and a game for everyone is reviewed before anyone else can play it.",
+      "li4": "Games kids make are private until they share them, and a game for everyone is reviewed by Claude first, with our team checking any it is unsure about.",
       "li5": "Kids use made-up names, and their profiles and names are kept out of search engines.",
       "links": "Read <a href=\"{safety}\">how we keep kids safe</a> and <a href=\"{guide}\">our guide to good screen time</a>."
     },
     "private": {
       "h": "Private by design",
       "p1": "There are no ads and no tracking cookies, so nothing here builds a profile of your child for advertisers.",
-      "p2": "There is no parent dashboard, no time limit and no activity report either. That’s on purpose: what your child makes and says here stays private.",
+      "p2": "There is no parent dashboard, no time limit and no activity report either. That’s on purpose: we don’t build a record of your child’s activity, not even for you. What they make stays private until they share it.",
       "paid": "A grown-up account linked to your child sees only their name and how many of the family’s extra Builder messages they used.",
       "p3": "To set limits, use the tools built into your child’s device, such as Apple Screen Time, Google Family Link or Microsoft Family Safety. <a href=\"{href}\">Our screen-time guide</a> explains how."
     },
@@ -3508,8 +3509,8 @@
     "faq": {
       "h": "Questions parents ask",
       "q1": "Is Oomba Academy free?",
-      "a1": "Yes. Every game is free to play, and every player gets free Builder messages each day to make their own games. There are no ads and nothing for kids to buy.",
-      "a1paid": "Yes. Every game is free to play, and every player gets free Builder messages each day. Families can choose an optional plan for extra Builder messages, and kids are never asked to pay. <a href=\"{plans}\">See the plans</a>.",
+      "a1": "Yes. Every game is free to play, and every player with an account (just a made-up name and a password) gets free Builder messages each day to make their own games. There are no ads and nothing for kids to buy.",
+      "a1paid": "Yes. Every game is free to play, and every player with an account (just a made-up name and a password) gets free Builder messages each day. Families can choose an optional plan for extra Builder messages, and kids are never asked to pay. <a href=\"{plans}\">See the plans</a>.",
       "q2": "What ages is it for?",
       "a2": "Kids aged 8 to 14. Some games, like Shark Plank and the first Sum Racer tracks, also suit younger readers.",
       "q3": "Does my child need an account or an email address?",
@@ -3519,7 +3520,7 @@
       "q5": "Can strangers talk to my child?",
       "a5": "No. Kids can only chat with friends they added with a 6-character friend code, never by searching names. Chat filters bad words, phone numbers, emails, addresses and links, kids can block or report anyone, and they can switch chat off on their Me page.",
       "q6": "What does the AI Builder do with what my child types?",
-      "a6": "It sends your child’s messages, pictures and files to Claude, an AI made by Anthropic, to write the game, without your child’s name or username. Chats between friends and lesson answers are never sent to the AI. <a href=\"{ai}\">How the Builder stays kid-safe</a>.",
+      "a6": "It sends your child’s messages, pictures and files to Claude, an AI made by Anthropic, to write the game, without your child’s name or username. A profile photo, if your child uploads one, is also sent to Claude to be checked before anyone sees it. Chats between friends and lesson answers are never sent to the AI. <a href=\"{ai}\">How the Builder stays kid-safe</a>.",
       "q7": "Can I see what my child is doing?",
       "a7": "Not on the site, and that’s on purpose: there is no parent dashboard or activity report. The best way to see what they’re doing is to play or build together.",
       "a7paid": "Not on the site, and that’s on purpose: there is no parent dashboard or activity report. A linked grown-up account sees only your child’s name and their use of the family’s extra Builder messages. The best way to see what they’re doing is to play or build together.",
@@ -3537,7 +3538,7 @@
     "ai": {
       "name": "Is the AI Builder safe?",
       "short": "What the AI sees, what it never gets, and the rules it follows",
-      "title": "Is AI safe for kids? A parent’s guide to our Builder",
+      "title": "Is AI safe for kids? Our Builder, explained",
       "description": "What the AI sees, what it never gets, and the rules it follows: a plain-words guide for parents of kids 8–14 using Oomba Academy’s AI game Builder.",
       "h1": "Is the AI Builder safe for my child?",
       "lead": "Oomba Academy’s Builder uses AI to turn your child’s idea into a game. Here is what it sees, what it never gets, the rules it follows and what we can’t promise, in plain words.",
@@ -3551,7 +3552,9 @@
         "li1": "The messages, pictures and files your child gives the Builder go to Claude, an AI made by the company Anthropic, which writes the game.",
         "li2": "Your child’s name and username are not sent with them.",
         "li3": "Chats between friends and lesson answers are never sent to the AI.",
-        "li4": "Hidden location data is removed from photos and pictures before they are kept."
+        "li4": "Hidden location data is removed from photos and pictures before they are kept.",
+        "li5": "If your child uploads a profile photo, it is sent to Claude to be checked before anyone sees it.",
+        "li6": "Games your child wants to share with everyone are reviewed by Claude first."
       },
       "rules": {
         "h": "The rules it follows",
@@ -3561,16 +3564,18 @@
         "li3": "No real brands, and no real people as characters.",
         "li4": "No chat between players and no collecting personal details inside games.",
         "li5": "No links to other websites and no ads inside games.",
+        "li6": "No romantic or adult content, no bullying or hate, and nothing about self-harm, drugs, alcohol or vaping.",
+        "li7": "No copyrighted characters like Mario or Pokémon, and no real classmates, teachers or family members in games.",
         "p2": "A request that breaks the rules is kindly refused, with ideas for something it can make instead."
       },
       "public": {
         "h": "Who sees the games",
-        "p": "A new game is private to your child. They can share it with friends or their class. A game for everyone is checked by the AI and reviewed before anyone else can play it, and every game runs in a locked sandbox that can’t reach the internet or your child’s account."
+        "p": "A new game is private to your child. They can share it with friends or their class. A game for everyone is reviewed by Claude before anyone else can play it, and our team checks any it is unsure about. Every game runs in a locked sandbox that can’t reach the internet or your child’s account."
       },
       "limits": {
         "h": "What we can’t promise",
         "p1": "No filter is perfect. An AI can misunderstand a request or make a mistake, and a game could still have something that isn’t right for your child.",
-        "p2": "If you see something wrong, tap 🚩 Report on the game page. When three people report a game, it is hidden until our team looks. Grown-ups can also email us at {email}."
+        "p2": "If you see something wrong, tap 🚩 Report on the game page. Enough reports hide a game until our team looks, and grown-ups can also email us at {email}."
       },
       "check": {
         "h": "Five questions to ask about any AI tool for kids",
@@ -3586,7 +3591,7 @@
         "q2": "Is my child’s name sent to the AI?",
         "a2": "No. Their name and username are not sent with their messages.",
         "q3": "Can the AI make scary or violent games?",
-        "a3": "Games can have cartoon action, like a hero’s friendly battles, but the Builder refuses gore, realistic violence, horror and jump-scares.",
+        "a3": "Games can have cartoon action, like a hero’s friendly battles, but the Builder refuses gore, realistic violence, horror and jump-scares. <a href=\"#rules\">See every rule it follows</a>.",
         "q4": "Are the games my child makes public?",
         "a4": "Not unless they share them. A game for everyone is reviewed before anyone else can play it.",
         "q5": "Is the Builder a companion or a friend bot?",
@@ -3596,7 +3601,7 @@
     "screen": {
       "name": "Good screen time",
       "short": "A checklist for choosing games and apps, and how to set limits",
-      "title": "Good screen time for kids 8–14: a parent’s guide",
+      "title": "Good screen time for kids: a parent’s guide",
       "description": "How to tell good screen time from bad: ads, purchases, chat, data, and making vs scrolling. A checklist for parents, with what we do and don’t do.",
       "h1": "Good screen time: how to choose games for kids 8–14",
       "lead": "There’s no perfect number of minutes. What kids do on a screen, who they do it with and what it pushes them toward matter just as much. This checklist helps you judge any game or app, including ours.",
@@ -3620,7 +3625,7 @@
         "li1": "<b>Ads:</b> none.",
         "li2": "<b>Purchases:</b> nothing for kids to buy, no loot boxes and no in-game money that costs money.",
         "li3": "<b>Strangers:</b> chat only with friends added by a code, filtered and reportable.",
-        "li4": "<b>Data:</b> we never ask kids for an email address, age, address or location.",
+        "li4": "<b>Data:</b> we never ask kids for an email address, age, address or location. Photos are optional: a profile photo or pictures for the Builder, with hidden location data removed and profile photos checked before anyone sees them.",
         "li5": "<b>Age fit:</b> made for ages 8 to 14.",
         "li6": "<b>Making:</b> kids can make their own games with the AI Builder.",
         "li7": "<b>Together:</b> several games have a two-player mode on one screen.",

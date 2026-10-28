@@ -207,3 +207,88 @@ test('hidden games drop out of the parent pages', async () => {
     for (const p of ['/parents', '/learn/games-for-8-and-9-year-olds']) assert.ok(!(await get(p)).text.includes('href="/g/word-hunt"'), p);
   } finally { q.run("UPDATE games SET hidden_reason='' WHERE id=?", wh.id); }
 });
+
+test('a grown-up account can open every page /parents and the guides link to', async () => {
+  paid(true, true);
+  const F = await import('../../server/services/family.js');
+  const g = auth.createUser({ username: 'RevParent1', password: 'a-long-password-1', accountType: 'grownup' }); F.ensureFamily(g);
+  let c = ''; auth.startSession({ append: (k, val) => { c = val.split(';')[0]; } }, g.id);
+  const seen = new Set();
+  for (const p of ['/parents', ...GUIDES, ...AGE_PAGES, '/learn/make-a-game']) {
+    const r = await get(p, { cookie: c });
+    assert.equal(r.status, 200, `grown-up: ${p}`);
+    if (!['/parents', ...GUIDES].includes(p)) { assert.ok(!main(r.text).includes('href="/build"'), `${p}: no Builder button for a grown-up`); continue; }
+    for (const [, href] of main(r.text).matchAll(/href="(\/[^"#?]*)/g)) seen.add(href);
+  }
+  for (const href of seen) assert.ok((await get(href, { cookie: c })).status < 400, `grown-up: ${href}`);
+  assert.ok(seen.has('/parents/ai-builder-safety') && seen.has('/learn/games-for-12-to-14-year-olds'));
+});
+
+test('the AI guide lists every rule and everything the AI sees; titles fit; reports and reviews said right', async () => {
+  const ai = (await get('/parents/ai-builder-safety')).text; const words = text(main(ai));
+  for (const s of ['romantic', 'bullying', 'self-harm', 'drugs', 'alcohol', 'vaping', 'Mario', 'Pokémon', 'classmates, teachers or family', 'gambling', 'real brands', 'links']) assert.ok(words.includes(s), `rules: ${s}`);
+  assert.ok(words.includes('profile photo, it is sent to Claude'), 'sees: profile photos');
+  assert.ok(words.includes('share with everyone are reviewed by Claude'), 'sees: public review');
+  assert.doesNotMatch(words, /three people report/, 'no fixed report count');
+  assert.doesNotMatch(words, /checked by the AI and reviewed/, 'no promise of a second review');
+  // FAQ answer 3 points at the full list.
+  assert.match(ai, /<a href="#rules">See every rule it follows<\/a>/);
+  const art = ofType(ai, 'Article')[0];
+  assert.equal(art.datePublished, PARENT_GUIDES[0].published);
+  assert.ok(art.dateModified >= art.datePublished);
+  for (const p of PAGES) { const title = /<title>([^<]+)<\/title>/.exec((await get(p)).text)[1]; assert.ok(decode(title).length <= 60, `${p}: title "${title}" ${title.length} chars`); }
+  // The parent pages end with a next step.
+  for (const p of ['/parents', ...GUIDES]) {
+    const m = main((await get(p)).text);
+    assert.ok(m.lastIndexOf('Seen enough? Try a game with your child now.') > m.indexOf('id="faq"'), `${p}: a call to action after the questions`);
+    assert.ok(m.lastIndexOf('href="/signup"') > m.indexOf('id="faq"'), `${p}: start free after the questions`);
+  }
+  // Screen-time guide: photos are named, honestly.
+  assert.match(text(main((await get('/parents/safety-and-screen-time')).text)), /Photos are optional/);
+  // Private by design does not claim everything stays private.
+  assert.doesNotMatch(text(main((await get('/parents')).text)), /makes and says here stays private/);
+});
+
+test('age pages: "Playing together" names only games on the page; no repeated practise line; consistent Sum Racer', async () => {
+  for (const age of AGES) {
+    const h = main((await get(`/learn/${age.slug}`)).text);
+    const together = (/<section class="panel" id="together"[\s\S]*?<\/section>/.exec(h) || [''])[0];
+    for (const name of ['Sum Racer', 'Castle Clash', 'Drop Four']) {
+      const slug = { 'Sum Racer': 'sum-racer', 'Castle Clash': 'castle-clash', 'Drop Four': 'connect-four' }[name];
+      assert.equal(together.includes(name), age.games.includes(slug), `${age.key}: together names ${name} only when listed`);
+    }
+    const faq = text((/<section class="panel faq lp-faq"[\s\S]*?<\/section>/.exec(h) || [''])[0]);
+    if (!age.games.includes('connect-four')) assert.ok(!faq.includes('Drop Four'), `${age.key}: FAQ names no unlisted game`);
+    assert.ok(!h.includes('class="lp-practise"'), `${age.key}: the fit line only`);
+  }
+  assert.match(text((await get('/learn/games-for-12-to-14-year-olds')).text), /Castle Clash has a two-player mode on one screen/);
+  assert.match(text((await get('/learn/games-for-8-and-9-year-olds')).text), /Sum Racer, Castle Clash and Drop Four each have a two-player mode/);
+  const a8 = text((await get('/learn/games-for-8-and-9-year-olds')).text);
+  assert.ok(a8.includes('adding to 10 or 20') && !a8.includes('Start with adding to 20'));
+  // Parent wording in shared keys.
+  const par = text(main((await get('/parents')).text));
+  assert.ok(!/\bStudents? (design|can race)|Two students/.test(par), 'no teacher wording on /parents');
+  assert.ok(par.includes('every player with an account'), 'building needs an account');
+});
+
+test('localized pages stay in one language: no untranslated additions on game, subject, home and teacher pages', async () => {
+  const es = (await get('/es/g/sum-racer')).text;
+  assert.match(robotsMeta(es), /^index/);
+  assert.doesNotMatch(es, /Ages 8–11/, 'no English age line on a Spanish game page');
+  const math = (await get('/es/learn/math-games')).text;
+  assert.match(robotsMeta(math), /^index/);
+  assert.doesNotMatch(main(math), /lang="en"/, '/es/learn/math-games has no English blocks');
+  const faq = ofType(math, 'FAQPage')[0];
+  for (const qn of faq.mainEntity) assert.doesNotMatch(qn.name, /\bmy child\b|\bthe\b/i, qn.name);
+  const make = main((await get('/es/learn/make-a-game')).text);
+  for (const id of ['parents', 'ideas', 'scratch']) assert.ok(!make.includes(`id="${id}"`), `/es make-a-game: no English ${id} section`);
+  assert.doesNotMatch(make, /lang="en"/);
+  // The "Parents" links use the translated footer label until the language has its own.
+  const home = (await get('/es')).text;
+  assert.match(home, /<span>Para las familias<\/span>/);
+  assert.doesNotMatch(home, /lang="en"[^>]*>For parents|>Parents</);
+  assert.match((await get('/es/teachers')).text, /<a class="navlink" href="\/parents"[^>]*><span class="emo" aria-hidden="true">👪<\/span>Para las familias/);
+  // English keeps all of it.
+  assert.match((await get('/g/sum-racer')).text, /Ages 8–11/);
+  assert.match((await get('/learn/math-games')).text, /id="home"/);
+});

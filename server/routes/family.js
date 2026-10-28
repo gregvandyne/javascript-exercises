@@ -27,6 +27,7 @@ const { customerOf } = B;
 import { rateLimit, allow, count, ipOf, loginLockKey } from '../services/ratelimit.js';
 import { tHtml, saveUserLang } from '../i18n/index.js';
 import { saveUserTheme } from '../theme.js';
+import { PARENT_GUIDES } from '../learn.js';
 import { siteHost } from '../site.js';
 import { SIGNUP, LOGIN, wantedNext, passwordPanel, signOutPanel, languagePanel } from './auth.js';
 
@@ -38,8 +39,10 @@ const nope = (req, res) => (isApi(req) ? res.status(404).json({ error: req.t('er
 // What a grown-up may open: game pages and play, search, the grown-up and info pages, signing in and out, their own
 // password and theme, and the family routes. Game calls a play page makes (save, score, ...) are allowed; a grown-up's
 // score is never stored (routes/games.js), so they are on no leaderboard.
+// The parent pages' own links: the guides (/parents/<guide>), and the read-only age and subject pages (/learn/<slug>).
+const GUIDE_PATHS = new RegExp(`^/parents/(${PARENT_GUIDES.map(g => g.slug).join('|')})$`);
 const GROWNUP_GET = [/^\/$/, /^\/search$/, /^\/api\/(search|live|me|billing\/status)$/, /^\/(g|play)\/[^/]+$/, /^\/(frame|shots|avatars)\/[^/]+$/,
-  /^\/(parents|safety|terms|refunds|privacy)$/, /^\/plans(\/schools)?$/, /^\/grown-ups(\/(signup|login))?$/, /^\/family(\/link)?$/, /^\/(login|signup)$/, /^\/api\/games\/[^/]+\/(save|leaderboard)$/];
+  /^\/(parents|safety|terms|refunds|privacy|teachers)$/, GUIDE_PATHS, /^\/learn\/[a-z0-9-]+$/, /^\/plans(\/schools)?$/, /^\/grown-ups(\/(signup|login))?$/, /^\/family(\/link)?$/, /^\/(login|signup)$/, /^\/api\/games\/[^/]+\/(save|leaderboard)$/];
 const GROWNUP_POST = [/^\/api\/auth\/(login|logout|logout-everywhere)$/, /^\/api\/me\/(password|theme)$/, /^\/api\/family\/(link|children\/[^/]+\/remove)$/,
   /^\/api\/billing\/(family\/checkout|portal)$/,
   /^\/api\/games\/[^/]+\/(play|heartbeat|leave|save|score|report)$/];
