@@ -179,5 +179,37 @@
     "fine": {
       "tax": "Prices are in US dollars, plus sales tax where it applies. Basic and Family plans are for US families for now. A plan renews until you cancel it, and you can cancel any time."
     }
+  },
+  "teachers": {
+    "play": {
+      "p": "Short games students want to play again, each practising a real skill. They open in seconds in the browser, with nothing to install."
+    },
+    "safe": {
+      "li2google": "Students never type an email address. If your school uses Sign in with Google, we keep each student’s school Google email only to recognise their account. A student’s real name, if you add one, is seen only by your school’s staff."
+    },
+    "faq": {
+      "a4google": "Students never type an email address, and we never ask for their age or home address. If your school uses Sign in with Google, we keep each student’s school Google email only to recognise their account. There are no ads and no tracking cookies. Our <a href=\"{href}\">privacy notice</a> lists exactly what we keep."
+    }
+  },
+  "learn": {
+    "practise": "What it practises:",
+    "hubs": {
+      "math": {
+        "description": "Practise addition, subtraction, multiplication and division facts in Sum Racer, a free math racing game for grades 1 to 5, with two-player races.",
+        "tracks": {
+          "p": "Students can also pick exactly which times tables to practise."
+        }
+      },
+      "makeAGame": {
+        "skills": {
+          "h": "What students practise"
+        }
+      },
+      "music": {
+        "faq": {
+          "a1": "No. Both games use colours and timing, not written notes."
+        }
+      }
+    }
   }
 }

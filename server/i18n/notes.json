@@ -570,5 +570,10 @@
   "learn.hubs.math.title": "Search-result title of a subject page (the same for every learn.hubs.*.title), max ~50 chars before \" · Oomba Academy\" is added.",
   "learn.hubs.math.description": "Search-result description of a subject page (the same for every learn.hubs.*.description), max ~155 chars.",
   "learn.hubs.makeAGame.how.li1": "Keep the <b>…</b> around the first word or two (the step's name).",
-  "learn.crumbs": "Screen-reader name of the \"Home › Teachers › Math games\" trail at the top of a subject page."
+  "learn.crumbs": "Screen-reader name of the \"Home › Teachers › Math games\" trail at the top of a subject page.",
+  "teachers.safe.li2google": "Replaces teachers.safe.li2 when Sign in with Google is on. \"Google\" is a brand: keep it in Latin letters.",
+  "teachers.faq.a4google": "Replaces teachers.faq.a4 when Sign in with Google is on. {href} is the privacy page's address: keep the <a href=\"{href}\"> tag around the words that open it.",
+  "learn.grades": "School grades a game or subject page suits, e.g. \"Grades 1–5\" or \"Grades K–8\". {from} is \"K\" (kindergarten) or a number, {to} a number. Use your school system's usual words for US grades.",
+  "learn.seeAll": "Link from a game page to its subject page. {name} is that page's name (learn.hubs.*.name, e.g. \"Math games\").",
+  "teachers.cta.start": "Main button on the teacher page. It jumps to the box that explains how a school is set up (by email, free): do not promise instant sign-up."
 }

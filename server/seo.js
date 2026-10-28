@@ -44,6 +44,9 @@ export const localeUrl = (path, code) => (code === DEFAULT_LOCALE ? path : `/${s
  */
 export function pathLocale(req, res, next) {
   if (req.method !== 'GET' && req.method !== 'HEAD') return next();
+  // A robot's Accept-Language (Bingbot, Googlebot's locale-adaptive crawl) never changes a page's language: the plain
+  // address is the English page and /<code>/… the others, so what it reads matches hreflang and the canonical.
+  if (isBot(req.headers['user-agent'])) req.ignoreAcceptLanguage = true;
   const p = req.path; const qs = req.url.slice(req.path.length);
   const m = /^\/([a-z]{2}(?:-[a-z]{2,4})?)(\/.*)?$/.exec(p);
   const code = m && BY_SEG.get(m[1]);
@@ -101,7 +104,9 @@ export function clip(s, n = 155) {
  */
 export function seoHead(req, seo, { title, description }) {
   if (!seo || !seo.index) return `<meta name="robots" content="${seo && seo.robots ? esc(seo.robots) : 'noindex'}">`;
-  const loc = req.locale || DEFAULT_LOCALE;
+  // The page's language is the address's, never the visitor's header, cookie or account: a plain address is always the
+  // English (x-default) page, indexable and its own canonical, whoever asks for it.
+  const loc = req.pathLocale || DEFAULT_LOCALE;
   // A page without language addresses (the legal pages, /sdk/) is English only: no hreflang.
   const langs = localizable(seo.path) ? pageLangs(seo.langs) : [DEFAULT_LOCALE];
   const own = langs.includes(loc);

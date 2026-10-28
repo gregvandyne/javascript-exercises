@@ -5,6 +5,7 @@ import { q, uid, now, tx } from '../db.js';
 import * as presence from './presence.js';
 import { current } from '../i18n/index.js';
 import { queueShot } from './shots.js';
+import { OFFICIAL } from '../auth.js';
 import { hasProfanity, personalInfo, looksLikeLinkCode } from './textfilter.js';
 
 export const CATEGORIES = [
@@ -137,8 +138,9 @@ const ORDERS = {
   rated: 'CASE WHEN g.rating_count>0 THEN (g.rating_sum*1.0+3*2)/(g.rating_count+2) ELSE 0 END DESC, g.rating_count DESC, g.plays DESC',
   likes: 'g.likes DESC', title: 'g.title ASC'
 };
-export function listVisible(user, { order = 'popular', limit = 24, category = null, ownerId = null, featured = false, offset = 0 } = {}) {
+export function listVisible(user, { order = 'popular', limit = 24, category = null, ownerId = null, featured = false, offset = 0, official = false } = {}) {
   const v = visibleWhere(user); const params = [...v.params]; let where = v.sql;
+  if (official) { where += " AND g.source='seed' AND u.username=?"; params.push(OFFICIAL); }   // launch games only
   if (category) { where += ' AND g.category=?'; params.push(category); }
   if (ownerId) { where += ' AND g.owner_id=?'; params.push(ownerId); }
   if (featured) where += ' AND g.featured>0';   // 1 = featured, 2 = also the home-page hero (seed JSON "hero": true)
@@ -189,9 +191,10 @@ export function searchBuilders(user, text, limit = 8) {
   return q.all(`SELECT u.id, u.username, u.display_name, u.avatar, u.color, u.photo_at, COUNT(g.id) AS games, COALESCE(SUM(g.plays),0) AS plays
     FROM users u JOIN games g ON g.owner_id=u.id WHERE ${v.sql} AND u.account_type!='grownup' AND (u.username LIKE ? OR u.display_name LIKE ?) GROUP BY u.id ORDER BY plays DESC LIMIT ?`, ...v.params, like, like, limit);
 }
-export function similar(user, game, limit = 6) {
-  const rows = listVisible(user, { category: game.category, limit: limit + 1 }).filter(g => g.id !== game.id);
-  if (rows.length < limit) listVisible(user, { limit: limit * 2 }).forEach(g => { if (g.id !== game.id && !rows.find(r => r.id === g.id) && rows.length < limit) rows.push(g); });
+/** official: only launch games (an indexed page shown signed out carries no text a child wrote). */
+export function similar(user, game, limit = 6, { official = false } = {}) {
+  const rows = listVisible(user, { category: game.category, limit: limit + 1, official }).filter(g => g.id !== game.id);
+  if (rows.length < limit) listVisible(user, { limit: limit * 2, official }).forEach(g => { if (g.id !== game.id && !rows.find(r => r.id === g.id) && rows.length < limit) rows.push(g); });
   return rows.slice(0, limit);
 }
 

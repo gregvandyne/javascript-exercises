@@ -269,3 +269,89 @@ test('no guest account for search-engine robots on /play', async () => {
   assert.equal(q.get('SELECT COUNT(*) n FROM users WHERE is_guest=1').n, before);
   assert.equal(r.headers.get('x-robots-tag'), 'noindex, nofollow');
 });
+
+test('every launch game has a real search title in English and en-GB (never a raw locale key)', async () => {
+  const slugs = q.all("SELECT slug FROM games WHERE source='seed' AND status='published' AND visibility='public' AND hidden_reason=''").map(r => r.slug);
+  assert.ok(slugs.length >= 10, `launch games: ${slugs.length}`);
+  for (const slug of slugs) {
+    for (const p of [`/g/${slug}`, `/en-gb/g/${slug}`]) {
+      const r = await get(p);
+      if (r.status !== 200) continue;
+      const title = /<title>([^<]+)<\/title>/.exec(r.text)[1];
+      assert.doesNotMatch(title, /\bseo\./, `${p}: ${title}`);
+      for (const tag of ['og:title', 'twitter:title']) assert.doesNotMatch(r.text, new RegExp(`(property|name)="${tag}" content="seo\\.`), `${p} ${tag}`);
+    }
+  }
+  // A game without its own search title gets the "<game>: free online <kind> for kids" one.
+  assert.match((await get('/g/brick-drop')).text, /<title>Brick Drop: free online \w+ game for kids · Oomba Academy<\/title>/);
+});
+
+test('a plain address is the indexable English page whatever Accept-Language, cookie or robot asks', async () => {
+  for (const lang of ['fr', 'de', 'ja', 'es']) {
+    for (const p of ['/', '/teachers', '/learn/math-games', '/privacy', '/g/sum-racer']) {
+      const r = await get(p, { 'accept-language': lang });
+      assert.match(robotsMeta(r.text), /^index, follow/, `${p} (${lang})`);
+      assert.equal(canonical(r.text), base + p, `${p} (${lang}) canonical`);
+      assert.match(r.text, /<meta property="og:locale" content="en_US">/, `${p} (${lang}) og:locale`);
+    }
+  }
+  // A robot reads the English page there; a person still gets their browser's language.
+  const bot = await get('/g/sum-racer', { 'accept-language': 'es', 'user-agent': 'Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)' });
+  assert.match(bot.text, /<html lang="en" dir="ltr"/);
+  const person = await get('/g/sum-racer', { 'accept-language': 'es' });
+  assert.match(person.text, /<html lang="es"/);
+  // The language address is still its own page.
+  const es = await get('/es/g/sum-racer', { 'accept-language': 'fr' });
+  assert.equal(canonical(es.text), `${base}/es/g/sum-racer`);
+});
+
+test('leaderboard API: no names signed out; launch-game "More like this" lists launch games only signed out', async () => {
+  const out = await (await fetch(`${base}/api/games/${sum.id}/leaderboard`)).json();
+  assert.ok(out.rows.length >= 1);
+  for (const r of out.rows) { assert.equal(r.name, undefined); assert.ok('score' in r); }
+  const inn = await (await fetch(`${base}/api/games/${sum.id}/leaderboard`, { headers: { cookie: cookieOf(kid) } })).json();
+  assert.ok(inn.rows.some(r => r.name === 'Zoe Kidname'), 'signed in, names are there');
+  // The kid's public game is an arcade game: it would be a candidate on an arcade launch game's page.
+  const arcade = q.get("SELECT slug FROM games WHERE source='seed' AND category='arcade' AND status='published' AND visibility='public' LIMIT 1");
+  if (arcade) {
+    assert.ok(!(await get(`/g/${arcade.slug}`)).text.includes(kidPublic.title), 'signed out: no child-made title');
+    assert.ok((await get(`/g/${arcade.slug}`, { cookie: cookieOf(kid) })).text.includes(kidPublic.title), 'signed in: as before');
+  }
+});
+
+test('structured data: no Software App fields without a rating; game pages show their breadcrumb, skills and subject link', async () => {
+  const page = (await get('/g/sum-racer')).text;
+  const sr = ofType(page, 'VideoGame')[0];
+  assert.equal(sr.applicationCategory, undefined); assert.equal(sr.operatingSystem, undefined);
+  assert.equal(sr.gamePlatform, 'Web browser');
+  assert.match(page, /<nav class="crumbs small"[^>]*><ol><li><a href="\/">Home<\/a><\/li><li><a href="\/teachers">/);
+  assert.ok(page.includes('href="/learn/math-games"'), 'links to its subject page');
+  assert.match(page, /What it practices:/);
+  assert.match(page, /Grades 1–5/);
+  assert.ok((await get('/es/g/sum-racer')).text.includes('href="/es/learn/math-games"'), 'stays on the language address');
+  // A child's game: no breadcrumb, no learning line.
+  const kg = (await get(`/g/${kidPublic.slug}`)).text;
+  assert.doesNotMatch(kg, /class="crumbs/);
+  // The home page: category chips are nofollow (search is disallowed); the subject pages are linked.
+  const home = (await get('/')).text;
+  for (const m of home.matchAll(/<a class="chip" role="listitem" href="\/search\?cat=[^"]+"([^>]*)>/g)) assert.match(m[1], /rel="nofollow"/);
+  for (const h of HUBS) assert.ok(home.includes(`href="/learn/${h.slug}"`), h.slug);
+  // The math page names what teachers search for, with its grades.
+  const math = (await get('/learn/math-games')).text;
+  for (const w of ['addition', 'subtraction', 'multiplication', 'division', 'Grades 1–5']) assert.ok(math.toLowerCase().includes(w.toLowerCase()), w);
+});
+
+test('/teachers: honest privacy wording with Sign in with Google, and a call to action that matches what happens', async () => {
+  const plain = (await get('/teachers')).text;
+  assert.match(plain, /Get a free school account/);
+  assert.match(plain, /First, email us to set up your school/);
+  assert.match(plain, /We never ask students for an email address/);
+  const { config } = await import('../../server/config.js');
+  const saved = [config.googleClientId, config.googleClientSecret];
+  config.googleClientId = '1234-abc.apps.googleusercontent.com'; config.googleClientSecret = 'secret';
+  try {
+    const g = (await get('/teachers')).text;
+    assert.match(g, /we keep each student(’|&#39;|')s school Google email only to recognize their account/);
+    assert.doesNotMatch(g, /We never ask students for an email address/);
+  } finally { [config.googleClientId, config.googleClientSecret] = saved; }
+});

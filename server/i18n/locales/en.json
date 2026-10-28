@@ -3045,12 +3045,12 @@
       "ages": "Made for ages 8 to 14"
     },
     "cta": {
-      "start": "Start free as a teacher",
+      "start": "Get a free school account",
       "try": "Try a game now, no sign-up"
     },
     "play": {
       "h": "Play to learn",
-      "p": "Short games students want to play again, each practising a real skill. They open in seconds in the browser, with nothing to install."
+      "p": "Short games students want to play again, each practicing a real skill. They open in seconds in the browser, with nothing to install."
     },
     "subjects": {
       "h": "Games by subject"
@@ -3075,7 +3075,8 @@
       "li2": "We never ask students for an email address, age or home address. A student's real name, if you add one, is seen only by your school's staff.",
       "li3": "Every game runs in a locked sandbox, and a game made for everyone is reviewed before anyone else can play it.",
       "li4": "Chat is only between friends who swapped friend codes, and your school can turn it off.",
-      "links": "Read <a href=\"{safety}\">how we keep kids safe</a> and our <a href=\"{privacy}\">privacy notice</a>."
+      "links": "Read <a href=\"{safety}\">how we keep kids safe</a> and our <a href=\"{privacy}\">privacy notice</a>.",
+      "li2google": "Students never type an email address. If your school uses Sign in with Google, we keep each student’s school Google email only to recognize their account. A student’s real name, if you add one, is seen only by your school’s staff."
     },
     "uses": {
       "h": "Ways to use it",
@@ -3093,7 +3094,7 @@
       "p": "The whole site works in {count} languages, including Spanish, Portuguese, French, Arabic and Hebrew, which helps students who are still learning English. Each student picks their own, and the Builder answers in it."
     },
     "start": {
-      "h": "Start free as a teacher",
+      "h": "Set up your school (free)",
       "p1": "Playing is free for everyone, and students can try any game straight away, without signing up.",
       "p2": "For classes, lessons and school accounts, write to {email} with your school’s name and who will look after it. We set up your school and your school admin’s account, and they add teachers and students. Setting up a school is free.",
       "plans": "Want more Builder messages for your classes? A school plan adds a shared pool for your students and teachers.",
@@ -3114,20 +3115,21 @@
       "q5": "What ages and grades is it for?",
       "a5": "Oomba Academy is made for ages 8 to 14, roughly grades 3 to 8. Some games, such as Shark Plank and the first Sum Racer tracks, also suit younger readers.",
       "q6": "How do I add my class?",
-      "a6": "Create a class and share its class code with students who have their own account, or make school accounts for the whole class and print login cards.",
-      "a6google": "Create a class and share its class code with students who have their own account, or make school accounts for the whole class and print login cards. Schools that use Google can let students sign in with Google.",
+      "a6": "First, email us to set up your school (it’s free). Then create a class and share its class code with students who have their own account, or make school accounts for the whole class and print login cards.",
+      "a6google": "First, email us to set up your school (it’s free). Then create a class and share its class code with students who have their own account, or make school accounts for the whole class and print login cards. Schools that use Google can let students sign in with Google.",
       "q7": "Can students make their own games? Who sees them?",
       "a7": "Yes. A new game is private to the student who made it. They can share it with their class, and a game for everyone is reviewed before anyone else can play it.",
       "q8": "Can I track progress and scores?",
-      "a8": "Yes. Lessons record each student's progress, game scores and written answers. You see them on the class's Progress tab and can download them as a spreadsheet (CSV).",
+      "a8": "Yes. Lessons record each student’s progress, game scores and written answers. You see them on the class’s Progress tab, and can download each student’s lesson progress as a spreadsheet (CSV).",
       "q9": "Which languages are there?",
-      "a9": "{count} languages, including Spanish, Portuguese, French, German, Arabic, Hebrew and Japanese. Each student picks their own."
+      "a9": "{count} languages, including Spanish, Portuguese, French, German, Arabic, Hebrew and Japanese. Each student picks their own.",
+      "a4google": "Students never type an email address, and we never ask for their age or home address. If your school uses Sign in with Google, we keep each student’s school Google email only to recognize their account. There are no ads and no tracking cookies. Our <a href=\"{href}\">privacy notice</a> lists exactly what we keep."
     }
   },
   "learn": {
     "crumbs": "Breadcrumb",
     "gamesHeading": "The games",
-    "practise": "What it practises:",
+    "practise": "What it practices:",
     "play": "Play",
     "about": "About the game",
     "tipsHeading": "In the classroom",
@@ -3152,26 +3154,26 @@
     "hubs": {
       "math": {
         "name": "Math games",
-        "short": "Adding, taking away, times tables and division",
-        "title": "Free math games for kids: times tables, adding and more",
-        "description": "Practise adding, taking away, times tables and division in Sum Racer, a free math racing game for ages 8 to 14, with two-player races.",
+        "short": "Addition, subtraction, multiplication (times tables) and division",
+        "title": "Free math games: addition, subtraction, multiplication",
+        "description": "Practice addition, subtraction, multiplication and division facts in Sum Racer, a free math racing game for grades 1 to 5, with two-player races.",
         "h1": "Fun math games for kids",
-        "lead": "Sum Racer turns math facts into a kart race: every right answer boosts your kart past Zippy the bunny, Bolt the robot and Rex the dino. It runs in the browser, so it works on Chromebooks, tablets and the classroom board.",
+        "lead": "Sum Racer is a free math facts game: every right answer speeds a kart past the other racers. Pick the track that matches what your class is learning, from addition to 10 up to the times tables and division, and run a quick race at the start of a lesson. It works in the browser, on Chromebooks, tablets and the classroom board.",
         "tracks": {
-          "h": "Seven tracks, from adding to 10 to all four operations",
-          "li1": "Adding to 10",
-          "li2": "Adding and taking away to 20",
-          "li3": "Adding and taking away to 100",
-          "li4": "The 2, 5 and 10 times tables",
-          "li5": "All the times tables up to 12",
-          "li6": "Sharing (division) facts",
+          "h": "Seven tracks: addition and subtraction to 100, multiplication (times tables) to 12, division",
+          "li1": "Addition to 10",
+          "li2": "Addition and subtraction to 20",
+          "li3": "Addition and subtraction to 100",
+          "li4": "Multiplication: the 2, 5 and 10 times tables",
+          "li5": "Multiplication: all the times tables up to 12",
+          "li6": "Division facts",
           "li7": "A mixed track with +, −, × and ÷",
-          "p": "Students can also pick exactly which times tables to practise, and tap the answer or type it."
+          "p": "Students can also pick exactly which times tables to practice."
         },
         "tips": "Start a lesson with a five-minute race on the track you are working on, or put two students on one device for a head-to-head race.",
         "faq": {
           "q1": "What math does Sum Racer cover?",
-          "a1": "Adding and taking away to 10, 20 and 100, the times tables up to 12, sharing (division) facts, and a mixed track with all four operations.",
+          "a1": "Addition to 10, addition and subtraction to 20 and 100, the times tables up to 12, division facts, and a mixed track with all four operations.",
           "q2": "Can two students race each other?",
           "a2": "Yes. Two players can race on one screen.",
           "q3": "Is it free?",
@@ -3222,7 +3224,7 @@
         "tips": "Use Loop Lab's music challenges to explore patterns and repetition, or play a Beat Lanes song as a quick brain break. Headphones help in a busy room.",
         "faq": {
           "q1": "Do students need to read music?",
-          "a1": "No. Both games use colours and timing, not written notes.",
+          "a1": "No. Both games use colors and timing, not written notes.",
           "q2": "Can students make whole songs?",
           "a2": "Yes. In Loop Lab they can chain patterns into a song and play it back like a little concert."
         }
@@ -3258,7 +3260,7 @@
         },
         "cta": "Start building",
         "skills": {
-          "h": "What students practise",
+          "h": "What students practice",
           "p": "Planning an idea, writing clear instructions, testing, finding and fixing problems, and improving a design step by step: the habits of programmers and game designers."
         },
         "safe": {
@@ -3275,6 +3277,8 @@
           "a3": "Ages 8 to 14."
         }
       }
-    }
+    },
+    "grades": "Grades {from}–{to}",
+    "seeAll": "See all {name}"
   }
 }

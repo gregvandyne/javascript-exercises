@@ -1,11 +1,11 @@
 // Game page, play page, the sandboxed frame, and the game APIs the SDK talks to (via the parent page).
 import { Router } from 'express';
-import { html, jsonData } from '../views/html.js';
+import { html, raw, jsonData } from '../views/html.js';
 import { page, notFound } from '../views/layout.js';
 import { coverArt, avatar, cardGrid, statusLabel, categoryLabel } from '../views/components.js';
 import { OFFICIAL } from '../auth.js';
 import * as seo from '../seo.js';
-import { LEARNING, isLearningGame, HUBS } from '../learn.js';
+import { LEARNING, isLearningGame, gradeBand, hubOfGame } from '../learn.js';
 import * as games from '../services/games.js';
 import * as presence from '../services/presence.js';
 import { frameDocument, sendFrame, sendFrameText, frameOrigins, SANDBOX } from '../services/frame.js';
@@ -41,15 +41,26 @@ router.get('/g/:slug', (req, res) => {
   const grownup = isGrownup(u);
   const myStars = games.userRating(g.id, u && u.id), liked = games.userLiked(g.id, u && u.id);
   const lb = games.leaderboard(g.id, 10);
-  const more = games.similar(u, g, 6);
+  // Signed out (search engines too), an official game's page suggests only launch games: a child's game title is
+  // free text that may hold their name, and this page is indexed.
+  const more = games.similar(u, g, 6, { official: !u && g.source === 'seed' });
   const cat = games.categoryInfo(g.category);
   const playable = !!g.published_version_id || (isOwner && g.current_version_id);
   const players = g.players_max > 1 ? `👥 ${t('game.about.players', { count: g.players_max })} · ` : `👤 ${t('game.about.onePlayer')} · `;
   // "Shared with: 5B, Art Club" (only reached after canView). The owner and admins see every class; anyone else sees
   // the classes they are in and a count of the others.
   const shared = games.classNamesFor(g, u);
+  // Search engines index official launch games only. A game a child made (even a published, reviewed one) is never
+  // indexed: its page carries the builder's name.
+  const official = g.source === 'seed' && owner && owner.username === OFFICIAL && g.visibility === 'public' && g.status === 'published' && !g.hidden_reason;
+  const crumbs = official ? gameCrumbs(req, g) : null;
+  const fbl = key => (t.own(key) ? '' : raw(' lang="en" dir="ltr"'));
+  const learn = official && LEARNING[g.slug];
+  const hub = official && hubOfGame(g.slug);
+  const band = learn && gradeBand([g.slug]);
   const body = html`
   <article>
+    ${crumbs ? html`<nav class="crumbs small" aria-label="${t('learn.crumbs')}" style="margin-bottom:var(--s3)"><ol>${crumbs.map(([name, p], i) => html`<li>${i < crumbs.length - 1 ? html`<a href="${lp(req, p)}">${name}</a>` : html`<span aria-current="page">${name}</span>`}</li>`)}</ol></nav>` : ''}
     <div class="gamehero">
       <div style="position:relative">${coverArt(d, '', { eager: true })}</div>
       <div>
@@ -75,6 +86,7 @@ router.get('/g/:slug', (req, res) => {
       <div class="stack">
         <section class="panel"><h2>${t('game.about.heading')}</h2>
           <p class="ugc" style="white-space:pre-line">${g.description || t('game.about.noDescription')}</p>
+          ${learn ? html`<p class="lp-practise"${fbl(`learn.games.${learn.key}`)}><b>${t('learn.practise')}</b> ${t(`learn.games.${learn.key}`)}${band ? ` · ${t('learn.grades', band)}` : ''}${hub ? html` · <a href="${lp(req, `/learn/${hub.slug}`)}">${t('learn.seeAll', { name: t(`learn.hubs.${hub.key}.name`) })}</a>` : ''}</p>` : ''}
           <div class="taglist"><a class="tag" href="/search?cat=${cat.key}">${cat.icon} ${categoryLabel(cat.key, t)}</a>${d.tagList.map(tag => html`<a class="tag" href="/search?q=${encodeURIComponent(tag)}">#${tag}</a>`)}</div>
           <p class="small muted" style="margin:12px 0 0">${players}${g.orientation === 'landscape' ? `📱↔️ ${t('game.about.sideways')} · ` : ''}${t('game.about.updated', { when: f.ago(g.updated_at) })}</p>
         </section>
@@ -85,7 +97,7 @@ router.get('/g/:slug', (req, res) => {
         </section>`}
         <section class="panel" aria-labelledby="lb-h"><h2 id="lb-h">🏆 ${t('game.leaderboard.heading')}</h2>
           ${lb.length ? html`<ol class="lb">${lb.map(r => html`<li>${avatar(r, 30)}<span>${u ? r.display_name : ''}</span><span class="sc" dir="ltr">${f.int(r.score)}${r.label ? ' ' + r.label : ''}</span></li>`)}</ol>
-            ${u ? '' : html`<p class="small muted" style="margin:10px 0 0">${t('game.leaderboard.signIn')}</p>`}` : html`<p class="muted">${t('game.leaderboard.empty')}</p>`}
+            ${u ? '' : html`<p class="small muted" style="margin:10px 0 0"${fbl('game.leaderboard.signIn')}>${t('game.leaderboard.signIn')}</p>`}` : html`<p class="muted">${t('game.leaderboard.empty')}</p>`}
         </section>
       </div>
       <aside class="stack" aria-label="${t('game.more.label')}">
@@ -94,14 +106,21 @@ router.get('/g/:slug', (req, res) => {
     </div>
   </article>
   ${jsonData('page-data', { gameId: g.id, slug: g.slug, title: g.title, visibility: g.visibility, shareText: t(`game.shareText.${g.visibility}`), reasons: reportReasons(t), signedIn: !!u })}`;
-  // Search engines index official launch games only. A game a child made (even a published, reviewed one) is never
-  // indexed: its page carries the builder's name.
-  const official = g.source === 'seed' && owner && owner.username === OFFICIAL && g.visibility === 'public' && g.status === 'published' && !g.hidden_reason;
   if (!official) res.set('X-Robots-Tag', 'noindex, nofollow');
-  const title = official && t.own(`seo.games.${g.slug}`) ? t(`seo.games.${g.slug}`) : official && t.own(`seo.game.kind.${cat.key}`) ? t('seo.game.title', { title: g.title, kind: t(`seo.game.kind.${cat.key}`) }) : g.title;
+  // Search titles only where this language really has the wording (t.own alone is true for every key in English).
+  const written = key => t.has(key) && t.own(key);
+  const title = official && written(`seo.games.${g.slug}`) ? t(`seo.games.${g.slug}`) : official && written(`seo.game.kind.${cat.key}`) ? t('seo.game.title', { title: g.title, kind: t(`seo.game.kind.${cat.key}`) }) : g.title;
   page(req, res, { title, active: 'home', back: '/', backLabel: t('nav.home'), body, description: seo.clip(g.description, 158), scripts: ['/js/game.js'],
     seo: official ? gameSeo(req, g, d, owner) : null });
 });
+
+/** A link that stays in the language address the page was opened at (/es/g/… -> /es/learn/…). */
+const lp = (req, p) => (req.pathLocale && seo.localizable(p) ? seo.localeUrl(p, req.pathLocale) : p);
+/** An official launch game's breadcrumb, shown on the page and in its structured data: [[name, path], …]. */
+function gameCrumbs(req, g) {
+  const t = req.t; const hub = hubOfGame(g.slug);
+  return [[t('nav.home'), '/'], ...(hub ? [[t('nav.teachers'), '/teachers'], [t(`learn.hubs.${hub.key}.name`), `/learn/${hub.slug}`]] : []), [g.title, `/g/${g.slug}`]];
+}
 
 /** Search and sharing data of an official launch game's page: its languages, its picture, and VideoGame (plus
  *  LearningResource for a learning game) structured data. */
@@ -113,13 +132,12 @@ function gameSeo(req, g, d, owner) {
   const og = fs.existsSync(new URL(`../../public/og/${g.slug}.jpg`, import.meta.url)) ? `/og/${g.slug}.jpg` : null;
   const image = og || `/covers/${g.slug}.jpg`;
   const learn = LEARNING[g.slug];
-  const hub = HUBS.find(h => h.games.includes(g.slug) && h.slug !== 'brain-break-games');
   const game = {
     '@type': isLearningGame(g.slug) ? ['VideoGame', 'LearningResource'] : 'VideoGame',
     '@id': seo.abs(req, path) + '#game',
-    name: g.title, description: g.description, url: seo.abs(req, seo.localeUrl(path, langs.includes(req.locale) ? req.locale : 'en')),
+    name: g.title, description: g.description, url: seo.abs(req, seo.localeUrl(path, langs.includes(req.pathLocale) ? req.pathLocale : 'en')),
     image: [seo.abs(req, image), seo.abs(req, `/covers/${g.slug}.jpg`)].filter((v, i, a) => a.indexOf(v) === i),
-    genre: tEn(`categories.${cat.key}`), gamePlatform: 'Web browser', applicationCategory: 'GameApplication', operatingSystem: 'Any (web browser)',
+    genre: tEn(`categories.${cat.key}`), gamePlatform: 'Web browser',
     inLanguage: langs, isFamilyFriendly: true, isAccessibleForFree: true, typicalAgeRange: `${seo.AGE.min}-${seo.AGE.max}`,
     audience: seo.audienceLd(),
     numberOfPlayers: { '@type': 'QuantitativeValue', minValue: 1, maxValue: Math.max(1, +g.players_max || 1) },
@@ -128,10 +146,12 @@ function gameSeo(req, g, d, owner) {
     ...(g.published_at ? { datePublished: new Date(g.published_at).toISOString().slice(0, 10) } : {}),
     ...(g.updated_at ? { dateModified: new Date(g.updated_at).toISOString().slice(0, 10) } : {}),
     // Only real ratings, shown on the page, and only once there are enough to mean something.
-    ...(d.rating_count >= 5 ? { aggregateRating: { '@type': 'AggregateRating', ratingValue: +d.rating.toFixed(1), ratingCount: d.rating_count, bestRating: 5, worstRating: 1 } } : {}),
+    // applicationCategory and operatingSystem make this a Software App rich result, which Google rejects without a
+    // rating or review, so they come only with the rating.
+    ...(d.rating_count >= 5 ? { aggregateRating: { '@type': 'AggregateRating', ratingValue: +d.rating.toFixed(1), ratingCount: d.rating_count, bestRating: 5, worstRating: 1 }, applicationCategory: 'GameApplication', operatingSystem: 'Any (web browser)' } : {}),
     ...(learn && isLearningGame(g.slug) ? { teaches: learn.teaches, educationalLevel: learn.level, learningResourceType: 'Game', interactivityType: 'active' } : {}),
   };
-  const crumbs = [[t('nav.home'), '/'], ...(hub ? [[t('nav.teachers'), '/teachers'], [t(`learn.hubs.${hub.key}.name`), `/learn/${hub.slug}`]] : []), [g.title, path]];
+  const crumbs = gameCrumbs(req, g);
   return {
     index: true, path, langs, type: 'website', image, imageAlt: t('seo.game.imageAlt', { title: g.title }),
     jsonld: [seo.graph([game, seo.breadcrumbLd(req, crumbs), seo.organizationLd(req)])],
@@ -280,7 +300,8 @@ router.post('/api/games/:id/score', requireUser, rateLimit('score', 30, 60e3), (
 });
 router.get('/api/games/:id/leaderboard', (req, res) => {
   const g = apiGame(req, res); if (!g) return;
-  res.json({ rows: games.leaderboard(g.id, 10).map(r => ({ name: r.display_name, avatar: r.avatar, score: r.score, label: r.label })) });
+  // Children's names only to someone signed in, as on the game page (a signed-out caller may be any scraper).
+  res.json({ rows: games.leaderboard(g.id, 10).map(r => ({ ...(req.user ? { name: r.display_name } : {}), avatar: r.avatar, score: r.score, label: r.label })) });
 });
 // Reports: any signed-in player (guests included) can report with a simple reason. N open reports auto-hide the game.
 router.post('/api/games/:id/report', requireUser, rateLimit('report', 10, 3600e3), (req, res) => {

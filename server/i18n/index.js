@@ -276,7 +276,8 @@ export const isPageGet = req => req.method === 'GET' && !req.path.startsWith('/a
  */
 export function middleware(req, res, next) {
   const query = typeof req.query.lang === 'string' ? req.query.lang : null;
-  const picked = pickLocale({ query, path: req.pathLocale, cookie: readCookie(req, COOKIE), user: req.user, acceptLanguage: req.headers['accept-language'] });
+  // req.ignoreAcceptLanguage: a search-engine robot (server/seo.js pathLocale) gets each address in its own language.
+  const picked = pickLocale({ query, path: req.pathLocale, cookie: readCookie(req, COOKIE), user: req.user, acceptLanguage: req.ignoreAcceptLanguage ? null : req.headers['accept-language'] });
   const code = picked.locale;
   req.locale = code; req.localeSource = picked.source; req.dir = localeInfo(code).dir; req.t = tFor(code); req.fmt = fmt(code);
   res.locals.t = req.t; res.locals.locale = code;

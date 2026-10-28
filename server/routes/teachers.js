@@ -17,7 +17,7 @@ import { familiesOn } from '../services/family.js';
 import { siteHost } from '../site.js';
 import * as games from '../services/games.js';
 import * as seo from '../seo.js';
-import { HUBS, hubBySlug, LEARNING, TEACHER_GAMES, HUB_FAQ, TEACHER_FAQ } from '../learn.js';
+import { HUBS, hubBySlug, LEARNING, TEACHER_GAMES, HUB_FAQ, TEACHER_FAQ, gradeBand } from '../learn.js';
 
 export const router = Router();
 const contactEmail = () => config.contactEmail || 'greg@oomba.ai';
@@ -59,7 +59,8 @@ router.get('/teachers', (req, res) => {
   const card = g => html`<li><a class="lp-game" href="${lp(req, `/g/${g.slug}`)}">${coverArt(g)}<span class="lp-game-text"><span class="lp-game-t">${g.title}</span>${el(t, 'span', `learn.games.${LEARNING[g.slug].key}`, {}, ' class="lp-game-d"')}</span></a></li>`;
   const badges = [['✅', 'teachers.badges.free'], ['🚫', 'teachers.badges.ads'], ['💻', 'teachers.badges.browser'], ...(google ? [['🔑', 'teachers.badges.google']] : []), ['🎒', 'teachers.badges.ages']];
   const classItems = ['li1', 'li2', ...(google ? ['li3'] : []), 'li4', 'li5'];
-  const faqPairs = Array.from({ length: TEACHER_FAQ }, (_, i) => [`teachers.faq.q${i + 1}`, `teachers.faq.a${i + 1}${i === 5 && google ? 'google' : ''}`]);
+  // With Sign in with Google on, a student's school Google email is kept: answers that say otherwise have a Google version.
+  const faqPairs = Array.from({ length: TEACHER_FAQ }, (_, i) => [`teachers.faq.q${i + 1}`, `teachers.faq.a${i + 1}${(i === 3 || i === 5) && google ? 'google' : ''}`]);
   const faq = faqBlock(req, faqPairs, 'teachers.faq.h', { href: '/privacy', count: langCount, host: siteHost(req) });
   const plans = familiesOn(req);
   const body = html`<div class="lp">
@@ -95,7 +96,7 @@ router.get('/teachers', (req, res) => {
     </section>
     <section class="panel" id="safe" aria-labelledby="safe-h">
       ${el(t, 'h2', 'teachers.safe.h', {}, ' id="safe-h"')}
-      <ul class="lp-list">${['li1', 'li2', 'li3', 'li4'].map(k => el(t, 'li', `teachers.safe.${k}`))}</ul>
+      <ul class="lp-list">${['li1', google ? 'li2google' : 'li2', 'li3', 'li4'].map(k => el(t, 'li', `teachers.safe.${k}`))}</ul>
       <p>${tHtml(t, 'teachers.safe.links', { safety: lp(req, '/safety'), privacy: '/privacy' })}</p>
     </section>
     <section class="panel" id="uses" aria-labelledby="uses-h">
@@ -150,12 +151,12 @@ router.get('/learn/:hub', (req, res) => {
   const t = req.t; const k = `learn.hubs.${hub.key}`;
   const list = hub.games.map(launchGame).filter(Boolean);
   const path = `/learn/${hub.slug}`;
+  const band = gradeBand(list.map(g => g.slug));
   const gameItem = g => html`<article class="panel lp-hubgame" aria-labelledby="g-${g.slug}">
       <a class="lp-hubgame-art" href="${lp(req, `/g/${g.slug}`)}" tabindex="-1" aria-hidden="true">${coverArt(g)}</a>
       <div class="lp-hubgame-text">
         <h2 id="g-${g.slug}"><a href="${lp(req, `/g/${g.slug}`)}">${g.title}</a></h2>
-        <p class="ugc">${g.description}</p>
-        <p class="lp-practise"><b>${t('learn.practise')}</b> ${el(t, 'span', `learn.games.${LEARNING[g.slug].key}`)}</p>
+        ${t.own(`learn.games.${LEARNING[g.slug].key}`) ? html`<p class="lp-practise"><b>${t('learn.practise')}</b> ${t(`learn.games.${LEARNING[g.slug].key}`)}</p>` : html`<p class="ugc">${g.description}</p>`}
         <div class="row"><a class="btn btn-primary" href="/play/${g.slug}" rel="nofollow">▶ ${t('learn.play')}</a><a class="btn" href="${lp(req, `/g/${g.slug}`)}">${t('learn.about')}</a></div>
       </div></article>`;
   const faq = faqBlock(req, Array.from({ length: HUB_FAQ[hub.key] }, (_, i) => [`${k}.faq.q${i + 1}`, `${k}.faq.a${i + 1}`]), 'learn.faqHeading');
@@ -166,6 +167,7 @@ router.get('/learn/:hub', (req, res) => {
     <section class="lp-hero lp-hero-sm" aria-labelledby="lp-h1">
       ${raw(`<h1 id="lp-h1"${fb(t, `${k}.h1`)}><span aria-hidden="true">${hub.emoji}</span> ${tHtml(t, `${k}.h1`)}</h1>`)}
       ${el(t, 'p', `${k}.lead`, {}, ' class="lead"')}
+      ${band ? html`<p class="lp-grades"><span aria-hidden="true">🎒</span> ${el(t, 'span', 'learn.grades', band)}</p>` : ''}
     </section>
     ${hub.extra === 'builder' ? builder(req, t) : html`<section class="lp-sec" aria-label="${t('learn.gamesHeading')}">${list.length ? list.map(gameItem) : html`<p class="notice">${t('learn.noGames')}</p>`}</section>`}
     ${hub.extra === 'tracks' ? tracks(t) : ''}

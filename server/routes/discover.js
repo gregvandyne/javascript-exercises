@@ -1,6 +1,6 @@
 // Home rails, search (games + builders), live counts.
 import { Router } from 'express';
-import { html } from '../views/html.js';
+import { html, raw } from '../views/html.js';
 import { page } from '../views/layout.js';
 import { rail, cardGrid, emptyState, avatar, coverArt, categoryLabel } from '../views/components.js';
 import * as games from '../services/games.js';
@@ -8,6 +8,7 @@ import * as presence from '../services/presence.js';
 import { rateLimit } from '../services/ratelimit.js';
 import { requireUser, isGrownup, OFFICIAL } from '../auth.js';
 import * as seo from '../seo.js';
+import { HUBS } from '../learn.js';
 
 export const router = Router();
 
@@ -34,6 +35,8 @@ router.get('/favorites', requireUser, (req, res) => {
 
 router.get('/', (req, res) => {
   const t = req.t;
+  /** Links stay in the language address the page was opened at (/es -> /es/teachers). */
+  const lp = p => (req.pathLocale ? seo.localeUrl(p, req.pathLocale) : p);
   const u = req.user;
   const featured = games.listVisible(u, { featured: true, order: 'plays', limit: 24 });   // every launch game fits; the rail scrolls
   const hero = featured[0];
@@ -52,9 +55,12 @@ router.get('/', (req, res) => {
   ];
   // The page's heading says what the site is. Signed out (new visitors, teachers, search engines) it is shown with a
   // short introduction; signed in, players know where they are, so it is only there for screen readers.
-  const intro = u ? html`<h1 class="sr-only">${t('home.intro.heading')}</h1>`
-    : html`<section class="home-intro" aria-labelledby="home-h1"><h1 id="home-h1">${t('home.intro.heading')}</h1><p>${t('home.intro.text')}</p>
-      <a class="btn" href="/teachers"><span aria-hidden="true">🍎</span> ${t('home.intro.teachers')}</a></section>`;
+  // Text still in English on this language's page is marked so (screen readers, right-to-left pages).
+  const fb = key => (t.own(key) ? '' : raw(' lang="en" dir="ltr"'));
+  const intro = u ? html`<h1 class="sr-only"${fb('home.intro.heading')}>${t('home.intro.heading')}</h1>`
+    : html`<section class="home-intro" aria-labelledby="home-h1"><h1 id="home-h1"${fb('home.intro.heading')}>${t('home.intro.heading')}</h1><p${fb('home.intro.text')}>${t('home.intro.text')}</p>
+      <a class="btn" href="${lp('/teachers')}"><span aria-hidden="true">🍎</span> <span${fb('home.intro.teachers')}>${t('home.intro.teachers')}</span></a>
+      <ul class="chips home-subjects" aria-label="${t('teachers.subjects.h')}">${HUBS.map(h => html`<li><a class="chip" href="${lp(`/learn/${h.slug}`)}"><span aria-hidden="true">${h.emoji}</span><span${fb(`learn.hubs.${h.key}.name`)}>${t(`learn.hubs.${h.key}.name`)}</span></a></li>`)}</ul></section>`;
   const body = html`${intro}
   ${hero ? html`<section class="hero cover-${hero.cover}" aria-label="${t('home.hero.label')}">
     <div>
@@ -69,7 +75,7 @@ router.get('/', (req, res) => {
     <a class="heroart" href="/g/${hero.slug}" aria-label="${t('home.hero.about', { title: hero.title })}">${coverArt(hero, '', { eager: true })}</a>
   </section>` : ''}
   <div class="chips scroll" role="list" aria-label="${t('home.categories')}" style="margin-bottom:18px">
-    ${games.CATEGORIES.map(([k, e]) => html`<a class="chip" role="listitem" href="/search?cat=${k}"><span aria-hidden="true">${e}</span>${categoryLabel(k, t)}</a>`)}
+    ${games.CATEGORIES.map(([k, e]) => html`<a class="chip" role="listitem" href="/search?cat=${k}" rel="nofollow"><span aria-hidden="true">${e}</span>${categoryLabel(k, t)}</a>`)}
   </div>
   ${rails.some(r => r) ? rails : emptyState({ emoji: '🎮', title: t('home.empty.title'), text: t('home.empty.text'), action: isGrownup(u) ? null : { href: '/build', label: t('home.empty.action') } })}`;
   page(req, res, { title: '', active: 'home', body, description: t.own('seo.home.description') ? t('seo.home.description') : t('layout.description'), seo: {

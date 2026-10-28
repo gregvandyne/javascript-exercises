@@ -1038,7 +1038,19 @@ switched to Basic keeps every link, but only the **first linked** child gets the
   schools, families, sign-in, search, play, frames, APIs, player and game pictures. Child-made games are never indexed,
   even when published and reviewed.
 - **Children's names never reach a signed-out page:** game cards credit only the official account, the leaderboard shows
-  scores without names, and search shows no builders except the official account (tests/unit/seo.test.js).
+  scores without names (the page and `/api/games/:id/leaderboard`), and search shows no builders except the official
+  account (tests/unit/seo.test.js).
+- **Children's game titles on indexed pages:** an official game's "More like this", signed out, lists launch games
+  only (a title is free text and could hold a first name). The home page rails still show reviewed public games made
+  by children, title and cover only, never the builder's name: that is the community the site is for, and every such
+  title passed the word and personal-information filters and a review before going public.
+- **The page's language is its address's** (`req.pathLocale`): robots, canonical, og:url and og:locale never follow
+  the visitor's cookie or Accept-Language, so a plain address is always the indexable English (x-default) page. Search
+  robots (`isBot`) also get the page's text in that language whatever Accept-Language they send; people still get
+  their browser's language.
+- **Game structured data:** `VideoGame` (plus `LearningResource`) with `gamePlatform`. `applicationCategory` and
+  `operatingSystem` are added only with an `aggregateRating` (5+ ratings): without a rating or review, Google reports
+  them as an invalid Software App item.
 - **Language addresses:** public pages also answer at `/<code>/…` (`/es/teachers`, `/zh-hant/g/sum-racer`) in that
   language, without writing the cookie. hreflang and the sitemap list a language only where the page is written in it
   (its heading key in that locale file, or a game's own `l10n`); other language addresses point their canonical to

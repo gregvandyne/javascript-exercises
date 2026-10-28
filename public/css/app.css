@@ -628,6 +628,11 @@ ol.steps li{margin-bottom:var(--s2)}
 .home-intro{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3) var(--s5);margin:0 0 var(--s5)}
 .home-intro h1{margin:0;flex:1 1 100%}
 .home-intro p{margin:0;flex:1 1 320px;max-width:62ch;color:var(--text-2);font-size:1.05rem}
+.home-intro .home-subjects{list-style:none;padding:0;margin:0;flex:1 1 100%;min-width:0}
+@media (max-width:600px){.home-intro .home-subjects{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding-bottom:4px}.home-intro .home-subjects li{flex:none}}
+/* English text not yet translated on a right-to-left page lines up with its own start edge. */
+.lp [dir="ltr"],.home-intro [dir="ltr"],.lp-practise[dir="ltr"]{text-align:left}
+[dir="rtl"] .lp :is(h1,h2,h3,p)[dir="ltr"]{margin-right:auto}
 .lp{display:flex;flex-direction:column;gap:var(--s6)}
 .lp>.panel+.panel{margin-top:0}
 .lp-hero{padding:var(--s6) var(--s5);border-radius:var(--r-lg);background:var(--accent-soft);box-shadow:var(--shadow)}
@@ -681,6 +686,7 @@ ol.steps li{margin-bottom:var(--s2)}
 .lp-hubgame .row{margin-top:var(--s4)}
 @media (max-width:560px){.lp-hubgame{grid-template-columns:96px minmax(0,1fr);gap:var(--s4)}.lp-hubgame .row .btn{flex:1}}
 .lp-practise{color:var(--text-2)}
+.lp-grades{margin:var(--s3) 0 0;font-weight:800}
 .lp-steps{margin:0 0 var(--s4);padding-inline-start:1.4em}
 .lp-steps li+li{margin-top:var(--s2)}
 .lp-more{list-style:none;padding:0;margin:0}

@@ -20,6 +20,16 @@ export const LEARNING = {
   'swish-flick': { key: 'swishFlick', teaches: ['Aim and force', 'Hand-eye coordination'], level: 'Grades 2-8', fun: true },
   'munch-maze': { key: 'munchMaze', teaches: ['Route planning'], level: 'Grades 2-8', fun: true },
 };
+/** The grade band of some launch games, for the visible "Grades 1–5" line: { from, to } ('K' or a number), or null. */
+export function gradeBand(slugs) {
+  const bands = slugs.map(s => /^Grades (K|\d+)-(\d+)$/.exec((LEARNING[s] || {}).level || '')).filter(Boolean);
+  if (!bands.length) return null;
+  const n = v => (v === 'K' ? 0 : +v);
+  const from = Math.min(...bands.map(b => n(b[1]))), to = Math.max(...bands.map(b => n(b[2])));
+  return { from: from === 0 ? 'K' : String(from), to: String(to) };
+}
+/** The subject page a launch game belongs to (its first one; brain breaks are a mix, never a game's home). */
+export const hubOfGame = slug => HUBS.find(h => h.games.includes(slug) && h.slug !== 'brain-break-games') || null;
 /** Games that count as learning resources in structured data (the rest are only VideoGame). */
 export const isLearningGame = slug => !!LEARNING[slug] && !LEARNING[slug].fun;
 

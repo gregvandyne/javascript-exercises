@@ -8,7 +8,7 @@ import path from 'node:path';
 import { findTouching } from './touching.js';
 
 const SHOTS = process.env.SEO_SHOTS || 'test-results/seo-shots';
-const PAGES = ['/teachers', '/learn/math-games', '/learn/word-games', '/learn/make-a-game', '/'];
+const PAGES = ['/teachers', '/learn/math-games', '/learn/word-games', '/learn/make-a-game', '/', '/g/sum-racer'];
 const VIEWS = [
   { width: 360, height: 780, scheme: 'light' }, { width: 360, height: 780, scheme: 'dark' },
   { width: 1280, height: 860, scheme: 'light' }, { width: 1280, height: 860, scheme: 'dark' },
@@ -50,7 +50,7 @@ test('structured data and language addresses work in the browser', async ({ page
   expect(errors).toEqual([]);
   // The hero's call to action jumps to the "start" section.
   await page.goto('/teachers');
-  await page.getByRole('link', { name: 'Start free as a teacher' }).first().click();
+  await page.getByRole('link', { name: 'Get a free school account' }).first().click();
   await expect(page.locator('#start')).toBeInViewport();
   // /fr/g/sum-racer is French, without changing the visitor's saved language.
   await page.goto('/fr/g/sum-racer');
