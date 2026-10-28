@@ -3057,6 +3057,36 @@
     "subjects": {
       "h": "Games by subject"
     },
+    "how": {
+      "h": "How it works in your classroom",
+      "lead": "Real screens from a demo school with made-up names, from your class list to the gradebook.",
+      "s1": {
+        "h": "Your classes in one place",
+        "p": "Once your school is set up, your school admin adds teachers, and each teacher makes their classes on My classes.",
+        "alt": "My classes for a teacher at Sunny Hill Demo School: three class cards, Coding Club, Ms. Rivera’s Class (5 students, 1 join request, 2 answers to review) and Reading Rockets, and a Lesson library button."
+      },
+      "s2": {
+        "h": "Students join with a code or login cards",
+        "p": "Students with their own account join with the class code, and you approve them. No email needed: you can make school accounts and print login cards.",
+        "pgoogle": "Students with their own account join with the class code, and you approve them. No email needed: you can make school accounts and print login cards. Or they sign in with their school Google account.",
+        "alt": "A class’s Students tab: one student, @StarGecko, asks to join with the class code, with a box for their real name and Approve and Decline buttons. Below it, the class list of 5 students and a button for new login cards."
+      },
+      "s3": {
+        "h": "Plan a lesson in steps",
+        "p": "Lessons mix short reading, a learning game, a build-a-game task and written questions. Assign one to a class with a due date.",
+        "alt": "The Steps list in the lesson editor: step 1, “Warm-up: slices of pizza”, and step 2, “Keep the bottom, add the top”, each with its text, its minutes and an Edit step button."
+      },
+      "s4": {
+        "h": "Students play, build and answer",
+        "p": "Each student works through the lesson at their own pace on any device.",
+        "alt": "A student’s view of a lesson: the game step, Quick-math warm-up, is marked Done with a best score of 47 and a Play Sum Racer button. Next come a build-a-game step with a Start building button, then a written question, the Exit ticket."
+      },
+      "s5": {
+        "h": "See progress and the gradebook",
+        "p": "The gradebook shows each student’s progress, game scores and written answers. Leave feedback, or download it as a CSV.",
+        "alt": "The class Progress tab: a gradebook table with how many steps each student has done in each lesson, a Download (CSV) button and a link to the written answers waiting for review."
+      }
+    },
     "build": {
       "h": "Build to learn",
       "p1": "Students describe a game in their own words, and the Builder makes it. While it works, it shows its steps behind the scenes, with short learning tips.",
@@ -3460,6 +3490,40 @@
     },
     "subjects": {
       "h": "Pick by subject"
+    },
+    "how": {
+      "h": "How Oomba Academy works",
+      "lead": "Here is what your child sees, step by step. These are real screens from the site, filled in with made-up names.",
+      "s1": {
+        "h": "Start free with a made-up name",
+        "p": "Your child picks a made-up name and a password. We never ask kids for an email address, age or home address.",
+        "alt": "The Oomba Academy sign-up page, “Make a free account”, with the made-up name PixelPanda typed in and a hidden password. It asks only for a fun name and a password."
+      },
+      "s2": {
+        "h": "Play learning games",
+        "p": "Math, reading, logic and music games run right in the browser on phones, tablets, Chromebooks and computers. Kids can try one without signing up.",
+        "alt": "Sum Racer, a math racing game, in the middle of a race: cartoon cars on a road, an addition question and four big answer buttons."
+      },
+      "s3": {
+        "h": "Describe it, play it, change it",
+        "p": "Your child types an idea in their own words. The Builder may ask a question with tap-to-answer ideas, then builds a first version they can play straight away. They decide what to change (“make it harder”) and get a new version; each change is saved, so they can go back.",
+        "alt": "The Oomba Academy Builder chat: the child has asked “Make it harder”, and the Builder answers that version 2 of Star Catch is ready, with a short list of things to try."
+      },
+      "s4": {
+        "h": "Private until they choose to share",
+        "p": "New games are private. Your child can share with friends, and a game for everyone is checked by Claude first, with our team looking at any it’s unsure about.",
+        "alt": "The “Publish your game” window with three choices: Only me, Friends, and Everyone, which says everyone can find and play it after a quick safety check."
+      },
+      "s5": {
+        "h": "Friends only with a code",
+        "p": "Friends are added by swapping a 6-character friend code, never by searching names, and chat is only between friends.",
+        "alt": "The Friends page: Pixel Panda’s 6-character friend code with a Copy button, a box to type a friend’s code, and one friend, Rocket Otter."
+      },
+      "s6": {
+        "h": "Link your grown-up account (optional)",
+        "p": "Your child gets a one-time code on their Me page and gives it to you face to face. You type it on your family page, and they say yes. Your family page then lists them and their extra Builder messages up to yesterday.",
+        "alt": "The grown-up’s family page: under Children, Pixel Panda is linked, with their extra Builder messages yesterday and this month, an Unlink button and a Link a child button."
+      }
     },
     "ages": {
       "h": "Games for every age",

@@ -160,7 +160,7 @@ export function seedDemoTeacher(admin, say = () => {}) {
   return { school, teacher, student };
 }
 
-function seedDemoLessons(teacher, school, cls) {
+export function seedDemoLessons(teacher, school, cls) {
   const game = slug => { const g = getGameBySlug(slug); return g && g.status === 'published' ? g.id : null; };
   const make = (folderId, l, steps) => {
     const r = lessons.createLesson(teacher, school.id, { folderId, ...l }); if (!r.ok) return null;
@@ -206,7 +206,7 @@ function seedDemoLessons(teacher, school, cls) {
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) { seed(); console.log('Seed done.'); }
 
 /** Written questions in the sample lessons (added once; demos made before questions existed get them too). */
-function seedDemoQuestions(teacher, school) {
+export function seedDemoQuestions(teacher, school) {
   const add = (title, step) => {
     const l = lessons.allLessonsOf(teacher.id, school.id).find(x => x.title === title);
     if (!l || lessons.steps(l.id).some(s => s.kind === 'question')) return;
@@ -219,7 +219,7 @@ function seedDemoQuestions(teacher, school) {
 }
 
 /** Sample progress for the demo classmates (once), so the gradebook has something to show. DemoStudent starts fresh. */
-function seedDemoProgress(teacher, cls) {
+export function seedDemoProgress(teacher, cls) {
   const plan = lessons.classPlan(cls.id).flatMap(g => g.lessons);
   if (!plan.length) return;
   const kids = schools.roster(cls.id).filter(p => p.role === 'student' && p.username !== 'DemoStudent');

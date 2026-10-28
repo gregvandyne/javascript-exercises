@@ -1,0 +1,111 @@
+/* "How it works" on /parents and /teachers (server/views/how.js, public/js/how.js): the layered hero picture, the
+   numbered steps with real screenshots, and the scroll reveal. Only theme tokens, so both themes follow on their own;
+   logical properties, so right-to-left pages mirror. Everything is visible without JavaScript: how.js only adds
+   classes (.how-par-js, .how-js, .how-reveal, .is-in), and does nothing when the reader asked for reduced motion.
+   Motion changes only transform and opacity. */
+
+/* ---------- Hero: brand shapes, a wide screen and a phone, at three depths ---------- */
+.lp-hero-how{position:relative;overflow:hidden;overflow:clip}
+.how-art{position:relative;height:290px;max-width:340px;margin:var(--s5) auto 0;pointer-events:none;--amp:-44px;--mx:0;--my:0}
+[dir="rtl"] .how-art{--flip:-1}
+.how-l{position:absolute;inset:0}
+.how-l0{--d:.15}
+.how-l1{--d:.4}
+.how-l2{--d:.7}
+.how-shape,.how-card{position:absolute;display:block;--r:0deg;
+  transform:translate3d(calc(var(--mx) * var(--d) * 18px),calc(var(--my) * var(--d) * 12px),0) rotate(calc(var(--flip,1) * var(--r)));
+  transition:transform .5s cubic-bezier(.2,.7,.2,1)}
+.how-blob{width:190px;height:190px;border-radius:50%;background:var(--brand-mint);opacity:.5;top:40px;inset-inline-start:calc(50% - 160px)}
+.how-dot{width:54px;height:54px;border-radius:50%;border:4px solid var(--accent-line);top:16px;inset-inline-end:calc(50% - 150px)}
+.how-star{width:58px;height:58px;background:var(--brand-spark);bottom:26px;inset-inline-end:calc(50% - 140px);--r:12deg;
+  clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)}
+.how-card{background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow-lg);overflow:hidden}
+.how-card img{display:block;width:100%;height:auto}
+.how-laptop{display:none}
+.how-phone{width:124px;top:6px;inset-inline-start:calc(50% - 62px);padding:5px;border-radius:24px;background:var(--brand-ink);border-color:var(--edge);--r:5deg}
+.how-phone img{border-radius:19px}
+.how-bar{display:flex;gap:5px;align-items:center;height:22px;padding-inline:10px;background:var(--card-2);border-bottom:1px solid var(--line)}
+.how-bar i{width:8px;height:8px;border-radius:50%;background:var(--edge)}
+.how-bar i:first-child{background:var(--danger)}
+.how-bar i:nth-child(2){background:var(--spark)}
+.how-bar i:last-child{background:var(--accent)}
+@media (min-width:960px){
+  .lp-hero-how{padding-inline-end:calc(var(--s5) + 440px);min-height:440px}
+  .how-art{position:absolute;top:50%;inset-inline-end:var(--s5);width:420px;height:380px;max-width:none;margin:0;translate:0 -50%;--amp:-110px}
+  .how-blob{width:230px;height:230px;top:0;inset-inline-start:24px}
+  .how-dot{top:6px;inset-inline-end:36px}
+  .how-star{bottom:18px;inset-inline-end:auto;inset-inline-start:14px}
+  .how-laptop{display:block;width:370px;top:44px;inset-inline-start:0;border-radius:14px;--r:-4deg}
+  .how-phone{width:150px;top:auto;bottom:4px;inset-inline-start:auto;inset-inline-end:0;--r:6deg}
+}
+@media (min-width:960px) and (max-width:1159px){
+  .lp-hero-how{padding-inline-end:calc(var(--s5) + 350px)}
+  .how-art{scale:.8;transform-origin:100% 50%}
+  [dir="rtl"] .how-art{transform-origin:0 50%}
+}
+@keyframes how-par{to{transform:translate3d(0,calc(var(--d) * var(--amp)),0)}}
+@media (prefers-reduced-motion:no-preference){
+  /* Browsers with scroll-driven animations move the layers on the compositor; others get --how-p from how.js. */
+  @supports (animation-timeline:scroll()){
+    .how-l{animation:how-par linear both;animation-timeline:scroll(root);animation-range:0 80vh;will-change:transform}
+  }
+  .how-art.how-par-js .how-l{transform:translate3d(0,calc(var(--how-p,0) * var(--d) * var(--amp)),0);will-change:transform}
+}
+
+/* ---------- Steps: cards with a phone screenshot; on wide screens a laptop screenshot ---------- */
+.how-lead{margin:0 0 var(--s4);color:var(--text-2);max-width:70ch}
+.how-steps{list-style:none;margin:0;padding:0;display:grid;gap:var(--s4)}
+.how-box{display:grid;grid-template-columns:auto minmax(0,1fr);gap:var(--s3) var(--s4);align-items:start;padding:var(--s5);border-radius:var(--r);background:var(--card);box-shadow:var(--shadow);border:2px solid transparent}
+.how-num{display:grid;place-items:center;width:44px;height:44px;border-radius:50%;background:var(--accent);color:var(--on-accent);font-weight:800;font-size:1.2rem;line-height:1}
+.how-h{margin:8px 0 var(--s2);font-size:1.2rem}
+.how-text p{margin:0;color:var(--text-2);max-width:62ch}
+.how-fig{grid-column:1/-1;justify-self:center;width:min(100%,260px);margin:var(--s2) 0 0;padding:6px;border-radius:30px;background:var(--brand-ink);border:1px solid var(--edge);box-shadow:var(--shadow-lg)}
+.how-fig picture,.how-fig img{display:block;width:100%;height:auto}
+.how-fig img{border-radius:24px}
+@media (max-width:480px){.how-box{padding:var(--s4)}.how-num{width:38px;height:38px;font-size:1.05rem}}
+/* Tablets: the words at the start, the phone picture at the end, so each card is short and fills the width. */
+@media (min-width:640px) and (max-width:959px){
+  .how-box{grid-template-columns:auto minmax(0,1fr) 220px;align-items:center}
+  .how-fig{grid-column:3;grid-row:1;width:100%;margin:0}
+}
+@media (min-width:960px){
+  .how-box{grid-template-columns:auto minmax(0,4fr) minmax(0,6fr);gap:var(--s5)}
+  .how-fig{grid-column:3;grid-row:1;width:100%;margin:0;padding:0;border-radius:14px;background:var(--card-2);border-color:var(--line);overflow:hidden}
+  .how-fig::before{content:"";display:block;height:22px;border-bottom:1px solid var(--line);
+    background:radial-gradient(circle,var(--danger) 0 4px,transparent 4.5px) 8px 50%/14px 14px no-repeat,radial-gradient(circle,var(--spark) 0 4px,transparent 4.5px) 22px 50%/14px 14px no-repeat,radial-gradient(circle,var(--accent) 0 4px,transparent 4.5px) 36px 50%/14px 14px no-repeat}
+  .how-fig img{border-radius:0}
+}
+
+/* Wide screens with how.js: the steps scroll by on one side while a sticky screen on the other shows the current one. */
+.how-stage{display:none}
+@media (min-width:960px){
+  .how-js .how-body{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:var(--s6);align-items:start}
+  .how-js .how-steps{gap:0}
+  .how-js .how-step{display:flex;align-items:center;min-height:62vh}
+  .how-js .how-box{grid-template-columns:auto minmax(0,1fr)}
+  .how-js .how-fig{display:none}
+  .how-js .how-step[aria-current] .how-box{border-color:var(--accent-line);box-shadow:var(--shadow-lg)}
+  .how-js .how-step:not([aria-current]) .how-num{background:var(--card-2);color:var(--text)}
+  .how-js .how-step:first-child{align-items:flex-start}
+  .how-js .how-stage{display:block;position:sticky;top:calc(var(--top) + 9vh)}
+}
+.how-screen{border-radius:16px;background:var(--card-2);border:1px solid var(--line);box-shadow:var(--shadow-lg);overflow:hidden}
+.how-screen .how-bar{height:26px}
+.how-shots{position:relative;aspect-ratio:16/10}
+.how-shot{position:absolute;inset:0;opacity:0;transform:scale(.98);transition:opacity .35s ease,transform .35s ease}
+.how-shot.on{opacity:1;transform:none}
+.how-shot picture,.how-shot img{display:block;width:100%;height:100%}
+.how-shot img{object-fit:cover;object-position:top}
+.how-prog{display:flex;align-items:center;justify-content:center;gap:var(--s3);margin-top:var(--s4)}
+.how-count{unicode-bidi:isolate;direction:ltr;font-weight:800;color:var(--text-2);font-variant-numeric:tabular-nums;min-width:4ch;text-align:center}
+.how-dots{display:flex;gap:6px}
+.how-dots i{display:block;width:28px;height:6px;border-radius:3px;background:var(--line)}
+.how-dots i.done{background:var(--accent)}
+.how-dots i.on{background:var(--accent-line)}
+
+/* ---------- Scroll reveal for the page's sections (once) ---------- */
+@media (prefers-reduced-motion:no-preference){
+  .how-reveal .how-rv{transition:opacity .55s ease,transform .55s cubic-bezier(.2,.7,.2,1)}
+  .how-reveal .how-rv:not(.is-in){opacity:0;transform:translate3d(0,20px,0)}
+}
+@media print{.how-rv{opacity:1!important;transform:none!important}.how-art,.how-stage{display:none!important}}

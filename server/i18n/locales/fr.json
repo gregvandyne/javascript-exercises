@@ -3055,6 +3055,36 @@
     "subjects": {
       "h": "Jeux par matière"
     },
+    "how": {
+      "h": "Comment ça marche dans votre classe",
+      "lead": "De vrais écrans d’une école de démonstration aux noms inventés, de votre liste de classe au carnet de notes.",
+      "s1": {
+        "h": "Toutes vos classes au même endroit",
+        "p": "Une fois votre école inscrite, l’admin de l’école ajoute les enseignants, et chaque enseignant crée ses classes sur Mes classes.",
+        "alt": "Mes classes pour un enseignant de Sunny Hill Demo School : trois cartes de classe, Coding Club, Ms. Rivera’s Class (5 élèves, 1 demande pour rejoindre la classe, 2 réponses à relire) et Reading Rockets, et un bouton « Lesson library »."
+      },
+      "s2": {
+        "h": "Les élèves rejoignent la classe avec un code ou une carte de connexion",
+        "p": "Les élèves qui ont leur propre compte rejoignent la classe avec le code de classe, et vous les validez. Pas besoin d’e-mail : vous pouvez créer des comptes école et imprimer des cartes de connexion.",
+        "pgoogle": "Les élèves qui ont leur propre compte rejoignent la classe avec le code de classe, et vous les validez. Pas besoin d’e-mail : vous pouvez créer des comptes école et imprimer des cartes de connexion. Ou bien ils se connectent avec le compte Google de leur école.",
+        "alt": "L’onglet Élèves d’une classe : un élève, @StarGecko, demande à rejoindre la classe avec le code de classe, avec un champ pour son vrai nom et les boutons « Approve » et « Decline ». En dessous, la liste de classe de 5 élèves et un bouton pour de nouvelles cartes de connexion."
+      },
+      "s3": {
+        "h": "Préparer une leçon par étapes",
+        "p": "Les leçons mélangent courtes lectures, jeu éducatif, création de jeu et questions écrites. Attribuez-en une à une classe avec une date limite.",
+        "alt": "La liste des étapes dans l’éditeur de leçon : l’étape 1, « Warm-up: slices of pizza », et l’étape 2, « Keep the bottom, add the top », chacune avec son texte, sa durée en minutes et un bouton « Edit step »."
+      },
+      "s4": {
+        "h": "Les élèves jouent, créent et répondent",
+        "p": "Chaque élève avance dans la leçon à son rythme, sur n’importe quel appareil.",
+        "alt": "Une leçon vue par un élève : l’étape de jeu, « Quick-math warm-up », est marquée « Done » avec un meilleur score de 47 et un bouton « Play Sum Racer ». Viennent ensuite une étape de création de jeu avec un bouton « Start building », puis une question écrite, « Exit ticket »."
+      },
+      "s5": {
+        "h": "Suivre la progression et le carnet de notes",
+        "p": "Le carnet de notes montre la progression de chaque élève, ses scores aux jeux et ses réponses écrites. Laissez des commentaires, ou téléchargez-le en CSV.",
+        "alt": "L’onglet Progression de la classe : un tableau de notes indiquant combien d’étapes chaque élève a faites dans chaque leçon, un bouton « Download (CSV) » et un lien vers les réponses écrites à relire."
+      }
+    },
     "build": {
       "h": "Créer pour apprendre",
       "p1": "Les élèves décrivent un jeu avec leurs propres mots, et le Constructeur le crée. Pendant qu’il travaille, il montre ses étapes en coulisses, avec de courtes astuces pour apprendre.",
@@ -3458,6 +3488,40 @@
     },
     "subjects": {
       "h": "Choisir par matière"
+    },
+    "how": {
+      "h": "Comment fonctionne Oomba Academy",
+      "lead": "Voici ce que voit votre enfant, étape par étape. Ce sont de vrais écrans du site, remplis avec des noms inventés.",
+      "s1": {
+        "h": "Commencer gratuitement avec un nom inventé",
+        "p": "Votre enfant choisit un nom inventé et un mot de passe. Nous ne demandons jamais aux enfants leur adresse e-mail, leur âge ni leur adresse postale.",
+        "alt": "La page d’inscription d’Oomba Academy, « Make a free account », avec le nom inventé PixelPanda saisi et un mot de passe masqué. Elle demande seulement un nom amusant et un mot de passe."
+      },
+      "s2": {
+        "h": "Jouer à des jeux éducatifs",
+        "p": "Les jeux de maths, de lecture, de logique et de musique fonctionnent directement dans le navigateur, sur téléphone, tablette, Chromebook et ordinateur. Les enfants peuvent en essayer un sans s’inscrire.",
+        "alt": "Sum Racer, un jeu de course de calcul, en pleine course : des voitures de dessin animé sur une route, une addition et quatre grands boutons de réponse."
+      },
+      "s3": {
+        "h": "Le décrire, y jouer, le modifier",
+        "p": "Votre enfant tape une idée avec ses propres mots. Le Constructeur peut poser une question avec des idées de réponse à toucher, puis crée une première version à laquelle votre enfant peut jouer tout de suite. C’est lui qui décide quoi changer (« rends-le plus difficile ») et il reçoit une nouvelle version ; chaque changement est enregistré, il peut donc revenir en arrière.",
+        "alt": "Le chat du Builder d’Oomba Academy : l’enfant a demandé « Make it harder », et le Builder répond que la version 2 de Star Catch est prête, avec une courte liste de choses à essayer."
+      },
+      "s4": {
+        "h": "Privé jusqu’à ce qu’il choisisse de le partager",
+        "p": "Les nouveaux jeux sont privés. Votre enfant peut les partager avec ses amis, et un jeu pour tout le monde est d’abord vérifié par Claude, et notre équipe examine ceux dont il n’est pas sûr.",
+        "alt": "La fenêtre « Publish your game » avec trois choix : « Only me », « Friends » et « Everyone », qui indique que tout le monde pourra trouver le jeu et y jouer après une rapide vérification de sécurité."
+      },
+      "s5": {
+        "h": "Des amis seulement avec un code",
+        "p": "On ajoute des amis en échangeant un code ami de 6 caractères, jamais en cherchant un nom, et le chat se fait uniquement entre amis.",
+        "alt": "La page Amis : le code ami de 6 caractères de Pixel Panda avec un bouton « Copy », un champ pour taper le code d’un ami, et un ami, Rocket Otter."
+      },
+      "s6": {
+        "h": "Relier votre compte adulte (facultatif)",
+        "p": "Votre enfant obtient un code à usage unique sur sa page Moi et vous le donne en personne. Vous le tapez sur votre page famille, et votre enfant dit oui. Votre page famille affiche alors votre enfant et ses messages supplémentaires pour le Constructeur jusqu’à hier.",
+        "alt": "La page famille de l’adulte : sous « Children », Pixel Panda est relié, avec ses messages supplémentaires pour le Builder hier et ce mois-ci, un bouton « Unlink » et un bouton « Link a child »."
+      }
     },
     "ages": {
       "h": "Des jeux pour chaque âge",

@@ -18,6 +18,7 @@ import { isGrownup } from '../auth.js';
 import { siteHost } from '../site.js';
 import * as games from '../services/games.js';
 import * as seo from '../seo.js';
+import { howArt, howSteps, howHead, HOW_SCRIPT } from '../views/how.js';
 import { HUBS, hubBySlug, LEARNING, TEACHER_GAMES, HUB_FAQ, TEACHER_FAQ, HOME_TIPS, AGES, gradeBand } from '../learn.js';
 
 export const router = Router();
@@ -65,7 +66,7 @@ router.get('/teachers', (req, res) => {
   const faq = faqBlock(req, faqPairs, 'teachers.faq.h', { href: '/privacy', count: langCount, host: siteHost(req) });
   const plans = familiesOn(req);
   const body = html`<div class="lp">
-  <section class="lp-hero" aria-labelledby="lp-h1">
+  <section class="lp-hero lp-hero-how" aria-labelledby="lp-h1">
     ${el(t, 'p', 'teachers.kicker', {}, ' class="lp-kicker"')}
     ${el(t, 'h1', 'teachers.h1', {}, ' id="lp-h1"')}
     ${el(t, 'p', 'teachers.lead', {}, ' class="lead"')}
@@ -74,7 +75,9 @@ router.get('/teachers', (req, res) => {
       <a class="btn btn-primary btn-big" href="#start">${t('teachers.cta.start')}</a>
       ${list[0] ? html`<a class="btn btn-big" href="/play/${list[0].slug}" rel="nofollow">▶ ${t('teachers.cta.try')}</a>` : ''}
     </div>
+    ${howArt(req, 'teachers')}
   </section>
+  ${howSteps(req, 'teachers')}
 
   <section class="lp-sec" id="play" aria-labelledby="play-h">
     ${el(t, 'h2', 'teachers.play.h', {}, ' id="play-h"')}${el(t, 'p', 'teachers.play.p')}
@@ -123,6 +126,7 @@ router.get('/teachers', (req, res) => {
   const items = list.map((g, i) => ({ '@type': 'ListItem', position: i + 1, url: seo.abs(req, `/g/${g.slug}`), name: g.title }));
   page(req, res, {
     title: t('teachers.title'), description: t('teachers.description'), body, bodyClass: 'lp-page',
+    head: howHead(), scripts: [HOW_SCRIPT],
     seo: {
       index: true, path: '/teachers', langs: seo.langsWithKey('teachers.h1'), image: '/og/teachers.jpg', imageAlt: t('seo.teachers.imageAlt'),
       jsonld: [seo.graph([

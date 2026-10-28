@@ -3056,6 +3056,36 @@
     "subjects": {
       "h": "Lernspiele nach Fächern"
     },
+    "how": {
+      "h": "So funktioniert es in Ihrer Klasse",
+      "lead": "Echte Ansichten aus einer Demo-Schule mit ausgedachten Namen, von der Klassenliste bis zur Notenübersicht.",
+      "s1": {
+        "h": "Ihre Klassen an einem Ort",
+        "p": "Sobald Ihre Schule eingerichtet ist, fügt Ihr Schuladmin die Lehrkräfte hinzu, und jede Lehrkraft legt ihre Klassen unter „Meine Klassen“ an.",
+        "alt": "„Meine Klassen“ einer Lehrkraft der Sunny Hill Demo School: drei Klassenkarten, Coding Club, Ms. Rivera’s Class (5 Schüler, 1 Beitrittsanfrage, 2 Antworten zu prüfen) und Reading Rockets, dazu ein Knopf „Lektionsbibliothek“."
+      },
+      "s2": {
+        "h": "Schüler treten mit einem Code oder mit Anmeldekarten bei",
+        "p": "Schüler mit eigenem Konto treten mit dem Klassencode bei, und Sie nehmen sie an. Keine E-Mail nötig: Sie können Schulkonten anlegen und Anmeldekarten ausdrucken.",
+        "pgoogle": "Schüler mit eigenem Konto treten mit dem Klassencode bei, und Sie nehmen sie an. Keine E-Mail nötig: Sie können Schulkonten anlegen und Anmeldekarten ausdrucken. Oder die Schüler melden sich mit ihrem Google-Konto der Schule an.",
+        "alt": "Der Reiter „Schüler“ einer Klasse: Ein Schüler, @StarGecko, möchte mit dem Klassencode beitreten, mit einem Feld für seinen echten Namen und den Knöpfen „Annehmen“ und „Ablehnen“. Darunter die Klassenliste mit 5 Schülern und ein Knopf für neue Anmeldekarten."
+      },
+      "s3": {
+        "h": "Eine Lektion in Schritten planen",
+        "p": "Lektionen verbinden kurze Lesetexte, ein Lernspiel, eine Aufgabe zum Spielebauen und schriftliche Fragen. Weisen Sie eine Lektion mit Abgabedatum einer Klasse zu.",
+        "alt": "Die Liste „Schritte“ im Lektionseditor: Schritt 1, „Aufwärmen: Pizzastücke“, und Schritt 2, „Den Nenner behalten, den Zähler addieren“, jeweils mit Text, Minuten und einem Knopf „Schritt bearbeiten“."
+      },
+      "s4": {
+        "h": "Schüler spielen, bauen und antworten",
+        "p": "Jeder Schüler bearbeitet die Lektion in seinem eigenen Tempo, auf jedem Gerät.",
+        "alt": "Die Ansicht einer Lektion für Schüler: Der Spielschritt „Kopfrechnen zum Aufwärmen“ ist als „Fertig“ markiert, mit einer Bestpunktzahl von 47 und einem Knopf „Sum Racer spielen“. Danach folgen ein Bauschritt mit dem Knopf „Jetzt bauen“ und eine schriftliche Frage, das Exit-Ticket."
+      },
+      "s5": {
+        "h": "Fortschritt und Notenübersicht ansehen",
+        "p": "Die Notenübersicht zeigt Fortschritt, Spielpunkte und schriftliche Antworten jedes Schülers. Geben Sie Feedback oder laden Sie sie als CSV herunter.",
+        "alt": "Der Reiter „Fortschritt“ der Klasse: eine Notenübersicht, die zeigt, wie viele Schritte jeder Schüler in jeder Lektion erledigt hat, ein Knopf „Herunterladen (CSV)“ und ein Link zu den schriftlichen Antworten, die auf Prüfung warten."
+      }
+    },
     "build": {
       "h": "Lernen durch Bauen",
       "p1": "Die Schüler beschreiben ein Spiel mit eigenen Worten, und der Baumeister baut es. Dabei zeigt er, was er hinter den Kulissen tut, mit kurzen Lerntipps.",
@@ -3459,6 +3489,40 @@
     },
     "subjects": {
       "h": "Nach Fach auswählen"
+    },
+    "how": {
+      "h": "So funktioniert Oomba Academy",
+      "lead": "Das sieht Ihr Kind, Schritt für Schritt. Es sind echte Ansichten der Website, ausgefüllt mit ausgedachten Namen.",
+      "s1": {
+        "h": "Kostenlos starten mit einem ausgedachten Namen",
+        "p": "Ihr Kind wählt einen ausgedachten Namen und ein Passwort. Wir fragen Kinder nie nach einer E-Mail-Adresse, dem Alter oder der Wohnadresse.",
+        "alt": "Die Anmeldeseite von Oomba Academy, „Mach dir ein kostenloses Konto“, mit dem eingetippten ausgedachten Namen PixelPanda und einem verdeckten Passwort. Gefragt wird nur nach einem lustigen Namen und einem Passwort."
+      },
+      "s2": {
+        "h": "Lernspiele spielen",
+        "p": "Mathe-, Lese-, Logik- und Musikspiele laufen direkt im Browser, auf Handys, Tablets, Chromebooks und Computern. Kinder können eins ohne Anmeldung ausprobieren.",
+        "alt": "Sum Racer, ein Mathe-Rennspiel, mitten in einem Rennen: Comic-Autos auf einer Straße, eine Plusaufgabe und vier große Antwortknöpfe."
+      },
+      "s3": {
+        "h": "Beschreiben, spielen, ändern",
+        "p": "Ihr Kind tippt eine Idee mit eigenen Worten ein. Der Baumeister stellt vielleicht eine Frage mit Ideen zum Antippen und baut dann eine erste Version, die sofort spielbar ist. Ihr Kind entscheidet, was sich ändern soll („mach es schwerer“), und bekommt eine neue Version; jede Änderung wird gespeichert, sodass es zurückgehen kann.",
+        "alt": "Der Chat mit dem Baumeister von Oomba Academy: Das Kind hat „Mach es schwerer“ geschrieben, und der Baumeister antwortet, dass Version 2 von Star Catch fertig ist, mit einer kurzen Liste von Dingen zum Ausprobieren."
+      },
+      "s4": {
+        "h": "Privat, bis Ihr Kind es teilen möchte",
+        "p": "Neue Spiele sind privat. Ihr Kind kann sie mit Freunden teilen, und ein Spiel für alle prüft zuerst Claude; bei Spielen, bei denen Claude unsicher ist, schaut unser Team nach.",
+        "alt": "Das Fenster „Gib dein Spiel frei“ mit drei Möglichkeiten: Nur ich, Freunde und Alle; bei „Alle“ steht, dass jeder das Spiel nach einer kurzen Sicherheitsprüfung finden und spielen kann."
+      },
+      "s5": {
+        "h": "Freunde nur mit einem Code",
+        "p": "Freunde werden durch Austausch eines 6-stelligen Freundescodes hinzugefügt, nie über eine Namenssuche, und gechattet wird nur unter Freunden.",
+        "alt": "Die Seite „Freunde“: der 6-stellige Freundescode von Pixel Panda mit einem Knopf „Kopieren“, ein Feld zum Eintippen eines Freundescodes und ein Freund, Rocket Otter."
+      },
+      "s6": {
+        "h": "Ihr Erwachsenenkonto verbinden (freiwillig)",
+        "p": "Ihr Kind bekommt auf seiner Seite „Ich“ einen einmaligen Code und gibt ihn Ihnen persönlich. Sie tippen ihn auf Ihrer Familienseite ein, und Ihr Kind sagt Ja. Ihre Familienseite zeigt dann Ihr Kind und seine zusätzlichen Nachrichten an den Baumeister bis gestern.",
+        "alt": "Die Familienseite des Erwachsenen: Unter „Kinder“ ist Pixel Panda verbunden, mit den zusätzlichen Nachrichten an den Baumeister von gestern und diesem Monat, einem Knopf „Trennen“ und einem Knopf „Kind verbinden“."
+      }
     },
     "ages": {
       "h": "Spiele für jedes Alter",
