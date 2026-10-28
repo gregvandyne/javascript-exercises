@@ -3056,6 +3056,36 @@
     "subjects": {
       "h": "Spelletjes per vak"
     },
+    "how": {
+      "h": "Zo werkt het in je klas",
+      "lead": "Echte schermen van een demoschool met verzonnen namen, van je klassenlijst tot het cijferoverzicht.",
+      "s1": {
+        "h": "Al je klassen op één plek",
+        "p": "Zodra je school is ingesteld, voegt je schoolbeheerder leerkrachten toe, en elke leerkracht maakt zijn of haar klassen aan op Mijn klassen.",
+        "alt": "Mijn klassen van een leerkracht op Sunny Hill Demo School: drie klaskaarten, Coding Club, Ms. Rivera’s Class (5 leerlingen, 1 verzoek om mee te doen, 2 antwoorden om na te kijken) en Reading Rockets, en een knop Lessenbibliotheek."
+      },
+      "s2": {
+        "h": "Leerlingen doen mee met een code of inlogkaarten",
+        "p": "Leerlingen met een eigen account doen mee met de klascode, en jij keurt ze goed. Geen e-mail nodig: je kunt schoolaccounts maken en inlogkaarten printen.",
+        "pgoogle": "Leerlingen met een eigen account doen mee met de klascode, en jij keurt ze goed. Geen e-mail nodig: je kunt schoolaccounts maken en inlogkaarten printen. Of ze loggen in met hun Google-account van school.",
+        "alt": "Het tabblad Leerlingen van een klas: één leerling, @StarGecko, vraagt met de klascode om mee te doen, met een vak voor de echte naam en de knoppen Goedkeuren en Weigeren. Daaronder de klassenlijst met 5 leerlingen en een knop voor nieuwe inlogkaarten."
+      },
+      "s3": {
+        "h": "Plan een les in stappen",
+        "p": "Lessen combineren korte leesteksten, een leerspel, een opdracht om een game te bouwen en schriftelijke vragen. Wijs een les toe aan een klas met een inleverdatum.",
+        "alt": "De lijst Stappen in de lesbewerker: stap 1, “Warm-up: slices of pizza”, en stap 2, “Keep the bottom, add the top”, elk met de tekst, het aantal minuten en een knop Stap bewerken."
+      },
+      "s4": {
+        "h": "Leerlingen spelen, bouwen en antwoorden",
+        "p": "Elke leerling werkt de les in eigen tempo door, op elk apparaat.",
+        "alt": "Een les zoals een leerling die ziet: de spelstap, Quick-math warm-up, staat op Klaar met een beste score van 47 en een knop om Sum Racer te spelen. Daarna komen een bouwstap met een knop Begin met bouwen en een schriftelijke vraag, het Exitticket."
+      },
+      "s5": {
+        "h": "Bekijk de voortgang en het cijferoverzicht",
+        "p": "Het cijferoverzicht toont de voortgang, spelscores en schriftelijke antwoorden van elke leerling. Geef feedback, of download het als CSV-bestand.",
+        "alt": "Het tabblad Voortgang van de klas: een cijferoverzicht met hoeveel stappen elke leerling in elke les heeft gedaan, een knop Downloaden (CSV) en een link naar de schriftelijke antwoorden die nog nagekeken moeten worden."
+      }
+    },
     "build": {
       "h": "Bouwend leren",
       "p1": "Leerlingen beschrijven een game in hun eigen woorden en de Bouwer maakt hem. Terwijl hij werkt, laat hij zien welke stappen hij achter de schermen zet, met korte leertips.",
@@ -3459,6 +3489,40 @@
     },
     "subjects": {
       "h": "Kies per vak"
+    },
+    "how": {
+      "h": "Zo werkt Oomba Academy",
+      "lead": "Dit ziet je kind, stap voor stap. Het zijn echte schermen van de site, ingevuld met verzonnen namen.",
+      "s1": {
+        "h": "Gratis beginnen met een verzonnen naam",
+        "p": "Je kind kiest een verzonnen naam en een wachtwoord. We vragen kinderen nooit om een e-mailadres, leeftijd of adres.",
+        "alt": "De aanmeldpagina van Oomba Academy, “Maak een gratis account”, met de verzonnen naam PixelPanda ingetypt en een verborgen wachtwoord. Er wordt alleen gevraagd om een leuke naam en een wachtwoord."
+      },
+      "s2": {
+        "h": "Leerspelletjes spelen",
+        "p": "Spelletjes voor rekenen, lezen, logisch denken en muziek werken direct in de browser op telefoons, tablets, Chromebooks en computers. Kinderen kunnen er een proberen zonder account.",
+        "alt": "Sum Racer, een racespel met rekensommen, midden in een race: cartoonauto's op een weg, een plussom en vier grote antwoordknoppen."
+      },
+      "s3": {
+        "h": "Beschrijf het, speel het, verander het",
+        "p": "Je kind typt een idee in eigen woorden. De Bouwer stelt misschien een vraag met ideeën om op te tikken, en bouwt dan een eerste versie die je kind meteen kan spelen. Je kind bepaalt wat er anders moet (“maak het moeilijker”) en krijgt een nieuwe versie; elke aanpassing wordt bewaard, dus je kind kan altijd terug.",
+        "alt": "De chat met de Bouwer van Oomba Academy: het kind heeft gevraagd “Maak het moeilijker”, en de Bouwer antwoordt dat versie 2 van Star Catch klaar is, met een kort lijstje dingen om te proberen."
+      },
+      "s4": {
+        "h": "Privé, tot je kind zelf iets deelt",
+        "p": "Nieuwe games zijn privé. Je kind kan ze delen met vrienden, en een game voor iedereen wordt eerst gecontroleerd door Claude. Twijfelt Claude, dan kijkt ons team ernaar.",
+        "alt": "Het venster “Publiceer je game” met drie keuzes: Alleen ik, Vrienden en Iedereen. Bij Iedereen staat dat iedereen de game kan vinden en spelen na een korte veiligheidscontrole."
+      },
+      "s5": {
+        "h": "Vrienden alleen met een code",
+        "p": "Vrienden worden toegevoegd door een vriendcode van 6 tekens uit te wisselen, nooit door op namen te zoeken, en de chat is alleen tussen vrienden.",
+        "alt": "De pagina Vrienden: de vriendcode van 6 tekens van Pixel Panda met een knop Kopieer, een vak om de code van een vriend te typen, en één vriend, Rocket Otter."
+      },
+      "s6": {
+        "h": "Koppel je ouderaccount (optioneel)",
+        "p": "Je kind krijgt een eenmalige code op de pagina Ik en geeft die persoonlijk aan jou. Jij typt de code op je gezinspagina, en je kind zegt ja. Je gezinspagina toont daarna je kind en zijn of haar extra berichten aan de Bouwer tot en met gisteren.",
+        "alt": "De gezinspagina van de ouder: onder Kinderen is Pixel Panda gekoppeld, met de extra berichten aan de Bouwer van gisteren en van deze maand, een knop Ontkoppelen en een knop Kind koppelen."
+      }
     },
     "ages": {
       "h": "Spelletjes voor elke leeftijd",
