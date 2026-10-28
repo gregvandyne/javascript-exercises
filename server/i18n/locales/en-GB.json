@@ -209,7 +209,7 @@
   "learn": {
     "practise": "What it practises:",
     "games": {
-      "sumRacer": "Maths facts from adding to 10 up to times tables and division, as a kart race. Two students can race on one screen."
+      "sumRacer": "Maths facts from adding to 10 up to times tables and division, as a kart race. Two players can race on one screen."
     },
     "hubs": {
       "math": {
@@ -222,18 +222,59 @@
           "p": "Students can also pick exactly which times tables to practise."
         },
         "faq": {
-          "q1": "What maths does Sum Racer cover?"
-        }
+          "q1": "What maths does Sum Racer cover?",
+          "q4": "Can my child practise just one times table at home?",
+          "a4": "Yes. In Sum Racer they can pick exactly which times tables to practise."
+        },
+        "home": "A five-minute race after school keeps maths facts fresh. Pick the track your child is working on at school, or choose exactly which times tables to practise, and race each other on the same screen."
       },
       "music": {
         "faq": {
-          "a1": "No. Both games use colours and timing, not written notes."
+          "a1": "No. Both games use colours and timing, not written notes.",
+          "a3": "No. Everything happens in the browser, with colours and timing instead of written notes."
         }
       },
       "makeAGame": {
         "skills": {
           "h": "What students practise"
+        },
+        "ideas": {
+          "li2": "A quiz about my favourite animals",
+          "li5": "A puzzle where you sort colours into jars"
         }
+      }
+    },
+    "ages": {
+      "skills": {
+        "h": "Skills they practise"
+      },
+      "a10": {
+        "abcya": "Outgrowing ABCya? Its games are for nursery to Year 7. Oomba Academy is made for ages 8 to 14."
+      }
+    }
+  },
+  "parents": {
+    "description": "Fun learning games for kids 8–14 that play free in the browser: maths, words, chess and music. No ads, no stranger chat, and kids can build their own games.",
+    "lead": "Oomba Academy is a website of short learning games that kids play right in the browser: maths races, word puzzles, chess and music. When they’re ready, they can make their own games by describing them to our AI Builder.",
+    "play": {
+      "p": "Each game practises a real skill in a few minutes, and kids come back because it’s fun. Pick one to try together."
+    },
+    "home": {
+      "h": "At home and for home education",
+      "li4": "Building a game together at the weekend",
+      "li7": "Maths, reading and music for home education"
+    },
+    "faq": {
+      "a10": "What kids do on a screen matters as much as how long. Short games that practise a skill, and making something of their own, are a good kind. Set your own limits with your device’s tools. <a href=\"{screen}\">Read our screen-time guide</a>."
+    },
+    "screen": {
+      "lead": "There’s no perfect number of minutes. What kids do on a screen, who they do it with and what it pushes them towards matter just as much. This checklist helps you judge any game or app, including ours.",
+      "check": {
+        "li6": "<b>Making or scrolling:</b> does your child solve, practise or make something, or mostly watch?"
+      },
+      "faq": {
+        "a1": "There is no single number. Paediatricians suggest consistent limits that leave room for sleep, school, being active and family time, and paying attention to what kids do on screens. A family media plan helps you decide.",
+        "a2": "Games can be educational. Look for ones where your child solves, practises or makes something, with no ads or purchases pulling them along."
       }
     }
   }

@@ -1,9 +1,10 @@
-// Share pictures (Open Graph / Twitter cards, 1200x630) for the home page, /teachers and each launch game:
-// public/og/site.jpg, public/og/teachers.jpg, public/og/<slug>.jpg. Built from the brand (server/views/brand.js, the
+// Share pictures (Open Graph / Twitter cards, 1200x630) for the home page, /teachers, the parent pages and each launch
+// game: public/og/site.jpg, teachers.jpg, parents.jpg, parents-<guide>.jpg, ages-<min>-<max>.jpg and <slug>.jpg. Built from the brand (server/views/brand.js, the
 // Bricolage font, the brand colours) and the launch games' cover screenshots (public/covers, `npm run covers`).
 // Never made for a game a child built: those pages are not indexed and show no share picture.
 //
 // Usage: node scripts/og-images.js            (run again after `npm run covers` or a brand change)
+//        node scripts/og-images.js parents.jpg  (only the named pictures)
 // Needs the Playwright Chromium (pre-installed at /opt/pw-browsers in our cloud sandboxes, or `npx playwright install chromium`).
 import fs from 'node:fs';
 import path from 'node:path';
@@ -54,6 +55,15 @@ const CARDS = [
     <div class="stack"><img src="${cover('castle-clash')}"><img src="${cover('sum-racer')}"><img src="${cover('word-hunt')}"></div><p class="url">oomba.ai</p></div>`) },
   { file: 'teachers.jpg', html: page(`<div class="card"><div>${brand()}<span class="kicker">For teachers</span><h1 style="font-size:58px">Fun, interactive learning games for the classroom</h1><div class="pills"><span>Free to start</span><span>No ads</span><span>Ages 8–14</span></div></div>
     <div class="stack"><img src="${cover('loop-lab')}"><img src="${cover('sum-racer')}"><img src="${cover('word-peek')}"></div><p class="url">oomba.ai/teachers</p></div>`) },
+  ...[
+    { file: 'parents.jpg', kicker: 'For parents', h1: 'Fun learning games for kids 8–14, safe by design', pills: ['Free', 'No ads', 'No stranger chat'], covers: ['word-hunt', 'sum-racer', 'castle-clash'], url: 'oomba.ai/parents' },
+    { file: 'parents-ai-builder-safety.jpg', kicker: 'For parents', h1: 'Is the AI Builder safe for my child?', pills: ['What it sees', 'The rules it follows'], covers: ['hero-of-sunvale', 'loop-lab', 'munch-maze'], url: 'oomba.ai/parents' },
+    { file: 'parents-safety-and-screen-time.jpg', kicker: 'A parent’s guide', h1: 'Good screen time for kids 8–14', pills: ['No ads', 'Nothing to buy', 'A checklist'], covers: ['shark-plank', 'word-peek', 'beat-lanes'], url: 'oomba.ai/parents' },
+    { file: 'ages-8-9.jpg', kicker: 'Ages 8 and 9', h1: 'Free learning games for 8 and 9 year olds', pills: ['Times tables', 'Spelling', 'Chess'], covers: ['shark-plank', 'sum-racer', 'word-hunt'], url: 'oomba.ai' },
+    { file: 'ages-10-11.jpg', kicker: 'Ages 10 and 11', h1: 'Free learning games for 10 and 11 year olds', pills: ['Division', 'Word puzzles', 'Make a game'], covers: ['word-peek', 'castle-clash', 'brick-drop'], url: 'oomba.ai' },
+    { file: 'ages-12-14.jpg', kicker: 'Ages 12 to 14', h1: 'Games for 12 to 14 year olds that aren’t babyish', pills: ['Strategy', 'Music', 'Make a game'], covers: ['loop-lab', 'hero-of-sunvale', 'castle-clash'], url: 'oomba.ai' },
+  ].map(c => ({ file: c.file, html: page(`<div class="card"><div>${brand()}<span class="kicker">${esc(c.kicker)}</span><h1 style="font-size:58px">${esc(c.h1)}</h1><div class="pills">${c.pills.map(p => `<span>${esc(p)}</span>`).join('')}</div></div>
+    <div class="stack">${c.covers.map(s => `<img src="${cover(s)}">`).join('')}</div><p class="url">${esc(c.url)}</p></div>`) })),
 ];
 const KICKER = { learning: 'Free learning game', words: 'Free word game', board: 'Free board game', music: 'Free music game', puzzle: 'Free puzzle game', arcade: 'Free arcade game', sports: 'Free sports game', adventure: 'Free adventure game', silly: 'Free silly game' };
 for (const f of fs.readdirSync(COVERS).filter(f => f.endsWith('.jpg'))) {
@@ -66,7 +76,8 @@ fs.mkdirSync(OUT, { recursive: true });
 const browser = await chromium.launch(EXE ? { executablePath: EXE } : {});
 const ctx = await browser.newContext({ viewport: { width: 1200, height: 630 }, deviceScaleFactor: 1 });
 const tab = await ctx.newPage();
-for (const c of CARDS) {
+const only = process.argv.slice(2);
+for (const c of CARDS.filter(c => !only.length || only.includes(c.file))) {
   await tab.setContent(c.html, { waitUntil: 'load' });
   await tab.evaluate(() => document.fonts.ready);
   await tab.screenshot({ path: path.join(OUT, c.file), type: 'jpeg', quality: 84 });

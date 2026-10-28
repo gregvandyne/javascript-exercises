@@ -1062,3 +1062,27 @@ switched to Basic keeps every link, but only the **first linked** child gets the
   and login-card passwords). `?v=` CSS/JS/covers/icons are cached for a year. Share pictures: `node scripts/og-images.js`.
 - **Owner steps (not code):** verify oomba.ai in Google Search Console and Bing Webmaster Tools (DNS TXT), submit
   /sitemap.xml, watch coverage for any /u/ or child-game URL, and pursue teacher directory listings (see the SEO plan).
+
+## Parent pages (SEO for parents)
+- **/parents stays the address** (already indexed, in every footer, the URL parents expect); no /families next to
+  /family and /grown-ups. It is now a landing page for parents (routes/parents.js): learning games, games by age and
+  subject, making games, what makes it safe, privacy, at home and homeschool, then every old privacy and safety section
+  under "Safety and privacy, in detail" with the same ids (`#what`, `#stored`, `#ai`, `#contact`…) and the same text as
+  /privacy (only their heading level changed, h2 → h3). Signed out, "Parents" is in the top menu next to "Teachers";
+  the footer says "For parents".
+- **New pages:** /parents/ai-builder-safety, /parents/safety-and-screen-time, and three age pages
+  /learn/games-for-8-and-9-year-olds, /learn/games-for-10-and-11-year-olds, /learn/games-for-12-to-14-year-olds
+  (grouped ages: one page per age would be thin with 15 launch games). Subject pages gained an "At home" paragraph
+  and a parent question; /learn/make-a-game gained a parent section, starting ideas and an honest Scratch comparison.
+  Game pages show an age range next to the grades (`ageBand`: grade N ≈ age N+5 to N+6, within 8–14).
+- **Claims:** no "parental controls", dashboard, monitoring or time limits are promised (there are none: the pages say
+  so and point to Apple Screen Time, Google Family Link and Microsoft Family Safety); nothing about COPPA (still with the
+  lawyer); never a price. Plans are linked (/plans, /grown-ups) only while `familiesOn`. Ring Rumble, Happy Putt, Footy
+  Tycoon and children's games are never on a parent page (tests/unit/seo-parents.test.js).
+- **Languages:** the parent copy (`parents.*`, `learn.ages.*`) is English for now and outside the 90 % readiness share
+  (`UNCOUNTED_PREFIXES`). Until a language has `parents.h1`, `/es/parents` and the other language addresses point their
+  canonical to the English page and are noindex (before, /parents was listed in every language because its old heading
+  was translated).
+- **Not built yet:** /parents/roblox-alternative (wait for the lawyer's glance at naming Roblox) and
+  /parents/summer-learning-games (publish by mid-May). The guides' external links (healthychildren.org, Common Sense
+  Media, Apple, Google, Microsoft) should be checked once from a network that reaches them.

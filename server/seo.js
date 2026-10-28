@@ -4,8 +4,8 @@
 // path, … }, and privateNoindex() adds an X-Robots-Tag: noindex, nofollow header to every private area (profiles,
 // Studio, classes, schools, families, sign-in, search, play, pictures of players and kids' games). So a new page can
 // never be indexed by accident, and children's profiles, names, unpublished games and chats never are.
-// Indexed: the home page, /teachers, the /learn/* subject pages, official launch games (/g/<slug> with source='seed'),
-// /safety, /parents, the legal pages, /sdk/, and the plans pages once paid plans are public.
+// Indexed: the home page, /teachers, the /learn/* subject and age pages, official launch games (/g/<slug> with
+// source='seed'), /safety, /parents and its guides (/parents/<guide>), the legal pages, /sdk/, and the plans pages once paid plans are public.
 //
 // Languages: the site picks a language from ?lang=, the cookie, the account, then Accept-Language. A search engine has
 // none of those, so public pages also answer at /<code>/<path> (/es/teachers, /zh-hant/g/sum-racer): pathLocale()
@@ -16,7 +16,7 @@ import { config } from './config.js';
 import { CODES, DEFAULT_LOCALE, availableCodes, localeInfo, tFor, dictionary } from './i18n/index.js';
 import { esc } from './views/html.js';
 import { BRAND } from './views/brand.js';
-import { HUBS } from './learn.js';
+import { HUBS, AGES, PARENT_GUIDES } from './learn.js';
 
 export const OG_W = 1200, OG_H = 630;
 /** Kids aged 8 to 14 (docs/decisions.md): the site's audience, in structured data. */
@@ -30,9 +30,10 @@ export const abs = (req, p) => origin(req) + p;
 /** The address segment of a language: en-GB -> 'en-gb', zh-Hant -> 'zh-hant'. */
 export const segOf = code => code.toLowerCase();
 const BY_SEG = new Map(CODES.map(c => [segOf(c), c]));
-const HUB_RE = HUBS.map(h => h.slug).join('|');
+const HUB_RE = [...HUBS, ...AGES].map(h => h.slug).join('|');
+const GUIDE_RE = PARENT_GUIDES.map(g => g.slug).join('|');
 /** Pages that have an address per language. */
-const LOCALIZED = new RegExp(`^/(?:|teachers|learn/(?:${HUB_RE})|g/[a-z0-9-]+|safety|parents)$`);
+const LOCALIZED = new RegExp(`^/(?:|teachers|learn/(?:${HUB_RE})|g/[a-z0-9-]+|safety|parents(?:/(?:${GUIDE_RE}))?)$`);
 export const localizable = p => LOCALIZED.test(p);
 /** '/teachers' in a language: English is the plain address (and x-default), others get /<code> in front. */
 export const localeUrl = (path, code) => (code === DEFAULT_LOCALE ? path : `/${segOf(code)}${path === '/' ? '' : path}`);

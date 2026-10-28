@@ -377,7 +377,7 @@ test('the grown-ups page shows how to contact us once CONTACT_EMAIL is set', asy
   config.contactEmail = 'hello@example.org';
   try {
     const h = await (await get('/parents')).text();
-    assert.match(h, /<section class="panel" id="contact"><h2>Contact us<\/h2>/);
+    assert.match(h, /<section class="panel" id="contact"><h3>Contact us<\/h3>/);   // under "Safety and privacy, in detail"
     assert.match(h, /Grown-ups can email us at <a href="mailto:hello@example.org" dir="ltr">hello@example.org<\/a>\./);
     assert.match(await (await get('/login')).text(), /<a href="\/parents#contact">Contact us<\/a>/, 'linked from the footer of every page');
   } finally { config.contactEmail = ''; }

@@ -82,10 +82,10 @@ export const dictionary = code => dicts.get(code) || {};
 export const READY_SHARE = 0.9;
 /** Long legal text (the /terms, /refunds and /privacy pages) is not counted for that share: it is translated last, after
  *  the legal review, and shows in English until then, so adding it never takes a language out of the picker. The same
- *  goes for the long teacher and subject pages (/teachers, /learn/*) and the search-engine wording (seo.*): until a
+ *  goes for the long teacher, parent and subject pages (/teachers, /parents, /learn/*) and the search-engine wording (seo.*): until a
  *  language has them, those pages show the English, marked as English, and server/seo.js lists only the languages
  *  that have them in hreflang and the sitemap. */
-export const UNCOUNTED_PREFIXES = ['info.terms.', 'info.refunds.', 'info.privacy.', 'teachers.', 'learn.', 'seo.'];
+export const UNCOUNTED_PREFIXES = ['info.terms.', 'info.refunds.', 'info.privacy.', 'teachers.', 'parents.', 'learn.', 'seo.'];
 const counted = code => Object.keys(dictionary(code)).filter(k => !UNCOUNTED_PREFIXES.some(p => k.startsWith(p))).length;
 export function availableCodes() {
   if (process.env.BRB_ALL_LOCALES === '1') return CODES.slice();

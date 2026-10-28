@@ -58,7 +58,8 @@
     "schools": "Escuelas",
     "family": "Familia",
     "plans": "Planes",
-    "teachers": "Docentes"
+    "teachers": "Docentes",
+    "parents": "Familias"
   },
   "errors": {
     "goHome": "Ir al inicio",
@@ -350,7 +351,8 @@
     "intro": {
       "heading": "Juegos educativos interactivos y divertidos para niños",
       "text": "Juegos gratis para niños de 8 a 14 años, para jugar en clase o en casa, y un Constructor que convierte tu propia idea en un juego.",
-      "teachers": "Para docentes"
+      "teachers": "Para docentes",
+      "parents": "Para las familias"
     }
   },
   "search": {
@@ -3131,13 +3133,13 @@
     "play": "Jugar",
     "about": "Sobre el juego",
     "tipsHeading": "En el aula",
-    "faqHeading": "Preguntas frecuentes de docentes",
+    "faqHeading": "Preguntas frecuentes de familias y docentes",
     "moreHeading": "Más juegos por materia",
     "teachersLink": "Oomba Academy para docentes",
     "safetyLink": "Cómo protegemos a los niños",
     "noGames": "Estamos actualizando estos juegos. Vuelva pronto.",
     "games": {
-      "sumRacer": "Cálculo mental, desde sumas hasta 10 hasta tablas de multiplicar y divisiones, en una carrera de karts. Dos estudiantes pueden competir en la misma pantalla.",
+      "sumRacer": "Cálculo mental, desde sumas hasta 10 hasta tablas de multiplicar y divisiones, en una carrera de karts. Dos jugadores pueden competir en la misma pantalla.",
       "wordHunt": "Sopas de letras temáticas con palabras en inglés leídas en voz alta, un reto del día y un modo para competir con un amigo.",
       "sharkPlank": "El ahorcado para primeros lectores, con cada palabra en inglés leída en voz alta.",
       "wordPeek": "Un reto diario para adivinar una palabra en inglés, con pistas después de cada intento, y versiones de 4 y 6 letras.",
@@ -3147,7 +3149,8 @@
       "loopLab": "Crear ritmos con batería, bajo y melodía, unirlos en una canción y superar 10 retos musicales.",
       "beatLanes": "Tocar al ritmo de nueve canciones, de Estrellita, ¿dónde estás? al Cancán.",
       "swishFlick": "Deslizar para encestar: la dirección apunta la pelota y la velocidad decide hasta dónde vuela.",
-      "munchMaze": "Una persecución en un laberinto: planear una ruta, comer todos los puntitos y esquivar a los Gloops."
+      "munchMaze": "Una persecución en un laberinto: planear una ruta, comer todos los puntitos y esquivar a los Gloops.",
+      "heroOfSunvale": "Una gran aventura en 3D: explorar un reino, ayudar a los aldeanos en sus misiones y ganar batallas amistosas para liberar a la princesa."
     },
     "hubs": {
       "math": {
@@ -3175,8 +3178,11 @@
           "q2": "¿Pueden competir dos estudiantes entre sí?",
           "a2": "Sí. Dos jugadores pueden competir en la misma pantalla.",
           "q3": "¿Es gratis?",
-          "a3": "Sí. Es gratis, sin anuncios, y los estudiantes pueden empezar sin registrarse."
-        }
+          "a3": "Sí. Es gratis, sin anuncios, y los estudiantes pueden empezar sin registrarse.",
+          "q4": "¿Puede mi hijo o hija practicar una sola tabla de multiplicar en casa?",
+          "a4": "Sí. En Sum Racer puede elegir exactamente qué tablas de multiplicar practicar."
+        },
+        "home": "Una carrera de cinco minutos después de la escuela mantiene frescas las operaciones básicas. Elija la pista que su hijo o hija está trabajando en la escuela, o elija exactamente qué tablas practicar, y compitan en la misma pantalla."
       },
       "words": {
         "name": "Juegos de lectura y ortografía",
@@ -3192,8 +3198,11 @@
           "q2": "¿Hay un reto diario?",
           "a2": "Sí. Word Hunt y Word Peek tienen un reto nuevo cada día, y en Word Peek un estudiante puede elegir una palabra secreta para un amigo.",
           "q3": "¿Puedo usar mi propia lista de palabras?",
-          "a3": "En estos juegos, todavía no. Puede describirle al Constructor un juego de ortografía con sus palabras, y lo creará para su clase."
-        }
+          "a3": "En estos juegos, todavía no. Puede describirle al Constructor un juego de ortografía con sus palabras, y lo creará para su clase.",
+          "q4": "¿Qué juego de palabras se adapta al nivel de lectura de mi hijo o hija?",
+          "a4": "Shark Plank y Word Hunt leen las palabras en voz alta, así que sirven para quienes todavía están afianzando la lectura. Word Peek es para quienes ya escriben con seguridad."
+        },
+        "home": "Haga de la Palabra del día una costumbre familiar en el desayuno y comenten juntos cada intento, o deje que un lector más pequeño juegue a Shark Plank con el sonido activado, para que cada palabra se lea en voz alta."
       },
       "strategy": {
         "name": "Juegos de ajedrez y estrategia",
@@ -3209,8 +3218,11 @@
           "q2": "¿Pueden jugar dos estudiantes en un mismo dispositivo?",
           "a2": "Sí. Castle Clash y Drop Four tienen un modo para dos jugadores en la misma pantalla.",
           "q3": "¿Qué tan difícil es el robot?",
-          "a3": "El robot de Castle Clash tiene cuatro niveles, y el de Drop Four tiene Fácil, Normal y Difícil."
-        }
+          "a3": "El robot de Castle Clash tiene cuatro niveles, y el de Drop Four tiene Fácil, Normal y Difícil.",
+          "q4": "¿Puedo aprender ajedrez junto con mi hijo o hija?",
+          "a4": "Sí. Las lecciones de Castle Clash empiezan por cómo se mueve cada pieza, así que un adulto que nunca ha jugado también puede aprender, y luego jugar contra su hijo o hija en la misma pantalla."
+        },
+        "home": "Aprendan ajedrez juntos: una lección de Castle Clash al día y luego una partida uno contra otro en la misma pantalla. Drop Four cabe en cualquier rato libre de cinco minutos."
       },
       "music": {
         "name": "Juegos de música",
@@ -3224,8 +3236,11 @@
           "q1": "¿Los estudiantes necesitan saber leer partituras?",
           "a1": "No. Los dos juegos usan colores y ritmo, no notas escritas.",
           "q2": "¿Pueden crear canciones completas?",
-          "a2": "Sí. En Loop Lab pueden unir patrones en una canción y reproducirla como un pequeño concierto."
-        }
+          "a2": "Sí. En Loop Lab pueden unir patrones en una canción y reproducirla como un pequeño concierto.",
+          "q3": "¿Mi hijo o hija necesita un instrumento o clases de música?",
+          "a3": "No. Todo ocurre en el navegador, con colores y ritmo en lugar de notas escritas."
+        },
+        "home": "Loop Lab no necesita clases ni instrumento: los niños crean un ritmo, lo convierten en una canción y se la tocan a la familia. En una casa con ruido, los auriculares ayudan."
       },
       "brainBreaks": {
         "name": "Juegos para pausas activas",
@@ -3244,9 +3259,9 @@
       },
       "makeAGame": {
         "name": "Crea tu propio juego",
-        "short": "Los estudiantes diseñan juegos con el Constructor con IA",
-        "title": "Crea tu propio juego: creador de juegos con IA para niños",
-        "description": "Los estudiantes describen un juego con sus palabras y el Constructor lo crea, mostrando sus pasos. Sin anuncios, de 8 a 14 años, y privado hasta compartirlo.",
+        "short": "Los niños diseñan juegos con el Constructor con IA",
+        "title": "Crea tu propio videojuego con IA, para niños",
+        "description": "Los niños describen un juego con sus palabras y el Constructor lo crea paso a paso. Sin programar ni anuncios, de 8 a 14 años y privado hasta compartirlo.",
         "h1": "Crea tu propio juego, sin saber programar",
         "lead": "En Oomba Academy, los estudiantes describen el juego que quieren y el Constructor con IA lo crea. Luego lo juegan, lo prueban y piden cambios, una idea a la vez.",
         "how": {
@@ -3272,11 +3287,373 @@
           "q2": "¿Quién puede ver los juegos que crean los estudiantes?",
           "a2": "Solo el estudiante, hasta que lo comparte. Puede compartirlo con amigos o con su clase, y un juego para todo el mundo se revisa antes de que otras personas puedan jugarlo.",
           "q3": "¿Para qué edades es?",
-          "a3": "De 8 a 14 años."
-        }
+          "a3": "De 8 a 14 años.",
+          "q4": "Mi hijo o hija quiere crear videojuegos. ¿Por dónde empieza?",
+          "a4": "Por una idea pequeña, como un laberinto o un juego de atrapar cosas. La describe, la juega y luego pide un cambio a la vez. Más adelante, muchos niños también prueban herramientas de programación como Scratch.",
+          "q5": "¿Esto es programar de verdad?",
+          "a5": "No exactamente. El Constructor escribe el código. Su hijo o hija se encarga del diseño, las pruebas y las explicaciones, que son una gran parte de crear juegos, y los pasos que muestra el Constructor permiten a los niños curiosos ver cómo se arma un juego.",
+          "q6": "¿Cuánto cuesta?",
+          "a6": "Nada. Todos los jugadores con cuenta (solo un nombre inventado y una contraseña) reciben mensajes gratis para el Constructor cada día.",
+          "a6paid": "Crear es gratis: todos los jugadores con cuenta (solo un nombre inventado y una contraseña) reciben mensajes gratis para el Constructor cada día. Las familias y las escuelas pueden elegir un plan opcional para tener mensajes extra. <a href=\"{plans}\">Ver los planes</a>.",
+          "q7": "¿Es seguro el Constructor con IA para mi hijo o hija?",
+          "a7": "Solo crea juegos y sigue reglas fijas de seguridad infantil en todos los idiomas. <a href=\"{ai}\">Lea qué ve y qué reglas sigue</a>."
+        },
+        "parents": {
+          "h": "Para las familias: por qué crear es mejor que solo jugar",
+          "p1": "Crear un juego es tiempo de pantalla activo. Su hijo o hija planea una idea, la explica con claridad, prueba lo que hizo el Constructor y decide qué arreglar después: los mismos pasos que siguen los diseñadores de videojuegos.",
+          "p2": "Es un buen proyecto para hacer juntos el fin de semana, y crear es gratis todos los días."
+        },
+        "ideas": {
+          "h": "Ideas para empezar",
+          "li1": "Un laberinto donde un gato recoge peces",
+          "li2": "Un juego de preguntas sobre mis animales favoritos",
+          "li3": "Un juego del espacio donde atrapas estrellas que caen",
+          "li4": "Una carrera entre tres caracoles",
+          "li5": "Un rompecabezas donde ordenas colores en frascos",
+          "p": "Luego pide un cambio a la vez, como “haz que el gato sea más rápido” o “agrega un segundo nivel”."
+        },
+        "scratch": {
+          "h": "Cómo se relaciona con Scratch y la programación",
+          "p": "Scratch y Code.org enseñan a programar con bloques. El Constructor es diferente: los niños diseñan con palabras, y el Constructor escribe el juego mientras muestra sus pasos. Muchos niños hacen las dos cosas, y el Constructor puede ser un primer paso antes del código."
+        },
+        "safeLink": "¿Es seguro el Constructor con IA? Una guía para familias"
       }
     },
     "grades": "Grados {from}–{to}",
-    "seeAll": "Ver todos: {name}"
+    "seeAll": "Ver todos: {name}",
+    "homeHeading": "En casa",
+    "parentsLink": "Oomba Academy para familias",
+    "byAgeHeading": "Juegos por edad",
+    "ages": {
+      "line": "De {from} a {to} años",
+      "fit": "Por qué encaja con esta edad:",
+      "skills": {
+        "h": "Habilidades que practican"
+      },
+      "together": {
+        "h": "Jugar juntos",
+        "p": "{count, plural, one {{games} tiene un modo para dos jugadores} other {{games} tienen un modo para dos jugadores}} en la misma pantalla: ideal para hermanos, amigos, o un adulto y un niño."
+      },
+      "safe": {
+        "h": "La seguridad en un minuto",
+        "p": "Sin anuncios, nada que los niños puedan comprar y sin chat con desconocidos: los amigos solo se agregan con un código. Nunca pedimos a los niños una dirección de correo electrónico. <a href=\"{href}\">Más información para familias</a>."
+      },
+      "make": {
+        "h": "Crea tu propio juego",
+        "link": "Cómo funciona crear un juego"
+      },
+      "moreHeading": "Juegos para otras edades",
+      "faq": {
+        "q1": "¿Estos juegos son gratis?",
+        "a1": "Sí. Todos los juegos son gratis en el navegador, sin anuncios ni descargas, y los niños pueden empezar sin registrarse."
+      },
+      "a8": {
+        "name": "8 y 9 años",
+        "short": "Tablas de multiplicar, ortografía, primeras partidas de ajedrez y música",
+        "title": "Juegos educativos para niños de 8 y 9 años",
+        "description": "Juegos gratis y sin anuncios para niños de 8 y 9 años: tablas de multiplicar, ortografía en inglés, ajedrez y música. Sin descargas ni desconocidos.",
+        "h1": "Juegos educativos para niños de 8 y 9 años",
+        "lead": "A los 8 y 9 años, los niños aprenden las tablas de multiplicar, leen palabras más largas y les encantan los juegos que pueden ganar. Estos juegos tienen rondas cortas, leen las palabras en voz alta cuando ayuda y permiten que dos niños jueguen en la misma pantalla.",
+        "fit": {
+          "sumRacer": "Empiece con sumas hasta 10 o 20 y, cuando llegue el momento, pase a las tablas del 2, del 5 y del 10.",
+          "wordHunt": "Sopas de letras temáticas para lectores en crecimiento: pueden tocar cualquier palabra para oírla en voz alta.",
+          "sharkPlank": "Ideal para niños que todavía están afianzando la lectura: cada palabra se lee en voz alta.",
+          "castleClash": "Una lección corta para cada pieza y luego el robot en su nivel más fácil, para que la primera partida de ajedrez no sea un muro de reglas.",
+          "connectFour": "Partidas rápidas para aprender a planear con anticipación, contra un hermano o contra el robot en Fácil.",
+          "loopLab": "Tocan cuadros para crear un ritmo y lo oyen repetirse al instante. No hace falta saber leer música.",
+          "beatLanes": "Tocan al ritmo de canciones que conocen, empezando por Estrellita, ¿dónde estás?",
+          "munchMaze": "Una persecución en un laberinto con modo Fácil: planear una ruta y comer todos los puntitos."
+        },
+        "faq": {
+          "q2": "¿Son demasiado difíciles los juegos para un niño de 8 años?",
+          "a2": "Todos empiezan fácil. Sum Racer comienza con sumas hasta 10, el robot de Castle Clash tiene un nivel fácil y Shark Plank lee cada palabra en voz alta.",
+          "q3": "¿Pueden jugar dos niños en un mismo dispositivo?",
+          "a3": "Sí. Sum Racer, Castle Clash y Drop Four tienen un modo para dos jugadores en la misma pantalla.",
+          "q4": "¿Puede un niño de 8 años usar el Constructor con IA?",
+          "a4": "Sí. Los niños escriben su idea, así que ayuda que sepan escribir una o dos frases, y al principio conviene que haya un adulto cerca. El Constructor sigue reglas fijas de seguridad infantil."
+        }
+      },
+      "a10": {
+        "name": "10 y 11 años",
+        "short": "Tablas y divisiones, retos de palabras y de ajedrez, crear juegos",
+        "title": "Juegos educativos para niños de 10 y 11 años",
+        "description": "Juegos gratis y sin anuncios para niños de 10 y 11 años: tablas y divisiones, un reto diario de palabras, ajedrez, música y crear sus propios juegos.",
+        "h1": "Juegos educativos para niños de 10 y 11 años",
+        "lead": "A los 10 y 11 años, los niños quieren un reto de verdad y opinar sobre lo que juegan. Estos juegos llegan hasta todas las tablas de multiplicar y la división, problemas de ajedrez y un reto diario de palabras, y el Constructor les permite crear su propio juego.",
+        "abcya": "¿ABCya se le queda corto? Sus juegos van de preescolar a 6.º grado. Oomba Academy está hecho para niños de 8 a 14 años.",
+        "make": {
+          "p": "A esta edad, a los niños les encanta crear sus propios juegos. Describen uno con sus palabras, como “un juego de preguntas sobre volcanes” o “un laberinto con un robot”, y el Constructor lo crea. Luego lo prueban y piden cambios. Es gratis todos los días."
+        },
+        "fit": {
+          "sumRacer": "Listos para lo más difícil: todas las tablas de multiplicar hasta el 12, divisiones y una pista mixta con las cuatro operaciones.",
+          "wordPeek": "Un reto diario que premia pensar con cuidado, con una pista después de cada intento, justo cuando su vocabulario despega.",
+          "castleClash": "¿Ya dominan lo básico? 24 problemas de jaque mate y niveles más difíciles del robot les dan algo de verdad que superar.",
+          "brickDrop": "La velocidad sube rápido: ideal para niños que quieren un reto de verdad y disfrutan superando su propio récord.",
+          "loopLab": "Ya tienen edad para planear una canción entera: unir ritmos y superar los 10 retos musicales.",
+          "heroOfSunvale": "Más que un juego rápido: misiones que leer y seguir, y un reino en 3D para explorar a su propio ritmo.",
+          "swishFlick": "Una pausa rápida con un poco de física: la dirección del deslizamiento apunta la pelota y su velocidad decide hasta dónde vuela."
+        },
+        "faq": {
+          "q2": "¿Son demasiado fáciles los juegos para un niño de 10 años?",
+          "a2": "No. Sum Racer llega hasta todas las tablas de multiplicar y la división, Castle Clash tiene 24 problemas de jaque mate y Word Peek es un verdadero reto diario.",
+          "q3": "¿Puede mi hijo o hija jugar con un hermano o un amigo?",
+          "a3": "Sí. Sum Racer y Castle Clash tienen un modo para dos jugadores en la misma pantalla, y Word Hunt tiene una carrera para jugar pasándose el teléfono.",
+          "q4": "¿Es seguro el Constructor con IA para un niño de 11 años?",
+          "a4": "El Constructor solo crea juegos y sigue reglas fijas de seguridad infantil, como nada de violencia sangrienta, nada de apuestas, nada de marcas reales y nada de enlaces externos. <a href=\"{ai}\">Vea todas las reglas que sigue</a>. Los juegos son privados hasta que su hijo o hija los comparte."
+        }
+      },
+      "a12": {
+        "name": "De 12 a 14 años",
+        "short": "Estrategia, música, retos y crear sus propios juegos",
+        "title": "Juegos educativos para chicos de 12 a 14 años",
+        "description": "Juegos para chicos de 12 a 14 años que no son infantiles: ajedrez, retos de palabras, música, una aventura en 3D y un Constructor con IA para crear juegos.",
+        "h1": "Juegos para chicos de 12 a 14 años que no son infantiles",
+        "lead": "Muchos sitios de juegos para niños se quedan en los 11 años. De los 12 a los 14, lo mejor de Oomba Academy es crear: los chicos diseñan sus propios juegos con el Constructor con IA, los comparten con sus amigos y los siguen mejorando. Los juegos de abajo sirven para un descanso entre medio.",
+        "make": {
+          "p": "Describe un juego con tus palabras y el Constructor lo crea: un juego de plataformas, un juego de preguntas sobre un tema de clase, un rompecabezas para un amigo. Luego pruébalo, encuentra lo que falla y pide cambios. Es gratis todos los días."
+        },
+        "fit": {
+          "castleClash": "Ajedrez de verdad, sin modo infantil: los problemas de jaque mate y el nivel más difícil del robot son un verdadero desafío, incluso para adultos.",
+          "wordPeek": "Más difícil que el reto diario: Palabra grande con 6 letras, o una palabra secreta para que un amigo la descubra.",
+          "brickDrop": "Una carrera hasta 40 líneas en Sprint, o seguir en Maratón mientras todo se acelera.",
+          "loopLab": "Los adolescentes a los que les gusta la música pueden crear canciones enteras con batería, bajo y melodía, no solo ritmos simples.",
+          "beatLanes": "Nueve canciones y combos largos para dedos rápidos.",
+          "heroOfSunvale": "Un gran reino en 3D para explorar, con misiones y un dragón al final."
+        },
+        "faq": {
+          "q2": "¿Oomba Academy es demasiado infantil para un chico de 13 años?",
+          "a2": "Está hecho para edades de 8 a 14 años. Los mayores vienen sobre todo por el Constructor, el ajedrez de verdad y la creación musical, que crecen con ellos.",
+          "q3": "¿Puede mi hijo o hija adolescente crear sus propios juegos?",
+          "a3": "Sí. Describe el juego con palabras y el Constructor lo crea. Un juego nuevo es privado hasta que lo comparte, y Claude revisa primero cada juego para todo el mundo; nuestro equipo revisa los que le generan dudas.",
+          "q4": "¿Hay chat con desconocidos?",
+          "a4": "No. Los niños solo chatean con amigos que agregaron con un código de 6 caracteres, nunca buscando nombres, y pueden desactivar el chat en su página Yo."
+        }
+      }
+    }
+  },
+  "parents": {
+    "title": "Juegos educativos gratis y seguros para niños",
+    "description": "Juegos educativos gratis para niños de 8 a 14 años: matemáticas, palabras, ajedrez y música. Sin anuncios ni desconocidos, y pueden crear sus juegos.",
+    "kicker": "👪 Para las familias",
+    "h1": "Juegos educativos divertidos para niños de 8 a 14 años, seguros desde el diseño",
+    "lead": "Oomba Academy es un sitio web de juegos educativos cortos que los niños juegan directamente en el navegador: carreras de cálculo, retos de palabras, ajedrez y música. Cuando estén listos, pueden crear sus propios juegos describiéndoselos a nuestro Constructor con IA.",
+    "badges": {
+      "free": "Gratis para jugar",
+      "ads": "Sin anuncios",
+      "buy": "Nada que los niños puedan comprar",
+      "strangers": "Sin chat con desconocidos",
+      "browser": "Funciona en cualquier navegador",
+      "languages": "{count} idiomas"
+    },
+    "cta": {
+      "start": "Empezar gratis",
+      "try": "Pruebe un juego ya, sin registrarse",
+      "grownup": "Crear una cuenta de adulto",
+      "lead": "¿Ya ha visto suficiente? Pruebe un juego con su hijo o hija ahora mismo."
+    },
+    "teachers": "¿Es docente? Vea <a href=\"{href}\">Oomba Academy para docentes</a>.",
+    "play": {
+      "h": "Aprender jugando",
+      "p": "Cada juego practica una habilidad real en pocos minutos, y los niños vuelven porque es divertido. Elija uno para probarlo juntos."
+    },
+    "subjects": {
+      "h": "Elegir por materia"
+    },
+    "ages": {
+      "h": "Juegos para cada edad",
+      "p": "Los niños cambian mucho entre los 8 y los 14 años. Estas páginas eligen los juegos que mejor encajan con cada edad y explican por qué."
+    },
+    "make": {
+      "h": "De jugar a crear",
+      "p1": "Su hijo o hija describe un juego con sus propias palabras, como “un laberinto donde un gato recoge peces”, y el Constructor lo crea. Luego lo juega, ve qué quiere cambiar y pide cambios, una idea a la vez.",
+      "p2": "Eso es planificar, escribir con claridad, probar y corregir, sin tener que saber programar primero. Crear es gratis todos los días para todos los jugadores con cuenta (solo un nombre inventado y una contraseña).",
+      "link": "Cómo funciona crear un juego",
+      "safe": "¿Es seguro el Constructor con IA?"
+    },
+    "safe": {
+      "h": "Qué lo hace seguro",
+      "li1": "Sin anuncios, sin cajas de botín (loot boxes) y nada que los niños puedan comprar. Nunca se les pide a los niños que paguen.",
+      "li2": "Sin chat con desconocidos. Los amigos solo se agregan con un código de amigo de 6 caracteres, nunca buscando nombres. El chat es solo entre amigos, filtra el lenguaje ofensivo y los datos personales, y se puede reportar.",
+      "li3": "Nunca pedimos a los niños dirección de correo electrónico, edad, domicilio ni ubicación.",
+      "li4": "Los juegos que crean los niños son privados hasta que los comparten, y Claude revisa primero cada juego para todo el mundo; nuestro equipo revisa los que le generan dudas.",
+      "li5": "Los niños usan nombres inventados, y sus perfiles y nombres no aparecen en los buscadores.",
+      "links": "Lea <a href=\"{safety}\">cómo protegemos a los niños</a> y <a href=\"{guide}\">nuestra guía para un tiempo de pantalla de calidad</a>."
+    },
+    "private": {
+      "h": "Privacidad desde el diseño",
+      "p1": "No hay anuncios ni cookies de rastreo, así que aquí nada crea un perfil de su hijo o hija para anunciantes.",
+      "p2": "Tampoco hay panel de control para padres, ni límite de tiempo, ni informe de actividad. Es a propósito: no guardamos un registro de la actividad de su hijo o hija, ni siquiera para usted. Lo que crea es privado hasta que lo comparte.",
+      "paid": "Una cuenta de adulto vinculada con su hijo o hija solo ve su nombre y cuántos de los mensajes extra de la familia para el Constructor ha usado.",
+      "p3": "Para poner límites, use las herramientas del propio dispositivo de su hijo o hija, como Tiempo de uso de Apple, Google Family Link o Microsoft Family Safety. <a href=\"{href}\">Nuestra guía sobre el tiempo de pantalla</a> explica cómo hacerlo."
+    },
+    "home": {
+      "h": "En casa y para la educación en casa",
+      "p": "Las familias aprovechan un juego siempre que unos minutos de juego vienen bien:",
+      "li1": "Una carrera de tablas de multiplicar después de la escuela",
+      "li2": "El reto diario de palabras en el desayuno",
+      "li3": "Una partida de ajedrez juntos",
+      "li4": "Crear un juego juntos el fin de semana",
+      "li5": "Practicar durante las vacaciones",
+      "li6": "Un rato de juego en un día de lluvia que además enseña algo",
+      "li7": "Matemáticas, lectura y música para la educación en casa"
+    },
+    "families": {
+      "p2": "Los planes son opcionales. Solo agregan mensajes extra para el Constructor, y nunca se les pide a los niños que paguen."
+    },
+    "detail": {
+      "h": "Seguridad y privacidad, en detalle",
+      "p": "Qué guardamos, qué nunca recopilamos, qué ve la IA y cómo funcionan los amigos y el chat, con palabras sencillas. Nuestra <a href=\"{href}\">Política de privacidad</a> tiene el texto completo."
+    },
+    "faq": {
+      "h": "Preguntas frecuentes de las familias",
+      "q1": "¿Oomba Academy es gratis?",
+      "a1": "Sí. Todos los juegos son gratis, y todos los jugadores con cuenta (solo un nombre inventado y una contraseña) reciben cada día mensajes gratis para el Constructor para crear sus propios juegos. No hay anuncios ni nada que los niños puedan comprar.",
+      "a1paid": "Sí. Todos los juegos son gratis, y todos los jugadores con cuenta (solo un nombre inventado y una contraseña) reciben cada día mensajes gratis para el Constructor. Las familias pueden elegir un plan opcional para tener mensajes extra para el Constructor, y nunca se les pide a los niños que paguen. <a href=\"{plans}\">Ver los planes</a>.",
+      "q2": "¿Para qué edades es?",
+      "a2": "Para niños de 8 a 14 años. Algunos juegos, como Shark Plank y las primeras pistas de Sum Racer, también sirven para lectores más pequeños.",
+      "q3": "¿Mi hijo o hija necesita una cuenta o un correo electrónico?",
+      "a3": "No. Cualquiera puede jugar enseguida, sin registrarse. Para guardar sus juegos y puntos, los niños pueden crear una cuenta con solo un nombre inventado y una contraseña. Nunca pedimos un correo electrónico.",
+      "q4": "¿Hay anuncios o compras dentro de la aplicación?",
+      "a4": "No. Sin anuncios, sin compras dentro de la aplicación, sin cajas de botín y sin monedas del juego que cuesten dinero. Nunca se les pide a los niños que paguen.",
+      "q5": "¿Pueden hablar desconocidos con mi hijo o hija?",
+      "a5": "No. Los niños solo pueden chatear con amigos que agregaron con un código de amigo de 6 caracteres, nunca buscando nombres. El chat filtra el lenguaje ofensivo, los números de teléfono, los correos, las direcciones y los enlaces; los niños pueden bloquear o reportar a cualquiera y desactivar el chat en su página Yo.",
+      "q6": "¿Qué hace el Constructor con IA con lo que escribe mi hijo o hija?",
+      "a6": "Envía los mensajes, imágenes y archivos de su hijo o hija a Claude, una IA creada por Anthropic, para escribir el juego, sin su nombre ni su nombre de usuario. Si su hijo o hija sube una foto de perfil, también se envía a Claude para que la revise antes de que nadie la vea. Los chats entre amigos y las respuestas de las lecciones nunca se envían a la IA. <a href=\"{ai}\">Cómo el Constructor se mantiene seguro para niños</a>.",
+      "q7": "¿Puedo ver lo que hace mi hijo o hija?",
+      "a7": "No en el sitio, y es a propósito: no hay panel de control para padres ni informe de actividad. La mejor manera de ver lo que hace es jugar o crear juntos.",
+      "a7paid": "No en el sitio, y es a propósito: no hay panel de control para padres ni informe de actividad. Una cuenta de adulto vinculada solo ve el nombre de su hijo o hija y cuántos mensajes extra de la familia para el Constructor usa. La mejor manera de ver lo que hace es jugar o crear juntos.",
+      "q8": "¿Funciona en Chromebooks, tabletas y teléfonos?",
+      "a8": "Sí. Funciona en cualquier navegador actualizado en computadoras, Chromebooks, tabletas y teléfonos, sin descargar nada. Algunos juegos se juegan mejor con el teléfono en horizontal.",
+      "q9": "¿En qué idiomas está?",
+      "a9": "En {count} idiomas, entre ellos inglés, francés, alemán, portugués, árabe, hebreo y japonés. Su hijo o hija elige uno con el botón 🌐, y el Constructor le responde en ese idioma.",
+      "q10": "¿Es un tiempo de pantalla de calidad?",
+      "a10": "Lo que los niños hacen frente a una pantalla importa tanto como el tiempo que pasan. Los juegos cortos que practican una habilidad, y crear algo propio, son un buen tipo de tiempo de pantalla. Ponga sus propios límites con las herramientas de su dispositivo. <a href=\"{screen}\">Lea nuestra guía sobre el tiempo de pantalla</a>."
+    },
+    "guides": {
+      "h": "Guías para familias"
+    },
+    "updated": "Actualizado el {date}",
+    "ai": {
+      "name": "¿Es seguro el Constructor con IA?",
+      "short": "Qué ve la IA, qué nunca recibe y qué reglas sigue",
+      "title": "¿Es segura la IA para niños? Así funciona",
+      "description": "Qué ve la IA, qué nunca recibe y qué reglas sigue: una guía clara para familias de niños de 8 a 14 años que usan el Constructor con IA de Oomba Academy.",
+      "h1": "¿Es seguro el Constructor con IA para mi hijo o hija?",
+      "lead": "El Constructor de Oomba Academy usa IA para convertir la idea de su hijo o hija en un juego. Aquí le explicamos con palabras sencillas qué ve, qué nunca recibe, qué reglas sigue y qué no podemos prometer.",
+      "what": {
+        "h": "Qué es el Constructor",
+        "p1": "El Constructor crea juegos. Su hijo o hija describe una idea, y el Constructor escribe el juego, muestra sus pasos mientras trabaja y hace una pregunta cuando necesita saber más.",
+        "p2": "Está hecho para crear juegos, no para ser un amigo o compañero con quien charlar de cualquier otra cosa."
+      },
+      "sees": {
+        "h": "Qué ve la IA y qué nunca recibe",
+        "li1": "Los mensajes, imágenes y archivos que su hijo o hija le da al Constructor van a Claude, una IA creada por la empresa Anthropic, que escribe el juego.",
+        "li2": "El nombre y el nombre de usuario de su hijo o hija no se envían con ellos.",
+        "li3": "Los chats entre amigos y las respuestas de las lecciones nunca se envían a la IA.",
+        "li4": "Los datos de ubicación ocultos se eliminan de las fotos e imágenes antes de guardarlas.",
+        "li5": "Si su hijo o hija sube una foto de perfil, se envía a Claude para que la revise antes de que nadie la vea.",
+        "li6": "Claude revisa primero los juegos que su hijo o hija quiere compartir con todo el mundo."
+      },
+      "rules": {
+        "h": "Las reglas que sigue",
+        "p": "El Constructor sigue reglas fijas de seguridad infantil en todos los idiomas, y ningún mensaje puede cambiarlas:",
+        "li1": "Nada de sangre, escenas sangrientas ni violencia realista, y nada de terror ni sustos repentinos (jump scares). El humor de dibujos animados, con golpes y caídas, está bien.",
+        "li2": "Nada de apuestas.",
+        "li3": "Nada de marcas reales, ni personas reales como personajes.",
+        "li4": "Nada de chat entre jugadores ni recolección de datos personales dentro de los juegos.",
+        "li5": "Nada de enlaces a otros sitios web ni anuncios dentro de los juegos.",
+        "li6": "Nada de contenido romántico ni para adultos, nada de acoso ni odio, y nada sobre autolesiones, drogas, alcohol o vapeo.",
+        "li7": "Nada de personajes con derechos de autor como Mario o Pokémon, ni compañeros de clase, docentes o familiares reales en los juegos.",
+        "p2": "Una petición que rompe las reglas se rechaza con amabilidad, con ideas de otras cosas que sí puede crear."
+      },
+      "public": {
+        "h": "Quién ve los juegos",
+        "p": "Un juego nuevo es privado para su hijo o hija. Puede compartirlo con amigos o con su clase. Claude revisa cada juego para todo el mundo antes de que otras personas puedan jugarlo, y nuestro equipo revisa los que le generan dudas. Cada juego funciona en un entorno aislado y cerrado (sandbox) que no puede acceder a internet ni a la cuenta de su hijo o hija."
+      },
+      "limits": {
+        "h": "Lo que no podemos prometer",
+        "p1": "Ningún filtro es perfecto. Una IA puede entender mal una petición o equivocarse, y un juego podría tener algo que no sea adecuado para su hijo o hija.",
+        "p2": "Si ve algo que no está bien, toque 🚩 Reportar en la página del juego. Cuando un juego recibe suficientes reportes, se oculta hasta que nuestro equipo lo revisa, y los adultos también pueden escribirnos a {email}."
+      },
+      "check": {
+        "h": "Cinco preguntas para hacerse sobre cualquier herramienta de IA para niños",
+        "li1": "<b>¿Qué hace?</b> Una herramienta que crea algo (un juego, un dibujo, un cuento) no es lo mismo que un chatbot que habla de cualquier cosa.",
+        "li2": "<b>¿Qué envía y a quién?</b> Busque una lista clara de lo que va a la empresa de IA, y si el nombre de su hijo o hija va incluido.",
+        "li3": "<b>¿Qué reglas sigue?</b> Una buena herramienta para niños dice qué se niega a crear.",
+        "li4": "<b>¿Quién ve lo que crea su hijo o hija?</b> Lo más seguro es que sea privado hasta que se comparta.",
+        "li5": "<b>¿Se puede reportar un problema?</b> Debería haber una forma fácil, y una persona que lo revise."
+      },
+      "faq": {
+        "q1": "¿Mi hijo o hija chatea con una IA?",
+        "a1": "Solo sobre el juego que está creando. Describe lo que quiere, y el Constructor hace preguntas y explica sus pasos.",
+        "q2": "¿Se envía el nombre de mi hijo o hija a la IA?",
+        "a2": "No. Su nombre y su nombre de usuario no se envían con sus mensajes.",
+        "q3": "¿Puede la IA crear juegos violentos o que den miedo?",
+        "a3": "Los juegos pueden tener acción de dibujos animados, como las batallas amistosas de un héroe, pero el Constructor rechaza las escenas sangrientas, la violencia realista, el terror y los sustos repentinos. <a href=\"#rules\">Vea todas las reglas que sigue</a>.",
+        "q4": "¿Son públicos los juegos que crea mi hijo o hija?",
+        "a4": "No, a menos que los comparta. Un juego para todo el mundo se revisa antes de que otras personas puedan jugarlo.",
+        "q5": "¿El Constructor es un compañero o un amigo virtual?",
+        "a5": "No. Es una herramienta para crear juegos."
+      }
+    },
+    "screen": {
+      "name": "Tiempo de pantalla de calidad",
+      "short": "Una lista para elegir juegos y apps, y cómo poner límites",
+      "title": "Tiempo de pantalla sano: guía para familias",
+      "description": "Cómo distinguir el buen tiempo de pantalla del malo: anuncios, compras, chat, datos, crear o mirar. Una lista para familias, con lo que hacemos y lo que no.",
+      "h1": "Tiempo de pantalla de calidad: cómo elegir juegos para niños de 8 a 14 años",
+      "lead": "No existe un número perfecto de minutos. Lo que los niños hacen frente a una pantalla, con quién lo hacen y hacia dónde los empuja importa igual. Esta lista le ayuda a evaluar cualquier juego o app, incluido el nuestro.",
+      "experts": {
+        "h": "Qué dicen los expertos",
+        "p1": "La American Academy of Pediatrics (Academia Estadounidense de Pediatría) recomienda un <a href=\"{aap}\">plan familiar de uso de medios</a> en lugar de un mismo número para todos los niños: para los niños en edad escolar, límites constantes que protejan el sueño, las tareas escolares, la actividad física y el tiempo juntos. <a href=\"{commonsense}\">Common Sense Media</a> también se fija en la calidad de lo que los niños ven y juegan, no solo en los minutos.",
+        "p2": "Por eso no le vamos a dar un número de minutos: usted conoce a su hijo o hija. Lo que sí podemos es ayudarle a evaluar en qué se usan esos minutos."
+      },
+      "check": {
+        "h": "Una lista para cualquier juego o app",
+        "li1": "<b>Anuncios:</b> ¿muestra anuncios, o videos que llevan a más videos?",
+        "li2": "<b>Compras:</b> ¿puede su hijo o hija gastar dinero? ¿Hay monedas del juego, cajas de botín o “pagar para ganar”?",
+        "li3": "<b>Desconocidos:</b> ¿pueden enviarle mensajes personas que su hijo o hija no conoce?",
+        "li4": "<b>Datos:</b> ¿le pide a su hijo o hija un correo electrónico, su edad, su ubicación o fotos?",
+        "li5": "<b>Edad adecuada:</b> ¿está hecho para la edad de su hijo o hija, y no solo permitido a esa edad?",
+        "li6": "<b>Crear o solo mirar:</b> ¿su hijo o hija resuelve, practica o crea algo, o sobre todo mira?",
+        "li7": "<b>Juntos:</b> ¿puede usted jugarlo con su hijo o hija?"
+      },
+      "us": {
+        "h": "Cómo sale Oomba Academy en esta lista, con honestidad",
+        "li1": "<b>Anuncios:</b> ninguno.",
+        "li2": "<b>Compras:</b> nada que los niños puedan comprar, sin cajas de botín y sin monedas del juego que cuesten dinero.",
+        "li3": "<b>Desconocidos:</b> chat solo con amigos agregados con un código, filtrado y que se puede reportar.",
+        "li4": "<b>Datos:</b> nunca pedimos a los niños correo electrónico, edad, dirección ni ubicación. Las fotos son opcionales: una foto de perfil o imágenes para el Constructor, sin los datos de ubicación ocultos, y las fotos de perfil se revisan antes de que nadie las vea.",
+        "li5": "<b>Edad adecuada:</b> hecho para niños de 8 a 14 años.",
+        "li6": "<b>Crear:</b> los niños pueden crear sus propios juegos con el Constructor con IA.",
+        "li7": "<b>Juntos:</b> varios juegos tienen un modo para dos jugadores en la misma pantalla.",
+        "p": "Lo que no tenemos: límites de tiempo, informes de actividad ni panel de control para padres. Para poner límites, use las herramientas de su propio dispositivo."
+      },
+      "tools": {
+        "h": "Poner límites con las herramientas de su dispositivo",
+        "p": "Estas herramientas gratuitas de los fabricantes le permiten fijar límites diarios, tiempo de inactividad y reglas para las apps:",
+        "li1": "<a href=\"{href}\">Tiempo de uso</a> de Apple en iPhone, iPad y Mac",
+        "li2": "<a href=\"{href}\">Google Family Link</a> en teléfonos y tabletas Android y en Chromebooks",
+        "li3": "<a href=\"{href}\">Microsoft Family Safety</a> en Windows y Xbox"
+      },
+      "rules": {
+        "h": "Reglas familiares que funcionan",
+        "li1": "Jueguen juntos a un juego nuevo la primera vez.",
+        "li2": "Crear juegos y chatear, siempre en una habitación compartida.",
+        "li3": "Pónganse de acuerdo sobre cuándo, no solo sobre cuánto tiempo: después de las tareas, no a la hora de dormir.",
+        "li4": "Pregúntele qué creó o aprendió hoy.",
+        "li5": "Usen las mismas reglas para todas las pantallas de la casa, también las de los adultos."
+      },
+      "faq": {
+        "q1": "¿Cuánto tiempo de pantalla es razonable para un niño de 10 años?",
+        "a1": "No hay un número único. Los pediatras recomiendan límites constantes que dejen espacio para dormir, la escuela, moverse y el tiempo en familia, y prestar atención a lo que hacen los niños en las pantallas. Un plan familiar de uso de medios le ayuda a decidir.",
+        "q2": "¿Es mejor el tiempo de pantalla educativo que los videojuegos?",
+        "a2": "Los juegos pueden ser educativos. Busque aquellos en los que su hijo o hija resuelve, practica o crea algo, sin anuncios ni compras que tiren de él.",
+        "q3": "¿Oomba Academy tiene límites de tiempo?",
+        "a3": "No. Use las herramientas de su dispositivo, como Tiempo de uso de Apple, Google Family Link o Microsoft Family Safety.",
+        "q4": "¿Es mejor crear juegos que jugarlos?",
+        "a4": "Las dos cosas tienen su lugar. Crear un juego pide a los niños planear, explicar con claridad, probar y corregir, así que es un tipo de tiempo de pantalla activo."
+      }
+    }
   }
 }

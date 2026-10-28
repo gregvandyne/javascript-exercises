@@ -5,7 +5,7 @@ import { page, notFound } from '../views/layout.js';
 import { coverArt, avatar, cardGrid, statusLabel, categoryLabel } from '../views/components.js';
 import { OFFICIAL } from '../auth.js';
 import * as seo from '../seo.js';
-import { LEARNING, isLearningGame, gradeBand, hubOfGame } from '../learn.js';
+import { LEARNING, isLearningGame, gradeBand, ageBand, hubOfGame } from '../learn.js';
 import * as games from '../services/games.js';
 import * as presence from '../services/presence.js';
 import { frameDocument, sendFrame, sendFrameText, frameOrigins, SANDBOX } from '../services/frame.js';
@@ -58,6 +58,8 @@ router.get('/g/:slug', (req, res) => {
   const learn = official && LEARNING[g.slug];
   const hub = official && hubOfGame(g.slug);
   const band = learn && gradeBand([g.slug]);
+  // The age line only once this language has it, so a translated sentence never carries an unmarked English phrase.
+  const ages = learn && t.own('learn.ages.line') && ageBand(g.slug);
   const body = html`
   <article>
     ${crumbs ? html`<nav class="crumbs small" aria-label="${t('learn.crumbs')}" style="margin-bottom:var(--s3)"><ol>${crumbs.map(([name, p], i) => html`<li>${i < crumbs.length - 1 ? html`<a href="${lp(req, p)}">${name}</a>` : html`<span aria-current="page">${name}</span>`}</li>`)}</ol></nav>` : ''}
@@ -86,7 +88,7 @@ router.get('/g/:slug', (req, res) => {
       <div class="stack">
         <section class="panel"><h2>${t('game.about.heading')}</h2>
           <p class="ugc" style="white-space:pre-line">${g.description || t('game.about.noDescription')}</p>
-          ${learn ? html`<p class="lp-practise"${fbl(`learn.games.${learn.key}`)}><b>${t('learn.practise')}</b> ${t(`learn.games.${learn.key}`)}${band ? ` · ${t('learn.grades', band)}` : ''}${hub ? html` · <a href="${lp(req, `/learn/${hub.slug}`)}">${t('learn.seeAll', { name: t(`learn.hubs.${hub.key}.name`) })}</a>` : ''}</p>` : ''}
+          ${learn ? html`<p class="lp-practise"${fbl(`learn.games.${learn.key}`)}><b>${t('learn.practise')}</b> ${t(`learn.games.${learn.key}`)}${band ? ` · ${t('learn.grades', band)}` : ''}${ages ? ` · ${t('learn.ages.line', ages)}` : ''}${hub ? html` · <a href="${lp(req, `/learn/${hub.slug}`)}">${t('learn.seeAll', { name: t(`learn.hubs.${hub.key}.name`) })}</a>` : ''}</p>` : ''}
           <div class="taglist"><a class="tag" href="/search?cat=${cat.key}">${cat.icon} ${categoryLabel(cat.key, t)}</a>${d.tagList.map(tag => html`<a class="tag" href="/search?q=${encodeURIComponent(tag)}">#${tag}</a>`)}</div>
           <p class="small muted" style="margin:12px 0 0">${players}${g.orientation === 'landscape' ? `📱↔️ ${t('game.about.sideways')} · ` : ''}${t('game.about.updated', { when: f.ago(g.updated_at) })}</p>
         </section>

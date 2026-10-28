@@ -1,16 +1,16 @@
 // /robots.txt and /sitemap.xml (server/seo.js has the rules). Registered before the session: no cookie, no database
 // write, the same answer for everyone.
 //
-// The sitemap lists only what may be indexed: the home page, /teachers, the /learn/* pages, the official launch games
-// that are live and public (visibleWhere(null), source='seed', owned by the official account), /safety, /parents, the
-// legal pages, /sdk/ and, once paid plans are public, /plans. Never a profile, a class, or a game a child made.
+// The sitemap lists only what may be indexed: the home page, /teachers, the /learn/* subject and age pages, the official launch games
+// that are live and public (visibleWhere(null), source='seed', owned by the official account), /safety, /parents and
+// its guides, the legal pages, /sdk/ and, once paid plans are public, /plans. Never a profile, a class, or a game a child made.
 import { Router } from 'express';
 import { config } from '../config.js';
 import { q } from '../db.js';
 import { visibleWhere } from '../services/games.js';
 import { OFFICIAL } from '../auth.js';
 import { esc } from '../views/html.js';
-import { HUBS, CONTENT_UPDATED } from '../learn.js';
+import { HUBS, AGES, PARENT_GUIDES, CONTENT_UPDATED } from '../learn.js';
 import { LEGAL_UPDATED } from './info.js';
 import { billingOn } from '../services/stripe.js';
 import { legacyHosts, hostOnly } from '../site.js';
@@ -51,7 +51,9 @@ export function sitemapEntries() {
       return { path: `/g/${g.slug}`, langs: Object.keys(l10n), lastmod: day(Math.max(g.updated_at || 0, g.published_at || 0)), images: [`/covers/${g.slug}.jpg`] };
     }),
     { path: '/safety', langs: langsWithKey('info.safety.heading') },
-    { path: '/parents', langs: langsWithKey('info.parents.heading') },
+    { path: '/parents', langs: langsWithKey('parents.h1'), lastmod: CONTENT_UPDATED, images: ['/og/parents.jpg'] },
+    ...PARENT_GUIDES.map(g => ({ path: `/parents/${g.slug}`, langs: langsWithKey(`parents.${g.key}.h1`), lastmod: CONTENT_UPDATED, images: [`/og/parents-${g.slug}.jpg`] })),
+    ...AGES.map(a => ({ path: `/learn/${a.slug}`, langs: langsWithKey(`learn.ages.${a.key}.h1`), lastmod: CONTENT_UPDATED, images: [`/og/ages-${a.min}-${a.max}.jpg`] })),
     { path: '/privacy', lastmod: LEGAL_UPDATED }, { path: '/terms', lastmod: LEGAL_UPDATED }, { path: '/refunds', lastmod: LEGAL_UPDATED },
     { path: '/sdk/' },
     ...(billingOn() && config.billingPublic ? [{ path: '/plans' }, { path: '/plans/schools' }] : []),

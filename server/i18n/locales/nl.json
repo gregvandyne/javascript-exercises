@@ -34,7 +34,7 @@
     "footer": {
       "tagline": "© Oomba Academy · Gratis spelen, gratis bouwen",
       "safety": "Veiligheid",
-      "parents": "Voor volwassenen",
+      "parents": "Voor ouders",
       "contact": "Contact",
       "builders": "Voor makers",
       "terms": "Voorwaarden",
@@ -59,7 +59,8 @@
     "schools": "Scholen",
     "family": "Gezin",
     "plans": "Prijzen",
-    "teachers": "Leerkrachten"
+    "teachers": "Leerkrachten",
+    "parents": "Ouders"
   },
   "errors": {
     "goHome": "Naar de start",
@@ -351,7 +352,8 @@
     "intro": {
       "heading": "Leuke, interactieve leerspelletjes voor kinderen",
       "text": "Gratis games voor kinderen van 8 tot 14 jaar, voor in de klas of thuis, en een Bouwer die je eigen idee in een game verandert.",
-      "teachers": "Voor leerkrachten"
+      "teachers": "Voor leerkrachten",
+      "parents": "Voor ouders"
     }
   },
   "search": {
@@ -3132,13 +3134,13 @@
     "play": "Spelen",
     "about": "Over de game",
     "tipsHeading": "In de klas",
-    "faqHeading": "Vragen van leerkrachten",
+    "faqHeading": "Vragen van ouders en leerkrachten",
     "moreHeading": "Meer spelletjes per vak",
     "teachersLink": "Oomba Academy voor leerkrachten",
     "safetyLink": "Hoe we kinderen veilig houden",
     "noGames": "Deze games worden bijgewerkt. Kom snel terug.",
     "games": {
-      "sumRacer": "Rekenen van plussommen tot 10 tot de tafels en delen, als kartrace. Twee leerlingen kunnen op één scherm tegen elkaar racen.",
+      "sumRacer": "Rekenen van plussommen tot 10 tot de tafels en delen, als kartrace. Twee spelers kunnen op één scherm tegen elkaar racen.",
       "wordHunt": "Woordzoekers met thema's en Engelse woorden die worden voorgelezen, een puzzel van de dag en een modus om tegen een vriend te racen.",
       "sharkPlank": "Galgje met Engelse woorden voor beginnende lezers, met elk woord voorgelezen.",
       "wordPeek": "Een dagelijkse Engelse woordpuzzel met hints na elke poging, plus versies met 4 en 6 letters.",
@@ -3148,7 +3150,8 @@
       "loopLab": "Beats maken met drums, bas en melodie, ze aan elkaar plakken tot een liedje en 10 muziekuitdagingen halen.",
       "beatLanes": "Tikken op de maat van negen liedjes, van Twinkel, twinkel, kleine ster tot de Cancan.",
       "swishFlick": "Veeg om te scoren: de richting bepaalt waar je mikt en de snelheid hoe ver de bal vliegt.",
-      "munchMaze": "Een achtervolging in een doolhof: een route plannen, alle bolletjes opeten en de Gloops ontwijken."
+      "munchMaze": "Een achtervolging in een doolhof: een route plannen, alle bolletjes opeten en de Gloops ontwijken.",
+      "heroOfSunvale": "Een groot 3D-avontuur: een koninkrijk verkennen, de dorpelingen helpen met missies en vriendelijke gevechten winnen om de prinses te bevrijden."
     },
     "hubs": {
       "math": {
@@ -3176,8 +3179,11 @@
           "q2": "Kunnen twee leerlingen tegen elkaar racen?",
           "a2": "Ja. Twee spelers kunnen op één scherm racen.",
           "q3": "Is het gratis?",
-          "a3": "Ja. Het is gratis te spelen, zonder reclame, en leerlingen kunnen beginnen zonder account."
-        }
+          "a3": "Ja. Het is gratis te spelen, zonder reclame, en leerlingen kunnen beginnen zonder account.",
+          "q4": "Kan mijn kind thuis één tafel apart oefenen?",
+          "a4": "Ja. In Sum Racer kan je kind precies kiezen welke tafels het wil oefenen."
+        },
+        "home": "Een race van vijf minuten na school houdt de sommen vers. Kies het circuit waar je kind op school mee bezig is, of kies precies welke tafels het moet oefenen, en race tegen elkaar op hetzelfde scherm."
       },
       "words": {
         "name": "Engelse woordspelletjes",
@@ -3193,8 +3199,11 @@
           "q2": "Is er een puzzel van de dag?",
           "a2": "Ja. Word Hunt en Word Peek hebben elk een nieuwe puzzel van de dag, en in Word Peek kan een leerling een geheim woord opgeven voor een vriend.",
           "q3": "Kan ik mijn eigen woordenlijst gebruiken?",
-          "a3": "In deze games nog niet. Je kunt de Bouwer een spellingsspel met jouw woorden beschrijven, en hij maakt er een voor je klas."
-        }
+          "a3": "In deze games nog niet. Je kunt de Bouwer een spellingsspel met jouw woorden beschrijven, en hij maakt er een voor je klas.",
+          "q4": "Welk woordspelletje past bij het leesniveau van mijn kind?",
+          "a4": "Shark Plank en Word Hunt lezen de woorden voor, dus ze passen bij kinderen die nog leren lezen. Word Peek is voor kinderen die al goed kunnen spellen."
+        },
+        "home": "Maak van het Woord van de dag een vast moment bij het ontbijt en bespreek samen elke poging, of laat een jongere lezer Shark Plank spelen met het geluid aan, zodat elk woord wordt voorgelezen."
       },
       "strategy": {
         "name": "Schaken en strategiespellen",
@@ -3210,8 +3219,11 @@
           "q2": "Kunnen twee leerlingen op één apparaat spelen?",
           "a2": "Ja. Castle Clash en Drop Four hebben allebei een modus voor twee spelers op één scherm.",
           "q3": "Hoe sterk is de robot?",
-          "a3": "De robot van Castle Clash heeft vier niveaus, en die van Drop Four heeft Makkelijk, Normaal en Moeilijk."
-        }
+          "a3": "De robot van Castle Clash heeft vier niveaus, en die van Drop Four heeft Makkelijk, Normaal en Moeilijk.",
+          "q4": "Kan ik samen met mijn kind leren schaken?",
+          "a4": "Ja. De lessen van Castle Clash beginnen bij hoe elk stuk beweegt, dus ook een volwassene die nog nooit heeft geschaakt kan het leren, en daarna op hetzelfde scherm tegen het kind spelen."
+        },
+        "home": "Leer samen schaken: doe elke dag één les van Castle Clash en speel daarna tegen elkaar op één scherm. Een potje Drop Four past in elke vrije vijf minuten."
       },
       "music": {
         "name": "Muziekspelletjes",
@@ -3225,8 +3237,11 @@
           "q1": "Moeten leerlingen noten kunnen lezen?",
           "a1": "Nee. Beide games werken met kleuren en timing, niet met geschreven noten.",
           "q2": "Kunnen leerlingen hele liedjes maken?",
-          "a2": "Ja. In Loop Lab kunnen ze patronen aan elkaar plakken tot een liedje en het afspelen als een klein concert."
-        }
+          "a2": "Ja. In Loop Lab kunnen ze patronen aan elkaar plakken tot een liedje en het afspelen als een klein concert.",
+          "q3": "Heeft mijn kind een instrument of muziekles nodig?",
+          "a3": "Nee. Alles gebeurt in de browser, met kleuren en timing in plaats van geschreven noten."
+        },
+        "home": "Voor Loop Lab zijn geen lessen en geen instrument nodig: kinderen maken een beat, plakken die aan elkaar tot een liedje en laten het aan het hele gezin horen. In een druk huis helpt een koptelefoon."
       },
       "brainBreaks": {
         "name": "Energizers en breinpauzes",
@@ -3245,9 +3260,9 @@
       },
       "makeAGame": {
         "name": "Maak je eigen game",
-        "short": "Leerlingen ontwerpen games met de AI-Bouwer",
-        "title": "Maak je eigen game: AI-gamemaker voor de klas",
-        "description": "Leerlingen beschrijven een game in gewone woorden en de Bouwer maakt hem en toont zijn stappen. Zonder reclame, 8 tot 14 jaar, privé tot je hem deelt.",
+        "short": "Kinderen ontwerpen games met de AI-Bouwer",
+        "title": "Zelf een game maken met AI, voor kinderen",
+        "description": "Kinderen beschrijven een game in gewone woorden, de Bouwer maakt hem en toont de stappen. Zonder programmeren of reclame, 8-14 jaar, privé tot je hem deelt.",
         "h1": "Maak je eigen game, zonder te programmeren",
         "lead": "Op Oomba Academy beschrijven leerlingen de game die ze willen en de AI-Bouwer maakt hem. Daarna spelen ze hem, testen ze hem en vragen ze om aanpassingen, één idee tegelijk.",
         "how": {
@@ -3273,11 +3288,373 @@
           "q2": "Wie kan de games zien die leerlingen maken?",
           "a2": "Alleen de leerling zelf, totdat die de game deelt. Die kan hem delen met vrienden of de klas, en een game voor iedereen wordt gecontroleerd voordat anderen hem kunnen spelen.",
           "q3": "Voor welke leeftijden is het?",
-          "a3": "Voor 8 tot 14 jaar."
-        }
+          "a3": "Voor 8 tot 14 jaar.",
+          "q4": "Mijn kind wil zelf games maken. Waar begint het?",
+          "a4": "Met een klein idee, zoals een doolhof of een vangspel. Je kind beschrijft het, speelt het en vraagt dan om één aanpassing tegelijk. Later proberen veel kinderen ook programmeertools zoals Scratch.",
+          "q5": "Is dit echt programmeren?",
+          "a5": "Niet helemaal. De Bouwer schrijft de code. Je kind doet het ontwerpen, het testen en het uitleggen, en dat zijn grote onderdelen van games maken. De stappen die de Bouwer laat zien, helpen nieuwsgierige kinderen te zien hoe een game in elkaar zit.",
+          "q6": "Wat kost het?",
+          "a6": "Niets. Elke speler met een account (alleen een verzonnen naam en een wachtwoord) krijgt elke dag gratis berichten aan de Bouwer.",
+          "a6paid": "Bouwen is gratis: elke speler met een account (alleen een verzonnen naam en een wachtwoord) krijgt elke dag gratis berichten aan de Bouwer. Gezinnen en scholen kunnen kiezen voor een optioneel abonnement met extra berichten. <a href=\"{plans}\">Bekijk de abonnementen</a>.",
+          "q7": "Is de AI-Bouwer veilig voor mijn kind?",
+          "a7": "Hij maakt alleen games en volgt in elke taal vaste regels voor kindveiligheid. <a href=\"{ai}\">Lees wat hij ziet en welke regels hij volgt</a>."
+        },
+        "parents": {
+          "h": "Voor ouders: waarom maken beter is dan alleen spelen",
+          "p1": "Een game maken is actieve schermtijd. Je kind bedenkt een plan, legt het duidelijk uit, test wat de Bouwer heeft gemaakt en beslist wat er daarna moet worden verbeterd: dezelfde stappen die gameontwerpers zetten.",
+          "p2": "Het is een leuk project om samen in het weekend te doen, en bouwen is elke dag gratis."
+        },
+        "ideas": {
+          "h": "Ideeën om mee te beginnen",
+          "li1": "Een doolhof waarin een kat vissen verzamelt",
+          "li2": "Een quiz over mijn lievelingsdieren",
+          "li3": "Een ruimtespel waarin je vallende sterren vangt",
+          "li4": "Een race tussen drie slakken",
+          "li5": "Een puzzel waarin je kleuren in potten sorteert",
+          "p": "Vraag daarna om één aanpassing tegelijk, zoals “maak de kat sneller” of “voeg een tweede level toe”."
+        },
+        "scratch": {
+          "h": "Hoe het zich verhoudt tot Scratch en programmeren",
+          "p": "Scratch en Code.org leren kinderen programmeren met blokken. De Bouwer werkt anders: kinderen ontwerpen met woorden, en de Bouwer schrijft de game en laat daarbij zijn stappen zien. Veel kinderen doen allebei, en de Bouwer kan een eerste stap zijn voordat ze zelf gaan coderen."
+        },
+        "safeLink": "Is de AI-Bouwer veilig? Een gids voor ouders"
       }
     },
     "grades": "Amerikaanse grade {from}–{to}",
-    "seeAll": "Bekijk alle {name}"
+    "seeAll": "Bekijk alle {name}",
+    "homeHeading": "Thuis",
+    "parentsLink": "Oomba Academy voor ouders",
+    "byAgeHeading": "Spelletjes per leeftijd",
+    "ages": {
+      "line": "{from}–{to} jaar",
+      "fit": "Waarom het bij deze leeftijd past:",
+      "skills": {
+        "h": "Wat ze oefenen"
+      },
+      "together": {
+        "h": "Samen spelen",
+        "p": "{count, plural, one {{games} heeft een modus voor twee spelers} other {{games} hebben allemaal een modus voor twee spelers}} op één scherm: leuk voor broers en zussen, vrienden, of een volwassene met een kind."
+      },
+      "safe": {
+        "h": "Veiligheid in één minuut",
+        "p": "Geen reclame, niets te koop voor kinderen en geen chat met vreemden: vrienden worden alleen met een code toegevoegd. We vragen kinderen nooit om een e-mailadres. <a href=\"{href}\">Meer voor ouders</a>."
+      },
+      "make": {
+        "h": "Maak je eigen game",
+        "link": "Zo werkt een game maken"
+      },
+      "moreHeading": "Spelletjes voor andere leeftijden",
+      "faq": {
+        "q1": "Zijn deze spelletjes gratis?",
+        "a1": "Ja. Elk spel is gratis te spelen in de browser, zonder reclame en zonder downloads, en kinderen kunnen beginnen zonder account."
+      },
+      "a8": {
+        "name": "8 en 9 jaar",
+        "short": "Tafels, Engelse woordjes, eerste schaakpartijen en muziek",
+        "title": "Gratis leerspelletjes voor 8- en 9-jarigen",
+        "description": "Gratis spelletjes zonder reclame voor kinderen van 8 en 9: tafels, Engelse woordjes, eerste schaakzetten en muziek. Geen downloads, geen chat met vreemden.",
+        "h1": "Leerspelletjes voor kinderen van 8 en 9 jaar",
+        "lead": "Met 8 en 9 jaar leren kinderen de tafels, lezen ze langere woorden en houden ze van spelletjes die ze kunnen winnen. Deze spelletjes hebben korte rondes, lezen woorden voor waar dat helpt en laten twee kinderen op één scherm spelen.",
+        "fit": {
+          "sumRacer": "Begin met plussommen tot 10 of 20, en ga verder met de tafels van 2, 5 en 10 als ze eraan toe zijn.",
+          "wordHunt": "Woordzoekers met thema's en Engelse woorden voor beginnende lezers: ze kunnen op elk woord tikken om het te horen.",
+          "sharkPlank": "Goed voor kinderen die nog leren lezen: elk woord wordt voorgelezen.",
+          "castleClash": "Een korte les voor elk stuk en daarna de robot op het makkelijkste niveau, zodat een eerste schaakpartij geen muur van regels is.",
+          "connectFour": "Snelle potjes om vooruit te leren denken, tegen een broer of zus of tegen de robot op Makkelijk.",
+          "loopLab": "Tik op vakjes om een beat te maken en hoor hem meteen herhalen. Noten lezen is niet nodig.",
+          "beatLanes": "Tikken op de maat van liedjes die ze kennen, te beginnen met Twinkel, twinkel, kleine ster.",
+          "munchMaze": "Een achtervolging in een doolhof met een makkelijke modus: een route plannen en alle bolletjes verzamelen."
+        },
+        "faq": {
+          "q2": "Zijn de spelletjes te moeilijk voor een kind van 8?",
+          "a2": "Elk spel begint makkelijk. Sum Racer start met plussommen tot 10, de robot van Castle Clash heeft een makkelijk niveau en Shark Plank leest elk woord voor.",
+          "q3": "Kunnen twee kinderen op één apparaat spelen?",
+          "a3": "Ja. Sum Racer, Castle Clash en Drop Four hebben een modus voor twee spelers op één scherm.",
+          "q4": "Kan een kind van 8 de AI-Bouwer gebruiken?",
+          "a4": "Ja. Kinderen typen hun idee, dus het helpt als ze een zin of twee kunnen schrijven, en in het begin is het fijn als er een volwassene in de buurt is. De Bouwer volgt vaste regels voor kindveiligheid."
+        }
+      },
+      "a10": {
+        "name": "10 en 11 jaar",
+        "short": "Tafels en delen, woord- en schaakpuzzels, zelf games maken",
+        "title": "Gratis leerspelletjes voor 10- en 11-jarigen",
+        "description": "Gratis browserspelletjes zonder reclame voor kinderen van 10 en 11: tafels en delen, een dagelijkse woordpuzzel, schaakpuzzels, muziek en zelf games maken.",
+        "h1": "Leerspelletjes voor kinderen van 10 en 11 jaar",
+        "lead": "Met 10 en 11 jaar willen kinderen een echte uitdaging en zelf meebeslissen over wat ze spelen. Deze spelletjes gaan door tot alle tafels en delen, schaakpuzzels en een dagelijkse woordpuzzel, en met de Bouwer maken ze zelf een game.",
+        "abcya": "Uitgekeken op spelletjessites voor kleuters? Oomba Academy is gemaakt voor kinderen van 8 tot 14.",
+        "make": {
+          "p": "Kinderen van deze leeftijd vinden het geweldig om zelf games te maken. Ze beschrijven er een in gewone woorden, zoals “een quiz over vulkanen” of “een doolhof met een robot”, en de Bouwer maakt hem. Daarna testen ze hem en vragen ze om aanpassingen. Het is elke dag gratis."
+        },
+        "fit": {
+          "sumRacer": "Klaar voor de moeilijkere sommen: alle tafels tot en met 12, delen en een gemengd circuit met alle vier de bewerkingen.",
+          "wordPeek": "Een dagelijkse puzzel die goed nadenken beloont, met een hint na elke poging, precies wanneer hun woordenschat groeit.",
+          "castleClash": "Voorbij de basis? 24 schaakmatpuzzels en moeilijkere robotniveaus geven ze iets echts om te verslaan.",
+          "brickDrop": "Het tempo gaat snel omhoog: ideaal voor kinderen die een echte uitdaging willen en hun eigen record willen verbreken.",
+          "loopLab": "Oud genoeg om een heel liedje te plannen: beats aan elkaar plakken en de 10 muziekuitdagingen halen.",
+          "heroOfSunvale": "Groter dan een snel spelletje: missies om te lezen en te volgen, en een 3D-koninkrijk om op hun eigen tempo te verkennen.",
+          "swishFlick": "Een snelle pauze met een beetje natuurkunde: de richting van de veeg bepaalt waar je mikt en de snelheid hoe ver de bal vliegt."
+        },
+        "faq": {
+          "q2": "Zijn de spelletjes te makkelijk voor een kind van 10?",
+          "a2": "Nee. Sum Racer gaat door tot alle tafels en delen, Castle Clash heeft 24 schaakmatpuzzels en Word Peek is elke dag een echte uitdaging.",
+          "q3": "Kan mijn kind met een broer, zus of vriend spelen?",
+          "a3": "Ja. Sum Racer en Castle Clash hebben een modus voor twee spelers op één scherm, en Word Hunt heeft een race waarbij je de telefoon doorgeeft.",
+          "q4": "Is de AI-Bouwer veilig voor een kind van 11?",
+          "a4": "De Bouwer maakt alleen games en volgt vaste regels voor kindveiligheid, zoals geen bloederige beelden, geen gokken, geen echte merken en geen links naar buiten. <a href=\"{ai}\">Bekijk alle regels die hij volgt</a>. Games blijven privé tot je kind ze deelt."
+        }
+      },
+      "a12": {
+        "name": "12 tot 14 jaar",
+        "short": "Strategie, muziek, puzzels en zelf games maken",
+        "title": "Gratis leerspelletjes voor 12- tot 14-jarigen",
+        "description": "Games voor kinderen van 12, 13 en 14 die niet kinderachtig zijn: schaken, woordpuzzels, muziek maken, een 3D-avontuur en een AI-Bouwer voor eigen games.",
+        "h1": "Games voor 12 tot 14 jaar die niet kinderachtig zijn",
+        "lead": "Veel spelletjessites voor kinderen houden op rond 11 jaar. Voor 12- tot 14-jarigen is maken het leukste deel van Oomba Academy: ze ontwerpen hun eigen games met de AI-Bouwer, delen ze met vrienden en blijven ze verbeteren. De games hieronder zijn fijn voor een pauze tussendoor.",
+        "make": {
+          "p": "Beschrijf een game in gewone woorden en de Bouwer maakt hem: een platformspel, een quiz over een schoolonderwerp, een puzzel voor een vriend. Test hem daarna, zoek wat er niet klopt en vraag om aanpassingen. Het is elke dag gratis."
+        },
+        "fit": {
+          "castleClash": "Echt schaken zonder kindermodus: schaakmatpuzzels en het moeilijkste niveau van de robot zijn een echte test, zelfs voor volwassenen.",
+          "wordPeek": "Moeilijker dan de dagelijkse puzzel: Groot woord met 6 letters, of bedenk een geheim woord dat een vriend moet raden.",
+          "brickDrop": "Race naar 40 lijnen in Sprint, of ga door in Marathon terwijl het steeds sneller gaat.",
+          "loopLab": "Tieners die van muziek houden, bouwen hele nummers met drums, bas en melodie, niet alleen simpele beats.",
+          "beatLanes": "Negen liedjes en lange combo's voor snelle vingers.",
+          "heroOfSunvale": "Een groot 3D-koninkrijk om te verkennen, met missies en een draak aan het eind."
+        },
+        "faq": {
+          "q2": "Is Oomba Academy te kinderachtig voor een kind van 13?",
+          "a2": "Het is gemaakt voor 8 tot 14 jaar. Oudere kinderen komen vooral voor de Bouwer, echt schaken en muziek maken, en die groeien met ze mee.",
+          "q3": "Kan mijn tiener zelf games maken?",
+          "a3": "Ja. Ze beschrijven de game in woorden en de Bouwer maakt hem. Een nieuwe game is privé tot ze hem delen, en een game voor iedereen wordt eerst beoordeeld door Claude, waarna ons team de games bekijkt waarover Claude twijfelt.",
+          "q4": "Is er een chat met vreemden?",
+          "a4": "Nee. Kinderen chatten alleen met vrienden die ze met een code van 6 tekens hebben toegevoegd, nooit door op namen te zoeken, en ze kunnen de chat uitzetten op de pagina Ik."
+        }
+      }
+    }
+  },
+  "parents": {
+    "title": "Veilige, gratis leerspelletjes voor kinderen",
+    "description": "Leuke, gratis leerspelletjes voor 8 tot 14 jaar in de browser: rekenen, woorden, schaken en muziek. Geen reclame, geen chat met vreemden, en zelf games maken.",
+    "kicker": "👪 Voor ouders",
+    "h1": "Leuke leerspelletjes voor 8 tot 14 jaar, veilig vanaf het begin",
+    "lead": "Oomba Academy is een website met korte leerspelletjes die kinderen direct in de browser spelen: rekenraces, woordpuzzels, schaken en muziek. Als ze eraan toe zijn, kunnen ze hun eigen games maken door ze te beschrijven aan onze AI-Bouwer.",
+    "badges": {
+      "free": "Gratis te spelen",
+      "ads": "Geen reclame",
+      "buy": "Niets te koop voor kinderen",
+      "strangers": "Geen chat met vreemden",
+      "browser": "Werkt in elke browser",
+      "languages": "{count} talen"
+    },
+    "cta": {
+      "start": "Laat je kind gratis beginnen",
+      "try": "Probeer nu een spel, zonder account",
+      "grownup": "Maak een ouderaccount",
+      "lead": "Genoeg gezien? Probeer nu samen met je kind een spelletje."
+    },
+    "teachers": "Geef je les? Bekijk <a href=\"{href}\">Oomba Academy voor leerkrachten</a>.",
+    "play": {
+      "h": "Leren dat voelt als spelen",
+      "p": "Elk spel oefent in een paar minuten een echte vaardigheid, en kinderen komen terug omdat het leuk is. Kies er een om samen te proberen."
+    },
+    "subjects": {
+      "h": "Kies per vak"
+    },
+    "ages": {
+      "h": "Spelletjes voor elke leeftijd",
+      "p": "Tussen 8 en 14 jaar veranderen kinderen enorm. Deze pagina's kiezen de spelletjes die bij elke leeftijd passen en leggen uit waarom."
+    },
+    "make": {
+      "h": "Van spelen naar maken",
+      "p1": "Je kind beschrijft een game in eigen woorden, zoals “een doolhof waarin een kat vissen verzamelt”, en de Bouwer maakt hem. Daarna speelt je kind hem, ziet wat er anders moet en vraagt om aanpassingen, één idee tegelijk.",
+      "p2": "Dat is plannen, duidelijk schrijven, testen en verbeteren, zonder eerst te hoeven programmeren. Bouwen is elke dag gratis voor elke speler met een account (alleen een verzonnen naam en een wachtwoord).",
+      "link": "Zo werkt een game maken",
+      "safe": "Is de AI-Bouwer veilig?"
+    },
+    "safe": {
+      "h": "Waarom het veilig is",
+      "li1": "Geen reclame, geen lootboxen en niets te koop voor kinderen. Kinderen wordt nooit gevraagd om te betalen.",
+      "li2": "Geen chat met vreemden. Vrienden worden alleen toegevoegd met een vriendcode van 6 tekens, nooit door op namen te zoeken. De chat is alleen tussen vrienden, filtert grof taalgebruik en persoonlijke gegevens, en kan worden gemeld.",
+      "li3": "We vragen kinderen nooit om een e-mailadres, leeftijd, woonadres of locatie.",
+      "li4": "Games die kinderen maken, blijven privé tot ze die delen, en een game voor iedereen wordt eerst beoordeeld door Claude, waarna ons team de games bekijkt waarover Claude twijfelt.",
+      "li5": "Kinderen gebruiken verzonnen namen, en hun profielen en namen blijven buiten zoekmachines.",
+      "links": "Lees <a href=\"{safety}\">hoe we kinderen veilig houden</a> en <a href=\"{guide}\">onze gids voor goede schermtijd</a>."
+    },
+    "private": {
+      "h": "Privé vanaf het begin",
+      "p1": "Er is geen reclame en er zijn geen trackingcookies, dus niets hier bouwt een profiel van je kind op voor adverteerders.",
+      "p2": "Er is ook geen ouderdashboard, geen tijdslimiet en geen activiteitenoverzicht. Dat is bewust: we houden niet bij wat je kind doet, ook niet voor jou. Wat je kind maakt, blijft privé tot het dat deelt.",
+      "paid": "Een ouderaccount dat aan je kind is gekoppeld, ziet alleen de naam van je kind en hoeveel van de extra gezinsberichten aan de Bouwer het heeft gebruikt.",
+      "p3": "Wil je limieten instellen? Gebruik dan de tools die in het apparaat van je kind zitten, zoals Schermtijd van Apple, Google Family Link of Microsoft Family Safety. <a href=\"{href}\">Onze gids over schermtijd</a> legt uit hoe."
+    },
+    "home": {
+      "h": "Thuis en bij thuisonderwijs",
+      "p": "Gezinnen passen een spelletje in waar een paar minuten spelen helpt:",
+      "li1": "Een tafelrace na school",
+      "li2": "Het Woord van de dag bij het ontbijt",
+      "li3": "Samen een potje schaken",
+      "li4": "In het weekend samen een game bouwen",
+      "li5": "Blijven oefenen in de vakantie",
+      "li6": "Een regendagpauze waar je toch iets van leert",
+      "li7": "Rekenen, lezen en muziek bij thuisonderwijs"
+    },
+    "families": {
+      "p2": "Abonnementen zijn optioneel. Ze geven alleen extra berichten aan de Bouwer, en kinderen wordt nooit gevraagd om te betalen."
+    },
+    "detail": {
+      "h": "Veiligheid en privacy in detail",
+      "p": "Wat we bewaren, wat we nooit verzamelen, wat de AI ziet en hoe vrienden en chat werken, in gewone woorden. Onze <a href=\"{href}\">privacyverklaring</a> heeft de volledige tekst."
+    },
+    "faq": {
+      "h": "Vragen van ouders",
+      "q1": "Is Oomba Academy gratis?",
+      "a1": "Ja. Elk spel is gratis te spelen, en elke speler met een account (alleen een verzonnen naam en een wachtwoord) krijgt elke dag gratis berichten aan de Bouwer om eigen games te maken. Er is geen reclame en er valt niets te kopen voor kinderen.",
+      "a1paid": "Ja. Elk spel is gratis te spelen, en elke speler met een account (alleen een verzonnen naam en een wachtwoord) krijgt elke dag gratis berichten aan de Bouwer. Gezinnen kunnen kiezen voor een optioneel abonnement met extra berichten aan de Bouwer, en kinderen wordt nooit gevraagd om te betalen. <a href=\"{plans}\">Bekijk de abonnementen</a>.",
+      "q2": "Voor welke leeftijden is het?",
+      "a2": "Voor kinderen van 8 tot 14 jaar. Sommige spelletjes, zoals Shark Plank en de eerste circuits van Sum Racer, zijn ook geschikt voor jongere lezers.",
+      "q3": "Heeft mijn kind een account of e-mailadres nodig?",
+      "a3": "Nee. Iedereen kan meteen spelen, zonder account. Om hun games en scores te bewaren, kunnen kinderen een account maken met alleen een verzonnen naam en een wachtwoord. We vragen nooit om een e-mailadres.",
+      "q4": "Zijn er reclame of in-app-aankopen?",
+      "a4": "Nee. Geen reclame, geen in-app-aankopen, geen lootboxen en geen spelgeld dat echt geld kost. Kinderen wordt nooit gevraagd om te betalen.",
+      "q5": "Kunnen vreemden met mijn kind praten?",
+      "a5": "Nee. Kinderen kunnen alleen chatten met vrienden die ze met een vriendcode van 6 tekens hebben toegevoegd, nooit door op namen te zoeken. De chat filtert grof taalgebruik, telefoonnummers, e-mailadressen, adressen en links, kinderen kunnen iedereen blokkeren of melden, en ze kunnen de chat uitzetten op de pagina Ik.",
+      "q6": "Wat doet de AI-Bouwer met wat mijn kind typt?",
+      "a6": "Hij stuurt de berichten, afbeeldingen en bestanden van je kind naar Claude, een AI van Anthropic, om de game te schrijven, zonder de naam of gebruikersnaam van je kind. Als je kind een profielfoto uploadt, gaat die ook naar Claude, zodat hij wordt gecontroleerd voordat iemand hem ziet. Chats tussen vrienden en antwoorden in lessen worden nooit naar de AI gestuurd. <a href=\"{ai}\">Hoe de Bouwer kindveilig blijft</a>.",
+      "q7": "Kan ik zien wat mijn kind doet?",
+      "a7": "Niet op de site, en dat is bewust: er is geen ouderdashboard of activiteitenoverzicht. De beste manier om te zien wat je kind doet, is samen spelen of bouwen.",
+      "a7paid": "Niet op de site, en dat is bewust: er is geen ouderdashboard of activiteitenoverzicht. Een gekoppeld ouderaccount ziet alleen de naam van je kind en hoeveel van de extra gezinsberichten aan de Bouwer het heeft gebruikt. De beste manier om te zien wat je kind doet, is samen spelen of bouwen.",
+      "q8": "Werkt het op Chromebooks, tablets en telefoons?",
+      "a8": "Ja. Het werkt in elke actuele webbrowser op computers, Chromebooks, tablets en telefoons, zonder iets te downloaden. Een paar spelletjes werken het best met de telefoon gekanteld.",
+      "q9": "Welke talen zijn er?",
+      "a9": "{count} talen, waaronder Nederlands, Spaans, Frans, Duits, Portugees, Arabisch, Hebreeuws en Japans. Je kind kiest een taal met de 🌐-knop, en de Bouwer antwoordt in die taal.",
+      "q10": "Is het goede schermtijd?",
+      "a10": "Wat kinderen op een scherm doen, is net zo belangrijk als hoe lang. Korte spelletjes die een vaardigheid oefenen en zelf iets maken, horen bij de goede soort. Stel je eigen limieten in met de tools van je apparaat. <a href=\"{screen}\">Lees onze gids over schermtijd</a>."
+    },
+    "guides": {
+      "h": "Gidsen voor ouders"
+    },
+    "updated": "Bijgewerkt op {date}",
+    "ai": {
+      "name": "Is de AI-Bouwer veilig?",
+      "short": "Wat de AI ziet, wat hij nooit krijgt en welke regels hij volgt",
+      "title": "Is AI veilig voor kinderen? Zo werkt de Bouwer",
+      "description": "Wat de AI ziet, wat hij nooit krijgt en welke regels hij volgt: een heldere gids voor ouders van kinderen van 8 tot 14 over de AI-Bouwer van Oomba Academy.",
+      "h1": "Is de AI-Bouwer veilig voor mijn kind?",
+      "lead": "De Bouwer van Oomba Academy gebruikt AI om het idee van je kind in een game te veranderen. Hier lees je in gewone woorden wat hij ziet, wat hij nooit krijgt, welke regels hij volgt en wat we niet kunnen beloven.",
+      "what": {
+        "h": "Wat de Bouwer is",
+        "p1": "De Bouwer maakt games. Je kind beschrijft een idee, en de Bouwer schrijft de game, laat zijn stappen zien terwijl hij werkt en stelt een vraag als hij meer moet weten.",
+        "p2": "Hij is gemaakt om games te bouwen, niet als vriend of maatje om over van alles mee te kletsen."
+      },
+      "sees": {
+        "h": "Wat de AI ziet, en wat hij nooit krijgt",
+        "li1": "De berichten, afbeeldingen en bestanden die je kind aan de Bouwer geeft, gaan naar Claude, een AI van het bedrijf Anthropic, die de game schrijft.",
+        "li2": "De naam en gebruikersnaam van je kind worden daar niet bij meegestuurd.",
+        "li3": "Chats tussen vrienden en antwoorden in lessen worden nooit naar de AI gestuurd.",
+        "li4": "Verborgen locatiegegevens worden uit foto's en afbeeldingen verwijderd voordat ze worden bewaard.",
+        "li5": "Als je kind een profielfoto uploadt, gaat die naar Claude, zodat hij wordt gecontroleerd voordat iemand hem ziet.",
+        "li6": "Games die je kind met iedereen wil delen, worden eerst beoordeeld door Claude."
+      },
+      "rules": {
+        "h": "De regels die hij volgt",
+        "p": "De Bouwer volgt in elke taal vaste regels voor kindveiligheid, en geen enkel bericht kan die veranderen:",
+        "li1": "Geen bloed, bloederige beelden of realistisch geweld, en geen horror of schrikmomenten. Tekenfilmachtige slapstick mag wel.",
+        "li2": "Geen gokken.",
+        "li3": "Geen echte merken en geen echte mensen als personages.",
+        "li4": "Geen chat tussen spelers en geen verzameling van persoonlijke gegevens in games.",
+        "li5": "Geen links naar andere websites en geen reclame in games.",
+        "li6": "Geen romantische inhoud of inhoud voor volwassenen, geen pesten of haat, en niets over zelfbeschadiging, drugs, alcohol of vapen.",
+        "li7": "Geen auteursrechtelijk beschermde personages zoals Mario of Pokémon, en geen echte klasgenoten, leerkrachten of familieleden in games.",
+        "p2": "Een verzoek dat de regels breekt, wordt vriendelijk geweigerd, met ideeën voor iets wat de Bouwer wel kan maken."
+      },
+      "public": {
+        "h": "Wie de games ziet",
+        "p": "Een nieuwe game is alleen zichtbaar voor je kind. Je kind kan hem delen met vrienden of de klas. Een game voor iedereen wordt door Claude beoordeeld voordat anderen hem kunnen spelen, en ons team bekijkt de games waarover Claude twijfelt. Elke game draait in een afgesloten sandbox die niet bij het internet of het account van je kind kan."
+      },
+      "limits": {
+        "h": "Wat we niet kunnen beloven",
+        "p1": "Geen enkel filter is perfect. Een AI kan een verzoek verkeerd begrijpen of een fout maken, en er kan toch iets in een game zitten dat niet geschikt is voor je kind.",
+        "p2": "Zie je iets wat niet klopt? Tik dan op 🚩 Melden op de pagina van de game. Na genoeg meldingen wordt een game verborgen tot ons team ernaar kijkt, en volwassenen kunnen ons ook mailen via {email}."
+      },
+      "check": {
+        "h": "Vijf vragen om te stellen over elke AI-tool voor kinderen",
+        "li1": "<b>Wat doet het?</b> Een tool die iets maakt (een game, een tekening, een verhaal) is iets anders dan een chatbot die over alles praat.",
+        "li2": "<b>Wat stuurt het door, en naar wie?</b> Zoek een duidelijke lijst van wat er naar het AI-bedrijf gaat, en of de naam van je kind wordt meegestuurd.",
+        "li3": "<b>Welke regels volgt het?</b> Een goede tool voor kinderen zegt wat hij weigert te maken.",
+        "li4": "<b>Wie ziet wat je kind maakt?</b> Privé tot het wordt gedeeld is het veiligst.",
+        "li5": "<b>Kun je een probleem melden?</b> Dat moet makkelijk kunnen, en er moet een mens naar kijken."
+      },
+      "faq": {
+        "q1": "Chat mijn kind met een AI?",
+        "a1": "Alleen over de game die het maakt. Je kind beschrijft wat het wil, en de Bouwer stelt vragen en legt zijn stappen uit.",
+        "q2": "Wordt de naam van mijn kind naar de AI gestuurd?",
+        "a2": "Nee. De naam en gebruikersnaam worden niet met de berichten meegestuurd.",
+        "q3": "Kan de AI enge of gewelddadige games maken?",
+        "a3": "Games kunnen tekenfilmachtige actie hebben, zoals de vriendelijke gevechten van een held, maar de Bouwer weigert bloederige beelden, realistisch geweld, horror en schrikmomenten. <a href=\"#rules\">Bekijk alle regels die hij volgt</a>.",
+        "q4": "Zijn de games die mijn kind maakt openbaar?",
+        "a4": "Niet tenzij je kind ze deelt. Een game voor iedereen wordt gecontroleerd voordat anderen hem kunnen spelen.",
+        "q5": "Is de Bouwer een AI-maatje of vriendjesbot?",
+        "a5": "Nee. Het is een hulpmiddel om games te maken."
+      }
+    },
+    "screen": {
+      "name": "Goede schermtijd",
+      "short": "Een checklist om games en apps te kiezen, en hoe je limieten instelt",
+      "title": "Goede schermtijd voor kinderen: een oudergids",
+      "description": "Hoe herken je goede schermtijd? Reclame, aankopen, chat, gegevens, en maken of scrollen. Een checklist voor ouders, met wat wij wel en niet doen.",
+      "h1": "Goede schermtijd: zo kies je games voor kinderen van 8 tot 14",
+      "lead": "Er bestaat geen perfect aantal minuten. Wat kinderen op een scherm doen, met wie en waar het ze naartoe duwt, is net zo belangrijk. Met deze checklist beoordeel je elke game of app, ook die van ons.",
+      "experts": {
+        "h": "Wat de experts zeggen",
+        "p1": "De American Academy of Pediatrics (de Amerikaanse vereniging van kinderartsen) raadt een <a href=\"{aap}\">mediaplan voor het gezin</a> aan in plaats van één getal voor elk kind: voor kinderen op de basisschool vaste afspraken die slaap, schoolwerk, beweging en tijd samen beschermen. Ook <a href=\"{commonsense}\">Common Sense Media</a> kijkt naar de kwaliteit van wat kinderen kijken en spelen, niet alleen naar de minuten.",
+        "p2": "Daarom geven we je hier geen aantal minuten: jij kent je kind. We helpen je wel om te beoordelen waar die minuten aan worden besteed."
+      },
+      "check": {
+        "h": "Een checklist voor elke game of app",
+        "li1": "<b>Reclame:</b> toont het reclame, of video's die naar nog meer video's leiden?",
+        "li2": "<b>Aankopen:</b> kan je kind geld uitgeven? Is er spelgeld, zijn er lootboxen of is het “pay to win”?",
+        "li3": "<b>Vreemden:</b> kunnen mensen die je kind niet kent berichten sturen?",
+        "li4": "<b>Gegevens:</b> vraagt het je kind om een e-mailadres, leeftijd, locatie of foto's?",
+        "li5": "<b>Past bij de leeftijd:</b> is het gemaakt voor de leeftijd van je kind, niet alleen toegestaan?",
+        "li6": "<b>Maken of scrollen:</b> lost je kind iets op, oefent het of maakt het iets, of kijkt het vooral?",
+        "li7": "<b>Samen:</b> kun je het met je kind spelen?"
+      },
+      "us": {
+        "h": "Hoe Oomba Academy het eerlijk gezegd doet",
+        "li1": "<b>Reclame:</b> geen.",
+        "li2": "<b>Aankopen:</b> niets te koop voor kinderen, geen lootboxen en geen spelgeld dat echt geld kost.",
+        "li3": "<b>Vreemden:</b> chatten alleen met vrienden die met een code zijn toegevoegd, gefilterd en te melden.",
+        "li4": "<b>Gegevens:</b> we vragen kinderen nooit om een e-mailadres, leeftijd, adres of locatie. Foto's zijn optioneel: een profielfoto of afbeeldingen voor de Bouwer, waarbij verborgen locatiegegevens worden verwijderd en profielfoto's worden gecontroleerd voordat iemand ze ziet.",
+        "li5": "<b>Past bij de leeftijd:</b> gemaakt voor 8 tot 14 jaar.",
+        "li6": "<b>Maken:</b> kinderen kunnen hun eigen games maken met de AI-Bouwer.",
+        "li7": "<b>Samen:</b> verschillende spelletjes hebben een modus voor twee spelers op één scherm.",
+        "p": "Wat we niet hebben: tijdslimieten, activiteitenoverzichten of een ouderdashboard. Gebruik voor limieten de tools van je eigen apparaat."
+      },
+      "tools": {
+        "h": "Limieten instellen met de tools van je apparaat",
+        "p": "Met deze gratis tools van de makers van de apparaten stel je daglimieten, rusttijd en regels voor apps in:",
+        "li1": "<a href=\"{href}\">Schermtijd van Apple</a> op iPhone, iPad en Mac",
+        "li2": "<a href=\"{href}\">Google Family Link</a> op Android-telefoons, -tablets en Chromebooks",
+        "li3": "<a href=\"{href}\">Microsoft Family Safety</a> op Windows en Xbox"
+      },
+      "rules": {
+        "h": "Gezinsafspraken die werken",
+        "li1": "Speel een nieuwe game de eerste keer samen.",
+        "li2": "Bouwen en chatten gebeurt in een gedeelde ruimte.",
+        "li3": "Spreek af wanneer, niet alleen hoe lang: na het huiswerk, niet voor het slapengaan.",
+        "li4": "Vraag wat je kind vandaag heeft gemaakt of geleerd.",
+        "li5": "Dezelfde regels voor elk scherm in huis, ook voor dat van de volwassenen."
+      },
+      "faq": {
+        "q1": "Hoeveel schermtijd is oké voor een kind van 10?",
+        "a1": "Er is geen vast getal. Kinderartsen raden vaste afspraken aan die ruimte laten voor slaap, school, bewegen en tijd met het gezin, en om te letten op wat kinderen op een scherm doen. Een mediaplan voor het gezin helpt je om te beslissen.",
+        "q2": "Is educatieve schermtijd beter dan games?",
+        "a2": "Games kunnen ook leerzaam zijn. Kies games waarin je kind iets oplost, oefent of maakt, zonder reclame of aankopen die het verder trekken.",
+        "q3": "Heeft Oomba Academy tijdslimieten?",
+        "a3": "Nee. Gebruik de tools van je apparaat, zoals Schermtijd van Apple, Google Family Link of Microsoft Family Safety.",
+        "q4": "Is games maken beter dan games spelen?",
+        "a4": "Allebei hebben ze hun plek. Een game maken vraagt van kinderen dat ze plannen, duidelijk uitleggen, testen en verbeteren, dus het is een actieve vorm van schermtijd."
+      }
+    }
   }
 }
