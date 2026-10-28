@@ -81,14 +81,14 @@ test('sitemap lists /parents, its guides and the age pages with their share pict
     assert.match(u, /<lastmod>\d{4}-\d{2}-\d{2}<\/lastmod>/, p);
     assert.match(u, /<image:loc>[^<]+\/og\/[\w-]+\.jpg<\/image:loc>/, p);
   }
-  // English only until the pages are translated: no other language's address is listed.
-  assert.ok(!xml.includes(`${base}/es/parents<`));
-  // A language address answers, and points search engines at the English page until it is translated.
+  // Translated: each language's address is listed, indexable, its own canonical, with no English blocks left.
+  assert.ok(xml.includes(`${base}/es/parents<`));
   const fr = await get('/fr/parents/ai-builder-safety');
   assert.equal(fr.status, 200);
-  assert.equal(canonical(fr.text), `${base}/parents/ai-builder-safety`);
-  assert.match(robotsMeta(fr.text), /^noindex/);
+  assert.equal(canonical(fr.text), `${base}/fr/parents/ai-builder-safety`);
+  assert.match(robotsMeta(fr.text), /^index/);
   assert.match(fr.text, /<html lang="fr"/);
+  assert.doesNotMatch(main(fr.text), /lang="en"/);
   assert.equal((await get('/he/learn/games-for-8-and-9-year-olds')).status, 200);
 });
 
@@ -281,13 +281,13 @@ test('localized pages stay in one language: no untranslated additions on game, s
   const faq = ofType(math, 'FAQPage')[0];
   for (const qn of faq.mainEntity) assert.doesNotMatch(qn.name, /\bmy child\b|\bthe\b/i, qn.name);
   const make = main((await get('/es/learn/make-a-game')).text);
-  for (const id of ['parents', 'ideas', 'scratch']) assert.ok(!make.includes(`id="${id}"`), `/es make-a-game: no English ${id} section`);
+  for (const id of ['parents', 'ideas', 'scratch']) assert.ok(make.includes(`id="${id}"`), `/es make-a-game: translated ${id} section`);
   assert.doesNotMatch(make, /lang="en"/);
-  // The "Parents" links use the translated footer label until the language has its own.
+  // The "Parents" links are in the page's language.
   const home = (await get('/es')).text;
   assert.match(home, /<span>Para las familias<\/span>/);
   assert.doesNotMatch(home, /lang="en"[^>]*>For parents|>Parents</);
-  assert.match((await get('/es/teachers')).text, /<a class="navlink" href="\/parents"[^>]*><span class="emo" aria-hidden="true">👪<\/span>Para las familias/);
+  assert.match((await get('/es/teachers')).text, /<a class="navlink" href="\/parents"[^>]*><span class="emo" aria-hidden="true">👪<\/span>Familias<\/a>/);
   // English keeps all of it.
   assert.match((await get('/g/sum-racer')).text, /Ages 8–11/);
   assert.match((await get('/learn/math-games')).text, /id="home"/);

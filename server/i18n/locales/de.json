@@ -34,7 +34,7 @@
     "footer": {
       "tagline": "© Oomba Academy · Kostenlos spielen, kostenlos bauen",
       "safety": "Sicherheit",
-      "parents": "Für Erwachsene",
+      "parents": "Für Eltern",
       "contact": "Kontakt",
       "builders": "Für Spielemacher",
       "terms": "Nutzungsbedingungen",
@@ -59,7 +59,8 @@
     "schools": "Schulen",
     "family": "Familie",
     "plans": "Abos",
-    "teachers": "Lehrkräfte"
+    "teachers": "Lehrkräfte",
+    "parents": "Eltern"
   },
   "errors": {
     "goHome": "Zur Startseite",
@@ -351,7 +352,8 @@
     "intro": {
       "heading": "Interaktive Lernspiele für Kinder, die Spaß machen",
       "text": "Kostenlose Spiele für 8- bis 14-Jährige, für den Unterricht oder zu Hause, und ein Baumeister, der aus deiner eigenen Idee ein Spiel macht.",
-      "teachers": "Für Lehrkräfte"
+      "teachers": "Für Lehrkräfte",
+      "parents": "Für Eltern"
     }
   },
   "search": {
@@ -3132,13 +3134,13 @@
     "play": "Spielen",
     "about": "Über das Spiel",
     "tipsHeading": "Im Unterricht",
-    "faqHeading": "Häufige Fragen von Lehrkräften",
+    "faqHeading": "Häufige Fragen von Eltern und Lehrkräften",
     "moreHeading": "Weitere Lernspiele nach Fächern",
     "teachersLink": "Oomba Academy für Lehrkräfte",
     "safetyLink": "So schützen wir Kinder",
     "noGames": "Diese Spiele werden gerade aktualisiert. Bitte schauen Sie bald wieder vorbei.",
     "games": {
-      "sumRacer": "Kopfrechnen von Plus bis 10 über das Einmaleins bis zum Teilen, als Kartrennen. Zwei Schüler können an einem Bildschirm gegeneinander fahren.",
+      "sumRacer": "Kopfrechnen von Plus bis 10 über das Einmaleins bis zum Teilen, als Kartrennen. Zwei Spieler können an einem Bildschirm gegeneinander fahren.",
       "wordHunt": "Wortsuchrätsel zu Themen, mit vorgelesenen Wörtern, einem Tagesrätsel und einem Wettrennen gegen Freunde.",
       "sharkPlank": "Galgenmännchen für Leseanfänger, bei dem jedes Wort vorgelesen wird.",
       "wordPeek": "Ein tägliches Worträtsel mit Hinweisen nach jedem Rateversuch, dazu Varianten mit 4 und 6 Buchstaben.",
@@ -3148,7 +3150,8 @@
       "loopLab": "Beats mit Schlagzeug, Bass und Melodie machen, zu einem Song verbinden und 10 Musik-Challenges schaffen.",
       "beatLanes": "Im Takt zu neun Liedern tippen, von „Funkel, funkel, kleiner Stern“ bis zum Cancan.",
       "swishFlick": "Mit einem Wisch Körbe werfen: Die Richtung zielt, und das Tempo bestimmt, wie weit der Ball fliegt.",
-      "munchMaze": "Eine Jagd durchs Labyrinth: einen Weg planen, alle Kügelchen sammeln und den Gloops ausweichen."
+      "munchMaze": "Eine Jagd durchs Labyrinth: einen Weg planen, alle Kügelchen sammeln und den Gloops ausweichen.",
+      "heroOfSunvale": "Ein großes 3D-Abenteuer: ein Königreich erkunden, den Dorfbewohnern bei Missionen helfen und freundliche Kämpfe gewinnen, um die Prinzessin zu befreien."
     },
     "hubs": {
       "math": {
@@ -3176,8 +3179,11 @@
           "q2": "Können zwei Schüler gegeneinander fahren?",
           "a2": "Ja. Zwei Spieler können an einem Bildschirm gegeneinander fahren.",
           "q3": "Ist es kostenlos?",
-          "a3": "Ja. Es ist kostenlos und werbefrei, und die Schüler können ohne Anmeldung loslegen."
-        }
+          "a3": "Ja. Es ist kostenlos und werbefrei, und die Schüler können ohne Anmeldung loslegen.",
+          "q4": "Kann mein Kind zu Hause gezielt nur eine Einmaleinsreihe üben?",
+          "a4": "Ja. In Sum Racer kann es genau auswählen, welche Einmaleinsreihen es üben möchte."
+        },
+        "home": "Ein fünfminütiges Rennen nach der Schule hält das Kopfrechnen frisch. Wählen Sie die Strecke, die Ihr Kind gerade in der Schule übt, oder genau die Einmaleinsreihen, die es üben soll, und fahren Sie am selben Bildschirm gegeneinander."
       },
       "words": {
         "name": "Lese- und Rechtschreibspiele",
@@ -3193,8 +3199,11 @@
           "q2": "Gibt es ein Tagesrätsel?",
           "a2": "Ja. Word Hunt und Word Peek haben jeden Tag ein neues Rätsel, und in Word Peek kann ein Schüler ein Geheimwort für einen Freund festlegen.",
           "q3": "Kann ich meine eigene Wörterliste verwenden?",
-          "a3": "In diesen Spielen noch nicht. Sie können dem Baumeister ein Rechtschreibspiel mit Ihren Wörtern beschreiben, und er baut eines für Ihre Klasse."
-        }
+          "a3": "In diesen Spielen noch nicht. Sie können dem Baumeister ein Rechtschreibspiel mit Ihren Wörtern beschreiben, und er baut eines für Ihre Klasse.",
+          "q4": "Welches Wortspiel passt zum Lesestand meines Kindes?",
+          "a4": "Shark Plank und Word Hunt lesen Wörter vor und passen deshalb zu Kindern, die noch lesen lernen. Word Peek ist für sichere Rechtschreiber."
+        },
+        "home": "Machen Sie das Tageswort von Word Peek zum Familienritual beim Frühstück und sprechen Sie über jeden Rateversuch, oder lassen Sie jüngere Leser Shark Plank mit Ton spielen, damit jedes Wort vorgelesen wird."
       },
       "strategy": {
         "name": "Schach- und Strategiespiele",
@@ -3210,8 +3219,11 @@
           "q2": "Können zwei Schüler an einem Gerät spielen?",
           "a2": "Ja. Castle Clash und Drop Four haben beide einen Modus für zwei Spieler an einem Bildschirm.",
           "q3": "Wie stark ist der Roboter?",
-          "a3": "Der Roboter in Castle Clash hat vier Stufen, der Roboter in Drop Four hat Leicht, Normal und Schwer."
-        }
+          "a3": "Der Roboter in Castle Clash hat vier Stufen, der Roboter in Drop Four hat Leicht, Normal und Schwer.",
+          "q4": "Kann ich zusammen mit meinem Kind Schach lernen?",
+          "a4": "Ja. Die Lektionen von Castle Clash beginnen damit, wie jede Figur zieht. So können auch Erwachsene, die noch nie gespielt haben, mitlernen und dann am selben Bildschirm gegen ihr Kind spielen."
+        },
+        "home": "Lernen Sie gemeinsam Schach: jeden Tag eine Lektion in Castle Clash, dann an einem Bildschirm gegeneinander spielen. Drop Four passt in jede freie Fünf-Minuten-Pause."
       },
       "music": {
         "name": "Musikspiele",
@@ -3225,8 +3237,11 @@
           "q1": "Müssen die Schüler Noten lesen können?",
           "a1": "Nein. Beide Spiele arbeiten mit Farben und Timing, nicht mit Noten.",
           "q2": "Können die Schüler ganze Lieder machen?",
-          "a2": "Ja. In Loop Lab können sie Muster zu einem Lied verbinden und es wie ein kleines Konzert abspielen."
-        }
+          "a2": "Ja. In Loop Lab können sie Muster zu einem Lied verbinden und es wie ein kleines Konzert abspielen.",
+          "q3": "Braucht mein Kind ein Instrument oder Musikunterricht?",
+          "a3": "Nein. Alles läuft im Browser, mit Farben und Timing statt Noten."
+        },
+        "home": "Für Loop Lab braucht es weder Unterricht noch Instrument: Kinder bauen einen Beat, verbinden ihn zu einem Song und spielen ihn der Familie vor. In einem lauten Haushalt helfen Kopfhörer."
       },
       "brainBreaks": {
         "name": "Spiele für zwischendurch",
@@ -3245,9 +3260,9 @@
       },
       "makeAGame": {
         "name": "Eigene Spiele bauen",
-        "short": "Schüler entwerfen Spiele mit dem KI-Baumeister",
-        "title": "Eigene Spiele bauen mit KI: für Kinder und Schulen",
-        "description": "Die Schüler beschreiben ein Spiel in einfachen Worten, und der Baumeister baut es und zeigt seine Schritte. Werbefrei, für 8–14, privat bis zum Teilen.",
+        "short": "Kinder entwerfen Spiele mit dem KI-Baumeister",
+        "title": "Eigene Videospiele machen: KI für Kinder",
+        "description": "Kinder beschreiben ein Spiel, und der Baumeister baut es und zeigt seine Schritte. Ohne Programmieren, werbefrei, für 8–14 Jahre, privat bis zum Teilen.",
         "h1": "Eigene Spiele bauen, ganz ohne Programmieren",
         "lead": "Bei Oomba Academy beschreiben die Schüler das Spiel, das sie sich wünschen, und der KI-Baumeister baut es. Dann spielen sie es, testen es und wünschen sich Änderungen, eine Idee nach der anderen.",
         "how": {
@@ -3273,11 +3288,373 @@
           "q2": "Wer sieht die Spiele, die Schüler bauen?",
           "a2": "Nur der Schüler selbst, bis er es teilt. Er kann es mit Freunden oder seiner Klasse teilen, und ein Spiel für alle wird geprüft, bevor andere es spielen können.",
           "q3": "Für welches Alter ist es?",
-          "a3": "Für 8- bis 14-Jährige."
-        }
+          "a3": "Für 8- bis 14-Jährige.",
+          "q4": "Mein Kind möchte Videospiele machen. Wie fängt es an?",
+          "a4": "Mit einer kleinen Idee, etwa einem Labyrinth oder einem Fangspiel. Es beschreibt die Idee, spielt das Spiel und wünscht sich dann eine Änderung nach der anderen. Später probieren viele Kinder auch Programmierwerkzeuge wie Scratch aus.",
+          "q5": "Ist das echtes Programmieren?",
+          "a5": "Nicht ganz. Den Code schreibt der Baumeister. Ihr Kind übernimmt das Entwerfen, Testen und Erklären, und das ist ein großer Teil der Spieleentwicklung. Die Schritte, die der Baumeister zeigt, lassen neugierige Kinder sehen, wie ein Spiel aufgebaut ist.",
+          "q6": "Was kostet das?",
+          "a6": "Nichts. Alle Spieler mit Konto (nur ein ausgedachter Name und ein Passwort) bekommen jeden Tag kostenlose Nachrichten an den Baumeister.",
+          "a6paid": "Bauen ist kostenlos: Alle Spieler mit Konto (nur ein ausgedachter Name und ein Passwort) bekommen jeden Tag kostenlose Nachrichten an den Baumeister. Familien und Schulen können ein freiwilliges Abo für zusätzliche Nachrichten wählen. <a href=\"{plans}\">Abos ansehen</a>.",
+          "q7": "Ist der KI-Baumeister sicher für mein Kind?",
+          "a7": "Er baut nur Spiele und folgt in jeder Sprache festen Regeln zum Schutz von Kindern. <a href=\"{ai}\">Lesen Sie, was er sieht und welche Regeln er befolgt</a>."
+        },
+        "parents": {
+          "h": "Für Eltern: Warum Selbermachen mehr bringt als nur Spielen",
+          "p1": "Ein Spiel zu bauen ist aktive Bildschirmzeit. Ihr Kind plant eine Idee, erklärt sie klar, testet, was der Baumeister gebaut hat, und entscheidet, was es als Nächstes verbessert: dieselben Schritte wie bei echten Spieleentwicklern.",
+          "p2": "Ein schönes Wochenendprojekt für die ganze Familie, und Bauen ist jeden Tag kostenlos."
+        },
+        "ideas": {
+          "h": "Ideen für den Anfang",
+          "li1": "Ein Labyrinth, in dem eine Katze Fische sammelt",
+          "li2": "Ein Quiz über meine Lieblingstiere",
+          "li3": "Ein Weltraumspiel, in dem man fallende Sterne fängt",
+          "li4": "Ein Wettrennen zwischen drei Schnecken",
+          "li5": "Ein Rätsel, bei dem man Farben in Gläser sortiert",
+          "p": "Dann eine Änderung nach der anderen wünschen, etwa „mach die Katze schneller“ oder „füg ein zweites Level hinzu“."
+        },
+        "scratch": {
+          "h": "Wie es zu Scratch und Programmieren passt",
+          "p": "Scratch und Code.org bringen Programmieren mit Blöcken bei. Der Baumeister ist anders: Kinder entwerfen mit Worten, und der Baumeister schreibt das Spiel und zeigt dabei seine Schritte. Viele Kinder machen beides, und der Baumeister kann ein erster Schritt vor dem Programmieren sein."
+        },
+        "safeLink": "Ist der KI-Baumeister sicher? Ein Ratgeber für Eltern"
       }
     },
     "grades": "Klassenstufe {from}–{to}",
-    "seeAll": "Alle {name} ansehen"
+    "seeAll": "Alle {name} ansehen",
+    "homeHeading": "Zu Hause",
+    "parentsLink": "Oomba Academy für Eltern",
+    "byAgeHeading": "Spiele nach Alter",
+    "ages": {
+      "line": "{from}–{to} Jahre",
+      "fit": "Warum es zu diesem Alter passt:",
+      "skills": {
+        "h": "Was dabei geübt wird"
+      },
+      "together": {
+        "h": "Gemeinsam spielen",
+        "p": "{count, plural, one {{games} hat einen Modus für zwei Spieler} other {{games} haben jeweils einen Modus für zwei Spieler}} an einem Bildschirm: gut für Geschwister, Freunde oder Erwachsene mit Kind."
+      },
+      "safe": {
+        "h": "Sicherheit in einer Minute",
+        "p": "Keine Werbung, nichts, was Kinder kaufen können, und kein Chat mit Fremden: Freunde werden nur über einen Code hinzugefügt. Wir fragen Kinder nie nach einer E-Mail-Adresse. <a href=\"{href}\">Mehr für Eltern</a>."
+      },
+      "make": {
+        "h": "Eigene Spiele bauen",
+        "link": "So entsteht ein Spiel"
+      },
+      "moreHeading": "Spiele für andere Altersstufen",
+      "faq": {
+        "q1": "Sind diese Spiele kostenlos?",
+        "a1": "Ja. Alle Spiele sind kostenlos im Browser spielbar, ohne Werbung und ohne Downloads, und Kinder können ohne Anmeldung loslegen."
+      },
+      "a8": {
+        "name": "8 und 9 Jahre",
+        "short": "Einmaleins, Rechtschreibung, erste Schachpartien und Musik",
+        "title": "Kostenlose Lernspiele für 8- und 9-Jährige",
+        "description": "Kostenlose, werbefreie Browserspiele für 8- und 9-Jährige: Einmaleins, Rechtschreibung, erste Schachzüge und Musik. Ohne Download und ohne Chat mit Fremden.",
+        "h1": "Lernspiele für 8- und 9-Jährige",
+        "lead": "Mit 8 und 9 lernen Kinder das Einmaleins, lesen längere Wörter und lieben Spiele, die sie gewinnen können. Diese Spiele haben kurze Runden, lesen Wörter vor, wo es hilft, und lassen zwei Kinder an einem Bildschirm spielen.",
+        "fit": {
+          "sumRacer": "Mit Plus bis 10 oder 20 anfangen und dann zur 2er-, 5er- und 10er-Reihe wechseln, wenn es so weit ist.",
+          "wordHunt": "Wortsuchrätsel zu Themen für Leseanfänger: Jedes Wort lässt sich antippen und wird vorgelesen.",
+          "sharkPlank": "Gut für Kinder, die noch lesen lernen: Jedes Wort wird vorgelesen.",
+          "castleClash": "Zu jeder Figur eine kurze Lektion, dann der Roboter auf der leichtesten Stufe. So wird die erste Schachpartie kein Berg aus Regeln.",
+          "connectFour": "Schnelle Partien, in denen man vorausplant, gegen Geschwister oder den Roboter auf „Leicht“.",
+          "loopLab": "Kästchen antippen, einen Beat bauen und ihn sofort in Dauerschleife hören. Noten lesen ist nicht nötig.",
+          "beatLanes": "Im Takt zu bekannten Liedern tippen, zum Anfang mit „Funkel, funkel, kleiner Stern“.",
+          "munchMaze": "Eine Jagd durchs Labyrinth mit leichtem Modus: einen Weg planen und alle Kügelchen sammeln."
+        },
+        "faq": {
+          "q2": "Sind die Spiele zu schwer für 8-Jährige?",
+          "a2": "Jedes Spiel fängt leicht an. Sum Racer beginnt mit Plus bis 10, der Roboter in Castle Clash hat eine leichte Stufe, und Shark Plank liest jedes Wort vor.",
+          "q3": "Können zwei Kinder an einem Gerät spielen?",
+          "a3": "Ja. Sum Racer, Castle Clash und Drop Four haben einen Modus für zwei Spieler an einem Bildschirm.",
+          "q4": "Können 8-Jährige den KI-Baumeister nutzen?",
+          "a4": "Ja. Kinder tippen ihre Idee ein, daher hilft es, wenn sie ein, zwei Sätze schreiben können, und am Anfang hilft ein Erwachsener in der Nähe. Der Baumeister folgt festen Regeln zum Schutz von Kindern."
+        }
+      },
+      "a10": {
+        "name": "10 und 11 Jahre",
+        "short": "Einmaleins und Teilen, Wort- und Schachrätsel, eigene Spiele bauen",
+        "title": "Kostenlose Lernspiele für 10- und 11-Jährige",
+        "description": "Kostenlose, werbefreie Browserspiele für 10- und 11-Jährige: Einmaleins und Teilen, ein tägliches Worträtsel, Schachrätsel, Musik und eigene Spiele bauen.",
+        "h1": "Lernspiele für 10- und 11-Jährige",
+        "lead": "Mit 10 und 11 wollen Kinder eine echte Herausforderung und mitbestimmen, was sie spielen. Diese Spiele reichen bis zum ganzen Einmaleins und zum Teilen, mit Schachrätseln und einem täglichen Worträtsel, und mit dem Baumeister können sie ein eigenes Spiel bauen.",
+        "abcya": "Zu groß für Lernspiele für Kindergarten und Grundschule? Oomba Academy ist für 8- bis 14-Jährige gemacht.",
+        "make": {
+          "p": "Kinder in diesem Alter lieben es, eigene Spiele zu bauen. Sie beschreiben eines in einfachen Worten, etwa „ein Quiz über Vulkane“ oder „ein Labyrinth mit einem Roboter“, und der Baumeister baut es. Dann testen sie es und wünschen sich Änderungen. Das ist jeden Tag kostenlos."
+        },
+        "fit": {
+          "sumRacer": "Bereit für die schwereren Aufgaben: alle Einmaleinsreihen bis 12, Teilen und eine gemischte Strecke mit allen vier Grundrechenarten.",
+          "wordPeek": "Ein tägliches Rätsel, das genaues Nachdenken belohnt, mit einem Hinweis nach jedem Rateversuch, genau dann, wenn der Wortschatz richtig wächst.",
+          "castleClash": "Die Grundlagen sitzen? 24 Mattaufgaben und stärkere Roboterstufen bieten eine echte Herausforderung.",
+          "brickDrop": "Das Tempo zieht schnell an: ideal für Kinder, die eine echte Herausforderung suchen und gern ihren eigenen Rekord schlagen.",
+          "loopLab": "Alt genug, um einen ganzen Song zu planen: Beats verbinden und die 10 Musik-Challenges schaffen.",
+          "heroOfSunvale": "Mehr als ein schnelles Spiel: Missionen zum Lesen und Befolgen und ein 3D-Königreich, das sie in ihrem eigenen Tempo erkunden.",
+          "swishFlick": "Eine kurze Pause mit etwas Physik: Die Richtung des Wischs zielt, und das Tempo bestimmt, wie weit der Ball fliegt."
+        },
+        "faq": {
+          "q2": "Sind die Spiele zu leicht für 10-Jährige?",
+          "a2": "Nein. Sum Racer reicht bis zum ganzen Einmaleins und zum Teilen, Castle Clash hat 24 Mattaufgaben, und Word Peek ist jeden Tag eine echte Herausforderung.",
+          "q3": "Kann mein Kind mit Geschwistern oder Freunden spielen?",
+          "a3": "Ja. Sum Racer und Castle Clash haben einen Modus für zwei Spieler an einem Bildschirm, und Word Hunt hat ein Wettrennen, bei dem das Handy weitergereicht wird.",
+          "q4": "Ist der KI-Baumeister sicher für 11-Jährige?",
+          "a4": "Der Baumeister baut nur Spiele und folgt festen Regeln zum Schutz von Kindern, etwa kein Blut, kein Glücksspiel, keine echten Marken und keine Links nach außen. <a href=\"{ai}\">Alle Regeln ansehen</a>. Spiele bleiben privat, bis Ihr Kind sie teilt."
+        }
+      },
+      "a12": {
+        "name": "12 bis 14 Jahre",
+        "short": "Strategie, Musik, Rätsel und eigene Spiele bauen",
+        "title": "Kostenlose Lernspiele für 12- bis 14-Jährige",
+        "description": "Spiele für 12-, 13- und 14-Jährige, die nicht kindisch sind: Schach, Worträtsel, Musik machen, ein 3D-Abenteuer und ein KI-Baumeister für eigene Spiele.",
+        "h1": "Spiele für 12- bis 14-Jährige, die nicht kindisch sind",
+        "lead": "Viele Spieleseiten für Kinder hören bei etwa 11 Jahren auf. Mit 12 bis 14 ist das Beste an Oomba Academy das Selbermachen: Jugendliche entwerfen mit dem KI-Baumeister eigene Spiele, teilen sie mit Freunden und verbessern sie immer weiter. Die Spiele unten eignen sich gut für eine Pause zwischendurch.",
+        "make": {
+          "p": "Ein Spiel in einfachen Worten beschreiben, und der Baumeister baut es: ein Jump ’n’ Run, ein Quiz zu einem Schulthema, ein Rätsel für einen Freund. Dann testen, Fehler finden und Änderungen wünschen. Das ist jeden Tag kostenlos."
+        },
+        "fit": {
+          "castleClash": "Echtes Schach ohne Kindermodus: Mattaufgaben und die stärkste Roboterstufe sind eine echte Prüfung, sogar für Erwachsene.",
+          "wordPeek": "Schwerer als das Tagesrätsel: Big Peek mit 6 Buchstaben, oder ein Geheimwort festlegen, das ein Freund knacken muss.",
+          "brickDrop": "Im Sprint auf 40 Reihen rasen oder im Marathon weiterspielen, während es immer schneller wird.",
+          "loopLab": "Musikbegeisterte Jugendliche bauen ganze Songs aus Schlagzeug, Bass und Melodie, nicht nur einfache Beats.",
+          "beatLanes": "Neun Lieder und lange Combos für flinke Finger.",
+          "heroOfSunvale": "Ein großes 3D-Königreich zum Erkunden, mit Missionen und einem Drachen am Ende."
+        },
+        "faq": {
+          "q2": "Ist Oomba Academy zu kindisch für 13-Jährige?",
+          "a2": "Es ist für 8- bis 14-Jährige gemacht. Ältere Kinder kommen vor allem wegen des Baumeisters, des echten Schachs und des Musikmachens, und das wächst mit ihnen mit.",
+          "q3": "Kann mein Teenager eigene Spiele bauen?",
+          "a3": "Ja. Er beschreibt das Spiel mit Worten, und der Baumeister baut es. Ein neues Spiel bleibt privat, bis er es teilt, und ein Spiel für alle wird zuerst von Claude geprüft; bei Unsicherheit sieht sich unser Team das Spiel an.",
+          "q4": "Gibt es Chat mit Fremden?",
+          "a4": "Nein. Kinder chatten nur mit Freunden, die sie mit einem 6-stelligen Code hinzugefügt haben, nie über eine Namenssuche, und sie können den Chat auf ihrer Seite „Ich“ ausschalten."
+        }
+      }
+    }
+  },
+  "parents": {
+    "title": "Sichere Lernspiele für Kinder 8–14, kostenlos",
+    "description": "Lernspiele für Kinder von 8 bis 14, kostenlos im Browser: Mathe, Wörter, Schach und Musik. Keine Werbung, kein Chat mit Fremden, und eigene Spiele bauen.",
+    "kicker": "👪 Für Eltern",
+    "h1": "Lernspiele für 8- bis 14-Jährige: mit Spaß und von Grund auf sicher",
+    "lead": "Oomba Academy ist eine Website mit kurzen Lernspielen, die Kinder direkt im Browser spielen: Matherennen, Worträtsel, Schach und Musik. Wenn sie so weit sind, können sie eigene Spiele bauen, indem sie sie unserem KI-Baumeister beschreiben.",
+    "badges": {
+      "free": "Kostenlos spielen",
+      "ads": "Keine Werbung",
+      "buy": "Kinder können nichts kaufen",
+      "strangers": "Kein Chat mit Fremden",
+      "browser": "Läuft in jedem Browser",
+      "languages": "{count} Sprachen"
+    },
+    "cta": {
+      "start": "Ihr Kind kostenlos starten lassen",
+      "try": "Jetzt ein Spiel testen, ohne Anmeldung",
+      "grownup": "Erwachsenenkonto erstellen",
+      "lead": "Genug gesehen? Probieren Sie jetzt gemeinsam mit Ihrem Kind ein Spiel aus."
+    },
+    "teachers": "Sie unterrichten eine Klasse? Hier geht es zu <a href=\"{href}\">Oomba Academy für Lehrkräfte</a>.",
+    "play": {
+      "h": "Lernen, das sich wie Spielen anfühlt",
+      "p": "Jedes Spiel übt in wenigen Minuten eine echte Fähigkeit, und Kinder kommen wieder, weil es Spaß macht. Suchen Sie eins aus und probieren Sie es gemeinsam."
+    },
+    "subjects": {
+      "h": "Nach Fach auswählen"
+    },
+    "ages": {
+      "h": "Spiele für jedes Alter",
+      "p": "Zwischen 8 und 14 verändern sich Kinder sehr. Diese Seiten zeigen die Spiele, die zu jedem Alter passen, und sagen, warum."
+    },
+    "make": {
+      "h": "Vom Spielen zum Selbermachen",
+      "p1": "Ihr Kind beschreibt ein Spiel mit eigenen Worten, etwa „ein Labyrinth, in dem eine Katze Fische sammelt“, und der Baumeister baut es. Dann spielt es das Spiel, merkt, was anders sein soll, und wünscht sich Änderungen, eine Idee nach der anderen.",
+      "p2": "Das ist Planen, klares Schreiben, Testen und Verbessern, ganz ohne Programmierkenntnisse. Bauen ist jeden Tag kostenlos für alle Spieler mit Konto (nur ein ausgedachter Name und ein Passwort).",
+      "link": "So entsteht ein Spiel",
+      "safe": "Ist der KI-Baumeister sicher?"
+    },
+    "safe": {
+      "h": "Was es sicher macht",
+      "li1": "Keine Werbung, keine Lootboxen und nichts, was Kinder kaufen können. Kinder werden nie zum Bezahlen aufgefordert.",
+      "li2": "Kein Chat mit Fremden. Freunde werden nur über einen 6-stelligen Freundescode hinzugefügt, nie über eine Namenssuche. Gechattet wird nur unter Freunden, unangemessene Sprache und persönliche Daten werden gefiltert, und alles kann gemeldet werden.",
+      "li3": "Wir fragen Kinder nie nach einer E-Mail-Adresse, dem Alter, der Wohnadresse oder dem Standort.",
+      "li4": "Spiele, die Kinder bauen, bleiben privat, bis sie sie teilen, und ein Spiel für alle wird zuerst von Claude geprüft; bei Unsicherheit sieht sich unser Team das Spiel an.",
+      "li5": "Kinder nutzen ausgedachte Namen, und ihre Profile und Namen erscheinen nicht in Suchmaschinen.",
+      "links": "Lesen Sie, <a href=\"{safety}\">wie wir Kinder schützen</a>, und <a href=\"{guide}\">unseren Ratgeber für gute Bildschirmzeit</a>."
+    },
+    "private": {
+      "h": "Datenschutz von Grund auf",
+      "p1": "Es gibt keine Werbung und keine Tracking-Cookies, also entsteht hier kein Profil Ihres Kindes für Werbetreibende.",
+      "p2": "Es gibt auch kein Eltern-Dashboard, kein Zeitlimit und keinen Aktivitätsbericht. Das ist Absicht: Wir zeichnen nicht auf, was Ihr Kind hier tut, auch nicht für Sie. Was es baut, bleibt privat, bis es das teilt.",
+      "paid": "Ein Erwachsenenkonto, das mit Ihrem Kind verbunden ist, sieht nur seinen Namen und wie viele der zusätzlichen Nachrichten der Familie an den Baumeister es verbraucht hat.",
+      "p3": "Um Grenzen zu setzen, nutzen Sie die Werkzeuge, die im Gerät Ihres Kindes eingebaut sind, etwa Bildschirmzeit von Apple, Google Family Link oder Microsoft Family Safety. <a href=\"{href}\">Unser Ratgeber zur Bildschirmzeit</a> erklärt, wie das geht."
+    },
+    "home": {
+      "h": "Zu Hause und beim Lernen daheim",
+      "p": "Familien bauen ein Spiel überall dort ein, wo ein paar Minuten Spielen helfen:",
+      "li1": "Ein Einmaleins-Rennen nach der Schule",
+      "li2": "Das tägliche Worträtsel beim Frühstück",
+      "li3": "Eine gemeinsame Partie Schach",
+      "li4": "Am Wochenende zusammen ein Spiel bauen",
+      "li5": "Üben in den Ferien",
+      "li6": "Eine Pause an Regentagen, bei der man trotzdem etwas lernt",
+      "li7": "Mathe, Lesen und Musik beim Lernen zu Hause"
+    },
+    "families": {
+      "p2": "Abos sind freiwillig. Sie bringen nur zusätzliche Nachrichten an den Baumeister, und Kinder werden nie zum Bezahlen aufgefordert."
+    },
+    "detail": {
+      "h": "Sicherheit und Datenschutz im Detail",
+      "p": "Was wir speichern, was wir nie erfassen, was die KI sieht und wie Freunde und Chat funktionieren, in einfachen Worten. Den vollständigen Text finden Sie in unserer <a href=\"{href}\">Datenschutzerklärung</a>."
+    },
+    "faq": {
+      "h": "Häufige Fragen von Eltern",
+      "q1": "Ist Oomba Academy kostenlos?",
+      "a1": "Ja. Alle Spiele sind kostenlos, und alle Spieler mit Konto (nur ein ausgedachter Name und ein Passwort) bekommen jeden Tag kostenlose Nachrichten an den Baumeister, um eigene Spiele zu bauen. Es gibt keine Werbung und nichts, was Kinder kaufen können.",
+      "a1paid": "Ja. Alle Spiele sind kostenlos, und alle Spieler mit Konto (nur ein ausgedachter Name und ein Passwort) bekommen jeden Tag kostenlose Nachrichten an den Baumeister. Familien können ein freiwilliges Abo für zusätzliche Nachrichten an den Baumeister wählen, und Kinder werden nie zum Bezahlen aufgefordert. <a href=\"{plans}\">Abos ansehen</a>.",
+      "q2": "Für welches Alter ist es gedacht?",
+      "a2": "Für Kinder von 8 bis 14. Einige Spiele, etwa Shark Plank und die ersten Strecken von Sum Racer, passen auch für jüngere Leseanfänger.",
+      "q3": "Braucht mein Kind ein Konto oder eine E-Mail-Adresse?",
+      "a3": "Nein. Alle können sofort spielen, ohne Anmeldung. Um ihre Spiele und Punkte zu behalten, können Kinder ein Konto mit nur einem ausgedachten Namen und einem Passwort erstellen. Wir fragen nie nach einer E-Mail-Adresse.",
+      "q4": "Gibt es Werbung oder In-App-Käufe?",
+      "a4": "Nein. Keine Werbung, keine In-App-Käufe, keine Lootboxen und kein Spielgeld, das echtes Geld kostet. Kinder werden nie zum Bezahlen aufgefordert.",
+      "q5": "Können Fremde mein Kind anschreiben?",
+      "a5": "Nein. Kinder können nur mit Freunden chatten, die sie über einen 6-stelligen Freundescode hinzugefügt haben, nie über eine Namenssuche. Der Chat filtert unangemessene Sprache, Telefonnummern, E-Mail-Adressen, Adressen und Links, Kinder können jeden blockieren oder melden, und sie können den Chat auf ihrer Seite „Ich“ ausschalten.",
+      "q6": "Was macht der KI-Baumeister mit dem, was mein Kind eintippt?",
+      "a6": "Er schickt die Nachrichten, Bilder und Dateien Ihres Kindes an Claude, eine KI von Anthropic, die daraus das Spiel schreibt, und zwar ohne den Namen oder Benutzernamen Ihres Kindes. Ein Profilfoto, falls Ihr Kind eines hochlädt, wird ebenfalls an Claude geschickt und geprüft, bevor jemand es sieht. Chats zwischen Freunden und Antworten in Lektionen werden nie an die KI geschickt. <a href=\"{ai}\">So bleibt der Baumeister kindersicher</a>.",
+      "q7": "Kann ich sehen, was mein Kind macht?",
+      "a7": "Nicht auf der Website, und das ist Absicht: Es gibt kein Eltern-Dashboard und keinen Aktivitätsbericht. Am besten sehen Sie, was Ihr Kind macht, wenn Sie gemeinsam spielen oder bauen.",
+      "a7paid": "Nicht auf der Website, und das ist Absicht: Es gibt kein Eltern-Dashboard und keinen Aktivitätsbericht. Ein verbundenes Erwachsenenkonto sieht nur den Namen Ihres Kindes und wie viele der zusätzlichen Nachrichten der Familie an den Baumeister es nutzt. Am besten sehen Sie, was Ihr Kind macht, wenn Sie gemeinsam spielen oder bauen.",
+      "q8": "Funktioniert es auf Chromebooks, Tablets und Handys?",
+      "a8": "Ja. Es läuft in jedem aktuellen Webbrowser auf Computern, Chromebooks, Tablets und Handys, ohne Download. Einige Spiele spielt man am besten mit quer gehaltenem Handy.",
+      "q9": "Welche Sprachen gibt es?",
+      "a9": "{count} Sprachen, darunter Englisch, Spanisch, Französisch, Portugiesisch, Arabisch, Hebräisch und Japanisch. Ihr Kind wählt eine mit dem 🌐-Knopf, und der Baumeister antwortet in dieser Sprache.",
+      "q10": "Ist das gute Bildschirmzeit?",
+      "a10": "Was Kinder am Bildschirm tun, zählt genauso viel wie die Dauer. Kurze Spiele, die eine Fähigkeit üben, und selbst etwas zu erschaffen, gehören zur guten Sorte. Setzen Sie Ihre eigenen Grenzen mit den Werkzeugen Ihres Geräts. <a href=\"{screen}\">Lesen Sie unseren Ratgeber zur Bildschirmzeit</a>."
+    },
+    "guides": {
+      "h": "Ratgeber für Eltern"
+    },
+    "updated": "Aktualisiert: {date}",
+    "ai": {
+      "name": "Ist der KI-Baumeister sicher?",
+      "short": "Was die KI sieht, was sie nie bekommt und welche Regeln sie befolgt",
+      "title": "Ist KI für Kinder sicher? Unser Baumeister",
+      "description": "Was die KI sieht, was sie nie bekommt und welche Regeln sie befolgt: ein Ratgeber für Eltern von 8- bis 14-Jährigen zum KI-Baumeister von Oomba Academy.",
+      "h1": "Ist der KI-Baumeister sicher für mein Kind?",
+      "lead": "Der Baumeister von Oomba Academy macht mit KI aus der Idee Ihres Kindes ein Spiel. Hier lesen Sie in einfachen Worten, was er sieht, was er nie bekommt, welche Regeln er befolgt und was wir nicht versprechen können.",
+      "what": {
+        "h": "Was der Baumeister ist",
+        "p1": "Der Baumeister baut Spiele. Ihr Kind beschreibt eine Idee, und er schreibt das Spiel, zeigt beim Arbeiten seine Schritte und stellt eine Frage, wenn er mehr wissen muss.",
+        "p2": "Er ist zum Bauen von Spielen gemacht, nicht als Freund oder Begleiter, mit dem man über alles Mögliche chattet."
+      },
+      "sees": {
+        "h": "Was die KI sieht und was sie nie bekommt",
+        "li1": "Die Nachrichten, Bilder und Dateien, die Ihr Kind dem Baumeister gibt, gehen an Claude, eine vom Unternehmen Anthropic entwickelte KI, die das Spiel schreibt.",
+        "li2": "Name und Benutzername Ihres Kindes werden dabei nicht mitgeschickt.",
+        "li3": "Chats zwischen Freunden und Antworten in Lektionen werden nie an die KI geschickt.",
+        "li4": "Versteckte Standortdaten werden aus Fotos und Bildern entfernt, bevor sie gespeichert werden.",
+        "li5": "Wenn Ihr Kind ein Profilfoto hochlädt, wird es an Claude geschickt und geprüft, bevor jemand es sieht.",
+        "li6": "Spiele, die Ihr Kind mit allen teilen möchte, werden zuerst von Claude geprüft."
+      },
+      "rules": {
+        "h": "Die Regeln, die er befolgt",
+        "p": "Der Baumeister folgt in jeder Sprache festen Regeln zum Schutz von Kindern, und keine Nachricht kann sie ändern:",
+        "li1": "Kein Blut, keine Brutalität und keine realistische Gewalt, kein Horror und keine Schreckmomente. Cartoon-Slapstick ist in Ordnung.",
+        "li2": "Kein Glücksspiel.",
+        "li3": "Keine echten Marken und keine echten Personen als Figuren.",
+        "li4": "Kein Chat zwischen Spielern und kein Sammeln persönlicher Daten in Spielen.",
+        "li5": "Keine Links zu anderen Websites und keine Werbung in Spielen.",
+        "li6": "Keine romantischen Inhalte und keine Inhalte für Erwachsene, kein Mobbing und kein Hass und nichts über Selbstverletzung, Drogen, Alkohol oder E-Zigaretten.",
+        "li7": "Keine urheberrechtlich geschützten Figuren wie Mario oder Pokémon und keine echten Mitschüler, Lehrkräfte oder Familienmitglieder in Spielen.",
+        "p2": "Eine Anfrage, die gegen die Regeln verstößt, lehnt er freundlich ab und schlägt etwas vor, das er stattdessen bauen kann."
+      },
+      "public": {
+        "h": "Wer die Spiele sieht",
+        "p": "Ein neues Spiel sieht nur Ihr Kind. Es kann das Spiel mit Freunden oder seiner Klasse teilen. Ein Spiel für alle wird von Claude geprüft, bevor andere es spielen können, und unser Team sieht sich jedes an, bei dem Claude unsicher ist. Jedes Spiel läuft in einer abgeschotteten Sandbox, die weder auf das Internet noch auf das Konto Ihres Kindes zugreifen kann."
+      },
+      "limits": {
+        "h": "Was wir nicht versprechen können",
+        "p1": "Kein Filter ist perfekt. Eine KI kann eine Anfrage missverstehen oder einen Fehler machen, und ein Spiel könnte trotzdem etwas enthalten, das nicht zu Ihrem Kind passt.",
+        "p2": "Wenn Ihnen etwas auffällt, tippen Sie auf der Spielseite auf 🚩 Melden. Nach genügend Meldungen wird ein Spiel ausgeblendet, bis unser Team es sich ansieht, und Erwachsene können uns auch unter {email} schreiben."
+      },
+      "check": {
+        "h": "Fünf Fragen an jedes KI-Werkzeug für Kinder",
+        "li1": "<b>Was macht es?</b> Ein Werkzeug, das etwas erschafft (ein Spiel, ein Bild, eine Geschichte), ist etwas anderes als ein Chatbot, der über alles redet.",
+        "li2": "<b>Was schickt es, und an wen?</b> Achten Sie auf eine verständliche Liste, was an das KI-Unternehmen geht und ob der Name Ihres Kindes mitgeschickt wird.",
+        "li3": "<b>Welche Regeln befolgt es?</b> Ein gutes Werkzeug für Kinder sagt, was es nicht macht.",
+        "li4": "<b>Wer sieht, was Ihr Kind erschafft?</b> Privat, bis es geteilt wird, ist am sichersten.",
+        "li5": "<b>Können Sie ein Problem melden?</b> Das sollte einfach gehen, und ein Mensch sollte es sich ansehen."
+      },
+      "faq": {
+        "q1": "Chattet mein Kind mit einer KI?",
+        "a1": "Nur über das Spiel, das es gerade baut. Es beschreibt, was es möchte, und der Baumeister stellt Fragen und erklärt seine Schritte.",
+        "q2": "Wird der Name meines Kindes an die KI geschickt?",
+        "a2": "Nein. Name und Benutzername werden nicht mit den Nachrichten mitgeschickt.",
+        "q3": "Kann die KI gruselige oder gewalttätige Spiele bauen?",
+        "a3": "Spiele können Cartoon-Action enthalten, etwa die freundlichen Kämpfe eines Helden, aber Blut, realistische Gewalt, Horror und Schreckmomente lehnt der Baumeister ab. <a href=\"#rules\">Alle Regeln ansehen</a>.",
+        "q4": "Sind die Spiele meines Kindes öffentlich?",
+        "a4": "Nur wenn es sie teilt. Ein Spiel für alle wird geprüft, bevor andere es spielen können.",
+        "q5": "Ist der Baumeister ein Begleiter oder ein Freundschafts-Bot?",
+        "a5": "Nein. Er ist ein Werkzeug zum Bauen von Spielen."
+      }
+    },
+    "screen": {
+      "name": "Gute Bildschirmzeit",
+      "short": "Eine Checkliste für die Wahl von Spielen und Apps, und wie man Grenzen setzt",
+      "title": "Gute Bildschirmzeit für Kinder: ein Ratgeber",
+      "description": "Gute und schlechte Bildschirmzeit erkennen: Werbung, Käufe, Chat, Daten, Selbermachen statt Scrollen. Checkliste für Eltern, mit dem, was wir tun und lassen.",
+      "h1": "Gute Bildschirmzeit: So wählen Sie Spiele für 8- bis 14-Jährige aus",
+      "lead": "Die perfekte Minutenzahl gibt es nicht. Was Kinder am Bildschirm tun, mit wem sie es tun und wozu es sie bringt, zählt genauso. Mit dieser Checkliste können Sie jedes Spiel und jede App beurteilen, auch unsere.",
+      "experts": {
+        "h": "Was Fachleute sagen",
+        "p1": "Die American Academy of Pediatrics (der US-Fachverband der Kinderärzte) empfiehlt einen <a href=\"{aap}\">Mediennutzungsplan für die Familie</a> statt einer festen Zahl für jedes Kind: für Schulkinder verlässliche Grenzen, die Schlaf, Schule, Bewegung und gemeinsame Zeit schützen. Auch <a href=\"{commonsense}\">Common Sense Media</a> (eine gemeinnützige US-Organisation) achtet auf die Qualität dessen, was Kinder schauen und spielen, nicht nur auf die Minuten.",
+        "p2": "Deshalb nennen wir Ihnen hier keine Minutenzahl: Sie kennen Ihr Kind. Wir helfen Ihnen aber einzuschätzen, womit diese Minuten verbracht werden."
+      },
+      "check": {
+        "h": "Eine Checkliste für jedes Spiel und jede App",
+        "li1": "<b>Werbung:</b> Zeigt es Werbung oder Videos, die zu immer mehr Videos führen?",
+        "li2": "<b>Käufe:</b> Kann Ihr Kind Geld ausgeben? Gibt es Spielgeld, Lootboxen oder „Pay to win“?",
+        "li3": "<b>Fremde:</b> Können Menschen, die Ihr Kind nicht kennt, ihm Nachrichten schicken?",
+        "li4": "<b>Daten:</b> Fragt es Ihr Kind nach E-Mail-Adresse, Alter, Standort oder Fotos?",
+        "li5": "<b>Altersgerecht:</b> Ist es für das Alter Ihres Kindes gemacht und nicht nur dafür freigegeben?",
+        "li6": "<b>Selbermachen oder Scrollen:</b> Löst, übt oder erschafft Ihr Kind etwas, oder schaut es vor allem zu?",
+        "li7": "<b>Gemeinsam:</b> Können Sie mitspielen?"
+      },
+      "us": {
+        "h": "Wie Oomba Academy dabei abschneidet, ganz ehrlich",
+        "li1": "<b>Werbung:</b> keine.",
+        "li2": "<b>Käufe:</b> nichts, was Kinder kaufen können, keine Lootboxen und kein Spielgeld, das echtes Geld kostet.",
+        "li3": "<b>Fremde:</b> Chat nur mit Freunden, die per Code hinzugefügt wurden, gefiltert und meldbar.",
+        "li4": "<b>Daten:</b> Wir fragen Kinder nie nach E-Mail-Adresse, Alter, Adresse oder Standort. Fotos sind freiwillig: ein Profilfoto oder Bilder für den Baumeister. Versteckte Standortdaten werden entfernt, und Profilfotos werden geprüft, bevor jemand sie sieht.",
+        "li5": "<b>Altersgerecht:</b> gemacht für 8- bis 14-Jährige.",
+        "li6": "<b>Selbermachen:</b> Kinder können mit dem KI-Baumeister eigene Spiele bauen.",
+        "li7": "<b>Gemeinsam:</b> Mehrere Spiele haben einen Modus für zwei Spieler an einem Bildschirm.",
+        "p": "Was wir nicht haben: Zeitlimits, Aktivitätsberichte oder ein Eltern-Dashboard. Für Grenzen nutzen Sie die Werkzeuge Ihres Geräts."
+      },
+      "tools": {
+        "h": "Grenzen mit den Werkzeugen Ihres Geräts setzen",
+        "p": "Mit diesen kostenlosen Werkzeugen der Gerätehersteller legen Sie Tageslimits, Auszeiten und App-Regeln fest:",
+        "li1": "<a href=\"{href}\">Bildschirmzeit</a> von Apple auf iPhone, iPad und Mac",
+        "li2": "<a href=\"{href}\">Google Family Link</a> auf Android-Handys, Android-Tablets und Chromebooks",
+        "li3": "<a href=\"{href}\">Microsoft Family Safety</a> auf Windows und Xbox"
+      },
+      "rules": {
+        "h": "Familienregeln, die funktionieren",
+        "li1": "Ein neues Spiel beim ersten Mal gemeinsam spielen.",
+        "li2": "Gebaut und gechattet wird in einem Raum, den alle nutzen.",
+        "li3": "Nicht nur festlegen, wie lange, sondern auch wann: nach den Hausaufgaben, nicht vor dem Schlafengehen.",
+        "li4": "Fragen, was die Kinder heute gebaut oder gelernt haben.",
+        "li5": "Für jeden Bildschirm im Haus dieselben Regeln, auch für die der Erwachsenen."
+      },
+      "faq": {
+        "q1": "Wie viel Bildschirmzeit ist für ein 10-jähriges Kind in Ordnung?",
+        "a1": "Eine einzige richtige Zahl gibt es nicht. Kinderärzte empfehlen verlässliche Grenzen, die Raum für Schlaf, Schule, Bewegung und Familienzeit lassen, und darauf zu achten, was Kinder am Bildschirm tun. Ein Mediennutzungsplan für die Familie hilft bei der Entscheidung.",
+        "q2": "Ist lehrreiche Bildschirmzeit besser als Spiele?",
+        "a2": "Spiele können lehrreich sein. Achten Sie auf solche, bei denen Ihr Kind etwas löst, übt oder erschafft, ohne Werbung oder Käufe, die es immer weiterziehen.",
+        "q3": "Hat Oomba Academy Zeitlimits?",
+        "a3": "Nein. Nutzen Sie die Werkzeuge Ihres Geräts, etwa Bildschirmzeit von Apple, Google Family Link oder Microsoft Family Safety.",
+        "q4": "Ist Spiele bauen besser als Spiele spielen?",
+        "a4": "Beides hat seinen Platz. Wer ein Spiel baut, muss planen, klar erklären, testen und verbessern, deshalb ist es eine aktive Art von Bildschirmzeit."
+      }
+    }
   }
 }
