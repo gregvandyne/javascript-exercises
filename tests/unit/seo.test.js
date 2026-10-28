@@ -80,9 +80,10 @@ test('sitemap.xml: public pages and live launch games with lastmod and hreflang;
   assert.match(sumUrl, /hreflang="x-default" href="[^"]+\/g\/sum-racer"/);
   assert.match(sumUrl, /hreflang="fr" href="[^"]+\/fr\/g\/sum-racer"/);
   assert.match(sumUrl, /<image:loc>[^<]+\/covers\/sum-racer\.jpg<\/image:loc>/);
-  // Pages only written in English have no language alternates.
+  // /teachers is written in every language now: all 13 alternates plus x-default.
   const teachers = urls.find(u => u.includes(`<loc>${base}/teachers</loc>`));
-  assert.doesNotMatch(teachers, /hreflang/);
+  assert.match(teachers, /hreflang="es" href="[^"]+\/es\/teachers"/);
+  assert.match(teachers, /hreflang="x-default" href="[^"]+\/teachers"/);
 });
 
 test('noindex: profiles, sign-in, search, play, a child\'s published game and its pictures; the 404 page', async () => {
@@ -186,12 +187,12 @@ test('languages: /<code>/ addresses, hreflang only for written languages, no coo
   assert.match(fr.text, /<a href="\/de\/g\/sum-racer\?lang=de" hreflang="de" rel="nofollow"/);
   const he = await get('/he/g/sum-racer');
   assert.match(he.text, /<html lang="he" dir="rtl"/);
-  // A page not written in that language yet: served, but pointing at the English page and not indexed.
+  // A page written in that language is its own canonical and indexed, and the English page lists it.
   const es = await get('/es/teachers');
   assert.equal(es.status, 200);
-  assert.equal(canonical(es.text), `${base}/teachers`);
-  assert.equal(robotsMeta(es.text), 'noindex, follow');
-  assert.deepEqual(hreflangs((await get('/teachers')).text), [], 'English only: no alternates');
+  assert.equal(canonical(es.text), `${base}/es/teachers`);
+  assert.match(robotsMeta(es.text), /^index, follow/);
+  assert.equal(Object.fromEntries(hreflangs((await get('/teachers')).text)).es, `${base}/es/teachers`);
   // Only public pages have language addresses; one address per page.
   assert.equal((await get('/fr/login')).status, 404);
   assert.equal((await get('/fr/u/OombaAcademy')).status, 404);
