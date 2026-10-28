@@ -1,9 +1,9 @@
 {
   "_about": "Oomba Academy: deutsche Texte (Deutsch). Begriffe: Baumeister (KI-Helfer), Studio, Freigeben, Freunde, Freundescode, Chat, Bestenliste, Likes, Mal gespielt, Werbung.",
   "layout": {
-    "titleHome": "Oomba Academy · Spiele spielen und bauen",
+    "titleHome": "Lernspiele für Kinder: spielen und bauen · Oomba Academy",
     "titleWith": "{title} · Oomba Academy",
-    "description": "Spiel kostenlose Spiele und bau mit Oomba Academy deine eigenen.",
+    "description": "Kostenlose, lustige Lernspiele für Kinder von 8 bis 14. Direkt im Browser spielen und mit dem KI-Baumeister eigene Spiele bauen.",
     "skip": "Direkt zu den Spielen",
     "mainNav": "Hauptmenü",
     "signIn": "Anmelden",
@@ -38,7 +38,8 @@
       "contact": "Kontakt",
       "builders": "Für Spielemacher",
       "terms": "Nutzungsbedingungen",
-      "privacy": "Datenschutz"
+      "privacy": "Datenschutz",
+      "teachers": "Für Lehrkräfte"
     },
     "build": {
       "ready": "✨ Dein Spiel „{title}“ ist fertig! <a href=\"{href}\">Öffnen</a>",
@@ -57,7 +58,8 @@
     "classes": "Klassen",
     "schools": "Schulen",
     "family": "Familie",
-    "plans": "Abos"
+    "plans": "Abos",
+    "teachers": "Lehrkräfte"
   },
   "errors": {
     "goHome": "Zur Startseite",
@@ -345,6 +347,11 @@
       "title": "Noch keine Spiele",
       "text": "Bau du das erste!",
       "action": "Spiel bauen"
+    },
+    "intro": {
+      "heading": "Interaktive Lernspiele für Kinder, die Spaß machen",
+      "text": "Kostenlose Spiele für 8- bis 14-Jährige, für den Unterricht oder zu Hause, und ein Baumeister, der aus deiner eigenen Idee ein Spiel macht.",
+      "teachers": "Für Lehrkräfte"
     }
   },
   "search": {
@@ -830,7 +837,8 @@
     },
     "leaderboard": {
       "heading": "Bestenliste",
-      "empty": "Noch keine Punkte. Sei der Erste!"
+      "empty": "Noch keine Punkte. Sei der Erste!",
+      "signIn": "Melde dich an, um die Namen der Spieler zu sehen."
     },
     "more": {
       "label": "Mehr",
@@ -2987,5 +2995,289 @@
         "p1": "Schreiben Sie an {email}."
       }
     }
+  },
+  "seo": {
+    "home": {
+      "description": "Kostenlose, werbefreie Lernspiele für Kinder von 8 bis 14: Mathe, Lesen, Schach und Musik. Im Browser spielen, mit dem KI-Baumeister eigene Spiele bauen.",
+      "imageAlt": "Oomba Academy: Lernspiele für Kinder, die Spaß machen"
+    },
+    "teachers": {
+      "imageAlt": "Oomba Academy für Lehrkräfte: interaktive Lernspiele für den Unterricht, die Spaß machen"
+    },
+    "game": {
+      "title": "{title}: kostenloses {kind} für Kinder",
+      "imageAlt": "{title}, ein kostenloses Spiel bei Oomba Academy",
+      "kind": {
+        "arcade": "Arcade-Spiel",
+        "sports": "Sportspiel",
+        "puzzle": "Rätselspiel",
+        "words": "Wortspiel",
+        "board": "Brettspiel",
+        "adventure": "Abenteuerspiel",
+        "learning": "Lernspiel",
+        "music": "Musikspiel",
+        "silly": "Quatschspiel"
+      }
+    },
+    "games": {
+      "sum-racer": "Sum Racer: Mathe-Rennspiel für Kinder",
+      "word-hunt": "Word Hunt: Wortsuchrätsel für Kinder",
+      "shark-plank": "Shark Plank: Galgenmännchen für Kinder",
+      "word-peek": "Word Peek: tägliches Worträtsel für Kinder",
+      "castle-clash": "Castle Clash: Schach lernen, gratis für Kinder",
+      "connect-four": "Drop Four: Vier in einer Reihe zu zweit",
+      "loop-lab": "Loop Lab: Musik und Beats online machen",
+      "beat-lanes": "Beat Lanes: Rhythmus-Musikspiel für Kinder"
+    }
+  },
+  "teachers": {
+    "title": "Interaktive Lernspiele für den Unterricht",
+    "description": "Kostenlose, werbefreie Lernspiele für 8- bis 14-Jährige, im Browser und auf Chromebooks: Mathe, Lesen, Schach und Musik, dazu ein KI-Baumeister.",
+    "kicker": "🍎 Für Lehrkräfte",
+    "h1": "Interaktive Lernspiele, die Ihre Klasse lieben wird",
+    "lead": "Oomba Academy ist eine kostenlose Website mit Lernspielen für 8- bis 14-Jährige. Die Schüler spielen direkt im Browser, und Ihre Klasse kann eigene Spiele bauen, indem sie sie unserem KI-Baumeister beschreibt.",
+    "badges": {
+      "free": "Kostenlos starten",
+      "ads": "Keine Werbung",
+      "browser": "Läuft in jedem Browser, auch auf Chromebooks",
+      "google": "Über Google anmelden",
+      "ages": "Für 8- bis 14-Jährige"
+    },
+    "cta": {
+      "start": "Kostenloses Schulkonto anfragen",
+      "try": "Jetzt ein Spiel testen, ohne Anmeldung"
+    },
+    "play": {
+      "h": "Spielend lernen",
+      "p": "Kurze Spiele, die die Schüler immer wieder spielen wollen, und jedes übt eine echte Fähigkeit. Sie öffnen sich in Sekunden im Browser, ohne Installation."
+    },
+    "subjects": {
+      "h": "Lernspiele nach Fächern"
+    },
+    "build": {
+      "h": "Lernen durch Bauen",
+      "p1": "Die Schüler beschreiben ein Spiel mit eigenen Worten, und der Baumeister baut es. Dabei zeigt er, was er hinter den Kulissen tut, mit kurzen Lerntipps.",
+      "p2": "Eine Idee klar aufschreiben, das Spiel testen und Änderungen wünschen: Das ist Planen, Schreiben und Fehlersuche, ganz ohne Programmierkenntnisse.",
+      "link": "So entsteht ein Spiel"
+    },
+    "class": {
+      "h": "Im Unterricht einsetzen",
+      "li1": "Klassen mit Klassencode: Schüler mit eigenem Konto treten mit dem Code bei, und Sie nehmen sie an.",
+      "li2": "Keine E-Mail-Adresse der Schüler nötig: Sie können Schulkonten für eine ganze Klasse anlegen und die Anmeldekarten ausdrucken.",
+      "li3": "Über Google anmelden für Schulen, die Google-Konten und Chromebooks nutzen.",
+      "li4": "Lektionen in Schritten: etwas lesen, ein Spiel spielen, ein Spiel bauen. Sie sehen Fortschritt, Punkte und schriftliche Antworten jedes Schülers.",
+      "li5": "Teilen Sie ein Spiel nur mit Ihren Klassen, dann bleibt es in Ihrer Klasse."
+    },
+    "safe": {
+      "h": "Von Grund auf sicher",
+      "li1": "Keine Werbung und keine Werbe- oder Tracking-Cookies.",
+      "li2": "Wir fragen Schüler nie nach E-Mail-Adresse, Alter oder Wohnadresse. Den echten Namen eines Schülers, falls Sie ihn eintragen, sieht nur das Personal Ihrer Schule.",
+      "li3": "Jedes Spiel läuft in einer abgeschotteten Sandbox, und ein Spiel für alle wird geprüft, bevor andere es spielen können.",
+      "li4": "Chatten können nur Freunde, die ihre Freundescodes getauscht haben, und Ihre Schule kann den Chat ausschalten.",
+      "links": "Lesen Sie, <a href=\"{safety}\">wie wir Kinder schützen</a>, und unsere <a href=\"{privacy}\">Datenschutzerklärung</a>.",
+      "li2google": "Schüler tippen nie eine E-Mail-Adresse ein. Wenn Ihre Schule „Über Google anmelden“ nutzt, speichern wir die schulische Google-E-Mail-Adresse jedes Schülers nur, um sein Konto zu erkennen. Den echten Namen eines Schülers, falls Sie ihn eintragen, sieht nur das Personal Ihrer Schule."
+    },
+    "uses": {
+      "h": "Ideen für den Einsatz",
+      "p": "Lehrkräfte bauen ein Spiel überall dort in den Schultag ein, wo ein paar Minuten konzentriertes Spielen helfen:",
+      "li1": "Zum Einstieg in die Stunde",
+      "li2": "Kurze Pausen zwischendurch",
+      "li3": "Für alle, die früher fertig sind",
+      "li4": "Stationenlernen",
+      "li5": "Spaß zum Wochenende",
+      "li6": "Regenpause",
+      "li7": "Üben zu Hause"
+    },
+    "languages": {
+      "h": "In den Sprachen Ihrer Schüler",
+      "p": "Die ganze Website funktioniert in {count} Sprachen, darunter Englisch, Arabisch, Russisch, Französisch und Spanisch. Das hilft Schülern, die noch Deutsch lernen. Jeder Schüler wählt seine Sprache, und der Baumeister antwortet darin."
+    },
+    "start": {
+      "h": "Ihre Schule einrichten (kostenlos)",
+      "p1": "Spielen ist für alle kostenlos, und Schüler können jedes Spiel sofort ausprobieren, ohne Anmeldung.",
+      "p2": "Für Klassen, Lektionen und Schulkonten schreiben Sie an {email}: den Namen Ihrer Schule und wer sich um sie kümmert. Wir richten Ihre Schule und das Konto Ihres Schuladmins ein, und der Schuladmin fügt Lehrkräfte und Schüler hinzu. Das Einrichten einer Schule ist kostenlos.",
+      "plans": "Mehr Nachrichten an den Baumeister für Ihre Klassen? Ein Schulabo bringt einen gemeinsamen Pool für Ihre Schüler und Lehrkräfte.",
+      "email": "Schreiben Sie uns, um Ihre Schule einzurichten",
+      "subject": "Meine Schule bei Oomba Academy einrichten",
+      "plansLink": "Schulabos"
+    },
+    "faq": {
+      "h": "Häufige Fragen von Lehrkräften",
+      "q1": "Ist Oomba Academy für Lehrkräfte kostenlos?",
+      "a1": "Ja. Spielen, Klassen, Lektionen und Fortschritt sind kostenlos, und jedes Schülerkonto bekommt jeden Tag kostenlose Nachrichten an den Baumeister.",
+      "q2": "Brauchen Schüler zum Spielen ein Konto oder eine E-Mail-Adresse?",
+      "a2": "Nein. Alle können sofort spielen. Für Ihre Klassen können Sie Schulkonten ohne E-Mail-Adresse anlegen und Anmeldekarten dafür ausdrucken.",
+      "q3": "Funktioniert es auf Chromebooks und im Schulnetz?",
+      "a3": "Es läuft in jedem aktuellen Webbrowser, auf Chromebooks, Laptops, Tablets und an der digitalen Tafel, ohne Installation. Wenn Ihre Schule Websites filtert, bitten Sie Ihre IT, {host} freizugeben.",
+      "q4": "Wie schützen Sie die Daten der Schüler?",
+      "a4": "Wir fragen Schüler nie nach E-Mail-Adresse, Alter oder Wohnadresse. Es gibt keine Werbung und keine Tracking-Cookies, und den echten Namen eines Schülers sieht nur das Personal seiner Schule. Unsere <a href=\"{href}\">Datenschutzerklärung</a> listet genau auf, was wir speichern.",
+      "q5": "Für welches Alter und welche Klassen ist es gedacht?",
+      "a5": "Oomba Academy ist für 8- bis 14-Jährige gemacht, also ungefähr für die 3. bis 8. Klasse. Einige Spiele, etwa Shark Plank und die ersten Strecken von Sum Racer, passen auch für jüngere Leseanfänger.",
+      "q6": "Wie füge ich meine Klasse hinzu?",
+      "a6": "Schreiben Sie uns zuerst, damit wir Ihre Schule einrichten (das ist kostenlos). Legen Sie dann eine Klasse an und geben Sie den Klassencode an Schüler mit eigenem Konto weiter, oder legen Sie Schulkonten für die ganze Klasse an und drucken Sie Anmeldekarten aus.",
+      "a6google": "Schreiben Sie uns zuerst, damit wir Ihre Schule einrichten (das ist kostenlos). Legen Sie dann eine Klasse an und geben Sie den Klassencode an Schüler mit eigenem Konto weiter, oder legen Sie Schulkonten für die ganze Klasse an und drucken Sie Anmeldekarten aus. Schulen, die Google nutzen, können Schüler auch über Google anmelden lassen.",
+      "q7": "Können Schüler eigene Spiele bauen? Wer sieht sie?",
+      "a7": "Ja. Ein neues Spiel sieht nur der Schüler, der es gebaut hat. Er kann es mit seiner Klasse teilen, und ein Spiel für alle wird geprüft, bevor andere es spielen können.",
+      "q8": "Kann ich Fortschritt und Punkte verfolgen?",
+      "a8": "Ja. Lektionen speichern den Fortschritt, die Spielpunkte und die schriftlichen Antworten jedes Schülers. Sie sehen sie in der Klasse unter „Fortschritt“ und können den Lektionsfortschritt jedes Schülers als Tabelle (CSV) herunterladen.",
+      "q9": "Welche Sprachen gibt es?",
+      "a9": "{count} Sprachen, darunter Englisch, Spanisch, Französisch, Arabisch, Russisch, Hebräisch und Japanisch. Jeder Schüler wählt seine eigene.",
+      "a4google": "Schüler tippen nie eine E-Mail-Adresse ein, und wir fragen nie nach ihrem Alter oder ihrer Wohnadresse. Wenn Ihre Schule „Über Google anmelden“ nutzt, speichern wir die schulische Google-E-Mail-Adresse jedes Schülers nur, um sein Konto zu erkennen. Es gibt keine Werbung und keine Tracking-Cookies. Unsere <a href=\"{href}\">Datenschutzerklärung</a> listet genau auf, was wir speichern."
+    }
+  },
+  "learn": {
+    "crumbs": "Brotkrümelnavigation",
+    "gamesHeading": "Die Spiele",
+    "practise": "Das wird geübt:",
+    "play": "Spielen",
+    "about": "Über das Spiel",
+    "tipsHeading": "Im Unterricht",
+    "faqHeading": "Häufige Fragen von Lehrkräften",
+    "moreHeading": "Weitere Lernspiele nach Fächern",
+    "teachersLink": "Oomba Academy für Lehrkräfte",
+    "safetyLink": "So schützen wir Kinder",
+    "noGames": "Diese Spiele werden gerade aktualisiert. Bitte schauen Sie bald wieder vorbei.",
+    "games": {
+      "sumRacer": "Kopfrechnen von Plus bis 10 über das Einmaleins bis zum Teilen, als Kartrennen. Zwei Schüler können an einem Bildschirm gegeneinander fahren.",
+      "wordHunt": "Wortsuchrätsel zu Themen, mit vorgelesenen Wörtern, einem Tagesrätsel und einem Wettrennen gegen Freunde.",
+      "sharkPlank": "Galgenmännchen für Leseanfänger, bei dem jedes Wort vorgelesen wird.",
+      "wordPeek": "Ein tägliches Worträtsel mit Hinweisen nach jedem Rateversuch, dazu Varianten mit 4 und 6 Buchstaben.",
+      "castleClash": "Echtes Schach mit kurzen Lektionen zu jeder Figur, 24 Mattaufgaben und einem Roboter in vier Stufen.",
+      "connectFour": "Vier in einer Reihe gegen einen Freund oder einen Roboter: vorausplanen und den Gegner blockieren.",
+      "brickDrop": "Puzzles mit fallenden Steinen: erkennen, wo jede Form passt, und ganze Reihen abräumen.",
+      "loopLab": "Beats mit Schlagzeug, Bass und Melodie machen, zu einem Song verbinden und 10 Musik-Challenges schaffen.",
+      "beatLanes": "Im Takt zu neun Liedern tippen, von „Funkel, funkel, kleiner Stern“ bis zum Cancan.",
+      "swishFlick": "Mit einem Wisch Körbe werfen: Die Richtung zielt, und das Tempo bestimmt, wie weit der Ball fliegt.",
+      "munchMaze": "Eine Jagd durchs Labyrinth: einen Weg planen, alle Kügelchen sammeln und den Gloops ausweichen."
+    },
+    "hubs": {
+      "math": {
+        "name": "Mathespiele",
+        "short": "Addition, Subtraktion, Multiplikation (Einmaleins) und Division",
+        "title": "Kostenlose Mathespiele: Plus, Minus, Einmaleins",
+        "description": "Plus, Minus, Einmaleins und Geteilt üben mit Sum Racer, einem kostenlosen Mathe-Rennspiel für die 1. bis 5. Klasse, auch zu zweit.",
+        "h1": "Mathespiele für Kinder, die Spaß machen",
+        "lead": "Sum Racer ist ein kostenloses Spiel fürs Kopfrechnen: Jede richtige Antwort lässt ein Kart an den anderen Fahrern vorbeiflitzen. Wählen Sie die Strecke, die zum aktuellen Stoff Ihrer Klasse passt, von Plus bis 10 bis zum Einmaleins und Teilen, und starten Sie die Stunde mit einem kurzen Rennen. Es läuft im Browser, auf Chromebooks, Tablets und an der digitalen Tafel.",
+        "tracks": {
+          "h": "Sieben Strecken: Plus und Minus bis 100, Einmaleins bis 12 und Teilen",
+          "li1": "Plus bis 10",
+          "li2": "Plus und Minus bis 20",
+          "li3": "Plus und Minus bis 100",
+          "li4": "Malnehmen: die 2er-, 5er- und 10er-Reihe",
+          "li5": "Malnehmen: alle Einmaleinsreihen bis 12",
+          "li6": "Teilen (Division)",
+          "li7": "Eine gemischte Strecke mit +, −, × und ÷",
+          "p": "Die Schüler können auch genau auswählen, welche Einmaleinsreihen sie üben."
+        },
+        "tips": "Beginnen Sie die Stunde mit einem fünfminütigen Rennen auf der Strecke, an der Sie gerade arbeiten, oder lassen Sie zwei Schüler an einem Gerät gegeneinander fahren.",
+        "faq": {
+          "q1": "Was üben die Kinder in Sum Racer?",
+          "a1": "Plus bis 10, Plus und Minus bis 20 und bis 100, das Einmaleins bis 12, Teilen und eine gemischte Strecke mit allen vier Grundrechenarten.",
+          "q2": "Können zwei Schüler gegeneinander fahren?",
+          "a2": "Ja. Zwei Spieler können an einem Bildschirm gegeneinander fahren.",
+          "q3": "Ist es kostenlos?",
+          "a3": "Ja. Es ist kostenlos und werbefrei, und die Schüler können ohne Anmeldung loslegen."
+        }
+      },
+      "words": {
+        "name": "Lese- und Rechtschreibspiele",
+        "short": "Wortsuchrätsel, Galgenmännchen und ein tägliches Worträtsel",
+        "title": "Kostenlose Lese- und Rechtschreibspiele für Kinder",
+        "description": "Wortsuchrätsel, Galgenmännchen und ein tägliches Worträtsel für 8- bis 14-Jährige, mit vorgelesenen Wörtern für Leseanfänger. Kostenlos und werbefrei.",
+        "h1": "Lese- und Rechtschreibspiele für Leseanfänger und Fortgeschrittene",
+        "lead": "Drei Wortspiele, die Rechtschreibung und Wortschatz fördern. Shark Plank und Word Hunt lesen Wörter vor und passen deshalb gut für Leseanfänger. Word Peek ist ein tägliches Worträtsel für sichere Rechtschreiber.",
+        "tips": "Nutzen Sie ein Thema aus Word Hunt zum Einstieg, lösen Sie das Tageswort von Word Peek gemeinsam an der Tafel und besprechen Sie jeden Rateversuch, oder geben Sie Shark Plank allen, die früher fertig sind.",
+        "faq": {
+          "q1": "Lesen die Spiele Wörter vor?",
+          "a1": "Shark Plank liest jedes Wort vor, und in Word Hunt können die Schüler jedes Wort antippen, um es zu hören.",
+          "q2": "Gibt es ein Tagesrätsel?",
+          "a2": "Ja. Word Hunt und Word Peek haben jeden Tag ein neues Rätsel, und in Word Peek kann ein Schüler ein Geheimwort für einen Freund festlegen.",
+          "q3": "Kann ich meine eigene Wörterliste verwenden?",
+          "a3": "In diesen Spielen noch nicht. Sie können dem Baumeister ein Rechtschreibspiel mit Ihren Wörtern beschreiben, und er baut eines für Ihre Klasse."
+        }
+      },
+      "strategy": {
+        "name": "Schach- und Strategiespiele",
+        "short": "Schachlektionen und -rätsel, Vier in einer Reihe, Blockpuzzles",
+        "title": "Kostenlose Schach- und Strategiespiele für Kinder",
+        "description": "Schach lernen mit kurzen Lektionen und Rätseln, dann gegen Freunde oder einen Roboter spielen. Dazu Vier in einer Reihe und Blockpuzzles, gratis für 8–14.",
+        "h1": "Schach- und Strategiespiele, die das Denken fördern",
+        "lead": "Bei Strategiespielen planen die Schüler voraus, erkennen Muster und überlegen, was der andere Spieler vorhat. Castle Clash bringt Schach vom ersten Zug an bei. Drop Four und Brick Drop sind schnelle Spiele rund um Planen und Muster.",
+        "tips": "Gründen Sie mit den Lektionen und Rätseln von Castle Clash eine Schach-AG, oder lassen Sie zwei Schüler an einem Gerät Drop Four spielen.",
+        "faq": {
+          "q1": "Können Kinder Schach von Grund auf lernen?",
+          "a1": "Ja. Castle Clash hat eine kurze Lektion zu jeder Figur und 24 Mattaufgaben, danach einen Roboter als Gegner in vier Stufen.",
+          "q2": "Können zwei Schüler an einem Gerät spielen?",
+          "a2": "Ja. Castle Clash und Drop Four haben beide einen Modus für zwei Spieler an einem Bildschirm.",
+          "q3": "Wie stark ist der Roboter?",
+          "a3": "Der Roboter in Castle Clash hat vier Stufen, der Roboter in Drop Four hat Leicht, Normal und Schwer."
+        }
+      },
+      "music": {
+        "name": "Musikspiele",
+        "short": "Beats bauen und zu Liedern mitspielen",
+        "title": "Musikspiele für Kinder: Beats und Rhythmus",
+        "description": "Eigene Beats bauen in Loop Lab und im Takt zu neun Liedern tippen in Beat Lanes. Kostenlose Musikspiele für 8- bis 14-Jährige, werbefrei, im Browser.",
+        "h1": "Musikspiele: Beats bauen und mitspielen",
+        "lead": "Loop Lab ist ein Beat-Baukasten: Die Schüler tippen auf Kästchen, bauen einen Loop aus Schlagzeug, Bass und Melodie und hören ihn sofort. Beat Lanes ist ein Rhythmusspiel mit neun Liedern, von „Funkel, funkel, kleiner Stern“ bis zum Cancan.",
+        "tips": "Erkunden Sie mit den Musik-Challenges von Loop Lab Muster und Wiederholung, oder spielen Sie ein Lied in Beat Lanes als kurze Pause zwischendurch. In einem lauten Raum helfen Kopfhörer.",
+        "faq": {
+          "q1": "Müssen die Schüler Noten lesen können?",
+          "a1": "Nein. Beide Spiele arbeiten mit Farben und Timing, nicht mit Noten.",
+          "q2": "Können die Schüler ganze Lieder machen?",
+          "a2": "Ja. In Loop Lab können sie Muster zu einem Lied verbinden und es wie ein kleines Konzert abspielen."
+        }
+      },
+      "brainBreaks": {
+        "name": "Spiele für zwischendurch",
+        "short": "Schnelle Spiele für eine kurze Pause",
+        "title": "Spiele für zwischendurch: kurze Pausen im Unterricht",
+        "description": "Lustige Spiele für 3 bis 5 Minuten Pause im Unterricht: Rhythmus, Körbe werfen, Labyrinthe, fallende Steine und ein Tagesrätsel. Gratis, ohne Anmeldung.",
+        "h1": "Schnelle Spiele für zwischendurch im Unterricht",
+        "lead": "Ein paar Minuten Spielen zwischen den Stunden helfen den Schülern, neu durchzustarten. Diese Spiele starten in Sekunden, brauchen keine Anmeldung und lassen sich leicht beenden, wenn der Timer abläuft.",
+        "tips": "Stellen Sie einen Timer auf 3 bis 5 Minuten, zeigen Sie ein Spiel an der Tafel und lassen Sie die Klasse abwechselnd spielen, oder lassen Sie die Schüler auf eigenen Geräten spielen.",
+        "faq": {
+          "q1": "Wie lang sollte eine kurze Pause sein?",
+          "a1": "Viele Lehrkräfte nehmen 3 bis 5 Minuten. Diese Spiele haben kurze Runden, so lässt sich pünktlich aufhören.",
+          "q2": "Kann die ganze Klasse an einem Bildschirm spielen?",
+          "a2": "Ja. Zeigen Sie ein Spiel an der Tafel und spielen Sie abwechselnd. Beat Lanes und Swish Flick funktionieren gut, wenn die ganze Klasse mitfiebert."
+        }
+      },
+      "makeAGame": {
+        "name": "Eigene Spiele bauen",
+        "short": "Schüler entwerfen Spiele mit dem KI-Baumeister",
+        "title": "Eigene Spiele bauen mit KI: für Kinder und Schulen",
+        "description": "Die Schüler beschreiben ein Spiel in einfachen Worten, und der Baumeister baut es und zeigt seine Schritte. Werbefrei, für 8–14, privat bis zum Teilen.",
+        "h1": "Eigene Spiele bauen, ganz ohne Programmieren",
+        "lead": "Bei Oomba Academy beschreiben die Schüler das Spiel, das sie sich wünschen, und der KI-Baumeister baut es. Dann spielen sie es, testen es und wünschen sich Änderungen, eine Idee nach der anderen.",
+        "how": {
+          "h": "So funktioniert es",
+          "li1": "<b>Beschreiben:</b> eine Idee eintippen, etwa „ein Labyrinth, in dem eine Katze Fische sammelt“, und nach Wunsch eine Zeichnung oder ein Foto hinzufügen.",
+          "li2": "<b>Bauen:</b> Der Baumeister baut das Spiel und zeigt dabei, was er hinter den Kulissen tut.",
+          "li3": "<b>Spielen und testen:</b> ausprobieren und merken, was geändert werden soll.",
+          "li4": "<b>Verbessern:</b> Änderungen in einfachen Worten wünschen, eine nach der anderen."
+        },
+        "cta": "Los geht's",
+        "skills": {
+          "h": "Was die Schüler üben",
+          "p": "Eine Idee planen, klare Anweisungen schreiben, testen, Fehler finden und beheben und einen Entwurf Schritt für Schritt verbessern: die Gewohnheiten von Programmierern und Spieleentwicklern."
+        },
+        "safe": {
+          "h": "Von Grund auf sicher",
+          "p": "Der Baumeister folgt festen Regeln zum Schutz von Kindern: kein Blut, kein Glücksspiel, keine echten Marken oder echten Personen, kein Chat und keine Datensammlung in Spielen und keine Links nach draußen. Jedes Spiel läuft in einer abgeschotteten Sandbox."
+        },
+        "tips": "Fügen Sie einer Lektion den Schritt „Ein Spiel bauen“ hinzu, mit der Idee, von der die Schüler ausgehen. Ein Projekt, das gut funktioniert: Jeder Schüler entwirft ein Wiederholungsspiel zum aktuellen Thema, dann spielen die Mitschüler es und geben Feedback.",
+        "faq": {
+          "q1": "Müssen die Schüler programmieren können?",
+          "a1": "Nein. Sie beschreiben das Spiel mit eigenen Worten. Der Baumeister zeigt beim Arbeiten seine Schritte, so können neugierige Schüler sehen, wie ein Spiel aufgebaut ist.",
+          "q2": "Wer sieht die Spiele, die Schüler bauen?",
+          "a2": "Nur der Schüler selbst, bis er es teilt. Er kann es mit Freunden oder seiner Klasse teilen, und ein Spiel für alle wird geprüft, bevor andere es spielen können.",
+          "q3": "Für welches Alter ist es?",
+          "a3": "Für 8- bis 14-Jährige."
+        }
+      }
+    },
+    "grades": "Klassenstufe {from}–{to}",
+    "seeAll": "Alle {name} ansehen"
   }
 }
