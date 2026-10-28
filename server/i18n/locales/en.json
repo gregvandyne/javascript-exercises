@@ -1,9 +1,9 @@
 {
   "_about": "Oomba Academy English (US) source strings. Keys are grouped by page. Placeholders and plurals: see server/i18n/README.md. Translator notes: server/i18n/notes.json.",
   "layout": {
-    "titleHome": "Oomba Academy · Play and build games",
+    "titleHome": "Fun learning games for kids: play and build · Oomba Academy",
     "titleWith": "{title} · Oomba Academy",
-    "description": "Play free games and build your own with Oomba Academy.",
+    "description": "Free, fun learning games for kids aged 8 to 14. Play right in the browser, and build your own games with an AI Builder.",
     "skip": "Skip to the games",
     "mainNav": "Main",
     "signIn": "Sign in",
@@ -38,7 +38,8 @@
       "contact": "Contact us",
       "builders": "For builders",
       "terms": "Terms",
-      "privacy": "Privacy"
+      "privacy": "Privacy",
+      "teachers": "For teachers"
     },
     "build": {
       "ready": "✨ Your game “{title}” is ready! <a href=\"{href}\">Open it</a>",
@@ -57,7 +58,8 @@
     "classes": "Classes",
     "schools": "Schools",
     "family": "Family",
-    "plans": "Plans"
+    "plans": "Plans",
+    "teachers": "Teachers"
   },
   "errors": {
     "goHome": "Go home",
@@ -345,6 +347,11 @@
       "title": "No games yet",
       "text": "Be the first to build one!",
       "action": "Build a game"
+    },
+    "intro": {
+      "heading": "Fun, interactive learning games for kids",
+      "text": "Free games for ages 8 to 14 to play in class or at home, and a Builder that turns your own idea into a game.",
+      "teachers": "For teachers"
     }
   },
   "search": {
@@ -830,7 +837,8 @@
     },
     "leaderboard": {
       "heading": "Leaderboard",
-      "empty": "No scores yet. Be the first!"
+      "empty": "No scores yet. Be the first!",
+      "signIn": "Sign in to see the players' names."
     },
     "more": {
       "label": "More",
@@ -2988,5 +2996,289 @@
         "p1": "Write to {email}."
       }
     }
+  },
+  "seo": {
+    "home": {
+      "description": "Free, ad-free learning games for kids aged 8 to 14: math, reading, chess and music. Play in any browser, and build your own games with an AI Builder.",
+      "imageAlt": "Oomba Academy: fun learning games for kids"
+    },
+    "teachers": {
+      "imageAlt": "Oomba Academy for teachers: fun, interactive learning games for the classroom"
+    },
+    "game": {
+      "title": "{title}: free online {kind} for kids",
+      "imageAlt": "{title}, a free game on Oomba Academy",
+      "kind": {
+        "arcade": "arcade game",
+        "sports": "sports game",
+        "puzzle": "puzzle game",
+        "words": "word game",
+        "board": "board game",
+        "adventure": "adventure game",
+        "learning": "learning game",
+        "music": "music game",
+        "silly": "silly game"
+      }
+    },
+    "games": {
+      "sum-racer": "Sum Racer: math racing game for kids",
+      "word-hunt": "Word Hunt: word search game for kids",
+      "shark-plank": "Shark Plank: hangman spelling game for kids",
+      "word-peek": "Word Peek: daily word guessing game for kids",
+      "castle-clash": "Castle Clash: learn chess, free for kids",
+      "connect-four": "Drop Four: four in a row for two players",
+      "loop-lab": "Loop Lab: make music and beats online",
+      "beat-lanes": "Beat Lanes: rhythm music game for kids"
+    }
+  },
+  "teachers": {
+    "title": "Fun interactive learning games for classrooms",
+    "description": "Free, ad-free learning games for ages 8 to 14 that run in any browser, Chromebooks too: math, reading, chess and music, plus an AI game Builder.",
+    "kicker": "🍎 For teachers",
+    "h1": "Fun, interactive learning games your class will ask for",
+    "lead": "Oomba Academy is a free website of learning games for ages 8 to 14. Students play right in the browser, and your class can make its own games by describing them to our AI Builder.",
+    "badges": {
+      "free": "Free to start",
+      "ads": "No ads",
+      "browser": "Runs in any browser, Chromebooks too",
+      "google": "Sign in with Google",
+      "ages": "Made for ages 8 to 14"
+    },
+    "cta": {
+      "start": "Get a free school account",
+      "try": "Try a game now, no sign-up"
+    },
+    "play": {
+      "h": "Play to learn",
+      "p": "Short games students want to play again, each practicing a real skill. They open in seconds in the browser, with nothing to install."
+    },
+    "subjects": {
+      "h": "Games by subject"
+    },
+    "build": {
+      "h": "Build to learn",
+      "p1": "Students describe a game in their own words, and the Builder makes it. While it works, it shows its steps behind the scenes, with short learning tips.",
+      "p2": "Writing a clear idea, testing the game and asking for changes is planning, writing and debugging, without having to know code first.",
+      "link": "How making a game works"
+    },
+    "class": {
+      "h": "Run it with your class",
+      "li1": "Classes with a class code: students who have their own account join with the code, and you approve them.",
+      "li2": "No student email needed: you can make school accounts for a whole class and print their login cards.",
+      "li3": "Sign in with Google for schools that use Google accounts and Chromebooks.",
+      "li4": "Lessons in steps: read something, play a game, build a game. You see each student's progress, scores and written answers.",
+      "li5": "Share a game with only your classes, so it stays inside your class."
+    },
+    "safe": {
+      "h": "Safe by design",
+      "li1": "No ads, and no advertising or tracking cookies.",
+      "li2": "We never ask students for an email address, age or home address. A student's real name, if you add one, is seen only by your school's staff.",
+      "li3": "Every game runs in a locked sandbox, and a game made for everyone is reviewed before anyone else can play it.",
+      "li4": "Chat is only between friends who swapped friend codes, and your school can turn it off.",
+      "links": "Read <a href=\"{safety}\">how we keep kids safe</a> and our <a href=\"{privacy}\">privacy notice</a>.",
+      "li2google": "Students never type an email address. If your school uses Sign in with Google, we keep each student’s school Google email only to recognize their account. A student’s real name, if you add one, is seen only by your school’s staff."
+    },
+    "uses": {
+      "h": "Ways to use it",
+      "p": "Teachers fit a game into the day wherever a few minutes of focused play helps:",
+      "li1": "Warm-ups",
+      "li2": "Brain breaks",
+      "li3": "Early finishers",
+      "li4": "Centers and stations",
+      "li5": "Fun Friday",
+      "li6": "Indoor recess",
+      "li7": "Practice at home"
+    },
+    "languages": {
+      "h": "In your students’ languages",
+      "p": "The whole site works in {count} languages, including Spanish, Portuguese, French, Arabic and Hebrew, which helps students who are still learning English. Each student picks their own, and the Builder answers in it."
+    },
+    "start": {
+      "h": "Set up your school (free)",
+      "p1": "Playing is free for everyone, and students can try any game straight away, without signing up.",
+      "p2": "For classes, lessons and school accounts, write to {email} with your school’s name and who will look after it. We set up your school and your school admin’s account, and they add teachers and students. Setting up a school is free.",
+      "plans": "Want more Builder messages for your classes? A school plan adds a shared pool for your students and teachers.",
+      "email": "Email us to set up your school",
+      "subject": "Setting up my school on Oomba Academy",
+      "plansLink": "School plans"
+    },
+    "faq": {
+      "h": "Questions teachers ask",
+      "q1": "Is Oomba Academy free for teachers?",
+      "a1": "Yes. Playing, classes, lessons and progress are free, and every student account gets free Builder messages each day.",
+      "q2": "Do students need an account or an email address to play?",
+      "a2": "No. Anyone can play straight away. For your classes you can make school accounts without any email address and print login cards for them.",
+      "q3": "Does it work on Chromebooks and school networks?",
+      "a3": "It runs in any up-to-date web browser, on Chromebooks, laptops, tablets and on the classroom board, with nothing to install. If your school filters websites, ask your IT team to allow {host}.",
+      "q4": "How do you protect student privacy?",
+      "a4": "We never ask students for an email address, age or home address. There are no ads and no tracking cookies, and a student's real name is seen only by their school's staff. Our <a href=\"{href}\">privacy notice</a> lists exactly what we keep.",
+      "q5": "What ages and grades is it for?",
+      "a5": "Oomba Academy is made for ages 8 to 14, roughly grades 3 to 8. Some games, such as Shark Plank and the first Sum Racer tracks, also suit younger readers.",
+      "q6": "How do I add my class?",
+      "a6": "First, email us to set up your school (it’s free). Then create a class and share its class code with students who have their own account, or make school accounts for the whole class and print login cards.",
+      "a6google": "First, email us to set up your school (it’s free). Then create a class and share its class code with students who have their own account, or make school accounts for the whole class and print login cards. Schools that use Google can let students sign in with Google.",
+      "q7": "Can students make their own games? Who sees them?",
+      "a7": "Yes. A new game is private to the student who made it. They can share it with their class, and a game for everyone is reviewed before anyone else can play it.",
+      "q8": "Can I track progress and scores?",
+      "a8": "Yes. Lessons record each student’s progress, game scores and written answers. You see them on the class’s Progress tab, and can download each student’s lesson progress as a spreadsheet (CSV).",
+      "q9": "Which languages are there?",
+      "a9": "{count} languages, including Spanish, Portuguese, French, German, Arabic, Hebrew and Japanese. Each student picks their own.",
+      "a4google": "Students never type an email address, and we never ask for their age or home address. If your school uses Sign in with Google, we keep each student’s school Google email only to recognize their account. There are no ads and no tracking cookies. Our <a href=\"{href}\">privacy notice</a> lists exactly what we keep."
+    }
+  },
+  "learn": {
+    "crumbs": "Breadcrumb",
+    "gamesHeading": "The games",
+    "practise": "What it practices:",
+    "play": "Play",
+    "about": "About the game",
+    "tipsHeading": "In the classroom",
+    "faqHeading": "Questions teachers ask",
+    "moreHeading": "More games by subject",
+    "teachersLink": "Oomba Academy for teachers",
+    "safetyLink": "How we keep kids safe",
+    "noGames": "These games are being updated. Please come back soon.",
+    "games": {
+      "sumRacer": "Math facts from adding to 10 up to times tables and division, as a kart race. Two students can race on one screen.",
+      "wordHunt": "Themed word searches with words read aloud, a daily puzzle and a race-a-friend mode.",
+      "sharkPlank": "Hangman for early readers, with every word read aloud.",
+      "wordPeek": "A daily word puzzle with clues after every guess, plus 4- and 6-letter versions.",
+      "castleClash": "Real chess, with short lessons for every piece, 24 checkmate puzzles and a robot at four levels.",
+      "connectFour": "Four in a row against a friend or a robot: plan ahead and block the other player.",
+      "brickDrop": "Falling-block puzzles: see where each shape fits and clear whole rows.",
+      "loopLab": "Make beats with drums, bass and melody, chain them into a song and clear 10 music challenges.",
+      "beatLanes": "Tap in time to nine songs, from Twinkle Twinkle to the Can-Can.",
+      "swishFlick": "Flick to shoot hoops: the direction aims the ball and the speed sets how far it flies.",
+      "munchMaze": "A maze chase: plan a route, collect every dot and dodge the Gloops."
+    },
+    "hubs": {
+      "math": {
+        "name": "Math games",
+        "short": "Addition, subtraction, multiplication (times tables) and division",
+        "title": "Free math games: addition, subtraction, multiplication",
+        "description": "Practice addition, subtraction, multiplication and division facts in Sum Racer, a free math racing game for grades 1 to 5, with two-player races.",
+        "h1": "Fun math games for kids",
+        "lead": "Sum Racer is a free math facts game: every right answer speeds a kart past the other racers. Pick the track that matches what your class is learning, from addition to 10 up to the times tables and division, and run a quick race at the start of a lesson. It works in the browser, on Chromebooks, tablets and the classroom board.",
+        "tracks": {
+          "h": "Seven tracks: addition and subtraction to 100, multiplication (times tables) to 12, division",
+          "li1": "Addition to 10",
+          "li2": "Addition and subtraction to 20",
+          "li3": "Addition and subtraction to 100",
+          "li4": "Multiplication: the 2, 5 and 10 times tables",
+          "li5": "Multiplication: all the times tables up to 12",
+          "li6": "Division facts",
+          "li7": "A mixed track with +, −, × and ÷",
+          "p": "Students can also pick exactly which times tables to practice."
+        },
+        "tips": "Start a lesson with a five-minute race on the track you are working on, or put two students on one device for a head-to-head race.",
+        "faq": {
+          "q1": "What math does Sum Racer cover?",
+          "a1": "Addition to 10, addition and subtraction to 20 and 100, the times tables up to 12, division facts, and a mixed track with all four operations.",
+          "q2": "Can two students race each other?",
+          "a2": "Yes. Two players can race on one screen.",
+          "q3": "Is it free?",
+          "a3": "Yes. It is free to play, with no ads, and students can start without signing up."
+        }
+      },
+      "words": {
+        "name": "Reading and spelling games",
+        "short": "Word searches, hangman and a daily word puzzle",
+        "title": "Free reading and spelling games for kids",
+        "description": "Word searches, hangman and a daily word puzzle for ages 8 to 14, with words read aloud for early readers. Free, no ads, in any browser.",
+        "h1": "Reading and spelling games for early and growing readers",
+        "lead": "Three word games that build spelling and vocabulary. Shark Plank and Word Hunt read words aloud, so they suit early readers. Word Peek is a daily word puzzle for confident spellers.",
+        "tips": "Use a Word Hunt theme as a warm-up for a topic, solve the Daily Peek together on the board and talk about each guess, or set Shark Plank for early finishers.",
+        "faq": {
+          "q1": "Do the games read words aloud?",
+          "a1": "Shark Plank reads each word aloud, and in Word Hunt students can tap any word to hear it.",
+          "q2": "Is there a daily puzzle?",
+          "a2": "Yes. Word Hunt and Word Peek each have a new daily puzzle, and in Word Peek a student can set a secret word for a friend.",
+          "q3": "Can I use my own spelling list?",
+          "a3": "Not in these games yet. You can describe a spelling game with your words to the Builder, and it will make one for your class."
+        }
+      },
+      "strategy": {
+        "name": "Chess and strategy games",
+        "short": "Chess lessons and puzzles, four in a row, block puzzles",
+        "title": "Free chess and strategy games for kids",
+        "description": "Learn chess with short lessons and puzzles, then play a friend or a robot. Plus four in a row and falling-block puzzles, free for ages 8 to 14.",
+        "h1": "Chess and strategy games that build thinking skills",
+        "lead": "Strategy games ask students to plan ahead, spot patterns and think about what the other player will do. Castle Clash teaches chess from the first move. Drop Four and Brick Drop are quick games of planning and patterns.",
+        "tips": "Run a class chess club with Castle Clash's lessons and puzzles, or pair students on one device for a game of Drop Four.",
+        "faq": {
+          "q1": "Can kids learn chess from scratch?",
+          "a1": "Yes. Castle Clash has a short lesson for every piece and 24 checkmate puzzles, then a robot to play at four levels.",
+          "q2": "Can two students play on one device?",
+          "a2": "Yes. Castle Clash and Drop Four both have a two-player mode on one screen.",
+          "q3": "How hard is the robot?",
+          "a3": "Castle Clash's robot has four levels, and Drop Four's robot has Easy, Normal and Hard."
+        }
+      },
+      "music": {
+        "name": "Music games",
+        "short": "Make beats and play along to songs",
+        "title": "Music games for kids: make beats and play in rhythm",
+        "description": "Make your own beats in Loop Lab and tap along to nine songs in Beat Lanes. Free music games for ages 8 to 14, with no ads, in any browser.",
+        "h1": "Music games: make beats and play along",
+        "lead": "Loop Lab is a beat maker: students tap squares to build a loop of drums, bass and melody and hear it straight away. Beat Lanes is a rhythm game with nine songs, from Twinkle Twinkle to the Can-Can.",
+        "tips": "Use Loop Lab's music challenges to explore patterns and repetition, or play a Beat Lanes song as a quick brain break. Headphones help in a busy room.",
+        "faq": {
+          "q1": "Do students need to read music?",
+          "a1": "No. Both games use colors and timing, not written notes.",
+          "q2": "Can students make whole songs?",
+          "a2": "Yes. In Loop Lab they can chain patterns into a song and play it back like a little concert."
+        }
+      },
+      "brainBreaks": {
+        "name": "Brain break games",
+        "short": "Quick games for a short break",
+        "title": "Quick brain break games for the classroom",
+        "description": "Short, fun games for a 3 to 5 minute classroom brain break: rhythm, hoops, mazes, falling blocks and a daily word puzzle. Free, no ads, no sign-up.",
+        "h1": "Quick brain break games for the classroom",
+        "lead": "A few minutes of play between lessons helps students reset. These games start in seconds, need no sign-up, and are easy to stop when the timer ends.",
+        "tips": "Set a timer for 3 to 5 minutes, put a game on the board and let the class take turns, or let students play on their own devices.",
+        "faq": {
+          "q1": "How long should a brain break be?",
+          "a1": "Many teachers use 3 to 5 minutes. These games have short rounds, so it is easy to stop on time.",
+          "q2": "Can the whole class play on one screen?",
+          "a2": "Yes. Put a game on the board and take turns. Beat Lanes and Swish Flick work well with the class cheering along."
+        }
+      },
+      "makeAGame": {
+        "name": "Make your own game",
+        "short": "Students design games with the AI Builder",
+        "title": "Make your own game: an AI game maker for kids and classrooms",
+        "description": "Students describe a game in plain words and the Builder makes it, showing its steps. Ad-free, for ages 8 to 14, and games stay private until shared.",
+        "h1": "Make your own game, no coding needed",
+        "lead": "On Oomba Academy, students describe the game they want and the AI Builder makes it. Then they play it, test it and ask for changes, one idea at a time.",
+        "how": {
+          "h": "How it works",
+          "li1": "<b>Describe:</b> type an idea, like “a maze where a cat collects fish”, and add a drawing or photo if you like.",
+          "li2": "<b>Build:</b> the Builder makes the game and shows its steps behind the scenes while it works.",
+          "li3": "<b>Play and test:</b> try it out and notice what to change.",
+          "li4": "<b>Improve:</b> ask for changes in plain words, one at a time."
+        },
+        "cta": "Start building",
+        "skills": {
+          "h": "What students practice",
+          "p": "Planning an idea, writing clear instructions, testing, finding and fixing problems, and improving a design step by step: the habits of programmers and game designers."
+        },
+        "safe": {
+          "h": "Safe by design",
+          "p": "The Builder follows fixed kid-safety rules: no gore, no gambling, no real brands or real people, no chat or data collection inside games, and no links out. Every game runs in a locked sandbox."
+        },
+        "tips": "Add a “build a game” step to a lesson with the idea students start from. A project that works well: each student designs a review game for the topic you are teaching, then classmates play it and give feedback.",
+        "faq": {
+          "q1": "Do students need to know how to code?",
+          "a1": "No. They describe the game in their own words. The Builder shows its steps as it works, so curious students can see how a game is put together.",
+          "q2": "Who can see the games students make?",
+          "a2": "Only the student, until they share it. They can share it with friends or their class, and a game for everyone is reviewed before anyone else can play it.",
+          "q3": "What ages is it for?",
+          "a3": "Ages 8 to 14."
+        }
+      }
+    },
+    "grades": "Grades {from}–{to}",
+    "seeAll": "See all {name}"
   }
 }

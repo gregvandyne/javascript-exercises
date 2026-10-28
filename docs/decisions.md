@@ -1030,3 +1030,35 @@ configurations allow it, prorated): the same subscription gets the other price, 
 plan from the price (audit `billing.plan.change`). With Basic, linking a second child is refused; a Family plan
 switched to Basic keeps every link, but only the **first linked** child gets the extras (`coveredChildren`), and
 /family names that child and says the others build with the free messages.
+
+## Search engines (SEO)
+- **Default noindex.** A page is indexed only when its route passes `seo: { index: true, … }` to `layout()` (home,
+  /teachers, /learn/*, official launch games, /safety, /parents, legal pages, /sdk/, /plans once `BILLING_PUBLIC`).
+  Private areas also get `X-Robots-Tag: noindex, nofollow` (server/seo.js `PRIVATE_RE`): profiles, Studio, classes,
+  schools, families, sign-in, search, play, frames, APIs, player and game pictures. Child-made games are never indexed,
+  even when published and reviewed.
+- **Children's names never reach a signed-out page:** game cards credit only the official account, the leaderboard shows
+  scores without names (the page and `/api/games/:id/leaderboard`), and search shows no builders except the official
+  account (tests/unit/seo.test.js).
+- **Children's game titles on indexed pages:** an official game's "More like this", signed out, lists launch games
+  only (a title is free text and could hold a first name). The home page rails still show reviewed public games made
+  by children, title and cover only, never the builder's name: that is the community the site is for, and every such
+  title passed the word and personal-information filters and a review before going public.
+- **The page's language is its address's** (`req.pathLocale`): robots, canonical, og:url and og:locale never follow
+  the visitor's cookie or Accept-Language, so a plain address is always the indexable English (x-default) page. Search
+  robots (`isBot`) also get the page's text in that language whatever Accept-Language they send; people still get
+  their browser's language.
+- **Game structured data:** `VideoGame` (plus `LearningResource`) with `gamePlatform`. `applicationCategory` and
+  `operatingSystem` are added only with an `aggregateRating` (5+ ratings): without a rating or review, Google reports
+  them as an invalid Software App item.
+- **Language addresses:** public pages also answer at `/<code>/…` (`/es/teachers`, `/zh-hant/g/sum-racer`) in that
+  language, without writing the cookie. hreflang and the sitemap list a language only where the page is written in it
+  (its heading key in that locale file, or a game's own `l10n`); other language addresses point their canonical to
+  English and are noindex. The teacher/subject copy (`teachers.*`, `learn.*`, `seo.*`) is outside the 90 % readiness
+  share, like the legal text, so it never takes a language out of the picker.
+- **Claims:** /teachers says nothing about COPPA/FERPA compliance (still with the lawyer, docs/legal-review.md), shows
+  Sign in with Google only when it is on, and plan wording only once plans are public.
+- **Speed:** signed-out text responses are gzip/brotli compressed; signed-in ones are not (BREACH: they can hold codes
+  and login-card passwords). `?v=` CSS/JS/covers/icons are cached for a year. Share pictures: `node scripts/og-images.js`.
+- **Owner steps (not code):** verify oomba.ai in Google Search Console and Bing Webmaster Tools (DNS TXT), submit
+  /sitemap.xml, watch coverage for any /u/ or child-game URL, and pursue teacher directory listings (see the SEO plan).

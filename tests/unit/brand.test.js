@@ -59,7 +59,7 @@ test('pages: the logo link is named Oomba Academy, with the wordmark; icons, fon
     assert.match(body, /<svg class="wordmark" viewBox="0 -24 616 184"/);
     assert.match(body, /<span class="logo-sub">Academy<\/span>/);
     assert.match(body, /<svg class="appmark" viewBox="0 0 240 240"/, 'the app-icon mark for narrow screens');
-    assert.match(body, /<title>Oomba Academy · /);
+    assert.match(body, /<title>[^<]* · Oomba Academy<\/title>/);
     // Icon links carry ?v= so browsers drop the old cached icons when they change.
     assert.match(body, /<link rel="apple-touch-icon" href="\/icons\/apple-touch-icon.png\?v=\w+">/);
     assert.match(body, /<link rel="icon" href="\/favicon.ico\?v=\w+" sizes="32x32">\n<link rel="icon" href="\/icons\/icon.svg\?v=\w+" type="image\/svg\+xml">/, 'the board favicon, not the app icon, for the tab');

@@ -10,7 +10,10 @@ import { page, legalReader } from '../views/layout.js';
 import { tHtml, dictionary, DEFAULT_LOCALE, fmt } from '../i18n/index.js';
 import { config } from '../config.js';
 import { familiesOn } from '../services/family.js';
+import { langsWithKey } from '../seo.js';
 export const router = Router();
+/** Search engines may index these pages, in the languages their heading is written in (server/seo.js). */
+const indexed = (path, key) => ({ index: true, path, langs: langsWithKey(key) });
 
 /** The legal pages' "Last updated" date (a calendar day, UTC). Change it with every change to their text. */
 export const LEGAL_UPDATED = '2026-10-27';
@@ -55,7 +58,7 @@ function info(req, pageKey, emoji, sections, extra = '') {
 }
 const codeBlock = s => html`<code dir="ltr">${s}</code>`;
 
-router.get('/safety', (req, res) => page(req, res, { title: req.t('info.safety.title'), back: '/', description: req.t('info.safety.description'), body: info(req, 'safety', '🛡️', ['box', 'checked', 'chat', 'personal', 'ads']) }));
+router.get('/safety', (req, res) => page(req, res, { title: req.t('info.safety.title'), back: '/', description: req.t('info.safety.description'), body: info(req, 'safety', '🛡️', ['box', 'checked', 'chat', 'personal', 'ads']), seo: indexed('/safety', 'info.safety.heading') }));
 // "Contact us" (CONTACT_EMAIL): where the page's "a grown-up can contact us" leads. Not shown until it is set.
 const contact = req => (config.contactEmail ? html`<section class="panel" id="contact"><h2>${req.t('info.parents.contact.h')}</h2>
   <p>${tHtml(req.t, 'info.parents.contact.p1', { email: html`<a href="mailto:${config.contactEmail}" dir="ltr">${config.contactEmail}</a>` })}</p></section>` : '');
@@ -65,7 +68,7 @@ const googlePrivacy = req => (googleEnabled() ? html`<section class="panel" id="
 const families = req => (familiesOn(req) ? html`<section class="panel" id="families"><h2>${req.t('info.parents.families.h')}</h2>
   <p>${req.t('info.parents.families.p1')}</p><div class="row"><a class="btn btn-primary" href="/plans">${req.t('info.parents.families.plans')}</a><a class="btn" href="/grown-ups">${req.t('info.parents.families.link')}</a></div></section>` : '');
 // Plans (D16), with the legal pages that cover them: only once paid plans are public.
-router.get('/parents', (req, res) => page(req, res, { title: req.t('info.parents.title'), back: '/', description: req.t('info.parents.description'), body: info(req, 'parents', '👪', ['what', ...(familiesOn(req) ? ['plans'] : []), 'stored', 'never', 'ai', 'keep', 'friends', 'builder', 'languages'], html`${families(req)}${googlePrivacy(req)}${contact(req)}`) }));
+router.get('/parents', (req, res) => page(req, res, { title: req.t('info.parents.title'), back: '/', description: req.t('info.parents.description'), body: info(req, 'parents', '👪', ['what', ...(familiesOn(req) ? ['plans'] : []), 'stored', 'never', 'ai', 'keep', 'friends', 'builder', 'languages'], html`${families(req)}${googlePrivacy(req)}${contact(req)}`), seo: indexed('/parents', 'info.parents.heading') }));
 router.get('/sdk', (req, res) => {
   const t = req.t;
   // The SDK names (BRB.storage.get...) are code and stay as they are in every language.
@@ -78,7 +81,7 @@ router.get('/sdk', (req, res) => {
       <p>${tHtml(t, 'info.sdk.brb.p5', { lang: codeBlock('BRB.user.lang'), dir: codeBlock('BRB.user.dir') })}</p>
     </section>
     <section class="panel"><h2>${t('info.sdk.rules.h')}</h2><p>${t('info.sdk.rules.p1')}</p></section></div>`;
-  page(req, res, { title: t('info.sdk.title'), back: '/build', backLabel: t('nav.build'), description: t('info.sdk.description'), body });
+  page(req, res, { title: t('info.sdk.title'), back: '/build', backLabel: t('nav.build'), description: t('info.sdk.description'), body, seo: { index: true, path: '/sdk/' } });
 });
 
 // ---------------------------------------------------------------- legal pages
@@ -94,7 +97,7 @@ function legal(req, pageKey, emoji, sections) {
     <p class="muted legal-updated"${fallback(t, 'info.legal.updated')}>${tHtml(t, 'info.legal.updated', { date: html`<time datetime="${LEGAL_UPDATED}">${date}</time>` })}</p>${notYet}
     ${sections.filter(Boolean).map(s => (typeof s === 'string' ? section(req, `info.${pageKey}.${s}`, { id: s }) : s))}</div>`;
 }
-const legalPage = (pageKey, emoji, sections) => (req, res) => page(req, res, { title: req.t(`info.${pageKey}.title`), back: '/', description: req.t(`info.${pageKey}.description`), body: legal(req, pageKey, emoji, sections(req)) });
+const legalPage = (pageKey, emoji, sections) => (req, res) => page(req, res, { title: req.t(`info.${pageKey}.title`), back: '/', description: req.t(`info.${pageKey}.description`), body: legal(req, pageKey, emoji, sections(req)), seo: { index: true, path: `/${pageKey}` } });
 router.get('/terms', legalPage('terms', '📜', () => ['who', 'accounts', 'schools', 'rules', 'ai', 'games', 'plans', 'ending', 'disclaimers', 'liability', 'disputes', 'changes', 'other', 'contact']));
 router.get('/refunds', legalPage('refunds', '💳', () => ['intro', 'cancel', 'refunds', 'special', 'rights', 'contact']));
 // The site's privacy text (the /parents sections, with the same paid-plan swaps) plus grown-up accounts, payments and

@@ -1,12 +1,14 @@
 // Home rails, search (games + builders), live counts.
 import { Router } from 'express';
-import { html } from '../views/html.js';
+import { html, raw } from '../views/html.js';
 import { page } from '../views/layout.js';
 import { rail, cardGrid, emptyState, avatar, coverArt, categoryLabel } from '../views/components.js';
 import * as games from '../services/games.js';
 import * as presence from '../services/presence.js';
 import { rateLimit } from '../services/ratelimit.js';
-import { requireUser, isGrownup } from '../auth.js';
+import { requireUser, isGrownup, OFFICIAL } from '../auth.js';
+import * as seo from '../seo.js';
+import { HUBS } from '../learn.js';
 
 export const router = Router();
 
@@ -33,6 +35,8 @@ router.get('/favorites', requireUser, (req, res) => {
 
 router.get('/', (req, res) => {
   const t = req.t;
+  /** Links stay in the language address the page was opened at (/es -> /es/teachers). */
+  const lp = p => (req.pathLocale ? seo.localeUrl(p, req.pathLocale) : p);
   const u = req.user;
   const featured = games.listVisible(u, { featured: true, order: 'plays', limit: 24 });   // every launch game fits; the rail scrolls
   const hero = featured[0];
@@ -49,24 +53,35 @@ router.get('/', (req, res) => {
     mine.length ? rail({ title: t('home.rails.mine'), emoji: '🛠️', games: mine, user: u, id: 'mine', more: '/build' }) : '',
     ...games.CATEGORIES.map(([k, e]) => rail({ title: categoryLabel(k, t), emoji: e, games: games.listVisible(u, { category: k, limit: 12 }), user: u, id: `cat-${k}`, more: `/search?cat=${k}` })),
   ];
-  const body = html`
+  // The page's heading says what the site is. Signed out (new visitors, teachers, search engines) it is shown with a
+  // short introduction; signed in, players know where they are, so it is only there for screen readers.
+  // Text still in English on this language's page is marked so (screen readers, right-to-left pages).
+  const fb = key => (t.own(key) ? '' : raw(' lang="en" dir="ltr"'));
+  const intro = u ? html`<h1 class="sr-only"${fb('home.intro.heading')}>${t('home.intro.heading')}</h1>`
+    : html`<section class="home-intro" aria-labelledby="home-h1"><h1 id="home-h1"${fb('home.intro.heading')}>${t('home.intro.heading')}</h1><p${fb('home.intro.text')}>${t('home.intro.text')}</p>
+      <a class="btn" href="${lp('/teachers')}"><span aria-hidden="true">🍎</span> <span${fb('home.intro.teachers')}>${t('home.intro.teachers')}</span></a>
+      <ul class="chips home-subjects" aria-label="${t('teachers.subjects.h')}">${HUBS.map(h => html`<li><a class="chip" href="${lp(`/learn/${h.slug}`)}"><span aria-hidden="true">${h.emoji}</span><span${fb(`learn.hubs.${h.key}.name`)}>${t(`learn.hubs.${h.key}.name`)}</span></a></li>`)}</ul></section>`;
+  const body = html`${intro}
   ${hero ? html`<section class="hero cover-${hero.cover}" aria-label="${t('home.hero.label')}">
     <div>
       <span class="hero-kicker"><span class="emo" aria-hidden="true">⭐</span> ${t('home.hero.kicker')}</span>
-      <h1>${hero.title}</h1>
+      <h2 class="hero-title">${hero.title}</h2>
       <p>${hero.description.split('. ')[0] + '.'}</p>
       <div class="row">
         <a class="btn btn-big" href="/play/${hero.slug}">▶ ${t('home.hero.play')}</a>
         <a class="btn btn-ghost" href="/g/${hero.slug}">${t('home.hero.more')}</a>
       </div>
     </div>
-    <a class="heroart" href="/g/${hero.slug}" aria-label="${t('home.hero.about', { title: hero.title })}">${coverArt(hero, '')}</a>
+    <a class="heroart" href="/g/${hero.slug}" aria-label="${t('home.hero.about', { title: hero.title })}">${coverArt(hero, '', { eager: true })}</a>
   </section>` : ''}
   <div class="chips scroll" role="list" aria-label="${t('home.categories')}" style="margin-bottom:18px">
-    ${games.CATEGORIES.map(([k, e]) => html`<a class="chip" role="listitem" href="/search?cat=${k}"><span aria-hidden="true">${e}</span>${categoryLabel(k, t)}</a>`)}
+    ${games.CATEGORIES.map(([k, e]) => html`<a class="chip" role="listitem" href="/search?cat=${k}" rel="nofollow"><span aria-hidden="true">${e}</span>${categoryLabel(k, t)}</a>`)}
   </div>
   ${rails.some(r => r) ? rails : emptyState({ emoji: '🎮', title: t('home.empty.title'), text: t('home.empty.text'), action: isGrownup(u) ? null : { href: '/build', label: t('home.empty.action') } })}`;
-  page(req, res, { title: '', active: 'home', body });
+  page(req, res, { title: '', active: 'home', body, description: t.own('seo.home.description') ? t('seo.home.description') : t('layout.description'), seo: {
+    index: true, path: '/', langs: seo.langsWithKey('home.intro.heading'), image: '/og/site.jpg', imageAlt: t('seo.home.imageAlt'),
+    jsonld: [seo.graph([seo.organizationLd(req), seo.websiteLd(req, req.locale)])],
+  } });
 });
 
 function searchResults(req) {
@@ -76,7 +91,8 @@ function searchResults(req) {
   const cat = games.CATEGORY_KEYS.includes(req.query.cat) ? req.query.cat : null;
   const sort = ['relevance', 'popular', 'rated', 'new', 'playing'].includes(req.query.sort) ? req.query.sort : (text ? 'relevance' : 'popular');
   const list = games.search(u, { text, category: cat, order: sort, limit: 60 });
-  const builders = text ? games.searchBuilders(u, text) : [];
+  // Children's names never reach a signed-out page (search engines included): signed out, only the official account.
+  const builders = text ? games.searchBuilders(u, text).filter(b => u || b.username === OFFICIAL) : [];
   const markup = html`
     ${builders.length ? html`<section aria-labelledby="bh" style="margin-bottom:20px"><h2 id="bh" class="small muted" style="text-transform:uppercase;letter-spacing:.05em">${t('search.builders')}</h2>
       <div class="cardgrid" style="grid-template-columns:repeat(auto-fill,minmax(220px,1fr))">${builders.map(b => { const inner = html`${avatar(b, 48)}<span style="flex:1;min-width:0"><span class="nm">${b.display_name}</span><br><span class="sub"><bdi>@${b.username}</bdi> · ${t('search.gameCount', { count: b.games })}</span></span>`; return isGrownup(u) ? html`<div class="person panel" style="padding:12px">${inner}</div>` : html`<a class="person panel" style="padding:12px" href="/u/${b.username}">${inner}</a>`; })}</div></section>` : ''}

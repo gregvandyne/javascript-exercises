@@ -179,5 +179,62 @@
     "fine": {
       "tax": "Prices are in US dollars, plus sales tax where it applies. Basic and Family plans are for US families for now. A plan renews until you cancel it, and you can cancel any time."
     }
+  },
+  "seo": {
+    "home": {
+      "description": "Free, ad-free learning games for kids aged 8 to 14: maths, reading, chess and music. Play in any browser, and build your own games with an AI Builder."
+    },
+    "games": {
+      "sum-racer": "Sum Racer: maths racing game for kids"
+    }
+  },
+  "teachers": {
+    "description": "Free, ad-free learning games for ages 8 to 14 that run in any browser, Chromebooks too: maths, reading, chess and music, plus an AI game Builder.",
+    "play": {
+      "p": "Short games students want to play again, each practising a real skill. They open in seconds in the browser, with nothing to install."
+    },
+    "safe": {
+      "li2google": "Students never type an email address. If your school uses Sign in with Google, we keep each student’s school Google email only to recognise their account. A student’s real name, if you add one, is seen only by your school’s staff."
+    },
+    "uses": {
+      "li4": "Learning stations and carousels",
+      "li6": "Wet play"
+    },
+    "faq": {
+      "q5": "What ages and year groups is it for?",
+      "a5": "Oomba Academy is made for ages 8 to 14, roughly Years 4 to 9. Some games, such as Shark Plank and the first Sum Racer tracks, also suit younger readers.",
+      "a4google": "Students never type an email address, and we never ask for their age or home address. If your school uses Sign in with Google, we keep each student’s school Google email only to recognise their account. There are no ads and no tracking cookies. Our <a href=\"{href}\">privacy notice</a> lists exactly what we keep."
+    }
+  },
+  "learn": {
+    "practise": "What it practises:",
+    "games": {
+      "sumRacer": "Maths facts from adding to 10 up to times tables and division, as a kart race. Two students can race on one screen."
+    },
+    "hubs": {
+      "math": {
+        "name": "Maths games",
+        "title": "Free maths games: addition, subtraction, multiplication",
+        "description": "Practise addition, subtraction, multiplication and division facts in Sum Racer, a free math racing game for grades 1 to 5, with two-player races.",
+        "h1": "Fun maths games for kids",
+        "lead": "Sum Racer is a free maths facts game: every right answer speeds a kart past the other racers. Pick the track that matches what your class is learning, from addition to 10 up to the times tables and division, and run a quick race at the start of a lesson. It works in the browser, on Chromebooks, tablets and the classroom board.",
+        "tracks": {
+          "p": "Students can also pick exactly which times tables to practise."
+        },
+        "faq": {
+          "q1": "What maths does Sum Racer cover?"
+        }
+      },
+      "music": {
+        "faq": {
+          "a1": "No. Both games use colours and timing, not written notes."
+        }
+      },
+      "makeAGame": {
+        "skills": {
+          "h": "What students practise"
+        }
+      }
+    }
   }
 }

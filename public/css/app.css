@@ -283,7 +283,7 @@ textarea.input{min-height:96px;resize:vertical}
 
 /* hero (its background is the featured game's own cover colours) */
 .hero{display:grid;grid-template-columns:1.1fr 1fr;gap:20px;align-items:center;border-radius:var(--r-lg);padding:28px;margin-bottom:28px;color:var(--brand-cream);box-shadow:var(--shadow-lg)}
-.hero h1{color:var(--brand-cream);font-size:clamp(1.8rem,5vw,2.8rem);text-shadow:0 3px 0 rgba(0,0,0,.15)}
+.hero h1,.hero .hero-title{letter-spacing:-.02em;color:var(--brand-cream);font-size:clamp(1.8rem,5vw,2.8rem);text-shadow:0 3px 0 rgba(0,0,0,.15)}
 .hero p{font-size:1.1rem;font-weight:600;opacity:.95}
 .hero .art{font-size:clamp(5rem,14vw,9rem)}
 .hero .btn{background:var(--brand-cream);color:var(--brand-ink);box-shadow:0 4px 0 rgba(20,20,20,.25)}
@@ -496,7 +496,7 @@ code{overflow-wrap:anywhere}
 :lang(ar) body,:lang(he) body{line-height:1.6}
 /* Text people typed (game titles and descriptions, names, notes) takes its direction from its own letters, so an English
    title reads right in an Arabic page and the other way round. Alignment still follows the page. */
-.gcard .t,.gcard .by,.hero h1,.hero p,.gamehero h1,.nm,.ptitle,.tpl-t,.tpl-d,.mg-t,.gi-t,.vnotes,.lb li span,.mygame h3,.pagehead h1,.profilehead h1,.fc-games h3,.mg-note,#st-live .note,.chip,.inboxrow .sub,.tag,.ugc,.st-turns,.pbadge{unicode-bidi:plaintext;text-align:match-parent}
+.gcard .t,.gcard .by,.hero h1,.hero .hero-title,.hero p,.gamehero h1,.nm,.ptitle,.tpl-t,.tpl-d,.mg-t,.gi-t,.vnotes,.lb li span,.mygame h3,.pagehead h1,.profilehead h1,.fc-games h3,.mg-note,#st-live .note,.chip,.inboxrow .sub,.tag,.ugc,.st-turns,.pbadge{unicode-bidi:plaintext;text-align:match-parent}
 
 /* Phones: the featured game's picture fills the hero card, with the words on a dark fade at the bottom. */
 @media (max-width:640px){
@@ -623,3 +623,71 @@ ol.steps li{margin-bottom:var(--s2)}
 .legal .panel ul{padding-inline-start:1.4em}
 .legal .panel li+li{margin-top:var(--s2)}
 .legal .panel a:not(.btn){overflow-wrap:anywhere}
+/* The home page's heading for signed-out visitors, and the teacher and subject pages (/teachers, /learn/*:
+   routes/teachers.js). Only theme tokens, so both themes and right-to-left pages follow on their own. */
+.home-intro{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3) var(--s5);margin:0 0 var(--s5)}
+.home-intro h1{margin:0;flex:1 1 100%}
+.home-intro p{margin:0;flex:1 1 320px;max-width:62ch;color:var(--text-2);font-size:1.05rem}
+.home-intro .home-subjects{list-style:none;padding:0;margin:0;flex:1 1 100%;min-width:0}
+@media (max-width:600px){.home-intro .home-subjects{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding-bottom:4px}.home-intro .home-subjects li{flex:none}}
+/* English text not yet translated on a right-to-left page lines up with its own start edge. */
+.lp [dir="ltr"],.home-intro [dir="ltr"],.lp-practise[dir="ltr"]{text-align:left}
+[dir="rtl"] .lp :is(h1,h2,h3,p)[dir="ltr"]{margin-right:auto}
+.lp{display:flex;flex-direction:column;gap:var(--s6)}
+.lp>.panel+.panel{margin-top:0}
+.lp-hero{padding:var(--s6) var(--s5);border-radius:var(--r-lg);background:var(--accent-soft);box-shadow:var(--shadow)}
+.lp-hero h1{font-size:clamp(1.9rem,5.4vw,3rem);max-width:24ch;margin-bottom:var(--s3)}
+.lp-hero-sm h1{font-size:clamp(1.7rem,4.6vw,2.5rem);max-width:none}
+.lp-hero .lead{max-width:62ch;margin:0;color:var(--text-2)}
+.lp-kicker{display:inline-block;margin:0 0 var(--s3);padding:4px 12px;border-radius:999px;background:var(--current);color:var(--on-current);font-weight:800;font-size:.9rem}
+.lp-badges{list-style:none;padding:0;margin:var(--s5) 0 0;display:flex;flex-wrap:wrap;gap:var(--s2)}
+.lp-badges li{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:4px 14px;border-radius:999px;background:var(--card);border:2px solid var(--line);font-weight:700;font-size:.95rem}
+.lp-cta{margin-top:var(--s5)}
+.lp-cta .btn-big{font-size:1.15rem;padding:0 28px}
+@media (max-width:480px){.lp-hero{padding:var(--s5) var(--s4)}.lp-cta .btn{width:100%}}
+.lp-sec>h2{margin-bottom:var(--s2)}
+.lp-sec>p{margin:0 0 var(--s4);color:var(--text-2);max-width:70ch}
+.lp-games{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:var(--s4)}
+.lp-game{display:grid;grid-template-columns:84px minmax(0,1fr);gap:var(--s3);align-items:start;height:100%;padding:var(--s3);border-radius:var(--r);background:var(--card);box-shadow:var(--shadow);color:var(--text)}
+.lp-game:hover{text-decoration:none;box-shadow:var(--shadow-lg)}
+.lp-game .coverart{aspect-ratio:3/4;border-radius:var(--r-sm);--art:2.2rem}
+.lp-game-text{display:flex;flex-direction:column;gap:4px;min-width:0}
+.lp-game-t{font-weight:800;font-size:1.05rem}
+.lp-game-d{font-size:.92rem;color:var(--text-2)}
+.lp-hubs{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:var(--s4)}
+.lp-hub{display:flex;gap:var(--s3);align-items:flex-start;height:100%;color:var(--text);padding:var(--s4)}
+.lp-hub:hover{text-decoration:none;box-shadow:var(--shadow-lg)}
+.lp-hub-e{font-size:1.8rem;line-height:1}
+.lp-hub-t{display:block;font-weight:800;font-size:1.05rem;color:var(--link)}
+.lp-hub-d{display:block;font-size:.92rem;color:var(--text-2);margin-top:2px}
+.lp-cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s4);align-items:start}
+@media (max-width:820px){.lp-cols{grid-template-columns:minmax(0,1fr)}}
+.lp-cols>.panel+.panel{margin-top:0}
+.lp-list{margin:0;padding-inline-start:1.3em}
+.lp-list li+li{margin-top:var(--s2)}
+.lp .panel>p:last-child,.lp .panel>.lp-list:last-child{margin-bottom:0}
+.lp-tags{list-style:none;padding:0;margin:0 0 var(--s4);display:flex;flex-wrap:wrap;gap:var(--s2)}
+.lp-tags li{padding:4px 12px;border-radius:999px;background:var(--card-2);border:1px solid var(--line);font-weight:700;font-size:.92rem}
+.lp-sub{margin-top:var(--s5)}
+.lp-start{background:var(--spark-soft)}
+.lp-start .row{margin-top:var(--s4)}
+.lp-faq h3{margin-top:var(--s5)}
+.lp-faq p{color:var(--text-2);max-width:75ch}
+.crumbs ol{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:4px 0;color:var(--muted)}
+.crumbs li+li::before{content:"›";margin-inline:8px;color:var(--muted)}
+[dir="rtl"] .crumbs li+li::before{content:"‹"}
+.crumbs a{color:var(--link);font-weight:600}
+.lp-hubgame{display:grid;grid-template-columns:150px minmax(0,1fr);gap:var(--s5);align-items:start}
+.lp-sec>.lp-hubgame+.lp-hubgame{margin-top:var(--s4)}
+.lp-hubgame-art .coverart{aspect-ratio:3/4;border-radius:var(--r);--art:3.4rem}
+.lp-hubgame h2{margin-bottom:var(--s2)}
+.lp-hubgame h2 a{color:var(--text)}
+.lp-hubgame p{margin:0 0 var(--s3)}
+.lp-hubgame .row{margin-top:var(--s4)}
+@media (max-width:560px){.lp-hubgame{grid-template-columns:96px minmax(0,1fr);gap:var(--s4)}.lp-hubgame .row .btn{flex:1}}
+.lp-practise{color:var(--text-2)}
+.lp-grades{margin:var(--s3) 0 0;font-weight:800}
+.lp-steps{margin:0 0 var(--s4);padding-inline-start:1.4em}
+.lp-steps li+li{margin-top:var(--s2)}
+.lp-more{list-style:none;padding:0;margin:0}
+.lp-list+p,.lp-steps+p{margin-top:var(--s3)}

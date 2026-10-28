@@ -1,8 +1,8 @@
 {
   "layout": {
-    "titleHome": "Oomba Academy · Joue et crée des jeux",
+    "titleHome": "Jeux éducatifs pour enfants : joue et crée · Oomba Academy",
     "titleWith": "{title} · Oomba Academy",
-    "description": "Joue à des jeux gratuits et crée les tiens avec Oomba Academy.",
+    "description": "Des jeux éducatifs gratuits et amusants pour les 8-14 ans. Joue directement dans le navigateur et crée tes propres jeux avec le Constructeur IA.",
     "skip": "Aller aux jeux",
     "mainNav": "Menu principal",
     "signIn": "Connexion",
@@ -37,7 +37,8 @@
       "contact": "Nous contacter",
       "builders": "Pour les créateurs",
       "terms": "Conditions",
-      "privacy": "Confidentialité"
+      "privacy": "Confidentialité",
+      "teachers": "Pour les enseignants"
     },
     "build": {
       "ready": "✨ Ton jeu « {title} » est prêt ! <a href=\"{href}\">Ouvre-le</a>",
@@ -56,7 +57,8 @@
     "classes": "Classes",
     "schools": "Écoles",
     "family": "Famille",
-    "plans": "Offres"
+    "plans": "Offres",
+    "teachers": "Enseignants"
   },
   "errors": {
     "goHome": "Retour à l’accueil",
@@ -344,6 +346,11 @@
       "title": "Pas encore de jeux",
       "text": "Crée le tout premier !",
       "action": "Créer un jeu"
+    },
+    "intro": {
+      "heading": "Jeux éducatifs interactifs et amusants pour enfants",
+      "text": "Des jeux gratuits pour les 8-14 ans, à jouer en classe ou à la maison, et un Constructeur qui transforme ton idée en jeu.",
+      "teachers": "Pour les enseignants"
     }
   },
   "search": {
@@ -829,7 +836,8 @@
     },
     "leaderboard": {
       "heading": "Classement",
-      "empty": "Pas encore de scores. À toi de jouer !"
+      "empty": "Pas encore de scores. À toi de jouer !",
+      "signIn": "Connecte-toi pour voir les noms des joueurs."
     },
     "more": {
       "label": "Plus",
@@ -2986,5 +2994,289 @@
         "p1": "Écrivez à {email}."
       }
     }
+  },
+  "seo": {
+    "home": {
+      "description": "Jeux éducatifs gratuits et sans publicité pour les 8-14 ans : maths, lecture, échecs et musique. Dans le navigateur, et crée tes propres jeux avec l’IA.",
+      "imageAlt": "Oomba Academy : des jeux éducatifs amusants pour les enfants"
+    },
+    "teachers": {
+      "imageAlt": "Oomba Academy pour les enseignants : des jeux éducatifs interactifs et amusants pour la classe"
+    },
+    "game": {
+      "title": "{title} : {kind} gratuit en ligne pour enfants",
+      "imageAlt": "{title}, un jeu gratuit sur Oomba Academy",
+      "kind": {
+        "arcade": "jeu d’arcade",
+        "sports": "jeu de sport",
+        "puzzle": "jeu de réflexion",
+        "words": "jeu de mots",
+        "board": "jeu de plateau",
+        "adventure": "jeu d’aventure",
+        "learning": "jeu éducatif",
+        "music": "jeu musical",
+        "silly": "jeu rigolo"
+      }
+    },
+    "games": {
+      "sum-racer": "Sum Racer : jeu de course de calcul pour enfants",
+      "word-hunt": "Word Hunt : mots mêlés en anglais pour enfants",
+      "shark-plank": "Shark Plank : jeu du pendu en anglais",
+      "word-peek": "Word Peek : le mot du jour à deviner en anglais",
+      "castle-clash": "Castle Clash : apprendre les échecs, gratuit",
+      "connect-four": "Drop Four : puissance 4 à deux joueurs",
+      "loop-lab": "Loop Lab : créer de la musique et des rythmes",
+      "beat-lanes": "Beat Lanes : jeu de rythme musical pour enfants"
+    }
+  },
+  "teachers": {
+    "title": "Jeux éducatifs interactifs pour la classe",
+    "description": "Jeux éducatifs gratuits et sans publicité pour les 8-14 ans, dans tout navigateur et sur Chromebook : maths, lecture, échecs, musique et un Constructeur IA.",
+    "kicker": "🍎 Pour les enseignants",
+    "h1": "Des jeux éducatifs interactifs que vos élèves vont réclamer",
+    "lead": "Oomba Academy est un site gratuit de jeux éducatifs pour les 8-14 ans. Les élèves jouent directement dans le navigateur, et votre classe peut créer ses propres jeux en les décrivant à notre Constructeur, une IA.",
+    "badges": {
+      "free": "Gratuit pour commencer",
+      "ads": "Sans publicité",
+      "browser": "Fonctionne dans tout navigateur, même sur Chromebook",
+      "google": "Se connecter avec Google",
+      "ages": "Conçu pour les 8-14 ans"
+    },
+    "cta": {
+      "start": "Obtenir un compte école gratuit",
+      "try": "Essayer un jeu, sans inscription"
+    },
+    "play": {
+      "h": "Jouer pour apprendre",
+      "p": "Des jeux courts auxquels les élèves ont envie de rejouer, et qui font chacun travailler une vraie compétence. Ils s’ouvrent en quelques secondes dans le navigateur, sans rien installer."
+    },
+    "subjects": {
+      "h": "Jeux par matière"
+    },
+    "build": {
+      "h": "Créer pour apprendre",
+      "p1": "Les élèves décrivent un jeu avec leurs propres mots, et le Constructeur le crée. Pendant qu’il travaille, il montre ses étapes en coulisses, avec de courtes astuces pour apprendre.",
+      "p2": "Formuler une idée claire, tester le jeu et demander des modifications, c’est planifier, rédiger et déboguer, sans avoir besoin de savoir coder.",
+      "link": "Comment on crée un jeu"
+    },
+    "class": {
+      "h": "En classe avec vos élèves",
+      "li1": "Des classes avec un code de classe : les élèves qui ont leur propre compte rejoignent la classe avec le code, et vous les validez.",
+      "li2": "Pas besoin d’e-mail pour les élèves : vous pouvez créer des comptes école pour toute une classe et imprimer leurs cartes de connexion.",
+      "li3": "Se connecter avec Google, pour les écoles qui utilisent des comptes Google et des Chromebook.",
+      "li4": "Des leçons en étapes : lire un texte, jouer à un jeu, créer un jeu. Vous voyez la progression, les scores et les réponses écrites de chaque élève.",
+      "li5": "Partagez un jeu uniquement avec vos classes : il reste dans votre classe."
+    },
+    "safe": {
+      "h": "Sécurisé dès la conception",
+      "li1": "Pas de publicité, ni de cookies publicitaires ou de suivi.",
+      "li2": "Nous ne demandons jamais aux élèves leur adresse e-mail, leur âge ni leur adresse postale. Le vrai nom d’un élève, si vous l’ajoutez, n’est visible que par le personnel de votre école.",
+      "li3": "Chaque jeu tourne dans un bac à sable verrouillé, et un jeu destiné à tout le monde est vérifié avant que d’autres puissent y jouer.",
+      "li4": "Le chat n’est possible qu’entre amis qui ont échangé leurs codes ami, et votre école peut le désactiver.",
+      "links": "Découvrez <a href=\"{safety}\">comment nous protégeons les enfants</a> et notre <a href=\"{privacy}\">politique de confidentialité</a>.",
+      "li2google": "Les élèves ne saisissent jamais d’adresse e-mail. Si votre école utilise Se connecter avec Google, nous conservons l’adresse Google scolaire de chaque élève uniquement pour reconnaître son compte. Le vrai nom d’un élève, si vous l’ajoutez, n’est visible que par le personnel de votre école."
+    },
+    "uses": {
+      "h": "Quand l’utiliser",
+      "p": "Les enseignants glissent un jeu dans la journée là où quelques minutes de jeu concentré font du bien :",
+      "li1": "Rituels de début de séance",
+      "li2": "Pauses actives",
+      "li3": "Pour les élèves qui ont fini en avance",
+      "li4": "Ateliers tournants",
+      "li5": "Moment détente du vendredi",
+      "li6": "Récré en classe les jours de pluie",
+      "li7": "Entraînement à la maison"
+    },
+    "languages": {
+      "h": "Dans les langues de vos élèves",
+      "p": "Tout le site fonctionne en {count} langues, dont l’espagnol, le portugais, le français, l’arabe et l’hébreu, ce qui aide les élèves qui apprennent encore l’anglais. Chaque élève choisit la sienne, et le Constructeur lui répond dans cette langue."
+    },
+    "start": {
+      "h": "Inscrire votre école (gratuit)",
+      "p1": "Jouer est gratuit pour tout le monde, et les élèves peuvent essayer n’importe quel jeu tout de suite, sans inscription.",
+      "p2": "Pour les classes, les leçons et les comptes école, écrivez à {email} en indiquant le nom de votre école et la personne qui s’en occupera. Nous créons votre école et le compte de son admin, qui ajoute ensuite les enseignants et les élèves. L’inscription d’une école est gratuite.",
+      "plans": "Besoin de plus de messages pour le Constructeur pour vos classes ? Un abonnement école ajoute une réserve partagée entre vos élèves et vos enseignants.",
+      "email": "Écrivez-nous pour inscrire votre école",
+      "subject": "Inscrire mon école sur Oomba Academy",
+      "plansLink": "Abonnements école"
+    },
+    "faq": {
+      "h": "Les questions des enseignants",
+      "q1": "Oomba Academy est-elle gratuite pour les enseignants ?",
+      "a1": "Oui. Les jeux, les classes, les leçons et le suivi de la progression sont gratuits, et chaque compte élève reçoit chaque jour des messages gratuits pour le Constructeur.",
+      "q2": "Les élèves ont-ils besoin d’un compte ou d’une adresse e-mail pour jouer ?",
+      "a2": "Non. Tout le monde peut jouer tout de suite. Pour vos classes, vous pouvez créer des comptes école sans aucune adresse e-mail et imprimer leurs cartes de connexion.",
+      "q3": "Est-ce que ça fonctionne sur Chromebook et sur les réseaux des écoles ?",
+      "a3": "Le site fonctionne dans tout navigateur à jour, sur Chromebook, ordinateur portable, tablette et sur le TNI de la classe, sans rien installer. Si votre école filtre les sites web, demandez à votre service informatique d’autoriser {host}.",
+      "q4": "Comment protégez-vous la vie privée des élèves ?",
+      "a4": "Nous ne demandons jamais aux élèves leur adresse e-mail, leur âge ni leur adresse postale. Il n’y a ni publicité ni cookies de suivi, et le vrai nom d’un élève n’est visible que par le personnel de son école. Notre <a href=\"{href}\">politique de confidentialité</a> détaille exactement ce que nous conservons.",
+      "q5": "Pour quels âges et quels niveaux ?",
+      "a5": "Oomba Academy est conçue pour les 8-14 ans, soit environ du CE2 à la 4e. Certains jeux, comme Shark Plank et les premiers circuits de Sum Racer, conviennent aussi aux plus jeunes lecteurs.",
+      "q6": "Comment ajouter ma classe ?",
+      "a6": "D’abord, écrivez-nous pour inscrire votre école (c’est gratuit). Ensuite, créez une classe et partagez son code de classe avec les élèves qui ont leur propre compte, ou créez des comptes école pour toute la classe et imprimez les cartes de connexion.",
+      "a6google": "D’abord, écrivez-nous pour inscrire votre école (c’est gratuit). Ensuite, créez une classe et partagez son code de classe avec les élèves qui ont leur propre compte, ou créez des comptes école pour toute la classe et imprimez les cartes de connexion. Les écoles qui utilisent Google peuvent permettre aux élèves de se connecter avec Google.",
+      "q7": "Les élèves peuvent-ils créer leurs propres jeux ? Qui les voit ?",
+      "a7": "Oui. Un nouveau jeu est privé : seul l’élève qui l’a créé le voit. Il peut le partager avec sa classe, et un jeu destiné à tout le monde est vérifié avant que d’autres puissent y jouer.",
+      "q8": "Puis-je suivre la progression et les scores ?",
+      "a8": "Oui. Les leçons enregistrent la progression, les scores aux jeux et les réponses écrites de chaque élève. Vous les retrouvez dans l’onglet Progression de la classe, et vous pouvez télécharger la progression de chaque élève dans les leçons sous forme de tableur (CSV).",
+      "q9": "Quelles langues sont disponibles ?",
+      "a9": "{count} langues, dont l’espagnol, le portugais, le français, l’allemand, l’arabe, l’hébreu et le japonais. Chaque élève choisit la sienne.",
+      "a4google": "Les élèves ne saisissent jamais d’adresse e-mail, et nous ne leur demandons jamais leur âge ni leur adresse postale. Si votre école utilise Se connecter avec Google, nous conservons l’adresse Google scolaire de chaque élève uniquement pour reconnaître son compte. Il n’y a ni publicité ni cookies de suivi. Notre <a href=\"{href}\">politique de confidentialité</a> détaille exactement ce que nous conservons."
+    }
+  },
+  "learn": {
+    "crumbs": "Fil d’Ariane",
+    "gamesHeading": "Les jeux",
+    "practise": "Ce qu’il fait travailler :",
+    "play": "Jouer",
+    "about": "À propos du jeu",
+    "tipsHeading": "En classe",
+    "faqHeading": "Les questions des enseignants",
+    "moreHeading": "Plus de jeux par matière",
+    "teachersLink": "Oomba Academy pour les enseignants",
+    "safetyLink": "Comment nous protégeons les enfants",
+    "noGames": "Ces jeux sont en cours de mise à jour. Revenez bientôt.",
+    "games": {
+      "sumRacer": "Le calcul mental, des additions jusqu’à 10 aux tables de multiplication et à la division, sous forme de course de karts. Deux élèves peuvent s’affronter sur le même écran.",
+      "wordHunt": "Des mots mêlés à thème, avec des mots anglais lus à voix haute, un défi du jour et un mode course contre un ami.",
+      "sharkPlank": "Le jeu du pendu pour les lecteurs débutants, avec chaque mot anglais lu à voix haute.",
+      "wordPeek": "Un mot anglais à deviner chaque jour, avec des indices après chaque essai, et des versions à 4 et 6 lettres.",
+      "castleClash": "De vrais échecs, avec une courte leçon pour chaque pièce, 24 énigmes d’échec et mat et un robot à quatre niveaux.",
+      "connectFour": "Un puissance 4 contre un ami ou un robot : anticiper et bloquer l’adversaire.",
+      "brickDrop": "Des casse-têtes de blocs qui tombent : voir où chaque forme s’emboîte et compléter des lignes entières.",
+      "loopLab": "Créer des rythmes avec batterie, basse et mélodie, les enchaîner en chanson et réussir 10 défis musicaux.",
+      "beatLanes": "Taper en rythme sur neuf chansons, d’Ah ! vous dirai-je, maman au French cancan.",
+      "swishFlick": "Glisser pour marquer des paniers : la direction vise et la vitesse décide jusqu’où la balle vole.",
+      "munchMaze": "Une course-poursuite dans un labyrinthe : prévoir un trajet, manger toutes les pastilles et éviter les Gloops."
+    },
+    "hubs": {
+      "math": {
+        "name": "Jeux de maths",
+        "short": "Addition, soustraction, multiplication (tables) et division",
+        "title": "Jeux de maths gratuits : additions et tables",
+        "description": "Révisez additions, soustractions, tables de multiplication et divisions avec Sum Racer, un jeu de course de calcul gratuit du CP au CM2, à jouer à deux.",
+        "h1": "Des jeux de maths amusants pour les enfants",
+        "lead": "Sum Racer est un jeu de calcul mental gratuit : chaque bonne réponse fait accélérer un kart devant les autres pilotes. Choisissez le circuit qui correspond à ce que votre classe apprend, des additions jusqu’à 10 aux tables de multiplication et à la division, et lancez une course rapide en début de séance. Il fonctionne dans le navigateur, sur Chromebook, tablette et TNI.",
+        "tracks": {
+          "h": "Sept circuits : additions et soustractions jusqu’à 100, tables de multiplication jusqu’à 12, division",
+          "li1": "Additions jusqu’à 10",
+          "li2": "Additions et soustractions jusqu’à 20",
+          "li3": "Additions et soustractions jusqu’à 100",
+          "li4": "Multiplication : les tables de 2, 5 et 10",
+          "li5": "Multiplication : toutes les tables jusqu’à 12",
+          "li6": "Divisions simples",
+          "li7": "Un circuit mixte avec +, −, × et ÷",
+          "p": "Les élèves peuvent aussi choisir précisément les tables de multiplication à travailler."
+        },
+        "tips": "Commencez la séance par une course de cinq minutes sur le circuit que vous travaillez, ou mettez deux élèves sur le même appareil pour un duel.",
+        "faq": {
+          "q1": "Quelles notions de maths Sum Racer couvre-t-il ?",
+          "a1": "Les additions jusqu’à 10, les additions et soustractions jusqu’à 20 et jusqu’à 100, les tables de multiplication jusqu’à 12, les divisions simples, et un circuit mixte avec les quatre opérations.",
+          "q2": "Deux élèves peuvent-ils faire la course l’un contre l’autre ?",
+          "a2": "Oui. Deux joueurs peuvent s’affronter sur le même écran.",
+          "q3": "Est-ce gratuit ?",
+          "a3": "Oui. Le jeu est gratuit, sans publicité, et les élèves peuvent commencer sans inscription."
+        }
+      },
+      "words": {
+        "name": "Jeux de lecture et d’orthographe",
+        "short": "Mots mêlés, pendu et un mot du jour à deviner",
+        "title": "Jeux de lecture et d’orthographe en anglais",
+        "description": "Mots mêlés, pendu et un mot du jour à deviner, en anglais, pour les 8-14 ans, avec des mots lus à voix haute. Gratuit, sans publicité, dans tout navigateur.",
+        "h1": "Jeux de lecture et d’orthographe en anglais, des débutants aux plus avancés",
+        "lead": "Trois jeux de mots en anglais pour travailler l’orthographe et le vocabulaire. Shark Plank et Word Hunt lisent les mots à voix haute : ils conviennent aux lecteurs débutants. Word Peek est un mot du jour à deviner pour les élèves plus à l’aise.",
+        "tips": "Lancez un thème de Word Hunt en ouverture d’une séquence, résolvez ensemble le Mot du jour au tableau en commentant chaque essai, ou proposez Shark Plank aux élèves qui ont fini en avance.",
+        "faq": {
+          "q1": "Les jeux lisent-ils les mots à voix haute ?",
+          "a1": "Shark Plank lit chaque mot à voix haute, et dans Word Hunt les élèves peuvent toucher n’importe quel mot pour l’entendre.",
+          "q2": "Y a-t-il un défi du jour ?",
+          "a2": "Oui. Word Hunt et Word Peek proposent chacun un nouveau défi chaque jour, et dans Word Peek un élève peut choisir un mot secret pour un ami.",
+          "q3": "Puis-je utiliser ma propre liste de mots ?",
+          "a3": "Pas encore dans ces jeux. Vous pouvez décrire au Constructeur un jeu d’orthographe avec vos mots, et il le créera pour votre classe."
+        }
+      },
+      "strategy": {
+        "name": "Jeux d’échecs et de stratégie",
+        "short": "Leçons et énigmes d’échecs, puissance 4, casse-têtes de blocs",
+        "title": "Jeux d’échecs et de stratégie gratuits pour enfants",
+        "description": "Apprendre les échecs avec de courtes leçons et des énigmes, puis jouer contre un ami ou un robot. Aussi : puissance 4 et blocs qui tombent. Gratuit, 8-14 ans.",
+        "h1": "Des jeux d’échecs et de stratégie qui font réfléchir",
+        "lead": "Les jeux de stratégie demandent aux élèves d’anticiper, de repérer des motifs et de prévoir ce que va faire l’adversaire. Castle Clash enseigne les échecs dès le premier coup. Drop Four et Brick Drop sont des parties rapides d’anticipation et de logique.",
+        "tips": "Lancez un club d’échecs en classe avec les leçons et les énigmes de Castle Clash, ou mettez deux élèves sur un même appareil pour une partie de Drop Four.",
+        "faq": {
+          "q1": "Un enfant peut-il apprendre les échecs à partir de zéro ?",
+          "a1": "Oui. Castle Clash propose une courte leçon pour chaque pièce et 24 énigmes d’échec et mat, puis un robot à affronter sur quatre niveaux.",
+          "q2": "Deux élèves peuvent-ils jouer sur le même appareil ?",
+          "a2": "Oui. Castle Clash et Drop Four ont tous les deux un mode à deux joueurs sur le même écran.",
+          "q3": "Le robot est-il difficile ?",
+          "a3": "Le robot de Castle Clash a quatre niveaux, et celui de Drop Four propose Facile, Normal et Difficile."
+        }
+      },
+      "music": {
+        "name": "Jeux de musique",
+        "short": "Créer des rythmes et jouer en musique",
+        "title": "Jeux de musique pour enfants : rythmes et beats",
+        "description": "Crée tes rythmes dans Loop Lab et joue en rythme sur neuf chansons dans Beat Lanes. Jeux musicaux gratuits pour les 8-14 ans, sans publicité.",
+        "h1": "Jeux de musique : créer des rythmes et jouer en rythme",
+        "lead": "Loop Lab est un créateur de rythmes : les élèves touchent des cases pour construire une boucle de batterie, de basse et de mélodie, et l’entendent tout de suite. Beat Lanes est un jeu de rythme avec neuf chansons, d’Ah ! vous dirai-je, maman au French cancan.",
+        "tips": "Utilisez les défis musicaux de Loop Lab pour explorer les motifs et la répétition, ou lancez une chanson de Beat Lanes comme pause active. Dans une classe animée, les casques aident.",
+        "faq": {
+          "q1": "Les élèves doivent-ils savoir lire la musique ?",
+          "a1": "Non. Les deux jeux utilisent des couleurs et le rythme, pas des notes écrites.",
+          "q2": "Les élèves peuvent-ils créer des chansons entières ?",
+          "a2": "Oui. Dans Loop Lab, ils peuvent enchaîner des motifs pour faire une chanson et la rejouer comme un petit concert."
+        }
+      },
+      "brainBreaks": {
+        "name": "Jeux pour pauses actives",
+        "short": "Des jeux rapides pour une courte pause",
+        "title": "Jeux rapides pour une pause active en classe",
+        "description": "Des jeux courts et amusants pour une pause active de 3 à 5 minutes : rythme, basket, labyrinthes, blocs, mot du jour. Gratuit, sans pub ni inscription.",
+        "h1": "Jeux rapides pour une pause active en classe",
+        "lead": "Quelques minutes de jeu entre deux activités aident les élèves à se remettre en forme. Ces jeux démarrent en quelques secondes, sans inscription, et s’arrêtent facilement quand le minuteur sonne.",
+        "tips": "Réglez un minuteur sur 3 à 5 minutes, affichez un jeu au tableau et laissez la classe jouer à tour de rôle, ou laissez les élèves jouer sur leur propre appareil.",
+        "faq": {
+          "q1": "Combien de temps doit durer une pause active ?",
+          "a1": "Beaucoup d’enseignants prévoient 3 à 5 minutes. Ces jeux ont des manches courtes, il est donc facile de s’arrêter à l’heure.",
+          "q2": "Toute la classe peut-elle jouer sur un seul écran ?",
+          "a2": "Oui. Affichez un jeu au tableau et jouez à tour de rôle. Beat Lanes et Swish Flick marchent très bien quand toute la classe encourage."
+        }
+      },
+      "makeAGame": {
+        "name": "Créer son propre jeu",
+        "short": "Les élèves conçoivent des jeux avec le Constructeur, une IA",
+        "title": "Créer son jeu vidéo : un créateur de jeux IA pour la classe",
+        "description": "Les élèves décrivent un jeu avec leurs mots et le Constructeur le crée en montrant ses étapes. Sans publicité, pour les 8-14 ans, et privé jusqu’au partage.",
+        "h1": "Créer son propre jeu, sans savoir coder",
+        "lead": "Sur Oomba Academy, les élèves décrivent le jeu qu’ils veulent et le Constructeur, une IA, le crée. Ensuite, ils y jouent, le testent et demandent des modifications, une idée à la fois.",
+        "how": {
+          "h": "Comment ça marche",
+          "li1": "<b>Décris :</b> tape une idée, comme « un labyrinthe où un chat ramasse des poissons », et ajoute un dessin ou une photo si tu veux.",
+          "li2": "<b>Crée :</b> le Constructeur fabrique le jeu et montre ses étapes en coulisses pendant qu’il travaille.",
+          "li3": "<b>Joue et teste :</b> essaie-le et repère ce que tu veux changer.",
+          "li4": "<b>Améliore :</b> demande des modifications avec des mots simples, une à la fois."
+        },
+        "cta": "Commencer à créer",
+        "skills": {
+          "h": "Ce que les élèves travaillent",
+          "p": "Planifier une idée, écrire des consignes claires, tester, trouver et corriger des problèmes, et améliorer une conception pas à pas : les habitudes des programmeurs et des concepteurs de jeux."
+        },
+        "safe": {
+          "h": "Sécurisé dès la conception",
+          "p": "Le Constructeur suit des règles fixes de sécurité pour les enfants : pas de scènes sanglantes, pas de jeux d’argent, pas de vraies marques ni de vraies personnes, pas de chat ni de collecte de données dans les jeux, et aucun lien vers l’extérieur. Chaque jeu tourne dans un bac à sable verrouillé."
+        },
+        "tips": "Ajoutez à une leçon une étape « créer un jeu » avec l’idée de départ des élèves. Un projet qui marche bien : chaque élève conçoit un jeu de révision sur le thème que vous étudiez, puis ses camarades y jouent et lui font un retour.",
+        "faq": {
+          "q1": "Les élèves doivent-ils savoir coder ?",
+          "a1": "Non. Ils décrivent le jeu avec leurs propres mots. Le Constructeur montre ses étapes pendant qu’il travaille, pour que les élèves curieux voient comment un jeu est construit.",
+          "q2": "Qui peut voir les jeux créés par les élèves ?",
+          "a2": "Seulement l’élève, jusqu’à ce qu’il le partage. Il peut le partager avec ses amis ou sa classe, et un jeu destiné à tout le monde est vérifié avant que d’autres puissent y jouer.",
+          "q3": "Pour quels âges ?",
+          "a3": "De 8 à 14 ans."
+        }
+      }
+    },
+    "grades": "Grades US {from}–{to}",
+    "seeAll": "Tout voir : {name}"
   }
 }
