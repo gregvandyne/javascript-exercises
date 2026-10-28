@@ -46,7 +46,44 @@ export const hubBySlug = slug => HUBS.find(h => h.slug === slug) || null;
 /** The teacher page's "Play to learn" cards, in order. */
 export const TEACHER_GAMES = ['sum-racer', 'word-hunt', 'shark-plank', 'word-peek', 'castle-clash', 'connect-four', 'loop-lab', 'beat-lanes'];
 /** Questions on each page (learn.hubs.<key>.faq.q<n> / a<n>, teachers.faq.q<n> / a<n>). */
-export const HUB_FAQ = { math: 3, words: 3, strategy: 3, music: 2, brainBreaks: 2, makeAGame: 3 };
+export const HUB_FAQ = { math: 4, words: 4, strategy: 4, music: 3, brainBreaks: 2, makeAGame: 7 };
+/** Subject pages with an "At home" paragraph for parents (learn.hubs.<key>.home). */
+export const HOME_TIPS = ['math', 'words', 'strategy', 'music'];
 export const TEACHER_FAQ = 9;
 /** Last change to the teacher and subject pages' text (sitemap lastmod). Change it with the text. */
 export const CONTENT_UPDATED = '2026-10-28';
+
+// ---------------------------------------------------------------------------------------------------- parents
+// The parent pages (routes/parents.js): /parents, the guides under /parents/<guide>, and the age pages
+// /learn/games-for-…. Same rule as above: only official launch games, looked up through canView. Ring Rumble (fighting),
+// Happy Putt (film-inspired) and Footy Tycoon (its "legends" need a check for real players' names) stay off them.
+
+/** A launch game's locale key under learn.games.* and learn.ages.<age>.fit.* (also for the games LEARNING doesn't list). */
+export const gameKey = slug => (LEARNING[slug] ? LEARNING[slug].key : { 'hero-of-sunvale': 'heroOfSunvale' }[slug] || null);
+/** The /parents page's "Learning that feels like play" cards, in order. */
+export const PARENT_GAMES = ['sum-racer', 'word-hunt', 'shark-plank', 'word-peek', 'castle-clash', 'loop-lab', 'beat-lanes', 'hero-of-sunvale'];
+/** Games with a two-player mode on one screen. */
+export const TWO_PLAYER = ['sum-racer', 'castle-clash', 'connect-four'];
+/** Age pages: path /learn/<slug>; key: locale key under learn.ages.*; games in order, each with a "why it fits" line
+ *  (learn.ages.<key>.fit.<gameKey>); make: where the "make your own game" panel goes ('first' before the games). Grouped
+ *  by two or three years, not one page per age: with 15 launch games, single-age pages would be thin. */
+export const AGES = [
+  { slug: 'games-for-8-and-9-year-olds', key: 'a8', min: 8, max: 9, emoji: '🎈', games: ['sum-racer', 'word-hunt', 'shark-plank', 'castle-clash', 'connect-four', 'loop-lab', 'beat-lanes', 'munch-maze'], faq: 4 },
+  { slug: 'games-for-10-and-11-year-olds', key: 'a10', min: 10, max: 11, emoji: '🚀', games: ['sum-racer', 'word-peek', 'castle-clash', 'brick-drop', 'loop-lab', 'hero-of-sunvale', 'swish-flick'], make: 'after', faq: 4 },
+  { slug: 'games-for-12-to-14-year-olds', key: 'a12', min: 12, max: 14, emoji: '🎧', games: ['castle-clash', 'word-peek', 'brick-drop', 'loop-lab', 'beat-lanes', 'hero-of-sunvale'], make: 'first', faq: 4 },
+];
+export const ageBySlug = slug => AGES.find(a => a.slug === slug) || null;
+/** Guides for parents: path /parents/<slug>; key: locale key under parents.<key>.*. */
+export const PARENT_GUIDES = [
+  { slug: 'ai-builder-safety', key: 'ai', emoji: '🤖', faq: 5 },
+  { slug: 'safety-and-screen-time', key: 'screen', emoji: '⏱️', faq: 4 },
+];
+export const guideBySlug = slug => PARENT_GUIDES.find(g => g.slug === slug) || null;
+export const PARENTS_FAQ = 10;
+/** A launch game's ages for the visible "Ages 8–11" line, from its grades (grade N is about age N+5 to N+6), within the
+ *  site's 8 to 14: { from, to }, or null. */
+export function ageBand(slug) {
+  const b = gradeBand([slug]); if (!b) return null;
+  const from = Math.max(8, (b.from === 'K' ? 0 : +b.from) + 5), to = Math.min(14, +b.to + 6);
+  return to > from ? { from: String(from), to: String(to) } : null;
+}

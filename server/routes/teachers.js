@@ -17,29 +17,29 @@ import { familiesOn } from '../services/family.js';
 import { siteHost } from '../site.js';
 import * as games from '../services/games.js';
 import * as seo from '../seo.js';
-import { HUBS, hubBySlug, LEARNING, TEACHER_GAMES, HUB_FAQ, TEACHER_FAQ, gradeBand } from '../learn.js';
+import { HUBS, hubBySlug, LEARNING, TEACHER_GAMES, HUB_FAQ, TEACHER_FAQ, HOME_TIPS, AGES, gradeBand } from '../learn.js';
 
 export const router = Router();
-const contactEmail = () => config.contactEmail || 'greg@oomba.ai';
+export const contactEmail = () => config.contactEmail || 'greg@oomba.ai';
 const OG_DIR = new URL('../../public/og/', import.meta.url);
 /** Is there a share picture for this launch game (scripts/og-images.js)? */
-const fsOg = slug => fs.existsSync(new URL(`${slug}.jpg`, OG_DIR));
+export const fsOg = slug => fs.existsSync(new URL(`${slug}.jpg`, OG_DIR));
 
 /** lang/dir for an element whose text is still the English (see routes/info.js). */
-const fb = (t, key) => (t.own(key) ? '' : raw(' lang="en" dir="ltr"'));
+export const fb = (t, key) => (t.own(key) ? '' : raw(' lang="en" dir="ltr"'));
 /** One string as an element, marked when it is the English fallback. */
-const el = (t, tag, key, vars, attrs = '') => raw(`<${tag}${attrs}${fb(t, key)}>${tHtml(t, key, vars)}</${tag}>`);
+export const el = (t, tag, key, vars, attrs = '') => raw(`<${tag}${attrs}${fb(t, key)}>${tHtml(t, key, vars)}</${tag}>`);
 /** A page's links stay in the language address the reader came in on (/es/learn/… -> /es/g/…). */
-const lp = (req, path) => (req.pathLocale && seo.localizable(path) ? seo.localeUrl(path, req.pathLocale) : path);
+export const lp = (req, path) => (req.pathLocale && seo.localizable(path) ? seo.localeUrl(path, req.pathLocale) : path);
 
 /** An official launch game a signed-out visitor may open, in the page's language; null otherwise. */
-function launchGame(slug) {
+export function launchGame(slug) {
   const g = games.getGameBySlug(slug);
   if (!g || g.source !== 'seed' || !games.canView(null, g)) return null;
   return games.localizeGame(g);
 }
 /** FAQ pairs [question key, answer key] -> markup, plus the plain text for FAQPage structured data. */
-function faqBlock(req, pairs, headingKey, vars = {}) {
+export function faqBlock(req, pairs, headingKey, vars = {}) {
   const t = req.t;
   return {
     markup: html`<section class="panel faq lp-faq" id="faq" aria-labelledby="faq-h">${el(t, 'h2', headingKey, {}, ' id="faq-h"')}
@@ -142,8 +142,12 @@ const builder = (req, t) => html`<section class="panel" id="how" aria-labelledby
     <ol class="lp-steps">${[1, 2, 3, 4].map(n => el(t, 'li', `learn.hubs.makeAGame.how.li${n}`))}</ol>
     <p><a class="btn btn-primary" href="/build">🛠️ ${t('learn.hubs.makeAGame.cta')}</a></p></section>
   <section class="panel" id="skills" aria-labelledby="skills-h">${el(t, 'h2', 'learn.hubs.makeAGame.skills.h', {}, ' id="skills-h"')}${el(t, 'p', 'learn.hubs.makeAGame.skills.p')}</section>
+  <section class="panel" id="parents" aria-labelledby="parents-h">${el(t, 'h2', 'learn.hubs.makeAGame.parents.h', {}, ' id="parents-h"')}${el(t, 'p', 'learn.hubs.makeAGame.parents.p1')}${el(t, 'p', 'learn.hubs.makeAGame.parents.p2')}</section>
+  <section class="panel" id="ideas" aria-labelledby="ideas-h">${el(t, 'h2', 'learn.hubs.makeAGame.ideas.h', {}, ' id="ideas-h"')}
+    <ul class="lp-tags">${[1, 2, 3, 4, 5].map(n => el(t, 'li', `learn.hubs.makeAGame.ideas.li${n}`))}</ul>${el(t, 'p', 'learn.hubs.makeAGame.ideas.p')}</section>
+  <section class="panel" id="scratch" aria-labelledby="scratch-h">${el(t, 'h2', 'learn.hubs.makeAGame.scratch.h', {}, ' id="scratch-h"')}${el(t, 'p', 'learn.hubs.makeAGame.scratch.p')}</section>
   <section class="panel" id="safe" aria-labelledby="safe-h">${el(t, 'h2', 'learn.hubs.makeAGame.safe.h', {}, ' id="safe-h"')}${el(t, 'p', 'learn.hubs.makeAGame.safe.p')}
-    <p><a href="${lp(req, '/safety')}">${t('learn.safetyLink')}</a></p></section>`;
+    <p><a href="${lp(req, '/parents/ai-builder-safety')}">${t('learn.hubs.makeAGame.safeLink')}</a> · <a href="${lp(req, '/safety')}">${t('learn.safetyLink')}</a></p></section>`;
 
 router.get('/learn/:hub', (req, res) => {
   const hub = hubBySlug(req.params.hub);
@@ -159,7 +163,9 @@ router.get('/learn/:hub', (req, res) => {
         ${t.own(`learn.games.${LEARNING[g.slug].key}`) ? html`<p class="lp-practise"><b>${t('learn.practise')}</b> ${t(`learn.games.${LEARNING[g.slug].key}`)}</p>` : html`<p class="ugc">${g.description}</p>`}
         <div class="row"><a class="btn btn-primary" href="/play/${g.slug}" rel="nofollow">▶ ${t('learn.play')}</a><a class="btn" href="${lp(req, `/g/${g.slug}`)}">${t('learn.about')}</a></div>
       </div></article>`;
-  const faq = faqBlock(req, Array.from({ length: HUB_FAQ[hub.key] }, (_, i) => [`${k}.faq.q${i + 1}`, `${k}.faq.a${i + 1}`]), 'learn.faqHeading');
+  // The make-a-game page's "How much does it cost?" names the optional plans (never a price) only while they are public.
+  const paidKey = n => (familiesOn(req) && t.has(`${k}.faq.a${n}paid`) ? `${k}.faq.a${n}paid` : `${k}.faq.a${n}`);
+  const faq = faqBlock(req, Array.from({ length: HUB_FAQ[hub.key] }, (_, i) => [`${k}.faq.q${i + 1}`, paidKey(i + 1)]), 'learn.faqHeading', { plans: '/plans', ai: lp(req, '/parents/ai-builder-safety') });
   const others = HUBS.filter(h => h !== hub);
   const crumbs = [[t('nav.home'), '/'], [t('nav.teachers'), '/teachers'], [t(`${k}.name`), path]];
   const body = html`<div class="lp">
@@ -172,10 +178,14 @@ router.get('/learn/:hub', (req, res) => {
     ${hub.extra === 'builder' ? builder(req, t) : html`<section class="lp-sec" aria-label="${t('learn.gamesHeading')}">${list.length ? list.map(gameItem) : html`<p class="notice">${t('learn.noGames')}</p>`}</section>`}
     ${hub.extra === 'tracks' ? tracks(t) : ''}
     <section class="panel" id="classroom" aria-labelledby="cls-h">${el(t, 'h2', 'learn.tipsHeading', {}, ' id="cls-h"')}${el(t, 'p', `${k}.tips`)}</section>
+    ${HOME_TIPS.includes(hub.key) ? html`<section class="panel" id="home" aria-labelledby="home-h">${el(t, 'h2', 'learn.homeHeading', {}, ' id="home-h"')}${el(t, 'p', `${k}.home`)}</section>` : ''}
     ${faq.markup}
     <section class="lp-sec" aria-labelledby="more-h">${el(t, 'h2', 'learn.moreHeading', {}, ' id="more-h"')}
       <ul class="chips lp-more">${others.map(h => html`<li><a class="chip" href="${lp(req, `/learn/${h.slug}`)}"><span aria-hidden="true">${h.emoji}</span>${t(`learn.hubs.${h.key}.name`)}</a></li>`)}
-        <li><a class="chip" href="${lp(req, '/teachers')}"><span aria-hidden="true">🍎</span>${t('learn.teachersLink')}</a></li></ul>
+        <li><a class="chip" href="${lp(req, '/teachers')}"><span aria-hidden="true">🍎</span>${t('learn.teachersLink')}</a></li>
+        <li><a class="chip" href="${lp(req, '/parents')}"><span aria-hidden="true">👪</span>${t('learn.parentsLink')}</a></li></ul>
+      ${el(t, 'h2', 'learn.byAgeHeading', {}, ' class="lp-sub"')}
+      <ul class="chips lp-more">${AGES.map(a => html`<li><a class="chip" href="${lp(req, `/learn/${a.slug}`)}"><span aria-hidden="true">${a.emoji}</span>${t(`learn.ages.${a.key}.name`)}</a></li>`)}</ul>
     </section>
   </div>`;
   const items = list.map((g, i) => ({ '@type': 'ListItem', position: i + 1, url: seo.abs(req, `/g/${g.slug}`), name: g.title }));
@@ -184,7 +194,7 @@ router.get('/learn/:hub', (req, res) => {
     seo: {
       index: true, path, langs: seo.langsWithKey(`${k}.h1`), image: list[0] && fsOg(list[0].slug) ? `/og/${list[0].slug}.jpg` : '/og/teachers.jpg', imageAlt: t(`${k}.h1`),
       jsonld: [seo.graph([
-        { '@type': 'CollectionPage', '@id': seo.abs(req, path), url: seo.abs(req, path), name: t(`${k}.title`), description: t(`${k}.description`), isPartOf: { '@id': seo.abs(req, '/#website') }, audience: { '@type': 'EducationalAudience', educationalRole: 'teacher' }, ...(items.length ? { mainEntity: { '@type': 'ItemList', itemListElement: items } } : {}) },
+        { '@type': 'CollectionPage', '@id': seo.abs(req, path), url: seo.abs(req, path), name: t(`${k}.title`), description: t(`${k}.description`), isPartOf: { '@id': seo.abs(req, '/#website') }, audience: [{ '@type': 'EducationalAudience', educationalRole: 'teacher' }, { '@type': 'ParentAudience', childMinAge: seo.AGE.min, childMaxAge: seo.AGE.max }], ...(items.length ? { mainEntity: { '@type': 'ItemList', itemListElement: items } } : {}) },
         faq.ld, seo.breadcrumbLd(req, crumbs),
       ])],
     },

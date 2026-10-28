@@ -5,7 +5,7 @@
 // preview cookie): paidN replaces pN then, or is added where it stands when there is no pN; before that it is skipped.
 import { Router } from 'express';
 import { googleEnabled } from '../oidc.js';
-import { html } from '../views/html.js';
+import { html, raw } from '../views/html.js';
 import { page, legalReader } from '../views/layout.js';
 import { tHtml, dictionary, DEFAULT_LOCALE, fmt } from '../i18n/index.js';
 import { config } from '../config.js';
@@ -43,14 +43,16 @@ function items(prefix, paid) {
 /** lang/dir for an element whose text is the English fallback (a right-to-left page keeps English sentences readable:
  *  the full stop stays at the end), nothing when the key is written in the page's language. */
 const fallback = (t, key) => (t.own(key) ? '' : html` lang="en" dir="ltr"`);
-function section(req, prefix, { id, paid = familiesOn(req) } = {}) {
+// level: the heading level of the section (2; 3 on /parents, where the sections sit under "Safety and privacy, in detail").
+export function section(req, prefix, { id, paid = familiesOn(req), level = 2 } = {}) {
   const t = req.t; const vars = { email: legalEmail() }; const out = []; let list = null;
+  const h = raw(`h${level}`), sub = raw(`h${level + 1}`);
   for (const it of items(prefix, paid)) {
     if (it.kind === 'li') { if (!list) out.push(list = { key: it.key, items: [] }); list.items.push(html`<li${fallback(t, it.key)}>${tHtml(t, it.key, vars)}</li>`); continue; }
     list = null;
-    out.push(it.kind === 's' ? html`<h3${fallback(t, it.key)}>${tHtml(t, it.key, vars)}</h3>` : html`<p${fallback(t, it.key)}>${tHtml(t, it.key, vars)}</p>`);
+    out.push(it.kind === 's' ? html`<${sub}${fallback(t, it.key)}>${tHtml(t, it.key, vars)}</${sub}>` : html`<p${fallback(t, it.key)}>${tHtml(t, it.key, vars)}</p>`);
   }
-  return html`<section class="panel"${id ? html` id="${id}"` : ''}><h2${fallback(t, `${prefix}.h`)}>${t(`${prefix}.h`)}</h2>${out.map(x => (x.items ? html`<ul${fallback(t, x.key)}>${x.items}</ul>` : x))}</section>`;
+  return html`<section class="panel"${id ? html` id="${id}"` : ''}><${h}${fallback(t, `${prefix}.h`)}>${t(`${prefix}.h`)}</${h}>${out.map(x => (x.items ? html`<ul${fallback(t, x.key)}>${x.items}</ul>` : x))}</section>`;
 }
 /** sections: section keys under info.<pageKey>; extra: more sections after them. */
 function info(req, pageKey, emoji, sections, extra = '') {
@@ -60,15 +62,17 @@ const codeBlock = s => html`<code dir="ltr">${s}</code>`;
 
 router.get('/safety', (req, res) => page(req, res, { title: req.t('info.safety.title'), back: '/', description: req.t('info.safety.description'), body: info(req, 'safety', '🛡️', ['box', 'checked', 'chat', 'personal', 'ads']), seo: indexed('/safety', 'info.safety.heading') }));
 // "Contact us" (CONTACT_EMAIL): where the page's "a grown-up can contact us" leads. Not shown until it is set.
-const contact = req => (config.contactEmail ? html`<section class="panel" id="contact"><h2>${req.t('info.parents.contact.h')}</h2>
+export const contact = (req, level = 2) => (config.contactEmail ? html`<section class="panel" id="contact">${raw(`<h${level}>`)}${req.t('info.parents.contact.h')}${raw(`</h${level}>`)}
   <p>${tHtml(req.t, 'info.parents.contact.p1', { email: html`<a href="mailto:${config.contactEmail}" dir="ltr">${config.contactEmail}</a>` })}</p></section>` : '');
 // With Sign in with Google on, what the site keeps from a school Google account (nothing while it is off).
-const googlePrivacy = req => (googleEnabled() ? html`<section class="panel" id="google"><h2>${req.t('google.setup.privacy.h')}</h2><p>${req.t('google.setup.privacy.p1')}</p></section>` : '');
+export const googlePrivacy = (req, level = 2) => (googleEnabled() ? html`<section class="panel" id="google">${raw(`<h${level}>`)}${req.t('google.setup.privacy.h')}${raw(`</h${level}>`)}<p>${req.t('google.setup.privacy.p1')}</p></section>` : '');
 // Family accounts (routes/family.js): /grown-ups is linked from here only, and only while families are on, next to /plans.
-const families = req => (familiesOn(req) ? html`<section class="panel" id="families"><h2>${req.t('info.parents.families.h')}</h2>
-  <p>${req.t('info.parents.families.p1')}</p><div class="row"><a class="btn btn-primary" href="/plans">${req.t('info.parents.families.plans')}</a><a class="btn" href="/grown-ups">${req.t('info.parents.families.link')}</a></div></section>` : '');
-// Plans (D16), with the legal pages that cover them: only once paid plans are public.
-router.get('/parents', (req, res) => page(req, res, { title: req.t('info.parents.title'), back: '/', description: req.t('info.parents.description'), body: info(req, 'parents', '👪', ['what', ...(familiesOn(req) ? ['plans'] : []), 'stored', 'never', 'ai', 'keep', 'friends', 'builder', 'languages'], html`${families(req)}${googlePrivacy(req)}${contact(req)}`), seo: indexed('/parents', 'info.parents.heading') }));
+export const families = (req, extra = '') => (familiesOn(req) ? html`<section class="panel" id="families"><h2>${req.t('info.parents.families.h')}</h2>
+  <p>${req.t('info.parents.families.p1')}</p>${extra}<div class="row"><a class="btn btn-primary" href="/plans">${req.t('info.parents.families.plans')}</a><a class="btn" href="/grown-ups">${req.t('info.parents.families.link')}</a></div></section>` : '');
+// /parents itself is in routes/parents.js: a page for parents with these sections under "Safety and privacy, in detail".
+/** The /parents privacy and safety sections, in order (Plans, D16, with the legal pages that cover them: only once paid
+ *  plans are public). /privacy repeats stored, never, ai and keep. */
+export const parentSections = req => ['what', ...(familiesOn(req) ? ['plans'] : []), 'stored', 'never', 'ai', 'keep', 'friends', 'builder', 'languages'];
 router.get('/sdk', (req, res) => {
   const t = req.t;
   // The SDK names (BRB.storage.get...) are code and stay as they are in every language.

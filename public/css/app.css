@@ -687,6 +687,17 @@ ol.steps li{margin-bottom:var(--s2)}
 @media (max-width:560px){.lp-hubgame{grid-template-columns:96px minmax(0,1fr);gap:var(--s4)}.lp-hubgame .row .btn{flex:1}}
 .lp-practise{color:var(--text-2)}
 .lp-grades{margin:var(--s3) 0 0;font-weight:800}
+/* Parent pages (routes/parents.js). */
+.lp-aside{margin:var(--s4) 0 0;color:var(--text-2)}
+.lp-hero .lp-aside{max-width:62ch}
+.lp-updated{margin:var(--s3) 0 0}
+.lp-fit{margin:0 0 var(--s2)}
+.lp-detail>p{margin:0 0 var(--s4);color:var(--text-2);max-width:70ch}
+.lp-detail>.panel+.panel{margin-top:var(--s4)}
+.lp-detail h3{font-size:1.15rem}
+.lp-make .row{margin-top:var(--s4)}
+.lp-hubs+.lp-more{margin-top:var(--s4)}
+.home-intro .home-who{gap:var(--s2)}
 .lp-steps{margin:0 0 var(--s4);padding-inline-start:1.4em}
 .lp-steps li+li{margin-top:var(--s2)}
 .lp-more{list-style:none;padding:0;margin:0}

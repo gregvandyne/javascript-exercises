@@ -34,7 +34,7 @@
     "footer": {
       "tagline": "© Oomba Academy · Free to play, free to build",
       "safety": "Safety",
-      "parents": "For grown-ups",
+      "parents": "For parents",
       "contact": "Contact us",
       "builders": "For builders",
       "terms": "Terms",
@@ -59,7 +59,8 @@
     "schools": "Schools",
     "family": "Family",
     "plans": "Plans",
-    "teachers": "Teachers"
+    "teachers": "Teachers",
+    "parents": "Parents"
   },
   "errors": {
     "goHome": "Go home",
@@ -351,7 +352,8 @@
     "intro": {
       "heading": "Fun, interactive learning games for kids",
       "text": "Free games for ages 8 to 14 to play in class or at home, and a Builder that turns your own idea into a game.",
-      "teachers": "For teachers"
+      "teachers": "For teachers",
+      "parents": "For parents"
     }
   },
   "search": {
@@ -3133,7 +3135,7 @@
     "play": "Play",
     "about": "About the game",
     "tipsHeading": "In the classroom",
-    "faqHeading": "Questions teachers ask",
+    "faqHeading": "Questions parents and teachers ask",
     "moreHeading": "More games by subject",
     "teachersLink": "Oomba Academy for teachers",
     "safetyLink": "How we keep kids safe",
@@ -3149,7 +3151,8 @@
       "loopLab": "Make beats with drums, bass and melody, chain them into a song and clear 10 music challenges.",
       "beatLanes": "Tap in time to nine songs, from Twinkle Twinkle to the Can-Can.",
       "swishFlick": "Flick to shoot hoops: the direction aims the ball and the speed sets how far it flies.",
-      "munchMaze": "A maze chase: plan a route, collect every dot and dodge the Gloops."
+      "munchMaze": "A maze chase: plan a route, collect every dot and dodge the Gloops.",
+      "heroOfSunvale": "A big 3D adventure: explore a kingdom, help the villagers on missions and win friendly battles to free the princess."
     },
     "hubs": {
       "math": {
@@ -3177,8 +3180,11 @@
           "q2": "Can two students race each other?",
           "a2": "Yes. Two players can race on one screen.",
           "q3": "Is it free?",
-          "a3": "Yes. It is free to play, with no ads, and students can start without signing up."
-        }
+          "a3": "Yes. It is free to play, with no ads, and students can start without signing up.",
+          "q4": "Can my child practice just one times table at home?",
+          "a4": "Yes. In Sum Racer they can pick exactly which times tables to practice."
+        },
+        "home": "A five-minute race after school keeps math facts fresh. Pick the track your child is working on at school, or choose exactly which times tables to practice, and race each other on the same screen."
       },
       "words": {
         "name": "Reading and spelling games",
@@ -3194,8 +3200,11 @@
           "q2": "Is there a daily puzzle?",
           "a2": "Yes. Word Hunt and Word Peek each have a new daily puzzle, and in Word Peek a student can set a secret word for a friend.",
           "q3": "Can I use my own spelling list?",
-          "a3": "Not in these games yet. You can describe a spelling game with your words to the Builder, and it will make one for your class."
-        }
+          "a3": "Not in these games yet. You can describe a spelling game with your words to the Builder, and it will make one for your class.",
+          "q4": "Which word game suits my child’s reading level?",
+          "a4": "Shark Plank and Word Hunt read words aloud, so they suit kids who are still building their reading. Word Peek is for confident spellers."
+        },
+        "home": "Make the Daily Peek a family habit at breakfast and talk about each guess, or let a younger reader play Shark Plank with the sound on, so every word is read aloud."
       },
       "strategy": {
         "name": "Chess and strategy games",
@@ -3211,8 +3220,11 @@
           "q2": "Can two students play on one device?",
           "a2": "Yes. Castle Clash and Drop Four both have a two-player mode on one screen.",
           "q3": "How hard is the robot?",
-          "a3": "Castle Clash's robot has four levels, and Drop Four's robot has Easy, Normal and Hard."
-        }
+          "a3": "Castle Clash's robot has four levels, and Drop Four's robot has Easy, Normal and Hard.",
+          "q4": "Can I learn chess alongside my child?",
+          "a4": "Yes. Castle Clash’s lessons start with how each piece moves, so a grown-up who has never played can learn too, then play their child on the same screen."
+        },
+        "home": "Learn chess together: do one Castle Clash lesson a day, then play each other on one screen. Drop Four fits into any spare five minutes."
       },
       "music": {
         "name": "Music games",
@@ -3226,8 +3238,11 @@
           "q1": "Do students need to read music?",
           "a1": "No. Both games use colors and timing, not written notes.",
           "q2": "Can students make whole songs?",
-          "a2": "Yes. In Loop Lab they can chain patterns into a song and play it back like a little concert."
-        }
+          "a2": "Yes. In Loop Lab they can chain patterns into a song and play it back like a little concert.",
+          "q3": "Does my child need an instrument or music lessons?",
+          "a3": "No. Everything happens in the browser, with colors and timing instead of written notes."
+        },
+        "home": "Loop Lab needs no lessons and no instrument: kids make a beat, chain it into a song and play it back to the family. Headphones help in a busy house."
       },
       "brainBreaks": {
         "name": "Brain break games",
@@ -3247,8 +3262,8 @@
       "makeAGame": {
         "name": "Make your own game",
         "short": "Students design games with the AI Builder",
-        "title": "Make your own game: an AI game maker for kids and classrooms",
-        "description": "Students describe a game in plain words and the Builder makes it, showing its steps. Ad-free, for ages 8 to 14, and games stay private until shared.",
+        "title": "Make your own video game: AI game maker for kids",
+        "description": "Kids describe a game in plain words and the Builder makes it, showing its steps. No coding needed, ad-free, for ages 8 to 14, and private until shared.",
         "h1": "Make your own game, no coding needed",
         "lead": "On Oomba Academy, students describe the game they want and the AI Builder makes it. Then they play it, test it and ask for changes, one idea at a time.",
         "how": {
@@ -3274,11 +3289,368 @@
           "q2": "Who can see the games students make?",
           "a2": "Only the student, until they share it. They can share it with friends or their class, and a game for everyone is reviewed before anyone else can play it.",
           "q3": "What ages is it for?",
-          "a3": "Ages 8 to 14."
-        }
+          "a3": "Ages 8 to 14.",
+          "q4": "My child wants to make video games. Where do they start?",
+          "a4": "With a small idea, like a maze or a catching game. They describe it, play it, then ask for one change at a time. Later, many kids also try coding tools like Scratch.",
+          "q5": "Is this real coding?",
+          "a5": "Not exactly. The Builder writes the code. Your child does the design, the testing and the explaining, which are big parts of making games, and the steps it shows let curious kids see how a game is put together.",
+          "q6": "How much does it cost?",
+          "a6": "Nothing. Every player gets free Builder messages each day.",
+          "a6paid": "Building is free: every player gets free Builder messages each day. Families and schools can choose an optional plan for extra messages. <a href=\"{plans}\">See the plans</a>.",
+          "q7": "Is the AI Builder safe for my child?",
+          "a7": "It only makes games, and it follows fixed kid-safety rules in every language. <a href=\"{ai}\">Read what it sees and the rules it follows</a>."
+        },
+        "parents": {
+          "h": "For parents: why making beats only playing",
+          "p1": "Making a game is active screen time. Your child plans an idea, explains it clearly, tests what the Builder made and decides what to fix next: the same steps game designers use.",
+          "p2": "It makes a good weekend project to do together, and building is free every day."
+        },
+        "ideas": {
+          "h": "Ideas to start with",
+          "li1": "A maze where a cat collects fish",
+          "li2": "A quiz about my favorite animals",
+          "li3": "A space game where you catch falling stars",
+          "li4": "A race between three snails",
+          "li5": "A puzzle where you sort colors into jars",
+          "p": "Then ask for one change at a time, like “make the cat faster” or “add a second level”."
+        },
+        "scratch": {
+          "h": "Where it fits next to Scratch and coding",
+          "p": "Scratch and Code.org teach coding with blocks. The Builder is different: kids design in words, and the Builder writes the game while showing its steps. Many kids do both, and the Builder can be a first step before code."
+        },
+        "safeLink": "Is the AI Builder safe? A guide for parents"
       }
     },
     "grades": "Grades {from}–{to}",
-    "seeAll": "See all {name}"
+    "seeAll": "See all {name}",
+    "homeHeading": "At home",
+    "parentsLink": "Oomba Academy for parents",
+    "byAgeHeading": "Games by age",
+    "ages": {
+      "line": "Ages {from}–{to}",
+      "fit": "Why it fits this age:",
+      "skills": {
+        "h": "Skills they practice"
+      },
+      "together": {
+        "h": "Playing together",
+        "p": "Sum Racer, Castle Clash and Drop Four each have a two-player mode on one screen: good for siblings, friends, or a grown-up and a child."
+      },
+      "safe": {
+        "h": "Safety in one minute",
+        "p": "No ads, nothing for kids to buy, and no chat with strangers: friends are added only with a code. We never ask kids for an email address. <a href=\"{href}\">More for parents</a>."
+      },
+      "make": {
+        "h": "Make your own game",
+        "link": "How making a game works"
+      },
+      "moreHeading": "Games for other ages",
+      "faq": {
+        "q1": "Are these games free?",
+        "a1": "Yes. Every game is free to play in the browser, with no ads and no downloads, and kids can start without signing up."
+      },
+      "a8": {
+        "name": "Ages 8 and 9",
+        "short": "Times tables, spelling, first chess games and music",
+        "title": "Free learning games for 8 and 9 year olds",
+        "description": "Free, ad-free browser games for 8 and 9 year olds: times tables, spelling, first chess moves and music. No downloads and no chat with strangers.",
+        "h1": "Learning games for 8 and 9 year olds",
+        "lead": "At 8 and 9, kids are learning their times tables, reading longer words and loving games they can win. These games keep rounds short, read words aloud where it helps, and let two kids play on one screen.",
+        "fit": {
+          "sumRacer": "Start with adding to 20, then move on to the 2, 5 and 10 times tables when they’re ready.",
+          "wordHunt": "Themed word searches, and they can tap any word to hear it read aloud.",
+          "sharkPlank": "Good for kids still building their reading: every word is read aloud.",
+          "castleClash": "A short lesson for each piece, then the robot at its easiest level.",
+          "connectFour": "Quick games about planning ahead, against a sibling or the robot on Easy.",
+          "loopLab": "Tap squares to make a beat and hear it loop right away. No need to read music.",
+          "beatLanes": "Tap in time to songs they know, starting with Twinkle Twinkle.",
+          "munchMaze": "A maze chase with an Easy mode: plan a route and collect every dot."
+        },
+        "faq": {
+          "q2": "Are the games too hard for an 8 year old?",
+          "a2": "Each one starts easy. Sum Racer begins with adding to 10, Castle Clash’s robot has an easy level, and Shark Plank reads every word aloud.",
+          "q3": "Can two kids play on one device?",
+          "a3": "Yes. Sum Racer, Castle Clash and Drop Four have a two-player mode on one screen.",
+          "q4": "Can an 8 year old use the AI Builder?",
+          "a4": "Yes. Kids type their idea, so it helps if they can write a sentence or two, and a grown-up nearby helps at first. The Builder follows fixed kid-safety rules."
+        }
+      },
+      "a10": {
+        "name": "Ages 10 and 11",
+        "short": "Times tables and division, word and chess puzzles, making games",
+        "title": "Free learning games for 10 and 11 year olds",
+        "description": "Free, ad-free browser games for 10 and 11 year olds: times tables and division, a daily word puzzle, chess puzzles, music, and making their own games.",
+        "h1": "Learning games for 10 and 11 year olds",
+        "lead": "At 10 and 11, kids want a real challenge and a say in what they play. These games go up to all the times tables and division, chess puzzles and a daily word puzzle, and the Builder lets them make a game of their own.",
+        "abcya": "Outgrowing ABCya? Its games are for PreK to grade 6. Oomba Academy is made for ages 8 to 14.",
+        "make": {
+          "p": "Kids this age love making their own games. They describe one in plain words, like “a quiz about volcanoes” or “a maze with a robot”, and the Builder makes it. Then they test it and ask for changes. It’s free every day."
+        },
+        "fit": {
+          "sumRacer": "All the times tables up to 12, division facts, and a mixed track with all four operations.",
+          "wordPeek": "Six guesses to find the daily word, with a clue after every guess.",
+          "castleClash": "24 checkmate puzzles and harder robot levels.",
+          "brickDrop": "Fast falling-block puzzles: see where each shape fits and clear whole rows.",
+          "loopLab": "Chain beats into a whole song and clear the 10 music challenges.",
+          "heroOfSunvale": "A 3D adventure with missions to follow and a kingdom to explore.",
+          "swishFlick": "Shoot hoops: the direction of the flick aims the ball and its speed sets how far it flies."
+        },
+        "faq": {
+          "q2": "Are the games too easy for a 10 year old?",
+          "a2": "No. Sum Racer goes up to all the times tables and division, Castle Clash has 24 checkmate puzzles, and Word Peek is a real daily challenge.",
+          "q3": "Can my child play with a sibling or a friend?",
+          "a3": "Yes. Sum Racer, Castle Clash and Drop Four have a two-player mode on one screen.",
+          "q4": "Is the AI Builder safe for an 11 year old?",
+          "a4": "The Builder only makes games, and it follows fixed kid-safety rules: no gore, no gambling, no real brands and no links out. Games stay private until your child shares them."
+        }
+      },
+      "a12": {
+        "name": "Ages 12 to 14",
+        "short": "Strategy, music, puzzles and making their own games",
+        "title": "Free learning games for 12 to 14 year olds",
+        "description": "Games for 12, 13 and 14 year olds that aren’t babyish: chess, word puzzles, music making, a 3D adventure, and an AI Builder to make their own games.",
+        "h1": "Games for 12 to 14 year olds that aren’t babyish",
+        "lead": "Many kids’ game sites stop at about age 11. At 12 to 14, the best part of Oomba Academy is making: kids design their own games with the AI Builder, share them with friends and keep improving them. The games below are good for a break in between.",
+        "make": {
+          "p": "Describe a game in plain words and the Builder makes it: a platformer, a quiz for a school topic, a puzzle for a friend. Then test it, find what’s wrong and ask for changes. It’s free every day."
+        },
+        "fit": {
+          "castleClash": "Real chess: puzzles and a robot at four levels, or a friend on the same screen.",
+          "wordPeek": "Big Peek with 6 letters, or set a secret word for a friend.",
+          "brickDrop": "Race to 40 lines in Sprint, or keep going in Marathon as it gets faster.",
+          "loopLab": "Make whole songs from drums, bass and melody.",
+          "beatLanes": "Nine songs and long combos for quick fingers.",
+          "heroOfSunvale": "A big 3D kingdom to explore, with missions and a dragon at the end."
+        },
+        "faq": {
+          "q2": "Is Oomba Academy too young for a 13 year old?",
+          "a2": "It’s made for ages 8 to 14. Older kids mostly come for the Builder, real chess and music making, which grow with them.",
+          "q3": "Can my teen make their own games?",
+          "a3": "Yes. They describe the game in words and the Builder makes it. A new game is private until they share it, and a game for everyone is reviewed first.",
+          "q4": "Is there chat with strangers?",
+          "a4": "No. Kids chat only with friends they added with a 6-character code, never by searching names, and they can switch chat off on their Me page."
+        }
+      }
+    }
+  },
+  "parents": {
+    "title": "Safe, free learning games for kids 8–14",
+    "description": "Fun learning games for kids 8–14 that play free in the browser: math, words, chess and music. No ads, no stranger chat, and kids can build their own games.",
+    "kicker": "👪 For parents",
+    "h1": "Fun learning games for kids 8–14, safe by design",
+    "lead": "Oomba Academy is a website of short learning games that kids play right in the browser: math races, word puzzles, chess and music. When they’re ready, they can make their own games by describing them to our AI Builder.",
+    "badges": {
+      "free": "Free to play",
+      "ads": "No ads",
+      "buy": "Nothing for kids to buy",
+      "strangers": "No chat with strangers",
+      "browser": "Works in any browser",
+      "languages": "{count} languages"
+    },
+    "cta": {
+      "start": "Let your child start free",
+      "try": "Try a game now, no sign-up",
+      "grownup": "Make a grown-up account"
+    },
+    "teachers": "Teaching a class? See <a href=\"{href}\">Oomba Academy for teachers</a>.",
+    "play": {
+      "h": "Learning that feels like play",
+      "p": "Each game practices a real skill in a few minutes, and kids come back because it’s fun. Pick one to try together."
+    },
+    "subjects": {
+      "h": "Pick by subject"
+    },
+    "ages": {
+      "h": "Games for every age",
+      "p": "Kids change a lot between 8 and 14. These pages pick the games that fit each age and say why."
+    },
+    "make": {
+      "h": "From playing to making",
+      "p1": "Your child describes a game in their own words, like “a maze where a cat collects fish”, and the Builder makes it. Then they play it, notice what to change and ask for changes, one idea at a time.",
+      "p2": "That’s planning, clear writing, testing and fixing, without having to know code first. Building is free every day.",
+      "link": "How making a game works",
+      "safe": "Is the AI Builder safe?"
+    },
+    "safe": {
+      "h": "What makes it safe",
+      "li1": "No ads, no loot boxes and nothing for kids to buy. Kids are never asked to pay.",
+      "li2": "No chat with strangers. Friends are added only with a 6-character friend code, never by searching names. Chat is only between friends, filters bad words and personal details, and can be reported.",
+      "li3": "We never ask kids for an email address, age, home address or location.",
+      "li4": "Games kids make are private until they share them, and a game for everyone is reviewed before anyone else can play it.",
+      "li5": "Kids use made-up names, and their profiles and names are kept out of search engines.",
+      "links": "Read <a href=\"{safety}\">how we keep kids safe</a> and <a href=\"{guide}\">our guide to good screen time</a>."
+    },
+    "private": {
+      "h": "Private by design",
+      "p1": "There are no ads and no tracking cookies, so nothing here builds a profile of your child for advertisers.",
+      "p2": "There is no parent dashboard, no time limit and no activity report either. That’s on purpose: what your child makes and says here stays private.",
+      "paid": "A grown-up account linked to your child sees only their name and how many of the family’s extra Builder messages they used.",
+      "p3": "To set limits, use the tools built into your child’s device, such as Apple Screen Time, Google Family Link or Microsoft Family Safety. <a href=\"{href}\">Our screen-time guide</a> explains how."
+    },
+    "home": {
+      "h": "At home and for homeschool",
+      "p": "Families fit a game in wherever a few minutes of play helps:",
+      "li1": "A times-tables race after school",
+      "li2": "The daily word puzzle at breakfast",
+      "li3": "A game of chess together",
+      "li4": "Building a game together on the weekend",
+      "li5": "Practice over the holidays",
+      "li6": "A rainy-day break that still teaches something",
+      "li7": "Homeschool math, reading and music"
+    },
+    "families": {
+      "p2": "Plans are optional. They only add extra Builder messages, and kids are never asked to pay."
+    },
+    "detail": {
+      "h": "Safety and privacy, in detail",
+      "p": "What we keep, what we never collect, what the AI sees and how friends and chat work, in plain words. Our <a href=\"{href}\">privacy notice</a> has the full text."
+    },
+    "faq": {
+      "h": "Questions parents ask",
+      "q1": "Is Oomba Academy free?",
+      "a1": "Yes. Every game is free to play, and every player gets free Builder messages each day to make their own games. There are no ads and nothing for kids to buy.",
+      "a1paid": "Yes. Every game is free to play, and every player gets free Builder messages each day. Families can choose an optional plan for extra Builder messages, and kids are never asked to pay. <a href=\"{plans}\">See the plans</a>.",
+      "q2": "What ages is it for?",
+      "a2": "Kids aged 8 to 14. Some games, like Shark Plank and the first Sum Racer tracks, also suit younger readers.",
+      "q3": "Does my child need an account or an email address?",
+      "a3": "No. Anyone can play straight away, without signing up. To keep their games and scores, kids can make an account with just a made-up name and a password. We never ask for an email address.",
+      "q4": "Are there ads or in-app purchases?",
+      "a4": "No. No ads, no in-app purchases, no loot boxes and no in-game money that costs money. Kids are never asked to pay.",
+      "q5": "Can strangers talk to my child?",
+      "a5": "No. Kids can only chat with friends they added with a 6-character friend code, never by searching names. Chat filters bad words, phone numbers, emails, addresses and links, kids can block or report anyone, and they can switch chat off on their Me page.",
+      "q6": "What does the AI Builder do with what my child types?",
+      "a6": "It sends your child’s messages, pictures and files to Claude, an AI made by Anthropic, to write the game, without your child’s name or username. Chats between friends and lesson answers are never sent to the AI. <a href=\"{ai}\">How the Builder stays kid-safe</a>.",
+      "q7": "Can I see what my child is doing?",
+      "a7": "Not on the site, and that’s on purpose: there is no parent dashboard or activity report. The best way to see what they’re doing is to play or build together.",
+      "a7paid": "Not on the site, and that’s on purpose: there is no parent dashboard or activity report. A linked grown-up account sees only your child’s name and their use of the family’s extra Builder messages. The best way to see what they’re doing is to play or build together.",
+      "q8": "Does it work on Chromebooks, tablets and phones?",
+      "a8": "Yes. It runs in any up-to-date web browser on computers, Chromebooks, tablets and phones, with nothing to download. A few games are best with the phone turned sideways.",
+      "q9": "Which languages are there?",
+      "a9": "{count} languages, including Spanish, French, German, Portuguese, Arabic, Hebrew and Japanese. Your child picks one with the 🌐 button, and the Builder answers in it.",
+      "q10": "Is it good screen time?",
+      "a10": "What kids do on a screen matters as much as how long. Short games that practice a skill, and making something of their own, are a good kind. Set your own limits with your device’s tools. <a href=\"{screen}\">Read our screen-time guide</a>."
+    },
+    "guides": {
+      "h": "Guides for parents"
+    },
+    "updated": "Updated {date}",
+    "ai": {
+      "name": "Is the AI Builder safe?",
+      "short": "What the AI sees, what it never gets, and the rules it follows",
+      "title": "Is AI safe for kids? A parent’s guide to our Builder",
+      "description": "What the AI sees, what it never gets, and the rules it follows: a plain-words guide for parents of kids 8–14 using Oomba Academy’s AI game Builder.",
+      "h1": "Is the AI Builder safe for my child?",
+      "lead": "Oomba Academy’s Builder uses AI to turn your child’s idea into a game. Here is what it sees, what it never gets, the rules it follows and what we can’t promise, in plain words.",
+      "what": {
+        "h": "What the Builder is",
+        "p1": "The Builder makes games. Your child describes an idea, and it writes the game, shows its steps while it works and asks a question when it needs to know more.",
+        "p2": "It is made for building games, not as a friend or companion to chat with about anything else."
+      },
+      "sees": {
+        "h": "What the AI sees, and what it never gets",
+        "li1": "The messages, pictures and files your child gives the Builder go to Claude, an AI made by the company Anthropic, which writes the game.",
+        "li2": "Your child’s name and username are not sent with them.",
+        "li3": "Chats between friends and lesson answers are never sent to the AI.",
+        "li4": "Hidden location data is removed from photos and pictures before they are kept."
+      },
+      "rules": {
+        "h": "The rules it follows",
+        "p": "The Builder follows fixed kid-safety rules in every language, and a message can’t change them:",
+        "li1": "No blood, gore or realistic violence, and no horror or jump-scares. Cartoon slapstick is fine.",
+        "li2": "No gambling.",
+        "li3": "No real brands, and no real people as characters.",
+        "li4": "No chat between players and no collecting personal details inside games.",
+        "li5": "No links to other websites and no ads inside games.",
+        "p2": "A request that breaks the rules is kindly refused, with ideas for something it can make instead."
+      },
+      "public": {
+        "h": "Who sees the games",
+        "p": "A new game is private to your child. They can share it with friends or their class. A game for everyone is checked by the AI and reviewed before anyone else can play it, and every game runs in a locked sandbox that can’t reach the internet or your child’s account."
+      },
+      "limits": {
+        "h": "What we can’t promise",
+        "p1": "No filter is perfect. An AI can misunderstand a request or make a mistake, and a game could still have something that isn’t right for your child.",
+        "p2": "If you see something wrong, tap 🚩 Report on the game page. When three people report a game, it is hidden until our team looks. Grown-ups can also email us at {email}."
+      },
+      "check": {
+        "h": "Five questions to ask about any AI tool for kids",
+        "li1": "<b>What does it do?</b> A tool that makes something (a game, a picture, a story) is different from a chatbot that talks about anything.",
+        "li2": "<b>What does it send, and to whom?</b> Look for a plain list of what goes to the AI company, and whether your child’s name goes with it.",
+        "li3": "<b>What rules does it follow?</b> A good tool for kids says what it refuses to make.",
+        "li4": "<b>Who sees what your child makes?</b> Private until shared is safest.",
+        "li5": "<b>Can you report a problem?</b> There should be an easy way, and a person who looks."
+      },
+      "faq": {
+        "q1": "Does my child chat with an AI?",
+        "a1": "Only about the game they’re making. They describe what they want, and the Builder asks questions and explains its steps.",
+        "q2": "Is my child’s name sent to the AI?",
+        "a2": "No. Their name and username are not sent with their messages.",
+        "q3": "Can the AI make scary or violent games?",
+        "a3": "Games can have cartoon action, like a hero’s friendly battles, but the Builder refuses gore, realistic violence, horror and jump-scares.",
+        "q4": "Are the games my child makes public?",
+        "a4": "Not unless they share them. A game for everyone is reviewed before anyone else can play it.",
+        "q5": "Is the Builder a companion or a friend bot?",
+        "a5": "No. It is a tool for making games."
+      }
+    },
+    "screen": {
+      "name": "Good screen time",
+      "short": "A checklist for choosing games and apps, and how to set limits",
+      "title": "Good screen time for kids 8–14: a parent’s guide",
+      "description": "How to tell good screen time from bad: ads, purchases, chat, data, and making vs scrolling. A checklist for parents, with what we do and don’t do.",
+      "h1": "Good screen time: how to choose games for kids 8–14",
+      "lead": "There’s no perfect number of minutes. What kids do on a screen, who they do it with and what it pushes them toward matter just as much. This checklist helps you judge any game or app, including ours.",
+      "experts": {
+        "h": "What the experts say",
+        "p1": "The American Academy of Pediatrics suggests a <a href=\"{aap}\">family media plan</a> instead of one number for every child: for school-age kids, consistent limits that protect sleep, schoolwork, physical activity and time together. <a href=\"{commonsense}\">Common Sense Media</a> also looks at the quality of what kids watch and play, not only the minutes.",
+        "p2": "So we won’t give you a number of minutes here: you know your child. We can help you judge what those minutes are spent on."
+      },
+      "check": {
+        "h": "A checklist for any game or app",
+        "li1": "<b>Ads:</b> does it show ads, or videos that lead to more videos?",
+        "li2": "<b>Purchases:</b> can your child spend money? Is there in-game money, loot boxes or “pay to win”?",
+        "li3": "<b>Strangers:</b> can people your child doesn’t know send them messages?",
+        "li4": "<b>Data:</b> does it ask your child for an email address, age, location or photos?",
+        "li5": "<b>Age fit:</b> is it made for your child’s age, not just allowed for it?",
+        "li6": "<b>Making or scrolling:</b> does your child solve, practice or make something, or mostly watch?",
+        "li7": "<b>Together:</b> can you play it with them?"
+      },
+      "us": {
+        "h": "How Oomba Academy does on it, honestly",
+        "li1": "<b>Ads:</b> none.",
+        "li2": "<b>Purchases:</b> nothing for kids to buy, no loot boxes and no in-game money that costs money.",
+        "li3": "<b>Strangers:</b> chat only with friends added by a code, filtered and reportable.",
+        "li4": "<b>Data:</b> we never ask kids for an email address, age, address or location.",
+        "li5": "<b>Age fit:</b> made for ages 8 to 14.",
+        "li6": "<b>Making:</b> kids can make their own games with the AI Builder.",
+        "li7": "<b>Together:</b> several games have a two-player mode on one screen.",
+        "p": "What we don’t have: time limits, activity reports or a parent dashboard. For limits, use your device’s own tools."
+      },
+      "tools": {
+        "h": "Setting limits with your device’s tools",
+        "p": "These free tools from the device makers let you set daily limits, downtime and app rules:",
+        "li1": "<a href=\"{href}\">Apple Screen Time</a> on iPhone, iPad and Mac",
+        "li2": "<a href=\"{href}\">Google Family Link</a> on Android phones, tablets and Chromebooks",
+        "li3": "<a href=\"{href}\">Microsoft Family Safety</a> on Windows and Xbox"
+      },
+      "rules": {
+        "h": "Family rules that work",
+        "li1": "Play a new game together the first time.",
+        "li2": "Keep building and chatting in a shared room.",
+        "li3": "Agree on when, not only how long: after homework, not at bedtime.",
+        "li4": "Ask what they made or learned today.",
+        "li5": "Use the same rules for every screen in the house, grown-ups’ too."
+      },
+      "faq": {
+        "q1": "How much screen time is OK for a 10 year old?",
+        "a1": "There is no single number. Pediatricians suggest consistent limits that leave room for sleep, school, being active and family time, and paying attention to what kids do on screens. A family media plan helps you decide.",
+        "q2": "Is educational screen time better than games?",
+        "a2": "Games can be educational. Look for ones where your child solves, practices or makes something, with no ads or purchases pulling them along.",
+        "q3": "Does Oomba Academy have time limits?",
+        "a3": "No. Use your device’s tools, like Apple Screen Time, Google Family Link or Microsoft Family Safety.",
+        "q4": "Is making games better than playing them?",
+        "a4": "Both have a place. Making a game asks kids to plan, explain clearly, test and fix, so it is an active kind of screen time."
+      }
+    }
   }
 }
