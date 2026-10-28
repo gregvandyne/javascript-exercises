@@ -491,8 +491,188 @@
       "notYet": "Los planes de pago todavía no están a la venta. Las partes de esta página que tratan de ellos se aplicarán cuando lo estén."
     },
     "terms": {
+      "title": "Términos del servicio",
+      "description": "Las reglas para usar Oomba Academy: cuentas, reglas de seguridad, juegos que usted crea, planes de pago y facturación.",
+      "heading": "Términos del servicio",
+      "who": {
+        "h": "1. Quiénes somos y qué cubren estos términos",
+        "p1": "Oomba Academy (oomba.ai) es un sitio web educativo donde niños de 8 a 14 años, sus familias y sus docentes juegan juegos web y crean sus propios juegos con un “Constructor” con IA.",
+        "p2": "El servicio lo gestiona Oomba Academy (“Oomba Academy”, “nosotros”). Puede escribirnos a <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a>.",
+        "p3": "Estos términos son las reglas para usar el sitio. Se aplican a todas las personas que lo usan. Nuestra <a href=\"/privacy\">Política de privacidad</a> y nuestra <a href=\"/refunds\">Política de reembolsos y cancelaciones</a> forman parte de estos términos.",
+        "p4": "<b>Una nota para niños:</b> estos términos están escritos para adultos. La versión corta para ti está en la <a href=\"/safety\">página Seguridad</a>: sé amable, no compartas tus datos personales, crea solo juegos que sigan las reglas del Constructor y cuéntale a un adulto de confianza si algo te preocupa."
+      },
       "accounts": {
-        "li16": "El niño recibe un código corto en su propia página Yo. Funciona una sola vez, durante 24 horas."
+        "h": "2. Quién puede usar Oomba Academy",
+        "s1": "Tipos de cuentas",
+        "li1": "<b>Invitado:</b> para cualquiera que quiera jugar. Se crea con un toque en un juego. Guarda un nombre inventado, partidas guardadas, puntos, calificaciones y favoritos.",
+        "li2": "<b>Cuenta propia:</b> para un niño (o cualquier persona) que quiera crear juegos, guardarlos y agregar amigos. Se crea en el sitio con un nombre de usuario inventado y una contraseña.",
+        "li3": "<b>Cuenta escolar:</b> para un estudiante de una escuela que usa Oomba Academy. La crea la escuela y le pertenece. El estudiante entra con una tarjeta de acceso (o, si la escuela lo activa, con una cuenta de Google de la escuela).",
+        "li4": "<b>Docente y admin de la escuela:</b> para el personal de la escuela. La configura la escuela o nosotros.",
+        "li5": "<b>Cuenta de adulto:</b> para una madre, un padre o un tutor legal que quiera vincularse con la cuenta de su hijo o hija o comprar un plan familiar. Se crea con un nombre y una contraseña de al menos 12 caracteres.",
+        "s2": "Niños",
+        "p1": "Oomba Academy está hecho para niños de 8 a 14 años.",
+        "li6": "Si usted es menor de 18 años, su madre, su padre o su tutor legal debe aceptar estos términos por usted, y es responsable de cómo usa usted el sitio. Pagar un plan no es la forma en que una madre, un padre o un tutor da su permiso para la cuenta de un niño (vea la sección 7.9).",
+        "li7": "Una cuenta escolar la crea la escuela. La escuela es responsable de tener el derecho a crearla y de informar a las familias al respecto (vea la sección 3).",
+        "s3": "Cuentas de adulto",
+        "li8": "Debe tener <b>18 años o más</b> y ser la <b>madre, el padre o el tutor legal</b> de cada niño con el que se vincule. Al registrarse, lo confirma marcando una casilla. Nosotros no lo comprobamos, así que le pedimos honestidad: vincularse con un niño que no es suyo incumple estos términos, y terminaremos el vínculo y podremos cerrar su cuenta.",
+        "li9": "Una cuenta de adulto puede jugar. <b>No puede</b> crear juegos, usar el Constructor, chatear, agregar amigos, publicar ni tener un perfil público.",
+        "li10": "Mantenga su contraseña en privado. Usted es responsable de lo que ocurra en su cuenta de adulto, incluidas las compras.",
+        "li11": "Para evitar que un niño compre algo en un dispositivo compartido, le volvemos a pedir su contraseña antes de que contrate o cambie un plan.",
+        "s4": "Vincular a un adulto con un niño",
+        "li16": "El niño recibe un código corto en su propia página Yo. Funciona una sola vez, durante 24 horas.",
+        "li13": "Usted escribe el código en su página familiar.",
+        "li14": "El niño tiene que decir <b>Sí</b> en su propia página. También puede decir <b>No</b> o <b>Reportar</b>.",
+        "li15": "El niño puede <b>Desvincular</b> o <b>Reportar</b> en cualquier momento. Un reporte termina el vínculo de inmediato y llega a nuestro equipo.",
+        "p2": "Un adulto vinculado ve el nombre de usuario y el nombre visible del niño, y cuántos de los mensajes extra de la familia para el Constructor usó el niño ayer y en lo que va del mes. Un adulto vinculado <b>no</b> ve los chats del niño, sus amigos, sus juegos, su actividad en vivo ni nada sobre su escuela.",
+        "p3": "Las cuentas escolares no se pueden vincular con una cuenta de adulto."
+      },
+      "schools": {
+        "h": "3. Escuelas",
+        "p1": "Si usa Oomba Academy para una escuela, estos términos se aplican a la escuela, a su personal y a sus estudiantes, junto con cualquier acuerdo escrito que firmemos con la escuela (por ejemplo, un acuerdo de privacidad de datos de estudiantes). Si ambos se contradicen, prevalece el acuerdo firmado.",
+        "p2": "La escuela:",
+        "li1": "confirma que tiene autoridad para aceptar estos términos y para crear cuentas para sus estudiantes;",
+        "li2": "es responsable de informar a las familias sobre su uso de Oomba Academy y de obtener de ellas cualquier consentimiento que necesite según leyes como COPPA, FERPA y las leyes estatales de privacidad estudiantil;",
+        "li3": "es dueña de sus listas de clase y de los registros de sus estudiantes. Solo los usamos para prestar el servicio a la escuela.",
+        "p3": "Solo los admins de la escuela ven la facturación de la escuela. Los docentes y los estudiantes nunca ven precios."
+      },
+      "rules": {
+        "h": "4. Usar Oomba Academy de forma segura: las reglas",
+        "p1": "Estas reglas se aplican a todos, incluido lo que usted escribe en el Constructor, los juegos que crea, los mensajes del chat, las imágenes que sube y su perfil.",
+        "s1": "No está permitido:",
+        "li1": "compartir datos personales (suyos o de cualquier otra persona): nombres completos reales, direcciones, números de teléfono, correos, nombres de escuelas en lugares públicos o usuarios de redes sociales;",
+        "li2": "acosar, amenazar, hostigar o tratar mal a nadie;",
+        "li3": "crear o compartir nada con violencia sangrienta, sustos de terror repentinos (jump scares), contenido para adultos, odio, apuestas, drogas o armas reales usadas para hacer daño a personas;",
+        "li4": "usar marcas reales, personas reales, o personajes, música o arte de otras personas que usted no tenga derecho a usar;",
+        "li5": "intentar evadir los filtros de seguridad, las reglas del Constructor, el entorno aislado (sandbox) de los juegos o los límites de mensajes (por ejemplo, con muchas cuentas);",
+        "li6": "crear juegos que recopilen datos, tengan chat o enlacen fuera del sitio;",
+        "li7": "intentar romper, sobrecargar, extraer datos automáticamente (scraping) o atacar el sitio, o entrar en cuentas que no son suyas;",
+        "li8": "comprar o intentar comprar un plan con una tarjeta de pago que usted no tiene permitido usar.",
+        "s2": "Cómo revisamos (moderación)",
+        "li9": "Cada mensaje al Constructor se revisa antes de que la IA lo vea. Los mensajes que rompen las reglas se rechazan con amabilidad.",
+        "li10": "Un robot revisor lee cada versión de cada juego. Los juegos compartidos con todos también pasan por una revisión cuidadosa de un modelo de IA, y una persona de nuestro equipo revisa cualquier juego sobre el que este tenga dudas. Los juegos compartidos con una clase o una escuela se revisan antes de llegar a ese público.",
+        "li11": "El chat es solo de texto, solo entre amigos que se agregaron mutuamente con su código de amigo, y filtra el lenguaje ofensivo y los datos personales.",
+        "li12": "Cualquier persona que haya iniciado sesión puede reportar un juego. Cuando tres personas reportan un juego, se oculta hasta que nuestro equipo lo revise. Cualquiera puede bloquear o reportar a alguien con quien chatea.",
+        "li13": "Nuestro equipo puede aprobar, rechazar, ocultar o retirar juegos, y pausar, suspender o prohibir cuentas. Registramos cada acción de moderación.",
+        "p2": "Ninguna revisión es perfecta. Si ve algo que no está bien, repórtelo o escriba a <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a>."
+      },
+      "ai": {
+        "h": "5. Contenido creado por IA",
+        "li1": "El Constructor usa Claude, una IA creada por Anthropic, para escribir juegos a partir de lo que usted describe. Lo que crea la IA puede tener errores o fallos, o parecerse de forma inesperada a algo que ya existe.",
+        "li2": "Revisamos los juegos antes de que se compartan ampliamente (sección 4), pero no prometemos que todos los juegos estén libres de errores.",
+        "li3": "No confíe en los juegos ni en las respuestas de la IA para nada importante (salud, seguridad, dinero, respuestas de tareas que usted no haya comprobado).",
+        "li4": "Lo que usted envía al Constructor (mensajes, imágenes, archivos) se envía a Anthropic para crear el juego. Vea nuestra <a href=\"/privacy\">Política de privacidad</a> para más detalles."
+      },
+      "games": {
+        "h": "6. Los juegos que usted crea: de quién son",
+        "s1": "Lo que le pertenece",
+        "p1": "Usted (o, en el caso de una cuenta escolar, usted y su escuela según lo que digan las normas de la escuela) conserva los derechos que tenga sobre los juegos que crea aquí: sus ideas, sus palabras, sus imágenes y sus diseños.",
+        "p2": "Algunas partes de un juego no son solo suyas:",
+        "li1": "el motor de juego, los efectos de sonido del sitio, las plantillas iniciales, la biblioteca Three.js y otras piezas de construcción nos pertenecen a nosotros o a nuestros licenciantes;",
+        "li2": "es posible que las partes escritas por la IA no estén protegidas por derechos de autor en absoluto.",
+        "s2": "La licencia que nos otorga",
+        "p3": "Para que podamos operar el sitio, usted otorga a Oomba Academy una licencia mundial, no exclusiva y libre de regalías para almacenar, copiar, ejecutar, mostrar, hacer capturas de pantalla, revisar (con personas y herramientas de IA, incluido el envío del juego a Anthropic para su revisión) y hacer pequeños cambios técnicos (por ejemplo, para adaptarlo a una pantalla o corregir un problema de seguridad) en los juegos, imágenes y textos que usted pone en el sitio, <b>solo para operar, proteger y mejorar Oomba Academy</b> y solo para mostrarlos a las personas que usted eligió (solo yo, amigos, sus clases, su escuela o todos).",
+        "li3": "Esta licencia termina cuando usted borra el juego, con estas excepciones: un juego borrado desaparece del sitio para todos, pero queda una copia en nuestro servidor para que los reportes y los registros de seguridad sigan remitiendo a algo; podemos conservar copias de seguridad durante un tiempo limitado; y los juegos en los que otras personas ya guardaron puntos conservan esos puntos.",
+        "li4": "No venderemos sus juegos ni los usaremos en anuncios, y no los usamos en nuestro marketing sin preguntarle.",
+        "li5": "Otros jugadores pueden jugar los juegos que usted comparte con ellos. No obtienen el derecho a copiarlos ni a remezclarlos. Si alguna vez se agrega la opción de remezclar, primero actualizaremos estos términos.",
+        "s3": "Respetar el trabajo de otras personas",
+        "p4": "Suba o describa solo cosas que tenga derecho a usar. Si cree que algo en Oomba Academy copia su trabajo, escriba a <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a> indicando qué es y dónde está. Retiramos el material que infringe derechos y cerramos las cuentas de quienes lo hacen una y otra vez."
+      },
+      "plans": {
+        "h": "7. Planes de pago y facturación",
+        "s1": "7.1 Qué es gratis y qué se paga",
+        "li1": "<b>Jugar es gratis</b> para todos, y también lo es una <b>cantidad diaria gratuita de mensajes para el Constructor</b>.",
+        "li2": "Los planes de pago <b>solo agregan más mensajes para el Constructor</b>. Pagar nunca desbloquea una función que no tengan los usuarios gratuitos.",
+        "li3": "<b>Los niños nunca ven precios</b> ni planes, y nunca se les pide que paguen. Solo las cuentas de adulto y los admins de la escuela pueden comprar un plan.",
+        "li4": "Podemos cambiar la cantidad gratuita en cualquier momento. Anunciaremos cualquier cambio en la <a href=\"/parents\">página Para las familias</a> antes de que se aplique.",
+        "s2": "7.2 Plan familiar",
+        "li5": "Lo compra una <b>cuenta de adulto</b> para <b>hasta 4 niños vinculados</b> (cada niño debe haber confirmado el vínculo).",
+        "li6": "Mensual o anual, al precio que se le muestra al adulto antes de comprar.",
+        "li7": "Da a la familia una cantidad fija de <b>mensajes extra para el Constructor cada mes</b>, compartidos entre los niños vinculados, además de los mensajes gratis diarios de cada niño. La cantidad se muestra antes de comprar y, después, en su página familiar.",
+        "li8": "Cada niño usa primero sus mensajes gratis diarios; los extra se usan después, o cuando el Constructor gratuito está descansando.",
+        "li9": "Los mensajes extra se renuevan al comienzo de cada mes calendario (UTC) y no se acumulan. Un mensaje con “Calidad pro” cuenta como 2. Un mensaje que no se logra crear se devuelve.",
+        "li10": "Para evitar que un niño use todo el mes en un día, hay un límite de cuántos mensajes extra puede usar un niño en un día, y un límite para el uso inusualmente costoso.",
+        "li11": "Un niño de una escuela con un plan escolar de pago crea en clase con la cantidad de la escuela, nunca con los mensajes extra de la familia.",
+        "li12": "<b>Por ahora, los planes familiares son solo para familias de Estados Unidos.</b> Necesita una dirección de facturación en Estados Unidos y una tarjeta de pago de Estados Unidos (o Apple Pay o Google Pay).",
+        "s3": "7.3 Plan escolar",
+        "li13": "Precio <b>por estudiante al año</b>, con un <b>mínimo de 25 estudiantes</b>. El precio se muestra a los admins de la escuela en la pestaña Pagos de la escuela.",
+        "li14": "La escuela recibe cada año un fondo compartido de mensajes para el Constructor para sus estudiantes y docentes. El tamaño se muestra en la pestaña Pagos de la escuela. Los estudiantes siempre reciben al menos la cantidad diaria gratuita. Cuando el fondo se agota, los estudiantes usan la cantidad gratuita hasta que empieza el año siguiente.",
+        "li15": "Las plazas pagadas cuentan a los estudiantes activos. Si agrega estudiantes durante el año, puede agregar plazas: paga de inmediato un importe prorrateado por el resto del año. Puede reducir la cantidad de plazas para el año siguiente; el cambio se aplica en la renovación, nunca por debajo de 25.",
+        "li16": "<b>Formas de pago:</b> con tarjeta en línea, o con factura (se acepta una orden de compra). Las facturas vencen <b>30 días</b> después de su envío (net 30) y se pueden pagar con tarjeta, transferencia bancaria o ACH, o con cheque (escríbanos para pedir la dirección postal).",
+        "li17": "Las escuelas exentas de impuestos pueden enviarnos su certificado de exención.",
+        "s4": "7.4 Pagos, Stripe e impuestos",
+        "li18": "Los pagos los procesa <b>Stripe</b>. Usted paga en la propia página de Stripe. Nosotros nunca vemos ni guardamos el número de su tarjeta.",
+        "li19": "Los precios están en dólares estadounidenses y <b>no incluyen el impuesto sobre las ventas</b>. Cuando la ley lo exige, el impuesto se agrega al pagar o en la factura.",
+        "li20": "Stripe envía sus recibos. El cargo aparece en su estado de cuenta como <b>OOMBA ACADEMY</b>.",
+        "s5": "7.5 Renovación automática",
+        "p1": "<b>Los planes se renuevan automáticamente hasta que usted los cancele.</b>",
+        "li21": "Un plan familiar mensual se renueva cada mes, y un plan anual cada año, al precio vigente en ese momento (vea 7.7), con cargo al método de pago registrado.",
+        "li22": "Antes de que pague, la página de pago muestra el precio, con qué frecuencia se le cobrará y que el plan se renueva hasta que lo cancele. Al pagar, acepta la renovación automática.",
+        "li23": "Enviamos un recordatorio antes de que se renueve un plan anual.",
+        "li24": "Los planes escolares con factura se renuevan cada año con una nueva factura. La pestaña Pagos de la escuela muestra un recordatorio 30 días antes.",
+        "s6": "7.6 Cancelación",
+        "li25": "<b>Cancele cuando quiera</b> en línea: en su página familiar, elija <b>Administrar pagos</b> y luego cancele en la página de Stripe. Escuelas: <b>Administrar pagos</b> en la pestaña Pagos, o escríbanos.",
+        "li26": "Cancelar detiene la próxima renovación. <b>El plan sigue funcionando hasta el final del período que pagó</b>, y después su familia o su escuela vuelve a la cantidad gratuita.",
+        "li27": "No se borra nada cuando termina un plan.",
+        "li28": "Los reembolsos se rigen por nuestra <a href=\"/refunds\">Política de reembolsos y cancelaciones</a>: en resumen, reembolso completo si lo pide dentro de los 14 días posteriores al pago que inicia un plan o a una renovación anual. Las renovaciones mensuales no se reembolsan, y en los demás casos no hay reembolsos parciales.",
+        "s7": "7.7 Cambios de precio y de plan",
+        "li29": "Podemos cambiar los precios o lo que incluye un plan. Se lo diremos <b>antes</b> de que el cambio se le aplique, con un aviso en su página familiar (o en la pestaña Pagos de la escuela) y por correo electrónico a la dirección que le dio a Stripe, con al menos 7 días y no más de 30 días de anticipación a la renovación a la que se aplica.",
+        "li30": "Un precio nuevo se aplica a partir de su próxima renovación, nunca a un período que ya pagó. Si no quiere el precio nuevo, cancele antes de esa renovación.",
+        "li31": "No reduciremos la cantidad de mensajes extra en un período que usted ya pagó.",
+        "s8": "7.8 Pagos atrasados o fallidos",
+        "li32": "<b>Pagos con tarjeta:</b> si un pago falla, el plan sigue funcionando durante <b>7 días</b> mientras se vuelve a intentar el cobro. Actualice su tarjeta en su página familiar. Si el pago sigue sin completarse, el plan termina.",
+        "li33": "<b>Facturas:</b> si una factura no se paga, el plan sigue funcionando hasta <b>30 días después de la fecha de vencimiento</b>. Después, el plan termina.",
+        "li34": "Cuando un plan termina de esta forma, la familia o la escuela simplemente vuelve a la cantidad gratuita. <b>No se borra ni se bloquea nada,</b> y las clases de la escuela siguen funcionando.",
+        "li35": "Si un pago se disputa ante el banco (un contracargo) o el banco advierte que puede ser un fraude, terminamos el plan de inmediato para que no se vuelva a cobrar a la tarjeta. Escríbanos si fue un error.",
+        "s9": "7.9 Pagar no es consentimiento parental",
+        "p2": "Comprar un plan no cambia lo que hacemos con los datos de un niño ni lo que una madre, un padre o un tutor ha aceptado al respecto. Cómo se informa a las familias sobre el uso que su hijo o hija hace de Oomba Academy es un asunto aparte, que se trata en nuestra <a href=\"/privacy\">Política de privacidad</a>."
+      },
+      "ending": {
+        "h": "8. Suspensión y cierre de cuentas",
+        "li1": "<b>Usted</b> puede dejar de usar Oomba Academy en cualquier momento. Todavía no hay un botón para borrar: para borrar una cuenta o recibir una copia de sus datos, escriba a <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a> (cuentas escolares: consulte a la escuela, que puede pedírnoslo). Si se borra una cuenta de adulto con un plan, primero cancelamos el plan.",
+        "li2": "<b>Nosotros</b> podemos pausar, limitar o cerrar una cuenta, retirar un juego o terminar un vínculo familiar si alguien incumple estos términos, pone en riesgo a un niño o si la ley lo exige. Explicaremos el motivo cuando podamos, salvo que hacerlo ponga a alguien en riesgo.",
+        "li3": "Si se suspende la cuenta de un niño, el plan familiar sigue funcionando para los demás niños vinculados. Una suspensión, por sí sola, no da derecho a un reembolso.",
+        "li4": "Si cerramos una cuenta de adulto por fraude o uso indebido grave, el plan termina y no se reembolsa, salvo que la ley lo exija.",
+        "li5": "Si <b>nosotros</b> terminamos un plan de pago por un motivo que no es culpa suya, o si cerramos Oomba Academy, reembolsamos la parte no usada del período que pagó."
+      },
+      "disclaimers": {
+        "h": "9. Exenciones de responsabilidad",
+        "p1": "Trabajamos mucho para que Oomba Academy sea seguro, divertido y esté disponible, pero:",
+        "li1": "el sitio y el Constructor se ofrecen <b>“tal cual” y “según disponibilidad”</b>. A veces pueden no funcionar, ir lentos o cambiar. El Constructor puede “descansar” cuando se alcanzan nuestros límites de gasto de seguridad o cuando nuestro proveedor de IA no está disponible, y en casos poco frecuentes esto también puede afectar a los planes de pago;",
+        "li2": "no prometemos que los juegos (los nuestros, los creados por IA o los creados por otros jugadores) estén libres de errores;",
+        "li3": "en la medida en que la ley lo permita, renunciamos a las garantías implícitas, como las de comerciabilidad, idoneidad para un fin determinado y no infracción.",
+        "p2": "Algunos estados no permiten algunas de estas exenciones, así que es posible que no se apliquen a usted. Nada de lo que dice aquí le quita derechos que tenga según la ley de protección al consumidor y a los que no se pueda renunciar."
+      },
+      "liability": {
+        "h": "10. Límites de nuestra responsabilidad",
+        "p1": "En la medida en que la ley lo permita:",
+        "li1": "no somos responsables de pérdidas indirectas, incidentales, especiales o consecuentes (por ejemplo, datos perdidos que usted no había guardado en otro lugar);",
+        "li2": "nuestra responsabilidad total por cualquier reclamo relacionado con Oomba Academy se limita a la <b>cantidad mayor</b> entre lo que nos pagó en los 12 meses anteriores al reclamo y <b>100 dólares estadounidenses</b>.",
+        "p2": "Estos límites <b>no</b> se aplican a la responsabilidad que la ley no permite limitar, incluida la derivada de nuestra negligencia grave, conducta dolosa o fraude, o de lesiones personales causadas por nuestra negligencia."
+      },
+      "disputes": {
+        "h": "11. Disputas y ley aplicable",
+        "li1": "<b>Hable primero con nosotros.</b> La mayoría de los problemas se pueden resolver por correo electrónico. Escriba a <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a> y denos 30 días para intentar solucionarlo.",
+        "li2": "Estos términos se rigen por las leyes del estado de EE. UU. donde tiene su sede Oomba Academy y por la ley federal de EE. UU., sin tener en cuenta las normas sobre conflictos de leyes.",
+        "li3": "Las disputas se resuelven en los tribunales estatales o federales del lugar donde tiene su sede Oomba Academy, <b>o</b> en el tribunal de reclamos menores del lugar donde usted vive si su reclamo cumple los requisitos.",
+        "li4": "Si vive en un estado cuya ley de protección al consumidor le da derechos que estos términos no pueden quitarle, los conserva."
+      },
+      "changes": {
+        "h": "12. Cambios en estos términos",
+        "li1": "Podemos actualizar estos términos. Cambiaremos la fecha de “Última actualización”.",
+        "li2": "Para cambios importantes, avisaremos <b>con al menos 30 días de anticipación</b> antes de que se apliquen: en la página Para las familias, en la página familiar y en la pestaña Pagos de la escuela, y por correo electrónico a los adultos que pagan y a los contactos de facturación de las escuelas.",
+        "li3": "Los cambios no se aplican a una disputa que empezó antes del cambio.",
+        "li4": "Si no acepta un cambio, puede dejar de usar el sitio y cancelar su plan antes de que se aplique. Seguir usándolo después significa que acepta los nuevos términos."
+      },
+      "other": {
+        "h": "13. Otras cuestiones legales",
+        "li1": "Si un tribunal determina que una parte de estos términos no se puede hacer cumplir, el resto sigue vigente.",
+        "li2": "Si no hacemos cumplir una regla de inmediato, no renunciamos al derecho de hacerlo más adelante.",
+        "li3": "Usted no puede transferir su cuenta ni estos términos a otra persona. Nosotros podemos transferirlos si Oomba Academy se vende o se reorganiza, y se lo comunicaremos.",
+        "li4": "Estos términos, nuestra Política de privacidad y nuestra Política de reembolsos y cancelaciones constituyen el acuerdo completo entre usted y nosotros sobre el sitio (más cualquier acuerdo firmado con una escuela, sección 3)."
+      },
+      "contact": {
+        "h": "14. Contacto",
+        "p1": "Oomba Academy · <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a>"
       }
     },
     "refunds": {
@@ -2936,6 +3116,36 @@
     "subjects": {
       "h": "Juegos por materia"
     },
+    "how": {
+      "h": "Cómo funciona en su aula",
+      "lead": "Pantallas reales de una escuela de demostración con nombres inventados, desde su lista de clase hasta el registro de calificaciones.",
+      "s1": {
+        "h": "Sus clases en un solo lugar",
+        "p": "Una vez configurada su escuela, el admin de la escuela agrega a los docentes, y cada docente crea sus clases en Mis clases.",
+        "alt": "Mis clases de una docente de Sunny Hill Demo School: tres tarjetas de clase, Coding Club, Ms. Rivera’s Class (5 estudiantes, 1 solicitud para unirse, 2 respuestas por revisar) y Reading Rockets, y un botón de Biblioteca de lecciones."
+      },
+      "s2": {
+        "h": "Los estudiantes se unen con un código o con tarjetas de acceso",
+        "p": "Los estudiantes que tienen su propia cuenta se unen con el código de clase y usted los aprueba. No hace falta correo: puede crear cuentas escolares e imprimir tarjetas de acceso.",
+        "pgoogle": "Los estudiantes que tienen su propia cuenta se unen con el código de clase y usted los aprueba. No hace falta correo: puede crear cuentas escolares e imprimir tarjetas de acceso. O pueden iniciar sesión con su cuenta de Google de la escuela.",
+        "alt": "La pestaña Estudiantes de una clase: un estudiante, @StarGecko, pide unirse con el código de clase, con un campo para su nombre real y los botones Aprobar y Rechazar. Debajo, la lista de la clase con 5 estudiantes y un botón para nuevas tarjetas de acceso."
+      },
+      "s3": {
+        "h": "Planifique una lección por pasos",
+        "p": "Las lecciones combinan lecturas cortas, un juego educativo, una tarea de crear un juego y preguntas escritas. Asígnela a una clase con una fecha de entrega.",
+        "alt": "La lista de Pasos en el editor de lecciones: el paso 1, “Warm-up: slices of pizza”, y el paso 2, “Keep the bottom, add the top”, cada uno con su texto, sus minutos y un botón Editar paso."
+      },
+      "s4": {
+        "h": "Los estudiantes juegan, crean y responden",
+        "p": "Cada estudiante avanza en la lección a su propio ritmo, en cualquier dispositivo.",
+        "alt": "La vista de una lección para el estudiante: el paso de juego, Quick-math warm-up, está marcado como Hecho con una mejor puntuación de 47 y un botón Jugar Sum Racer. Luego vienen un paso de crear un juego con un botón Empezar a crear y una pregunta escrita, el Ticket de salida."
+      },
+      "s5": {
+        "h": "Vea el progreso y el registro de calificaciones",
+        "p": "El registro de calificaciones muestra el progreso de cada estudiante, sus puntuaciones en los juegos y sus respuestas escritas. Deje comentarios o descárguelo como CSV.",
+        "alt": "La pestaña Progreso de la clase: una tabla de calificaciones con cuántos pasos ha hecho cada estudiante en cada lección, un botón Descargar (CSV) y un enlace a las respuestas escritas pendientes de revisión."
+      }
+    },
     "build": {
       "h": "Crear para aprender",
       "p1": "Los estudiantes describen un juego con sus propias palabras y el Constructor lo crea. Mientras trabaja, muestra sus pasos detrás de escena, con breves consejos para aprender.",
@@ -3388,6 +3598,40 @@
     },
     "subjects": {
       "h": "Elegir por materia"
+    },
+    "how": {
+      "h": "Cómo funciona Oomba Academy",
+      "lead": "Esto es lo que ve su hijo o hija, paso a paso. Son pantallas reales del sitio, completadas con nombres inventados.",
+      "s1": {
+        "h": "Empiece gratis con un nombre inventado",
+        "p": "Su hijo o hija elige un nombre inventado y una contraseña. Nunca les pedimos a los niños su correo, su edad ni su dirección.",
+        "alt": "La página de registro de Oomba Academy, “Crea una cuenta gratis”, con el nombre inventado PixelPanda escrito y una contraseña oculta. Solo pide un nombre divertido y una contraseña."
+      },
+      "s2": {
+        "h": "Jugar juegos educativos",
+        "p": "Los juegos de matemáticas, lectura, lógica y música funcionan directamente en el navegador en teléfonos, tabletas, Chromebooks y computadoras. Los niños pueden probar uno sin registrarse.",
+        "alt": "Sum Racer, un juego de carreras de matemáticas, en plena carrera: autos de caricatura en una carretera, una suma y cuatro botones grandes de respuesta."
+      },
+      "s3": {
+        "h": "Descríbelo, juégalo, cámbialo",
+        "p": "Su hijo o hija escribe una idea con sus propias palabras. El Constructor puede hacerle una pregunta con ideas para responder con un toque, y luego crea una primera versión que puede jugar de inmediato. Su hijo o hija decide qué cambiar (“hazlo más difícil”) y obtiene una versión nueva; cada cambio se guarda, así que puede volver atrás.",
+        "alt": "El chat del Constructor de Oomba Academy: el niño pidió “Hazlo más difícil” y el Constructor responde que la versión 2 de Star Catch está lista, con una lista corta de cosas para probar."
+      },
+      "s4": {
+        "h": "Privado hasta que decidan compartir",
+        "p": "Los juegos nuevos son privados. Su hijo o hija puede compartirlos con amigos, y un juego para todos lo revisa Claude primero, y nuestro equipo mira los que le generan dudas.",
+        "alt": "La ventana “Publica tu juego” con tres opciones: Solo yo, Amigos y Todos, que indica que cualquiera puede encontrarlo y jugarlo después de una revisión de seguridad rápida."
+      },
+      "s5": {
+        "h": "Amigos solo con un código",
+        "p": "Los amigos se agregan intercambiando un código de amigo de 6 caracteres, nunca buscando nombres, y el chat es solo entre amigos.",
+        "alt": "La página Amigos: el código de amigo de 6 caracteres de Pixel Panda con un botón Copiar, un campo para escribir el código de un amigo y un amigo, Rocket Otter."
+      },
+      "s6": {
+        "h": "Vincule su cuenta de adulto (opcional)",
+        "p": "Su hijo o hija obtiene un código de un solo uso en su página Yo y se lo da en persona. Usted lo escribe en su página familiar, y su hijo o hija acepta. Luego su página familiar lo muestra junto con sus mensajes extra para el Constructor hasta ayer.",
+        "alt": "La página familiar del adulto: en Niños aparece Pixel Panda vinculado, con sus mensajes extra para el Constructor de ayer y de este mes, un botón Desvincular y un botón Vincular a un niño."
+      }
     },
     "ages": {
       "h": "Juegos para cada edad",

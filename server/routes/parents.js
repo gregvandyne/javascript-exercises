@@ -19,6 +19,7 @@ import * as seo from '../seo.js';
 import { HUBS, AGES, ageBySlug, PARENT_GUIDES, guideBySlug, PARENT_GAMES, PARENTS_FAQ, TWO_PLAYER, gameKey, CONTENT_UPDATED } from '../learn.js';
 import { launchGame, faqBlock, el, fb, lp, contactEmail, inClassLine } from './teachers.js';
 import { section, parentSections, families, googlePrivacy, contact, setupLink } from './info.js';
+import { howArt, howSteps, howHead, HOW_SCRIPT } from '../views/how.js';
 
 export const router = Router();
 
@@ -73,14 +74,16 @@ router.get('/parents', (req, res) => {
   const faqPairs = Array.from({ length: PARENTS_FAQ }, (_, i) => [`parents.faq.q${i + 1}`, `parents.faq.a${i + 1}${paid && (i === 0 || i === 6) ? 'paid' : ''}`]);
   const faq = faqBlock(req, faqPairs, 'parents.faq.h', vars);
   const body = html`<div class="lp">
-  <section class="lp-hero" aria-labelledby="lp-h1">
+  <section class="lp-hero lp-hero-how" aria-labelledby="lp-h1">
     ${el(t, 'p', 'parents.kicker', {}, ' class="lp-kicker"')}
     ${el(t, 'h1', 'parents.h1', {}, ' id="lp-h1"')}
     ${el(t, 'p', 'parents.lead', {}, ' class="lead"')}
     ${ctaRow(req)}
     ${el(t, 'p', 'parents.teachers', { href: lp(req, '/teachers') }, ' class="lp-aside small"')}
     <ul class="lp-badges">${badges.map(([e, k]) => html`<li><span aria-hidden="true">${e}</span> ${el(t, 'span', k, { count })}</li>`)}</ul>
+    ${howArt(req, 'parents')}
   </section>
+  ${howSteps(req, 'parents')}
 
   <section class="lp-sec" id="play" aria-labelledby="play-h">
     ${el(t, 'h2', 'parents.play.h', {}, ' id="play-h"')}${el(t, 'p', 'parents.play.p')}
@@ -134,6 +137,7 @@ router.get('/parents', (req, res) => {
   const crumbs = [[t('nav.home'), '/'], [parentsLabel(t), '/parents']];
   page(req, res, {
     title: t('parents.title'), description: t('parents.description'), body, bodyClass: 'lp-page', active: 'parents',
+    head: howHead(), scripts: [HOW_SCRIPT],
     seo: {
       index: true, path: '/parents', langs: seo.langsWithKey('parents.h1'), image: '/og/parents.jpg', imageAlt: t('parents.h1'),
       jsonld: [seo.graph([

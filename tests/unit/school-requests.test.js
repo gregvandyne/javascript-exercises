@@ -42,7 +42,7 @@ let n = 0;
 const kid = () => auth.createUser({ username: `SrKid${++n}`, password: 'rainbow-77' });
 const grownup = () => { const u = auth.createUser({ username: `SrParent${++n}`, password: 'a-long-password-1', accountType: 'grownup' }); F.ensureFamily(u); return auth.getUser(u.id); };
 const admin = () => auth.createUser({ username: `SrBoss${++n}`, password: 'rainbow-77', role: 'admin' });
-const good = (over = {}) => ({ school: 'Maple Street Elementary', role: 'teacher', email: 'Ms.Rivera@maple.k12.example.org', students: '320', country: 'United States', ...over });
+const good = (over = {}) => ({ school: 'Maple Street Elementary', role: 'teacher', email: 'Ms.Zorvath@maple.k12.example.org', students: '320', country: 'United States', ...over });
 const send = (u, body, opts = {}) => as(u)('/api/teachers/school-request', { method: 'POST', body, ...opts });
 const start = s => (/<section class="panel lp-start"[\s\S]*?<\/section>/.exec(s) || [''])[0];
 
@@ -75,12 +75,12 @@ test('a kid\'s own or school account never gets the form (no email asked of a ch
 });
 
 test('sending: stored once, thank-you page with nothing echoed back, the admin count goes up', async () => {
-  const r = await send(null, good({ school: '  Maple   Street <b>Elementary</b> ' }));
+  const r = await send(null, good({ school: '  Quillonby   Street <b>Elementary</b> ' }));
   assert.equal(r.status, 200, r.text);
   assert.deepEqual(r.json, { ok: true });
   const row = q.get('SELECT * FROM school_requests');
-  assert.equal(row.school_name, 'Maple Street <b>Elementary</b>', 'spaces tidied, kept as typed (escaped where shown)');
-  assert.equal(row.email, 'ms.rivera@maple.k12.example.org');
+  assert.equal(row.school_name, 'Quillonby Street <b>Elementary</b>', 'spaces tidied, kept as typed (escaped where shown)');
+  assert.equal(row.email, 'ms.zorvath@maple.k12.example.org');
   assert.equal(row.students, 320); assert.equal(row.role, 'teacher'); assert.equal(row.country, 'United States');
   assert.equal(row.status, 'open'); assert.equal(row.user_id, null); assert.equal(row.locale, 'en');
   const thanks = await call(null, '/teachers?sent=1');
@@ -88,7 +88,8 @@ test('sending: stored once, thank-you page with nothing echoed back, the admin c
   assert.match(s, /Thank you! We(&#39;|')ve got your request\./);
   assert.match(s, /within 1 school day/);
   assert.doesNotMatch(s, /<form/);
-  assert.doesNotMatch(thanks.text, /Maple|rivera/i, 'nothing typed is shown back');
+  // Typed values that appear nowhere else on the site (the walkthrough's demo class is "Ms. Rivera's Class").
+  assert.doesNotMatch(thanks.text, /Quillonby|zorvath|maple\.k12/i, 'nothing typed is shown back');
   // A grown-up account is remembered (to tell repeat requests apart). A guest is not: a guest is often a child who
   // tapped Play, and signing up keeps the guest's id, so it must never sit next to an email.
   const g = auth.createGuest();

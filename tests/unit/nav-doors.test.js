@@ -83,7 +83,7 @@ test('a kid with an account keeps their tab bar (Friends, Me) and no grown-up do
 
 test('/parents: "Set up your child — free" (grown-up sign-up) and "Try a game" at the top; before plans are public, the child sign-up', async () => {
   const on = await call(null, '/parents');
-  const hero = /<section class="lp-hero"[\s\S]*?<\/section>/.exec(on.text)[0];
+  const hero = /<section class="lp-hero[ "][\s\S]*?<\/section>/.exec(on.text)[0];
   assert.match(hero, /<a class="btn btn-primary btn-big" href="\/grown-ups\/signup">Set up your child — free<\/a>/);
   assert.match(hero, /href="\/play\/[a-z0-9-]+" rel="nofollow">▶ /);
   assert.match(hero, /href="\/teachers"/, 'the teacher link sits right under the buttons');

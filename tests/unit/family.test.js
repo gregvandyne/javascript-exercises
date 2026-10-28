@@ -551,14 +551,16 @@ test('the child\'s panel: a safety line next to the code; an English fallback is
   }
 });
 
-test('grown-up sign-up and sign-in in German: the translated name label and hint until "Your sign-in name" is translated', async () => {
+test('grown-up sign-up and sign-in in German: the translated sign-in name label and hint, no English left', async () => {
+  const de = i18n.tFor('de');
+  assert.ok(de.own('family.signup.signInName') && de.own('family.signup.signInNameHint'), 'German has the sign-in name label and hint');
   for (const path of ['/grown-ups/signup', '/grown-ups/login']) {
     const r = await call('lang=de', path);
     assert.equal(r.status, 200, path);
-    assert.match(r.text, /<label for="username">Kontoname<\/label>/, path);
-    assert.doesNotMatch(r.text, /Your sign-in name|Your real name is fine/, `${path}: no unmarked English`);
+    assert.match(r.text, /<label for="username">Ihr Anmeldename<\/label>/, path);
+    assert.doesNotMatch(r.text, /Your sign-in name|Your real name is fine|<label for="username">Kontoname</, `${path}: no English, not the old label`);
   }
-  assert.match((await call('lang=de', '/grown-ups/signup')).text, /3 bis 16 Buchstaben oder Zahlen\. Kinder sehen diesen Namen nie\./);
+  assert.ok((await call('lang=de', '/grown-ups/signup')).text.includes(`<span class="hint">${de('family.signup.signInNameHint')}</span>`), 'the German hint');
   assert.match((await call(null, '/grown-ups/signup')).text, /<label for="username">Your sign-in name<\/label>/, 'English has the new label');
 });
 

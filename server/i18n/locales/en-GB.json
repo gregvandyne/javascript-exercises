@@ -273,6 +273,12 @@
     "play": {
       "p": "Each game practises a real skill in a few minutes, and kids come back because it’s fun. Pick one to try together."
     },
+    "how": {
+      "s2": {
+        "p": "Maths, reading, logic and music games run right in the browser on phones, tablets, Chromebooks and computers. Kids can try one without signing up.",
+        "alt": "Sum Racer, a maths racing game, in the middle of a race: cartoon cars on a road, an addition question and four big answer buttons."
+      }
+    },
     "home": {
       "h": "At home and for home education",
       "li4": "Building a game together at the weekend",

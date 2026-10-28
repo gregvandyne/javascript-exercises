@@ -30,6 +30,8 @@ test.afterEach(() => paid(false));
 const en = i18n.dictionary('en');
 const plain = s => s.replace(/<[^>]+>/g, '').replace(/\{email\}/g, 'greg@oomba.ai');
 const decode = s => s.replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&amp;/g, '&');
+/** The page's own content (not the layout's language picker, whose "English" is rightly marked as English). */
+const mainOf = s => s.slice(s.indexOf('<main'), s.indexOf('</main>'));
 
 test('/terms, /refunds and /privacy are public, dated, and show every paragraph of their text', async () => {
   for (const [path, key] of [['/terms', 'terms'], ['/refunds', 'refunds'], ['/privacy?for=grownups', 'privacy']]) {
@@ -152,8 +154,10 @@ test('the legal text never takes a language out of the picker; Hebrew legal page
   assert.match(r.text, /<section class="panel" id="payments"><h2>/);
   assert.match(r.text, /<section class="panel" id="stored"><h2>/);
   const t = (await get('/terms', { cookie: 'lang=he' })).text;
-  // Only the new 24-hour link-code item waits for its translation (shown in English, marked, never the old "1 hour").
-  assert.deepEqual([...t.matchAll(/<li lang="en" dir="ltr">([^<]*)/g)].map(m => m[1]), ['The child gets a short code on their own Me page. It works once, for 24 hours.']);
+  // The Terms are fully Hebrew too, the 24-hour link-code item included: nothing marked as English.
+  assert.ok(t.includes('<main') && t.includes('</main>'));
+  assert.doesNotMatch(mainOf(t), /lang="en" dir="ltr"/);
+  assert.ok(decode(t).includes(i18n.makeT('he')('info.terms.accounts.li16')), 'the Hebrew 24-hour link-code item');
   assert.doesNotMatch((await get('/terms')).text, /lang="en" dir="ltr"><b>Guest/, 'English pages need no marking');
 });
 
@@ -172,11 +176,18 @@ test('grown-up accounts (the people who pay) can open all three legal pages', as
 
 test('the 24-hour link code: no language still says "1 hour"; the Privacy Policy lists school set-up requests', async () => {
   for (const lang of ['de', 'fr', 'he']) {
-    const terms = await get('/terms', { cookie: `lang=${lang}` });
-    assert.match(terms.text, /lang="en" dir="ltr">The child gets a short code on their own Me page\. It works once, for 24 hours\./, lang);
-    const pv = await get('/privacy?for=grownups', { cookie: `lang=${lang}` });
-    assert.match(pv.text, /It works once, for 24 hours\./, lang);
+    const t = i18n.makeT(lang);
+    for (const key of ['info.terms.accounts.li16', 'info.privacy.linking.li7']) assert.ok(t.own(key), `${lang} ${key} is translated`);
+    assert.match(t('info.terms.accounts.li16'), /24/, lang);
+    const terms = decode(mainOf((await get('/terms', { cookie: `lang=${lang}` })).text));
+    assert.ok(terms.includes(t('info.terms.accounts.li16')), `${lang}: the translated 24-hour item on /terms`);
+    assert.doesNotMatch(terms, /lang="en" dir="ltr"|It works once|1 hour/, `${lang}: no English left on /terms`);
+    const pv = decode(mainOf((await get('/privacy?for=grownups', { cookie: `lang=${lang}` })).text));
+    assert.ok(pv.includes(t('info.privacy.linking.li7').replace(/<\/?b>/g, '')) || pv.includes(t('info.privacy.linking.li7')), `${lang}: the translated 24-hour code on /privacy`);
+    assert.doesNotMatch(pv, /It works once|1 hour/, `${lang}: no English 24-hour line on /privacy`);
   }
+  // No language still says the code works for one hour (the old wording).
+  for (const { code } of i18n.availableLocales()) for (const key of ['info.terms.accounts.li16', 'info.privacy.linking.li7']) assert.doesNotMatch(i18n.makeT(code)(key), /\b1 hour|one hour/i, `${code} ${key}`);
   const pv = (await get('/privacy?for=grownups')).text;
   const sec = (/<section class="panel" id="schoolSetup">[\s\S]*?<\/section>/.exec(pv) || [''])[0];
   assert.match(sec, /School set-up requests/);
