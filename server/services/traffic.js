@@ -3,11 +3,13 @@
 // - a visitor is counted once per day through a salted hash of (day, IP, browser). The salt is the session secret and
 //   changes the hash every day, so visitors cannot be followed across days; the day's hashes are deleted after two days.
 // Counted: successful GET page loads (HTML) by people. Not counted: APIs, files, game frames, admin pages, bots.
+// Parent and teacher page views also count toward their funnel's first step (services/funnel.js), with the same rules.
 import crypto from 'node:crypto';
 import { q, today } from '../db.js';
 import { config } from '../config.js';
 import { register } from './jobs.js';
 import { ipOf } from './ratelimit.js';
+import * as funnel from './funnel.js';
 
 const SKIP = /^\/(api|frame|shots|covers|sdk|js|css|fonts|img|health|admin|favicon|robots|manifest)/;
 const BOTS = /bot|crawl|spider|slurp|preview|monitor|uptime|curl|wget|python|node-fetch|headless|lighthouse|render/i;
@@ -20,8 +22,12 @@ const salt = () => config.sessionSecret || 'magic-cups';
 const visitorHash = (day, ip, ua) => crypto.createHash('sha256').update(`${salt()}|${day}|${ip}|${ua}`).digest('base64url').slice(0, 16);
 
 /** Record one page view (and, if this visitor is new today, one visitor). */
-export function recordView(path, ip, ua, day = today()) {
+/** funnelSkip: a page load that isn't a new look at the page (the teacher form's own reply, /teachers?sent=1), so it
+ *  doesn't add to the funnel's page views. */
+export function recordView(path, ip, ua, day = today(), { funnelSkip = false } = {}) {
   q.run('INSERT INTO traffic(day, area, views) VALUES (?,?,1) ON CONFLICT(day, area) DO UPDATE SET views=views+1', day, areaOf(path));
+  const step = funnelSkip ? null : funnel.viewStepOf(path);
+  if (step) funnel.bump(step, 1, day);
   const r = q.run('INSERT OR IGNORE INTO visit_seen(day, h) VALUES (?,?)', day, visitorHash(day, ip, ua));
   if (r.changes) q.run("INSERT INTO traffic(day, area, views) VALUES (?, '_visitors', 1) ON CONFLICT(day, area) DO UPDATE SET views=views+1", day);
 }
@@ -33,7 +39,8 @@ export function countVisits(req, res, next) {
   if (!ua || BOTS.test(ua)) return next();
   res.on('finish', () => {
     if (res.statusCode !== 200 || !String(res.getHeader('content-type') || '').includes('text/html')) return;
-    try { recordView(req.path, ipOf(req), ua); } catch { /* stats must never break a page */ }
+    const reply = req.query && (req.query.sent !== undefined || req.query.failed !== undefined);
+    try { recordView(req.path, ipOf(req), ua, today(), { funnelSkip: !!reply }); } catch { /* stats must never break a page */ }
   });
   next();
 }

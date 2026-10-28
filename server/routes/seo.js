@@ -45,6 +45,7 @@ export function sitemapEntries() {
   const out = [
     { path: '/', langs: langsWithKey('home.intro.heading'), lastmod: newest ? day(newest) : null, images: ['/og/site.jpg'] },
     { path: '/teachers', langs: langsWithKey('teachers.h1'), lastmod: CONTENT_UPDATED, images: ['/og/teachers.jpg'] },
+    { path: '/learn', langs: langsWithKey('learn.index.h1'), lastmod: CONTENT_UPDATED },
     ...HUBS.map(h => ({ path: `/learn/${h.slug}`, langs: langsWithKey(`learn.hubs.${h.key}.h1`), lastmod: CONTENT_UPDATED })),
     ...list.map(g => {
       let l10n = {}; try { l10n = JSON.parse(g.l10n || '{}') || {}; } catch { /* none */ }

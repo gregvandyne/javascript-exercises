@@ -11,6 +11,7 @@ import { config } from '../config.js';
 import { log } from './log.js';
 import * as S from './stripe.js';
 import * as B from './billing.js';
+import * as funnel from './funnel.js';
 
 export const STEP_UP_MS = 10 * 60e3;
 /** Did this sign-in type its password again in the last STEP_UP_MS? */
@@ -117,6 +118,10 @@ export function startFamilyCheckout({ family, user, interval, base, plan = 'fami
     const prices = await familyPrices(plan);
     const price = prices && prices[interval];
     if (!price) return { ok: false, code: 'noPrice' };
+    // Funnel: one "Checkout started" per try, not per click: a family that already had a session in the last day
+    // (came back from Checkout and clicked again) isn't counted again.
+    const earlier = openSession('family', fid);
+    const newTry = !earlier || now() - earlier.created_at > 86400e3;
     if (await endOpenSession(fid) === 'paid') return { ok: false, code: 'paying' };
     const customer = await familyCustomer(fid);
     const meta = { owner_kind: 'family', owner_id: fid };
@@ -146,6 +151,7 @@ export function startFamilyCheckout({ family, user, interval, base, plan = 'fami
     const session = await S.createCheckoutSession(params, `checkout-family-${fid}-${uid(12)}`);
     rememberSession('family', fid, session.id);
     audit(user.id, 'billing.checkout.start', ownerKey(fid), { session: session.id, plan, interval });
+    if (newTry) funnel.bump('parent.checkout');
     return { ok: true, url: session.url };
   });
 }

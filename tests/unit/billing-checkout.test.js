@@ -735,3 +735,23 @@ test('a family child in a school without a plan keeps the extras but sees only "
   q.run("UPDATE school_members SET status='left', left_at=? WHERE school_id=? AND user_id=?", Date.now(), school.id, a.child.id);
   assert.deepEqual(usage.counter(a.child), { turnsLeft: 7, freeLeft: 3, extraLeft: 5, classContext: false }, 'out of school: the "+N" counter again');
 });
+
+test('funnel counts (services/funnel.js): Checkout started once per try; Paid once, from the webhook', async () => {
+  const count = step => q.get('SELECT COALESCE(SUM(n),0) n FROM funnel_counts WHERE step=?', step).n;
+  const started0 = count('parent.checkout'), paid0 = count('parent.paid');
+  const f = family();
+  assert.equal((await checkout(f.who)).status, 200);
+  assert.equal((await checkout(f.who, { interval: 'year' })).status, 200);
+  assert.equal(count('parent.checkout'), started0 + 1, 'clicking again within a day is the same try');
+  assert.equal((await checkout(f.who, { interval: 'week' })).status, 400);
+  assert.equal(count('parent.checkout'), started0 + 1, 'a refused request does not');
+  // A day later it is a new try.
+  q.run("UPDATE billing_checkouts SET created_at=created_at-? WHERE owner_kind='family' AND owner_id=?", 2 * 86400e3, f.fam.id);
+  assert.equal((await checkout(f.who)).status, 200);
+  assert.equal(count('parent.checkout'), started0 + 2);
+  assert.equal(count('parent.paid'), paid0);
+  const p = await payingFamily();
+  assert.equal(count('parent.paid'), paid0 + 1);
+  await call(p.who, '/api/billing/status');
+  assert.equal(count('parent.paid'), paid0 + 1, 'the return page never counts it twice');
+});

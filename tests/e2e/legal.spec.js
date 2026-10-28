@@ -25,14 +25,16 @@ for (const lang of ['en', 'he']) {
         const where = `${path} ${lang} @${v.width}/${scheme}`;
         await expect(page.locator('h1'), where).toContainText(heading);
         expect(await page.locator('html').getAttribute('dir'), where).toBe(lang === 'he' ? 'rtl' : 'ltr');
-        await expect(page.locator('.legal-updated time'), where).toHaveAttribute('datetime', '2026-10-27');
+        await expect(page.locator('.legal-updated time'), where).toHaveAttribute('datetime', '2026-10-28');
         // Billing is off in this run: "not on sale yet", except on the /privacy without the billing sections.
         await expect(page.locator('.legal-notyet'), where).toHaveCount(path === '/privacy' ? 0 : 1);
         expect(await page.locator('.legal section.panel').count(), where).toBeGreaterThan(4);
         // The Hebrew text reads right to left; nothing is left marked as English.
         if (lang === 'he') {
           expect(await page.locator('#contact p').evaluate(e => getComputedStyle(e).direction), where).toBe('rtl');
-          expect(await page.locator('.legal [lang="en"]').count(), where).toBe(0);
+          // Except the new text waiting for its translation: the 24-hour link code and school set-up requests.
+          const en = await page.locator('.legal [lang="en"]').evaluateAll(els => els.filter(e => !/24 hours/.test(e.textContent) && !e.closest('#schoolSetup')).map(e => `${e.tagName} ${e.textContent.slice(0, 40)}`));
+          expect(en, where).toEqual([]);
         }
         for (const t of await findTouching(page)) problems.push(`${where}: ${t.a} ⟷ ${t.b} (${t.dir} ${t.gap}px)`);
         const wide = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);

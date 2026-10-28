@@ -33,7 +33,7 @@ const BY_SEG = new Map(CODES.map(c => [segOf(c), c]));
 const HUB_RE = [...HUBS, ...AGES].map(h => h.slug).join('|');
 const GUIDE_RE = PARENT_GUIDES.map(g => g.slug).join('|');
 /** Pages that have an address per language. */
-const LOCALIZED = new RegExp(`^/(?:|teachers|learn/(?:${HUB_RE})|g/[a-z0-9-]+|safety|parents(?:/(?:${GUIDE_RE}))?)$`);
+const LOCALIZED = new RegExp(`^/(?:|teachers|learn(?:/(?:${HUB_RE}))?|g/[a-z0-9-]+|safety|parents(?:/(?:${GUIDE_RE}))?)$`);
 export const localizable = p => LOCALIZED.test(p);
 /** '/teachers' in a language: English is the plain address (and x-default), others get /<code> in front. */
 export const localeUrl = (path, code) => (code === DEFAULT_LOCALE ? path : `/${segOf(code)}${path === '/' ? '' : path}`);

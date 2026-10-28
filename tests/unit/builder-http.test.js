@@ -538,7 +538,10 @@ test('detached POST errors are JSON with a code: empty, no turns left, 2 builds 
   const { today } = await import('../../server/db.js');
   q.run('INSERT INTO builder_usage(user_id, day, turns) VALUES (?,?,999) ON CONFLICT(user_id, day) DO UPDATE SET turns=999', kidId, today());
   r = await build(kid, id);
-  assert.equal(r.status, 429); assert.equal(r.json.code, 'limit'); assert.match(r.json.error, /Builder turns for today/);
+  assert.equal(r.status, 429); assert.equal(r.json.code, 'limit'); assert.match(r.json.error, /Builder messages for today/);
+  // One message a day reads as one, not "all 1 Builder messages".
+  assert.equal(tEn('builder.errors.limit', { count: 1 }), 'You have used your 1 Builder message for today. Come back tomorrow for more!');
+  assert.equal(tEn('builder.errors.limit', { count: 7 }), 'You have used all 7 Builder messages for today. Come back tomorrow for more!');
   assert.equal(q.get('SELECT COUNT(*) n FROM builder_turns WHERE game_id=?', id).n, 0, 'nothing stored');
   q.run('DELETE FROM builder_usage WHERE user_id=?', kidId);
   const gate = holdBuilder();

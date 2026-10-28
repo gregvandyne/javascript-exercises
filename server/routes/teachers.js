@@ -5,16 +5,19 @@
 // Games are listed only when they are an official launch game anyone may open now (canView for a signed-out visitor):
 // never a game a child made. The text is under teachers.* and learn.* in the locale files. Until a language has it, a
 // paragraph shows the English, marked lang="en" dir="ltr", and search engines are told the page is English only.
-import { Router } from 'express';
+import express, { Router } from 'express';
 import fs from 'node:fs';
 import { html, raw } from '../views/html.js';
-import { page, notFound, parentsLabel } from '../views/layout.js';
+import { page, notFound, parentsLabel, signedOut } from '../views/layout.js';
 import { coverArt } from '../views/components.js';
 import { tHtml, availableLocales } from '../i18n/index.js';
 import { config } from '../config.js';
 import { googleEnabled } from '../oidc.js';
 import { familiesOn } from '../services/family.js';
 import { isGrownup } from '../auth.js';
+import { isSchoolStaff, isPlatformAdmin } from '../services/schools.js';
+import * as SR from '../services/school-requests.js';
+import { allow, count, ipOf } from '../services/ratelimit.js';
 import { siteHost } from '../site.js';
 import * as games from '../services/games.js';
 import * as seo from '../seo.js';
@@ -49,6 +52,79 @@ export function faqBlock(req, pairs, headingKey, vars = {}) {
   };
 }
 
+// ---------------------------------------------------------------------------------------------------- "Set up my school"
+/** Who may send the "Set up my school" form: an adult or someone signed out (a guest included). Never a kid's own or
+ *  school account: the site doesn't ask a child for an email (docs/decisions.md "Doors for grown-ups"). */
+export const maySetUpSchool = u => signedOut(u) || isGrownup(u) || isSchoolStaff(u) || isPlatformAdmin(u);
+/** Stored requests per address per hour, and from everyone per day; tries (any post, a robot's or one with a mistake)
+ *  per address per hour. Only a stored request spends the first two, like sign-up (routes/auth.js SIGNUP), so a
+ *  teacher fixing typos isn't locked out and junk posts can't use up the day's requests for every school. */
+export const SETUP_LIMITS = { perIpHour: 5, perDay: 200, triesPerIpHour: 100 };
+/** The teacher page a form came from (/teachers or /<lang>/teachers), for the no-JavaScript reply. */
+const setupBack = v => (/^\/(?:[a-z]{2,3}(?:-[A-Za-z]{2,4})?\/)?teachers$/.test(String(v || '')) ? String(v) : '/teachers');
+
+/** The form (or its thank-you) inside the "Set up your school" panel. */
+function setupBlock(req, { sent = false, failed = false } = {}) {
+  const t = req.t;
+  if (sent) {
+    return html`<div class="notice good sr-thanks" role="status" id="setup-thanks">
+      ${raw(`<h3${fb(t, 'teachers.setup.thanks.h')}><span aria-hidden="true">✅</span> ${tHtml(t, 'teachers.setup.thanks.h')}</h3>`)}
+      ${el(t, 'p', 'teachers.setup.thanks.p1')}${el(t, 'p', 'teachers.setup.thanks.p2', {}, ' style="margin-bottom:0"')}</div>`;
+  }
+  if (!maySetUpSchool(req.user)) return el(t, 'p', 'teachers.setup.kid', {}, ' class="notice"');
+  const back = lp(req, '/teachers');
+  const lab = (id, key) => el(t, 'label', key, {}, ` for="${id}"`);
+  const errs = id => raw(`<span class="err" id="${id}-err" aria-live="polite"></span>`);
+  return html`${el(t, 'p', 'teachers.setup.lead')}
+    <form class="sr-form" data-api="/api/teachers/school-request" data-next="${back}?sent=1#start" method="post" action="/api/teachers/school-request" novalidate>
+      <input type="hidden" name="back" value="${back}">
+      <div class="sr-grid">
+        <div class="field">${lab('sr-school', 'teachers.setup.school')}
+          <input class="input" id="sr-school" name="school" required minlength="2" maxlength="${SR.LIMITS.school}" autocomplete="organization">${errs('sr-school')}</div>
+        <div class="field">${lab('sr-role', 'teachers.setup.role')}
+          <select class="input" id="sr-role" name="role" required><option value="">${t('teachers.setup.rolePick')}</option>${SR.ROLES.map(r => html`<option value="${r}">${t(`teachers.setup.roles.${r}`)}</option>`)}</select>${errs('sr-role')}</div>
+        <div class="field">${lab('sr-email', 'teachers.setup.email')}
+          <input class="input" id="sr-email" name="email" type="email" dir="ltr" required maxlength="${SR.LIMITS.email}" autocomplete="email" autocapitalize="off" spellcheck="false" aria-describedby="sr-email-hint">
+          ${el(t, 'span', 'teachers.setup.emailHint', {}, ' class="hint" id="sr-email-hint"')}${errs('sr-email')}</div>
+        <div class="field">${lab('sr-students', 'teachers.setup.students')}
+          <input class="input" id="sr-students" name="students" type="number" inputmode="numeric" required min="1" max="${SR.LIMITS.studentsMax}" step="1">${errs('sr-students')}</div>
+        <div class="field">${lab('sr-country', 'teachers.setup.country')}
+          <input class="input" id="sr-country" name="country" required minlength="2" maxlength="${SR.LIMITS.country}" autocomplete="country-name">${errs('sr-country')}</div>
+      </div>
+      <div class="sr-hp" aria-hidden="true"><label for="sr-website">Website</label><input id="sr-website" name="website" tabindex="-1" autocomplete="off"></div>
+      ${failed ? el(t, 'p', 'teachers.setup.errors.again', {}, ' class="err"') : ''}
+      <p class="err form-err" aria-live="polite"></p>
+      <button class="btn btn-primary btn-big" type="submit">${t('teachers.setup.submit')}</button>
+      ${el(t, 'p', 'teachers.setup.privacy', { privacy: '/privacy?for=grownups#schoolSetup' }, ' class="small muted"')}
+    </form>`;
+}
+
+// No JavaScript: the form posts as a plain form (urlencoded) and gets a page back, not JSON.
+router.post('/api/teachers/school-request', express.urlencoded({ extended: false, limit: '8kb', parameterLimit: 20 }), (req, res) => {
+  const t = req.t; const body = req.body || {};
+  const plain = !req.is('application/json');
+  const back = setupBack(body.back);
+  const fail = (status, error, field = null) => (plain ? res.redirect(303, `${back}?failed=1#start`) : res.status(status).json(field ? { error, field } : { error }));
+  if (!maySetUpSchool(req.user)) return plain ? res.redirect(303, `${back}#start`) : res.status(404).json({ error: t('errors.api.notFound') });
+  const ip = ipOf(req);
+  if (!allow(`school-request-try:${ip}`, SETUP_LIMITS.triesPerIpHour, 3600e3)) return fail(429, t('teachers.setup.errors.slow'));
+  const ok = () => (plain ? res.redirect(303, `${back}?sent=1#start`) : res.json({ ok: true }));
+  if (String(body.website || '').trim()) return ok();   // a robot filled the hidden field: thanked, not stored
+  if (count(`school-request:${ip}`) >= SETUP_LIMITS.perIpHour) return fail(429, t('teachers.setup.errors.slow'));
+  if (count('school-request:all') >= SETUP_LIMITS.perDay) return fail(429, t('teachers.setup.errors.busyToday'));
+  // Only an adult account's id is kept with the request: a guest may be a child (see services/school-requests.js).
+  const r = SR.createRequest(body, { by: signedOut(req.user) ? null : req.user, locale: req.locale });
+  if (!r.ok) {
+    if (!r.field) return fail(503, t('teachers.setup.errors.full'));
+    if (plain) return fail(400);
+    const errors = Object.fromEntries(r.fields.map(f => [f, t(`teachers.setup.errors.${f}`)]));
+    return res.status(400).json({ error: errors[r.field], field: r.field, errors });
+  }
+  allow(`school-request:${ip}`, SETUP_LIMITS.perIpHour, 3600e3);
+  allow('school-request:all', SETUP_LIMITS.perDay, 86400e3);
+  ok();
+});
+
 // ---------------------------------------------------------------------------------------------------- /teachers
 router.get('/teachers', (req, res) => {
   const t = req.t;
@@ -64,6 +140,9 @@ router.get('/teachers', (req, res) => {
   const faqPairs = Array.from({ length: TEACHER_FAQ }, (_, i) => [`teachers.faq.q${i + 1}`, `teachers.faq.a${i + 1}${(i === 3 || i === 5) && google ? 'google' : ''}`]);
   const faq = faqBlock(req, faqPairs, 'teachers.faq.h', { href: '/privacy', count: langCount, host: siteHost(req) });
   const plans = familiesOn(req);
+  // ?sent=1: the thank-you after the form (nothing it said is shown back); ?failed=1: a form sent without JavaScript
+  // that needs fixing (the JavaScript form shows each field's own message instead).
+  const sent = req.query.sent === '1', failed = req.query.failed === '1';
   const body = html`<div class="lp">
   <section class="lp-hero" aria-labelledby="lp-h1">
     ${el(t, 'p', 'teachers.kicker', {}, ' class="lp-kicker"')}
@@ -109,13 +188,14 @@ router.get('/teachers', (req, res) => {
 
   <section class="panel lp-start" id="start" aria-labelledby="start-h">
     ${el(t, 'h2', 'teachers.start.h', {}, ' id="start-h"')}
-    ${el(t, 'p', 'teachers.start.p1')}${el(t, 'p', 'teachers.start.p2', { email: mail })}
+    ${el(t, 'p', 'teachers.start.p1')}
+    ${setupBlock(req, { sent, failed })}
     ${plans ? el(t, 'p', 'teachers.start.plans') : ''}
     <div class="row">
-      <a class="btn btn-primary" href="mailto:${email}?subject=${encodeURIComponent(t('teachers.start.subject'))}">✉️ ${t('teachers.start.email')}</a>
       ${plans ? html`<a class="btn" href="/plans/schools">${t('teachers.start.plansLink')}</a>` : ''}
       ${list[0] ? html`<a class="btn" href="/play/${list[0].slug}" rel="nofollow">▶ ${t('teachers.cta.try')}</a>` : ''}
     </div>
+    ${el(t, 'p', 'teachers.setup.questions', { email: mail }, ' class="small muted"')}
   </section>
   ${faq.markup}
   </div>`;
@@ -149,6 +229,45 @@ const builder = (req, t) => html`<section class="panel" id="how" aria-labelledby
   ${t.own('learn.hubs.makeAGame.scratch.h') ? html`<section class="panel" id="scratch" aria-labelledby="scratch-h">${el(t, 'h2', 'learn.hubs.makeAGame.scratch.h', {}, ' id="scratch-h"')}${el(t, 'p', 'learn.hubs.makeAGame.scratch.p')}</section>` : ''}
   <section class="panel" id="safe" aria-labelledby="safe-h">${el(t, 'h2', 'learn.hubs.makeAGame.safe.h', {}, ' id="safe-h"')}${el(t, 'p', 'learn.hubs.makeAGame.safe.p')}
     <p>${t.own('learn.hubs.makeAGame.safeLink') ? html`<a href="${lp(req, '/parents/ai-builder-safety')}">${t('learn.hubs.makeAGame.safeLink')}</a> · ` : ''}<a href="${lp(req, '/safety')}">${t('learn.safetyLink')}</a></p></section>`;
+
+/** "Using this in class? See Oomba Academy for teachers." on the subject, age and game pages, for signed-out visitors
+ *  and guests (a teacher who found a game from a search); empty for anyone with an account, and in a language that
+ *  hasn't got the sentence yet (a translated page stays in one language). */
+export const inClassLine = req => (signedOut(req.user) && req.t.own('learn.inClass') ? el(req.t, 'p', 'learn.inClass', { href: lp(req, '/teachers') }, ' class="lp-aside small in-class"') : '');
+
+// ---------------------------------------------------------------------------------------------------- /learn
+/** The /learn hub: every subject page and age page, with a line for teachers and one for parents. */
+router.get('/learn', (req, res) => {
+  const t = req.t;
+  const card = (href, emoji, name, short) => html`<li><a class="lp-hub panel" href="${lp(req, href)}"><span class="lp-hub-e" aria-hidden="true">${emoji}</span><span>${el(t, 'span', name, {}, ' class="lp-hub-t"')}${el(t, 'span', short, {}, ' class="lp-hub-d"')}</span></a></li>`;
+  const crumbs = [[t('nav.home'), '/'], [t('learn.index.crumb'), '/learn']];
+  const body = html`<div class="lp">
+    <nav class="crumbs small" aria-label="${t('learn.crumbs')}"><ol>${crumbs.map(([name, p], i) => html`<li>${i < crumbs.length - 1 ? html`<a href="${lp(req, p)}">${name}</a>` : html`<span aria-current="page">${name}</span>`}</li>`)}</ol></nav>
+    <section class="lp-hero lp-hero-sm" aria-labelledby="lp-h1">
+      ${el(t, 'h1', 'learn.index.h1', {}, ' id="lp-h1"')}
+      ${el(t, 'p', 'learn.index.lead', {}, ' class="lead"')}
+    </section>
+    <section class="lp-sec" id="subjects" aria-labelledby="subj-h">${el(t, 'h2', 'learn.index.subjects', {}, ' id="subj-h"')}
+      <ul class="lp-hubs">${HUBS.map(h => card(`/learn/${h.slug}`, h.emoji, `learn.hubs.${h.key}.name`, `learn.hubs.${h.key}.short`))}</ul></section>
+    <section class="lp-sec" id="ages" aria-labelledby="ages-h">${el(t, 'h2', 'learn.index.ages', {}, ' id="ages-h"')}
+      <ul class="lp-hubs">${AGES.map(a => card(`/learn/${a.slug}`, a.emoji, `learn.ages.${a.key}.name`, `learn.ages.${a.key}.short`))}</ul></section>
+    <section class="lp-sec" aria-labelledby="who-h">${el(t, 'h2', 'learn.index.who', {}, ' id="who-h"')}
+      <ul class="chips lp-more"><li><a class="chip" href="${lp(req, '/teachers')}"><span aria-hidden="true">🍎</span>${t('learn.teachersLink')}</a></li>
+        <li><a class="chip" href="${lp(req, '/parents')}"><span aria-hidden="true">👪</span>${parentsLabel(t, 'learn.parentsLink')}</a></li></ul></section>
+  </div>`;
+  const items = [...HUBS.map(h => [`/learn/${h.slug}`, t(`learn.hubs.${h.key}.name`)]), ...AGES.map(a => [`/learn/${a.slug}`, t(`learn.ages.${a.key}.name`)])]
+    .map(([p, name], i) => ({ '@type': 'ListItem', position: i + 1, url: seo.abs(req, p), name }));
+  page(req, res, {
+    title: t('learn.index.title'), description: t('learn.index.description'), body, bodyClass: 'lp-page',
+    seo: {
+      index: true, path: '/learn', langs: seo.langsWithKey('learn.index.h1'), image: '/og/teachers.jpg', imageAlt: t('learn.index.h1'),
+      jsonld: [seo.graph([
+        { '@type': 'CollectionPage', '@id': seo.abs(req, '/learn'), url: seo.abs(req, '/learn'), name: t('learn.index.title'), description: t('learn.index.description'), isPartOf: { '@id': seo.abs(req, '/#website') }, mainEntity: { '@type': 'ItemList', itemListElement: items } },
+        seo.breadcrumbLd(req, crumbs),
+      ])],
+    },
+  });
+});
 
 router.get('/learn/:hub', (req, res) => {
   const hub = hubBySlug(req.params.hub);
@@ -184,6 +303,7 @@ router.get('/learn/:hub', (req, res) => {
     <section class="panel" id="classroom" aria-labelledby="cls-h">${el(t, 'h2', 'learn.tipsHeading', {}, ' id="cls-h"')}${el(t, 'p', `${k}.tips`)}</section>
     ${HOME_TIPS.includes(hub.key) && t.own(`${k}.home`) ? html`<section class="panel" id="home" aria-labelledby="home-h">${el(t, 'h2', 'learn.homeHeading', {}, ' id="home-h"')}${el(t, 'p', `${k}.home`)}</section>` : ''}
     ${faq.markup}
+    ${inClassLine(req)}
     <section class="lp-sec" aria-labelledby="more-h">${el(t, 'h2', 'learn.moreHeading', {}, ' id="more-h"')}
       <ul class="chips lp-more">${others.map(h => html`<li><a class="chip" href="${lp(req, `/learn/${h.slug}`)}"><span aria-hidden="true">${h.emoji}</span>${t(`learn.hubs.${h.key}.name`)}</a></li>`)}
         <li><a class="chip" href="${lp(req, '/teachers')}"><span aria-hidden="true">🍎</span>${t('learn.teachersLink')}</a></li>

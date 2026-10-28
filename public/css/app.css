@@ -155,7 +155,10 @@ a:not([class]):focus-visible{outline-offset:1px;border-radius:4px}
   .tab .emo{font-size:1.45rem;line-height:1;filter:grayscale(.6);opacity:.8}
   .tab[aria-current="page"]{color:var(--link)} .tab[aria-current="page"] .emo{filter:none;opacity:1;transform:scale(1.1)}
   .tab:hover{text-decoration:none}
+  /* One line per label (six tabs on a 360px phone: "Grown-ups" must not break at its hyphen and lift its icon). */
+  .tab-t{display:block;max-width:100%;padding-inline:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .tab .badge{inset-inline-end:calc(50% - 26px)}
+  @media (max-width:400px){.tab{font-size:.72rem}}
   body{padding-bottom:calc(var(--tabbar) + env(safe-area-inset-bottom))}
 }
 .wrap{max-width:1240px;margin:0 auto;padding:20px 16px 48px}
@@ -193,6 +196,8 @@ a:not([class]):focus-visible{outline-offset:1px;border-radius:4px}
 .chips.scroll::-webkit-scrollbar{display:none}
 .chip{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 16px;border-radius:999px;border:2px solid var(--line);background:var(--card);color:var(--text);font:700 .95rem var(--font);cursor:pointer;white-space:nowrap}
 .chip:hover{border-color:var(--accent-line);text-decoration:none}
+.chip:disabled{opacity:.55;cursor:not-allowed}
+.chip:disabled:hover{border-color:var(--line)}
 .chip[aria-pressed="true"],.chip.on{background:var(--current);border-color:var(--current);color:var(--on-current)}
 .field{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
 .field label{font-weight:700}
@@ -559,6 +564,8 @@ code{overflow-wrap:anywhere}
 
 /* Families (routes/family.js): the child's "For grown-ups" panel on Me, and the grown-up's pages. */
 .famcode{margin-bottom:var(--s3)}
+/* On a kid's Me page the panel comes first, above the tiles (the Builder's daily-limit card points here). */
+main>#grownups{margin-bottom:24px}
 .famkids{list-style:none;margin:0 0 var(--s3);padding:0;display:flex;flex-direction:column;gap:var(--s3)}
 .famkid{display:flex;align-items:center;gap:var(--s3);flex-wrap:wrap;padding:var(--s3);border-radius:var(--r-sm);background:var(--card-2)}
 .famkid-main{flex:1;min-width:180px}
@@ -644,7 +651,9 @@ ol.steps li{margin-bottom:var(--s2)}
 .lp-badges li{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:4px 14px;border-radius:999px;background:var(--card);border:2px solid var(--line);font-weight:700;font-size:.95rem}
 .lp-cta{margin-top:var(--s5)}
 .lp-cta .btn-big{font-size:1.15rem;padding:0 28px}
-@media (max-width:480px){.lp-hero{padding:var(--s5) var(--s4)}.lp-cta .btn{width:100%}}
+@media (max-width:480px){.lp-hero{padding:var(--s5) var(--s4)}.lp-cta .btn{width:100%;white-space:normal;text-align:center;padding-block:10px}
+  /* Every button on the landing pages may wrap on a phone (long German or Portuguese labels): no sideways scroll. */
+  .lp .btn{white-space:normal;text-align:center;max-width:100%;padding-block:8px}}
 .lp-sec>h2{margin-bottom:var(--s2)}
 .lp-sec>p{margin:0 0 var(--s4);color:var(--text-2);max-width:70ch}
 .lp-games{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:var(--s4)}
@@ -702,3 +711,27 @@ ol.steps li{margin-bottom:var(--s2)}
 .lp-steps li+li{margin-top:var(--s2)}
 .lp-more{list-style:none;padding:0;margin:0}
 .lp-list+p,.lp-steps+p{margin-top:var(--s3)}
+/* "Set up my school" on /teachers (routes/teachers.js). The hidden field is for robots: off screen, never read out. */
+.sr-form{margin-top:var(--s4)}
+.sr-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:0 var(--s4)}
+.sr-form select.input{width:100%}
+.sr-hp{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.sr-form>.btn{margin-top:var(--s2)}
+.sr-form>.small{margin:var(--s3) 0 0}
+.sr-thanks{margin-top:var(--s4)}
+.sr-thanks h3{margin:0 0 var(--s2)}
+.sr-thanks p{font-weight:500}
+/* /plans/schools: the seat calculator and the page to print for a school's admin (routes/plans.js). */
+.seatcalc .row{align-items:flex-end}
+.seatcalc .field{margin-bottom:0;flex:1;min-width:min(100%,180px)}
+.seatcalc-out{margin:var(--s4) 0 0;font-size:1.15rem}
+.seatcalc-out b{font-size:1.4rem}
+.printdoc{max-width:720px;margin:0 auto}
+.printdoc .printbar{margin-bottom:var(--s4)}
+.printdoc table{width:100%}
+@media print{
+  .topbar,.tabbar,.foot,.backlink,.skip,.printbar,.noprint{display:none!important}
+  body{background:#fff!important;color:#000!important}
+  .printdoc .panel{border:1px solid #999;box-shadow:none;background:#fff!important;break-inside:avoid}
+  .printdoc a{color:#000;text-decoration:underline}
+}

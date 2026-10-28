@@ -141,7 +141,7 @@ test('no prices, no kids’ names or games, no promises the site doesn’t keep:
   }
   paid(true, true);
   const par = (await get('/parents')).text;
-  assert.match(par, /<a class="btn btn-big" href="\/grown-ups">Make a grown-up account<\/a>/);
+  assert.match(par, /<a class="btn btn-primary btn-big" href="\/grown-ups\/signup">Set up your child — free<\/a>/);
   assert.match(par, /<a class="btn btn-primary" href="\/plans">See plans and prices<\/a>/, 'the families section, as before');
   assert.ok(text(par).includes('A linked grown-up account sees only your child’s name'));
 });

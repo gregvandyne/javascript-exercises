@@ -210,7 +210,7 @@ test('the pages: nothing touches, no sideways scroll (360 / 1280, light / dark, 
   const kid = await person(browser); await signup(kid, uniq('Kid'));
   const teacher = await person(browser); await login(teacher, 'DemoTeacher', 'demo-pass-123').catch(() => {});
   const sets = [
-    ['out', null, ['/plans', '/plans?interval=year', '/plans/schools', '/grown-ups', '/grown-ups/signup?plan=family&interval=year', '/grown-ups/login?plan=basic&interval=month']],
+    ['out', null, ['/plans', '/plans?interval=year', '/plans/schools', '/plans/schools?students=10', '/plans/schools/print?students=140', '/grown-ups', '/grown-ups/signup?plan=family&interval=year', '/grown-ups/login?plan=basic&interval=month']],
     ['kid', await kid.context().storageState(), ['/', '/plans?ask=basic']],
     ['grownup', await fresh.context().storageState(), ['/plans', '/family', '/family?plan=basic&interval=month']],
     ['basic', await paid.mum.context().storageState(), ['/plans', '/family?welcome=1']],
@@ -236,6 +236,27 @@ test('the pages: nothing touches, no sideways scroll (360 / 1280, light / dark, 
   // Back to English for the accounts used above (?lang= is saved on the account).
   for (const pg of [paid.mum, fresh, kid, teacher]) await pg.goto('/?lang=en').catch(() => {});
   expect([...new Set(problems)]).toEqual([]);
+});
+
+test('/plans/schools: the seat calculator (Stripe\'s seat price, at least 25) and "Send this to my admin"', async ({ browser }) => {
+  const page = await person(browser);
+  await page.goto('/plans/schools');
+  await expect(page.locator('#calc-students')).toHaveValue('25');
+  await page.fill('#calc-students', '12');
+  await Promise.all([page.waitForURL(/students=12/), page.locator('#calc button[type=submit]').click()]);
+  await expect(page.locator('.seatcalc-out')).toHaveText('25 students × $20.00 = $500.00 a year');
+  await expect(page.locator('#calc')).toContainText('so a smaller school pays for 25');
+  await page.fill('#calc-students', '140');
+  await Promise.all([page.waitForURL(/students=140/), page.locator('#calc button[type=submit]').click()]);
+  await expect(page.locator('.seatcalc-out')).toHaveText('140 students × $20.00 = $2,800.00 a year');
+  await Promise.all([page.waitForURL(/\/plans\/schools\/print\?students=140/), page.locator('a', { hasText: 'Send this to my admin' }).click()]);
+  await expect(page.locator('.printdoc')).toContainText('$2,800.00');
+  await expect(page.locator('[data-print]')).toBeVisible();
+  // Printed: no menus, no buttons, just the page.
+  await page.emulateMedia({ media: 'print' });
+  for (const sel of ['.topbar', '.tabbar', '.foot', '.printbar']) await expect(page.locator(sel)).toBeHidden();
+  await expect(page.locator('h1')).toBeVisible();
+  await page.context().close();
 });
 
 test('six menu items (a teacher: Classes and Plans) fit the top bar from small laptops to wide screens', async ({ browser }) => {

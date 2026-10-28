@@ -2,6 +2,7 @@
 import { Router } from 'express';
 import { html, raw, jsonData } from '../views/html.js';
 import { page, notFound } from '../views/layout.js';
+import { inClassLine } from './teachers.js';
 import { coverArt, avatar, cardGrid, statusLabel, categoryLabel } from '../views/components.js';
 import { OFFICIAL } from '../auth.js';
 import * as seo from '../seo.js';
@@ -80,6 +81,7 @@ router.get('/g/:slug', (req, res) => {
           ${grownup ? '' : html`<button class="iconbtn" type="button" id="likebtn" aria-pressed="${String(!!liked)}"><span class="emo" aria-hidden="true">${liked ? '❤️' : '🤍'}</span>${t('game.like')}</button>`}
           <button class="iconbtn" type="button" id="sharebtn"><span class="emo" aria-hidden="true">🔗</span>${t('game.share')}</button>
           ${isOwner ? html`<a class="iconbtn" href="/studio/${g.id}"><span class="emo" aria-hidden="true">🛠️</span>${t('game.edit')}</a>` : html`<button class="iconbtn" type="button" id="reportbtn"><span class="emo" aria-hidden="true">🚩</span>${t('game.report.button')}</button>`}
+          ${isOwner || grownup || !t.own('game.makeLike') ? '' : html`<a class="iconbtn" href="/build" id="makelike"><span class="emo" aria-hidden="true">🛠️</span>${t('game.makeLike')}</a>`}
         </div>
         ${isOwner ? html`<p class="small muted" style="margin-top:8px">${statusLabel(g, t, shared ? shared.names.length : 1)}${g.pending_version_id ? ` · ${t('game.updateWaiting')}` : ''}${g.review_note ? html` · ${t('game.reviewer', { note: g.review_note })}` : ''}</p>` : ''}
       </div>
@@ -90,6 +92,7 @@ router.get('/g/:slug', (req, res) => {
           <p class="ugc" style="white-space:pre-line">${g.description || t('game.about.noDescription')}</p>
           ${learn ? html`<p class="lp-practise"${fbl(`learn.games.${learn.key}`)}><b>${t('learn.practise')}</b> ${t(`learn.games.${learn.key}`)}${band ? ` · ${t('learn.grades', band)}` : ''}${ages ? ` · ${t('learn.ages.line', ages)}` : ''}${hub ? html` · <a href="${lp(req, `/learn/${hub.slug}`)}">${t('learn.seeAll', { name: t(`learn.hubs.${hub.key}.name`) })}</a>` : ''}</p>` : ''}
           <div class="taglist"><a class="tag" href="/search?cat=${cat.key}">${cat.icon} ${categoryLabel(cat.key, t)}</a>${d.tagList.map(tag => html`<a class="tag" href="/search?q=${encodeURIComponent(tag)}">#${tag}</a>`)}</div>
+          ${inClassLine(req)}
           <p class="small muted" style="margin:12px 0 0">${players}${g.orientation === 'landscape' ? `📱↔️ ${t('game.about.sideways')} · ` : ''}${t('game.about.updated', { when: f.ago(g.updated_at) })}</p>
         </section>
         ${grownup ? '' : html`<section class="panel" aria-labelledby="rate-h"><h2 id="rate-h">${t('game.rate.heading')}</h2>

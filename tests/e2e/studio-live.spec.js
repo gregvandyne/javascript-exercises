@@ -199,7 +199,7 @@ test('LV-5 a follow-up while the AI writes: the strip (also with tips off), then
   await expect(strip).toBeVisible();
   await expect(strip).toContainText('Got your message. The AI will read it after this step.');
   await expect(strip).toContainText('It’s writing code right now, so it finishes that first.');
-  await expect(strip).toContainText('Extra messages don’t use a turn. If the Builder has already finished, your message starts a new build and uses 1 turn.');
+  await expect(strip).toContainText('Messages you send while it builds don’t use up a Builder message. If the Builder has already finished, your message starts a new build and uses 1 Builder message.');
   const fu = page.locator('#st-log .msg.fu');
   await expect(fu).toHaveCount(1);
   await expect(fu.locator('.fu-text')).toHaveText(DRAGON);
@@ -236,7 +236,7 @@ test('LV-6 too late for the build: "This starts the next build", then the next b
   await page.reload();
   await expect(page.locator('#st-log .msg.fu .fu-st')).toContainText('This starts the next build');
   stage = 2;
-  await expect(page.locator('#st-log .ev.carried')).toContainText('Your message started a new build (1 turn)', { timeout: 10_000 });
+  await expect(page.locator('#st-log .ev.carried')).toContainText('Your message started a new build (1 Builder message)', { timeout: 10_000 });
   await expect(live(page).locator('li.stp-cur')).toContainText('Round 1: reading your new message');
   await expect(page.locator('#st-log .msg.fu .fu-st')).toContainText('The AI is reading it now');
   await expect(page.locator('#st-turns')).toContainText('57');
@@ -249,7 +249,7 @@ test('LV-7 dropped: the bubble says why, and "Put it back in the box" fills the 
   await routeLive(page, () => ({ events: [...hello(turnOf()), ...STEPS, ['inbox', { status: 'waiting', entry: fuEntry('waiting'), left: 2 }], ['inbox', { status: 'dropped', ids: ['F1'], why: 'limit' }]] }));
   await page.reload();
   const st = page.locator('#st-log .msg.fu .fu-st');
-  await expect(st).toContainText('Not read: no turns left today');
+  await expect(st).toContainText('Not read: no Builder messages left today');
   await st.getByRole('button', { name: 'Put it back in the box' }).click();
   await expect(page.locator('#st-input')).toHaveValue(DRAGON);
   await expect(page.locator('#st-input')).toBeFocused();

@@ -34,6 +34,12 @@ export const VERSION = Date.now().toString(36); // cache-buster per boot
  *  already-translated "For parents" stands in, so a translated page never shows that link in English. */
 export const parentsKey = (t, key = 'nav.parents') => (t.own(key) || !t.own('layout.footer.parents') ? key : 'layout.footer.parents');
 export const parentsLabel = (t, key) => t(parentsKey(t, key));
+/** Signed out, for menus, the home intro and the footer: no account, or a guest (one tap on Play makes a guest). */
+export const signedOut = u => !u || !!u.is_guest;
+/** A tab's label key. Until a language has "Grown-ups", its "Parents" stands in (the tab opens the parent page). */
+const tabKey = (t, k) => (k === 'grownups' && !t.own('nav.grownups') && t.own('nav.parents') ? 'nav.parents' : `nav.${k}`);
+/** Pages the signed-out "Grown-ups" tab stands for (it is current on them). */
+const GROWNUP_PAGES = ['parents', 'teachers', 'grownups'];
 export const legalReader = u => !!u && !u.is_guest && (isGrownup(u) || isPlatformAdmin(u) || isSchoolStaff(u));
 
 /** URL of the current page with ?lang=<code> or ?theme=<theme> (the server stores the choice and redirects back without it). */
@@ -91,17 +97,23 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
   const staff = u && isSchoolStaff(u);
   // Plans (/plans, routes/plans.js) is in everyone's menu while paid-plan pages are on (docs/decisions.md "Paid plans" §17).
   const plans = familiesOn(req) ? [['plans', '/plans', '⭐']] : [];
+  // Signed out means signed out or a guest: a parent who plays one game becomes a guest (routes/games.js) and must keep
+  // every grown-up door. Friends needs an account, so it waits until a kid has one.
+  const out = signedOut(u);
   const navItems = grownup ? [NAV[0], NAV[1], ...plans, ['family', '/family', '👪']]
-    : u && staff ? [...NAV, ['classes', '/teach', '🏫'], ...plans]
-    : u && isPlatformAdmin(u) ? [...NAV, ['schools', '/admin/schools', '🏫'], ...plans]
-    : u && inAnySchool(u) ? [...NAV, ['classes', '/classes', '🏫'], ...plans] : [...NAV, ...plans];
-  // Signed out: the parent and teacher pages in the top menu (the phone tab bar keeps its five tabs; the footer links
-  // them there).
-  const teachersNav = u ? [] : [['parents', '/parents', '👪'], ['teachers', '/teachers', '🍎']];
+    : out ? [NAV[0], NAV[1], NAV[2], ...plans]
+    : staff ? [...NAV, ['classes', '/teach', '🏫'], ...plans]
+    : isPlatformAdmin(u) ? [...NAV, ['schools', '/admin/schools', '🏫'], ...plans]
+    : inAnySchool(u) ? [...NAV, ['classes', '/classes', '🏫'], ...plans] : [...NAV, ...plans];
+  // Signed out: the parent and teacher pages in the top menu; on phones one "Grown-ups" tab (to /parents, which links
+  // the teacher page at its top) sits before Plans.
+  const teachersNav = out ? [['parents', '/parents', '👪'], ['teachers', '/teachers', '🍎']] : [];
+  const tabItems = out ? [NAV[0], NAV[1], NAV[2], ['grownups', '/parents', '👪'], ...plans] : navItems;
   // Pages in the Classes area highlight Schools for the platform admin, whose nav has Schools instead of Classes.
   const act = active === 'classes' && !navItems.some(([k]) => k === 'classes') && navItems.some(([k]) => k === 'schools') ? 'schools' : active;
   const signIn = t('layout.signIn');
-  const cur = k => (k === act ? raw('aria-current="page"') : '');
+  // The signed-out "Sign in" tab is current on the sign-in and sign-up pages, never on a guest's own Me page.
+  const cur = k => (k === act || (k === 'grownups' && GROWNUP_PAGES.includes(act)) ? raw('aria-current="page"') : '');
   const nav = bare ? '' : html`
   <a class="skip" href="#main">${t('layout.skip')}</a>
   <header class="topbar">
@@ -120,12 +132,13 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
     <a class="me-btn" href="${meHref}" ${cur(grownup ? 'family' : 'me')} aria-label="${u ? t('layout.meLabel', { name: u.display_name }) : signIn}">${u ? avatar(u, 38) : html`<span class="avatar" style="--s:38px;--c:var(--hover)" aria-hidden="true">🙂</span>`}<span class="name">${u ? u.display_name : signIn}</span>${badge('me')}</a>
   </header>
   <nav class="tabbar" aria-label="${t('layout.mainNav')}">
-    ${navItems.map(([k, href, emo]) => html`<a class="tab" href="${href}" ${cur(k)}><span class="emo" aria-hidden="true">${emo}</span>${t(`nav.${k}`)}${badge(k)}</a>`)}
-    ${grownup ? '' : html`<a class="tab" href="${meHref}" ${cur('me')}>${u && u.photo_at ? html`<span class="emo">${avatar(u, 28)}</span>` : html`<span class="emo" aria-hidden="true">${u ? u.avatar : '🙂'}</span>`}${u ? t('nav.me') : signIn}${badge('me')}</a>`}
+    ${tabItems.map(([k, href, emo]) => { const key = tabKey(t, k); return html`<a class="tab" href="${href}" ${cur(k)}${t.own(key) ? '' : raw(' lang="en"')}><span class="emo" aria-hidden="true">${emo}</span><span class="tab-t">${t(key)}</span>${badge(k)}</a>`; })}
+    ${grownup ? '' : out ? html`<a class="tab" href="/login" ${req.path === '/me' ? '' : cur('me')}><span class="emo" aria-hidden="true">🙂</span><span class="tab-t">${signIn}</span></a>`
+      : html`<a class="tab" href="${meHref}" ${cur('me')}>${u.photo_at ? html`<span class="emo">${avatar(u, 28)}</span>` : html`<span class="emo" aria-hidden="true">${u.avatar}</span>`}<span class="tab-t">${t('nav.me')}</span>${badge('me')}</a>`}
   </nav>`;
   // A footer word still in English on this language's page reads left to right.
   const fb = key => (t.own(key) ? '' : raw(' lang="en" dir="ltr"'));
-  const foot = bare ? '' : html`<footer class="foot"><span>${t('layout.footer.tagline')}</span><a href="/safety">${t('layout.footer.safety')}</a><a href="/parents"${fb('layout.footer.parents')}>${t('layout.footer.parents')}</a>${!u || staff ? html`<a href="/teachers"${fb('layout.footer.teachers')}>${t('layout.footer.teachers')}</a>` : ''}${config.contactEmail ? html`<a href="/parents#contact">${t('layout.footer.contact')}</a>` : ''}${grownup ? '' : html`<a href="/sdk/">${t('layout.footer.builders')}</a>`}${legalReader(u) ? html`<a href="/terms"${fb('layout.footer.terms')}>${t('layout.footer.terms')}</a>` : ''}<a href="/privacy"${fb('layout.footer.privacy')}>${t('layout.footer.privacy')}</a><a href="${grownup ? '/family#language' : '/me#language'}" class="foot-lang"><span aria-hidden="true">🌐</span> ${info.name}</a></footer>`;
+  const foot = bare ? '' : html`<footer class="foot"><span>${t('layout.footer.tagline')}</span><a href="/safety">${t('layout.footer.safety')}</a><a href="/parents"${fb('layout.footer.parents')}>${t('layout.footer.parents')}</a>${out || staff ? html`<a href="/teachers"${fb('layout.footer.teachers')}>${t('layout.footer.teachers')}</a>` : ''}${config.contactEmail ? html`<a href="/parents#contact">${t('layout.footer.contact')}</a>` : ''}${grownup ? '' : html`<a href="/sdk/">${t('layout.footer.builders')}</a>`}${legalReader(u) ? html`<a href="/terms"${fb('layout.footer.terms')}>${t('layout.footer.terms')}</a>` : ''}<a href="/privacy"${fb('layout.footer.privacy')}>${t('layout.footer.privacy')}</a><a href="${grownup ? '/family#language' : '/me#language'}" class="foot-lang"><span aria-hidden="true">🌐</span> ${info.name}</a></footer>`;
   const backHtml = back ? html`<a class="backlink" href="${back}"><span class="flip" aria-hidden="true">←</span> ${backLabel || t('layout.back')}</a>` : '';
   // A sign-in that just ended (timed out, or ended on another device) is mentioned once, on whatever page comes next; the
   // sign-in page says it itself.

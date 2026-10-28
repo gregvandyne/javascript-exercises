@@ -224,7 +224,7 @@ test('teacher and subject pages: one H1, real launch games only, links in the me
   assert.match(t.text, /<h1 id="lp-h1">Fun, interactive learning games your class will ask for<\/h1>/);
   for (const slug of ['sum-racer', 'word-hunt', 'castle-clash', 'loop-lab']) assert.ok(t.text.includes(`href="/g/${slug}"`), slug);
   assert.ok(!t.text.includes(kidPublic.slug));
-  assert.match(t.text, /href="mailto:[^"]+\?subject=/, 'a working way to start');
+  assert.match(t.text, /<form class="sr-form" data-api="\/api\/teachers\/school-request"/, 'a working way to start: the "Set up my school" form');
   assert.match(t.text, /<a class="navlink" href="\/teachers"/, 'top menu, signed out');
   assert.match(t.text, /<footer[\s\S]*href="\/teachers"/, 'footer, signed out');
   const kidHome = await get('/', { cookie: cookieOf(kid) });

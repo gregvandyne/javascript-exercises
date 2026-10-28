@@ -193,6 +193,22 @@ button.stp-line{cursor:pointer}
 @media (prefers-reduced-motion:reduce){.stp-spin{animation:none;border-color:var(--accent-line)}}
 
 .st-compose{border-top:1px solid var(--line);padding:10px}
+/* No Builder messages left today (studio.js syncLimit): calm, no price, no plan, no countdown. */
+.st-limit{margin-bottom:10px;padding:12px 14px;border-radius:var(--r-sm);background:var(--card-2);border:2px solid var(--line)}
+.st-limit>p{margin:0}
+.st-limit-h{font-weight:800}
+.st-limit>.st-limit-text{margin-top:4px;color:var(--text-2)}
+.st-limit-acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.st-limit-acts .btn{min-height:44px;white-space:normal;text-align:center}
+.st-limit>.st-limit-gu{margin-top:10px;font-size:.92rem}
+.st-limit-gu a{font-weight:700}
+@media (max-width:520px){.st-limit-acts .btn{flex:1 1 40%}}
+/* A phone: .st-chat has a fixed height, so the card replaces the typing row (nothing can be sent) and scrolls when
+   it is taller than its share; the chat log keeps a usable height and nothing spills over the preview's switcher. */
+@media (max-width:960px){
+  .st-compose.st-out .st-row,.st-compose.st-out .st-attach{display:none}
+  .st-compose.st-out .st-limit{margin-bottom:0;max-height:min(34vh,260px);overflow:auto}
+}
 .st-compose.drag{outline:3px dashed var(--accent-line);outline-offset:-6px;border-radius:0 0 var(--r) var(--r)}
 .st-attach{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
 .st-row{display:flex;gap:8px;align-items:flex-end}

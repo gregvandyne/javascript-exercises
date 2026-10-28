@@ -36,7 +36,7 @@ test('/terms, /refunds and /privacy are public, dated, and show every paragraph 
     const r = await get(path); assert.equal(r.status, 200, path);
     const text = decode(r.text);
     assert.match(text, new RegExp(`<h1>[^<]*${en[`info.${key}.heading`]}</h1>`), `${path} heading`);
-    assert.match(text, new RegExp(`Last updated: <time datetime="${LEGAL_UPDATED}">October 27, 2026</time>`), `${path} date`);
+    assert.match(text, new RegExp(`Last updated: <time datetime="${LEGAL_UPDATED}">October 28, 2026</time>`), `${path} date`);
     assert.match(text, /href="mailto:greg@oomba\.ai"/, `${path} contact`);
     for (const k of Object.keys(en).filter(k => k.startsWith(`info.${key}.`) && !k.startsWith('info.privacy.more.') && /\.(p|li|s)\d+$/.test(k))) {
       const words = plain(en[k]).slice(0, 60);
@@ -147,12 +147,13 @@ test('the legal text never takes a language out of the picker; Hebrew legal page
   const r = await get('/privacy?for=grownups', { cookie: 'lang=he' });
   assert.equal(r.status, 200);
   assert.match(r.text, /<html[^>]*dir="rtl"/);
-  assert.match(r.text, /<time datetime="2026-10-27">/);
+  assert.match(r.text, /<time datetime="2026-10-28">/);
   // Every section is translated now: nothing on the Hebrew pages is marked as English.
   assert.match(r.text, /<section class="panel" id="payments"><h2>/);
   assert.match(r.text, /<section class="panel" id="stored"><h2>/);
   const t = (await get('/terms', { cookie: 'lang=he' })).text;
-  assert.doesNotMatch(t, /<li lang="en" dir="ltr">/);
+  // Only the new 24-hour link-code item waits for its translation (shown in English, marked, never the old "1 hour").
+  assert.deepEqual([...t.matchAll(/<li lang="en" dir="ltr">([^<]*)/g)].map(m => m[1]), ['The child gets a short code on their own Me page. It works once, for 24 hours.']);
   assert.doesNotMatch((await get('/terms')).text, /lang="en" dir="ltr"><b>Guest/, 'English pages need no marking');
 });
 
@@ -167,4 +168,18 @@ test('an untranslated footer word reads left to right on a right-to-left page', 
 test('grown-up accounts (the people who pay) can open all three legal pages', async () => {
   const { grownupMay } = await import('../../server/routes/family.js');
   for (const p of ['/terms', '/refunds', '/privacy']) assert.equal(grownupMay('GET', p), true, p);
+});
+
+test('the 24-hour link code: no language still says "1 hour"; the Privacy Policy lists school set-up requests', async () => {
+  for (const lang of ['de', 'fr', 'he']) {
+    const terms = await get('/terms', { cookie: `lang=${lang}` });
+    assert.match(terms.text, /lang="en" dir="ltr">The child gets a short code on their own Me page\. It works once, for 24 hours\./, lang);
+    const pv = await get('/privacy?for=grownups', { cookie: `lang=${lang}` });
+    assert.match(pv.text, /It works once, for 24 hours\./, lang);
+  }
+  const pv = (await get('/privacy?for=grownups')).text;
+  const sec = (/<section class="panel" id="schoolSetup">[\s\S]*?<\/section>/.exec(pv) || [''])[0];
+  assert.match(sec, /School set-up requests/);
+  assert.match(sec, /work email/); assert.match(sec, /<b>1 year<\/b> after we close the request/);
+  assert.match(sec, /A guest's account is never kept with a request|A guest&#39;s account is never kept with a request/);
 });

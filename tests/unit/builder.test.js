@@ -175,7 +175,7 @@ test('daily turn limit: refused when used up; refusals do not use turns', async 
     let t = await turn(u, g.id, 'hi'); assert.equal(t.r.turnsLeft, 1);
     t = await turn(u, g.id, 'a catch game with robots'); assert.equal(t.r.turnsLeft, 0); assert.equal(versions(g.id).length, 1);
     t = await turn(u, g.id, 'make it harder');
-    assert.equal(t.r.error, 'limit'); assert.match(t.of('error')[0].message, /all 2 Builder turns/);
+    assert.equal(t.r.error, 'limit'); assert.match(t.of('error')[0].message, /all 2 Builder messages/);
     assert.equal(versions(g.id).length, 1, 'nothing built past the limit');
   } finally { config.builderDailyTurns = old; }
 });

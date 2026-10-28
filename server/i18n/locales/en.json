@@ -60,7 +60,8 @@
     "family": "Family",
     "plans": "Plans",
     "teachers": "Teachers",
-    "parents": "Parents"
+    "parents": "Parents",
+    "grownups": "Grown-ups"
   },
   "errors": {
     "goHome": "Go home",
@@ -147,7 +148,10 @@
       "haveAccount": "Have an account?",
       "signInLink": "Sign in",
       "newHere": "New here?",
-      "signupLink": "Make a free account"
+      "signupLink": "Make a free account",
+      "grownupLogin": "Grown-up or teacher? <a href=\"{grownup}\">Parents sign in here</a> · <a href=\"{teachers}\">Teachers start here</a>",
+      "grownupLoginSoon": "Grown-up or teacher? <a href=\"{grownup}\">Oomba Academy for parents</a> · <a href=\"{teachers}\">Teachers start here</a>",
+      "grownupSignup": "Grown-up or teacher? <a href=\"{grownup}\">Parents start here</a> · <a href=\"{teachers}\">Teachers start here</a>"
     },
     "api": {
       "tooManyGuests": "Too many guests from here. Try again later.",
@@ -254,7 +258,7 @@
       "newCode": "Get a new code",
       "codeOpen": "You have a code that still works. Lost it? Get a new one, and the old one stops working.",
       "codeLabel": "Your code",
-      "codeHow": "It works once, for 1 hour. A grown-up can link to your account with this code at {where}.",
+      "codeHowDay": "It works once, for 24 hours. A grown-up can link to your account with this code at {where}.",
       "codeWarn": "Only give this code to your parent or guardian, face to face. Never type it in chat or a game, or give it to someone online.",
       "pending": "<b>Your grown-up</b> wants to link to your account. Only say yes if this is your parent or guardian. If you don't know them, tell an adult you trust.",
       "pendingCheck": "Did you give your code to your parent or guardian yourself, face to face? If you didn't, tap Report.",
@@ -406,7 +410,8 @@
         "h": "No ads",
         "p1": "There are no ads on Oomba Academy. Nothing is for sale, and nothing pops up over a game.",
         "paid1": "There are no ads on Oomba Academy. Playing is always free. You never have to pay for anything here, and nothing pops up over a game."
-      }
+      },
+      "setup": "Set up your child"
     },
     "parents": {
       "title": "For grown-ups",
@@ -515,7 +520,7 @@
         "li10": "Keep your password private. You are responsible for what happens in your grown-up account, including purchases.",
         "li11": "To protect against a child buying something on a shared device, we ask for your password again before you start or change a plan.",
         "s4": "Linking a grown-up to a child",
-        "li12": "The child gets a short code on their own Me page. It works once, for 1 hour.",
+        "li16": "The child gets a short code on their own Me page. It works once, for 24 hours.",
         "li13": "You enter the code on your family page.",
         "li14": "The child must say <b>Yes</b> on their own page. They can also say <b>No</b> or <b>Report</b>.",
         "li15": "The child can <b>Unlink</b> or <b>Report</b> at any time. A report ends the link at once and goes to our team.",
@@ -739,7 +744,7 @@
       },
       "linking": {
         "h": "Linking to a child",
-        "li1": "<b>The code:</b> your child gets a short code on their Me page. We store it scrambled. It works once, for 1 hour.",
+        "li7": "<b>The code:</b> your child gets a short code on their Me page. We store it scrambled. It works once, for 24 hours.",
         "li2": "<b>The child says yes:</b> the link only starts when your child confirms it on their own page. They can say No, or Report it to our team. Reports are kept while open and deleted 1 year after we close them.",
         "li3": "<b>What you see about your child:</b> their username and display name, how many of the family's extra Builder messages they used yesterday and so far this month, and whether they are building on the Family plan or the free allowance.",
         "li4": "<b>What you don't see:</b> today's live activity (so you can't tell when they're online), their chats, friends or games, any messages charged to a school, or whether they are in a school at all.",
@@ -771,6 +776,13 @@
         "li4": "<b>How long:</b> the contact's name and email, the address, the note and the purchase order number in our database are deleted <b>2 years</b> after the request is closed. Stripe keeps the school's address and purchase order number with its invoices (see below).",
         "li5": "<b>Seats</b> are counted from the number of active students. Billing does not use students' names or work.",
         "li6": "<b>Families never see class activity:</b> a grown-up linked to a student sees only that student's family extra messages."
+      },
+      "schoolSetup": {
+        "h": "School set-up requests",
+        "li1": "<b>What we keep when a teacher or school leader asks us to set up a school</b> (the form on our teachers page): the school's name, their role, their work email, about how many students, the country, the language of the page and when it was sent. If they were signed in to a grown-up or school staff account, we also keep which account sent it. A guest's account is never kept with a request.",
+        "li2": "<b>What we use it for:</b> only to set up the school and reply to the request. We don't send newsletters, and we don't share it with Stripe or anyone else.",
+        "li3": "<b>Who sees it:</b> only our team.",
+        "li4": "<b>How long:</b> deleted <b>1 year</b> after we close the request (or 1 year after it was sent, if it is never closed)."
       },
       "children": {
         "h": "Children's data",
@@ -874,7 +886,8 @@
       "saveFailed": "We could not save that.",
       "badScore": "Bad score.",
       "pickReason": "Pick a reason."
-    }
+    },
+    "makeLike": "Make a game like this"
   },
   "play": {
     "backTo": "Back to {title}",
@@ -1122,6 +1135,13 @@
       "ready": "✨ Ready",
       "question": "💬 Has a question",
       "stopped": "⚠️ Stopped"
+    },
+    "grownup": {
+      "title": "The Builder",
+      "heading": "The Builder is for kids' accounts",
+      "text": "Kids make their own games with the Builder, signed in with their own account. A grown-up account can play games and look after a family, but it can't build.",
+      "how": "How making a game works",
+      "safety": "Is the AI Builder safe?"
     }
   },
   "studio": {
@@ -1254,15 +1274,15 @@
     "kindRefusal": "I can’t help with that one. Let’s build something fun instead. What kind of game would you like?",
     "scanStillFailing": "The safety check still is not happy. Tap “Ask the Builder to fix it” to try again.",
     "turnTimeout": "⏱️ This build took longer than our time limit, so I stopped. Your newest version is saved. Tell me what to change next!",
-    "turnTimeoutNothing": "⏱️ This build took longer than our time limit, so I stopped before I could save anything. It didn’t use up a turn, so you can try again.",
+    "turnTimeoutNothing": "⏱️ This build took longer than our time limit, so I stopped before I could save anything. It didn’t use up a Builder message, so you can try again.",
     "errors": {
       "disabled": "Building is switched off for this account. A grown-up can ask us to turn it back on.",
       "empty": "Type a message or tap an idea first.",
       "busy": "The Builder is still working on your last message. One moment!",
       "tooMany": "You already have 2 games building. Wait until one is done, then try again.",
-      "limit": "You have used all {count} Builder turns for today. Come back tomorrow for more!",
+      "limit": "{count, plural, one {You have used your # Builder message for today.} other {You have used all # Builder messages for today.}} Come back tomorrow for more!",
       "muddled": "The Builder got muddled. Please try again in a moment.",
-      "resting": "The AI Builder is resting right now. Your game and your turns are saved, so come back a bit later!",
+      "resting": "The AI Builder is resting right now. Your game and your Builder messages are saved, so come back a bit later!",
       "limitToday": "You've used today's Builder messages. More tomorrow!",
       "limitClass": "Your class has used today's Builder messages. More tomorrow!"
     },
@@ -1361,7 +1381,7 @@
         }
       }
     },
-    "cutOffNothing": "The Builder spent so long planning that it ran out of room before it could build anything. Your turn wasn’t used. Try asking for one or two changes at a time.",
+    "cutOffNothing": "The Builder spent so long planning that it ran out of room before it could build anything. This didn’t use up a Builder message. Try asking for one or two changes at a time.",
     "followUps": {
       "cap": "You’ve sent {max, plural, one {# extra message} other {# extra messages}} during this build. Wait until it’s done, then tell me more!",
       "refusedCap": "Let’s wait for the Builder to finish this build first.",
@@ -1492,7 +1512,7 @@
     },
     "studio": {
       "docTitle": "Studio: {title} · Oomba Academy",
-      "turns": "{left} of {total} turns left today",
+      "turns": "{left} of {total} Builder messages left today",
       "fixButton": "Ask the Builder to fix it",
       "fixMessage": "Please fix the safety check problems in version {number}:",
       "buildFirst": "Build something first!",
@@ -1834,7 +1854,7 @@
       },
       "continue": "Carry on building",
       "continueMessage": "Please carry on with my last message.",
-      "notCounted": "This one didn’t use up a turn.",
+      "notCounted": "This one didn’t use up a Builder message.",
       "signedOutBuilding": "You were signed out. The Builder keeps working on your game: sign in again to see it.",
       "gameGone": "This game was deleted, so the Builder stopped.",
       "followups": {
@@ -1853,7 +1873,7 @@
         "retry": "Try again",
         "putBack": "Put it back in the box",
         "notRead": {
-          "limit": "Not read: no turns left today",
+          "limit": "Not read: no Builder messages left today",
           "error": "Not read: the Builder got muddled",
           "stopped": "Not read: the build stopped",
           "chain": "Not read yet. Send it again when the Builder is free"
@@ -1861,10 +1881,10 @@
         "gotAi": "{count, plural, one {Got your message. The AI will read it after this step.} other {Got your # messages. The AI will read them after this step.}}",
         "gotBlocks": "{count, plural, one {Got your message. The Builder will read it after this step.} other {Got your # messages. The Builder will read them after this step.}}",
         "writingNow": "It’s writing code right now, so it finishes that first.",
-        "turnNote": "Extra messages don’t use a turn. If the Builder has already finished, your message starts a new build and uses 1 turn.",
+        "turnNote": "Messages you send while it builds don’t use up a Builder message. If the Builder has already finished, your message starts a new build and uses 1 Builder message.",
         "noUploadsHint": "Add pictures after this build",
         "announceRead": "The Builder is reading your new message",
-        "carriedNote": "Your message started a new build (1 turn)"
+        "carriedNote": "Your message started a new build (1 Builder message)"
       },
       "eta": {
         "about": "Usually about {time}",
@@ -1884,13 +1904,23 @@
       },
       "stillWorking": "One moment, the Builder is still working!",
       "resting": {
-        "text": "😴 The AI Builder is resting right now. It will be back {when}. Your game and your turns are saved, so come back then!",
+        "text": "😴 The AI Builder is resting right now. It will be back {when}. Your game and your Builder messages are saved, so come back then!",
         "today": "today at {time}",
         "tomorrow": "tomorrow at {time}",
         "date": "on {date} at {time}"
       },
       "extra": "+{n} extra this month",
-      "turnsLeftToday": "{left} left today"
+      "turnsLeftToday": "{left} left today",
+      "limitCard": {
+        "heading": "You have used all your Builder messages for today",
+        "text": "Your game is saved, and new Builder messages come tomorrow. Until then, you can:",
+        "textEmpty": "New Builder messages come tomorrow. Until then, you can:",
+        "publish": "Publish your game",
+        "play": "Play games",
+        "others": "Play games other kids made",
+        "grownUp": "A grown-up can link to your account:",
+        "grownUpWhere": "Me › For grown-ups"
+      }
     }
   },
   "favorites": {
@@ -2776,7 +2806,9 @@
       "signOutFirst": "Sign out of the account on this device first.",
       "needAdult": "Tick the box to say you are a parent or guardian, 18 or older.",
       "short": "Use at least {min} characters.",
-      "chosen": "You picked the {plan}. Next you pay on Stripe's secure page, then you add your children."
+      "chosen": "You picked the {plan}. Next you pay on Stripe's secure page, then you add your children.",
+      "signInName": "Your sign-in name",
+      "signInNameHint": "Your real name is fine. 3 to 16 letters or numbers, no spaces. Children never see it."
     },
     "login": {
       "title": "Grown-up sign-in",
@@ -2819,14 +2851,14 @@
       "title": "Link a child",
       "heading": "Link a child",
       "step1": "Your child signs in, opens <b>Me</b>, then <b>For grown-ups</b>, and taps <b>Get a code</b>.",
-      "step2": "Type the code here. It works once, for 1 hour.",
+      "step2Day": "Type the code here. It works once, for 24 hours.",
       "step3": "Your child says yes on their own Me page. Until then the link waits (for up to 24 hours).",
       "label": "Your child's code",
       "submit": "Send link request",
       "sent": "Request sent. Your child needs to say yes on their Me page."
     },
     "errors": {
-      "badCode": "That code doesn't work. A code works once, for 1 hour: ask your child for a new one.",
+      "badCodeDay": "That code doesn't work. A code works once, for 24 hours: ask your child for a new one.",
       "already": "You already asked to link this child, or they are already linked.",
       "full": "A family can link up to {max} children.",
       "typeCode": "Type the code your child gave you.",
@@ -2878,7 +2910,7 @@
       "legal": "Plans are covered by our <a href=\"/terms\">Terms of Service</a> and our <a href=\"/refunds\">Refund and Cancellation Policy</a>.",
       "welcomePlan": "Your {plan} is on. Thank you!",
       "welcomeHeading": "Now add your child",
-      "welcomeStep2": "Tap Link a child below and type the code. It works once, for 1 hour.",
+      "welcomeStep2Day": "Tap Link a child below and type the code. It works once, for 24 hours.",
       "basicNote": "Your Basic plan covers one child: {name}. Your other linked children build with the free daily messages. To cover up to {max} children, switch to the Family plan in Manage billing.",
       "coversBasic": "Covers 1 child.",
       "coversFamily": "Covers up to {max} children.",
@@ -2990,12 +3022,41 @@
         "h": "How to set up a school",
         "li1": "Write to {email} with your school's name and who will look after it (the school admin).",
         "li2": "We set up the school and the school admin's account. The school admin adds teachers and students.",
-        "li3": "The school admin pays on the school's Billing tab: by card, or by asking for an invoice or a purchase order."
+        "li3": "The school admin pays on the school's Billing tab: by card, or by asking for an invoice or a purchase order.",
+        "li1form": "Fill in the short form on <a href=\"{href}\">the teachers page</a>. A teacher or a school leader can send it.",
+        "li2day": "Within 1 school day, we set up the school and the school admin's account. The school admin adds teachers and students."
       },
       "toBilling": "Go to your school's Billing tab",
       "contact": {
         "h": "Questions?",
         "p1": "Write to {email}."
+      },
+      "calc": {
+        "h": "What would it cost?",
+        "label": "Number of students",
+        "button": "Work it out",
+        "result": "{seats, plural, one {# student} other {# students}} × {price} = {total} a year",
+        "min": "A school plan is for at least {min} students, so a smaller school pays for {min}.",
+        "tax": "Prices are in US dollars and don't include sales tax.",
+        "print": "Send this to my admin",
+        "printHint": "A page with the price and how to set up, to print or save as a PDF for whoever pays at your school."
+      },
+      "print": {
+        "title": "School plan: a page for your school's admin",
+        "heading": "Oomba Academy school plan",
+        "intro": "A teacher at your school would like a school plan on Oomba Academy: learning games for ages 8 to 14, and a Builder where students make their own games. Here is what it costs and how to set it up.",
+        "printButton": "Print or save as PDF",
+        "back": "Back to school plans",
+        "cost": "What it costs",
+        "perStudent": "Price per student, per year",
+        "minimum": "Smallest plan",
+        "minimumN": "{min, plural, one {# student} other {# students}}",
+        "students": "Students",
+        "total": "Total per year",
+        "estimate": "This is an estimate for {date}, not an invoice. Prices are in US dollars and don't include sales tax.",
+        "setup": "How to set it up",
+        "li1": "Set up the school (free): fill in the short form at {url}.",
+        "contact": "Questions? Write to {email}."
       }
     }
   },
@@ -3126,6 +3187,43 @@
       "q9": "Which languages are there?",
       "a9": "{count} languages, including Spanish, Portuguese, French, German, Arabic, Hebrew and Japanese. Each student picks their own.",
       "a4google": "Students never type an email address, and we never ask for their age or home address. If your school uses Sign in with Google, we keep each student’s school Google email only to recognize their account. There are no ads and no tracking cookies. Our <a href=\"{href}\">privacy notice</a> lists exactly what we keep."
+    },
+    "setup": {
+      "lead": "Tell us a little about your school. We'll set it up within 1 school day and reply to your email with what to do next. Setting up a school is free.",
+      "school": "School name",
+      "role": "Your role",
+      "rolePick": "Choose one",
+      "roles": {
+        "teacher": "Teacher",
+        "leader": "Principal or head teacher",
+        "it": "IT or technology lead",
+        "district": "District or school group",
+        "other": "Something else"
+      },
+      "email": "Your work email",
+      "emailHint": "Your school email, so we know the request comes from the school. We use it only to reply.",
+      "students": "About how many students?",
+      "country": "Country",
+      "submit": "Set up my school",
+      "privacy": "We use your email only to answer this request, and we delete the request 1 year after we've answered it. See our <a href=\"{privacy}\">Privacy Policy</a>.",
+      "questions": "Questions first? Write to {email}.",
+      "kid": "A teacher or a school leader can ask us to set up a school here. Show this page to your teacher!",
+      "thanks": {
+        "h": "Thank you! We've got your request.",
+        "p1": "We'll set up your school within 1 school day and reply to the email you gave us.",
+        "p2": "While you wait, try a game with your class: students can play straight away, without signing up."
+      },
+      "errors": {
+        "school": "Type your school's name (2 to 100 characters).",
+        "role": "Choose your role.",
+        "email": "Type an email address like name@school.org.",
+        "students": "Type about how many students, as a number.",
+        "country": "Type your country.",
+        "slow": "Too many requests from here. Please try again in an hour.",
+        "busyToday": "We've had a lot of requests today. Please try again tomorrow, or write to us.",
+        "full": "We can't take more requests right now. Please write to us instead.",
+        "again": "Something in the form needs fixing. Please check it and send it again."
+      }
     }
   },
   "learn": {
@@ -3431,7 +3529,18 @@
           "a4": "No. Kids chat only with friends they added with a 6-character code, never by searching names, and they can switch chat off on their Me page."
         }
       }
-    }
+    },
+    "index": {
+      "crumb": "Learn",
+      "title": "Learning games by subject and age",
+      "description": "Free learning games for kids aged 8 to 14, by subject (math, words, strategy, music, brain breaks, making games) and by age. Play in the browser, at school or at home.",
+      "h1": "Learning games by subject and age",
+      "lead": "Free games for ages 8 to 14 that play in the browser. Pick a subject or an age to see which games fit and what they practice.",
+      "subjects": "By subject",
+      "ages": "By age",
+      "who": "For teachers and parents"
+    },
+    "inClass": "Using this in class? <a href=\"{href}\">See Oomba Academy for teachers</a>."
   },
   "parents": {
     "title": "Safe, free learning games for kids 8–14",
@@ -3451,7 +3560,8 @@
       "start": "Let your child start free",
       "try": "Try a game now, no sign-up",
       "grownup": "Make a grown-up account",
-      "lead": "Seen enough? Try a game with your child now."
+      "lead": "Seen enough? Try a game with your child now.",
+      "setup": "Set up your child — free"
     },
     "teachers": "Teaching a class? See <a href=\"{href}\">Oomba Academy for teachers</a>.",
     "play": {
