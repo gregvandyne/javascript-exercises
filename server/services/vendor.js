@@ -68,10 +68,10 @@ export function checkThree(src) {
     try { map = JSON.parse(body); } catch { add('three_pin', 'The import map is not valid. Use the exact import map from the 3D rules.'); return ' '; }
     if (isPinnedMap(map)) { pinned = true; return ' '; }
     // Not the pinned map: anything Three.js or vendor in it is refused; other entries are judged by the URL rules.
-    if (body.includes('/vendor/') || THREE_URL.test(body) || (map && map.imports && typeof map.imports === 'object' && 'three' in map.imports)) add('three_pin', PIN);
+    if (body.includes(VENDOR_PATH) || THREE_URL.test(body) || (map && map.imports && typeof map.imports === 'object' && 'three' in map.imports)) add('three_pin', PIN);
     return block;
   });
-  if (rest.includes('/vendor/')) add('three_pin', PIN);
+  if (rest.includes(VENDOR_PATH)) add('three_pin', PIN);
   if (THREE_URL.test(rest)) add('three_pin', PIN);
   const mods = moduleCode(rest);
   if (THREE_ADDON.test(mods)) add('three_pin', 'Uses a Three.js add-on (three/addons/...). Add-ons are not available here: build it with Three.js itself.');

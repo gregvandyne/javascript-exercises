@@ -107,10 +107,11 @@ test('3D games are flagged to the SDK (device check); 2D games are not', () => {
   assert.equal(V.deviceNeeds(loadTemplate('runner')), null);
 });
 
-test('the frame CSP allows only the site\'s own /vendor/three/ path, never other site scripts or odd hosts', () => {
+test('the frame CSP allows only the site\'s own /vendor/three/ and /vendor/oomba-kit/ paths, never other site scripts or odd hosts', () => {
   assert.doesNotMatch(FRAME_CSP, /vendor/, 'no origin, no vendor source');
   const csp = frameCsp('https://oomba.example');
-  assert.match(csp, /script-src 'unsafe-inline' https:\/\/cdnjs\.cloudflare\.com https:\/\/oomba\.example\/vendor\/three\/;/);
+  assert.match(csp, /script-src 'unsafe-inline' https:\/\/cdnjs\.cloudflare\.com https:\/\/oomba\.example\/vendor\/three\/ https:\/\/oomba\.example\/vendor\/oomba-kit\/;/);
+  assert.match(csp, /font-src https:\/\/fonts\.gstatic\.com data: https:\/\/oomba\.example\/vendor\/oomba-kit\/;/, 'the kit fonts');
   assert.doesNotMatch(csp.match(/script-src[^;]*/)[0], /'self'/, "not 'self': that would allow every site script");
   for (const o of ['https://x.example; script-src *', 'javascript:alert(1)', 'https://a b', 'ftp://x.example']) assert.doesNotMatch(frameCsp(o), /vendor/, o);
   assert.equal(requestOrigin({ protocol: 'https', host: 'oomba.example' }), 'https://oomba.example');
@@ -118,7 +119,7 @@ test('the frame CSP allows only the site\'s own /vendor/three/ path, never other
   assert.equal(requestOrigin({ protocol: 'http', host: 'evil.example;script-src *' }), '');
   // A list: each plain origin once; odd ones are left out.
   assert.match(frameCsp(['https://play.example.com', 'http://internal:3000', 'HTTPS://PLAY.EXAMPLE.COM', 'https://x.example; script-src *']),
-    /script-src 'unsafe-inline' https:\/\/cdnjs\.cloudflare\.com https:\/\/play\.example\.com\/vendor\/three\/ http:\/\/internal:3000\/vendor\/three\/;/);
+    /script-src 'unsafe-inline' https:\/\/cdnjs\.cloudflare\.com https:\/\/play\.example\.com\/vendor\/three\/ https:\/\/play\.example\.com\/vendor\/oomba-kit\/ http:\/\/internal:3000\/vendor\/three\/ http:\/\/internal:3000\/vendor\/oomba-kit\/;/);
 });
 
 test('PUBLIC_URL: the frame CSP names the public origin (a CDN rewrites Host) and still the name the request came in on', () => {
@@ -172,12 +173,12 @@ test('/vendor is served with a year of immutable caching and CORS; a 3D frame ge
   // Behind a proxy (TRUST_PROXY=1) the origin comes from X-Forwarded-Proto/Host.
   const frame = await call(src, { headers: { 'x-forwarded-proto': 'https', 'x-forwarded-host': 'oomba.example' } });
   assert.equal(frame.status, 200);
-  assert.match(frame.headers.get('content-security-policy'), /script-src 'unsafe-inline' https:\/\/cdnjs\.cloudflare\.com https:\/\/oomba\.example\/vendor\/three\/;/);
+  assert.match(frame.headers.get('content-security-policy'), /script-src 'unsafe-inline' https:\/\/cdnjs\.cloudflare\.com https:\/\/oomba\.example\/vendor\/three\/ https:\/\/oomba\.example\/vendor\/oomba-kit\/;/);
   const doc = await frame.text();
   assert.match(doc, /"device":\{"webgl2":true,"importmap":true,"title":"This game needs a newer device or browser"/);
   assert.ok(doc.includes(V.threeImportMap()), 'the import map reaches the frame intact');
   const direct = await call(src);
-  assert.match(direct.headers.get('content-security-policy'), new RegExp(`${BASE.replace(/[.:/]/g, '\\$&')}/vendor/three/;`));
+  assert.match(direct.headers.get('content-security-policy'), new RegExp(`${BASE.replace(/[.:/]/g, '\\$&')}/vendor/three/ ${BASE.replace(/[.:/]/g, '\\$&')}/vendor/oomba-kit/;`));
   // It publishes like any game (for friends straight away; Everyone would go to review), and its play frame is 3D too.
   const pub = await call(`/api/studio/${made.id}/publish`, { method: 'POST', body: JSON.stringify({ visibility: 'friends' }) });
   const pj = await pub.json();
@@ -203,11 +204,11 @@ test('PUBLIC_URL over HTTP: a temporary name before moving day and a Host-rewrit
     const scripts = async headers => (await call(src, { headers })).headers.get('content-security-policy').match(/script-src[^;]*/)[0];
     // Caddy on the temporary name (Host kept): the page loads /vendor/three/ from new.example.com.
     assert.equal(await scripts({ 'x-forwarded-proto': 'https', 'x-forwarded-host': 'new.example.com' }),
-      "script-src 'unsafe-inline' https://cdnjs.cloudflare.com https://play.example.com/vendor/three/ https://new.example.com/vendor/three/");
+      "script-src 'unsafe-inline' https://cdnjs.cloudflare.com https://play.example.com/vendor/three/ https://play.example.com/vendor/oomba-kit/ https://new.example.com/vendor/three/ https://new.example.com/vendor/oomba-kit/");
     // Front Door / CloudFront rewrote Host to the origin's name: the browser is on PUBLIC_URL.
     assert.equal(await scripts({ 'x-forwarded-proto': 'https', 'x-forwarded-host': 'origin.play.example.com' }),
-      "script-src 'unsafe-inline' https://cdnjs.cloudflare.com https://play.example.com/vendor/three/ https://origin.play.example.com/vendor/three/");
+      "script-src 'unsafe-inline' https://cdnjs.cloudflare.com https://play.example.com/vendor/three/ https://play.example.com/vendor/oomba-kit/ https://origin.play.example.com/vendor/three/ https://origin.play.example.com/vendor/oomba-kit/");
     assert.equal(await scripts({ 'x-forwarded-proto': 'https', 'x-forwarded-host': 'play.example.com' }),
-      "script-src 'unsafe-inline' https://cdnjs.cloudflare.com https://play.example.com/vendor/three/");
+      "script-src 'unsafe-inline' https://cdnjs.cloudflare.com https://play.example.com/vendor/three/ https://play.example.com/vendor/oomba-kit/");
   } finally { config.publicUrl = saved; }
 });

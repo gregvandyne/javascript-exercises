@@ -234,6 +234,8 @@ router.get('/frame/:token', (req, res) => {
   const init = {
     user: { ...(u ? { displayName: u.display_name, avatar: u.avatar, isGuest: !!u.is_guest } : { displayName: t('play.defaultPlayer'), avatar: '🙂', isGuest: true }), lang, dir: localeInfo(lang).dir },
     game: { id: g.id, title: g.title },
+    // The site theme for games that follow it (Oomba Kit games); 'system' is left out so the device decides.
+    ...(req.theme === 'light' || req.theme === 'dark' ? { theme: req.theme } : {}),
     save: u && !preview ? games.getSave(g.id, u.id) : {},
     canSave: !!u && !preview,
     preview,

@@ -1,0 +1,202 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Oomba Kit: art gallery</title>
+<style>
+/* Laid out by viewport: one tab row and one chip row, each a single line that scrolls sideways (never wraps over the
+   scene); props and icons are a scrolling grid of cards (72 px cells at least, 14 px labels); characters stand on
+   ground anchored to the bottom of the view. */
+.g-bar{position:fixed;top:calc(8px + env(safe-area-inset-top));inset-inline:8px;display:flex;justify-content:center;z-index:15;pointer-events:none}
+.g-row{display:flex;gap:4px;align-items:center;max-width:100%;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none;white-space:nowrap;
+  background:var(--ok-card);border:2px solid #141414;border-radius:999px;padding:4px;box-shadow:0 3px 0 #141414;pointer-events:auto}
+.g-row::-webkit-scrollbar{display:none}
+.ok-night .g-row{border-color:#FFFDF255;box-shadow:0 3px 0 #000}
+.g-row button{font:inherit;font-weight:700;font-size:15px;min-height:44px;padding:0 14px;border-radius:999px;border:0;background:transparent;color:var(--ok-text);cursor:pointer;flex-shrink:0}
+.g-row button[aria-pressed=true]{background:#66C792;color:#141414}
+.g-row .g-label{flex-shrink:0;font-weight:800;font-size:13px;letter-spacing:.02em;text-transform:uppercase;opacity:.65;padding:0 6px 0 10px}
+.g-row .g-sep{flex-shrink:0;width:2px;align-self:stretch;margin:6px 4px;background:var(--ok-line)}
+.g-chips{position:fixed;bottom:calc(10px + env(safe-area-inset-bottom));inset-inline:8px;display:flex;justify-content:center;z-index:15;pointer-events:none}
+.g-chips .g-row{border-radius:24px}
+.g-grid{position:fixed;inset:calc(76px + env(safe-area-inset-top)) 10px calc(78px + env(safe-area-inset-bottom));overflow:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(max(84px,calc((100% - 50px) / 12)),1fr));gap:10px;align-content:start;padding:6px;z-index:14}
+.g-grid.g-icons{grid-template-columns:repeat(auto-fill,minmax(88px,1fr));bottom:calc(12px + env(safe-area-inset-bottom))}
+.g-card{background:var(--ok-card);color:var(--ok-text);border:2px solid #141414;border-radius:18px;box-shadow:0 3px 0 #141414;display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:6px;padding:10px 6px 8px;min-height:104px;cursor:pointer}
+.ok-night .g-card{border-color:#FFFDF233;box-shadow:0 3px 0 #000}
+.g-card canvas{display:block;max-width:100%;height:56px;width:auto;object-fit:contain}
+.g-card svg{width:36px;height:36px}
+.g-card span{font-weight:700;font-size:14px;line-height:1.15;text-align:center;overflow-wrap:anywhere}
+.g-card:active{transform:translateY(2px)}
+.g-ui{position:fixed;inset-inline-end:12px;top:calc(76px + env(safe-area-inset-top));max-height:calc(100% - 100px);width:min(320px,calc(100vw - 24px));overflow:auto;display:grid;grid-template-columns:1fr 1fr;gap:8px;z-index:14;padding:10px;
+  background:var(--ok-card);border:2px solid #141414;border-radius:22px;box-shadow:0 4px 0 #141414}
+.g-ui .ok-btn{justify-content:center;font-size:15px;padding:0 10px;min-height:44px}
+@media (max-width:600px){.g-ui{top:auto;bottom:calc(12px + env(safe-area-inset-bottom));max-height:44vh;width:auto;inset-inline-start:12px}}
+</style></head>
+<body>
+<!--KIT-->
+<script>
+// The Oomba Kit gallery: every character, clip and mood, every prop and variant, every icon, every biome by day and
+// night with auto-tiled ground, and every standard screen. For the owner's review and for the screenshot tests.
+// Public API only.
+const S = Oomba.stage({ api: 1, biome: 'meadow', seed: 11 });
+const ui = Oomba.ui.root(), T = Oomba.t;
+const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
+let ents = [], labels = [], chips = null, extra = null, tab = '', clip = 'idle', mood = 'happy', relayout = null;
+const clear = () => { for (const e of ents) e.remove(null); ents = []; labels = []; if (chips) chips.remove(); chips = null; if (extra) extra.remove(); extra = null; if (hud) { hud.root.remove(); hud = null; } relayout = null; S.camera.zoom = 1; };
+const add = (name, o) => { const e = S.add(name, o); ents.push(e); return e; };
+// world labels in the scene: 15 CSS px whatever the zoom (the kit draws small labels as Ink on a Cream pill)
+S.draw((ctx, D) => { const px = S.fit ? S.fit.k * S.camera.zoom : 1; for (const l of labels) D.text(ctx, l[0], l[1], l[2], { size: 15 / px, weight: 700, max: (l[3] || 140) }); });
+/** One chip row: [[label, [[value, text], ...], current, onPick], ...] groups in a single sideways-scrolling line. */
+const chipRow = groups => {
+  const wrap = el('div', 'g-chips'), row = el('div', 'g-row'); row.setAttribute('role', 'toolbar'); wrap.appendChild(row);
+  groups.forEach(([label, items, current, onPick], gi) => {
+    if (gi) row.appendChild(el('span', 'g-sep'));
+    if (label) row.appendChild(el('span', 'g-label', label));
+    const bs = items.map(([v, text]) => { const b = el('button', '', text); b.type = 'button'; b.setAttribute('aria-pressed', String(v === current)); b.onclick = () => { bs.forEach(x => x.setAttribute('aria-pressed', 'false')); b.setAttribute('aria-pressed', 'true'); onPick(v); }; row.appendChild(b); return b; });
+  });
+  ui.appendChild(wrap); return wrap;
+};
+const kids = [
+  { species: 'kid', skin: 1, hair: { style: 'puffs', color: 'black' }, outfit: { top: 'overalls', color: 'sky' }, wear: ['backpack'] },
+  { species: 'kid', skin: 5, hair: { style: 'curls', color: 'black' }, outfit: { top: 'hoodie', color: 'grape' }, wear: ['headphones'] },
+  { species: 'kid', skin: 3, hair: { style: 'bob', color: 'copper' }, outfit: { top: 'dress', color: 'coral' }, wear: ['glasses'] },
+  { species: 'kid', skin: 7, hair: { style: 'braids', color: 'cocoa' }, outfit: { top: 'tee', color: 'mint' }, wear: ['crown'] },
+  { species: 'kid', skin: 0, hair: { style: 'spiky', color: 'blonde' }, outfit: { top: 'tee', color: 'peach' }, wear: ['scarf'] },
+  { species: 'kid', skin: 6, hair: { style: 'long', color: 'cocoa' }, outfit: { top: 'hoodie', color: 'sky' }, wear: ['wizard-hat'] },
+];
+/** The view in world units at zoom 1 (the stage's design view). */
+const view = () => ({ w: S.view.vw, h: S.view.vh });
+const TABS = {
+  chars() {
+    S.setBiome('meadow');
+    const all = Oomba.art.species.map(s => [s, s]).concat(kids.map(k => [k, k.hair.style + ' · ' + k.outfit.top]));
+    // columns and zoom from the viewport: 6 across on wide screens, 3 on phones; ground at the bottom of the view
+    relayout = () => {
+      for (const e of ents) e.remove(null); ents = []; labels = [];
+      const v = view(), cols = v.w / v.h > 1.25 ? 6 : 3, rows = Math.ceil(all.length / cols);
+      const spanW = cols * 160, spanH = rows * 230 + 150, z = Math.max(0.5, Math.min(2.4, v.w / spanW, v.h / spanH));
+      S.camera.zoom = z; S.camera.x = 0;
+      const vh = v.h / z, bottom = vh / 2 - 140 / z;   // the lowest ground line, above the chip row
+      S.camera.y = 0;
+      const grounds = [];
+      for (let r = 0; r < rows; r++) {
+        const gy = bottom - (rows - 1 - r) * 230, items = all.slice(r * cols, r * cols + cols);
+        items.forEach(([spec, label], i) => {
+          const x = (i - (items.length - 1) / 2) * 160;
+          const e = add(spec, { x, y: gy, size: 124, seed: r * cols + i + 1 }); e.groundY = gy; e.state(clip).mood(mood); e.look(null);
+          labels.push([label, x, gy + 26, 150]);
+        });
+        grounds.push(gy);
+      }
+      // the bottom row stands on the meadow's ground; rows above stand on floating platforms (a platformer's shelves)
+      const cells = Math.ceil(v.w / z / 64) + 2;
+      ents.push(...S.ground([' '.repeat(cells), '#'.repeat(cells), '#'.repeat(cells), '#'.repeat(cells)], { cell: 64, x: -cells * 32, y: grounds[rows - 1] - 64 }));
+      for (let r = 0; r < rows - 1; r++) for (let i = 0; i < cols; i++) add('platform', { x: (i - (cols - 1) / 2) * 160, y: grounds[r] + 22, size: 44, layer: 'world', shadow: false });
+    };
+    relayout();
+    chips = chipRow([['Mood', Oomba.art.moods.map(m => [m, m]), mood, m => { mood = m; for (const e of ents) if (e.spec) e.mood(m); }],
+      ['Clip', Oomba.art.clips.map(c => [c, c]), clip, c => { clip = c; for (const e of ents) if (e.spec) e.state(c); }]]);
+  },
+  props(group = 'all') {
+    S.setBiome('none'); S.camera.x = 0; S.camera.y = 0;
+    const G = Oomba.art.props, V = Oomba.art.variants;
+    let items;
+    if (group === 'all') items = [].concat(...Object.values(G)).map(n => [n, '']);
+    else if (group === 'variants') items = [].concat(...['tile', 'pie', 'clock', 'dice', 'shape', 'tree', 'chest', 'gate', 'book', 'rocket', 'sign'].map(n => V[n].map(v => [n, v])));
+    else items = G[group].map(n => [n, '']).concat([].concat(...G[group].filter(n => V[n]).map(n => V[n].filter(Boolean).map(v => [n, v]))));
+    extra = el('div', 'g-grid'); extra.setAttribute('role', 'list');
+    const dpr = Math.min(2, devicePixelRatio || 1);
+    for (const [n, v] of items) {
+      const card = el('div', 'g-card'); card.setAttribute('role', 'listitem'); card.dataset.prop = n;
+      const c = Oomba.art.toCanvas(n, Math.round(64 * dpr), v); c.setAttribute('aria-hidden', 'true'); card.appendChild(c);
+      card.appendChild(el('span', '', v ? n + ' ' + v : n));
+      card.onclick = () => { Oomba.juice.pop(c); Oomba.sfx(n === 'spark' || n === 'coin' ? 'spark' : 'pop'); };
+      extra.appendChild(card);
+    }
+    ui.appendChild(extra);
+    chips = chipRow([['Group', [['all', 'All'], ...Object.keys(G).map(g => [g, g]), ['variants', 'variants']], group, g => { clear(); TABS.props(g); }]]);
+  },
+  icons() {
+    S.setBiome('none');
+    extra = el('div', 'g-grid g-icons'); extra.setAttribute('role', 'list');
+    for (const n of Oomba.icons) { const c = el('div', 'g-card'); c.setAttribute('role', 'listitem'); c.innerHTML = Oomba.icon(n); c.appendChild(el('span', '', n)); extra.appendChild(c); }
+    ui.appendChild(extra);
+  },
+  biomes(b = 'meadow') {
+    S.setBiome(b); S.camera.x = 0; S.camera.y = 0;
+    relayout = () => {
+      for (const e of ents) e.remove(null); ents = [];
+      const v = view(), z = Math.max(0.6, Math.min(1.6, v.w / 1000, v.h / 620)); S.camera.zoom = z;
+      const vh = v.h / z, gy = vh / 2 - 64 * 2.2;   // ground two tiles above the bottom of the view
+      const cells = Math.ceil(v.w / z / 64) + 4, mid = Math.floor(cells / 2);
+      const row = (s, w) => ' '.repeat(Math.max(0, mid - 2)) + s + ' '.repeat(Math.max(0, cells - mid + 2 - w));
+      ents.push(...S.ground([row('  ## ', 5), row(' ####', 5), '#'.repeat(cells), '#'.repeat(cells), '#'.repeat(cells)], { cell: 64, x: -cells * 32, y: gy - 64 * 2 }));
+      const deco = { meadow: ['tree', 'bush', 'flower', 'mushroom'], forest: ['tree:pine', 'log', 'mushroom', 'leaf'], beach: ['tree:palm', 'shell', 'boat', 'rock'], snow: ['tree:snow', 'snowman', 'rock', 'log'], desert: ['cactus', 'rock', 'cactus', 'spikes'], candy: ['cupcake', 'cookie', 'gift', 'grapes'] }[b];
+      deco.forEach((d, i) => { const [n, vv] = d.split(':'); const x = [-380, -250, 330, 440][i]; add(n, { x, y: gy, size: n === 'tree' ? 190 : n === 'boat' ? 90 : 64, variant: vv || '', shadow: false, layer: 'world' }); });
+      const hero = add('oomba', { x: -130, y: gy, size: 120 }); hero.groundY = gy;
+      const pal = add(b === 'snow' ? 'bunny' : b === 'beach' ? 'frog' : b === 'desert' ? 'fox' : 'kid', { x: 220, y: gy, size: 120, flip: true }); pal.groundY = gy; pal.state('wave');
+      add('spark', { x: 48, y: gy - 64 * 2 - 36, size: 50, parts: [{ bob: { amp: 8 } }] });
+      add('lantern', { x: -260, y: gy, size: 150, parts: ['lantern'], shadow: false, layer: 'world' });
+      add('bee', { x: -40, y: gy - 230, size: 80, parts: [{ fly: { rangeX: 70, rangeY: 20 } }] });
+    };
+    relayout();
+    chips = chipRow([['Biome', Oomba.art.biomes.map(x => [x, x]), b, x => { clear(); TABS.biomes(x); }]]);
+  },
+  screens() {
+    S.setBiome('meadow'); S.camera.x = 0; S.camera.y = 0;
+    relayout = () => {
+      for (const e of ents) e.remove(null); ents = [];
+      const v = view(), z = Math.max(0.6, Math.min(1.6, v.w / 1100, v.h / 640)); S.camera.zoom = z;
+      const gy = v.h / z / 2 - 96, cells = Math.ceil(v.w / z / 64) + 4;
+      ents.push(...S.ground([' '.repeat(cells), '#'.repeat(cells), '#'.repeat(cells)], { cell: 64, x: -cells * 32, y: gy - 64 }));
+      const hero = add('oomba', { x: -330, y: gy, size: 150 }); hero.groundY = gy;
+      const fox = add('fox', { x: -120, y: gy, size: 140, flip: true }); fox.groundY = gy; window.__fox = fox;
+    };
+    relayout();
+    extra = el('div', 'g-ui');
+    const go = (label, fn, kind = 'quiet') => extra.appendChild(Oomba.ui.button(label, { kind, onPress: fn }));
+    go('Title screen', () => Oomba.ui.title({ title: 'Oomba Meadow', subtitle: 'Collect the sparks and open the gate.', hero: Oomba.char('oomba') }), 'hot');
+    go('How to play', () => Oomba.ui.howTo([{ icon: 'move', text: 'Move with the arrows' }, { icon: 'jump', text: 'Jump over the thorns' }, { icon: 'spark', text: 'Collect every spark' }]));
+    go('Countdown', () => Oomba.ui.countdown(3));
+    go('HUD', () => showHud());
+    go('Pause', () => Oomba.ui.pause());
+    go('Win', () => Oomba.ui.win({ stars: 3, score: 1280, best: 990, hero: Oomba.me() }), 'go');
+    go('Try again', () => Oomba.ui.tryAgain({ score: 420, best: 990, hero: Oomba.me() }));
+    go('Settings', () => Oomba.ui.settings());
+    go('Quiz: 7 × 6', () => Oomba.ui.ask({ q: '7 × 6 = ?', choices: ['36', '42', '48', '54'], a: 42, hint: '7 × 6 is 6 + 6 + 6 + 6 + 6 + 6 + 6', who: window.__fox }));
+    go('Correct', () => Oomba.ui.banner('correct'));
+    go('Wrong', () => Oomba.ui.banner('wrong', T('answerIs', { a: '42' })));
+    go('Bubble', () => { const fox = window.__fox; fox.state('talk'); Oomba.ui.bubble(fox, Oomba.lang === 'ar' ? 'مرحباً! هل تساعدني في جمع الشرارات؟' : Oomba.lang === 'ja' ? 'こんにちは！スパークをあつめてくれる？' : 'Hi! Can you help me collect the sparks before sunset?', { readAloud: false }).then(() => fox.state('idle')); });
+    go('Dialog', () => Oomba.ui.dialog({ portrait: 'fox', title: 'A gate!', text: 'Answer the question to open it.', buttons: [{ label: T('close'), kind: 'quiet', value: 'no' }, { label: T('play'), value: 'yes' }] }));
+    go('Toast', () => Oomba.ui.toast(T('great')));
+    ui.appendChild(extra);
+    showHud();
+  },
+};
+let hud = null;
+function showHud() {
+  if (hud) hud.root.remove();
+  hud = Oomba.ui.hud(['score', 'lives:3', 'timer', 'progress', 'combo']);
+  hud.score.set(120); hud.progress.set(0.45); hud.timer.start(45); hud.combo.bump(); hud.combo.bump(); hud.combo.bump();
+  hud.root.style.top = Math.round(bar.getBoundingClientRect().bottom) + 'px';
+}
+Oomba.input.on('tap', p => {
+  const w = S.toWorld(p);
+  const c = ents.find(e => e.spec && Math.abs(e.x - w.x) < 50 && w.y < e.y && w.y > e.y - e.size);
+  if (c) { c.state('cheer'); S.burst('sparkle', c.x, c.y - c.size * 0.6, { n: 10 }); Oomba.sfx('pop'); Oomba.after(1200, () => c.state(clip)); }
+});
+// top bar: tabs + day/night, one line that scrolls sideways on small screens
+const bar = el('div', 'g-bar'), tabs = el('div', 'g-row'); tabs.setAttribute('role', 'toolbar');
+const TAB_NAMES = [['chars', 'Characters'], ['props', 'Props'], ['icons', 'Icons'], ['biomes', 'Biomes'], ['screens', 'Screens']];
+function show(name, arg) { clear(); tab = name; [...tabs.children].forEach((b, i) => { if (TAB_NAMES[i]) b.setAttribute('aria-pressed', String(TAB_NAMES[i][0] === name)); }); TABS[name](arg); }
+for (const [n, l] of TAB_NAMES) { const b = el('button', '', l); b.type = 'button'; b.onclick = () => show(n); tabs.appendChild(b); }
+const nightBtn = el('button', '', 'Day / Night'); nightBtn.type = 'button'; nightBtn.onclick = () => S.toNight(S.timeOfDay < 0.5, 1500); tabs.appendChild(nightBtn);
+bar.appendChild(tabs); ui.appendChild(bar);
+// re-lay the scene when the viewport changes (rotation, split view, zoom)
+let lastV = '';
+S.update(() => { const v = Math.round(S.view.vw) + 'x' + Math.round(S.view.vh); if (v !== lastV) { lastV = v; if (relayout) relayout(); } });
+show(new URLSearchParams(location.search).get('tab') || 'chars');
+Oomba.scene = 'gallery';
+Oomba.test({ state: () => ({ gallery: { tab, entities: ents.length, chars: ents.filter(e => e.spec).length, labels: labels.length, icons: document.querySelectorAll('.g-icons .g-card').length, props: document.querySelectorAll('.g-grid:not(.g-icons) .g-card').length, biome: S.biome, tod: S.timeOfDay } }) });
+Object.assign(window.__brbTest, {
+  gallery: () => window.__brbTest.state().gallery,
+  tab: (n, arg) => show(n, arg), night: on => S.setTimeOfDay(on === false ? 0 : 1, 0), clip: c => { clip = c; for (const e of ents) if (e.spec) e.state(c); },
+});
+</script>
+</body></html>

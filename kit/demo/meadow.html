@@ -1,0 +1,534 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Oomba Meadow</title>
+<style>
+/* The hero customiser card (the rest of the UI is the kit's own screens and HUD). */
+.mh{position:fixed;z-index:20;inset-inline-end:max(16px,5vw);top:50%;transform:translateY(-50%);width:min(392px,calc(100vw - 32px));max-height:calc(100vh - 32px);overflow:auto;
+  background:var(--ok-card);color:var(--ok-text);border:3px solid #141414;border-radius:30px;box-shadow:0 8px 0 #141414;padding:20px 18px 18px;display:flex;flex-direction:column;gap:14px;
+  animation:mh-in 420ms cubic-bezier(.34,1.56,.64,1) both}
+.ok-night .mh{border-color:#FFFDF233;box-shadow:0 8px 0 #000}
+@keyframes mh-in{0%{opacity:0;transform:translateY(-50%) translateX(40px) scale(.92)}100%{opacity:1;transform:translateY(-50%)}}
+[dir=rtl] .mh{animation-name:mh-in-rtl}@keyframes mh-in-rtl{0%{opacity:0;transform:translateY(-50%) translateX(-40px) scale(.92)}100%{opacity:1;transform:translateY(-50%)}}
+.mh h2{margin:0;font-weight:800;font-size:1.65em;line-height:1.1;text-align:center;font-variation-settings:"opsz" 48}
+.mh-tabs{display:flex;gap:4px;background:var(--ok-bg2);border-radius:999px;padding:4px;border:2px solid var(--ok-line)}
+.mh-tabs button{flex:1;font:inherit;font-weight:700;font-size:.95em;min-height:44px;border:0;border-radius:999px;background:transparent;color:var(--ok-text);cursor:pointer;padding:0 6px}
+.mh-tabs button[aria-selected=true]{background:#66C792;color:#141414;box-shadow:inset 0 -3px 0 #1F9D6355}
+.mh-panel{display:flex;flex-direction:column;gap:12px}
+.mh-head{display:flex;align-items:center;justify-content:center;gap:10px}
+.mh-live{display:none;height:132px;justify-content:center;align-items:flex-end;margin:-4px 0 -6px}
+.mh-live canvas{display:block}
+.mh-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.mh-opt{position:relative;aspect-ratio:1;border-radius:20px;border:2.5px solid var(--ok-line);background:var(--ok-bg2);display:flex;align-items:flex-end;justify-content:center;cursor:pointer;padding:0;overflow:hidden;
+  transition:transform 140ms cubic-bezier(.34,1.56,.64,1),border-color 120ms}
+.mh-opt{align-items:flex-start}.mh-opt canvas{display:block;height:170%!important;width:auto!important;margin-top:4%;flex-shrink:0}
+/* outfits: the torso at 2x, so the choices differ at a glance; extras: head and shoulders */
+.mh-torso .mh-opt canvas{height:250%!important;margin-top:-128%}
+.mh-bust .mh-opt canvas{height:150%!important;margin-top:-6%}
+.mh-opt:hover{transform:translateY(-2px)}
+.mh-opt[aria-pressed=true]{border-color:#141414;box-shadow:0 0 0 3px #66C792;transform:scale(1.05)}
+.ok-night .mh-opt[aria-pressed=true]{border-color:#FFFDF2}
+.mh-sws{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.mh-sw{width:40px;height:40px;border-radius:50%;border:2.5px solid #141414;cursor:pointer;padding:0;box-shadow:0 3px 0 #141414;transition:transform 140ms cubic-bezier(.34,1.56,.64,1)}
+.mh-sws.mh-big .mh-sw{width:52px;height:52px}
+.mh-sw[aria-pressed=true]{transform:scale(1.14);box-shadow:0 0 0 3px var(--ok-card),0 0 0 6px #66C792}
+.mh-label{font-weight:700;font-size:.85em;opacity:.75;text-align:center;margin:0}
+.mh-acts{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.mh-none{font-weight:800;font-size:1.6em;opacity:.45;align-self:center}
+@media (orientation:portrait) and (max-width:720px){
+  .mh{top:calc(10px + env(safe-area-inset-top));transform:none;inset-inline:12px;width:auto;padding:14px 12px 12px;gap:10px;border-radius:24px;max-height:62vh;animation-name:mh-drop}
+  [dir=rtl] .mh{animation-name:mh-drop}
+  @keyframes mh-drop{0%{opacity:0;transform:translateY(-30px) scale(.94)}100%{opacity:1;transform:none}}
+  .mh h2{font-size:1.3em}.mh-panel{min-height:0;gap:8px}.mh-grid{gap:8px}.mh-opt{border-radius:16px}.mh-sw{width:34px;height:34px}.mh-sws.mh-big .mh-sw{width:40px;height:40px}
+  .mh{max-height:calc(100vh - 24px)}
+  .mh-live{display:flex}   /* the hero you are making, large, inside the card */
+  .mh .ok-big{min-height:52px;font-size:1.15em;padding:0 22px}
+}
+.mh-skip{position:fixed;bottom:calc(14px + env(safe-area-inset-bottom));inset-inline-start:14px;z-index:19}
+</style></head>
+<body>
+<!--KIT-->
+<script>
+// "Oomba Meadow": the Oomba Kit approval showcase. A real, playable mini-platformer built only on the kit's public API
+// (Oomba.stage, characters, props, particles, lights, time of day, the standard screens and HUD). The game logic
+// (tile collisions, coyote time, the magnet, the quiz gate) is plain code here; phase 2 moves it into Oomba.game.
+'use strict';
+const O = window.Oomba, PAL = O.tokens.palette, INK = '#141414';
+const S = O.stage({ api: 1, biome: 'meadow', seed: 21 });
+const T = (k, v) => O.t(k, v);
+const DARK = O.theme.mode === 'dark';
+const TOD = { title: DARK ? 0.9 : 0.4, day: DARK ? 0.86 : 0, night: 1 };
+const realWait = ms => O.time.real.wait(ms);   // real time: runs through the pause screen and slow-mo (story beats)
+
+// ---- words (kit chrome words come from Oomba.t: play, go, best...) ------------------------------------------------
+O.strings({
+  en: { sub: 'Collect the sparks, open the fox’s gate and reach the flag before night!', make: 'Make your hero', skin: 'Skin', hair: 'Hair', outfit: 'Outfit', extra: 'Extra', avatar: 'Use my avatar', ready: 'Let’s go!',
+    move: 'Run with the arrows, A/D or the stick', jump: 'Jump with Space, ↑ or the green button', collect: 'Grab every spark — they fly to you!',
+    foxHi: 'Hi! The gate only opens for a times-table answer. Ready?', foxAgain: 'So close! Let’s try that one again.', foxYes: 'Brilliant! The meadow is yours.', hint: '7 × 6 is the same as 6 + 6 + 6 + 6 + 6 + 6 + 6',
+    croak: 'Croak!', splash: 'Splash!', ouch: 'Ouch!', closeSay: 'The meadow will wait for you. One more go?', night: 'Night falls…', hint2: '6 × 8 is the same as 8 + 8 + 8 + 8 + 8 + 8', nightCap: '[night falls]' },
+  // ar/he: maths sits in Unicode isolates (LRI ... PDI) so it never reorders inside right-to-left sentences
+  ar: { sub: 'اجمع الشرارات، وافتح بوابة الثعلب، واصل إلى العلم قبل حلول الليل!', make: 'اصنع بطلك', skin: 'البشرة', hair: 'الشعر', outfit: 'الملابس', extra: 'إضافات', avatar: 'استخدم صورتي', ready: 'هيا بنا!',
+    move: 'اركض بالأسهم أو بعصا التحكم', jump: 'اقفز بالمسافة أو ↑ أو بالزر الأخضر', collect: 'اجمع كل الشرارات، فهي تطير إليك!',
+    foxHi: 'مرحباً! لا تُفتح البوابة إلا بإجابة من جدول الضرب. هل أنت مستعد؟', foxAgain: 'اقتربت كثيراً! لنحاول مرة أخرى.', foxYes: 'رائع! المرج كله لك.', hint: '\u20667 × 6\u2069 تساوي \u20666 + 6 + 6 + 6 + 6 + 6 + 6\u2069',
+    croak: 'نق!', splash: 'طرطشة!', ouch: 'آخ!', closeSay: 'المرج سينتظرك. محاولة أخرى؟', night: 'حلّ الليل…', hint2: '\u20666 × 8\u2069 تساوي \u20668 + 8 + 8 + 8 + 8 + 8\u2069', nightCap: '[حلّ الليل]' },
+  he: { sub: 'אספו את הניצוצות, פתחו את השער של השועל והגיעו לדגל לפני הלילה!', make: 'צרו את הגיבור שלכם', skin: 'עור', hair: 'שיער', outfit: 'בגדים', extra: 'תוספות', avatar: 'הדמות שלי', ready: 'יוצאים!',
+    move: 'רצים עם החצים או עם הג׳ויסטיק', jump: 'קופצים עם רווח, ↑ או הכפתור הירוק', collect: 'אספו כל ניצוץ – הם עפים אליכם!',
+    foxHi: 'שלום! השער נפתח רק בתשובה מלוח הכפל. מוכנים?', foxAgain: 'כמעט! בואו ננסה שוב.', foxYes: 'מצוין! האחו כולו שלכם.', hint: '\u20667 × 6\u2069 זה כמו \u20666 + 6 + 6 + 6 + 6 + 6 + 6\u2069',
+    croak: 'קוואק!', splash: 'פלאש!', ouch: 'אאוץ׳!', closeSay: 'האחו יחכה לכם. עוד ניסיון?', night: 'הלילה יורד…', hint2: '\u20666 × 8\u2069 זה כמו \u20668 + 8 + 8 + 8 + 8 + 8\u2069', nightCap: '[הלילה יורד]' },
+  ja: { sub: 'スパークをあつめて、キツネのもんをあけて、よるになるまえにはたまでいこう！', make: 'ヒーローをつくろう', skin: 'はだ', hair: 'かみ', outfit: 'ふく', extra: 'こもの', avatar: 'わたしのアバター', ready: 'しゅっぱつ！',
+    move: 'やじるしかスティックではしる', jump: 'スペース、↑、みどりのボタンでジャンプ', collect: 'スパークをぜんぶあつめよう！とんでくるよ',
+    foxHi: 'こんにちは！このもんは、かけざんのこたえでひらくんだ。じゅんびはいい？', foxAgain: 'おしい！もういちどやってみよう。', foxYes: 'すごい！はらっぱはきみのものだ。', hint: '7 × 6 は 6 + 6 + 6 + 6 + 6 + 6 + 6 とおなじ',
+    croak: 'ケロッ！', splash: 'バシャッ！', ouch: 'いたっ！', closeSay: 'はらっぱはまっているよ。もういっかい？', night: 'よるがきた…', hint2: '6 × 8 は 8 + 8 + 8 + 8 + 8 + 8 とおなじ', nightCap: '[よるになる]' },
+  es: { sub: '¡Junta las chispas, abre la puerta del zorro y llega a la bandera antes de la noche!', make: 'Crea tu héroe', skin: 'Piel', hair: 'Pelo', outfit: 'Ropa', extra: 'Extra', avatar: 'Usar mi avatar', ready: '¡Vamos!',
+    move: 'Corre con las flechas o el joystick', jump: 'Salta con Espacio, ↑ o el botón verde', collect: '¡Atrapa cada chispa: vuelan hacia ti!',
+    foxHi: '¡Hola! La puerta solo se abre con una respuesta de las tablas. ¿Listo?', foxAgain: '¡Casi! Probemos otra vez.', foxYes: '¡Genial! El prado es tuyo.', hint: '7 × 6 es lo mismo que 6 + 6 + 6 + 6 + 6 + 6 + 6',
+    croak: '¡Croac!', splash: '¡Chof!', ouch: '¡Ay!', closeSay: 'El prado te espera. ¿Otra vez?', night: 'Cae la noche…', hint2: '6 × 8 es lo mismo que 8 + 8 + 8 + 8 + 8 + 8', nightCap: '[cae la noche]' },
+  fr: { sub: 'Ramasse les étincelles, ouvre la porte du renard et atteins le drapeau avant la nuit !', make: 'Crée ton héros', skin: 'Peau', hair: 'Cheveux', outfit: 'Tenue', extra: 'Extra', avatar: 'Mon avatar', ready: 'C’est parti !',
+    move: 'Cours avec les flèches ou le joystick', jump: 'Saute avec Espace, ↑ ou le bouton vert', collect: 'Attrape chaque étincelle : elles volent vers toi !',
+    foxHi: 'Salut ! La porte s’ouvre seulement avec une table de multiplication. Prêt ?', foxAgain: 'Presque ! On réessaie.', foxYes: 'Bravo ! La prairie est à toi.', hint: '7 × 6, c’est comme 6 + 6 + 6 + 6 + 6 + 6 + 6',
+    croak: 'Croâ !', splash: 'Plouf !', ouch: 'Aïe !', closeSay: 'La prairie t’attend. On rejoue ?', night: 'La nuit tombe…', hint2: '6 × 8, c’est comme 8 + 8 + 8 + 8 + 8 + 8', nightCap: '[la nuit tombe]' },
+  de: { sub: 'Sammle die Funken, öffne das Tor des Fuchses und erreiche die Fahne vor der Nacht!', make: 'Bau deinen Helden', skin: 'Haut', hair: 'Haare', outfit: 'Kleidung', extra: 'Extra', avatar: 'Mein Avatar', ready: 'Los geht’s!',
+    move: 'Lauf mit den Pfeilen oder dem Stick', jump: 'Spring mit Leertaste, ↑ oder dem grünen Knopf', collect: 'Schnapp dir jeden Funken – sie fliegen zu dir!',
+    foxHi: 'Hallo! Das Tor öffnet sich nur mit einer Einmaleins-Antwort. Bereit?', foxAgain: 'Fast! Versuchen wir es nochmal.', foxYes: 'Super! Die Wiese gehört dir.', hint: '7 × 6 ist dasselbe wie 6 + 6 + 6 + 6 + 6 + 6 + 6',
+    croak: 'Quak!', splash: 'Platsch!', ouch: 'Autsch!', closeSay: 'Die Wiese wartet auf dich. Nochmal?', night: 'Die Nacht kommt…', hint2: '6 × 8 ist dasselbe wie 8 + 8 + 8 + 8 + 8 + 8', nightCap: '[die Nacht kommt]' },
+  ru: { sub: 'Собери искры, открой ворота лиса и добеги до флага до ночи!', make: 'Создай героя', skin: 'Кожа', hair: 'Волосы', outfit: 'Одежда', extra: 'Ещё', avatar: 'Мой аватар', ready: 'Поехали!',
+    move: 'Беги стрелками или джойстиком', jump: 'Прыгай пробелом, ↑ или зелёной кнопкой', collect: 'Лови все искры — они летят к тебе!',
+    foxHi: 'Привет! Ворота открываются только ответом из таблицы умножения. Готов?', foxAgain: 'Почти! Давай ещё раз.', foxYes: 'Отлично! Луг твой.', hint: '7 × 6 — это 6 + 6 + 6 + 6 + 6 + 6 + 6',
+    croak: 'Ква!', splash: 'Плюх!', ouch: 'Ой!', closeSay: 'Луг тебя подождёт. Ещё разок?', night: 'Наступает ночь…', hint2: '6 × 8 — это 8 + 8 + 8 + 8 + 8 + 8', nightCap: '[наступает ночь]' },
+});
+
+// ---- art the demo adds on top of the kit (the art-pack API: Oomba.art.define + the "Oomba Ink" grammar) ------------
+const ink = O.art.ink;
+O.art.define('pond', { w: 64, h: 64, ax: 0.5, ay: 0.5, draw(ctx, k) {
+  const top = k.v === 'top', y0 = top ? 16 : -2;
+  const g = ctx.createLinearGradient(0, y0, 0, 66); g.addColorStop(0, top ? PAL.sky[1] : PAL.sky[2]); g.addColorStop(1, PAL.sky[2]);
+  ctx.fillStyle = g; ctx.fillRect(-1, y0, 66, 68 - y0);
+  ctx.strokeStyle = 'rgba(255,253,242,0.55)'; ctx.lineCap = 'round'; ctx.lineWidth = ink.lines(k).inner;
+  for (const [x, y, w] of top ? [[10, 30, 16], [38, 44, 12], [20, 56, 10]] : [[14, 18, 10], [40, 40, 14]]) { ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + w, y); ctx.stroke(); }
+  if (top) {
+    const p = new Path2D(); p.moveTo(-2, 16); for (let x = 0; x <= 66; x += 4) p.lineTo(x, 16 + Math.sin(x / 64 * Math.PI * 4) * 2.2);
+    ctx.strokeStyle = 'rgba(255,253,242,0.9)'; ctx.lineWidth = ink.lines(k).w * 1.6; ctx.stroke(p);
+    ctx.strokeStyle = INK; ctx.lineWidth = ink.lines(k).w * 0.7; ctx.stroke(p);
+  }
+} });
+O.art.define('lilypad', { w: 100, h: 40, ax: 0.5, ay: 0.4, draw(ctx, k) {
+  const p = new Path2D(); p.moveTo(50, 16); p.lineTo(80, 6); p.bezierCurveTo(100, 14, 100, 34, 50, 36); p.bezierCurveTo(0, 34, 0, 6, 50, 6); p.lineTo(64, 4); p.closePath();
+  ink.sticker(ctx, k, p, { fill: PAL.mint[2], shade: PAL.mint[3], gloss: [30, 14, 12, 3, -0.15] });
+  for (const a of [-2.6, -1.9, -0.9, 0.4]) { const v = new Path2D(); v.moveTo(50, 20); v.lineTo(50 + Math.cos(a) * 34, 20 + Math.sin(a) * 12); ink.detail(ctx, k, v, 0.7); }
+  if (k.v === 'b') { for (let i = 0; i < 5; i++) { const a = i / 5 * Math.PI * 2; ink.sticker(ctx, k, ink.ellipse(28 + Math.cos(a) * 5, 14 + Math.sin(a) * 4, 5, 4), { fill: PAL.coral[0], rim: false, line: 0.6 }); } ink.sticker(ctx, k, ink.ellipse(28, 14, 3.5, 3), { fill: PAL.spark[2], rim: false, line: 0.6 }); }
+} });
+O.art.define('reed', { w: 30, h: 70, ax: 0.5, ay: 1, draw(ctx, k) {
+  for (const [x, h, c] of [[9, 62, 0], [17, 68, 1], [24, 54, 0]]) {
+    const s = new Path2D(); s.moveTo(x, 70); s.quadraticCurveTo(x - 2, 70 - h * 0.5, x + 1, 70 - h); ctx.strokeStyle = INK; ctx.lineWidth = ink.lines(k).w * 2.2; ctx.lineCap = 'round'; ctx.stroke(s); ctx.strokeStyle = PAL.mint[3]; ctx.lineWidth = ink.lines(k).w; ctx.stroke(s);
+    if (c) ink.sticker(ctx, k, ink.rrect(x - 4, 70 - h + 4, 9, 20, 4.5), { fill: PAL.cocoa[2], shade: PAL.cocoa[3], rim: false, line: 0.8 });
+  }
+} });
+
+// ---- the level: one character per cell (64 units), the surface is row 6 -----------------------------------------
+//  #  ground            ~  pond water        F  lily pad + frog   @  lily pad     *  spark        ^  spikes
+//  K  hero start        b  bunny             B  bee               X  fox          G  quiz gate    L  lantern
+//  P  goal flag         O  the Oomba mascot  T  tree              u  bush         m  mushroom     S  sign
+const MAP = [
+//0         1         2         3         4         5         6         7
+//01234567890123456789012345678901234567890123456789012345678901234567890123456789
+ '                                                                                ',
+ '                                 B    **                                        ',
+ '                                     ####                                       ',
+ '            **        **         ****                                           ',
+ '           *  *      *  *       ######      ***            **    ** L**    **   ',
+ '  T  b  K S     u         ***    ^^^^^    m  T X u G   L    L  ######  L  T L PO',
+ '###################~~F~@~#######################################################',
+ '###################~~~~~~#######################################################',
+ '###################~~~~~~#######################################################',
+ '###################~~~~~~#######################################################',
+ '###################~~~~~~#######################################################',
+ '###################~~~~~~#######################################################',
+];
+const CELL = 64, SR = 6, COLS = MAP[0].length, ROWS = MAP.length, LEVEL_W = COLS * CELL;
+const SOLID = MAP.map(r => [...r].map(c => c === '#'));
+const cx = c => c * CELL + CELL / 2, rowTop = r => (r - SR) * CELL, feet = r => (r + 1 - SR) * CELL;
+const solidAt = (c, r) => (c < 0 || c >= COLS) ? true : r >= 0 && r < ROWS && SOLID[r][c];
+const groundTop = x => { const c = Math.floor(x / CELL); if (c < 0 || c >= COLS) return 0; for (let r = 0; r < ROWS; r++) if (SOLID[r][c]) return rowTop(r); return null; };
+
+// ---- state ------------------------------------------------------------------------------------------------------
+const save = O.save.define({ v: 1, defaults: { best: 0, hero: null } });
+const HERO0 = { species: 'kid', skin: 3, hair: { style: 'curls', color: 'black' }, outfit: { top: 'hoodie', color: 'sky' }, wear: ['backpack'] };
+let heroSpec = save.hero && save.hero.species ? save.hero : HERO0;
+const G = { scene: 'boot', ents: [], sparks: [], pads: [], lanterns: [], kid: null, bunny: null, frog: null, bee: null, fox: null, gate: null, flag: null, mascot: null,
+  gateOpen: false, talked: false, nightOn: false, total: 0, got: 0, score: 0, combo: 0, comboT: 0, hud: null, startX: 0, safeX: 0, t: 0, ended: false };
+const K = { vx: 0, vy: 0, grounded: false, coyote: 0, buffer: 0, wasGround: true, stepT: 0, airMax: 0, croakT: 0 };
+const PHYS = { run: 330, acc: 2700, dec: 3200, air: 1900, g: 2500, jump: 930, cut: 0.42, coyote: 0.11, buffer: 0.13, fall: 1150, hw: 22, h: 92 };
+
+function spawn(name, o) { const e = S.add(name, o); G.ents.push(e); return e; }
+function clearLevel() { for (const e of G.ents) e.remove(null); G.ents = []; G.sparks = []; G.pads = []; G.lanterns = []; S.lights.length = 0; }
+function build() {
+  clearLevel(); const R0 = O.rand(7), R = () => R0.float(); R.range = R0.range;
+  G.gateOpen = false; G.talked = false; G.nightOn = false; G.got = 0; G.score = 0; G.combo = 0; G.ended = false;
+  // ground: auto-tiled from the '#' cells (the kit picks edge/corner tiles), then the pond's water columns
+  G.ents.push(...S.ground(MAP.map(r => r.replace(/[^#]/g, ' ')), { cell: CELL, x: 0, y: rowTop(0) }));
+  MAP.forEach((row, r) => [...row].forEach((ch, c) => {
+    const x = cx(c), y = feet(r);
+    if (ch === '~' || ch === 'F' || ch === '@') spawn('pond', { x, y: rowTop(r) + CELL / 2, size: CELL + 1, variant: r === SR ? 'top' : '', layer: 'world', shadow: false });
+    if (ch === 'F' || ch === '@') { const p = spawn('lilypad', { x, y: rowTop(r) + 20, size: 34, variant: ch === '@' ? 'b' : '', layer: 'world', z: 3, shadow: false }); G.pads.push({ x, top: rowTop(r) + 14, half: 50, e: p }); }
+    if (ch === 'F') { G.frog = spawn('frog', { x: x + 6, y: rowTop(r) + 14, size: 78, flip: true, seed: 5 }); G.frog.groundY = rowTop(r) + 14; }
+    if (ch === '*') { const s = spawn('spark', { x, y: rowTop(r) + CELL / 2, size: 46, parts: [{ bob: { amp: 6 } }, { glow: { amount: 0.7 } }], seed: c * 31 + r, layer: 'actors', z: 2 }); G.sparks.push(s); }
+    if (ch === '^') spawn('spikes', { x, y, size: 40, layer: 'world', z: 2, shadow: false, tag: 'spike' });
+    if (ch === 'T') spawn('tree', { x, y: y + 2, size: 230, layer: 'world', z: -2, shadow: false, wind: 0.6 });
+    if (ch === 'u') spawn('bush', { x, y: y + 4, size: 70, layer: 'world', z: 2, shadow: false });
+    if (ch === 'm') spawn('mushroom', { x, y: y + 2, size: 56, layer: 'world', z: 2, shadow: false });
+    if (ch === 'S') spawn('sign', { x, y: y + 2, size: 84, variant: '→', layer: 'world', z: 1, shadow: false });
+    if (ch === 'L') { const l = spawn('lantern', { x, y: y + 2, size: 150, parts: ['lantern'], layer: 'world', z: 1, shadow: false }); l.light.on = false; G.lanterns.push(l); }
+    if (ch === 'P') { G.flag = spawn('flag', { x: x - 10, y: y + 2, size: 176, layer: 'world', z: 1, shadow: false, wind: 1 }); }
+    if (ch === 'G') { G.gate = spawn('gate', { x, y: y + 2, size: 168, layer: 'world', z: 4, shadow: false }); }
+    if (ch === 'X') { G.fox = spawn('fox', { x, y, size: 122, flip: true, seed: 9 }); G.fox.groundY = y; }
+    if (ch === 'B') { G.bee = spawn('bee', { x, y: rowTop(r) + CELL / 2, size: 70, parts: [{ fly: { rangeX: 110, rangeY: 26, speed: 1.1 } }], seed: 4 }); G.bee.shadow = false; }
+    if (ch === 'O') { G.mascot = spawn('oomba', { x, y, size: 112, flip: true, seed: 3 }); G.mascot.groundY = y; G.mascot.state('wave'); }
+    if (ch === 'b') { G.bunny = spawn('bunny', { x, y, size: 92, seed: 6 }); G.bunny.groundY = y; G.bunny.hop = 0; }
+    if (ch === 'K') { G.startX = x; }
+    // flowers, grass and reeds on open ground (seeded: the same meadow every time)
+    if (ch === ' ' && r === SR - 1 && SOLID[SR][c]) {
+      const n = MAP[r][c - 1], m = MAP[r][c + 1];
+      if (MAP[SR][c + 1] === '~' || MAP[SR][c - 1] === '~') spawn('reed', { x: x + (MAP[SR][c + 1] === '~' ? 18 : -18), y: 4, size: 64, layer: 'world', z: 5, shadow: false, wind: 1 });
+      else if (R() < 0.55) spawn('flower', { x: x + R.range(-20, 20), y: 3, size: R.range(30, 42), variant: R() < 0.5 ? '' : 'b', layer: 'world', z: 1, shadow: false, wind: 1 });
+      if (R() < 0.45 && n !== '^' && m !== '^') spawn('grass', { x: x + R.range(-24, 24), y: 6, size: R.range(18, 26), layer: 'world', z: 5, shadow: false, wind: 1 });
+    }
+  }));
+  G.total = G.sparks.length;
+  G.fox.look({ x: G.fox.x - 300, y: G.fox.y - 60 });
+  makeKid(G.startX, 0);
+  G.mascot.look(G.kid); G.frog.look(G.kid); G.bunny.look(G.kid);
+  for (const s of G.sparks) s.groundY = groundTop(s.x) == null ? s.y + 200 : groundTop(s.x);
+}
+function makeKid(x, y, react) {
+  const old = G.kid, spec = O.char(heroSpec);
+  const e = S.add(spec, { x, y, size: 112, seed: 2, z: 3 }); e.groundY = y; e.look(null);
+  if (old) { e.flip = old.flip; old.remove(null); G.ents.splice(G.ents.indexOf(old), 1); }
+  G.ents.push(e); G.kid = e;
+  if (G.bunny) G.bunny.look(e); if (G.mascot) G.mascot.look(e); if (G.frog) G.frog.look(e);
+  if (react) { e.state('cheer'); e.squash(1.18, 320); S.burst('sparkle', x, y - 70, { n: 14 }); O.sfx('pop', { pitch: 1 + Math.random() * 0.2 }); O.after(900, () => { if (e.clip === 'cheer') e.state('idle'); }); }
+  return e;
+}
+
+// ---- camera: fixed vertical framing. Landscape: the ground at 84% of the height. Portrait (phones): zoomed so the
+// view is about 11-12 tiles high and at least 5.5 wide, with the ground at 78% (the title at 75%): more sky and level,
+// a strip of soil, never a screenful of dirt. ---------------------------------------------------------------------
+let titlePan = 0;
+function frameCamera(dt) {
+  const V = S.view; if (!V.vw) return;
+  const portrait = V.vh > V.vw * 1.1;
+  const z = portrait ? Math.max(0.5, Math.min(V.vw / 352, V.vh / 672)) : Math.max(1, Math.min(V.vw / 560, V.vh / 540));
+  const VH = V.vh / z, frac = portrait ? (G.scene === 'title' ? 0.75 : 0.78) : 0.84;
+  S.camera.zoom = z; S.camera.bounds({ x: 0, y: -frac * VH, w: LEVEL_W, h: VH });
+  if (G.scene === 'title') { titlePan += dt; S.camera.x = 480 + (1 - Math.cos(titlePan * 0.085)) * 0.5 * 2700; }
+  if (G.scene === 'custom') { const VW = V.vw / z, rtl = O.dir === 'rtl', portrait = V.vh > V.vw * 1.1; const want = G.kid.x + (portrait ? 0 : (rtl ? -1 : 1) * VW * 0.22); S.camera.x += (want - S.camera.x) * Math.min(1, dt * 4); }
+}
+
+// ---- the player ---------------------------------------------------------------------------------------------------
+function hurt(dir, why) {
+  const e = G.kid; if (e.invuln > 0 || G.ended) return;
+  O.time.hitstop(90); S.camera.shake(0.5); e.flash(); e.state('hurt'); e.invuln = 1.4; O.sfx('hurt', { at: e });
+  K.vx = dir * 420; K.vy = -560; K.grounded = false;
+  S.burst('sparks', e.x, e.y - 60, { n: 10 }); S.floatText(T(why || 'ouch'), e.x, e.y - 130, 'hazard');
+  if (O.settings.assist === 'nofail') return;
+  const left = G.hud.lives.lose(); if (left <= 0) lose();
+}
+function landOn(y, speed) {
+  const e = G.kid; e.y = y; K.vy = 0;
+  if (!K.grounded) {
+    const k = Math.min(1, speed / 1100);
+    e.squash(0.86 - k * 0.16, 260); S.burst('dust', e.x, y, { n: 3 + Math.round(k * 6) }); O.sfx('land', { volume: 0.4 + k * 0.6, at: e });
+    if (e.clip === 'jump' || e.clip === 'fall') e.state(k > 0.35 ? 'land' : 'idle');
+    // the frog croaks when you land near it
+    if (G.frog && K.croakT <= 0 && Math.abs(G.frog.x - e.x) < 230) { K.croakT = 2; croak(); }
+  }
+  K.grounded = true; K.coyote = PHYS.coyote;
+}
+function croak() {
+  const f = G.frog; f.state('talk'); f.squash(1.3, 380); O.sfx('pop', { pitch: 0.55, at: f }); S.floatText(T('croak'), f.x, f.y - 100, 'player');
+  O.tween(f, { jy: -40 }, { ms: 180, ease: 'quadOut' }).then(() => O.tween(f, { jy: 0 }, { ms: 260, ease: 'bounceOut' })).then(() => f.state('idle'));
+  const p = G.pads[0]; if (p) O.tween(p.e, { jy: 5 }, { ms: 120 }).then(() => O.tween(p.e, { jy: 0 }, { ms: 500, ease: 'elasticOut' }));
+}
+function stepKid(dt) {
+  const e = G.kid, I = O.input, ax = G.scene === 'play' ? I.axis().x : 0;
+  // horizontal: snappy acceleration, slower in the air
+  const target = ax * PHYS.run, rate = !K.grounded ? PHYS.air : Math.abs(target) > Math.abs(K.vx) || Math.sign(target) !== Math.sign(K.vx) ? PHYS.acc : PHYS.dec;
+  if (e.invuln < 1.1) K.vx += Math.max(-rate * dt, Math.min(rate * dt, target - K.vx));
+  if (Math.abs(ax) > 0.1 && e.invuln < 1.1) e.flip = ax < 0;
+  // jump: buffered presses and coyote time, variable height when released early
+  if (G.scene === 'play' && I.pressed('jump')) K.buffer = PHYS.buffer;
+  K.buffer -= dt; K.coyote -= dt; K.croakT -= dt;
+  if (K.buffer > 0 && (K.grounded || K.coyote > 0)) {
+    K.vy = -PHYS.jump; K.grounded = false; K.coyote = 0; K.buffer = 0;
+    e.squash(1.22, 300); e.state('jump'); S.burst('dust', e.x, e.y, { n: 4 }); O.sfx('jump');
+  }
+  if (!I.down('jump') && K.vy < -PHYS.jump * PHYS.cut) K.vy = -PHYS.jump * PHYS.cut;
+  K.vy = Math.min(PHYS.fall, K.vy + PHYS.g * dt);
+  // move x, then y, against the tile grid (plus the closed gate and the lily pads)
+  const hw = PHYS.hw, h = PHYS.h;
+  let nx = e.x + K.vx * dt;
+  const r0 = Math.floor((e.y - h) / CELL) + SR, r1 = Math.floor((e.y - 1) / CELL) + SR;
+  if (K.vx > 0) { const c = Math.floor((nx + hw) / CELL); for (let r = r0; r <= r1; r++) if (solidAt(c, r)) { nx = c * CELL - hw - 0.01; K.vx = 0; break; } }
+  if (K.vx < 0) { const c = Math.floor((nx - hw) / CELL); for (let r = r0; r <= r1; r++) if (solidAt(c, r)) { nx = (c + 1) * CELL + hw + 0.01; K.vx = 0; break; } }
+  if (!G.gateOpen && G.gate && nx + hw > G.gate.x - 34) { nx = G.gate.x - 34 - hw; K.vx = 0; }
+  e.x = nx; e.vx = K.vx;
+  const py = e.y; let ny = py + K.vy * dt; const wasGround = K.grounded; K.grounded = false;
+  const c0 = Math.floor((e.x - hw) / CELL), c1 = Math.floor((e.x + hw) / CELL);
+  if (K.vy >= 0) {
+    const r = Math.floor(ny / CELL) + SR; let land = null;
+    for (let c = c0; c <= c1; c++) if (c >= 0 && c < COLS && solidAt(c, r) && py <= rowTop(r) + 0.5) land = rowTop(r);
+    for (const p of G.pads) if (Math.abs(p.x - e.x) < p.half && py <= p.top + 0.5 && ny >= p.top) land = land == null ? p.top : Math.min(land, p.top);
+    if (land != null) { if (!wasGround) landOn(land, K.vy); else { e.y = land; K.vy = 0; K.grounded = true; K.coyote = PHYS.coyote; } }
+    else e.y = ny;
+  } else {
+    const r = Math.floor((ny - h) / CELL) + SR; let hit = false;
+    for (let c = c0; c <= c1; c++) if (c >= 0 && c < COLS && r >= 0 && SOLID[r] && SOLID[r][c]) hit = true;
+    if (hit) { e.y = (r + 1 - SR) * CELL + h; K.vy = 40; e.squash(0.9, 180); O.sfx('step', { pitch: 0.7 }); } else e.y = ny;
+  }
+  if (K.grounded && Math.abs(K.vx) < 5 && G.pads.every(p => Math.abs(p.x - e.x) >= p.half)) G.safeX = e.x;
+  if (K.grounded && groundTop(e.x) === 0 && !G.pads.some(p => Math.abs(p.x - e.x) < p.half)) G.safeX = e.x;
+  // air clips, footsteps
+  if (!K.grounded && !wasGround === false && K.vy > 60 && e.clip !== 'hurt') e.state('fall');
+  if (!K.grounded && K.vy > 60 && e.clip === 'jump') e.state('fall');
+  if (K.grounded && Math.abs(K.vx) > 240) { K.stepT -= dt; if (K.stepT <= 0) { K.stepT = 0.26; S.burst('dust', e.x - Math.sign(K.vx) * 14, e.y, { n: 1 }); O.sfx('step', { volume: 0.25, pitchVar: 0.15 }); } }
+  const gt = groundTop(e.x); e.groundY = gt == null ? e.y + 400 : Math.min(gt, ...G.pads.filter(p => Math.abs(p.x - e.x) < p.half).map(p => p.top), 1e9);
+  // the pond: a splash and back to the bank
+  if (e.y > 26) {
+    S.burst('splash', e.x, 16, { n: 16 }); O.sfx('splash', { pitch: 0.6 }); e.x = G.safeX; e.y = 0; K.vy = 0; K.vx = 0; K.grounded = true;
+    e.invuln = 0; hurt(0, 'splash'); K.vx = 0; K.vy = -300;
+  }
+  // hazards
+  if (e.invuln <= 0) {
+    for (const s of G.ents) if (s.tag === 'spike' && Math.abs(s.x - e.x) < 34 + hw * 0.5 && e.y > s.y - 26) { K.vy = 0; hurt(e.x < s.x ? -1 : 1); K.vy = -760; break; }
+    if (G.bee && e.invuln <= 0 && Math.abs(G.bee.x - e.x) < 44 && Math.abs((G.bee.y) - (e.y - 52)) < 66) hurt(e.x < G.bee.x ? -1 : 1);
+  }
+}
+function collectSpark(s) {
+  if (s.collecting) return; G.got++;
+  G.combo = G.comboT > 0 ? G.combo + 1 : 1; G.comboT = 1.4;
+  const pts = 10 + Math.min(10, G.combo - 1) * 2; G.score += pts;
+  // the +points start at the pickup (never on the hero's face) and fly into the score pill, which bumps on arrival
+  const hud = G.hud;
+  s.collect(); S.floatText('+' + O.num(pts), s.x, s.y - 20, 'reward', { avoid: G.kid, to: 'score', onArrive: () => { if (hud && G.hud === hud) hud.score.add(pts); } });
+  O.sfx('spark', { pitch: 1 + Math.min(G.combo, 10) * 0.055, at: s });
+  if (hud && G.combo > 1) hud.combo.bump();
+  G.kid.squash(1.08, 160);
+  if (G.got === G.total) { O.ui.toast(T('sparksOf', { n: G.got, total: G.total })); S.burst('coins', G.kid.x, G.kid.y - 90); }
+}
+function stepSparks(dt) {
+  const e = G.kid, hx = e.x, hy = e.y - 56;
+  for (const s of G.sparks) {
+    if (s.dead || s.collecting) continue;
+    const dx = hx - s.x, dy = hy - s.y, d = Math.hypot(dx, dy);
+    if (!s.magnet && d < 118 && G.scene === 'play') { s.magnet = true; s.behaviours.length = 0; s.v = 120; }
+    if (s.magnet) { s.v = Math.min(1600, s.v + 3400 * dt); const k = Math.min(1, s.v * dt / Math.max(1, d)); s.x += dx * k; s.y += dy * k; s.rot += dt * 12; }
+    if (d < 40) collectSpark(s);
+  }
+  G.comboT -= dt; if (G.comboT <= 0 && G.combo) { G.combo = 0; if (G.hud) G.hud.combo.reset(); }
+}
+function stepFriends(dt) {
+  const b = G.bunny, e = G.kid;
+  if (b) {   // the bunny hops along behind you
+    const behind = G.scene === 'play' || G.scene === 'talk' ? e.x - (e.flip ? -96 : 96) : b.x, dx = behind - b.x;
+    const moving = Math.abs(dx) > 18; b.vx = moving ? Math.max(-420, Math.min(420, dx * 4)) : 0; b.x += b.vx * dt;
+    if (moving) b.flip = dx < 0;
+    b.hop = moving ? b.hop + dt * 11 : Math.max(0, b.hop - dt * 6) * 0;
+    const gt = groundTop(b.x), pad = G.pads.find(p => Math.abs(p.x - b.x) < p.half), gy = pad ? pad.top : gt == null ? 0 : gt;
+    b.y += (gy - b.y) * Math.min(1, dt * 14); b.groundY = gy;
+    b.jy = moving ? -Math.abs(Math.sin(b.hop)) * (gt == null && !pad ? 70 : 20) : 0;
+  }
+  if (G.fox && G.fox.clip !== 'talk' && G.fox.clip !== 'cheer') G.fox.look(Math.abs(G.fox.x - e.x) < 600 ? e : { x: G.fox.x - 300, y: G.fox.y - 60 });
+}
+
+// ---- story beats --------------------------------------------------------------------------------------------------
+async function talkToFox() {
+  G.talked = true; G.scene = 'talk'; K.vx = 0; G.kid.state('idle'); G.kid.flip = false;
+  const fox = G.fox; fox.state('wave'); fox.look(G.kid); G.hud.timer.stop();
+  await realWait(500); fox.state('talk');
+  await O.ui.bubble(fox, T('foxHi'), { ms: 4600 });
+  fox.state('think');
+  // two tries a question: a miss shows the hint (the answer is never given away on the retry); two misses reveal it,
+  // and the fox asks a different fact
+  const QS = [['7 × 6 = ?', 42, ['36', '42', '48', '49'], 'hint'], ['6 × 8 = ?', 48, ['42', '48', '54', '46'], 'hint2'], ['7 × 6 = ?', 42, ['42', '54', '35', '48'], 'hint']];
+  for (let i = 0; ; i++) {
+    const [q, a, ch, h] = QS[Math.min(i, QS.length - 1)];
+    const right = await O.ui.ask({ q, a, choices: ch, hint: T(h), tries: 2, who: fox });
+    if (right) break;
+    fox.state('talk'); G.kid.state('think');
+    await O.ui.bubble(fox, T('foxAgain'), { ms: 2400 });
+  }
+  openGate();
+}
+async function openGate() {
+  const fox = G.fox, gate = G.gate;
+  fox.state('cheer'); G.kid.state('cheer'); G.score += 50; G.hud.score.add(50);
+  O.sfx('gate'); S.camera.shake(0.25);
+  gate.variant = 'open'; gate.jsy = 0.82; gate.jsx = 1.15; O.spring(gate, 'jsy', { k: 260, zeta: 0.3 }).to(1); O.spring(gate, 'jsx', { k: 260, zeta: 0.3 }).to(1);
+  S.burst('sparkle', gate.x, gate.y - 120, { n: 26 }); S.burst('coins', gate.x, gate.y - 100);
+  G.gateOpen = true;
+  O.ui.bubble(fox, T('foxYes'), { ms: 2200 });
+  await realWait(900);
+  G.kid.state('idle'); fox.state('idle'); G.scene = 'play'; G.hud.timer.start(Math.max(25, G.hud.timer.left), lose);
+}
+function nightfall(ms = 3200) {
+  G.nightOn = true; const k = ms / 3200;
+  S.setTimeOfDay(TOD.night, ms);
+  O.ui.toast(T('night'), { ms: 2400 }); O.sfx('whoosh', { pitch: 0.5, caption: T('nightCap') });
+  const kid = G.kid;
+  G.lanterns.slice().sort((a, b) => a.x - b.x).forEach((l, i) => O.after((1300 + i * 420) * k, () => {
+    l.light.on = true; l.squash(1.25, 360);
+    S.burst('sparks', l.x, l.y - l.size * 0.8, { n: 7, color: PAL.spark[1] }); O.sfx('spark', { pitch: 0.7 + i * 0.1, at: l, caption: false });
+  }));
+  G.mascot.state('idle');
+  O.after(600, () => { kid.state('think'); O.after(700, () => { if (kid.clip === 'think') kid.state('idle'); }); });
+}
+async function reachGoal() {
+  if (G.ended) return; G.ended = true; G.scene = 'goal';
+  const kid = G.kid, flag = G.flag; K.vx = 0;
+  G.hud.timer.stop();
+  O.time.slowmo(0.3, 900); S.camera.punch(1.1);
+  kid.state('cheer'); flag.wobble(); flag.squash(1.15, 400);
+  S.burst('confetti', flag.x, flag.y - 220, { w: 220 }); S.burst('sparkle', kid.x, kid.y - 80, { n: 24 }); O.sfx('levelup');
+  G.mascot.state('cheer'); S.burst('sparkle', G.mascot.x, G.mascot.y - 120, { n: 12 });
+  await realWait(1400);
+  await S.wipe('out', { at: { x: kid.x, y: kid.y - 60 }, ms: 650 });
+  // the results tableau: everyone you met cheers in a row by the flag
+  // they stand either side of the results card (the card covers the middle of the view)
+  const mid = Math.min(flag.x - 120, LEVEL_W - S.view.vw / S.camera.zoom / 2), wide = S.view.vw / S.camera.zoom > 760;
+  const spots = wide ? [[G.bunny, -470], [G.frog, -360], [kid, -250], [G.fox, 250], [G.mascot, 370]] : [[G.bunny, -150], [kid, -50], [G.frog, 50], [G.fox, 150], [G.mascot, 250]];
+  for (const [e, dx] of spots) { e.behaviours.length = 0; e.x = mid + dx; e.y = groundTop(e.x) || 0; e.jy = 0; e.groundY = e.y; e.flip = dx > 0; e.look(null); e.state('cheer'); }
+  flag.x = mid + (wide ? 445 : 330);
+  G.bee.behaviours.length = 0; G.bee.x = mid - 300; G.bee.y = -300; G.bee.add('fly', { rangeX: 40, rangeY: 16 });
+  S.camera.target = null; S.camera.x = mid;
+  const timeBonus = Math.round(G.hud.timer.left) * 2, heartBonus = G.hud.lives.value * 25, total = G.score + timeBonus + heartBonus;
+  const stars = G.got >= G.total * 0.9 ? 3 : G.got >= G.total * 0.55 ? 2 : 1;
+  const best = save.best || 0; O.save.set({ best: Math.max(best, total) });
+  G.hud.root.style.display = 'none';
+  await S.wipe('in', { at: { x: kid.x, y: kid.y - 60 }, ms: 650 });
+  G.scene = 'win';
+  const v = await O.ui.win({ stars, score: total, best, hero: O.char(heroSpec), pause: false });
+  restart(v === 'next' ? 'title' : 'count');
+}
+async function lose() {
+  if (G.ended) return; G.ended = true; G.scene = 'lose';
+  const kid = G.kid; K.vx = 0; G.hud.timer.stop(); kid.state('sad'); O.time.hitstop(120);
+  await realWait(900);
+  const v = await O.ui.tryAgain({ score: G.score, best: save.best || 0, hero: O.char(heroSpec), say: T('closeSay') });
+  restart(v === 'again' ? 'count' : 'title');
+}
+
+// ---- scenes -------------------------------------------------------------------------------------------------------
+function setScene(s) { G.scene = s; O.scene = s; }
+let prebaked = false;
+async function title() {
+  setScene('title'); S.camera.target = null; titlePan = 0; S.setTimeOfDay(TOD.title, 0);
+  if (G.hud) { G.hud.root.remove(); G.hud = null; }
+  // behind the title: bake everything the level draws (at play zoom and the goal's camera punch), the score texts and
+  // the night variants, so play never bakes or uploads a page
+  if (!prebaked) { prebaked = true; frameCamera(0); S.prebake({ night: true, zooms: [1.1], text: ['+10', '+12', '+14', '+16', '+18', '+20', '+22', '+24', '+26', '+28', '+30', ['Ouch!', 'hazard'], [T('ouch'), 'hazard'], [T('splash'), 'hazard'], [T('croak'), 'player']] }); }
+  await O.ui.title({ title: 'Oomba Meadow', subtitle: T('sub'), hero: O.char('oomba'), heroSize: 116 });
+  await customise();
+}
+let mh = null;
+function customise() {
+  setScene('custom'); S.setTimeOfDay(TOD.day, 1800);
+  const kid = G.kid; kid.x = G.startX; kid.y = 0; kid.flip = false; kid.state('wave'); O.after(1200, () => kid.state('idle'));
+  return new Promise(resolve => {
+    const root = O.ui.root(), el = (t, c, s) => { const e = document.createElement(t); if (c) e.className = c; if (s != null) e.textContent = s; return e; };
+    mh = el('section', 'mh'); mh.setAttribute('role', 'dialog'); mh.setAttribute('aria-label', T('make'));
+    mh.appendChild(el('h2', '', T('make')));
+    const live = el('div', 'mh-live'); mh.appendChild(live);
+    const showLive = () => { live.innerHTML = ''; live.appendChild(O.ui.portrait(O.char(heroSpec), { size: 132, mood: 'happy' })); };
+    const tabs = el('div', 'mh-tabs'); tabs.setAttribute('role', 'tablist'); mh.appendChild(tabs);
+    const panel = el('div', 'mh-panel'); mh.appendChild(panel);
+    const spec = () => JSON.parse(JSON.stringify(heroSpec.species === 'kid' ? heroSpec : HERO0));
+    const apply = s => { heroSpec = s; O.save.set({ hero: s }); makeKid(G.kid.x, 0, true); render(); showLive(); };
+    const pic = s => O.ui.portrait(O.char(s), { size: 120 });
+    const opt = (content, pressed, onPick, label) => { const b = el('button', 'mh-opt'); b.type = 'button'; b.setAttribute('aria-pressed', String(pressed)); b.setAttribute('aria-label', label); if (typeof content === 'string') b.appendChild(el('span', 'mh-none', content)); else b.appendChild(content); b.onclick = onPick; return b; };
+    const sw = (hex, pressed, onPick, label) => { const b = el('button', 'mh-sw'); b.type = 'button'; b.style.background = hex; b.setAttribute('aria-pressed', String(pressed)); b.setAttribute('aria-label', label); b.onclick = onPick; return b; };
+    const TABS = {
+      skin() { const g = el('div', 'mh-grid'); O.tokens.skin.forEach((hex, i) => { const s = spec(); s.skin = i; const b = opt(pic(s), heroSpec.skin === i, () => apply(s), T('skin') + ' ' + (i + 1)); b.style.background = `linear-gradient(${hex}55, transparent 70%)`; g.appendChild(b); }); panel.appendChild(g); },
+      hair() { const g = el('div', 'mh-grid'); O.art.hair.forEach(st => { const s = spec(); s.hair = { style: st, color: s.hair.color }; g.appendChild(opt(pic(s), heroSpec.hair && heroSpec.hair.style === st, () => apply(s), st)); }); panel.appendChild(g);
+        const r = el('div', 'mh-sws'); ['cocoa', 'black', 'blonde', 'copper', 'grape', 'sky'].forEach(c => r.appendChild(sw(O.tokens.hair[c], heroSpec.hair && heroSpec.hair.color === c, () => { const s = spec(); s.hair.color = c; apply(s); }, c))); panel.appendChild(r); },
+      outfit() { const g = el('div', 'mh-grid mh-torso'); O.art.tops.forEach(tp => { const s = spec(); s.outfit = { top: tp, color: s.outfit.color }; g.appendChild(opt(pic(s), heroSpec.outfit && heroSpec.outfit.top === tp, () => apply(s), tp)); }); panel.appendChild(g);
+        const r = el('div', 'mh-sws'); ['sky', 'grape', 'coral', 'mint', 'peach', 'cocoa'].forEach(c => r.appendChild(sw(PAL[c][2], heroSpec.outfit && heroSpec.outfit.color === c, () => { const s = spec(); s.outfit.color = c; apply(s); }, c))); panel.appendChild(r); },
+      extra() { const g = el('div', 'mh-grid mh-bust'); [null, ...O.art.wear].forEach(w => { const s = spec(); s.wear = w ? [w] : []; const on = w ? (heroSpec.wear || []).includes(w) : !(heroSpec.wear || []).length; g.appendChild(opt(w ? pic(s) : '—', on, () => apply(s), w || 'none')); });
+        g.appendChild(opt(O.ui.portrait(O.me(), { size: 120 }), false, () => apply(JSON.parse(JSON.stringify(O.me()))), T('avatar'))); panel.appendChild(g); },
+    };
+    let tab = 'skin';
+    function render() {
+      tabs.innerHTML = ''; panel.innerHTML = '';
+      for (const k of Object.keys(TABS)) { const b = el('button', '', T(k)); b.type = 'button'; b.setAttribute('role', 'tab'); b.setAttribute('aria-selected', String(k === tab)); b.onclick = () => { tab = k; O.sfx('select'); render(); }; tabs.appendChild(b); }
+      TABS[tab]();
+    }
+    render(); showLive();
+    const acts = el('div', 'mh-acts');
+    acts.append(O.ui.button(T('avatar'), { kind: 'quiet', onPress: () => apply(JSON.parse(JSON.stringify(O.me()))) }),
+      O.ui.button(T('ready'), { kind: 'hot', big: true, onPress: () => { mh.remove(); mh = null; resolve(); } }));
+    mh.appendChild(acts); root.appendChild(mh);
+    window.__mhDone = () => { if (mh) { mh.remove(); mh = null; } resolve(); };
+  }).then(howTo);
+}
+async function howTo() {
+  setScene('howto');
+  const cards = [{ icon: 'move', text: T('move') }, { icon: 'jump', text: T('jump') }, { icon: 'spark', text: T('collect') }];
+  O.say(cards.map(c => c.text).join(' '));
+  await O.ui.howTo(cards);
+  await play();
+}
+async function play() {
+  setScene('count');
+  S.camera.follow(G.kid, { lookAhead: 0.16, deadzone: [0.08, 0.9], smooth: 0.1 });
+  G.hud = O.ui.hud(['score', 'lives:3', 'timer', 'progress', 'combo'], { onPause: v => { if (v === 'restart') restart('count'); if (v === 'quit') restart('title'); } });
+  O.input.touch('stick+jump');
+  await O.ui.countdown(3);
+  setScene('play'); G.t = 0;
+  G.hud.timer.start(150, lose);
+}
+async function restart(to) {
+  for (const m of document.querySelectorAll('.ok-modal,.ok-bubble,.mh')) m.remove();
+  if (G.hud) { G.hud.root.remove(); G.hud = null; }
+  build(); S.setTimeOfDay(to === 'title' ? TOD.title : TOD.day, 0); K.vx = K.vy = 0; K.grounded = true;
+  if (to === 'title') return title();
+  S.camera.x = G.kid.x; return play();
+}
+
+// ---- the frame ----------------------------------------------------------------------------------------------------
+S.update(dt => {
+  frameCamera(dt);
+  if (!G.kid) return;
+  G.t += dt;
+  stepKid(dt); stepSparks(dt); stepFriends(dt);
+  if (G.scene === 'play') {
+    if (!G.talked && G.kid.x > G.fox.x - 150) talkToFox();
+    if (G.gateOpen && !G.nightOn && G.kid.x > G.gate.x + 60) nightfall();
+    if (G.kid.x > G.flag.x - 20) reachGoal();
+    if (G.hud) G.hud.progress.set((G.kid.x - G.startX) / (G.flag.x - G.startX));
+  }
+});
+
+// ---- test and screenshot hooks ------------------------------------------------------------------------------------
+const meadowState = () => ({ meadow: { scene: G.scene, x: Math.round(G.kid ? G.kid.x : 0), y: Math.round(G.kid ? G.kid.y : 0), got: G.got, total: G.total, score: G.score, gate: G.gateOpen, night: G.nightOn, tod: +S.timeOfDay.toFixed(2), lanterns: G.lanterns.filter(l => l.light.on).length } });
+const closeModals = () => { for (const b of document.querySelectorAll('.ok-modal')) { const btn = b.querySelector('[data-ok-focus]') || b.querySelector('button'); if (btn) btn.click(); } };
+Object.assign(window.__brbTest, {
+  meadow: () => meadowState().meadow,
+  /** jump the demo to a beat: 'custom' | 'play' | 'pond' | 'bee' | 'fox' | 'night' | 'goal' | 'lose' */
+  beat: async name => {
+    if (G.scene === 'title') { closeModals(); await realWait(50); }
+    if (G.scene === 'custom' && name !== 'custom') { window.__mhDone(); await realWait(50); }
+    if (name === 'custom') return;
+    if (G.scene === 'howto') { closeModals(); await realWait(50); }
+    for (let i = 0; i < 40 && G.scene === 'count'; i++) await realWait(100);
+    const at = { play: G.startX, pond: cx(17), bee: cx(31), fox: cx(44), night: cx(50), goal: cx(74) }[name];
+    if (at != null) { G.kid.x = at; G.kid.y = name === 'bee' ? rowTop(4) : 0; K.vy = 0; G.bunny.x = at - 96; S.camera.x = at; }
+    if (name === 'night') { G.talked = true; G.gate.variant = 'open'; G.gateOpen = true; }
+    if (name === 'goal') { G.talked = true; G.gateOpen = true; G.gate.variant = 'open'; if (!G.nightOn) nightfall(); S.setTimeOfDay(1, 0); for (const l of G.lanterns) l.light.on = true; }
+    if (name === 'lose') lose();
+  },
+  hold: (action, ms) => O.input.hold(action, ms),
+  nightfall: ms => nightfall(ms),
+  collectAll: () => { for (const s of G.sparks) if (!s.dead) collectSpark(s); },
+});
+O.test({ state: meadowState, start: () => window.__brbTest.beat('play'), win: () => window.__brbTest.beat('goal') });
+
+build();
+O.fonts.ready.then(() => title());
+</script>
+</body></html>

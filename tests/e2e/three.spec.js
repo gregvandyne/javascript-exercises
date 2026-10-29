@@ -35,7 +35,7 @@ test('Star Island: start from the template, real 3D under the frame CSP, offline
   // The preview frame: the real CSP names only the site's /vendor/three/ path, and the island draws.
   let frame = await gameFrame(page);
   await expect.poll(async () => (await state(frame) || {}).ready, { timeout: 30_000 }).toBe(true);
-  expect(csp.at(-1)).toMatch(/script-src 'unsafe-inline' https:\/\/cdnjs\.cloudflare\.com http:\/\/localhost:\d+\/vendor\/three\/;/);
+  expect(csp.at(-1)).toMatch(/script-src 'unsafe-inline' https:\/\/cdnjs\.cloudflare\.com http:\/\/localhost:\d+\/vendor\/three\/ http:\/\/localhost:\d+\/vendor\/oomba-kit\/;/);
   expect(csp.at(-1)).toMatch(/connect-src 'none'/);
   await frame.evaluate(() => window.__brbTest.start());
   await expect.poll(async () => (await state(frame) || {}).screen).toBe('play');

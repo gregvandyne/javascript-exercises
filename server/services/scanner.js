@@ -3,6 +3,7 @@
 import { hasProfanity, personalInfo, looksLikeLinkCode } from './textfilter.js';
 import { MAX_GAME_BYTES } from './sanitize.js';
 import { checkThree } from './vendor.js';
+import { checkKit } from './kit.js';
 
 const ALLOWED_URL = /^https:\/\/(fonts\.googleapis\.com|fonts\.gstatic\.com|cdnjs\.cloudflare\.com)(\/|$)/i;
 
@@ -153,9 +154,13 @@ export function scanVersion(html) {
   for (const u of new Set((src.match(CDNJS_URL) || []).map(x => x.split(/[?#]/)[0]))) {
     if (!CDNJS_ALLOW.has(u)) { add('flag', 'unknown_cdnjs', `Loads a code library we have not reviewed (${u.slice(0, 80)}).`); }
   }
-  if (/<script\b[^>]*\bsrc\s*=\s*["']?(?!["']|https:\/\/cdnjs\.cloudflare\.com\/)/i.test(src)) add('fail', 'external_script', 'Loads a script from somewhere we do not allow.');
+  // The Oomba Kit: exactly the pinned tag (version, integrity, crossorigin) passes; it is taken out before the
+  // external-script and Three.js checks. Any other mention of its files fails (kit_pin / kit_tag).
+  const kit = checkKit(src);
+  for (const i of kit.issues) add(i.level, i.code, i.message);
+  if (/<script\b[^>]*\bsrc\s*=\s*["']?(?!["']|https:\/\/cdnjs\.cloudflare\.com\/)/i.test(kit.rest)) add('fail', 'external_script', 'Loads a script from somewhere we do not allow.');
   // 3D games: exactly the pinned, self-hosted Three.js (import map with integrity); any other Three.js fails.
-  for (const i of checkThree(src)) add(i.level, i.code, i.message);
+  for (const i of checkThree(kit.rest)) add(i.level, i.code, i.message);
   if (/<a\b[^>]*\bhref\s*=\s*["']?(https?:|\/\/|mailto:|tel:|javascript:)/i.test(src)) issues.push({ level: 'fail', code: 'link', message: 'Has a link that leaves the game.' });
   // Visible text and string literals: profanity and personal-info requests.
   const text = visibleText(src).slice(0, 200000); const literals = stringLiterals(src).slice(0, 5000);

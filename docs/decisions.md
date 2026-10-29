@@ -1419,3 +1419,37 @@ the end of `routes/family.js`, migration `0030_parent_made`) and ships dark.
 - **Left out:** the "What your child made" activity panel (needs its own safety read); parent toggles for chat and
   photo; a verified consent method; retention timers; grown-up self-delete; hand-over; translations (English with
   `lang="en"` marking until done). Full design and test list: the Weeks 3–4 design notes.
+
+## Oomba Kit: one visual foundation for every game (phase 1)
+- **Build our own kit instead of adopting an engine.** The kit is `window.Oomba`, a classic script pinned with SRI at `/vendor/oomba-kit/<ver>/`, the same way three.js is served. It has two stateless backends: Paper (Canvas 2D) and Glaze (WebGL2). — Every engine needs patches to run in the frame sandbox (no eval, workers, wasm, fetch or URL images). They cost 70–350 KB gz, none has the Canvas 2D fallback that low-end Chromebooks need, and their bitmap text breaks Arabic. A small, frozen API is also what the Builder writes most reliably. Three.js stays the 3D path. Full spec: `docs/kit.md`.
+- The art direction is **"Oomba Ink"**, taken from the logo:
+  - a thick round Ink outline of constant on-screen width and a Cream sticker rim;
+  - flat fill, one hard cel shade and one gloss highlight;
+  - the logo's ring eyes on every character;
+  - the 4-point spark as the only reward glyph;
+  - hazards always spiky and coral.
+  
+  Games use colour role names, never hex. All art is procedural code baked into atlases. — It is the most recognisable as our own (it is the logo), the cheapest to draw on Chromebooks, and the easiest to read for colour-blind players. It also needs no image hosting under the frame's `img-src data: blob:` rule.
+- **UI in the DOM, the game world on canvas.** — Screen readers, focus, RTL and crisp text come for free, and the Builder playtest's `inspect()` only sees DOM.
+- Paper is a finished art style, not a fallback. The tier or backend changes only at a scene transition, on the pause screen or after a lost WebGL context; dynamic resolution moves first. There is no WebGL1 path. — Most school Chromebooks land on the lowest tier, and visible quality jumps look like bugs.
+- Kit versions live in folders that are never changed or deleted. `KIT_VERSIONS` only grows. API 1 only gains features. `edit_game` keeps the version a game was pinned to. The inlined SDK only gains plumbing (`BRB.theme`, `BRB.motion`), never look. — Old games must never change under their players.
+- The kit is never inlined into the frame. — Frame documents are `no-store` and arrive uncompressed for signed-in kids. A vendor file is cached once and brotli-compressed.
+- **Please confirm:**
+  - kit games follow the site's light/dark theme via `init.theme` (non-kit games keep their own colours);
+  - `/vendor/oomba-kit/` is added to the frame's `script-src` and `font-src`;
+  - Bricolage is the kit font, with system fallbacks for each script;
+  - the "Oomba" mascot species is the default and guest character;
+  - esbuild is added as a pinned devDependency used only for the build;
+  - about 80 KB brotli of code plus about 108 KB of fonts, cached once per device.
+- **Core engine (built).** Decisions taken while building it:
+  - The build bundles without a tool: each `kit/src` module becomes a function scope that returns its exports, so
+    sources stay plain ES modules for the unit tests and the dist stays a classic script. A unit test rebuilds it
+    in memory and fails when `public/vendor/oomba-kit/1.0.0/oomba-kit.js` is stale.
+  - Glowing and "unlit" parts (ink line, sticker rim, rewards) are painted into a mask while the art bakes. Glaze
+    reads the mask in its lighting shader; Paper uses the same mask to bake night variants that keep those parts at
+    full colour, so both backends agree on what stays bright at night.
+  - Light halos are ordinary display-list items (additive glow sprites), so Paper and Glaze draw them the same way;
+    Glaze adds the per-sprite point lighting on top.
+  - Kit timers (`after`, `every`) fire inside the clock tick, not as promise callbacks, so `__brbTest.step(n)` is exact.
+  - The `/kit` frame takes `?l=` and `?mode=`: the site middleware treats `?lang=` and `?theme=` as the visitor's own
+    choice and redirects.

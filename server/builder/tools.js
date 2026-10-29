@@ -140,6 +140,7 @@ export function toolbox(ctx) {
       const small = [...new Set([...(b.smallButtons || []), ...(a.smallButtons || [])])];
       if (small.length) problems.push(`Buttons smaller than 40px (hard for small fingers): ${small.map(x => `"${x}"`).join(', ')}.`);
       if (!a.testHook) problems.push('window.__brbTest is missing (add state() and start(), see the Game Contract).');
+      else if (a.state && /"game":false/.test(a.state)) problems.push('This Oomba Kit game never registered its test hooks: call Oomba.test({ state: () => ({...}), start: () => ... }) so the playtest can start a round and read the game state.');
       steps.info({ pics: (r.title ? 1 : 0) + (r.play ? 1 : 0), probs: problems.length }, row);
       const size = orientation === 'landscape' ? '844x390 landscape' : '390x700 portrait';
       const text = [
