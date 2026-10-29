@@ -489,7 +489,7 @@
     var parts = speechChunks(s), rate = num(opts.rate, 0.5, 2, 1), pitch = num(opts.pitch, 0, 2, 1), vol = num(opts.volume, 0, 1, 1);
     try { if (synth.paused) synth.resume(); } catch (e) { /* ignore */ }   // iOS and Chrome can be left paused (tab switch, call)
     parts.forEach(function (p, i) {
-      var u = new Utter(p); u.voice = v; u.lang = v.lang; u.rate = rate; u.pitch = pitch; u.volume = vol;
+      var u = new Utter(p); u.voice = v; u.lang = v.lang; u.rate = rate; u.pitch = pitch; u.volume = vol; markOwn(u);
       // Chrome can garbage-collect a playing utterance and never fire onend: hold on to it until it is done.
       var done = function () { var k = liveUtterances.indexOf(u); if (k >= 0) liveUtterances.splice(k, 1); };
       liveUtterances.push(u);
@@ -520,7 +520,71 @@
     } catch (e) { return false; }
   }
   function stopSpeaking() { pendingSpeech = []; try { if (synth) synth.cancel(); } catch (e) { /* ignore */ } }
+
+  // ---- Better voices for games that call speechSynthesis.speak directly ------------------------------
+  // Older games (Builder games saved before BRB.speak existed, and some seed games) build their own
+  // SpeechSynthesisUtterance and pick a voice with getVoices().find(...), which often lands on the worst one
+  // (Albert, eSpeak, "Desktop"). The owner decided on 29 Oct 2026 (docs/decisions.md) to upgrade every game's
+  // voices from here, without editing the games. speechSynthesis.speak is wrapped once, on the instance (so
+  // 'speechSynthesis' in window, instanceof SpeechSynthesis and SpeechSynthesis.prototype are untouched), and
+  // each utterance is adjusted just before the browser's own speak() gets it:
+  //   - no voice set: the best voice for u.lang (empty: the game's language); no voice for it: left as it is.
+  //   - a voice set by the game: replaced only when it is a penalised voice (score below 0: eSpeak, Eloquence,
+  //     Apple novelty/MacinTalk, Windows "Desktop", Apple compact) AND the best voice for the same language
+  //     scores at least VOICE_UPGRADE_MARGIN more. 30 means a "Desktop" (-15) or compact (-10) voice is only
+  //     swapped for an on-device natural voice (+25..+30) or an online one (+20), never for another plain local
+  //     voice (Microsoft Mark, 0), while the really bad ones (Eloquence -40, eSpeak -60, novelty -80) give way to
+  //     any ordinary voice. A voice in another language than the utterance's is the game's choice and is kept.
+  //   - a mild pitch shift (0.85..1.25, not 1) becomes 1: that is what made old games sound robotic. Stronger
+  //     shifts are deliberate character voices and are kept. Rate and volume are never touched.
+  // BRB.speak's own utterances are marked and passed straight through. Nothing waits: with no voice list yet,
+  // the utterance is spoken as the game made it. Old games' text is not split (only BRB.speak does that).
+  var VOICE_UPGRADE_MARGIN = 30;
+  var ownUtterances = typeof WeakSet === 'function' ? new WeakSet() : null;
+  function markOwn(u) { if (ownUtterances) ownUtterances.add(u); else { try { u.__brbOwn = true; } catch (e) { /* ignore */ } } }
+  function isOwn(u) { return ownUtterances ? ownUtterances.has(u) : !!u.__brbOwn; }
+  // A voice's quality alone (the scores above, without the language and region part): below 0 = penalised.
+  function voiceQuality(v) {
+    var id = String(v.name || '') + ' ' + String(v.voiceURI || ''), online = v.localService === false || /-network\b/i.test(id), s = online ? VOICE_ONLINE : 0;
+    for (var j = 0; j < VOICE_SCORES.length; j++) if (VOICE_SCORES[j][0].test(id) && !(online && VOICE_SCORES[j][1] > 0)) s += VOICE_SCORES[j][1];
+    return s;
+  }
+  // The game's language for an utterance without one: the player's site language, else the page's lang.
+  function gameLang() {
+    if (INIT.user && typeof INIT.user.lang === 'string' && INIT.user.lang) return INIT.user.lang;
+    try { if (document.documentElement.lang) return document.documentElement.lang; } catch (e) { /* no document */ }
+    return 'en';
+  }
+  function upgradeUtterance(u) {
+    if (!u || typeof u !== 'object' || (Utter && !(u instanceof Utter)) || isOwn(u)) return;
+    var p = u.pitch;
+    if (typeof p === 'number' && p !== 1 && p >= 0.85 && p <= 1.25) u.pitch = 1;
+    if (!voiceList.length) loadVoices();
+    if (!voiceList.length) return;   // voices not listed yet: speak it as it is, now
+    var cur = u.voice;
+    if (!cur) {
+      var v = voiceFor(u.lang || gameLang());
+      if (v) { u.voice = v; if (!u.lang) u.lang = v.lang; }
+      return;
+    }
+    var vl = voiceTag(cur.lang).lang;
+    if (!vl || (u.lang && voiceTag(u.lang).lang !== vl)) return;   // a voice in another language: the game's choice
+    var q = voiceQuality(cur); if (q >= 0) return;                   // not a penalised voice: keep it
+    var best = voiceFor(cur.lang);
+    if (best && best !== cur && best.name !== cur.name && voiceQuality(best) - q >= VOICE_UPGRADE_MARGIN) u.voice = best;
+  }
+  function installSpeakUpgrade() {
+    var orig = synth.speak;
+    if (typeof orig !== 'function' || orig.__brbUpgrade) return;   // once, even if the SDK runs twice
+    var wrapped = function (u) {
+      try { upgradeUtterance(u); } catch (e) { /* never stop the game's speech */ }
+      return orig.apply(this, arguments);
+    };
+    wrapped.__brbUpgrade = true;
+    try { synth.speak = wrapped; } catch (e) { /* read-only: leave it */ }
+  }
   if (synth) {
+    installSpeakUpgrade();
     loadVoices(); if (voiceList.length) voicesSettled = true;
     var onVoices = function () { loadVoices(); if (voiceList.length) voicesSettled = true; flushPending(); };
     try { if (typeof synth.addEventListener === 'function') synth.addEventListener('voiceschanged', onVoices); } catch (e) { /* ignore */ }
@@ -530,7 +594,7 @@
     // unlocks it, so a game can also speak later (after an animation or a timer).
     var unlock = function () {
       ['touchend', 'pointerup', 'click', 'keydown'].forEach(function (n) { window.removeEventListener(n, unlock, true); });
-      try { var u = new Utter(' '); u.volume = 0; synth.speak(u); } catch (e) { /* ignore */ }
+      try { var u = new Utter(' '); u.volume = 0; markOwn(u); synth.speak(u); } catch (e) { /* ignore */ }
     };
     ['touchend', 'pointerup', 'click', 'keydown'].forEach(function (n) { window.addEventListener(n, unlock, true); });
     window.addEventListener('pagehide', stopSpeaking);   // never keep talking after the game is closed

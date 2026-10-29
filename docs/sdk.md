@@ -72,7 +72,8 @@ There is no network and no way to reach the page around the game.
 
 ## Speech
 
-Games that read words or messages aloud use `BRB.speak`, never `speechSynthesis` directly. It uses the Web Speech API with
+Games that read words or messages aloud use `BRB.speak`, never `speechSynthesis` directly (old games that do still get
+better voices: see the end of this section). It uses the Web Speech API with
 the best voice the device **already has**: free, no server, and the text never leaves the device.
 
 ```js
@@ -117,6 +118,20 @@ BRB.speak(T[BRB.user.lang].win);                      // text from the game's ow
   playing unless `queue: true`. A paused speech engine is resumed, speech stops when the game closes, and every call is a
   safe no-op when the browser has no speech at all.
 - `onend` runs once the whole text has been spoken.
+- **Games that call `speechSynthesis` directly get better voices too.** Older games (and Builder games saved before
+  `BRB.speak`) build their own `SpeechSynthesisUtterance`. The SDK wraps `window.speechSynthesis.speak` once (on the
+  instance: `'speechSynthesis' in window` and `instanceof SpeechSynthesis` still work, and it is a no-op where speech is
+  missing) and adjusts each utterance just before the browser speaks it (owner's decision, 29 Oct 2026, `docs/decisions.md`):
+  - no voice set: the best voice for `u.lang`, or for the game's language (`BRB.user.lang`, then the page's `lang`) when
+    `u.lang` is empty; with no voice for the language it is left as it is;
+  - a voice the game set: replaced only when it is a penalised voice (eSpeak, Eloquence, Apple novelty / MacinTalk,
+    Windows "Desktop", Apple compact) **and** the best voice for the same language is clearly better (30 or more points:
+    a Desktop or compact voice only gives way to an on-device natural voice or an online one; eSpeak, Eloquence and
+    novelty voices to any ordinary voice). A voice in another language than the utterance is never changed;
+  - a mild pitch shift (0.85–1.25, but not 1) is set to 1; stronger shifts (below 0.85, above 1.25) are deliberate
+    character voices and are kept. `rate` and `volume` are never changed;
+  - `BRB.speak`'s own utterances pass straight through. Nothing is delayed or split: an utterance spoken before the
+    voice list has loaded goes out exactly as the game made it.
 
 ## 3D games
 

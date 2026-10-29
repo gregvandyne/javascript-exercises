@@ -206,7 +206,7 @@ test('games speak through BRB.speak at the normal pitch', () => {
 
 // ---- BRB.speak: run the SDK's speech code against a fake speechSynthesis ---------------------------
 const SPEECH = between(SDK, '  // ---- Speech: the most natural voice', '  var BRB = {');
-function fakeSpeech({ voices = [], paused = false, synth = true } = {}) {
+function fakeSpeech({ voices = [], paused = false, synth = true, user = { lang: 'fr' }, win: reuse } = {}) {
   const log = [], listeners = {}, timers = [];
   const ss = {
     paused, list: voices,
@@ -216,13 +216,13 @@ function fakeSpeech({ voices = [], paused = false, synth = true } = {}) {
     resume() { log.push(['resume']); this.paused = false; },
     addEventListener(n, f) { (listeners[n] = listeners[n] || []).push(f); },
   };
-  class Utter { constructor(text) { this.text = text; } }
-  const win = { addEventListener() {}, removeEventListener() {} };
-  if (synth) { win.speechSynthesis = ss; win.SpeechSynthesisUtterance = Utter; }
+  class Utter { constructor(text) { this.text = text; this.lang = ''; this.voice = null; this.pitch = 1; this.rate = 1; this.volume = 1; } }
+  const win = reuse || { addEventListener() {}, removeEventListener() {} };
+  if (synth && !reuse) { win.speechSynthesis = ss; win.SpeechSynthesisUtterance = Utter; }
   const api = new Function('window', 'INIT', 'setTimeout', SPEECH + '\nreturn { speak: speak, stopSpeaking: stopSpeaking, voiceFor: voiceFor, chunks: speechChunks };')(
-    win, { user: { lang: 'fr' } }, (f, ms) => timers.push([f, ms]));
+    win, { user }, (f, ms) => timers.push([f, ms]));
   const spoken = () => log.filter(l => l[0] === 'speak').map(l => l[1]);
-  return { api, ss, log, spoken, fire: n => (listeners[n] || []).forEach(f => f()), runTimers: () => timers.splice(0).forEach(([f]) => f()) };
+  return { api, ss, win, Utter: win.SpeechSynthesisUtterance, log, spoken, fire: n => (listeners[n] || []).forEach(f => f()), runTimers: () => timers.splice(0).forEach(([f]) => f()) };
 }
 
 test('BRB.speak uses the best voice at rate 1 and pitch 1, cancelling the line before unless queue', () => {
@@ -325,3 +325,112 @@ for (const file of GAMES) {
     assert.equal(f.log.length, 0);
   });
 }
+
+// ---- Old games that call speechSynthesis.speak themselves get the better voices too (owner, 29 Oct 2026) -------------
+// The SDK wraps window.speechSynthesis.speak: a missing voice gets the best one, a robotic voice the game picked is
+// upgraded when a clearly better voice exists for the same language, and a mild pitch shift goes back to 1.
+const say = (f, text, set = {}) => { const u = new f.Utter(text); Object.assign(u, set); f.win.speechSynthesis.speak(u); return f.spoken().at(-1); };
+const byName = (list, name) => { const v = list.find(x => x.name === name); assert.ok(v, name); return v; };
+
+test('raw speechSynthesis.speak: an utterance with no voice gets the best voice for its language (or the game\'s)', () => {
+  const f = fakeSpeech({ voices: LISTS.macSafari, user: { lang: 'en' } });
+  let u = say(f, 'cat', { lang: 'en-US' });
+  assert.equal(u.voice.name, 'Ava (Premium)'); assert.equal(u.lang, 'en-US');
+  u = say(f, 'Bonjour', { lang: 'fr-FR' });
+  assert.equal(u.voice.name, 'Thomas');
+  u = say(f, 'hello');   // no lang: the game's language (BRB.user.lang)
+  assert.equal(u.voice.name, 'Ava (Premium)'); assert.equal(u.lang, 'en-US');
+  const g = fakeSpeech({ voices: LISTS.chromeWindows, user: { lang: 'fr' } });
+  assert.equal(say(g, 'Bonjour').voice.name, 'Google français');
+  // No voice for the language: left alone (the browser does what it always did).
+  u = say(g, 'Shalom', { lang: 'he-IL' });
+  assert.equal(u.voice, null); assert.equal(u.lang, 'he-IL');
+  assert.equal(g.spoken().length, 2);
+});
+
+test('raw speechSynthesis.speak: robotic voices the game picked are upgraded only when a clearly better same-language voice exists', () => {
+  // Firefox-style "Desktop" voice with Google US English (online) available: upgraded.
+  const david = V('Microsoft David Desktop - English (United States)', 'en-US', { def: true });
+  let f = fakeSpeech({ voices: [david, V('Microsoft Mark - English (United States)', 'en-US'), G('Google US English', 'en-US')] });
+  assert.equal(say(f, 'cat', { voice: david, lang: 'en-US' }).voice.name, 'Google US English');
+  // ...but only a plain local voice better than it: kept (not clearly better).
+  f = fakeSpeech({ voices: LISTS.firefoxWindows });
+  assert.equal(say(f, 'cat', { voice: LISTS.firefoxWindows[0], lang: 'en-US' }).voice.name, LISTS.firefoxWindows[0].name);
+  // ...and no better voice at all for French: the Desktop voice stays.
+  const hortense = byName(LISTS.firefoxWindows, 'Microsoft Hortense Desktop - French');
+  assert.equal(say(f, 'chat', { voice: hortense, lang: 'fr-FR' }).voice, hortense);
+  // Apple's Albert (the old first-match pick) with Samantha / Ava available.
+  const albert = LISTS.macSafari[0];
+  f = fakeSpeech({ voices: LISTS.macSafari });
+  assert.equal(say(f, 'cat', { voice: albert }).voice.name, 'Ava (Premium)');
+  f = fakeSpeech({ voices: [albert, apple('Samantha', 'en-US', 'compact', { def: true })] });
+  assert.equal(say(f, 'cat', { voice: albert, lang: 'en-US' }).voice.name, 'Samantha');
+  // eSpeak on Linux: Google's online voice instead.
+  f = fakeSpeech({ voices: LISTS.linux });
+  assert.equal(say(f, 'cat', { voice: LISTS.linux[0], lang: 'en-US' }).voice.name, 'Google US English');
+  // eSpeak Spanish with no other Spanish voice than eSpeak: kept.
+  const espEs = V('Spanish espeak-ng', 'es');
+  f = fakeSpeech({ voices: [espEs, G('Google US English', 'en-US')] });
+  assert.equal(say(f, 'gato', { voice: espEs }).voice, espEs);
+  // Only robotic voices for the language: kept.
+  f = fakeSpeech({ voices: [albert, LISTS.macSafari[1]] });
+  assert.equal(say(f, 'cat', { voice: albert }).voice, albert);
+});
+
+test('raw speechSynthesis.speak: good voices and other-language voices the game picked are kept', () => {
+  const f = fakeSpeech({ voices: LISTS.macSafari });
+  const samantha = byName(LISTS.macSafari, 'Samantha'), daniel = byName(LISTS.macSafari, 'Daniel'), thomas = byName(LISTS.macSafari, 'Thomas');
+  assert.equal(say(f, 'cat', { voice: daniel, lang: 'en-GB' }).voice, daniel);   // compact, but already the best British voice
+  assert.equal(say(f, 'cat', { voice: samantha }).voice.name, 'Ava (Premium)');   // compact, and a Premium voice is there
+  assert.equal(say(f, 'cat', { voice: thomas, lang: 'en-US' }).voice, thomas);   // a French voice for English text: deliberate
+  // A novelty voice in another language than the utterance: never touched.
+  const albert = LISTS.macSafari[0];
+  assert.equal(say(f, 'Bonjour', { voice: albert, lang: 'fr-FR' }).voice, albert);
+  const g = fakeSpeech({ voices: LISTS.edgeWindows });
+  const aria = byName(LISTS.edgeWindows, 'Microsoft Aria Online (Natural) - English (United States)');
+  assert.equal(say(g, 'cat', { voice: aria }).voice, aria);
+  // A plain on-device voice is not penalised: the game's choice, even with a better online voice there.
+  const zira = byName(LISTS.edgeWindows, 'Microsoft Zira - English (United States)');
+  assert.equal(say(g, 'cat', { voice: zira, lang: 'en-US' }).voice, zira);
+});
+
+test('raw speechSynthesis.speak: mild pitch shifts go back to 1, strong ones and the rate are kept', () => {
+  const f = fakeSpeech({ voices: LISTS.iosSafari });
+  for (const [p, want] of [[1.1, 1], [1.15, 1], [0.9, 1], [0.85, 1], [1.25, 1], [1, 1], [1.6, 1.6], [0.5, 0.5], [2, 2], [0.8, 0.8], [1.3, 1.3]]) {
+    const u = say(f, 'hi', { lang: 'en-US', pitch: p, rate: 0.7, volume: 0.4 });
+    assert.equal(u.pitch, want, `pitch ${p}`); assert.equal(u.rate, 0.7); assert.equal(u.volume, 0.4);
+  }
+});
+
+test('raw speechSynthesis.speak: no voices listed yet means it is spoken as it is, at once', () => {
+  const f = fakeSpeech({ voices: [] });
+  const u = say(f, 'hi', { lang: 'en-US' });
+  assert.equal(f.spoken().length, 1); assert.equal(u.voice, null); assert.equal(u.lang, 'en-US');
+  f.ss.list = LISTS.iosSafari; f.fire('voiceschanged');
+  assert.equal(say(f, 'hi', { lang: 'en-US' }).voice.name, 'Samantha (Enhanced)');
+});
+
+test('BRB.speak utterances pass through the wrapper untouched; the wrapper is installed once; no speech = no errors', () => {
+  const f = fakeSpeech({ voices: LISTS.macSafari });
+  const before = f.win.speechSynthesis.speak;
+  assert.equal(before.__brbUpgrade, true);
+  // BRB.speak chose Thomas at pitch 1.1 for French text: the wrapper must not change it.
+  assert.equal(f.api.speak('Bonjour', { pitch: 1.1 }), true);
+  let u = f.spoken().at(-1); assert.equal(u.voice.name, 'Thomas'); assert.equal(u.pitch, 1.1);
+  // An explicit lang voice from BRB.speak with a penalised-only language list is kept as well.
+  const g = fakeSpeech({ voices: [LISTS.macSafari[0], LISTS.macSafari[1]] });
+  g.api.speak('cat', { lang: 'en-US', pitch: 0.9 }); u = g.spoken().at(-1); assert.equal(u.voice.name, 'Albert'); assert.equal(u.pitch, 0.9);
+  // The SDK running a second time on the same window does not wrap again.
+  fakeSpeech({ voices: LISTS.macSafari, win: f.win });
+  assert.equal(f.win.speechSynthesis.speak, before);
+  const n = f.spoken().length; say(f, 'once', { lang: 'en-US' }); assert.equal(f.spoken().length, n + 1);
+  // The browser's speak still gets the right `this` and its return value.
+  assert.equal(f.log.at(-1)[1].text, 'once');
+  // No speechSynthesis at all: nothing is created, nothing throws.
+  const h = fakeSpeech({ synth: false });
+  assert.equal('speechSynthesis' in h.win, false);
+  assert.equal(h.api.speak('hi'), false);
+  // A non-utterance is handed to the browser unchanged (it throws its own TypeError, as before).
+  const k = fakeSpeech({ voices: LISTS.macSafari }); const odd = { text: 'x', pitch: 1.1 };
+  k.win.speechSynthesis.speak(odd); assert.equal(odd.pitch, 1.1); assert.equal('voice' in odd, false);
+});
