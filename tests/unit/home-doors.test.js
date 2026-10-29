@@ -1,7 +1,7 @@
 // Home doors (the navigation proposal's Week 2, docs/decisions.md "Home doors"): signed out and as a guest the home page
-// opens with a promise and three doors: kid → a game in one tap through /go/kid (a counting redirect), parent and
-// teacher straight to their page in the home page's language, counted by a beacon (POST /go/<door>; a daily total,
-// people only); the wide top bar is Home · Build · (Plans) · Parents · Teachers ·
+// opens with a promise and three doors: kid → down the same page to the featured game and the game rows (#play), parent
+// and teacher straight to their page in the home page's language, each counted by a beacon (POST /go/<door>; a daily
+// total, people only); the wide top bar is Home · Build · (Plans) · Parents · Teachers ·
 // Sign in · ▶ Play now. Kids, students, teachers and grown-ups with an account see none of it.
 import './_setup.js';
 import test from 'node:test';
@@ -53,8 +53,9 @@ test('signed out and as a guest: the promise, then three doors (kid first, the b
   for (const [who, u] of [['signed out', null], ['guest', auth.createGuest()]]) {
     const home = (await call(u, '/')).text;
     const d = doors(home);
-    assert.deepEqual(hrefs(d), ['/go/kid', '/parents', '/teachers'], who);
-    assert.match(d, /class="door door-kid" href="\/go\/kid" rel="nofollow">/, `${who}: the counting redirect is nofollow`);
+    assert.deepEqual(hrefs(d), ['#play', '/parents', '/teachers'], who);
+    assert.match(d, /class="door door-kid" href="#play" data-count="\/go\/kid">/, `${who}: down this page to the games, counted by a beacon`);
+    assert.doesNotMatch(d, /nofollow|href="\/go\//, `${who}: no door goes through /go/ any more`);
     assert.match(d, /class="door door-parent" href="\/parents" data-count="\/go\/parent">/, `${who}: a real link, counted by a beacon`);
     assert.match(d, /class="door door-teacher" href="\/teachers" data-count="\/go\/teacher">/, who);
     assert.match(d, /role="group" aria-label="Who is visiting\?"/);
@@ -64,6 +65,8 @@ test('signed out and as a guest: the promise, then three doors (kid first, the b
     assert.doesNotMatch(home, /home-who|>For parents<\/span><\/a><a class="btn"/, `${who}: the old parent/teacher buttons are gone (no duplicates)`);
     const at = k => home.indexOf(k);
     assert.ok(at('id="home-h1"') < at('class="doors"') && at('class="doors"') < at('class="hero '), `${who}: heading, doors, then the featured game`);
+    assert.equal(home.match(/\bid="play"/g).length, 1, `${who}: one #play on the page`);
+    assert.ok(at('class="doors"') < at('<div id="play" class="home-play">') && at('id="play"') < at('class="hero ') && at('id="play"') < at('class="rail'), `${who}: #play starts at the featured game, above the rows`);
     assert.doesNotMatch(d, /\$\d|€\d|£\d|plan/i, 'no prices or plan names on the doors');
   }
 });
@@ -77,15 +80,18 @@ test('nobody with an account sees the doors or Play now: kids, students, teacher
   }
 });
 
-test('the kid door reaches a game in one tap: /go/kid → the featured game (no sign-up), which plays', async () => {
+test('the kid door reaches a game in two taps: #play → the featured game\'s Play (no sign-up), which plays; old /go/kid links land on #play', async () => {
   const home = (await call(null, '/')).text;
-  const heroPlay = /<a class="btn btn-big" href="(\/play\/[a-z0-9-]+)">/.exec(home)[1];
-  const r = await call(null, '/go/kid');
-  assert.equal(r.status, 302);
-  assert.equal(r.location, heroPlay, 'the same game as the home page\'s featured Play button');
-  const play = await call(null, r.location);
-  assert.equal(play.status, 200, 'the game opens signed out (a guest is made, no sign-up)');
-  assert.equal((await call(auth.createGuest(), '/go/play')).location, heroPlay, 'the top bar\'s Play now goes there too');
+  const play = home.slice(home.indexOf('<div id="play" class="home-play">'));
+  const heroPlay = /<a class="btn btn-big" href="(\/play\/[a-z0-9-]+)">/.exec(play)[1];
+  const g = await call(null, heroPlay);
+  assert.equal(g.status, 200, 'the game opens signed out (a guest is made, no sign-up)');
+  assert.match(play, /class="rail/, 'the game rows are in #play too, so a kid picks');
+  for (const [path, to] of [['/go/kid', '/#play'], ['/go/play', '/#play'], ['/go/kid?l=es', '/es#play'], ['/go/play?l=de', '/de#play'], ['/go/kid?l=xx', '/#play'], ['/go/kid?l=//evil.example', '/#play']]) {
+    const r = await call(null, path);
+    assert.equal(r.status, 302, path); assert.equal(r.location, to, path);
+  }
+  assert.equal((await call(auth.createGuest(), '/go/play')).location, '/#play', 'a guest too');
 });
 
 test('parent and teacher doors link the home page\'s own language pages (crawlable); old ?l= links still redirect; unknown doors are 404', async () => {
@@ -98,8 +104,9 @@ test('parent and teacher doors link the home page\'s own language pages (crawlab
   assert.equal((await call(null, '/go/nope')).status, 404);
   assert.equal((await call(null, '/go/__proto__')).status, 404);
   const es = (await call(null, '/es')).text;
-  assert.deepEqual(hrefs(doors(es)), ['/go/kid', '/es/parents', '/es/teachers'], 'a crawlable link to its own language\'s pages');
-  assert.doesNotMatch(doors(es).replace(/<a class="door door-kid"[^>]*>/, ''), /nofollow/);
+  assert.deepEqual(hrefs(doors(es)), ['#play', '/es/parents', '/es/teachers'], 'a crawlable link to its own language\'s pages');
+  assert.doesNotMatch(doors(es), /nofollow/);
+  assert.match(es, /class="btn btn-hot playnow" href="\/es#play" data-count="\/go\/play"/, 'Play now: this language\'s home page, at the games');
 });
 
 test('door clicks are counted: one daily total per door, people only, never cached or indexed', async () => {
@@ -109,29 +116,35 @@ test('door clicks are counted: one daily total per door, people only, never cach
   // HEAD (link checkers, scanners) and prefetches redirect the same but count nothing.
   for (const [d, opts] of [['kid', { method: 'HEAD' }], ['play', { method: 'HEAD' }], ['kid', { headers: { 'sec-purpose': 'prefetch' } }], ['kid', { headers: { purpose: 'prefetch' } }]]) {
     const r = await call(null, `/go/${d}`, opts);
-    assert.equal(r.status, 302); assert.match(r.location, /^\/play\//);
+    assert.equal(r.status, 302); assert.equal(r.location, '/#play');
   }
   assert.deepEqual(['door.kid', 'door.bar'].map(clicks), [2, 1], 'HEAD and prefetch are not clicks');
-  // The parent and teacher doors' beacon: POST /go/<door> from this site counts (204, nothing else); from elsewhere,
-  // a robot, without a browser, or for the kid door it doesn't.
+  // The doors' and Play now's beacon: POST /go/<door> from this site counts (204, nothing else); from elsewhere, a
+  // robot or without a browser it doesn't.
   const beacon = (d, headers = { 'sec-fetch-site': 'same-origin' }, ua) => call(null, `/go/${d}`, { method: 'POST', headers, ua });
   assert.equal((await beacon('parent')).status, 204);
   assert.equal((await beacon('teacher')).status, 204);
   assert.equal((await beacon('parent', { 'sec-fetch-site': 'cross-site' })).status, 403, 'another site can\'t count');
   await beacon('parent', {}); await beacon('parent', undefined, 'curl/8.0'); await beacon('parent', undefined, 'Mozilla/5.0 (compatible; Googlebot/2.1)');
-  assert.equal((await beacon('kid')).status, 404, 'the kid door counts by its redirect only');
+  assert.equal((await beacon('kid')).status, 204, 'the kid door counts by its beacon');
+  assert.equal((await beacon('play')).status, 204, 'and Play now');
+  assert.equal((await beacon('kid', { 'sec-fetch-site': 'cross-site' })).status, 403, 'another site can\'t count the kid door');
+  await beacon('kid', {}); await beacon('play', undefined, 'curl/8.0'); await beacon('kid', undefined, 'Mozilla/5.0 (compatible; Googlebot/2.1)');
   assert.equal((await beacon('nope')).status, 404);
-  assert.deepEqual(['door.kid', 'door.parent', 'door.teacher'].map(clicks), [2, 2, 2]);
+  assert.equal((await beacon('__proto__')).status, 404);
+  assert.deepEqual(['door.kid', 'door.parent', 'door.teacher', 'door.bar'].map(clicks), [3, 2, 2, 2]);
   await call(null, '/go/kid', { ua: 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)' });
   await call(null, '/go/kid', { ua: 'facebookexternalhit/1.1' });
   await call(null, '/go/kid', { ua: '' });
   await call(null, '/go/nope');
-  assert.equal(clicks('door.kid'), 2, 'robots, link previews and requests without a browser are not counted');
+  assert.equal(clicks('door.kid'), 3, 'robots, link previews and requests without a browser are not counted');
   const cols = q.all("SELECT name FROM pragma_table_info('funnel_counts')").map(c => c.name).sort();
   assert.deepEqual(cols, ['day', 'n', 'step'], 'nothing about who clicked');
-  const r = await call(null, '/go/parent');
-  assert.equal(r.headers.get('cache-control'), 'no-store');
-  assert.match(r.headers.get('x-robots-tag'), /noindex/);
+  for (const d of ['parent', 'kid']) {
+    const r = await call(null, `/go/${d}`);
+    assert.equal(r.headers.get('cache-control'), 'no-store');
+    assert.match(r.headers.get('x-robots-tag'), /noindex/);
+  }
   assert.match((await call(null, '/robots.txt')).text, /^Disallow: \/go\/$/m);
   assert.doesNotMatch((await call(null, '/sitemap.xml')).text, /\/go\//);
   // The home page stays the one indexable address (the doors add none).
@@ -147,8 +160,8 @@ test('a translated home page shows its own doors; until a language has them, its
   assert.match(d, /aria-label="Wer ist zu Besuch\?"/);
   assert.match(d, /<span class="door-h">Ich bin ein Kind – los geht’s<\/span><span class="door-s">Keine Anmeldung nötig<\/span>/);
   assert.match(d, /<span class="door-h">Ich bin Elternteil<\/span>/); assert.match(d, /<span class="door-h">Ich bin Lehrkraft<\/span>/);
-  assert.deepEqual(hrefs(d), ['/go/kid', '/de/parents', '/de/teachers'], 'parent and teacher doors stay in German');
-  assert.match(de, /class="btn btn-hot playnow" href="\/go\/play" rel="nofollow"><span aria-hidden="true">▶<\/span> <span class="playnow-t">Jetzt spielen<\/span>/);
+  assert.deepEqual(hrefs(d), ['#play', '/de/parents', '/de/teachers'], 'parent and teacher doors stay in German');
+  assert.match(de, /class="btn btn-hot playnow" href="\/de#play" data-count="\/go\/play"><span aria-hidden="true">▶<\/span> <span class="playnow-t">Jetzt spielen<\/span>/);
   // A language without the door words yet (simulated): never English doors, the words it has stand in.
   await withoutKeys('de', ['home.doors', 'nav.playNow'], async () => {
     const gap = (await call(null, '/de')).text;
@@ -167,7 +180,7 @@ test('the wide top bar, signed out and as a guest: Home · Build · Plans · Par
   for (const [who, u] of [['signed out', null], ['guest', auth.createGuest()]]) {
     const page = (await call(u, '/safety')).text;
     assert.deepEqual(hrefs(topnav(page)), ['/', '/build', '/plans', '/parents', '/teachers'], who);
-    assert.match(page, /class="me-btn" href="\/(login|me)"[\s\S]*?<\/a>\s*<a class="btn btn-hot playnow" href="\/go\/play" rel="nofollow"><span aria-hidden="true">▶<\/span> <span class="playnow-t">Play now<\/span><\/a>\s*<\/header>/, `${who}: Play now ends the bar`);
+    assert.match(page, /class="me-btn" href="\/(login|me)"[\s\S]*?<\/a>\s*<a class="btn btn-hot playnow" href="\/#play" data-count="\/go\/play"><span aria-hidden="true">▶<\/span> <span class="playnow-t">Play now<\/span><\/a>\s*<\/header>/, `${who}: Play now ends the bar`);
     assert.match(page, /<form class="topsearch" role="search"/, `${who}: the search field stays`);
   }
   // A kid keeps their menu (Search and Friends in it) and no Play now.
@@ -177,6 +190,6 @@ test('the wide top bar, signed out and as a guest: Home · Build · Plans · Par
   config.stripeApiKey = '';
   const off = (await call(null, '/')).text;
   assert.deepEqual(hrefs(topnav(off)), ['/', '/build', '/parents', '/teachers']);
-  assert.deepEqual(hrefs(doors(off)), ['/go/kid', '/parents', '/teachers']);
-  assert.match(off, /href="\/go\/play"/);
+  assert.deepEqual(hrefs(doors(off)), ['#play', '/parents', '/teachers']);
+  assert.match(off, /class="btn btn-hot playnow" href="\/#play" data-count="\/go\/play"/);
 });

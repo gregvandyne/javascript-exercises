@@ -328,8 +328,8 @@ function funnelSection(r) {
   School plan: a subscription's first invoice once it is paid (an invoiced school counts when it pays, not when the
   invoice is sent), from Stripe's webhook (gifted plans don't count). Checkout started: once per family per try (opening
   Checkout again within a day doesn't add to it). A teacher page reloaded after sending the form isn't a new view. Home doors: clicks on the three doors signed-out
-  visitors and guests see on the home page, and on the top bar's "▶ Play now" (each goes through /go/&lt;door&gt;, which counts
-  it and redirects; robots are left out). Who's this for: the choice on Start free (/signup) before the kid form, counted the
+  visitors and guests see on the home page, and on the top bar's "▶ Play now" (each click counted by a beacon to
+  /go/&lt;door&gt; on its way; older links through /go/&lt;door&gt; count and redirect; robots are left out). Who's this for: the choice on Start free (/signup) before the kid form, counted the
   same way through /signup/for/&lt;choice&gt; (a guest keeping their progress and a kid on their way to a page skip it). Counting started
   with this update, so the first two weeks read low. Days are UTC.</p>`;
 }
