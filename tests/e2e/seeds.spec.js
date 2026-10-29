@@ -40,3 +40,22 @@ test('BRB.speak exists and returns false gracefully without voices; the word gam
   await page.waitForTimeout(300);
   expect(errors).toEqual([]);
 });
+
+// Old games call speechSynthesis.speak themselves: the SDK's wrapper (better voice, mild pitch back to 1) must never break them.
+test('a raw speechSynthesis.speak call in a game does not throw, and feature detection still works', async ({ page }) => {
+  const errors = [];
+  page.on('pageerror', e => errors.push(e.message));
+  await page.goto('/play/word-peek');
+  const f = await gameFrame(page);
+  const r = await f.evaluate(() => {
+    const out = ['speechSynthesis' in window, speechSynthesis instanceof SpeechSynthesis, speechSynthesis.speak.__brbUpgrade === true];
+    speechSynthesis.speak(new SpeechSynthesisUtterance('hi'));
+    const u = new SpeechSynthesisUtterance('hello'); u.pitch = 1.1; u.rate = 0.75; speechSynthesis.speak(u);   // 0.75 and 1.5: exact as float32
+    const w = new SpeechSynthesisUtterance('robot'); w.pitch = 1.5; speechSynthesis.speak(w);
+    speechSynthesis.cancel();
+    return [...out, u.pitch, u.rate, w.pitch];
+  });
+  expect(r).toEqual([true, true, true, 1, 0.75, 1.5]);
+  await page.waitForTimeout(300);
+  expect(errors).toEqual([]);
+});
