@@ -160,15 +160,22 @@ a:not([class]):focus-visible{outline-offset:1px;border-radius:4px}
 /* Where the wordmark would squeeze the search box (phones, and beside the full nav on small laptops), the app-icon mark. */
 @media (min-width:821px) and (max-width:1000px),(max-width:600px){.logo-lockup{display:none}.logo .appmark{display:block}}
 @media (min-width:1001px) and (max-width:1100px){.topbar:has(.navlink:nth-child(5)) .logo-lockup{display:none}.topbar:has(.navlink:nth-child(5)) .logo .appmark{display:block}}
-/* Six menu items (Classes or Schools, and Plans): the compact top bar up to wider screens, and on small laptops the
-   items without their emoji. */
+/* Six menu items (Schools and Plans): the compact top bar up to wider screens; five or more: on small laptops the items
+   without their emoji. */
 @media (min-width:1181px) and (max-width:1400px){
   .topbar:has(.navlink:nth-child(6)){gap:8px}
   .topbar:has(.navlink:nth-child(6)) .me-btn .name,.topbar:has(.navlink:nth-child(6)) .langpick .lang-code{display:none}
   .topbar:has(.navlink:nth-child(6)) .navlink{padding:0 10px}
 }
 @media (min-width:1001px) and (max-width:1400px){.topbar:has(.navlink:nth-child(6)) .logo-lockup{display:none}.topbar:has(.navlink:nth-child(6)) .logo .appmark{display:block}}
-@media (min-width:821px) and (max-width:1000px){.topbar:has(.navlink:nth-child(6)) .navlink .emo{display:none}}
+@media (min-width:821px) and (max-width:1000px){.topbar:has(.navlink:nth-child(5)) .navlink .emo{display:none}}
+/* Signed in with four or more menu items (a tab bar for each role: kids, students and the platform admin have five or six
+   with Plans, a school admin four): on small laptops the search field becomes the round 🔎 button, as on the smallest
+   phones, so every label and the search fit in English, German and Russian; just above 1180px the name beside the avatar
+   steps aside. Checked for every role from 821px in tests/e2e/plans.spec.js. */
+@media (min-width:821px) and (max-width:1000px){.topbar:has(.navlink:nth-child(4)) .topsearch{display:none}.topbar:has(.navlink:nth-child(4)) .topsearch-btn{display:flex}}
+@media (min-width:1001px) and (max-width:1100px){.topbar:has(.navlink:nth-child(5)) .topsearch{display:none}.topbar:has(.navlink:nth-child(5)) .topsearch-btn{display:flex}}
+@media (min-width:1181px) and (max-width:1300px){.topbar:has(.navlink:nth-child(5)) .me-btn .name{display:none}}
 /* Phones: a little more room for the search words (app.js also swaps in the short placeholder when the long one won't fit). */
 @media (max-width:420px){.topbar{gap:8px}.topsearch input{padding-inline:36px 10px}.topsearch .ico{inset-inline-start:11px}}
 /* Long nav labels (Russian, French, Dutch) can squeeze the search box to nothing just above 820px: then it hides
@@ -629,6 +636,36 @@ ol.steps li{margin-bottom:var(--s2)}
 .famcheck.folded[open]>summary{margin-bottom:var(--s3)}
 .famcheck.folded[open]{padding-bottom:var(--s4)}
 .welcome .notice:last-child{margin-bottom:0}
+/* Parent-made child accounts (routes/family.js, behind madeOn): a made child's tools on /family (each folds open under its
+ *  button), the notice on "Make your child's account", "What we keep", and the child's side (the card, Me's Unlink and
+ *  Report asking for a new password). */
+.famkid-acts{flex:1 1 100%;display:flex;flex-wrap:wrap;align-items:flex-start;gap:var(--s2)}
+.famkid-acts>.notice{flex:1 1 100%;margin:0}
+/* Its buttons carry the child's name (up to 16 characters: "Change WombatWhimsyMWWx's password"), so they may wrap on a
+ * phone instead of pushing the page sideways. */
+.famkid-acts .btn{white-space:normal;text-wrap:balance;max-width:100%;padding-block:8px;text-align:center;overflow-wrap:anywhere}
+.famkid-act{max-width:100%}
+.famkid-act>summary,.famleave>summary{list-style:none;cursor:pointer}
+.famkid-act>summary::-webkit-details-marker,.famleave>summary::-webkit-details-marker{display:none}
+.famkid-act[open],.famleave[open]{flex:1 1 100%}
+.famkid-act[open]>summary,.famleave[open]>summary{margin-bottom:var(--s3)}
+.famkid-act form,.famleave form{padding:var(--s3);border-radius:var(--r-sm);background:var(--card);box-shadow:inset 0 0 0 1px var(--line)}
+.famleaves{align-items:flex-start}
+.made-notice{margin:var(--s4) 0;padding:var(--s3) var(--s4);border-radius:var(--r-sm);background:var(--card-2)}
+.made-notice h2{font-size:1.05rem;margin:0 0 var(--s2)}
+.made-notice ul,.madesees{padding-inline-start:1.2em;margin:0 0 var(--s2)}
+.made-notice li,.madesees li{margin-bottom:var(--s1)}
+.made-noconsent{font-weight:700}
+.keptlist{padding-inline-start:1.2em;margin:0 0 var(--s3)}
+.keptlist li{margin-bottom:var(--s1)}
+.keptlist ul{padding-inline-start:1.2em;margin:var(--s1) 0 0;overflow-wrap:anywhere}
+.kept-delete{margin-top:var(--s5);padding-top:var(--s4);border-top:1px solid var(--line)}
+.kept-delete h2{margin-top:0}
+.madecard .row{margin-top:var(--s2)}
+.madecard .madesees{font-weight:500}
+.madecard p.small{margin-bottom:var(--s2)}
+.madecard-more>summary{cursor:pointer;font-weight:700;width:fit-content}
+.madecard-more[open]>summary{margin-bottom:var(--s2)}
 /* The plans page (routes/plans.js): four cards like any pricing page, a monthly / yearly switch, then the fine print. */
 .plans-head{text-align:center;margin-bottom:var(--s5)}
 .plans-head .lead{max-width:640px;margin-inline:auto}

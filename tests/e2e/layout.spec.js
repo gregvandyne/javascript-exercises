@@ -3,7 +3,7 @@
 // playwright.config.js). scripts/layout-audit.js runs the same check over every page it can reach.
 import { test, expect } from '@playwright/test';
 import { findTouching } from './touching.js';
-import { ADMIN } from './helpers.js';
+import { ADMIN, signup, uniq, schoolWithAdmin } from './helpers.js';
 
 const DEMO = 'demo-pass-123';
 const VIEWS = [
@@ -79,9 +79,11 @@ test('admin pages: nothing touches', async ({ browser }) => {
 });
 
 test('the top bar fits the logo, search, the language and theme menus and the Me button in English, German and Russian', async ({ browser }) => {
-  // The demo teacher has the most nav items (Classes) and a long name: the tightest bar.
-  const { state, ctx } = await signIn(browser, 'DemoTeacher', DEMO); await ctx.close();
+  // The demo teacher has a long name; the platform admin has the most menu items (Home · Search · Build · Friends ·
+  // Schools): together the tightest bars.
   const problems = [];
+  for (const [who, pw] of [['DemoTeacher', DEMO], [ADMIN.username, ADMIN.password]]) {
+  const { state, ctx } = await signIn(browser, who, pw); await ctx.close();
   for (const lang of ['en', 'de', 'ru']) for (const width of [320, 360, 390, 820, 1024, 1280]) {
     const c = await browser.newContext({ viewport: { width, height: 700 }, storageState: state });
     await c.addCookies([{ name: 'lang', value: lang, url: test.info().project.use.baseURL }]);
@@ -101,12 +103,75 @@ test('the top bar fits the logo, search, the language and theme menus and the Me
         .filter(s => !document.querySelector(s).checkVisibility());
       return { tight: items.slice(1).some((b, i) => b.left - items[i].right < 4) || nav.slice(1).some((b, i) => b.left - nav[i].right < 2),
         off: items.some(b => b.left < 0 || b.right > innerWidth), wide: document.documentElement.scrollWidth - innerWidth,
-        logo: document.querySelector('.logo-lockup').checkVisibility() ? 'wordmark' : 'mark', name: document.querySelector('.topbar .logo').getAttribute('aria-label'), cut, missing, field };
+        logo: document.querySelector('.logo-lockup').checkVisibility() ? 'wordmark' : 'mark', name: document.querySelector('.topbar .logo').getAttribute('aria-label'), cut, missing, field,
+        links: document.querySelectorAll('.topnav .navlink').length };
     });
-    // The mark on phones and beside the full nav on small laptops (up to 1100px with five nav items, as here).
-    const logo = width <= 600 || (width > 820 && width <= 1100) ? 'mark' : 'wordmark';
-    if (r.tight || r.off || r.wide || r.cut || r.missing.length || r.field !== width >= 360 || r.logo !== logo || r.name !== 'Oomba Academy') problems.push(`${lang} @${width}: ${JSON.stringify(r)}`);
+    // The mark on phones and beside the menu on small laptops (up to 1000px; up to 1100px with five menu items or more).
+    const logo = width <= 600 || (width > 820 && width <= 1000) || (width > 1000 && width <= 1100 && r.links >= 5) ? 'mark' : 'wordmark';
+    // The search field, or the round 🔎 button: below 360px, and on small laptops beside four or more menu items (up to
+    // 1000px) or five or more (up to 1100px).
+    const field = width >= 360 && !(width > 820 && ((width <= 1000 && r.links >= 4) || (width <= 1100 && r.links >= 5)));
+    if (r.tight || r.off || r.wide || r.cut || r.missing.length || r.field !== field || r.logo !== logo || r.name !== 'Oomba Academy') problems.push(`${who} ${lang} @${width}: ${JSON.stringify(r)}`);
     await c.close();
+  }
+  }
+  expect(problems).toEqual([]);
+});
+
+// Navigation weeks 3–4: a tab bar for each role (billing is off on this server, so no Plans). The phone tab bar at 360px
+// and the desktop top bar at 1280px, light and dark, English, Hebrew and Arabic: the right items in order, every label
+// on one line and not cut, nothing touching, no sideways scroll.
+test('every role\'s tab bar (360) and top bar (1280): the right items, labels fit, nothing touches (light, dark, he, ar)', async ({ browser }) => {
+  // A school admin: a new own account, appointed by the platform admin.
+  const adm = await signIn(browser, ADMIN.username, ADMIN.password);
+  const headCtx = await browser.newContext(); const headPage = await headCtx.newPage();
+  const { username: headName } = await signup(headPage, uniq('Head'), 'head-pass-123');
+  const school = await schoolWithAdmin(adm.page, headName);
+  const headState = await headCtx.storageState(); await headCtx.close(); await adm.ctx.close();
+  const kidCtx = await browser.newContext(); const kidPage = await kidCtx.newPage();
+  await signup(kidPage, uniq('Kid')); const kidState = await kidCtx.storageState(); await kidCtx.close();
+  const state = async (u, pw) => { const x = await signIn(browser, u, pw); await x.ctx.close(); return x.state; };
+  const ROLES = [
+    ['signed out', undefined, ['/', '/search', '/build', '/parents', '/login'], ['/', '/build', '/parents', '/teachers'], ['/', '/login']],
+    ['kid', kidState, ['/', '/search', '/build', '/friends', '/me'], ['/', '/search', '/build', '/friends'], ['/', '/me']],
+    ['student', await state('DemoStudent', DEMO), ['/', '/classes', '/build', '/friends', '/me'], ['/', '/classes', '/build', '/friends'], ['/classes', '/me']],
+    ['teacher', await state('DemoTeacher', DEMO), ['/teach', '/', '/me'], ['/teach', '/'], ['/teach', '/me']],
+    ['school admin', headState, ['/teach', '/', '/school', '/me'], ['/teach', '/', '/school'], ['/teach', `/school/${school.slug}?tab=people`, '/me']],
+    ['platform admin', await state(ADMIN.username, ADMIN.password), ['/', '/search', '/build', '/friends', '/admin/schools', '/me'], ['/', '/search', '/build', '/friends', '/admin/schools'], ['/', '/me']],
+  ];
+  const problems = [];
+  for (const [who, st, tabs, top, pages] of ROLES) {
+    for (const [width, scheme, lang] of [[360, 'light', 'en'], [360, 'dark', 'he'], [360, 'light', 'ar'], [1280, 'dark', 'en'], [1280, 'light', 'he'], [1280, 'dark', 'ar']]) {
+      const ctx = await browser.newContext({ viewport: { width, height: 800 }, colorScheme: scheme, storageState: st });
+      await ctx.addCookies([{ name: 'lang', value: lang, url: test.info().project.use.baseURL }]);
+      const page = await ctx.newPage();
+      for (const p of pages) {
+        await page.goto(p); await page.evaluate(() => document.fonts.ready);
+        const r = await page.evaluate(() => {
+          const vis = e => e.checkVisibility();
+          const tabs = [...document.querySelectorAll('.tabbar .tab')];
+          return {
+            tabs: tabs.map(t => t.getAttribute('href')), tabsShown: tabs.some(vis),
+            top: [...document.querySelectorAll('.topnav .navlink')].map(a => a.getAttribute('href')), topShown: [...document.querySelectorAll('.topnav .navlink')].some(vis),
+            cut: tabs.filter(t => vis(t) && t.scrollWidth > t.clientWidth + 1).map(t => t.textContent.trim()),
+            wrapped: tabs.filter(vis).map(t => t.querySelector('.tab-t')).filter(l => l && l.getBoundingClientRect().height > parseFloat(getComputedStyle(l).lineHeight || '0') * 1.5 + 1).map(l => l.textContent.trim()),
+            search: vis(document.querySelector('#topq')) || vis(document.querySelector('.topsearch-btn')),
+            wide: document.documentElement.scrollWidth - innerWidth,
+          };
+        });
+        const at = `${who} ${p} @${width}/${scheme}/${lang}`;
+        if (JSON.stringify(r.tabs) !== JSON.stringify(tabs)) problems.push(`${at}: tabs ${r.tabs.join(' ')}`);
+        if (JSON.stringify(r.top) !== JSON.stringify(top)) problems.push(`${at}: top ${r.top.join(' ')}`);
+        if (width === 360 && (!r.tabsShown || r.topShown)) problems.push(`${at}: the phone shows the top menu instead of the tab bar`);
+        if (width === 1280 && (r.tabsShown || !r.topShown)) problems.push(`${at}: the desktop shows the tab bar`);
+        if (r.cut.length) problems.push(`${at}: cut off ${r.cut.join(', ')}`);
+        if (r.wrapped.length) problems.push(`${at}: label on two lines ${r.wrapped.join(', ')}`);
+        if (!r.search) problems.push(`${at}: no search in the top bar`);
+        if (r.wide > 1) problems.push(`${at}: scrolls sideways ${r.wide}px`);
+        for (const t of await findTouching(page)) problems.push(`${at}: ${t.a} ⟷ ${t.b} (${t.dir} ${t.gap}px)`);
+      }
+      await ctx.close();
+    }
   }
   expect(problems).toEqual([]);
 });

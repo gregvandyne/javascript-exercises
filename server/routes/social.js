@@ -5,7 +5,7 @@ import { Router } from 'express';
 import { html, raw, jsonData } from '../views/html.js';
 import { page, notFound } from '../views/layout.js';
 import { avatar, cardGrid, emptyState } from '../views/components.js';
-import { requireAccount, getUserByName, getUser, isRetiredName, OFFICIAL, isGrownup } from '../auth.js';
+import { requireAccount, getUserByName, getUser, isOfficialOldName, OFFICIAL, isGrownup } from '../auth.js';
 import { rateLimit } from '../services/ratelimit.js';
 import * as friends from '../services/friends.js';
 import * as chat from '../services/chat.js';
@@ -139,8 +139,9 @@ export const favouriteGames = (viewer, userId, limit = 12) => games.favorites(vi
 router.get('/u/:username', (req, res) => {
   const t = req.t, f = req.fmt;
   const p = getUserByName(req.params.username);
-  // The official account's old names (MagicCups, …) point to its profile now.
-  if (!p && isRetiredName(req.params.username)) return res.redirect(301, `/u/${OFFICIAL}`);
+  // The official account's old names (MagicCups, …) point to its profile now. Only those: a deleted child's reserved
+  // name is the normal 404 (auth.isRetiredName also covers reserved names, for sign-up only).
+  if (!p && isOfficialOldName(req.params.username)) return res.redirect(301, `/u/${OFFICIAL}`);
   // Grown-up accounts have no public profile.
   if (!p || p.banned || isGrownup(p)) return notFound(req, res, t('profile.notFound'));
   const viewer = req.user;

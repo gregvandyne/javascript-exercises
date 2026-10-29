@@ -62,7 +62,10 @@
     "teachers": "Teachers",
     "parents": "Parents",
     "grownups": "Grown-ups",
-    "playNow": "Play now"
+    "playNow": "Play now",
+    "games": "Games",
+    "account": "Account",
+    "school": "School"
   },
   "errors": {
     "goHome": "Go home",
@@ -294,6 +297,34 @@
         "linked": "You're already linked to a grown-up.",
         "pending": "Answer the question on this page first.",
         "nothing": "There's nothing to do here right now. Try reloading the page."
+      },
+      "madeLinked": "<b>Your grown-up</b> made this account and is linked to it.",
+      "madePwReset": "Your grown-up gave your account a new password.",
+      "made": {
+        "card": {
+          "title": "A grown-up made this account for you.",
+          "summary": "They can see some counts about your account, but never what you made, wrote or said.",
+          "more": "What can they see?",
+          "sees": "Your grown-up can see:",
+          "cantRead": "They can't read your chats or your Builder messages.",
+          "ok": "OK",
+          "notMine": "This isn't my grown-up"
+        },
+        "sees": {
+          "extras": "how many extra Builder messages you used",
+          "games": "how many games you made, and how many are public",
+          "chats": "how many of your games have Builder chats",
+          "uploads": "how many pictures and files you uploaded",
+          "saves": "how many game saves you have",
+          "scores": "how many scores you have",
+          "friends": "how many friends you have",
+          "messages": "how many chat messages you sent",
+          "photo": "whether you have a profile photo",
+          "signins": "which browsers you are signed in on"
+        },
+        "newPwWhy": "Your grown-up knows your old password, so pick a new one.",
+        "newPw": "New password",
+        "newPwConfirm": "New password again"
       }
     }
   },
@@ -468,6 +499,7 @@
         "h": "How long we keep it",
         "p1": "We keep an account's data for as long as the account exists. None of it is deleted on a timer yet. A game your child deletes is taken off the site for everyone, but a copy stays on our server.",
         "p2": "There is no button yet to delete an account or download its data. To ask for either, a grown-up can contact us. For a school account, ask the school; it can ask us.",
+        "madeP2": "There is no button yet to delete an account or download its data, except that a grown-up who made their child's account can delete it from their family page. To ask for a deletion or a copy of the data, a grown-up can contact us. For a school account, ask the school; it can ask us.",
         "paid1": "We keep an account's own data for as long as the account exists, and none of it is deleted on a timer yet. A game your child deletes is taken off the site for everyone, but a copy stays on our server. Family links, link codes and billing records have their own timers: see <a href=\"/privacy#billingKeep\">how long we keep billing information</a>."
       },
       "friends": {
@@ -490,6 +522,15 @@
         "h": "Family accounts",
         "p1": "A parent or guardian can make their own grown-up account and link it to their child's account. Your child has to say yes on their own page.",
         "plans": "See plans and prices"
+      },
+      "made": {
+        "h": "If you make your child's account",
+        "p1": "On your family page you can make your child's own account instead of linking one they already have. Your child signs in with the made-up name and password you choose.",
+        "li1": "It is your child's account. Please don't chat or play as them: friends think they are talking to your child.",
+        "li2": "You see counts only (games, uploads, saves, scores, friends, chat messages sent, which browsers are signed in), up to yesterday. Never what your child made, wrote or said.",
+        "li3": "Your child is told that a grown-up made the account and what you can see. They can unlink or report you on their Me page, and then pick a new password.",
+        "li4": "Before you make it, you read what the account keeps and tick that you are the child's parent or legal guardian. That, and paying for a plan, is not a parental consent check under children's privacy laws.",
+        "li5": "You can change the password, see what we keep and delete the account from your family page. We keep it until you delete it: there are no automatic deletion timers yet."
       }
     },
     "sdk": {
@@ -651,6 +692,7 @@
       "ending": {
         "h": "8. Suspending and ending accounts",
         "li1": "<b>You</b> can stop using Oomba Academy at any time. There is no delete button yet: to delete an account or get a copy of its data, email <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a> (school accounts: ask the school, which can ask us). If a grown-up account with a plan is deleted, we cancel the plan first.",
+        "madeLi1": "<b>You</b> can stop using Oomba Academy at any time. A grown-up who made their child's account can delete it from their family page. Otherwise there is no delete button yet: to delete an account or get a copy of its data, email <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a> (school accounts: ask the school, which can ask us). If a grown-up account with a plan is deleted, we cancel the plan first.",
         "li2": "<b>We</b> may pause, limit or close an account, take down a game, or end a family link if someone breaks these terms, puts a child at risk, or if the law requires it. We'll explain why when we can, unless that would put someone at risk.",
         "li3": "If a child's account is suspended, the family plan keeps working for the other linked children. A suspension alone is not a reason for a refund.",
         "li4": "If we close a grown-up account for fraud or serious misuse, the plan ends and is not refunded, unless the law requires it.",
@@ -796,7 +838,8 @@
         "li3": "<b>What goes to Stripe:</b> when we create the school's invoices, the school's name, the billing contact's email, the billing address and the purchase order number are saved with Stripe, which sends the invoices. The contact's name, the note and the tax-exempt answer stay only with us. Nothing is sent until we create the invoices. A school that pays by card types its name and billing address on Stripe's page instead.",
         "li4": "<b>How long:</b> the contact's name and email, the address, the note and the purchase order number in our database are deleted <b>2 years</b> after the request is closed. Stripe keeps the school's address and purchase order number with its invoices (see below).",
         "li5": "<b>Seats</b> are counted from the number of active students. Billing does not use students' names or work.",
-        "li6": "<b>Families never see class activity:</b> a grown-up linked to a student sees only that student's family extra messages."
+        "li6": "<b>Families never see class activity:</b> a grown-up linked to a student sees only that student's family extra messages.",
+        "li7": "<b>Asking for a School plan:</b> a teacher can ask their school's admins for a School plan. We keep which teacher asked, for which school and when, never a message. The school's admins see who asked until they dismiss it or the school gets a plan, and we delete it <b>90 days</b> after that. Teachers only see whether their school has a plan."
       },
       "schoolSetup": {
         "h": "School set-up requests",
@@ -834,6 +877,17 @@
       "contact": {
         "h": "Questions",
         "p1": "Oomba Academy · <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a>"
+      },
+      "made": {
+        "h": "Accounts a grown-up makes for a child",
+        "p1": "A parent or legal guardian with a grown-up account can make their child's own account on their family page. It is an ordinary child's account, with the same rules, limits and safety checks as any other.",
+        "li1": "What it keeps: the same as any child's account: games, Builder chats, pictures and files uploaded, game saves, scores, ratings and likes, friends and friend chat, a profile photo if one is added, settings, and sign-in cookies with the browser's name.",
+        "li8": "What the grown-up sees: how many extra Builder messages the child used (up to yesterday), and counts of games, Builder chats, uploads, saves, scores, friends and chat messages sent, whether there is a profile photo, and which browsers are signed in. Never the content. The counts stop at the end of yesterday, so nothing the child adds today shows before tomorrow, but something the child deletes or ends today (a game, a friend, a sign-in) can already be missing from them.",
+        "li3": "The grown-up chose the username and password. We ask them not to use the child's real name, and we refuse names that look like a real name, a birth year or the grown-up's own name.",
+        "li4": "The child is told that a grown-up made the account and what that grown-up can see. They can unlink or report the grown-up on their Me page; that asks them for a new password, so the grown-up can't sign in as them any more.",
+        "li5": "Before making the account, the grown-up reads a notice about what we keep and ticks that they have read it and that they are the child's parent or legal guardian. We keep a record of that: when, and which version of the notice. This is not a parental consent check under children's privacy laws, and we don't treat it as one. Paying for a plan isn't one either.",
+        "li9": "The grown-up can see these counts and delete the account from their family page: everything the child made, wrote and uploaded goes straight away. We keep a short record that the account existed and who made it, the old username is held back for 90 days so nobody else can take it, and a class the child used to be in keeps its own records. If the child is in a school class now, the teacher removes them from the class first.",
+        "li7": "How long: as long as the account exists. We have no automatic deletion timers yet."
       }
     }
   },
@@ -1993,7 +2047,16 @@
       "noneAsk": "Ask your school admin to add you to a class.",
       "manage": "Manage {school}",
       "noneAdmin": "You don't teach any classes yet",
-      "noneAdminText": "Classes you teach show up here. All of {school}'s classes are under Manage {school} above."
+      "noneAdminText": "Classes you teach show up here. All of {school}'s classes are under Manage {school} above.",
+      "makeGame": "Make a game",
+      "plan": {
+        "heading": "School plan · {school}",
+        "none": "No school plan · students on free Builder messages",
+        "setUp": "Set up School plan",
+        "on": "School plan on",
+        "billing": "Billing",
+        "settling": "Setting up your plan…"
+      }
     },
     "class": {
       "new": "New class",
@@ -2319,6 +2382,24 @@
         "noCustomer": "Your school has no billing account yet."
       },
       "legal": "School plans are covered by our <a href=\"/terms\">Terms of Service</a>, our <a href=\"/refunds\">Refund and Cancellation Policy</a> and our <a href=\"/privacy#schoolBilling\">Privacy Policy</a>."
+    },
+    "pick": {
+      "title": "Your schools",
+      "text": "Pick the school you want to look after."
+    },
+    "asks": {
+      "text": "Your school doesn't have a School plan. With one, students get more Builder messages. You can ask your school's admin.",
+      "button": "Ask my admin",
+      "sent": "We told your school's admin.",
+      "askedOn": "You asked on {date}. Your school's admin can see it on their pages.",
+      "hasPlan": "Your school has a School plan.",
+      "asked": "{count, plural, one {# teacher asked for a School plan} other {# teachers asked for a School plan}}",
+      "dismiss": "Dismiss",
+      "dismissed": "Dismissed.",
+      "errors": {
+        "planOn": "Your school already has a School plan.",
+        "noAdmin": "Your school has no admin yet, so there is nobody to ask."
+      }
     }
   },
   "lessons": {
@@ -2850,13 +2931,13 @@
       "cancelConfirm": "Cancel this request?",
       "helpHeading": "Help",
       "help": "Questions, or a problem with your account? Write to {email}.",
-      "off": "Family accounts are switched off right now. You can still play games, change your language or password, and sign out here.",
       "yourPlan": "Your plan",
       "planFreeText": "Your children build with the free daily Builder messages.",
       "seePlans": "See plans",
       "changePlan": "Change plan",
       "sourceBasic": "Extra messages come from your Basic plan.",
-      "fullBasic": "Your Basic plan covers 1 child. To link more, switch to the Family plan (up to {max} children) in Manage billing."
+      "fullBasic": "Your Basic plan covers 1 child. To link more, switch to the Family plan (up to {max} children) in Manage billing.",
+      "offAccount": "Family accounts are switched off right now. You can still play games. Your language, password and Sign out are on your Account page."
     },
     "link": {
       "title": "Link a child",
@@ -2880,7 +2961,9 @@
       "planOn": "Your plan is on",
       "hide": "Free is fine, hide this",
       "staying": "Staying free for now.",
-      "notOnSale": "Plans aren’t on sale yet. Free works in the meantime."
+      "notOnSale": "Plans aren’t on sale yet. Free works in the meantime.",
+      "step2Made": "Add your child",
+      "step2MadeHow": "Make your child's account, or link one they already have."
     },
     "errors": {
       "badCodeDay": "That code doesn't work. A code works once, for 24 hours: ask your child for a new one.",
@@ -2955,6 +3038,98 @@
       "basicMany": "Basic covers one child: {name}. Your other children keep only the free daily messages.",
       "basicManyPending": "Basic covers one child. Your other children keep only the free daily messages.",
       "basicManyLink": "Cover all your children with the Family plan"
+    },
+    "account": {
+      "heading": "Your account"
+    },
+    "made": {
+      "title": "Make your child's account",
+      "heading": "Make your child's account",
+      "intro": "Your child will use this name and password to sign in on any device. You'll stay their grown-up on Oomba Academy.",
+      "nameLabel": "A made-up name for your child",
+      "nameHint": "Make up a fun name. Don't use their real name, surname, school or birth year, or your own name. Other kids may see it.",
+      "pwLabel": "Their password",
+      "pwHint": "6 or more letters or numbers your child can remember. Not the same as your password.",
+      "pwConfirm": "Their password again",
+      "notice": {
+        "h": "Before you make it: what this account keeps",
+        "keep": "What this account keeps: the games your child makes, their Builder chats, pictures and files they upload, game saves, scores, ratings and likes, friends and friend chat messages, a profile photo if they add one, their settings, and sign-in cookies with the browser's name.",
+        "ai": "What goes to Anthropic's Claude (the AI behind the Builder): Builder messages, pictures and files, profile photos (for a safety check) and games sent for the public review. No names or usernames are sent. Friend chat never goes to the AI.",
+        "who": "Who sees what: friends they add with a friend code can chat with them and see their friends-only games. Anyone can play the games they choose to make public. Their username shows on public games and leaderboards.",
+        "howLong": "How long we keep it: as long as the account exists. We have no automatic deletion timers yet.",
+        "rights": "What you can do: see what we keep and delete the account from your family page, or contact us.",
+        "more": "Read the full Privacy Policy"
+      },
+      "ack": "I've read this.",
+      "guardian": "I am this child's parent or legal guardian.",
+      "noConsent": "Making this account, ticking these boxes or paying for a plan is not a parental consent check under children's privacy laws, and we don't treat it as one.",
+      "submit": "Make the account",
+      "done": "{name}'s account is ready.",
+      "ready": "Account ready. {name} can sign in with the name and password you chose.",
+      "madeByYou": "You made this account",
+      "add": "Make their account",
+      "linkCode": "Link with a code",
+      "errors": {
+        "reported": "We can't make a new account right now.",
+        "reportedContact": "We can't make a new account right now. Write to {email}.",
+        "yearCap": "Your family has made {max} accounts in the last 12 months, the most for one family.",
+        "dayCap": "You've made {max} accounts today. Try again tomorrow.",
+        "nameLikeYours": "Pick a name that doesn't use your own name.",
+        "sameAsYours": "Pick a different password from yours.",
+        "needAck": "Tick this box once you've read what the account keeps.",
+        "needGuardian": "Only a parent or legal guardian can make a child's account."
+      }
+    },
+    "switch": {
+      "button": "Switch to {name}",
+      "childPw": "{name}'s password",
+      "device": "This signs you out here and signs {name} in. To come back, sign in with your own password. If this device is shared with your child, don't let the browser save your password. Your other devices stay signed in.",
+      "submit": "Sign {name} in",
+      "errors": {
+        "need": "Type {name}'s password.",
+        "wrong": "That isn't {name}'s password."
+      }
+    },
+    "childPw": {
+      "button": "Change {name}'s password",
+      "label": "New password for {name}",
+      "submit": "Save the new password",
+      "done": "Saved. {name} is signed out everywhere and will be told you set a new password."
+    },
+    "kept": {
+      "link": "What we keep",
+      "deleteLink": "Delete account",
+      "title": "What we keep",
+      "heading": "What we keep for {name}",
+      "reauthText": "Type your password to see what we keep for {name}.",
+      "reauthSubmit": "Continue",
+      "introCounts": "Counts only, up to the end of yesterday (UTC): what {name} adds today shows from tomorrow, but something deleted or ended today (a game, a friend, a sign-in) can already be missing. We never show you what {name} made, wrote or said.",
+      "rows": {
+        "games": "Games made: {n} ({pub} public)",
+        "chats": "Games with Builder chats: {n}",
+        "uploads": "Pictures and files uploaded: {n}",
+        "saves": "Game saves: {n}",
+        "scores": "Scores: {n}",
+        "friends": "Friends: {n}",
+        "messages": "Friend chat messages sent: {n}",
+        "photoYes": "Profile photo: yes",
+        "photoNo": "Profile photo: no",
+        "signins": "{n, plural, one {Signed in on # browser:} other {Signed in on # browsers:}}",
+        "signinsNone": "Not signed in on any browser",
+        "madeAt": "Account made: {date}",
+        "notice": "Notice you read: the version of {version}"
+      },
+      "never": "What we never keep for {name}: an email address, age, real name, location or payment details.",
+      "extras": "Extra Builder messages are on your family page.",
+      "deleteHeading": "Delete {name}'s account",
+      "deleteTextKeeps": "This deletes {name}'s account straight away, with everything {name} made, wrote and uploaded on Oomba Academy. We keep a short record that the account existed and who made it, and a class {name} used to be in keeps its own records. It can't be undone.",
+      "confirmLabel": "Type {name} to confirm",
+      "deleteSubmit": "Delete the account for good",
+      "deleted": "{name}'s account was deleted.",
+      "errors": {
+        "confirmName": "Type the account's name exactly to confirm.",
+        "inSchool": "{name} is in a class. School records belong to the school: ask the teacher to remove them from the class first, then delete here."
+      }
     }
   },
   "plans": {

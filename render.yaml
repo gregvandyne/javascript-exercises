@@ -48,3 +48,7 @@ services:
       # Optional "School" payment method configuration (pmc_…: cards, Link, ACH); unset = the account's default.
       - key: STRIPE_PMC_SCHOOL
         sync: false
+      # Parent-made child accounts (docs/decisions.md): off. Turn on only after the owner's sign-off is recorded in
+      # docs/legal-review.md (item 30).
+      - key: PARENT_MADE_CHILDREN
+        value: "0"

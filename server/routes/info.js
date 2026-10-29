@@ -9,7 +9,7 @@ import { html, raw } from '../views/html.js';
 import { page, legalReader } from '../views/layout.js';
 import { tHtml, dictionary, DEFAULT_LOCALE, fmt } from '../i18n/index.js';
 import { config } from '../config.js';
-import { familiesOn } from '../services/family.js';
+import { familiesOn, madeOn } from '../services/family.js';
 import { langsWithKey } from '../seo.js';
 import { isGrownup } from '../auth.js';
 export const router = Router();
@@ -17,7 +17,7 @@ export const router = Router();
 const indexed = (path, key) => ({ index: true, path, langs: langsWithKey(key) });
 
 /** The legal pages' "Last updated" date (a calendar day, UTC). Change it with every change to their text. */
-export const LEGAL_UPDATED = '2026-10-28';
+export const LEGAL_UPDATED = '2026-10-29';
 /** Where the legal pages send people: CONTACT_EMAIL, else the owner's address. */
 const legalEmail = () => config.contactEmail || 'greg@oomba.ai';
 
@@ -29,13 +29,18 @@ function sectionKeys(prefix) {
   if (!byPrefix.has(prefix)) byPrefix.set(prefix, Object.keys(en).filter(k => k.startsWith(`${prefix}.`)).map(k => k.slice(prefix.length + 1)).filter(k => !k.includes('.')));
   return byPrefix.get(prefix);
 }
-function items(prefix, paid) {
+// made: parent-made child accounts are on (madeOn): madeP<n> / madeLi<n> stand in for p<n> / li<n> (e.g. the "no delete
+// button yet" sentences, while a grown-up can delete an account they made from their family page).
+function items(prefix, paid, made = false) {
   const out = []; const keys = sectionKeys(prefix);
   const has = new Set(keys);
   for (const k of keys) {
+    const mm = /^made(P|Li)(\d+)$/.exec(k);
+    if (mm) { if (made) out.push({ kind: mm[1].toLowerCase(), key: `${prefix}.${k}` }); continue; }
     const m = /^(?:(paid)|(p|li|s))(\d+)$/.exec(k); if (!m) continue;
     if (m[1] && !paid) continue;                                   // paid wording before launch
     if (!m[1] && paid && has.has(`paid${m[3]}`) && m[2] === 'p') continue;  // replaced by its paidN
+    if (!m[1] && made && m[2] !== 's' && has.has(`made${m[2] === 'p' ? 'P' : 'Li'}${m[3]}`)) continue;  // replaced by its madeN
     out.push({ kind: m[1] ? 'p' : m[2], key: `${prefix}.${k}` });
   }
   return out;
@@ -48,10 +53,10 @@ const fallback = (t, key) => (t.own(key) ? '' : html` lang="en" dir="ltr"`);
 // level: the heading level of the section (2; 3 on /parents, where the sections sit under "Safety and privacy, in detail").
 // fold: the section's text folds away under its heading (a <details>; /parents, where the page is long on phones). The
 // id stays on the <section>, and app.js opens the fold when a link leads to it (/parents#keep).
-export function section(req, prefix, { id, paid = familiesOn(req), level = 2, fold = false } = {}) {
+export function section(req, prefix, { id, paid = familiesOn(req), made = madeOn(req), level = 2, fold = false } = {}) {
   const t = req.t; const vars = { email: legalEmail() }; const out = []; let list = null;
   const h = raw(`h${level}`), sub = raw(`h${level + 1}`);
-  for (const it of items(prefix, paid)) {
+  for (const it of items(prefix, paid, made)) {
     if (it.kind === 'li') { if (!list) out.push(list = { keys: [], items: [] }); list.keys.push(it.key); list.items.push(html`<li${fallback(t, it.key)}>${tHtml(t, it.key, vars)}</li>`); continue; }
     list = null;
     out.push(it.kind === 's' ? html`<${sub}${fallback(t, it.key)}>${tHtml(t, it.key, vars)}</${sub}>` : html`<p${fallback(t, it.key)}>${tHtml(t, it.key, vars)}</p>`);
@@ -141,6 +146,8 @@ router.get('/privacy', legalPage('privacy', '🔒', req => {
   const full = fullPrivacy(req);
   return ['intro',
     ...['stored', 'never', 'ai', 'keep'].map(s => section(req, `info.parents.${s}`, { id: s })), googlePrivacy(req),
+    // Parent-made child accounts (docs/decisions.md): only while they are on (madeOn). No plan names, so for every reader.
+    madeOn(req) ? 'made' : null,
     ...(full ? ['grownups', 'linking', 'payments', 'schoolBilling', 'schoolSetup'] : []), 'children', ...(full ? ['billingKeep', 'where'] : []),
     !full && !req.user ? 'more' : null, 'contact'];
 }));

@@ -84,7 +84,13 @@ export const getUserByName = name => q.get('SELECT * FROM users WHERE username=?
  *  and nobody can sign up with one. */
 export const OFFICIAL = 'OombaAcademy';
 export const OFFICIAL_OLD_NAMES = ['MagicCups', 'MagicCup', 'BRBGaming'];
-export const isRetiredName = name => OFFICIAL_OLD_NAMES.some(o => o.toLowerCase() === String(name || '').toLowerCase());
+/** One of the official account's old names (/u/<old name> redirects to its profile: routes/social.js). */
+export const isOfficialOldName = name => OFFICIAL_OLD_NAMES.some(o => o.toLowerCase() === String(name || '').toLowerCase());
+/** A name nobody can sign up with: an official old name, or a deleted parent-made child's old name, reserved for a while
+ *  (reserved_names; services/account-delete.js), so nobody can sign up as that child. Never used for profile
+ *  redirects: a reserved name's /u/ page is the normal 404, so it tells nobody the name was a recently deleted account. */
+export const isRetiredName = name => isOfficialOldName(name)
+  || !!q.get('SELECT 1 FROM reserved_names WHERE name=? AND until>?', String(name || ''), now());
 export function verifyPassword(user, password) {
   const ok = bcrypt.compareSync(String(password || '').slice(0, 72), (user && user.password_hash) || DUMMY_HASH);
   return !!(user && user.password_hash && ok);
@@ -164,9 +170,10 @@ export const longPasswordKind = u => ['staff', 'grownup'].includes(accountKind(u
 // The cookie outlives its session by a day, so a device that comes back to an ended sign-in (even the next morning) is
 // told so, and the next person to sign in there isn't sent to the last one's page.
 const COOKIE_GRACE = 86400;
-export function startSession(res, userId, ua = '') {
+/** via: 'switch' for a sign-in a grown-up's Switch started (routes/family.js; req.sessionVia), else nothing. */
+export function startSession(res, userId, ua = '', { via = null } = {}) {
   const id = uid(32); const t = now(); const { max } = SESSION_RULES[accountKind(getUser(userId))];
-  q.run('INSERT INTO sessions(id, user_id, created_at, expires_at, ua, last_active) VALUES (?,?,?,?,?,?)', id, userId, t, t + max, String(ua).slice(0, 200), t);
+  q.run('INSERT INTO sessions(id, user_id, created_at, expires_at, ua, last_active, via) VALUES (?,?,?,?,?,?,?)', id, userId, t, t + max, String(ua).slice(0, 200), t, via === 'switch' ? 'switch' : null);
   setCookie(res, COOKIE, pack(id), Math.floor(max / 1000) + COOKIE_GRACE);
   return id;
 }
@@ -217,12 +224,12 @@ export function sessionMiddleware(req, res, next) {
   const t = now();
   // Ended sessions are kept a day (as long as their cookie), then swept.
   if (t - lastSweep > 3600e3) { lastSweep = t; q.run('DELETE FROM sessions WHERE expires_at<?', t - COOKIE_GRACE * 1000); }
-  req.user = null; req.sessionId = null; req.sessionEnded = false;
+  req.user = null; req.sessionId = null; req.sessionEnded = false; req.sessionVia = null; req.madeCardOk = false;
   const id = unpack(parseCookies(req)[COOKIE]);
   if (id) {
     const { s, u } = liveSession(id, t);
     if (u) {
-      req.user = u; req.sessionId = id;
+      req.user = u; req.sessionId = id; req.sessionVia = s.via || null; req.madeCardOk = !!s.made_card_ok;
       if (t - s.last_active > ACTIVITY_EVERY && isActivity(req)) q.run('UPDATE sessions SET last_active=? WHERE id=?', t, id);
       if (t - u.last_seen > 60e3) q.run('UPDATE users SET last_seen=? WHERE id=?', t, u.id);
     } else {

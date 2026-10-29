@@ -3,12 +3,12 @@ import express, { Router } from 'express';
 import fs from 'node:fs';
 import { html, raw } from '../views/html.js';
 import { page } from '../views/layout.js';
-import { avatar, notYou } from '../views/components.js';
+import { avatar, notYou, makeGameBtn } from '../views/components.js';
 import * as auth from '../auth.js';
 import { q, audit } from '../db.js';
 import * as photos from '../services/photos.js';
 import { isSchoolStaff, isPlatformAdmin } from '../services/schools.js';
-import { rateLimit, allow, count, ipOf, loginLockKey, GUESTS_PER_IP_HOUR } from '../services/ratelimit.js';
+import { rateLimit, allow, count, ipOf, loginLockKey, GUESTS_PER_IP_HOUR, SIGNUP } from '../services/ratelimit.js';
 import { availableLocales, normalizeCode, tHtml, setLangCookie, saveUserLang } from '../i18n/index.js';
 import { THEMES, THEME_ICONS, normalizeTheme, setThemeCookie, saveUserTheme } from '../theme.js';
 import { buildStatus } from '../builder/turns.js';
@@ -174,9 +174,8 @@ router.post('/api/auth/guest', (req, res) => {
   if (req.themeSource === 'cookie') saveUserTheme(u, req.theme);
   res.json({ ok: true, user: auth.publicUser(u) });
 });
-// Sign-up limits, per address (never per session: a guest cookie is free). Only accounts actually made count toward the
-// 30 an hour, so a class fixing typos and taken names isn't locked out; 2000 tries an hour stops a flood.
-export const SIGNUP = { perHour: 30, triesPerHour: 2000 };
+// Sign-up limits (services/ratelimit.js SIGNUP): per address, only accounts actually made count toward the hourly cap.
+export { SIGNUP };
 router.post('/api/auth/signup', (req, res) => {
   const t = req.t;
   const ip = ipOf(req);
@@ -402,7 +401,7 @@ router.get('/me', auth.requireUser, (req, res) => {
   // grown-up the code. Empty for everyone else (guests, school accounts, staff) and while family pages are off.
   const family = meFamilyPanel(req);
   const body = html`
-  <div class="pagehead">${avatar(u, 72)}<div style="flex:1;min-width:0"><h1 style="margin:0">${u.display_name}</h1><div class="muted"><bdi>@${u.username}</bdi>${u.is_guest ? ` · ${t('me.guestTag')}` : ''}</div>${u.is_guest ? '' : notYou(req, { withName: false, plain: auth.accountKind(u) !== 'student' })}</div></div>
+  <div class="pagehead">${avatar(u, 72)}<div style="flex:1;min-width:0"><h1 style="margin:0">${u.display_name}</h1><div class="muted"><bdi>@${u.username}</bdi>${u.is_guest ? ` · ${t('me.guestTag')}` : ''}</div>${u.is_guest ? '' : notYou(req, { withName: false, plain: auth.accountKind(u) !== 'student' })}</div>${!u.is_guest && isSchoolStaff(u) ? makeGameBtn(t) : ''}</div>
   ${u.is_guest ? html`<div class="notice warn" style="margin-bottom:16px">${tHtml(t, 'me.guestNotice', { href: '/signup?next=/me' })}</div>` : ''}
   ${family}
   <nav class="metiles" aria-label="${t('me.title')}">

@@ -61,7 +61,10 @@
     "teachers": "Docentes",
     "parents": "Familias",
     "grownups": "Adultos",
-    "playNow": "Jugar ya"
+    "playNow": "Jugar ya",
+    "games": "Juegos",
+    "account": "Cuenta",
+    "school": "Escuela"
   },
   "errors": {
     "goHome": "Ir al inicio",
@@ -293,6 +296,34 @@
         "linked": "Tu cuenta ya está vinculada con un adulto.",
         "pending": "Primero responde la pregunta de esta página.",
         "nothing": "Ahora no hay nada que hacer aquí. Prueba a recargar la página."
+      },
+      "madeLinked": "<b>Tu adulto</b> creó esta cuenta y está vinculado con ella.",
+      "madePwReset": "Tu adulto le puso una contraseña nueva a tu cuenta.",
+      "made": {
+        "card": {
+          "title": "Un adulto creó esta cuenta para ti.",
+          "summary": "Puede ver algunos números sobre tu cuenta, pero nunca lo que creaste, escribiste o dijiste.",
+          "more": "¿Qué puede ver?",
+          "sees": "Tu adulto puede ver:",
+          "cantRead": "No puede leer tus chats ni tus mensajes para el Constructor.",
+          "ok": "OK",
+          "notMine": "No es mi adulto"
+        },
+        "sees": {
+          "extras": "cuántos mensajes extra para el Constructor usaste",
+          "games": "cuántos juegos creaste y cuántos son públicos",
+          "chats": "cuántos de tus juegos tienen chats con el Constructor",
+          "uploads": "cuántas imágenes y archivos subiste",
+          "saves": "cuántas partidas guardadas tienes",
+          "scores": "cuántas puntuaciones tienes",
+          "friends": "cuántos amigos tienes",
+          "messages": "cuántos mensajes de chat enviaste",
+          "photo": "si tienes foto de perfil",
+          "signins": "en qué navegadores tienes la sesión iniciada"
+        },
+        "newPwWhy": "Tu adulto conoce tu contraseña anterior, así que elige una nueva.",
+        "newPw": "Contraseña nueva",
+        "newPwConfirm": "Repite la contraseña nueva"
       }
     }
   },
@@ -467,6 +498,7 @@
         "h": "Cuánto tiempo lo guardamos",
         "p1": "Guardamos los datos de una cuenta mientras la cuenta exista. Por ahora nada se borra automáticamente después de un tiempo. Un juego que su hijo o hija borra desaparece del sitio para todos, pero queda una copia en nuestro servidor.",
         "p2": "Todavía no hay un botón para eliminar una cuenta ni para descargar sus datos. Para pedir cualquiera de las dos cosas, un adulto puede escribirnos. Si es una cuenta escolar, consulte a la escuela; ella puede pedírnoslo.",
+        "madeP2": "Todavía no hay un botón para borrar una cuenta o descargar sus datos, salvo que un adulto que creó la cuenta de su hijo o hija puede borrarla desde su página familiar. Para pedir que se borre una cuenta o una copia de sus datos, un adulto puede contactarnos. Para una cuenta escolar, pregunte a la escuela; la escuela puede pedírnoslo.",
         "paid1": "Guardamos los datos propios de una cuenta mientras la cuenta exista, y por ahora nada se borra automáticamente después de un tiempo. Un juego que su hijo o hija borra desaparece del sitio para todos, pero queda una copia en nuestro servidor. Los vínculos familiares, los códigos de vinculación y los registros de facturación tienen sus propios plazos: vea <a href=\"/privacy#billingKeep\">cuánto tiempo guardamos la información de facturación</a>."
       },
       "friends": {
@@ -489,6 +521,15 @@
         "h": "Cuentas familiares",
         "p1": "Una madre, un padre o un tutor puede crear su propia cuenta de adulto y vincularla con la cuenta de su hijo o hija. Su hijo o hija tiene que decir que sí en su propia página.",
         "plans": "Ver planes y precios"
+      },
+      "made": {
+        "h": "Si usted crea la cuenta de su hijo o hija",
+        "p1": "En su página familiar puede crear la cuenta propia de su hijo o hija en lugar de vincular una que ya tenga. Su hijo o hija entra con el nombre inventado y la contraseña que usted elija.",
+        "li1": "Es la cuenta de su hijo o hija. Por favor, no chatee ni juegue haciéndose pasar por él o ella: sus amigos creen que están hablando con su hijo o hija.",
+        "li2": "Usted solo ve cantidades (juegos, archivos subidos, partidas guardadas, puntuaciones, amigos, mensajes de chat enviados, en qué navegadores hay una sesión iniciada), hasta ayer. Nunca lo que su hijo o hija creó, escribió o dijo.",
+        "li3": "A su hijo o hija se le informa que un adulto creó la cuenta y qué puede ver usted. Puede desvincularlo o reportarlo a usted en su página Yo, y luego elegir una contraseña nueva.",
+        "li4": "Antes de crearla, usted lee qué guarda la cuenta y marca que es la madre, el padre o el tutor legal del niño. Eso, y pagar un plan, no es una verificación de consentimiento parental según las leyes de privacidad infantil.",
+        "li5": "Puede cambiar la contraseña, ver qué guardamos y borrar la cuenta desde su página familiar. La guardamos hasta que usted la borre: todavía no hay plazos de borrado automático."
       }
     },
     "sdk": {
@@ -650,6 +691,7 @@
       "ending": {
         "h": "8. Suspensión y cierre de cuentas",
         "li1": "<b>Usted</b> puede dejar de usar Oomba Academy en cualquier momento. Todavía no hay un botón para borrar: para borrar una cuenta o recibir una copia de sus datos, escriba a <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a> (cuentas escolares: consulte a la escuela, que puede pedírnoslo). Si se borra una cuenta de adulto con un plan, primero cancelamos el plan.",
+        "madeLi1": "<b>Usted</b> puede dejar de usar Oomba Academy en cualquier momento. Un adulto que creó la cuenta de su hijo o hija puede borrarla desde su página familiar. Por lo demás, todavía no hay un botón para borrar: para borrar una cuenta u obtener una copia de sus datos, escriba a <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a> (cuentas escolares: pregunte a la escuela, que puede pedírnoslo). Si se borra una cuenta de adulto con un plan, primero cancelamos el plan.",
         "li2": "<b>Nosotros</b> podemos pausar, limitar o cerrar una cuenta, retirar un juego o terminar un vínculo familiar si alguien incumple estos términos, pone en riesgo a un niño o si la ley lo exige. Explicaremos el motivo cuando podamos, salvo que hacerlo ponga a alguien en riesgo.",
         "li3": "Si se suspende la cuenta de un niño, el plan familiar sigue funcionando para los demás niños vinculados. Una suspensión, por sí sola, no da derecho a un reembolso.",
         "li4": "Si cerramos una cuenta de adulto por fraude o uso indebido grave, el plan termina y no se reembolsa, salvo que la ley lo exija.",
@@ -795,7 +837,8 @@
         "li3": "<b>Qué se envía a Stripe:</b> cuando creamos las facturas de la escuela, el nombre de la escuela, el correo del contacto de facturación, la dirección de facturación y el número de orden de compra se guardan en Stripe, que envía las facturas. El nombre del contacto, la nota y la respuesta sobre la exención de impuestos se quedan solo con nosotros. No se envía nada hasta que creamos las facturas. Una escuela que paga con tarjeta escribe su nombre y su dirección de facturación en la página de Stripe.",
         "li4": "<b>Cuánto tiempo:</b> el nombre y el correo del contacto, la dirección, la nota y el número de orden de compra que están en nuestra base de datos se borran <b>2 años</b> después de cerrar la solicitud. Stripe conserva la dirección de la escuela y el número de orden de compra con sus facturas (vea más abajo).",
         "li5": "<b>Las plazas</b> se cuentan según la cantidad de estudiantes activos. La facturación no usa los nombres ni el trabajo de los estudiantes.",
-        "li6": "<b>Las familias nunca ven la actividad de clase:</b> un adulto vinculado con un estudiante solo ve los mensajes extra de la familia que usó ese estudiante."
+        "li6": "<b>Las familias nunca ven la actividad de clase:</b> un adulto vinculado con un estudiante solo ve los mensajes extra de la familia que usó ese estudiante.",
+        "li7": "<b>Pedir un plan escolar:</b> un docente puede pedir a los admins de su escuela un plan escolar. Guardamos qué docente lo pidió, para qué escuela y cuándo, nunca un mensaje. Los admins de la escuela ven quién lo pidió hasta que lo descartan o la escuela contrata un plan, y lo borramos <b>90 días</b> después de eso. Los docentes solo ven si su escuela tiene un plan."
       },
       "schoolSetup": {
         "h": "Solicitudes para dar de alta una escuela",
@@ -833,6 +876,17 @@
       "contact": {
         "h": "Preguntas",
         "p1": "Oomba Academy · <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a>"
+      },
+      "made": {
+        "h": "Cuentas que un adulto crea para un niño",
+        "p1": "Una madre, un padre o un tutor legal con una cuenta de adulto puede crear la cuenta propia de su hijo o hija en su página familiar. Es una cuenta infantil normal, con las mismas reglas, límites y controles de seguridad que cualquier otra.",
+        "li1": "Qué guarda: lo mismo que cualquier cuenta infantil: juegos, chats con el Constructor, imágenes y archivos subidos, partidas guardadas, puntuaciones, valoraciones y me gusta, amigos y chat con amigos, una foto de perfil si se agrega, la configuración y cookies de inicio de sesión con el nombre del navegador.",
+        "li8": "Qué ve el adulto: cuántos mensajes extra para el Constructor usó el niño (hasta ayer), y cantidades de juegos, chats con el Constructor, archivos subidos, partidas guardadas, puntuaciones, amigos y mensajes de chat enviados, si hay foto de perfil y en qué navegadores hay una sesión iniciada. Nunca el contenido. Las cantidades llegan hasta el final de ayer, así que nada de lo que el niño agregue hoy aparece antes de mañana, pero algo que el niño borre o termine hoy (un juego, un amigo, una sesión) ya puede faltar en ellas.",
+        "li3": "El adulto eligió el nombre de usuario y la contraseña. Le pedimos que no use el nombre real del niño, y rechazamos nombres que parezcan un nombre real, un año de nacimiento o el propio nombre del adulto.",
+        "li4": "Al niño se le informa que un adulto creó la cuenta y qué puede ver ese adulto. Puede desvincular o reportar al adulto en su página Yo; entonces se le pide una contraseña nueva, para que el adulto ya no pueda entrar como él o ella.",
+        "li5": "Antes de crear la cuenta, el adulto lee un aviso sobre lo que guardamos y marca que lo leyó y que es la madre, el padre o el tutor legal del niño. Guardamos un registro de eso: cuándo y qué versión del aviso. Esto no es una verificación de consentimiento parental según las leyes de privacidad infantil, y no lo tratamos como tal. Pagar un plan tampoco lo es.",
+        "li9": "El adulto puede ver estas cantidades y borrar la cuenta desde su página familiar: todo lo que el niño creó, escribió y subió se borra de inmediato. Guardamos un registro breve de que la cuenta existió y de quién la creó, el nombre de usuario anterior queda reservado durante 90 días para que nadie más pueda usarlo, y una clase en la que estuvo el niño conserva sus propios registros. Si el niño está ahora en una clase de una escuela, primero el docente lo quita de la clase.",
+        "li7": "Cuánto tiempo: mientras exista la cuenta. Todavía no tenemos plazos de borrado automático."
       }
     }
   },
@@ -1991,7 +2045,16 @@
       "noneAsk": "Pida al admin de su escuela que le asigne una clase.",
       "manage": "Gestionar {school}",
       "noneAdmin": "Todavía no da ninguna clase",
-      "noneAdminText": "Aquí aparecen las clases que usted da. Todas las clases de {school} están en Gestionar {school}, más arriba."
+      "noneAdminText": "Aquí aparecen las clases que usted da. Todas las clases de {school} están en Gestionar {school}, más arriba.",
+      "makeGame": "Crear un juego",
+      "plan": {
+        "heading": "Plan escolar · {school}",
+        "none": "Sin plan escolar · los estudiantes usan los mensajes gratis para el Constructor",
+        "setUp": "Activar el plan escolar",
+        "on": "Plan escolar activo",
+        "billing": "Pagos",
+        "settling": "Estamos activando su plan…"
+      }
     },
     "class": {
       "new": "Nueva clase",
@@ -2317,6 +2380,24 @@
         "noCustomer": "Su escuela todavía no tiene una cuenta de facturación."
       },
       "legal": "Los planes escolares se rigen por nuestros <a href=\"/terms\">Términos del servicio</a>, nuestra <a href=\"/refunds\">Política de reembolsos y cancelaciones</a> y nuestra <a href=\"/privacy#schoolBilling\">Política de privacidad</a>."
+    },
+    "pick": {
+      "title": "Sus escuelas",
+      "text": "Elija la escuela de la que quiere ocuparse."
+    },
+    "asks": {
+      "text": "Su escuela no tiene un plan escolar. Con uno, los estudiantes reciben más mensajes para el Constructor. Puede pedírselo al admin de su escuela.",
+      "button": "Pedírselo al admin",
+      "sent": "Le avisamos al admin de su escuela.",
+      "askedOn": "Lo pidió el {date}. El admin de su escuela puede verlo en sus páginas.",
+      "hasPlan": "Su escuela tiene un plan escolar.",
+      "asked": "{count, plural, one {# docente pidió un plan escolar} other {# docentes pidieron un plan escolar}}",
+      "dismiss": "Descartar",
+      "dismissed": "Descartado.",
+      "errors": {
+        "planOn": "Su escuela ya tiene un plan escolar.",
+        "noAdmin": "Su escuela todavía no tiene admin, así que no hay a quién pedírselo."
+      }
     }
   },
   "lessons": {
@@ -2848,13 +2929,13 @@
       "cancelConfirm": "¿Cancelar esta solicitud?",
       "helpHeading": "Ayuda",
       "help": "¿Tiene preguntas o algún problema con su cuenta? Escriba a {email}.",
-      "off": "Las cuentas familiares están desactivadas en este momento. Aquí todavía puede jugar, cambiar su idioma o su contraseña, y cerrar sesión.",
       "yourPlan": "Su plan",
       "planFreeText": "Sus hijos crean con los mensajes gratis diarios para el Constructor.",
       "seePlans": "Ver planes",
       "changePlan": "Cambiar de plan",
       "sourceBasic": "Los mensajes extra vienen de su plan Básico.",
-      "fullBasic": "Su plan Básico cubre a 1 niño. Para vincular a más, cambie al plan familiar (hasta {max} niños) en “Administrar pagos”."
+      "fullBasic": "Su plan Básico cubre a 1 niño. Para vincular a más, cambie al plan familiar (hasta {max} niños) en “Administrar pagos”.",
+      "offAccount": "Las cuentas familiares están desactivadas por ahora. Puede seguir jugando. Su idioma, su contraseña y Salir están en su página Cuenta."
     },
     "link": {
       "title": "Vincular a un niño",
@@ -2878,7 +2959,9 @@
       "planOn": "Su plan está activo",
       "hide": "Lo gratis está bien, ocultar esto",
       "staying": "Por ahora, seguimos con lo gratis.",
-      "notOnSale": "Los planes todavía no están a la venta. Mientras tanto, lo gratis funciona."
+      "notOnSale": "Los planes todavía no están a la venta. Mientras tanto, lo gratis funciona.",
+      "step2Made": "Agregue a su hijo o hija",
+      "step2MadeHow": "Cree la cuenta de su hijo o hija, o vincule una que ya tenga."
     },
     "errors": {
       "badCodeDay": "Ese código no funciona. Un código funciona una sola vez, durante 24 horas: pídale uno nuevo a su hijo o hija.",
@@ -2953,6 +3036,98 @@
       "basicMany": "El plan Básico cubre a un niño: {name}. Sus otros hijos solo conservan los mensajes gratis diarios.",
       "basicManyPending": "El plan Básico cubre a un niño. Sus otros hijos solo conservan los mensajes gratis diarios.",
       "basicManyLink": "Cubra a todos sus hijos con el plan familiar"
+    },
+    "account": {
+      "heading": "Su cuenta"
+    },
+    "made": {
+      "title": "Crear la cuenta de su hijo o hija",
+      "heading": "Crear la cuenta de su hijo o hija",
+      "intro": "Su hijo o hija usará este nombre y esta contraseña para entrar en cualquier dispositivo. Usted seguirá siendo su adulto en Oomba Academy.",
+      "nameLabel": "Un nombre inventado para su hijo o hija",
+      "nameHint": "Invente un nombre divertido. No use su nombre real, su apellido, su escuela ni su año de nacimiento, ni el nombre de usted. Otros niños pueden verlo.",
+      "pwLabel": "Su contraseña",
+      "pwHint": "6 o más letras o números que su hijo o hija pueda recordar. No la misma que la contraseña de usted.",
+      "pwConfirm": "Repita su contraseña",
+      "notice": {
+        "h": "Antes de crearla: qué guarda esta cuenta",
+        "keep": "Qué guarda esta cuenta: los juegos que crea su hijo o hija, sus chats con el Constructor, las imágenes y los archivos que sube, partidas guardadas, puntuaciones, valoraciones y me gusta, amigos y mensajes del chat con amigos, una foto de perfil si la agrega, su configuración y cookies de inicio de sesión con el nombre del navegador.",
+        "ai": "Qué se envía a Claude de Anthropic (la IA detrás del Constructor): los mensajes para el Constructor, imágenes y archivos, fotos de perfil (para un control de seguridad) y los juegos enviados a la revisión pública. No se envían nombres ni nombres de usuario. El chat con amigos nunca se envía a la IA.",
+        "who": "Quién ve qué: los amigos que agregue con un código de amigo pueden chatear con su hijo o hija y ver sus juegos solo para amigos. Cualquiera puede jugar a los juegos que decida hacer públicos. Su nombre de usuario aparece en los juegos públicos y en las tablas de clasificación.",
+        "howLong": "Cuánto tiempo lo guardamos: mientras exista la cuenta. Todavía no tenemos plazos de borrado automático.",
+        "rights": "Qué puede hacer usted: ver qué guardamos y borrar la cuenta desde su página familiar, o contactarnos.",
+        "more": "Leer la Política de privacidad completa"
+      },
+      "ack": "Leí esto.",
+      "guardian": "Soy la madre, el padre o el tutor legal de este niño.",
+      "noConsent": "Crear esta cuenta, marcar estas casillas o pagar un plan no es una verificación de consentimiento parental según las leyes de privacidad infantil, y no lo tratamos como tal.",
+      "submit": "Crear la cuenta",
+      "done": "La cuenta de {name} está lista.",
+      "ready": "Cuenta lista. {name} puede entrar con el nombre y la contraseña que usted eligió.",
+      "madeByYou": "Usted creó esta cuenta",
+      "add": "Crear su cuenta",
+      "linkCode": "Vincular con un código",
+      "errors": {
+        "reported": "Ahora no podemos crear una cuenta nueva.",
+        "reportedContact": "Ahora no podemos crear una cuenta nueva. Escriba a {email}.",
+        "yearCap": "Su familia creó {max} cuentas en los últimos 12 meses, el máximo para una familia.",
+        "dayCap": "Hoy creó {max} cuentas. Vuelva a intentarlo mañana.",
+        "nameLikeYours": "Elija un nombre que no use su propio nombre.",
+        "sameAsYours": "Elija una contraseña distinta de la suya.",
+        "needAck": "Marque esta casilla cuando haya leído qué guarda la cuenta.",
+        "needGuardian": "Solo una madre, un padre o un tutor legal puede crear la cuenta de un niño."
+      }
+    },
+    "switch": {
+      "button": "Cambiar a {name}",
+      "childPw": "Contraseña de {name}",
+      "device": "Esto cierra su sesión aquí e inicia la de {name}. Para volver, entre con su propia contraseña. Si comparte este dispositivo con su hijo o hija, no deje que el navegador guarde su contraseña. Sus otros dispositivos siguen con la sesión iniciada.",
+      "submit": "Iniciar la sesión de {name}",
+      "errors": {
+        "need": "Escriba la contraseña de {name}.",
+        "wrong": "Esa no es la contraseña de {name}."
+      }
+    },
+    "childPw": {
+      "button": "Cambiar la contraseña de {name}",
+      "label": "Contraseña nueva para {name}",
+      "submit": "Guardar la contraseña nueva",
+      "done": "Guardada. Se cerró la sesión de {name} en todas partes y se le avisará que usted puso una contraseña nueva."
+    },
+    "kept": {
+      "link": "Qué guardamos",
+      "deleteLink": "Borrar cuenta",
+      "title": "Qué guardamos",
+      "heading": "Qué guardamos de {name}",
+      "reauthText": "Escriba su contraseña para ver qué guardamos de {name}.",
+      "reauthSubmit": "Continuar",
+      "introCounts": "Solo cantidades, hasta el final de ayer (UTC): lo que {name} agregue hoy aparece a partir de mañana, pero algo borrado o terminado hoy (un juego, un amigo, una sesión) ya puede faltar. Nunca le mostramos lo que {name} creó, escribió o dijo.",
+      "rows": {
+        "games": "Juegos creados: {n} ({pub} públicos)",
+        "chats": "Juegos con chats con el Constructor: {n}",
+        "uploads": "Imágenes y archivos subidos: {n}",
+        "saves": "Partidas guardadas: {n}",
+        "scores": "Puntuaciones: {n}",
+        "friends": "Amigos: {n}",
+        "messages": "Mensajes enviados en el chat con amigos: {n}",
+        "photoYes": "Foto de perfil: sí",
+        "photoNo": "Foto de perfil: no",
+        "signins": "{n, plural, one {Sesión iniciada en # navegador:} other {Sesión iniciada en # navegadores:}}",
+        "signinsNone": "Sin sesión iniciada en ningún navegador",
+        "madeAt": "Cuenta creada: {date}",
+        "notice": "Aviso que leyó: la versión del {version}"
+      },
+      "never": "Lo que nunca guardamos de {name}: correo electrónico, edad, nombre real, ubicación ni datos de pago.",
+      "extras": "Los mensajes extra para el Constructor están en su página familiar.",
+      "deleteHeading": "Borrar la cuenta de {name}",
+      "deleteTextKeeps": "Esto borra la cuenta de {name} de inmediato, con todo lo que {name} creó, escribió y subió en Oomba Academy. Guardamos un registro breve de que la cuenta existió y de quién la creó, y una clase en la que estuvo {name} conserva sus propios registros. No se puede deshacer.",
+      "confirmLabel": "Escriba {name} para confirmar",
+      "deleteSubmit": "Borrar la cuenta para siempre",
+      "deleted": "Se borró la cuenta de {name}.",
+      "errors": {
+        "confirmName": "Escriba el nombre de la cuenta exactamente para confirmar.",
+        "inSchool": "{name} está en una clase. Los registros escolares pertenecen a la escuela: pida al docente que lo quite de la clase primero y luego bórrela aquí."
+      }
     }
   },
   "plans": {

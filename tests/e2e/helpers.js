@@ -96,3 +96,19 @@ export async function makeFriends(a, b) {
   await a.goto('/friends');
   await Promise.all([a.waitForResponse(r => /\/api\/friends\/[^/]+\/accept$/.test(r.url()) && r.ok()), a.locator('[data-act="accept"]').first().click()]);
 }
+
+/** The platform admin (a page signed in as ADMIN) makes a school and appoints an existing own account as its school
+ *  admin (and, with teacher, another as a teacher there). -> { id, slug, name } */
+export async function schoolWithAdmin(admin, username, { teacher = null, name = `${uniq('Elm')} School` } = {}) {
+  const made = await admin.request.post('/api/admin/schools', { data: { name } });
+  expect(made.ok()).toBe(true);
+  const slug = (await made.json()).redirect.match(/\/school\/([^?]+)/)[1];
+  const html = await (await admin.request.get(`/school/${slug}?tab=people`)).text();
+  const id = html.match(/\/api\/schools\/([A-Za-z0-9]+)\/staff/)[1];
+  for (const [who, role, rosterName] of [[username, 'admin', 'Ms Head'], [teacher, 'teacher', 'Mr Teach']]) {
+    if (!who) continue;
+    const add = await admin.request.post(`/api/schools/${id}/staff`, { data: { account: 'existing', username: who, rosterName, role } });
+    expect(add.ok(), await add.text()).toBe(true);
+  }
+  return { id, slug, name };
+}

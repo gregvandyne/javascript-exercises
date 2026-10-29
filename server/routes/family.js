@@ -12,7 +12,7 @@
 // the same families gate, the billing tester rule while the key is a test key, and the password typed again.
 import { Router } from 'express';
 import { html, raw } from '../views/html.js';
-import { page, notFound, parentsLabel } from '../views/layout.js';
+import { page, notFound, parentsLabel, tabKey as navLabel } from '../views/layout.js';
 import { avatar, notYou } from '../views/components.js';
 import * as auth from '../auth.js';
 import { audit, tx, today } from '../db.js';
@@ -25,12 +25,16 @@ import { log } from '../services/log.js';
 import { familyMonth, coveredChildren } from '../builder/usage.js';
 import * as B from '../services/billing.js';
 const { customerOf } = B;
-import { rateLimit, allow, count, ipOf, loginLockKey } from '../services/ratelimit.js';
+import { rateLimit, allow, count, clear as clearLimit, ipOf, loginLockKey } from '../services/ratelimit.js';
 import { tHtml, saveUserLang } from '../i18n/index.js';
 import { saveUserTheme } from '../theme.js';
 import { PARENT_GUIDES } from '../learn.js';
 import { siteHost } from '../site.js';
 import { SIGNUP, LOGIN, wantedNext, passwordPanel, signOutPanel, languagePanel } from './auth.js';
+import { LEGAL_UPDATED } from './info.js';
+import { madeSees } from '../views/family-made.js';
+import { deleteAccount, inSchoolOrClass } from '../services/account-delete.js';
+import { cancel as cancelBuild } from '../builder/runner.js';
 
 export const router = Router();
 const isApi = req => req.originalUrl.startsWith('/api/');
@@ -43,8 +47,8 @@ const nope = (req, res) => (isApi(req) ? res.status(404).json({ error: req.t('er
 // The parent pages' own links: the guides (/parents/<guide>), and the read-only age and subject pages (/learn/<slug>).
 const GUIDE_PATHS = new RegExp(`^/parents/(${PARENT_GUIDES.map(g => g.slug).join('|')})$`);
 const GROWNUP_GET = [/^\/$/, /^\/search$/, /^\/api\/(search|live|me|billing\/status)$/, /^\/(g|play)\/[^/]+$/, /^\/(frame|shots|avatars)\/[^/]+$/,
-  /^\/(parents|safety|terms|refunds|privacy|teachers)$/, GUIDE_PATHS, /^\/learn(\/[a-z0-9-]+)?$/, /^\/plans(\/schools(\/print)?)?$/, /^\/grown-ups(\/(signup|login))?$/, /^\/family(\/link)?$/, /^\/(login|signup)$/, /^\/api\/games\/[^/]+\/(save|leaderboard)$/];
-const GROWNUP_POST = [/^\/api\/auth\/(login|logout|logout-everywhere)$/, /^\/api\/me\/(password|theme)$/, /^\/api\/family\/(link|checklist\/hide|children\/[^/]+\/remove)$/,
+  /^\/(parents|safety|terms|refunds|privacy|teachers)$/, GUIDE_PATHS, /^\/learn(\/[a-z0-9-]+)?$/, /^\/plans(\/schools(\/print)?)?$/, /^\/grown-ups(\/(signup|login))?$/, /^\/family(\/link)?$/, /^\/family\/account$/, /^\/family\/children\/(new|[^/]+\/data)$/, /^\/(login|signup)$/, /^\/api\/games\/[^/]+\/(save|leaderboard)$/];
+const GROWNUP_POST = [/^\/api\/auth\/(login|logout|logout-everywhere)$/, /^\/api\/me\/(password|theme)$/, /^\/api\/family\/(link|checklist\/hide|reauth|children\/new|children\/[^/]+\/(remove|switch|password|delete))$/,
   /^\/api\/billing\/(family\/checkout|portal)$/,
   /^\/api\/teachers\/school-request$/,   // a parent who is also a teacher may ask us to set up their school
   /^\/api\/games\/[^/]+\/(play|heartbeat|leave|save|score|report)$/];
@@ -99,15 +103,28 @@ router.use((req, res, next) => {
 // ---------------------------------------------------------------- gates
 const on = (req, res, next) => (F.familiesOn(req) ? next() : nope(req, res));
 /** The grown-up's pages: signed out -> the grown-up sign-in; anyone else -> 404. While families are off, only a
- *  grown-up's own /family page is there (to sign out and change the password); /family/link and the APIs are 404. */
+ *  grown-up's own /family and /family/account pages are there (to sign out and change the language or password);
+ *  /family/link and the APIs are 404. */
+const OPEN_WHEN_OFF = new Set(['/family', '/family/account']);
 function grownupOnly(req, res, next) {
-  if (!F.familiesOn(req) && !(auth.isGrownup(req.user) && req.method === 'GET' && req.path === '/family')) return nope(req, res);
+  if (!F.familiesOn(req) && !(auth.isGrownup(req.user) && req.method === 'GET' && OPEN_WHEN_OFF.has(req.path))) return nope(req, res);
   if (auth.isGrownup(req.user)) return next();
   if (!isApi(req) && (!req.user || req.user.is_guest)) return res.redirect(`/grown-ups/login?next=${encodeURIComponent(req.originalUrl)}${req.sessionEnded ? '&signedout=1' : ''}`);
   nope(req, res);
 }
 /** The child's side: only own kid accounts (never guests, school accounts, staff or grown-ups). */
 const childOnly = (req, res, next) => (F.familiesOn(req) && F.isChildAccount(req.user) ? next() : nope(req, res));
+/** Parent-made child accounts (F.madeOn: families on and PARENT_MADE_CHILDREN=1), then the grown-up fence: off, every
+ *  one of their pages and APIs is a 404 like an unknown address. */
+const madeOnly = (req, res, next) => (F.madeOn(req) ? grownupOnly(req, res, next) : nope(req, res));
+/** A child this grown-up's family made and is still linked to (:token, F.requestToken): req.made = { row, child,
+ *  family }; a code-linked child, another family's child or an unknown token is a 404. */
+function madeKid(req, res, next) {
+  const m = F.madeChild(req.user, req.params.token);
+  if (!m) return nope(req, res);
+  req.made = m;
+  next();
+}
 
 // ---------------------------------------------------------------- the child's "For grown-ups" panel on /me
 /** Neutral and always there for own accounts: no plans, messages or money. Empty for everyone else. */
@@ -123,7 +140,22 @@ export function meFamilyPanel(req) {
   const form = (action, label, { cls = 'btn', confirm = '', extra = '' } = {}) => html`<form data-api="/api/me/family/${action}" data-reload data-confirm="${confirm}">${extra}<button class="${cls}" type="submit">${label}</button></form>`;
   const r = F.liveRowOf(u.id);
   let inner;
-  if (r && r.status === 'linked') {
+  if (r && r.status === 'linked' && F.madeLinkOf(u)) {
+    // An account the linked grown-up made: what they can see (the same list as the first-sign-in card and /family), and
+    // Unlink and Report, each asking for a new password (the grown-up knows the old one).
+    const leave = (action, id, label, confirm) => html`<details class="famleave" id="${id}" data-hash-open><summary class="btn">${label}</summary>
+      <form data-api="/api/me/family/${action}" data-reload data-confirm="${confirm}" novalidate>
+        <p class="small">${k('me.family.made.newPwWhy')}</p>
+        <div class="field"><label for="${id}-pw">${k('me.family.made.newPw')}</label>
+          <input class="input" id="${id}-pw" name="newPassword" type="password" dir="ltr" autocomplete="new-password" required minlength="6" maxlength="72"><span class="err" id="${id}-pw-err" aria-live="polite"></span></div>
+        <div class="field"><label for="${id}-confirm">${k('me.family.made.newPwConfirm')}</label>
+          <input class="input" id="${id}-confirm" name="newConfirm" type="password" dir="ltr" autocomplete="new-password" required maxlength="72"><span class="err" id="${id}-confirm-err" aria-live="polite"></span></div>
+        <p class="err form-err" aria-live="polite"></p>
+        <button class="btn ${action === 'report' ? 'btn-danger' : 'btn-primary'}" type="submit">${label}</button>
+      </form></details>`;
+    inner = html`<p>${kh('me.family.madeLinked')}</p>${madeSees(req)}
+      <div class="row famleaves">${leave('unlink', 'grownups-unlink', k('me.family.unlink'), t('me.family.unlinkConfirm'))}${leave('report', 'grownups-report', html`🚩 ${k('me.family.report')}`, t('me.family.reportLinkedConfirm'))}</div>`;
+  } else if (r && r.status === 'linked') {
     inner = html`<p>${kh('me.family.linked')}</p>
       <div class="row">${form('unlink', k('me.family.unlink'), { confirm: t('me.family.unlinkConfirm') })}${form('report', html`🚩 ${k('me.family.report')}`, { confirm: t('me.family.reportLinkedConfirm') })}</div>`;
   } else if (r) {
@@ -155,15 +187,36 @@ router.post('/api/me/family/answer', childOnly, rateLimit('family-answer', 30, 6
   if (!r.ok) return childErr(req, res, 'nothing', 409);
   res.json({ ok: true, toast: req.t(`me.family.done.${what}`) });
 });
-router.post('/api/me/family/unlink', childOnly, rateLimit('family-answer', 30, 60e3), (req, res) => {
-  const r = F.childLeaves(req.user);
+/** Unlink or Report. On an account the linked grown-up made (F.madeLinkOf) both need a new password (kid rules, typed
+ *  twice, not the old one): the password changes, every sign-in ends and this device gets a fresh one, and the link ends,
+ *  all at once. A code-linked child keeps the one-tap Unlink and Report (that adult never knew the password). */
+function childLeaves(req, res, reportIt) {
+  const t = req.t, u = req.user;
+  let newPassword = null;
+  if (F.madeLinkOf(u)) {
+    const { newPassword: pw, newConfirm } = req.body || {};
+    const rule = auth.checkPassword(pw, u.username, t);
+    if (rule) return res.status(400).json({ error: rule, field: 'newPassword' });
+    if (String(newConfirm ?? '') !== String(pw)) return res.status(400).json({ error: t('me.password.mismatch'), field: 'newConfirm' });
+    if (auth.verifyPassword(u, pw)) return res.status(400).json({ error: t('me.password.same'), field: 'newPassword' });
+    newPassword = String(pw);
+  }
+  const r = F.childLeaves(u, { reportIt, newPassword });
   if (!r.ok) return childErr(req, res, 'nothing', 409);
-  res.json({ ok: true, toast: req.t('me.family.done.unlink') });
-});
-router.post('/api/me/family/report', childOnly, rateLimit('family-answer', 30, 60e3), (req, res) => {
-  const r = F.childLeaves(req.user, { reportIt: true });
-  if (!r.ok) return childErr(req, res, 'nothing', 409);
-  res.json({ ok: true, toast: req.t('me.family.done.reportLinked') });
+  // A fresh sign-in on this device; one a Switch started stays marked as one (req.sessionVia).
+  if (r.made) auth.startSession(res, u.id, req.headers['user-agent'], { via: req.sessionVia });
+  res.json({ ok: true, toast: t(reportIt ? 'me.family.done.reportLinked' : 'me.family.done.unlink') });
+}
+router.post('/api/me/family/unlink', childOnly, rateLimit('family-answer', 30, 60e3), (req, res) => childLeaves(req, res, false));
+router.post('/api/me/family/report', childOnly, rateLimit('family-answer', 30, 60e3), (req, res) => childLeaves(req, res, true));
+// The first-sign-in card's OK (madeCard). Answered for good only in a sign-in the child made themselves: in one a
+// grown-up's Switch started (often the grown-up still holding the device), OK hides the card for that sign-in only, so
+// the child still sees it the first time they sign in on their own.
+router.post('/api/me/family/made-seen', childOnly, rateLimit('family-answer', 30, 60e3), (req, res) => {
+  if (!F.madeOn(req) || !req.user.made_by) return nope(req, res);
+  if (req.sessionVia === 'switch') F.madeCardOkThisSession(req.sessionId);
+  else F.madeNoteSeen(req.user.id);
+  res.json({ ok: true });
 });
 
 // ---------------------------------------------------------------- /grown-ups (public): the sign-up and sign-in
@@ -290,13 +343,14 @@ router.post('/api/grown-ups/signup', on, (req, res) => {
 // ---------------------------------------------------------------- /family (the grown-up's pages)
 router.get('/family', grownupOnly, async (req, res) => {
   const t = req.t, f = req.fmt, u = req.user;
+  const en = key => (t.own(key) ? '' : raw(' lang="en" dir="ltr"'));
   // Families off (billing off): no children, links or plans, but the grown-up can still change their language and
   // password and sign out.
   if (!F.familiesOn(req)) {
     const body = html`<div class="pagehead"><h1>👪 ${t('family.page.heading')}</h1>${notYou(req, { plain: true })}</div>
-    <section class="panel"><p class="muted" style="margin:0">${t('family.page.off')}</p></section>
-    <div class="mesettings">${languagePanel(req)}${passwordPanel(req)}${signOutPanel(req)}</div>`;
-    return page(req, res, { title: t('family.page.title'), active: 'family', body });
+    <section class="panel"><p class="muted"${en('family.page.offAccount')}>${t('family.page.offAccount')}</p>
+      <p style="margin-bottom:0"><a class="btn" href="/family/account">⚙️ ${t(navLabel(t, 'account'))}</a></p></section>`;
+    return page(req, res, { title: t('family.page.title'), active: 'family', body, scripts: ['/js/family.js'] });
   }
   const fam = F.ensureFamily(u);
   const kids = F.childrenOf(fam.id);
@@ -307,6 +361,7 @@ router.get('/family', grownupOnly, async (req, res) => {
   const max = F.maxChildrenFor(fam.id);
   const planBox = await planPanel(req, fam, plan, kids, chosen);
   const removeForm = (k, label, confirm) => html`<form data-api="/api/family/children/${F.requestToken(fam.id, k.child_id)}/remove" data-reload data-confirm="${confirm}"><button class="btn" type="submit">${label}</button></form>`;
+  const made = F.madeOn(req);
   const rows = kids.map(k => {
     if (k.status === 'pending') {
       return html`<li class="famkid pending"><span class="avatar" style="--s:44px;--c:var(--hover)" aria-hidden="true">⏳</span>
@@ -315,18 +370,24 @@ router.get('/family', grownupOnly, async (req, res) => {
     }
     const use = F.childUsage(fam.id, k.child_id);
     const source = !covered.has(k.child_id) ? 'family.page.sourceFree' : plan.plan === 'basic' ? 'family.page.sourceBasic' : 'family.page.sourceFamily';
-    return html`<li class="famkid">${avatar({ id: k.child_id, avatar: k.avatar, color: k.color, photo_at: 0, display_name: k.display_name }, 44)}
+    // A child this family made, still on the link made with the account (made_link): never a Remove, whatever
+    // PARENT_MADE_CHILDREN says (the grown-up knows the password, so unlinking would leave an account an adult can sign
+    // in to; the child leaves with a new password instead). While madeOn, the made-only tools (Delete among them); off,
+    // no tools at all. A code-linked child (also one this family made who left and linked again) keeps today's row.
+    const madeLink = k.made_link === 1 && k.made_by_family === fam.id, mine = made && madeLink;
+    return html`<li class="famkid${mine ? ' famkid-made' : ''}">${avatar({ id: k.child_id, avatar: k.avatar, color: k.color, photo_at: 0, display_name: k.display_name }, 44)}
       <div class="famkid-main"><b><bdi>${k.display_name}</bdi></b> <span class="muted small"><bdi>@${k.username}</bdi></span>
         <div class="small">${t('family.page.yesterday', { n: use.yesterday })} · ${t('family.page.month', { n: use.month })}</div>
-        <div class="small muted">${t(source)}</div></div>
-      ${removeForm(k, t('family.page.remove'), t('family.page.removeConfirm', { name: k.display_name }))}</li>`;
+        <div class="small muted">${t(source)}</div>${mine ? html`<div class="small muted"${en('family.made.madeByYou')}>${t('family.made.madeByYou')}</div>` : ''}</div>
+      ${mine ? madeTools(req, fam, k) : madeLink ? '' : removeForm(k, t('family.page.remove'), t('family.page.removeConfirm', { name: k.display_name }))}</li>`;
   });
   const linked = kids.filter(k => k.status === 'linked');
   // A Family plan switched to Basic keeps every link; only the first linked child gets the extra messages.
   const firstCovered = linked.find(k => covered.has(k.child_id));
   const basicNote = plan.entitled && plan.plan === 'basic' && linked.length > 1 && firstCovered
     ? html`<p class="notice warn" id="basic-note">${tHtml(t, 'family.billing.basicNote', { name: html`<b><bdi>${firstCovered.display_name}</bdi></b>`, max: config.familyMaxChildren })}</p>` : '';
-  const addBtn = kids.length < max ? html`<a class="btn btn-primary" href="/family/link">➕ ${t('family.page.add')}</a>`
+  const addBtn = kids.length < max ? (made ? html`<div class="row"><a class="btn btn-primary" href="/family/children/new"${en('family.made.add')}>➕ ${t('family.made.add')}</a><a class="btn" href="/family/link"${en('family.made.linkCode')}>${t('family.made.linkCode')}</a></div>`
+    : html`<a class="btn btn-primary" href="/family/link">➕ ${t('family.page.add')}</a>`)
     : html`<p class="small">${plan.entitled && plan.plan === 'basic' ? t('family.page.fullBasic', { max: config.familyMaxChildren }) : t('family.page.full', { max })}</p>`;
   // Just paid (back from Checkout): the next step is adding a child, with the steps right here.
   const welcome = plan.entitled && (req.query.welcome === '1' || typeof req.query.checkout === 'string')
@@ -348,9 +409,20 @@ router.get('/family', grownupOnly, async (req, res) => {
   ${welcome}
   ${planFirst ? html`${planBox}${kidsBox}` : html`${kidsBox}${planBox}`}
   ${config.contactEmail ? html`<section class="panel" aria-labelledby="help-h"><h2 id="help-h">${t('family.page.helpHeading')}</h2>
-    <p>${tHtml(t, 'family.page.help', { email: html`<a href="mailto:${config.contactEmail}" dir="ltr">${config.contactEmail}</a>` })}</p></section>` : ''}
-  <div class="mesettings">${languagePanel(req)}${passwordPanel(req)}${signOutPanel(req)}</div>`;
+    <p>${tHtml(t, 'family.page.help', { email: html`<a href="mailto:${config.contactEmail}" dir="ltr">${config.contactEmail}</a>` })}</p></section>` : ''}`;
   page(req, res, { title: t('family.page.title'), active: 'family', body, scripts: ['/js/family.js'] });
+});
+
+// /family/account: the grown-up's own settings (Language, Password, Sign out and Sign out everywhere), moved off /family
+// so that page is about the children and the plan. No new settings. Open while families are off too (grownupOnly), so a
+// grown-up can always sign out. /family#password, #language and #signout (old bookmarks and links) come here
+// (public/js/family.js).
+router.get('/family/account', grownupOnly, (req, res) => {
+  const t = req.t;
+  const en = key => (t.own(key) ? '' : raw(' lang="en" dir="ltr"'));
+  const body = html`<div class="pagehead"><h1${en('family.account.heading')}>⚙️ ${t('family.account.heading')}</h1>${notYou(req, { plain: true })}</div>
+  <div class="mesettings">${languagePanel(req)}${passwordPanel(req)}${signOutPanel(req)}</div>`;
+  page(req, res, { title: t(navLabel(t, 'account')), active: 'account', body, back: '/family', backLabel: t('family.page.title') });
 });
 
 /**
@@ -382,9 +454,12 @@ export function familyChecklist(req, { fam, kids, plan, max, sale = true }) {
     <span class="famcheck-mark" aria-hidden="true">${done ? '✓' : n}</span>
     <div class="famcheck-text">${w('b', titleKey)}${done ? html` <span class="sr-only">${t('family.check.done')}</span>` : ''}${detail}</div></li>`;
   let s2 = '';
+  // Parent-made accounts on (F.madeOn): step 2 is "Add your child": make their account, or link one they already have.
+  const made = F.madeOn(req);
   // Straight back from Checkout with no child linked, the welcome right below has the add-a-child steps and its button.
   if (!linked && !(planOn && backFromCheckout)) {
     s2 = waits ? html`<p class="small muted">${t('family.page.pending')}</p>`
+      : made ? html`${w('p', 'family.check.step2MadeHow', ' class="small"')}${kids.length < max ? html`<p class="small famcheck-acts"><a href="/family/children/new"${en('family.made.add')}>${t('family.made.add')}</a> · <a href="/family/link"${en('family.check.linkCta')}>${t('family.check.linkCta')}</a></p>` : ''}`
       : html`<p class="small">${tHtml(t, 'family.link.step1')}</p>${kids.length < max ? html`<p class="small"><a href="/family/link"${en('family.check.linkCta')}>${t('family.check.linkCta')}</a></p>` : ''}`;
   }
   let s3;
@@ -398,7 +473,7 @@ export function familyChecklist(req, { fam, kids, plan, max, sale = true }) {
   }
   const list = html`<ol class="famcheck-list">
     ${step(1, true, 'family.check.account')}
-    ${step(2, linked, 'family.check.link', s2)}
+    ${step(2, linked, made ? 'family.check.step2Made' : 'family.check.link', s2)}
     ${step(3, planOn, 'family.check.plan', s3)}</ol>`;
   if (allSet) {
     return html`<details class="panel famcheck folded" id="famcheck"><summary><span aria-hidden="true">✓</span> ${w('span', 'family.check.allSet')}</summary>${list}</details>`;
@@ -603,7 +678,215 @@ router.post('/api/family/checklist/hide', grownupOnly, rateLimit('family-checkli
   res.json({ ok: true });
 });
 router.post('/api/family/children/:id/remove', grownupOnly, rateLimit('family-remove', 30, 60e3), (req, res) => {
+  // A child this family made (on the link made with the account) has no Remove, also while PARENT_MADE_CHILDREN is off:
+  // the grown-up knows the password, so unlinking would leave an account an adult can still sign in to (decisions.md).
+  if (F.madeChild(req.user, req.params.id)) return res.status(404).json({ error: req.t('family.errors.notFound') });
   const r = F.removeChild(req.user, req.params.id);
   if (!r.ok) return res.status(404).json({ error: req.t('family.errors.notFound') });
   res.json({ ok: true, toast: req.t('family.page.removed') });
+});
+
+// ---------------------------------------------------------------- parent-made child accounts (madeOn)
+// docs/decisions.md "Parent-made child accounts". Every page and API here: madeOn (families on and PARENT_MADE_CHILDREN=1)
+// and the grown-up fence (madeOnly), else a 404 like an unknown address. The APIs are POST with a JSON body (csrfCheck runs
+// on every route), behind the grown-up's step-up (their password within 10 minutes) and a flood guard. The child-only
+// actions (madeKid) reach only a child this family made and is still linked to; a code-linked child is a 404.
+/** Text in a language that doesn't have it yet is marked as English. */
+const enAttr = (t, key) => (t.own(key) ? '' : raw(' lang="en" dir="ltr"'));
+/** The tools on a made child's /family row: Switch to <name>, Change <name>'s password, What we keep, Delete. Right after
+ *  making the account (?made=<token>) the row says it is ready and Switch is open. */
+function madeTools(req, fam, k) {
+  const t = req.t, tok = F.requestToken(fam.id, k.child_id), name = k.display_name;
+  const en = key => enAttr(t, key);
+  const just = req.query.made === tok;
+  return html`<div class="famkid-acts">
+    ${just ? html`<p class="notice good famkid-ready" role="status"${en('family.made.ready')}>✅ ${t('family.made.ready', { name })}</p>` : ''}
+    <details class="famkid-act"${just ? raw(' open') : ''}><summary class="btn btn-primary"${en('family.switch.button')}>${t('family.switch.button', { name })}</summary>
+      <form data-api="/api/family/children/${tok}/switch" novalidate>
+        <p class="small"${en('family.switch.device')}>${t('family.switch.device', { name })}</p>
+        <div class="field"><label for="sw-${tok}"${en('family.switch.childPw')}>${t('family.switch.childPw', { name })}</label>
+          <input class="input" id="sw-${tok}" name="childPassword" type="password" dir="ltr" autocomplete="off" required maxlength="72"><span class="err" id="sw-${tok}-err" aria-live="polite"></span></div>
+        ${passwordField(req, `pw-sw-${tok}`)}
+        <p class="err form-err" aria-live="polite"></p>
+        <button class="btn btn-primary" type="submit"${en('family.switch.submit')}>${t('family.switch.submit', { name })}</button>
+      </form></details>
+    <details class="famkid-act"><summary class="btn"${en('family.childPw.button')}>${t('family.childPw.button', { name })}</summary>
+      <form data-api="/api/family/children/${tok}/password" data-reset novalidate>
+        <div class="field"><label for="cp-${tok}"${en('family.childPw.label')}>${t('family.childPw.label', { name })}</label>
+          <input class="input" id="cp-${tok}" name="newPassword" type="password" dir="ltr" autocomplete="new-password" required minlength="6" maxlength="72" aria-describedby="cp-${tok}-hint">
+          <span class="hint" id="cp-${tok}-hint"${en('family.made.pwHint')}>${t('family.made.pwHint')}</span><span class="err" id="cp-${tok}-err" aria-live="polite"></span></div>
+        <div class="field"><label for="cpc-${tok}"${en('family.made.pwConfirm')}>${t('family.made.pwConfirm')}</label>
+          <input class="input" id="cpc-${tok}" name="newConfirm" type="password" dir="ltr" autocomplete="new-password" required maxlength="72"><span class="err" id="cpc-${tok}-err" aria-live="polite"></span></div>
+        ${passwordField(req, `pw-cp-${tok}`)}
+        <p class="err form-err" aria-live="polite"></p>
+        <button class="btn btn-primary" type="submit"${en('family.childPw.submit')}>${t('family.childPw.submit')}</button>
+      </form></details>
+    <a class="btn" href="/family/children/${tok}/data"${en('family.kept.link')}>${t('family.kept.link')}</a>
+    <a class="btn" href="/family/children/${tok}/data#delete"${en('family.kept.deleteLink')}>${t('family.kept.deleteLink')}</a>
+  </div>`;
+}
+
+/** "Make your child's account": the name and password (kid rules), the grown-up's password when the step-up isn't
+ *  fresh, the direct notice (family.made.notice.*: a COPPA 312.4 draft for the lawyer), "I've read this", the guardian
+ *  statement and the no-consent sentence. Never asks for age, birthday, real name, school, photo, email or phone. */
+router.get('/family/children/new', madeOnly, (req, res) => {
+  const t = req.t, fam = F.ensureFamily(req.user);
+  const en = key => enAttr(t, key);
+  const el = (tag, key, attrs = '', vars) => raw(`<${tag}${attrs}${en(key)}>${html`${t(key, vars)}`}</${tag}>`);
+  const cap = F.madeLimit(fam);
+  const capText = cap && (cap === 'yearCap' ? t('family.made.errors.yearCap', { max: F.MADE.perYear }) : cap === 'dayCap' ? t('family.made.errors.dayCap', { max: F.MADE.perDay })
+    : cap === 'fullBasic' ? t('family.errors.fullBasic') : t('family.errors.full', { max: F.maxChildrenFor(fam.id) }));
+  const notice = html`<section class="made-notice" aria-labelledby="made-notice-h">
+    ${el('h2', 'family.made.notice.h', ' id="made-notice-h"')}
+    <ul class="small">${['keep', 'ai', 'who', 'howLong', 'rights'].map(k => el('li', `family.made.notice.${k}`))}</ul>
+    <p class="small" style="margin-bottom:0"><a href="/privacy#made"${en('family.made.notice.more')}>${t('family.made.notice.more')}</a></p></section>`;
+  const form = html`<form data-api="/api/family/children/new" novalidate>
+      <div class="field"><label for="made-name"${en('family.made.nameLabel')}>${t('family.made.nameLabel')}</label>
+        <input class="input" id="made-name" name="username" dir="ltr" autocomplete="off" required minlength="3" maxlength="16" autocapitalize="off" spellcheck="false" aria-describedby="made-name-hint">
+        <span class="hint" id="made-name-hint"${en('family.made.nameHint')}>${t('family.made.nameHint')}</span><span class="err" id="made-name-err" aria-live="polite"></span></div>
+      <div class="field"><label for="made-pw"${en('family.made.pwLabel')}>${t('family.made.pwLabel')}</label>
+        <input class="input" id="made-pw" name="newPassword" type="password" dir="ltr" autocomplete="new-password" required minlength="6" maxlength="72" aria-describedby="made-pw-hint">
+        <span class="hint" id="made-pw-hint"${en('family.made.pwHint')}>${t('family.made.pwHint')}</span><span class="err" id="made-pw-err" aria-live="polite"></span></div>
+      <div class="field"><label for="made-confirm"${en('family.made.pwConfirm')}>${t('family.made.pwConfirm')}</label>
+        <input class="input" id="made-confirm" name="newConfirm" type="password" dir="ltr" autocomplete="new-password" required maxlength="72"><span class="err" id="made-confirm-err" aria-live="polite"></span></div>
+      ${passwordField(req, 'pw-made')}
+      ${notice}
+      <div class="field"><label class="checkline"><input type="checkbox" id="made-ack" name="ack" value="1" required> <span${en('family.made.ack')}>${t('family.made.ack')}</span></label><span class="err" id="made-ack-err" aria-live="polite"></span></div>
+      <div class="field"><label class="checkline"><input type="checkbox" id="made-guardian" name="guardian" value="1" required> <span${en('family.made.guardian')}>${t('family.made.guardian')}</span></label><span class="err" id="made-guardian-err" aria-live="polite"></span></div>
+      ${el('p', 'family.made.noConsent', ' class="small made-noconsent"')}
+      <p class="err form-err" aria-live="polite"></p>
+      <button class="btn btn-primary btn-block btn-big" type="submit"${en('family.made.submit')}>${t('family.made.submit')}</button>
+    </form>`;
+  const body = html`<div class="authbox"><div class="panel">
+    ${el('h1', 'family.made.heading')}
+    ${el('p', 'family.made.intro', ' class="muted"')}
+    ${cap ? html`<p class="notice warn" role="status">${capText}</p>` : form}
+  </div></div>`;
+  page(req, res, { title: t('family.made.title'), active: 'family', back: '/family', backLabel: t('family.page.title'), body });
+});
+
+/** Refusal codes of F.createChildAccount -> [status, i18n key]. */
+const MADE_ERRORS = {
+  name: [400, 'errors.api.badRequest'], password: [400, 'errors.api.badRequest'], notGrownup: [404, 'errors.api.notFound'], reported: [409, 'family.made.errors.reported'], slowDown: [429, 'errors.api.slowDown'], tooManySignups: [429, 'auth.api.tooManySignups'],
+  yearCap: [409, 'family.made.errors.yearCap'], dayCap: [409, 'family.made.errors.dayCap'], full: [409, 'family.errors.full'], fullBasic: [409, 'family.errors.fullBasic'],
+  nameLikeYours: [400, 'family.made.errors.nameLikeYours'], nameTaken: [400, 'auth.api.nameTaken'], mismatch: [400, 'me.password.mismatch'],
+  sameAsYours: [400, 'family.made.errors.sameAsYours'], needAck: [400, 'family.made.errors.needAck'], needGuardian: [400, 'family.made.errors.needGuardian'],
+};
+/** The form's own fields checked before the step-up, all at once (name, password typed twice, the two boxes), with the
+ *  grown-up's password when the step-up isn't fresh: one answer lists everything to fix, so nobody goes round the form
+ *  once per field. createChildAccount checks every rule again (and the ones that cost more, after the address limits). */
+function madeFieldsFirst(req, res, next) {
+  const t = req.t, b = req.body || {}, errors = F.childFieldErrors(req.user, { username: b.username, password: b.newPassword, confirm: b.newConfirm, ack: b.ack, guardian: b.guardian }, t);
+  const fields = Object.keys(errors);
+  if (!fields.length) return next();
+  const out = Object.fromEntries(fields.map(f => [f, errors[f].error || t(MADE_ERRORS[errors[f].code][1])]));
+  const needPw = !C.reauthFresh(req.sessionId);
+  if (needPw && !String(b.password ?? '')) out.password = t('family.billing.password.needed');
+  const field = fields[0];
+  res.status(400).json({ error: out[field], field, errors: out, ...(needPw ? { needPassword: true } : {}) });
+}
+router.post('/api/family/children/new', madeOnly, rateLimit('family-child-new', 10, 3600e3), madeFieldsFirst, stepUp, (req, res) => {
+  const t = req.t, b = req.body || {};
+  const r = F.createChildAccount(req.user, { username: b.username, password: b.newPassword, confirm: b.newConfirm, ack: b.ack, guardian: b.guardian },
+    { ip: ipOf(req), t, noticeVersion: LEGAL_UPDATED });
+  if (!r.ok) {
+    const [status, key] = MADE_ERRORS[r.code] || [400, 'errors.api.badRequest'];
+    const fam = F.familyOfOwner(req.user.id);
+    const error = r.error || (r.code === 'reported' && config.contactEmail ? t('family.made.errors.reportedContact', { email: config.contactEmail })
+      : t(key, { max: r.code === 'dayCap' ? F.MADE.perDay : r.code === 'full' && fam ? F.maxChildrenFor(fam.id) : F.MADE.perYear }));
+    return res.status(status).json({ error, ...(r.field ? { field: r.field } : {}) });
+  }
+  res.json({ ok: true, redirect: `/family?made=${encodeURIComponent(r.token)}`, toast: t('family.made.done', { name: r.child.display_name }) });
+});
+
+/** Switch to <child>: a sign-in as the child, never an impersonation. Made accounts only (madeKid); not a banned,
+ *  school-managed or non-standard account. The child's current password is needed: wrong tries count toward the
+ *  child's own sign-in lock (LOGIN.userFails) and a per-grown-up key (SWITCH_TRIES), so this gives no more guesses than
+ *  the sign-in page. Then, in one response: the grown-up's session row is deleted (no second cookie keeps it), a fresh
+ *  child session starts (a new id, the child's own SESSION_RULES, no reauth_at), brb_ended is cleared, and the audit
+ *  says who switched to whom. The only way back is a real grown-up sign-in. */
+export const SWITCH_TRIES = { fails: 5, window: 900e3 };
+router.post('/api/family/children/:token/switch', madeOnly, rateLimit('family-switch', 20, 900e3), madeKid, stepUp, (req, res) => {
+  const t = req.t, g = req.user, { child } = req.made;
+  if (child.banned || child.managed_school || auth.accountKind(child) !== 'standard') return nope(req, res);
+  const name = child.display_name, lockKey = loginLockKey(child.username), failKey = `switch-fail:${g.id}`;
+  if (count(lockKey) >= LOGIN.userFails || count(failKey) >= SWITCH_TRIES.fails) return res.status(429).json({ error: t('family.errors.tooMany') });
+  const pw = String((req.body || {}).childPassword ?? '');
+  if (!pw) return res.status(400).json({ error: t('family.switch.errors.need', { name }), field: 'childPassword' });
+  if (!auth.verifyPassword(child, pw)) {
+    allow(lockKey, LOGIN.userFails, LOGIN.window); allow(failKey, SWITCH_TRIES.fails, SWITCH_TRIES.window);
+    return res.status(400).json({ error: t('family.switch.errors.wrong', { name }), field: 'childPassword' });
+  }
+  audit(g.id, 'family.switch', child.id, { from: g.id, to: child.id });
+  auth.endSession(req, res);
+  // Marked as a Switch sign-in: the child's first-sign-in card and new-password note wait for a sign-in of their own.
+  auth.startSession(res, child.id, req.headers['user-agent'], { via: 'switch' });
+  auth.clearEnded(req, res);
+  res.json({ ok: true, redirect: '/' });
+});
+
+/** The grown-up sets a new password for a child they made: kid rules, typed twice, not the grown-up's own. Every sign-in
+ *  of the child ends, their sign-in lock is cleared (as a teacher's reset does), and the child is told once. */
+router.post('/api/family/children/:token/password', madeOnly, rateLimit('family-child-pw', 10, 3600e3), madeKid, stepUp, (req, res) => {
+  const t = req.t, { child } = req.made, { newPassword: pw, newConfirm } = req.body || {};
+  const rule = auth.checkPassword(pw, child.username, t);
+  if (rule) return res.status(400).json({ error: rule, field: 'newPassword' });
+  if (String(newConfirm ?? '') !== String(pw)) return res.status(400).json({ error: t('me.password.mismatch'), field: 'newConfirm' });
+  if (auth.verifyPassword(req.user, pw)) return res.status(400).json({ error: t('family.made.errors.sameAsYours'), field: 'newPassword' });
+  F.resetChildPassword(req.user, child, String(pw));
+  clearLimit(loginLockKey(child.username));
+  res.json({ ok: true, toast: t('family.childPw.done', { name: child.display_name }) });
+});
+
+/** The password typed again for a page that needs it ("What we keep"): runs the step-up and only marks the session. */
+router.post('/api/family/reauth', madeOnly, rateLimit('family-reauth', 20, 900e3), stepUp, (req, res) => res.json({ ok: true }));
+
+/** "What we keep" for a made child (COPPA 312.6, GDPR Art 15), behind the step-up: counts only, as of the end of
+ *  yesterday (UTC), never content (whether a parent may read the child's own chats is a lawyer question: legal-review
+ *  item 35). Then Delete (COPPA 312.6, GDPR Art 17): the account's name typed to confirm. */
+router.get('/family/children/:token/data', madeOnly, madeKid, (req, res) => {
+  const t = req.t, f = req.fmt, { child } = req.made, tok = req.params.token, name = child.display_name;
+  const en = key => enAttr(t, key);
+  const el = (tag, key, vars = {}, attrs = '') => raw(`<${tag}${attrs}${en(key)}>${html`${t(key, vars)}`}</${tag}>`);
+  const head = el('h1', 'family.kept.heading', { name });
+  let inner;
+  if (!C.reauthFresh(req.sessionId)) {
+    inner = html`${el('p', 'family.kept.reauthText', { name })}
+      <form data-api="/api/family/reauth" data-reload novalidate>${passwordField(req, 'pw-kept')}<p class="err form-err" aria-live="polite"></p>
+        <button class="btn btn-primary" type="submit"${en('family.kept.reauthSubmit')}>${t('family.kept.reauthSubmit')}</button></form>`;
+  } else {
+    const c = F.keptCounts(child.id);
+    const row = (key, vars) => el('li', `family.kept.rows.${key}`, vars);
+    const items = F.GROWNUP_SEES.filter(k => k !== 'extras').map(k => {
+      if (k === 'games') return row('games', { n: c.games.n, pub: c.games.public });
+      if (k === 'photo') return row(c.photo ? 'photoYes' : 'photoNo');
+      if (k === 'signins') return c.signins.length ? html`<li${en('family.kept.rows.signins')}>${t('family.kept.rows.signins', { n: c.signins.length })}<ul>${c.signins.map(s => html`<li><bdi dir="ltr">${s.ua || '?'}</bdi> · ${f.date(s.since)}</li>`)}</ul></li>` : row('signinsNone');
+      return row(k, { n: c[k] });
+    });
+    const school = inSchoolOrClass(child);
+    inner = html`${el('p', 'family.kept.introCounts', { name }, ' class="muted"')}
+      <ul class="keptlist">${items}
+        ${c.madeAt ? row('madeAt', { date: f.date(c.madeAt) }) : ''}${c.notice ? row('notice', { version: c.notice }) : ''}</ul>
+      ${el('p', 'family.kept.never', { name }, ' class="small"')}
+      <p class="small muted"${en('family.kept.extras')}>${t('family.kept.extras')}</p>
+      <section class="kept-delete" id="delete" aria-labelledby="delete-h">${el('h2', 'family.kept.deleteHeading', { name }, ' id="delete-h"')}
+        ${school ? el('p', 'family.kept.errors.inSchool', { name }, ' class="notice warn"') : html`${el('p', 'family.kept.deleteTextKeeps', { name })}
+        <form data-api="/api/family/children/${tok}/delete" novalidate>
+          <div class="field"><label for="del-name"${en('family.kept.confirmLabel')}>${t('family.kept.confirmLabel', { name: child.username })}</label>
+            <input class="input" id="del-name" name="confirmName" dir="ltr" autocomplete="off" autocapitalize="off" spellcheck="false" required maxlength="16"><span class="err" id="del-name-err" aria-live="polite"></span></div>
+          ${passwordField(req, 'pw-del')}
+          <p class="err form-err" aria-live="polite"></p>
+          <button class="btn btn-danger" type="submit"${en('family.kept.deleteSubmit')}>${t('family.kept.deleteSubmit')}</button>
+        </form>`}</section>`;
+  }
+  const body = html`<div class="wrap narrow" style="padding:0"><section class="panel">${head}${inner}</section></div>`;
+  page(req, res, { title: t('family.kept.title'), active: 'family', back: '/family', backLabel: t('family.page.title'), body });
+});
+router.post('/api/family/children/:token/delete', madeOnly, rateLimit('family-child-delete', 10, 3600e3), madeKid, stepUp, (req, res) => {
+  const t = req.t, { child } = req.made, name = child.display_name;
+  if (String((req.body || {}).confirmName ?? '').trim().toLowerCase() !== child.username.toLowerCase()) return res.status(400).json({ error: t('family.kept.errors.confirmName'), field: 'confirmName' });
+  const r = deleteAccount(child.id, req.user, { by: 'grownup' });
+  if (!r.ok) return r.code === 'inSchool' ? res.status(409).json({ error: t('family.kept.errors.inSchool', { name }) }) : nope(req, res);
+  for (const g of r.games) cancelBuild(g, 'deleted');   // a build in one of the child's games stops at once
+  res.json({ ok: true, redirect: '/family', toast: t('family.kept.deleted', { name }) });
 });

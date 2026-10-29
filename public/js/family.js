@@ -1,6 +1,9 @@
 // Grown-up and school billing pages (server/routes/family.js, school-billing.js): "00:00 UTC" also in the reader's own
 // time, and the wait after Checkout.
 import { $$, api } from '/js/app.js';
+// The grown-up's language, password and sign-out panels moved from /family to /family/account: old links and bookmarks
+// (/family#password, #language, #signout) go on to the same panel there.
+if (location.pathname === '/family' && /^#(password|language|signout)$/.test(location.hash)) location.replace(`/family/account${location.hash}`);
 const midnight = new Date(); midnight.setUTCHours(24, 0, 0, 0);   // the next reset, so daylight saving time is right
 for (const box of $$('[data-utc-midnight]')) {
   const el = box.querySelector('[data-time]'); if (!el) continue;

@@ -62,7 +62,10 @@
     "teachers": "Leerkrachten",
     "parents": "Ouders",
     "grownups": "Ouders",
-    "playNow": "Speel nu"
+    "playNow": "Speel nu",
+    "games": "Games",
+    "account": "Account",
+    "school": "School"
   },
   "errors": {
     "goHome": "Naar de start",
@@ -294,6 +297,34 @@
         "linked": "Je bent al gekoppeld aan een volwassene.",
         "pending": "Beantwoord eerst de vraag op deze pagina.",
         "nothing": "Er is hier nu niets te doen. Probeer de pagina opnieuw te laden."
+      },
+      "madeLinked": "<b>Een volwassene</b> heeft dit account gemaakt en is eraan gekoppeld.",
+      "madePwReset": "De volwassene die bij je account hoort, heeft je account een nieuw wachtwoord gegeven.",
+      "made": {
+        "card": {
+          "title": "Een volwassene heeft dit account voor je gemaakt.",
+          "summary": "Die kan een paar aantallen over je account zien, maar nooit wat je hebt gemaakt, geschreven of gezegd.",
+          "more": "Wat kan die volwassene zien?",
+          "sees": "De volwassene kan zien:",
+          "cantRead": "Die kan je chats en je berichten aan de Bouwer niet lezen.",
+          "ok": "Oké",
+          "notMine": "Dit is niet mijn ouder of verzorger"
+        },
+        "sees": {
+          "extras": "hoeveel extra berichten aan de Bouwer je hebt gebruikt",
+          "games": "hoeveel games je hebt gemaakt, en hoeveel daarvan openbaar zijn",
+          "chats": "bij hoeveel van je games je met de Bouwer hebt gechat",
+          "uploads": "hoeveel plaatjes en bestanden je hebt geüpload",
+          "saves": "hoeveel opgeslagen games je hebt",
+          "scores": "hoeveel scores je hebt",
+          "friends": "hoeveel vrienden je hebt",
+          "messages": "hoeveel chatberichten je hebt gestuurd",
+          "photo": "of je een profielfoto hebt",
+          "signins": "in welke browsers je bent ingelogd"
+        },
+        "newPwWhy": "De volwassene kent je oude wachtwoord, dus kies een nieuw wachtwoord.",
+        "newPw": "Nieuw wachtwoord",
+        "newPwConfirm": "Nieuw wachtwoord nog een keer"
       }
     }
   },
@@ -468,6 +499,7 @@
         "h": "Hoe lang we het bewaren",
         "p1": "We bewaren de gegevens van een account zolang het account bestaat. Er wordt nog niets automatisch na een bepaalde tijd verwijderd. Een game die je kind verwijdert, verdwijnt voor iedereen van de site, maar er blijft een kopie op onze server.",
         "p2": "Er is nog geen knop om een account te verwijderen of de gegevens ervan te downloaden. Wil je een van beide, dan kan een volwassene contact met ons opnemen. Gaat het om een schoolaccount? Vraag het dan aan de school; die kan het aan ons vragen.",
+        "madeP2": "Er is nog geen knop om een account te verwijderen of de gegevens ervan te downloaden, behalve dat een volwassene die het account van het eigen kind heeft gemaakt, het kan verwijderen op de gezinspagina. Om te vragen of een account verwijderd kan worden of om een kopie van de gegevens te krijgen, kan een volwassene contact met ons opnemen. Gaat het om een schoolaccount? Vraag het dan aan de school; die kan het aan ons vragen.",
         "paid1": "We bewaren de eigen gegevens van een account zolang het account bestaat, en er wordt nog niets automatisch na een bepaalde tijd verwijderd. Een game die je kind verwijdert, verdwijnt voor iedereen van de site, maar er blijft een kopie op onze server. Voor gezinskoppelingen, koppelcodes en betaalgegevens gelden eigen termijnen: zie <a href=\"/privacy#billingKeep\">hoe lang we betaalgegevens bewaren</a>."
       },
       "friends": {
@@ -490,6 +522,15 @@
         "h": "Gezinsaccounts",
         "p1": "Een ouder of verzorger kan een eigen ouderaccount maken en dat koppelen aan het account van zijn of haar kind. Je kind moet daar op de eigen pagina ja op zeggen.",
         "plans": "Bekijk abonnementen en prijzen"
+      },
+      "made": {
+        "h": "Als je het account van je kind maakt",
+        "p1": "Op je gezinspagina kun je een eigen account voor je kind maken in plaats van een account te koppelen dat je kind al heeft. Je kind logt in met de verzonnen naam en het wachtwoord die jij kiest.",
+        "li1": "Het is het account van je kind. Chat of speel alsjeblieft niet als je kind: vrienden denken dat ze met je kind praten.",
+        "li2": "Je ziet alleen aantallen (games, uploads, opgeslagen games, scores, vrienden, verstuurde chatberichten, in welke browsers is ingelogd), tot en met gisteren. Nooit wat je kind heeft gemaakt, geschreven of gezegd.",
+        "li3": "Je kind krijgt te horen dat een volwassene het account heeft gemaakt en wat jij kunt zien. Je kind kan je ontkoppelen of melden op de eigen pagina Ik, en kiest dan een nieuw wachtwoord.",
+        "li4": "Voordat je het account maakt, lees je wat het account bewaart en vink je aan dat je de ouder of wettelijke voogd van het kind bent. Dat, en betalen voor een abonnement, is geen controle van ouderlijke toestemming volgens privacywetten voor kinderen.",
+        "li5": "Op je gezinspagina kun je het wachtwoord veranderen, zien wat we bewaren en het account verwijderen. We bewaren het tot je het verwijdert: er zijn nog geen automatische verwijdertermijnen."
       }
     },
     "sdk": {
@@ -651,6 +692,7 @@
       "ending": {
         "h": "8. Accounts schorsen en beëindigen",
         "li1": "<b>Jij</b> kunt op elk moment stoppen met Oomba Academy. Er is nog geen verwijderknop: om een account te verwijderen of een kopie van de gegevens te krijgen, mail je naar <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a> (schoolaccounts: vraag het aan de school, die het aan ons kan vragen). Als een ouderaccount met een abonnement wordt verwijderd, zeggen we eerst het abonnement op.",
+        "madeLi1": "<b>Jij</b> kunt op elk moment stoppen met Oomba Academy. Een volwassene die het account van het eigen kind heeft gemaakt, kan het verwijderen op de gezinspagina. Verder is er nog geen verwijderknop: om een account te verwijderen of een kopie van de gegevens te krijgen, mail je naar <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a> (schoolaccounts: vraag het aan de school, die het aan ons kan vragen). Als een ouderaccount met een abonnement wordt verwijderd, zeggen we eerst het abonnement op.",
         "li2": "<b>Wij</b> kunnen een account pauzeren, beperken of sluiten, een game verwijderen of een gezinskoppeling beëindigen als iemand deze voorwaarden overtreedt, een kind in gevaar brengt, of als de wet dat vereist. We leggen uit waarom als dat kan, tenzij iemand daardoor in gevaar zou komen.",
         "li3": "Als het account van een kind wordt geschorst, blijft het gezinsabonnement werken voor de andere gekoppelde kinderen. Een schorsing alleen is geen reden voor terugbetaling.",
         "li4": "Als we een ouderaccount sluiten wegens fraude of ernstig misbruik, stopt het abonnement en wordt het niet terugbetaald, tenzij de wet dat vereist.",
@@ -796,7 +838,8 @@
         "li3": "<b>Wat naar Stripe gaat:</b> als we de facturen van de school aanmaken, worden de naam van de school, het e-mailadres van de contactpersoon voor facturatie, het factuuradres en het inkoopordernummer opgeslagen bij Stripe, dat de facturen verstuurt. De naam van de contactpersoon, de opmerking en het antwoord over belastingvrijstelling blijven alleen bij ons. Er wordt niets verstuurd totdat we de facturen aanmaken. Een school die met een kaart betaalt, typt haar naam en factuuradres in plaats daarvan op de pagina van Stripe.",
         "li4": "<b>Hoe lang:</b> de naam en het e-mailadres van de contactpersoon, het adres, de opmerking en het inkoopordernummer in onze database worden <b>2 jaar</b> nadat de aanvraag is afgesloten verwijderd. Stripe bewaart het adres van de school en het inkoopordernummer bij de facturen (zie hieronder).",
         "li5": "<b>Plaatsen</b> worden geteld op basis van het aantal actieve leerlingen. Voor de facturatie worden geen namen of werk van leerlingen gebruikt.",
-        "li6": "<b>Gezinnen zien nooit wat er in de klas gebeurt:</b> een volwassene die aan een leerling gekoppeld is, ziet alleen de extra gezinsberichten van die leerling."
+        "li6": "<b>Gezinnen zien nooit wat er in de klas gebeurt:</b> een volwassene die aan een leerling gekoppeld is, ziet alleen de extra gezinsberichten van die leerling.",
+        "li7": "<b>Een schoolabonnement aanvragen:</b> een leerkracht kan de schoolbeheerders om een schoolabonnement vragen. We bewaren welke leerkracht het vroeg, voor welke school en wanneer, nooit een bericht. De schoolbeheerders zien wie het vroeg totdat ze het verzoek wegklikken of de school een abonnement krijgt, en we verwijderen het <b>90 dagen</b> daarna. Leerkrachten zien alleen of hun school een abonnement heeft."
       },
       "schoolSetup": {
         "h": "Aanvragen om een school op te zetten",
@@ -834,6 +877,17 @@
       "contact": {
         "h": "Vragen",
         "p1": "Oomba Academy · <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a>"
+      },
+      "made": {
+        "h": "Accounts die een volwassene voor een kind maakt",
+        "p1": "Een ouder of wettelijke voogd met een ouderaccount kan op de gezinspagina een eigen account voor het kind maken. Het is een gewoon kinderaccount, met dezelfde regels, limieten en veiligheidscontroles als elk ander.",
+        "li1": "Wat het bewaart: hetzelfde als elk kinderaccount: games, chats met de Bouwer, geüploade plaatjes en bestanden, opgeslagen games, scores, beoordelingen en likes, vrienden en vriendenchat, een profielfoto als die is toegevoegd, instellingen, en inlogcookies met de naam van de browser.",
+        "li8": "Wat de volwassene ziet: hoeveel extra berichten aan de Bouwer het kind heeft gebruikt (tot en met gisteren), en het aantal games, chats met de Bouwer, uploads, opgeslagen games, scores, vrienden en verstuurde chatberichten, of er een profielfoto is, en in welke browsers is ingelogd. Nooit de inhoud. De aantallen stoppen aan het einde van gisteren, dus niets wat het kind vandaag toevoegt, is vóór morgen te zien, maar iets wat het kind vandaag verwijdert of beëindigt (een game, een vriend, een inlog) kan er al uit verdwenen zijn.",
+        "li3": "De volwassene heeft de gebruikersnaam en het wachtwoord gekozen. We vragen om niet de echte naam van het kind te gebruiken, en we weigeren namen die op een echte naam, een geboortejaar of de eigen naam van de volwassene lijken.",
+        "li4": "Het kind krijgt te horen dat een volwassene het account heeft gemaakt en wat die volwassene kan zien. Het kind kan de volwassene ontkoppelen of melden op de eigen pagina Ik; daarna wordt het kind om een nieuw wachtwoord gevraagd, zodat de volwassene niet meer als het kind kan inloggen.",
+        "li5": "Voordat de volwassene het account maakt, leest die een melding over wat we bewaren en vinkt die aan dat die de melding heeft gelezen en de ouder of wettelijke voogd van het kind is. Daarvan houden we een registratie bij: wanneer, en welke versie van de melding. Dit is geen controle van ouderlijke toestemming volgens privacywetten voor kinderen, en we behandelen het ook niet zo. Betalen voor een abonnement is dat evenmin.",
+        "li9": "De volwassene kan deze aantallen zien en het account verwijderen op de gezinspagina: alles wat het kind heeft gemaakt, geschreven en geüpload, verdwijnt meteen. We bewaren een korte registratie dat het account heeft bestaan en wie het heeft gemaakt, de oude gebruikersnaam wordt 90 dagen vastgehouden zodat niemand anders hem kan nemen, en een klas waarin het kind vroeger zat, houdt haar eigen gegevens. Zit het kind nu in een schoolklas, dan haalt de leerkracht het kind eerst uit de klas.",
+        "li7": "Hoe lang: zolang het account bestaat. We hebben nog geen automatische verwijdertermijnen."
       }
     }
   },
@@ -1992,7 +2046,16 @@
       "noneAsk": "Vraag je schoolbeheerder om je aan een klas toe te voegen.",
       "manage": "{school} beheren",
       "noneAdmin": "Je geeft nog geen les aan een klas",
-      "noneAdminText": "Klassen waar je les aan geeft, verschijnen hier. Alle klassen van {school} vind je hierboven onder {school} beheren."
+      "noneAdminText": "Klassen waar je les aan geeft, verschijnen hier. Alle klassen van {school} vind je hierboven onder {school} beheren.",
+      "makeGame": "Maak een game",
+      "plan": {
+        "heading": "Schoolabonnement · {school}",
+        "none": "Geen schoolabonnement · leerlingen gebruiken de gratis berichten aan de Bouwer",
+        "setUp": "Schoolabonnement instellen",
+        "on": "Schoolabonnement actief",
+        "billing": "Facturatie",
+        "settling": "Je abonnement wordt ingesteld…"
+      }
     },
     "class": {
       "new": "Nieuwe klas",
@@ -2318,6 +2381,24 @@
         "noCustomer": "Je school heeft nog geen facturatieaccount."
       },
       "legal": "Voor schoolabonnementen gelden onze <a href=\"/terms\">Servicevoorwaarden</a>, ons <a href=\"/refunds\">Beleid voor terugbetaling en opzegging</a> en ons <a href=\"/privacy#schoolBilling\">Privacybeleid</a>."
+    },
+    "pick": {
+      "title": "Je scholen",
+      "text": "Kies de school die je wilt beheren."
+    },
+    "asks": {
+      "text": "Je school heeft geen schoolabonnement. Daarmee krijgen leerlingen meer berichten aan de Bouwer. Je kunt het aan je schoolbeheerder vragen.",
+      "button": "Vraag het mijn beheerder",
+      "sent": "We hebben het je schoolbeheerder laten weten.",
+      "askedOn": "Je hebt het gevraagd op {date}. Je schoolbeheerder kan het op de eigen pagina's zien.",
+      "hasPlan": "Je school heeft een schoolabonnement.",
+      "asked": "{count, plural, one {# leerkracht vroeg om een schoolabonnement} other {# leerkrachten vroegen om een schoolabonnement}}",
+      "dismiss": "Wegklikken",
+      "dismissed": "Weggeklikt.",
+      "errors": {
+        "planOn": "Je school heeft al een schoolabonnement.",
+        "noAdmin": "Je school heeft nog geen beheerder, dus er is niemand om het aan te vragen."
+      }
     }
   },
   "lessons": {
@@ -2849,13 +2930,13 @@
       "cancelConfirm": "Dit verzoek annuleren?",
       "helpHeading": "Hulp",
       "help": "Vragen, of een probleem met je account? Mail naar {email}.",
-      "off": "Gezinsaccounts staan nu uit. Je kunt hier nog wel games spelen, je taal of wachtwoord veranderen en uitloggen.",
       "yourPlan": "Je abonnement",
       "planFreeText": "Je kinderen bouwen met de gratis dagelijkse berichten aan de Bouwer.",
       "seePlans": "Bekijk abonnementen",
       "changePlan": "Abonnement wijzigen",
       "sourceBasic": "Extra berichten komen uit je basisabonnement.",
-      "fullBasic": "Je basisabonnement geldt voor 1 kind. Wil je meer kinderen koppelen? Stap dan via Abonnement beheren over op het gezinsabonnement (maximaal {max} kinderen)."
+      "fullBasic": "Je basisabonnement geldt voor 1 kind. Wil je meer kinderen koppelen? Stap dan via Abonnement beheren over op het gezinsabonnement (maximaal {max} kinderen).",
+      "offAccount": "Gezinsaccounts staan op dit moment uit. Je kunt nog steeds games spelen. Je taal, wachtwoord en Uitloggen vind je op je pagina Account."
     },
     "link": {
       "title": "Kind koppelen",
@@ -2879,7 +2960,9 @@
       "planOn": "Je abonnement is actief",
       "hide": "Gratis is prima, verberg dit",
       "staying": "We blijven voorlopig gratis.",
-      "notOnSale": "Abonnementen zijn nog niet te koop. Tot die tijd werkt gratis ook."
+      "notOnSale": "Abonnementen zijn nog niet te koop. Tot die tijd werkt gratis ook.",
+      "step2Made": "Voeg je kind toe",
+      "step2MadeHow": "Maak het account van je kind, of koppel een account dat je kind al heeft."
     },
     "errors": {
       "badCodeDay": "Die code werkt niet. Een code werkt één keer, 24 uur lang: vraag je kind om een nieuwe.",
@@ -2954,6 +3037,98 @@
       "basicMany": "Basis geldt voor één kind: {name}. Je andere kinderen houden alleen de gratis dagelijkse berichten.",
       "basicManyPending": "Basis geldt voor één kind. Je andere kinderen houden alleen de gratis dagelijkse berichten.",
       "basicManyLink": "Neem het gezinsabonnement voor al je kinderen"
+    },
+    "account": {
+      "heading": "Je account"
+    },
+    "made": {
+      "title": "Maak het account van je kind",
+      "heading": "Maak het account van je kind",
+      "intro": "Je kind gebruikt deze naam en dit wachtwoord om op elk apparaat in te loggen. Jij blijft de volwassene van je kind op Oomba Academy.",
+      "nameLabel": "Een verzonnen naam voor je kind",
+      "nameHint": "Verzin een leuke naam. Gebruik niet de echte voornaam, achternaam, school of het geboortejaar van je kind, en ook niet je eigen naam. Andere kinderen kunnen hem zien.",
+      "pwLabel": "Het wachtwoord van je kind",
+      "pwHint": "6 of meer letters of cijfers die je kind kan onthouden. Niet hetzelfde als jouw wachtwoord.",
+      "pwConfirm": "Het wachtwoord van je kind nog een keer",
+      "notice": {
+        "h": "Voordat je het maakt: wat dit account bewaart",
+        "keep": "Wat dit account bewaart: de games die je kind maakt, de chats met de Bouwer, plaatjes en bestanden die je kind uploadt, opgeslagen games, scores, beoordelingen en likes, vrienden en chatberichten met vrienden, een profielfoto als je kind die toevoegt, de instellingen, en inlogcookies met de naam van de browser.",
+        "ai": "Wat naar Claude van Anthropic gaat (de AI achter de Bouwer): berichten aan de Bouwer, plaatjes en bestanden, profielfoto's (voor een veiligheidscontrole) en games die voor de openbare controle worden ingestuurd. Er worden geen namen of gebruikersnamen meegestuurd. Vriendenchat gaat nooit naar de AI.",
+        "who": "Wie wat ziet: vrienden die je kind met een vriendcode toevoegt, kunnen met je kind chatten en de games voor alleen vrienden zien. Iedereen kan de games spelen die je kind openbaar maakt. De gebruikersnaam van je kind staat bij openbare games en op scorelijsten.",
+        "howLong": "Hoe lang we het bewaren: zolang het account bestaat. We hebben nog geen automatische verwijdertermijnen.",
+        "rights": "Wat je kunt doen: zien wat we bewaren en het account verwijderen op je gezinspagina, of contact met ons opnemen.",
+        "more": "Lees het volledige privacybeleid"
+      },
+      "ack": "Ik heb dit gelezen.",
+      "guardian": "Ik ben de ouder of wettelijke voogd van dit kind.",
+      "noConsent": "Dit account maken, deze vakjes aanvinken of betalen voor een abonnement is geen controle van ouderlijke toestemming volgens privacywetten voor kinderen, en we behandelen het ook niet zo.",
+      "submit": "Account maken",
+      "done": "Het account van {name} is klaar.",
+      "ready": "Account klaar. {name} kan inloggen met de naam en het wachtwoord die jij hebt gekozen.",
+      "madeByYou": "Jij hebt dit account gemaakt",
+      "add": "Account voor je kind maken",
+      "linkCode": "Koppelen met een code",
+      "errors": {
+        "reported": "We kunnen nu geen nieuw account maken.",
+        "reportedContact": "We kunnen nu geen nieuw account maken. Schrijf naar {email}.",
+        "yearCap": "Je gezin heeft in de afgelopen 12 maanden {max} accounts gemaakt, het maximum voor één gezin.",
+        "dayCap": "Je hebt vandaag {max} accounts gemaakt. Probeer het morgen opnieuw.",
+        "nameLikeYours": "Kies een naam waarin je eigen naam niet voorkomt.",
+        "sameAsYours": "Kies een ander wachtwoord dan dat van jezelf.",
+        "needAck": "Vink dit vakje aan als je hebt gelezen wat het account bewaart.",
+        "needGuardian": "Alleen een ouder of wettelijke voogd kan een account voor een kind maken."
+      }
+    },
+    "switch": {
+      "button": "Wissel naar {name}",
+      "childPw": "Wachtwoord van {name}",
+      "device": "Hiermee log je hier uit en log je {name} in. Om terug te gaan, log je in met je eigen wachtwoord. Deel je dit apparaat met je kind, laat de browser je wachtwoord dan niet opslaan. Op je andere apparaten blijf je ingelogd.",
+      "submit": "{name} inloggen",
+      "errors": {
+        "need": "Typ het wachtwoord van {name}.",
+        "wrong": "Dat is niet het wachtwoord van {name}."
+      }
+    },
+    "childPw": {
+      "button": "Wachtwoord van {name} veranderen",
+      "label": "Nieuw wachtwoord voor {name}",
+      "submit": "Nieuw wachtwoord opslaan",
+      "done": "Opgeslagen. {name} is overal uitgelogd en krijgt te horen dat jij een nieuw wachtwoord hebt ingesteld."
+    },
+    "kept": {
+      "link": "Wat we bewaren",
+      "deleteLink": "Account verwijderen",
+      "title": "Wat we bewaren",
+      "heading": "Wat we bewaren voor {name}",
+      "reauthText": "Typ je wachtwoord om te zien wat we bewaren voor {name}.",
+      "reauthSubmit": "Doorgaan",
+      "introCounts": "Alleen aantallen, tot het einde van gisteren (UTC): wat {name} vandaag toevoegt, zie je vanaf morgen, maar iets wat vandaag is verwijderd of beëindigd (een game, een vriend, een inlog) kan er al uit verdwenen zijn. We laten je nooit zien wat {name} heeft gemaakt, geschreven of gezegd.",
+      "rows": {
+        "games": "Gemaakte games: {n} ({pub} openbaar)",
+        "chats": "Games met chats met de Bouwer: {n}",
+        "uploads": "Geüploade plaatjes en bestanden: {n}",
+        "saves": "Opgeslagen games: {n}",
+        "scores": "Scores: {n}",
+        "friends": "Vrienden: {n}",
+        "messages": "Verstuurde chatberichten aan vrienden: {n}",
+        "photoYes": "Profielfoto: ja",
+        "photoNo": "Profielfoto: nee",
+        "signins": "{n, plural, one {Ingelogd in # browser:} other {Ingelogd in # browsers:}}",
+        "signinsNone": "In geen enkele browser ingelogd",
+        "madeAt": "Account gemaakt: {date}",
+        "notice": "Melding die je hebt gelezen: de versie van {version}"
+      },
+      "never": "Wat we nooit bewaren voor {name}: een e-mailadres, leeftijd, echte naam, locatie of betaalgegevens.",
+      "extras": "Extra berichten aan de Bouwer staan op je gezinspagina.",
+      "deleteHeading": "Account van {name} verwijderen",
+      "deleteTextKeeps": "Hiermee wordt het account van {name} meteen verwijderd, met alles wat {name} op Oomba Academy heeft gemaakt, geschreven en geüpload. We bewaren een korte registratie dat het account heeft bestaan en wie het heeft gemaakt, en een klas waarin {name} vroeger zat, houdt haar eigen gegevens. Dit kan niet ongedaan worden gemaakt.",
+      "confirmLabel": "Typ {name} om te bevestigen",
+      "deleteSubmit": "Account definitief verwijderen",
+      "deleted": "Het account van {name} is verwijderd.",
+      "errors": {
+        "confirmName": "Typ de naam van het account precies om te bevestigen.",
+        "inSchool": "{name} zit in een klas. Schoolgegevens zijn van de school: vraag de leerkracht om {name} eerst uit de klas te halen, en verwijder het account daarna hier."
+      }
     }
   },
   "plans": {

@@ -118,9 +118,9 @@ function linksTab() {
   const list = family.openReports();
   if (!list.length) return emptyState({ emoji: '🧑‍🧒', title: 'No link reports', text: 'When a child reports a grown-up who asked to link to their account, it shows up here. The report already ended any link.' });
   return html`<div class="stack">${list.map(r => html`<article class="panel">
-    <p class="row small" style="gap:6px"><span class="chip-s bad">Reported</span> ${when(r.created_at)}</p>
+    <p class="row small" style="gap:6px"><span class="chip-s bad">Reported</span>${r.parent_made ? html` <span class="chip-s warn">made account</span>` : ''} ${when(r.created_at)}</p>
     <p class="small" style="margin:0">Child: ${avatar({ id: r.child_id, avatar: r.child_avatar, color: r.child_color, photo_at: r.child_photo_at }, 26)} <b>${r.child_display}</b> <a href="/admin?tab=users&amp;username=${encodeURIComponent(r.child_name)}">@${r.child_name}</a>${r.child_banned ? ' · banned' : ''}</p>
-    <p class="small">Grown-up: ${r.owner_name ? html`<a href="/admin?tab=users&amp;username=${encodeURIComponent(r.owner_name)}">@${r.owner_name}</a> · account made ${when(r.owner_created)}${r.owner_banned ? ' · banned' : ''}` : 'account gone'} · ${r.family_reports} report${r.family_reports === 1 ? '' : 's'} against this family</p>
+    <p class="small">Grown-up: ${r.owner_name ? html`<a href="/admin?tab=users&amp;username=${encodeURIComponent(r.owner_name)}">@${r.owner_name}</a> · account made ${when(r.owner_created)}${r.owner_banned ? ' · banned' : ''}` : 'account gone'} · ${r.family_reports} report${r.family_reports === 1 ? '' : 's'} against this family${r.made_count ? html` · ${r.made_count} account${r.made_count === 1 ? '' : 's'} made, ${r.code_linked_count} linked by code` : ''}</p>
     <div class="row">
       <button class="btn" type="button" data-act="resolvelink" data-id="${r.id}">👍 Done</button>
       ${r.owner_id && !r.owner_banned ? html`<button class="btn btn-danger" type="button" data-act="banlink" data-id="${r.id}" data-name="${r.owner_name}">⛔ Ban grown-up</button>` : ''}
@@ -158,11 +158,18 @@ function familyCell(u) {
   const l = family.adminLinks(u.id);
   const brk = (fid, cid, label) => html` <button class="btn" type="button" data-act="unlinkfamily" data-id="${fid}" data-child="${cid}" data-name="${label}">Break link</button>`;
   const st = r => (r.status === 'pending' ? 'asked' : 'linked');
+  const look = name => html`<a href="/admin?tab=users&amp;username=${encodeURIComponent(name)}">@${name}</a>`;
+  // Parent-made accounts (services/family.js createChildAccount): who made this one, kept after an unlink or a deletion.
+  const madeBy = l.madeBy ? html`<div class="made-by">Made by grown-up ${l.madeBy.maker_name ? look(l.madeBy.maker_name) : 'account gone'} (#${l.madeBy.made_by}) on ${new Date(l.madeBy.made_at).toISOString().slice(0, 10)}</div>` : '';
   if (u.account_type === 'grownup') {
-    return html`Grown-up account${l.children.length ? html`${l.children.map(c => html`<div>${st(c)}: <a href="/admin?tab=users&amp;username=${encodeURIComponent(c.child_name)}">@${c.child_name}</a>${brk(c.family_id, c.child_id, c.child_name)}</div>`)}` : ' · no children'}`;
+    const made = l.made.length ? html`<div class="made-list">Accounts this family made: ${l.made.length} (in the last 365 days: ${l.madeYear})
+      ${l.made.map(m => html`<div>· ${m.status === 'deleted' ? html`deleted account (#${m.id})` : look(m.username)} · ${m.status}${['left', 'reported', 'relinked'].includes(m.status) ? ' · not paused with this grown-up: review on its own' : ''}</div>`)}
+      <div>Linked by code: ${l.codeLinked}.</div>
+      ${u.banned && l.made.some(m => m.pausable) ? html`<button class="btn btn-danger" type="button" data-act="pausemade" data-id="${u.id}" data-name="${u.username}">⛔ Pause all accounts this grown-up made</button>` : ''}</div>` : '';
+    return html`Grown-up account${l.children.length ? html`${l.children.map(c => html`<div>${st(c)}: ${look(c.child_name)}${brk(c.family_id, c.child_id, c.child_name)}</div>`)}` : ' · no children'}${made}`;
   }
-  if (!l.asChild.length) return 'none';
-  return html`${l.asChild.map(r => html`<div>${st(r)} with grown-up <a href="/admin?tab=users&amp;username=${encodeURIComponent(r.owner_name)}">@${r.owner_name}</a>${brk(r.family_id, r.child_id, u.username)}</div>`)}`;
+  if (!l.asChild.length) return madeBy || 'none';
+  return html`${madeBy}${l.asChild.map(r => html`<div>${st(r)} with grown-up ${look(r.owner_name)}${brk(r.family_id, r.child_id, u.username)}</div>`)}`;
 }
 
 const SCHOOL_ROLE = { admin: 'School admin', teacher: 'Teacher', student: 'Student' };
@@ -521,6 +528,13 @@ router.post('/api/admin/chat-reports/:id/ban', (req, res) => { const r = mod.ban
 router.get('/api/admin/users', (req, res) => { const u = mod.findUser(req.query.username); return u ? res.json({ user: u }) : res.status(404).json({ error: 'No user with that exact name.' }); });
 router.post('/api/admin/users/:id/ban', (req, res) => { const r = mod.banUser(req.user, req.params.id, note(req)); res.status(r.ok ? 200 : 400).json(r); });
 router.post('/api/admin/users/:id/photo/remove', (req, res) => (photos.removePhoto(req.params.id, req.user.id) ? res.json({ ok: true }) : res.status(404).json({ error: 'That player has no photo.' })));
+// After a ban: pause (ban, reason made-by-banned) the accounts this grown-up made that are still theirs (family.pausableMade:
+// not a child who left or reported them), so the admin can review them.
+router.post('/api/admin/users/:id/pause-made', (req, res) => {
+  const g = q.get('SELECT * FROM users WHERE id=?', String(req.params.id || ''));
+  if (!g || g.account_type !== 'grownup') return res.status(404).json({ error: 'No grown-up with that id.' });
+  res.json({ ok: true, paused: family.pauseMade(req.user, g.id, mod.banUser) });
+});
 router.post('/api/admin/users/:id/unban', (req, res) => { const r = mod.unbanUser(req.user, req.params.id); res.status(r.ok ? 200 : 400).json(r); });
 router.get('/api/admin/audit', (req, res) => res.json({ rows: mod.auditLog(200) }));
 // Family links (services/family.js): a link report done, its grown-up banned (every link of theirs ends), a link broken.

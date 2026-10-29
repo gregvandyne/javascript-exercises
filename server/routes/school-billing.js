@@ -8,6 +8,10 @@
 //   /api/billing/school/:id/portal          Manage billing (Stripe's Customer Portal)
 //   /api/billing/school/:id/invoice-request ask for an invoice (D7); .../cancel withdraws it
 //   /api/billing/school/:id/status          the return page's poll after Checkout
+//   /api/schools/:id/ask-plan               "Ask my admin": a teacher (staff, not admin) asks for a School plan
+//   /api/schools/:id/ask-plan/:aid/close    a school admin dismisses one ask
+// Also the plan card at the top of a school admin's My classes (teachPlanCard) and a teacher's "Ask my admin" panel
+// (askPanel), both drawn on /teach (routes/schools.js).
 import { Router } from 'express';
 import { html, raw } from '../views/html.js';
 import { isGrownup } from '../auth.js';
@@ -19,6 +23,8 @@ import * as F from '../services/family.js';
 import * as S from '../services/stripe.js';
 import * as C from '../services/checkout.js';
 import * as SB from '../services/school-billing.js';
+import * as B from '../services/billing.js';
+import * as PA from '../services/plan-asks.js';
 import { stepUp, passwordField, stripeTrouble } from './family.js';
 
 export const router = Router();
@@ -83,6 +89,67 @@ router.get('/api/billing/school/:id/status', schoolGate, rateLimit('billing-stat
   res.set('Cache-Control', 'no-store').json({ state });
 });
 
+// ---------------------------------------------------------------- "Ask my admin"
+/** Families (paid-plan pages) on for this request, and a signed-in, unbanned account that isn't a grown-up's. */
+const askGate = (req, res, next) => (F.familiesOn(req) && req.user && !req.user.is_guest && !req.user.banned && !isGrownup(req.user) ? next() : nope(req, res));
+router.post('/api/schools/:id/ask-plan', askGate, rateLimit('school-ask', 10, 3600e3), (req, res) => {
+  const r = PA.ask(req.user, req.params.id);
+  if (!r.ok) return r.code === 'notFound' ? nope(req, res) : res.status(409).json({ error: req.t(`school.asks.errors.${r.code}`) });
+  res.json({ ok: true, toast: req.t('school.asks.sent') });
+});
+router.post('/api/schools/:id/ask-plan/:aid/close', askGate, rateLimit('school-ask-close', 60, 3600e3), (req, res) => {
+  const s = SC.getSchool(req.params.id);
+  if (!s || !billingTabOn(req, s)) return nope(req, res);
+  const r = PA.dismiss(req.user, s.id, req.params.aid);
+  if (!r.ok) return nope(req, res);
+  res.json({ ok: true, toast: req.t('school.asks.dismissed') });
+});
+
+/** The teachers who asked for a School plan, each with Dismiss (school admins: /teach's plan card and the Billing tab).
+ *  Its words are new: until a language has them, each is marked as English on its own element (lang, and left to right
+ *  so "1 teacher asked…" keeps its number at the start on a right-to-left page), wherever the list is drawn. */
+function asksList(req, s, asks) {
+  const t = req.t, f = req.fmt;
+  if (!asks.length) return '';
+  const en = key => (t.own(key) ? '' : raw(' lang="en" dir="ltr"'));
+  return html`<div class="planasks" id="plan-asks-${s.id}"><p><b${en('school.asks.asked')}>${t('school.asks.asked', { count: asks.length })}</b></p>
+    <ul class="plain archlist">${asks.map(a => html`<li><span><bdi>${a.name}</bdi> <span class="small muted">${f.date(a.created_at)}</span></span>
+      <form data-api="/api/schools/${s.id}/ask-plan/${a.id}/close" data-reload><button class="btn btn-sm" type="submit"${en('school.asks.dismiss')}>${t('school.asks.dismiss')}</button></form></li>`)}</ul></div>`;
+}
+/** A school's plan on a school admin's My classes: only while the Billing tab is there and selling to them (the same
+ *  rule as the tab: families on, and a live key or a billing tester). No amounts or prices here: those stay on /plans,
+ *  /plans/schools and the Billing tab. Plus the teachers who asked for a plan. */
+export function teachPlanCard(req, s) {
+  const t = req.t, u = req.user;
+  if (!billingTabOn(req, s) || !C.mayBill(u)) return '';
+  const plan = B.ownerPlan('school', s.id);
+  const tab = `/school/${encodeURIComponent(s.slug)}?tab=billing`;
+  const go = key => html`<a href="${tab}">${t(key)} <span class="flip" aria-hidden="true">→</span></a>`;
+  let state;
+  if (plan.entitled) state = html`<span class="planchip paid">${t('school.teach.plan.on')}</span> ${go('school.teach.plan.billing')}`;
+  else if ((C.unsettledPlanOf('school', s.id) || {}).payment_pending) state = html`<span aria-hidden="true">⏳</span> ${t('school.teach.plan.settling')}`;
+  else state = html`${t('school.teach.plan.none')} · <b>${go('school.teach.plan.setUp')}</b>`;
+  const out = html`<section class="panel teachplan" aria-labelledby="tp-${s.id}"><h2 id="tp-${s.id}">${t('school.teach.plan.heading', { school: s.name })}</h2>
+    <p>${state}</p>${asksList(req, s, PA.openAsks(s.id))}</section>`;
+  return t.own('school.teach.plan.heading') ? out : html`<div lang="en" dir="ltr" style="display:contents">${out}</div>`;
+}
+/** "Ask my admin" on a teacher's My classes, for a school where they are staff but not admin: while families are on,
+ *  the school isn't archived and has an admin. No prices or plan details. */
+export function askPanel(req, s) {
+  const t = req.t, f = req.fmt, u = req.user;
+  if (!F.familiesOn(req) || !PA.teacherHere(u, s.id)) return '';
+  const school = SC.getSchool(s.id);
+  if (!school || school.archived_at || !PA.hasAdmin(s.id)) return '';
+  PA.closeIfPlanOn(s.id);
+  const mine = PA.myOpenAsk(u, s.id);
+  let inner;
+  if (PA.planOn(s.id)) inner = html`<p style="margin:0">${t('school.asks.hasPlan')}</p>`;
+  else if (mine) inner = html`<p style="margin:0">✅ ${t('school.asks.askedOn', { date: f.date(mine.created_at) })}</p>`;
+  else inner = html`<p>${t('school.asks.text')}</p><form data-api="/api/schools/${s.id}/ask-plan" data-reload><button class="btn" type="submit">✋ ${t('school.asks.button')}</button></form>`;
+  const out = html`<section class="panel askplan" aria-labelledby="ap-${s.id}"><h2 id="ap-${s.id}">${t('school.teach.plan.heading', { school: s.name })}</h2>${inner}</section>`;
+  return t.own('school.asks.text') ? out : html`<div lang="en" dir="ltr" style="display:contents">${out}</div>`;
+}
+
 // ---------------------------------------------------------------- the Billing tab
 const plural = (t, key, n) => t(key, { count: n });
 
@@ -142,7 +209,9 @@ export async function schoolBillingTab(req, s) {
   if (plan.entitled) parts.push(html`<p class="small muted">${t('school.billing.daily', { cap: v.cap })}</p>`);
   if (price) parts.push(html`<p class="small muted">${t('school.billing.price', { price: f.money(price.unitAmount), min: config.schoolMinSeats, perSeat: config.schoolTurnsPerSeat })}${LESSONS_PER_SEAT() ? ` ${t('school.billing.priceLessons', { count: LESSONS_PER_SEAT() })}` : ''}</p>`);
 
-  const head = html`<section class="panel" aria-labelledby="bill-h" id="plan"><h2 id="bill-h">${t('school.billing.heading')}</h2>${parts}
+  // Teachers who asked for a School plan ("Ask my admin"), first.
+  const asks = PA.openAsks(s.id);
+  const head = html`${asks.length ? html`<section class="panel" id="plan-asks">${asksList(req, s, asks)}</section>` : ''}<section class="panel" aria-labelledby="bill-h" id="plan"><h2 id="bill-h">${t('school.billing.heading')}</h2>${parts}
     ${!may ? html`<p class="small muted">${t('school.billing.notOpen')}</p>` : ''}</section>`;
 
   // ---- actions

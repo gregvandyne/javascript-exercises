@@ -139,7 +139,7 @@ test('grown-up sessions follow the staff rules (12 hours idle, 7 days at most); 
   auth.notePasswordLength(auth.getUser(g.id), 'short');
   assert.equal(auth.getUser(g.id).password_short, 1);
   const fam = await as(g)('/family');
-  assert.match(fam.text, /choose a longer one/); assert.match(fam.text, /href="\/family#password"/);
+  assert.match(fam.text, /choose a longer one/); assert.match(fam.text, /href="\/family\/account#password"/, 'to the password panel on their Account page');
   // Sign out everywhere works for grown-ups too.
   assert.equal((await as(g)('/api/auth/logout-everywhere', { method: 'POST', body: {} })).status, 200);
 });
@@ -179,9 +179,10 @@ test('access matrix: a grown-up gets 404 on every kid route group, and can play 
   const build = await go('/build');
   assert.equal(build.status, 200); assert.match(build.text, /The Builder is for kids&#39; accounts/);
   assert.doesNotMatch(build.text, /id="newgame"|data-template=/);
-  // Nav: Home, Search and Family; no Build, Friends or Me tab.
+  // Nav: Family, Games (and Plans), Account; no Build, Friends or Me tab (tests/unit/nav-roles.test.js has every role's).
   const home = await go('/');
-  assert.match(home.text, /href="\/family"/); assert.doesNotMatch(home.text, /class="navlink" href="\/build"/); assert.doesNotMatch(home.text, /class="tab" href="\/me"/);
+  assert.match(home.text, /class="tab" href="\/family"/); assert.match(home.text, /class="tab" href="\/family\/account"/);
+  assert.doesNotMatch(home.text, /class="navlink" href="\/build"/); assert.doesNotMatch(home.text, /class="tab" href="\/me"/);
 });
 
 test('access matrix: family routes are 404 for kids, school students, teachers, guests and the admin; the child panel only for own kid accounts', async () => {
@@ -217,13 +218,17 @@ test('billing off: no family pages, no panel, no /parents link; grown-ups stay f
   assert.equal((await as(k)('/api/me/family/code', { method: 'POST', body: {} })).status, 404);
   const me = await as(k)('/me'); assert.equal(me.status, 200); assert.doesNotMatch(me.text, /id="grownups"/);
   assert.doesNotMatch((await call(null, '/parents')).text, /href="\/grown-ups|id="families"|id="plans"/);
-  // A grown-up who already has an account keeps a small /family page: language, password and Sign out, nothing else.
+  // A grown-up who already has an account keeps a small /family page pointing to their Account page (language, password
+  // and Sign out), nothing else.
   const li = await call(null, '/api/auth/login', { method: 'POST', body: { username: g.username, password: 'a-long-password-1' } });
   assert.equal(li.status, 200, li.text);
   const home = await call(li.cookie, li.json.redirect);
   assert.equal(home.status, 200, `${li.json.redirect} -> ${home.status}`);
-  assert.match(home.text, /data-api="\/api\/auth\/logout"/); assert.match(home.text, /data-api="\/api\/me\/password"/); assert.match(home.text, /id="lang-select"|id="language"|availableLocales/);
   assert.match(home.text, /switched off/); assert.doesNotMatch(home.text, /href="\/family\/link"/);
+  assert.match(home.text, /href="\/family\/account"/);
+  const acct = await call(li.cookie, '/family/account');
+  assert.equal(acct.status, 200);
+  assert.match(acct.text, /data-api="\/api\/auth\/logout"/); assert.match(acct.text, /data-api="\/api\/me\/password"/); assert.match(acct.text, /id="lang-select"/);
   for (const [method, path] of [['GET', '/family/link'], ['POST', '/api/family/link'], ['POST', '/api/family/children/x/remove']]) {
     assert.equal((await as(g)(path, { method, body: method === 'POST' ? { code: 'ABC-2345' } : undefined })).status, 404, `off: ${method} ${path}`);
   }
@@ -519,14 +524,13 @@ test('grown-up pages only show what a grown-up can use: no Studio button, profil
   const go = as(g);
   const home = await go('/');
   assert.doesNotMatch(home.text, /href="\/build"/, 'no Open my Studio button');
-  assert.match(home.text, /href="\/family#language"/, 'the footer language link goes to their own page');
+  assert.match(home.text, /href="\/family\/account#language"/, 'the footer language link goes to their own Account page');
   const gp = await go(`/g/${gm.slug}`);
   assert.equal(gp.status, 200);
   assert.doesNotMatch(gp.text, /href="\/u\//); assert.doesNotMatch(gp.text, /id="likebtn"/); assert.doesNotMatch(gp.text, /id="rate"/);
   const pp = await go(`/play/${gm.slug}`);
   assert.equal(pp.status, 200); assert.doesNotMatch(pp.text, /id="p-like"|id="p-rate"/);
-  const fam = await go('/family');
-  assert.match(fam.text, /id="language"/, 'a language choice on the family page');
+  assert.match((await go('/family/account')).text, /id="language"/, 'a language choice on their Account page');
   // Kids still get them all.
   const kp = await as(kid())(`/g/${gm.slug}`);
   assert.match(kp.text, /href="\/u\//); assert.match(kp.text, /id="likebtn"/); assert.match(kp.text, /id="rate"/);
