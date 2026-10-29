@@ -189,6 +189,9 @@ const CONFIG = {
   pointsPerWord: 100,
   perfectBonus: 50,         // no mistakes on a word
   readAloud: true,          // say the word out loud (if the device can)
+  speechLang: 'en-US',      // the language the words and cheers are in (BRB.speak picks the best voice for it)
+  wordRate: 0.85,           // the word to spell is read a little slower than talking (1 = normal) so every sound is clear
+  talkRate: 1,              // cheers: normal talking speed sounds the most natural
   cheers: ['Great reading!', 'You did it!', 'Wonderful!', 'Super speller!', 'Yes!'],
   saveKey: 'word-best',
 };
@@ -211,9 +214,11 @@ document.querySelectorAll('.mute').forEach(b => b.addEventListener('click', () =
 updateMute();
 let best = +BRB.storage.get(CONFIG.saveKey) || 0;
 $('bestTitle').textContent = '🏆 Best: ' + best;
-function say(text) {
+// Speech: BRB.speak uses the most natural voice available, at the normal pitch, and says nothing when there is none.
+// Always pass the language the text is written in (CONFIG.speechLang), not the player's language.
+function say(text, rate = CONFIG.talkRate) {
   if (!CONFIG.readAloud || BRB.sfx.muted) return;
-  try { if (!('speechSynthesis' in window)) return; speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.rate = 0.8; u.pitch = 1.15; speechSynthesis.speak(u); } catch (e) { /* no voice on this device */ }
+  try { if (typeof BRB.speak === 'function') BRB.speak(text, { lang: CONFIG.speechLang, rate }); } catch (e) { /* no voice on this device */ }
 }
 function starSvg(on) {
   return '<svg viewBox="0 0 50 50" class="' + (on ? 'on' : '') + '"><path d="M25 3l6.5 14 15 1.6-11.3 10.2 3.2 15L25 36.2 11.6 43.8l3.2-15L3.5 18.6l15-1.6z" fill="' +
@@ -263,7 +268,7 @@ function showWord() {
   renderSlots();
   updateHud();
   if (!REDUCED) document.querySelector('.picture').animate([{ transform: 'scale(.7) rotate(-6deg)', opacity: 0 }, { transform: 'scale(1)', opacity: 1 }], { duration: 350, easing: 'cubic-bezier(.3,1.5,.5,1)' });
-  setTimeout(() => say(word.toLowerCase()), 300);
+  setTimeout(() => say(word.toLowerCase(), CONFIG.wordRate), 300);
 }
 
 function nextSlot() { return filled.indexOf(false); }
@@ -360,7 +365,7 @@ $('againBtn').addEventListener('click', startGame);
 $('pauseBtn').addEventListener('click', pause);
 $('resumeBtn').addEventListener('click', resume);
 $('restartBtn').addEventListener('click', startGame);
-$('hearBtn').addEventListener('click', () => { BRB.sfx.play('click'); say(word.toLowerCase()); });
+$('hearBtn').addEventListener('click', () => { BRB.sfx.play('click'); say(word.toLowerCase(), CONFIG.wordRate); });
 $('helpBtn').addEventListener('click', helpMe);
 addEventListener('keydown', e => {
   if (e.repeat || e.metaKey || e.ctrlKey || e.altKey) return;

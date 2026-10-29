@@ -402,7 +402,7 @@ const CONFIG = {
   noRepeatDays: 250,                // a new cycle of daily words starts with none of the last cycle's final 250 words
   recentAvoid: 40,                  // practice modes don't repeat any of your last 40 words
   maxTile: 66,                      // biggest tile size in px
-  speechRate: 0.8,
+  speechRate: 0.9,                  // the answer word is read a touch slower than talking (1 = normal) so every sound is clear
   hitEmoji: '🟢', nearEmoji: '🟡', missEmoji: '⚪', hcHitEmoji: '🟠', hcNearEmoji: '🔵',
   modes: {                          // names come from I18N ('m_' + id)
     daily:    { icon: '📅', length: 5 },
@@ -2694,15 +2694,66 @@ let fast = false;   // skipAnimations()
    Sound + speech (speechSynthesis may be missing: every use is guarded)
    ===================================================================================== */
 function sfx(name) { try { BRB.sfx.play(name); } catch (e) { /* ignore */ } }
-function canSpeak() { try { return !!(window.speechSynthesis && window.SpeechSynthesisUtterance); } catch (e) { return false; } }
-function say(text) {
-  if (!canSpeak()) return false;
+/* voice-pick:start. Only for playing this file on its own: on Oomba Academy the SDK's BRB.speak is used.
+   The same scoring as BRB.voice in public/sdk/brb-sdk.js (tests/unit/voice.test.js checks they agree):
+   the language's preferred region first, natural/premium/enhanced voices up, old Windows "Desktop" voices,
+   eSpeak and Apple's novelty voices down; the browser's online voices (Edge "Online (Natural)", Chrome "Google US English")
+   after on-device natural ones but before plain on-device ones. An online voice sends the text to Microsoft or Google
+   (accepted by the owner on 29 Oct 2026, docs/decisions.md). When the browser has not listed its voices yet,
+   speakWith waits for them rather than letting the browser choose one. */
+const VOICE_REGIONS = { en: ['us', 'gb', 'ca', 'au'], 'en-gb': ['gb', 'ie', 'au'], pt: ['br', 'pt'], 'zh-hant': ['tw', 'cn', 'hk'], zh: ['cn', 'tw', 'hk'],
+  he: ['il'], es: ['es', 'mx', 'us'], fr: ['fr', 'ca'], de: ['de', 'at', 'ch'], it: ['it'], nl: ['nl', 'be'], ja: ['jp'], ru: ['ru'], ar: ['sa', 'eg', 'ae'] };
+const VOICE_SCORES = [[/\b(natural|neural)\b/i, 30], [/premium/i, 30], [/siri/i, 25], [/enhanced/i, 25], [/^google\b/i, 10], [/\bdesktop\b/i, -15], [/compact/i, -10],
+  [/^(eddy|flo|grandma|grandpa|reed|rocko|sandy|shelley)\b/i, -40],
+  [/^(albert|bad news|bahh|bells|boing|bubbles|cellos|deranged|good news|hysterical|jester|organ|pipe organ|superstar|trinoids|whisper|wobble|zarvox|fred|junior|kathy|ralph|agnes|bruce|princess|vicki|victoria)\b/i, -80],
+  [/e-?speak/i, -60]];
+const VOICE_ONLINE = 20;   // an online voice gets this instead of the bonuses (penalties still count)
+function voiceTag(t) {
+  const p = String(t || '').replace(/_/g, '-').toLowerCase().split('-'); let lang = p[0], region = '', script = '';
+  for (const x of p.slice(1)) { if (/^[a-z]{4}$/.test(x)) script = x; else if (!region && /^([a-z]{2}|\d{3})$/.test(x)) region = x; }
+  if (lang === 'iw') lang = 'he';
+  if (lang === 'cmn' || lang === 'yue') lang = 'zh';
+  if (lang === 'zh' && !region) region = script === 'hant' ? 'tw' : script === 'hans' ? 'cn' : '';
+  return { lang, region };
+}
+function pickVoice(list, lang) {
+  const key = String(lang || 'en').replace(/_/g, '-').toLowerCase(), want = voiceTag(key);
+  const regions = VOICE_REGIONS[key] || [...new Set([want.region, ...(VOICE_REGIONS[want.lang] || [])].filter(Boolean))];
+  let best = null, top = -Infinity;
+  for (const v of list || []) {
+    if (!v) continue;
+    const id = String(v.name || '') + ' ' + String(v.voiceURI || '');
+    const tg = voiceTag(v.lang); if (tg.lang !== want.lang) continue;
+    const online = v.localService === false || /-network\b/i.test(id);   // the text goes to Google / Microsoft
+    const r = regions.indexOf(tg.region); let s = r >= 0 ? 100 - 10 * r : 40;
+    for (const [re, add] of VOICE_SCORES) if (re.test(id) && !(online && add > 0)) s += add;
+    if (online) s += VOICE_ONLINE;
+    if (v.default) s += 5;
+    if (s > top) { best = v; top = s; }
+  }
+  return best;
+}
+/* voice-pick:end */
+/** Speaks text with BRB.speak, or (this file on its own) the best voice. false: nothing will be said. */
+function speakWith(text, lang, rate, queue) {
   try {
-    window.speechSynthesis.cancel();
-    const u = new window.SpeechSynthesisUtterance(text); u.rate = CONFIG.speechRate; u.pitch = 1.1; u.lang = 'en-US';
-    window.speechSynthesis.speak(u); return true;
+    if (window.BRB && typeof BRB.speak === 'function') return BRB.speak(text, { lang, rate, queue });
+    const ss = window.speechSynthesis; if (!ss || !window.SpeechSynthesisUtterance) return false;
+    if (!queue) ss.cancel();
+    const go = () => {   // only ever with a voice set explicitly: a lang-only utterance lets the browser pick any voice (often the worst)
+      const v = pickVoice(ss.getVoices() || [], lang); if (!v) return false;
+      const u = new SpeechSynthesisUtterance(text); u.voice = v; u.lang = v.lang; u.rate = rate; ss.speak(u); return true;
+    };
+    if ((ss.getVoices() || []).length) return go();
+    // Chrome lists its voices a moment after the page loads: wait for them once (at most 1.5 s), then speak or stay silent.
+    let waited = false; const later = () => { if (waited) return; waited = true; try { go(); } catch (e) { /* ignore */ } };
+    if (typeof ss.addEventListener === 'function') ss.addEventListener('voiceschanged', later, { once: true });
+    setTimeout(later, 1500);
+    return true;
   } catch (e) { return false; }
 }
+/** Says the answer word (always an English, en-US voice: this is an English word game). */
+function say(text) { return speakWith(text, 'en-US', CONFIG.speechRate, false); }
 function isMuted() { try { return !!BRB.sfx.muted; } catch (e) { return false; } }
 function setMuted(on) { try { BRB.sfx.mute(!!on); } catch (e) { /* ignore */ } save.settings.muted = isMuted(); persist(); refreshMute(); }
 function refreshMute() {

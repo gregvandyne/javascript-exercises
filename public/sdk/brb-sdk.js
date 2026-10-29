@@ -388,6 +388,154 @@
     }
   };
 
+  // ---- Speech: the most natural voice the device already has ---------------------------
+  // Browsers list many voices for a language, and the first one is often the worst: an old Windows
+  // "Desktop" voice, eSpeak on Linux, or one of Apple's novelty voices ("Albert", "Bad News"...), which
+  // sort first alphabetically. So we score every voice and keep the best one for the language.
+  // Order within the language: on-device natural voices (Natural/Neural, Premium, Siri, Enhanced), then the
+  // browser's ONLINE voices (localService === false or "-network": Edge's "Microsoft Aria Online (Natural)",
+  // Chrome's "Google US English"), then plain on-device voices, then eSpeak / Eloquence / novelty voices.
+  // An online voice sends the spoken text to the browser vendor (Microsoft or Google). The owner accepted that
+  // on 29 Oct 2026 (docs/decisions.md): games already used those voices, and without them Windows speech is
+  // robotic ("Desktop" voices) or silent (no local voice for the language). With no voice at all, speak() says nothing.
+  // voice-pick:start (seed-games/word-peek.html and shark-plank.html carry a copy; tests/unit/voice.test.js checks they agree)
+  // The regions we prefer for each site language, best first. A voice for the exact language and region
+  // wins over one for the language only (an en-GB page gets a British voice before an American one).
+  //   pt: the site's pt is Brazilian Portuguese (docs/sdk.md), so pt-BR first, then pt-PT.
+  //   zh-Hant: spoken as Mandarin: Taiwanese Mandarin (zh-TW) first, then mainland Mandarin (zh-CN, which reads
+  //            Traditional characters fine), and Hong Kong (zh-HK) last: those voices (Apple's Sinji, Windows' Tracy,
+  //            Android's yue) speak Cantonese, a different spoken language.
+  //   A tag with a region that has no entry here ("en-US", "es-MX", "zh-TW") tries that region first, then the
+  //   language's own list (en-US on a device with no American voice gets a British one before an Indian one).
+  //   he: he-IL; Android and old browsers still say "iw", which counts as he.
+  var VOICE_REGIONS = { en: ['us', 'gb', 'ca', 'au'], 'en-gb': ['gb', 'ie', 'au'], pt: ['br', 'pt'], 'zh-hant': ['tw', 'cn', 'hk'], zh: ['cn', 'tw', 'hk'],
+    he: ['il'], es: ['es', 'mx', 'us'], fr: ['fr', 'ca'], de: ['de', 'at', 'ch'], it: ['it'], nl: ['nl', 'be'], ja: ['jp'], ru: ['ru'], ar: ['sa', 'eg', 'ae'] };
+  // Matched against "name voiceURI". The language match is worth 100 (preferred region; 10 less for each
+  // step down the list) or 40 (same language, another region), so these move a voice within its language.
+  var VOICE_SCORES = [
+    [/\b(natural|neural)\b/i, 30],   // Windows 11 / ChromeOS "Natural" voices (when they are on the device)
+    [/premium/i, 30],                // Apple's best downloadable voices ("Ava (Premium)")
+    [/siri/i, 25],                   // Apple's Siri voices, where a browser lists them
+    [/enhanced/i, 25],               // Apple's larger download of a standard voice ("Samantha (Enhanced)")
+    [/^google\b/i, 10],              // Google's own voices when they are local (Android, ChromeOS)
+    [/\bdesktop\b/i, -15],           // Windows SAPI 5 "Microsoft David/Zira/Mark Desktop": the oldest Windows voices
+    [/compact/i, -10],               // Apple's small "compact" voices: fine, but any download beats them
+    [/^(eddy|flo|grandma|grandpa|reed|rocko|sandy|shelley)\b/i, -40],   // Apple's Eloquence voices (2022): clear but very synthetic
+    // Apple's novelty and 1990s MacinTalk voices: sound effects or robots. Always last for their language.
+    [/^(albert|bad news|bahh|bells|boing|bubbles|cellos|deranged|good news|hysterical|jester|organ|pipe organ|superstar|trinoids|whisper|wobble|zarvox|fred|junior|kathy|ralph|agnes|bruce|princess|vicki|victoria)\b/i, -80],
+    [/e-?speak/i, -60]               // eSpeak / espeak-ng (Linux): the most robotic of all
+  ];
+  // An online voice gets this instead of the bonuses above (penalties still count): below an on-device
+  // natural voice (+25..+40), above a plain on-device one (at most +15: a local Google voice that is the default).
+  var VOICE_ONLINE = 20;
+  // "en_US", "iw-IL", "cmn-Hant-TW", "yue-HK" -> { lang, region } in one spelling.
+  function voiceTag(t) {
+    var p = String(t || '').replace(/_/g, '-').toLowerCase().split('-'), lang = p[0], region = '', script = '';
+    for (var i = 1; i < p.length; i++) { if (/^[a-z]{4}$/.test(p[i])) script = p[i]; else if (!region && /^([a-z]{2}|\d{3})$/.test(p[i])) region = p[i]; }
+    if (lang === 'iw') lang = 'he';
+    if (lang === 'cmn' || lang === 'yue') lang = 'zh';
+    if (lang === 'zh' && !region) region = script === 'hant' ? 'tw' : script === 'hans' ? 'cn' : '';
+    return { lang: lang, region: region };
+  }
+  // The best voice in list for a BCP-47 tag ("en-GB", "pt", "zh-Hant"), or null. Ties keep list order.
+  function pickVoice(list, lang) {
+    var key = String(lang || 'en').replace(/_/g, '-').toLowerCase(), want = voiceTag(key);
+    var regions = VOICE_REGIONS[key];
+    if (!regions) { regions = want.region ? [want.region] : []; (VOICE_REGIONS[want.lang] || []).forEach(function (r) { if (regions.indexOf(r) < 0) regions.push(r); }); }
+    var best = null, top = -Infinity;
+    for (var i = 0; list && i < list.length; i++) {
+      var v = list[i]; if (!v) continue;
+      var id = String(v.name || '') + ' ' + String(v.voiceURI || '');
+      var t = voiceTag(v.lang); if (t.lang !== want.lang) continue;
+      var online = v.localService === false || /-network\b/i.test(id);   // the text goes to Google / Microsoft
+      var r = regions.indexOf(t.region), s = r >= 0 ? 100 - 10 * r : 40;
+      for (var j = 0; j < VOICE_SCORES.length; j++) if (VOICE_SCORES[j][0].test(id) && !(online && VOICE_SCORES[j][1] > 0)) s += VOICE_SCORES[j][1];
+      if (online) s += VOICE_ONLINE;
+      if (v.default) s += 5;           // the voice the person chose in their device settings
+      if (s > top) { best = v; top = s; }
+    }
+    return best;
+  }
+  // voice-pick:end
+  var synth = null, Utter = null;
+  try { if (window.speechSynthesis && window.SpeechSynthesisUtterance) { synth = window.speechSynthesis; Utter = window.SpeechSynthesisUtterance; } } catch (e) { /* none */ }
+  var USER_LANG = (INIT.user && typeof INIT.user.lang === 'string' && INIT.user.lang) || 'en';
+  var voiceList = [], voiceCache = {}, voicesSettled = false, pendingSpeech = [], liveUtterances = [];
+  function loadVoices() { try { voiceList = (synth && synth.getVoices()) || []; } catch (e) { voiceList = []; } voiceCache = {}; return voiceList; }
+  function voiceFor(lang) {
+    if (!synth) return null;
+    if (!voiceList.length) loadVoices();
+    var key = String(lang || USER_LANG);
+    if (!Object.prototype.hasOwnProperty.call(voiceCache, key)) voiceCache[key] = pickVoice(voiceList, key);
+    return voiceCache[key];
+  }
+  // Chrome stops an utterance that runs longer than about 15 seconds, so long text is spoken a sentence
+  // (at most ~180 characters) at a time.
+  function speechChunks(s) {
+    var out = [], parts = s.match(/[^.!?。！？]+[.!?。！？]*\s*/g) || [s], cur = '';
+    parts.forEach(function (p) {
+      while (p.length > 180) {   // one very long sentence: break at a comma or space, else anywhere (Chinese, Japanese)
+        var cut = Math.max(p.lastIndexOf(', ', 178) + 1, p.lastIndexOf(' ', 179)), end = cut >= 60 ? cut + 1 : 180;
+        if (cur) { out.push(cur); cur = ''; } out.push(p.slice(0, end)); p = p.slice(end);
+      }
+      if ((cur + p).length > 180) { out.push(cur); cur = p; } else cur += p;
+    });
+    if (cur) out.push(cur);
+    return out.map(function (x) { return x.trim(); }).filter(Boolean);
+  }
+  function num(x, lo, hi, d) { x = +x; return isFinite(x) ? Math.min(hi, Math.max(lo, x)) : d; }
+  function startSpeech(s, opts, lang) {
+    var v = voiceFor(lang); if (!v) return false;   // no voice for this language
+    var parts = speechChunks(s), rate = num(opts.rate, 0.5, 2, 1), pitch = num(opts.pitch, 0, 2, 1), vol = num(opts.volume, 0, 1, 1);
+    try { if (synth.paused) synth.resume(); } catch (e) { /* ignore */ }   // iOS and Chrome can be left paused (tab switch, call)
+    parts.forEach(function (p, i) {
+      var u = new Utter(p); u.voice = v; u.lang = v.lang; u.rate = rate; u.pitch = pitch; u.volume = vol;
+      // Chrome can garbage-collect a playing utterance and never fire onend: hold on to it until it is done.
+      var done = function () { var k = liveUtterances.indexOf(u); if (k >= 0) liveUtterances.splice(k, 1); };
+      liveUtterances.push(u);
+      u.onerror = done;
+      u.onend = function () { done(); if (i === parts.length - 1 && typeof opts.onend === 'function') { try { opts.onend(); } catch (e) { /* game's own error */ } } };
+      synth.speak(u);
+    });
+    return true;
+  }
+  function flushPending() {
+    if (!voiceList.length && !voicesSettled) return;
+    var list = pendingSpeech; pendingSpeech = [];
+    list.forEach(function (a) { try { startSpeech(a[0], a[1], a[2]); } catch (e) { /* ignore */ } });
+  }
+  // speak(text, { lang, rate, pitch, volume, queue, onend }): true if it started (or is waiting for the
+  // device's voice list, which some browsers fill a moment after the page loads); false when there is
+  // no speech here or no voice for the language. A new line stops the one playing unless queue is true.
+  function speak(text, opts) {
+    opts = opts || {};
+    if (!synth || !Utter) return false;
+    var s = String(text == null ? '' : text).replace(/\s+/g, ' ').trim(); if (!s) return false;
+    var lang = typeof opts.lang === 'string' && opts.lang ? opts.lang : USER_LANG;
+    try {
+      if (!opts.queue) { pendingSpeech = []; synth.cancel(); }
+      if (!voiceList.length) loadVoices();
+      if (!voiceList.length) { if (voicesSettled) return false; pendingSpeech.push([s, opts, lang]); return true; }
+      return startSpeech(s, opts, lang);
+    } catch (e) { return false; }
+  }
+  function stopSpeaking() { pendingSpeech = []; try { if (synth) synth.cancel(); } catch (e) { /* ignore */ } }
+  if (synth) {
+    loadVoices(); if (voiceList.length) voicesSettled = true;
+    var onVoices = function () { loadVoices(); if (voiceList.length) voicesSettled = true; flushPending(); };
+    try { if (typeof synth.addEventListener === 'function') synth.addEventListener('voiceschanged', onVoices); } catch (e) { /* ignore */ }
+    // A browser with no voices at all never fires voiceschanged: after a moment, stop waiting.
+    setTimeout(function () { if (!voiceList.length) loadVoices(); voicesSettled = true; flushPending(); }, 1500);
+    // iPhones and iPads only allow speech that a tap started. A silent, empty line on the first tap or key
+    // unlocks it, so a game can also speak later (after an animation or a timer).
+    var unlock = function () {
+      ['touchend', 'pointerup', 'click', 'keydown'].forEach(function (n) { window.removeEventListener(n, unlock, true); });
+      try { var u = new Utter(' '); u.volume = 0; synth.speak(u); } catch (e) { /* ignore */ }
+    };
+    ['touchend', 'pointerup', 'click', 'keydown'].forEach(function (n) { window.addEventListener(n, unlock, true); });
+    window.addEventListener('pagehide', stopSpeaking);   // never keep talking after the game is closed
+  }
+
   var BRB = {
     version: 1,
     // lang: the player's site language ("en", "fr", "ar"...); dir: "rtl" for right-to-left languages (he, ar), else "ltr".
@@ -405,7 +553,11 @@
     fullscreen: function () { return askFullscreen(); },
     orientation: function (o) { send('brb:orientation', { value: String(o || 'any') }); },
     fx: fx,
-    sfx: fx.sfx
+    sfx: fx.sfx,
+    // Speech with the most natural voice available (see "Speech" above and docs/sdk.md).
+    voice: function (lang) { try { return voiceFor(lang); } catch (e) { return null; } },
+    speak: speak,
+    stopSpeaking: stopSpeaking
   };
   Object.freeze(BRB.storage); Object.freeze(BRB.score);
   try { Object.defineProperty(window, 'BRB', { value: BRB, writable: false, configurable: false }); } catch (e) { window.BRB = BRB; }
