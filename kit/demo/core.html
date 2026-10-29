@@ -1,0 +1,56 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Oomba Kit: core scene</title></head>
+<body>
+<!--KIT-->
+<script>
+// The engine smoke scene: the meadow, the Oomba mascot, sparks, lanterns, particles, day <-> night, the iris wipe.
+// Level B (Oomba.stage), about 60 lines: the same calls the Builder will write.
+const S = Oomba.stage({ api: 1, biome: 'meadow', seed: 7 });
+const ground = () => S.viewY(0.86);
+const hero = S.add('oomba', { x: 0, y: 0, size: 150, seed: 3 });
+hero.look('pointer');
+const sparks = [-330, -180, 180, 330].map((x, i) => S.add('spark', { x, y: 0, size: 56, parts: [{ bob: { amp: 8 } }], seed: i + 1 }));
+const lanterns = [-460, 460].map(x => S.add('lantern', { x, y: 0, size: 170, parts: ['lantern'], shadow: false }));
+S.update(() => {
+  const g = ground();
+  hero.y = g; hero.groundY = g;
+  for (const l of lanterns) l.y = g + 6;
+  for (const s of sparks) { s.baseY = g - 170; s.groundY = g; }
+});
+hero.pop();
+Oomba.input.touch('stick+jump');   // DOM touch controls, shown after the first touch
+let streak = 0;
+function collect(s) {
+  streak++;
+  s.pop(); s.float('+1'); S.burst('sparkle', s.x, s.y);
+  Oomba.sfx('spark', { pitch: 1 + Math.min(streak, 8) * 0.06, at: s });
+  Oomba.ui.announce(Oomba.t('sparksOf', { n: streak, total: 99 }));
+}
+Oomba.input.on('tap', p => {
+  const w = S.toWorld(p);
+  const hit = sparks.find(s => Math.hypot(s.x - w.x, (s.y - 20) - w.y) < 50);
+  if (hit) collect(hit); else { S.burst('sparkle', w.x, w.y, { n: 8 }); hero.squash(0.82); Oomba.sfx('pop'); }
+});
+const ui = Oomba.ui.root();
+const bar = document.createElement('div');
+bar.style.cssText = 'position:fixed;top:calc(12px + env(safe-area-inset-top));inset-inline-end:12px;display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end';
+const night = () => S.toNight(S.timeOfDay < 0.5);
+const celebrate = () => { Oomba.juice.confetti(); S.burst('sparkle', hero.x, hero.y - 120, { n: 20 }); hero.squash(1.15); S.flash(); Oomba.sfx('win'); S.camera.punch(1.06); };
+const wipe = async () => { await S.wipe('out', { at: { x: hero.x, y: hero.y - 70 } }); S.transition(); await S.wipe('in', { at: { x: hero.x, y: hero.y - 70 } }); };
+const hurt = () => { Oomba.time.hitstop(60); S.camera.shake(0.4); hero.flash(); hero.wobble(); hero.invuln = 1; Oomba.sfx('hurt'); };
+bar.append(
+  Oomba.ui.button(Oomba.t('play'), { kind: 'hot', onPress: () => collect(sparks[(streak) % sparks.length]) }),
+  Oomba.ui.button('Night', { kind: 'quiet', onPress: night }),
+  Oomba.ui.button('Wow', { kind: 'go', onPress: celebrate }),
+  Oomba.ui.button('Wipe', { kind: 'quiet', onPress: wipe }),
+);
+ui.appendChild(bar);
+// Scene hooks for tests: the game's state through the public Oomba.test, plus scene helpers merged into __brbTest.
+Oomba.scene = 'core';
+Oomba.test({ state: () => ({ streak, tod: +S.timeOfDay.toFixed(2) }), start: () => collect(sparks[0]) });
+Object.assign(window.__brbTest, {
+  scene: () => ({ hero: { x: hero.x, y: hero.y }, sparks: sparks.length, tod: S.timeOfDay, streak, lights: S.lights.length }),
+  night: on => S.setTimeOfDay(on === false ? 0 : 1, 0), collect: i => collect(sparks[i | 0]), celebrate, wipe, hurt,
+});
+</script>
+</body></html>

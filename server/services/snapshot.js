@@ -11,25 +11,32 @@
 //     worker (server/shots-worker.js) over HTTP, so the browser runs in its own container with no database and no
 //     secrets. The worker runs the exact same code via runLocal().
 //   BRB_SNAPSHOTS=0 turns both off.
-// The game page can reach nothing but Google Fonts, cdnjs and the self-hosted /vendor/three/ files (the same sources its
-// CSP allows); the vendor files are answered from disk, so 3D games work the same locally and in the worker.
+// The game page can reach nothing but Google Fonts, cdnjs and the self-hosted /vendor/three/ and /vendor/oomba-kit/
+// files (the same sources its CSP allows); the vendor files are answered from disk, so 3D and kit games work the same
+// locally and in the worker.
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { frameDocument, frameCsp, SANDBOX } from './frame.js';
 import { VENDOR_PATH, THREE_MODULE, THREE_CORE } from './vendor.js';
+import { KIT_PATH } from './kit.js';
 import { config } from '../config.js';
 
 const HOST = 'http://game.invalid';
-const VENDOR_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../public', `.${VENDOR_PATH}`);
-/** A /vendor/three/... request -> the file on disk, or null (only plain .js/LICENSE names, never outside the folder). */
+const PUBLIC_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../public');
+/** A /vendor/three/<v>/<file> or /vendor/oomba-kit/<v>/[fonts/]<file> request -> the file on disk, or null (plain
+ *  names only, never outside those folders). */
 function vendorFile(url) {
-  const m = /^\/vendor\/three\/([0-9][0-9a-z.-]{0,30})\/([a-z0-9][a-z0-9.-]{0,60})$/i.exec(new URL(url).pathname);
-  if (!m || m[1].includes('..') || m[2].includes('..')) return null;
-  const f = path.join(VENDOR_DIR, m[1], m[2]);
-  return f.startsWith(VENDOR_DIR + path.sep) && fs.existsSync(f) && fs.statSync(f).isFile() ? f : null;
+  const p = new URL(url).pathname;
+  const m = /^\/vendor\/(three|oomba-kit)\/([0-9][0-9a-z.-]{0,30})\/((?:fonts\/)?[a-z0-9][a-z0-9.-]{0,60})$/i.exec(p);
+  if (!m || m[2].includes('..') || m[3].includes('..') || (m[1] === 'three' && m[3].includes('/'))) return null;
+  const dir = path.join(PUBLIC_DIR, 'vendor', m[1]);
+  const f = path.join(dir, m[2], m[3]);
+  return f.startsWith(dir + path.sep) && fs.existsSync(f) && fs.statSync(f).isFile() ? f : null;
 }
+export { vendorFile };
+const VENDOR_TYPES = { js: 'text/javascript; charset=utf-8', woff2: 'font/woff2', json: 'application/json; charset=utf-8' };
 /** Are the pinned Three.js files on this disk? (The worker checks at start: without them 3D covers fail.) */
 export const threeReady = () => [THREE_MODULE, THREE_CORE].every(p => !!vendorFile(`${HOST}${p}`));
 const ALLOWED = /^https:\/\/(fonts\.googleapis\.com|fonts\.gstatic\.com|cdnjs\.cloudflare\.com)\//;
@@ -207,10 +214,10 @@ async function capture(gameHtml, opts) {
       const u = route.request().url();
       if (u === `${HOST}/`) return route.fulfill({ status: 200, contentType: 'text/html; charset=utf-8', body: host });
       if (u === `${HOST}/frame`) return route.fulfill({ status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'content-security-policy': frameCsp(HOST) }, body: doc });
-      if (u.startsWith(`${HOST}${VENDOR_PATH}`)) {
+      if (u.startsWith(`${HOST}${VENDOR_PATH}`) || u.startsWith(`${HOST}${KIT_PATH}`)) {
         const f = vendorFile(u);
         if (!f) return route.fulfill({ status: 404, body: '' });
-        return route.fulfill({ status: 200, headers: { 'content-type': f.endsWith('.js') ? 'text/javascript; charset=utf-8' : 'text/plain; charset=utf-8', 'access-control-allow-origin': '*', 'cross-origin-resource-policy': 'cross-origin' }, body: fs.readFileSync(f) });
+        return route.fulfill({ status: 200, headers: { 'content-type': VENDOR_TYPES[f.split('.').pop()] || 'text/plain; charset=utf-8', 'access-control-allow-origin': '*', 'cross-origin-resource-policy': 'cross-origin' }, body: fs.readFileSync(f) });
       }
       if (ALLOWED.test(u)) return route.continue();
       return route.abort();

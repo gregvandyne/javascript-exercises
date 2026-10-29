@@ -1,11 +1,12 @@
 // Builds the HTML served inside the sandboxed game iframe and the strict CSP for it.
 // The SDK is inlined (the frame has an opaque origin, and the CSP allows only inline scripts, cdnjs and the site's own
-// self-hosted 3D library under /vendor/three/).
+// self-hosted libraries: the 3D library under /vendor/three/ and the Oomba Kit under /vendor/oomba-kit/).
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { sanitizeGameHtml } from './sanitize.js';
 import { deviceNeeds, VENDOR_PATH } from './vendor.js';
+import { KIT_PATH } from './kit.js';
 import { config } from '../config.js';
 
 const SDK_PATH = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../public/sdk/brb-sdk.js');
@@ -21,9 +22,11 @@ export const SANDBOX = 'allow-scripts allow-pointer-lock allow-orientation-lock'
 // other browsers. Anything that is not a plain origin is left out.
 const ORIGIN_URL_RE = /^https?:\/\/(\[[0-9a-f:.]+\]|[a-z0-9.-]+)(:\d{1,5})?$/i;
 export function frameCsp(origins = '') {
-  const vendor = [...new Set([].concat(origins || []).filter(o => typeof o === 'string' && ORIGIN_URL_RE.test(o)).map(o => o.toLowerCase()))]
-    .map(o => ` ${o}${VENDOR_PATH}`).join('');
-  return `sandbox ${SANDBOX}; default-src 'none'; script-src 'unsafe-inline' https://cdnjs.cloudflare.com${vendor}; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com data:; img-src data: blob:; media-src data: blob:; connect-src 'none'; frame-ancestors 'self'; form-action 'none'; base-uri 'none'`;
+  const own = [...new Set([].concat(origins || []).filter(o => typeof o === 'string' && ORIGIN_URL_RE.test(o)).map(o => o.toLowerCase()))];
+  // Scripts: the 3D library and the Oomba Kit. Fonts: the kit's self-hosted font files (its script loads them).
+  const vendor = own.map(o => ` ${o}${VENDOR_PATH} ${o}${KIT_PATH}`).join('');
+  const fonts = own.map(o => ` ${o}${KIT_PATH}`).join('');
+  return `sandbox ${SANDBOX}; default-src 'none'; script-src 'unsafe-inline' https://cdnjs.cloudflare.com${vendor}; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com data:${fonts}; img-src data: blob:; media-src data: blob:; connect-src 'none'; frame-ancestors 'self'; form-action 'none'; base-uri 'none'`;
 }
 export const FRAME_CSP = frameCsp();
 const ORIGIN_RE = /^(\[[0-9a-f:.]+\]|[a-z0-9.-]+)(:\d{1,5})?$/i;

@@ -606,6 +606,10 @@
     user: Object.freeze({ displayName: (INIT.user && INIT.user.displayName) || 'Player', avatar: (INIT.user && INIT.user.avatar) || '🙂', isGuest: !!(INIT.user && INIT.user.isGuest),
       lang: (INIT.user && typeof INIT.user.lang === 'string' && INIT.user.lang) || 'en', dir: INIT.user && INIT.user.dir === 'rtl' ? 'rtl' : 'ltr' }),
     game: Object.freeze({ id: (INIT.game && INIT.game.id) || '', title: (INIT.game && INIT.game.title) || '' }),
+    // The site's theme ('light' / 'dark'; '' = follow the device) and motion preference ('reduce' / 'full'; '' = the
+    // device setting). Read-only plumbing: the Oomba Kit uses them; games that keep their own colours can ignore them.
+    theme: INIT.theme === 'light' || INIT.theme === 'dark' ? INIT.theme : '',
+    motion: INIT.motion === 'reduce' || INIT.motion === 'full' ? INIT.motion : '',
     preview: !!INIT.preview,
     storage: {
       get: function (k) { var v = local.getItem(k); if (v === null) return null; try { return JSON.parse(v); } catch (e) { return v; } },

@@ -1,0 +1,11 @@
+{
+  "version": "1.0.0",
+  "api": 1,
+  "files": {
+    "oomba-kit.js": "sha384-NkPK4XtJjmA/7TxqlPbFPOcmbkCdwseDfHONaaeBG8ui1jtJ5KZQnF6bfWgFwtv1",
+    "fonts/bricolage-latin.woff2": "sha384-X/jaeJ4W5GX6njFPEfUBZdJHzn5fubPkE+9LDSLSmoJRUtrBMlRU1+5BAHszUiNB",
+    "fonts/bricolage-latin-ext.woff2": "sha384-Ot7IlVGIs2pRGgA5YgE5tJccM1wkGm5cs2e1qkPHXBwCUMF/C0NVXdFYEsrbfv9x",
+    "fonts/OFL.txt": "sha384-JA+iC+Ed3rNRZpoSVhqXkEYWz/2PvbVwINTmNcnUvukL6sqylA/l3Z7FoBpydUJd",
+    "LICENSE": "sha384-QL8OJsVxorVUX5Qy3GIpb4Melm3VtxFXpe+PUMxCjfDrlah37LMjBkK1YigM4eEG"
+  }
+}

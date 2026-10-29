@@ -1,0 +1,4 @@
+{
+  "_": "Kit versions that have shipped (been on the live site). Their files and SRI hashes may never change again: saved games pin the hash. scripts/build-kit.js refuses --replace for these, and tests/unit/kit-platform.test.js checks KIT_VERSIONS against this list. Add a version here in the same change that ships it.",
+  "versions": {}
+}

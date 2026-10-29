@@ -49,6 +49,7 @@ The SDK (`public/sdk/brb-sdk.js`) is loaded before the game's own code and is fr
 | `BRB.user` | `{ displayName, avatar, isGuest, lang, dir }`. No other identity is ever given to a game. `lang` and `dir` are explained in [Languages](#languages). |
 | `BRB.game` | `{ id, title }` |
 | `BRB.preview` | `true` inside the Studio preview (saving is off there). |
+| `BRB.theme` / `BRB.motion` | The site theme (`'light'`, `'dark'`, or `''` to follow the device): read-only plumbing for games that follow the site, like [Oomba Kit](kit-api.md) games; other games keep their own colours. `BRB.motion` is **reserved** for a future site motion setting and is always `''` today: games follow the device's reduced-motion setting (the kit also has its own settings panel). |
 | `BRB.storage.get(key)` | Per-player, per-game cloud save. Synchronous read. Values are JSON-decoded when possible. |
 | `BRB.storage.set(key, value)` / `remove(key)` | Writes are debounced and sent to the server. Max ~450 KB per game per player. |
 | `localStorage` / `sessionStorage` | Work as usual. `localStorage` is a shim backed by the same cloud save, pre-filled before the game starts, so older games just work. |

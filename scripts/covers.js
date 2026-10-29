@@ -11,7 +11,8 @@ import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { chromium } from '@playwright/test';
-import { frameDocument, FRAME_CSP, SANDBOX } from '../server/services/frame.js';
+import { frameDocument, frameCsp, SANDBOX } from '../server/services/frame.js';
+import { vendorFile } from '../server/services/snapshot.js';
 import { SEED_GAMES } from './seed.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -129,7 +130,16 @@ async function capture(browser, slug) {
   if (!recipe) return console.log(`- ${slug}: no recipe, skipped`);
   const doc = frameDocument(fs.readFileSync(htmlPath, 'utf8'), { user: { displayName: 'Player', avatar: '🦊', isGuest: false }, game: { id: slug, title: slug }, save: {}, canSave: false, preview: true });
   const srv = http.createServer((q, r) => {
-    if (q.url.startsWith('/g')) { r.setHeader('Content-Security-Policy', FRAME_CSP); r.setHeader('Content-Type', 'text/html; charset=utf-8'); return r.end(doc); }
+    const origin = `http://127.0.0.1:${srv.address().port}`;
+    if (q.url.startsWith('/g')) { r.setHeader('Content-Security-Policy', frameCsp(origin)); r.setHeader('Content-Type', 'text/html; charset=utf-8'); return r.end(doc); }
+    // The self-hosted libraries (Three.js, the Oomba Kit and its fonts), from disk, as the site serves them.
+    if (q.url.startsWith('/vendor/')) {
+      const f = vendorFile(origin + q.url.split('?')[0]);
+      if (!f) { r.statusCode = 404; return r.end(); }
+      r.setHeader('Content-Type', f.endsWith('.js') ? 'text/javascript; charset=utf-8' : f.endsWith('.woff2') ? 'font/woff2' : 'text/plain; charset=utf-8');
+      r.setHeader('Access-Control-Allow-Origin', '*'); r.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+      return r.end(fs.readFileSync(f));
+    }
     r.setHeader('Content-Type', 'text/html; charset=utf-8');
     r.end(`<!doctype html><style>html,body{margin:0;height:100%;background:#000}iframe{width:100%;height:100%;border:0;display:block}</style><iframe sandbox="${SANDBOX}" src="/g"></iframe>`);
   });
