@@ -60,7 +60,8 @@
     "plans": "Planes",
     "teachers": "Docentes",
     "parents": "Familias",
-    "grownups": "Adultos"
+    "grownups": "Adultos",
+    "playNow": "Jugar ya"
   },
   "errors": {
     "goHome": "Ir al inicio",
@@ -150,7 +151,19 @@
       "signupLink": "Crea una cuenta gratis",
       "grownupLogin": "¿Es adulto o docente? <a href=\"{grownup}\">Familias: entren aquí</a> · <a href=\"{teachers}\">Docentes: empiecen aquí</a>",
       "grownupLoginSoon": "¿Es adulto o docente? <a href=\"{grownup}\">Oomba Academy para familias</a> · <a href=\"{teachers}\">Docentes: empiecen aquí</a>",
-      "grownupSignup": "¿Es adulto o docente? <a href=\"{grownup}\">Familias: empiecen aquí</a> · <a href=\"{teachers}\">Docentes: empiecen aquí</a>"
+      "grownupSignup": "¿Es adulto o docente? <a href=\"{grownup}\">Familias: empiecen aquí</a> · <a href=\"{teachers}\">Docentes: empiecen aquí</a>",
+      "whoHeading": "¿Para quién es?",
+      "whoGrownup": "Para mí (un adulto)",
+      "whoGrownupSub": "Su propia cuenta, vinculada con la cuenta de su hijo o hija",
+      "whoKid": "Para mi hijo o hija",
+      "whoKidSub": "Un nombre inventado y una contraseña, sin correo. Los niños que entran solos también empiezan aquí.",
+      "whoTeacher": "Soy docente",
+      "whoTeacherSub": "Configure su escuela y sus clases",
+      "whoBack": "¿Para quién es? Elegir de nuevo",
+      "soonHeading": "Las cuentas de adulto llegarán pronto",
+      "soonText": "Pronto podrá crear su propia cuenta, vinculada con la cuenta de su hijo o hija. Mientras tanto, su hijo o hija puede empezar gratis con un nombre inventado y una contraseña (sin correo), y la página para familias explica cómo funciona Oomba Academy y cómo protege a los niños.",
+      "soonParents": "Oomba Academy para familias",
+      "soonKid": "Crear la cuenta de mi hijo o hija"
     },
     "api": {
       "tooManyGuests": "Hay demasiados invitados desde aquí. Inténtalo más tarde.",
@@ -357,6 +370,15 @@
       "text": "Juegos gratis para niños de 8 a 14 años, para jugar en clase o en casa, y un Constructor que convierte tu propia idea en un juego.",
       "teachers": "Para docentes",
       "parents": "Para las familias"
+    },
+    "doors": {
+      "label": "¿Quién nos visita?",
+      "kid": "Soy niño o niña: ¡a jugar!",
+      "kidSub": "Sin registrarte",
+      "parent": "Soy madre o padre",
+      "parentSub": "¿Es seguro? Configure gratis la cuenta de su hijo o hija",
+      "teacher": "Soy docente",
+      "teacherSub": "Clases, lecciones y progreso gratis"
     }
   },
   "search": {
@@ -466,7 +488,6 @@
       "families": {
         "h": "Cuentas familiares",
         "p1": "Una madre, un padre o un tutor puede crear su propia cuenta de adulto y vincularla con la cuenta de su hijo o hija. Su hijo o hija tiene que decir que sí en su propia página.",
-        "link": "Sobre las cuentas familiares",
         "plans": "Ver planes y precios"
       }
     },
@@ -2735,25 +2756,16 @@
   },
   "family": {
     "landing": {
-      "title": "Cuentas familiares",
-      "description": "Cuentas de adulto para madres, padres y tutores en Oomba Academy: vincule a sus hijos y vea qué agrega un plan familiar.",
-      "heading": "Oomba Academy para familias",
-      "intro": "Jugar y crear juegos en Oomba Academy es gratis. Una cuenta de adulto permite que una madre, un padre o un tutor se vincule con sus hijos, y un plan familiar les da mensajes extra para el Constructor.",
       "signup": "Crear una cuenta de adulto",
       "login": "Entrar",
       "toFamily": "Ir a su página familiar",
       "what": {
-        "h": "Qué agrega un plan familiar",
         "p1": "{extra, plural, one {# mensaje extra para el Constructor} other {# mensajes extra para el Constructor}} al mes, para compartir entre hasta {max} niños, además de los mensajes gratis que todos los jugadores reciben cada día.",
-        "p2": "Pagar nunca desbloquea nada que los jugadores gratis no tengan, y nunca se les pide a los niños que paguen.",
         "limitDaily": "Cada niño puede usar hasta {daily, plural, one {# mensaje extra} other {# mensajes extra}} al día.",
         "limitCost": "Los mensajes extra de una familia también se detienen hasta fin de mes si su funcionamiento resulta inusualmente costoso.",
         "limitReset": "Los mensajes extra se renuevan el día 1 de cada mes (UTC) y no se acumulan."
       },
       "price": {
-        "h": "Precio",
-        "p1": "{monthly} al mes o {yearly} al año, más el impuesto sobre las ventas donde corresponda. Puede cancelar cuando quiera: el plan sigue hasta el final del período que pagó.",
-        "both": "El plan Básico cuesta {basic} al mes, para un niño. El plan familiar cuesta {family} al mes, para hasta {max} niños. Más el impuesto sobre las ventas donde corresponda. Puede cancelar cuando quiera: el plan sigue hasta el final del período que pagó.",
         "soon": "Los planes familiares todavía no están a la venta. Ya puede crear una cuenta de adulto y vincular a sus hijos.",
         "us": "Por ahora, los planes familiares son solo para familias de Estados Unidos."
       },
@@ -2786,8 +2798,7 @@
           "q": "¿Vincular o pagar es una forma de consentimiento parental?",
           "a": "No. La vinculación y los planes familiares solo tienen que ver con los mensajes extra para el Constructor. No son la forma en que el sitio pide ni registra el consentimiento."
         }
-      },
-      "plans": "Comparar planes y precios"
+      }
     },
     "signup": {
       "title": "Registro de adultos",
@@ -2854,6 +2865,20 @@
       "label": "Código de su hijo o hija",
       "submit": "Enviar solicitud",
       "sent": "Solicitud enviada. Su hijo o hija tiene que decir que sí en su página Yo."
+    },
+    "check": {
+      "heading": "Primeros pasos",
+      "allSet": "Todo listo",
+      "done": "Hecho",
+      "account": "Su cuenta de adulto",
+      "link": "Vincular a su hijo o hija",
+      "linkCta": "Escribir el código de su hijo o hija",
+      "plan": "Elegir un plan (opcional)",
+      "planWhy": "Lo gratis funciona; un plan agrega mensajes para el Constructor para su hijo o hija.",
+      "planOn": "Su plan está activo",
+      "hide": "Lo gratis está bien, ocultar esto",
+      "staying": "Por ahora, seguimos con lo gratis.",
+      "notOnSale": "Los planes todavía no están a la venta. Mientras tanto, lo gratis funciona."
     },
     "errors": {
       "badCodeDay": "Ese código no funciona. Un código funciona una sola vez, durante 24 horas: pídale uno nuevo a su hijo o hija.",
@@ -3670,6 +3695,9 @@
       "li5": "Practicar durante las vacaciones",
       "li6": "Un rato de juego en un día de lluvia que además enseña algo",
       "li7": "Matemáticas, lectura y música para la educación en casa"
+    },
+    "plans": {
+      "adds": "Un plan agrega mensajes extra para el Constructor cada mes para sus hijos vinculados (un solo hijo o hija o toda la familia, según el plan), además de los mensajes gratis que todos los jugadores reciben cada día. Pagar nunca desbloquea nada más, y nunca se les pide a los niños que paguen."
     },
     "families": {
       "p2": "Los planes son opcionales. Solo agregan mensajes extra para el Constructor, y nunca se les pide a los niños que paguen."

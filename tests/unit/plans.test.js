@@ -489,10 +489,14 @@ test('Hebrew /plans is fully Hebrew: no sentence falls back to English, and the 
   assert.match(r, /45/);
 });
 
-test('/grown-ups gives both prices (Basic and Family), and Compare plans is the main button there', async () => {
-  const page = decode((await call(null, '/grown-ups')).text);
-  assert.match(page, /Basic is \$4\.99 a month, for one child\. Family is \$7\.99 a month, for up to 4 children\./);
-  assert.match(page, /<a class="btn btn-primary" href="\/plans">Compare plans and prices<\/a>/);
+test('/grown-ups is now /parents#families (a 301), and the parent page names no price: amounts are on /plans only', async () => {
+  const r = await call(null, '/grown-ups');
+  assert.equal(r.status, 301); assert.equal(r.location, '/parents#families');
+  assert.equal((await call(null, '/grown-ups?ref=mail')).location, '/parents?ref=mail#families', 'the query stays');
+  const page = decode((await call(null, '/parents')).text);
+  const main = page.slice(page.indexOf('<main'), page.indexOf('<footer'));
+  assert.doesNotMatch(main, /\$\s?\d|\d\.\d\d\b|per month|a month\b|Basic plan\b|Family plan\b/, 'no amounts, no plan names ("Family plans" in general is fine)');
+  assert.match(main, /<section class="panel" id="plans">[\s\S]*<a class="btn btn-primary" href="\/plans">See plans and prices<\/a>/);
 });
 
 // ---------------------------------------------------------------- prices stay on /plans
@@ -513,9 +517,8 @@ test('prices are on /plans only: kid pages (Studio, Me, games, Build, Home) carr
   assert.match((await call(who, '/plans')).text, /\$7\.99/, 'the plans page itself has them');
 });
 
-test('/parents and /grown-ups link to /plans', async () => {
+test('/parents links to /plans (only while paid-plan pages are on)', async () => {
   assert.match((await call(null, '/parents')).text, /<a class="btn btn-primary" href="\/plans">See plans and prices<\/a>/);
-  assert.match((await call(null, '/grown-ups')).text, /<a class="btn btn-primary" href="\/plans">Compare plans and prices<\/a>/);
   config.billingPublic = false;
   assert.doesNotMatch((await call(null, '/parents')).text, /href="\/plans"/);
 });

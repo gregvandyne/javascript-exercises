@@ -259,3 +259,20 @@ if (FIRST) try {
 } catch { /* storage off */ }
 // A confirmation saved by a form just before it reloaded or moved to another page.
 if (FIRST) try { const m = sessionStorage.getItem('brb-toast'); if (m) { sessionStorage.removeItem('brb-toast'); toast(m); } } catch { /* storage off */ }
+
+// A link to a section folded away under its heading (<details class="lp-fold">, the privacy details on /parents, e.g.
+// /parents#keep from another page) opens it, then shows it.
+function openFold() {
+  let id = ''; try { id = decodeURIComponent(location.hash.slice(1)); } catch { return; }
+  const el = id && document.getElementById(id); if (!el) return;
+  const d = el.matches('details.lp-fold') ? el : el.querySelector(':scope > details.lp-fold') || el.closest('details.lp-fold');
+  if (d && !d.open) { d.open = true; el.scrollIntoView(); }
+}
+if (FIRST) { openFold(); addEventListener('hashchange', openFold); }
+
+// A link that counts its click on the way (the home page's parent and teacher doors, which lead straight to their page):
+// one beacon to its data-count address (a daily total, nothing about who), then the link goes on as usual.
+on(document, 'click', e => {
+  const a = e.target instanceof Element && e.target.closest('a[data-count]');
+  if (a && navigator.sendBeacon) try { navigator.sendBeacon(a.dataset.count); } catch { /* counting must never stop a link */ }
+});

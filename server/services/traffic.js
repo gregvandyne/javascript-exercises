@@ -10,12 +10,24 @@ import { config } from '../config.js';
 import { register } from './jobs.js';
 import { ipOf } from './ratelimit.js';
 import * as funnel from './funnel.js';
+import { isBot } from '../seo.js';
 
 const SKIP = /^\/(api|frame|shots|covers|sdk|js|css|fonts|img|health|admin|favicon|robots|manifest)/;
 const BOTS = /bot|crawl|spider|slurp|preview|monitor|uptime|curl|wget|python|node-fetch|headless|lighthouse|render/i;
 const AREAS = [[/^\/$/, 'home'], [/^\/g\//, 'game'], [/^\/play\//, 'play'], [/^\/(build|studio)/, 'build'], [/^\/search/, 'search'],
   [/^\/favorites/, 'favorites'], [/^\/(friends|chat)/, 'friends'], [/^\/u\//, 'profile'], [/^\/me/, 'me'], [/^\/(signup|login)/, 'signup'],
   [/^\/(teach|class|school|classes)\b/, 'school']]; // teacher, class and school pages (lessons and progress live under /teach and /class)
+/** A person's browser, not a robot, a link preview or a script (the same rule as visits; the home doors use it too). */
+export const isPerson = ua => !!ua && !BOTS.test(String(ua));
+/** Is this request a person's click, to count in the funnel (the home doors, /go/<door>; "Who's this for?",
+ *  /signup/for/<who>)? Not a prefetch or prerender, and from a browser (every browser says Mozilla/) that isn't a
+ *  robot or a link preview. Callers count a GET only, never HEAD (link checkers and scanners send HEAD with
+ *  browser-like user agents). */
+export function countable(req) {
+  const ua = String(req.headers['user-agent'] || '');
+  const purpose = String(req.headers['sec-purpose'] || req.headers.purpose || req.headers['x-moz'] || '');
+  return /^Mozilla\//.test(ua) && isPerson(ua) && !isBot(ua) && !/prefetch|prerender/i.test(purpose);
+}
 export const areaOf = path => (AREAS.find(([re]) => re.test(path)) || [null, 'other'])[1];
 
 const salt = () => config.sessionSecret || 'magic-cups';
@@ -36,7 +48,7 @@ export function recordView(path, ip, ua, day = today(), { funnelSkip = false } =
 export function countVisits(req, res, next) {
   if (req.method !== 'GET' || SKIP.test(req.path) || !String(req.headers.accept || '').includes('text/html')) return next();
   const ua = String(req.headers['user-agent'] || '');
-  if (!ua || BOTS.test(ua)) return next();
+  if (!isPerson(ua)) return next();
   res.on('finish', () => {
     if (res.statusCode !== 200 || !String(res.getHeader('content-type') || '').includes('text/html')) return;
     const reply = req.query && (req.query.sent !== undefined || req.query.failed !== undefined);

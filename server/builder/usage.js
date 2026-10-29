@@ -7,7 +7,7 @@
 //   free     everyone: BUILDER_DAILY_TURNS a UTC day, paid by the free AI pool.
 //   family   a confirmed child of a family with a plan: the same free daily messages first; beyond them, or while the
 //            free AI pool rests, the family's extra messages (FAMILY_EXTRA_MESSAGES a UTC month, shared by its children,
-//            Pro weight counted), paid by the paid pool. Limits (disclosed on /grown-ups): FAMILY_CHILD_DAILY_MAX extra
+//            Pro weight counted), paid by the paid pool. Limits (disclosed on /plans): FAMILY_CHILD_DAILY_MAX extra
 //            messages per child per day, and FAMILY_MONTHLY_AI_USD of AI cost per family per month.
 //            The Basic plan is the same for one child: BASIC_EXTRA_MESSAGES a month and BASIC_MONTHLY_AI_USD, for the
 //            family's first linked child only (a Family plan switched to Basic keeps its links; the others use the free

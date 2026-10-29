@@ -1078,7 +1078,7 @@ switched to Basic keeps every link, but only the **first linked** child gets the
   Game pages show an age range next to the grades (`ageBand`: grade N ≈ age N+5 to N+6, within 8–14).
 - **Claims:** no "parental controls", dashboard, monitoring or time limits are promised (there are none: the pages say
   so and point to Apple Screen Time, Google Family Link and Microsoft Family Safety); nothing about COPPA (still with the
-  lawyer); never a price. Plans are linked (/plans, /grown-ups) only while `familiesOn`. Ring Rumble, Happy Putt, Footy
+  lawyer); never a price. Plans and grown-up accounts are linked (/plans, /grown-ups/signup) only while `familiesOn`. Ring Rumble, Happy Putt, Footy
   Tycoon and children's games are never on a parent page (tests/unit/seo-parents.test.js).
 - **Languages:** the parent copy (`parents.*`, `learn.ages.*`) is English for now and outside the 90 % readiness share
   (`UNCOUNTED_PREFIXES`). Until a language has `parents.h1`, `/es/parents` and the other language addresses point their
@@ -1170,3 +1170,120 @@ switched to Basic keeps every link, but only the **first linked** child gets the
 - **Report:** /admin/stats › "Funnels, last 7 days vs the 7 before": one table per funnel with both weeks, the change,
   and each step as a share of the step before (last 7 days). A guardrail that dropped is marked. Counting started with
   this change, so the first two weeks read low; write down the baseline once the first full week is in.
+
+## Home doors (navigation, week 2)
+- **Home, signed out or a guest** (`signedOut(u)`): the heading and one-line promise (unchanged keys, so search results
+  and hreflang stay as they were), then three doors, then the subject chips, the featured game and the rows, so it still
+  feels like the app. 🎮 "I'm a kid — play now" is the big Spark door and goes straight into the featured game (the
+  same one as the hero's Play button; no sign-up, a guest is made as on any /play); 👪 "I'm a parent" → /parents;
+  🍎 "I'm a teacher" → /teachers. They replace Week 1's "For parents" / "For teachers" buttons (no duplicates). Phones:
+  one door under the other on the first screen; tablets: the kid's door on its own row; ≥960px: one row, kid's widest.
+  Signed-in kids, students, staff and grown-ups see no doors and no Play now.
+- **No English doors on translated pages:** until a language has `home.doors.*`, its own "Play" (`home.hero.play`),
+  "For parents" (`parentsKey`) and "For teachers" (`home.intro.teachers`) stand in and the small lines are left out.
+  The group's screen-reader label is left out too until translated. Play now borrows "Play" the same way.
+- **Counting (`/go/<door>`):** the kid door links `/go/kid` (and the top bar's Play now `/go/play`), which adds one to
+  the day's total for that door (`funnel_counts` steps `door.kid`, `door.bar`; nothing else stored) and answers 302 to
+  the game. The parent and teacher doors link straight to their page in the home page's language (/es → /es/parents),
+  so every translated home page keeps a crawlable link to its own parent and teacher pages; their click is counted by a
+  beacon on the way (`data-count` → `navigator.sendBeacon` POST `/go/parent|teacher`, public/js/app.js: steps
+  `door.parent`, `door.teacher`; 204, same-origin only, rate-limited, nothing else stored). Without JavaScript the link
+  still works, just uncounted. Only a person's click counts (`traffic.countable`): a GET (never HEAD, which link
+  checkers send with browser-like user agents) or the beacon, not a prefetch, from a `Mozilla/` user agent that is
+  neither a robot by the visit counter's rule nor `seo.isBot`. Older `/go/parent?l=es` links still redirect to
+  /es/parents (an unknown code is ignored, so it never leads off the site). No new indexable address: /go/ is
+  disallowed in robots.txt, answers `X-Robots-Tag: noindex, nofollow` (`PRIVATE_RE`) and `no-store`, and the redirect
+  links are `rel="nofollow"`. Counting on the way was picked over `?from=home-door` on the target pages, which would add
+  a second address of /parents and /teachers and count reloads.
+- **Report:** /admin/stats › Funnels has a "Home doors (signed out)" table under the three funnels: clicks per door,
+  last 7 days vs the 7 before, no "of step before" (a tally, not a funnel). The guardrail (kid sign-ups, games played)
+  is what tells whether the doors cost kids anything.
+- **Desktop top bar, signed out or a guest:** Home · Build · Plans (while `familiesOn`) · Parents · Teachers, then
+  Sign in and a Spark "▶ Play now" button (`/go/play`, the featured game). The search field stays and stands for the
+  Search link (the phone tab bar keeps Search). To fit in English, German and Russian: the menu drops its icons up to
+  1300px, the wordmark becomes the app mark up to 1400px, up to 1100px the search field becomes the round 🔎 button,
+  and up to 1000px Play now is a round ▶ (its words kept for screen readers). Checked from 821px to 1920px in
+  nav-doors.spec.js (billing off) and plans.spec.js (Plans on); phones hide Play now (the tab bar and the doors are there).
+
+## Who's this for? (navigation, week 2)
+- **Start free (/signup), signed out:** first asks "Who's this for?" with three door-style links, one under the other:
+  👪 **Me (a grown-up)** → /grown-ups/signup while `familiesOn`, otherwise /signup?for=grownup, an honest "Grown-up
+  accounts are coming soon" with the parent page and "Make my child's account"; 🧒 **My child** → the kid form,
+  unchanged (/signup?for=kid; the small line under it also tells a kid on their own that this is their button, since
+  the three choices name no "I'm a kid"); 🍎 **I'm a teacher** → /teachers#start (the Set up my school form). No
+  prices or plan names (kids see this page too). "Play as a guest" and "Have an account? Sign in" stay under it.
+- **Skipped** (the kid form at once, as before): a guest keeping their progress (a kid already playing); ?for=kid; a
+  ?next= to any page that isn't a grown-up or teacher page (the Builder's sign-in wall, joining a class, a game,
+  Friends, Me; Plans, /parents, /teachers, /family, /learn and the info pages still ask); and a language that doesn't
+  have the question yet (`t.own`), so a translated page never shows it in English. **Sign in (/login) never asks**: kids
+  sign in every day.
+- **Reconciled with Week 1's "Grown-up or teacher?" line:** the chooser replaces it on plain /signup (no duplicate).
+  After "My child" the form shows "Who's this for? Pick again" instead; when the question was skipped for a ?next= the
+  line stays, so a grown-up who lands there still finds their way. /login keeps the line.
+- **Parent page, before parents' accounts open:** "Let your child start free" (and /safety's "Set up your child") link
+  /signup?for=kid, the kid form at once: the parent already said who it's for.
+- **Counting (`/signup/for/<who>`):** like the home doors' /go/: one daily total per choice (`who.grownup`, `who.kid`,
+  `who.teacher`), a person's GET only (never HEAD or a prefetch; `traffic.countable`), signed out only, then 302 on.
+  A ?next= comes along to the grown-up sign-up (a parent who started on /plans goes back there after signing up,
+  checked with `nextFor`; a plan picked on /plans still wins) and to the kid form. /signup/for/ is disallowed in
+  robots.txt (/signup itself stays crawlable so its noindex is seen); the redirect answers noindex and no-store; the
+  links are `rel="nofollow"`. Report: /admin/stats ›
+  Funnels › "Who's this for? (sign-up)", a tally like the doors. The guardrail's kid sign-ups show whether the extra
+  step costs kids anything.
+
+## One parent page (navigation, week 2)
+- **/parents and /grown-ups are one page, /parents** (indexed, its own canonical, in the sitemap; routes/parents.js).
+  In order: the promise, the hero picture and two buttons; a short safety section (`#safe`, "What makes it safe");
+  "How it works"; **Plans** (`#plans`: what a plan adds, US only, "not on sale yet" for anyone who can't buy now, the
+  legal pages, and "See plans and prices" → /plans); **Family accounts** (`#families`: what a grown-up account does, how
+  linking works, Make a grown-up account / Sign in or, for a grown-up, their family page, and the grown-ups' five
+  questions as fold-outs); then the games, ages, subjects, making games, at home, the guides, "Private by design", the
+  privacy details, the FAQ and the buttons again. Plans and Family accounts only while `familiesOn`: with billing off
+  (production today) neither is there, and nothing on the page leads to /plans or a grown-up page.
+- **No amounts on /parents.** /grown-ups showed both monthly prices and the per-child daily limit; those are on /plans
+  only now (it states the limits before buying, as before). The Plans section has no numbers at all.
+- **Folds for phones:** the eight privacy sections under "Safety and privacy, in detail" (and Sign in with Google's)
+  are `<details class="lp-fold">` with the heading as the summary, inside the same `<section class="panel" id="…">`, so
+  every old anchor still works; app.js opens the fold a link leads to (/parents#keep, also on hashchange). Their text is
+  unchanged and still the same as /privacy (which stays open, h2). Contact (`#contact`, the footer link) stays open.
+- **FAQ data = the visible FAQ:** FAQPage lists exactly the questions in the FAQ panel (with the paid wording when
+  plans are on). The grown-ups' questions under Family accounts are fold-outs there, not FAQ data.
+- **/grown-ups → 301 /parents#families**, keeping the query (?bpreview is still handled first). Always a 301, also with
+  billing off (a permanent redirect must not depend on a setting; /parents is there either way). /grown-ups/signup and
+  /grown-ups/login are unchanged; their Back link goes to /parents#families. The funnel's parent views count /parents
+  (and its guides) only now.
+- **Strings:** the /grown-ups page's own strings (its title, description, heading, intro, price lines, "What a family
+  plan adds" heading, "Compare plans and prices") and "About family accounts" were removed from every locale. One new
+  string, `parents.plans.adds`; until a language has it, that page shows the older `parents.families.p2`, so a
+  translated page gets no English paragraph.
+
+## The /family checklist (navigation, week 2)
+
+`server/routes/family.js` `familyChecklist`, at the top of /family, for the grown-up only (the page is `grownupOnly`;
+kids, guests and signed-out visitors get a 404 or the sign-in, and while families are off the small /family page has no
+checklist).
+
+- **Three steps.** 1) Your grown-up account (always done). 2) Link your child: done once a child is linked; until then
+  the child's side (Me › For grown-ups › Get a code, the same words as /family/link) and a link to the code form, or
+  "Waiting for your child to say yes" while a request waits. Straight back from Checkout with no child, the welcome
+  panel below already has those steps and its button, so step 2 doesn't repeat them. 3) Pick a plan (optional): done
+  while the family has a plan ("Your plan is on"); otherwise "Free works; a plan adds Builder messages for your child"
+  and a link to /plans; after "Free is fine", "Staying free for now." (no "any time" promise: plans are US-only and may
+  not be on sale). While this grown-up can't buy a plan (`familyOnSale`: `onSale`, the Family payment method
+  configuration and its prices, the same rule as /plans and /parents' "not on sale yet"), step 3 says "Plans aren't on
+  sale yet. Free works in the meantime." with no link. **No amounts and no plan names** (prices stay on /plans only);
+  while Checkout is still settling step 3 offers nothing (the plan card shows the wait).
+- **Folds to "All set"** (a `<details>`, so the steps can still be opened) once a child is linked and either a plan is on
+  or the grown-up tapped "Free is fine, hide this". Straight back from Checkout (`?welcome=1`, `?checkout=`) it stays open
+  so "Your plan is on" shows.
+- **Dismissal is stored on the server**, on the grown-up's own family row (migration `0028_family_checklist`,
+  `families.checklist_hidden_at`), through `POST /api/family/checklist/hide` (inside the grown-up fence). Why keep it:
+  without it a family happy on the free plan would see "Pick a plan" every visit, which is a nag. It is only offered
+  once a child is linked, so hiding always folds the list. Nothing about the child is stored; there is no "unhide" (the
+  plan card below always has See plans).
+- **Nothing new is counted.** The steps are the parent funnel's own steps, counted where they happen (`parent.signup`,
+  `parent.child`, `parent.paid` in services/funnel.js); viewing or hiding the checklist adds nothing.
+- **Words:** `family.check.*` (English only; notes in notes.json). Until a language has them, they are marked
+  `lang="en" dir="ltr"` (like `meFamilyPanel`); the how-to reuses the translated `family.link.step1`.
+- Tests: `tests/unit/family-checklist.test.js` (each state, the fence, families off, no amounts, nothing counted, the
+  English marking); `tests/e2e/family.spec.js` (the flow, and folded/open at 360/1280, light/dark, he).

@@ -17,6 +17,7 @@ import { loginGoogle, googleNotice, loginJoinLink, meGooglePanel, noPasswordText
 import { meFamilyPanel, nextFor } from './family.js';
 import { familiesOn } from '../services/family.js';
 import * as funnel from '../services/funnel.js';
+import { countable } from '../services/traffic.js';
 
 export const router = Router();
 export const safeNext = n => (typeof n === 'string' && /^\/(?!\/)[\w\-/?=&%.#]*$/.test(n) ? n : '/');
@@ -44,6 +45,59 @@ function grownupLine(req, isSignup) {
   if (!t.own(key)) return '';   // until this language has the line
   return html`<p class="center small grownup-line">${tHtml(t, key, { grownup, teachers: '/teachers' })}</p>`;
 }
+// ---------------------------------------------------------------------------------------------------- who's this for?
+// "Start free" (/signup) first asks who the account is for (docs/decisions.md "Who's this for?"): a grown-up (their own
+// sign-up, or a "coming soon" note while parents' accounts are off), a child (the kid form, unchanged) or a teacher (the
+// "Set up my school" form on /teachers). Plain links, so it works without JavaScript; each choice goes through
+// /signup/for/<who>, which counts it and redirects. Sign in (/login) never asks: kids sign in every day.
+const WHO_KEYS = ['auth.page.whoHeading', 'auth.page.whoGrownup', 'auth.page.whoGrownupSub', 'auth.page.whoKid', 'auth.page.whoKidSub', 'auth.page.whoTeacher', 'auth.page.whoTeacherSub'];
+// A ?next= on a grown-up or teacher page (Plans, the parent and teacher pages, the guides) still asks; any other page
+// (the Builder, joining a class, a game, Friends, Me) is a kid on their way somewhere, so the kid form opens at once.
+const GROWNUP_NEXT = /^\/([a-z]{2}(-[A-Za-z]{2,4})?\/)?(plans|parents|teachers|grown-ups|family|safety|privacy|terms|refunds|learn)(\/|\?|#|$)/;
+/** Does /signup ask "Who's this for?" Not for a guest keeping their progress (a kid already playing), not once the
+ *  address says ?for=kid, not on a kid's way to a page (?next=), and not until this language has the question. */
+export function asksWho(req) {
+  const u = req.user, t = req.t;
+  if (u || req.query.for === 'kid') return false;
+  const next = wantedNext(req.query.next);
+  if (next && !GROWNUP_NEXT.test(next)) return false;
+  return WHO_KEYS.every(k => t.own(k));
+}
+/** Choice -> funnel step (services/funnel.js "who"). */
+const WHO = new Map([['grownup', 'who.grownup'], ['kid', 'who.kid'], ['teacher', 'who.teacher']]);
+/** Where a choice leads. A ?next= comes along to the grown-up sign-up (a parent who started on /plans goes back there;
+ *  routes/family.js checks it with nextFor) and to the kid form. */
+export function whoTarget(req, who) {
+  const next = wantedNext(req.query.next);
+  const q = next ? `next=${encodeURIComponent(next)}` : '';
+  if (who === 'grownup') return familiesOn(req) ? `/grown-ups/signup${q ? `?${q}` : ''}` : '/signup?for=grownup';
+  if (who === 'teacher') return '/teachers#start';
+  return `/signup?for=kid${q ? `&${q}` : ''}`;
+}
+/** The three choices (the home page's door style, one under the other). */
+function whoChooser(req, next) {
+  const t = req.t; const n = wantedNext(next) ? `?next=${encodeURIComponent(next)}` : '';
+  const door = (who, emoji, key) => html`<a class="door door-${who}" href="/signup/for/${who}${who === 'teacher' ? '' : n}" rel="nofollow"><span class="door-e" aria-hidden="true">${emoji}</span><span class="door-t"><span class="door-h">${t(key)}</span><span class="door-s">${t(`${key}Sub`)}</span></span><span class="door-go flip" aria-hidden="true">›</span></a>`;
+  return html`<div class="doors whofor" role="group" aria-labelledby="who-h">
+    ${door('grownup', '👪', 'auth.page.whoGrownup')}
+    ${door('kid', '🧒', 'auth.page.whoKid')}
+    ${door('teacher', '🍎', 'auth.page.whoTeacher')}
+  </div>`;
+}
+/** "Me (a grown-up)" while parents' accounts are off: an honest "coming soon", the parent page, and the child's account.
+ *  Text this language doesn't have yet is marked as English. */
+function grownupSoon(req, res) {
+  const t = req.t; const fb = key => (t.own(key) ? '' : raw(' lang="en" dir="ltr"'));
+  const body = html`<div class="authbox"><div class="panel">
+    <div class="center" style="font-size:3rem" aria-hidden="true">👪</div>
+    <h1 class="center"${fb('auth.page.soonHeading')}>${t('auth.page.soonHeading')}</h1>
+    <p${fb('auth.page.soonText')}>${t('auth.page.soonText')}</p>
+    <div class="soon-btns"><a class="btn btn-primary btn-block" href="/parents"${fb('auth.page.soonParents')}>${t('auth.page.soonParents')}</a>
+    <a class="btn btn-block" href="/signup?for=kid"${fb('auth.page.soonKid')}>${t('auth.page.soonKid')}</a></div>
+    <p class="center small whoback"><a href="/signup"${fb('auth.page.whoBack')}>${t('auth.page.whoBack')}</a></p>
+  </div></div>`;
+  page(req, res, { title: t('auth.page.titleSignup'), active: 'me', body });
+}
 function authPage(req, res, mode) {
   const t = req.t;
   const next = safeNext(req.query.next);
@@ -51,12 +105,27 @@ function authPage(req, res, mode) {
   const isSignup = mode === 'signup';
   const upgrading = isSignup && u && u.is_guest;
   if (u && !u.is_guest) return res.redirect(nextFor(u, wantedNext(req.query.next)) || homeFor(u));
+  if (isSignup && !u && req.query.for === 'grownup') return familiesOn(req) ? res.redirect(302, whoTarget(req, 'grownup')) : grownupSoon(req, res);
+  // "Who's this for?" instead of the form; the kid form after "My child" gets a way back instead of the grown-up line.
+  const ask = isSignup && asksWho(req);
+  const pickedKid = isSignup && !u && req.query.for === 'kid' && t.own('auth.page.whoBack');
+  const top = upgrading ? '' : pickedKid ? html`<p class="center small whoback"><a href="/signup${wantedNext(req.query.next) ? `?next=${encodeURIComponent(next)}` : ''}">${t('auth.page.whoBack')}</a></p>` : grownupLine(req, isSignup);
+  if (ask) {
+    const body = html`<div class="authbox"><div class="panel">
+      <div class="center" style="font-size:3rem" aria-hidden="true">🎉</div>
+      <h1 class="center" id="who-h">${t('auth.page.whoHeading')}</h1>
+      ${whoChooser(req, next)}
+      <div class="divider">${t('auth.page.or')}</div><button class="btn btn-block" type="button" data-guest-play="${next}">${t('auth.page.playAsGuest')}</button>
+      <p class="center small" style="margin-top:16px">${t('auth.page.haveAccount')} <a href="/login?next=${encodeURIComponent(next)}">${t('auth.page.signInLink')}</a></p>
+    </div></div>`;
+    return page(req, res, { title: t('auth.page.titleSignup'), active: 'me', body });
+  }
   const body = html`<div class="authbox">
     <div class="panel">
       <div class="center" style="font-size:3rem" aria-hidden="true">${isSignup ? '🎉' : '👋'}</div>
       <h1 class="center">${isSignup ? (upgrading ? t('auth.page.headingUpgrade') : t('auth.page.headingSignup')) : t('auth.page.headingLogin')}</h1>
       <p class="center muted">${isSignup ? t('auth.page.introSignup') : t('auth.page.introLogin')}</p>
-      ${upgrading ? '' : grownupLine(req, isSignup)}
+      ${top}
       ${!isSignup && (req.query.signedout === '1' || req.sessionEnded) ? html`<p class="notice warn" role="status">${t('auth.page.signedOut')}</p>` : ''}
       ${!isSignup && req.query.moved === '1' && publicHost() ? html`<p class="notice" role="status">${t('auth.page.moved', { site: publicHost() })}</p>` : ''}
       ${isSignup ? '' : googleNotice(req)}
@@ -86,6 +155,16 @@ function authPage(req, res, mode) {
 }
 router.get('/login', (req, res) => authPage(req, res, 'login'));
 router.get('/signup', (req, res) => authPage(req, res, 'signup'));
+// A "Who's this for?" choice: counted (people's browsers only: no robots, link previews or scripts; one daily total per
+// choice, nothing about who chose; a GET only, never HEAD or a prefetch), then on to where it leads. /signup/for/ is
+// disallowed in robots.txt (/signup itself stays crawlable, so its noindex is seen) and this answers noindex.
+router.get('/signup/for/:who', (req, res) => {
+  const step = WHO.get(req.params.who);
+  if (!step) return res.redirect(302, '/signup');
+  if (!req.user && req.method === 'GET' && countable(req)) funnel.bump(step);
+  res.set({ 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex, nofollow' });
+  res.redirect(302, whoTarget(req, req.params.who));
+});
 
 router.post('/api/auth/guest', (req, res) => {
   if (req.user) return res.json({ ok: true, user: auth.publicUser(req.user) });

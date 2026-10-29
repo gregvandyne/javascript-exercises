@@ -208,7 +208,7 @@ export const config = {
   billingGraceDays: Math.max(0, num(process.env.BILLING_GRACE_DAYS, 7)),
   schoolInvoiceGraceDays: Math.max(0, num(process.env.SCHOOL_INVOICE_GRACE_DAYS, 30)),
   // Families (server/services/family.js): children one grown-up can link, and the extra Builder messages a family plan
-  // adds each month (shown on /grown-ups; counted from chunk 4 on).
+  // adds each month (shown on /plans; counted from chunk 4 on).
   // Paid-plan pages (grown-up accounts, family links, later checkout) for everyone: off until the owner opens them.
   // Before that, only a browser holding the preview cookie sees them (BILLING_PREVIEW_TOKEN, 24+ characters; visit
   // any page with ?bpreview=<token> once). Billing itself (webhooks, sync) runs either way when the Stripe keys are set.
@@ -216,7 +216,7 @@ export const config = {
   billingPreviewToken: (process.env.BILLING_PREVIEW_TOKEN || '').length >= 24 ? process.env.BILLING_PREVIEW_TOKEN : '',
   familyMaxChildren: Math.max(1, num(process.env.FAMILY_MAX_CHILDREN, 4)),
   familyExtraMessages: Math.max(0, num(process.env.FAMILY_EXTRA_MESSAGES, 40)),
-  // The family plan's limits besides the monthly count (server/builder/usage.js; disclosed on /grown-ups and /family):
+  // The family plan's limits besides the monthly count (server/builder/usage.js; disclosed on /plans and /family):
   // extra messages one child may use in a UTC day, and the AI cost (US dollars) of one family's extra messages in a UTC
   // month, a backstop against unusually expensive messages.
   familyChildDailyMax: Math.max(0, Math.floor(num(process.env.FAMILY_CHILD_DAILY_MAX, 60))),

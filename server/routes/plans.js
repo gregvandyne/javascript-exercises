@@ -1,8 +1,8 @@
 // The plans page (docs/decisions.md "Paid plans" §17, the owner's decision of 2026-10-27): /plans, linked from the top
-// menu for everyone while paid-plan pages are on (billing on, and BILLING_PUBLIC=1 or the preview cookie), like
-// /grown-ups. Four cards like any pricing page: Free, Basic (one child), Family (up to FAMILY_MAX_CHILDREN children)
-// and School, with a monthly / yearly switch. Prices come from Stripe's Price objects by lookup key (services/stripe.js
-// caches them), so the page always says what Checkout charges.
+// menu for everyone while paid-plan pages are on (billing on, and BILLING_PUBLIC=1 or the preview cookie), like the
+// Plans and Family accounts sections of /parents. Four cards like any pricing page: Free, Basic (one child), Family (up
+// to FAMILY_MAX_CHILDREN children) and School, with a monthly / yearly switch. Prices come from Stripe's Price objects
+// by lookup key (services/stripe.js caches them), so the page always says what Checkout charges.
 //
 // Who buys: only a grown-up account (Basic, Family) or a school admin (School). Everyone may look:
 //   - signed out: Basic / Family lead to the grown-up sign-up with the plan kept (?plan=…&interval=…), then /family asks

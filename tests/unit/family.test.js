@@ -171,9 +171,10 @@ test('access matrix: a grown-up gets 404 on every kid route group, and can play 
   }
   assert.equal((await go('/me')).location, '/family', '/me sends a grown-up to their family page');
   const slug = q.get("SELECT slug FROM games WHERE status='published' LIMIT 1")?.slug;
-  for (const p of ['/', '/search', '/parents', '/safety', '/grown-ups', '/family', '/family/link', ...(slug ? [`/g/${slug}`, `/play/${slug}`] : [])]) {
+  for (const p of ['/', '/search', '/parents', '/safety', '/family', '/family/link', ...(slug ? [`/g/${slug}`, `/play/${slug}`] : [])]) {
     const r = await go(p); assert.equal(r.status, 200, `${p} -> ${r.status}`);
   }
+  assert.equal((await go('/grown-ups')).location, '/parents#families', 'the old grown-ups page moves to the one parent page');
   // /build explains instead of a 404, and builds nothing.
   const build = await go('/build');
   assert.equal(build.status, 200); assert.match(build.text, /The Builder is for kids&#39; accounts/);
@@ -210,11 +211,12 @@ test('access matrix: family routes are 404 for kids, school students, teachers, 
 test('billing off: no family pages, no panel, no /parents link; grown-ups stay fenced in', async () => {
   const k = kid(); const g = grownup();
   config.stripeApiKey = '';
-  for (const p of ['/grown-ups', '/grown-ups/signup', '/grown-ups/login']) assert.equal((await call(null, p)).status, 404, p);
+  for (const p of ['/grown-ups/signup', '/grown-ups/login']) assert.equal((await call(null, p)).status, 404, p);
+  assert.equal((await call(null, '/grown-ups')).status, 301, 'the old address moves to /parents either way (a 301 must not depend on a setting)');
   assert.equal((await call(null, '/api/grown-ups/signup', { method: 'POST', body: { username: 'OffParent', password: 'twelve-chars-ok', confirm: 'twelve-chars-ok', adult: '1' } })).status, 404);
   assert.equal((await as(k)('/api/me/family/code', { method: 'POST', body: {} })).status, 404);
   const me = await as(k)('/me'); assert.equal(me.status, 200); assert.doesNotMatch(me.text, /id="grownups"/);
-  assert.doesNotMatch((await call(null, '/parents')).text, /href="\/grown-ups"/);
+  assert.doesNotMatch((await call(null, '/parents')).text, /href="\/grown-ups|id="families"|id="plans"/);
   // A grown-up who already has an account keeps a small /family page: language, password and Sign out, nothing else.
   const li = await call(null, '/api/auth/login', { method: 'POST', body: { username: g.username, password: 'a-long-password-1' } });
   assert.equal(li.status, 200, li.text);
@@ -229,7 +231,8 @@ test('billing off: no family pages, no panel, no /parents link; grown-ups stay f
   assert.equal((await call(li.cookie, '/api/auth/logout', { method: 'POST', body: {} })).status, 200, 'the grown-up can sign out');
   const b = await as(g)('/build'); assert.equal(b.status, 200); assert.doesNotMatch(b.text, /id="newgame"|class="btn btn-primary" href="\/family"/, 'still no Builder for a grown-up, and no family button while families are off');
   config.stripeApiKey = 'rk_test_fake';
-  assert.match((await call(null, '/parents')).text, /href="\/grown-ups"/, 'on: /parents links to /grown-ups');
+  const on = (await call(null, '/parents')).text;
+  assert.match(on, /<section class="panel" id="families"[\s\S]*href="\/grown-ups\/signup"[\s\S]*href="\/grown-ups\/login"/, 'on: /parents has the Family accounts section, with the sign-up and sign-in');
 });
 
 // ---------------------------------------------------------------- codes and the child's answer
@@ -612,8 +615,8 @@ test('before BILLING_PUBLIC: family pages only for a browser with the preview co
   try {
     config.billingPublic = false; config.billingPreviewToken = 'p'.repeat(32);
     const child = kid();
-    assert.equal((await call('', '/grown-ups')).status, 404);
-    assert.doesNotMatch((await call('', '/parents')).text, /href="\/grown-ups"/);
+    assert.equal((await call('', '/grown-ups/signup')).status, 404);
+    assert.doesNotMatch((await call('', '/parents')).text, /href="\/grown-ups|id="families"/);
     assert.doesNotMatch((await as(child)('/me')).text, /famcode|me-family/);
     assert.equal((await as(child)('/api/me/family/code', { method: 'POST', body: {} })).status, 404);
     // A wrong token: no cookie, just the clean address back.
@@ -624,15 +627,15 @@ test('before BILLING_PUBLIC: family pages only for a browser with the preview co
     assert.equal(r.status, 302); assert.equal(r.headers.get('location'), '/parents');
     const c = r.headers.getSetCookie().find(x => x.startsWith(`${F.PREVIEW_COOKIE}=`));
     assert.match(c, /HttpOnly/); const pc = c.split(';')[0];
-    assert.equal((await call(pc, '/grown-ups')).status, 200);
-    assert.match((await call(pc, '/parents')).text, /href="\/grown-ups"/);
+    assert.equal((await call(pc, '/grown-ups/signup')).status, 200);
+    assert.match((await call(pc, '/parents')).text, /id="families"[\s\S]*href="\/grown-ups\/signup"/);
     assert.equal((await call(`${cookieFor(child.id)}; ${pc}`, '/api/me/family/code', { method: 'POST', body: {} })).status, 200);
     // A cookie with another value counts for nothing; no token configured means no preview at all.
-    assert.equal((await call(`${F.PREVIEW_COOKIE}=${'q'.repeat(32)}`, '/grown-ups')).status, 404);
+    assert.equal((await call(`${F.PREVIEW_COOKIE}=${'q'.repeat(32)}`, '/grown-ups/signup')).status, 404);
     config.billingPreviewToken = '';
-    assert.equal((await call(pc, '/grown-ups')).status, 404);
+    assert.equal((await call(pc, '/grown-ups/signup')).status, 404);
     // Open to everyone.
     config.billingPublic = true;
-    assert.equal((await call('', '/grown-ups')).status, 200);
+    assert.equal((await call('', '/grown-ups/signup')).status, 200);
   } finally { config.billingPublic = keep.pub; config.billingPreviewToken = keep.tok; }
 });

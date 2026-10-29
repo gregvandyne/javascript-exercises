@@ -107,7 +107,12 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
     : inAnySchool(u) ? [...NAV, ['classes', '/classes', '🏫'], ...plans] : [...NAV, ...plans];
   // Signed out: the parent and teacher pages in the top menu; on phones one "Grown-ups" tab (to /parents, which links
   // the teacher page at its top) sits before Plans.
+  // On wide screens the search field stands for Search, so the signed-out top menu is Home · Build · (Plans) · Parents ·
+  // Teachers, then Sign in and a "▶ Play now" button (docs/decisions.md "Home doors").
   const teachersNav = out ? [['parents', '/parents', '👪'], ['teachers', '/teachers', '🍎']] : [];
+  const topItems = out ? [NAV[0], NAV[2], ...plans, ...teachersNav] : navItems;
+  const playKey = t.own('nav.playNow') ? 'nav.playNow' : 'home.hero.play';
+  const playNow = out ? html`<a class="btn btn-hot playnow" href="/go/play" rel="nofollow"${t.own(playKey) ? '' : raw(' lang="en"')}><span aria-hidden="true">▶</span> <span class="playnow-t">${t(playKey)}</span></a>` : '';
   const tabItems = out ? [NAV[0], NAV[1], NAV[2], ['grownups', '/parents', '👪'], ...plans] : navItems;
   // Pages in the Classes area highlight Schools for the platform admin, whose nav has Schools instead of Classes.
   const act = active === 'classes' && !navItems.some(([k]) => k === 'classes') && navItems.some(([k]) => k === 'schools') ? 'schools' : active;
@@ -125,11 +130,12 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
     </form>
     <a class="topsearch-btn" href="/search" aria-label="${t('layout.search.label')}"><span aria-hidden="true">🔎</span></a>
     <nav class="topnav" aria-label="${t('layout.mainNav')}">
-      ${[...navItems, ...teachersNav].map(([k, href, emo]) => { const key = k === 'parents' ? parentsKey(t) : `nav.${k}`; return html`<a class="navlink" href="${href}" ${cur(k)}${t.own(key) ? '' : raw(' lang="en"')}><span class="emo" aria-hidden="true">${emo}</span>${t(key)}${badge(k)}</a>`; })}
+      ${topItems.map(([k, href, emo]) => { const key = k === 'parents' ? parentsKey(t) : `nav.${k}`; return html`<a class="navlink" href="${href}" ${cur(k)}${t.own(key) ? '' : raw(' lang="en"')}><span class="emo" aria-hidden="true">${emo}</span>${t(key)}${badge(k)}</a>`; })}
     </nav>
     ${langPicker(req)}
     ${themePicker(req)}
     <a class="me-btn" href="${meHref}" ${cur(grownup ? 'family' : 'me')} aria-label="${u ? t('layout.meLabel', { name: u.display_name }) : signIn}">${u ? avatar(u, 38) : html`<span class="avatar" style="--s:38px;--c:var(--hover)" aria-hidden="true">🙂</span>`}<span class="name">${u ? u.display_name : signIn}</span>${badge('me')}</a>
+    ${playNow}
   </header>
   <nav class="tabbar" aria-label="${t('layout.mainNav')}">
     ${tabItems.map(([k, href, emo]) => { const key = tabKey(t, k); return html`<a class="tab" href="${href}" ${cur(k)}${t.own(key) ? '' : raw(' lang="en"')}><span class="emo" aria-hidden="true">${emo}</span><span class="tab-t">${t(key)}</span>${badge(k)}</a>`; })}

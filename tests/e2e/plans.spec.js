@@ -16,6 +16,7 @@ import { spawn, execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { signup, login, uniq, ownIp, ADMIN } from './helpers.js';
 import { findTouching } from './touching.js';
+import { topbarFit } from './topbar-fit.js';
 
 const E2E = +(process.env.E2E_PORT || 4310);
 const PORT = E2E + 8, STRIPE_PORT = E2E - 1;
@@ -279,5 +280,24 @@ test('six menu items (a teacher: Classes and Plans) fit the top bar from small l
     }
   }
   await teacher.goto('/?lang=en');
+  expect([...new Set(problems)]).toEqual([]);
+});
+
+test('signed out with Plans on: Home · Build · Plans · Parents · Teachers, Sign in and ▶ Play now fit (en, de, ru; light, dark)', async ({ browser }) => {
+  const problems = [];
+  for (const width of [821, 900, 1000, 1001, 1100, 1101, 1180, 1181, 1280, 1400, 1440, 1920]) {
+    for (const [lang, scheme] of [['en', 'light'], ['de', 'dark'], ['ru', 'light']]) {
+      const ctx = await browser.newContext({ baseURL: APP, viewport: { width, height: 800 }, colorScheme: scheme });
+      await ctx.addCookies([{ name: 'lang', value: lang, url: APP }]);
+      const page = await ctx.newPage();
+      await page.goto('/'); await page.evaluate(() => document.fonts.ready);
+      expect(await page.locator('.topnav .navlink').evaluateAll(l => l.map(a => a.getAttribute('href')))).toEqual(['/', '/build', '/plans', '/parents', '/teachers']);
+      const r = await page.evaluate(topbarFit);
+      if (r.tight || r.off || r.wide > 0 || r.cut || r.missing.length) problems.push(`${width}/${lang}: ${JSON.stringify(r)}`);
+      for (const t of await findTouching(page)) problems.push(`${width}/${lang}: ${t.a} ⟷ ${t.b} (${t.dir} ${t.gap}px)`);
+      if (SHOTS) await page.locator('.topbar').screenshot({ path: path.join(SHOTS, `topbar-signedout-${width}-${lang}.png`) });
+      await ctx.close();
+    }
+  }
   expect([...new Set(problems)]).toEqual([]);
 });

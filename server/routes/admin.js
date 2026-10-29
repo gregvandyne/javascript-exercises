@@ -311,16 +311,19 @@ function funnelSection(r) {
   <h2 class="stats-h" id="funnels">Funnels, last 7 days vs the 7 before</h2>
   <div class="stats-grid stats-funnels">
     ${r.funnels.map(f => html`<section class="panel" aria-labelledby="funnel-${f.key}"><h2 id="funnel-${f.key}">${f.title}</h2>
-      <div class="tblwrap"><table class="tbl"><thead><tr><th>Step</th><th title="${range(r.last)}">Last 7 days</th><th title="${range(r.prev)}">Week before</th><th>Change</th>${f.guardrail ? '' : html`<th>Of step before</th>`}</tr></thead><tbody>
-        ${f.steps.map((s, i) => html`<tr><td>${s.label}</td><td>${int(s.last)}</td><td>${int(s.prev)}</td><td>${changeCell(s, f.guardrail)}</td>${f.guardrail ? '' : html`<td>${i === 0 ? '' : s.rate === null ? '–' : `${s.rate}%`}</td>`}</tr>`)}
+      <div class="tblwrap"><table class="tbl"><thead><tr><th>Step</th><th title="${range(r.last)}">Last 7 days</th><th title="${range(r.prev)}">Week before</th><th>Change</th>${f.guardrail || f.tally ? '' : html`<th>Of step before</th>`}</tr></thead><tbody>
+        ${f.steps.map((s, i) => html`<tr><td>${s.label}</td><td>${int(s.last)}</td><td>${int(s.prev)}</td><td>${changeCell(s, f.guardrail)}</td>${f.guardrail || f.tally ? '' : html`<td>${i === 0 ? '' : s.rate === null ? '–' : `${s.rate}%`}</td>`}</tr>`)}
       </tbody></table></div></section>`)}
   </div>
   <p class="small muted">Daily totals counted on the server where each step happens (no cookies, no trackers, no ids:
   one number per step per day, so steps compare totals, not the same people). Page views are the parent pages
-  (/parents, its guides, /grown-ups) and the teacher pages (/teachers, /plans/schools), counted like visits. Paid and
+  (/parents and its guides) and the teacher pages (/teachers, /plans/schools), counted like visits. Paid and
   School plan: a subscription's first invoice once it is paid (an invoiced school counts when it pays, not when the
   invoice is sent), from Stripe's webhook (gifted plans don't count). Checkout started: once per family per try (opening
-  Checkout again within a day doesn't add to it). A teacher page reloaded after sending the form isn't a new view. Counting started
+  Checkout again within a day doesn't add to it). A teacher page reloaded after sending the form isn't a new view. Home doors: clicks on the three doors signed-out
+  visitors and guests see on the home page, and on the top bar's "▶ Play now" (each goes through /go/&lt;door&gt;, which counts
+  it and redirects; robots are left out). Who's this for: the choice on Start free (/signup) before the kid form, counted the
+  same way through /signup/for/&lt;choice&gt; (a guest keeping their progress and a kid on their way to a page skip it). Counting started
   with this update, so the first two weeks read low. Days are UTC.</p>`;
 }
 const gameLink = g => html`<a href="/g/${g.slug}">${g.icon} ${g.title}</a>${g.source === 'seed' ? html` <span class="chip-s">launch</span>` : ''}`;

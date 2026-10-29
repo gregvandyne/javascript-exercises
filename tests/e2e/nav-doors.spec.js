@@ -1,8 +1,11 @@
 // Doors for grown-ups: signed out and as a guest (after one tap on Play) the phone tab bar is Home · Search · Build ·
 // Grown-ups · (Plans) · Sign in, every label fits at 360px in English, German and Hebrew, light and dark; the desktop
 // bar keeps Parents and Teachers; the new pages (/learn, a grown-up's /build) have nothing touching and no sideways scroll.
+// Week 2: the home doors (the kid's reaches a game in one tap) and the signed-out top bar with ▶ Play now, which fits.
 import { test, expect } from '@playwright/test';
 import { findTouching } from './touching.js';
+import { gameFrame } from './helpers.js';
+import { topbarFit } from './topbar-fit.js';
 
 test.describe.configure({ timeout: 180_000 });
 
@@ -19,7 +22,7 @@ async function guestContext(browser, opts = {}) {
 test('signed out and as a guest: Grown-ups tab, no Friends; the labels fit at 360px (en, de, he; light, dark)', async ({ browser }) => {
   const problems = [];
   for (const who of ['signed out', 'guest']) {
-    for (const [lang, scheme] of [['en', 'light'], ['de', 'dark'], ['he', 'light'], ['en', 'dark']]) {
+    for (const [lang, scheme] of [['en', 'light'], ['de', 'dark'], ['he', 'light'], ['en', 'dark'], ['ar', 'dark']]) {
       const opts = { viewport: { width: 360, height: 760 }, colorScheme: scheme };
       const ctx = who === 'guest' ? await guestContext(browser, opts) : await browser.newContext(opts);
       await ctx.addCookies([{ name: 'lang', value: lang, url: test.info().project.use.baseURL }]);
@@ -69,8 +72,55 @@ test('desktop, signed out and as a guest: Parents and Teachers in the top bar, n
     await expect(page.locator('.topnav a[href="/teachers"]')).toBeVisible();
     await expect(page.locator('.topnav a[href="/friends"]')).toHaveCount(0);
     await expect(page.locator('.home-intro')).toBeVisible();
+    // Week 2: Home · Build · Parents · Teachers (Plans when billing is public), Sign in, then ▶ Play now; the search field stays.
+    expect(await page.locator('.topnav .navlink').evaluateAll(l => l.map(a => a.getAttribute('href')))).toEqual(['/', '/build', '/parents', '/teachers']);
+    await expect(page.locator('.topbar .playnow')).toBeVisible();
+    await expect(page.locator('#topq')).toBeVisible();
+    const doors = page.locator('.home-intro .doors .door');
+    await expect(doors).toHaveCount(3);
+    await expect(doors.first()).toContainText('I’m a kid — play now');
+    // Wide screens: one row of doors, the kid's first (on the reading side) and widest.
+    const boxes = await doors.evaluateAll(l => l.map(d => d.getBoundingClientRect()).map(r => ({ top: Math.round(r.top), w: r.width })));
+    expect(new Set(boxes.map(b => b.top)).size).toBe(1);
+    expect(boxes[0].w).toBeGreaterThan(boxes[1].w);
     await ctx.close();
   }
+});
+
+test('the kid door reaches a game in one tap (phone and desktop, signed out and as a guest); nobody signs up', async ({ browser }) => {
+  for (const [who, width] of [['signed out', 360], ['guest', 1280]]) {
+    const opts = { viewport: { width, height: 800 } };
+    const ctx = who === 'guest' ? await guestContext(browser, opts) : await browser.newContext(opts);
+    const page = await ctx.newPage();
+    await page.goto('/');
+    const kid = page.locator('.door-kid');
+    await expect(kid).toBeInViewport();   // on the first screen, phone too
+    await Promise.all([page.waitForURL(/\/play\/[a-z0-9-]+$/), kid.click()]);
+    await gameFrame(page);
+    // The parent and teacher doors open their pages; the top bar's Play now plays too (desktop).
+    await page.goto('/');
+    await Promise.all([page.waitForURL(/\/parents$/), page.locator('.door-parent').click()]);
+    await page.goto('/');
+    await Promise.all([page.waitForURL(/\/teachers$/), page.locator('.door-teacher').click()]);
+    if (width > 820) { await Promise.all([page.waitForURL(/\/play\//), page.locator('.topbar .playnow').click()]); await gameFrame(page); }
+    else await expect(page.locator('.topbar .playnow')).toBeHidden();
+    await ctx.close();
+  }
+});
+
+test('signed out, the top bar fits from small laptops to wide screens (en, de, ru; signed out and guest)', async ({ browser }) => {
+  const problems = [];
+  for (const who of ['signed out', 'guest']) for (const lang of ['en', 'de', 'ru']) for (const width of [821, 900, 1000, 1024, 1101, 1181, 1280, 1440]) {
+    const opts = { viewport: { width, height: 700 } };
+    const ctx = who === 'guest' ? await guestContext(browser, opts) : await browser.newContext(opts);
+    await ctx.addCookies([{ name: 'lang', value: lang, url: test.info().project.use.baseURL }]);
+    const page = await ctx.newPage();
+    await page.goto('/safety'); await page.evaluate(() => document.fonts.ready);
+    const r = await page.evaluate(topbarFit);
+    if (r.tight || r.off || r.wide > 0 || r.cut || r.missing.length) problems.push(`${who} ${lang} @${width}: ${JSON.stringify(r)}`);
+    await ctx.close();
+  }
+  expect(problems).toEqual([]);
 });
 
 test('the new and changed pages: nothing touches, no sideways scroll (360 / 1280, light / dark, he)', async ({ browser }) => {
@@ -79,7 +129,7 @@ test('the new and changed pages: nothing touches, no sideways scroll (360 / 1280
     const ctx = await guestContext(browser, { viewport: { width, height: 800 }, colorScheme: scheme });
     await ctx.addCookies([{ name: 'lang', value: lang, url: test.info().project.use.baseURL }]);
     const page = await ctx.newPage();
-    for (const p of ['/learn', '/learn/math-games', '/learn/games-for-8-and-9-year-olds', '/g/sum-racer', '/parents', '/safety', '/login', '/signup']) {
+    for (const p of ['/', '/learn', '/learn/math-games', '/learn/games-for-8-and-9-year-olds', '/g/sum-racer', '/parents', '/safety', '/login', '/signup']) {
       await page.goto(p);
       for (const t of await findTouching(page)) problems.push(`${p} @${width}/${scheme}/${lang}: ${t.a} ⟷ ${t.b} (${t.dir} ${t.gap}px)`);
       const wide = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);

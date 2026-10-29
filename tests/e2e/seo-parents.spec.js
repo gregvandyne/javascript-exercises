@@ -30,6 +30,13 @@ test('parent pages: layout at 360 and 1280, light, dark and Hebrew', async ({ br
       for (const t of await findTouching(page)) problems.push(`${p} @${v.width}/${v.scheme}${v.lang ? '/' + v.lang : ''}: ${t.a}  ⟷  ${t.b} (${t.dir} ${t.gap}px)`);
       const wide = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
       if (wide > 1) problems.push(`${p} @${v.width}${v.lang ? '/' + v.lang : ''}: scrolls sideways by ${wide}px`);
+      // /parents: the privacy details again, unfolded.
+      if (p === '/parents') {
+        await page.evaluate(() => { for (const d of document.querySelectorAll('details.lp-fold')) d.open = true; });
+        for (const t of await findTouching(page)) problems.push(`${p} (open) @${v.width}/${v.scheme}${v.lang ? '/' + v.lang : ''}: ${t.a}  ⟷  ${t.b} (${t.dir} ${t.gap}px)`);
+        const w2 = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
+        if (w2 > 1) problems.push(`${p} (open) @${v.width}${v.lang ? '/' + v.lang : ''}: scrolls sideways by ${w2}px`);
+      }
       // Pictures load before the screenshot (cards are lazy).
       await page.evaluate(async () => { for (const img of document.querySelectorAll('img[loading="lazy"]')) img.loading = 'eager'; await Promise.all([...document.images].map(i => (i.complete ? null : new Promise(r => { i.onload = i.onerror = r; })))); });
       await page.screenshot({ path: path.join(SHOTS, `${p === '/' ? 'home' : p.slice(1).replace(/\//g, '_')}-${v.width}-${v.scheme}${v.lang ? '-' + v.lang : ''}.png`), fullPage: true });
@@ -46,13 +53,27 @@ test('parent pages: structured data in the browser, the calls to action, and the
   expect(types).toEqual(expect.arrayContaining(['WebPage', 'FAQPage', 'BreadcrumbList', 'ItemList', 'Organization']));
   // The privacy sections are still there under their old addresses (/parents#ai, the footer's /parents#contact).
   for (const id of ['what', 'stored', 'never', 'ai', 'keep', 'friends', 'builder', 'languages']) await expect(page.locator(`section#${id}`)).toHaveCount(1);
+  // They are folded under their headings (the page is long on phones): closed until tapped, or opened by a link to them.
+  await expect(page.locator('section#stored details.lp-fold')).not.toHaveAttribute('open', '');
+  await expect(page.locator('section#stored .lp-fold-body')).toBeHidden();
+  await page.locator('section#stored summary').click();
+  await expect(page.locator('section#stored .lp-fold-body')).toBeVisible();
   await page.goto('/parents#keep');
   await expect(page.locator('section#keep')).toBeInViewport();
+  await expect(page.locator('section#keep .lp-fold-body')).toBeVisible();
+  await expect(page.locator('section#never .lp-fold-body')).toBeHidden();
+  // Another fold from a link on the same page (hashchange).
+  await page.evaluate(() => { location.hash = 'friends'; });
+  await expect(page.locator('section#friends .lp-fold-body')).toBeVisible();
+  await expect(page.locator('section#friends')).toBeInViewport();
+  // The old grown-ups page: a 301 to /parents (billing is off in this run, so no Family accounts section yet).
+  const r = await page.request.get('/grown-ups?x=1', { maxRedirects: 0 });
+  expect(r.status()).toBe(301); expect(r.headers().location).toBe('/parents?x=1#families');
   // "Try a game now" opens a game without signing up; "Let your child start free" opens the kids' sign-up.
   await page.goto('/parents');
   // Once at the top, and again after the questions at the end.
   await expect(page.getByRole('link', { name: 'Let your child start free' })).toHaveCount(2);
-  for (const l of await page.getByRole('link', { name: 'Let your child start free' }).all()) await expect(l).toHaveAttribute('href', '/signup');
+  for (const l of await page.getByRole('link', { name: 'Let your child start free' }).all()) await expect(l).toHaveAttribute('href', '/signup?for=kid');
   await page.locator('a.lp-hub[href="/learn/games-for-8-and-9-year-olds"]').click();
   await expect(page).toHaveURL(/\/learn\/games-for-8-and-9-year-olds$/);
   await expect(page.locator('h1')).toContainText('Learning games for 8 and 9 year olds');

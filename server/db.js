@@ -306,6 +306,9 @@ export const MIGRATIONS = [
   // per step, like the traffic table. No user, family, school or class ids: nothing here can follow a person.
   ['0027_funnel', `CREATE TABLE IF NOT EXISTS funnel_counts (day TEXT NOT NULL, step TEXT NOT NULL, n INTEGER NOT NULL DEFAULT 0,
       PRIMARY KEY(day, step));`],
+  // The /family checklist (routes/family.js familyChecklist): when the grown-up said a free family is fine and hid the
+  // "Pick a plan" step. On the grown-up's own family row; NULL = not hidden. Nothing about the child.
+  ['0028_family_checklist', `ALTER TABLE families ADD COLUMN checklist_hidden_at INTEGER;`],
 ];
 
 db.exec('CREATE TABLE IF NOT EXISTS migrations (name TEXT PRIMARY KEY, applied_at INTEGER NOT NULL)');

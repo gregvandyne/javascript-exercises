@@ -51,7 +51,7 @@ test.describe.configure({ timeout: 240_000 });
 
 test('public pages: nothing touches', async ({ browser }) => {
   const { state, ctx } = await signIn(browser); await ctx.close();
-  expect(await checkPages(browser, state, ['/', '/search?q=quiz', '/g/sum-racer', '/login', '/signup', '/safety', '/parents', '/sdk', '/terms', '/refunds', '/privacy'])).toEqual([]);
+  expect(await checkPages(browser, state, ['/', '/search?q=quiz', '/g/sum-racer', '/login', '/signup', '/signup?for=kid', '/signup?for=grownup', '/safety', '/parents', '/sdk', '/terms', '/refunds', '/privacy'])).toEqual([]);
 });
 
 test('student pages: nothing touches', async ({ browser }) => {

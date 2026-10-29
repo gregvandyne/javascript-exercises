@@ -52,7 +52,7 @@ test('robots.txt: private app paths disallowed, the rest allowed, the sitemap na
   const r = await get('/robots.txt');
   assert.equal(r.status, 200);
   assert.match(r.headers.get('content-type'), /^text\/plain/);
-  for (const p of ['/api/', '/frame/', '/play/', '/studio/', '/search', '/*?lang=']) assert.ok(r.text.includes(`Disallow: ${p}\n`), p);
+  for (const p of ['/api/', '/go/', '/signup/for/', '/frame/', '/play/', '/studio/', '/search', '/*?lang=']) assert.ok(r.text.includes(`Disallow: ${p}\n`), p);
   assert.match(r.text, /^User-agent: \*$/m);
   assert.match(r.text, new RegExp(`^Sitemap: ${base}/sitemap.xml$`, 'm'));
   // Profiles and classes are NOT disallowed: search engines must read their noindex.
