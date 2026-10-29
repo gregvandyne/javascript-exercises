@@ -14,6 +14,7 @@ const games = await import('../../server/services/games.js');
 const { q, now } = await import('../../server/db.js');
 const { AGES, PARENT_GUIDES, HUBS, HOME_TIPS } = await import('../../server/learn.js');
 const { _reset: resetLimits } = await import('../../server/services/ratelimit.js');
+const { withoutKeys } = await import('../support/i18n-gaps.js');
 
 seed({ quiet: true });
 const kid = auth.createUser({ username: 'ParentPageKid', password: 'a-long-password-1', displayName: 'Mia Kidname' });
@@ -153,8 +154,11 @@ test('/parents keeps every privacy and safety section, saying the same as /priva
   const priv = (await get('/privacy')).text;
   const body = (page, id) => text(new RegExp(`<section class="panel" id="${id}">[\\s\\S]*?</section>`).exec(page)[0]);
   for (const id of ['stored', 'never', 'ai', 'keep']) assert.equal(body(h, id), body(priv, id), `${id}: the same words on /parents and /privacy`);
-  // The sections sit under one heading on /parents (h3), and stay h2 on /privacy.
-  assert.match(h, /<section class="panel" id="stored"><h3>What we keep<\/h3>/);
+  // The sections sit under one heading on /parents (h3), folded away under it (the page is long on phones), and stay
+  // h2, open, on /privacy.
+  assert.match(h, /<section class="panel" id="stored"><details class="lp-fold"><summary><h3>What we keep<\/h3><\/summary><div class="lp-fold-body">/);
+  for (const id of ['what', 'stored', 'never', 'ai', 'keep', 'friends', 'builder', 'languages']) assert.match(h, new RegExp(`<section class="panel" id="${id}"><details class="lp-fold"><summary><h3>`), `${id} is folded`);
+  assert.doesNotMatch(priv, /lp-fold/);
   assert.match(priv, /<section class="panel" id="stored"><h2>What we keep<\/h2>/);
   assert.match(h, /<h2 id="details-h">Safety and privacy, in detail<\/h2>/);
   // Contact (CONTACT_EMAIL): /parents#contact still works.
@@ -164,7 +168,7 @@ test('/parents keeps every privacy and safety section, saying the same as /priva
 
 test('calls to action and links: start free, try a game, teachers; menu, footer, home, subject and game pages', async () => {
   const par = (await get('/parents')).text;
-  assert.match(par, /<a class="btn btn-primary btn-big" href="\/signup">Let your child start free<\/a>/);
+  assert.match(par, /<a class="btn btn-primary btn-big" href="\/signup\?for=kid">Let your child start free<\/a>/);
   assert.match(par, /href="\/play\/sum-racer" rel="nofollow">▶ Try a game now, no sign-up/);
   assert.match(par, /href="\/teachers">Oomba Academy for teachers<\/a>/);
   for (const p of [...AGE_PAGES, ...GUIDES, '/learn/make-a-game', '/learn/math-games']) assert.ok(par.includes(`href="${p}"`), `/parents links ${p}`);
@@ -173,7 +177,8 @@ test('calls to action and links: start free, try a game, teachers; menu, footer,
   const home = (await get('/')).text;
   assert.match(home, /<a class="navlink" href="\/parents"/);
   assert.match(home, /<footer[\s\S]*<a href="\/parents">For parents<\/a>/);
-  assert.match(home, /<section class="home-intro"[\s\S]*href="\/parents"[\s\S]*<\/section>/);
+  assert.match(home, /<section class="home-intro"[\s\S]*class="door door-parent" href="\/parents" data-count="\/go\/parent"[\s\S]*<\/section>/, 'the home page\'s parent door (a crawlable link, counted by a beacon)');
+  assert.match((await get('/es')).text, /class="door door-parent" href="\/es\/parents" data-count="\/go\/parent"/, 'a translated home page links its own language\'s parent page');
   let c = ''; auth.startSession({ append: (k, val) => { c = val.split(';')[0]; } }, kid.id);
   assert.doesNotMatch((await get('/', { cookie: c })).text, /class="navlink" href="\/parents"/);
   // Subject pages: an "At home" paragraph, the parent page and the age pages.
@@ -241,7 +246,7 @@ test('the AI guide lists every rule and everything the AI sees; titles fit; repo
   for (const p of ['/parents', ...GUIDES]) {
     const m = main((await get(p)).text);
     assert.ok(m.lastIndexOf('Seen enough? Try a game with your child now.') > m.indexOf('id="faq"'), `${p}: a call to action after the questions`);
-    assert.ok(m.lastIndexOf('href="/signup"') > m.indexOf('id="faq"'), `${p}: start free after the questions`);
+    assert.ok(m.lastIndexOf('href="/signup?for=kid"') > m.indexOf('id="faq"'), `${p}: start free after the questions`);
   }
   // Screen-time guide: photos are named, honestly.
   assert.match(text(main((await get('/parents/safety-and-screen-time')).text)), /Photos are optional/);
@@ -285,10 +290,78 @@ test('localized pages stay in one language: no untranslated additions on game, s
   assert.doesNotMatch(make, /lang="en"/);
   // The "Parents" links are in the page's language.
   const home = (await get('/es')).text;
-  assert.match(home, /<span>Para las familias<\/span>/);
-  assert.doesNotMatch(home, /lang="en"[^>]*>For parents|>Parents</);
+  assert.match(home, /<a class="door door-parent" href="\/es\/parents"[^>]*>.*?<span class="door-h">Soy madre o padre<\/span>/, 'the parent door in Spanish');
+  assert.doesNotMatch(home, /lang="en"[^>]*>For parents|>Parents<|I’m a parent/);
+  // Before "I’m a parent" was translated (simulated), the Spanish "For parents" stood in.
+  await withoutKeys('es', ['home.doors'], async () => {
+    const gap = (await get('/es')).text;
+    assert.match(gap, /<span class="door-h">Para las familias<\/span>/, 'the parent door, until "I’m a parent" is translated');
+    assert.doesNotMatch(gap, /lang="en"[^>]*>For parents|>Parents<|I’m a parent/);
+  });
   assert.match((await get('/es/teachers')).text, /<a class="navlink" href="\/parents"[^>]*><span class="emo" aria-hidden="true">👪<\/span>Familias<\/a>/);
   // English keeps all of it.
   assert.match((await get('/g/sum-racer')).text, /Ages 8–11/);
   assert.match((await get('/learn/math-games')).text, /id="home"/);
+});
+
+// ---------------------------------------------------------------- one parent page (/parents and /grown-ups merged)
+test('one parent page: promise and buttons, safety, How it works, Plans, Family accounts, then the details folded', async () => {
+  const order = (h, ids) => { const at = ids.map(id => h.indexOf(id)); at.forEach((n, i) => assert.ok(n > 0 && (i === 0 || n > at[i - 1]), `${ids[i]} after ${ids[i - 1]}`)); };
+  // Billing off: no Plans and no Family accounts, nothing that leads to a grown-up page or to /plans.
+  const off = main((await get('/parents')).text);
+  order(off, ['id="lp-h1"', 'class="row lp-cta"', 'id="safe"', 'id="how-it-works"', 'id="play"', 'id="private"', 'id="details"', 'id="faq"']);
+  assert.doesNotMatch(off, /id="plans"|id="families"|href="\/plans"|href="\/grown-ups/);
+  paid(true, true);
+  const on = main((await get('/parents')).text);
+  order(on, ['id="lp-h1"', 'class="row lp-cta"', 'id="safe"', 'id="how-it-works"', 'id="plans"', 'id="families"', 'id="play"', 'id="details"', 'id="faq"']);
+  // Plans: what a plan adds and the link to /plans; no amount (the PRICE test above covers every price shape).
+  const plans = /<section class="panel" id="plans">[\s\S]*?<\/section>/.exec(on)[0];
+  assert.ok(text(plans).includes('A plan adds extra Builder messages each month'));
+  assert.match(plans, /<a class="btn btn-primary" href="\/plans">See plans and prices<\/a>/);
+  assert.match(plans, /aren't on sale yet|aren&#39;t on sale yet/, 'a test key: not on sale to the signed-out');
+  assert.doesNotMatch(text(plans), /\d/, 'no numbers at all');
+  // Family accounts: what /grown-ups said (how linking works, the questions folded), with its sign-up and sign-in.
+  const fam = /<section class="panel" id="families"[\s\S]*?<\/section>/.exec(on)[0];
+  assert.match(fam, /<ol class="lp-steps"><li>Make a grown-up account: a name and a password of at least 12 characters\. No email needed\.<\/li>/);
+  assert.match(fam, /href="\/grown-ups\/signup">Make a grown-up account<\/a><a class="btn" href="\/grown-ups\/login">Sign in<\/a>/);
+  assert.equal((fam.match(/<details class="lp-q">/g) || []).length, 5);
+  assert.match(fam, /Is linking or paying a form of parental consent\?<\/summary><p>No\./);
+  assert.match(fam, /<span data-utc-midnight hidden>/); assert.match((await get('/parents')).text, /src="\/js\/family\.js/);
+  // The FAQ structured data is still the visible FAQ (the grown-ups' folded questions aren't FAQ data).
+  const h = (await get('/parents')).text;
+  const faq = ofType(h, 'FAQPage')[0];
+  const shown = [...main(h).match(/<section class="panel faq lp-faq"[\s\S]*?<\/section>/)[0].matchAll(/<h3>([^<]+)<\/h3>/g)].map(m => decode(m[1]));
+  assert.deepEqual(faq.mainEntity.map(x => x.name), shown);
+  assert.ok(faq.mainEntity[0].acceptedAnswer.text.includes('Families can choose an optional plan'), 'the paid wording in the data too');
+  // A signed-in grown-up gets their family page instead of the sign-up.
+  const g = auth.createUser({ username: 'MergedPageMum', password: 'a-long-password-12', accountType: 'grownup' });
+  let c = ''; auth.startSession({ append: (k, val) => { c = val.split(';')[0]; } }, g.id);
+  assert.match(/<section class="panel" id="families"[\s\S]*?<\/section>/.exec((await get('/parents', { cookie: c })).text)[0], /<a class="btn btn-primary" href="\/family">Go to your family page<\/a>/);
+});
+
+test('/grown-ups is a 301 to /parents#families, keeping the query; its sign-up and sign-in stay', async () => {
+  for (const [on, pub] of [[false, false], [true, true]]) {
+    paid(on, pub);
+    const r = await get('/grown-ups');
+    assert.equal(r.status, 301); assert.equal(r.headers.get('location'), '/parents#families');
+    assert.equal((await get('/grown-ups?utm_source=mail&x=1')).headers.get('location'), '/parents?utm_source=mail&x=1#families');
+  }
+  for (const p of ['/grown-ups/signup', '/grown-ups/login']) {
+    const r = await get(p);
+    assert.equal(r.status, 200, p);
+    assert.match(r.text, /href="\/parents#families"/, `${p}: back to the parent page`);
+  }
+  // Not in the sitemap; /parents is.
+  const xml = (await get('/sitemap.xml')).text;
+  assert.ok(!xml.includes('/grown-ups'));
+});
+
+test('a translated /parents with paid plans on stays in its language: no new English paragraph', async () => {
+  paid(true, true);
+  for (const p of ['/es/parents', '/he/parents']) {
+    const h = main((await get(p)).text);
+    const sec = /<section class="panel" id="plans">[\s\S]*?<\/section>/.exec(h)[0] + /<section class="panel" id="families"[\s\S]*?<\/section>/.exec(h)[0];
+    assert.doesNotMatch(sec, /lang="en"/, p);
+    assert.doesNotMatch(sec, /A plan adds extra Builder messages/, `${p}: the new sentence waits for its translation`);
+  }
 });

@@ -61,7 +61,8 @@
     "plans": "Abos",
     "teachers": "Lehrkräfte",
     "parents": "Eltern",
-    "grownups": "Erwachsene"
+    "grownups": "Erwachsene",
+    "playNow": "Jetzt spielen"
   },
   "errors": {
     "goHome": "Zur Startseite",
@@ -151,7 +152,19 @@
       "signupLink": "Kostenloses Konto erstellen",
       "grownupLogin": "Erwachsene oder Lehrkraft? <a href=\"{grownup}\">Eltern melden sich hier an</a> · <a href=\"{teachers}\">Lehrkräfte starten hier</a>",
       "grownupLoginSoon": "Erwachsene oder Lehrkraft? <a href=\"{grownup}\">Oomba Academy für Eltern</a> · <a href=\"{teachers}\">Lehrkräfte starten hier</a>",
-      "grownupSignup": "Erwachsene oder Lehrkraft? <a href=\"{grownup}\">Eltern starten hier</a> · <a href=\"{teachers}\">Lehrkräfte starten hier</a>"
+      "grownupSignup": "Erwachsene oder Lehrkraft? <a href=\"{grownup}\">Eltern starten hier</a> · <a href=\"{teachers}\">Lehrkräfte starten hier</a>",
+      "whoHeading": "Für wen ist das Konto?",
+      "whoGrownup": "Für mich (Erwachsene/r)",
+      "whoGrownupSub": "Ein eigenes Konto, verbunden mit dem Konto deines Kindes",
+      "whoKid": "Für mein Kind",
+      "whoKidSub": "Ein ausgedachter Name und ein Passwort, keine E-Mail. Kinder, die es allein machen, starten auch hier.",
+      "whoTeacher": "Ich bin Lehrkraft",
+      "whoTeacherSub": "Richte deine Schule und deine Klassen ein",
+      "whoBack": "Für wen ist das Konto? Neu auswählen",
+      "soonHeading": "Erwachsenenkonten gibt es bald",
+      "soonText": "Bald kannst du ein eigenes Konto erstellen, verbunden mit dem Konto deines Kindes. Bis dahin kann dein Kind kostenlos mit einem ausgedachten Namen und einem Passwort starten (keine E-Mail), und die Elternseite erklärt, wie Oomba Academy funktioniert und Kinder schützt.",
+      "soonParents": "Oomba Academy für Eltern",
+      "soonKid": "Konto für mein Kind erstellen"
     },
     "api": {
       "tooManyGuests": "Zu viele Gäste von hier. Versuch es später noch mal.",
@@ -358,6 +371,15 @@
       "text": "Kostenlose Spiele für 8- bis 14-Jährige, für den Unterricht oder zu Hause, und ein Baumeister, der aus deiner eigenen Idee ein Spiel macht.",
       "teachers": "Für Lehrkräfte",
       "parents": "Für Eltern"
+    },
+    "doors": {
+      "label": "Wer ist zu Besuch?",
+      "kid": "Ich bin ein Kind – los geht’s",
+      "kidSub": "Keine Anmeldung nötig",
+      "parent": "Ich bin Elternteil",
+      "parentSub": "Ist es sicher? Kind kostenlos einrichten",
+      "teacher": "Ich bin Lehrkraft",
+      "teacherSub": "Kostenlose Klassen, Lektionen und Fortschritt"
     }
   },
   "search": {
@@ -467,7 +489,6 @@
       "families": {
         "h": "Familienkonten",
         "p1": "Eltern und Erziehungsberechtigte können ein eigenes Erwachsenenkonto erstellen und es mit dem Konto ihres Kindes verbinden. Ihr Kind muss auf seiner eigenen Seite zustimmen.",
-        "link": "Mehr über Familienkonten",
         "plans": "Abos und Preise ansehen"
       }
     },
@@ -2736,25 +2757,16 @@
   },
   "family": {
     "landing": {
-      "title": "Familienkonten",
-      "description": "Erwachsenenkonten für Eltern und Erziehungsberechtigte bei Oomba Academy: Kinder verbinden, und was ein Familienabo zusätzlich bietet.",
-      "heading": "Oomba Academy für Familien",
-      "intro": "Spiele spielen und bauen ist bei Oomba Academy kostenlos. Mit einem Erwachsenenkonto können sich Eltern und Erziehungsberechtigte mit ihren Kindern verbinden, und ein Familienabo gibt den Kindern zusätzliche Nachrichten an den Baumeister.",
       "signup": "Erwachsenenkonto erstellen",
       "login": "Anmelden",
       "toFamily": "Zu Ihrer Familienseite",
       "what": {
-        "h": "Was ein Familienabo bietet",
         "p1": "{extra, plural, one {# zusätzliche Nachricht an den Baumeister} other {# zusätzliche Nachrichten an den Baumeister}} pro Monat, geteilt von bis zu {max} Kindern, zusätzlich zu den kostenlosen Nachrichten, die alle Spieler jeden Tag bekommen.",
-        "p2": "Bezahlen schaltet nie etwas frei, das kostenlose Spieler nicht haben, und Kinder werden nie zum Bezahlen aufgefordert.",
         "limitDaily": "Ein Kind kann bis zu {daily, plural, one {# zusätzliche Nachricht} other {# zusätzliche Nachrichten}} pro Tag nutzen.",
         "limitCost": "Die zusätzlichen Nachrichten einer Familie enden außerdem für den Rest des Monats, wenn sie ungewöhnlich teuer im Betrieb werden.",
         "limitReset": "Die zusätzlichen Nachrichten starten am 1. jedes Monats (UTC) neu. Nicht genutzte werden nicht übernommen."
       },
       "price": {
-        "h": "Preis",
-        "p1": "{monthly} pro Monat oder {yearly} pro Jahr, zzgl. Umsatzsteuer, wo sie anfällt. Jederzeit kündbar: Das Abo läuft bis zum Ende des bezahlten Zeitraums.",
-        "both": "Das Basis-Abo kostet {basic} pro Monat, für ein Kind. Das Familienabo kostet {family} pro Monat, für bis zu {max} Kinder. Zzgl. Umsatzsteuer, wo sie anfällt. Jederzeit kündbar: Das Abo läuft bis zum Ende des bezahlten Zeitraums.",
         "soon": "Familienabos gibt es noch nicht zu kaufen. Sie können aber schon jetzt ein Erwachsenenkonto erstellen und Ihre Kinder verbinden.",
         "us": "Familienabos gibt es vorerst nur für Familien in den USA."
       },
@@ -2787,8 +2799,7 @@
           "q": "Ist das Verbinden oder Bezahlen eine Form der elterlichen Einwilligung?",
           "a": "Nein. Beim Verbinden und bei Familienabos geht es nur um zusätzliche Nachrichten an den Baumeister. Die Website holt darüber keine Einwilligung ein und hält auch keine fest."
         }
-      },
-      "plans": "Abos und Preise vergleichen"
+      }
     },
     "signup": {
       "title": "Registrierung für Erwachsene",
@@ -2855,6 +2866,20 @@
       "label": "Code Ihres Kindes",
       "submit": "Anfrage senden",
       "sent": "Anfrage gesendet. Ihr Kind muss auf seiner Seite „Ich“ zustimmen."
+    },
+    "check": {
+      "heading": "Erste Schritte",
+      "allSet": "Alles erledigt",
+      "done": "Erledigt",
+      "account": "Ihr Erwachsenenkonto",
+      "link": "Ihr Kind verbinden",
+      "linkCta": "Code Ihres Kindes eingeben",
+      "plan": "Abo auswählen (optional)",
+      "planWhy": "Kostenlos funktioniert auch; ein Abo bringt Ihrem Kind zusätzliche Nachrichten an den Baumeister.",
+      "planOn": "Ihr Abo ist aktiv",
+      "hide": "Kostenlos reicht, ausblenden",
+      "staying": "Vorerst bleiben Sie kostenlos.",
+      "notOnSale": "Abos gibt es noch nicht zu kaufen. Bis dahin funktioniert alles kostenlos."
     },
     "errors": {
       "badCodeDay": "Dieser Code funktioniert nicht. Ein Code funktioniert einmal, 24 Stunden lang: Bitten Sie Ihr Kind um einen neuen.",
@@ -3671,6 +3696,9 @@
       "li5": "Üben in den Ferien",
       "li6": "Eine Pause an Regentagen, bei der man trotzdem etwas lernt",
       "li7": "Mathe, Lesen und Musik beim Lernen zu Hause"
+    },
+    "plans": {
+      "adds": "Ein Abo bringt Ihren verbundenen Kindern jeden Monat zusätzliche Nachrichten an den Baumeister (für ein Kind oder die ganze Familie, je nach Abo), zusätzlich zu den kostenlosen Nachrichten, die alle Spieler jeden Tag bekommen. Bezahlen schaltet nie etwas anderes frei, und Kinder werden nie zum Bezahlen aufgefordert."
     },
     "families": {
       "p2": "Abos sind freiwillig. Sie bringen nur zusätzliche Nachrichten an den Baumeister, und Kinder werden nie zum Bezahlen aufgefordert."

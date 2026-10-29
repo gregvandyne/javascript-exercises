@@ -1,12 +1,18 @@
-// Pages for parents, written for them and for search engines: /parents (what Oomba Academy is, what kids learn, what
-// makes it safe, and every privacy and safety section that was there before), the guides /parents/ai-builder-safety and
-// /parents/safety-and-screen-time, and the age pages /learn/games-for-…-year-olds (server/learn.js AGES).
+// Pages for parents, written for them and for search engines: /parents (what Oomba Academy is, what makes it safe, how it
+// works, plans and grown-up accounts, and every privacy and safety section that was there before), the guides
+// /parents/ai-builder-safety and /parents/safety-and-screen-time, and the age pages /learn/games-for-…-year-olds
+// (server/learn.js AGES).
+//
+// /parents is the one parent page (docs/decisions.md "One parent page"): the old grown-up accounts page /grown-ups is a
+// 301 to /parents#families (routes/family.js). In order: the promise, the picture and two buttons; a short safety
+// section; "How it works"; Plans (what a plan adds, a link to /plans, no amounts) and Family accounts (what a grown-up
+// account does and how linking works), both only while paid-plan pages are on (familiesOn); then the games, ages and
+// subjects; the privacy details folded away under their headings (long on phones); the questions; the buttons again.
 //
 // Every claim is something the site does today (docs/decisions.md "Parent pages"). In particular: no parental controls,
-// dashboard or time limits are promised (there are none), nothing says "COPPA", and no price appears anywhere. Plans and
-// the grown-up account are linked only while paid-plan pages are on (familiesOn), and then only to /plans and
-// /grown-ups. Games are official launch games anyone may open (launchGame), never a game a child made, and never Ring
-// Rumble, Happy Putt or Footy Tycoon. The text is under parents.* and learn.ages.* in the locale files; English
+// dashboard or time limits are promised (there are none), nothing says "COPPA", and no price appears anywhere: prices
+// are on /plans only. Games are official launch games anyone may open (launchGame), never a game a child made, and never
+// Ring Rumble, Happy Putt or Footy Tycoon. The text is under parents.* and learn.ages.* in the locale files; English
 // fallbacks are marked lang="en", and search engines are told a page is English only until its heading is translated.
 import { Router } from 'express';
 import { html, raw } from '../views/html.js';
@@ -18,7 +24,8 @@ import { isGrownup } from '../auth.js';
 import * as seo from '../seo.js';
 import { HUBS, AGES, ageBySlug, PARENT_GUIDES, guideBySlug, PARENT_GAMES, PARENTS_FAQ, TWO_PLAYER, gameKey, CONTENT_UPDATED } from '../learn.js';
 import { launchGame, faqBlock, el, fb, lp, contactEmail, inClassLine } from './teachers.js';
-import { section, parentSections, families, googlePrivacy, contact, setupLink } from './info.js';
+import { section, parentSections, googlePrivacy, contact, setupLink } from './info.js';
+import { familyOnSale } from './family.js';
 import { howArt, howSteps, howHead, HOW_SCRIPT } from '../views/how.js';
 
 export const router = Router();
@@ -63,9 +70,47 @@ const itemList = (req, list, name) => ({ '@type': 'ItemList', ...(name ? { name 
 const updated = req => html`<p class="muted small lp-updated"${fb(req.t, 'parents.updated')}>${tHtml(req.t, 'parents.updated', { date: html`<time datetime="${CONTENT_UPDATED}">${fmt(req.locale || DEFAULT_LOCALE).day(Date.parse(`${CONTENT_UPDATED}T00:00:00Z`), { year: 'numeric', month: 'long', day: 'numeric' })}</time>` })}</p>`;
 
 // ---------------------------------------------------------------------------------------------------- /parents
-router.get('/parents', (req, res) => {
+/** A new string, shown only once the page's language has it (English pages always do); else `alt`, an older string
+ *  that says less, or nothing. So a translated page never gets a new English paragraph. */
+const ownOr = (t, tag, key, alt, vars) => (t.own(key) ? el(t, tag, key, vars) : alt ? el(t, tag, alt, vars) : '');
+/** Plans (only while paid-plan pages are on): what a plan adds, who it is for, the legal pages, and /plans for the
+ *  prices. No amounts here: prices are on /plans only. `sale`: can this visitor buy one now? */
+function plansSection(req, sale) {
+  const t = req.t;
+  return html`<section class="panel" id="plans">
+    ${el(t, 'h2', 'info.parents.plans.h', {}, ' id="plans-h"')}
+    ${el(t, 'p', 'info.parents.plans.p1')}
+    ${ownOr(t, 'p', 'parents.plans.adds', 'parents.families.p2')}
+    ${sale ? '' : el(t, 'p', 'family.landing.price.soon', {}, ' class="notice"')}
+    ${el(t, 'p', 'family.landing.price.us', {}, ' class="muted"')}
+    ${el(t, 'p', 'info.parents.plans.p2', {}, ' class="small"')}
+    <p class="row lp-sec-cta"><a class="btn btn-primary" href="/plans"${fb(t, 'info.parents.families.plans')}>${t('info.parents.families.plans')}</a></p>
+  </section>`;
+}
+/** Family accounts (only while paid-plan pages are on; what /grown-ups said): what a grown-up account does, how linking
+ *  works, the sign-up and sign-in (or, for a grown-up, their family page), and the questions grown-ups ask, folded. */
+function familiesSection(req) {
+  const t = req.t; const u = req.user;
+  const qa = k => html`<details class="lp-q"><summary${fb(t, `family.landing.faq.${k}.q`)}>${t(`family.landing.faq.${k}.q`)}</summary>${k === 'reset'
+    ? html`<p${fb(t, 'family.landing.faq.reset.a')}>${t('family.landing.faq.reset.a')} <span data-utc-midnight hidden>${tHtml(t, 'family.landing.faq.reset.local', { time: html`<time data-time></time>` })}</span></p>`
+    : el(t, 'p', `family.landing.faq.${k}.a`)}</details>`;
+  const actions = isGrownup(u) ? html`<a class="btn btn-primary" href="/family"${fb(t, 'family.landing.toFamily')}>${t('family.landing.toFamily')}</a>`
+    : html`<a class="btn btn-primary" href="/grown-ups/signup"${fb(t, 'family.landing.signup')}>${t('family.landing.signup')}</a><a class="btn" href="/grown-ups/login"${fb(t, 'family.landing.login')}>${t('family.landing.login')}</a>`;
+  return html`<section class="panel" id="families" aria-labelledby="families-h">
+    ${el(t, 'h2', 'info.parents.families.h', {}, ' id="families-h"')}
+    ${el(t, 'p', 'info.parents.families.p1')}
+    ${el(t, 'h3', 'family.landing.how.h')}
+    <ol class="lp-steps">${['p1', 'p2', 'p3'].map(k => el(t, 'li', `family.landing.how.${k}`))}</ol>
+    <p class="row lp-sec-cta">${actions}</p>
+    <div class="lp-qs">${el(t, 'h3', 'family.landing.faq.h')}${['cancel', 'store', 'see', 'reset', 'consent'].map(qa)}</div>
+  </section>`;
+}
+
+router.get('/parents', async (req, res) => {
   const t = req.t;
   const paid = familiesOn(req);
+  // "Not on sale yet" unless this visitor can buy a plan now (familyOnSale: the same rule as /plans and the /family checklist).
+  const sale = paid && await familyOnSale(req.user);
   const count = availableLocales().length;
   const list = PARENT_GAMES.map(launchGame).filter(Boolean);
   const card = g => html`<li><a class="lp-game" href="${lp(req, `/g/${g.slug}`)}">${coverArt(g)}<span class="lp-game-text"><span class="lp-game-t">${g.title}</span>${el(t, 'span', `learn.games.${gameKey(g.slug)}`, {}, ' class="lp-game-d"')}</span></a></li>`;
@@ -83,7 +128,15 @@ router.get('/parents', (req, res) => {
     <ul class="lp-badges">${badges.map(([e, k]) => html`<li><span aria-hidden="true">${e}</span> ${el(t, 'span', k, { count })}</li>`)}</ul>
     ${howArt(req, 'parents')}
   </section>
+
+  <section class="panel" id="safe" aria-labelledby="safe-h">
+    ${el(t, 'h2', 'parents.safe.h', {}, ' id="safe-h"')}
+    <ul class="lp-list">${['li1', 'li2', 'li3', 'li4', 'li5'].map(k => el(t, 'li', `parents.safe.${k}`))}</ul>
+    ${el(t, 'p', 'parents.safe.links', { safety: lp(req, '/safety'), guide: lp(req, '/parents/safety-and-screen-time') })}
+  </section>
   ${howSteps(req, 'parents')}
+  ${paid ? plansSection(req, sale) : ''}
+  ${paid ? familiesSection(req) : ''}
 
   <section class="lp-sec" id="play" aria-labelledby="play-h">
     ${el(t, 'h2', 'parents.play.h', {}, ' id="play-h"')}${el(t, 'p', 'parents.play.p')}
@@ -105,31 +158,26 @@ router.get('/parents', (req, res) => {
       ${el(t, 'h2', 'parents.make.h', {}, ' id="make-h"')}${el(t, 'p', 'parents.make.p1')}${el(t, 'p', 'parents.make.p2')}
       <p class="row"><a class="btn" href="${lp(req, '/learn/make-a-game')}">🛠️ ${t('parents.make.link')}</a><a class="btn" href="${lp(req, '/parents/ai-builder-safety')}">🤖 ${t('parents.make.safe')}</a></p>
     </section>
-    <section class="panel" id="safe" aria-labelledby="safe-h">
-      ${el(t, 'h2', 'parents.safe.h', {}, ' id="safe-h"')}
-      <ul class="lp-list">${['li1', 'li2', 'li3', 'li4', 'li5'].map(k => el(t, 'li', `parents.safe.${k}`))}</ul>
-      ${el(t, 'p', 'parents.safe.links', { safety: lp(req, '/safety'), guide: lp(req, '/parents/safety-and-screen-time') })}
-    </section>
-    <section class="panel" id="private" aria-labelledby="private-h">
-      ${el(t, 'h2', 'parents.private.h', {}, ' id="private-h"')}${el(t, 'p', 'parents.private.p1')}${el(t, 'p', 'parents.private.p2')}
-      ${paid ? el(t, 'p', 'parents.private.paid') : ''}${el(t, 'p', 'parents.private.p3', { href: lp(req, '/parents/safety-and-screen-time') })}
-    </section>
     <section class="panel" id="home" aria-labelledby="home-h">
       ${el(t, 'h2', 'parents.home.h', {}, ' id="home-h"')}${el(t, 'p', 'parents.home.p')}
       <ul class="lp-tags">${['li1', 'li2', 'li3', 'li4', 'li5', 'li6', 'li7'].map(k => el(t, 'li', `parents.home.${k}`))}</ul>
     </section>
   </div>
-  ${families(req, el(t, 'p', 'parents.families.p2'))}
 
   <section class="lp-sec" id="guides" aria-labelledby="guides-h">
     ${el(t, 'h2', 'parents.guides.h', {}, ' id="guides-h"')}
     ${guideCards(req)}
   </section>
 
+  <section class="panel" id="private" aria-labelledby="private-h">
+    ${el(t, 'h2', 'parents.private.h', {}, ' id="private-h"')}${el(t, 'p', 'parents.private.p1')}${el(t, 'p', 'parents.private.p2')}
+    ${paid ? el(t, 'p', 'parents.private.paid') : ''}${el(t, 'p', 'parents.private.p3', { href: lp(req, '/parents/safety-and-screen-time') })}
+  </section>
+
   <section class="lp-sec lp-detail" id="details" aria-labelledby="details-h">
     ${el(t, 'h2', 'parents.detail.h', {}, ' id="details-h"')}${el(t, 'p', 'parents.detail.p', { href: '/privacy' })}
-    ${parentSections(req).map(s => section(req, `info.parents.${s}`, { id: s, level: 3 }))}
-    ${googlePrivacy(req, 3)}${contact(req, 3)}
+    ${parentSections(req).map(s => section(req, `info.parents.${s}`, { id: s, level: 3, fold: true }))}
+    ${googlePrivacy(req, 3, { fold: true })}${contact(req, 3)}
   </section>
   ${faq.markup}
   ${ctaEnd(req)}
@@ -137,7 +185,7 @@ router.get('/parents', (req, res) => {
   const crumbs = [[t('nav.home'), '/'], [parentsLabel(t), '/parents']];
   page(req, res, {
     title: t('parents.title'), description: t('parents.description'), body, bodyClass: 'lp-page', active: 'parents',
-    head: howHead(), scripts: [HOW_SCRIPT],
+    head: howHead(), scripts: [HOW_SCRIPT, ...(paid ? ['/js/family.js'] : [])],
     seo: {
       index: true, path: '/parents', langs: seo.langsWithKey('parents.h1'), image: '/og/parents.jpg', imageAlt: t('parents.h1'),
       jsonld: [seo.graph([

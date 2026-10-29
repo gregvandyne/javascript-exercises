@@ -17,6 +17,14 @@ export const FUNNELS = Object.freeze([
     ['teacher.class', 'First class with students'], ['teacher.plan', 'School plan']] },
   { key: 'guardrail', title: 'Guardrail (must not drop)', guardrail: true, steps: [
     ['kid.signup', 'Kid sign-ups'], ['kid.play', 'Games played']] },
+  // Which door signed-out visitors and guests take on the home page (routes/discover.js /go/<door>), and the top bar's
+  // "▶ Play now". Clicks, not a funnel: no "of step before".
+  { key: 'doors', title: 'Home doors (signed out)', tally: true, steps: [
+    ['door.kid', 'I’m a kid — play now'], ['door.parent', 'I’m a parent'], ['door.teacher', 'I’m a teacher'],
+    ['door.bar', 'Top bar ▶ Play now']] },
+  // "Who's this for?" on Start free (routes/auth.js /signup/for/<who>). Choices, not a funnel: no "of step before".
+  { key: 'who', title: 'Who’s this for? (sign-up)', tally: true, steps: [
+    ['who.grownup', 'Me (a grown-up)'], ['who.kid', 'My child'], ['who.teacher', 'I’m a teacher']] },
 ]);
 export const STEPS = Object.freeze(FUNNELS.flatMap(f => f.steps.map(s => s[0])));
 const KNOWN = new Set(STEPS);
@@ -33,7 +41,7 @@ export function bump(step, n = 1, day = today()) {
 
 // Page views: the grown-up pages only (the path after the language prefix, which server/seo.js pathLocale removes).
 // /learn is left out: its subject pages are for teachers and its age pages for parents, and the funnel would mix them.
-const PAGES = [[/^\/(parents(\/[^/]+)?|grown-ups)$/, 'parent.view'], [/^\/(teachers|plans\/schools)$/, 'teacher.view']];
+const PAGES = [[/^\/parents(\/[^/]+)?$/, 'parent.view'], [/^\/(teachers|plans\/schools)$/, 'teacher.view']];
 /** The view step a page path counts toward, or null (every kid page, and anything else). */
 export const viewStepOf = path => (PAGES.find(([re]) => re.test(String(path || ''))) || [null, null])[1];
 
@@ -47,7 +55,7 @@ export const change = (now, before) => (before > 0 ? Math.round(((now - before) 
  * The weekly report: the last 7 days (ending `end`, today by default) against the 7 before.
  * -> { last: { from, to }, prev: { from, to }, funnels: [{ key, title, guardrail, steps: [{ key, label, last, prev,
  *      change, rate }] }] }, where rate is this step's share of the step before it over the last 7 days (null for a
- *      first step, a guardrail or nothing before).
+ *      first step, a guardrail, a tally of clicks (the home doors) or nothing before).
  */
 export function weekly(end = today()) {
   const last = { from: shift(end, -6), to: end }, prev = { from: shift(end, -13), to: shift(end, -7) };
@@ -55,11 +63,11 @@ export function weekly(end = today()) {
   return {
     last, prev,
     funnels: FUNNELS.map(f => ({
-      key: f.key, title: f.title, guardrail: !!f.guardrail,
+      key: f.key, title: f.title, guardrail: !!f.guardrail, tally: !!f.tally,
       steps: f.steps.map(([key, label], i) => {
         const before = i ? a[f.steps[i - 1][0]] || 0 : 0;
         return { key, label, last: a[key] || 0, prev: b[key] || 0, change: change(a[key] || 0, b[key] || 0),
-          rate: !f.guardrail && i && before ? Math.round(((a[key] || 0) / before) * 1000) / 10 : null };
+          rate: !f.guardrail && !f.tally && i && before ? Math.round(((a[key] || 0) / before) * 1000) / 10 : null };
       }),
     })),
   };

@@ -39,20 +39,22 @@ const PRICE = /\$\s?\d|\d\.\d\d\b|\bUSD\b|€|£\s?\d|\/mo\b|a month\b|per (mont
 const PROMISES = [/COPPA/i, /kidSAFE/i, /parental controls?/i, /\bmonitor/i, /\btrack/i];
 
 for (const page of ['parents', 'teachers']) {
-  test(`/${page}: "How it works" comes right after the hero, with numbered steps and real screenshots`, async () => {
+  test(`/${page}: "How it works" comes right after the hero (on /parents, after the short safety section), with numbered steps and real screenshots`, async () => {
     const h = await get(`/${page}`);
     const sec = element(h, '<section class="lp-sec how" id="how-it-works"');
     assert.ok(sec, 'the section is there');
     assert.ok(h.indexOf('id="how-it-works"') < h.indexOf('id="play"'), 'before the games');
     assert.ok(h.indexOf('class="lp-hero lp-hero-how"') < h.indexOf('id="how-it-works"'), 'after the hero');
-    // Headings in order: the page's one h1, then this h2, then one h3 per step.
+    // Headings in order: the page's one h1, (on /parents: "What makes it safe", an h2), then this h2, then one h3 per step.
+    const before = page === 'parents' ? [1, 2] : [1];
+    if (page === 'parents') assert.ok(h.indexOf('class="lp-hero lp-hero-how"') < h.indexOf('id="safe"') && h.indexOf('id="safe"') < h.indexOf('id="how-it-works"'), 'the one parent page: hero, safety, How it works');
     const heads = [...h.slice(h.indexOf('<main'), h.indexOf('id="play"')).matchAll(/<h([1-6])[\s>]/g)].map(m => +m[1]);
-    assert.deepEqual(heads, [1, 2, ...Array(heads.length - 2).fill(3)]);
+    assert.deepEqual(heads, [...before, 2, ...Array(heads.length - before.length - 1).fill(3)]);
     assert.match(sec, /<h2 id="how-h">[^<]+<\/h2>/);
     const steps = [...sec.matchAll(/<li class="how-step" id="how-(\d+)" data-step="(\d+)">/g)];
     assert.equal(steps.length, STEPS[page].filter(s => !s.when).length, 'every step whose screen is on');
     steps.forEach((m, i) => { assert.equal(+m[1], i + 1); assert.equal(+m[2], i + 1); });
-    assert.equal(heads.length - 2, steps.length, 'one h3 per step');
+    assert.equal(heads.length - before.length - 1, steps.length, 'one h3 per step');
     // Every picture: a file on disk, a size, alt text, lazy.
     const imgs = [...sec.matchAll(/<img\b[^>]*>/g)].map(m => m[0]);
     assert.equal(imgs.length, steps.length);
@@ -113,6 +115,11 @@ test('/parents: the family step shows only while paid-plan pages are public', as
 test('/parents and /teachers keep every section id', async () => {
   const par = await get('/parents');
   for (const id of ['lp-h1', 'how-it-works', 'play', 'ages', 'subjects', 'make', 'safe', 'private', 'home', 'guides', 'details', 'faq', 'what', 'stored', 'never', 'ai', 'keep', 'friends', 'builder', 'languages']) assert.match(par, new RegExp(`id="${id}"`), `/parents #${id}`);
+  // While paid-plan pages are on, also Plans and Family accounts (what /grown-ups said; /grown-ups#… had no ids).
+  paid(true);
+  const on = await get('/parents');
+  for (const id of ['plans', 'families']) assert.match(on, new RegExp(`id="${id}"`), `/parents #${id}`);
+  paid(false);
   const tea = await get('/teachers');
   for (const id of ['lp-h1', 'how-it-works', 'play', 'subjects', 'build', 'class', 'safe', 'uses', 'start', 'faq']) assert.match(tea, new RegExp(`id="${id}"`), `/teachers #${id}`);
 });

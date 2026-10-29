@@ -26,7 +26,8 @@ test('the picker lists every language by its own name; choosing French translate
   // The choice persists across pages (cookie), including client-side strings.
   await page.goto('/search');
   await expect(html(page)).toHaveAttribute('lang', 'fr');
-  await expect(page.locator('.topnav .navlink[aria-current="page"]')).toContainText('Recherche');
+  // Signed out, the wide top bar has the search field instead of a Search link (the home doors, Week 2); the tab is current.
+  await expect(page.locator('.tabbar .tab[aria-current="page"]')).toContainText('Recherche');
   await page.locator('.topbar .langpick summary').click();
   await expect(page.locator('.topbar .lang-list a[aria-current="true"]')).toContainText('Français');
   await expect(page.locator('#i18n')).toHaveCount(1);

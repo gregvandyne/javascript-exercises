@@ -1,5 +1,5 @@
 // Funnel counts (services/funnel.js): a visit to /parents shows up in /admin/stats' Parents table, and the three
-// funnel tables fit at 360px (light, dark, Hebrew) with nothing touching and no sideways scroll.
+// funnel tables and the home doors' clicks and "Who's this for?" choices fit at 360px (light, dark, Hebrew) with nothing touching and no sideways scroll.
 import { test, expect } from '@playwright/test';
 import { findTouching } from './touching.js';
 import { ADMIN } from './helpers.js';
@@ -12,6 +12,9 @@ test('/admin/stats: funnels, last 7 days vs the 7 before; a parent page view is 
   const visitor = await browser.newContext({ userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0 Safari/537.36' });
   const vp = await visitor.newPage();
   expect((await vp.goto('/parents')).status()).toBe(200);
+  // ...and, on the home page, takes the teacher door (a link straight to the teacher page, counted by its beacon to /go/teacher).
+  await vp.goto('/');
+  await Promise.all([vp.waitForURL(/\/teachers$/), vp.locator('.door-teacher').click()]);
   await visitor.close();
 
   const problems = [];
@@ -23,7 +26,9 @@ test('/admin/stats: funnels, last 7 days vs the 7 before; a parent page view is 
     await Promise.all([page.waitForURL(u => !u.pathname.startsWith('/login')), page.click('button[type=submit]')]);
     await page.goto('/admin/stats');
     await expect(page.locator('#funnels')).toHaveText('Funnels, last 7 days vs the 7 before');
-    await expect(page.locator('.stats-funnels > section')).toHaveCount(3);
+    await expect(page.locator('.stats-funnels > section')).toHaveCount(5);   // and the home doors and "Who's this for?" under the funnels
+    const door = page.locator('#funnel-doors ~ .tblwrap tbody tr', { hasText: 'I’m a teacher' }).locator('td').nth(1);
+    if (!(Number(await door.textContent()) >= 1)) problems.push(`${lang} ${scheme}: teacher door clicks ${await door.textContent()}`);
     const views = Number(await page.locator('#funnel-parent ~ .tblwrap tbody tr').first().locator('td').nth(1).textContent());
     if (!(views >= 1)) problems.push(`${lang} ${scheme}: parent page views ${views}`);
     const wide = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);

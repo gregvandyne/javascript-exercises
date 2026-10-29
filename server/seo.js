@@ -77,7 +77,7 @@ export const langsWithKey = key => CODES.filter(c => c === DEFAULT_LOCALE || (c 
 // ---------------------------------------------------------------------------------------------------- private areas
 /** Never indexed, whatever the page says: profiles, the Studio, accounts, classes, schools, families, sign-in, search,
  *  play pages, game frames, APIs and pictures of players and of games. Search engines still crawl them to read this. */
-export const PRIVATE_RE = /^\/(u|studio|build|me|favorites|friends|chat|family|grown-ups|class|classes|teach|school|cards|admin|join|login|signup|auth|google-setup|search|play|frame|api|shots|avatars)(\/|$)/i;
+export const PRIVATE_RE = /^\/(u|go|studio|build|me|favorites|friends|chat|family|grown-ups|class|classes|teach|school|cards|admin|join|login|signup|auth|google-setup|search|play|frame|api|shots|avatars)(\/|$)/i;
 export function privateNoindex(req, res, next) {
   if (PRIVATE_RE.test(req.path)) res.set('X-Robots-Tag', 'noindex, nofollow');
   next();

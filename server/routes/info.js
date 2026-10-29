@@ -46,7 +46,9 @@ function items(prefix, paid) {
  *  the full stop stays at the end), nothing when the key is written in the page's language. */
 const fallback = (t, key) => (t.own(key) ? '' : html` lang="en" dir="ltr"`);
 // level: the heading level of the section (2; 3 on /parents, where the sections sit under "Safety and privacy, in detail").
-export function section(req, prefix, { id, paid = familiesOn(req), level = 2 } = {}) {
+// fold: the section's text folds away under its heading (a <details>; /parents, where the page is long on phones). The
+// id stays on the <section>, and app.js opens the fold when a link leads to it (/parents#keep).
+export function section(req, prefix, { id, paid = familiesOn(req), level = 2, fold = false } = {}) {
   const t = req.t; const vars = { email: legalEmail() }; const out = []; let list = null;
   const h = raw(`h${level}`), sub = raw(`h${level + 1}`);
   for (const it of items(prefix, paid)) {
@@ -54,8 +56,12 @@ export function section(req, prefix, { id, paid = familiesOn(req), level = 2 } =
     list = null;
     out.push(it.kind === 's' ? html`<${sub}${fallback(t, it.key)}>${tHtml(t, it.key, vars)}</${sub}>` : html`<p${fallback(t, it.key)}>${tHtml(t, it.key, vars)}</p>`);
   }
-  return html`<section class="panel"${id ? html` id="${id}"` : ''}><${h}${fallback(t, `${prefix}.h`)}>${t(`${prefix}.h`)}</${h}>${out.map(x => (x.items ? html`<ul${x.keys.every(k => !t.own(k)) ? fallback(t, x.keys[0]) : ''}>${x.items}</ul>` : x))}</section>`;
+  const head = html`<${h}${fallback(t, `${prefix}.h`)}>${t(`${prefix}.h`)}</${h}>`;
+  const rest = out.map(x => (x.items ? html`<ul${x.keys.every(k => !t.own(k)) ? fallback(t, x.keys[0]) : ''}>${x.items}</ul>` : x));
+  return html`<section class="panel"${id ? html` id="${id}"` : ''}>${fold ? folded(head, rest) : html`${head}${rest}`}</section>`;
 }
+/** A heading and the text under it, folded away until the heading is tapped. */
+export const folded = (head, body) => html`<details class="lp-fold"><summary>${head}</summary><div class="lp-fold-body">${body}</div></details>`;
 /** sections: section keys under info.<pageKey>; extra: more sections after them. */
 function info(req, pageKey, emoji, sections, extra = '') {
   return html`<div class="wrap narrow" style="padding:0"><h1>${emoji} ${req.t(`info.${pageKey}.heading`)}</h1>${sections.map(s => section(req, `info.${pageKey}.${s}`, { id: s }))}${extra}</div>`;
@@ -68,7 +74,7 @@ const codeBlock = s => html`<code dir="ltr">${s}</code>`;
 export function setupLink(req) {
   // Until a language has "Set up your child — free", its already-translated "Make a grown-up account" stands in.
   const [href, key] = isGrownup(req.user) ? ['/family', 'family.landing.toFamily']
-    : !familiesOn(req) ? ['/signup', 'parents.cta.start'] : ['/grown-ups/signup', req.t.own('parents.cta.setup') ? 'parents.cta.setup' : 'parents.cta.grownup'];
+    : !familiesOn(req) ? ['/signup?for=kid', 'parents.cta.start'] : ['/grown-ups/signup', req.t.own('parents.cta.setup') ? 'parents.cta.setup' : 'parents.cta.grownup'];
   return { href, key, label: req.t(key) };
 }
 /** The end of /safety: "Set up your child". Signed out it opens the set-up (setupLink) at once; anyone signed in as a
@@ -86,14 +92,15 @@ router.get('/safety', (req, res) => page(req, res, { title: req.t('info.safety.t
 export const contact = (req, level = 2) => (config.contactEmail ? html`<section class="panel" id="contact">${raw(`<h${level}>`)}${req.t('info.parents.contact.h')}${raw(`</h${level}>`)}
   <p>${tHtml(req.t, 'info.parents.contact.p1', { email: html`<a href="mailto:${config.contactEmail}" dir="ltr">${config.contactEmail}</a>` })}</p></section>` : '');
 // With Sign in with Google on, what the site keeps from a school Google account (nothing while it is off).
-export const googlePrivacy = (req, level = 2) => (googleEnabled() ? html`<section class="panel" id="google">${raw(`<h${level}>`)}${req.t('google.setup.privacy.h')}${raw(`</h${level}>`)}<p>${req.t('google.setup.privacy.p1')}</p></section>` : '');
-// Family accounts (routes/family.js): /grown-ups is linked from here only, and only while families are on, next to /plans.
-export const families = (req, extra = '') => (familiesOn(req) ? html`<section class="panel" id="families"><h2>${req.t('info.parents.families.h')}</h2>
-  <p>${req.t('info.parents.families.p1')}</p>${extra}<div class="row"><a class="btn btn-primary" href="/plans">${req.t('info.parents.families.plans')}</a><a class="btn" href="/grown-ups">${req.t('info.parents.families.link')}</a></div></section>` : '');
+export function googlePrivacy(req, level = 2, { fold = false } = {}) {
+  if (!googleEnabled()) return '';
+  const head = html`${raw(`<h${level}>`)}${req.t('google.setup.privacy.h')}${raw(`</h${level}>`)}`, body = html`<p>${req.t('google.setup.privacy.p1')}</p>`;
+  return html`<section class="panel" id="google">${fold ? folded(head, body) : html`${head}${body}`}</section>`;
+}
 // /parents itself is in routes/parents.js: a page for parents with these sections under "Safety and privacy, in detail".
-/** The /parents privacy and safety sections, in order (Plans, D16, with the legal pages that cover them: only once paid
- *  plans are public). /privacy repeats stored, never, ai and keep. */
-export const parentSections = req => ['what', ...(familiesOn(req) ? ['plans'] : []), 'stored', 'never', 'ai', 'keep', 'friends', 'builder', 'languages'];
+// Its Plans and Family accounts sections (only once paid plans are public) are its own, higher up the page.
+/** The /parents privacy and safety sections, in order. /privacy repeats stored, never, ai and keep. */
+export const parentSections = () => ['what', 'stored', 'never', 'ai', 'keep', 'friends', 'builder', 'languages'];
 router.get('/sdk', (req, res) => {
   const t = req.t;
   // The SDK names (BRB.storage.get...) are code and stay as they are in every language.

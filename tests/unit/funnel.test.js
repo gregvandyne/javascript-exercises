@@ -48,7 +48,7 @@ test('bump: known steps only, adds up per day; weekly compares the last 7 days w
   const r = funnel.weekly(end);
   assert.deepEqual(r.last, { from: '2026-10-22', to: '2026-10-28' });
   assert.deepEqual(r.prev, { from: '2026-10-15', to: '2026-10-21' });
-  assert.deepEqual(r.funnels.map(f => f.key), ['parent', 'teacher', 'guardrail']);
+  assert.deepEqual(r.funnels.map(f => f.key), ['parent', 'teacher', 'guardrail', 'doors', 'who']);
   const step = (f, s) => r.funnels.find(x => x.key === f).steps.find(x => x.key === s);
   assert.deepEqual(step('parent', 'parent.view'), { key: 'parent.view', label: 'Parent page views', last: 150, prev: 80, change: 88, rate: null });
   assert.equal(step('parent', 'parent.signup').last, 30); assert.equal(step('parent', 'parent.signup').change, -25);
@@ -58,12 +58,17 @@ test('bump: known steps only, adds up per day; weekly compares the last 7 days w
   assert.equal(step('teacher', 'teacher.request').change, null, 'nothing the week before: no percentage');
   assert.equal(step('guardrail', 'kid.play').change, -20);
   assert.equal(step('guardrail', 'kid.play').rate, null, 'guardrail steps are not a funnel');
-  assert.equal(funnel.STEPS.length, 12);
+  assert.equal(funnel.STEPS.length, 19);
+  funnel.bump('door.kid', 9, '2026-10-27'); funnel.bump('door.parent', 3, '2026-10-27');
+  const doors = funnel.weekly(end).funnels.find(f => f.key === 'doors');
+  assert.equal(doors.tally, true);
+  assert.deepEqual(doors.steps.map(s => [s.key, s.last, s.rate]), [['door.kid', 9, null], ['door.parent', 3, null], ['door.teacher', 0, null], ['door.bar', 0, null]], 'door clicks are a tally: no "of step before"');
 });
 
 test('page views: parent and teacher pages count (also with a language prefix); kid pages, bots, 404s and redirects do not', async () => {
   reset();
-  for (const p of ['/parents', '/parents/screen-time', '/grown-ups']) assert.equal(funnel.viewStepOf(p), 'parent.view', p);
+  for (const p of ['/parents', '/parents/screen-time']) assert.equal(funnel.viewStepOf(p), 'parent.view', p);
+  assert.equal(funnel.viewStepOf('/grown-ups'), null, '/grown-ups is a 301 to /parents now: the view counts there');
   for (const p of ['/teachers', '/plans/schools']) assert.equal(funnel.viewStepOf(p), 'teacher.view', p);
   for (const p of ['/', '/g/x', '/play/x', '/build', '/studio/x', '/me', '/u/x', '/search', '/plans', '/learn', '/learn/math', '/parents/a/b', '/teachersx', '/signup'])
     assert.equal(funnel.viewStepOf(p), null, p);
@@ -162,6 +167,10 @@ test('/admin/stats shows the three funnels with last 7 days vs the 7 before; adm
   assert.match(page, /<tr><td>Grown-up sign-ups<\/td><td>4<\/td><td>0<\/td><td>new<\/td><td>10%<\/td><\/tr>/);
   assert.match(page, /<tr><td>Games played<\/td><td>12<\/td><td>20<\/td><td><span class="chip-s warn">−40%<\/span><\/td><\/tr>/, 'a guardrail drop stands out');
   assert.doesNotMatch(page, /Builder turns|\bturns\b/i);
+  assert.match(page, /<h2 id="funnel-doors">Home doors \(signed out\)<\/h2>/, 'the home doors under the funnels');
+  assert.match(page, /<tr><td>I’m a kid — play now<\/td><td>0<\/td><td>0<\/td><td>–<\/td><\/tr>/, 'no "of step before" column');
+  assert.match(page, /<h2 id="funnel-who">Who’s this for\? \(sign-up\)<\/h2>/, '"Who’s this for?" choices on Start free');
+  assert.match(page, /<tr><td>My child<\/td><td>0<\/td><td>0<\/td><td>–<\/td><\/tr>/);
   const kidPage = await visit('/admin/stats', cookieFor(kid()));
   assert.notEqual(kidPage.status, 200);
 });

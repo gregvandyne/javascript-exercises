@@ -543,12 +543,13 @@ test('/family: Subscribe buttons with prices, what to read before paying, the pa
   assert.match(page, /id="pw-checkout"/);
   assert.doesNotMatch(page.match(/<input[^>]*id="pw-checkout"[^>]*>/)[0], /required/);
   assert.match(body(page), /By subscribing, you agree to our <a href="\/terms">/);
-  // /grown-ups: the limits are stated before buying; "not on sale yet" only for those who can't buy.
-  const landing = (await call(f.who, '/grown-ups')).text;
-  assert.match(landing, /One child can use up to 4 extra messages a day/);
-  assert.match(landing, /<a href="\/terms">Terms of Service<\/a> and our <a href="\/refunds">Refund and Cancellation Policy<\/a>/, '/grown-ups links the terms and the refund policy');
+  // /plans states the limits before buying; /parents (Plans, where /grown-ups was) links the terms and the refund policy
+  // and says "not on sale yet" only to those who can't buy.
+  assert.match((await call(f.who, '/plans')).text, /One child can use up to 4 extra messages a day/);
+  const landing = (await call(f.who, '/parents')).text;
+  assert.match(landing, /<a href="\/terms">Terms of Service<\/a>, our <a href="\/refunds">Refund and Cancellation Policy<\/a>/, '/parents links the terms and the refund policy');
   assert.doesNotMatch(landing, /aren&#39;t on sale yet|aren't on sale yet/);
-  assert.match((await call(null, '/grown-ups')).text, /aren&#39;t on sale yet|aren't on sale yet/);
+  assert.match((await call(null, '/parents')).text, /aren&#39;t on sale yet|aren't on sale yet/);
 });
 
 test('/admin/billing: read-only, admin only; rows, flags, refund window, events, the Stripe Tax banner', async () => {
@@ -656,7 +657,7 @@ test('without STRIPE_PMC_FAMILY family plans are not on sale: no Subscribe, no C
   const page = (await call(f.who, '/family?plan=basic')).text;
   assert.doesNotMatch(page, /data-api="\/api\/billing\/family\/checkout"/);
   assert.match(page, /This plan isn&#39;t on sale yet|This plan isn't on sale yet/);
-  assert.match((await call(f.who, '/grown-ups')).text, /aren&#39;t on sale yet|aren't on sale yet/);
+  assert.match((await call(f.who, '/parents')).text, /aren&#39;t on sale yet|aren't on sale yet/);
   assert.match(parseStripe({ STRIPE_API_KEY: 'rk_test_x', STRIPE_WEBHOOK_SECRET: 'whsec_x' }).warnings.join(), /STRIPE_PMC_FAMILY is not set/);
   assert.doesNotMatch(parseStripe({ STRIPE_API_KEY: 'rk_test_x', STRIPE_WEBHOOK_SECRET: 'whsec_x', STRIPE_PMC_FAMILY: 'pmc_1AbC' }).warnings.join(), /STRIPE_PMC_FAMILY/);
   const admin = auth.createUser({ username: `Adm${uid(4)}`, password: 'admin-password-1', role: 'admin' });

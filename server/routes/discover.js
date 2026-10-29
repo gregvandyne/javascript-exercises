@@ -1,7 +1,7 @@
 // Home rails, search (games + builders), live counts.
 import { Router } from 'express';
 import { html, raw } from '../views/html.js';
-import { page, parentsKey, signedOut } from '../views/layout.js';
+import { page, parentsKey, signedOut, notFound } from '../views/layout.js';
 import { rail, cardGrid, emptyState, avatar, coverArt, categoryLabel } from '../views/components.js';
 import * as games from '../services/games.js';
 import * as presence from '../services/presence.js';
@@ -9,6 +9,9 @@ import { rateLimit } from '../services/ratelimit.js';
 import { requireUser, isGrownup, OFFICIAL } from '../auth.js';
 import * as seo from '../seo.js';
 import { HUBS } from '../learn.js';
+import { availableCodes } from '../i18n/index.js';
+import * as funnel from '../services/funnel.js';
+import { countable } from '../services/traffic.js';
 
 export const router = Router();
 
@@ -53,14 +56,16 @@ router.get('/', (req, res) => {
     mine.length ? rail({ title: t('home.rails.mine'), emoji: '🛠️', games: mine, user: u, id: 'mine', more: '/build' }) : '',
     ...games.CATEGORIES.map(([k, e]) => rail({ title: categoryLabel(k, t), emoji: e, games: games.listVisible(u, { category: k, limit: 12 }), user: u, id: `cat-${k}`, more: `/search?cat=${k}` })),
   ];
-  // The page's heading says what the site is. Signed out (new visitors, teachers, search engines) it is shown with a
-  // short introduction; signed in, players know where they are, so it is only there for screen readers. A guest (one
-  // tap on Play) still counts as signed out: a parent who tried a game keeps the parent and teacher buttons.
+  // The page's heading says what the site is. Signed out (new visitors, teachers, search engines) it comes with a
+  // one-line promise and three doors: kids straight to a game (no sign-up), parents and teachers to their own page
+  // (docs/decisions.md "Home doors"); the featured game and the rows follow, so it still feels like the app. Signed in,
+  // players know where they are, so the heading is only there for screen readers. A guest (one tap on Play) still counts
+  // as signed out: a parent who tried a game keeps their door.
   // Text still in English on this language's page is marked so (screen readers, right-to-left pages).
   const fb = key => (t.own(key) ? '' : raw(' lang="en" dir="ltr"'));
   const intro = !signedOut(u) ? html`<h1 class="sr-only"${fb('home.intro.heading')}>${t('home.intro.heading')}</h1>`
     : html`<section class="home-intro" aria-labelledby="home-h1"><h1 id="home-h1"${fb('home.intro.heading')}>${t('home.intro.heading')}</h1><p${fb('home.intro.text')}>${t('home.intro.text')}</p>
-      <span class="row home-who"><a class="btn" href="${lp('/parents')}"><span aria-hidden="true">👪</span> <span${fb(parentsKey(t, 'home.intro.parents'))}>${t(parentsKey(t, 'home.intro.parents'))}</span></a><a class="btn" href="${lp('/teachers')}"><span aria-hidden="true">🍎</span> <span${fb('home.intro.teachers')}>${t('home.intro.teachers')}</span></a></span>
+      ${homeDoors(req)}
       <ul class="chips home-subjects" aria-label="${t('teachers.subjects.h')}">${HUBS.map(h => html`<li><a class="chip" href="${lp(`/learn/${h.slug}`)}"><span aria-hidden="true">${h.emoji}</span><span${fb(`learn.hubs.${h.key}.name`)}>${t(`learn.hubs.${h.key}.name`)}</span></a></li>`)}</ul></section>`;
   const body = html`${intro}
   ${hero ? html`<section class="hero cover-${hero.cover}" aria-label="${t('home.hero.label')}">
@@ -83,6 +88,61 @@ router.get('/', (req, res) => {
     index: true, path: '/', langs: seo.langsWithKey('home.intro.heading'), image: '/og/site.jpg', imageAlt: t('seo.home.imageAlt'),
     jsonld: [seo.graph([seo.organizationLd(req), seo.websiteLd(req, req.locale)])],
   } });
+});
+
+// ---------------------------------------------------------------------------------------------------- home doors
+/** The three doors on the signed-out home page. The kid door goes through /go/kid (below), which counts the click and
+ *  redirects to a game. The parent and teacher doors link straight to their page in this page's language (/es/parents),
+ *  so every home page keeps a crawlable link to its own language's parent and teacher pages; their click is counted on
+ *  the way by a beacon (data-count -> POST /go/<door>, public/js/app.js), no redirect. Until a language has the door labels, the ones it already has stand in ("Play", "For parents", "For
+ *  teachers") and the small lines are left out, so a translated home page never shows English doors (a door with no
+ *  label in this language at all is English, marked so). */
+function homeDoors(req) {
+  const t = req.t;
+  const lp = p => (req.pathLocale ? seo.localeUrl(p, req.pathLocale) : p);
+  const label = (key, stand) => (t.own(key) ? key : t.own(stand) ? stand : key);
+  const fb = key => (t.own(key) ? '' : raw(' lang="en" dir="ltr"'));
+  const door = (name, emoji, key, stand, sub, href) => {
+    const k = label(key, stand);
+    const go = href.startsWith('/go/');   // the counting redirect is nofollow; a door straight to its page is a real link
+    return html`<a class="door door-${name}" href="${href}"${go ? raw(' rel="nofollow"') : raw(` data-count="/go/${name}"`)}><span class="door-e" aria-hidden="true">${emoji}</span><span class="door-t"><span class="door-h"${fb(k)}>${t(k)}</span>${t.own(sub) || !t.own(k) ? html`<span class="door-s"${fb(sub)}>${t(sub)}</span>` : ''}</span><span class="door-go flip" aria-hidden="true">›</span></a>`;
+  };
+  return html`<div class="doors" role="group"${t.own('home.doors.label') ? html` aria-label="${t('home.doors.label')}"` : ''}>
+    ${door('kid', '🎮', 'home.doors.kid', 'home.hero.play', 'home.doors.kidSub', '/go/kid')}
+    ${door('parent', '👪', 'home.doors.parent', parentsKey(t, 'home.intro.parents'), 'home.doors.parentSub', lp('/parents'))}
+    ${door('teacher', '🍎', 'home.doors.teacher', 'home.intro.teachers', 'home.doors.teacherSub', lp('/teachers'))}
+  </div>`;
+}
+/** Door -> funnel step (services/funnel.js "doors"). play is the top bar's "▶ Play now" (views/layout.js). */
+const DOORS = new Map([['kid', 'door.kid'], ['play', 'door.bar'], ['parent', 'door.parent'], ['teacher', 'door.teacher']]);
+/** Where a door leads: kids straight into the featured game (the home page's own hero, so one tap from home is one
+ *  game, no sign-up), parents and teachers to their page in the language the home page was in (?l=es -> /es/parents). */
+export function doorTarget(req, door) {
+  if (door === 'kid' || door === 'play') {
+    const g = games.listVisible(req.user, { featured: true, order: 'plays', limit: 1 })[0] || games.listVisible(req.user, { order: 'popular', limit: 1 })[0];
+    return g ? `/play/${g.slug}` : '/';
+  }
+  const code = availableCodes().includes(req.query.l) ? req.query.l : null;
+  const p = door === 'parent' ? '/parents' : '/teachers';
+  return code ? seo.localeUrl(p, code) : p;
+}
+// A counting redirect, so the doors cost the pages they lead to nothing (no extra address to index: /go/ is disallowed
+// in robots.txt and answers noindex). Counted once per click, for people's browsers only (not robots, link previews or
+// scripts): one daily total per door, nothing about who clicked. Older ?l= links to the parent and teacher doors still work.
+router.get('/go/:door', (req, res) => {
+  const step = DOORS.get(req.params.door);
+  if (!step) return notFound(req, res);
+  if (req.method === 'GET' && countable(req)) funnel.bump(step);
+  res.set({ 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex, nofollow' });
+  res.redirect(302, doorTarget(req, req.params.door));
+});
+// The parent and teacher doors' beacon (they link straight to their page): counts only, same rules, same-origin only
+// (csrfCheck in app.js turns away other sites). The kid door and Play now are counted by their redirect, not here.
+router.post('/go/:door', rateLimit('door', 30, 60e3), (req, res) => {
+  const step = (req.params.door === 'parent' || req.params.door === 'teacher') && DOORS.get(req.params.door);
+  if (!step) return res.status(404).end();
+  if (req.headers['sec-fetch-site'] === 'same-origin' && countable(req)) funnel.bump(step);
+  res.set('Cache-Control', 'no-store').status(204).end();
 });
 
 function searchResults(req) {

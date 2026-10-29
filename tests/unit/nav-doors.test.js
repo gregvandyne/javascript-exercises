@@ -94,7 +94,7 @@ test('/parents: "Set up your child — free" (grown-up sign-up) and "Try a game"
   assert.match((await as(g)('/parents')).text, /<a class="btn btn-primary btn-big" href="\/family">/, 'a signed-in grown-up goes to their family');
   config.stripeApiKey = '';
   const off = await call(null, '/parents');
-  assert.match(off.text, /<a class="btn btn-primary btn-big" href="\/signup">Let your child start free<\/a>/);
+  assert.match(off.text, /<a class="btn btn-primary btn-big" href="\/signup\?for=kid">Let your child start free<\/a>/);
   assert.doesNotMatch(off.text, /href="\/grown-ups/);
 });
 
@@ -107,14 +107,16 @@ test('/safety ends with "Set up your child": the set-up signed out, the parent p
   }
   assert.match((await as(grownup())('/safety')).text, /href="\/family"[^>]*>/);
   config.stripeApiKey = '';
-  assert.match((await call(null, '/safety')).text, /href="\/signup"[^>]*>Set up your child<\/a>/);
+  assert.match((await call(null, '/safety')).text, /href="\/signup\?for=kid"[^>]*>Set up your child<\/a>/);
 });
 
 test('/login and /signup: "Grown-up or teacher?" leads to the grown-up sign-in or sign-up and to /teachers', async () => {
   const li = await call(null, '/login');
   assert.match(li.text, /Grown-up or teacher\? <a href="\/grown-ups\/login">Parents sign in here<\/a> · <a href="\/teachers">Teachers start here<\/a>/);
-  const su = await call(null, '/signup');
+  // Plain /signup asks "Who's this for?" instead (tests/unit/who-for.test.js); a kid on their way to a page keeps the line.
+  const su = await call(null, '/signup?next=%2Fbuild');
   assert.match(su.text, /<a href="\/grown-ups\/signup">Parents start here<\/a>/);
+  assert.doesNotMatch((await call(null, '/signup')).text, /grownup-line/);
   // A guest keeping their progress isn't sent elsewhere.
   assert.doesNotMatch((await as(auth.createGuest())('/signup')).text, /grownup-line/);
   config.stripeApiKey = '';

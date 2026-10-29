@@ -61,7 +61,8 @@
     "plans": "Prijzen",
     "teachers": "Leerkrachten",
     "parents": "Ouders",
-    "grownups": "Ouders"
+    "grownups": "Ouders",
+    "playNow": "Speel nu"
   },
   "errors": {
     "goHome": "Naar de start",
@@ -151,7 +152,19 @@
       "signupLink": "Maak een gratis account",
       "grownupLogin": "Volwassene of leerkracht? <a href=\"{grownup}\">Ouders loggen hier in</a> · <a href=\"{teachers}\">Leerkrachten beginnen hier</a>",
       "grownupLoginSoon": "Volwassene of leerkracht? <a href=\"{grownup}\">Oomba Academy voor ouders</a> · <a href=\"{teachers}\">Leerkrachten beginnen hier</a>",
-      "grownupSignup": "Volwassene of leerkracht? <a href=\"{grownup}\">Ouders beginnen hier</a> · <a href=\"{teachers}\">Leerkrachten beginnen hier</a>"
+      "grownupSignup": "Volwassene of leerkracht? <a href=\"{grownup}\">Ouders beginnen hier</a> · <a href=\"{teachers}\">Leerkrachten beginnen hier</a>",
+      "whoHeading": "Voor wie is dit?",
+      "whoGrownup": "Ik (een volwassene)",
+      "whoGrownupSub": "Je eigen account, gekoppeld aan het account van je kind",
+      "whoKid": "Mijn kind",
+      "whoKidSub": "Een verzonnen naam en een wachtwoord, geen e-mail. Kinderen die alleen zijn, beginnen ook hier.",
+      "whoTeacher": "Ik ben leerkracht",
+      "whoTeacherSub": "Zet je school en je klassen op",
+      "whoBack": "Voor wie is dit? Kies opnieuw",
+      "soonHeading": "Accounts voor volwassenen komen binnenkort",
+      "soonText": "Binnenkort kun je je eigen account maken, gekoppeld aan het account van je kind. Tot die tijd kan je kind gratis beginnen met een verzonnen naam en een wachtwoord (geen e-mail), en op de pagina voor ouders lees je hoe Oomba Academy werkt en kinderen veilig houdt.",
+      "soonParents": "Oomba Academy voor ouders",
+      "soonKid": "Maak het account van mijn kind"
     },
     "api": {
       "tooManyGuests": "Te veel gasten vanaf hier. Probeer het later nog eens.",
@@ -358,6 +371,15 @@
       "text": "Gratis games voor kinderen van 8 tot 14 jaar, voor in de klas of thuis, en een Bouwer die je eigen idee in een game verandert.",
       "teachers": "Voor leerkrachten",
       "parents": "Voor ouders"
+    },
+    "doors": {
+      "label": "Wie komt er kijken?",
+      "kid": "Ik ben een kind — speel nu",
+      "kidSub": "Geen aanmelding nodig",
+      "parent": "Ik ben een ouder",
+      "parentSub": "Is het veilig? Meld je kind gratis aan",
+      "teacher": "Ik ben leerkracht",
+      "teacherSub": "Gratis klassen, lessen en voortgang"
     }
   },
   "search": {
@@ -467,7 +489,6 @@
       "families": {
         "h": "Gezinsaccounts",
         "p1": "Een ouder of verzorger kan een eigen ouderaccount maken en dat koppelen aan het account van zijn of haar kind. Je kind moet daar op de eigen pagina ja op zeggen.",
-        "link": "Over gezinsaccounts",
         "plans": "Bekijk abonnementen en prijzen"
       }
     },
@@ -2736,25 +2757,16 @@
   },
   "family": {
     "landing": {
-      "title": "Gezinsaccounts",
-      "description": "Ouderaccounts voor ouders en verzorgers op Oomba Academy: koppel je kinderen en lees wat een gezinsabonnement toevoegt.",
-      "heading": "Oomba Academy voor gezinnen",
-      "intro": "Games spelen en bouwen op Oomba Academy is gratis. Met een ouderaccount kan een ouder of verzorger zich aan zijn of haar kinderen koppelen, en een gezinsabonnement geeft hun extra berichten aan de Bouwer.",
       "signup": "Maak een ouderaccount",
       "login": "Inloggen",
       "toFamily": "Naar je gezinspagina",
       "what": {
-        "h": "Wat een gezinsabonnement toevoegt",
         "p1": "{extra, plural, one {# extra bericht aan de Bouwer} other {# extra berichten aan de Bouwer}} per maand, te delen door maximaal {max} kinderen, bovenop de gratis berichten die elke speler elke dag krijgt.",
-        "p2": "Betalen geeft nooit toegang tot iets wat gratis spelers niet hebben, en kinderen wordt nooit gevraagd om te betalen.",
         "limitDaily": "Eén kind kan maximaal {daily, plural, one {# extra bericht} other {# extra berichten}} per dag gebruiken.",
         "limitCost": "De extra berichten van een gezin stoppen ook voor de rest van de maand als ze ongewoon duur worden om te leveren.",
         "limitReset": "Extra berichten beginnen op de 1e van elke maand (UTC) opnieuw en worden niet meegenomen naar de volgende maand."
       },
       "price": {
-        "h": "Prijs",
-        "p1": "{monthly} per maand of {yearly} per jaar, plus omzetbelasting (sales tax) waar die geldt. Altijd opzegbaar: het abonnement loopt door tot het einde van de periode waarvoor je hebt betaald.",
-        "both": "Basis kost {basic} per maand, voor één kind. Gezin kost {family} per maand, voor maximaal {max} kinderen. Plus omzetbelasting (sales tax) waar die geldt. Altijd opzegbaar: het abonnement loopt door tot het einde van de periode waarvoor je hebt betaald.",
         "soon": "Gezinsabonnementen zijn nog niet te koop. Je kunt nu al een ouderaccount maken en je kinderen koppelen.",
         "us": "Gezinsabonnementen zijn voorlopig alleen voor gezinnen in de Verenigde Staten."
       },
@@ -2787,8 +2799,7 @@
           "q": "Is koppelen of betalen een vorm van ouderlijke toestemming?",
           "a": "Nee. Koppelen en gezinsabonnementen gaan alleen over extra berichten aan de Bouwer. Zo vraagt de site geen toestemming en legt de site ook geen toestemming vast."
         }
-      },
-      "plans": "Vergelijk abonnementen en prijzen"
+      }
     },
     "signup": {
       "title": "Aanmelden voor ouders",
@@ -2855,6 +2866,20 @@
       "label": "Code van je kind",
       "submit": "Koppelverzoek sturen",
       "sent": "Verzoek verstuurd. Je kind moet nog ja zeggen op de pagina Ik."
+    },
+    "check": {
+      "heading": "Zo begin je",
+      "allSet": "Alles klaar",
+      "done": "Klaar",
+      "account": "Je account als volwassene",
+      "link": "Koppel je kind",
+      "linkCta": "Typ de code van je kind",
+      "plan": "Kies een abonnement (optioneel)",
+      "planWhy": "Gratis werkt ook; een abonnement geeft je kind extra berichten aan de Bouwer.",
+      "planOn": "Je abonnement is actief",
+      "hide": "Gratis is prima, verberg dit",
+      "staying": "We blijven voorlopig gratis.",
+      "notOnSale": "Abonnementen zijn nog niet te koop. Tot die tijd werkt gratis ook."
     },
     "errors": {
       "badCodeDay": "Die code werkt niet. Een code werkt één keer, 24 uur lang: vraag je kind om een nieuwe.",
@@ -3671,6 +3696,9 @@
       "li5": "Blijven oefenen in de vakantie",
       "li6": "Een regendagpauze waar je toch iets van leert",
       "li7": "Rekenen, lezen en muziek bij thuisonderwijs"
+    },
+    "plans": {
+      "adds": "Een abonnement geeft je gekoppelde kinderen elke maand extra berichten aan de Bouwer (voor één kind of het hele gezin, afhankelijk van het abonnement), bovenop de gratis berichten die elke speler elke dag krijgt. Betalen ontgrendelt nooit iets anders, en kinderen wordt nooit gevraagd om te betalen."
     },
     "families": {
       "p2": "Abonnementen zijn optioneel. Ze geven alleen extra berichten aan de Bouwer, en kinderen wordt nooit gevraagd om te betalen."

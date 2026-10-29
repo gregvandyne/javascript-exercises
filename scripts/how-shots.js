@@ -223,7 +223,7 @@ async function parentShots({ person, shot }) {
   // 1. Sign up with a made-up name (not submitted).
   await both('parents-start', async kind => {
     const p = await person(kind);
-    await p.goto('/signup');
+    await p.goto('/signup?for=kid');   // the kid form (plain /signup first asks "Who's this for?")
     await p.fill('#username', 'PixelPanda'); await p.fill('#password', 'a-made-up-pass');
     await p.locator('#username').blur();
     const f = await shot(p, `parents-start-${kind}`); await p.context().close(); return f;

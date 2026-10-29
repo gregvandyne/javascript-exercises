@@ -268,7 +268,7 @@ test('the new pages: nothing touches, no sideways scroll (360 / 1280, light / da
   const adminState = await (await admin(browser)).context().storageState();
   const sets = [
     [beforeState, ['/family', '/family?plan=family&interval=year', '/family?checkout=cs_test_layoutcheck123']],
-    [paidState, ['/family', '/grown-ups']],
+    [paidState, ['/family', '/parents']],   // /parents: its Plans and Family accounts sections (where /grown-ups was)
     [adminState, ['/admin/billing']],
   ];
   const problems = [];

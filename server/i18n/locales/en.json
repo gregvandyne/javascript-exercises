@@ -61,7 +61,8 @@
     "plans": "Plans",
     "teachers": "Teachers",
     "parents": "Parents",
-    "grownups": "Grown-ups"
+    "grownups": "Grown-ups",
+    "playNow": "Play now"
   },
   "errors": {
     "goHome": "Go home",
@@ -151,7 +152,19 @@
       "signupLink": "Make a free account",
       "grownupLogin": "Grown-up or teacher? <a href=\"{grownup}\">Parents sign in here</a> · <a href=\"{teachers}\">Teachers start here</a>",
       "grownupLoginSoon": "Grown-up or teacher? <a href=\"{grownup}\">Oomba Academy for parents</a> · <a href=\"{teachers}\">Teachers start here</a>",
-      "grownupSignup": "Grown-up or teacher? <a href=\"{grownup}\">Parents start here</a> · <a href=\"{teachers}\">Teachers start here</a>"
+      "grownupSignup": "Grown-up or teacher? <a href=\"{grownup}\">Parents start here</a> · <a href=\"{teachers}\">Teachers start here</a>",
+      "whoHeading": "Who’s this for?",
+      "whoGrownup": "Me (a grown-up)",
+      "whoGrownupSub": "Your own account, linked to your child’s account",
+      "whoKid": "My child",
+      "whoKidSub": "A made-up name and a password, no email. Kids on their own start here too.",
+      "whoTeacher": "I’m a teacher",
+      "whoTeacherSub": "Set up your school and your classes",
+      "whoBack": "Who’s this for? Pick again",
+      "soonHeading": "Grown-up accounts are coming soon",
+      "soonText": "Soon you’ll be able to make your own account, linked to your child’s account. Until then, your child can start free with a made-up name and a password (no email), and the parents’ page explains how Oomba Academy works and keeps children safe.",
+      "soonParents": "Oomba Academy for parents",
+      "soonKid": "Make my child’s account"
     },
     "api": {
       "tooManyGuests": "Too many guests from here. Try again later.",
@@ -358,6 +371,15 @@
       "text": "Free games for ages 8 to 14 to play in class or at home, and a Builder that turns your own idea into a game.",
       "teachers": "For teachers",
       "parents": "For parents"
+    },
+    "doors": {
+      "label": "Who is visiting?",
+      "kid": "I’m a kid — play now",
+      "kidSub": "No sign-up needed",
+      "parent": "I’m a parent",
+      "parentSub": "Is it safe? Set up your child, free",
+      "teacher": "I’m a teacher",
+      "teacherSub": "Free classes, lessons and progress"
     }
   },
   "search": {
@@ -467,7 +489,6 @@
       "families": {
         "h": "Family accounts",
         "p1": "A parent or guardian can make their own grown-up account and link it to their child's account. Your child has to say yes on their own page.",
-        "link": "About family accounts",
         "plans": "See plans and prices"
       }
     },
@@ -2737,25 +2758,16 @@
   },
   "family": {
     "landing": {
-      "title": "Family accounts",
-      "description": "Grown-up accounts for parents and guardians on Oomba Academy: link your children, and what a family plan adds.",
-      "heading": "Oomba Academy for families",
-      "intro": "Playing and building games on Oomba Academy is free. A grown-up account lets a parent or guardian link to their children, and a family plan adds extra Builder messages for them.",
       "signup": "Make a grown-up account",
       "login": "Sign in",
       "toFamily": "Go to your family page",
       "what": {
-        "h": "What a family plan adds",
         "p1": "{extra, plural, one {# extra Builder message} other {# extra Builder messages}} a month, shared by up to {max} children, on top of the free messages every player gets each day.",
-        "p2": "Paying never unlocks anything free players lack, and children are never asked to pay.",
         "limitDaily": "One child can use up to {daily, plural, one {# extra message} other {# extra messages}} a day.",
         "limitCost": "A family's extras also stop for the month if they get unusually expensive to run.",
         "limitReset": "Extras start again on the 1st of each month (UTC) and don't roll over."
       },
       "price": {
-        "h": "Price",
-        "p1": "{monthly} a month or {yearly} a year, plus sales tax where it applies. Cancel anytime: the plan runs to the end of the period you paid for.",
-        "both": "Basic is {basic} a month, for one child. Family is {family} a month, for up to {max} children. Plus sales tax where it applies. Cancel anytime: the plan runs to the end of the period you paid for.",
         "soon": "Family plans aren't on sale yet. You can make a grown-up account and link your children now.",
         "us": "Family plans are for US families for now."
       },
@@ -2788,8 +2800,7 @@
           "q": "Is linking or paying a form of parental consent?",
           "a": "No. Linking and family plans are only about extra Builder messages. They are not how the site asks for or records consent."
         }
-      },
-      "plans": "Compare plans and prices"
+      }
     },
     "signup": {
       "title": "Grown-up sign-up",
@@ -2856,6 +2867,20 @@
       "label": "Your child's code",
       "submit": "Send link request",
       "sent": "Request sent. Your child needs to say yes on their Me page."
+    },
+    "check": {
+      "heading": "Getting started",
+      "allSet": "All set",
+      "done": "Done",
+      "account": "Your grown-up account",
+      "link": "Link your child",
+      "linkCta": "Type your child's code",
+      "plan": "Pick a plan (optional)",
+      "planWhy": "Free works; a plan adds Builder messages for your child.",
+      "planOn": "Your plan is on",
+      "hide": "Free is fine, hide this",
+      "staying": "Staying free for now.",
+      "notOnSale": "Plans aren’t on sale yet. Free works in the meantime."
     },
     "errors": {
       "badCodeDay": "That code doesn't work. A code works once, for 24 hours: ask your child for a new one.",
@@ -3672,6 +3697,9 @@
       "li5": "Practice over the holidays",
       "li6": "A rainy-day break that still teaches something",
       "li7": "Homeschool math, reading and music"
+    },
+    "plans": {
+      "adds": "A plan adds extra Builder messages each month for your linked children (one child or the whole family, depending on the plan), on top of the free messages every player gets each day. Paying never unlocks anything else, and kids are never asked to pay."
     },
     "families": {
       "p2": "Plans are optional. They only add extra Builder messages, and kids are never asked to pay."

@@ -1,7 +1,8 @@
 // Grown-up accounts and family links (paid plans, chunk 3), end to end. Families are on only while billing is, so this
 // spec runs its own server with billing on against the fake Stripe (tests/support/fake-stripe.js): the server on
 // E2E_PORT + 3 (default 4313), the fake Stripe on E2E_PORT + 2. No payments yet.
-//   - a child gets a code on /me, a grown-up signs up from /parents → /grown-ups and types it, the child says yes;
+//   - a child gets a code on /me, a grown-up signs up from /parents (its Family accounts section; /grown-ups is a 301 to
+//     /parents#families) and types it, the child says yes;
 //   - a child reports a request, the admin sees it in the link reports queue;
 //   - grown-ups are fenced in (a "the Builder is for kids" page on /build, 404 on friends and chat); kids never see a link to the grown-up pages;
 //   - the new pages at 360 px and 1280 px, light and dark, and right to left (he): nothing touches, no sideways scroll.
@@ -81,12 +82,21 @@ test('a child gets a code, a grown-up signs up from /parents and links, the chil
   await expect(kidPage.locator('#grownups a')).toHaveCount(0);   // the address is text, not a link
 
   const mum = await person(browser);
-  await mum.goto('/parents');
-  await Promise.all([mum.waitForURL(/\/grown-ups$/), mum.click('a[href="/grown-ups"]')]);
-  await expect(mum.locator('h1')).toContainText('Oomba Academy for families');
-  await expect(mum.locator('main')).toContainText('$7.99');
-  await expect(mum.locator('main')).toContainText('US families');
-  await Promise.all([mum.waitForURL(/\/grown-ups\/signup$/), mum.click('a[href="/grown-ups/signup"]')]);
+  // The old address lands on the one parent page's Family accounts section.
+  await mum.goto('/grown-ups');
+  await expect(mum).toHaveURL(/\/parents#families$/);
+  await expect(mum.locator('#families')).toBeInViewport();
+  await expect(mum.locator('#families')).toContainText('How linking works');
+  // Plans: what a plan adds and where the prices are; no price on the parent page itself.
+  await expect(mum.locator('#plans')).toContainText('US families');
+  await expect(mum.locator('#plans a[href="/plans"]')).toHaveText('See plans and prices');
+  await expect(mum.locator('main')).not.toContainText('$');
+  // The grown-ups' questions fold open.
+  const consent = mum.locator('#families details.lp-q', { hasText: 'parental consent' });
+  await expect(consent.locator('p')).toBeHidden();
+  await consent.locator('summary').click();
+  await expect(consent.locator('p')).toBeVisible();
+  await Promise.all([mum.waitForURL(/\/grown-ups\/signup$/), mum.locator('#families a[href="/grown-ups/signup"]').click()]);
   // The 12-character rule and the parent-or-guardian box.
   await mum.fill('#username', uniq('Mum')); await mum.fill('#password', 'too-short-1'); await mum.fill('#confirm', 'too-short-1'); await mum.check('#adult');
   await mum.click('button[type=submit]');
@@ -242,7 +252,7 @@ test('the new pages: nothing touches, no sideways scroll (360 / 1280, light / da
   await enterCode(mum, cb);
   const mumState = await mum.context().storageState(), askedState = await b.context().storageState(), linkedState = await a.context().storageState();
   const sets = [
-    [null, ['/grown-ups', '/grown-ups/signup', '/grown-ups/login', '/parents']],
+    [null, ['/grown-ups/signup', '/grown-ups/login', '/parents', '/parents#families']],
     [mumState, ['/family', '/family/link']],
     [askedState, ['/me#grownups']],
     [linkedState, ['/me#grownups']],
@@ -257,6 +267,8 @@ test('the new pages: nothing touches, no sideways scroll (360 / 1280, light / da
         const url = v.lang ? `${p.split('#')[0]}${p.includes('?') ? '&' : '?'}lang=${v.lang}` : p;
         await page.goto(url);
         if (v.lang) await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
+        // The parent page's folds: checked open (the closed ones are only their heading rows).
+        if (p === '/parents') await page.evaluate(() => { for (const d of document.querySelectorAll('details.lp-fold, details.lp-q')) d.open = true; });
         for (const t of await findTouching(page)) problems.push(`${p} @${v.width}/${v.scheme}${v.lang ? '/' + v.lang : ''}: ${t.a} ⟷ ${t.b} (${t.dir} ${t.gap}px)`);
         const wide = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
         if (wide > 1) problems.push(`${p} @${v.width}${v.lang ? '/' + v.lang : ''}: scrolls sideways by ${wide}px`);
@@ -276,7 +288,7 @@ test('a grown-up meets no dead ends: every same-site link and form on their page
   await grownupSignup(mum, uniq('Mum'));
   await mum.goto('/');
   const game = await mum.locator('a[href^="/g/"]').first().getAttribute('href');
-  const seeds = ['/', '/search', '/search?q=a', '/family', '/family/link', '/parents', '/safety', '/grown-ups', game, game.replace('/g/', '/play/')];
+  const seeds = ['/', '/search', '/search?q=a', '/family', '/family/link', '/parents', '/safety', game, game.replace('/g/', '/play/')];
   const hrefs = new Set(), apis = new Set();
   for (const p of seeds) {
     await mum.goto(p);
@@ -308,4 +320,60 @@ test('the code panel: a safety line next to the code; a new code hides "Lost it?
   await expect(kidPage.locator('#famcode')).toBeVisible();
   await expect(kidPage.locator('#famcode-open')).toBeHidden();
   await expect(kidPage.locator('[data-family-code]')).toHaveCount(0);
+});
+
+test('the /family checklist: how to link, ticks when the child says yes, "Free is fine" folds it to All set; kids never see it', async ({ browser }) => {
+  const mum = await person(browser);
+  await grownupSignup(mum, uniq('Mum'));
+  const check = mum.locator('#famcheck');
+  await expect(check.locator('h2')).toHaveText('Getting started');
+  const steps = check.locator('.famcheck-step');
+  await expect(steps).toHaveCount(3);
+  await expect(steps.nth(0)).toHaveClass(/done/);
+  await expect(steps.nth(1)).not.toHaveClass(/done/);
+  await expect(steps.nth(1)).toContainText('For grown-ups');
+  // A test key and not a billing tester: plans aren't on sale to Mum, so step 3 promises nothing and has no plans link.
+  await expect(steps.nth(2)).toContainText('Plans aren’t on sale yet. Free works in the meantime.');
+  await expect(steps.nth(2).locator('a[href="/plans"]')).toHaveCount(0);
+  await expect(check).not.toContainText('$');
+  // Step 2's link opens the code form; the child says yes.
+  const kidPage = await person(browser);
+  await signup(kidPage, uniq('Kid'));
+  const code = await getCode(kidPage);
+  await expect(kidPage.locator('#famcheck')).toHaveCount(0);
+  await Promise.all([mum.waitForURL(/\/family\/link$/), steps.nth(1).locator('a[href="/family/link"]').click()]);
+  await mum.fill('#code', code);
+  await Promise.all([mum.waitForURL(/\/family$/), mum.click('button[type=submit]')]);
+  await expect(steps.nth(1)).toContainText('Waiting for your child to say yes');
+  await kidPage.goto('/me'); await Promise.all([kidPage.waitForLoadState('load'), kidPage.locator('#grownups button', { hasText: 'Yes' }).click()]);
+  await expect(kidPage.locator('#famcheck')).toHaveCount(0);
+  await mum.reload();
+  await expect(steps.nth(1)).toHaveClass(/done/);
+  // "Free is fine": folded to one line, kept after a reload, still opens.
+  await Promise.all([mum.waitForLoadState('load'), steps.nth(2).locator('button', { hasText: 'Free is fine, hide this' }).click()]);
+  await expect(mum.locator('details#famcheck > summary')).toHaveText(/All set/);
+  await mum.reload();
+  const folded = mum.locator('details#famcheck');
+  await expect(folded).not.toHaveAttribute('open', '');
+  await expect(folded.locator('.famcheck-step').first()).toBeHidden();
+  await folded.locator('summary').click();
+  await expect(folded.locator('.famcheck-step').nth(2)).toContainText('Plans aren’t on sale yet');
+  await expect(folded.locator('.famcheck-step').nth(2)).not.toContainText('any time');
+  // Folded and opened, at 360 and 1280, light and dark, and right to left: nothing touches, no sideways scroll.
+  const state = await mum.context().storageState();
+  const problems = [];
+  for (const v of VIEWS) {
+    const ctx = await browser.newContext({ baseURL: FAM, viewport: { width: v.width, height: v.height }, colorScheme: v.scheme, storageState: state });
+    const page = await ctx.newPage();
+    await page.goto(v.lang ? `/family?lang=${v.lang}` : '/family');
+    for (const open of [false, true]) {
+      await page.evaluate(o => { document.querySelector('details#famcheck').open = o; }, open);
+      for (const t of await findTouching(page)) problems.push(`/family ${open ? 'open' : 'folded'} @${v.width}/${v.scheme}${v.lang ? '/' + v.lang : ''}: ${t.a} ⟷ ${t.b} (${t.dir} ${t.gap}px)`);
+      const wide = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
+      if (wide > 1) problems.push(`/family @${v.width}${v.lang ? '/' + v.lang : ''}: scrolls sideways by ${wide}px`);
+      if (SHOTS) await page.screenshot({ path: path.join(SHOTS, `family_check_${open ? 'open' : 'folded'}-${v.width}-${v.scheme}${v.lang ? '-' + v.lang : ''}.png`) });
+    }
+    await ctx.close();
+  }
+  expect([...new Set(problems)]).toEqual([]);
 });

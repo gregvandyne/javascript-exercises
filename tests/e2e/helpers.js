@@ -32,6 +32,9 @@ export async function ownIp(page) { await page.context().setExtraHTTPHeaders({ '
 export async function signup(page, username = uniq('Kid'), password = 'secret123') {
   await ownIp(page);
   await page.goto('/signup');
+  // "Start free" first asks "Who's this for?" (in the languages that have it): a kid's account is "My child".
+  const mine = page.locator('.whofor a.door-kid');
+  if (await mine.count()) await Promise.all([page.waitForURL(/\/signup\?for=kid/), mine.click()]);
   await page.fill('#username', username); await page.fill('#password', password);
   await Promise.all([page.waitForURL(u => !u.pathname.startsWith('/signup')), page.click('button[type=submit]')]);
   return { username, password };

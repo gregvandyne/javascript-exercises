@@ -22,7 +22,7 @@ export const router = Router();
 /** Paths no search engine needs: APIs, game frames, play pages (they make a guest), sign-in hand-offs, the Studio, chat,
  *  search results and the language and theme switches. Private pages that ARE crawlable (profiles, classes, schools)
  *  are not listed: a disallowed page can't be read, so its noindex would never be seen (server/seo.js PRIVATE_RE). */
-export const DISALLOW = ['/api/', '/frame/', '/play/', '/auth/', '/studio/', '/build', '/chat', '/search', '/*?lang=', '/*&lang=', '/*?theme=', '/*&theme='];
+export const DISALLOW = ['/api/', '/go/', '/signup/for/', '/frame/', '/play/', '/auth/', '/studio/', '/build', '/chat', '/search', '/*?lang=', '/*&lang=', '/*?theme=', '/*&theme='];
 const onOldHost = req => !!config.publicUrl && legacyHosts().has(hostOnly(req.headers.host));
 
 router.get('/robots.txt', (req, res) => {

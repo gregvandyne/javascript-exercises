@@ -71,6 +71,8 @@ export const isChildAccount = u => !!u && !u.is_guest && !u.banned && !isGrownup
 
 export const familyById = id => (id ? q.get('SELECT * FROM families WHERE id=?', String(id)) || null : null);
 export const familyOfOwner = userId => (userId ? q.get('SELECT * FROM families WHERE owner_id=?', userId) || null : null);
+/** The grown-up said a free family is fine: the /family checklist folds to its "All set" line (routes/family.js). */
+export const hideChecklist = familyId => q.run('UPDATE families SET checklist_hidden_at=? WHERE id=? AND checklist_hidden_at IS NULL', now(), familyId).changes > 0;
 /** The grown-up's family, made the first time it is needed (sign-up makes it). */
 export function ensureFamily(grownup) {
   if (!isGrownup(grownup)) return null;
