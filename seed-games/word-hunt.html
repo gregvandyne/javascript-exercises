@@ -289,7 +289,8 @@ const CONFIG = {
   overlapChance: 0.65,    // how often the generator tries to cross words over a shared letter
   maxCellPx: 64,          // biggest letter box on large screens
   dailyDifficulty: 'medium',
-  speechRate: 0.8,
+  speechRate: 0.9,        // a found word read aloud: a touch slower than talking (1) so a young reader hears every sound
+  talkRate: 1,            // messages and cheers: normal talking speed sounds the most natural
   race: { players: [['🦊', 'Player 1'], ['🐸', 'Player 2']], hintSeconds: 15 },   // "Race a friend": each hint adds this many seconds
   // Colour-blind-safe highlight colours (Okabe-Ito family). Each band also gets a pattern and a dark outline.
   bands: [
@@ -1236,46 +1237,36 @@ function paintBackground() {
    Sound + speech (speechSynthesis may be missing: every use is guarded)
    ===================================================================================== */
 function sfx(name) { try { BRB.sfx.play(name); } catch (e) { /* ignore */ } }
+/* Voices: BRB.speak picks the most natural voice for the language and speaks at the normal pitch.
+   The game needs the SDK (it is always there on Oomba Academy). With an older SDK that has no BRB.speak, nothing is
+   spoken (the word is shown instead): a lang-only utterance would let the browser pick a voice itself, often its
+   most robotic one. Rates (1 = normal talking): see CONFIG.speechRate / CONFIG.talkRate. */
 function canSpeak() { try { return !!(window.speechSynthesis && window.SpeechSynthesisUtterance); } catch (e) { return false; } }
+function speakLine(text, lang, rate, queue) {
+  try {
+    return typeof BRB.speak === 'function' ? BRB.speak(text, { lang, rate, queue }) : false;
+  } catch (e) { return false; }
+}
 /** Speaks an English word (always an en-US voice, whatever the menu language). */
-function say(text, queue) {
-  if (!canSpeak()) return false;
-  try {
-    if (!queue) window.speechSynthesis.cancel();
-    utter(text, null); return true;
-  } catch (e) { return false; }
-}
-function utter(text, ui) {
-  const u = new window.SpeechSynthesisUtterance(text); u.rate = CONFIG.speechRate; u.pitch = 1.1;
-  if (ui) { u.lang = ui.lang; if (ui.voice) u.voice = ui.voice; } else u.lang = 'en-US';
-  window.speechSynthesis.speak(u);
-}
-const VOICE_TAG = { pt: 'pt-BR', 'zh-Hant': 'zh-TW', fr: 'fr-FR', es: 'es-ES', de: 'de-DE', he: 'he-IL', ja: 'ja-JP', ar: 'ar-SA', ru: 'ru-RU', it: 'it-IT', nl: 'nl-NL' };
-/** The device's voice for the menu language, or null if it has none (then only the English words are spoken). */
-function uiVoice() {
-  const tag = VOICE_TAG[LANG] || LANG; let vs = [];
-  try { vs = window.speechSynthesis.getVoices() || []; } catch (e) { /* ignore */ }
-  if (!vs.length) return { lang: tag, voice: null };   // the list is not ready yet: let the browser pick by language
-  const norm = x => String(x || '').replace('_', '-').toLowerCase(), want = norm(tag), base = want.split('-')[0];
-  const v = vs.find(x => norm(x.lang) === want) || vs.find(x => norm(x.lang).split('-')[0] === base);
-  return v ? { lang: v.lang, voice: v } : null;
-}
-/** Says a message in the menu language. Placeholders named in enKeys are English words: they get the English voice. */
+function say(text, queue) { return speakLine(text, 'en-US', CONFIG.speechRate, queue); }
+/** Says a message in the menu language. Placeholders named in enKeys are English words: they get the English voice.
+    With no voice on the device for the menu language, only the English words are spoken. */
 function sayT(key, vars = {}, enKeys = ['w', 'l']) {
-  if (!canSpeak()) return false;
-  try {
-    window.speechSynthesis.cancel();
-    if (IS_EN) { utter(t(key, vars), null); return true; }
-    const ui = uiVoice(), local = Object.assign({}, vars); enKeys.forEach(k => { delete local[k]; });
-    t(key, local).split(/(\{\w+\})/).forEach(seg => {
-      const m = /^\{(\w+)\}$/.exec(seg);
-      if (m) { if (vars[m[1]] != null) utter(String(vars[m[1]]), null); }
-      else if (ui && /\p{L}/u.test(seg)) utter(seg.replace(/^[\s\p{P}]+/u, '').trim(), ui);
-    });
-    return true;
-  } catch (e) { return false; }
+  if (IS_EN) return speakLine(t(key, vars), LANG, CONFIG.talkRate, false);
+  const local = Object.assign({}, vars); enKeys.forEach(k => { delete local[k]; });
+  let first = true, any = false;
+  const go = (text, lang) => { if (speakLine(text, lang, CONFIG.talkRate, !first)) any = true; first = false; };
+  t(key, local).split(/(\{\w+\})/).forEach(seg => {
+    const m = /^\{(\w+)\}$/.exec(seg);
+    if (m) { if (vars[m[1]] != null) go(String(vars[m[1]]), 'en-US'); }
+    else if (/\p{L}/u.test(seg)) go(seg.replace(/^[\s\p{P}]+/u, '').trim(), LANG);
+  });
+  return any;
 }
-function stopSpeaking() { try { if (canSpeak()) window.speechSynthesis.cancel(); } catch (e) { /* ignore */ } clearReadTimers(); }
+function stopSpeaking() {
+  try { if (typeof BRB.stopSpeaking === 'function') BRB.stopSpeaking(); else if (canSpeak()) window.speechSynthesis.cancel(); } catch (e) { /* ignore */ }
+  clearReadTimers();
+}
 let readTimers = [];
 function clearReadTimers() { readTimers.forEach(clearTimeout); readTimers = []; document.querySelectorAll('.wchip.speaking').forEach(b => b.classList.remove('speaking')); }
 

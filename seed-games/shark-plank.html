@@ -216,25 +216,76 @@ try{stars=+localStorage.getItem('shark-plank-stars')||0;}catch(e){}
 
 /* ---------- speech ---------- */
 /* The game's words and letters are always spoken with an English (en-US) voice. Cheers and messages use the
-   menu language's voice when the device has one; with no such voice only the English word is spoken. */
-const VOICE_TAG={pt:'pt-BR','zh-Hant':'zh-TW',fr:'fr-FR',es:'es-ES',de:'de-DE',he:'he-IL',ja:'ja-JP',ar:'ar-SA',ru:'ru-RU',it:'it-IT',nl:'nl-NL'};
-function uiVoice(){
-  const tag=VOICE_TAG[LANG]||LANG;let vs=[];try{vs=speechSynthesis.getVoices()||[];}catch(e){}
-  if(!vs.length)return {lang:tag,voice:null};          // voices not listed yet: let the browser pick by language
-  const norm=x=>String(x||'').replace('_','-').toLowerCase(),want=norm(tag),base=want.split('-')[0];
-  const v=vs.find(x=>norm(x.lang)===want)||vs.find(x=>norm(x.lang).split('-')[0]===base);
-  return v?{lang:v.lang,voice:v}:null;
+   menu language's voice when the device has one; with no such voice only the English word is spoken.
+   Voices: the most natural one on the device (BRB.speak), at the normal pitch. Rates: 1 is normal talking;
+   a letter and the messages use 1, and the "hear the word" button reads the word slower (RATE.word) on purpose. */
+const RATE={talk:1,word:.8};
+/* voice-pick:start. Only for playing this file on its own: on Oomba Academy the SDK's BRB.speak is used.
+   The same scoring as BRB.voice in public/sdk/brb-sdk.js (tests/unit/voice.test.js checks they agree):
+   the language's preferred region first, natural/premium/enhanced voices up, old Windows "Desktop" voices,
+   eSpeak and Apple's novelty voices down; the browser's online voices (Edge "Online (Natural)", Chrome "Google US English")
+   after on-device natural ones but before plain on-device ones. An online voice sends the text to Microsoft or Google
+   (accepted by the owner on 29 Oct 2026, docs/decisions.md). When the browser has not listed its voices yet,
+   speakWith waits for them rather than letting the browser choose one. */
+const VOICE_REGIONS = { en: ['us', 'gb', 'ca', 'au'], 'en-gb': ['gb', 'ie', 'au'], pt: ['br', 'pt'], 'zh-hant': ['tw', 'cn', 'hk'], zh: ['cn', 'tw', 'hk'],
+  he: ['il'], es: ['es', 'mx', 'us'], fr: ['fr', 'ca'], de: ['de', 'at', 'ch'], it: ['it'], nl: ['nl', 'be'], ja: ['jp'], ru: ['ru'], ar: ['sa', 'eg', 'ae'] };
+const VOICE_SCORES = [[/\b(natural|neural)\b/i, 30], [/premium/i, 30], [/siri/i, 25], [/enhanced/i, 25], [/^google\b/i, 10], [/\bdesktop\b/i, -15], [/compact/i, -10],
+  [/^(eddy|flo|grandma|grandpa|reed|rocko|sandy|shelley)\b/i, -40],
+  [/^(albert|bad news|bahh|bells|boing|bubbles|cellos|deranged|good news|hysterical|jester|organ|pipe organ|superstar|trinoids|whisper|wobble|zarvox|fred|junior|kathy|ralph|agnes|bruce|princess|vicki|victoria)\b/i, -80],
+  [/e-?speak/i, -60]];
+const VOICE_ONLINE = 20;   // an online voice gets this instead of the bonuses (penalties still count)
+function voiceTag(t) {
+  const p = String(t || '').replace(/_/g, '-').toLowerCase().split('-'); let lang = p[0], region = '', script = '';
+  for (const x of p.slice(1)) { if (/^[a-z]{4}$/.test(x)) script = x; else if (!region && /^([a-z]{2}|\d{3})$/.test(x)) region = x; }
+  if (lang === 'iw') lang = 'he';
+  if (lang === 'cmn' || lang === 'yue') lang = 'zh';
+  if (lang === 'zh' && !region) region = script === 'hant' ? 'tw' : script === 'hans' ? 'cn' : '';
+  return { lang, region };
 }
-function utter(text,rate,ui){const u=new SpeechSynthesisUtterance(text);u.rate=rate;u.pitch=1.15;if(ui){u.lang=ui.lang;if(ui.voice)u.voice=ui.voice;}else u.lang='en-US';speechSynthesis.speak(u);}
-function say(t,rate=.85){try{if(!('speechSynthesis' in window))return;speechSynthesis.cancel();utter(t,rate,null);}catch(e){}}
-function sayT(key,vars={},rate=.85){
+function pickVoice(list, lang) {
+  const key = String(lang || 'en').replace(/_/g, '-').toLowerCase(), want = voiceTag(key);
+  const regions = VOICE_REGIONS[key] || [...new Set([want.region, ...(VOICE_REGIONS[want.lang] || [])].filter(Boolean))];
+  let best = null, top = -Infinity;
+  for (const v of list || []) {
+    if (!v) continue;
+    const id = String(v.name || '') + ' ' + String(v.voiceURI || '');
+    const tg = voiceTag(v.lang); if (tg.lang !== want.lang) continue;
+    const online = v.localService === false || /-network\b/i.test(id);   // the text goes to Google / Microsoft
+    const r = regions.indexOf(tg.region); let s = r >= 0 ? 100 - 10 * r : 40;
+    for (const [re, add] of VOICE_SCORES) if (re.test(id) && !(online && add > 0)) s += add;
+    if (online) s += VOICE_ONLINE;
+    if (v.default) s += 5;
+    if (s > top) { best = v; top = s; }
+  }
+  return best;
+}
+/* voice-pick:end */
+/** Speaks text with BRB.speak, or (this file on its own) the best voice. false: nothing will be said. */
+function speakWith(text, lang, rate, queue) {
+  try {
+    if (window.BRB && typeof BRB.speak === 'function') return BRB.speak(text, { lang, rate, queue });
+    const ss = window.speechSynthesis; if (!ss || !window.SpeechSynthesisUtterance) return false;
+    if (!queue) ss.cancel();
+    const go = () => {   // only ever with a voice set explicitly: a lang-only utterance lets the browser pick any voice (often the worst)
+      const v = pickVoice(ss.getVoices() || [], lang); if (!v) return false;
+      const u = new SpeechSynthesisUtterance(text); u.voice = v; u.lang = v.lang; u.rate = rate; ss.speak(u); return true;
+    };
+    if ((ss.getVoices() || []).length) return go();
+    // Chrome lists its voices a moment after the page loads: wait for them once (at most 1.5 s), then speak or stay silent.
+    let waited = false; const later = () => { if (waited) return; waited = true; try { go(); } catch (e) { /* ignore */ } };
+    if (typeof ss.addEventListener === 'function') ss.addEventListener('voiceschanged', later, { once: true });
+    setTimeout(later, 1500);
+    return true;
+  } catch (e) { return false; }
+}
+function say(t,rate=RATE.talk){speakWith(t,'en-US',rate,false);}
+function sayT(key,vars={},rate=RATE.talk){
   try{
-    if(!('speechSynthesis' in window))return;speechSynthesis.cancel();
-    if(IS_EN){utter(t(key,vars),rate,null);return;}
-    const ui=uiVoice();
+    if(IS_EN){speakWith(t(key,vars),LANG,rate,false);return;}
+    let first=true;const go=(text,lang)=>{speakWith(text,lang,rate,!first);first=false;};
     t(key).split(/(\{\w+\})/).forEach(seg=>{const m=/^\{(\w+)\}$/.exec(seg);
-      if(m){if(vars[m[1]]!=null)utter(String(vars[m[1]]),rate,null);}
-      else if(ui&&/\p{L}/u.test(seg))utter(seg.replace(/^[\s\p{P}]+/u,'').trim(),rate,ui);});
+      if(m){if(vars[m[1]]!=null)go(String(vars[m[1]]),'en-US');}
+      else if(/\p{L}/u.test(seg))go(seg.replace(/^[\s\p{P}]+/u,'').trim(),LANG);});
   }catch(e){}
 }
 
@@ -254,7 +305,7 @@ $('startSecret').addEventListener('click',()=>{
   if(w.length<2){$('err').textContent=t('errShort');return;}
   $('secret').hidden=true;$('play').hidden=false;newWord(w);
 });
-$('hear').addEventListener('click',()=>{if(word)say(word.toLowerCase(),.7);});
+$('hear').addEventListener('click',()=>{if(word)say(word.toLowerCase(),RATE.word);});
 $('hint').addEventListener('click',()=>{
   if(over)return;const left=[...new Set(word.split(''))].filter(l=>!guessed.has(l));
   if(!left.length||miss>=LIVES-1){sayT('sNoHelp');return;}
