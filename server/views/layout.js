@@ -161,7 +161,7 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
   if (staff) badges.me = (badges.me || 0) + (badges.friends || 0);
   const badge = k => (badges[k] ? html`<span class="badge" aria-label="${t('layout.badgeNew', { count: badges[k] })}">${badges[k] > 9 ? '9+' : badges[k]}</span>` : '');
   const playKey = t.own('nav.playNow') ? 'nav.playNow' : 'home.hero.play';
-  const playNow = out ? html`<a class="btn btn-hot playnow" href="/go/play" rel="nofollow"${t.own(playKey) ? '' : raw(' lang="en"')}><span aria-hidden="true">▶</span> <span class="playnow-t">${t(playKey)}</span></a>` : '';
+  const playNow = out ? html`<a class="btn btn-hot playnow" href="${(req.pathLocale ? localeUrl('/', req.pathLocale) : '/') + '#play'}" data-count="/go/play"${t.own(playKey) ? '' : raw(' lang="en"')}><span aria-hidden="true">▶</span> <span class="playnow-t">${t(playKey)}</span></a>` : '';
   const act = currentTab(shell, active);
   const signIn = t('layout.signIn');
   const cur = k => (k === act || (k === 'grownups' && GROWNUP_PAGES.includes(act)) ? raw('aria-current="page"') : '');

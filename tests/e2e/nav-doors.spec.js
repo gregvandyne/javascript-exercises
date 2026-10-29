@@ -1,7 +1,8 @@
 // Doors for grown-ups: signed out and as a guest (after one tap on Play) the phone tab bar is Home · Search · Build ·
 // Grown-ups · (Plans) · Sign in, every label fits at 360px in English, German and Hebrew, light and dark; the desktop
 // bar keeps Parents and Teachers; the new pages (/learn, a grown-up's /build) have nothing touching and no sideways scroll.
-// Week 2: the home doors (the kid's reaches a game in one tap) and the signed-out top bar with ▶ Play now, which fits.
+// Week 2: the home doors (the kid's scrolls down to the games, #play, so a game is two taps away) and the signed-out
+// top bar with ▶ Play now (to the home page's #play), which fits.
 import { test, expect } from '@playwright/test';
 import { findTouching } from './touching.js';
 import { gameFrame } from './helpers.js';
@@ -87,25 +88,71 @@ test('desktop, signed out and as a guest: Parents and Teachers in the top bar, n
   }
 });
 
-test('the kid door reaches a game in one tap (phone and desktop, signed out and as a guest); nobody signs up', async ({ browser }) => {
-  for (const [who, width] of [['signed out', 360], ['guest', 1280]]) {
+/** #play (the featured game and the rows) has been scrolled to: its top sits just under the sticky top bar (the page's
+ *  scroll-padding), it stays put (the smooth scroll is over), and the hero's Play button is on screen, not under the bar. */
+async function atPlay(page) {
+  const at = () => page.evaluate(() => {
+    const play = document.getElementById('play').getBoundingClientRect().top;
+    const pad = parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0;
+    const bar = document.querySelector('.topbar')?.getBoundingClientRect().bottom || 0;
+    const btn = document.querySelector('#play .hero a.btn-big').getBoundingClientRect();
+    return { off: Math.round(Math.abs(play - pad)), y: Math.round(scrollY), under: btn.top < bar, out: btn.bottom > innerHeight };
+  });
+  await expect.poll(async () => { const a = await at(); await page.waitForTimeout(150); const b = await at(); return a.y === b.y && b.off <= 2; }, { timeout: 5000 }).toBe(true);
+  const r = await at();
+  expect(r.y).toBeGreaterThan(0);
+  expect(r.under || r.out, 'the hero Play button is on screen, clear of the top bar').toBe(false);
+  await expect(page.locator('#play .hero a.btn-big')).toBeInViewport();
+  expect(new URL(page.url()).hash).toBe('#play');
+}
+
+test('the kid door scrolls down to the featured game and the rows (#play), counted; one more tap plays; nobody signs up', async ({ browser }) => {
+  for (const [who, width] of [['signed out', 390], ['guest', 1280], ['signed out', 1280], ['guest', 390]]) {
     const opts = { viewport: { width, height: 800 } };
     const ctx = who === 'guest' ? await guestContext(browser, opts) : await browser.newContext(opts);
     const page = await ctx.newPage();
     await page.goto('/');
+    expect(await page.evaluate(() => scrollY)).toBe(0);
     const kid = page.locator('.door-kid');
     await expect(kid).toBeInViewport();   // on the first screen, phone too
-    await Promise.all([page.waitForURL(/\/play\/[a-z0-9-]+$/), kid.click()]);
+    await expect(kid).toHaveAttribute('href', '#play');
+    const beacon = page.waitForRequest(r => r.method() === 'POST' && new URL(r.url()).pathname === '/go/kid');
+    await kid.click();
+    await beacon;
+    await atPlay(page);
+    expect(new URL(page.url()).pathname, 'the same page, not a game').toBe('/');
+    if (process.env.BRB_SNAPSHOTS) await page.screenshot({ path: test.info().outputPath(`kid-door-${width}-${who.replace(' ', '-')}.png`) });
+    // Two taps from home to a game, no sign-up.
+    await Promise.all([page.waitForURL(/\/play\/[a-z0-9-]+$/), page.locator('#play .hero a.btn-big').click()]);
     await gameFrame(page);
-    // The parent and teacher doors open their pages; the top bar's Play now plays too (desktop).
+    // The parent and teacher doors open their pages.
     await page.goto('/');
     await Promise.all([page.waitForURL(/\/parents$/), page.locator('.door-parent').click()]);
     await page.goto('/');
     await Promise.all([page.waitForURL(/\/teachers$/), page.locator('.door-teacher').click()]);
-    if (width > 820) { await Promise.all([page.waitForURL(/\/play\//), page.locator('.topbar .playnow').click()]); await gameFrame(page); }
-    else await expect(page.locator('.topbar .playnow')).toBeHidden();
+    // From another page, the top bar's Play now lands on the home page at #play (desktop; phones hide it).
+    if (width > 820) {
+      const b = page.waitForRequest(r => r.method() === 'POST' && new URL(r.url()).pathname === '/go/play');
+      await Promise.all([page.waitForURL(u => u.pathname === '/' && u.hash === '#play'), page.locator('.topbar .playnow').click()]);
+      await b;
+      await atPlay(page);
+      // On the home page itself it scrolls there too.
+      await page.evaluate(() => { history.replaceState(null, '', '/'); scrollTo(0, 0); });
+      await page.locator('.topbar .playnow').click();
+      await atPlay(page);
+    } else await expect(page.locator('.topbar .playnow')).toBeHidden();
     await ctx.close();
   }
+});
+
+test('Play now on a language page leads to that language\'s home page at #play', async ({ browser }) => {
+  const ctx = await browser.newContext({ viewport: { width: 1280, height: 800 } });
+  const page = await ctx.newPage();
+  await page.goto('/de/teachers');
+  await expect(page.locator('.topbar .playnow')).toHaveAttribute('href', '/de#play');
+  await Promise.all([page.waitForURL(u => u.pathname === '/de' && u.hash === '#play'), page.locator('.topbar .playnow').click()]);
+  await atPlay(page);
+  await ctx.close();
 });
 
 test('signed out, the top bar fits from small laptops to wide screens (en, de, ru; signed out and guest)', async ({ browser }) => {

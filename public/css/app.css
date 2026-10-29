@@ -65,7 +65,7 @@
   color-scheme:dark;
 }}
 *,*::before,*::after{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%;scroll-padding-top:calc(var(--top) + 12px)}
+html{-webkit-text-size-adjust:100%;scroll-padding-top:calc(var(--top) + 12px);scroll-behavior:smooth}
 body{margin:0;font:450 17px/1.5 var(--font);font-optical-sizing:auto;color:var(--text);background:var(--bg);min-height:100vh;-webkit-font-smoothing:antialiased}
 img,svg{max-width:100%}
 input[type=checkbox],input[type=radio]{accent-color:var(--accent-line)}
@@ -763,8 +763,9 @@ ol.steps li{margin-bottom:var(--s2)}
 .lp-game-text{display:flex;flex-direction:column;gap:4px;min-width:0}
 .lp-game-t{font-weight:800;font-size:1.05rem}
 .lp-game-d{font-size:.92rem;color:var(--text-2)}
-.lp-hubs{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:var(--s4)}
-.lp-hub{display:flex;gap:var(--s3);align-items:flex-start;height:100%;color:var(--text);padding:var(--s4)}
+.lp-hubs{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));grid-auto-rows:1fr;gap:var(--s4)}
+/* Every card in a list is as tall as the tallest one (grid-auto-rows:1fr), content centred. */
+.lp-hub{display:flex;gap:var(--s3);align-items:center;height:100%;box-sizing:border-box;color:var(--text);padding:var(--s4)}
 .lp-hub:hover{text-decoration:none;box-shadow:var(--shadow-lg)}
 .lp-hub-e{font-size:1.8rem;line-height:1}
 .lp-hub-t{display:block;font-weight:800;font-size:1.05rem;color:var(--link)}

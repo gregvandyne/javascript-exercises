@@ -1174,32 +1174,36 @@ switched to Basic keeps every link, but only the **first linked** child gets the
 ## Home doors (navigation, week 2)
 - **Home, signed out or a guest** (`signedOut(u)`): the heading and one-line promise (unchanged keys, so search results
   and hreflang stay as they were), then three doors, then the subject chips, the featured game and the rows, so it still
-  feels like the app. 🎮 "I'm a kid — play now" is the big Spark door and goes straight into the featured game (the
-  same one as the hero's Play button; no sign-up, a guest is made as on any /play); 👪 "I'm a parent" → /parents;
+  feels like the app. 🎮 "I'm a kid — play now" is the big Spark door and scrolls down the same page to the featured
+  game, the category chips and the game rows (`#play`, which wraps them), so a kid picks what to play: the owner's
+  decision of 29 Oct ("play now should just take you lower in the page to the featured section"), replacing the first
+  version, which went straight into the featured game. A game is two taps from home (the door, then the hero's Play or
+  any card), still with no sign-up (a guest is made as on any /play). The scroll is smooth (`scroll-behavior`), instant
+  with reduced motion, and lands just under the sticky top bar (`scroll-padding-top`). 👪 "I'm a parent" → /parents;
   🍎 "I'm a teacher" → /teachers. They replace Week 1's "For parents" / "For teachers" buttons (no duplicates). Phones:
   one door under the other on the first screen; tablets: the kid's door on its own row; ≥960px: one row, kid's widest.
   Signed-in kids, students, staff and grown-ups see no doors and no Play now.
 - **No English doors on translated pages:** until a language has `home.doors.*`, its own "Play" (`home.hero.play`),
   "For parents" (`parentsKey`) and "For teachers" (`home.intro.teachers`) stand in and the small lines are left out.
   The group's screen-reader label is left out too until translated. Play now borrows "Play" the same way.
-- **Counting (`/go/<door>`):** the kid door links `/go/kid` (and the top bar's Play now `/go/play`), which adds one to
-  the day's total for that door (`funnel_counts` steps `door.kid`, `door.bar`; nothing else stored) and answers 302 to
-  the game. The parent and teacher doors link straight to their page in the home page's language (/es → /es/parents),
-  so every translated home page keeps a crawlable link to its own parent and teacher pages; their click is counted by a
-  beacon on the way (`data-count` → `navigator.sendBeacon` POST `/go/parent|teacher`, public/js/app.js: steps
-  `door.parent`, `door.teacher`; 204, same-origin only, rate-limited, nothing else stored). Without JavaScript the link
-  still works, just uncounted. Only a person's click counts (`traffic.countable`): a GET (never HEAD, which link
+- **Counting (beacon, `/go/<door>`):** every door and the top bar's Play now is a plain link: the kid door `#play`,
+  Play now the home page's `#play` in the page's language (`/#play`, `/es#play`), the parent and teacher doors their
+  page in the home page's language (/es → /es/parents), so every translated home page keeps a crawlable link to its
+  own parent and teacher pages. Each click is counted by a beacon on the way (`data-count` → `navigator.sendBeacon`
+  POST `/go/kid|play|parent|teacher`, public/js/app.js: steps `door.kid`, `door.bar`, `door.parent`, `door.teacher`;
+  204, same-origin only, rate-limited, nothing else stored). Without JavaScript the link still works, just uncounted. Only a person's click counts (`traffic.countable`): a GET (never HEAD, which link
   checkers send with browser-like user agents) or the beacon, not a prefetch, from a `Mozilla/` user agent that is
-  neither a robot by the visit counter's rule nor `seo.isBot`. Older `/go/parent?l=es` links still redirect to
-  /es/parents (an unknown code is ignored, so it never leads off the site). No new indexable address: /go/ is
-  disallowed in robots.txt, answers `X-Robots-Tag: noindex, nofollow` (`PRIVATE_RE`) and `no-store`, and the redirect
-  links are `rel="nofollow"`. Counting on the way was picked over `?from=home-door` on the target pages, which would add
+  neither a robot by the visit counter's rule nor `seo.isBot`. GET /go/<door> stays for older links (the doors used to
+  go through it): it still counts the click and redirects, `/go/kid` and `/go/play` to `/#play` (`?l=es` → `/es#play`),
+  `/go/parent?l=es` to /es/parents (an unknown code is ignored, so it never leads off the site). No new indexable
+  address: /go/ is disallowed in robots.txt and answers `X-Robots-Tag: noindex, nofollow` (`PRIVATE_RE`) and `no-store`;
+  nothing on the site links to it any more. Counting on the way was picked over `?from=home-door` on the target pages, which would add
   a second address of /parents and /teachers and count reloads.
 - **Report:** /admin/stats › Funnels has a "Home doors (signed out)" table under the three funnels: clicks per door,
   last 7 days vs the 7 before, no "of step before" (a tally, not a funnel). The guardrail (kid sign-ups, games played)
   is what tells whether the doors cost kids anything.
 - **Desktop top bar, signed out or a guest:** Home · Build · Plans (while `familiesOn`) · Parents · Teachers, then
-  Sign in and a Spark "▶ Play now" button (`/go/play`, the featured game). The search field stays and stands for the
+  Sign in and a Spark "▶ Play now" button (the home page's game rows, `/#play`, like the kid door). The search field stays and stands for the
   Search link (the phone tab bar keeps Search). To fit in English, German and Russian: the menu drops its icons up to
   1300px, the wordmark becomes the app mark up to 1400px, up to 1100px the search field becomes the round 🔎 button,
   and up to 1000px Play now is a round ▶ (its words kept for screen readers). Checked from 821px to 1920px in
@@ -1222,7 +1226,7 @@ switched to Basic keeps every link, but only the **first linked** child gets the
   line stays, so a grown-up who lands there still finds their way. /login keeps the line.
 - **Parent page, before parents' accounts open:** "Let your child start free" (and /safety's "Set up your child") link
   /signup?for=kid, the kid form at once: the parent already said who it's for.
-- **Counting (`/signup/for/<who>`):** like the home doors' /go/: one daily total per choice (`who.grownup`, `who.kid`,
+- **Counting (`/signup/for/<who>`):** like the home doors' old /go/ redirect: one daily total per choice (`who.grownup`, `who.kid`,
   `who.teacher`), a person's GET only (never HEAD or a prefetch; `traffic.countable`), signed out only, then 302 on.
   A ?next= comes along to the grown-up sign-up (a parent who started on /plans goes back there after signing up,
   checked with `nextFor`; a plan picked on /plans still wins) and to the kid form. /signup/for/ is disallowed in
