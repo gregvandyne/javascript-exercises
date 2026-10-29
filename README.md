@@ -116,7 +116,8 @@ logged, audited and flagged `unknown_price`.
 | `SCHOOL_INVOICE_GRACE_DAYS` | `30` | Days after an unpaid invoice's due date before an invoice school's plan ends. |
 | `BILLING_PUBLIC` | `0` | `1` shows the paid-plan pages (grown-up accounts, family links, checkout) to everyone. Until then billing runs but those pages are hidden. |
 | `BILLING_PREVIEW_TOKEN` | — | 24+ characters. Before `BILLING_PUBLIC`, visiting any page with `?bpreview=<token>` lets that browser see the paid-plan pages for 12 hours (`?bpreview=off` stops it). |
-| `FAMILY_MAX_CHILDREN` | `4` | Children one grown-up account can link (pending requests count). |
+| `FAMILY_MAX_CHILDREN` | `4` | Children one grown-up account can link (pending requests count). With parent-made accounts on, also the most accounts one family can make in a rolling year (deleted ones count). |
+| `PARENT_MADE_CHILDREN` | `0` | `1` lets a grown-up make their child's own account on /family (with families on). Off until the owner signs off on docs/legal-review.md item 30; start-up warns while it is on in production. |
 | `FAMILY_EXTRA_MESSAGES` | `40` | Extra Builder messages a family plan adds each month, shared by its children and used only after each child's free daily ones (or while the free AI budget rests). Shown on /grown-ups and /family. |
 | `FAMILY_CHILD_DAILY_MAX` | `60` | Extra messages one child may use in a UTC day (stated on /grown-ups and /family). |
 | `FAMILY_MONTHLY_AI_USD` | `4` | AI cost (US dollars) one family's extra messages may reach in a UTC month before they stop (stated as a limit on unusually expensive use). Also sets the paid AI pool: families with a plan, or with extra messages used this month, × this. |

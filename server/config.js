@@ -104,6 +104,7 @@ const renderHost = hostOnly(process.env.RENDER_EXTERNAL_HOSTNAME);
 const requireSecret = parseFlag(process.env.REQUIRE_SESSION_SECRET, 'REQUIRE_SESSION_SECRET');
 const maintenance = parseFlag(process.env.MAINTENANCE_MODE, 'MAINTENANCE_MODE');
 const billingPublic = parseFlag(process.env.BILLING_PUBLIC, 'BILLING_PUBLIC');
+const parentMade = parseFlag(process.env.PARENT_MADE_CHILDREN, 'PARENT_MADE_CHILDREN');
 const movedPermanently = parseFlag(process.env.MOVED_PERMANENTLY, 'MOVED_PERMANENTLY');
 const sessionSecret = process.env.SESSION_SECRET || '';
 /** SQLite journal modes that keep data safe after a crash (MEMORY and OFF don't). */
@@ -138,7 +139,7 @@ export const config = {
     googleClientId && !GOOGLE_ID_RE.test(googleClientId) && 'GOOGLE_CLIENT_ID must look like 1234-abc.apps.googleusercontent.com',
     oidcBase.error, oidcBase.url && (process.env.NODE_ENV || 'development') === 'production' && "GOOGLE_OIDC_BASE is for tests and can't be used in production",
     ...stripe.errors,
-    publicUrl.error, movedTo.error, redirectHosts.error, requireSecret.error, maintenance.error, movedPermanently.error,
+    publicUrl.error, movedTo.error, redirectHosts.error, requireSecret.error, maintenance.error, movedPermanently.error, parentMade.error,
     !JOURNAL_MODES.includes(journalMode) && `BRB_JOURNAL_MODE must be one of ${JOURNAL_MODES.join(', ')}`,
     requireSecret.on && sessionSecret && sessionSecret.length < MIN_SECRET_LENGTH
       && `SESSION_SECRET is shorter than ${MIN_SECRET_LENGTH} characters, which REQUIRE_SESSION_SECRET=1 refuses (make one with: openssl rand -hex 32)`,
@@ -213,6 +214,10 @@ export const config = {
   // Before that, only a browser holding the preview cookie sees them (BILLING_PREVIEW_TOKEN, 24+ characters; visit
   // any page with ?bpreview=<token> once). Billing itself (webhooks, sync) runs either way when the Stripe keys are set.
   billingPublic: billingPublic.on,
+  // Parent-made child accounts (services/family.js madeOn; docs/decisions.md "Parent-made child accounts"): a grown-up
+  // makes their child's own account. Off by default; it also needs families on. Turning it on in production waits for
+  // the owner's sign-off on docs/legal-review.md item 30 (start-up warns while it is on in production).
+  parentMadeChildren: parentMade.on,
   billingPreviewToken: (process.env.BILLING_PREVIEW_TOKEN || '').length >= 24 ? process.env.BILLING_PREVIEW_TOKEN : '',
   familyMaxChildren: Math.max(1, num(process.env.FAMILY_MAX_CHILDREN, 4)),
   familyExtraMessages: Math.max(0, num(process.env.FAMILY_EXTRA_MESSAGES, 40)),

@@ -7,7 +7,7 @@ import { Router } from 'express';
 import crypto from 'node:crypto';
 import { html, raw } from '../views/html.js';
 import { page, notFound, VERSION } from '../views/layout.js';
-import { avatar, emptyState, gradeLabel, BRAND, appMark, notYou, coverArt, cardGrid } from '../views/components.js';
+import { avatar, emptyState, gradeLabel, BRAND, appMark, notYou, coverArt, cardGrid, makeGameBtn } from '../views/components.js';
 import { requireUser, requireAdmin, getUserByName, accountKind } from '../auth.js';
 import { rateLimit } from '../services/ratelimit.js';
 import * as S from '../services/schools.js';
@@ -16,7 +16,7 @@ import { teacherLessonsPanel, studentLessonsPanel } from './lessons.js';
 import * as P from '../services/progress.js';
 import * as games from '../services/games.js';
 import { siteHost } from '../site.js';
-import { billingTabOn, schoolBillingTab } from './school-billing.js';
+import { billingTabOn, schoolBillingTab, teachPlanCard, askPanel } from './school-billing.js';
 import { cardsHook, classInvitesPanel, classGoogleJoin, googleRosterInfo, googleRosterLine, googleRowMenu, schoolGoogleSettings, staffGoogleInvites } from './google.js';
 
 export const router = Router();
@@ -125,6 +125,19 @@ const loadSchool = (req, res) => {
   return s;
 };
 const SCHOOL_TABS = ['classes', 'people', 'settings'];
+// /school: the School tab of a school admin's menu. An admin of one school goes to its People tab; of several, picks
+// one; anyone else (teachers, students, kids, the platform admin who isn't a school's admin) gets a 404.
+router.get('/school', requireUser, (req, res) => {
+  const t = req.t;
+  const list = S.adminSchools(req.user);
+  if (!list.length) return no(req, res);
+  if (list.length === 1) return res.redirect(302, `/school/${encodeURIComponent(list[0].slug)}?tab=people`);
+  const en = key => (t.own(key) ? '' : raw(' lang="en" dir="ltr"'));
+  const body = html`<div class="pagehead"><h1${en('school.pick.title')}>🏛️ ${t('school.pick.title')}</h1></div>
+    <p class="muted"${en('school.pick.text')}>${t('school.pick.text')}</p>
+    <div class="classgrid">${list.map(x => html`<div class="panel classcard"><a class="cc-name cc-link" href="/school/${x.slug}?tab=people"><b>${x.name}</b></a></div>`)}</div>`;
+  page(req, res, { title: t(t.own('school.pick.title') ? 'school.pick.title' : 'nav.schools'), active: 'school', body, head: CSS });
+});
 router.get('/school/:slug', requireUser, async (req, res) => {
   const s = loadSchool(req, res); if (!s) return;
   const t = req.t;
@@ -137,7 +150,9 @@ router.get('/school/:slug', requireUser, async (req, res) => {
   <div class="pagehead"><h1>🏫 ${s.name}</h1></div>
   <nav class="tabs" aria-label="${s.name}">${tabs.map(k => html`<a href="/school/${s.slug}?tab=${k}" ${k === tab ? raw('aria-current="page"') : ''}${t.own(`school.tabs.${k}`) ? '' : raw(' lang="en" dir="ltr"')}>${t(`school.tabs.${k}`)}</a>`)}</nav>
   ${content}`;
-  page(req, res, { title: s.name, active: member ? 'classes' : S.isSchoolStaff(req.user) ? 'me' : 'schools', body, head: CSS, scripts: tab === 'billing' ? ['/js/schools.js', '/js/family.js'] : ['/js/schools.js'],
+  // The School tab is current for the school's own admins; a teacher on a school page keeps Classes.
+  const active = member ? (S.membership(s.id, req.user.id).role === 'admin' ? 'school' : 'classes') : S.isSchoolStaff(req.user) ? 'me' : 'schools';
+  page(req, res, { title: s.name, active, body, head: CSS, scripts: tab === 'billing' ? ['/js/schools.js', '/js/family.js'] : ['/js/schools.js'],
     back: member ? '/teach' : '/admin/schools', backLabel: member ? t('school.teach.title') : t('nav.schools') });
 });
 
@@ -339,7 +354,9 @@ router.get('/teach', requireUser, (req, res) => {
   const canCreate = schools.filter(x => S.canCreateClass(u, x.id));
   const admins = schools.filter(x => S.canManageSchool(u, x.id));
   const body = html`
-  <div class="pagehead"><h1>🍎 ${t('school.teach.title')}</h1><div class="row"><a class="btn btn-primary" href="/teach/lessons">📚 ${t('lessons.library.title')}</a>${admins.map(x => html`<a class="btn" href="/school/${x.slug}">🏫 ${t('school.teach.manage', { school: x.name })}</a>`)}</div></div>
+  <div class="pagehead"><h1>🍎 ${t('school.teach.title')}</h1><div class="row"><a class="btn btn-primary" href="/teach/lessons">📚 ${t('lessons.library.title')}</a>${makeGameBtn(t)}${admins.map(x => html`<a class="btn" href="/school/${x.slug}">🏫 ${t('school.teach.manage', { school: x.name })}</a>`)}</div></div>
+  ${admins.map(x => teachPlanCard(req, x))}
+  ${schools.map(x => askPanel(req, x))}
   ${mine.length ? html`<div class="classgrid">${mine.map(c => html`<div class="panel classcard">
       <span class="cc-school small muted">${c.school_name}</span><a class="cc-name cc-link" href="/class/${c.id}"><b>${c.name}</b></a>
       <span class="small">${[c.subject, gradeLabel(t, c.grade)].filter(Boolean).join(' · ')}</span>

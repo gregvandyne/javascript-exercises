@@ -62,7 +62,10 @@
     "teachers": "Lehrkräfte",
     "parents": "Eltern",
     "grownups": "Erwachsene",
-    "playNow": "Jetzt spielen"
+    "playNow": "Jetzt spielen",
+    "games": "Spiele",
+    "account": "Konto",
+    "school": "Schule"
   },
   "errors": {
     "goHome": "Zur Startseite",
@@ -294,6 +297,34 @@
         "linked": "Du bist schon mit einem Erwachsenen verbunden.",
         "pending": "Beantworte zuerst die Frage auf dieser Seite.",
         "nothing": "Hier gibt es gerade nichts zu tun. Lade die Seite neu."
+      },
+      "madeLinked": "<b>Dein Erwachsener</b> hat dieses Konto erstellt und ist damit verbunden.",
+      "madePwReset": "Dein Erwachsener hat deinem Konto ein neues Passwort gegeben.",
+      "made": {
+        "card": {
+          "title": "Ein Erwachsener hat dieses Konto für dich erstellt.",
+          "summary": "Er kann ein paar Zahlen über dein Konto sehen, aber nie, was du gemacht, geschrieben oder gesagt hast.",
+          "more": "Was kann er sehen?",
+          "sees": "Dein Erwachsener kann sehen:",
+          "cantRead": "Er kann deine Chats und deine Nachrichten an den Baumeister nicht lesen.",
+          "ok": "OK",
+          "notMine": "Das ist nicht mein Erwachsener"
+        },
+        "sees": {
+          "extras": "wie viele zusätzliche Nachrichten an den Baumeister du verbraucht hast",
+          "games": "wie viele Spiele du gemacht hast und wie viele davon öffentlich sind",
+          "chats": "bei wie vielen deiner Spiele es Chats mit dem Baumeister gibt",
+          "uploads": "wie viele Bilder und Dateien du hochgeladen hast",
+          "saves": "wie viele Spielstände du hast",
+          "scores": "wie viele Punktestände du hast",
+          "friends": "wie viele Freunde du hast",
+          "messages": "wie viele Chatnachrichten du geschickt hast",
+          "photo": "ob du ein Profilfoto hast",
+          "signins": "in welchen Browsern du angemeldet bist"
+        },
+        "newPwWhy": "Dein Erwachsener kennt dein altes Passwort. Such dir darum ein neues aus.",
+        "newPw": "Neues Passwort",
+        "newPwConfirm": "Neues Passwort wiederholen"
       }
     }
   },
@@ -468,6 +499,7 @@
         "h": "Wie lange wir Daten speichern",
         "p1": "Wir speichern die Daten eines Kontos, solange es das Konto gibt. Bisher wird nichts davon nach einer bestimmten Zeit automatisch gelöscht. Ein Spiel, das Ihr Kind löscht, verschwindet für alle von der Website, aber eine Kopie bleibt auf unserem Server.",
         "p2": "Noch gibt es keinen Knopf, um ein Konto zu löschen oder seine Daten herunterzuladen. Um eines davon zu beantragen, kann ein Erwachsener uns schreiben. Bei einem Schulkonto fragen Sie bitte die Schule; sie kann sich an uns wenden.",
+        "madeP2": "Noch gibt es keinen Knopf, um ein Konto zu löschen oder seine Daten herunterzuladen. Ausnahme: Ein Erwachsener, der das Konto seines Kindes erstellt hat, kann es auf seiner Familienseite löschen. Um eine Löschung oder eine Kopie der Daten zu beantragen, kann ein Erwachsener uns schreiben. Bei einem Schulkonto fragen Sie bitte die Schule; sie kann sich an uns wenden.",
         "paid1": "Wir speichern die eigenen Daten eines Kontos, solange es das Konto gibt, und bisher wird nichts davon nach einer bestimmten Zeit automatisch gelöscht. Ein Spiel, das Ihr Kind löscht, verschwindet für alle von der Website, aber eine Kopie bleibt auf unserem Server. Für Familienverbindungen, Verbindungscodes und Abrechnungsdaten gelten eigene Fristen: siehe <a href=\"/privacy#billingKeep\">wie lange wir Abrechnungsdaten speichern</a>."
       },
       "friends": {
@@ -490,6 +522,15 @@
         "h": "Familienkonten",
         "p1": "Eltern und Erziehungsberechtigte können ein eigenes Erwachsenenkonto erstellen und es mit dem Konto ihres Kindes verbinden. Ihr Kind muss auf seiner eigenen Seite zustimmen.",
         "plans": "Abos und Preise ansehen"
+      },
+      "made": {
+        "h": "Wenn Sie das Konto Ihres Kindes erstellen",
+        "p1": "Auf Ihrer Familienseite können Sie ein eigenes Konto für Ihr Kind erstellen, statt ein bestehendes zu verbinden. Ihr Kind meldet sich mit dem ausgedachten Namen und dem Passwort an, die Sie wählen.",
+        "li1": "Es ist das Konto Ihres Kindes. Bitte chatten oder spielen Sie nicht an seiner Stelle: Freunde glauben, sie sprechen mit Ihrem Kind.",
+        "li2": "Sie sehen nur Zahlen (Spiele, Uploads, Spielstände, Punktestände, Freunde, gesendete Chatnachrichten, in welchen Browsern es angemeldet ist), jeweils bis gestern. Nie, was Ihr Kind gemacht, geschrieben oder gesagt hat.",
+        "li3": "Ihr Kind erfährt, dass ein Erwachsener das Konto erstellt hat und was Sie sehen können. Es kann die Verbindung auf seiner Seite „Ich“ trennen oder Sie melden und dann ein neues Passwort wählen.",
+        "li4": "Bevor Sie es erstellen, lesen Sie, was das Konto speichert, und bestätigen per Häkchen, dass Sie Elternteil oder erziehungsberechtigt sind. Das ist, ebenso wie das Bezahlen eines Abos, keine Prüfung der elterlichen Einwilligung im Sinne von Datenschutzgesetzen für Kinder.",
+        "li5": "Auf Ihrer Familienseite können Sie das Passwort ändern, sehen, was wir speichern, und das Konto löschen. Wir speichern es, bis Sie es löschen: Automatische Löschfristen gibt es noch nicht."
       }
     },
     "sdk": {
@@ -651,6 +692,7 @@
       "ending": {
         "h": "8. Konten sperren und beenden",
         "li1": "<b>Sie</b> können jederzeit aufhören, Oomba Academy zu nutzen. Einen Knopf zum Löschen gibt es noch nicht: Um ein Konto zu löschen oder eine Kopie seiner Daten zu erhalten, schreiben Sie an <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a> (Schulkonten: Fragen Sie die Schule; sie kann sich an uns wenden). Wird ein Erwachsenenkonto mit einem Abo gelöscht, kündigen wir zuerst das Abo.",
+        "madeLi1": "<b>Sie</b> können jederzeit aufhören, Oomba Academy zu nutzen. Ein Erwachsener, der das Konto seines Kindes erstellt hat, kann es auf seiner Familienseite löschen. Ansonsten gibt es noch keinen Knopf zum Löschen: Um ein Konto zu löschen oder eine Kopie seiner Daten zu erhalten, schreiben Sie an <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a> (Schulkonten: Fragen Sie die Schule; sie kann sich an uns wenden). Wird ein Erwachsenenkonto mit einem Abo gelöscht, kündigen wir zuerst das Abo.",
         "li2": "<b>Wir</b> können ein Konto pausieren, einschränken oder schließen, ein Spiel entfernen oder eine Familienverbindung beenden, wenn jemand gegen diese Bedingungen verstößt, ein Kind gefährdet oder wenn das Gesetz es verlangt. Wir erklären den Grund, wenn wir können, außer das würde jemanden gefährden.",
         "li3": "Wenn das Konto eines Kindes gesperrt wird, läuft das Familienabo für die anderen verbundenen Kinder weiter. Eine Sperre allein ist kein Grund für eine Erstattung.",
         "li4": "Wenn wir ein Erwachsenenkonto wegen Betrugs oder schweren Missbrauchs schließen, endet das Abo und wird nicht erstattet, es sei denn, das Gesetz verlangt es.",
@@ -796,7 +838,8 @@
         "li3": "<b>Was an Stripe geht:</b> Wenn wir die Rechnungen der Schule erstellen, werden der Name der Schule, die E-Mail-Adresse des Abrechnungskontakts, die Rechnungsadresse und die Bestellnummer bei Stripe gespeichert, das die Rechnungen verschickt. Der Name des Kontakts, die Anmerkung und die Angabe zur Steuerbefreiung bleiben nur bei uns. Nichts wird gesendet, bevor wir die Rechnungen erstellen. Eine Schule, die per Karte zahlt, gibt ihren Namen und ihre Rechnungsadresse stattdessen auf der Seite von Stripe ein.",
         "li4": "<b>Wie lange:</b> Name und E-Mail-Adresse des Kontakts, die Adresse, die Anmerkung und die Bestellnummer in unserer Datenbank werden <b>2 Jahre</b> nach Abschluss der Anfrage gelöscht. Stripe bewahrt die Adresse und die Bestellnummer der Schule mit ihren Rechnungen auf (siehe unten).",
         "li5": "<b>Plätze</b> werden anhand der Anzahl aktiver Schüler gezählt. Für die Abrechnung werden keine Namen oder Arbeiten von Schülern verwendet.",
-        "li6": "<b>Familien sehen nie Aktivitäten aus der Klasse:</b> Ein Erwachsener, der mit einem Schüler verbunden ist, sieht nur die zusätzlichen Familiennachrichten dieses Schülers."
+        "li6": "<b>Familien sehen nie Aktivitäten aus der Klasse:</b> Ein Erwachsener, der mit einem Schüler verbunden ist, sieht nur die zusätzlichen Familiennachrichten dieses Schülers.",
+        "li7": "<b>Ein Schulabo anfragen:</b> Eine Lehrkraft kann die Schuladmins ihrer Schule um ein Schulabo bitten. Wir speichern, welche Lehrkraft gefragt hat, für welche Schule und wann, aber nie eine Nachricht. Die Schuladmins sehen, wer gefragt hat, bis sie die Anfrage ausblenden oder die Schule ein Abo hat, und wir löschen sie <b>90 Tage</b> danach. Lehrkräfte sehen nur, ob ihre Schule ein Abo hat."
       },
       "schoolSetup": {
         "h": "Anfragen zur Einrichtung von Schulen",
@@ -834,6 +877,17 @@
       "contact": {
         "h": "Fragen",
         "p1": "Oomba Academy · <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a>"
+      },
+      "made": {
+        "h": "Konten, die ein Erwachsener für ein Kind erstellt",
+        "p1": "Ein Elternteil oder Erziehungsberechtigter mit einem Erwachsenenkonto kann auf seiner Familienseite ein eigenes Konto für sein Kind erstellen. Es ist ein ganz normales Kinderkonto, mit denselben Regeln, Grenzen und Sicherheitsprüfungen wie jedes andere.",
+        "li1": "Was es speichert: dasselbe wie jedes Kinderkonto: Spiele, Chats mit dem Baumeister, hochgeladene Bilder und Dateien, Spielstände, Punktestände, Bewertungen und Likes, Freunde und Freundes-Chat, ein Profilfoto, falls eines hinzugefügt wird, Einstellungen und Anmelde-Cookies mit dem Namen des Browsers.",
+        "li8": "Was der Erwachsene sieht: wie viele zusätzliche Nachrichten an den Baumeister das Kind verbraucht hat (bis gestern) sowie die Anzahl der Spiele, Chats mit dem Baumeister, Uploads, Spielstände, Punktestände, Freunde und gesendeten Chatnachrichten, ob es ein Profilfoto gibt und in welchen Browsern das Kind angemeldet ist. Nie die Inhalte. Die Zahlen reichen bis zum Ende des gestrigen Tages. Was das Kind heute hinzufügt, erscheint also erst morgen, aber etwas, das das Kind heute löscht oder beendet (ein Spiel, eine Freundschaft, eine Anmeldung), kann darin schon fehlen.",
+        "li3": "Der Erwachsene hat den Benutzernamen und das Passwort gewählt. Wir bitten ihn, nicht den echten Namen des Kindes zu verwenden, und lehnen Namen ab, die wie ein echter Name, ein Geburtsjahr oder der eigene Name des Erwachsenen aussehen.",
+        "li4": "Das Kind erfährt, dass ein Erwachsener das Konto erstellt hat und was dieser Erwachsene sehen kann. Es kann die Verbindung auf seiner Seite „Ich“ trennen oder den Erwachsenen melden; danach muss es ein neues Passwort wählen, damit sich der Erwachsene nicht mehr als das Kind anmelden kann.",
+        "li5": "Bevor der Erwachsene das Konto erstellt, liest er einen Hinweis dazu, was wir speichern, und bestätigt per Häkchen, dass er ihn gelesen hat und Elternteil oder erziehungsberechtigt ist. Davon speichern wir einen Nachweis: wann und welche Version des Hinweises. Das ist keine Prüfung der elterlichen Einwilligung im Sinne von Datenschutzgesetzen für Kinder, und wir behandeln es auch nicht so. Das Bezahlen eines Abos ist ebenfalls keine.",
+        "li9": "Der Erwachsene kann diese Zahlen sehen und das Konto auf seiner Familienseite löschen: Alles, was das Kind gemacht, geschrieben und hochgeladen hat, wird sofort gelöscht. Wir behalten einen kurzen Nachweis, dass es das Konto gab und wer es erstellt hat, der alte Benutzername wird 90 Tage lang zurückgehalten, damit ihn niemand sonst nehmen kann, und eine Klasse, in der das Kind früher war, behält ihre eigenen Unterlagen. Ist das Kind gerade in einer Schulklasse, entfernt die Lehrkraft es zuerst aus der Klasse.",
+        "li7": "Wie lange: solange es das Konto gibt. Automatische Löschfristen gibt es noch nicht."
       }
     }
   },
@@ -1992,7 +2046,16 @@
       "noneAsk": "Bitten Sie einen Schuladmin, Sie einer Klasse hinzuzufügen.",
       "manage": "{school} verwalten",
       "noneAdmin": "Sie unterrichten noch keine Klasse",
-      "noneAdminText": "Klassen, die Sie unterrichten, erscheinen hier. Alle Klassen von {school} finden Sie oben unter „{school} verwalten“."
+      "noneAdminText": "Klassen, die Sie unterrichten, erscheinen hier. Alle Klassen von {school} finden Sie oben unter „{school} verwalten“.",
+      "makeGame": "Spiel bauen",
+      "plan": {
+        "heading": "Schulabo · {school}",
+        "none": "Kein Schulabo · Schüler nutzen die kostenlosen Nachrichten an den Baumeister",
+        "setUp": "Schulabo einrichten",
+        "on": "Schulabo aktiv",
+        "billing": "Abrechnung",
+        "settling": "Ihr Abo wird eingerichtet…"
+      }
     },
     "class": {
       "new": "Neue Klasse",
@@ -2318,6 +2381,24 @@
         "noCustomer": "Ihre Schule hat noch kein Abrechnungskonto."
       },
       "legal": "Für Schulabos gelten unsere <a href=\"/terms\">Nutzungsbedingungen</a>, unsere <a href=\"/refunds\">Erstattungs- und Kündigungsrichtlinie</a> und unsere <a href=\"/privacy#schoolBilling\">Datenschutzerklärung</a>."
+    },
+    "pick": {
+      "title": "Ihre Schulen",
+      "text": "Wählen Sie die Schule, die Sie betreuen möchten."
+    },
+    "asks": {
+      "text": "Ihre Schule hat kein Schulabo. Damit bekommen Schüler mehr Nachrichten an den Baumeister. Sie können den Schuladmin Ihrer Schule fragen.",
+      "button": "Meinen Admin fragen",
+      "sent": "Wir haben dem Schuladmin Ihrer Schule Bescheid gegeben.",
+      "askedOn": "Sie haben am {date} gefragt. Der Schuladmin Ihrer Schule sieht das auf seinen Seiten.",
+      "hasPlan": "Ihre Schule hat ein Schulabo.",
+      "asked": "{count, plural, one {# Lehrkraft hat nach einem Schulabo gefragt} other {# Lehrkräfte haben nach einem Schulabo gefragt}}",
+      "dismiss": "Ausblenden",
+      "dismissed": "Ausgeblendet.",
+      "errors": {
+        "planOn": "Ihre Schule hat schon ein Schulabo.",
+        "noAdmin": "Ihre Schule hat noch keinen Schuladmin, also gibt es niemanden, den Sie fragen können."
+      }
     }
   },
   "lessons": {
@@ -2849,13 +2930,13 @@
       "cancelConfirm": "Diese Anfrage zurückziehen?",
       "helpHeading": "Hilfe",
       "help": "Fragen oder ein Problem mit Ihrem Konto? Schreiben Sie an {email}.",
-      "off": "Familienkonten sind gerade ausgeschaltet. Hier können Sie trotzdem Spiele spielen, Ihre Sprache oder Ihr Passwort ändern und sich abmelden.",
       "yourPlan": "Ihr Abo",
       "planFreeText": "Ihre Kinder bauen mit den kostenlosen täglichen Nachrichten an den Baumeister.",
       "seePlans": "Abos ansehen",
       "changePlan": "Abo wechseln",
       "sourceBasic": "Zusätzliche Nachrichten kommen aus Ihrem Basis-Abo.",
-      "fullBasic": "Ihr Basis-Abo gilt für 1 Kind. Um weitere Kinder zu verbinden, wechseln Sie unter „Abrechnung verwalten“ zum Familienabo (bis zu {max} Kinder)."
+      "fullBasic": "Ihr Basis-Abo gilt für 1 Kind. Um weitere Kinder zu verbinden, wechseln Sie unter „Abrechnung verwalten“ zum Familienabo (bis zu {max} Kinder).",
+      "offAccount": "Familienkonten sind gerade ausgeschaltet. Sie können trotzdem Spiele spielen. Ihre Sprache, Ihr Passwort und „Abmelden“ finden Sie auf Ihrer Seite „Konto“."
     },
     "link": {
       "title": "Kind verbinden",
@@ -2879,7 +2960,9 @@
       "planOn": "Ihr Abo ist aktiv",
       "hide": "Kostenlos reicht, ausblenden",
       "staying": "Vorerst bleiben Sie kostenlos.",
-      "notOnSale": "Abos gibt es noch nicht zu kaufen. Bis dahin funktioniert alles kostenlos."
+      "notOnSale": "Abos gibt es noch nicht zu kaufen. Bis dahin funktioniert alles kostenlos.",
+      "step2Made": "Kind hinzufügen",
+      "step2MadeHow": "Erstellen Sie das Konto Ihres Kindes, oder verbinden Sie ein Konto, das es schon hat."
     },
     "errors": {
       "badCodeDay": "Dieser Code funktioniert nicht. Ein Code funktioniert einmal, 24 Stunden lang: Bitten Sie Ihr Kind um einen neuen.",
@@ -2954,6 +3037,98 @@
       "basicMany": "Das Basis-Abo gilt für ein Kind: {name}. Ihre anderen Kinder behalten nur die kostenlosen täglichen Nachrichten.",
       "basicManyPending": "Das Basis-Abo gilt für ein Kind. Ihre anderen Kinder behalten nur die kostenlosen täglichen Nachrichten.",
       "basicManyLink": "Alle Ihre Kinder mit dem Familienabo abdecken"
+    },
+    "account": {
+      "heading": "Ihr Konto"
+    },
+    "made": {
+      "title": "Konto für Ihr Kind erstellen",
+      "heading": "Konto für Ihr Kind erstellen",
+      "intro": "Mit diesem Namen und Passwort meldet sich Ihr Kind auf jedem Gerät an. Sie bleiben auf Oomba Academy sein Erwachsener.",
+      "nameLabel": "Ein ausgedachter Name für Ihr Kind",
+      "nameHint": "Denken Sie sich einen lustigen Namen aus. Verwenden Sie nicht den echten Vor- oder Nachnamen, die Schule oder das Geburtsjahr Ihres Kindes und auch nicht Ihren eigenen Namen. Andere Kinder können ihn sehen.",
+      "pwLabel": "Sein Passwort",
+      "pwHint": "Mindestens 6 Buchstaben oder Zahlen, die sich Ihr Kind merken kann. Nicht dasselbe wie Ihr Passwort.",
+      "pwConfirm": "Sein Passwort wiederholen",
+      "notice": {
+        "h": "Bevor Sie es erstellen: Was dieses Konto speichert",
+        "keep": "Was dieses Konto speichert: die Spiele, die Ihr Kind baut, seine Chats mit dem Baumeister, Bilder und Dateien, die es hochlädt, Spielstände, Punktestände, Bewertungen und Likes, Freunde und Nachrichten im Freundes-Chat, ein Profilfoto, falls es eines hinzufügt, seine Einstellungen und Anmelde-Cookies mit dem Namen des Browsers.",
+        "ai": "Was an Claude von Anthropic geht (die KI hinter dem Baumeister): Nachrichten an den Baumeister, Bilder und Dateien, Profilfotos (für eine Sicherheitsprüfung) und Spiele, die zur öffentlichen Prüfung eingereicht werden. Es werden keine Namen oder Benutzernamen gesendet. Der Freundes-Chat geht nie an die KI.",
+        "who": "Wer was sieht: Freunde, die Ihr Kind mit einem Freundescode hinzufügt, können mit ihm chatten und seine Spiele sehen, die nur für Freunde sind. Alle können die Spiele spielen, die es öffentlich macht. Sein Benutzername steht bei öffentlichen Spielen und in Bestenlisten.",
+        "howLong": "Wie lange wir es speichern: solange es das Konto gibt. Automatische Löschfristen gibt es noch nicht.",
+        "rights": "Was Sie tun können: auf Ihrer Familienseite sehen, was wir speichern, und das Konto löschen, oder uns schreiben.",
+        "more": "Die ganze Datenschutzerklärung lesen"
+      },
+      "ack": "Ich habe das gelesen.",
+      "guardian": "Ich bin Elternteil oder erziehungsberechtigt für dieses Kind.",
+      "noConsent": "Das Erstellen dieses Kontos, das Setzen dieser Häkchen oder das Bezahlen eines Abos ist keine Prüfung der elterlichen Einwilligung im Sinne von Datenschutzgesetzen für Kinder, und wir behandeln es auch nicht so.",
+      "submit": "Konto erstellen",
+      "done": "Das Konto von {name} ist bereit.",
+      "ready": "Konto bereit. {name} kann sich mit dem Namen und Passwort anmelden, die Sie gewählt haben.",
+      "madeByYou": "Sie haben dieses Konto erstellt",
+      "add": "Konto erstellen",
+      "linkCode": "Mit Code verbinden",
+      "errors": {
+        "reported": "Wir können gerade kein neues Konto erstellen.",
+        "reportedContact": "Wir können gerade kein neues Konto erstellen. Schreiben Sie an {email}.",
+        "yearCap": "Ihre Familie hat in den letzten 12 Monaten {max} Konten erstellt, das Maximum für eine Familie.",
+        "dayCap": "Sie haben heute {max} Konten erstellt. Versuchen Sie es morgen wieder.",
+        "nameLikeYours": "Wählen Sie einen Namen, der Ihren eigenen Namen nicht enthält.",
+        "sameAsYours": "Wählen Sie ein anderes Passwort als Ihr eigenes.",
+        "needAck": "Setzen Sie dieses Häkchen, sobald Sie gelesen haben, was das Konto speichert.",
+        "needGuardian": "Nur Eltern oder Erziehungsberechtigte können ein Konto für ein Kind erstellen."
+      }
+    },
+    "switch": {
+      "button": "Zu {name} wechseln",
+      "childPw": "Passwort von {name}",
+      "device": "Damit werden Sie hier abgemeldet und {name} angemeldet. Um zurückzukommen, melden Sie sich mit Ihrem eigenen Passwort an. Wenn Ihr Kind dieses Gerät mitbenutzt, lassen Sie den Browser Ihr Passwort nicht speichern. Auf Ihren anderen Geräten bleiben Sie angemeldet.",
+      "submit": "{name} anmelden",
+      "errors": {
+        "need": "Geben Sie das Passwort von {name} ein.",
+        "wrong": "Das ist nicht das Passwort von {name}."
+      }
+    },
+    "childPw": {
+      "button": "Passwort von {name} ändern",
+      "label": "Neues Passwort für {name}",
+      "submit": "Neues Passwort speichern",
+      "done": "Gespeichert. {name} ist überall abgemeldet und erfährt, dass Sie ein neues Passwort festgelegt haben."
+    },
+    "kept": {
+      "link": "Was wir speichern",
+      "deleteLink": "Konto löschen",
+      "title": "Was wir speichern",
+      "heading": "Was wir für {name} speichern",
+      "reauthText": "Geben Sie Ihr Passwort ein, um zu sehen, was wir für {name} speichern.",
+      "reauthSubmit": "Weiter",
+      "introCounts": "Nur Zahlen, bis zum Ende des gestrigen Tages (UTC): Was {name} heute hinzufügt, erscheint ab morgen, aber etwas, das heute gelöscht oder beendet wurde (ein Spiel, eine Freundschaft, eine Anmeldung), kann schon fehlen. Wir zeigen Ihnen nie, was {name} gemacht, geschrieben oder gesagt hat.",
+      "rows": {
+        "games": "Gebaute Spiele: {n} ({pub} öffentlich)",
+        "chats": "Spiele mit Chats mit dem Baumeister: {n}",
+        "uploads": "Hochgeladene Bilder und Dateien: {n}",
+        "saves": "Spielstände: {n}",
+        "scores": "Punktestände: {n}",
+        "friends": "Freunde: {n}",
+        "messages": "Gesendete Nachrichten im Freundes-Chat: {n}",
+        "photoYes": "Profilfoto: ja",
+        "photoNo": "Profilfoto: nein",
+        "signins": "{n, plural, one {In # Browser angemeldet:} other {In # Browsern angemeldet:}}",
+        "signinsNone": "In keinem Browser angemeldet",
+        "madeAt": "Konto erstellt: {date}",
+        "notice": "Gelesener Hinweis: Version vom {version}"
+      },
+      "never": "Was wir für {name} nie speichern: eine E-Mail-Adresse, das Alter, den echten Namen, den Standort oder Zahlungsdaten.",
+      "extras": "Die zusätzlichen Nachrichten an den Baumeister finden Sie auf Ihrer Familienseite.",
+      "deleteHeading": "Konto von {name} löschen",
+      "deleteTextKeeps": "Damit wird das Konto von {name} sofort gelöscht, mit allem, was {name} auf Oomba Academy gemacht, geschrieben und hochgeladen hat. Wir behalten einen kurzen Nachweis, dass es das Konto gab und wer es erstellt hat, und eine Klasse, in der {name} früher war, behält ihre eigenen Unterlagen. Das kann nicht rückgängig gemacht werden.",
+      "confirmLabel": "Zum Bestätigen {name} eingeben",
+      "deleteSubmit": "Konto endgültig löschen",
+      "deleted": "Das Konto von {name} wurde gelöscht.",
+      "errors": {
+        "confirmName": "Geben Sie zum Bestätigen den Namen des Kontos genau ein.",
+        "inSchool": "{name} ist in einer Klasse. Schulunterlagen gehören der Schule: Bitten Sie die Lehrkraft, {name} zuerst aus der Klasse zu entfernen, und löschen Sie das Konto dann hier."
+      }
     }
   },
   "plans": {

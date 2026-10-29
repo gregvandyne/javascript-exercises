@@ -229,7 +229,8 @@ Chat exists only between **accepted friends** (added with a 6-character friend c
 when both are real accounts with chat switched on and neither has blocked the other.
 Messages are short, filtered for rude words and personal details (phone numbers, emails, links, addresses, other apps,
 schools, meet-ups) and refused messages are never stored. Repeated refusals pause chat for a while, and there are rate
-and daily limits. Anyone can block or report a message; grown-ups can switch chat off on the Me page.
+and daily limits. Anyone can block or report a message, and chat can be switched off on the account's own Me page
+(there is no separate grown-up control for it yet: an owner decision, docs/legal-review.md).
 (See `server/services/chat.js`.)
 
 **In every language.** The site is offered in 13 languages, and the same filters check every message whatever language
@@ -350,3 +351,27 @@ docs/legal-review.md). Billing data and its timers are on `/privacy`.
 - **Deleting or exporting:** there is no feature yet. The grown-ups page says a grown-up can contact us (school accounts:
   ask the school, which can ask us); the address is `CONTACT_EMAIL`, shown on /parents once it is set. See
   docs/decisions.md for what is still missing.
+- **Parent-made accounts** (only while `PARENT_MADE_CHILDREN=1` and families are on; off by default, and off in
+  production until the owner signs off on docs/legal-review.md item 30; docs/decisions.md "Parent-made child accounts").
+  A grown-up makes their child's own account on /family: a made-up username (kid name rules, never the grown-up's own
+  name) and a password (kid rules, never the grown-up's), after reading a short notice of what the account keeps and
+  ticking "I've read this" and "I am this child's parent or legal guardian". We store the account like any kid
+  account, plus who made it (`users.made_by`, `made_by_family`, `made_at`, kept for good) and a record of the notice
+  and the statement (`family_notice_acks`: version and time). **It is not a parental consent check, and no page says
+  it is**; paying isn't one either. The account is an ordinary kid account: no badge, nothing a friend or the public
+  can see about the grown-up. Limits: the kid sign-up's per-address limits, at most `FAMILY_MAX_CHILDREN` made a year
+  (deleted ones count) and 2 a day, refused while a child's report against the family is open.
+  - **What the grown-up sees:** counts only (games, Builder chats, uploads, saves, scores, friends, chat messages sent,
+    a photo or not, which browsers are signed in), up to yesterday, behind their password; never content or today.
+    The child is told the same list on a first-sign-in card and on Me.
+  - **Switch to <child>** signs the grown-up out on that device and the child in, with the child's password (wrong
+    tries count toward the child's own sign-in lock) and the grown-up's. The only way back is the grown-up's normal
+    sign-in; nothing in the child's session remembers the grown-up. A grown-up who knows the password could still sign
+    in as the child and chat under their name: /parents asks them not to (owner decision in docs/legal-review.md).
+  - **The child's voice:** "This isn't my grown-up" goes to Report. Report or Unlink on a made account makes the child
+    pick a new password, ends every other sign-in and the link, and a report is marked as a made account for the admin.
+  - **Reset and delete:** the grown-up can set a new password (the child is told once) and delete the account: games,
+    chats, uploads, friends, chat messages, the photo and sign-ins are removed and the account becomes a tombstone that
+    can't sign in; Builder usage totals stay without their text; the old name is reserved for 90 days. Refused while
+    the child is in a class (school records are the school's). Only made accounts get these tools; a code-linked
+    child's grown-up still only sees the extra-message counts and can unlink.

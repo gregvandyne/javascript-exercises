@@ -119,3 +119,6 @@ export function emptyState({ emoji = '🌈', title, text = '', action = null }) 
 export function personRow(u, { href = null, sub = '', right = '' } = {}) {
   return html`<a class="person" href="${href || '/u/' + u.username}">${avatar(u, 44)}<span style="flex:1;min-width:0"><span class="nm">${u.display_name || u.displayName || u.username}</span><br><span class="sub">${sub || html`<bdi>@${u.username}</bdi>`}</span></span>${right}</a>`;
 }
+
+/** "🛠️ Make a game" (the Builder): school staff have no Build tab, so My classes and Me keep it one tap away. */
+export const makeGameBtn = t => html`<a class="btn" href="/build"${t.own('school.teach.makeGame') ? '' : raw(' lang="en" dir="ltr"')}>🛠️ ${t('school.teach.makeGame')}</a>`;

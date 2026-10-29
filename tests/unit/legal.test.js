@@ -33,14 +33,15 @@ const decode = s => s.replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&a
 /** The page's own content (not the layout's language picker, whose "English" is rightly marked as English). */
 const mainOf = s => s.slice(s.indexOf('<main'), s.indexOf('</main>'));
 
+// (info.privacy.made.* shows only while parent-made accounts are on: tests/unit/family-made.test.js checks it.)
 test('/terms, /refunds and /privacy are public, dated, and show every paragraph of their text', async () => {
   for (const [path, key] of [['/terms', 'terms'], ['/refunds', 'refunds'], ['/privacy?for=grownups', 'privacy']]) {
     const r = await get(path); assert.equal(r.status, 200, path);
     const text = decode(r.text);
     assert.match(text, new RegExp(`<h1>[^<]*${en[`info.${key}.heading`]}</h1>`), `${path} heading`);
-    assert.match(text, new RegExp(`Last updated: <time datetime="${LEGAL_UPDATED}">October 28, 2026</time>`), `${path} date`);
+    assert.match(text, new RegExp(`Last updated: <time datetime="${LEGAL_UPDATED}">October 29, 2026</time>`), `${path} date`);
     assert.match(text, /href="mailto:greg@oomba\.ai"/, `${path} contact`);
-    for (const k of Object.keys(en).filter(k => k.startsWith(`info.${key}.`) && !k.startsWith('info.privacy.more.') && /\.(p|li|s)\d+$/.test(k))) {
+    for (const k of Object.keys(en).filter(k => k.startsWith(`info.${key}.`) && !k.startsWith('info.privacy.more.') && !k.startsWith('info.privacy.made.') && /\.(p|li|s)\d+$/.test(k))) {
       const words = plain(en[k]).slice(0, 60);
       assert.ok(decode(text.replace(/<[^>]+>/g, '')).includes(words), `${path} shows ${k}`);
     }
@@ -149,7 +150,7 @@ test('the legal text never takes a language out of the picker; Hebrew legal page
   const r = await get('/privacy?for=grownups', { cookie: 'lang=he' });
   assert.equal(r.status, 200);
   assert.match(r.text, /<html[^>]*dir="rtl"/);
-  assert.match(r.text, /<time datetime="2026-10-28">/);
+  assert.match(r.text, /<time datetime="2026-10-29">/);
   // Every section is translated now: nothing on the Hebrew pages is marked as English.
   assert.match(r.text, /<section class="panel" id="payments"><h2>/);
   assert.match(r.text, /<section class="panel" id="stored"><h2>/);

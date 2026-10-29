@@ -136,7 +136,8 @@ on(document, 'submit', async e => {
       const other = name !== field && f.querySelector(`[name="${name}"]`); if (!other) continue;
       other.setAttribute('aria-invalid', 'true'); const er = f.querySelector(`#${other.id}-err`); if (er) er.textContent = msg;
     }
-    else {
+    // No field to point at: the form's own line (a field's message shows once, under the field).
+    if (!target) {
       const er = f.querySelector('.form-err'); if (er) er.textContent = err.message; else toast(err.message, { bad: true });
       // A form with a single field (e.g. a class code): that field is the one to fix.
       const only = $$('.input', f); if (er && only.length === 1) { only[0].setAttribute('aria-invalid', 'true'); only[0].focus(); }
@@ -261,11 +262,12 @@ if (FIRST) try {
 if (FIRST) try { const m = sessionStorage.getItem('brb-toast'); if (m) { sessionStorage.removeItem('brb-toast'); toast(m); } } catch { /* storage off */ }
 
 // A link to a section folded away under its heading (<details class="lp-fold">, the privacy details on /parents, e.g.
-// /parents#keep from another page) opens it, then shows it.
+// /parents#keep from another page, or a <details data-hash-open>) opens it, then shows it.
 function openFold() {
   let id = ''; try { id = decodeURIComponent(location.hash.slice(1)); } catch { return; }
   const el = id && document.getElementById(id); if (!el) return;
-  const d = el.matches('details.lp-fold') ? el : el.querySelector(':scope > details.lp-fold') || el.closest('details.lp-fold');
+  const F = 'details.lp-fold, details[data-hash-open]';   // also a form folded under a button (Me › For grown-ups › Report)
+  const d = el.matches(F) ? el : el.querySelector(`:scope > :is(${F})`) || el.closest(F);
   if (d && !d.open) { d.open = true; el.scrollIntoView(); }
 }
 if (FIRST) { openFold(); addEventListener('hashchange', openFold); }

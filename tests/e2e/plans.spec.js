@@ -14,7 +14,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { spawn, execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import { signup, login, uniq, ownIp, ADMIN } from './helpers.js';
+import { signup, login, uniq, ownIp, ADMIN, schoolWithAdmin } from './helpers.js';
 import { findTouching } from './touching.js';
 import { topbarFit } from './topbar-fit.js';
 
@@ -260,26 +260,94 @@ test('/plans/schools: the seat calculator (Stripe\'s seat price, at least 25) an
   await page.context().close();
 });
 
-test('six menu items (a teacher: Classes and Plans) fit the top bar from small laptops to wide screens', async ({ browser }) => {
-  const teacher = await person(browser); await login(teacher, 'DemoTeacher', 'demo-pass-123');
-  const state = await teacher.context().storageState();
+// Navigation weeks 3–4: a tab bar for each role, with Plans in every one. Each signed-in role's top bar fits from small
+// laptops to wide screens (en, de, ru), and its phone tab bar's labels fit at 360px (en, de, he, ar; light and dark).
+// The platform admin has the most menu items (Home · Search · Build · Friends · Schools · Plans).
+const ROLE_BARS = {
+  kid: { tabs: ['/', '/search', '/build', '/friends', '/plans', '/me'], top: ['/', '/search', '/build', '/friends', '/plans'] },
+  student: { tabs: ['/', '/classes', '/build', '/friends', '/plans', '/me'], top: ['/', '/classes', '/build', '/friends', '/plans'] },
+  teacher: { tabs: ['/teach', '/', '/plans', '/me'], top: ['/teach', '/', '/plans'] },
+  'school admin': { tabs: ['/teach', '/', '/school', '/plans', '/me'], top: ['/teach', '/', '/school', '/plans'] },
+  'grown-up': { tabs: ['/family', '/', '/plans', '/family/account'], top: ['/family', '/', '/plans'] },
+  'platform admin': { tabs: ['/', '/search', '/build', '/friends', '/admin/schools', '/plans', '/me'], top: ['/', '/search', '/build', '/friends', '/admin/schools', '/plans'] },
+};
+let roleStates = null;
+async function roles(browser) {
+  if (roleStates) return roleStates;
+  const out = {};
+  const as = async (name, pw) => { const p = await person(browser); await login(p, name, pw); const st = await p.context().storageState(); await p.context().close(); return st; };
+  const kid = await person(browser); await signup(kid, uniq('Kid')); out.kid = await kid.context().storageState();
+  out.student = await as('DemoStudent', 'demo-pass-123');
+  out.teacher = await as('DemoTeacher', 'demo-pass-123');
+  // A school admin: a new own account the platform admin appoints.
+  const head = await person(browser); const { username } = await signup(head, uniq('Head'), 'head-pass-123');
+  const a = await person(browser); await login(a, ADMIN.username, ADMIN.password);
+  await schoolWithAdmin(a, username);
+  out['school admin'] = await head.context().storageState();
+  out['platform admin'] = await a.context().storageState();
+  const mum = await person(browser);
+  await mum.goto('/grown-ups/signup');
+  await mum.fill('#username', uniq('Mum')); await mum.fill('#password', PW); await mum.fill('#confirm', PW); await mum.check('#adult');
+  await Promise.all([mum.waitForURL(/\/family$/), mum.click('button[type=submit]')]);
+  out['grown-up'] = await mum.context().storageState();
+  roleStates = out;
+  return out;
+}
+
+test('every signed-in role\'s top bar fits from small laptops to wide screens (en, de, ru), with Plans in it', async ({ browser }) => {
+  const states = await roles(browser);
   const problems = [];
-  for (const width of [821, 900, 1000, 1001, 1100, 1180, 1181, 1280, 1400, 1440]) {
-    for (const lang of ['en', 'ru']) {
-      const ctx = await browser.newContext({ baseURL: APP, viewport: { width, height: 800 }, storageState: state });
+  for (const [who, state] of Object.entries(states)) {
+    for (const width of [821, 900, 1000, 1001, 1100, 1101, 1180, 1181, 1280, 1440, 1920]) {
+      for (const lang of ['en', 'de', 'ru']) {
+        const ctx = await browser.newContext({ baseURL: APP, viewport: { width, height: 800 }, storageState: state });
+        await ctx.addCookies([{ name: 'lang', value: lang, url: APP }]);
+        const page = await ctx.newPage();
+        await page.goto('/plans'); await page.evaluate(() => document.fonts.ready);
+        const hrefs = await page.locator('.topnav .navlink').evaluateAll(l => l.map(a => a.getAttribute('href')));
+        if (JSON.stringify(hrefs) !== JSON.stringify(ROLE_BARS[who].top)) problems.push(`${who} ${width}/${lang}: top ${hrefs.join(' ')}`);
+        const r = await page.evaluate(topbarFit);
+        if (r.tight || r.off || r.wide > 0 || r.cut || r.missing.length) problems.push(`${who} ${width}/${lang}: ${JSON.stringify(r)}`);
+        for (const t of await findTouching(page)) problems.push(`${who} ${width}/${lang}: ${t.a} ⟷ ${t.b} (${t.dir} ${t.gap}px)`);
+        if (SHOTS) await page.locator('.topbar').screenshot({ path: path.join(SHOTS, `topbar-${who.replace(/ /g, '-')}-${width}-${lang}.png`) });
+        await ctx.close();
+      }
+    }
+  }
+  expect([...new Set(problems)]).toEqual([]);
+});
+
+test('every signed-in role\'s phone tab bar at 360px: the right tabs, labels on one line and not cut (en, de, he, ar; light, dark)', async ({ browser }) => {
+  const states = await roles(browser);
+  const problems = [];
+  for (const [who, state] of Object.entries(states)) {
+    for (const [lang, scheme] of [['en', 'light'], ['de', 'dark'], ['he', 'light'], ['ar', 'dark']]) {
+      const ctx = await browser.newContext({ baseURL: APP, viewport: { width: 360, height: 760 }, colorScheme: scheme, storageState: state });
+      await ctx.addCookies([{ name: 'lang', value: lang, url: APP }]);
       const page = await ctx.newPage();
-      await page.goto(`/plans?lang=${lang}`);
-      await expect(page.locator('.topnav .navlink')).toHaveCount(6);
-      for (const t of await findTouching(page)) problems.push(`${width}/${lang}: ${t.a} ⟷ ${t.b} (${t.dir} ${t.gap}px)`);
-      const wide = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
-      if (wide > 1) problems.push(`${width}/${lang}: scrolls sideways by ${wide}px`);
-      const over = await page.evaluate(() => { const b = document.querySelector('.topbar').getBoundingClientRect(); return [...document.querySelectorAll('.topbar > *')].filter(e => { const r = e.getBoundingClientRect(); return r.width && (r.right > b.right + 1 || r.left < b.left - 1); }).map(e => e.className); });
-      if (over.length) problems.push(`${width}/${lang}: outside the top bar: ${over.join(', ')}`);
-      if (SHOTS) await page.locator('.topbar').screenshot({ path: path.join(SHOTS, `topbar-teacher-${width}-${lang}.png`) });
+      await page.goto('/plans'); await page.evaluate(() => document.fonts.ready);
+      const r = await page.evaluate(() => {
+        const tabs = [...document.querySelectorAll('.tabbar .tab')];
+        return {
+          hrefs: tabs.map(t => t.getAttribute('href')),
+          cut: tabs.filter(t => t.scrollWidth > t.clientWidth + 1).map(t => t.textContent.trim()),
+          wrapped: tabs.map(t => t.querySelector('.tab-t')).filter(l => l && l.getBoundingClientRect().height > parseFloat(getComputedStyle(l).lineHeight || '0') * 1.5 + 1).map(l => l.textContent.trim()),
+          english: [...document.querySelectorAll('.tabbar [lang="en"]')].map(e => e.textContent.trim()),
+          wide: document.documentElement.scrollWidth - innerWidth,
+        };
+      });
+      const at = `${who} ${lang}/${scheme}`;
+      if (JSON.stringify(r.hrefs) !== JSON.stringify(ROLE_BARS[who].tabs)) problems.push(`${at}: tabs ${r.hrefs.join(' ')}`);
+      if (r.cut.length) problems.push(`${at}: cut off ${r.cut.join(', ')}`);
+      if (r.wrapped.length) problems.push(`${at}: label on two lines ${r.wrapped.join(', ')}`);
+      if (lang !== 'en' && r.english.length) problems.push(`${at}: English labels on a translated page ${r.english.join(', ')}`);
+      if (r.wide > 1) problems.push(`${at}: scrolls sideways ${r.wide}px`);
+      await expect(page.locator('.tabbar .tab[href="/plans"]')).toHaveAttribute('aria-current', 'page');
+      for (const t of await findTouching(page)) problems.push(`${at}: ${t.a} ⟷ ${t.b} (${t.dir} ${t.gap}px)`);
+      if (SHOTS) await page.locator('.tabbar').screenshot({ path: path.join(SHOTS, `tabbar-${who.replace(/ /g, '-')}-${lang}-${scheme}.png`) });
       await ctx.close();
     }
   }
-  await teacher.goto('/?lang=en');
   expect([...new Set(problems)]).toEqual([]);
 });
 

@@ -5,14 +5,16 @@
 //     "left today" → more students (billed at once, the pool grows);
 //   - invoice: another school's admin asks for an invoice → /admin/billing → Create invoice subscription → the plan is
 //     on → Mark paid by check; an overdue invoice shows on the tab;
-//   - the Billing tab and /admin/billing at 360 px and 1280 px, light and dark, and right to left (he).
+//   - "Ask my admin": a teacher asks for a School plan on My classes; the school admin sees it on My classes' plan card
+//     (no prices) and the Billing tab, and dismisses it; the School tab;
+//   - the Billing tab, /admin/billing and My classes at 360 px and 1280 px, light and dark, and right to left (he).
 import { test, expect } from '@playwright/test';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { spawn, execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import { signup, login, uniq, ownIp, ADMIN, templateGame } from './helpers.js';
+import { signup, login, uniq, ownIp, ADMIN, templateGame, schoolWithAdmin } from './helpers.js';
 import { findTouching } from './touching.js';
 
 const E2E = +(process.env.E2E_PORT || 4310);
@@ -203,6 +205,49 @@ test('invoice: the school asks, the owner clicks Create invoice subscription, th
   expect((await control('state')).violations).toEqual([]);
 });
 
+// ---------------------------------------------------------------- "Ask my admin" (navigation weeks 3–4)
+let askStates = null;   // the asked school's admin and teacher, for the layout check below
+test('"Ask my admin": a teacher asks; the admin sees who asked on My classes (no prices) and the Billing tab, and dismisses it', async ({ browser }) => {
+  const a = await admin(browser);
+  const head = await person(browser), teach = await person(browser);
+  const { username: headName } = await signup(head, uniq('Head'), 'head-pass-123');
+  const { username: teachName } = await signup(teach, uniq('Teach'), 'teach-pass-123');
+  const school = await schoolWithAdmin(a, headName, { teacher: teachName });
+  await makeTester(browser, headName);
+  // The teacher: Classes · Games · Plans · Me, and the panel on My classes.
+  await teach.setViewportSize({ width: 360, height: 780 });
+  await teach.goto('/teach');
+  expect(await teach.locator('.tabbar .tab').evaluateAll(l => l.map(x => x.getAttribute('href')))).toEqual(['/teach', '/', '/plans', '/me']);
+  const panel = teach.locator('section.askplan');
+  await expect(panel).toContainText("Your school doesn't have a School plan.");
+  await panel.locator('button', { hasText: 'Ask my admin' }).click();
+  await expect(teach.locator('#toasts')).toContainText("We told your school's admin.");
+  await expect(panel).toContainText('You asked on');
+  await expect(panel.locator('button')).toHaveCount(0);
+  // The admin: Classes · Games · School · Plans · Me; the plan card names who asked, with no amounts.
+  await head.setViewportSize({ width: 360, height: 780 });
+  await head.goto('/teach');
+  expect(await head.locator('.tabbar .tab').evaluateAll(l => l.map(x => x.getAttribute('href')))).toEqual(['/teach', '/', '/school', '/plans', '/me']);
+  const card = head.locator('section.teachplan');
+  await expect(card).toContainText('No school plan · students on free Builder messages');
+  await expect(card.locator(`a[href="/school/${school.slug}?tab=billing"]`)).toContainText('Set up School plan');
+  await expect(card).toContainText('1 teacher asked for a School plan');
+  await expect(card).toContainText('Mr Teach');
+  await expect(head.locator('main')).not.toContainText('$');
+  await head.goto(`/school/${school.slug}?tab=billing`);
+  await expect(head.locator('#plan-asks')).toContainText('Mr Teach');
+  askStates = [await head.context().storageState(), await teach.context().storageState()];
+  await head.goto('/teach');
+  await Promise.all([head.waitForLoadState('load'), card.locator('button', { hasText: 'Dismiss' }).click()]);
+  await expect(head.locator('main')).not.toContainText('teacher asked');
+  await expect(head.locator('section.teachplan')).toContainText('No school plan');
+  // A kid (and a student) has nothing to ask with: the address is a 404.
+  const kid = await person(browser); await signup(kid, uniq('Kid'));
+  expect((await kid.request.post(`/api/schools/${school.id}/ask-plan`, { data: {} })).status()).toBe(404);
+  // Asked again, so the layout check below sees the card with its list.
+  expect((await teach.request.post(`/api/schools/${school.id}/ask-plan`, { data: {} })).ok()).toBe(true);
+});
+
 // ---------------------------------------------------------------- layout of the new pages
 const VIEWS = [
   { width: 360, height: 780, scheme: 'light' }, { width: 360, height: 780, scheme: 'dark' },
@@ -221,6 +266,7 @@ test('the Billing tab and /admin/billing: nothing touches, no sideways scroll (3
     [await asked.page.context().storageState(), [`/school/${asked.slug}?tab=billing`]],
     [await boss.context().storageState(), [`/school/${DEMO_SLUG}?tab=billing`, `/school/${DEMO_SLUG}?tab=billing&checkout=cs_test_layoutcheck123`]],
     [await (await admin(browser)).context().storageState(), ['/admin/billing']],
+    ...(askStates ? [[askStates[0], ['/teach']], [askStates[1], ['/teach']]] : []),
   ];
   const problems = [];
   for (const v of VIEWS) {

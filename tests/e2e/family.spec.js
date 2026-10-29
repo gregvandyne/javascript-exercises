@@ -5,7 +5,9 @@
 //     /parents#families) and types it, the child says yes;
 //   - a child reports a request, the admin sees it in the link reports queue;
 //   - grown-ups are fenced in (a "the Builder is for kids" page on /build, 404 on friends and chat); kids never see a link to the grown-up pages;
-//   - the new pages at 360 px and 1280 px, light and dark, and right to left (he): nothing touches, no sideways scroll.
+//   - the new pages at 360 px and 1280 px, light and dark, and right to left (he): nothing touches, no sideways scroll;
+//   - navigation weeks 3–4: the grown-up's Family · Games · Plans · Account bar (phone and desktop, fits), /family vs
+//     /family/account, and the old /family#password, #language and #signout links landing on the Account page.
 import { test, expect } from '@playwright/test';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -14,6 +16,7 @@ import { spawn, execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { signup, uniq, ownIp, ADMIN, templateGame, studioState } from './helpers.js';
 import { findTouching } from './touching.js';
+import { topbarFit } from './topbar-fit.js';
 
 const E2E = +(process.env.E2E_PORT || 4310);
 const PORT = E2E + 3, STRIPE_PORT = E2E + 2;
@@ -240,8 +243,9 @@ const VIEWS = [
   { width: 360, height: 780, scheme: 'light' }, { width: 360, height: 780, scheme: 'dark' },
   { width: 1280, height: 860, scheme: 'light' }, { width: 1280, height: 860, scheme: 'dark' },
   { width: 360, height: 780, scheme: 'light', lang: 'he' }, { width: 1280, height: 860, scheme: 'dark', lang: 'he' },
+  { width: 360, height: 780, scheme: 'dark', lang: 'ar' },
 ];
-test('the new pages: nothing touches, no sideways scroll (360 / 1280, light / dark, he)', async ({ browser }) => {
+test('the new pages: nothing touches, no sideways scroll (360 / 1280, light / dark, he, ar)', async ({ browser }) => {
   // Set up one of each state: a grown-up with a linked child and a waiting request, and a child being asked.
   const mum = await person(browser);
   await grownupSignup(mum, uniq('Mum'));
@@ -253,7 +257,7 @@ test('the new pages: nothing touches, no sideways scroll (360 / 1280, light / da
   const mumState = await mum.context().storageState(), askedState = await b.context().storageState(), linkedState = await a.context().storageState();
   const sets = [
     [null, ['/grown-ups/signup', '/grown-ups/login', '/parents', '/parents#families']],
-    [mumState, ['/family', '/family/link']],
+    [mumState, ['/family', '/family/link', '/family/account']],
     [askedState, ['/me#grownups']],
     [linkedState, ['/me#grownups']],
   ];
@@ -283,12 +287,46 @@ test('the new pages: nothing touches, no sideways scroll (360 / 1280, light / da
   expect([...new Set(problems)]).toEqual([]);
 });
 
+test('the grown-up\'s menus: Family · Games · Plans · Account; settings on /family/account; old /family# links land there', async ({ browser }) => {
+  const mum = await person(browser, { viewport: { width: 360, height: 760 } });
+  await grownupSignup(mum, uniq('Mum'));
+  const tabs = () => mum.locator('.tabbar .tab').evaluateAll(l => l.map(a => [a.getAttribute('href'), a.querySelector('.tab-t').textContent]));
+  expect(await tabs()).toEqual([['/family', 'Family'], ['/', 'Games'], ['/plans', 'Plans'], ['/family/account', 'Account']]);
+  await expect(mum.locator('.tabbar .tab[href="/family"]')).toHaveAttribute('aria-current', 'page');
+  // /family is about the children and the plan; the settings are one tap away.
+  await expect(mum.locator('#famcheck')).toBeVisible();
+  await expect(mum.locator('#password, #language, #signout')).toHaveCount(0);
+  await Promise.all([mum.waitForURL(/\/family\/account$/), mum.locator('.tabbar .tab[href="/family/account"]').click()]);
+  await expect(mum.locator('h1')).toContainText('Your account');
+  for (const id of ['#language', '#password', '#signout']) await expect(mum.locator(id)).toBeVisible();
+  await expect(mum.locator('.tabbar .tab[href="/family/account"]')).toHaveAttribute('aria-current', 'page');
+  // The game home is the Games tab.
+  await mum.goto('/');
+  await expect(mum.locator('.tabbar .tab[href="/"]')).toHaveAttribute('aria-current', 'page');
+  // Old links and bookmarks: /family#password, #language and #signout go on to the same panel on the Account page.
+  for (const h of ['password', 'language', 'signout']) {
+    await mum.goto(`/family#${h}`);
+    await mum.waitForURL(new RegExp(`/family/account#${h}$`));
+    await expect(mum.locator(`#${h}`)).toBeVisible();
+  }
+  // Desktop: Family · Games · Plans, and the avatar button opens the Account page; it all fits (en, de, ru).
+  for (const lang of ['en', 'de', 'ru']) for (const width of [821, 1000, 1101, 1280, 1920]) {
+    await mum.setViewportSize({ width, height: 760 });
+    await mum.goto(`/family?lang=${lang}`); await mum.evaluate(() => document.fonts.ready);
+    expect(await mum.locator('.topnav .navlink').evaluateAll(l => l.map(a => a.getAttribute('href')))).toEqual(['/family', '/', '/plans']);
+    await expect(mum.locator('.topbar .me-btn')).toHaveAttribute('href', '/family/account');
+    const r = await mum.evaluate(topbarFit);
+    expect(r.tight || r.off || r.wide > 0 || r.cut || r.missing.length, `${lang} @${width}: ${JSON.stringify(r)}`).toBeFalsy();
+  }
+  await mum.goto('/?lang=en');
+});
+
 test('a grown-up meets no dead ends: every same-site link and form on their pages answers (no 404)', async ({ browser }) => {
   const mum = await person(browser);
   await grownupSignup(mum, uniq('Mum'));
   await mum.goto('/');
   const game = await mum.locator('a[href^="/g/"]').first().getAttribute('href');
-  const seeds = ['/', '/search', '/search?q=a', '/family', '/family/link', '/parents', '/safety', game, game.replace('/g/', '/play/')];
+  const seeds = ['/', '/search', '/search?q=a', '/family', '/family/link', '/family/account', '/parents', '/safety', game, game.replace('/g/', '/play/')];
   const hrefs = new Set(), apis = new Set();
   for (const p of seeds) {
     await mum.goto(p);

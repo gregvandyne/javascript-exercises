@@ -19,7 +19,7 @@ import { html, raw } from '../views/html.js';
 import { page, notFound, parentsLabel } from '../views/layout.js';
 import { coverArt } from '../views/components.js';
 import { tHtml, availableLocales, fmt, localeInfo, DEFAULT_LOCALE } from '../i18n/index.js';
-import { familiesOn } from '../services/family.js';
+import { familiesOn, madeOn } from '../services/family.js';
 import { isGrownup } from '../auth.js';
 import * as seo from '../seo.js';
 import { HUBS, AGES, ageBySlug, PARENT_GUIDES, guideBySlug, PARENT_GAMES, PARENTS_FAQ, TWO_PLAYER, gameKey, CONTENT_UPDATED } from '../learn.js';
@@ -177,6 +177,7 @@ router.get('/parents', async (req, res) => {
   <section class="lp-sec lp-detail" id="details" aria-labelledby="details-h">
     ${el(t, 'h2', 'parents.detail.h', {}, ' id="details-h"')}${el(t, 'p', 'parents.detail.p', { href: '/privacy' })}
     ${parentSections(req).map(s => section(req, `info.parents.${s}`, { id: s, level: 3, fold: true }))}
+    ${madeOn(req) ? section(req, 'info.parents.made', { id: 'made', level: 3, fold: true }) : ''}
     ${googlePrivacy(req, 3, { fold: true })}${contact(req, 3)}
   </section>
   ${faq.markup}

@@ -84,8 +84,9 @@ export const READY_SHARE = 0.9;
  *  the legal review, and shows in English until then, so adding it never takes a language out of the picker. The same
  *  goes for the long teacher, parent and subject pages (/teachers, /parents, /learn/*) and the search-engine wording (seo.*): until a
  *  language has them, those pages show the English, marked as English, and server/seo.js lists only the languages
- *  that have them in hreflang and the sitemap. */
-export const UNCOUNTED_PREFIXES = ['info.terms.', 'info.refunds.', 'info.privacy.', 'teachers.', 'parents.', 'learn.', 'seo.'];
+ *  that have them in hreflang and the sitemap. The parent-made accounts' legal notice (family.made.notice.*, the /parents
+ *  fold info.parents.made.*) is legal text too. */
+export const UNCOUNTED_PREFIXES = ['info.terms.', 'info.refunds.', 'info.privacy.', 'teachers.', 'parents.', 'learn.', 'seo.', 'info.parents.made.', 'family.made.notice.'];
 const counted = code => Object.keys(dictionary(code)).filter(k => !UNCOUNTED_PREFIXES.some(p => k.startsWith(p))).length;
 export function availableCodes() {
   if (process.env.BRB_ALL_LOCALES === '1') return CODES.slice();

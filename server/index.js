@@ -53,6 +53,8 @@ for (const w of config.stripeWarnings) log('warn', w);
 if (billingMode() !== 'off') { checkTax().catch(() => {}); checkPrices().catch(() => {}); }
 // The site tells grown-ups they can contact us (deletion, export, a lost password); without an address that leads nowhere.
 if (config.env === 'production' && !config.contactEmail) log('warn', 'CONTACT_EMAIL is not set: /parents has no way to contact the team');
+// Parent-made child accounts are a legal gate, not a merge gate: on in production only after the owner signed off.
+if (config.env === 'production' && config.parentMadeChildren) log('warn', 'PARENT_MADE_CHILDREN=1: parent-made child accounts are on. The owner\'s sign-off must be recorded in docs/legal-review.md (item 30) first.');
 startRunner();
 const stopJobs = startJobs();
 startSweeper();

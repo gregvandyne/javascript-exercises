@@ -309,6 +309,42 @@ export const MIGRATIONS = [
   // The /family checklist (routes/family.js familyChecklist): when the grown-up said a free family is fine and hid the
   // "Pick a plan" step. On the grown-up's own family row; NULL = not hidden. Nothing about the child.
   ['0028_family_checklist', `ALTER TABLE families ADD COLUMN checklist_hidden_at INTEGER;`],
+  // "Ask my admin" (server/services/plan-asks.js; docs/decisions.md "Navigation shells"): a teacher asks their school's
+  // admins for a School plan. Ids and dates only, never a message. One open ask per teacher per school; closed when an
+  // admin dismisses it ('dismissed') or the school's plan comes on ('plan'); deleted 90 days after it was closed.
+  ['0029_plan_asks', `CREATE TABLE IF NOT EXISTS school_plan_asks (id TEXT PRIMARY KEY, school_id TEXT NOT NULL, teacher_id TEXT NOT NULL,
+      created_at INTEGER NOT NULL, closed_at INTEGER, closed_by TEXT, close_reason TEXT);
+    CREATE UNIQUE INDEX IF NOT EXISTS school_plan_asks_open ON school_plan_asks(school_id, teacher_id) WHERE closed_at IS NULL;
+    CREATE INDEX IF NOT EXISTS school_plan_asks_closed ON school_plan_asks(closed_at) WHERE closed_at IS NOT NULL;`],
+  // Parent-made child accounts (services/family.js createChildAccount; docs/decisions.md "Parent-made child accounts"),
+  // behind PARENT_MADE_CHILDREN. users.made_by / made_by_family / made_at: which grown-up (and family) made the account,
+  // never cleared (also after an unlink or a deletion, so the yearly cap and the admin still count it). None of these
+  // changes how the account is treated: it is an ordinary kid account. made_note_seen_at: the child answered the
+  // first-sign-in card; pw_reset_note_at: the grown-up set a new password, told to the child once. family_notice_acks:
+  // the record that the grown-up acknowledged the notice (notice version, method) and made the guardian statement; a
+  // record, not a consent. link_reports.parent_made: the child reported the grown-up who made their account.
+  // reserved_names: a deleted child's old username, kept from sign-up until `until`.
+  ['0030_parent_made', `ALTER TABLE users ADD COLUMN made_by TEXT;
+    ALTER TABLE users ADD COLUMN made_by_family TEXT;
+    ALTER TABLE users ADD COLUMN made_at INTEGER;
+    ALTER TABLE users ADD COLUMN made_note_seen_at INTEGER;
+    ALTER TABLE users ADD COLUMN pw_reset_note_at INTEGER;
+    CREATE INDEX IF NOT EXISTS users_made_by_family ON users(made_by_family, made_at) WHERE made_by_family IS NOT NULL;
+    CREATE TABLE IF NOT EXISTS family_notice_acks (id TEXT PRIMARY KEY, child_id TEXT NOT NULL UNIQUE, family_id TEXT NOT NULL,
+      grownup_id TEXT NOT NULL, notice_version TEXT NOT NULL, method TEXT NOT NULL, guardian_statement INTEGER NOT NULL, created_at INTEGER NOT NULL);
+    ALTER TABLE link_reports ADD COLUMN parent_made INTEGER NOT NULL DEFAULT 0;
+    CREATE TABLE IF NOT EXISTS reserved_names (name TEXT PRIMARY KEY COLLATE NOCASE, until INTEGER NOT NULL);`],
+  // Parent-made child accounts, part 2. family_children.made_link: 1 only on the row createChildAccount wrote, for as long
+  // as that link lasts; a code link (also the same family linking again after the child left) writes 0, so the made-only
+  // powers (Switch, Change password, What we keep, Delete) never come back once the child has cut the adult out.
+  // sessions.via: 'switch' for a sign-in the grown-up's Switch started (routes/family.js), else NULL; the child's
+  // first-sign-in card and the new-password note are only answered or used up in a sign-in the child made themselves.
+  // sessions.made_card_ok: OK on that card in a Switch sign-in, which hides it for that sign-in only.
+  ['0031_made_link', `ALTER TABLE family_children ADD COLUMN made_link INTEGER NOT NULL DEFAULT 0;
+    ALTER TABLE sessions ADD COLUMN via TEXT;
+    ALTER TABLE sessions ADD COLUMN made_card_ok INTEGER NOT NULL DEFAULT 0;
+    UPDATE family_children SET made_link=1 WHERE unlinked_at IS NULL AND status='linked' AND EXISTS (SELECT 1 FROM users u
+      WHERE u.id=family_children.child_id AND u.made_by_family=family_children.family_id AND u.made_at=family_children.linked_at);`],
 ];
 
 db.exec('CREATE TABLE IF NOT EXISTS migrations (name TEXT PRIMARY KEY, applied_at INTEGER NOT NULL)');

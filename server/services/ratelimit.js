@@ -12,6 +12,10 @@ export function count(key) { const b = buckets.get(key); return b && b.reset > D
 export const clear = key => { buckets.delete(key); };
 /** The bucket of failed sign-ins for one username (routes/auth.js counts it; a password reset clears it). */
 export const loginLockKey = username => `login-user:${String(username || '').trim().toLowerCase().slice(0, 64)}`;
+/** Sign-up limits, per address (never per session: a guest cookie is free). Only accounts actually made count toward the
+ *  30 an hour, so a class fixing typos and taken names isn't locked out; 2000 tries an hour stops a flood. Shared by the
+ *  kid sign-up, the grown-up sign-up and parent-made child accounts (services/family.js). */
+export const SIGNUP = { perHour: 30, triesPerHour: 2000 };
 /** New guest accounts per address per hour (a whole school of guests playing at once fits). */
 export const GUESTS_PER_IP_HOUR = 500;
 /**

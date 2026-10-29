@@ -9,14 +9,16 @@ const ROUTES = {
   resolvelink: id => `/api/admin/link-reports/${id}/resolve`, banlink: id => `/api/admin/link-reports/${id}/ban`,
   unlinkfamily: (id, b) => `/api/admin/family/${id}/children/${encodeURIComponent(b.dataset.child)}/unlink`,
   tester: id => `/api/admin/users/${id}/billing-tester`,
+  pausemade: id => `/api/admin/users/${id}/pause-made`,
 };
-const DONE = { approve: 'Approved. It is public now.', reject: 'Sent back with your note.', restore: 'Restored and reports dismissed.', suspend: 'Game suspended.', unsuspend: 'Game is back.', hide: 'Message hidden.', dismiss: 'Report dismissed.', bansender: 'Sender banned.', ban: 'User banned.', unban: 'User unbanned.', unphoto: 'Photo removed.', resolvelink: 'Report done.', banlink: 'Grown-up banned. Their links have ended.', unlinkfamily: 'Link broken.', tester: 'Billing tester changed.' };
+const DONE = { approve: 'Approved. It is public now.', reject: 'Sent back with your note.', restore: 'Restored and reports dismissed.', suspend: 'Game suspended.', unsuspend: 'Game is back.', hide: 'Message hidden.', dismiss: 'Report dismissed.', bansender: 'Sender banned.', ban: 'User banned.', unban: 'User unbanned.', unphoto: 'Photo removed.', resolvelink: 'Report done.', banlink: 'Grown-up banned. Their links have ended.', unlinkfamily: 'Link broken.', tester: 'Billing tester changed.', pausemade: 'Accounts paused.' };
 const CONFIRM = {
   suspend: () => ['Suspend this game?', 'Nobody but the builder and admins can open it until you unsuspend it.', '⛔ Suspend'],
   bansender: b => [`Ban @${b.dataset.name}?`, 'Their account is paused, they are signed out everywhere, and the message is hidden.', '⛔ Ban'],
   ban: b => [`Ban @${b.dataset.name}?`, 'Their account is paused and they are signed out everywhere.', '⛔ Ban'],
   banlink: b => [`Ban grown-up @${b.dataset.name}?`, 'Their account is paused, they are signed out everywhere, and every link to their family ends.', '⛔ Ban'],
   unlinkfamily: b => [`Break the family link of @${b.dataset.name}?`, 'The child and the grown-up are no longer linked. Either can start again with a new code.', 'Break link'],
+  pausemade: b => [`Pause every account @${b.dataset.name} made?`, 'Each account they made is banned (reason: made-by-banned) and signed out everywhere, so you can review it. Unban one to give it back.', '⛔ Pause all'],
 };
 
 async function run(b) {

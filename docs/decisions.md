@@ -1287,3 +1287,129 @@ checklist).
   `lang="en" dir="ltr"` (like `meFamilyPanel`); the how-to reuses the translated `family.link.step1`.
 - Tests: `tests/unit/family-checklist.test.js` (each state, the fence, families off, no amounts, nothing counted, the
   English marking); `tests/e2e/family.spec.js` (the flow, and folded/open at 360/1280, light/dark, he).
+
+## Navigation shells (weeks 3–4, part A: a tab bar for each role)
+Shipped from the navigation proposal's Option 2. Not behind a new flag: Plans shows exactly while `familiesOn`.
+- **One function, `shellFor(u, req)`** (views/layout.js) -> `{ role, tabs, top, meHref }`; the first match wins:
+  signed out or guest (unchanged) · grown-up: Family · Games · Plans · Account (avatar -> `/family/account`) · staff who
+  admin a live school: Classes · Games · School · Plans · Me · other staff: Classes · Games · Plans · Me · the platform
+  admin who isn't staff: unchanged · students (`inAnySchool`): Home · Classes · Build · Friends · Plans · Me · kids:
+  unchanged (byte for byte; a unit test holds it). The desktop top bar is the same list without Me/Account; everyone
+  has the search field (or the round 🔎 button below 360px).
+- **`currentTab`:** `home` and `search` pages make Games current where there is no Home tab; `/school/:slug` passes
+  `school` for its own admins (teachers there keep `classes`); `/family/account` passes `account`.
+- **Labels** with translated stand-ins until a language has them (`tabKey`): `nav.games` -> `nav.home`, `nav.account`
+  -> `nav.me`, `nav.school` -> `nav.schools` (like `nav.grownups` -> `nav.parents`).
+- **Staff badges:** no Friends tab, so friend requests and unread chat count on Me.
+- **Fit (app.css):** signed in with 4+ menu items, the search field is the round 🔎 button at 821–1000px (5+ items: to
+  1100px), 5+ items drop their emoji up to 1000px, and the avatar's name steps aside at 1181–1300px. The kid's and
+  student's bars (five items with Plans) overflowed in Russian at 821px before this.
+- **`/family/account`** (grownupOnly, open while families are off): Language, Password, Sign out, Sign out everywhere.
+  /family keeps the checklist, children, plan and help; while families are off it is a short note with an Account
+  button. `public/js/family.js` sends `/family#password|#language|#signout` on to the Account page. The footer language
+  link and the short-password notice point there. A guest is sent to the grown-up sign-in, as on /family.
+- **`/school`:** an admin of one school -> its People tab; of several -> a chooser; anyone else -> 404.
+- **"🛠️ Make a game"** on /teach's head and in Me's header for staff (they have no Build tab).
+- **/teach plan card** (per school the user admins; only while `billingTabOn` and `C.mayBill` — the Billing tab's own
+  selling rule): "No school plan · students on free Builder messages · Set up School plan →", "School plan on ·
+  Billing →" or "Setting up your plan…". Never an amount.
+- **"Ask my admin"** (`services/plan-asks.js`, migration `0029_plan_asks`): a panel on /teach for each school where the
+  user is a teacher (not admin), while families are on, the school is live and has an admin. `POST
+  /api/schools/:id/ask-plan` (staff, not admin; 10 an hour) keeps one open row per teacher per school (ids and dates
+  only; audit `school.plan.ask` with the ask id). Admins see "N teachers asked" with names and dates on the card and at
+  the top of the Billing tab, and Dismiss (`.../ask-plan/:aid/close`). Open asks close with `close_reason='plan'` when
+  the plan is on, checked when read. Closed asks are deleted 90 days later (daily job `school-plan-asks-retention`).
+  A teacher whose school has a plan reads only "Your school has a School plan." Privacy text: school billing li7
+  (`LEGAL_UPDATED` 2026-10-29).
+- Tests: `tests/unit/nav-roles.test.js`, `family-account.test.js`, `plan-asks.test.js`; e2e: `layout.spec.js` (every
+  role at 360/1280, light/dark, he/ar), `plans.spec.js` (every role's top bar 821–1920 in en/de/ru, tab bar at 360 in
+  en/de/he/ar), `schools.spec.js` (School tab), `school-billing.spec.js` (Ask my admin), `family.spec.js` (the split and
+  the old anchors).
+
+## Parent-made child accounts (weeks 3–4)
+Design: the navigation proposal's step 3, plus three safety reviews (all "go with conditions"). Part B is built
+(`services/family.js` "parent-made child accounts", `services/account-delete.js`, `views/family-made.js`, the routes at
+the end of `routes/family.js`, migration `0030_parent_made`) and ships dark.
+- **A tab bar for each role** (`shellFor` in views/layout.js). Kids keep Home · Search · Build · Friends · Plans · Me
+  unchanged. Students (in any school or class): Home · Classes · Build · Friends · Plans · Me, with Search from the top
+  bar. Grown-ups: Family · Games · Plans · Account; the settings move to a new `/family/account`, and the old /family
+  anchors still work. School admins: Classes · Games · School · Plans · Me (`/school` opens the school they run). Plain
+  teachers: Classes · Games · Plans · Me, with "Make a game" on /teach and Me. The platform admin's bar is unchanged.
+  Plans shows exactly while `familiesOn` and appears in every role's bar.
+- **/teach plan card** for school admins (no amounts): "No school plan · Set up School plan" or "School plan on". It is
+  shown only where the Billing tab may sell. **"Ask my admin"** for plain teachers: a `school_plan_asks` row (ids and
+  dates only, one open per teacher; deleted 90 days after it closes) that the admins see on /teach and on Billing. It
+  closes itself when the plan comes on. There is no inbox system, and the site sends no email.
+- **Parent-made child accounts are dark:** they need `familiesOn(req)` and `PARENT_MADE_CHILDREN=1` (off by default).
+  Turning them on in production needs the owner's sign-off on the legal-review item "Parent-made child accounts".
+- **One creation path**, `F.createChildAccount`, which makes an ordinary kid account (no flag changes `accountKind`,
+  `isChildAccount`, sessions, chat or `publicUser`). The form has a username, a password and the password again.
+  - **Name:** kid name rules (no `realNames`), and the name may not use the grown-up's own name.
+  - **Password:** kid rules, and it may not be the grown-up's own password.
+  - **Step-up:** the grown-up's password within 10 minutes.
+  - **Notice:** the parent ticks "I've read this" for a direct notice (what is kept, what goes to Claude, who sees
+    what, how long, see and delete). They also tick "I am this child's parent or legal guardian", which is stored as a
+    statement. A sentence on the page says that making, ticking or paying is **not** a parental consent check.
+  - **Limits:** the kid sign-up's per-address buckets. At most `FAMILY_MAX_CHILDREN` made per rolling 365 days, with
+    unlinked and deleted accounts still counting, and at most 2 per day. The live cap (Basic = 1). Refused while the
+    family has an open link report.
+  - **One transaction:** account, linked row, `family_notice_acks` record (notice version = `LEGAL_UPDATED`, method
+    `notice-ack`) and audits (`user.signup {by_grownup, parentMade}`, `family.child.create`, `family.link {by:'create'}`).
+  - **Permanent provenance:** `users.made_by`, `made_by_family`, `made_at` (migration 0030).
+- **Switch to <child>** works only for accounts this family made and is still linked to, never for a code-linked
+  child. It asks for the child's password and the grown-up's step-up. It ends the grown-up's session on this device,
+  starts a fresh child session and clears `brb_ended`. The only way back is the normal grown-up sign-in with their
+  password: there is no switch-back button, PIN or remembered-parent cookie.
+- **The child keeps a voice.** A first-sign-in card in fixed words: "A grown-up made this account for you…" with what
+  they can and can't see, plus "This isn't my grown-up". Me › For grown-ups keeps Unlink and Report. On a made account
+  both force a new password, end the other sessions and the link, and a report is marked `parent_made` for the admin.
+- **The grown-up's tools for a made child**, each behind step-up:
+  - Reset password (the child is told once).
+  - "What we keep": counts only, as of yesterday, no content.
+  - Delete: a real delete or tombstone of games, chats, uploads, photo, friends, sessions and links. The old name is
+    reserved for 90 days, and Builder usage totals are kept without text. It is refused while the child is in a class.
+  - There is no Remove (unlink) for made children; Delete is offered instead.
+- **Admin:** "made by grown-up @x" on the child, and "accounts this family made" on the grown-up. Link reports show
+  the made flag and counts. "Pause all accounts this grown-up made" is a manual button after a ban.
+- **As built, where it differs from the design notes:** the child's new password fields are `newPassword` /
+  `newConfirm` (the step-up keeps `password` for the grown-up's own), and Switch's is `childPassword`. Delete is reached
+  from the row's "Delete account" button on the "What we keep" page (behind the same step-up), not a second form on the
+  row. `F.deleteAccount` lives in `services/account-delete.js` (it needs photos, screenshots and uploads); it also clears
+  the child's plays and game reports of their user id, adjusts the likes and ratings totals of other games, and keeps a
+  chat message someone else reported with its text blanked. The first-sign-in card shows only while the maker is still
+  linked. "What we keep" lists `F.GROWNUP_SEES` (extras, games, chats, uploads, saves, scores, friends, messages, photo,
+  sign-ins), the same list as the child's card. The /privacy#made section shows to every reader while it is on (it names
+  no plans). `LEGAL_UPDATED` is unchanged for this part: nothing live changed.
+- **"Made" means the link made with the account, unbroken** (`family_children.made_link`, migration 0031): 1 only on the
+  row `createChildAccount` wrote. A code link writes 0, also when the family that made the account links again by code
+  after the child left (`childLeaves` also sets 0). `madeChild` and `madeLinkOf` need it, so once a child has cut the
+  adult out with a new password, Switch, Change password, What we keep and Delete stay 404 for good, and leaving again
+  is the one-tap code-link Unlink. `madeChild` also refuses a banned, school-managed or non-standard account (a banned
+  account may be under review, so its data must not be deleted).
+- **Switch sign-ins are marked** (`sessions.via='switch'`). The first-sign-in card still shows in them, but its OK only
+  hides it for that sign-in (`sessions.made_card_ok`); it is answered for good only in a sign-in the child made
+  themselves, so the child always sees it even when the grown-up taps OK right after switching. The one-time "your
+  grown-up gave your account a new password" note is never drawn or used up in a Switch sign-in either. The card is
+  short (title, one line, OK, "This isn't my grown-up"); the full list folds under "What can they see?".
+- **What stays when the flag goes off** (one rule): the protections against an adult who knows the child's password
+  never depend on `PARENT_MADE_CHILDREN`. With the flag off (families on), a child whose made link is still on keeps Me's
+  made panel, where Unlink and Report ask for a new password; the grown-up gets no Remove for that child (the row shows
+  no buttons, and the Remove API is a 404), so turning the flag off can never leave an unlinked account whose password
+  an adult knows; and the new-password note is still shown once. Everything that gives the grown-up powers (make,
+  Switch, Change password, What we keep, Delete, the first-sign-in card's introduction, the /privacy and /parents
+  sections) is off with the flag.
+- **"Pause all accounts this grown-up made"** pauses only `F.pausableMade`: accounts whose made link is still on or was
+  ended by someone other than the child (the grown-up's own ban ends it), with no link report by the child against that
+  family and no live link to another family. A child who left or reported that grown-up is listed for the admin as
+  "left", "reported" or "relinked", to review on its own.
+- **"What we keep" counts** stop at the end of yesterday (UTC) for what was added, but games, friends, sign-ins and the
+  photo are read as they are now (there are no deleted-at or accepted-at times to rewind), so something deleted or
+  ended today can already be missing. The copy says exactly that (`family.kept.introCounts`, `info.privacy.made.li8`),
+  and the child's card makes no "never today" promise.
+- Tests: `tests/unit/family-made.test.js`, `family-switch.test.js`, `family-made-child.test.js`,
+  `family-delete.test.js`, `family-made-admin.test.js` (shared harness `tests/unit/_made.js`); e2e
+  `tests/e2e/family-made.spec.js` (its own server with the flag on: make, switch, play, build, back; What we keep and
+  Delete; the kid crawl; the new pages at 360/1280, light/dark, he/ar).
+- **Left out:** the "What your child made" activity panel (needs its own safety read); parent toggles for chat and
+  photo; a verified consent method; retention timers; grown-up self-delete; hand-over; translations (English with
+  `lang="en"` marking until done). Full design and test list: the Weeks 3–4 design notes.

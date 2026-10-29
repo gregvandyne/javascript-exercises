@@ -494,6 +494,9 @@ export function canManageStudent(u, schoolId, studentId) {
     WHERE t.user_id=? AND t.role='teacher' AND t.status='active' AND s.user_id=? AND s.status='active' AND c.school_id=?`, u.id, studentId, schoolId);
 }
 /** Is the user staff (admin or teacher) anywhere? */
+/** The live schools this user is an admin of by membership (the platform admin's all-access doesn't count), by name:
+ *  the School tab and /school (routes/schools.js). */
+export const adminSchools = u => (u ? q.all("SELECT s.id, s.name, s.slug FROM school_members m JOIN schools s ON s.id=m.school_id WHERE m.user_id=? AND m.status='active' AND m.role='admin' AND s.archived_at IS NULL ORDER BY s.name COLLATE NOCASE", u.id) : []);
 export const isStaff = u => !!u && (isPlatformAdmin(u) || !!q.get("SELECT 1 FROM school_members WHERE user_id=? AND status='active' AND role!='student'", u.id));
 
 // ---------------------------------------------------------------- school rules for the game site

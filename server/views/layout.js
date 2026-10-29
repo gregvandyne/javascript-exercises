@@ -1,7 +1,8 @@
 // Page layout. Contract for every route:
 //   res.send(layout(req, { title, active, body, scripts, head, back, bodyClass, description, bare, mid, i18n }))
 //   mid: true = a medium-width page (reading pages like lessons)
-//   active: 'home'|'search'|'build'|'friends'|'me'|'plans'|'family'|null   back: href for the Back link on inner pages
+//   active: 'home'|'search'|'build'|'friends'|'me'|'plans'|'family'|'account'|'classes'|'school'|null   (the tab it makes
+//           current: shellFor/currentTab)   back: href for the Back link on inner pages
 //   scripts: ['/js/foo.js'] (ES modules)   bare: true = no nav/footer (play page)
 //   i18n: extra key prefixes to embed for the browser. Every page gets 'js.app' plus 'js.<name>' for each /js/<name>.js.
 //   seo: { index: true, path, langs, image, imageAlt, type, jsonld } to let search engines index the page (server/seo.js).
@@ -12,11 +13,12 @@ import { accountKind, STAFF_PASSWORD_MIN, isGrownup, longPasswordKind } from '..
 import { config } from '../config.js';
 import { ICONS_V } from './brand.js';
 import { navBadges } from '../services/badges.js';
-import { inAnySchool, isSchoolStaff, isPlatformAdmin } from '../services/schools.js';
+import { inAnySchool, isSchoolStaff, isPlatformAdmin, adminSchools } from '../services/schools.js';
 import { availableLocales, localeInfo, tReq, tHtml, clientStrings, DEFAULT_LOCALE, localPath } from '../i18n/index.js';
 import { THEMES, THEME_ICONS, BAR_COLORS } from '../theme.js';
 import { notices, markNotified } from '../builder/turns.js';
 import { familiesOn } from '../services/family.js';
+import { madeCard, pwResetNote } from './family-made.js';
 import { seoHead, localeUrl, clip } from '../seo.js';
 
 const NAV = [
@@ -36,11 +38,72 @@ export const parentsKey = (t, key = 'nav.parents') => (t.own(key) || !t.own('lay
 export const parentsLabel = (t, key) => t(parentsKey(t, key));
 /** Signed out, for menus, the home intro and the footer: no account, or a guest (one tap on Play makes a guest). */
 export const signedOut = u => !u || !!u.is_guest;
-/** A tab's label key. Until a language has "Grown-ups", its "Parents" stands in (the tab opens the parent page). */
-const tabKey = (t, k) => (k === 'grownups' && !t.own('nav.grownups') && t.own('nav.parents') ? 'nav.parents' : `nav.${k}`);
+/** Labels with a translated stand-in until a language has their own: Grown-ups -> Parents (the tab opens the parent
+ *  page), Games -> Home (both open /), Account -> Me, School -> Schools. A translated page never shows them in English. */
+const STAND_IN = { grownups: 'parents', games: 'home', account: 'me', school: 'schools' };
+/** A menu item's label key (tab bar and top bar). */
+export function tabKey(t, k) {
+  if (k === 'parents') return parentsKey(t);
+  if (k === 'signin') return 'layout.signIn';
+  const own = `nav.${k}`, alt = STAND_IN[k] && `nav.${STAND_IN[k]}`;
+  return alt && !t.own(own) && t.own(alt) ? alt : own;
+}
 /** Pages the signed-out "Grown-ups" tab stands for (it is current on them). */
 const GROWNUP_PAGES = ['parents', 'teachers', 'grownups'];
 export const legalReader = u => !!u && !u.is_guest && (isGrownup(u) || isPlatformAdmin(u) || isSchoolStaff(u));
+
+/**
+ * The menus for one person (the navigation proposal's Option 2, "a tab bar per role"; docs/decisions.md "Navigation
+ * shells"): -> { role, tabs, top, meHref }. tabs is the phone tab bar, last item the Me / Account / Sign in tab; top is the
+ * desktop top bar's links (the avatar button, meHref, stands for Me or Account there). Each item is [key, href, emoji].
+ * Plans is in every list exactly while paid-plan pages are on (familiesOn), kids' and students' too (owner, 27 Oct).
+ * The first matching row wins:
+ *   signed out or a guest   Home · Search · Build · Grown-ups · (Plans) · Sign in   (top: Home · Build · (Plans) · Parents · Teachers)
+ *   grown-up                Family · Games · (Plans) · Account                     (top: Family · Games · (Plans))
+ *   school staff, admin     Classes · Games · School · (Plans) · Me                (top: the same without Me)
+ *   school staff            Classes · Games · (Plans) · Me
+ *   platform admin          Home · Search · Build · Friends · Schools · (Plans) · Me   (unchanged)
+ *   student                 Home · Classes · Build · Friends · (Plans) · Me         (top: the same without Me)
+ *   kid                     Home · Search · Build · Friends · (Plans) · Me          (unchanged)
+ * Everyone signed in also has the search field (or, below 360px, the round 🔎 button) in the top bar.
+ */
+export function shellFor(u, req) {
+  const plans = familiesOn(req) ? [['plans', '/plans', '⭐']] : [];
+  const [home, search, build, friends] = NAV;
+  const games = ['games', '/', '🎮'];
+  const me = ['me', '/me', '🙂'];
+  if (signedOut(u)) {
+    return { role: 'out', tabs: [home, search, build, ['grownups', '/parents', '👪'], ...plans, ['signin', '/login', '🙂']],
+      top: [home, build, ...plans, ['parents', '/parents', '👪'], ['teachers', '/teachers', '🍎']], meHref: '/login' };
+  }
+  if (isGrownup(u)) {
+    const top = [['family', '/family', '👪'], games, ...plans];
+    return { role: 'grownup', tabs: [...top, ['account', '/family/account', '⚙️']], top, meHref: '/family/account' };
+  }
+  if (isSchoolStaff(u)) {
+    const admin = adminSchools(u).length > 0;
+    const top = [['classes', '/teach', '🏫'], games, ...(admin ? [['school', '/school', '🏛️']] : []), ...plans];
+    return { role: admin ? 'schoolAdmin' : 'teacher', tabs: [...top, me], top, meHref: '/me' };
+  }
+  if (isPlatformAdmin(u)) {
+    const top = [home, search, build, friends, ['schools', '/admin/schools', '🏫'], ...plans];
+    return { role: 'admin', tabs: [...top, me], top, meHref: '/me' };
+  }
+  if (inAnySchool(u)) {
+    const top = [home, ['classes', '/classes', '🏫'], build, friends, ...plans];
+    return { role: 'student', tabs: [...top, me], top, meHref: '/me' };
+  }
+  const top = [home, search, build, friends, ...plans];
+  return { role: 'kid', tabs: [...top, me], top, meHref: '/me' };
+}
+/** The tab a page's `active` makes current in this shell: the game pages (home, search) are Games where there is no Home
+ *  or Search tab; the Classes area is Schools for the platform admin; the parent and teacher pages are Grown-ups. */
+export function currentTab(shell, active) {
+  const has = k => shell.tabs.some(([x]) => x === k) || shell.top.some(([x]) => x === k);
+  if ((active === 'home' || active === 'search') && !has(active) && has('games')) return 'games';
+  if (active === 'classes' && !has('classes') && has('schools')) return 'schools';
+  return active;
+}
 
 /** URL of the current page with ?lang=<code> or ?theme=<theme> (the server stores the choice and redirects back without it). */
 function choiceHref(req, name, value) {
@@ -87,38 +150,29 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
   const t = tReq(req);
   const locale = req.locale || DEFAULT_LOCALE; const info = localeInfo(locale);
   const u = req.user;
-  const badges = u ? navBadges(u) : { friends: 0 };
+  // The menus for this person's role (shellFor). Signed out means signed out or a guest: a parent who plays one game
+  // becomes a guest (routes/games.js) and must keep every grown-up door.
+  const shell = shellFor(u, req);
+  const out = shell.role === 'out', grownup = shell.role === 'grownup';
+  const staff = shell.role === 'schoolAdmin' || shell.role === 'teacher';
+  const meHref = shell.meHref;
+  const badges = u ? { ...navBadges(u) } : { friends: 0 };
+  // Staff have no Friends tab: friend requests and unread chat count on Me (/me links to /friends).
+  if (staff) badges.me = (badges.me || 0) + (badges.friends || 0);
   const badge = k => (badges[k] ? html`<span class="badge" aria-label="${t('layout.badgeNew', { count: badges[k] })}">${badges[k] > 9 ? '9+' : badges[k]}</span>` : '');
-  // Grown-up accounts (routes/family.js) get Home, Search and their family page, and no Me tab.
-  const grownup = isGrownup(u);
-  const meHref = grownup ? '/family' : u ? '/me' : '/login';
-  // People in a school get a Classes tab (teachers land on /teach, students on /classes); the platform admin, when not
-  // staff of a school, gets Schools instead.
-  const staff = u && isSchoolStaff(u);
-  // Plans (/plans, routes/plans.js) is in everyone's menu while paid-plan pages are on (docs/decisions.md "Paid plans" §17).
-  const plans = familiesOn(req) ? [['plans', '/plans', '⭐']] : [];
-  // Signed out means signed out or a guest: a parent who plays one game becomes a guest (routes/games.js) and must keep
-  // every grown-up door. Friends needs an account, so it waits until a kid has one.
-  const out = signedOut(u);
-  const navItems = grownup ? [NAV[0], NAV[1], ...plans, ['family', '/family', '👪']]
-    : out ? [NAV[0], NAV[1], NAV[2], ...plans]
-    : staff ? [...NAV, ['classes', '/teach', '🏫'], ...plans]
-    : isPlatformAdmin(u) ? [...NAV, ['schools', '/admin/schools', '🏫'], ...plans]
-    : inAnySchool(u) ? [...NAV, ['classes', '/classes', '🏫'], ...plans] : [...NAV, ...plans];
-  // Signed out: the parent and teacher pages in the top menu; on phones one "Grown-ups" tab (to /parents, which links
-  // the teacher page at its top) sits before Plans.
-  // On wide screens the search field stands for Search, so the signed-out top menu is Home · Build · (Plans) · Parents ·
-  // Teachers, then Sign in and a "▶ Play now" button (docs/decisions.md "Home doors").
-  const teachersNav = out ? [['parents', '/parents', '👪'], ['teachers', '/teachers', '🍎']] : [];
-  const topItems = out ? [NAV[0], NAV[2], ...plans, ...teachersNav] : navItems;
   const playKey = t.own('nav.playNow') ? 'nav.playNow' : 'home.hero.play';
   const playNow = out ? html`<a class="btn btn-hot playnow" href="/go/play" rel="nofollow"${t.own(playKey) ? '' : raw(' lang="en"')}><span aria-hidden="true">▶</span> <span class="playnow-t">${t(playKey)}</span></a>` : '';
-  const tabItems = out ? [NAV[0], NAV[1], NAV[2], ['grownups', '/parents', '👪'], ...plans] : navItems;
-  // Pages in the Classes area highlight Schools for the platform admin, whose nav has Schools instead of Classes.
-  const act = active === 'classes' && !navItems.some(([k]) => k === 'classes') && navItems.some(([k]) => k === 'schools') ? 'schools' : active;
+  const act = currentTab(shell, active);
   const signIn = t('layout.signIn');
-  // The signed-out "Sign in" tab is current on the sign-in and sign-up pages, never on a guest's own Me page.
   const cur = k => (k === act || (k === 'grownups' && GROWNUP_PAGES.includes(act)) ? raw('aria-current="page"') : '');
+  const label = k => { const key = tabKey(t, k); return { key, attr: t.own(key) ? '' : raw(' lang="en"') }; };
+  const tab = ([k, href, emo]) => {
+    // The signed-out "Sign in" tab is current on the sign-in and sign-up pages, never on a guest's own Me page.
+    if (k === 'signin') return html`<a class="tab" href="${href}" ${req.path === '/me' ? '' : cur('me')}><span class="emo" aria-hidden="true">${emo}</span><span class="tab-t">${signIn}</span></a>`;
+    if (k === 'me') return html`<a class="tab" href="${href}" ${cur('me')}>${u.photo_at ? html`<span class="emo">${avatar(u, 28)}</span>` : html`<span class="emo" aria-hidden="true">${u.avatar}</span>`}<span class="tab-t">${t('nav.me')}</span>${badge('me')}</a>`;
+    const l = label(k);
+    return html`<a class="tab" href="${href}" ${cur(k)}${l.attr}><span class="emo" aria-hidden="true">${emo}</span><span class="tab-t">${t(l.key)}</span>${badge(k)}</a>`;
+  };
   const nav = bare ? '' : html`
   <a class="skip" href="#main">${t('layout.skip')}</a>
   <header class="topbar">
@@ -130,21 +184,20 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
     </form>
     <a class="topsearch-btn" href="/search" aria-label="${t('layout.search.label')}"><span aria-hidden="true">🔎</span></a>
     <nav class="topnav" aria-label="${t('layout.mainNav')}">
-      ${topItems.map(([k, href, emo]) => { const key = k === 'parents' ? parentsKey(t) : `nav.${k}`; return html`<a class="navlink" href="${href}" ${cur(k)}${t.own(key) ? '' : raw(' lang="en"')}><span class="emo" aria-hidden="true">${emo}</span>${t(key)}${badge(k)}</a>`; })}
+      ${shell.top.map(([k, href, emo]) => { const l = label(k); return html`<a class="navlink" href="${href}" ${cur(k)}${l.attr}><span class="emo" aria-hidden="true">${emo}</span>${t(l.key)}${badge(k)}</a>`; })}
     </nav>
     ${langPicker(req)}
     ${themePicker(req)}
-    <a class="me-btn" href="${meHref}" ${cur(grownup ? 'family' : 'me')} aria-label="${u ? t('layout.meLabel', { name: u.display_name }) : signIn}">${u ? avatar(u, 38) : html`<span class="avatar" style="--s:38px;--c:var(--hover)" aria-hidden="true">🙂</span>`}<span class="name">${u ? u.display_name : signIn}</span>${badge('me')}</a>
+    <a class="me-btn" href="${meHref}" ${cur(grownup ? 'account' : 'me')} aria-label="${u ? t('layout.meLabel', { name: u.display_name }) : signIn}">${u ? avatar(u, 38) : html`<span class="avatar" style="--s:38px;--c:var(--hover)" aria-hidden="true">🙂</span>`}<span class="name">${u ? u.display_name : signIn}</span>${badge('me')}</a>
     ${playNow}
   </header>
   <nav class="tabbar" aria-label="${t('layout.mainNav')}">
-    ${tabItems.map(([k, href, emo]) => { const key = tabKey(t, k); return html`<a class="tab" href="${href}" ${cur(k)}${t.own(key) ? '' : raw(' lang="en"')}><span class="emo" aria-hidden="true">${emo}</span><span class="tab-t">${t(key)}</span>${badge(k)}</a>`; })}
-    ${grownup ? '' : out ? html`<a class="tab" href="/login" ${req.path === '/me' ? '' : cur('me')}><span class="emo" aria-hidden="true">🙂</span><span class="tab-t">${signIn}</span></a>`
-      : html`<a class="tab" href="${meHref}" ${cur('me')}>${u.photo_at ? html`<span class="emo">${avatar(u, 28)}</span>` : html`<span class="emo" aria-hidden="true">${u.avatar}</span>`}<span class="tab-t">${t('nav.me')}</span>${badge('me')}</a>`}
+    ${shell.tabs.slice(0, -1).map(tab)}
+    ${tab(shell.tabs.at(-1))}
   </nav>`;
   // A footer word still in English on this language's page reads left to right.
   const fb = key => (t.own(key) ? '' : raw(' lang="en" dir="ltr"'));
-  const foot = bare ? '' : html`<footer class="foot"><span>${t('layout.footer.tagline')}</span><a href="/safety">${t('layout.footer.safety')}</a><a href="/parents"${fb('layout.footer.parents')}>${t('layout.footer.parents')}</a>${out || staff ? html`<a href="/teachers"${fb('layout.footer.teachers')}>${t('layout.footer.teachers')}</a>` : ''}${config.contactEmail ? html`<a href="/parents#contact">${t('layout.footer.contact')}</a>` : ''}${grownup ? '' : html`<a href="/sdk/">${t('layout.footer.builders')}</a>`}${legalReader(u) ? html`<a href="/terms"${fb('layout.footer.terms')}>${t('layout.footer.terms')}</a>` : ''}<a href="/privacy"${fb('layout.footer.privacy')}>${t('layout.footer.privacy')}</a><a href="${grownup ? '/family#language' : '/me#language'}" class="foot-lang"><span aria-hidden="true">🌐</span> ${info.name}</a></footer>`;
+  const foot = bare ? '' : html`<footer class="foot"><span>${t('layout.footer.tagline')}</span><a href="/safety">${t('layout.footer.safety')}</a><a href="/parents"${fb('layout.footer.parents')}>${t('layout.footer.parents')}</a>${out || staff ? html`<a href="/teachers"${fb('layout.footer.teachers')}>${t('layout.footer.teachers')}</a>` : ''}${config.contactEmail ? html`<a href="/parents#contact">${t('layout.footer.contact')}</a>` : ''}${grownup ? '' : html`<a href="/sdk/">${t('layout.footer.builders')}</a>`}${legalReader(u) ? html`<a href="/terms"${fb('layout.footer.terms')}>${t('layout.footer.terms')}</a>` : ''}<a href="/privacy"${fb('layout.footer.privacy')}>${t('layout.footer.privacy')}</a><a href="${grownup ? '/family/account#language' : '/me#language'}" class="foot-lang"><span aria-hidden="true">🌐</span> ${info.name}</a></footer>`;
   const backHtml = back ? html`<a class="backlink" href="${back}"><span class="flip" aria-hidden="true">←</span> ${backLabel || t('layout.back')}</a>` : '';
   // A sign-in that just ended (timed out, or ended on another device) is mentioned once, on whatever page comes next; the
   // sign-in page says it itself.
@@ -152,8 +205,10 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
   // A build that ended while the builder was away (the page was closed, or they signed out) is mentioned once, on the next
   // page they open. Only for builds they sent themselves; opening that game's Studio first counts as seeing it.
   const news = !bare && u && !u.is_guest ? buildNews(t, u) : '';
+  // A parent-made account: the first-sign-in card until the child answers it, and the one-time "new password" note.
+  const made = !bare && u && !u.is_guest ? html`${pwResetNote(req, t)}${madeCard(req, t)}` : '';
   // Staff (and the platform admin) who signed in with a short password are asked for a longer one on every page.
-  const shortPw = !bare && u && u.password_short && longPasswordKind(u) ? html`<p class="notice warn pagenote">${tHtml(t, accountKind(u) === 'grownup' ? 'layout.shortPasswordGrownup' : 'layout.shortPassword', { min: STAFF_PASSWORD_MIN, href: grownup ? '/family#password' : '/me#password' })}</p>` : '';
+  const shortPw = !bare && u && u.password_short && longPasswordKind(u) ? html`<p class="notice warn pagenote">${tHtml(t, accountKind(u) === 'grownup' ? 'layout.shortPasswordGrownup' : 'layout.shortPassword', { min: STAFF_PASSWORD_MIN, href: grownup ? '/family/account#password' : '/me#password' })}</p>` : '';
   const prefixes = ['js.app', ...scripts.map(s => (s.match(/^\/js\/([\w-]+)\.js$/) || [])[1]).filter(Boolean).map(n => `js.${n}`), ...i18n];
   // An explicit Light or Dark choice is on <html> before any CSS loads, so the first paint is right (no flash, no JS).
   const theme = req.theme === 'light' || req.theme === 'dark' ? req.theme : null;
@@ -184,7 +239,7 @@ ${head}
 </head>
 <body class="${esc(bodyClass)}" data-user="${u ? esc(u.id) : ''}" data-guest="${u && u.is_guest ? '1' : ''}">
 ${nav}
-<main id="main"${bare ? '' : mid ? ' class="wrap mid"' : ' class="wrap"'}>${ended}${news}${shortPw}${backHtml}${body}</main>
+<main id="main"${bare ? '' : mid ? ' class="wrap mid"' : ' class="wrap"'}>${ended}${news}${made}${shortPw}${backHtml}${body}</main>
 ${foot}
 <div class="toasts" role="status" aria-live="polite" id="toasts"></div>
 ${strings}
