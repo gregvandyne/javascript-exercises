@@ -178,7 +178,11 @@ test('on: the Studio has the mic button (hidden until the script checks the brow
   assert.match(page.headers.get('permissions-policy'), /microphone=\(self\)/);
   assert.match((await owner('/build')).headers.get('permissions-policy'), /microphone=\(\)/, 'other pages keep it blocked');
   const st = (await owner(`/api/studio/${g.id}`)).json;
-  assert.deepEqual(st.mic, { maxMs: config.sttMaxSeconds * 1000, maxBytes: config.sttMaxBytes });
+  assert.deepEqual(st.mic, { maxMs: config.sttMaxSeconds * 1000, maxBytes: config.sttMaxBytes, live: true, rate: 24000 }, 'the page builds its audio at the service\'s rate from the start');
+  assert.match(page.text, /id="st-mic-said" aria-live="polite" aria-atomic="true"/, 'the final words are announced in their own live region');
+  config.sttLive = false;
+  assert.equal((await owner(`/api/studio/${g.id}`)).json.mic.live, false, 'STT_LIVE=0: record and upload as before');
+  config.sttLive = true;
   off();
 });
 

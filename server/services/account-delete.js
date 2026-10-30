@@ -60,6 +60,7 @@ export function deleteAccount(childId, actor, { by = 'grownup', parentMade = tru
     q.run('DELETE FROM chat_blocks WHERE user_id=? OR blocked_id=?', u.id, u.id);
     q.run('DELETE FROM chat_usage WHERE user_id=?', u.id);
     q.run('DELETE FROM stt_usage WHERE user_id=?', u.id);   // speech to text counts (never audio)
+    q.run('DELETE FROM stt_live WHERE user_id=?', u.id);    // live speech to text session ids (never audio)
     // 4. chat: reports the child filed go; a message of theirs someone else reported stays, blanked, for that report
     q.run('DELETE FROM chat_reports WHERE reporter_id=?', u.id);
     q.run("UPDATE chat_messages SET body='' WHERE from_id=? AND id IN (SELECT message_id FROM chat_reports)", u.id);

@@ -1337,7 +1337,8 @@
       "tooFast": "Ça fait beaucoup d’enregistrements ! Attends une minute, puis réessaie.",
       "daily": "Tu as utilisé tous les enregistrements d’aujourd’hui. Tu peux toujours écrire ton message.",
       "failed": "Désolé, je n’ai pas réussi à transformer ça en mots. Réessaie, ou écris ton message.",
-      "busy": "L’aide à la voix est occupée pour le moment. Réessaie dans un instant."
+      "busy": "L’aide à la voix est occupée pour le moment. Réessaie dans un instant.",
+      "oneAtATime": "Le micro est déjà allumé dans un autre onglet. Arrête-le d’abord là-bas."
     }
   },
   "publish": {
@@ -2015,12 +2016,16 @@
         "start": "Parler au lieu d’écrire",
         "stop": "Arrêter l’enregistrement",
         "recording": "Enregistrement {time} sur {max}. Appuie encore sur le micro pour arrêter, ou sur Échap pour annuler.",
+        "listening": "J’écoute… {time} sur {max}. Appuie encore sur le micro pour arrêter, ou sur Échap pour annuler.",
         "transcribing": "J’écris ce que tu as dit…",
+        "finishing": "Je termine les mots…",
         "check": "Vérifie les mots, puis appuie sur Envoyer.",
+        "heard": "Tu as dit : {text}",
         "nothing": "Je n’ai entendu aucun mot. Réessaie, un peu plus près du micro.",
         "denied": "Le micro est bloqué. Demande à un adulte de l’autoriser pour ce site dans les réglages du navigateur.",
         "noMic": "Aucun micro n’a été trouvé sur cet appareil.",
         "cancelled": "Enregistrement arrêté. Rien n’a été envoyé ni gardé.",
+        "cancelledLive": "Enregistrement arrêté. Rien n’a été gardé.",
         "failed": "Désolé, je n’ai pas réussi à transformer ça en mots. Réessaie, ou écris ton message."
       }
     }

@@ -242,6 +242,8 @@ button.stp-line{cursor:pointer}
 .st-input:placeholder-shown{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .st-input:focus{border-color:var(--focus);outline:none}
 .st-input:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+/* Live speech to text: the words so far, not final yet (read-only): a dashed edge and softer text, and the status line says so too. */
+.st-input.st-interim{border-style:dashed;border-color:var(--edge);color:var(--text-2);cursor:default}
 .st-send{min-height:48px;padding:0 18px}
 
 .st-prev-head{display:flex;align-items:center;gap:8px;padding:8px 10px;border-bottom:1px solid var(--line);flex-wrap:wrap}

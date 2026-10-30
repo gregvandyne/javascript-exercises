@@ -1338,7 +1338,8 @@
       "tooFast": "Das sind ganz schön viele Aufnahmen! Warte eine Minute und versuch es dann noch mal.",
       "daily": "Das waren alle Aufnahmen für heute. Du kannst deine Nachricht aber weiter tippen.",
       "failed": "Tut mir leid, daraus konnte ich keine Wörter machen. Versuch es noch mal oder tippe deine Nachricht.",
-      "busy": "Der Sprachhelfer ist gerade beschäftigt. Versuch es gleich noch mal."
+      "busy": "Der Sprachhelfer ist gerade beschäftigt. Versuch es gleich noch mal.",
+      "oneAtATime": "Das Mikrofon ist schon in einem anderen Tab an. Stopp es zuerst dort."
     }
   },
   "publish": {
@@ -2016,12 +2017,16 @@
         "start": "Sprechen statt tippen",
         "stop": "Aufnahme stoppen",
         "recording": "Aufnahme {time} von {max}. Drück noch mal aufs Mikrofon zum Stoppen oder Esc zum Abbrechen.",
+        "listening": "Ich höre zu… {time} von {max}. Drück noch mal aufs Mikrofon zum Stoppen oder Esc zum Abbrechen.",
         "transcribing": "Ich schreibe auf, was du gesagt hast…",
+        "finishing": "Ich schreibe die letzten Wörter…",
         "check": "Prüf die Wörter und drück dann auf Senden.",
+        "heard": "Du hast gesagt: {text}",
         "nothing": "Ich habe keine Wörter gehört. Versuch es noch mal, etwas näher am Mikrofon.",
         "denied": "Das Mikrofon ist blockiert. Bitte einen Erwachsenen, es für diese Seite in den Browser-Einstellungen zu erlauben.",
         "noMic": "Auf diesem Gerät wurde kein Mikrofon gefunden.",
         "cancelled": "Aufnahme gestoppt. Nichts wurde gesendet oder behalten.",
+        "cancelledLive": "Aufnahme gestoppt. Nichts wurde behalten.",
         "failed": "Tut mir leid, daraus konnte ich keine Wörter machen. Versuch es noch mal oder tippe deine Nachricht."
       }
     }
