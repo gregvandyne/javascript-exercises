@@ -7,9 +7,10 @@
 // Everything here answers 404 while billing is off (no STRIPE_API_KEY), except that grown-up accounts stay fenced in and
 // keep a small /family page with their language, password and Sign out (so a grown-up can always sign out).
 //
-// The fence (grownupGuard, before every other route): a grown-up account can play games and look after its family,
-// nothing else. It is a list of what they may open; everything else (the Builder, Studio, friends, chat, profiles,
-// classes, schools, admin, ...) is a 404, as if the page weren't there. Paying (chunk 4) is for grown-ups only, behind
+// The fence (grownupGuard, before every other route): a grown-up account can play games, look after its family, build
+// games (the Builder and Studio) and connect with other grown-ups (/family/connections and the friend-code APIs, which
+// never join an adult and a child: services/friends.js), nothing else. It is a list of what they may open; everything
+// else (chat, the kids' /friends page, profiles, classes, schools, admin, ...) is a 404, as if the page weren't there. Paying (chunk 4) is for grown-ups only, behind
 // the same families gate, the billing tester rule while the key is a test key, and the password typed again.
 import { Router } from 'express';
 import { html, raw } from '../views/html.js';
@@ -36,6 +37,9 @@ import { LEGAL_UPDATED } from './info.js';
 import { madeSees } from '../views/family-made.js';
 import { deleteAccount, inSchoolOrClass } from '../services/account-delete.js';
 import { cancel as cancelBuild } from '../builder/runner.js';
+import * as friends from '../services/friends.js';
+import * as games from '../services/games.js';
+import { coverArt, statusLabel } from '../views/components.js';
 
 export const router = Router();
 const isApi = req => req.originalUrl.startsWith('/api/');
@@ -53,32 +57,23 @@ const GROWNUP_POST = [/^\/api\/auth\/(login|logout|logout-everywhere)$/, /^\/api
   /^\/api\/billing\/(family\/checkout|portal)$/,
   /^\/api\/teachers\/school-request$/,   // a parent who is also a teacher may ask us to set up their school
   /^\/api\/games\/[^/]+\/(play|heartbeat|leave|save|score|report)$/];
+// Building games (docs/decisions.md "Grown-ups can build"): the Builder, the Studio and its APIs, and grown-up connections
+// (the friend-code APIs; services/friends.js keeps adults and kids apart). Chat, /friends and /u/ stay closed.
+const GROWNUP_BUILDER_GET = [/^\/build$/, /^\/studio\/[^/]+$/, /^\/api\/studio\/[^/]+(\/(live|uploads\/[^/]+))?$/, /^\/family\/connections$/, /^\/api\/friends$/];
+const GROWNUP_BUILDER_POST = [/^\/api\/studio\/new$/, /^\/api\/studio\/[^/]+\/(chat|meta|delete|restore|save|publish|update|visibility|transcribe|uploads)$/,
+  /^\/api\/friends\/add$/, /^\/api\/friends\/[^/]+\/(accept|decline|cancel|remove)$/];
+const GROWNUP_BUILDER_DELETE = [/^\/api\/studio\/[^/]+\/uploads\/[^/]+$/];
 /** May a grown-up account use this method and path? */
 export function grownupMay(method, path) {
-  const list = method === 'GET' || method === 'HEAD' ? GROWNUP_GET : method === 'POST' ? GROWNUP_POST : [];
+  const get = method === 'GET' || method === 'HEAD';
+  const list = get ? [...GROWNUP_GET, ...GROWNUP_BUILDER_GET] : method === 'POST' ? [...GROWNUP_POST, ...GROWNUP_BUILDER_POST] : method === 'DELETE' ? GROWNUP_BUILDER_DELETE : [];
   return list.some(re => re.test(path));
 }
 export function grownupGuard(req, res, next) {
   if (!auth.isGrownup(req.user)) return next();
   if ((req.method === 'GET' || req.method === 'HEAD') && req.path === '/me') return res.redirect(302, '/family');
-  if ((req.method === 'GET' || req.method === 'HEAD') && req.path === '/build') return builderForKids(req, res);
   if (grownupMay(req.method, req.path)) return next();
   nope(req, res);
-}
-/** /build for a grown-up account: not a 404 (the Build tab and "Make a game" links are everywhere a parent looks), a
- *  short page saying the Builder is for kids' accounts and where to read about it. */
-function builderForKids(req, res) {
-  const t = req.t;
-  const fb = key => (t.own(key) ? '' : raw(' lang="en" dir="ltr"'));
-  const body = html`<div class="empty"><div class="emo" aria-hidden="true">🛠️</div>
-    <h1${fb('build.grownup.heading')}>${t('build.grownup.heading')}</h1>
-    <p${fb('build.grownup.text')}>${t('build.grownup.text')}</p>
-    <div class="row" style="justify-content:center">
-      ${F.familiesOn(req) ? html`<a class="btn btn-primary" href="/family">${t('family.landing.toFamily')}</a>` : ''}
-      <a class="btn" href="/learn/make-a-game"${fb('build.grownup.how')}>${t('build.grownup.how')}</a>
-      <a class="btn" href="/parents/ai-builder-safety"${fb('build.grownup.safety')}>${t('build.grownup.safety')}</a>
-    </div></div>`;
-  page(req, res, { title: t('build.grownup.title'), active: 'build', body });
 }
 /** Where a sign-in may go back to (?next=): a grown-up only to a page they may open (not just '/'), a child never to a
  *  family page. -> the path, or null for "their own home". */
@@ -106,7 +101,7 @@ const on = (req, res, next) => (F.familiesOn(req) ? next() : nope(req, res));
 /** The grown-up's pages: signed out -> the grown-up sign-in; anyone else -> 404. While families are off, only a
  *  grown-up's own /family and /family/account pages are there (to sign out and change the language or password);
  *  /family/link and the APIs are 404. */
-const OPEN_WHEN_OFF = new Set(['/family', '/family/account']);
+const OPEN_WHEN_OFF = new Set(['/family', '/family/account', '/family/connections']);
 function grownupOnly(req, res, next) {
   if (!F.familiesOn(req) && !(auth.isGrownup(req.user) && req.method === 'GET' && OPEN_WHEN_OFF.has(req.path))) return nope(req, res);
   if (auth.isGrownup(req.user)) return next();
@@ -398,12 +393,27 @@ router.get('/family', grownupOnly, async (req, res) => {
     ${kids.length ? html`<ul class="famkids">${rows}</ul><p class="small muted">${t('family.page.usageNote')}</p>` : html`<p class="muted">${t('family.page.none')}</p>`}
     ${basicNote}${addBtn}
   </section>`;
+  // The grown-up's own games (docs/decisions.md "Grown-ups can build"): a few of them with their status, Build, their
+  // connections (and requests waiting) and their own Builder use (never today). This private page is the only place a
+  // grown-up's games and their children are ever shown together.
+  const mineAll = games.myGames(u.id, 6), mine = mineAll.slice(0, 5);
+  const waiting = friends.incoming(u.id).length;
+  const own = F.ownerUsage(fam.id, u.id);
+  const yourGames = html`<section class="panel famgames" aria-labelledby="famgames-h" id="your-games"><h2 id="famgames-h"${en('familyGames.heading')}>🛠️ ${t('familyGames.heading')}</h2>
+    ${mine.length ? html`<ul class="famgames-list">${mine.map(g => html`<li class="famgame"><a class="famgame-cover" href="/studio/${g.id}" tabindex="-1" aria-hidden="true">${coverArt(g, '', { draft: true })}</a>
+      <div class="famgame-main"><a href="/studio/${g.id}"><b>${g.title}</b></a><div class="small muted">${statusLabel(g, t)}</div></div></li>`)}</ul>`
+    : html`<p class="muted"${en('familyGames.empty')}>${t('familyGames.empty')}</p>`}
+    <div class="row"><a class="btn btn-primary" href="/build"${en('familyGames.build')}>✨ ${t('familyGames.build')}</a>${mineAll.length > 5 ? html`<a class="btn" href="/build"${en('familyGames.seeAll')}>${t('familyGames.seeAll')}</a>` : ''}
+      <a class="btn" href="/family/connections"${en('familyGames.connections')}>🤝 ${t('familyGames.connections', { count: waiting })}</a></div>
+    <p class="small muted famgames-use"><b${en('familyGames.usage')}>${t('familyGames.usage')}</b> <span${en('familyGames.usageLine')}>${t('familyGames.usageLine', { yesterday: own.yesterday, month: own.month })}</span></p>
+  </section>`;
   // A plan picked on /plans (and not paid yet) comes first: that is what the grown-up came here to do.
   const planFirst = (chosen && !plan.entitled) || (typeof req.query.checkout === 'string' && !plan.entitled);
   const body = html`
   <div class="pagehead"><h1>👪 ${t('family.page.heading')}</h1>${notYou(req, { plain: true })}</div>
   ${familyChecklist(req, { fam, kids, plan, max, sale: await familyOnSale(u) })}
   ${planFirst ? html`${planBox}${kidsBox}` : html`${kidsBox}${planBox}`}
+  ${yourGames}
   ${config.contactEmail ? html`<section class="panel" aria-labelledby="help-h"><h2 id="help-h">${t('family.page.helpHeading')}</h2>
     <p>${tHtml(t, 'family.page.help', { email: html`<a href="mailto:${config.contactEmail}" dir="ltr">${config.contactEmail}</a>` })}</p></section>` : ''}`;
   page(req, res, { title: t('family.page.title'), active: 'family', body, scripts: ['/js/family.js'] });
@@ -633,6 +643,41 @@ router.get('/api/billing/status', billingGate, rateLimit('billing-status', 60, 6
   const state = id ? await C.checkoutReturn(fam, id) : F.familyPlan(fam.id).entitled ? 'active' : 'none';
   res.set('Cache-Control', 'no-store').json({ state });
 });
+
+// ---------------------------------------------------------------- /family/connections
+// A grown-up's connections: other grown-ups only, added by friend code (services/friends.js refuses a kid's code with
+// the same "not found" as a wrong code). They see each other's "My grown-up connections" games. Nothing else: no chat,
+// no profiles, no pictures but the plain grown-up one, and nothing about anyone's children.
+router.get('/family/connections', grownupOnly, (req, res) => {
+  const t = req.t, u = req.user;
+  const en = key => (t.own(key) ? '' : raw(' lang="en" dir="ltr"'));
+  const who = p => html`<span class="avatar" style="--s:40px;--c:${auth.GROWNUP_COLOR}" aria-hidden="true">${auth.GROWNUP_AVATAR}</span>
+    <div class="famkid-main"><b><bdi>${p.display_name}</bdi></b> <span class="muted small"><bdi>@${p.username}</bdi></span></div>`;
+  const act = (p, action, label, cls = 'btn') => html`<form data-api="/api/friends/${p.id}/${action}" data-reload><button class="${cls}" type="submit"${en(`connections.${action}`)}>${label}</button></form>`;
+  const inc = friends.incoming(u.id), out = friends.outgoing(u.id), list = friends.list(u.id);
+  const section = (id, key, rows) => (rows.length ? html`<section class="panel" aria-labelledby="${id}"><h2 id="${id}"${en(key)}>${t(key)}</h2><ul class="famkids">${rows}</ul></section>` : '');
+  const body = html`<div class="pagehead"><h1${en('connections.heading')}>🤝 ${t('connections.heading')}</h1>${notYou(req, { plain: true })}</div>
+  <section class="panel" aria-labelledby="conn-code-h">
+    <p${en('connections.intro')}>${t('connections.intro')}</p>
+    <p class="notice"${en('connections.adultsOnly')}><span aria-hidden="true">🛡️</span> ${t('connections.adultsOnly')}</p>
+    <h2 id="conn-code-h"${en('connections.yourCode')}>${t('connections.yourCode')}</h2>
+    <p><span class="bigcode" id="mycode" dir="ltr">${u.friend_code || ''}</span></p>
+    <p class="small muted"${en('connections.codeHelp')}>${t('connections.codeHelp')}</p>
+    <form data-api="/api/friends/add" data-reload novalidate class="conn-add">
+      <div class="field"><label for="code"${en('connections.addLabel')}>${t('connections.addLabel')}</label>
+        <input class="input codeinput" id="code" name="code" dir="ltr" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="12" required><span class="err" id="code-err" aria-live="polite"></span></div>
+      <p class="err form-err" aria-live="polite"></p>
+      <button class="btn btn-primary" type="submit"${en('connections.addBtn')}>${t('connections.addBtn')}</button>
+    </form>
+  </section>
+  ${section('conn-in-h', 'connections.incoming', inc.map(p => html`<li class="famkid">${who(p)}<div class="row">${act(p, 'accept', t('connections.accept'), 'btn btn-primary')}${act(p, 'decline', t('connections.decline'))}</div></li>`))}
+  ${section('conn-out-h', 'connections.outgoing', out.map(p => html`<li class="famkid">${who(p)}${act(p, 'cancel', t('connections.cancel'))}</li>`))}
+  <section class="panel" aria-labelledby="conn-list-h"><h2 id="conn-list-h"${en('connections.list')}>${t('connections.list')}</h2>
+    ${list.length ? html`<ul class="famkids">${list.map(p => html`<li class="famkid">${who(p)}${act(p, 'remove', t('connections.remove'))}</li>`)}</ul>` : html`<p class="muted"${en('connections.empty')}>${t('connections.empty')}</p>`}
+  </section>`;
+  page(req, res, { title: t('connections.title'), active: 'family', back: '/family', backLabel: t('family.page.title'), body, head: raw('<link rel="stylesheet" href="/css/community.css">') });
+});
+
 
 /** The hidden field that brings a form's answer back to "Add your kids" (/family/add) instead of /family. */
 const backToAdd = then => (then ? html`<input type="hidden" name="then" value="add">` : '');

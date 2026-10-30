@@ -1,7 +1,7 @@
 // Sessions, passwords, guests and the kid-safe username rules. Reused from the starter, renamed and tightened.
 import crypto from 'node:crypto';
 import bcrypt from 'bcryptjs';
-import { q, uid, now, setting, tx } from './db.js';
+import { q, uid, now, setting, tx, newFriendCode } from './db.js';
 import { config } from './config.js';
 import { cleanName, cleanText } from './services/textfilter.js';
 import { tEn, tReq } from './i18n/index.js';
@@ -48,19 +48,21 @@ export const AVATARS = ['🦊', '🐼', '🦦', '🐨', '🐯', '🐧', '🐬', 
 export const GROWNUP_AVATAR = '👤', GROWNUP_COLOR = '#64748b';
 export const COLORS = ['#2f6bff', '#ff5c5c', '#16a34a', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4', '#f97316'];
 const pick = a => a[Math.floor(Math.random() * a.length)];
-function friendCode() { for (;;) { const c = Array.from({ length: 6 }, () => 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'[crypto.randomInt(31)]).join(''); if (!q.get('SELECT 1 FROM users WHERE friend_code=?', c)) return c; } }
+export const friendCode = () => newFriendCode();
 
 /** accountType: 'kid' (every player, guest and school account) or 'grownup' (a parent's account: docs/decisions.md
- *  "Paid plans"). Grown-ups get no friend code: nobody can add them as a friend. */
+ *  "Paid plans"). Grown-ups get a friend code too, for connections with other grown-ups only (services/friends.js: a
+ *  kid's code never finds a grown-up, and a grown-up's never finds a kid). */
 export function createUser({ username, password, displayName, role = 'player', isGuest = false, avatar, color, accountType = 'kid' }) {
   const id = uid(10);
   const hash = password ? bcrypt.hashSync(password, BCRYPT_COST) : null;
   const grownup = accountType === 'grownup' && !isGuest;
   q.run('INSERT INTO users(id, username, display_name, password_hash, role, is_guest, avatar, color, friend_code, created_at, last_seen, account_type) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)',
-    id, username, displayName || username, hash, grownup ? 'player' : role, isGuest ? 1 : 0, avatar || (grownup ? GROWNUP_AVATAR : pick(AVATARS)), color || (grownup ? GROWNUP_COLOR : pick(COLORS)), grownup ? null : friendCode(), now(), now(), grownup ? 'grownup' : 'kid');
+    id, username, displayName || username, hash, grownup ? 'player' : role, isGuest ? 1 : 0, avatar || (grownup ? GROWNUP_AVATAR : pick(AVATARS)), color || (grownup ? GROWNUP_COLOR : pick(COLORS)), friendCode(), now(), now(), grownup ? 'grownup' : 'kid');
   return getUser(id);
 }
-/** A grown-up account (users.account_type): it can play games and look after a family, nothing else (server/routes/family.js). */
+/** A grown-up account (users.account_type): it can play games, look after a family, build games and connect with other
+ *  grown-ups, nothing else (server/routes/family.js). */
 export const isGrownup = u => !!u && !u.is_guest && u.account_type === 'grownup';
 export function createGuest() {
   for (let i = 0; i < 40; i++) {
@@ -256,6 +258,13 @@ export function requireUser(req, res, next) {
  *  there (server/routes/family.js also turns them away from everything they don't need, before any route). */
 export function requireAccount(req, res, next) {
   if (isGrownup(req.user)) return isApi(req) ? res.status(404).json({ error: tReq(req)('errors.api.notFound') }) : res.status(404).send('Not found');
+  if (req.user && !req.user.is_guest) return next();
+  if (isApi(req)) return req.user ? res.status(403).json({ error: tReq(req)('errors.api.needAccount') }) : res.status(401).json(signedOutReply(req, 'errors.api.needAccount'));
+  res.redirect(req.sessionEnded ? signInAgain(req) : '/signup?next=' + encodeURIComponent(req.originalUrl));
+}
+/** A real account that may build: a kid's or a grown-up's (never a guest). The Builder, the Studio and the friend-code
+ *  APIs (a grown-up's are connections with other grown-ups); chat, profiles and the /friends page stay requireAccount. */
+export function requireBuilder(req, res, next) {
   if (req.user && !req.user.is_guest) return next();
   if (isApi(req)) return req.user ? res.status(403).json({ error: tReq(req)('errors.api.needAccount') }) : res.status(401).json(signedOutReply(req, 'errors.api.needAccount'));
   res.redirect(req.sessionEnded ? signInAgain(req) : '/signup?next=' + encodeURIComponent(req.originalUrl));

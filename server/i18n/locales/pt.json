@@ -347,7 +347,9 @@
     "class": "{count, plural, one {Minha turma} other {Minhas turmas}}",
     "onlyYouNow": "Só você por enquanto",
     "public": "Todos",
-    "school": "Minha escola"
+    "school": "Minha escola",
+    "family": "Minha família",
+    "connections": "Meus contatos adultos"
   },
   "status": {
     "hidden": "Escondido",
@@ -580,7 +582,7 @@
         "li7": "Uma conta da escola é criada pela escola. A escola é responsável por ter o direito de criá-la e por informar os pais e responsáveis sobre ela (veja a seção 3).",
         "s3": "Contas de adulto",
         "li8": "Você precisa ter <b>18 anos ou mais</b> e ser <b>pai, mãe ou responsável legal</b> de cada criança a que se vincular. Ao se cadastrar, você confirma isso marcando uma caixa. Nós não verificamos, então seja honesto: vincular-se a uma criança que não é sua viola estes termos, e nós vamos encerrar o vínculo e podemos fechar sua conta.",
-        "li9": "Uma conta de adulto pode jogar. Ela <b>não pode</b> criar jogos, usar o Construtor, usar o chat, adicionar amigos, publicar nem ter um perfil público.",
+        "li9": "Uma conta de adulto pode jogar e criar jogos com o Construtor. Os jogos dela passam pelas mesmas verificações de segurança que qualquer jogo. Ela só pode se conectar com outras contas de adulto. Ela <b>não pode</b> usar o chat, adicionar crianças como amigos, publicar nem ter um perfil público, e os jogos dela nunca mostram quais crianças estão vinculadas a ela.",
         "li10": "Mantenha sua senha em segredo. Você é responsável pelo que acontece na sua conta de adulto, incluindo compras.",
         "li11": "Para evitar que uma criança compre algo em um aparelho compartilhado, pedimos sua senha de novo antes de você começar ou mudar um plano.",
         "s4": "Como vincular um adulto a uma criança",
@@ -805,7 +807,7 @@
         "li6": "o seu plano: os números de cliente e de assinatura da Stripe, o tipo de plano, mensal ou anual, a situação, as vagas, as datas e os valores;",
         "li7": "um registro das ações importantes (por exemplo, \"plano iniciado\", \"criança vinculada\", \"reembolso\"). Esses registros nunca contêm dados de cartão nem endereços de e-mail.",
         "p1": "<b>O que não pedimos:</b> seu e-mail, número de telefone, endereço residencial ou idade. (A Stripe pede alguns desses dados quando você paga: veja Pagamentos abaixo.)",
-        "p2": "Uma conta de adulto não pode criar jogos, usar o chat, adicionar amigos nem ter um perfil público, e não aparece nas buscas."
+        "p2": "Uma conta de adulto pode criar jogos. Eles passam pelas mesmas verificações de segurança que qualquer jogo, e um jogo compartilhado com todos mostra o nome de exibição do adulto e “Criador adulto”. Uma conta de adulto só pode se conectar com outras contas de adulto; ela não pode usar o chat, adicionar crianças como amigos nem ter um perfil público, e não aparece nas buscas. Nunca mostramos publicamente quais crianças estão vinculadas a um adulto, nem os nomes delas."
       },
       "linking": {
         "h": "Vínculo com uma criança",
@@ -940,7 +942,9 @@
       "friends": "Só seus amigos na Oomba Academy podem abrir este link.",
       "class": "Só as turmas com quem este jogo foi compartilhado podem abrir este link.",
       "public": "Qualquer pessoa com o link pode jogar este jogo.",
-      "school": "Todo mundo da sua escola pode achar e jogar."
+      "school": "Todo mundo da sua escola pode achar e jogar.",
+      "family": "Só o adulto que criou este jogo e a família dele podem abrir este link.",
+      "connections": "Só o adulto que criou este jogo e os contatos adultos dele podem abrir este link."
     },
     "sharedWith": "Compartilhado com:",
     "sharedWithMore": "{count, plural, one {e mais # turma} other {e mais # turmas}}",
@@ -964,7 +968,8 @@
       "badScore": "Pontuação inválida.",
       "pickReason": "Escolha um motivo."
     },
-    "makeLike": "Criar um jogo assim"
+    "makeLike": "Criar um jogo assim",
+    "grownupBuilder": "Criador adulto"
   },
   "play": {
     "backTo": "Voltar para {title}",
@@ -1212,13 +1217,6 @@
       "ready": "✨ Pronto",
       "question": "💬 Tem uma dúvida",
       "stopped": "⚠️ Parou"
-    },
-    "grownup": {
-      "title": "O Construtor",
-      "heading": "O Construtor é para contas de crianças",
-      "text": "As crianças criam os próprios jogos com o Construtor, usando a própria conta. Uma conta de adulto pode jogar e cuidar de uma família, mas não pode criar jogos.",
-      "how": "Como funciona criar um jogo",
-      "safety": "O Construtor com IA é seguro?"
     }
   },
   "studio": {
@@ -1231,7 +1229,9 @@
       "friends": "Só você e seus amigos na Oomba Academy podem jogar.",
       "class": "Só as turmas que você escolheu podem jogar.",
       "public": "Todo mundo na Oomba Academy pode achar e jogar, depois de uma verificação de segurança rápida.",
-      "school": "Todo mundo da sua escola pode achar e jogar."
+      "school": "Todo mundo da sua escola pode achar e jogar.",
+      "family": "Você e as crianças vinculadas à sua família podem jogar.",
+      "connections": "Só você e seus contatos adultos podem jogar."
     },
     "status": {
       "hidden": "Escondido por enquanto",
@@ -1353,7 +1353,9 @@
     "waiting": "Seu jogo está esperando uma verificação de segurança rápida. Vamos compartilhar assim que ele passar.",
     "school": "No ar para a sua escola! Todo mundo da sua escola pode achar e jogar.",
     "class": "{count, plural, one {No ar para {name}! Todo mundo da sua turma pode achar e jogar.} other {No ar para as suas turmas! Todo mundo delas pode achar e jogar.}}",
-    "schoolOnly": "Sua escola mantém os jogos dentro da escola. Compartilhe com a sua escola."
+    "schoolOnly": "Sua escola mantém os jogos dentro da escola. Compartilhe com a sua escola.",
+    "liveFamily": "No ar para sua família! Você e as crianças vinculadas à sua família podem jogar.",
+    "liveConnections": "Compartilhado com seus contatos adultos! Só você e eles podem jogar."
   },
   "builder": {
     "kindRefusal": "Com esse eu não posso ajudar. Vamos criar algo divertido! Que tipo de jogo você quer?",
@@ -1616,7 +1618,9 @@
         "friends": "Amigos",
         "class": "{count, plural, one {Minha turma} other {Minhas turmas}}",
         "public": "Todos",
-        "school": "Minha escola"
+        "school": "Minha escola",
+        "family": "Minha família",
+        "connections": "Meus contatos adultos"
       },
       "top": {
         "inReview": "Em revisão",
@@ -1646,7 +1650,8 @@
         "publicCheck": "Jogos para todos passam antes por uma verificação de segurança rápida, e os jogadores continuam com a versão antiga até ela passar.",
         "onlyYou": "só você pode ver",
         "pendingNew": "A versão {number} está esperando uma verificação de segurança rápida. Vamos compartilhar assim que ela passar.",
-        "reviewer": "O revisor diz: “{note}” Peça ao Construtor para mudar isso e depois toque em Atualizar ou Publicar de novo."
+        "reviewer": "O revisor diz: “{note}” Peça ao Construtor para mudar isso e depois toque em Atualizar ou Publicar de novo.",
+        "waitingFamily": "Aguardando uma verificação rápida de segurança antes que sua família possa jogar. Até lá, continua compartilhado como está agora."
       },
       "safety": {
         "chipPass": "Seguro",
@@ -1758,7 +1763,12 @@
         "classRemoved": "Seu professor tirou o jogo desta turma.",
         "allRemoved": "{count, plural, one {Seu professor tirou este jogo da sua turma.} other {Seus professores tiraram este jogo das suas turmas.}}",
         "copied": "Link copiado!",
-        "copyFailed": "Não foi possível copiar."
+        "copyFailed": "Não foi possível copiar.",
+        "hint": {
+          "family": "Só as crianças que aceitaram o vínculo com sua família. Nunca outras crianças.",
+          "connections": "Só outros adultos com quem você se conectou por código. Nunca crianças.",
+          "publicGrownup": "Todos, depois de uma verificação de segurança. Aparece como {name}, criador adulto."
+        }
       },
       "update": {
         "title": "Atualize seu jogo no ar",
@@ -2023,6 +2033,9 @@
         "noMic": "Nenhum microfone foi encontrado neste aparelho.",
         "cancelled": "Gravação interrompida. Nada foi enviado nem guardado.",
         "failed": "Desculpe, não consegui transformar isso em palavras. Tente de novo ou digite sua mensagem."
+      },
+      "limit": {
+        "seePlans": "Ver planos para mais mensagens do Construtor"
       }
     }
   },
@@ -2914,7 +2927,7 @@
     "signup": {
       "title": "Cadastro de adulto",
       "heading": "Criar uma conta de adulto",
-      "intro": "Para pais, mães e responsáveis. Uma conta de adulto pode jogar e cuidar de uma família. Ela não pode criar jogos, usar o chat nem adicionar amigos.",
+      "intro": "Para pais, mães e responsáveis. Uma conta de adulto pode jogar, cuidar de uma família, criar jogos e se conectar com outros adultos. Ela não pode usar o chat nem adicionar crianças como amigos.",
       "nameLabel": "Nome da conta",
       "nameHint": "De 3 a 16 letras ou números. As crianças nunca veem este nome.",
       "passwordHint": "Pelo menos {min} caracteres.",
@@ -4078,5 +4091,32 @@
         "a4": "Os dois têm seu lugar. Criar um jogo pede que a criança planeje, explique com clareza, teste e corrija, então é um tipo ativo de tempo de tela."
       }
     }
+  },
+  "connections": {
+    "title": "Contatos adultos",
+    "heading": "Meus contatos adultos",
+    "intro": "Conecte-se com outros adultos que você conhece, como outro pai ou mãe, trocando códigos. Depois, vocês podem compartilhar jogos entre si: escolha “Meus contatos adultos” ao compartilhar um jogo.",
+    "yourCode": "Seu código",
+    "codeHelp": "Passe-o só para outro adulto que você conhece. Ele digita o código na própria página de contatos.",
+    "addLabel": "O código de outro adulto",
+    "addBtn": "Conectar",
+    "incoming": "Querem se conectar com você",
+    "outgoing": "Aguardando a resposta",
+    "list": "Seus contatos",
+    "empty": "Nenhum contato ainda.",
+    "accept": "Aceitar",
+    "decline": "Recusar",
+    "cancel": "Cancelar",
+    "remove": "Remover",
+    "adultsOnly": "Contatos são só para contas de adulto. O código de uma criança não funciona aqui, e crianças não podem usar o seu. Não há chat: contatos servem só para compartilhar jogos."
+  },
+  "familyGames": {
+    "heading": "Seus jogos",
+    "empty": "Você ainda não criou nenhum jogo. O Construtor também funciona para adultos.",
+    "build": "Criar um jogo",
+    "seeAll": "Ver todos os meus jogos",
+    "connections": "{count, plural, =0 {Meus contatos} one {Meus contatos (# pedido)} other {Meus contatos (# pedidos)}}",
+    "usage": "Seu uso do Construtor:",
+    "usageLine": "mensagens ontem: {yesterday} · neste mês: {month}"
   }
 }

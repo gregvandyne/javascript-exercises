@@ -222,7 +222,8 @@ test('a grown-up account can open every page /parents and the guides link to', a
   for (const p of ['/parents', ...GUIDES, ...AGE_PAGES, '/learn/make-a-game']) {
     const r = await get(p, { cookie: c });
     assert.equal(r.status, 200, `grown-up: ${p}`);
-    if (!['/parents', ...GUIDES].includes(p)) { assert.ok(!main(r.text).includes('href="/build"'), `${p}: no Builder button for a grown-up`); continue; }
+    if (p === '/learn/make-a-game') assert.ok(main(r.text).includes('href="/build"'), `${p}: the Builder button, for grown-ups too`);
+    if (!['/parents', ...GUIDES].includes(p)) continue;
     for (const [, href] of main(r.text).matchAll(/href="(\/[^"#?]*)/g)) seen.add(href);
   }
   for (const href of seen) assert.ok((await get(href, { cookie: c })).status < 400, `grown-up: ${href}`);

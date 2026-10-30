@@ -125,14 +125,13 @@ test('/login and /signup: "Grown-up or teacher?" leads to the grown-up sign-in o
   assert.doesNotMatch(soon, /Parents sign in here/);
 });
 
-test('/build for a grown-up explains; for anyone else it is unchanged', async () => {
+test('/build is the Builder for a grown-up too (docs/decisions.md "Grown-ups can build"); for anyone else it is unchanged', async () => {
   const g = grownup();
   const r = await as(g)('/build');
   assert.equal(r.status, 200);
-  assert.match(r.text, /The Builder is for kids&#39; accounts/);
-  assert.match(r.text, /href="\/learn\/make-a-game"/); assert.match(r.text, /href="\/family"/);
+  assert.match(r.text, /id="newgame"/); assert.doesNotMatch(r.text, /The Builder is for kids/);
   assert.match(r.text, /noindex/);
-  assert.equal((await as(g)('/api/studio/new', { method: 'POST', body: {} })).status, 404);
+  assert.equal((await as(g)('/api/studio/new', { method: 'POST', body: {} })).status, 200);
   assert.match((await call(null, '/build')).location, /^\/signup\?next=%2Fbuild/);
   assert.equal((await as(kid())('/build')).status, 200);
 });
@@ -164,7 +163,7 @@ test('"Using this in class?" on subject, age and game pages for signed-out visit
   }
   assert.match((await as(k)('/g/sum-racer')).text, /<a class="iconbtn" href="\/build" id="makelike">/);
   assert.match((await call(null, '/g/sum-racer')).text, /id="makelike"/);
-  assert.doesNotMatch((await as(g)('/g/sum-racer')).text, /id="makelike"/, 'no Builder link for a grown-up');
+  assert.match((await as(g)('/g/sum-racer')).text, /id="makelike"/, 'grown-ups can build too');
 });
 
 test('grown-ups sign up with a real name, "Your sign-in name", and get a plain person picture; kid name rules are unchanged', async () => {

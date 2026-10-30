@@ -357,14 +357,33 @@ export const MIGRATIONS = [
   // audio or words. For the per-builder daily cap and the site-wide daily minutes cap, which survive a restart. Kept 3 days.
   ['0033_stt_usage', `CREATE TABLE IF NOT EXISTS stt_usage (day TEXT NOT NULL, user_id TEXT NOT NULL, clips INTEGER NOT NULL DEFAULT 0,
       seconds REAL NOT NULL DEFAULT 0, PRIMARY KEY(day, user_id));`],
+  // Grown-ups can build (docs/decisions.md "Grown-ups can build"). games.visibility gets a new value, 'family' (the owner
+  // and their linked children), with no new column. Grown-ups get a friend code, for connections with OTHER grown-ups
+  // only (services/friends.js keeps adults and kids apart in both directions): the backfill below gives every grown-up
+  // without one a new unique code. Defence in depth: no friendship (or request) between a grown-up and a kid may exist.
+  ['0034_grownup_builder', `DELETE FROM friends WHERE EXISTS (SELECT 1 FROM users a, users b
+      WHERE a.id=friends.user_id AND b.id=friends.friend_id AND (a.account_type='grownup') <> (b.account_type='grownup'));`,
+  conn => {
+    for (const r of conn.prepare("SELECT id FROM users WHERE account_type='grownup' AND friend_code IS NULL AND is_guest=0").all()) {
+      conn.prepare('UPDATE users SET friend_code=? WHERE id=?').run(newFriendCode(conn), r.id);
+    }
+  }],
 ];
+
+const CODE_LETTERS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+/** A new 6-character friend code no account has (no 0/O, 1/I/L, so it reads aloud clearly). */
+export function newFriendCode(conn = db) {
+  const taken = conn.prepare('SELECT 1 FROM users WHERE friend_code=?');
+  for (;;) { const c = Array.from({ length: 6 }, () => CODE_LETTERS[crypto.randomInt(CODE_LETTERS.length)]).join(''); if (!taken.get(c)) return c; }
+}
 
 db.exec('CREATE TABLE IF NOT EXISTS migrations (name TEXT PRIMARY KEY, applied_at INTEGER NOT NULL)');
 export function migrate(extra = []) {
   const applied = new Set(db.prepare('SELECT name FROM migrations').all().map(r => r.name));
-  for (const [name, sql] of [...MIGRATIONS, ...extra]) {
+  // An entry is [name, sql] or [name, sql, after]: after(db) runs in the same transaction, for a backfill SQL can't do.
+  for (const [name, sql, after] of [...MIGRATIONS, ...extra]) {
     if (applied.has(name)) continue;
-    db.transaction(() => { db.exec(sql); db.prepare('INSERT INTO migrations(name, applied_at) VALUES (?, ?)').run(name, now()); })();
+    db.transaction(() => { db.exec(sql); if (after) after(db); db.prepare('INSERT INTO migrations(name, applied_at) VALUES (?, ?)').run(name, now()); })();
   }
 }
 migrate();

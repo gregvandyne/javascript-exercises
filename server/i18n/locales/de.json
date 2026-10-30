@@ -347,7 +347,9 @@
     "class": "{count, plural, one {Meine Klasse} other {Meine Klassen}}",
     "onlyYouNow": "Gerade nur du",
     "public": "Alle",
-    "school": "Meine Schule"
+    "school": "Meine Schule",
+    "family": "Meine Familie",
+    "connections": "Meine Erwachsenen-Kontakte"
   },
   "status": {
     "hidden": "Versteckt",
@@ -580,7 +582,7 @@
         "li7": "Ein Schulkonto wird von der Schule angelegt. Die Schule ist dafür verantwortlich, dass sie berechtigt ist, es anzulegen, und dass sie die Eltern darüber informiert (siehe Abschnitt 3).",
         "s3": "Erwachsenenkonten",
         "li8": "Sie müssen <b>mindestens 18 Jahre alt</b> und <b>Elternteil oder Erziehungsberechtigter</b> jedes Kindes sein, mit dem Sie sich verbinden. Bei der Registrierung bestätigen Sie das mit einem Häkchen. Wir prüfen das nicht, also seien Sie bitte ehrlich: Wer sich mit einem Kind verbindet, das nicht das eigene ist, verstößt gegen diese Bedingungen; wir beenden dann die Verbindung und können Ihr Konto schließen.",
-        "li9": "Mit einem Erwachsenenkonto kann man Spiele spielen. Man kann damit <b>nicht</b> Spiele bauen, den Baumeister nutzen, chatten, Freunde hinzufügen, etwas posten oder ein öffentliches Profil haben.",
+        "li9": "Mit einem Erwachsenenkonto kann man Spiele spielen und mit dem Baumeister Spiele bauen. Diese Spiele durchlaufen dieselben Sicherheitsprüfungen wie jedes Spiel. Man kann sich damit nur mit anderen Erwachsenenkonten verbinden. Man kann damit <b>nicht</b> chatten, Kinder als Freunde hinzufügen, etwas posten oder ein öffentliches Profil haben, und seine Spiele zeigen nie, welche Kinder mit dem Konto verknüpft sind.",
         "li10": "Halten Sie Ihr Passwort geheim. Sie sind für alles verantwortlich, was in Ihrem Erwachsenenkonto passiert, auch für Käufe.",
         "li11": "Zum Schutz davor, dass ein Kind auf einem gemeinsam genutzten Gerät etwas kauft, fragen wir erneut nach Ihrem Passwort, bevor Sie ein Abo abschließen oder ändern.",
         "s4": "Einen Erwachsenen mit einem Kind verbinden",
@@ -805,7 +807,7 @@
         "li6": "Ihr Abo: die Kunden- und Abonummern von Stripe, Abotyp, monatlich oder jährlich, Status, Plätze, Daten und Beträge;",
         "li7": "ein Protokoll wichtiger Aktionen (zum Beispiel „Abo begonnen“, „Kind verbunden“, „Erstattung“). Diese Einträge enthalten nie Kartendaten oder E-Mail-Adressen.",
         "p1": "<b>Wonach wir nicht fragen:</b> Ihre E-Mail-Adresse, Telefonnummer, Wohnadresse oder Ihr Alter. (Stripe fragt beim Bezahlen nach einigen davon: siehe „Zahlungen“ unten.)",
-        "p2": "Ein Erwachsenenkonto kann nicht bauen, chatten, Freunde hinzufügen oder ein öffentliches Profil haben und erscheint nicht in der Suche."
+        "p2": "Mit einem Erwachsenenkonto kann man Spiele bauen. Sie durchlaufen dieselben Sicherheitsprüfungen wie jedes Spiel, und ein für alle freigegebenes Spiel zeigt den Anzeigenamen der erwachsenen Person und „Von Erwachsenen gebaut“. Ein Erwachsenenkonto kann sich nur mit anderen Erwachsenenkonten verbinden; es kann nicht chatten, keine Kinder als Freunde hinzufügen und kein öffentliches Profil haben, und es erscheint nicht in der Suche. Wir zeigen nie öffentlich, welche Kinder mit einer erwachsenen Person verknüpft sind, und auch nicht ihre Namen."
       },
       "linking": {
         "h": "Verbindung mit einem Kind",
@@ -940,7 +942,9 @@
       "friends": "Nur deine Freunde auf Oomba Academy können diesen Link öffnen.",
       "class": "Nur die Klassen, mit denen dieses Spiel geteilt ist, können diesen Link öffnen.",
       "public": "Alle mit dem Link können dieses Spiel spielen.",
-      "school": "Alle an deiner Schule können es finden und spielen."
+      "school": "Alle an deiner Schule können es finden und spielen.",
+      "family": "Nur die erwachsene Person, die dieses Spiel gebaut hat, und ihre Familie können diesen Link öffnen.",
+      "connections": "Nur die erwachsene Person, die dieses Spiel gebaut hat, und ihre Erwachsenen-Kontakte können diesen Link öffnen."
     },
     "sharedWith": "Geteilt mit:",
     "sharedWithMore": "{count, plural, one {und # weitere Klasse} other {und # weitere Klassen}}",
@@ -964,7 +968,8 @@
       "badScore": "Ungültiger Punktestand.",
       "pickReason": "Wähl einen Grund."
     },
-    "makeLike": "Bau ein Spiel wie dieses"
+    "makeLike": "Bau ein Spiel wie dieses",
+    "grownupBuilder": "Von Erwachsenen gebaut"
   },
   "play": {
     "backTo": "Zurück zu {title}",
@@ -1212,13 +1217,6 @@
       "ready": "✨ Fertig",
       "question": "💬 Hat eine Frage",
       "stopped": "⚠️ Gestoppt"
-    },
-    "grownup": {
-      "title": "Der Baumeister",
-      "heading": "Der Baumeister ist für Kinderkonten",
-      "text": "Kinder bauen ihre eigenen Spiele mit dem Baumeister, angemeldet mit ihrem eigenen Konto. Mit einem Erwachsenenkonto können Sie Spiele spielen und eine Familie verwalten, aber nicht bauen.",
-      "how": "So entsteht ein Spiel",
-      "safety": "Ist der KI-Baumeister sicher?"
     }
   },
   "studio": {
@@ -1231,7 +1229,9 @@
       "friends": "Nur du und deine Freunde auf Oomba Academy können es spielen.",
       "class": "Nur die Klassen, die du ausgewählt hast, können es spielen.",
       "public": "Alle auf Oomba Academy können es finden und spielen, nach einem kurzen Sicherheitscheck.",
-      "school": "Alle an deiner Schule können es finden und spielen."
+      "school": "Alle an deiner Schule können es finden und spielen.",
+      "family": "Sie und die Kinder, die mit Ihrer Familie verknüpft sind, können es spielen.",
+      "connections": "Nur Sie und Ihre Erwachsenen-Kontakte können es spielen."
     },
     "status": {
       "hidden": "Gerade versteckt",
@@ -1353,7 +1353,9 @@
     "waiting": "Dein Spiel wartet auf einen kurzen Sicherheitscheck. Sobald es geprüft ist, teilen wir es.",
     "school": "Online für deine Schule! Alle an deiner Schule können es finden und spielen.",
     "class": "{count, plural, one {Online für {name}! Alle in deiner Klasse können es finden und spielen.} other {Online für deine Klassen! Alle darin können es finden und spielen.}}",
-    "schoolOnly": "Deine Schule behält Spiele in der Schule. Teile es stattdessen mit deiner Schule."
+    "schoolOnly": "Deine Schule behält Spiele in der Schule. Teile es stattdessen mit deiner Schule.",
+    "liveFamily": "Live für Ihre Familie! Sie und die Kinder, die mit Ihrer Familie verknüpft sind, können es spielen.",
+    "liveConnections": "Mit Ihren Erwachsenen-Kontakten geteilt! Nur Sie und diese Kontakte können es spielen."
   },
   "builder": {
     "kindRefusal": "Dabei kann ich leider nicht helfen. Lass uns lieber etwas Lustiges bauen. Was für ein Spiel hättest du gern?",
@@ -1616,7 +1618,9 @@
         "friends": "Freunde",
         "class": "{count, plural, one {Meine Klasse} other {Meine Klassen}}",
         "public": "Alle",
-        "school": "Meine Schule"
+        "school": "Meine Schule",
+        "family": "Meine Familie",
+        "connections": "Meine Erwachsenen-Kontakte"
       },
       "top": {
         "inReview": "Wird geprüft",
@@ -1646,7 +1650,8 @@
         "publicCheck": "Spiele für alle bekommen zuerst einen kurzen Sicherheitscheck, und bis er bestanden ist, spielen alle die alte Version.",
         "onlyYou": "nur du kannst es sehen",
         "pendingNew": "Version {number} wartet auf einen kurzen Sicherheitscheck. Sobald sie geprüft ist, teilen wir sie.",
-        "reviewer": "Der Prüfer sagt: „{note}“ Bitte den Baumeister, das zu ändern, und tipp dann noch mal auf Aktualisieren oder Freigeben."
+        "reviewer": "Der Prüfer sagt: „{note}“ Bitte den Baumeister, das zu ändern, und tipp dann noch mal auf Aktualisieren oder Freigeben.",
+        "waitingFamily": "Wartet auf eine kurze Sicherheitsprüfung, bevor Ihre Familie spielen kann. Bis dahin bleibt es so freigegeben wie jetzt."
       },
       "safety": {
         "chipPass": "Sicher",
@@ -1758,7 +1763,12 @@
         "classRemoved": "Deine Lehrkraft hat es aus dieser Klasse herausgenommen.",
         "allRemoved": "{count, plural, one {Deine Lehrkraft hat dieses Spiel aus deiner Klasse herausgenommen.} other {Deine Lehrkräfte haben dieses Spiel aus deinen Klassen herausgenommen.}}",
         "copied": "Link kopiert!",
-        "copyFailed": "Kopieren hat nicht geklappt."
+        "copyFailed": "Kopieren hat nicht geklappt.",
+        "hint": {
+          "family": "Nur Kinder, die der Verknüpfung mit Ihrer Familie zugestimmt haben. Nie andere Kinder.",
+          "connections": "Nur andere Erwachsene, mit denen Sie sich per Code verbunden haben. Nie Kinder.",
+          "publicGrownup": "Alle, nach einer Sicherheitsprüfung. Angezeigt als {name} („Von Erwachsenen gebaut“)."
+        }
       },
       "update": {
         "title": "Dein Spiel aktualisieren",
@@ -2023,6 +2033,9 @@
         "noMic": "Auf diesem Gerät wurde kein Mikrofon gefunden.",
         "cancelled": "Aufnahme gestoppt. Nichts wurde gesendet oder behalten.",
         "failed": "Tut mir leid, daraus konnte ich keine Wörter machen. Versuch es noch mal oder tippe deine Nachricht."
+      },
+      "limit": {
+        "seePlans": "Pläne für mehr Baumeister-Nachrichten ansehen"
       }
     }
   },
@@ -2913,7 +2926,7 @@
     "signup": {
       "title": "Registrierung für Erwachsene",
       "heading": "Erwachsenenkonto erstellen",
-      "intro": "Für Eltern und Erziehungsberechtigte. Mit einem Erwachsenenkonto können Sie Spiele spielen und eine Familie verwalten. Spiele bauen, chatten oder Freunde hinzufügen geht damit nicht.",
+      "intro": "Für Eltern und Erziehungsberechtigte. Mit einem Erwachsenenkonto können Sie Spiele spielen, eine Familie verwalten, Spiele bauen und sich mit anderen Erwachsenen verbinden. Chatten oder Kinder als Freunde hinzufügen geht damit nicht.",
       "nameLabel": "Kontoname",
       "nameHint": "3 bis 16 Buchstaben oder Zahlen. Kinder sehen diesen Namen nie.",
       "passwordHint": "Mindestens {min} Zeichen.",
@@ -4077,5 +4090,32 @@
         "a4": "Beides hat seinen Platz. Wer ein Spiel baut, muss planen, klar erklären, testen und verbessern, deshalb ist es eine aktive Art von Bildschirmzeit."
       }
     }
+  },
+  "connections": {
+    "title": "Erwachsenen-Kontakte",
+    "heading": "Meine Erwachsenen-Kontakte",
+    "intro": "Verbinden Sie sich mit anderen Erwachsenen, die Sie kennen, zum Beispiel mit anderen Eltern, indem Sie Codes austauschen. Dann können Sie einander Spiele freigeben: Wählen Sie beim Freigeben „Meine Erwachsenen-Kontakte“.",
+    "yourCode": "Ihr Code",
+    "codeHelp": "Geben Sie ihn nur anderen Erwachsenen, die Sie kennen. Sie tippen ihn auf ihrer eigenen Kontaktseite ein.",
+    "addLabel": "Code einer anderen erwachsenen Person",
+    "addBtn": "Verbinden",
+    "incoming": "Möchten sich mit Ihnen verbinden",
+    "outgoing": "Warten auf Zustimmung",
+    "list": "Ihre Kontakte",
+    "empty": "Noch keine Kontakte.",
+    "accept": "Annehmen",
+    "decline": "Ablehnen",
+    "cancel": "Zurückziehen",
+    "remove": "Entfernen",
+    "adultsOnly": "Kontakte gibt es nur zwischen Erwachsenenkonten. Der Code eines Kindes funktioniert hier nicht, und Kinder können Ihren nicht verwenden. Es gibt keinen Chat: Über Kontakte werden nur Spiele geteilt."
+  },
+  "familyGames": {
+    "heading": "Ihre Spiele",
+    "empty": "Sie haben noch kein Spiel gebaut. Der Baumeister funktioniert auch für Erwachsene.",
+    "build": "Ein Spiel bauen",
+    "seeAll": "Alle meine Spiele",
+    "connections": "{count, plural, =0 {Meine Kontakte} one {Meine Kontakte (# Anfrage)} other {Meine Kontakte (# Anfragen)}}",
+    "usage": "Ihre Baumeister-Nutzung:",
+    "usageLine": "Nachrichten gestern: {yesterday} · diesen Monat: {month}"
   }
 }

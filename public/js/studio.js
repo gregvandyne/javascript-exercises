@@ -16,9 +16,14 @@ const log = $('#st-log'), input = $('#st-input'), frame = $('#st-frame'), stage 
 let pro = false;
 try { pro = localStorage.getItem('brb-pro') === '1'; } catch { /* private mode */ }
 const SIZES = { phone: [390, 760], tablet: [820, 1100], landscape: [844, 390] };
-const VIS = { private: ['🔒', t('js.studio.vis.private')], friends: ['👫', t('js.studio.vis.friends')], class: ['🎒', t('js.studio.vis.class', { count: 2 })], school: ['🏫', t('js.studio.vis.school')], public: ['🌍', t('js.studio.vis.public')] };
+const VIS = { private: ['🔒', t('js.studio.vis.private')], family: ['🏠', t('js.studio.vis.family')], friends: ['👫', t('js.studio.vis.friends')], class: ['🎒', t('js.studio.vis.class', { count: 2 })], school: ['🏫', t('js.studio.vis.school')], public: ['🌍', t('js.studio.vis.public')] };
+/** A grown-up builder's 'friends' are their grown-up connections (S.grownup: set by the server for a grown-up's game). */
+const CONNECTIONS = ['🤝', t('js.studio.vis.connections')];
 /** [emoji, label] for a sharing level. 'class' says "My class" for one class and "My classes" for several. */
-const visOf = (k, count = 1) => (k === 'class' ? ['🎒', t('js.studio.vis.class', { count })] : VIS[k] || ['', k]);
+const visOf = (k, count = 1) => (k === 'class' ? ['🎒', t('js.studio.vis.class', { count })] : k === 'friends' && S.grownup ? CONNECTIONS : VIS[k] || ['', k]);
+/** A grown-up's share dialog: one line under each choice saying exactly who that is (never their children's names). */
+const grownupHint = k => (!S.grownup ? '' : k === 'family' ? t('js.studio.share.hint.family') : k === 'friends' ? t('js.studio.share.hint.connections')
+  : k === 'public' ? t('js.studio.share.hint.publicGrownup', { name: S.grownup.name }) : '');
 // Idea chips: keys a, b, c... under a prefix (missing letters are skipped).
 const chipList = prefix => [...'abcdefgh'].map(k => t(`${prefix}.${k}`)).filter(x => !x.startsWith(prefix));
 const START_CHIPS = chipList('js.studio.startChips');
@@ -72,6 +77,7 @@ function syncLimit() {
     const html = `<p class="st-limit-h" id="${LIMIT_WHY}"><span aria-hidden="true">🌙</span> ${E('js.studio.limitCard.heading')}</p>
       <p class="st-limit-text">${E(S.current ? 'js.studio.limitCard.text' : 'js.studio.limitCard.textEmpty')}</p>
       <div class="st-limit-acts">${canPublish ? `<button class="btn btn-sm btn-hot" type="button" data-act="limit-publish">🚀 ${E('js.studio.limitCard.publish')}</button>` : ''}<a class="btn btn-sm" href="/">🎮 ${E('js.studio.limitCard.play')}</a><a class="btn btn-sm" href="/search?sort=new">✨ ${E('js.studio.limitCard.others')}</a></div>
+      ${S.grownup && S.grownup.seePlans ? `<p class="st-limit-gu"><a href="/plans">${E('js.studio.limit.seePlans')}</a></p>` : ''}
       ${S.grownUpLink ? `<p class="st-limit-gu"><span aria-hidden="true">🧑‍🧒</span> ${E('js.studio.limitCard.grownUp')} <a href="/me#grownups">${E('js.studio.limitCard.grownUpWhere')}</a></p>` : ''}`;
     if (box.dataset.html !== html || box.hidden) { box.innerHTML = html; box.dataset.html = html; }
     box.hidden = false;
@@ -126,7 +132,7 @@ const LIST = typeof Intl.ListFormat === 'function' ? new Intl.ListFormat(INTL, {
 /** "5B, Art Club and Chess Club" in the reader's language. Class names are typed by teachers: escaped, and each kept
  *  whole inside right-to-left text. */
 const nameList = names => (LIST ? LIST.formatToParts(names).map(p => (p.type === 'element' ? `<bdi>${esc(p.value)}</bdi>` : esc(p.value))).join('') : names.map(n => `<bdi>${esc(n)}</bdi>`).join(', '));
-const isGroup = v => v === 'class' || v === 'school';
+const isGroup = v => v === 'class' || v === 'school' || v === 'family';
 /** Would sharing this version with a class or the school wait for a person? Only a clean or approved version goes
  *  straight out (server/services/publish.js). */
 const needsCheck = id => { const v = (S.versions || []).find(x => x.id === id); return !!v && v.safety === 'flag' && v.review !== 'approved'; };
@@ -134,8 +140,9 @@ const needsCheck = id => { const v = (S.versions || []).find(x => x.id === id); 
 function waitingText() {
   const want = S.pending.visibility || 'public';
   if (want === 'school') return E('js.studio.live.waitingSchool');
+  if (want === 'family') return E('js.studio.live.waitingFamily');
   if (want === 'class') return E('js.studio.live.waitingClass', { count: Math.max(1, classShare().classes.filter(c => c.chosen && !c.removed).length) });
-  if (isGroup(S.live.visibility)) return E('js.studio.live.waitingPublic');
+  if (isGroup(S.live.visibility) || (S.grownup && S.live.visibility === 'friends')) return E('js.studio.live.waitingPublic');
   return E(S.live.visibility === 'friends' ? 'js.studio.live.waitingFriends' : 'js.studio.live.waitingYou');
 }
 function renderSafety() {
@@ -1479,8 +1486,10 @@ function shareSheet(mode) {
   const live = S.live;
   const options = () => S.shareOptions || ['private', 'friends', 'public'];   // read again after a refused request
   // Before it is live, the dialog opens on what is waiting for a check (if anything), else on the game's level.
-  let pick = live ? live.visibility : (S.pending && S.pending.visibility) || S.game.visibility || 'private';
-  if (!live && !options().includes(pick)) pick = 'private';
+  // Never shared yet (still a draft): the server's starting choice (S.shareDefault: 'family' for a grown-up builder, else
+  // 'private'). A game shared before (now suspended, rejected…) opens on its stored level, as it always did.
+  let pick = live ? live.visibility : (S.pending && S.pending.visibility) || (S.game.status === 'draft' ? S.shareDefault : S.game.visibility) || 'private';
+  if (!live && !options().includes(pick)) pick = options().includes(S.shareDefault) ? S.shareDefault : 'private';
   // Classes: ticked = the game's list (classes a teacher took it off can't be ticked). The first time nothing is
   // ticked: sharing with a class is the builder's own choice, and "All my classes" is one tap.
   const ticked = new Set(classShare().classes.filter(c => c.chosen && !c.removed).map(c => c.id));
@@ -1505,7 +1514,7 @@ function shareSheet(mode) {
       <p class="cp-later">${E('js.studio.share.classLater')}</p><p class="cp-err" id="cp-err" role="alert"></p></fieldset>`;
   };
   const optsHtml = () => options().filter(k => VIS[k] && (k !== 'class' || cls().length))
-    .map(k => (k === 'class' ? classOption(k) : `<button type="button" data-vis="${k}" aria-pressed="${k === pick}"><b>${VIS[k][0]} ${esc(VIS[k][1])}</b><span>${esc(S.shareText[k])}</span></button>`)).join('');
+    .map(k => { if (k === 'class') return classOption(k); const [e, w] = visOf(k), h = grownupHint(k); return `<button type="button" data-vis="${k}" aria-pressed="${k === pick}"><b>${e} ${esc(w)}</b><span>${esc(S.shareText[k])}</span>${h ? `<span class="vis-hint">${esc(h)}</span>` : ''}</button>`; }).join('');
   const link = live ? `<div class="field"><label for="share-link">${E('js.studio.share.link')}</label><div class="row"><input class="input" id="share-link" dir="ltr" readonly value="${esc(location.origin + S.shareUrl)}" style="flex:1;min-width:0"><button class="btn" type="button" id="share-copy">📋 ${E('js.studio.share.copy')}</button></div></div>` : '';
   const title = live ? `🔗 ${t('js.studio.share.titleLive')}` : mode === 'publish' ? `🚀 ${t('js.studio.share.titlePublish')}` : `🔗 ${t('js.studio.share.titleWho')}`;
   const s = sheet({ title, content: `${live ? `<p>${E('js.studio.share.playersGet', { number: live.number })}</p>` : `<p>${E('js.studio.share.pickWho', { number: S.current.number })}</p>`}<div class="vischoice" role="group" aria-label="${E('js.studio.share.whoLabel')}">${optsHtml()}</div><p class="small muted" id="vis-hint"></p>${link}<div class="sheet-actions"><button class="btn btn-primary" type="button" id="vis-go">${live ? E('js.studio.share.save') : E('js.studio.top.publish')}</button></div>` });

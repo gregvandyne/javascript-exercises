@@ -11,7 +11,8 @@
 //            messages per child per day, and FAMILY_MONTHLY_AI_USD of AI cost per family per month.
 //            The Basic plan is the same for one child: BASIC_EXTRA_MESSAGES a month and BASIC_MONTHLY_AI_USD, for the
 //            family's first linked child only (a Family plan switched to Basic keeps its links; the others use the free
-//            messages, and /family says so).
+//            messages, and /family says so). The grown-up who owns the family builds on the same terms: free messages
+//            first, then the same extras pool, always covered while the plan is (never counted in maxChildren).
 //   school   an active student or staff member of a school with a plan whose pool has messages left: every message
 //            comes from the school's pool (paid AI pool), up to the school's daily cap per person (never below the free
 //            daily messages), so they never "rest" with free users. With the pool empty: the free messages, never the
@@ -40,14 +41,17 @@ export function coveredChildren(familyId, plan) {
   return q.all("SELECT child_id FROM family_children WHERE family_id=? AND status='linked' AND unlinked_at IS NULL ORDER BY linked_at, requested_at, child_id", familyId)
     .slice(0, max).map(r => r.child_id);
 }
-/** The family whose plan pays a child's extra messages: the child's confirmed (linked) family, when it has a plan that
- *  covers this child (billing off: never). -> family id or null.
+/** The family whose plan pays a builder's extra messages: the grown-up owner's own family while its plan is entitled, or a
+ *  child's confirmed (linked) family, when it has a plan that covers this child (billing off: never). -> family id or null.
  *  Never for a member of a school with a plan (docs/decisions.md "Paid plans" §3.1, §4.3): they build from the school's
  *  pool, and family money is never used in class. A family child in a school without a plan keeps the family's extras,
  *  but as a class context sees only "{left} left today" (no "+N extra" counter). */
 export function familyOf(userId, side = null) {
   if (!userId) return null;
   if ((side || schoolSide(userId)).entitled) return null;
+  // A grown-up builder: their own family's plan covers them while it is entitled (Basic too), outside maxChildren.
+  const own = q.get('SELECT id FROM families WHERE owner_id=?', userId);
+  if (own) return ownerPlan('family', own.id).entitled ? own.id : null;
   const r = q.get("SELECT family_id FROM family_children WHERE child_id=? AND status='linked' AND unlinked_at IS NULL", userId);
   if (!r) return null;
   const p = ownerPlan('family', r.family_id);

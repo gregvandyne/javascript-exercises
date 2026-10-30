@@ -53,7 +53,7 @@ const guest = auth.createGuest();
 
 const ON = {
   out: { tabs: ['/', '/search', '/build', '/parents', '/plans', '/login'], top: ['/', '/build', '/plans', '/parents', '/teachers'] },
-  grownup: { tabs: ['/family', '/', '/plans', '/family/account'], top: ['/family', '/', '/plans'] },
+  grownup: { tabs: ['/family', '/build', '/', '/plans', '/family/account'], top: ['/family', '/build', '/', '/plans'] },
   schoolAdmin: { tabs: ['/teach', '/', '/school', '/plans', '/me'], top: ['/teach', '/', '/school', '/plans'] },
   teacher: { tabs: ['/teach', '/', '/plans', '/me'], top: ['/teach', '/', '/plans'] },
   admin: { tabs: ['/', '/search', '/build', '/friends', '/admin/schools', '/plans', '/me'], top: ['/', '/search', '/build', '/friends', '/admin/schools', '/plans'] },
@@ -62,7 +62,7 @@ const ON = {
 };
 const KEYS = {
   out: ['home', 'search', 'build', 'grownups', 'plans', 'signin'],
-  grownup: ['family', 'games', 'plans', 'account'],
+  grownup: ['family', 'build', 'games', 'plans', 'account'],
   schoolAdmin: ['classes', 'games', 'school', 'plans', 'me'],
   teacher: ['classes', 'games', 'plans', 'me'],
   admin: ['home', 'search', 'build', 'friends', 'schools', 'plans', 'me'],
@@ -88,8 +88,8 @@ test('shellFor: every role\'s tab keys, in order, with paid-plan pages on and of
     assert.deepEqual(s.tabs.map(([k]) => k), KEYS[role].filter(k => k !== 'plans'), `${role}, plans off`);
     assert.ok(!s.top.some(([k]) => k === 'plans'), `${role}: no Plans while plans are off`);
   }
-  // With billing off: a grown-up has 3 tabs, an admin teacher 4, a plain teacher 3.
-  assert.equal(shellFor(mum, req).tabs.length, 3); assert.equal(shellFor(head, req).tabs.length, 4); assert.equal(shellFor(teacher, req).tabs.length, 3);
+  // With billing off: a grown-up has 4 tabs (Family · Build · Games · Account), an admin teacher 4, a plain teacher 3.
+  assert.equal(shellFor(mum, req).tabs.length, 4); assert.equal(shellFor(head, req).tabs.length, 4); assert.equal(shellFor(teacher, req).tabs.length, 3);
 });
 
 test('every role\'s phone tab bar and desktop top bar on the page, plans on and off; search in every top bar', async () => {

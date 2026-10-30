@@ -896,7 +896,8 @@ statement, never a check, audit `user.signup {grownup:true}`), never from a gues
 code, use the staff session rules (12 hours idle, 7 days at most) and land on `/family`. A fence before every route
 (`routes/family.js` `grownupGuard`) lists what a grown-up may open (game pages and play, search, info pages, signing in
 and out, their password and theme, the family pages); everything else, the Builder, Studio, friends, chat, profiles,
-classes, schools and admin included, is a 404, and `requireAccount` itself refuses them too. They are on no
+classes, schools and admin included, is a 404, and `requireAccount` itself refuses them too (since "Grown-ups can build"
+below, the Builder, the Studio and grown-up-only connections are open to them; chat, profiles and friends with kids are not). They are on no
 leaderboard (their scores aren't stored), in no builder search, have no profile and can't join a school. Linking: the
 child (an own kid account; never a guest, a school account or staff, whose code endpoints 404) gets a code like
 `K7Q-4MZ9` on /me (only an HMAC is stored; 24 hours, single use, one open per child, rate-limited; it was 1 hour, but a child who hits the
@@ -1438,6 +1439,62 @@ the end of `routes/family.js`, migration `0030_parent_made`) and ships dark.
 - **Left out:** the "What your child made" activity panel (needs its own safety read); parent toggles for chat and
   photo; a verified consent method; retention timers; grown-up self-delete; hand-over; translations (English with
   `lang="en"` marking until done). Full design and test list: the Weeks 3–4 design notes.
+
+## Grown-ups can build
+
+The owner asked for grown-ups (parents) to be builders too, sharing each game with just their family, just their
+grown-up connections, or everyone. Every other fence around grown-up accounts stays.
+
+- **Sharing levels for a grown-up** (`services/schools.js` `sharingOptions`): `private` ("Only me"), `family` (new: the
+  grown-up and the children linked to the family they own), `friends` (shown to them as "My grown-up connections") and
+  `public`. Never `class` or `school`. A kid's options don't change and a kid can never pick `family` (`publish()`
+  refuses any level not offered). With family pages off (`familiesOn()` false) there is no new `family` choice, but a game already live or waiting at
+  `family` keeps that level (`sharingOptions(owner, game)`), so its updates still reach the children who can play it and
+  an admin approval of a waiting `family` review stays `family`.
+- **Default for a new grown-up game: `family`** (`shareDefault`), or `private` while family pages are off.
+- **Who sees a `family` game** (`services/games.js`, one rule for `canView` and `visibleWhere`): the owner, the admin and
+  the children with a confirmed, live link to the owner's family. Not a pending request, not after an unlink, not
+  another family's children, not the grown-up's connections. Play, embed, saves, scores, listings, search, similar,
+  favourites and the chat share list all follow it. No migration column: `games.visibility` is text.
+- **Moderation:** `family` is a group level like `class` and `school` (it reaches children who didn't opt in): a clean
+  scan or an existing approval goes live at once, a flagged version waits for a person. Approvals are stored by name, so
+  `WIDTH` became `{ family: 1, class: 2, school: 3, public: 4 }`. Connections (`friends`) go live at once, as kids'
+  friends games do (both sides are adults who chose it). `public` is exactly the kids' pipeline (scan, model review, the
+  admin queue). The admin queue shows a grown-up owner as plain text with a "Grown-up builder" tag (no `/u/` link).
+- **Connections are adults only.** They reuse the `friends` table and friend codes: grown-ups now get a code
+  (migration `0034_grownup_builder` backfills one for every grown-up and deletes any mixed adult-kid row).
+  `services/friends.js` refuses a mixed pair in both directions with the same "not found" as a wrong code (so neither
+  side learns the other exists) and `accept()` refuses a mixed pending row. Grown-ups manage them on
+  `/family/connections` (code, add by code, requests, list, Remove), with no chat, profile links or pictures. Chat still
+  refuses grown-ups on either side; `/friends`, `/chat` and `/u/` stay 404 for them.
+- **No profile, no contact:** `/u/<grown-up>` stays a 404. A grown-up's game page shows their display name and a
+  "Grown-up builder" tag with no link, for every viewer, and nothing about their children. Grown-ups stay out of builder
+  search and leaderboards. Like, Rate and stored scores stay off for grown-up viewers.
+- **A family game that widens never names the children.** Scores and likes the owner's linked children left while a game
+  was `family` stay stored, but `leaderboard(gameId, limit, viewer)` and `favorites()` leave the owner's own linked
+  children out for every viewer outside that family (not the owner, not one of those children, not an admin), at every
+  level. Leaving them out (instead of deleting) also covers later narrow-then-widen changes.
+- **Toasts and links:** sharing at `friends` tells a grown-up "Shared with your grown-up connections!"
+  (`publish.liveConnections`). The limit card's /plans link shows only while /plans is open (family pages on) and their
+  own family plan doesn't already cover them (`grownup.seePlans`). The share sheet opens a draft on `shareDefault` and a
+  game shared before (suspended, rejected) on its stored level.
+- **Access:** a new `requireBuilder` (any real account) guards the Studio routes and the friend-code APIs;
+  `requireAccount` (kids only) still guards chat and the /friends page. The fence (`routes/family.js`) has separate
+  lists for building (GET, POST and DELETE), so the grown-up page list is unchanged. The "Builder is for kids" page is
+  gone; `?next=/build` now lands on `/build`. Grown-ups' tabs: Family · Build · Games · (Plans) · Account (a Family
+  badge counts connection requests).
+- **Quota:** `builder/usage.js` `familyOf` covers the family's owner while its plan is entitled (Basic too), outside
+  `maxChildren`, from the same `family:<id>` extras. Without a plan a grown-up has the free daily messages like anyone.
+  No price outside /plans: a grown-up's limit card links to /plans with no amount.
+- **/family "Your games":** up to 5 of their games with status, Build, connections (with requests waiting) and their own
+  Builder use (yesterday and this month up to yesterday, never today). This private page is the only place a
+  grown-up's games and children appear together.
+- **Credit name (owner call):** a public grown-up game shows the display name, which for grown-ups starts as their
+  username (they may pick a real name at sign-up). Switching the credit to `@username` is a one-line change if wanted.
+- **Legal:** Terms (`info.terms.accounts.li9`) and Privacy (`info.privacy.grownups.p2`) now say grown-ups may build,
+  their games get the same review, connections are adults only and children's names and family links are never shown.
+- Tests: `tests/unit/grownup-builder.test.js` (and the updated family, nav, class-sharing tests); e2e
+  `tests/e2e/grownup-builder.spec.js`, `tests/e2e/grownup-connections.spec.js`.
 
 ## Oomba Kit: one visual foundation for every game (phase 1)
 - **Build our own kit instead of adopting an engine.** The kit is `window.Oomba`, a classic script pinned with SRI at `/vendor/oomba-kit/<ver>/`, the same way three.js is served. It has two stateless backends: Paper (Canvas 2D) and Glaze (WebGL2). — Every engine needs patches to run in the frame sandbox (no eval, workers, wasm, fetch or URL images). They cost 70–350 KB gz, none has the Canvas 2D fallback that low-end Chromebooks need, and their bitmap text breaks Arabic. A small, frozen API is also what the Builder writes most reliably. Three.js stays the 3D path. Full spec: `docs/kit.md`.
