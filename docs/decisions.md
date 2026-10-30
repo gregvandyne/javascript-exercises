@@ -1332,6 +1332,25 @@ Shipped from the navigation proposal's Option 2. Not behind a new flag: Plans sh
   en/de/he/ar), `schools.spec.js` (School tab), `school-billing.spec.js` (Ask my admin), `family.spec.js` (the split and
   the old anchors).
 
+## "Add your kids" (the step after sign-up and after paying)
+The owner asked that parents can add their children during sign-up: make the child's account there, or link one the
+child already has. `/family/add` (routes/family.js) is that step.
+- **Where it shows:** a new grown-up lands on it after signing up, unless they picked a plan on /plans (then they pay
+  first) or came from a grown-up page (`?next=`). It also shows after a successful family Checkout: the wait panel
+  goes there, and `/family?checkout=…` or `?welcome=1` with the plan on redirects there. The old welcome panel on
+  /family is gone, and the step says "Your … plan is on. Thank you!". It is also the Children panel's ➕ button on
+  /family.
+- **Two choices side by side** (links, `?how=make|link`, no script needed): "Make my child's account" is offered only
+  while `F.madeOn` (PARENT_MADE_CHILDREN=1). It uses the same form, direct notice, "I've read this", guardian statement and
+  no-consent sentence as /family/children/new, and posts to the same API behind the same step-up and limits. With the
+  flag off, nothing about making an account shows and the code form is open straight away. "Link my child's existing
+  account" uses the same code form and API as /family/link. Each form sends `then=add`, which only changes where the
+  answer redirects (back to the step).
+- **After a child is added:** the step lists the children added so far, showing display names only, to this grown-up.
+  It offers "Add another child" while `maxChildrenFor` allows, and Done (→ /family). Before any child is added it offers
+  "I'll do this later" (→ /family), and nothing asks again. Paying and adding a child stay separate: the step shows no
+  prices or payment forms.
+
 ## Parent-made child accounts (weeks 3–4)
 Design: the navigation proposal's step 3, plus three safety reviews (all "go with conditions"). Part B is built
 (`services/family.js` "parent-made child accounts", `services/account-delete.js`, `views/family-made.js`, the routes at
