@@ -121,6 +121,14 @@ const RECIPES = {
     for (let i = 0; i < 4; i++) { await f.evaluate(() => { const t = window.__brbTest; t.answer(t.state().question.answer); t.step && t.step(900); }); }
     await wait(900);
   } },
+  'code-isle': { viewport: PORTRAIT, async prep(f) {
+    await hook(f);
+    // The rainbow chimneys of Function Village, built by the answer code, with that code in the editor.
+    await f.evaluate(() => { const t = window.__brbTest; t.unlockAll(); t.solve('4-5'); });
+    await wait(4000);   // the stars card opens a moment after the run
+    await f.evaluate(() => { const t = window.__brbTest; t.closeModal(); t.camera({ theta: 0.55, phi: 0.92, dist: 15 }); });
+    await wait(2000);
+  } },
 };
 
 async function capture(browser, slug) {
