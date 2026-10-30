@@ -52,3 +52,15 @@ services:
       # docs/legal-review.md (item 30).
       - key: PARENT_MADE_CHILDREN
         value: "0"
+      # The Builder looking facts up on the web (server/builder/search.js; docs/legal-review.md item 39). Off until the
+      # owner has checked one live build with it on (the blocked-sites list is sent with every request and the API
+      # refuses a list it doesn't accept; the server then turns search off by itself and logs why). Set "1" to turn it on.
+      - key: BUILDER_WEB_SEARCH
+        value: "0"
+      # Speaking instead of typing in the Builder chat (server/services/stt.js; docs/legal-review.md item 38). The mic
+      # is hidden until STT_API_KEY is set. Set the key in the dashboard only after the provider has agreed zero data
+      # retention for the key's project; never put it in this file. STT_PROVIDER: openai (default) or elevenlabs.
+      - key: STT_PROVIDER
+        value: openai
+      - key: STT_API_KEY
+        sync: false

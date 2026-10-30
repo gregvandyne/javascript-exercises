@@ -282,9 +282,11 @@ export function _acceptScreened(gameId, user, text, cid = null, s = { ok: true }
  * The one hook into a provider's loop (ctx.between), at the top of every round (the building blocks: at the start and
  * after each pass): stop when the build was aborted, the game deleted, the builder banned or their Builder turned off;
  * otherwise hand over the follow-ups waiting now (they become 'reading'). waitMs (the building blocks in tests and
- * demos only): wait up to this long for a follow-up when none is waiting. -> { stop: reason | null, add: [entries] }.
+ * demos only): wait up to this long for a follow-up when none is waiting. hold: check for a stop only and hand nothing
+ * over (a round that can't carry messages: a paused answer going on, or a turn of tool results only).
+ * -> { stop: reason | null, add: [entries] }.
  */
-export async function between(job, round, { waitMs = 0 } = {}) {
+export async function between(job, round, { waitMs = 0, hold = false } = {}) {
   if (job.ac.signal.aborted) return { stop: String(job.ac.signal.reason), add: [] };
   const g = games.getGame(job.gameId);
   if (!g || g.status === 'deleted') { cancel(job, 'deleted'); return { stop: 'deleted', add: [] }; }
@@ -296,6 +298,7 @@ export async function between(job, round, { waitMs = 0 } = {}) {
     if (job.ac.signal.aborted) return { stop: String(job.ac.signal.reason), add: [] };
   }
   if (job.ended || job.handedOff) return { stop: 'stopped', add: [] };
+  if (hold) return { stop: null, add: [] };   // this round can't carry new messages: they keep waiting for the next
   const add = job.waiting.splice(0);
   if (add.length) {
     job.reading.push(...add);

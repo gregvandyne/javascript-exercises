@@ -493,7 +493,9 @@
       },
       "ai": {
         "h": "O que a IA vê",
-        "p1": "Para criar um jogo, as mensagens, imagens e arquivos que a criança dá ao Construtor são enviados ao Claude, uma IA feita pela empresa Anthropic, que escreve o jogo. O nome e o nome de usuário da criança não são enviados junto. As fotos de perfil também são enviadas ao Claude para serem verificadas antes que alguém as veja. O Claude revisa os jogos antes que possam ser compartilhados com todos, e a nossa equipe confere os jogos sobre os quais ele tem dúvida. Os chats entre amigos e as respostas das aulas não são enviados à IA."
+        "p1": "Para criar um jogo, as mensagens, imagens e arquivos que a criança dá ao Construtor são enviados ao Claude, uma IA feita pela empresa Anthropic, que escreve o jogo. O nome e o nome de usuário da criança não são enviados junto. As fotos de perfil também são enviadas ao Claude para serem verificadas antes que alguém as veja. O Claude revisa os jogos antes que possam ser compartilhados com todos, e a nossa equipe confere os jogos sobre os quais ele tem dúvida. Os chats entre amigos e as respostas das aulas não são enviados à IA.",
+        "p2": "Falar em vez de digitar: quando a criança toca no microfone no chat do Construtor, a gravação é enviada ao serviço de conversão de fala em texto {provider}, que a transforma em palavras. A criança vê as palavras e pode mudá-las antes de enviar. A gravação é usada só para isso e apagada na hora: nós nunca a guardamos, e {provider} não pode guardá-la nem usá-la para treinar seus sistemas. As palavras passam pelas mesmas verificações de segurança que uma mensagem digitada.",
+        "p3": "Pesquisa de fatos: para acertar um jogo, o Construtor pode pesquisar um fato na internet (por exemplo, a velocidade de um guepardo). A criança nunca vê as páginas nem os links. O Construtor tem a instrução de nunca pesquisar nada pessoal; se ainda assim uma pesquisa parecer pessoal, os resultados não são usados e as palavras não são guardadas. Sites adultos, de apostas, de redes sociais e de vídeos são bloqueados. Guardamos uma lista das pesquisas, sem o nome nem o nome de usuário da criança, junto com o jogo para o qual foram feitas, por 90 dias para que nossa equipe possa conferi-las."
       },
       "keep": {
         "h": "Por quanto tempo guardamos",
@@ -1329,6 +1331,14 @@
       "cantContinue": "Não dá mais para continuar essa criação. Mande uma mensagem nova.",
       "restarting": "Nosso servidor está reiniciando. Tente de novo daqui a pouco.",
       "liveBusy": "Este jogo está aberto em abas demais. Feche algumas e tente de novo."
+    },
+    "mic": {
+      "start": "Falar em vez de digitar",
+      "tooLong": "Essa gravação está longa demais. Tente uma mais curta, de até {max}.",
+      "tooFast": "Quantas gravações! Espere um minuto e tente de novo.",
+      "daily": "As gravações de hoje acabaram. Você ainda pode digitar sua mensagem.",
+      "failed": "Desculpe, não consegui transformar isso em palavras. Tente de novo ou digite sua mensagem.",
+      "busy": "O ajudante de voz está ocupado agora. Tente de novo daqui a pouco."
     }
   },
   "publish": {
@@ -1463,7 +1473,8 @@
       "noUploads": "Dá para adicionar imagens e arquivos quando esta criação terminar. Mande suas palavras agora ou espere um pouquinho.",
       "notYours": "Outra pessoa começou esta criação. Espere ela terminar."
     },
-    "budgetStop": "O Construtor de IA precisa descansar agora, então parei aqui. Tudo o que fiz até agora está salvo."
+    "budgetStop": "O Construtor de IA precisa descansar agora, então parei aqui. Tudo o que fiz até agora está salvo.",
+    "searchStopped": "Não consegui pesquisar isso, então parei aqui. Tente pedir de outro jeito!"
   },
   "uploads": {
     "tooFast": "Quantos arquivos! Espere um minuto e tente de novo.",
@@ -1919,7 +1930,12 @@
           "done": "{m, plural, one {Leu sua nova mensagem} other {Leu suas # novas mensagens}}",
           "learn": "Os blocos simples procuram mensagens novas entre um passo e outro e depois usam suas regras nelas."
         },
-        "fuRead": "{count, plural, one {leu # mensagem nova} other {leu # mensagens novas}}"
+        "fuRead": "{count, plural, one {leu # mensagem nova} other {leu # mensagens novas}}",
+        "search": {
+          "now": "Pesquisando uma coisa",
+          "done": "Pesquisou uma coisa",
+          "learn": "A IA pode pesquisar um fato de verdade, como a velocidade de um guepardo, para o seu jogo ficar certinho. Ela nunca mostra páginas da internet para você, e uma verificação de segurança lê o que ela encontrou."
+        }
       },
       "resumed": "🔄 O servidor reiniciou, então o Construtor continuou de onde estava.",
       "resumedV": "🔄 O servidor reiniciou, então o Construtor continuou a partir da versão {v}.",
@@ -1995,6 +2011,18 @@
         "others": "Jogar jogos de outras crianças",
         "grownUp": "Um adulto pode se vincular à sua conta:",
         "grownUpWhere": "Eu › Para adultos"
+      },
+      "mic": {
+        "start": "Falar em vez de digitar",
+        "stop": "Parar a gravação",
+        "recording": "Gravando {time} de {max}. Aperte o microfone de novo para parar, ou Esc para cancelar.",
+        "transcribing": "Escrevendo o que você disse…",
+        "check": "Confira as palavras e depois aperte Enviar.",
+        "nothing": "Não ouvi nenhuma palavra. Tente de novo, um pouco mais perto do microfone.",
+        "denied": "O microfone está bloqueado. Peça para um adulto permitir o microfone para este site nas configurações do navegador.",
+        "noMic": "Nenhum microfone foi encontrado neste aparelho.",
+        "cancelled": "Gravação interrompida. Nada foi enviado nem guardado.",
+        "failed": "Desculpe, não consegui transformar isso em palavras. Tente de novo ou digite sua mensagem."
       }
     }
   },

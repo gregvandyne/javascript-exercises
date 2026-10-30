@@ -345,6 +345,18 @@ export const MIGRATIONS = [
     ALTER TABLE sessions ADD COLUMN made_card_ok INTEGER NOT NULL DEFAULT 0;
     UPDATE family_children SET made_link=1 WHERE unlinked_at IS NULL AND status='linked' AND EXISTS (SELECT 1 FROM users u
       WHERE u.id=family_children.child_id AND u.made_by_family=family_children.family_id AND u.made_at=family_children.linked_at);`],
+  // The Builder's web searches, for the admin to review (server/builder/search.js). Never a user id or name: the build
+  // (turn_id) and the game are enough to follow one up. A query that looks like personal details is stored as
+  // [redacted]. Kept 90 days.
+  ['0032_builder_searches', `CREATE TABLE IF NOT EXISTS builder_searches (id TEXT PRIMARY KEY, turn_id TEXT, game_id TEXT,
+      day TEXT NOT NULL, query TEXT NOT NULL, domains TEXT NOT NULL DEFAULT '[]', results INTEGER NOT NULL DEFAULT 0,
+      flagged INTEGER NOT NULL DEFAULT 0, reason TEXT, created_at INTEGER NOT NULL);
+    CREATE INDEX IF NOT EXISTS builder_searches_at ON builder_searches(created_at);
+    CREATE INDEX IF NOT EXISTS builder_searches_flagged ON builder_searches(flagged, created_at);`],
+  // Speech to text use per UTC day and builder (server/services/stt-usage.js): clips and counted seconds only, never
+  // audio or words. For the per-builder daily cap and the site-wide daily minutes cap, which survive a restart. Kept 3 days.
+  ['0033_stt_usage', `CREATE TABLE IF NOT EXISTS stt_usage (day TEXT NOT NULL, user_id TEXT NOT NULL, clips INTEGER NOT NULL DEFAULT 0,
+      seconds REAL NOT NULL DEFAULT 0, PRIMARY KEY(day, user_id));`],
 ];
 
 db.exec('CREATE TABLE IF NOT EXISTS migrations (name TEXT PRIMARY KEY, applied_at INTEGER NOT NULL)');

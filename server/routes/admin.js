@@ -23,12 +23,13 @@ import * as billing from '../services/billing.js';
 import * as stripe from '../services/stripe.js';
 import { audit, q } from '../db.js';
 import { config } from '../config.js';
+import * as webSearch from '../builder/search.js';
 
 export const router = Router();
 router.use('/admin', requireAdmin);
 router.use('/api/admin', requireAdmin);
 
-const TABS = [['queue', '⏳', 'Review queue'], ['reports', '🚩', 'Reports'], ['chat', '💬', 'Chat reports'], ['links', '🧑‍🧒', 'Link reports'], ['schoolreq', '🏫', 'School requests'], ['users', '👤', 'Users'], ['audit', '📜', 'Audit log']];
+const TABS = [['queue', '⏳', 'Review queue'], ['reports', '🚩', 'Reports'], ['chat', '💬', 'Chat reports'], ['links', '🧑‍🧒', 'Link reports'], ['schoolreq', '🏫', 'School requests'], ['users', '👤', 'Users'], ['searches', '🔎', 'Web searches'], ['audit', '📜', 'Audit log']];
 const gameReason = k => (GAME_REASONS.find(r => r[0] === k) || [k, k])[1];
 const chatReason = k => (chat.REPORT_REASONS.find(r => r[0] === k) || [k, k])[1];
 const when = t => html`<time datetime="${new Date(t).toISOString()}" title="${new Date(t).toISOString().replace('T', ' ').slice(0, 16)} UTC">${timeAgo(t)}</time>`;
@@ -225,6 +226,21 @@ function auditTab() {
   </tbody></table></div>`;
 }
 
+/** The Builder's web searches (builder/search.js): newest first, ?flagged=1 for flagged ones only. No user names are
+ *  stored; the build id and the game are there to follow one up. */
+function searchesTab(req) {
+  const flaggedOnly = req.query.flagged === '1';
+  const rows = webSearch.listSearches({ flagged: flaggedOnly, limit: 300 });
+  const filter = html`<p class="small">${flaggedOnly ? html`Showing flagged searches only. <a href="/admin?tab=searches">Show all</a>` : html`Showing all searches. <a href="/admin?tab=searches&amp;flagged=1">Show flagged only</a>`}
+    · Web search is <b>${webSearch.webSearchOn() ? 'on' : 'off'}</b> (BUILDER_WEB_SEARCH) · kept 90 days</p>`;
+  if (!rows.length) return html`${filter}${emptyState({ emoji: '🔎', title: 'No web searches', text: 'Searches the Builder makes to check a fact show up here.' })}`;
+  return html`${filter}<div class="panel tblwrap"><table class="tbl audit"><thead><tr><th>When</th><th>Query</th><th>Sites</th><th>Result</th><th>Game</th><th>Build</th></tr></thead><tbody>
+    ${rows.map(r => html`<tr><td>${when(r.created_at)}</td><td dir="auto">${r.query}</td><td class="small muted">${r.domains.join(', ') || '–'}</td>
+      <td>${r.flagged ? html`<span class="chip-s warn">⚠️ flagged${r.reason ? ` (${r.reason})` : ''}</span>` : html`${r.results} result${r.results === 1 ? '' : 's'}${r.reason ? html` <span class="small muted">${r.reason}</span>` : ''}`}</td>
+      <td>${r.game_slug ? html`<a href="/studio/${r.game_id}">${r.game_title}</a>` : '–'}</td><td class="small muted"><code>${r.turn_id || ''}</code></td></tr>`)}
+  </tbody></table></div>`;
+}
+
 /** AI spending vs the caps (AI_DAILY_BUDGET_USD / AI_MONTHLY_BUDGET_USD). Admin pages are English-only. */
 function aiSpendPanel() {
   const b = aiBudget.status(); const usd = n => '$' + n.toFixed(2);
@@ -236,8 +252,8 @@ function aiSpendPanel() {
 router.get('/admin', (req, res) => {
   const tab = TABS.some(t => t[0] === req.query.tab) ? req.query.tab : 'queue';
   const c = mod.counts();
-  const n = { queue: c.queue, reports: c.reports, chat: c.chat, links: family.openReportCount(), schoolreq: schoolRequests.openCount() };
-  const content = { queue: queueTab, reports: reportsTab, chat: chatTab, links: linksTab, schoolreq: schoolRequestsTab, users: usersTab, audit: auditTab }[tab](req);
+  const n = { queue: c.queue, reports: c.reports, chat: c.chat, links: family.openReportCount(), schoolreq: schoolRequests.openCount(), searches: webSearch.flaggedCount() };
+  const content = { queue: queueTab, reports: reportsTab, chat: chatTab, links: linksTab, schoolreq: schoolRequestsTab, users: usersTab, searches: searchesTab, audit: auditTab }[tab](req);
   const body = html`
   <div class="pagehead"><h1>🛡️ Admin</h1><div class="row"><a class="btn btn-primary" href="/admin/stats"><span aria-hidden="true">📊</span> Stats</a><a class="btn" href="/admin/schools"><span aria-hidden="true">🏫</span> Schools${n.schoolreq ? html`&nbsp;<span class="badge" aria-label="${n.schoolreq} school request${n.schoolreq === 1 ? '' : 's'} waiting">${n.schoolreq}</span>` : ''}</a><a class="btn" href="/admin/billing"><span aria-hidden="true">💳</span> Billing</a></div></div>
   ${aiSpendPanel()}

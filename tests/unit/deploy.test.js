@@ -491,3 +491,8 @@ test('tini runs as the app user, not root: the image starts with the entrypoint,
   assert.ok(drop > 0 && tini > drop, 'tini is exec\'d after setpriv drops to node');
   assert.match(ep, /if \[ "\$\$" = 1 \] && \[ -x \/usr\/bin\/tini \]; then exec \/usr\/bin\/tini -- "\$0" "\$@"; fi/);
 });
+
+test('the Docker image carries every folder the server reads at run time (kit/demo for the /kit preview)', () => {
+  const df = fs.readFileSync(new URL('../../Dockerfile', import.meta.url), 'utf8');
+  for (const dir of ['server', 'public', 'scripts', 'seed-games', 'kit/demo']) assert.match(df, new RegExp(`^COPY ${dir.replace('/', '\\/')} \\./${dir.replace('/', '\\/')}$`, 'm'), dir);
+});

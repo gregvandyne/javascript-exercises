@@ -14,6 +14,7 @@ import * as snapshot from '../services/snapshot.js';
 import { localeInfo } from '../i18n/index.js';
 import { templateHtml, templateInfo, TEMPLATE_KEYS } from './catalog.js';
 import { NO_STEPS, cleanNote } from './steps.js';
+import { stripLinks } from './search.js';
 
 // Templates the Builder may start from with start_from_template: every template (all on the Oomba Kit; island is 3D).
 const STARTERS = TEMPLATE_KEYS;
@@ -73,7 +74,9 @@ export function toolbox(ctx) {
     if (Buffer.byteLength(rawHtml) > MAX_GAME_BYTES) return { ok: false, forModel: 'The game is bigger than 2 MB. Make it smaller.' };
     const { html, removed } = sanitizeGameHtml(rawHtml.replace(/^\s*<!doctype[^>]*>/i, ''));
     const report = scanVersion(html);
-    const note = cleanNote(notes, 200) || 'New version';
+    // Shown on the version card: no links or site names (the model may have read web pages), nothing the filter refuses.
+    const n0 = cleanNote(stripLinks(notes), 200);
+    const note = (n0 && cleanText(n0, 200).ok && n0) || 'New version';
     const v = games.addVersion(ctx.gameId, html, { notes: note, createdBy: ctx.user.id, safetyStatus: report.status, safetyReport: report });
     // The safety program (not AI) ran, and the version is saved. k (flag/fail): how many things it listed at that level.
     const listed = (report.issues || []).filter(i => i.level === report.status).length;
@@ -95,9 +98,11 @@ export function toolbox(ctx) {
 
   const tools = {
     ask_user(input) {
-      const question = String((input && input.question) || '').trim().slice(0, 200);
-      const options = (Array.isArray(input && input.options) ? input.options : []).map(o => String(o).trim().slice(0, 48)).filter(o => o && cleanText(o, 48).ok).slice(0, 8);
+      // Shown in the chat: links and site names removed, and nothing the text filter refuses (personal details, rude words).
+      const question = stripLinks(String((input && input.question) || '')).trim().slice(0, 200);
+      const options = (Array.isArray(input && input.options) ? input.options : []).map(o => stripLinks(String(o)).trim().slice(0, 48)).filter(o => o && cleanText(o, 48).ok).slice(0, 8);
       if (!question) return { ok: false, forModel: 'ask_user needs a question.' };
+      if (!cleanText(question, 200).ok) return { ok: false, forModel: 'That question was not shown: it had personal details, contact details or words that are not allowed. Never ask for personal details. Ask again in your own simple words.' };
       steps.start('ask');
       return { ok: true, forModel: 'The question is on screen. Stop now and wait for the builder to answer.', event: ['ask', { question, options }], stop: true };
     },
