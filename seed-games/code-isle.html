@@ -43,17 +43,17 @@ body{margin:0;touch-action:manipulation}
 .ci-stars{display:inline-flex;gap:1px}.ci-stars svg{width:14px;height:14px}
 /* the code panel */
 .ci-panel{position:fixed;z-index:5;background:var(--ok-card);color:var(--ok-text);display:flex;flex-direction:column;border:3px solid var(--ok-edge);overflow:hidden}
-body.portrait .ci-panel{left:0;right:0;bottom:0;height:var(--ph,58%);border-radius:26px 26px 0 0;border-bottom:0;padding:8px calc(8px + env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) calc(8px + env(safe-area-inset-left))}
+body.portrait .ci-panel{left:0;right:0;bottom:0;height:var(--ph,63%);border-radius:26px 26px 0 0;border-bottom:0;padding:8px calc(8px + env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) calc(8px + env(safe-area-inset-left))}
 body.landscape .ci-panel{top:0;right:0;bottom:0;width:clamp(340px,44vw,600px);border-radius:26px 0 0 26px;border-right:0;padding:calc(10px + env(safe-area-inset-top)) calc(10px + env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) 12px}
-body.portrait.pbig .ci-panel{--ph:76%}
+body.portrait.pbig .ci-panel{--ph:80%}
 body.portrait.psmall .ci-panel{--ph:auto}
-body.portrait.psmall .ci-panel .ci-ed,body.portrait.psmall .ci-panel .ci-pal,body.portrait.psmall .ci-panel .ci-mission,body.portrait.psmall .ci-panel .ci-tests{display:none}
+body.portrait.psmall .ci-panel .ci-ed,body.portrait.psmall .ci-panel .ci-pal,body.portrait.psmall .ci-panel .ci-editbar,body.portrait.psmall .ci-panel .ci-mission,body.portrait.psmall .ci-panel .ci-tests{display:none}
 .ci-head{display:flex;align-items:center;gap:8px;margin-bottom:6px}
 .ci-head .ok-btn.ok-icon{min-height:44px;width:44px;flex:none}
 .ci-name{flex:1;min-width:0;display:flex;flex-direction:column}
 .ci-name b{font-weight:800;font-size:1.1em;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ci-name small{font-weight:600;font-size:.8em;opacity:.8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:4px}
-.ci-mission{display:flex;gap:8px;align-items:center;margin-bottom:6px}
+.ci-mission{display:flex;gap:8px;align-items:center;margin-bottom:4px}
 .ci-mission canvas{flex:none}
 .ci-goal{flex:1;min-width:0;font-weight:600;font-size:.92em;line-height:1.3}
 .ci-goal b{font-weight:800}
@@ -131,6 +131,15 @@ body.portrait.psmall .ci-panel .ci-ed,body.portrait.psmall .ci-panel .ci-pal,bod
 @media (prefers-reduced-motion:reduce){.ci-pulse{animation:none}}
 /* light tinted pieces keep dark text by night too */
 .ci-bubble.bad,.ci-plabel.open,.ci-lvl.open,.ci-tests button.ok,.ci-tests button.no,.ci-chips button,.ci-out .ln{color:var(--ci-ink)}
+/* the edit bar: always on screen, so deleting, moving lines and the keyboard are easy to find on a phone */
+.ci-editbar{display:flex;gap:6px;overflow-x:auto;padding:2px 0 4px;scrollbar-width:thin}
+.ci-editbar button{flex:none;min-height:40px;padding:0 12px;border-radius:12px;background:var(--ci-spark-tint);color:var(--ci-ink);font:inherit;font-weight:700;font-size:.88em;white-space:nowrap;
+  border:2px solid var(--ok-edge);box-shadow:0 3px 0 var(--ok-edge);cursor:pointer;display:inline-flex;align-items:center;gap:5px}
+.ci-editbar button svg{width:18px;height:18px}
+.ci-editbar button:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ok-edge)}
+.ci-editbar button.kb{background:var(--ci-sky-tint)}
+.ci-editbar button.kb[aria-pressed=true]{background:var(--ci-go)}
+.ci-gut>div>div{cursor:pointer}
 </style>
 <canvas id="view" tabindex="-1" aria-label="The 3D island"></canvas>
 <div class="labels" id="labels"></div>
@@ -169,9 +178,9 @@ body.portrait.psmall .ci-panel .ci-ed,body.portrait.psmall .ci-panel .ci-pal,bod
   <div class="ci-pal">
     <div class="ci-tabs" id="palTabs">
       <button type="button" data-tab="pip" class="on">Pip</button><button type="button" data-tab="code">Code</button><button type="button" data-tab="sym">Symbols</button>
-      <button type="button" class="kb" id="kbBtn" hidden></button>
     </div>
     <div class="ci-chips" id="chips"></div>
+    <div class="ci-editbar" id="editBar" aria-label="Edit your code"></div>
   </div>
   <div class="ci-out" id="out" aria-live="polite"></div>
   <div class="ci-run">
@@ -2967,7 +2976,7 @@ function applySettings() {
   LH = T[1];
   if (BTN.speed) BTN.speed.textContent = speed() + '×';
   const kb = SAVE.settings.keyboard; $('#code').setAttribute('inputmode', kb ? 'text' : 'none');
-  $('#kbBtn').hidden = !TOUCH; $('#kbBtn').textContent = `Keyboard: ${kb ? 'on' : 'off'}`;
+  const k = $('#kbBtn'); if (k) { k.hidden = !TOUCH; k.lastChild.textContent = `Keyboard ${kb ? 'on' : 'off'}`; k.setAttribute('aria-pressed', String(!!kb)); }
   if (cur) renderCode();
 }
 function settingsCard() {
@@ -2982,6 +2991,7 @@ function settingsCard() {
     <div class="ci-acts"><i data-more></i><i data-x></i></div>`);
   m.querySelectorAll('[data-k]').forEach(b => b.addEventListener('click', () => {
     let v = b.dataset.v; if (v === 'true') v = true; else if (v === 'false') v = false; else if (/^\d+$/.test(v)) v = +v;
+    if (b.dataset.k === 'keyboard') { setKeyboard(v, false); settingsCard(); return; }
     SAVE.settings[b.dataset.k] = v; save(); applySettings(); sfx('click');
     if (b.dataset.k === 'unlockAll') { rebuildStatic(); if (mode === 'map') renderMap(); }
     settingsCard();
@@ -3249,10 +3259,6 @@ function renderChips() {
   if (palTab === 'pip') for (const k of pipKeys) add(CHIPS[k][0], '', () => chip(CHIPS[k][1]));
   else if (palTab === 'code') { for (const k of keys.filter(k2 => !pipKeys.includes(k2))) add(CHIPS[k][0], 'code', () => chip(CHIPS[k][1])); if (cur.level.sandbox) add('jumpTo(x, z)', '', () => chip('pip.jumpTo(5, 5);')); }
   else for (const s of SYMBOLS) add(s, 'sym', () => { pushHistory(); insertText(s); });
-  add('new line', 'edit', () => { pushHistory(); newline(); });
-  add('⌫', 'edit', () => { pushHistory(); const s = ta.selectionStart, e2 = ta.selectionEnd; if (s !== e2) ta.setRangeText('', s, e2, 'end'); else if (s > 0) ta.setRangeText('', s - 1, s, 'end'); afterEdit(); }, 'Delete');
-  add('delete line', 'edit', () => { pushHistory(); const v = ta.value, s = ta.selectionStart; const ls = v.lastIndexOf('\n', s - 1) + 1; let le = v.indexOf('\n', s); le = le < 0 ? v.length : le + 1; ta.setRangeText('', ls, le, 'start'); afterEdit(); });
-  add('undo', 'edit', undo);
   box.scrollLeft = 0;
 }
 function chip(text) {
@@ -3277,7 +3283,63 @@ function chip(text) {
 }
 function focusCode() { ta.focus({ preventScroll: true }); }
 document.querySelectorAll('#palTabs [data-tab]').forEach(b => b.addEventListener('click', () => { palTab = b.dataset.tab; sfx('click'); renderChips(); }));
-$('#kbBtn').addEventListener('click', () => { SAVE.settings.keyboard = !SAVE.settings.keyboard; save(); applySettings(); if (SAVE.settings.keyboard) { ta.blur(); ta.focus(); } else ta.blur(); });
+/* The edit bar: delete, delete a line, new line, move a line up or down, undo, and the phone keyboard. */
+function lineRange(v, s) { const ls = v.lastIndexOf('\n', s - 1) + 1; let le = v.indexOf('\n', s); if (le < 0) le = v.length; return [ls, le]; }
+function deleteLine() {
+  const v = ta.value; if (!v) return;
+  const s = ta.selectionStart, e2 = Math.max(s, ta.selectionEnd - (ta.selectionEnd > s && v[ta.selectionEnd - 1] === '\n' ? 1 : 0));
+  const [ls] = lineRange(v, s); const [, le] = lineRange(v, e2);
+  let from = ls, to = le < v.length ? le + 1 : le; if (to === v.length && from > 0 && le === v.length) from -= 1;   // the last line takes its newline with it
+  pushHistory(); ta.setRangeText('', from, to, 'end');
+  const p = Math.min(from + (from < ls ? 1 : 0), ta.value.length); const [a] = lineRange(ta.value, p); ta.setSelectionRange(a, a); afterEdit();
+}
+function moveLine(dir) {
+  const v = ta.value, s = ta.selectionStart, [ls, le] = lineRange(v, s), col = s - ls;
+  if (dir < 0 && ls === 0) return; if (dir > 0 && le >= v.length) return;
+  pushHistory();
+  const lines = v.split('\n'), i = v.slice(0, ls).split('\n').length - 1, j = i + dir;
+  [lines[i], lines[j]] = [lines[j], lines[i]];
+  ta.value = lines.join('\n');
+  const start = lines.slice(0, j).join('\n').length + (j ? 1 : 0); const p = start + Math.min(col, lines[j].length);
+  ta.setSelectionRange(p, p); afterEdit(); scrollToLine(j + 1);
+}
+function backspace() { pushHistory(); const s = ta.selectionStart, e2 = ta.selectionEnd; if (s !== e2) ta.setRangeText('', s, e2, 'end'); else if (s > 0) ta.setRangeText('', s - 1, s, 'end'); afterEdit(); }
+/** Turn the phone keyboard on or off right now. A focused text box keeps the keyboard it opened with, so it is
+ *  blurred and made read-only for a moment (that is what makes the browser forget it), then focused again from this
+ *  same tap, which is when phones allow the keyboard to open. */
+function setKeyboard(onKb, refocus = true) {
+  SAVE.settings.keyboard = !!onKb; save();
+  const ro = ta.readOnly;
+  ta.readOnly = true; ta.blur();
+  ta.setAttribute('inputmode', onKb ? 'text' : 'none');
+  ta.readOnly = ro;
+  applySettings();
+  if (onKb && refocus && !ro) ta.focus({ preventScroll: true });
+  Oomba.ui.toast(onKb ? 'Keyboard on: tap your code and type.' : 'Keyboard off: tap the code buttons to add code.');
+}
+{
+  const bar = $('#editBar');
+  const add = (label, icon, fn, cls) => {
+    const b = el('button', cls || '', icon ? ICON(icon) : ''); b.type = 'button'; b.appendChild(document.createTextNode(label));
+    if (!cls) b.addEventListener('pointerdown', e => e.preventDefault());   // keep the cursor where it is
+    b.addEventListener('click', () => { if (anim.on) return; sfx('click'); fn(); });
+    bar.appendChild(b); return b;
+  };
+  const kb = add('Keyboard', 'pencil', () => setKeyboard(!SAVE.settings.keyboard), 'kb'); kb.id = 'kbBtn';
+  add('Delete', 'back', backspace).setAttribute('aria-label', 'Delete one letter');
+  add('Delete line', 'cross', deleteLine);
+  add('New line', 'down', () => { pushHistory(); newline(); });
+  add('Undo', 'restart', undo);
+  add('Move up', 'up', () => moveLine(-1));
+  add('Move down', 'down', () => moveLine(1));
+}
+// Tap a line number to select that whole line (then Delete line, or Move up / down).
+$('#gutIn').addEventListener('click', e => {
+  const d = e.target.closest('#gutIn > div'); if (!d || anim.on) return;
+  const n = [...$('#gutIn').children].indexOf(d); if (n < 0) return;
+  const v = ta.value, lines = v.split('\n'); const start = lines.slice(0, n).join('\n').length + (n ? 1 : 0);
+  ta.setSelectionRange(start, start + lines[n].length); ta.focus({ preventScroll: true });
+});
 function hideLines() { $('#errline').hidden = true; $('#runline').hidden = true; document.querySelectorAll('#gutIn .e').forEach(d => d.classList.remove('e')); }
 function showRunLine(line) { const r = $('#runline'); r.hidden = false; r.style.top = (10 + (line - 1) * LH) + 'px'; scrollToLine(line); }
 function showErrLine(line) { const r = $('#errline'); r.hidden = false; r.style.top = (10 + (line - 1) * LH) + 'px'; const g = $('#gutIn').children[line - 1]; if (g) g.classList.add('e'); }
