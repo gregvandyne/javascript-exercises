@@ -1,0 +1,64 @@
+{
+  "slug": "code-isle",
+  "title": "Code Isle",
+  "icon": "🤖",
+  "cover": "ocean",
+  "category": "learning",
+  "tags": "coding,code,javascript,programming,3d,adventure,robot,loops,functions,learning,building",
+  "description": "Write real JavaScript to help Pip the robot rebuild a foggy 3D island. 48 coding adventures teach commands, loops, variables, functions, if and else, while loops, arrays and objects, and everything you build stays in the world. Plus a Free Build meadow and a Code Book to look things up.",
+  "orientation": "any",
+  "players_max": 1,
+  "age_rating": "everyone",
+  "featured": true,
+  "notes": "Built on the Oomba Kit 1.0.0 (pinned kit tag plus the art-animals pack) over the built-in Three.js 0.185.1 (pinned import map with integrity), like Star Island: the kit's title, dialogs (with the guides as kit characters: Pip is a sky-blue Oomba; the chapter guides are a duck, bear, owl, mouse, frog, bunny, dog, fox, cat and a grape Oomba), results (Oomba.ui.win), settings, cards, buttons, icons, sounds, font, day/night theme and palette (every block colour is a kit colour); Oomba.time.start() runs the kit clock; the code editor alone uses a monospace face. Kids type (or tap chips to add) real JavaScript; it never runs as JavaScript: a small interpreter in the first <script> (window.CodeIsle: lexer, parser, tree-walking interpreter with step, call-depth, array-size and Pip-action limits, friendly errors with line numbers and 'did you mean' hints) runs it against Pip's world simulation, then the 3D view replays the recorded events with the running line highlighted. Supported: let/const/var, numbers, text, template text, arrays, objects, functions (declarations, expressions, arrows, defaults, return, this in methods), if/else, for, for...of, while, do...while, break/continue, ternary, && || ?? !, all math and comparison operators, ++/--/+= and friends, array and string methods, Math, console.log. Pip: forward(n), turnLeft/Right/Around, build(block, count), plant(kind), dig, paint(color), say, ahead, here, isBlocked, onFlag, height, heightAhead, facing (+ jumpTo(x, z) in Free Build). 10 chapters, 48 levels (window.CodeIsleLevels): First Steps (commands), Loop River (for loops), Number Hill (variables and math), Function Village (functions, inputs, return), Choice Marsh (if, else, else if, comparisons; tested in 3 worlds each), Pattern Garden (nested loops, %, ||), Crystal Caves (while loops, mazes), Rainbow Market (arrays, index, push), Castle Plans (objects) and The Glitch (everything). Goals: blueprint blocks, paint tiles, plants, gems, the flag, a gold star spot and things Pip must say. Stars: finished, used the lesson's idea, and code in par lines or fewer. Each level is a plot on one big island: unfinished plots are grey 'glitch' fog, finished plots keep what the player built. Saves in BRB.storage key 'code-isle-v1' (stars, best code, builds, drafts, Free Build, settings). Score: BRB.score.submit(total stars, 'stars') after each level; BRB.gameOver({ won: true, score }) at the ending. Test hooks: window.__brbTest (state, levels, start, setCode, run, finish, solve, unlockAll, map, title, closeDialog, closeModal, camera).",
+  "l10n": {
+    "en-GB": {
+      "description": "Write real JavaScript to help Pip the robot rebuild a foggy 3D island. 48 coding adventures teach commands, loops, variables, functions, if and else, while loops, arrays and objects, and everything you build stays in the world. Plus a Free Build meadow and a Code Book to look things up.",
+      "tags": "coding,code,javascript,programming,3d,adventure,robot,loops,functions,learning,building"
+    },
+    "pt": {
+      "description": "Escreva JavaScript de verdade para ajudar o robô Pip a reconstruir uma ilha 3D coberta de névoa. 48 aventuras de programação ensinam comandos, loops, variáveis, funções, if e else, while, arrays e objetos, e tudo o que você constrói fica no mundo. Tem também um campo de construção livre e um Livro de Código para consultar. (O jogo está em inglês.)",
+      "tags": "programação,código,javascript,3d,aventura,robô,loops,funções,aprender,construir"
+    },
+    "fr": {
+      "description": "Écris du vrai JavaScript pour aider le robot Pip à reconstruire une île 3D noyée dans le brouillard. 48 aventures de code t’apprennent les commandes, les boucles, les variables, les fonctions, if et else, while, les tableaux et les objets, et tout ce que tu construis reste dans le monde. Avec une prairie de construction libre et un Livre du code. (Le jeu est en anglais.)",
+      "tags": "programmation,code,javascript,3d,aventure,robot,boucles,fonctions,apprendre,construire"
+    },
+    "es": {
+      "description": "Escribe JavaScript de verdad para ayudar al robot Pip a reconstruir una isla 3D cubierta de niebla. 48 aventuras de programación enseñan comandos, bucles, variables, funciones, if y else, while, arrays y objetos, y todo lo que construyes se queda en el mundo. Además, una pradera de construcción libre y un Libro de código para consultar. (El juego está en inglés.)",
+      "tags": "programación,código,javascript,3d,aventura,robot,bucles,funciones,aprender,construir"
+    },
+    "de": {
+      "description": "Schreib echtes JavaScript und hilf dem Roboter Pip, eine nebelige 3D-Insel wieder aufzubauen. 48 Programmier-Abenteuer zeigen Befehle, Schleifen, Variablen, Funktionen, if und else, while, Arrays und Objekte, und alles, was du baust, bleibt in der Welt. Dazu eine Wiese zum freien Bauen und ein Code-Buch zum Nachschlagen. (Das Spiel ist auf Englisch.)",
+      "tags": "Programmieren,Code,JavaScript,3D,Abenteuer,Roboter,Schleifen,Funktionen,Lernen,Bauen"
+    },
+    "he": {
+      "description": "כתבו JavaScript אמיתי ועזרו לרובוט פיפ לבנות מחדש אי תלת־ממדי שמכוסה בערפל. 48 הרפתקאות תכנות מלמדות פקודות, לולאות, משתנים, פונקציות, if ו־else, ‏while, מערכים ואובייקטים, וכל מה שבונים נשאר בעולם. יש גם אחו לבנייה חופשית וספר קוד לעיון. (המשחק באנגלית.)",
+      "tags": "תכנות,קוד,javascript,תלת ממד,הרפתקה,רובוט,לולאות,פונקציות,לימוד,בנייה"
+    },
+    "ja": {
+      "description": "本物のJavaScriptを書いて、ロボットのピップといっしょにきりにつつまれた3Dの島をたてなおそう！ 48のプログラミングのぼうけんで、コマンド、ループ、へんすう、かんすう、if と else、while、はいれつ、オブジェクトをまなべます。つくったものは世界にのこります。自由にたてられる草原と、しらべものができるコードブックつき。（ゲームは英語です）",
+      "tags": "プログラミング,コード,javascript,3d,ぼうけん,ロボット,ループ,かんすう,べんきょう,けんちく"
+    },
+    "ar": {
+      "description": "اكتب JavaScript حقيقية لتساعد الروبوت بيب على إعادة بناء جزيرة ثلاثية الأبعاد يغطيها الضباب. ‏48 مغامرة برمجية تعلّمك الأوامر والحلقات والمتغيرات والدوال و if و else و while والمصفوفات والكائنات، وكل ما تبنيه يبقى في العالم. وفيها أيضًا مرج للبناء الحر وكتاب للكود. (اللعبة باللغة الإنجليزية.)",
+      "tags": "برمجة,كود,javascript,ثلاثي الأبعاد,مغامرة,روبوت,حلقات,دوال,تعلّم,بناء"
+    },
+    "ru": {
+      "description": "Пиши настоящий JavaScript и помоги роботу Пипу заново построить затянутый туманом 3D-остров. 48 приключений учат командам, циклам, переменным, функциям, if и else, while, массивам и объектам, а всё, что ты построишь, остаётся в мире. А ещё луг для свободной стройки и Книга кода. (Игра на английском.)",
+      "tags": "программирование,код,javascript,3d,приключения,робот,циклы,функции,учёба,стройка"
+    },
+    "it": {
+      "description": "Scrivi vero JavaScript per aiutare il robot Pip a ricostruire un’isola 3D avvolta nella nebbia. 48 avventure di programmazione insegnano comandi, cicli, variabili, funzioni, if ed else, while, array e oggetti, e tutto quello che costruisci resta nel mondo. In più un prato per costruire liberamente e un Libro del codice da consultare. (Il gioco è in inglese.)",
+      "tags": "programmazione,codice,javascript,3d,avventura,robot,cicli,funzioni,imparare,costruire"
+    },
+    "zh-Hant": {
+      "description": "寫真正的 JavaScript，幫助機器人皮皮重建一座被迷霧籠罩的 3D 島嶼！48 個程式冒險教你指令、迴圈、變數、函式、if 和 else、while、陣列和物件，而且你蓋的東西都會留在世界裡。還有自由建造草原和可以查詢的程式之書。（遊戲為英文。）",
+      "tags": "程式設計,程式,javascript,3d,冒險,機器人,迴圈,函式,學習,建造"
+    },
+    "nl": {
+      "description": "Schrijf echt JavaScript en help robot Pip een mistig 3D-eiland weer op te bouwen. 48 programmeeravonturen leren je opdrachten, lussen, variabelen, functies, if en else, while, arrays en objecten, en alles wat je bouwt blijft in de wereld. Met een weide om vrij te bouwen en een Codeboek om dingen op te zoeken. (Het spel is in het Engels.)",
+      "tags": "programmeren,code,javascript,3d,avontuur,robot,lussen,functies,leren,bouwen"
+    }
+  }
+}
