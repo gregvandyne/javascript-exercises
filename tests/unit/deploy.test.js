@@ -3,6 +3,7 @@
 import os from 'node:os';
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import http from 'node:http';
 import { execFileSync } from 'node:child_process';
 const TMP = fs.mkdtempSync(path.join(os.tmpdir(), 'brb-deploy-test-'));
@@ -495,4 +496,25 @@ test('tini runs as the app user, not root: the image starts with the entrypoint,
 test('the Docker image carries every folder the server reads at run time (kit/demo for the /kit preview)', () => {
   const df = fs.readFileSync(new URL('../../Dockerfile', import.meta.url), 'utf8');
   for (const dir of ['server', 'public', 'scripts', 'seed-games', 'kit/demo']) assert.match(df, new RegExp(`^COPY ${dir.replace('/', '\\/')} \\./${dir.replace('/', '\\/')}$`, 'm'), dir);
+});
+
+test('every file the server imports (followed through relative imports) is copied into the Docker image', () => {
+  const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+  const df = fs.readFileSync(path.join(root, 'Dockerfile'), 'utf8');
+  const copied = [...df.matchAll(/^COPY (?!--)(\S+) \.\/\S+$/gm)].map(m => m[1].replace(/\/$/, ''));
+  const covered = rel => copied.some(d => rel === d || rel.startsWith(d + '/'));
+  const seen = new Set(); const missing = [];
+  const walk = file => {
+    if (seen.has(file)) return; seen.add(file);
+    const rel = path.relative(root, file).split(path.sep).join('/');
+    if (!covered(rel)) missing.push(rel);
+    const src = fs.readFileSync(file, 'utf8');
+    for (const m of src.matchAll(/(?:^|[\s;])(?:import|export)\s[^'"]*?from\s*['"](\.{1,2}\/[^'"]+)['"]|import\(\s*['"](\.{1,2}\/[^'"]+)['"]\s*\)/gm)) {
+      const next = path.resolve(path.dirname(file), m[1] || m[2]);
+      if (fs.existsSync(next) && fs.statSync(next).isFile()) walk(next);
+    }
+  };
+  const all = dir => fs.readdirSync(dir, { withFileTypes: true }).flatMap(e => e.isDirectory() ? all(path.join(dir, e.name)) : e.name.endsWith('.js') ? [path.join(dir, e.name)] : []);
+  for (const f of all(path.join(root, 'server'))) walk(f);
+  assert.deepEqual(missing, [], 'add a COPY line to the Dockerfile for these');
 });
