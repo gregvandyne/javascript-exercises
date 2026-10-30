@@ -91,7 +91,7 @@ body.portrait.psmall .ci-panel .ci-ed,body.portrait.psmall .ci-panel .ci-pal,bod
 .ci-chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;scrollbar-width:thin}
 .ci-chips button{flex:none;min-height:42px;min-width:42px;padding:0 12px;border-radius:14px;background:var(--ci-sky-tint);color:var(--ok-text);font-family:var(--ci-mono);font-size:14px;font-weight:600;white-space:nowrap;border:2px solid var(--ok-edge);box-shadow:0 3px 0 var(--ok-edge);cursor:pointer}
 .ci-chips button.code{background:var(--ci-grape-tint)}
-.ci-chips button.sym{background:var(--ok-bg2);min-width:44px;font-weight:800}
+.ci-chips button.sym{background:var(--ci-sym);min-width:44px;font-weight:800}
 .ci-chips button.edit{background:var(--ci-spark-tint);font-family:inherit;font-weight:700}
 .ci-chips button:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ok-edge)}
 .ci-out{min-height:22px;max-height:84px;overflow:auto;margin-top:4px;font-weight:600;font-size:.9em;line-height:1.35;padding:0 2px}
@@ -2778,7 +2778,7 @@ $('#labels').style.pointerEvents = 'none'; $('#ciMapBar').style.pointerEvents = 
   const r = document.documentElement.style, ink = C('ink');
   const vars = {
     sky: C('water', 'light'), go: C('go'), ink: C('ink'), reward: C('reward'), 'go-tint': C('mint', 'tint'), 'wrong-tint': C('coral', 'tint'), 'sky-tint': C('sky', 'tint'),
-    'grape-tint': C('grape', 'tint'), 'spark-tint': C('spark', 'tint'),
+    'grape-tint': C('grape', 'tint'), 'spark-tint': C('spark', 'tint'), sym: C('stone', 'tint'),
     'code-bg': ink, 'code-gut': mix(ink, C('snow'), 0.06), 'code-ink': C('cream'), 'code-dim': C('stone', 'light'), 'code-sel': mix(ink, C('sky'), 0.45),
     'code-run': mix(ink, C('spark'), 0.22), 'code-err': C('coral', 'light'), 'code-errbg': mix(ink, C('coral'), 0.25),
     k: C('grape', 'light'), s: C('mint', 'light'), n: C('peach', 'light'), p: C('sky', 'light'), f: C('spark', 'light'), m: C('sky', 'tint'), o: C('coral', 'light'), b: C('grape', 'tint'),
