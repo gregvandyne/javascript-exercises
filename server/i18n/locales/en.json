@@ -3050,8 +3050,6 @@
       },
       "legal": "Plans are covered by our <a href=\"/terms\">Terms of Service</a> and our <a href=\"/refunds\">Refund and Cancellation Policy</a>.",
       "welcomePlan": "Your {plan} is on. Thank you!",
-      "welcomeHeading": "Now add your child",
-      "welcomeStep2Day": "Tap Link a child below and type the code. It works once, for 24 hours.",
       "basicNote": "Your Basic plan covers one child: {name}. Your other linked children build with the free daily messages. To cover up to {max} children, switch to the Family plan in Manage billing.",
       "coversBasic": "Covers 1 child.",
       "coversFamily": "Covers up to {max} children.",
@@ -3163,6 +3161,24 @@
         "confirmName": "Type the account's name exactly to confirm.",
         "inSchool": "{name} is in a class. School records belong to the school: ask the teacher to remove them from the class first, then delete here."
       }
+    },
+    "add": {
+      "title": "Add your kids",
+      "heading": "Add your kids",
+      "intro": "Make an account for your child, or link the account they already have. You can add more children later.",
+      "introLink": "Link your child's Oomba Academy account to yours. You can add more children later.",
+      "accountReady": "Your grown-up account is ready.",
+      "pick": "How would you like to add your child?",
+      "another": "Add another child",
+      "makeTitle": "Make my child's account",
+      "makeSub": "They don't have an account yet.",
+      "linkTitle": "Link my child's existing account",
+      "linkSub": "They already have one and can get a code.",
+      "added": "Added so far",
+      "done": "Done",
+      "later": "I'll do this later",
+      "laterNote": "You can add your children any time from Your family.",
+      "cta": "Add a child"
     }
   },
   "plans": {

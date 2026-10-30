@@ -3048,8 +3048,6 @@
       },
       "legal": "Les abonnements sont régis par nos <a href=\"/terms\">Conditions d’utilisation</a> et notre <a href=\"/refunds\">Politique de remboursement et de résiliation</a>.",
       "welcomePlan": "Votre abonnement est activé : {plan}. Merci !",
-      "welcomeHeading": "Ajoutez maintenant votre enfant",
-      "welcomeStep2Day": "Touchez Relier un enfant ci-dessous et tapez le code. Il fonctionne une seule fois, pendant 24 heures.",
       "basicNote": "Votre abonnement Essentiel couvre un enfant : {name}. Vos autres enfants reliés créent avec les messages gratuits du jour. Pour couvrir jusqu’à {max} enfants, passez à l’abonnement famille dans « Gérer l’abonnement ».",
       "coversBasic": "Couvre 1 enfant.",
       "coversFamily": "Couvre jusqu’à {max} enfants.",
@@ -3161,6 +3159,24 @@
         "confirmName": "Tapez exactement le nom du compte pour confirmer.",
         "inSchool": "{name} est dans une classe. Les données scolaires appartiennent à l’école : demandez à l’enseignant de retirer {name} de la classe, puis supprimez le compte ici."
       }
+    },
+    "add": {
+      "title": "Ajouter vos enfants",
+      "heading": "Ajouter vos enfants",
+      "intro": "Créez un compte pour votre enfant, ou reliez celui qu’il a déjà. Vous pourrez ajouter d’autres enfants plus tard.",
+      "introLink": "Reliez le compte Oomba Academy de votre enfant au vôtre. Vous pourrez ajouter d’autres enfants plus tard.",
+      "accountReady": "Votre compte adulte est prêt.",
+      "pick": "Comment voulez-vous ajouter votre enfant ?",
+      "another": "Ajouter un autre enfant",
+      "makeTitle": "Créer le compte de mon enfant",
+      "makeSub": "Il n’a pas encore de compte.",
+      "linkTitle": "Relier le compte de mon enfant",
+      "linkSub": "Il en a déjà un et peut obtenir un code.",
+      "added": "Ajoutés jusqu’ici",
+      "done": "Terminé",
+      "later": "Je le ferai plus tard",
+      "laterNote": "Vous pouvez ajouter vos enfants à tout moment depuis « Votre famille ».",
+      "cta": "Ajouter un enfant"
     }
   },
   "plans": {

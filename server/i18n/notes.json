@@ -655,7 +655,6 @@
   "info.privacy.linking.li7": "A family link code works once, for 24 hours (it used to be 1 hour: this is new text, not the old one).",
   "family.link.step2Day": "A family link code works once, for 24 hours (it used to be 1 hour: this is new text, not the old one).",
   "family.errors.badCodeDay": "A family link code works once, for 24 hours (it used to be 1 hour: this is new text, not the old one).",
-  "family.billing.welcomeStep2Day": "A family link code works once, for 24 hours (it used to be 1 hour: this is new text, not the old one).",
   "teachers.setup.errors.busyToday": "Shown to a teacher when the site has had too many school set-up requests today (from everyone). Don't promise a time sooner than tomorrow.",
   "js.studio.limitCard.textEmpty": "For kids: limitCard.text for a game with nothing built yet (so it doesn't say 'Your game is saved'). 'Tomorrow' only: no times or countdowns.",
   "auth.page.grownupLoginSoon": "The same line as auth.page.grownupLogin, before parents' accounts open: {grownup} is the page for parents (it explains the site; there is no parents' sign-in yet), {teachers} the page for teachers. Keep \"Oomba Academy\" as is.",
@@ -853,5 +852,14 @@
   "studio.mic.oneAtATime": "The microphone can be on in one browser tab at a time; shown when the child turns it on in a second tab.",
   "studio.mic.tooLong": "{max} is the longest recording allowed, as minutes:seconds (e.g. 1:00). Keep it as it is.",
   "studio.mic.start": "Screen-reader label and tooltip of the 🎤 button next to the Builder chat box: speak a message instead of typing it.",
-  "js.studio.steps.search.now": "A build step row: the AI is looking up a real-world fact on the web. Never mention links or websites. Short, max ~30 chars."
+  "js.studio.steps.search.now": "A build step row: the AI is looking up a real-world fact on the web. Never mention links or websites. Short, max ~30 chars.",
+  "family.add.title": "Browser tab title of the grown-up's \"Add your kids\" step (right after signing up or paying, and from Your family). For the parent.",
+  "family.add.heading": "Heading of that step, for the parent.",
+  "family.add.pick": "Heading above two side-by-side choices: make the child's account, or link one they already have.",
+  "family.add.makeTitle": "Choice tile title, max ~32 chars (two tiles sit side by side on a 360 px phone).",
+  "family.add.linkTitle": "Choice tile title, max ~36 chars (two tiles sit side by side on a 360 px phone). Also the heading above the code form.",
+  "family.add.makeSub": "Small line under the \"make\" tile title, max ~40 chars.",
+  "family.add.linkSub": "Small line under the \"link\" tile title, max ~45 chars.",
+  "family.add.laterNote": "Next to \"I'll do this later\". \"Your family\" is the name of the grown-up's Family page (family.page.title).",
+  "family.add.cta": "Button on the Family page that opens this step, max ~20 chars (a ➕ goes before it)."
 }

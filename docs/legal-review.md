@@ -167,6 +167,8 @@ Draft pages to review: terms.md, refunds.md, privacy-payments.md. Every `[LEGAL 
     whenever any of this text changes** after the flag is on, so each record points at the text the grown-up read. In
     the terms only §8's "no delete button yet" changes, and only while the flag is on (`info.terms.ending.madeLi1`
     above); §7.9 already says paying is not consent. The DPIA note is docs/dpia-parent-made.md.
+    **Owner sign-off:** owner approved, 2026-10-30, ahead of lawyer review. `PARENT_MADE_CHILDREN=1` is on in
+    production from that date; the lawyer review of the text above is still open.
 31. **Consent method (COPPA 312.5(b)).** The "no email" rule rules out email-plus. Email-plus and text-plus are only
     allowed when nothing is disclosed, and friend chat and public games count as disclosure. The choices are: (a) keep
     notice and acknowledgement only for now, (b) a third-party verified-consent provider or a COPPA Safe Harbor, or

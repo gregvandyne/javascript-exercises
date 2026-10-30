@@ -3049,8 +3049,6 @@
       },
       "legal": "I piani sono regolati dai nostri <a href=\"/terms\">Termini di servizio</a> e dalla nostra <a href=\"/refunds\">Politica di rimborso e disdetta</a>.",
       "welcomePlan": "Il vostro {plan} è attivo. Grazie!",
-      "welcomeHeading": "Ora aggiungete vostro figlio o vostra figlia",
-      "welcomeStep2Day": "Toccate Collega un figlio o una figlia qui sotto e scrivete il codice. Funziona una sola volta, per 24 ore.",
       "basicNote": "Il vostro piano Base copre un figlio o una figlia: {name}. Gli altri figli collegati creano con i messaggi gratuiti giornalieri. Per coprire fino a {max} figli, passate al piano famiglia in Gestisci pagamenti.",
       "coversBasic": "Copre 1 figlio o figlia.",
       "coversFamily": "Copre fino a {max} figli.",
@@ -3162,6 +3160,24 @@
         "confirmName": "Scrivete esattamente il nome dell'account per confermare.",
         "inSchool": "{name} è in una classe. I dati scolastici appartengono alla scuola: chiedete all'insegnante di rimuoverlo dalla classe, poi eliminate l'account qui."
       }
+    },
+    "add": {
+      "title": "Aggiungete i vostri figli",
+      "heading": "Aggiungete i vostri figli",
+      "intro": "Create un account per vostro figlio o vostra figlia, oppure collegate quello che ha già. Potrete aggiungere altri figli più tardi.",
+      "introLink": "Collegate l'account Oomba Academy di vostro figlio o vostra figlia al vostro. Potrete aggiungere altri figli più tardi.",
+      "accountReady": "Il vostro account da adulto è pronto.",
+      "pick": "Come volete aggiungere vostro figlio o vostra figlia?",
+      "another": "Aggiungi un altro figlio o figlia",
+      "makeTitle": "Crea l'account di mio figlio/a",
+      "makeSub": "Non ha ancora un account.",
+      "linkTitle": "Collega l'account di mio figlio/a",
+      "linkSub": "Ne ha già uno e può ottenere un codice.",
+      "added": "Aggiunti finora",
+      "done": "Fatto",
+      "later": "Lo farò più tardi",
+      "laterNote": "Potete aggiungere i vostri figli in qualsiasi momento da «La vostra famiglia».",
+      "cta": "Aggiungi un figlio o una figlia"
     }
   },
   "plans": {

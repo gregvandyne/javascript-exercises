@@ -276,25 +276,29 @@ test('signed out → pick a plan → grown-up sign-up keeps it → /family asks 
   const fam = F.familyOfOwner(g.id);
   assert.equal(B.ownerPlan('family', fam.id).plan, 'family');
   assert.equal(JSON.parse(audits('billing.checkout.start', `family:${fam.id}`)[0].details).plan, 'family');
-  // Back on /family: the welcome says what to do next, with the steps.
-  const done = decode((await call(who, new URL(back).pathname + new URL(back).search)).text);
-  assert.match(done, /Your Family plan is on\. Thank you!/);
-  assert.match(done, /<h2 id="welcome-h">Now add your child<\/h2>/);
-  assert.match(done, /Your child signs in, opens <b>Me<\/b>/);
-  assert.match(done, /href="\/family\/link">➕ Link a child</);
-  assert.match(decode((await call(who, '/family?welcome=1')).text), /Now add your child/);
+  // Back on /family with the plan on: on to "Add your kids", which says thank you and has the code form.
+  const ret = await call(who, new URL(back).pathname + new URL(back).search);
+  assert.equal(ret.status, 302); assert.equal(ret.location, '/family/add?from=checkout');
+  assert.equal((await call(who, '/family?welcome=1')).location, '/family/add?from=checkout');
+  const step = decode((await call(who, ret.location)).text);
+  assert.match(step, /Your Family plan is on\. Thank you!/);
+  assert.match(step, /<h1>Add your kids<\/h1>/);
+  assert.match(step, /Your child signs in, opens <b>Me<\/b>/);
+  assert.match(step, /data-api="\/api\/family\/link"[\s\S]*name="then" value="add"/);
+  assert.doesNotMatch(step, /\$\d|data-api="\/api\/billing/, 'nothing about money on the step');
   // The plan card: Family, extras, Manage billing and Change plan.
+  const done = decode((await call(who, '/family')).text);
   assert.match(done, /class="planchip paid">Family plan</);
   assert.match(done, /Yearly, renews on/);
   assert.match(done, /5 of 5 extra messages left this month/);
   assert.match(done, /Covers up to 4 children\./);
   assert.match(done, /data-api="\/api\/billing\/portal"/);
   assert.match(done, /href="\/plans">Change plan</);
-  // The waiting page goes back to the welcome.
+  // The waiting page goes on to "Add your kids".
   const s2 = parent();
   const open = await checkout(s2.who, { plan: 'basic', interval: 'month' });
   const sid = open.json.redirect.split('/pay/')[1];
-  assert.match((await call(s2.who, `/family?checkout=${sid}`)).text, /data-back="\/family\?welcome=1"/);
+  assert.match((await call(s2.who, `/family?checkout=${sid}`)).text, /data-back="\/family\/add\?from=checkout"/);
 });
 
 test('a grown-up on /plans: their plan is marked; paying goes through /family; switching goes through Manage billing', async () => {
@@ -441,7 +445,7 @@ test('the Basic checkout names no other plan; more than one child already linked
   assert.doesNotMatch(main(page), /Family plans aren't on sale/);
 });
 
-test('back from Checkout: no "family plan" toast (the welcome names the plan); one Link a child button, in the welcome', async () => {
+test('back from Checkout: no "family plan" toast ("Add your kids" names the plan); the Children panel opens "Add your kids"', async () => {
   const s2 = parent();
   const open = await checkout(s2.who, { plan: 'basic', interval: 'month' });
   const sid = open.json.redirect.split('/pay/')[1];
@@ -449,12 +453,11 @@ test('back from Checkout: no "family plan" toast (the welcome names the plan); o
   assert.match(wait, /data-checkout-wait=/);
   assert.doesNotMatch(wait, /data-done=|Your family plan is on/);
   await pay(open.json.redirect);
-  const done = decode((await call(s2.who, '/family?welcome=1')).text);
+  const done = decode((await call(s2.who, '/family/add?from=checkout')).text);
   assert.match(done, /Your Basic plan is on\. Thank you!/);
-  assert.equal((main(done).match(/href="\/family\/link"/g) || []).length, 1, 'one Link a child button');
-  assert.match(done, /id="welcome"[\s\S]*href="\/family\/link"[\s\S]*id="kids-h"/);
-  // Later (no welcome), the Children panel has it again.
-  assert.match(decode((await call(s2.who, '/family')).text), /id="kids-h"[\s\S]*href="\/family\/link">➕ Link a child</);
+  assert.equal((main(done).match(/data-api="\/api\/family\/link"/g) || []).length, 1, 'one code form');
+  // Later, the Children panel opens it again.
+  assert.match(decode((await call(s2.who, '/family')).text), /id="kids-h"[\s\S]*href="\/family\/add">➕ Link a child</);
 });
 
 test('/plans without the "Family" payment method configuration: Basic and Family are not on sale, even to a tester', async () => {

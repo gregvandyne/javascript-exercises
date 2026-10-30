@@ -3050,8 +3050,6 @@
       },
       "legal": "Os planos são regidos pelos nossos <a href=\"/terms\">Termos de Serviço</a> e pela nossa <a href=\"/refunds\">Política de Reembolso e Cancelamento</a>.",
       "welcomePlan": "Seu {plan} foi ativado. Obrigado!",
-      "welcomeHeading": "Agora adicione a criança",
-      "welcomeStep2Day": "Toque em Vincular uma criança abaixo e digite o código. Ele funciona uma vez, por 24 horas.",
       "basicNote": "Seu plano Básico cobre uma criança: {name}. As outras crianças vinculadas criam com as mensagens grátis diárias. Para cobrir até {max} crianças, mude para o plano Família em Gerenciar cobrança.",
       "coversBasic": "Cobre 1 criança.",
       "coversFamily": "Cobre até {max} crianças.",
@@ -3163,6 +3161,24 @@
         "confirmName": "Digite o nome da conta exatamente igual para confirmar.",
         "inSchool": "{name} está em uma turma. Os registros da escola pertencem à escola: peça ao professor para remover a criança da turma antes e depois exclua aqui."
       }
+    },
+    "add": {
+      "title": "Adicione seus filhos",
+      "heading": "Adicione seus filhos",
+      "intro": "Crie uma conta para seu filho ou vincule a conta que ele já tem. Você pode adicionar mais filhos depois.",
+      "introLink": "Vincule a conta da Oomba Academy do seu filho à sua. Você pode adicionar mais filhos depois.",
+      "accountReady": "Sua conta de adulto está pronta.",
+      "pick": "Como você quer adicionar seu filho?",
+      "another": "Adicionar outro filho",
+      "makeTitle": "Criar a conta do meu filho",
+      "makeSub": "Ele ainda não tem conta.",
+      "linkTitle": "Vincular a conta do meu filho",
+      "linkSub": "Ele já tem uma e pode pegar um código.",
+      "added": "Adicionados até agora",
+      "done": "Concluído",
+      "later": "Vou fazer isso depois",
+      "laterNote": "Você pode adicionar seus filhos a qualquer momento em “Sua família”.",
+      "cta": "Adicionar uma criança"
     }
   },
   "plans": {
