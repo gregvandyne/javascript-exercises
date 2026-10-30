@@ -31,7 +31,7 @@ async function call(cookie, path, { method = 'GET', body } = {}) {
   const h = { ...(cookie ? { cookie } : {}) }; if (body !== undefined) h['content-type'] = 'application/json';
   const r = await fetch(base + path, { method, headers: h, body: body !== undefined ? JSON.stringify(body) : undefined, redirect: 'manual' });
   const text = await r.text(); let json = null; try { json = JSON.parse(text); } catch { /* html */ }
-  return { status: r.status, text, json };
+  return { status: r.status, text, json, location: r.headers.get('location') };
 }
 const as = u => (path, opts) => call(cookieFor(u.id), path, opts);
 let n = 0;
@@ -102,7 +102,7 @@ test('"Free is fine": stored on the family, the checklist folds to All set and s
   assert.equal(funnelTotal(), before, 'hiding counts nothing');
 });
 
-test('a plan on: "Your plan is on"; with a child linked it folds to All set, but straight back from Checkout it stays open', async () => {
+test('a plan on: "Your plan is on"; with a child linked it folds to All set; straight back from Checkout /family goes on to "Add your kids"', async () => {
   const g = grownup();
   grant(g);
   let c = checklist((await as(g)('/family')).text);
@@ -110,17 +110,13 @@ test('a plan on: "Your plan is on"; with a child linked it folds to All set, but
   assert.match(stepOf(c, 3), /^ done"[\s\S]*Your plan is on/);
   assert.doesNotMatch(stepOf(c, 3), /href="\/plans"|Free works/);
   assert.match(stepOf(c, 2), /family\/link/);
-  // Straight back from Checkout with no child: the welcome below has the steps and the button, step 2 doesn't repeat them.
-  const welcome = (await as(g)('/family?welcome=1')).text;
-  assert.doesNotMatch(stepOf(checklist(welcome), 2), /family\/link|Get a code/);
-  assert.equal((welcome.match(/href="\/family\/link"/g) || []).length, 1);
   await linkUp(g, kid());
   c = checklist((await as(g)('/family')).text);
   assert.match(c, /^<details class="panel famcheck folded"/);
+  // Straight back from Checkout (the plan on): "Add your kids" says thank you and is where a child is added.
   for (const q2 of ['?welcome=1', '?checkout=cs_test_abc']) {
-    c = checklist((await as(g)(`/family${q2}`)).text);
-    assert.match(c, /^<section/, `${q2}: open after paying`);
-    assert.match(stepOf(c, 3), /^ done"[\s\S]*Your plan is on/);
+    const r = await call(cookieFor(g.id), `/family${q2}`);
+    assert.equal(r.status, 302, q2); assert.equal(r.location, '/family/add?from=checkout', q2);
   }
 });
 

@@ -58,7 +58,7 @@ async function grownupSignup(page, name = uniq('Mum')) {
   await page.goto('/grown-ups/signup');
   await page.fill('#username', name); await page.fill('#password', 'a-long-password-1'); await page.fill('#confirm', 'a-long-password-1');
   await page.check('#adult');
-  await Promise.all([page.waitForURL(/\/family$/), page.click('button[type=submit]')]);
+  await Promise.all([page.waitForURL(/\/family\/add\?from=signup$/), page.click('button[type=submit]')]);
   return name;
 }
 async function getCode(page) {
@@ -105,6 +105,7 @@ test('a child gets a code, a grown-up signs up from /parents and links, the chil
   await mum.click('button[type=submit]');
   await expect(mum.locator('#password-err')).toContainText('12');
   const mumName = await grownupSignup(mum);
+  await mum.goto('/family');
   await expect(mum.locator('h1')).toContainText('Your family');
   await expect(mum.locator('.topnav')).toContainText('Family');
   await expect(mum.locator('.topnav a[href="/build"]')).toHaveCount(0);
@@ -290,6 +291,7 @@ test('the new pages: nothing touches, no sideways scroll (360 / 1280, light / da
 test('the grown-up\'s menus: Family · Games · Plans · Account; settings on /family/account; old /family# links land there', async ({ browser }) => {
   const mum = await person(browser, { viewport: { width: 360, height: 760 } });
   await grownupSignup(mum, uniq('Mum'));
+  await mum.goto('/family');
   const tabs = () => mum.locator('.tabbar .tab').evaluateAll(l => l.map(a => [a.getAttribute('href'), a.querySelector('.tab-t').textContent]));
   expect(await tabs()).toEqual([['/family', 'Family'], ['/', 'Games'], ['/plans', 'Plans'], ['/family/account', 'Account']]);
   await expect(mum.locator('.tabbar .tab[href="/family"]')).toHaveAttribute('aria-current', 'page');
@@ -363,6 +365,7 @@ test('the code panel: a safety line next to the code; a new code hides "Lost it?
 test('the /family checklist: how to link, ticks when the child says yes, "Free is fine" folds it to All set; kids never see it', async ({ browser }) => {
   const mum = await person(browser);
   await grownupSignup(mum, uniq('Mum'));
+  await mum.goto('/family');
   const check = mum.locator('#famcheck');
   await expect(check.locator('h2')).toHaveText('Getting started');
   const steps = check.locator('.famcheck-step');

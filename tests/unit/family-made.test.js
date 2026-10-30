@@ -35,8 +35,8 @@ test('the gate: with PARENT_MADE_CHILDREN off, or families off, every page and A
   // On: the doors appear.
   config.parentMadeChildren = true;
   const on = await as(g)('/family');
-  assert.match(on.text, /href="\/family\/children\/new"[^>]*>➕ Make their account/);
-  assert.match(on.text, /<a class="btn" href="\/family\/link"[^>]*>Link with a code<\/a>/);
+  assert.match(on.text, /<a class="btn btn-primary" href="\/family\/add">➕ Add a child<\/a>/, 'the Children panel opens "Add your kids"');
+  assert.match(on.text, /<a href="\/family\/children\/new">Make their account<\/a> · <a href="\/family\/link">/, 'the checklist\'s step 2 has both ways');
   assert.match(on.text, /Add your child/);
   assert.match((await call(null, '/privacy')).text, /<section class="panel" id="made"><h2>Accounts a grown-up makes for a child<\/h2>/);
   assert.match((await call(null, '/parents')).text, /id="made"><details class="lp-fold"><summary><h3>If you make your child&#39;s account|id="made"><details class="lp-fold"><summary><h3>If you make your child's account/);
@@ -153,7 +153,7 @@ test('one transaction: an ordinary kid account, linked, the notice record, three
   const page = await call(cookieFor(g.id), `/family?made=${encodeURIComponent(token)}`);
   assert.match(page.text, /You made this account/);
   assert.match(page.text, /Account ready\. .*can sign in/);
-  assert.match(page.text, /<details class="famkid-act" open><summary class="btn btn-primary">Switch to /);
+  assert.match(page.text, /<details class="famkid-act" id="made-switch" open><summary class="btn btn-primary">Switch to /);
   assert.doesNotMatch(page.text, new RegExp(`children/${token}/remove`));
   assert.match(page.text, new RegExp(`children/${token}/data#delete`));
   assert.equal((await post(g, `/api/family/children/${token}/remove`, {})).status, 404, 'no Remove for a made child');
@@ -284,7 +284,8 @@ test('translated: the made texts on a German page are German, and marked as Engl
   assert.match(main(page.text), /<p class="small made-noconsent">Das Erstellen dieses Kontos/);
   assert.doesNotMatch(main(page.text), /lang="en"|Make your child|What this account keeps/);
   const fam = await as(auth.getUser(g.id))('/family');
-  assert.ok(main(fam.text).includes(`href="/family/children/new">➕ ${de['family.made.add']}</a>`));
+  assert.ok(main(fam.text).includes(`href="/family/children/new">${de['family.made.add']}</a>`));
+  assert.ok(main(fam.text).includes(`href="/family/add">➕ ${de['family.add.cta']}</a>`));
   assert.doesNotMatch(main(fam.text), /lang="en"|Make their account/);
   // The made texts taken out of German (simulated): those are English, marked so.
   await withoutKeys('de', ['family.made'], async () => {
@@ -294,6 +295,6 @@ test('translated: the made texts on a German page are German, and marked as Engl
     assert.match(gap.text, /<li lang="en" dir="ltr">What this account keeps:/);
     assert.match(gap.text, /<p class="small made-noconsent" lang="en" dir="ltr">/);
     const gapFam = await as(auth.getUser(g.id))('/family');
-    assert.match(gapFam.text, /href="\/family\/children\/new" lang="en" dir="ltr">➕ Make their account/);
+    assert.match(gapFam.text, /href="\/family\/children\/new" lang="en" dir="ltr">Make their account/);
   });
 });

@@ -55,13 +55,13 @@ async function grownupSignup(page, name = uniq('Mum')) {
   await page.goto('/grown-ups/signup');
   await page.fill('#username', name); await page.fill('#password', PW); await page.fill('#confirm', PW);
   await page.check('#adult');
-  await Promise.all([page.waitForURL(/\/family$/), page.click('button[type=submit]')]);
+  await Promise.all([page.waitForURL(/\/family\/add\?from=signup$/), page.click('button[type=submit]')]);
   return name;
 }
-/** On /family: "Make their account", the form, back on /family with the new row. -> { kidName, token } */
+/** "Make your child's account" (/family/children/new; its door on /family is "Add your kids", tests/e2e/family-add.spec.js),
+ *  the form, back on /family with the new row. -> { kidName, token } */
 async function makeChild(page, kidName = uniq('Kid')) {
-  await page.goto('/family');
-  await Promise.all([page.waitForURL(/\/family\/children\/new$/), page.locator('#kids-h ~ .row a[href="/family/children/new"]').click()]);
+  await page.goto('/family/children/new');
   await expect(page.locator('h1')).toHaveText("Make your child's account");
   await page.fill('#made-name', kidName); await page.fill('#made-pw', KID_PW); await page.fill('#made-confirm', KID_PW);
   if (await page.locator('#pw-made').isVisible()) await page.fill('#pw-made', PW);
@@ -89,6 +89,7 @@ const tabsOf = page => page.locator('.tabbar .tab').evaluateAll(l => l.map(a => 
 test('a grown-up signs up, makes their child\'s account and switches; the child plays and builds; back to the grown-up with their password', async ({ browser }) => {
   const page = await person(browser, { viewport: { width: 360, height: 780 } });
   const mumName = await grownupSignup(page);
+  await page.goto('/family');
   await expect(page.locator('#famcheck')).toContainText('Add your child');
   await expect(page.locator('#famcheck')).toContainText('Make your child\'s account, or link one they already have.');
   const { kidName, row } = await makeChild(page);
