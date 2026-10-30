@@ -121,7 +121,7 @@ export async function executeTurn(job, { user, game, text = '', pro = false, wan
   job.pool = job.pool || allowanceFor(user).pool;
   try {
     usage = { ...usage, ...(await PROVIDERS[name].run({
-      user, game, text, pro: !!pro, history, uploads, state, tools: tb, emit, steps, signal: job.ac.signal, locale, t,
+      user, game, text, pro: !!pro, history, uploads, state, tools: tb, emit, steps, signal: job.ac.signal, locale, t, turn: job.id,
       between: (round, o) => runner.between(job, round, o), settle: () => runner.settle(job), pending: () => job.waiting.length,
       pool: job.pool, cost: usd => { try { turns.addCost(job.id, usd); } catch { /* the database is closing */ } },
       resume: carry, maxRounds,

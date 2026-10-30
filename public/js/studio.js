@@ -316,10 +316,10 @@ function renderLog() {
 // The top of the live card ("eta" below): how long builds like this usually take, from the server's numbers (eta.js),
 // and that the builder can close the page or sign out. Both appear at the first real authoring step or once the build
 // has lasted the estimate's showAt (LEAVE_AT without one), so a quick question reply never flashes them.
-const STEP_ICON = { screen: '🛡️', blocks: '🧱', think: '🧠', write: '✍️', edit: '✏️', fix: '🛠️', template: '🏝️', check: '🔒', name: '🏷️', playtest: '📱', notes: '🧪', ask: '💬', resume: '🔄', read: '📬', sending: '📨', offline: '📶', waiting: '⏳', restart: '🔄' };
-const SERVER_STEPS = new Set(['screen', 'blocks', 'think', 'write', 'edit', 'fix', 'template', 'check', 'name', 'playtest', 'notes', 'ask', 'resume', 'read']);
+const STEP_ICON = { search: '🔎', screen: '🛡️', blocks: '🧱', think: '🧠', write: '✍️', edit: '✏️', fix: '🛠️', template: '🏝️', check: '🔒', name: '🏷️', playtest: '📱', notes: '🧪', ask: '💬', resume: '🔄', read: '📬', sending: '📨', offline: '📶', waiting: '⏳', restart: '🔄' };
+const SERVER_STEPS = new Set(['screen', 'blocks', 'think', 'write', 'edit', 'fix', 'template', 'check', 'name', 'playtest', 'notes', 'ask', 'resume', 'read', 'search']);
 // Timed rows run until the next row starts (spinner, seconds); the others take milliseconds and arrive done.
-const TIMED = new Set(['screen', 'blocks', 'think', 'write', 'edit', 'fix', 'playtest', 'sending', 'offline', 'waiting', 'restart']);
+const TIMED = new Set(['screen', 'blocks', 'think', 'write', 'edit', 'fix', 'playtest', 'search', 'sending', 'offline', 'waiting', 'restart']);
 const AUTHOR = new Set(['write', 'edit', 'fix']);
 // An instant row's learning line is shown under the next timed row ("Just now: …"): one per row, most useful first,
 // each at most once a turn.
@@ -1323,6 +1323,92 @@ compose.addEventListener('dragover', e => { if ([...(e.dataTransfer.types || [])
 compose.addEventListener('dragleave', () => compose.classList.remove('drag'));
 compose.addEventListener('drop', e => { compose.classList.remove('drag'); if (e.dataTransfer.files.length) { e.preventDefault(); addFiles([...e.dataTransfer.files]); } });
 input.addEventListener('paste', e => { const files = [...(e.clipboardData && e.clipboardData.files || [])]; if (files.length) { e.preventDefault(); addFiles(files); } });
+
+// ---------------------------------------------------------------- speaking instead of typing
+// The 🎤 button (only when the server has speech to text on: S.mic). Tap to record, tap again to stop (it stops by
+// itself at S.mic.maxMs); Esc cancels and throws the clip away. The clip goes to POST /transcribe and the words are
+// added to the chat box for the builder to check and edit: never sent by themselves. The clip is never kept here
+// either (one Blob, dropped after the request). States: idle, recording (red dot, timer, aria-pressed), transcribing
+// (button disabled), then a hint or an error in the status line (role=status, read by screen readers).
+const mic = (() => {
+  const btn = $('#st-mic'), status = $('#st-mic-status');
+  if (!btn || !S.mic || !window.MediaRecorder || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return null;
+  // Chrome, Edge, Firefox and Android: WebM; Safari (iPhone, iPad, Mac): MP4 with AAC; then Ogg.
+  const TYPES = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/mp4;codecs=mp4a.40.2', 'audio/ogg;codecs=opus'];
+  const type = TYPES.find(x => { try { return MediaRecorder.isTypeSupported(x); } catch { return false; } });
+  if (type === undefined && typeof MediaRecorder.isTypeSupported === 'function') return null;
+  btn.hidden = false; btn.parentElement.classList.add('has-mic');   // a phone makes room for it (studio.css)
+  let rec = null, stream = null, chunks = [], t0 = 0, timer = 0, cancelled = false, state = 'idle';
+  const clock = ms => { const s = Math.max(0, Math.floor(ms / 1000)); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`; };
+  const say = (text, tone = '') => { status.textContent = text; status.className = `st-mic-status${tone ? ` ${tone}` : ''}`; };
+  function setState(st) {
+    state = st; const on = st === 'recording';
+    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    btn.classList.toggle('rec', on); btn.disabled = st === 'working';   // not while asking: the button keeps focus
+    btn.setAttribute('aria-busy', st === 'working' ? 'true' : 'false');
+    const label = t(on ? 'js.studio.mic.stop' : 'js.studio.mic.start'); btn.setAttribute('aria-label', label); btn.title = label;
+    $('.st-mic-ico', btn).textContent = on ? '⏹️' : st === 'working' ? '⏳' : '🎤';
+  }
+  function tick() {
+    const el = Date.now() - t0;
+    say(t('js.studio.mic.recording', { time: clock(el), max: clock(S.mic.maxMs) }), 'rec');
+    if (el >= S.mic.maxMs) stop();
+  }
+  function release() {
+    clearInterval(timer); timer = 0;
+    if (stream) stream.getTracks().forEach(tr => tr.stop());   // the browser's mic light goes off
+    stream = null;
+  }
+  async function start() {
+    if (state !== 'idle') return;
+    setState('asking'); say('');
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ audio: { channelCount: 1, echoCancellation: true, noiseSuppression: true } });
+    } catch (e) {
+      setState('idle'); release();
+      say(t(e && (e.name === 'NotFoundError' || e.name === 'OverconstrainedError') ? 'js.studio.mic.noMic' : 'js.studio.mic.denied'), 'bad');
+      return;
+    }
+    chunks = []; cancelled = false;
+    try { rec = new MediaRecorder(stream, { ...(type ? { mimeType: type } : {}), audioBitsPerSecond: 48000 }); }
+    catch { try { rec = new MediaRecorder(stream); } catch { setState('idle'); release(); say(t('js.studio.mic.failed'), 'bad'); return; } }
+    rec.ondataavailable = e => { if (e.data && e.data.size) chunks.push(e.data); };
+    rec.onstop = () => finish();
+    rec.start();   // no time slices: Safari makes broken clips with them
+    t0 = Date.now(); setState('recording'); tick(); timer = setInterval(tick, 250);
+  }
+  function stop() { if (state === 'recording' && rec && rec.state !== 'inactive') { clearInterval(timer); timer = 0; rec.stop(); } }
+  function cancel() { if (state !== 'recording') return; cancelled = true; stop(); }
+  async function finish() {
+    const ms = Date.now() - t0; release();
+    const blob = new Blob(chunks, { type: (rec && rec.mimeType) || type || 'audio/webm' }); chunks = []; rec = null;
+    if (cancelled) { setState('idle'); say(t('js.studio.mic.cancelled')); btn.focus(); return; }
+    if (ms < 400 || !blob.size) { setState('idle'); say(t('js.studio.mic.nothing'), 'bad'); return; }
+    setState('working'); say(t('js.studio.mic.transcribing'));
+    let data = null, res = null;
+    try {
+      res = await fetch(`/api/studio/${ID}/transcribe`, { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': blob.type.split(';')[0] || 'audio/webm', 'X-Clip-Ms': String(Math.round(ms)) }, body: blob });
+      data = await res.json().catch(() => ({}));
+    } catch { /* offline */ }
+    setState('idle');
+    if (res && res.status === 401) return failed(Object.assign(new Error(t('js.app.signedOut')), { signedOut: true }));
+    if (!res || !res.ok) { say((data && data.error) || t('js.studio.mic.failed'), 'bad'); btn.focus(); return; }
+    const text = String((data && data.text) || '').trim();
+    if (!text) { say(t('js.studio.mic.nothing'), 'bad'); btn.focus(); return; }
+    // Added after anything already typed; the builder checks it and presses Send themself.
+    const cur = input.value.replace(/\s+$/, '');
+    input.value = (cur ? `${cur} ${text}` : text).slice(0, +input.maxLength > 0 ? +input.maxLength : 2000);
+    autosize(); input.focus(); input.setSelectionRange(input.value.length, input.value.length);
+    say(t('js.studio.mic.check'), 'good');
+  }
+  btn.addEventListener('click', () => { if (state === 'recording') stop(); else if (state === 'idle') start(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && state === 'recording') { e.preventDefault(); e.stopPropagation(); cancel(); } }, true);
+  // Leaving the page or hiding it while recording: stop and throw the clip away (the mic never stays on).
+  addEventListener('pagehide', () => { cancelled = true; if (rec && rec.state !== 'inactive') rec.stop(); release(); });
+  document.addEventListener('visibilitychange', () => { if (document.hidden) cancel(); });
+  setState('idle');
+  return { cancel, get state() { return state; } };
+})();
 
 // ---------------------------------------------------------------- title, icon, settings
 const titleIn = $('#st-title');

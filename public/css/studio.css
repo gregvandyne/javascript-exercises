@@ -214,6 +214,28 @@ button.stp-line{cursor:pointer}
 .st-row{display:flex;gap:8px;align-items:flex-end}
 .st-clip{width:48px;height:48px;flex:none;border-radius:50%;border:2px solid var(--line);background:var(--card);font-size:1.3rem;cursor:pointer}
 .st-clip:hover{border-color:var(--accent-line)}
+/* Speaking instead of typing: the mic button and its status line. Recording shows a red ring, a stop icon and the
+   timer in words (never colour alone); the ring pulses only when motion is welcome. */
+.st-mic{width:48px;height:48px;flex:none;border-radius:50%;border:2px solid var(--line);background:var(--card);font-size:1.3rem;cursor:pointer;position:relative}
+.st-mic:hover{border-color:var(--accent-line)}
+.st-mic:disabled{cursor:progress;opacity:.75}
+.st-mic.rec{border-color:var(--danger);box-shadow:0 0 0 3px color-mix(in srgb,var(--danger) 35%,transparent)}
+.st-mic.rec::after{content:"";position:absolute;top:4px;right:4px;width:10px;height:10px;border-radius:50%;background:var(--danger)}
+@media (prefers-reduced-motion:no-preference){.st-mic.rec{animation:st-mic-pulse 1.4s ease-in-out infinite}}
+@keyframes st-mic-pulse{50%{box-shadow:0 0 0 7px color-mix(in srgb,var(--danger) 15%,transparent)}}
+/* A phone with the mic shown: a little less padding and gap, so the short placeholder still fits beside three buttons
+   (tap targets stay at least 44px). Without the mic nothing changes. */
+@media (max-width:440px){
+  .st-row.has-mic{gap:6px}
+  .st-row.has-mic .st-clip,.st-row.has-mic .st-mic{width:44px;height:44px;font-size:1.15rem}
+  .st-row.has-mic .st-send{padding:0 10px}
+  .st-row.has-mic .st-input{padding-left:10px;padding-right:10px}
+}
+.st-mic-status{margin:6px 4px 0;font-size:.9rem;min-height:0}
+.st-mic-status:empty{margin:0}
+.st-mic-status.rec::before{content:"● ";color:var(--danger)}
+.st-mic-status.bad{color:var(--danger);font-weight:600}
+.st-mic-status.good{font-weight:600}
 .st-input{flex:1;min-width:0;min-height:48px;max-height:140px;resize:none;padding:11px 14px;border-radius:22px;border:2px solid var(--edge);background:var(--card-2);color:var(--text);font:inherit;line-height:1.35}
 .st-input::placeholder{color:var(--muted);opacity:1}
 /* The placeholder stays on one line (app.js swaps in the short one when the long one doesn't fit). */

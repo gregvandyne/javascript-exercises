@@ -106,6 +106,10 @@ const maintenance = parseFlag(process.env.MAINTENANCE_MODE, 'MAINTENANCE_MODE');
 const billingPublic = parseFlag(process.env.BILLING_PUBLIC, 'BILLING_PUBLIC');
 const parentMade = parseFlag(process.env.PARENT_MADE_CHILDREN, 'PARENT_MADE_CHILDREN');
 const movedPermanently = parseFlag(process.env.MOVED_PERMANENTLY, 'MOVED_PERMANENTLY');
+const builderWebSearch = parseFlag(process.env.BUILDER_WEB_SEARCH, 'BUILDER_WEB_SEARCH');
+/** Speech to text providers (server/services/stt.js). 'mock' answers fixed words, for tests only. */
+export const STT_PROVIDERS = ['openai', 'elevenlabs', 'mock'];
+const sttProvider = String(process.env.STT_PROVIDER || 'openai').trim().toLowerCase();
 const sessionSecret = process.env.SESSION_SECRET || '';
 /** SQLite journal modes that keep data safe after a crash (MEMORY and OFF don't). */
 export const JOURNAL_MODES = ['WAL', 'DELETE', 'TRUNCATE', 'PERSIST'];
@@ -142,6 +146,9 @@ export const config = {
     oidcBase.error, oidcBase.url && (process.env.NODE_ENV || 'development') === 'production' && "GOOGLE_OIDC_BASE is for tests and can't be used in production",
     ...stripe.errors,
     publicUrl.error, movedTo.error, redirectHosts.error, requireSecret.error, maintenance.error, movedPermanently.error, parentMade.error,
+    builderWebSearch.error,
+    !STT_PROVIDERS.includes(sttProvider) && `STT_PROVIDER must be one of ${STT_PROVIDERS.filter(p => p !== 'mock').join(', ')}`,
+    sttProvider === 'mock' && (process.env.NODE_ENV || 'development') === 'production' && "STT_PROVIDER=mock is for tests and can't be used in production",
     !JOURNAL_MODES.includes(journalMode) && `BRB_JOURNAL_MODE must be one of ${JOURNAL_MODES.join(', ')}`,
     requireSecret.on && sessionSecret && sessionSecret.length < MIN_SECRET_LENGTH
       && `SESSION_SECRET is shorter than ${MIN_SECRET_LENGTH} characters, which REQUIRE_SESSION_SECRET=1 refuses (make one with: openssl rand -hex 32)`,
@@ -161,6 +168,21 @@ export const config = {
   builderModel: process.env.BUILDER_MODEL || 'claude-sonnet-5-5',
   builderProModel: process.env.BUILDER_PRO_MODEL || 'claude-opus-5-5',
   builderDailyTurns: num(process.env.BUILDER_DAILY_TURNS, 60),
+  // BUILDER_WEB_SEARCH=1: the Builder may look facts up on the web (server/builder/search.js: blocked sites, a cap per
+  // build, screening, an admin log). Off when unset. The Anthropic Console's own web search setting is a second switch.
+  builderWebSearch: builderWebSearch.on,
+  // Speech to text in the Studio chat (server/services/stt.js): on only when STT_API_KEY is set (the owner sets it in
+  // the host's dashboard, never in a file). Audio is kept in memory only and dropped after the words come back.
+  sttProvider: STT_PROVIDERS.includes(sttProvider) ? sttProvider : '',
+  sttApiKey: process.env.STT_API_KEY || '',
+  sttModel: process.env.STT_MODEL || '',
+  sttMaxSeconds: Math.min(120, Math.max(5, num(process.env.STT_MAX_SECONDS, 60))),
+  sttMaxBytes: Math.min(10_000_000, Math.max(100_000, num(process.env.STT_MAX_BYTES, 1_500_000))),
+  sttPerMinute: Math.max(1, num(process.env.STT_PER_MINUTE, 8)),
+  sttDailyClips: Math.max(1, num(process.env.STT_DAILY_CLIPS, 60)),
+  // Site-wide minutes of speech to text a UTC day (all builders together), and its price for the AI spending caps.
+  sttDailyMinutes: Math.max(1, num(process.env.STT_DAILY_MINUTES, 300)),
+  sttUsdPerMinute: Math.max(0, num(process.env.STT_USD_PER_MINUTE, 0.007)),
   // Turns one "Pro quality" message uses (server/builder/usage.js). 1 = the same as a normal message (today); paid
   // plans set 2 (docs/decisions.md "Paid plans", D5). Whole numbers from 1 to 10.
   proTurnWeight: Math.min(10, Math.max(1, Math.floor(num(process.env.PRO_TURN_WEIGHT, 1)) || 1)),
