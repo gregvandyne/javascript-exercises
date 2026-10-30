@@ -70,7 +70,7 @@ for (const backend of ['paper', 'glaze']) {
       }
       expect(new Set(means).size, `biomes look different (${means.join(' ')})`).toBeGreaterThanOrEqual(mode === 'day' ? 6 : 4);
     }
-    expect(counts.chars.chars).toBe(12);
+    expect(counts.chars.chars).toBe(19);   // 13 species (6 core + 7 from art-animals) and 6 sample kids
     expect(counts.props.props).toBeGreaterThanOrEqual(50);
     expect(counts.icons.icons).toBeGreaterThanOrEqual(40);
     // every clip and mood runs on every character without errors

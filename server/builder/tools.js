@@ -12,17 +12,34 @@ import { cleanText } from '../services/textfilter.js';
 import { signToken } from '../auth.js';
 import * as snapshot from '../services/snapshot.js';
 import { localeInfo } from '../i18n/index.js';
-import { templateHtml, templateInfo } from './catalog.js';
+import { templateHtml, templateInfo, TEMPLATE_KEYS } from './catalog.js';
 import { NO_STEPS, cleanNote } from './steps.js';
 import { stripLinks } from './search.js';
 
-// Templates the Builder may start from with start_from_template (the 3D one; 2D games are written fresh).
-const STARTERS = ['island'];
+// Templates the Builder may start from with start_from_template: every template (all on the Oomba Kit; island is 3D).
+const STARTERS = TEMPLATE_KEYS;
 
 const CATS = games.CATEGORY_KEYS;
 /** A Studio preview link (signed, short-lived). lang: the builder's language, passed to the game as BRB.user.lang. */
 export const previewUrl = (version, game, userId, lang = null) => `/frame/${signToken({ v: version.id, g: game.id, u: userId, p: 1, ...(lang ? { l: lang } : {}) })}`;
 const plainIssues = report => (report.issues || []).map(i => `${i.level === 'fail' ? 'Must fix' : 'Check'}: ${i.message}`);
+/** The same, with the scan's model-only details (e.g. which word matched): only ever in the model's tool result. */
+const modelIssues = report => (report.issues || []).map(i => `${i.level === 'fail' ? 'Must fix' : 'Check'}: ${i.message}${i.detail ? ' ' + i.detail : ''}`);
+/** What the playtest's probe (snapshot.js probeGame) and the kit's state say is wrong with a kit game's round. */
+export function probeProblems(r, after = {}) {
+  const out = [], p = r && r.probe;
+  let st = null; try { st = after && after.state ? JSON.parse(after.state) : null; } catch { st = null; }
+  if (st && st.game && st.scene === 'play' && st.controls !== 'none' && typeof st.inView === 'number' && st.inView < 2) out.push('The play picture (it becomes the game\'s cover) shows almost nothing but the ground and the hero. Put pickups, friends or props near the start, or frame the camera on them.');
+  if (!p || p.error || !p.s1) return out;
+  const { s0, s1 } = p, cell = s1.cell || 48, ended = p.scenes.some(x => /^(win|lose|goal)$/.test(x));
+  if (!ended && (s1.controls !== 'none' || s1.total > 0) && s1.score === s0.score && s1.got === s0.got && p.moved < cell && /^(play|talk|countdown)$/.test(s1.scene)) out.push('In 25 s of play (holding right, jumping, answering every question) nothing happened: no points, no pickups and the hero did not move. Check the controls, the level and that the round can be won (controls: \'none\' means no hero movement: move the hero from code). If it is played some other way, play it through yourself in your head.');
+  else if (!ended && s1.total > 0 && s1.got === 0) out.push(`In 25 s of play nothing was picked up (0 of ${s1.total}). Check the pickups can be reached from the start.`);
+  if (p.scenes.includes('talk') && s1.scene === 'talk') out.push('The game was stuck in a story beat (scene "talk") at the end of the playtest: a gate or talk handler may never finish (on.gate should ask, open the gate, or return true / false).');
+  if (p.covered) out.push(`The hero is hidden under the game's own ${p.covered} on screen. Keep your own pieces clear of the play area (below var(--ok-safe-top), or in a card at the bottom with the camera framed above it).`);
+  return out;
+}
+/** The style lint's notes for the model (kit games only; they never block a version). */
+export const styleTips = report => (report.lint || []).map(l => `${l.level === 'warn' ? 'Style' : 'Tip'} (${l.code}): ${l.message}`);
 
 /** Apply exact find/replace edits. Each find must occur exactly once (in the text as it is when that edit runs). */
 export function applyEdits(html, edits) {
@@ -70,10 +87,12 @@ export function toolbox(ctx) {
     if (removed.length) forModel += ` The platform removed: ${[...new Set(removed)].join(', ')}.`;
     if (report.status === 'fail') {
       ctx.state.scanFails = (ctx.state.scanFails || 0) + 1;
-      forModel += ` The safety scan FAILED, so this version cannot be shared. Problems: ${plainIssues(report).join(' ')} Fix every problem now with edit_game or write_game.`;
+      forModel += ` The safety scan FAILED, so this version cannot be shared. Problems: ${modelIssues(report).join(' ')} Fix every problem now with edit_game or write_game.`;
       return { ok: false, forModel, event, version: v, report };
     }
-    if (report.status === 'flag') forModel += ` Please also look at: ${plainIssues(report).join(' ')}`;
+    if (report.status === 'flag') forModel += ` Please also look at: ${modelIssues(report).join(' ')}`;
+    const tips = styleTips(report);
+    if (tips.length) forModel += ` The style check (the game still works; fix these so it looks and plays like a first-party Oomba game): ${tips.join(' ')}`;
     return { ok: true, forModel, event, version: v, report };
   }
 
@@ -126,7 +145,7 @@ export function toolbox(ctx) {
       const orientation = g.orientation === 'landscape' ? 'landscape' : 'portrait';
       let r;
       try {
-        r = await snapshot.runGame(cur.html, { size: 'phone', orientation, lang: ctx.locale || 'en', dir: localeInfo(ctx.locale || 'en').dir, title: g.title, scale: 1, quality: 62, titleMs: 1500, playMs: 2500 });
+        r = await snapshot.runGame(cur.html, { size: 'phone', orientation, lang: ctx.locale || 'en', dir: localeInfo(ctx.locale || 'en').dir, title: g.title, scale: 1, quality: 62, titleMs: 1500, playMs: 2500, probe: true });
       } catch (e) {
         steps.info({ ok: false }, row);
         // The screenshot worker is down or busy: say so, rather than blame the game.
@@ -146,6 +165,8 @@ export function toolbox(ctx) {
       if (small.length) problems.push(`Buttons smaller than 40px (hard for small fingers): ${small.map(x => `"${x}"`).join(', ')}.`);
       if (!a.testHook) problems.push('window.__brbTest is missing (add state() and start(), see the Game Contract).');
       else if (a.state && /"game":false/.test(a.state)) problems.push('This Oomba Kit game never registered its test hooks: call Oomba.test({ state: () => ({...}), start: () => ... }) so the playtest can start a round and read the game state.');
+      problems.push(...probeProblems(r, a));
+      const tips = styleTips(scanVersion(cur.html));
       steps.info({ pics: (r.title ? 1 : 0) + (r.play ? 1 : 0), probs: problems.length }, row);
       const size = orientation === 'landscape' ? '844x390 landscape' : '390x700 portrait';
       const text = [
@@ -153,6 +174,9 @@ export function toolbox(ctx) {
         `Picture 1: the title screen after 1.5 seconds. Then I ${r.started || 'could not find anything to tap'}. Picture 2: 2.5 seconds later.`,
         a.state ? `__brbTest.state() after starting: ${a.state}` : '',
         problems.length ? `Problems found:\n- ${problems.join('\n- ')}` : 'No errors or layout problems were detected.',
+        r.probe && !r.probe.error && r.probe.s1 ? `Then I played on for about 25 s of game time (holding right, jumping, answering each question with the first answer left, pressing the game's own buttons and 1-4 in turn): scenes ${r.probe.scenes.join(' → ')}; score ${r.probe.s0.score} → ${r.probe.s1.score}; picked up ${r.probe.s1.got} of ${r.probe.s1.total}.` : '',
+        r.kitWarnings && r.kitWarnings.length ? `Oomba Kit warnings (the game runs, but each is a mistake to fix):\n- ${r.kitWarnings.join('\n- ')}` : '',
+        tips.length ? `Style check:\n- ${tips.join('\n- ')}` : '',
         'Now look at both pictures like a picky player and art director: Is it clear what to do? Does it look polished and fun, with a real',
         'background, characters with personality and a tidy HUD? Is anything blank, overlapping, cut off, too small, misaligned or ugly?',
         'Did the game actually start? Fix every real problem with edit_game (then playtest again), or say it looks good and carry on.',
@@ -170,7 +194,9 @@ export function toolbox(ctx) {
       if (stopped()) return { ok: false, forModel: 'Stopped.', stop: true };   // stopped while the files were read
       steps.start('template');
       const r = saveVersion(html, (input && input.notes) || `Started from ${info ? info.title : key}`);
-      if (r.ok) r.forModel += ` It is ${info ? info.title : key}. Now make it theirs with edit_game: change the CONFIG block near the top of the module script (and the I18N table for words), following the 3D RULES.`;
+      if (r.ok) r.forModel += key === 'island'
+        ? ` It is ${info ? info.title : key}. Now make it theirs with edit_game: change the CONFIG block near the top of the module script (and the I18N table for words), following the 3D RULES.`
+        : ` It is ${info ? info.title : key}, an Oomba Kit game. Now make it theirs with edit_game: change lines of its CONFIG block (one key per line: title, the hero and cast as character specs, the biome, numbers, item lists), its content lists, and the WORDS table (every language you change), following the KIT RULES.`;
       return r;
     },
     test_notes(input) {

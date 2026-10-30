@@ -4,13 +4,14 @@
 import { PALETTE, INK, CREAM, PAPER } from './tokens.js';
 import { fontStack } from './text.js';
 import { SCREEN_CSS } from './screens.js';
+import { icon, ICON_NAMES } from './icons.js';
 
 const P = PALETTE;
 export const CSS = `
 .ok-stage{position:fixed;inset:0;overflow:hidden;background:${PAPER};touch-action:none;-webkit-user-select:none;user-select:none}
 .ok-stage canvas{position:absolute;left:0;top:0;width:100%;height:100%;display:block}
 .ok-ui{position:fixed;inset:0;pointer-events:none;font-family:var(--ok-font);color:var(--ok-text);z-index:10;
-  --ok-text:${INK};--ok-card:${CREAM};--ok-scrim:rgba(20,20,20,.42);--ok-glow:rgba(255,253,242,.62);--ok-focus:${INK};--ok-edge:${INK};--ok-bg2:${PAPER};--ok-line:#E2DDCB;--ok-icon-card:${CREAM};font-size:calc(16px * var(--ok-ts,1))}
+  --ok-safe-top:calc(140px + env(safe-area-inset-top));--ok-text:${INK};--ok-card:${CREAM};--ok-scrim:rgba(20,20,20,.42);--ok-glow:rgba(255,253,242,.62);--ok-focus:${INK};--ok-edge:${INK};--ok-bg2:${PAPER};--ok-line:#E2DDCB;--ok-icon-card:${CREAM};font-size:calc(16px * var(--ok-ts,1))}
 .ok-ui.ok-night{--ok-text:${CREAM};--ok-card:#1E1E1B;--ok-scrim:rgba(10,12,12,.55);--ok-glow:rgba(14,20,20,.5);--ok-focus:${P.spark[2]};--ok-edge:${CREAM};--ok-bg2:#262622;--ok-line:#36352F;--ok-icon-card:#2E2D28}
 .ok-ui>*{pointer-events:auto}
 .ok-ui :focus-visible{outline:3px solid var(--ok-focus);outline-offset:3px}
@@ -73,6 +74,7 @@ export class UI {
     this.cap = d.createElement('div'); this.cap.className = 'ok-caption'; this.cap.setAttribute('aria-hidden', 'true'); r.appendChild(this.cap);
     this.toastEl = d.createElement('div'); this.toastEl.className = 'ok-toast'; this.toastEl.setAttribute('role', 'status'); r.appendChild(this.toastEl);
     (d.body || d.documentElement).appendChild(r);
+    if (!d.body) d.addEventListener('DOMContentLoaded', () => { if (d.body && r.parentNode !== d.body) d.body.appendChild(r); }, { once: true });
     this.sync();
     return r;
   }
@@ -99,11 +101,17 @@ export class UI {
     if (this._toastOff) this._toastOff();
     this._toastOff = this.kit.loop.ui.after(o.ms || 1800, () => this.toastEl.classList.remove('on'));
   }
-  /** button(label, {kind:'hot'|'go'|'quiet'|'icon', icon:svgString, big, onPress}) */
+  /** button(label, {kind:'hot'|'go'|'quiet'|'icon', icon: an icon name ('up', 'speak') or SVG markup, big, onPress})
+   *  -> the <button> element (append it where you like). label is shown as given (pass Oomba.t('key') to translate). */
   button(label, o = {}) {
     const b = this.doc.createElement('button'); b.type = 'button';
     b.className = 'ok-btn ok-' + (o.kind || 'go') + (o.big ? ' ok-big' : '');
-    if (o.icon) b.innerHTML = o.icon;
+    if (o.icon) {
+      const s = String(o.icon).trim();
+      if (s.charAt(0) === '<') b.innerHTML = s;
+      else if (ICON_NAMES.includes(s)) b.innerHTML = icon(s);
+      else this.kit.warn(`ui.button: unknown icon "${s}" (use a name from Oomba.icons, or Oomba.icon(name))`);
+    }
     if (o.kind === 'icon') b.setAttribute('aria-label', String(label)); else b.appendChild(this.doc.createTextNode(String(label)));
     b.addEventListener('click', e => { this.kit.audio.unlock(); this.kit.sfx('select'); if (o.onPress) o.onPress(e); });
     return b;

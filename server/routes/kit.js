@@ -6,18 +6,18 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { config } from '../config.js';
 import { frameDocument, sendFrame, frameOrigins, SANDBOX } from '../services/frame.js';
-import { kitTag } from '../services/kit.js';
+import { kitTag, kitPackTag, kitPacks } from '../services/kit.js';
 import { esc } from '../views/html.js';
 
 export const router = Router();
 const DEMO_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../kit/demo');
-const SCENES = ['meadow', 'gallery', 'core'];
+const SCENES = ['meadow', 'quest', 'gallery', 'core'];
 const TABS = ['chars', 'props', 'icons', 'biomes', 'screens'];
 const LANGS = ['en', 'ar', 'he', 'ja', 'ru', 'fr', 'es', 'de', 'it', 'pt', 'nl', 'zh-Hant', 'en-GB'];
 const allowed = req => config.kitPreview || (req.user && req.user.role === 'admin');
 const pick = (v, list, d) => (list.includes(v) ? v : d);
-/** A kit scene file with the pinned kit tag put in. */
-export function sceneHtml(name) { return fs.readFileSync(path.join(DEMO_DIR, `${name}.html`), 'utf8').replace('<!--KIT-->', kitTag()); }
+/** A kit scene file with the pinned kit tag put in (and every art pack's, where the scene asks for them). */
+export function sceneHtml(name) { return fs.readFileSync(path.join(DEMO_DIR, `${name}.html`), 'utf8').replace('<!--KIT-->', kitTag()).replace('<!--PACKS-->', kitPacks().map(n => kitPackTag(n)).join('\n')); }
 
 router.get('/kit', (req, res) => {
   if (!allowed(req)) return res.status(404).send('Not found');

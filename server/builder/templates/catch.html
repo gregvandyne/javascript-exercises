@@ -1,415 +1,105 @@
 <title>Fruit Catch</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap">
-<style>
-/* Layout: one full-screen canvas (orchard, falling things, bunny with basket), DOM HUD on top, overlay screens. */
-:root{--ink:#4a1d3f;--accent:#ec4899;--accentDark:#be185d;--card:#fff;--font:"Fredoka","Trebuchet MS",system-ui,sans-serif}
-[hidden]{display:none!important}
-html,body{height:100%}
-body{margin:0;overflow:hidden;font-family:var(--font);color:var(--ink);background:#ffd6e8;touch-action:none;user-select:none;-webkit-user-select:none}
-#stage{position:fixed;inset:0}
-canvas{display:block;width:100%;height:100%}
-button{font-family:inherit;color:inherit;cursor:pointer}
-button:focus-visible{outline:4px solid #fff;outline-offset:2px}
-.hud{position:fixed;left:0;right:0;top:0;z-index:5;display:flex;align-items:center;gap:6px;
-  padding:10px max(12px,env(safe-area-inset-left)) 0 max(12px,env(safe-area-inset-right));pointer-events:none}
-.hud .grow{flex:1;display:flex;justify-content:center;gap:5px;min-width:0;flex-wrap:wrap}
-.pill{background:rgba(255,255,255,.94);border-radius:999px;padding:6px 10px;font-weight:700;font-size:1.02rem;box-shadow:0 3px 0 rgba(0,0,0,.15);white-space:nowrap}
-.pill.low{background:#fee2e2;color:#b91c1c}
-.icon-btn{pointer-events:auto;width:46px;height:46px;flex:none;border:0;border-radius:50%;background:#fff;font-size:1.35rem;box-shadow:0 4px 0 rgba(0,0,0,.18);display:grid;place-items:center;padding:0}
-.icon-btn:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.18)}
-.screen{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(74,29,63,.3)}
-.panel{background:var(--card);border-radius:28px;padding:22px 20px;width:min(100%,420px);max-height:100%;overflow:auto;text-align:center;
-  box-shadow:0 10px 0 rgba(0,0,0,.18);display:flex;flex-direction:column;align-items:center;gap:12px}
-.panel h1{margin:0;font-size:clamp(2rem,9vw,2.7rem);line-height:1.05;color:var(--accent)}
-.panel p{margin:0;font-size:1.1rem;line-height:1.35}
-.panel canvas{width:130px;height:130px}
-.legend{display:flex;gap:14px;justify-content:center;font-size:1rem;flex-wrap:wrap}
-.legend div{background:#fdf2f8;border-radius:14px;padding:6px 10px}
-.legend b{display:block;font-size:1.5rem;letter-spacing:2px}
-.big-btn{border:0;border-radius:20px;background:var(--accent);color:#fff;font-weight:700;font-size:1.5rem;padding:14px 34px;min-height:60px;min-width:200px;box-shadow:0 6px 0 var(--accentDark)}
-.big-btn.alt{background:#fde7f3;color:var(--ink);box-shadow:0 6px 0 #f5bfdc;font-size:1.2rem;min-height:52px}
-.big-btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--accentDark)}
-.chips{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
-.chip{font-weight:700;background:#fff4cc;border-radius:999px;padding:6px 14px}
-.newbest{background:#22c55e;color:#fff;border-radius:999px;padding:4px 14px;font-weight:700}
-</style>
-
-<div id="stage"><canvas id="cv" aria-label="Catch game"></canvas></div>
-
-<div class="hud">
-  <button class="icon-btn" id="pauseBtn" aria-label="Pause">⏸️</button>
-  <div class="grow">
-    <div class="pill" id="livesEl" aria-label="Lives">❤️❤️❤️</div>
-    <div class="pill" id="scoreEl" aria-label="Score">⭐ 0</div>
-    <div class="pill" id="timeEl" aria-label="Time left">⏱ 60</div>
-  </div>
-  <button class="icon-btn mute" aria-label="Turn sound off">🔊</button>
-</div>
-
-<section class="screen" id="titleScreen">
-  <div class="panel">
-    <canvas id="portrait" width="260" height="260" aria-hidden="true"></canvas>
-    <h1 id="titleText">Fruit Catch</h1>
-    <p id="subtitleText">Help Bun fill the basket before time runs out!</p>
-    <div class="legend"><div>Catch<b id="goodLegend">🍎🍓🍌</b></div><div>Dodge<b id="badLegend">🪨🧦</b></div></div>
-    <div class="chip" id="bestTitle">🏆 Best: 0</div>
-    <button class="big-btn" id="playBtn">▶ Play</button>
-    <p style="font-size:.95rem">Drag to move · Keys: ← → or A D · P = pause</p>
-    <button class="icon-btn mute" aria-label="Turn sound off">🔊</button>
-  </div>
-</section>
-
-<section class="screen" id="pauseScreen" hidden>
-  <div class="panel">
-    <h1>Paused</h1>
-    <button class="big-btn" id="resumeBtn">▶ Keep going</button>
-    <button class="big-btn alt" id="restartBtn">↺ Start over</button>
-    <button class="icon-btn mute" aria-label="Turn sound off">🔊</button>
-  </div>
-</section>
-
-<section class="screen" id="resultScreen" hidden>
-  <div class="panel">
-    <h1 id="resultTitle">Basket full!</h1>
-    <p id="resultLine"></p>
-    <div class="chips"><div class="chip" id="resultScore">⭐ 0</div><div class="chip" id="bestResult">🏆 Best: 0</div></div>
-    <div class="newbest" id="newBest" hidden>New best score!</div>
-    <button class="big-btn" id="againBtn">↺ Play again</button>
-  </div>
-</section>
-
+<div id="game"></div>
+<!--KIT-->
+<!--PACK:dress-->
+<!--PACK:art-school-->
 <script>
-/* =====================================================================
-   CONFIG: change these to make the catch game your own!
-   ===================================================================== */
+// Catch the Falling Things, on the Oomba Kit: one Oomba.game call. The kit does the hero, the controls (keys, stick,
+// jump button), the catching (a pickup magnet), getting hurt, the HUD, pause, results and every screen. This file only
+// drops things from the sky and makes it a little faster as the minute goes by.
+'use strict';
 const CONFIG = {
   title: 'Fruit Catch',
-  subtitle: 'Help Bun fill the basket before time runs out!',
-  catcherName: 'Bun',
-  catcherColor: '#f9f5f2',     // fur colour of the bunny
-  basketColor: '#d4893f',
-  colors: { skyTop: '#ffc2dd', skyBottom: '#fff1d6', leaves: '#4caf50', leavesDark: '#2e7d32', grass: '#7bd36b', accent: '#ec4899', accentDark: '#be185d' },
-  goodItems: [ { emoji: '🍎', points: 10 }, { emoji: '🍓', points: 10 }, { emoji: '🍌', points: 10 }, { emoji: '🍇', points: 15 }, { emoji: '🍒', points: 20 } ],
-  badItems: ['🪨', '🧦', '🥾'],
-  powerUp: '🌟',               // makes the basket big for a while
-  extraLife: '💖',
+  hero: { species: 'bunny' },
+  biome: 'meadow',
+  good: ['apple', 'banana', 'grapes', 'melon', 'cupcake', 'carrot'],
+  bad: ['rock', 'spikeball'],
+  extraLife: 'heart',
+  powerUp: 'gem',
+  points: 10,
+  powerPoints: 30,
   lives: 3,
   roundSeconds: 60,
-  startFallSpeed: 170,         // pixels per second
-  endFallSpeed: 400,
-  startSpawnEvery: 0.95,       // seconds between drops at the start
-  endSpawnEvery: 0.38,
-  startBadChance: 0.18,        // chance a drop is something to dodge
-  endBadChance: 0.38,
-  comboStep: 5,                // every 5 catches in a row = +1 multiplier
-  saveKey: 'catch-best',
+  startFall: 3,
+  endFall: 7,
+  startEvery: 1,
+  endEvery: 0.45,
+  startBad: 0.18,
+  endBad: 0.38,
+  stars: [150, 300, 450],
 };
+// The words players read, in the site's languages (Oomba.t picks the player's; English when one is missing).
+const WORDS = {
+  en: { sub: 'Catch the yummy food before time runs out!', move: 'Run with the arrows or the stick. Jump with Space!', catch: 'Catch fruit and treats for points', dodge: 'Dodge the rocks!', big: 'Super catcher!' },
+  es: { sub: '¡Atrapa la comida rica antes de que se acabe el tiempo!', move: 'Corre con las flechas o el joystick. ¡Salta con Espacio!', catch: 'Atrapa frutas y golosinas para ganar puntos', dodge: '¡Esquiva las rocas!', big: '¡Súper atrapador!' },
+  fr: { sub: 'Attrape la bonne nourriture avant la fin du temps !', move: 'Cours avec les flèches ou le joystick. Saute avec Espace !', catch: 'Attrape fruits et friandises pour gagner des points', dodge: 'Évite les cailloux !', big: 'Super attrapeur !' },
+  de: { sub: 'Fang das leckere Essen, bevor die Zeit um ist!', move: 'Lauf mit den Pfeilen oder dem Stick. Spring mit der Leertaste!', catch: 'Fang Obst und Leckereien für Punkte', dodge: 'Weich den Steinen aus!', big: 'Super-Fänger!' },
+  it: { sub: 'Prendi il cibo buono prima che finisca il tempo!', move: 'Corri con le frecce o la levetta. Salta con Spazio!', catch: 'Prendi frutta e dolcetti per fare punti', dodge: 'Schiva i sassi!', big: 'Super acchiappa!' },
+  pt: { sub: 'Pegue a comida gostosa antes que o tempo acabe!', move: 'Corra com as setas ou o controle. Pule com Espaço!', catch: 'Pegue frutas e doces para ganhar pontos', dodge: 'Desvie das pedras!', big: 'Super pegador!' },
+  nl: { sub: 'Vang het lekkere eten voordat de tijd op is!', move: 'Ren met de pijltjes of de stick. Spring met de spatiebalk!', catch: 'Vang fruit en snoepjes voor punten', dodge: 'Ontwijk de stenen!', big: 'Supervanger!' },
+  ru: { sub: 'Лови вкусную еду, пока не кончилось время!', move: 'Беги стрелками или джойстиком. Прыгай пробелом!', catch: 'Лови фрукты и сладости, чтобы получить очки', dodge: 'Уворачивайся от камней!', big: 'Супер-ловец!' },
+  he: { sub: 'תפסו את האוכל הטעים לפני שהזמן נגמר!', move: 'רוצו עם החצים או הג׳ויסטיק. קפצו עם רווח!', catch: 'תפסו פירות וממתקים כדי לקבל נקודות', dodge: 'התחמקו מהאבנים!', big: 'תופס־על!' },
+  ar: { sub: 'التقط الطعام اللذيذ قبل أن ينتهي الوقت!', move: 'اركض بالأسهم أو بعصا التحكم. اقفز بالمسافة!', catch: 'التقط الفواكه والحلوى لتربح النقاط', dodge: 'تجنّب الصخور!', big: 'ملتقط خارق!' },
+  ja: { sub: 'じかんが なくなる まえに おいしい たべものを キャッチしよう！', move: 'やじるしか スティックで はしろう。スペースで ジャンプ！', catch: 'くだものや おやつを キャッチして ポイント', dodge: 'いしを よけよう！', big: 'スーパーキャッチ！' },
+  'zh-Hant': { sub: '在時間用完前接住好吃的食物！', move: '用方向鍵或搖桿跑，按空白鍵跳！', catch: '接住水果和點心得分', dodge: '躲開石頭！', big: '超級接手！' },
+};
+// The field: one character per cell (P = where the hero starts, # = ground).
+const FIELD = [
+  '                        ',
+  '                        ',
+  '                        ',
+  '                        ',
+  '                        ',
+  '                        ',
+  '                        ',
+  '                        ',
+  '           P            ',
+  '########################',
+  '########################',
+];
 
-/* ===== Shell helpers ===== */
-const $ = id => document.getElementById(id);
-const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
-const rand = (a, b) => a + Math.random() * (b - a);
-const pick = list => list[Math.floor(Math.random() * list.length)];
+const O = window.Oomba;
 const lerp = (a, b, k) => a + (b - a) * k;
-document.documentElement.style.setProperty('--accent', CONFIG.colors.accent);
-document.documentElement.style.setProperty('--accentDark', CONFIG.colors.accentDark);
-document.title = CONFIG.title;
-$('titleText').textContent = CONFIG.title;
-$('subtitleText').textContent = CONFIG.subtitle;
-$('goodLegend').textContent = CONFIG.goodItems.slice(0, 3).map(i => i.emoji).join('');
-$('badLegend').textContent = CONFIG.badItems.slice(0, 3).join('');
-function showScreen(id) { document.querySelectorAll('.screen').forEach(s => { s.hidden = s.id !== id; }); }
-function updateMute() {
-  document.querySelectorAll('.mute').forEach(b => { b.textContent = BRB.sfx.muted ? '🔇' : '🔊'; b.setAttribute('aria-label', BRB.sfx.muted ? 'Turn sound on' : 'Turn sound off'); });
+let clock = 0, wait = 0;
+
+function drop(w, k) {
+  const r = w.rand, c = w.cell, S = w.stage;
+  const x = r.range(Math.max(c, S.viewX(0.08)), Math.min(w.level.w - c, S.viewX(0.92))), y = S.viewY(0) - c;
+  const roll = r.float();
+  let e;
+  if (roll < lerp(CONFIG.startBad, CONFIG.endBad, k)) e = w.spawn(r.pick(CONFIG.bad), { x, y, size: 1.2, parts: ['hazard'], tag: 'drop' });
+  else if (roll > 0.975) e = w.spawn(CONFIG.extraLife, { x, y, size: 0.8, parts: [{ collectible: { heal: 1, value: 0, count: false } }], tag: 'drop' });
+  else if (roll > 0.95) { e = w.spawn(CONFIG.powerUp, { x, y, size: 0.8, parts: [{ collectible: { value: CONFIG.powerPoints } }, { glow: { amount: 0.6 } }], tag: 'drop' }); e.power = true; }
+  else e = w.spawn(r.pick(CONFIG.good), { x, y, size: 1.2, parts: [{ collectible: { value: CONFIG.points } }], tag: 'drop' });
+  e.fall = lerp(CONFIG.startFall, CONFIG.endFall, k) * c * r.range(0.85, 1.15);
 }
-document.querySelectorAll('.mute').forEach(b => {
-  b.addEventListener('pointerdown', e => e.stopPropagation());
-  b.addEventListener('click', () => { BRB.sfx.mute(); updateMute(); BRB.sfx.play('click'); });
+
+const game = O.game({
+  api: 1, title: CONFIG.title, subtitle: 'sub', biome: CONFIG.biome, hero: CONFIG.hero,
+  controls: 'platformer:snappy',
+  hud: ['score', 'lives:' + CONFIG.lives, 'timer:' + CONFIG.roundSeconds, 'combo'],
+  howTo: [{ icon: 'move', text: 'move' }, { icon: 'spark', text: 'catch' }, { icon: 'heart', text: 'dodge' }],
+  strings: WORDS,
+  level: O.level.grid(FIELD),
+  stars: w => CONFIG.stars.filter(s => w.points >= s).length,
+  setup() { clock = 0; wait = 0.8; },
+  update(w, dt) {
+    if (w.scene !== 'play' || w.busy) return;
+    clock += dt; wait -= dt;
+    const k = Math.min(1, clock / CONFIG.roundSeconds);
+    if (wait <= 0) { wait = lerp(CONFIG.startEvery, CONFIG.endEvery, k); drop(w, k); }
+    const floor = w.level.h - 2 * w.cell;
+    for (const e of w.all('drop')) { e.y += e.fall * dt; if (e.y > floor - e.size * 0.3) e.remove('puff'); }
+  },
+  on: {
+    hit(w, by) { if (by) by.remove('puff'); },
+    collect(w, item) {
+      if (!item.power) return;
+      O.ui.toast(O.t('big'));
+      w.hero.size *= 1.3; w.hero.pop();
+      w.after(6000, () => { w.hero.size /= 1.3; });
+    },
+    timeup(w) { w.win(); return false; },   // the round ends on time: results, with stars from the score
+  },
 });
-updateMute();
-let best = +BRB.storage.get(CONFIG.saveKey) || 0;
-$('bestTitle').textContent = '🏆 Best: ' + best;
-
-/* ===== Canvas: a 400 x 640 play field, scaled to fit, wider screens see more orchard ===== */
-const cv = $('cv'), ctx = cv.getContext('2d');
-let W = 400, H = 640, dpr = 1, scale = 1, fieldX = 0, fieldW = 400, floorY = 560;
-function resize() {
-  const r = $('stage').getBoundingClientRect();
-  dpr = Math.min(2, devicePixelRatio || 1); scale = Math.min(r.width / 400, r.height / 640);
-  cv.width = Math.round(r.width * dpr); cv.height = Math.round(r.height * dpr);
-  W = r.width / scale; H = r.height / scale;
-  fieldW = Math.min(W, 700); fieldX = (W - fieldW) / 2; floorY = H - 70;
-  catcher.y = floorY;
-}
-const catcher = { x: 200, y: 560, tx: 200, w: 96, big: 0, squash: 0, mood: 0, hurt: 0 };
-addEventListener('resize', resize); resize();
-
-/* ===== Game state ===== */
-let hudCache = '';
-let state = 'title', score, lives, timeLeft, combo, bestCombo, caught, items, parts, popups, spawnT, elapsed, keys = {};
-
-function reset() {
-  score = 0; lives = CONFIG.lives; timeLeft = CONFIG.roundSeconds; combo = 0; bestCombo = 0; caught = 0;
-  items = []; parts = []; popups = []; spawnT = 0.6; elapsed = 0;
-  catcher.x = catcher.tx = W / 2; catcher.big = 0; catcher.hurt = 0; catcher.mood = 0;
-  updateHud();
-}
-reset();
-function startGame() { reset(); state = 'play'; showScreen(null); BRB.sfx.play('powerup'); }
-
-/* ===== Input: drag anywhere, or arrow keys ===== */
-function pointerX(e) { const r = cv.getBoundingClientRect(); return (e.clientX - r.left) / scale; }
-let dragging = false;
-$('stage').addEventListener('pointerdown', e => { e.preventDefault(); dragging = true; catcher.tx = pointerX(e); });
-addEventListener('pointermove', e => { if (dragging || e.pointerType === 'mouse') catcher.tx = pointerX(e); });
-addEventListener('pointerup', () => { dragging = false; });
-addEventListener('keydown', e => {
-  const k = e.key.toLowerCase(); keys[k] = true;
-  if (['arrowleft', 'arrowright', ' '].includes(k)) e.preventDefault();
-  if ((k === 'enter' || k === ' ') && (state === 'title' || state === 'over') && !e.repeat) startGame();
-  else if (k === 'p' || k === 'escape') { if (state === 'play') pause(); else if (state === 'paused') resume(); }
-});
-addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
-function pause() { if (state !== 'play') return; state = 'paused'; showScreen('pauseScreen'); BRB.sfx.play('click'); }
-function resume() { state = 'play'; showScreen(null); BRB.sfx.play('click'); }
-document.addEventListener('visibilitychange', () => { if (document.hidden) pause(); });
-$('pauseBtn').addEventListener('pointerdown', e => e.stopPropagation());
-$('pauseBtn').addEventListener('click', pause);
-$('resumeBtn').addEventListener('click', resume);
-$('restartBtn').addEventListener('click', startGame);
-$('playBtn').addEventListener('click', startGame);
-$('againBtn').addEventListener('click', startGame);
-
-/* ===== Spawning ===== */
-function spawn(k) {
-  const r = Math.random();
-  let kind = 'good', emoji, points = 0;
-  if (r < lerp(CONFIG.startBadChance, CONFIG.endBadChance, k)) { kind = 'bad'; emoji = pick(CONFIG.badItems); }
-  else if (r > 0.97) { kind = 'power'; emoji = CONFIG.powerUp; points = 50; }
-  else if (r > 0.955 && lives < CONFIG.lives) { kind = 'life'; emoji = CONFIG.extraLife; }
-  else { const g = pick(CONFIG.goodItems); emoji = g.emoji; points = g.points; }
-  items.push({ kind, emoji, points, x: rand(fieldX + 30, fieldX + fieldW - 30), y: 60, vy: lerp(CONFIG.startFallSpeed, CONFIG.endFallSpeed, k) * rand(0.85, 1.15), rot: rand(-0.4, 0.4), spin: rand(-2, 2), wob: rand(0, 6) });
-}
-
-function burst(x, y, cols, n) {
-  if (REDUCED) n = Math.ceil(n / 3);
-  for (let i = 0; i < n; i++) { const a = rand(0, 6.28), s = rand(80, 280); parts.push({ x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s - 120, life: rand(0.4, 0.8), max: 0.8, r: rand(3, 6), col: pick(cols) }); }
-}
-function popup(x, y, text, col, size) { popups.push({ x, y, text, col, size: size || 26, life: 1 }); }
-
-/* ===== Update ===== */
-function update(dt) {
-  elapsed += dt; timeLeft -= dt;
-  const k = Math.min(1, elapsed / CONFIG.roundSeconds);
-  if (timeLeft <= 0) { timeLeft = 0; updateHud(); return finish(true); }
-  // move the catcher
-  if (keys.arrowleft || keys.a) catcher.tx -= 560 * dt;
-  if (keys.arrowright || keys.d) catcher.tx += 560 * dt;
-  const half = (catcher.big > 0 ? 1.45 : 1) * catcher.w / 2;
-  catcher.tx = Math.max(fieldX + half, Math.min(fieldX + fieldW - half, catcher.tx));
-  const before = catcher.x;
-  catcher.x += (catcher.tx - catcher.x) * Math.min(1, dt * 16);
-  catcher.lean = Math.max(-0.25, Math.min(0.25, (catcher.x - before) / (dt * 2400 || 1)));
-  catcher.big = Math.max(0, catcher.big - dt); catcher.hurt = Math.max(0, catcher.hurt - dt);
-  catcher.mood = Math.max(0, catcher.mood - dt); catcher.squash *= Math.pow(0.002, dt);
-  // spawn
-  spawnT -= dt;
-  if (spawnT <= 0) { spawn(k); spawnT = lerp(CONFIG.startSpawnEvery, CONFIG.endSpawnEvery, k) * rand(0.8, 1.2); }
-  // falling things
-  const mouthY = catcher.y - 46;
-  for (const it of items) {
-    it.y += it.vy * dt; it.rot += it.spin * dt; it.wob += dt * 3;
-    if (!it.done && it.y > mouthY - 10 && it.y < mouthY + 26 && Math.abs(it.x - catcher.x) < half + 6) { it.done = true; catchItem(it); }
-    else if (!it.done && it.y > floorY + 10) { it.done = true; missItem(it); }
-  }
-  items = items.filter(it => !it.done);
-  for (const p of parts) { p.life -= dt; p.x += p.vx * dt; p.y += p.vy * dt; p.vy += 600 * dt; }
-  parts = parts.filter(p => p.life > 0);
-  for (const p of popups) { p.life -= dt; p.y -= 40 * dt; }
-  popups = popups.filter(p => p.life > 0);
-  updateHud();
-}
-
-function catchItem(it) {
-  catcher.squash = 0.18;
-  if (it.kind === 'bad') {
-    lives--; combo = 0; catcher.hurt = 1;
-    BRB.sfx.play('hit'); burst(it.x, it.y, ['#9ca3af', '#6b7280', '#fff'], 14); popup(it.x, it.y - 20, 'Yuck!', '#7c3aed');
-    BRB.fx.shake($('stage'), 8);
-    if (lives <= 0) finish(false);
-    return;
-  }
-  if (it.kind === 'life') { lives = Math.min(CONFIG.lives, lives + 1); BRB.sfx.play('powerup'); popup(it.x, it.y - 20, '+1 ❤️', '#e11d48'); burst(it.x, it.y, ['#fb7185', '#fda4af'], 16); return; }
-  combo++; caught++; bestCombo = Math.max(bestCombo, combo);
-  const mult = 1 + Math.floor(combo / CONFIG.comboStep);
-  score += it.points * mult;
-  catcher.mood = 0.6;
-  if (it.kind === 'power') { catcher.big = 6; BRB.sfx.play('powerup'); popup(it.x, it.y - 30, 'BIG BASKET!', '#d97706', 30); burst(it.x, it.y, ['#ffd23f', '#fff'], 24); }
-  else { BRB.sfx.play('coin'); burst(it.x, it.y, ['#ffd23f', '#f472b6', '#fff'], 10); popup(it.x, it.y - 20, '+' + it.points * mult, '#be185d'); }
-  if (combo > 0 && combo % CONFIG.comboStep === 0) { popup(catcher.x, catcher.y - 130, 'Combo x' + mult + '!', '#7c3aed', 34); BRB.sfx.play('powerup'); }
-}
-function missItem(it) {
-  if (it.kind === 'good' || it.kind === 'power') { if (combo >= 3) popup(it.x, floorY - 20, 'Missed!', '#9a3412', 20); combo = 0; burst(it.x, floorY, ['#a3e635', '#fff'], 4); }
-}
-
-function finish(timeUp) {
-  if (state !== 'play') return;
-  state = 'over';
-  const won = timeUp && lives > 0;
-  const isBest = score > best;
-  if (isBest) { best = score; BRB.storage.set(CONFIG.saveKey, best); }
-  BRB.score.submit(score, caught + ' caught');
-  BRB.gameOver({ won, score });
-  BRB.sfx.play(won ? 'win' : 'lose');
-  if (won || isBest) BRB.fx.confetti();
-  setTimeout(() => {
-    $('resultTitle').textContent = won ? 'Basket full! 🧺' : 'Oh no, too much yuck!';
-    $('resultLine').textContent = CONFIG.catcherName + ' caught ' + caught + ' goodies. Best combo: ' + bestCombo + ' in a row.';
-    $('resultScore').textContent = '⭐ ' + score;
-    $('bestResult').textContent = '🏆 Best: ' + best;
-    $('bestTitle').textContent = '🏆 Best: ' + best;
-    $('newBest').hidden = !isBest;
-    showScreen('resultScreen'); $('againBtn').focus({ preventScroll: true });
-  }, 700);
-}
-
-function updateHud() {
-  const s = lives + '|' + score + '|' + Math.ceil(timeLeft);
-  if (s === hudCache) return; hudCache = s;
-  $('livesEl').textContent = '❤️'.repeat(Math.max(0, lives)) + '🤍'.repeat(Math.max(0, CONFIG.lives - lives));
-  $('scoreEl').textContent = '⭐ ' + score;
-  $('timeEl').textContent = '⏱ ' + Math.ceil(timeLeft);
-  $('timeEl').classList.toggle('low', timeLeft <= 10);
-}
-
-/* ===== Drawing ===== */
-function drawBackground(t) {
-  const g = ctx.createLinearGradient(0, 0, 0, H);
-  g.addColorStop(0, CONFIG.colors.skyTop); g.addColorStop(1, CONFIG.colors.skyBottom);
-  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
-  // distant hills
-  ctx.fillStyle = 'rgba(123,211,107,.45)'; ctx.beginPath(); ctx.moveTo(0, floorY);
-  for (let x = 0; x <= W + 10; x += 10) ctx.lineTo(x, floorY - 70 - Math.sin(x / 90 + 1) * 30 - Math.sin(x / 37) * 8);
-  ctx.lineTo(W, floorY); ctx.fill();
-  // tree trunks at the sides of the field
-  ctx.fillStyle = '#8d5a34';
-  [fieldX + 20, fieldX + fieldW - 20].forEach(x => { ctx.beginPath(); ctx.moveTo(x - 16, floorY + 4); ctx.lineTo(x - 9, 60); ctx.lineTo(x + 9, 60); ctx.lineTo(x + 16, floorY + 4); ctx.fill(); });
-  // grass floor
-  ctx.fillStyle = CONFIG.colors.grass; ctx.fillRect(0, floorY, W, H - floorY);
-  ctx.fillStyle = '#5cb85c';
-  for (let x = 0; x < W; x += 26) { ctx.beginPath(); ctx.moveTo(x, floorY + 2); ctx.lineTo(x + 7, floorY - 9); ctx.lineTo(x + 14, floorY + 2); ctx.fill(); }
-  ctx.fillStyle = 'rgba(255,255,255,.5)';
-  for (let x = 30; x < W; x += 110) { ctx.beginPath(); ctx.arc(x, floorY + 30, 4, 0, 7); ctx.arc(x + 50, floorY + 50, 3, 0, 7); ctx.fill(); }
-}
-function drawCanopy(t) {
-  // a leafy band across the top that the goodies fall out of
-  for (let layer = 0; layer < 2; layer++) {
-    ctx.fillStyle = layer ? CONFIG.colors.leaves : CONFIG.colors.leavesDark; ctx.beginPath(); ctx.moveTo(0, 0);
-    for (let x = -20; x <= W + 40; x += 38) {
-      const y = 46 + layer * 14 + Math.sin(x * 0.7 + layer) * 10 + Math.sin(t * 1.5 + x) * (REDUCED ? 0 : 2);
-      ctx.arc(x, y, 30 - layer * 4, 0, 7);
-    }
-    ctx.lineTo(W, 0); ctx.fill();
-  }
-  ctx.fillStyle = 'rgba(255,255,255,.18)';
-  for (let x = 10; x < W; x += 76) { ctx.beginPath(); ctx.ellipse(x, 40, 12, 6, -0.4, 0, 7); ctx.fill(); }
-}
-function drawItem(it) {
-  ctx.save(); ctx.translate(it.x + Math.sin(it.wob) * 3, it.y); ctx.rotate(it.rot);
-  if (it.kind === 'power' || it.kind === 'life') { ctx.fillStyle = 'rgba(255,255,255,.55)'; ctx.beginPath(); ctx.arc(0, 0, 28 + Math.sin(it.wob * 2) * 3, 0, 7); ctx.fill(); }
-  ctx.font = '42px "Noto Color Emoji","Apple Color Emoji","Segoe UI Emoji",sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.fillStyle = '#000'; ctx.fillText(it.emoji, 0, 2);   // opaque fill so colour emoji are not see-through
-  ctx.restore();
-  // little shadow on the grass so kids can judge where it lands
-  const k = Math.min(1, Math.max(0, it.y / floorY));
-  ctx.fillStyle = 'rgba(0,0,0,' + 0.15 * k + ')'; ctx.beginPath(); ctx.ellipse(it.x, floorY + 6, 18 * k, 5 * k, 0, 0, 7); ctx.fill();
-}
-// The catcher: a bunny peeking over a woven basket
-function drawCatcher(c, x, y, wide, lean, squash, happy, hurt, t) {
-  const bw = 96 * wide;
-  c.save(); c.translate(x, y); c.rotate(lean || 0); c.scale(1 + squash * 0.5, 1 - squash);
-  c.fillStyle = 'rgba(0,0,0,.18)'; c.beginPath(); c.ellipse(0, 6, bw * 0.55, 8, 0, 0, 7); c.fill();
-  // ears
-  const fur = CONFIG.catcherColor, wig = Math.sin(t * 4) * 0.08;
-  [[-16, -0.18 + wig], [16, 0.18 - wig]].forEach(([ex, rot]) => {
-    c.save(); c.translate(ex, -92); c.rotate(rot + (hurt > 0 ? (ex < 0 ? -0.5 : 0.5) : 0));
-    c.fillStyle = fur; c.beginPath(); c.ellipse(0, -30, 11, 32, 0, 0, 7); c.fill();
-    c.fillStyle = '#ffb3cf'; c.beginPath(); c.ellipse(0, -28, 5.5, 24, 0, 0, 7); c.fill(); c.restore();
-  });
-  // head
-  c.fillStyle = fur; c.beginPath(); c.ellipse(0, -72, 34, 30, 0, 0, 7); c.fill();
-  c.strokeStyle = 'rgba(0,0,0,.08)'; c.lineWidth = 3; c.stroke();
-  // face
-  if (hurt > 0) {
-    c.strokeStyle = '#3b2a35'; c.lineWidth = 3; c.lineCap = 'round';
-    [[-12, -76], [12, -76]].forEach(([ex, ey]) => { c.beginPath(); c.moveTo(ex - 5, ey - 4); c.lineTo(ex + 5, ey + 4); c.moveTo(ex + 5, ey - 4); c.lineTo(ex - 5, ey + 4); c.stroke(); });
-    c.beginPath(); c.moveTo(-8, -58); c.quadraticCurveTo(0, -64, 8, -58); c.stroke();
-  } else {
-    c.fillStyle = '#3b2a35';
-    if (happy > 0) { c.strokeStyle = '#3b2a35'; c.lineWidth = 3.5; c.lineCap = 'round'; [[-12], [12]].forEach(([ex]) => { c.beginPath(); c.arc(ex, -74, 6, Math.PI + 0.3, -0.3); c.stroke(); }); }
-    else { c.beginPath(); c.ellipse(-12, -76, 5, 6.5, 0, 0, 7); c.ellipse(12, -76, 5, 6.5, 0, 0, 7); c.fill(); c.fillStyle = '#fff'; c.beginPath(); c.arc(-10.5, -78, 1.8, 0, 7); c.arc(13.5, -78, 1.8, 0, 7); c.fill(); }
-    c.fillStyle = '#ff7aa8'; c.beginPath(); c.ellipse(0, -66, 4.5, 3.5, 0, 0, 7); c.fill();
-    c.strokeStyle = '#3b2a35'; c.lineWidth = 2.5; c.beginPath(); c.moveTo(0, -63); c.lineTo(0, -60); c.moveTo(-6, -58); c.quadraticCurveTo(0, happy > 0 ? -52 : -56, 6, -58); c.stroke();
-  }
-  c.fillStyle = 'rgba(255,120,160,.45)'; c.beginPath(); c.arc(-22, -64, 6, 0, 7); c.arc(22, -64, 6, 0, 7); c.fill();
-  // paws on the basket rim
-  c.fillStyle = fur; c.beginPath(); c.ellipse(-bw / 2 + 10, -44, 11, 9, 0, 0, 7); c.ellipse(bw / 2 - 10, -44, 11, 9, 0, 0, 7); c.fill();
-  // basket
-  const bc = CONFIG.basketColor;
-  c.fillStyle = bc; c.beginPath(); c.moveTo(-bw / 2, -42); c.lineTo(bw / 2, -42); c.lineTo(bw / 2 - 10, 2); c.quadraticCurveTo(0, 8, -bw / 2 + 10, 2); c.closePath(); c.fill();
-  c.save(); c.clip();
-  c.strokeStyle = 'rgba(0,0,0,.18)'; c.lineWidth = 3;
-  for (let yy = -32; yy < 8; yy += 10) { c.beginPath(); c.moveTo(-bw, yy); c.lineTo(bw, yy); c.stroke(); }
-  for (let xx = -bw / 2; xx < bw / 2; xx += 14) { c.beginPath(); c.moveTo(xx, -42); c.lineTo(xx + 4, 8); c.stroke(); }
-  c.restore();
-  c.fillStyle = '#a8642a'; c.beginPath(); c.roundRect ? c.roundRect(-bw / 2 - 4, -48, bw + 8, 10, 5) : c.rect(-bw / 2 - 4, -48, bw + 8, 10); c.fill();
-  c.restore();
-}
-
-function draw(t) {
-  ctx.setTransform(dpr * scale, 0, 0, dpr * scale, 0, 0);
-  drawBackground(t);
-  items.forEach(drawItem);
-  drawCatcher(ctx, catcher.x, catcher.y, catcher.big > 0 ? 1.45 : 1, catcher.lean, catcher.squash, catcher.mood, catcher.hurt, t);
-  drawCanopy(t);
-  for (const p of parts) { ctx.globalAlpha = Math.max(0, p.life / p.max); ctx.fillStyle = p.col; ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 7); ctx.fill(); }
-  ctx.globalAlpha = 1; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
-  for (const p of popups) {
-    ctx.globalAlpha = Math.min(1, p.life * 2); ctx.font = '700 ' + p.size + 'px Fredoka, Trebuchet MS, sans-serif';
-    ctx.lineWidth = 5; ctx.strokeStyle = '#fff'; ctx.strokeText(p.text, p.x, p.y); ctx.fillStyle = p.col; ctx.fillText(p.text, p.x, p.y);
-  }
-  ctx.globalAlpha = 1;
-  // combo meter
-  if (state === 'play' && combo >= 2) {
-    ctx.font = '700 22px Fredoka, Trebuchet MS, sans-serif'; ctx.lineWidth = 5; ctx.strokeStyle = '#fff'; ctx.fillStyle = '#7c3aed';
-    const txt = '🔥 ' + combo + ' in a row  x' + (1 + Math.floor(combo / CONFIG.comboStep));
-    ctx.strokeText(txt, W / 2, floorY + 44); ctx.fillText(txt, W / 2, floorY + 44);
-  }
-  if (catcher.big > 0 && state === 'play') {
-    ctx.fillStyle = 'rgba(255,255,255,.7)'; ctx.fillRect(catcher.x - 40, catcher.y + 14, 80, 8);
-    ctx.fillStyle = '#f59e0b'; ctx.fillRect(catcher.x - 40, catcher.y + 14, 80 * catcher.big / 6, 8);
-  }
-}
-function drawPortrait(t) {
-  const pc = $('portrait').getContext('2d');
-  pc.setTransform(1, 0, 0, 1, 0, 0); pc.clearRect(0, 0, 260, 260);
-  pc.fillStyle = '#fdf2f8'; pc.beginPath(); pc.arc(130, 130, 126, 0, 7); pc.fill();
-  pc.font = '40px "Noto Color Emoji","Apple Color Emoji",sans-serif'; pc.textAlign = 'center'; pc.textBaseline = 'middle'; pc.fillStyle = '#000';
-  pc.fillText(CONFIG.goodItems[0].emoji, 70, 50 + Math.sin(t * 3) * 6); pc.fillText(CONFIG.goodItems[1 % CONFIG.goodItems.length].emoji, 190, 60 + Math.sin(t * 3 + 2) * 6);
-  pc.setTransform(1.5, 0, 0, 1.5, 0, 0);
-  drawCatcher(pc, 87, 158, 1, Math.sin(t * 2) * 0.06, 0, 1, 0, t);
-}
-
-/* ===== Main loop ===== */
-let last = performance.now();
-function frame(now) {
-  const dt = Math.min(0.033, (now - last) / 1000); last = now;
-  if (state === 'play') update(dt);
-  else { for (const p of parts) { p.life -= dt; } parts = parts.filter(p => p.life > 0); }
-  draw(now / 1000);
-  if (!$('titleScreen').hidden) drawPortrait(now / 1000);
-  requestAnimationFrame(frame);
-}
-requestAnimationFrame(frame);
 </script>

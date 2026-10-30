@@ -35,8 +35,8 @@ test('docs/kit-api.md (what a model reads) names exactly what exists', () => {
   const at = p => p.split('.').reduce((o, k) => (o == null ? undefined : o[k]), O);
   for (const p of named) assert.notEqual(at(p), undefined, `docs/kit-api.md names Oomba.${p}, which does not exist`);
   for (const k of Object.keys(O)) assert.ok([...named].some(p => p === k || p.startsWith(k + '.')), `Oomba.${k} is public but not in docs/kit-api.md`);
-  for (const ns of ['time', 'input', 'ui', 'juice', 'art', 'save']) for (const k of Object.keys(O[ns])) assert.ok(named.has(ns + '.' + k) || [...named].some(p => p.startsWith(ns + '.' + k + '.')), `Oomba.${ns}.${k} is public but not in docs/kit-api.md`);
-  assert.doesNotMatch(doc, /Oomba\.game\(|Oomba\.level\b|w\.spawn|Oomba\.debug/, 'nothing unbuilt or internal in the reference');
+  for (const ns of ['time', 'input', 'ui', 'juice', 'art', 'save', 'level']) for (const k of Object.keys(O[ns])) assert.ok(named.has(ns + '.' + k) || [...named].some(p => p.startsWith(ns + '.' + k + '.')), `Oomba.${ns}.${k} is public but not in docs/kit-api.md`);
+  assert.doesNotMatch(doc, /Oomba\.debug|Oomba\.__pk|\bw\._/, 'nothing internal in the reference');
 });
 
 test('Oomba.debug exists only with ?okDebug=1, and is not enumerable', () => {

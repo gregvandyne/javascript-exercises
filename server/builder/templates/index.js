@@ -1,9 +1,14 @@
 // "Start from" game templates for the Studio. Each template is a finished mini-game following the
-// Game Contract (docs/sdk.md): one HTML document, no doctype/head (the platform wraps it), uses window.BRB.
-// The things a builder is most likely to change live in a `const CONFIG = { ... }` block near the top of each file.
+// Game Contract (docs/sdk.md): one HTML document, no doctype/head (the platform wraps it). They are built on the Oomba
+// Kit (docs/kit-api.md): the files hold <!--KIT--> and <!--PACK:name--> where the pinned tags go, and loadTemplate()
+// puts in exactly kitTag() and kitPackTag(name), so a game started from a template pins the kit version of that day.
+// The things a builder is most likely to change live in a `const CONFIG = { ... }` block near the top of each file,
+// one key per line (so a Builder edit is a one-line find/replace); the words players read are in a WORDS table
+// (Oomba.strings) in the 13 site languages.
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { kitTag, kitPackTag } from '../../services/kit.js';
 
 const DIR = path.dirname(fileURLToPath(import.meta.url));
 
@@ -32,6 +37,8 @@ const cache = new Map();
 /** Returns the template's HTML. Throws on an unknown key. */
 export function loadTemplate(key) {
   if (!TEMPLATES.some(t => t.key === key)) throw new Error(`Unknown template: ${key}`);
-  if (!cache.has(key)) cache.set(key, fs.readFileSync(path.join(DIR, `${key}.html`), 'utf8'));
+  if (!cache.has(key)) cache.set(key, withKitTags(fs.readFileSync(path.join(DIR, `${key}.html`), 'utf8')));
   return cache.get(key);
 }
+/** The template source with the kit's pinned tags in place of <!--KIT--> and <!--PACK:name-->. */
+export const withKitTags = src => String(src).replace('<!--KIT-->', () => kitTag()).replace(/<!--PACK:([a-z0-9-]+)-->/g, (m, n) => kitPackTag(n));

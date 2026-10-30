@@ -1,11 +1,13 @@
 // Build the Oomba Kit: kit/src/*.js (ES modules, imported directly by the unit tests) -> one classic-script IIFE at
-// public/vendor/oomba-kit/<version>/oomba-kit.js, plus the fonts, licences and manifest.json (sha384 of every file),
-// and the version's SRI in server/services/kit.js (KIT_VERSIONS).
+// public/vendor/oomba-kit/<version>/oomba-kit.js (the core), each art pack kit/packs/<name>.js -> packs/<name>.js (its
+// own classic script, loaded only by the games that use it), plus the fonts, licences and manifest.json (sha384 of
+// every file), and the SRIs in server/services/kit.js (KIT_VERSIONS, KIT_PACKS). Sizes are reported as brotli; the
+// caps (SIZE_CAPS) are enforced by tests/unit/kit-platform.test.js.
 //   node scripts/build-kit.js            refuses to touch an existing version folder (they are immutable)
 //   node scripts/build-kit.js --replace  rebuild the current version in place (refused once it is in kit/SHIPPED.json)
 // Bundling: each module becomes a function scope returning its exports (names read by importing the module in Node),
-// in dependency order. Minifying: esbuild when it is installed (a pinned devDependency, owner to confirm); otherwise
-// a careful comment/indent stripper here. Size is measured as brotli (what /vendor serves).
+// in dependency order. Minifying: esbuild (a pinned, build-only devDependency); without it (production installs skip
+// devDependencies) a careful comment/indent stripper here. Size is measured as brotli (what /vendor serves).
 import fs from 'node:fs';
 import path from 'node:path';
 import zlib from 'node:zlib';
@@ -14,6 +16,9 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SRC = path.join(ROOT, 'kit/src');
+const PACKS_DIR = path.join(ROOT, 'kit/packs');
+/** Brotli caps in bytes: the core (spec: 95 KB) and each pack. */
+export const SIZE_CAPS = { core: 95 * 1024, 'art-animals': 12 * 1024, 'art-school': 12 * 1024, 'art-biomes': 8 * 1024, dress: 10 * 1024, 'style-bold': 10 * 1024 };
 const IMPORT_RE = /^import\s*\{([^}]*)\}\s*from\s*'\.\/([\w-]+)\.js';\s*$/;
 
 export async function bundle() {
@@ -44,6 +49,20 @@ export async function bundle() {
   }
   return { code: `(function () {\n'use strict';\n${parts.join('\n')}\n})();\n`, modules: order };
 }
+
+/** A pack source (kit/packs/<name>.js: `export const PACK` + `export function define(K)`, no imports) -> its classic
+ *  script: it hands define() to the kit's registration hook with the kit version it was built for. */
+export function bundlePack(name, version) {
+  const src = fs.readFileSync(path.join(PACKS_DIR, name + '.js'), 'utf8');
+  if (/^\s*import\b/m.test(src)) throw new Error(`packs/${name}.js: packs take everything from define(K), never imports`);
+  const body = src.replace(/^export\s+(?=(const|function)\b)/gm, '');
+  if (/^\s*export\b/m.test(body)) throw new Error(`packs/${name}.js: unsupported export form`);
+  return `(function () {\n'use strict';\nvar O = window.Oomba;\nif (!O || !O.__pk) { if (window.console) window.console.error('[oomba] ${name}: load the Oomba Kit tag before this pack'); return; }\n${body}\nO.__pk({ name: PACK.name, version: '${version}' }, define);\n})();\n`;
+}
+/** The minifier leaves template literals alone, so the notes inside the kit's CSS strings (`/* a note *\/` followed by
+ *  a CSS rule, selector or the end of the string) would ship. Drop them: lowercase prose comments only. */
+export const cssComments = code => code.replace(/\/\* [a-z][^*`]*?\*\/(\n?)(?=[.@:\w`\n])/g, '');
+export const packNames = () => fs.readdirSync(PACKS_DIR).filter(f => f.endsWith('.js')).map(f => f.slice(0, -3)).sort();
 
 /** Strip comments and indentation without touching strings, template literals or regex literals. */
 export function strip(src) {
@@ -92,8 +111,28 @@ export async function minify(code) {
   try {
     const esbuild = await import('esbuild');
     const r = await esbuild.transform(code, { minify: true, target: 'es2019', legalComments: 'inline' });
-    return { code: r.code, tool: 'esbuild' };
-  } catch (e) { return { code: strip(code), tool: 'strip' }; }
+    return { code: minifyGlsl(r.code), tool: 'esbuild' };
+  } catch (e) { return { code: minifyGlsl(strip(code)), tool: 'strip' }; }
+}
+/** Shader sources (template literals holding GLSL, with no interpolation) lose their comments and spaces: GLSL needs a
+ *  newline only after a preprocessor line (#version, #define, precision stays on a line of its own too). */
+export function minifyGlsl(code) {
+  const one = src => {
+    const lines = src.replace(/\/\/[^\n]*/g, '').split('\n').map(l => l.trim()).filter(Boolean);
+    let out = '', buf = '';
+    const flush = () => { if (buf) out += buf.replace(/\s+/g, ' ').replace(/ ?([{}()\[\];,=+\-*\/<>!&|?:]) ?/g, '$1').trim(); buf = ''; };
+    for (const l of lines) { if (/^(#|precision )/.test(l)) { flush(); out += (out && !out.endsWith('\n') ? '\n' : '') + l + '\n'; } else buf += ' ' + l; }
+    flush();
+    return (src.startsWith('\n') ? '\n' : '') + out;
+  };
+  // the shader literals start with "#version", "uniform" or a newline then "uniform"; none holds ${...}
+  let out = '', i = 0;
+  for (;;) {
+    const m = /`(?=#version 300 es|\n?uniform )/g; m.lastIndex = i; const r = m.exec(code); if (!r) break;
+    const end = code.indexOf('`', r.index + 1), src = code.slice(r.index + 1, end);
+    out += code.slice(i, r.index + 1) + (src.includes('${') ? src : one(src)) + '`'; i = end + 1;
+  }
+  return out + code.slice(i);
 }
 export const sri = buf => 'sha384-' + crypto.createHash('sha384').update(buf).digest('base64');
 export const brotli = buf => zlib.brotliCompressSync(buf, { params: { [zlib.constants.BROTLI_PARAM_QUALITY]: 11 } }).length;
@@ -109,7 +148,7 @@ async function main() {
   const { code, modules } = await bundle();
   const banner = `/*! Oomba Kit ${VERSION} (api 1) | (c) Oomba Academy | fonts: Bricolage Grotesque, SIL OFL 1.1 */\n`;
   const min = await minify(code);
-  const out = Buffer.from(banner + min.code);
+  const out = Buffer.from(banner + cssComments(min.code));
   fs.mkdirSync(path.join(dir, 'fonts'), { recursive: true });
   fs.writeFileSync(path.join(dir, 'oomba-kit.js'), out);
   const F = path.join(ROOT, 'public/fonts');
@@ -117,18 +156,35 @@ async function main() {
   fs.copyFileSync(path.join(F, 'bricolage-grotesque-latin-ext-opsz-normal.woff2'), path.join(dir, 'fonts/bricolage-latin-ext.woff2'));
   fs.copyFileSync(path.join(F, 'bricolage-grotesque-OFL.txt'), path.join(dir, 'fonts/OFL.txt'));
   fs.writeFileSync(path.join(dir, 'LICENSE'), `Oomba Kit ${VERSION}\nCopyright (c) Oomba Academy. All rights reserved.\nGames on Oomba Academy may load this file from this path. It may not be copied elsewhere.\n\nfonts/: Bricolage Grotesque, licensed under the SIL Open Font License 1.1 (fonts/OFL.txt).\n`);
+  // the art packs
+  const rows = [['core', out]];
+  fs.rmSync(path.join(dir, 'packs'), { recursive: true, force: true });
+  fs.mkdirSync(path.join(dir, 'packs'), { recursive: true });
+  for (const name of packNames()) {
+    const p = await minify(bundlePack(name, VERSION));
+    const buf = Buffer.from(`/*! Oomba Kit ${VERSION} pack ${name} | (c) Oomba Academy */\n` + p.code);
+    fs.writeFileSync(path.join(dir, 'packs', name + '.js'), buf); rows.push([name, buf]);
+  }
   const files = {};
-  for (const f of ['oomba-kit.js', 'fonts/bricolage-latin.woff2', 'fonts/bricolage-latin-ext.woff2', 'fonts/OFL.txt', 'LICENSE']) files[f] = sri(fs.readFileSync(path.join(dir, f)));
-  fs.writeFileSync(path.join(dir, 'manifest.json'), JSON.stringify({ version: VERSION, api: 1, files }, null, 2) + '\n');
-  // KIT_VERSIONS in server/services/kit.js: add this version, or update it with --replace.
+  for (const f of ['oomba-kit.js', ...packNames().map(n => `packs/${n}.js`), 'fonts/bricolage-latin.woff2', 'fonts/bricolage-latin-ext.woff2', 'fonts/OFL.txt', 'LICENSE']) files[f] = sri(fs.readFileSync(path.join(dir, f)));
+  fs.writeFileSync(path.join(dir, 'manifest.json'), JSON.stringify({ version: VERSION, api: 1, files, packs: packNames() }, null, 2) + '\n');
+  // KIT_VERSIONS and KIT_PACKS in server/services/kit.js: add this version, or update it with --replace.
   const svc = path.join(ROOT, 'server/services/kit.js');
   if (fs.existsSync(svc)) {
     let s = fs.readFileSync(svc, 'utf8');
+    const v = VERSION.replace(/\./g, '\\.');
     const line = `  '${VERSION}': '${files['oomba-kit.js']}',`;
-    const re = new RegExp(`^  '${VERSION.replace(/\./g, '\\.')}': 'sha384-[^']+',$`, 'm');
+    const re = new RegExp(`^  '${v}': 'sha384-[^']+',$`, 'm');
     if (re.test(s)) s = s.replace(re, line); else s = s.replace(/(export const KIT_VERSIONS = Object\.freeze\(\{\n)/, `$1${line}\n`);
+    const pl = `  '${VERSION}': Object.freeze({ ${packNames().map(n => `'${n}': '${files['packs/' + n + '.js']}'`).join(', ')} }),`;
+    const pre = new RegExp(`^  '${v}': Object\\.freeze\\(\\{[^\\n]*\\}\\),$`, 'm');
+    if (pre.test(s)) s = s.replace(pre, pl); else s = s.replace(/(export const KIT_PACKS = Object\.freeze\(\{\n)/, `$1${pl}\n`);
     fs.writeFileSync(svc, s);
   }
-  console.log(`oomba-kit ${VERSION}: ${modules.length} modules, ${min.tool}; ${out.length} bytes, gzip ${gzip(out)}, brotli ${brotli(out)}; ${files['oomba-kit.js']}`);
+  console.log(`oomba-kit ${VERSION}: ${modules.length} modules, ${min.tool}`);
+  for (const [name, buf] of rows) {
+    const br = brotli(buf), cap = SIZE_CAPS[name];
+    console.log(`  ${name.padEnd(12)} ${String(buf.length).padStart(7)} B  gzip ${String(gzip(buf)).padStart(6)}  brotli ${String(br).padStart(6)} (${(br / 1024).toFixed(1)} KB${cap ? `, cap ${(cap / 1024).toFixed(0)} KB${br > cap ? ' OVER' : ''}` : ''})`);
+  }
 }
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) main().catch(e => { console.error(e); process.exit(1); });

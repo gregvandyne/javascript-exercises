@@ -121,7 +121,7 @@ export function makeLut(tod, size = 16) {
   for (let b = 0; b < size; b++) for (let g = 0; g < size; g++) for (let r = 0; r < size; r++) {
     const R = (r / (size - 1)) * 255, G = (g / (size - 1)) * 255, B = (b / (size - 1)) * 255;
     let [L, A, Bb] = rgbToOklab(R, G, B);
-    const d = [0.6 + (L - 0.6) * 1.04, A * 1.06 + 0.003, Bb * 1.06 + 0.007];
+    const d = [0.62 + (L - 0.6) * 1.04, A * 1.14 + 0.003, Bb * 1.14 + 0.006];   // day: +8% chroma over the base grade, midtones up 3%
     const n = [L * 0.98, A * 0.86 - 0.012 * (1 - L), Bb * 0.86 - 0.008 * (1 - L)];
     L = d[0] + (n[0] - d[0]) * tod; A = d[1] + (n[1] - d[1]) * tod; Bb = d[2] + (n[2] - d[2]) * tod;
     const c = oklabToRgb(L, A, Bb);

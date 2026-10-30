@@ -116,7 +116,7 @@ const RECIPES = {
     await wait(900);
   } },
   'sum-racer': { viewport: PORTRAIT, async prep(f) {
-    await hook(f); await f.evaluate(() => window.__brbTest.start({ track: 2, mode: 'choice', players: 1, seed: 5 }));
+    await hook(f); await f.evaluate(() => { const t = window.__brbTest; if (t.cover) t.cover(true); t.start({ track: 2, mode: 'choice', players: 1, seed: 5 }); });
     await f.evaluate(() => window.__brbTest.skipAnimations && window.__brbTest.skipAnimations());
     for (let i = 0; i < 4; i++) { await f.evaluate(() => { const t = window.__brbTest; t.answer(t.state().question.answer); t.step && t.step(900); }); }
     await wait(900);

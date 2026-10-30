@@ -1,374 +1,172 @@
-<title>Rocket Race Board Game</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap">
+<title>Rocket Race</title>
 <style>
-/* Layout: HUD with whose turn it is, the winding board (inline SVG built by script), then a message line,
-   the die and a big Roll button. Overlays for setup/title, pause and results. */
-:root{
-  --bg1:#fde68a; --bg2:#fb923c; --ink:#3f2a0b; --accent:#7c3aed; --accentDark:#5b21b6; --card:#fff;
-  --tile:#fffaf0; --tileEdge:#f3d9a4; --road:#f6c46a; --font:"Fredoka","Trebuchet MS",system-ui,sans-serif;
-}
-[hidden]{display:none!important}
-html,body{height:100%}
-body{margin:0;overflow:hidden;font-family:var(--font);color:var(--ink);background:radial-gradient(circle at 30% 10%,var(--bg1),var(--bg2));touch-action:manipulation;user-select:none;-webkit-user-select:none}
-.app{position:relative;height:100%;max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:8px;padding:10px max(12px,env(safe-area-inset-left)) 12px max(12px,env(safe-area-inset-right))}
-button{font-family:inherit;color:inherit;cursor:pointer}
-button:focus-visible{outline:4px solid #fff;outline-offset:2px}
-.hud{display:flex;align-items:center;gap:8px}
-.turn{flex:1;min-width:0;display:flex;justify-content:center}
-.turn div{background:#fff;border-radius:999px;padding:7px 14px;font-weight:700;font-size:1.1rem;box-shadow:0 3px 0 rgba(0,0,0,.15);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border:3px solid var(--who,#fff)}
-.icon-btn{width:46px;height:46px;flex:none;border:0;border-radius:50%;background:#fff;font-size:1.35rem;box-shadow:0 4px 0 rgba(0,0,0,.18);display:grid;place-items:center;padding:0}
-.icon-btn:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.18)}
-.board{flex:1;min-height:0;display:grid;place-items:center}
-.board svg{width:100%;height:100%;display:block;overflow:visible}
-.msg{text-align:center;font-weight:700;font-size:1.15rem;min-height:1.5em;margin:0;text-shadow:0 1px 0 rgba(255,255,255,.6)}
-.controls{display:flex;align-items:center;justify-content:center;gap:14px}
-.die{width:74px;height:74px;flex:none;border-radius:18px;background:#fff;box-shadow:0 6px 0 rgba(0,0,0,.2),inset 0 -4px 0 #e5e7eb;display:grid;grid-template:repeat(3,1fr)/repeat(3,1fr);padding:10px;gap:2px}
-.die i{border-radius:50%;background:transparent;margin:3px}
-.die i.on{background:#3f2a0b}
-.roll{border:0;border-radius:22px;background:var(--accent);color:#fff;font-weight:700;font-size:1.6rem;padding:12px 30px;min-height:68px;min-width:170px;box-shadow:0 6px 0 var(--accentDark)}
-.roll:active:not(:disabled){transform:translateY(4px);box-shadow:0 2px 0 var(--accentDark)}
-.roll:disabled{opacity:.5;cursor:default}
-.screen{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;padding:14px;background:rgba(63,42,11,.35)}
-.panel{background:var(--card);border-radius:28px;padding:20px 18px;width:min(100%,430px);max-height:100%;overflow:auto;text-align:center;
-  box-shadow:0 10px 0 rgba(0,0,0,.18);display:flex;flex-direction:column;align-items:center;gap:12px}
-.panel h1{margin:0;font-size:clamp(1.9rem,8.5vw,2.5rem);line-height:1.05;color:var(--accent)}
-.panel p{margin:0;font-size:1.05rem;line-height:1.35}
-.count{display:flex;gap:8px}
-.count button,.seat button{border:3px solid #e9d5ff;background:#faf5ff;border-radius:16px;min-height:48px;min-width:56px;font-weight:700;font-size:1.1rem;padding:6px 12px}
-.count button[aria-pressed="true"]{background:var(--accent);border-color:var(--accentDark);color:#fff}
-.seats{display:flex;flex-direction:column;gap:8px;width:100%}
-.seat{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#fffbeb;border-radius:16px;padding:6px 8px 6px 12px;font-weight:700;font-size:1.1rem}
-.seat span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.big-btn{border:0;border-radius:20px;background:var(--accent);color:#fff;font-weight:700;font-size:1.5rem;padding:14px 34px;min-height:60px;min-width:200px;box-shadow:0 6px 0 var(--accentDark)}
-.big-btn.alt{background:#f3e8ff;color:var(--ink);box-shadow:0 6px 0 #d8b4fe;font-size:1.2rem;min-height:52px}
-.big-btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--accentDark)}
-.chips{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
-.chip{font-weight:700;background:#fff4cc;border-radius:999px;padding:6px 14px}
-.newbest{background:#22c55e;color:#fff;border-radius:999px;padding:4px 14px;font-weight:700}
-.podium{font-size:4rem;line-height:1}
-@media (orientation:landscape) and (max-height:500px){.app{flex-direction:row;flex-wrap:wrap}.hud{width:100%}.board{flex:1 1 60%}.side{display:flex;flex-direction:column;justify-content:center;gap:10px;width:190px}.controls{flex-direction:column;gap:12px}.roll{min-width:160px}}
-@media (prefers-reduced-motion:reduce){.panel *{animation:none!important}}
+/* The roll button and the "whose turn" pill: kit buttons and pills in the kit's UI layer. */
+.ok-ui .bd-roll{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom));min-width:200px;z-index:1}
+.bd-turn{position:fixed;left:50%;transform:translateX(-50%);top:calc(70px + env(safe-area-inset-top));display:flex;align-items:center;gap:8px;padding:4px 18px 4px 6px;
+  background:var(--ok-card);color:var(--ok-text);border:3px solid var(--ok-edge);box-shadow:0 4px 0 var(--ok-edge);border-radius:999px;font-weight:800;white-space:nowrap;z-index:1}
 </style>
-
-<div class="app">
-  <div class="hud">
-    <button class="icon-btn" id="pauseBtn" aria-label="Pause">⏸️</button>
-    <div class="turn"><div id="turnEl">🦊 Fox’s turn</div></div>
-    <button class="icon-btn mute" aria-label="Turn sound off">🔊</button>
-  </div>
-  <div class="board" id="board"></div>
-  <div class="side">
-    <p class="msg" id="msgEl" aria-live="polite">Roll the die!</p>
-    <div class="controls">
-      <div class="die" id="die" aria-label="Die"></div>
-      <button class="roll" id="rollBtn">🎲 Roll</button>
-    </div>
-  </div>
-</div>
-
-<section class="screen" id="titleScreen">
-  <div class="panel">
-    <h1 id="titleText">Rocket Race</h1>
-    <p id="subtitleText">Roll the die and race to the trophy! Rockets zoom you ahead, slides send you back.</p>
-    <div class="count" role="group" aria-label="How many players"><button data-n="2" aria-pressed="true">2</button><button data-n="3" aria-pressed="false">3</button><button data-n="4" aria-pressed="false">4</button></div>
-    <div class="seats" id="seats"></div>
-    <div class="chip" id="bestTitle">🏆 Best: none yet</div>
-    <button class="big-btn" id="playBtn">▶ Play</button>
-    <button class="icon-btn mute" aria-label="Turn sound off">🔊</button>
-  </div>
-</section>
-
-<section class="screen" id="pauseScreen" hidden>
-  <div class="panel">
-    <h1>Paused</h1>
-    <button class="big-btn" id="resumeBtn">▶ Keep going</button>
-    <button class="big-btn alt" id="restartBtn">↺ New game</button>
-    <button class="icon-btn mute" aria-label="Turn sound off">🔊</button>
-  </div>
-</section>
-
-<section class="screen" id="resultScreen" hidden>
-  <div class="panel">
-    <div class="podium" id="podium">🦊</div>
-    <h1 id="resultTitle">Fox wins!</h1>
-    <p id="resultLine"></p>
-    <div class="chips"><div class="chip" id="resultScore">⭐ 0</div><div class="chip" id="bestResult">🏆 Best: 0</div></div>
-    <div class="newbest" id="newBest" hidden>New best!</div>
-    <button class="big-btn" id="againBtn">↺ Play again</button>
-  </div>
-</section>
-
+<div id="game"></div>
+<!--KIT-->
+<!--PACK:dress-->
+<!--PACK:art-school-->
 <script>
-/* =====================================================================
-   CONFIG: change these to make the board game your own!
-   Squares are numbered 0 (start) to squares - 1 (finish).
-   ===================================================================== */
+// Race Board Game, on the Oomba Kit: one Oomba.game call (controls: 'none'). Roll the die and race along a winding
+// path of numbered tiles: rockets zoom you ahead, banana peels slide you back, stars give another roll. Play a friend
+// on one screen or the robot. The kit does the screens, pause, results, sound and juice.
+'use strict';
 const CONFIG = {
   title: 'Rocket Race',
-  subtitle: 'Roll the die and race to the trophy! Rockets zoom you ahead, slides send you back.',
+  p1: { name: 'Fox', species: 'fox' },
+  p2: { name: 'Frog', species: 'frog' },
+  robot: { name: 'Robo', species: 'oomba', colors: { base: 'stone' }, wear: ['headphones'] },
+  biome: 'meadow',
   squares: 30,
-  finishEmoji: '🏆',
-  tokens: [
-    { name: 'Fox', emoji: '🦊', color: '#f97316' },
-    { name: 'Panda', emoji: '🐼', color: '#64748b' },
-    { name: 'Frog', emoji: '🐸', color: '#22c55e' },
-    { name: 'Unicorn', emoji: '🦄', color: '#a855f7' },
-  ],
-  // Special squares. kind: 'boost' (jump ahead to "to"), 'slide' (slide back to "to"), 'again' (roll again)
-  specials: {
-    3: { kind: 'boost', to: 11, emoji: '🚀', text: 'Rocket boost!' },
-    7: { kind: 'again', emoji: '⭐', text: 'Lucky star! Roll again!' },
-    9: { kind: 'slide', to: 4, emoji: '🛝', text: 'Wheee! Slide down!' },
-    14: { kind: 'boost', to: 20, emoji: '🌈', text: 'Rainbow bridge!' },
-    17: { kind: 'slide', to: 12, emoji: '🌊', text: 'Splash! Washed back!' },
-    19: { kind: 'again', emoji: '⭐', text: 'Lucky star! Roll again!' },
-    23: { kind: 'boost', to: 27, emoji: '🎈', text: 'Balloon ride!' },
-    26: { kind: 'slide', to: 18, emoji: '🍌', text: 'Oops, banana peel!' },
-  },
-  colors: { bg1: '#fde68a', bg2: '#fb923c', accent: '#7c3aed', accentDark: '#5b21b6' },
-  botDelay: 0.8,     // seconds the robot "thinks" before rolling
-  saveKey: 'board-best',
+  perRow: 6,
+  botDelay: 0.8,
+  stepMs: 170,
 };
+// Special squares: boost (zoom ahead to "to"), slide (slide back to "to"), again (roll again). art: a kit prop.
+const SPECIALS = {
+  3: { kind: 'boost', to: 11, art: 'rocket' },
+  7: { kind: 'again', art: 'spark' },
+  9: { kind: 'slide', to: 4, art: 'banana' },
+  14: { kind: 'boost', to: 20, art: 'rocket' },
+  17: { kind: 'slide', to: 12, art: 'banana' },
+  19: { kind: 'again', art: 'spark' },
+  23: { kind: 'boost', to: 27, art: 'rocket' },
+  26: { kind: 'slide', to: 18, art: 'banana' },
+};
+const WORDS = {
+  en: { sub: 'Roll the die and race to the trophy! Rockets zoom you ahead, banana peels slide you back.', roll: 'Roll!', turn: '{name}’s turn', boost: 'Rocket boost!', slide: 'Wheee! Slide down!', again: 'Lucky star! Roll again!', who: 'Who is playing?', two: 'Two players', robot: 'Me vs the robot', how1: 'Tap Roll to throw the die', how2: 'Rockets zoom you ahead', how3: 'First to the trophy wins', wins: '{name} wins!' },
+  es: { sub: '¡Tira el dado y corre hasta el trofeo! Los cohetes te adelantan y las cáscaras de plátano te hacen resbalar.', roll: '¡Tirar!', turn: 'Turno de {name}', boost: '¡Impulso de cohete!', slide: '¡Uiii! ¡A resbalar!', again: '¡Estrella de la suerte! ¡Tira otra vez!', who: '¿Quién juega?', two: 'Dos jugadores', robot: 'Yo contra el robot', how1: 'Toca Tirar para lanzar el dado', how2: 'Los cohetes te adelantan', how3: 'Gana quien llegue primero al trofeo', wins: '¡Gana {name}!' },
+  fr: { sub: 'Lance le dé et file jusqu’au trophée ! Les fusées te font avancer, les peaux de banane te font glisser.', roll: 'Lancer !', turn: 'Au tour de {name}', boost: 'Coup de fusée !', slide: 'Wiii ! Ça glisse !', again: 'Étoile porte-bonheur ! Relance !', who: 'Qui joue ?', two: 'Deux joueurs', robot: 'Moi contre le robot', how1: 'Touche Lancer pour jeter le dé', how2: 'Les fusées te font avancer', how3: 'Le premier au trophée gagne', wins: '{name} gagne !' },
+  de: { sub: 'Würfle und renn zum Pokal! Raketen bringen dich nach vorn, Bananenschalen lassen dich zurückrutschen.', roll: 'Würfeln!', turn: '{name} ist dran', boost: 'Raketenschub!', slide: 'Huiii! Runterrutschen!', again: 'Glücksstern! Noch mal würfeln!', who: 'Wer spielt?', two: 'Zwei Spieler', robot: 'Ich gegen den Roboter', how1: 'Tippe auf Würfeln', how2: 'Raketen bringen dich nach vorn', how3: 'Wer zuerst beim Pokal ist, gewinnt', wins: '{name} gewinnt!' },
+  it: { sub: 'Tira il dado e corri fino al trofeo! I razzi ti spingono avanti, le bucce di banana ti fanno scivolare indietro.', roll: 'Tira!', turn: 'Tocca a {name}', boost: 'Spinta a razzo!', slide: 'Uiii! Si scivola!', again: 'Stella fortunata! Tira ancora!', who: 'Chi gioca?', two: 'Due giocatori', robot: 'Io contro il robot', how1: 'Tocca Tira per lanciare il dado', how2: 'I razzi ti spingono avanti', how3: 'Vince chi arriva primo al trofeo', wins: 'Vince {name}!' },
+  pt: { sub: 'Jogue o dado e corra até o troféu! Foguetes te levam para frente, cascas de banana te fazem escorregar.', roll: 'Jogar!', turn: 'Vez de {name}', boost: 'Impulso de foguete!', slide: 'Uhuuu! Escorregou!', again: 'Estrela da sorte! Jogue de novo!', who: 'Quem vai jogar?', two: 'Dois jogadores', robot: 'Eu contra o robô', how1: 'Toque em Jogar para lançar o dado', how2: 'Foguetes te levam para frente', how3: 'Quem chegar primeiro ao troféu vence', wins: '{name} venceu!' },
+  nl: { sub: 'Gooi de dobbelsteen en race naar de beker! Raketten schieten je vooruit, bananenschillen laten je terugglijden.', roll: 'Gooien!', turn: '{name} is aan de beurt', boost: 'Raketboost!', slide: 'Wiii! Glijden!', again: 'Geluksster! Gooi nog eens!', who: 'Wie speelt er?', two: 'Twee spelers', robot: 'Ik tegen de robot', how1: 'Tik op Gooien voor de dobbelsteen', how2: 'Raketten schieten je vooruit', how3: 'Wie eerst bij de beker is, wint', wins: '{name} wint!' },
+  ru: { sub: 'Бросай кубик и мчись к кубку! Ракеты несут вперёд, а банановые шкурки — назад.', roll: 'Бросить!', turn: 'Ходит {name}', boost: 'Ракетный рывок!', slide: 'Уиии! Скатываемся!', again: 'Счастливая звёздочка! Бросай ещё!', who: 'Кто играет?', two: 'Два игрока', robot: 'Я против робота', how1: 'Нажми «Бросить», чтобы кинуть кубик', how2: 'Ракеты несут вперёд', how3: 'Кто первым дойдёт до кубка — победил', wins: '{name} побеждает!' },
+  he: { sub: 'הטילו את הקובייה ודהרו אל הגביע! טילים מקפיצים קדימה, קליפות בננה מחליקות אחורה.', roll: 'הטל!', turn: 'התור של {name}', boost: 'זינוק טיל!', slide: 'ווּיי! מחליקים למטה!', again: 'כוכב מזל! הטילו שוב!', who: 'מי משחק?', two: 'שני שחקנים', robot: 'אני נגד הרובוט', how1: 'הקישו על ״הטל!״ כדי להטיל את הקובייה', how2: 'טילים מקפיצים קדימה', how3: 'מי שמגיע ראשון לגביע מנצח', wins: '{name} מנצח!' },
+  ar: { sub: 'ارمِ النرد وسابق نحو الكأس! الصواريخ تدفعك للأمام وقشور الموز تزلقك للخلف.', roll: 'ارمِ!', turn: 'دور {name}', boost: 'دفعة صاروخ!', slide: 'ويي! انزلاق للأسفل!', again: 'نجمة الحظ! ارمِ مرة أخرى!', who: 'من سيلعب؟', two: 'لاعبان', robot: 'أنا ضد الروبوت', how1: 'انقر «ارمِ!» لترمي النرد', how2: 'الصواريخ تدفعك للأمام', how3: 'أول من يصل إلى الكأس يفوز', wins: '{name} يفوز!' },
+  ja: { sub: 'サイコロを ふって トロフィーまで きょうそう！ロケットで すすみ、バナナの かわで すべって もどるよ。', roll: 'ふる！', turn: '{name}の ばん', boost: 'ロケットで ビューン！', slide: 'わーい！すべって もどる！', again: 'ラッキースター！もう いっかい！', who: 'だれが あそぶ？', two: '2にんで あそぶ', robot: 'ロボットと たいけつ', how1: '「ふる！」で サイコロを ふろう', how2: 'ロケットで まえに すすむよ', how3: 'さきに トロフィーに ついたら かち', wins: '{name}の かち！' },
+  'zh-Hant': { sub: '擲骰子，衝向獎盃！火箭讓你往前衝，香蕉皮讓你滑回去。', roll: '擲！', turn: '輪到{name}', boost: '火箭加速！', slide: '咻～滑下去！', again: '幸運星！再擲一次！', who: '誰要玩？', two: '兩個玩家', robot: '我對機器人', how1: '點「擲！」擲骰子', how2: '火箭讓你往前衝', how3: '先到獎盃的人贏', wins: '{name} 贏了！' },
+};
+const SET = [
+  '                              ',
+  '                              ',
+  '                              ',
+  '                              ',
+  '                              ',
+  '                              ',
+  '                              ',
+  '                              ',
+  '                              ',
+  '              P               ',
+  '##############################',
+  '##############################',
+  '##############################',
+  '##############################',
+  '##############################',
+];
 
-/* ===== Shell helpers ===== */
-const $ = id => document.getElementById(id);
-const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
-const wait = ms => new Promise(r => setTimeout(r, REDUCED ? Math.min(ms, 120) : ms));
-for (const k in CONFIG.colors) document.documentElement.style.setProperty('--' + k, CONFIG.colors[k]);
-document.title = CONFIG.title;
-$('titleText').textContent = CONFIG.title;
-$('subtitleText').textContent = CONFIG.subtitle;
-function showScreen(id) { document.querySelectorAll('.screen').forEach(s => { s.hidden = s.id !== id; }); }
-function updateMute() {
-  document.querySelectorAll('.mute').forEach(b => { b.textContent = BRB.sfx.muted ? '🔇' : '🔊'; b.setAttribute('aria-label', BRB.sfx.muted ? 'Turn sound on' : 'Turn sound off'); });
+const O = window.Oomba;
+let vsBot = false, ui = null, pos = [1, 1], turn = 0, rolling = false, die = null, world = null;
+const who = i => (i === 1 && vsBot ? CONFIG.robot : i ? CONFIG.p2 : CONFIG.p1);
+const token = (w, i) => (i ? w.find('p2') : w.hero);
+const rows = () => Math.ceil(CONFIG.squares / CONFIG.perRow);
+/** Square n (1..squares) -> its place: rows wind left to right, then back, from the bottom up. */
+function spot(w, n) {
+  const c = w.cell * 1.55, i = n - 1, r = Math.floor(i / CONFIG.perRow), k = i % CONFIG.perRow, col = r % 2 ? CONFIG.perRow - 1 - k : k;
+  return { x: w.level.w / 2 + (col - (CONFIG.perRow - 1) / 2) * c, y: ground(w) - 1.1 * w.cell - r * c };
 }
-document.querySelectorAll('.mute').forEach(b => b.addEventListener('click', () => { BRB.sfx.mute(); updateMute(); BRB.sfx.play('click'); }));
-updateMute();
-let best = +BRB.storage.get(CONFIG.saveKey) || 0;   // fewest turns a human needed to win (0 = none yet)
-function showBest() { $('bestTitle').textContent = '🏆 Best: ' + (best ? 'won in ' + best + ' turns' : 'none yet'); }
-showBest();
-
-/* ===== Setup: number of players, and who is a robot ===== */
-let count = 2, seats = [false, true, true, true];   // true = robot
-function renderSeats() {
-  $('seats').innerHTML = '';
-  for (let i = 0; i < count; i++) {
-    const t = CONFIG.tokens[i], row = document.createElement('div'); row.className = 'seat';
-    row.innerHTML = '<span>' + t.emoji + ' ' + t.name + '</span>';
-    const b = document.createElement('button');
-    b.textContent = seats[i] ? '🤖 Robot' : '🙂 Player';
-    b.setAttribute('aria-label', t.name + ' is played by ' + (seats[i] ? 'a robot' : 'a person') + '. Tap to change.');
-    b.addEventListener('click', () => { seats[i] = !seats[i]; if (seats.slice(0, count).every(Boolean)) seats[0] = false; BRB.sfx.play('click'); renderSeats(); });
-    row.appendChild(b); $('seats').appendChild(row);
+const ground = w => w.level.h - 5 * w.cell;
+/** The board fills the screen between the "whose turn" pill (top) and the Roll button (bottom). */
+function frame(w) {
+  const V = w.stage.view, C = w.cam, k = V.vh / innerHeight, top = 120 * k, bottom = 100 * k, c = w.cell * 1.55;
+  const x0 = w.level.w / 2 - (CONFIG.perRow * c) / 2 - w.cell, x1 = w.level.w - x0, y0 = spot(w, CONFIG.squares).y - 3.4 * w.cell, y1 = ground(w) + w.cell * 0.6;
+  const z = Math.min(V.vw / (x1 - x0), (V.vh - top - bottom) / (y1 - y0));
+  C.bounds(null); C.zoom = z; C.x = (x0 + x1) / 2; C.y = (y0 + y1) / 2 - ((top + V.vh - bottom) / 2 - V.vh / 2) / z;
+}
+function clear() { if (ui) { ui.roll.remove(); ui.turn.remove(); } ui = null; }
+function build(w) {
+  clear(); world = w; pos = [1, 1]; turn = 0; rolling = false;
+  for (let n = 1; n <= CONFIG.squares; n++) {
+    const s = SPECIALS[n], p = spot(w, n), hue = s ? { boost: 'mint', slide: 'coral', again: 'grape' }[s.kind] : n === CONFIG.squares ? 'peach' : 'sky';
+    w.spawn('tile', { x: p.x, y: p.y, size: 1.25, variant: O.num(n) + ':' + hue, z: 1 });
+    if (s) w.spawn(s.art, { x: p.x + w.cell * 0.5, y: p.y - w.cell * 0.5, size: 0.85, z: 2 });
   }
+  const end = spot(w, CONFIG.squares);
+  w.spawn('trophy', { x: end.x, y: end.y - w.cell * 1.2, size: 1.1, z: 2, parts: [{ bob: { amp: 5 } }, { glow: { amount: 0.5 } }] });
+  const p2 = w.spawn(Object.assign({}, who(1)), { x: 0, y: 0, tag: 'p2', size: 1, z: 4 });
+  w.hero.size = w.cell;
+  place(w, 0, 1); place(w, 1, 1); p2.look(w.hero);
+  die = w.spawn('dice', { x: w.level.w / 2, y: spot(w, CONFIG.squares).y - w.cell * 2.7, size: 1.3, variant: '6', z: 5 });
+  ui = { roll: O.ui.button(O.t('roll'), { kind: 'hot', big: true, icon: O.icon('play'), onPress: () => roll(w) }), turn: document.createElement('div') };
+  ui.roll.classList.add('bd-roll'); ui.turn.className = 'bd-turn';
+  O.ui.root().append(ui.roll, ui.turn);
+  showTurn(w);
 }
-document.querySelectorAll('.count button').forEach(b => b.addEventListener('click', () => {
-  count = +b.dataset.n; document.querySelectorAll('.count button').forEach(x => x.setAttribute('aria-pressed', x === b)); BRB.sfx.play('click'); renderSeats();
-}));
-renderSeats();
-
-/* ===== Board drawing (inline SVG) ===== */
-const NS = 'http://www.w3.org/2000/svg';
-let cols = 5, rows = 6, cells = [], tokenEls = [];
-function el(tag, attrs, parent) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
-// Square i -> centre point. Rows snake back and forth starting at the bottom-left.
-function cellPos(i) { const r = Math.floor(i / cols), c = r % 2 ? cols - 1 - (i % cols) : i % cols; return { x: c * 100 + 50, y: (rows - 1 - r) * 100 + 50 }; }
-function buildBoard() {
-  const box = $('board').getBoundingClientRect();
-  const wide = box.width / Math.max(1, box.height) > 1.3;
-  cols = wide ? 10 : 5; rows = Math.ceil(CONFIG.squares / cols);
-  const svg = el('svg', { viewBox: '-10 -10 ' + (cols * 100 + 20) + ' ' + (rows * 100 + 20), 'aria-label': 'Game board', role: 'img' });
-  cells = Array.from({ length: CONFIG.squares }, (_, i) => cellPos(i));
-  // the road
-  el('path', { d: 'M' + cells.map(p => p.x + ' ' + p.y).join(' L'), fill: 'none', stroke: 'var(--road)', 'stroke-width': 46, 'stroke-linejoin': 'round', 'stroke-linecap': 'round', opacity: 0.9 }, svg);
-  el('path', { d: 'M' + cells.map(p => p.x + ' ' + p.y).join(' L'), fill: 'none', stroke: '#fff', 'stroke-width': 4, 'stroke-dasharray': '10 12', opacity: 0.8 }, svg);
-  // tiles
-  const palette = ['#fffaf0', '#fef3c7', '#fce7f3', '#e0f2fe', '#dcfce7'];
-  cells.forEach((p, i) => {
-    const sp = CONFIG.specials[i], last = i === CONFIG.squares - 1;
-    const fill = i === 0 ? '#bbf7d0' : last ? '#fde047' : sp ? (sp.kind === 'slide' ? '#fecaca' : sp.kind === 'boost' ? '#c7d2fe' : '#fef08a') : palette[i % palette.length];
-    el('rect', { x: p.x - 44, y: p.y - 44, width: 88, height: 88, rx: 18, fill, stroke: 'rgba(0,0,0,.12)', 'stroke-width': 3 }, svg);
-    el('rect', { x: p.x - 44, y: p.y + 34, width: 88, height: 10, rx: 5, fill: 'rgba(0,0,0,.07)' }, svg);
-    const label = i === 0 ? 'GO' : last ? '' : String(i);
-    const n = el('text', { x: p.x - 34, y: p.y - 20, 'font-size': 22, 'font-weight': 700, fill: '#6b4f1d', 'font-family': 'Fredoka,Trebuchet MS,sans-serif' }, svg); n.textContent = label;
-    const icon = last ? CONFIG.finishEmoji : sp ? sp.emoji : '';
-    if (icon) { const t = el('text', { x: p.x + 6, y: p.y + 22, 'font-size': last ? 54 : 40, 'text-anchor': 'middle' }, svg); t.textContent = icon; }
-  });
-  // rocket arcs and slides
-  for (const k in CONFIG.specials) {
-    const sp = CONFIG.specials[k]; if (sp.to === undefined) continue;
-    const a = cells[k], b = cells[sp.to], mx = (a.x + b.x) / 2 + (a.y === b.y ? 0 : 60), my = (a.y + b.y) / 2 - (a.y === b.y ? 70 : 0);
-    const d = 'M' + a.x + ' ' + a.y + ' Q' + mx + ' ' + my + ' ' + b.x + ' ' + b.y;
-    if (sp.kind === 'boost') {
-      el('path', { d, fill: 'none', stroke: '#6366f1', 'stroke-width': 9, 'stroke-linecap': 'round', 'stroke-dasharray': '2 16', opacity: 0.6 }, svg);
-    } else {
-      el('path', { d, fill: 'none', stroke: '#f472b6', 'stroke-width': 16, 'stroke-linecap': 'round', opacity: 0.35 }, svg);
-      el('path', { d, fill: 'none', stroke: '#fff', 'stroke-width': 4, 'stroke-linecap': 'round', opacity: 0.6 }, svg);
-    }
-    el('circle', { cx: b.x, cy: b.y + 30, r: 7, fill: sp.kind === 'boost' ? '#6366f1' : '#ec4899', opacity: 0.8 }, svg);
+function place(w, i, n) { const p = spot(w, n), t = token(w, i); t.x = p.x + (i ? 0.32 : -0.32) * w.cell; t.y = p.y - w.cell * 0.45; }
+function showTurn(w) {
+  if (!ui) return;
+  ui.turn.innerHTML = ''; ui.turn.append(O.ui.portrait(token(w, turn).spec, { size: 40 }), O.t('turn', { name: who(turn).name }));
+  const bot = vsBot && turn === 1; ui.roll.disabled = bot;
+  token(w, turn).state('wave'); token(w, 1 - turn).state('idle');
+  if (bot) w.after(CONFIG.botDelay * 1000, () => roll(w));
+}
+async function hop(w, i, to) {
+  const t = token(w, i), dir = to > pos[i] ? 1 : -1;
+  while (pos[i] !== to && !w.ended) {
+    pos[i] += dir; const p = spot(w, pos[i]);
+    t.flip = p.x + (i ? 0.32 : -0.32) * w.cell < t.x; t.state('jump');
+    await O.tween(t, { x: p.x + (i ? 0.32 : -0.32) * w.cell, y: p.y - w.cell * 0.45 }, { ms: CONFIG.stepMs, ease: 'quadOut' });
+    t.squash(0.85, 120); O.sfx('step', { pitch: 1 + pos[i] * 0.01 });
   }
-  // tokens
-  tokenEls = players.map((pl, i) => {
-    const g = el('g', {}, svg);
-    el('ellipse', { cx: 0, cy: 22, rx: 22, ry: 6, fill: 'rgba(0,0,0,.2)' }, g);
-    el('circle', { cx: 0, cy: 0, r: 25, fill: pl.color, stroke: '#fff', 'stroke-width': 5 }, g);
-    const t = el('text', { x: 0, y: 11, 'font-size': 30, 'text-anchor': 'middle' }, g); t.textContent = pl.emoji;
-    return g;
-  });
-  $('board').innerHTML = ''; $('board').appendChild(svg);
-  players.forEach((pl, i) => placeToken(i, pl.pos, 0));
+  t.state('idle');
 }
-// little offsets so tokens on the same square do not hide each other
-const OFF = [[-16, -12], [16, -12], [-16, 14], [16, 14]];
-function tokenXY(i, pos, lift) { const p = cells[pos]; const many = players.filter(q => q.pos === pos).length > 1; return { x: p.x + (many ? OFF[i][0] : 0), y: p.y + (many ? OFF[i][1] : 0) - (lift || 0) }; }
-function placeToken(i, pos, lift, scale) {
-  const g = tokenEls[i]; if (!g) return;
-  const { x, y } = tokenXY(i, pos, lift);
-  g.setAttribute('transform', 'translate(' + x + ' ' + y + ') scale(' + (scale || (i === turn && playing ? 1.12 : 0.95)) + ')');
-  if (i === turn) g.parentNode.appendChild(g);   // current player on top
-}
-function placeAll() { players.forEach((p, i) => placeToken(i, p.pos, 0)); }
-let resizeT; addEventListener('resize', () => { clearTimeout(resizeT); resizeT = setTimeout(() => { if (players.length) buildBoard(); }, 150); });
-
-/* ===== Die ===== */
-const PIPS = { 1: [4], 2: [0, 8], 3: [0, 4, 8], 4: [0, 2, 6, 8], 5: [0, 2, 4, 6, 8], 6: [0, 2, 3, 5, 6, 8] };
-function showDie(n) { $('die').innerHTML = Array.from({ length: 9 }, (_, i) => '<i class="' + (PIPS[n].includes(i) ? 'on' : '') + '"></i>').join(''); $('die').setAttribute('aria-label', 'Die shows ' + n); }
-showDie(6);
-async function rollDie() {
-  const n = 1 + Math.floor(Math.random() * 6);
-  const steps = REDUCED ? 1 : 9;
-  for (let s = 0; s < steps; s++) {
-    showDie(1 + Math.floor(Math.random() * 6));
-    if (!REDUCED) $('die').animate([{ transform: 'rotate(' + (s * 40 - 20) + 'deg) scale(1.08)' }, { transform: 'rotate(' + (s * 40 + 20) + 'deg) scale(1)' }], { duration: 90 });
-    BRB.sfx.play('click'); await wait(90);
-  }
-  showDie(n);
-  if (!REDUCED) $('die').animate([{ transform: 'scale(1.3)' }, { transform: 'scale(1)' }], { duration: 250, easing: 'cubic-bezier(.3,1.6,.5,1)' });
-  return n;
-}
-
-/* ===== Game state and turns ===== */
-let players = [], turn = 0, playing = false, busy = false, paused = false, turns = 0, botTimer = null, gameId = 0;
-
-function startGame() {
-  players = Array.from({ length: count }, (_, i) => ({ ...CONFIG.tokens[i], pos: 0, bot: seats[i], turns: 0 }));
-  turn = 0; turns = 0; playing = true; busy = false; paused = false; gameId++; clearTimeout(botTimer);
-  showScreen(null); buildBoard(); BRB.sfx.play('powerup');
-  beginTurn();
-}
-
-function beginTurn() {
-  const pl = players[turn];
-  $('turnEl').textContent = pl.emoji + ' ' + pl.name + '’s turn' + (pl.bot ? ' 🤖' : '');
-  $('turnEl').style.setProperty('--who', pl.color);
-  $('msgEl').textContent = pl.bot ? pl.name + ' the robot is rolling…' : 'Tap Roll (or press Space)!';
-  $('rollBtn').disabled = pl.bot;
-  placeAll();
-  if (pl.bot) { clearTimeout(botTimer); botTimer = setTimeout(() => { if (!paused) takeTurn(); else beginTurnLater(); }, CONFIG.botDelay * 1000); }
-  else $('rollBtn').focus({ preventScroll: true });
-}
-function beginTurnLater() { botTimer = setTimeout(() => { if (playing && players[turn].bot && !busy) { if (paused) beginTurnLater(); else takeTurn(); } }, 400); }
-
-async function takeTurn() {
-  if (!playing || busy || paused) return;
-  busy = true; $('rollBtn').disabled = true;
-  const id = gameId, stale = () => id !== gameId;   // a new game started while we were animating
-  const pl = players[turn]; pl.turns++; if (!pl.bot) turns++;
-  const n = await rollDie();
-  if (stale()) return;
-  $('msgEl').textContent = pl.emoji + ' rolled a ' + n + '!';
-  // hop square by square
-  const goal = Math.min(CONFIG.squares - 1, pl.pos + n);
-  while (pl.pos < goal) {
-    pl.pos++;
-    BRB.sfx.play('jump');
-    await hop(turn, pl.pos);
-    if (stale()) return;
-  }
+async function roll(w) {
+  if (rolling || w.ended || w.scene !== 'play' || w !== world) return;
+  rolling = true; if (ui) ui.roll.disabled = true;
+  const n = w.rand.int(1, 6), i = turn;
+  for (let k = 0; k < 7; k++) { die.variant = String(w.rand.int(1, 6)); die.squash(1.1, 60); O.sfx('pop', { pitch: 0.8 + k * 0.05, volume: 0.4 }); await O.wait(70); }
+  die.variant = String(n); die.pop(); O.ui.announce(O.num(n));
+  await O.wait(250);
+  await hop(w, i, Math.min(CONFIG.squares, pos[i] + n));
+  if (i === 0) w.score(n * 10);
   let again = false;
-  const sp = CONFIG.specials[pl.pos];
-  if (sp && pl.pos !== CONFIG.squares - 1) {
-    $('msgEl').textContent = sp.emoji + ' ' + sp.text;
-    if (sp.kind === 'again') { again = true; BRB.sfx.play('coin'); await wait(500); }
+  const s = SPECIALS[pos[i]];
+  if (s && !w.ended) {
+    O.ui.toast(O.t(s.kind));
+    if (s.kind === 'again') { again = true; O.sfx('spark'); token(w, i).state('cheer'); }
     else {
-      BRB.sfx.play(sp.kind === 'boost' ? 'powerup' : 'hit');
-      if (sp.kind === 'slide') BRB.fx.shake($('board'), 5);
-      await wait(350);
-      await glide(turn, pl.pos, sp.to);
-      if (stale()) return;
-      pl.pos = sp.to; placeAll(); await wait(400);
+      O.sfx(s.kind === 'boost' ? 'levelup' : 'whoosh'); const p = spot(w, s.to); pos[i] = s.to;
+      w.stage.burst(s.kind === 'boost' ? 'sparkle' : 'dust', token(w, i).x, token(w, i).y, { n: 14 });
+      await O.tween(token(w, i), { x: p.x + (i ? 0.32 : -0.32) * w.cell, y: p.y - w.cell * 0.45 }, { ms: 520, ease: 'cubicInOut' });
     }
   }
-  if (stale()) return;
-  placeAll();
-  if (pl.pos >= CONFIG.squares - 1) return finish(turn);
-  busy = false;
-  if (!again) turn = (turn + 1) % players.length;
-  beginTurn();
-}
-function hop(i, pos) {
-  return new Promise(res => {
-    const from = tokenXY(i, pos - 1), to = cells[pos], t0 = performance.now(), dur = REDUCED ? 60 : 230;
-    (function step(t) {
-      const k = Math.min(1, (t - t0) / dur), lift = Math.sin(k * Math.PI) * 34;
-      tokenEls[i].setAttribute('transform', 'translate(' + (from.x + (to.x - from.x) * k) + ' ' + (from.y + (to.y - from.y) * k - lift) + ') scale(1.15)');
-      if (k < 1) requestAnimationFrame(step); else res();
-    })(t0);
-  });
-}
-function glide(i, a, b) {
-  const A = cells[a], B = cells[b];
-  return BRB.fx.tween(0, 1, REDUCED ? 100 : 750, k => {
-    const lift = Math.sin(k * Math.PI) * (b > a ? 80 : 20);
-    tokenEls[i].setAttribute('transform', 'translate(' + (A.x + (B.x - A.x) * k) + ' ' + (A.y + (B.y - A.y) * k - lift) + ') scale(' + (1.15 + Math.sin(k * Math.PI) * 0.25) + ') rotate(' + (b > a ? 0 : Math.sin(k * 12) * 15) + ')');
-  });
+  if (w.ended) return;
+  if (pos[i] >= CONFIG.squares) {
+    token(w, i).state('cheer'); await w.say(token(w, i), O.t('wins', { name: who(i).name })); clear();
+    if (vsBot && i === 1) w.lose({ say: O.t('wins', { name: who(1).name }) });
+    else w.win(Object.assign({ stars: pos[1 - i] < CONFIG.squares / 2 ? 3 : 2 }, vsBot ? {} : { title: O.t('wins', { name: who(i).name }), who: token(w, i), submit: false }));
+    return;
+  }
+  rolling = false;
+  if (!again) turn = 1 - turn;
+  showTurn(w);
 }
 
-function finish(w) {
-  playing = false; busy = false;
-  const pl = players[w];
-  const humans = players.filter(p => !p.bot).length;
-  const won = !pl.bot;                             // a person won
-  const score = won ? Math.max(10, 400 - pl.turns * 15) : 0;
-  const isBest = won && (!best || pl.turns < best);
-  if (isBest) { best = pl.turns; BRB.storage.set(CONFIG.saveKey, best); }
-  BRB.score.submit(score, won ? 'Won in ' + pl.turns + ' turns' : 'Race');
-  BRB.gameOver({ won: won || humans === 0, score });
-  BRB.sfx.play(won ? 'win' : 'lose');
-  if (won) BRB.fx.confetti();
-  $('msgEl').textContent = pl.emoji + ' reached the ' + CONFIG.finishEmoji + '!';
-  setTimeout(() => {
-    $('podium').textContent = pl.emoji;
-    $('resultTitle').textContent = pl.name + ' wins!';
-    $('resultLine').textContent = (pl.bot ? 'The robot got there first. Rematch?' : 'Hooray! ' + pl.name + ' raced to the finish in ' + pl.turns + ' turns.');
-    $('resultScore').textContent = '⭐ ' + score;
-    $('bestResult').textContent = '🏆 Best: ' + (best ? best + ' turns' : '–');
-    $('newBest').hidden = !isBest;
-    showBest();
-    showScreen('resultScreen'); $('againBtn').focus({ preventScroll: true });
-  }, 900);
-}
-
-/* ===== Pause ===== */
-function pause() { if (!playing || paused) return; paused = true; showScreen('pauseScreen'); BRB.sfx.play('click'); }
-function resume() { paused = false; showScreen(null); BRB.sfx.play('click'); if (players[turn].bot && !busy) beginTurn(); }
-document.addEventListener('visibilitychange', () => { if (document.hidden) pause(); });
-
-/* ===== Controls ===== */
-$('playBtn').addEventListener('click', startGame);
-$('againBtn').addEventListener('click', () => { showScreen('titleScreen'); BRB.sfx.play('click'); $('playBtn').focus({ preventScroll: true }); });
-$('pauseBtn').addEventListener('click', pause);
-$('resumeBtn').addEventListener('click', resume);
-$('restartBtn').addEventListener('click', () => { clearTimeout(botTimer); playing = false; paused = false; showScreen('titleScreen'); });
-$('rollBtn').addEventListener('click', () => { if (playing && !players[turn].bot) takeTurn(); });
-addEventListener('keydown', e => {
-  if (e.repeat) return;
-  const k = e.key.toLowerCase();
-  if (!$('titleScreen').hidden) { if (k === 'enter' && document.activeElement === document.body) { e.preventDefault(); startGame(); } return; }
-  if (!$('resultScreen').hidden) return;
-  if (!$('pauseScreen').hidden) { if (k === 'escape' || k === 'p') resume(); return; }
-  if (k === 'escape' || k === 'p') return pause();
-  if ((k === ' ' || k === 'enter') && playing && !players[turn].bot) { e.preventDefault(); takeTurn(); }
+const game = O.game({
+  api: 1, title: CONFIG.title, subtitle: 'sub', biome: CONFIG.biome,
+  controls: 'none', camera: 'fixed', hero: Object.assign({}, CONFIG.p1), countdown: 0,
+  hud: ['score'],
+  howTo: [{ icon: 'tap', text: 'how1' }, { icon: 'next', text: 'how2' }, { icon: 'trophy', text: 'how3' }],
+  strings: WORDS,
+  level: O.level.grid(SET),
+  async intro() {
+    vsBot = (await O.ui.dialog({ title: O.t('who'), buttons: [{ label: O.t('robot'), kind: 'quiet', value: 1, icon: 'gamepad' }, { label: O.t('two'), kind: 'hot', value: 2, icon: 'user' }] })) === 1;
+  },
+  setup: clear,
+  update: frame,
+  on: { start: build, results: clear, lose: clear },
 });
 </script>

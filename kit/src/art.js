@@ -37,6 +37,7 @@ export function defineCoreArt(atlas) {
     const p = new Path2D(); p.moveTo(30, 50); p.bezierCurveTo(6, 36, 4, 20, 12, 12); p.bezierCurveTo(20, 4, 28, 8, 30, 16); p.bezierCurveTo(32, 8, 40, 4, 48, 12); p.bezierCurveTo(56, 20, 54, 36, 30, 50); p.closePath();
     sticker(ctx, k, p, { fill: P.coral[2], shade: P.coral[3], shadeOff: 5, gloss: [18, 18, 5, 4, -0.6] });
   });
+  def('bubble', 16, 16, (ctx, k) => { const p = ellipsePath(8, 8, 6.5, 6.5); ctx.fillStyle = 'rgba(255,253,242,0.28)'; ctx.fill(p); ctx.strokeStyle = 'rgba(255,253,242,0.9)'; ctx.lineWidth = 1.4; ctx.stroke(p); ctx.fillStyle = '#FFFDF2'; ctx.beginPath(); ctx.ellipse(5.6, 5.4, 1.8, 1.2, -0.6, 0, Math.PI * 2); ctx.fill(); });
   def('star', 16, 16, (ctx, k) => { const p = sparkPath(8, 8, 7, 0.16); ctx.fillStyle = '#FFF7D6'; ctx.fill(p); glowMask(k, p); });
   def('sun', 100, 100, (ctx, k) => {
     const g = ctx.createRadialGradient(50, 50, 18, 50, 50, 50);
@@ -45,8 +46,9 @@ export function defineCoreArt(atlas) {
     const d = ellipsePath(50, 50, 22, 22); ctx.fillStyle = '#FFF3C4'; ctx.fill(d); glowMask(k, d);
   });
   def('moon', 80, 80, (ctx, k) => {
-    const g = ctx.createRadialGradient(40, 40, 14, 40, 40, 40);
-    g.addColorStop(0, 'rgba(220,240,255,0.35)'); g.addColorStop(1, 'rgba(220,240,255,0)');
+    // a glowing moon: a bright halo that falls off softly (it reads as light, not a sticker, on any night sky)
+    const g = ctx.createRadialGradient(40, 40, 15, 40, 40, 40);
+    g.addColorStop(0, 'rgba(255,250,225,0.8)'); g.addColorStop(0.35, 'rgba(235,245,255,0.32)'); g.addColorStop(1, 'rgba(220,240,255,0)');
     ctx.fillStyle = g; ctx.fillRect(0, 0, 80, 80);
     const m = new Path2D(); m.arc(40, 40, 17, 0, TAU);
     ctx.fillStyle = CREAM; ctx.fill(m);
@@ -57,8 +59,8 @@ export function defineCoreArt(atlas) {
     const p = new Path2D();
     p.moveTo(30, 58); p.arc(30, 44, 14, Math.PI / 2, Math.PI * 1.5); p.arc(58, 32, 22, Math.PI, Math.PI * 1.75); p.arc(96, 28, 24, Math.PI * 1.2, Math.PI * 1.95);
     p.arc(130, 42, 16, Math.PI * 1.5, Math.PI / 2); p.closePath();
-    // cream-white with a light warm shade: the stage tints each cloud by the sky behind it (blue by day, peach at sunset)
-    sticker(ctx, k, p, { fill: CREAM, shade: '#ECE8DF', shadeOff: 7, rim: false, line: 0.7, gloss: null });
+    // white with a clean sky-blue shade (never grey): the stage tints each cloud a little by the sky behind it
+    sticker(ctx, k, p, { fill: '#FFFFFF', shade: '#DCEEFD', shadeOff: 6, rim: false, line: 0.7, gloss: null });
   });
   def('lantern', 40, 120, (ctx, k) => {
     const post = rrectPath(17, 40, 6, 78, 3); sticker(ctx, k, post, { fill: P.cocoa[2], shade: P.cocoa[3], shadeOff: 3, rim: true });
@@ -67,6 +69,23 @@ export function defineCoreArt(atlas) {
     const glass = rrectPath(8, 18, 24, 26, 8); sticker(ctx, k, glass, { fill: '#FFE7A3', shade: P.spark[2], shadeOff: 3, gloss: [14, 25, 3, 5, -0.3] }); glowMask(k, glass);
     const core = ellipsePath(20, 32, 5.5, 7); ctx.fillStyle = '#FFF4D2'; ctx.fill(core);
     const cap = new Path2D(); cap.moveTo(5, 19); cap.quadraticCurveTo(20, 4, 35, 19); cap.closePath(); sticker(ctx, k, cap, { fill: P.cocoa[3], rim: false });
+  }, 0.5, 1);
+  // Water (level '~'): flat sky blues (gradients are allowed for water), ripples, and on the surface a wavy cream line.
+  def('water', 64, 64, (ctx, k) => {
+    const top = k.v === 'top', y0 = top ? 16 : -2, g = ctx.createLinearGradient(0, y0, 0, 66); g.addColorStop(0, top ? P.sky[1] : P.sky[2]); g.addColorStop(1, P.sky[2]);
+    ctx.fillStyle = g; ctx.fillRect(-1, y0, 66, 68 - y0);
+    ctx.strokeStyle = 'rgba(255,253,242,0.55)'; ctx.lineCap = 'round'; ctx.lineWidth = lines(k).inner;
+    for (const [x, y, w] of top ? [[10, 30, 16], [38, 44, 12], [20, 56, 10]] : [[14, 18, 10], [40, 40, 14]]) { ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + w, y); ctx.stroke(); }
+    if (top) { const p = new Path2D(); p.moveTo(-2, 16); for (let x = 0; x <= 66; x += 4) p.lineTo(x, 16 + Math.sin(x / 64 * Math.PI * 4) * 2.2); ctx.strokeStyle = 'rgba(255,253,242,0.9)'; ctx.lineWidth = lines(k).w * 1.6; ctx.stroke(p); ctx.strokeStyle = INK; ctx.lineWidth = lines(k).w * 0.7; ctx.stroke(p); }
+  });
+  // Checkpoint (level 'K'): a post with a pennant, cream until reached ('on': mint with a spark).
+  def('checkpoint', 50, 96, (ctx, k) => {
+    const on = k.v === 'on';
+    sticker(ctx, k, rrectPath(8, 82, 34, 12, 5), { fill: P.stone[1], shade: P.stone[2], shadeOff: 2 });
+    sticker(ctx, k, rrectPath(12, 14, 6, 72, 3), { fill: P.cocoa[2], shade: P.cocoa[3], shadeOff: 2 });
+    const f = new Path2D(); f.moveTo(18, 16); f.quadraticCurveTo(34, 18, 46, 28); f.quadraticCurveTo(34, 36, 18, 42); f.closePath();
+    sticker(ctx, k, f, { fill: on ? P.mint[2] : CREAM, shade: on ? P.mint[3] : P.stone[1], shadeOff: 3 });
+    const s = sparkPath(15, 10, on ? 9 : 6, 0.2); sticker(ctx, k, s, { fill: on ? P.spark[2] : P.stone[1], rim: false, line: 0.6, unlit: on }); if (on) glowMask(k, s);
   }, 0.5, 1);
   // The placeholder stage.add() shows for a name it does not know (with a warning naming the nearest real one).
   def('missing', 60, 60, (ctx, k) => {

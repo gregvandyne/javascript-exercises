@@ -12,7 +12,7 @@ import { computeFit } from './fit.js';
 import { defineCoreArt } from './art.js';
 import { defineChar, charSpec, charRig, CH, FACES } from './chars.js';
 import { defineProps } from './props.js';
-import { BIOMES, biomeBands, defineGround, autotile, groundVariant } from './biomes.js';
+import { BIOMES, RECIPES, biomeBands, defineGround, autotile, groundVariant } from './biomes.js';
 import { SPECIES } from './validate.js';
 import { textSprite } from './text.js';
 import { Entity, cachedSprite, ROLE_TEXT } from './entity.js';
@@ -29,7 +29,7 @@ export class Stage {
   constructor(kit, canvas = null, o = {}) {
     this.kit = kit; const doc = this.doc = kit.doc, win = this.win = kit.win;
     this.size = Array.isArray(o.size) ? o.size : [960, 540]; this.fitMode = o.fit === 'letterbox' ? 'letterbox' : 'expand';
-    this.biome = o.biome === 'none' ? 'none' : BIOMES[o.biome] ? o.biome : 'meadow'; this.seed = o.seed != null ? o.seed : 1;
+    this.biome = o.biome === 'none' ? 'none' : BIOMES[o.biome] ? o.biome : 'meadow'; this.seed = o.seed != null ? o.seed : 1; this.dress = o.dress == null ? 'auto' : o.dress;
     // backend + tier (spec §5.2): override -> probe -> software check
     const q = kit.query, set = kit.settings;
     this.backendOverride = o.backend && o.backend !== 'auto' ? o.backend : q.okBackend || 'auto';
@@ -45,7 +45,9 @@ export class Stage {
     for (const fn of kit.artPacks) fn(this.atlas);
     // DOM
     this.el = doc.createElement('div'); this.el.className = 'ok-stage';
-    const parent = o.parent || doc.body; parent.insertBefore(this.el, kit.ui.mount());
+    // the kit tag may run in <head> (before <body> exists): the stage then joins the page once the body is parsed
+    const put = () => { const parent = o.parent || doc.body, r = kit.ui.mount(); if (r.parentNode === parent) parent.insertBefore(this.el, r); else parent.appendChild(this.el); };
+    if (o.parent || doc.body) put(); else doc.addEventListener('DOMContentLoaded', put, { once: true });
     this.userCanvas = canvas;
     this.view = new View(); this.list = new DisplayList(); this.camera = new Camera();
     this.particles = new Particles(1024, mulberry32(this.seed * 31 + 7));
@@ -58,7 +60,9 @@ export class Stage {
     this.bands = null; this.bandKey = ''; this.bandIds = []; this.bandWant = ''; this.bandWantAt = 0; this.bandView = null;
     this.stars = []; const R = mulberry32(this.seed * 13 + 1);
     for (let i = 0; i < 40; i++) this.stars.push({ x: R(), y: R(), s: 7 + R() * 8, p: R() * 6.28, c: { name: '', v: '', b: -1, id: -1 } });
-    this.clouds = []; for (let i = 0; i < 5; i++) this.clouds.push({ x: R(), y: 0.07 + R() * 0.26, s: 60 + R() * 60, v: 6 + R() * 10, c: { name: '', v: '', b: -1, id: -1 } });
+    this.clouds = []; for (let i = 0; i < 7; i++) { const far = i < 3; this.clouds.push({ x: (i + R() * 0.7) / 7, y: (far ? 0.05 : 0.1) + R() * 0.2, s: (48 + R() * 46) * (far ? 0.62 : 1), v: (far ? 3 : 7) + R() * 8, far, c: { name: '', v: '', b: -1, id: -1 } }); }   // two depths: far ones smaller, slower, fainter
+    const R2 = mulberry32(this.seed * 17 + 3);   // a denser starfield for space biomes (biome stars: n)
+    for (let i = 0; i < 40; i++) this.stars.push({ x: R2(), y: R2(), s: 5 + R2() * 7, p: R2() * 6.28, c: { name: '', v: '', b: -1, id: -1 }, extra: true });
     this.bodyC = [{ name: '', v: '', b: -1, id: -1 }, { name: '', v: '', b: -1, id: -1 }];
     this.glowC = { name: '', v: '', b: -1, id: -1 }; this.fireflies = 0;
     this.backend = null; this.canvas = null; this.contextLost = 0;
@@ -184,6 +188,8 @@ export class Stage {
   }
   /** Switch the background biome (bands re-bake at the next frame). */
   setBiome(name) { this.biome = name === 'none' ? 'none' : BIOMES[name] ? name : 'meadow'; this.bandKey = ''; }
+  /** Scene dressing: 'auto' (props, foreground framing, ambient life), 'off' (sparse bands only) or a density (0.2-2). */
+  setDress(v) { this.dress = v == null ? 'auto' : v; this.bandKey = ''; }
   update(fn) { this.updaters.push(fn); return () => { this.updaters = this.updaters.filter(f => f !== fn); }; }
   draw(fn) { this.drawers.push(fn); return () => { this.drawers = this.drawers.filter(f => f !== fn); }; }
   /** light({x, y, follow, radius, color, intensity, night:true}) -> Light (only shines at dusk/night when night is true). */
@@ -264,6 +270,7 @@ export class Stage {
         if (e.shadow) ids.push(A.sprite('shadow', Math.abs(e.size * (def.w / def.h)) * 0.7 * 0.26 * k, ''));
       }
       for (const [name, size, v] of o.sprites || []) ids.push(A.sprite(name, size * k, v || ''));
+      for (const n of this.particles.spriteNames) ids.push(A.sprite(n, 24 * k, ''));   // every particle preset's sprite
     }
     for (const t of o.text || []) textSprite(this.atlas, String(t[0] != null && typeof t !== 'string' ? t[0] : t), { px: 30 * V.scale * this.camera.effZoom, color: ROLE_TEXT(typeof t === 'string' ? 'reward' : t[1] || 'reward'), dir: this.kit.i18n.dir, lang: this.kit.i18n.lang });
     for (let i = 0; A.queue.length && i < 4000; i++) A.pump(0, null);
@@ -329,12 +336,12 @@ export class Stage {
     const A = this.atlas, L = this.list, V = this.view, C = this.camera, F = this.F, now = this.kit.loop.now;
     A.pump(4, this.kit.clock);
     sky(this.tod, this.skyOut); this._tintSky();
-    F.tod = this.tod; F.time = now / 1000;
+    F.tod = this.tod; F.time = now / 1000; F.vignette = F.contrast ? 0 : 0.35 + 0.65 * Math.min(1, this.tod * 1.5);   // light by day (it reads as dirt on a bright sky), full at night
     const amb = this.skyOut.ambient; F.ambient[0] = amb[0]; F.ambient[1] = amb[1]; F.ambient[2] = amb[2];
     F.renderScale = this.gov.scale; F.bloom = this.gov.bloom && !F.contrast; F.maxLights = this.gov.lights; F.lightK = this.skyOut.lanterns;
     V.camX = C.x; V.camY = C.y; V.zoom = C.effZoom; V.shakeX = C.sx; V.shakeY = C.sy; V.shakeRot = C.srot;
     L.clear();
-    if (this.biome !== 'none') { this._emitSky(); this._emitBands(); }
+    if (this.biome !== 'none') { this._emitSky(); this._emitBands(); if (this.dress !== 'off' && !F.contrast) this._emitLife(); }
     this._emitEntities(alpha);
     this._emitParticles();
     this._emitFloaters();
@@ -348,7 +355,7 @@ export class Stage {
   _tintSky() {
     const B = BIOMES[this.biome], t = B && B.sky; if (!t) return;
     if (!this._tint || this._tintFor !== this.biome) { this._tint = [hexToOklab(t[0]), hexToOklab(t[1])]; this._tintFor = this.biome; }
-    const k = t[2] * (1 - Math.min(1, this.tod * 1.4)), S = this.skyOut;
+    const k = t[2] * (B.skyHold ? 1 : 1 - Math.min(1, this.tod * 1.4)), S = this.skyOut;   // skyHold: the tint stays at night (space, under the sea)
     for (let i = 0; i < 3; i++) { S.top[i] += (this._tint[0][i] - S.top[i]) * k; S.bottom[i] += (this._tint[1][i] - S.bottom[i]) * k; }
   }
   _probeHigh(now) {
@@ -363,28 +370,45 @@ export class Stage {
   _emitSky() {
     const L = this.list, A = this.atlas, V = this.view, S = this.skyOut, k = V.scale, t = this.t;
     if (this.F.contrast) return;
-    if (S.stars > 0.01) {
-      // stars stay in the sky band: above the farthest hills, thinning toward them
-      const top = this.bands && this.bands.length ? this.bands[0].top * (this.bandView ? V.vh / this.bandView.vh : 1) / V.vh : 0.45, maxY = Math.max(0.12, Math.min(0.34, top - 0.06));
+    // a biome may change the sky: stars by day too (stars: 0..1, filling more of the sky), rising bubbles instead of
+    // stars, no clouds, and a sprite in place of the sun and moon (sun: false | 'planet')
+    const B = BIOMES[this.biome] || {};
+    if (B.bubbles) {
       for (const s of this.stars) {
-        const id = cachedSprite(A, s.c, 'star', '', s.s * k), y = 0.025 + s.y * s.y * (maxY - 0.025);
-        const i = L.push(id, s.x * V.vw, y * V.vh, s.s, s.s, Z.sky, 0);
-        L.alpha[i] = S.stars * (0.5 + 0.35 * Math.sin(t * 0.9 + s.p * 3)) * (1 - 0.6 * s.y); L.lit[i] = 0; L.emis[i] = 1;
+        if (s.extra) continue;
+        const id = cachedSprite(A, s.c, 'bubble', '', s.s * 2.2 * k), y = 1 - ((s.y + t * 0.02 * (0.6 + s.p / 6)) % 1) * 0.9;
+        const i = L.push(id, (s.x + Math.sin(t * 0.8 + s.p) * 0.01) * V.vw, y * V.vh, s.s * 2.2, s.s * 2.2, Z.sky, 0); L.alpha[i] = 0.85; L.lit[i] = 1;
       }
     }
-    for (let b = 0; b < 2; b++) {
-      const o = b ? S.moon : S.sun, name = b ? 'moon' : 'sun', size = b ? 120 : 150; if (o.a <= 0.01) continue;
+    const starA = B.bubbles ? 0 : Math.max(S.stars, B.stars || 0);
+    if (starA > 0.01) {
+      // stars stay in the sky band: above the farthest hills, thinning toward them
+      const top = this.bands && this.bands.length ? this.bands[0].top * (this.bandView ? V.vh / this.bandView.vh : 1) / V.vh : 0.45, maxY = Math.max(0.12, Math.min(B.stars ? 0.46 : 0.34, top - 0.06));
+      for (const s of this.stars) {
+        if (s.extra && !B.stars) continue;
+        const id = cachedSprite(A, s.c, 'star', '', s.s * k), y = 0.025 + s.y * s.y * (maxY - 0.025);
+        const i = L.push(id, s.x * V.vw, y * V.vh, s.s, s.s, Z.sky, 0);
+        L.alpha[i] = starA * (0.5 + 0.35 * Math.sin(t * 0.9 + s.p * 3)) * (1 - 0.6 * s.y); L.lit[i] = 0; L.emis[i] = 1;
+      }
+    }
+    if (typeof B.sun === 'string') {   // a planet hangs in the sky all day and night
+      const id = cachedSprite(A, this.bodyC[0], B.sun, '', 190 * k), i = L.push(id, 0.72 * V.vw, 0.16 * V.vh, 228, 190, Z.sky, 0); L.alpha[i] = 1; L.lit[i] = 1;
+    }
+    for (let b = 0; b < 2 && B.sun == null; b++) {
+      const o = b ? S.moon : S.sun, name = b ? 'moon' : 'sun', size = b ? 250 : 150; if (o.a <= 0.01) continue;   // a big glowing moon sells a night scene
       const id = cachedSprite(A, this.bodyC[b], name, '', size * k);
-      const i = L.push(id, o.x * V.vw, o.y * V.vh, size, size, Z.sky, 0); L.alpha[i] = o.a; L.lit[i] = 0; L.emis[i] = 1;
+      // on a tall phone the moon hangs at the top end corner, clear of the title and the HUD's first pills
+      const port = b && V.vh > V.vw * 1.1, mx = port ? 0.84 : o.x, my = port ? Math.max(0.15, Math.min(o.y, 0.3)) : o.y;
+      const i = L.push(id, mx * V.vw, my * V.vh, size, size, Z.sky, 0); L.alpha[i] = o.a; L.lit[i] = 0; L.emis[i] = 1;
     }
     const span = V.vw + 400;
-    for (const c of this.clouds) {
+    for (const c of (B.clouds === false ? [] : this.clouds)) {
       const id = cachedSprite(A, c.c, 'cloud', '', c.s * k);
       let x = (c.x * span + t * c.v - V.camX * 0.05) % span; if (x < 0) x += span;
-      const i = L.push(id, x - 200, c.y * V.vh, c.s * 160 / 70, c.s, Z.sky, 0); L.lit[i] = 1; L.alpha[i] = 0.96;
-      // tinted by the sky behind it: a fifth of the way from white to the sky colour (blue by day, warm at sunset)
+      const i = L.push(id, x - 200, c.y * V.vh, c.s * 160 / 70, c.s, Z.sky, 0); L.lit[i] = 1; L.alpha[i] = c.far ? 0.85 : 0.98;
+      // tinted by the sky behind it: a little of the way from white to the sky colour (blue by day, warm at sunset)
       const tt = Math.pow(Math.min(1, c.y + 0.12), 1.15), rgb = oklabToRgb(S.top[0] + (S.bottom[0] - S.top[0]) * tt, S.top[1] + (S.bottom[1] - S.top[1]) * tt, S.top[2] + (S.bottom[2] - S.top[2]) * tt);
-      L.tr[i] = 1 - (1 - Math.min(255, rgb[0]) / 255) * 0.2; L.tg[i] = 1 - (1 - Math.min(255, rgb[1]) / 255) * 0.2; L.tb[i] = 1 - (1 - Math.min(255, rgb[2]) / 255) * 0.2;
+      const q = 0.08 + 0.3 * Math.min(1, this.tod * 2); L.tr[i] = 1 - (1 - Math.min(255, rgb[0]) / 255) * q; L.tg[i] = 1 - (1 - Math.min(255, rgb[1]) / 255) * q; L.tb[i] = 1 - (1 - Math.min(255, rgb[2]) / 255) * q;
     }
   }
   /** Parallax bands: one dedicated atlas page per band slot, re-baked in place when the biome, the tier's band count or
@@ -393,13 +417,13 @@ export class Stage {
   _emitBands() {
     const V = this.view, L = this.list, A = this.atlas, now = this.kit.loop.now;
     const count = TIER_SPEC[this.gov.tier].bands;
-    const shape = this.biome + '#' + count, size = Math.round(V.vw) + 'x' + Math.round(V.vh) + '@' + Math.round(V.scale * 10);
+    const shape = this.biome + '#' + count + '#' + this.dress, size = Math.round(V.vw) + 'x' + Math.round(V.vh) + '@' + Math.round(V.scale * 10);
     const want = shape + '|' + size;
     if (want !== this.bandWant) { this.bandWant = want; this.bandWantAt = now; }
     const shapeChanged = !this.bands || !this.bandKey.startsWith(shape + '|');
     if (want !== this.bandKey && (shapeChanged || now - this.bandWantAt >= 150)) {
       this.bandKey = want;
-      this.bands = biomeBands(this.doc, { biome: this.biome, vw: V.vw, vh: V.vh, pxk: V.scale, seed: this.seed, count });
+      this.bands = biomeBands(this.doc, { biome: this.biome, vw: V.vw, vh: V.vh, pxk: V.scale, seed: this.seed, count, dress: this.dress });
       this.bandView = { vw: V.vw, vh: V.vh };
       const ids = [];
       this.bands.forEach((b, i) => {
@@ -419,6 +443,45 @@ export class Stage {
       const layer = bi < this.bands.length - 2 ? Z.far : bi === this.bands.length - 2 ? Z.mid : Z.near;
       for (let x = x0; x < V.vw; x += W) {
         const i = L.push(id, x, b.top * sy, W + 0.5, b.h * sy, layer, 0); L.ax[i] = 0; L.ay[i] = 0; L.lit[i] = layer === Z.near ? 0.4 : 0.15;   // far scenery: night ambient, little lantern light
+      }
+    }
+  }
+  /** Ambient life and foreground framing (auto-dressing): birds / gulls in flocks, butterflies, drifting leaves, snow,
+   *  fish under the sea; big leaves framing the bottom corners. Analytic paths on the clock: nothing is allocated per
+   *  frame. Counts follow the tier; reduced motion keeps the framing and drops the movers. */
+  _emitLife() {
+    const L = this.list, A = this.atlas, V = this.view, k = V.scale, t = this.t, B = RECIPES[this.biome] || {}, tier = this.gov.tier;
+    if (!A.defs.get('critter')) return;   // the dress pack draws them
+    const C = this.lifeC || (this.lifeC = Array.from({ length: 48 }, () => ({ name: '', v: '', b: -1, id: -1 })));
+    const sK = Math.max(1, Math.min(2.4, V.vh / V.vw * 1.25)), many = tier === 'low' ? 0.5 : 1;
+    let c = 0;
+    if (B.fg) {
+      const h = Math.min(V.vh * 0.2, V.vw * 0.17), w = h * 1.1, id = cachedSprite(A, C[c++], 'fg', this.biome, h * k), sw = this.reduced ? 0 : 0.02;
+      for (const side of [0, 1]) { const i = L.push(id, side ? V.vw + 4 : -4, V.vh + 6, side ? -w : w, h, Z.front, 0); L.ax[i] = 0; L.ay[i] = 1; L.rot[i] = sw * Math.sin(t * 1.4 + side * 2) * (side ? -1 : 1); L.lit[i] = 0.6; }
+      c = 2;
+    }
+    if (this.reduced) return;
+    const day = 1 - Math.min(1, this.skyOut.stars * 1.4), life = String(B.life || '').split(',');
+    const put = (v, x, y, w, h, layer, a, rot) => { if (c >= C.length || a <= 0.02) return; const id = cachedSprite(A, C[c++], 'critter', v, Math.abs(h) * k * 1.6), i = L.push(id, x, y, w, h, layer, 0); L.alpha[i] = a; L.rot[i] = rot || 0; L.lit[i] = 0.5; };
+    const fr = x => x - Math.floor(x);
+    for (const kind of life) {
+      if (kind === 'bird' || kind === 'gull') {
+        for (let f = 0; f < (many < 1 ? 1 : 2); f++) {
+          const P = 13 + f * 5, u = fr(t / P + f * 0.41), dir = f % 2 ? -1 : 1, x0 = dir > 0 ? -120 + u * (V.vw + 240) : V.vw + 120 - u * (V.vw + 240), y0 = (0.1 + f * 0.09) * V.vh + Math.sin(t * 0.6 + f) * 12;
+          for (let j = 0; j < 3; j++) { const s = (kind === 'gull' ? 34 : 24) * sK * (j ? 0.8 : 1), fl = 0.3 + 0.7 * Math.abs(Math.sin(t * 8 + j * 1.7 + f)); put(kind, x0 - dir * j * 30 * sK, y0 + (j === 0 ? 0 : j === 1 ? -14 : 14) * sK, s * 40 / 30 * dir, s * fl, Z.near, day); }
+        }
+      } else if (kind === 'butterfly') {
+        for (let j = 0; j < 3 * many; j++) {
+          const x = V.vw * (0.08 + 0.84 * fr(t * 0.025 + j * 0.37)) + Math.sin(t * 1.3 + j * 2) * 40, y = V.vh * (0.6 + 0.07 * Math.sin(t * 0.8 + j * 2.1)) + Math.sin(t * 3.1 + j) * 10, s = 30 * sK;
+          put(j % 2 ? 'fly2' : 'fly', x, y, s * 1.33 * (0.25 + 0.75 * Math.abs(Math.sin(t * 13 + j))), s, Z.near, day, Math.sin(t * 2 + j) * 0.2);
+        }
+      } else if (kind === 'leaf') {
+        for (let j = 0; j < 5 * many; j++) { const s = 16 * sK, y = (fr(t * 0.045 + j * 0.21) * 1.15 - 0.08) * V.vh, x = fr(j * 0.29 + t * 0.01) * V.vw + Math.sin(t * 1.2 + j) * 36; put('leaf' + j % 3, x, y, s * 1.33, s, Z.near, 0.95, t * 1.3 + j); }
+      } else if (kind === 'fish') {
+        for (let j = 0; j < 4 * many; j++) { const dir = j % 2 ? -1 : 1, u = fr(t / (16 + j * 3) + j * 0.3), s = (20 + j * 4) * sK; put('fish', dir > 0 ? -60 + u * (V.vw + 120) : V.vw + 60 - u * (V.vw + 120), V.vh * (0.2 + j * 0.11) + Math.sin(t * 1.4 + j) * 8, -s * 1.33 * dir, s, Z.near, 1); }
+      } else if (kind === 'snow') {
+        const D = this.snowC || (this.snowC = { name: '', v: '', b: -1, id: -1 }), id = cachedSprite(A, D, 'dot', '', 10 * k);
+        for (let j = 0; j < 30 * many; j++) { const r = (j * 0.618) % 1, s = (4 + r * 6) * sK, y = (fr(t * (0.03 + r * 0.03) + j * 0.137) * 1.1 - 0.05) * V.vh, x = fr(j * 0.377 + Math.sin(t * 0.4 + j) * 0.01) * V.vw; const i = L.push(id, x, y, s, s, r > 0.6 ? Z.fx : Z.near, 0); L.alpha[i] = 0.85; L.lit[i] = 0.3; }
       }
     }
   }

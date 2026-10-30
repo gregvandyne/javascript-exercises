@@ -1,0 +1,50 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Oomba Quest</title></head>
+<body>
+<!--KIT-->
+<!--PACKS-->
+<script>
+// "Oomba Quest": a whole game in one Oomba.game({...}) call, as the Builder writes them. It uses every built-in part
+// (sparks, coins, a heart, a key and a door, a spring, a moving platform, a rolling spike ball, a checkpoint, a bee, an
+// owl who talks, a sign, a quiz gate with its own question, the flag) and the three art packs (an owl and a penguin
+// from art-animals, a chalkboard and an abacus from art-school, the jungle biome from art-biomes). Level 2 is made by
+// Oomba.level.generate. No physics, collision, screens or juice code: the kit does all of it.
+'use strict';
+const O = window.Oomba;
+const game = O.game({
+  api: 1, title: 'Oomba Quest', subtitle: 'sub', biome: 'jungle', seed: 5,
+  controls: 'platformer:kid-easy', hero: 'me',
+  hud: ['score', 'lives:3', 'count:spark', 'progress'],
+  howTo: [{ icon: 'move', text: 'move' }, { icon: 'jump', text: 'jump' }, { icon: 'spark', text: 'goal' }],
+  strings: {
+    en: { sub: 'Find the key, ask the owl, and reach the flag!', move: 'Run with the arrows or the stick', jump: 'Jump with Space or the green button', goal: 'Grab the sparks — springs bounce you up high!', owl: 'Hoo! The door needs a key. Bounce on the spring to reach it!', sign: 'Gate ahead: count the beads!', hint: 'Count them one by one.' },
+    es: { sub: '¡Busca la llave, habla con el búho y llega a la bandera!', move: 'Corre con las flechas o el joystick', jump: 'Salta con Espacio o el botón verde', goal: '¡Atrapa las chispas: los resortes te lanzan alto!', owl: '¡Uh! La puerta necesita una llave. ¡Salta en el resorte para alcanzarla!', sign: '¡Puerta delante: cuenta las cuentas!', hint: 'Cuéntalas una a una.' },
+    ar: { sub: 'اعثر على المفتاح، واسأل البومة، واصل إلى العلم!', move: 'اركض بالأسهم أو بعصا التحكم', jump: 'اقفز بالمسافة أو بالزر الأخضر', goal: 'اجمع الشرارات، فالنوابض تقفز بك عالياً!', owl: 'هوو! الباب يحتاج مفتاحاً. اقفز على النابض لتصل إليه!', sign: 'بوابة أمامك: عُدّ الخرز!', hint: 'عُدّها واحدة واحدة.' },
+  },
+  level: [
+    O.level.grid([
+      '                                                                ',
+      '            k                                                   ',
+      '          ====                               B                  ',
+      '         $   $   $ $ $                                          ',
+      '               M                            $$$           $$    ',
+      '  P   N    S            $ $   E    i a Q  K  ^^   D  p c     G  ',
+      '################~~~~~#####################################  ####',
+      '################~~~~~#####################################  ####',
+    ], {
+      N: { kind: 'npc', species: 'owl', say: 'owl', tag: 'owl' },
+      i: { kind: 'sign', say: 'sign', variant: '?' },
+      a: { kind: 'abacus', size: 1.5 },
+      c: { kind: 'chalkboard', size: 2, variant: '2 + 2' },
+      p: { kind: 'penguin', size: 1.5, flip: true, tag: 'penguin' },
+      Q: { kind: 'gate', q: '4 + 3 = ?', a: 7, choices: [6, 7, 8, 9], hint: 'hint' },
+      M: { kind: 'mover', platform: { dx: 5, speed: 1.6 } },
+    }, { cell: 48 }),
+    O.level.generate({ seed: 12, length: 70, difficulty: 0.4, cell: 48 }),
+  ],
+  on: {
+    start(w) { const p = w.find('penguin'); if (p) p.state('wave'); },
+  },
+});
+</script>
+</body></html>

@@ -30,6 +30,7 @@
 </style></head>
 <body>
 <!--KIT-->
+<!--PACKS-->
 <script>
 // The Oomba Kit gallery: every character, clip and mood, every prop and variant, every icon, every biome by day and
 // night with auto-tiled ground, and every standard screen. For the owner's review and for the screenshot tests.
@@ -97,7 +98,7 @@ const TABS = {
     S.setBiome('none'); S.camera.x = 0; S.camera.y = 0;
     const G = Oomba.art.props, V = Oomba.art.variants;
     let items;
-    if (group === 'all') items = [].concat(...Object.values(G)).map(n => [n, '']);
+    if (group === 'all') items = [].concat(...Object.values(G)).map(n => [n, '']).concat([['ledge', ''], ['ledge', 'l'], ['ledge', 'm'], ['ledge', 'r']]);   // the level's one-way ledge tiles
     else if (group === 'variants') items = [].concat(...['tile', 'pie', 'clock', 'dice', 'shape', 'tree', 'chest', 'gate', 'book', 'rocket', 'sign'].map(n => V[n].map(v => [n, v])));
     else items = G[group].map(n => [n, '']).concat([].concat(...G[group].filter(n => V[n]).map(n => V[n].filter(Boolean).map(v => [n, v]))));
     extra = el('div', 'g-grid'); extra.setAttribute('role', 'list');
@@ -127,10 +128,11 @@ const TABS = {
       const cells = Math.ceil(v.w / z / 64) + 4, mid = Math.floor(cells / 2);
       const row = (s, w) => ' '.repeat(Math.max(0, mid - 2)) + s + ' '.repeat(Math.max(0, cells - mid + 2 - w));
       ents.push(...S.ground([row('  ## ', 5), row(' ####', 5), '#'.repeat(cells), '#'.repeat(cells), '#'.repeat(cells)], { cell: 64, x: -cells * 32, y: gy - 64 * 2 }));
-      const deco = { meadow: ['tree', 'bush', 'flower', 'mushroom'], forest: ['tree:pine', 'log', 'mushroom', 'leaf'], beach: ['tree:palm', 'shell', 'boat', 'rock'], snow: ['tree:snow', 'snowman', 'rock', 'log'], desert: ['cactus', 'rock', 'cactus', 'spikes'], candy: ['cupcake', 'cookie', 'gift', 'grapes'] }[b];
+      const deco = { meadow: ['tree', 'bush', 'flower', 'mushroom'], forest: ['tree:pine', 'log', 'mushroom', 'leaf'], beach: ['tree:palm', 'shell', 'boat', 'rock'], snow: ['tree:snow', 'snowman', 'rock', 'log'], desert: ['cactus', 'rock', 'cactus', 'spikes'], candy: ['cupcake', 'cookie', 'gift', 'grapes'],
+        jungle: ['tree', 'bush', 'leaf', 'mushroom'], reef: ['shell', 'rock', 'boat', 'shell'], city: ['bus', 'car', 'sign', 'bush'], moon: ['rock', 'rocket:go', 'rock', 'spikeball'], autumn: ['tree', 'leaf', 'log', 'mushroom'] }[b] || ['tree', 'bush', 'rock', 'leaf'];   // the last five come from the art-biomes pack
       deco.forEach((d, i) => { const [n, vv] = d.split(':'); const x = [-380, -250, 330, 440][i]; add(n, { x, y: gy, size: n === 'tree' ? 190 : n === 'boat' ? 90 : 64, variant: vv || '', shadow: false, layer: 'world' }); });
       const hero = add('oomba', { x: -130, y: gy, size: 120 }); hero.groundY = gy;
-      const pal = add(b === 'snow' ? 'bunny' : b === 'beach' ? 'frog' : b === 'desert' ? 'fox' : 'kid', { x: 220, y: gy, size: 120, flip: true }); pal.groundY = gy; pal.state('wave');
+      const pal = add({ snow: 'bunny', beach: 'frog', desert: 'fox', jungle: 'owl', reef: 'penguin', city: 'dog', moon: 'cat', autumn: 'bear' }[b] || 'kid', { x: 220, y: gy, size: 120, flip: true }); pal.groundY = gy; pal.state('wave');
       add('spark', { x: 48, y: gy - 64 * 2 - 36, size: 50, parts: [{ bob: { amp: 8 } }] });
       add('lantern', { x: -260, y: gy, size: 150, parts: ['lantern'], shadow: false, layer: 'world' });
       add('bee', { x: -40, y: gy - 230, size: 80, parts: [{ fly: { rangeX: 70, rangeY: 20 } }] });

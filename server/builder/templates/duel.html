@@ -1,407 +1,158 @@
-<title>Snack Snatch Duel</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap">
+<title>Snack Snatch!</title>
 <style>
-/* Layout: three zones. Landscape: Player 1 pad | scene | Player 2 pad. Portrait: Player 2 pad (upside down, for the
-   friend across the table) / scene / Player 1 pad. Overlays for title, pause and results. */
-:root{
-  --p1:#ef4444; --p1Dark:#b91c1c; --p2:#3b82f6; --p2Dark:#1d4ed8; --ink:#3b1d0f; --bg1:#ffcf6b; --bg2:#ff8a5c;
-  --accent:#f97316; --accentDark:#c2410c; --card:#fff; --font:"Fredoka","Trebuchet MS",system-ui,sans-serif;
-}
-[hidden]{display:none!important}
-html,body{height:100%}
-body{margin:0;overflow:hidden;font-family:var(--font);color:var(--ink);background:linear-gradient(160deg,var(--bg1),var(--bg2));touch-action:none;user-select:none;-webkit-user-select:none}
-button{font-family:inherit;color:inherit;cursor:pointer}
-button:focus-visible{outline:4px solid #fff;outline-offset:2px}
-.duel{position:fixed;inset:0;display:grid;gap:10px;padding:10px max(10px,env(safe-area-inset-left)) 10px max(10px,env(safe-area-inset-right));
-  grid-template-columns:1fr minmax(0,1.5fr) 1fr;grid-template-areas:"p1 scene p2"}
-.pad{position:relative;border:0;border-radius:26px;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:10px;
-  font-weight:700;touch-action:none;transition:transform .08s,filter .2s;box-shadow:inset 0 -8px 0 rgba(0,0,0,.18)}
-.pad.p1{grid-area:p1;background:var(--p1)}
-.pad.p2{grid-area:p2;background:var(--p2)}
-.pad:active,.pad.pressed{transform:scale(.97)}
-.pad .who{font-size:1.25rem;display:flex;align-items:center;gap:6px}
-.pad .tap{font-size:clamp(2rem,6vw,3rem);line-height:1;text-shadow:0 3px 0 rgba(0,0,0,.2)}
-.pad .dots{display:flex;gap:6px}
-.pad .dots i{width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,.3);box-shadow:inset 0 2px 0 rgba(0,0,0,.15)}
-.pad .dots i.on{background:#ffd23f;box-shadow:0 0 0 2px #fff}
-.pad .key{font-size:.9rem;opacity:.85;background:rgba(0,0,0,.18);border-radius:999px;padding:3px 10px}
-.pad.dim{filter:saturate(.4) brightness(.9)}
-.pad.won{animation:bounce .6s}
-.pad.foul{animation:shake .45s}
-@keyframes bounce{40%{transform:scale(1.06)}}
-@keyframes shake{20%{translate:-8px 0}40%{translate:8px 0}60%{translate:-5px 0}80%{translate:5px 0}}
-.scene{grid-area:scene;position:relative;min-width:0;min-height:0;border-radius:26px;overflow:hidden;background:#fff6e5;box-shadow:0 6px 0 rgba(0,0,0,.12)}
-.scene canvas{position:absolute;inset:0;width:100%;height:100%}
-.scene .bar{position:absolute;left:8px;right:8px;top:8px;display:flex;justify-content:space-between;align-items:center;z-index:2}
-.pill{background:rgba(255,255,255,.94);border-radius:999px;padding:6px 12px;font-weight:700;font-size:1rem;box-shadow:0 3px 0 rgba(0,0,0,.15);white-space:nowrap}
-.icon-btn{width:46px;height:46px;flex:none;border:0;border-radius:50%;background:#fff;font-size:1.35rem;box-shadow:0 4px 0 rgba(0,0,0,.18);display:grid;place-items:center;padding:0}
-.icon-btn:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.18)}
-@media (orientation:portrait){
-  .duel{grid-template-columns:1fr;grid-template-rows:1fr minmax(0,1.35fr) 1fr;grid-template-areas:"p2" "scene" "p1"}
-  .pad.p2 .inner{transform:rotate(180deg)}
-}
-.pad .inner{display:flex;flex-direction:column;align-items:center;gap:6px;pointer-events:none}
-.screen{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;padding:12px;background:rgba(59,29,15,.35)}
-.panel{background:var(--card);border-radius:28px;padding:18px 20px;width:min(100%,460px);max-height:100%;overflow:auto;text-align:center;
-  box-shadow:0 10px 0 rgba(0,0,0,.18);display:flex;flex-direction:column;align-items:center;gap:10px}
-.panel h1{margin:0;font-size:clamp(1.8rem,7vw,2.5rem);line-height:1.05;color:var(--accent)}
-.panel p{margin:0;font-size:1.05rem;line-height:1.35}
-.big-btn{border:0;border-radius:20px;background:var(--accent);color:#fff;font-weight:700;font-size:1.4rem;padding:12px 30px;min-height:56px;min-width:190px;box-shadow:0 6px 0 var(--accentDark)}
-.big-btn.alt{background:#ffedd5;color:var(--ink);box-shadow:0 6px 0 #fdba74;font-size:1.15rem;min-height:50px}
-.big-btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--accentDark)}
-.modes{display:flex;gap:8px}
-.mode{border:3px solid #fed7aa;border-radius:16px;background:#fff7ed;padding:8px 14px;min-height:48px;font-weight:700;font-size:1.05rem}
-.mode[aria-pressed="true"]{background:var(--accent);border-color:var(--accentDark);color:#fff}
-.chips{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
-.chip{font-weight:700;background:#fff4cc;border-radius:999px;padding:6px 14px}
-.newbest{background:#22c55e;color:#fff;border-radius:999px;padding:4px 14px;font-weight:700}
-@media (max-height:420px){.panel{gap:6px;padding:12px 16px}.panel h1{font-size:1.7rem}.big-btn{min-height:50px;padding:8px 24px}}
-@media (prefers-reduced-motion:reduce){.pad.won,.pad.foul{animation:none}}
+/* Two big tap pads (one per player), the signal and the score: kit buttons and pills in the kit's UI layer. */
+.ok-ui .du-pad{position:fixed;bottom:calc(14px + env(safe-area-inset-bottom));width:calc(50vw - 21px);height:min(22vh,150px);border-radius:28px;font-size:1.3em;z-index:1;flex-direction:column}
+.ok-ui .du-p1{inset-inline-start:14px}
+.ok-ui .du-p2{inset-inline-end:14px}
+.du-pad small{font-size:.7em;opacity:.85}
+.du-pad b{font-size:1.5em;line-height:1;-webkit-text-stroke:.12em var(--ok-edge);paint-order:stroke fill;color:var(--ok-card)}
+.ok-ui .du-pad:active{transform:translateY(3px) scale(.97)}
+.du-signal,.du-score{position:fixed;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:10px;border:3px solid var(--ok-edge);box-shadow:0 4px 0 var(--ok-edge);border-radius:999px;font-weight:800;z-index:1;white-space:nowrap}
+.du-signal{top:calc(70px + env(safe-area-inset-top));padding:10px 26px;font-size:clamp(26px,7vw,44px);background:var(--du-bg);color:var(--ok-text)}
+.du-signal svg{width:1.1em;height:1.1em}
+.du-score{top:calc(14px + env(safe-area-inset-top));padding:6px 16px;background:var(--ok-card);color:var(--ok-text);font-size:1.05em}
 </style>
-
-<div class="duel" id="duel">
-  <button class="pad p1" id="pad1" aria-label="Player 1 button">
-    <div class="inner"><div class="who" id="name1">🔴 Red</div><div class="tap">TAP!</div><div class="dots" id="dots1"></div><div class="key">key A</div></div>
-  </button>
-  <div class="scene" id="scene">
-    <canvas id="cv" aria-label="The snack table"></canvas>
-    <div class="bar">
-      <button class="icon-btn" id="pauseBtn" aria-label="Pause">⏸️</button>
-      <div class="pill" id="roundEl">Round 1</div>
-      <button class="icon-btn mute" aria-label="Turn sound off">🔊</button>
-    </div>
-  </div>
-  <button class="pad p2" id="pad2" aria-label="Player 2 button">
-    <div class="inner"><div class="who" id="name2">🔵 Blue</div><div class="tap">TAP!</div><div class="dots" id="dots2"></div><div class="key" id="key2">key L or →</div></div>
-  </button>
-</div>
-
-<section class="screen" id="titleScreen">
-  <div class="panel">
-    <h1 id="titleText">Snack Snatch!</h1>
-    <p id="subtitleText">Wait for the GREEN light, then tap your side first to grab the snack. Tap too early and your friend gets the point!</p>
-    <div class="modes" role="group" aria-label="Who is playing">
-      <button class="mode" id="mode2" aria-pressed="true">👫 2 players</button>
-      <button class="mode" id="modeBot" aria-pressed="false">🤖 vs Robot</button>
-    </div>
-    <div class="chip" id="bestTitle">⚡ Fastest: none yet</div>
-    <button class="big-btn" id="playBtn">▶ Play</button>
-    <button class="icon-btn mute" aria-label="Turn sound off">🔊</button>
-  </div>
-</section>
-
-<section class="screen" id="pauseScreen" hidden>
-  <div class="panel">
-    <h1>Paused</h1>
-    <button class="big-btn" id="resumeBtn">▶ Keep going</button>
-    <button class="big-btn alt" id="restartBtn">↺ Start over</button>
-    <button class="icon-btn mute" aria-label="Turn sound off">🔊</button>
-  </div>
-</section>
-
-<section class="screen" id="resultScreen" hidden>
-  <div class="panel">
-    <h1 id="resultTitle">Red wins!</h1>
-    <p id="resultLine"></p>
-    <div class="chips"><div class="chip" id="resultFast">⚡ 0.30s</div><div class="chip" id="bestResult">🏆 Best: 0.30s</div></div>
-    <div class="newbest" id="newBest" hidden>New fastest grab!</div>
-    <button class="big-btn" id="againBtn">↺ Play again</button>
-  </div>
-</section>
-
+<div id="game"></div>
+<!--KIT-->
+<!--PACK:dress-->
+<!--PACK:art-school-->
 <script>
-/* =====================================================================
-   CONFIG: change these to make the duel your own!
-   ===================================================================== */
+// Two-Player Duel, on the Oomba Kit: one Oomba.game call (controls: 'none'). Two players share one screen: wait for
+// GO, then tap your pad (or press A / L) first to snatch the snack. Tap too early and the other player gets the point.
+// Play a friend or the robot; first to three wins. The kit does the screens, pause, results and juice.
+'use strict';
 const CONFIG = {
   title: 'Snack Snatch!',
-  subtitle: 'Wait for the GREEN light, then tap your side first to grab the snack. Tap too early and your friend gets the point!',
-  players: [
-    { name: 'Red', badge: '🔴', color: '#ef4444', dark: '#b91c1c', look: 'ears' },     // look: 'ears' or 'antennae'
-    { name: 'Blue', badge: '🔵', color: '#3b82f6', dark: '#1d4ed8', look: 'antennae' },
-  ],
-  snacks: ['🍪', '🍩', '🧁', '🍉', '🍓'],   // a new snack every round
-  roundsToWin: 3,          // best of 5
-  minWait: 1.4,            // seconds of red light before green (random between min and max)
+  p1: { name: 'Fox', species: 'fox' },
+  p2: { name: 'Frog', species: 'frog' },
+  robot: { name: 'Robo', species: 'oomba', colors: { base: 'stone' }, wear: ['headphones'] },
+  biome: 'candy',
+  padColors: ['coral', 'sky'],
+  snacks: ['cupcake', 'cookie', 'apple', 'melon', 'grapes'],
+  roundsToWin: 3,
+  minWait: 1.4,
   maxWait: 3.6,
-  fakeFromRound: 3,        // from this round on, a yellow "trick" light can appear first
-  botMin: 0.42,            // robot reaction time range (seconds); it gets a bit faster each round
+  fakeFromRound: 3,
+  botMin: 0.42,
   botMax: 0.75,
-  colors: { bg1: '#ffcf6b', bg2: '#ff8a5c', accent: '#f97316', accentDark: '#c2410c' },
-  saveKey: 'duel-fastest',
+  keys: ['KeyA', 'KeyL'],
 };
+const WORDS = {
+  en: { sub: 'Wait for GO, then tap your side first to grab the snack!', wait: 'Wait…', go: 'GO!', trick: 'Not yet!', early: 'Too early!', who: 'Who is playing?', two: 'Two players', robot: 'Me vs the robot', how1: 'Wait for GO', how2: 'Tap your side first (or press A / L)', how3: 'Too early gives your friend the point', wins: '{name} wins!', tap: 'Tap!' },
+  es: { sub: '¡Espera al YA y toca tu lado primero para atrapar la golosina!', wait: 'Espera…', go: '¡YA!', trick: '¡Todavía no!', early: '¡Demasiado pronto!', who: '¿Quién juega?', two: 'Dos jugadores', robot: 'Yo contra el robot', how1: 'Espera al YA', how2: 'Toca tu lado primero (o pulsa A / L)', how3: 'Si te adelantas, el punto es para el otro', wins: '¡Gana {name}!', tap: '¡Toca!' },
+  fr: { sub: 'Attends le PARTEZ, puis touche ton côté en premier pour attraper le goûter !', wait: 'Attends…', go: 'PARTEZ !', trick: 'Pas encore !', early: 'Trop tôt !', who: 'Qui joue ?', two: 'Deux joueurs', robot: 'Moi contre le robot', how1: 'Attends le PARTEZ', how2: 'Touche ton côté en premier (ou A / L)', how3: 'Trop tôt : le point va à l’autre', wins: '{name} gagne !', tap: 'Touche !' },
+  de: { sub: 'Warte auf LOS und tippe zuerst auf deine Seite, um den Snack zu schnappen!', wait: 'Warte…', go: 'LOS!', trick: 'Noch nicht!', early: 'Zu früh!', who: 'Wer spielt?', two: 'Zwei Spieler', robot: 'Ich gegen den Roboter', how1: 'Warte auf LOS', how2: 'Tippe zuerst auf deine Seite (oder A / L)', how3: 'Zu früh: Der Punkt geht an die andere Seite', wins: '{name} gewinnt!', tap: 'Tippen!' },
+  it: { sub: 'Aspetta il VIA, poi tocca per primo il tuo lato per prendere lo spuntino!', wait: 'Aspetta…', go: 'VIA!', trick: 'Non ancora!', early: 'Troppo presto!', who: 'Chi gioca?', two: 'Due giocatori', robot: 'Io contro il robot', how1: 'Aspetta il VIA', how2: 'Tocca per primo il tuo lato (o premi A / L)', how3: 'Troppo presto: il punto va all’altro', wins: 'Vince {name}!', tap: 'Tocca!' },
+  pt: { sub: 'Espere o JÁ e toque primeiro no seu lado para pegar o lanche!', wait: 'Espere…', go: 'JÁ!', trick: 'Ainda não!', early: 'Cedo demais!', who: 'Quem vai jogar?', two: 'Dois jogadores', robot: 'Eu contra o robô', how1: 'Espere o JÁ', how2: 'Toque primeiro no seu lado (ou aperte A / L)', how3: 'Cedo demais: o ponto vai para o outro', wins: '{name} venceu!', tap: 'Toque!' },
+  nl: { sub: 'Wacht op NU en tik als eerste op jouw kant om de snack te pakken!', wait: 'Wacht…', go: 'NU!', trick: 'Nog niet!', early: 'Te vroeg!', who: 'Wie speelt er?', two: 'Twee spelers', robot: 'Ik tegen de robot', how1: 'Wacht op NU', how2: 'Tik als eerste op jouw kant (of druk A / L)', how3: 'Te vroeg: het punt gaat naar de ander', wins: '{name} wint!', tap: 'Tik!' },
+  ru: { sub: 'Жди сигнала «ДАВАЙ», потом первым нажми на свою сторону и схвати угощение!', wait: 'Жди…', go: 'ДАВАЙ!', trick: 'Ещё нет!', early: 'Слишком рано!', who: 'Кто играет?', two: 'Два игрока', robot: 'Я против робота', how1: 'Жди сигнала «ДАВАЙ»', how2: 'Первым нажми на свою сторону (или A / L)', how3: 'Слишком рано — очко получит соперник', wins: '{name} побеждает!', tap: 'Жми!' },
+  he: { sub: 'חכו ל״עכשיו!״ והקישו ראשונים על הצד שלכם כדי לחטוף את החטיף!', wait: 'חכו…', go: 'עכשיו!', trick: 'עוד לא!', early: 'מוקדם מדי!', who: 'מי משחק?', two: 'שני שחקנים', robot: 'אני נגד הרובוט', how1: 'חכו ל״עכשיו!״', how2: 'הקישו ראשונים על הצד שלכם (או A / L)', how3: 'מוקדם מדי? הנקודה עוברת לשני', wins: '{name} מנצח!', tap: 'הקישו!' },
+  ar: { sub: 'انتظر «الآن!» ثم انقر على جهتك أولاً لتخطف الوجبة!', wait: 'انتظر…', go: 'الآن!', trick: 'ليس بعد!', early: 'مبكر جداً!', who: 'من سيلعب؟', two: 'لاعبان', robot: 'أنا ضد الروبوت', how1: 'انتظر «الآن!»', how2: 'انقر على جهتك أولاً (أو اضغط A / L)', how3: 'إن بكّرت تذهب النقطة للآخر', wins: '{name} يفوز!', tap: 'انقر!' },
+  ja: { sub: '「いま！」を まって、さきに じぶんの がわを タップして おやつを とろう！', wait: 'まって…', go: 'いま！', trick: 'まだだよ！', early: 'はやすぎ！', who: 'だれが あそぶ？', two: '2にんで あそぶ', robot: 'ロボットと たいけつ', how1: '「いま！」を まとう', how2: 'さきに じぶんの がわを タップ（A / L キーでも OK）', how3: 'はやすぎると あいてに 1てん', wins: '{name}の かち！', tap: 'タップ！' },
+  'zh-Hant': { sub: '等到「開始！」，再搶先點你那一邊，把點心搶到手！', wait: '等一下…', go: '開始！', trick: '還沒！', early: '太早了！', who: '誰要玩？', two: '兩個玩家', robot: '我對機器人', how1: '等「開始！」', how2: '搶先點你那一邊（或按 A / L）', how3: '太早點，分數就給對方', wins: '{name} 贏了！', tap: '點！' },
+};
+const SET = [
+  '                              ',
+  '                              ',
+  '                              ',
+  '                              ',
+  '                              ',
+  '           P        2         ',
+  '##############################',
+  '##############################',
+  '##############################',
+  '##############################',
+  '##############################',
+];
 
-/* ===== Shell helpers ===== */
-const $ = id => document.getElementById(id);
-const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
-const rand = (a, b) => a + Math.random() * (b - a);
-const pick = list => list[Math.floor(Math.random() * list.length)];
-for (const k in CONFIG.colors) document.documentElement.style.setProperty('--' + k, CONFIG.colors[k]);
-CONFIG.players.forEach((p, i) => {
-  document.documentElement.style.setProperty('--p' + (i + 1), p.color);
-  document.documentElement.style.setProperty('--p' + (i + 1) + 'Dark', p.dark);
-  $('name' + (i + 1)).textContent = p.badge + ' ' + p.name;
-});
-document.title = CONFIG.title;
-$('titleText').textContent = CONFIG.title;
-$('subtitleText').textContent = CONFIG.subtitle;
-function showScreen(id) { document.querySelectorAll('.screen').forEach(s => { s.hidden = s.id !== id; }); }
-function updateMute() {
-  document.querySelectorAll('.mute').forEach(b => { b.textContent = BRB.sfx.muted ? '🔇' : '🔊'; b.setAttribute('aria-label', BRB.sfx.muted ? 'Turn sound on' : 'Turn sound off'); });
+const O = window.Oomba;
+let vsBot = false, ui = null, wins = [0, 0], round = 1, phase = 'idle', t = 0, goAt = 0, trickAt = 0, botAt = 0, snack = null, world = null;
+const who = i => (i === 1 && vsBot ? CONFIG.robot : i ? CONFIG.p2 : CONFIG.p1);
+const actor = (w, i) => (i ? w.find('p2') : w.hero);
+/** The middle of the set in view, the ground just above the tap pads. */
+function frame(w) {
+  const V = w.stage.view, C = w.cam, L = w.level, pads = V.vh * (Math.min(innerHeight * 0.22, 150) + 20) / innerHeight;
+  const z = Math.min(V.vw / (12 * w.cell), (V.vh - pads) / (L.h - 2 * w.cell));
+  C.bounds(null); C.zoom = z; C.x = L.w / 2; C.y = L.h - 4.6 * w.cell - (V.vh / 2 - pads) / z;
 }
-document.querySelectorAll('.mute').forEach(b => b.addEventListener('click', () => { BRB.sfx.mute(); updateMute(); BRB.sfx.play('click'); }));
-updateMute();
-let fastest = +BRB.storage.get(CONFIG.saveKey) || 0;   // fastest grab in milliseconds (0 = none yet)
-function showBest() { $('bestTitle').textContent = '⚡ Fastest: ' + (fastest ? (fastest / 1000).toFixed(2) + 's' : 'none yet'); }
-showBest();
-
-/* ===== Game state ===== */
-// phase: idle | wait | fake | go | point | over
-let phase = 'idle', paused = false, vsBot = false, wins = [0, 0], round = 1, timer = 0, goAt = 0, fakeLeft = false;
-let snack = '🍪', winner = -1, msg = '', sub = '', reactions = [], botAt = 0, grab = [0, 0], mood = ['', ''];
-
-function setMode(bot) { vsBot = bot; $('mode2').setAttribute('aria-pressed', !bot); $('modeBot').setAttribute('aria-pressed', bot); $('name2').textContent = bot ? '🤖 Robot' : CONFIG.players[1].badge + ' ' + CONFIG.players[1].name; $('key2').hidden = bot; BRB.sfx.play('click'); }
-$('mode2').addEventListener('click', () => setMode(false));
-$('modeBot').addEventListener('click', () => setMode(true));
-
-function startGame() {
-  BRB.orientation('landscape');
-  wins = [0, 0]; round = 1; reactions = []; paused = false;
-  showScreen(null); renderDots(); BRB.sfx.play('powerup');
-  newRound();
+const el = (tag, cls, html) => { const e = document.createElement(tag); e.className = cls; if (html != null) e.innerHTML = html; return e; };
+function signal(kind) {
+  if (!ui) return;
+  const role = { wait: 'wrong', go: 'correct', trick: 'reward' }[kind] || 'neutral', icon = { wait: 'pause', go: 'check', trick: 'cross' }[kind] || 'timer';
+  ui.signal.style.setProperty('--du-bg', O.color(role, 'light'));
+  ui.signal.innerHTML = O.icon(icon); ui.signal.append(O.t(kind)); O.ui.announce(O.t(kind));
 }
-function name(i) { return i === 1 && vsBot ? 'Robot' : CONFIG.players[i].name; }
-
-function newRound() {
-  phase = 'wait'; winner = -1; grab = [0, 0]; mood = ['', ''];
-  snack = pick(CONFIG.snacks);
-  timer = rand(CONFIG.minWait, CONFIG.maxWait);
-  fakeLeft = round >= CONFIG.fakeFromRound && Math.random() < 0.6;
-  msg = 'Wait for it…'; sub = 'Don’t tap yet!';
-  $('roundEl').textContent = 'Round ' + round;
-  document.querySelectorAll('.pad').forEach(p => p.classList.remove('dim', 'won', 'foul'));
-}
-
-function press(i) {
-  if (paused) return;
-  const pad = $('pad' + (i + 1));
-  pad.classList.add('pressed'); setTimeout(() => pad.classList.remove('pressed'), 120);
-  if (phase === 'wait' || phase === 'fake') {
-    // too early: the other player gets the point
-    winner = 1 - i; mood[i] = 'oops'; mood[winner] = 'happy';
-    msg = name(i) + ' tapped too early!'; sub = name(winner) + ' gets the point';
-    pad.classList.add('foul'); BRB.sfx.play('hit'); BRB.fx.shake($('scene'), 6);
-    point();
-  } else if (phase === 'go') {
-    const ms = Math.round(performance.now() - goAt);
-    winner = i; mood[i] = 'happy'; mood[1 - i] = 'sad';
-    if (!(i === 1 && vsBot)) reactions.push(ms);
-    msg = name(i) + ' grabbed it!'; sub = (ms / 1000).toFixed(2) + ' seconds';
-    pad.classList.add('won'); BRB.sfx.play('coin');
-    point();
-  }
-}
-
-function point() {
-  phase = 'point'; timer = 2.2;
-  wins[winner]++;
-  $('pad' + (2 - winner)).classList.add('dim');
-  renderDots();
-  if (wins[winner] >= CONFIG.roundsToWin) { timer = 1.6; }
-}
-
-function endMatch() {
-  phase = 'over';
-  const w = winner;
-  const best = reactions.length ? Math.min(...reactions) : 0;
-  const isBest = best > 0 && (!fastest || best < fastest);
-  if (isBest) { fastest = best; BRB.storage.set(CONFIG.saveKey, fastest); }
-  const score = best ? Math.max(0, 1000 - best) : 0;   // higher is better on the leaderboard
-  const humanWon = !(vsBot && w === 1);
-  BRB.score.submit(score, best ? 'Fastest ' + (best / 1000).toFixed(2) + 's' : 'Duel');
-  BRB.gameOver({ won: humanWon, score });
-  BRB.sfx.play(humanWon ? 'win' : 'lose');
-  if (humanWon) BRB.fx.confetti({ colors: [CONFIG.players[w].color, '#ffd23f', '#fff', CONFIG.players[w].dark] });
-  $('resultTitle').textContent = (w === 1 && vsBot ? '🤖 Robot' : CONFIG.players[w].badge + ' ' + CONFIG.players[w].name) + ' wins!';
-  $('resultLine').textContent = 'Final score ' + wins[0] + ' – ' + wins[1] + '. ' + (vsBot && w === 1 ? 'The robot was quick! Try again?' : 'What a snack snatcher!');
-  $('resultFast').textContent = '⚡ This game: ' + (best ? (best / 1000).toFixed(2) + 's' : '–');
-  $('bestResult').textContent = '🏆 Fastest ever: ' + (fastest ? (fastest / 1000).toFixed(2) + 's' : '–');
-  $('newBest').hidden = !isBest;
-  showBest();
-  showScreen('resultScreen'); $('againBtn').focus({ preventScroll: true });
-}
-
-function renderDots() {
+function score() { if (ui) ui.score.textContent = `${who(0).name} ${O.num(wins[0])} – ${O.num(wins[1])} ${who(1).name}`; }
+function clear() { if (ui) for (const k in ui) ui[k].remove(); ui = null; }
+function build(w) {
+  clear(); world = w; wins = [0, 0]; round = 1; phase = 'idle';
+  const p2 = w.spawn(Object.assign({}, who(1)), { c: 20, r: 5, tag: 'p2', flip: true, size: 1.75 });
+  p2.look(w.hero); w.hero.look(p2);
+  ui = { signal: el('div', 'du-signal'), score: el('div', 'du-score') };
   [0, 1].forEach(i => {
-    $('dots' + (i + 1)).innerHTML = Array.from({ length: CONFIG.roundsToWin }, (_, k) => '<i class="' + (k < wins[i] ? 'on' : '') + '"></i>').join('');
+    const pad = O.ui.button('', { kind: i ? 'hot' : 'go', big: true });
+    pad.classList.add('du-pad', i ? 'du-p2' : 'du-p1');
+    pad.innerHTML = `<b>${O.t('tap')}</b><small>${who(i).name}${i && vsBot ? '' : ' · ' + CONFIG.keys[i].replace('Key', '')}</small>`;
+    // each pad in its player's colour at full strength, with their portrait
+    pad.style.background = O.color(CONFIG.padColors[i]); pad.style.setProperty('--ok-press', O.color(CONFIG.padColors[i], 'shade'));
+    const look = Object.assign({}, who(i)); delete look.name; pad.prepend(O.ui.portrait(look, { size: 56, mood: 'determined' }));
+    pad.addEventListener('pointerdown', e => { e.preventDefault(); if (!(i === 1 && vsBot)) press(i); });
+    if (i === 1 && vsBot) pad.disabled = true;
+    ui['pad' + i] = pad;
   });
+  for (const k in ui) O.ui.root().appendChild(ui[k]);
+  score(); signal('wait');
+}
+function next(w) {
+  if (w.ended) return;
+  if (snack) snack.remove(null);
+  snack = w.spawn(w.rand.pick(CONFIG.snacks), { c: 15.5, r: 4, size: 1.2, parts: [{ bob: { amp: 6 } }] }); snack.pop();
+  for (const i of [0, 1]) actor(w, i).state('idle').mood('determined');
+  phase = 'wait'; t = 0; goAt = w.rand.range(CONFIG.minWait, CONFIG.maxWait);
+  trickAt = round >= CONFIG.fakeFromRound && w.rand.chance(0.5) ? goAt * w.rand.range(0.35, 0.6) : 0;
+  signal('wait');
+}
+function press(i) {
+  const w = world; if (!w || w.ended || w.scene !== 'play' || (phase !== 'wait' && phase !== 'trick' && phase !== 'go')) return;
+  const early = phase !== 'go', win = early ? 1 - i : i;
+  phase = 'done';
+  if (early) { actor(w, i).state('hurt').mood('surprised'); O.ui.toast(O.t('early')); O.sfx('wrong'); }
+  const a = actor(w, win), b = actor(w, 1 - win);
+  O.tween(snack, { x: a.x, y: a.y - a.size * 0.7 }, { ms: 220, ease: 'quadOut' }).then(() => { if (snack) snack.collect(); snack = null; });
+  a.state('cheer'); a.squash(1.15); if (!early) b.state('sad');
+  O.sfx('spark'); w.cam.punch(1.04);
+  wins[win]++; round++; score();
+  if (wins[win] >= CONFIG.roundsToWin) {
+    w.after(900, async () => {
+      await w.say(a, O.t('wins', { name: who(win).name }));
+      clear();
+      if (vsBot && win === 1) w.lose({ say: O.t('wins', { name: who(1).name }) });
+      // two friends: the card names the winner and shows them; a hot-seat score never goes to the leaderboard
+      else w.win(Object.assign({ stars: wins[1 - win] === 0 ? 3 : wins[1 - win] === 1 ? 2 : 1, score: wins[win] * 100 }, vsBot ? {} : { title: O.t('wins', { name: who(win).name }), who: a, submit: false }));
+    });
+  } else w.after(1600, () => next(w));
 }
 
-/* ===== Update ===== */
-function update(dt) {
-  grab = grab.map((g, i) => Math.max(0, Math.min(1, g + (winner === i && phase !== 'wait' && mood[i] === 'happy' && phase !== 'fake' ? dt * 4 : -dt * 3))));
-  if (paused || phase === 'idle' || phase === 'over') return;
-  timer -= dt;
-  if (phase === 'wait') {
-    if (fakeLeft && timer < 0.9 && timer > 0.5) { phase = 'fake'; fakeLeft = false; msg = 'Hmm… yellow?'; sub = 'Not yet!'; timer = 1.0 + rand(0.6, 1.4); BRB.sfx.play('click'); }
-    else if (timer <= 0) go();
-  } else if (phase === 'fake') {
-    if (timer <= 0) go();
-    else if (timer < 1.0 && msg !== 'Wait for it…') { msg = 'Wait for it…'; sub = 'Don’t tap yet!'; }
-  } else if (phase === 'go') {
-    if (vsBot && performance.now() >= botAt) press(1);
-    else if (performance.now() - goAt > 3000) { msg = 'Nobody grabbed it!'; sub = 'Again!'; phase = 'point'; timer = 1.2; winner = -1; }
-  } else if (phase === 'point') {
-    if (timer <= 0) {
-      if (winner >= 0 && wins[winner] >= CONFIG.roundsToWin) return endMatch();
-      if (winner >= 0) round++;
-      newRound();
-    }
-  }
-}
-function go() {
-  phase = 'go'; goAt = performance.now(); msg = 'GO!'; sub = 'Tap now!';
-  const k = Math.max(0.7, 1 - (round - 1) * 0.06);
-  botAt = goAt + rand(CONFIG.botMin, CONFIG.botMax) * 1000 * k;
-  BRB.sfx.play('jump');
-}
-
-/* ===== Drawing (scene is 400 x 300 game pixels, scaled to fit) ===== */
-const cv = $('cv'), ctx = cv.getContext('2d');
-let sw = 400, sh = 300, sc = 1, ox = 0, oy = 0, dpr = 1;
-function resize() {
-  const r = $('scene').getBoundingClientRect(); dpr = Math.min(2, devicePixelRatio || 1);
-  cv.width = Math.round(r.width * dpr); cv.height = Math.round(r.height * dpr);
-  sw = r.width; sh = r.height; sc = Math.min(sw / 400, (sh - 50) / 270); ox = (sw - 400 * sc) / 2; oy = 50 + (sh - 50 - 270 * sc) / 2 - 20 * sc;
-}
-addEventListener('resize', resize); resize();
-
-function light(t) {
-  const x = 200, y = 64;
-  ctx.fillStyle = '#3f3f46'; ctx.fillRect(x - 5, y + 20, 10, 40);
-  ctx.fillStyle = '#27272a'; ctx.beginPath(); ctx.roundRect ? ctx.roundRect(x - 62, y - 26, 124, 52, 26) : ctx.rect(x - 62, y - 26, 124, 52); ctx.fill();
-  const on = phase === 'go' ? 2 : phase === 'fake' ? 1 : (phase === 'wait' ? 0 : -1);
-  ['#ef4444', '#facc15', '#22c55e'].forEach((c, i) => {
-    ctx.globalAlpha = on === i ? 1 : 0.22; ctx.fillStyle = c; ctx.beginPath(); ctx.arc(x - 38 + i * 38, y, 16, 0, 7); ctx.fill();
-    if (on === i) { ctx.globalAlpha = 0.25; ctx.beginPath(); ctx.arc(x - 38 + i * 38, y, 24, 0, 7); ctx.fill(); }
-  });
-  ctx.globalAlpha = 1;
-}
-// A round, fuzzy critter. side: -1 = left (player 1), 1 = right (player 2)
-function critter(side, col, dark, look, reach, md, t) {
-  const bx = 200 + side * 128, by = 205;
-  const bob = Math.sin(t * 3 + side) * 3 * (REDUCED ? 0 : 1) + (md === 'happy' ? -Math.abs(Math.sin(t * 10)) * 8 * (REDUCED ? 0 : 1) : 0);
-  ctx.save(); ctx.translate(bx, by + bob);
-  ctx.fillStyle = 'rgba(0,0,0,.12)'; ctx.beginPath(); ctx.ellipse(0, 52 - bob, 46, 8, 0, 0, 7); ctx.fill();
-  // arm reaching to the middle
-  const armLen = 30 + reach * 70;
-  ctx.strokeStyle = dark; ctx.lineWidth = 14; ctx.lineCap = 'round';
-  ctx.beginPath(); ctx.moveTo(-side * 20, 10); ctx.quadraticCurveTo(-side * (armLen * 0.5), -10 - reach * 20, -side * armLen, -6 - reach * 18); ctx.stroke();
-  ctx.fillStyle = col; ctx.beginPath(); ctx.arc(-side * armLen, -6 - reach * 18, 10, 0, 7); ctx.fill();
-  // headgear
-  if (look === 'ears') {
-    ctx.fillStyle = col; [[-24, -40], [24, -40]].forEach(([ex, ey]) => { ctx.beginPath(); ctx.moveTo(ex - 14, ey + 10); ctx.lineTo(ex, ey - 22); ctx.lineTo(ex + 14, ey + 10); ctx.fill(); });
-    ctx.fillStyle = '#ffd1dc'; [[-24, -40], [24, -40]].forEach(([ex, ey]) => { ctx.beginPath(); ctx.moveTo(ex - 7, ey + 6); ctx.lineTo(ex, ey - 10); ctx.lineTo(ex + 7, ey + 6); ctx.fill(); });
-  } else {
-    ctx.strokeStyle = dark; ctx.lineWidth = 4;
-    [[-14, 1], [14, -1]].forEach(([ex, d]) => { ctx.beginPath(); ctx.moveTo(ex, -36); ctx.quadraticCurveTo(ex - d * 8, -60, ex - d * 4 + Math.sin(t * 4 + ex) * 3, -70); ctx.stroke(); ctx.fillStyle = '#ffd23f'; ctx.beginPath(); ctx.arc(ex - d * 4 + Math.sin(t * 4 + ex) * 3, -72, 7, 0, 7); ctx.fill(); });
-  }
-  // fuzzy body
-  ctx.fillStyle = col; ctx.beginPath();
-  for (let a = 0; a < Math.PI * 2; a += Math.PI / 10) { const r = 48 + (Math.round(a * 10 / Math.PI) % 2 ? 3 : -1); ctx.lineTo(Math.cos(a) * r, Math.sin(a) * r); }
-  ctx.fill();
-  ctx.fillStyle = 'rgba(255,255,255,.18)'; ctx.beginPath(); ctx.ellipse(-12, -18, 18, 12, -0.5, 0, 7); ctx.fill();
-  // face, looking toward the snack
-  const lookX = -side * 4;
-  if (md === 'oops' || md === 'sad') {
-    ctx.strokeStyle = '#1f1f1f'; ctx.lineWidth = 3.5; ctx.lineCap = 'round';
-    [-14, 14].forEach(ex => { ctx.beginPath(); ctx.arc(ex, -6, 7, Math.PI + 0.4, -0.4); ctx.stroke(); });
-    ctx.beginPath(); ctx.ellipse(0, 18, 8, md === 'oops' ? 9 : 4, 0, 0, 7); ctx.fillStyle = '#4a1d1d'; ctx.fill();
-  } else {
-    ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.ellipse(-14, -8, 11, 13, 0, 0, 7); ctx.ellipse(14, -8, 11, 13, 0, 0, 7); ctx.fill();
-    ctx.fillStyle = '#1f1f1f'; ctx.beginPath(); ctx.arc(-14 + lookX, -6, 5.5, 0, 7); ctx.arc(14 + lookX, -6, 5.5, 0, 7); ctx.fill();
-    ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(-12 + lookX, -9, 2, 0, 7); ctx.arc(16 + lookX, -9, 2, 0, 7); ctx.fill();
-    ctx.fillStyle = '#4a1d1d'; ctx.beginPath();
-    if (md === 'happy') { ctx.arc(0, 14, 12, 0, Math.PI); ctx.fill(); }
-    else { ctx.lineWidth = 3.5; ctx.strokeStyle = '#4a1d1d'; ctx.arc(0, 12, 9, 0.3, Math.PI - 0.3); ctx.stroke(); }
-  }
-  ctx.fillStyle = 'rgba(255,255,255,.35)'; ctx.beginPath(); ctx.arc(-28, 10, 6, 0, 7); ctx.arc(28, 10, 6, 0, 7); ctx.fill();
-  ctx.restore();
-}
-function draw(t) {
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  // wallpaper stripes
-  ctx.fillStyle = '#fff6e5'; ctx.fillRect(0, 0, sw, sh);
-  ctx.fillStyle = '#ffedd0'; for (let x = 0; x < sw; x += 40) ctx.fillRect(x, 0, 20, sh);
-  ctx.setTransform(dpr * sc, 0, 0, dpr * sc, dpr * ox, dpr * oy);
-  light(t);
-  // table
-  ctx.fillStyle = '#b45309'; ctx.fillRect(40, 250, 320, 16); ctx.fillStyle = '#92400e'; ctx.fillRect(60, 266, 14, 40); ctx.fillRect(326, 266, 14, 40);
-  ctx.fillStyle = '#fde68a'; ctx.beginPath(); ctx.ellipse(200, 248, 140, 10, 0, 0, 7); ctx.fill();
-  // plate + snack (moves toward whoever grabbed it)
-  const g = winner >= 0 ? grab[winner] : 0, dir = winner === 0 ? -1 : 1;
-  ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.ellipse(200, 238, 40, 9, 0, 0, 7); ctx.fill();
-  ctx.strokeStyle = '#e5e7eb'; ctx.lineWidth = 2; ctx.stroke();
-  const wig = phase === 'go' && !REDUCED ? Math.sin(t * 30) * 0.12 : 0;
-  // once grabbed, the snack flies up above the winner's head
-  ctx.save(); ctx.translate(200 + dir * g * 128, 214 - g * 110); ctx.rotate(wig); ctx.scale(1 + g * 0.2, 1 + g * 0.2);
-  ctx.font = '46px "Noto Color Emoji","Apple Color Emoji","Segoe UI Emoji",sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = '#000';
-  ctx.fillText(snack, 0, 0);
-  ctx.restore();
-  critter(-1, CONFIG.players[0].color, CONFIG.players[0].dark, CONFIG.players[0].look, grab[0], mood[0], t);
-  critter(1, CONFIG.players[1].color, CONFIG.players[1].dark, vsBot ? 'antennae' : CONFIG.players[1].look, grab[1], mood[1], t);
-  if (vsBot) { ctx.font = '26px "Noto Color Emoji",sans-serif'; ctx.textAlign = 'center'; ctx.fillText('🤖', 328, 160); }
-  // message
-  if (phase !== 'idle' && phase !== 'over') {
-    ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
-    ctx.font = '700 ' + (msg === 'GO!' ? 44 : 26) + 'px Fredoka, Trebuchet MS, sans-serif';
-    ctx.lineWidth = 7; ctx.strokeStyle = '#fff'; ctx.strokeText(msg, 200, 128); ctx.fillStyle = msg === 'GO!' ? '#16a34a' : '#3b1d0f'; ctx.fillText(msg, 200, 128);
-    ctx.font = '600 18px Fredoka, Trebuchet MS, sans-serif'; ctx.lineWidth = 5; ctx.strokeText(sub, 200, 152); ctx.fillStyle = '#7c2d12'; ctx.fillText(sub, 200, 152);
-  }
-}
-
-/* The big pad label tells players when to tap */
-let padLabel = '';
-function updatePads() {
-  const label = phase === 'go' ? 'TAP!' : (phase === 'wait' || phase === 'fake') ? 'WAIT…' : phase === 'point' ? (winner >= 0 ? '' : 'WAIT…') : 'TAP!';
-  if (label === padLabel) return; padLabel = label;
-  document.querySelectorAll('.pad .tap').forEach((el, i) => { el.textContent = label || (i === winner ? 'YUM!' : 'OH NO!'); });
-}
-
-/* ===== Main loop ===== */
-let last = performance.now();
-function frame(now) {
-  const dt = Math.min(0.05, (now - last) / 1000); last = now;
-  update(dt); draw(now / 1000); updatePads();
-  requestAnimationFrame(frame);
-}
-requestAnimationFrame(frame);
-
-/* ===== Pause ===== */
-function pause() { if (phase === 'idle' || phase === 'over' || paused) return; paused = true; showScreen('pauseScreen'); BRB.sfx.play('click'); }
-function resume() {
-  paused = false; showScreen(null); BRB.sfx.play('click');
-  if (phase === 'go' || phase === 'wait' || phase === 'fake') newRound();   // restart the round fairly
-}
-document.addEventListener('visibilitychange', () => { if (document.hidden) pause(); });
-
-/* ===== Controls: each side has its own pad and keys ===== */
-$('pad1').addEventListener('pointerdown', e => { e.preventDefault(); press(0); });
-$('pad2').addEventListener('pointerdown', e => { e.preventDefault(); if (!vsBot) press(1); });
-$('playBtn').addEventListener('click', startGame);
-$('againBtn').addEventListener('click', startGame);
-$('pauseBtn').addEventListener('click', pause);
-$('resumeBtn').addEventListener('click', resume);
-$('restartBtn').addEventListener('click', startGame);
-const P1_KEYS = ['a', 's', 'd', 'w', 'q', 'z'], P2_KEYS = ['l', 'k', 'j', 'arrowleft', 'arrowright', 'arrowup', 'arrowdown'];
-addEventListener('keydown', e => {
-  if (e.repeat) return;
-  const k = e.key.toLowerCase();
-  if (!$('titleScreen').hidden || !$('resultScreen').hidden) { if (k === 'enter' || k === ' ') { e.preventDefault(); startGame(); } return; }
-  if (!$('pauseScreen').hidden) { if (k === 'escape' || k === 'p') resume(); return; }
-  if (k === 'escape' || k === 'p') return pause();
-  if (P1_KEYS.includes(k)) press(0);
-  else if (P2_KEYS.includes(k) && !vsBot) { e.preventDefault(); press(1); }
+const game = O.game({
+  api: 1, title: CONFIG.title, subtitle: 'sub', biome: CONFIG.biome,
+  controls: 'none', camera: 'fixed', hero: Object.assign({}, CONFIG.p1), countdown: 0,
+  hud: [],
+  howTo: [{ icon: 'timer', text: 'how1' }, { icon: 'tap', text: 'how2' }, { icon: 'info', text: 'how3' }],
+  strings: WORDS,
+  level: O.level.grid(SET, { 2: 'cloud' }),
+  async intro() {
+    vsBot = (await O.ui.dialog({ title: O.t('who'), buttons: [{ label: O.t('robot'), kind: 'quiet', value: 1, icon: 'gamepad' }, { label: O.t('two'), kind: 'hot', value: 2, icon: 'user' }] })) === 1;
+  },
+  setup(w) { const c = w.find('cloud'); if (c) c.remove(null); clear(); },
+  update(w, dt) {
+    frame(w);
+    if (w.scene !== 'play' || w !== world) return;
+    t += dt;
+    if (phase === 'wait' && trickAt && t >= trickAt) { phase = 'trick'; trickAt = 0; signal('trick'); O.sfx('pop', { pitch: 0.7 }); w.after(600, () => { if (phase === 'trick') { phase = 'wait'; signal('wait'); } }); }
+    if (phase === 'wait' && t >= goAt) { phase = 'go'; signal('go'); O.sfx('count', { pitch: 1.5 }); botAt = t + w.rand.range(CONFIG.botMin, CONFIG.botMax) * Math.max(0.7, 1 - round * 0.05); }
+    if (phase === 'go' && vsBot && t >= botAt) press(1);
+  },
+  on: { start(w) { build(w); w.after(700, () => next(w)); }, results: clear, lose: clear },
 });
+addEventListener('keydown', e => { const i = CONFIG.keys.indexOf(e.code); if (i >= 0 && !e.repeat && !(i === 1 && vsBot)) press(i); });
 </script>

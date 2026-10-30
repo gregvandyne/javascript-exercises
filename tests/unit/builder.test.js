@@ -64,7 +64,9 @@ test('mock flow: questions -> write_game v1 -> edit v2 -> restore v3 = copy of v
 
   t = await turn(u, g.id, 'change the hero to a dragon and make it pink');
   const v4 = games.getVersion(games.getGame(g.id).current_version_id);
-  assert.equal(v4.number, 4); assert.match(v4.html, /BRB_TUNE\.hero = \[".+","🐉"\];/u); assert.match(v4.html, /BRB_TUNE\.tint = "#ff5fb0";/);
+  // An Oomba Kit game: the hero's look is a spec edit on the kit layer (a dragon-ish mascot, then pink: coral in the kit).
+  assert.equal(v4.number, 4); assert.match(v4.html, /BRB_TUNE\.look = \{"hero":\{"species":"oomba","colors":\{"base":"coral"/); assert.match(v4.html, /"wear":\["crown"\]/);
+  assert.doesNotMatch(v4.html, /BRB_TUNE\.tint/, 'no colour wash over a kit game');
   assert.equal(games.getGame(g.id).icon, '🐉');
 
   t = await turn(u, g.id, "it's ready!");

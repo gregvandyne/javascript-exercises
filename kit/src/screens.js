@@ -2,7 +2,7 @@
 // try-again (never "game over"), settings, the quiz widget (ask), correct/wrong banners, speech bubbles, dialogs and
 // the HUD (score, lives, timer, progress, combo, count). Real DOM in the kit's .ok-ui root: labelled buttons, focus
 // trapped in modals, arrow keys / d-pad / 1-4 move and answer, mirrored for RTL, day and night, reduced motion aware.
-import { PALETTE, INK, CREAM } from './tokens.js';
+import { PALETTE, INK, CREAM, z as Z } from './tokens.js';
 import { icon } from './icons.js';
 
 const P = PALETTE;
@@ -11,7 +11,7 @@ export const WORDMARK = `<svg viewBox="0 -24 616 184" aria-hidden="true" focusab
 export const SCREEN_CSS = `
 .ok-modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:calc(16px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right)) calc(16px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left));z-index:20;animation:ok-fade 200ms ease-out}
 .ok-scrim{background:var(--ok-scrim);-webkit-backdrop-filter:saturate(.75) blur(2px);backdrop-filter:saturate(.75) blur(2px)}
-.ok-win.ok-scrim{background:radial-gradient(closest-side,var(--ok-scrim) 35%,transparent);-webkit-backdrop-filter:none;backdrop-filter:none}
+.ok-win.ok-scrim{background:radial-gradient(ellipse 80% 90% at 50% 50%,var(--ok-scrim) 50%,rgba(10,12,12,.12));-webkit-backdrop-filter:none;backdrop-filter:none}
 .ok-ask.ok-side-start{justify-content:flex-start}.ok-ask.ok-side-end{justify-content:flex-end}
 .ok-asker{display:flex;align-items:center;gap:10px;font-weight:700;margin:-10px 0 -6px}.ok-asker canvas{display:block}
 .ok-scrimlayer{position:absolute;inset:0;z-index:-1;background:var(--ok-scrim);-webkit-backdrop-filter:saturate(.75) blur(2px);backdrop-filter:saturate(.75) blur(2px);pointer-events:none}
@@ -19,6 +19,7 @@ export const SCREEN_CSS = `
 .ok-card{position:relative;background:var(--ok-card);color:var(--ok-text);border:3px solid ${INK};border-radius:32px;box-shadow:0 8px 0 ${INK};padding:28px 24px 24px;
   width:min(440px,100%);max-height:100%;overflow:auto;text-align:center;display:flex;flex-direction:column;align-items:center;gap:14px;animation:ok-pop 320ms cubic-bezier(.34,1.56,.64,1)}
 .ok-night .ok-card{border-color:${CREAM}33;box-shadow:0 8px 0 #000}
+.ok-night .ok-card .ok-portrait{filter:drop-shadow(0 0 1.5px ${CREAM}) drop-shadow(0 0 10px rgba(255,253,242,.35))}
 .ok-h1{margin:0;font-weight:800;font-size:clamp(2rem,7vmin,3.6rem);line-height:1.02;font-variation-settings:"opsz" 72;color:var(--ok-text);
   -webkit-text-stroke:0;paint-order:stroke fill;text-wrap:balance}
 .ok-h2{margin:0;font-weight:800;font-size:1.7em;line-height:1.1;font-variation-settings:"opsz" 48;text-wrap:balance}
@@ -30,19 +31,30 @@ export const SCREEN_CSS = `
 /* the title block sits above the horizon (the cast stands on the ground below it, never behind the button); its soft
    cream glow falls off radially and never reaches the characters */
 .ok-title-block{position:relative;display:flex;flex-direction:column;align-items:center;gap:clamp(8px,1.6vh,16px);max-height:min(64vh,calc(100% - 24vh));padding:4px 28px 10px}
-.ok-title-block::before{content:"";position:absolute;inset:-6% -14%;z-index:-1;background:radial-gradient(closest-side,var(--ok-glow) 30%,transparent);pointer-events:none}
-.ok-title-screen .ok-h1{font-size:clamp(2.5rem,min(10.5vmin,13vw),5.4rem);line-height:1.02;letter-spacing:.005em;color:${CREAM};margin:0 0 .16em;text-shadow:none;text-align:center}
-/* each word is a sticker: Ink outline over its fill, a Cream rim around that, and an Ink drop below (two layers of the
-   same word behind it), popping in with backOut */
-.ok-title-screen .ok-title-word{position:relative;display:inline-block;isolation:isolate;-webkit-text-stroke:.1em ${INK};paint-order:stroke fill;animation:ok-sticker 640ms cubic-bezier(.34,1.56,.64,1) both}
-.ok-title-screen .ok-title-word::before,.ok-title-screen .ok-title-word::after{content:attr(data-t);position:absolute;inset:0;z-index:-1;color:${CREAM};-webkit-text-stroke:.32em ${CREAM};paint-order:stroke fill;pointer-events:none}
-.ok-title-screen .ok-title-word::after{z-index:-2;color:${INK};-webkit-text-stroke:.32em ${INK};transform:translateY(.1em)}
-.ok-title-screen .ok-title-word:nth-child(4n+1){color:${P.mint[2]}}
+.ok-title-block::before{content:"";position:absolute;inset:-4% -12%;z-index:-1;background:radial-gradient(closest-side,var(--ok-glow) 45%,transparent);pointer-events:none}
+/* a clear zone around Play: a soft dim halo, so nothing in the scene reads as touching the button (no blur: a blurred
+   strip of scenery looks like a rendering bug) */
+.ok-cta{position:relative;display:flex;justify-content:center}
+.ok-cta::before{content:"";position:absolute;inset:-18px -40px -24px;z-index:-1;border-radius:999px;background:radial-gradient(closest-side,var(--ok-glow) 55%,transparent);pointer-events:none}
+.ok-title-screen .ok-h1{font-size:clamp(3rem,min(14vmin,15vw),7rem);line-height:.98;letter-spacing:-.01em;margin:0 0 .2em;text-align:center}
+/* the lockup: each word a sticker with a gradient face (spark to coral by default, spec.titleHue), an Ink edge, a Cream
+   rim and a 3D Ink extrude; words tilt alternately and drop in one after another */
+.ok-title-word{position:relative;display:inline-block;isolation:isolate;rotate:-4deg;animation:ok-sticker 640ms cubic-bezier(.34,1.56,.64,1) both}
+.ok-title-word:nth-child(even){rotate:2deg}.ok-stack .ok-title-word{display:block}
+.ok-title-word i{font-style:normal;background:linear-gradient(var(--ok-t1,#FFE14D) 20%,var(--ok-t2,#FF7A3D) 85%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.ok-title-word::before,.ok-title-word::after{content:attr(data-w);position:absolute;inset:0;z-index:-1;color:${INK};-webkit-text-stroke:.24em ${INK};pointer-events:none}
+.ok-title-word::after{z-index:-2;color:${CREAM};-webkit-text-stroke:.46em ${CREAM};filter:drop-shadow(0 .12em 0 ${INK})}
 .ok-title-screen [lang|=ar] .ok-title-word,.ok-ui[lang|=ar] .ok-title-screen .ok-h1,.ok-ui[lang|=he] .ok-title-screen .ok-h1{line-height:1.15}
-.ok-hero-wrap{animation:ok-bob 2.4s ease-in-out infinite;margin-bottom:-10px}
-.ok-brand{display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:.85em;color:var(--ok-text);opacity:.9}
+.ok-title-hero{position:fixed;bottom:max(3vh,14px);inset-inline-start:max(4vw,14px);z-index:-1;pointer-events:none;animation:ok-sticker 640ms 120ms cubic-bezier(.34,1.56,.64,1) both}
+.ok-title-hero canvas{animation:ok-bob 2.4s ease-in-out infinite}
+.ok-title-badge{margin:-.6em 0 -.2em;animation:ok-sticker 640ms 200ms cubic-bezier(.34,1.56,.64,1) both}.ok-title-badge>*{display:block;max-height:min(110px,13vh);width:auto}
+.ok-title-screen .ok-brand{position:fixed;top:calc(14px + env(safe-area-inset-top));inset-inline-start:14px}
+.ok-title-screen .ok-big{min-height:clamp(76px,10.5vh,90px);min-width:240px;font-size:clamp(1.6rem,3.7vh,2.05rem);border-width:3.5px;box-shadow:0 6px 0 ${INK};margin-top:10px;animation:ok-pop 420ms 260ms both,ok-glow 1.2s 900ms ease-in-out infinite}
+@keyframes ok-glow{50%{box-shadow:0 6px 0 ${INK},0 0 0 9px rgba(255,210,63,.5)}}
+.ok-title-screen .ok-big:focus-visible{outline-offset:4px;animation:ok-pop 420ms 260ms both}   /* one ring: the focus ring, or the pulse, never both */
+.ok-brand{display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:.85em;color:${INK};background:${CREAM};border:2px solid ${INK};border-radius:999px;padding:3px 10px;box-shadow:0 2px 0 ${INK}}
 .ok-brand svg{height:1.25em;width:auto}
-.ok-title-screen .ok-p{text-align:center;background:var(--ok-card);border:2.5px solid ${INK};box-shadow:0 3px 0 ${INK};border-radius:18px;padding:8px 16px;max-width:min(40ch,calc(100vw - 48px));font-size:clamp(.95em,2.4vmin,1.1em)}
+.ok-title-screen .ok-p{text-align:center;background:var(--ok-card);border:3px solid ${INK};box-shadow:0 4px 0 ${INK};border-radius:18px;padding:10px 18px;max-width:min(40ch,calc(100vw - 48px));font-size:clamp(1rem,2.6vmin,1.35rem)}
 .ok-night .ok-title-screen .ok-p{border-color:${CREAM}55;box-shadow:0 3px 0 #000}
 .ok-corner{position:fixed;top:calc(12px + env(safe-area-inset-top));inset-inline-end:calc(12px + env(safe-area-inset-right));display:flex;gap:8px}
 .ok-sparks{display:flex;gap:6px;justify-content:center}
@@ -51,6 +63,10 @@ export const SCREEN_CSS = `
 .ok-night .ok-sparks .ok-slot{--ok-fill:#3A3933}
 .ok-sparks .ok-slot:nth-child(2){transform:translateY(-10px) scale(1.12)}
 .ok-sparks .ok-on{--ok-fill:${P.spark[2]};animation:ok-land 420ms cubic-bezier(.34,1.56,.64,1)}
+.ok-win .ok-card{z-index:1}
+.ok-sparks{position:relative;isolation:isolate}
+.ok-sparks::before{content:"";position:absolute;inset:-34% -18%;z-index:-1;border-radius:50%;background:radial-gradient(closest-side,rgba(255,210,63,.55),rgba(255,210,63,0));opacity:0;transition:opacity 500ms ease-out;pointer-events:none}
+.ok-sparks.ok-lit::before{opacity:1}
 .ok-score{font-weight:800;font-size:2.2em;font-variant-numeric:tabular-nums;line-height:1}
 .ok-best{font-weight:600;color:var(--ok-text);opacity:.8}
 .ok-badge{display:inline-flex;align-items:center;gap:6px;background:${P.spark[2]};color:${INK};border:2px solid ${INK};border-radius:999px;padding:4px 14px;font-weight:800;animation:ok-pop 320ms cubic-bezier(.34,1.56,.64,1);transform:rotate(-3deg)}
@@ -73,19 +89,22 @@ export const SCREEN_CSS = `
 .ok-switch[aria-checked=true]::after{inset-inline-start:24px}
 .ok-ask .ok-card{width:min(560px,100%)}
 .ok-q{font-weight:800;margin:0;font-size:clamp(1.6rem,6vmin,2.6rem);line-height:1.15;font-variant-numeric:tabular-nums;text-wrap:balance}
-.ok-tiles{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%}
+.ok-tiles{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%;background:#2B1F5C;padding:14px;border-radius:26px;border:3px solid ${INK}}
 .ok-tile{position:relative;font:inherit;font-weight:800;font-size:clamp(1.4rem,5vmin,2.1rem);min-height:72px;border-radius:22px;border:3px solid ${INK};background:${CREAM};color:${INK};
-  box-shadow:0 5px 0 ${INK};cursor:pointer;transition:transform 80ms ease-out,box-shadow 80ms ease-out;font-variant-numeric:tabular-nums}
-.ok-tile:active{transform:translateY(4px);box-shadow:0 1px 0 ${INK}}
+  box-shadow:inset 0 -6px 0 var(--ok-lip,${P.coral[2]}),0 5px 0 ${INK};cursor:pointer;transition:transform 80ms ease-out,box-shadow 80ms ease-out;font-variant-numeric:tabular-nums}
+/* the answer dock: deep grape behind white tiles, each with a coloured lip (the zone reads apart from the world) */
+.ok-tile:nth-child(4n+2){--ok-lip:${P.sky[2]}}.ok-tile:nth-child(4n+3){--ok-lip:${P.grape[2]}}.ok-tile:nth-child(4n){--ok-lip:${P.mint[2]}}
+.ok-tile:active{transform:translateY(4px);box-shadow:inset 0 -6px 0 var(--ok-lip,${P.coral[2]}),0 1px 0 ${INK}}
 .ok-tile .ok-key{position:absolute;top:6px;inset-inline-start:8px;font-size:.5em;font-weight:700;opacity:.55}
 .ok-tile .ok-mark{position:absolute;top:-12px;inset-inline-end:-10px;width:34px;height:34px;border-radius:50%;border:2px solid ${INK};display:flex;align-items:center;justify-content:center;animation:ok-pop 320ms cubic-bezier(.34,1.56,.64,1)}
 .ok-tile .ok-mark svg{width:22px;height:22px}
-.ok-tile.ok-right{background:${P.mint[1]}}.ok-tile.ok-right .ok-mark{background:${P.mint[2]};border-radius:50%}
-.ok-tile.ok-bad{background:${P.coral[0]};animation:ok-wobble 420ms ease-out}.ok-tile.ok-bad .ok-mark{background:${P.coral[2]};border-radius:6px;transform:rotate(45deg)}.ok-tile.ok-bad .ok-mark svg{transform:rotate(-45deg)}
+.ok-tile.ok-right{background:${P.mint[2]};animation:ok-punch 220ms ease-out}.ok-tile.ok-right .ok-mark{background:${P.mint[2]};border-radius:50%}
+.ok-tile.ok-bad{background:${P.coral[1]};animation:ok-shake 240ms linear}.ok-tile.ok-bad .ok-mark{background:${P.coral[2]};border-radius:6px;transform:rotate(45deg)}.ok-tile.ok-bad .ok-mark svg{transform:rotate(-45deg)}
 .ok-hint{display:flex;align-items:center;gap:8px;font-weight:700;background:${P.sky[0]};color:${INK};border-radius:16px;padding:8px 14px;animation:ok-pop 320ms cubic-bezier(.34,1.56,.64,1)}
 .ok-hint svg{width:1.3em;height:1.3em;flex-shrink:0}
-.ok-banner{position:fixed;top:calc(76px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:10px;padding:10px 20px 10px 12px;border:3px solid ${INK};border-radius:999px;
+.ok-banner{position:fixed;top:calc(74px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:10px;padding:10px 20px 10px 12px;border:3px solid ${INK};border-radius:999px;
   font-weight:800;font-size:1.15em;color:${INK};box-shadow:0 5px 0 ${INK};z-index:22;animation:ok-drop 420ms cubic-bezier(.34,1.56,.64,1);max-width:calc(100vw - 32px)}
+.ok-banner.ok-inline{position:relative;top:auto;left:auto;transform:none;align-self:center;font-size:1em;padding:6px 16px 6px 8px;box-shadow:0 3px 0 ${INK};animation:ok-pop 320ms cubic-bezier(.34,1.56,.64,1)}
 .ok-banner .ok-mark{width:34px;height:34px;flex-shrink:0;display:flex;align-items:center;justify-content:center;border:2px solid ${INK};background:${CREAM}}
 .ok-banner .ok-mark svg{width:22px;height:22px}
 .ok-banner.ok-correct{background:${P.mint[2]}}.ok-banner.ok-correct .ok-mark{border-radius:50%}
@@ -100,7 +119,7 @@ export const SCREEN_CSS = `
 @media (max-width:600px){.ok-bubble{font-size:18px;padding:12px 14px}}
 .ok-hud{position:fixed;inset:0;pointer-events:none;padding:calc(10px + env(safe-area-inset-top)) calc(10px + env(safe-area-inset-right)) 0 calc(10px + env(safe-area-inset-left));display:flex;justify-content:space-between;align-items:flex-start;gap:8px;z-index:12}
 .ok-hud>div{display:flex;gap:8px;align-items:center;flex-wrap:nowrap;pointer-events:auto;min-width:0}
-.ok-pill{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 14px 0 8px;border-radius:999px;background:var(--ok-card);color:var(--ok-text);border:2.5px solid ${INK};box-shadow:0 3px 0 ${INK};font-weight:800;font-size:clamp(1.15rem,3.6vmin,1.5rem);font-variant-numeric:tabular-nums}
+.ok-pill{display:inline-flex;align-items:center;gap:6px;min-height:46px;padding:0 14px 0 8px;border-radius:999px;background:var(--ok-card);color:var(--ok-text);border:3px solid ${INK};box-shadow:0 3px 0 ${INK};font-weight:800;font-size:clamp(1.15rem,3.6vmin,1.5rem);font-variant-numeric:tabular-nums;white-space:nowrap}
 .ok-night .ok-pill{border-color:${CREAM}55;box-shadow:0 3px 0 #000}
 .ok-pill svg{width:28px;height:28px;flex-shrink:0}
 .ok-pill .ok-sp{display:flex}.ok-pill .ok-sp svg{stroke-width:2}
@@ -114,7 +133,7 @@ export const SCREEN_CSS = `
 .ok-timer.ok-low .ok-pie{fill:${P.coral[1]}}.ok-timer.ok-low{animation:ok-pulse 1s ease-in-out infinite}
 .ok-progress{width:clamp(120px,24vw,240px);padding:0 8px 0 12px;gap:6px}
 .ok-bar{flex:1;height:14px;border-radius:999px;background:${P.stone[0]};border:2px solid ${INK};overflow:hidden;min-width:28px}
-.ok-bar i{display:block;height:100%;width:0;background:${P.mint[2]};border-inline-end:2px solid ${INK};transition:width 300ms cubic-bezier(.34,1.56,.64,1)}
+.ok-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,${P.mint[2]},${P.spark[2]});border-inline-end:2px solid ${INK};transition:width 300ms cubic-bezier(.34,1.56,.64,1)}
 .ok-progress .ok-flag{width:22px;height:22px;flex-shrink:0;color:${P.mint[2]}}
 .ok-scorepill{position:relative}
 .ok-scorepill:has(.ok-combo:not([hidden])){padding-inline-end:24px}
@@ -142,17 +161,20 @@ export const SCREEN_CSS = `
 @keyframes ok-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
 @keyframes ok-land{0%{transform:scale(2.2) rotate(-40deg);opacity:0}60%{transform:scale(.9) rotate(6deg);opacity:1}100%{transform:none}}
 @keyframes ok-countpop{0%{transform:scale(2.4);opacity:0}30%{transform:scale(.92);opacity:1}45%{transform:scale(1.04)}80%{transform:scale(1);opacity:1}100%{transform:scale(.8);opacity:0}}
-@keyframes ok-wobble{0%,100%{transform:none}20%{transform:translateX(-8px) rotate(-2deg)}40%{transform:translateX(7px) rotate(2deg)}60%{transform:translateX(-5px)}80%{transform:translateX(3px)}}
+@keyframes ok-punch{50%{transform:scale(1.12)}}
+@keyframes ok-shake{25%,75%{translate:-6px}50%{translate:6px}}
 @keyframes ok-heartpop{0%{transform:scale(1)}40%{transform:scale(1.5)}100%{transform:scale(1)}}
 @keyframes ok-pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
 @keyframes ok-nudge{0%,100%{transform:translateY(0)}50%{transform:translateY(3px)}}
-.ok-rm .ok-modal,.ok-rm .ok-card,.ok-rm .ok-hero-wrap,.ok-rm .ok-title-word,.ok-rm .ok-on,.ok-rm .ok-badge,.ok-rm .ok-howcard,.ok-rm .ok-tile,.ok-rm .ok-banner,.ok-rm .ok-bubble,.ok-rm .ok-hint,.ok-rm .ok-pop,.ok-rm .ok-low,.ok-rm .ok-bump,.ok-rm .ok-more{animation:ok-fade 200ms ease-out!important}
+.ok-rm .ok-modal,.ok-rm .ok-card,.ok-rm .ok-title-hero canvas,.ok-rm .ok-title-word,.ok-rm .ok-title-hero,.ok-rm .ok-title-badge,.ok-rm .ok-big,.ok-rm .ok-on,.ok-rm .ok-badge,.ok-rm .ok-howcard,.ok-rm .ok-tile,.ok-rm .ok-banner,.ok-rm .ok-bubble,.ok-rm .ok-hint,.ok-rm .ok-pop,.ok-rm .ok-low,.ok-rm .ok-bump,.ok-rm .ok-more{animation:ok-fade 200ms ease-out!important}
 .ok-rm .ok-count b{animation:ok-countfade 700ms both!important}
 @keyframes ok-countfade{0%,100%{opacity:0}20%,80%{opacity:1}}
 @media (max-width:420px){.ok-card{padding:22px 16px 18px;border-radius:26px}.ok-tiles{gap:10px}}
 `;
 
 /** 'rtl' for Hebrew/Arabic script, 'ltr' for other letters, and 'ltr' for text with no letters (maths, numbers). */
+/** Title lockup gradients (spec.titleHue). */
+export const TITLE_HUES = { spark: ['#FFE14D', '#FF7A3D'], mint: ['#9BF0B8', '#2FB7E8'], sky: ['#7FD3FF', '#9B6BE8'], coral: ['#FFB36B', '#FF4F6E'] };
 export function textDir(s) {
   const m = /[A-Za-z\u00C0-\u024F\u0370-\u03FF\u0400-\u04FF\u0590-\u08FF\u3040-\u30FF\u4E00-\u9FFF\uAC00-\uD7AF]/.exec(String(s));
   return m && /[\u0590-\u08FF]/.test(m[0]) ? 'rtl' : 'ltr';
@@ -179,6 +201,7 @@ export function screens(kit) {
   const stage = () => kit.stage;
   const btn = (label, kind, onPress, o = {}) => { const b = ui.button(label, Object.assign({ kind, onPress }, o)); return b; };
   let open = 0;
+  const live = new Set();   // open modals' close functions (closeAll: a test jumping straight into play)
   /** A modal: scrim, card, focus trap, arrow-key moves; pauses the game while open. -> {root, card, close(v), done} */
   function modal(kind, o = {}) {
     const root = el('div', 'ok-modal ok-' + kind + (o.scrim === false ? '' : ' ok-scrim'));
@@ -204,12 +227,12 @@ export function screens(kit) {
     root.tabIndex = -1; doc.addEventListener('keydown', keys, true);
     const close = v => {
       if (!root.parentNode) return;
-      root.parentNode.removeChild(root); open--; doc.removeEventListener('keydown', keys, true);
+      root.parentNode.removeChild(root); open--; live.delete(close); doc.removeEventListener('keydown', keys, true);
       if (pause) kit.loop.resume('ui:' + kind);
       try { if (prev && prev.focus) prev.focus(); } catch (e) { /* gone */ }
       resolve(v);
     };
-    ui.mount().appendChild(root);
+    ui.mount().appendChild(root); live.add(close);
     later(0, () => { const f = root.querySelector('[data-ok-focus]') || root.querySelector('button'); if (f) f.focus({ preventScroll: true }); });
     return { root, card, close, done };
   }
@@ -230,14 +253,17 @@ export function screens(kit) {
       const m = modal('title-screen', { bare: true, scrim: false, pause: o.pause === true });   // the world stays alive behind the title
       const block = el('div', 'ok-title-block'); m.root.appendChild(block);
       if (o.brand !== false) { const b = el('div', 'ok-brand', WORDMARK); b.setAttribute('dir', 'ltr'); block.appendChild(b); }
-      if (o.hero !== false) { const w = el('div', 'ok-hero-wrap'); w.appendChild(portrait(o.hero, { size: o.heroSize || 120, mood: 'happy' })); block.appendChild(w); }
-      const h = el('h1', 'ok-h1'); h.id = 'ok-t-' + (++uid); h.dir = textDir(o.title || '');
-      String(o.title || '').split(/(\s+)/).forEach((w, i) => { if (/^\s+$/.test(w)) h.appendChild(doc.createTextNode(w)); else { const s = txt('span', 'ok-title-word', w); s.setAttribute('data-t', w); s.style.animationDelay = (120 + i * 70) + 'ms'; h.appendChild(s); } });
+      // the game's hero stands big in the bottom-start corner of the scene (about a third of the screen's height)
+      if (o.hero !== false) { const w = el('div', 'ok-title-hero'), W = kit.win; w.appendChild(portrait(o.hero, { size: o.heroSize || Math.round(Math.min(W.innerHeight * 0.4, W.innerWidth * (W.innerHeight > W.innerWidth ? 0.46 : 0.36))), mood: 'cheer' })); m.root.appendChild(w); }
+      const h = el('h1', 'ok-h1'), words = String(o.title || '').split(/(\s+)/), hue = TITLE_HUES[o.titleHue] || TITLE_HUES.spark; h.id = 'ok-t-' + (++uid); h.dir = textDir(o.title || '');
+      h.style.setProperty('--ok-t1', hue[0]); h.style.setProperty('--ok-t2', hue[1]); if (words.length === 3) h.classList.add('ok-stack');
+      words.forEach((w, i) => { if (/^\s+$/.test(w)) h.appendChild(doc.createTextNode(w)); else { const s = el('span', 'ok-title-word'), f = txt('i', '', w); s.appendChild(f); s.setAttribute('data-w', w); s.style.animationDelay = (i * 70) + 'ms'; h.appendChild(s); } });
       m.root.setAttribute('aria-labelledby', h.id); block.appendChild(h);
+      if (o.badge && o.badge.nodeType) { const bd = el('div', 'ok-title-badge'); bd.setAttribute('aria-hidden', 'true'); bd.appendChild(o.badge); block.appendChild(bd); }   // the game's motif (a pie, a letter) under the lockup
       if (o.subtitle) block.appendChild(gtxt('p', 'ok-p', o.subtitle));
       const play = btn(T('play'), 'hot', () => { kit.sfx('whoosh'); m.close(); if (o.play) o.play(); }, { big: true, icon: icon('play') });
       play.setAttribute('data-ok-focus', '');
-      block.appendChild(play);
+      const cta = el('div', 'ok-cta'); cta.appendChild(play); block.appendChild(cta);
       const corner = el('div', 'ok-corner'); corner.appendChild(btn(T('settings'), 'icon', () => S.settings(), { icon: icon('settings') })); m.root.appendChild(corner);
       return m.done;
     },
@@ -280,24 +306,28 @@ export function screens(kit) {
     win(o = {}) {
       const stars = Math.max(0, Math.min(3, o.stars == null ? 3 : o.stars | 0)), score = +o.score || 0, best = o.best != null ? +o.best : null;
       const m = modal('win', { pause: o.pause !== false });
-      if (o.hero !== false) m.card.appendChild(portrait(o.hero, { size: 120, mood: 'cheer' }));
-      m.card.appendChild(txt('h2', 'ok-h2', o.title || T('youWon')));
+      if (o.hero !== false) m.card.appendChild(portrait(o.hero, { size: 156, mood: 'cheer' }));
+      m.card.appendChild(gtxt('h2', 'ok-h2', o.title || T('youWon')));
       const row = el('div', 'ok-sparks'); row.setAttribute('role', 'img'); row.setAttribute('aria-label', T('sparks', { n: stars }));
       const slots = [0, 1, 2].map(() => { const s = el('span', 'ok-slot', icon('spark')); row.appendChild(s); return s; });
       m.card.appendChild(row);
       const sc = txt('div', 'ok-score', kit.i18n.num(0)); m.card.appendChild(sc);
       const newBest = best != null && score > best;
       if (best != null) m.card.appendChild(txt('div', 'ok-best', T('best') + ' ' + kit.i18n.num(Math.max(best, score))));
-      const again = btn(T('playAgain'), 'quiet', () => m.close('again'), { icon: icon('restart') }), next = btn(T('next'), 'hot', () => m.close('next'), { big: true, icon: icon('next') });
-      next.setAttribute('data-ok-focus', '');
-      const r = el('div', 'ok-row'); r.append(again, next); m.card.appendChild(r);
+      // next: false (a single level, the last level): "Play again" is the big, focused button and there is no Next
+      const r = el('div', 'ok-row');
+      if (o.next === false) { const again = btn(T('playAgain'), 'hot', () => m.close('again'), { big: true, icon: icon('restart') }); again.setAttribute('data-ok-focus', ''); r.append(again); }
+      else { const again = btn(T('playAgain'), 'quiet', () => m.close('again'), { icon: icon('restart') }), next = btn(T('next'), 'hot', () => m.close('next'), { big: true, icon: icon('next') }); next.setAttribute('data-ok-focus', ''); r.append(again, next); }
+      m.card.appendChild(r);
       const roll = { v: 0 }; kit.loop.ui.tween(roll, { v: score }, { ms: reduced() ? 1 : 900, ease: 'cubicOut', onUpdate: () => { sc.textContent = kit.i18n.num(Math.round(roll.v)); } }).then(() => { sc.textContent = kit.i18n.num(score); });
       slots.forEach((s, i) => { if (i < stars) later(350 + i * 380, () => { s.classList.add('ok-on'); kit.sfx('spark', { pitch: 1 + i * 0.12 }); }); });
       later(350 + stars * 380, () => {
         if (newBest) { const b = el('div', 'ok-badge', icon('spark')); b.appendChild(doc.createTextNode(T('newBest'))); sc.after(b); kit.sfx('levelup'); }
+        row.classList.add('ok-lit');
+        if (!reduced() && kit.celebrate) kit.celebrate(m.root);   // the dress pack: confetti behind the card (never over its text)
         const s = stage(); if (s && !reduced()) s.burst('confetti', s.camera.x, s.camera.y - s.view.vh * 0.45, { w: s.view.vw * 0.8 }); kit.sfx('win');
       });
-      announce(T('youWon') + ' ' + T('sparks', { n: stars }));
+      announce((o.title || T('youWon')) + ' ' + T('sparks', { n: stars }));
       return m.done;
     },
     tryAgain(o = {}) {
@@ -391,7 +421,7 @@ export function screens(kit) {
           }
           done = true; tiles.forEach(x => x.setAttribute('aria-disabled', 'true'));
           const good = tiles[ans]; if (good) { good.classList.add('ok-right'); mark(good, true); }
-          S.banner('wrong', T('answerIs', { a: choices[ans] })); showHint();
+          S.banner('wrong', T('answerIs', { a: (textDir(choices[ans]) === 'ltr' && kit.i18n.dir === 'rtl' ? '\u2066' + choices[ans] + '\u2069' : choices[ans]) })); showHint();
           later(1900, () => m.close(false));
         });
         grid.appendChild(t); return t;
@@ -399,15 +429,26 @@ export function screens(kit) {
       if (tiles[0]) tiles[0].setAttribute('data-ok-focus', '');
       return m.done;
     },
-    /** banner('correct' | 'wrong', reason?) */
+    /** banner('correct' | 'wrong', reason?, text?): "Correct!" / "Not quite." then the reason (a string key or text; maths
+     *  keeps reading left to right in Arabic and Hebrew), or text alone in place of both. It drops into the banner band
+     *  under the HUD (games keep their own pieces below var(--ok-safe-top)); while the quiz card is open it shows inside
+     *  the card, under the answers, so it never covers the question. */
     banner(kind, reason, text) {
       const ok = kind !== 'wrong';
       for (const old of ui.mount().querySelectorAll('.ok-banner')) old.remove();
       const b = el('div', 'ok-banner ok-' + (ok ? 'correct' : 'wrong'));
       b.setAttribute('role', 'status');
       b.appendChild(el('span', 'ok-mark', icon(ok ? 'check' : 'cross', { stroke: 3.2 })));
-      b.appendChild(txt('span', '', text || (ok ? T('correct') : reason ? T('wrong') + ' ' + reason : T('wrong'))));
-      ui.mount().appendChild(b);
+      const words = el('span', '');
+      const iso = s => { const i = doc.createElement('bdi'); i.textContent = String(s); i.dir = textDir(s); return i; };
+      if (text) words.appendChild(iso(text));
+      else {
+        words.appendChild(doc.createTextNode(ok ? T('correct') : T('wrong')));
+        if (reason != null && reason !== '') { words.appendChild(doc.createTextNode(' ')); words.appendChild(iso(kit.i18n.has(reason) ? T(reason) : reason)); }
+      }
+      b.appendChild(words);
+      const asking = [...ui.mount().querySelectorAll('.ok-ask')].pop(), card = asking && asking.querySelector('.ok-card');
+      if (card) { b.classList.add('ok-inline'); card.appendChild(b); } else ui.mount().appendChild(b);
       announce(b.textContent);
       later(ok ? 1400 : 2200, () => b.remove());
       return b;
@@ -423,9 +464,23 @@ export function screens(kit) {
       ui.mount().appendChild(b);
       const place = () => {
         const s = stage(); let x = innerW() / 2, y = innerH() * 0.4;
-        if (s && s.fit) { const w = at && at.x != null ? at : { x: 0, y: 0 }; const top = w.size ? { x: w.x, y: w.y - w.size * 1.05 } : w; const p = s.camera.toScreen(top); x = s.fit.offX + p.x * s.fit.k; y = s.fit.offY + p.y * s.fit.k; }
-        const bw = b.offsetWidth, bh = b.offsetHeight, left = Math.max(8, Math.min(innerW() - bw - 8, x - bw / 2));
-        b.style.left = left + 'px'; b.style.top = Math.max(8, y - bh - 22) + 'px';
+        if (s && s.fit) { const w = at && at.x != null ? at : { x: 0, y: 0 }; const top = w.size ? { x: w.x, y: w.y - w.size * 1.18 } : w; const p = s.camera.toScreen(top); x = s.fit.offX + p.x * s.fit.k; y = s.fit.offY + p.y * s.fit.k; }
+        const bw = b.offsetWidth, bh = b.offsetHeight, W = innerW();
+        // never cover a pickup, a letter block or another face: the cast and pickups on screen (and any element the
+        // game marks data-ok-keep) are kept clear. Try centred, then shifted left or right, then higher.
+        const keep = [];
+        if (s && s.fit) for (const e of s.entities) {
+          if (e.dead || e.taken || e === at || e.layer !== Z.actors || e.visible === false) continue;
+          const p = s.camera.toScreen({ x: e.x, y: e.y - e.size * 0.5 }), cx = s.fit.offX + p.x * s.fit.k, cy = s.fit.offY + p.y * s.fit.k, r = e.size * 0.55 * s.fit.k * (s.camera.effZoom || 1);
+          if (cx > -r && cx < W + r) keep.push([cx - r, cy - r, cx + r, cy + r]);
+        }
+        if (doc.querySelectorAll) for (const k of doc.querySelectorAll('[data-ok-keep]')) { const q = k.getBoundingClientRect(); keep.push([q.left, q.top, q.right, q.bottom]); }
+        const clampL = l => Math.max(8, Math.min(W - bw - 8, l)), hits = (l, t) => keep.reduce((n, k) => n + (l < k[2] && l + bw > k[0] && t < k[3] && t + bh + 18 > k[1] ? 1 : 0), 0);
+        const top0 = Math.max(8, y - bh - 30), tries = [[x - bw / 2, top0], [x - bw + 40, top0], [x - 40, top0], [x - bw / 2, Math.max(8, top0 - bh * 0.6)], [x - bw + 40, Math.max(8, top0 - bh * 0.6)], [x - 40, Math.max(8, top0 - bh * 0.6)]];
+        let best = null;
+        for (const [l0, t] of tries) { const l = clampL(l0), n = hits(l, t); if (!best || n < best[2]) best = [l, t, n]; if (!n) break; }
+        const left = best[0];
+        b.style.left = left + 'px'; b.style.top = best[1] + 'px';
         b.style.setProperty('--ok-tx', Math.max(24, Math.min(bw - 24, x - left)) + 'px');
       };
       const innerW = () => kit.win.innerWidth, innerH = () => kit.win.innerHeight;
@@ -517,6 +572,8 @@ export function screens(kit) {
       return H;
     },
     get open() { return open; },
+    /** Close every open modal (each resolves undefined) and speech bubble. */
+    closeAll() { for (const c of [...live]) c(); for (const b of ui.mount().querySelectorAll('.ok-bubble')) b.remove(); },
   };
   let uid = 0;
   return S;

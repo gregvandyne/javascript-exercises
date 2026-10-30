@@ -24,9 +24,12 @@ import { PRESET_NAMES } from './particles.js';
 import { sparkPath, sticker, detail, ringEye, glowMask, lines, ellipsePath, rrectPath } from './grammar.js';
 import { screens } from './screens.js';
 import { icon, ICON_NAMES } from './icons.js';
-import { charSpec, defineChar, CLIPS, FACES } from './chars.js';
+import { charSpec, defineChar, CLIPS, FACES, STYLE } from './chars.js';
 import { defineProps, PROP_GROUPS, PROP_VARIANTS } from './props.js';
 import { defineGround, BIOME_NAMES, autotile } from './biomes.js';
+import { makeGame, GAME_PARTS, groundFollow, CONTROLS, KIND_NAMES } from './game.js';
+import { grid, generate, LEGEND } from './level.js';
+import { installPacks, PACK_NAMES } from './packs.js';
 
 export const VERSION = '1.0.0', API = 1;
 
@@ -59,7 +62,7 @@ export function createKit(win) {
   const evs = {};
   kit.on = (ev, fn) => { (evs[ev] = evs[ev] || []).push(fn); return () => { evs[ev] = (evs[ev] || []).filter(f => f !== fn); }; };
   kit.emit = (ev, v) => { for (const fn of (evs[ev] || []).slice()) { try { fn(v); } catch (e) { kit.warn(e); } } };
-  const storage = brbStorage(brb, win);
+  const storage = kit.storage = brbStorage(brb, win);
   kit.i18n = new I18n((brb && brb.user && brb.user.lang) || doc.documentElement.getAttribute('lang') || 'en');
   kit.settings = new Settings({ storage, brb, win });
   kit.theme = new Theme({ brb, win });
@@ -70,7 +73,7 @@ export function createKit(win) {
   kit.screens = screens(kit);
   kit.save = new Save(storage); kit.save.warn = kit.warn;
   kit.flashes = new FlashLimiter();
-  kit.parts = Object.assign({}, CORE_PARTS); kit.rigs = Object.assign({}, RIGS); kit.artPacks = [];
+  kit.parts = Object.assign({}, CORE_PARTS, GAME_PARTS, { follow: groundFollow(CORE_PARTS.follow) }); kit.rigs = Object.assign({}, RIGS); kit.artPacks = [];
   kit.stages = []; kit.stage = null; kit.scene = 'boot'; kit.tier = 'low'; kit.backend = 'none'; kit.glLocked = false;
   kit.testActions = {}; kit.testState = null; kit.hudPause = null;
   kit.audio.onCaption = text => kit.ui.caption(text);
@@ -84,7 +87,13 @@ export function createKit(win) {
   let stopLoop = null, detachInput = null;
   kit.attachStage = s => {
     kit.stages.push(s); kit.stage = s;
+    if (detachInput && kit.inputBare) { detachInput(); detachInput = null; kit.inputBare = false; }
     if (!detachInput) detachInput = kit.input.attach(win, s.el);
+    kit.startLoop();
+  };
+  /** The game clock without a 2D stage (a three.js game with the kit's UI): Oomba.time.start(). */
+  kit.startLoop = () => {
+    if (!detachInput) { detachInput = kit.input.attach(win, doc.createElement('div')); kit.inputBare = true; }   // keys (pause) with no stage
     if (!stopLoop) {
       loop.update = dt => {
         let pads = null; try { pads = win.navigator.getGamepads ? win.navigator.getGamepads() : null; } catch (e) { pads = null; }
@@ -112,7 +121,11 @@ export function createKit(win) {
   win.addEventListener('pointerdown', unlock, { capture: true }); win.addEventListener('keydown', unlock, { capture: true });
   win.addEventListener('pagehide', () => kit.save.flush());
   let helper = null;
-  kit.helperAtlas = () => { if (!helper) { helper = new Atlas({ doc, pageSize: 2048, maxPages: 2 }); defineCoreArt(helper); defineProps(helper); defineGround(helper); for (const fn of kit.artPacks) fn(helper); } return helper; };
+  kit.helperAtlas = () => { if (!helper) { helper = kit.helper = new Atlas({ doc, pageSize: 2048, maxPages: 2 }); defineCoreArt(helper); defineProps(helper); defineGround(helper); for (const fn of kit.artPacks) fn(helper); } return helper; };
+  installPacks(kit);
+  kit.validateGame = spec => validate('game', spec);
+  /** The art style: 'bold' (12-14: taller cast, cool faces, sharper UI from the style-bold pack) or 'playful'. */
+  kit.setStyle = n => { STYLE.name = n === 'bold' ? 'bold' : 'playful'; kit.ui.mount().classList.toggle('ok-bold', STYLE.name === 'bold'); if (STYLE.name === 'bold' && !kit.packs['style-bold']) kit.warn("style 'bold': load the style-bold pack (its pinned tag right after the kit tag)"); return STYLE.name; };
   kit.drawKit = makeDraw(kit);
   /** A character portrait canvas px tall (mood = face variant), drawn once through the helper atlas. */
   kit.portraitCanvas = (spec, px = 160, mood = '') => {
@@ -167,6 +180,8 @@ function publicApi(kit) {
       get now() { return loop.now; }, get game() { return loop.game; },
       get scale() { return loop.scale; }, set scale(v) { loop.scale = Math.max(0.1, Math.min(2, +v || 1)); },
       hitstop: ms => loop.hitstop(ms), slowmo: (s, ms) => loop.slowmo(s, ms),
+      /** start(): run the game clock (and the HUD's pause key) in a game with no Oomba.stage, e.g. three.js. */
+      start: () => kit.startLoop(),
       pause: r => loop.pause(r), resume: r => loop.resume(r), get paused() { return loop.paused; },
       wait: ms => loop.tw.wait(ms), after: (ms, fn) => loop.tw.after(ms, fn), every: (ms, fn) => loop.tw.every(ms, fn),
       real: { wait: ms => loop.ui.wait(ms), after: (ms, fn) => loop.ui.after(ms, fn), every: (ms, fn) => loop.ui.every(ms, fn) },
@@ -230,6 +245,14 @@ function publicApi(kit) {
       banner: (k, r) => kit.screens.banner(k, r), ask: q => kit.screens.ask(q), bubble: (at, t, o) => kit.screens.bubble(at, t, o), dialog: o => kit.screens.dialog(o),
       portrait: (spec, o) => kit.screens.portrait(spec, o), get open() { return kit.screens.open; },
     },
+    /** game({...}) -> the declarative game (level A): see docs/kit-api.md. */
+    game: spec => makeGame(kit, spec || {}, o => O.stage(o)),
+    level: { grid: (rows, legend, o) => grid(rows, legend, o), generate: o => generate(o), legend: LEGEND, kinds: KIND_NAMES, controls: CONTROLS },
+    /** pack(name) -> what a loaded art pack added ({name, species, props, biomes}), or null (with a warning naming the tag to add). */
+    pack: name => kit.packs[name] || (kit.warn(PACK_NAMES.includes(name) ? `Oomba.pack('${name}'): the pack is not loaded. Add its pinned tag right after the kit tag.` : `Oomba.pack('${name}'): there is no such pack (packs: ${PACK_NAMES.join(', ')}).`), null),
+    get packs() { return Object.keys(kit.packs); },
+    /** style() -> 'playful' | 'bold'; style('bold') switches it (before the stage is made). */
+    style: n => (n == null ? STYLE.name : kit.setStyle(n)),
     /** char(spec) -> a validated, frozen character spec (stage.add(spec) spawns it). */
     char: spec => charSpec(spec),
     icon: (name, o) => icon(name, o), icons: ICON_NAMES,
@@ -251,6 +274,9 @@ function publicApi(kit) {
   // Internals for the kit's own tests and the /kit preview only (?okDebug=1): unsupported, not enumerable, and the
   // scanner warns when a game names it.
   if (kit.query.okDebug === '1') Object.defineProperty(O, 'debug', { value: { kit }, enumerable: false });
+  // The hook pack files call (not for games: the scanner flags it).
+  Object.defineProperty(O, '__pk', { value: (meta, define) => kit.definePack(meta, define), enumerable: false });
+  kit.publicTest = O.test; kit.publicInput = O.input; kit.publicJuice = O.juice;
   kit.meSpec = () => O.me();
   return O;
 }

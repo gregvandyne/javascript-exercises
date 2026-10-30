@@ -28,7 +28,7 @@ export class Paper {
     return this.skyC;
   }
   _vignette(pw, ph, F) {
-    const key = pw + 'x' + ph + '|' + (F.tod > 0.5 ? 2 : F.tod > 0.25 ? 1 : 0) + (F.vignette > 0 ? 1 : 0);
+    const key = pw + 'x' + ph + '|' + (F.tod > 0.5 ? 2 : F.tod > 0.25 ? 1 : 0) + Math.round(F.vignette * 8);
     if (key === this.vigKey && this.vig) return this.vig;
     const w = Math.max(16, pw >> 2), h = Math.max(16, ph >> 2);
     if (!this.vig) this.vig = this.atlas.canvas(w, h); else { this.vig.width = w; this.vig.height = h; }

@@ -7,16 +7,23 @@ import { PALETTE, INK, CREAM, SKIN, SKIN_SHADE, HAIR } from './tokens.js';
 import { sticker, detail, ringEye, sparkPath, ellipsePath, rrectPath, glowMask, lines } from './grammar.js';
 import { UNLIT } from './atlas.js';
 import { adjustHex, contrast, hexToOklab } from './color.js';
-import { validate } from './validate.js';
+import { validate, SPECIES } from './validate.js';
 
 const P = PALETTE, TAU = Math.PI * 2, PI = Math.PI;
 export const CW = 120, CH = 150;
 export const CLIPS = ['idle', 'walk', 'run', 'jump', 'fall', 'land', 'hurt', 'cheer', 'think', 'sad', 'sleep', 'talk', 'wave'];
+/** The art style (Oomba.style): 'playful' (default) or 'bold' (the style-bold pack sets the proportions: legs, head,
+ *  body x; no blush, narrowed eyes, 'determined' by default). WEAR_X: pack wear {hat(hx, top, rx) -> {p, draw}, body(ctx, k, box)}. */
+export const STYLE = { name: 'playful' }, WEAR_X = {};
 export const FACES = ['happy', 'sad', 'surprised', 'determined', 'thinking', 'sleepy', 'wink', 'cheer', 'hurt', 'sleep', 'talk'];
 // Back to front. Both arms hang behind the torso (shared rim, no floating capsules); the rig moves the front arm in
 // front only while it crosses the body (think, talk). Long hair has its own back part, behind the body.
 const ORDER = ['wingL', 'wingR', 'hairB', 'pack', 'tail', 'ears', 'armB', 'legB', 'legF', 'armF', 'body', 'head', 'pupilL', 'pupilR', 'face'];
 const ONE_SHOT = { land: 0.28, hurt: 0.5 };
+/** Species added by art packs (Oomba.pack): name -> {geom, color, belly, browed, mouth ('w' | 'beak'), paw, legs(H),
+ *  parts(H), headBack(H), headFront(ctx, k, H), beak(ctx, k, H, open), hats}. The drawers below call these hooks at fixed points. */
+export const SPECIES_EXT = {};
+export function addSpecies(name, def) { SPECIES_EXT[name] = def; if (!SPECIES.includes(name)) SPECIES.push(name); }
 
 // ---- path helpers ----
 export function capsule(x1, y1, x2, y2, r) {
@@ -62,7 +69,7 @@ function geom(sp) {
     bee: { head: [60, 94, 38, 38], neck: [60, 140], eyes: [[47, 88], [73, 88]], eyeD: 20, mouth: [60, 106], sh: [[24, 104], [96, 104]], arm: [11, 6], armOut: 5, wings: [[48, 60], [72, 60]], ears: [60, 60], one: true, ring: 0.17 },
     oomba: { head: [60, 98, 41, 48], neck: [60, 146], eyes: [[46, 92], [74, 92]], eyeD: 26, mouth: [60, 112], hips: [[46, 140], [74, 140]], leg: [5, 7], sh: [[22, 104], [98, 104]], arm: [13, 7], armOut: 5, ears: [60, 56], one: true, ring: 0.22 },
   };
-  return G[sp] || G.oomba;
+  return G[sp] || (SPECIES_EXT[sp] && SPECIES_EXT[sp].geom) || G.oomba;
 }
 
 /** Build (and register in the atlas) a character from a spec: -> { id, spec, G, parts:[names] }. Cached per atlas. */
@@ -80,10 +87,17 @@ export function defineChar(atlas, spec) {
   const pr = pupilR(G);
   atlas.define(id + ':pupil', { w: pr * 2 + 4, h: pr * 2 + 4, ax: 0.5, ay: 0.5, lineH: CH, draw(ctx, k) { pupilDraw(ctx, k, pr + 2, pr + 2, pr); } });
   // The whole character at rest (portraits, hit boxes, the gallery): every part in order, pupils centred.
+  const tf = (ctx, n) => {   // the bold proportions at rest (the rig does the same per slot)
+    if (STYLE.name !== 'bold' || !STYLE.legs || !G.hips) return; const up = G.leg[0] * (STYLE.legs - 1), hy = G.hips[0][1], [nx, ny] = G.neck;
+    if (n[0] === 'l') { ctx.translate(0, hy - up); ctx.scale(1, STYLE.legs); ctx.translate(0, -hy); return; }
+    ctx.translate(0, -up);
+    if (n === 'body' || n === 'pack') { ctx.translate(60, 0); ctx.scale(STYLE.body, 1); ctx.translate(-60, 0); }
+    else if (!/^arm|^tail/.test(n)) { ctx.translate(nx, ny); ctx.scale(STYLE.head, STYLE.head); ctx.translate(-nx, -ny); }
+  };
   const all = (ctx, k) => {
     for (const n of parts) {
-      if (n === 'pupilL' || n === 'pupilR') { const E = G.eyes[n === 'pupilL' ? 0 : 1]; if (!closedEyes(k.v || spec.mood, n)) { ctx.save(); pupilDraw(ctx, k, E[0], E[1] - 1, pr * (k.v === 'surprised' ? 0.7 : 1)); ctx.restore(); } continue; }
-      ctx.save(); const kk = n === 'face' ? Object.assign({}, k, { v: k.v || spec.mood }) : k; D[n].draw(ctx, kk); ctx.restore();
+      if (n === 'pupilL' || n === 'pupilR') { const E = G.eyes[n === 'pupilL' ? 0 : 1]; if (!closedEyes(k.v || spec.mood, n)) { ctx.save(); tf(ctx, n); pupilDraw(ctx, k, E[0], E[1] - 1, pr * (k.v === 'surprised' ? 0.7 : 1)); ctx.restore(); } continue; }
+      ctx.save(); tf(ctx, n); const kk = n === 'face' ? Object.assign({}, k, { v: k.v || spec.mood }) : k; D[n].draw(ctx, kk); ctx.restore();
     }
   };
   atlas.define(id, { w: CW, h: CH, ax: 0.5, ay: 1, draw: all });
@@ -99,9 +113,12 @@ export function charSpec(o) {
   const s = Object.assign({}, validate('char', typeof o === 'string' ? { species: o } : o || {}).spec);
   if (s.species === 'kid') { s.hair = s.hair || { style: 'bob', color: 'cocoa' }; s.outfit = s.outfit || { top: 'tee', color: 'sky' }; }
   // The bee is honey amber (peach) with Ink stripes: Spark yellow is for rewards only, never a creature.
-  if (s.species !== 'kid' && !(o && o.colors && o.colors.base)) s.colors = Object.assign({}, s.colors, { base: { fox: 'peach', bunny: 'snow', frog: 'mint', bee: 'peach', oomba: 'mint' }[s.species] || s.colors.base });
+  const X = SPECIES_EXT[s.species];
+  if (s.species !== 'kid' && !(o && o.colors && o.colors.base)) s.colors = Object.assign({}, s.colors, { base: { fox: 'peach', bunny: 'snow', frog: 'mint', bee: 'peach', oomba: 'mint' }[s.species] || (X && X.color) || s.colors.base });
+  if (X && X.belly && !(o && o.colors && o.colors.belly)) s.colors = Object.assign({}, s.colors, { belly: X.belly });
   if (s.colors.base === 'spark') s.colors = Object.assign({}, s.colors, { base: 'peach' });
-  s.id = 'ch' + hash(JSON.stringify([s.species, s.body, s.colors, s.skin, s.hair, s.outfit, s.wear]));
+  if (STYLE.name === 'bold' && !(o && o.mood)) s.mood = 'determined';
+  s.id = 'ch' + hash(JSON.stringify([s.species, s.body, s.colors, s.skin, s.hair, s.outfit, s.wear, STYLE.name]));
   s.__ok = 1;
   return Object.freeze(s);
 }
@@ -109,8 +126,10 @@ export function charSpec(o) {
 const pupilR = G => G.eyeD * (0.5 - (G.ring || 0.22)) * 0.55;
 function pupilDraw(ctx, k, x, y, r) {
   const p = circ(x, y, r); ctx.fillStyle = INK; ctx.fill(p);
-  const h = circ(x - r * 0.34, y - r * 0.38, Math.max(1.1, r * 0.38)); ctx.fillStyle = '#FFFFFF'; ctx.fill(h);   // the catch-light
-  if (k.mask) { const m = k.mask(); m.fillStyle = UNLIT; m.fill(p); m.fillStyle = '#FF0000'; m.fill(h); }
+  // the catch-light; on a phone-sized face (a pupil under ~3 px) it would turn the pupil into a ring, so it goes
+  const small = r * (k.s || 1) < 3, h = small ? null : circ(x - r * 0.34, y - r * 0.38, Math.max(1.1, r * 0.38));
+  if (h) { ctx.fillStyle = '#FFFFFF'; ctx.fill(h); }
+  if (k.mask) { const m = k.mask(); m.fillStyle = UNLIT; m.fill(p); if (h) { m.fillStyle = '#FF0000'; m.fill(h); } }
 }
 const CLOSED = { cheer: 2, hurt: 2, sleep: 2, blink: 2, wink: 1 };
 function closedEyes(v, n) { const base = String(v || '').split('.')[0], c = String(v || '').endsWith('.b') ? 2 : CLOSED[base] || 0; return c === 2 || (c === 1 && n === 'pupilR'); }
@@ -128,6 +147,9 @@ function drawers(spec, G) {
   const outfit = spec.outfit ? ramp(spec.outfit.color) : null;
   const accent = spec.colors.accent === 'spark' ? 'coral' : spec.colors.accent;
   const A = ramp(accent);
+  const X = SPECIES_EXT[sp] || null;
+  // what a pack species' hooks get: its colours, geometry and the Ink drawing grammar
+  const XH = X ? { spec, G, fill, shade, light, tint, belly, A, P, INK, CREAM, rim, flat, shaded, sticker, detail, capsule, circ, ellipse: ellipsePath, rrect: rrectPath, adjust: adjustHex, lines, spark: sparkPath, glow: glowMask } : null;
 
   // Limbs: a capsule hanging from its pivot (tucked under the torso, which is drawn over the shoulder), with a
   // paw/hand; sleeves for kids. The upper end starts a little above the pivot so a raised arm still meets the body.
@@ -153,7 +175,7 @@ function drawers(spec, G) {
     const kidSleeve = sp === 'kid' ? (spec.outfit.top === 'overalls' ? [0, 0, CREAM, P.cream[3]] : outfit) : null;
     const sleeveLen = sp === 'kid' ? (spec.outfit.top === 'hoodie' ? 0.85 : 0.45) : 0;
     const col = sp === 'kid' ? skin : fill, colS = sp === 'kid' ? skinS : shade;
-    const paw = sp === 'fox' ? P.cocoa[3] : sp === 'kid' ? skin : sp === 'bee' ? INK : null;
+    const paw = X && X.paw ? X.paw(XH) : sp === 'fox' ? P.cocoa[3] : sp === 'kid' ? skin : sp === 'bee' ? INK : null;
     [['armB', 0, -1], ['armF', 1, 1]].forEach(([n, i, s]) => {
       const [x, y] = G.sh[i];
       D[n] = { box: [x - 22, y - 16, x + 22, y + len + 14], pivot: [x, y], draw: limb(x, y, len, r, s * (G.armOut || 3), col, colS, paw, kidSleeve, sleeveLen) };
@@ -168,6 +190,7 @@ function drawers(spec, G) {
     } else if (sp === 'fox') { col = P.cocoa[3]; colS = adjustHex(P.cocoa[3], -0.08); foot = P.cocoa[3]; }
     else if (sp === 'oomba') { col = shade; foot = shade; }
     else if (sp === 'frog') { foot = light; }
+    if (X && X.legs) [col, colS, foot] = X.legs(XH);
     [['legB', 0], ['legF', 1]].forEach(([n, i]) => {
       const [x, y] = G.hips[i];
       D[n] = { box: [x - 18, y - 12, x + 20, y + len + 14], pivot: [x, y],
@@ -207,6 +230,7 @@ function drawers(spec, G) {
         ctx.save(); ctx.clip(t); flat(ctx, k, ellipsePath(cx, mid + 6, w * 0.3, (bot - top) * 0.36), belly, 0.6); ctx.restore();
       }
       if (wear.has('backpack')) for (const s of [-1, 1]) { const st = capsule(cx + s * w * 0.3, top + 4, cx + s * w * 0.34, mid + 6, 2.6); flat(ctx, k, st, A[2], 0.7); }
+      for (const n of wear) if (WEAR_X[n] && WEAR_X[n].body) WEAR_X[n].body(ctx, k, { cx, top, mid, bot, w, A });
       if (wear.has('scarf')) { const sc = rrectPath(cx - w * 0.46, top - 4, w * 0.92, 11, 5.5), tail = rrectPath(cx + w * 0.12, top + 2, 9, 20, 4); rim(ctx, k, [sc, tail]); shaded(ctx, k, tail, A[2], A[3], null, 2); shaded(ctx, k, sc, A[2], A[3], null, 2); }
     } };
   }
@@ -254,6 +278,8 @@ function drawers(spec, G) {
     }
   }
 
+  if (X && X.parts) Object.assign(D, X.parts(XH));
+
   // ---- long hair: hangs behind the body (its own part, so it never covers the torso) ----
   if (sp === 'kid') {
     const H0 = hairShapes(spec.hair.style, G);
@@ -274,12 +300,14 @@ function drawers(spec, G) {
     if (sp === 'fox') { ears = [-1, 1].map(s => { const p = new Path2D(); p.moveTo(hx + s * 30, hy - 4); p.quadraticCurveTo(hx + s * 34, hy - 36, hx + s * 26, hy - 42); p.quadraticCurveTo(hx + s * 14, hy - 34, hx + s * 8, hy - 22); p.closePath(); return p; }); sil.push(...ears); }
     if (sp === 'frog') { bumps = G.eyes.map(([x, y]) => circ(x, y + 2, 15)); sil.push(...bumps); }
     if (sp === 'bee') { sting = new Path2D(); sting.moveTo(52, 128); sting.quadraticCurveTo(60, 152, 60, 152); sting.quadraticCurveTo(60, 152, 68, 128); sting.closePath(); sil.unshift(sting); }
-    const hat = sp === 'kid' || sp === 'fox' || sp === 'bunny' ? wearHat(wear, hx, hy - hry, hrx) : [];
+    const xb = X && X.headBack ? X.headBack(XH) : []; sil.push(...xb.map(b => b.p));
+    const hat = sp === 'kid' || sp === 'fox' || sp === 'bunny' || (X && X.hats) ? wearHat(wear, hx, hy - hry, hrx) : [];
     sil.push(...hat.map(h => h.p));
     rim(ctx, k, sil);
     if (sting) flat(ctx, k, sting, P.cocoa[3]);
     for (const p of back) shaded(ctx, k, p, hc, hcS, null, 4);
     if (H && H.ties) for (const t of H.ties) flat(ctx, k, t, A[2], 0.7);   // hair ties: buns read as hair, never ears
+    for (const b of xb) b.draw ? b.draw(ctx, k) : shaded(ctx, k, b.p, b.fill || fill, b.shade || shade, null, 3);
     if (ears) ears.forEach((p, i) => { shaded(ctx, k, p, fill, shade, null, 3); const s = i ? 1 : -1, inner = new Path2D(); inner.moveTo(hx + s * 26, hy - 10); inner.quadraticCurveTo(hx + s * 27, hy - 30, hx + s * 24, hy - 34); inner.quadraticCurveTo(hx + s * 16, hy - 28, hx + s * 13, hy - 20); inner.closePath(); flat(ctx, k, inner, P.cocoa[3], 0.5); });
     if (sp === 'kid') for (const s of [-1, 1]) shaded(ctx, k, circ(hx + s * (hrx - 1), hy + 5, 6.5), skin, skinS, null, 2);
     shaded(ctx, k, head, headFill, headShade, [hx - hrx * 0.42, hy - hry * 0.45, hrx * 0.2, hry * 0.13, -0.6], sp === 'oomba' ? 9 : 6);
@@ -289,8 +317,9 @@ function drawers(spec, G) {
     if (sp === 'fox') { ctx.save(); ctx.clip(head); const m = new Path2D(); m.moveTo(hx - hrx, hy + 6); m.quadraticCurveTo(hx - 12, hy + 6, hx, hy + 14); m.quadraticCurveTo(hx + 12, hy + 6, hx + hrx, hy + 6); m.lineTo(hx + hrx, hy + hry); m.lineTo(hx - hrx, hy + hry); m.closePath(); flat(ctx, k, m, CREAM, 0.6); ctx.restore(); flat(ctx, k, ellipsePath(hx, hy + 9, 4.6, 3.4), INK, 0.6); }
     if (sp === 'bunny') { ctx.save(); ctx.clip(head); flat(ctx, k, ellipsePath(hx, hy + 18, 16, 11), CREAM, 0.6); ctx.restore(); const n = new Path2D(); n.moveTo(hx - 4, hy + 11); n.quadraticCurveTo(hx, hy + 9, hx + 4, hy + 11); n.quadraticCurveTo(hx, hy + 17, hx - 4, hy + 11); n.closePath(); flat(ctx, k, n, P.coral[2], 0.6); }
     if (sp === 'frog') { ctx.save(); ctx.clip(head); flat(ctx, k, ellipsePath(hx, hy + 18, 24, 9), light, 0.6); ctx.restore(); }
+    if (X && X.headFront) { XH.head = head; X.headFront(ctx, k, XH); }
     // cheeks, nose, eyes
-    ctx.fillStyle = 'rgba(255,156,143,0.7)';
+    ctx.fillStyle = STYLE.name === 'bold' ? 'rgba(0,0,0,0)' : 'rgba(255,156,143,0.7)';
     const cy = G.mouth[1] - 3, cdx = (G.eyes[1][0] - G.eyes[0][0]) * 0.5 + G.eyeD * 0.45;
     for (const s of [-1, 1]) { ctx.beginPath(); ctx.ellipse(hx + s * cdx, cy, 5.5, 3.2, 0, 0, TAU); ctx.fill(); }
     if (sp === 'kid') { const n = new Path2D(); n.moveTo(hx - 2.5, G.mouth[1] - 7); n.quadraticCurveTo(hx, G.mouth[1] - 5, hx + 2.5, G.mouth[1] - 7); detail(ctx, k, n, 1); }
@@ -304,8 +333,9 @@ function drawers(spec, G) {
   D.face = { box: [hx - hrx - 6, Math.min(G.eyes[0][1] - G.eyeD - 14, hy - hry), hx + hrx + 6, G.mouth[1] + 16], pivot: G.neck, draw(ctx, k) {
     const v = String(k.v || 'happy'), blink = v.endsWith('.b'), mood = v.split('.')[0];
     const [mx, my] = G.mouth, d = G.eyeD;
+    const lidFill = (X && X.lid) || headFill;   // a species with a pale face around the eyes (the owl) closes them on it
     const lid = (x, y, shape) => {
-      const c = circ(x, y, d / 2 + 0.6); ctx.fillStyle = headFill; ctx.fill(c);
+      const c = circ(x, y, d / 2 + 0.6); ctx.fillStyle = lidFill; ctx.fill(c);
       const p = new Path2D();
       if (shape === 'up') { p.moveTo(x - d * 0.36, y + 2); p.quadraticCurveTo(x, y - d * 0.4, x + d * 0.36, y + 2); }
       else if (shape === 'x') { p.moveTo(x - d * 0.3, y - d * 0.25); p.lineTo(x + d * 0.12, y); p.lineTo(x - d * 0.3, y + d * 0.25); }
@@ -313,8 +343,8 @@ function drawers(spec, G) {
       else { p.moveTo(x - d * 0.36, y); p.quadraticCurveTo(x, y + d * 0.3, x + d * 0.36, y); }
       detail(ctx, k, p, 1.7);
     };
-    const half = (x, y, tilt = 0) => { ctx.save(); const c = circ(x, y, d / 2 + 0.6); ctx.clip(c); ctx.fillStyle = headFill; ctx.fillRect(x - d, y - d, d * 2, d * 0.95 + tilt); ctx.restore(); const p = new Path2D(); p.moveTo(x - d * 0.42, y - d * 0.05 + tilt * 0.5); p.lineTo(x + d * 0.42, y - d * 0.05 - tilt * 0.5); detail(ctx, k, p, 1.5); };
-    const brow = (x, y, a, lift = 0) => { const p = new Path2D(); const by = y - d * 0.78 - lift; p.moveTo(x - d * 0.28, by + a * d * 0.18); p.quadraticCurveTo(x, by - d * 0.08, x + d * 0.28, by - a * d * 0.18); detail(ctx, k, p, 1.5); };
+    const half = (x, y, tilt = 0, cov = 0.95) => { ctx.save(); const c = circ(x, y, d / 2 + 0.6); ctx.clip(c); ctx.fillStyle = lidFill; ctx.fillRect(x - d, y - d, d * 2, d * cov + tilt); ctx.restore(); const p = new Path2D(); p.moveTo(x - d * 0.42, y - d * (1 - cov) + tilt * 0.5); p.lineTo(x + d * 0.42, y - d * (1 - cov) - tilt * 0.5); detail(ctx, k, p, 1.5); };
+    const brow = (x, y, a, lift = 0) => { const p = new Path2D(); const by = y - d * 0.78 - lift; p.moveTo(x - d * 0.28, by + a * d * 0.18); p.quadraticCurveTo(x, by - d * 0.08, x + d * 0.28, by - a * d * 0.18); detail(ctx, k, p, STYLE.name === 'bold' ? 2.2 : 1.5); };
     const [L, Rr] = G.eyes;
     if (blink) { lid(L[0], L[1]); lid(Rr[0], Rr[1]); }
     else if (mood === 'cheer') { lid(L[0], L[1], 'up'); lid(Rr[0], Rr[1], 'up'); }
@@ -323,8 +353,9 @@ function drawers(spec, G) {
     else if (mood === 'wink') lid(Rr[0], Rr[1], 'up');
     else if (mood === 'sleepy') { half(L[0], L[1]); half(Rr[0], Rr[1]); }
     else if (mood === 'sad') { half(L[0], L[1], -4); half(Rr[0], Rr[1], 4); }
+    else if (STYLE.name === 'bold' && mood !== 'surprised') { half(L[0], L[1], -2, 0.74); half(Rr[0], Rr[1], 2, 0.74); }   // bold: a cool, narrowed look
     // brows (kids, foxes, bunnies; the mascot and the frog emote with lids and mouth)
-    const browed = sp === 'kid' || sp === 'fox' || sp === 'bunny' || sp === 'bee';
+    const browed = sp === 'kid' || sp === 'fox' || sp === 'bunny' || sp === 'bee' || !!(X && X.browed);
     if (browed) {
       if (mood === 'sad' || mood === 'hurt') { brow(L[0], L[1], -1); brow(Rr[0], Rr[1], 1); }
       else if (mood === 'determined') { brow(L[0], L[1], 1, -2); brow(Rr[0], Rr[1], -1, -2); }
@@ -334,7 +365,8 @@ function drawers(spec, G) {
     // mouth
     const w = sp === 'frog' ? 15 : sp === 'oomba' ? 7 : 6.5;
     const m = new Path2D();
-    if (mood === 'cheer' || mood === 'talk' || mood === 'surprised' || mood === 'hurt') {
+    if (X && X.mouth === 'beak') { if (X.beak) X.beak(ctx, k, XH, mood === 'cheer' || mood === 'talk' || mood === 'surprised' || mood === 'hurt'); }
+    else if (mood === 'cheer' || mood === 'talk' || mood === 'surprised' || mood === 'hurt') {
       const o = new Path2D();
       if (mood === 'cheer') { o.moveTo(mx - w * 1.2, my - 2); o.quadraticCurveTo(mx, my - 3, mx + w * 1.2, my - 2); o.quadraticCurveTo(mx + w, my + 11, mx, my + 11); o.quadraticCurveTo(mx - w, my + 11, mx - w * 1.2, my - 2); }
       else if (mood === 'hurt') { o.moveTo(mx - w, my + 3); o.quadraticCurveTo(mx, my - 4, mx + w, my + 3); o.quadraticCurveTo(mx, my + 1, mx - w, my + 3); }
@@ -347,7 +379,7 @@ function drawers(spec, G) {
       else if (mood === 'determined') { m.moveTo(mx - w, my + 1); m.quadraticCurveTo(mx, my + 4, mx + w, my); }
       else if (mood === 'thinking') { m.moveTo(mx - w * 0.6, my + 2); m.quadraticCurveTo(mx, my, mx + w * 0.9, my + 3); }
       else if (mood === 'sleepy' || mood === 'sleep') { m.moveTo(mx - w * 0.5, my + 2); m.quadraticCurveTo(mx, my + 4, mx + w * 0.5, my + 2); }
-      else if (sp === 'fox') { m.moveTo(mx - w, my - 1); m.quadraticCurveTo(mx - w / 2, my + 5, mx, my); m.quadraticCurveTo(mx + w / 2, my + 5, mx + w, my - 1); }
+      else if (sp === 'fox' || (X && X.mouth === 'w')) { m.moveTo(mx - w, my - 1); m.quadraticCurveTo(mx - w / 2, my + 5, mx, my); m.quadraticCurveTo(mx + w / 2, my + 5, mx + w, my - 1); }
       else { m.moveTo(mx - w, my); m.quadraticCurveTo(mx, my + w * 0.95, mx + w, my); }
       detail(ctx, k, m, 1.4);
       if (sp === 'bunny' && mood !== 'sad') { const t = rrectPath(mx - 3.5, my + 2.5, 7, 6, 1.5); sticker(ctx, k, t, { fill: CREAM, rim: false, line: 0.5 }); }
@@ -398,6 +430,7 @@ function hairShapes(style, G) {
 /** Head wear (crown, wizard hat, headphones, the 'cap' hair style is a hair shape). -> [{p, draw}] */
 function wearHat(wear, hx, top, rx) {
   const out = [];
+  for (const n of wear) if (WEAR_X[n] && WEAR_X[n].hat) out.push(WEAR_X[n].hat(hx, top, rx));
   if (wear.has('headphones')) {
     const band = new Path2D(); band.ellipse(hx, top + 26, rx + 5, rx - 2, 0, PI + 0.25, TAU - 0.25);
     const cups = [-1, 1].map(s => rrectPath(hx + s * (rx + 2) - 7, top + 26, 14, 22, 7));
@@ -509,6 +542,16 @@ export function charRig(e, t, out) {
       default: x = pvx; y = pvy;
     }
     slot(o, id, x, y, d.w, d.h, r, v); n++;
+  }
+  if (STYLE.name === 'bold' && STYLE.legs && G.hips) {   // bold proportions: longer legs (all above them rises), a smaller head about the neck
+    const up = G.leg[0] * (STYLE.legs - 1), hk = STYLE.head, cy = ny + hdy - up;
+    for (let i = 0; i < n; i++) {
+      const o = out[i], part = o.name.slice(o.name.lastIndexOf(':') + 1);
+      if (part === 'legB' || part === 'legF') { o.h *= STYLE.legs; continue; }
+      o.y -= up;
+      if (part === 'body' || part === 'pack') o.w *= STYLE.body;
+      else if (!/^arm|^tail/.test(part)) { o.x = nx + (o.x - nx) * hk; o.y = cy + (o.y - cy) * hk; o.w *= hk; o.h *= hk; }
+    }
   }
   return n;
 }

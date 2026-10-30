@@ -1,83 +1,33 @@
 <title>Star Island</title>
 <style>
-/* Layout: one full-screen 3D canvas, a DOM HUD on top, overlay screens, and touch controls (joystick + jump). */
-:root{--ink:#1d2340;--soft:#55607a;--panel:rgba(255,255,255,.92);--gold-dark:#c98a00;--pink:#ff5c9e;--pink-dark:#c23a74}
+/* Layout: one full-screen 3D canvas, the touch controls (joystick + jump) and the tip. The title, how-to, HUD, pause and
+   results screens are the Oomba Kit's (Oomba.ui), so they match every other Oomba game and speak all 13 languages. */
+:root{--is-ink:currentColor}   /* the --is-* colours and font come from the kit (see "Kit colours" in the module) */
 [hidden]{display:none!important}
-html,body{height:100%;overflow:hidden;background:#9fe0ff;touch-action:none;user-select:none;-webkit-user-select:none}
-body{margin:0;font-family:system-ui,"Segoe UI",Roboto,sans-serif;color:var(--ink)}
+html,body{height:100%;overflow:hidden;background:var(--is-sky);touch-action:none;user-select:none;-webkit-user-select:none}
+body{margin:0;font-family:var(--is-font);color:var(--is-ink)}
 #view{position:fixed;inset:0;width:100%;height:100%;display:block;outline:none}
 button{font-family:inherit;cursor:pointer}
-button:focus-visible{outline:4px solid #fff;outline-offset:2px}
-.hud{position:fixed;top:max(10px,env(safe-area-inset-top));left:max(10px,env(safe-area-inset-left));right:max(10px,env(safe-area-inset-right));display:flex;gap:8px;align-items:center;pointer-events:none;z-index:5;direction:ltr}
-.pill{background:var(--panel);font:800 20px/1 system-ui,sans-serif;padding:12px 16px;border-radius:999px;box-shadow:0 3px 0 rgba(0,0,0,.15);white-space:nowrap}
-.pill.late{background:#ffe1c2;color:#b4470a}
-.spacer{flex:1}
-.ibtn{pointer-events:auto;width:52px;height:52px;flex:none;border-radius:50%;border:0;background:var(--panel);font-size:24px;line-height:1;box-shadow:0 4px 0 rgba(0,0,0,.2);display:grid;place-items:center;padding:0}
-.ibtn:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.2)}
-.screen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:20px;z-index:10;background:radial-gradient(circle at 50% 40%,rgba(255,255,255,.12),rgba(20,40,90,.45))}
-.card{background:#fff;border-radius:28px;padding:24px 22px 22px;max-width:420px;width:100%;max-height:100%;overflow:auto;text-align:center;box-shadow:0 10px 0 rgba(0,0,0,.12),0 20px 50px rgba(0,0,0,.25)}
-.card .emo{font-size:46px;line-height:1.1}
-h1{margin:6px 0;font:900 clamp(30px,8vw,42px)/1.05 system-ui,sans-serif;letter-spacing:-.5px}
-.sub{margin:0 0 18px;color:var(--soft);font:700 17px/1.35 system-ui,sans-serif}
-.big{font:900 26px/1 system-ui,sans-serif;color:#5a3b00;background:linear-gradient(#ffe066,#ffbf1f);border:0;border-radius:20px;padding:18px 40px;min-height:64px;min-width:200px;box-shadow:0 7px 0 var(--gold-dark)}
-.big:active{transform:translateY(5px);box-shadow:0 2px 0 var(--gold-dark)}
-.big:disabled{filter:grayscale(.6);cursor:default}
-.hint{color:var(--soft);font:600 15px/1.4 system-ui,sans-serif;margin:16px 0 0}
-.best{color:var(--gold-dark);font:800 16px system-ui,sans-serif;margin:10px 0 0;min-height:1em}
-#stickBase{position:fixed;width:132px;height:132px;border-radius:50%;background:rgba(255,255,255,.25);border:3px solid rgba(255,255,255,.75);display:none;z-index:6;pointer-events:none;transform:translate(-50%,-50%)}
-#stickKnob{position:absolute;left:50%;top:50%;width:60px;height:60px;margin:-30px 0 0 -30px;border-radius:50%;background:rgba(255,255,255,.95);box-shadow:0 3px 0 rgba(0,0,0,.2)}
-#stickHint{position:fixed;left:24px;right:130px;bottom:max(26px,env(safe-area-inset-bottom));z-index:6;pointer-events:none;color:#fff;font:800 15px system-ui,sans-serif;text-shadow:0 2px 4px rgba(0,0,0,.35);display:none}
-#jumpBtn{position:fixed;right:max(18px,env(safe-area-inset-right));bottom:max(22px,env(safe-area-inset-bottom));width:92px;height:92px;border-radius:50%;border:0;font:900 17px system-ui,sans-serif;color:#fff;background:linear-gradient(#ff9ac6,var(--pink));box-shadow:0 6px 0 var(--pink-dark);z-index:6;display:none;touch-action:none;padding:0 6px;overflow:hidden}
-#jumpBtn:active,#jumpBtn.down{transform:translateY(4px);box-shadow:0 2px 0 var(--pink-dark)}
+#stickBase{position:fixed;width:132px;height:132px;border-radius:50%;background:rgba(255,253,242,.3);border:3px solid var(--is-ink);display:none;z-index:6;pointer-events:none;transform:translate(-50%,-50%)}
+#stickKnob{position:absolute;left:50%;top:50%;width:60px;height:60px;margin:-30px 0 0 -30px;border-radius:50%;background:var(--is-go);border:3px solid var(--is-ink);box-shadow:0 3px 0 var(--is-go-shade)}
+#stickHint{position:fixed;left:24px;right:130px;bottom:max(26px,env(safe-area-inset-bottom));z-index:6;pointer-events:none;color:var(--is-card);font:800 15px var(--is-font);text-shadow:0 2px 4px rgba(0,0,0,.45);display:none}
+#jumpBtn{position:fixed;right:max(18px,env(safe-area-inset-right));bottom:max(22px,env(safe-area-inset-bottom));width:92px;height:92px;border-radius:50%;border:3px solid var(--is-ink);font:900 17px var(--is-font);color:var(--is-ink);background:var(--is-go);box-shadow:0 6px 0 var(--is-ink);z-index:6;display:none;touch-action:none;padding:0 6px;overflow:hidden}
+#jumpBtn:active,#jumpBtn.down{transform:translateY(4px);box-shadow:0 2px 0 var(--is-ink)}
 body.touch.playing #jumpBtn,body.touch.playing #stickHint{display:block}
-.tip{position:fixed;left:50%;top:max(78px,calc(env(safe-area-inset-top) + 68px));transform:translateX(-50%);z-index:5;background:var(--panel);border-radius:999px;padding:10px 18px;font:800 16px/1.3 system-ui,sans-serif;text-align:center;width:max-content;max-width:calc(100% - 32px);pointer-events:none;box-shadow:0 4px 0 rgba(0,0,0,.15)}
-.pop{position:fixed;z-index:7;pointer-events:none;font:900 28px system-ui,sans-serif;color:#fff;text-shadow:0 3px 0 var(--gold-dark),0 0 14px #ffcf3f;animation:pop .9s ease-out forwards}
+.tip{position:fixed;left:50%;top:max(78px,calc(env(safe-area-inset-top) + 68px));transform:translateX(-50%);z-index:5;background:var(--is-card);color:var(--is-ink);border:2px solid var(--is-ink);border-radius:999px;padding:10px 18px;font:800 16px/1.3 var(--is-font);text-align:center;width:max-content;max-width:calc(100% - 32px);pointer-events:none;box-shadow:0 4px 0 var(--is-ink)}
+.pop{position:fixed;z-index:7;pointer-events:none;font:900 28px var(--is-font);color:var(--is-reward);-webkit-text-stroke:2px var(--is-ink);text-shadow:0 3px 0 var(--is-ink);animation:pop .9s ease-out forwards}
 @keyframes pop{from{transform:translate(-50%,-50%) scale(.6)}30%{transform:translate(-50%,-90%) scale(1.25)}to{transform:translate(-50%,-170%) scale(1);opacity:0}}
 @media (prefers-reduced-motion:reduce){.pop{animation:fade 1s linear forwards;transform:translate(-50%,-50%)}}
 @keyframes fade{to{opacity:0}}
 </style>
 
 <canvas id="view"></canvas>
-<div class="hud" id="hud" hidden>
-  <div class="pill" id="starPill" role="status">⭐ 0/12</div>
-  <div class="pill" id="timePill">⏱ 90</div>
-  <div class="spacer"></div>
-  <button class="ibtn" id="pauseBtn" type="button">⏸</button>
-  <button class="ibtn" id="muteBtn" type="button">🔊</button>
-</div>
 <div class="tip" id="tip" hidden></div>
 <div id="stickBase"><div id="stickKnob"></div></div>
 <div id="stickHint"></div>
 <button id="jumpBtn" type="button"></button>
 
-<section class="screen" id="titleScreen">
-  <div class="card">
-    <div class="emo" aria-hidden="true">🌟🐣🌴</div>
-    <h1 id="titleText">Star Island</h1>
-    <p class="sub" id="subText"></p>
-    <button class="big" id="playBtn" type="button" disabled></button>
-    <p class="best" id="bestLine"></p>
-    <p class="hint" id="hintLine"></p>
-  </div>
-</section>
-<section class="screen" id="pauseScreen" hidden>
-  <div class="card">
-    <div class="emo" aria-hidden="true">😴</div>
-    <h1 id="pausedText"></h1>
-    <p class="sub" id="restText"></p>
-    <button class="big" id="resumeBtn" type="button"></button>
-  </div>
-</section>
-<section class="screen" id="endScreen" hidden>
-  <div class="card">
-    <div class="emo" id="endEmo" aria-hidden="true">🎉</div>
-    <h1 id="endTitle"></h1>
-    <p class="sub" id="endText"></p>
-    <button class="big" id="againBtn" type="button"></button>
-    <p class="best" id="endBest"></p>
-  </div>
-</section>
-
+<!--KIT-->
 <script>
 /* =====================================================================================
    I18N: every word the player sees, in the 13 site languages. BRB.user.lang picks the table;
@@ -231,13 +181,17 @@ function t(key, vars) {
 }
 // Until the 3D world is ready, a start() from the platform is remembered and done as soon as it is.
 window.__brbTest = { state: () => ({ screen: 'loading', ready: false }), start() { window.__islandStartWanted = true; } };
-document.getElementById('playBtn').textContent = t('loading');
-// If the 3D library can't load at all (offline, a school filter), say so kindly instead of "Loading…" forever.
-setTimeout(function () {
-  if (window.__islandReady) return;
-  const b = document.getElementById('playBtn'); b.textContent = t('tryLater'); b.disabled = true;
-  document.getElementById('hintLine').textContent = t('loadFail');
-}, 20000);
+// The kit's clock runs its screens (title, how-to, HUD, pause, results); a 3D game has no 2D stage, so it starts the
+// clock itself.
+Oomba.time.start();
+// Kit colours and the kit's font for the island's own controls (the joystick, the jump button, the tip).
+(function () {
+  const r = document.documentElement.style, c = (role, step) => Oomba.color(role, step);
+  [['--is-ink', c('outline')], ['--is-card', c('card')], ['--is-go', c('go')], ['--is-go-shade', c('go', 'shade')], ['--is-reward', c('reward')], ['--is-sky', c('water', 'light')]].forEach(([k, v]) => r.setProperty(k, v));
+  Oomba.fonts.ready.then(() => r.setProperty('--is-font', getComputedStyle(Oomba.ui.root()).getPropertyValue('--ok-font') || 'inherit'));
+})();
+// If the 3D library can't load at all (offline, a school filter), say so kindly instead of waiting forever.
+Oomba.time.real.after(20000, function () { if (!window.__islandReady) Oomba.ui.dialog({ title: t('tryLater'), text: t('loadFail') }); });
 </script>
 <script type="importmap">
 { "imports": { "three": "/vendor/three/0.185.1/three.module.min.js" },
@@ -295,24 +249,15 @@ const NAMES = { hero: CONFIG.heroName, title: TITLE };
 document.title = TITLE;
 try { document.documentElement.lang = LANG; } catch (e) { /* ignore */ }
 if (RTL) document.querySelectorAll('.card, .tip, #stickHint').forEach(el => { el.dir = 'rtl'; });
-$('titleText').textContent = TITLE;
-$('subText').textContent = t('subtitle', NAMES);
-$('pausedText').textContent = t('paused');
-$('restText').textContent = t('resting', NAMES);
-$('resumeBtn').textContent = t('keepGoing');
-$('againBtn').textContent = t('again');
 $('jumpBtn').textContent = t('jump'); if (t('jump').length > 6) $('jumpBtn').style.fontSize = '14px';
 $('jumpBtn').setAttribute('aria-label', t('jump'));
 $('stickHint').textContent = t('drag');
-$('pauseBtn').setAttribute('aria-label', t('pause'));
-$('muteBtn').setAttribute('aria-label', t('sound'));
 $('view').setAttribute('aria-label', t('world', NAMES));
-$('hintLine').textContent = t('hintKeys');
 
 /* ===== Game state ===== */
 const S = { screen: 'title', ready: false, got: 0, timeLeft: CONFIG.roundSeconds, fps: 0, quality: 0, frames: 0, best: 0, lost: false };
 try { S.best = +(BRB.storage.get(CONFIG.saveKey) || 0); } catch (e) { S.best = 0; }
-if (S.best) $('bestLine').textContent = t('best', { n: S.best });
+let hud = null;   // the kit's HUD while playing: stars found, the clock, pause and sound
 
 /* ===== Renderer (the platform shows a friendly message if this device can't do 3D) ===== */
 const canvas = $('view');
@@ -643,7 +588,7 @@ function popText(worldPos, text) {
   const v = worldPos.clone().project(camera), el = document.createElement('div');
   el.className = 'pop'; el.textContent = text;
   el.style.left = ((v.x + 1) / 2 * innerWidth) + 'px'; el.style.top = ((1 - v.y) / 2 * innerHeight) + 'px';
-  document.body.appendChild(el); setTimeout(() => el.remove(), 1000);
+  document.body.appendChild(el); Oomba.time.real.after(1000, () => el.remove());
 }
 
 /* ===== Input: keyboard, a floating touch joystick and a jump button ===== */
@@ -654,9 +599,7 @@ addEventListener('keydown', e => {
   if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(e.key)) e.preventDefault();
   if (e.repeat) return;
   keys.add(e.key.toLowerCase());
-  if (e.key === ' ' || e.key === 'Enter') { if (S.screen === 'play') jumpQueued = true; else if (S.screen === 'title' || S.screen === 'end') startGame(); }
-  if ((e.key === 'p' || e.key === 'Escape') && (S.screen === 'play' || S.screen === 'pause')) togglePause();
-  if (e.key === 'm') toggleMute();
+  if ((e.key === ' ' || e.key === 'Enter') && S.screen === 'play' && !Oomba.ui.open) jumpQueued = true;   // P / Esc pause: the kit's HUD
 });
 addEventListener('keyup', e => keys.delete(e.key.toLowerCase()));
 addEventListener('blur', () => keys.clear());
@@ -680,7 +623,8 @@ canvas.addEventListener('pointerup', endStick); canvas.addEventListener('pointer
 const jumpBtn = $('jumpBtn');
 jumpBtn.addEventListener('pointerdown', e => { e.preventDefault(); jumpQueued = true; jumpBtn.classList.add('down'); });
 ['pointerup', 'pointercancel', 'pointerleave'].forEach(n => jumpBtn.addEventListener(n, () => jumpBtn.classList.remove('down')));
-if (matchMedia('(pointer: coarse)').matches) { document.body.classList.add('touch'); $('hintLine').textContent = t('hintTouch'); }
+const TOUCH = matchMedia('(pointer: coarse)').matches;
+if (TOUCH) document.body.classList.add('touch');
 function inputVector() {
   let x = 0, z = 0;
   if (keys.has('arrowleft') || keys.has('a')) x -= 1;
@@ -692,57 +636,57 @@ function inputVector() {
   return { x, z };
 }
 
-/* ===== Screens and buttons ===== */
-function show(id) { ['titleScreen', 'pauseScreen', 'endScreen'].forEach(s => { $(s).hidden = s !== id; }); }
-function setMuteIcon() { $('muteBtn').textContent = BRB.sfx.muted ? '🔇' : '🔊'; }
-function toggleMute() { BRB.sfx.mute(); setMuteIcon(); }
-function togglePause() {
-  if (S.screen === 'play') { S.screen = 'pause'; show('pauseScreen'); stick.id = null; base.style.display = 'none'; keys.clear(); }
-  else if (S.screen === 'pause') { S.screen = 'play'; show(null); BRB.sfx.play('click'); }
+/* ===== Screens: the kit's title, how-to, pause and results ===== */
+function pause() { if (hud && S.screen === 'play') { stick.id = null; base.style.display = 'none'; keys.clear(); hud.pause(); } }
+document.addEventListener('visibilitychange', () => { if (document.hidden) pause(); });
+const ready = new Promise(res => { window.__islandOnReady = res; });
+let direct = false;   // a test or cover picture: straight into play, no how-to
+async function toTitle() {
+  S.screen = 'title';
+  await Oomba.ui.title({ title: TITLE, subtitle: t('subtitle', NAMES), hero: false });
+  await ready;
+  if (!direct) await Oomba.ui.howTo([{ icon: 'move', text: t(TOUCH ? 'hintTouch' : 'hintKeys') }, { icon: 'star', text: t('tip') }]);
+  startGame();
 }
-$('playBtn').addEventListener('click', () => startGame());
-$('againBtn').addEventListener('click', () => startGame());
-$('resumeBtn').addEventListener('click', () => togglePause());
-$('pauseBtn').addEventListener('click', () => togglePause());
-$('muteBtn').addEventListener('click', () => toggleMute());
-setMuteIcon();
-document.addEventListener('visibilitychange', () => { if (document.hidden && S.screen === 'play') togglePause(); });
+/** Close the kit screen on top (title, how-to, results) by pressing its main button. */
+const closeScreens = () => document.querySelectorAll('.ok-ui .ok-modal [data-ok-focus]').forEach(b => b.click());
 // The 3D picture can be lost (the device needed the graphics chip back): pause and wait for it. The platform
 // tells the player kindly if it does not come back.
-canvas.addEventListener('webglcontextlost', e => { e.preventDefault(); S.lost = true; if (S.screen === 'play') togglePause(); });
+canvas.addEventListener('webglcontextlost', e => { e.preventDefault(); S.lost = true; pause(); });
 canvas.addEventListener('webglcontextrestored', () => { S.lost = false; });
 
-let tipTimer = 0;
+let tipTimer = null;
 function startGame() {
-  if (!S.ready) return;
+  if (!S.ready || S.screen === 'play') return;
   seed = 20261025 + Math.floor(Math.random() * 1000);
   buildStars();
   Object.assign(S, { screen: 'play', got: 0, timeLeft: CONFIG.roundSeconds, frames: 0 });
   hero.pos.set(0, heightAt(0, 0), 0); hero.vel.set(0, 0, 0); hero.vy = 0; hero.onGround = true; hero.yaw = 0;
   camPos.copy(hero.pos).add(camOffset);
   document.body.classList.add('playing');
-  $('hud').hidden = false; show(null); updateHud(true);
-  if (plats.length) { $('tip').textContent = t('tip'); $('tip').hidden = false; clearTimeout(tipTimer); tipTimer = setTimeout(() => { $('tip').hidden = true; }, 3500); }
+  if (hud) hud.root.remove();
+  hud = Oomba.ui.hud(['count:star', 'timer'], { total: stars.length, onPause: v => { if (v === 'restart') { S.screen = 'restart'; startGame(); } if (v === 'quit') { endHud(); S.screen = 'end'; document.body.classList.remove('playing'); toTitle(); } } });
+  hud.timer.start(CONFIG.roundSeconds, () => { if (S.screen === 'play') endGame(false); });
+  updateHud(true);
+  if (plats.length) { $('tip').textContent = t('tip'); $('tip').hidden = false; if (tipTimer) tipTimer(); tipTimer = Oomba.time.real.after(3500, () => { $('tip').hidden = true; }); }
   BRB.sfx.play('click');
 }
-function endGame(won) {
+function endHud() { if (hud) { hud.timer.stop(); hud.root.remove(); } hud = null; }
+async function endGame(won) {
+  if (S.screen !== 'play') return;
   S.screen = 'end'; document.body.classList.remove('playing'); stick.id = null; base.style.display = 'none'; $('tip').hidden = true;
-  const score = S.got * 100 + (won ? Math.ceil(S.timeLeft) * 10 : 0);
-  const newBest = score > S.best; if (newBest) { S.best = score; try { BRB.storage.set(CONFIG.saveKey, score); } catch (e) { /* ignore */ } }
-  $('endEmo').textContent = won ? '🎉' : '⏰';
-  $('endTitle').textContent = won ? t('winTitle') : t('loseTitle');
-  $('endText').textContent = won ? t('winText', { ...NAMES, s: Math.ceil(S.timeLeft) }) : t('loseText', { got: S.got, total: stars.length });
-  $('endBest').textContent = newBest ? t('newBest', { score }) : t('scoreLine', { score, best: S.best });
-  show('endScreen');
-  if (won) { BRB.sfx.play('win'); BRB.fx.confetti(); } else BRB.sfx.play('lose');
+  endHud();
+  const score = S.got * 100 + (won ? Math.ceil(S.timeLeft) * 10 : 0), best = S.best;
+  if (score > S.best) { S.best = score; try { BRB.storage.set(CONFIG.saveKey, score); } catch (e) { /* ignore */ } }
   BRB.gameOver({ won, score });
+  if (won) {
+    BRB.fx.confetti();
+    const f = S.timeLeft / CONFIG.roundSeconds;
+    await Oomba.ui.win({ stars: f > 0.5 ? 3 : f > 0.2 ? 2 : 1, score, best, hero: false, title: t('winTitle') });
+  } else await Oomba.ui.tryAgain({ score, best, hero: false, title: t('loseTitle'), say: t('loseText', { got: S.got, total: stars.length }) });
+  if (S.screen === 'end') startGame();
 }
-let shownSecs = -1;
-function updateHud(force) {
-  $('starPill').textContent = `⭐ ${S.got}/${stars.length}`;
-  const secs = Math.ceil(S.timeLeft);
-  if (force || secs !== shownSecs) { shownSecs = secs; $('timePill').textContent = `⏱ ${secs}`; $('timePill').classList.toggle('late', secs <= 10); }
-}
+function updateHud() { if (hud && hud.count) hud.count.set(S.got, stars.length); }
 
 /* ===== Quality ladder: watch the frame rate and step down on slow devices (school laptops, older tablets) ===== */
 const LEVELS = [
@@ -789,7 +733,7 @@ function frame(now) {
   const raw = last ? (now - last) / 1000 : 0.016, dt = Math.min(0.05, raw); last = now; clock += dt;
   watchFps(now, raw); S.frames++;
   if (S.lost) return;
-  if (S.screen === 'play') step(dt);
+  if (S.screen === 'play' && !Oomba.time.paused) step(dt);
   animateWorld(dt);
   if (S.screen === 'title') {   // a slow orbit on the title screen (a still view with reduced motion)
     const a = REDUCED ? 0.6 : clock * 0.12;
@@ -832,7 +776,7 @@ function supportAt(x, z, y) {
 }
 const offLand = (x, z) => heightAt(x, z) < 0.08 || Math.hypot(x, z) > R * 0.93;
 function step(dt) {
-  S.timeLeft -= dt;
+  S.timeLeft = hud ? hud.timer.left : 0;
   const inp = inputVector();
   hero.vel.x += (inp.x * CONFIG.speed - hero.vel.x) * damp(dt, 10);
   hero.vel.z += (inp.z * CONFIG.speed - hero.vel.z) * damp(dt, 10);
@@ -867,12 +811,10 @@ function step(dt) {
   for (const st of stars) {
     if (st.taken || st.mesh.position.distanceTo(centre) > 1.15) continue;
     st.taken = true; st.mesh.visible = st.glow.visible = false; S.got++;
-    burst(st.mesh.position); popText(st.mesh.position, '+1 ⭐'); BRB.sfx.play('coin');
-    updateHud(true);
+    burst(st.mesh.position); popText(st.mesh.position, '+1'); BRB.sfx.play('coin');
+    updateHud();
     if (S.got >= stars.length) { BRB.score.submit(S.got * 100 + Math.ceil(S.timeLeft) * 10); endGame(true); return; }
   }
-  if (S.timeLeft <= 0) { S.timeLeft = 0; updateHud(); endGame(false); return; }
-  updateHud();
 }
 
 function animateWorld(dt) {
@@ -916,14 +858,13 @@ function animateWorld(dt) {
 buildStars();
 setQuality(0);
 renderer.setAnimationLoop(frame);
-S.ready = true; window.__islandReady = true;
-$('playBtn').disabled = false; $('playBtn').textContent = t('play');
+S.ready = true; window.__islandReady = true; window.__islandOnReady();
 
 // Test hook used by the platform's playtests and cover pictures. start() begins play without the start tip or
 // touch hint, so a cover picture shows the island and hero, not the "Hop up the floating rocks…" bubble.
 function testStart() {
-  startGame();
-  clearTimeout(tipTimer); const tipEl = $('tip'); if (tipEl) tipEl.hidden = true;
+  direct = true; closeScreens(); startGame();
+  if (tipTimer) tipTimer(); const tipEl = $('tip'); if (tipEl) tipEl.hidden = true;
   const sh = $('stickHint'); if (sh) sh.style.visibility = 'hidden';
 }
 window.__brbTest = {
@@ -935,5 +876,6 @@ window.__brbTest = {
   },
   start() { testStart(); },
 };
+toTitle();
 if (window.__islandStartWanted) testStart();
 </script>

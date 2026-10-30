@@ -25,11 +25,11 @@ import { config } from '../config.js';
 
 const HOST = 'http://game.invalid';
 const PUBLIC_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../public');
-/** A /vendor/three/<v>/<file> or /vendor/oomba-kit/<v>/[fonts/]<file> request -> the file on disk, or null (plain
+/** A /vendor/three/<v>/<file> or /vendor/oomba-kit/<v>/[fonts/ | packs/]<file> request -> the file on disk, or null (plain
  *  names only, never outside those folders). */
 function vendorFile(url) {
   const p = new URL(url).pathname;
-  const m = /^\/vendor\/(three|oomba-kit)\/([0-9][0-9a-z.-]{0,30})\/((?:fonts\/)?[a-z0-9][a-z0-9.-]{0,60})$/i.exec(p);
+  const m = /^\/vendor\/(three|oomba-kit)\/([0-9][0-9a-z.-]{0,30})\/((?:fonts\/|packs\/)?[a-z0-9][a-z0-9.-]{0,60})$/i.exec(p);
   if (!m || m[2].includes('..') || m[3].includes('..') || (m[1] === 'three' && m[3].includes('/'))) return null;
   const dir = path.join(PUBLIC_DIR, 'vendor', m[1]);
   const f = path.join(dir, m[2], m[3]);
@@ -113,7 +113,7 @@ function inspect(W) {
   const wide = [...document.querySelectorAll('body *')].filter(el => out(el) && !(el.parentElement && el.parentElement !== document.body && out(el.parentElement)))
     .slice(0, 3).map(el => { const r = el.getBoundingClientRect(); return `<${name(el)}> from x=${Math.round(r.left)} to x=${Math.round(r.right)}`; });
   let state = null, hook = false;
-  try { hook = !!(window.__brbTest && typeof window.__brbTest.state === 'function'); if (hook) state = JSON.stringify(window.__brbTest.state()).slice(0, 600); } catch (e) { state = 'state() threw: ' + e.message; }
+  try { hook = !!(window.__brbTest && typeof window.__brbTest.state === 'function'); if (hook) state = JSON.stringify(window.__brbTest.state()).slice(0, 1200); } catch (e) { state = 'state() threw: ' + e.message; }
   const canvases = [...document.querySelectorAll('canvas')].filter(vis).length;
   return {
     sideways: de.scrollWidth > W + 2 || innerWidth > W + 2,   // a phone zooms out to fit wide pages, which shrinks the game
@@ -195,7 +195,7 @@ async function capture(gameHtml, opts) {
   const host = `<!doctype html><meta charset="utf-8"><style>html,body{margin:0;height:100%;background:#000;overflow:hidden}iframe{width:100%;height:100%;border:0;display:block}</style><iframe sandbox="${SANDBOX}" src="${HOST}/frame"></iframe>`;
   const b = await browser();
   const ctx = await b.newContext({ viewport: shape, deviceScaleFactor: o.scale, hasTouch: true, isMobile: false, reducedMotion: 'no-preference', serviceWorkers: 'block', locale: o.lang });
-  const errors = [];
+  const errors = [], kitWarnings = [];
   try {
     // Screenshots never need WebRTC, and it is the one outbound path ctx.route cannot abort (it is not HTTP).
     // Remove its constructors from every frame (top and any nested one), so a hostile game cannot open a
@@ -224,7 +224,12 @@ async function capture(gameHtml, opts) {
     });
     const page = await ctx.newPage();
     page.on('pageerror', e => errors.push(String(e.message || e).split('\n')[0].slice(0, 200)));
-    page.on('console', m => { if (m.type() === 'error' && !/Failed to load resource|ERR_FAILED|net::/i.test(m.text())) errors.push(m.text().slice(0, 200)); });
+    page.on('console', m => {
+      if (m.type() === 'error' && !/Failed to load resource|ERR_FAILED|net::/i.test(m.text())) errors.push(m.text().slice(0, 200));
+      // the kit's own warnings (unknown art, a pack not loaded, a gate with no question, a bake that failed): the model
+      // never sees the console, so the playtest reports them
+      else if (m.type() === 'warning' && /^\[oomba\]/.test(m.text())) kitWarnings.push(m.text().replace(/^\[oomba\]\s*/, '').slice(0, 220));
+    });
     page.on('dialog', d => d.dismiss().catch(() => {}));
     await page.goto(`${HOST}/`, { waitUntil: 'domcontentloaded', timeout: 15000 });
     const frame = await waitFrame(page);
@@ -240,10 +245,64 @@ async function capture(gameHtml, opts) {
       play = await page.screenshot({ type: 'jpeg', quality: o.quality });
     }
     const after = await frame.evaluate(inspect, shape.width).catch(e => ({ error: e.message }));
-    return { title, play, started, errors: [...new Set(errors)].slice(0, 8), before, after, launches };
+    // the playtest's probe: about 25 s of game time stepped deterministically, holding right, jumping and answering
+    let probe = null;
+    if (o.probe) probe = await frame.evaluate(probeGame, { secs: o.probeSecs || 25 }).catch(e => ({ error: String(e.message || e).split('\n')[0].slice(0, 160) }));
+    return { title, play, started, errors: [...new Set(errors)].slice(0, 8), kitWarnings: [...new Set(kitWarnings)].slice(0, 10), before, after, probe, launches };
   } finally {
     await ctx.close().catch(() => {});
   }
+}
+
+/** In the game frame: drive a kit game (Oomba.game: __brbTest.step) for `secs` of game time: hold right, jump now and
+ *  then, answer every question (first tile left; the game's own buttons and 1-4 in turn), tap speech bubbles away. Returns the states before and after, the
+ *  scenes seen, how far the hero moved, and whether the game's own DOM covers the hero. Null for other games. */
+async function probeGame({ secs }) {
+  const T = window.__brbTest; if (!T || typeof T.step !== 'function' || typeof T.state !== 'function') return null;
+  const s0 = T.state(); if (!s0 || !s0.game || !('got' in s0)) return null;
+  const key = (type, code, k) => { try { window.dispatchEvent(new KeyboardEvent(type, { code, key: k, bubbles: true })); } catch (e) { /* ignore */ } };
+  const covering = st => {
+    const b = st && st.heroBox; if (!b) return null;
+    const x = b.x, ys = [b.y, b.y - b.h * 0.25, b.y + b.h * 0.25]; let hits = 0, by = null;
+    for (const y of ys) {
+      if (x < 0 || y < 0 || x > innerWidth || y > innerHeight) continue;
+      const el = document.elementFromPoint(x, y); if (!el || el.tagName === 'CANVAS' || el === document.body || el === document.documentElement) continue;
+      if (el.closest('.ok-hud, .ok-touch, .ok-modal, .ok-bubble, .ok-banner, .ok-toast, .ok-caption')) continue;
+      hits++; by = el.tagName.toLowerCase() + (el.id ? '#' + el.id : '') + (el.className && typeof el.className === 'string' ? '.' + el.className.trim().split(/\s+/).slice(0, 2).join('.') : '');
+    }
+    return hits >= 2 ? by : null;
+  };
+  const cover0 = covering(s0), scenes = new Set([s0.scene]);
+  let minX = s0.hero ? s0.hero.x : 0, maxX = minX, asked = 0;
+  key('keydown', 'ArrowRight', 'ArrowRight');
+  for (let i = 0; i < secs * 2; i++) {
+    const jump = i % 3 === 0; if (jump) key('keydown', 'Space', ' ');
+    T.step(30);
+    if (jump) key('keyup', 'Space', ' ');
+    const tile = document.querySelector('.ok-ask .ok-tile:not([disabled]):not([aria-disabled="true"])'); if (tile) { tile.click(); asked++; }
+    const bub = document.querySelector('.ok-bubble'); if (bub) { bub.click(); bub.click(); }
+    // the game's own answer buttons and 1-4 keys, in turn (quiz cards, answer-to-move races)
+    if (!tile && i % 2 === 1) {
+      const own = [...document.querySelectorAll('button:not([disabled])')].filter(x => !x.closest('.ok-hud, .ok-modal, .ok-touch, .ok-corner, .ok-bubble') && x.offsetParent);
+      if (own.length) { own[(i >> 1) % own.length].click(); asked++; }
+      const d = 'Digit' + (1 + ((i >> 1) % 4)); key('keydown', d, d.slice(5)); key('keyup', d, d.slice(5));
+    }
+    await new Promise(r => setTimeout(r, 40));
+    const s = T.state(); scenes.add(s.scene); if (s.hero) { minX = Math.min(minX, s.hero.x); maxX = Math.max(maxX, s.hero.x); }
+    if (/^(win|lose|goal)$/.test(s.scene)) break;
+  }
+  key('keyup', 'ArrowRight', 'ArrowRight');
+  // a story beat that is still running when the time is up gets a few more seconds (tapping bubbles and answers) before
+  // it counts as stuck: a talk scene in progress at the last instant is not a hang
+  let s1 = T.state();
+  for (let j = 0; j < 10 && s1.scene === 'talk'; j++) {
+    T.step(500);
+    const tile = document.querySelector('.ok-ask .ok-tile:not([disabled]):not([aria-disabled="true"])'); if (tile) tile.click();
+    const bub = document.querySelector('.ok-bubble'); if (bub) { bub.click(); bub.click(); }
+    await new Promise(r => setTimeout(r, 300));   // real time too: a quiz card shows the answer for a moment before it closes
+    s1 = T.state();
+  }
+  return { s0, s1, scenes: [...scenes], moved: Math.round(maxX - minX), asked, covered: cover0 };
 }
 
 async function waitFrame(page) {
