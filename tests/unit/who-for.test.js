@@ -158,8 +158,8 @@ test('a grown-up who started on a grown-up page (?next=/plans) goes back there a
   };
   const base1 = { password: 'a-long-password-1', confirm: 'a-long-password-1', adult: true };
   assert.equal((await post({ ...base1, username: `WhoNext${++n}`, next: '/plans' })).redirect, '/plans');
-  assert.equal((await post({ ...base1, username: `WhoNext${++n}`, next: '/build' })).redirect, '/family', 'not a grown-up page');
-  assert.equal((await post({ ...base1, username: `WhoNext${++n}`, next: '//evil.example' })).redirect, '/family');
+  assert.equal((await post({ ...base1, username: `WhoNext${++n}`, next: '/build' })).redirect, '/family/add?from=signup', 'not a grown-up page: "Add your kids"');
+  assert.equal((await post({ ...base1, username: `WhoNext${++n}`, next: '//evil.example' })).redirect, '/family/add?from=signup');
   assert.equal((await post({ ...base1, username: `WhoNext${++n}`, next: '/plans', plan: 'family', interval: 'year' })).redirect, '/family?plan=family&interval=year');
 });
 

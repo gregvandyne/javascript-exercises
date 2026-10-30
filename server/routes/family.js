@@ -1,6 +1,7 @@
 // Grown-up accounts and family links (docs/decisions.md "Paid plans", chunk 3; rules in server/services/family.js).
 //   /grown-ups/signup|login the grown-up sign-up and sign-in (/grown-ups itself is a 301 to /parents#families)
 //   /family, /family/link   the grown-up's own pages
+//   /family/add             "Add your kids": the step after sign-up and after paying (make an account, or link one)
 //   /api/me/family/*        the child's side, from the "For grown-ups" panel on /me
 //   /api/billing/*          the grown-up's plan (chunk 4): Checkout, the Customer Portal and the return page's status
 // Everything here answers 404 while billing is off (no STRIPE_API_KEY), except that grown-up accounts stay fenced in and
@@ -47,7 +48,7 @@ const nope = (req, res) => (isApi(req) ? res.status(404).json({ error: req.t('er
 // The parent pages' own links: the guides (/parents/<guide>), and the read-only age and subject pages (/learn/<slug>).
 const GUIDE_PATHS = new RegExp(`^/parents/(${PARENT_GUIDES.map(g => g.slug).join('|')})$`);
 const GROWNUP_GET = [/^\/$/, /^\/search$/, /^\/api\/(search|live|me|billing\/status)$/, /^\/(g|play)\/[^/]+$/, /^\/(frame|shots|avatars)\/[^/]+$/,
-  /^\/(parents|safety|terms|refunds|privacy|teachers)$/, GUIDE_PATHS, /^\/learn(\/[a-z0-9-]+)?$/, /^\/plans(\/schools(\/print)?)?$/, /^\/grown-ups(\/(signup|login))?$/, /^\/family(\/link)?$/, /^\/family\/account$/, /^\/family\/children\/(new|[^/]+\/data)$/, /^\/(login|signup)$/, /^\/api\/games\/[^/]+\/(save|leaderboard)$/];
+  /^\/(parents|safety|terms|refunds|privacy|teachers)$/, GUIDE_PATHS, /^\/learn(\/[a-z0-9-]+)?$/, /^\/plans(\/schools(\/print)?)?$/, /^\/grown-ups(\/(signup|login))?$/, /^\/family(\/(link|add))?$/, /^\/family\/account$/, /^\/family\/children\/(new|[^/]+\/data)$/, /^\/(login|signup)$/, /^\/api\/games\/[^/]+\/(save|leaderboard)$/];
 const GROWNUP_POST = [/^\/api\/auth\/(login|logout|logout-everywhere)$/, /^\/api\/me\/(password|theme)$/, /^\/api\/family\/(link|checklist\/hide|reauth|children\/new|children\/[^/]+\/(remove|switch|password|delete))$/,
   /^\/api\/billing\/(family\/checkout|portal)$/,
   /^\/api\/teachers\/school-request$/,   // a parent who is also a teacher may ask us to set up their school
@@ -334,10 +335,11 @@ router.post('/api/grown-ups/signup', on, (req, res) => {
   allow(`signup:${ip}`, SIGNUP.perHour, 3600e3);
   if (req.localeSource === 'cookie') saveUserLang(u, req.locale);
   if (req.themeSource === 'cookie') saveUserTheme(u, req.theme);
-  // A plan picked on /plans comes along: /family then asks for it (password again, then Stripe's Checkout). Otherwise a
-  // grown-up page they started on (?next=, e.g. /plans via "Who's this for?") is where they go back to.
+  // A plan picked on /plans comes along: /family then asks for it (password again, then Stripe's Checkout), and "Add your
+  // kids" comes after paying. Otherwise a grown-up page they started on (?next=, e.g. /plans via "Who's this for?") is
+  // where they go back to, and with neither, "Add your kids" (/family/add, skippable).
   const chosen = chosenPlan(req.body || {});
-  res.json({ ok: true, redirect: (!chosen && nextFor(u, wantedNext((req.body || {}).next))) || `/family${choiceQuery(chosen)}` });
+  res.json({ ok: true, redirect: (!chosen && nextFor(u, wantedNext((req.body || {}).next))) || (chosen ? `/family${choiceQuery(chosen)}` : ADD_AFTER.signup) });
 });
 
 // ---------------------------------------------------------------- /family (the grown-up's pages)
@@ -353,8 +355,10 @@ router.get('/family', grownupOnly, async (req, res) => {
     return page(req, res, { title: t('family.page.title'), active: 'family', body, scripts: ['/js/family.js'] });
   }
   const fam = F.ensureFamily(u);
-  const kids = F.childrenOf(fam.id);
   const plan = F.familyPlan(fam.id);
+  // Just paid (back from Checkout, the plan on): the next step is adding a child, on "Add your kids".
+  if (plan.entitled && (req.query.welcome === '1' || typeof req.query.checkout === 'string')) return res.redirect(302, ADD_AFTER.checkout);
+  const kids = F.childrenOf(fam.id);
   const chosen = chosenPlan(req.query);
   // The children the plan pays extra messages for (Basic: the first linked child only).
   const covered = new Set(plan.entitled ? coveredChildren(fam.id, plan.plan) : []);
@@ -386,27 +390,19 @@ router.get('/family', grownupOnly, async (req, res) => {
   const firstCovered = linked.find(k => covered.has(k.child_id));
   const basicNote = plan.entitled && plan.plan === 'basic' && linked.length > 1 && firstCovered
     ? html`<p class="notice warn" id="basic-note">${tHtml(t, 'family.billing.basicNote', { name: html`<b><bdi>${firstCovered.display_name}</bdi></b>`, max: config.familyMaxChildren })}</p>` : '';
-  const addBtn = kids.length < max ? (made ? html`<div class="row"><a class="btn btn-primary" href="/family/children/new"${en('family.made.add')}>➕ ${t('family.made.add')}</a><a class="btn" href="/family/link"${en('family.made.linkCode')}>${t('family.made.linkCode')}</a></div>`
-    : html`<a class="btn btn-primary" href="/family/link">➕ ${t('family.page.add')}</a>`)
+  // One door to "Add your kids" (make an account while madeOn, or link one with the child's code).
+  const addKey = made ? 'family.add.cta' : 'family.page.add';
+  const addBtn = kids.length < max ? html`<a class="btn btn-primary" href="/family/add"${en(addKey)}>➕ ${t(addKey)}</a>`
     : html`<p class="small">${plan.entitled && plan.plan === 'basic' ? t('family.page.fullBasic', { max: config.familyMaxChildren }) : t('family.page.full', { max })}</p>`;
-  // Just paid (back from Checkout): the next step is adding a child, with the steps right here.
-  const welcome = plan.entitled && (req.query.welcome === '1' || typeof req.query.checkout === 'string')
-    ? html`<section class="panel welcome" aria-labelledby="welcome-h" id="welcome"><p class="notice good" role="status"><span aria-hidden="true">🎉</span> ${t('family.billing.welcomePlan', { plan: planName(t, plan.plan) })}</p>
-      ${linked.length ? '' : html`<h2 id="welcome-h">${t('family.billing.welcomeHeading')}</h2>
-      <ol class="steps"><li>${tHtml(t, 'family.link.step1')}</li><li>${t('family.billing.welcomeStep2Day')}</li><li>${t('family.link.step3')}</li></ol>
-      ${kids.length < max ? html`<a class="btn btn-primary" href="/family/link">➕ ${t('family.page.add')}</a>` : ''}`}</section>` : '';
-  // While the welcome shows its add-a-child steps (and its own Link a child button), the Children panel adds no second one.
-  const welcomeSteps = !!welcome && !linked.length;
   const kidsBox = html`<section class="panel" aria-labelledby="kids-h"><h2 id="kids-h">${t('family.page.children')}</h2>
     ${kids.length ? html`<ul class="famkids">${rows}</ul><p class="small muted">${t('family.page.usageNote')}</p>` : html`<p class="muted">${t('family.page.none')}</p>`}
-    ${basicNote}${welcomeSteps ? '' : addBtn}
+    ${basicNote}${addBtn}
   </section>`;
   // A plan picked on /plans (and not paid yet) comes first: that is what the grown-up came here to do.
   const planFirst = (chosen && !plan.entitled) || (typeof req.query.checkout === 'string' && !plan.entitled);
   const body = html`
   <div class="pagehead"><h1>👪 ${t('family.page.heading')}</h1>${notYou(req, { plain: true })}</div>
   ${familyChecklist(req, { fam, kids, plan, max, sale: await familyOnSale(u) })}
-  ${welcome}
   ${planFirst ? html`${planBox}${kidsBox}` : html`${kidsBox}${planBox}`}
   ${config.contactEmail ? html`<section class="panel" aria-labelledby="help-h"><h2 id="help-h">${t('family.page.helpHeading')}</h2>
     <p>${tHtml(t, 'family.page.help', { email: html`<a href="mailto:${config.contactEmail}" dir="ltr">${config.contactEmail}</a>` })}</p></section>` : ''}`;
@@ -430,14 +426,13 @@ router.get('/family/account', grownupOnly, (req, res) => {
  * for the grown-up only (the page is grownupOnly, and only while families are on):
  *   1. Your grown-up account: always done (they are reading it).
  *   2. Link your child: done once a child is linked; until then how (the child's Me › For grown-ups code) and the link
- *      form, or "waiting for your child to say yes" while a request waits (straight back from Checkout the welcome
- *      below shows those steps, so step 2 doesn't repeat them).
+ *      form, or "waiting for your child to say yes" while a request waits.
  *   3. Pick a plan (optional): done while the family has a plan ("Your plan is on"); otherwise one calm line and a
  *      link to /plans (no "any time" promise: plans are US-only for now), or, while this grown-up can't buy a plan
  *      (familyOnSale), "not on sale yet" and no link. No amounts here: prices are only on /plans.
  * Steps 1–2 done and a plan on (or the grown-up said "Free is fine", families.checklist_hidden_at) -> it folds to a
- * small "All set" line (a <details>, so the steps can still be opened). Straight back from Checkout it stays open, so
- * "Your plan is on" shows. Nothing is counted here: the steps are the funnel's own (parent.signup, parent.child,
+ * small "All set" line (a <details>, so the steps can still be opened). Straight back from Checkout with the plan on,
+ * /family goes on to "Add your kids" (/family/add), which says thank you. Nothing is counted here: the steps are the funnel's own (parent.signup, parent.child,
  * parent.paid, counted where they happen). Its words come in one language: until a language has them, the English is
  * marked as English (lang="en", left to right).
  */
@@ -447,17 +442,15 @@ export function familyChecklist(req, { fam, kids, plan, max, sale = true }) {
   const w = (tag, key, attrs = '') => raw(`<${tag}${attrs}${en(key)}>${html`${t(key)}`}</${tag}>`);
   const linked = kids.some(k => k.status === 'linked'), waits = kids.some(k => k.status === 'pending');
   const planOn = !!plan.entitled, hidden = !!fam.checklist_hidden_at;
-  const backFromCheckout = req.query.welcome === '1' || typeof req.query.checkout === 'string';
   const checkoutWait = typeof req.query.checkout === 'string' && !planOn;
-  const allSet = linked && (planOn || hidden) && !(planOn && backFromCheckout);
+  const allSet = linked && (planOn || hidden);
   const step = (n, done, titleKey, detail = '') => html`<li class="famcheck-step${done ? ' done' : ''}">
     <span class="famcheck-mark" aria-hidden="true">${done ? '✓' : n}</span>
     <div class="famcheck-text">${w('b', titleKey)}${done ? html` <span class="sr-only">${t('family.check.done')}</span>` : ''}${detail}</div></li>`;
   let s2 = '';
   // Parent-made accounts on (F.madeOn): step 2 is "Add your child": make their account, or link one they already have.
   const made = F.madeOn(req);
-  // Straight back from Checkout with no child linked, the welcome right below has the add-a-child steps and its button.
-  if (!linked && !(planOn && backFromCheckout)) {
+  if (!linked) {
     s2 = waits ? html`<p class="small muted">${t('family.page.pending')}</p>`
       : made ? html`${w('p', 'family.check.step2MadeHow', ' class="small"')}${kids.length < max ? html`<p class="small famcheck-acts"><a href="/family/children/new"${en('family.made.add')}>${t('family.made.add')}</a> · <a href="/family/link"${en('family.check.linkCta')}>${t('family.check.linkCta')}</a></p>` : ''}`
       : html`<p class="small">${tHtml(t, 'family.link.step1')}</p>${kids.length < max ? html`<p class="small"><a href="/family/link"${en('family.check.linkCta')}>${t('family.check.linkCta')}</a></p>` : ''}`;
@@ -510,7 +503,7 @@ async function planPanel(req, fam, plan, kids, chosen) {
   // Back from Checkout and the plan isn't on yet: only the wait (no "Free plan", no Subscribe: they just paid).
   if (checkoutId && !plan.entitled) {
     return html`<section class="panel" aria-labelledby="plan-h" id="plan">${head}
-      <div class="notice" role="status" data-checkout-wait="${checkoutId}" data-back="/family?welcome=1">
+      <div class="notice" role="status" data-checkout-wait="${checkoutId}" data-back="${ADD_AFTER.checkout}">
         <p style="margin:0"><span aria-hidden="true">⏳</span> ${t('family.billing.waiting')}</p>
         <div data-slow hidden><p class="small" style="margin:.5em 0 0">${t('family.billing.slow')}</p>
           <p class="small" style="margin:.5em 0 0"><a href="/family">${t('family.billing.back')}</a></p></div></div></section>`;
@@ -641,18 +634,92 @@ router.get('/api/billing/status', billingGate, rateLimit('billing-status', 60, 6
   res.set('Cache-Control', 'no-store').json({ state });
 });
 
-router.get('/family/link', grownupOnly, (req, res) => {
+/** The hidden field that brings a form's answer back to "Add your kids" (/family/add) instead of /family. */
+const backToAdd = then => (then ? html`<input type="hidden" name="then" value="add">` : '');
+/** Link a child with their code: the steps and the form. On /family/link and, inline, on "Add your kids" ({ then }). */
+function linkForm(req, { then = false } = {}) {
   const t = req.t;
-  const body = html`<div class="authbox"><div class="panel">
-    <h1>${t('family.link.heading')}</h1>
-    <ol class="steps"><li>${tHtml(t, 'family.link.step1')}</li><li>${t('family.link.step2Day')}</li><li>${t('family.link.step3')}</li></ol>
-    <form data-api="/api/family/link" novalidate>
+  return html`<ol class="steps"><li>${tHtml(t, 'family.link.step1')}</li><li>${t('family.link.step2Day')}</li><li>${t('family.link.step3')}</li></ol>
+    <form data-api="/api/family/link" novalidate>${backToAdd(then)}
       <div class="field"><label for="code">${t('family.link.label')}</label>
         <input class="input codeinput" id="code" name="code" dir="ltr" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="12" placeholder="K7Q-4MZ9" required><span class="err" id="code-err" aria-live="polite"></span></div>
       <p class="err form-err" aria-live="polite"></p>
       <button class="btn btn-primary btn-block" type="submit">${t('family.link.submit')}</button>
-    </form></div></div>`;
+    </form>`;
+}
+router.get('/family/link', grownupOnly, (req, res) => {
+  const t = req.t;
+  const body = html`<div class="authbox"><div class="panel">
+    <h1>${t('family.link.heading')}</h1>
+    ${linkForm(req)}</div></div>`;
   page(req, res, { title: t('family.link.title'), active: 'family', back: '/family', backLabel: t('family.page.title'), body, head: raw('<link rel="stylesheet" href="/css/community.css">') });
+});
+
+/**
+ * "Add your kids" (/family/add): where a new grown-up lands right after signing up (ADD_AFTER.signup) and right after
+ * paying (ADD_AFTER.checkout), and the Children panel's add button on /family. Two choices side by side: "Make my
+ * child's account" (only while madeOn: the same form, direct notice and boxes as /family/children/new, posting to the
+ * same API) and "Link my child's existing account" (the same code form as /family/link, same API). ?how=make|link
+ * opens one of them inline (no script needed); their answer comes back here (then=add), where the children added so
+ * far are listed (display names, to this grown-up only) with "Add another" while there is room and Done. "I'll do this
+ * later" goes to /family, and nothing asks again. A child just made here comes back with ?made=<token>: the step says
+ * the account is ready and Switch / Done go on to /family?made=<token> (Switch open), like /family/children/new.
+ * Nothing here is about paying: a plan and a child are separate steps.
+ */
+export const ADD_AFTER = { signup: '/family/add?from=signup', checkout: '/family/add?from=checkout' };
+router.get('/family/add', grownupOnly, (req, res) => {
+  const t = req.t, u = req.user;
+  const en = key => enAttr(t, key);
+  const el = (tag, key, attrs = '', vars) => raw(`<${tag}${attrs}${en(key)}>${html`${t(key, vars)}`}</${tag}>`);
+  const fam = F.ensureFamily(u);
+  const kids = F.childrenOf(fam.id), plan = F.familyPlan(fam.id), max = F.maxChildrenFor(fam.id);
+  const made = F.madeOn(req);
+  const from = req.query.from === 'signup' || req.query.from === 'checkout' ? req.query.from : '';
+  const how = req.query.how === 'make' && made ? 'make' : req.query.how === 'link' || !made ? 'link' : '';
+  const room = kids.length < max;
+  // Where the step starts from: a thank-you after paying, "your account is ready" after signing up.
+  const hello = from === 'checkout' && plan.entitled
+    ? html`<p class="notice good" role="status"><span aria-hidden="true">🎉</span> ${t('family.billing.welcomePlan', { plan: planName(t, plan.plan) })}</p>`
+    : from === 'signup' ? html`<p class="notice good" role="status"><span aria-hidden="true">✅</span> ${el('span', 'family.add.accountReady')}</p>` : '';
+  const added = kids.length ? html`<section class="addkids-added" aria-labelledby="addkids-added-h">${el('h2', 'family.add.added', ' id="addkids-added-h"')}
+    <ul class="famkids">${kids.map(k => (k.status === 'pending'
+      ? html`<li class="famkid pending"><span class="avatar" style="--s:36px;--c:var(--hover)" aria-hidden="true">⏳</span><div class="famkid-main">${t('family.page.pending')}</div></li>`
+      : html`<li class="famkid">${avatar({ id: k.child_id, avatar: k.avatar, color: k.color, photo_at: 0, display_name: k.display_name }, 36)}<div class="famkid-main"><b><bdi>${k.display_name}</bdi></b></div></li>`))}</ul></section>` : '';
+  const q = how => `/family/add?${from ? `from=${from}&` : ''}how=${how}#addkids-how`;
+  const choice = (key, emoji, sub) => html`<a class="door addkids-choice" href="${q(key)}"${how === key ? raw(' aria-current="true"') : ''}>
+    <span class="door-e" aria-hidden="true">${emoji}</span><span class="door-t">${el('span', `family.add.${key}Title`, ' class="door-h"')}${el('span', sub, ' class="door-s"')}</span></a>`;
+  let adding;
+  if (!room) {
+    adding = html`<p class="notice" role="status">${plan.entitled && plan.plan === 'basic' ? t('family.page.fullBasic', { max: config.familyMaxChildren }) : t('family.page.full', { max })}</p>`;
+  } else {
+    const pickKey = kids.length ? 'family.add.another' : 'family.add.pick';
+    const choices = made ? html`${el('h2', pickKey, ' id="addkids-pick-h"')}
+      <div class="addkids-choices" role="group" aria-labelledby="addkids-pick-h">${choice('make', '🧒', 'family.add.makeSub')}${choice('link', '🔗', 'family.add.linkSub')}</div>` : '';
+    const inner = how === 'make' ? madeFormBox(req, fam, { then: true }) : how === 'link' ? linkForm(req, { then: true }) : '';
+    // Parent-made accounts off: linking is the only way, so it is open straight away under its own heading.
+    adding = html`${choices}${how ? html`<section class="addkids-how" id="addkids-how" aria-labelledby="addkids-how-h">
+      ${el('h2', how === 'make' ? 'family.made.heading' : made ? 'family.add.linkTitle' : kids.length ? 'family.add.another' : 'family.add.linkTitle', ' id="addkids-how-h"')}
+      ${how === 'make' ? el('p', 'family.made.intro', ' class="muted small"') : ''}${inner}</section>` : ''}`;
+  }
+  // Right after making an account here (?made=<token>, as /family gets it from /family/children/new): the child made by
+  // this family says it is ready, and Done (and "Switch to <name>") go on to /family?made=<token>, where Switch is open.
+  const justMade = made && typeof req.query.made === 'string'
+    ? kids.find(k => k.made_link === 1 && k.made_by_family === fam.id && F.requestToken(fam.id, k.child_id) === req.query.made) : null;
+  const doneHref = justMade ? `/family?made=${encodeURIComponent(req.query.made)}` : '/family';
+  const ready = justMade ? html`<p class="notice good famkid-ready" role="status"${en('family.made.ready')}>✅ ${t('family.made.ready', { name: justMade.display_name })}</p>` : '';
+  // Done once a child is added; until then "I'll do this later". Either way /family, and nothing asks again.
+  const leave = kids.length ? html`${justMade ? html`<a class="btn btn-primary" href="${doneHref}#made-switch"${en('family.switch.button')}>${t('family.switch.button', { name: justMade.display_name })}</a>` : ''}<a class="btn${justMade ? '' : ' btn-primary'}" href="${doneHref}"${en('family.add.done')}>${t('family.add.done')}</a>`
+    : html`<a class="btn" href="/family"${en('family.add.later')}>${t('family.add.later')}</a>`;
+  const body = html`<div class="authbox addkids"><div class="panel">
+    ${hello}
+    ${ready}
+    ${el('h1', 'family.add.heading')}
+    ${el('p', made ? 'family.add.intro' : 'family.add.introLink', ' class="muted"')}
+    ${added}
+    ${adding}
+    <div class="row addkids-leave">${leave}${kids.length ? '' : el('span', 'family.add.laterNote', ' class="small muted"')}</div>
+  </div></div>`;
+  page(req, res, { title: t('family.add.title'), active: 'family', back: '/family', backLabel: t('family.page.title'), body, head: raw('<link rel="stylesheet" href="/css/community.css">') });
 });
 
 // Typing a child's code: 10 wrong codes per 15 minutes per grown-up (and 60 per address), counted like sign-in
@@ -670,7 +737,7 @@ router.post('/api/family/link', grownupOnly, (req, res) => {
     const status = r.code === 'notGrownup' ? 404 : r.code === 'badCode' ? 400 : 409;
     return res.status(status).json({ error: t(`family.errors.${r.code === 'notGrownup' || r.code === 'badCode' ? 'badCodeDay' : r.code}`, { max: r.code === 'full' ? F.maxChildrenFor(F.familyOfOwner(u.id)?.id) : config.familyMaxChildren }), field: 'code' });
   }
-  res.json({ ok: true, redirect: '/family', toast: t('family.link.sent') });
+  res.json({ ok: true, redirect: (req.body || {}).then === 'add' ? '/family/add' : '/family', toast: t('family.link.sent') });
 });
 // "Free is fine": hides the checklist's plan step for good (the plan card below still has See plans).
 router.post('/api/family/checklist/hide', grownupOnly, rateLimit('family-checklist', 20, 60e3), (req, res) => {
@@ -701,7 +768,7 @@ function madeTools(req, fam, k) {
   const just = req.query.made === tok;
   return html`<div class="famkid-acts">
     ${just ? html`<p class="notice good famkid-ready" role="status"${en('family.made.ready')}>✅ ${t('family.made.ready', { name })}</p>` : ''}
-    <details class="famkid-act"${just ? raw(' open') : ''}><summary class="btn btn-primary"${en('family.switch.button')}>${t('family.switch.button', { name })}</summary>
+    <details class="famkid-act"${just ? raw(' id="made-switch" open') : ''}><summary class="btn btn-primary"${en('family.switch.button')}>${t('family.switch.button', { name })}</summary>
       <form data-api="/api/family/children/${tok}/switch" novalidate>
         <p class="small"${en('family.switch.device')}>${t('family.switch.device', { name })}</p>
         <div class="field"><label for="sw-${tok}"${en('family.switch.childPw')}>${t('family.switch.childPw', { name })}</label>
@@ -726,11 +793,11 @@ function madeTools(req, fam, k) {
   </div>`;
 }
 
-/** "Make your child's account": the name and password (kid rules), the grown-up's password when the step-up isn't
+/** "Make your child's account" (/family/children/new, and inline on "Add your kids"): the name and password (kid rules), the grown-up's password when the step-up isn't
  *  fresh, the direct notice (family.made.notice.*: a COPPA 312.4 draft for the lawyer), "I've read this", the guardian
  *  statement and the no-consent sentence. Never asks for age, birthday, real name, school, photo, email or phone. */
-router.get('/family/children/new', madeOnly, (req, res) => {
-  const t = req.t, fam = F.ensureFamily(req.user);
+function madeFormBox(req, fam, { then = false } = {}) {
+  const t = req.t;
   const en = key => enAttr(t, key);
   const el = (tag, key, attrs = '', vars) => raw(`<${tag}${attrs}${en(key)}>${html`${t(key, vars)}`}</${tag}>`);
   const cap = F.madeLimit(fam);
@@ -740,7 +807,7 @@ router.get('/family/children/new', madeOnly, (req, res) => {
     ${el('h2', 'family.made.notice.h', ' id="made-notice-h"')}
     <ul class="small">${['keep', 'ai', 'who', 'howLong', 'rights'].map(k => el('li', `family.made.notice.${k}`))}</ul>
     <p class="small" style="margin-bottom:0"><a href="/privacy#made"${en('family.made.notice.more')}>${t('family.made.notice.more')}</a></p></section>`;
-  const form = html`<form data-api="/api/family/children/new" novalidate>
+  const form = html`<form data-api="/api/family/children/new" novalidate>${backToAdd(then)}
       <div class="field"><label for="made-name"${en('family.made.nameLabel')}>${t('family.made.nameLabel')}</label>
         <input class="input" id="made-name" name="username" dir="ltr" autocomplete="off" required minlength="3" maxlength="16" autocapitalize="off" spellcheck="false" aria-describedby="made-name-hint">
         <span class="hint" id="made-name-hint"${en('family.made.nameHint')}>${t('family.made.nameHint')}</span><span class="err" id="made-name-err" aria-live="polite"></span></div>
@@ -757,10 +824,15 @@ router.get('/family/children/new', madeOnly, (req, res) => {
       <p class="err form-err" aria-live="polite"></p>
       <button class="btn btn-primary btn-block btn-big" type="submit"${en('family.made.submit')}>${t('family.made.submit')}</button>
     </form>`;
+  return cap ? html`<p class="notice warn" role="status">${capText}</p>` : form;
+}
+router.get('/family/children/new', madeOnly, (req, res) => {
+  const t = req.t, fam = F.ensureFamily(req.user);
+  const el = (tag, key, attrs = '') => raw(`<${tag}${attrs}${enAttr(t, key)}>${html`${t(key)}`}</${tag}>`);
   const body = html`<div class="authbox"><div class="panel">
     ${el('h1', 'family.made.heading')}
     ${el('p', 'family.made.intro', ' class="muted"')}
-    ${cap ? html`<p class="notice warn" role="status">${capText}</p>` : form}
+    ${madeFormBox(req, fam)}
   </div></div>`;
   page(req, res, { title: t('family.made.title'), active: 'family', back: '/family', backLabel: t('family.page.title'), body });
 });
@@ -796,7 +868,7 @@ router.post('/api/family/children/new', madeOnly, rateLimit('family-child-new', 
       : t(key, { max: r.code === 'dayCap' ? F.MADE.perDay : r.code === 'full' && fam ? F.maxChildrenFor(fam.id) : F.MADE.perYear }));
     return res.status(status).json({ error, ...(r.field ? { field: r.field } : {}) });
   }
-  res.json({ ok: true, redirect: `/family?made=${encodeURIComponent(r.token)}`, toast: t('family.made.done', { name: r.child.display_name }) });
+  res.json({ ok: true, redirect: `${b.then === 'add' ? '/family/add' : '/family'}?made=${encodeURIComponent(r.token)}`, toast: t('family.made.done', { name: r.child.display_name }) });
 });
 
 /** Switch to <child>: a sign-in as the child, never an impersonation. Made accounts only (madeKid); not a banned,

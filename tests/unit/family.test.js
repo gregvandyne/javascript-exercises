@@ -71,7 +71,7 @@ const teacher = S.createSchoolAccount(boss, oak.id, { rosterName: 'Ms Teach', ro
 const student = S.createSchoolAccount(teacher, oak.id, { rosterName: 'Stu Dent' }).user;
 
 // ---------------------------------------------------------------- grown-up accounts
-test('grown-up sign-up: 12+ characters, the parent-or-guardian box, no friend code, a family, audited; lands on /family', async () => {
+test('grown-up sign-up: 12+ characters, the parent-or-guardian box, no friend code, a family, audited; lands on "Add your kids"', async () => {
   const bad = async (body, field, status = 400) => { const r = await call(null, '/api/grown-ups/signup', { method: 'POST', body }); assert.equal(r.status, status, r.text); assert.equal(r.json.field, field); };
   const ok = { username: 'MumOfTwo', password: 'twelve-chars-ok', confirm: 'twelve-chars-ok', adult: '1' };
   const signups = () => (q.get("SELECT SUM(n) n FROM funnel_counts WHERE step='parent.signup'").n || 0);
@@ -81,7 +81,7 @@ test('grown-up sign-up: 12+ characters, the parent-or-guardian box, no friend co
   await bad({ ...ok, adult: undefined }, 'adult');
   await bad({ ...ok, username: 'x' }, 'username');
   const r = await call(null, '/api/grown-ups/signup', { method: 'POST', body: ok });
-  assert.equal(r.status, 200, r.text); assert.equal(r.json.redirect, '/family'); assert.ok(r.cookie);
+  assert.equal(r.status, 200, r.text); assert.equal(r.json.redirect, '/family/add?from=signup'); assert.ok(r.cookie);
   const u = auth.getUserByName('MumOfTwo');
   assert.equal(u.account_type, 'grownup'); assert.equal(u.friend_code, null); assert.equal(u.role, 'player');
   assert.equal(auth.accountKind(u), 'grownup'); assert.ok(auth.isGrownup(u));

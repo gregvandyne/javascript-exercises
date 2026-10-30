@@ -56,7 +56,7 @@ async function grownupSignup(page, name = uniq('Mum')) {
   await page.goto('/grown-ups/signup');
   await page.fill('#username', name); await page.fill('#password', PW); await page.fill('#confirm', PW);
   await page.check('#adult');
-  await Promise.all([page.waitForURL(/\/family$/), page.click('button[type=submit]')]);
+  await Promise.all([page.waitForURL(/\/family\/add\?from=signup$/), page.click('button[type=submit]')]);
   return name;
 }
 /** A child (own account) linked to a new grown-up. -> { kid, kidName, mum, mumName } */
@@ -99,9 +99,11 @@ async function subscribe(mum) {
   await expect(plan).toContainText('Subscribe: $69.00 a year');
   await expect(plan).toContainText('renews automatically');
   await mum.fill('#pw-checkout', PW);
-  await Promise.all([mum.waitForURL(/\/family\?checkout=cs_test_/), plan.locator('button[value="month"]').click()]);
-  // The webhook usually wins the race (the page then says so at once); otherwise the page waits for it.
-  await expect(mum.locator('#plan .planchip.paid')).toHaveText('Family plan', { timeout: 30_000 });
+  // Back from Checkout: /family waits for the webhook (or it already won the race), then "Add your kids" says thank you.
+  await Promise.all([mum.waitForURL(/\/family\/add\?from=checkout$/, { timeout: 30_000 }), plan.locator('button[value="month"]').click()]);
+  await expect(mum.locator('main .notice.good')).toContainText('Your Family plan is on. Thank you!');
+  await mum.goto('/family');
+  await expect(mum.locator('#plan .planchip.paid')).toHaveText('Family plan');
 }
 /** One Builder message through the Studio's API, waited for. -> the reply's status */
 async function send(page, id, text) {

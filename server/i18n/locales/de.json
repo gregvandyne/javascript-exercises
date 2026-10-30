@@ -3044,8 +3044,6 @@
       },
       "legal": "Für Abos gelten unsere <a href=\"/terms\">Nutzungsbedingungen</a> und unsere <a href=\"/refunds\">Erstattungs- und Kündigungsrichtlinie</a>.",
       "welcomePlan": "Ihr {plan} ist aktiv. Vielen Dank!",
-      "welcomeHeading": "Jetzt Ihr Kind verbinden",
-      "welcomeStep2Day": "Tippen Sie unten auf „Kind verbinden“ und geben Sie den Code ein. Er funktioniert einmal, 24 Stunden lang.",
       "basicNote": "Ihr Basis-Abo gilt für ein Kind: {name}. Ihre anderen verbundenen Kinder bauen mit den kostenlosen täglichen Nachrichten. Um bis zu {max} Kinder abzudecken, wechseln Sie unter „Abrechnung verwalten“ zum Familienabo.",
       "coversBasic": "Für 1 Kind.",
       "coversFamily": "Für bis zu {max} Kinder.",
@@ -3157,6 +3155,24 @@
         "confirmName": "Geben Sie zum Bestätigen den Namen des Kontos genau ein.",
         "inSchool": "{name} ist in einer Klasse. Schulunterlagen gehören der Schule: Bitten Sie die Lehrkraft, {name} zuerst aus der Klasse zu entfernen, und löschen Sie das Konto dann hier."
       }
+    },
+    "add": {
+      "title": "Kinder hinzufügen",
+      "heading": "Kinder hinzufügen",
+      "intro": "Erstellen Sie ein Konto für Ihr Kind, oder verbinden Sie das Konto, das es schon hat. Weitere Kinder können Sie später hinzufügen.",
+      "introLink": "Verbinden Sie das Oomba-Academy-Konto Ihres Kindes mit Ihrem. Weitere Kinder können Sie später hinzufügen.",
+      "accountReady": "Ihr Erwachsenenkonto ist fertig.",
+      "pick": "Wie möchten Sie Ihr Kind hinzufügen?",
+      "another": "Weiteres Kind hinzufügen",
+      "makeTitle": "Konto für mein Kind erstellen",
+      "makeSub": "Es hat noch kein Konto.",
+      "linkTitle": "Konto meines Kindes verbinden",
+      "linkSub": "Es hat schon eins und kann einen Code holen.",
+      "added": "Bisher hinzugefügt",
+      "done": "Fertig",
+      "later": "Später erledigen",
+      "laterNote": "Unter „Ihre Familie“ können Sie Ihre Kinder jederzeit hinzufügen.",
+      "cta": "Kind hinzufügen"
     }
   },
   "plans": {

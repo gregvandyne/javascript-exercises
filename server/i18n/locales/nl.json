@@ -3044,8 +3044,6 @@
       },
       "legal": "Voor abonnementen gelden onze <a href=\"/terms\">Servicevoorwaarden</a> en ons <a href=\"/refunds\">Beleid voor terugbetaling en opzegging</a>.",
       "welcomePlan": "{plan} is actief. Bedankt!",
-      "welcomeHeading": "Voeg nu je kind toe",
-      "welcomeStep2Day": "Tik hieronder op Kind koppelen en typ de code. Die werkt één keer, 24 uur lang.",
       "basicNote": "Je basisabonnement geldt voor één kind: {name}. Je andere gekoppelde kinderen bouwen met de gratis dagelijkse berichten. Wil je dat het abonnement voor maximaal {max} kinderen geldt? Stap dan via Abonnement beheren over op het gezinsabonnement.",
       "coversBasic": "Voor 1 kind.",
       "coversFamily": "Voor maximaal {max} kinderen.",
@@ -3157,6 +3155,24 @@
         "confirmName": "Typ de naam van het account precies om te bevestigen.",
         "inSchool": "{name} zit in een klas. Schoolgegevens zijn van de school: vraag de leerkracht om {name} eerst uit de klas te halen, en verwijder het account daarna hier."
       }
+    },
+    "add": {
+      "title": "Je kinderen toevoegen",
+      "heading": "Je kinderen toevoegen",
+      "intro": "Maak een account voor je kind, of koppel het account dat je kind al heeft. Je kunt later meer kinderen toevoegen.",
+      "introLink": "Koppel het Oomba Academy-account van je kind aan het jouwe. Je kunt later meer kinderen toevoegen.",
+      "accountReady": "Je account voor volwassenen is klaar.",
+      "pick": "Hoe wil je je kind toevoegen?",
+      "another": "Nog een kind toevoegen",
+      "makeTitle": "Account voor mijn kind maken",
+      "makeSub": "Je kind heeft nog geen account.",
+      "linkTitle": "Account van mijn kind koppelen",
+      "linkSub": "Je kind heeft er al een en kan een code krijgen.",
+      "added": "Tot nu toe toegevoegd",
+      "done": "Klaar",
+      "later": "Dit doe ik later",
+      "laterNote": "Je kunt je kinderen altijd toevoegen via ‘Je gezin’.",
+      "cta": "Kind toevoegen"
     }
   },
   "plans": {
