@@ -88,6 +88,8 @@ On/off settings (`REQUIRE_SESSION_SECRET`, `MAINTENANCE_MODE`, `MOVED_PERMANENTL
 | `STT_API_KEY` | – | Turns on speaking instead of typing in the Studio chat (`server/services/stt.js`). Set it only in the host's dashboard, and only once the provider has agreed zero data retention for the key's project (docs/legal-review.md item 38). Without it the 🎤 button is not shown. Audio is never stored. |
 | `STT_PROVIDER` | `openai` | The speech-to-text service: `openai` or `elevenlabs` (`mock` is for tests and refused in production). |
 | `STT_MODEL` | – | Overrides the provider's default transcription model. |
+| `STT_LIVE` | `1` | Live mode: the words show in the chat box while the child speaks (a WebSocket relay to the provider's realtime API, `server/services/stt-live.js`). `0` turns only the live mode off; the mic then records and uploads as before. The host must pass WebSockets through (Azure App Service: turn *Web sockets* on). |
+| `STT_REALTIME_MODEL` | – | Overrides the live model (OpenAI: the transcription model, `STT_MODEL` or its default; ElevenLabs: `scribe_v2_realtime`). |
 | `STT_MAX_SECONDS` / `STT_MAX_BYTES` | `60` / `1500000` | The longest and largest clip accepted. |
 | `STT_PER_MINUTE` / `STT_DAILY_CLIPS` | `8` / `60` | Clips per builder per minute and per day. |
 | `STT_DAILY_MINUTES` / `STT_USD_PER_MINUTE` | `300` / `0.007` | Speech-to-text minutes a day for the whole site (kept in the database, so a restart does not reset it), and the price per minute added to the AI spending caps. The clip length is read from the recording itself; `X-Clip-Ms` from the page is required but only a hint. |

@@ -846,6 +846,11 @@
   "info.parents.ai.p2": "Legal text for parents (privacy policy, voice input; COPPA audio notice). Translate exactly; do not soften or add claims. {provider} is the speech-to-text company's name (e.g. OpenAI): keep it as it is. \"is not allowed to keep it\" is a promise (the provider is forbidden to keep it), not \"might not\". Changes need the owner's sign-off and a new LEGAL_UPDATED.",
   "info.parents.ai.p3": "Legal text for parents (privacy policy, the Builder's web searches). Translate exactly; do not soften or add claims. The list is kept without the child's name or username but with the game it was for (so it is not anonymous): keep that meaning. Changes need the owner's sign-off and a new LEGAL_UPDATED.",
   "js.studio.mic.recording": "Status line under the chat box while the microphone records. {time} is how long so far and {max} the longest a recording can be, both like 0:12 and 1:00.",
+  "js.studio.mic.listening": "Status line under the chat box while the microphone is on and the words appear as the child speaks (live). {time} is how long so far and {max} the longest a recording can be, both like 0:12 and 1:00.",
+  "js.studio.mic.finishing": "Status line for a second after the child stops speaking, while the last words are finished. Short.",
+  "js.studio.mic.heard": "Read aloud by screen readers only, once, when the words are ready in the chat box. {text} is what the child said. Keep it short.",
+  "js.studio.mic.cancelledLive": "After Esc stops a live recording: the words are thrown away and nothing is kept. Do not say that nothing was sent (the voice already went to the speech helper while the child spoke).",
+  "studio.mic.oneAtATime": "The microphone can be on in one browser tab at a time; shown when the child turns it on in a second tab.",
   "studio.mic.tooLong": "{max} is the longest recording allowed, as minutes:seconds (e.g. 1:00). Keep it as it is.",
   "studio.mic.start": "Screen-reader label and tooltip of the 🎤 button next to the Builder chat box: speak a message instead of typing it.",
   "js.studio.steps.search.now": "A build step row: the AI is looking up a real-world fact on the web. Never mention links or websites. Short, max ~30 chars."

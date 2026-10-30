@@ -171,6 +171,17 @@ starred and land in the chat box for the child to check; they are only sent when
 are screened like typed text. The clip lives in memory for that one request and is never stored or logged. The
 microphone is allowed on the Studio page only (`Permissions-Policy`), never in the game frame.
 
+*Live mode* (`server/services/stt-live.js`; off with `STT_LIVE=0`): the words show in the box while the child speaks.
+The page streams the mic as 16-bit PCM over a same-origin WebSocket to our server, which relays it to the provider's
+realtime API; the key never reaches the browser. The socket has the same rules as the upload: Origin checked (no
+cross-site sockets), signed in, a kid's real account, the game's owner, the Builder on, 8 clips a minute (the same
+count), 60 a day, the site's minutes and the AI spending caps, one mic at a time per account, at most 60 seconds of
+audio (counted from the bytes received), frames of at most 64 KB, and it stops after 10 silent seconds. Every message
+to the page is the whole text so far, tidied and with rude words starred, and the newest word of every unfinished
+part is held back until the next one starts, so no rude word or its first letters ever shows. While listening the box is read-only; only the
+final words are announced to screen readers. Audio frames are forwarded and dropped, never stored; the log line has
+numbers only. If the live link fails, the recording kept in the page's memory is uploaded once instead.
+
 ## 5. Uploads: pictures and files for inspiration
 
 Builders can add pictures and files in the Studio chat (📎, drag and drop, or paste) as **inspiration only**.

@@ -219,15 +219,21 @@ function liveSession(id, t) {
 /** The user signed in with a session id, by the same rules as every request (sessionMiddleware), or null. Read-only:
  *  it never ends a session or counts as activity (builder/live.js re-checks open streams with it). */
 export function sessionUser(id) { return id ? liveSession(id, now()).u || null : null; }
+/** The sign-in a request's cookie names, by the same rules as every request. Read-only (no cookie, no activity):
+ *  sessionMiddleware uses it, and so does the live speech to text socket (services/stt-live.js), which has no response
+ *  to set cookies on. -> { id, s, u }: the session id (null without a valid cookie), its row, and the user if it counts. */
+export function userFromRequest(req, t = now()) {
+  const id = unpack(parseCookies(req)[COOKIE]);
+  return id ? { id, ...liveSession(id, t) } : { id: null, s: null, u: null };
+}
 let lastSweep = 0;
 export function sessionMiddleware(req, res, next) {
   const t = now();
   // Ended sessions are kept a day (as long as their cookie), then swept.
   if (t - lastSweep > 3600e3) { lastSweep = t; q.run('DELETE FROM sessions WHERE expires_at<?', t - COOKIE_GRACE * 1000); }
   req.user = null; req.sessionId = null; req.sessionEnded = false; req.sessionVia = null; req.madeCardOk = false;
-  const id = unpack(parseCookies(req)[COOKIE]);
+  const { id, s, u } = userFromRequest(req, t);
   if (id) {
-    const { s, u } = liveSession(id, t);
     if (u) {
       req.user = u; req.sessionId = id; req.sessionVia = s.via || null; req.madeCardOk = !!s.made_card_ok;
       if (t - s.last_active > ACTIVITY_EVERY && isActivity(req)) q.run('UPDATE sessions SET last_active=? WHERE id=?', t, id);

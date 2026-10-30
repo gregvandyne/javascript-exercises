@@ -357,6 +357,12 @@ export const MIGRATIONS = [
   // audio or words. For the per-builder daily cap and the site-wide daily minutes cap, which survive a restart. Kept 3 days.
   ['0033_stt_usage', `CREATE TABLE IF NOT EXISTS stt_usage (day TEXT NOT NULL, user_id TEXT NOT NULL, clips INTEGER NOT NULL DEFAULT 0,
       seconds REAL NOT NULL DEFAULT 0, PRIMARY KEY(day, user_id));`],
+  // Live speech to text sessions that may still have their clip uploaded once instead (server/services/stt-live.js):
+  // the session's random id, whose it is, and until when. Ids only, never audio or words; in the database so the one
+  // upload after a restart (the reason the live link failed) is not counted as a second clip. Rows go when used or late.
+  ['0034_stt_live', `CREATE TABLE IF NOT EXISTS stt_live (id TEXT PRIMARY KEY, user_id TEXT NOT NULL, game_id TEXT NOT NULL,
+      state TEXT NOT NULL, until INTEGER NOT NULL);
+    CREATE INDEX IF NOT EXISTS stt_live_until ON stt_live(until);`],
 ];
 
 db.exec('CREATE TABLE IF NOT EXISTS migrations (name TEXT PRIMARY KEY, applied_at INTEGER NOT NULL)');
