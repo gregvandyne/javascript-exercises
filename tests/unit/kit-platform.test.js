@@ -19,7 +19,7 @@ const V = await import('../../server/services/vendor.js');
 const { scanVersion } = await import('../../server/services/scanner.js');
 const { frameCsp, frameDocument } = await import('../../server/services/frame.js');
 const { vendorFile } = await import('../../server/services/snapshot.js');
-const { bundle, minify, strip } = await import('../../scripts/build-kit.js');
+const { bundle, bundlePack, packNames, minify, strip, cssComments, SIZE_CAPS } = await import('../../scripts/build-kit.js');
 const { VERSION } = await import('../../kit/src/index.js');
 const { config } = await import('../../server/config.js');
 const { createApp } = await import('../../server/app.js');
@@ -54,16 +54,68 @@ test('shipped versions are locked: their hash in KIT_VERSIONS never changes (kit
 });
 
 test('the built file is up to date with kit/src', async () => {
-  const { code } = await bundle(); const { code: min } = await minify(code);
+  const { code } = await bundle(); const min = cssComments((await minify(code)).code);
   const body = dist(VERSION).toString('utf8').replace(/^\/\*![^\n]*\*\/\n/, '');
   assert.equal(body, min, SHIPPED[VERSION]
     ? `kit/src changed but ${VERSION} has shipped: bump the patch version in kit/src/index.js and run node scripts/build-kit.js`
     : `kit/src changed: run node scripts/build-kit.js --replace (${VERSION} has not shipped yet)`);
 });
 
-test('size gate: oomba-kit.js is at most 95 KB brotli (target 80)', () => {
-  const br = zlib.brotliCompressSync(dist(VERSION), { params: { [zlib.constants.BROTLI_PARAM_QUALITY]: 11 } }).length;
-  assert.ok(br <= 95 * 1024, `${br} bytes brotli`);
+const brot = buf => zlib.brotliCompressSync(buf, { params: { [zlib.constants.BROTLI_PARAM_QUALITY]: 11 } }).length;
+test('size gate: oomba-kit.js is at most 95 KB brotli, and each art pack is under its own cap', () => {
+  assert.equal(SIZE_CAPS.core, 95 * 1024);
+  const br = brot(dist(VERSION));
+  assert.ok(br <= SIZE_CAPS.core, `core: ${br} bytes brotli`);
+  for (const name of packNames()) {
+    assert.ok(SIZE_CAPS[name], `pack ${name} has a size cap in scripts/build-kit.js`);
+    const b = brot(fs.readFileSync(path.join(KIT_DIR, VERSION, 'packs', name + '.js')));
+    assert.ok(b <= SIZE_CAPS[name], `${name}: ${b} bytes brotli (cap ${SIZE_CAPS[name]})`);
+  }
+});
+
+test('art packs: one pinned file per pack, SRI in KIT_PACKS and the manifest, up to date with kit/packs', async () => {
+  const names = packNames();
+  assert.deepEqual(names, ['art-animals', 'art-biomes', 'art-school', 'dress', 'style-bold']);
+  assert.deepEqual(Object.keys(K.KIT_PACKS).sort(), Object.keys(K.KIT_VERSIONS).sort(), 'every version lists its packs');
+  assert.ok(Object.isFrozen(K.KIT_PACKS) && Object.isFrozen(K.KIT_PACKS[VERSION]));
+  const m = JSON.parse(fs.readFileSync(path.join(KIT_DIR, VERSION, 'manifest.json'), 'utf8'));
+  assert.deepEqual(m.packs, names);
+  for (const n of names) {
+    const file = fs.readFileSync(path.join(KIT_DIR, VERSION, 'packs', n + '.js'));
+    assert.equal(K.KIT_PACKS[VERSION][n], sri(file), `${n}: the pinned hash is the file's`);
+    assert.equal(m.files[`packs/${n}.js`], sri(file));
+    const { code } = await minify(bundlePack(n, VERSION));
+    assert.equal(file.toString('utf8').replace(/^\/\*![^\n]*\*\/\n/, ''), code, `kit/packs/${n}.js changed: run node scripts/build-kit.js --replace`);
+    assert.match(file.toString('utf8'), new RegExp(`version:"${VERSION.replace(/\./g, '\\.')}"`), 'built for this kit version');
+    assert.equal(K.kitPackTag(n), `<script src="/vendor/oomba-kit/${VERSION}/packs/${n}.js" integrity="${K.KIT_PACKS[VERSION][n]}" crossorigin="anonymous"></script>`);
+  }
+  assert.throws(() => K.kitPackTag('art-cars'), /unknown kit pack/);
+  // shipped packs are locked like the core (kit/SHIPPED.json packs: version -> name -> sha384)
+  const shippedPacks = JSON.parse(fs.readFileSync(path.join(ROOT, 'kit/SHIPPED.json'), 'utf8')).packs || {};
+  for (const v of Object.keys(SHIPPED)) assert.ok(shippedPacks[v], `kit ${v} shipped: its packs are locked in kit/SHIPPED.json too`);
+  for (const [v, packs] of Object.entries(shippedPacks)) for (const [n, h] of Object.entries(packs)) {
+    assert.equal(K.KIT_PACKS[v][n], h, `kit ${v} pack ${n} shipped with ${h}`);
+    assert.equal(sri(fs.readFileSync(path.join(KIT_DIR, v, 'packs', n + '.js'))), h, `${v} pack ${n} changed after it shipped`);
+  }
+});
+
+test('scanner: a pack passes only as its exact pinned tag, after the kit tag of the same version', () => {
+  const core = K.kitTag(), pack = K.kitPackTag('art-animals');
+  assert.deepEqual(codes(GAME(core + pack)).filter(c => c.startsWith('kit') || c === 'external_script'), []);
+  assert.deepEqual(codes(GAME(core + K.kitPackTag('art-school') + pack)).filter(c => c.startsWith('kit')), [], 'several packs');
+  const bad = {
+    before: pack + core,
+    alone: pack,
+    wrongSri: core + pack.replace(/integrity="[^"]+"/, 'integrity="sha384-AAAA"'),
+    noCors: core + pack.replace(' crossorigin="anonymous"', ''),
+    extra: core + pack.replace('></script>', ' async></script>'),
+    unknown: core + `<script src="/vendor/oomba-kit/${VERSION}/packs/art-cars.js" integrity="${K.KIT_PACKS[VERSION]['art-animals']}" crossorigin="anonymous"></script>`,
+    otherVersion: core + `<script src="/vendor/oomba-kit/9.9.9/packs/art-animals.js" integrity="${K.KIT_PACKS[VERSION]['art-animals']}" crossorigin="anonymous"></script>`,
+  };
+  for (const [name, t] of Object.entries(bad)) assert.ok(codes(GAME(t)).includes('kit_pin'), `${name}: ${codes(GAME(t))}`);
+  assert.ok(scanVersion(GAME(pack + core)).issues.find(i => i.code === 'kit_pin').message.includes(core), 'the message gives the order and the exact tags');
+  assert.ok(codes(GAME(core, "Oomba.__pk({ name: 'x' }, () => {});")).includes('kit_debug'), 'the pack hook is flagged');
+  assert.ok(codes(GAME(core, `const u = '/vendor/oomba-kit/${VERSION}/packs/art-animals.js';`)).includes('kit_tag'));
 });
 
 test('the frame CSP allows the kit in script-src and font-src (images stay data:/blob: only)', () => {
@@ -101,6 +153,7 @@ test('the screenshot worker serves kit files from disk (and nothing outside the 
   const H = 'http://game.invalid';
   assert.equal(vendorFile(`${H}${K.kitSrc()}`), path.join(KIT_DIR, VERSION, 'oomba-kit.js'));
   assert.equal(vendorFile(`${H}/vendor/oomba-kit/${VERSION}/fonts/bricolage-latin.woff2`), path.join(KIT_DIR, VERSION, 'fonts/bricolage-latin.woff2'));
+  assert.equal(vendorFile(`${H}/vendor/oomba-kit/${VERSION}/packs/art-animals.js`), path.join(KIT_DIR, VERSION, 'packs/art-animals.js'), 'packs route too');
   for (const bad of [`/vendor/oomba-kit/${VERSION}/../../three/x.js`, '/vendor/oomba-kit/1.0.0/nope.js', `/vendor/three/${V.THREE_VERSION}/fonts/x.js`, '/vendor/other/1.0.0/a.js']) assert.equal(vendorFile(H + bad), null, bad);
   assert.ok(vendorFile(`${H}${V.THREE_MODULE}`), 'three still routes');
 });
@@ -131,6 +184,12 @@ test('/kit is admin-only (or KIT_PREVIEW=1); its frame is the real frame wrapper
     const doc = await f.text();
     assert.ok(doc.includes(K.kitTag()), 'the pinned tag'); assert.match(doc, /"lang":"ar","dir":"rtl"/); assert.match(doc, /"theme":"dark"/);
     assert.equal((await fetch(`${BASE}/kit/frame/nope`)).status, 404);
+    const gal = await (await fetch(`${BASE}/kit/frame/gallery`)).text();
+    for (const n of Object.keys(K.KIT_PACKS[VERSION])) assert.ok(gal.includes(K.kitPackTag(n)), `the gallery loads ${n}`);
+    const quest = await (await fetch(`${BASE}/kit/frame/quest`)).text();
+    assert.ok(quest.indexOf(K.kitTag()) < quest.indexOf(K.kitPackTag('art-animals')), 'the kit tag first, then the packs');
+    const { sceneHtml } = await import('../../server/routes/kit.js');
+    for (const sc of ['quest', 'meadow']) { const iss = scanVersion(sceneHtml(sc)).issues; assert.deepEqual(iss.filter(i => i.level === 'fail'), [], `the ${sc} demo passes the scanner`); }
     const js = await fetch(`${BASE}${K.kitSrc()}`, { headers: { 'accept-encoding': 'br' } });
     assert.equal(js.status, 200); assert.equal(js.headers.get('access-control-allow-origin'), '*'); assert.match(js.headers.get('cache-control'), /immutable/);
     const font = await fetch(`${BASE}/vendor/oomba-kit/${VERSION}/fonts/bricolage-latin.woff2`);
@@ -138,15 +197,22 @@ test('/kit is admin-only (or KIT_PREVIEW=1); its frame is the real frame wrapper
   } finally { config.kitPreview = false; }
 });
 
-test('source grep: kit/src never uses eval, Function(), the network, workers, dynamic import, Date.now, Math.random, blur filters or emoji', () => {
+test('source grep: kit/src and kit/packs never use eval, Function(), the network, workers, dynamic import, Date.now, Math.random, blur filters or emoji', () => {
   const BANNED = [[/\beval\s*\(/, 'eval'], [/\bFunction\s*\(/, 'Function('], [/\bfetch\s*\(/, 'fetch'], [/XMLHttpRequest/, 'XHR'], [/\bWorker\b/, 'Worker'],
     [/\bimport\s*\(/, 'import('], [/Date\.now/, 'Date.now'], [/Math\.random/, 'Math.random'], [/shadowBlur/, 'shadowBlur'], [/\.filter\s*=/, '.filter ='],
     [/\bsetTimeout\b|\bsetInterval\b/, 'timers'], [/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u, 'emoji']];
-  const dir = path.join(ROOT, 'kit/src');
-  for (const f of fs.readdirSync(dir).filter(f => f.endsWith('.js'))) {
+  for (const dir of [path.join(ROOT, 'kit/src'), path.join(ROOT, 'kit/packs')]) for (const f of fs.readdirSync(dir).filter(f => f.endsWith('.js'))) {
     const src = strip(fs.readFileSync(path.join(dir, f), 'utf8'));   // code only: comments may name what is banned
     for (const [re, what] of BANNED) assert.doesNotMatch(src, re, `${f}: ${what}`);
   }
+  for (const n of packNames()) for (const [re, what] of BANNED) assert.doesNotMatch(fs.readFileSync(path.join(KIT_DIR, VERSION, 'packs', n + '.js'), 'utf8'), re, `packs/${n}.js: ${what}`);
   const built = dist(VERSION).toString('utf8');
   for (const [re, what] of BANNED) assert.doesNotMatch(built, re, `dist: ${what}`);
+});
+
+test('cssComments drops the prose notes inside CSS strings and leaves code alone', () => {
+  const css = '`.a{color:red}\n/* the card: a note */\n.b{x:1}/* a note */`';
+  assert.equal(cssComments(css), '`.a{color:red}\n.b{x:1}`');
+  const js = 'const re=/a*/g;const s="/* not a note */";/*! keep me */';
+  assert.equal(cssComments(js), js);
 });

@@ -22,7 +22,10 @@ const SAFE = ['class', 'pass', 'grass', 'glass', 'bass', 'mass', 'assist', 'asse
   'method', 'analy', 'analis', 'analiz', 'analog', 'cockpit', 'cockatoo', 'cockroach', 'cockermouth', 'penistone', 'heroine', 'heroina', 'cumul', 'cumbia',
   'nudel', 'methode', 'dicke', 'dicker', 'dickes', 'dicken',                 // de/nl: noodles, method, thick
   'cumple', 'cumpl', 'cumpri', 'cumbre', 'sexta', 'sexto', 'sextet',         // es/pt: birthday, fulfil, greet, summit, Friday/sixth
-  'en retard', 'nazion', 'fagiol', 'fagian', 'fagott'];                       // fr: late; it: nation, beans, pheasant, bassoon
+  'en retard', 'nazion', 'fagiol', 'fagian', 'fagott',                        // fr: late; it: nation, beans, pheasant, bassoon
+  // more everyday words in the kit's 13 game languages (found in games written in them): fr "pas de retard" (no delay),
+  // "du retard", "retarder" (to delay); es/pt "retardar" (to delay); de "Analyse"; nl "analyse"; it "sessanta" is fine
+  'de retard', 'du retard', 'retarder', 'retardar', 'retardo', 'retardataire', 'analys', 'sextant'];
 
 const LEET = { '0': 'o', '1': 'i', '!': 'i', '3': 'e', '4': 'a', '@': 'a', '5': 's', '$': 's', '7': 't', '+': 't', '8': 'b', '9': 'g', '|': 'i' };
 export function normalise(s) {
@@ -80,7 +83,7 @@ export function loadBlocklists(dir = BLOCKLIST_DIR) {
 }
 loadBlocklists();
 function listHit(s, { names = false } = {}) {
-  if (!LISTS.words.length) return false;
+  if (!LISTS.words.length) return null;
   let text = foldForList(s);
   for (const w of LISTS.safe) if (w) text = text.split(w).join(' ');
   const leet = text.replace(/[0-9!@$+|]/g, c => LEET[c] || c);
@@ -88,12 +91,12 @@ function listHit(s, { names = false } = {}) {
   // spaced-out letters ("м а т") joined back together
   const runs = (text.match(/(?:(?:^|\s)\p{L}(?=\s|$)){3,}/gu) || []).map(r => r.replace(/\s/g, ''));
   for (const e of LISTS.words) {
-    if (e.anywhere) { if (squashed.includes(e.w)) return true; continue; }
-    if (e.re.test(text) || e.re.test(leet)) return true;
-    if (names && e.w.length >= 3 && squashed.includes(e.w)) return true;
-    if (runs.some(r => r.includes(e.w))) return true;
+    if (e.anywhere) { if (squashed.includes(e.w)) return e.w; continue; }
+    if (e.re.test(text) || e.re.test(leet)) return e.w;
+    if (names && e.w.length >= 3 && squashed.includes(e.w)) return e.w;
+    if (runs.some(r => r.includes(e.w))) return e.w;
   }
-  return false;
+  return null;
 }
 
 function stripSafe(t) { for (const w of SAFE) t = t.split(w).join(' '); return t; }
@@ -122,20 +125,22 @@ export function looksLikeLinkCode(text) {
 }
 
 /** true if the text contains blocked words (any language list), including spaced-out or leetspeak versions. */
-export function hasProfanity(s, { names = false } = {}) {
+export function hasProfanity(s, o = {}) { return !!profanityMatch(s, o); }
+/** The blocked word the text matched (for the Builder's model-only detail, never shown to players), or null. */
+export function profanityMatch(s, { names = false } = {}) {
   s = String(s || '').slice(0, 200000);
   const base = stripSafe(normalise(normalizeText(s)));
   const words = base.replace(/[^a-z]+/g, ' ');
   const squashed = base.replace(/[^a-z]/g, '');
   const list = names ? [...BLOCK, ...NAME_ONLY] : BLOCK;
   for (const b of list) {
-    if (names && squashed.includes(b)) return true;
+    if (names && squashed.includes(b)) return b;
     // whole words or word starts in normal text, and anywhere in letters that were spaced out ("s h i t")
-    if (new RegExp(`(^|\\s)${b}`).test(words)) return true;
+    if (new RegExp(`(^|\\s)${b}`).test(words)) return b;
   }
   // spaced-out letters: "f u c k" -> look for runs of single letters
   const runs = words.match(/(?:\b[a-z]\b\s?){3,}/g) || [];
-  for (const r of runs) { const j = r.replace(/\s/g, ''); if (list.some(b => j.includes(b))) return true; }
+  for (const r of runs) { const j = r.replace(/\s/g, ''); const b = list.find(x => j.includes(x)); if (b) return b; }
   return listHit(s, { names });
 }
 /** Personal info: phone numbers, emails, street addresses, social handles, links. Any script, any digits. */

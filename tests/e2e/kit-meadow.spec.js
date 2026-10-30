@@ -96,8 +96,10 @@ test('the meadow plays end to end: title, hero, how-to, run, jump, quiz gate, ni
   const m = await M(f);
   expect(m.got).toBe(m.total); expect(m.scene).toBe('win');
   expect(await f.evaluate(() => window.Oomba.debug.kit.stage.entities.filter(e => e.clip === 'cheer').length)).toBeGreaterThanOrEqual(5);
-  // Play again -> countdown -> a fresh level
-  await f.locator('.ok-win .ok-quiet').click();
+  // one level: "Play again" is the big, focused button and there is no Next; it -> countdown -> a fresh level
+  await expect(f.locator('.ok-win .ok-row button')).toHaveCount(1);
+  await expect(f.locator('.ok-win .ok-hot')).toBeFocused();
+  await f.locator('.ok-win .ok-hot').click();
   await expect.poll(() => M(f).then(m => [m.scene, m.got, m.gate]), { timeout: 15000 }).toEqual(['play', 0, false]);
   expect(await k.csp()).toEqual([]);
   expect(k.errors).toEqual([]);

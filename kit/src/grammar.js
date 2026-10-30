@@ -65,7 +65,12 @@ export function detail(ctx, k, path, width = 1) {
  *  (so a kid's eyes never read as glasses), Cream inside and unlit (eye whites stay Cream at night). Pupils are
  *  separate sprites (they move). */
 export function ringEye(ctx, k, x, y, d, ring = 0.22) {
-  const sw = Math.max(d * ring, lines(k).inner * 1.4), r = d / 2 - sw / 2;
+  // Small sizes (a phone-sized character): the 2 px minimum line would fill the eye with Ink (a dark mask), so the
+  // ring thins out there and the Cream stays open; the radius never goes negative.
+  let sw = Math.max(d * ring, lines(k).inner * 1.4);
+  const dev = d * (k.s || 1); if (dev < 14) sw = Math.min(sw, d * Math.max(0.12, ring * 0.7));
+  sw = Math.min(sw, d * 0.4);
+  const r = Math.max(0.5, d / 2 - sw / 2);
   const p = new Path2D(); p.arc(x, y, r, 0, Math.PI * 2);
   ctx.fillStyle = CREAM; ctx.fill(p);
   ctx.strokeStyle = INK; ctx.lineWidth = sw; ctx.stroke(p);

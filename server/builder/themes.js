@@ -106,3 +106,52 @@ export const THEME_CHIPS = ['🦈 Sharks', '🐉 Dragons', '🤖 Robots', '🦄 
 export const LEARN_CHIPS = ['🔤 Spelling', '➕ Maths', '🌍 Geography', '🎵 Music', '🎉 Just for fun'];
 export const PLAYER_CHIPS = ['👤 Just me', '📱 Pass the phone', '👫 Two on one screen'];
 export const NEXT_CHIPS = ['Make it harder', 'Add a second level', 'Change the hero to a dragon'];
+
+// ---- Oomba Kit games: themes, colours and things to wear as character-spec edits -------------------------------
+// A theme -> the hero's look in the kit (a species, colours, things to wear) and, for some, a core biome. A species from
+// the art-animals pack is used only when the game loads that pack (pack); otherwise the look falls back to `alt`.
+const K = (spec, o = {}) => ({ spec, ...o });
+export const KIT_LOOKS = {
+  shark: K({ species: 'oomba', colors: { base: 'sky' } }, { biome: 'beach' }), dragon: K({ species: 'oomba', colors: { base: 'coral', belly: 'peach' }, wear: ['crown'] }, { biome: 'desert' }),
+  dino: K({ species: 'frog', colors: { base: 'mint', belly: 'peach' } }, { biome: 'forest' }), robot: K({ species: 'oomba', colors: { base: 'stone' }, wear: ['headphones'] }),
+  unicorn: K({ species: 'bunny', colors: { base: 'grape' }, wear: ['crown'] }, { biome: 'candy' }), space: K({ species: 'kid', outfit: { top: 'overalls', color: 'sky' }, wear: ['headphones'] }, { biome: 'snow' }),
+  alien: K({ species: 'oomba', colors: { base: 'mint' }, wear: ['glasses'] }), cat: K({ species: 'cat' }, { pack: 'art-animals', alt: { species: 'fox', colors: { base: 'grape' } } }),
+  dog: K({ species: 'dog' }, { pack: 'art-animals', alt: { species: 'fox', colors: { base: 'cocoa' } } }), fox: K({ species: 'fox' }),
+  penguin: K({ species: 'penguin' }, { pack: 'art-animals', alt: { species: 'oomba', colors: { base: 'stone', belly: 'snow' } }, biome: 'snow' }), bunny: K({ species: 'bunny' }),
+  frog: K({ species: 'frog' }), octopus: K({ species: 'oomba', colors: { base: 'grape' } }, { biome: 'beach' }), bee: K({ species: 'bee' }),
+  fish: K({ species: 'oomba', colors: { base: 'sky' } }, { biome: 'beach' }), monkey: K({ species: 'bear', colors: { base: 'cocoa' } }, { pack: 'art-animals', alt: { species: 'fox', colors: { base: 'cocoa' } }, biome: 'forest' }),
+  lion: K({ species: 'fox', colors: { base: 'peach' }, wear: ['crown'] }, { biome: 'desert' }), panda: K({ species: 'bear', colors: { base: 'snow' } }, { pack: 'art-animals', alt: { species: 'bunny', colors: { base: 'snow' } } }),
+  zombie: K({ species: 'kid', skin: 2, outfit: { top: 'hoodie', color: 'mint' } }), ghost: K({ species: 'oomba', colors: { base: 'snow' } }),
+  pirate: K({ species: 'kid', outfit: { top: 'tee', color: 'coral' }, wear: ['scarf'] }, { biome: 'beach' }), princess: K({ species: 'kid', outfit: { top: 'dress', color: 'grape' }, wear: ['crown'] }, { biome: 'candy' }),
+  knight: K({ species: 'kid', outfit: { top: 'hoodie', color: 'stone' }, wear: ['crown'] }), wizard: K({ species: 'kid', outfit: { top: 'hoodie', color: 'grape' }, wear: ['wizard-hat'] }),
+  ninja: K({ species: 'kid', outfit: { top: 'hoodie', color: 'stone' }, wear: ['scarf'] }), bird: K({ species: 'duck' }, { pack: 'art-animals', alt: { species: 'bee', colors: { base: 'sky' } } }),
+  butterfly: K({ species: 'bee', colors: { base: 'grape' } }, { biome: 'candy' }), turtle: K({ species: 'frog', colors: { base: 'mint' } }, { biome: 'beach' }),
+  horse: K({ species: 'bunny', colors: { base: 'cocoa' } }), owl: K({ species: 'owl' }, { pack: 'art-animals', alt: { species: 'oomba', colors: { base: 'cocoa' } }, biome: 'forest' }),
+  bear: K({ species: 'bear' }, { pack: 'art-animals', alt: { species: 'fox', colors: { base: 'cocoa' } }, biome: 'forest' }), pizza: K({ species: 'kid', outfit: { top: 'tee', color: 'coral' } }),
+  cake: K({ species: 'kid', outfit: { top: 'overalls', color: 'coral' } }, { biome: 'candy' }), candy: K({ species: 'bunny', colors: { base: 'coral' } }, { biome: 'candy' }),
+  soccer: K({ species: 'kid', outfit: { top: 'tee', color: 'mint' } }), basketball: K({ species: 'kid', outfit: { top: 'tee', color: 'peach' } }),
+  car: K({ species: 'kid', outfit: { top: 'overalls', color: 'sky' } }, { biome: 'desert' }), train: K({ species: 'kid', outfit: { top: 'overalls', color: 'cocoa' } }),
+  snowman: K({ species: 'oomba', colors: { base: 'snow' }, wear: ['scarf'] }, { biome: 'snow' }), star: K({ species: 'oomba', colors: { base: 'peach' } }),
+  flower: K({ species: 'bunny', colors: { base: 'coral' } }),
+};
+/** The kit look for a theme: { spec, biome } (spec drops a pack species the game does not load). */
+export function kitLook(theme, html = '') {
+  const L = theme && KIT_LOOKS[theme.key]; if (!L) return null;
+  const hasPack = !L.pack || String(html).includes(`/packs/${L.pack}.js`);
+  return { spec: hasPack ? L.spec : L.alt, biome: L.biome || '' };
+}
+// Colour words -> the kit's hues (spark yellow is for rewards, so yellow and gold become peach).
+export const KIT_HUES = { red: 'coral', pink: 'coral', orange: 'peach', yellow: 'peach', gold: 'peach', green: 'mint', teal: 'mint', blue: 'sky',
+  purple: 'grape', rainbow: 'grape', brown: 'cocoa', black: 'stone', dark: 'stone', night: 'grape', white: 'snow', grey: 'stone', gray: 'stone' };
+// Things to wear: words -> the kit's wear names.
+export const KIT_WEAR = [[/\b(wizard )?hats?\b|\bcaps?\b/, 'wizard-hat'], [/\bcrowns?\b|\btiaras?\b/, 'crown'], [/\bglasses\b|\bspectacles\b/, 'glasses'],
+  [/\bscarf\b|\bscarves\b/, 'scarf'], [/\bheadphones\b/, 'headphones'], [/\bbackpack\b|\bschool ?bag\b/, 'backpack']];
+// Characters a builder may name in a change ("make the fox blue"): word -> species.
+export const KIT_SPECIES = [['fox', /\bfox(es)?\b/], ['bunny', /\bbunn(y|ies)\b|\brabbits?\b/], ['frog', /\bfrogs?\b/], ['bee', /\bbees?\b/], ['oomba', /\boombas?\b/],
+  ['cat', /\bcats?\b|\bkitt(y|en)s?\b/], ['dog', /\bdogs?\b|\bpupp(y|ies)\b/], ['bear', /\bbears?\b/], ['mouse', /\bm(ouse|ice)\b/], ['owl', /\bowls?\b/],
+  ['penguin', /\bpenguins?\b/], ['duck', /\bducks?\b/]];
+// Worlds a builder may ask for ("make it snowy") -> core biomes (the art-biomes pack's only when the game loads it).
+export const KIT_BIOMES = [['snow', /\bsnow(y)?\b|\bwinter\b|\bice\b|\bicy\b/], ['beach', /\bbeach\b|\bseaside\b|\bsand(y)?\b/], ['desert', /\bdesert\b/],
+  ['candy', /\bcandy ?land\b|\bsweet world\b/], ['forest', /\bforest\b|\bwoods\b/], ['meadow', /\bmeadow\b|\bgrass(y)?\b/],
+  ['jungle', /\bjungle\b/, 'art-biomes'], ['reef', /\breef\b|\bunder ?water\b|\bunder the sea\b/, 'art-biomes'], ['city', /\bcity\b|\btown\b/, 'art-biomes'],
+  ['moon', /\bmoon\b|\bspace\b/, 'art-biomes'], ['autumn', /\bautumn\b|\bfall leaves\b/, 'art-biomes']];

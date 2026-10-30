@@ -1,27 +1,32 @@
 # Oomba Kit (developer docs)
 
-> **Status: phase 1 built (engine, art library, UI kit, demo). This file is the design; for what exists, with exact
-> signatures, read [kit-api.md](kit-api.md)** (that page is what a model reads; a unit test keeps it equal to the code).
-> Sections marked **(phase 2 design, not built)** describe plans, chiefly the declarative `Oomba.game` layer (§7.2).
+> **Status: phase 1 (engine, art library, UI kit, demo) and phase 2's game layer and art packs are built. This file is
+> the design; for what exists, with exact signatures, read [kit-api.md](kit-api.md)** (that page is what a model reads;
+> a unit test keeps it equal to the code). Sections marked **(not built)** describe plans.
 >
 > - **Sources:** `kit/src/*.js` (ES modules; the unit tests import them directly, no DOM needed at import).
 >   Core: `tokens color rand ease tween loop input i18n strings audio save settings theme validate`.
 >   Render: `list atlas paper glaze governor sky camera particles fit stage entity text`. Art: `grammar art chars props
->   biomes icons`. DOM: `ui screens juice`. Glue: `parts helpers testhooks index`.
-> - **Build and versions:** `node scripts/build-kit.js` writes `public/vendor/oomba-kit/<version>/` and the version's SRI
->   into `server/services/kit.js` (`KIT_VERSIONS`). A version folder is immutable: the build refuses to overwrite it,
+>   biomes icons`. DOM: `ui screens juice`. Game (level A): `level game` (§7.2). Packs: `packs` (the registry) and the pack
+>   sources in `kit/packs/*.js` (`art-animals`, `art-school`, `art-biomes`). Glue: `parts helpers testhooks index`.
+> - **Build and versions:** `node scripts/build-kit.js` (esbuild 0.28.2, a pinned build-only devDependency; without it a
+>   built-in stripper) writes `public/vendor/oomba-kit/<version>/` (the core `oomba-kit.js`, `packs/<name>.js`, fonts,
+>   `manifest.json`) and the SRIs into `server/services/kit.js` (`KIT_VERSIONS`, `KIT_PACKS`), and prints every file's
+>   brotli size against its cap (`SIZE_CAPS`: core 95 KB; art-animals 12, art-school 12, art-biomes 8). A version folder is immutable: the build refuses to overwrite it,
 >   `--replace` works only while the version is unshipped, and once a version is listed in `kit/SHIPPED.json`
->   (version → sha384, added in the change that ships it) `--replace` is refused and a test fails if its hash or file
->   ever changes (saved games pin that hash). Size today: about 87.6 KB brotli without a minifier (cap 95 KB, in
->   `tests/unit/kit-platform.test.js`); esbuild would make it about 82.5 KB (owner decision, §17).
+>   (version → sha384, plus its packs' hashes, added in the change that ships it; **1.0.0 is locked**, with its three packs, in the change that ships the first games on it) `--replace` is refused and a test fails if its hash or file
+>   ever changes (saved games pin that hash). Sizes today (brotli): core about 91 KB (cap 95 KB, with the game layer;
+>   the learning and food props moved to `art-school`), art-animals 1.8 KB, art-school 4.1 KB, art-biomes 1.5 KB.
+>   `tests/unit/kit-platform.test.js` enforces the caps.
 > - **Platform:** the frame CSP allows `<origin>/vendor/oomba-kit/` in `script-src` and `font-src` (next to cdnjs and
->   `/vendor/three/`); the scanner accepts exactly `kitTag()`, fails anything else naming the kit (`kit_pin`, `kit_tag`)
->   and flags games that name `Oomba.debug` (`kit_debug`); `snapshot.js` and `scripts/covers.js` serve kit files from
+>   `/vendor/three/`); the scanner accepts exactly `kitTag()` and, after it, exactly `kitPackTag(name)` for each pack (same
+>   version), fails anything else naming the kit (`kit_pin`, `kit_tag`) and flags games that name `Oomba.debug` or the
+>   pack hook `Oomba.__pk` (`kit_debug`); `snapshot.js` and `scripts/covers.js` serve kit files from
 >   disk; the SDK exposes `BRB.theme` (from `init.theme`). `BRB.motion` is reserved: no site setting sends
 >   `init.motion` yet, so it is always `''` and the kit follows the device's reduced-motion setting and its own
 >   settings panel. `BRB.on('theme')` is not built (the kit reads `BRB.theme` once). `/kit` (admins, or everyone with
->   `KIT_PREVIEW=1`) runs `kit/demo/<scene>.html` through the real frame wrapper; scenes `meadow` (the demo), `core`
->   and `gallery` (`&tab=chars|props|icons|biomes|screens`). Its frame takes `?l=`, `?mode=`, `?okBackend=`,
+>   `KIT_PREVIEW=1`) runs `kit/demo/<scene>.html` through the real frame wrapper; scenes `meadow` (the demo, on `Oomba.game`), `quest` (one
+>   `Oomba.game` call with every part and all three packs, two levels), `core` and `gallery` (loads every pack) (`&tab=chars|props|icons|biomes|screens`). Its frame takes `?l=`, `?mode=`, `?okBackend=`,
 >   `?okTier=`, `?okGov=off` (freeze the governor for screenshots) and `?okDebug=1` (exposes the unsupported
 >   `Oomba.debug.kit` internals to the kit's own tests; games never have it).
 > - **Engine (phase 1 review fixes):** parallax bands live on one atlas page per band slot and re-bake in place when
@@ -208,13 +213,20 @@ server/services/kit.js               KIT_PATH, KIT_VERSIONS={'1.0.0':'sha384-…
 ```
 
 - **One code file per version.** Glaze ships inside it (about 16 KB br). That avoids a second runtime-injected pin.
-- **Phase 2 art breadth** ships as `art-<pack>.js` files in the same version folder, each with its own SRI in `KIT_VERSIONS[v].packs`.
+- **Art packs** ship as `packs/<name>.js` in the same version folder, each with its own SRI in `KIT_PACKS[v][name]` and the
+  manifest. A pack is a classic script built from `kit/packs/<name>.js` (`export const PACK`, `export function define(K)`,
+  no imports): it calls the kit's non-enumerable hook `Oomba.__pk({name, version}, define)`, which refuses a pack built for
+  another kit version. `define(K)` gets the Ink grammar and `K.species(name, def)`, `K.prop(name, group, def, variants)`,
+  `K.biome(name, def, {decos, profiles})`; species hook into the core character builder (geometry, colours, `headBack`,
+  `headFront`, `parts`, `beak`, `legs`), so they get every clip, face, wear item and the night grade. A game declares a
+  pack like the core, with exactly `kitPackTag(name)` after `kitTag()`; only games that use a pack download it, and the
+  file is cached for a year like the core. `Oomba.pack(name)` reports what a loaded pack added.
 - **Opt-in tag** (exact, emitted by `kitTag()`):
   ```html
   <script src="/vendor/oomba-kit/1.0.0/oomba-kit.js" integrity="sha384-…" crossorigin="anonymous"></script>
   ```
   `crossorigin="anonymous"` is required: the frame is opaque-origin, so without it SRI fails and errors show as "Script error.".
-- **Minifier:** **esbuild as a pinned devDependency** (owner/orchestrator to confirm). Without it, `build-kit.js` strips comments and whitespace itself and the budget is measured as brotli. The built file is committed, like three.js.
+- **Minifier:** **esbuild 0.28.2, a pinned build-only devDependency** (owner approved). Production installs skip devDependencies; there `build-kit.js` would fall back to its own stripper, but the built files are committed (like three.js), so production never builds. Budgets are measured as brotli.
 - **Immutable folders:**
   - The build refuses to overwrite an existing version folder (`--replace` only while unshipped).
   - `kit/SHIPPED.json` locks every shipped version's hash: the build refuses `--replace` for it and a unit test fails
@@ -265,9 +277,9 @@ server/services/kit.js               KIT_PATH, KIT_VERSIONS={'1.0.0':'sha384-…
 | | `stage` | fit (letterbox/expand, DPR cap, safe areas), layers, camera, particles, backend pick/demote, governor | 4 |
 | art | `art/*` | grammar primitives, rig + clips, 6 species, ~25 props, ~40 icons, meadow biome (day + night), effects | 18 |
 | ui | `ui/*` | injected CSS, screens, HUD, buttons, ask widgets, dialogue, toast, captions, settings, live region | 10 |
-| game | `game/*` | `Oomba.game`, world/entities, physics-lite, 3 control presets, ~15 parts, `level.grid` | 7 |
+| game | `game`, `level`, `packs` | `Oomba.game`, world, tile physics, 6 control presets, 19 parts, `level.grid`/`generate`, the pack registry | 11.5 (built) |
 | test | `testhooks` | `__brbTest` auto-hooks, `step(n)`, `frameStats` | 0.7 |
-| | **total `oomba-kit.js`** | **target ≤ 80 KB br, hard CI cap 95 KB** | ≈ 87 today, without a minifier |
+| | **total `oomba-kit.js`** | **target ≤ 80 KB br, hard CI cap 95 KB** | ≈ 91 today (esbuild, with `game` + `level`) |
 
 Fonts are 77 + 31 KB woff2, loaded with `FontFace` on demand and cached.
 
@@ -392,6 +404,75 @@ Oomba.char({
   - Poisson-disc flowers and bushes;
   - auto-tiled rounded ground with a grass lip (16-case marching-squares rule set);
   - a seeded variation.
+- **Auto-dressing (phase 2b).** A game with no decoration code still looks lush:
+  - The bands are taller and steeper: tops at 34/46/58/72% of the view height, 16/12/9/5% tall, so the sky is at most
+    about 40% of a landscape frame. Every profile is normalised to its band; the far band of meadow, forest and snow is
+    a mountain range ('peaks', snow caps). Band colours follow aerial perspective: far = clean sky blue mixed into the
+    hue, near = the hue at full chroma (never a grey mix).
+  - Each band carries a dressing recipe (`'kind:spacing'`, `c` = clusters of 2-4 with air between groups), seeded per
+    prop (±30% size, mirrored flips) and drawn across the tile seam, with 20% headroom so tall trees never clip. The core
+    draws trees (round and two pine shapes), bushes, flowers, mushrooms, cacti, palms and lollipops; the `dress` pack
+    adds houses, fences, lamp posts, tents, beach huts, umbrellas, flags, cones, tyre stacks, rocks and grass tufts, and
+    richer per-biome recipes. Portrait views grow the props with the view (up to 2.4×).
+  - The `dress` pack also gives each biome foreground framing (big leaves, palm fronds, agave, snowy or candy mounds in
+    the bottom corners, about 4-6% of the frame, swaying) and ambient life (bird flocks, gulls, butterflies, drifting
+    leaves, snow, fish under the sea), on analytic paths: nothing is allocated per frame. Half as many on the low tier;
+    reduced motion keeps the framing and drops the movers.
+  - `Oomba.game({dress: 'off' | 'auto' | 0.2-2})`, `stage.setDress(v)`.
+  - Colour: noon sky `#4FB4F7` → `#BFE8FF`; the day grade adds about 8% chroma; the vignette is 0.35 by day, 1 at
+    night; clouds are white with a sky-blue shade at two depths (7 of them).
+  - The low tier bakes 3 bands (was 2), so the mountains show on every device.
+- **Bold style (phase 2b, `style-bold` pack).** `Oomba.game({style: 'bold'})` / `Oomba.style('bold')`. The core keeps
+  only the switch: no blush, narrowed eyes (the upper lid covers about a quarter), thicker brows, 'determined' by
+  default, and the rig and portraits apply the pack's proportions (legs ×1.6, head ×0.84 about the neck, body ×0.9:
+  about 3 heads tall). The pack adds wear (`hood visor headset helmet cap-back`, `jersey bomber techvest`; visor and vest
+  strip glow at night), a UI overlay under `.ok-bold` (deep surfaces `#121826`/`#1E2738`, neon mint/cyan/magenta/volt
+  accents, 8-10 px corners, pill-shaped big buttons with a volt glow (the kit's rounded Play), a light rim on characters on the dark cards, a slanted title with a cyan-to-magenta face and a magenta glow edge,
+  monospace HUD numbers), golden-hour light by default, and the biomes `cyber skate station haunted`.
+- **Title lockup (phase 2b).** Each word of the title is a sticker: a gradient face (`titleHue`: spark→coral by default,
+  mint, sky, coral), an Ink edge, a Cream rim and an Ink extrude, words tilted −4°/+2°, two-word titles stacked, about
+  18-22% of the screen's height. The game's hero stands big (about 40% of the height) in the bottom-start corner (not on
+  a fixed-camera set, whose cast is already big; on a tall phone up to 46% of the width, 3 vh clear of the bottom), Play
+  is 76-90 px tall and breathes with one ring (the keyboard focus ring replaces the pulse, never both), the tagline is
+  bigger, the wordmark is a Cream chip in the top corner (it reads on a night sky), the title pan is 2.5× faster, and
+  a soft clear zone (5 px blur, faded) sits behind the logo, tagline and Play so busy scenery never crowds them.
+- **Night sky (round 2).** The moon is bigger (170) with a bright glow that falls off softly; on a tall phone it hangs
+  in the top end corner (84% across), clear of the title and the HUD. A character on a dark card (night results)
+  gets a light rim.
+- **Layout guards (round 2, in the `dress` pack).** At build time and after `setup()` the cast is moved just enough
+  that no character starts cut off by the level's edge or on top of another (the hero stays put). While a game runs,
+  two characters overlapping for over a second, or a big prop behind the title's Play button, give a one-time
+  `[oomba]` warning that the Builder's playtest passes to the model. `w.levelNo` / `w.levelCount` tell a game which
+  level it is on; `count:flag` in the HUD shows "3 of 10" (`w.hud.count.set(n, total)`). Speech bubbles sit a little
+  higher (above the speaker's head with room for the tail).
+- **Answer dock (phase 2b).** `Oomba.ui.ask` tiles sit on a deep grape dock (`#2B1F5C`), white with a 6 px coloured lip;
+  right punches (1→1.12→1, 220 ms) and turns mint, wrong shakes (±6 px, 240 ms) and turns coral.
+- **Sizes (round 2, brotli).** Core 94.6 KB (cap 95 KB; the vehicles and the shell, cactus, snowman and log props
+  moved to `dress`, the layout guards live in `dress`, and the build strips comments and spaces from the shader
+  sources, about 0.6 KB); `dress` 5.5 KB; `style-bold` 3.0 KB; art-animals 1.9, art-biomes 1.9, art-school 4.0.
+- **Scale (phase 2b).** The landscape camera shows about 7.2 rows (was 8.4) with at most ~0.6 cell of soil; on a phone
+  in portrait the hero is at least 21% of the height. HUD pills are 46 px with a 3 px Ink edge; the progress bar fills
+  mint→spark.
+- **Round 3 polish.**
+  - Title: no blurred strip behind the lockup (the soft glow stays); Play sits in a `.ok-cta` wrapper with a soft halo,
+    so scenery never seems to touch it. `titleBadge` (a canvas, e.g. `Oomba.art.toCanvas('pie', 110, '3/4')`) puts the
+    game's motif under the lockup.
+  - Results: the card's portrait is 156 px; the sparks get a glow behind them once lit; the scrim covers more of the
+    scene; with the `dress` pack, paper confetti falls behind the card (`kit.celebrate(root)`, never over its text;
+    off with reduced motion). The score count-up and spark pop-in were already there.
+  - Speech bubbles try centred, then to either side, then higher, and take the spot that covers no pickup, face or
+    `[data-ok-keep]` element.
+  - The HUD flag meter follows the hero to the goal in every game until the game calls `w.hud.progress.set`.
+  - A night sky's moon is 250 units (was 170); platformer framing shows about a cell of soil so feet never sit on the
+    screen edge. Pickup sizes stay as they were (bigger defaults overflowed the first atlas page in the meadow demo and
+    caused whole-page GPU uploads mid-play); a game that wants bigger sparks sets them in its legend
+    (`$: { kind: 'spark', size: 1 }`), which the kit rules now suggest.
+  - Bold style: HUD numbers use the game font (tabular figures), not monospace; the tagline is upright; the oomba logo
+    pill is dark with a cyan edge.
+  - The Builder's playtest gives a talk scene still running at the end a few more seconds (tapping bubbles and
+    answers) before it reports the game as stuck.
+  - Build: prose comments inside the CSS strings are stripped (`cssComments`), about 0.45 KB brotli.
+  - Sizes: core 94.7 KB (cap 95), `dress` 6.0 KB, `style-bold` 3.0 KB.
 - **Exports:** `Oomba.art.toSVG(spec) → string` (DOM portraits, the Builder preview), `toCanvas(spec, px) → HTMLCanvasElement`, and `toTexture(THREE, spec, px)` (the 3D bridge; `THREE` is passed in, never imported).
 
 ### 6.4 The player's avatar
@@ -449,10 +530,14 @@ Oomba.validate(kind:'char'|'prop'|'game', spec:object): {spec:object, warnings:s
 Oomba.me(): CharSpec
 ```
 
-### 7.2 Game (level A) (phase 2 design, not built)
+### 7.2 Game (level A) (built)
 
-> Nothing in this section exists yet. Builder prompts must not use it until it ships; they use `Oomba.stage` and the
-> calls in [kit-api.md](kit-api.md).
+> Built in `kit/src/game.js` and `kit/src/level.js`; the exact, current signatures (including additions over this
+> design: `intro`, `setup`, `on.title/results/checkpoint/door/spring/stomp/skip`, `w.story`, `w.setHero`, levels as an
+> array, `game.start()/next()/hero()`, `heroSize`, `trySay`, the extra legend characters `o k D E M i C`) are in
+> [kit-api.md](kit-api.md). Differences from the sketch below: sizes in legends and `w.spawn` are in cells; `w.score(n)`
+> adds points and `w.points` reads them; `Oomba.level.generate` takes `cell`. "Oomba Meadow" and "Oomba Quest" (`/kit`)
+> are built on it: the meadow lost its hand-written tile collisions, coyote time, magnet, hazards, scenes and test hooks.
 
 ```ts
 Oomba.game(spec: {
@@ -731,6 +816,7 @@ The settings panel (pause and title screens) holds these options. They are saved
   - **Night on Paper has its own baselines.**
 - **Perf (soft gate):** CDP `setCPUThrottlingRate(4)` at 1366 × 768 on tier low, 40 entities + 300 particles: p90 < 16.6 ms against the stored baseline.
 - **Gallery:** every species × mood, prop, icon, widget, easing curve and particle preset, in both themes. These are art regression baselines.
+- **Game layer and packs (built):** `tests/e2e/kit-meadow.spec.js` (the meadow on `Oomba.game`, end to end) and `tests/e2e/kit-quest.spec.js` (one `Oomba.game` call with all three packs: pinned pack tags, talk, spring, key and door, quiz gate, flag, the generated level 2; Glaze, dark, Arabic). Unit: `tests/unit/kit-game.test.js` runs whole rounds headless (`tests/support/kit-fake.js`) with `step(n)`: physics, every part, outcomes, presets, packs.
 
 ### Manual sign-off (phase 1 exit)
 
@@ -810,6 +896,41 @@ Everything is also reachable by keyboard, touch and gamepad. In `ar` the HUD, me
    - A `layer.js` tune hook, `Oomba.__tune({hero, speed})`, so "make the fox blue with a hat" is a spec edit.
    - An "upgrade kit" edit path.
 2. **Templates:** rewrite the 7 2D templates on the kit (each about 3–8 KB, keeps `const CONFIG =` with single-line keys, passes the scan, gains i18n). Star Island gets the kit UI over three.js.
+
+   **Built (Builder on the kit):**
+   - `KIT_RULES` (`server/builder/kit-rules.js`) is generated by `node scripts/build-kit-rules.js` from the parts of
+     [kit-api.md](kit-api.md) marked `<!-- builder:rules|api|examples -->` plus the kit's own lists (species, props and
+     biomes per pack with their exact pinned tags, wear, hair, moods, clips, icons, controls, level kinds, roles, motion
+     tokens). It is fixed text ending `SYSTEM_PROMPT` (one cached block); `prompt.js` puts in `kitTag()` /
+     `kitPackTag(name)`. About 5 k tokens, not 2.5 k: the game-layer reference alone is about 2 k, and the model needs it
+     exact. `tests/unit/builder-kit.test.js` fails when it is out of date and runs the three example games.
+   - The Art direction section is now short: the kit is the art direction. `start_from_template` accepts every template.
+   - Style lint: `server/services/stylelint.js`, in `scanVersion(...).lint` (never changes the status), only for kit
+     games; codes `raw_hex font emoji_text emoji_dom own_screens own_loop timing slow_effect pack_missing icon_name
+     motion none_world` (warn) and `colour_only gate_handler missing_key` (info). Every pattern is linear and games over
+     300 KB are not linted (a 2 MB upload scans in about a second). The notes go back to the model after each version
+     and in the playtest. 3D games only count colour codes in CSS.
+   - Playtest: the model also gets the kit's `[oomba]` console warnings, and a probe that steps about 25 s of game
+     time (holding right, jumping, answering questions, pressing the game's own buttons): a round where nothing
+     happens, nothing is collected, a hero hidden under the game's own DOM, or an empty cover frame is reported.
+   - Safety scan: a profanity fail carries a model-only `detail` (which word matched, and where), and everyday words
+     in the kit's languages that start like a blocked word are allowed (fr "pas de retard").
+   - Tune hook (**mock Builder only** today: the real model edits CONFIG lines instead; its `<script id="brb-builder-layer"
+     data-kit="1">` tag marks it): kit 2D games get the kit layer (`layer.js`): `BRB_TUNE.speed | level2 | name | look | biome` lines
+     applied through `Oomba.__tune` (not enumerable), which wraps `Oomba.game`, `Oomba.stage(...).add` and
+     `Oomba.ui.title/win/tryAgain`: looks merge into character specs by species (`look.fox`) and for the hero
+     (`look.hero`). Older games and the 3D island keep the original layer byte for byte.
+   - Upgrade path: the model is told to keep an older game's style unless the builder asks; the mock rebuilds an older
+     game on the kit template of its kind only on an unambiguous ask ("upgrade it", "upgrade my game", "the new look",
+     "Oomba Kit"; never "add an upgrade shop"), keeping its title and tune-ups; fixing a failed scan on an older game
+     maps its hero to the template's theme.
+   - Templates: all 8 on 1.0.0 (`<!--KIT-->` / `<!--PACK:name-->` in the files, filled by `loadTemplate`), 2D ones
+     5.7–14.6 KB, every one an `Oomba.game` call (quiz, memory, word, duel and board use `controls: 'none'` with DOM
+     pieces in `Oomba.ui.root()`), `WORDS` in 12 languages (en-GB falls back to en), lint-clean. Star Island keeps its
+     3D world and controls, with the kit's title, how-to, HUD, pause and results (`Oomba.time.start()` runs the kit
+     clock: a 3D game has no 2D stage). No 2D template fixes `seed`, so "Play again" deals new rounds; the quiz carries
+     its questions per language (en, es, fr; English otherwise); duel and board name the winner and submit no score in
+     two-player mode.
 3. **Seed games**, one at a time, small → large: word-peek, shark-plank, brick-drop, connect-4, munch-maze, sum-racer, happy-putt, beat-lanes, word-hunt, swish-flick, then castle-clash and footy-tycoon, then the Hero of Sunvale DOM chrome. For each:
    1. Add the tag.
    2. Swap the shell CSS and screen/pause/mute/visibility code for `Oomba.ui`.
@@ -819,7 +940,29 @@ Everything is also reachable by keyboard, touch and gamepad. In `ar` the HUD, me
    6. Move i18n to `Oomba.strings`.
    7. **Keep `__brbTest` byte-compatible** (merged) and keep the `voice.test.js` copies in sync.
    8. Re-run `npm run covers`, the OG images, `seed.js` and the scanner tests, plus a per-game smoke e2e.
-4. **Art breadth:** packs (`art-animals`, `art-school`, `art-space`, …) toward 20+ species, 120 props, 8 biomes and 150 icons, each pack pinned with SRI. Andika for reading and Cyrillic; self-hosted Hebrew and Arabic display faces.
+
+   **Built (the pilots): Word Peek and Sum Racer** (`tests/e2e/kit-pilots.spec.js`). Their rules, words, word lists,
+   question decks, saves (`word-peek-v1`, `sum-racer-v1`) and `__brbTest` hooks are unchanged; each assigns its hooks
+   with `Object.assign(window.__brbTest, {...})`, so its own names win and the kit's (`setTheme`, `setLang`, ...) stay.
+   Patterns the next ports reuse:
+   - **A DOM game** (Word Peek): the game's DOM moves into `Oomba.ui.root()`, so it inherits the kit's font and its
+     `--ok-*` day/night variables; its cards use the kit's `ok-modal` / `ok-card` / `ok-btn` / `ok-switch` classes;
+     a kit stage draws the world behind it (Pip's forest, night in the dark theme), which also runs the kit's clock
+     for `Oomba.time.real` timers. The owl is `Oomba.ui.portrait` of the `art-animals` owl.
+   - **A hand-drawn canvas game** (Sum Racer): its renderer stays (two-player split screen needs two views), sized by
+     `Oomba.fit`, drawing kit props with `Oomba.draw.sprite`, kit characters with `Oomba.art.toCanvas`, sticker text
+     with `Oomba.draw.text` and kit colours from `Oomba.color` / `Oomba.tokens.palette`. The title and pause are
+     `Oomba.ui.title` / `Oomba.ui.pause`; the one stage is empty during play and shows the podium (the cast on
+     `stage.ground` steps in the track's biome) behind the results card.
+   - **Strings**: the game's table goes to `Oomba.strings` under a prefix (`wp.`, `sr.`) so its keys never replace the
+     kit's button words; emoji in the table are dropped when it is registered and kit icons are shown instead; lists
+     (cheers, ordinals) are read from the table directly.
+   - **Colours as CSS variables**: set once from `Oomba.color(...)` on `:root` (`--wp-*`, `--sr-*`), so the game's CSS
+     has no colour codes.
+   - Gaps found: the core `tree` prop's `palm` variant draws its leaves in Ink (Sum Racer draws its own palm); no
+     dinosaur species (Rex became a dog: the game's descriptions say so); the kit has no public way to close its
+     title or pause screen from code (the pilots click the screen's own button).
+4. **Art breadth:** packs, each pinned with SRI. **Built:** the pack mechanism, `art-animals` (7 species, 13 in all), `art-school` (25 props: learning, food, classroom) and `art-biomes` (5 biomes, 11 in all). Next: more species toward 20+, props toward 120, icons toward 150, `art-space`. Andika for reading and Cyrillic; self-hosted Hebrew and Arabic display faces.
 5. **3D bridge:** `toTexture`, a gradient-map toon material, an inverted-hull outline and the shared palette LUT, so three.js games match.
 6. **Platform:** an avatar parts-spec schema on the profile; cross-game kit settings; the optional sticker book (needs a safety review).
 
@@ -829,12 +972,10 @@ Everything is also reachable by keyboard, touch and gamepad. In `ar` the HUD, me
 2. **CSP: allow `/vendor/oomba-kit/` in `script-src` and `font-src`.**
 3. **Font: Bricolage for kit UI and display**, with per-script system fallbacks (Andika for Cyrillic and reading in phase 2), instead of a rounder game face.
 4. **The "Oomba" mascot species** (logo ring eyes + spark antenna) as the kit's default character and the guest avatar.
-5. **The size budget (decide now).** The kit is about 87.6 KB brotli against the 95 KB cap, which leaves about 7 KB for
-   phase 2's `Oomba.game`. esbuild (a pinned build-only devDependency) brings it to about 82.5 KB (measured), because
-   the bulk is CSS, 13 languages of strings and the art code rather than comments. Options: approve esbuild and raise
-   the cap to 110 KB for 1.x, or keep 95 KB and have the kit load optional packs (art, extra languages) as extra
-   pinned files from its own version folder.
-6. **Size: about 87 KB brotli of code today (unminified) + about 108 KB of fonts, cached once per device.** In return, Builder games shrink to about 3–15 KB.
+5. **The size budget (decided).** The owner approved esbuild as a pinned build-only devDependency and keeping the core
+   small with optional pinned packs. With the game layer the core is about 91 KB brotli (cap 95 KB); packs have their
+   own caps and only the games that use them load them.
+6. **Size: about 91 KB brotli of core code + about 108 KB of fonts, cached once per device.** In return, Builder games shrink to about 3–15 KB.
 
 **Still uncertain (verify in phase 1):**
 - real Chromebook and iPad frame times, since headless SwiftShader numbers don't represent them;

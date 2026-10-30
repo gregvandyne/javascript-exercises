@@ -4,7 +4,7 @@
 
 export const TIERS = ['low', 'mid', 'high'];
 export const TIER_SPEC = {
-  low: { backend: 'paper', dpr: 1.25, particles: 120, bands: 2, lights: 0, bloom: false, fireflies: 12, page: 1024 },
+  low: { backend: 'paper', dpr: 1.25, particles: 120, bands: 3, lights: 0, bloom: false, fireflies: 12, page: 1024 },
   mid: { backend: 'glaze', dpr: 1.5, particles: 300, bands: 3, lights: 2, bloom: false, fireflies: 16, page: 2048 },
   high: { backend: 'glaze', dpr: 2, particles: 600, bands: 4, lights: 4, bloom: true, fireflies: 20, page: 2048 },
 };

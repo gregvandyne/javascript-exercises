@@ -67,7 +67,8 @@ test('renders a game and returns base64 pictures', { skip: noChromium ? 'no Chro
 });
 
 test('renders a 3D game too: the self-hosted Three.js is answered from the worker\'s own files', { skip: noChromium ? 'no Chromium' : false, timeout: 120_000 }, async () => {
-  const html = fs.readFileSync(path.join(ROOT, 'server/builder/templates/island.html'), 'utf8');
+  const { loadTemplate } = await import('../../server/builder/templates/index.js');
+  const html = loadTemplate('island');   // with the pinned Oomba Kit tag (its screens and HUD)
   const r = await run(JSON.stringify({ html, opts: { size: 'cover', titleMs: 1500, playMs: 1500 } }));
   assert.equal(r.status, 200);
   const j = await r.json();

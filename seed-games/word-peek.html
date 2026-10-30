@@ -1,273 +1,309 @@
 <title>Word Peek</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap">
 <style>
-/* Word Peek: a daily five-letter word-guessing game with Pip the owl.
-   Layout (portrait): HUD (home / mode + try count / stats / settings / mute), the letter grid on a cream card
-   with Pip peeking over its top edge (Pip's speech bubble shows the messages), then the on-screen keyboard.
+/* Word Peek on the Oomba Kit: a daily five-letter word-guessing game with Pip the owl.
+   The kit draws Pip's forest behind the game (day, or night in the dark theme), Pip himself (the kit's owl), the
+   icons, buttons, toggles, captions and the type. This file only lays out the game's own pieces: the HUD row, the
+   letter grid on a card with Pip peeking over its top edge (his speech bubble shows the messages), the on-screen
+   keyboard, and the home, how-to, stats, settings, result and "set a word for a friend" cards.
    Short wide screens (landscape phones) put the grid on the left and the keyboard on the right.
-   Overlays: home screen (modes), how to play, stats, settings, the result panel and the "set a word for a friend" hand-off.
-   Colours: right spot = teal + a tick badge, wrong spot = amber + a dot badge, not in the word = dimmed slate.
-   High contrast swaps to orange + blue. Every mark also has a shape, so colour is never the only clue. */
-:root{
-  --sky1:#fff1c4; --sky2:#ffd98a; --sky3:#ffbf7a;
-  --ink:#3a2a1c; --ink2:#6b5440; --card:#fffaf0; --cardEdge:#f1d9a6; --paper:#fffdf7;
-  --hit:#0e8f88; --hitInk:#ffffff; --near:#f2a627; --nearInk:#3a2a1c; --miss:#7d8698; --missInk:#ffffff;
-  --keyBg:#fff6e2; --keyInk:#3a2a1c; --accent:#e46b2c; --accentDark:#a8460f;
-  --font:"Fredoka","Trebuchet MS","Segoe UI",system-ui,sans-serif;
-  --tile:56px; --gap:6px; --keyH:52px;
-  color-scheme:light;
-}
-.hc{ --hit:#d9480f; --hitInk:#ffffff; --near:#1971c2; --nearInk:#ffffff; --miss:#5f6673; --missInk:#ffffff; }
+   Colours come from the kit (set as --wp-* variables at start): right spot = mint + a tick badge, wrong spot = peach
+   + a dot badge, not in the word = dimmed stone. High contrast swaps to orange + blue. Every mark also has a shape,
+   so colour is never the only clue. No colour codes and no fonts here: the kit's variables and font only. */
+.wp{--tile:56px;--gap:6px;--keyH:52px;--hit:var(--wp-hit);--hitInk:var(--wp-hitInk);--near:var(--wp-near);--nearInk:var(--wp-nearInk);
+  --miss:var(--wp-miss);--missInk:var(--wp-missInk);--rim:var(--wp-ink);--soft:color-mix(in srgb,var(--ok-text) 62%,transparent)}
+.ok-night .wp{--rim:color-mix(in srgb,var(--wp-cream) 38%,transparent)}
+.hc .wp,.wp.hc{--hit:var(--wp-hcHit);--hitInk:var(--wp-hcHitInk);--near:var(--wp-hcNear);--nearInk:var(--wp-hcNearInk);--miss:var(--wp-hcMiss)}
 [hidden]{display:none!important}
 html,body{height:100%}
-body{margin:0;overflow:hidden;font-family:var(--font);color:var(--ink);touch-action:manipulation;user-select:none;-webkit-user-select:none;
-  -webkit-tap-highlight-color:transparent;
-  background:
-    radial-gradient(3px 3px at 12% 14%,rgba(255,255,255,.9),transparent 70%),
-    radial-gradient(2px 2px at 84% 9%,rgba(255,255,255,.85),transparent 70%),
-    radial-gradient(3px 3px at 70% 30%,rgba(255,255,255,.6),transparent 70%),
-    radial-gradient(2px 2px at 24% 46%,rgba(255,255,255,.55),transparent 70%),
-    radial-gradient(circle at 110% 105%,rgba(255,140,90,.45),transparent 45%),
-    radial-gradient(circle at -10% 110%,rgba(255,200,90,.5),transparent 45%),
-    linear-gradient(175deg,var(--sky1),var(--sky2) 55%,var(--sky3));}
-button{font-family:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
-button:focus-visible{outline:3px solid var(--accentDark);outline-offset:2px}
+body{margin:0;overflow:hidden;touch-action:manipulation;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
+.wp button{font-family:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.wp .ok-btn,.wp .mode .go{color:var(--wp-ink);--ok-icon-card:var(--wp-cream)}
+.wp .ok-btn svg{flex:none}
+.wp svg{display:block}
 
 /* ---------- play layout ---------- */
-.app{position:relative;height:100%;max-width:560px;margin:0 auto;box-sizing:border-box;display:grid;
+.app{position:fixed;inset:0;max-width:560px;margin:0 auto;box-sizing:border-box;display:grid;
   grid-template-rows:auto minmax(0,1fr) auto;grid-template-areas:"hud" "board" "kb";gap:6px;
-  padding:8px max(8px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left))}
+  padding:max(8px,env(safe-area-inset-top)) max(8px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left))}
 .app.side{max-width:1100px;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);grid-template-rows:auto minmax(0,1fr);
-  grid-template-areas:"board hud" "board kb";column-gap:14px}
+  grid-template-areas:"board hud" "board kb";column-gap:16px}
 .app.offstage{visibility:hidden}
 .hud{grid-area:hud;display:flex;align-items:center;gap:6px;min-width:0}
-.icon-btn{width:44px;height:44px;flex:none;border:0;border-radius:50%;background:#fffdf6;font-size:1.25rem;padding:0;display:grid;place-items:center;
-  box-shadow:0 3px 0 rgba(120,70,20,.28)}
-.icon-btn:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(120,70,20,.28)}
-.pill{flex:1;min-width:0;height:44px;box-sizing:border-box;border-radius:999px;background:rgba(255,253,246,.85);box-shadow:inset 0 0 0 2px rgba(160,100,40,.18);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.05;padding:0 8px;text-align:center}
-.pill b{font-weight:600;font-size:clamp(.82rem,3.8vw,1.02rem);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
-.pill span{font-size:clamp(.72rem,3.2vw,.86rem);color:var(--ink2);font-weight:500;white-space:nowrap;overflow:hidden;max-width:100%}
+.hud .ok-btn.ok-icon,.corner .ok-btn.ok-icon{width:46px;min-height:46px;flex:none}
+.pill{flex:1;min-width:0;height:46px;box-sizing:border-box;border-radius:999px;background:var(--ok-card);color:var(--ok-text);border:2.5px solid var(--rim);box-shadow:0 3px 0 var(--wp-ink);
+  display:flex;align-items:center;justify-content:center;gap:6px;line-height:1.05;padding:0 10px}
+.pill .pic{flex:none;display:flex}
+.pill .txt{display:flex;flex-direction:column;align-items:center;min-width:0}
+.pill b{font-weight:800;font-size:clamp(.82rem,3.8vw,1.02rem);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.pill span{font-size:clamp(.72rem,3.2vw,.86rem);color:var(--soft);font-weight:600;white-space:nowrap;overflow:hidden;max-width:100%;display:flex;align-items:center;gap:3px}
+.pill span svg{width:1.1em;height:1.1em}
 
 .boardWrap{grid-area:board;position:relative;min-height:0;min-width:0;display:flex;align-items:center;justify-content:center}
-.card{position:relative;background:var(--card);border-radius:20px;padding:10px;box-shadow:0 0 0 4px var(--cardEdge),0 10px 24px rgba(140,80,20,.22);
-  margin-top:calc(var(--tile) * .82)}
+.card{position:relative;background:var(--ok-card);border:3px solid var(--rim);border-radius:24px;padding:10px;box-shadow:0 7px 0 var(--wp-ink);
+  margin-top:calc(var(--tile) * .98)}
 .grid{display:grid;gap:var(--gap)}
 .row{display:grid;grid-auto-flow:column;gap:var(--gap)}
-.tile{position:relative;width:var(--tile);height:var(--tile);box-sizing:border-box;border-radius:calc(var(--tile) * .22);display:grid;place-items:center;
-  font-weight:600;font-size:calc(var(--tile) * .56);text-transform:uppercase;background:var(--paper);border:2px dashed #e7d3ac;color:var(--ink);
+.tile{position:relative;width:var(--tile);height:var(--tile);box-sizing:border-box;border-radius:calc(var(--tile) * .24);display:grid;place-items:center;
+  font-weight:800;font-size:calc(var(--tile) * .56);text-transform:uppercase;background:var(--ok-bg2);border:2.5px dashed var(--ok-line);color:var(--ok-text);
   transform-style:preserve-3d;line-height:1}
-.tile.filled{border:3px solid #6b5440;animation:pop .14s ease-out}
-.tile.hit,.tile.near,.tile.miss{border:0;box-shadow:inset 0 -4px 0 rgba(0,0,0,.16)}
+.tile .ch{transform:translateY(.03em)}
+.tile.filled{border:3px solid var(--rim);background:var(--ok-card);box-shadow:0 3px 0 var(--wp-ink)}
+.tile.hit,.tile.near,.tile.miss{border:3px solid var(--wp-ink);box-shadow:0 3px 0 var(--wp-ink)}
 .tile.hit{background:var(--hit);color:var(--hitInk)}
 .tile.near{background:var(--near);color:var(--nearInk)}
-.tile.miss{background:var(--miss);color:var(--missInk);opacity:.82}
-.tile .mk{position:absolute;top:calc(var(--tile) * .05);right:calc(var(--tile) * .05);width:calc(var(--tile) * .26);height:calc(var(--tile) * .26);
-  border-radius:50%;display:none;place-items:center;font-size:calc(var(--tile) * .18);line-height:1;font-weight:700}
-.tile.hit .mk{display:grid;background:#fff;color:var(--hit)}
-.tile.hit .mk::before{content:"✓"}
-.tile.near .mk{display:grid;background:transparent}
-.tile.near .mk::before{content:"";width:42%;height:42%;border-radius:50%;background:var(--nearInk)}
+.tile.miss{background:var(--miss);color:var(--missInk);border-color:color-mix(in srgb,var(--wp-ink) 55%,var(--miss));box-shadow:none;opacity:.86}
+.tile .mk{position:absolute;top:calc(var(--tile) * -.1);inset-inline-end:calc(var(--tile) * -.1);width:calc(var(--tile) * .34);height:calc(var(--tile) * .34);box-sizing:border-box;
+  border-radius:50%;display:none;place-items:center;background:var(--wp-cream);border:2px solid var(--wp-ink);color:var(--wp-ink)}
+.tile .mk svg{width:78%;height:78%;stroke-width:3.4}
+.tile.hit .mk{display:grid}
+.tile.near .mk{display:grid;background:transparent;border:0;top:calc(var(--tile) * .06);inset-inline-end:calc(var(--tile) * .06);width:calc(var(--tile) * .2);height:calc(var(--tile) * .2)}
+.tile.near .mk svg{display:none}
+.tile.near .mk::before{content:"";width:100%;height:100%;border-radius:50%;background:var(--nearInk)}
 .tile.flip{animation:flip var(--flipMs,420ms) ease-in-out}
 .tile.bounce{animation:bounce .5s ease-out}
 .row.shake{animation:shake .4s ease-in-out}
-.tile.cursor{border-color:#c79a55;border-style:solid}
-@keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.1)}100%{transform:scale(1)}}
+.tile.cursor{border:3px solid var(--wp-mint);border-style:solid}
 @keyframes flip{0%{transform:rotateX(0)}50%{transform:rotateX(90deg)}100%{transform:rotateX(0)}}
 @keyframes bounce{0%,100%{transform:translateY(0)}35%{transform:translateY(-34%)}60%{transform:translateY(4%)}80%{transform:translateY(-6%)}}
 @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(4px)}}
 
-/* Pip the owl peeks over the card's top edge; the speech bubble shows messages. */
-.owl{position:absolute;left:50%;bottom:calc(100% - 6px);width:calc(var(--tile) * 1.62);height:calc(var(--tile) * 1.05);transform:translateX(-50%);
-  z-index:3;pointer-events:none;overflow:visible}
-.owl svg{width:100%;height:100%;overflow:visible;display:block}
-.owl .bodyG{transform-origin:50% 100%;transition:transform .25s ease}
-.owl.cheer .bodyG{animation:hop .55s ease-out 3}
-.owl.happy .bodyG{transform:translateY(-4px)}
-.owl.sad .bodyG{transform:translateY(5px)}
-.owl.tilt .bodyG{transform:rotate(-8deg)}
-@keyframes hop{0%,100%{transform:translateY(0)}40%{transform:translateY(-22%)}}
-.owl .wingL,.owl .wingR{transition:transform .25s ease}
-.owl .wingL{transform-origin:28px 62px}.owl .wingR{transform-origin:92px 62px}
-.owl.cheer .wingL{transform:rotate(55deg)}.owl.cheer .wingR{transform:rotate(-55deg)}
-.owl .pupil{transition:transform .18s ease}
-.lid{transform-box:fill-box;transform-origin:50% 0;transform:scaleY(0);transition:transform .09s linear}
-.owl.blink .lid{transform:scaleY(1)}
-.owl.sad .lid,.resOwl.sad .lid{transform:scaleY(.45)}
-.happyEye{display:none}
-.owl.happy .happyEye,.owl.cheer .happyEye,.resOwl.happy .happyEye,.logoOwl .happyEye{display:block}
-.owl.happy .eyeOpen,.owl.cheer .eyeOpen,.resOwl.happy .eyeOpen,.logoOwl .eyeOpen{display:none}
-.bubble{position:absolute;left:50%;top:18px;transform:translate(-50%,-6px);z-index:4;background:#fff;color:var(--ink);
-  border-radius:16px;padding:9px 16px;font-weight:600;font-size:clamp(.95rem,4.2vw,1.1rem);white-space:normal;width:max-content;text-align:center;line-height:1.2;box-shadow:0 4px 0 rgba(120,70,20,.25),0 0 0 3px #ffd88a;
-  opacity:0;transition:opacity .2s ease,transform .2s ease;pointer-events:none;max-width:calc(100% - 8px);box-sizing:border-box;text-overflow:ellipsis;overflow:visible}
-.bubble::before{content:"";position:absolute;left:50%;top:-9px;margin-left:-9px;border:9px solid transparent;border-top:0;border-bottom-color:#fff}
+/* Pip (the kit's owl) peeks over the card's top edge: the card's edge hides his feet. */
+.owl{position:absolute;left:50%;bottom:calc(100% + 1px);width:calc(var(--tile) * 3);height:calc(var(--tile) * 1.5);transform:translateX(-50%);
+  z-index:3;pointer-events:none;overflow:hidden}
+.owl .body{position:absolute;left:0;right:0;top:calc(var(--tile) * .1);height:calc(var(--tile) * 1.8);transform-origin:50% 100%;transition:transform .25s ease}
+.owl canvas{position:absolute;left:50%;top:0;height:100%!important;width:auto!important;transform:translateX(-50%)}
+.owl.cheer .body{animation:hop .55s ease-out 3}
+.owl.happy .body{transform:translateY(-3px)}
+.owl.sad .body{transform:translateY(6px)}
+.owl.tilt .body{transform:rotate(-9deg)}
+@keyframes hop{0%,100%{transform:translateY(0)}40%{transform:translateY(-16%)}}
+.bubble{position:absolute;left:50%;top:14px;transform:translate(-50%,-6px);z-index:4;background:var(--wp-cream);color:var(--wp-ink);border:3px solid var(--wp-ink);
+  border-radius:20px;padding:9px 16px;font-weight:700;font-size:clamp(.98rem,4.2vw,1.12rem);white-space:normal;width:max-content;text-align:center;line-height:1.25;box-shadow:0 4px 0 var(--wp-ink);
+  opacity:0;transition:opacity .2s ease,transform .2s ease;pointer-events:none;max-width:calc(100% - 8px);box-sizing:border-box;overflow:visible}
+.bubble::before{content:"";position:absolute;left:50%;top:-13px;margin-left:-11px;border:11px solid transparent;border-top:0;border-bottom:13px solid var(--wp-ink)}
+.bubble::after{content:"";position:absolute;left:50%;top:-8px;margin-left:-8px;border:8px solid transparent;border-top:0;border-bottom:9px solid var(--wp-cream)}
 .bubble.show{opacity:1;transform:translate(-50%,0)}
 .grid.secret .row:not(:first-child){display:none}
-.secretHelp{margin:0 0 10px;text-align:center;font-weight:600;font-size:1.05rem;line-height:1.3;max-width:calc(var(--tile) * 6.4)}
-.secretHelp .sub{display:block;font-weight:500;font-size:.92rem;color:var(--ink2)}
+.secretHelp{margin:0 0 10px;text-align:center;font-weight:700;font-size:1.05rem;line-height:1.3;max-width:calc(var(--tile) * 6.4)}
+.secretHelp .sub{display:block;font-weight:600;font-size:.92rem;color:var(--soft)}
 
-/* ---------- keyboard ---------- */
-.kb{grid-area:kb;display:flex;flex-direction:column;gap:6px;width:100%;max-width:540px;margin:0 auto;align-self:end}
+/* ---------- keyboard (kit keys: cream stickers with an Ink edge) ---------- */
+.kb{grid-area:kb;display:flex;flex-direction:column;gap:7px;width:100%;max-width:556px;margin:0 auto;align-self:end;
+  /* a solid card tray in the kit style: keys (and the greyed-out ones) stay readable over any scene */
+  background:var(--ok-card);border:2.5px solid var(--wp-ink);border-radius:22px;box-shadow:0 4px 0 var(--wp-ink);padding:9px 6px 7px;box-sizing:border-box}
 .app.side .kb{align-self:center}
-/* Keys have no gaps between their tap areas: the visible key is drawn by ::before, inset a little. */
 .krow{display:flex;gap:0;justify-content:center}
-.key{--kbg:var(--keyBg);flex:1 1 0;min-width:0;max-width:57px;height:var(--keyH);border:0;background:transparent;color:var(--keyInk);font-weight:600;
-  font-size:clamp(1rem,4.6vw,1.3rem);text-transform:uppercase;padding:0 0 3px;position:relative;z-index:0}
-.key::before{content:"";position:absolute;inset:0 2.5px 3px;border-radius:10px;background:var(--kbg);box-shadow:0 3px 0 rgba(120,70,20,.3);z-index:-1}
-.key:active::before,.key.press::before{transform:translateY(2px);box-shadow:0 1px 0 rgba(120,70,20,.3)}
+.key{--kbg:var(--ok-card);--kin:var(--ok-text);flex:1 1 0;min-width:0;max-width:57px;height:var(--keyH);border:0;background:transparent;color:var(--kin);font-weight:800;
+  font-size:clamp(1rem,4.6vw,1.3rem);text-transform:uppercase;padding:0 0 4px;position:relative;z-index:0}
+.key::before{content:"";position:absolute;inset:0 2.5px 4px;border-radius:12px;background:var(--kbg);border:2px solid var(--rim);box-shadow:0 3px 0 var(--wp-ink);z-index:-1}
+.key:active::before,.key.press::before{transform:translateY(2px);box-shadow:0 1px 0 var(--wp-ink)}
+.key:focus-visible{outline:none}.key:focus-visible::before{outline:3px solid var(--ok-focus);outline-offset:2px}
 .key.wide{flex:1.55 1 0;max-width:86px;font-size:clamp(.78rem,3.4vw,1rem)}
-.key.hit{--kbg:var(--hit);color:var(--hitInk)}
-.key.near{--kbg:var(--near);color:var(--nearInk)}
-.key.miss{--kbg:var(--miss);color:var(--missInk);opacity:.62}
-.key .km{position:absolute;top:3px;right:6px;font-size:.62rem;line-height:1}
-.key.hit .km::before{content:"✓"}
-.key.near .km::before{content:"●";font-size:.5rem}
+.key.wide svg{width:1.5em;height:1.5em;margin:auto}
+.key.hit{--kbg:var(--hit);--kin:var(--hitInk)}.key.hit::before{border-color:var(--wp-ink)}
+.key.near{--kbg:var(--near);--kin:var(--nearInk)}.key.near::before{border-color:var(--wp-ink)}
+.key.miss{--kbg:var(--miss);--kin:var(--missInk);opacity:.78}.key.miss::before{box-shadow:none;border-color:color-mix(in srgb,var(--wp-ink) 35%,transparent)}
+/* the win card: a warm glow behind it instead of the grey scrim */
+#resScreen.won.ok-scrim{background:radial-gradient(closest-side,color-mix(in srgb,var(--ok-card) 30%,transparent) 20%,rgba(60,36,10,.42));-webkit-backdrop-filter:saturate(1.05);backdrop-filter:saturate(1.05)}
+.key .km{position:absolute;top:4px;inset-inline-end:7px;width:.62rem;height:.62rem;line-height:1}
+.key .km svg{width:100%;height:100%;stroke-width:4}
+.key:not(.hit) .km svg{display:none}
+.key.near .km::before{content:"";display:block;width:.42rem;height:.42rem;margin:.1rem;border-radius:50%;background:var(--kin)}
 .krow.spacer::before,.krow.spacer::after{content:"";flex:.5 1 0;max-width:28px}
 
-/* ---------- overlays ---------- */
-.screen{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;padding:12px;box-sizing:border-box;overflow:auto}
-.screen.dim{background:rgba(70,40,10,.45)}
-.screen.solid{background:inherit;
-  background:radial-gradient(circle at 110% 105%,rgba(255,140,90,.45),transparent 45%),radial-gradient(circle at -10% 110%,rgba(255,200,90,.5),transparent 45%),linear-gradient(175deg,var(--sky1),var(--sky2) 55%,var(--sky3))}
-.panel{position:relative;background:var(--card);border-radius:22px;box-shadow:0 0 0 4px var(--cardEdge),0 14px 30px rgba(110,60,10,.3);
-  width:min(440px,100%);max-height:100%;overflow:auto;box-sizing:border-box;padding:18px 18px 16px;text-align:center;animation:panelIn .25s ease-out}
-@keyframes panelIn{0%{transform:scale(.9);opacity:0}100%{transform:scale(1);opacity:1}}
-.panel h2{margin:2px 0 8px;font-size:1.55rem;font-weight:700}
-.panel p{margin:6px 0;line-height:1.35;font-size:1.02rem}
-.close{position:absolute;top:8px;inset-inline-end:8px}
-.btn{min-height:50px;border:0;border-radius:16px;padding:10px 16px;font-size:1.08rem;font-weight:600;background:#fff;color:var(--ink);white-space:normal;line-height:1.15;
-  box-shadow:0 4px 0 rgba(120,70,20,.3),inset 0 0 0 2px rgba(160,100,40,.18)}
-.btn:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(120,70,20,.3)}
-.btn.primary{background:var(--accent);color:#fff;box-shadow:0 4px 0 var(--accentDark)}
-.btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:12px}
-.btns .btn{flex:1 1 auto}
+/* ---------- cards (the kit's modal + card, with the game's content) ---------- */
+.wp .ok-card{width:min(440px,100%);padding:22px 18px 18px;gap:10px}
+.wp .ok-card .x{position:absolute;top:10px;inset-inline-end:10px}
+.wp .ok-h2{font-size:1.6em}
+.wp .ok-card p{margin:0;line-height:1.38;font-size:1.02rem;font-weight:600}
+.btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;width:100%;margin-top:4px}
+.btns .ok-btn{flex:1 1 auto}
 
-/* home */
-.home{width:min(460px,100%);display:flex;flex-direction:column;align-items:center;gap:10px;padding:4px 0}
-.logo{position:relative;display:flex;flex-direction:column;align-items:center;margin-top:4px}
-.logoOwl{width:150px;height:96px;margin-bottom:-12px;position:relative;z-index:2}
+/* home: the forest stays in view behind the title and the mode cards */
+.home{position:fixed;inset:0;overflow:auto;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:max(14px,env(safe-area-inset-top)) 14px max(14px,env(safe-area-inset-bottom));box-sizing:border-box}
+.homeIn{width:min(460px,100%);display:flex;flex-direction:column;align-items:center;gap:12px}
+.logo{position:relative;display:flex;flex-direction:column;align-items:center}
+.logoOwl{margin-bottom:-14px;position:relative;z-index:0;animation:bob 2.4s ease-in-out infinite}
+.logoOwl canvas{display:block}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
 .logoTiles{display:flex;gap:6px;position:relative;z-index:1}
-.logoTiles .tile{--tile:52px;border:0;color:#fff;box-shadow:inset 0 -4px 0 rgba(0,0,0,.16)}
-.logoWord{font-size:2.3rem;font-weight:700;letter-spacing:.5px;margin:2px 0 0;line-height:1;color:var(--ink)}
-.tag{margin:0;color:var(--ink2);font-weight:500;font-size:1.05rem;text-align:center}
+.logoTiles .tile{--tile:50px}
+.logoWord{margin:12px 0 4px;font-weight:800;font-size:clamp(3rem,13vw,4.4rem);line-height:1;display:flex;gap:.28em;--ok-t1:#9BF0B8;--ok-t2:#2FB7E8}
+/* the PEEK tiles flip in one by one; the Enter key lights up when the row is full; bigger mode text and keys */
+.logoTiles .tile{animation:flip 420ms ease-in-out both}.logoTiles .tile:nth-child(2){animation-delay:90ms}.logoTiles .tile:nth-child(3){animation-delay:180ms}.logoTiles .tile:nth-child(4){animation-delay:270ms}
+.key.ready{--kbg:var(--wp-mint);--kin:var(--wp-ink)}.key.ready::before{border-color:var(--wp-ink)}
+.mode .mt{font-size:1.25rem}.mode .md{font-size:.96rem}
+@media (min-width:800px){.key{font-size:1.3rem}.key.wide{font-size:1.05rem}}
+.tag{margin:0;text-align:center;background:var(--ok-card);color:var(--ok-text);border:2.5px solid var(--rim);box-shadow:0 3px 0 var(--wp-ink);border-radius:18px;padding:8px 16px;
+  font-weight:700;font-size:1.02rem;line-height:1.3}
 .tag,.mode .md,.resMsg,.def,.secretHelp{text-wrap:balance}
-:lang(ja){word-break:auto-phrase}   /* Japanese: break lines between phrases, not inside words */
-.tag .practise{display:block;margin-top:3px;font-size:.92rem;font-weight:600;color:var(--accentDark)}
+:lang(ja){word-break:auto-phrase}
+.tag .practise{display:block;margin-top:3px;font-size:.92rem;font-weight:700;color:var(--soft)}
 .modes{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%}
-.mode{border:0;border-radius:18px;background:var(--card);box-shadow:0 4px 0 rgba(120,70,20,.3),0 0 0 3px var(--cardEdge);padding:10px 10px 9px;text-align:start;
-  display:flex;flex-direction:column;gap:2px;min-height:86px;color:var(--ink)}
-.mode:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(120,70,20,.3),0 0 0 3px var(--cardEdge)}
-.mode .mt{font-size:1.12rem;font-weight:600;display:flex;align-items:center;gap:6px}
-.mode .mt i{font-style:normal;font-size:1.45rem}
-.mode .md{font-size:.88rem;color:var(--ink2);line-height:1.2}
-.mode.daily{grid-column:1 / -1;background:linear-gradient(135deg,#fff8e6,#ffe7b5);min-height:78px}
-.mode.daily .md b{color:var(--accentDark)}
-.mode.daily{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto;column-gap:10px;align-items:center;align-content:center}
+.mode{border:3px solid var(--rim);border-radius:22px;background:var(--ok-card);color:var(--ok-text);box-shadow:0 5px 0 var(--wp-ink);padding:10px 12px 10px;text-align:start;
+  display:flex;flex-direction:column;gap:3px;min-height:88px;font:inherit;transition:transform 80ms ease-out,box-shadow 80ms ease-out}
+.mode:active{transform:translateY(4px);box-shadow:0 1px 0 var(--wp-ink)}
+.mode .mt{font-size:1.1rem;font-weight:800;display:flex;align-items:center;gap:8px;line-height:1.1}
+.mode .mt canvas{flex:none}
+.mode .md{font-size:.88rem;color:var(--soft);line-height:1.22;font-weight:600}
+.mode .md svg{display:inline-block;width:1em;height:1em;vertical-align:-.15em}
+.mode.daily{grid-column:1 / -1;min-height:80px;display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto;column-gap:10px;align-items:center;align-content:center}
 .mode.daily .mt{grid-column:1;grid-row:1}.mode.daily .md{grid-column:1;grid-row:2}
-.mode .go{grid-column:2;grid-row:1 / span 2;align-self:center;background:var(--accent);color:#fff;font-weight:600;font-size:1.05rem;border-radius:999px;
-  padding:9px 14px;box-shadow:0 3px 0 var(--accentDark);white-space:nowrap}
+.mode.daily .md b{color:var(--ok-text)}
+.mode .go{grid-column:2;grid-row:1 / span 2;align-self:center;display:inline-flex;align-items:center;gap:6px;background:var(--wp-hot);color:var(--wp-ink);font-weight:800;font-size:1.05rem;border-radius:999px;
+  border:2.5px solid var(--wp-ink);padding:9px 14px 9px 16px;box-shadow:0 4px 0 var(--wp-hotPress);white-space:nowrap}
+.mode .go svg{width:1em;height:1em}
 .mode.friend{grid-column:1 / -1;min-height:62px;flex-direction:row;align-items:center;gap:10px}
 .homeBar{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap}
-.homeBar .btn{min-height:46px;padding:8px 14px;font-size:1rem}
-.points{font-weight:600;color:var(--ink2);font-size:1rem}
-.corner{position:fixed;top:8px;inset-inline-end:max(8px,env(safe-area-inset-right));display:flex;gap:6px;z-index:2}
+.points{display:inline-flex;align-items:center;gap:6px;font-weight:800;background:var(--ok-card);color:var(--ok-text);border:2.5px solid var(--rim);box-shadow:0 3px 0 var(--wp-ink);border-radius:999px;padding:6px 14px 6px 8px}
+.points svg{width:24px;height:24px}
+.corner{position:fixed;top:max(10px,env(safe-area-inset-top));inset-inline-end:max(10px,env(safe-area-inset-right));display:flex;gap:8px;z-index:2}
 @media (max-height:700px) and (orientation:portrait){
-  .home{gap:8px}
-  .logoOwl{width:124px;height:79px;margin-bottom:-10px}.logoTiles .tile{--tile:46px}.logoWord{font-size:2rem}
+  .homeIn{gap:9px}
+  .logoOwl canvas{height:76px!important;width:auto!important}.logoTiles .tile{--tile:44px}.logoWord{font-size:2.4rem}
   .mode{min-height:74px;padding:8px 10px}.mode.daily{min-height:64px}.mode.friend{min-height:54px}
-  .homeBar .btn{min-height:44px}
 }
 
 /* help */
-.ex{display:flex;gap:5px;justify-content:center;margin:8px 0 2px}
+.ex{display:flex;gap:6px;justify-content:center;margin:8px 0 2px}
 .ex .tile{--tile:42px}
-.exNote{font-size:.95rem!important;color:var(--ink2)}
-.help{text-align:start}
+.exNote{font-size:.95rem!important;color:var(--soft)}
+.help{text-align:start!important;align-items:stretch!important}
 .help h2{text-align:center}
-.help ul{margin:6px 0;padding-inline-start:20px;padding-inline-end:0;line-height:1.4}
+.help ul{margin:6px 0;padding-inline-start:20px;padding-inline-end:0;line-height:1.4;font-weight:600}
+.help .btns{justify-content:center}
 @media (max-height:740px){
-  .help{padding:14px 14px 12px}.help h2{margin-bottom:10px}.help p{font-size:.95rem;margin:4px 0}
-  .ex{margin:4px 0 0}.ex .tile{--tile:36px}.exNote{font-size:.88rem!important;margin:2px 0 4px!important}
-  .help ul{font-size:.9rem;line-height:1.3;margin:4px 0}.help .btns{margin-top:6px}
+  .help{padding:16px 14px 14px!important;gap:6px!important}.help p{font-size:.95rem!important}
+  .ex{margin:4px 0 0}.ex .tile{--tile:36px}.exNote{font-size:.88rem!important}
+  .help ul{font-size:.9rem;line-height:1.3;margin:4px 0}
 }
 
 /* stats */
-.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:4px 0 10px}
-.tab{min-height:52px;border:0;border-radius:14px;padding:4px 2px;background:#fff;font-weight:600;font-size:.86rem;line-height:1.1;box-shadow:inset 0 0 0 2px rgba(160,100,40,.22);
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;width:100%}
+.tab{min-height:56px;border:2.5px solid var(--rim);border-radius:16px;padding:4px 2px;background:var(--ok-bg2);color:var(--ok-text);font-weight:800;font-size:.86rem;line-height:1.1;
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
-.tab i{font-style:normal;font-size:1.2rem}
-.tab.on{background:var(--accent);color:#fff;box-shadow:none}
-.nums{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:6px 0 10px}
-.nums div{display:flex;flex-direction:column;align-items:center;line-height:1.1}
-.nums b{font-size:1.6rem;font-weight:700}
-.nums span{font-size:.78rem;color:var(--ink2)}
-.dist{display:flex;flex-direction:column;gap:4px;text-align:start}
-.bar{display:flex;align-items:center;gap:6px;font-weight:600}
-.bar i{font-style:normal;width:14px;text-align:end}
-.bar b{display:block;min-width:26px;padding:3px 7px;border-radius:7px;background:var(--miss);color:#fff;text-align:end;font-size:.9rem;box-sizing:border-box;transition:width .4s ease}
-.bar.last b{background:var(--hit)}
-.totalPts{margin-top:10px;font-weight:600}
 
-/* settings */
-.set{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 2px;border-bottom:2px dashed #efdcb6;text-align:start}
-.set:last-of-type{border-bottom:0}
-.set div{display:flex;flex-direction:column;line-height:1.2}
-.set b{font-size:1.06rem}
-.set span{font-size:.86rem;color:var(--ink2)}
-.switch{width:64px;height:44px;flex:none;border:0;border-radius:999px;background:#d9cbb2;position:relative;padding:0}
-.switch::after{content:"";position:absolute;top:6px;left:6px;width:32px;height:32px;border-radius:50%;background:#fff;box-shadow:0 2px 0 rgba(0,0,0,.2);transition:left .18s ease}
-.switch[aria-checked="true"]{background:var(--hit)}
-.switch[aria-checked="true"]::after{left:26px}
+.tab.on{background:var(--wp-mintTint);color:var(--wp-ink);border-color:var(--wp-ink);box-shadow:0 3px 0 var(--wp-ink)}
+.nums{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;width:100%}
+.nums div{display:flex;flex-direction:column;align-items:center;line-height:1.1}
+.nums b{font-size:1.7rem;font-weight:800;font-variant-numeric:tabular-nums}
+.nums span{font-size:.8rem;color:var(--soft);font-weight:600}
+.dist{display:flex;flex-direction:column;gap:5px;text-align:start;width:100%}
+.dist>b{text-align:center}
+.bar{display:flex;align-items:center;gap:8px;font-weight:800}
+.bar i{font-style:normal;width:14px;text-align:end}
+.bar b{display:block;min-width:28px;padding:3px 8px;border-radius:9px;background:var(--wp-stone);color:var(--wp-cream);text-align:end;font-size:.9rem;box-sizing:border-box;border:2px solid var(--wp-ink)}
+.bar.last b{background:var(--hit);color:var(--hitInk)}
+.totalPts{display:flex;align-items:center;justify-content:center;gap:6px;font-weight:800}
+.totalPts svg{width:22px;height:22px}
+
+/* settings: the kit's rows and switches */
+.wp .ok-set .ok-srow div{display:flex;flex-direction:column;line-height:1.2}
+.wp .ok-set .ok-srow span{font-size:.86rem;color:var(--soft);font-weight:600}
 
 /* result */
-.resPanel{padding-top:12px}
-.resOwl{width:104px;height:66px;margin:0 auto 6px;display:block;overflow:visible}
-.resTitle{font-size:1.8rem!important;margin:0 0 2px!important}
-.resMsg{margin:2px 0!important}
-.wordCard{display:flex;align-items:center;justify-content:center;gap:10px;margin:4px 0 0}
-.wordCard .big{font-size:1.9rem;font-weight:700;letter-spacing:3px;text-transform:uppercase}
-.say{width:48px;height:48px}
-.def{font-size:.98rem;color:var(--ink2);margin:2px 6px 6px!important}
-.resMid{display:flex;align-items:center;justify-content:center;gap:12px;background:#fff6e0;border-radius:16px;padding:8px 10px;margin:4px 0}
-.emojis{font-size:1rem;line-height:1.2;letter-spacing:1px;white-space:pre;flex:none}
-.resNums{grid-template-columns:repeat(2,minmax(54px,1fr));margin:0;row-gap:6px}
+.resPortrait canvas{display:block}
+.resTitle{font-size:1.9em!important}
+.wordCard{display:flex;align-items:center;justify-content:center;gap:10px}
+.wordTiles{display:flex;gap:5px}
+.wordTiles .tile{--tile:40px}
+.say{flex:none}
+.def{font-size:.98rem!important;color:var(--soft)}
+.def svg{display:inline-block;width:1.15em;height:1.15em;vertical-align:-.2em;margin-inline-end:5px}
+.resMid{display:flex;align-items:center;justify-content:center;gap:14px;background:var(--ok-bg2);border:2px solid var(--ok-line);border-radius:18px;padding:10px 12px;width:100%;box-sizing:border-box}
+.mini{display:grid;gap:3px;flex:none}
+.mini div{display:flex;gap:3px}
+.mini i{display:block;width:13px;height:13px;border-radius:4px;border:1.5px solid var(--wp-ink);box-sizing:border-box;background:var(--ok-card)}
+.mini i.hit{background:var(--hit)}.mini i.near{background:var(--near);border-radius:50%}.mini i.miss{background:var(--miss);opacity:.75}
+.resNums{grid-template-columns:repeat(2,minmax(54px,1fr));row-gap:6px;width:auto}
 .resNums b{font-size:1.35rem}
-.ptsLine{font-weight:600;color:var(--accentDark);margin:6px 0 0!important}
-.countdown{font-weight:600;margin-top:6px}
-.countdown b{font-variant-numeric:tabular-nums;font-size:1.2rem;color:var(--accentDark)}
+.ptsLine{display:flex;align-items:center;justify-content:center;gap:6px;font-weight:800!important}
+.ptsLine svg{width:22px;height:22px}
+.countdown{font-weight:700}
+.countdown b{font-variant-numeric:tabular-nums;font-size:1.2rem}
 @media (orientation:landscape) and (max-height:560px){
-  .resPanel{width:min(780px,100%);display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;align-items:center;text-align:center}
-  .resPanel .resB{padding-top:30px}
-  .home{width:min(820px,100%);display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);grid-template-areas:"logo modes" "tag modes" "bar modes" "pts modes";
-    align-items:center;column-gap:20px;row-gap:6px}
-  .logo{grid-area:logo}.tag{grid-area:tag;text-align:center}.modes{grid-area:modes}.homeBar{grid-area:bar}.points{grid-area:pts;text-align:center}
+  .resPanel{width:min(780px,100%)!important;display:grid!important;grid-template-columns:1fr 1fr;gap:6px 18px!important;align-items:center}
+  .resPanel .resA,.resPanel .resB{display:flex;flex-direction:column;align-items:center;gap:8px}
+  .homeIn{width:min(820px,100%);display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);grid-template-areas:"logo modes" "tag modes" "bar modes" "pts modes";
+    align-items:center;column-gap:20px;row-gap:8px}
+  .logo{grid-area:logo}.tag{grid-area:tag}.modes{grid-area:modes}.homeBar{grid-area:bar}.points{grid-area:pts;justify-self:center}
   .mode{min-height:64px}.mode.daily{min-height:60px}.mode.friend{min-height:52px}
-  .logoOwl{width:120px;height:76px}.logoTiles .tile{--tile:44px}.logoWord{font-size:2rem}
+  .logoOwl canvas{height:64px!important;width:auto!important}.logoTiles .tile{--tile:42px}.logoWord{font-size:2.3rem}
 }
+.resA,.resB{display:contents}
 
 /* friend */
-.secretRow{display:flex;gap:6px;justify-content:center;margin:10px 0}
+.secretRow{display:flex;gap:6px;justify-content:center}
 .secretRow .tile{--tile:44px}
 
-@media (prefers-reduced-motion: reduce){
-  .tile.filled,.tile.flip,.tile.bounce,.row.shake,.owl.cheer .bodyG,.panel{animation:none}
-  .owl .bodyG,.owl .wingL,.owl .wingR,.bubble{transition:none}
+.ok-rm .wp .logoTiles .tile,.ok-rm .wp .tile.flip,.ok-rm .wp .tile.bounce,.ok-rm .wp .row.shake,.ok-rm .wp .owl.cheer .body,.ok-rm .wp .logoOwl{animation:none}
+.ok-rm .wp .owl .body,.ok-rm .wp .bubble{transition:none}
+/* round 2: the cursor cell is unmistakable (an Ink edge and a mint ring), empty cells are soft, and the keyboard tray
+   has room at its edges with wider, slightly shorter keys; on big screens everything is about a fifth bigger */
+.tile:not(.filled):not(.hit):not(.near):not(.miss){border:2px solid color-mix(in srgb,var(--ok-line) 75%,transparent);background:color-mix(in srgb,var(--ok-bg2) 70%,transparent)}
+.tile.cursor:not(.filled){border:3px solid var(--wp-ink)!important;box-shadow:0 0 0 4px color-mix(in srgb,var(--wp-mint) 70%,transparent);animation:wpCur 1.4s ease-in-out infinite}
+@keyframes wpCur{50%{box-shadow:0 0 0 7px color-mix(in srgb,var(--wp-mint) 35%,transparent)}}
+.ok-rm .tile.cursor{animation:none}
+.kb{padding:10px 10px 8px;gap:8px}
+.key::before{inset:0 2px 4px;border-radius:11px}
+.key{max-width:62px;font-size:clamp(1.05rem,4.9vw,1.4rem);padding:0 0 6px}
+.app.big{max-width:700px}
+.app.big .kb{max-width:680px;padding:12px 12px 10px;gap:9px}
+.app.side.big{max-width:1180px;column-gap:36px;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);grid-template-areas:"hud hud" "board kb"}
+.app.side.big .hud{max-width:760px;width:100%;justify-self:center}
+.app.side.big .kb{align-self:center;margin-top:calc(var(--tile) * .7)}
+.app.big .key{max-width:66px;font-size:1.55rem}.app.big .key.wide{max-width:104px;font-size:1.1rem}
+.app.big .hud .ok-btn.ok-icon{width:52px;min-height:52px}.app.big .pill{height:52px}
+/* the win: a ring of sparks and paper confetti behind the card (never over its text) */
+.wpCel{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.wpCel i{position:absolute;display:block;border-radius:3px;animation:wpFall 2.6s ease-in-out infinite alternate}
+.wpCel svg{position:absolute;width:44px;height:44px;color:var(--wp-ink);--ok-fill:#FFD23F;animation:wpTw 1.6s ease-in-out infinite alternate}
+@keyframes wpFall{to{transform:translateY(14px) rotate(40deg)}}
+@keyframes wpTw{to{transform:scale(.8) rotate(12deg)}}
+.ok-rm .wpCel i,.ok-rm .wpCel svg{animation:none}
+@media (prefers-reduced-motion:reduce){.wpCel i,.wpCel svg,.tile.cursor{animation:none}}
+#resScreen .ok-card{position:relative;z-index:1}
+/* round 3. The "in the word" colour is spark yellow (far from the right-spot green); empty cells have a visible edge;
+   the tick and dot badges sit inside the tile; wider keys (a slimmer tray edge, thinner gaps) */
+.tile:not(.filled):not(.hit):not(.near):not(.miss){border:2.5px solid color-mix(in srgb,var(--wp-ink) 24%,var(--ok-line));background:color-mix(in srgb,var(--ok-card) 80%,transparent)}
+.tile .mk{top:calc(var(--tile) * .05);inset-inline-end:calc(var(--tile) * .05);width:calc(var(--tile) * .28);height:calc(var(--tile) * .28)}
+.tile.near .mk{top:calc(var(--tile) * .08);inset-inline-end:calc(var(--tile) * .08);width:calc(var(--tile) * .18);height:calc(var(--tile) * .18)}
+.kb{padding:8px 5px 7px;gap:7px}
+.key::before{inset:0 1.5px 4px;border-radius:10px}
+.key.wide{flex:1.7 1 0;font-size:clamp(.7rem,3.1vw,1rem);letter-spacing:-.02em}
+.app.big .key.wide{max-width:112px}
+/* big screens: the keyboard lines up with the bottom of the board; the title pill stays a sensible width */
+.app.side.big .kb{align-self:end;margin-top:0;margin-bottom:calc(var(--tile) * .25)}
+.app.side.big .hud{max-width:600px}
+/* the result: the board behind is dimmed, the card is bigger on big screens, Play again leads, bigger numbers */
+#resScreen.won.ok-scrim{background:radial-gradient(closest-side,rgba(40,26,8,.28) 25%,rgba(40,26,8,.55))}
+.resNums b{font-size:1.75rem}
+#resBtns{display:grid;grid-template-columns:1.5fr 1fr;gap:10px;width:100%}
+#resBtns .ok-btn{white-space:nowrap;padding-inline:12px}
+#resBtns #resMain{min-height:62px;font-size:1.2rem}
+#resBtns #resHome{min-height:52px;align-self:center}
+@media (min-width:900px) and (min-height:700px){
+  #resScreen .resPanel{width:min(560px,100%)!important;padding:30px 30px 26px!important;font-size:1.08rem}
+  #resScreen .wordTiles .tile{--tile:50px}
 }
 </style>
 
+<!-- Every player-visible string comes from the I18N table in the script (registered with Oomba.strings):
+     data-t = text, data-th = text with <b> markup, data-ta = aria-label; data-icon = a kit icon. -->
+<div id="game" class="wp">
 <!-- ======================= play screen ======================= -->
-<!-- Every player-visible string comes from the I18N table in the script: data-t = text, data-th = text with <b> markup, data-ta = aria-label. -->
 <div class="app offstage" id="app">
   <div class="hud">
-    <button class="icon-btn" id="homeBtn" data-ta="a_home">🏠</button>
-    <div class="pill"><b id="modeName"></b><span id="tryText"></span></div>
-    <button class="icon-btn" id="statsBtn" data-ta="a_stats">📊</button>
-    <button class="icon-btn" id="setBtn" data-ta="a_settings">⚙️</button>
-    <button class="icon-btn" id="muteBtn" data-ta="a_soundOff">🔊</button>
+    <button class="ok-btn ok-icon" id="homeBtn" data-icon="home" data-ta="a_home"></button>
+    <div class="pill"><span class="pic" id="modePic" aria-hidden="true"></span><div class="txt"><b id="modeName"></b><span id="tryText"></span></div></div>
+    <button class="ok-btn ok-icon" id="statsBtn" data-icon="trophy" data-ta="a_stats"></button>
+    <button class="ok-btn ok-icon" id="setBtn" data-icon="settings" data-ta="a_settings"></button>
+    <button class="ok-btn ok-icon mute" id="muteBtn" data-ta="a_soundOff"></button>
   </div>
   <div class="boardWrap" id="boardWrap">
     <div class="card" id="card">
-      <div class="owl" id="owl" aria-hidden="true"></div>
+      <div class="owl" id="owl" aria-hidden="true"><div class="body"></div></div>
       <div class="bubble" id="bubble" role="status" aria-live="polite"></div>
       <p class="secretHelp" id="secretHelp" hidden><span data-t="secret1"></span><span class="sub" data-t="secret2"></span></p>
       <div class="grid" id="grid" dir="ltr" lang="en" data-ta="a_guesses"></div>
@@ -277,47 +313,47 @@ button:focus-visible{outline:3px solid var(--accentDark);outline-offset:2px}
 </div>
 
 <!-- ======================= home ======================= -->
-<section class="screen solid" id="homeScreen">
-  <div class="home">
+<section class="home" id="homeScreen">
+  <div class="homeIn">
     <div class="logo">
-      <svg class="logoOwl" id="logoOwl" viewBox="0 0 120 78" aria-hidden="true"></svg>
+      <div class="logoOwl" id="logoOwl" aria-hidden="true"></div>
       <div class="logoTiles" dir="ltr" aria-hidden="true">
-        <div class="tile" style="background:var(--hit)">P</div><div class="tile" style="background:var(--near);color:var(--nearInk)">E</div>
-        <div class="tile" style="background:var(--near);color:var(--nearInk)">E</div><div class="tile" style="background:var(--hit)">K</div>
+        <div class="tile hit"><span class="ch">P</span><span class="mk" data-icon="check"></span></div><div class="tile near"><span class="ch">E</span><span class="mk"></span></div>
+        <div class="tile near"><span class="ch">E</span><span class="mk"></span></div><div class="tile hit"><span class="ch">K</span><span class="mk" data-icon="check"></span></div>
       </div>
-      <h1 class="logoWord">Word Peek</h1>
+      <h1 class="logoWord" dir="ltr" aria-label="Word Peek"><span class="ok-title-word" data-w="Word"><i>Word</i></span><span class="ok-title-word" data-w="Peek"><i>Peek</i></span></h1>
     </div>
     <p class="tag"><span data-t="tag"></span><span class="practise" id="practiseLine" data-t="practise"></span></p>
     <div class="modes">
-      <button class="mode daily" id="modeDaily" data-mode="daily"><span class="mt"><i>📅</i><span data-t="m_daily"></span></span><span class="md" id="dailyNote"></span><span class="go" id="dailyGo"></span></button>
-      <button class="mode" data-mode="practice"><span class="mt"><i>🎯</i><span data-t="m_practice"></span></span><span class="md" data-t="md_practice"></span></button>
-      <button class="mode" data-mode="little"><span class="mt"><i>🐣</i><span data-t="m_little"></span></span><span class="md" data-t="md_little"></span></button>
-      <button class="mode" data-mode="big"><span class="mt"><i>🦉</i><span data-t="m_big"></span></span><span class="md" data-t="md_big"></span></button>
-      <button class="mode" data-mode="friend" id="modeFriend"><span class="mt"><i>🤝</i><span data-t="m_friend"></span></span><span class="md" data-t="md_friend"></span></button>
+      <button class="mode daily" id="modeDaily" data-mode="daily"><span class="mt" data-pic="daily"><span data-t="m_daily"></span></span><span class="md" id="dailyNote"></span><span class="go"><span id="dailyGo"></span><span data-icon="play"></span></span></button>
+      <button class="mode" data-mode="practice"><span class="mt" data-pic="practice"><span data-t="m_practice"></span></span><span class="md" data-t="md_practice"></span></button>
+      <button class="mode" data-mode="little"><span class="mt" data-pic="little"><span data-t="m_little"></span></span><span class="md" data-t="md_little"></span></button>
+      <button class="mode" data-mode="big"><span class="mt" data-pic="big"><span data-t="m_big"></span></span><span class="md" data-t="md_big"></span></button>
+      <button class="mode" data-mode="friend" id="modeFriend"><span class="mt" data-pic="friend"><span data-t="m_friend"></span></span><span class="md" data-t="md_friend"></span></button>
     </div>
     <div class="homeBar">
-      <button class="btn" id="helpBtnHome" data-t="b_help"></button>
-      <button class="btn" id="statsBtnHome" data-t="b_stats"></button>
+      <button class="ok-btn ok-quiet" id="helpBtnHome" data-icon="question"><span data-t="b_help"></span></button>
+      <button class="ok-btn ok-quiet" id="statsBtnHome" data-icon="trophy"><span data-t="b_stats"></span></button>
     </div>
     <div class="corner">
-      <button class="icon-btn" id="setBtnHome" data-ta="a_settings">⚙️</button>
-      <button class="icon-btn" id="muteBtnHome" data-ta="a_soundOff">🔊</button>
+      <button class="ok-btn ok-icon" id="setBtnHome" data-icon="settings" data-ta="a_settings"></button>
+      <button class="ok-btn ok-icon mute" id="muteBtnHome" data-ta="a_soundOff"></button>
     </div>
-    <div class="points" id="homePoints"></div>
+    <div class="points" id="homePointsBox"><span data-icon="star"></span><span id="homePoints"></span></div>
   </div>
 </section>
 
 <!-- ======================= how to play ======================= -->
-<section class="screen dim" id="helpScreen" hidden>
-  <div class="panel help" role="dialog" data-ta="h_title">
-    <button class="icon-btn close" data-close data-ta="a_close">✖️</button>
-    <h2 data-t="h_title"></h2>
+<section class="ok-modal ok-scrim" id="helpScreen" hidden>
+  <div class="ok-card help" role="dialog" aria-modal="true" data-ta="h_title">
+    <button class="ok-btn ok-icon x" data-close data-icon="cross" data-ta="a_close"></button>
+    <h2 class="ok-h2" data-t="h_title"></h2>
     <p data-th="h_intro"></p>
-    <div class="ex" dir="ltr" lang="en"><div class="tile hit">P<span class="mk"></span></div><div class="tile filled">L</div><div class="tile filled">A</div><div class="tile filled">N</div><div class="tile filled">T</div></div>
+    <div class="ex" dir="ltr" lang="en"><div class="tile hit"><span class="ch">P</span><span class="mk" data-icon="check"></span></div><div class="tile filled">L</div><div class="tile filled">A</div><div class="tile filled">N</div><div class="tile filled">T</div></div>
     <p class="exNote" data-th="h_hit"></p>
-    <div class="ex" dir="ltr" lang="en"><div class="tile filled">C</div><div class="tile filled">H</div><div class="tile filled">A</div><div class="tile near">I<span class="mk"></span></div><div class="tile filled">R</div></div>
+    <div class="ex" dir="ltr" lang="en"><div class="tile filled">C</div><div class="tile filled">H</div><div class="tile filled">A</div><div class="tile near"><span class="ch">I</span><span class="mk"></span></div><div class="tile filled">R</div></div>
     <p class="exNote" data-th="h_near"></p>
-    <div class="ex" dir="ltr" lang="en"><div class="tile filled">B</div><div class="tile filled">R</div><div class="tile miss">O<span class="mk"></span></div><div class="tile filled">W</div><div class="tile filled">N</div></div>
+    <div class="ex" dir="ltr" lang="en"><div class="tile filled">B</div><div class="tile filled">R</div><div class="tile miss"><span class="ch">O</span><span class="mk"></span></div><div class="tile filled">W</div><div class="tile filled">N</div></div>
     <p class="exNote" data-th="h_miss"></p>
     <ul>
       <li data-th="h_li1"></li>
@@ -325,48 +361,48 @@ button:focus-visible{outline:3px solid var(--accentDark);outline-offset:2px}
       <li data-th="h_li3"></li>
       <li data-th="h_li4"></li>
     </ul>
-    <div class="btns"><button class="btn primary" data-close data-t="h_go"></button></div>
+    <div class="btns"><button class="ok-btn ok-hot ok-big" data-close data-icon="play"><span data-t="h_go"></span></button></div>
   </div>
 </section>
 
 <!-- ======================= stats ======================= -->
-<section class="screen dim" id="statsScreen" hidden>
-  <div class="panel" role="dialog" data-ta="a_stats">
-    <button class="icon-btn close" data-close data-ta="a_close">✖️</button>
-    <h2 data-t="s_title"></h2>
+<section class="ok-modal ok-scrim" id="statsScreen" hidden>
+  <div class="ok-card" role="dialog" aria-modal="true" data-ta="a_stats">
+    <button class="ok-btn ok-icon x" data-close data-icon="cross" data-ta="a_close"></button>
+    <h2 class="ok-h2" data-t="s_title"></h2>
     <div class="tabs" id="statTabs"></div>
     <div class="nums" id="statNums"></div>
     <div class="dist" id="statDist"></div>
-    <div class="totalPts" id="statPts"></div>
+    <div class="totalPts"><span data-icon="star"></span><span id="statPts"></span></div>
   </div>
 </section>
 
 <!-- ======================= settings ======================= -->
-<section class="screen dim" id="setScreen" hidden>
-  <div class="panel" role="dialog" data-ta="a_settings">
-    <button class="icon-btn close" data-close data-ta="a_close">✖️</button>
-    <h2 data-t="set_title"></h2>
-    <div class="set"><div><b data-t="set_hc"></b><span data-t="set_hc_d"></span></div><button class="switch" id="swContrast" role="switch" aria-checked="false" data-ta="set_hc"></button></div>
-    <div class="set"><div><b data-t="set_hard"></b><span data-t="set_hard_d"></span></div><button class="switch" id="swHard" role="switch" aria-checked="false" data-ta="set_hard"></button></div>
-    <div class="set"><div><b data-t="set_sound"></b><span data-t="set_sound_d"></span></div><button class="switch" id="swSound" role="switch" aria-checked="true" data-ta="set_sound"></button></div>
-    <div class="btns"><button class="btn" id="helpBtnSet" data-t="b_help"></button><button class="btn primary" data-close data-t="done"></button></div>
+<section class="ok-modal ok-scrim" id="setScreen" hidden>
+  <div class="ok-card ok-set" role="dialog" aria-modal="true" data-ta="a_settings">
+    <button class="ok-btn ok-icon x" data-close data-icon="cross" data-ta="a_close"></button>
+    <h2 class="ok-h2" data-t="set_title"></h2>
+    <div class="ok-srow"><div><b data-t="set_hc"></b><span data-t="set_hc_d"></span></div><button class="ok-switch" id="swContrast" role="switch" aria-checked="false" data-ta="set_hc"></button></div>
+    <div class="ok-srow"><div><b data-t="set_hard"></b><span data-t="set_hard_d"></span></div><button class="ok-switch" id="swHard" role="switch" aria-checked="false" data-ta="set_hard"></button></div>
+    <div class="ok-srow"><div><b data-t="set_sound"></b><span data-t="set_sound_d"></span></div><button class="ok-switch" id="swSound" role="switch" aria-checked="true" data-ta="set_sound"></button></div>
+    <div class="btns"><button class="ok-btn ok-quiet" id="moreSet" data-icon="settings"></button><button class="ok-btn ok-quiet" id="helpBtnSet" data-icon="question"><span data-t="b_help"></span></button><button class="ok-btn ok-go" data-close data-icon="check"><span data-t="done"></span></button></div>
   </div>
 </section>
 
 <!-- ======================= result ======================= -->
-<section class="screen dim" id="resScreen" hidden>
-  <div class="panel resPanel" role="dialog" data-ta="a_result">
-    <button class="icon-btn close" data-close data-ta="a_close">✖️</button>
+<section class="ok-modal ok-scrim" id="resScreen" hidden>
+  <div class="ok-card resPanel" role="dialog" aria-modal="true" data-ta="a_result">
+    <button class="ok-btn ok-icon x" data-close data-icon="cross" data-ta="a_close"></button>
     <div class="resA">
-      <svg class="resOwl" id="resOwl" viewBox="0 0 120 78" aria-hidden="true"></svg>
-      <h2 class="resTitle" id="resTitle"></h2>
+      <div class="resPortrait" id="resOwl" aria-hidden="true"></div>
+      <h2 class="ok-h2 resTitle" id="resTitle"></h2>
       <p class="resMsg" id="resMsg"></p>
-      <div class="wordCard" dir="ltr"><span class="big" id="resWord" lang="en"></span><button class="icon-btn say" id="sayBtn" data-ta="a_say">🔊</button></div>
-      <p class="def" id="resDef" lang="en" dir="ltr"></p>
+      <div class="wordCard" dir="ltr"><span class="wordTiles" id="resWord" lang="en"></span><button class="ok-btn ok-icon say" id="sayBtn" data-icon="sound" data-ta="a_say"></button></div>
+      <p class="def" id="resDefBox"><span id="resDefIcon" data-icon="book"></span><span id="resDef" lang="en" dir="ltr"></span></p>
     </div>
     <div class="resB">
-      <div class="resMid"><div class="emojis" id="resEmojis" dir="ltr" data-ta="a_yourResult"></div><div class="nums resNums" id="resNums"></div></div>
-      <p class="ptsLine" id="resPts"></p>
+      <div class="resMid"><div class="mini" id="resEmojis" dir="ltr" role="img" data-ta="a_yourResult"></div><div class="nums resNums" id="resNums"></div></div>
+      <p class="ptsLine" id="resPtsBox"><span data-icon="star"></span><span id="resPts"></span></p>
       <div class="countdown" id="resCount" hidden><span data-t="r_next"></span> <b id="resTimer" dir="ltr">00:00:00</b></div>
       <div class="btns" id="resBtns"></div>
     </div>
@@ -374,23 +410,28 @@ button:focus-visible{outline:3px solid var(--accentDark);outline-offset:2px}
 </section>
 
 <!-- ======================= friend hand-off ======================= -->
-<section class="screen dim" id="passScreen" hidden>
-  <div class="panel" role="dialog" data-ta="a_pass">
-    <h2 data-t="p_title"></h2>
+<section class="ok-modal ok-scrim" id="passScreen" hidden>
+  <div class="ok-card" role="dialog" aria-modal="true" data-ta="a_pass">
+    <h2 class="ok-h2" data-t="p_title"></h2>
     <p data-t="p_1"></p>
     <div class="secretRow" id="passRow" dir="ltr"></div>
     <p data-t="p_2"></p>
-    <div class="btns"><button class="btn" id="passBack" data-t="p_back"></button><button class="btn primary" id="passGo" data-t="p_go"></button></div>
+    <div class="btns"><button class="ok-btn ok-quiet" id="passBack" data-icon="back"><span data-t="p_back"></span></button><button class="ok-btn ok-hot" id="passGo" data-icon="play"><span data-t="p_go"></span></button></div>
   </div>
 </section>
-
+</div>
+<script src="/vendor/oomba-kit/1.0.0/oomba-kit.js" integrity="sha384-z+NesXSa8n9F3R0/dcZ7o60eHwzQbYE94cEyPfLu6WlUZ2zOaEO2OAS6WsmM7oUU" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.0.0/packs/art-animals.js" integrity="sha384-fIOJsCe/mBmelLUnXEhcOGl0x7/dQvXe5xKjHrOD4KegZbvOrJ9DzTizBzU9RzOD" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.0.0/packs/art-school.js" integrity="sha384-yCC/QOZAd0OcPMGet+ySH+2pkji2SRciYBilMG/braih3toohKVqxJGR4YoQJrqM" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.0.0/packs/dress.js" integrity="sha384-cLr8VKytVQYDunYCBWc3ZZuc3v1GsLxrYMkqdof5zRFlOs4VKIp5cxtTLrMpBDLe" crossorigin="anonymous"></script>
 <script>
 /* =====================================================================================
-   Word Peek
+   Word Peek (on the Oomba Kit)
    - Daily Peek: one 5-letter word a day (the same for everyone, picked from the local date), played once a day.
    - Practice (5 letters), Little Peek (4 letters), Big Peek (6 letters): unlimited random words.
    - Friend Peek: one player types a secret word, the other guesses (no points, so nobody can farm the leaderboard).
    Saves in BRB.storage key 'word-peek-v1': settings, points, stats per mode, today's daily board, the round in progress.
+   The kit brings Pip (its owl), his forest, the icons, buttons, sounds, captions, type and the light/dark look.
    ===================================================================================== */
 const CONFIG = {
   tries: 6,                         // guesses per round
@@ -403,13 +444,14 @@ const CONFIG = {
   recentAvoid: 40,                  // practice modes don't repeat any of your last 40 words
   maxTile: 66,                      // biggest tile size in px
   speechRate: 0.9,                  // the answer word is read a touch slower than talking (1 = normal) so every sound is clear
-  hitEmoji: '🟢', nearEmoji: '🟡', missEmoji: '⚪', hcHitEmoji: '🟠', hcNearEmoji: '🔵',
-  modes: {                          // names come from I18N ('m_' + id)
-    daily:    { icon: '📅', length: 5 },
-    practice: { icon: '🎯', length: 5 },
-    little:   { icon: '🐣', length: 4 },
-    big:      { icon: '🦉', length: 6 },
-    friend:   { icon: '🤝', length: 5 }
+  pip: { species: 'owl', wear: ['scarf'] },   // Pip the owl (a kit character spec)
+  biome: 'forest',                  // Pip's home behind the game (night in the dark theme)
+  modes: {                          // names come from I18N ('m_' + id); icon: a kit prop
+    daily:    { icon: 'clock', length: 5 },
+    practice: { icon: 'pencil', length: 5 },
+    little:   { icon: 'letterblock', length: 4 },
+    big:      { icon: 'book', length: 6 },
+    friend:   { icon: 'gift', length: 5 }
   }
 };
 
@@ -945,29 +987,31 @@ const I18N = {
     hm_streak: { one: "🔥 {n} dag", other: "🔥 {n} dagen" }
   }
 };
-const LANG = (() => { let l = 'en'; try { l = String((window.BRB && BRB.user && BRB.user.lang) || 'en'); } catch (e) { /* old SDK */ } return l; })();
-const LANG_BASE = LANG.split('-')[0];
-const LANG_CHAIN = [LANG, LANG_BASE, 'en'].filter((l, i, a) => I18N[l] && a.indexOf(l) === i);
-const RTL = (() => { try { if (BRB.user.dir === 'rtl') return true; } catch (e) { /* old SDK */ } return LANG_BASE === 'he' || LANG_BASE === 'ar'; })();
-const NUM_LOCALE = LANG_BASE === 'ar' ? 'ar-u-nu-latn' : (I18N[LANG] ? LANG : 'en');
-const NF = (() => { try { return new Intl.NumberFormat(NUM_LOCALE); } catch (e) { return { format: n => String(n) }; } })();
-const PLURAL = (() => { try { return new Intl.PluralRules(NUM_LOCALE); } catch (e) { return { select: n => (n === 1 ? 'one' : 'other') }; } })();
-/** The raw entry for a key (string, plural object or list), following the lookup order. */
-function tRaw(key) { for (const l of LANG_CHAIN) { const v = I18N[l][key]; if (v !== undefined) return v; } return key; }
-/** A translated string: picks the plural form by vars.n and fills {name} placeholders (numbers are formatted for the language). */
-function t(key, vars) {
-  let v = tRaw(key);
-  if (v && typeof v === 'object' && !Array.isArray(v)) { const n = vars && typeof vars.n === 'number' ? vars.n : 0; const f = PLURAL.select(n); v = v[f] != null ? v[f] : v.other; }
-  v = String(v);
-  return vars ? v.replace(/\{(\w+)\}/g, (m, k) => (k in vars ? (typeof vars[k] === 'number' ? NF.format(vars[k]) : String(vars[k])) : m)) : v;
-}
-/** Puts the static strings into the page (data-t = text, data-th = text with <b>, data-ta = aria-label) and sets the language + direction. */
+
+// The table goes to the kit (Oomba.strings) under 'wp.' keys, so the game's words never replace the kit's own button
+// words. Pictures are the kit's icons, not emoji: emoji in the table are left out when it is registered.
+const NS = 'wp.';
+const noEmoji = v => (typeof v === 'string' ? v.replace(/\p{Extended_Pictographic}️?/gu, '').replace(/ {2,}/g, ' ').trim()
+  : Array.isArray(v) ? v.map(noEmoji) : v && typeof v === 'object' ? Object.fromEntries(Object.entries(v).map(([k, x]) => [k, noEmoji(x)])) : v);
+const STR = {};
+for (const l in I18N) { STR[l] = {}; for (const k in I18N[l]) STR[l][NS + k] = noEmoji(I18N[l][k]); }
+Oomba.strings(STR);
+const LANG = Oomba.lang;
+const LANG_CHAIN = [LANG, LANG.split('-')[0], 'en'].filter((l, i, a) => STR[l] && a.indexOf(l) === i);
+const RTL = Oomba.dir === 'rtl';
+const NF = { format: n => Oomba.num(n) };
+/** The raw entry for a key (a list, like the cheers after a win), following the lookup order. */
+function tRaw(key) { for (const l of LANG_CHAIN) { const v = STR[l][NS + key]; if (v !== undefined) return v; } return key; }
+/** A translated string (the kit picks the plural form by vars.n and fills {name} placeholders with formatted numbers). */
+function t(key, vars) { const s = Oomba.t(NS + key, vars); return s === NS + key ? key : s; }
+/** Puts the static strings into the page (data-t = text, data-th = text with <b>, data-ta = aria-label) and the kit icons (data-icon). */
 function applyI18n() {
   const root = document.documentElement; root.lang = LANG; if (RTL) root.dir = 'rtl';
   const vars = { daily: t('m_daily'), little: t('m_little'), big: t('m_big'), hard: t('set_hard') };
   document.querySelectorAll('[data-t]').forEach(el => { el.textContent = t(el.dataset.t); });
   document.querySelectorAll('[data-th]').forEach(el => { el.innerHTML = t(el.dataset.th, vars); });
   document.querySelectorAll('[data-ta]').forEach(el => { el.setAttribute('aria-label', t(el.dataset.ta)); });
+  document.querySelectorAll('[data-icon]').forEach(el => { el.insertAdjacentHTML('afterbegin', Oomba.icon(el.dataset.icon)); });
   const pl = document.getElementById('practiseLine'); if (pl) pl.hidden = !pl.textContent;
 }
 /** Shrinks a one-line label until it fits its box (never below minPx). */
@@ -2649,9 +2693,14 @@ function nextDay(dateStr) { const [y, m, d] = dateStr.split('-').map(Number); co
    ===================================================================================== */
 const SAVE_KEY = 'word-peek-v1';
 const MODE_IDS = ['daily', 'practice', 'little', 'big'];
-const REDUCED = (() => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; } })();
+// the kit's reduced motion (device, site or the kit's own setting), kept current: "More settings" can turn it on
+// mid-game, and every use below reads it again
+let REDUCED = !!Oomba.settings.reduced;
+Oomba.settings.on('change', () => { REDUCED = !!Oomba.settings.reduced; });
 const $ = id => document.getElementById(id);
 const blankStats = () => ({ played: 0, wins: 0, streak: 0, best: 0, dist: [0, 0, 0, 0, 0, 0], last: 0, lastWin: '', lastPlayed: '' });
+const later = (ms, fn) => Oomba.time.real.after(ms, fn);   // real clock: menus and reveals keep going while nothing else runs
+const noop = () => {};
 
 function loadSave() {
   let s = null;
@@ -2691,9 +2740,27 @@ const S = {
 let fast = false;   // skipAnimations()
 
 /* =====================================================================================
+   The kit: Pip's forest behind everything, colours as CSS variables, the game's DOM inside the kit's UI root
+   ===================================================================================== */
+const STAGE = Oomba.stage({ api: 1, biome: CONFIG.biome, size: [960, 540] });
+STAGE.camera.x = 0; STAGE.camera.y = -150;
+for (const [x, s] of [[-430, 150], [420, 170], [-250, 110]]) STAGE.add('tree', { x, y: 30, size: s, variant: 'pine', layer: 'near' });
+for (const x of [-330, 330]) STAGE.add('lantern', { x, y: 28, size: 90, layer: 'near' });
+const C = Oomba.color, cssVars = {
+  ink: C('ink'), cream: C('card'), mint: C('mint'), mintTint: C('mint', 'light'), stone: C('stone'),
+  hit: C('mint', 'shade'), hitInk: C('card'), near: C('spark'), nearInk: C('ink'), miss: C('stone'), missInk: C('card'),
+  hcHit: C('peach', 'shade'), hcHitInk: C('card'), hcNear: C('sky', 'shade'), hcNearInk: C('card'), hcMiss: C('stone', 'shade'),
+  hot: C('hot'), hotPress: C('hot', 'shade'),
+};
+for (const k in cssVars) document.documentElement.style.setProperty('--wp-' + k, cssVars[k]);
+Oomba.ui.root().appendChild($('game'));
+Oomba.scene = 'home';
+
+/* =====================================================================================
    Sound + speech (speechSynthesis may be missing: every use is guarded)
    ===================================================================================== */
-function sfx(name) { try { BRB.sfx.play(name); } catch (e) { /* ignore */ } }
+// The kit's sounds (with captions when they are on); the SDK's names (click, coin, hit, powerup, lose) pass through.
+function sfx(name, o) { try { Oomba.sfx(name, Object.assign({ caption: false }, o)); } catch (e) { /* ignore */ } }
 /* voice-pick:start. Only for playing this file on its own: on Oomba Academy the SDK's BRB.speak is used.
    The same scoring as BRB.voice in public/sdk/brb-sdk.js (tests/unit/voice.test.js checks they agree):
    the language's preferred region first, natural/premium/enhanced voices up, old Windows "Desktop" voices,
@@ -2758,68 +2825,77 @@ function isMuted() { try { return !!BRB.sfx.muted; } catch (e) { return false; }
 function setMuted(on) { try { BRB.sfx.mute(!!on); } catch (e) { /* ignore */ } save.settings.muted = isMuted(); persist(); refreshMute(); }
 function refreshMute() {
   const m = isMuted();
-  for (const id of ['muteBtn', 'muteBtnHome']) { $(id).textContent = m ? '🔇' : '🔊'; $(id).setAttribute('aria-label', t(m ? 'a_soundOn' : 'a_soundOff')); }
+  for (const id of ['muteBtn', 'muteBtnHome']) { $(id).innerHTML = Oomba.icon(m ? 'mute' : 'sound'); $(id).setAttribute('aria-label', t(m ? 'a_soundOn' : 'a_soundOff')); }
   $('swSound').setAttribute('aria-checked', String(!m));
 }
 
 /* =====================================================================================
-   Pip the owl (inline SVG). Moods: idle, think (eyes follow the letter you type), happy, cheer, sad, tilt.
+   Pip the owl (the kit's owl). Moods: idle/think (thinking face), happy, cheer, sad, tilt (a puzzled head tilt).
+   Each face is drawn once by the kit and swapped; he blinks every few seconds.
    ===================================================================================== */
-function owlSVG() {
-  // viewBox 0 0 120 78: head and shoulders above the card edge, toes hooked over the edge at the bottom.
-  return `<g class="bodyG">
-    <path class="wingL" d="M22 60 C10 58 6 72 14 80 L32 80 Z" fill="#7a4f2e"/>
-    <path class="wingR" d="M98 60 C110 58 114 72 106 80 L88 80 Z" fill="#7a4f2e"/>
-    <path d="M20 80 C18 52 30 26 60 26 C90 26 102 52 100 80 Z" fill="#9a6439"/>
-    <path d="M30 20 L40 34 L26 36 Z M90 20 L80 34 L94 36 Z" fill="#7a4f2e"/>
-    <ellipse cx="60" cy="68" rx="24" ry="14" fill="#f3d6a4"/>
-    <path d="M44 66 q4 4 8 0 q4 4 8 0 q4 4 8 0 q4 4 8 0" fill="none" stroke="#d9b27a" stroke-width="2" stroke-linecap="round"/>
-    <g class="eyeOpen">
-      <circle cx="44" cy="46" r="13" fill="#fff"/><circle cx="76" cy="46" r="13" fill="#fff"/>
-      <circle cx="44" cy="46" r="13" fill="none" stroke="#e9a33c" stroke-width="3"/><circle cx="76" cy="46" r="13" fill="none" stroke="#e9a33c" stroke-width="3"/>
-      <g class="pupil"><circle cx="44" cy="47" r="6.5" fill="#2b1d12"/><circle cx="76" cy="47" r="6.5" fill="#2b1d12"/>
-        <circle cx="46.5" cy="44.5" r="2.2" fill="#fff"/><circle cx="78.5" cy="44.5" r="2.2" fill="#fff"/></g>
-      <rect class="lid" x="30" y="32" width="28" height="28" rx="14" fill="#9a6439"/><rect class="lid" x="62" y="32" width="28" height="28" rx="14" fill="#9a6439"/>
-    </g>
-    <g class="happyEye" fill="none" stroke="#2b1d12" stroke-width="4" stroke-linecap="round">
-      <path d="M35 48 q9 -10 18 0"/><path d="M67 48 q9 -10 18 0"/>
-    </g>
-    <path d="M55 55 L65 55 L60 64 Z" fill="#f08c2a"/>
-  </g>
-  <g fill="#f08c2a"><path d="M40 74 q-3 6 0 9 M44 74 q0 7 0 9" stroke="#f08c2a" stroke-width="4" stroke-linecap="round"/>
-    <path d="M76 74 q0 7 0 9 M80 74 q3 6 0 9" stroke="#f08c2a" stroke-width="4" stroke-linecap="round"/></g>`;
+const PIP = Oomba.char(CONFIG.pip);
+const FACE = { idle: 'thinking', think: 'thinking', happy: 'happy', cheer: 'cheer', sad: 'sad', tilt: 'surprised', blink: 'sleep' };
+const pipFaces = {};
+function pipFace(mood) {
+  const f = FACE[mood] || 'happy';
+  if (!pipFaces[f]) { const c = pipPortrait(150, f); c.hidden = true; $('owl').firstElementChild.appendChild(c); pipFaces[f] = c; }
+  for (const k in pipFaces) pipFaces[k].hidden = k !== f;
+}
+/** Pip's portrait without the room the kit leaves above his head for hats (the same crop for every face). */
+let pipTop = -1;
+function pipPortrait(px, mood) {
+  const src = Oomba.ui.portrait(PIP, { size: px, mood }), w = src.width, h = src.height;
+  if (pipTop < 0) {
+    const d = src.getContext('2d').getImageData(0, 0, w, h).data; pipTop = 0;
+    find: for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (d[(y * w + x) * 4 + 3] > 20) { pipTop = Math.max(0, y - 3) / h; break find; }
+  }
+  const top = Math.round(pipTop * h), c = document.createElement('canvas'); c.width = w; c.height = h - top;
+  c.getContext('2d').drawImage(src, 0, top, w, h - top, 0, 0, w, h - top);
+  c.setAttribute('aria-hidden', 'true'); c.style.height = Math.round(px * (h - top) / h) + 'px'; c.style.width = 'auto';
+  return c;
 }
 function initOwls() {
-  $('owl').innerHTML = `<svg viewBox="0 0 120 78">${owlSVG()}</svg>`;
-  $('logoOwl').innerHTML = owlSVG(); $('resOwl').innerHTML = owlSVG();
+  pipFace('think');
+  $('logoOwl').appendChild(pipPortrait(150, 'happy'));
 }
-let moodTimer = 0;
+let moodNow = 'think', moodOff = noop;
 function owlMood(mood, ms) {
-  const el = $('owl'); clearTimeout(moodTimer);
+  const el = $('owl'); moodOff();
   el.classList.remove('happy', 'cheer', 'sad', 'tilt');
   if (mood && mood !== 'idle' && mood !== 'think') el.classList.add(mood);
-  if (ms) moodTimer = setTimeout(() => owlMood(S.over ? (S.won ? 'happy' : 'sad') : 'think'), ms);
+  moodNow = mood || 'think'; pipFace(moodNow);
+  if (ms) moodOff = later(ms, () => owlMood(S.over ? (S.won ? 'happy' : 'sad') : 'think'));
   lookAt();
 }
-/** Pip looks toward the tile you are typing in (or straight ahead). */
+/** Pip turns his body a little toward the tile you are typing in (or straight ahead). */
 function lookAt() {
-  const p = $('owl').querySelector('.pupil'); if (!p) return;
-  let x = 0, y = 2;
-  if (!S.over && S.screen === 'play') { const col = Math.min(S.typed.length, S.length - 1); x = (col / Math.max(1, S.length - 1) - 0.5) * 7; y = 3.5; }
-  p.style.transform = `translate(${x.toFixed(1)}px,${y}px)`;
+  const b = $('owl').firstElementChild; if (!b) return;
+  let x = 0;
+  if (!S.over && S.screen === 'play' && moodNow === 'think') { const col = Math.min(S.typed.length, S.length - 1); x = (col / Math.max(1, S.length - 1) - 0.5) * 10; }
+  b.style.translate = x.toFixed(1) + 'px 0';
 }
-// Blinks every few seconds (an eyelid moves; nothing flashes).
+// Blinks every few seconds (eyelids close for a moment; nothing flashes).
 function blinkLoop() {
-  const el = $('owl');
-  setTimeout(() => { el.classList.add('blink'); setTimeout(() => { el.classList.remove('blink'); blinkLoop(); }, 140); }, 2600 + Math.random() * 3200);
+  later(2600 + Math.random() * 3200, () => {
+    if (moodNow === 'think' || moodNow === 'idle' || moodNow === 'happy') { const m = moodNow; pipFace('blink'); later(140, () => { if (moodNow === m) pipFace(m); }); }
+    blinkLoop();
+  });
 }
-/** The result panel's owl: happy eyes for a win, sleepy eyes for a loss. */
-function rebuildResOwl(mood) { $('resOwl').setAttribute('class', 'resOwl ' + (mood || '')); }
+/** The result card's Pip: cheering for a win, sad for a loss. */
+function rebuildResOwl(mood) { $('resOwl').innerHTML = ''; $('resOwl').appendChild(pipPortrait(140, mood === 'happy' ? 'cheer' : 'sad')); }
+/** A kit prop as a small picture (mode icons). */
+function propPic(name, px) {
+  const d = Math.min(2, devicePixelRatio || 1), n = Math.round(px * d), src = Oomba.art.toCanvas(name, n), c = document.createElement('canvas');
+  c.width = c.height = n; const k = Math.min(n / src.width, n / src.height);   // fitted into a square, so a long pencil is as big as a clock
+  c.getContext('2d').drawImage(src, (n - src.width * k) / 2, (n - src.height * k) / 2, src.width * k, src.height * k);
+  c.style.width = c.style.height = px + 'px'; c.setAttribute('aria-hidden', 'true'); return c;
+}
 
 /* =====================================================================================
    Building the grid + keyboard
    ===================================================================================== */
 const KB_ROWS = ['qwertyuiop', 'asdfghjkl', '+zxcvbnm-'];
+const CHECK = Oomba.icon('check');
 function buildKeyboard() {
   const kb = $('kb'); kb.innerHTML = '';
   KB_ROWS.forEach((r, ri) => {
@@ -2827,8 +2903,8 @@ function buildKeyboard() {
     for (const ch of r) {
       const b = document.createElement('button'); b.className = 'key'; b.type = 'button';
       if (ch === '+') { b.classList.add('wide'); b.textContent = 'Enter'; b.dataset.k = 'enter'; b.setAttribute('aria-label', 'Enter'); }
-      else if (ch === '-') { b.classList.add('wide'); b.textContent = '⌫'; b.dataset.k = 'back'; b.setAttribute('aria-label', t('a_delete')); }
-      else { b.innerHTML = ch + '<span class="km"></span>'; b.dataset.k = ch; b.setAttribute('aria-label', ch.toUpperCase()); }
+      else if (ch === '-') { b.classList.add('wide'); b.innerHTML = Oomba.icon('back'); b.dataset.k = 'back'; b.setAttribute('aria-label', t('a_delete')); }
+      else { b.innerHTML = ch + '<span class="km">' + CHECK + '</span>'; b.dataset.k = ch; b.setAttribute('aria-label', ch.toUpperCase()); }
       row.appendChild(b);
     }
     kb.appendChild(row);
@@ -2838,7 +2914,7 @@ function buildGrid() {
   const g = $('grid'); g.innerHTML = '';
   for (let r = 0; r < CONFIG.tries; r++) {
     const row = document.createElement('div'); row.className = 'row';
-    for (let c = 0; c < S.length; c++) { const t = document.createElement('div'); t.className = 'tile'; t.innerHTML = '<span class="ch"></span><span class="mk"></span>'; row.appendChild(t); }
+    for (let c = 0; c < S.length; c++) { const t = document.createElement('div'); t.className = 'tile'; t.innerHTML = '<span class="ch"></span><span class="mk">' + CHECK + '</span>'; row.appendChild(t); }
     g.appendChild(row);
   }
   layout();
@@ -2871,40 +2947,47 @@ function paintKeyboard() {
 }
 function paintHud() {
   const m = CONFIG.modes[S.mode];
-  $('modeName').textContent = m.icon + ' ' + t('m_' + S.mode) + (S.hard ? ' · ' + t('hud_hard') : '');
-  if (S.friendSetup) $('tryText').textContent = t('hud_secret');
-  else if (S.over) $('tryText').textContent = S.won ? t('hud_solved', { n: S.guesses.length }) : t('hud_over');
-  else $('tryText').textContent = t('hud_try', { n: Math.min(S.guesses.length + 1, CONFIG.tries), total: CONFIG.tries }) + (S.mode === 'daily' && dailyStreakNow() ? ` · 🔥${NF.format(dailyStreakNow())}` : '');
-  fitText($('modeName'), 10); fitText($('tryText'), 9);   // long words (German, Russian) shrink to fit the pill
+  $('modePic').innerHTML = ''; $('modePic').appendChild(propPic(m.icon, 26));
+  $('modeName').textContent = t('m_' + S.mode) + (S.hard ? ' · ' + t('hud_hard') : '');
+  const tt = $('tryText');
+  if (S.friendSetup) tt.textContent = t('hud_secret');
+  else if (S.over) tt.textContent = S.won ? t('hud_solved', { n: S.guesses.length }) : t('hud_over');
+  else {
+    tt.textContent = t('hud_try', { n: Math.min(S.guesses.length + 1, CONFIG.tries), total: CONFIG.tries });
+    if (S.mode === 'daily' && dailyStreakNow()) tt.insertAdjacentHTML('beforeend', ' · ' + Oomba.icon('spark') + NF.format(dailyStreakNow()));
+  }
+  fitText($('modeName'), 10); fitText(tt, 9);   // long words (German, Russian) shrink to fit the pill
 }
 
 /** Fits the tiles and keys to the space we have (portrait: stacked; short and wide: side by side). */
 function layout() {
   const W = innerWidth, H = innerHeight, app = $('app');
-  const side = W > H * 1.2 && H < 620;
+  const side = W > H * 1.2 && (H < 620 || W >= 1000);   // short landscape phones, and laptops and desktops: board beside the keyboard
   app.classList.toggle('side', side);
-  const keyH = side ? Math.max(44, Math.min(56, Math.floor((H - 80) / 3.9))) : Math.max(46, Math.min(58, Math.floor(H * 0.078)));
-  document.documentElement.style.setProperty('--keyH', keyH + 'px');
+  // big screens (a laptop or desktop): the board and keyboard about a fifth bigger, so the game fills the window
+  const big = W >= 900 && H >= 700; app.classList.toggle('big', big);
+  const keyH = side ? Math.max(44, Math.min(H >= 700 ? 70 : 56, Math.floor((H - 80) / 3.9))) : big ? Math.min(68, Math.floor(H * 0.082)) : Math.max(46, Math.min(54, Math.floor(H * 0.066)));
+  app.style.setProperty('--keyH', keyH + 'px');
   const wrap = $('boardWrap'); const bw = wrap.clientWidth, bh = wrap.clientHeight;
   if (!bw || !bh) return;
-  const gap = side || H < 680 ? 5 : 6; document.documentElement.style.setProperty('--gap', gap + 'px');
+  const gap = side || H < 680 ? 5 : 6; app.style.setProperty('--gap', gap + 'px');
   const cols = S.length, rows = CONFIG.tries;
-  // width: card padding 10*2 + outline; height: card padding + room for Pip (0.82 tile) above the card
-  const byW = (bw - 28 - gap * (cols - 1)) / cols;
-  const byH = (bh - 34 - gap * (rows - 1)) / (rows + 0.82);
-  const tile = Math.max(26, Math.floor(Math.min(byW, byH, CONFIG.maxTile)));
-  document.documentElement.style.setProperty('--tile', tile + 'px');
+  // width: card padding 10*2 + its 3px edge; height: card padding + edge + drop + room for Pip (1.45 tiles) above the card
+  const byW = (bw - 30 - gap * (cols - 1)) / cols;
+  const byH = (bh - 40 - gap * (rows - 1)) / (rows + 1.45);
+  const tile = Math.max(26, Math.floor(Math.min(byW, byH, big ? CONFIG.maxTile * 1.25 : CONFIG.maxTile)));
+  app.style.setProperty('--tile', tile + 'px');
 }
 
 /* =====================================================================================
-   Messages (Pip's speech bubble)
+   Messages (Pip's speech bubble; screen readers hear them too)
    ===================================================================================== */
-let bubbleTimer = 0;
+let bubbleOff = noop;
 function toast(msg, ms = 1600) {
-  const b = $('bubble'); b.textContent = msg; b.classList.add('show'); clearTimeout(bubbleTimer);
-  if (ms) bubbleTimer = setTimeout(() => b.classList.remove('show'), ms);
+  const b = $('bubble'); b.textContent = msg; b.classList.add('show'); bubbleOff();
+  if (ms) bubbleOff = later(ms, () => b.classList.remove('show'));
 }
-function hideToast() { clearTimeout(bubbleTimer); $('bubble').classList.remove('show'); }
+function hideToast() { bubbleOff(); $('bubble').classList.remove('show'); }
 
 /* =====================================================================================
    Starting rounds
@@ -2946,13 +3029,13 @@ function startRound(opts = {}) {
       save.round = { mode, answer: S.answer, guesses: [], hard: S.hard }; persist();
     }
   }
-  $('app').classList.remove('offstage');
+  $('homeScreen').hidden = true; $('app').classList.remove('offstage'); Oomba.scene = 'play';
   buildGrid(); paintBoard(); paintKeyboard(); paintHud(); lookAt();
   owlMood(S.over ? (S.won ? 'happy' : 'sad') : 'think');
   $('grid').classList.toggle('secret', S.friendSetup); $('secretHelp').hidden = !S.friendSetup;
-  if (S.over) setTimeout(() => showResult(false), fast ? 0 : 450);
+  if (S.over) later(fast ? 0 : 450, () => showResult(false));
   else if (!S.friendSetup) {
-    sfx('powerup');
+    sfx('whoosh');
     if (S.guesses.length) toast(t('t_back'), 1600);
     else toast(t(mode === 'little' ? 't_find4' : mode === 'big' ? 't_find6' : mode === 'friend' ? 't_friend' : 't_find'), 1500);
   }
@@ -2967,7 +3050,7 @@ function typeLetter(ch) {
   if (!canType()) return false;
   const max = S.friendSetup ? 6 : S.length;
   if (S.typed.length >= max) return false;
-  S.typed += ch; sfx('click');
+  S.typed += ch; sfx('pop');
   if (!S.friendSetup) hideToast();   // the bubble sits over the grid: get out of the way as soon as you type
   if (S.friendSetup) paintSecret(); else { paintRow(); }
   lookAt(); return true;
@@ -2983,13 +3066,14 @@ function paintRow() {
     const was = t.querySelector('.ch').textContent;
     setTile(t, ch, null);
     if (c === S.typed.length) t.classList.add('cursor');
-    if (ch && !was && !REDUCED && !fast) { t.classList.remove('filled'); void t.offsetWidth; t.classList.add('filled'); }
+    if (ch && !was && !REDUCED && !fast) Oomba.juice.pop(t.querySelector('.ch'));
   }
+  const ent = document.querySelector('.key[data-k="enter"]'); if (ent) ent.classList.toggle('ready', S.typed.length === S.length && !S.over);   // Enter lights up once the word is full
 }
 function rejectRow(msg) {
-  toast(msg, 1700); sfx('hit'); owlMood('tilt', 900);
+  toast(msg, 1700); sfx('wrong'); owlMood('tilt', 900);
   const row = rowEl(S.guesses.length);
-  if (row && !REDUCED && !fast) { row.classList.remove('shake'); void row.offsetWidth; row.classList.add('shake'); setTimeout(() => row.classList.remove('shake'), 450); }
+  if (row && !REDUCED && !fast) Oomba.juice.shake(0.45, row);
   return msg;
 }
 /** Enter: checks the typed word. Returns the marks, or an error message. */
@@ -3019,27 +3103,27 @@ function reveal(r, done) {
   const flip = REDUCED ? 160 : CONFIG.flipMs, gap = REDUCED ? 90 : CONFIG.flipGapMs;
   row.style.setProperty('--flipMs', flip + 'ms');
   [...row.children].forEach((t, c) => {
-    setTimeout(() => {
+    later(c * gap, () => {
       if (!REDUCED) { t.classList.remove('filled', 'cursor'); t.classList.add('flip'); }
-      setTimeout(() => {
+      later(REDUCED ? 0 : flip / 2, () => {
         setTile(t, g.word[c], g.marks[c]); if (!REDUCED) t.classList.add('flip');
-        sfx(g.marks[c] === 'hit' ? 'coin' : 'click');
-      }, REDUCED ? 0 : flip / 2);
-    }, c * gap);
+        const m = g.marks[c]; sfx(m === 'hit' ? 'correct' : m === 'near' ? 'pop' : 'step');
+      });
+    });
   });
-  setTimeout(() => { row.querySelectorAll('.tile').forEach(t => t.classList.remove('flip')); S.busy = false; paintBoard(); paintKeyboard(); paintHud(); done(); }, (S.length - 1) * gap + flip + 40);
+  later((S.length - 1) * gap + flip + 40, () => { row.querySelectorAll('.tile').forEach(t => t.classList.remove('flip')); S.busy = false; paintBoard(); paintKeyboard(); paintHud(); done(); });
 }
 function afterReveal(marks) {
   if (S.over) {
     if (S.won) {
-      owlMood('cheer'); sfx('win'); toast(tRaw('win')[S.guesses.length - 1], 2000);
-      try { BRB.fx.confetti({ colors: ['#0e8f88', '#f2a627', '#e46b2c', '#ffd34d', '#7cc6f0', '#fff3c4'] }); } catch (e) { /* ignore */ }
+      owlMood('cheer'); sfx('win', { caption: undefined }); toast(tRaw('win')[S.guesses.length - 1], 2000);
+      try { if (!fast) Oomba.juice.confetti(); } catch (e) { /* ignore */ }
       const row = rowEl(S.guesses.length - 1);
-      if (!REDUCED && !fast) [...row.children].forEach((t, c) => setTimeout(() => t.classList.add('bounce'), c * 90));
+      if (!REDUCED && !fast) [...row.children].forEach((t, c) => later(c * 90, () => t.classList.add('bounce')));
     } else {
       owlMood('sad'); sfx('lose'); toast(t('t_lose'), 2000);
     }
-    setTimeout(() => showResult(true), fast ? 0 : 1500);
+    later(fast ? 0 : 1500, () => showResult(true));
     return;
   }
   const hits = marks.filter(m => m === 'hit').length, nears = marks.filter(m => m === 'near').length;
@@ -3088,18 +3172,17 @@ function submitSecret() {
   if (!isAllowed(w)) return rejectRow(t('e_list'));
   hideToast(); S.typed = ''; S.pendingSecret = w;
   const pr = $('passRow'); pr.innerHTML = ''; for (let i = 0; i < w.length; i++) { const t = document.createElement('div'); t.className = 'tile filled'; t.textContent = '?'; pr.appendChild(t); }
-  openPanel('pass'); sfx('coin');
+  openPanel('pass'); sfx('correct');
   return 'secret set';
 }
 
 /* =====================================================================================
-   Result panel
+   Result card
    ===================================================================================== */
-let countdownTimer = 0;
-function emojiGrid() {
-  const hc = save.settings.contrast;
-  const e = { hit: hc ? CONFIG.hcHitEmoji : CONFIG.hitEmoji, near: hc ? CONFIG.hcNearEmoji : CONFIG.nearEmoji, miss: CONFIG.missEmoji };
-  return S.guesses.map(g => g.marks.map(m => e[m]).join('')).join('\n');
+let countdownOff = noop;
+/** The marks as a little grid of shapes (a dot for the wrong spot) for the result card. */
+function markGrid() {
+  return S.guesses.map(g => '<div>' + g.marks.map(m => `<i class="${m}"></i>`).join('') + '</div>').join('');
 }
 function statNumsHTML(st) {
   const pct = st.played ? Math.round(st.wins / st.played * 100) : 0;
@@ -3108,32 +3191,52 @@ function statNumsHTML(st) {
 }
 function showResult(fresh) {
   if (S.screen !== 'play' || !S.over) return;
+  hideToast();   // Pip's "Super!" never shows through behind the card
   const word = S.answer.toUpperCase(), tries = S.guesses.length;
   $('resTitle').textContent = S.won ? tRaw('win')[tries - 1] : t('r_close');
-  $('resMsg').textContent = S.won ? t(S.mode === 'friend' ? 'r_friend' : 'r_found', { n: tries }) : t('r_lost', { word: '\u2066' + word + '\u2069' });
-  $('resWord').textContent = word;
+  $('resMsg').textContent = S.won ? t(S.mode === 'friend' ? 'r_friend' : 'r_found', { n: tries }) : t('r_lost', { word: '⁦' + word + '⁩' });
+  const wt = $('resWord'); wt.innerHTML = ''; wt.setAttribute('aria-label', word);
+  for (const ch of word) { const d = document.createElement('div'); d.className = 'tile ' + (S.won ? 'hit' : 'filled'); d.innerHTML = '<span class="ch"></span>'; d.firstChild.textContent = ch; d.setAttribute('aria-hidden', 'true'); wt.appendChild(d); }
   // The meaning stays English (lang="en" on #resDef): it teaches the English word. A friend's secret word may have no meaning listed.
-  const def = GLOSSARY[S.answer] ? '📖 ' + GLOSSARY[S.answer][0].toUpperCase() + GLOSSARY[S.answer].slice(1) + '.' : '';
+  const def = GLOSSARY[S.answer] ? GLOSSARY[S.answer][0].toUpperCase() + GLOSSARY[S.answer].slice(1) + '.' : '';
   $('resDef').textContent = def || (S.mode === 'friend' ? t('r_secret') : '');
-  $('resDef').lang = def ? 'en' : LANG; $('resDef').dir = def ? 'ltr' : 'auto';
-  $('resEmojis').textContent = emojiGrid();
+  $('resDef').lang = def ? 'en' : LANG; $('resDef').dir = def ? 'ltr' : 'auto'; $('resDefIcon').hidden = !def; $('resDefBox').hidden = !$('resDef').textContent;
+  $('resEmojis').innerHTML = markGrid();
   $('resEmojis').setAttribute('aria-label', S.guesses.map((g, i) => t('r_tryAria', { n: i + 1, marks: g.marks.map(m => t('mk_' + m)).join(', ') })).join('. '));
   const st = save.stats[S.mode];
   $('resPts').textContent = S.mode === 'friend' ? '' : (S.won && S.lastPoints && fresh ? t('r_plus', { n: S.lastPoints }) + ' · ' : '') + t('points', { n: save.points });
+  $('resPtsBox').hidden = S.mode === 'friend';
   $('resNums').hidden = !st; if (st) $('resNums').innerHTML = statNumsHTML(st);
   rebuildResOwl(S.won ? 'happy' : 'sad');
+  $('resScreen').classList.toggle('won', !!S.won);
+  { // a still celebration behind the card: paper confetti in the margins and a few sparks (the card hides the middle)
+    const rs = $('resScreen'); let cel = rs.querySelector('.wpCel'); if (cel) cel.remove();
+    if (S.won) {
+      cel = document.createElement('div'); cel.className = 'wpCel'; cel.setAttribute('aria-hidden', 'true');
+      const cols = ['#FFD23F', '#FF7A3D', '#3CC37A', '#4FB4F7', '#B07CF0', '#FF5E7E'], rnd = mulberry32(tries * 7919 + word.length);
+      for (let i = 0; i < 34; i++) {
+        const band = i % 4, x = band < 2 ? rnd() * 100 : (band === 2 ? rnd() * 9 : 91 + rnd() * 9), y = band === 0 ? 8 + rnd() * 9 : band === 1 ? 86 + rnd() * 13 : 8 + rnd() * 90;
+        const e = document.createElement('i'); e.style.cssText = `left:${x.toFixed(1)}%;top:${y.toFixed(1)}%;width:${(8 + rnd() * 7).toFixed(0)}px;height:${(5 + rnd() * 4).toFixed(0)}px;background:${cols[i % cols.length]};transform:rotate(${(rnd() * 180).toFixed(0)}deg);animation-delay:-${(rnd() * 2.6).toFixed(2)}s`;
+        cel.appendChild(e);
+      }
+      [[7, 12], [88, 14], [5, 90], [90, 91], [28, 10]].forEach(([x, y], i) => { const w = document.createElement('span'); w.innerHTML = Oomba.icon('spark'); const sv = w.firstChild; sv.style.left = x + '%'; sv.style.top = y + '%'; sv.style.animationDelay = (-i * 0.4) + 's'; cel.appendChild(sv); });
+      rs.prepend(cel);
+    }
+  }
+  // the win moment: confetti as the card opens (the burst at the last tile has faded by then)
+  if (S.won && fresh && !REDUCED && !fast) Oomba.time.real.after(250, () => { try { if (S.screen === 'play' && S.over) Oomba.juice.confetti(); } catch (e) { /* ignore */ } });
   const btns = $('resBtns'); btns.innerHTML = '';
-  const add = (label, cls, fn, id) => { const b = document.createElement('button'); b.className = 'btn ' + cls; b.textContent = label; if (id) b.id = id; b.addEventListener('click', () => { sfx('click'); fn(); }); btns.appendChild(b); };
-  clearInterval(countdownTimer);
+  const add = (label, kind, icon, fn, id) => { const b = Oomba.ui.button(label, { kind, icon: Oomba.icon(icon), onPress: fn }); if (id) b.id = id; btns.appendChild(b); };
+  countdownOff();
   if (S.mode === 'daily') {
-    $('resCount').hidden = false; tickCountdown(); countdownTimer = setInterval(tickCountdown, 1000);
-    add(t('b_practice'), 'primary', () => startRound({ mode: 'practice', resume: true }), 'resMain');
-    add(t('b_home'), '', toHome, 'resHome');
+    $('resCount').hidden = false; tickCountdown(); countdownOff = Oomba.time.real.every(1000, tickCountdown);
+    add(t('b_practice'), 'hot', 'pencil', () => startRound({ mode: 'practice', resume: true }), 'resMain');
+    add(t('b_home'), 'quiet', 'home', toHome, 'resHome');
   } else {
     $('resCount').hidden = true;
-    if (S.mode === 'friend') add(t('b_newSecret'), 'primary', () => startRound({ mode: 'friend' }), 'resMain');
-    else add(t('b_again'), 'primary', () => startRound({ mode: S.mode }), 'resMain');
-    add(t('b_home'), '', toHome, 'resHome');
+    if (S.mode === 'friend') add(t('b_newSecret'), 'hot', 'restart', () => startRound({ mode: 'friend' }), 'resMain');
+    else add(t('b_again'), 'hot', 'restart', () => startRound({ mode: S.mode }), 'resMain');
+    add(t('b_home'), 'quiet', 'home', toHome, 'resHome');
   }
   openPanel('res');
 }
@@ -3147,32 +3250,37 @@ function tickCountdown() {
 }
 
 /* =====================================================================================
-   Panels + home
+   Cards + home
    ===================================================================================== */
 const PANELS = { help: 'helpScreen', stats: 'statsScreen', set: 'setScreen', res: 'resScreen', pass: 'passScreen' };
+let panelFrom = null;
 function openPanel(name) {
   for (const k in PANELS) $(PANELS[k]).hidden = k !== name;
+  if (!S.panel) panelFrom = document.activeElement;
   S.panel = name;
   if (name === 'stats') renderStats(S.screen === 'play' && MODE_IDS.includes(S.mode) ? S.mode : statTab);
   if (name === 'set') refreshSettings();
+  Oomba.ui.announce(($(PANELS[name]).querySelector('h2') || {}).textContent || '');
+  later(0, () => { const card = $(PANELS[name]); const f = card.querySelector('.ok-hot, .ok-go') || card.querySelector('button'); if (f && S.panel === name) f.focus({ preventScroll: true }); });
 }
 function closePanel() {
   if (!S.panel) return;
   const was = S.panel; $(PANELS[was]).hidden = true; S.panel = null;
-  if (was === 'res') clearInterval(countdownTimer);
+  if (was === 'res') countdownOff();
   if (was === 'pass') S.friendSetup = true;
+  try { if (panelFrom && panelFrom.isConnected && panelFrom.focus) panelFrom.focus({ preventScroll: true }); } catch (e) { /* gone */ }
 }
-function hideAll() { for (const k in PANELS) $(PANELS[k]).hidden = true; S.panel = null; clearInterval(countdownTimer); }
+function hideAll() { for (const k in PANELS) $(PANELS[k]).hidden = true; S.panel = null; countdownOff(); }
 function toHome() {
-  hideAll(); hideToast(); S.screen = 'home'; S.friendSetup = false;
+  hideAll(); hideToast(); S.screen = 'home'; S.friendSetup = false; Oomba.scene = 'home';
   $('homeScreen').hidden = false; $('app').classList.add('offstage'); refreshHome();
 }
 function refreshHome() {
   const today = todayStr(), d = save.daily, done = d && d.date === today && d.over, streak = dailyStreakNow();
   const going = !done && d && d.date === today && d.guesses && d.guesses.length;
-  const st = streak ? ' · ' + t('hm_streak', { n: streak }) : '';
+  const st = streak ? ' · ' + Oomba.icon('spark') + ' ' + t('hm_streak', { n: streak }) : '';
   $('dailyGo').textContent = t(done ? 'go_see' : going ? 'go_go' : 'go_play');
-  if (done) $('dailyNote').innerHTML = t(d.won ? 'hm_solved' : 'hm_done') + ' ' + t('hm_newIn', { time: '<span dir="ltr">' + fmtTime(msToMidnight()) + '</span>' }) + st;
+  if (done) $('dailyNote').innerHTML = (d.won ? Oomba.icon('check') + ' ' : '') + t(d.won ? 'hm_solved' : 'hm_done') + ' ' + t('hm_newIn', { time: '<span dir="ltr">' + fmtTime(msToMidnight()) + '</span>' }) + st;
   else if (going) $('dailyNote').innerHTML = t('hm_keep', { n: d.guesses.length + 1, total: CONFIG.tries }) + st;
   else $('dailyNote').innerHTML = t('md_daily') + st;
   $('homePoints').textContent = t('points', { n: save.points });
@@ -3180,10 +3288,14 @@ function refreshHome() {
 let statTab = 'daily';
 function renderStats(mode) {
   statTab = mode;
-  $('statTabs').innerHTML = MODE_IDS.map(m => `<button class="tab${m === mode ? ' on' : ''}" data-tab="${m}"><i>${CONFIG.modes[m].icon}</i>${t('tab_' + m)}</button>`).join('');
+  const tabs = $('statTabs'); tabs.innerHTML = '';
+  for (const m of MODE_IDS) {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'tab' + (m === mode ? ' on' : ''); b.dataset.tab = m; b.setAttribute('aria-pressed', String(m === mode));
+    b.appendChild(propPic(CONFIG.modes[m].icon, 22)); b.appendChild(document.createTextNode(t('tab_' + m))); tabs.appendChild(b);
+  }
   const st = save.stats[mode]; $('statNums').innerHTML = statNumsHTML(st);
   const max = Math.max(1, ...st.dist);
-  $('statDist').innerHTML = '<b style="text-align:center">' + t('s_dist') + '</b>' + st.dist.map((n, i) =>
+  $('statDist').innerHTML = '<b>' + t('s_dist') + '</b>' + st.dist.map((n, i) =>
     `<div class="bar${st.last === i + 1 ? ' last' : ''}"><i>${i + 1}</i><b style="width:${Math.max(8, Math.round(n / max * 100))}%">${n}</b></div>`).join('');
   $('statPts').textContent = t('s_total', { n: save.points });
 }
@@ -3192,7 +3304,7 @@ function refreshSettings() {
   $('swHard').setAttribute('aria-checked', String(!!save.settings.hard));
   refreshMute();
 }
-function setContrast(on) { save.settings.contrast = !!on; document.documentElement.classList.toggle('hc', !!on); persist(); refreshSettings(); }
+function setContrast(on) { save.settings.contrast = !!on; $('game').classList.toggle('hc', !!on); persist(); refreshSettings(); }
 /** Hard mode can be switched before your first guess of a round. */
 function setHard(on) {
   on = !!on;
@@ -3208,13 +3320,18 @@ function press(k) {
   if (S.over && S.screen === 'play' && !S.panel && !S.busy && k === 'enter') { showResult(false); return; }   // see the result again
   if (k === 'enter') submit(); else if (k === 'back') backspace(); else if (/^[a-z]$/.test(k)) typeLetter(k);
 }
+const tap = (id, fn) => $(id).addEventListener('click', () => { sfx('select'); fn(); });
 $('card').addEventListener('click', () => { if (S.over && S.screen === 'play' && !S.panel && !S.busy) showResult(false); });
 $('kb').addEventListener('click', e => {
   const b = e.target.closest('.key'); if (!b) return;
   press(b.dataset.k);
 });
 document.addEventListener('keydown', e => {
-  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  if (e.ctrlKey || e.metaKey || e.altKey || Oomba.ui.open) return;
+  if (S.panel && e.key === 'Tab') {   // keep the keyboard focus inside the open card
+    const bs = [...$(PANELS[S.panel]).querySelectorAll('button:not([disabled])')].filter(b => b.offsetParent); if (!bs.length) return;
+    const i = bs.indexOf(document.activeElement); e.preventDefault(); bs[(i + (e.shiftKey ? -1 : 1) + bs.length) % bs.length].focus(); return;
+  }
   if (e.key === 'Escape') { if (S.panel && S.panel !== 'pass') { closePanel(); e.preventDefault(); } return; }
   if (S.panel || S.screen !== 'play') return;
   let k = null;
@@ -3222,47 +3339,55 @@ document.addEventListener('keydown', e => {
   if (!k) return;
   e.preventDefault();
   const key = $('kb').querySelector(`[data-k="${k}"]`);
-  if (key) { key.classList.add('press'); setTimeout(() => key.classList.remove('press'), 110); }
+  if (key) { key.classList.add('press'); later(110, () => key.classList.remove('press')); }
   press(k);
 });
 document.querySelectorAll('.mode').forEach(b => b.addEventListener('click', () => {
-  sfx('click'); $('homeScreen').hidden = true;
+  sfx('select'); $('homeScreen').hidden = true;
   startRound({ mode: b.dataset.mode, resume: true });
 }));
-document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', () => { sfx('click'); closePanel(); }));
-document.querySelectorAll('.screen.dim').forEach(s => s.addEventListener('click', e => { if (e.target === s && s.id !== 'passScreen') closePanel(); }));
-$('homeBtn').addEventListener('click', () => { sfx('click'); toHome(); });
-$('statsBtn').addEventListener('click', () => { sfx('click'); openPanel('stats'); });
-$('statsBtnHome').addEventListener('click', () => { sfx('click'); openPanel('stats'); });
-$('setBtn').addEventListener('click', () => { sfx('click'); openPanel('set'); });
-$('setBtnHome').addEventListener('click', () => { sfx('click'); openPanel('set'); });
-$('helpBtnHome').addEventListener('click', () => { sfx('click'); openPanel('help'); });
-$('helpBtnSet').addEventListener('click', () => { sfx('click'); openPanel('help'); });
-$('muteBtn').addEventListener('click', () => { setMuted(!isMuted()); sfx('click'); });
-$('muteBtnHome').addEventListener('click', () => { setMuted(!isMuted()); sfx('click'); });
-$('swSound').addEventListener('click', () => { setMuted(!isMuted()); sfx('click'); });
-$('swContrast').addEventListener('click', () => { setContrast(!save.settings.contrast); sfx('click'); });
-$('swHard').addEventListener('click', () => { setHard(!save.settings.hard); sfx('click'); });
-$('statTabs').addEventListener('click', e => { const t = e.target.closest('[data-tab]'); if (t) { sfx('click'); renderStats(t.dataset.tab); } });
+document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', () => { sfx('select'); closePanel(); }));
+document.querySelectorAll('.ok-modal').forEach(s => s.addEventListener('click', e => { if (e.target === s && s.id !== 'passScreen') closePanel(); }));
+tap('homeBtn', toHome);
+tap('statsBtn', () => openPanel('stats'));
+tap('statsBtnHome', () => openPanel('stats'));
+tap('setBtn', () => openPanel('set'));
+tap('setBtnHome', () => openPanel('set'));
+tap('helpBtnHome', () => openPanel('help'));
+tap('helpBtnSet', () => openPanel('help'));
+tap('moreSet', () => Oomba.ui.settings());   // the kit's settings: motion, captions, read aloud, text size, ...
+$('muteBtn').addEventListener('click', () => { setMuted(!isMuted()); sfx('select'); });
+$('muteBtnHome').addEventListener('click', () => { setMuted(!isMuted()); sfx('select'); });
+$('swSound').addEventListener('click', () => { setMuted(!isMuted()); sfx('select'); });
+$('swContrast').addEventListener('click', () => { setContrast(!save.settings.contrast); sfx('select'); });
+$('swHard').addEventListener('click', () => { setHard(!save.settings.hard); sfx('select'); });
+$('statTabs').addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (b) { sfx('select'); renderStats(b.dataset.tab); } });
 $('sayBtn').addEventListener('click', () => { if (!say(S.answer)) toast(t('t_noVoice'), 1600); });
-$('passGo').addEventListener('click', () => { sfx('click'); const w = S.pendingSecret; S.pendingSecret = ''; startRound({ mode: 'friend', answer: w }); });
-$('passBack').addEventListener('click', () => { sfx('click'); closePanel(); S.typed = ''; paintSecret(); });
+tap('passGo', () => { const w = S.pendingSecret; S.pendingSecret = ''; startRound({ mode: 'friend', answer: w }); });
+tap('passBack', () => { closePanel(); S.typed = ''; paintSecret(); });
 addEventListener('resize', layout);
 if (window.ResizeObserver) new ResizeObserver(() => layout()).observe($('boardWrap'));
-try { if (document.fonts && document.fonts.ready) document.fonts.ready.then(layout); } catch (e) { /* ignore */ }
+Oomba.fonts.ready.then(() => { layout(); if (S.screen === 'play') paintHud(); });
 
 /* =====================================================================================
    Boot
    ===================================================================================== */
 applyI18n(); initOwls(); buildKeyboard();
-document.documentElement.classList.toggle('hc', !!save.settings.contrast);
+$('moreSet').appendChild(document.createTextNode(Oomba.t('settings') + ' +'));
+document.querySelectorAll('[data-pic]').forEach(el => el.prepend(propPic(CONFIG.modes[el.dataset.pic].icon, 30)));
+$('game').classList.toggle('hc', !!save.settings.contrast);
 if (typeof save.settings.muted === 'boolean' && save.settings.muted !== isMuted()) { try { BRB.sfx.mute(save.settings.muted); } catch (e) { /* ignore */ } }
 refreshMute(); refreshHome(); blinkLoop();
 if (!save.seenHelp) { save.seenHelp = true; persist(); openPanel('help'); }   // first visit: how to play
-setInterval(() => { if (S.screen === 'home') refreshHome(); }, 1000);   // the daily countdown on the home screen
+Oomba.time.real.every(1000, () => { if (S.screen === 'home') refreshHome(); });   // the daily countdown on the home screen
+Oomba.on('focus', layout);
+// a turn-based game: clicking the page around it (the site's buttons, full screen) never freezes it; the kit's lost-focus
+// pause is for action games
+Oomba.on('blur', () => Oomba.time.resume('blur'));
 
 /* =====================================================================================
-   window.__brbTest: hooks for automated play tests (harmless in production).
+   window.__brbTest: hooks for automated play tests (harmless in production). Merged into the kit's hooks
+   (setTheme, setLang, setTier, step ...): the game's own names below win and behave as before.
      state()            -> { screen, mode, length, answer, typed, guesses: [{word, marks}], keyboard: {letter: mark}, over, won, hard,
                              busy, panel, date, points, lastPoints, stats (all modes), daily (saved daily state), settings }
      start({ mode, answer?, seed?, date?, resume? }) -> starts a round ('daily' | 'practice' | 'little' | 'big' | 'friend') -> state()
@@ -3277,7 +3402,7 @@ setInterval(() => { if (S.screen === 'home') refreshHome(); }, 1000);   // the d
      today('YYYY-MM-DD' | null) -> pretend it is another day (daily lock + streak tests)
      home(), panel(name | null), settings({ contrast, hard, muted }), hardError(word)
    ===================================================================================== */
-window.__brbTest = {
+window.__brbTest = Object.assign(window.__brbTest || {}, {
   state() {
     return { screen: S.screen, mode: S.mode, length: S.length, answer: S.answer, typed: S.typed,
       guesses: S.guesses.map(g => ({ word: g.word, marks: g.marks.slice() })), keyboard: keyboardMarks(S.guesses),
@@ -3303,5 +3428,5 @@ window.__brbTest = {
   panel(name) { if (name) openPanel(name); else closePanel(); return S.panel; },
   settings(o = {}) { if ('contrast' in o) setContrast(o.contrast); if ('hard' in o) setHard(o.hard); if ('muted' in o) setMuted(o.muted); return Object.assign({}, save.settings); },
   hardError: w => hardModeError(w, S.guesses)
-};
+});
 </script>

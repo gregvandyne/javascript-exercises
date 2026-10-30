@@ -5,59 +5,59 @@
   "cover": "sunset",
   "category": "learning",
   "tags": "math,maths,racing,addition,subtraction,times tables,division,learning,kart,2 player",
-  "description": "Answer math questions to zoom your kart past Zippy the bunny, Bolt the robot and Rex the dino. Race 7 tracks from adding to 10 up to times tables, sharing and a mixed Galaxy Grand Prix. Tap the answer or type it, and race a friend on one phone.",
+  "description": "Answer math questions to zoom your kart past Zippy the bunny, Bolt the robot and Rex the frog. Race 7 tracks from adding to 10 up to times tables, sharing and a mixed Galaxy Grand Prix. Tap the answer or type it, and race a friend on one phone.",
   "orientation": "any",
   "players_max": 2,
   "age_rating": "everyone",
   "featured": true,
-  "notes": "Canvas 2D side-scrolling race with parallax scenery drawn in code for 7 tracks (Number Lane, Sunny Speedway, Desert Dash, Snowy Summit, Jungle Jam, Volcano Valley, Galaxy Grand Prix) plus a Practice Loop where you pick the times tables (2-12). Answer by tapping one of 4 choices or with a keypad (keyboard digits + Enter). Right answers boost the kart (streaks give Turbo); wrong answers give a short wobble and a kind correction ('7 + 5 is 12'). Rivals are rubber-banded to the track's pace, weaker in the final stretch, so a steady answerer wins about half the time and loses narrowly. No answer timers; the last kart is towed home. Missed facts return 3 questions later and once more after a right retry, and are saved as 'tricky facts' that come back in later races until answered right in a later race. Two players: split screen (top half upside down in portrait, side by side in landscape). Saves best place, stars, wins per track, tricky facts and total right answers in BRB.storage key 'sum-racer-v1' (player 1 only). Score = player 1's right answers x track multiplier (1-6) + 50 for a win, submitted with label 'race points'. Loads Google Font Fredoka. window.__brbTest exposes state/start/answer/step/skipAnimations/finish/questionsFor/deck/seed/tricky/save/frameStats for verifiers.",
+  "notes": "Built on the Oomba Kit (pinned kit tag plus the art-animals, art-school and art-biomes packs): the kit's title, pause, settings, sounds, captions, font, icons and light/dark look; the karts' drivers are kit characters (the player's avatar, the fox for player 2, Zippy the bunny, Bolt the Oomba and Rex the frog) and the podium after a race stands in the track's kit world. Canvas 2D side-scrolling race (sized with Oomba.fit) with parallax scenery in the Oomba Ink style (kit props, kit colours) for 7 tracks (Number Lane, Sunny Speedway, Desert Dash, Snowy Summit, Jungle Jam, Volcano Valley, Galaxy Grand Prix) plus a Practice Loop where you pick the times tables (2-12). Answer by tapping one of 4 choices or with a keypad (keyboard digits + Enter). Right answers boost the kart (streaks give Turbo); wrong answers give a short wobble and a kind correction ('7 + 5 is 12'). Rivals are rubber-banded to the track's pace, weaker in the final stretch, so a steady answerer wins about half the time and loses narrowly. No answer timers; the last kart is towed home. Missed facts return 3 questions later and once more after a right retry, and are saved as 'tricky facts' that come back in later races until answered right in a later race. Two players: split screen (top half upside down in portrait, side by side in landscape). Saves best place, stars, wins per track, tricky facts and total right answers in BRB.storage key 'sum-racer-v1' (player 1 only). Score = player 1's right answers x track multiplier (1-6) + 50 for a win, submitted with label 'race points'. window.__brbTest exposes state/start/answer/step/skipAnimations/finish/questionsFor/deck/seed/tricky/save/frameStats for verifiers.",
   "l10n": {
     "en-GB": {
-      "description": "Answer maths questions to zoom your kart past Zippy the bunny, Bolt the robot and Rex the dino. Race 7 tracks from adding to 10 up to times tables, sharing and a mixed Galaxy Grand Prix. Tap the answer or type it, and race a friend on one phone.",
+      "description": "Answer maths questions to zoom your kart past Zippy the bunny, Bolt the robot and Rex the frog. Race 7 tracks from adding to 10 up to times tables, sharing and a mixed Galaxy Grand Prix. Tap the answer or type it, and race a friend on one phone.",
       "tags": "maths,racing,addition,subtraction,times tables,division,learning,kart,2 player"
     },
     "pt": {
-      "description": "Responda perguntas de matemática para acelerar seu kart e passar a coelhinha Faísca, o robô Parafuso e o dino Rex. Corra em 7 pistas, de somar até 10 até as tabuadas, a divisão e o Grande Prêmio Galáxia misturado. Toque na resposta ou digite, e corra contra um amigo no mesmo celular.",
+      "description": "Responda perguntas de matemática para acelerar seu kart e passar a coelhinha Faísca, o robô Parafuso e o sapo Rex. Corra em 7 pistas, de somar até 10 até as tabuadas, a divisão e o Grande Prêmio Galáxia misturado. Toque na resposta ou digite, e corra contra um amigo no mesmo celular.",
       "tags": "matemática,corrida,adição,subtração,tabuada,divisão,aprender,kart,2 jogadores"
     },
     "fr": {
-      "description": "Réponds aux questions de maths pour que ton kart dépasse Zou le lapin, Boulon le robot et Rex le dino. Fais la course sur 7 circuits, des additions jusqu’à 10 aux tables de multiplication, aux divisions et au Grand Prix Galaxie tout mélangé. Touche la réponse ou tape-la, et défie un ami sur le même téléphone.",
+      "description": "Réponds aux questions de maths pour que ton kart dépasse Zou le lapin, Boulon le robot et Rex la grenouille. Fais la course sur 7 circuits, des additions jusqu’à 10 aux tables de multiplication, aux divisions et au Grand Prix Galaxie tout mélangé. Touche la réponse ou tape-la, et défie un ami sur le même téléphone.",
       "tags": "maths,course,addition,soustraction,tables de multiplication,division,apprendre,kart,2 joueurs"
     },
     "es": {
-      "description": "Responde preguntas de mate para que tu kart adelante a Chispa la conejita, Tuerca el robot y Rex el dino. Corre en 7 pistas, desde sumar hasta 10 hasta las tablas de multiplicar, repartir y el Gran Premio Galaxia con de todo. Toca la respuesta o escríbela, y corre contra un amigo en el mismo teléfono.",
+      "description": "Responde preguntas de mate para que tu kart adelante a Chispa la conejita, Tuerca el robot y Rex la rana. Corre en 7 pistas, desde sumar hasta 10 hasta las tablas de multiplicar, repartir y el Gran Premio Galaxia con de todo. Toca la respuesta o escríbela, y corre contra un amigo en el mismo teléfono.",
       "tags": "matemáticas,carreras,suma,resta,tablas de multiplicar,división,aprender,kart,2 jugadores"
     },
     "de": {
-      "description": "Löse Matheaufgaben, damit dein Kart an Flitzi dem Hasen, Bolzen dem Roboter und Rex dem Dino vorbeizischt. Fahr auf 7 Strecken: von Plus bis 10 über das Einmaleins und Teilen bis zum gemischten Galaxie-Grand-Prix. Tipp die Antwort an oder tipp sie ein, und fahr gegen einen Freund auf einem Handy.",
+      "description": "Löse Matheaufgaben, damit dein Kart an Flitzi dem Hasen, Bolzen dem Roboter und Rex dem Frosch vorbeizischt. Fahr auf 7 Strecken: von Plus bis 10 über das Einmaleins und Teilen bis zum gemischten Galaxie-Grand-Prix. Tipp die Antwort an oder tipp sie ein, und fahr gegen einen Freund auf einem Handy.",
       "tags": "Mathe,Rennen,Plus,Minus,Einmaleins,Teilen,Lernen,Kart,2 Spieler"
     },
     "he": {
-      "description": "ענו על תרגילי חשבון כדי שהקארט שלכם יעקוף את זריזי הארנב, בורגי הרובוט ורקס הדינוזאור. התחרו ב־7 מסלולים, מחיבור עד 10 ועד לוח הכפל, חילוק והגרנד פרי הגלקטי המעורב. לחצו על התשובה או הקלידו אותה, והתחרו נגד חבר באותו טלפון.",
+      "description": "ענו על תרגילי חשבון כדי שהקארט שלכם יעקוף את זריזי הארנב, בורגי הרובוט ורקס הצפרדע. התחרו ב־7 מסלולים, מחיבור עד 10 ועד לוח הכפל, חילוק והגרנד פרי הגלקטי המעורב. לחצו על התשובה או הקלידו אותה, והתחרו נגד חבר באותו טלפון.",
       "tags": "חשבון,מרוץ,חיבור,חיסור,לוח הכפל,חילוק,לימוד,קארט,2 שחקנים"
     },
     "ja": {
-      "description": "さんすうのもんだいにこたえて、ウサギのピョン、ロボットのボルト、きょうりゅうのレックスをカートでぬかそう！ 10までのたしざんから、かけざん、わりざん、ぜんぶまぜたギャラクシーグランプリまで、7つのコースでレースします。こたえはタップでもすうじでもOK。1台のスマホでともだちともたいせんできます。",
+      "description": "さんすうのもんだいにこたえて、ウサギのピョン、ロボットのボルト、カエルのレックスをカートでぬかそう！ 10までのたしざんから、かけざん、わりざん、ぜんぶまぜたギャラクシーグランプリまで、7つのコースでレースします。こたえはタップでもすうじでもOK。1台のスマホでともだちともたいせんできます。",
       "tags": "さんすう,レース,たしざん,ひきざん,かけざん,わりざん,べんきょう,カート,2人"
     },
     "ar": {
-      "description": "أجب عن أسئلة الرياضيات لتتجاوز بسيارتك الأرنب سهم والروبوت برغي والديناصور ريكس. تسابق في 7 حلبات، من الجمع حتى 10 إلى جداول الضرب والقسمة وجائزة المجرة الكبرى الممزوجة. المس الإجابة أو اكتبها، وتسابق مع صديق على الهاتف نفسه.",
+      "description": "أجب عن أسئلة الرياضيات لتتجاوز بسيارتك الأرنب سهم والروبوت برغي والضفدع ريكس. تسابق في 7 حلبات، من الجمع حتى 10 إلى جداول الضرب والقسمة وجائزة المجرة الكبرى الممزوجة. المس الإجابة أو اكتبها، وتسابق مع صديق على الهاتف نفسه.",
       "tags": "رياضيات,سباق,جمع,طرح,جداول الضرب,قسمة,تعلّم,سيارة,لاعبان"
     },
     "ru": {
-      "description": "Решай примеры, чтобы твой карт обогнал зайчика Шустрика, робота Болтика и динозавра Рекса. Гоняй по 7 трассам: от сложения до 10 до таблицы умножения, деления и смешанного Гран-при «Галактика». Нажимай ответ или печатай его и соревнуйся с другом на одном телефоне.",
+      "description": "Решай примеры, чтобы твой карт обогнал зайчика Шустрика, робота Болтика и лягушонка Рекса. Гоняй по 7 трассам: от сложения до 10 до таблицы умножения, деления и смешанного Гран-при «Галактика». Нажимай ответ или печатай его и соревнуйся с другом на одном телефоне.",
       "tags": "математика,гонки,сложение,вычитание,таблица умножения,деление,учёба,карт,2 игрока"
     },
     "it": {
-      "description": "Rispondi alle domande di matematica per far sorpassare al tuo kart la coniglietta Saetta, il robot Bullone e il dino Rex. Corri su 7 piste, dalle addizioni fino a 10 alle tabelline, alle divisioni e al Gran Premio Galassia misto. Tocca la risposta o scrivila, e sfida un amico sullo stesso telefono.",
+      "description": "Rispondi alle domande di matematica per far sorpassare al tuo kart la coniglietta Saetta, il robot Bullone e la rana Rex. Corri su 7 piste, dalle addizioni fino a 10 alle tabelline, alle divisioni e al Gran Premio Galassia misto. Tocca la risposta o scrivila, e sfida un amico sullo stesso telefono.",
       "tags": "matematica,corse,addizione,sottrazione,tabelline,divisione,imparare,kart,2 giocatori"
     },
     "zh-Hant": {
-      "description": "回答數學題，讓你的賽車超過兔子跳跳、機器人螺絲和恐龍雷克斯！在 7 條賽道上比賽，從 10 以內的加法到乘法、除法，還有綜合題目的銀河大獎賽。可以點選答案或自己輸入，也能和朋友用同一支手機比賽。",
+      "description": "回答數學題，讓你的賽車超過兔子跳跳、機器人螺絲和小狗雷克斯！在 7 條賽道上比賽，從 10 以內的加法到乘法、除法，還有綜合題目的銀河大獎賽。可以點選答案或自己輸入，也能和朋友用同一支手機比賽。",
       "tags": "數學,賽車,加法,減法,乘法,除法,學習,卡丁車,雙人"
     },
     "nl": {
-      "description": "Beantwoord rekensommen zodat je kart Flits het konijn, Bout de robot en Rex de dino inhaalt. Race op 7 circuits: van plussommen tot 10 tot de tafels, delen en de gemengde Grote Prijs Melkweg. Tik het antwoord aan of typ het, en race tegen een vriend op één telefoon.",
+      "description": "Beantwoord rekensommen zodat je kart Flits het konijn, Bout de robot en Rex de kikker inhaalt. Race op 7 circuits: van plussommen tot 10 tot de tafels, delen en de gemengde Grote Prijs Melkweg. Tik het antwoord aan of typ het, en race tegen een vriend op één telefoon.",
       "tags": "rekenen,racen,optellen,aftrekken,tafels,delen,leren,kart,2 spelers"
     }
   }

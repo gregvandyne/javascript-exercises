@@ -85,6 +85,10 @@ export class Input {
       if (isField(e.target)) return;
       // Inside a DOM dialog (pause, quiz), buttons own Enter/Space: never also jump.
       if (e.target && e.target.closest && e.target.closest('.ok-modal') && (e.code === 'Space' || e.code === 'Enter')) return;
+      // A focused control of the game's own (cards, letters, board buttons in Oomba.ui.root()) owns Space and Enter too:
+      // the browser presses it; it never also jumps or confirms. (The HUD's own pause button keeps focus after a click, so
+      // there Space stays the jump key.)
+      if ((e.code === 'Space' || e.code === 'Enter' || e.code === 'NumpadEnter') && e.target && e.target.closest && e.target.closest('button, [role=button], a[href], summary, [role=switch], [role=checkbox]') && !e.target.closest('.ok-hud, .ok-touch')) return;
       if (SCROLL_KEYS.has(e.code)) e.preventDefault();
       if (!e.repeat) this.srcDown(e.code);
     };

@@ -1,224 +1,288 @@
 <title>Sum Racer</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap">
 <style>
-/* Sum Racer: answer maths questions to power your kart. Screens: title (animated race behind a card) ->
-   track picker -> race (canvas race view + question panel; two halves in two-player mode) -> results podium.
-   Pause and practice-table picker are overlays. Every button is at least 56px tall. */
-:root{
-  --ink:#2a1846; --accent:#ff6a1a; --accentDark:#c44a00; --sun:#ffd23f; --sunDark:#d9a400;
-  --good:#1fb35a; --goodDark:#12803f; --kind:#7c4dff; --kindSoft:#efe8ff; --oops:#ffb38a;
-  --dash1:#2b1b52; --dash2:#3d2775; --card:#fff; --soft:#fff4e8; --softEdge:#ffd2ad;
-  --font:"Fredoka","Trebuchet MS",system-ui,sans-serif;
-}
+/* Sum Racer on the Oomba Kit: answer maths questions to power your kart. Screens: the kit's title (a demo race drives
+   behind it) -> track picker -> race (canvas race view + question panel; two halves in two-player mode) -> results
+   (the kit's podium world behind the card). The kit's pause screen and settings; the practice-table picker is a kit
+   card. Every button is at least 56px tall. Colours are the kit's (CSS variables --sr-* set at start, and the kit's
+   --ok-* day/night variables); the font is the kit's. */
+.sr{--rim:var(--sr-ink);--soft:color-mix(in srgb,var(--ok-text) 65%,transparent)}
+.ok-night .sr{--rim:color-mix(in srgb,var(--sr-cream) 40%,transparent)}
 [hidden]{display:none!important}
 html,body{height:100%}
-body{margin:0;overflow:hidden;font-family:var(--font);color:var(--ink);background:#2b1b52;
-  touch-action:manipulation;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
-button{font-family:inherit;color:inherit;cursor:pointer;touch-action:manipulation}
-button:focus-visible{outline:4px solid #fff;outline-offset:2px}
-.panel button:focus-visible,.picker button:focus-visible{outline-color:var(--kind)}
+body{margin:0;overflow:hidden;touch-action:manipulation;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
+.sr button{font-family:inherit;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.sr .ok-btn{color:var(--sr-ink);--ok-icon-card:var(--sr-cream)}
+.sr .ok-btn.ok-icon{width:56px;min-height:56px;flex:none}
+.sr .ok-btn.ok-icon svg{width:28px;height:28px}
+.sr svg{display:block}
+.sr{position:fixed;inset:0}
 .screen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
-.icon-btn{width:56px;height:56px;flex:none;border:0;border-radius:50%;background:#fff;font-size:1.5rem;box-shadow:0 4px 0 rgba(0,0,0,.22);display:grid;place-items:center;padding:0}
-.icon-btn:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.22)}
-.big-btn{border:0;border-radius:20px;background:var(--accent);color:#fff;font-weight:700;font-size:1.5rem;padding:12px 30px;min-height:64px;min-width:200px;box-shadow:0 6px 0 var(--accentDark);line-height:1.1}
-.big-btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--accentDark)}
-.big-btn.alt{background:var(--soft);color:var(--ink);box-shadow:0 6px 0 var(--softEdge);font-size:1.15rem}
-.big-btn.alt:active{box-shadow:0 2px 0 var(--softEdge)}
-.big-btn.go{background:var(--good);box-shadow:0 6px 0 var(--goodDark)}
-.big-btn.go:active{box-shadow:0 2px 0 var(--goodDark)}
-.chip{font-weight:600;background:#fff4cc;border-radius:999px;padding:6px 14px;font-size:1rem;line-height:1.2}
-
-/* ---------- Title ---------- */
-.bgcanvas{position:absolute;inset:0;width:100%;height:100%;display:block}
-.titleCard{position:relative;margin:auto;margin-top:max(14px,4vh);align-self:flex-start;width:min(92%,420px);background:rgba(255,255,255,.94);border-radius:30px;
-  padding:18px 18px 20px;text-align:center;box-shadow:0 10px 0 rgba(0,0,0,.2);display:flex;flex-direction:column;align-items:center;gap:10px}
-.logo{margin:4px 0 0;font-weight:700;font-size:clamp(3rem,15vw,4.4rem);line-height:.9;letter-spacing:.01em;color:var(--sun);
-  -webkit-text-stroke:3px var(--ink);paint-order:stroke fill;text-shadow:0 6px 0 var(--ink);display:flex;flex-direction:column;align-items:center}
-.logo .l2{color:var(--accent);font-size:1.08em}
-.signs{display:flex;gap:8px;justify-content:center}
-.signs span{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-weight:700;font-size:1.6rem;color:#fff;box-shadow:0 3px 0 rgba(0,0,0,.2)}
-.tag{margin:0;font-size:1.15rem;font-weight:600;line-height:1.3;text-wrap:balance}
-:lang(ja){word-break:auto-phrase}   /* Japanese: break lines between phrases, not inside words */
-.pickHint,.panel p,.practise,.moveUp{text-wrap:balance}
+.bgcanvas{position:fixed;inset:0;width:100%;height:100%;display:block}
 .chips{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
-.titleCard .mute{position:absolute;top:10px;inset-inline-end:10px}
-.titleCard .big-btn{min-width:230px;font-size:1.8rem}
+.chip{display:inline-flex;align-items:center;gap:6px;font-weight:800;background:var(--ok-card);color:var(--ok-text);border:2.5px solid var(--rim);box-shadow:0 3px 0 var(--sr-ink);
+  border-radius:999px;padding:5px 14px 5px 8px;font-size:1rem;line-height:1.2}
+.chip svg{width:22px;height:22px;flex:none}
+.chip.good{background:var(--sr-mintTint);color:var(--sr-ink);border-color:var(--sr-ink)}
+.chip.star{background:var(--sr-sparkTint);color:var(--sr-ink);border-color:var(--sr-ink)}
+.chip.kindc{background:var(--sr-grapeTint);color:var(--sr-ink);border-color:var(--sr-ink)}
+.signs{display:flex;gap:8px;justify-content:center}
+.signs span{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;font-weight:800;font-size:1.6rem;color:var(--sr-ink);border:2.5px solid var(--sr-ink);box-shadow:0 3px 0 var(--sr-ink)}
 
-/* ---------- Track picker ---------- */
-.picker{flex-direction:column;justify-content:flex-start;background:linear-gradient(#ffb15c,#ff7a45 55%,#e0457b);overflow:hidden}
-.pickHead{flex:none;width:100%;max-width:980px;display:flex;align-items:center;gap:10px;padding:10px 12px 6px;box-sizing:border-box}
-.pickHead h2{flex:1;margin:0;text-align:center;color:#fff;font-size:1.7rem;text-shadow:0 3px 0 rgba(0,0,0,.2)}
-.pickBody{flex:1;min-height:0;width:100%;max-width:980px;overflow-y:auto;overflow-x:hidden;padding:4px 12px 18px;box-sizing:border-box}
-.toggles{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
-.seg{flex:1 1 300px;display:flex;gap:6px;background:rgba(255,255,255,.35);border-radius:20px;padding:5px}
-.seg button{flex:1;min-width:0;border:0;border-radius:16px;background:rgba(255,255,255,.75);min-height:56px;font-weight:700;font-size:1.05rem;padding:4px 6px;line-height:1.1}
-.seg button[aria-pressed="true"]{background:#fff;box-shadow:0 4px 0 rgba(0,0,0,.18);color:var(--accentDark)}
-.tracks{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
-.tcard{position:relative;border:0;border-radius:20px;background:#fff;padding:0 0 8px;text-align:start;overflow:hidden;box-shadow:0 5px 0 rgba(0,0,0,.2);display:flex;flex-direction:column;min-height:56px}
-.tcard:active{transform:translateY(3px);box-shadow:0 2px 0 rgba(0,0,0,.2)}
-.tcard canvas{display:block;width:100%;aspect-ratio:21/9;background:#9ad}
-.tcard .tnum{position:absolute;top:6px;inset-inline-start:6px;width:30px;height:30px;border-radius:50%;background:var(--ink);color:#fff;font-weight:700;display:grid;place-items:center;font-size:1.05rem}
-.tcard .tname{font-weight:700;font-size:1.1rem;padding:6px 10px 0;line-height:1.1}
-.tcard .tskill{font-size:.92rem;padding:2px 10px 0;opacity:.8;line-height:1.15}
-.tcard .tmeta{display:flex;justify-content:space-between;align-items:center;padding:4px 10px 0;font-size:.95rem;font-weight:600}
-.tcard .tstars{color:#f2a900;letter-spacing:1px;font-size:1.1rem}
-.tcard .tbadge{position:absolute;top:6px;inset-inline-end:6px;background:var(--good);color:#fff;font-weight:700;border-radius:999px;padding:3px 10px;font-size:.9rem;box-shadow:0 2px 0 rgba(0,0,0,.2)}
-.pickHint{color:#fff;text-align:center;font-weight:600;margin:12px 0 0;text-shadow:0 2px 0 rgba(0,0,0,.2)}
+/* ---------- Track picker (over the demo race) ---------- */
+.picker{flex-direction:column;justify-content:flex-start;overflow:hidden;background:linear-gradient(color-mix(in srgb,var(--ok-bg2) 82%,transparent),color-mix(in srgb,var(--ok-bg2) 35%,transparent))}
+.pickHead{flex:none;width:100%;max-width:980px;display:flex;align-items:center;gap:10px;padding:max(10px,env(safe-area-inset-top)) 12px 6px;box-sizing:border-box}
+.pickHead h2{flex:1;margin:0;text-align:center;font-size:1.8rem;font-weight:800;color:var(--sr-cream);-webkit-text-stroke:.12em var(--sr-ink);paint-order:stroke fill;text-shadow:0 .09em 0 var(--sr-ink)}
+.pickBody{flex:1;min-height:0;width:100%;max-width:980px;overflow-y:auto;overflow-x:hidden;padding:6px 12px 22px;box-sizing:border-box}
+.toggles{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px}
+.seg{flex:1 1 300px;display:flex;gap:6px;background:var(--ok-card);border:2.5px solid var(--rim);box-shadow:0 3px 0 var(--sr-ink);border-radius:22px;padding:5px}
+.seg button{flex:1;min-width:0;border:0;border-radius:16px;background:transparent;color:var(--ok-text);min-height:56px;font-weight:800;font-size:1.02rem;padding:4px 6px;line-height:1.1;
+  display:flex;align-items:center;justify-content:center;gap:6px}
+.seg button svg{width:22px;height:22px;flex:none}
+.seg button[aria-pressed="true"]{background:var(--sr-mint);color:var(--sr-ink);box-shadow:inset 0 0 0 2.5px var(--sr-ink),0 3px 0 var(--sr-ink)}
+.tracks{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
+.tcard{position:relative;border:3px solid var(--rim);border-radius:22px;background:var(--ok-card);color:var(--ok-text);padding:0 0 8px;text-align:start;overflow:hidden;
+  box-shadow:0 5px 0 var(--sr-ink);display:flex;flex-direction:column;min-height:56px;font:inherit;transition:transform 80ms ease-out,box-shadow 80ms ease-out}
+.tcard:active{transform:translateY(4px);box-shadow:0 1px 0 var(--sr-ink)}
+.tcard canvas{display:block;width:100%;aspect-ratio:21/9;border-bottom:2.5px solid var(--sr-ink)}
+.tcard .tnum{position:absolute;top:7px;inset-inline-start:7px;width:32px;height:32px;box-sizing:border-box;border-radius:50%;background:var(--sr-cream);color:var(--sr-ink);border:2.5px solid var(--sr-ink);
+  font-weight:800;display:grid;place-items:center;font-size:1.05rem}
+.tcard .tnum svg{width:18px;height:18px}
+.tcard .tname{font-weight:800;font-size:1.12rem;padding:7px 10px 0;line-height:1.1}
+.tcard .tskill{font-size:.92rem;padding:2px 10px 0;color:var(--soft);font-weight:600;line-height:1.15}
+.tcard .tmeta{display:flex;justify-content:space-between;align-items:center;gap:6px;padding:5px 10px 0;font-size:.95rem;font-weight:700}
+.tcard .tstars{display:flex;gap:1px}
+.tcard .tstars svg{width:22px;height:22px}
+.tcard .tstars .off{--ok-fill:var(--sr-stoneTint)}
+.ok-night .sr .tcard .tstars .off{--ok-fill:var(--sr-nightOff)}
+.tcard .tbadge{position:absolute;top:7px;inset-inline-end:7px;background:var(--sr-mint);color:var(--sr-ink);font-weight:800;border-radius:999px;padding:3px 11px;font-size:.9rem;
+  border:2.5px solid var(--sr-ink);box-shadow:0 2px 0 var(--sr-ink);transform:rotate(3deg)}
+.pickHint{text-align:center;font-weight:700;margin:14px auto 0;max-width:640px;background:var(--ok-card);color:var(--ok-text);border:2.5px solid var(--rim);border-radius:18px;padding:8px 14px;box-shadow:0 3px 0 var(--sr-ink)}
+.pickHint,.ok-card p,.practise,.moveUp{text-wrap:balance}
+:lang(ja){word-break:auto-phrase}
 
-/* ---------- Overlays ---------- */
-.modal{z-index:30;background:rgba(25,12,50,.55);padding:12px;box-sizing:border-box}
-.panel{position:relative;background:var(--card);border-radius:28px;padding:16px;width:min(100%,460px);max-height:100%;overflow:auto;box-sizing:border-box;text-align:center;
-  box-shadow:0 10px 0 rgba(0,0,0,.2);display:flex;flex-direction:column;align-items:center;gap:10px}
-.panel h2{margin:0;font-size:clamp(1.6rem,7vw,2.1rem);line-height:1.1;color:var(--accent)}
-.panel p{margin:0;font-size:1.1rem;line-height:1.35}
+/* ---------- kit cards ---------- */
+.sr .ok-card{gap:12px}
+.sr .ok-card p{margin:0;font-size:1.08rem;line-height:1.35;font-weight:600}
 .btns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;width:100%}
-.btns .big-btn{flex:1 1 140px;min-width:0;font-size:1.25rem;padding:10px 10px}
+.btns .ok-btn{flex:1 1 auto;min-width:0;min-height:56px;white-space:nowrap}
 .tables{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;width:100%}
-.tables button{min-height:60px;border:3px solid var(--softEdge);background:var(--soft);border-radius:16px;font-weight:700;font-size:1.5rem}
-.tables button[aria-pressed="true"]{background:var(--accent);border-color:var(--accentDark);color:#fff}
-.panel .mute{position:absolute;top:10px;inset-inline-end:10px}
+.tables button{min-height:60px;border:2.5px solid var(--rim);background:var(--ok-bg2);color:var(--ok-text);border-radius:16px;font-weight:800;font-size:1.45rem}
+.tables button[aria-pressed="true"]{background:var(--sr-mint);color:var(--sr-ink);border-color:var(--sr-ink);box-shadow:0 3px 0 var(--sr-ink)}
 
 /* ---------- Race ---------- */
-.race{display:grid;background:var(--dash1);align-items:stretch;justify-content:stretch}
+.race{display:grid;background:var(--ok-bg2);align-items:stretch;justify-content:stretch}
 .race.one{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);grid-template-areas:"bar" "h0"}
 .race.one .h1{display:none}
 .race.two{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto minmax(0,1fr);grid-template-areas:"h1" "bar" "h0"}
 .race.two .h1{transform:rotate(180deg)}  /* the top player sits on the other side of the phone */
-.bar{grid-area:bar;display:flex;align-items:center;gap:10px;padding:4px 10px;background:var(--dash1);min-height:60px;box-sizing:border-box}
-.bar .tname{flex:1;min-width:0;text-align:center;color:#fff;font-weight:700;font-size:1.15rem;line-height:1.1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar{grid-area:bar;display:flex;align-items:center;gap:10px;padding:5px 10px;background:var(--ok-bg2);min-height:64px;box-sizing:border-box;border-bottom:3px solid var(--rim)}
+.bar .tname{flex:1;min-width:0;text-align:center;color:var(--ok-text);font-weight:800;font-size:1.15rem;line-height:1.1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .bar .tname b,.bar .tname small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.bar .tname small{font-size:.85rem;font-weight:500;opacity:.8}
+.bar .tname small{font-size:.85rem;font-weight:600;color:var(--soft)}
 .race.two .bar .tname small{display:none}
+.race.two .bar{border-top:3px solid var(--rim)}
 .half{min-width:0;min-height:0;display:grid;grid-template-rows:minmax(0,1fr) auto;grid-template-columns:minmax(0,1fr)}
 .h0{grid-area:h0}.h1{grid-area:h1}
-.view{position:relative;min-height:0;overflow:hidden;background:#7cc8ff}
+.view{position:relative;min-height:0;overflow:hidden;background:var(--ok-bg2)}
 .view canvas{position:absolute;left:0;top:0;width:100%;height:100%;display:block}
-.qpanel{background:linear-gradient(var(--dash2),var(--dash1));padding:8px 10px 10px;display:flex;flex-direction:column;gap:8px;min-width:0;box-sizing:border-box;border-top:4px solid #5a3fa6}
-.qline{height:78px;flex:none;border-radius:18px;background:rgba(255,255,255,.1);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;overflow:hidden;transition:background .2s}
-.qlabel{font-size:1.05rem;font-weight:600;line-height:1.1;opacity:.9;white-space:nowrap;max-width:96%;overflow:hidden;text-overflow:ellipsis}
-.qmain{font-size:40px;font-weight:700;line-height:1.1;white-space:nowrap;max-width:98%;display:flex;align-items:center;justify-content:center;gap:.25em}
-.qbox{display:inline-block;min-width:1.6em;padding:0 .2em;border-radius:12px;background:#fff;color:var(--ink);text-align:center;line-height:1.15}
-.qline.right{background:var(--good)}
-.qline.wrong{background:var(--kindSoft);color:var(--ink)}
-.qline.wrong .qlabel{color:var(--kind);opacity:1}
-.qline.done{background:rgba(255,210,63,.95);color:var(--ink)}
-.answers{display:grid;gap:8px;min-width:0}
+.qpanel{background:var(--ok-bg2);padding:10px 10px 12px;display:flex;flex-direction:column;gap:10px;min-width:0;box-sizing:border-box;border-top:3px solid var(--rim)}
+.qline{position:relative;height:80px;flex:none;box-sizing:border-box;border-radius:22px;background:var(--ok-card);color:var(--ok-text);border:3px solid var(--rim);box-shadow:0 4px 0 var(--sr-ink);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;transition:background .2s}
+.qlabel{font-size:1.02rem;font-weight:700;line-height:1.1;color:var(--soft);white-space:nowrap;max-width:96%;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:5px}
+.qlabel svg{width:1.15em;height:1.15em;flex:none}
+.qmain{font-size:40px;font-weight:800;line-height:1.1;white-space:nowrap;max-width:98%;display:flex;align-items:center;justify-content:center;gap:.25em;font-variant-numeric:tabular-nums}
+.qmain svg{width:.9em;height:.9em;flex:none}
+.qbox{display:inline-block;min-width:1.6em;padding:0 .2em;border-radius:12px;background:var(--sr-sparkTint);color:var(--sr-ink);border:2.5px solid var(--sr-ink);text-align:center;line-height:1.1}
+.qline.right{background:var(--sr-mint);color:var(--sr-ink);border-color:var(--sr-ink)}
+.qline.right .qlabel{color:var(--sr-ink)}
+.qline.wrong{background:var(--sr-grapeTint);color:var(--sr-ink);border-color:var(--sr-ink)}
+.qline.wrong .qlabel{color:var(--sr-grapeShade)}
+.qline.done{background:var(--sr-sparkTint);color:var(--sr-ink);border-color:var(--sr-ink)}
+.qline.done .qlabel{color:var(--sr-ink)}
+.answers{display:grid;gap:10px;min-width:0}
 .choices{grid-template-columns:1fr 1fr}
-.ans,.key{border:0;border-radius:18px;background:#fff;color:var(--ink);font-weight:700;min-height:56px;min-width:0;padding:0;box-shadow:0 5px 0 var(--edge,#b9a6e8);transition:transform .08s,background .15s,opacity .15s}
+.ans,.key{position:relative;border:3px solid var(--sr-ink);border-radius:20px;background:var(--sr-cream);color:var(--sr-ink);font-weight:800;min-height:56px;min-width:0;padding:0;
+  box-shadow:0 5px 0 var(--sr-ink);transition:transform 80ms ease-out,box-shadow 80ms ease-out,background .15s,opacity .15s;font-variant-numeric:tabular-nums}
 .ans{font-size:36px;height:clamp(60px,10.5vh,96px)}
-.ans:nth-child(1){--edge:#ffcf33}.ans:nth-child(2){--edge:#47d4ff}.ans:nth-child(3){--edge:#ff7cc4}.ans:nth-child(4){--edge:#a98bff}
-.ans:active,.key:active{transform:translateY(4px);box-shadow:0 1px 0 var(--edge,#b9a6e8)}
-.ans.isRight{background:var(--good);color:#fff;--edge:var(--goodDark)}
-.ans.isOops{background:var(--oops);animation:nudge .35s ease}
+.ans .n{position:absolute;top:5px;inset-inline-start:9px;font-size:.36em;font-weight:700;opacity:.5}
+.ans:active,.key:active{transform:translateY(4px);box-shadow:0 1px 0 var(--sr-ink)}
+.mk{position:absolute;top:-12px;inset-inline-end:-10px;width:34px;height:34px;box-sizing:border-box;border:2.5px solid var(--sr-ink);display:flex;align-items:center;justify-content:center;
+  animation:srPop 320ms cubic-bezier(.34,1.56,.64,1);color:var(--sr-ink)}
+.mk svg{width:22px;height:22px;stroke-width:3.2}
+.ans.isRight{background:var(--sr-mintLight)}.ans.isRight .mk{background:var(--sr-mint);border-radius:50%}
+/* each answer tile has its own colour (a tint and a coloured base edge), so kids find answers fast */
+.ans[data-i="0"]{--tile:var(--sr-peach);background:var(--sr-peachTint)}.ans[data-i="1"]{--tile:var(--sr-sky);background:var(--sr-skyTint)}
+.ans[data-i="2"]{--tile:var(--sr-coral);background:var(--sr-coralTint)}.ans[data-i="3"]{--tile:var(--sr-grape);background:var(--sr-grapeTint)}
+.choices .ans{box-shadow:inset 0 -9px 0 var(--tile),0 5px 0 var(--sr-ink)}.choices .ans:active{box-shadow:inset 0 -9px 0 var(--tile),0 1px 0 var(--sr-ink)}
+.choices .ans.isRight,.choices .ans.isOops{box-shadow:0 5px 0 var(--sr-ink)}.choices .ans.isRight{background:var(--sr-mintLight)}.choices .ans.isOops{background:var(--sr-coralTint)}
+/* the title: a solid card behind the tagline, Play and the stats (the street scenery never shows through them), and a
+   coloured second word so the logo reads against the clouds */
+.sr-tcard{display:flex;flex-direction:column;align-items:center;gap:12px;background:var(--ok-card);border:3px solid var(--sr-ink);border-radius:28px;box-shadow:0 6px 0 var(--sr-ink);padding:14px 16px 16px;max-width:min(420px,calc(100vw - 32px))}
+.sr-tcard .ok-p{border:0!important;box-shadow:none!important;background:transparent!important;padding:0!important}
+.sr-tcard .chips .chip{box-shadow:none}
+.ans.isOops{background:var(--sr-coralTint);animation:nudge .35s ease}.ans.isOops .mk{background:var(--sr-coral);border-radius:7px;transform:rotate(45deg)}.ans.isOops .mk svg{transform:rotate(-45deg)}
 .answers.locked .ans:not(.isRight):not(.isOops){opacity:.45}
 .answers.locked{pointer-events:none}
+/* the question dock: deep grape (the panel reads apart from the bright world), the question in cream, white answer
+   tiles each with a coloured lip; the right tile punches, a wrong one shakes */
+.qpanel{background:linear-gradient(#3D2775,#2B1F5C);border-color:var(--sr-ink)}
+.qline{background:#2B1F5C;color:#FFFDF2;border-color:#120C2C;box-shadow:0 4px 0 #120C2C}
+.qlabel{color:#FFE27A;font-size:1.1rem}.qmain{font-size:46px}
+.qbox{background:#FFFDF2}
+.ans[data-i]{background:#FFFFFF}.key{background:#FFFFFF;box-shadow:0 5px 0 #120C2C}
+.choices .ans{box-shadow:inset 0 -7px 0 var(--tile),0 5px 0 #120C2C}.choices .ans:active{box-shadow:inset 0 -7px 0 var(--tile),0 1px 0 #120C2C}
+.ans.isRight{animation:srPunch 220ms ease-out}.qpanel .kbhint{color:#C6A9F3}
+@keyframes srPunch{50%{transform:scale(1.1)}}
+/* two players: the bar between the halves in both players' colours at full strength (player 1 coral, player 2 sky) */
+.race.two .bar{background:linear-gradient(90deg,var(--sr-coral) 50%,var(--sr-sky) 50%)}
+@media (orientation:portrait){.race.two .bar{background:linear-gradient(180deg,var(--sr-sky) 50%,var(--sr-coral) 50%)}}
+.sr-tcard{background:#2B1F5C;color:#FFFDF2;border-color:var(--sr-ink)}.sr-tcard .ok-p{color:#FFFDF2!important}
+.signs span{width:52px;height:52px;border-radius:50%;font-size:2rem;color:#FFFFFF;-webkit-text-stroke:5px var(--sr-ink);paint-order:stroke fill}
+#resTitle.ok-h2{font-size:clamp(2.4rem,7vmin,3.8rem)!important;line-height:1;margin:6px 0 8px}
+/* wide screens: the logo and Play on the start side, the karts racing in on the other */
+@media (min-aspect-ratio:6/5){.ok-title-screen .ok-title-block{align-self:flex-start;margin-inline-start:3vw}}
+.resStats{background:#2B1F5C;border:3px solid var(--sr-ink);border-radius:20px;padding:10px}
 @keyframes nudge{0%,100%{transform:translateX(0)}30%{transform:translateX(-6px)}70%{transform:translateX(5px)}}
+@keyframes srPop{0%{transform:scale(.4);opacity:0}100%{transform:none;opacity:1}}
 .keypad{grid-template-columns:repeat(3,1fr);grid-template-areas:"k1 k2 k3" "k4 k5 k6" "k7 k8 k9" "kb k0 ko"}
-.key{font-size:30px;height:clamp(56px,8vh,80px)}
-.key[data-k="ok"]{background:var(--good);color:#fff;--edge:var(--goodDark)}
-.key[data-k="back"]{background:#ffe1cc;--edge:#ffb38a}
+.key{font-size:30px;height:clamp(56px,8vh,80px);display:flex;align-items:center;justify-content:center}
+.key svg{width:.95em;height:.95em}
+.key[data-k="ok"]{background:var(--sr-mint)}
+.key[data-k="back"]{background:var(--sr-stoneTint)}
 .qpanel.racing-off .answers{opacity:.4;pointer-events:none}
-.kbhint{color:#fff;opacity:.7;text-align:center;font-size:.9rem;margin:-2px 0 0;display:none}
+.kbhint{color:var(--soft);text-align:center;font-size:.9rem;font-weight:600;margin:-2px 0 0;display:none}
 @media (hover:hover) and (pointer:fine) and (min-height:720px){.race.one .kbhint{display:block}}
 
 /* Two players: smaller panels, answers in one row, a two-row keypad. */
-.race.two .qline{height:60px;border-radius:14px}
+.race.two .qline{height:60px;border-radius:16px}
 .race.two .qlabel{font-size:.9rem}
 .race.two .qmain{font-size:32px}
 .race.two .choices{grid-template-columns:repeat(4,1fr)}
 .race.two .ans{height:62px;font-size:32px}
 .race.two .keypad{grid-template-columns:repeat(6,1fr);grid-template-areas:"k1 k2 k3 k4 k5 kb" "k6 k7 k8 k9 k0 ko"}
 .race.two .key{height:56px;font-size:28px}
-.race.two .qpanel{padding:6px 8px 8px;gap:6px}
-.race.two .bar{min-height:64px;justify-content:center;background:linear-gradient(90deg,#3a7bff,#2b1b52 30%,#2b1b52 70%,#ff5a2a)}
+.race.two .qpanel{padding:6px 8px 9px;gap:7px}
+.race.two .bar{min-height:64px;justify-content:center}
 
-@media (orientation:portrait) and (max-width:379px){.race.two .qpanel{padding:6px 3px 8px}.race.two .keypad{gap:3px}} /* six keys of 56px still fit across a 360px phone */
+@media (orientation:portrait) and (max-width:379px){.race.two .qpanel{padding:6px 3px 8px}.race.two .keypad{gap:3px}}
 @media (orientation:landscape){
   .race.one .half{grid-template-columns:minmax(0,1fr) clamp(300px,36vw,480px);grid-template-rows:minmax(0,1fr)}
-  .race.one .qpanel{border-top:0;border-left:4px solid #5a3fa6;justify-content:center}
+  .race.one .qpanel{border-top:0;border-inline-start:3px solid var(--rim);justify-content:center}
   .race.one .keypad{grid-template-columns:repeat(4,1fr);grid-template-areas:"k1 k2 k3 k4" "k5 k6 k7 k8" "k9 k0 kb ko"}
   .race.two{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);grid-template-rows:minmax(0,1fr);grid-template-areas:"h0 bar h1"}
   .race.two .h1{transform:none}
-  .race.two .bar{flex-direction:column;min-height:0;width:68px;padding:8px 6px;background:linear-gradient(#2b1b52,#3d2775)}
+  .race.two .bar{flex-direction:column;min-height:0;width:74px;padding:8px 6px;border:0;border-inline:3px solid var(--rim)}
   .race.two .bar .tname{display:none}
   .race.two .qpanel{padding:6px 6px 8px}
-  .race.two .keypad,.race.two .choices{gap:5px}
+  .race.two .keypad,.race.two .choices{gap:6px}
 }
 @media (orientation:landscape) and (max-height:500px){
-  .bar{min-height:58px;padding:2px 10px}
+  .bar{min-height:60px;padding:2px 10px}
   .qline{height:64px}
   .qmain{font-size:34px}
   .race.one .ans{height:clamp(58px,17vh,80px)}
   .race.one .key{height:56px;font-size:28px}
-  .race.one .qpanel{gap:6px;padding:6px 8px}
+  .race.one .qpanel{gap:7px;padding:6px 8px}
 }
 
-/* ---------- Results ---------- */
-.resPanel{width:min(100%,520px);gap:8px}
-.resPanel h2{font-size:clamp(1.6rem,7vw,2.2rem)}
-#podium{width:100%;height:170px;display:block;flex:none}
-.resStats{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
-.resStats .chip{font-size:1rem}
-.chip.good{background:#dcfce7}.chip.star{background:#fff1b8}.chip.kindc{background:var(--kindSoft)}
-.practise{font-size:1.05rem;font-weight:600;color:var(--kind);line-height:1.3}
-.moveUp{font-weight:700;color:var(--goodDark)}
-.resRows{display:flex;flex-direction:column;gap:4px;width:100%}
-.resRow{display:flex;align-items:center;gap:8px;background:var(--soft);border-radius:14px;padding:6px 10px;font-weight:600;text-align:start;font-size:1rem;line-height:1.2}
+/* ---------- Results: the card sits beside (wide) or below (tall) the podium in the kit's world ---------- */
+.resModal{background:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;align-items:flex-end!important}
+.resPanel{width:min(100%,520px)!important;gap:8px!important;padding:20px 16px 16px!important;max-height:62%!important}
+@media (min-aspect-ratio:5/4){.resModal{justify-content:flex-end!important;align-items:center!important}.resPanel{max-height:100%!important;margin-inline-end:2vw}}
+.resPanel h2{font-size:clamp(1.6rem,6.5vw,2.1rem)!important}
+.resPanel .ok-sparks .ok-slot{width:clamp(44px,11vmin,62px);height:clamp(44px,11vmin,62px)}
+.ok-night .resPanel .ok-sparks .ok-on{--ok-fill:var(--sr-spark)}   /* the kit's night rule outweighs its own lit spark */
+.resStats{display:flex;flex-wrap:wrap;gap:7px;justify-content:center}
+.practise{font-size:1.05rem;font-weight:700;color:var(--soft);line-height:1.3}
+.moveUp{font-weight:800;display:flex;align-items:center;gap:6px;justify-content:center}
+.moveUp svg{width:22px;height:22px;flex:none}
+.resRows{display:flex;flex-direction:column;gap:6px;width:100%}
+.resRow{display:flex;align-items:center;gap:10px;background:var(--ok-bg2);border:2px solid var(--ok-line);border-radius:16px;padding:6px 10px;font-weight:700;text-align:start;font-size:1rem;line-height:1.2}
+.resRow canvas{flex:none;width:40px;height:40px}
 .resRow b{font-size:1.2rem}
 @media (orientation:landscape) and (max-height:560px){
-  .resPanel{width:min(100%,820px);display:grid;grid-template-columns:1fr 1fr;align-items:center;column-gap:16px;row-gap:6px;padding:12px 16px}
-  .resPanel h2{grid-column:1 / -1}
-  .resPanel #podium{grid-column:1;grid-row:2 / span 4;height:200px}
-  .resPanel > :not(h2):not(#podium):not(.mute){grid-column:2}
-  .resPanel .btns .big-btn{flex-basis:120px;min-height:58px;font-size:1.1rem}
+  .resPanel{width:min(60%,560px)!important;padding:12px 14px!important;gap:6px!important}
+  .resPanel .ok-sparks .ok-slot{width:40px;height:40px}
+  .resPanel .btns .ok-btn{flex-basis:110px;min-height:56px}
 }
-@media (min-width:1000px) and (min-height:700px){
-  .qline{height:116px}.qlabel{font-size:1.3rem}.qmain{font-size:58px}
-  .race.one .ans{height:clamp(96px,15vh,140px);font-size:56px}
-  .race.one .key{height:clamp(72px,10vh,100px);font-size:40px}
-  .race.one .qpanel{gap:12px;padding:16px}
+@media (max-width:379px){.btns .ok-btn{font-size:1rem;padding:0 10px}}
+.ok-rm .sr .ans,.ok-rm .sr .key,.ok-rm .sr .qline{transition:none}.ok-rm .sr .ans.isOops,.ok-rm .sr .mk{animation:none}
+/* round 2: one theme for the whole race screen. The top bar is the same deep grape as the question dock (cream
+   text, the kit's cream icon buttons), so the bright world sits framed between two dark bands. */
+.race .bar{background:linear-gradient(#3D2775,#2B1F5C);border-color:#120C2C}
+.race .bar .tname{color:#FFFDF2}.race .bar .tname small{color:#C6A9F3}
+.race.one .qline{height:clamp(84px,12vh,104px)}.race.one .qmain{font-size:clamp(44px,6.4vh,54px)}
+/* wide screens: the dock fills its column, the question on top and the four tiles sharing the rest, so no empty purple
+   is left above or below them */
+@media (orientation:landscape) and (min-height:501px){
+  .race.one .qpanel{justify-content:stretch;padding:18px 18px 20px;gap:16px}
+  .race.one .qline{height:clamp(120px,20vh,170px);border-radius:28px}
+  .race.one .qlabel{font-size:clamp(1.1rem,2.4vh,1.4rem)}
+  .race.one .qmain{font-size:clamp(56px,9vh,84px)}
+  .race.one .answers{flex:1;min-height:0;gap:16px}
+  .race.one .choices{grid-template-rows:1fr 1fr}
+  .race.one .choices .ans{height:auto;min-height:96px;font-size:clamp(52px,9vh,88px);border-radius:26px}
+  .race.one .keypad{grid-auto-rows:1fr}.race.one .key{height:auto;min-height:60px;font-size:clamp(30px,5vh,44px)}
+  .race.one .kbhint{flex:none}
 }
-@media (max-height:520px){
-  .titleCard{margin-top:8px;padding:10px 16px 14px;gap:8px}
-  .logo{flex-direction:row;gap:.22em;font-size:clamp(2.4rem,12vh,3.4rem)}
-  .signs{display:none}
-  .titleCard .big-btn{min-height:60px}
-  .tables{grid-template-columns:repeat(6,1fr)}
-  #practiceScreen .panel{gap:8px;padding:12px 16px}
+/* the title: Play is bigger with one ring, the stats sit in one row, the card has room on every side */
+.sr-tcard{padding:16px 22px 18px;margin-inline:16px}
+.sr-tcard .chips{flex-wrap:nowrap;gap:6px}.sr-tcard .chip{font-size:.92rem;padding:4px 11px 4px 7px;white-space:nowrap}.sr-tcard .chip svg{width:19px;height:19px}
+.ok-title-screen .sr-tcard .ok-big{min-height:clamp(78px,10.5vh,92px);min-width:250px;font-size:clamp(1.7rem,3.8vh,2.1rem)}
+@media (orientation:portrait){.ok-title-screen .ok-title-block{gap:8px;padding-top:0}.ok-title-screen .ok-h1{font-size:clamp(3rem,13.5vw,4.6rem)}.signs span{width:46px;height:46px;font-size:1.75rem}}
+@media (min-aspect-ratio:6/5){.ok-title-screen .ok-title-block{margin-inline-start:max(3vw,24px)}.sr-tcard{margin-inline:0}}
+/* results: Race again and Next track side by side in accent colours, Tracks below; the card never runs off a phone */
+.resPanel .btns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.resPanel .btns #menuBtn{grid-column:1/-1;min-height:52px}
+.resPanel .btns .ok-btn{padding:0 10px}.resPanel .btns .ok-btn svg{flex:none}
+.resPanel .btns .ok-btn[hidden]+.ok-btn,.resPanel .btns:has(#nextBtn[hidden]) #againBtn{grid-column:1/-1}
+.resPanel #againBtn.ok-quiet{background:#7FD3FF;--ok-press:#2B8FD0}
+.resPanel #nextBtn.ok-quiet{background:#8EE3B5;--ok-press:#2E9E66}
+.resModal{padding-bottom:max(10px,env(safe-area-inset-bottom))!important}
+@media (orientation:portrait){.resPanel{max-height:none!important;padding:16px 14px 14px!important;gap:6px!important}.resPanel h2{margin:0!important}.resPanel .ok-sparks .ok-slot{width:46px;height:46px}.resStats{padding:8px;gap:6px}.resStats .chip{font-size:.95rem;padding:3px 11px 3px 7px}.practise{font-size:.98rem}}
+/* round 3. Title: on phones a tighter lockup so the card ends above the number signs; on wide screens the card stays on
+   the start side and the karts race on the other. */
+@media (orientation:portrait){
+  .ok-title-screen .ok-h1{font-size:clamp(2.7rem,12vw,4.1rem)}
+  .signs span{width:40px;height:40px;font-size:1.5rem}
+  .sr-tcard{gap:9px;padding:12px 16px 14px}
+  .sr-tcard .ok-p{font-size:1rem!important;line-height:1.3}
+  .ok-title-screen .sr-tcard .ok-big{min-height:66px;font-size:1.65rem;margin-top:2px}
 }
-@media (max-width:379px){.btns .big-btn{font-size:1.1rem;padding:10px 6px}}
-@media (prefers-reduced-motion:reduce){.ans,.key{transition:none}.ans.isOops{animation:none}.qline{transition:none}}
+/* the race: a bigger key hint on wide screens */
+.kbhint{font-size:1.05rem}
+/* results: a chequered finish banner over the podium, the card off the screen edge, bolder buttons and stats */
+.resFinish{position:fixed;top:calc(12px + env(safe-area-inset-top));left:4vw;right:4vw;height:clamp(30px,5vh,46px);border:3px solid var(--sr-ink);border-radius:12px;box-shadow:0 4px 0 var(--sr-ink);
+  background:repeating-conic-gradient(#1C1A17 0 25%,#FFFDF2 0 50%) 0 0/calc(clamp(30px,5vh,46px) / 2) calc(clamp(30px,5vh,46px) / 2);rotate:-1.5deg;pointer-events:none;animation:srPop 420ms cubic-bezier(.34,1.56,.64,1) both}
+@media (min-aspect-ratio:5/4){.resFinish{right:auto;width:calc(100vw - min(520px,46vw) - 14vw)}.resPanel{margin-inline-end:6vw!important}}
+.resStats .chip{font-size:1.12rem;padding:7px 15px 7px 9px}.resStats .chip svg{width:24px;height:24px}
+.resPanel #againBtn.ok-quiet{background:#39A9F5;--ok-press:#1F78B8}
+.resPanel #nextBtn.ok-quiet{background:#2EC27E;--ok-press:#1A8A57}
+.ok-rm .resFinish{animation:none}
 </style>
 
-<!-- Title -->
-<section class="screen" id="titleScreen">
-  <canvas class="bgcanvas" id="titleCanvas" aria-hidden="true"></canvas>
-  <div class="titleCard">
-    <h1 class="logo" dir="ltr" aria-label="Sum Racer"><span>Sum</span><span class="l2">Racer</span></h1>
-    <div class="signs" dir="ltr" aria-hidden="true"><span style="background:#ff6a1a">+</span><span style="background:#1fbfae">−</span><span style="background:#7c4dff">×</span><span style="background:#ff5fa8">÷</span></div>
-    <p class="tag" data-t="tag"></p>
-    <button class="big-btn" id="playBtn" data-t="play"></button>
-    <div class="chips"><span class="chip" id="starChip"></span><span class="chip" id="rightChip"></span></div>
-    <button class="icon-btn mute" data-ta="a_soundOff">🔊</button>
-  </div>
-</section>
+<div id="game" class="sr">
+<canvas class="bgcanvas" id="titleCanvas" aria-hidden="true"></canvas>
+
+<!-- Title: the kit's title screen (built in the script) over the demo race -->
+<section class="screen" id="titleScreen" aria-hidden="true"></section>
 
 <!-- Track picker -->
 <section class="screen picker" id="pickScreen" hidden>
   <header class="pickHead">
-    <button class="icon-btn" id="backBtn" data-ta="a_back">⬅️</button>
+    <button class="ok-btn ok-icon" id="backBtn" data-icon="back" data-ta="a_back"></button>
     <h2 data-t="pick_title"></h2>
-    <button class="icon-btn mute" data-ta="a_soundOff">🔊</button>
+    <button class="ok-btn ok-icon mute" data-ta="a_soundOff"></button>
   </header>
   <div class="pickBody">
     <div class="toggles">
       <div class="seg" role="group" data-ta="a_answerHow">
-        <button data-mode="choice" aria-pressed="true" data-t="m_tap"></button>
-        <button data-mode="keypad" aria-pressed="false" data-t="m_type"></button>
+        <button data-mode="choice" aria-pressed="true" data-icon="tap"><span data-t="m_tap"></span></button>
+        <button data-mode="keypad" aria-pressed="false" data-icon="pencil"><span data-t="m_type"></span></button>
       </div>
       <div class="seg" role="group" data-ta="a_players">
-        <button data-players="1" aria-pressed="true" data-t="p_one"></button>
-        <button data-players="2" aria-pressed="false" data-t="p_two"></button>
+        <button data-players="1" aria-pressed="true" data-icon="user"><span data-t="p_one"></span></button>
+        <button data-players="2" aria-pressed="false" data-icon="swap"><span data-t="p_two"></span></button>
       </div>
     </div>
     <div class="tracks" id="trackGrid"></div>
@@ -227,14 +291,14 @@ button:focus-visible{outline:4px solid #fff;outline-offset:2px}
 </section>
 
 <!-- Practice tables -->
-<section class="screen modal" id="practiceScreen" hidden>
-  <div class="panel">
-    <h2 data-t="tn8"></h2>
+<section class="ok-modal ok-scrim" id="practiceScreen" hidden>
+  <div class="ok-card" role="dialog" aria-modal="true">
+    <h2 class="ok-h2" data-t="tn8"></h2>
     <p data-t="pr_text"></p>
     <div class="tables" id="tableGrid" dir="ltr"></div>
     <div class="btns">
-      <button class="big-btn alt" id="practiceBack" data-t="back"></button>
-      <button class="big-btn go" id="practiceGo" data-t="race_go"></button>
+      <button class="ok-btn ok-quiet" id="practiceBack" data-icon="back"><span data-t="back"></span></button>
+      <button class="ok-btn ok-hot" id="practiceGo" data-icon="flag"><span data-t="race_go"></span></button>
     </div>
   </div>
 </section>
@@ -242,41 +306,28 @@ button:focus-visible{outline:4px solid #fff;outline-offset:2px}
 <!-- Race -->
 <section class="screen race one" id="raceScreen" dir="ltr" hidden>
   <div class="bar" id="raceBar">
-    <button class="icon-btn" id="pauseBtn" data-ta="a_pause">⏸️</button>
+    <button class="ok-btn ok-icon" id="pauseBtn" data-icon="pause" data-ta="a_pause"></button>
     <div class="tname" id="raceName"></div>
-    <button class="icon-btn mute" data-ta="a_soundOff">🔊</button>
+    <button class="ok-btn ok-icon mute" data-ta="a_soundOff"></button>
   </div>
   <div class="half h0" id="half0"></div>
   <div class="half h1" id="half1"></div>
 </section>
 
-<!-- Pause -->
-<section class="screen modal" id="pauseScreen" hidden>
-  <div class="panel">
-    <h2 data-t="paused"></h2>
-    <p data-t="pause_text"></p>
-    <button class="big-btn go" id="resumeBtn" data-t="resume"></button>
-    <div class="btns">
-      <button class="big-btn alt" id="restartBtn" data-t="restart"></button>
-      <button class="big-btn alt" id="quitBtn" data-t="tracks"></button>
-    </div>
-    <button class="icon-btn mute" data-ta="a_soundOff">🔊</button>
-  </div>
-</section>
-
-<!-- Results -->
-<section class="screen modal" id="resultScreen" hidden>
-  <div class="panel resPanel">
-    <h2 id="resTitle"></h2>
-    <canvas id="podium" aria-hidden="true"></canvas>
+<!-- Results (the kit's world shows the podium behind this card) -->
+<section class="ok-modal resModal" id="resultScreen" hidden>
+  <div class="resFinish" aria-hidden="true"></div>
+  <div class="ok-card resPanel" role="dialog" aria-modal="true" aria-labelledby="resTitle">
+    <h2 class="ok-h2" id="resTitle"></h2>
+    <div class="ok-sparks" id="resSparks" role="img"></div>
     <div class="resRows" id="resRows" hidden></div>
     <div class="resStats" id="resStats"></div>
     <div class="practise" id="resPractise"></div>
     <div class="moveUp" id="resMoveUp" hidden></div>
     <div class="btns">
-      <button class="big-btn" id="againBtn" data-t="again"></button>
-      <button class="big-btn go" id="nextBtn" data-t="next"></button>
-      <button class="big-btn alt" id="menuBtn" data-t="tracks"></button>
+      <button class="ok-btn ok-quiet" id="againBtn" data-icon="restart"><span data-t="again"></span></button>
+      <button class="ok-btn ok-hot" id="nextBtn" data-icon="next"><span data-t="next"></span></button>
+      <button class="ok-btn ok-quiet" id="menuBtn" data-icon="flag"><span data-t="tracks"></span></button>
     </div>
   </div>
 </section>
@@ -292,12 +343,17 @@ button:focus-visible{outline:4px solid #fff;outline-offset:2px}
       <button class="key" data-k="1" style="grid-area:k1">1</button><button class="key" data-k="2" style="grid-area:k2">2</button><button class="key" data-k="3" style="grid-area:k3">3</button>
       <button class="key" data-k="4" style="grid-area:k4">4</button><button class="key" data-k="5" style="grid-area:k5">5</button><button class="key" data-k="6" style="grid-area:k6">6</button>
       <button class="key" data-k="7" style="grid-area:k7">7</button><button class="key" data-k="8" style="grid-area:k8">8</button><button class="key" data-k="9" style="grid-area:k9">9</button>
-      <button class="key" data-k="back" style="grid-area:kb" data-ta="a_rubOut">⌫</button><button class="key" data-k="0" style="grid-area:k0">0</button><button class="key" data-k="ok" style="grid-area:ko" data-ta="a_go">✓</button>
+      <button class="key" data-k="back" style="grid-area:kb" data-icon="back" data-ta="a_rubOut"></button><button class="key" data-k="0" style="grid-area:k0">0</button><button class="key" data-k="ok" style="grid-area:ko" data-icon="check" data-ta="a_go"></button>
     </div>
     <p class="kbhint" data-t="kbhint"></p>
   </div>
 </template>
-
+</div>
+<script src="/vendor/oomba-kit/1.0.0/oomba-kit.js" integrity="sha384-z+NesXSa8n9F3R0/dcZ7o60eHwzQbYE94cEyPfLu6WlUZ2zOaEO2OAS6WsmM7oUU" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.0.0/packs/art-animals.js" integrity="sha384-fIOJsCe/mBmelLUnXEhcOGl0x7/dQvXe5xKjHrOD4KegZbvOrJ9DzTizBzU9RzOD" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.0.0/packs/art-school.js" integrity="sha384-yCC/QOZAd0OcPMGet+ySH+2pkji2SRciYBilMG/braih3toohKVqxJGR4YoQJrqM" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.0.0/packs/art-biomes.js" integrity="sha384-0X8OvdyaknEYsK5nXvhDnMNWl1lS8XuHH/SKuJrOF7CjDIwxYbp3yQeChbVl2zhH" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.0.0/packs/dress.js" integrity="sha384-cLr8VKytVQYDunYCBWc3ZZuc3v1GsLxrYMkqdof5zRFlOs4VKIp5cxtTLrMpBDLe" crossorigin="anonymous"></script>
 <script>
 /* @@PURE-BEGIN: CONFIG + maths + race model. No DOM in here (the Node tests run this block on its own). */
 const CONFIG = {
@@ -329,24 +385,27 @@ const CONFIG = {
   practiceTables: [2, 3, 4, 5],
   // Track names and skills come from I18N ('tn' + id, 'ts' + id); rival names from 'rv_' + kind.
   // rivalSpeed (m/s) is tuned so a steady answerer at `pace` seconds per question wins about half the time.
+  // biome: the kit world for the podium after the race.
   tracks: [
-    { id: 1, mult: 1, lap: 600, rivalSpeed: 16.3, pace: 6.5 },
-    { id: 2, mult: 2, lap: 650, rivalSpeed: 17.2, pace: 6 },
-    { id: 3, mult: 3, lap: 600, rivalSpeed: 15.9, pace: 8 },
-    { id: 4, mult: 3, lap: 650, rivalSpeed: 17.2, pace: 6 },
-    { id: 5, mult: 4, lap: 600, rivalSpeed: 16.3, pace: 7 },
-    { id: 6, mult: 5, lap: 600, rivalSpeed: 16.0, pace: 7.5 },
-    { id: 7, mult: 6, lap: 550, rivalSpeed: 15.0, pace: 9 },
-    { id: 8, mult: 2, lap: 600, rivalSpeed: 16.3, pace: 7 }
+    { id: 1, mult: 1, lap: 600, rivalSpeed: 16.3, pace: 6.5, biome: 'meadow' },
+    { id: 2, mult: 2, lap: 650, rivalSpeed: 17.2, pace: 6, biome: 'beach' },
+    { id: 3, mult: 3, lap: 600, rivalSpeed: 15.9, pace: 8, biome: 'desert' },
+    { id: 4, mult: 3, lap: 650, rivalSpeed: 17.2, pace: 6, biome: 'snow' },
+    { id: 5, mult: 4, lap: 600, rivalSpeed: 16.3, pace: 7, biome: 'jungle' },
+    { id: 6, mult: 5, lap: 600, rivalSpeed: 16.0, pace: 7.5, biome: 'desert', dusk: true },
+    { id: 7, mult: 6, lap: 550, rivalSpeed: 15.0, pace: 9, biome: 'moon' },
+    { id: 8, mult: 2, lap: 600, rivalSpeed: 16.3, pace: 7, biome: 'beach' }
   ],
+  // The cast (kit character specs) and their kart colours (kit hues). Zippy the bunny, Bolt (the robot-ish Oomba)
+  // and Rex the frog; player 1 drives as their own avatar, player 2 as the fox.
   rivals: [
-    { kind: 'bunny', color: '#ff5fa8', dark: '#c22a74', pace: 1.03 },
-    { kind: 'robot', color: '#1fbfae', dark: '#0f7f74', pace: 1.0 },
-    { kind: 'dino',  color: '#7ccf35', dark: '#4a8f17', pace: 0.95 }
+    { kind: 'bunny', char: { species: 'bunny' }, kart: 'peach', pace: 1.03 },
+    { kind: 'robot', char: { species: 'oomba', wear: ['headphones'] }, kart: 'grape', pace: 1.0 },
+    { kind: 'dino',  char: { species: 'frog', wear: ['scarf'] }, kart: 'mint', pace: 0.95 }
   ],
   players: [
-    { color: '#ff5a2a', dark: '#b8320f', fallback: '🦊' },
-    { color: '#3a7bff', dark: '#1d4bc2', fallback: '🐼' }
+    { kart: 'coral', char: { species: 'kid', hair: { style: 'curls', color: 'black' }, outfit: { top: 'hoodie', color: 'sky' } } },
+    { kart: 'sky', char: { species: 'fox' } }
   ]
 };
 
@@ -919,36 +978,38 @@ const I18N = {
     ord: ["1e", "2e", "3e", "4e"], place: ["1e plaats", "2e plaats", "3e plaats", "4e plaats"]
   }
 };
-const LANG = (() => { let l = 'en'; try { l = String((window.BRB && BRB.user && BRB.user.lang) || 'en'); } catch (e) { /* old SDK */ } return l; })();
-const LANG_BASE = LANG.split('-')[0];
-const LANG_CHAIN = [LANG, LANG_BASE, 'en'].filter((l, i, a) => I18N[l] && a.indexOf(l) === i);
-const RTL = (() => { try { if (BRB.user.dir === 'rtl') return true; } catch (e) { /* old SDK */ } return LANG_BASE === 'he' || LANG_BASE === 'ar'; })();
-const NUM_LOCALE = LANG_BASE === 'ar' ? 'ar-u-nu-latn' : (I18N[LANG] ? LANG : 'en');
-const NF = (() => { try { return new Intl.NumberFormat(NUM_LOCALE); } catch (e) { return { format: n => String(n) }; } })();
-const NF1 = (() => { try { return new Intl.NumberFormat(NUM_LOCALE, { minimumFractionDigits: 1, maximumFractionDigits: 1 }); } catch (e) { return { format: n => n.toFixed(1) }; } })();
-const PCT = (() => { try { return new Intl.NumberFormat(NUM_LOCALE, { style: 'percent' }); } catch (e) { return { format: n => Math.round(n * 100) + '%' }; } })();
-const PLURAL = (() => { try { return new Intl.PluralRules(NUM_LOCALE); } catch (e) { return { select: n => (n === 1 ? 'one' : 'other') }; } })();
+
+// The table goes to the kit (Oomba.strings) under 'sr.' keys, so the game's words never replace the kit's own button
+// words. Pictures are the kit's icons and characters, not emoji: emoji in the table are left out when it is registered.
+const NS = 'sr.';
+const noEmoji = v => (typeof v === 'string' ? v.replace(/\p{Extended_Pictographic}️?|[▶★☆]/gu, '').replace(/ {2,}/g, ' ').trim()
+  : Array.isArray(v) ? v.map(noEmoji) : v && typeof v === 'object' ? Object.fromEntries(Object.entries(v).map(([k, x]) => [k, noEmoji(x)])) : v);
+const STR = {};
+for (const l in I18N) { STR[l] = {}; for (const k in I18N[l]) STR[l][NS + k] = k === 'list_sep' ? I18N[l][k] : noEmoji(I18N[l][k]); }
+Oomba.strings(STR);
+const LANG = Oomba.lang;
+const LANG_CHAIN = [LANG, LANG.split('-')[0], 'en'].filter((l, i, a) => STR[l] && a.indexOf(l) === i);
+const RTL = Oomba.dir === 'rtl';
+const NF = { format: n => Oomba.num(n) };
+const NF1 = { format: n => Oomba.num(n, { minimumFractionDigits: 1, maximumFractionDigits: 1 }) };
+const PCT = { format: n => Oomba.num(n, { style: 'percent' }) };
 /** Maths shown inside a sentence stays left-to-right, also in Hebrew and Arabic (Unicode isolate marks), and never breaks across lines. */
-const LTR = s => '\u2066' + s.replace(/ /g, '\u00a0') + '\u2069';
-/** The raw entry for a key (string, plural object or list), following the lookup order. */
-function tRaw(key) { for (const l of LANG_CHAIN) { const v = I18N[l][key]; if (v !== undefined) return v; } return key; }
-/** A translated string: picks the plural form by vars.n and fills {name} placeholders (numbers are formatted for the language). */
-function t(key, vars) {
-  let v = tRaw(key);
-  if (v && typeof v === 'object' && !Array.isArray(v)) { const n = vars && typeof vars.n === 'number' ? vars.n : 0; const f = PLURAL.select(n); v = v[f] != null ? v[f] : v.other; }
-  v = String(v);
-  return vars ? v.replace(/\{(\w+)\}/g, (m, k) => (k in vars ? (typeof vars[k] === 'number' ? NF.format(vars[k]) : String(vars[k])) : m)) : v;
-}
+const LTR = s => '⁦' + s.replace(/ /g, ' ') + '⁩';
+/** The raw entry for a key (a list, like the cheers), following the lookup order. */
+function tRaw(key) { for (const l of LANG_CHAIN) { const v = STR[l][NS + key]; if (v !== undefined) return v; } return key; }
+/** A translated string (the kit picks the plural form by vars.n and fills {name} placeholders with formatted numbers). */
+function t(key, vars) { const s = Oomba.t(NS + key, vars); return s === NS + key ? key : s; }
 const trackName = id => t('tn' + id), trackSkill = id => t('ts' + id);
 const ordinal = n => tRaw('ord')[n - 1] || String(n);        // "1st", "2e", "3.", "ראשון"...
 const placeName = n => tRaw('place')[n - 1] || String(n);    // "2nd place", "2. Platz"...
-/** Puts the static strings into the page (data-t = text, data-ta = aria-label) and sets the language + direction.
+/** Puts the static strings into the page (data-t = text, data-ta = aria-label), the kit icons (data-icon) and the direction.
     Menus and panels turn right-to-left for Hebrew and Arabic; the race, answer buttons, keypad and table picker stay left-to-right. */
 function applyI18n() {
   const root = document.documentElement; root.lang = LANG; if (RTL) root.dir = 'rtl';
   document.querySelectorAll('[data-t]').forEach(el => { el.textContent = t(el.dataset.t); });
   document.querySelectorAll('[data-ta]').forEach(el => { el.setAttribute('aria-label', t(el.dataset.ta)); });
-  if (RTL) { document.querySelectorAll('.qlabel, .kbhint, #raceName').forEach(el => { el.dir = 'rtl'; }); document.getElementById('backBtn').textContent = '➡️'; }
+  document.querySelectorAll('[data-icon]').forEach(el => { el.insertAdjacentHTML('afterbegin', Oomba.icon(RTL && el.id === 'backBtn' ? 'next' : el.dataset.icon)); });
+  if (RTL) document.querySelectorAll('.qlabel, .kbhint, #raceName').forEach(el => { el.dir = 'rtl'; });
 }
 /** Shrinks a label until its text fits its box (never below minPx). */
 function fitText(el, minPx) {
@@ -958,409 +1019,454 @@ function fitText(el, minPx) {
   let size = parseFloat(cs.fontSize) || 16;
   while (range.getBoundingClientRect().width > avail - 1 && size > minPx) { size -= 0.5; el.style.fontSize = size + 'px'; }
 }
-/** Canvas text: sets the font, shrinking it until the text is at most maxW wide. Returns the size used. */
-function fitFont(g, text, size, maxW, weight) {
-  size = Math.round(size); g.font = (weight || '700') + ' ' + size + 'px ' + FONT;
-  while (size > 8 && g.measureText(text).width > maxW) { size--; g.font = (weight || '700') + ' ' + size + 'px ' + FONT; }
-  return size;
-}
-/** Canvas text direction: words follow the language; digits-only labels stay left-to-right. */
-const textDir = (g, words) => { g.direction = words && RTL ? 'rtl' : 'ltr'; };
 
 /* =====================================================================================
-   Small helpers
+   The kit: colours, drawing helpers, the world behind the results, sound
    ===================================================================================== */
 const $ = id => document.getElementById(id);
-let REDUCED = false; try { REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { /* ignore */ }
-const FONT = 'Fredoka, "Trebuchet MS", system-ui, sans-serif';
+// the kit's reduced motion (device, site or the kit's own setting), kept current: the kit's settings screen can turn it
+// on mid-game, and every use below reads it again
+let REDUCED = !!Oomba.settings.reduced;
+Oomba.settings.on('change', () => { REDUCED = !!Oomba.settings.reduced; });
 const TAU = Math.PI * 2;
 const visRng = makeRng((Math.random() * 4294967295) >>> 0);   // looks only (particles, cheers): never the maths or the race
 const pickOne = arr => arr[Math.floor(visRng() * arr.length)];
-const DPR = () => Math.min(2, window.devicePixelRatio || 1);
-function sfx(name) { try { BRB.sfx.play(name); } catch (e) { /* ignore */ } }
-function makeCanvas(w, h) { const c = document.createElement('canvas'); c.width = Math.max(1, Math.ceil(w)); c.height = Math.max(1, Math.ceil(h)); return c; }
-/** A canvas plus a context already scaled to CSS pixels. */
-function layer(w, h, d) { const c = makeCanvas(w * d, h * d), g = c.getContext('2d'); g.setTransform(d, 0, 0, d, 0, 0); return [c, g]; }
-function rrect(g, x, y, w, h, r) {
-  r = Math.max(0, Math.min(r, w / 2, h / 2)); g.beginPath();
-  g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath();
+const D = Oomba.draw;
+const NIGHT = () => Oomba.theme.mode === 'dark';
+const C = (hue, step) => Oomba.color(hue, step);
+const INK = C('ink'), CREAM = C('card');
+const hex2 = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+/** a mixed with b (0..1), as a CSS colour. */
+const mix = (a, b, f) => { const x = hex2(a), y = hex2(b); return 'rgb(' + x.map((v, i) => Math.round(v + (y[i] - v) * f)).join(',') + ')'; };
+const alpha = (h, a) => 'rgba(' + hex2(h).join(',') + ',' + a + ')';
+const cssVars = {
+  ink: INK, cream: CREAM, spark: C('spark'), mint: C('mint'), mintLight: C('mint', 'light'), mintTint: C('mint', 'tint'), sparkTint: C('spark', 'tint'), grapeTint: C('grape', 'tint'), grapeShade: C('grape', 'shade'),
+  coral: C('coral'), coralTint: C('coral', 'tint'), stoneTint: C('stone', 'tint'), nightOff: C('stone', 'shade'),
+  peach: C('peach'), peachTint: C('peach', 'tint'), sky: C('sky'), skyTint: C('sky', 'tint'), grape: C('grape'), coralLight: C('coral', 'light'),
+};
+for (const k in cssVars) document.documentElement.style.setProperty('--sr-' + k, cssVars[k]);
+// The kit's world: the podium after a race (an empty sky the rest of the time, so it costs nothing behind the race).
+const WORLD = Oomba.stage({ api: 1, biome: 'none', size: [960, 540] });
+Oomba.ui.root().appendChild($('game'));
+let FONTSTACK = getComputedStyle(Oomba.ui.root()).getPropertyValue('--ok-font') || 'system-ui, sans-serif';
+const font = (size, w = 800) => w + ' ' + Math.round(size) + 'px ' + FONTSTACK;
+/** Canvas text in the kit's sticker style (Ink outline, Cream rim; a Cream pill when small), shrunk to fit maxW. */
+function ftext(g, str, x, y, o = {}) {
+  let size = o.size || 20; g.font = font(size, o.weight);
+  if (o.max) { const w = g.measureText(str).width; if (w > o.max) size = Math.max(9, size * o.max / w); }
+  D.text(g, str, x, y, Object.assign({}, o, { size, max: 0 }));
+  return size;
 }
+/** Plain canvas text (no sticker), shrinking to fit. Returns the size used. */
+function fitFont(g, text, size, maxW, weight) {
+  size = Math.round(size); g.font = font(size, weight || 800);
+  while (size > 8 && g.measureText(text).width > maxW) { size--; g.font = font(size, weight || 800); }
+  return size;
+}
+const textDir = (g, words) => { g.direction = words && RTL ? 'rtl' : 'ltr'; };
+const DPR = () => Math.min(2, window.devicePixelRatio || 1);
+// The kit's sounds (captions for the key ones when captions are on); the SDK's names pass through to BRB.sfx.
+function sfx(name, o) { try { Oomba.sfx(name, Object.assign({ caption: false }, o)); } catch (e) { /* ignore */ } }
+function makeCanvas(w, h) { const c = document.createElement('canvas'); c.width = Math.max(1, Math.ceil(w)); c.height = Math.max(1, Math.ceil(h)); return c; }
+/** A canvas of w x h CSS px at d device px per CSS px, with its context scaled to CSS px. */
+function layer(w, h, d) { const c = makeCanvas(w * d, h * d), g = c.getContext('2d'); g.setTransform(d, 0, 0, d, 0, 0); return [c, g]; }
+const rrect = (g, x, y, w, h, r) => D.rrect(g, x, y, w, h, r);
 function disc(g, x, y, r, fill) { g.beginPath(); g.arc(x, y, Math.max(0, r), 0, TAU); if (fill) { g.fillStyle = fill; g.fill(); } }
 function oval(g, x, y, rx, ry, rot, fill) { g.beginPath(); g.ellipse(x, y, Math.max(0, rx), Math.max(0, ry), rot || 0, 0, TAU); if (fill) { g.fillStyle = fill; g.fill(); } }
 function poly(g, pts, fill) { g.beginPath(); g.moveTo(pts[0], pts[1]); for (let i = 2; i < pts.length; i += 2) g.lineTo(pts[i], pts[i + 1]); g.closePath(); if (fill) { g.fillStyle = fill; g.fill(); } }
+/** Ink outline for the current path (the kit's line weight for a thing about px tall). */
+function ink(g, px, col) { g.lineJoin = 'round'; g.lineCap = 'round'; g.lineWidth = Math.max(1.5, Math.min(3.5, px * 0.05)); g.strokeStyle = col || INK; g.stroke(); }
+/** A sticker shape: flat fill and an Ink outline. */
+function sticker(g, pathFn, fill, px) { pathFn(); g.fillStyle = fill; g.fill(); ink(g, px); }
 function vgrad(g, y0, y1, stops) { const gr = g.createLinearGradient(0, y0, 0, y1); stops.forEach((c, i) => gr.addColorStop(i / (stops.length - 1), c)); return gr; }
+/** A kit prop drawn into a plain canvas (baked into the scenery tiles once). */
+const prop = (g, name, x, y, size, variant) => D.sprite(g, name, x, y, { size, state: variant || '' });
 
 /* =====================================================================================
-   Scenery art. Every track has a sky picture (static) and three tiles that repeat sideways
-   and scroll at different speeds (far, middle, roadside). Tiles must join up seamlessly, so
-   hills use whole-number sine waves and objects near an edge are drawn on both sides (wrap).
-   Painters get (g, TW tile width, H tile height = top of the road, rng).
+   Scenery in the "Oomba Ink" style: flat kit colours, an Ink line on every top edge, the kit's own props (trees,
+   palms, cacti, snowmen, boats, rockets, signs, number tiles...). Every track has a sky picture (static) and three
+   tiles that repeat sideways and scroll at different speeds (far, middle, roadside). Tiles join up seamlessly: hills
+   use whole-number sine waves and things near an edge are drawn on both sides (wrap). In the dark theme the day
+   tracks race at night. Painters get (g, TW tile width, H tile height = top of the road, rng).
    ===================================================================================== */
+const P = Oomba.tokens.palette;
 function wrap(TW, x, half, fn) { fn(x); if (x - half < 0) fn(x + TW); if (x + half > TW) fn(x - TW); }
-/** A rolling ridge filled down to `bottom`; returns y(x) so things can stand on it. */
-function ridge(g, TW, base, amp, waves, fill, bottom, phase) {
+/** A rolling ridge filled down to `bottom`, with an Ink top edge; returns y(x) so things can stand on it. */
+function ridge(g, TW, base, amp, waves, fill, bottom, phase, noLine) {
   const y = x => { let v = base; for (const [k, a] of waves) v -= Math.sin((x / TW) * TAU * k + (phase || 0) * k) * a * amp; return v; };
   g.beginPath(); g.moveTo(0, bottom);
   for (let x = 0; x <= TW; x += 4) g.lineTo(x, y(x));
   g.lineTo(TW, y(TW)); g.lineTo(TW, bottom); g.closePath(); g.fillStyle = fill; g.fill();
+  if (!noLine) { g.beginPath(); for (let x = -4; x <= TW + 4; x += 4) x <= 0 ? g.moveTo(x, y(x)) : g.lineTo(x, y(x)); g.lineWidth = 2; g.strokeStyle = INK; g.lineJoin = 'round'; g.stroke(); }
   return y;
 }
-/** A mountain range of n peaks, with optional snow caps and a shaded side. */
+/** A mountain range of n peaks (Ink outline, a shaded side, optional snow caps). */
 function peaks(g, TW, n, base, hMin, hMax, rng, fill, shade, cap) {
   for (let i = 0; i < n; i++) {
     const px = (i + 0.15 + rng() * 0.7) * TW / n, h = hMin + rng() * (hMax - hMin), w = (0.7 + rng() * 0.5) * TW / n;
     wrap(TW, px, w, x => {
-      poly(g, [x - w, base, x - w * 0.12, base - h * 0.97, x, base - h, x + w * 0.18, base - h * 0.92, x + w, base], fill);
-      if (shade) poly(g, [x, base - h, x + w * 0.18, base - h * 0.92, x + w, base, x + w * 0.1, base], shade);
-      if (cap) poly(g, [x - w * 0.25, base - h * 0.72, x - w * 0.12, base - h * 0.97, x, base - h, x + w * 0.18, base - h * 0.92, x + w * 0.3, base - h * 0.7, x + w * 0.14, base - h * 0.76, x + w * 0.02, base - h * 0.68, x - w * 0.1, base - h * 0.77], cap);
+      const shape = () => { g.beginPath(); g.moveTo(x - w, base + 2); g.lineTo(x - w * 0.12, base - h * 0.97); g.quadraticCurveTo(x, base - h * 1.03, x + w * 0.18, base - h * 0.92); g.lineTo(x + w, base + 2); g.closePath(); };
+      shape(); g.fillStyle = fill; g.fill();
+      if (shade) poly(g, [x + w * 0.04, base - h * 0.99, x + w * 0.18, base - h * 0.92, x + w, base + 2, x + w * 0.1, base + 2], shade);
+      if (cap) { poly(g, [x - w * 0.25, base - h * 0.72, x - w * 0.12, base - h * 0.97, x, base - h, x + w * 0.18, base - h * 0.92, x + w * 0.3, base - h * 0.7, x + w * 0.14, base - h * 0.76, x + w * 0.02, base - h * 0.68, x - w * 0.1, base - h * 0.77], cap); }
+      shape(); ink(g, h);
     });
   }
 }
-function cloud(g, x, y, s, col) { g.fillStyle = col || '#fff'; g.beginPath(); g.arc(x, y, s, 0, TAU); g.arc(x + s * 1.1, y - s * 0.35, s * 0.9, 0, TAU); g.arc(x + s * 2.1, y, s * 0.8, 0, TAU); g.arc(x + s * 1, y + s * 0.3, s * 0.85, 0, TAU); g.fill(); }
-function roundTree(g, x, y, s, leaf, dark) {
-  g.fillStyle = '#8a5a34'; g.fillRect(x - s * 0.09, y - s * 0.55, s * 0.18, s * 0.55);
-  disc(g, x, y - s * 0.85, s * 0.5, dark); disc(g, x - s * 0.08, y - s * 0.92, s * 0.42, leaf); disc(g, x - s * 0.18, y - s * 1.05, s * 0.14, 'rgba(255,255,255,.25)');
-}
-function pine(g, x, y, s, col, snow) {
-  g.fillStyle = '#6b4226'; g.fillRect(x - s * 0.06, y - s * 0.22, s * 0.12, s * 0.22);
-  for (let i = 0; i < 3; i++) {
-    const ty = y - s * 0.2 - i * s * 0.28, tw = s * (0.42 - i * 0.1);
-    poly(g, [x - tw, ty, x, ty - s * 0.42, x + tw, ty], col);
-    if (snow) poly(g, [x - tw * 0.45, ty - s * 0.24, x, ty - s * 0.42, x + tw * 0.45, ty - s * 0.24, x + tw * 0.15, ty - s * 0.2, x - tw * 0.2, ty - s * 0.21], snow);
-  }
-}
+/** A palm in the Ink style: a curved trunk and five leaves (mint, Ink outline), two coconuts. */
 function palm(g, x, y, s) {
-  g.strokeStyle = '#9b6a3c'; g.lineWidth = s * 0.08; g.lineCap = 'round';
-  g.beginPath(); g.moveTo(x, y); g.quadraticCurveTo(x + s * 0.12, y - s * 0.5, x + s * 0.05, y - s); g.stroke();
+  const trunk = () => { g.beginPath(); g.moveTo(x, y); g.quadraticCurveTo(x + s * 0.12, y - s * 0.5, x + s * 0.05, y - s); };
+  g.lineCap = 'round'; trunk(); g.strokeStyle = INK; g.lineWidth = s * 0.1 + 3; g.stroke(); trunk(); g.strokeStyle = P.cocoa[2]; g.lineWidth = s * 0.1; g.stroke();
   const tx = x + s * 0.05, ty = y - s;
-  for (let i = 0; i < 6; i++) { const a = -Math.PI / 2 + (i - 2.5) * 0.55; oval(g, tx + Math.cos(a) * s * 0.28, ty + Math.sin(a) * s * 0.16 + s * 0.08, s * 0.32, s * 0.08, a, i % 2 ? '#2f9e44' : '#40c057'); }
-  disc(g, tx - s * 0.04, ty + s * 0.06, s * 0.05, '#6b3f1d'); disc(g, tx + s * 0.05, ty + s * 0.07, s * 0.05, '#6b3f1d');
+  for (let i = 0; i < 5; i++) { const a = -Math.PI / 2 + (i - 2) * 0.62; oval(g, tx + Math.cos(a) * s * 0.27, ty + Math.sin(a) * s * 0.15 + s * 0.07, s * 0.3, s * 0.085, a, i % 2 ? P.mint[3] : P.mint[2]); ink(g, s * 0.6); }
+  for (const dx of [-0.04, 0.05]) { disc(g, tx + dx * s, ty + s * 0.07, s * 0.055, P.cocoa[2]); ink(g, s * 0.3); }
 }
-function cactus(g, x, y, s, col) {
-  col = col || '#3f9d4a'; g.fillStyle = col;
-  rrect(g, x - s * 0.1, y - s, s * 0.2, s, s * 0.1); g.fill();
-  rrect(g, x - s * 0.36, y - s * 0.68, s * 0.14, s * 0.36, s * 0.07); g.fill(); g.fillRect(x - s * 0.3, y - s * 0.4, s * 0.25, s * 0.1);
-  rrect(g, x + s * 0.22, y - s * 0.8, s * 0.14, s * 0.4, s * 0.07); g.fill(); g.fillRect(x + s * 0.05, y - s * 0.5, s * 0.25, s * 0.1);
-  g.fillStyle = 'rgba(255,255,255,.18)'; g.fillRect(x - s * 0.05, y - s * 0.94, s * 0.04, s * 0.85);
-}
+function sunDisc(g, x, y, r, inner, glow) { const gr = g.createRadialGradient(x, y, r * 0.4, x, y, r * 2.4); gr.addColorStop(0, glow); gr.addColorStop(1, alpha(CREAM, 0)); disc(g, x, y, r * 2.4, gr); disc(g, x, y, r, inner); }
 function house(g, x, y, s, wall, roof, num) {
-  g.fillStyle = wall; g.fillRect(x - s * 0.5, y - s * 0.62, s, s * 0.62);
-  poly(g, [x - s * 0.62, y - s * 0.6, x, y - s * 1.08, x + s * 0.62, y - s * 0.6], roof);
-  g.fillStyle = '#fff'; g.fillRect(x - s * 0.38, y - s * 0.48, s * 0.24, s * 0.2); g.fillStyle = '#7fc8f8'; g.fillRect(x - s * 0.35, y - s * 0.45, s * 0.18, s * 0.14);
-  g.fillStyle = '#7a4a2a'; rrect(g, x + s * 0.06, y - s * 0.42, s * 0.24, s * 0.42, s * 0.08); g.fill();
-  if (num != null) { disc(g, x, y - s * 0.78, s * 0.14, '#fff'); g.fillStyle = '#2a1846'; g.font = '700 ' + Math.round(s * 0.2) + 'px ' + FONT; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(String(num), x, y - s * 0.77); }
+  sticker(g, () => { g.beginPath(); rrect(g, x - s * 0.5, y - s * 0.64, s, s * 0.64, s * 0.06); }, wall, s);
+  sticker(g, () => poly(g, [x - s * 0.64, y - s * 0.58, x, y - s * 1.08, x + s * 0.64, y - s * 0.58]), roof, s);
+  sticker(g, () => { g.beginPath(); rrect(g, x - s * 0.38, y - s * 0.5, s * 0.26, s * 0.22, s * 0.05); }, P.sky[1], s * 0.5);
+  sticker(g, () => { g.beginPath(); rrect(g, x + s * 0.06, y - s * 0.42, s * 0.24, s * 0.42, s * 0.1); }, P.cocoa[2], s * 0.5);
+  if (num != null) { disc(g, x, y - s * 0.78, s * 0.15, CREAM); ink(g, s * 0.5); g.fillStyle = INK; g.font = font(s * 0.2); g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(String(num), x, y - s * 0.77); }
 }
-function flower(g, x, y, s, col) { g.strokeStyle = '#3f9d4a'; g.lineWidth = Math.max(1, s * 0.15); g.beginPath(); g.moveTo(x, y); g.lineTo(x, y - s); g.stroke(); for (let i = 0; i < 5; i++) { const a = i * TAU / 5; disc(g, x + Math.cos(a) * s * 0.3, y - s + Math.sin(a) * s * 0.3, s * 0.24, col); } disc(g, x, y - s, s * 0.18, '#ffd23f'); }
-function snowman(g, x, y, s) {
-  disc(g, x, y - s * 0.3, s * 0.3, '#fff'); disc(g, x, y - s * 0.78, s * 0.22, '#fff');
-  g.strokeStyle = 'rgba(120,150,190,.5)'; g.lineWidth = 1; g.beginPath(); g.arc(x, y - s * 0.3, s * 0.3, 0, TAU); g.stroke();
-  disc(g, x - s * 0.07, y - s * 0.82, s * 0.03, '#222'); disc(g, x + s * 0.07, y - s * 0.82, s * 0.03, '#222');
-  poly(g, [x, y - s * 0.77, x + s * 0.2, y - s * 0.74, x, y - s * 0.72], '#ff8a1a');
-  g.fillStyle = '#e63946'; g.fillRect(x - s * 0.2, y - s * 0.6, s * 0.4, s * 0.07);
-  g.fillStyle = '#2a1846'; g.fillRect(x - s * 0.16, y - s * 1.1, s * 0.32, s * 0.22); g.fillRect(x - s * 0.24, y - s * 0.9, s * 0.48, s * 0.05);
+function fenceRow(g, TW, y, h) {
+  g.fillStyle = CREAM; g.strokeStyle = INK; g.lineWidth = 1.5;
+  for (const yy of [y - h * 0.75, y - h * 0.38]) { g.fillRect(0, yy, TW, 3); g.strokeRect(-2, yy, TW + 4, 3); }
+  for (let x = 4; x < TW; x += 16) { g.beginPath(); g.moveTo(x, y); g.lineTo(x, y - h); g.lineTo(x + 3.5, y - h - 4); g.lineTo(x + 7, y - h); g.lineTo(x + 7, y); g.closePath(); g.fill(); g.stroke(); }
 }
-function rock(g, x, y, s, col, hi) { poly(g, [x - s * 0.5, y, x - s * 0.38, y - s * 0.45, x - s * 0.05, y - s * 0.6, x + s * 0.35, y - s * 0.42, x + s * 0.5, y], col); if (hi) poly(g, [x - s * 0.38, y - s * 0.45, x - s * 0.05, y - s * 0.6, x + s * 0.05, y - s * 0.35, x - s * 0.25, y - s * 0.25], hi); }
-function mushroom(g, x, y, s) { g.fillStyle = '#fff3e0'; g.fillRect(x - s * 0.1, y - s * 0.45, s * 0.2, s * 0.45); g.beginPath(); g.arc(x, y - s * 0.42, s * 0.38, Math.PI, 0); g.closePath(); g.fillStyle = '#e63946'; g.fill(); disc(g, x - s * 0.15, y - s * 0.6, s * 0.06, '#fff'); disc(g, x + s * 0.12, y - s * 0.55, s * 0.07, '#fff'); disc(g, x, y - s * 0.72, s * 0.05, '#fff'); }
-function bigLeaf(g, x, y, s, a, col) { g.save(); g.translate(x, y); g.rotate(a); oval(g, 0, -s * 0.5, s * 0.22, s * 0.5, 0, col); g.strokeStyle = 'rgba(0,0,0,.18)'; g.lineWidth = Math.max(1, s * 0.03); g.beginPath(); g.moveTo(0, 0); g.lineTo(0, -s * 0.95); g.stroke(); g.restore(); }
-function umbrella(g, x, y, s, c1, c2) { g.strokeStyle = '#7a5a3a'; g.lineWidth = Math.max(1, s * 0.05); g.beginPath(); g.moveTo(x, y); g.lineTo(x, y - s); g.stroke(); for (let i = 0; i < 4; i++) { g.beginPath(); g.moveTo(x, y - s * 1.12); g.arc(x, y - s * 0.95, s * 0.5, Math.PI + i * Math.PI / 4, Math.PI + (i + 1) * Math.PI / 4); g.closePath(); g.fillStyle = i % 2 ? c2 : c1; g.fill(); } }
-function sailboat(g, x, y, s) { poly(g, [x - s * 0.5, y, x + s * 0.5, y, x + s * 0.35, y + s * 0.18, x - s * 0.35, y + s * 0.18], '#e85d4a'); poly(g, [x, y - s * 0.05, x, y - s * 0.9, x + s * 0.42, y - s * 0.05], '#fff'); poly(g, [x - s * 0.04, y - s * 0.05, x - s * 0.04, y - s * 0.7, x - s * 0.35, y - s * 0.05], '#ffe08a'); }
-function dome(g, x, y, s) { g.fillStyle = '#7d6bd6'; g.fillRect(x - s * 0.55, y - s * 0.12, s * 1.1, s * 0.12); g.beginPath(); g.arc(x, y - s * 0.12, s * 0.48, Math.PI, 0); g.closePath(); g.fillStyle = 'rgba(160,240,255,.55)'; g.fill(); g.strokeStyle = 'rgba(255,255,255,.7)'; g.lineWidth = Math.max(1, s * 0.04); g.stroke(); disc(g, x - s * 0.15, y - s * 0.38, s * 0.08, 'rgba(255,255,255,.7)'); }
+function umbrella(g, x, y, s, c1) {
+  g.strokeStyle = INK; g.lineWidth = Math.max(1.5, s * 0.06); g.beginPath(); g.moveTo(x, y); g.lineTo(x, y - s); g.stroke();
+  for (let i = 0; i < 4; i++) { g.beginPath(); g.moveTo(x, y - s * 1.12); g.arc(x, y - s * 0.95, s * 0.5, Math.PI + i * Math.PI / 4, Math.PI + (i + 1) * Math.PI / 4); g.closePath(); g.fillStyle = i % 2 ? CREAM : c1; g.fill(); ink(g, s * 0.6); }
+}
+function castle(g, x, y, s) {
+  const f = P.peach[1];
+  sticker(g, () => poly(g, [x - s * 0.7, y, x - s * 0.7, y - s * 0.8, x - s * 0.4, y - s * 0.8, x - s * 0.4, y - s * 0.6, x - s * 0.2, y - s * 0.6, x - s * 0.2, y - s * 1.4, x + s * 0.2, y - s * 1.4, x + s * 0.2, y - s * 0.6, x + s * 0.4, y - s * 0.6, x + s * 0.4, y - s * 0.8, x + s * 0.7, y - s * 0.8, x + s * 0.7, y]), f, s);
+  sticker(g, () => poly(g, [x, y - s * 2, x + s * 0.4, y - s * 1.8, x, y - s * 1.6]), P.coral[2], s * 0.6);
+  g.strokeStyle = INK; g.lineWidth = 1.5; g.beginPath(); g.moveTo(x, y - s * 1.4); g.lineTo(x, y - s * 2); g.stroke();
+}
+function mesa(g, x, b, w, h) {
+  sticker(g, () => poly(g, [x - w, b + 2, x - w * 0.7, b - h, x + w * 0.6, b - h, x + w, b + 2]), P.coral[1], h);
+  poly(g, [x + w * 0.3, b - h, x + w * 0.6, b - h, x + w, b + 2, x + w * 0.5, b + 2], alpha(P.coral[3], 0.35));
+  g.fillStyle = alpha(P.coral[3], 0.3); g.fillRect(x - w * 0.78, b - h * 0.6, w * 1.6, h * 0.07); g.fillRect(x - w * 0.86, b - h * 0.3, w * 1.75, h * 0.07);
+  poly(g, [x - w, b + 2, x - w * 0.7, b - h, x + w * 0.6, b - h, x + w, b + 2]); ink(g, h);
+}
+function cabin(g, x, b, s) {
+  sticker(g, () => { g.beginPath(); g.rect(x - s * 0.6, b - s * 0.6, s * 1.2, s * 0.6); }, P.cocoa[2], s);
+  g.fillStyle = alpha(INK, 0.25); for (let k = 1; k < 4; k++) g.fillRect(x - s * 0.6, b - s * 0.15 * k, s * 1.2, 1.5);
+  sticker(g, () => poly(g, [x - s * 0.78, b - s * 0.55, x, b - s * 1.05, x + s * 0.78, b - s * 0.55]), P.snow[0], s);
+  sticker(g, () => { g.beginPath(); g.rect(x - s * 0.36, b - s * 0.42, s * 0.22, s * 0.18); }, P.peach[1], s * 0.4);
+  sticker(g, () => { g.beginPath(); g.rect(x + s * 0.1, b - s * 0.4, s * 0.22, s * 0.4); }, P.cocoa[3], s * 0.4);
+}
 function planet(g, x, y, r, c1, c2, ring) {
   if (ring) { g.strokeStyle = ring; g.lineWidth = r * 0.16; g.beginPath(); g.ellipse(x, y, r * 1.75, r * 0.45, -0.3, Math.PI * 0.95, Math.PI * 2.05); g.stroke(); }
-  const gr = g.createRadialGradient(x - r * 0.4, y - r * 0.4, r * 0.1, x, y, r); gr.addColorStop(0, c1); gr.addColorStop(1, c2); disc(g, x, y, r, gr);
-  g.save(); g.beginPath(); g.arc(x, y, r, 0, TAU); g.clip(); g.fillStyle = 'rgba(255,255,255,.12)'; g.fillRect(x - r, y - r * 0.3, r * 2, r * 0.18); g.fillRect(x - r, y + r * 0.2, r * 2, r * 0.12); g.restore();
+  disc(g, x, y, r, c1); g.save(); g.beginPath(); g.arc(x, y, r, 0, TAU); g.clip(); disc(g, x + r * 0.35, y + r * 0.35, r * 0.95, c2); g.fillStyle = alpha(CREAM, 0.18); g.fillRect(x - r, y - r * 0.3, r * 2, r * 0.16); g.restore();
+  g.beginPath(); g.arc(x, y, r, 0, TAU); ink(g, r * 2);
   if (ring) { g.strokeStyle = ring; g.lineWidth = r * 0.16; g.beginPath(); g.ellipse(x, y, r * 1.75, r * 0.45, -0.3, Math.PI * 0.05, Math.PI * 0.95); g.stroke(); }
 }
-function sunDisc(g, x, y, r, inner, outer) { const gr = g.createRadialGradient(x, y, r * 0.2, x, y, r * 2.2); gr.addColorStop(0, inner); gr.addColorStop(0.4, outer); gr.addColorStop(1, 'rgba(255,255,255,0)'); disc(g, x, y, r * 2.2, gr); disc(g, x, y, r, inner); }
-function fenceRow(g, TW, y, h, col) { g.fillStyle = col; for (let x = 4; x < TW; x += 14) { g.fillRect(x, y - h, 6, h); poly(g, [x, y - h, x + 3, y - h - 4, x + 6, y - h], col); } g.fillRect(0, y - h * 0.75, TW, 3); g.fillRect(0, y - h * 0.35, TW, 3); }
+function dome(g, x, y, s) {
+  sticker(g, () => { g.beginPath(); g.rect(x - s * 0.55, y - s * 0.12, s * 1.1, s * 0.12); }, P.grape[3], s);
+  g.beginPath(); g.arc(x, y - s * 0.12, s * 0.48, Math.PI, 0); g.closePath(); g.fillStyle = alpha(P.sky[0], 0.55); g.fill(); ink(g, s);
+  disc(g, x - s * 0.17, y - s * 0.38, s * 0.07, alpha(CREAM, 0.85));
+}
+function stars(g, w, h, n, r) { for (let i = 0; i < n; i++) { const s = r() < 0.15 ? 2.2 : 1.3; g.fillStyle = alpha(CREAM, (0.4 + r() * 0.6).toFixed(2)); g.fillRect(r() * w, r() * h, s, s); } }
 
 const SCENES = {
-  /* 1. Number Lane: a sunny street of numbered houses, picket fences and number signs. */
+  /* 1. Number Lane: a sunny street of numbered houses, picket fences and number tiles. */
   1: {
-    sky: ['#6cc4ff', '#bfe8ff', '#e9f8ff'], road: '#6d7186', line: '#ffffff', kerb: ['#ff4d4d', '#ffffff'], dust: 'rgba(220,205,170,', amb: 'flutter', ground: '#7fcf6a',
-    skyDeco(g, w, H) { sunDisc(g, w * 0.14, H * 0.2, H * 0.08, '#fff7b0', 'rgba(255,240,150,.45)'); },
+    sky: ['#4FB4F7', '#8ED2FF', '#D4F0FF'], road: P.stone[3], line: CREAM, kerb: [P.coral[2], CREAM], dust: P.peach[0], amb: 'flutter',
+    skyDeco(g, w, H) { sunDisc(g, w * 0.14, H * 0.2, H * 0.07, P.spark[0], alpha(P.spark[1], 0.5)); },
     far(g, TW, H, r) {
-      for (let i = 0; i < 5; i++) { const x = (i + r() * 0.6) * TW / 5, s = H * (0.04 + r() * 0.035); wrap(TW, x, s * 3, xx => cloud(g, xx, H * (0.1 + 0.06 * (i % 3)), s, 'rgba(255,255,255,.95)')); }
-      ridge(g, TW, H * 0.6, H * 0.07, [[2, 1], [3, 0.5]], '#a9e39b', H, 0.4);
+      for (let i = 0; i < 4; i++) { const x = (i + r() * 0.6) * TW / 4, s = H * (0.12 + r() * 0.06); wrap(TW, x, s, xx => prop(g, 'cloud', xx, H * (0.2 + 0.07 * (i % 3)), s)); }
+      ridge(g, TW, H * 0.6, H * 0.07, [[2, 1], [3, 0.5]], P.mint[1], H, 0.4);
     },
-    mid(g, TW, H, r) {
-      const y = ridge(g, TW, H * 0.76, H * 0.04, [[3, 1], [5, 0.5]], '#86d46f', H);
-      const walls = ['#ffd6a5', '#bde0fe', '#ffc8dd', '#caffbf', '#fdffb6', '#e7c6ff'], roofs = ['#e76f51', '#6d597a', '#2a9d8f', '#d62828', '#457b9d'];
+    mid(g, TW, H) {
+      const y = ridge(g, TW, H * 0.76, H * 0.04, [[3, 1], [5, 0.5]], mix(P.mint[1], P.mint[2], 0.5), H);
+      const walls = [P.peach[0], P.sky[0], P.coral[0], P.mint[0], P.spark[0], P.grape[0]], roofs = [P.coral[2], P.grape[2], P.mint[3], P.coral[3], P.sky[3]];
       const n = Math.max(3, Math.round(TW / 120));
       for (let i = 0; i < n; i++) {
         const x = (i + 0.5) * TW / n, s = H * 0.24;
         wrap(TW, x, s, xx => house(g, xx, y(xx) + 2, s, walls[i % walls.length], roofs[i % roofs.length], i + 1));
-        const tx = x + TW / n * 0.5; wrap(TW, tx, s * 0.5, xx => roundTree(g, xx, y(xx) + 2, H * 0.2, '#5cc05a', '#3f9d4a'));
+        const tx = x + TW / n * 0.5; wrap(TW, tx, H * 0.15, xx => prop(g, 'tree', xx, y(xx) + 3, H * 0.3));
       }
     },
     side(g, TW, H, r) {
-      g.fillStyle = '#6cc35a'; g.fillRect(0, H - H * 0.08, TW, H * 0.08);
-      fenceRow(g, TW, H - 2, H * 0.11, '#ffffff');
-      for (let x = 10; x < TW; x += 22 + r() * 18) flower(g, x, H - 1, H * 0.06, ['#ff5d8f', '#ffd23f', '#a06cd5', '#ff8c42'][Math.floor(r() * 4)]);
+      g.fillStyle = P.mint[2]; g.fillRect(0, H - H * 0.08, TW, H * 0.08);
+      fenceRow(g, TW, H - 2, H * 0.11);
+      for (let x = 10; x < TW; x += 26 + r() * 22) prop(g, 'flower', x, H + 1, H * 0.09, r() < 0.5 ? '' : 'b');
       const n = Math.max(2, Math.round(TW / 260));
       for (let i = 0; i < n; i++) {
-        const x = (i + 0.3) * TW / n, s = H * 0.13, num = 1 + Math.floor(r() * 10);
-        wrap(TW, x, s, xx => { g.fillStyle = '#8a8f9e'; g.fillRect(xx - 2, H - s * 2.1, 4, s * 2.1); disc(g, xx, H - s * 2.3, s * 0.7, '#ffd23f'); g.strokeStyle = '#2a1846'; g.lineWidth = 2; g.beginPath(); g.arc(xx, H - s * 2.3, s * 0.7, 0, TAU); g.stroke(); g.fillStyle = '#2a1846'; g.font = '700 ' + Math.round(s * 0.9) + 'px ' + FONT; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(String(num), xx, H - s * 2.26); });
+        const x = (i + 0.3) * TW / n, s = H * 0.15, num = 1 + Math.floor(r() * 10), hue = ['sky', 'grape', 'mint', 'coral'][i % 4];
+        wrap(TW, x, s, xx => { g.fillStyle = P.stone[2]; g.fillRect(xx - 2, H - s * 1.9, 4, s * 1.9); g.strokeStyle = INK; g.lineWidth = 1.2; g.strokeRect(xx - 2, H - s * 1.9, 4, s * 1.9); prop(g, 'tile', xx, H - s * 1.6, s * 1.2, num + ':' + hue); });
       }
     }
   },
-  /* 2. Sunny Speedway: seaside with sailboats, palms, beach umbrellas and sandcastles. */
+  /* 2. Sunny Speedway: a deep sea to the horizon (a far island, sails, rolling swell), a beach of palm groves with a
+     few whole umbrellas, sandcastles and shells by the road. */
   2: {
-    sky: ['#48b8ff', '#8fd6ff', '#fff3c4'], road: '#727690', line: '#ffffff', kerb: ['#2f80ff', '#ffffff'], dust: 'rgba(245,215,150,', amb: 'gull', ground: '#f6d78c',
-    skyDeco(g, w, H) { sunDisc(g, w * 0.8, H * 0.22, H * 0.1, '#fff2a8', 'rgba(255,220,120,.5)'); },
+    sky: ['#2F9BEF', '#5DBBF7', '#CDEFFF'], road: P.stone[3], line: CREAM, kerb: [P.coral[2], CREAM], dust: P.peach[0], amb: 'gull',
+    skyDeco(g, w, H) { sunDisc(g, w * 0.8, H * 0.2, H * 0.08, P.spark[0], alpha(P.spark[1], 0.55)); },
     far(g, TW, H, r) {
-      for (let i = 0; i < 3; i++) { const x = (i + r()) * TW / 3, s = H * 0.035; wrap(TW, x, s * 3, xx => cloud(g, xx, H * (0.12 + 0.08 * i), s)); }
-      g.fillStyle = vgrad(g, H * 0.5, H, ['#1e9bff', '#38c3e8', '#7fe0e0']); g.fillRect(0, H * 0.5, TW, H * 0.5);
-      const ix = TW * 0.3; wrap(TW, ix, H * 0.3, xx => { oval(g, xx, H * 0.5, H * 0.28, H * 0.06, 0, '#4fae5a'); palm(g, xx + H * 0.05, H * 0.48, H * 0.14); });
-      for (let i = 0; i < 3; i++) { const x = (i + 0.5 + r() * 0.3) * TW / 3; wrap(TW, x, H * 0.1, xx => sailboat(g, xx, H * (0.56 + r() * 0.05), H * 0.1)); }
-      g.fillStyle = 'rgba(255,255,255,.55)'; for (let i = 0; i < 26; i++) { const x = r() * TW, y = H * (0.54 + r() * 0.12); g.fillRect(x, y, 8 + r() * 14, 2); }
+      for (let i = 0; i < 3; i++) { const x = (i + r()) * TW / 3, s = H * (0.1 + r() * 0.06); wrap(TW, x, s, xx => prop(g, 'cloud', xx, H * (0.12 + 0.07 * i), s)); }
+      const hz = H * 0.36, shore = H * 0.82;
+      // the sea: deep blue at the horizon to bright turquoise at the shore, a pale haze line on the horizon
+      g.fillStyle = vgrad(g, hz, shore, ['#1663B8', '#1E86D6', '#2FB4E8', '#5ED8EE']); g.fillRect(0, hz, TW, H - hz);
+      g.fillStyle = alpha('#E9F8FF', 0.7); g.fillRect(0, hz, TW, Math.max(2, H * 0.012));
+      // a far island: two soft humps with a few tiny palms, tinted toward the sky (it is far away)
+      const ix = TW * 0.28; wrap(TW, ix, H * 0.5, xx => {
+        g.beginPath(); g.moveTo(xx - H * 0.46, hz + 1); g.quadraticCurveTo(xx - H * 0.3, hz - H * 0.11, xx - H * 0.12, hz - H * 0.05); g.quadraticCurveTo(xx + H * 0.02, hz - H * 0.15, xx + H * 0.2, hz - H * 0.04); g.quadraticCurveTo(xx + H * 0.34, hz - H * 0.01, xx + H * 0.44, hz + 1); g.closePath();
+        g.fillStyle = mix(P.mint[2], '#8FCBEA', 0.55); g.fill(); g.lineWidth = 1.5; g.strokeStyle = alpha(INK, 0.45); g.stroke();
+        for (const dx of [-0.2, -0.08, 0.06]) palm(g, xx + dx * H, hz - H * 0.06 - (dx === 0.06 ? H * 0.05 : 0), H * 0.07);
+      });
+      const lx = TW * 0.78; wrap(TW, lx, H * 0.2, xx => { g.fillStyle = mix(P.sky[2], '#8FCBEA', 0.5); g.beginPath(); g.ellipse(xx, hz + 1, H * 0.16, H * 0.025, 0, Math.PI, 0); g.fill(); });
+      // rolling swell: rows of foam dashes that grow longer and further apart toward the shore (depth)
+      for (let row = 0; row < 9; row++) {
+        const f = row / 8, y = hz + H * 0.03 + (shore - hz - H * 0.06) * Math.pow(f, 1.4), len = 6 + f * 26, gap = 30 + f * 70, a = 0.35 + f * 0.4;
+        g.fillStyle = alpha(CREAM, a.toFixed(2)); for (let x = r() * gap; x < TW; x += gap + r() * gap * 0.6) { rrect(g, x, y, len, 1.5 + f * 1.5, 1); g.fill(); }
+      }
+      // sails: small and pale far out, one bigger nearer in
+      for (let i = 0; i < 3; i++) { const x = (i + 0.2 + r() * 0.6) * TW / 3, near = i === 1, y = near ? H * 0.6 : H * (0.42 + r() * 0.05); wrap(TW, x, H * 0.1, xx => prop(g, 'boat', xx, y, near ? H * 0.14 : H * 0.07)); }
     },
     mid(g, TW, H, r) {
-      const y = ridge(g, TW, H * 0.8, H * 0.035, [[2, 1], [4, 0.6]], '#f6d78c', H);
-      const n = Math.max(3, Math.round(TW / 110));
-      for (let i = 0; i < n; i++) {
-        const x = (i + 0.3) * TW / n; wrap(TW, x, H * 0.3, xx => palm(g, xx, y(xx) + 3, H * (0.28 + (i % 2) * 0.06)));
-        const ux = x + TW / n * 0.55; wrap(TW, ux, H * 0.1, xx => umbrella(g, xx, y(xx) + 3, H * 0.13, i % 2 ? '#ff5d8f' : '#ff8c42', '#fff'));
+      // wet sand and a foam line where the sea meets the beach, then the dry dunes
+      const y = ridge(g, TW, H * 0.84, H * 0.03, [[2, 1], [5, 0.4]], '#FFE3A1', H);
+      g.strokeStyle = alpha(CREAM, 0.95); g.lineWidth = 3; g.beginPath(); for (let x = 0; x <= TW; x += 6) { const yy = y(x) - 4 + Math.sin(x / 13) * 1.6; x ? g.lineTo(x, yy) : g.moveTo(x, yy); } g.stroke();
+      // palm groves: clusters of one to three palms of different heights and leans, with open beach between them;
+      // an umbrella stands whole on the sand in front of every other grove
+      const groves = Math.max(2, Math.round(TW / 230));
+      for (let i = 0; i < groves; i++) {
+        const cx = (i + 0.25 + r() * 0.4) * TW / groves, n = 1 + Math.floor(r() * 3);
+        for (let j = 0; j < n; j++) { const x = cx + (j - (n - 1) / 2) * H * (0.16 + r() * 0.08), s = H * (0.24 + r() * 0.2); wrap(TW, x, H * 0.3, xx => palm(g, xx, y(xx) + 3, s)); }
+        { const ux = cx + H * (0.32 + r() * 0.12), hue = [P.coral[2], P.sky[2], P.grape[2], P.spark[2]][i % 4], us = H * (0.12 + (i % 2) * 0.03);
+          wrap(TW, ux, H * 0.2, xx => { const yy = y(xx) + H * 0.07; rrect(g, xx + us * 0.15, yy - us * 0.16, us * 0.9, us * 0.28, us * 0.08); g.fillStyle = [P.sky[1], P.coral[1], P.mint[1]][i % 3]; g.fill(); ink(g, us * 0.5); umbrella(g, xx, yy, us, hue); }); }
       }
     },
     side(g, TW, H, r) {
-      g.fillStyle = '#f3cf7d'; g.fillRect(0, H - H * 0.09, TW, H * 0.09);
-      for (let x = 30; x < TW - 20; x += 70 + r() * 60) {
-        const k = Math.floor(r() * 3), s = H * 0.09;
-        if (k === 0) { disc(g, x, H - s * 0.6, s * 0.6, '#fff'); g.save(); g.beginPath(); g.arc(x, H - s * 0.6, s * 0.6, 0, TAU); g.clip(); g.fillStyle = '#ff4d4d'; g.fillRect(x - s, H - s * 1.3, s * 0.65, s * 1.4); g.fillStyle = '#2f80ff'; g.fillRect(x + s * 0.3, H - s * 1.3, s, s * 1.4); g.restore(); }
-        else if (k === 1) { g.fillStyle = '#e8b65c'; g.fillRect(x - s * 0.7, H - s * 0.8, s * 1.4, s * 0.8); g.fillRect(x - s * 0.8, H - s * 1.2, s * 0.4, s * 0.4); g.fillRect(x + s * 0.4, H - s * 1.2, s * 0.4, s * 0.4); g.fillRect(x - s * 0.2, H - s * 1.5, s * 0.4, s * 0.7); poly(g, [x, H - s * 2.1, x + s * 0.35, H - s * 1.85, x, H - s * 1.6], '#ff4d4d'); g.fillStyle = '#5a3a1a'; g.fillRect(x - 1, H - s * 2.1, 2, s * 0.6); }
-        else { for (let i = 0; i < 5; i++) { const a = -Math.PI / 2 + i * TAU / 5; poly(g, [x, H - s * 0.4, x + Math.cos(a - 0.3) * s * 0.18, H - s * 0.4 + Math.sin(a - 0.3) * s * 0.18, x + Math.cos(a) * s * 0.45, H - s * 0.4 + Math.sin(a) * s * 0.45, x + Math.cos(a + 0.3) * s * 0.18, H - s * 0.4 + Math.sin(a + 0.3) * s * 0.18], '#ff7b54'); } }
+      // the roadside: sand with a few things spaced out (a sandcastle, shells, a flag), never a stamped row
+      g.fillStyle = '#FFD98A'; g.fillRect(0, H - H * 0.09, TW, H * 0.09);
+      const kinds = ['castle', 'shell', 'flag', 'castle', 'shell', 'cone'];
+      let k0 = Math.floor(r() * kinds.length);
+      for (let x = 50 + r() * 40; x < TW - 40; x += 110 + r() * 110) {
+        const k = kinds[k0++ % kinds.length], s = H * (0.08 + r() * 0.03);
+        if (k === 'shell') prop(g, 'shell', x, H, s * 1.1); else if (k === 'castle') castle(g, x, H, s * 1.2);
+        else if (k === 'flag') { g.fillStyle = INK; g.fillRect(x - 1.5, H - s * 2.6, 3, s * 2.6); poly(g, [x + 1.5, H - s * 2.6, x + s * 1.3, H - s * 2.25, x + 1.5, H - s * 1.9], [P.coral[2], P.sky[2], P.spark[2]][Math.floor(r() * 3)]); ink(g, s * 2); }
+        else { poly(g, [x - s * 0.45, H, x - s * 0.12, H - s * 1.1, x + s * 0.12, H - s * 1.1, x + s * 0.45, H], P.peach[2]); ink(g, s); g.fillStyle = CREAM; g.fillRect(x - s * 0.28, H - s * 0.6, s * 0.56, s * 0.16); }
       }
-      g.fillStyle = '#c99a5b'; for (let x = 0; x < TW; x += 40) g.fillRect(x + 18, H - H * 0.07, 4, H * 0.07);
     }
   },
-  /* 3. Desert Dash: red mesas, a big low sun, cacti and rolling tumbleweeds. */
+  /* 3. Desert Dash: red mesas, a big low sun, cacti, rocks and rolling tumbleweeds. */
   3: {
-    sky: ['#ff9a4d', '#ffc77a', '#ffe8b5'], road: '#b98552', line: '#fff3d6', kerb: ['#ff6b35', '#fff3d6'], dust: 'rgba(230,180,110,', amb: 'tumble', ground: '#eeb260',
-    skyDeco(g, w, H) { sunDisc(g, w * 0.3, H * 0.4, H * 0.14, '#fff0b0', 'rgba(255,190,90,.5)'); g.fillStyle = 'rgba(255,255,255,.35)'; g.fillRect(w * 0.55, H * 0.15, w * 0.2, 3); g.fillRect(w * 0.6, H * 0.2, w * 0.12, 3); },
+    sky: [P.peach[2], P.peach[1], P.spark[0]], road: P.cocoa[2], line: P.peach[0], kerb: [P.coral[2], P.peach[0]], dust: P.peach[1], amb: 'tumble',
+    skyDeco(g, w, H) { sunDisc(g, w * 0.3, H * 0.42, H * 0.12, P.spark[0], alpha(P.spark[1], 0.5)); },
     far(g, TW, H, r) {
       const n = Math.max(2, Math.round(TW / 220));
-      for (let i = 0; i < n; i++) {
-        const x = (i + 0.2 + r() * 0.5) * TW / n, w = H * (0.35 + r() * 0.3), h = H * (0.18 + r() * 0.16), b = H * 0.66;
-        wrap(TW, x, w, xx => { poly(g, [xx - w, b, xx - w * 0.7, b - h, xx + w * 0.6, b - h, xx + w, b], '#d4643f'); g.fillStyle = 'rgba(120,40,30,.25)'; g.fillRect(xx - w * 0.78, b - h * 0.6, w * 1.6, h * 0.08); g.fillRect(xx - w * 0.85, b - h * 0.3, w * 1.75, h * 0.08); poly(g, [xx + w * 0.3, b - h, xx + w * 0.6, b - h, xx + w, b, xx + w * 0.5, b], 'rgba(120,40,30,.25)'); });
-      }
+      for (let i = 0; i < n; i++) { const x = (i + 0.2 + r() * 0.5) * TW / n, w = H * (0.35 + r() * 0.3), h = H * (0.18 + r() * 0.16), b = H * 0.66; wrap(TW, x, w, xx => mesa(g, xx, b, w, h)); }
     },
-    mid(g, TW, H, r) {
-      const y = ridge(g, TW, H * 0.78, H * 0.05, [[2, 1], [3, 0.7]], '#efb662', H);
-      ridge(g, TW, H * 0.9, H * 0.03, [[4, 1]], '#e5a352', H, 1);
+    mid(g, TW, H) {
+      const y = ridge(g, TW, H * 0.78, H * 0.05, [[2, 1], [3, 0.7]], P.peach[1], H);
+      ridge(g, TW, H * 0.9, H * 0.03, [[4, 1]], mix(P.peach[1], P.peach[2], 0.5), H, 1);
       const n = Math.max(3, Math.round(TW / 130));
-      for (let i = 0; i < n; i++) { const x = (i + 0.5) * TW / n; wrap(TW, x, H * 0.15, xx => cactus(g, xx, y(xx) + 4, H * (0.2 + (i % 3) * 0.05))); }
+      for (let i = 0; i < n; i++) { const x = (i + 0.5) * TW / n; wrap(TW, x, H * 0.15, xx => prop(g, 'cactus', xx, y(xx) + 4, H * (0.26 + (i % 3) * 0.06))); }
     },
     side(g, TW, H, r) {
-      g.fillStyle = '#e09b4b'; g.fillRect(0, H - H * 0.08, TW, H * 0.08);
-      for (let x = 20; x < TW - 20; x += 50 + r() * 70) { if (r() < 0.5) rock(g, x, H, H * 0.12, '#b3653d', '#cf8457'); else cactus(g, x, H, H * 0.12, '#4caf50'); }
-      const sx = TW * 0.6; wrap(TW, sx, 30, xx => { g.fillStyle = '#8a5a34'; g.fillRect(xx - 2, H - H * 0.26, 4, H * 0.26); g.fillStyle = '#d9a066'; rrect(g, xx - H * 0.13, H - H * 0.32, H * 0.26, H * 0.1, 3); g.fill(); g.fillStyle = '#5a3a1a'; g.font = '700 ' + Math.round(H * 0.07) + 'px ' + FONT; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('100 ▶', xx, H - H * 0.265); });
+      g.fillStyle = P.peach[2]; g.fillRect(0, H - H * 0.08, TW, H * 0.08);
+      for (let x = 20; x < TW - 20; x += 50 + r() * 70) { if (r() < 0.5) prop(g, 'rock', x, H + 1, H * 0.1); else prop(g, 'cactus', x, H + 1, H * 0.15); }
+      const sx = TW * 0.6; wrap(TW, sx, 40, xx => prop(g, 'sign', xx, H + 1, H * 0.26, '100 →'));
     }
   },
   /* 4. Snowy Summit: snowy peaks, frosted pines, a cabin and snowmen, with falling snow. */
   4: {
-    sky: ['#7fbfff', '#bfe0ff', '#f1f8ff'], road: '#8ea6c0', line: '#ffffff', kerb: ['#3a7bff', '#ffffff'], dust: 'rgba(255,255,255,', amb: 'snow', ground: '#f3f9ff',
-    skyDeco(g, w, H) { sunDisc(g, w * 0.7, H * 0.18, H * 0.06, '#ffffff', 'rgba(255,255,255,.5)'); },
+    sky: [P.sky[1], P.sky[0], P.snow[0]], road: P.snow[3], line: CREAM, kerb: [P.sky[3], CREAM], dust: P.snow[0], amb: 'snow',
+    skyDeco(g, w, H) { sunDisc(g, w * 0.7, H * 0.18, H * 0.05, CREAM, alpha(CREAM, 0.6)); },
     far(g, TW, H, r) {
-      peaks(g, TW, Math.max(3, Math.round(TW / 160)), H * 0.68, H * 0.3, H * 0.5, r, '#86a3cc', 'rgba(40,60,110,.18)', '#ffffff');
-      peaks(g, TW, Math.max(4, Math.round(TW / 110)), H * 0.72, H * 0.15, H * 0.28, r, '#a7bfdf', 'rgba(40,60,110,.12)', '#ffffff');
+      peaks(g, TW, Math.max(3, Math.round(TW / 160)), H * 0.68, H * 0.3, H * 0.5, r, mix(P.sky[2], P.snow[2], 0.5), alpha(P.sky[3], 0.2), P.snow[0]);
+      peaks(g, TW, Math.max(4, Math.round(TW / 110)), H * 0.72, H * 0.15, H * 0.28, r, P.snow[2], alpha(P.sky[3], 0.15), P.snow[0]);
     },
     mid(g, TW, H, r) {
-      const y = ridge(g, TW, H * 0.78, H * 0.04, [[2, 1], [5, 0.4]], '#f3f9ff', H);
+      const y = ridge(g, TW, H * 0.78, H * 0.04, [[2, 1], [5, 0.4]], P.snow[1], H);
       const n = Math.max(5, Math.round(TW / 60));
-      for (let i = 0; i < n; i++) { const x = (i + r() * 0.8) * TW / n; wrap(TW, x, H * 0.12, xx => pine(g, xx, y(xx) + 3, H * (0.22 + r() * 0.12), i % 2 ? '#2d7d4f' : '#246b43', '#ffffff')); }
-      const cx = TW * 0.45; wrap(TW, cx, H * 0.2, xx => { const b = y(xx) + 3, s = H * 0.2; g.fillStyle = '#8a5a34'; g.fillRect(xx - s * 0.6, b - s * 0.6, s * 1.2, s * 0.6); g.fillStyle = 'rgba(0,0,0,.15)'; for (let k = 1; k < 4; k++) g.fillRect(xx - s * 0.6, b - s * 0.15 * k, s * 1.2, 2); poly(g, [xx - s * 0.75, b - s * 0.55, xx, b - s * 1.05, xx + s * 0.75, b - s * 0.55], '#ffffff'); g.fillStyle = '#ffd23f'; g.fillRect(xx - s * 0.35, b - s * 0.42, s * 0.22, s * 0.18); g.fillStyle = '#5a3a1a'; g.fillRect(xx + s * 0.1, b - s * 0.4, s * 0.22, s * 0.4); });
+      for (let i = 0; i < n; i++) { const x = (i + r() * 0.8) * TW / n; wrap(TW, x, H * 0.12, xx => prop(g, 'tree', xx, y(xx) + 3, H * (0.28 + r() * 0.12), 'snow')); }
+      const cx = TW * 0.45; wrap(TW, cx, H * 0.2, xx => cabin(g, xx, y(xx) + 3, H * 0.2));
     },
     side(g, TW, H, r) {
-      for (let x = 0; x < TW; x += 30) oval(g, x + 15, H - 1, 22, H * 0.05, 0, '#ffffff');
-      for (let x = 40; x < TW - 30; x += 90 + r() * 80) { if (r() < 0.55) snowman(g, x, H - 2, H * 0.2); else { g.fillStyle = '#8a8f9e'; g.fillRect(x - 1.5, H - H * 0.22, 3, H * 0.22); poly(g, [x + 1.5, H - H * 0.22, x + H * 0.12, H - H * 0.18, x + 1.5, H - H * 0.14], r() < 0.5 ? '#ff4d4d' : '#3a7bff'); } }
+      for (let x = 0; x < TW; x += 30) oval(g, x + 15, H - 1, 22, H * 0.05, 0, P.snow[0]);
+      for (let x = 40; x < TW - 30; x += 90 + r() * 80) { if (r() < 0.55) prop(g, 'snowman', x, H + 1, H * 0.22); else prop(g, 'flag', x, H + 1, H * 0.22); }
     }
   },
-  /* 5. Jungle Jam: misty mountains with a waterfall, giant trees, vines, leaves and spotty mushrooms. */
+  /* 5. Jungle Jam: misty mountains with a waterfall, big trees, leaves and spotty mushrooms. */
   5: {
-    sky: ['#58c9a5', '#a8e8c6', '#e6ffd8'], road: '#7b5230', line: '#f3d9a0', kerb: ['#ffb627', '#3f2a14'], dust: 'rgba(150,110,70,', amb: 'leaf', ground: '#2f8f4e',
-    skyDeco(g, w, H) { g.fillStyle = 'rgba(255,255,255,.18)'; for (let i = 0; i < 4; i++) poly(g, [w * (0.1 + i * 0.25), 0, w * (0.18 + i * 0.25), 0, w * (0.3 + i * 0.25), H, w * (0.16 + i * 0.25), H]); },
+    sky: [P.mint[1], P.mint[0], P.snow[0]], road: P.cocoa[2], line: P.peach[0], kerb: [P.peach[2], P.cocoa[3]], dust: P.cocoa[1], amb: 'leaf',
+    skyDeco(g, w, H) { g.fillStyle = alpha(CREAM, 0.2); for (let i = 0; i < 4; i++) poly(g, [w * (0.1 + i * 0.25), 0, w * (0.18 + i * 0.25), 0, w * (0.3 + i * 0.25), H, w * (0.16 + i * 0.25), H]); },
     far(g, TW, H, r) {
-      peaks(g, TW, Math.max(3, Math.round(TW / 170)), H * 0.7, H * 0.28, H * 0.42, r, '#5aa985', 'rgba(20,70,50,.15)');
-      const wx = TW * 0.35; wrap(TW, wx, H * 0.2, xx => { g.fillStyle = '#4b9474'; g.fillRect(xx - H * 0.12, H * 0.36, H * 0.24, H * 0.36); g.fillStyle = vgrad(g, H * 0.36, H * 0.7, ['#e9fbff', '#9fe3ff']); g.fillRect(xx - H * 0.05, H * 0.37, H * 0.1, H * 0.35); oval(g, xx, H * 0.71, H * 0.1, H * 0.025, 0, '#e9fbff'); });
-      ridge(g, TW, H * 0.7, H * 0.05, [[3, 1], [5, 0.5]], '#3f9a63', H, 0.7);
+      peaks(g, TW, Math.max(3, Math.round(TW / 170)), H * 0.7, H * 0.28, H * 0.42, r, mix(P.mint[2], P.sky[2], 0.3), alpha(P.mint[3], 0.25));
+      const wx = TW * 0.35; wrap(TW, wx, H * 0.2, xx => { sticker(g, () => { g.beginPath(); g.rect(xx - H * 0.05, H * 0.37, H * 0.1, H * 0.35); }, P.sky[1], H * 0.4); oval(g, xx, H * 0.71, H * 0.1, H * 0.025, 0, P.sky[0]); ink(g, H * 0.2); });
+      ridge(g, TW, H * 0.7, H * 0.05, [[3, 1], [5, 0.5]], P.mint[2], H, 0.7);
     },
-    mid(g, TW, H, r) {
-      const y = ridge(g, TW, H * 0.78, H * 0.04, [[4, 1], [7, 0.4]], '#2f8f4e', H);
+    mid(g, TW, H) {
+      const y = ridge(g, TW, H * 0.78, H * 0.04, [[4, 1], [7, 0.4]], P.mint[3], H);
       const n = Math.max(4, Math.round(TW / 90));
-      for (let i = 0; i < n; i++) {
-        const x = (i + 0.5) * TW / n, s = H * (0.3 + (i % 3) * 0.06);
-        wrap(TW, x, s * 0.8, xx => { const b = y(xx) + 4; g.fillStyle = '#6b4a2b'; g.fillRect(xx - s * 0.07, b - s * 0.9, s * 0.14, s * 0.9); disc(g, xx - s * 0.3, b - s * 0.95, s * 0.32, '#1f7a3d'); disc(g, xx + s * 0.3, b - s * 0.95, s * 0.3, '#1f7a3d'); disc(g, xx, b - s * 1.15, s * 0.4, '#2e9a4f'); disc(g, xx - s * 0.12, b - s * 1.25, s * 0.15, 'rgba(255,255,255,.18)');
-          g.strokeStyle = '#3fae5a'; g.lineWidth = Math.max(1, s * 0.035); for (let k = -1; k <= 1; k += 2) { g.beginPath(); g.moveTo(xx + k * s * 0.3, b - s * 0.75); g.quadraticCurveTo(xx + k * s * 0.36, b - s * 0.4, xx + k * s * 0.28, b - s * 0.3); g.stroke(); } });
-      }
+      for (let i = 0; i < n; i++) { const x = (i + 0.5) * TW / n; wrap(TW, x, H * 0.2, xx => prop(g, i % 3 === 1 ? 'bush' : 'tree', xx, y(xx) + 4, i % 3 === 1 ? H * 0.16 : H * (0.4 + (i % 3) * 0.08))); }
     },
     side(g, TW, H, r) {
-      g.fillStyle = '#25733f'; g.fillRect(0, H - H * 0.07, TW, H * 0.07);
-      for (let x = 10; x < TW; x += 26 + r() * 20) bigLeaf(g, x, H, H * (0.14 + r() * 0.1), (r() - 0.5) * 1.2, r() < 0.5 ? '#3fae5a' : '#2e9a4f');
-      for (let x = 50; x < TW - 30; x += 110 + r() * 90) { if (r() < 0.5) mushroom(g, x, H, H * 0.16); else { for (let i = 0; i < 5; i++) { const a = i * TAU / 5; oval(g, x + Math.cos(a) * H * 0.03, H - H * 0.13 + Math.sin(a) * H * 0.03, H * 0.04, H * 0.022, a, '#ff4d6d'); } disc(g, x, H - H * 0.13, H * 0.018, '#ffd23f'); } }
+      g.fillStyle = P.mint[3]; g.fillRect(0, H - H * 0.07, TW, H * 0.07);
+      for (let x = 10; x < TW; x += 30 + r() * 20) prop(g, 'grass', x, H + 1, H * (0.08 + r() * 0.05));
+      for (let x = 50; x < TW - 30; x += 110 + r() * 90) prop(g, r() < 0.5 ? 'mushroom' : 'leaf', x, H + 1, H * 0.14);
     }
   },
-  /* 6. Volcano Valley: a big smoking volcano, glowing lava pools and dark rocks with orange cracks. */
+  /* 6. Volcano Valley: a big smoking volcano, glowing lava pools and dark rocks. */
   6: {
-    sky: ['#2d1b4e', '#7a2f5a', '#ff8a3d'], road: '#3a3140', line: '#ffb347', kerb: ['#ff6b1a', '#2a2030'], dust: 'rgba(120,100,110,', amb: 'ember', ground: '#2e1f2b',
-    skyDeco(g, w, H) { g.fillStyle = 'rgba(255,255,255,.7)'; for (let i = 0; i < 18; i++) { const x = (i * 97 % 100) / 100 * w, y = (i * 53 % 40) / 100 * H; g.fillRect(x, y, 1.5, 1.5); } disc(g, w * 0.82, H * 0.16, H * 0.05, '#ffe9c2'); disc(g, w * 0.82 + H * 0.02, H * 0.15, H * 0.045, '#7a2f5a'); },
-    far(g, TW, H, r) {
-      ridge(g, TW, H * 0.68, H * 0.06, [[3, 1], [5, 0.5]], '#3a2233', H);
+    dark: true, sky: [P.grape[3], mix(P.grape[3], P.coral[2], 0.5), P.peach[2]], road: mix(P.stone[3], INK, 0.45), line: P.peach[1], kerb: [P.coral[2], mix(INK, P.grape[3], 0.3)], dust: P.stone[1], amb: 'ember',
+    skyDeco(g, w, H, r) { stars(g, w, H * 0.45, 18, r); disc(g, w * 0.82, H * 0.16, H * 0.05, P.spark[0]); disc(g, w * 0.82 + H * 0.02, H * 0.15, H * 0.045, mix(P.grape[3], P.coral[2], 0.4)); },
+    far(g, TW, H) {
+      ridge(g, TW, H * 0.68, H * 0.06, [[3, 1], [5, 0.5]], mix(P.grape[3], INK, 0.45), H);
       const vx = TW * 0.5; wrap(TW, vx, H * 0.75, xx => {
         const b = H * 0.72, top = H * 0.24, w = H * 0.7;
-        poly(g, [xx - w, b, xx - H * 0.12, top, xx + H * 0.12, top, xx + w, b], '#4b2a3c');
-        poly(g, [xx + H * 0.02, top, xx + H * 0.12, top, xx + w, b, xx + H * 0.25, b], 'rgba(0,0,0,.18)');
-        const gl = g.createRadialGradient(xx, top, 2, xx, top, H * 0.2); gl.addColorStop(0, 'rgba(255,200,80,.9)'); gl.addColorStop(1, 'rgba(255,90,30,0)'); disc(g, xx, top, H * 0.2, gl);
-        oval(g, xx, top, H * 0.12, H * 0.025, 0, '#ffb347');
-        g.strokeStyle = '#ff7a1a'; g.lineWidth = Math.max(2, H * 0.02); g.lineCap = 'round'; g.beginPath(); g.moveTo(xx - H * 0.05, top + 2); g.quadraticCurveTo(xx - H * 0.12, H * 0.42, xx - H * 0.2, H * 0.6); g.stroke(); g.beginPath(); g.moveTo(xx + H * 0.06, top + 2); g.quadraticCurveTo(xx + H * 0.1, H * 0.4, xx + H * 0.26, H * 0.64); g.stroke();
-        for (let k = 0; k < 4; k++) disc(g, xx + (k - 1.5) * H * 0.06 + k * 3, top - H * 0.06 - k * H * 0.05, H * (0.05 + k * 0.012), 'rgba(110,80,110,' + (0.7 - k * 0.12) + ')');
+        const cone = () => poly(g, [xx - w, b, xx - H * 0.12, top, xx + H * 0.12, top, xx + w, b]);
+        cone(); g.fillStyle = mix(P.cocoa[3], P.grape[3], 0.5); g.fill();
+        poly(g, [xx + H * 0.02, top, xx + H * 0.12, top, xx + w, b, xx + H * 0.25, b], alpha(INK, 0.2));
+        const gl = g.createRadialGradient(xx, top, 2, xx, top, H * 0.2); gl.addColorStop(0, alpha(P.peach[1], 0.9)); gl.addColorStop(1, alpha(P.coral[2], 0)); disc(g, xx, top, H * 0.2, gl);
+        g.strokeStyle = P.peach[2]; g.lineWidth = Math.max(2, H * 0.02); g.lineCap = 'round'; g.beginPath(); g.moveTo(xx - H * 0.05, top + 2); g.quadraticCurveTo(xx - H * 0.12, H * 0.42, xx - H * 0.2, H * 0.6); g.stroke(); g.beginPath(); g.moveTo(xx + H * 0.06, top + 2); g.quadraticCurveTo(xx + H * 0.1, H * 0.4, xx + H * 0.26, H * 0.64); g.stroke();
+        cone(); ink(g, H); oval(g, xx, top, H * 0.12, H * 0.025, 0, P.peach[1]); ink(g, H * 0.3);
+        for (let k = 0; k < 4; k++) { disc(g, xx + (k - 1.5) * H * 0.06 + k * 3, top - H * 0.06 - k * H * 0.05, H * (0.05 + k * 0.012), mix(P.stone[2], P.grape[3], 0.3 + k * 0.1)); ink(g, H * 0.3); }
       });
     },
-    mid(g, TW, H, r) {
-      const y = ridge(g, TW, H * 0.8, H * 0.04, [[3, 1], [6, 0.5]], '#2e1f2b', H);
+    mid(g, TW, H) {
+      const y = ridge(g, TW, H * 0.8, H * 0.04, [[3, 1], [6, 0.5]], mix(P.grape[3], INK, 0.6), H);
       const n = Math.max(3, Math.round(TW / 120));
       for (let i = 0; i < n; i++) {
         const x = (i + 0.5) * TW / n;
-        wrap(TW, x, H * 0.2, xx => { const b = y(xx) + 6; const gl = g.createRadialGradient(xx, b, 1, xx, b, H * 0.14); gl.addColorStop(0, 'rgba(255,160,60,.8)'); gl.addColorStop(1, 'rgba(255,80,20,0)'); disc(g, xx, b, H * 0.14, gl); oval(g, xx, b, H * 0.1, H * 0.02, 0, '#ff8a1a'); oval(g, xx, b, H * 0.06, H * 0.01, 0, '#ffd23f'); });
-        const rx = x + TW / n * 0.5; wrap(TW, rx, H * 0.15, xx => poly(g, [xx - H * 0.12, y(xx) + 5, xx - H * 0.04, y(xx) - H * 0.16, xx + H * 0.02, y(xx) - H * 0.09, xx + H * 0.06, y(xx) - H * 0.2, xx + H * 0.13, y(xx) + 5], '#1f141d'));
+        wrap(TW, x, H * 0.2, xx => { const b = y(xx) + 6; const gl = g.createRadialGradient(xx, b, 1, xx, b, H * 0.14); gl.addColorStop(0, alpha(P.peach[2], 0.8)); gl.addColorStop(1, alpha(P.coral[2], 0)); disc(g, xx, b, H * 0.14, gl); oval(g, xx, b, H * 0.1, H * 0.02, 0, P.peach[2]); ink(g, H * 0.2); oval(g, xx, b, H * 0.06, H * 0.01, 0, P.peach[0]); });
+        const rx = x + TW / n * 0.5; wrap(TW, rx, H * 0.15, xx => prop(g, 'rock', xx, y(xx) + 6, H * 0.13));
       }
     },
     side(g, TW, H, r) {
-      g.fillStyle = '#241820'; g.fillRect(0, H - H * 0.08, TW, H * 0.08);
-      for (let x = 20; x < TW - 20; x += 40 + r() * 60) {
-        const s = H * (0.1 + r() * 0.08); rock(g, x, H, s, '#1a1218', '#2f2430');
-        g.strokeStyle = '#ff8a1a'; g.lineWidth = 1.5; g.beginPath(); g.moveTo(x - s * 0.2, H - s * 0.1); g.lineTo(x - s * 0.05, H - s * 0.3); g.lineTo(x + s * 0.12, H - s * 0.22); g.stroke();
-      }
-      for (let x = 60; x < TW - 20; x += 140 + r() * 80) { poly(g, [x - 5, H, x - 2, H - H * 0.12, x + 3, H], '#ffb347'); poly(g, [x + 2, H, x + 6, H - H * 0.08, x + 9, H], '#ff7a1a'); }
+      g.fillStyle = mix(P.grape[3], INK, 0.7); g.fillRect(0, H - H * 0.08, TW, H * 0.08);
+      for (let x = 20; x < TW - 20; x += 50 + r() * 60) prop(g, 'rock', x, H + 1, H * (0.1 + r() * 0.06));
+      for (let x = 60; x < TW - 20; x += 140 + r() * 80) { sticker(g, () => poly(g, [x - 5, H, x - 2, H - H * 0.12, x + 3, H]), P.peach[1], 20); sticker(g, () => poly(g, [x + 2, H, x + 6, H - H * 0.08, x + 9, H]), P.coral[2], 16); }
     }
   },
-  /* 7. Galaxy Grand Prix: a starry sky with a ringed planet, craters, glass domes and neon posts. */
+  /* 7. Galaxy Grand Prix: a starry sky with a ringed planet, craters, glass domes, rockets and lanterns. */
   7: {
-    sky: ['#0b0b2e', '#25125a', '#4b1f7a'], road: '#1e1b4b', line: '#4ff0ff', kerb: ['#ff4fd8', '#3a2f8a'], dust: 'rgba(180,160,255,', amb: 'twinkle', ground: '#5b45b0',
+    dark: true, sky: [mix(INK, P.grape[3], 0.4), mix(INK, P.grape[3], 0.7), P.grape[3]], road: mix(INK, P.grape[3], 0.5), line: P.sky[1], kerb: [P.grape[1], mix(INK, P.grape[3], 0.6)], dust: P.grape[1], amb: 'twinkle',
     skyDeco(g, w, H, r) {
-      for (let i = 0; i < 6; i++) { const gr = g.createRadialGradient(0, 0, 1, 0, 0, 1); gr.addColorStop(0, i % 2 ? 'rgba(255,80,200,.18)' : 'rgba(80,160,255,.18)'); gr.addColorStop(1, 'rgba(0,0,0,0)'); g.save(); g.translate(r() * w, r() * H * 0.7); g.scale(H * 0.3, H * 0.15); disc(g, 0, 0, 1, gr); g.restore(); }
-      for (let i = 0; i < 90; i++) { g.fillStyle = 'rgba(255,255,255,' + (0.4 + r() * 0.6) + ')'; const s = r() < 0.15 ? 2 : 1.2; g.fillRect(r() * w, r() * H * 0.85, s, s); }
-      planet(g, w * 0.76, H * 0.3, H * 0.13, '#ffd59e', '#e0702b', 'rgba(255,230,190,.8)');
-      planet(g, w * 0.18, H * 0.16, H * 0.05, '#c9f2ff', '#5aa0e0');
+      stars(g, w, H * 0.85, 90, r);
+      planet(g, w * 0.76, H * 0.3, H * 0.12, P.peach[1], P.peach[2], alpha(P.peach[0], 0.85));
+      planet(g, w * 0.18, H * 0.16, H * 0.05, P.sky[1], P.sky[2]);
     },
     far(g, TW, H, r) {
-      for (let i = 0; i < 4; i++) { const x = r() * TW, y = H * (0.2 + r() * 0.3), s = H * (0.02 + r() * 0.03); wrap(TW, x, s, xx => { rock(g, xx, y + s * 0.5, s * 2, '#6e5aa8', '#8a76c4'); }); }
-      ridge(g, TW, H * 0.7, H * 0.05, [[2, 1], [5, 0.4]], '#3b2f7a', H, 0.3);
+      for (let i = 0; i < 4; i++) { const x = r() * TW, y = H * (0.2 + r() * 0.3), s = H * (0.05 + r() * 0.05); wrap(TW, x, s, xx => prop(g, 'rock', xx, y + s * 0.5, s)); }
+      ridge(g, TW, H * 0.7, H * 0.05, [[2, 1], [5, 0.4]], mix(P.grape[3], INK, 0.3), H, 0.3);
     },
     mid(g, TW, H, r) {
-      const y = ridge(g, TW, H * 0.78, H * 0.035, [[3, 1], [4, 0.5]], '#5b45b0', H);
-      for (let i = 0; i < 10; i++) { const x = r() * TW, yy = H * (0.84 + r() * 0.12); wrap(TW, x, H * 0.08, xx => { oval(g, xx, yy, H * 0.06, H * 0.015, 0, '#4a378f'); oval(g, xx, yy - 1, H * 0.045, H * 0.009, 0, '#3b2c78'); }); }
+      const y = ridge(g, TW, H * 0.78, H * 0.035, [[3, 1], [4, 0.5]], P.grape[2], H);
+      for (let i = 0; i < 10; i++) { const x = r() * TW, yy = H * (0.86 + r() * 0.1); wrap(TW, x, H * 0.08, xx => { oval(g, xx, yy, H * 0.06, H * 0.015, 0, P.grape[3]); oval(g, xx, yy - 1, H * 0.045, H * 0.009, 0, mix(P.grape[3], INK, 0.3)); }); }
       const n = Math.max(2, Math.round(TW / 200));
-      for (let i = 0; i < n; i++) { const x = (i + 0.4) * TW / n; wrap(TW, x, H * 0.2, xx => { dome(g, xx, y(xx) + 3, H * 0.22); g.strokeStyle = '#b8a8ff'; g.lineWidth = 2; g.beginPath(); g.moveTo(xx + H * 0.2, y(xx) + 3); g.lineTo(xx + H * 0.2, y(xx) - H * 0.22); g.stroke(); disc(g, xx + H * 0.2, y(xx) - H * 0.23, 3, '#ff4fd8'); }); }
+      for (let i = 0; i < n; i++) { const x = (i + 0.4) * TW / n; wrap(TW, x, H * 0.2, xx => { dome(g, xx, y(xx) + 3, H * 0.22); prop(g, 'rocket', xx + H * 0.24, y(xx) + 4, H * 0.24); }); }
     },
     side(g, TW, H, r) {
-      g.fillStyle = '#463597'; g.fillRect(0, H - H * 0.07, TW, H * 0.07);
-      for (let x = 30; x < TW; x += 60) {
-        const c = (x / 60) % 2 < 1 ? '#4ff0ff' : '#ff4fd8';
-        g.fillStyle = '#8f86c9'; g.fillRect(x - 1.5, H - H * 0.2, 3, H * 0.2);
-        const gl = g.createRadialGradient(x, H - H * 0.21, 1, x, H - H * 0.21, H * 0.06); gl.addColorStop(0, c); gl.addColorStop(1, 'rgba(0,0,0,0)'); disc(g, x, H - H * 0.21, H * 0.06, gl); disc(g, x, H - H * 0.21, 2.5, '#fff');
-      }
-      for (let x = 15; x < TW; x += 80 + r() * 50) { poly(g, [x - 4, H, x, H - H * 0.1, x + 4, H], '#9be7ff'); poly(g, [x + 3, H, x + 7, H - H * 0.06, x + 10, H], '#ff9cf0'); }
+      g.fillStyle = P.grape[3]; g.fillRect(0, H - H * 0.07, TW, H * 0.07);
+      for (let x = 30; x < TW; x += 70) prop(g, 'lantern', x, H + 1, H * 0.2);
+      for (let x = 15; x < TW; x += 80 + r() * 50) { sticker(g, () => poly(g, [x - 4, H, x, H - H * 0.1, x + 4, H]), P.sky[1], 16); sticker(g, () => poly(g, [x + 3, H, x + 7, H - H * 0.06, x + 10, H]), P.grape[1], 12); }
     }
   }
 };
 const sceneOf = track => (track === 8 ? 2 : track);
 
 /* =====================================================================================
-   Karts and drivers. A kart is drawn in "kart units": x from -50 (back) to +50 (front),
-   y from -80 (top of the driver's ears) to 0 (where the wheels touch the road).
+   Karts and drivers. A kart is drawn in "kart units": x from -50 (back) to +50 (front), y from -80 (top of the
+   driver) to 0 (where the wheels touch the road). The driver is a kit character (the player's own avatar, the fox,
+   Zippy the bunny, Bolt and Rex the frog); the kart is a sticker in the kart's kit colour with an Ink outline.
    The body and driver are drawn once into a cached sprite; wheels, flames and wobble are live.
    ===================================================================================== */
-function paintDriver(g, info, hx, hy) {
-  const k = info.kind;
-  if (k === 'bunny') {
-    for (const [dx, a] of [[-7, -0.45], [2, -0.2]]) { oval(g, hx + dx - 3, hy - 22, 5, 14, a, '#ffffff'); oval(g, hx + dx - 3, hy - 21, 2.4, 9, a, '#ffb3d1'); }
-    disc(g, hx, hy, 14, '#ffffff'); g.strokeStyle = 'rgba(0,0,0,.12)'; g.lineWidth = 1.5; g.beginPath(); g.arc(hx, hy, 14, 0, TAU); g.stroke();
-    disc(g, hx + 3, hy - 3, 2.4, '#2a1846'); disc(g, hx + 10, hy - 3, 2.2, '#2a1846'); disc(g, hx + 3.7, hy - 3.8, 0.8, '#fff');
-    oval(g, hx + 12, hy + 2, 2.4, 1.8, 0, '#ff6fa8'); disc(g, hx + 1, hy + 4, 3, 'rgba(255,120,170,.35)');
-    g.strokeStyle = '#2a1846'; g.lineWidth = 1.3; g.beginPath(); g.arc(hx + 9, hy + 5, 3, 0.2, Math.PI - 0.6); g.stroke();
-  } else if (k === 'robot') {
-    g.strokeStyle = '#8b97a8'; g.lineWidth = 2.5; g.beginPath(); g.moveTo(hx - 2, hy - 13); g.lineTo(hx - 2, hy - 24); g.stroke(); disc(g, hx - 2, hy - 25, 3.6, '#ffd23f');
-    g.fillStyle = '#c7d2e2'; rrect(g, hx - 14, hy - 14, 28, 26, 7); g.fill(); g.strokeStyle = '#8b97a8'; g.lineWidth = 1.5; g.stroke();
-    g.fillStyle = '#1b2b4a'; rrect(g, hx - 9, hy - 8, 22, 11, 5); g.fill();
-    disc(g, hx - 2, hy - 2.5, 2.6, '#5ff7ff'); disc(g, hx + 7, hy - 2.5, 2.6, '#5ff7ff');
-    g.fillStyle = '#8b97a8'; for (let i = 0; i < 4; i++) g.fillRect(hx - 5 + i * 4, hy + 6, 2, 4);
-    disc(g, hx - 14, hy, 3, '#ff5fa8');
-  } else if (k === 'dino') {
-    poly(g, [hx - 10, hy - 11, hx - 6, hy - 19, hx - 2, hy - 13, hx + 2, hy - 20, hx + 6, hy - 13], '#4a8f17');
-    poly(g, [hx - 13, hy - 4, hx - 20, hy - 6, hx - 14, hy + 2], '#4a8f17');
-    oval(g, hx - 1, hy, 14, 12.5, 0, '#8bdc4a'); oval(g, hx + 9, hy + 4, 10, 7.5, 0, '#8bdc4a');
-    disc(g, hx + 3, hy - 5, 4.2, '#fff'); disc(g, hx + 4.2, hy - 5, 2.2, '#2a1846'); disc(g, hx + 15, hy + 1, 1.1, '#2a1846');
-    g.strokeStyle = '#2a1846'; g.lineWidth = 1.3; g.beginPath(); g.arc(hx + 10, hy + 4, 5, 0.3, Math.PI - 0.9); g.stroke();
-    disc(g, hx + 1, hy + 4, 2.6, 'rgba(255,140,120,.4)');
-  } else {
-    // A human: a shiny helmet in the kart colour with the player's picture in the visor.
-    disc(g, hx, hy, 16, info.color); g.fillStyle = 'rgba(255,255,255,.85)'; g.fillRect(hx - 2, hy - 16, 4, 6);
-    disc(g, hx + 2, hy + 1, 12.2, '#fff8ee');
-    g.font = '19px ' + '"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(info.face, hx + 2, hy + 2);
-    g.strokeStyle = info.dark; g.lineWidth = 2; g.beginPath(); g.arc(hx, hy, 16, 0, TAU); g.stroke();
-  }
-}
-function paintKart(g, info) {
-  const c = info.color, d = info.dark;
-  g.fillStyle = d; rrect(g, -50, -42, 17, 6, 3); g.fill(); g.fillRect(-45, -38, 4, 14);          // spoiler
-  g.fillStyle = c; g.beginPath(); g.moveTo(-44, -12); g.lineTo(-46, -26); g.quadraticCurveTo(-45, -31, -37, -31); g.lineTo(12, -29);
-  g.quadraticCurveTo(32, -27, 45, -19); g.quadraticCurveTo(51, -15, 48, -10); g.lineTo(40, -8); g.lineTo(-40, -8); g.closePath(); g.fill();
-  g.fillStyle = 'rgba(255,255,255,.35)'; g.beginPath(); g.moveTo(-40, -27); g.lineTo(10, -26); g.quadraticCurveTo(26, -25, 36, -20); g.lineTo(-40, -22); g.closePath(); g.fill();
-  g.fillStyle = d; g.fillRect(-42, -13, 86, 5); rrect(g, 40, -16, 10, 7, 3); g.fill();
-  g.fillStyle = d; rrect(g, -26, -46, 9, 20, 4); g.fill();                                      // seat back
-  paintDriver(g, info, -6, -46);
-  g.strokeStyle = '#2a2a3a'; g.lineWidth = 3; g.lineCap = 'round'; g.beginPath(); g.moveTo(9, -30); g.lineTo(15, -39); g.stroke(); // steering
-  disc(g, 24, -20, 7.5, '#ffffff'); g.fillStyle = '#2a1846'; g.font = '700 10px ' + FONT; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(info.num, 24, -19.5);
-}
 const spriteCache = new Map();
+/** A kit character, cropped to the head and shoulders (a driver), px CSS px tall at d device px per px. */
+function driverCanvas(spec, px, d, headOnly) {
+  const key = 'd' + JSON.stringify(spec) + px + '|' + d + (headOnly ? 'h' : '');
+  let c = spriteCache.get(key); if (c) return c;
+  const full = Oomba.art.toCanvas(spec, Math.round(px * d * 2.6), 'happy'), w = full.width, h = full.height;
+  const data = full.getContext('2d').getImageData(0, 0, w, h).data; let top = 0;
+  find: for (let y = 0; y < h; y++) for (let x = 0; x < w; x += 2) if (data[(y * w + x) * 4 + 3] > 30) { top = y; break find; }
+  // a head portrait starts below the Oomba's tall antenna, so Bolt's face (not just his spark) fills the disc
+  const body = h - top, cut = Math.round(body * (headOnly ? 0.5 : 0.62)), skip = headOnly && ((spec && spec.species) || spec) === 'oomba' ? Math.round(body * 0.3) : 0;
+  c = makeCanvas(w, cut); c.getContext('2d').drawImage(full, 0, top + skip, w, cut, 0, 0, w, cut);
+  spriteCache.set(key, c); return c;
+}
+function paintKart(g, info, d, s) {
+  const c = C(info.kart), sh = C(info.kart, 'shade'), lw = 2.8;
+  const out = () => { g.lineWidth = lw; g.strokeStyle = INK; g.lineJoin = 'round'; g.stroke(); };
+  g.beginPath(); rrect(g, -50, -42, 18, 7, 3); g.fillStyle = sh; g.fill(); out();                    // spoiler
+  g.beginPath(); g.rect(-45, -37, 5, 14); g.fillStyle = sh; g.fill(); out();
+  g.beginPath(); rrect(g, -27, -48, 10, 22, 4); g.fillStyle = sh; g.fill(); out();                    // seat back
+  // the driver sits in the kart (the body hides their legs)
+  const dc = driverCanvas(info.char, 46 * s, d), dh = 46, dw = dh * dc.width / dc.height;   // the driver's head is about half the kart's height
+  g.drawImage(dc, -6 - dw / 2, -72, dw, dh);
+  const body = () => { g.beginPath(); g.moveTo(-44, -10); g.lineTo(-46, -26); g.quadraticCurveTo(-45, -31, -37, -31); g.lineTo(12, -29); g.quadraticCurveTo(32, -27, 45, -19); g.quadraticCurveTo(51, -15, 48, -10); g.closePath(); };
+  body(); g.fillStyle = c; g.fill();
+  g.save(); body(); g.clip(); g.fillStyle = sh; g.fillRect(-50, -16, 100, 8); g.fillStyle = CREAM; g.fillRect(-50, -25, 100, 4.5); g.fillStyle = alpha(CREAM, 0.45); g.beginPath(); g.moveTo(-40, -27); g.lineTo(10, -26); g.quadraticCurveTo(26, -25, 36, -20); g.lineTo(-40, -23); g.closePath(); g.fill(); g.restore();
+  body(); out();
+  g.strokeStyle = INK; g.lineWidth = 3.4; g.lineCap = 'round'; g.beginPath(); g.moveTo(9, -30); g.lineTo(15, -40); g.stroke();   // steering
+  disc(g, 25, -20, 10, CREAM); g.lineWidth = 2.4; g.strokeStyle = INK; g.stroke();
+  g.fillStyle = INK; g.font = font(13); g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(info.num, 25, -19.5);
+}
 /** Cached kart body+driver sprite for a kart drawn `kw` CSS px wide. */
 function kartSprite(info, kw, d) {
   const key = info.key + '|' + Math.round(kw) + '|' + d; let sp = spriteCache.get(key);
   if (!sp) {
-    const s = kw / 100, [c, g] = layer(110 * s, 90 * s, d);
-    g.scale(s, s); g.translate(55, 86); paintKart(g, info);
-    sp = { c, w: 110 * s, h: 90 * s, ox: 55 * s, oy: 86 * s }; spriteCache.set(key, sp);
-    if (spriteCache.size > 80) spriteCache.delete(spriteCache.keys().next().value);
+    const s = kw / 100, [c, g] = layer(110 * s, 96 * s, d);
+    g.scale(s, s); g.translate(55, 92); paintKart(g, info, d, s);
+    sp = { c, w: 110 * s, h: 96 * s, ox: 55 * s, oy: 92 * s }; spriteCache.set(key, sp);
+    if (spriteCache.size > 120) spriteCache.delete(spriteCache.keys().next().value);
   }
   return sp;
 }
-/** Cached driver-only head sprite in a round badge, `size` CSS px across. */
+/** Cached driver head in a round sticker badge in the kart colour, `size` CSS px across. */
 function headSprite(info, size, d) {
   const key = 'h' + info.key + '|' + Math.round(size) + '|' + d; let sp = spriteCache.get(key);
   if (!sp) {
-    const s = size / 44, [c, g] = layer(size, size, d);
-    g.scale(s, s); disc(g, 22, 22, 21, '#fff'); disc(g, 22, 22, 19, info.color);
-    g.save(); g.beginPath(); g.arc(22, 22, 19, 0, TAU); g.clip(); paintDriver(g, info, info.kind === 'human' ? 21 : 20, info.kind === 'bunny' ? 28 : 25); g.restore();
+    const [c, g] = layer(size, size, d), r = size / 2 - 1.5;
+    disc(g, size / 2, size / 2, r, C(info.kart, 'light'));
+    g.save(); g.beginPath(); g.arc(size / 2, size / 2, r, 0, TAU); g.clip();
+    const dc = driverCanvas(info.char, size, d, true), h = size * 0.98, w = h * dc.width / dc.height; g.drawImage(dc, size / 2 - w / 2, size * 0.1, w, h); g.restore();
+    g.beginPath(); g.arc(size / 2, size / 2, r, 0, TAU); g.lineWidth = Math.max(1.5, size * 0.07); g.strokeStyle = INK; g.stroke();
     sp = { c, w: size, h: size }; spriteCache.set(key, sp);
   }
   return sp;
 }
 
 /* =====================================================================================
-   Views: one canvas showing the race from one kart's point of view (two in two-player mode,
-   one for the title screen's demo race, small ones for the track picker).
+   Views: one canvas showing the race from one kart's point of view (two in two-player mode, one for the title
+   screen's demo race, small ones for the track picker). Canvases are sized by Oomba.fit.
    ===================================================================================== */
+let COVER = false;   // __brbTest.cover(): a closer road for the library cover (bigger kart and driver)
 function metrics(w, h, kind) {
-  const title = kind === 'title', hud = kind === 'race' ? Math.round(Math.max(30, Math.min(40, h * 0.12))) : 0;
-  let roadTop = Math.round(title ? h * 0.66 : kind === 'thumb' ? h * 0.52 : hud + (h - hud) * (h < 200 ? 0.34 : 0.42));
+  const title = kind === 'title', hud = kind === 'race' ? Math.round(Math.max(34, Math.min(44, h * 0.12))) : 0;
+  let roadTop = Math.round(title ? h * (h > w * 1.2 ? 0.7 : 0.62) : kind === 'thumb' ? h * 0.52 : hud + (h - hud) * (COVER ? 0.2 : h < 200 ? 0.34 : 0.42));
   const roadBot = Math.round(h - Math.max(3, h * 0.035));
   // On a tall view keep the lanes a sensible size and show more scenery instead.
-  const maxLane = Math.max(44, Math.min(80, w * 0.085, h * 0.14));
+  const maxLane = Math.max(44, Math.min(80, w * (COVER ? 0.14 : 0.085), h * 0.14));
   if (kind === 'race' && (roadBot - roadTop) / 4 > maxLane) roadTop = Math.round(roadBot - maxLane * 4);
   const laneH = (roadBot - roadTop) / 4;
-  const kartW = Math.max(26, Math.min(170, laneH * 2.3, w * 0.24));
+  const kartW = Math.max(26, Math.min(200, laneH * (title ? 2.9 : 2.6), w * (COVER ? 0.36 : title ? 0.3 : 0.27)));
   const ppm = Math.max(4.5, Math.min(13, w / 70));            // pixels per metre (about 70 m of road across the view)
-  return { w, h, hud, roadTop, roadBot, laneH, kartW, ppm, x0: Math.round(w * (kind === 'title' ? 0.45 : 0.34)) };
+  return { w, h, hud, roadTop, roadBot, laneH, kartW, ppm, x0: Math.round(w * (kind === 'title' ? (w > h * 1.2 ? 0.73 : 0.46) : 0.34)) };
 }
 function makeView(canvas, kind) {
-  const P = 140;
-  return { cv: canvas, g: canvas.getContext('2d'), kind, w: 0, h: 0, dpr: 1, m: null, tiles: null, scene: 1, follow: 0, lead: 0,
+  const N = 140;
+  return { cv: canvas, g: canvas.getContext('2d'), kind, w: 0, h: 0, dpr: 1, m: null, tiles: null, scene: 1, follow: 0, lead: 0, fit: null, night: false,
     // kart particles (dust, flames, sparks, puffs) in world metres across, lanes down; plain arrays reused every frame
-    px: new Float32Array(P), py: new Float32Array(P), pvx: new Float32Array(P), pvy: new Float32Array(P), pl: new Float32Array(P), pm: new Float32Array(P), ps: new Float32Array(P), pk: new Uint8Array(P), pn: 0,
+    px: new Float32Array(N), py: new Float32Array(N), pvx: new Float32Array(N), pvy: new Float32Array(N), pl: new Float32Array(N), pm: new Float32Array(N), ps: new Float32Array(N), pk: new Uint8Array(N), pn: 0,
     amb: [], emit: [0, 0, 0, 0], pops: [] };
 }
-/** Match the canvas to its box (CSS px * device pixels). Returns true when the size changed. */
+/** Fit the view's canvas to its box with the kit (Oomba.fit: device pixels, capped), in CSS px. */
+function fitView(v) {
+  if (v.fit) v.fit.off();
+  v.fit = Oomba.fit(v.cv, { size: [100, 100], fit: 'expand', dprCap: 2 });
+  const k = v.fit.scale / v.fit.dpr, w = Math.round(v.fit.vw * k), h = Math.round(v.fit.vh * k);
+  const changed = w !== v.w || h !== v.h || v.fit.dpr !== v.dpr || v.night !== NIGHT();
+  v.w = w; v.h = h; v.dpr = v.fit.dpr; v.night = NIGHT();
+  if (changed) { v.m = w > 0 && h > 0 ? metrics(w, h, v.kind) : null; v.tiles = null; }
+  return changed;
+}
+/** Small views (track cards) are sized by hand: they are drawn once. */
 function sizeView(v, w, h) {
   w = Math.round(w); h = Math.round(h); const d = DPR();
   if (w === v.w && h === v.h && d === v.dpr) return false;
@@ -1368,11 +1474,16 @@ function sizeView(v, w, h) {
   v.m = w > 0 && h > 0 ? metrics(w, h, v.kind) : null; v.tiles = null; return true;
 }
 function buildTiles(v) {
-  const sc = SCENES[v.scene], m = v.m, d = v.dpr, H = m.roadTop, TW = Math.ceil(Math.max(m.w * 1.3, 520));
+  const sc = SCENES[v.scene], m = v.m, d = v.dpr, H = m.roadTop, TW = Math.ceil(Math.max(m.w * 1.3, 520)), night = v.night && !sc.dark;
   const [sky, gs] = layer(m.w, H, d);
-  gs.fillStyle = vgrad(gs, 0, H, sc.sky); gs.fillRect(0, 0, m.w, H); sc.skyDeco(gs, m.w, H, makeRng(7));
-  const mk = fn => { const [c, g] = layer(TW, H, d); fn(g, TW, H, makeRng(fn === sc.far ? 11 : fn === sc.mid ? 22 : 33)); return c; };
-  v.tiles = { sky, far: mk(sc.far), mid: mk(sc.mid), side: mk(sc.side), TW };
+  if (night) { D.sky(gs, m.w, H, { mode: 'dark' }); stars(gs, m.w, H * 0.7, 40, makeRng(5)); disc(gs, m.w * 0.78, H * 0.18, H * 0.06, P.snow[1]); }
+  else { gs.fillStyle = vgrad(gs, 0, H, sc.sky); gs.fillRect(0, 0, m.w, H); sc.skyDeco(gs, m.w, H, makeRng(7)); }
+  const mk = (fn, seed) => {
+    const [c, g] = layer(TW, H, d); fn(g, TW, H, makeRng(seed));
+    if (night) { g.save(); g.globalCompositeOperation = 'source-atop'; g.fillStyle = 'rgba(14,42,46,.48)'; g.fillRect(0, 0, TW, H); g.restore(); }
+    return c;
+  };
+  v.tiles = { sky, far: mk(sc.far, 11), mid: mk(sc.mid, 22), side: mk(sc.side, 33), TW, night };
   initAmbient(v);
 }
 /** Draw a repeating tile scrolled by `off` CSS px, snapped to device pixels so it stays crisp. */
@@ -1386,14 +1497,15 @@ function drawScene(v, cam) {
   blit(g, t.far, camPx * 0.06, t.TW, m.roadTop, d);
   blit(g, t.mid, camPx * 0.3, t.TW, m.roadTop, d);
   blit(g, t.side, camPx, t.TW, m.roadTop, d);
-  // the road: asphalt, two-tone kerbs and dashed lane lines that move with the karts
-  const top = m.roadTop, bot = m.roadBot, kh = Math.max(3, Math.min(8, m.laneH * 0.16));
-  g.fillStyle = sc.road; g.fillRect(0, top, m.w, bot - top);
-  g.fillStyle = 'rgba(0,0,0,.08)'; for (let i = 0; i < 4; i++) g.fillRect(0, top + m.laneH * (i + 0.72), m.w, Math.max(1, m.laneH * 0.08));
+  // the road: asphalt with an Ink edge, two-tone kerbs and dashed lane lines that move with the karts
+  const top = m.roadTop, bot = m.roadBot, kh = Math.max(4, Math.min(9, m.laneH * 0.17));
+  g.fillStyle = t.night ? mix(sc.road, INK, 0.35) : sc.road; g.fillRect(0, top, m.w, bot - top);
+  g.fillStyle = alpha(INK, 0.08); for (let i = 0; i < 4; i++) g.fillRect(0, top + m.laneH * (i + 0.72), m.w, Math.max(1, m.laneH * 0.08));
   const kp = Math.max(18, m.laneH * 0.9), off = ((camPx % (kp * 2)) + kp * 2) % (kp * 2);
   for (let x = -off; x < m.w; x += kp * 2) { g.fillStyle = sc.kerb[0]; g.fillRect(x, top - kh, kp, kh); g.fillRect(x + kp, bot, kp, m.h - bot); g.fillStyle = sc.kerb[1]; g.fillRect(x + kp, top - kh, kp, kh); g.fillRect(x, bot, kp, m.h - bot); }
-  const per = Math.max(30, m.ppm * 7), dw = per * 0.5, doff = ((camPx % per) + per) % per, lh = Math.max(2, m.laneH * 0.07);
-  g.fillStyle = sc.line; for (let i = 1; i < 4; i++) { const y = top + m.laneH * i - lh / 2; for (let x = -doff; x < m.w; x += per) g.fillRect(x, y, dw, lh); }
+  g.fillStyle = INK; g.fillRect(0, top - kh - 1.5, m.w, 2); g.fillRect(0, top, m.w, 2); g.fillRect(0, bot - 1, m.w, 2);
+  const per = Math.max(30, m.ppm * 7), dw = per * 0.5, doff = ((camPx % per) + per) % per, lh = Math.max(2.5, m.laneH * 0.08);
+  g.fillStyle = sc.line; for (let i = 1; i < 4; i++) { const y = top + m.laneH * i - lh / 2; for (let x = -doff; x < m.w; x += per) { rrect(g, x, y, dw, lh, lh / 2); g.fill(); } }
 }
 const sx = (v, cam, dist) => v.m.x0 + (dist - cam) * v.m.ppm;
 const laneY = (v, lane) => v.m.roadTop + v.m.laneH * (lane + 0.86);
@@ -1404,32 +1516,33 @@ function drawGantries(v, cam, race, time) {
   for (let k = 0; k <= CONFIG.laps; k++) {
     const x = sx(v, cam, k * lap); if (x < -160 || x > m.w + 160) continue;
     const sq = Math.max(4, m.laneH / 4), rows = Math.ceil((m.roadBot - m.roadTop) / sq);
-    for (let r = 0; r < rows; r++) for (let c = 0; c < 2; c++) { g.fillStyle = (r + c) % 2 ? '#222' : '#fff'; g.fillRect(x + c * sq, m.roadTop + r * sq, sq, Math.min(sq, m.roadBot - m.roadTop - r * sq)); }
+    for (let r = 0; r < rows; r++) for (let c = 0; c < 2; c++) { g.fillStyle = (r + c) % 2 ? INK : CREAM; g.fillRect(x + c * sq, m.roadTop + r * sq, sq, Math.min(sq, m.roadBot - m.roadTop - r * sq)); }
     if (k === 0 && v.kind === 'race' && (S.phase === 'countdown' || S.goT > 0)) continue;   // the traffic lights hang here instead
     const label = k === 0 ? t('g_start') : k === CONFIG.laps ? t('g_finish') : t('g_lap', { n: k + 1 });
-    const bh = Math.max(16, Math.min(34, m.roadTop * 0.18)), by = Math.max(m.hud + 4, m.roadTop - bh * 2.6);
-    g.font = '700 ' + Math.round(bh * 0.66) + 'px ' + FONT; const bw = g.measureText(label).width + bh * 0.9;   // banner fits the word in any language
-    g.fillStyle = '#5b5f73'; g.fillRect(x - 3, by, 6, m.roadTop - by); g.fillRect(x + bw - 3, by, 6, m.roadTop - by);
-    g.fillStyle = k === CONFIG.laps ? '#ff3b6b' : '#2a1846'; rrect(g, x - 6, by, bw + 12, bh, bh * 0.3); g.fill();
-    g.fillStyle = '#fff'; g.font = '700 ' + Math.round(bh * 0.66) + 'px ' + FONT; g.textAlign = 'center'; g.textBaseline = 'middle'; textDir(g, true); g.fillText(label, x + bw / 2, by + bh * 0.54);
+    const bh = Math.max(18, Math.min(36, m.roadTop * 0.18)), by = Math.max(m.hud + 6, m.roadTop - bh * 2.6);
+    g.font = font(bh * 0.6); const bw = g.measureText(label).width + bh * 1.1;   // the banner fits the word in any language
+    for (const px of [x - 3, x + bw - 3]) { g.fillStyle = P.stone[2]; g.fillRect(px, by, 6, m.roadTop - by); g.strokeStyle = INK; g.lineWidth = 1.5; g.strokeRect(px, by, 6, m.roadTop - by); }
+    D.panel(g, x - 6, by, bw + 12, bh, { radius: bh * 0.35, fill: k === CONFIG.laps ? P.coral[1] : CREAM });
+    g.fillStyle = INK; g.textAlign = 'center'; g.textBaseline = 'middle'; textDir(g, true); g.fillText(label, x + bw / 2, by + bh * 0.54);
   }
-  // Crowd stands next to the finish line.
+  // Crowd stands next to the finish line: little cheering fans in the kit's colours.
   const fx = sx(v, cam, race.total); if (fx > -m.w && fx < m.w * 2) {
     const s = Math.max(4, m.roadTop * 0.05), standW = s * 26, standH = s * 5.5, base = m.roadTop - Math.max(3, m.laneH * 0.16);
+    const cols = [P.coral[2], P.sky[2], P.mint[2], P.grape[2], P.peach[2], P.coral[1]], skin = Oomba.tokens.skin;
     for (const side of [-1, 1]) {
       const x0 = side < 0 ? fx - standW - s * 3 : fx + s * 14;
-      g.fillStyle = '#c0c6d6'; g.fillRect(x0, base - standH, standW, standH); g.fillStyle = '#9aa2b8'; for (let r = 1; r < 4; r++) g.fillRect(x0, base - standH + r * standH / 4, standW, 1.5);
-      const cols = ['#ff5d8f', '#ffd23f', '#3a7bff', '#2ec4b6', '#ff8c42', '#a06cd5'];
+      g.fillStyle = P.stone[1]; g.fillRect(x0, base - standH, standW, standH); g.strokeStyle = INK; g.lineWidth = 1.5; g.strokeRect(x0, base - standH, standW, standH);
+      g.fillStyle = P.stone[2]; for (let r = 1; r < 4; r++) g.fillRect(x0, base - standH + r * standH / 4, standW, 1.5);
       for (let r = 0; r < 3; r++) for (let c = 0; c < 12; c++) {
         const hx = x0 + s + c * standW / 12.2, jump = REDUCED ? 0 : Math.max(0, Math.sin(time * 7 + c * 1.7 + r * 2.1)) * s * 0.6, hy = base - standH + s * 0.9 + r * standH / 3.4 - jump;
-        disc(g, hx, hy, s * 0.55, cols[(c + r * 2) % cols.length]); disc(g, hx, hy - s * 0.7, s * 0.42, '#ffd9b3');
+        disc(g, hx, hy, s * 0.55, cols[(c + r * 2) % cols.length]); disc(g, hx, hy - s * 0.7, s * 0.42, skin[(c * 3 + r) % skin.length]);
         if ((c + r) % 3 === 0) { g.strokeStyle = cols[(c + 3) % cols.length]; g.lineWidth = Math.max(1, s * 0.25); g.beginPath(); g.moveTo(hx + s * 0.4, hy - s * 0.2); g.lineTo(hx + s * 0.8, hy - s * 1.3 - jump * 0.5); g.stroke(); }
       }
     }
   }
 }
 
-/* ---------- Particles (cosmetic only) ---------- */
+/* ---------- Particles (cosmetic only): dust puffs, exhaust flames, reward sparks, oops puffs ---------- */
 function addPart(v, kind, x, y, vx, vy, life, size) {
   let i = v.pn < v.px.length ? v.pn++ : -1;
   if (i < 0) { let best = 0; for (let j = 1; j < v.px.length; j++) if (v.pl[j] < v.pl[best]) best = j; i = best; }   // reuse the oldest
@@ -1461,10 +1574,10 @@ function drawParts(v, cam, front) {
     const k = v.pk[i]; if ((k === 2) !== front) continue;
     const x = sx(v, cam, v.px[i]), y = m.roadTop + v.py[i] * m.laneH, f = v.pl[i] / v.pm[i];
     if (x < -30 || x > m.w + 30) continue;
-    if (k === 0) disc(g, x, y, v.ps[i] * m.laneH * (1.6 - f * 0.8), dust + (0.45 * f).toFixed(2) + ')');
-    else if (k === 1) { const r = v.ps[i] * m.laneH * (0.5 + f * 0.6); disc(g, x, y, r * 1.5, 'rgba(255,120,30,' + (0.35 * f).toFixed(2) + ')'); disc(g, x, y, r, f > 0.5 ? '#fff2a8' : '#ffb347'); }
-    else if (k === 2) { const r = v.ps[i] * m.laneH * f; g.fillStyle = 'rgba(255,230,90,' + f.toFixed(2) + ')'; g.fillRect(x - r, y - r * 0.25, r * 2, r * 0.5); g.fillRect(x - r * 0.25, y - r, r * 0.5, r * 2); }
-    else if (k === 3) disc(g, x, y, v.ps[i] * m.laneH * (1.8 - f), 'rgba(235,235,245,' + (0.6 * f).toFixed(2) + ')');
+    if (k === 0) disc(g, x, y, v.ps[i] * m.laneH * (1.6 - f * 0.8), alpha(dust, (0.5 * f).toFixed(2)));
+    else if (k === 1) { const r = v.ps[i] * m.laneH * (0.5 + f * 0.6); disc(g, x, y, r * 1.5, alpha(P.peach[2], (0.4 * f).toFixed(2))); disc(g, x, y, r, f > 0.5 ? P.spark[0] : P.peach[1]); }
+    else if (k === 2) { const r = v.ps[i] * m.laneH * f; if (r > 1) { g.globalAlpha = Math.min(1, f * 1.4); D.spark(g, x, y, r); g.globalAlpha = 1; } }
+    else if (k === 3) disc(g, x, y, v.ps[i] * m.laneH * (1.8 - f), alpha(P.stone[0], (0.75 * f).toFixed(2)));
   }
 }
 
@@ -1484,15 +1597,15 @@ function drawAmbient(v, dt, time, speed) {
     else a.x -= drift * 0.05;
     if (a.x < -0.05) { a.x += 1.1; a.y = visRng(); } if (a.x > 1.05) a.x -= 1.1; if (a.y > 1.02) { a.y = -0.02; a.x = visRng(); } if (a.y < -0.02) { a.y = 1.02; a.x = visRng(); }
     const x = a.x * m.w;
-    if (type === 'snow') disc(g, x, m.hud + a.y * (m.h - m.hud), 1.2 + a.s * 1.4, 'rgba(255,255,255,.9)');
-    else if (type === 'ember') { const y = m.hud + a.y * (m.h - m.hud); disc(g, x, y, 1 + a.s, 'rgba(255,' + (140 + Math.round(a.s * 60)) + ',60,' + (0.3 + 0.6 * a.y).toFixed(2) + ')'); }
-    else if (type === 'leaf') { const y = m.hud + a.y * (m.roadTop - m.hud) * 1.2; oval(g, x, y, 3 + a.s * 2, 1.5 + a.s, time * 2 + a.p, a.s > 1 ? '#7ed957' : '#3fae5a'); }
+    if (type === 'snow') disc(g, x, m.hud + a.y * (m.h - m.hud), 1.2 + a.s * 1.4, alpha(CREAM, 0.9));
+    else if (type === 'ember') { const y = m.hud + a.y * (m.h - m.hud); disc(g, x, y, 1 + a.s, alpha(a.s > 1 ? P.peach[1] : P.coral[1], (0.3 + 0.6 * a.y).toFixed(2))); }
+    else if (type === 'leaf') { const y = m.hud + a.y * (m.roadTop - m.hud) * 1.2; oval(g, x, y, 3 + a.s * 2, 1.5 + a.s, time * 2 + a.p, a.s > 1 ? P.mint[1] : P.mint[2]); g.lineWidth = 1; g.strokeStyle = INK; g.stroke(); }
     else if (type === 'tumble') {
       const y = m.roadTop - Math.max(3, m.laneH * 0.16) - (4 + a.s * 3) - Math.abs(Math.sin(time * 4 + a.p)) * 4, r = 4 + a.s * 3;
-      g.strokeStyle = '#9a6a3a'; g.lineWidth = 1.4; g.beginPath(); g.arc(x, y, r, 0, TAU); for (let j = 0; j < 3; j++) { const an = time * -6 + a.p + j * 2.1; g.moveTo(x + Math.cos(an) * r, y + Math.sin(an) * r); g.lineTo(x - Math.cos(an) * r, y - Math.sin(an) * r); } g.stroke();
-    } else if (type === 'flutter') { const y = m.hud + 8 + a.y * (m.roadTop - m.hud) * 0.8, f = Math.abs(Math.sin(time * 9 + a.p)); g.fillStyle = a.s > 1 ? '#ff8cc6' : '#ffd23f'; oval(g, x - 3 * f, y, 3.5 * f + 0.5, 2.5, 0); g.fill(); oval(g, x + 3 * f, y, 3.5 * f + 0.5, 2.5, 0); g.fill(); }
-    else if (type === 'gull') { const y = m.hud + 6 + a.y * (m.roadTop - m.hud) * 0.5, f = Math.sin(time * 5 + a.p) * 2.5; g.strokeStyle = 'rgba(255,255,255,.95)'; g.lineWidth = 1.6; g.beginPath(); g.moveTo(x - 6, y - f); g.quadraticCurveTo(x - 3, y - 3, x, y); g.quadraticCurveTo(x + 3, y - 3, x + 6, y - f); g.stroke(); }
-    else if (type === 'twinkle') { const y = m.hud + a.y * (m.roadTop - m.hud) * 0.9, al = 0.35 + 0.65 * (0.5 + 0.5 * Math.sin(time * 1.4 + a.p * 3)), r = 1.5 + a.s * 2; g.fillStyle = 'rgba(255,255,255,' + al.toFixed(2) + ')'; g.fillRect(x - r, y - 0.6, r * 2, 1.2); g.fillRect(x - 0.6, y - r, 1.2, r * 2); }
+      g.strokeStyle = P.cocoa[2]; g.lineWidth = 1.6; g.beginPath(); g.arc(x, y, r, 0, TAU); for (let j = 0; j < 3; j++) { const an = time * -6 + a.p + j * 2.1; g.moveTo(x + Math.cos(an) * r, y + Math.sin(an) * r); g.lineTo(x - Math.cos(an) * r, y - Math.sin(an) * r); } g.stroke();
+    } else if (type === 'flutter') { const y = m.hud + 8 + a.y * (m.roadTop - m.hud) * 0.8, f = Math.abs(Math.sin(time * 9 + a.p)); g.fillStyle = a.s > 1 ? P.grape[1] : P.coral[1]; oval(g, x - 3 * f, y, 3.5 * f + 0.5, 2.5, 0); g.fill(); oval(g, x + 3 * f, y, 3.5 * f + 0.5, 2.5, 0); g.fill(); }
+    else if (type === 'gull') { const y = m.hud + 6 + a.y * (m.roadTop - m.hud) * 0.5, f = Math.sin(time * 5 + a.p) * 2.5; g.strokeStyle = INK; g.lineWidth = 1.8; g.beginPath(); g.moveTo(x - 6, y - f); g.quadraticCurveTo(x - 3, y - 3, x, y); g.quadraticCurveTo(x + 3, y - 3, x + 6, y - f); g.stroke(); }
+    else if (type === 'twinkle') { const y = m.hud + a.y * (m.roadTop - m.hud) * 0.9, al = 0.35 + 0.65 * (0.5 + 0.5 * Math.sin(time * 1.4 + a.p * 3)), r = 1.5 + a.s * 2; g.fillStyle = alpha(CREAM, al.toFixed(2)); g.fillRect(x - r, y - 0.6, r * 2, 1.2); g.fillRect(x - 0.6, y - r, 1.2, r * 2); }
   }
 }
 
@@ -1501,114 +1614,139 @@ function drawKart(v, k, info, x, y, time) {
   const g = v.g, m = v.m, s = m.kartW / 100, sp = kartSprite(info, m.kartW, v.dpr);
   const wob = k.wobble > 0 ? Math.sin(time * (REDUCED ? 8 : 22)) * (REDUCED ? 0.03 : 0.1) * Math.min(1, k.wobble / 0.6) : 0;
   const bounce = k.v > 1 && !REDUCED ? Math.sin(time * 17 + k.lane * 2) * 0.7 * s : 0;
-  oval(g, x, y + 1, 46 * s, 5 * s, 0, 'rgba(0,0,0,.22)');
+  oval(g, x, y + 1, 46 * s, 5 * s, 0, alpha(INK, 0.25));
   g.save(); g.translate(x, y + bounce); if (wob) g.rotate(wob);
-  if (k.boost > 7 && !k.finished) {   // flame from the exhaust
+  if (k.boost > 7 && !k.finished) {   // a sticker flame from the exhaust
     const fl = Math.min(1, k.boost / 25) * (0.8 + 0.2 * Math.sin(time * 30));
-    poly(g, [-48 * s, -26 * s, (-48 - 34 * fl) * s, -21 * s, -48 * s, -15 * s], 'rgba(255,120,30,.85)');
-    poly(g, [-48 * s, -24 * s, (-48 - 20 * fl) * s, -21 * s, -48 * s, -17 * s], '#fff2a8');
+    poly(g, [-48 * s, -28 * s, (-50 - 36 * fl) * s, -21 * s, -48 * s, -14 * s], P.peach[2]); ink(g, 40 * s);
+    poly(g, [-48 * s, -25 * s, (-48 - 20 * fl) * s, -21 * s, -48 * s, -17 * s], P.spark[0]);
   }
   g.drawImage(sp.c, -sp.ox, -sp.oy, sp.w, sp.h);
   const turn = k.dist * 1.7;
   for (const [wx, r] of [[-28, 10.5], [33, 9.5]]) {
-    disc(g, wx * s, -r * s, r * s, '#232330'); disc(g, wx * s, -r * s, r * 0.5 * s, '#c9ced8');
-    g.strokeStyle = '#6a6f80'; g.lineWidth = Math.max(1, 1.8 * s); g.beginPath(); g.moveTo(wx * s + Math.cos(turn) * r * 0.5 * s, -r * s + Math.sin(turn) * r * 0.5 * s); g.lineTo(wx * s - Math.cos(turn) * r * 0.5 * s, -r * s - Math.sin(turn) * r * 0.5 * s); g.stroke();
+    disc(g, wx * s, -r * s, r * s, INK); disc(g, wx * s, -r * s, r * 0.5 * s, P.stone[1]);
+    g.strokeStyle = P.stone[3]; g.lineWidth = Math.max(1, 1.8 * s); g.beginPath(); g.moveTo(wx * s + Math.cos(turn) * r * 0.5 * s, -r * s + Math.sin(turn) * r * 0.5 * s); g.lineTo(wx * s - Math.cos(turn) * r * 0.5 * s, -r * s - Math.sin(turn) * r * 0.5 * s); g.stroke();
   }
   g.restore();
 }
 /** A bubble at the edge of the view for a kart that is off screen: its face, an arrow and how far away it is. */
 function drawEdgeBubble(v, info, ahead, gap, y) {
-  const g = v.g, m = v.m, r = Math.max(11, Math.min(20, m.laneH * 0.5)), hs = headSprite(info, r * 2, v.dpr);
-  const w = r * 2 + r * 2.4, x = ahead ? m.w - w - 4 : 4, cy = Math.max(m.roadTop - r, Math.min(m.h - r - 2, y));
-  g.fillStyle = 'rgba(42,24,70,.82)'; rrect(g, x, cy - r, w, r * 2, r); g.fill();
+  const g = v.g, m = v.m, r = Math.max(10, Math.min(15, m.laneH * 0.3)), hs = headSprite(info, r * 2, v.dpr);
+  const w = r * 2 + r * 2.4, x = ahead ? m.w - w - 4 : 4, cy = Math.max(m.roadTop + r + 2, Math.min(m.h - r - 2, y));
+  g.save(); g.globalAlpha = 0.82; rrect(g, x, cy - r, w, r * 2, r); g.fillStyle = '#2B1F5C'; g.fill(); g.lineWidth = 1.5; g.strokeStyle = alpha(CREAM, 0.5); g.stroke(); g.restore();
   const hx = ahead ? x + w - r * 2 : x; g.drawImage(hs.c, hx, cy - r, r * 2, r * 2);
   const gapTxt = t('meters', { n: Math.round(gap) });
-  g.fillStyle = '#fff'; fitFont(g, gapTxt, r * 0.8, r * 2.2); g.textAlign = 'center'; g.textBaseline = 'middle'; textDir(g, true);
-  g.fillText(gapTxt, ahead ? x + r * 1.25 : x + r * 2 + r * 1.15, cy + 1);
-  poly(g, ahead ? [m.w - 1, cy, m.w - 7, cy - 5, m.w - 7, cy + 5] : [1, cy, 7, cy - 5, 7, cy + 5], '#fff');
+  g.fillStyle = CREAM; fitFont(g, gapTxt, r * 0.85, r * 2.2); g.textAlign = 'center'; g.textBaseline = 'middle'; textDir(g, true);
+  g.fillText(gapTxt, ahead ? x + r * 1.25 : x + r * 2 + r * 1.2, cy + 1);
+  poly(g, ahead ? [m.w - 1, cy, m.w - 5, cy - 4, m.w - 5, cy + 4] : [1, cy, 5, cy - 4, 5, cy + 4], CREAM);
 }
-function drawKarts(v, race, infos, cam, time) {
+function drawKarts(v, race, infos, cam, time, order) {
   const m = v.m, me = race.karts[v.follow];
-  for (const i of S.laneOrder) {
+  for (const i of order || S.laneOrder) {
     // On the start grid the karts are drawn staggered (far lanes a little behind) so they do not hide each other;
     // the stagger fades away over the first 35 metres. It is only a picture: the race itself starts level.
     const k = race.karts[i], x = sx(v, cam, k.dist) + (k.lane - 1.5) * m.kartW * 0.32 * Math.max(0, 1 - k.dist / 35), y = laneY(v, k.lane);
-    if (x < -m.kartW * 0.6) { if (v.kind === 'race') drawEdgeBubble(v, infos[i], false, me.dist - k.dist, y - m.kartW * 0.3); continue; }
-    if (x > m.w + m.kartW * 0.6) { if (v.kind === 'race') drawEdgeBubble(v, infos[i], true, k.dist - me.dist, y - m.kartW * 0.3); continue; }
+    if (x < -m.kartW * 0.6) { if (v.kind === 'race') drawEdgeBubble(v, infos[i], false, me.dist - k.dist, y - m.laneH * 0.5); continue; }
+    if (x > m.w + m.kartW * 0.6) { if (v.kind === 'race') drawEdgeBubble(v, infos[i], true, k.dist - me.dist, y - m.laneH * 0.5); continue; }
     drawKart(v, k, infos[i], x, y, time);
   }
 }
-/* ---------- Floating words above karts ("Zoom!", "Lap 2!") ---------- */
-function addPop(v, kartIndex, text, color, big) {
-  while (v.pops.length > 2) v.pops.shift();
-  const used = v.pops.filter(p => p.t < 1).map(p => p.slot); let slot = 0; while (used.includes(slot)) slot++;
-  v.pops.push({ k: kartIndex, text, color: color || '#fff', t: 0, big: !!big, slot });
+/* ---------- Floating words above karts ("Zoom!", "Lap 2!") in the kit's sticker type ---------- */
+function addPop(v, kartIndex, text, role, big) {
+  v.pops.length = 0;   // one big word at a time
+  const used = v.pops.filter(p => p.t < 1).map(p => p.slot); let slot = 0; while (used.includes(slot)) slot++;   // only live pops hold a slot
+  v.pops.push({ k: kartIndex, text, role: role || '', t: 0, big: !!big, slot });
 }
 function drawPops(v, race, cam, dt) {
   const g = v.g, m = v.m;
+  for (let i = v.pops.length - 1; i >= 0; i--) { v.pops[i].t += dt; if (v.pops[i].t > 1.3) v.pops.splice(i, 1); }
+  const newest = v.pops[v.pops.length - 1];
   for (let i = v.pops.length - 1; i >= 0; i--) {
-    const p = v.pops[i]; p.t += dt; if (p.t > 1.3) { v.pops.splice(i, 1); continue; }
-    const k = race.karts[p.k], base = Math.max(16, Math.min(32, m.kartW * (p.big ? 0.3 : 0.24), m.h * 0.11));
-    const sc = REDUCED ? 1 : Math.min(1, 0.6 + p.t * 3), a = p.t > 0.9 ? Math.max(0, 1 - (p.t - 0.9) / 0.4) : 1;
-    const size = fitFont(g, p.text, base * sc, m.w - 16); textDir(g, true); const half = g.measureText(p.text).width / 2 + 6;   // long words shrink to fit the view
-    const x = Math.max(half, Math.min(m.w - half, sx(v, cam, k.dist) + m.kartW * 0.15));
-    const y = Math.max(m.hud + base * 0.7 + p.slot * base * 1.1, laneY(v, k.lane) - m.kartW * 0.7 - (REDUCED ? 0 : p.t * 20) - p.slot * base * 1.1);
-    g.globalAlpha = a; g.textAlign = 'center'; g.textBaseline = 'middle';
-    g.lineWidth = Math.max(3, size * 0.18); g.strokeStyle = '#2a1846'; g.strokeText(p.text, x, y); g.fillStyle = p.color; g.fillText(p.text, x, y); g.globalAlpha = 1;
+    const p = v.pops[i];
+    const k = race.karts[p.k], base = Math.max(18, Math.min(34, m.kartW * (p.big ? 0.3 : 0.24), m.h * 0.11));
+    // room between the HUD and the driver's head: when the pops would not fit stacked there (a short phone view),
+    // only the newest shows, so words never pile up or garble; with no room at all it sits beside the kart
+    const top = laneY(v, k.lane) - m.kartW * 0.98, room = top - (m.hud + base * 0.7), stacked = v.pops.filter(q => q.t < 1).length;
+    const crowded = room < base * 1.45 * Math.max(1, stacked);
+    if (crowded && p !== newest) continue;
+    // one word at a time, big, tilted, a spark-to-coral face with an Ink edge and drop; it pops in, holds, then slides
+    // back with the road (painted on the air)
+    const sc = REDUCED ? 1 : p.t < 0.26 ? 0.5 + 0.62 * Math.sin(Math.min(1, p.t / 0.26) * Math.PI / 2) - 0.12 * Math.max(0, p.t / 0.26 - 0.8) : 1, a = p.t > 0.9 ? Math.max(0, 1 - (p.t - 0.9) / 0.4) : 1;
+    const big = Math.max(26, Math.min(64, m.kartW * 0.42, m.h * 0.15)), size = fitFont(g, p.text, big * sc, m.w - 24), half = g.measureText(p.text).width / 2 + 10;
+    const x = Math.max(half, Math.min(m.w - half, sx(v, cam, k.dist) + m.kartW * 0.2 - (REDUCED ? 0 : Math.max(0, p.t - 0.76) * m.w * 0.5)));
+    const y = Math.max(m.hud + size * 0.7, laneY(v, k.lane) - m.kartW * 0.95);
+    g.save(); g.globalAlpha = a; g.translate(x, y); g.rotate(p.text.length % 2 ? 0.1 : -0.1);
+    g.textAlign = 'center'; g.textBaseline = 'middle'; g.lineJoin = 'round';
+    g.lineWidth = size * 0.26; g.strokeStyle = INK; g.strokeText(p.text, 0, size * 0.1); g.fillStyle = INK; g.fillText(p.text, 0, size * 0.1);
+    g.lineWidth = size * 0.2; g.strokeText(p.text, 0, 0);
+    const gr = g.createLinearGradient(0, -size * 0.45, 0, size * 0.4); gr.addColorStop(0, p.role ? C(p.role, 'light') : '#FFE14D'); gr.addColorStop(1, p.role ? C(p.role) : '#FF7A3D');
+    g.fillStyle = gr; g.fillText(p.text, 0, 0); g.restore();
   }
 }
 /* ---------- The race HUD drawn on each view: place, progress strip, lap, streak ---------- */
-const PLACE_COL = ['#ffd23f', '#dfe6ee', '#f2a65e', '#c9b8f5'];
 function drawHud(v, race, infos, p) {
   const g = v.g, m = v.m, me = race.karts[v.follow], place = race.placeOf(me), hh = m.hud;
-  g.fillStyle = 'rgba(42,24,70,.78)'; g.fillRect(0, 0, m.w, hh);
-  const bw = hh * 1.55; g.fillStyle = PLACE_COL[place - 1]; rrect(g, 5, 4, bw, hh - 8, (hh - 8) / 2); g.fill();
-  g.fillStyle = '#2a1846'; fitFont(g, ordinal(place), hh * 0.52, bw - 8); g.textAlign = 'center'; g.textBaseline = 'middle'; textDir(g, true); g.fillText(ordinal(place), 5 + bw / 2, hh / 2 + 1);
-  const lap = race.lapOf(me), lapTxt = t('hud_lap', { n: lap, total: CONFIG.laps }); g.font = '700 ' + Math.round(hh * 0.44) + 'px ' + FONT; const lw = g.measureText(lapTxt).width;
-  g.fillStyle = '#fff'; g.textAlign = 'right'; g.fillText(lapTxt, m.w - 8, hh / 2 + 1);
-  // streak flame
-  let right = m.w - lw - 16;
+  g.fillStyle = '#2B1F5C'; g.fillRect(0, 0, m.w, hh); g.fillStyle = '#120C2C'; g.fillRect(0, hh - 2, m.w, 2);
+  const bw = hh * 1.6, ph = hh - 10;
+  rrect(g, 6, 5, bw, ph, ph / 2); g.fillStyle = place === 1 ? P.spark[2] : place === 2 ? P.stone[0] : place === 3 ? P.peach[1] : P.grape[0]; g.fill(); ink(g, ph);
+  g.fillStyle = INK; fitFont(g, ordinal(place), ph * 0.62, bw - 10); g.textAlign = 'center'; g.textBaseline = 'middle'; textDir(g, true); g.fillText(ordinal(place), 6 + bw / 2, hh / 2);
+  const lap = race.lapOf(me), lapTxt = t('hud_lap', { n: lap, total: CONFIG.laps }); g.font = font(ph * 0.5); const lw = g.measureText(lapTxt).width + ph * 0.8;
+  rrect(g, m.w - 6 - lw, 5, lw, ph, ph / 2); g.fillStyle = CREAM; g.fill(); ink(g, ph);
+  g.fillStyle = INK; g.textAlign = 'center'; g.fillText(lapTxt, m.w - 6 - lw / 2, hh / 2);
+  // streak: a little flame sticker and the count
+  let right = m.w - lw - 14;
   if (p && p.streak >= 2) {
-    const st = '×' + p.streak; g.font = '700 ' + Math.round(hh * 0.44) + 'px ' + FONT; textDir(g, false); const tw = g.measureText(st).width, fx = right - tw - hh * 0.35;
-    const fs = hh * 0.26; poly(g, [fx, hh / 2 - fs * 1.4, fx + fs * 0.9, hh / 2 + fs * 0.2, fx + fs * 0.4, hh / 2 + fs, fx - fs * 0.4, hh / 2 + fs, fx - fs * 0.9, hh / 2 + fs * 0.2], p.streak >= 3 ? '#ff7a1a' : '#ffb347'); disc(g, fx, hh / 2 + fs * 0.35, fs * 0.45, '#ffe08a');
-    g.fillStyle = p.streak >= 3 ? '#ffd23f' : '#fff'; g.textAlign = 'left'; g.fillText(st, fx + fs * 1.1, hh / 2 + 1); right = fx - fs * 1.4;
+    const st = '×' + Oomba.num(p.streak); g.font = font(ph * 0.5); textDir(g, false); const tw = g.measureText(st).width, fs = ph * 0.3, fx = right - tw - fs * 1.4;
+    poly(g, [fx, hh / 2 - fs * 1.5, fx + fs * 0.95, hh / 2 + fs * 0.2, fx + fs * 0.45, hh / 2 + fs, fx - fs * 0.45, hh / 2 + fs, fx - fs * 0.95, hh / 2 + fs * 0.2], p.streak >= 3 ? P.coral[2] : P.peach[2]); ink(g, fs * 3);
+    disc(g, fx, hh / 2 + fs * 0.35, fs * 0.42, P.spark[0]);
+    g.fillStyle = INK; g.textAlign = 'left'; D.text(g, st, fx + fs * 1.2 + tw / 2, hh / 2, { size: ph * 0.5, color: CREAM, rim: true }); right = fx - fs * 1.6;
   }
-  // progress strip: where every kart is in the whole race
-  const x0 = 5 + bw + 12, x1 = right - 10, y = hh / 2;
+  // progress strip: where every kart is in the whole race (faces for the others)
+  const x0 = 6 + bw + 20, x1 = right - 16, y = hh / 2;
   if (x1 - x0 > 40) {
-    g.fillStyle = 'rgba(255,255,255,.22)'; rrect(g, x0, y - 4, x1 - x0, 8, 4); g.fill();
-    g.fillStyle = 'rgba(255,255,255,.55)'; for (let l = 1; l < CONFIG.laps; l++) g.fillRect(x0 + (x1 - x0) * l / CONFIG.laps - 1, y - 6, 2, 12);
-    const fs = 4; for (let r = 0; r < 2; r++) for (let c = 0; c < 2; c++) { g.fillStyle = (r + c) % 2 ? '#222' : '#fff'; g.fillRect(x1 + 2 + c * fs, y - fs + r * fs, fs, fs); }
-    race.karts.forEach((k, i) => { if (i === v.follow) return; disc(g, x0 + (x1 - x0) * Math.min(1, k.dist / race.total), y, Math.max(4, hh * 0.15), infos[i].color); });
-    const mx = x0 + (x1 - x0) * Math.min(1, me.dist / race.total); disc(g, mx, y, Math.max(6, hh * 0.24), '#fff'); disc(g, mx, y, Math.max(4.5, hh * 0.18), infos[v.follow].color);
+    const bh2 = Math.max(7, Math.min(10, hh * 0.2)), fillTo = x0 + (x1 - x0) * Math.min(1, me.dist / race.total);
+    rrect(g, x0, y - bh2, x1 - x0, bh2 * 2, bh2); g.fillStyle = '#4A3A86'; g.fill();
+    if (fillTo - x0 > bh2) { rrect(g, x0, y - bh2, fillTo - x0, bh2 * 2, bh2); g.fillStyle = vgrad(g, y - bh2, y + bh2, [P.mint[1], P.mint[2]]); g.fill(); }
+    rrect(g, x0, y - bh2, x1 - x0, bh2 * 2, bh2); g.lineWidth = 2; g.strokeStyle = CREAM; g.stroke();
+    g.fillStyle = CREAM; for (let l = 1; l < CONFIG.laps; l++) g.fillRect(x0 + (x1 - x0) * l / CONFIG.laps - 1, y - bh2 - 2, 2, bh2 * 2 + 4);
+    const fs = 4; for (let r = 0; r < 2; r++) for (let c = 0; c < 2; c++) { g.fillStyle = (r + c) % 2 ? INK : CREAM; g.fillRect(x1 + 3 + c * fs, y - fs + r * fs, fs, fs); }
+    const hs = Math.max(20, hh * 0.78);
+    race.karts.forEach((k, i) => { if (i === v.follow) return; const hx = x0 + (x1 - x0) * Math.min(1, k.dist / race.total); g.drawImage(headSprite(infos[i], hs, v.dpr).c, hx - hs / 2, y - hs / 2, hs, hs); });
+    const mx = x0 + (x1 - x0) * Math.min(1, me.dist / race.total), ms = hs * 1.15; g.drawImage(headSprite(infos[v.follow], ms, v.dpr).c, mx - ms / 2, y - ms / 2, ms, ms);
   }
 }
 function drawCountdown(v) {
   const g = v.g, m = v.m, e = S.cd, lit = S.phase === 'countdown' ? Math.min(3, Math.floor(e / CD_STEP) + 1) : 0, go = S.phase !== 'countdown' && S.goT > 0;
   if (!lit && !go) return;
   const sky = m.roadTop - m.hud, r = Math.max(8, Math.min(22, sky * 0.17, m.w * 0.045)), w = r * 7.4, h = r * 2.8;
-  const lx = Math.max(w / 2 + 4, Math.min(m.w * 0.55, sx(v, v.cam, 0))), x = lx - w / 2, y = m.hud + Math.max(4, sky * 0.1);
-  g.fillStyle = '#5b5f73'; g.fillRect(lx - 3, y + h, 6, Math.max(0, m.roadTop - y - h));
-  g.fillStyle = '#2a2438'; rrect(g, x, y, w, h, r); g.fill(); g.strokeStyle = '#fff'; g.lineWidth = 2; g.stroke();
-  for (let i = 0; i < 3; i++) disc(g, x + r * 1.3 + i * r * 2.4, y + h / 2, r, go ? '#2ee06a' : i < lit ? '#ff3b3b' : '#4a4360');
-  const txt = go ? t('go') : String(4 - lit), p = REDUCED ? 1 : 1 + 0.15 * Math.max(0, 1 - ((go ? 0.9 - S.goT : e % CD_STEP) / 0.25));
-  const room = m.w - x - w - 16, size = Math.max(14, Math.min(80, sky * 0.62, Math.max(28, room * 0.55)));
-  const drawn = fitFont(g, txt, size * p, room); g.textAlign = 'center'; g.textBaseline = 'middle'; g.lineWidth = drawn * 0.14; g.strokeStyle = '#2a1846'; textDir(g, true);
-  const tx = x + w + 4 + room / 2, ty = y + h / 2 + size * 0.1;   // longer words ("PARTEZ !", "МАРШ!") shrink to fit beside the lights
-  g.strokeText(txt, tx, ty); g.fillStyle = go ? '#2ee06a' : '#ffd23f'; g.fillText(txt, tx, ty);
+  const lx = Math.max(w / 2 + 4, Math.min(m.w * 0.55, sx(v, v.cam, 0))), x = lx - w / 2, y = m.hud + Math.max(6, sky * 0.1);
+  g.fillStyle = P.stone[2]; g.fillRect(lx - 3, y + h, 6, Math.max(0, m.roadTop - y - h)); g.strokeStyle = INK; g.lineWidth = 1.5; g.strokeRect(lx - 3, y + h, 6, Math.max(0, m.roadTop - y - h));
+  D.panel(g, x, y, w, h, { radius: r, fill: mix(INK, P.stone[3], 0.4) });
+  for (let i = 0; i < 3; i++) { disc(g, x + r * 1.3 + i * r * 2.4, y + h / 2, r, go ? P.mint[1] : i < lit ? P.coral[2] : mix(INK, P.stone[3], 0.7)); g.lineWidth = 2; g.strokeStyle = INK; g.stroke(); }
+  const txt = go ? t('go') : Oomba.num(4 - lit), pz = REDUCED ? 1 : 1 + 0.15 * Math.max(0, 1 - ((go ? 0.9 - S.goT : e % CD_STEP) / 0.25));
+  const room = m.w - x - w - 16, size = Math.max(16, Math.min(80, sky * 0.62, Math.max(28, room * 0.55)));
+  const tx = x + w + 6 + room / 2, ty = y + h / 2 + size * 0.06;   // longer words ("PARTEZ !", "МАРШ!") shrink to fit beside the lights
+  ftext(g, txt, tx, ty, { size: size * pz, max: room, color: go ? P.mint[1] : CREAM, rim: true });
 }
 function drawFinishBanner(v, place) {
   const g = v.g, m = v.m, size = Math.max(22, Math.min(54, m.h * 0.14)), y = m.hud + (m.roadTop - m.hud) * 0.5;
-  g.fillStyle = 'rgba(42,24,70,.72)'; g.fillRect(0, y - size * 0.95, m.w, size * 1.9);
+  g.fillStyle = alpha(INK, 0.55); g.fillRect(0, y - size * 0.95, m.w, size * 1.9);
   const msg = place === 1 ? t('won_banner') : t('fin_place', { place: placeName(place) });
-  fitFont(g, msg, size, m.w - 16); g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = place === 1 ? '#ffd23f' : '#fff'; textDir(g, true);
-  g.fillText(msg, m.w / 2, y + 1);
+  ftext(g, msg, m.w / 2, y + 1, { size, max: m.w - 24, color: place === 1 ? P.spark[2] : CREAM, rim: true });
+}
+/** Speed streaks trailing one kart (the title's leader). */
+function motionLines(v, x, y, time) {
+  const g = v.g, s = v.m.kartW / 100;
+  for (let i = 0; i < 4; i++) {
+    const len = (60 + ((i * 37) % 50)) * s, yy = y - (12 + i * 11) * s, sh = ((time * 5 + i * 0.37) % 1) * 30 * s, x1 = x - 52 * s - sh;
+    rrect(g, x1 - len, yy - 2 * s, len, 4 * s, 2 * s); g.fillStyle = alpha(CREAM, 0.85); g.fill(); g.lineWidth = Math.max(1, 1.2 * s); g.strokeStyle = alpha(INK, 0.55); g.stroke();
+  }
 }
 function drawSpeedLines(v, k, time) {
   if (REDUCED || k.boost < 12) return;
-  const g = v.g, m = v.m, a = Math.min(0.45, (k.boost - 12) / 40);
-  g.fillStyle = 'rgba(255,255,255,' + a.toFixed(2) + ')';
-  for (let i = 0; i < 7; i++) { const y = m.hud + ((i * 97) % 100) / 100 * (m.h - m.hud), len = m.w * (0.15 + (i % 3) * 0.08), x = m.w - ((time * 900 + i * 211) % (m.w + len)); g.fillRect(x, y, len, 2); }
+  const g = v.g, m = v.m, a = Math.min(0.5, (k.boost - 12) / 40);
+  g.fillStyle = alpha(CREAM, a.toFixed(2));
+  for (let i = 0; i < 7; i++) { const y = m.hud + ((i * 97) % 100) / 100 * (m.h - m.hud), len = m.w * (0.15 + (i % 3) * 0.08), x = m.w - ((time * 900 + i * 211) % (m.w + len)); rrect(g, x, y, len, 2.5, 1.25); g.fill(); }
 }
 
 /** Draw a whole race view. */
@@ -1678,6 +1816,7 @@ const S = {
   race: null, seed: 0, phase: 'idle', cd: 0, goT: 0, resultT: 0, P: [], infos: [], laneOrder: [0, 1, 2, 3], results: null
 };
 const VIEWS = [];   // the race views (index = player)
+const MARK = { right: Oomba.icon('check'), oops: Oomba.icon('cross') };
 const HALVES = [0, 1].map(i => {
   const el = $('half' + i); el.appendChild($('halfTpl').content.cloneNode(true));
   const ui = { el, qpanel: el.querySelector('.qpanel'), qline: el.querySelector('.qline'), qlabel: el.querySelector('.qlabel'), qmain: el.querySelector('.qmain'),
@@ -1696,12 +1835,13 @@ const HALVES = [0, 1].map(i => {
   return ui;
 });
 
+/** Player 1 drives as their own avatar (the kit's Oomba.me(); a guest gets CONFIG's kid), player 2 as the fox. */
 function playerInfo(i) {
-  const pc = CONFIG.players[i], own = (BRB.user && BRB.user.avatar) || pc.fallback;
-  let face = i === 0 ? own : pc.fallback; if (i === 1 && face === own) face = '🐯';
-  return { key: 'p' + i + face, kind: 'human', color: pc.color, dark: pc.dark, face, num: String(i + 1), name: S.players === 1 ? t('you') : t('player', { n: i + 1 }), short: S.players === 1 ? t('you') : t('pshort', { n: i + 1 }) };
+  const pc = CONFIG.players[i]; let ch = i === 0 ? Oomba.me() : Oomba.char(pc.char);
+  if (i === 0 && ch.species === 'oomba') ch = Oomba.char(pc.char);   // the Oomba is Bolt's look: guests drive as a kid
+  return { key: 'p' + i, kind: 'human', kart: pc.kart, char: ch, num: String(i + 1), name: S.players === 1 ? t('you') : t('player', { n: i + 1 }), short: S.players === 1 ? t('you') : t('pshort', { n: i + 1 }) };
 }
-function rivalInfo(r, n) { const name = t('rv_' + r.kind); return { key: r.kind, kind: r.kind, color: r.color, dark: r.dark, face: '', num: String(n), name, short: name }; }
+function rivalInfo(r, n) { const name = t('rv_' + r.kind); return { key: r.kind, kind: r.kind, kart: r.kart, char: Oomba.char(r.char), num: String(n), name, short: name }; }
 function infosFor(race) { return race.karts.map(k => k.human ? playerInfo(k.player) : rivalInfo(CONFIG.rivals[k.rival], k.rival + 3)); }
 
 /* =====================================================================================
@@ -1709,6 +1849,7 @@ function infosFor(race) { return race.karts.map(k => k.human ? playerInfo(k.play
    ===================================================================================== */
 function startRace(track, opts) {
   opts = opts || {};
+  closeTitle(); closeKitPause();
   S.track = track; S.seed = (opts.seed != null ? opts.seed : Math.floor(Math.random() * 1e9)) >>> 0;
   const rr = makeRng(S.seed);
   S.race = makeRace(track, S.players, rr);
@@ -1729,10 +1870,10 @@ function startRace(track, opts) {
   VIEWS.forEach(v => { v.scene = sceneOf(track); v.tiles = null; v.pn = 0; v.pops.length = 0; v.lead = 0; });
   showScreen('race'); layoutViews(); fitText(nm, 11); fitText(sm, 9);   // long names (German, Russian) shrink to fit the bar
   S.P.forEach(p => renderPanel(p));
-  if (S.fast) beginRacing(); else sfx('click');
+  if (S.fast) beginRacing(); else sfx('count');
 }
 function beginRacing() {
-  S.phase = 'racing'; S.goT = S.fast ? 0 : 0.9; sfx('powerup');
+  S.phase = 'racing'; S.goT = S.fast ? 0 : 0.9; sfx('count', { pitch: 1.5 });
   S.P.forEach(p => { p.prevPlace = S.race.placeOf(p.kart); nextQuestion(p); });
 }
 function nextQuestion(p) {
@@ -1751,15 +1892,15 @@ function answer(pi, value) {
     S.race.right(p.kart, p.streak);
     p.fb = 'right'; p.fbT = S.fast ? 0 : CONFIG.feedback.rightMs / 1000;
     const milestone = CONFIG.race.combo.some(c => c[0] === p.streak);
-    sfx(milestone ? 'powerup' : 'coin');
+    sfx(milestone ? 'levelup' : 'correct', { pitch: 1 + Math.min(6, p.streak) * 0.05 });
     const turbo = tRaw('turbo')[CONFIG.race.combo.findIndex(c => c[0] === p.streak)];
-    addPop(v, ki, milestone ? turbo : pickOne(tRaw('zoom')), milestone ? '#ffd23f' : '#fff', milestone);
+    addPop(v, ki, milestone ? turbo : pickOne(tRaw('zoom')), milestone ? 'reward' : '', milestone);
     for (let j = 0; j < (REDUCED ? 3 : 10); j++) addPart(v, 2, p.kart.dist + (visRng() - 0.3) * 6, p.kart.lane + 0.2 + visRng() * 0.6, p.kart.v * 0.9 + (visRng() - 0.5) * 8, (visRng() - 0.7) * 2, 0.6, 0.18 + visRng() * 0.14);
   } else {
     p.wrong++; p.streak = 0; S.race.wrong(p.kart);
     if (!p.missed.some(m => m.key === q.key)) p.missed.push({ key: q.key, text: q.text, answer: q.answer });
     p.fb = 'wrong'; p.fbT = S.fast ? 0 : (S.track === 1 ? CONFIG.feedback.wrongMsEasy : CONFIG.feedback.wrongMs) / 1000; p.fbAge = 0;
-    sfx('click');
+    sfx('wrong', { volume: 0.6 });
     for (let j = 0; j < 4; j++) addPart(v, 3, p.kart.dist + (visRng() - 0.5) * 4, p.kart.lane + 0.5 + visRng() * 0.3, p.kart.v * 0.6, -0.4, 0.8, 0.25);
   }
   renderPanel(p);
@@ -1769,9 +1910,9 @@ function answer(pi, value) {
 function tapChoice(pi, j) { const p = S.P[pi]; if (!p || !p.q || p.locked) return; answer(pi, p.q.choices[j]); }
 function keyIn(pi, k) {
   const p = S.P[pi]; if (!p || !p.q || p.locked || S.phase !== 'racing' || S.paused) return;
-  if (k === 'back') { p.typed = p.typed.slice(0, -1); sfx('click'); }
+  if (k === 'back') { p.typed = p.typed.slice(0, -1); sfx('select'); }
   else if (k === 'ok') { if (p.typed) answer(pi, +p.typed); return; }
-  else if (p.typed.length < 3) { p.typed = (p.typed === '0' ? '' : p.typed) + k; sfx('click'); }
+  else if (p.typed.length < 3) { p.typed = (p.typed === '0' ? '' : p.typed) + k; sfx('select'); }
   renderPanel(p);
 }
 /** A tap on the correction moves on (after a moment, so it can be read). */
@@ -1781,7 +1922,7 @@ function update(dt) {
   if (S.screen !== 'race' && S.screen !== 'results') return;
   if (S.phase === 'countdown') {
     const before = Math.floor(S.cd / CD_STEP); S.cd += dt; const after = Math.floor(S.cd / CD_STEP);
-    if (S.cd >= CD_TOTAL) beginRacing(); else if (after !== before) { sfx('click'); S.P.forEach(renderPanel); }
+    if (S.cd >= CD_TOTAL) beginRacing(); else if (after !== before) { sfx('count'); S.P.forEach(renderPanel); }
     return;
   }
   if (S.goT > 0) S.goT -= dt;
@@ -1793,14 +1934,14 @@ function update(dt) {
     const v = VIEWS[p.idx], ki = race.karts.indexOf(p.kart), place = race.placeOf(p.kart);
     if (p.passT > 0) p.passT -= dt;
     if (place < p.prevPlace && !p.kart.finished && p.passT <= 0) {
-      const passed = race.standings()[place]; if (passed) { addPop(v, ki, t('passed', { name: S.infos[race.karts.indexOf(passed)].short }), '#7ff0ff'); sfx('jump'); p.passT = 1.2; }
+      const passed = race.standings()[place]; if (passed) { addPop(v, ki, t('passed', { name: S.infos[race.karts.indexOf(passed)].short }), ''); sfx('whoosh'); p.passT = 1.2; }
     }
     p.prevPlace = place;
     const lap = race.lapOf(p.kart);
-    if (lap > p.lap) { p.lap = lap; addPop(v, ki, lap === CONFIG.laps ? t('lastLap') : t('lapPop', { n: lap }), '#ffd23f', true); sfx('coin'); }
+    if (lap > p.lap) { p.lap = lap; addPop(v, ki, lap === CONFIG.laps ? t('lastLap') : t('lapPop', { n: lap }), 'reward', true); sfx('spark'); }
     if (p.kart.finished && !p.finishedShown) {
       p.finishedShown = true; p.q = null; p.locked = true; p.fb = ''; renderPanel(p);
-      sfx(p.kart.place === 1 ? 'win' : 'coin');
+      sfx(p.kart.place === 1 ? 'win' : 'correct', { caption: undefined });
     }
   }
   if (S.P.every(p => p.kart.finished)) {
@@ -1826,67 +1967,107 @@ function endRace() {
 }
 
 /* =====================================================================================
-   The question panel (DOM)
+   The question panel (DOM, kit tiles: a tick or a cross shape marks right and oops, never colour alone)
    ===================================================================================== */
-function setMain(ui, text, box) {
-  ui.qmain.textContent = ''; const t = document.createElement('span'); t.className = 'qt'; t.textContent = text; ui.qmain.append(t);
+function setMain(ui, text, box, icon) {
+  ui.qmain.textContent = ''; if (icon) ui.qmain.insertAdjacentHTML('beforeend', Oomba.icon(icon));
+  const t = document.createElement('span'); t.className = 'qt'; t.textContent = text; ui.qmain.append(t);
   if (box != null) { const b = document.createElement('span'); b.className = 'qbox'; b.textContent = box; ui.qmain.append(b); }
   // shrink a long line to fit (never below 28px)
   ui.qmain.style.fontSize = ''; let size = parseFloat(getComputedStyle(ui.qmain).fontSize) || 36;
   while (ui.qmain.scrollWidth > ui.qmain.clientWidth + 1 && size > 28) { size -= 2; ui.qmain.style.fontSize = size + 'px'; }
 }
+function setLabel(ui, text, icon) { ui.qlabel.textContent = text; if (icon) ui.qlabel.insertAdjacentHTML('afterbegin', Oomba.icon(icon)); }
 function renderPanel(p) {
   const ui = HALVES[p.idx], q = p.q, cls = ui.qline.classList;
   cls.remove('right', 'wrong', 'done');
   ui.choices.classList.remove('locked'); ui.keypad.classList.remove('locked');
-  ui.ans.forEach(b => b.classList.remove('isRight', 'isOops'));
+  ui.ans.forEach(b => { b.classList.remove('isRight', 'isOops'); const m = b.querySelector('.mk'); if (m) m.remove(); });
   ui.qpanel.classList.toggle('racing-off', S.phase === 'countdown' || p.kart.finished);
   if (S.phase === 'countdown') {
     const n = Math.min(3, Math.floor(S.cd / CD_STEP) + 1);
-    ui.qlabel.textContent = t('q_ready'); fitText(ui.qlabel, 11); setMain(ui, String(4 - n) + '…');
+    setLabel(ui, t('q_ready')); fitText(ui.qlabel, 11); setMain(ui, NF.format(4 - n) + '…');
     ui.ans.forEach(b => { b.textContent = '?'; }); return;
   }
   if (p.kart.finished) {
-    cls.add('done'); ui.qlabel.textContent = t(S.players === 2 ? 'q_finished2' : 'q_finished'); fitText(ui.qlabel, 11);
-    ui.qmain.dir = 'auto'; setMain(ui, (p.kart.place === 1 ? '🏆 ' : '🏁 ') + placeName(p.kart.place)); ui.qmain.dir = 'ltr'; return;
+    cls.add('done'); setLabel(ui, t(S.players === 2 ? 'q_finished2' : 'q_finished')); fitText(ui.qlabel, 11);
+    ui.qmain.dir = 'auto'; setMain(ui, placeName(p.kart.place), null, p.kart.place === 1 ? 'trophy' : 'flag'); ui.qmain.dir = 'ltr'; return;
   }
   if (!q) return;
   if (p.fb === 'right') {
-    cls.add('right'); ui.qlabel.textContent = p.streak >= 3 ? t('inrow', { n: p.streak }) : pickOne(tRaw('right_words'));
-    setMain(ui, q.text + ' = ' + q.answer + ' ✓');
+    cls.add('right'); setLabel(ui, p.streak >= 3 ? t('inrow', { n: p.streak }) : pickOne(tRaw('right_words')), p.streak >= 3 ? 'spark' : 'check');
+    setMain(ui, q.text + ' = ' + q.answer, null, 'check');
   } else if (p.fb === 'wrong') {
-    cls.add('wrong'); ui.qlabel.textContent = t('remember', { kind: pickOne(tRaw('kind_words')) });
-    setMain(ui, t('is', { q: q.text, a: String(q.answer), n: q.answer }));   // the kind correction: "7 + 5 is 12" 
+    cls.add('wrong'); setLabel(ui, t('remember', { kind: pickOne(tRaw('kind_words')) }), 'hint');
+    setMain(ui, t('is', { q: q.text, a: String(q.answer), n: q.answer }));   // the kind correction: "7 + 5 is 12"
   } else {
-    ui.qlabel.textContent = q.tricky ? t('tricky') : q.review ? t('again1') : p.streak >= 2 ? t('inrowGo', { n: p.streak }) : t('question', { n: q.n });
+    setLabel(ui, q.tricky ? t('tricky') : q.review ? t('again1') : p.streak >= 2 ? t('inrowGo', { n: p.streak }) : t('question', { n: q.n }), q.tricky ? 'star' : q.review ? 'restart' : p.streak >= 2 ? 'spark' : '');
     setMain(ui, q.text + ' =', p.typed || '?');
   }
   fitText(ui.qlabel, 11);
-  ui.ans.forEach((b, j) => { b.textContent = q.choices[j]; b.setAttribute('aria-label', t('ans_aria', { n: q.choices[j] })); });
+  ui.ans.forEach((b, j) => { b.textContent = q.choices[j]; b.insertAdjacentHTML('afterbegin', '<span class="n" aria-hidden="true">' + (j + 1) + '</span>'); b.setAttribute('aria-label', t('ans_aria', { n: q.choices[j] })); });
   if (p.fb) {
     ui.choices.classList.add('locked'); ui.keypad.classList.add('locked');
-    ui.ans.forEach(b => { const n = +b.textContent; if (n === q.answer) b.classList.add('isRight'); else if (p.fb === 'wrong' && n === p.picked) b.classList.add('isOops'); });
+    ui.ans.forEach((b, j) => { const n = q.choices[j]; if (n === q.answer) { b.classList.add('isRight'); b.insertAdjacentHTML('beforeend', '<span class="mk">' + MARK.right + '</span>'); } else if (p.fb === 'wrong' && n === p.picked) { b.classList.add('isOops'); b.insertAdjacentHTML('beforeend', '<span class="mk">' + MARK.oops + '</span>'); } });
   }
 }
 
 /* =====================================================================================
-   Screens
+   Screens: the kit's title and pause; the game's picker, practice card and results (in the kit's look)
    ===================================================================================== */
+let titleOpen = false, titleSkip = false;
 function showScreen(name) {
-  S.screen = name;
-  $('titleScreen').hidden = name !== 'title'; $('pickScreen').hidden = name !== 'pick';
-  $('raceScreen').hidden = name !== 'race' && name !== 'results'; $('resultScreen').hidden = name !== 'results';
-  $('pauseScreen').hidden = true; $('practiceScreen').hidden = true;
-  if (name === 'title') refreshTitle();
+  S.screen = name; Oomba.scene = name;
+  $('pickScreen').hidden = name !== 'pick';
+  $('raceScreen').hidden = name !== 'race'; $('resultScreen').hidden = name !== 'results';
+  $('titleCanvas').hidden = name !== 'title' && name !== 'pick';
+  $('practiceScreen').hidden = true;
+  if (name === 'results') buildPodium(); else clearPodium();
+  if (name === 'title') openTitle();
 }
+/** The kit's title screen (a sticker logo over the demo race), with the game's stars and right answers. */
+function openTitle() {
+  if (titleOpen) return; titleOpen = true;
+  Oomba.ui.title({ title: CONFIG.title, subtitle: t('tag'), hero: false, play: () => { titleOpen = false; if (!titleSkip) showPicker(); } });
+  const scr = [...Oomba.ui.root().querySelectorAll('.ok-title-screen')].pop(); if (!scr) return;
+  const block = scr.querySelector('.ok-title-block'), play = block && block.querySelector('.ok-hot');
+  if (play) play.id = 'playBtn';
+  const signs = document.createElement('div'); signs.className = 'signs'; signs.dir = 'ltr'; signs.setAttribute('aria-hidden', 'true');
+  [['+', 'spark'], ['−', 'mint'], ['×', 'sky'], ['÷', 'coral']].forEach(([s, h]) => { const e = document.createElement('span'); e.textContent = s; e.style.background = C(h); signs.append(e); });
+  const h1 = block && block.querySelector('.ok-h1'); if (h1) h1.after(signs);
+  const chips = document.createElement('div'); chips.className = 'chips sr';
+  chips.style.position = 'static';
+  chips.innerHTML = `<span class="chip">${Oomba.icon('star')}<span id="starChip"></span></span><span class="chip">${Oomba.icon('check')}<span id="rightChip"></span></span>`;
+  // tagline, Play and the stats on one solid card (the player's own racer is in the demo race below)
+  const card = document.createElement('div'); card.className = 'sr-tcard';
+  const sub = block && block.querySelector('.ok-p');
+  if (block) { if (sub) card.append(sub); if (play) card.append(play); card.append(chips); block.append(card); }
+  const corner = scr.querySelector('.ok-corner'); if (corner) { const m = muteButton(); corner.prepend(m); }
+  refreshTitle(); updateMute();
+}
+/** Leaves the kit's title screen without its Play action (a test or a quit jumping straight somewhere else). */
+function closeTitle() { if (!titleOpen) return; const b = $('playBtn'); if (b) { titleSkip = true; b.click(); titleSkip = false; } titleOpen = false; }
 function refreshTitle() {
-  $('starChip').textContent = t('stars', { n: totalStars() });
-  $('rightChip').textContent = t('rights', { n: save.totalCorrect });
+  const sc = $('starChip'), rc = $('rightChip');
+  if (sc) sc.textContent = t('stars', { n: totalStars() });
+  if (rc) rc.textContent = t('rights', { n: save.totalCorrect });
 }
+/** Pause: the kit's pause screen (resume, restart, settings, quit = back to the tracks, sound). */
+let pauseIgnore = false;
 function setPaused(on) {
   if (S.screen !== 'race' || S.phase === 'done') return;
-  S.paused = !!on; $('pauseScreen').hidden = !S.paused; if (on) sfx('click');
-  if (on) $('resumeBtn').focus();
+  if (on && !S.paused) {
+    S.paused = true;
+    Oomba.ui.pause().then(r => {
+      if (pauseIgnore) { pauseIgnore = false; return; }
+      S.paused = false; updateMute();
+      if (r === 'restart') startRace(S.track); else if (r === 'quit') quitToPicker();
+    });
+  } else if (!on && S.paused) { S.paused = false; closeKitPause(); }
+}
+function closeKitPause() {
+  const b = Oomba.ui.root().querySelector('.ok-pause .ok-go'); if (!b) return;
+  pauseIgnore = true; b.click();
 }
 function quitToPicker() {
   if (S.race && S.phase !== 'done') persist();   // keep the tricky facts found so far
@@ -1896,21 +2077,23 @@ function quitToPicker() {
 /* ---------- Track picker ---------- */
 let thumbsDrawn = false;
 function showPicker() {
-  showScreen('pick');
+  closeTitle(); showScreen('pick');
   const grid = $('trackGrid');
   if (!grid.children.length) {
     CONFIG.tracks.forEach(tc => {
       const b = document.createElement('button'); b.className = 'tcard'; b.dataset.track = tc.id;
       b.innerHTML = '<canvas aria-hidden="true"></canvas><span class="tnum"></span><span class="tname"></span><span class="tskill"></span><span class="tmeta"><span class="tstars"></span><span class="tbest"></span></span>';
-      b.querySelector('.tnum').textContent = tc.id === 8 ? '★' : tc.id; b.querySelector('.tname').textContent = trackName(tc.id); b.querySelector('.tskill').textContent = trackSkill(tc.id);
-      b.addEventListener('click', () => { sfx('click'); if (tc.id === 8) openPractice(); else startRace(tc.id); });
+      if (tc.id === 8) b.querySelector('.tnum').innerHTML = Oomba.icon('star'); else b.querySelector('.tnum').textContent = NF.format(tc.id);
+      b.querySelector('.tname').textContent = trackName(tc.id); b.querySelector('.tskill').textContent = trackSkill(tc.id);
+      b.addEventListener('click', () => { sfx('select'); if (tc.id === 8) openPractice(); else startRace(tc.id); });
       grid.append(b);
     });
   }
   const sug = suggestedTrack();
   grid.querySelectorAll('.tcard').forEach(b => {
-    const id = +b.dataset.track, ts = trackSave(id);
-    b.querySelector('.tstars').textContent = id === 8 ? '' : '★'.repeat(ts.stars) + '☆'.repeat(3 - ts.stars);
+    const id = +b.dataset.track, ts = trackSave(id), st = b.querySelector('.tstars');
+    st.innerHTML = id === 8 ? '' : [0, 1, 2].map(i => `<span class="${i < ts.stars ? 'on' : 'off'}">${Oomba.icon('spark')}</span>`).join('');
+    st.setAttribute('role', 'img'); st.setAttribute('aria-label', id === 8 ? '' : Oomba.t('sparks', { n: ts.stars }));
     b.querySelector('.tbest').textContent = ts.best ? t('best', { ord: ordinal(ts.best) }) : id === 8 ? LTR('×' + save.tables.join(' ×')) : t('new');
     let badge = b.querySelector('.tbadge'); if (id === sug && id !== 8) { if (!badge) { badge = document.createElement('span'); badge.className = 'tbadge'; b.append(badge); } badge.textContent = t(id === 1 && !ts.races ? 'startHere' : 'tryMe'); } else if (badge) badge.remove();
     b.setAttribute('aria-label', trackName(id) + ', ' + trackSkill(id));
@@ -1923,7 +2106,7 @@ function showPicker() {
 function drawThumbs() {
   document.querySelectorAll('.tcard').forEach(b => {
     const id = +b.dataset.track, cv = b.querySelector('canvas'), w = Math.max(150, Math.round(cv.clientWidth || 180)), h = Math.round(w * 9 / 21);
-    const v = makeView(cv, 'thumb'); v.scene = sceneOf(id); sizeView(v, w, h); buildTiles(v);
+    const v = makeView(cv, 'thumb'); v.scene = sceneOf(id); v.night = NIGHT(); sizeView(v, w, h); buildTiles(v);
     v.g.setTransform(v.dpr, 0, 0, v.dpr, 0, 0); drawScene(v, 40 + id * 17);
     const fake = (lane, dist) => ({ lane, dist, v: 0, wobble: 0, boost: 0, finished: false });
     drawKart(v, fake(1, 0), rivalInfo(CONFIG.rivals[id % 3], 3), v.m.x0 + v.m.kartW * 0.9, laneY(v, 1), 0);
@@ -1936,77 +2119,87 @@ function openPractice() {
     const b = document.createElement('button'); b.textContent = '×' + n; b.dataset.t = n; b.setAttribute('aria-label', t('table_aria', { n }));
     b.addEventListener('click', () => {
       const i = save.tables.indexOf(n); if (i >= 0) { if (save.tables.length > 1) save.tables.splice(i, 1); } else save.tables.push(n);
-      save.tables.sort((a, c) => a - c); persist(); refreshTables(); sfx('click');
+      save.tables.sort((a, c) => a - c); persist(); refreshTables(); sfx('select');
     });
     grid.append(b);
   }
-  refreshTables(); $('practiceScreen').hidden = false;
+  refreshTables(); $('practiceScreen').hidden = false; Oomba.time.real.after(0, () => $('practiceGo').focus({ preventScroll: true }));
 }
 function refreshTables() { $('tableGrid').querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(save.tables.includes(+b.dataset.t)))); }
 
-/* ---------- Results ---------- */
-function chip(text, cls) { const c = document.createElement('span'); c.className = 'chip' + (cls ? ' ' + cls : ''); c.textContent = text; return c; }
+/* ---------- Results: the cast on a podium in the track's kit world, and the card ---------- */
+let podium = [];
+function clearPodium() { for (const e of podium) e.remove(null); podium = []; WORLD.setBiome('none'); }
+function buildPodium() {
+  clearPodium(); const R = S.results; if (!R) return;
+  const tc = CONFIG.tracks[S.track - 1], cell = 64;
+  WORLD.setBiome(tc.biome); if (!NIGHT()) WORLD.setTimeOfDay(tc.dusk ? 0.55 : 0, 0);
+  // the podium: big blocks in the place colours (1st spark, 2nd sky, 3rd peach) on the track's ground
+  podium = WORLD.ground(['####################', '####################'], { cell, x: -11 * cell, y: 0 });
+  for (const [c0, n, hue] of [[-2, 3, 'spark'], [-4, 2, 'sky'], [0, 1, 'peach']]) for (let c = c0; c < c0 + 2; c++) for (let r = 1; r <= n; r++) podium.push(WORLD.add('block', { x: (c + 0.5) * cell, y: -(r - 0.5) * cell, size: cell + 1, variant: ':' + hue, shadow: false }));
+  const spots = [[-1, -3], [-3, -2], [1, -1], [3.2, 0]];   // 1st, 2nd, 3rd (on the steps), 4th (beside 3rd), in cells
+  for (const fx of [-5.4, 4.9]) podium.push(WORLD.add('flag', { x: fx * cell, y: 0, size: cell * 2.2, shadow: false }));
+  R.standings.forEach((ki, i) => {
+    const info = S.infos[ki], [cx, cy] = spots[i];
+    const e = WORLD.add(info.char, { x: cx * cell, y: cy * cell, size: i === 0 ? 170 : 120, flip: false });
+    e.state(i === 0 ? 'cheer' : i === 3 ? 'wave' : 'idle').mood(i === 0 ? 'happy' : 'happy'); podium.push(e);
+    if (i < 3) podium.push(WORLD.add('tile', { x: cx * cell, y: cy * cell + cell * 0.6, size: cell * 0.9, variant: (i + 1) + ':' + ['spark', 'sky', 'peach'][i] }));
+  });
+  framePodium();
+}
+/** The camera frames the podium in the part of the screen the card leaves free. */
+function framePodium() {
+  if (!podium.length) return;
+  const V = WORLD.view, f = WORLD.fit, card = $('resultScreen').querySelector('.ok-card'), cell = 64;
+  if (!V || !f || !card) return;
+  const r = card.getBoundingClientRect(), wide = innerWidth / innerHeight >= 1.25;
+  const fx0 = 0, fx1 = wide ? Math.max(innerWidth * 0.4, r.left - 16) : innerWidth, fy0 = Math.min(innerHeight * 0.14, 92), fy1 = wide ? innerHeight : Math.max(innerHeight * 0.3, r.top - 8);
+  const W = 11.6 * cell, H = 6.2 * cell, z = Math.max(0.3, Math.min(1.6, ((fx1 - fx0) / f.k) / W, ((fy1 - fy0) / f.k) / H));
+  const midX = ((fx0 + fx1) / 2 - f.offX) / f.k, midY = ((fy0 + fy1) / 2 - f.offY) / f.k;
+  const cam = WORLD.camera; cam.bounds(null); cam.zoom = z;
+  cam.x = -0.25 * cell - (midX - V.vw / 2) / z; cam.y = -2.3 * cell - (midY - V.vh / 2) / z;
+}
+function chip(text, cls, icon) { const c = document.createElement('span'); c.className = 'chip' + (cls ? ' ' + cls : ''); if (icon) c.innerHTML = Oomba.icon(icon); c.append(text); return c; }
 function showResults() {
-  const R = S.results, tc = CONFIG.tracks[S.track - 1], two = S.players === 2;
+  const R = S.results, two = S.players === 2;
   showScreen('results');
   let title;
   if (!two) title = t(['r_won', 'r_2nd', 'r_3rd', 'r_4th'][R.place - 1]);
   else { const a = R.per[0].place, b = R.per[1].place; title = t('r_pwins', { n: a < b ? 1 : 2 }); }
-  $('resTitle').textContent = title;
+  { const h = $('resTitle'), w = document.createElement('span'), f = document.createElement('i'); w.className = 'ok-title-word'; w.dataset.w = title; f.textContent = title; w.append(f); h.textContent = ''; h.append(w); h.setAttribute('aria-label', title); }
+  // the race's sparks (1st = 3, 2nd = 2, else 1) land one by one, as on every kit results screen
+  const sp = $('resSparks'); sp.innerHTML = ''; sp.hidden = two; sp.setAttribute('aria-label', Oomba.t('sparks', { n: R.stars }));
+  const slots = [0, 1, 2].map(() => { const s = document.createElement('span'); s.className = 'ok-slot'; s.innerHTML = Oomba.icon('spark'); sp.append(s); return s; });
+  if (!two) slots.forEach((s, i) => { if (i < R.stars) Oomba.time.real.after(S.fast ? 0 : 350 + i * 380, () => { s.classList.add('ok-on'); if (!S.fast) sfx('spark', { pitch: 1 + i * 0.12 }); }); });
   const stats = $('resStats'); stats.textContent = ''; const rows = $('resRows'); rows.textContent = ''; rows.hidden = !two;
   if (!two) {
     const p = R.per[0];
-    stats.append(chip(t('c_right', { n: p.correct, acc: PCT.format(p.acc / 100) }), 'good'));
-    if (p.fastest != null) stats.append(chip(t('c_fast', { s: t('secs', { s: NF1.format(p.fastest) }) })));
-    if (p.bestStreak >= 3) stats.append(chip(t('c_row', { n: p.bestStreak })));
-    stats.append(chip(t('c_points', { stars: '⭐'.repeat(R.stars), n: R.points }), 'star'));
+    stats.append(chip(t('c_right', { n: p.correct, acc: PCT.format(p.acc / 100) }), 'good', 'check'));
+    if (p.fastest != null) stats.append(chip(t('c_fast', { s: t('secs', { s: NF1.format(p.fastest) }) }), '', 'timer'));
+    if (p.bestStreak >= 3) stats.append(chip(t('c_row', { n: p.bestStreak }), '', 'spark'));
+    stats.append(chip(t('c_points', { stars: '', n: R.points }), 'star', 'star'));
   } else {
     R.per.forEach((p, i) => {
       const r = document.createElement('div'); r.className = 'resRow';
-      r.innerHTML = '<b></b><span></span>';
-      r.querySelector('b').textContent = S.infos[S.race.karts.indexOf(S.P[i].kart)].face + ' ' + ordinal(p.place);
-      r.querySelector('span').textContent = t('row_line', { i: i + 1, n: p.correct, acc: PCT.format(p.acc / 100) }) + (p.fastest != null ? ' ⚡' + t('secs', { s: NF1.format(p.fastest) }) : '');
-      rows.append(r);
+      const info = S.infos[S.race.karts.indexOf(S.P[i].kart)], hs = headSprite(info, 40, DPR()), c = document.createElement('canvas');
+      c.width = hs.c.width; c.height = hs.c.height; c.getContext('2d').drawImage(hs.c, 0, 0); c.setAttribute('aria-hidden', 'true');
+      const b = document.createElement('b'), s = document.createElement('span'); b.textContent = ordinal(p.place);
+      s.textContent = t('row_line', { i: i + 1, n: p.correct, acc: PCT.format(p.acc / 100) }) + (p.fastest != null ? ' · ' + t('secs', { s: NF1.format(p.fastest) }) : '');
+      r.append(c, b, s); rows.append(r);
     });
-    stats.append(chip(t('c_p1pts', { n: R.points }), 'star'));
+    stats.append(chip(t('c_p1pts', { n: R.points }), 'star', 'star'));
   }
   const missed = R.per[0].missed.concat(two ? R.per[1].missed : []).filter((m, i, a) => a.findIndex(o => o.key === m.key) === i).slice(0, 3);
   $('resPractise').textContent = missed.length ? t('practise', { list: missed.map(m => LTR(m.text + ' = ' + m.answer)).join(t('list_sep')) }) : t('noMistakes');
-  const mu = $('resMoveUp'); mu.hidden = !R.moveUp; if (R.moveUp) mu.textContent = t('moveUp', { n: CONFIG.moveUpAfterWins, track: trackName(S.track + 1) });
+  const mu = $('resMoveUp'); mu.hidden = !R.moveUp; if (R.moveUp) { mu.innerHTML = Oomba.icon('next'); mu.append(t('moveUp', { n: CONFIG.moveUpAfterWins, track: trackName(S.track + 1) })); }
   const hasNext = S.track < 7; $('nextBtn').hidden = !hasNext;
-  $('againBtn').className = 'big-btn' + (R.moveUp ? ' alt' : ''); $('nextBtn').className = 'big-btn ' + (R.moveUp || R.place === 1 ? 'go' : 'alt');
-  if (R.place === 1 || (two && Math.min(R.per[0].place, R.per[1].place) === 1)) { try { BRB.fx.confetti(); } catch (e) { /* ignore */ } }
-  else sfx('coin');
-  sizePodium(); ($('nextBtn').hidden ? $('againBtn') : (R.moveUp ? $('nextBtn') : $('againBtn'))).focus({ preventScroll: true });
-}
-function sizePodium() { const cv = $('podium'), w = Math.round(cv.clientWidth), h = Math.round(cv.clientHeight), d = DPR(); if (w && (cv.width !== Math.round(w * d) || cv.height !== Math.round(h * d))) { cv.width = Math.round(w * d); cv.height = Math.round(h * d); } }
-function drawPodium(time) {
-  const cv = $('podium'), R = S.results; if (!R || !cv.width) return;
-  const g = cv.getContext('2d'), d = DPR(), w = cv.width / d, h = cv.height / d, t = time - R.shownAt;
-  g.setTransform(d, 0, 0, d, 0, 0); g.clearRect(0, 0, w, h);
-  g.save(); rrect(g, 0, 0, w, h, 18); g.clip();
-  g.fillStyle = vgrad(g, 0, h, ['#8fd3ff', '#d9f2ff']); g.fillRect(0, 0, w, h);
-  // cheering crowd at the back
-  const cols = ['#ff5d8f', '#ffd23f', '#3a7bff', '#2ec4b6', '#ff8c42', '#a06cd5'];
-  for (let i = 0; i < 16; i++) { const x = (i + 0.5) * w / 16, jump = REDUCED ? 0 : Math.max(0, Math.sin(time * 6 + i * 1.3)) * 5, y = h * 0.42 - jump; disc(g, x, y + 10, 9, cols[i % 6]); disc(g, x, y, 7, '#ffd9b3'); if (i % 2 === 0) { g.strokeStyle = cols[(i + 2) % 6]; g.lineWidth = 3; g.lineCap = 'round'; g.beginPath(); g.moveTo(x + 6, y + 6); g.lineTo(x + 12, y - 8 - jump); g.stroke(); } }
-  g.fillStyle = '#7bd26b'; g.fillRect(0, h * 0.5, w, h * 0.5);
-  const bw = Math.min(110, w * 0.24), cx = w * 0.42, base = h - 6;
-  const steps = [{ place: 2, x: cx - bw, hgt: h * 0.3 }, { place: 1, x: cx, hgt: h * 0.4 }, { place: 3, x: cx + bw, hgt: Math.max(40, h * 0.23) }];
-  for (const st of steps) {
-    const ki = R.standings[st.place - 1], info = S.infos[ki], top = base - st.hgt;
-    g.fillStyle = PLACE_COL[st.place - 1]; rrect(g, st.x - bw / 2 + 2, top, bw - 4, st.hgt, 8); g.fill();
-    g.fillStyle = 'rgba(0,0,0,.12)'; g.fillRect(st.x - bw / 2 + 2, top + st.hgt * 0.75, bw - 4, st.hgt * 0.25);
-    g.fillStyle = '#2a1846'; g.font = '700 ' + Math.round(Math.min(28, st.hgt * 0.42)) + 'px ' + FONT; g.textAlign = 'center'; g.textBaseline = 'middle'; textDir(g, false); g.fillText(String(st.place), st.x, top + Math.min(st.hgt * 0.32, 20));
-    const hs = Math.min(bw * 0.7, h * 0.34), drop = REDUCED ? 0 : Math.max(0, 1 - t * 2.2 + (st.place - 1) * 0.25), bounce = REDUCED ? 0 : Math.abs(Math.sin(time * 3 + st.place)) * (st.place === 1 ? 4 : 2);
-    const sp = headSprite(info, hs, d); g.drawImage(sp.c, st.x - hs / 2, top - hs - 4 - drop * h * 0.6 - bounce, hs, hs);
-    fitFont(g, info.short, Math.min(15, bw * 0.16), bw - 6); g.fillStyle = '#2a1846'; textDir(g, true); g.fillText(info.short, st.x, base - 9);
-  }
-  // 4th place waves from the side
-  const k4 = R.standings[3], i4 = S.infos[k4], hs4 = Math.min(bw * 0.5, h * 0.26), x4 = Math.min(w - hs4 / 2 - 8, cx + bw * 2.05);
-  g.drawImage(headSprite(i4, hs4, d).c, x4 - hs4 / 2, base - hs4 - 18, hs4, hs4);
-  const l4 = ordinal(4) + ' ' + i4.short;
-  g.fillStyle = '#2a1846'; fitFont(g, l4, Math.min(15, hs4 * 0.32), Math.min(w - 8, 2 * (w - x4) - 8)); g.textAlign = 'center'; textDir(g, true); g.fillText(l4, x4, base - 7);
-  g.restore();
+  const nextFirst = R.moveUp || R.place === 1;
+  $('againBtn').className = 'ok-btn ' + (nextFirst && hasNext ? 'ok-quiet' : 'ok-hot'); $('nextBtn').className = 'ok-btn ' + (nextFirst ? 'ok-hot' : 'ok-quiet');
+  const won = R.place === 1 || (two && Math.min(R.per[0].place, R.per[1].place) === 1);
+  if (won) { sfx('win', { caption: undefined }); if (!REDUCED) for (const ms of [400, 1300, 2300, 3400]) Oomba.time.real.after(S.fast ? 0 : ms, () => { if (S.screen === 'results') Oomba.juice.confetti(); }); }
+  else sfx('pop');
+  ($('nextBtn').hidden ? $('againBtn') : (nextFirst ? $('nextBtn') : $('againBtn'))).focus({ preventScroll: true });
+  Oomba.time.real.after(0, framePodium);
 }
 
 /* =====================================================================================
@@ -2016,11 +2209,13 @@ const demo = { view: makeView($('titleCanvas'), 'title'), race: null, infos: nul
 function newDemo() {
   demo.sceneIdx = demo.sceneIdx % 7 + 1; demo.view.scene = demo.sceneIdx; demo.view.tiles = null; demo.view.pn = 0;
   const saved = S.players; S.players = 1; demo.race = makeRace(1, 1, makeRng(demo.sceneIdx * 99)); demo.infos = infosFor(demo.race); S.players = saved;
-  demo.race.karts.forEach(k => { k.dist = 40 + k.lane * 6; });
+  const wide = demo.view.m ? demo.view.m.w > demo.view.m.h * 1.2 : innerWidth > innerHeight * 1.2;
+  demo.race.karts.forEach(k => { k.dist = 40 + k.lane * (wide ? 9 : 13); });   // spread out across the road, not bunched (on a wide screen, all on the free side)
+  demo.order = demo.race.karts.map((k, i) => i).sort((a, b) => demo.race.karts[a].lane - demo.race.karts[b].lane);
   demo.next = 1; demo.t = 0;
 }
 function drawDemo(dt, time) {
-  const v = demo.view; sizeView(v, innerWidth, innerHeight); if (!v.m) return;
+  const v = demo.view; if (!v.fit) fitView(v); if (!v.m) return;
   if (!demo.race || demo.t > 16) newDemo();
   const race = demo.race; demo.t += dt;
   race.step(dt); demo.next -= dt; const me = race.karts[0];
@@ -2028,32 +2223,36 @@ function drawDemo(dt, time) {
   if (!v.tiles) buildTiles(v);
   const cam = race.karts.reduce((a, k) => a + k.dist, 0) / race.karts.length;
   v.g.setTransform(v.dpr, 0, 0, v.dpr, 0, 0); drawScene(v, cam);
-  const savedOrder = S.laneOrder; S.laneOrder = race.karts.map((k, i) => i).sort((a, b) => race.karts[a].lane - race.karts[b].lane);
   emitKartParts(v, race, dt); stepParts(v, dt); drawParts(v, cam, false);
-  for (const i of S.laneOrder) { const k = race.karts[i]; drawKart(v, k, demo.infos[i], sx(v, cam, k.dist), laneY(v, k.lane), time); }
-  S.laneOrder = savedOrder; drawAmbient(v, dt, time, 20);
+  const lead = race.karts.reduce((a, k) => (k.dist > a.dist ? k : a), race.karts[0]);
+  if (!REDUCED) motionLines(v, sx(v, cam, lead.dist), laneY(v, lead.lane), time);
+  for (const i of demo.order) { const k = race.karts[i]; drawKart(v, k, demo.infos[i], sx(v, cam, k.dist), laneY(v, k.lane), time); }
+  drawAmbient(v, dt, time, 20);
 }
 
 /* =====================================================================================
    Layout and the main loop
    ===================================================================================== */
 function layoutViews() {
-  VIEWS.forEach((v, i) => { const box = v.cv.parentElement; if (box.offsetParent === null) return; sizeView(v, box.clientWidth, box.clientHeight); });
-  if (S.screen === 'results') sizePodium();
+  VIEWS.forEach(v => { const box = v.cv.parentElement; if (box.offsetParent === null) return; fitView(v); });
+  if (!$('titleCanvas').hidden) fitView(demo.view);
+  if (S.screen === 'results') framePodium();
 }
-if (window.ResizeObserver) { const ro = new ResizeObserver(layoutViews); VIEWS.forEach(v => ro.observe(v.cv.parentElement)); ro.observe($('podium')); }
+if (window.ResizeObserver) { const ro = new ResizeObserver(layoutViews); VIEWS.forEach(v => ro.observe(v.cv.parentElement)); }
 window.addEventListener('resize', layoutViews);
+Oomba.theme.on('change', () => { thumbsDrawn = false; layoutViews(); });
+Oomba.fonts.ready.then(() => { FONTSTACK = getComputedStyle(Oomba.ui.root()).getPropertyValue('--ok-font') || FONTSTACK; spriteCache.clear(); VIEWS.concat(demo.view).forEach(v => { v.tiles = null; }); });
 
 let last = performance.now(), frameGaps = null;
 function frame(now) {
-  const raw = now - last, dt = Math.min(0.05, Math.max(0, raw / 1000)); last = now; S.time += dt;
+  // a slow device (or a busy one) skips ahead up to 0.1 s a frame, so the race never drifts into slow motion
+  const raw = now - last, dt = Math.min(0.1, Math.max(0, raw / 1000)); last = now; S.time += dt;
   if (frameGaps) frameGaps.push(raw);
-  if (S.screen === 'title') drawDemo(dt, S.time);
+  if (S.screen === 'title' || S.screen === 'pick') drawDemo(dt, S.time);
   else if (S.screen === 'race' || S.screen === 'results') {
     if (!S.paused && !S.manual) update(dt);
     const vdt = S.paused ? 0 : dt;
-    for (let i = 0; i < S.players; i++) drawRaceView(VIEWS[i], vdt, S.time);
-    if (S.screen === 'results') drawPodium(S.time);
+    if (S.screen === 'race') for (let i = 0; i < S.players; i++) drawRaceView(VIEWS[i], vdt, S.time);
   }
   requestAnimationFrame(frame);
 }
@@ -2061,28 +2260,27 @@ function frame(now) {
 /* =====================================================================================
    Buttons and keys
    ===================================================================================== */
-function updateMute() { const m = BRB.sfx.muted; document.querySelectorAll('.mute').forEach(b => { b.textContent = m ? '🔇' : '🔊'; b.setAttribute('aria-label', t(m ? 'a_soundOn' : 'a_soundOff')); }); }
-document.querySelectorAll('.mute').forEach(b => b.addEventListener('click', () => { BRB.sfx.mute(); updateMute(); sfx('click'); }));
-$('playBtn').addEventListener('click', () => { sfx('powerup'); showPicker(); });
-$('backBtn').addEventListener('click', () => { sfx('click'); showScreen('title'); });
-document.querySelectorAll('[data-mode]').forEach(b => b.addEventListener('click', () => { S.mode = b.dataset.mode; save.mode = S.mode; persist(); showPicker(); sfx('click'); }));
-document.querySelectorAll('[data-players]').forEach(b => b.addEventListener('click', () => { S.players = +b.dataset.players; save.players = S.players; persist(); showPicker(); sfx('click'); }));
-$('practiceGo').addEventListener('click', () => { sfx('powerup'); startRace(8); });
-$('practiceBack').addEventListener('click', () => { sfx('click'); $('practiceScreen').hidden = true; });
+function muteButton() { const b = document.createElement('button'); b.className = 'ok-btn ok-icon mute'; b.type = 'button'; b.addEventListener('click', toggleMute); return b; }
+function updateMute() { const m = BRB.sfx.muted; document.querySelectorAll('.mute').forEach(b => { b.innerHTML = Oomba.icon(m ? 'mute' : 'sound'); b.setAttribute('aria-label', t(m ? 'a_soundOn' : 'a_soundOff')); }); }
+function toggleMute() { BRB.sfx.mute(); updateMute(); sfx('select'); }
+document.querySelectorAll('.mute').forEach(b => b.addEventListener('click', toggleMute));
+const tap = (id, fn, s = 'select') => $(id).addEventListener('click', () => { sfx(s); fn(); });
+tap('backBtn', () => showScreen('title'));
+document.querySelectorAll('[data-mode]').forEach(b => b.addEventListener('click', () => { S.mode = b.dataset.mode; save.mode = S.mode; persist(); showPicker(); sfx('select'); }));
+document.querySelectorAll('[data-players]').forEach(b => b.addEventListener('click', () => { S.players = +b.dataset.players; save.players = S.players; persist(); showPicker(); sfx('select'); }));
+tap('practiceGo', () => startRace(8), 'whoosh');
+tap('practiceBack', () => { $('practiceScreen').hidden = true; });
 $('pauseBtn').addEventListener('click', () => setPaused(true));
-$('resumeBtn').addEventListener('click', () => setPaused(false));
-$('restartBtn').addEventListener('click', () => { sfx('click'); startRace(S.track); });
-$('quitBtn').addEventListener('click', () => { sfx('click'); quitToPicker(); });
-$('againBtn').addEventListener('click', () => { sfx('click'); startRace(S.track); });
-$('nextBtn').addEventListener('click', () => { sfx('powerup'); startRace(Math.min(7, S.track + 1)); });
-$('menuBtn').addEventListener('click', () => { sfx('click'); quitToPicker(); });
+tap('againBtn', () => startRace(S.track));
+tap('nextBtn', () => startRace(Math.min(7, S.track + 1)), 'whoosh');
+tap('menuBtn', () => quitToPicker());
 document.addEventListener('visibilitychange', () => { if (document.hidden && S.screen === 'race' && S.phase !== 'done') setPaused(true); });
 
 document.addEventListener('keydown', e => {
+  if (Oomba.ui.open) return;   // the kit's own screens (pause, settings) own the keys while they are open
   const k = e.key;
   if (k === 'p' || k === 'P' || k === 'Escape') {
     if (S.screen === 'race' && !S.paused && S.phase !== 'done') { setPaused(true); e.preventDefault(); }
-    else if (S.paused) { setPaused(false); e.preventDefault(); }
     else if (!$('practiceScreen').hidden && k === 'Escape') $('practiceScreen').hidden = true;
     return;
   }
@@ -2102,7 +2300,8 @@ showScreen('title');
 requestAnimationFrame(frame);
 
 /* =====================================================================================
-   window.__brbTest: hooks for automated play tests (harmless in production).
+   window.__brbTest: hooks for automated play tests (harmless in production). Merged into the kit's hooks
+   (setTheme, setLang, setTier ...): the game's own names below win and behave as before.
      state()            -> { screen, track, mode, players, phase, paused, question: {text, answer, choices} | null (player 1),
                              place, lap, progress: [0..1 per kart], correct, wrong, streak, finished (player 1),
                              p: [per player { question, place, lap, correct, wrong, streak, finished, typed, feedback, missed }],
@@ -2124,7 +2323,9 @@ requestAnimationFrame(frame);
      frameStats(start)  -> start collecting rAF gaps; frameStats() returns them
    ===================================================================================== */
 let nextSeed = null;
-window.__brbTest = {
+window.__brbTest = Object.assign(window.__brbTest || {}, {
+  /** cover(on): frame the race closer for the library cover (bigger kart and driver; the cover script calls it). */
+  cover(on = true) { COVER = on !== false; for (const v of VIEWS) { v.w = 0; v.h = 0; fitView(v); } return COVER; },
   state() {
     const race = S.race, p1 = S.P[0];
     const pq = p => p && p.q ? { text: p.q.text, answer: p.q.answer, choices: p.q.choices.slice(), key: p.q.key, review: !!p.q.review, tricky: !!p.q.tricky } : null;
@@ -2175,5 +2376,5 @@ window.__brbTest = {
   tricky() { return JSON.parse(JSON.stringify(save.tricky)); },
   save() { return JSON.parse(JSON.stringify(save)); },
   frameStats(start) { if (start) { frameGaps = []; return true; } const g = frameGaps || []; frameGaps = null; return g; }
-};
+});
 </script>

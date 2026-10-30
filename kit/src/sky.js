@@ -1,13 +1,13 @@
 // The time-of-day model shared by both backends: sky gradient stops (mixed in OKLab), sun/moon path, star and
 // firefly amounts, ambient light and the colour grade. timeOfDay: 0 = noon, ~.45 = golden hour, ~.7 = dusk, 1 = night.
 import { hexToOklab, oklabToHex } from './color.js';
-import { PALETTE, NIGHT_SKY } from './tokens.js';
+import { NIGHT_SKY } from './tokens.js';
 
 // [tod, top, bottom, ambient rgb]
 export const SKY_KEYS = [
-  [0.0, PALETTE.sky[1], '#E4F5EC', [1, 1, 1]],
-  [0.22, '#86C4EE', '#FFF1D2', [1, 0.98, 0.93]],   // late afternoon: keeps the day-to-gold blend from greying out
-  [0.42, '#F6B27F', '#FFE9A6', [1.0, 0.93, 0.82]],
+  [0.0, '#4FB4F7', '#BFE8FF', [1, 1, 1]],   // noon: a saturated blue that never goes near white at the horizon
+  [0.22, '#5AAEEC', '#FFE6B8', [1, 0.98, 0.93]],   // late afternoon: keeps the day-to-gold blend from greying out
+  [0.42, '#FF9F5A', '#FFE08A', [1.0, 0.93, 0.82]],
   [0.68, '#7A55C9', '#FF9C8F', [0.66, 0.6, 0.78]],
   [1.0, NIGHT_SKY[0], NIGHT_SKY[1], [0.5, 0.57, 0.76]],
 ];

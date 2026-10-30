@@ -78,6 +78,8 @@ export class Entity {
   /** collect(): the pickup pops up and away with a sparkle burst, then is removed. Resolves when gone. */
   collect(fx = 'sparkle') {
     if (this.dead || this.collecting) return Promise.resolve(false);
+    // a world's pickup collected from game code counts like one the hero touched (points, got, combo, on.collect)
+    if (this.world && this.roleName === 'collectible' && !this.taken) return this.world._collect(this) || Promise.resolve(true);
     this.collecting = true; const tw = this.stage.kit.loop.tw;
     this.stage.particles.burst(fx, this.x, this.y - this.size * (this._ay() - 0.5));
     if (this.stage.reduced) return tw.tween(this, { alpha: 0 }, { ms: 200, ease: 'linear' }).then(() => { this.remove(null); return true; });

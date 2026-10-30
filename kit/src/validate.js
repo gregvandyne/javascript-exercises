@@ -9,7 +9,8 @@ export const BODIES = ['bean', 'ball', 'pear'];
 export const HAIR_STYLES = ['puffs', 'bob', 'curls', 'spiky', 'braids', 'buzz', 'long', 'cap'];
 export const TOPS = ['tee', 'hoodie', 'dress', 'overalls'];
 export const WEAR = ['scarf', 'glasses', 'crown', 'wizard-hat', 'backpack', 'headphones'];
-export const PARTS = ['move', 'player', 'patrol', 'follow', 'bob', 'fly', 'collectible', 'hazard', 'goal', 'checkpoint', 'spring', 'quizGate', 'talk', 'lantern', 'shadow', 'glow'];
+export const PARTS = ['move', 'player', 'patrol', 'follow', 'bob', 'fly', 'collectible', 'hazard', 'goal', 'checkpoint', 'spring', 'quizGate', 'talk', 'lantern', 'shadow', 'glow',
+  'platform', 'door', 'key', 'solid', 'walk'];
 
 export function editDistance(a, b) {
   a = String(a); b = String(b);

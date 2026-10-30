@@ -5,6 +5,10 @@
 //   game exists  -> "make it harder / easier / faster", "change the colour", "change the hero to X", "add a second level",
 //                   "call it X" -> edit_game with real find/replace edits (a new version)
 //                -> "it's ready" / "polish" -> polish pass with a checklist
+//                -> "upgrade it" / "the new look" (an older game, before the Oomba Kit) -> rebuilt on the kit template of
+//                   its kind, keeping its title and tune-ups; only when asked, never on its own
+// Games on the Oomba Kit (every template) are changed through the kit layer (layer.js): character looks, the biome,
+// the title and the game clock are spec edits on single BRB_TUNE lines ("make the fox blue with a hat").
 // Text is streamed in small chunks so the SSE path is exercised.
 // The runner's checkpoint (ctx.between) runs before it starts (a stopped build does nothing) and after each pass (a
 // question, or a version with its notes): new messages the builder sent meanwhile are used right away, as the answer
@@ -17,8 +21,9 @@
 // the same name / check / notes / ask rows as Claude's, from tools.js. It never gets AI rows (rounds, playtests).
 import { templateHtml, templateInfo } from './catalog.js';
 import { detectKind, detectTheme, themeByKey, detectPlayers, detectLearn, detectColor, nextColor, titleFor, CATEGORY_FOR, DEFAULT_KIND,
-  KIND_CHIPS, THEME_CHIPS, LEARN_CHIPS, PLAYER_CHIPS, NEXT_CHIPS } from './themes.js';
-import { withLayer, readTune, tuneEdits, hasLayer, guessHero, shownTitle, LAYER_ID } from './layer.js';
+  KIND_CHIPS, THEME_CHIPS, LEARN_CHIPS, PLAYER_CHIPS, NEXT_CHIPS, THEMES, kitLook, KIT_HUES, KIT_WEAR, KIT_SPECIES, KIT_BIOMES } from './themes.js';
+import { withLayer, readTune, tuneEdits, hasLayer, guessHero, shownTitle, LAYER_ID, kitLayerFor, usesKit } from './layer.js';
+import { TEMPLATES } from './templates/index.js';
 import { cleanText } from '../services/textfilter.js';
 import { isThreeGame } from '../services/vendor.js';
 import { NO_STEPS } from './steps.js';
@@ -102,12 +107,7 @@ async function build(ctx, m) {
   const { html: base, fallback } = await templateHtml(kind);
   const realKind = fallback ? 'catch' : kind;   // 'island' is the 3D template (Star Island)
   const title = titleFor(kind, theme);
-  const heroFrom = guessHero(base, info.icon);
-  const oldTitle = shownTitle(base);
-  const html = withLayer(base.replace(/<title>[^<]*<\/title>/i, `<title>${title}</title>`), {
-    hero: theme && heroFrom ? [heroFrom, theme.emoji] : ['', ''],
-    name: oldTitle ? [oldTitle, title] : ['', ''],
-  });
+  const html = personalise(base, title, theme, info.icon);
   const learnBit = a.learn && a.learn !== 'none' ? ` It sneaks in some ${a.learn} too.` : '';
   await say(ctx, `Here's my plan for ${title} ${theme ? theme.emoji : info.icon}: ${PLANS[realKind] || PLANS.catch}${learnBit} Building it now…\n\n`);
   tools.exec('set_game', {
@@ -132,6 +132,8 @@ async function followUp(ctx, m, cur) {
   const t = text.toLowerCase();
   const tune = readTune(cur.html); const changes = {}; const said = [];
   if (/\b(fix|repair)\b/.test(t) && cur.safety_status === 'fail') return fixSafety(ctx, m, cur);
+  if (UPGRADE.test(t)) return upgrade(ctx, m, cur);
+  const kit = kitLayerFor(cur.html);
   if (/\b(ready|polish|finished|all done|it'?s done|publish|perfect|looks good)\b/.test(t)) {
     await say(ctx, 'Polish time! ✨ Here is a checklist of things to try in your game. Press Publish when you are happy with it!');
     tools.exec('test_notes', { checklist: POLISH });
@@ -147,7 +149,8 @@ async function followUp(ctx, m, cur) {
   let theme = detectTheme(text);
   // In a 3D game "stars" are the things to collect, not a new hero (unless they say so).
   if (theme && theme.key === 'star' && isThreeGame(cur.html) && !/\b(hero|player|character)\b/.test(t)) theme = null;
-  if (theme && (/\b(hero|player|character|guy|main)\b|\bchange\b|\bturn\b|\bmake (it|him|her|them)\b|\binstead\b|\binto\b|\babout\b/.test(t))) {
+  if (kit) Object.assign(changes, kitChanges(t, cur.html, tune, theme, said));
+  else if (theme && (/\b(hero|player|character|guy|main)\b|\bchange\b|\bturn\b|\bmake (it|him|her|them)\b|\binstead\b|\binto\b|\babout\b/.test(t))) {
     const from = (tune.hero && tune.hero[0]) || guessHero(cur.html, g.icon);
     if (from) { changes.hero = [from, theme.emoji]; said.push(`swapped in a ${theme.name.toLowerCase()} ${theme.emoji}`); }
   }
@@ -155,12 +158,13 @@ async function followUp(ctx, m, cur) {
   const conf = isThreeGame(cur.html) ? threeDChanges(t, cur.html, said) : {};
   const col = detectColor(text);
   const skyWord = conf.sky && col && ['night', 'dark'].includes(col.name);
-  if (!skyWord && (col || (/\bcolou?rs?\b/.test(t) && !conf.sky))) { changes.tint = col ? col.hex : nextColor(tune.tint); said.push(col ? `gave it a ${col.name} colour splash 🎨` : 'gave it new colours 🎨'); }
+  if (!kit && !skyWord && (col || (/\bcolou?rs?\b/.test(t) && !conf.sky))) { changes.tint = col ? col.hex : nextColor(tune.tint); said.push(col ? `gave it a ${col.name} colour splash 🎨` : 'gave it new colours 🎨'); }
   const rename = text.match(/\b(?:call it|name it|rename it(?: to)?|title it)\s+["“']?([^"”'\n]{2,40})/i);
   if (rename) {
     const c = cleanText(rename[1].trim(), 40);
     if (c.ok && c.value) {
       tools.exec('set_game', { title: c.value }); said.push(`renamed it “${c.value}”`);
+      if (kit) changes.name = [tune.name[0] || shownTitle(cur.html), c.value];   // the title the kit game shows
       // In a 3D game the title also shows inside the game (the title card), so keep CONFIG.title in step.
       if (isThreeGame(cur.html) && readConfig(cur.html, 'title') !== undefined) conf.title = c.value;
     }
@@ -171,7 +175,7 @@ async function followUp(ctx, m, cur) {
     tools.exec('ask_user', { question: 'What should we change?', options: [...nextChips(tune), 'Make it easier', 'Change the colours', '✨ Polish it'] });
     return;
   }
-  if (theme && changes.hero) tools.exec('set_game', { icon: theme.emoji });
+  if (theme && (changes.hero || (changes.look && said.some(x => x.startsWith('swapped in'))))) tools.exec('set_game', { icon: theme.emoji });
   const confEdits = configEdits(cur.html, conf);
   const edits = Object.keys(changes).length ? tuneEdits(cur.html, changes) : [];
   // Tidy the version note: drop only the trailing emoji from each phrase, keeping brackets, numbers and quotes
@@ -185,7 +189,78 @@ async function followUp(ctx, m, cur) {
   tools.exec('test_notes', { checklist: ['Play a round and see the change', 'Check it is still fair and fun', 'Press Play again at the end'] });
   tools.exec('ask_user', { question: 'What next?', options: nextChips({ ...tune, ...changes }) });
 }
-const stripLayer = html => String(html).replace(new RegExp(`\\n?<script id="${LAYER_ID}">[\\s\\S]*?<\\/script>`), '');
+const stripLayer = html => String(html).replace(new RegExp(`\\n?<script id="${LAYER_ID}"(?: data-kit="1")?>[\\s\\S]*?<\\/script>`), '');
+
+/** A template made theirs: its title, and the theme's hero (a kit look and biome on a kit game, an emoji swap on 3D). */
+function personalise(base, title, theme, icon, extra = {}) {
+  const oldTitle = shownTitle(base), named = base.replace(/<title>[^<]*<\/title>/i, `<title>${title}</title>`);
+  if (kitLayerFor(base)) {
+    const look = theme ? kitLook(theme, base) : null;
+    return withLayer(named, { name: oldTitle ? [oldTitle, title] : ['', ''], look: look && look.spec ? { hero: look.spec } : {}, biome: (look && look.biome) || '', ...extra });
+  }
+  const heroFrom = guessHero(base, icon);
+  return withLayer(named, { hero: theme && heroFrom ? [heroFrom, theme.emoji] : ['', ''], name: oldTitle ? [oldTitle, title] : ['', ''], ...extra });
+}
+
+// ---- Kit games: character looks, the world, as spec edits (the kit layer's BRB_TUNE.look / .biome lines) ---------
+const merge = (a, b) => { const r = { ...(a || {}) }; for (const [k, v] of Object.entries(b || {})) r[k] = v && typeof v === 'object' && !Array.isArray(v) ? merge(r[k], v) : v; return r; };
+const KIT_CYCLE = ['grape', 'mint', 'coral', 'peach', 'sky'];
+const HUE_WORDS = { coral: 'red', peach: 'orange', mint: 'green', sky: 'blue', grape: 'purple', cocoa: 'brown', stone: 'grey', snow: 'white' };
+/** The look changes a message asks for in a kit game -> { look, biome } (only what changes) plus phrases for the reply. */
+function kitChanges(t, html, tune, theme, said) {
+  const out = {}; let look = { ...(tune.look || {}) };
+  const col = detectColor(t), hue = col ? KIT_HUES[col.name] : null;
+  const wear = KIT_WEAR.filter(([re]) => re.test(t)).map(([, w]) => w);
+  const named = KIT_SPECIES.filter(([, re]) => re.test(t)).map(([s]) => s);
+  const heroish = /\b(hero|player|character|guy|main|me|my)\b|\bchange\b|\bturn\b|\bmake (it|him|her|them)\b|\binstead\b|\binto\b|\babout\b/.test(t);
+  if (theme && heroish && !(named.length && (hue || wear.length))) {
+    const L = kitLook(theme, html);
+    if (L && L.spec) { look.hero = L.spec; said.push(`swapped in a ${theme.name.toLowerCase()} ${theme.emoji}`); }
+  }
+  const dress = (key, who) => {
+    const p = {};
+    if (hue) Object.assign(p, merge(p, { colors: { base: hue }, outfit: { color: hue } }));
+    if (wear.length) p.wear = [...new Set([...((look[key] && look[key].wear) || []), ...wear])];
+    if (!Object.keys(p).length) return;
+    look[key] = merge(look[key], p);
+    said.push(`made ${who}${hue ? ` ${HUE_WORDS[hue] || hue}` : ''}${wear.length ? ` with ${wear.map(w => (w === 'wizard-hat' ? 'a hat' : w === 'glasses' ? 'glasses' : `a ${w}`)).join(' and ')}` : ''} 🎨`);
+  };
+  if (named.length && (hue || wear.length)) for (const sp of named) dress(sp, `the ${sp}`);
+  else if (hue || wear.length) dress('hero', 'the hero');
+  else if (/\bcolou?rs?\b/.test(t) && !look.hero) { look.hero = { colors: { base: KIT_CYCLE[0] }, outfit: { color: KIT_CYCLE[0] } }; said.push('gave the hero new colours 🎨'); }
+  else if (/\bcolou?rs?\b/.test(t)) { const now = (look.hero.colors || {}).base, next = KIT_CYCLE[(KIT_CYCLE.indexOf(now) + 1) % KIT_CYCLE.length]; look.hero = merge(look.hero, { colors: { base: next }, outfit: { color: next } }); said.push('gave the hero new colours 🎨'); }
+  if (JSON.stringify(look) !== JSON.stringify(tune.look || {})) out.look = look;
+  const world = KIT_BIOMES.find(([, re, pack]) => re.test(t) && (!pack || String(html).includes(`/packs/${pack}.js`)));
+  if (world && /\b(world|place|level|background|make it|set it|go to|in the|island)\b/.test(t) && world[0] !== tune.biome) { out.biome = world[0]; said.push(`moved it to the ${world[0]} 🌍`); }
+  return out;
+}
+
+// ---- "Upgrade it": an older game rebuilt on the Oomba Kit (only when the builder asks) -------------------------
+// Only an unambiguous ask: "upgrade it", "upgrade my game", "the new look", "Oomba Kit". Never "add an upgrade shop",
+// "upgrade the hero's sword" or "give the player upgrades" (those are game ideas, not a rebuild).
+const UPGRADE = /\bupgrade (?:it|this|my game|the game|this game|my old game)\b(?!\s*(?:'s|s)\b)|\bnew(est)? (?:oomba )?look\b|\boomba kit\b|\blook like the new games\b|\bmoderni[sz]e (?:it|my game|the game|this game)\b|\bmake it look new\b/i;
+const kindOf = (html, g, m) => {
+  if (m.answers && m.answers.kind) return m.answers.kind;
+  const first = readTune(html).name[0] || shownTitle(html);
+  const t = TEMPLATES.find(x => x.title === first || x.title === g.title);
+  return t ? t.key : isThreeGame(html) ? 'island' : detectKind(`${g.title} ${g.tags || ''} ${g.description || ''}`) || DEFAULT_KIND;
+};
+async function upgrade(ctx, m, cur) {
+  const { tools } = ctx, g = tools.game();
+  if (usesKit(cur.html)) { await say(ctx, 'Your game already has the newest Oomba look! ✨ What should we change next?'); tools.exec('ask_user', { question: 'What next?', options: nextChips(readTune(cur.html)) }); return; }
+  const kind = kindOf(cur.html, g, m), info = await templateInfo(kind), { html: base, fallback } = await templateHtml(kind);
+  if (fallback) { await say(ctx, 'Hmm, I can’t do that one right now. Try again later!'); return; }
+  const tune = readTune(cur.html), emoji = tune.hero && tune.hero[1], theme = emoji ? themeByKey((THEMES.find(x => x[2] === emoji) || [])[0]) : null;
+  let html = personalise(base, g.title, theme, info && info.icon, { speed: tune.speed || 1, level2: !!tune.level2 });
+  if (kind === 'island') for (const k of ['stars', 'platforms', 'sky']) { const v = readConfig(cur.html, k); if (v !== undefined) html = applyConfig(html, { [k]: v }); }
+  if (kind === 'island' && readConfig(html, 'title') !== undefined) html = applyConfig(html, { title: g.title });
+  await say(ctx, 'Upgrade time! ✨ I rebuilt your game with the new Oomba look: new characters, screens, sounds and every language. ');
+  const r = tools.exec('write_game', { html, notes: 'Upgraded to the new Oomba look' });
+  if (!r.ok) { await say(ctx, 'Hmm, that did not work. Try asking in a different way!'); return; }
+  await say(ctx, `Press Play to try version ${r.version.number}. Your old game is still in Versions if you want it back.`);
+  tools.exec('test_notes', { checklist: CHECK[kind] || CHECK.default });
+  tools.exec('ask_user', { question: 'What next?', options: nextChips(readTune(html)) });
+}
 
 // ---- 3D games: CONFIG lines (stars, platforms, sky) --------------------------------------------
 const configBlock = html => (String(html).match(/const CONFIG\s*=\s*\{[\s\S]*?\n\};/) || [])[0] || '';
@@ -229,12 +304,22 @@ function threeDChanges(t, html, said) {
 }
 
 async function fixSafety(ctx, m, cur) {
-  const kind = m.answers.kind || DEFAULT_KIND;
+  const g = ctx.tools.game(), kind = m.answers.kind || kindOf(cur.html, g, m);
   const { html: base } = await templateHtml(kind);
   const tune = readTune(cur.html);
   await say(ctx, 'On it! 🛠️ I rebuilt the game without the part the safety check did not like.');
-  const r = ctx.tools.exec('write_game', { html: withLayer(base.replace(/<title>[^<]*<\/title>/i, `<title>${ctx.tools.game().title}</title>`), tune), notes: 'Fixed the safety check' });
-  if (r.ok) ctx.tools.exec('ask_user', { question: 'All fixed! What next?', options: nextChips(tune) });
+  let html;
+  if (!usesKit(cur.html) && kitLayerFor(base)) {
+    // an older game rebuilt on its kit template: its hero and colour come across as the matching theme (the kit layer
+    // has no hero/tint keys, so they are mapped, never silently dropped), with its title, speed and level 2
+    const emoji = tune.hero && tune.hero[1], theme = emoji ? themeByKey((THEMES.find(x => x[2] === emoji) || [])[0]) : null, info = await templateInfo(kind);
+    html = personalise(base, g.title, theme, info && info.icon, { speed: tune.speed || 1, level2: !!tune.level2 });
+  } else {
+    const named = base.replace(/<title>[^<]*<\/title>/i, `<title>${g.title}</title>`);
+    html = withLayer(named, kitLayerFor(named) && !hasLayer(cur.html) ? {} : tune);
+  }
+  const r = ctx.tools.exec('write_game', { html, notes: 'Fixed the safety check' });
+  if (r.ok) ctx.tools.exec('ask_user', { question: 'All fixed! What next?', options: nextChips(readTune(html)) });
 }
 
 /** The runner's checkpoint: null when the build was stopped, else the new messages (read and used at once). */

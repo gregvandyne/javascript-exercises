@@ -37,6 +37,9 @@ async function open(gameHtml, { init = null, size = { width: 390, height: 700 } 
     if (u === HOST + '/frame') return route.fulfill({ status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'content-security-policy': frameCsp(HOST) }, body: doc });
     const m = /^http:\/\/game\.invalid\/vendor\/three\/([\d.]+)\/([\w.]+)$/.exec(u);
     if (m) return route.fulfill({ status: 200, headers: { 'content-type': 'text/javascript', 'access-control-allow-origin': '*' }, body: fs.readFileSync(path.join(ROOT, 'public/vendor/three', m[1], m[2])) });
+    // the Oomba Kit (Star Island's screens and HUD) and its font, from disk like the site serves them
+    const k = /^http:\/\/game\.invalid\/vendor\/oomba-kit\/([\d.]+)\/([\w./-]+)$/.exec(u);
+    if (k && !k[2].includes('..')) return route.fulfill({ status: 200, headers: { 'content-type': k[2].endsWith('.woff2') ? 'font/woff2' : 'text/javascript', 'access-control-allow-origin': '*' }, body: fs.readFileSync(path.join(ROOT, 'public/vendor/oomba-kit', k[1], k[2])) });
     return route.abort();
   });
   const page = await ctx.newPage();

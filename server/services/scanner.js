@@ -1,9 +1,10 @@
 // Static safety scan for every game version. Pure function; see tests/unit/scanner.test.js and tests/safety/.
 // status: 'pass' (fine), 'flag' (allowed for Private/Friends, needs a human look before Public), 'fail' (cannot be shared).
-import { hasProfanity, personalInfo, looksLikeLinkCode } from './textfilter.js';
+import { profanityMatch, personalInfo, looksLikeLinkCode } from './textfilter.js';
 import { MAX_GAME_BYTES } from './sanitize.js';
 import { checkThree } from './vendor.js';
 import { checkKit } from './kit.js';
+import { lintGame } from './stylelint.js';
 
 const ALLOWED_URL = /^https:\/\/(fonts\.googleapis\.com|fonts\.gstatic\.com|cdnjs\.cloudflare\.com)(\/|$)/i;
 
@@ -164,8 +165,14 @@ export function scanVersion(html) {
   if (/<a\b[^>]*\bhref\s*=\s*["']?(https?:|\/\/|mailto:|tel:|javascript:)/i.test(src)) issues.push({ level: 'fail', code: 'link', message: 'Has a link that leaves the game.' });
   // Visible text and string literals: profanity and personal-info requests.
   const text = visibleText(src).slice(0, 200000); const literals = stringLiterals(src).slice(0, 5000);
-  const bad = [text, ...literals].find(s => hasProfanity(s));
-  if (bad) issues.push({ level: 'fail', code: 'profanity', message: 'Has words that are not allowed.' });
+  // detail: for the Builder's model only (never shown to players): which word matched, and where, so it can fix a
+  // false friend in another language instead of guessing (or dropping the language).
+  let bad = null, term = null; for (const s of [text, ...literals]) { term = profanityMatch(s); if (term) { bad = s; break; } }
+  if (bad) {
+    const at = Math.max(0, bad.toLowerCase().indexOf(String(term).slice(0, 4)));
+    const snip = bad.slice(Math.max(0, at - 40), at + 60).replace(/\s+/g, ' ').trim();
+    issues.push({ level: 'fail', code: 'profanity', message: 'Has words that are not allowed.', detail: `The blocked word "${term}" matched in: "${snip}". If it is an innocent word in another language, reword that line.` });
+  }
   const askPI = [text, ...literals].find(s => PERSONAL_PROMPT.test(s));
   if (askPI) issues.push({ level: 'fail', code: 'personal_info', message: 'Asks players for personal details.' });
   if ([text, ...literals].some(s => LINK_CODE_PROMPT.test(s)) || looksLikeLinkCode(text)) issues.push({ level: 'fail', code: 'link_code', message: 'Asks for or shows a family link code.' });
@@ -174,5 +181,7 @@ export function scanVersion(html) {
   if (/<[^>]+style\s*=\s*["'][^"']*(font-size\s*:\s*0(px)?\b|opacity\s*:\s*0(\.0+)?\s*[;"']|color\s*:\s*transparent)[^"']*["'][^>]*>\s*[A-Za-z]{3,}/i.test(src)) issues.push({ level: 'flag', code: 'hidden_text', message: 'Has hidden text.' });
   for (const f of flashing(src)) issues.push({ level: 'flag', code: 'flashing', message: f + ' Fast flashing can hurt some players.' });
   const status = issues.some(i => i.level === 'fail') ? 'fail' : issues.some(i => i.level === 'flag') ? 'flag' : 'pass';
-  return { status, issues, bytes: Buffer.byteLength(src), scannedAt: Date.now() };
+  // Style notes for kit games (never change the status): see stylelint.js.
+  let lint = []; try { lint = lintGame(src); } catch { lint = []; }
+  return { status, issues, lint, bytes: Buffer.byteLength(src), scannedAt: Date.now() };
 }

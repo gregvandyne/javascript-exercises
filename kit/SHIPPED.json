@@ -1,4 +1,15 @@
 {
-  "_": "Kit versions that have shipped (been on the live site). Their files and SRI hashes may never change again: saved games pin the hash. scripts/build-kit.js refuses --replace for these, and tests/unit/kit-platform.test.js checks KIT_VERSIONS against this list. Add a version here in the same change that ships it.",
-  "versions": {}
+  "_": "Kit versions that have shipped (been on the live site). Their files and SRI hashes may never change again: saved games pin the hash. scripts/build-kit.js refuses --replace for these, and tests/unit/kit-platform.test.js checks KIT_VERSIONS against this list. Add a version here in the same change that ships it. packs: the same lock for each version's art packs (name -> sha384 of packs/<name>.js).",
+  "versions": {
+    "1.0.0": "sha384-z+NesXSa8n9F3R0/dcZ7o60eHwzQbYE94cEyPfLu6WlUZ2zOaEO2OAS6WsmM7oUU"
+  },
+  "packs": {
+    "1.0.0": {
+      "art-animals": "sha384-fIOJsCe/mBmelLUnXEhcOGl0x7/dQvXe5xKjHrOD4KegZbvOrJ9DzTizBzU9RzOD",
+      "art-biomes": "sha384-0X8OvdyaknEYsK5nXvhDnMNWl1lS8XuHH/SKuJrOF7CjDIwxYbp3yQeChbVl2zhH",
+      "art-school": "sha384-yCC/QOZAd0OcPMGet+ySH+2pkji2SRciYBilMG/braih3toohKVqxJGR4YoQJrqM",
+      "dress": "sha384-cLr8VKytVQYDunYCBWc3ZZuc3v1GsLxrYMkqdof5zRFlOs4VKIp5cxtTLrMpBDLe",
+      "style-bold": "sha384-smhSYk+V6EuNb/TjWseiOlH187FTJModZe951GNvlqgfYC5e1txwq8ST3ql1sch+"
+    }
+  }
 }
