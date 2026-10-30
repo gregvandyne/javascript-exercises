@@ -125,9 +125,10 @@ const RECIPES = {
     await hook(f);
     // The rainbow chimneys of Function Village, built by the answer code, with that code in the editor.
     await f.evaluate(() => { const t = window.__brbTest; t.unlockAll(); t.solve('4-5'); });
-    await wait(4000);   // the stars card opens a moment after the run
-    await f.evaluate(() => { const t = window.__brbTest; t.closeModal(); t.camera({ theta: 0.55, phi: 0.92, dist: 15 }); });
-    await wait(2000);
+    await f.waitForSelector('.ok-win', { timeout: 30000 });   // the kit's stars card opens a moment after the run
+    await wait(1500);
+    await f.evaluate(async () => { const t = window.__brbTest; await t.closeModal(); t.camera({ theta: 0.55, phi: 0.92, dist: 15 }); });
+    await wait(2500);
   } },
 };
 
