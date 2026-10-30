@@ -256,6 +256,16 @@ export function childUsage(familyId, childId, t = now()) {
     AND charged_day>=? AND charged_day<?`, childId, `family:${familyId}`, from, to).n;
   return { yesterday: sum(yesterday, day), month: monthStart < day ? sum(monthStart, day) : 0 };
 }
+/** The grown-up's own Builder use for their /family page ("Your games"): like childUsage, yesterday and this month up to
+ *  the end of yesterday (never today), but every message they sent (free ones too: it is their own use, and the free
+ *  messages are what most grown-ups have). familyId only checks they own that family. */
+export function ownerUsage(familyId, ownerId, t = now()) {
+  if (!q.get('SELECT 1 FROM families WHERE id=? AND owner_id=?', familyId, ownerId)) return { yesterday: 0, month: 0 };
+  const day = today(t), yesterday = today(t - DAY), monthStart = day.slice(0, 8) + '01';
+  const sum = (from, to) => q.get(`SELECT COALESCE(SUM(weight), 0) n FROM builder_turns WHERE user_id=? AND refunded=0
+    AND charged_day>=? AND charged_day<?`, ownerId, from, to).n;
+  return { yesterday: sum(yesterday, day), month: monthStart < day ? sum(monthStart, day) : 0 };
+}
 export const familyPlan = familyId => ownerPlan('family', familyId);
 /** How many children (linked or asked) a family can have now: 1 with a Basic plan, else FAMILY_MAX_CHILDREN (also
  *  before paying: a grown-up may link first or pay first). */

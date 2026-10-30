@@ -288,7 +288,7 @@ router.get('/learn/:slug', (req, res, next) => {
       </div></article>`;
   };
   const make = html`<section class="panel lp-make" id="make" aria-labelledby="make-h">${el(t, 'h2', 'learn.ages.make.h', {}, ' id="make-h"')}${el(t, 'p', `${k}.make.p`)}
-    <div class="row">${isGrownup(req.user) ? '' : html`<a class="btn btn-primary" href="/build">🛠️ ${t('learn.hubs.makeAGame.cta')}</a>`}<a class="btn" href="${lp(req, '/learn/make-a-game')}">${t('learn.ages.make.link')}</a></div></section>`;
+    <div class="row"><a class="btn btn-primary" href="/build">🛠️ ${t('learn.hubs.makeAGame.cta')}</a><a class="btn" href="${lp(req, '/learn/make-a-game')}">${t('learn.ages.make.link')}</a></div></section>`;
   // Subject pages that have some of this age's games, with those games' names.
   const skills = HUBS.filter(h => h.slug !== 'brain-break-games').map(h => [h, list.filter(g => h.games.includes(g.slug))]).filter(([h, gs]) => gs.length || (h.slug === 'make-a-game' && age.make));
   const faq = faqBlock(req, [['learn.ages.faq.q1', 'learn.ages.faq.a1'], ...Array.from({ length: age.faq - 1 }, (_, i) => [`${k}.faq.q${i + 2}`, `${k}.faq.a${i + 2}`])], 'parents.faq.h', { ai: lp(req, '/parents/ai-builder-safety') });

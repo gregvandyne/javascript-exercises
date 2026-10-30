@@ -18,12 +18,14 @@ try { for (const f of fs.readdirSync(COVER_DIR)) if (f.endsWith('.jpg')) COVER_S
 
 export { BRAND, wordmark, appMark } from './brand.js';
 
-const VIS_EMOJI = { private: '🔒', friends: '👫', class: '🎒', school: '🏫', public: '🌍' };
-/** "🔒 Only me" / "👫 Friends" / "🎒 My class(es)" / "🏫 My school" / "🌍 Everyone" in the reader's language.
- *  count: how many classes a 'class' game is shared with ("My class" for one, "My classes" otherwise). */
-export function visLabel(v, t = current().t, count = 1) {
+const VIS_EMOJI = { private: '🔒', family: '🏠', friends: '👫', class: '🎒', school: '🏫', public: '🌍' };
+/** "🔒 Only me" / "🏠 My family" / "👫 Friends" / "🎒 My class(es)" / "🏫 My school" / "🌍 Everyone" in the reader's language.
+ *  count: how many classes a 'class' game is shared with ("My class" for one, "My classes" otherwise).
+ *  grownup: the game's owner is a grown-up builder, whose 'friends' are "🤝 My grown-up connections". */
+export function visLabel(v, t = current().t, count = 1, { grownup = false } = {}) {
   // A class game that reaches no class right now (its builder left, or a teacher took it off): in effect only them.
   if (v === 'class' && count === 0) return `🔒 ${t('vis.onlyYouNow')}`;
+  if (v === 'friends' && grownup) return `🤝 ${t('vis.connections')}`;
   return VIS_EMOJI[v] ? `${VIS_EMOJI[v]} ${t(`vis.${v}`, { count })}` : v;
 }
 /** A category's label in the reader's language. */
@@ -88,13 +90,13 @@ export function gameCard(g, { showVis = false, classPill = true, byName = null }
   </a>`;
 }
 /** count: for a 'class' game, how many classes it is shared with ("My class" / "My classes"). */
-export function statusLabel(g, t = current().t, count = 1) {
+export function statusLabel(g, t = current().t, count = 1, grownup = g.owner_type === 'grownup') {
   if (g.hidden_reason) return `⚠️ ${t('status.hidden')}`;
   if (g.status === 'in_review') return `⏳ ${t('status.inReview')}`;
   if (g.status === 'rejected') return `✏️ ${t('status.needsChanges')}`;
   if (g.status === 'suspended') return `⛔ ${t('status.suspended')}`;
   if (g.status !== 'published') return `📝 ${t('status.draft')}`;
-  return visLabel(g.visibility, t, count);
+  return visLabel(g.visibility, t, count, { grownup });
 }
 export function rail({ title, games, more = null, id = null, emoji = '' }) {
   if (!games || !games.length) return '';

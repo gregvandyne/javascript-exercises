@@ -347,7 +347,9 @@
     "class": "{count, plural, one {My class} other {My classes}}",
     "onlyYouNow": "Only you right now",
     "public": "Everyone",
-    "school": "My school"
+    "school": "My school",
+    "family": "My family",
+    "connections": "My grown-up connections"
   },
   "status": {
     "hidden": "Hidden",
@@ -580,7 +582,7 @@
         "li7": "A school account is created by the school. The school is responsible for having the right to create it and for telling parents about it (see section 3).",
         "s3": "Grown-up accounts",
         "li8": "You must be <b>18 or older</b> and the <b>parent or legal guardian</b> of every child you link to. When you sign up you confirm this with a checkbox. We do not check it, so please be honest: linking to a child who is not yours breaks these terms, and we will end the link and may close your account.",
-        "li9": "A grown-up account can play games. It <b>cannot</b> build games, use the Builder, chat, add friends, post, or have a public profile.",
+        "li9": "A grown-up account can play games and build games with the Builder. Its games go through the same safety checks as every game. It can connect with other grown-up accounts only. It <b>cannot</b> chat, add kids as friends, post, or have a public profile, and its games never show which children are linked to it.",
         "li10": "Keep your password private. You are responsible for what happens in your grown-up account, including purchases.",
         "li11": "To protect against a child buying something on a shared device, we ask for your password again before you start or change a plan.",
         "s4": "Linking a grown-up to a child",
@@ -805,7 +807,7 @@
         "li6": "your plan: Stripe's customer and subscription numbers, plan type, monthly or yearly, status, seats, dates and amounts;",
         "li7": "a record of important actions (for example \"plan started\", \"child linked\", \"refund\"). These records never contain card details or email addresses.",
         "p1": "<b>What we don't ask for:</b> your email, phone number, home address or age. (Stripe asks for some of these when you pay: see Payments below.)",
-        "p2": "A grown-up account can't build, chat, add friends or have a public profile, and doesn't appear in search."
+        "p2": "A grown-up account can build games. They go through the same safety checks as every game, and a game shared with everyone shows the grown-up’s display name and “Grown-up builder”. A grown-up account can connect with other grown-up accounts only; it can’t chat, add kids as friends or have a public profile, and doesn’t appear in search. We never show publicly which children are linked to a grown-up, or their names."
       },
       "linking": {
         "h": "Linking to a child",
@@ -940,7 +942,9 @@
       "friends": "Only your friends on Oomba Academy can open this link.",
       "class": "Only the classes this game is shared with can open this link.",
       "public": "Anyone with the link can play this game.",
-      "school": "Everyone at your school can find and play it."
+      "school": "Everyone at your school can find and play it.",
+      "family": "Only the grown-up who made this game and their family can open this link.",
+      "connections": "Only the grown-up who made this game and their grown-up connections can open this link."
     },
     "sharedWith": "Shared with:",
     "sharedWithMore": "{count, plural, one {and # other class} other {and # other classes}}",
@@ -964,7 +968,8 @@
       "badScore": "Bad score.",
       "pickReason": "Pick a reason."
     },
-    "makeLike": "Make a game like this"
+    "makeLike": "Make a game like this",
+    "grownupBuilder": "Grown-up builder"
   },
   "play": {
     "backTo": "Back to {title}",
@@ -1212,13 +1217,6 @@
       "ready": "✨ Ready",
       "question": "💬 Has a question",
       "stopped": "⚠️ Stopped"
-    },
-    "grownup": {
-      "title": "The Builder",
-      "heading": "The Builder is for kids' accounts",
-      "text": "Kids make their own games with the Builder, signed in with their own account. A grown-up account can play games and look after a family, but it can't build.",
-      "how": "How making a game works",
-      "safety": "Is the AI Builder safe?"
     }
   },
   "studio": {
@@ -1231,7 +1229,9 @@
       "friends": "Only you and your friends on Oomba Academy can play it.",
       "class": "Only the classes you picked can play it.",
       "public": "Everyone on Oomba Academy can find and play it, after a quick safety check.",
-      "school": "Everyone at your school can find and play it."
+      "school": "Everyone at your school can find and play it.",
+      "family": "You and the kids linked to your family can play it.",
+      "connections": "Only you and your grown-up connections can play it."
     },
     "status": {
       "hidden": "Hidden for now",
@@ -1354,7 +1354,9 @@
     "waiting": "Your game is waiting for a quick safety check. We will share it as soon as it passes.",
     "school": "Live for your school! Everyone at your school can find and play it.",
     "class": "{count, plural, one {Live for {name}! Everyone in your class can find and play it.} other {Live for your classes! Everyone in them can find and play it.}}",
-    "schoolOnly": "Your school keeps games inside the school. Share it with your school instead."
+    "schoolOnly": "Your school keeps games inside the school. Share it with your school instead.",
+    "liveFamily": "Live for your family! You and the kids linked to your family can play it.",
+    "liveConnections": "Shared with your grown-up connections! Only they and you can play it."
   },
   "builder": {
     "kindRefusal": "I can’t help with that one. Let’s build something fun instead. What kind of game would you like?",
@@ -1617,7 +1619,9 @@
         "friends": "Friends",
         "class": "{count, plural, one {My class} other {My classes}}",
         "public": "Everyone",
-        "school": "My school"
+        "school": "My school",
+        "family": "My family",
+        "connections": "My grown-up connections"
       },
       "top": {
         "inReview": "In review",
@@ -1647,7 +1651,8 @@
         "publicCheck": "Games for everyone get a quick safety check first, and players keep the old version until it passes.",
         "onlyYou": "only you can see it",
         "pendingNew": "Version {number} is waiting for a quick safety check. We will share it as soon as it passes.",
-        "reviewer": "Reviewer says: “{note}” Ask the Builder to change it, then press Update or Publish again."
+        "reviewer": "Reviewer says: “{note}” Ask the Builder to change it, then press Update or Publish again.",
+        "waitingFamily": "Waiting for a quick safety check before your family can play. Until then, it stays shared the way it is now."
       },
       "safety": {
         "chipPass": "Safe",
@@ -1759,7 +1764,12 @@
         "classRemoved": "Your teacher took it off this class.",
         "allRemoved": "{count, plural, one {Your teacher took this game off your class.} other {Your teachers took this game off your classes.}}",
         "copied": "Link copied!",
-        "copyFailed": "Could not copy."
+        "copyFailed": "Could not copy.",
+        "hint": {
+          "family": "Only children who said yes to your family link. Never other kids.",
+          "connections": "Only other grown-ups you connected with by code. Never kids.",
+          "publicGrownup": "Everyone, after a safety check. Shown as {name}, grown-up builder."
+        }
       },
       "update": {
         "title": "Update your live game",
@@ -2028,6 +2038,9 @@
         "cancelled": "Recording stopped. Nothing was sent or kept.",
         "cancelledLive": "Recording stopped. Nothing was kept.",
         "failed": "Sorry, I couldn't turn that into words. Try again, or type your message."
+      },
+      "limit": {
+        "seePlans": "See plans for more Builder messages"
       }
     }
   },
@@ -2919,7 +2932,7 @@
     "signup": {
       "title": "Grown-up sign-up",
       "heading": "Make a grown-up account",
-      "intro": "For parents and guardians. A grown-up account can play games and look after a family. It can't build games, chat or add friends.",
+      "intro": "For parents and guardians. A grown-up account can play games, look after a family, build games and connect with other grown-ups. It can’t chat or add kids as friends.",
       "nameLabel": "Account name",
       "nameHint": "3 to 16 letters or numbers. Children never see this name.",
       "passwordHint": "At least {min} characters.",
@@ -4083,5 +4096,32 @@
         "a4": "Both have a place. Making a game asks kids to plan, explain clearly, test and fix, so it is an active kind of screen time."
       }
     }
+  },
+  "connections": {
+    "title": "Grown-up connections",
+    "heading": "My grown-up connections",
+    "intro": "Connect with other grown-ups you know, like another parent, by swapping codes. Then you can share games with each other: pick “My grown-up connections” when you share a game.",
+    "yourCode": "Your code",
+    "codeHelp": "Give it only to another grown-up you know. They type it on their own connections page.",
+    "addLabel": "Another grown-up’s code",
+    "addBtn": "Connect",
+    "incoming": "Asking to connect with you",
+    "outgoing": "Waiting for them to say yes",
+    "list": "Your connections",
+    "empty": "No connections yet.",
+    "accept": "Accept",
+    "decline": "Decline",
+    "cancel": "Cancel",
+    "remove": "Remove",
+    "adultsOnly": "Connections are for grown-up accounts only. A kid’s code doesn’t work here, and kids can’t use yours. There is no chat: connections only share games."
+  },
+  "familyGames": {
+    "heading": "Your games",
+    "empty": "You haven’t made a game yet. The Builder works for grown-ups too.",
+    "build": "Build a game",
+    "seeAll": "See all my games",
+    "connections": "{count, plural, =0 {My connections} one {My connections (# request)} other {My connections (# requests)}}",
+    "usage": "Your Builder use:",
+    "usageLine": "messages yesterday: {yesterday} · this month: {month}"
   }
 }

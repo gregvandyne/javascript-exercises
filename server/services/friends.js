@@ -1,8 +1,15 @@
 // Friends: added only by a 6-character friend code (never by searching names, for kids' safety).
+// Grown-up accounts use the same codes and rows for "connections", with OTHER grown-ups only: a friendship (or a request)
+// always joins two kids or two grown-ups, never one of each (samePair). A kid typing a grown-up's code, or a grown-up
+// typing a kid's, gets the same "not found" as a code nobody has, so neither learns the other exists.
 // Storage: one 'pending' row (requester -> target) while waiting; two 'accepted' rows (both directions) once friends.
 import { q, now, tx, audit } from '../db.js';
 import { tEn } from '../i18n/index.js';
 import { classmates } from './schools.js';
+import { isGrownup, getUser } from '../auth.js';
+
+/** May these two accounts be friends (or connections)? Both kids, or both grown-ups: never an adult and a child. */
+export const samePair = (a, b) => !!a && !!b && isGrownup(a) === isGrownup(b);
 
 const USER_COLS = 'u.id, u.username, u.display_name, u.avatar, u.color, u.photo_at, u.is_guest, u.chat_enabled';
 
@@ -18,8 +25,8 @@ export function addByCode(user, code, tr = tEn) {
   if (!c) return fail(tr('friends.api.typeCode'));
   if (c.length !== 6) return fail(tr('friends.api.codeLength'));
   const t = q.get('SELECT * FROM users WHERE friend_code=?', c);
-  // Grown-up accounts have no friend code; an old one would find nobody either.
-  if (!t || t.banned || t.account_type === 'grownup') return fail(tr('friends.api.codeNotFound'));
+  // A grown-up's code finds grown-ups only, and a kid's finds kids only: the other kind is "not found", word for word.
+  if (!t || t.banned || !samePair(user, t)) return fail(tr('friends.api.codeNotFound'));
   if (t.id === user.id) return fail(tr('friends.api.ownCode'));
   if (t.is_guest) return fail(tr('friends.api.guest'));
   // School accounts make friends with classmates only (the school's safe default).
@@ -39,6 +46,8 @@ export function addByCode(user, code, tr = tEn) {
 export function accept(user, fromId) {
   const r = q.get("SELECT 1 FROM friends WHERE user_id=? AND friend_id=? AND status='pending'", fromId, user.id);
   if (!r) return false;
+  // Defence in depth: a mixed request (a row that should never exist) is refused and dropped, never accepted.
+  if (!samePair(user, getUser(fromId))) { q.run("DELETE FROM friends WHERE user_id=? AND friend_id=? AND status='pending'", fromId, user.id); return false; }
   tx(() => {
     const t = now();
     q.run('DELETE FROM friends WHERE (user_id=? AND friend_id=?) OR (user_id=? AND friend_id=?)', fromId, user.id, user.id, fromId);

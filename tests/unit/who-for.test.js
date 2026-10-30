@@ -148,8 +148,9 @@ test('a grown-up who started on a grown-up page (?next=/plans) goes back there a
   const page = (await call(null, g.location)).text;
   assert.match(page, /<input type="hidden" name="next" value="\/plans">/);
   assert.match(page, /href="\/grown-ups\/login\?next=%2Fplans"/, 'Sign in instead keeps it too');
-  // A page a grown-up account can't open (a kid page) is not kept.
-  assert.doesNotMatch((await call(null, '/grown-ups/signup?next=%2Fbuild')).text, /name="next"/);
+  // A page a grown-up account can't open (a kid page) is not kept; the Builder is one they can.
+  assert.doesNotMatch((await call(null, '/grown-ups/signup?next=%2Fchat')).text, /name="next"/);
+  assert.match((await call(null, '/grown-ups/signup?next=%2Fbuild')).text, /<input type="hidden" name="next" value="\/build">/);
   // A plan picked on /plans wins over next=.
   assert.doesNotMatch((await call(null, '/grown-ups/signup?plan=family&next=%2Fplans')).text, /name="next"/);
   const post = async body => {
@@ -158,7 +159,8 @@ test('a grown-up who started on a grown-up page (?next=/plans) goes back there a
   };
   const base1 = { password: 'a-long-password-1', confirm: 'a-long-password-1', adult: true };
   assert.equal((await post({ ...base1, username: `WhoNext${++n}`, next: '/plans' })).redirect, '/plans');
-  assert.equal((await post({ ...base1, username: `WhoNext${++n}`, next: '/build' })).redirect, '/family/add?from=signup', 'not a grown-up page: "Add your kids"');
+  assert.equal((await post({ ...base1, username: `WhoNext${++n}`, next: '/build' })).redirect, '/build', 'grown-ups can build');
+  assert.equal((await post({ ...base1, username: `WhoNext${++n}`, next: '/friends' })).redirect, '/family/add?from=signup', 'not a grown-up page: "Add your kids"');
   assert.equal((await post({ ...base1, username: `WhoNext${++n}`, next: '//evil.example' })).redirect, '/family/add?from=signup');
   assert.equal((await post({ ...base1, username: `WhoNext${++n}`, next: '/plans', plan: 'family', interval: 'year' })).redirect, '/family?plan=family&interval=year');
 });

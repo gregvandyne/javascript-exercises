@@ -277,6 +277,7 @@ button.stp-line{cursor:pointer}
 .vischoice button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:start;padding:12px 16px;border-radius:var(--r-sm);border:2px solid var(--line);background:var(--card);color:var(--text);font:inherit;cursor:pointer;min-height:60px}
 .vischoice button b{font-size:1.05rem}
 .vischoice button span{color:var(--muted);font-size:.92rem}
+.vischoice button .vis-hint{font-size:.85rem;font-style:italic}
 .vischoice button[aria-pressed="true"]{border-color:var(--accent-line);background:var(--accent-soft)}
 /* "My classes" when a teacher took the game off every class: it says so, and can't be picked. */
 .vischoice button[aria-disabled="true"]{border-style:dashed;cursor:not-allowed}

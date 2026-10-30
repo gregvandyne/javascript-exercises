@@ -38,10 +38,13 @@ router.get('/g/:slug', (req, res) => {
   const [d] = games.decorate([{ ...g, ...(() => { const o = games.getOwner(g); return { owner_name: o.username, owner_display: o.display_name, owner_avatar: o.avatar, owner_color: o.color }; })() }]);
   const owner = games.getOwner(g);
   const isOwner = u && u.id === g.owner_id;
-  // Grown-up accounts (routes/family.js) play, but don't like, rate or open profiles.
+  // Grown-up accounts (routes/family.js) play and build, but don't like, rate or open profiles.
   const grownup = isGrownup(u);
+  // A grown-up builder's game: their name and a "Grown-up builder" tag, never a link (grown-ups have no /u/ profile), for
+  // every viewer. Nothing on this page leads to contacting them, and nothing says which children are theirs.
+  const byGrownup = isGrownup(owner);
   const myStars = games.userRating(g.id, u && u.id), liked = games.userLiked(g.id, u && u.id);
-  const lb = games.leaderboard(g.id, 10);
+  const lb = games.leaderboard(g.id, 10, u);
   // Signed out (search engines too), an official game's page suggests only launch games: a child's game title is
   // free text that may hold their name, and this page is indexed.
   const more = games.similar(u, g, 6, { official: !u && g.source === 'seed' });
@@ -68,7 +71,8 @@ router.get('/g/:slug', (req, res) => {
       <div style="position:relative">${coverArt(d, '', { eager: true })}</div>
       <div>
         <h1>${g.title}</h1>
-        ${grownup ? html`<span class="person ownerchip">${avatar(owner, 32)}<span class="nm">${owner.display_name}</span></span>` : html`<a class="person ownerchip" href="/u/${owner.username}">${avatar(owner, 32)}<span class="nm">${owner.display_name}</span></a>`}
+        ${byGrownup ? html`<span class="person ownerchip ownerchip-grownup">${avatar(owner, 32)}<span class="nm"><bdi>${owner.display_name}</bdi></span><span class="gu-tag"${fbl('game.grownupBuilder')}>🧑 ${t('game.grownupBuilder')}</span></span>`
+          : grownup ? html`<span class="person ownerchip">${avatar(owner, 32)}<span class="nm">${owner.display_name}</span></span>` : html`<a class="person ownerchip" href="/u/${owner.username}">${avatar(owner, 32)}<span class="nm">${owner.display_name}</span></a>`}
         ${shared && shared.names.length ? html`<div class="sharedwith small"><span>🎒 ${t('game.sharedWith')}</span> <ul class="chips-inline">${shared.names.map(n => html`<li dir="auto">${n}</li>`)}</ul>${shared.others ? html` <span class="muted">${t('game.sharedWithMore', { count: shared.others })}</span>` : ''}</div>` : ''}
         <div class="statrow">
           <div class="stat"><b>${d.rating_count ? d.rating.toFixed(1) + ' ★' : t('cards.new')}</b>${d.rating_count ? t('game.stats.ratings', { count: d.rating_count, n: f.num(d.rating_count) }) : t('game.stats.noRatings')}</div>
@@ -81,9 +85,9 @@ router.get('/g/:slug', (req, res) => {
           ${grownup ? '' : html`<button class="iconbtn" type="button" id="likebtn" aria-pressed="${String(!!liked)}"><span class="emo" aria-hidden="true">${liked ? '❤️' : '🤍'}</span>${t('game.like')}</button>`}
           <button class="iconbtn" type="button" id="sharebtn"><span class="emo" aria-hidden="true">🔗</span>${t('game.share')}</button>
           ${isOwner ? html`<a class="iconbtn" href="/studio/${g.id}"><span class="emo" aria-hidden="true">🛠️</span>${t('game.edit')}</a>` : html`<button class="iconbtn" type="button" id="reportbtn"><span class="emo" aria-hidden="true">🚩</span>${t('game.report.button')}</button>`}
-          ${isOwner || grownup || !t.own('game.makeLike') ? '' : html`<a class="iconbtn" href="/build" id="makelike"><span class="emo" aria-hidden="true">🛠️</span>${t('game.makeLike')}</a>`}
+          ${isOwner || !t.own('game.makeLike') ? '' : html`<a class="iconbtn" href="/build" id="makelike"><span class="emo" aria-hidden="true">🛠️</span>${t('game.makeLike')}</a>`}
         </div>
-        ${isOwner ? html`<p class="small muted" style="margin-top:8px">${statusLabel(g, t, shared ? shared.names.length : 1)}${g.pending_version_id ? ` · ${t('game.updateWaiting')}` : ''}${g.review_note ? html` · ${t('game.reviewer', { note: g.review_note })}` : ''}</p>` : ''}
+        ${isOwner ? html`<p class="small muted" style="margin-top:8px">${statusLabel(g, t, shared ? shared.names.length : 1, byGrownup)}${g.pending_version_id ? ` · ${t('game.updateWaiting')}` : ''}${g.review_note ? html` · ${t('game.reviewer', { note: g.review_note })}` : ''}</p>` : ''}
       </div>
     </div>
     <div class="grid2">
@@ -110,7 +114,7 @@ router.get('/g/:slug', (req, res) => {
       </aside>
     </div>
   </article>
-  ${jsonData('page-data', { gameId: g.id, slug: g.slug, title: g.title, visibility: g.visibility, shareText: t(`game.shareText.${g.visibility}`), reasons: reportReasons(t), signedIn: !!u })}`;
+  ${jsonData('page-data', { gameId: g.id, slug: g.slug, title: g.title, visibility: g.visibility, shareText: t(`game.shareText.${g.visibility === 'friends' && byGrownup ? 'connections' : g.visibility}`), reasons: reportReasons(t), signedIn: !!u })}`;
   if (!official) res.set('X-Robots-Tag', 'noindex, nofollow');
   // Search titles only where this language really has the wording (t.own alone is true for every key in English).
   const written = key => t.has(key) && t.own(key);
@@ -308,7 +312,7 @@ router.post('/api/games/:id/score', requireUser, rateLimit('score', 30, 60e3), (
 router.get('/api/games/:id/leaderboard', (req, res) => {
   const g = apiGame(req, res); if (!g) return;
   // Children's names only to someone signed in, as on the game page (a signed-out caller may be any scraper).
-  res.json({ rows: games.leaderboard(g.id, 10).map(r => ({ ...(req.user ? { name: r.display_name } : {}), avatar: r.avatar, score: r.score, label: r.label })) });
+  res.json({ rows: games.leaderboard(g.id, 10, req.user).map(r => ({ ...(req.user ? { name: r.display_name } : {}), avatar: r.avatar, score: r.score, label: r.label })) });
 });
 // Reports: any signed-in player (guests included) can report with a simple reason. N open reports auto-hide the game.
 router.post('/api/games/:id/report', requireUser, rateLimit('report', 10, 3600e3), (req, res) => {

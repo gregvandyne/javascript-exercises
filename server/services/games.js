@@ -16,8 +16,10 @@ export const CATEGORIES = [
 export const CATEGORY_KEYS = CATEGORIES.map(c => c[0]);
 export const categoryInfo = k => { const c = CATEGORIES.find(x => x[0] === k) || CATEGORIES[0]; return { key: c[0], icon: c[1], label: c[2] }; };
 export const COVERS = ['sunset', 'ocean', 'forest', 'candy', 'night', 'lava', 'mint', 'gold'];
-/** Sharing levels, narrow to wide (the Studio's share dialog lists them in this order). */
-export const VISIBILITIES = ['private', 'friends', 'class', 'school', 'public'];
+/** Sharing levels, narrow to wide (the Studio's share dialog lists them in this order). 'family' (the owner and their
+ *  linked children) is for grown-up builders only, and 'class' and 'school' for kids only (services/schools.js
+ *  sharingOptions says who may pick what). */
+export const VISIBILITIES = ['private', 'family', 'friends', 'class', 'school', 'public'];
 export const ORIENTATIONS = ['any', 'portrait', 'landscape'];
 
 export const slugify = s => String(s).toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40) || 'game';
@@ -30,7 +32,7 @@ export function uniqueSlug(title, exceptId = null) {
 export const getGame = id => (id ? q.get('SELECT * FROM games WHERE id=?', id) : null) || null;
 export const getGameBySlug = slug => q.get('SELECT * FROM games WHERE slug=?', String(slug || '')) || null;
 export const getVersion = id => (id ? q.get('SELECT * FROM game_versions WHERE id=?', id) : null) || null;
-export const getOwner = game => q.get('SELECT id, username, display_name, avatar, color, photo_at FROM users WHERE id=?', game.owner_id) || null;
+export const getOwner = game => q.get('SELECT id, username, display_name, avatar, color, photo_at, account_type, is_guest FROM users WHERE id=?', game.owner_id) || null;
 
 /** Same school (both active members)? Games shared with 'My school' are for schoolmates. */
 export const sameSchool = (a, b) => !!(a && b && q.get("SELECT 1 FROM school_members x JOIN school_members y ON y.school_id=x.school_id WHERE x.user_id=? AND y.user_id=? AND x.status='active' AND y.status='active'", a, b));
@@ -74,8 +76,21 @@ export const CLASS_SQL = `(g.visibility='class' AND g.id IN (SELECT gc.game_id F
 /** Does this game reach this viewer through one of its classes? (The same SQL as listings use.) */
 const classReach = (userId, gameId) => !!q.get(`SELECT 1 FROM games g WHERE g.id=? AND ${CLASS_SQL}`, gameId, userId, userId);
 
+// ---------------------------------------------------------------- "My family" (visibility 'family', grown-up builders)
+// The one place that knows the family rule, used by canView AND visibleWhere: a grown-up's 'family' game reaches the
+// children linked to the family they own (a confirmed link, not a pending request, not unlinked). Nobody else: not
+// another family's children, not the grown-up's connections. Which children belong to a grown-up is never shown
+// anywhere public; this rule only decides who may open the game.
+const LINKED_CHILD = "fc.status='linked' AND fc.unlinked_at IS NULL";
+const FAMILY_SQL = `SELECT 1 FROM families f JOIN family_children fc ON fc.family_id=f.id WHERE f.owner_id=? AND fc.child_id=? AND ${LINKED_CHILD}`;
+/** Is viewerId a linked child of the family ownerId owns? */
+export const inFamilyOf = (ownerId, viewerId) => !!(ownerId && viewerId && q.get(FAMILY_SQL, ownerId, viewerId));
+/** The family branch of visibleWhere. Params: viewerId. */
+const FAMILY_WHERE = `(g.visibility='family' AND g.owner_id IN (SELECT f.owner_id FROM families f JOIN family_children fc ON fc.family_id=f.id WHERE fc.child_id=? AND ${LINKED_CHILD}))`;
+
 /** THE visibility rule. Can this user open/play this game's published version?
- *  Private: owner and admins. Friends: owner, admins, accepted friends. School: schoolmates. Class: the members (and
+ *  Private: owner and admins. Family: the grown-up owner's linked children. Friends: owner, admins, accepted friends (a
+ *  grown-up's are other grown-ups only). School: schoolmates. Class: the members (and
  *  school admins) of the classes the owner chose, while the owner is still in them (CLASS_SQL). Public: everyone.
  *  Everything except owner/admin only while published and not hidden. */
 export function canView(user, game) {
@@ -85,6 +100,7 @@ export function canView(user, game) {
   if (user && user.id === game.owner_id) return true;
   if (game.status !== 'published' || !game.published_version_id || game.hidden_reason) return false;
   if (game.visibility === 'public') return true;
+  if (game.visibility === 'family') return !!user && inFamilyOf(game.owner_id, user.id);
   if (game.visibility === 'friends') return !!user && areFriends(game.owner_id, user.id);
   if (game.visibility === 'school') return !!user && sameSchool(game.owner_id, user.id);
   if (game.visibility === 'class') return !!user && classReach(user.id, game.id);
@@ -110,12 +126,13 @@ export function visibleWhere(user) {
   return {
     sql: `${base} AND (g.visibility='public' OR g.owner_id=? OR (g.visibility='friends' AND g.owner_id IN (SELECT friend_id FROM friends WHERE user_id=? AND status='accepted'))
       OR (g.visibility='school' AND g.owner_id IN (SELECT a.user_id FROM school_members a JOIN school_members b ON b.school_id=a.school_id WHERE b.user_id=? AND a.status='active' AND b.status='active'))
+      OR ${FAMILY_WHERE}
       OR ${CLASS_SQL})`,
-    params: [user.id, user.id, user.id, user.id, user.id]
+    params: [user.id, user.id, user.id, user.id, user.id, user.id]
   };
 }
 const COLS = `g.id, g.slug, g.owner_id, g.title, g.description, g.icon, g.cover, g.category, g.tags, g.visibility, g.status, g.plays, g.likes, g.rating_sum, g.rating_count, g.featured, g.players_max, g.orientation, g.source, g.published_at, g.updated_at, g.created_at, g.current_version_id, g.published_version_id, g.pending_version_id, g.review_note, g.hidden_reason, g.l10n,
-  u.username AS owner_name, u.display_name AS owner_display, u.avatar AS owner_avatar, u.color AS owner_color, u.photo_at AS owner_photo_at`;
+  u.username AS owner_name, u.display_name AS owner_display, u.avatar AS owner_avatar, u.color AS owner_color, u.photo_at AS owner_photo_at, u.account_type AS owner_type`;
 export const SELECT = `SELECT ${COLS} FROM games g JOIN users u ON u.id=g.owner_id`;
 
 export const avgRating = g => (g.rating_count ? g.rating_sum / g.rating_count : 0);
@@ -160,7 +177,11 @@ export function fromFriends(user, limit = 12) {
 /** A player's favorites (the games they tapped ❤️ on), newest first. Only games this viewer may still see. */
 export function favorites(viewer, userId, limit = 24, offset = 0) {
   const v = visibleWhere(viewer);
-  return decorate(q.all(`${SELECT} JOIN likes l ON l.game_id=g.id AND l.user_id=? WHERE ${v.sql} ORDER BY l.created_at DESC LIMIT ? OFFSET ?`, userId, ...v.params, limit, offset));
+  // A child's likes on their own grown-up's games (left from when the game was 'family') are shown only to that family:
+  // anyone else would learn whose child they are.
+  const fam = viewer && (viewer.role === 'admin' || viewer.id === userId) ? '' : ` AND NOT (${OWNERS_CHILD('l.user_id', 'g.owner_id')} AND g.owner_id IS NOT ? AND ${viewer ? `NOT ${OWNERS_CHILD('?', 'g.owner_id')}` : '1'})`;
+  const famParams = fam ? (viewer ? [viewer.id, viewer.id] : [null]) : [];
+  return decorate(q.all(`${SELECT} JOIN likes l ON l.game_id=g.id AND l.user_id=? WHERE ${v.sql}${fam} ORDER BY l.created_at DESC LIMIT ? OFFSET ?`, userId, ...v.params, ...famParams, limit, offset));
 }
 /** All of a builder's own games (any status) for "My games". */
 export function myGames(userId, limit = 50) {
@@ -278,8 +299,17 @@ export function endPlay(playId, userId) {
   const p = q.get('SELECT * FROM plays WHERE id=? AND user_id IS ?', playId, userId || null); if (!p) return;
   const t = now(); q.run('UPDATE plays SET ended_at=?, seconds=? WHERE id=?', t, Math.min(6 * 3600, Math.round((t - p.started_at) / 1000)), playId);
 }
-export function leaderboard(gameId, limit = 10) {
-  return q.all(`SELECT s.score, s.label, s.created_at, u.id, u.username, u.display_name, u.avatar, u.color, u.photo_at FROM scores s JOIN users u ON u.id=s.user_id WHERE s.game_id=? AND u.banned=0 AND u.account_type!='grownup' ORDER BY s.score DESC, s.created_at ASC LIMIT ?`, gameId, limit);
+/** SQL: is the player `childCol` one of the linked children of the game's (grown-up) owner `ownerCol`? */
+const OWNERS_CHILD = (childCol, ownerCol) => `${childCol} IN (SELECT fc.child_id FROM families f JOIN family_children fc ON fc.family_id=f.id WHERE f.owner_id=${ownerCol} AND ${LINKED_CHILD})`;
+/** May this viewer see which children belong to this game's owner? Only the owner, their own linked children and admins. */
+const seesFamily = (viewer, ownerId) => !!viewer && (viewer.role === 'admin' || viewer.id === ownerId || inFamilyOf(ownerId, viewer.id));
+/** The top scores. A grown-up's game may have been 'family' when their children played it, and moved to connections or
+ *  public since: so its own owner's linked children are left off the board for everyone outside that family (an
+ *  unrelated adult or another child would otherwise learn which kids are theirs). Pass the viewer. */
+export function leaderboard(gameId, limit = 10, viewer = null) {
+  const g = q.get('SELECT owner_id FROM games WHERE id=?', gameId);
+  const hideKids = g && !seesFamily(viewer, g.owner_id);
+  return q.all(`SELECT s.score, s.label, s.created_at, u.id, u.username, u.display_name, u.avatar, u.color, u.photo_at FROM scores s JOIN users u ON u.id=s.user_id WHERE s.game_id=? AND u.banned=0 AND u.account_type!='grownup'${hideKids ? ` AND NOT ${OWNERS_CHILD('s.user_id', '?')}` : ''} ORDER BY s.score DESC, s.created_at ASC LIMIT ?`, gameId, ...(hideKids ? [g.owner_id] : []), limit);
 }
 /** A score's label ("3 stars", "lap 2") is shown on the public leaderboard, so a game can't use it to publish what a
  *  player typed: anything with blocked words, personal details or a family link code is dropped. */

@@ -269,7 +269,7 @@ const ROLE_BARS = {
   student: { tabs: ['/', '/classes', '/build', '/friends', '/plans', '/me'], top: ['/', '/classes', '/build', '/friends', '/plans'] },
   teacher: { tabs: ['/teach', '/', '/plans', '/me'], top: ['/teach', '/', '/plans'] },
   'school admin': { tabs: ['/teach', '/', '/school', '/plans', '/me'], top: ['/teach', '/', '/school', '/plans'] },
-  'grown-up': { tabs: ['/family', '/', '/plans', '/family/account'], top: ['/family', '/', '/plans'] },
+  'grown-up': { tabs: ['/family', '/build', '/', '/plans', '/family/account'], top: ['/family', '/build', '/', '/plans'] },
   'platform admin': { tabs: ['/', '/search', '/build', '/friends', '/admin/schools', '/plans', '/me'], top: ['/', '/search', '/build', '/friends', '/admin/schools', '/plans'] },
 };
 let roleStates = null;

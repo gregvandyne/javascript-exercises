@@ -38,7 +38,7 @@ function queueTab(req) {
   const items = mod.reviewQueue();
   if (!items.length) return emptyState({ emoji: '✅', title: 'Nothing to review', text: 'Games waiting for a human check show up here.' });
   // What the builder asked for: approving applies exactly this audience (never more).
-  const audience = (a, classes) => (a === 'class' ? `🎒 ${classes.length ? classes.join(', ') : 'their classes (none live right now)'}` : a === 'school' ? '🏫 the school' : '🌍 everyone');
+  const audience = (a, classes) => (a === 'class' ? `🎒 ${classes.length ? classes.join(', ') : 'their classes (none live right now)'}` : a === 'school' ? '🏫 the school' : a === 'family' ? '🏠 their family (the grown-up and their linked children)' : '🌍 everyone');
   return html`<div class="stack">${items.map(({ game: g, version: v, isUpdate, liveNumber, safety, review, audience: aud, classes }) => {
     const token = signToken({ v: v.id, g: g.id, u: req.user.id, p: 1 }, 3600);
     const issues = safety.issues || [];
@@ -47,7 +47,7 @@ function queueTab(req) {
         <div class="rc-cover">${coverArt(g)}</div>
         <div class="rc-info">
           <h2>${g.title}</h2>
-          <p class="muted small">by <a href="/u/${g.owner_name}">${g.owner_display}</a> (@${g.owner_name}) · version ${v.number} · ${fmtNum(Math.round((v.size || 0) / 1024))} KB · sent ${when(g.updated_at)}</p>
+          <p class="muted small">by ${g.owner_type === 'grownup' ? html`${g.owner_display} <span class="chip-s">🧑 Grown-up builder</span>` : html`<a href="/u/${g.owner_name}">${g.owner_display}</a>`} (@${g.owner_name}) · version ${v.number} · ${fmtNum(Math.round((v.size || 0) / 1024))} KB · sent ${when(g.updated_at)}</p>
           <p>${isUpdate ? html`<span class="chip-s warn">🔁 Update to a live game</span> Players keep version ${liveNumber} until you approve.` : html`<span class="chip-s">🆕 New game</span>`}</p>
           <p class="small">Waiting to share with: <b>${audience(aud, classes)}</b></p>
           ${g.description ? html`<p class="small">${g.description}</p>` : ''}
@@ -80,7 +80,7 @@ function reportsTab() {
       <div class="rc-cover small">${coverArt(g)}</div>
       <div style="flex:1;min-width:200px">
         <h2 style="margin:0"><a href="/g/${g.slug}">${g.title}</a></h2>
-        <p class="small muted" style="margin:0">by @${g.owner_name} · ${statusLabel(g, tEn)}${g.hidden_reason ? ` (hidden by ${g.hidden_reason})` : ''}</p>
+        <p class="small muted" style="margin:0">by @${g.owner_name}${g.owner_type === 'grownup' ? ' (grown-up builder)' : ''} · ${statusLabel(g, tEn)}${g.hidden_reason ? ` (hidden by ${g.hidden_reason})` : ''}</p>
         <p style="margin:6px 0"><b>${g.open_reports}</b> open report${g.open_reports === 1 ? '' : 's'}${g.last_report ? html` · last ${when(g.last_report)}` : ''}</p>
         ${g.reasons.length ? html`<div class="chips">${g.reasons.map(r => html`<span class="chip-s">${gameReason(r.reason)} × ${r.n}</span>`)}</div>` : ''}
         ${g.details.length ? html`<ul class="small">${g.details.map(d => html`<li>“${d}”</li>`)}</ul>` : ''}
@@ -212,7 +212,7 @@ function usersTab(req) {
       <tr><th scope="row">Friends</th><td>${u.friends}</td></tr>
       <tr><th scope="row">Chat</th><td>${u.chat_enabled ? 'on' : 'off'} · ${u.chatReports} message report${u.chatReports === 1 ? '' : 's'} against them</td></tr>
     </tbody></table></div>
-    <div class="row" style="margin-top:12px"><a class="btn" href="/u/${u.username}">View profile</a>
+    <div class="row" style="margin-top:12px">${u.account_type === 'grownup' ? '' : html`<a class="btn" href="/u/${u.username}">View profile</a>`}
       ${u.photo_at ? html`<button class="btn" type="button" data-act="unphoto" data-id="${u.id}" data-name="${u.username}">🖼️ Remove photo</button>` : ''}
       ${u.role === 'admin' ? '' : u.banned ? html`<button class="btn" type="button" data-act="unban" data-id="${u.id}" data-name="${u.username}">Unban</button>` : html`<button class="btn btn-danger" type="button" data-act="ban" data-id="${u.id}" data-name="${u.username}">⛔ Ban</button>`}</div>
   </section>` : ''}`;
@@ -400,7 +400,7 @@ router.get('/admin/stats', (req, res) => {
     </section>
     <section class="panel"><h2>🛠️ Top builders</h2>
       ${builders.length ? html`<div class="tblwrap"><table class="tbl"><thead><tr><th>Builder</th><th>Games</th><th>Live</th><th>Plays</th></tr></thead><tbody>
-        ${builders.map(b => html`<tr><td><a href="/u/${b.username}">${b.avatar} ${b.display_name}</a></td><td>${int(b.games)}</td><td>${int(b.live)}</td><td>${int(b.plays)}</td></tr>`)}</tbody></table></div>` : html`<p class="muted">Nobody has built a game yet.</p>`}
+        ${builders.map(b => html`<tr><td>${b.account_type === 'grownup' ? html`<a href="/admin?tab=users&amp;username=${encodeURIComponent(b.username)}">🧑 ${b.display_name}</a> <span class="muted small">(grown-up)</span>` : html`<a href="/u/${b.username}">${b.avatar} ${b.display_name}</a>`}</td><td>${int(b.games)}</td><td>${int(b.live)}</td><td>${int(b.plays)}</td></tr>`)}</tbody></table></div>` : html`<p class="muted">Nobody has built a game yet.</p>`}
     </section>
     <section class="panel"><h2>🧭 Where people go, last 7 days</h2>
       ${areas.length ? html`<div class="tblwrap"><table class="tbl"><thead><tr><th>Page area</th><th>Views</th></tr></thead><tbody>
@@ -413,7 +413,7 @@ router.get('/admin/stats', (req, res) => {
     </section>
     <section class="panel"><h2>🆕 Newest accounts</h2>
       ${fresh.length ? html`<div class="tblwrap"><table class="tbl"><thead><tr><th>Player</th><th>Joined</th><th>Last seen</th></tr></thead><tbody>
-        ${fresh.map(u => html`<tr><td><a href="/u/${u.username}">${u.avatar} ${u.display_name}</a></td><td>${timeAgo(u.created_at)}</td><td>${u.last_seen ? timeAgo(u.last_seen) : 'never'}</td></tr>`)}</tbody></table></div>` : html`<p class="muted">No accounts yet.</p>`}
+        ${fresh.map(u => html`<tr><td>${u.account_type === 'grownup' ? html`<a href="/admin?tab=users&amp;username=${encodeURIComponent(u.username)}">🧑 ${u.display_name}</a>` : html`<a href="/u/${u.username}">${u.avatar} ${u.display_name}</a>`}</td><td>${timeAgo(u.created_at)}</td><td>${u.last_seen ? timeAgo(u.last_seen) : 'never'}</td></tr>`)}</tbody></table></div>` : html`<p class="muted">No accounts yet.</p>`}
       <p class="small muted">${int(k.users.guests)} guest players in total, +${int(k.users.guestsWeek)} this week. ${int(k.users.banned)} banned.</p>
     </section>
   </div>`;

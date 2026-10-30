@@ -347,7 +347,9 @@
     "class": "{count, plural, one {La mia classe} other {Le mie classi}}",
     "onlyYouNow": "Per ora solo tu",
     "public": "Tutti",
-    "school": "La mia scuola"
+    "school": "La mia scuola",
+    "family": "La mia famiglia",
+    "connections": "I miei contatti adulti"
   },
   "status": {
     "hidden": "Nascosto",
@@ -580,7 +582,7 @@
         "li7": "Un account scolastico è creato dalla scuola. La scuola è responsabile di avere il diritto di crearlo e di informarne i genitori (vedi la sezione 3).",
         "s3": "Account genitore",
         "li8": "Dovete avere <b>almeno 18 anni</b> ed essere il <b>genitore o tutore legale</b> di ogni bambino o bambina a cui vi collegate. Al momento della registrazione lo confermate spuntando una casella. Noi non lo verifichiamo, quindi vi chiediamo di essere onesti: collegarsi a un bambino o una bambina che non è vostro figlio o figlia viola questi termini, e in quel caso interromperemo il collegamento e potremo chiudere il vostro account.",
-        "li9": "Un account genitore può giocare. <b>Non può</b> creare giochi, usare il Costruttore, chattare, aggiungere amici, pubblicare contenuti o avere un profilo pubblico.",
+        "li9": "Un account genitore può giocare e creare giochi con il Costruttore. I suoi giochi passano dagli stessi controlli di sicurezza di ogni gioco. Può collegarsi solo con altri account adulti. <b>Non può</b> chattare, aggiungere bambini come amici, pubblicare contenuti o avere un profilo pubblico, e i suoi giochi non mostrano mai quali bambini sono collegati all’account.",
         "li10": "Tenete privata la vostra password. Siete responsabili di quello che succede nel vostro account genitore, compresi gli acquisti.",
         "li11": "Per evitare che un bambino acquisti qualcosa su un dispositivo condiviso, vi chiediamo di nuovo la password prima di attivare o modificare un piano.",
         "s4": "Collegare un adulto a un figlio o una figlia",
@@ -805,7 +807,7 @@
         "li6": "il vostro piano: i numeri cliente e di abbonamento di Stripe, il tipo di piano, mensile o annuale, lo stato, i posti, le date e gli importi;",
         "li7": "un registro delle azioni importanti (per esempio «piano attivato», «figlio collegato», «rimborso»). Questi registri non contengono mai dati delle carte o indirizzi email.",
         "p1": "<b>Cosa non vi chiediamo:</b> la vostra email, il numero di telefono, l'indirizzo di casa o l'età. (Stripe chiede alcuni di questi dati quando pagate: vedete Pagamenti più sotto.)",
-        "p2": "Un account genitore non può creare giochi, chattare, aggiungere amici o avere un profilo pubblico, e non compare nelle ricerche."
+        "p2": "Un account genitore può creare giochi. Passano dagli stessi controlli di sicurezza di ogni gioco, e un gioco condiviso con tutti mostra il nome visualizzato dell’adulto e «Creatore adulto». Un account genitore può collegarsi solo con altri account adulti; non può chattare, aggiungere bambini come amici o avere un profilo pubblico, e non compare nelle ricerche. Non mostriamo mai pubblicamente quali bambini sono collegati a un adulto, né i loro nomi."
       },
       "linking": {
         "h": "Collegamento a un figlio o una figlia",
@@ -940,7 +942,9 @@
       "friends": "Solo i tuoi amici su Oomba Academy possono aprire questo link.",
       "class": "Solo le classi con cui è condiviso questo gioco possono aprire questo link.",
       "public": "Chiunque abbia il link può giocare a questo gioco.",
-      "school": "Tutti nella tua scuola possono trovarlo e giocarci."
+      "school": "Tutti nella tua scuola possono trovarlo e giocarci.",
+      "family": "Solo l’adulto che ha creato questo gioco e la sua famiglia possono aprire questo link.",
+      "connections": "Solo l’adulto che ha creato questo gioco e i suoi contatti adulti possono aprire questo link."
     },
     "sharedWith": "Condiviso con:",
     "sharedWithMore": "{count, plural, one {e # altra classe} other {e altre # classi}}",
@@ -964,7 +968,8 @@
       "badScore": "Punteggio non valido.",
       "pickReason": "Scegli un motivo."
     },
-    "makeLike": "Crea un gioco così"
+    "makeLike": "Crea un gioco così",
+    "grownupBuilder": "Creatore adulto"
   },
   "play": {
     "backTo": "Torna a {title}",
@@ -1212,13 +1217,6 @@
       "ready": "✨ Pronto",
       "question": "💬 Ha una domanda",
       "stopped": "⚠️ Fermato"
-    },
-    "grownup": {
-      "title": "Il Costruttore",
-      "heading": "Il Costruttore è per gli account dei ragazzi",
-      "text": "I ragazzi creano i propri giochi con il Costruttore, accedendo con il proprio account. Un account genitore può giocare e occuparsi di una famiglia, ma non può creare giochi.",
-      "how": "Come si crea un gioco",
-      "safety": "Il Costruttore IA è sicuro?"
     }
   },
   "studio": {
@@ -1231,7 +1229,9 @@
       "friends": "Solo tu e i tuoi amici su Oomba Academy potete giocarci.",
       "class": "Solo le classi che hai scelto possono giocarci.",
       "public": "Tutti su Oomba Academy possono trovarlo e giocarci, dopo un rapido controllo di sicurezza.",
-      "school": "Tutti nella tua scuola possono trovarlo e giocarci."
+      "school": "Tutti nella tua scuola possono trovarlo e giocarci.",
+      "family": "Voi e i figli collegati alla vostra famiglia potete giocarci.",
+      "connections": "Solo voi e i vostri contatti adulti potete giocarci."
     },
     "status": {
       "hidden": "Nascosto per ora",
@@ -1354,7 +1354,9 @@
     "waiting": "Il tuo gioco aspetta un rapido controllo di sicurezza. Lo condivideremo appena lo supera.",
     "school": "Online per la tua scuola! Tutti nella tua scuola possono trovarlo e giocarci.",
     "class": "{count, plural, one {Online per {name}! Tutti nella tua classe possono trovarlo e giocarci.} other {Online per le tue classi! Tutti lì possono trovarlo e giocarci.}}",
-    "schoolOnly": "La tua scuola tiene i giochi dentro la scuola. Condividilo con la tua scuola."
+    "schoolOnly": "La tua scuola tiene i giochi dentro la scuola. Condividilo con la tua scuola.",
+    "liveFamily": "Online per la vostra famiglia! Voi e i figli collegati alla vostra famiglia potete giocarci.",
+    "liveConnections": "Condiviso con i vostri contatti adulti! Solo voi e loro potete giocarci."
   },
   "builder": {
     "kindRefusal": "Con questo non posso aiutarti. Creiamo invece qualcosa di divertente! Che tipo di gioco ti piacerebbe?",
@@ -1617,7 +1619,9 @@
         "friends": "Amici",
         "class": "{count, plural, one {La mia classe} other {Le mie classi}}",
         "public": "Tutti",
-        "school": "La mia scuola"
+        "school": "La mia scuola",
+        "family": "La mia famiglia",
+        "connections": "I miei contatti adulti"
       },
       "top": {
         "inReview": "In revisione",
@@ -1647,7 +1651,8 @@
         "publicCheck": "I giochi per tutti passano prima un rapido controllo di sicurezza, e i giocatori tengono la versione vecchia finché non lo supera.",
         "onlyYou": "solo tu puoi vederlo",
         "pendingNew": "La versione {number} aspetta un rapido controllo di sicurezza. La condivideremo appena lo supera.",
-        "reviewer": "Il revisore dice: «{note}» Chiedi al Costruttore di cambiarlo, poi premi di nuovo Aggiorna o Pubblica."
+        "reviewer": "Il revisore dice: «{note}» Chiedi al Costruttore di cambiarlo, poi premi di nuovo Aggiorna o Pubblica.",
+        "waitingFamily": "In attesa di un breve controllo di sicurezza prima che la vostra famiglia possa giocare. Fino ad allora resta condiviso come adesso."
       },
       "safety": {
         "chipPass": "Sicuro",
@@ -1759,7 +1764,12 @@
         "classRemoved": "L'insegnante l'ha tolto da questa classe.",
         "allRemoved": "{count, plural, one {L'insegnante ha tolto questo gioco dalla tua classe.} other {Gli insegnanti hanno tolto questo gioco dalle tue classi.}}",
         "copied": "Link copiato!",
-        "copyFailed": "Non è stato possibile copiare."
+        "copyFailed": "Non è stato possibile copiare.",
+        "hint": {
+          "family": "Solo i figli che hanno accettato il collegamento con la vostra famiglia. Mai altri bambini.",
+          "connections": "Solo altri adulti con cui vi siete collegati tramite codice. Mai bambini.",
+          "publicGrownup": "Tutti, dopo un controllo di sicurezza. Mostrato come {name}, creatore adulto."
+        }
       },
       "update": {
         "title": "Aggiorna il tuo gioco online",
@@ -2028,6 +2038,9 @@
         "cancelled": "Registrazione fermata. Non è stato inviato né conservato niente.",
         "cancelledLive": "Registrazione fermata. Non è stato conservato niente.",
         "failed": "Scusa, non sono riuscito a trasformarlo in parole. Riprova o scrivi il tuo messaggio."
+      },
+      "limit": {
+        "seePlans": "Vedi i piani per più messaggi del Costruttore"
       }
     }
   },
@@ -2918,7 +2931,7 @@
     "signup": {
       "title": "Registrazione account genitore",
       "heading": "Crea un account genitore",
-      "intro": "Per genitori e tutori. Un account genitore può giocare e occuparsi di una famiglia. Non può creare giochi, chattare o aggiungere amici.",
+      "intro": "Per genitori e tutori. Un account genitore può giocare, occuparsi di una famiglia, creare giochi e collegarsi con altri adulti. Non può chattare né aggiungere bambini come amici.",
       "nameLabel": "Nome dell'account",
       "nameHint": "Da 3 a 16 lettere o numeri. I bambini non vedono mai questo nome.",
       "passwordHint": "Almeno {min} caratteri.",
@@ -4082,5 +4095,32 @@
         "a4": "Entrambi hanno il loro spazio. Creare un gioco chiede ai ragazzi di pianificare, spiegare con chiarezza, provare e correggere, quindi è un tempo davanti allo schermo attivo."
       }
     }
+  },
+  "connections": {
+    "title": "Contatti adulti",
+    "heading": "I miei contatti adulti",
+    "intro": "Collegatevi con altri adulti che conoscete, per esempio un altro genitore, scambiandovi i codici. Poi potrete condividere giochi tra voi: scegliete «I miei contatti adulti» quando condividete un gioco.",
+    "yourCode": "Il vostro codice",
+    "codeHelp": "Datelo solo a un altro adulto che conoscete. Lo inserisce nella sua pagina dei contatti.",
+    "addLabel": "Il codice di un altro adulto",
+    "addBtn": "Collega",
+    "incoming": "Vogliono collegarsi con voi",
+    "outgoing": "In attesa della loro risposta",
+    "list": "I vostri contatti",
+    "empty": "Ancora nessun contatto.",
+    "accept": "Accetta",
+    "decline": "Rifiuta",
+    "cancel": "Annulla",
+    "remove": "Rimuovi",
+    "adultsOnly": "I contatti sono solo per gli account adulti. Il codice di un bambino qui non funziona, e i bambini non possono usare il vostro. Non c’è chat: i contatti servono solo a condividere giochi."
+  },
+  "familyGames": {
+    "heading": "I vostri giochi",
+    "empty": "Non avete ancora creato nessun gioco. Il Costruttore funziona anche per gli adulti.",
+    "build": "Crea un gioco",
+    "seeAll": "Tutti i miei giochi",
+    "connections": "{count, plural, =0 {I miei contatti} one {I miei contatti (# richiesta)} other {I miei contatti (# richieste)}}",
+    "usage": "Il vostro uso del Costruttore:",
+    "usageLine": "messaggi ieri: {yesterday} · questo mese: {month}"
   }
 }
