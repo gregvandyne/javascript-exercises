@@ -11,7 +11,8 @@
 
 // resume: instant, fact v (the newest saved version): the build carried on after a server restart (runner.js).
 // read: instant, fact m: the building blocks read m new messages the builder sent while they worked (mock.js).
-export const STEP_KEYS = ['screen', 'blocks', 'think', 'write', 'edit', 'fix', 'template', 'check', 'name', 'playtest', 'notes', 'ask', 'resume', 'read'];
+// search: the AI is looking a fact up on the web (search.js); never its query or the sites.
+export const STEP_KEYS = ['screen', 'blocks', 'think', 'write', 'edit', 'fix', 'template', 'check', 'name', 'playtest', 'notes', 'ask', 'resume', 'read', 'search'];
 const MAX_ROWS = 80;
 
 /** One line of model or player text, safe to show: control and bidi-override characters become spaces, whitespace

@@ -25,7 +25,7 @@ for (const lang of ['en', 'he']) {
         const where = `${path} ${lang} @${v.width}/${scheme}`;
         await expect(page.locator('h1'), where).toContainText(heading);
         expect(await page.locator('html').getAttribute('dir'), where).toBe(lang === 'he' ? 'rtl' : 'ltr');
-        await expect(page.locator('.legal-updated time'), where).toHaveAttribute('datetime', '2026-10-29');
+        await expect(page.locator('.legal-updated time'), where).toHaveAttribute('datetime', '2026-10-30');
         // Billing is off in this run: "not on sale yet", except on the /privacy without the billing sections.
         await expect(page.locator('.legal-notyet'), where).toHaveCount(path === '/privacy' ? 0 : 1);
         expect(await page.locator('.legal section.panel').count(), where).toBeGreaterThan(4);

@@ -25,14 +25,17 @@ export const PRICES = {
 // A model we don't know (e.g. a fallback) is priced like the most expensive one, so the cap errs on the safe side.
 const UNKNOWN = { input: 10, output: 50, cacheRead: 1 };
 
-/** Dollars for one response's usage block. */
+/** One web search (the Builder's server tool): $10 per 1,000, on top of the tokens its results add. */
+export const WEB_SEARCH_USD = 0.01;
+/** Dollars for one response's usage block (web searches included). */
 export function costOf(model, usage = {}) {
   const p = PRICES[String(model || '').replace(/-\d{8}$/, '')] || UNKNOWN;
   const u = usage || {};
   const usd = ((u.input_tokens || 0) * p.input
     + (u.cache_creation_input_tokens || 0) * p.input * 1.25
     + (u.cache_read_input_tokens || 0) * p.cacheRead
-    + (u.output_tokens || 0) * p.output) / 1e6;
+    + (u.output_tokens || 0) * p.output) / 1e6
+    + ((u.server_tool_use && u.server_tool_use.web_search_requests) || 0) * WEB_SEARCH_USD;
   return Number.isFinite(usd) ? usd : 0;
 }
 
@@ -51,6 +54,17 @@ export function recordUsage(model, usage, day = today(), pool = 'free') {
     cache_read=cache_read+excluded.cache_read, cache_write=cache_write+excluded.cache_write, usd=usd+excluded.usd`,
   day, m, u.input_tokens || 0, u.output_tokens || 0, u.cache_read_input_tokens || 0, u.cache_creation_input_tokens || 0, usd);
   return usd;
+}
+
+/** Record spend that has no token usage (speech to text): label names it on the admin stats page (e.g. 'stt:openai'). */
+export function recordSpend(label, usd, pool = 'free', day = today()) {
+  const v = Number.isFinite(+usd) && +usd > 0 ? +usd : 0;
+  q.run('INSERT INTO ai_spend(day, usd, calls) VALUES (?,?,1) ON CONFLICT(day) DO UPDATE SET usd=usd+excluded.usd, calls=calls+1', day, v);
+  q.run('INSERT INTO ai_spend_pool(day, pool, usd, calls) VALUES (?,?,?,1) ON CONFLICT(day, pool) DO UPDATE SET usd=usd+excluded.usd, calls=calls+1',
+    day, POOLS.includes(pool) ? pool : 'free', v);
+  q.run(`INSERT INTO ai_usage(day, model, calls, input, output, cache_read, cache_write, usd) VALUES (?,?,1,0,0,0,0,?)
+    ON CONFLICT(day, model) DO UPDATE SET calls=calls+1, usd=usd+excluded.usd`, day, String(label || 'other').slice(0, 60), v);
+  return v;
 }
 
 export function spent(day = today()) {

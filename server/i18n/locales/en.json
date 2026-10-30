@@ -493,7 +493,9 @@
       },
       "ai": {
         "h": "What the AI sees",
-        "p1": "To make a game, the messages, pictures and files your child gives the Builder are sent to Claude, an AI made by the company Anthropic, which writes the game. Your child's name and username are not sent with them. Profile photos are also sent to Claude to be checked before anyone sees them. Claude reviews games before they can be shared with everyone, and our team checks any it is unsure about. Chats between friends and lesson answers are not sent to the AI."
+        "p1": "To make a game, the messages, pictures and files your child gives the Builder are sent to Claude, an AI made by the company Anthropic, which writes the game. Your child's name and username are not sent with them. Profile photos are also sent to Claude to be checked before anyone sees them. Claude reviews games before they can be shared with everyone, and our team checks any it is unsure about. Chats between friends and lesson answers are not sent to the AI.",
+        "p2": "Speaking instead of typing: when your child taps the microphone in the Builder chat, the recording is sent to {provider}, a speech-to-text service, which turns it into words. Your child sees the words and can change them before sending. The recording is used only for this and deleted straight away: we never store it, and {provider} is not allowed to keep it or use it to train its systems. The words go through the same safety checks as a typed message.",
+        "p3": "Looking up facts: to get a game right, the Builder can look up a fact on the web (for example how fast a cheetah runs). Your child never sees the web pages or links. The Builder is told never to search for anything personal; if a search still looks personal, its results are not used and its words are not kept. Adult, gambling, social media and video sites are blocked. We keep a list of the searches, without your child's name or username, together with the game they were for, for 90 days so our team can check them."
       },
       "keep": {
         "h": "How long we keep it",
@@ -1329,6 +1331,14 @@
       "cantContinue": "That build can’t be continued any more. Send a new message instead.",
       "restarting": "Our server is restarting. Try again in a moment.",
       "liveBusy": "This game is open in too many tabs. Close some and try again."
+    },
+    "mic": {
+      "start": "Speak instead of typing",
+      "tooLong": "That recording is too long. Try a shorter one, up to {max}.",
+      "tooFast": "That's a lot of recordings! Wait a minute, then try again.",
+      "daily": "That's all the recordings for today. You can still type your message.",
+      "failed": "Sorry, I couldn't turn that into words. Try again, or type your message.",
+      "busy": "The speech helper is busy right now. Try again in a moment."
     }
   },
   "publish": {
@@ -1463,7 +1473,8 @@
       "noUploads": "Pictures and files can be added when this build is done. Send your words now, or wait a moment.",
       "notYours": "Someone else started this build. Wait until it’s done."
     },
-    "budgetStop": "The AI Builder has to rest now, so I stopped here. Everything I made so far is saved."
+    "budgetStop": "The AI Builder has to rest now, so I stopped here. Everything I made so far is saved.",
+    "searchStopped": "I couldn't look that up, so I stopped here. Try asking in a different way!"
   },
   "uploads": {
     "tooFast": "That is a lot of files! Wait a minute and try again.",
@@ -1919,7 +1930,12 @@
           "done": "{m, plural, one {Read your new message} other {Read your # new messages}}",
           "learn": "The building blocks check for new messages between steps, then use their rules on them."
         },
-        "fuRead": "{count, plural, one {read # new message} other {read # new messages}}"
+        "fuRead": "{count, plural, one {read # new message} other {read # new messages}}",
+        "search": {
+          "now": "Looking something up",
+          "done": "Looked something up",
+          "learn": "The AI can look up a real fact, like how fast a cheetah runs, so your game gets it right. It never shows you web pages, and a safety check reads what it found."
+        }
       },
       "resumed": "🔄 The server restarted, so the Builder carried on from where it was.",
       "resumedV": "🔄 The server restarted, so the Builder carried on from version {v}.",
@@ -1995,6 +2011,18 @@
         "others": "Play games other kids made",
         "grownUp": "A grown-up can link to your account:",
         "grownUpWhere": "Me › For grown-ups"
+      },
+      "mic": {
+        "start": "Speak instead of typing",
+        "stop": "Stop recording",
+        "recording": "Recording {time} of {max}. Press the mic again to stop, or Esc to cancel.",
+        "transcribing": "Writing down what you said…",
+        "check": "Check the words, then press Send.",
+        "nothing": "I didn't hear any words. Try again, a bit closer to the mic.",
+        "denied": "The microphone is blocked. Ask a grown-up to allow it for this site in the browser settings.",
+        "noMic": "No microphone was found on this device.",
+        "cancelled": "Recording stopped. Nothing was sent or kept.",
+        "failed": "Sorry, I couldn't turn that into words. Try again, or type your message."
       }
     }
   },

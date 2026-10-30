@@ -10,7 +10,11 @@ import * as games from '../services/games.js';
 import { publish, setVisibility } from '../services/publish.js';
 import { cleanText } from '../services/textfilter.js';
 import { requireAccount, getUser } from '../auth.js';
-import { rateLimit } from '../services/ratelimit.js';
+import { rateLimit, allow } from '../services/ratelimit.js';
+import { sttEnabled, transcribe, sniff, baseMime, MIMES, KINDS, SttError, clipSeconds, countedSeconds } from '../services/stt.js';
+import * as sttUsage from '../services/stt-usage.js';
+import { log } from '../services/log.js';
+import { config } from '../config.js';
 import { audit } from '../db.js';
 import { listTemplates, templateHtml, templateInfo, TEMPLATE_KEYS } from '../builder/catalog.js';
 import { scanVersion } from '../services/scanner.js';
@@ -96,6 +100,9 @@ export function studioState(user, gameId, t = tEn, req = null) {
     turn: publicTurn(g.id, user), lastTurn: lastTurn(g.id, user),
     shareText: shareText(t), shareUrl: `/g/${g.slug}`, shareOptions: sharingOptions(getUser(g.owner_id)), classShare: classShare(g, g.owner_id),
     uploads: { limits: LIMITS, used: listUploads(g.id).length },
+    // Speech to text (services/stt.js): only when the owner turned it on; the page hides the mic otherwise.
+    // Not while the Builder is off for this account (a grown-up or teacher turned it off): no voice leaves the site then.
+    mic: sttEnabled() && user.builder_enabled ? { maxMs: config.sttMaxSeconds * 1000, maxBytes: config.sttMaxBytes } : null,
     grownUpLink: grownUpLinkHint(req, user),
   };
 }
@@ -153,6 +160,8 @@ router.get('/studio/:id', requireAccount, (req, res) => {
   const g = loadEditable(req, res, { api: false }); if (!g) return;
   if (req.user.id === g.owner_id) turns.markSeen(g.id);   // the owner sees how the last build ended: no more "Ready" news
   const state = studioState(req.user, g.id, t, req);
+  // The microphone is allowed on this page only, and only while speech to text is on (the game frame never gets it).
+  if (state.mic) res.set('Permissions-Policy', 'camera=(), microphone=(self), geolocation=(), payment=(), interest-cohort=()');
   const body = html`
   <div class="studio" id="studio">
     <div class="st-top">
@@ -185,8 +194,10 @@ router.get('/studio/:id', requireAccount, (req, res) => {
             <input type="file" id="st-file" hidden multiple accept="image/png,image/jpeg,image/webp,image/gif,application/pdf,.txt,.md,.csv,.json,text/plain,text/markdown,text/csv,application/json">
             <label class="sr-only" for="st-input">${t('studio.chat.inputLabel')}</label>
             <textarea class="st-input" id="st-input" rows="1" maxlength="2000" dir="auto" placeholder="${t('studio.chat.placeholder')}" data-short="${t('studio.chat.placeholderShort')}"></textarea>
+            ${state.mic ? html`<button class="st-mic" type="button" id="st-mic" aria-pressed="false" aria-describedby="st-mic-status" aria-label="${t('studio.mic.start')}" title="${t('studio.mic.start')}" hidden><span class="st-mic-ico" aria-hidden="true">🎤</span></button>` : ''}
             <button class="btn btn-primary st-send" type="submit" id="st-send">${t('chat.thread.send')}</button>
           </div>
+          ${state.mic ? html`<p class="st-mic-status" id="st-mic-status" role="status" aria-live="polite"></p>` : ''}
         </form>
       </section>
       <section class="st-preview" aria-label="${t('studio.preview.label')}">
@@ -366,6 +377,60 @@ router.post('/api/studio/:id/visibility', requireAccount, rateLimit('studio-publ
   const g = loadEditable(req, res); if (!g) return;
   const sr = shareRequest(req); if (sr.error) return res.status(400).json({ error: sr.error });
   shareReply(req, res, g, await setVisibility(req.user, g.id, sr.vis, req.t, sr.classIds));
+});
+
+// ---- Speech to text (services/stt.js). Raw body: one recorded clip (WebM, MP4/AAC or Ogg), at most
+// STT_MAX_BYTES; X-Clip-Ms (required): its length as the page measured it. The real length is read from the clip itself
+// (a page can lie about X-Clip-Ms) and must be within STT_MAX_SECONDS. Answers { text } (rude words starred) for the kid
+// to check and edit; it is never sent to the Builder from here (Send screens it like typed text). The clip lives in
+// memory for this request only: it is never written anywhere, and the log line has only its size, the time taken and
+// the service. Caps: clips a minute per builder (memory), clips a day per builder and minutes a day for the whole site
+// (SQLite, services/stt-usage.js), and the AI spending caps (the cost is recorded there). A clip that is refused before
+// it reaches the service uses none of the daily caps.
+const clockOf = sec => `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}`;
+const tooLong = req => req.t('studio.mic.tooLong', { max: clockOf(config.sttMaxSeconds) });
+const sttBody = (req, res, next) => express.raw({ type: () => true, limit: config.sttMaxBytes, inflate: false })(req, res, err => {
+  if (!err) return next();
+  const big = err.status === 413;
+  res.status(big ? 413 : 400).json({ error: big ? tooLong(req) : req.t('studio.mic.failed'), code: big ? 'too_big' : 'bad' });
+});
+router.post('/api/studio/:id/transcribe', requireAccount, (req, res, next) => {
+  if (!sttEnabled()) return res.status(404).json({ error: req.t('errors.api.notFound'), code: 'off' });
+  // The Builder is off for this account: the voice is never sent to the outside service.
+  if (!req.user.builder_enabled) return res.status(403).json({ error: req.t('studio.api.buildingOff'), code: 'builder_off' });
+  if (!loadEditable(req, res)) return;   // the owner (or an admin) only, before the clip is read
+  if (!MIMES.includes(baseMime(req.get('content-type')))) return res.status(415).json({ error: req.t('studio.mic.failed'), code: 'type' });
+  const hdr = req.get('x-clip-ms'); const ms = Number(hdr);
+  if (!hdr || !Number.isFinite(ms) || ms < 0) return res.status(400).json({ error: req.t('studio.mic.failed'), code: 'bad' });
+  if (ms > config.sttMaxSeconds * 1000 + 2000) return res.status(413).json({ error: tooLong(req), code: 'too_long' });
+  // Clips a minute (fixed window, in memory), then the day's caps (kept in the database), before the clip is read.
+  if (!allow(`stt:${req.user.id}`, config.sttPerMinute, 60e3)) return res.status(429).json({ error: req.t('studio.mic.tooFast'), code: 'fast' });
+  const why = sttUsage.blocked(req.user.id, allowanceFor(req.user).pool);
+  if (why === 'daily') return res.status(429).json({ error: req.t('studio.mic.daily'), code: 'daily' });
+  if (why) return res.status(503).json({ error: req.t('studio.mic.busy'), code: 'site' });
+  next();
+}, sttBody, async (req, res) => {
+  let bytes = Buffer.isBuffer(req.body) ? req.body : Buffer.alloc(0);
+  req.body = null;   // the only other reference to the clip: nothing later (error handlers, logs) can see it
+  if (bytes.length < 200 || !KINDS.includes(sniff(bytes))) return res.status(415).json({ error: req.t('studio.mic.failed'), code: 'type' });
+  const size = bytes.length;
+  const real = clipSeconds(bytes);
+  if (real != null && real > config.sttMaxSeconds + 2) { bytes = null; return res.status(413).json({ error: tooLong(req), code: 'too_long' }); }
+  // Counted at its real length, or (when that can't be read) at an estimate from its size that errs long.
+  const seconds = countedSeconds(bytes, +req.get('x-clip-ms'));
+  sttUsage.record(req.user.id, seconds, config.sttProvider, allowanceFor(req.user).pool);
+  try {
+    const r = await transcribe({ bytes, locale: req.locale || 'en' });
+    bytes = null;
+    log('info', 'speech to text', { bytes: size, seconds: Math.round(seconds), ms: r.ms, provider: r.provider });
+    if (!r.text) return res.json({ text: '', reason: 'nothing' });
+    res.json({ text: r.text });
+  } catch (e) {
+    bytes = null;
+    const code = e instanceof SttError ? e.code : 'provider';
+    log('info', 'speech to text failed', { bytes: size, code });
+    res.status(code === 'format' ? 415 : code === 'busy' ? 503 : 502).json({ error: req.t(code === 'busy' ? 'studio.mic.busy' : 'studio.mic.failed'), code });
+  }
 });
 
 // ---- Uploads (inspiration pictures and files). Raw body: the file bytes; ?name= the file name.

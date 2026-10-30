@@ -59,13 +59,14 @@ export function deleteAccount(childId, actor, { by = 'grownup', parentMade = tru
     q.run('DELETE FROM friends WHERE user_id=? OR friend_id=?', u.id, u.id);
     q.run('DELETE FROM chat_blocks WHERE user_id=? OR blocked_id=?', u.id, u.id);
     q.run('DELETE FROM chat_usage WHERE user_id=?', u.id);
+    q.run('DELETE FROM stt_usage WHERE user_id=?', u.id);   // speech to text counts (never audio)
     // 4. chat: reports the child filed go; a message of theirs someone else reported stays, blanked, for that report
     q.run('DELETE FROM chat_reports WHERE reporter_id=?', u.id);
     q.run("UPDATE chat_messages SET body='' WHERE from_id=? AND id IN (SELECT message_id FROM chat_reports)", u.id);
     q.run('DELETE FROM chat_messages WHERE (from_id=? OR to_id=?) AND id NOT IN (SELECT message_id FROM chat_reports)', u.id, u.id);
     // 5. the child's games
     for (const g of gameIds) {
-      for (const tbl of ['game_versions', 'builder_chats', 'builder_uploads', 'saves', 'scores', 'plays', 'ratings', 'likes', 'game_classes', 'reports']) q.run(`DELETE FROM ${tbl} WHERE game_id=?`, g);
+      for (const tbl of ['game_versions', 'builder_chats', 'builder_uploads', 'saves', 'scores', 'plays', 'ratings', 'likes', 'game_classes', 'reports', 'builder_searches']) q.run(`DELETE FROM ${tbl} WHERE game_id=?`, g);
       q.run('DELETE FROM games WHERE id=?', g);
     }
     // 6. the child's rows on other games

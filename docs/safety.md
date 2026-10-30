@@ -154,6 +154,23 @@ notes that a thinking block happened.
 Limits: 60 Builder turns per person per day by default (`BUILDER_DAILY_TURNS`), a maximum length per turn, and a rate
 limit on the chat endpoint. Accounts can have building switched off.
 
+**Looking facts up on the web** (`BUILDER_WEB_SEARCH=1`, off by default; `server/builder/search.js`). The Builder may
+use Anthropic's web search tool to get a real-world fact right. Adult, dating, gambling, gore and hate, forum and
+imageboard, social and messaging, AI-companion, user-video, drug and piracy sites are blocked in every request (the
+Console's own setting can hold the same list). At most 4 searches a build (3 per request). Each query is checked as it
+finishes (word rules and personal details; a bad one stops the round and is logged as flagged, personal details as
+`[redacted]`); what a round found (queries, titles, sites, the short quotes it cited; page text itself is encrypted)
+is checked by the word rules and a separate model check, and the chat text written after a search is held back until
+then. Kids see only a "Looking something up" step: never a query, a site or a link, and links are stripped from the
+chat. Games are scanned as always. Admin › Web searches lists every search for 90 days, with no user name or id.
+
+**Speaking instead of typing** (on only when `STT_API_KEY` is set; `server/services/stt.js`). The 🎤 button records at
+most 60 seconds; the clip goes to our server (signed in, the game's owner, 8 a minute and 60 a day, 1.5 MB, audio
+types checked by their first bytes) and on to the speech-to-text provider. The words come back with rude words
+starred and land in the chat box for the child to check; they are only sent when the child presses Send, and then they
+are screened like typed text. The clip lives in memory for that one request and is never stored or logged. The
+microphone is allowed on the Studio page only (`Permissions-Policy`), never in the game frame.
+
 ## 5. Uploads: pictures and files for inspiration
 
 Builders can add pictures and files in the Studio chat (📎, drag and drop, or paste) as **inspiration only**.

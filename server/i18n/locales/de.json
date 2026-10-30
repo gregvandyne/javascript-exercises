@@ -493,7 +493,9 @@
       },
       "ai": {
         "h": "Was die KI sieht",
-        "p1": "Damit ein Spiel entsteht, werden die Nachrichten, Bilder und Dateien, die Ihr Kind dem Baumeister gibt, an Claude geschickt, eine vom Unternehmen Anthropic entwickelte KI, die das Spiel schreibt. Name und Benutzername Ihres Kindes werden dabei nicht mitgeschickt. Auch Profilfotos werden an Claude geschickt und geprüft, bevor jemand sie sieht. Claude überprüft Spiele, bevor sie mit allen geteilt werden können, und unser Team sieht sich jedes an, bei dem Claude unsicher ist. Chats zwischen Freunden und Antworten in Lektionen werden nicht an die KI geschickt."
+        "p1": "Damit ein Spiel entsteht, werden die Nachrichten, Bilder und Dateien, die Ihr Kind dem Baumeister gibt, an Claude geschickt, eine vom Unternehmen Anthropic entwickelte KI, die das Spiel schreibt. Name und Benutzername Ihres Kindes werden dabei nicht mitgeschickt. Auch Profilfotos werden an Claude geschickt und geprüft, bevor jemand sie sieht. Claude überprüft Spiele, bevor sie mit allen geteilt werden können, und unser Team sieht sich jedes an, bei dem Claude unsicher ist. Chats zwischen Freunden und Antworten in Lektionen werden nicht an die KI geschickt.",
+        "p2": "Sprechen statt tippen: Wenn Ihr Kind im Chat des Baumeisters auf das Mikrofon tippt, wird die Aufnahme an den Spracherkennungsdienst {provider} geschickt, der sie in Wörter umwandelt. Ihr Kind sieht die Wörter und kann sie vor dem Senden ändern. Die Aufnahme wird nur dafür verwendet und sofort gelöscht: Wir speichern sie nie, und {provider} darf sie weder aufbewahren noch zum Trainieren seiner Systeme verwenden. Die Wörter durchlaufen dieselben Sicherheitsprüfungen wie eine getippte Nachricht.",
+        "p3": "Fakten nachschlagen: Damit ein Spiel stimmt, kann der Baumeister einen Fakt im Internet nachschlagen (zum Beispiel, wie schnell ein Gepard läuft). Ihr Kind sieht nie die Webseiten oder Links. Der Baumeister ist angewiesen, nie nach etwas Persönlichem zu suchen; wirkt eine Suche trotzdem persönlich, werden ihre Ergebnisse nicht verwendet und ihre Wörter nicht gespeichert. Seiten für Erwachsene, Glücksspiel, soziale Netzwerke und Videos sind gesperrt. Wir behalten eine Liste der Suchen, ohne den Namen oder Benutzernamen Ihres Kindes, zusammen mit dem Spiel, für das sie gemacht wurden, 90 Tage lang, damit unser Team sie prüfen kann."
       },
       "keep": {
         "h": "Wie lange wir Daten speichern",
@@ -1329,6 +1331,14 @@
       "cantContinue": "Dieser Bau kann nicht mehr fortgesetzt werden. Schick stattdessen eine neue Nachricht.",
       "restarting": "Unser Server startet gerade neu. Versuch es gleich noch mal.",
       "liveBusy": "Dieses Spiel ist in zu vielen Tabs offen. Schließ ein paar und versuch es noch mal."
+    },
+    "mic": {
+      "start": "Sprechen statt tippen",
+      "tooLong": "Die Aufnahme ist zu lang. Versuch eine kürzere, höchstens {max}.",
+      "tooFast": "Das sind ganz schön viele Aufnahmen! Warte eine Minute und versuch es dann noch mal.",
+      "daily": "Das waren alle Aufnahmen für heute. Du kannst deine Nachricht aber weiter tippen.",
+      "failed": "Tut mir leid, daraus konnte ich keine Wörter machen. Versuch es noch mal oder tippe deine Nachricht.",
+      "busy": "Der Sprachhelfer ist gerade beschäftigt. Versuch es gleich noch mal."
     }
   },
   "publish": {
@@ -1463,7 +1473,8 @@
       "noUploads": "Bilder und Dateien kannst du hinzufügen, wenn dieser Bau fertig ist. Schick deine Worte jetzt oder warte einen Moment.",
       "notYours": "Jemand anderes hat diesen Bau gestartet. Warte, bis er fertig ist."
     },
-    "budgetStop": "Der KI-Baumeister muss sich jetzt ausruhen, deshalb habe ich hier aufgehört. Alles, was ich bisher gemacht habe, ist gespeichert."
+    "budgetStop": "Der KI-Baumeister muss sich jetzt ausruhen, deshalb habe ich hier aufgehört. Alles, was ich bisher gemacht habe, ist gespeichert.",
+    "searchStopped": "Das konnte ich nicht nachschlagen, deshalb habe ich hier aufgehört. Frag doch mal anders!"
   },
   "uploads": {
     "tooFast": "Das sind ganz schön viele Dateien! Warte eine Minute und versuch es noch mal.",
@@ -1919,7 +1930,12 @@
           "done": "{m, plural, one {Deine neue Nachricht gelesen} other {Deine # neuen Nachrichten gelesen}}",
           "learn": "Die einfachen Bausteine schauen zwischen den Schritten nach neuen Nachrichten und wenden dann ihre Regeln darauf an."
         },
-        "fuRead": "{count, plural, one {# neue Nachricht gelesen} other {# neue Nachrichten gelesen}}"
+        "fuRead": "{count, plural, one {# neue Nachricht gelesen} other {# neue Nachrichten gelesen}}",
+        "search": {
+          "now": "Schlage etwas nach",
+          "done": "Etwas nachgeschlagen",
+          "learn": "Die KI kann einen echten Fakt nachschlagen, zum Beispiel wie schnell ein Gepard läuft, damit dein Spiel stimmt. Sie zeigt dir nie Webseiten, und eine Sicherheitsprüfung liest, was sie gefunden hat."
+        }
       },
       "resumed": "🔄 Der Server wurde neu gestartet, darum hat der Baumeister dort weitergemacht, wo er war.",
       "resumedV": "🔄 Der Server wurde neu gestartet, darum hat der Baumeister bei Version {v} weitergemacht.",
@@ -1995,6 +2011,18 @@
         "others": "Spiele von anderen Kindern",
         "grownUp": "Ein Erwachsener kann sich mit deinem Konto verbinden:",
         "grownUpWhere": "Ich › Für Erwachsene"
+      },
+      "mic": {
+        "start": "Sprechen statt tippen",
+        "stop": "Aufnahme stoppen",
+        "recording": "Aufnahme {time} von {max}. Drück noch mal aufs Mikrofon zum Stoppen oder Esc zum Abbrechen.",
+        "transcribing": "Ich schreibe auf, was du gesagt hast…",
+        "check": "Prüf die Wörter und drück dann auf Senden.",
+        "nothing": "Ich habe keine Wörter gehört. Versuch es noch mal, etwas näher am Mikrofon.",
+        "denied": "Das Mikrofon ist blockiert. Bitte einen Erwachsenen, es für diese Seite in den Browser-Einstellungen zu erlauben.",
+        "noMic": "Auf diesem Gerät wurde kein Mikrofon gefunden.",
+        "cancelled": "Aufnahme gestoppt. Nichts wurde gesendet oder behalten.",
+        "failed": "Tut mir leid, daraus konnte ich keine Wörter machen. Versuch es noch mal oder tippe deine Nachricht."
       }
     }
   },

@@ -842,5 +842,11 @@
   "info.parents.keep.madeP2": "Legal text. Replaces info.parents.keep.p2 while parent-made child accounts are on (a grown-up can delete an account they made). Translate exactly.",
   "info.terms.ending.madeLi1": "Legal text (terms §8). Replaces info.terms.ending.li1 while parent-made child accounts are on. Keep <b></b> and the mailto link as they are; {email} is an address. Translate exactly.",
   "family.kept.introCounts": "The grown-up's \"What we keep\" page for a child account they made: counts only, and Delete. {name} is the child's username; {n} a number; {date} a date.",
-  "family.kept.deleteTextKeeps": "Legal text about deletion: translate exactly. Keep \"Oomba Academy\" as is. {name} is the child's username."
+  "family.kept.deleteTextKeeps": "Legal text about deletion: translate exactly. Keep \"Oomba Academy\" as is. {name} is the child's username.",
+  "info.parents.ai.p2": "Legal text for parents (privacy policy, voice input; COPPA audio notice). Translate exactly; do not soften or add claims. {provider} is the speech-to-text company's name (e.g. OpenAI): keep it as it is. \"is not allowed to keep it\" is a promise (the provider is forbidden to keep it), not \"might not\". Changes need the owner's sign-off and a new LEGAL_UPDATED.",
+  "info.parents.ai.p3": "Legal text for parents (privacy policy, the Builder's web searches). Translate exactly; do not soften or add claims. The list is kept without the child's name or username but with the game it was for (so it is not anonymous): keep that meaning. Changes need the owner's sign-off and a new LEGAL_UPDATED.",
+  "js.studio.mic.recording": "Status line under the chat box while the microphone records. {time} is how long so far and {max} the longest a recording can be, both like 0:12 and 1:00.",
+  "studio.mic.tooLong": "{max} is the longest recording allowed, as minutes:seconds (e.g. 1:00). Keep it as it is.",
+  "studio.mic.start": "Screen-reader label and tooltip of the 🎤 button next to the Builder chat box: speak a message instead of typing it.",
+  "js.studio.steps.search.now": "A build step row: the AI is looking up a real-world fact on the web. Never mention links or websites. Short, max ~30 chars."
 }

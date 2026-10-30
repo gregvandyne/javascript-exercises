@@ -493,7 +493,9 @@
       },
       "ai": {
         "h": "Cosa vede l'IA",
-        "p1": "Per creare un gioco, i messaggi, le immagini e i file che vostro figlio o figlia dà al Costruttore vengono inviati a Claude, un'IA creata dall'azienda Anthropic, che scrive il gioco. Il nome e il nome utente di vostro figlio o figlia non vengono inviati insieme a questi contenuti. Anche le foto del profilo vengono inviate a Claude per essere controllate prima che qualcuno le veda. Claude verifica i giochi prima che possano essere condivisi con tutti, e il nostro team controlla quelli su cui ha dei dubbi. Le chat tra amici e le risposte alle lezioni non vengono inviate all'IA."
+        "p1": "Per creare un gioco, i messaggi, le immagini e i file che vostro figlio o figlia dà al Costruttore vengono inviati a Claude, un'IA creata dall'azienda Anthropic, che scrive il gioco. Il nome e il nome utente di vostro figlio o figlia non vengono inviati insieme a questi contenuti. Anche le foto del profilo vengono inviate a Claude per essere controllate prima che qualcuno le veda. Claude verifica i giochi prima che possano essere condivisi con tutti, e il nostro team controlla quelli su cui ha dei dubbi. Le chat tra amici e le risposte alle lezioni non vengono inviate all'IA.",
+        "p2": "Parlare invece di scrivere: quando vostro figlio o figlia tocca il microfono nella chat del Costruttore, la registrazione viene inviata al servizio di trascrizione vocale {provider}, che la trasforma in parole. Vostro figlio o figlia vede le parole e può cambiarle prima di inviarle. La registrazione serve solo a questo e viene cancellata subito: non la conserviamo mai, e {provider} non può conservarla né usarla per addestrare i suoi sistemi. Le parole passano per gli stessi controlli di sicurezza di un messaggio scritto.",
+        "p3": "Ricerca di fatti: per fare un gioco giusto, il Costruttore può cercare un fatto sul web (per esempio quanto corre veloce un ghepardo). Vostro figlio o figlia non vede mai le pagine web né i link. Il Costruttore ha l'istruzione di non cercare mai niente di personale; se una ricerca sembra comunque personale, i suoi risultati non vengono usati e le sue parole non vengono conservate. I siti per adulti, di scommesse, di social network e di video sono bloccati. Conserviamo un elenco delle ricerche, senza il nome o il nome utente di vostro figlio o figlia, insieme al gioco per cui sono state fatte, per 90 giorni, così il nostro team può controllarle."
       },
       "keep": {
         "h": "Per quanto tempo li conserviamo",
@@ -1329,6 +1331,14 @@
       "cantContinue": "Il Costruttore non può più continuare questa costruzione. Manda invece un nuovo messaggio.",
       "restarting": "Il nostro server si sta riavviando. Riprova tra un attimo.",
       "liveBusy": "Questo gioco è aperto in troppe schede. Chiudine qualcuna e riprova."
+    },
+    "mic": {
+      "start": "Parla invece di scrivere",
+      "tooLong": "Questa registrazione è troppo lunga. Prova con una più corta, al massimo {max}.",
+      "tooFast": "Quante registrazioni! Aspetta un minuto e poi riprova.",
+      "daily": "Le registrazioni di oggi sono finite. Puoi ancora scrivere il tuo messaggio.",
+      "failed": "Scusa, non sono riuscito a trasformarlo in parole. Riprova o scrivi il tuo messaggio.",
+      "busy": "L’aiutante della voce è occupato adesso. Riprova tra un momento."
     }
   },
   "publish": {
@@ -1463,7 +1473,8 @@
       "noUploads": "Immagini e file si possono aggiungere quando questa costruzione è finita. Intanto manda solo le parole, oppure aspetta un attimo.",
       "notYours": "Questa costruzione l’ha iniziata qualcun altro. Aspetta che sia finita."
     },
-    "budgetStop": "Il Costruttore IA deve riposarsi adesso, quindi mi sono fermato qui. Tutto quello che ho fatto finora è salvato."
+    "budgetStop": "Il Costruttore IA deve riposarsi adesso, quindi mi sono fermato qui. Tutto quello che ho fatto finora è salvato.",
+    "searchStopped": "Non sono riuscito a cercarlo, quindi mi sono fermato qui. Prova a chiederlo in un altro modo!"
   },
   "uploads": {
     "tooFast": "Quanti file! Aspetta un minuto e riprova.",
@@ -1919,7 +1930,12 @@
           "done": "{m, plural, one {Letto il tuo nuovo messaggio} other {Letti i tuoi # nuovi messaggi}}",
           "learn": "I blocchi semplici controllano se ci sono nuovi messaggi tra un passaggio e l’altro, poi ci applicano le loro regole."
         },
-        "fuRead": "{count, plural, one {letto # nuovo messaggio} other {letti # nuovi messaggi}}"
+        "fuRead": "{count, plural, one {letto # nuovo messaggio} other {letti # nuovi messaggi}}",
+        "search": {
+          "now": "Sto cercando un’informazione",
+          "done": "Ha cercato un’informazione",
+          "learn": "L’IA può cercare un fatto vero, come quanto corre veloce un ghepardo, così il tuo gioco è giusto. Non ti mostra mai pagine web, e un controllo di sicurezza legge quello che ha trovato."
+        }
       },
       "resumed": "🔄 Il server si è riavviato, quindi il Costruttore ha continuato da dove era rimasto.",
       "resumedV": "🔄 Il server si è riavviato, quindi il Costruttore ha continuato dalla versione {v}.",
@@ -1995,6 +2011,18 @@
         "others": "Giocare ai giochi di altri ragazzi",
         "grownUp": "Un adulto può collegarsi al tuo account:",
         "grownUpWhere": "Io › Per gli adulti"
+      },
+      "mic": {
+        "start": "Parla invece di scrivere",
+        "stop": "Ferma la registrazione",
+        "recording": "Registrazione {time} di {max}. Premi di nuovo il microfono per fermare, o Esc per annullare.",
+        "transcribing": "Sto scrivendo quello che hai detto…",
+        "check": "Controlla le parole, poi premi Invia.",
+        "nothing": "Non ho sentito nessuna parola. Riprova, un po’ più vicino al microfono.",
+        "denied": "Il microfono è bloccato. Chiedi a un adulto di permetterlo per questo sito nelle impostazioni del browser.",
+        "noMic": "Non è stato trovato nessun microfono su questo dispositivo.",
+        "cancelled": "Registrazione fermata. Non è stato inviato né conservato niente.",
+        "failed": "Scusa, non sono riuscito a trasformarlo in parole. Riprova o scrivi il tuo messaggio."
       }
     }
   },

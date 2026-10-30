@@ -17,9 +17,12 @@ export const router = Router();
 const indexed = (path, key) => ({ index: true, path, langs: langsWithKey(key) });
 
 /** The legal pages' "Last updated" date (a calendar day, UTC). Change it with every change to their text. */
-export const LEGAL_UPDATED = '2026-10-29';
+export const LEGAL_UPDATED = '2026-10-30';
 /** Where the legal pages send people: CONTACT_EMAIL, else the owner's address. */
 const legalEmail = () => config.contactEmail || 'greg@oomba.ai';
+// The speech-to-text company named in the privacy text (STT_PROVIDER): a company name, never translated.
+const STT_COMPANIES = { openai: 'OpenAI', elevenlabs: 'ElevenLabs' };
+const sttCompany = () => STT_COMPANIES[config.sttProvider] || STT_COMPANIES.openai;
 
 /** The items of one section, in en.json order, with the paid-plan swaps applied. -> [{ kind, key }] */
 const keyCache = new WeakMap();   // English dictionary -> prefix -> its item names (a reload makes a new dictionary)
@@ -54,7 +57,7 @@ const fallback = (t, key) => (t.own(key) ? '' : html` lang="en" dir="ltr"`);
 // fold: the section's text folds away under its heading (a <details>; /parents, where the page is long on phones). The
 // id stays on the <section>, and app.js opens the fold when a link leads to it (/parents#keep).
 export function section(req, prefix, { id, paid = familiesOn(req), made = madeOn(req), level = 2, fold = false } = {}) {
-  const t = req.t; const vars = { email: legalEmail() }; const out = []; let list = null;
+  const t = req.t; const vars = { email: legalEmail(), provider: sttCompany() }; const out = []; let list = null;
   const h = raw(`h${level}`), sub = raw(`h${level + 1}`);
   for (const it of items(prefix, paid, made)) {
     if (it.kind === 'li') { if (!list) out.push(list = { keys: [], items: [] }); list.keys.push(it.key); list.items.push(html`<li${fallback(t, it.key)}>${tHtml(t, it.key, vars)}</li>`); continue; }

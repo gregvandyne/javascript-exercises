@@ -84,6 +84,13 @@ On/off settings (`REQUIRE_SESSION_SECRET`, `MAINTENANCE_MODE`, `MOVED_PERMANENTL
 | `BUILDER_DAILY_TURNS` | `60` | Builder messages per user per UTC day (the free allowance; `server/builder/usage.js` `allowanceFor`). |
 | `PRO_TURN_WEIGHT` | `1` | Messages one "Pro quality" message counts as (1 to 10). Paid plans will set `2` (docs/decisions.md "Paid plans", D5). |
 | `BUILDER_MAX_TOKENS` | `64000` | Max output tokens per Builder turn. |
+| `BUILDER_WEB_SEARCH` | off | `1`: the Builder may look facts up on the web (Anthropic's web search tool; `server/builder/search.js`): blocked adult, gambling, social, forum and video sites, at most 4 searches a build, queries and results screened, kids never see links. Every search is logged for the admin (Admin › Web searches; no user names, kept 90 days). If the API refuses the tool, the server turns search off by itself until the next restart. |
+| `STT_API_KEY` | – | Turns on speaking instead of typing in the Studio chat (`server/services/stt.js`). Set it only in the host's dashboard, and only once the provider has agreed zero data retention for the key's project (docs/legal-review.md item 38). Without it the 🎤 button is not shown. Audio is never stored. |
+| `STT_PROVIDER` | `openai` | The speech-to-text service: `openai` or `elevenlabs` (`mock` is for tests and refused in production). |
+| `STT_MODEL` | – | Overrides the provider's default transcription model. |
+| `STT_MAX_SECONDS` / `STT_MAX_BYTES` | `60` / `1500000` | The longest and largest clip accepted. |
+| `STT_PER_MINUTE` / `STT_DAILY_CLIPS` | `8` / `60` | Clips per builder per minute and per day. |
+| `STT_DAILY_MINUTES` / `STT_USD_PER_MINUTE` | `300` / `0.007` | Speech-to-text minutes a day for the whole site (kept in the database, so a restart does not reset it), and the price per minute added to the AI spending caps. The clip length is read from the recording itself; `X-Clip-Ms` from the page is required but only a hint. |
 | `AI_DAILY_BUDGET_USD` | `5` | Most the site spends on the AI per UTC day. At the cap the Builder goes offline (mock builder), picture uploads pause and public reviews wait for a person. `0` turns the AI off. |
 | `AI_MONTHLY_BUDGET_USD` | `150` | Same, per calendar month (the free budget; keep the daily cap at about monthly ÷ 30 so it lasts the month). Today's and this month's spend show on `/admin`. Also set a spend limit in the Anthropic Console as the hard backstop. |
 | `CHAT_DAILY_LIMIT` | `300` | Max chat messages per user per day. |

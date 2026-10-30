@@ -3,7 +3,7 @@
 /terms, /refunds and /privacy (server/routes/info.js, text in `info.terms.*`, `info.refunds.*`, `info.privacy.*` and the
 reused `info.parents.*` sections) are on the site for everyone, also before `BILLING_PUBLIC`. They were made from the
 drafts terms.md, refunds.md and privacy-payments.md. The public text has no drafting markers; every marker from the
-drafts is listed here with what the page says today. **Last updated: 2026-10-29** (`LEGAL_UPDATED` in
+drafts is listed here with what the page says today. **Last updated: 2026-10-30** (`LEGAL_UPDATED` in
 server/routes/info.js; change it with every change to the text).
 
 ## Turning on TERMS_PUBLISHED
@@ -224,3 +224,45 @@ Owner decisions for parent-made accounts (no lawyer needed):
 - **Accept in writing** that a parent signing in as their child puts an adult in kid-only spaces (friends and chat)
   under the child's name. This can't be prevented technically, since the parent knows the password. /parents and
   safety.md should say "your child's account is your child's; please don't chat as them".
+
+### Builder: speaking instead of typing, and looking facts up on the web (2026-10-30)
+
+38. **Voice input in the Builder chat (COPPA audio exception, 16 CFR 312.5(c)(9) as amended in 2025).** New live
+    privacy sentence `info.parents.ai.p2` on /parents and /privacy; `LEGAL_UPDATED` moved to 2026-10-30 for it. What
+    ships, behind the owner setting `STT_API_KEY` (off until then, and the 🎤 button is not shown): a child taps the
+    microphone, the clip (at most 60 seconds) goes to our server and from there to a speech-to-text provider
+    (`STT_PROVIDER`, OpenAI by default); the words come back into the chat box for the child to check and edit, and
+    are only sent when the child presses Send (then they go through the same screening as typed text). The clip is
+    held in memory for that one request and dropped; it is never written to disk, the database or a log (the log line
+    has its size, the time taken and the provider's name only). Please confirm:
+    - that this fits the audio-file exception (collected only to replace written words, used for nothing else, deleted
+      immediately), and that the notice wording is enough for it;
+    - the claim "{provider} is not allowed to keep it or use it to train its systems" (the page names the provider set
+      by `STT_PROVIDER`, e.g. OpenAI, as the amended COPPA notice rule asks). It is true only once the owner has
+      **zero data retention** agreed for the key's project (OpenAI requires it before processing data of children under
+      13; ElevenLabs only in its enterprise zero-retention mode, which the code requests with `enable_logging=false`).
+      The owner must not set `STT_API_KEY` before that agreement exists;
+    - the provider is now named on the page (from `STT_PROVIDER`); whether it must also be listed as a sub-processor;
+    - the per-builder daily clip count and the site-wide minutes are kept in the database (`stt_usage`: day, user id,
+      clips, seconds; never audio or words; 3 days, deleted with the account) so the caps survive a restart;
+    - whether a school (FERPA, state student-privacy laws) needs to be told before its students can use it, or whether
+      voice input should stay off for school accounts.
+39. **The Builder looking facts up on the web.** New live privacy sentence `info.parents.ai.p3`; behind
+    `BUILDER_WEB_SEARCH` (render.yaml keeps it `0` until the owner turns it on). The AI may search the web for a fact
+    (for example a real animal or a sport's rules) with Anthropic's web search tool. Children never see links, pages or
+    site names; adult, gambling, social, forum and video sites are blocked; queries that look like personal details, or
+    that contain the builder's username or display name, or a full name next to a school or town word, are stopped;
+    and an admin log keeps the query (those replaced by `[redacted]`), the sites, the game and the build for 90 days,
+    with no user name or id. Note: a search runs as soon as the model asks for it (it is Anthropic's server tool), so
+    stopping a query keeps its results out of the game and its words out of the log, but cannot stop the query
+    reaching the search engine; the first guard is the rule given to the model and the screen on kids' own messages.
+    The page now says this ("the Builder is told never to search for anything personal; if a search still looks
+    personal, its results are not used and its words are not kept") instead of "nothing about your child is sent".
+    The log is pseudonymous, not anonymous (each row has the game, which leads to the account); the page says "without
+    your child's name or username, together with the game they were for". Please confirm:
+    - **Citations.** Anthropic's terms ask that search results shown straight to users carry their sources. Our chat
+      shows only the Builder's own words, never the results, and no source names (the owner's rule: no links for kids).
+      Is that acceptable, or should the chat show plain, non-clickable source names ("Facts checked on: Wikipedia")?
+    - the 90-day log and its wording on the page;
+    - that facts about films, shows or brands found by search don't change the copyright rules (the Builder still
+      refuses to put protected characters or names in games).

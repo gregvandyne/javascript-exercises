@@ -493,7 +493,9 @@
       },
       "ai": {
         "h": "Wat de AI ziet",
-        "p1": "Om een game te maken, worden de berichten, afbeeldingen en bestanden die je kind aan de Bouwer geeft naar Claude gestuurd, een AI van het bedrijf Anthropic, die de game schrijft. De naam en gebruikersnaam van je kind worden daar niet bij meegestuurd. Ook profielfoto's worden naar Claude gestuurd, zodat ze gecontroleerd worden voordat iemand ze ziet. Claude beoordeelt games voordat ze met iedereen kunnen worden gedeeld, en ons team bekijkt de games waarover Claude twijfelt. Chats tussen vrienden en antwoorden in lessen worden niet naar de AI gestuurd."
+        "p1": "Om een game te maken, worden de berichten, afbeeldingen en bestanden die je kind aan de Bouwer geeft naar Claude gestuurd, een AI van het bedrijf Anthropic, die de game schrijft. De naam en gebruikersnaam van je kind worden daar niet bij meegestuurd. Ook profielfoto's worden naar Claude gestuurd, zodat ze gecontroleerd worden voordat iemand ze ziet. Claude beoordeelt games voordat ze met iedereen kunnen worden gedeeld, en ons team bekijkt de games waarover Claude twijfelt. Chats tussen vrienden en antwoorden in lessen worden niet naar de AI gestuurd.",
+        "p2": "Praten in plaats van typen: als je kind in de chat van de Bouwer op de microfoon tikt, gaat de opname naar de spraak-naar-tekstdienst {provider}, die er woorden van maakt. Je kind ziet de woorden en kan ze aanpassen voordat het verstuurt. De opname wordt alleen hiervoor gebruikt en meteen verwijderd: wij bewaren hem nooit, en {provider} mag hem niet bewaren of gebruiken om zijn systemen te trainen. De woorden gaan door dezelfde veiligheidscontroles als een getypt bericht.",
+        "p3": "Feiten opzoeken: om een spel goed te maken kan de Bouwer een feit op internet opzoeken (bijvoorbeeld hoe snel een jachtluipaard rent). Je kind ziet nooit de webpagina's of links. De Bouwer heeft de opdracht nooit iets persoonlijks op te zoeken; lijkt een zoekopdracht toch persoonlijk, dan worden de resultaten niet gebruikt en de woorden niet bewaard. Sites voor volwassenen, gokken, sociale media en video's zijn geblokkeerd. We bewaren een lijst van de zoekopdrachten, zonder de naam of gebruikersnaam van je kind, samen met het spel waarvoor ze waren, 90 dagen, zodat ons team ze kan controleren."
       },
       "keep": {
         "h": "Hoe lang we het bewaren",
@@ -1329,6 +1331,14 @@
       "cantContinue": "Hier kan de Bouwer niet meer mee verder. Stuur liever een nieuw bericht.",
       "restarting": "Onze server start opnieuw op. Probeer het zo nog eens.",
       "liveBusy": "Deze game staat open in te veel tabbladen. Sluit er een paar en probeer het nog eens."
+    },
+    "mic": {
+      "start": "Praten in plaats van typen",
+      "tooLong": "Die opname is te lang. Probeer een kortere, hooguit {max}.",
+      "tooFast": "Dat zijn veel opnames! Wacht een minuut en probeer het dan opnieuw.",
+      "daily": "De opnames voor vandaag zijn op. Je kunt je bericht nog wel typen.",
+      "failed": "Sorry, ik kon er geen woorden van maken. Probeer het nog eens of typ je bericht.",
+      "busy": "De spraakhulp heeft het nu druk. Probeer het zo nog eens."
     }
   },
   "publish": {
@@ -1463,7 +1473,8 @@
       "noUploads": "Plaatjes en bestanden kun je toevoegen als het bouwen klaar is. Stuur nu alleen je tekst, of wacht even.",
       "notYours": "Iemand anders heeft de Bouwer hier aan het werk gezet. Wacht tot hij klaar is."
     },
-    "budgetStop": "De AI-Bouwer moet nu even rusten, dus ik ben hier gestopt. Alles wat ik tot nu toe heb gemaakt is bewaard."
+    "budgetStop": "De AI-Bouwer moet nu even rusten, dus ik ben hier gestopt. Alles wat ik tot nu toe heb gemaakt is bewaard.",
+    "searchStopped": "Ik kon dat niet opzoeken, dus ben ik hier gestopt. Probeer het eens op een andere manier te vragen!"
   },
   "uploads": {
     "tooFast": "Dat zijn veel bestanden! Wacht een minuutje en probeer het opnieuw.",
@@ -1919,7 +1930,12 @@
           "done": "{m, plural, one {Je nieuwe bericht gelezen} other {Je # nieuwe berichten gelezen}}",
           "learn": "De simpele bouwblokken kijken tussen de stappen door of er nieuwe berichten zijn, en gebruiken daar dan hun regels op."
         },
-        "fuRead": "{count, plural, one {# nieuw bericht gelezen} other {# nieuwe berichten gelezen}}"
+        "fuRead": "{count, plural, one {# nieuw bericht gelezen} other {# nieuwe berichten gelezen}}",
+        "search": {
+          "now": "Iets aan het opzoeken",
+          "done": "Iets opgezocht",
+          "learn": "De AI kan een echt feit opzoeken, zoals hoe snel een jachtluipaard rent, zodat je spel klopt. Hij laat je nooit webpagina's zien, en een veiligheidscontrole leest wat hij vond."
+        }
       },
       "resumed": "🔄 De server is opnieuw opgestart, dus de Bouwer ging verder waar hij was.",
       "resumedV": "🔄 De server is opnieuw opgestart, dus de Bouwer ging verder vanaf versie {v}.",
@@ -1995,6 +2011,18 @@
         "others": "Games van andere kinderen spelen",
         "grownUp": "Een volwassene kan zich aan je account koppelen:",
         "grownUpWhere": "Ik › Voor volwassenen"
+      },
+      "mic": {
+        "start": "Praten in plaats van typen",
+        "stop": "Opname stoppen",
+        "recording": "Opname {time} van {max}. Druk nog een keer op de microfoon om te stoppen, of op Esc om te annuleren.",
+        "transcribing": "Ik schrijf op wat je zei…",
+        "check": "Controleer de woorden en druk dan op Stuur.",
+        "nothing": "Ik hoorde geen woorden. Probeer het nog eens, iets dichter bij de microfoon.",
+        "denied": "De microfoon is geblokkeerd. Vraag een volwassene om hem voor deze site toe te staan in de browserinstellingen.",
+        "noMic": "Er is geen microfoon gevonden op dit apparaat.",
+        "cancelled": "Opname gestopt. Er is niets verstuurd of bewaard.",
+        "failed": "Sorry, ik kon er geen woorden van maken. Probeer het nog eens of typ je bericht."
       }
     }
   },
