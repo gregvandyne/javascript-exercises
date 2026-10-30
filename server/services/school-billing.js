@@ -189,6 +189,7 @@ export function startSchoolCheckout({ school, user, seats, base }) {
     // Which ways a school can pay is the optional "School" payment method configuration (cards, Link, ACH), else the
     // account's default: never payment_method_types (BP-4).
     if (config.stripePmcSchool) params.payment_method_configuration = config.stripePmcSchool;
+    params.managed_payments = { enabled: false };   // as for family Checkout (checkout.js): we are the seller
     if (config.stripeTax) params.automatic_tax = { enabled: true };
     if (config.termsPublished) {
       params.consent_collection = { terms_of_service: 'required' };
