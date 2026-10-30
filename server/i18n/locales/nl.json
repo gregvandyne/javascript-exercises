@@ -1338,7 +1338,8 @@
       "tooFast": "Dat zijn veel opnames! Wacht een minuut en probeer het dan opnieuw.",
       "daily": "De opnames voor vandaag zijn op. Je kunt je bericht nog wel typen.",
       "failed": "Sorry, ik kon er geen woorden van maken. Probeer het nog eens of typ je bericht.",
-      "busy": "De spraakhulp heeft het nu druk. Probeer het zo nog eens."
+      "busy": "De spraakhulp heeft het nu druk. Probeer het zo nog eens.",
+      "oneAtATime": "De microfoon staat al aan in een ander tabblad. Zet hem daar eerst uit."
     }
   },
   "publish": {
@@ -2026,12 +2027,16 @@
         "start": "Praten in plaats van typen",
         "stop": "Opname stoppen",
         "recording": "Opname {time} van {max}. Druk nog een keer op de microfoon om te stoppen, of op Esc om te annuleren.",
+        "listening": "Ik luister… {time} van {max}. Druk nog een keer op de microfoon om te stoppen, of op Esc om te annuleren.",
         "transcribing": "Ik schrijf op wat je zei…",
+        "finishing": "Ik schrijf de laatste woorden op…",
         "check": "Controleer de woorden en druk dan op Stuur.",
+        "heard": "Je zei: {text}",
         "nothing": "Ik hoorde geen woorden. Probeer het nog eens, iets dichter bij de microfoon.",
         "denied": "De microfoon is geblokkeerd. Vraag een volwassene om hem voor deze site toe te staan in de browserinstellingen.",
         "noMic": "Er is geen microfoon gevonden op dit apparaat.",
         "cancelled": "Opname gestopt. Er is niets verstuurd of bewaard.",
+        "cancelledLive": "Opname gestopt. Er is niets bewaard.",
         "failed": "Sorry, ik kon er geen woorden van maken. Probeer het nog eens of typ je bericht."
       },
       "limit": {

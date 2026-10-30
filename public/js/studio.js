@@ -1217,6 +1217,7 @@ const newCid = () => (crypto.randomUUID ? crypto.randomUUID() : Array.from(crypt
 /** Send a message to the Builder. The server answers at once (the build runs on its own); the live stream shows it.
  *  continueOf: the id of the build that stopped early ("Carry on building"). */
 async function send(text, { continueOf = null } = {}) {
+  if (input.readOnly) return;   // the mic is still writing the words (speaking instead of typing)
   text = String(text || '').trim();
   const ups = pending.filter(u => u.id);
   if (LIVE.stopped === 'gone') return;
@@ -1333,85 +1334,280 @@ input.addEventListener('paste', e => { const files = [...(e.clipboardData && e.c
 
 // ---------------------------------------------------------------- speaking instead of typing
 // The 🎤 button (only when the server has speech to text on: S.mic). Tap to record, tap again to stop (it stops by
-// itself at S.mic.maxMs); Esc cancels and throws the clip away. The clip goes to POST /transcribe and the words are
-// added to the chat box for the builder to check and edit: never sent by themselves. The clip is never kept here
-// either (one Blob, dropped after the request). States: idle, recording (red dot, timer, aria-pressed), transcribing
-// (button disabled), then a hint or an error in the status line (role=status, read by screen readers).
+// itself at S.mic.maxMs); Esc cancels and throws the words away. The words are added to the chat box for the builder to
+// check and edit: never sent by themselves. Audio is never kept here either (one Blob in memory, dropped at the end).
+// Live (S.mic.live, and the browser has AudioWorklet and WebSocket): the words show in the box WHILE the kid speaks.
+// The mic goes through public/js/stt-worklet.js (16-bit mono PCM at the service's rate, S.mic.rate) to our server's
+// socket (/api/studio/:id/listen, services/stt-live.js), which sends back the words so far, already tidied and with rude
+// words starred; on stop it sends the final words. The audio graph is built as soon as the mic is on and its frames are
+// held here until the socket is open (and on the server until the service is ready), so the first words are kept. If no
+// frame comes from the graph (an iPhone's audio suspended), or the link is too slow, it falls back as below. Text typed before the mic started stays in front. While listening the box is
+// read-only, in a lighter "not final yet" style, with the caret at the end; focus stays on the mic button. Only the
+// final words are announced to screen readers (#st-mic-said), never each change. MediaRecorder still records the clip
+// in memory, so if the live link fails (the socket can't open, the service fails, the server restarts) the clip is
+// uploaded once to POST /transcribe as before (with X-Live-Id, so it isn't counted twice); a refusal (too many, the
+// daily cap, the site busy, the Builder off, the mic on in another tab) is shown and nothing is uploaded.
+// Not live: the clip goes to POST /transcribe on stop, as before.
+// States: idle, asking, recording (red ring, timer, aria-pressed), finishing (live: the last words), working (upload).
 const mic = (() => {
-  const btn = $('#st-mic'), status = $('#st-mic-status');
+  const btn = $('#st-mic'), status = $('#st-mic-status'), said = $('#st-mic-said');
   if (!btn || !S.mic || !window.MediaRecorder || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return null;
   // Chrome, Edge, Firefox and Android: WebM; Safari (iPhone, iPad, Mac): MP4 with AAC; then Ogg.
   const TYPES = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/mp4;codecs=mp4a.40.2', 'audio/ogg;codecs=opus'];
   const type = TYPES.find(x => { try { return MediaRecorder.isTypeSupported(x); } catch { return false; } });
   if (type === undefined && typeof MediaRecorder.isTypeSupported === 'function') return null;
+  const AC = window.AudioContext || window.webkitAudioContext;
+  const canLive = () => !!(S.mic && S.mic.live && AC && window.AudioWorkletNode && window.WebSocket);
+  const WORKLET = `/js/stt-worklet.js${new URL(import.meta.url).search}`;
   btn.hidden = false; btn.parentElement.classList.add('has-mic');   // a phone makes room for it (studio.css)
   let rec = null, stream = null, chunks = [], t0 = 0, timer = 0, cancelled = false, state = 'idle';
+  let L = null;      // the live session: { ws, ctx, node, rate, queue, frames, ready, failed, done, refused, liveId, base, waitTimer }
+  let clip = null;   // the recorded clip once the recorder stopped: { blob, ms }
   const clock = ms => { const s = Math.max(0, Math.floor(ms / 1000)); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`; };
   const say = (text, tone = '') => { status.textContent = text; status.className = `st-mic-status${tone ? ` ${tone}` : ''}`; };
+  const maxLen = () => (+input.maxLength > 0 ? +input.maxLength : 2000);
+  const joined = (base, text) => (base && text ? `${base} ${text}` : base || text).slice(0, maxLen());
+  const caretEnd = () => { try { input.setSelectionRange(input.value.length, input.value.length); } catch { /* not focusable yet */ } };
   function setState(st) {
-    state = st; const on = st === 'recording';
+    state = st; const on = st === 'recording', busy = st === 'working' || st === 'finishing';
     btn.setAttribute('aria-pressed', on ? 'true' : 'false');
-    btn.classList.toggle('rec', on); btn.disabled = st === 'working';   // not while asking: the button keeps focus
-    btn.setAttribute('aria-busy', st === 'working' ? 'true' : 'false');
+    btn.classList.toggle('rec', on); btn.disabled = busy;   // not while asking: the button keeps focus
+    btn.setAttribute('aria-busy', busy ? 'true' : 'false');
     const label = t(on ? 'js.studio.mic.stop' : 'js.studio.mic.start'); btn.setAttribute('aria-label', label); btn.title = label;
-    $('.st-mic-ico', btn).textContent = on ? '⏹️' : st === 'working' ? '⏳' : '🎤';
+    $('.st-mic-ico', btn).textContent = on ? '⏹️' : busy ? '⏳' : '🎤';
   }
+  const listening = () => !!(L && L.ready && !L.failed);
   function tick() {
     const el = Date.now() - t0;
-    say(t('js.studio.mic.recording', { time: clock(el), max: clock(S.mic.maxMs) }), 'rec');
+    say(t(listening() ? 'js.studio.mic.listening' : 'js.studio.mic.recording', { time: clock(el), max: clock(S.mic.maxMs) }), 'rec');
     if (el >= S.mic.maxMs) stop();
   }
-  function release() {
+  /** The mic off (the browser's light goes out). keepAudio: the live audio graph stays a moment to send its last frame. */
+  function release(keepAudio = false) {
     clearInterval(timer); timer = 0;
-    if (stream) stream.getTracks().forEach(tr => tr.stop());   // the browser's mic light goes off
+    if (stream) stream.getTracks().forEach(tr => tr.stop());
     stream = null;
+    if (L && !keepAudio) stopAudio(L);
   }
+  function stopAudio(l) {
+    clearTimeout(l.frameTimer);
+    try { if (l.node) { l.node.port.onmessage = null; l.node.disconnect(); } } catch { /* gone */ }
+    try { if (l.src) l.src.disconnect(); } catch { /* gone */ }
+    try { if (l.ctx && l.ctx.state !== 'closed') l.ctx.close(); } catch { /* gone */ }
+    l.node = null; l.src = null; l.ctx = null;
+  }
+  // The text box while live: what was typed before, then the words so far; read-only and marked "not final yet".
+  function interimOn(base) { input.readOnly = true; input.classList.add('st-interim'); input.setAttribute('aria-busy', 'true'); return base; }
+  function interimOff() { input.readOnly = false; input.classList.remove('st-interim'); input.removeAttribute('aria-busy'); }
+  function showInterim(l, text) { input.value = joined(l.base, text); autosize(); input.scrollTop = input.scrollHeight; caretEnd(); }
+  function closeSocket(l, msg) {
+    clearTimeout(l.waitTimer); clearTimeout(l.openTimer);
+    const ws = l.ws; l.ws = null; if (!ws) return;
+    ws.onmessage = ws.onclose = ws.onerror = null;
+    try { if (msg && ws.readyState === 1) ws.send(JSON.stringify(msg)); } catch { /* gone */ }
+    try { ws.close(1000); } catch { /* gone */ }
+  }
+
+  function startLive(ctx) {
+    const rate = +S.mic.rate || 16000;
+    const l = L = { ctx, ws: null, node: null, src: null, rate, queue: [], queued: 0, frames: 0, ready: false, failed: false, done: false, refused: false, liveId: '', base: interimOn(input.value.replace(/\s+$/, '')) };
+    let ws;
+    try { ws = new WebSocket(`${location.protocol === 'https:' ? 'wss:' : 'ws:'}//${location.host}/api/studio/${ID}/listen`); } catch { liveFailed(l); return; }
+    ws.binaryType = 'arraybuffer'; l.ws = ws;
+    l.openTimer = setTimeout(() => { if (!l.ready) liveFailed(l); }, 5000);
+    ws.onopen = () => flushFrames(l);
+    ws.onmessage = e => { if (typeof e.data === 'string') { let m = null; try { m = JSON.parse(e.data); } catch { /* not ours */ } if (m) onLive(l, m); } };
+    ws.onclose = () => { if (L === l && !l.done && !l.refused) liveFailed(l); };
+    ws.onerror = () => {};
+    startAudio(l);
+  }
+  /** The audio graph, at once (not after the socket is ready): its frames wait in l.queue until the socket is open. */
+  async function startAudio(l) {
+    try {
+      if (l.ctx.state !== 'running') l.ctx.resume().catch(() => {});
+      await l.ctx.audioWorklet.addModule(WORKLET);
+      if (L !== l || l.failed || l.done || !stream || !l.ctx) return;
+      l.src = l.ctx.createMediaStreamSource(stream);
+      l.node = new AudioWorkletNode(l.ctx, 'oomba-pcm', { numberOfInputs: 1, numberOfOutputs: 1, outputChannelCount: [1], processorOptions: { targetRate: l.rate } });
+      l.node.port.onmessage = ev => {
+        if (ev.data === 'flushed') { if (l.onFlushed) l.onFlushed(); return; }
+        l.frames++; sendFrame(l, ev.data);
+      };
+      // Silent (nothing is written to the output), but connected so every browser runs it; never an echo.
+      const mute = l.ctx.createGain(); mute.gain.value = 0;
+      l.src.connect(l.node); l.node.connect(mute); mute.connect(l.ctx.destination);
+      // iOS can suspend (or "interrupt") the context when the mic turns on: try to resume it; no frames at all after
+      // a moment means the live words can't come, so the clip is uploaded at the end instead.
+      l.ctx.onstatechange = () => { if (l.ctx && l.ctx.state !== 'running' && l.ctx.state !== 'closed' && state === 'recording') l.ctx.resume().catch(() => {}); };
+      l.frameTimer = setTimeout(() => {
+        if (L !== l || l.frames) return;
+        if (l.ctx) l.ctx.resume().catch(() => {});
+        l.frameTimer = setTimeout(() => { if (L === l && !l.frames && state === 'recording') liveFailed(l); }, 1500);
+      }, 1000);
+    } catch { liveFailed(l); }
+  }
+  function sendFrame(l, buf) {
+    if (l.failed || l.done || l.refused) return;
+    const ws = l.ws;
+    if (ws && ws.readyState === 1) {
+      // A link too slow for live: the clip is uploaded instead (dropping frames would lose words).
+      if (ws.bufferedAmount > 512 * 1024) { liveFailed(l); return; }
+      flushFrames(l); ws.send(buf);
+    } else if (l.queued < (S.mic.maxMs / 1000) * l.rate * 2) { l.queue.push(buf); l.queued += buf.byteLength; }
+  }
+  function flushFrames(l) {
+    const ws = l.ws; if (!ws || ws.readyState !== 1) return;
+    const q = l.queue; l.queue = []; l.queued = 0;
+    for (const b of q) ws.send(b);
+  }
+  async function onLive(l, m) {
+    if (L !== l || l.done || l.refused) return;
+    if (m.liveId) l.liveId = String(m.liveId);
+    if (m.type === 'ready') {
+      clearTimeout(l.openTimer);
+      if (state !== 'recording' || !stream) return;   // stopped (or cancelled) while it opened: the stop below decides
+      if (+m.rate && +m.rate !== l.rate) { liveFailed(l); return; }   // the page was made for another service
+      l.ready = true; tick();
+    } else if (m.type === 'text') {
+      if (!l.failed) showInterim(l, String(m.text || ''));
+    } else if (m.type === 'limit') {
+      stop();
+    } else if (m.type === 'final') {
+      l.done = true; liveFinal(l, String(m.text || ''));
+    } else if (m.type === 'error') {
+      if (m.fallback) liveFailed(l); else liveRefused(l, m.error);
+    }
+  }
+  /** The live link failed: keep recording (the clip is uploaded at the end); the words so far stay, not final. */
+  function liveFailed(l) {
+    if (l.failed || l.done || l.refused) return;
+    l.failed = true; closeSocket(l); stopAudio(l);
+    if (state === 'recording') tick();
+    settle();
+  }
+  /** Refused (too many, the day's cap, busy, the Builder off, another tab): stop, nothing is uploaded. */
+  function liveRefused(l, msg) {
+    l.refused = true; closeSocket(l);
+    cancelled = true; if (rec && rec.state !== 'inactive') rec.stop();
+    release(); interimOff(); input.value = l.base; autosize(); L = null; clip = null;
+    setState('idle'); say(msg || t('js.studio.mic.failed'), 'bad'); btn.focus();
+  }
+  function liveFinal(l, text) {
+    closeSocket(l); stopAudio(l); L = null; clip = null;
+    // The server can end a session by itself (the longest recording, or 10 silent seconds): the mic goes off too.
+    if (rec && rec.state !== 'inactive') { cancelled = true; rec.stop(); }
+    release(); chunks = [];
+    interimOff();
+    setState('idle');
+    if (!text) { input.value = l.base; autosize(); say(t('js.studio.mic.nothing'), 'bad'); btn.focus(); return; }
+    input.value = joined(l.base, text);
+    autosize(); input.focus(); caretEnd();
+    say(t('js.studio.mic.check'), 'good');
+    if (said) said.textContent = t('js.studio.mic.heard', { text });   // the one announcement
+  }
+
   async function start() {
     if (state !== 'idle') return;
-    setState('asking'); say('');
+    // iOS only lets a page start audio inside the tap itself: the context is made first, before anything is awaited.
+    let ctx = null;
+    if (canLive()) { try { ctx = new AC(); ctx.resume().catch(() => {}); } catch { ctx = null; } }
+    setState('asking'); say(''); if (said) said.textContent = '';
     try {
       stream = await navigator.mediaDevices.getUserMedia({ audio: { channelCount: 1, echoCancellation: true, noiseSuppression: true } });
     } catch (e) {
+      try { if (ctx) ctx.close(); } catch { /* gone */ }
       setState('idle'); release();
       say(t(e && (e.name === 'NotFoundError' || e.name === 'OverconstrainedError') ? 'js.studio.mic.noMic' : 'js.studio.mic.denied'), 'bad');
       return;
     }
-    chunks = []; cancelled = false;
+    chunks = []; cancelled = false; clip = null;
     try { rec = new MediaRecorder(stream, { ...(type ? { mimeType: type } : {}), audioBitsPerSecond: 48000 }); }
-    catch { try { rec = new MediaRecorder(stream); } catch { setState('idle'); release(); say(t('js.studio.mic.failed'), 'bad'); return; } }
+    catch { try { rec = new MediaRecorder(stream); } catch { try { if (ctx) ctx.close(); } catch { /* gone */ } setState('idle'); release(); say(t('js.studio.mic.failed'), 'bad'); return; } }
     rec.ondataavailable = e => { if (e.data && e.data.size) chunks.push(e.data); };
-    rec.onstop = () => finish();
+    rec.onstop = () => recorded();
     rec.start();   // no time slices: Safari makes broken clips with them
     t0 = Date.now(); setState('recording'); tick(); timer = setInterval(tick, 250);
+    if (ctx) startLive(ctx);
   }
-  function stop() { if (state === 'recording' && rec && rec.state !== 'inactive') { clearInterval(timer); timer = 0; rec.stop(); } }
-  function cancel() { if (state !== 'recording') return; cancelled = true; stop(); }
-  async function finish() {
-    const ms = Date.now() - t0; release();
+  function stop() {
+    if (state !== 'recording' || !rec || rec.state === 'inactive') return;
+    clearInterval(timer); timer = 0;
+    const l = L;
+    if (l && l.ready && !l.failed) {
+      // The last few milliseconds of audio go out first, then "stop"; the mic turns off at once either way.
+      setState('finishing'); say(t('js.studio.mic.finishing'));
+      let sent = false;
+      const sendStop = () => { if (sent) return; sent = true; try { if (l.ws && l.ws.readyState === 1) l.ws.send(JSON.stringify({ type: 'stop' })); } catch { /* the close handler falls back */ } stopAudio(l); };
+      l.onFlushed = sendStop;
+      if (l.node) { try { l.node.port.postMessage('flush'); } catch { /* gone */ } setTimeout(sendStop, 300); } else sendStop();
+      // The words should come within a few seconds; if not, the clip is uploaded instead.
+      l.waitTimer = setTimeout(() => liveFailed(l), 8000);
+      release(true); rec.stop();
+    } else {
+      // Live never got going: closing the socket (not "cancel") lets the server count this clip's upload as its fallback.
+      if (l) { l.failed = true; closeSocket(l); stopAudio(l); }
+      rec.stop();
+    }
+  }
+  function cancel() {
+    if (state !== 'recording') return;
+    cancelled = true;
+    const l = L;
+    if (l) { closeSocket(l, { type: 'cancel' }); l.refused = true; interimOff(); input.value = l.base; autosize(); }
+    clearInterval(timer); timer = 0;
+    if (rec && rec.state !== 'inactive') rec.stop();
+    release();
+    // Live, the voice already went to the speech service while it was heard: the message says only that nothing was kept.
+    L = null; clip = null; chunks = [];
+    setState('idle'); say(t(l ? 'js.studio.mic.cancelledLive' : 'js.studio.mic.cancelled')); btn.focus();
+  }
+  /** The recorder stopped: keep the clip in memory until we know whether the live words came. */
+  function recorded() {
+    const ms = Date.now() - t0;
     const blob = new Blob(chunks, { type: (rec && rec.mimeType) || type || 'audio/webm' }); chunks = []; rec = null;
-    if (cancelled) { setState('idle'); say(t('js.studio.mic.cancelled')); btn.focus(); return; }
-    if (ms < 400 || !blob.size) { setState('idle'); say(t('js.studio.mic.nothing'), 'bad'); return; }
+    if (stream) release();
+    if (cancelled) { cancelled = false; return; }
+    if (state === 'idle') return;   // the live words already came (or it was refused)
+    clip = { blob, ms };
+    if (state === 'recording') setState(L && !L.failed ? 'finishing' : 'working');
+    settle();
+  }
+  /** After a stop: upload the clip unless the live words are still on their way. */
+  function settle() {
+    if (state !== 'finishing' && state !== 'working') return;
+    if (L && !L.failed) return;
+    if (!clip) return;
+    const c = clip; clip = null;
+    upload(c, L);
+  }
+  async function upload({ blob, ms }, l) {
+    L = null;
+    const base = l ? l.base : input.value.replace(/\s+$/, '');
+    if (ms < 400 || !blob.size) { if (l) { interimOff(); input.value = base; autosize(); } setState('idle'); say(t('js.studio.mic.nothing'), 'bad'); return; }
     setState('working'); say(t('js.studio.mic.transcribing'));
     let data = null, res = null;
     try {
-      res = await fetch(`/api/studio/${ID}/transcribe`, { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': blob.type.split(';')[0] || 'audio/webm', 'X-Clip-Ms': String(Math.round(ms)) }, body: blob });
+      res = await fetch(`/api/studio/${ID}/transcribe`, { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': blob.type.split(';')[0] || 'audio/webm', 'X-Clip-Ms': String(Math.round(ms)), ...(l && l.liveId ? { 'X-Live-Id': l.liveId } : {}) }, body: blob });
       data = await res.json().catch(() => ({}));
     } catch { /* offline */ }
+    blob = null;
+    interimOff();
     setState('idle');
+    const text = res && res.ok ? String((data && data.text) || '').trim() : '';
+    if (!text && l) { input.value = base; autosize(); }   // the "not final" words go: only checked words stay
     if (res && res.status === 401) return failed(Object.assign(new Error(t('js.app.signedOut')), { signedOut: true }));
     if (!res || !res.ok) { say((data && data.error) || t('js.studio.mic.failed'), 'bad'); btn.focus(); return; }
-    const text = String((data && data.text) || '').trim();
     if (!text) { say(t('js.studio.mic.nothing'), 'bad'); btn.focus(); return; }
     // Added after anything already typed; the builder checks it and presses Send themself.
-    const cur = input.value.replace(/\s+$/, '');
-    input.value = (cur ? `${cur} ${text}` : text).slice(0, +input.maxLength > 0 ? +input.maxLength : 2000);
-    autosize(); input.focus(); input.setSelectionRange(input.value.length, input.value.length);
+    input.value = joined(base, text);
+    autosize(); input.focus(); caretEnd();
     say(t('js.studio.mic.check'), 'good');
+    if (l && said) said.textContent = t('js.studio.mic.heard', { text });
   }
   btn.addEventListener('click', () => { if (state === 'recording') stop(); else if (state === 'idle') start(); });
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && state === 'recording') { e.preventDefault(); e.stopPropagation(); cancel(); } }, true);
-  // Leaving the page or hiding it while recording: stop and throw the clip away (the mic never stays on).
-  addEventListener('pagehide', () => { cancelled = true; if (rec && rec.state !== 'inactive') rec.stop(); release(); });
+  // Leaving the page or hiding it while recording: stop and throw everything away (the mic never stays on).
+  addEventListener('pagehide', () => { cancelled = true; if (L) closeSocket(L, { type: 'cancel' }); if (rec && rec.state !== 'inactive') rec.stop(); release(); });
   document.addEventListener('visibilitychange', () => { if (document.hidden) cancel(); });
   setState('idle');
   return { cancel, get state() { return state; } };

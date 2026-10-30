@@ -229,14 +229,14 @@ test('migration 0034 backfills unique codes for grown-ups and deletes any mixed 
   const t = Date.now();
   q.run("INSERT INTO friends(user_id, friend_id, status, created_at) VALUES (?,?,'accepted',?), (?,?,'accepted',?), (?,?,'pending',?)", g1.id, k.id, t, k.id, g1.id, t, k.id, g2.id, t);
   q.run("INSERT INTO friends(user_id, friend_id, status, created_at) VALUES (?,?,'accepted',?)", k.id, k2.id, t);
-  q.run("DELETE FROM migrations WHERE name='0034_grownup_builder'");
+  q.run("DELETE FROM migrations WHERE name='0035_grownup_builder'");
   migrate();
   const c1 = auth.getUser(g1.id).friend_code, c2 = auth.getUser(g2.id).friend_code;
   assert.match(c1, /^[A-Z2-9]{6}$/); assert.match(c2, /^[A-Z2-9]{6}$/); assert.notEqual(c1, c2);
   assert.equal(q.get('SELECT COUNT(*) n FROM users WHERE friend_code=?', c1).n, 1);
   assert.equal(q.get('SELECT COUNT(*) n FROM friends WHERE user_id IN (?,?) OR friend_id IN (?,?)', g1.id, g2.id, g1.id, g2.id).n, 0, 'mixed rows gone');
   assert.equal(q.get('SELECT COUNT(*) n FROM friends WHERE user_id=? AND friend_id=?', k.id, k2.id).n, 1, 'kid friendships kept');
-  assert.ok(q.get("SELECT 1 FROM migrations WHERE name='0034_grownup_builder'"));
+  assert.ok(q.get("SELECT 1 FROM migrations WHERE name='0035_grownup_builder'"));
 });
 
 // ---------------------------------------------------------------- child safety: negative tests

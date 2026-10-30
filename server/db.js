@@ -357,11 +357,17 @@ export const MIGRATIONS = [
   // audio or words. For the per-builder daily cap and the site-wide daily minutes cap, which survive a restart. Kept 3 days.
   ['0033_stt_usage', `CREATE TABLE IF NOT EXISTS stt_usage (day TEXT NOT NULL, user_id TEXT NOT NULL, clips INTEGER NOT NULL DEFAULT 0,
       seconds REAL NOT NULL DEFAULT 0, PRIMARY KEY(day, user_id));`],
+  // Live speech to text sessions that may still have their clip uploaded once instead (server/services/stt-live.js):
+  // the session's random id, whose it is, and until when. Ids only, never audio or words; in the database so the one
+  // upload after a restart (the reason the live link failed) is not counted as a second clip. Rows go when used or late.
+  ['0034_stt_live', `CREATE TABLE IF NOT EXISTS stt_live (id TEXT PRIMARY KEY, user_id TEXT NOT NULL, game_id TEXT NOT NULL,
+      state TEXT NOT NULL, until INTEGER NOT NULL);
+    CREATE INDEX IF NOT EXISTS stt_live_until ON stt_live(until);`],
   // Grown-ups can build (docs/decisions.md "Grown-ups can build"). games.visibility gets a new value, 'family' (the owner
   // and their linked children), with no new column. Grown-ups get a friend code, for connections with OTHER grown-ups
   // only (services/friends.js keeps adults and kids apart in both directions): the backfill below gives every grown-up
   // without one a new unique code. Defence in depth: no friendship (or request) between a grown-up and a kid may exist.
-  ['0034_grownup_builder', `DELETE FROM friends WHERE EXISTS (SELECT 1 FROM users a, users b
+  ['0035_grownup_builder', `DELETE FROM friends WHERE EXISTS (SELECT 1 FROM users a, users b
       WHERE a.id=friends.user_id AND b.id=friends.friend_id AND (a.account_type='grownup') <> (b.account_type='grownup'));`,
   conn => {
     for (const r of conn.prepare("SELECT id FROM users WHERE account_type='grownup' AND friend_code IS NULL AND is_guest=0").all()) {

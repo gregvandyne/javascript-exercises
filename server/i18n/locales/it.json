@@ -1338,7 +1338,8 @@
       "tooFast": "Quante registrazioni! Aspetta un minuto e poi riprova.",
       "daily": "Le registrazioni di oggi sono finite. Puoi ancora scrivere il tuo messaggio.",
       "failed": "Scusa, non sono riuscito a trasformarlo in parole. Riprova o scrivi il tuo messaggio.",
-      "busy": "L’aiutante della voce è occupato adesso. Riprova tra un momento."
+      "busy": "L’aiutante della voce è occupato adesso. Riprova tra un momento.",
+      "oneAtATime": "Il microfono è già acceso in un’altra scheda. Spegnilo prima lì."
     }
   },
   "publish": {
@@ -2026,12 +2027,16 @@
         "start": "Parla invece di scrivere",
         "stop": "Ferma la registrazione",
         "recording": "Registrazione {time} di {max}. Premi di nuovo il microfono per fermare, o Esc per annullare.",
+        "listening": "Ti ascolto… {time} di {max}. Premi di nuovo il microfono per fermare, o Esc per annullare.",
         "transcribing": "Sto scrivendo quello che hai detto…",
+        "finishing": "Sto finendo le parole…",
         "check": "Controlla le parole, poi premi Invia.",
+        "heard": "Hai detto: {text}",
         "nothing": "Non ho sentito nessuna parola. Riprova, un po’ più vicino al microfono.",
         "denied": "Il microfono è bloccato. Chiedi a un adulto di permetterlo per questo sito nelle impostazioni del browser.",
         "noMic": "Non è stato trovato nessun microfono su questo dispositivo.",
         "cancelled": "Registrazione fermata. Non è stato inviato né conservato niente.",
+        "cancelledLive": "Registrazione fermata. Non è stato conservato niente.",
         "failed": "Scusa, non sono riuscito a trasformarlo in parole. Riprova o scrivi il tuo messaggio."
       },
       "limit": {

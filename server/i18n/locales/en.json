@@ -1338,7 +1338,8 @@
       "tooFast": "That's a lot of recordings! Wait a minute, then try again.",
       "daily": "That's all the recordings for today. You can still type your message.",
       "failed": "Sorry, I couldn't turn that into words. Try again, or type your message.",
-      "busy": "The speech helper is busy right now. Try again in a moment."
+      "busy": "The speech helper is busy right now. Try again in a moment.",
+      "oneAtATime": "The mic is already on in another tab. Stop it there first."
     }
   },
   "publish": {
@@ -2026,12 +2027,16 @@
         "start": "Speak instead of typing",
         "stop": "Stop recording",
         "recording": "Recording {time} of {max}. Press the mic again to stop, or Esc to cancel.",
+        "listening": "Listening… {time} of {max}. Press the mic again to stop, or Esc to cancel.",
         "transcribing": "Writing down what you said…",
+        "finishing": "Finishing the words…",
         "check": "Check the words, then press Send.",
+        "heard": "You said: {text}",
         "nothing": "I didn't hear any words. Try again, a bit closer to the mic.",
         "denied": "The microphone is blocked. Ask a grown-up to allow it for this site in the browser settings.",
         "noMic": "No microphone was found on this device.",
         "cancelled": "Recording stopped. Nothing was sent or kept.",
+        "cancelledLive": "Recording stopped. Nothing was kept.",
         "failed": "Sorry, I couldn't turn that into words. Try again, or type your message."
       },
       "limit": {

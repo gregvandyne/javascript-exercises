@@ -1338,7 +1338,8 @@
       "tooFast": "Quantas gravações! Espere um minuto e tente de novo.",
       "daily": "As gravações de hoje acabaram. Você ainda pode digitar sua mensagem.",
       "failed": "Desculpe, não consegui transformar isso em palavras. Tente de novo ou digite sua mensagem.",
-      "busy": "O ajudante de voz está ocupado agora. Tente de novo daqui a pouco."
+      "busy": "O ajudante de voz está ocupado agora. Tente de novo daqui a pouco.",
+      "oneAtATime": "O microfone já está ligado em outra aba. Desligue lá primeiro."
     }
   },
   "publish": {
@@ -2026,12 +2027,16 @@
         "start": "Falar em vez de digitar",
         "stop": "Parar a gravação",
         "recording": "Gravando {time} de {max}. Aperte o microfone de novo para parar, ou Esc para cancelar.",
+        "listening": "Ouvindo… {time} de {max}. Aperte o microfone de novo para parar, ou Esc para cancelar.",
         "transcribing": "Escrevendo o que você disse…",
+        "finishing": "Terminando as palavras…",
         "check": "Confira as palavras e depois aperte Enviar.",
+        "heard": "Você disse: {text}",
         "nothing": "Não ouvi nenhuma palavra. Tente de novo, um pouco mais perto do microfone.",
         "denied": "O microfone está bloqueado. Peça para um adulto permitir o microfone para este site nas configurações do navegador.",
         "noMic": "Nenhum microfone foi encontrado neste aparelho.",
         "cancelled": "Gravação interrompida. Nada foi enviado nem guardado.",
+        "cancelledLive": "Gravação interrompida. Nada foi guardado.",
         "failed": "Desculpe, não consegui transformar isso em palavras. Tente de novo ou digite sua mensagem."
       },
       "limit": {

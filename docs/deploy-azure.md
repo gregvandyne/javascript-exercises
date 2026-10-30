@@ -378,6 +378,8 @@ briefly run the old and new container together.
 - App settings: `WEBSITES_PORT=3000`, `WEBSITES_ENABLE_APP_SERVICE_STORAGE=true`, `BRB_DATA_DIR=/home/data` (the
   persistent `/home` share), `BRB_JOURNAL_MODE=DELETE`, `TRUST_PROXY=1`, `PUBLIC_URL`, `REQUIRE_SESSION_SECRET=1`,
   secrets as Key Vault references (`@Microsoft.KeyVault(SecretUri=...)`). *Health check* path `/health`; *Always on*.
+- *Configuration › General settings › Web sockets*: **On** (the Studio mic's live words use a WebSocket,
+  `/api/studio/:id/listen`). Off, the mic still works but only shows the words after the recording stops.
 - Requests are cut after 230 s.
 
 ---

@@ -805,6 +805,54 @@ A review of the three batches together found these; each got the smallest correc
   questions they couldn't follow up on, which was misleading. A build already running stops at its next round and
   says so (`builder.budgetStop`).
 
+## Live speech to text (words while the kid speaks)
+- **The words show in the chat box while the kid speaks**, then settle into the final words on stop. — Owner request:
+  before, nothing showed until the recording was stopped. The page streams the mic over a WebSocket to our server
+  (`/api/studio/:id/listen`, `server/services/stt-live.js`), which relays it to the provider's realtime transcription
+  API (`stt.js` `openRealtime`: OpenAI realtime transcription sessions by default, ElevenLabs realtime if that adapter
+  is chosen). The key stays on the server and the CSP is unchanged (`connect-src 'self'` covers our own socket).
+  New dependency: `ws` (Node has no WebSocket server). Kill switch for the live mode only: `STT_LIVE=0` (the page then
+  records and uploads as before). OpenAI's live sessions use the configured transcription model (`STT_MODEL` or
+  its default, the same as uploads); ElevenLabs needs its realtime model (`scribe_v2_realtime`); `STT_REALTIME_MODEL`
+  overrides either.
+- **Not re-sending the whole clip every 1.5 s.** That costs the square of the clip length in provider seconds (a 60 s
+  clip sends about 20 minutes of audio), makes the quotas either dishonest or punishing, Safari's MediaRecorder slices
+  can't be read on their own, and it would still lag by 1.5 s plus a round trip.
+- **Every message to the page is the whole text so far, tidied and masked** (never a raw piece from the provider), and
+  the newest, still-growing word is held back until the next one starts (the last 2 characters in scripts without
+  spaces), so neither a rude word nor its first letters ever flash on screen. The words lag one word behind speech.
+  This is done for **each unfinished segment on its own**, in commit order (with turn detection one segment can still
+  be streaming while the next one is committed), and empty segments are skipped.
+- **Turn detection on for every OpenAI model.** The realtime API only transcribes audio once it is committed, so with
+  no turn detection nothing would show until stop. Server VAD commits at each short pause (500 ms), and in a long turn
+  without a pause the relay commits by itself (only while the VAD hears speech, never a stretch of silence: at a
+  quiet frame after 3 s, at the latest after 5 s), so words come
+  phrase by phrase while the kid talks. On stop: one commit, then a `session.update` turning detection off; its answer
+  comes after every commit's (the service answers in order), so a VAD commit that was already on its way can't be
+  taken for the stop's own and the last words are never cut off.
+- **First words are kept.** The page builds its audio graph as soon as the mic is on (at `S.mic.rate`) and holds the
+  frames until the socket is open; the relay holds them in memory until the provider is ready, then sends them in
+  order (counted as seconds only then). Before, the kid's first second of speech was dropped.
+- **Counting:** a live session is one clip (counted when it opens, in the same per-minute bucket as uploads); its
+  seconds are the audio bytes the relay received (the page can't fake them), counted once when it ends. If the live
+  link fails, the page uploads its in-memory clip to `/transcribe` once with `X-Live-Id`: not a second clip, but its
+  seconds count (the audio really went to the provider twice). The ids are in SQLite (`stt_live`: id, user, game,
+  state, expiry; never audio or words), so the upload after a restart (what `drainLive` asks for) is still recognised.
+  A fallback upload skips only the builder's own daily cap; the site's minutes and the AI spending caps still apply.
+  One app instance only, as for the rest of the site (an id made on another instance would not be known there).
+- **Fallback:** the page keeps recording with MediaRecorder too; a socket that can't open, a provider error, a lost
+  connection, a restart (`drainLive` on shutdown), a link too slow to keep up (never dropped frames, which would lose
+  words), an audio graph that sends no frames (an iPhone's suspended audio: the page checks after 2.5 s) or a stop
+  with no audio received by the relay uploads the clip instead (never an empty "final" that would throw it away). Refusals (too many, the day's cap, the
+  site busy, the Builder off, the mic on in another tab) don't fall back. Browsers without AudioWorklet use the old
+  path unchanged.
+- **Unverified provider details** (docs could not be fetched from this environment): the exact OpenAI `session.update`
+  nesting (and that a partial update turning turn detection off is answered with `session.updated`; if not, the stop
+  waits `finalWaitMs` and uses the words so far), whether the live model takes a prompt, and the ElevenLabs field names `audio_base_64` / `commit`. Covered
+  by a local fake in tests; **one smoke test with a real key is needed before relying on it** (a field rename falls
+  back to the upload path, it does not break the mic). Live models may cost a different amount per minute than
+  `STT_USD_PER_MINUTE`: **owner to decide** whether a separate live price is needed.
+
 ## Paid plans (billing decisions D0-D16)
 The owner approved every recommendation of the billing design (October 2026). The full design (allowance sources,
 Stripe integration, data model, tests and the owner's setup steps) is built in chunks: 0 settings and docs, 1 cost per
@@ -1462,7 +1510,7 @@ grown-up connections, or everyone. Every other fence around grown-up accounts st
   friends games do (both sides are adults who chose it). `public` is exactly the kids' pipeline (scan, model review, the
   admin queue). The admin queue shows a grown-up owner as plain text with a "Grown-up builder" tag (no `/u/` link).
 - **Connections are adults only.** They reuse the `friends` table and friend codes: grown-ups now get a code
-  (migration `0034_grownup_builder` backfills one for every grown-up and deletes any mixed adult-kid row).
+  (migration `0035_grownup_builder` backfills one for every grown-up and deletes any mixed adult-kid row).
   `services/friends.js` refuses a mixed pair in both directions with the same "not found" as a wrong code (so neither
   side learns the other exists) and `accept()` refuses a mixed pending row. Grown-ups manage them on
   `/family/connections` (code, add by code, requests, list, Remove), with no chat, profile links or pictures. Chat still

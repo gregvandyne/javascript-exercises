@@ -10,6 +10,7 @@
 //   provider for the key's project before turning it on (docs/legal-review.md).
 // - Each service gets a short hint in the kid's language (kids describing a game), which helps with children's speech;
 //   Traditional Chinese gets its hint in Traditional characters, so the words come back in them.
+import WS from 'ws';
 import { config } from '../config.js';
 import { hasProfanity } from './textfilter.js';
 
@@ -63,8 +64,9 @@ export class SttError extends Error {
   constructor(code, message = code) { super(message); this.code = code; }
 }
 
-/** Tests replace fetch here (no network in unit tests). */
-export const hooks = { fetch: (...a) => globalThis.fetch(...a) };
+/** Tests replace fetch here (no network in unit tests); realtimeBase points the live adapters at a local fake
+ *  (tests/support/fake-realtime.js) instead of the provider (never configurable from the environment). */
+export const hooks = { fetch: (...a) => globalThis.fetch(...a), WebSocket: WS, realtimeBase: null, finalWaitMs: 3500, connectMs: 5000, longTurnMs: 3000, hardTurnMs: 5000 };
 
 const DEFAULT_MODEL = { openai: 'gpt-transcribe', elevenlabs: 'scribe_v2' };
 const PROVIDERS = {
@@ -245,4 +247,240 @@ export async function transcribe({ bytes, locale = 'en', signal = null }) {
     throw new SttError('provider', e && e.name === 'AbortError' ? 'aborted' : 'network');
   }
   return { text: maskWords(tidy(raw)), provider: config.sttProvider, ms: Date.now() - t0 };
+}
+
+// ---------------------------------------------------------------- live (words while the kid speaks)
+// The relay (services/stt-live.js) streams the kid's voice here as 16-bit mono PCM and opens one realtime session at
+// the provider per recording. Still nothing is stored: each audio frame is forwarded and dropped. The page only ever
+// gets safeText() of the whole transcript so far (never a raw piece the provider sent), so a rude word that arrives in
+// pieces is starred as soon as it is whole; and the last, still-growing word of every unfinished segment is held back
+// until the next one starts (or the segment is final), so the first letters of a rude word never show on their own.
+// OpenAI only transcribes audio once it is committed, so every model gets server VAD (a commit at each pause), and the
+// relay commits by itself in a long turn without a pause (at a quiet frame after LONG_TURN, at the latest HARD_TURN).
+
+/** The PCM sample rate each provider's realtime API takes (the page resamples the mic to it). */
+export const RATE = { openai: 24000, elevenlabs: 16000, mock: 16000 };
+/** OpenAI's realtime transcription sessions use the configured transcription model (STT_MODEL, or the default above);
+ *  ElevenLabs has a separate realtime model. STT_REALTIME_MODEL overrides either. */
+export const DEFAULT_REALTIME_MODEL = { elevenlabs: 'scribe_v2_realtime' };
+const REALTIME_URL = { openai: 'wss://api.openai.com/v1/realtime?intent=transcription', elevenlabs: 'wss://api.elevenlabs.io/v1/speech-to-text/realtime' };
+const realtimeModel = () => config.sttRealtimeModel
+  || (config.sttProvider === 'openai' ? (config.sttModel || DEFAULT_MODEL.openai) : DEFAULT_REALTIME_MODEL[config.sttProvider]) || '';
+/** Live models are not sent the hint (until they are known to take one). */
+const isLiveModel = m => /live|whisper/i.test(m);
+/** OpenAI's turn detection: a commit after each short pause, so the words of each phrase come while the kid speaks. */
+export const OPENAI_VAD = { type: 'server_vad', threshold: 0.5, prefix_padding_ms: 300, silence_duration_ms: 500 };
+/** Mean loudness of a 16-bit PCM frame (0..32768). */
+function level(buf) {
+  const n = buf.length >> 1; if (!n) return 0;
+  let sum = 0; for (let i = 0; i < n; i++) sum += Math.abs(buf.readInt16LE(i * 2));
+  return sum / n;
+}
+
+/** Is live speech to text available (speech to text on, STT_LIVE not 0, and the provider has a realtime API)? */
+export function liveEnabled(cfg = config) {
+  return sttEnabled(cfg) && !!cfg.sttLive && !!RATE[cfg.sttProvider];
+}
+
+// Scripts written without spaces between words (Chinese, Japanese, Thai…): hold back the last characters instead.
+const NO_SPACES = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Thai}\p{Script=Lao}\p{Script=Khmer}\p{Script=Myanmar}]/u;
+/** The interim words safe to show: the still-growing last word dropped (or its last 2 characters, in a script
+ *  without spaces), then tidied and masked. */
+export const interimText = text => safeText(holdBack(String(text || '')));
+/** The text without its last, maybe unfinished word (raw: the caller masks the whole). */
+function holdBack(s) {
+  if (!s || /\s$/.test(s)) return s;
+  const at = s.search(/\S+$/); const tail = s.slice(at);
+  return s.slice(0, at) + (NO_SPACES.test(tail) ? Array.from(tail).slice(0, -2).join('') : '');
+}
+/** What the page may show: tidied, rude words starred. */
+export const safeText = text => maskWords(tidy(text));
+
+/** The words of one live session: segments in the order the provider committed them (their completions can come back
+ *  in any order), each growing from pieces until it is final, plus the current not-yet-committed words. */
+export class Transcript {
+  constructor(onText = () => {}) { this.segs = new Map(); this.order = []; this.partial = ''; this.onText = onText; this.last = ''; }
+  seg(id) { if (!this.segs.has(id)) { this.segs.set(id, { text: '', final: false }); this.order.push(id); } return this.segs.get(id); }
+  /** The provider committed id after prev: put it right after prev (or first when prev is null and it is new). */
+  committed(id, prev) {
+    // Words that streamed in before any commit (a live model) belong to the first commit that follows, whatever id the
+    // provider gives it: they move into it, so they are never counted twice.
+    if (!this.segs.has(id)) {
+      const loose = this.order.filter(x => !this.segs.get(x).committed && !this.segs.get(x).final);
+      if (loose.length) {
+        const text = loose.map(x => this.segs.get(x).text).join('');
+        for (const x of loose) this.segs.delete(x);
+        this.order = this.order.filter(x => this.segs.has(x));
+        this.seg(id).text = text;
+      }
+    }
+    this.seg(id).committed = true;
+    if (prev === undefined) return;
+    this.order = this.order.filter(x => x !== id);
+    const after = prev == null ? 0 : this.order.indexOf(prev) + 1;
+    this.order.splice(prev != null && after === 0 ? this.order.length : after, 0, id);
+  }
+  delta(id, piece) { const s = this.seg(id); if (!s.final) { s.text += String(piece || ''); this.emit(); } }
+  completed(id, text) { const s = this.seg(id); s.text = String(text ?? s.text); s.final = true; this.emit(); }
+  failed(id) { this.seg(id).final = true; this.emit(); }
+  setPartial(text) { this.partial = String(text || ''); this.emit(); }
+  commitPartial(text) { const id = `c${this.order.length}`; const s = this.seg(id); s.text = String(text ?? this.partial); s.final = true; this.partial = ''; this.emit(); }
+  /** Everything heard so far (final and not), in order. */
+  raw() { return [...this.order.map(id => this.segs.get(id).text.trim()), this.partial.trim()].filter(Boolean).join(' '); }
+  allFinal() { return [...this.segs.values()].every(s => s.final); }
+  /** The interim text, in commit order: final segments whole; every unfinished one (each grows on its own, so any of
+   *  them may end in half a word) and the partial words without their last word; empty ones skipped. */
+  interim() {
+    const parts = [];
+    for (const id of this.order) { const s = this.segs.get(id); const t = (s.final ? s.text : holdBack(s.text)).trim(); if (t) parts.push(t); }
+    const p = holdBack(this.partial).trim(); if (p) parts.push(p);
+    return safeText(parts.join(' '));
+  }
+  final() { return safeText(this.raw()); }
+  emit() { const t = this.interim(); if (t !== this.last) { this.last = t; this.onText(t); } }
+}
+
+const providerUrl = (provider, query = '') => {
+  const u = REALTIME_URL[provider] + query;
+  return hooks.realtimeBase ? u.replace(/^wss:\/\/[^/]+/, hooks.realtimeBase) : u;
+};
+const busyCode = s => /rate_limit|quota|too_many|429|limit_exceeded|concurren/i.test(String(s || '')) ? 'busy' : 'provider';
+
+/**
+ * One live session at the provider. -> { rate, ready: Promise, append(Buffer), finish(): Promise<string>, abort() }.
+ * onText(text): the safe interim text whenever it changes. onError(SttError): the session failed after it was ready
+ * (the relay falls back). finish() asks for the final words and resolves with them (tidied and masked); if the final
+ * answer doesn't come within FINAL_WAIT_MS it resolves with what was heard so far.
+ */
+export function openRealtime({ locale = 'en', onText = () => {}, onError = () => {} } = {}) {
+  if (!liveEnabled()) throw new SttError('off');
+  const provider = config.sttProvider;
+  const tr = new Transcript(onText);
+  if (provider === 'mock') return mockRealtime(tr);
+  const model = realtimeModel();
+  let ws = null, ended = false, finishing = null, readyOk, readyNo, appended = 0;
+  // OpenAI: audio bytes since the last commit, the turn's average loudness, and whether the turn detection hears speech
+  // (only then does the relay commit a long turn itself: committing silence costs and can make up words).
+  let sinceCommit = 0, loud = 0, speaking = false;
+  const ready = new Promise((res, rej) => { readyOk = res; readyNo = rej; });
+  ready.catch(() => {});
+  let isReady = false;
+  const connectTimer = setTimeout(() => fail(new SttError('timeout')), hooks.connectMs);
+  function fail(e) {
+    if (ended) return; ended = true; clearTimeout(connectTimer);
+    try { ws && ws.terminate(); } catch { /* gone */ }
+    if (finishing) finishing.resolve(tr.final());   // stopping already: what was heard is the answer
+    else if (!isReady) readyNo(e); else onError(e);
+  }
+  const markReady = () => { if (isReady || ended) return; isReady = true; clearTimeout(connectTimer); readyOk(); };
+  const sendJson = obj => { if (ws && ws.readyState === 1) ws.send(JSON.stringify(obj)); };
+  // Done when the provider has answered the stop (OpenAI: the session.update sent after the last commit is acknowledged,
+  // so every commit before it, the turn detection's and ours, is known) and every segment it committed is final.
+  const checkDone = () => { if (finishing && finishing.sent && finishing.heard && tr.allFinal()) finishing.resolve(tr.final()); };
+
+  if (provider === 'openai') {
+    ws = new hooks.WebSocket(providerUrl('openai'), { headers: { Authorization: `Bearer ${config.sttApiKey}` }, perMessageDeflate: false, handshakeTimeout: hooks.connectMs });
+    const live = isLiveModel(model);
+    ws.on('open', () => sendJson({ type: 'session.update', session: { type: 'transcription', audio: { input: {
+      format: { type: 'audio/pcm', rate: RATE.openai },
+      noise_reduction: { type: 'near_field' },
+      transcription: { model, language: langOf(locale), ...(live ? {} : { prompt: hintFor(locale) }) },
+      turn_detection: OPENAI_VAD,
+    } } } }));
+    ws.on('message', (data, isBinary) => {
+      if (isBinary) return;
+      let m; try { m = JSON.parse(String(data)); } catch { return; }
+      switch (m.type) {
+        case 'session.updated': case 'transcription_session.updated':
+          markReady();
+          if (finishing && finishing.sent) { finishing.heard = true; checkDone(); }
+          break;
+        case 'input_audio_buffer.speech_started': speaking = true; break;
+        case 'input_audio_buffer.speech_stopped': speaking = false; break;
+        case 'input_audio_buffer.committed': tr.committed(m.item_id, m.previous_item_id); sinceCommit = 0; checkDone(); break;
+        case 'conversation.item.input_audio_transcription.delta': tr.delta(m.item_id, m.delta); break;
+        case 'conversation.item.input_audio_transcription.completed': tr.completed(m.item_id, m.transcript); checkDone(); break;
+        case 'conversation.item.input_audio_transcription.failed': tr.failed(m.item_id); checkDone(); break;
+        case 'error': {
+          const code = m.error && (m.error.code || m.error.type);
+          // A commit with nothing new (the turn detection took it first, or the kid stopped in a pause) is not a failure.
+          if (/commit_empty|buffer_too_small/i.test(String(code))) break;
+          fail(new SttError(busyCode(code), `openai realtime ${String(code || 'error').slice(0, 60)}`));
+          break;
+        }
+        default: break;
+      }
+    });
+  } else if (provider === 'elevenlabs') {
+    const q = new URLSearchParams({ model_id: model, audio_format: `pcm_${RATE.elevenlabs}`, language_code: langOf(locale), commit_strategy: 'vad', enable_logging: 'false' });
+    ws = new hooks.WebSocket(providerUrl('elevenlabs', `?${q}`), { headers: { 'xi-api-key': config.sttApiKey }, perMessageDeflate: false, handshakeTimeout: hooks.connectMs });
+    ws.on('message', (data, isBinary) => {
+      if (isBinary) return;
+      let m; try { m = JSON.parse(String(data)); } catch { return; }
+      const type = String(m.message_type || m.type || '');
+      if (type === 'session_started') markReady();
+      else if (type === 'partial_transcript') tr.setPartial(m.text);
+      else if (type === 'committed_transcript') { tr.commitPartial(m.text); if (finishing && finishing.sent) finishing.heard = true; checkDone(); }
+      else if (/error|exceeded|limited|unauthor/i.test(type)) fail(new SttError(busyCode(type), `elevenlabs realtime ${type.slice(0, 60)}`));
+    });
+  }
+  ws.on('error', () => fail(new SttError('provider', 'network')));
+  ws.on('unexpected-response', (req, res) => fail(new SttError(res.statusCode === 429 ? 'busy' : 'provider', `${provider} realtime ${res.statusCode}`)));
+  ws.on('close', () => fail(new SttError('provider', 'closed')));
+
+  return {
+    rate: RATE[provider], ready, transcript: tr,
+    append(buf) {
+      if (ended || !isReady || !buf || !buf.length) return;
+      appended += buf.length;
+      const audio = Buffer.from(buf.buffer, buf.byteOffset, buf.length).toString('base64');
+      if (provider === 'openai') {
+        sendJson({ type: 'input_audio_buffer.append', audio });
+        // A long turn without a pause: commit it ourselves (at a quiet frame, between two words if we can), so its
+        // words still come while the kid talks.
+        const b = Buffer.from(buf.buffer, buf.byteOffset, buf.length), lv = level(b), perMs = RATE.openai * 2 / 1000;
+        sinceCommit += buf.length; loud = loud ? loud * 0.9 + lv * 0.1 : lv;
+        if (speaking && (sinceCommit >= hooks.hardTurnMs * perMs || (sinceCommit >= hooks.longTurnMs * perMs && lv < loud * 0.5))) { sinceCommit = 0; sendJson({ type: 'input_audio_buffer.commit' }); }
+      } else sendJson({ message_type: 'input_audio_chunk', audio_base_64: audio, sample_rate: RATE.elevenlabs, commit: false });
+    },
+    finish() {
+      if (finishing) return finishing.promise;
+      let resolve; const promise = new Promise(r => { resolve = r; });
+      const timer = setTimeout(() => finishing.resolve(tr.final()), hooks.finalWaitMs);
+      finishing = { promise, sent: false, heard: false, resolve: text => { clearTimeout(timer); if (!ended) { ended = true; try { ws.close(1000); } catch { /* gone */ } } resolve(text); } };
+      if (ended) { finishing.resolve(tr.final()); return promise; }
+      if (provider === 'openai') {
+        // The last words, then turn detection off; its acknowledgement comes after every commit's (events are answered
+        // in order), so a turn detection commit already on its way can't be mistaken for ours.
+        sendJson({ type: 'input_audio_buffer.commit' });
+        sendJson({ type: 'session.update', session: { type: 'transcription', audio: { input: { turn_detection: null } } } });
+      } else sendJson({ message_type: 'input_audio_chunk', audio_base_64: '', sample_rate: RATE.elevenlabs, commit: true });
+      finishing.sent = true;
+      // No audio at all: nothing to wait for. ElevenLabs with nothing pending (its VAD committed everything already)
+      // may not answer a commit, so it gets a shorter wait.
+      if (!appended) finishing.resolve(tr.final());
+      else if (provider === 'elevenlabs' && !tr.partial.trim()) setTimeout(() => finishing.resolve(tr.final()), Math.min(1200, hooks.finalWaitMs));
+      return promise;
+    },
+    abort() { if (!ended) { ended = true; clearTimeout(connectTimer); try { ws.terminate(); } catch { /* gone */ } } },
+  };
+}
+
+/** Tests only (refused in production by config): a word of "make the dragon fly faster" after every quarter second of
+ *  audio, as if a provider heard them; the whole sentence at the end (nothing for under 2000 bytes, as the batch mock). */
+const MOCK_WORDS = ['make', 'the', 'dragon', 'fly', 'faster'];
+function mockRealtime(tr) {
+  let bytes = 0, ended = false;
+  const per = RATE.mock * 2 / 4;
+  return {
+    rate: RATE.mock, ready: Promise.resolve(), transcript: tr,
+    append(buf) {
+      if (ended || !buf) return;
+      bytes += buf.length;
+      const n = Math.min(MOCK_WORDS.length, Math.floor(bytes / per));
+      tr.setPartial(MOCK_WORDS.slice(0, n).join(' '));
+    },
+    async finish() { ended = true; return bytes > 2000 ? safeText(MOCK_WORDS.join(' ')) : ''; },
+    abort() { ended = true; },
+  };
 }

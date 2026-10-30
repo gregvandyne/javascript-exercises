@@ -11,7 +11,8 @@ import { publish, setVisibility } from '../services/publish.js';
 import { cleanText } from '../services/textfilter.js';
 import { requireBuilder, getUser, isGrownup } from '../auth.js';
 import { rateLimit, allow } from '../services/ratelimit.js';
-import { sttEnabled, transcribe, sniff, baseMime, MIMES, KINDS, SttError, clipSeconds, countedSeconds } from '../services/stt.js';
+import { sttEnabled, liveEnabled, transcribe, sniff, baseMime, MIMES, KINDS, SttError, clipSeconds, countedSeconds, RATE } from '../services/stt.js';
+import { consumeFallback } from '../services/stt-live.js';
 import * as sttUsage from '../services/stt-usage.js';
 import { log } from '../services/log.js';
 import { config } from '../config.js';
@@ -109,7 +110,8 @@ export function studioState(user, gameId, t = tEn, req = null) {
     uploads: { limits: LIMITS, used: listUploads(g.id).length },
     // Speech to text (services/stt.js): only when the owner turned it on; the page hides the mic otherwise.
     // Not while the Builder is off for this account (a grown-up or teacher turned it off): no voice leaves the site then.
-    mic: sttEnabled() && user.builder_enabled ? { maxMs: config.sttMaxSeconds * 1000, maxBytes: config.sttMaxBytes } : null,
+    // live: words show while the kid speaks (services/stt-live.js), unless STT_LIVE=0; the page records and uploads otherwise.
+    mic: sttEnabled() && user.builder_enabled ? { maxMs: config.sttMaxSeconds * 1000, maxBytes: config.sttMaxBytes, live: liveEnabled(), ...(liveEnabled() ? { rate: RATE[config.sttProvider] } : {}) } : null,
     grownUpLink: grownUpLinkHint(req, user),
   };
 }
@@ -204,7 +206,7 @@ router.get('/studio/:id', requireBuilder, (req, res) => {
             ${state.mic ? html`<button class="st-mic" type="button" id="st-mic" aria-pressed="false" aria-describedby="st-mic-status" aria-label="${t('studio.mic.start')}" title="${t('studio.mic.start')}" hidden><span class="st-mic-ico" aria-hidden="true">🎤</span></button>` : ''}
             <button class="btn btn-primary st-send" type="submit" id="st-send">${t('chat.thread.send')}</button>
           </div>
-          ${state.mic ? html`<p class="st-mic-status" id="st-mic-status" role="status" aria-live="polite"></p>` : ''}
+          ${state.mic ? html`<p class="st-mic-status" id="st-mic-status" role="status" aria-live="polite"></p><p class="sr-only" id="st-mic-said" aria-live="polite" aria-atomic="true"></p>` : ''}
         </form>
       </section>
       <section class="st-preview" aria-label="${t('studio.preview.label')}">
@@ -407,14 +409,20 @@ router.post('/api/studio/:id/transcribe', requireBuilder, (req, res, next) => {
   if (!sttEnabled()) return res.status(404).json({ error: req.t('errors.api.notFound'), code: 'off' });
   // The Builder is off for this account: the voice is never sent to the outside service.
   if (!req.user.builder_enabled) return res.status(403).json({ error: req.t('studio.api.buildingOff'), code: 'builder_off' });
-  if (!loadEditable(req, res)) return;   // the owner (or an admin) only, before the clip is read
+  const g = loadEditable(req, res); if (!g) return;   // the owner (or an admin) only, before the clip is read
   if (!MIMES.includes(baseMime(req.get('content-type')))) return res.status(415).json({ error: req.t('studio.mic.failed'), code: 'type' });
   const hdr = req.get('x-clip-ms'); const ms = Number(hdr);
   if (!hdr || !Number.isFinite(ms) || ms < 0) return res.status(400).json({ error: req.t('studio.mic.failed'), code: 'bad' });
   if (ms > config.sttMaxSeconds * 1000 + 2000) return res.status(413).json({ error: tooLong(req), code: 'too_long' });
+  // X-Live-Id: the clip of a live session that failed (services/stt-live.js), uploaded once instead. That session was
+  // already counted as a clip (and its minute's turn), so this upload isn't; its seconds are, as the audio really goes
+  // to the service again. A used, unknown or someone else's id is ignored: the upload counts like any other.
+  req.sttFromLive = !!req.get('x-live-id') && consumeFallback(req.get('x-live-id'), req.user.id, g.id);
   // Clips a minute (fixed window, in memory), then the day's caps (kept in the database), before the clip is read.
-  if (!allow(`stt:${req.user.id}`, config.sttPerMinute, 60e3)) return res.status(429).json({ error: req.t('studio.mic.tooFast'), code: 'fast' });
-  const why = sttUsage.blocked(req.user.id, allowanceFor(req.user).pool);
+  if (!req.sttFromLive && !allow(`stt:${req.user.id}`, config.sttPerMinute, 60e3)) return res.status(429).json({ error: req.t('studio.mic.tooFast'), code: 'fast' });
+  // A fallback skips the builder's own daily cap (its clip was counted when the session opened), never the site's.
+  const pool = allowanceFor(req.user).pool;
+  const why = req.sttFromLive ? sttUsage.siteBlocked(pool) : sttUsage.blocked(req.user.id, pool);
   if (why === 'daily') return res.status(429).json({ error: req.t('studio.mic.daily'), code: 'daily' });
   if (why) return res.status(503).json({ error: req.t('studio.mic.busy'), code: 'site' });
   next();
@@ -427,11 +435,12 @@ router.post('/api/studio/:id/transcribe', requireBuilder, (req, res, next) => {
   if (real != null && real > config.sttMaxSeconds + 2) { bytes = null; return res.status(413).json({ error: tooLong(req), code: 'too_long' }); }
   // Counted at its real length, or (when that can't be read) at an estimate from its size that errs long.
   const seconds = countedSeconds(bytes, +req.get('x-clip-ms'));
-  sttUsage.record(req.user.id, seconds, config.sttProvider, allowanceFor(req.user).pool);
+  if (req.sttFromLive) sttUsage.addSeconds(req.user.id, seconds, config.sttProvider, allowanceFor(req.user).pool);
+  else sttUsage.record(req.user.id, seconds, config.sttProvider, allowanceFor(req.user).pool);
   try {
     const r = await transcribe({ bytes, locale: req.locale || 'en' });
     bytes = null;
-    log('info', 'speech to text', { bytes: size, seconds: Math.round(seconds), ms: r.ms, provider: r.provider });
+    log('info', 'speech to text', { bytes: size, seconds: Math.round(seconds), ms: r.ms, provider: r.provider, ...(req.sttFromLive ? { mode: 'fallback' } : {}) });
     if (!r.text) return res.json({ text: '', reason: 'nothing' });
     res.json({ text: r.text });
   } catch (e) {
