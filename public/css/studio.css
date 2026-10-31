@@ -308,3 +308,16 @@ button.stp-line{cursor:pointer}
 .sheet-actions .btn{flex:1}
 .sheet textarea.input{display:block;width:100%}
 .mygame .coverart .shot-icon{display:none}.mygame .coverart.has-shot img{object-position:center}
+/* The theme chips over the message box (routes/studio.js themePicker): one scrolling row, a small picture of each world. */
+.st-themes{display:flex;align-items:center;gap:8px;margin:0 -10px 8px;padding:0 10px;min-width:0}
+.st-themes-h{flex:none;font-weight:800;font-size:.85rem;color:var(--text-2)}
+.st-themes-row{display:flex;gap:6px;overflow-x:auto;scrollbar-width:thin;min-width:0;padding:2px 2px 4px;scroll-snap-type:x proximity}
+.st-theme{flex:none;display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:3px 12px 3px 3px;border-radius:999px;border:2px solid var(--line);background:var(--card);color:var(--text);font:700 .85rem var(--font);cursor:pointer;scroll-snap-align:start;white-space:nowrap}
+.st-theme img{width:48px;height:32px;border-radius:999px;object-fit:cover;background:var(--card-2);flex:none}
+.st-theme:hover{border-color:var(--accent-line)}
+.st-theme[aria-pressed="true"]{background:var(--current);border-color:var(--current);color:var(--on-current)}
+.st-theme.is-current{border-color:var(--accent-line)}
+.st-theme-now{font-size:.7rem;font-weight:800;padding:1px 6px;border-radius:999px;background:var(--accent-soft);color:var(--accent-ink)}
+@media (max-width:520px){.st-themes-h{display:none}}
+/* Out of messages: nothing can be sent, so the theme chips (they only write into the message) step aside for the card. */
+.st-compose.st-out .st-themes{display:none}

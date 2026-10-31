@@ -1,4 +1,4 @@
-# Oomba Kit 1.0 API reference (what exists)
+# Oomba Kit API reference (what exists: kit 1.1.0)
 
 This page lists only what the kit does today, with exact signatures. It is the page a model reads before writing a kit
 game. Start with **the game layer** (`Oomba.game`): a whole game is a spec, a one-character level and a few handlers.
@@ -6,10 +6,11 @@ The design and the plans are in [kit.md](kit.md). `tests/unit/kit-api.test.js` c
 public name is on this page.
 
 Load the kit with exactly the tag `kitTag()` makes (pinned version, `integrity`, `crossorigin="anonymous"`). It creates
-`window.Oomba` (alias `window.OK`) once.
+`window.Oomba` (alias `window.OK`) once. New games load the latest kit (1.1.0, with themes); games saved on 1.0.0 keep
+their own pinned tag and work as before (the server serves both; a version's files never change).
 
 ```html
-<script src="/vendor/oomba-kit/1.0.0/oomba-kit.js" integrity="sha384-…" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.0/oomba-kit.js" integrity="sha384-…" crossorigin="anonymous"></script>
 <script>
   const S = Oomba.stage({ api: 1, biome: 'meadow' });
   const hero = S.add('kid', { x: 0, y: 0, size: 120, hair: { style: 'curls', color: 'black' } });
@@ -22,10 +23,10 @@ Load the kit with exactly the tag `kitTag()` makes (pinned version, `integrity`,
 ## The game layer (start here)
 
 ```html
-<script src="/vendor/oomba-kit/1.0.0/oomba-kit.js" integrity="sha384-…" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.0/oomba-kit.js" integrity="sha384-…" crossorigin="anonymous"></script>
 <script>
   Oomba.game({
-    api: 1, title: 'Spark Hop', biome: 'meadow', controls: 'platformer:kid-easy', hud: ['score', 'lives:3', 'timer:90'],
+    api: 1, title: 'Spark Hop', theme: 'meadow', controls: 'platformer:kid-easy', hud: ['score', 'lives:3', 'timer:90'],
     howTo: [{ icon: 'move', text: 'Run with the arrows' }, { icon: 'jump', text: 'Jump with Space' }],
     level: Oomba.level.grid([
       '                         ',
@@ -48,7 +49,7 @@ captions, read-aloud, right-to-left and reduced motion done by the kit. Scores g
 (`BRB.speak`).
 
 Spec (all optional except `level` for a real game; a missing level is generated):
-- `api: 1`, `title`, `subtitle` (text or a string key), `titleHue: 'spark' | 'mint' | 'sky' | 'coral'` (the title lockup's gradient), `titleBadge` (a canvas under the lockup that says what the game is about: `Oomba.art.toCanvas('pie', 110, '3/4')`), `style: 'bold'` (12-14: with the `style-bold` pack), `dress: 'auto' | 'off' | 0.2-2` (the scene's automatic dressing: props on the hills, framing leaves, birds and butterflies; 'auto' by default, a number makes it denser or sparser; it needs the `dress` pack), `biome`, `theme: 'auto' | 'light' | 'dark'`, `backend`, `size: [960, 540]`, `fit`, `seed` (leave it out: each round then gets a fresh `w.rand`, so "Play again" deals new cards, questions and dice; a `seed` replays the same rounds).
+- `api: 1`, `title`, `subtitle` (text or a string key), `titleHue: 'spark' | 'mint' | 'sky' | 'coral'` (the title lockup's gradient), `titleBadge` (a canvas under the lockup that says what the game is about: `Oomba.art.toCanvas('pie', 110, '3/4')`), `style: 'bold'` (12-14: with the `style-bold` pack), `dress: 'auto' | 'off' | 0.2-2` (the scene's automatic dressing: props on the hills, framing leaves, birds and butterflies; 'auto' by default, a number makes it denser or sparser; it needs the `dress` pack), `theme` (a world: `'castle'`, see Themes below; kit 1.0's `'light' | 'dark' | 'auto'` still mean the mode), `mode: 'auto' | 'light' | 'dark'` (pin the light/dark mode; `'auto'` follows the site), `biome` (the world alone, without a theme's light, accent and props; next to a theme it replaces only the world), `backend`, `size: [960, 540]`, `fit`, `seed` (leave it out: each round then gets a fresh `w.rand`, so "Play again" deals new cards, questions and dice; a `seed` replays the same rounds).
 - `controls`: `'platformer:kid-easy'` (default) `| 'platformer:snappy' | 'platformer:floaty' | 'topdown' | 'tap' | 'none'`. Platformers have coyote time (90 ms), a jump buffer (110 ms), variable jump height (about 2.7 cells), fall gravity ×1.6, 80% hit boxes and a pickup magnet. `tap`: hold the pointer to walk toward it, tap above the hero to jump. `'none'`: no hero input or physics and no walk-up talk; pickups, the goal, hazards and gates still work when your code moves the hero (`w.hero.x += ...` in `update`, or `Oomba.tween(w.hero, {x}, {ms})`).
 - `camera`: `'follow'` (default: about 7 rows high; on a phone in portrait the hero is at least 21% of the screen's height) `| 'fixed'` (the whole level; `update` may set `w.cam.zoom`, `x`, `y` every step, as the kit resets them) or `{lookAhead, deadzone, smooth}`.
 - `hud`: widgets of `Oomba.ui.hud` (`'score' 'lives:3' 'timer:60' 'progress' 'combo' 'count:spark'`; `'count:flag'` with `w.hud.count.set(n, total)` shows "3 of 10"). The timer starts at play; time up loses (unless `on.timeup` returns `false`).
@@ -86,23 +87,44 @@ A legend value is a kind, any prop or species name (`'tree'`, `'owl'`), an objec
 **Turn-based, card and two-player games.** `controls: 'none'`, `camera: 'fixed'`, `hero` the player (or drop it out of view), your cards and buttons in `Oomba.ui.root()` placed below `var(--ok-safe-top)` (the HUD and the kit's banner band are above it), turns started from `on.start(w)`. Two players: show whose turn it is in your own DOM, end with `w.win({ title: 'p2Wins', who: CONFIG.p2, submit: false })`. Maths in your DOM gets `dir="ltr"` (it never mirrors in Arabic or Hebrew). Your own motion reads `Oomba.settings.reduced` at each use and has a `.ok-rm` CSS rule.
 <!-- /builder -->
 
+## Themes (kit 1.1.0)
+
+<!-- builder:api -->
+**Themes.** `Oomba.game({ theme: 'castle' })` picks a whole look at once: the world (biome, sky and time of day), an
+accent colour (title lockup, pennants, boards), the ambient life and corner framing, a prop set and a music mood.
+Themes come with the `dress` pack; some worlds need one more pack (the art lists give each theme's packs). Themes:
+`meadow beach jungle snow desert reef space candy haunted castle cyber stadium forest autumn city` (`cyber` is the
+12-14 look: it sets `style: 'bold'`). Names are forgiving (`'Ocean Reef'`, `'candy land'`, `'football'`,
+`'halloween'`); an unknown name or a missing pack warns and shows a near world. Recolour a theme with
+`theme: { name: 'beach', accent: 'grape', palette: { hills: 'coral', ground: 'mint', sky: 'grape' } }` (hue names; the
+kit keeps each colour's brightness, so contrast never breaks; spark yellow is never an accent). `Oomba.theme.look` →
+`{name, biome, accent, tod, music, bed, style, packs, props}` while a theme runs (else `null`): `props` are the theme's
+props that are loaded now (for legends and `w.spawn`), `music` a mood word and `bed` the kit's nearest music bed
+(`const look = Oomba.theme.look; Oomba.music(look.bed)`). `Oomba.theme.names` → every theme.
+<!-- /builder -->
+
 ## Art packs
 
 Extra art comes in separate pinned files, loaded only by the games that use them, each with its exact tag **after the
 kit's tag** (`kitPackTag(name)` on the server; any other form fails the scanner):
 
 ```html
-<script src="/vendor/oomba-kit/1.0.0/packs/art-animals.js" integrity="sha384-…" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.0/packs/art-animals.js" integrity="sha384-…" crossorigin="anonymous"></script>
 ```
 
 - `art-animals`: species `cat dog bear mouse owl penguin duck` (13 with the core six).
 - `art-school`: props `tile pie clock dice shape book pencil globe bulb magnifier` (learning), `apple banana carrot cookie melon cheese cupcake grapes` (food), `chalkboard abacus ruler crayon schoolbag paint letterblock` (school).
 - `art-biomes`: biomes `jungle reef city moon autumn` (11 with the core six).
+- `art-biomes-2` (1.1.0): biomes `castle stadium space spooky` for the themes castle, stadium, space and haunted.
+- `art-props` (1.1.0): the themes' props: treasure `sweet snowflake starfish pearl` (collectible like coins), seaside
+  `sandcastle anchor clam`, snowy `igloo`, spooky `pumpkin ghost cauldron`, castle `tower banner shield torch`, sports
+  `ball goalpost`, sweets `donut candycane`, space `ufo satellite`, wild `totem pot pyramid`, tech `drone`.
 - `dress`: the automatic scene dressing every Builder template loads: houses, fences, lamp posts, tents, beach huts,
-  umbrellas, flags, cones, tyre stacks, rock piles and grass tufts on the hills (on top of the core's trees, pines,
+  umbrellas, flags, cones, tyre stacks, rock piles and grass tufts on the hills (and, from 1.1.0, the themes) (on top of the core's trees, pines,
   bushes and flowers), big leaves framing the bottom corners, and ambient life (bird flocks, gulls, butterflies,
   drifting leaves, snow, fish under the sea; fewer on slow devices, none with reduced motion). Also the props `car bus
   rocket boat plane` (vehicles) and `shell cactus snowman log`. `Oomba.game({dress: 'off'})` keeps the bands sparse.
+- `bridge-3d` (1.1.0): the 3D bridge for three.js games (`Oomba.three`, below). 2D games never load it.
 - `style-bold`: the Bold style for 12-14 (`Oomba.game({style: 'bold'})`, or `Oomba.style('bold')` before
   `Oomba.stage`): about 3 heads tall, narrowed eyes, no blush, 'determined' by default; wear `hood visor headset helmet
   cap-back` (head) and `jersey bomber techvest` (body); deep surfaces with neon accents, 8-10 px corners, clipped
@@ -110,6 +132,54 @@ kit's tag** (`kitPackTag(name)` on the server; any other form fails the scanner)
 
 `Oomba.pack(name)` → `{name, version, species, props, biomes}` when the pack is loaded, else `null` with a warning that
 names the tag to add. `Oomba.packs` → the loaded pack names.
+
+## The 3D bridge (kit 1.1.0, pack `bridge-3d`)
+
+A three.js game (the import map from `/vendor/three/`, as before) gets the Oomba Ink look from the `bridge-3d` pack:
+toon (cel) shading with a soft rim light and Ink outlines, the kit's colours, a theme as a 3D world, kit characters as
+low-poly rigs or as billboards of their 2D art, and the kit's screens over the canvas. `THREE` is passed in, never
+imported by the kit. 2D games never load this pack.
+
+<!-- builder:3d -->
+**3D games on the kit.** Load the kit tag, then `{{PACK_TAG:dress}}` (themes) and `{{PACK_TAG:bridge-3d}}` (plus the
+packs a theme needs, and `{{PACK_TAG:style-bold}}` for `style: 'bold'`), then three.js with its import map. One call
+gives the look; the game's code is only its world rules:
+
+```js
+import * as THREE from 'three';
+Oomba.time.start();   // the kit's clock and pause key with no 2D stage
+const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('view'), antialias: devicePixelRatio < 1.5 });
+const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(60, 16 / 9, 0.1, 300);
+const B = Oomba.three(THREE, { renderer, scene, camera, theme: CONFIG.theme });
+const W = B.world({ size: 30 });                         // sky, fog, light, land, hills, the theme's props, clouds or stars
+const hero = B.rig(CONFIG.hero, { size: 1.6 }); scene.add(hero);   // a kit character spec as a toon rig with Ink
+const friend = B.sprite({ species: 'bunny' }); friend.position.set(3, W.heightAt(3, -3), -3); scene.add(friend);
+const coin = B.spark(); coin.position.set(0, W.heightAt(0, -6) + 1, -6); scene.add(coin);
+BRB.fx.fit3d(renderer, camera, { maxDpr: B.dprCap, onResize(w, h) { camera.fov = w / h < 0.8 ? 70 : 60; } });
+B.run(dt => { /* move the hero: hero.position, hero.heading (radians), hero.speed 0..1, hero.air; then the camera */ });
+```
+
+- `Oomba.three(THREE, {renderer, scene, camera, theme, style, tod, size, governor})` → `B`. `theme` is a theme name or
+  recolour (Themes, above); `style: 'bold'` (12-14) or the theme's; `tod` 0 (noon) … 1 (night): the theme's by default,
+  night on a dark site, dusk or later in Bold; `governor: false` when the game runs its own quality ladder.
+- `B.world({size, seed, height(x, z), hilly, flat, ground, hills, props, propCount, clouds})` → `{group, heightAt(x, z),
+  props, size, sun, hemi}`. `B.sky({size, shadows})` alone sets the sky, fog and lights for a game with its own land;
+  `B.look.land` → `{grass, grassDark, rock, sand}` colours for it, `B.look` also has `name biome tod accent music bed props`.
+- Characters: `B.rig(spec, {size})` (low-poly, about 17 draw calls with its Ink: the hero; `B.rig(Oomba.avatar())` is
+  the player's own character, for "play as me") and `B.sprite(spec, {size,
+  mood})` (a billboard of the 2D art, 1 draw call: NPCs and crowds). Both: `position`, `heading`, `speed` (0 idle, 0.3
+  walk, 1 run), `air` (jump), `play('cheer' | 'wave' | 'hurt' | 'land', ms)`; a sprite also has `mood(face)`.
+- Things: `B.prop(name, {size, variant})` (any kit prop as a billboard), `B.spark({size})` (the reward spark in 3D).
+- Your own models: colour them with `B.toon(hueOrRole, {glow, opacity, flat})` (`flat: true` gives a faceted low-poly look) (hue names and roles, never colour codes), or
+  build with Lambert / Phong and call `B.inkify(root)`; `B.outline(obj, {important, width})` adds Ink (only `important`
+  ones keep it on slow devices); `B.bake(group)` merges a model into one mesh (mark moving parts `userData.pivot = true`).
+- `B.update(dt)` every frame when the game runs its own `setAnimationLoop` (`B.run(fn)` does it for you, and caps slow
+  devices at 30 fps). `B.fit({onResize})` sizes the renderer where there is no `BRB.fx.fit3d`. `B.tier` (`'low' | 'mid' | 'high'`), `B.quality` (0-2, the governor lowers it: pixel ratio, shadows,
+  outline distance, props), `B.dprCap`, `B.reduced`, `B.motion` (multiply your own decorative motion by it: 0 with
+  reduced motion, 0.75 in Bold), `B.color(hue, step)`, `B.neon(name)`, `B.toScreen(obj)` → `{x, y}` CSS px for DOM.
+- Screens: the kit's own over the canvas: `Oomba.ui.title`, `Oomba.ui.howTo`, `Oomba.ui.hud`, `Oomba.ui.ask`,
+  `Oomba.ui.win`, `Oomba.ui.tryAgain`, `Oomba.ui.pause`.
+<!-- /builder -->
 
 ## The two clocks (read this first)
 
@@ -125,10 +195,10 @@ open uses `time.real`.
 
 ## Core
 
-- `Oomba.version` (`'1.0.0'`), `Oomba.api` (`1`), `Oomba.tier` (`'low' | 'mid' | 'high'`), `Oomba.backend` (`'paper' | 'glaze'`).
+- `Oomba.version` (`'1.1.0'`), `Oomba.api` (`1`), `Oomba.tier` (`'low' | 'mid' | 'high'`), `Oomba.backend` (`'paper' | 'glaze'`).
 - `Oomba.color(role, step?)` → hex. Roles: `player friend correct go` (mint), `reward hot` (spark), `hazard wrong` (coral), `interact water` (sky), `magic` (grape), ... Steps `'tint' | 'light' | 'base' | 'shade'` or 0-3.
 - `Oomba.tokens` → `{radius, space, outline(hPx), motion, z, palette, roles, skin, hair}`.
-- `Oomba.theme.mode` (`'light' | 'dark'`), `Oomba.theme.biome`, `Oomba.theme.on('change', fn)` → off, `Oomba.theme.set('light' | 'dark' | 'auto')`.
+- `Oomba.theme.mode` (`'light' | 'dark'`), `Oomba.theme.biome`, `Oomba.theme.look` and `Oomba.theme.names` (Themes, above), `Oomba.theme.on('change', fn)` → off, `Oomba.theme.set('light' | 'dark' | 'auto')`.
 - `Oomba.rand(seed)` → `{float(), int(a, b), range(a, b), pick(arr), chance(p), shuffle(arr)}`; `Oomba.seedOf(text)` → number.
 - `Oomba.tween(target, props, {ms, ease, delay, onUpdate})` → Promise (with `cancel()`), on the game clock. `Oomba.tween.seq(steps)`, `Oomba.tween.all(promises)`, `Oomba.tween.stagger(items, fn, gapMs)`, `Oomba.tween.ui(target, props, opts)` (real clock).
 - `Oomba.ease` (31 easing functions by name), `Oomba.easings` (their names).
@@ -172,14 +242,14 @@ open uses `time.real`.
 
 <!-- builder:api -->
 - `Oomba.char(spec)` → a frozen character spec. Spec: `{species: 'oomba'|'kid'|'fox'|'bunny'|'frog'|'bee', skin: 0-7, hair: {style, color}, outfit: {top, color}, wear: [...], mood, colors: {base, belly, accent}, body, seed}`.
-- `Oomba.me()` → the player's avatar as a kid spec (the mascot for guests).
+- `Oomba.avatar()` → the character the player designed on their Me page (`BRB.user.character`, a parts spec; with its Bold wear when the game is Bold), else a look from their account; the mascot for guests. `Oomba.me()` is the same.
 - `Oomba.icon(name, {size, label, stroke})` → SVG string; `Oomba.icons` (names). Lines are Ink (`currentColor`); stickers fill by role (reward spark, danger coral, success mint). Pairs: `heart` / `heart-off`, `spark` / `spark-off`, `star` / `star-off`, `flag` / `flag-off`.
 <!-- /builder -->
 - `Oomba.art.species`, `Oomba.art.clips`, `Oomba.art.faces`, `Oomba.art.moods`, `Oomba.art.hair`, `Oomba.art.tops`, `Oomba.art.wear`, `Oomba.art.props` (groups), `Oomba.art.variants`, `Oomba.art.biomes`.
 <!-- builder:api -->
 - `Oomba.art.toCanvas(nameOrSpec, px, variant)` → a canvas (DOM previews, cards).
 <!-- /builder -->
-- Art packs: `Oomba.art.define(name, {w, h, ax, ay, draw(ctx, k)})`, `Oomba.art.pack(fn)`, `Oomba.art.rig(name, fn)`, `Oomba.art.part(name, fn)`, and the drawing grammar `Oomba.art.ink` (`sticker detail ringEye glow lines ellipse rrect spark`), `Oomba.art.sparkPath`, `Oomba.art.autotile`.
+- Art packs: `Oomba.art.define(name, {w, h, ax, ay, draw(ctx, k)})` (works before or after the first `toCanvas`), `Oomba.art.pack(fn)`, `Oomba.art.rig(name, fn)`, `Oomba.art.part(name, fn)`, and the drawing grammar `Oomba.art.ink` (`sticker detail ringEye glow lines ellipse rrect spark`), `Oomba.art.sparkPath`, `Oomba.art.autotile`.
 
 ## The stage (the world)
 
@@ -242,12 +312,13 @@ The document (nothing else around it; the platform wraps it and loads the SDK):
 <div id="game"></div>
 {{KIT_TAG}}
 {{PACK_TAG:dress}}
+{{PACK_TAG:art-props}}
 <script>
 'use strict';
 const CONFIG = {
   title: 'Spark Hop',
   hero: { species: 'fox', wear: ['scarf'] },
-  biome: 'meadow',
+  theme: 'castle',
   lives: 3,
 };
 const WORDS = { en: { sub: 'Reach the flag!' }, es: { sub: '¡Llega a la bandera!' } };
@@ -258,23 +329,31 @@ Oomba.game({ api: 1, title: CONFIG.title, subtitle: 'sub', strings: WORDS, /* ..
 - Copy the kit tag exactly: `{{KIT_TAG}}`. A pack goes right after it, exactly as listed under the art lists. Load only
   the packs the game uses, and always `dress` (every 2D game: it fills the world with trees, houses, framing leaves
   and birds by itself; never add decoration code of your own).
+- Pick the world with a theme (`theme: 'castle'` in CONFIG; what the builder asks for: "a spooky level" is `haunted`,
+  "underwater" is `reef`, "football" is `stadium`), load the packs the art lists give for it right after `dress`, and
+  use its props (the `props` of `Oomba.theme.look`, or by name in the level's legend). A builder's colour wish is a recolour
+  (`theme: { name: 'beach', accent: 'grape' }`), never colour codes. Use `biome` only for a world no theme has.
 - Who is it for? Ideas that sound 12-14 (cyber, neon, esports, skate, parkour, ninja, robot, battle, speedrun, space
-  station, lab, haunted, hover racing, or the builder asks for "cool" / "older" / "not babyish") get
-  `style: 'bold'` and the `style-bold` pack: a taller cast with cool faces, sharper UI, warm-to-dusk light, the biomes
-  `cyber skate station haunted` and the wear `hood visor headset helmet cap-back jersey bomber techvest`. Everything
-  else stays playful (no `style`). `<div id="game"></div>` comes before the kit tag (the kit needs the page body).
+  station, haunted, or "cool" / "older" / "not babyish") get `style: 'bold'` and the `style-bold` pack (taller cast,
+  sharper UI, dusk light, its biomes and wear). Everything else stays playful (no `style`). `<div id="game"></div>` comes before the kit tag (the kit needs the page body).
 - Use `Oomba.game` for every kind of game: platformers, catchers and runners (`controls: 'platformer:...'`), top-down
   worlds (`'topdown'`), and quiz, card, word, board and party games (`controls: 'none'`, `camera: 'fixed'`, the turns
   started from `on.start(w)`, your buttons or cards appended to `Oomba.ui.root()`). It brings the title, how-to,
   countdown, HUD, pause, results, best score, `BRB.gameOver` and the test hooks. Use `Oomba.stage` plus `Oomba.ui` only
   when `Oomba.game` truly cannot fit; then call `Oomba.test({state, start})` and `BRB.gameOver({won, score})` yourself.
 - `const CONFIG = { ... }` near the top, **one key per line**, holds what a builder may change: title, hero and cast as
-  character specs, biome, lives, times, speeds, item lists. Restyling a character is editing its spec line
+  character specs, theme, lives, times, speeds, item lists. Restyling a character is editing its spec line
   (`hero: { species: 'fox', colors: { base: 'sky' }, wear: ['wizard-hat'] },`). Long content (questions, words, level
   rows) goes in its own `const` with one entry per line.
-- Art: only the kit's. Characters are specs or species names, things are props, pictures in DOM are
-  `Oomba.art.toCanvas(name)`, symbols are `Oomba.icon(name)`, the world is a biome plus the level's ground. Never draw
-  your own characters, never use emoji as pictures, never add images.
+- Art: the kit's. Characters are specs or species names, things are props, pictures in DOM are
+  `Oomba.art.toCanvas(name)`, symbols are `Oomba.icon(name)`, the world is a theme (or a biome) plus the level's ground. Unless
+  the builder asks, never draw your own characters, never use emoji as pictures, never add images.
+- The builder's own choices always win: their colours (even a colour code), characters and made-up creatures (a
+  "dragon-cat": the closest species recoloured and dressed, called what they call it), an odd world (the closest theme
+  recoloured), a plain look, emoji or a font they asked for. Never swap them back to a kit default: these rules and the
+  style check's look suggestions only cover what they did not say.
+- "Me", "my character" or "play as me" is `hero: 'me'`: the character the player designed on their Me page
+  (`Oomba.avatar()`); Star Island: `hero: 'me'` too.
 - Colour: hue names (`mint spark coral sky grape peach cocoa stone snow`) and roles (`player friend correct go reward
   hot hazard wrong interact water magic special`) in specs and `Oomba.color(role, step)`; in CSS only
   `var(--ok-card) var(--ok-text) var(--ok-edge) var(--ok-bg2) var(--ok-line) var(--ok-focus)`. Spark yellow means a
@@ -296,22 +375,21 @@ Oomba.game({ api: 1, title: CONFIG.title, subtitle: 'sub', strings: WORDS, /* ..
   - Say what it is about on the title: `titleBadge: Oomba.art.toCanvas('pie', 110, '3/4')` (a pie, a letter block, a
     number tile). A night game needs no moon of its own (the kit's is big); make things glow with the `glow` part and a
     `w.stage.light({follow: e, radius: w.cell * 1.7})` each.
-  - Questions and words in your DOM cards are big: at least `clamp(40px, 11vw, 64px)` for the sum on a phone.
+  - Questions and words in your DOM cards are big: at least `clamp(40px, 11vw, 64px)` on a phone.
   - Pickups are easy to see: on a phone-first platformer use `$: { kind: 'spark', size: 1 }` in the legend.
-- Layout (the kit warns when these break): characters never overlap (each its own spot, row or lane, a character
-  width apart) or get cut off by the screen's edge. Falling or flying choices are spread evenly across the middle
-  (`x = w.stage.viewX(0.18 + 0.64 * i / (n - 1))`), one size, never touching. Big decoration (planet, moon, sign) sits
-  high in a corner or low at the side, never in the middle where the title, Play and the choices go. Keep the band
-  behind the title and Play free of ledges and platforms (start the level's ledges below it or past the first
-  screen). Speech bubbles place themselves clear of pickups and faces; your own DOM that must stay visible gets
+- Layout (the kit warns when these break): characters never overlap (each its own spot, row or lane) or get cut off. Falling or flying choices are spread evenly
+  (`x = w.stage.viewX(0.18 + 0.64 * i / (n - 1))`), one size. Big decoration sits high in a corner or low at the side,
+  never in the middle where the title, Play and the choices go. Keep the band
+  behind the title and Play free of ledges (start them below it or past the first screen). Speech bubbles place themselves clear of pickups and faces; your own DOM that must stay visible gets
   `data-ok-keep`. Choices fly above the skyline's signs, not across them.
 - Phones first: the kit's camera frames platformers; for `camera: 'fixed'` games set the zoom in `update` so the scene
   fits `w.stage.view` (see the third example). Your DOM pieces sit below `top: var(--ok-safe-top)` (the HUD and the
   kit's right/wrong banner are above it) or in a card at the bottom, and keep 48px buttons. Put something to see near
   the start: the play picture becomes the game's cover.
-- An older game (made before the kit, with no kit tag) keeps its own style: edit it in its own style. Only when the
-  builder asks for it ("upgrade it", "the new look") rebuild it on the kit with `write_game`, keeping its idea, rules,
-  levels, words and CONFIG values; say the old version stays in Versions.
+- 3D games (a world you walk around in, only when the builder asks for 3D) are three.js on the kit's 3D bridge
+  (`Oomba.three`, the `bridge-3d` pack: {{PACK_TAG:bridge-3d}}): the 3D RULES say how.
+- An older game (no kit tag) keeps its own style. Only when the builder asks ("upgrade it", "the new look") rebuild it
+  on the kit with `write_game`, keeping its idea, rules, levels, words and CONFIG values; the old version stays in Versions.
 <!-- /builder -->
 
 <!-- builder:examples -->
@@ -321,11 +399,11 @@ A platformer with a quiz gate (everything else is the kit):
 const CONFIG = {
   title: 'Spark Hop',
   hero: { species: 'fox', wear: ['scarf'] },
-  biome: 'meadow',
+  theme: 'meadow',
 };
 const WORDS = { en: { sub: 'Grab the sparks and reach the flag!', run: 'Run with the arrows', jump: 'Jump with Space' } };
 Oomba.game({
-  api: 1, title: CONFIG.title, subtitle: 'sub', biome: CONFIG.biome, hero: CONFIG.hero, strings: WORDS,
+  api: 1, title: CONFIG.title, subtitle: 'sub', theme: CONFIG.theme, hero: CONFIG.hero, strings: WORDS,
   controls: 'platformer:kid-easy', hud: ['score', 'lives:3', 'timer:90'],
   howTo: [{ icon: 'move', text: 'run' }, { icon: 'jump', text: 'jump' }],
   level: Oomba.level.grid([
@@ -374,7 +452,7 @@ A quiz show (`controls: 'none'`: a host asks with the kit's quiz card, the camer
 const CONFIG = {
   title: 'Planet Quiz',
   host: { species: 'frog', wear: ['glasses'] },
-  biome: 'forest',
+  theme: 'forest',
 };
 const QUESTIONS = [
   { q: 'q1', a: 'earth', choices: ['earth', 'mars', 'venus'], fact: 'f1' },
@@ -385,7 +463,7 @@ const WORDS = {
   es: { sub: '¡Responde las preguntas!', hello: '¡Croac! ¿Listo?', q1: '¿En qué planeta vivimos?', q2: '¿Cuántas lunas tiene la Tierra?', earth: 'Tierra', mars: 'Marte', venus: 'Venus', f1: 'La Tierra es el único planeta con vida que conocemos.' },
 };
 Oomba.game({
-  api: 1, title: CONFIG.title, subtitle: 'sub', biome: CONFIG.biome, strings: WORDS, titleHero: Oomba.char(CONFIG.host),
+  api: 1, title: CONFIG.title, subtitle: 'sub', theme: CONFIG.theme, strings: WORDS, titleHero: Oomba.char(CONFIG.host),
   controls: 'none', camera: 'fixed', hud: ['score'],
   level: Oomba.level.grid(['                              ', '                              ', '                              ',
     '            P     N           ', '##############################', '##############################'],

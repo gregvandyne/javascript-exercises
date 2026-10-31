@@ -1,246 +1,239 @@
 <title>Drop Four</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&display=swap">
 <style>
-/* Drop Four: the classic connect-four game. Layout: HUD (pause / whose turn / mute), the match score chips,
-   the board (one canvas; discs + plate + preview drawn by script), a message line and a small controls row.
-   Overlays for the title screen, pause and results. In short landscape the board sits left and everything
-   else stacks in a side column so the cells stay big. */
-:root{
-  --bg1:#ffe9f4; --bg2:#ffb8dc; --bg3:#b8a4ff;
-  --ink:#3b1f47; --accent:#ff3d8b; --accentDark:#c21463; --card:#fff; --soft:#fff0f7; --softEdge:#ffc2dd;
-  --board:#2f62e6; --font:"Fredoka","Trebuchet MS",system-ui,sans-serif;
-}
+/* Drop Four on the Oomba Kit: the classic connect-four game. The kit draws the candy world behind everything (day, or
+   night in the dark theme), the title lockup, the characters (player one is the player's own Me-page avatar, the robot
+   is a grey Oomba with glasses and headphones, friends tap through kit animals), the pause screen, icons, buttons and
+   type. This file lays out the game's own pieces in the kit's sticker look (Cream cards, Ink edges):
+   HUD (pause / whose turn / sound), the match score chips, the board (one canvas: discs, plate and preview drawn by
+   script), a message line and the Undo row. The title card (who plays, robot level, series, the two seats, Play) sits
+   in the kit's title screen; the results card slides up under the board. In short landscape the board sits left and
+   everything else stacks in a side column so the cells stay big. Colours come from the kit (--c4-* set at start). */
+.c4{position:absolute;inset:0;pointer-events:auto}
+.c4,.c4-tcard{--rim:var(--c4-ink);--soft:color-mix(in srgb,var(--ok-text) 66%,transparent)}
+.ok-night .c4,.ok-night .c4-tcard{--rim:color-mix(in srgb,var(--c4-cream) 38%,transparent)}
 [hidden]{display:none!important}
 html,body{height:100%}
-body{margin:0;overflow:hidden;font-family:var(--font);color:var(--ink);
-  background:radial-gradient(circle at 20% 0%,var(--bg1),var(--bg2) 45%,var(--bg3));
-  touch-action:manipulation;user-select:none;-webkit-user-select:none}
-.app{position:relative;height:100%;max-width:980px;margin:0 auto;display:grid;gap:8px;align-content:center;
-  padding:10px max(12px,env(safe-area-inset-left)) 12px max(12px,env(safe-area-inset-right));
+body{margin:0;overflow:hidden;touch-action:manipulation;user-select:none;-webkit-user-select:none}
+.c4 button,.c4-tcard button{font-family:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.c4 svg,.c4-tcard svg{display:block}
+.c4 .ok-btn.ok-icon{width:48px;min-height:48px;flex:none}
+.app{position:relative;height:100%;max-width:980px;margin:0 auto;display:grid;gap:8px;align-content:center;box-sizing:border-box;
+  padding:max(10px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));
   grid-template-areas:"hud" "scores" "board" "msg" "ctrl";grid-template-rows:auto auto auto auto auto;grid-template-columns:minmax(0,1fr);
   transition:transform .45s ease}
+@media (max-aspect-ratio:4/5){.app{align-content:start}} /* a tall phone: the game at the top, the players stand on the ground below it */
 .app.offstage{visibility:hidden} /* the title screen covers the game; keep the live HUD out of sight */
-button{font-family:inherit;color:inherit;cursor:pointer}
-button:focus-visible{outline:4px solid #fff;outline-offset:2px}
-.panel button:focus-visible{outline-color:var(--ink)} /* the panels are white, so a white ring would be invisible there */
 .hud{grid-area:hud;display:flex;align-items:center;gap:8px}
 .turn{flex:1;min-width:0;display:flex;justify-content:center}
-.turn div{background:#fff;border-radius:999px;padding:7px 14px;font-weight:700;font-size:1.1rem;line-height:1.15;box-shadow:0 3px 0 rgba(0,0,0,.15);
-  text-align:center;overflow-wrap:break-word;border:3px solid var(--who,#fff);max-width:100%;transition:border-color .2s}
+.turn>div{display:flex;align-items:center;gap:6px;background:var(--ok-card);color:var(--ok-text);border-radius:999px;padding:4px 14px 4px 6px;font-weight:800;font-size:1.1rem;line-height:1.15;
+  box-shadow:0 3px 0 var(--c4-ink);text-align:center;overflow-wrap:break-word;border:3px solid var(--who,var(--rim));max-width:100%;transition:border-color .2s;min-height:36px;box-sizing:border-box}
+.turn>div.noface{padding-inline-start:14px}
+.turn canvas{flex:none;width:34px;height:34px}
 .turn div.long{font-size:.95rem}   /* long names wrap to a second line instead of being cut off */
 .turn div.thinking{animation:breathe 1.2s ease-in-out infinite}
 @keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
-.icon-btn{width:46px;height:46px;flex:none;border:0;border-radius:50%;background:#fff;font-size:1.35rem;box-shadow:0 4px 0 rgba(0,0,0,.18);display:grid;place-items:center;padding:0}
-.icon-btn:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.18)}
 .scores{grid-area:scores;display:flex;align-items:stretch;justify-content:center;gap:8px} /* both chips the same height, even when one name is shrunk */
-/* A chip is a small grid: the name (and, in a series, the win dots under it) on the left, the win count on the right.
-   Putting the dots under the name instead of beside it keeps even a 12-letter name on one line at phone width. */
-.pchip{max-width:300px;flex:1;min-width:0;display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:6px;row-gap:3px;align-items:center;align-content:center;background:#fff;border-radius:16px;padding:5px 9px;border:3px solid var(--pc,#fff);
-  box-shadow:0 3px 0 rgba(0,0,0,.12);font-weight:700;font-size:1rem;transition:transform .2s,box-shadow .2s}
-.pchip.active{transform:translateY(-2px) scale(1.03);box-shadow:0 5px 0 rgba(0,0,0,.18)}
-.pchip .pname{grid-column:1;min-width:0;line-height:1.1;overflow-wrap:break-word}
-.pchip .pname.long{font-size:.8rem}
-.pchip .pwins{grid-column:2;font-size:1.35rem;min-width:1.2em;text-align:end}
-.pchip.series .pwins{grid-row:1 / span 2} /* the number stays centred beside both lines */
-.pchip .sdots{grid-column:1;display:flex;gap:4px} /* "First to 3": one dot per win needed, under the name */
-.pchip .sdots i{width:13px;height:13px;border-radius:50%;background:#e9d5f5;display:block;box-shadow:inset 0 1px 2px rgba(0,0,0,.12)}
+/* A chip: the player's face, the name (and, in a series, the win dots under it), the win count on the right. */
+.pchip{max-width:300px;flex:1;min-width:0;display:grid;grid-template-columns:auto minmax(0,1fr) auto;column-gap:6px;row-gap:3px;align-items:center;align-content:center;
+  background:var(--ok-card);color:var(--ok-text);border-radius:18px;padding:4px 10px 4px 5px;border:3px solid var(--pc,var(--rim));box-shadow:0 3px 0 var(--c4-ink);font-weight:800;font-size:1rem;transition:transform .2s,box-shadow .2s}
+.pchip.active{transform:translateY(-2px) scale(1.03);box-shadow:0 5px 0 var(--c4-ink)}
+.pchip .pface{grid-column:1;grid-row:1 / span 2;width:38px;height:38px;display:block;align-self:center}
+.pchip .pface canvas{width:38px;height:38px;display:block}
+.pchip .pname{grid-column:2;grid-row:1 / span 2;align-self:center;min-width:0;line-height:1.1;white-space:nowrap} /* centred with the face and the score */
+.pchip .pname.wrap{white-space:normal;overflow-wrap:anywhere} /* fitChipNames() shrinks a long name; one still too wide wraps */
+.pchip.series .pname{grid-row:1;align-self:end}
+.pchip.series .sdots{grid-row:2;align-self:start}
+.pchip .pwins{grid-column:3;grid-row:1 / span 2;font-size:1.4rem;min-width:1.2em;text-align:end;font-variant-numeric:tabular-nums}
+.pchip .sdots{grid-column:2;display:flex;gap:4px} /* "First to 3": one dot per win needed, under the name */
+.pchip .sdots i{width:13px;height:13px;border-radius:50%;background:var(--ok-bg2);border:2px solid var(--rim);display:block;box-sizing:border-box}
 .pchip .sdots i.on{background:var(--pc)}
-.vs{font-weight:700;opacity:.7;flex:none;align-self:center;font-size:.9rem}
-@media (max-width:374px){.vs{display:none}.pchip{padding:5px 7px}} /* a 360px phone: the chips need that room for a 12-letter name */
+.vs{font-weight:800;flex:none;align-self:center;font-size:.9rem;background:var(--ok-card);color:var(--ok-text);border:2px solid var(--rim);border-radius:999px;padding:2px 8px}
+@media (max-width:430px){.vs{display:none}.scores{gap:10px}.pchip{padding:4px 9px 4px 4px;column-gap:5px}.pchip .pface,.pchip .pface canvas{width:34px;height:34px}} /* a phone: the chips need that room for "Guest Penguin" on one line */
 .boardWrap{grid-area:board;position:relative;min-height:0;display:grid;place-items:start center}
-canvas#board{display:block;touch-action:none;outline:none;border-radius:16px;transform-origin:top center;transition:transform .45s ease} /* keyboard focus shows as the hovering disc... */
-canvas#board.ring:focus-visible{outline:4px solid #fff;outline-offset:3px} /* ...and as a ring whenever no disc is hovering (the robot's turn, the results) */
+canvas#board{display:block;touch-action:none;outline:none;border-radius:18px;transform-origin:top center;transition:transform .45s ease} /* keyboard focus shows as the hovering disc... */
+canvas#board.ring:focus-visible{outline:4px solid var(--ok-focus);outline-offset:3px} /* ...and as a ring whenever no disc is hovering (the robot's turn, the results) */
 /* No min-height here: an explicit one would become the row's minimum in the grid and let a two-line message
    spill over the Undo row on a very short screen. An empty message keeps one line with a blank instead. */
-.msg{grid-area:msg;text-align:center;font-weight:700;font-size:1.1rem;line-height:1.25;margin:0;text-shadow:0 1px 0 rgba(255,255,255,.6);overflow-wrap:break-word}
-.msg:empty::before{content:"\00a0"}
+.msg{grid-area:msg;justify-self:center;display:flex;align-items:center;gap:6px;max-width:100%;box-sizing:border-box;text-align:center;font-weight:800;font-size:1.08rem;line-height:1.25;margin:0;
+  background:var(--ok-card);color:var(--ok-text);border:2.5px solid var(--rim);border-radius:18px;padding:5px 14px;box-shadow:0 3px 0 var(--c4-ink);overflow-wrap:break-word}
+.msg canvas{flex:none;width:30px;height:30px;margin-inline-start:-6px}
+.msg #msgText:empty::before{content:"\00a0"}
 .ctrl{grid-area:ctrl;display:flex;justify-content:center;gap:10px}
-.mini{border:0;border-radius:16px;background:#fff;font-weight:700;font-size:1.05rem;padding:10px 18px;min-height:48px;box-shadow:0 4px 0 rgba(0,0,0,.15)}
-.mini:active:not(:disabled){transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.15)}
-.mini:disabled{opacity:.45;cursor:default}
-.screen{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;padding:14px;background:rgba(59,31,71,.38)}
-.screen.results{background:rgba(59,31,71,.14);align-items:flex-end;pointer-events:none} /* the HUD's mute button stays live behind the thin tint */
-.screen.results .panel{pointer-events:auto}
-.app.over #pauseBtn{visibility:hidden} /* nothing to pause once the game is over */
-.panel{position:relative;background:var(--card);border-radius:28px;padding:14px 16px 16px;width:min(100%,440px);max-height:100%;overflow:auto;text-align:center;
-  box-shadow:0 10px 0 rgba(0,0,0,.18);display:flex;flex-direction:column;align-items:center;gap:8px}
-.panel h1{margin:0;font-size:clamp(2rem,9vw,2.7rem);line-height:1.05;color:var(--accent);letter-spacing:.01em}
-.panel h2{margin:0;font-size:clamp(1.5rem,7vw,2rem);line-height:1.1;color:var(--accent)}
-.panel p{margin:0;font-size:1.05rem;line-height:1.35}
-.panel .hint{font-size:.92rem;opacity:.75}
-.logo{width:150px;height:60px;flex:none;display:block} /* flex:none so the panel never squashes the logo */
-.kbhint{display:none} /* the keyboard hint only fits on tall screens */
-@media (min-height:760px){.kbhint{display:block}}
-.row{display:flex;gap:8px;width:100%;justify-content:center}
-.row button{flex:1;border:3px solid var(--softEdge);background:var(--soft);border-radius:16px;min-height:44px;font-weight:700;font-size:1rem;padding:6px 5px;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
-.row button[aria-pressed="true"]{background:var(--accent);border-color:var(--accentDark);color:#fff}
-@media (max-width:374px){.row button{font-size:.9rem;padding:6px 3px}} /* three level buttons still fit on a 360px phone */
-/* Translated labels: fitButtons() shrinks a label that is too wide; one that still does not fit wraps (never "…"). */
-.row button.wrap,.btns .big-btn.wrap,.big-btn.wrap{white-space:normal;line-height:1.1;overflow-wrap:anywhere;text-overflow:clip}
-:lang(ar) *{letter-spacing:0!important} /* letter spacing breaks joined Arabic letters */
-:lang(ja) .panel p,:lang(ja) .msg,:lang(ja) .turn div{word-break:keep-all;overflow-wrap:anywhere} /* Japanese lines break at the spaces between phrases */
-.setup,.setupL,.setupR{display:contents}
-.seats{display:flex;flex-direction:column;gap:8px;width:100%}
-.seat{display:flex;align-items:center;gap:8px;background:var(--soft);border-radius:18px;padding:6px}
-.seat .who{flex:none;font-size:1rem;font-weight:700;opacity:.8;width:2.8em;text-align:start;padding-inline-start:4px}
-.seat button{border:3px solid var(--softEdge);background:#fff;border-radius:14px;min-height:44px;font-weight:700;font-size:1.1rem;padding:4px 10px}
-.seat button.fixed{cursor:default;border-color:transparent;background:transparent} /* the robot's picture and name cannot change: shown as labels */
-.seat button.fixed:active{animation:wiggle .35s ease} /* ...but a tap still gets a little beep and wiggle */
-@keyframes wiggle{0%,100%{transform:rotate(0)}30%{transform:rotate(-10deg) scale(1.1)}70%{transform:rotate(8deg) scale(1.1)}}
-.seat .emojiBtn{flex:none;width:52px;font-size:1.5rem;padding:0}
-.seat .nameBtn{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.seat .nameBtn.long{font-size:.95rem;padding:4px 6px}
-.seat .nameBtn.wrap{white-space:normal;overflow-wrap:anywhere;line-height:1.1} /* a name too wide even at the smallest size wraps instead of being cut */
-.panel .mute.corner{position:absolute;top:10px;inset-inline-end:10px}
-.seat .colorBtn{flex:none;width:52px;padding:0;display:grid;place-items:center}
-.seat .colorBtn i{width:30px;height:30px;border-radius:50%;display:block;background:radial-gradient(circle at 35% 30%,var(--dl),var(--dm) 55%,var(--dd));box-shadow:0 2px 0 rgba(0,0,0,.2)}
-.big-btn{border:0;border-radius:20px;background:var(--accent);color:#fff;font-weight:700;font-size:1.5rem;padding:14px 34px;min-height:60px;min-width:200px;box-shadow:0 6px 0 var(--accentDark)}
-.big-btn.alt{background:var(--soft);color:var(--ink);box-shadow:0 6px 0 var(--softEdge);font-size:1.15rem;min-height:52px;padding:10px 24px}
-.big-btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--accentDark)}
-.big-btn.alt:active{box-shadow:0 2px 0 var(--softEdge)}
+.ctrl .ok-btn{min-height:48px}
+.ctrl .ok-btn:disabled{opacity:1;cursor:default;background:var(--ok-bg2);color:color-mix(in srgb,var(--ok-text) 45%,var(--ok-bg2));box-shadow:none;transform:none} /* solid, so the world never shows through it */
+/* the results card: under the board, the board (and its winning line) stays in view above it */
+.c4 .resScreen{align-items:flex-end;pointer-events:none;background:none} /* the HUD's sound button stays live behind it */
+.resScreen .ok-card{pointer-events:auto;width:min(100%,440px);padding:14px 14px 16px;gap:7px}
+.resScreen .resHead{display:flex;align-items:center;justify-content:center;gap:8px;max-width:100%}
+.resScreen .resFace{display:flex;gap:2px;flex:none}
+.resScreen .resFace canvas{display:block}
+.resScreen p{margin:0;font-size:1.05rem;font-weight:600;line-height:1.3;text-wrap:balance}
+.resScreen .ok-h2{font-size:clamp(1.5rem,7vw,1.9rem)}
+/* the win headline in the winner's disc colour with a sticker Ink edge (like the title lockup) */
+.resScreen .ok-h2.cheer{color:var(--win);-webkit-text-stroke:4px var(--c4-ink);paint-order:stroke fill;text-shadow:0 3px 0 var(--c4-ink);letter-spacing:.03em;line-height:1.15}
+.score-line{font-size:1.35rem;font-weight:800}
 .chips{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
-.chip{font-weight:700;background:#fff4cc;border-radius:999px;padding:6px 14px;font-size:1rem}
-.chip.good{background:#dcfce7}
-.chip .sub{display:block;font-size:.85rem;opacity:.8;line-height:1.2} /* the per-level breakdown on its own line */
-.score-line{font-size:1.4rem;font-weight:700}
+.chip{display:inline-flex;align-items:center;gap:6px;font-weight:800;background:var(--c4-sparkTint);color:var(--c4-ink);border:2px solid var(--c4-ink);border-radius:999px;padding:4px 12px;font-size:.95rem;line-height:1.2}
+.chip svg{width:1.15em;height:1.15em;flex:none}
+.chip.good{background:var(--c4-mintTint)}
+.chip .sub{display:block;font-size:.85rem;opacity:.85;line-height:1.2} /* the per-level breakdown on its own line */
+.chip.col{flex-direction:column;gap:0}
 .btns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;width:100%}
-.btns .big-btn{flex:1;min-width:140px;font-size:1.25rem;padding:10px 12px;min-height:54px;white-space:nowrap}
-.btns .big-btn.alt{font-size:1rem}
-@media (max-width:374px){.btns .big-btn{font-size:1.1rem;padding:10px 8px;min-width:120px}} /* "Play again" and "Pick players" stay on one line on a 360px phone */
-.results .panel{padding:14px 14px 16px;gap:8px}
-.results .chip{font-size:.95rem;padding:5px 12px}
-.results .mute{display:none} /* in portrait the HUD's own mute button stays tappable above the panel; landscape hides the HUD and shows this one */
+.btns .ok-btn{flex:1 1 auto;min-width:140px;min-height:54px;white-space:nowrap}
+.resScreen .mute.corner{display:none;position:absolute;top:10px;inset-inline-end:10px} /* in portrait the HUD's own sound button stays tappable above the card */
+.app.over #pauseBtn{visibility:hidden} /* nothing to pause once the game is over */
+
+/* ---------- Title (the kit's title screen; the game's card: who plays, the level, the series, the two seats, Play) ---------- */
+.ok-ui .ok-title-screen .ok-title-block{max-height:none}
+.c4-tcard{display:flex;flex-direction:column;align-items:center;gap:8px;width:min(460px,calc(100vw - 28px));box-sizing:border-box;background:var(--ok-card);color:var(--ok-text);
+  border:3px solid var(--c4-ink);border-radius:26px;box-shadow:0 6px 0 var(--c4-ink);padding:10px 10px 12px}
+.ok-night .c4-tcard{border-color:color-mix(in srgb,var(--c4-cream) 34%,transparent);box-shadow:0 6px 0 black}
+.ok-ui .ok-title-screen .c4-tcard .ok-p{border:0;box-shadow:none;background:none;padding:0 6px;font-size:clamp(1rem,2.4vmin,1.15rem)}
+.ok-title-screen .c4-tcard .ok-big{margin-top:2px}
+.ok-title-screen .c4-tcard .ok-cta::before{display:none}
+.setup,.setupL,.setupR{display:contents}
+.row{display:flex;gap:5px;width:100%;justify-content:center;background:var(--ok-bg2);border:2.5px solid var(--ok-line);border-radius:20px;padding:4px;box-sizing:border-box}
+.row button{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;border:0;background:transparent;color:var(--ok-text);border-radius:15px;min-height:44px;font-weight:800;font-size:1rem;padding:4px 5px;
+  white-space:nowrap;overflow:hidden;min-width:0;line-height:1.1}
+.row button svg{width:20px;height:20px;flex:none}
+#levelRow button{flex-direction:column;gap:1px;padding:3px 4px;min-height:50px}
+#levelRow button svg{width:15px;height:15px}
+.row button .ico{display:flex;flex:none}
+.row button[aria-pressed="true"]{background:var(--c4-coral);color:var(--c4-ink);box-shadow:inset 0 0 0 2.5px var(--c4-ink),0 3px 0 var(--c4-ink)}
+@media (max-width:374px){.row button{font-size:.9rem;padding:4px 3px}.row button svg{width:16px;height:16px}} /* three level buttons still fit on a 360px phone */
+/* Translated labels: fitButtons() shrinks a label that is too wide; one that still does not fit wraps (never "…"). */
+.row button.wrap,.btns .ok-btn.wrap,.c4-tcard .ok-big.wrap{white-space:normal;overflow-wrap:anywhere}
+.seats{display:flex;flex-direction:column;gap:6px;width:100%}
+.seat{display:flex;align-items:center;gap:6px;background:var(--ok-bg2);border:2.5px solid var(--ok-line);border-radius:20px;padding:4px;box-sizing:border-box}
+.seat .who{flex:none;font-size:.95rem;font-weight:800;color:var(--soft);width:2.4em;text-align:start;padding-inline-start:5px}
+.seat button{border:2.5px solid var(--rim);background:var(--ok-card);color:var(--ok-text);border-radius:15px;min-height:48px;font-weight:800;font-size:1.08rem;padding:2px 10px;box-shadow:0 3px 0 var(--c4-ink)}
+.seat button:active{transform:translateY(2px);box-shadow:0 1px 0 var(--c4-ink)}
+.seat button.fixed{cursor:default;border-color:transparent;background:transparent;box-shadow:none} /* the robot's picture and name cannot change: shown as labels */
+.seat button.fixed:active{transform:none;animation:wiggle .35s ease} /* ...but a tap still gets a little beep and wiggle */
+@keyframes wiggle{0%,100%{transform:rotate(0)}30%{transform:rotate(-10deg) scale(1.1)}70%{transform:rotate(8deg) scale(1.1)}}
+.seat .emojiBtn{flex:none;width:56px;height:56px;padding:0;display:grid;place-items:center}
+.seat .emojiBtn canvas{width:44px;height:44px;display:block}
+.seat .nameBtn{flex:1;min-width:0;white-space:nowrap;overflow:hidden}
+.seat .nameBtn.long{font-size:.95rem;padding:2px 6px}
+.seat .nameBtn.wrap{white-space:normal;overflow-wrap:anywhere;line-height:1.1} /* a name too wide even at the smallest size wraps instead of being cut */
+.seat .colorBtn{flex:none;width:56px;height:56px;padding:0;display:grid;place-items:center}
+.seat .colorBtn canvas{width:40px;height:40px;display:block}
+.c4-tcard .hint{margin:0;font-size:.9rem;font-weight:600;color:var(--soft);text-align:center;line-height:1.3}
+.c4-tcard .chip{font-size:.92rem}
+.kbhint{display:none} /* the keyboard hint shows with a mouse, on a tall screen */
+@media (hover:hover) and (pointer:fine) and (min-height:700px){.kbhint{display:block}}
+.ok-pause .c4-note{margin:-4px 0 0;font-weight:600;line-height:1.35;max-width:32ch;text-wrap:balance}
+html[lang="ar"] .c4 *,html[lang="ar"] .c4-tcard *{letter-spacing:0!important} /* letter spacing breaks joined Arabic letters */
+html[lang="ja"] .c4 p,html[lang="ja"] .c4 .msg,html[lang="ja"] .turn div,html[lang="ja"] .c4-tcard p{word-break:keep-all;overflow-wrap:anywhere} /* Japanese lines break at the spaces between phrases */
 @media (orientation:landscape) and (max-height:560px){
   .app{grid-template-areas:"board hud" "board scores" "board msg" "board ctrl";grid-template-rows:auto auto minmax(0,1fr) auto;grid-template-columns:minmax(0,1fr) 300px;column-gap:14px;align-content:stretch}
-  .boardWrap{height:auto!important}
-  .turn div{font-size:1rem;padding:7px 10px}
+  .boardWrap{height:auto!important;place-items:center}
+  .turn>div{font-size:1rem;padding:3px 10px 3px 4px}
   .turn div.long{font-size:.85rem} /* a 12-letter name's turn still fits on one line beside the two round buttons */
-  .setup{display:grid;grid-template-columns:1.2fr 1fr;gap:10px;width:100%;align-items:start}
-  .setupL,.setupR{display:flex;flex-direction:column;gap:8px;min-width:0}
-  .panel{width:min(100%,620px)}
-  .panel .hint,.logo,.seat .who{display:none}
-  .seat button{font-size:1rem}
   .scores{flex-direction:column;align-items:stretch}
   .vs{display:none}
   .msg{white-space:normal;line-height:1.3;align-self:center} /* the message floats mid-column, so robot mode (no Undo row) has no empty tail */
   .ctrl{flex-direction:column;align-items:stretch}
-  .screen.results{align-items:center;justify-content:flex-end}
-  .screen.results .panel{width:min(100%,300px)} /* widened by script into the free space next to the board */
-  .screen.results .panel h2{font-size:1.6rem}
-  .results .mute{display:grid}
-  .app.over .hud,.app.over .scores,.app.over .msg,.app.over .ctrl{visibility:hidden} /* the results panel takes the side column */
-  .panel{padding:14px 16px;gap:8px}
-  .boardWrap{place-items:center}
+  .c4 .resScreen{align-items:center;justify-content:flex-end}
+  .resScreen .ok-card{width:min(100%,300px);padding:12px 12px 14px;gap:6px} /* widened by script into the free space next to the board */
+  .resScreen .ok-h2{font-size:1.5rem}
+  .resScreen .resFace{display:none}
+  .resScreen .mute.corner{display:grid}
+  .app.over .hud,.app.over .scores,.app.over .msg,.app.over .ctrl{visibility:hidden} /* the results card takes the side column */
+  .ok-ui .ok-title-screen{padding-top:6px}
+  .ok-ui .ok-title-screen .ok-h1{font-size:clamp(1.5rem,7.5vmin,2rem);margin:0}
+  .ok-ui .ok-title-screen .ok-title-block{gap:4px;padding-top:0}
+  .ok-ui .ok-title-badge{display:none}
+  .c4-tcard{width:min(640px,calc(100vw - 28px));padding:8px 10px 10px;gap:6px}
+  .setup{display:grid;grid-template-columns:1.15fr 1fr;gap:8px;width:100%;align-items:start}
+  .setupL,.setupR{display:flex;flex-direction:column;gap:6px;min-width:0}
+  .c4-tcard .hint,.seat .who{display:none}
+  .row button{min-height:36px}
+  #levelRow button{min-height:40px;gap:0}
+  #levelRow button svg{width:13px;height:13px}
+  .seat button{font-size:1rem;min-height:44px}
+  .seat .emojiBtn,.seat .colorBtn{width:48px;height:48px}
+  .seat .emojiBtn canvas{width:38px;height:38px}
+  .ok-title-screen .c4-tcard .ok-big{min-height:44px;margin-top:0}
+  .ok-ui .ok-title-screen .ok-title-block>.c4-tcard{margin-top:8px} /* a clear gap under the title lockup */
+  /* the pause card: two buttons a row under Resume, so Quit and the Sound switch fit on a phone on its side */
+  .ok-ui .ok-pause .ok-card{width:min(540px,100%);max-height:100%;overflow-y:auto;box-sizing:border-box;padding:10px 16px 12px;gap:6px;border-radius:24px;box-shadow:0 5px 0 var(--c4-ink)}
+  .ok-ui .ok-pause .ok-h2{font-size:1.5rem;margin:0;line-height:1.1}
+  .ok-pause .c4-note{margin:0;font-size:.95rem}
+  .ok-ui .ok-pause .ok-col{display:grid;grid-template-columns:1fr 1fr;gap:8px;max-width:none}
+  .ok-ui .ok-pause .ok-col>.ok-big{grid-column:1 / -1;min-height:50px;font-size:1.2em}
+  .ok-ui .ok-pause .ok-col>.ok-btn{min-height:46px}
+  .ok-ui .ok-pause .ok-srow{min-height:46px;box-sizing:border-box}
 }
-@media (prefers-reduced-motion:reduce){.app,canvas#board{transition:none}}
-@media (prefers-reduced-motion:reduce){.turn div.thinking{animation:none}.pchip{transition:none}.seat button.fixed:active{animation:none}}
+/* a wide screen (desktop, a tablet on its side): the title card's options and seats side by side */
+@media (min-width:760px) and (min-height:561px){
+  .c4-tcard{width:min(720px,calc(100vw - 40px))}
+  /* the results card goes wide and short (portrait beside the words, the chips and buttons in rows), so the
+     final board above it stays big */
+  .resScreen .ok-card{width:min(100%,620px);display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:14px;row-gap:6px;padding:12px 18px 16px;justify-items:center}
+  .resScreen .resHead{display:contents}
+  .resScreen .resFace{grid-column:1;grid-row:1 / span 3;align-self:center}
+  .resScreen .resHead .ok-h2,.resScreen #resultSub,.resScreen .score-line{grid-column:2}
+  .resScreen .chips,.resScreen .btns{grid-column:1 / -1}
+  .resScreen .btns{flex-wrap:nowrap}
+  .resScreen .btns .ok-btn{flex:1 1 0}
+  .setup{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;align-items:start}
+  .setupL,.setupR{display:flex;flex-direction:column;gap:6px;min-width:0}
+}
+@media (prefers-reduced-motion:reduce){.app,canvas#board{transition:none}.turn div.thinking{animation:none}.pchip{transition:none}.seat button.fixed:active{animation:none}}
+.ok-rm .app,.ok-rm canvas#board{transition:none}
+.ok-rm .turn div.thinking,.ok-rm .seat button.fixed:active{animation:none}
+.ok-rm .pchip{transition:none}
 </style>
 
+<div class="c4" id="game">
 <div class="app offstage" id="app">
   <div class="hud" id="hud">
-    <button class="icon-btn" id="pauseBtn" aria-label="Pause" data-i18n-aria="pause">⏸️</button>
-    <div class="turn"><div id="turnEl"></div></div>
-    <button class="icon-btn mute" aria-label="Turn sound off">🔊</button>
+    <span id="pauseSlot"></span>
+    <div class="turn"><div id="turnEl"><span id="turnFace"></span><span id="turnText"></span></div></div>
+    <span id="muteSlot"></span>
   </div>
   <div class="scores" id="scores">
-    <div class="pchip" id="chip1"><span class="pname" id="chipName1"></span><span class="sdots" id="dots1" hidden></span><b class="pwins" id="chipWins1">0</b></div>
+    <div class="pchip" id="chip1"><span class="pface" id="face1"></span><span class="pname" id="chipName1"></span><span class="sdots" id="dots1" hidden></span><b class="pwins" id="chipWins1">0</b></div>
     <span class="vs" data-i18n="vs">vs</span>
-    <div class="pchip" id="chip2"><span class="pname" id="chipName2"></span><span class="sdots" id="dots2" hidden></span><b class="pwins" id="chipWins2">0</b></div>
+    <div class="pchip" id="chip2"><span class="pface" id="face2"></span><span class="pname" id="chipName2"></span><span class="sdots" id="dots2" hidden></span><b class="pwins" id="chipWins2">0</b></div>
   </div>
   <div class="boardWrap" id="boardWrap"><canvas id="board" tabindex="0" aria-label="Game board. Use the arrow keys to pick a column and Enter to drop a disc." data-i18n-aria="boardAria"></canvas></div>
-  <p class="msg" id="msgEl" aria-live="polite" data-i18n="tapColumn">Tap a column to drop a disc.</p>
-  <div class="ctrl" id="ctrlRow">
-    <button class="mini" id="undoBtn" data-i18n="undo" data-emoji="↩️">↩️ Undo</button>
-  </div>
+  <p class="msg" id="msgEl" aria-live="polite"><span id="msgFace"></span><span id="msgText"></span></p>
+  <div class="ctrl" id="ctrlRow"><span id="undoSlot"></span></div>
 </div>
 
-<section class="screen" id="titleScreen">
-  <div class="panel">
-    <svg class="logo" viewBox="0 0 150 60" aria-hidden="true">
-      <rect x="3" y="6" width="144" height="50" rx="12" fill="#2f62e6"/>
-      <rect x="6" y="9" width="138" height="44" rx="10" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="2"/>
-      <g>
-        <circle cx="24" cy="31" r="14" fill="#1c3f9c"/><circle cx="24" cy="30" r="12" fill="#ff4b4b"/><ellipse cx="20" cy="25" rx="4" ry="2.4" fill="rgba(255,255,255,.6)"/>
-        <circle cx="58" cy="31" r="14" fill="#1c3f9c"/><circle cx="58" cy="30" r="12" fill="#ffcf33"/><ellipse cx="54" cy="25" rx="4" ry="2.4" fill="rgba(255,255,255,.6)"/>
-        <circle cx="92" cy="31" r="14" fill="#1c3f9c"/><circle cx="92" cy="30" r="12" fill="#ff4b4b"/><ellipse cx="88" cy="25" rx="4" ry="2.4" fill="rgba(255,255,255,.6)"/>
-        <circle cx="126" cy="31" r="14" fill="#1c3f9c"/><circle cx="126" cy="30" r="12" fill="#ffcf33"/><ellipse cx="122" cy="25" rx="4" ry="2.4" fill="rgba(255,255,255,.6)"/>
-      </g>
-    </svg>
-    <h1 id="titleText">Drop Four</h1>
-    <p data-i18n="tagline">Drop discs. Get four in a row. Win!</p>
-    <div class="setup">
-      <div class="setupL">
-        <div class="row" role="group" aria-label="Who plays" data-i18n-aria="whoPlays">
-          <button data-mode="two" aria-pressed="false" data-i18n="twoPlayers" data-emoji="👫">👫 Two players</button>
-          <button data-mode="robot" aria-pressed="true" data-i18n="vsRobot" data-emoji="🤖">🤖 Vs Robot</button>
-        </div>
-        <div class="row" id="levelRow" role="group" aria-label="Robot level" data-i18n-aria="robotLevel">
-          <button data-level="easy" aria-pressed="false" data-i18n="easy" data-emoji="🌱">🌱 Easy</button>
-          <button data-level="normal" aria-pressed="true" data-i18n="normal" data-emoji="⭐">⭐ Normal</button>
-          <button data-level="hard" aria-pressed="false" data-i18n="hard" data-emoji="🔥">🔥 Hard</button>
-        </div>
-        <div class="row" role="group" aria-label="How many games" data-i18n-aria="howMany">
-          <button data-series="single" aria-pressed="true" data-i18n="oneGame" data-emoji="🎮">🎮 1 game</button>
-          <button data-series="three" aria-pressed="false" data-i18n="firstTo" data-emoji="🏆">🏆 First to 3</button>
-        </div>
-      </div>
-      <div class="setupR">
-        <div class="seats">
-          <div class="seat"><span class="who">P1</span><button class="emojiBtn" data-p="0" aria-label="Change picture" data-i18n-aria="changePic">🦊</button><button class="nameBtn" data-p="0" aria-label="Change name" data-i18n-aria="changeName">Fox</button><button class="colorBtn" data-p="0" aria-label="Change disc color" data-i18n-aria="changeColor"><i></i></button></div>
-          <div class="seat"><span class="who">P2</span><button class="emojiBtn" data-p="1" aria-label="Change picture" data-i18n-aria="changePic">🐸</button><button class="nameBtn" data-p="1" aria-label="Change name" data-i18n-aria="changeName">Frog</button><button class="colorBtn" data-p="1" aria-label="Change disc color" data-i18n-aria="changeColor"><i></i></button></div>
-        </div>
-        <p class="hint" id="setupHint">Tap your picture, name or disc to change it.</p>
-        <div class="chip" id="bestChip">🏆 Robot points: 0</div>
-      </div>
-    </div>
-    <button class="big-btn" id="playBtn" data-i18n="play" data-emoji="▶">▶ Play</button>
-    <p class="hint kbhint" id="kbHint">Tap a column to drop. Keys 1–7, ← → and Enter work too.</p>
-    <button class="icon-btn mute corner" aria-label="Turn sound off">🔊</button>
-  </div>
-</section>
-
-<section class="screen" id="pauseScreen" hidden>
-  <div class="panel">
-    <h2 data-i18n="paused">Paused</h2>
-    <p id="pauseInfo"></p>
-    <button class="big-btn" id="resumeBtn" data-i18n="keepPlaying" data-emoji="▶">▶ Keep playing</button>
-    <div class="btns">
-      <button class="big-btn alt" id="restartBtn" data-i18n="startOver" data-emoji="🔄">🔄 Start over</button>
-      <button class="big-btn alt" id="quitBtn" data-i18n="quit" data-emoji="🏠">🏠 Quit</button>
-    </div>
-    <button class="icon-btn mute" aria-label="Turn sound off">🔊</button>
-  </div>
-</section>
-
-<section class="screen results" id="resultScreen" hidden>
-  <div class="panel">
-    <h2 id="resultTitle"></h2>
+<section class="ok-modal resScreen" id="resultScreen" role="dialog" aria-labelledby="resultTitle" hidden>
+  <div class="ok-card">
+    <div class="resHead"><div class="resFace" id="resFace"></div><h2 class="ok-h2" id="resultTitle"></h2></div>
     <p id="resultSub"></p>
     <div class="score-line" id="resultScore"></div>
     <div class="chips" id="resultChips"></div>
-    <div class="btns">
-      <button class="big-btn" id="againBtn" data-i18n="playAgain" data-emoji="▶">▶ Play again</button>
-      <button class="big-btn alt" id="changeBtn" data-i18n="pickPlayers" data-emoji="👫">👫 Pick players</button>
-    </div>
-    <button class="icon-btn mute" aria-label="Turn sound off">🔊</button>
+    <div class="btns" id="resBtns"></div>
   </div>
 </section>
+</div>
 
+<script src="/vendor/oomba-kit/1.1.0/oomba-kit.js" integrity="sha384-GCejMN1YYamlsZNEJw6SRznGmZC2i6tppYwkLt8cv2gI3YTTsZq6l8eyUQuAM8qX" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.0/packs/dress.js" integrity="sha384-ZCFgY98YAWY7Tcy+GfJLalmnJukKdzbVpg6j4ZljXuJSYgYzkWSWMPihVW/u8CqH" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.0/packs/art-props.js" integrity="sha384-/RtKQ/ov2WG1EoCt4pJ98rHY07jOZjZ+lia901K+1BfS49MydEROuw7UaInBPHle" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.0/packs/art-animals.js" integrity="sha384-0kgnnCmovTaNwWnsPFryp1c8kgX7ji/jku0tdAsfRwfiaWP9usy3eBLuIdBsh8jE" crossorigin="anonymous"></script>
 <script>
 /* =====================================================================================
    CONFIG: change these to make the game your own!
    ===================================================================================== */
 const CONFIG = {
   title: 'Drop Four',
+  theme: 'candy',           // the kit's world behind the game (its hills, sweets and coral accent)
   cols: 7, rows: 6, inARow: 4,
   saveKey: 'drop-four-v1',
   seriesWins: 3,            // "First to 3" series length
   gravity: 40,              // how fast a disc falls (cells per second, per second)
   bounce: 0.3,              // how bouncy a landing is (0 = thud, 0.5 = very bouncy)
-  emojiOnDiscs: true,       // draw each player's picture on their discs
+  facesOnDiscs: true,       // draw each player's character on their discs (it also tells the discs apart without colour)
   robot: {
     name: 'Robo', emoji: '🤖',
+    look: { species: 'oomba', colors: { base: 'stone' }, wear: ['glasses', 'headphones'] },   // the robot's character
     minThinkMs: 600,        // the robot always "thinks" at least this long so it feels fair
     hoverMs: 320,           // the robot shows its disc over the column before dropping
     sliceMs: 35,            // the search never blocks the screen longer than this
@@ -250,16 +243,34 @@ const CONFIG = {
     hard:   { depth: 7, slipChance: 0 },                          // looks 7 moves ahead with full pruning and a cache
     pointsPerWin: { easy: 1, normal: 2, hard: 4 }                 // leaderboard points for beating each level
   },
+  // Disc colours: a kit hue name, or main / dark / light colour codes for a colour the kit has no hue for.
   discs: [
-    { id: 'red',    name: 'Red',    main: '#ff4b4b', dark: '#c71f1f', light: '#ffb0b0' },
-    { id: 'yellow', name: 'Yellow', main: '#ffcf33', dark: '#d19600', light: '#fff1b0' },
-    { id: 'green',  name: 'Green',  main: '#45d47a', dark: '#17923f', light: '#b9f5cf' },
-    { id: 'purple', name: 'Purple', main: '#a985ff', dark: '#6b2fd9', light: '#ddd2ff' },
-    { id: 'orange', name: 'Orange', main: '#ff8a3d', dark: '#c75500', light: '#ffd0b0' },
-    { id: 'pink',   name: 'Pink',   main: '#ff6fb5', dark: '#c2287a', light: '#ffc4e2' },
-    { id: 'cyan',   name: 'Cyan',   main: '#3fd0e8', dark: '#0f88a3', light: '#bdf1fa' }
+    { id: 'red',    name: 'Red',    hue: 'coral' },
+    { id: 'yellow', name: 'Yellow', hue: 'spark' },
+    { id: 'green',  name: 'Green',  hue: 'mint' },
+    { id: 'purple', name: 'Purple', hue: 'grape' },
+    { id: 'orange', name: 'Orange', hue: 'peach' },
+    { id: 'pink',   name: 'Pink',   main: '#FF7EB6', dark: '#C93F7F', light: '#FFC2DC' },
+    { id: 'cyan',   name: 'Cyan',   main: '#3FCFE4', dark: '#128AA3', light: '#B5EEF7' }
   ],
-  emojis: ['🦊', '🐸', '🐼', '🦄', '🐯', '🐙', '🦖', '🐧', '🐱', '🐶', '🦋', '🐵'],
+  // The pictures players tap through: player one's own character first ('me': their Me-page avatar), then these kit
+  // animals. The emoji are only the ids kept in the save (older versions showed them), so old saves keep their pick.
+  pictures: {
+    '🦊': { species: 'fox' },
+    '🐸': { species: 'frog' },
+    '🐼': { species: 'bear', colors: { base: 'snow' } },
+    '🦄': { species: 'bunny', colors: { base: 'grape' } },
+    '🐯': { species: 'cat', colors: { base: 'peach' } },
+    '🐙': { species: 'oomba', colors: { base: 'coral' } },
+    '🦖': { species: 'frog', colors: { base: 'sky' } },
+    '🐧': { species: 'penguin' },
+    '🐱': { species: 'cat' },
+    '🐶': { species: 'dog' },
+    '🦋': { species: 'bee' },
+    '🐵': { species: 'mouse' },
+    '🦉': { species: 'owl' },
+    '🦆': { species: 'duck' }
+  },
   // The nicknames players tap through (we never ask for real names). These English words are the ids kept in the
   // save; each language shows its own word for them (I18N[lang].nick), so a save works in every language.
   nicknames: ['Fox', 'Frog', 'Rocket', 'Star', 'Bubbles', 'Tiger', 'Pickle', 'Comet', 'Waffle', 'Ninja', 'Panda', 'Zippy', 'Mango', 'Sparky']
@@ -1267,7 +1278,10 @@ document.documentElement.lang = LANG;
 const $ = id => document.getElementById(id);
 const { cols: COLS, rows: ROWS } = CONFIG;
 const CENTRE = Math.floor((COLS - 1) / 2);   // the middle column (3 on the classic 7-wide board); the robot and the preview start here
-let REDUCED = false; try { REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { /* ignore */ }
+// The kit's reduced motion (the device, the site or the kit's own setting), kept current: the kit's settings screen
+// can turn it on mid-game.
+let REDUCED = !!Oomba.settings.reduced;
+Oomba.settings.on('change', () => { REDUCED = !!Oomba.settings.reduced; });
 
 // Seeded random numbers (mulberry32) so tests can replay the robot. seed() is exposed on __brbTest.
 let rngState = (Math.random() * 4294967295) >>> 0;
@@ -1275,20 +1289,125 @@ function rng() { rngState = (rngState + 0x6D2B79F5) >>> 0; let t = rngState; t =
 const pick = arr => arr[Math.floor(rng() * arr.length)];
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const wait = ms => new Promise(r => setTimeout(r, ms));
-const discById = id => CONFIG.discs.find(d => d.id === id) || CONFIG.discs[0];
 const LEVELS = ['easy', 'normal', 'hard'];
 /** English "Fox's", "Bubbles'" (names ending in s only get the apostrophe); used by the English "{pos} turn". */
 const possessive = name => name + (/s$/i.test(name) ? "'" : "'s");
 
+/* =====================================================================================
+   The kit: the candy world, colours, characters and faces, sound
+   ===================================================================================== */
+const TAU = Math.PI * 2;
+const C = (hue, step) => Oomba.color(hue, step);
+const PAL = Oomba.tokens.palette;
+const INK = C('ink'), CREAM = C('card');
+const RTL = DIR === 'rtl';
+/** The discs' colours: a kit hue's light / base / shade steps, or the colour codes given in CONFIG. */
+const DISCS = CONFIG.discs.map(d => {
+  const h = d.hue && PAL[d.hue];
+  return Object.assign({}, d, h ? { light: h[1], main: h[2], dark: h[3] } : {});
+});
+const discById = id => DISCS.find(d => d.id === id) || DISCS[0];
+const cssVars = { ink: INK, cream: CREAM, coral: C('coral', 'light'), sparkTint: C('spark', 'tint'), mintTint: C('mint', 'tint') };
+for (const k in cssVars) document.documentElement.style.setProperty('--c4-' + k, cssVars[k]);
+// The kit's world behind everything: the candy theme's hills (night in the dark theme) with two of its sweets.
+const STAGE = Oomba.stage({ api: 1, biome: CONFIG.theme === 'haunted' ? 'spooky' : CONFIG.theme, size: [960, 540] });
+const PROPS = [];
+for (const [name, x, s] of [['candycane', -430, 120], ['donut', 400, 80]]) {
+  try { PROPS.push({ e: STAGE.add(name, { x, y: 30, size: s, layer: 'near', flip: x > 0 }), x, s }); } catch (e) { /* the art-props pack is missing: the world alone */ }
+}
+/** Frame the world for the screen. A tall phone would otherwise see a narrow slice of a wide world (a big empty sky
+    above, flat ground below): the camera moves in closer, puts the hills behind the lower half of the screen, and
+    the two sweets come in from the sides so they stay in view. */
+function frameWorld() {
+  const v = STAGE.view; if (!v || !v.vh || !v.vw) return;
+  const tall = v.vh / v.vw, zoom = tall > 1.4 ? 1.9 : tall > 0.9 ? 1.35 : 1;
+  STAGE.camera.zoom = zoom; STAGE.camera.x = 0;
+  STAGE.camera.y = tall > 0.9 ? 30 - (0.8 - 0.5) * v.vh / zoom : 0;
+  const half = v.vw / 2 / zoom;
+  for (const p of PROPS) { const edge = Math.max(0, half - p.s * 0.45); p.e.x = Math.sign(p.x) * Math.min(Math.abs(p.x), edge); }
+}
+frameWorld();
+Oomba.ui.root().appendChild($('game'));
+Oomba.scene = 'title';
+/** The kit's sounds (captions only for the moments the kit captions); the SDK's names (lose, coin...) pass through. */
+function sfx(name, o) { try { Oomba.sfx(name, Object.assign({ caption: false }, o)); } catch (e) { /* ignore */ } }
+function shake(trauma, el) { if (!REDUCED && !fast) { try { Oomba.juice.shake(trauma, el); } catch (e) { /* ignore */ } } }
+
+/** Player one's own character: their Me-page avatar. A guest's name says an animal ("Guest Fox", "Guest Yeti"), so a
+    guest gets a kit character that matches it (the mascot when the name says nothing we can draw). */
+const GUEST_LOOKS = {
+  fox: { species: 'fox' }, panda: { species: 'bear', colors: { base: 'snow' } }, otter: { species: 'mouse', colors: { base: 'cocoa' } },
+  koala: { species: 'bear', colors: { base: 'stone' } }, tiger: { species: 'cat', colors: { base: 'peach' } }, penguin: { species: 'penguin' },
+  dolphin: { species: 'oomba', colors: { base: 'sky' } }, falcon: { species: 'owl' }, lynx: { species: 'cat', colors: { base: 'cocoa' } },
+  yeti: { species: 'bear', colors: { base: 'snow' }, wear: ['scarf'] }, robot: { species: 'oomba', colors: { base: 'sky' }, wear: ['headset'] },
+  dragon: { species: 'frog', colors: { base: 'grape' } }, shark: { species: 'oomba', colors: { base: 'sky' }, wear: ['visor'] },
+  wolf: { species: 'dog', colors: { base: 'stone' } }, comet: { species: 'oomba', colors: { base: 'grape' }, wear: ['wizard-hat'] },
+  rocket: { species: 'oomba', colors: { base: 'coral' }, wear: ['helmet'] }
+};
+const ME = (() => {
+  const u = (window.BRB && BRB.user) || {};
+  if (u.isGuest) {
+    const word = String(u.displayName || '').trim().split(/\s+/).pop().toLowerCase(), look = GUEST_LOOKS[word];
+    if (look) { try { return Oomba.char(look); } catch (e) { /* the mascot below */ } }
+  }
+  return Oomba.avatar();
+})();
+const lookCache = new Map();
+/** The character for a picture id: 'me', the robot's id, or one of CONFIG.pictures (an unknown id shows the fox). */
+function lookOf(id) {
+  if (id === 'me') return ME;
+  let spec = lookCache.get(id);
+  if (!spec) { spec = Oomba.char(id === CONFIG.robot.emoji ? CONFIG.robot.look : (CONFIG.pictures[id] || CONFIG.pictures['🦊'] || 'fox')); lookCache.set(id, spec); }
+  return spec;
+}
+// How far down the head's top sits in a character's picture, as a share of the crop (the oomba's antenna and the bee's
+// feelers stick up above the head: the crop keeps them, the head just sits a little lower).
+const FACE_DROP = { oomba: 0.02, bee: 0.02 };
+// How much of the character's height the crop takes (round characters have their face low in the body).
+const FACE_SPAN = { oomba: 0.9, bee: 0.82 };
+const faceCache = new Map();
+/** A square canvas (px device pixels) of a character's head and shoulders: the kit's portrait, cropped so the whole
+    head (ears, antenna, hats) fits. Cached. */
+function faceImage(spec, px, mood) {
+  px = Math.max(8, Math.round(px)); const key = (spec.id || JSON.stringify(spec)) + '|' + px + '|' + (mood || '');
+  let c = faceCache.get(key); if (c) return c;
+  const src = Oomba.ui.portrait(spec, { size: px * 1.6, mood: mood || 'happy' });
+  const W = src.width, H = src.height;
+  let x0 = W, y0 = H, x1 = -1, y1 = -1;
+  try {
+    const d = src.getContext('2d').getImageData(0, 0, W, H).data;
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (d[(y * W + x) * 4 + 3] > 40) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+  } catch (e) { x0 = 0; y0 = 0; x1 = W; y1 = H; }
+  if (x1 < 0) { x0 = 0; y0 = 0; x1 = W; y1 = H; }
+  const bw = x1 - x0, bh = y1 - y0, s = Math.max(bw * 1.02, bh * (FACE_SPAN[spec.species] || 0.72)), mid = (x0 + x1) / 2, top = y0 - s * (0.05 - (FACE_DROP[spec.species] || 0));
+  c = document.createElement('canvas'); c.width = c.height = px;
+  c.getContext('2d').drawImage(src, mid - s / 2, top, s, s, 0, 0, px, px);
+  if (faceCache.size > 200) faceCache.clear();
+  faceCache.set(key, c);
+  return c;
+}
+const DPR = () => Math.min(2, window.devicePixelRatio || 1);
+/** A face as a DOM canvas of css x css px (for chips, the turn pill, the seats and the message line): the head in a
+    round sticker frame (a soft fill, the character drawn inside, an Ink ring), so nothing is cut off at a card edge. */
+function faceEl(spec, css, mood, bg) {
+  const d = DPR(), n = Math.round(css * d), lw = Math.max(1.5, css * 0.06) * d, r = n / 2 - lw / 2;
+  const src = faceImage(spec, n - lw * 2.4, mood), c = document.createElement('canvas');
+  c.width = c.height = n; const g = c.getContext('2d');
+  g.beginPath(); g.arc(n / 2, n / 2, r, 0, TAU); g.fillStyle = bg || PAL.snow[1]; g.fill();
+  g.save(); g.clip(); g.drawImage(src, lw * 1.2, lw * 1.2); g.restore();
+  g.lineWidth = lw; g.strokeStyle = INK; g.beginPath(); g.arc(n / 2, n / 2, r, 0, TAU); g.stroke();
+  c.style.width = css + 'px'; c.style.height = css + 'px'; c.setAttribute('aria-hidden', 'true');
+  return c;
+}
+function setFace(slot, spec, css, mood, bg) { const el = typeof slot === 'string' ? $(slot) : slot; if (!el) return; el.textContent = ''; if (spec) el.appendChild(faceEl(spec, css, mood, bg)); }
+
 document.title = CONFIG.title;
-$('titleText').textContent = CONFIG.title;   // the game's name is a brand: it stays the same in every language
-/** Put the language's words on the static page: data-i18n (text, after an optional data-emoji) and data-i18n-aria. */
+/** Put the language's words on the static page: data-i18n (text) and data-i18n-aria. */
 function applyStaticText() {
-  document.querySelectorAll('[data-i18n]').forEach(el => { const e = el.dataset.emoji; el.textContent = (e ? e + ' ' : '') + t(el.dataset.i18n, { n: CONFIG.seriesWins }); });
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n, { n: CONFIG.seriesWins }); });
   document.querySelectorAll('[data-i18n-aria]').forEach(el => el.setAttribute('aria-label', t(el.dataset.i18nAria)));
-  $('kbHint').textContent = t('kbHint', { n: Math.min(COLS, 9) });
   // Right-to-left languages mirror the menus and messages; the board (a canvas) and its columns stay left-to-right.
-  document.querySelectorAll('.panel, #msgEl, .turn, .pchip, .ctrl').forEach(el => el.dir = DIR);
+  document.querySelectorAll('#resultScreen .ok-card, #msgEl, .turn, .pchip, .ctrl').forEach(el => el.dir = DIR);
 }
 applyStaticText();
 /** Does the label of button b fit on one line? (A button clips its text, so scrollWidth cannot tell: the label is
@@ -1296,20 +1415,37 @@ applyStaticText();
 const ruler = document.createElement('span');
 ruler.style.cssText = 'position:absolute;left:0;top:0;visibility:hidden;white-space:nowrap;pointer-events:none';
 function labelFits(b) {
-  const cs = getComputedStyle(b), room = b.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+  const cs = getComputedStyle(b), icon = b.querySelector('.ico') || b.querySelector('svg'), room = b.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight) - (icon ? icon.getBoundingClientRect().width + (parseFloat(cs.columnGap) || 0) : 0);
   ruler.style.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily; ruler.style.letterSpacing = cs.letterSpacing;
   ruler.textContent = b.textContent; if (!ruler.isConnected) document.body.appendChild(ruler);
   return ruler.getBoundingClientRect().width <= room - 1;   // a little slack: the browser clips at a fraction of a pixel
 }
 /** Shrink a button label that is too wide for its button; if it still does not fit at a readable size, let it wrap. */
 function fitButtons() {
-  document.querySelectorAll('.row button, .big-btn, .mini').forEach(b => {
+  document.querySelectorAll('.row button, .btns .ok-btn, .c4-tcard .ok-big, .ctrl .ok-btn').forEach(b => {
     b.style.fontSize = ''; b.classList.remove('wrap');
     if (!b.clientWidth) return;   // not on screen
     let size = parseFloat(getComputedStyle(b).fontSize) || 16; const min = Math.max(11, size * 0.72);
     while (!labelFits(b) && size > min) { size -= 0.5; b.style.fontSize = size + 'px'; }
     if (!labelFits(b)) b.classList.add('wrap');
   });
+  // the buttons of one row (the three levels...) share one size: the smallest any of them needed
+  document.querySelectorAll('.row').forEach(r => {
+    const bs = [...r.querySelectorAll('button')].filter(b => b.clientWidth); if (bs.length < 2) return;
+    const min = Math.min(...bs.map(b => parseFloat(getComputedStyle(b).fontSize) || 16));
+    for (const b of bs) if (Math.abs((parseFloat(getComputedStyle(b).fontSize) || 16) - min) > 0.1) b.style.fontSize = min + 'px';
+  });
+}
+/** The score chips' names on one line: a long one ("Guest Penguin") shrinks a little; one still too wide wraps. */
+function fitChipNames() {
+  for (const id of ['chipName1', 'chipName2']) {
+    const b = $(id); if (!b) continue;
+    b.style.fontSize = ''; b.classList.remove('wrap');
+    if (!b.clientWidth) continue;
+    let size = parseFloat(getComputedStyle(b).fontSize) || 16; const min = Math.max(11, size * 0.7);
+    while (!labelFits(b) && size > min) { size -= 0.5; b.style.fontSize = size + 'px'; }
+    if (!labelFits(b)) b.classList.add('wrap');
+  }
 }
 
 /* =====================================================================================
@@ -1319,11 +1455,12 @@ const DEFAULT_SAVE = {
   v: 1,
   mode: 'robot', difficulty: 'normal', series: 'single',
   players: [
-    { emoji: '🦊', name: (BRB.user.displayName || 'Fox').slice(0, 12), color: 'red' },
+    { emoji: 'me', name: (BRB.user.displayName || 'Fox').slice(0, 14), color: 'red' },
     { emoji: '🐸', name: 'Frog', color: 'yellow' }
   ],
   robotColor: 'yellow',
-  stats: { easy: { w: 0, l: 0, d: 0 }, normal: { w: 0, l: 0, d: 0 }, hard: { w: 0, l: 0, d: 0 } }
+  stats: { easy: { w: 0, l: 0, d: 0 }, normal: { w: 0, l: 0, d: 0 }, hard: { w: 0, l: 0, d: 0 } },
+  kit: 1
 };
 let save = DEFAULT_SAVE;
 try {
@@ -1331,6 +1468,12 @@ try {
   if (s && s.v === 1 && Array.isArray(s.players) && s.players.length === 2 && s.stats) {
     save = s;
     for (const k of LEVELS) save.stats[k] = Object.assign({ w: 0, l: 0, d: 0 }, save.stats[k]);
+    // Once, on the first visit after the move to the kit: player one's old default picture (the fox) becomes their own
+    // character. A picture they picked on purpose stays.
+    if (!save.kit) { if (save.players[0] && save.players[0].emoji === '🦊') save.players[0].emoji = 'me'; save.kit = 1; }
+    // Names now keep 14 letters: a long account name ("Guest Penguin") saved cut at 12 gets its end back.
+    const own = String(BRB.user.displayName || '');
+    for (const pl of save.players) if (pl && own.length > 12 && pl.name === own.slice(0, 12)) pl.name = own.slice(0, 14);
   }
 } catch (e) { /* fresh start */ }
 // Only the three known levels (and modes, series) ever reach the stats table.
@@ -1355,7 +1498,7 @@ const S = {
   winLines: [],               // each winning line on its own, sorted, for the line drawn through it
   moves: [], placed: 0,       // move history (columns) for undo
   wins: [0, 0], starter: 1, gameNo: 1, seriesOver: false,
-  players: [null, null],      // [{emoji,name,color}, {...}]; players[1] is the robot in robot mode
+  players: [null, null],      // [{emoji,name,color,look,disc}, {...}]; players[1] is the robot in robot mode
   previewCol: CENTRE, previewX: CENTRE, // the disc hovering above the board (previewX eases towards previewCol)
   busy: false, thinking: false, paused: false, over: false,
   firstMoves: 0
@@ -1611,17 +1754,19 @@ const AI = (() => {
 })();
 
 /* =====================================================================================
-   Drawing: one canvas. Layers: placed discs (offscreen, redrawn when the board changes),
-   the falling disc, the plate with holes (offscreen, redrawn on resize), the preview disc,
-   the winning line and particles. All animation is time-based inside requestAnimationFrame.
+   Drawing: one canvas, in the kit's "Oomba Ink" look (flat colour, a cel shade, Ink outlines, a Cream rim).
+   Layers: the plate's dark back (offscreen), placed discs (offscreen, redrawn when the board changes), the falling
+   disc, the plate with holes (offscreen, redrawn on resize), the preview disc, the winning line and particles.
+   All animation is time-based inside requestAnimationFrame.
    ===================================================================================== */
 const wrap = $('boardWrap'), canvas = $('board'), ctx = canvas.getContext('2d');
 const discLayer = document.createElement('canvas'), plateLayer = document.createElement('canvas');
 const G = { cell: 48, pad: 6, w: 348, h: 360, plateX: 6, plateY: 54, plateW: 336, plateH: 288, holeR: 19, dpr: 1, ready: false };
 let discDirty = true, falling = null, winAt = 0, hoverOwner = 0, lastFrame = 0, rafId = 0;
-const EMOJI_FONT = '"Fredoka","Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",system-ui,sans-serif';
+const PLATE = { base: PAL.sky[3], light: PAL.sky[2], back: mixHex(PAL.sky[3], INK, 0.42), foot: mixHex(PAL.sky[3], INK, 0.3) };
+function mixHex(a, b, f) { const p = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16)), x = p(a), y = p(b); return 'rgb(' + x.map((v, i) => Math.round(v + (y[i] - v) * f)).join(',') + ')'; }
 
-const LANDSCAPE = matchMedia('(orientation:landscape) and (max-height:560px)');
+const LANDSCAPE = matchMedia('(orientation:landscape) and (max-height:560px)'), WIDE = matchMedia('(min-width:760px) and (min-height:561px)');
 /** Size the board to the room it has. In portrait the board row is sized by hand (everything else is measured
     and the leftover goes below the controls); in short landscape the board column simply fills the height. */
 function layout() {
@@ -1638,7 +1783,7 @@ function layout() {
   const cell = Math.max(24, Math.floor(Math.min((availW - 2 * pad) / COLS, (availH - 2 * pad) / (ROWS + 1 + feet))));
   const dpr = Math.min(3, window.devicePixelRatio || 1);
   // Same size as last time (say the message line grew or shrank): keep the canvases, nothing to redraw.
-  if (G.ready && cell === G.cell && dpr === G.dpr) { if (!LANDSCAPE.matches) wrap.style.height = G.h + 'px'; return; }
+  if (G.ready && cell === G.cell && dpr === G.dpr) { if (!LANDSCAPE.matches) wrap.style.height = G.h + 'px'; placeCast(); return; }
   G.ready = true; G.cell = cell; G.pad = pad; G.holeR = cell * 0.41; G.dpr = dpr;
   G.w = cell * COLS + 2 * pad; G.h = Math.ceil(cell * (ROWS + 1 + feet) + 2 * pad);
   G.plateX = pad; G.plateY = pad + cell; G.plateW = cell * COLS; G.plateH = cell * ROWS;
@@ -1646,72 +1791,79 @@ function layout() {
   canvas.style.width = G.w + 'px'; canvas.style.height = G.h + 'px';
   if (!LANDSCAPE.matches) wrap.style.height = G.h + 'px';
   drawPlate(); discDirty = true;
+  placeCast();
 }
 // Centre of a hole, as two plain functions (no array to throw away per call: frame() uses these a lot).
 const cx = col => G.pad + col * G.cell + G.cell / 2, cy = row => G.plateY + row * G.cell + G.cell / 2;
 
 function roundRect(c, x, y, w, h, r) { c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r); c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath(); }
+const lineW = px => Math.max(1.5, Math.min(4, px * 0.05));   // the kit's Ink line for a thing about px tall
 
-/** The chunky blue plate with real holes (even-odd fill) and shaded rims, plus two little feet. */
+/** The chunky plate with real holes (even-odd fill): a Sky face, a lighter top band, an Ink outline, a Cream rim
+    inside it, Ink rings round the holes, and two little feet. */
 function drawPlate() {
   const c = plateLayer.getContext('2d'); c.setTransform(G.dpr, 0, 0, G.dpr, 0, 0); c.clearRect(0, 0, G.w, G.h);
-  const { plateX: x, plateY: y, plateW: w, plateH: h, cell } = G, rad = cell * 0.28;
+  const { plateX: x, plateY: y, plateW: w, plateH: h, cell } = G, rad = cell * 0.3, lw = Math.max(2.5, cell * 0.07);
   // feet
-  c.fillStyle = '#1b3fa8';
-  c.beginPath(); roundRect(c, x + cell * 0.25, y + h - cell * 0.1, cell * 1.1, cell * 0.4, cell * 0.12); c.fill();
-  c.beginPath(); roundRect(c, x + w - cell * 1.35, y + h - cell * 0.1, cell * 1.1, cell * 0.4, cell * 0.12); c.fill();
-  // drop shadow
-  c.fillStyle = 'rgba(50,20,90,.22)'; c.beginPath(); roundRect(c, x, y + cell * 0.12, w, h, rad); c.fill();
-  // plate with holes
-  const g = c.createLinearGradient(0, y, 0, y + h); g.addColorStop(0, '#4a7cf5'); g.addColorStop(1, '#2149c9');
-  c.fillStyle = g; c.beginPath(); roundRect(c, x, y, w, h, rad);
-  for (let r = 0; r < ROWS; r++) for (let col = 0; col < COLS; col++) { const x = cx(col), y = cy(r); c.moveTo(x + G.holeR, y); c.arc(x, y, G.holeR, 0, Math.PI * 2); }
-  c.fill('evenodd');
-  // bevel
-  c.lineWidth = Math.max(2, cell * 0.06); c.strokeStyle = 'rgba(255,255,255,.3)'; c.beginPath(); roundRect(c, x + cell * 0.08, y + cell * 0.08, w - cell * 0.16, h - cell * 0.16, rad * 0.8); c.stroke();
-  c.lineWidth = Math.max(2, cell * 0.05); c.strokeStyle = '#17358f'; c.beginPath(); roundRect(c, x, y, w, h, rad); c.stroke();
-  // hole rims: a dark inner shadow at the top, a light lip at the bottom
-  c.lineWidth = Math.max(1.5, cell * 0.05);
+  for (const fx of [x + cell * 0.25, x + w - cell * 1.35]) {
+    c.beginPath(); roundRect(c, fx, y + h - cell * 0.1, cell * 1.1, cell * 0.42, cell * 0.14); c.fillStyle = PLATE.foot; c.fill(); c.lineWidth = lw * 0.8; c.strokeStyle = INK; c.stroke();
+  }
+  // the plate with holes: base face, then the lighter top band, both with the holes cut out
+  const holes = () => { for (let r = 0; r < ROWS; r++) for (let col = 0; col < COLS; col++) { const hx = cx(col), hy = cy(r); c.moveTo(hx + G.holeR, hy); c.arc(hx, hy, G.holeR, 0, TAU); } };
+  c.fillStyle = PLATE.base; c.beginPath(); roundRect(c, x, y, w, h, rad); holes(); c.fill('evenodd');
+  c.save(); c.beginPath(); roundRect(c, x, y, w, h, rad); c.clip();
+  c.beginPath(); c.rect(x, y, w, cell * 0.34); c.clip();
+  c.fillStyle = PLATE.light; c.beginPath(); c.rect(x, y, w, cell * 0.34); for (let col = 0; col < COLS; col++) { const hx = cx(col), hy = cy(0); c.moveTo(hx + G.holeR, hy); c.arc(hx, hy, G.holeR, 0, TAU); } c.fill('evenodd');
+  c.restore();
+  // Cream rim just inside the outline, then the Ink outline
+  c.lineWidth = Math.max(1.5, cell * 0.045); c.strokeStyle = CREAM; c.globalAlpha = 0.55; c.beginPath(); roundRect(c, x + lw, y + lw, w - 2 * lw, h - 2 * lw, rad * 0.8); c.stroke(); c.globalAlpha = 1;
+  c.lineWidth = lw; c.strokeStyle = INK; c.beginPath(); roundRect(c, x, y, w, h, rad); c.stroke();
+  // hole rims: an Ink ring, a Cream lip at the bottom
   for (let r = 0; r < ROWS; r++) for (let col = 0; col < COLS; col++) {
-    const x = cx(col), y = cy(r);
-    c.strokeStyle = 'rgba(10,20,80,.45)'; c.beginPath(); c.arc(x, y, G.holeR, Math.PI * 1.05, Math.PI * 1.95); c.stroke();
-    c.strokeStyle = 'rgba(255,255,255,.28)'; c.beginPath(); c.arc(x, y, G.holeR, Math.PI * 0.1, Math.PI * 0.9); c.stroke();
+    const hx = cx(col), hy = cy(r);
+    c.lineWidth = Math.max(1.5, cell * 0.05); c.strokeStyle = INK; c.beginPath(); c.arc(hx, hy, G.holeR, 0, TAU); c.stroke();
+    c.lineWidth = Math.max(1, cell * 0.035); c.strokeStyle = 'rgba(255,253,242,.4)'; c.beginPath(); c.arc(hx, hy, G.holeR + cell * 0.045, Math.PI * 0.15, Math.PI * 0.85); c.stroke();
   }
 }
-/** Disc gradients are cached per context, colour and size (keyed by the disc object and a rounded radius, so
-    looking one up builds no string), so a frame never creates a new gradient. */
-const gradCache = new WeakMap();
-function discGradient(c, r, disc) {
-  let m = gradCache.get(c); if (!m) { m = new Map(); gradCache.set(c, m); }
-  let byR = m.get(disc); if (!byR) { byR = new Map(); m.set(disc, byR); }
-  const k = Math.round(r * 4); let g = byR.get(k);
-  if (!g) { g = c.createRadialGradient(-r * 0.3, -r * 0.35, r * 0.1, 0, 0, r); g.addColorStop(0, disc.light); g.addColorStop(0.5, disc.main); g.addColorStop(1, disc.dark); byR.set(k, g); }
-  return g;
+/** The plate's hard Ink drop shadow (the kit's sticker shadow) and its dark back (seen through the empty holes),
+    drawn first on each frame, under the discs. */
+function drawBack(c) {
+  const { plateX: x, plateY: y, plateW: w, plateH: h, cell } = G;
+  c.fillStyle = INK; c.beginPath(); roundRect(c, x, y + cell * 0.1, w, h, cell * 0.3); c.fill();
+  c.fillStyle = PLATE.back; c.beginPath(); roundRect(c, x + 2, y + 2, w - 4, h - 4, cell * 0.28); c.fill();
 }
-// The winning rings' white, at 32 brightness steps, built once (no colour string per frame).
-const RING_WHITE = Array.from({ length: 32 }, (_, i) => 'rgba(255,255,255,' + (0.45 + 0.45 * i / 31).toFixed(2) + ')');
-/** A glossy disc with a highlight; the player's picture on top when CONFIG.emojiOnDiscs is on. */
-function drawDisc(c, x, y, r, disc, emoji, squash) {
-  const sx = 1 + 0.18 * (squash || 0), sy = 1 - 0.22 * (squash || 0);
+/** A disc in the Oomba Ink look: an Ink edge, the colour with a cel shade at the bottom, an inner ring, the
+    player's character's face (CONFIG.facesOnDiscs) and a Cream gloss. */
+function drawDisc(c, x, y, r, disc, look, squash) {
+  const sx = 1 + 0.18 * (squash || 0), sy = 1 - 0.22 * (squash || 0), lw = lineW(r * 2) * 0.9;
   c.save(); c.translate(x, y); c.scale(sx, sy);
-  c.fillStyle = disc.dark; c.beginPath(); c.arc(0, r * 0.07, r, 0, Math.PI * 2); c.fill();
-  c.fillStyle = discGradient(c, r, disc); c.beginPath(); c.arc(0, 0, r * 0.96, 0, Math.PI * 2); c.fill();
-  c.lineWidth = r * 0.09; c.strokeStyle = 'rgba(0,0,0,.14)'; c.beginPath(); c.arc(0, 0, r * 0.68, 0, Math.PI * 2); c.stroke();
-  c.fillStyle = 'rgba(255,255,255,.6)'; c.beginPath(); c.ellipse(-r * 0.32, -r * 0.42, r * 0.26, r * 0.14, -0.5, 0, Math.PI * 2); c.fill();
-  if (emoji && CONFIG.emojiOnDiscs) { c.font = Math.round(r * 0.95) + 'px ' + EMOJI_FONT; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillStyle = '#000'; c.fillText(emoji, 0, r * 0.08); }
+  c.fillStyle = INK; c.beginPath(); c.arc(0, r * 0.06, r, 0, TAU); c.fill();
+  c.fillStyle = disc.dark; c.beginPath(); c.arc(0, 0, r - lw, 0, TAU); c.fill();
+  c.fillStyle = disc.main; c.beginPath(); c.arc(0, -r * 0.07, r - lw * 1.7, 0, TAU); c.fill();
+  c.lineWidth = r * 0.07; c.strokeStyle = disc.dark; c.beginPath(); c.arc(0, -r * 0.04, r * 0.7, 0, TAU); c.stroke();
+  if (look && CONFIG.facesOnDiscs) drawDiscFace(c, 0, -r * 0.04, r * 0.62, disc, look, false);
+  c.fillStyle = 'rgba(255,253,242,.75)'; c.beginPath(); c.ellipse(-r * 0.4, -r * 0.5, r * 0.2, r * 0.1, -0.6, 0, TAU); c.fill();
   c.restore();
+}
+/** The character's face in the middle of a disc (fr: its radius). ring: an Ink edge round it (the winning four draw
+    the faces again on top of their line, so the line never hides who won). */
+function drawDiscFace(c, x, y, fr, disc, look, ring) {
+  const img = faceImage(look, fr * 2 * G.dpr);
+  c.fillStyle = disc.light; c.beginPath(); c.arc(x, y, fr, 0, TAU); c.fill();
+  c.save(); c.clip(); c.drawImage(img, x - fr, y - fr, fr * 2, fr * 2); c.restore();
+  if (ring) { c.lineWidth = Math.max(1.5, fr * 0.12); c.strokeStyle = INK; c.beginPath(); c.arc(x, y, fr, 0, TAU); c.stroke(); }
 }
 function drawDiscLayer() {
   const c = discLayer.getContext('2d'); c.setTransform(G.dpr, 0, 0, G.dpr, 0, 0); c.clearRect(0, 0, G.w, G.h);
   for (let r = 0; r < ROWS; r++) for (let col = 0; col < COLS; col++) {
     const p = S.board[r][col]; if (!p) continue;
     const pl = S.players[p - 1];
-    drawDisc(c, cx(col), cy(r), G.holeR * 0.97, pl.disc, pl.emoji, 0);
+    drawDisc(c, cx(col), cy(r), G.holeR * 0.97, pl.disc, pl.look, 0);
   }
   discDirty = false;
 }
 
-// Particles (a fixed pool, no per-frame allocation).
+// Particles (a fixed pool, no per-frame allocation): crumbs on landing, kit sparks round a winning four.
 const PARTS = Array.from({ length: 140 }, () => ({ on: false, x: 0, y: 0, vx: 0, vy: 0, life: 0, max: 1, size: 3, color: '#fff', star: false }));
 let partsLive = 0;   // how many particles are flying (so the loop knows when the picture has gone still)
 function burst(x, y, color, n, speed, star) {
@@ -1719,9 +1871,9 @@ function burst(x, y, color, n, speed, star) {
   let made = 0;
   for (let i = 0; i < PARTS.length; i++) {
     const p = PARTS[i]; if (p.on) continue;
-    const a = rng() * Math.PI * 2, sp = speed * (0.35 + rng() * 0.85);
+    const a = rng() * TAU, sp = speed * (0.35 + rng() * 0.85);
     p.on = true; p.x = x; p.y = y; p.vx = Math.cos(a) * sp; p.vy = Math.sin(a) * sp - speed * 0.35; p.max = p.life = 0.45 + rng() * 0.5;
-    p.size = G.cell * (0.05 + rng() * 0.08); p.color = rng() < 0.3 ? '#fff' : color; p.star = !!star;
+    p.size = G.cell * (star ? 0.09 + rng() * 0.07 : 0.05 + rng() * 0.07); p.color = star ? (rng() < 0.5 ? PAL.spark[2] : CREAM) : (rng() < 0.3 ? CREAM : color); p.star = !!star;
     partsLive++;
     if (++made >= n) break;
   }
@@ -1733,15 +1885,18 @@ function drawParticles(dt) {
     p.life -= dt; if (p.life <= 0) { p.on = false; continue; }
     partsLive++;
     p.vy += G.cell * 9 * dt; p.x += p.vx * dt; p.y += p.vy * dt;
-    const k = p.life / p.max; ctx.globalAlpha = k; ctx.fillStyle = p.color;
-    if (p.star) { ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.life * 6); ctx.fillRect(-p.size, -p.size * 0.35, p.size * 2, p.size * 0.7); ctx.fillRect(-p.size * 0.35, -p.size, p.size * 0.7, p.size * 2); ctx.restore(); }
-    else { ctx.beginPath(); ctx.arc(p.x, p.y, p.size * k, 0, Math.PI * 2); ctx.fill(); }
+    const k = p.life / p.max; ctx.globalAlpha = Math.min(1, k * 1.5); ctx.fillStyle = p.color;
+    if (p.star) {   // the kit's four-point spark, with an Ink edge
+      const s = p.size * (0.6 + 0.4 * k), q = s * 0.22;
+      ctx.beginPath(); ctx.moveTo(p.x, p.y - s); ctx.quadraticCurveTo(p.x + q, p.y - q, p.x + s, p.y); ctx.quadraticCurveTo(p.x + q, p.y + q, p.x, p.y + s); ctx.quadraticCurveTo(p.x - q, p.y + q, p.x - s, p.y); ctx.quadraticCurveTo(p.x - q, p.y - q, p.x, p.y - s);
+      ctx.fill(); ctx.lineWidth = Math.max(1, s * 0.22); ctx.strokeStyle = INK; ctx.stroke();
+    } else { ctx.beginPath(); ctx.arc(p.x, p.y, p.size * k, 0, TAU); ctx.fill(); }
   }
   ctx.globalAlpha = 1;
 }
 
 /** One frame. Only runs while the board is on screen; nothing moves while paused, so nothing is redrawn then.
-    On the results screen the rings pulse and the sparkles fall for a few seconds, then one calm frame is drawn
+    On the results screen the rings pulse and the sparks fall for a few seconds, then one calm frame is drawn
     and the loop idles (no redraw, nothing allocated) until something changes, to spare a phone's battery. */
 let idle = false, ringOn = false;
 function frame(now) {
@@ -1774,25 +1929,34 @@ function frame(now) {
   }
   if (discDirty) drawDiscLayer();
   ctx.setTransform(G.dpr, 0, 0, G.dpr, 0, 0); ctx.clearRect(0, 0, G.w, G.h);
+  drawBack(ctx);
   ctx.drawImage(discLayer, 0, 0, G.w, G.h);
 
   // the falling disc (behind the plate)
-  if (falling) { const f = falling, pl = S.players[f.player - 1]; drawDisc(ctx, cx(f.col), G.plateY + f.y * G.cell + G.cell / 2, G.holeR * 0.97, pl.disc, pl.emoji, Math.max(0, f.squash)); }
+  if (falling) { const f = falling, pl = S.players[f.player - 1]; drawDisc(ctx, cx(f.col), G.plateY + f.y * G.cell + G.cell / 2, G.holeR * 0.97, pl.disc, pl.look, Math.max(0, f.squash)); }
   ctx.drawImage(plateLayer, 0, 0, G.w, G.h);
 
-  // the winning four: pulsing rings and a line that draws itself through them
+  // the winning four: pulsing Cream rings with an Ink edge and a line that draws itself through them
   if (S.winningCells.length) {
-    const t = (now - winAt) / 1000, prog = (REDUCED || fast) ? 1 : clamp((t - 0.1) / 0.6, 0, 1), pulse = still ? 1 : 0.5 + 0.5 * Math.sin(t * 4);
+    const t = (now - winAt) / 1000, prog = (REDUCED || fast) ? 1 : clamp((t - 0.1) / 0.6, 0, 1), pulse = still || REDUCED ? 1 : 0.5 + 0.5 * Math.sin(t * 4);
     const disc = S.players[S.winner - 1].disc, cells = S.winningCells;
-    ctx.lineWidth = G.cell * 0.08; ctx.strokeStyle = RING_WHITE[Math.round(pulse * 31)];
-    for (let i = 0; i < cells.length; i++) { ctx.beginPath(); ctx.arc(cx(cells[i][1]), cy(cells[i][0]), G.holeR * (0.88 + 0.07 * pulse), 0, Math.PI * 2); ctx.stroke(); }
+    // a pulsing Cream ring round each winning disc (just outside it, on the plate, so it never covers the disc)
+    for (let i = 0; i < cells.length; i++) {
+      const x = cx(cells[i][1]), y = cy(cells[i][0]), rr = G.holeR * (1.04 + 0.05 * pulse);
+      ctx.lineWidth = G.cell * 0.1; ctx.strokeStyle = INK; ctx.beginPath(); ctx.arc(x, y, rr, 0, TAU); ctx.stroke();
+      ctx.lineWidth = G.cell * 0.05; ctx.strokeStyle = CREAM; ctx.beginPath(); ctx.arc(x, y, rr, 0, TAU); ctx.stroke();
+    }
     if (prog > 0) for (let i = 0; i < S.winLines.length; i++) {   // one line per completed four (a drop can finish two at once)
       const line = S.winLines[i], first = line[0], last = line[line.length - 1];
       const ax = cx(first[1]), ay = cy(first[0]), ex = ax + (cx(last[1]) - ax) * prog, ey = ay + (cy(last[0]) - ay) * prog;
       ctx.lineCap = 'round';
-      ctx.lineWidth = G.cell * 0.24; ctx.strokeStyle = 'rgba(255,255,255,.9)'; ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(ex, ey); ctx.stroke();
-      ctx.lineWidth = G.cell * 0.11; ctx.strokeStyle = disc.dark; ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(ex, ey); ctx.stroke();
+      ctx.lineWidth = G.cell * 0.3; ctx.strokeStyle = INK; ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(ex, ey); ctx.stroke();
+      ctx.lineWidth = G.cell * 0.19; ctx.strokeStyle = CREAM; ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(ex, ey); ctx.stroke();
+      ctx.lineWidth = G.cell * 0.08; ctx.strokeStyle = disc.dark; ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(ex, ey); ctx.stroke();
     }
+    // the winners' faces on top of the line: it joins the four discs without hiding a face
+    const wl = S.players[S.winner - 1].look;
+    if (wl && CONFIG.facesOnDiscs) for (let i = 0; i < cells.length; i++) drawDiscFace(ctx, cx(cells[i][1]), cy(cells[i][0]) - G.holeR * 0.97 * 0.04, G.holeR * 0.97 * 0.62, disc, wl, true);
     if (!REDUCED && t < 1.6 && rng() < dt * 12) { const cell = pick(cells); burst(cx(cell[1]), cy(cell[0]), disc.light, 2, G.cell * 2.2, true); }
   }
 
@@ -1805,24 +1969,62 @@ function frame(now) {
     const x = G.pad + S.previewX * G.cell + G.cell / 2, y = G.pad + G.cell / 2 + bob;
     const full = lowestEmpty(S.board, S.previewCol) < 0;
     ctx.globalAlpha = full ? 0.35 : (S.thinking ? 0.8 : 1);
-    drawDisc(ctx, x, y, G.holeR * 0.95, disc, pl.emoji, 0);
+    drawDisc(ctx, x, y, G.holeR * 0.95, disc, pl.look, 0);
     ctx.globalAlpha = 1;
-    if (!full && !S.thinking) { // a little arrow under the disc
-      ctx.fillStyle = 'rgba(255,255,255,.7)'; ctx.beginPath(); ctx.moveTo(x - G.cell * 0.12, y + G.holeR * 1.02); ctx.lineTo(x + G.cell * 0.12, y + G.holeR * 1.02); ctx.lineTo(x, y + G.holeR * 1.02 + G.cell * 0.12); ctx.fill();
+    if (!full && !S.thinking) { // a little Ink-edged arrow under the disc
+      const ay = y + G.holeR * 1.08, aw = G.cell * 0.14;
+      ctx.beginPath(); ctx.moveTo(x - aw, ay); ctx.lineTo(x + aw, ay); ctx.lineTo(x, ay + aw); ctx.closePath();
+      ctx.fillStyle = CREAM; ctx.fill(); ctx.lineJoin = 'round'; ctx.lineWidth = Math.max(1.5, G.cell * 0.035); ctx.strokeStyle = INK; ctx.stroke();
     }
   }
   drawParticles(dt);
 }
 
 /* =====================================================================================
+   The cast in the world: on a wide screen the two players stand in the candy world either side of the board
+   (player one on the left) and react: a wave at the start, the robot thinks, the winner cheers, the other sighs.
+   ===================================================================================== */
+const cast = [null, null], castBack = [null, null];
+let castKey = '';
+function placeCast() {
+  const key = S.players[0] && S.players[1] ? S.players[0].emoji + '|' + S.players[1].emoji + '|' + S.mode : '';
+  if (key !== castKey) {
+    castKey = key;
+    for (let i = 0; i < 2; i++) { if (cast[i]) { try { cast[i].remove(); } catch (e) { /* ignore */ } cast[i] = null; } }
+    if (key) for (let i = 0; i < 2; i++) { try { cast[i] = STAGE.add(S.players[i].look, { x: 0, y: 0, size: 100, layer: 'front', flip: i === 1 }); } catch (e) { cast[i] = null; } }
+  }
+  const r = canvas.getBoundingClientRect(), left = r.left, right = innerWidth - r.right;
+  const room = Math.min(left, right), side = room >= 170;
+  // A tall phone has no room beside the board, but the stack sits at the top and leaves the ground below it free:
+  // the two players stand there instead, either side of the screen.
+  const low = $('app').classList.contains('over') ? null : ($('ctrlRow').hidden ? $('msgEl') : $('ctrlRow'));
+  const below = low ? innerHeight - low.getBoundingClientRect().bottom : 0, under = !side && below >= 120;
+  const show = S.screen !== 'title' && (side || under) && !LANDSCAPE.matches && G.ready;
+  for (let i = 0; i < 2; i++) {
+    const e = cast[i]; if (!e) continue;
+    e.visible = show; if (!show || !STAGE.toDesign) continue;
+    const h = side ? Math.min(innerHeight * 0.34, room * 0.85) : Math.min(below * 0.9, innerWidth * 0.42), x = side ? (i ? innerWidth - room / 2 : room / 2) : (i ? innerWidth * 0.78 : innerWidth * 0.22);
+    const foot = STAGE.toWorld(STAGE.toDesign(x, innerHeight - Math.max(16, innerHeight * 0.06))), head = STAGE.toWorld(STAGE.toDesign(x, innerHeight - h));
+    e.x = foot.x; e.y = foot.y; e.size = Math.max(40, foot.y - head.y);
+  }
+}
+/** A cast member's clip ('cheer', 'sad', 'think', 'wave', 'idle'); with ms it goes back to idle after that long. */
+function castDo(i, clip, ms) {
+  const e = cast[i]; if (!e) return;
+  if (castBack[i]) { castBack[i](); castBack[i] = null; }
+  try { e.state(clip); } catch (err) { /* ignore */ }
+  if (ms) castBack[i] = Oomba.time.real.after(ms, () => { castBack[i] = null; try { e.state('idle'); } catch (err) { /* ignore */ } });
+}
+
+/* =====================================================================================
    Dropping discs
    ===================================================================================== */
 function onLand(f) {
-  BRB.sfx.play('hit');
+  sfx('land');
   const x = cx(f.col), y = cy(f.row), disc = S.players[f.player - 1].disc;
   burst(x - G.holeR * 0.7, y + G.holeR * 0.6, disc.light, 5, G.cell * 2.4, false);
   burst(x + G.holeR * 0.7, y + G.holeR * 0.6, disc.light, 5, G.cell * 2.4, false);
-  if (!REDUCED) BRB.fx.shake(canvas, 2);
+  shake(0.18, canvas);
 }
 function commitFalling() {
   const f = falling; falling = null;
@@ -1841,10 +2043,10 @@ async function dropDisc(col) {
   if (S.screen !== 'play' || S.busy || S.over || S.paused) return false;
   col = clamp(Math.round(col), 0, COLS - 1);
   const row = lowestEmpty(S.board, col);
-  if (row < 0) { BRB.sfx.play('click'); if (!REDUCED) BRB.fx.shake(canvas, 4); say(t('colFull')); return false; }
+  if (row < 0) { sfx('wrong'); shake(0.35, canvas); say(t('colFull')); return false; }
   S.busy = true; const player = S.turn; const token = thinkToken;
   S.previewCol = col; hoverOwner = 0;
-  BRB.sfx.play('click');
+  sfx('whoosh', { volume: 0.6 });
   await animateDrop(col, row, player);
   if (token !== thinkToken) { S.busy = false; return false; }   // the game was reset mid-drop
   S.moves.push(col); S.placed++; S.firstMoves++;
@@ -1855,13 +2057,14 @@ async function dropDisc(col) {
   else { S.turn = 3 - S.turn; afterTurnChange(); }
   return true;
 }
+const nameOf = n => S.players[n - 1].name;
 function afterTurnChange() {
   updateHud();
   if (isRobotTurn()) {
     // Start the robot on the next tick, so whoever awaited the human's drop sees the board as it landed.
     hoverOwner = 0; const token = thinkToken;
     setTimeout(() => { if (token === thinkToken && S.screen === 'play' && !S.over) robotMove(); }, 0);
-  } else { hoverOwner = S.turn; if (S.mode === 'robot') say(S.firstMoves < 2 ? t('yourTurnTap') : pick(tv('nudge'))); else say(t('nameTap', { name: S.players[S.turn - 1].emoji + ' ' + S.players[S.turn - 1].name })); }
+  } else { hoverOwner = S.turn; if (S.mode === 'robot') say(S.firstMoves < 2 ? t('yourTurnTap') : pick(tv('nudge'))); else say(t('nameTap', { name: nameOf(S.turn) }), S.turn); }
   updateUndo();
 }
 
@@ -1871,7 +2074,7 @@ function robotMove() {
   if (!isRobotTurn() || S.over || S.screen !== 'play') return Promise.resolve(false);
   const token = thinkToken, t0 = performance.now();
   S.thinking = true; hoverOwner = 2; S.previewCol = CENTRE; updateHud(); updateUndo();
-  bubble(say4('think'));
+  bubble(say4('think')); castDo(1, 'think');
   robotPromise = (async () => {
     const col = await AI.choose(S.board, 2, S.difficulty, () => token !== thinkToken, () => S.paused);
     if (token !== thinkToken || col < 0) { if (token === thinkToken) S.thinking = false; return false; }
@@ -1882,7 +2085,7 @@ function robotMove() {
     // The game may have been paused during any wait above: hold the disc over the column until play resumes.
     while (S.paused && token === thinkToken) await wait(100);
     if (token !== thinkToken) return false;
-    S.thinking = false; updateHud();
+    S.thinking = false; updateHud(); castDo(1, 'idle');
     const ok = await dropDisc(col);
     if (ok && token === thinkToken && !S.over && rng() < 0.3) bubble(say4('move'));
     return ok;
@@ -1899,36 +2102,35 @@ function applyPlayers() {
   // S.players is never saved, so it holds the names as shown in this language (a nickname id becomes its word).
   S.players[0] = Object.assign({}, save.players[0], { name: showName(save.players[0].name) });
   if (S.mode === 'robot') {
-    let color = save.robotColor; if (color === S.players[0].color) color = CONFIG.discs.find(d => d.id !== color).id;
+    let color = save.robotColor; if (color === S.players[0].color) color = DISCS.find(d => d.id !== color).id;
     S.players[1] = { emoji: CONFIG.robot.emoji, name: robotName(), color };
   } else {
     S.players[1] = Object.assign({}, save.players[1], { name: showName(save.players[1].name) });
-    if (S.players[1].color === S.players[0].color) S.players[1].color = CONFIG.discs.find(d => d.id !== S.players[0].color).id;
+    if (S.players[1].color === S.players[0].color) S.players[1].color = DISCS.find(d => d.id !== S.players[0].color).id;
   }
-  for (const pl of S.players) pl.disc = discById(pl.color);   // looked up once here, never per frame
+  for (const pl of S.players) { pl.disc = discById(pl.color); pl.look = lookOf(pl.emoji); }   // looked up once here, never per frame
 }
 /** Start a fresh board. keepScore keeps the session match score (rematch: the other player starts and the game
-    number goes up); restart replays the current game with the same starter ("Start over" from the pause menu). */
+    number goes up); restart replays the current game with the same starter ("Restart" from the pause screen). */
 function startGame({ keepScore = false, restart = false } = {}) {
+  closeTitle(); if (S.paused) dismissKitPause();
   thinkToken++; robotPromise = null; falling = null; clearTimeout(resultsTimer); AI.reset();
   if (!keepScore) { S.wins = [0, 0]; S.starter = 1; S.gameNo = 1; S.seriesOver = false; applyPlayers(); S.firstMoves = 0; }
   else if (!restart) { S.starter = 3 - S.starter; S.gameNo++; if (S.seriesOver) { S.wins = [0, 0]; S.gameNo = 1; S.seriesOver = false; } }
   S.board = emptyBoard(); S.moves = []; S.placed = 0; S.turn = S.starter; S.winner = null; S.winningCells = []; S.winLines = [];
   S.busy = false; S.thinking = false; S.paused = false; S.over = false; S.previewCol = CENTRE; S.previewX = CENTRE;
   for (const p of PARTS) p.on = false;
-  discDirty = true; S.screen = 'play';
-  $('titleScreen').hidden = true; $('pauseScreen').hidden = true; $('resultScreen').hidden = true;
+  discDirty = true; S.screen = 'play'; Oomba.scene = 'play';
+  $('resultScreen').hidden = true;
   const app = $('app'); app.classList.remove('offstage', 'over'); app.style.transform = ''; canvas.style.transform = '';
   $('ctrlRow').hidden = S.mode !== 'two';
-  document.documentElement.style.setProperty('--p1', discById(S.players[0].color).main);
-  document.documentElement.style.setProperty('--p2', discById(S.players[1].color).main);
-  $('chip1').style.setProperty('--pc', discById(S.players[0].color).main);
-  $('chip2').style.setProperty('--pc', discById(S.players[1].color).main);
+  for (let i = 0; i < 2; i++) $('chip' + (i + 1)).style.setProperty('--pc', S.players[i].disc.main);
   updateScores(); updateHud(); updateUndo();
-  layout(); canvas.focus({ preventScroll: true });
+  layout(); placeCast(); canvas.focus({ preventScroll: true });
+  castDo(0, 'wave', 1400); castDo(1, 'idle');
   if (!rafId) { lastFrame = performance.now(); rafId = requestAnimationFrame(frame); }
   if (isRobotTurn()) { hoverOwner = 0; say(''); const token = thinkToken; setTimeout(() => { if (token === thinkToken && S.screen === 'play' && !S.over) robotMove(); }, fast ? 0 : 500); }
-  else { hoverOwner = S.turn; say(S.mode === 'robot' ? t('youStart') : t('nameStarts', { name: S.players[S.turn - 1].emoji + ' ' + S.players[S.turn - 1].name })); }
+  else { hoverOwner = S.turn; if (S.mode === 'robot') say(t('youStart')); else say(t('nameStarts', { name: nameOf(S.turn) }), S.turn); }
 }
 /** winner: 1 | 2 with the winning line(s) from winFrom, or 0 for a tie with []. */
 function finishGame(winner, lines) {
@@ -1954,22 +2156,28 @@ function finishGame(winner, lines) {
   }
   updateScores(); updateHud(); updateUndo();
   if (winner) {
-    const name = S.players[winner - 1].emoji + ' ' + S.players[winner - 1].name;
-    say(t('wins', { name }));
-    if (robot && winner === 2) { BRB.sfx.play('lose'); if (!REDUCED) BRB.fx.shake(wrap, 8); bubble(say4('win')); }
-    else { BRB.sfx.play('win'); const d = discById(S.players[winner - 1].color); setTimeout(() => BRB.fx.confetti({ colors: [d.main, d.light, '#fff', '#ffd23f', '#a855f7'] }), fast ? 0 : 350); if (robot) bubble(say4('lose')); }
-  } else { say(t('tieRematch')); BRB.sfx.play('coin'); if (robot) bubble(say4('draw')); }
+    say(t('wins', { name: nameOf(winner) }), winner);
+    castDo(winner - 1, 'cheer'); castDo(2 - winner, 'sad');
+    if (robot && winner === 2) { sfx('lose'); shake(0.6, wrap); bubble(say4('win')); }
+    else { sfx('win', { caption: undefined }); setTimeout(() => { if (!REDUCED && S.over) { try { Oomba.juice.confetti(); } catch (e) { /* ignore */ } } }, fast ? 0 : 350); if (robot) bubble(say4('lose')); }
+  } else { say(t('tieRematch')); sfx('spark'); castDo(0, 'wave', 1600); castDo(1, 'wave', 1600); if (robot) bubble(say4('draw')); }
   resultsTimer = setTimeout(() => showResults(winner, humanWon, gained), fast ? 0 : (winner ? 1500 : 900));
 }
 function showResults(winner, humanWon, gained) {
   if (S.screen !== 'play' || !S.over) return;
-  S.screen = 'over';
+  S.screen = 'over'; Oomba.scene = 'results';
   const robot = S.mode === 'robot';
   const p1 = S.players[0], p2 = S.players[1];
-  $('resultTitle').textContent = winner ? t('wins', { name: p(winner).emoji + ' ' + p(winner).name }) : t('tie');
+  // the winner cheering on the card (both players, side by side, for a tie)
+  const faces = $('resFace'); faces.textContent = '';
+  const wide = WIDE.matches;
+  for (const n of winner ? [winner] : [1, 2]) faces.appendChild(Oomba.ui.portrait(S.players[n - 1].look, { size: winner ? (wide ? 104 : 70) : (wide ? 72 : 56), mood: winner ? 'cheer' : 'happy' }));
+  const head = $('resultTitle');
+  head.textContent = winner ? t('wins', { name: p(winner).name }) : t('tie');
+  head.classList.add('cheer'); head.style.setProperty('--win', winner ? p(winner).disc.main : PAL.sky[1]);
   let sub;
   if (S.series === 'three') {
-    sub = S.seriesOver ? '🏆 ' + t('seriesWin', { name: p(winner).name, a: S.wins[winner - 1], b: S.wins[2 - winner] }) : t('seriesGame', { n: S.gameNo, m: CONFIG.seriesWins });
+    sub = S.seriesOver ? t('seriesWin', { name: p(winner).name, a: S.wins[winner - 1], b: S.wins[2 - winner] }) : t('seriesGame', { n: S.gameNo, m: CONFIG.seriesWins });
   } else sub = winner ? (robot ? (winner === 1 ? t('beatOn', { robot: robotName(), level: levelName(S.difficulty) }) : t('robotFour', { robot: robotName() })) : t('fourInRow')) : t('boardFull');
   $('resultSub').textContent = sub;
   // Each name and number is its own isolated piece, so a right-to-left language reads it in its own order.
@@ -1977,33 +2185,34 @@ function showResults(winner, humanWon, gained) {
   $('resultScore').innerHTML = [bdi(p1.name), bdi(fmtN(S.wins[0])), '–', bdi(fmtN(S.wins[1])), bdi(p2.name)].join(' ');
   const chips = [];
   if (robot) {
-    chips.push('<span class="chip">⭐ ' + esc(t('chipPoints', { n: robotPoints() })) + (gained ? ' <b><bdi>(+' + fmtN(gained) + ')</bdi></b>' : '') + '</span>');
+    chips.push('<span class="chip">' + Oomba.icon('star') + '<span>' + esc(t('chipPoints', { n: robotPoints() })) + (gained ? ' <b><bdi>(+' + fmtN(gained) + ')</bdi></b>' : '') + '</span></span>');
     const st = save.stats[S.difficulty];
-    chips.push('<span class="chip' + (humanWon ? ' good' : '') + '">' + esc(t('levelStats', { level: levelName(S.difficulty), w: t('winsN', { n: st.w }), l: t('lossesN', { n: st.l }) })) + '</span>');
+    chips.push('<span class="chip' + (humanWon ? ' good' : '') + '">' + Oomba.icon('flag') + '<span>' + esc(t('levelStats', { level: levelName(S.difficulty), w: t('winsN', { n: st.w }), l: t('lossesN', { n: st.l }) })) + '</span></span>');
   }
   $('resultChips').innerHTML = chips.join('');
-  $('againBtn').textContent = '▶ ' + t(S.seriesOver ? 'newSeries' : 'playAgain');
+  setBtnLabel($('againBtn'), t(S.seriesOver ? 'newSeries' : 'playAgain'));
   $('resultScreen').hidden = false;
   fitBoardBehindResults();
   fitButtons();
   $('againBtn').focus({ preventScroll: true });
   function p(n) { return S.players[n - 1]; }
 }
-/** The results panel sits at the bottom in portrait: slide the stack up into any spare room and scale the board
-    down so the final board (and the winning line) stays in view behind the panel. Landscape puts the panel in
-    the side column instead (the HUD there is hidden by CSS while .app has the "over" class). */
+/** The results card sits at the bottom in portrait: slide the stack up into any spare room and scale the board
+    down so the final board (and the winning line) stays in view above the card. Landscape puts the card in the
+    side column instead (the HUD there is hidden by CSS while .app has the "over" class). */
 function fitBoardBehindResults() {
-  const app = $('app'), panel = $('resultScreen').querySelector('.panel'); app.classList.add('over');
+  const app = $('app'), panel = $('resultScreen').querySelector('.ok-card'); app.classList.add('over');
   // Layout offsets, not client rects: a transform from the previous results may still be easing back.
   const boardLeft = app.offsetLeft + wrap.offsetLeft + canvas.offsetLeft, boardTop = app.offsetTop + wrap.offsetTop + canvas.offsetTop;
   if (LANDSCAPE.matches) {
-    // Widen the side panel into the empty space right of the board (never over it) so its buttons fit on one row.
+    // Widen the side card into the empty space right of the board (never over it) so its buttons fit on one row.
     const room = window.innerWidth - (boardLeft + canvas.offsetWidth) - 20;
     panel.style.width = Math.round(clamp(room, 300, 380)) + 'px';
     return;
   }
   panel.style.width = '';
-  const panelTop = panel.getBoundingClientRect().top, hudTop = app.offsetTop + $('hud').offsetTop;
+  // the card's layout top (its pop-in animation scales it, so a client rect would be wrong for a moment)
+  const panelTop = panel.offsetTop, hudTop = app.offsetTop + $('hud').offsetTop;
   const shift = Math.max(0, hudTop - 10);                       // spare room above the HUD (the stack is centred)
   const room = panelTop - 8 - (boardTop - shift);              // height left for the board once it has moved up
   const k = clamp(room / canvas.offsetHeight, 0.4, 1);
@@ -2018,104 +2227,235 @@ function undoMove() {
   const col = S.moves.pop();
   for (let r = 0; r < ROWS; r++) if (S.board[r][col]) { S.board[r][col] = 0; break; }
   S.placed--; S.turn = 3 - S.turn; discDirty = true; S.previewCol = col; hoverOwner = S.turn;
-  BRB.sfx.play('click'); updateHud(); updateUndo(); say(t('tryAgain', { name: S.players[S.turn - 1].emoji + ' ' + S.players[S.turn - 1].name }));
+  sfx('pop'); updateHud(); updateUndo(); say(t('tryAgain', { name: nameOf(S.turn) }), S.turn);
 }
-function updateUndo() { $('undoBtn').disabled = !(S.mode === 'two' && S.screen === 'play' && S.moves.length && !S.over && !S.busy); }
+function updateUndo() { const b = $('undoBtn'); if (b) b.disabled = !(S.mode === 'two' && S.screen === 'play' && S.moves.length && !S.over && !S.busy); }
 
+/** Pause: the kit's pause screen (resume, restart, settings, quit = back to the title, sound), with the game's note. */
+let pauseIgnore = false;
 function setPaused(on) {
   if (S.screen !== 'play' && S.screen !== 'pause') return;
   if (on && S.over) return;
-  S.paused = on; S.screen = on ? 'pause' : 'play';
-  $('pauseScreen').hidden = !on;
-  if (on) { $('pauseInfo').textContent = t(S.mode === 'robot' ? 'pauseRobot' : 'pauseFriend'); fitButtons(); $('resumeBtn').focus({ preventScroll: true }); }
-  else {
-    lastFrame = performance.now(); canvas.focus({ preventScroll: true });
-    if (isRobotTurn() && !S.over && !robotPromise) robotMove();   // the robot's start was skipped while paused
-  }
-  BRB.sfx.play('click');
+  if (on && !S.paused) {
+    S.paused = true; S.screen = 'pause'; pointerDown = false;
+    Oomba.ui.pause().then(r => {
+      if (pauseIgnore) { pauseIgnore = false; return; }
+      updateMute();
+      if (r === 'restart') { S.paused = false; startGame({ keepScore: true, restart: true }); }
+      else if (r === 'quit') { S.paused = false; quitToTitle(); }
+      else resumePlay();
+    });
+    const card = Oomba.ui.root().querySelector('.ok-pause .ok-card');
+    if (card) {
+      const h = card.querySelector('.ok-h2'), note = document.createElement('p'); note.className = 'c4-note'; note.id = 'pauseInfo';
+      note.textContent = t(S.mode === 'robot' ? 'pauseRobot' : 'pauseFriend'); if (RTL) note.dir = 'rtl';
+      if (h) h.after(note);
+      const resume = card.querySelector('.ok-go'); if (resume) resume.id = 'resumeBtn';
+    }
+  } else if (!on && S.paused) closeKitPause();
 }
+function resumePlay() {
+  if (!S.paused) return;
+  S.paused = false; S.screen = 'play';
+  lastFrame = performance.now(); canvas.focus({ preventScroll: true });
+  if (isRobotTurn() && !S.over && !robotPromise) robotMove();   // the robot's start was skipped while paused
+}
+/** Closes the kit's pause screen from code without acting on its result (a restart or a quit takes over). */
+function dismissKitPause() {
+  const b = Oomba.ui.root().querySelector('.ok-pause .ok-go');
+  if (b) { pauseIgnore = true; b.click(); }
+  S.paused = false;
+}
+/** Closes the kit's pause screen from code (a test, P again) and resumes play. */
+function closeKitPause() { dismissKitPause(); S.paused = true; resumePlay(); }
 function quitToTitle() {
+  if (S.paused) dismissKitPause();
   thinkToken++; robotPromise = null; falling = null; clearTimeout(resultsTimer); clearTimeout(bubbleTimer);
   S.screen = 'title'; S.paused = false; S.over = false; S.thinking = false; S.busy = false; hoverOwner = 0;
-  $('pauseScreen').hidden = true; $('resultScreen').hidden = true; $('titleScreen').hidden = false;
+  $('resultScreen').hidden = true;
   const app = $('app'); app.classList.add('offstage'); app.classList.remove('over'); app.style.transform = ''; canvas.style.transform = '';
   if (rafId) { cancelAnimationFrame(rafId); rafId = 0; }
-  refreshTitle(); $('playBtn').focus({ preventScroll: true });
+  placeCast(); openTitle();
 }
 
 /* =====================================================================================
    HUD and messages
    ===================================================================================== */
-function say(text) { $('msgEl').textContent = text; }
-/** A short robot speech line in the message slot (kid-friendly cheers and taunts). */
+/** The message line; who (1 | 2) shows that player's face in front of it. */
+function say(text, who) { $('msgText').textContent = text; setFace('msgFace', who && S.players[who - 1] ? S.players[who - 1].look : null, 30, undefined, who && S.players[who - 1] ? S.players[who - 1].disc.light : undefined); }
+/** A short robot speech line in the message slot (kid-friendly cheers and taunts), with the robot's face. */
 function bubble(text) {
   if (S.mode !== 'robot') return;
   clearTimeout(bubbleTimer);
-  say(CONFIG.robot.emoji + ' ' + text);
+  say(text, 2);
   if (!S.over) bubbleTimer = setTimeout(() => { if (S.screen === 'play' && !S.thinking && !S.over && S.turn === 1) say(tv('nudge')[0]); }, 2600);
 }
+let turnFaceKey = '';
 function updateHud() {
   const el = $('turnEl');
   const cur = S.players[S.turn - 1]; if (!cur) return;
+  const shown = S.over && S.winner ? S.players[S.winner - 1] : (S.over ? null : cur);
   el.classList.toggle('thinking', S.thinking && !REDUCED);
-  el.classList.toggle('long', (S.over && S.winner ? S.players[S.winner - 1] : cur).name.length > 8);
-  if (S.over) el.textContent = S.winner ? t('wins', { name: S.players[S.winner - 1].emoji + ' ' + S.players[S.winner - 1].name }) : t('tie');
-  else if (S.thinking) el.textContent = cur.emoji + ' ' + t('thinking', { name: cur.name });
-  else if (S.mode === 'robot' && S.turn === 1) el.textContent = cur.emoji + ' ' + t('yourTurn');
-  else el.textContent = cur.emoji + ' ' + t('turnOf', { name: cur.name, pos: possessive(cur.name) });
-  el.style.setProperty('--who', discById((S.over && S.winner ? S.players[S.winner - 1] : cur).color).main);
+  el.classList.toggle('long', (shown || cur).name.length > 8);
+  let text;
+  if (S.over) text = S.winner ? t('wins', { name: S.players[S.winner - 1].name }) : t('tie');
+  else if (S.thinking) text = t('thinking', { name: cur.name });
+  else if (S.mode === 'robot' && S.turn === 1) text = t('yourTurn');
+  else text = t('turnOf', { name: cur.name, pos: possessive(cur.name) });
+  $('turnText').textContent = text;
+  const key = shown ? shown.emoji + (S.over ? '!' : '') : '';
+  if (key !== turnFaceKey) { turnFaceKey = key; setFace('turnFace', shown ? shown.look : null, 34, S.over ? 'cheer' : undefined, shown ? shown.disc.light : undefined); }
+  el.classList.toggle('noface', !shown);
+  el.style.setProperty('--who', ((S.over && S.winner ? S.players[S.winner - 1] : cur).disc).main);
   $('chip1').classList.toggle('active', !S.over && S.turn === 1);
   $('chip2').classList.toggle('active', !S.over && S.turn === 2);
 }
 function updateScores() {
   for (let i = 0; i < 2; i++) {
     const pl = S.players[i]; if (!pl) continue;
-    $('chipName' + (i + 1)).textContent = pl.emoji + ' ' + pl.name;
-    $('chipName' + (i + 1)).classList.toggle('long', pl.name.length > 8);
-    $('chipWins' + (i + 1)).textContent = S.wins[i];
+    setFace('face' + (i + 1), pl.look, 38, undefined, pl.disc.light);
+    $('chipName' + (i + 1)).textContent = pl.name;
+    $('chipWins' + (i + 1)).textContent = fmtN(S.wins[i]);
     $('chip' + (i + 1)).classList.toggle('series', S.series === 'three');
     const dots = $('dots' + (i + 1)); dots.hidden = S.series !== 'three';   // in a series: the number plus one dot per win needed
     dots.innerHTML = Array.from({ length: CONFIG.seriesWins }, (_, k) => '<i class="' + (k < S.wins[i] ? 'on' : '') + '"></i>').join('');
   }
+  turnFaceKey = '';
+  fitChipNames();
+}
+/** The kit's sound on/off buttons (the HUD, the title's corner, the landscape results card). */
+function muteButton(extra) {
+  const b = Oomba.ui.button(t('soundOff'), { kind: 'icon', icon: 'sound', onPress: () => { BRB.sfx.mute(); updateMute(); } });
+  b.classList.add('mute'); if (extra) b.classList.add(extra); return b;
 }
 function updateMute() {
-  document.querySelectorAll('.mute').forEach(b => { b.textContent = BRB.sfx.muted ? '🔇' : '🔊'; b.setAttribute('aria-label', t(BRB.sfx.muted ? 'soundOn' : 'soundOff')); });
+  document.querySelectorAll('.mute').forEach(b => { b.innerHTML = Oomba.icon(BRB.sfx.muted ? 'mute' : 'sound'); b.setAttribute('aria-label', t(BRB.sfx.muted ? 'soundOn' : 'soundOff')); });
 }
-updateMute();
-document.querySelectorAll('.mute').forEach(b => b.addEventListener('click', () => { BRB.sfx.mute(); updateMute(); BRB.sfx.play('click'); }));
+/** A kit button's label (its icon stays). */
+function setBtnLabel(b, text) { if (!b) return; [...b.childNodes].forEach(n => { if (n.nodeType === 3) n.remove(); }); b.appendChild(document.createTextNode(text)); }
+{
+  const pause = Oomba.ui.button(t('pause'), { kind: 'icon', icon: 'pause', onPress: () => setPaused(true) }); pause.id = 'pauseBtn';
+  $('pauseSlot').replaceWith(pause);
+  $('muteSlot').replaceWith(muteButton());
+  const undo = Oomba.ui.button(t('undo'), { kind: 'quiet', icon: 'back', onPress: undoMove }); undo.id = 'undoBtn';
+  $('undoSlot').replaceWith(undo);
+  const again = Oomba.ui.button(t('playAgain'), { kind: 'hot', big: true, icon: 'restart', onPress: () => startGame({ keepScore: true }) }); again.id = 'againBtn';
+  const change = Oomba.ui.button(t('pickPlayers'), { kind: 'quiet', icon: 'user', onPress: () => quitToTitle() }); change.id = 'changeBtn';
+  $('resBtns').append(again, change);
+  $('resultScreen').querySelector('.ok-card').append(muteButton('corner'));
+}
 
 /* =====================================================================================
-   Title screen: pick who plays, the robot level, series length, pictures, names and colours.
+   Title screen: the kit's title (the sticker lockup, a four-in-a-row badge, player one's own character cheering)
+   with the game's card: who plays, the robot level, series length, the two seats (picture, name, disc colour), Play.
    Names are tapped from a list of fun nicknames (we never ask for real names).
    ===================================================================================== */
+/** A little disc canvas (css px) in the board's look, for the badge and the colour buttons. */
+function discCanvas(disc, css, look) {
+  const d = DPR(), c = document.createElement('canvas'); c.width = c.height = Math.round(css * d);
+  const g = c.getContext('2d'); g.setTransform(d, 0, 0, d, 0, 0);
+  const keep = G.dpr; G.dpr = d; drawDisc(g, css / 2, css / 2 - css * 0.02, css * 0.46, disc, look || null, 0); G.dpr = keep;
+  c.style.width = c.style.height = css + 'px'; c.setAttribute('aria-hidden', 'true');
+  return c;
+}
+/** The title badge: a strip of the board with four discs in a row. */
+function badgeCanvas() {
+  const d = DPR(), cell = 40, w = cell * 4 + 16, h = cell + 16, c = document.createElement('canvas'); c.width = Math.round(w * d); c.height = Math.round((h + 5) * d);
+  const g = c.getContext('2d'); g.setTransform(d, 0, 0, d, 0, 0);
+  g.fillStyle = INK; g.beginPath(); roundRect(g, 2, 6, w - 4, h - 4, 14); g.fill();
+  g.fillStyle = PLATE.base; g.beginPath(); roundRect(g, 2, 2, w - 4, h - 4, 14); g.fill(); g.lineWidth = 3; g.strokeStyle = INK; g.stroke();
+  const keep = G.dpr; G.dpr = d;
+  ['red', 'yellow', 'red', 'yellow'].forEach((id, i) => drawDisc(g, 8 + cell / 2 + i * cell, h / 2, cell * 0.42, discById(id), null, 0));
+  G.dpr = keep;
+  c.style.width = w + 'px'; c.style.height = (h + 5) + 'px';
+  return c;
+}
+const ROW_ICONS = { two: ['user', 'user'], robot: ['gamepad'], easy: ['star'], normal: ['star', 'star'], hard: ['star', 'star', 'star'], single: ['flag'], three: ['trophy'] };
+function optButton(attr, value, key) {
+  const b = document.createElement('button'); b.type = 'button'; b.dataset[attr] = value; b.dataset.i18nKey = key; b.setAttribute('aria-pressed', 'false');
+  const ic = document.createElement('span'); ic.className = 'ico'; ic.innerHTML = (ROW_ICONS[value] || []).map(n => Oomba.icon(n)).join(''); b.appendChild(ic);
+  b.appendChild(document.createTextNode(t(key, { n: CONFIG.seriesWins })));
+  return b;
+}
+function optRow(id, aria, items) {
+  const r = document.createElement('div'); r.className = 'row'; r.setAttribute('role', 'group'); r.setAttribute('aria-label', t(aria)); if (id) r.id = id; if (RTL) r.dir = 'rtl';
+  for (const [attr, value, key] of items) r.appendChild(optButton(attr, value, key));
+  return r;
+}
+function seatEl(i) {
+  const s = document.createElement('div'); s.className = 'seat'; if (RTL) s.dir = 'rtl';
+  s.innerHTML = '<span class="who"></span><button type="button" class="emojiBtn" data-p="' + i + '"></button><button type="button" class="nameBtn" data-p="' + i + '"></button><button type="button" class="colorBtn" data-p="' + i + '"></button>';
+  return s;
+}
+function buildSetupCard() {
+  const card = document.createElement('div'); card.className = 'c4-tcard'; card.style.position = 'static'; if (RTL) card.dir = 'rtl';
+  const setup = document.createElement('div'); setup.className = 'setup';
+  const L = document.createElement('div'); L.className = 'setupL';
+  L.append(optRow(null, 'whoPlays', [['mode', 'two', 'twoPlayers'], ['mode', 'robot', 'vsRobot']]),
+    optRow('levelRow', 'robotLevel', [['level', 'easy', 'easy'], ['level', 'normal', 'normal'], ['level', 'hard', 'hard']]),
+    optRow(null, 'howMany', [['series', 'single', 'oneGame'], ['series', 'three', 'firstTo']]));
+  const R = document.createElement('div'); R.className = 'setupR';
+  const seats = document.createElement('div'); seats.className = 'seats'; seats.append(seatEl(0), seatEl(1));
+  const hint = document.createElement('p'); hint.className = 'hint'; hint.id = 'setupHint';
+  const best = document.createElement('div'); best.className = 'chip col'; best.id = 'bestChip';
+  R.append(seats, hint, best);
+  setup.append(L, R);
+  card.append(setup);
+  wireSetup(card);
+  return card;
+}
+let titleOpen = false, titleSkip = false;
+function openTitle() {
+  if (titleOpen) return; titleOpen = true; S.screen = 'title'; Oomba.scene = 'title';
+  Oomba.ui.title({ title: CONFIG.title, subtitle: t('tagline'), titleHue: 'coral', hero: lookOf(save.players[0].emoji), badge: badgeCanvas(),
+    play: () => { titleOpen = false; if (!titleSkip) { S.mode = save.mode; S.difficulty = save.difficulty; S.series = save.series; startGame(); } } });
+  const scr = [...Oomba.ui.root().querySelectorAll('.ok-title-screen')].pop(); if (!scr) return;
+  const block = scr.querySelector('.ok-title-block'), play = block && block.querySelector('.ok-hot');
+  if (play) play.id = 'playBtn';
+  const card = buildSetupCard();
+  const sub = block && block.querySelector('.ok-p'); if (sub) card.prepend(sub);
+  const cta = block && block.querySelector('.ok-cta'); if (cta) card.append(cta);
+  const kb = document.createElement('p'); kb.className = 'hint kbhint'; kb.id = 'kbHint'; kb.textContent = t('kbHint', { n: Math.min(COLS, 9) }); card.append(kb);
+  if (block) block.append(card);
+  const corner = scr.querySelector('.ok-corner'); if (corner) corner.prepend(muteButton());
+  refreshTitle(); updateMute();
+  if (play) play.focus({ preventScroll: true });
+}
+/** Leaves the kit's title screen without its Play action (a test or a restart jumping straight into play). */
+function closeTitle() { if (!titleOpen) return; const b = $('playBtn'); if (b) { titleSkip = true; b.click(); titleSkip = false; } titleOpen = false; }
 function refreshTitle() {
   document.querySelectorAll('[data-mode]').forEach(b => b.setAttribute('aria-pressed', b.dataset.mode === save.mode));
   document.querySelectorAll('[data-level]').forEach(b => b.setAttribute('aria-pressed', b.dataset.level === save.difficulty));
   document.querySelectorAll('[data-series]').forEach(b => b.setAttribute('aria-pressed', b.dataset.series === save.series));
-  $('levelRow').hidden = save.mode !== 'robot';
+  const lr = $('levelRow'); if (lr) lr.hidden = save.mode !== 'robot';
   const seats = document.querySelectorAll('.seat');
-  for (let i = 0; i < 2; i++) {
+  for (let i = 0; i < seats.length && i < 2; i++) {
     const robot = i === 1 && save.mode === 'robot';
-    const pl = robot ? { emoji: CONFIG.robot.emoji, name: robotName(), color: save.robotColor === save.players[0].color ? CONFIG.discs.find(d => d.id !== save.robotColor).id : save.robotColor }
+    const pl = robot ? { emoji: CONFIG.robot.emoji, name: robotName(), color: save.robotColor === save.players[0].color ? DISCS.find(d => d.id !== save.robotColor).id : save.robotColor }
       : Object.assign({}, save.players[i], { name: showName(save.players[i].name) });
     const seat = seats[i];
-    seat.querySelector('.who').textContent = t('seat', { n: i + 1 });   // the robot is still "P2" (its picture is already the 🤖 button)
+    seat.querySelector('.who').textContent = t('seat', { n: i + 1 });
     const e = seat.querySelector('.emojiBtn'), n = seat.querySelector('.nameBtn'), c = seat.querySelector('.colorBtn');
     // The robot's picture and name are fixed: shown as flat labels that still beep and wiggle when tapped.
-    e.textContent = pl.emoji; e.classList.toggle('fixed', robot); e.setAttribute('aria-disabled', robot); e.setAttribute('aria-label', robot ? t('theRobot') : t('changePic'));
+    setFace(e, lookOf(pl.emoji), 44, undefined, discById(pl.color).light); e.classList.toggle('fixed', robot); e.setAttribute('aria-disabled', robot); e.setAttribute('aria-label', robot ? t('theRobot') : t('changePic'));
     n.textContent = pl.name; n.classList.toggle('fixed', robot); n.setAttribute('aria-disabled', robot); n.setAttribute('aria-label', robot ? t('robotCalled', { name: pl.name }) : t('changeName'));
     n.classList.toggle('long', pl.name.length > 9);
-    const d = discById(pl.color); const dot = c.querySelector('i');
-    dot.style.setProperty('--dm', d.main); dot.style.setProperty('--dd', d.dark); dot.style.setProperty('--dl', d.light);
+    const d = discById(pl.color); c.textContent = ''; c.appendChild(discCanvas(d, 40));
     c.setAttribute('aria-label', t('changeColorNow', { color: t('c_' + d.id) }));
   }
-  $('setupHint').textContent = t(save.mode === 'robot' ? 'hintRobot' : 'hintTwo');
+  // the title's big character is player one's picture
+  const hero = document.querySelector('.ok-title-hero canvas');
+  if (hero && hero.dataset.look !== save.players[0].emoji) { const nh = Oomba.ui.portrait(lookOf(save.players[0].emoji), { size: parseFloat(hero.style.height) || 200, mood: 'cheer' }); nh.dataset.look = save.players[0].emoji; hero.replaceWith(nh); }
+  const hint = $('setupHint'); if (hint) hint.textContent = t(save.mode === 'robot' ? 'hintRobot' : 'hintTwo');
   const pts = robotPoints(), st = save.stats, chip = $('bestChip');
-  chip.textContent = '🏆 ' + (pts ? t('robotPoints', { n: pts }) : t('beatRobot'));
-  if (pts) {   // the per-level wins on a second line, each "level number" pair kept together
-    const sub = document.createElement('span'); sub.className = 'sub';
-    sub.textContent = t('levelsLine', { e: st.easy.w, m: st.normal.w, h: st.hard.w });
-    chip.appendChild(sub);
+  if (chip) {
+    chip.innerHTML = '<span style="display:inline-flex;align-items:center;gap:6px">' + Oomba.icon('trophy') + '<span></span></span>';
+    chip.querySelector('span span').textContent = pts ? t('robotPoints', { n: pts }) : t('beatRobot');
+    if (pts) {   // the per-level wins on a second line, each "level number" pair kept together
+      const sub = document.createElement('span'); sub.className = 'sub';
+      sub.textContent = t('levelsLine', { e: st.easy.w, m: st.normal.w, h: st.hard.w });
+      chip.appendChild(sub);
+    }
   }
   fitNameButtons(); fitButtons();
 }
@@ -2132,40 +2472,37 @@ function fitNameButtons() {
 }
 function cycle(list, cur, step) { const i = list.indexOf(cur); return list[(i < 0 ? 0 : i + step + list.length) % list.length]; }
 // The names to tap through: the player's own Oomba Academy name first (so it can always be picked again), then the nicknames.
-const NAME_LIST = (() => { const own = String(BRB.user.displayName || '').slice(0, 12).trim(); return own && !CONFIG.nicknames.includes(own) ? [own].concat(CONFIG.nicknames) : CONFIG.nicknames.slice(); })();
-function nextFreeColor(cur, otherId) { let id = cur; do { id = cycle(CONFIG.discs.map(d => d.id), id, 1); } while (id === otherId); return id; }
-
-document.querySelectorAll('[data-mode]').forEach(b => b.addEventListener('click', () => { save.mode = b.dataset.mode; persist(); refreshTitle(); BRB.sfx.play('click'); }));
-document.querySelectorAll('[data-level]').forEach(b => b.addEventListener('click', () => { save.difficulty = b.dataset.level; persist(); refreshTitle(); BRB.sfx.play('click'); }));
-document.querySelectorAll('[data-series]').forEach(b => b.addEventListener('click', () => { save.series = b.dataset.series; persist(); refreshTitle(); BRB.sfx.play('click'); }));
+const NAME_LIST = (() => { const own = String(BRB.user.displayName || '').slice(0, 14).trim(); return own && !CONFIG.nicknames.includes(own) ? [own].concat(CONFIG.nicknames) : CONFIG.nicknames.slice(); })();
+// The pictures to tap through: player one may be their own character ('me'); player two picks from the animals.
+const PICTURES = Object.keys(CONFIG.pictures);
+function nextFreeColor(cur, otherId) { let id = cur; do { id = cycle(DISCS.map(d => d.id), id, 1); } while (id === otherId); return id; }
 /** Tapping the robot's picture or name: it cannot change, so it just beeps (the wiggle is CSS on :active). */
-function robotSeatTap(b) { if (b.dataset.p !== '1' || save.mode !== 'robot') return false; BRB.sfx.play('click'); return true; }
-document.querySelectorAll('.emojiBtn').forEach(b => b.addEventListener('click', () => {
-  if (robotSeatTap(b)) return;
-  const i = +b.dataset.p, other = save.players[1 - i].emoji;
-  let e = save.players[i].emoji; do { e = cycle(CONFIG.emojis, e, 1); } while (e === other);
-  save.players[i].emoji = e; persist(); refreshTitle(); BRB.sfx.play('coin');
-}));
-document.querySelectorAll('.nameBtn').forEach(b => b.addEventListener('click', () => {
-  if (robotSeatTap(b)) return;
-  const i = +b.dataset.p, other = save.players[1 - i].name;
-  let n = save.players[i].name; do { n = cycle(NAME_LIST, n, 1); } while (n === other);
-  save.players[i].name = n; persist(); refreshTitle(); BRB.sfx.play('click');
-}));
-document.querySelectorAll('.colorBtn').forEach(b => b.addEventListener('click', () => {
-  const i = +b.dataset.p;
-  if (i === 1 && save.mode === 'robot') save.robotColor = nextFreeColor(save.robotColor, save.players[0].color);
-  else save.players[i].color = nextFreeColor(save.players[i].color, i === 1 ? save.players[0].color : (save.mode === 'robot' ? save.robotColor : save.players[1].color));
-  persist(); refreshTitle(); BRB.sfx.play('powerup');
-}));
-$('playBtn').addEventListener('click', () => { S.mode = save.mode; S.difficulty = save.difficulty; S.series = save.series; BRB.sfx.play('powerup'); startGame(); });
-$('againBtn').addEventListener('click', () => { BRB.sfx.play('click'); startGame({ keepScore: true }); });
-$('changeBtn').addEventListener('click', () => { BRB.sfx.play('click'); quitToTitle(); });
-$('pauseBtn').addEventListener('click', () => setPaused(true));
-$('resumeBtn').addEventListener('click', () => setPaused(false));
-$('restartBtn').addEventListener('click', () => { BRB.sfx.play('click'); startGame({ keepScore: true, restart: true }); });
-$('quitBtn').addEventListener('click', () => { BRB.sfx.play('click'); quitToTitle(); });
-$('undoBtn').addEventListener('click', undoMove);
+function robotSeatTap(b) { if (b.dataset.p !== '1' || save.mode !== 'robot') return false; sfx('select'); return true; }
+function wireSetup(card) {
+  card.querySelectorAll('[data-mode]').forEach(b => b.addEventListener('click', () => { save.mode = b.dataset.mode; persist(); refreshTitle(); sfx('select'); }));
+  card.querySelectorAll('[data-level]').forEach(b => b.addEventListener('click', () => { save.difficulty = b.dataset.level; persist(); refreshTitle(); sfx('select'); }));
+  card.querySelectorAll('[data-series]').forEach(b => b.addEventListener('click', () => { save.series = b.dataset.series; persist(); refreshTitle(); sfx('select'); }));
+  card.querySelectorAll('.emojiBtn').forEach(b => b.addEventListener('click', () => {
+    if (robotSeatTap(b)) return;
+    const i = +b.dataset.p, other = save.players[1 - i].emoji, list = i === 0 ? ['me'].concat(PICTURES) : PICTURES;
+    let e = save.players[i].emoji; do { e = cycle(list, e, 1); } while (e === other);
+    save.players[i].emoji = e; persist(); refreshTitle(); sfx('pop');
+    const face = b.querySelector('canvas'); if (face && !REDUCED) { try { Oomba.juice.pop(face); } catch (err) { /* ignore */ } }
+  }));
+  card.querySelectorAll('.nameBtn').forEach(b => b.addEventListener('click', () => {
+    if (robotSeatTap(b)) return;
+    const i = +b.dataset.p, other = save.players[1 - i].name;
+    let n = save.players[i].name; do { n = cycle(NAME_LIST, n, 1); } while (n === other);
+    save.players[i].name = n; persist(); refreshTitle(); sfx('select');
+  }));
+  card.querySelectorAll('.colorBtn').forEach(b => b.addEventListener('click', () => {
+    const i = +b.dataset.p;
+    if (i === 1 && save.mode === 'robot') save.robotColor = nextFreeColor(save.robotColor, save.players[0].color);
+    else save.players[i].color = nextFreeColor(save.players[i].color, i === 1 ? save.players[0].color : (save.mode === 'robot' ? save.robotColor : save.players[1].color));
+    persist(); refreshTitle(); sfx('spark');
+    const disc = b.querySelector('canvas'); if (disc && !REDUCED) { try { Oomba.juice.pop(disc); } catch (err) { /* ignore */ } }
+  }));
+}
 document.addEventListener('visibilitychange', () => { if (document.hidden && S.screen === 'play' && !S.over) setPaused(true); });
 
 /* =====================================================================================
@@ -2189,30 +2526,42 @@ canvas.addEventListener('pointerup', e => {
 canvas.addEventListener('pointercancel', () => { pointerDown = false; });
 canvas.addEventListener('contextmenu', e => e.preventDefault());
 
+// P again closes the kit's pause screen, as it did before (Esc is the kit's own). The kit's screen keeps every key to
+// itself from the document's capture phase, so this listens on the window, which comes first.
+window.addEventListener('keydown', e => {
+  if (S.screen !== 'pause' || (e.key !== 'p' && e.key !== 'P')) return;
+  const top = [...document.querySelectorAll('.ok-modal')].pop();
+  if (!top || !top.classList.contains('ok-pause')) return;   // the settings screen on top keeps its keys
+  e.preventDefault(); e.stopPropagation(); setPaused(false);
+}, true);
 document.addEventListener('keydown', e => {
   const k = e.key;
-  if (k === 'p' || k === 'P' || k === 'Escape') { if (S.screen === 'play' && !S.over) { setPaused(true); e.preventDefault(); } else if (S.screen === 'pause') { setPaused(false); e.preventDefault(); } return; }
+  if (Oomba.ui.open && S.screen !== 'title') return;   // the kit's own screens (pause, settings) own the keys while they are open
+  if (k === 'p' || k === 'P' || k === 'Escape') { if (S.screen === 'play' && !S.over) { setPaused(true); e.preventDefault(); } return; }
   if (k === 'm' || k === 'M') { BRB.sfx.mute(); updateMute(); return; }
   if (S.screen !== 'play') return;
   if (e.target && e.target.tagName === 'BUTTON' && (k === 'Enter' || k === ' ')) return;   // let buttons be buttons
   if (k === 'u' || k === 'U') { undoMove(); return; }
   if (!canAct()) return;
-  if (k === 'ArrowLeft' || k === 'a' || k === 'A') { S.previewCol = (S.previewCol + COLS - 1) % COLS; hoverOwner = S.turn; BRB.sfx.play('click'); e.preventDefault(); }
-  else if (k === 'ArrowRight' || k === 'd' || k === 'D') { S.previewCol = (S.previewCol + 1) % COLS; hoverOwner = S.turn; BRB.sfx.play('click'); e.preventDefault(); }
+  if (k === 'ArrowLeft' || k === 'a' || k === 'A') { S.previewCol = (S.previewCol + COLS - 1) % COLS; hoverOwner = S.turn; sfx('step'); e.preventDefault(); }
+  else if (k === 'ArrowRight' || k === 'd' || k === 'D') { S.previewCol = (S.previewCol + 1) % COLS; hoverOwner = S.turn; sfx('step'); e.preventDefault(); }
   else if (k === 'Enter' || k === ' ' || k === 'ArrowDown') { dropDisc(S.previewCol); e.preventDefault(); }
   else if (k.length === 1 && k >= '1' && k <= '9' && +k <= COLS) { dropDisc(+k - 1); e.preventDefault(); }   // 1..COLS drop straight into that column
 });
 
 // Keep the board sized to its box (the page, and the rows around the board, can change size).
-const relayout = () => { if (S.screen !== 'title') layout(); else fitNameButtons(); fitButtons(); };
+const relayout = () => { frameWorld(); if (S.screen !== 'title') { layout(); fitChipNames(); } else fitNameButtons(); fitButtons(); placeCast(); };
 if (window.ResizeObserver) { const ro = new ResizeObserver(relayout); for (const id of ['app', 'hud', 'scores', 'msgEl', 'ctrlRow']) ro.observe($(id)); }
 window.addEventListener('resize', relayout);
-try { if (document.fonts && document.fonts.ready) document.fonts.ready.then(relayout); } catch (e) { /* ignore */ }
+Oomba.fonts.ready.then(relayout);
+Oomba.theme.on('change', () => { if (G.ready) { drawPlate(); discDirty = true; idle = false; } });
 
-refreshTitle();
+updateMute();
+openTitle();
 
 /* =====================================================================================
-   window.__brbTest: hooks for automated play tests (harmless in production).
+   window.__brbTest: hooks for automated play tests (harmless in production). Merged into the kit's hooks
+   (setTheme, setLang, setTier ...): the game's own names below win and behave as before.
      state()                      -> { screen, board (6x7 of 0/1/2, row 0 = top), turn, winner (null | 0 tie | 1 | 2),
                                       winningCells [[row,col]...] (every winning cell), winLines [[[row,col]...]...] (one per
                                       completed four), mode, difficulty, thinking, wins, moves, previewCol }
@@ -2230,7 +2579,7 @@ refreshTitle();
      seed(n)                      -> reset the game's random numbers (robot tie-breaks, Easy moves, taunts)
      undo(), pause(on), rematch(), quit()
    ===================================================================================== */
-window.__brbTest = {
+const TEST = {
   state() {
     return { screen: S.screen, board: S.board.map(r => r.slice()), turn: S.turn, winner: S.winner, winningCells: S.winningCells.map(c => c.slice()),
       winLines: S.winLines.map(l => l.map(c => c.slice())), mode: S.mode, difficulty: S.difficulty, series: S.series, thinking: S.thinking, busy: S.busy, over: S.over, wins: S.wins.slice(), moves: S.moves.slice(), previewCol: S.previewCol, paused: S.paused };
@@ -2239,7 +2588,7 @@ window.__brbTest = {
     if (opts.mode === 'two' || opts.mode === 'robot') save.mode = opts.mode;
     if (LEVELS.includes(opts.difficulty)) save.difficulty = opts.difficulty;
     if (opts.series === 'single' || opts.series === 'three') save.series = opts.series;
-    if (Array.isArray(opts.names)) opts.names.forEach((n, i) => { if (n && save.players[i]) save.players[i].name = String(n).slice(0, 12); });
+    if (Array.isArray(opts.names)) opts.names.forEach((n, i) => { if (n && save.players[i]) save.players[i].name = String(n).slice(0, 14); });
     S.mode = save.mode; S.difficulty = save.difficulty; S.series = save.series;
     startGame();
     if (opts.starter === 2 || opts.starter === 1) { thinkToken++; robotPromise = null; S.starter = opts.starter; S.turn = opts.starter; hoverOwner = 0; updateHud(); if (isRobotTurn()) robotMove(); else hoverOwner = S.turn; }
@@ -2262,8 +2611,9 @@ window.__brbTest = {
   undo() { undoMove(); return this.state(); },
   pause(on = true) { setPaused(on); return this.state(); },
   rematch() { startGame({ keepScore: true }); return this.state(); },
-  quit() { quitToTitle(); return this.state(); },
-  get nodes() { return AI.nodes; },
-  get lastSearch() { return AI.lastSearch; }   // { col, score, depth, nodes } of the robot's last real search
+  quit() { quitToTitle(); return this.state(); }
 };
+window.__brbTest = Object.assign(window.__brbTest || {}, TEST);
+Object.defineProperty(window.__brbTest, 'nodes', { get: () => AI.nodes, configurable: true });
+Object.defineProperty(window.__brbTest, 'lastSearch', { get: () => AI.lastSearch, configurable: true });   // { col, score, depth, nodes } of the robot's last real search
 </script>

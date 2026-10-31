@@ -46,7 +46,7 @@ The SDK (`public/sdk/brb-sdk.js`) is loaded before the game's own code and is fr
 
 | API | What it does |
 |---|---|
-| `BRB.user` | `{ displayName, avatar, isGuest, lang, dir }`. No other identity is ever given to a game. `lang` and `dir` are explained in [Languages](#languages). |
+| `BRB.user` | `{ displayName, avatar, isGuest, lang, dir, character }`. No other identity is ever given to a game. `lang` and `dir` are explained in [Languages](#languages). `character` is the Oomba character the player designed on their Me page (a frozen parts spec from the kit's lists: `species body skin hair mood outfit colors wear bold`, never a picture), or `null` (guests, or not designed yet); kit games read it with `Oomba.avatar()`. |
 | `BRB.game` | `{ id, title }` |
 | `BRB.preview` | `true` inside the Studio preview (saving is off there). |
 | `BRB.theme` / `BRB.motion` | The site theme (`'light'`, `'dark'`, or `''` to follow the device): read-only plumbing for games that follow the site, like [Oomba Kit](kit-api.md) games; other games keep their own colours. `BRB.motion` is **reserved** for a future site motion setting and is always `''` today: games follow the device's reduced-motion setting (the kit also has its own settings panel). |

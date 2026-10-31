@@ -326,6 +326,118 @@
         "newPw": "Nieuw wachtwoord",
         "newPwConfirm": "Nieuw wachtwoord nog een keer"
       }
+    },
+    "character": {
+      "heading": "Mijn Oomba-figuur",
+      "text": "Ontwerp één keer je eigen figuur. Spellen waarin je als jezelf kunt spelen maken er de held van. Het is een tekening die jij maakt, nooit een foto.",
+      "guestText": "Gasten spelen als Oomba. Maak een account om je eigen figuur te ontwerpen.",
+      "signup": "Account maken",
+      "previewLabel": "Jouw figuur",
+      "styleGroup": "Laat de look zien voor",
+      "playful": "Speels",
+      "bold": "Bold",
+      "boldNote": "Bold is de look in spellen voor oudere spelers. Kies wat je daar draagt.",
+      "kind": "Soort",
+      "body": "Lichaamsvorm",
+      "skin": "Huidskleur",
+      "skinLabel": "Huidskleur {n}",
+      "hair": "Haar",
+      "hairColor": "Haarkleur",
+      "eyes": "Ogen",
+      "top": "Shirt",
+      "topColor": "Kleur van het shirt",
+      "color": "Kleur",
+      "accent": "Extra kleur",
+      "accessory": "Extra",
+      "boldHat": "Op je hoofd",
+      "boldTop": "Jas",
+      "boldEyes": "Ogen in Bold",
+      "none": "Niets",
+      "save": "Mijn figuur bewaren",
+      "reset": "Opnieuw beginnen",
+      "notSaved": "Nog niet bewaard",
+      "saved": "Je figuur is bewaard! Spellen kunnen hem nu gebruiken.",
+      "invalid": "Die figuur kon niet worden bewaard. Probeer het nog eens.",
+      "guestOnly": "Maak een account om je eigen figuur te bewaren.",
+      "names": {
+        "species": {
+          "kid": "Kind",
+          "oomba": "Oomba",
+          "fox": "Vos",
+          "bunny": "Konijn",
+          "frog": "Kikker",
+          "bee": "Bij"
+        },
+        "body": {
+          "bean": "Boon",
+          "ball": "Rond",
+          "pear": "Peer"
+        },
+        "hair": {
+          "puffs": "Staartjes",
+          "bob": "Bob",
+          "curls": "Krullen",
+          "spiky": "Stekels",
+          "braids": "Vlechten",
+          "buzz": "Kort",
+          "long": "Lang",
+          "cap": "Pet"
+        },
+        "hairColor": {
+          "cocoa": "Bruin",
+          "black": "Zwart",
+          "blonde": "Blond",
+          "copper": "Rood",
+          "stone": "Grijs",
+          "grape": "Paars",
+          "sky": "Blauw",
+          "mint": "Groen"
+        },
+        "eyes": {
+          "happy": "Blij",
+          "surprised": "Verrast",
+          "determined": "Vastberaden",
+          "thinking": "Denkend",
+          "sleepy": "Slaperig",
+          "wink": "Knipoog"
+        },
+        "top": {
+          "tee": "T-shirt",
+          "hoodie": "Hoodie",
+          "dress": "Jurk",
+          "overalls": "Tuinbroek"
+        },
+        "color": {
+          "mint": "Munt",
+          "coral": "Koraal",
+          "sky": "Hemelsblauw",
+          "grape": "Druif",
+          "peach": "Perzik",
+          "cocoa": "Cacao",
+          "stone": "Steen",
+          "snow": "Sneeuw"
+        },
+        "wear": {
+          "scarf": "Sjaal",
+          "glasses": "Bril",
+          "crown": "Kroon",
+          "wizard-hat": "Tovenaarshoed",
+          "backpack": "Rugzak",
+          "headphones": "Koptelefoon"
+        },
+        "boldHat": {
+          "hood": "Capuchon",
+          "visor": "Vizier",
+          "headset": "Headset",
+          "helmet": "Helm",
+          "cap-back": "Pet"
+        },
+        "boldTop": {
+          "jersey": "Sportshirt",
+          "bomber": "Bomberjack",
+          "techvest": "Techvest"
+        }
+      }
     }
   },
   "cards": {
@@ -486,7 +598,8 @@
         "h": "Wat we bewaren",
         "p1": "Bij een eigen account bewaren we een verzonnen naam, een wachtwoord (onleesbaar opgeslagen) en wat je kind hier doet: de games die het bouwt, de chats met de Bouwer en de afbeeldingen of bestanden die het toevoegt, opgeslagen spelvoortgang, scores, beoordelingen, favorieten, vrienden, chatberichten, een profielfoto als het er een uploadt, en instellingen zoals taal en thema. Bij spelen als gast bewaren we een verzonnen naam, opgeslagen spelvoortgang, scores, beoordelingen en favorieten.",
         "p2": "Een schoolaccount is een account waarmee je kind inlogt met een inlogkaart van school. Het wordt gemaakt door de school en is van die school. Daarbij bewaren we hetzelfde, plus de echte naam van de leerling zoals de school die voor de klassenlijst heeft ingetypt (alleen het personeel van de school en ons team zien die), de klassen van de leerling, de voortgang in lessen, geschreven antwoorden en de feedback van de leerkracht. Wordt je kind met een eigen account en een klascode lid van een klas, dan bewaart de school hetzelfde voor die klas, ook de echte naam als de leerkracht die intypt.",
-        "paid3": "Gezinsabonnementen zien nooit wat er in de klas gebeurt: een volwassene die aan een leerling gekoppeld is, ziet alleen de extra gezinsberichten van die leerling."
+        "paid3": "Gezinsabonnementen zien nooit wat er in de klas gebeurt: een volwassene die aan een leerling gekoppeld is, ziet alleen de extra gezinsberichten van die leerling.",
+        "p4": "<b>Hun Oomba-figuur:</b> eigen accounts kunnen een getekende figuur ontwerpen die spellen als held gebruiken (lichaamsvorm, huidskleur, haar, ogen, kleding en kleuren uit onze lijsten). Die wordt alleen als deze keuzes bij het account bewaard, nooit als foto of afbeelding van uw kind, en wordt met het account verwijderd."
       },
       "never": {
         "h": "Wat we nooit verzamelen",
@@ -1340,6 +1453,27 @@
       "failed": "Sorry, ik kon er geen woorden van maken. Probeer het nog eens of typ je bericht.",
       "busy": "De spraakhulp heeft het nu druk. Probeer het zo nog eens.",
       "oneAtATime": "De microfoon staat al aan in een ander tabblad. Zet hem daar eerst uit."
+    },
+    "themes": {
+      "heading": "Kies een wereld",
+      "current": "nu",
+      "names": {
+        "meadow": "Weide",
+        "beach": "Strand",
+        "jungle": "Jungle",
+        "snow": "Sneeuw",
+        "desert": "Woestijn",
+        "reef": "Rif",
+        "space": "Ruimte",
+        "candy": "Snoep",
+        "haunted": "Spookachtig",
+        "castle": "Kasteel",
+        "cyber": "Cyber",
+        "stadium": "Stadion",
+        "forest": "Bos",
+        "autumn": "Herfst",
+        "city": "Stad"
+      }
     }
   },
   "publish": {
@@ -2041,7 +2175,12 @@
       },
       "limit": {
         "seePlans": "Bekijk abonnementen voor meer berichten aan de Bouwer"
-      }
+      },
+      "themeUse": "Gebruik het thema {name}."
+    },
+    "character": {
+      "unsaved": "Nog niet bewaard",
+      "saved": "Je figuur is bewaard!"
     }
   },
   "favorites": {

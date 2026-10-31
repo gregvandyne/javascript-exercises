@@ -1,274 +1,329 @@
 <title>Word Hunt</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Fredoka:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@700&display=swap">
 <style>
-/* Word Hunt: a kid-friendly word search.
-   Layout (portrait): HUD (pause / theme + timer / mute), the letter grid on a notebook card, the word list
-   (emoji + word chips), and a tools row (Hint, Read to me). In wide screens (landscape phones, desktops) the grid
+/* Word Hunt on the Oomba Kit: a kid-friendly word search.
+   Layout (portrait): HUD (pause / theme + timer / sound), the letter grid on a notebook card, the word list
+   (picture + word chips), and a tools row (Hint, Read to me). In wide screens (landscape phones, desktops) the grid
    sits on the left and everything else stacks in a side column so the letters stay big.
-   A full-screen canvas behind everything draws the theme's scene (bubbles + a whale for Ocean, stars + a rocket
-   for Space...). Overlays: title screen, pause and results. */
-:root{
-  --th1:#ffe7a8; --th2:#ffd08a; --acc:#e8892b; --accDark:#b45f12; --accSoft:#fff1dc;
-  --ink:#23324a; --paper:#fffdf4; --card:#ffffff; --muted:#5d6b80;
-  --display:"Fredoka","Trebuchet MS",system-ui,sans-serif;
-  --letters:"Andika","Fredoka","Trebuchet MS",system-ui,sans-serif;
-  color-scheme:light;
-}
+   Behind everything a kit stage draws the theme's world (the reef for Ocean, the alien planet for Space, the stadium
+   for Sports...; night in the dark theme). The title, pause and settings screens are the kit's; the results card is
+   the game's own, in the kit's look, so the solved grid stays in view above it.
+   Colours come from the kit (set as --wh-* variables from Oomba.color at start and on every theme change). */
+.wh,.wh-tcard{--acc:var(--wh-acc);--accDark:var(--wh-accDark);--accSoft:var(--wh-accSoft);--ink:var(--wh-ink);--rim:var(--wh-ink);
+  --soft:color-mix(in srgb,var(--ok-text) 66%,transparent)}
+.wh{position:absolute;inset:0;pointer-events:auto;user-select:none;-webkit-user-select:none;
+  touch-action:manipulation;-webkit-tap-highlight-color:transparent;color:var(--ok-text)}
+.ok-night .wh,.ok-night .wh-tcard{--rim:color-mix(in srgb,var(--wh-cream) 40%,transparent)}
 [hidden]{display:none!important}
-html,body{height:100%}
-body{margin:0;overflow:hidden;font-family:var(--display);color:var(--ink);background:linear-gradient(180deg,var(--th1),var(--th2));
-  touch-action:manipulation;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
-#bg{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:0;pointer-events:none}
-button{font-family:inherit;color:inherit;cursor:pointer}
-button:focus-visible{outline:4px solid var(--ink);outline-offset:2px}
+.wh button,.wh-tcard button{font-family:inherit;color:inherit;cursor:pointer}
+.wh .ok-btn,.wh-tcard .ok-btn{color:var(--wh-ink)}
+.ic{display:inline-flex;vertical-align:-.18em}.ic svg{width:1.15em;height:1.15em}
+.pic{display:block;flex:none}
 
 /* ---------- play screen ---------- */
-.app{position:relative;z-index:1;height:100%;max-width:1200px;margin:0 auto;display:grid;gap:8px;
-  padding:8px max(8px,env(safe-area-inset-right)) 10px max(8px,env(safe-area-inset-left));
+.app{position:relative;height:100%;max-width:1200px;margin:0 auto;display:grid;gap:8px;box-sizing:border-box;
+  padding:max(8px,env(safe-area-inset-top)) max(8px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left));
   grid-template-areas:"hud" "board" "words" "tools";grid-template-rows:auto minmax(0,1fr) auto auto;grid-template-columns:minmax(0,1fr)}
 .app.offstage{visibility:hidden} /* the title screen covers the game; keep the live HUD out of sight */
-.hud{grid-area:hud;display:flex;align-items:center;gap:8px;min-width:0}
-.icon-btn{width:46px;height:46px;flex:none;border:0;border-radius:50%;background:#fff;font-size:1.3rem;box-shadow:0 4px 0 rgba(0,0,0,.18);display:grid;place-items:center;padding:0}
-.icon-btn:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.18)}
-.info{flex:1;min-width:0;display:flex;align-items:center;gap:8px;background:#fff;border-radius:999px;padding:3px 14px 3px 4px;box-shadow:0 3px 0 rgba(0,0,0,.14);min-height:46px}
-.info canvas{width:40px;height:40px;flex:none;display:block}
+.hud{grid-area:hud;position:relative;display:flex;align-items:center;gap:8px;min-width:0}
+.hud .ok-btn.ok-icon{width:48px;min-height:48px;flex:none}
+.info{flex:1;min-width:0;height:52px;box-sizing:border-box;display:flex;align-items:center;gap:8px;background:var(--ok-card);color:var(--ok-text);
+  border:2.5px solid var(--rim);border-radius:999px;padding:2px 14px 2px 6px;box-shadow:0 3px 0 var(--wh-ink)}
+.info .pic{width:40px;height:40px}
 .infoText{min-width:0;display:flex;flex-direction:column;line-height:1.1}
-.infoText b{font-size:1.1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.infoText span{font-size:.95rem;color:var(--muted);font-weight:600;white-space:nowrap}
+.infoText b{font-size:1.08rem;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.infoText span{font-size:.92rem;color:var(--soft);font-weight:700;white-space:nowrap;display:flex;align-items:center;gap:4px}
 .boardWrap{grid-area:board;position:relative;min-height:0;min-width:0}
-.card{position:absolute;background:var(--paper);border-radius:16px;padding:5px;box-shadow:0 0 0 4px #fff,0 8px 0 4px rgba(0,0,0,.13)}
-.card::before,.card::after{content:"";position:absolute;top:-10px;width:58px;height:20px;background:rgba(255,226,120,.85);border-radius:3px;box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.card{position:absolute;background:var(--wh-cream);border:3px solid var(--rim);border-radius:22px;padding:5px;box-shadow:0 7px 0 var(--wh-ink)}
+.card::before,.card::after{content:"";position:absolute;top:-12px;width:58px;height:20px;background:var(--wh-tape);border:2px solid var(--wh-ink);border-radius:4px;opacity:.92}
 .card::before{left:14px;transform:rotate(-8deg)} .card::after{right:14px;transform:rotate(7deg)} /* two bits of sticky tape: the notebook look */
-canvas#grid{display:block;touch-action:none;outline:none;border-radius:10px}
-.card:focus-within{box-shadow:0 0 0 4px var(--ink),0 8px 0 4px rgba(0,0,0,.13)}
-.hud{position:relative}
+.ok-night .card{border-color:var(--wh-cream);box-shadow:0 7px 0 black}
+.ok-night .card::before,.ok-night .card::after{opacity:.8}
+canvas#grid{display:block;touch-action:none;outline:none;border-radius:14px}
+.card:focus-within{box-shadow:0 0 0 4px var(--ok-focus),0 7px 0 var(--wh-ink)}
 /* Messages pop up over the HUD's middle pill (never over the letters). */
-.toast{position:absolute;left:54px;right:54px;top:50%;transform:translateY(-50%) scale(.9);min-height:46px;display:flex;align-items:center;justify-content:center;
-  background:var(--ink);color:#fff;font-weight:600;font-size:1rem;line-height:1.2;text-align:center;padding:5px 12px;border-radius:18px;pointer-events:none;
-  opacity:0;transition:opacity .2s,transform .2s;z-index:3;box-shadow:0 3px 0 rgba(0,0,0,.2)}
+.toast{position:absolute;left:56px;right:56px;top:50%;transform:translateY(-50%) scale(.9);min-height:48px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;gap:6px;
+  background:var(--wh-ink);color:var(--wh-cream);font-weight:700;font-size:1rem;line-height:1.2;text-align:center;padding:5px 12px;border-radius:20px;pointer-events:none;
+  opacity:0;transition:opacity .2s,transform .2s;z-index:3;box-shadow:0 3px 0 rgba(0,0,0,.25)}
+.ok-night .toast{background:var(--wh-cream);color:var(--wh-ink)}
+.toast .ic{--ok-fill:var(--wh-spark)}
 .toast.show{opacity:1;transform:translateY(-50%) scale(1)}
 .toast.long{font-size:.9rem;line-height:1.15}
+.toast{text-wrap:balance} /* a long hint breaks into even lines (never one word alone on the last line) */
 .words{grid-area:words;list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;justify-content:center;gap:6px;align-content:flex-start}
 .words li{display:contents}
-.wchip{display:flex;align-items:center;gap:5px;min-height:38px;border:3px solid transparent;background:#fff;border-radius:14px;padding:2px 10px 2px 6px;
-  font:700 1.08rem/1 var(--letters);letter-spacing:.04em;box-shadow:0 3px 0 rgba(0,0,0,.12);position:relative}
-.wchip .em{font-size:1.25rem;line-height:1}
-.wchip.found{background:linear-gradient(var(--band,#dcfce7),var(--band,#dcfce7)) #fff;border-color:var(--bandDark,#16a34a);color:#2b3445}
-.wchip.found .w{text-decoration:line-through;text-decoration-thickness:3px;text-decoration-color:var(--bandDark,#16a34a)}
-.wchip.found::after{content:"✓";position:absolute;top:-9px;right:-7px;width:20px;height:20px;border-radius:50%;background:var(--bandDark,#16a34a);color:#fff;font:700 .8rem/20px var(--display);text-align:center}
-.wchip.pop{animation:pop .45s ease-out}
-.wchip.speaking{border-color:var(--acc);transform:translateY(-2px)}
-.wchip.hinted:not(.found){border-color:#f5b400;border-style:dashed}
-@keyframes pop{0%{transform:scale(1)}35%{transform:scale(1.22) rotate(-4deg)}70%{transform:scale(.95)}100%{transform:scale(1)}}
-.tools{grid-area:tools;display:flex;gap:8px;justify-content:center}
+.wchip{font-family:Andika,var(--ok-font);display:flex;align-items:center;gap:5px;min-height:40px;border:2.5px solid var(--rim);background:var(--ok-card);color:var(--ok-text);border-radius:14px;padding:2px 10px 2px 6px;
+  font-weight:800;font-size:1.08rem;line-height:1;letter-spacing:.05em;box-shadow:0 3px 0 var(--wh-ink);position:relative}
+.wchip:active{transform:translateY(2px);box-shadow:0 1px 0 var(--wh-ink)}
+.wchip .em{font-size:1.25rem;line-height:1;letter-spacing:0}
+.wchip.found{background:linear-gradient(var(--band),var(--band)) var(--wh-cream);border-color:var(--bandDark);color:var(--wh-ink)}
+.wchip.found .w{text-decoration:line-through;text-decoration-thickness:3px;text-decoration-color:var(--bandDark)}
+.wchip .tick{position:absolute;top:-10px;inset-inline-end:-8px;width:22px;height:22px;border-radius:50%;background:var(--bandDark);color:var(--wh-cream);border:2px solid var(--wh-ink);
+  display:none;place-items:center;box-sizing:border-box}
+.wchip .tick svg{width:14px;height:14px}
+.wchip.found .tick{display:grid}
+.wchip.speaking{border-color:var(--acc);box-shadow:0 0 0 3px var(--accSoft),0 3px 0 var(--wh-ink);transform:translateY(-2px)}
+.wchip.hinted:not(.found){border-color:var(--wh-sparkDark);border-style:dashed;background:var(--wh-sparkTint);color:var(--wh-ink)}
+.tools{grid-area:tools;display:flex;gap:10px;justify-content:center}
 .words.many .wchip{min-height:34px;font-size:1rem;padding:1px 8px 1px 4px;border-width:2px}
 .words.many .wchip .em{font-size:1.1rem}
 .words.many{gap:5px}
-.tool{flex:1;max-width:220px;min-height:48px;border:0;border-radius:16px;font-weight:700;font-size:1.05rem;color:#fff;padding:6px 10px;display:flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap}
-.tool .cost{font-size:.8rem;opacity:.9;font-weight:600}
-.tool.hint{background:#f59f00;box-shadow:0 4px 0 #b66d00}
-.tool.read{background:#7c4dff;box-shadow:0 4px 0 #5129c2}
-.tool:active:not(:disabled){transform:translateY(3px);box-shadow:none}
+.wh .tool{flex:1;max-width:240px;min-height:52px;padding:0 12px;white-space:nowrap;font-size:1.05rem}
+.tool .cost{font-size:.82rem;opacity:.85;font-weight:700}
+.tool.hint .ic,.tool.hint svg{--ok-fill:var(--wh-spark)}
 .tool:disabled{opacity:.45;cursor:default}
 
 /* Short portrait phones: tighter spacing and smaller word chips, so a long Hard list never shrinks the letters. */
 @media (max-aspect-ratio:5/4) and (max-height:720px){
-  .app{gap:6px;padding-top:6px;padding-bottom:8px}
+  .app{gap:6px}
+  .info{height:48px}
   .words.many{gap:4px}
   .words.many .wchip{min-height:30px;font-size:.95rem;padding:0 7px 0 4px;gap:3px;border-radius:12px}
   .words.many .wchip .em{font-size:1rem}
-  .words.many .wchip.found::after{top:-7px;right:-5px;width:17px;height:17px;font-size:.7rem;line-height:17px}
-  .tool{min-height:44px}
+  .words.many .wchip .tick{top:-7px;width:18px;height:18px}
+  .wh .tool{min-height:46px}
 }
 /* Wide screens (landscape phones, tablets, desktops): grid on the left, the rest in a side column. */
 @media (min-aspect-ratio:5/4){
   .app{grid-template-areas:"board hud" "board words" "board tools";grid-template-columns:minmax(0,1fr) minmax(250px,360px);
-    grid-template-rows:auto minmax(0,1fr) auto;column-gap:16px;padding-top:10px}
-  .words{align-content:center;overflow:auto;padding:8px 2px}
+    grid-template-rows:auto minmax(0,1fr) auto;column-gap:18px;padding-top:max(12px,env(safe-area-inset-top))}
+  .words{align-content:center;overflow:auto;padding:12px 4px}
   .tools{flex-wrap:wrap}
+  /* the side column sits on one card, so the chips and the HUD never sit on the world's props or sky pictures */
+  .app::before{content:"";grid-column:2;grid-row:1/-1;margin:-6px -10px 0;border-radius:26px;border:3px solid var(--rim);
+    background:var(--ok-card);box-shadow:0 7px 0 var(--wh-ink)}
+  .ok-night .app::before{box-shadow:0 7px 0 black}
+  .info{box-shadow:none}
 }
 @media (min-aspect-ratio:5/4) and (min-width:1000px) and (min-height:640px){
   .app{grid-template-columns:minmax(0,1fr) minmax(300px,440px)}
-  .words .wchip,.words.many .wchip{min-height:46px;font-size:1.3rem;padding:3px 12px 3px 8px;border-width:3px}
+  .words .wchip,.words.many .wchip{min-height:48px;font-size:1.3rem;padding:3px 12px 3px 8px;border-width:2.5px}
   .words .wchip .em,.words.many .wchip .em{font-size:1.5rem}
-  .words,.words.many{gap:8px}
-  .tool{min-height:56px;font-size:1.15rem}
+  .words,.words.many{gap:9px}
+  .wh .tool{min-height:58px;font-size:1.15rem}
 }
 .app.paused canvas#grid{filter:blur(7px)} /* no peeking while the timer is stopped */
+.app.paused .info,.app.paused .toast{visibility:hidden} /* the pause card says it all; no washed-out HUD behind the dim */
 @media (min-aspect-ratio:5/4) and (max-height:430px){
   .card::before,.card::after{display:none}
+  .info{height:46px}
   .wchip{min-height:34px;font-size:1rem;padding:1px 8px 1px 4px}
   .wchip .em{font-size:1.1rem}
-  .tool{min-height:44px;font-size:1rem}
+  .wh .tool{min-height:46px;font-size:1rem}
 }
 
-/* ---------- overlays ---------- */
-.screen{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;padding:12px;overflow:auto}
-.screen.dim{background:rgba(35,50,74,.42)}
-.screen.results{align-items:flex-end;pointer-events:none;background:rgba(35,50,74,.12)} /* the solved grid stays visible above the panel */
-.screen.results .panel{pointer-events:auto;margin:0 auto}
-.panel{position:relative;background:var(--card);border-radius:28px;padding:14px 16px 16px;width:min(100%,460px);max-height:100%;overflow:auto;text-align:center;
-  box-shadow:0 10px 0 rgba(0,0,0,.18);display:flex;flex-direction:column;align-items:center;gap:8px;margin:auto}
-.panel h1{margin:0;font-size:clamp(2.2rem,10vw,3rem);line-height:1;color:var(--acc);letter-spacing:.01em;text-shadow:0 3px 0 rgba(0,0,0,.08)}
-.panel h2{margin:0;font-size:clamp(1.5rem,7vw,2rem);line-height:1.1;color:var(--acc)}
-.panel p{margin:0;font-size:1.05rem;line-height:1.3}
-.panel .sub{font-size:.95rem;color:var(--muted)}
-.corner{position:absolute;top:10px;inset-inline-end:10px}
-.big-btn{border:0;border-radius:20px;background:var(--acc);color:#fff;font-weight:700;font-size:1.45rem;padding:12px 30px;min-height:58px;min-width:200px;box-shadow:0 6px 0 var(--accDark)}
-.big-btn.alt{background:var(--accSoft);color:var(--ink);box-shadow:0 6px 0 rgba(0,0,0,.14);font-size:1.15rem;min-height:52px}
-.big-btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--accDark)}
-.chip{font-weight:700;background:#fff4cc;border-radius:999px;padding:6px 14px;font-size:1rem;white-space:nowrap}
-.chips{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
-
-/* Title screen */
-.titlePanel{display:grid;width:min(100%,480px);grid-template-columns:minmax(0,1fr);justify-items:center;gap:8px;
-  grid-template-areas:"art" "name" "tag" "daily" "diff" "themes" "opts" "play"}
-.nameBox{grid-area:name;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0}
-.practise{margin:0;font-size:1rem;font-weight:600;line-height:1.2;color:var(--ink)}
-/* Not in English: the "practise English words" line takes the tagline's place on phones, so the menu still fits. */
-@media (max-height:800px){.titlePanel.hasPractise .tag{display:none}}
-/* Long words (German, Russian, Japanese) stay on one line and shrink to fit (fitLabels). */
-.daily{white-space:nowrap;overflow:hidden;min-width:0}
-.daily .streak{font-size:.86em}
-.row button{overflow:hidden}
-.row button .dn{white-space:nowrap}
-.row button small{font-size:.72em}
-.titleArt{grid-area:art;width:140px;height:96px;display:block}
-.tag{grid-area:tag}
-.daily{grid-area:daily;width:100%;min-height:52px;border:3px solid #ffd43b;background:#fff9db;border-radius:18px;font-weight:700;font-size:1.1rem;
-  display:flex;align-items:center;justify-content:center;gap:8px;padding:6px 10px;box-shadow:0 4px 0 #f0c419}
-.daily .streak{background:#fff;border-radius:999px;padding:3px 10px;font-size:.95rem;white-space:nowrap}
-.daily.done{background:#ebfbee;border-color:#8ce99a;box-shadow:0 4px 0 #69db7c}
-.row{grid-area:diff;display:flex;gap:6px;width:100%}
-.row button,.themes button,.opt{border:3px solid rgba(0,0,0,.08);background:#f7f7fb;border-radius:16px;font-weight:700}
-.row button{flex:1;min-width:0;min-height:48px;font-size:1.05rem;padding:4px 4px;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.1}
-.row button small{font-size:.75rem;font-weight:600;opacity:.75}
-.row button[aria-pressed="true"],.themes button[aria-pressed="true"]{background:var(--acc);border-color:var(--accDark);color:#fff}
-.themes{grid-area:themes;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;width:100%}
-.themes button{min-height:56px;padding:4px 1px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:.8rem;line-height:1.05;min-width:0}
-.themes button .te{font-size:1.5rem;line-height:1}
-.themes button .tn{max-width:100%;overflow:hidden;white-space:nowrap}   /* long names shrink to fit (fitLabels) */
-.opts{grid-area:opts;display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;width:100%}
-.opt{min-height:44px;padding:4px 14px;font-size:1rem}
-.opt[aria-pressed="true"]{background:#d3f9d8;border-color:#40c057}
-.playRow{grid-area:play;display:flex;gap:8px;width:100%;justify-content:center;align-items:stretch}
-.playRow .big-btn{flex:1.3;min-width:0;padding:10px 12px}
-.playRow .big-btn.race{flex:1;font-size:1rem;line-height:1.1;white-space:normal;padding:6px 8px}
-@media (max-height:680px){.tag{display:none}.titleArt{height:80px}}
-@media (min-aspect-ratio:5/4) and (max-height:600px){
-  .titlePanel{width:min(100%,820px);grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);column-gap:16px;align-items:center;
-    grid-template-areas:"art themes" "name themes" "daily themes" "diff opts" "play opts"}
-  .titleArt{width:120px;height:66px}
-  .tag{display:none}
-  .themes button{min-height:50px}
-  .titlePanel .corner{inset-inline-end:auto;inset-inline-start:10px}
-  .titlePanel h1{font-size:2.2rem}
-}
-@media (min-aspect-ratio:5/4) and (max-height:400px){.titleArt{display:none}.titlePanel{grid-template-areas:"name themes" "daily themes" "diff themes" "play opts"}}
-
-/* Results */
-.resPanel .resArt{width:120px;height:80px;display:block}
-.stars{font-size:2.6rem;line-height:1;letter-spacing:.08em}
-.stars .off{filter:grayscale(1);opacity:.35}
-.stars span{display:inline-block}
+/* ---------- results: the game's card in the kit's look (the solved grid stays visible above it) ---------- */
+.wh-res{position:fixed;inset:0;z-index:15;display:flex;align-items:flex-end;justify-content:center;padding:12px;box-sizing:border-box;pointer-events:none;
+  background:linear-gradient(transparent 40%,color-mix(in srgb,var(--wh-ink) 22%,transparent))}
+.wh-res .ok-card{pointer-events:auto;width:min(100%,460px);max-height:100%;overflow:auto;box-sizing:border-box;padding:16px 16px 18px;gap:8px;display:flex;flex-direction:column;align-items:center;text-align:center;
+  animation:whUp .38s cubic-bezier(.34,1.56,.64,1) both}
+@keyframes whUp{from{transform:translateY(40px);opacity:0}}
+.wh-res .ok-h2{margin:0;font-size:clamp(1.5rem,7vw,2rem);line-height:1.1}
+.resArt{display:flex;align-items:flex-end;justify-content:center;gap:10px;height:84px;margin-top:-4px}
+.resArt canvas{height:100%!important;width:auto!important} /* the card's height sets the picture's size */
+.stars{display:flex;gap:10px;justify-content:center;line-height:1}
+.stars span{display:inline-grid;width:46px;height:46px;--ok-fill:var(--wh-spark)}
+.stars span svg,.stars span canvas{width:100%;height:100%}
+.stars span.off{--ok-fill:var(--wh-stone);opacity:.5} /* an unearned star: a clear grey star */
+.stars span.tm{--ok-fill:var(--wh-spark)}
 .stars span.pop{animation:starPop .5s ease-out both}
 @keyframes starPop{0%{transform:scale(0) rotate(-40deg)}70%{transform:scale(1.3) rotate(8deg)}100%{transform:scale(1)}}
-.btns{display:flex;flex-direction:column;gap:10px;width:100%;max-width:320px}
-.btns .big-btn{width:100%;min-width:0;font-size:1.2rem;padding:8px 12px;min-height:52px;white-space:nowrap}
+.chips{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.chip{display:inline-flex;align-items:center;gap:6px;font-weight:800;background:var(--ok-bg2);color:var(--ok-text);border:2px solid var(--ok-line);border-radius:999px;padding:5px 12px;font-size:1rem;white-space:nowrap}
+.chip.good{background:var(--wh-sparkTint);border-color:var(--wh-sparkDark);color:var(--wh-ink)}
+.chip.good .ic{--ok-fill:var(--wh-spark)}
+.chip canvas{height:34px;width:34px;margin:-7px 0 -7px -6px}
+.notes{display:flex;flex-direction:column;gap:3px;align-items:center;font-size:.95rem;font-weight:700;color:var(--ok-text);line-height:1.25;margin:0}
+.notes span{display:inline-flex;align-items:center;gap:5px}
+.notes .ic{--ok-fill:var(--wh-spark)}
+.btns{display:flex;flex-direction:column;gap:12px;width:100%;max-width:330px;margin-top:4px}
+.btns .ok-btn{width:100%;white-space:nowrap}
 @media (min-aspect-ratio:5/4){
-  .screen.results{align-items:center;justify-content:flex-end}
-  .screen.results .panel{width:min(100%,360px);margin:0}
-  .app.over .hud,.app.over .words,.app.over .tools{visibility:hidden} /* the results panel takes the side column */
+  .wh-res{align-items:center;justify-content:flex-end;background:none;padding-inline-end:max(16px,calc((100vw - 1200px) / 2 + 12px))}
+  .wh-res .ok-card{width:min(100%,380px);border-color:transparent;box-shadow:none;background:transparent} /* it sits on the side column's card */
+  .app.over .hud,.app.over .words,.app.over .tools{visibility:hidden} /* the results card takes the side column */
 }
-@media (min-aspect-ratio:5/4) and (max-height:430px){.resPanel .resArt{display:none}.resPanel{gap:6px;padding:12px}.stars{font-size:2.1rem}}
+@media (min-aspect-ratio:5/4) and (min-height:431px){.resArt{height:112px}.resArt canvas{max-height:112px}.chip canvas{height:40px!important;width:40px!important;margin:-9px 0 -9px -6px}}
+/* landscape phones: the results card is wider than the side column, so it keeps its own card there */
+@media (min-aspect-ratio:5/4) and (max-height:430px){.app.over::before{visibility:hidden}
+  .wh-res .ok-card{background:var(--ok-card);border-color:var(--rim);box-shadow:0 7px 0 var(--wh-ink)}}
+@media (min-aspect-ratio:5/4) and (max-height:430px){.resArt{display:none}.wh-res .ok-card{gap:5px;padding:10px 12px 12px}.stars span{width:36px;height:36px}.btns{gap:8px}}
 @media (max-aspect-ratio:5/4){.app.over .words,.app.over .tools{visibility:hidden}}
+/* Portrait: a compact card so most of the solved grid and the world stay in view above it. */
+@media (max-aspect-ratio:5/4){
+  .wh-res{padding:10px;background:linear-gradient(transparent 60%,color-mix(in srgb,var(--wh-ink) 14%,transparent))}
+  .wh-res .ok-card{padding:12px 14px 14px;gap:6px}
+  .wh-res .ok-h2{font-size:clamp(1.35rem,6vw,1.8rem)}
+  .resArt{height:64px}.resArt canvas{max-height:64px}
+  .stars span{width:38px;height:38px}
+  .btns{gap:8px}
+  .btns .ok-btn{min-height:50px;font-size:1.08rem}
+  .btns .ok-btn.ok-quiet{min-height:44px;font-size:1rem}
+}
+@media (max-aspect-ratio:5/4) and (max-height:740px){.resArt{height:52px}.resArt canvas{max-height:52px}.stars span{width:32px;height:32px}}
+
+/* ---------- the title card (inside the kit's title screen, under the "Word Hunt" lockup) ---------- */
+.ok-ui .ok-title-screen .ok-title-block{max-height:none}
+.wh-tcard{display:grid;width:min(480px,calc(100vw - 28px));box-sizing:border-box;grid-template-columns:minmax(0,1fr);justify-items:center;gap:8px;
+  background:var(--ok-card);color:var(--ok-text);border:3px solid var(--rim);border-radius:26px;box-shadow:0 7px 0 var(--wh-ink);padding:12px 12px 14px;
+  grid-template-areas:"tag" "daily" "diff" "themes" "opts" "play";--rim:var(--wh-ink)}
+.ok-night .wh-tcard{box-shadow:0 7px 0 black}
+.ok-ui .ok-title-screen .wh-tcard .ok-p{grid-area:tag;margin:0;border:0;box-shadow:none;background:none;padding:0 6px;font-size:1.05rem;font-weight:700;text-align:center}
+.wh-tcard .practise{display:block;font-size:.95rem;color:var(--soft);margin-top:2px}
+.wh-tcard .daily{grid-area:daily;width:100%;min-height:52px;border:2.5px solid var(--wh-ink);background:var(--wh-sparkTint);color:var(--wh-ink);border-radius:18px;font-weight:800;font-size:1.08rem;
+  display:flex;align-items:center;justify-content:center;gap:8px;padding:5px 10px;box-shadow:0 4px 0 var(--wh-ink);white-space:nowrap;overflow:hidden;min-width:0}
+.wh-tcard .daily:active{transform:translateY(3px);box-shadow:0 1px 0 var(--wh-ink)}
+.daily .ic{--ok-fill:var(--wh-spark)}
+.daily .streak{display:inline-flex;align-items:center;gap:4px;background:var(--wh-cream);border:2px solid var(--wh-ink);border-radius:999px;padding:2px 10px;font-size:.88em;white-space:nowrap}
+.daily.done{background:var(--wh-mintTint)}
+.row{grid-area:diff;display:flex;gap:6px;width:100%}
+.row button,.themes button,.opt{border:2.5px solid var(--rim);background:var(--ok-bg2);color:var(--ok-text);border-radius:16px;font-weight:800;box-shadow:0 3px 0 var(--wh-ink)}
+.row button:active,.themes button:active,.opt:active{transform:translateY(2px);box-shadow:0 1px 0 var(--wh-ink)}
+.row button{flex:1;min-width:0;min-height:52px;font-size:1.02rem;padding:3px 4px;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.1;overflow:hidden}
+.row button .dn{white-space:nowrap;display:inline-flex;align-items:center;gap:4px}
+.row button .pic{width:24px;height:24px}
+.row button .lvStars{display:inline-flex;gap:0;--ok-fill:var(--wh-spark)}.row button .lvStars svg{width:17px;height:17px}
+.row button small{font-size:.74em;font-weight:700;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.row button[aria-pressed="true"],.themes button[aria-pressed="true"]{background:var(--acc);border-color:var(--wh-ink);color:var(--wh-ink)}
+.ok-night .row button[aria-pressed="true"],.ok-night .themes button[aria-pressed="true"]{color:var(--wh-ink)}
+.themes{grid-area:themes;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;width:100%}
+.themes button{min-height:62px;padding:3px 4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:.76rem;line-height:1.05;min-width:0;overflow:hidden}
+.themes button .pic{width:34px;height:34px}
+.themes button .tn{max-width:100%;overflow:hidden;white-space:nowrap}   /* long names shrink to fit (fitLabels) */
+.opts{grid-area:opts;display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;width:100%}
+.opt{min-height:46px;padding:3px 14px 3px 8px;font-size:1rem;display:inline-flex;align-items:center;gap:6px}
+.opt .pic{width:26px;height:26px}
+.opt[aria-pressed="true"]{background:var(--wh-mintTint);color:var(--wh-ink)}
+.opt .box{width:20px;height:20px;border:2px solid currentColor;border-radius:6px;display:grid;place-items:center;box-sizing:border-box}
+.opt .box svg{width:14px;height:14px;visibility:hidden}
+.opt[aria-pressed="true"] .box svg{visibility:visible}
+.pts{display:inline-flex;align-items:center;gap:6px;font-weight:800;background:var(--wh-sparkTint);color:var(--wh-ink);border:2px solid var(--wh-sparkDark);border-radius:999px;padding:5px 14px 5px 9px;white-space:nowrap}
+.pts .ic{--ok-fill:var(--wh-spark)}
+.playRow{grid-area:play;display:flex;gap:10px;width:100%;justify-content:center;align-items:center}
+.playRow .ok-cta{flex:1.25;min-width:0}
+.playRow .ok-cta .ok-btn{width:100%;min-width:0;padding:0 10px}
+.playRow .ok-cta::before{display:none}
+.playRow .race{flex:1;min-width:0;min-height:56px;font-size:1rem;line-height:1.1;white-space:normal;padding:4px 10px}
+.ok-title-screen .ok-corner .mute{width:48px}
+/* right-to-left: the wordmark (always LTR inside) goes to the right, away from the corner buttons on the left */
+html[dir=rtl] .ok-ui .ok-title-screen .ok-brand{left:auto;right:14px}
+.ok-title-badge canvas{max-height:min(84px,10vh)!important}
+@media (max-height:900px) and (max-aspect-ratio:5/4){
+  .ok-ui .ok-title-screen{padding-top:6px}
+  .ok-ui .ok-title-screen .ok-h1{font-size:clamp(2.3rem,12vw,3.2rem);margin:0}
+  .ok-ui .ok-title-screen .ok-title-word{display:inline-block}
+  .ok-ui .ok-title-screen .ok-title-block{gap:6px;padding:46px 0 0}
+  .ok-ui .ok-title-screen .ok-title-badge{margin:-.4em 0 -.3em}
+}
+@media (max-height:760px) and (max-aspect-ratio:5/4){
+  .ok-ui .ok-title-screen .ok-title-badge{display:none}
+  .wh-tcard{gap:6px;padding:10px 10px 12px}
+  .themes button{min-height:54px}.themes button .pic{width:28px;height:28px}
+  .wh-tcard .practise{display:none}
+}
+@media (max-height:640px) and (max-aspect-ratio:5/4){.ok-ui .ok-title-screen .wh-tcard .ok-p{display:none}}
+/* Wide screens: the card goes in two columns (the themes on the end side) under a one-line lockup. */
+@media (min-aspect-ratio:5/4){
+  .ok-ui .ok-title-screen .ok-title-block{gap:6px;padding-top:6px}
+  .ok-ui .ok-title-screen .ok-h1{font-size:clamp(2.4rem,min(11vmin,9vw),5.4rem);margin:0}
+  .wh-tcard{width:min(880px,calc(100vw - 28px));grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);column-gap:16px;align-items:center;
+    grid-template-areas:"tag themes" "daily themes" "diff themes" "opts themes" "play themes"}
+}
+@media (min-aspect-ratio:5/4) and (max-height:820px){.ok-ui .ok-title-screen .ok-title-badge{margin:-.5em 0 -.4em}.ok-title-badge canvas{max-height:64px!important}}
+/* Wide but short (landscape phones): smaller still. */
+@media (min-aspect-ratio:5/4) and (max-height:600px){
+  .ok-ui .ok-title-screen{padding-top:4px;padding-bottom:4px}
+  .ok-ui .ok-title-screen .ok-title-block{padding:20px 0 4px;gap:4px}
+  .ok-ui .ok-title-screen .ok-h1{font-size:2rem;margin:0;white-space:nowrap}
+  .ok-ui .ok-title-screen .ok-h1 .ok-title-word{display:inline-block}
+  .ok-ui .ok-title-screen .ok-title-badge,.ok-ui .ok-title-screen .wh-tcard .ok-p{display:none}
+  .wh-tcard{width:min(820px,calc(100vw - 150px));grid-template-columns:minmax(0,1fr) minmax(0,1.45fr);column-gap:12px;align-items:center;
+    grid-template-areas:"daily themes" "diff themes" "play opts";padding:8px 10px 10px;gap:6px}
+  .themes{grid-template-columns:repeat(7,minmax(0,1fr))}
+  .daily{min-height:44px;font-size:1rem}
+  .row button{min-height:44px;font-size:.95rem}
+  .themes{gap:5px}.themes button{min-height:44px;font-size:.7rem;padding:2px 2px}.themes button .pic{width:22px;height:22px}
+  .row button .lvStars svg{width:13px;height:13px}.row button small{gap:2px}
+  .opt{min-height:40px}.pts{padding:3px 10px 3px 7px}
+  .playRow .ok-btn{min-height:50px;font-size:1.1rem}
+  .playRow .race{min-height:46px}
+}
 @media (max-width:374px){
-  .screen{padding:8px}
-  .panel{padding:12px 10px 14px}
+  .wh-tcard{padding:10px 8px 12px}
   .themes{gap:5px}
-  .themes button{font-size:.74rem;border-width:2px}
-  .opt{padding:4px 10px;font-size:.92rem}
-  .chip{padding:5px 10px;font-size:.92rem}
+  .themes button{font-size:.7rem;border-width:2px;padding:3px 4px}
+  .opt{padding:3px 10px 3px 6px;font-size:.92rem}
+  .pts{padding:4px 10px 4px 7px;font-size:.92rem}
   .row button{font-size:.95rem}
   .wchip{font-size:1rem;padding:2px 8px 2px 5px}
-  .tool{font-size:.98rem}
+  .wh .tool{font-size:.98rem}
 }
-@media (prefers-reduced-motion:reduce){
-  .wchip.pop,.stars span.pop{animation:none}
-  .toast{transition:none}
-}
+.ok-rm .wh .wchip.pop,.ok-rm .wh .stars span.pop,.ok-rm .wh-res .ok-card{animation:none}
+.ok-rm .wh .toast{transition:none}
+@media (prefers-reduced-motion:reduce){.wh .stars span.pop,.wh-res .ok-card{animation:none}.wh .toast{transition:none}}
 </style>
 
-<canvas id="bg" aria-hidden="true"></canvas>
-
-<div class="app offstage" id="app">
-  <div class="hud" id="hud">
-    <button class="icon-btn" id="pauseBtn" aria-label="Pause" data-i18n-aria="pause">⏸️</button>
-    <div class="info">
-      <canvas id="hudArt" aria-hidden="true"></canvas>
-      <div class="infoText"><b id="themeName">Animals</b><span id="hudSub" aria-live="off">⏱ 0:00 · 0 of 6</span></div>
+<div id="game" class="wh">
+  <div class="app offstage" id="app">
+    <div class="hud" id="hud">
+      <div class="info">
+        <span id="hudArt" aria-hidden="true"></span>
+        <div class="infoText"><b id="themeName">Animals</b><span id="hudSub" aria-live="off"></span></div>
+      </div>
+      <div class="toast" id="toast" role="status" aria-live="polite"></div>
     </div>
-    <button class="icon-btn mute" aria-label="Turn sound off">🔊</button>
-    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <div class="boardWrap" id="boardWrap">
+      <div class="card" id="card"><canvas id="grid" tabindex="0" data-i18n-aria="gridLabel" aria-label="Letter grid. Drag across a word, or tap its first letter and then its last letter. With a keyboard, use the arrow keys and press Enter on the first and last letter."></canvas></div>
+    </div>
+    <ul class="words" id="words" aria-label="Words to find" data-i18n-aria="wordsLabel" dir="ltr"></ul>
+    <div class="tools" id="tools">
+      <button class="ok-btn ok-quiet tool hint" id="hintBtn"><span class="ic" data-icon="hint"></span><span data-i18n="hint">Hint</span> <span class="cost" id="hintCost" dir="ltr"></span></button>
+      <button class="ok-btn ok-go tool read" id="readBtn"><span class="ic" data-icon="speak"></span><span data-i18n="read">Read to me</span></button>
+    </div>
   </div>
-  <div class="boardWrap" id="boardWrap">
-    <div class="card" id="card"><canvas id="grid" tabindex="0" data-i18n-aria="gridLabel" aria-label="Letter grid. Drag across a word, or tap its first letter and then its last letter. With a keyboard, use the arrow keys and press Enter on the first and last letter."></canvas></div>
-  </div>
-  <ul class="words" id="words" aria-label="Words to find" data-i18n-aria="wordsLabel" dir="ltr"></ul>
-  <div class="tools" id="tools">
-    <button class="tool hint" id="hintBtn">💡 <span data-i18n="hint">Hint</span> <span class="cost" id="hintCost" dir="ltr"></span></button>
-    <button class="tool read" id="readBtn">🗣️ <span data-i18n="read">Read to me</span></button>
-  </div>
+
+  <section class="wh-res" id="resultsScreen" hidden>
+    <div class="ok-card resPanel" role="dialog" aria-labelledby="resTitle">
+      <div class="resArt" id="resArt" aria-hidden="true"></div>
+      <h2 class="ok-h2" id="resTitle">You found them all!</h2>
+      <div class="stars" id="resStars" role="img" aria-label="3 stars"></div>
+      <div class="chips" id="resChips"></div>
+      <p class="notes" id="resNote"></p>
+      <div class="btns">
+        <button class="ok-btn ok-hot ok-big" id="nextBtn"></button>
+        <button class="ok-btn ok-quiet" id="changeBtn"></button>
+      </div>
+    </div>
+  </section>
 </div>
 
-<section class="screen" id="titleScreen">
-  <div class="panel titlePanel">
-    <canvas class="titleArt" id="titleArt" aria-hidden="true"></canvas>
-    <div class="nameBox"><h1 dir="ltr">Word Hunt</h1><p class="practise" id="practise" hidden></p></div>
-    <p class="tag" data-i18n="tag">Find the hidden words!</p>
-    <button class="daily" id="dailyBtn"><span id="dailyTxt">📅 Daily puzzle</span> <span class="streak" id="streakChip">🔥 0</span></button>
+<!-- The title card: the kit's title screen shows the lockup and its Play button; this goes under the lockup. -->
+<template id="titleTpl">
+  <div class="wh-tcard">
+    <button class="daily" id="dailyBtn"><span id="dailyTxt"></span> <span class="streak" id="streakChip"></span></button>
     <div class="row" role="group" aria-label="How hard" data-i18n-aria="howHard">
-      <button data-diff="easy" aria-pressed="true"><span class="dn">🐣 <span data-i18n="lvl_easy">Easy</span></span><small dir="ltr">8 × 8</small></button>
-      <button data-diff="medium" aria-pressed="false"><span class="dn">🦊 <span data-i18n="lvl_medium">Medium</span></span><small dir="ltr">10 × 10</small></button>
-      <button data-diff="hard" aria-pressed="false"><span class="dn">🦁 <span data-i18n="lvl_hard">Hard</span></span><small dir="ltr">12 × 12</small></button>
+      <button data-diff="easy" aria-pressed="true"><span class="dn"><span class="lv" data-pic="easy"></span><span data-i18n="lvl_easy">Easy</span></span><small dir="ltr">8 × 8</small></button>
+      <button data-diff="medium" aria-pressed="false"><span class="dn"><span class="lv" data-pic="medium"></span><span data-i18n="lvl_medium">Medium</span></span><small dir="ltr">10 × 10</small></button>
+      <button data-diff="hard" aria-pressed="false"><span class="dn"><span class="lv" data-pic="hard"></span><span data-i18n="lvl_hard">Hard</span></span><small dir="ltr">12 × 12</small></button>
     </div>
     <div class="themes" id="themes" role="group" aria-label="Pick a theme" data-i18n-aria="pickTheme"></div>
     <div class="opts">
-      <button class="opt" id="relaxBtn" aria-pressed="false">🌿 <span data-i18n="relaxOpt">Relax (no timer)</span></button>
-      <span class="chip" id="pointsChip">⭐ 0 points</span>
+      <button class="opt" id="relaxBtn" aria-pressed="false"><span class="box" data-icon="check"></span><span class="lv" data-pic="relax"></span><span data-i18n="relaxOpt">Relax (no timer)</span></button>
+      <span class="pts" id="pointsChip"></span>
     </div>
     <div class="playRow">
-      <button class="big-btn" id="playBtn">▶ <span data-i18n="play">Play</span></button>
-      <button class="big-btn alt race" id="raceBtn">👫 <span data-i18n="race">Race a friend</span></button>
-    </div>
-    <button class="icon-btn mute corner" aria-label="Turn sound off">🔊</button>
-  </div>
-</section>
-
-<section class="screen dim" id="pauseScreen" hidden>
-  <div class="panel">
-    <h2 data-i18n="paused">Paused</h2>
-    <p data-i18n="pausedMsg">Take a little break. The timer is stopped.</p>
-    <button class="big-btn" id="resumeBtn">▶ <span data-i18n="resume">Keep playing</span></button>
-    <button class="big-btn alt" id="quitBtn">🏠 <span data-i18n="changeTheme">Change theme</span></button>
-    <button class="icon-btn mute corner" aria-label="Turn sound off">🔊</button>
-  </div>
-</section>
-
-<section class="screen results" id="resultsScreen" hidden>
-  <div class="panel resPanel" role="dialog" aria-labelledby="resTitle">
-    <canvas class="resArt" id="resArt" aria-hidden="true"></canvas>
-    <h2 id="resTitle">You found them all!</h2>
-    <div class="stars" id="resStars" aria-label="3 stars"></div>
-    <div class="chips" id="resChips"></div>
-    <p class="sub" id="resNote"></p>
-    <div class="btns">
-      <button class="big-btn" id="nextBtn">▶ Next puzzle</button>
-      <button class="big-btn alt" id="changeBtn">🎨 Change theme</button>
+      <button class="ok-btn ok-quiet race" id="raceBtn"><span class="ic" data-icon="user"></span><span data-i18n="race">Race a friend</span></button>
     </div>
   </div>
-</section>
+</template>
 
+<script src="/vendor/oomba-kit/1.1.0/oomba-kit.js" integrity="sha384-GCejMN1YYamlsZNEJw6SRznGmZC2i6tppYwkLt8cv2gI3YTTsZq6l8eyUQuAM8qX" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.0/packs/dress.js" integrity="sha384-ZCFgY98YAWY7Tcy+GfJLalmnJukKdzbVpg6j4ZljXuJSYgYzkWSWMPihVW/u8CqH" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.0/packs/art-animals.js" integrity="sha384-0kgnnCmovTaNwWnsPFryp1c8kgX7ji/jku0tdAsfRwfiaWP9usy3eBLuIdBsh8jE" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.0/packs/art-school.js" integrity="sha384-tjWzckG1fXZNGAIROedz8rciqX12aec8Bw77p9Pn81hGGnR/2i9HS7cM6023xw0P" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.0/packs/art-props.js" integrity="sha384-/RtKQ/ov2WG1EoCt4pJ98rHY07jOZjZ+lia901K+1BfS49MydEROuw7UaInBPHle" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.0/packs/art-biomes.js" integrity="sha384-UVVUeKEbyMD1WPlwhrdiH/sB6bVZpbw7GKz2KoN4VJg/JMMI+hUkvx2Ts03akI3t" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.0/packs/art-biomes-2.js" integrity="sha384-0ad0awdyk2fC5pFpqYc/7EABVSKTEe1ZKo2YB6cvjKZDIDA2mI1+YRUEQhOgXrHs" crossorigin="anonymous"></script>
 <script>
 /* =====================================================================================
    CONFIG: change these to make the game your own!
@@ -276,12 +331,34 @@ canvas#grid{display:block;touch-action:none;outline:none;border-radius:10px}
 const CONFIG = {
   title: 'Word Hunt',
   saveKey: 'word-hunt-v1',
+  titleHue: 'coral',
+  mascot: 'wh-lion',      // the game's mascot: on the title (next to the lockup and in the corner) and the Animals theme
   levels: {
     // size: grid is size x size. words: [min, max] words per puzzle. maxLen: longest word allowed.
     // points: base points for solving. targetSec: finish faster than this (with no hints) for 3 stars.
-    easy:   { name: 'Easy',   emoji: '🐣', size: 8,  words: [5, 6],   minLen: 3, maxLen: 5,  dirs: ['E', 'S'],             points: 10, targetSec: 120 },
-    medium: { name: 'Medium', emoji: '🦊', size: 10, words: [8, 8],   minLen: 3, maxLen: 8,  dirs: ['E', 'S', 'SE'],       points: 20, targetSec: 210 },
-    hard:   { name: 'Hard',   emoji: '🦁', size: 12, words: [10, 12], minLen: 3, maxLen: 11, dirs: ['E', 'S', 'SE', 'NE', 'W', 'N', 'NW', 'SW'], points: 30, targetSec: 360 }
+    // stars: how many stars the level's button shows (1 = easiest).
+    easy:   { name: 'Easy',   stars: 1, size: 8,  words: [5, 6],   minLen: 3, maxLen: 5,  dirs: ['E', 'S'],             points: 10, targetSec: 120 },
+    medium: { name: 'Medium', stars: 2, size: 10, words: [8, 8],   minLen: 3, maxLen: 8,  dirs: ['E', 'S', 'SE'],       points: 20, targetSec: 210 },
+    hard:   { name: 'Hard',   stars: 3, size: 12, words: [10, 12], minLen: 3, maxLen: 11, dirs: ['E', 'S', 'SE', 'NE', 'W', 'N', 'NW', 'SW'], points: 30, targetSec: 360 }
+  },
+  // Each word theme's look: the kit world behind the game (a biome; tod 0 = noon ... 1 = night), its accent hue, the kit
+  // picture on its button and in the HUD, and the props standing in its world. The 'wh-' pictures are drawn below in the
+  // kit's Ink style (a lion, whale, sun and cloud, ladybird, tractor, dinosaur and music note).
+  worlds: {
+    animals:  { world: 'forest',  tod: 0,    hue: 'peach', pic: 'wh-lion',  props: ['owl', 'bunny', 'mushroom'] },
+    ocean:    { world: 'reef',    tod: 0,    hue: 'sky',   pic: 'wh-whale', props: ['clam', 'starfish', 'anchor'] },
+    space:    { world: 'space',   tod: 0,    hue: 'grape', pic: 'planet',   props: ['rocket', 'ufo', 'satellite'] },
+    food:     { world: 'candy',   tod: 0,    hue: 'coral', pic: 'apple',    props: ['cupcake', 'apple', 'donut'] },
+    sports:   { world: 'stadium', tod: 0,    hue: 'mint',  pic: 'ball',     props: ['goalpost', 'ball', 'trophy'] },
+    weather:  { world: 'snow',    tod: 0,    hue: 'sky',   pic: 'wh-weather', props: ['snowman', 'igloo', 'snowflake'] },
+    bugs:     { world: 'meadow',  tod: 0,    hue: 'coral', pic: 'wh-ladybug', props: ['bee', 'flower', 'mushroom'] },
+    dinos:    { world: 'jungle',  tod: 0.1,  hue: 'mint',  pic: 'wh-dino',  props: ['wh-dino', 'totem', 'bush'] },
+    farm:     { world: 'autumn',  tod: 0.3,  hue: 'peach', pic: 'wh-tractor', props: ['duck', 'pumpkin', 'carrot'] },
+    music:    { world: 'castle',  tod: 0.22, hue: 'grape', pic: 'wh-note',  props: ['wh-note', 'banner', 'tower'] },
+    colours:  { world: 'beach',   tod: 0,    hue: 'coral', pic: 'paint',    props: ['paint', 'crayon', 'sandcastle'] },
+    feelings: { world: 'desert',  tod: 0.36, hue: 'peach', pic: 'heart',    props: ['heart', 'flower', 'cactus'] },
+    vehicles: { world: 'city',    tod: 0.2,  hue: 'sky',   pic: 'car',      props: ['car', 'bus', 'plane'] },
+    surprise: { world: 'meadow',  tod: 0,    hue: 'grape', pic: 'gift',     props: ['gift', 'tree', 'flower'] }
   },
   hintCost: 3,            // points taken off for each hint
   minPoints: 5,           // a solved puzzle is always worth at least this much
@@ -291,7 +368,8 @@ const CONFIG = {
   dailyDifficulty: 'medium',
   speechRate: 0.9,        // a found word read aloud: a touch slower than talking (1) so a young reader hears every sound
   talkRate: 1,            // messages and cheers: normal talking speed sounds the most natural
-  race: { players: [['🦊', 'Player 1'], ['🐸', 'Player 2']], hintSeconds: 15 },   // "Race a friend": each hint adds this many seconds
+  // "Race a friend": a fox and a frog (two bright, different colours, so the pass-the-phone players are easy to tell apart).
+  race: { players: [{ species: 'fox' }, { species: 'frog' }], hintSeconds: 15 },   // each hint adds this many seconds
   // Colour-blind-safe highlight colours (Okabe-Ito family). Each band also gets a pattern and a dark outline.
   bands: [
     ['#f5b942', '#a86b00'], ['#7cc6f0', '#1f6f9e'], ['#3fc39a', '#0b6b4f'], ['#f2e85c', '#8f8600'],
@@ -775,38 +853,37 @@ function themeShort(id) {
 const levelName = id => t('lvl_' + id);
 const playerName = i => t(i ? 'player2' : 'player1');
 
-
 /* =====================================================================================
    THEMES + PUZZLE GENERATOR (pure code, no DOM: the Node tests run this part on its own)
    Word lists: "WORD:emoji" or "WORD:emoji:how_to_say_it" (underscores become spaces). Letters A-Z only.
    ===================================================================================== */
 /* GEN-START */
 const THEMES = [
-  { id: 'animals', name: 'Animals', emoji: '🦁', sky: ['#fff1c1', '#ffcf8a'], acc: ['#e8590c', '#a63f05', '#fff0e0'],
+  { id: 'animals', name: 'Animals',
     words: 'CAT:🐱 DOG:🐶 LION:🦁 TIGER:🐯 BEAR:🐻 ZEBRA:🦓 MONKEY:🐵 PANDA:🐼 HORSE:🐴 RABBIT:🐰 MOUSE:🐭 FOX:🦊 WOLF:🐺 FROG:🐸 OWL:🦉 KOALA:🐨 CAMEL:🐫 GIRAFFE:🦒 ELEPHANT:🐘 HIPPO:🦛 SNAKE:🐍 TURTLE:🐢 PENGUIN:🐧 PARROT:🦜 SLOTH:🦥 DEER:🦌 KANGAROO:🦘 RACCOON:🦝 SKUNK:🦨 GORILLA:🦍' },
-  { id: 'ocean', name: 'Ocean', emoji: '🐳', sky: ['#c9f3ff', '#5cc2ec'], acc: ['#1971c2', '#0b4a85', '#e3f3ff'],
+  { id: 'ocean', name: 'Ocean',
     words: 'WHALE:🐳 SHARK:🦈 FISH:🐟 CRAB:🦀 SEAL:🦭 OCTOPUS:🐙 SQUID:🦑 SHELL:🐚 WAVE:🌊 BOAT:⛵ DOLPHIN:🐬 LOBSTER:🦞 SHRIMP:🦐 TURTLE:🐢 ANCHOR:⚓ SAND:🏖️ ISLAND:🏝️ DIVER:🤿 SHIP:🚢 PEARL:🦪 SURF:🏄 BUBBLES:🫧 PUFFER:🐡 SAILOR:⛵ REEF:🪸' },
-  { id: 'space', name: 'Space', emoji: '🚀', sky: ['#3b2f86', '#140f3a'], acc: ['#7048e8', '#4521b5', '#efe9ff'],
+  { id: 'space', name: 'Space',
     words: 'SUN:☀️ MOON:🌙 STAR:⭐ ROCKET:🚀 PLANET:🪐 COMET:☄️ ALIEN:👽 EARTH:🌍 MARS:🔴 ORBIT:💫 GALAXY:🌌 TELESCOPE:🔭 UFO:🛸:U_F_O ASTRONAUT:🧑‍🚀 CRATER:🌑 ROBOT:🤖 NIGHT:🌃 SATELLITE:🛰️ SPACE:🌠 LAUNCH:🔥 HELMET:⛑️ JUPITER:🟠' },
-  { id: 'food', name: 'Food', emoji: '🍕', sky: ['#ffe3e0', '#ffad9e'], acc: ['#e03131', '#a51111', '#ffeceb'],
+  { id: 'food', name: 'Food',
     words: 'PIZZA:🍕 APPLE:🍎 BREAD:🍞 CAKE:🍰 CHEESE:🧀 EGG:🥚 MILK:🥛 RICE:🍚 SOUP:🍲 TACO:🌮 PASTA:🍝 BANANA:🍌 CARROT:🥕 COOKIE:🍪 DONUT:🍩 BERRIES:🍓 HONEY:🍯 LEMON:🍋 MANGO:🥭 PEAR:🍐 CORN:🌽 BURGER:🍔 SALAD:🥗 JUICE:🧃 WAFFLE:🧇 MELON:🍈 CHERRY:🍒 SANDWICH:🥪 NOODLES:🍜' },
-  { id: 'sports', name: 'Sports', emoji: '⚽', sky: ['#dcf8cc', '#86d36f'], acc: ['#2b8a3e', '#16632a', '#e6f7e9'],
+  { id: 'sports', name: 'Sports',
     words: 'BALL:⚽ GOAL:🥅 KICK:🦵 RUN:🏃 SWIM:🏊 SKATE:⛸️ SKI:🎿 BIKE:🚴 TENNIS:🎾 GOLF:⛳ SOCCER:⚽ RUGBY:🏉 HOCKEY:🏒 BOXING:🥊 KARATE:🥋 SURF:🏄 MEDAL:🏅 TROPHY:🏆 RACE:🏁 JUMP:🤸 DIVE:🤿 BOWLING:🎳 SAIL:⛵ ROWING:🚣 DARTS:🎯 YOGA:🧘 CHAMPION:🥇' },
-  { id: 'weather', name: 'Weather', emoji: '🌦️', sky: ['#dcefff', '#94c9ff'], acc: ['#1c7ed6', '#0f5aa3', '#e7f3ff'],
+  { id: 'weather', name: 'Weather',
     words: 'SUN:☀️ RAIN:🌧️ SNOW:❄️ WIND:🌬️ CLOUD:☁️ STORM:⛈️ FOG:🌫️ ICE:🧊 RAINBOW:🌈 THUNDER:🌩️ LIGHTNING:⚡ SUNNY:😎 FROST:🥶 HOT:🥵 COLD:🧣 WARM:🌡️ BREEZE:🍃 PUDDLE:💦 UMBRELLA:☂️ TORNADO:🌪️ MIST:🌁 DRIZZLE:🌦️ SLEET:🌨️ WEATHER:🌤️ HAIL:🧊' },
-  { id: 'bugs', name: 'Bugs', emoji: '🐞', sky: ['#efffd9', '#b2e68a'], acc: ['#e03131', '#a51111', '#ffeceb'],
+  { id: 'bugs', name: 'Bugs',
     words: 'ANT:🐜 BEE:🐝 FLY:🪰 LADYBUG:🐞 BUTTERFLY:🦋 SPIDER:🕷️ WORM:🪱 SNAIL:🐌 BEETLE:🪲 CRICKET:🦗 CATERPILLAR:🐛 MOSQUITO:🦟 WEB:🕸️ HIVE:🍯 FIREFLY:✨ BUG:🐛 WINGS:🦋 BUZZ:🐝 MOTH:🌙 HONEYBEE:🍯 SLUG:🐌 DRAGONFLY:🧚' },
-  { id: 'dinos', name: 'Dinosaurs', short: 'Dinos', emoji: '🦕', sky: ['#e7f8d2', '#9fd36a'], acc: ['#5c940d', '#3b6608', '#eef8df'],
+  { id: 'dinos', name: 'Dinosaurs', short: 'Dinos',
     words: 'DINO:🦕 REX:🦖 RAPTOR:🦖 EGG:🥚 FOSSIL:🦴 BONES:🦴 TEETH:🦷 CLAWS:🐾 ROAR:📣 STOMP:👣 TAIL:🦎 HORNS:🦏 VOLCANO:🌋 JUNGLE:🌴 FERN:🌿 SWAMP:🐊 DIG:⛏️ METEOR:☄️ HERD:🦕 SPIKES:🌵 TRICERATOPS:🦏 STEGOSAURUS:🦕 PTERODACTYL:🦅 DINOSAUR:🦖 NEST:🥚' },
-  { id: 'farm', name: 'Farm', emoji: '🚜', sky: ['#fff6cf', '#bfe59c'], acc: ['#d9480f', '#9c3208', '#fff0e6'],
+  { id: 'farm', name: 'Farm',
     words: 'COW:🐮 PIG:🐷 HEN:🐔 SHEEP:🐑 GOAT:🐐 HORSE:🐴 DUCK:🦆 BARN:🏠 TRACTOR:🚜 FARMER:🧑‍🌾 HAY:🌾 CORN:🌽 EGGS:🥚 MILK:🥛 LAMB:🐑 CHICK:🐥 FENCE:🚧 ROOSTER:🐓 PONY:🐴 TURKEY:🦃 SEEDS:🌱 PUMPKIN:🎃 APPLES:🍎 MUD:🟫 BUNNY:🐰' },
-  { id: 'music', name: 'Music', emoji: '🎵', sky: ['#f4e6ff', '#cba3ff'], acc: ['#9c36b5', '#6b1f80', '#f8ecff'],
+  { id: 'music', name: 'Music',
     words: 'DRUM:🥁 PIANO:🎹 GUITAR:🎸 SONG:🎤 BAND:🎺 VIOLIN:🎻 HORN:📯 BELL:🔔 SING:🎙️ DANCE:💃 BEAT:🥁 TUNE:🎶 NOTE:🎵 BANJO:🪕 TRUMPET:🎺 RADIO:📻 CLAP:👏 SAX:🎷 LOUD:📢 FLUTE:🎶 MUSIC:🎼 SHAKER:🪇 STAGE:🎪 HUM:😊 CHOIR:🧑‍🎤' },
-  { id: 'colours', name: 'Colours', emoji: '🎨', sky: ['#fff0f6', '#ffc9e3'], acc: ['#d6336c', '#a01f4c', '#fff0f6'],
+  { id: 'colours', name: 'Colours',
     words: 'RED:🟥 BLUE:🟦 GREEN:🟩 YELLOW:🟨 ORANGE:🟧 PURPLE:🟪 PINK:🌸 BROWN:🟫 BLACK:⬛ WHITE:⬜ GOLD:🥇 SILVER:🥈 RAINBOW:🌈 PAINT:🎨 CRAYON:🖍️ LIME:🟢 CREAM:🍦 BRUSH:🖌️ VIOLET:🔮 NAVY:🔵 RUBY:💎 SKY:🌤️ COLOUR:🖍️ MAGENTA:🌺' },
-  { id: 'feelings', name: 'Feelings', short: 'Feelings', emoji: '😊', sky: ['#fff8d6', '#ffde85'], acc: ['#e67700', '#a35400', '#fff4e0'],
+  { id: 'feelings', name: 'Feelings', short: 'Feelings',
     words: 'HAPPY:😊 SAD:😢 MAD:😠 GLAD:😀 BRAVE:🦸 CALM:😌 SILLY:🤪 PROUD:🏅 SCARED:😨 TIRED:😴 SHY:🙈 KIND:🤗 LOVE:❤️ CRY:😭 LAUGH:😂 SMILE:🙂 GRUMPY:😒 BORED:🥱 EXCITED:🤩 WORRIED:😟 JOY:🥳 HUG:🫂 SURPRISED:😮 NERVOUS:😬 CHEERFUL:🌞' },
-  { id: 'vehicles', name: 'Things That Go', short: 'Go Go Go', emoji: '🚗', sky: ['#e3f2ff', '#a9d4ff'], acc: ['#e8590c', '#a63f05', '#fff0e0'],
+  { id: 'vehicles', name: 'Things That Go', short: 'Go Go Go',
     words: 'CAR:🚗 BUS:🚌 TRAIN:🚂 PLANE:✈️ BOAT:⛵ SHIP:🚢 BIKE:🚲 TRUCK:🚚 TAXI:🚕 VAN:🚐 TRAM:🚊 ROCKET:🚀 SCOOTER:🛴 TRACTOR:🚜 HELICOPTER:🚁 FERRY:⛴️ AMBULANCE:🚑 CANOE:🛶 JET:🛩️ SLED:🛷 BALLOON:🎈 MOTORBIKE:🏍️ SUBWAY:🚇 DIGGER:🚧' }
 ].map(t => Object.assign(t, {
   words: t.words.trim().split(/\s+/).map(s => { const [word, emoji, spoken] = s.split(':'); return { word, emoji, say: spoken ? spoken.replace(/_/g, ' ') : word.toLowerCase() }; })
@@ -944,12 +1021,12 @@ function generatePuzzle(themeId, difficulty, seed) {
    ===================================================================================== */
 const $ = id => document.getElementById(id);
 const TAU = Math.PI * 2;
-let REDUCED = false; try { REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { /* ignore */ }
+let REDUCED = !!Oomba.settings.reduced;
+Oomba.settings.on('change', () => { REDUCED = !!Oomba.settings.reduced; });
 const LEVEL_IDS = Object.keys(CONFIG.levels);
-const EMOJI_FONT = '"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
 const fmtTime = ms => { const s = Math.floor(ms / 1000); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
 const randSeed = () => (Math.random() * 4294967296) >>> 0;
-let accCache = null;       // the theme's accent colour, read from CSS once per theme
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 let usingKeys = false;     // move keyboard focus around only for keyboard players (no stray focus rings on touch)
 addEventListener('keydown', () => { usingKeys = true; }, true);
 addEventListener('pointerdown', () => { usingKeys = false; }, true);
@@ -966,8 +1043,197 @@ function dailyFor(date) {
   return { theme: THEMES[h % THEMES.length].id, difficulty: CONFIG.dailyDifficulty, seed: h };
 }
 
+/* ---------- the table's own emoji become kit icons (the words' emoji are the words' pictures and stay) ---------- */
+const ICON_FOR = { '🔥': 'spark', '⭐': 'star', '🏆': 'trophy', '💡': 'hint', '✨': 'spark', '✅': 'check', '📅': 'flag', '⏱': 'timer', '🔈': 'speak' };
+const PICTO = /(?:\p{Extended_Pictographic}|\p{Regional_Indicator})(?:️|‍(?:\p{Extended_Pictographic}))*|️/gu;
+/** The raw template for a key (plural picked), with or without its emoji. */
+function tmpl(key, vars) {
+  let s = raw(key);
+  if (s === undefined) return key;
+  if (s && typeof s === 'object' && !Array.isArray(s)) s = s[PLURAL.select(vars && vars.n != null ? vars.n : 1)] || s.other;
+  return String(s);
+}
+const fill = (s, vars, enc) => !vars ? s : s.replace(/\{(\w+)\}/g, (m, k) => k in vars ? enc(typeof vars[k] === 'number' ? fmtN(vars[k]) : String(vars[k])) : m);
+/** t() without the table's emoji (aria labels, chips that show a kit icon of their own). */
+function tPlain(key, vars) { return fill(tmpl(key, vars).replace(PICTO, '').replace(/\s{2,}/g, ' ').trim(), vars, s => s); }
+/** t() as HTML: the table's emoji become kit icons, the rest is escaped. */
+function tHtml(key, vars) {
+  const parts = tmpl(key, vars).split(PICTO), marks = tmpl(key, vars).match(PICTO) || [];
+  let out = '';
+  parts.forEach((p, i) => { out += fill(esc(p), vars, esc); if (i < marks.length && ICON_FOR[marks[i]]) out += icon(ICON_FOR[marks[i]]); });
+  return out.replace(/\s{2,}/g, ' ').trim();
+}
+const icon = name => '<span class="ic" aria-hidden="true">' + Oomba.icon(name) + '</span>';
+
 /* =====================================================================================
-   Saved progress (BRB.storage is the per-player cloud save)
+   The kit: two pictures of our own (in the kit's Ink style), colours, the world behind the game, characters
+   ===================================================================================== */
+const PAL = Oomba.tokens.palette, INK_ = Oomba.art.ink;
+// A friendly long-neck dinosaur and a pair of music notes (the kit has neither yet). Defined before any picture is made.
+Oomba.art.define('wh-dino', { w: 124, h: 100, ax: 0.5, ay: 1, draw(ctx, k) {
+  const S = (p, fill, shade, o) => INK_.sticker(ctx, k, p, Object.assign({ fill, shade, shadeOff: 4 }, o));
+  for (const x of [34, 48, 72, 84]) S(INK_.rrect(x, 70, 11, 27, 5), x === 48 || x === 84 ? PAL.mint[3] : PAL.mint[2], PAL.mint[3], { shadeOff: 2 });
+  const b = new Path2D();
+  b.moveTo(4, 74); b.quadraticCurveTo(28, 62, 40, 52); b.quadraticCurveTo(62, 38, 82, 50); b.quadraticCurveTo(88, 30, 92, 16);
+  b.quadraticCurveTo(96, 5, 108, 7); b.quadraticCurveTo(121, 10, 117, 20); b.quadraticCurveTo(108, 25, 101, 24);
+  b.quadraticCurveTo(97, 44, 94, 60); b.quadraticCurveTo(94, 84, 70, 84); b.lineTo(42, 84); b.quadraticCurveTo(22, 82, 4, 74); b.closePath();
+  S(b, PAL.mint[2], PAL.mint[3], { gloss: [58, 54, 12, 4, -0.2] });
+  const belly = INK_.ellipse(64, 78, 20, 5); INK_.sticker(ctx, k, belly, { fill: PAL.mint[1], rim: false, line: 0.5 });
+  for (const [x, y] of [[46, 50], [58, 44], [70, 44]]) { const s = new Path2D(); s.moveTo(x - 6, y + 3); s.lineTo(x, y - 7); s.lineTo(x + 6, y + 3); s.closePath(); S(s, PAL.peach[1], PAL.peach[2], { rim: false, line: 0.6, shadeOff: 1 }); }
+  ctx.fillStyle = PAL.ink[0]; ctx.beginPath(); ctx.arc(106, 14, 2.8, 0, TAU); ctx.fill();
+  ctx.fillStyle = PAL.snow[0]; ctx.beginPath(); ctx.arc(107, 13, 1, 0, TAU); ctx.fill();
+  const m = new Path2D(); m.moveTo(104, 20); m.quadraticCurveTo(109, 23, 114, 19); INK_.detail(ctx, k, m, 0.7);
+} });
+Oomba.art.define('wh-note', { w: 90, h: 100, ax: 0.5, ay: 1, draw(ctx, k) {
+  const S = (p, o) => INK_.sticker(ctx, k, p, Object.assign({ fill: PAL.grape[2], shade: PAL.grape[3], shadeOff: 3 }, o));
+  const beam = new Path2D(); beam.moveTo(30, 22); beam.lineTo(80, 10); beam.lineTo(80, 26); beam.lineTo(30, 38); beam.closePath();
+  S(INK_.rrect(30, 22, 8, 62, 4)); S(INK_.rrect(72, 10, 8, 64, 4)); S(beam);
+  S(INK_.ellipse(22, 84, 16, 11), { gloss: [16, 80, 5, 2.5, -0.4] }); S(INK_.ellipse(64, 74, 16, 11), { gloss: [58, 70, 5, 2.5, -0.4] });
+} });
+
+// Full-colour pictures for the themes whose kit art did not read at a glance (judged against the old emoji):
+// a lion (the game's mascot and the Animals theme), a whale (Ocean), a sun behind a cloud (Weather), a ladybird (Bugs)
+// and a tractor (Farm).
+const scallop = (cx, cy, r, bump, n) => { const p = new Path2D(); for (let i = 0; i <= n; i++) { const a = i / n * TAU - Math.PI / 2, x = cx + Math.cos(a) * r, y = cy + Math.sin(a) * r;
+  if (!i) { p.moveTo(x, y); continue; } const m = a - TAU / n / 2; p.quadraticCurveTo(cx + Math.cos(m) * (r + bump), cy + Math.sin(m) * (r + bump), x, y); } p.closePath(); return p; };
+const dot = (ctx, x, y, r, c) => { ctx.fillStyle = c; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill(); };
+const eye = (ctx, x, y, r) => { dot(ctx, x, y, r, PAL.ink[0]); dot(ctx, x + r * 0.35, y - r * 0.35, r * 0.38, PAL.snow[0]); };
+Oomba.art.define('wh-lion', { w: 110, h: 104, ax: 0.5, ay: 1, draw(ctx, k) {
+  INK_.sticker(ctx, k, scallop(55, 54, 38, 12, 12), { fill: PAL.peach[2], shade: PAL.peach[3], shadeOff: 4 });
+  for (const x of [33, 77]) INK_.sticker(ctx, k, INK_.ellipse(x, 30, 9, 9), { fill: PAL.spark[2], shade: PAL.peach[2], shadeOff: 2 });
+  INK_.sticker(ctx, k, INK_.ellipse(55, 58, 29, 27), { fill: PAL.spark[2], shade: PAL.spark[3], shadeOff: 3, gloss: [44, 42, 7, 3, -0.4] });
+  for (const x of [38, 72]) dot(ctx, x, 66, 5, PAL.coral[1]);
+  eye(ctx, 45, 53, 4.4); eye(ctx, 65, 53, 4.4);
+  INK_.sticker(ctx, k, INK_.ellipse(55, 70, 13, 9), { fill: PAL.spark[0], rim: false, line: 0.6 });
+  const n = new Path2D(); n.moveTo(49, 63); n.lineTo(61, 63); n.quadraticCurveTo(55, 72, 55, 70); n.quadraticCurveTo(55, 72, 49, 63); n.closePath();
+  INK_.sticker(ctx, k, n, { fill: PAL.cocoa[2], rim: false, line: 0.6 });
+  const m = new Path2D(); m.moveTo(55, 69); m.lineTo(55, 73); m.moveTo(48, 73); m.quadraticCurveTo(55, 79, 62, 73); INK_.detail(ctx, k, m, 0.8);
+} });
+Oomba.art.define('wh-whale', { w: 130, h: 92, ax: 0.5, ay: 1, draw(ctx, k) {
+  for (const [x, a] of [[36, -0.35], [48, 0.35]]) { ctx.save(); ctx.translate(x, 14); ctx.rotate(a); INK_.sticker(ctx, k, INK_.ellipse(0, 0, 4, 8), { fill: PAL.sky[1], shade: PAL.sky[2], shadeOff: 1, line: 0.6 }); ctx.restore(); }
+  const b = new Path2D();
+  b.moveTo(8, 60); b.bezierCurveTo(8, 28, 72, 22, 94, 50); b.quadraticCurveTo(102, 40, 108, 30); b.quadraticCurveTo(116, 22, 126, 24);
+  b.quadraticCurveTo(120, 38, 112, 48); b.quadraticCurveTo(122, 56, 126, 70); b.quadraticCurveTo(110, 68, 98, 60);
+  b.bezierCurveTo(86, 84, 18, 88, 8, 60); b.closePath();
+  INK_.sticker(ctx, k, b, { fill: PAL.sky[2], shade: PAL.sky[3], shadeOff: 4, gloss: [40, 40, 12, 4, -0.15] });
+  INK_.sticker(ctx, k, INK_.ellipse(46, 72, 30, 7), { fill: PAL.sky[0], rim: false, line: 0.5 });
+  eye(ctx, 30, 52, 4.2); dot(ctx, 22, 62, 4, PAL.coral[1]);
+  const m = new Path2D(); m.moveTo(14, 62); m.quadraticCurveTo(22, 70, 32, 64); INK_.detail(ctx, k, m, 0.8);
+} });
+Oomba.art.define('wh-weather', { w: 112, h: 100, ax: 0.5, ay: 1, draw(ctx, k) {
+  const rays = new Path2D();
+  for (let i = 0; i < 9; i++) { const a = i / 9 * TAU, c = Math.cos(a), s = Math.sin(a), q = TAU / 40;
+    rays.moveTo(46 + Math.cos(a - q) * 28, 40 + Math.sin(a - q) * 28); rays.lineTo(46 + c * 42, 40 + s * 42); rays.lineTo(46 + Math.cos(a + q) * 28, 40 + Math.sin(a + q) * 28); rays.closePath(); }
+  INK_.sticker(ctx, k, rays, { fill: PAL.spark[2], shade: PAL.spark[3], shadeOff: 2, line: 0.7 });
+  INK_.sticker(ctx, k, INK_.ellipse(46, 40, 25, 25), { fill: PAL.spark[2], shade: PAL.peach[2], shadeOff: 3, gloss: [38, 30, 6, 3, -0.6] });
+  const c = new Path2D();
+  c.moveTo(38, 94); c.quadraticCurveTo(20, 94, 22, 79); c.quadraticCurveTo(24, 65, 40, 67); c.quadraticCurveTo(46, 47, 68, 51);
+  c.quadraticCurveTo(87, 48, 92, 65); c.quadraticCurveTo(108, 66, 107, 80); c.quadraticCurveTo(106, 94, 92, 94); c.closePath();
+  INK_.sticker(ctx, k, c, { fill: PAL.snow[0], shade: PAL.snow[2], shadeOff: 4 });
+} });
+Oomba.art.define('wh-ladybug', { w: 104, h: 100, ax: 0.5, ay: 1, draw(ctx, k) {
+  const ant = new Path2D(); ant.moveTo(44, 18); ant.quadraticCurveTo(38, 6, 28, 6); ant.moveTo(60, 18); ant.quadraticCurveTo(66, 6, 76, 6); INK_.detail(ctx, k, ant, 1.2);
+  dot(ctx, 28, 6, 4, PAL.ink[0]); dot(ctx, 76, 6, 4, PAL.ink[0]);
+  INK_.sticker(ctx, k, INK_.ellipse(52, 26, 19, 14), { fill: PAL.ink[0], rim: false });
+  dot(ctx, 45, 23, 3.5, PAL.snow[0]); dot(ctx, 59, 23, 3.5, PAL.snow[0]);
+  INK_.sticker(ctx, k, INK_.ellipse(52, 60, 38, 36), { fill: PAL.coral[2], shade: PAL.coral[3], shadeOff: 4, gloss: [34, 44, 8, 4, -0.7] });
+  const mid = new Path2D(); mid.moveTo(52, 26); mid.lineTo(52, 96); INK_.detail(ctx, k, mid, 1.1);
+  for (const [x, y, r] of [[36, 50, 7], [68, 50, 7], [32, 72, 6], [72, 72, 6], [44, 86, 4.5], [60, 86, 4.5]]) dot(ctx, x, y, r, PAL.ink[0]);
+} });
+Oomba.art.define('wh-tractor', { w: 132, h: 100, ax: 0.5, ay: 1, draw(ctx, k) {
+  INK_.sticker(ctx, k, INK_.rrect(94, 26, 7, 26, 3), { fill: PAL.stone[2], shade: PAL.stone[3], shadeOff: 2 });
+  INK_.sticker(ctx, k, INK_.rrect(44, 48, 78, 28, 7), { fill: PAL.coral[2], shade: PAL.coral[3], shadeOff: 4, gloss: [70, 54, 12, 3, 0] });
+  INK_.sticker(ctx, k, INK_.rrect(14, 18, 46, 52, 6), { fill: PAL.coral[2], shade: PAL.coral[3], shadeOff: 4 });
+  INK_.sticker(ctx, k, INK_.rrect(22, 26, 30, 22, 4), { fill: PAL.sky[1], shade: PAL.sky[2], shadeOff: 2, gloss: [30, 32, 5, 2, -0.5] });
+  INK_.sticker(ctx, k, INK_.rrect(8, 10, 58, 10, 4), { fill: PAL.coral[3], rim: false });
+  for (const [x, y, r, h] of [[38, 72, 26, 10], [106, 82, 16, 6]]) {
+    INK_.sticker(ctx, k, INK_.ellipse(x, y, r, r), { fill: PAL.stone[3], shade: PAL.ink[0], shadeOff: 3 });
+    INK_.sticker(ctx, k, INK_.ellipse(x, y, h, h), { fill: PAL.spark[2], shade: PAL.spark[3], shadeOff: 2 });
+  }
+} });
+
+const C = (hue, step) => Oomba.color(hue, step);
+const WORLD = id => CONFIG.worlds[id] || CONFIG.worlds.surprise;
+/** The theme's colours go on the page as CSS variables (the game's CSS has no colour codes). */
+function applyThemeColours(id) {
+  const h = WORLD(id).hue, st = document.documentElement.style;
+  const vars = { ink: C('ink'), cream: C('card'), acc: C(h, 'base'), accDark: C(h, 'shade'), accSoft: C(h, 'tint'), spark: C('spark'), sparkDark: C('spark', 'shade'),
+    sparkTint: C('spark', 'tint'), tape: C('spark', 'light'), mintTint: C('mint', 'tint'), stone: C('stone') };
+  for (const k in vars) st.setProperty('--wh-' + k, vars[k]);
+  accCache = null;   // the drag band colour follows the theme
+}
+let accCache = null;
+function getAcc() { if (!accCache) accCache = WORLD(S.theme).hue ? C(WORLD(S.theme).hue, 'base') : C('sky'); return accCache; }
+/** The grid is a paper card in the light and the dark (the bands keep their contrast): Ink letters. */
+let paperInk = null;
+function inkColour() { if (!paperInk) paperInk = C('ink'); return paperInk; }
+
+// The kit's world behind everything: the theme's biome and a few of its props (night in the dark theme).
+const STAGE = Oomba.stage({ api: 1, biome: 'forest', size: [960, 540] });
+Oomba.ui.root().appendChild($('game'));
+Oomba.scene = 'title';
+let worldOn = null, worldProps = [];
+// On the title the lion is the only character on screen, so the worlds' animals stay off its hills there.
+const CREATURES = new Set(Oomba.art.species.concat(['wh-dino']));
+/** Shows a word theme's world behind the game: biome, time of day and three of its props on the near hills. */
+function setWorld(id) {
+  const key = id + (S.screen === 'title' ? '|title' : ''); if (worldOn === key) return; worldOn = key;
+  const w = WORLD(id);
+  try { STAGE.setBiome(w.world); } catch (e) { /* a missing pack: the kit warns and keeps a core world */ }
+  if (Oomba.theme.mode !== 'dark') { try { STAGE.setTimeOfDay(w.tod || 0, REDUCED ? 0 : 500); } catch (e) { /* ignore */ } }
+  worldProps.forEach(e => { try { e.remove('none'); } catch (err) { /* ignore */ } }); worldProps = [];
+  const spots = [[0.1, 1.1], [0.88, 0.9], [0.66, 0.6]];
+  let props = w.props;
+  if (S.screen === 'title') props = props.filter(n => !CREATURES.has(n)).concat(['tree', 'flower', 'bush']).slice(0, 3);
+  props.forEach((name, i) => {
+    const [fx, sz] = spots[i % spots.length];
+    try { worldProps.push(STAGE.add(name, { x: STAGE.viewX(fx), y: 30, size: 110 * sz, layer: 'near', flip: fx > 0.5 })); } catch (e) { /* ignore */ }
+  });
+}
+// Back in the light: after the kit's own dawn, the theme's time of day again.
+Oomba.theme.on('change', mode => { paperInk = null; dirty = true; if (mode !== 'dark') Oomba.time.real.after(900, () => { const w = WORLD(String(worldOn).split('|')[0]); if (Oomba.theme.mode !== 'dark' && w.tod) { try { STAGE.setTimeOfDay(w.tod, 400); } catch (e) { /* ignore */ } } }); });
+// The props stand at fractions of the view: place them again when the screen changes shape.
+let reWorld = null;
+addEventListener('resize', () => { if (reWorld) reWorld(); reWorld = later(200, () => { const id = worldOn && worldOn.split('|')[0]; worldOn = null; if (id) setWorld(id); }); });
+
+/** The kit's sounds (no captions for the game's small clicks); the SDK's names pass through. */
+function sfx(name, o) { try { Oomba.sfx(name, Object.assign({ caption: false }, o)); } catch (e) { /* ignore */ } }
+
+/** The two pass-the-phone racers. */
+const RACERS = CONFIG.race.players.map(p => Oomba.char(p));
+const picCache = new Map();
+/** A kit picture (prop, species, our own art, or a character spec) cropped to its ink, centred in a square canvas. */
+function picCanvas(what, css, variant) {
+  const dpr = Math.min(2, window.devicePixelRatio || 1), px = Math.max(8, Math.round(css * dpr));
+  const key = (typeof what === 'object' ? (what.id || JSON.stringify(what)) : what) + '|' + px + '|' + (variant || '');
+  let src = picCache.get(key);
+  if (!src) {
+    let raw;
+    try { raw = typeof what === 'object' ? Oomba.ui.portrait(what, { size: px * 1.2, mood: variant || 'happy' }) : Oomba.art.toCanvas(what, px * 2, variant || ''); } catch (e) { raw = null; }
+    src = document.createElement('canvas'); src.width = src.height = px;
+    if (raw && raw.width && raw.height) {
+      const W = raw.width, H = raw.height; let x0 = W, y0 = H, x1 = -1, y1 = -1;
+      try {
+        const d = raw.getContext('2d').getImageData(0, 0, W, H).data;
+        for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (d[(y * W + x) * 4 + 3] > 30) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+      } catch (e) { x0 = 0; y0 = 0; x1 = W - 1; y1 = H - 1; }
+      if (x1 < 0) { x0 = 0; y0 = 0; x1 = W - 1; y1 = H - 1; }
+      const bw = x1 - x0 + 1, bh = y1 - y0 + 1, s = px / Math.max(bw, bh);
+      src.getContext('2d').drawImage(raw, x0, y0, bw, bh, (px - bw * s) / 2, (px - bh * s) / 2, bw * s, bh * s);
+    }
+    if (picCache.size > 300) picCache.clear();
+    picCache.set(key, src);
+  }
+  const c = document.createElement('canvas'); c.width = c.height = px; c.className = 'pic';
+  c.style.width = c.style.height = css + 'px'; c.setAttribute('aria-hidden', 'true');
+  c.getContext('2d').drawImage(src, 0, 0);
+  return c;
+}
+function putPic(slot, what, css) { if (!slot) return; slot.textContent = ''; slot.appendChild(picCanvas(what, css)); }
+document.querySelectorAll('[data-icon]').forEach(el => { el.insertAdjacentHTML('afterbegin', Oomba.icon(el.dataset.icon)); });
+
+/* =====================================================================================
+   Saved progress (BRB.storage is the per-player cloud save; the shape is unchanged)
    ===================================================================================== */
 const DEFAULT_SAVE = { total: 0, puzzles: 0, solved: {}, best: { easy: null, medium: null, hard: null }, stars: 0,
   daily: { last: null, streak: 0, bestStreak: 0 }, relax: false, difficulty: 'easy', theme: 'animals', seenHelp: 0 };
@@ -1003,240 +1269,11 @@ const S = {
   race: null            // "Race a friend": { turn: 0 | 1, results: [{ timeMs, hints }] } - both players get the same puzzle
 };
 let fast = false;      // __brbTest.skipAnimations(): no sweeps, no delays
-
-/* =====================================================================================
-   Theme art: original cartoon mascots and scene motifs, drawn with canvas paths.
-   Every mascot is drawn centred on (0,0) and fits in a box of size s.
-   ===================================================================================== */
-function circ(c, x, y, r, fill) { c.beginPath(); c.arc(x, y, r, 0, TAU); if (fill) { c.fillStyle = fill; c.fill(); } }
-function ell(c, x, y, rx, ry, rot, fill) { c.beginPath(); c.ellipse(x, y, rx, ry, rot || 0, 0, TAU); if (fill) { c.fillStyle = fill; c.fill(); } }
-function face(c, x, y, s, opts = {}) {   // two eyes with shine, a smile and pink cheeks
-  const e = s * 0.09;
-  circ(c, x - s * 0.22, y, e, '#1d1d2b'); circ(c, x + s * 0.22, y, e, '#1d1d2b');
-  circ(c, x - s * 0.2, y - e * 0.4, e * 0.38, '#fff'); circ(c, x + s * 0.24, y - e * 0.4, e * 0.38, '#fff');
-  c.strokeStyle = '#1d1d2b'; c.lineWidth = Math.max(1.5, s * 0.06); c.lineCap = 'round';
-  c.beginPath(); c.arc(x, y + s * 0.12, s * 0.16, 0.15 * Math.PI, 0.85 * Math.PI); c.stroke();
-  if (opts.cheeks !== false) { c.globalAlpha = 0.45; circ(c, x - s * 0.36, y + s * 0.16, s * 0.08, '#ff6b8b'); circ(c, x + s * 0.36, y + s * 0.16, s * 0.08, '#ff6b8b'); c.globalAlpha = 1; }
-}
-function star5(c, x, y, r, fill) { c.beginPath(); for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? r * 0.45 : r; c.lineTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr); } c.closePath(); if (fill) { c.fillStyle = fill; c.fill(); } }
-function heart(c, x, y, s, fill) { c.beginPath(); c.moveTo(x, y + s * 0.35); c.bezierCurveTo(x - s * 0.9, y - s * 0.25, x - s * 0.35, y - s * 0.85, x, y - s * 0.3); c.bezierCurveTo(x + s * 0.35, y - s * 0.85, x + s * 0.9, y - s * 0.25, x, y + s * 0.35); c.fillStyle = fill; c.fill(); }
-function note(c, x, y, s, fill) { c.fillStyle = fill; ell(c, x, y, s * 0.32, s * 0.24, -0.4, fill); c.fillRect(x + s * 0.22, y - s * 0.95, s * 0.1, s * 0.95); c.beginPath(); c.moveTo(x + s * 0.32, y - s * 0.95); c.quadraticCurveTo(x + s * 0.75, y - s * 0.7, x + s * 0.55, y - s * 0.35); c.lineTo(x + s * 0.32, y - s * 0.6); c.fill(); }
-
-const ART = {
-  animals(c, s) {   // a friendly lion
-    const r = s * 0.3;
-    c.fillStyle = '#e8892b'; c.beginPath();
-    for (let i = 0; i < 14; i++) { const a = i / 14 * TAU; c.moveTo(Math.cos(a) * r * 1.25 + r * 0.42, Math.sin(a) * r * 1.25); c.arc(Math.cos(a) * r * 1.25, Math.sin(a) * r * 1.25, r * 0.42, 0, TAU); }
-    c.fill(); circ(c, 0, 0, r * 1.3, '#e8892b');
-    circ(c, -r * 0.72, -r * 0.72, r * 0.3, '#f8c95a'); circ(c, r * 0.72, -r * 0.72, r * 0.3, '#f8c95a');
-    circ(c, -r * 0.72, -r * 0.72, r * 0.15, '#e8892b'); circ(c, r * 0.72, -r * 0.72, r * 0.15, '#e8892b');
-    circ(c, 0, 0, r, '#f8c95a');
-    ell(c, 0, r * 0.38, r * 0.48, r * 0.36, 0, '#fff3d6');
-    face(c, 0, -r * 0.1, r * 1.3, { cheeks: true });
-    c.beginPath(); c.moveTo(-r * 0.16, r * 0.15); c.lineTo(r * 0.16, r * 0.15); c.lineTo(0, r * 0.32); c.closePath(); c.fillStyle = '#7a3b10'; c.fill();
-  },
-  ocean(c, s) {   // a smiling whale with a spout
-    const r = s * 0.42;
-    c.fillStyle = '#7cd3ff'; c.beginPath(); c.moveTo(-r * 0.05, -r * 0.55); c.quadraticCurveTo(-r * 0.25, -r * 0.95, -r * 0.45, -r * 0.85); c.moveTo(-r * 0.05, -r * 0.55); c.quadraticCurveTo(r * 0.15, -r * 0.95, r * 0.35, -r * 0.88);
-    c.strokeStyle = '#7cd3ff'; c.lineWidth = r * 0.1; c.lineCap = 'round'; c.stroke();
-    circ(c, -r * 0.45, -r * 0.88, r * 0.08, '#b9ecff'); circ(c, r * 0.35, -r * 0.9, r * 0.08, '#b9ecff');
-    c.fillStyle = '#2f7fd8'; c.beginPath(); c.moveTo(r * 0.75, 0); c.quadraticCurveTo(r * 1.05, -r * 0.45, r * 1.12, -r * 0.5); c.quadraticCurveTo(r * 1.0, -r * 0.1, r * 1.15, r * 0.25); c.quadraticCurveTo(r * 0.95, r * 0.15, r * 0.7, r * 0.2); c.fill();
-    c.beginPath(); c.moveTo(-r * 0.95, r * 0.1); c.bezierCurveTo(-r * 0.95, -r * 0.6, r * 0.5, -r * 0.65, r * 0.8, r * 0.05); c.bezierCurveTo(r * 0.6, r * 0.55, -r * 0.7, r * 0.6, -r * 0.95, r * 0.1); c.fill();
-    c.fillStyle = '#d7f1ff'; c.beginPath(); c.moveTo(-r * 0.9, r * 0.2); c.bezierCurveTo(-r * 0.6, r * 0.5, r * 0.3, r * 0.5, r * 0.6, r * 0.28); c.bezierCurveTo(r * 0.2, r * 0.6, -r * 0.6, r * 0.58, -r * 0.9, r * 0.2); c.fill();
-    circ(c, -r * 0.5, -r * 0.1, r * 0.08, '#1d1d2b'); circ(c, -r * 0.48, -r * 0.13, r * 0.03, '#fff');
-    c.globalAlpha = 0.5; circ(c, -r * 0.62, r * 0.1, r * 0.07, '#ff8fab'); c.globalAlpha = 1;
-    c.strokeStyle = '#1d1d2b'; c.lineWidth = r * 0.05; c.beginPath(); c.arc(-r * 0.72, r * 0.02, r * 0.14, 0.2, 1.6); c.stroke();
-  },
-  space(c, s) {   // a rocket with a flame
-    const r = s * 0.42;
-    c.save(); c.rotate(0.5);
-    c.fillStyle = '#ffb02e'; c.beginPath(); c.moveTo(-r * 0.2, r * 0.6); c.quadraticCurveTo(0, r * 1.25, r * 0.2, r * 0.6); c.fill();
-    c.fillStyle = '#ffe066'; c.beginPath(); c.moveTo(-r * 0.1, r * 0.6); c.quadraticCurveTo(0, r * 0.98, r * 0.1, r * 0.6); c.fill();
-    c.fillStyle = '#e03131'; c.beginPath(); c.moveTo(-r * 0.28, r * 0.2); c.lineTo(-r * 0.55, r * 0.68); c.lineTo(-r * 0.22, r * 0.55); c.fill();
-    c.beginPath(); c.moveTo(r * 0.28, r * 0.2); c.lineTo(r * 0.55, r * 0.68); c.lineTo(r * 0.22, r * 0.55); c.fill();
-    c.fillStyle = '#f1f3f5'; c.beginPath(); c.moveTo(0, -r); c.bezierCurveTo(r * 0.5, -r * 0.6, r * 0.38, r * 0.3, r * 0.25, r * 0.62); c.lineTo(-r * 0.25, r * 0.62); c.bezierCurveTo(-r * 0.38, r * 0.3, -r * 0.5, -r * 0.6, 0, -r); c.fill();
-    c.fillStyle = '#e03131'; c.beginPath(); c.moveTo(0, -r); c.bezierCurveTo(r * 0.22, -r * 0.82, r * 0.3, -r * 0.65, r * 0.33, -r * 0.55); c.lineTo(-r * 0.33, -r * 0.55); c.bezierCurveTo(-r * 0.3, -r * 0.65, -r * 0.22, -r * 0.82, 0, -r); c.fill();
-    circ(c, 0, -r * 0.18, r * 0.2, '#5f3dc4'); circ(c, 0, -r * 0.18, r * 0.14, '#91e2ff'); circ(c, -r * 0.05, -r * 0.23, r * 0.05, '#fff');
-    c.restore();
-  },
-  food(c, s) {   // a happy pizza slice
-    const r = s * 0.45;
-    c.fillStyle = '#d9822b'; c.beginPath(); c.moveTo(-r * 0.75, -r * 0.62); c.quadraticCurveTo(0, -r * 0.95, r * 0.75, -r * 0.62); c.lineTo(r * 0.7, -r * 0.42); c.lineTo(-r * 0.7, -r * 0.42); c.fill();
-    c.fillStyle = '#ffd43b'; c.beginPath(); c.moveTo(-r * 0.68, -r * 0.5); c.lineTo(r * 0.68, -r * 0.5); c.lineTo(0, r * 0.9); c.closePath(); c.fill();
-    circ(c, -r * 0.3, -r * 0.25, r * 0.12, '#e03131'); circ(c, r * 0.28, -r * 0.22, r * 0.11, '#e03131'); circ(c, 0, r * 0.45, r * 0.09, '#e03131');
-    face(c, 0, r * 0.05, r * 0.6);
-  },
-  sports(c, s) {   // a shiny trophy with a star
-    const r = s * 0.42;
-    c.strokeStyle = '#f59f00'; c.lineWidth = r * 0.12; c.beginPath(); c.arc(-r * 0.55, -r * 0.35, r * 0.25, Math.PI * 0.5, Math.PI * 1.5); c.stroke();
-    c.beginPath(); c.arc(r * 0.55, -r * 0.35, r * 0.25, -Math.PI * 0.5, Math.PI * 0.5); c.stroke();
-    c.fillStyle = '#fcc419'; c.beginPath(); c.moveTo(-r * 0.6, -r * 0.7); c.lineTo(r * 0.6, -r * 0.7); c.quadraticCurveTo(r * 0.6, r * 0.15, 0, r * 0.25); c.quadraticCurveTo(-r * 0.6, r * 0.15, -r * 0.6, -r * 0.7); c.fill();
-    c.fillStyle = '#f59f00'; c.fillRect(-r * 0.1, r * 0.2, r * 0.2, r * 0.3); c.fillStyle = '#8f5a00'; c.fillRect(-r * 0.45, r * 0.5, r * 0.9, r * 0.32);
-    c.fillStyle = '#ffd8a8'; c.fillRect(-r * 0.28, r * 0.58, r * 0.56, r * 0.14);
-    star5(c, 0, -r * 0.3, r * 0.25, '#fff');
-    c.globalAlpha = 0.5; ell(c, -r * 0.32, -r * 0.4, r * 0.07, r * 0.22, 0.2, '#fff'); c.globalAlpha = 1;
-  },
-  weather(c, s) {   // the sun peeking over a fluffy cloud, with rain drops
-    const r = s * 0.42;
-    c.fillStyle = '#ffd43b'; for (let i = 0; i < 10; i++) { const a = i / 10 * TAU; c.save(); c.translate(r * 0.25, -r * 0.3); c.rotate(a); c.beginPath(); c.moveTo(-r * 0.08, -r * 0.48); c.lineTo(0, -r * 0.7); c.lineTo(r * 0.08, -r * 0.48); c.fill(); c.restore(); }
-    circ(c, r * 0.25, -r * 0.3, r * 0.42, '#ffd43b');
-    face(c, r * 0.32, -r * 0.42, r * 0.5, { cheeks: false });
-    c.fillStyle = '#4dabf7'; [[-0.5, 0.75], [-0.1, 0.9], [0.3, 0.75]].forEach(([x, y]) => { c.beginPath(); c.moveTo(x * r, (y - 0.18) * r); c.quadraticCurveTo((x + 0.1) * r, y * r, x * r, (y + 0.06) * r); c.quadraticCurveTo((x - 0.1) * r, y * r, x * r, (y - 0.18) * r); c.fill(); });
-    c.fillStyle = '#fff'; c.beginPath(); c.arc(-r * 0.45, r * 0.2, r * 0.32, 0, TAU); c.arc(-r * 0.08, r * 0.02, r * 0.38, 0, TAU); c.arc(r * 0.35, r * 0.22, r * 0.3, 0, TAU); c.rect(-r * 0.45, r * 0.15, r * 0.8, r * 0.37); c.fill();
-    c.strokeStyle = 'rgba(80,120,170,.25)'; c.lineWidth = r * 0.04; c.beginPath(); c.moveTo(-r * 0.7, r * 0.52); c.lineTo(r * 0.55, r * 0.52); c.stroke();
-  },
-  bugs(c, s) {   // a ladybug
-    const r = s * 0.4;
-    c.strokeStyle = '#1d1d2b'; c.lineWidth = r * 0.07; c.lineCap = 'round';
-    c.beginPath(); c.moveTo(-r * 0.15, -r * 0.75); c.quadraticCurveTo(-r * 0.3, -r * 1.05, -r * 0.45, -r * 1.0); c.moveTo(r * 0.15, -r * 0.75); c.quadraticCurveTo(r * 0.3, -r * 1.05, r * 0.45, -r * 1.0); c.stroke();
-    circ(c, -r * 0.45, -r * 1.0, r * 0.08, '#1d1d2b'); circ(c, r * 0.45, -r * 1.0, r * 0.08, '#1d1d2b');
-    for (const y of [-0.15, 0.2, 0.5]) { c.beginPath(); c.moveTo(-r * 0.7, y * r); c.lineTo(-r * 1.0, (y + 0.12) * r); c.moveTo(r * 0.7, y * r); c.lineTo(r * 1.0, (y + 0.12) * r); c.stroke(); }
-    circ(c, 0, -r * 0.6, r * 0.38, '#1d1d2b');
-    circ(c, 0, r * 0.12, r * 0.78, '#e03131');
-    c.beginPath(); c.moveTo(0, -r * 0.62); c.lineTo(0, r * 0.9); c.stroke();
-    [[-0.38, -0.12, 0.15], [0.38, -0.12, 0.15], [-0.45, 0.38, 0.13], [0.45, 0.38, 0.13], [-0.15, 0.6, 0.1], [0.15, 0.6, 0.1]].forEach(([x, y, rr]) => circ(c, x * r, y * r, rr * r, '#1d1d2b'));
-    circ(c, -r * 0.13, -r * 0.68, r * 0.08, '#fff'); circ(c, r * 0.13, -r * 0.68, r * 0.08, '#fff');
-    circ(c, -r * 0.12, -r * 0.67, r * 0.04, '#1d1d2b'); circ(c, r * 0.14, -r * 0.67, r * 0.04, '#1d1d2b');
-    c.globalAlpha = 0.35; ell(c, -r * 0.35, -r * 0.25, r * 0.12, r * 0.22, 0.6, '#fff'); c.globalAlpha = 1;
-  },
-  dinos(c, s) {   // a long-neck dinosaur
-    const r = s * 0.42;
-    c.fillStyle = '#69c34a';
-    c.beginPath(); c.moveTo(-r * 0.95, r * 0.25); c.quadraticCurveTo(-r * 0.5, r * 0.15, -r * 0.4, r * 0.05); c.lineTo(-r * 0.35, r * 0.35); c.fill();
-    ell(c, -r * 0.05, r * 0.25, r * 0.55, r * 0.35, 0, '#69c34a');
-    c.beginPath(); c.moveTo(r * 0.2, r * 0.05); c.quadraticCurveTo(r * 0.45, -r * 0.3, r * 0.42, -r * 0.7); c.lineTo(r * 0.68, -r * 0.7); c.quadraticCurveTo(r * 0.7, -r * 0.2, r * 0.45, r * 0.25); c.fill();
-    ell(c, r * 0.62, -r * 0.78, r * 0.3, r * 0.2, 0.1, '#69c34a');
-    c.fillRect(-r * 0.45, r * 0.4, r * 0.18, r * 0.42); c.fillRect(r * 0.18, r * 0.4, r * 0.18, r * 0.42);
-    c.fillStyle = '#4c9a30'; c.fillRect(-r * 0.25, r * 0.42, r * 0.15, r * 0.38); c.fillRect(r * 0.35, r * 0.42, r * 0.13, r * 0.36);
-    c.fillStyle = '#b6ea8e'; ell(c, 0, r * 0.38, r * 0.35, r * 0.14, 0, '#b6ea8e');
-    c.fillStyle = '#ffa94d'; [[-0.3, -0.08], [0, -0.12], [0.28, -0.05]].forEach(([x, y]) => { c.beginPath(); c.moveTo((x - 0.08) * r, (y + 0.05) * r); c.lineTo(x * r, (y - 0.08) * r); c.lineTo((x + 0.08) * r, (y + 0.05) * r); c.fill(); });
-    circ(c, r * 0.68, -r * 0.83, r * 0.06, '#1d1d2b'); circ(c, r * 0.69, -r * 0.85, r * 0.02, '#fff');
-    c.strokeStyle = '#1d1d2b'; c.lineWidth = r * 0.035; c.beginPath(); c.arc(r * 0.72, -r * 0.75, r * 0.12, 0.2, 1.4); c.stroke();
-    c.globalAlpha = 0.45; circ(c, r * 0.58, -r * 0.7, r * 0.05, '#ff6b8b'); c.globalAlpha = 1;
-  },
-  farm(c, s) {   // a red barn
-    const r = s * 0.42;
-    c.fillStyle = '#c92a2a'; c.beginPath(); c.moveTo(-r * 0.8, -r * 0.1); c.lineTo(-r * 0.55, -r * 0.6); c.lineTo(0, -r * 0.9); c.lineTo(r * 0.55, -r * 0.6); c.lineTo(r * 0.8, -r * 0.1); c.lineTo(r * 0.8, r * 0.8); c.lineTo(-r * 0.8, r * 0.8); c.fill();
-    c.strokeStyle = '#fff'; c.lineWidth = r * 0.08; c.lineJoin = 'round';
-    c.beginPath(); c.moveTo(-r * 0.86, -r * 0.08); c.lineTo(-r * 0.58, -r * 0.64); c.lineTo(0, -r * 0.96); c.lineTo(r * 0.58, -r * 0.64); c.lineTo(r * 0.86, -r * 0.08); c.stroke();
-    c.fillStyle = '#7a1c1c'; c.fillRect(-r * 0.32, r * 0.2, r * 0.64, r * 0.6);
-    c.strokeRect(-r * 0.32, r * 0.2, r * 0.64, r * 0.6); c.beginPath(); c.moveTo(-r * 0.32, r * 0.2); c.lineTo(r * 0.32, r * 0.8); c.moveTo(r * 0.32, r * 0.2); c.lineTo(-r * 0.32, r * 0.8); c.stroke();
-    c.fillStyle = '#ffe066'; c.beginPath(); c.arc(0, -r * 0.35, r * 0.17, 0, TAU); c.fill(); c.stroke();
-    c.fillStyle = '#e9c46a'; c.beginPath(); c.moveTo(-r * 1.0, r * 0.8); c.quadraticCurveTo(-r * 0.95, r * 0.4, -r * 0.75, r * 0.45); c.lineTo(-r * 0.7, r * 0.8); c.fill();
-  },
-  music(c, s) {   // two dancing notes
-    const r = s * 0.45;
-    c.fillStyle = '#9c36b5'; ell(c, -r * 0.45, r * 0.5, r * 0.3, r * 0.22, -0.4, '#9c36b5'); ell(c, r * 0.45, r * 0.3, r * 0.3, r * 0.22, -0.4, '#9c36b5');
-    c.fillRect(-r * 0.22, -r * 0.6, r * 0.11, r * 1.08); c.fillRect(r * 0.68, -r * 0.8, r * 0.11, r * 1.08);
-    c.beginPath(); c.moveTo(-r * 0.22, -r * 0.6); c.lineTo(r * 0.79, -r * 0.8); c.lineTo(r * 0.79, -r * 0.55); c.lineTo(-r * 0.22, -r * 0.35); c.fill();
-    face(c, -r * 0.45, r * 0.47, r * 0.42, { cheeks: false });
-    star5(c, -r * 0.75, -r * 0.55, r * 0.14, '#ffd43b'); star5(c, r * 0.2, r * 0.85, r * 0.1, '#ffd43b');
-  },
-  colours(c, s) {   // a paint palette with a brush
-    const r = s * 0.44;
-    c.fillStyle = '#e9b872'; c.beginPath(); c.moveTo(r * 0.2, -r * 0.8); c.bezierCurveTo(r * 1.1, -r * 0.7, r * 1.05, r * 0.6, r * 0.2, r * 0.75); c.bezierCurveTo(-r * 0.5, r * 0.85, -r * 1.05, r * 0.4, -r * 0.95, -r * 0.1); c.bezierCurveTo(-r * 0.85, -r * 0.6, -r * 0.4, -r * 0.85, r * 0.2, -r * 0.8); c.fill();
-    circ(c, -r * 0.1, r * 0.35, r * 0.15, '#fff8e6');
-    [['#e03131', -0.55, -0.15], ['#fcc419', -0.25, -0.5], ['#37b24d', 0.2, -0.5], ['#1c7ed6', 0.55, -0.2], ['#ae3ec9', 0.55, 0.25], ['#f76707', 0.2, 0.45]].forEach(([col, x, y]) => circ(c, x * r, y * r, r * 0.15, col));
-    c.save(); c.translate(-r * 0.35, r * 0.6); c.rotate(-0.8);
-    c.fillStyle = '#8d5524'; c.fillRect(-r * 0.05, 0, r * 0.1, r * 0.6); c.fillStyle = '#adb5bd'; c.fillRect(-r * 0.07, -r * 0.12, r * 0.14, r * 0.14);
-    c.fillStyle = '#e03131'; c.beginPath(); c.moveTo(-r * 0.07, -r * 0.12); c.quadraticCurveTo(0, -r * 0.4, r * 0.07, -r * 0.12); c.fill(); c.restore();
-  },
-  feelings(c, s) {   // a big beaming smiley with a heart
-    const r = s * 0.4;
-    circ(c, 0, 0, r * 0.95, '#ffd43b');
-    c.globalAlpha = 0.25; circ(c, -r * 0.3, -r * 0.35, r * 0.3, '#fff'); c.globalAlpha = 1;
-    c.strokeStyle = '#1d1d2b'; c.lineWidth = r * 0.09; c.lineCap = 'round';
-    c.beginPath(); c.arc(-r * 0.32, -r * 0.15, r * 0.14, Math.PI * 1.1, Math.PI * 1.9); c.stroke(); c.beginPath(); c.arc(r * 0.32, -r * 0.15, r * 0.14, Math.PI * 1.1, Math.PI * 1.9); c.stroke();
-    c.fillStyle = '#7a1f1f'; c.beginPath(); c.arc(0, r * 0.12, r * 0.45, 0.05 * Math.PI, 0.95 * Math.PI); c.closePath(); c.fill();
-    c.fillStyle = '#ff8787'; c.beginPath(); c.arc(0, r * 0.42, r * 0.18, Math.PI, 0); c.fill();
-    c.globalAlpha = 0.5; circ(c, -r * 0.62, r * 0.18, r * 0.13, '#ff6b8b'); circ(c, r * 0.62, r * 0.18, r * 0.13, '#ff6b8b'); c.globalAlpha = 1;
-    heart(c, r * 0.8, -r * 0.75, r * 0.45, '#f03e3e');
-  },
-  vehicles(c, s) {   // a little red car
-    const r = s * 0.44;
-    c.fillStyle = '#e8590c'; c.beginPath(); c.moveTo(-r * 0.95, r * 0.35); c.lineTo(-r * 0.95, 0); c.quadraticCurveTo(-r * 0.9, -r * 0.12, -r * 0.6, -r * 0.15); c.lineTo(-r * 0.4, -r * 0.55); c.quadraticCurveTo(-r * 0.3, -r * 0.65, -r * 0.1, -r * 0.65); c.lineTo(r * 0.35, -r * 0.65); c.quadraticCurveTo(r * 0.5, -r * 0.65, r * 0.6, -r * 0.15); c.quadraticCurveTo(r * 0.95, -r * 0.1, r * 0.95, r * 0.1); c.lineTo(r * 0.95, r * 0.35); c.fill();
-    c.fillStyle = '#bde6ff'; c.beginPath(); c.moveTo(-r * 0.3, -r * 0.18); c.lineTo(-r * 0.18, -r * 0.5); c.lineTo(r * 0.05, -r * 0.5); c.lineTo(r * 0.05, -r * 0.18); c.fill();
-    c.beginPath(); c.moveTo(r * 0.15, -r * 0.18); c.lineTo(r * 0.15, -r * 0.5); c.lineTo(r * 0.33, -r * 0.5); c.lineTo(r * 0.45, -r * 0.18); c.fill();
-    circ(c, r * 0.85, r * 0.05, r * 0.08, '#ffe066');
-    for (const x of [-0.55, 0.55]) { circ(c, x * r, r * 0.38, r * 0.24, '#343a40'); circ(c, x * r, r * 0.38, r * 0.1, '#ced4da'); }
-    c.strokeStyle = 'rgba(0,0,0,.25)'; c.lineWidth = r * 0.04; c.beginPath(); c.moveTo(r * 0.1, -r * 0.15); c.lineTo(r * 0.1, r * 0.25); c.stroke();
-  },
-  surprise(c, s) {   // a wrapped present with a big bow
-    const r = s * 0.42;
-    c.fillStyle = '#4dabf7'; c.fillRect(-r * 0.7, -r * 0.2, r * 1.4, r * 1.0); c.fillStyle = '#74c0fc'; c.fillRect(-r * 0.8, -r * 0.42, r * 1.6, r * 0.3);
-    c.fillStyle = '#f03e3e'; c.fillRect(-r * 0.12, -r * 0.42, r * 0.24, r * 1.22);
-    ell(c, -r * 0.3, -r * 0.58, r * 0.3, r * 0.17, 0.4, '#f03e3e'); ell(c, r * 0.3, -r * 0.58, r * 0.3, r * 0.17, -0.4, '#f03e3e'); circ(c, 0, -r * 0.5, r * 0.12, '#c92a2a');
-    c.fillStyle = '#fff'; c.font = '700 ' + Math.round(r * 0.6) + 'px Fredoka, sans-serif'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('?', r * 0.4, r * 0.32);
-  }
-};
-// Background motifs: small shapes scattered over the theme's scene.
-const MOTIF = {
-  animals(c, x, y, s) { c.fillStyle = '#c0712a'; ell(c, x, y + s * 0.15, s * 0.32, s * 0.26, 0, '#c0712a'); [[-0.32, -0.2], [-0.11, -0.38], [0.11, -0.38], [0.32, -0.2]].forEach(([a, b]) => circ(c, x + a * s, y + b * s, s * 0.12, '#c0712a')); },
-  ocean(c, x, y, s) { c.strokeStyle = '#ffffff'; c.lineWidth = Math.max(2, s * 0.1); circ(c, x, y, s * 0.35); c.stroke(); circ(c, x - s * 0.12, y - s * 0.12, s * 0.07, '#fff'); },
-  space(c, x, y, s) { star5(c, x, y, s * 0.4, '#fff3bf'); },
-  food(c, x, y, s, k) { c.save(); c.translate(x, y); c.rotate(k * 2.1); c.fillStyle = ['#ff6b6b', '#ffd43b', '#69db7c', '#74c0fc', '#da77f2'][k % 5]; c.fillRect(-s * 0.3, -s * 0.08, s * 0.6, s * 0.16); c.restore(); },
-  sports(c, x, y, s) { circ(c, x, y, s * 0.32, '#ffffff'); c.strokeStyle = '#2b8a3e'; c.lineWidth = s * 0.06; c.stroke(); star5(c, x, y, s * 0.13, '#2b8a3e'); },
-  weather(c, x, y, s) { c.fillStyle = '#4dabf7'; c.beginPath(); c.moveTo(x, y - s * 0.35); c.quadraticCurveTo(x + s * 0.25, y + s * 0.05, x, y + s * 0.2); c.quadraticCurveTo(x - s * 0.25, y + s * 0.05, x, y - s * 0.35); c.fill(); },
-  bugs(c, x, y, s, k) { c.save(); c.translate(x, y); c.rotate(k * 1.3); ell(c, 0, 0, s * 0.38, s * 0.18, 0, '#5c940d'); c.strokeStyle = '#a9e34b'; c.lineWidth = s * 0.04; c.beginPath(); c.moveTo(-s * 0.35, 0); c.lineTo(s * 0.35, 0); c.stroke(); c.restore(); },
-  dinos(c, x, y, s, k) { c.save(); c.translate(x, y); c.rotate(k * 0.7); ell(c, 0, s * 0.1, s * 0.2, s * 0.24, 0, '#5c940d'); [-0.2, 0, 0.2].forEach(a => { c.beginPath(); c.moveTo(a * s, -s * 0.05); c.lineTo(a * s * 1.6, -s * 0.4); c.lineWidth = s * 0.1; c.strokeStyle = '#5c940d'; c.lineCap = 'round'; c.stroke(); }); c.restore(); },
-  farm(c, x, y, s, k) { const col = ['#ffffff', '#ffd43b', '#ff8787'][k % 3]; for (let i = 0; i < 5; i++) { const a = i / 5 * TAU; circ(c, x + Math.cos(a) * s * 0.18, y + Math.sin(a) * s * 0.18, s * 0.14, col); } circ(c, x, y, s * 0.11, '#f59f00'); },
-  music(c, x, y, s) { note(c, x, y, s * 0.6, '#862e9c'); },
-  colours(c, x, y, s, k) { const col = ['#e03131', '#fcc419', '#37b24d', '#1c7ed6', '#ae3ec9', '#f76707'][k % 6]; c.fillStyle = col; c.beginPath(); for (let i = 0; i < 12; i++) { const a = i / 12 * TAU, rr = s * (i % 2 ? 0.22 : 0.34); c.lineTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr); } c.fill(); },
-  feelings(c, x, y, s) { heart(c, x, y, s * 0.5, '#ff6b8b'); },
-  vehicles(c, x, y, s) { c.fillStyle = '#ffffff'; c.beginPath(); c.arc(x - s * 0.2, y, s * 0.18, 0, TAU); c.arc(x + s * 0.05, y - s * 0.08, s * 0.22, 0, TAU); c.arc(x + s * 0.28, y + s * 0.02, s * 0.16, 0, TAU); c.fill(); },
-  surprise(c, x, y, s) { star5(c, x, y, s * 0.35, '#ffffff'); }
-};
-
-/** Draw a mascot into a small canvas (HUD, title, results). bob > 0 makes it bounce gently. */
-function paintArt(cv, themeId, cssW, cssH, opts = {}) {
-  const dpr = Math.min(3, window.devicePixelRatio || 1);
-  if (cv.width !== Math.round(cssW * dpr) || cv.height !== Math.round(cssH * dpr)) { cv.width = Math.round(cssW * dpr); cv.height = Math.round(cssH * dpr); }
-  const c = cv.getContext('2d'); c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, cssW, cssH);
-  const draw = ART[themeId] || ART.surprise, t = opts.t || 0;
-  if (opts.lens) {   // the title logo: the theme mascot seen through a magnifying glass
-    const R = cssH * 0.4, cx = cssW / 2 - R * 0.25, cy = cssH * 0.46 + (REDUCED ? 0 : Math.sin(t * 2.2) * 2);
-    c.save(); c.translate(cx, cy); c.rotate(-0.2);
-    c.strokeStyle = '#7a4b1f'; c.lineWidth = R * 0.32; c.lineCap = 'round'; c.beginPath(); c.moveTo(R * 0.95, R * 0.4); c.lineTo(R * 1.6, R * 0.95); c.stroke();
-    c.restore();
-    const th = THEME_BY_ID[themeId]; const g = c.createLinearGradient(0, cy - R, 0, cy + R);
-    g.addColorStop(0, th ? th.sky[0] : '#e7f5ff'); g.addColorStop(1, th ? th.sky[1] : '#a5d8ff');
-    circ(c, cx, cy, R, null); c.fillStyle = g; c.fill();
-    c.save(); circ(c, cx, cy, R); c.clip(); c.translate(cx, cy + R * 0.08 + (REDUCED ? 0 : Math.sin(t * 3) * R * 0.05)); draw(c, R * 1.7); c.restore();
-    c.globalAlpha = 0.35; ell(c, cx - R * 0.45, cy - R * 0.45, R * 0.28, R * 0.14, -0.7, '#fff'); c.globalAlpha = 1;
-    c.strokeStyle = '#ffb703'; c.lineWidth = R * 0.16; circ(c, cx, cy, R); c.stroke();
-    c.strokeStyle = 'rgba(0,0,0,.18)'; c.lineWidth = 2; circ(c, cx, cy, R * 1.08); c.stroke();
-    return;
-  }
-  const size = Math.min(cssW, cssH) * (opts.scale || 1);
-  const bob = opts.bob && !REDUCED ? Math.abs(Math.sin(t * 4)) * -cssH * 0.08 : 0;
-  c.save(); c.translate(cssW / 2, cssH / 2 + bob + (opts.bob ? cssH * 0.04 : 0)); draw(c, size); c.restore();
-}
-
-/** The full-screen theme scene behind the game (redrawn on resize / theme change only). */
-function paintBackground() {
-  const cv = $('bg'), dpr = Math.min(2, window.devicePixelRatio || 1), w = innerWidth, h = innerHeight;
-  cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
-  const c = cv.getContext('2d'); c.setTransform(dpr, 0, 0, dpr, 0, 0);
-  const id = S.screen === 'title' ? (S.pickTheme === 'surprise' ? 'surprise' : S.pickTheme) : S.theme;
-  const th = THEME_BY_ID[id] || { sky: ['#e7f5ff', '#b2f2bb'] };
-  const g = c.createLinearGradient(0, 0, 0, h); g.addColorStop(0, th.sky[0]); g.addColorStop(1, th.sky[1]); c.fillStyle = g; c.fillRect(0, 0, w, h);
-  const rng = mulberry32(hashStr(id)), motif = MOTIF[id] || MOTIF.surprise, count = Math.round(w * h / 7000);
-  c.globalAlpha = id === 'space' ? 0.85 : 0.3;
-  for (let i = 0; i < count; i++) motif(c, rng() * w, rng() * h, 14 + rng() * 22, i);
-  c.globalAlpha = 1;
-  // ground shapes for a few themes
-  if (id === 'ocean') { c.fillStyle = 'rgba(255,255,255,.35)'; c.beginPath(); c.moveTo(0, h); for (let x = 0; x <= w + 40; x += 40) c.lineTo(x, h - 40 - Math.sin(x / 50) * 10); c.lineTo(w, h); c.fill(); }
-  if (id === 'farm' || id === 'dinos' || id === 'bugs' || id === 'sports') { c.fillStyle = 'rgba(64,140,40,.25)'; c.beginPath(); c.ellipse(w * 0.25, h + 40, w * 0.6, 140, 0, 0, TAU); c.ellipse(w * 0.85, h + 60, w * 0.5, 150, 0, 0, TAU); c.fill(); }
-  // two big mascots peeking in from the corners
-  const big = Math.max(110, Math.min(w, h) * 0.34), art = ART[id] || ART.surprise;
-  c.save(); c.globalAlpha = 0.92; c.translate(big * 0.42, h - big * 0.38); c.rotate(-0.12); art(c, big); c.restore();
-  c.save(); c.globalAlpha = 0.92; c.translate(w - big * 0.4, big * 0.42); c.rotate(0.15); art(c, big * 0.8); c.restore();
-}
+const later = (ms, fn) => Oomba.time.real.after(ms, fn);   // the real clock: messages and the results keep going while a menu is open
 
 /* =====================================================================================
    Sound + speech (speechSynthesis may be missing: every use is guarded)
    ===================================================================================== */
-function sfx(name) { try { BRB.sfx.play(name); } catch (e) { /* ignore */ } }
 /* Voices: BRB.speak picks the most natural voice for the language and speaks at the normal pitch.
    The game needs the SDK (it is always there on Oomba Academy). With an older SDK that has no BRB.speak, nothing is
    spoken (the word is shown instead): a lang-only utterance would let the browser pick a voice itself, often its
@@ -1252,11 +1289,11 @@ function say(text, queue) { return speakLine(text, 'en-US', CONFIG.speechRate, q
 /** Says a message in the menu language. Placeholders named in enKeys are English words: they get the English voice.
     With no voice on the device for the menu language, only the English words are spoken. */
 function sayT(key, vars = {}, enKeys = ['w', 'l']) {
-  if (IS_EN) return speakLine(t(key, vars), LANG, CONFIG.talkRate, false);
+  if (IS_EN) return speakLine(tPlain(key, vars), LANG, CONFIG.talkRate, false);
   const local = Object.assign({}, vars); enKeys.forEach(k => { delete local[k]; });
   let first = true, any = false;
   const go = (text, lang) => { if (speakLine(text, lang, CONFIG.talkRate, !first)) any = true; first = false; };
-  t(key, local).split(/(\{\w+\})/).forEach(seg => {
+  tPlain(key, local).split(/(\{\w+\})/).forEach(seg => {
     const m = /^\{(\w+)\}$/.exec(seg);
     if (m) { if (vars[m[1]] != null) go(String(vars[m[1]]), 'en-US'); }
     else if (/\p{L}/u.test(seg)) go(seg.replace(/^[\s\p{P}]+/u, '').trim(), LANG);
@@ -1268,13 +1305,13 @@ function stopSpeaking() {
   clearReadTimers();
 }
 let readTimers = [];
-function clearReadTimers() { readTimers.forEach(clearTimeout); readTimers = []; document.querySelectorAll('.wchip.speaking').forEach(b => b.classList.remove('speaking')); }
+function clearReadTimers() { readTimers.forEach(c => c()); readTimers = []; document.querySelectorAll('.wchip.speaking').forEach(b => b.classList.remove('speaking')); }
 
 /* =====================================================================================
    Starting a puzzle
    ===================================================================================== */
 function startPuzzle(opts = {}) {
-  let theme = opts.theme || S.pickTheme, difficulty = LEVEL_IDS.includes(opts.difficulty) ? opts.difficulty : S.difficulty;
+  let theme = String(opts.theme || S.pickTheme).toLowerCase(), difficulty = LEVEL_IDS.includes(opts.difficulty) ? opts.difficulty : S.difficulty;
   let seed = opts.seed != null ? (opts.seed >>> 0) : randSeed(), daily = !!opts.daily;
   if (daily) { const d = dailyFor(todayStr()); theme = d.theme; difficulty = d.difficulty; seed = d.seed; }
   if (theme === 'surprise' || !THEME_BY_ID[theme]) {   // "Surprise me": a different theme from last time
@@ -1282,7 +1319,7 @@ function startPuzzle(opts = {}) {
   }
   let p = generatePuzzle(theme, difficulty, seed);
   while (!p) { seed = (seed + 1) >>> 0; p = generatePuzzle(theme, difficulty, seed); }   // (never needed; belt and braces)
-  stopSpeaking();
+  stopSpeaking(); closeTitle(); dismissKitPause();
   if (opts.race === 'new') S.race = { turn: 0, results: [] };
   else if (opts.race !== 'next') S.race = null;
   if (S.race) daily = false;
@@ -1290,37 +1327,36 @@ function startPuzzle(opts = {}) {
     words: p.words.map((w, i) => Object.assign({}, w, { found: false, band: -1, idx: i })),
     found: 0, timeMs: 0, hintsUsed: 0, done: false, paused: false, pending: null, drag: null, cursor: [0, 0], hint: null,
     bands: [], fails: [], parts: [], lastPoints: 0 });
-  applyThemeColours(theme);
-  $('titleScreen').hidden = true; $('resultsScreen').hidden = true; $('pauseScreen').hidden = true;
+  Oomba.scene = 'play';
+  applyThemeColours(theme); setWorld(theme);
+  cancelResults();
+  $('resultsScreen').hidden = true;
   $('app').classList.remove('offstage', 'over', 'paused');
-  const racer = S.race ? [CONFIG.race.players[S.race.turn][0], playerName(S.race.turn)] : null;
-  $('themeName').textContent = racer ? racer[0] + ' ' + racer[1] + ' · ' + themeName(theme) : (daily ? '📅 ' : '') + themeName(theme);
+  const racer = S.race ? playerName(S.race.turn) : null;
+  $('themeName').textContent = racer ? racer + ' · ' + themeName(theme) : themeName(theme);
+  if (daily) $('themeName').insertAdjacentHTML('afterbegin', icon('flag') + ' ');
+  putPic($('hudArt'), S.race ? RACERS[S.race.turn] : WORLD(theme).pic, 40);
   buildWordList();
   $('hintCost').textContent = '−' + CONFIG.hintCost;
-  paintBackground(); layout(); updateHud(true);
-  paintArt($('hudArt'), theme, 40, 40, { scale: 0.95 });
-  sfx('powerup');
-  if (racer) toast(t('raceGo', { p: racer[0] + ' ' + racer[1], n: S.words.length }), 2400);
-  else if (save.seenHelp < 2) { toast(t('toastHelp'), 3800); save.seenHelp++; persist(); }
-  else toast(t('toastFind', { n: S.words.length, theme: IS_EN ? themeName(theme).toLowerCase() : themeName(theme) }), 2000);
+  layout(); updateHud(true);
+  sfx('whoosh');
+  if (racer) toast(tHtml('raceGo', { p: racer, n: S.words.length }), 2400);
+  else if (save.seenHelp < 2) { toast(tHtml('toastHelp'), 3800); save.seenHelp++; persist(); }
+  else toast(tHtml('toastFind', { n: S.words.length, theme: IS_EN ? themeName(theme).toLowerCase() : themeName(theme) }), 2000);
   lastTick = performance.now(); dirty = true;
   focusIfKeys(gridCv);
 }
-function applyThemeColours(id) {
-  const th = THEME_BY_ID[id]; if (!th) return; const st = document.documentElement.style;
-  accCache = null;   // the drag band colour follows the theme
-  st.setProperty('--th1', th.sky[0]); st.setProperty('--th2', th.sky[1]); st.setProperty('--acc', th.acc[0]); st.setProperty('--accDark', th.acc[1]); st.setProperty('--accSoft', th.acc[2]);
-}
 
 /* ---------- the word list (real buttons, so screen readers can read it; a tap reads the word aloud) ---------- */
+const CHECK = Oomba.icon('check');
 function buildWordList() {
   const ul = $('words'); ul.innerHTML = ''; ul.classList.toggle('many', S.words.length > 8);
   S.words.forEach((w, i) => {
     const li = document.createElement('li'), b = document.createElement('button');
     b.className = 'wchip'; b.dataset.i = i; b.dir = 'ltr';   // the words are English
-    b.innerHTML = '<span class="em" aria-hidden="true">' + w.emoji + '</span><span class="w">' + w.word + '</span>';
+    b.innerHTML = '<span class="em" aria-hidden="true">' + w.emoji + '</span><span class="w">' + w.word + '</span><span class="tick" aria-hidden="true">' + CHECK + '</span>';
     b.setAttribute('aria-label', t('chipNotFound', { w: w.word.toLowerCase() }));
-    b.addEventListener('click', () => { if (!say(w.say)) toast('🔈 ' + w.word); sfx('click'); b.classList.remove('pop'); void b.offsetWidth; if (!REDUCED) b.classList.add('pop'); });
+    b.addEventListener('click', () => { if (!say(w.say)) toast(icon('speak') + ' ' + esc(w.word)); sfx('select'); if (!REDUCED) { try { Oomba.juice.pop(b); } catch (e) { /* ignore */ } } });
     li.appendChild(b); ul.appendChild(li);
   });
 }
@@ -1333,25 +1369,25 @@ let cell = 40;            // CSS pixels per letter box
 const gridCv = $('grid'), gctx = gridCv.getContext('2d');
 function layout() {
   if (S.screen === 'title') return;
-  const wrap = $('boardWrap'), W = wrap.clientWidth, H = wrap.clientHeight, pad = 5 * 2 + 8;   // card padding + the white ring
+  const wrap = $('boardWrap'), W = wrap.clientWidth, H = wrap.clientHeight, pad = 5 * 2 + 6 + 8;   // card padding + border + its shadow
   const n = S.n;
   cell = Math.max(18, Math.min(CONFIG.maxCellPx, Math.floor((Math.min(W, H) - pad) / n)));
   const side = cell * n, dpr = Math.min(3, window.devicePixelRatio || 1);
   gridCv.style.width = side + 'px'; gridCv.style.height = side + 'px';
   gridCv.width = Math.round(side * dpr); gridCv.height = Math.round(side * dpr);
   gctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  const card = $('card'), cw = side + 10;
-  const wide = innerWidth >= innerHeight * 1.25;
+  const card = $('card'), cw = side + 16;
   card.style.left = Math.max(4, Math.round((W - cw) / 2)) + 'px';
-  card.style.top = Math.max(4, wide ? Math.round((H - cw) / 2) : Math.round((H - cw) / 2)) + 'px';
+  card.style.top = Math.max(8, Math.round((H - cw - 6) / 2)) + 'px';
   dirty = true; draw(performance.now());
 }
 
 /* =====================================================================================
-   Drawing the grid: paper, found-word bands (colour + pattern + outline), the drag band, letters, hint glow, sparkles
+   Drawing the grid: paper, found-word bands (colour + pattern + outline), the drag band, letters, hint glow, sparks
    ===================================================================================== */
 let dirty = true;
 const center = (r, c) => [(c + 0.5) * cell, (r + 0.5) * cell];
+const rgba = (hex, a) => { const n = parseInt(String(hex).slice(1, 7), 16); return 'rgba(' + (n >> 16 & 255) + ',' + (n >> 8 & 255) + ',' + (n & 255) + ',' + a + ')'; };
 function capsulePath(c, len, rad) {   // a rounded band along the x axis from 0 to len (local, rotated coordinates)
   c.beginPath(); c.arc(0, 0, rad, Math.PI / 2, Math.PI * 1.5); c.arc(len, 0, rad, -Math.PI / 2, Math.PI / 2); c.closePath();
 }
@@ -1379,10 +1415,10 @@ function drawBand(c, b, t) {
   cap.done();
 }
 function draw(t) {
-  const n = S.n, side = cell * n, c = gctx;
+  const n = S.n, side = cell * n, c = gctx, ink = inkColour();
   c.clearRect(0, 0, side, side);
   // paper: faint dots between the letter boxes
-  c.fillStyle = 'rgba(35,50,74,.12)';
+  c.fillStyle = rgba(ink.length === 7 ? ink : C('ink'), 0.14);
   for (let r = 1; r < n; r++) for (let k = 1; k < n; k++) { c.beginPath(); c.arc(k * cell, r * cell, Math.max(1.2, cell * 0.035), 0, TAU); c.fill(); }
   // found-word bands
   for (const b of S.bands) drawBand(c, b, t);
@@ -1391,7 +1427,7 @@ function draw(t) {
   for (const f of S.fails) {
     const k = (t - f.born) / 520, wob = REDUCED ? 0 : Math.sin(k * 30) * (1 - k) * cell * 0.08;
     const [x1, y1] = center(f.start[0], f.start[1]), [x2, y2] = center(f.end[0], f.end[1]);
-    const cap = capsule(c, x1 + wob, y1, x2 + wob, y2, cell * 0.4); c.globalAlpha = 0.45 * (1 - k); c.fillStyle = '#868e96'; c.fill(); c.globalAlpha = 1; cap.done();
+    const cap = capsule(c, x1 + wob, y1, x2 + wob, y2, cell * 0.4); c.globalAlpha = 0.45 * (1 - k); c.fillStyle = C('stone'); c.fill(); c.globalAlpha = 1; cap.done();
   }
   // the band that follows your finger / mouse (or the keyboard cursor after the first Enter)
   let sel = null;
@@ -1405,32 +1441,38 @@ function draw(t) {
   // tap-tap: the first letter waits with a soft ring (a slow, gentle pulse)
   if (S.pending) {
     const [x, y] = center(S.pending[0], S.pending[1]), pulse = REDUCED ? 0 : (Math.sin(t / 380) + 1) * 0.5;
-    c.globalAlpha = 0.35; circ(c, x, y, cell * 0.44, getAcc()); c.globalAlpha = 1;
-    c.strokeStyle = getAcc(); c.lineWidth = Math.max(2.5, cell * 0.08); circ(c, x, y, cell * (0.42 + pulse * 0.06)); c.stroke();
+    c.globalAlpha = 0.35; c.fillStyle = getAcc(); c.beginPath(); c.arc(x, y, cell * 0.44, 0, TAU); c.fill(); c.globalAlpha = 1;
+    c.strokeStyle = getAcc(); c.lineWidth = Math.max(2.5, cell * 0.08); c.beginPath(); c.arc(x, y, cell * (0.42 + pulse * 0.06), 0, TAU); c.stroke();
   }
-  // hint: a warm glow on the first letter, pulsing slowly for 3 seconds, then staying soft until the word is found
+  // hint: a warm spark glow on the first letter, pulsing slowly for 3 seconds, then staying soft until the word is found
   if (S.hint && !S.hint.word.found) {
-    const [x, y] = center(S.hint.cell[0], S.hint.cell[1]), age = t - S.hint.t;
+    const [x, y] = center(S.hint.cell[0], S.hint.cell[1]), age = t - S.hint.t, sp = C('spark');
     const pulse = REDUCED || age > 3000 ? 0.5 : (Math.sin(age / 1000 * TAU - Math.PI / 2) + 1) * 0.5;   // one slow pulse per second
     const g = c.createRadialGradient(x, y, cell * 0.1, x, y, cell * (0.55 + pulse * 0.25));
-    g.addColorStop(0, 'rgba(255,212,59,.85)'); g.addColorStop(1, 'rgba(255,212,59,0)');
+    g.addColorStop(0, rgba(sp, 0.9)); g.addColorStop(1, rgba(sp, 0));
     c.fillStyle = g; c.beginPath(); c.arc(x, y, cell * (0.55 + pulse * 0.25), 0, TAU); c.fill();
-    c.strokeStyle = '#f08c00'; c.lineWidth = Math.max(2, cell * 0.07); circ(c, x, y, cell * 0.42); c.stroke();
+    c.strokeStyle = C('ink'); c.lineWidth = Math.max(2, cell * 0.06); c.beginPath(); c.arc(x, y, cell * 0.42, 0, TAU); c.stroke();
   }
-  // letters
-  c.fillStyle = '#23324a'; c.textAlign = 'center'; c.textBaseline = 'middle';
-  c.font = '700 ' + Math.round(cell * 0.6) + 'px Andika, Fredoka, "Trebuchet MS", sans-serif';
-  for (let r = 0; r < n; r++) for (let k = 0; k < n; k++) c.fillText(S.letters[r][k], (k + 0.5) * cell, (r + 0.5) * cell + cell * 0.03);
+  // letters (the kit's font, Ink on the paper; light letters at night)
+  c.fillStyle = ink; c.textAlign = 'center'; c.textBaseline = 'middle';
+  c.font = '700 ' + Math.round(cell * 0.62) + 'px ' + letterFont();
+  for (let r = 0; r < n; r++) for (let k = 0; k < n; k++) c.fillText(S.letters[r][k], (k + 0.5) * cell, (r + 0.5) * cell + cell * 0.04);
   // keyboard cursor
   if (S.kb && document.activeElement === gridCv) {
-    const [r, k] = S.cursor; c.strokeStyle = '#23324a'; c.lineWidth = 3; c.beginPath(); c.roundRect ? c.roundRect(k * cell + 2, r * cell + 2, cell - 4, cell - 4, cell * 0.25) : c.rect(k * cell + 2, r * cell + 2, cell - 4, cell - 4); c.stroke();
+    const [r, k] = S.cursor; c.strokeStyle = ink; c.lineWidth = 3; c.beginPath(); c.roundRect ? c.roundRect(k * cell + 2, r * cell + 2, cell - 4, cell - 4, cell * 0.25) : c.rect(k * cell + 2, r * cell + 2, cell - 4, cell - 4); c.stroke();
   }
-  // sparkles
-  for (const p of S.parts) { const k = (t - p.born) / p.life; if (k >= 1) continue; const x = p.x + p.vx * k * 60, y = p.y + p.vy * k * 60 + 40 * k * k; c.globalAlpha = 1 - k; star5(c, x, y, p.s * (1 - k * 0.5), p.col); }
+  // sparks flying off a found word (the kit's spark shape)
+  for (const p of S.parts) {
+    const k = (t - p.born) / p.life; if (k < 0 || k >= 1) continue;
+    const x = p.x + p.vx * k * 60, y = p.y + p.vy * k * 60 + 40 * k * k;
+    c.globalAlpha = 1 - k; try { Oomba.draw.spark(c, x, y, p.s * (1 - k * 0.5), { fill: p.col }); } catch (e) { /* ignore */ }
+  }
   c.globalAlpha = 1;
   S.parts = S.parts.filter(p => t - p.born < p.life);
 }
-function getAcc() { if (!accCache) accCache = getComputedStyle(document.documentElement).getPropertyValue('--acc').trim() || '#e8590c'; return accCache; }
+// The letters use Andika, a face made for early readers (every letter distinct: its Q has a real tail), then the kit's.
+let fontCache = '';
+function letterFont() { if (!fontCache) fontCache = 'Andika, ' + ((getComputedStyle(Oomba.ui.root()).getPropertyValue('--ok-font') || '').trim() || 'system-ui, sans-serif'); return fontCache; }
 
 /* =====================================================================================
    Selecting words
@@ -1446,15 +1488,16 @@ function trySelect(a, b) {
   const same = (p, q) => p[0] === q[0] && p[1] === q[1];
   const w = S.words.find(x => (same(x.start, a) && same(x.end, b)) || (same(x.start, b) && same(x.end, a)));
   if (w && !w.found) { markFound(w); return true; }
-  if (w && w.found) { toast(t('already', { w: isoEn(w.word) })); sfx('click'); return false; }
+  if (w && w.found) { toast(tHtml('already', { w: isoEn(w.word) })); sfx('select'); return false; }
   // not a word: grey band that wobbles away, gently
   S.fails.push({ start: a, end: b, born: performance.now() });
   const letters = cellsOf(a, b).map(([r, c]) => S.letters[r][c]).join('');
-  toast(letters.length > 2 ? t('notOnList', { w: isoEn(letters) }) : t('longer'), 1600);
-  sfx('click'); dirty = true;
-  try { BRB.fx.shake($('card'), 3); } catch (e) { /* ignore */ }   // a small, gentle wobble (skipped for reduced motion)
+  toast(letters.length > 2 ? tHtml('notOnList', { w: isoEn(letters) }) : tHtml('longer'), 1600);
+  sfx('pop', { volume: 0.6 }); dirty = true;
+  if (!REDUCED && !fast) { try { Oomba.juice.shake(0.3, $('card')); } catch (e) { /* ignore */ } }   // a small, gentle wobble
   return false;
 }
+const SPARKS = ['spark', 'coral', 'sky', 'mint', 'grape'];
 function markFound(w) {
   const now = performance.now();
   w.found = true; w.band = S.found; S.found++;
@@ -1463,20 +1506,21 @@ function markFound(w) {
   const chip = chipFor(w);
   if (chip) {
     const [fill, dark] = CONFIG.bands[w.band % CONFIG.bands.length];
-    chip.style.setProperty('--band', fill + '66'); chip.style.setProperty('--bandDark', dark);
-    chip.classList.add('found'); chip.classList.remove('hinted', 'pop'); void chip.offsetWidth; if (!REDUCED) chip.classList.add('pop');
+    chip.style.setProperty('--band', rgba(fill, 0.42)); chip.style.setProperty('--bandDark', dark);
+    chip.classList.add('found'); chip.classList.remove('hinted');
+    if (!REDUCED && !fast) { try { Oomba.juice.pop(chip); } catch (e) { /* ignore */ } }
     chip.setAttribute('aria-label', t('chipFound', { w: w.word.toLowerCase() }));
   }
-  // sparkles along the word
+  // sparks along the word
   if (!REDUCED && !fast) for (const [r, c] of cellsOf(w.start, w.end)) for (let i = 0; i < 3; i++) {
     const [x, y] = center(r, c), a = Math.random() * TAU, sp = 0.4 + Math.random() * 0.8;
-    S.parts.push({ x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 0.4, s: cell * (0.12 + Math.random() * 0.1), col: ['#ffd43b', '#ff8787', '#74c0fc', '#69db7c', '#da77f2'][i % 5], born: now + Math.random() * 120, life: 650 });
+    S.parts.push({ x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 0.4, s: cell * (0.14 + Math.random() * 0.1), col: C(SPARKS[i % SPARKS.length], 'light'), born: now + Math.random() * 120, life: 650 });
   }
   const last = S.found === S.words.length;
-  sfx(last ? 'win' : 'coin');
+  sfx(last ? 'win' : 'spark', { pitch: 1 + Math.min(0.5, S.found * 0.06) });
   if (!last) {
     const cheers = raw('cheers');
-    toast(w.emoji + ' ' + isoEn(w.word + '!') + ' ' + cheers[Math.floor(Math.random() * cheers.length)], 1500);
+    toast(esc(w.emoji + ' ' + isoEn(w.word + '!') + ' ' + cheers[Math.floor(Math.random() * cheers.length)]), 1500);
     if (!BRB.sfx.muted) say(w.say);
   }
   updateHud(true); dirty = true;
@@ -1533,10 +1577,10 @@ gridCv.addEventListener('pointercancel', e => endDrag(e, true));
 gridCv.addEventListener('lostpointercapture', e => { if (S.drag && S.drag.id === e.pointerId) endDrag(e, false); });
 /** Tap-tap selection: first tap marks the first letter, second tap (in a straight line) picks the last letter. */
 function tapCell(rc) {
-  if (!S.pending) { S.pending = rc; sfx('click'); toast(t('tapLast'), 1300); dirty = true; return; }
+  if (!S.pending) { S.pending = rc; sfx('select'); toast(tHtml('tapLast'), 1300); dirty = true; return; }
   const a = S.pending;
   if (a[0] === rc[0] && a[1] === rc[1]) { S.pending = null; dirty = true; return; }   // tap the same letter again to cancel
-  if (!inLine(a, rc)) { S.pending = rc; sfx('click'); toast(t('straight'), 1500); dirty = true; return; }
+  if (!inLine(a, rc)) { S.pending = rc; sfx('select'); toast(tHtml('straight'), 1500); dirty = true; return; }
   S.pending = null; trySelect(a, rc); dirty = true;
 }
 
@@ -1545,23 +1589,23 @@ gridCv.addEventListener('keydown', e => {
   if (S.screen !== 'play' || S.done) return;
   const k = e.key, mv = { ArrowUp: [-1, 0], ArrowDown: [1, 0], ArrowLeft: [0, -1], ArrowRight: [0, 1] }[k];
   if (mv) {
-    e.preventDefault(); S.kb = true;
+    e.preventDefault(); e.stopPropagation(); S.kb = true;
     S.cursor = [Math.max(0, Math.min(S.n - 1, S.cursor[0] + mv[0])), Math.max(0, Math.min(S.n - 1, S.cursor[1] + mv[1]))];
     announce(t('kbCell', { r: S.cursor[0] + 1, c: S.cursor[1] + 1, l: S.letters[S.cursor[0]][S.cursor[1]] }));
     dirty = true; return;
   }
   if (k === 'Enter' || k === ' ') {
-    e.preventDefault(); S.kb = true;
-    if (!S.pending) { S.pending = S.cursor.slice(); sfx('click'); announce(t('kbFirst', { l: S.letters[S.cursor[0]][S.cursor[1]] })); }
+    e.preventDefault(); e.stopPropagation(); S.kb = true;
+    if (!S.pending) { S.pending = S.cursor.slice(); sfx('select'); announce(t('kbFirst', { l: S.letters[S.cursor[0]][S.cursor[1]] })); }
     else if (S.pending[0] === S.cursor[0] && S.pending[1] === S.cursor[1]) { S.pending = null; announce(t('kbCancel')); }
-    else if (!inLine(S.pending, S.cursor)) { announce(t('kbNotStraight')); sfx('click'); }
+    else if (!inLine(S.pending, S.cursor)) { announce(t('kbNotStraight')); sfx('select'); }
     else { const a = S.pending; S.pending = null; trySelect(a, S.cursor.slice()); }
     dirty = true;
   }
 });
 gridCv.addEventListener('focus', () => { dirty = true; });
 gridCv.addEventListener('blur', () => { dirty = true; });
-function announce(text) { toast(text, 1800); }
+function announce(text) { toast(esc(text), 1800); }
 
 /* =====================================================================================
    HUD, toast, hint, read-aloud
@@ -1570,14 +1614,15 @@ let lastShownSec = -1;
 function updateHud(force) {
   const sec = Math.floor(S.timeMs / 1000);
   if (!force && sec === lastShownSec) return; lastShownSec = sec;
-  const count = t('count', { a: S.found, b: S.words.length });
-  $('hudSub').textContent = (save.relax && !S.race ? '🌿 ' + t('relax') : '⏱ \u2066' + fmtTime(S.timeMs) + '\u2069') + ' · ✅ ' + count;
+  const count = esc(t('count', { a: S.found, b: S.words.length }));
+  $('hudSub').innerHTML = (save.relax && !S.race ? esc(t('relax')) : icon('timer') + '<span dir="ltr">' + fmtTime(S.timeMs) + '</span>') + ' · ' + icon('check') + count;
 }
 let toastTimer = null;
-function hideToast() { clearTimeout(toastTimer); $('toast').classList.remove('show'); }
-function toast(text, ms = 1800) {
-  const el = $('toast'); el.textContent = text; el.classList.add('show'); el.classList.toggle('long', text.length > 48);
-  clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove('show'), ms);
+function hideToast() { if (toastTimer) toastTimer(); toastTimer = null; $('toast').classList.remove('show'); }
+/** Shows a message over the HUD's middle pill. html: already escaped (tHtml / esc). */
+function toast(html, ms = 1800) {
+  const el = $('toast'); el.innerHTML = html; el.classList.add('show'); el.classList.toggle('long', el.textContent.length > 48);
+  if (toastTimer) toastTimer(); toastTimer = later(ms, () => el.classList.remove('show'));
 }
 function useHint() {
   if (S.screen !== 'play' || S.done) return null;
@@ -1587,7 +1632,7 @@ function useHint() {
   w.hinted = true; S.hintsUsed++;
   S.hint = { word: w, cell: w.start, t: performance.now() };
   const chip = chipFor(w); if (chip) chip.classList.add('hinted');
-  toast(t('hintToast', { e: w.emoji, w: isoEn(w.word), l: isoEn(w.word[0]) }), 2600);
+  toast(tHtml('hintToast', { e: w.emoji, w: isoEn(w.word), l: isoEn(w.word[0]) }), 2600);
   sfx('powerup'); if (!BRB.sfx.muted) sayT('hintSay', { w: w.say, l: w.word[0] });
   dirty = true;
   return { word: w.word, cell: w.start.slice() };
@@ -1596,23 +1641,43 @@ $('hintBtn').addEventListener('click', useHint);
 function readWords() {
   const left = S.words.filter(w => !w.found), list = left.length ? left : S.words;
   stopSpeaking();
-  if (!canSpeak()) { toast(t('noTalk'), 2200); sfx('click'); }
+  if (!canSpeak()) { toast(esc(t('noTalk')), 2200); sfx('select'); }
   list.forEach((w, i) => {
-    readTimers.push(setTimeout(() => {
+    readTimers.push(later(i * 1100, () => {
       document.querySelectorAll('.wchip.speaking').forEach(b => b.classList.remove('speaking'));
       const chip = chipFor(w); if (chip) chip.classList.add('speaking');
       say(w.say, true);
-    }, i * 1100));
+    }));
   });
-  readTimers.push(setTimeout(clearReadTimers, list.length * 1100 + 400));
+  readTimers.push(later(list.length * 1100 + 400, clearReadTimers));
   return list.map(w => w.word);
 }
-$('readBtn').addEventListener('click', () => { sfx('click'); readWords(); });
+$('readBtn').addEventListener('click', () => { sfx('select'); readWords(); });
 
 /* =====================================================================================
-   Finishing a puzzle: points, stars, saving, streak, results screen
+   Finishing a puzzle: points, stars, saving, streak, results card
    ===================================================================================== */
 let resultsTimer = null;
+function cancelResults() { if (resultsTimer) resultsTimer(); resultsTimer = null; }
+/** The results card's picture: kit pictures by name (the theme's) or characters (the racers, cheering). */
+function setResArt(list) { const a = $('resArt'); a.textContent = ''; list.forEach(([what, mood]) => a.appendChild(picCanvas(what, 112, typeof what === 'string' ? '' : mood))); }
+function setStars(n) {
+  $('resStars').innerHTML = [0, 1, 2].map(i => '<span class="' + (i < n ? 'pop' : 'off') + '" style="animation-delay:' + (i * 0.18) + 's">' + Oomba.icon('star') + '</span>').join('');
+  if (!fast) for (let i = 0; i < n; i++) later(180 * i + 120, () => { if (S.screen === 'results') sfx('spark', { pitch: 1 + i * 0.12 }); });
+}
+function noteLine(html) { const s = document.createElement('span'); s.innerHTML = html; $('resNote').appendChild(s); }
+function setResButtons(next, nextIcon, change, changeIcon) {
+  $('nextBtn').innerHTML = Oomba.icon(nextIcon) + esc(next); $('changeBtn').innerHTML = Oomba.icon(changeIcon) + esc(change);
+}
+function resetResultButtons() { setResButtons(t('nextPuzzle'), 'next', t('changeTheme'), 'home'); }
+function celebrate() { if (!REDUCED && !fast) { try { Oomba.juice.confetti(); } catch (e) { /* ignore */ } } }
+function showResults() {
+  S.screen = 'results'; Oomba.scene = 'results';
+  hideToast(); $('resultsScreen').hidden = false;
+  fitLabels();
+  focusIfKeys($('nextBtn'));
+  Oomba.ui.announce($('resTitle').textContent);
+}
 function finishPuzzle() {
   S.done = true; S.pending = null; S.drag = null; stopSpeaking();
   if (S.race) return finishRaceTurn();
@@ -1627,205 +1692,279 @@ function finishPuzzle() {
   if (newBest) save.best[S.difficulty] = Math.round(S.timeMs);
   save.total += points; save.puzzles++; save.stars += stars;
   save.solved[S.theme] = (save.solved[S.theme] || 0) + 1;
-  let streakMsg = '';
+  let streakKey = null, streakN = 0;
   if (S.daily) {
     const today = todayStr();
     if (save.daily.last !== today) {
       save.daily.streak = save.daily.last === todayStr(-1) ? save.daily.streak + 1 : 1;
       save.daily.last = today; save.daily.bestStreak = Math.max(save.daily.bestStreak, save.daily.streak);
-      streakMsg = save.daily.streak === 1 ? t('streakNew', { n: 1 }) : t('streakRow', { n: save.daily.streak });
-    } else streakMsg = t('alreadyDaily', { n: save.daily.streak });
+      streakKey = save.daily.streak === 1 ? 'streakNew' : 'streakRow';
+    } else streakKey = 'alreadyDaily';
+    streakN = save.daily.streak;
   }
   persist();
   BRB.score.submit(save.total, 'puzzle points');   // the leaderboard label stays English: everyone shares one leaderboard
   BRB.gameOver({ won: true, score: save.total });
   $('app').classList.add('over');
   const show = () => {
-    S.screen = 'results';
+    resetResultButtons();
     $('resTitle').textContent = stars === 3 ? t('resSuper') : t('resAll');
-    $('resStars').innerHTML = [0, 1, 2].map(i => '<span class="' + (i < stars ? 'pop' : 'off') + '" style="animation-delay:' + (i * 0.18) + 's">⭐</span>').join('');
+    setResArt([[WORLD(S.theme).pic]]);
+    setStars(stars);
     $('resStars').setAttribute('aria-label', t('stars', { n: stars }));
-    $('resChips').innerHTML = (save.relax ? '<span class="chip">🌿 ' + t('relax') + '</span>' : '<span class="chip">⏱ <span dir="ltr">' + fmtTime(S.timeMs) + '</span></span>') +
-      '<span class="chip">💡 ' + t('hints', { n: S.hintsUsed }) + '</span><span class="chip good">' + t('plusPoints', { n: points }) + '</span>';
-    const tips = [];
-    if (streakMsg) tips.push(streakMsg);
-    if (newBest && prevBest != null) tips.push(t('newBest', { level: levelName(S.difficulty) }));
-    if (stars < 3 && !streakMsg) tips.push(S.hintsUsed ? t('tipNoHints') : t('tipFaster'));
-    tips.push(t('totalPoints', { n: save.total }));
-    $('resNote').textContent = tips.join('  ·  ');
-    paintArt($('resArt'), S.theme, 120, 80, { bob: true, t: 0 });
-    hideToast(); $('resultsScreen').hidden = false;
-    focusIfKeys($('nextBtn'));
+    $('resChips').innerHTML = (save.relax ? '<span class="chip">' + esc(t('relax')) + '</span>' : '<span class="chip">' + icon('timer') + '<span dir="ltr">' + fmtTime(S.timeMs) + '</span></span>') +
+      '<span class="chip">' + icon('hint') + esc(t('hints', { n: S.hintsUsed })) + '</span><span class="chip good">' + icon('spark') + esc(t('plusPoints', { n: points })) + '</span>';
+    $('resNote').textContent = '';
+    if (streakKey) noteLine(streakKey === 'alreadyDaily' ? esc(tPlain('alreadyDaily', { n: '' })) + ' ' + icon('spark') + esc(fmtN(streakN)) : tHtml(streakKey, { n: streakN }));
+    if (newBest && prevBest != null) noteLine(tHtml('newBest', { level: levelName(S.difficulty) }));
+    if (stars < 3 && !streakKey) noteLine(esc(S.hintsUsed ? t('tipNoHints') : t('tipFaster')));
+    noteLine(tHtml('totalPoints', { n: save.total }));
+    showResults();
     sayT(stars === 3 ? 'saySuper' : 'sayAll');
   };
-  if (!fast) setTimeout(() => BRB.fx.confetti({ colors: CONFIG.bands.map(b => b[0]) }), 300);
-  clearTimeout(resultsTimer);
-  if (fast) show(); else resultsTimer = setTimeout(show, 1100);
+  if (!fast) later(300, celebrate);
+  cancelResults();
+  if (fast) show(); else resultsTimer = later(1100, show);
 }
 /** Race a friend: player 1 solves, passes the phone, player 2 solves the same grid. Fastest wins (each hint adds time). */
 function finishRaceTurn() {
-  const R = S.race, me = [CONFIG.race.players[R.turn][0], playerName(R.turn)];
+  const R = S.race;
   R.results[R.turn] = { timeMs: Math.round(S.timeMs), hints: S.hintsUsed };
   $('app').classList.add('over');
   const total = r => r.timeMs + r.hints * CONFIG.race.hintSeconds * 1000;
-  const line = (i) => { const r = R.results[i], pl = CONFIG.race.players[i]; return '<span class="chip" dir="ltr">' + pl[0] + ' ' + fmtTime(r.timeMs) + (r.hints ? ' + 💡' + r.hints : '') + '</span>'; };
+  const line = i => { const r = R.results[i]; return '<span class="chip" dir="ltr">' + '<i class="face" data-p="' + i + '"></i>' + fmtTime(r.timeMs) + (r.hints ? ' + ' + icon('hint') + r.hints : '') + '</span>'; };
+  const faces = () => document.querySelectorAll('#resChips .face').forEach(f => f.replaceWith(picCanvas(RACERS[+f.dataset.p], 34)));
   let winner = -1;
   if (R.turn === 1) { const a = total(R.results[0]), b = total(R.results[1]); winner = a === b ? 2 : (a < b ? 0 : 1); BRB.gameOver({ won: true, score: save.total }); }
   const show = () => {
-    S.screen = 'results';
     if (R.turn === 0) {
-      $('resTitle').textContent = t('raceDone', { p: me[0] + ' ' + me[1] });
-      $('resStars').innerHTML = '<span>⏱️</span>'; $('resStars').setAttribute('aria-label', t('raceAria'));
-      $('resChips').innerHTML = line(0);
-      $('resNote').textContent = t('passPhone', { p: playerName(1) });
-      $('nextBtn').textContent = '📱 ' + t('pGo', { p: playerName(1) }); $('changeBtn').textContent = '🏠 ' + t('stopRace');
+      $('resTitle').textContent = t('raceDone', { p: playerName(0) });
+      setResArt([[RACERS[0], 'cheer']]);
+      $('resStars').innerHTML = '<span class="tm">' + Oomba.icon('timer') + '</span>'; $('resStars').setAttribute('aria-label', t('raceAria'));
+      $('resChips').innerHTML = line(0); faces();
+      $('resNote').textContent = ''; noteLine(esc(t('passPhone', { p: playerName(1) })));
+      setResButtons(t('pGo', { p: playerName(1) }), 'play', t('stopRace'), 'home');
       sayT('sayPass', { p: playerName(1) }, []);
     } else {
-      const w = winner === 2 ? null : [CONFIG.race.players[winner][0], playerName(winner)];
-      $('resTitle').textContent = winner === 2 ? t('tie') : t('wins', { p: w[0] + ' ' + w[1] });
-      $('resStars').innerHTML = '<span class="pop">🏆</span>'; $('resStars').setAttribute('aria-label', t('raceOver'));
-      $('resChips').innerHTML = line(0) + line(1);
-      $('resNote').textContent = t('hintAdds', { n: CONFIG.race.hintSeconds });
-      $('nextBtn').textContent = '🔁 ' + t('raceAgain'); $('changeBtn').textContent = '🎨 ' + t('changeTheme');
-      if (winner === 2) sayT('tie'); else sayT('sayWins', { p: w[1] }, []);
+      $('resTitle').textContent = winner === 2 ? t('tie') : t('wins', { p: playerName(winner) });
+      setResArt(winner === 2 ? [[RACERS[0], 'cheer'], [RACERS[1], 'cheer']] : [[RACERS[winner], 'cheer']]);
+      $('resStars').innerHTML = '<span class="pop"></span>'; $('resStars').firstChild.appendChild(picCanvas('trophy', 46)); $('resStars').setAttribute('aria-label', t('raceOver'));
+      $('resChips').innerHTML = line(0) + line(1); faces();
+      $('resNote').textContent = ''; noteLine(esc(t('hintAdds', { n: CONFIG.race.hintSeconds })));
+      setResButtons(t('raceAgain'), 'restart', t('changeTheme'), 'home');
+      if (winner === 2) sayT('tie'); else sayT('sayWins', { p: playerName(winner) }, []);
     }
-    paintArt($('resArt'), S.theme, 120, 80, { bob: true, t: 0 });
-    hideToast(); $('resultsScreen').hidden = false; focusIfKeys($('nextBtn'));
+    showResults();
   };
-  if (!fast && R.turn === 1) setTimeout(() => BRB.fx.confetti({ colors: CONFIG.bands.map(b => b[0]) }), 300);
-  clearTimeout(resultsTimer);
-  if (fast) show(); else resultsTimer = setTimeout(show, 1100);
+  if (!fast && R.turn === 1) later(300, celebrate);
+  cancelResults();
+  if (fast) show(); else resultsTimer = later(1100, show);
 }
-function resetResultButtons() { $('nextBtn').textContent = '▶ ' + t('nextPuzzle'); $('changeBtn').textContent = '🎨 ' + t('changeTheme'); }
 $('nextBtn').addEventListener('click', () => {
-  sfx('click');
+  sfx('select');
   if (S.race && S.race.turn === 0 && S.race.results[0]) { S.race.turn = 1; return startPuzzle({ theme: S.theme, difficulty: S.difficulty, seed: S.seed, race: 'next' }); }
-  if (S.race) { resetResultButtons(); return startPuzzle({ theme: S.pickTheme === 'surprise' ? 'surprise' : S.theme, difficulty: S.difficulty, race: 'new' }); }
+  if (S.race) return startPuzzle({ theme: S.pickTheme === 'surprise' ? 'surprise' : S.theme, difficulty: S.difficulty, race: 'new' });
   startPuzzle({ theme: S.daily ? S.theme : S.pickTheme === 'surprise' ? 'surprise' : S.theme, difficulty: S.difficulty });
 });
-$('changeBtn').addEventListener('click', () => { sfx('click'); S.race = null; resetResultButtons(); toTitle(); });
+$('changeBtn').addEventListener('click', () => { sfx('select'); S.race = null; toTitle(); });
 
 /* =====================================================================================
-   Pause, mute, title screen
+   Pause (the kit's pause screen, with the game's note), sound, title screen
    ===================================================================================== */
+let pauseIgnore = false, kitPauseOpen = false;
 function setPaused(on) {
   if (S.screen !== 'play' && S.screen !== 'pause') return;
   if (on && S.done) return;
-  S.paused = on; S.screen = on ? 'pause' : 'play';
-  $('pauseScreen').hidden = !on; $('app').classList.toggle('paused', on);
-  if (on) { stopSpeaking(); S.drag = null; focusIfKeys($('resumeBtn')); }
-  else { lastTick = performance.now(); focusIfKeys(gridCv); }
-  sfx('click');
+  if (on && !S.paused) {
+    S.paused = true; S.screen = 'pause'; Oomba.scene = 'pause'; stopSpeaking(); S.drag = null;
+    $('app').classList.add('paused'); kitPauseOpen = true;
+    Oomba.ui.pause().then(r => {
+      kitPauseOpen = false; updateMute();
+      if (pauseIgnore) { pauseIgnore = false; return; }
+      if (r === 'restart') startPuzzle({ theme: S.theme, difficulty: S.difficulty, seed: S.seed, daily: S.daily, race: S.race ? 'next' : undefined });
+      else if (r === 'quit') toTitle();
+      else resumePlay();
+    });
+    const card = Oomba.ui.root().querySelector('.ok-pause .ok-card');
+    if (card) {
+      const h = card.querySelector('.ok-h2'), note = document.createElement('p'); note.className = 'ok-p'; note.id = 'pauseInfo';
+      note.textContent = t('pausedMsg'); note.style.margin = '0';
+      if (h) { h.textContent = t('paused'); h.after(note); }
+      const resume = card.querySelector('.ok-go'); if (resume) resume.id = 'resumeBtn';
+      // the kit's Quit goes back to the title, where the theme is picked: it says so, as before
+      const quit = [...card.querySelectorAll('.ok-quiet')].pop(); if (quit) { quit.id = 'quitBtn'; [...quit.childNodes].forEach(n => { if (n.nodeType === 3) n.remove(); }); quit.appendChild(document.createTextNode(t('changeTheme'))); }
+    }
+  } else if (!on && S.paused) { dismissKitPause(); resumePlay(true); }
 }
-$('pauseBtn').addEventListener('click', () => setPaused(true));
-$('resumeBtn').addEventListener('click', () => setPaused(false));
-$('quitBtn').addEventListener('click', () => { sfx('click'); toTitle(); });
+function resumePlay(force) {
+  if (!S.paused && !force) return;
+  S.paused = false; S.screen = 'play'; Oomba.scene = 'play';
+  $('app').classList.remove('paused');
+  lastTick = performance.now(); focusIfKeys(gridCv);
+}
+/** Closes the kit's pause screen from code without acting on its result. */
+function dismissKitPause() {
+  if (!kitPauseOpen) return;
+  const b = Oomba.ui.root().querySelector('.ok-pause .ok-go');
+  if (b) { pauseIgnore = true; b.click(); }
+  kitPauseOpen = false;
+}
 document.addEventListener('visibilitychange', () => { if (document.hidden && S.screen === 'play' && !S.done) setPaused(true); });
 addEventListener('keydown', e => {
   if (e.metaKey || e.ctrlKey || e.altKey) return;
   const k = e.key;
   if (k === 'Escape' && S.screen === 'play' && S.pending) { S.pending = null; dirty = true; return; }
-  if ((k === 'p' || k === 'P' || k === 'Escape') && (S.screen === 'play' || S.screen === 'pause')) { e.preventDefault(); setPaused(S.screen === 'play'); }
-});
+  if (S.screen === 'play' && (k === 'p' || k === 'P' || k === 'Escape') && !Oomba.ui.open) { e.preventDefault(); e.stopPropagation(); setPaused(true); return; }
+  if (S.screen === 'pause' && (k === 'p' || k === 'P')) { e.preventDefault(); e.stopPropagation(); setPaused(false); }   // Esc: the kit's pause screen resumes by itself
+}, true);   // capture: the kit's pause screen keeps the keys inside it
+function muteButton() {
+  const b = Oomba.ui.button(t('soundOff'), { kind: 'icon', icon: 'sound', onPress: () => { BRB.sfx.mute(); updateMute(); if (BRB.sfx.muted) stopSpeaking(); else sfx('select'); } });
+  b.classList.add('mute'); return b;
+}
 function updateMute() {
-  document.querySelectorAll('.mute').forEach(b => { b.textContent = BRB.sfx.muted ? '🔇' : '🔊'; b.setAttribute('aria-label', BRB.sfx.muted ? t('soundOn') : t('soundOff')); });
+  document.querySelectorAll('.mute').forEach(b => { b.innerHTML = Oomba.icon(BRB.sfx.muted ? 'mute' : 'sound'); b.setAttribute('aria-label', t(BRB.sfx.muted ? 'soundOn' : 'soundOff')); });
 }
-updateMute();
-document.querySelectorAll('.mute').forEach(b => b.addEventListener('click', () => { BRB.sfx.mute(); updateMute(); sfx('click'); if (BRB.sfx.muted) stopSpeaking(); }));
+{
+  const pause = Oomba.ui.button(t('pause'), { kind: 'icon', icon: 'pause', onPress: () => setPaused(true) }); pause.id = 'pauseBtn';
+  $('hud').prepend(pause); $('toast').before(muteButton());
+  updateMute();
+}
 
-function toTitle() {
-  clearTimeout(resultsTimer); stopSpeaking(); S.race = null; resetResultButtons();
-  S.screen = 'title'; S.paused = false; S.done = false;
-  $('pauseScreen').hidden = true; $('resultsScreen').hidden = true; $('titleScreen').hidden = false;
-  $('app').classList.add('offstage'); $('app').classList.remove('over', 'paused');
-  refreshTitle(); paintBackground();
+/* ---------- the title: the kit's title screen (lockup, the player's character, settings) with the game's card ---------- */
+let titleOpen = false, titleSkip = false;
+/** The title's badge: the kit's magnifying glass and the lion mascot. */
+function badgeCanvas() {
+  const c = document.createElement('div'); c.style.cssText = 'display:flex;align-items:flex-end;gap:4px';
+  c.append(picCanvas('magnifier', 72), picCanvas(CONFIG.mascot, 66));
+  return c;
 }
-function buildThemeButtons() {
-  const box = $('themes');
-  const items = THEMES.map(th => ({ id: th.id, emoji: th.emoji })).concat([{ id: 'surprise', emoji: '🎲' }]).map(it => Object.assign(it, { name: themeName(it.id), short: themeShort(it.id) }));
-  box.innerHTML = items.map(it => '<button data-theme="' + it.id + '" aria-pressed="false" aria-label="' + it.name + '"><span class="te" aria-hidden="true">' + it.emoji + '</span><span class="tn">' + it.short + '</span></button>').join('');
-  box.querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
-    S.pickTheme = b.dataset.theme; save.theme = S.pickTheme; persist(); sfx('click');
-    if (S.pickTheme !== 'surprise') applyThemeColours(S.pickTheme);
-    refreshTitle(); paintBackground();
-  }));
+function openTitle() {
+  if (titleOpen) return; titleOpen = true; S.screen = 'title'; Oomba.scene = 'title';
+  Oomba.ui.title({ title: CONFIG.title, subtitle: t('tag'), titleHue: CONFIG.titleHue, hero: false, badge: badgeCanvas(),
+    play: () => { titleOpen = false; if (!titleSkip) startPuzzle({ theme: S.pickTheme, difficulty: S.difficulty }); } });
+  const scr = [...Oomba.ui.root().querySelectorAll('.ok-title-screen')].pop(); if (!scr) return;
+  const block = scr.querySelector('.ok-title-block'), play = block && block.querySelector('.ok-hot');
+  if (play) play.id = 'playBtn';
+  const card = $('titleTpl').content.firstElementChild.cloneNode(true);
+  const sub = block && block.querySelector('.ok-p');
+  if (sub) { const pr = document.createElement('span'); pr.className = 'practise'; pr.id = 'practise'; pr.textContent = tPlain('practise'); pr.hidden = IS_EN; sub.appendChild(pr); card.prepend(sub); }
+  const cta = block && block.querySelector('.ok-cta'); if (cta) card.querySelector('.playRow').prepend(cta);
+  if (block) block.append(card);
+  wireTitle(card);
+  const corner = scr.querySelector('.ok-corner'); if (corner) corner.prepend(muteButton());
+  // the lion stands in the corner where the kit puts a hero (the kit's hero is a character; ours is a picture)
+  const hero = document.createElement('div'); hero.className = 'ok-title-hero wh-hero';
+  hero.appendChild(picCanvas(CONFIG.mascot, Math.round(Math.min(innerHeight * 0.26, innerWidth * (innerHeight > innerWidth ? 0.36 : 0.15)))));
+  scr.appendChild(hero);
+  refreshTitle(); updateMute(); fitLabels();
+  if (play && usingKeys) play.focus({ preventScroll: true });
+}
+/** Leaves the kit's title screen without its Play action (the daily / race buttons, a test). */
+function closeTitle() { if (!titleOpen) return; const b = $('playBtn'); if (b) { titleSkip = true; b.click(); titleSkip = false; } titleOpen = false; }
+function toTitle() {
+  cancelResults(); stopSpeaking(); dismissKitPause(); S.race = null; resetResultButtons();
+  S.screen = 'title'; S.paused = false; S.done = false; Oomba.scene = 'title';
+  $('resultsScreen').hidden = true;
+  $('app').classList.add('offstage'); $('app').classList.remove('over', 'paused');
+  hideToast();
+  setWorld(S.pickTheme === 'surprise' ? 'surprise' : S.pickTheme); applyThemeColours(S.pickTheme);
+  openTitle();
+}
+function wireTitle(card) {
+  card.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
+  card.querySelectorAll('[data-i18n-aria]').forEach(el => el.setAttribute('aria-label', t(el.dataset.i18nAria)));
+  card.querySelectorAll('[data-icon]').forEach(el => { el.insertAdjacentHTML('afterbegin', Oomba.icon(el.dataset.icon)); });
+  card.querySelectorAll('[data-pic]').forEach(el => {
+    if (el.dataset.pic === 'relax') return putPic(el, 'leaf', 22);
+    el.className = 'lv lvStars'; el.innerHTML = Oomba.icon('star').repeat(CONFIG.levels[el.dataset.pic].stars);   // 1, 2 or 3 stars: how hard
+    const sm = el.closest('button').querySelector('small'); if (sm) sm.prepend(el);
+  });
+  const box = card.querySelector('#themes');
+  THEMES.map(th => th.id).concat(['surprise']).forEach(id => {
+    const b = document.createElement('button'); b.dataset.theme = id; b.setAttribute('aria-pressed', 'false'); b.setAttribute('aria-label', themeName(id));
+    b.appendChild(picCanvas(WORLD(id).pic, 34)); const n = document.createElement('span'); n.className = 'tn'; n.textContent = themeShort(id); b.appendChild(n);
+    b.addEventListener('click', () => {
+      S.pickTheme = id; save.theme = id; persist(); sfx('select');
+      applyThemeColours(id); setWorld(id);
+      refreshTitle();
+      if (!REDUCED) { try { Oomba.juice.pop(b.querySelector('canvas')); } catch (e) { /* ignore */ } }
+    });
+    box.appendChild(b);
+  });
+  card.querySelectorAll('[data-diff]').forEach(b => b.addEventListener('click', () => { S.difficulty = b.dataset.diff; save.difficulty = S.difficulty; persist(); sfx('select'); refreshTitle(); }));
+  card.querySelector('#relaxBtn').addEventListener('click', () => { save.relax = !save.relax; persist(); sfx('select'); refreshTitle(); });
+  card.querySelector('#raceBtn').addEventListener('click', () => { sfx('select'); startPuzzle({ theme: S.pickTheme, difficulty: S.difficulty, race: 'new' }); });
+  card.querySelector('#dailyBtn').addEventListener('click', () => { sfx('select'); startPuzzle({ daily: true }); });
 }
 function refreshTitle() {
+  if (!$('dailyBtn')) return;
   document.querySelectorAll('[data-diff]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.diff === S.difficulty)));
   document.querySelectorAll('[data-theme]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.theme === S.pickTheme)));
   $('relaxBtn').setAttribute('aria-pressed', String(!!save.relax));
-  $('pointsChip').textContent = '⭐ ' + t('points', { n: save.total });
+  $('pointsChip').innerHTML = icon('star') + esc(t('points', { n: save.total }));
   const doneToday = save.daily.last === todayStr(), st = liveStreak();
   $('dailyBtn').classList.toggle('done', doneToday);
-  $('dailyTxt').textContent = doneToday ? '✅ ' + t('dailyDone') : '📅 ' + t('daily');
-  $('streakChip').textContent = st ? '🔥 ' + t('days', { n: st }) : '✨ ' + t('newEveryDay');
+  $('dailyTxt').innerHTML = icon(doneToday ? 'check' : 'flag') + ' ' + esc(tPlain(doneToday ? 'dailyDone' : 'daily'));
+  $('streakChip').innerHTML = icon('spark') + esc(st ? t('days', { n: st }) : tPlain('newEveryDay'));
   $('dailyBtn').setAttribute('aria-label', (doneToday ? t('dailyAriaDone') : t('dailyAriaPlay')) + ' ' + t('streakAria', { n: st }));
-  if (S.pickTheme !== 'surprise') applyThemeColours(S.pickTheme);
   fitLabels();
 }
-document.querySelectorAll('[data-diff]').forEach(b => b.addEventListener('click', () => { S.difficulty = b.dataset.diff; save.difficulty = S.difficulty; persist(); sfx('click'); refreshTitle(); }));
-$('relaxBtn').addEventListener('click', () => { save.relax = !save.relax; persist(); sfx('click'); refreshTitle(); });
-$('playBtn').addEventListener('click', () => { sfx('click'); resetResultButtons(); startPuzzle({ theme: S.pickTheme, difficulty: S.difficulty }); });
-$('raceBtn').addEventListener('click', () => { sfx('click'); resetResultButtons(); startPuzzle({ theme: S.pickTheme, difficulty: S.difficulty, race: 'new' }); });
-$('dailyBtn').addEventListener('click', () => { sfx('click'); resetResultButtons(); startPuzzle({ daily: true }); });
 
 /* =====================================================================================
    Main loop: timer + animations (requestAnimationFrame, time based; the grid only redraws when something changed)
    ===================================================================================== */
-let lastTick = performance.now(), artT = 0;
+let lastTick = performance.now();
 function frame(now) {
   requestAnimationFrame(frame);
   const dt = Math.min(100, now - lastTick); lastTick = now;
   if (S.screen === 'play' && !S.done && !S.paused) { S.timeMs += dt; updateHud(false); }
-  if (S.screen === 'title') {   // the logo bobs gently
-    artT += dt / 1000; paintArt($('titleArt'), S.pickTheme, titleArtSize.w, titleArtSize.h, { lens: true, t: artT });
-  } else if (S.screen === 'results' && !REDUCED) { artT += dt / 1000; paintArt($('resArt'), S.theme, 120, 80, { bob: true, t: artT }); }
-  if (S.screen === 'play' || S.screen === 'results') {
+  if (S.screen === 'play' || S.screen === 'results' || S.screen === 'pause') {
     const animating = S.parts.length || S.fails.length || S.pending || (S.hint && now - S.hint.t < 3200) || S.bands.some(b => now - b.born < 300);
     if (dirty || animating) { dirty = false; draw(now); }
   }
 }
-let titleArtSize = { w: 140, h: 96 };
-function measureTitleArt() { const el = $('titleArt'); titleArtSize = { w: el.clientWidth || 140, h: el.clientHeight || 96 }; }
-function relayout() { measureTitleArt(); paintBackground(); if (S.screen !== 'title') layout(); }
+function relayout() { if (S.screen !== 'title') layout(); }
 addEventListener('resize', relayout);
 if (window.ResizeObserver) { const ro = new ResizeObserver(() => { if (S.screen !== 'title') layout(); }); ro.observe($('boardWrap')); }
-try { if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { dirty = true; relayout(); }); } catch (e) { /* ignore */ }
+Oomba.fonts.ready.then(() => { fontCache = ''; dirty = true; relayout(); fitLabels(); });
+try { document.fonts.load('700 40px Andika').then(() => { dirty = true; }); } catch (e) { /* the kit's font then */ }
 
 /* ---------- language: fill in the page's words, set the reading direction, make long words fit ---------- */
 function applyI18n() {
   try { document.documentElement.lang = LANG; document.documentElement.dir = DIR; } catch (e) { /* ignore */ }
-  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
-  document.querySelectorAll('[data-i18n-aria]').forEach(el => el.setAttribute('aria-label', t(el.dataset.i18nAria)));
-  const pr = $('practise'); pr.textContent = t('practise'); pr.hidden = IS_EN;   // "Practise English words!" for everyone not playing in English
-  document.querySelector('.titlePanel').classList.toggle('hasPractise', !IS_EN);
+  document.querySelectorAll('#game [data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
+  document.querySelectorAll('#game [data-i18n-aria]').forEach(el => el.setAttribute('aria-label', t(el.dataset.i18nAria)));
   resetResultButtons();
 }
 /** Shrinks a label until it fits on one line (German and Russian run long), down to a readable minimum. */
 function fitLabels() {
-  const fit = (el, min) => {
-    el.style.fontSize = ''; if (!el.offsetParent) return;
+  const fit = (el, min, room) => {   // room: px of air a theme name keeps from its tile's edges (measured against the tile)
+    if (!el) return; el.style.fontSize = ''; if (!el.offsetParent) return;
     let fs = parseFloat(getComputedStyle(el).fontSize);
-    while (el.scrollWidth > el.clientWidth + 1 && fs > min) { fs -= 0.5; el.style.fontSize = fs + 'px'; }
+    const box = () => { if (room == null) return el.clientWidth + 1; const p = el.parentNode, cs = getComputedStyle(p); return p.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight) - room; };
+    while (el.scrollWidth > box() && fs > min) { fs -= 0.5; el.style.fontSize = fs + 'px'; }
   };
   document.querySelectorAll('.themes .tn').forEach(el => {
-    el.style.whiteSpace = ''; fit(el, 9.5);
+    el.style.whiteSpace = ''; fit(el, 9, 3);
     if (el.scrollWidth > el.clientWidth + 1) {   // CJK: wrap onto 2 lines (at the marked spot when the name has one)
-      el.style.whiteSpace = 'normal'; el.style.fontSize = '10.5px'; el.style.wordBreak = el.textContent.includes('\u200b') ? 'keep-all' : '';
+      el.style.whiteSpace = 'normal'; el.style.fontSize = '10.5px'; el.style.wordBreak = el.textContent.includes('​') ? 'keep-all' : '';
     }
   });
   document.querySelectorAll('.row button').forEach(el => fit(el, 11));
   fit($('dailyBtn'), 11);
+  fit($('raceBtn'), 11);
+  fit($('nextBtn'), 11); fit($('changeBtn'), 11);
 }
 addEventListener('resize', fitLabels);
-try { if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitLabels); } catch (e) { /* ignore */ }
 
 applyI18n();
-buildThemeButtons(); refreshTitle(); measureTitleArt(); paintBackground(); fitLabels();
+applyThemeColours(S.pickTheme); setWorld(S.pickTheme === 'surprise' ? 'surprise' : S.pickTheme);
+openTitle();
 requestAnimationFrame(frame);
 
 /* =====================================================================================
-   window.__brbTest: hooks for automated play tests (harmless in production).
+   window.__brbTest: hooks for automated play tests (harmless in production). Merged into the kit's own hooks
+   (setTheme, setLang, ...): the game's names win.
      state()        -> { screen, theme, difficulty, seed, daily, grid (row strings), words: [{word, emoji, found, start:[r,c], end:[r,c], dir}],
                          found, timeMs, hintsUsed, done, paused, pending, cell (px), points, stars, race, save }
      start({ theme, difficulty, seed, daily, race })  -> starts a puzzle (theme may be 'surprise'; daily:true = today's daily puzzle;
@@ -1841,14 +1980,14 @@ requestAnimationFrame(frame);
      cellCenter(r, c) -> { x, y } of a letter box in page pixels inside the game frame (for real drag tests)
      daily(date)    -> { theme, difficulty, seed } of the daily puzzle for that date
    ===================================================================================== */
-window.__brbTest = {
+window.__brbTest = Object.assign(window.__brbTest || {}, {
   state() {
     return { screen: S.screen, theme: S.theme, pickTheme: S.pickTheme, difficulty: S.difficulty, seed: S.seed, daily: S.daily,
       grid: S.letters.map(r => r.join('')), words: S.words.map(w => ({ word: w.word, emoji: w.emoji, found: w.found, start: w.start.slice(), end: w.end.slice(), dir: w.dir })),
       found: S.found, timeMs: Math.round(S.timeMs), hintsUsed: S.hintsUsed, done: S.done, paused: S.paused, pending: S.pending ? S.pending.slice() : null,
       cell, points: S.lastPoints, stars: S.lastStars || 0, relax: !!save.relax, race: S.race ? JSON.parse(JSON.stringify(S.race)) : null, save: JSON.parse(JSON.stringify(save)) };
   },
-  start(opts = {}) { resetResultButtons(); startPuzzle(Object.assign({}, opts, { race: opts.race ? 'new' : undefined })); return this.state(); },
+  start(opts = {}) { startPuzzle(Object.assign({}, opts, { race: opts.race ? 'new' : undefined })); return this.state(); },
   next() { $('nextBtn').click(); return this.state(); },
   select(a, b) { return trySelect([a[0], a[1]], [b[0], b[1]]); },
   solveAll() { S.words.filter(w => !w.found).forEach(w => trySelect(w.start, w.end)); return this.state(); },
@@ -1861,5 +2000,5 @@ window.__brbTest = {
   today(d) { todayOverride = d || null; refreshTitle(); return todayStr(); },
   daily(d) { return dailyFor(d || todayStr()); },
   cellCenter(r, c) { const b = gridCv.getBoundingClientRect(); return { x: b.left + (c + 0.5) * cell, y: b.top + (r + 0.5) * cell }; }
-};
+});
 </script>

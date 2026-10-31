@@ -75,7 +75,10 @@ export function validate(kind, spec) {
     s.api = 1;
     s.size = Array.isArray(s.size) && s.size.length === 2 ? [clamp(s.size[0], 320, 3840, 960), clamp(s.size[1], 240, 2160, 540)] : [960, 540];
     s.fit = s.fit === 'letterbox' ? 'letterbox' : 'expand';
-    s.theme = ['light', 'dark'].includes(s.theme) ? s.theme : 'auto';
+    // theme: 'light' | 'dark' | 'auto' (the light/dark mode, as in 1.0), or a named theme ('beach', {name, accent, palette}):
+    // a theme is kept in s.look for the dress pack (kit.useTheme); mode then goes in s.mode
+    const th = s.theme; if (th && !['light', 'dark', 'auto'].includes(th)) s.look = th;
+    s.theme = ['light', 'dark'].includes(s.mode || th) ? s.mode || th : 'auto';
     s.backend = ['paper', 'glaze'].includes(s.backend) ? s.backend : 'auto';
     if (s.howTo && s.howTo.length > 3) { w.push('howTo has more than 3 cards; extra cards dropped'); s.howTo = s.howTo.slice(0, 3); }
     return { spec: s, warnings: w };

@@ -25,7 +25,7 @@ async function open(page, key) {
   const st = await studioState(page, g.id);
   expect(st.current.safety).toBe('pass');
   const tags = await f.evaluate(() => [...document.querySelectorAll('script[src]')].map(s => [s.getAttribute('src'), !!s.integrity, s.crossOrigin]));
-  expect(tags[0][0]).toBe('/vendor/oomba-kit/1.0.0/oomba-kit.js');
+  expect(tags[0][0]).toBe('/vendor/oomba-kit/1.1.0/oomba-kit.js');
   for (const t of tags) expect([t[1], t[2]]).toEqual([true, 'anonymous']);
   await f.evaluate(() => window.__brbTest.start());
   await expect.poll(async () => { const s = await S(frameOf(page)); return s && (s.scene || s.screen); }, { timeout: 15_000 }).toBe('play');

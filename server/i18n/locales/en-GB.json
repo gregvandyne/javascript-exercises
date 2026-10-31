@@ -12,6 +12,18 @@
       "colorHeading": "Colour",
       "colorGroup": "Colour",
       "colorLabel": "Colour {color}"
+    },
+    "character": {
+      "hairColor": "Hair colour",
+      "topColor": "Top colour",
+      "color": "Colour",
+      "accent": "Extra colour",
+      "names": {
+        "hairColor": {
+          "blonde": "Blonde",
+          "stone": "Grey"
+        }
+      }
     }
   },
   "categories": {

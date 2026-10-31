@@ -1,0 +1,29 @@
+{
+  "version": "1.1.0",
+  "api": 1,
+  "files": {
+    "oomba-kit.js": "sha384-GCejMN1YYamlsZNEJw6SRznGmZC2i6tppYwkLt8cv2gI3YTTsZq6l8eyUQuAM8qX",
+    "packs/art-animals.js": "sha384-0kgnnCmovTaNwWnsPFryp1c8kgX7ji/jku0tdAsfRwfiaWP9usy3eBLuIdBsh8jE",
+    "packs/art-biomes.js": "sha384-UVVUeKEbyMD1WPlwhrdiH/sB6bVZpbw7GKz2KoN4VJg/JMMI+hUkvx2Ts03akI3t",
+    "packs/art-biomes-2.js": "sha384-0ad0awdyk2fC5pFpqYc/7EABVSKTEe1ZKo2YB6cvjKZDIDA2mI1+YRUEQhOgXrHs",
+    "packs/art-props.js": "sha384-/RtKQ/ov2WG1EoCt4pJ98rHY07jOZjZ+lia901K+1BfS49MydEROuw7UaInBPHle",
+    "packs/art-school.js": "sha384-tjWzckG1fXZNGAIROedz8rciqX12aec8Bw77p9Pn81hGGnR/2i9HS7cM6023xw0P",
+    "packs/bridge-3d.js": "sha384-XrVZh1TfGin1ajGCc72TzhAxeqUJQM3JI3kI1weHoMgUIV4urBdPtJbZxO7wPOli",
+    "packs/dress.js": "sha384-ZCFgY98YAWY7Tcy+GfJLalmnJukKdzbVpg6j4ZljXuJSYgYzkWSWMPihVW/u8CqH",
+    "packs/style-bold.js": "sha384-k+n1lKA8kY7eQBU96sQUOp6Hb9i7/wDs/mQ3rkJFKRpyeIpcGqF0XDCcCm28Mjp0",
+    "fonts/bricolage-latin.woff2": "sha384-X/jaeJ4W5GX6njFPEfUBZdJHzn5fubPkE+9LDSLSmoJRUtrBMlRU1+5BAHszUiNB",
+    "fonts/bricolage-latin-ext.woff2": "sha384-Ot7IlVGIs2pRGgA5YgE5tJccM1wkGm5cs2e1qkPHXBwCUMF/C0NVXdFYEsrbfv9x",
+    "fonts/OFL.txt": "sha384-JA+iC+Ed3rNRZpoSVhqXkEYWz/2PvbVwINTmNcnUvukL6sqylA/l3Z7FoBpydUJd",
+    "LICENSE": "sha384-n4rpLzt3YyoKHT0579fpVMGQElIGcO9lU4hDXxpGUCgD7GTfc6YxlqR2ZIUXZNym"
+  },
+  "packs": [
+    "art-animals",
+    "art-biomes",
+    "art-biomes-2",
+    "art-props",
+    "art-school",
+    "bridge-3d",
+    "dress",
+    "style-bold"
+  ]
+}

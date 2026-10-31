@@ -1,284 +1,381 @@
 <title>Footy Tycoon</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bungee&family=Nunito:wght@700;800;900&display=swap">
 <style>
-/* Layout: night stadium. 9x9 board ring (32 spaces) framed like the stands, floodlit pitch in the middle holds dice + controls; team sheets below. Single committed dark look. */
-:root{
-  --night:#070b18; --night2:#0f1730; --tile:#141d36; --tile2:#1b2747; --ink:#eef3ff; --muted:#93a2c6; --line:#2c3a63;
-  --grass:#1f8f45; --grass2:#1a7f3d; --chalk:#f4fff6; --gold:#ffd23f; --gold-ink:#1d1606; --neon:#39e58c; --red:#ff4f5e;
-  --display:"Bungee","Impact",system-ui,sans-serif;
-  --body:"Nunito",system-ui,-apple-system,sans-serif;
-  color-scheme:dark;
-}
+/* Footy Tycoon on the Oomba Kit. The kit draws the stadium world behind everything (day, or night in the dark theme),
+   the title lockup, the characters (every footballer is a kit kid in his team's shirt; seat one can play as the
+   player's own Me-page character), the pause and settings screens, icons, buttons, sound and type. This file lays out
+   the game's own pieces in the kit's sticker look (Cream cards, Ink edges): the setup card on the title screen, the
+   HUD (pause, mode, sound), the 10 x 10 board ring with the pitch in the middle (turn, dice, message, Roll, Trade),
+   the team sheets, the popups, the 3D dice, the Trophy Shop and the champions card. On a wide screen the team sheets
+   sit beside the board. Colours come from the kit's variables (--ok-*) and --ft-* set from Oomba.color at start;
+   the group colours and the shop's pitches are the game's own (their names say the colour). */
 [hidden]{display:none!important}
-body{background:var(--night);color:var(--ink);font-family:var(--body);
-  background-image:radial-gradient(60% 40% at 10% -5%,rgba(160,200,255,.22),transparent 70%),radial-gradient(60% 40% at 90% -5%,rgba(160,200,255,.22),transparent 70%),linear-gradient(var(--night2),var(--night) 60%);
-  background-attachment:fixed;
-  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:14px}
-.wrap{max-width:600px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
-.title{display:flex;flex-direction:column;align-items:center;gap:2px}
-.title h1{font:400 clamp(1.9rem,9vw,2.8rem)/1 var(--display);margin:0;letter-spacing:.02em;
-  background:linear-gradient(180deg,#fff 10%,var(--gold) 55%,#e08a00 95%);-webkit-background-clip:text;background-clip:text;color:transparent;
-  filter:drop-shadow(0 3px 0 #5a3500) drop-shadow(0 0 18px rgba(255,210,63,.35))}
-.title small{font:900 .7rem var(--body);letter-spacing:.3em;text-transform:uppercase;color:var(--muted)}
-button{font-family:inherit}
-.btn{font:400 1rem var(--display);letter-spacing:.03em;padding:11px 18px;border-radius:14px;cursor:pointer;border:2px solid var(--line);
-  background:linear-gradient(var(--tile2),var(--tile));color:var(--ink);box-shadow:0 4px 0 #050812,0 0 0 1px rgba(255,255,255,.04) inset}
-.btn.primary{background:linear-gradient(#ffe27a,var(--gold) 50%,#f0a800);color:var(--gold-ink);border-color:#a46a00;box-shadow:0 4px 0 #7a4c00,0 0 22px rgba(255,210,63,.35)}
-.btn:active:not(:disabled){transform:translateY(3px);box-shadow:0 1px 0 #050812}
-.btn:disabled{opacity:.4;cursor:default;box-shadow:none}
-.btn:focus-visible,.tile:focus-visible,.chipbtn:focus-visible,.mode:focus-visible{outline:3px solid var(--neon);outline-offset:2px}
+html,body{height:100%}
+body{margin:0;overflow:hidden;touch-action:manipulation}
+.ft{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;
+  --soft:color-mix(in srgb,var(--ok-text) 68%,transparent);--rim:var(--ft-ink)}
+.ok-night .ft,.ok-night .ft-card{--rim:color-mix(in srgb,var(--ft-cream) 38%,transparent)}
+.ft button,.ft-card button,.ft-pop button{font-family:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.ft button:not(.ok-btn):not(.btn),.ft-card button:not(.ok-btn):not(.btn),.ft-pop button:not(.ok-btn):not(.btn){color:inherit}
+.ft svg,.ft-card svg,.ft-pop svg{display:block}
+.ft .ok-btn.ok-icon{width:48px;min-height:48px;flex:none}
+.wrap{max-width:1180px;margin:0 auto;box-sizing:border-box;
+  padding:max(10px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(16px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))}
+/* sticker surfaces */
+.sk{background:var(--ok-card);color:var(--ok-text);border:3px solid var(--rim);border-radius:20px;box-shadow:0 4px 0 var(--ft-ink)}
+.ok-night .sk{box-shadow:0 4px 0 #000}
+.pill{display:inline-flex;align-items:center;gap:6px;background:var(--ok-card);color:var(--ok-text);border:2.5px solid var(--rim);border-radius:999px;padding:3px 12px;font-weight:800;box-shadow:0 3px 0 var(--ft-ink)}
+.pill svg{width:1.2em;height:1.2em;flex:none}
+.btn{font:inherit;font-weight:800;font-size:1rem;min-height:48px;padding:6px 18px;border-radius:999px;border:2.5px solid var(--ft-ink);background:var(--ft-cream);color:var(--ft-ink)!important;
+  box-shadow:0 4px 0 var(--ft-ink);display:inline-flex;align-items:center;justify-content:center;gap:6px;line-height:1.15;text-align:center}
+.btn.primary{background:var(--ft-spark)}
+.btn.go{background:var(--ft-mint)}
+.btn:active:not(:disabled){transform:translateY(3px);box-shadow:0 1px 0 var(--ft-ink)}
+.btn:disabled{opacity:.45;cursor:default;box-shadow:0 2px 0 var(--ft-ink)}
+.btn svg{width:1.25em;height:1.25em;flex:none}
+.ft :focus-visible,.ft-card :focus-visible,.ft-pop :focus-visible{outline:3px solid var(--ok-focus);outline-offset:2px}
 
-/* setup */
-.panel{background:linear-gradient(var(--tile2),var(--tile));border:2px solid var(--line);border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:14px;
-  box-shadow:0 10px 30px rgba(0,0,0,.4)}
-.panel h2{font:400 1.05rem var(--display);margin:0;color:var(--gold);letter-spacing:.04em}
-.modes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.mode{border:2px solid var(--line);border-radius:16px;background:var(--night2);color:var(--ink);padding:12px 10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
-.mode b{font:400 1.05rem var(--display)}
-.mode span{font-size:.78rem;color:var(--muted);font-weight:800}
+/* ---------- title: the setup card inside the kit's title screen ---------- */
+.ok-ui .ok-title-screen .ok-title-block{max-height:none}
+.ok-ui .ok-title-screen{overflow-y:auto;padding-bottom:16px}
+.ok-ui .ok-title-screen .ok-h1{font-size:clamp(2.4rem,min(11vmin,12vw),5rem)}
+.ft-card{display:flex;flex-direction:column;align-items:stretch;gap:8px;width:min(460px,calc(100vw - 28px));box-sizing:border-box;background:var(--ok-card);color:var(--ok-text);
+  border:3px solid var(--ft-ink);border-radius:26px;box-shadow:0 6px 0 var(--ft-ink);padding:10px 10px 12px;position:relative;z-index:1}
+.ok-night .ft-card{border-color:color-mix(in srgb,var(--ft-cream) 34%,transparent);box-shadow:0 6px 0 black}
+.ok-ui .ok-title-screen .ft-card .ok-p{border:0;box-shadow:none;background:none;padding:0 6px;font-size:1.05rem;max-width:none}
+.ok-title-screen .ft-card .ok-cta{display:flex;justify-content:center}
+.ok-title-screen .ft-card .ok-big{margin-top:2px;min-height:68px;min-width:min(260px,100%)}
+.ok-title-screen .ft-card .ok-cta::before{display:none}
+.lab{font-weight:800;font-size:.9rem;color:var(--soft);margin:2px 6px -2px;text-align:start}
+.modes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.mode{border:2.5px solid var(--ok-line);border-radius:18px;background:var(--ok-bg2);padding:6px;display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center;min-height:48px}
+.mode b{font-size:1.05rem;display:flex;align-items:center;gap:5px}
+.mode b svg{width:1.1em;height:1.1em}
+.mode span{font-size:.82rem;font-weight:700;color:var(--soft)}
 .mode .faces{display:flex}
-.mode .faces div{width:38px;height:38px;border-radius:50%;margin-inline-start:-8px;border:2px solid var(--night2);background:var(--tile2);overflow:hidden}
-.mode .faces div:first-child{margin-inline-start:0}
-.mode[aria-pressed="true"]{border-color:var(--gold);box-shadow:0 0 0 2px var(--gold) inset,0 0 24px rgba(255,210,63,.25);background:linear-gradient(#2a2410,var(--night2))}
-.counts{display:flex;gap:8px}
-.counts .btn{flex:1}
-.counts .btn[aria-pressed="true"]{background:var(--neon);color:#062513;border-color:#0f7a43}
-.names{display:flex;flex-direction:column;gap:8px}
-.namerow{display:flex;gap:10px;align-items:center}
-.pblock{display:flex;flex-direction:column;gap:6px}
-.iconrow{display:flex;gap:6px;overflow-x:auto;padding:2px 2px 4px;scrollbar-width:none}
-.iconrow::-webkit-scrollbar{display:none}
-.iconpick{flex:none;width:36px;height:36px;border-radius:50%;border:2px solid var(--line);background:var(--night2);font-size:1.15rem;line-height:1;cursor:pointer;display:grid;place-items:center;padding:0}
-.iconpick[aria-pressed="true"]{border-color:#fff;background:var(--c);box-shadow:0 0 12px var(--c)}
-.dot.ic{width:32px;height:32px;display:grid;place-items:center;font-size:1.05rem;line-height:1}
-.botbtn{flex:none;font:900 .85rem var(--body);padding:9px 10px;border-radius:12px;border:2px solid var(--line);background:var(--night2);color:var(--muted);cursor:pointer}
-.botbtn[aria-pressed="true"]{background:#7c5cff;border-color:#a78bfa;color:#fff;box-shadow:0 0 14px rgba(124,92,255,.5)}
-.namerow input{flex:1;min-width:0;font:800 1rem var(--body);padding:10px 12px;border-radius:12px;border:2px solid var(--line);background:var(--night2);color:var(--ink)}
-.dot{width:22px;height:22px;border-radius:50%;border:3px solid #fff;flex:none;box-shadow:0 0 10px var(--c,transparent)}
-.rules{margin:0;padding-inline-start:20px;color:var(--muted);font-size:.9rem;line-height:1.45;display:flex;flex-direction:column;gap:3px}
-.rules b{color:var(--ink)}
+.mode .faces img{width:34px;height:34px;border-radius:50%;margin-inline-start:-8px;border:2px solid var(--ok-card);background:var(--ok-card)}
+.mode .faces img:first-child{margin-inline-start:0}
+.mode[aria-pressed="true"]{border-color:var(--ft-ink);background:var(--ft-sky);color:var(--ft-ink);box-shadow:0 3px 0 var(--ft-ink)}
+.mode[aria-pressed="true"] span{color:var(--ft-ink)}
+.counts{display:flex;gap:5px;background:var(--ok-bg2);border:2.5px solid var(--ok-line);border-radius:20px;padding:4px}
+.counts .btn{flex:1;min-height:42px;border:0;box-shadow:none;background:transparent;color:var(--ok-text)!important;font-size:1.1rem}
+.counts .btn[aria-pressed="true"]{background:var(--ft-coral);color:var(--ft-ink)!important;box-shadow:inset 0 0 0 2.5px var(--ft-ink),0 3px 0 var(--ft-ink)}
+.names{display:flex;flex-direction:column;gap:6px}
+.namerow{display:flex;gap:6px;align-items:center;background:var(--ok-bg2);border:2.5px solid var(--ok-line);border-radius:20px;padding:4px}
+.tokbtn{flex:none;width:48px;height:48px;border-radius:50%;border:2.5px solid var(--ft-ink);background:var(--c);display:grid;place-items:center;font-size:1.45rem;line-height:1;padding:0;box-shadow:0 3px 0 var(--ft-ink)}
+.tokbtn img,.tok img,.dot img{width:100%;height:100%;border-radius:50%;display:block}
+.namerow input{flex:1;min-width:0;font:inherit;font-weight:800;font-size:1.05rem;padding:9px 12px;border-radius:15px;border:2.5px solid var(--rim);background:var(--ok-card);color:var(--ok-text);min-height:44px;box-sizing:border-box}
+.namerow input::placeholder{color:var(--soft);opacity:1}
+.botbtn{flex:none;font-weight:800;font-size:.95rem;min-height:44px;padding:4px 10px;border-radius:15px;border:2.5px solid var(--ok-line);background:var(--ok-card);display:inline-flex;align-items:center;gap:5px}
+.botbtn img{width:28px;height:28px;border-radius:50%}
+.botbtn[aria-pressed="true"]{background:var(--ft-grape);border-color:var(--ft-ink);color:var(--ft-ink)!important;box-shadow:0 3px 0 var(--ft-ink)}
+.titlebtns{display:flex;gap:6px;flex-wrap:wrap}
+.titlebtns .btn{flex:1 1 40%;min-height:46px;font-size:.95rem;padding:4px 10px;flex-wrap:wrap;column-gap:4px;row-gap:0}
+.titlebtns .btn>span{white-space:nowrap}
+.titlebtns #resume{flex-basis:100%}
+#shopBadge{opacity:.8}
+@media (min-width:760px) and (min-height:600px){.titlebtns .btn,.titlebtns #resume{flex:1 1 0}}
+.rules{margin:0;padding-inline-start:22px;line-height:1.45;display:flex;flex-direction:column;gap:4px;font-weight:600}
+.rules b{font-weight:800}
+@media (min-width:760px) and (min-height:600px){
+  .ft-card{width:min(760px,calc(100vw - 40px))}
+  .setup{display:grid;grid-template-columns:1fr 1.2fr;gap:10px;align-items:start}
+  .setupL,.setupR{display:flex;flex-direction:column;gap:8px;min-width:0}
+}
+.setup,.setupL,.setupR{display:contents}
+@media (min-width:760px) and (min-height:600px){.setup{display:grid}.setupL,.setupR{display:flex}}
+@media (max-height:740px){.ok-ui .ok-title-screen .ok-title-badge{display:none}}
 
-/* board */
-.stadium{padding:8px;border-radius:20px;background:linear-gradient(145deg,#25335c,#0b1124);box-shadow:0 0 0 2px var(--line),0 18px 40px rgba(0,0,0,.6),0 0 60px rgba(57,229,140,.08)}
-.board{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));grid-template-rows:repeat(10,minmax(0,1fr));
-  aspect-ratio:1;width:100%;max-width:100%;gap:2px;background:#050812;border-radius:12px;overflow:hidden}
-.tile{position:relative;background:linear-gradient(170deg,var(--tile2),var(--tile));border:0;padding:0;color:var(--ink);display:flex;flex-direction:column;
-  align-items:center;justify-content:flex-start;text-align:center;min-width:0;min-height:0;cursor:pointer;overflow:hidden}
-.tile .band{height:12%;width:100%;flex:none;background:var(--g);box-shadow:0 0 8px var(--g)}
-.tile .av{flex:1;min-height:0;width:100%;display:flex;align-items:center;justify-content:center;padding-top:4%}
-.tile .av svg{height:100%;width:auto;max-width:90%}
-.tile .nm{font:900 clamp(.38rem,1.55vw,.66rem)/1 var(--body);padding:1px 1px 3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;letter-spacing:-.02em}
+/* ---------- the game ---------- */
+.hud{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.hud .mid{flex:1;min-width:0;display:flex;justify-content:center}
+.modetag{font-weight:800;font-size:.95rem}
+.layout{display:grid;gap:12px;grid-template-columns:minmax(0,1fr);justify-items:center}
+@media (min-width:900px){.layout{grid-template-columns:auto minmax(260px,340px);align-items:start;justify-items:stretch}}
+.stadium{padding:7px;border-radius:24px;width:min(100%,calc(100vh - 110px),680px);box-sizing:border-box;background:var(--ok-card);border:3px solid var(--rim);box-shadow:0 5px 0 var(--ft-ink)}
+@media (max-width:899px){.stadium{width:min(100%,640px)}}
+.ok-night .stadium{box-shadow:0 5px 0 #000}
+.board{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));grid-template-rows:repeat(10,minmax(0,1fr));aspect-ratio:1;width:100%;gap:2px;border-radius:16px;overflow:hidden;background:var(--ft-ink);direction:ltr}
+.ok-night .board{background:#000}
+.tile{position:relative;background:var(--ok-card);border:0;padding:0;color:var(--ok-text);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;text-align:center;min-width:0;min-height:0;cursor:pointer;overflow:hidden}
+.tile .band{height:13%;width:100%;flex:none;background:var(--g);border-bottom:1.5px solid var(--ft-ink)}
+.tile .av{flex:1;min-height:0;width:100%;display:flex;align-items:center;justify-content:center;padding-top:3%}
+.tile .av img{height:100%;width:auto;max-width:92%;object-fit:contain}
+.tile .nm{font-weight:800;font-size:clamp(.4rem,1.6vw,.68rem);line-height:1;padding:1px 1px 3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 .tile.special{justify-content:center;gap:2px}
-.tile .ic{font-size:clamp(.8rem,3.4vw,1.35rem);line-height:1}
-.tile .ic svg{height:clamp(16px,5.6vw,30px);width:auto}
-.tile.special .nm{font-family:var(--display);font-weight:400;font-size:clamp(.32rem,1.35vw,.56rem);letter-spacing:0}
-.tile.chance{background:linear-gradient(170deg,#3a2f0b,#211a06)}
-.tile.chance .ic{color:var(--gold);font-family:var(--display);text-shadow:0 0 10px var(--gold)}
-.tile.shoot{background:repeating-linear-gradient(45deg,#0f3a22 0 4px,#0c2f1c 4px 8px)}
-.tile.champ{background:linear-gradient(170deg,#2b2350,#17123a)}
-.tile.corner{background:linear-gradient(135deg,#22305a,#121a33)}
-.tile.corner .nm{font-size:clamp(.36rem,1.5vw,.62rem)}
-.tile.owned::after{content:"";position:absolute;inset:0;border:2px solid var(--own);border-radius:2px;pointer-events:none;box-shadow:inset 0 0 10px var(--own)}
-.tile .hurt{position:absolute;top:13%;left:1px;font-size:.55rem}
+.tile .ic{display:grid;place-items:center;line-height:1;font-weight:800}
+.tile .ic svg,.tile .ic img{height:clamp(16px,5.4vw,32px);width:auto}
+.tile.special .nm{font-size:clamp(.34rem,1.4vw,.6rem)}
+.tile.chance{background:var(--ft-sparkT)}
+.tile.chance .ic svg{color:var(--ft-ink)}
+.tile.shoot{background:repeating-linear-gradient(45deg,var(--ft-mintT) 0 4px,var(--ok-card) 4px 8px)}
+.tile.champ{background:var(--ft-grapeT)}
+.tile.corner{background:var(--ft-skyT)}
+.tile.corner .nm{font-size:clamp(.38rem,1.5vw,.64rem)}
+.tile.redcard{background:var(--ft-coralT)}
+.tile.sinbin{background:repeating-linear-gradient(90deg,var(--ok-bg2) 0 6px,var(--ok-line) 6px 9px)}
+.ok-night .tile.shoot,.ok-night .tile.chance,.ok-night .tile.champ,.ok-night .tile.corner,.ok-night .tile.redcard{background:var(--ok-bg2)}
+.ok-night .tile.chance .ic svg{color:var(--ft-spark)}
+.tile.owned::after{content:"";position:absolute;inset:0;border:3px solid var(--own);pointer-events:none}
+.tile .hurt{position:absolute;top:14%;left:1px;width:clamp(9px,2.6vw,15px);height:auto}
+.tile .hurt svg{width:100%;height:auto}
 .tile .toks{position:absolute;left:0;right:0;bottom:2px;display:flex;justify-content:center;gap:1px;z-index:2}
-.tok{width:clamp(13px,3.7vw,21px);height:clamp(13px,3.7vw,21px);border-radius:50%;border:1.5px solid #fff;display:grid;place-items:center;font-size:clamp(7px,2.3vw,12px);line-height:1;box-shadow:0 2px 4px rgba(0,0,0,.6),0 0 8px var(--c)}
+.tok{width:clamp(14px,3.9vw,23px);height:clamp(14px,3.9vw,23px);border-radius:50%;border:2px solid var(--ft-ink);display:grid;place-items:center;font-size:clamp(7px,2.3vw,12px);line-height:1;box-shadow:0 2px 0 var(--ft-ink);box-sizing:border-box}
 .tok.hop{animation:hop .17s ease-out}
 @keyframes hop{50%{transform:translateY(-60%) scale(1.15)}}
-.tile.here{filter:brightness(1.35)}
-
+.tile.here{box-shadow:inset 0 0 0 3px var(--ft-spark)}
+.redc{display:block;width:.62em;height:.86em;background:var(--ft-coral);border:2px solid var(--ft-ink);border-radius:3px;transform:rotate(-8deg);font-size:clamp(16px,5vw,30px)}
+.tile.goalie .band{background:repeating-linear-gradient(90deg,var(--ft-sky) 0 4px,var(--ft-skyD) 4px 8px)}
+.tile .glove{position:absolute;top:12%;right:1px;font-size:clamp(.45rem,1.8vw,.7rem)}
 .pitch{grid-area:2/2/10/10;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(6px,2vw,14px);
-  padding:10px;color:var(--chalk);text-align:center;overflow:hidden;
-  background:radial-gradient(70% 60% at 50% 45%,rgba(255,255,255,.12),transparent 70%),repeating-linear-gradient(90deg,var(--grass) 0 12.5%,var(--grass2) 12.5% 25%)}
+  padding:10px;color:var(--ft-ink);text-align:center;overflow:hidden;background:repeating-linear-gradient(90deg,var(--pitch) 0 12.5%,var(--pitch2) 12.5% 25%)}
 .pitch .lines{position:absolute;inset:0;pointer-events:none}
 .pitch > :not(.lines){position:relative;z-index:1}
-.turnpill{display:flex;align-items:center;gap:8px;background:rgba(5,10,20,.55);border:1px solid rgba(255,255,255,.2);border-radius:999px;padding:5px 14px 5px 6px;
-  font:400 clamp(.75rem,3vw,1rem) var(--display);max-width:100%;backdrop-filter:blur(2px)}
-.turnpill .tok{width:26px;height:26px;flex:none;font-size:15px}
-.turnpill span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.turnpill{display:flex;align-items:center;gap:8px;background:var(--ft-cream);border:2.5px solid var(--ft-ink);border-radius:999px;padding:4px 14px 4px 5px;font-weight:800;font-size:clamp(.8rem,3.2vw,1.1rem);max-width:100%;box-shadow:0 3px 0 var(--ft-ink)}
+.turnpill .tok{width:28px;height:28px;flex:none;font-size:16px}
+.turnpill span{overflow:hidden;white-space:normal;line-height:1.1;text-wrap:balance}
 .minidice{display:flex;gap:8px}
-.mdie{width:clamp(30px,8.5vw,42px);aspect-ratio:1;background:linear-gradient(145deg,#fff,#dfe5ef);border-radius:9px;display:grid;
-  grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:14%;gap:6%;box-shadow:0 4px 0 #9aa6bd,0 6px 12px rgba(0,0,0,.4)}
+.mdie{width:clamp(30px,8.5vw,44px);aspect-ratio:1;background:var(--ft-cream);border:2.5px solid var(--ft-ink);border-radius:10px;display:grid;box-sizing:border-box;
+  grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:12%;gap:6%;box-shadow:0 3px 0 var(--ft-ink)}
 .mdie i,.face i{border-radius:50%}
-.mdie i.on,.face i.on{background:radial-gradient(circle at 35% 35%,#4a5170,#0d1226)}
-.msg{font:900 clamp(.7rem,2.8vw,.95rem)/1.25 var(--body);max-width:88%;min-height:2.5em;text-wrap:balance;text-shadow:0 1px 3px rgba(0,0,0,.6)}
-.pitch .btn{font-size:clamp(1rem,4.4vw,1.35rem);padding:10px 30px}
+.mdie i.on,.face i.on{background:var(--ft-ink)}
+.msg{font-weight:800;font-size:clamp(.72rem,2.9vw,1rem);line-height:1.25;max-width:90%;min-height:2.5em;text-wrap:balance;background:color-mix(in srgb,var(--ft-cream) 88%,transparent);border-radius:12px;padding:4px 10px;box-sizing:border-box}
+.msg:empty{visibility:hidden}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.pitch .btn{font-size:clamp(1.05rem,4.4vw,1.4rem);padding:6px 28px;min-height:clamp(44px,11vw,56px)}
+.pitch .btn.small{font-size:clamp(.8rem,3.1vw,1rem);padding:4px 12px;min-height:44px}
 
-/* rolling dice overlay */
-.diceStage{position:fixed;inset:0;z-index:15;display:flex;align-items:center;justify-content:center;gap:28px;pointer-events:none;perspective:900px;transition:opacity .3s}
-.dw{position:relative;width:68px;height:68px;transform-style:preserve-3d}
-.cube{position:absolute;inset:0;transform-style:preserve-3d;--h:34px}
-.face{position:absolute;inset:0;border-radius:14px;background:linear-gradient(145deg,#ffffff,#dde3ee);box-shadow:inset 0 0 0 2px #c7cfdf,inset 0 -6px 10px rgba(0,0,0,.08);
-  display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:14%;gap:6%;backface-visibility:hidden}
+/* the dice that roll across the screen */
+.diceStage{position:fixed;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;gap:28px;pointer-events:none;perspective:900px;transition:opacity .3s}
+.dw{position:relative;width:70px;height:70px;transform-style:preserve-3d}
+.cube{position:absolute;inset:0;transform-style:preserve-3d;--h:35px}
+.face{position:absolute;inset:0;border-radius:14px;background:var(--ft-cream);box-shadow:inset 0 0 0 3px var(--ft-ink),inset 0 -7px 0 rgba(20,20,20,.08);
+  display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:15%;gap:6%;backface-visibility:hidden}
 .f1{transform:translateZ(var(--h))} .f2{transform:rotateY(90deg) translateZ(var(--h))} .f3{transform:rotateX(90deg) translateZ(var(--h))}
 .f4{transform:rotateX(-90deg) translateZ(var(--h))} .f5{transform:rotateY(-90deg) translateZ(var(--h))} .f6{transform:rotateY(180deg) translateZ(var(--h))}
-.dshadow{position:absolute;left:8%;right:8%;bottom:-22px;height:14px;border-radius:50%;background:rgba(0,0,0,.55);filter:blur(5px)}
+.dshadow{position:absolute;left:10%;right:10%;bottom:-20px;height:12px;border-radius:50%;background:rgba(20,20,20,.35)}
 
 /* team sheets */
+.side{display:flex;flex-direction:column;gap:10px;width:100%;min-width:0}
 .sheets{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
-.ps{background:linear-gradient(var(--tile2),var(--tile));border:2px solid var(--line);border-top:5px solid var(--c);border-radius:14px;padding:10px;display:flex;flex-direction:column;gap:7px;min-width:0}
-.ps.active{box-shadow:0 0 0 2px var(--c),0 0 24px color-mix(in srgb,var(--c) 45%,transparent)}
-.ps .top{display:flex;align-items:center;gap:8px;min-width:0}
-.ps .top b{font:400 .95rem var(--display);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0}
-.ps .money{font:400 1.35rem var(--display);font-variant-numeric:tabular-nums;color:var(--neon)}
+@media (min-width:900px){.sheets{grid-template-columns:minmax(0,1fr)}}
+.ps{padding:8px 10px;display:flex;flex-direction:column;gap:6px;min-width:0;border-top:7px solid var(--c);border-radius:18px}
+.ps.active{transform:translateY(-2px);box-shadow:0 0 0 3px var(--c),0 6px 0 var(--ft-ink)}
+.ps .top{display:flex;align-items:center;gap:8px;min-width:0;flex-wrap:wrap}
+.ps .top b{font-size:1.05rem;flex:1;min-width:0;overflow-wrap:anywhere}
+.ps .top .ttl{flex-basis:100%;padding-inline-start:40px;margin-top:-4px}
+.ps .money{font-size:1.4rem;font-weight:800;font-variant-numeric:tabular-nums;color:var(--ft-mintD)}
+.ok-night .ps .money{color:var(--ft-mint)}
+.ps .money.neg{color:var(--ft-coralD)}
 .checks{display:flex;gap:6px}
-.checks i{width:26px;height:26px;border-radius:50%;border:2px dashed var(--muted);display:grid;place-items:center;font-style:normal;font-weight:900;font-size:.9rem}
-.checks i.on{border:2px solid #fff;background:var(--neon);color:#062513;box-shadow:0 0 12px var(--neon)}
+.checks i{width:26px;height:26px;border-radius:50%;border:2.5px dashed var(--soft);display:grid;place-items:center;box-sizing:border-box}
+.checks i.on{border:2.5px solid var(--ft-ink);background:var(--ft-mint);color:var(--ft-ink)}
+.checks i svg{width:16px;height:16px}
 .owned-list{display:flex;flex-wrap:wrap;gap:4px}
-.chip{font:800 .72rem var(--body);padding:2px 7px 2px 2px;border-radius:999px;border:1.5px solid var(--g);background:var(--night2);display:inline-flex;align-items:center;gap:4px}
-.chip .mini{width:18px;height:18px;border-radius:50%;overflow:hidden;background:var(--tile2);display:grid;place-items:center}
-.chip .mini svg{width:100%;height:100%}
-.ps .none{font-size:.78rem;color:var(--muted)}
-.ps .note{font-size:.75rem;font-weight:900;color:var(--red)}
+.chip{font-weight:800;font-size:.76rem;padding:2px 8px 2px 2px;border-radius:999px;border:2px solid var(--g);background:var(--ok-bg2);display:inline-flex;align-items:center;gap:4px}
+.chip .mini{width:20px;height:20px;border-radius:50%;overflow:hidden;background:var(--ok-card);display:grid;place-items:center;flex:none}
+.chip .mini img,.chip .mini svg{width:100%;height:100%;object-fit:cover}
+.chip svg.st{width:12px;height:12px}
+.ps .none,.none{font-size:.82rem;color:var(--soft);font-weight:700}
+.ps .note{font-size:.8rem;font-weight:800;color:var(--ft-coralD);display:flex;align-items:center;gap:4px}
+.ps .pardon{font-size:.8rem;font-weight:800;display:flex;align-items:center;gap:4px}
+.ok-night .ps .note{color:var(--ft-coral)}
+.ps svg.si{width:15px;height:15px}
+.dot{width:32px;height:32px;border-radius:50%;border:2.5px solid var(--ft-ink);flex:none;display:grid;place-items:center;font-size:1.05rem;line-height:1;box-sizing:border-box}
 .foot{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
-.foot .btn{font-size:.8rem;padding:7px 12px}
-.howto{font-size:.85rem;color:var(--muted);margin:0;line-height:1.45}
-.modetag{font:400 .75rem var(--display);color:var(--gold);letter-spacing:.06em}
+.howto{font-size:.9rem;font-weight:700;margin:0;line-height:1.4;padding:6px 12px;border-radius:14px}
+.ttl{font-weight:800;font-size:.75rem;color:var(--ft-grapeD);white-space:normal}
+.ok-night .ttl{color:var(--ft-grape)}
 
-/* modal */
-.scrim{position:fixed;inset:0;z-index:20;background:rgba(3,6,14,.72);display:flex;align-items:center;justify-content:center;
-  padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
-.sheet{width:100%;max-width:380px;max-height:100%;overflow:auto;background:linear-gradient(var(--tile2),var(--tile));border:2px solid var(--line);border-radius:22px;
-  box-shadow:0 20px 60px rgba(0,0,0,.6),0 0 40px color-mix(in srgb,var(--hc,var(--gold)) 30%,transparent);animation:pop .35s cubic-bezier(.3,1.5,.5,1) both}
-@keyframes pop{from{transform:scale(.6) rotate(-3deg);opacity:0}}
-.sheet-head{background:linear-gradient(135deg,var(--hc,var(--gold)),color-mix(in srgb,var(--hc,var(--gold)) 60%,#000));color:var(--hi,#fff);padding:14px 16px 12px}
-.sheet-head small{display:block;font:900 .7rem var(--body);letter-spacing:.14em;text-transform:uppercase;opacity:.9}
-.sheet-head h3{font:400 1.4rem/1.1 var(--display);margin:3px 0 0;text-wrap:balance;text-shadow:0 2px 0 rgba(0,0,0,.25)}
-.sheet-body{padding:14px 16px;font-size:1rem;line-height:1.4;display:flex;flex-direction:column;gap:8px}
+/* popups (the game's own: rich cards with choices) */
+.scrim{position:fixed;inset:0;z-index:25;background:var(--ok-scrim);backdrop-filter:blur(2px);display:flex;align-items:center;justify-content:center;
+  padding:max(16px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(16px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left))}
+.sheet{width:100%;max-width:400px;max-height:100%;overflow:auto;background:var(--ok-card);color:var(--ok-text);border:3px solid var(--ft-ink);border-radius:26px;box-shadow:0 6px 0 var(--ft-ink);animation:pop .36s cubic-bezier(.34,1.56,.64,1) both;box-sizing:border-box}
+.ok-night .sheet{border-color:color-mix(in srgb,var(--ft-cream) 40%,transparent);box-shadow:0 6px 0 #000}
+@keyframes pop{from{transform:scale(.7);opacity:0}}
+.sheet-head{background:var(--hc,var(--ft-spark));color:var(--ft-ink);padding:12px 16px 10px;border-bottom:3px solid var(--ft-ink)}
+.sheet-head small{display:block;font-weight:800;font-size:.8rem;opacity:.85}
+.sheet-head h3{font-size:1.45rem;line-height:1.1;margin:2px 0 0;text-wrap:balance;font-weight:800}
+.sheet-body{padding:12px 16px;font-size:1.02rem;line-height:1.4;display:flex;flex-direction:column;gap:8px;font-weight:600}
 .sheet-body p{margin:0}
-.sheet-body .big{font:400 2.4rem/1 var(--display);text-align:center}
-.sheet-body .stat{display:flex;justify-content:space-between;gap:10px;font-weight:800;border-bottom:1px dashed var(--line);padding-bottom:4px}
+.sheet-body b{font-weight:800}
+.sheet-body .big{font-size:2.4rem;line-height:1;text-align:center;font-weight:800;display:flex;justify-content:center;align-items:center;gap:8px}
+.sheet-body .big svg,.sheet-body .big img{height:64px;width:auto}
+.sheet-body .stat{display:flex;justify-content:space-between;gap:10px;font-weight:800;border-bottom:2px dashed var(--ok-line);padding-bottom:4px}
 .card{display:flex;align-items:center;gap:12px}
-.avbig{width:96px;height:96px;flex:none;border-radius:50%;overflow:hidden;background:radial-gradient(circle at 50% 30%,#3a4a7a,#141d36);border:3px solid var(--g,#fff);box-shadow:0 0 18px var(--g,transparent)}
-.avbig svg{width:100%;height:100%}
-.card .who b{display:block;font:400 1.05rem/1.1 var(--display)}
-.card .who span{font-weight:800;color:var(--muted);font-size:.9rem}
+.avbig{width:96px;height:96px;flex:none;border-radius:50%;overflow:hidden;background:var(--ok-bg2);border:3px solid var(--ft-ink);box-shadow:0 0 0 4px var(--g,transparent);display:grid;place-items:center}
+.avbig img{width:100%;height:100%;object-fit:cover}
+.avbig svg,.avbig img.pr{width:78%;height:78%;object-fit:contain}
+.card .who b{display:block;font-size:1.15rem;line-height:1.15}
+.card .who span{font-weight:700;color:var(--soft);font-size:.92rem}
 .sheet-btns{padding:0 16px 16px;display:flex;flex-wrap:wrap;gap:8px}
 .sheet-btns .btn{flex:1 1 auto}
-.chipbtn{flex:1 1 40%;font:800 .9rem var(--body);padding:6px 8px;border-radius:12px;border:2px solid var(--g);background:var(--night2);color:var(--ink);
-  cursor:pointer;display:flex;align-items:center;gap:6px;text-align:start}
-.chipbtn .mini{width:26px;height:26px;border-radius:50%;overflow:hidden;flex:none;background:var(--tile2)}
-.chipbtn small{color:var(--muted);font-weight:800;display:block}
+.chipbtn{flex:1 1 40%;font-weight:800;font-size:.92rem;padding:5px 8px;border-radius:16px;border:2.5px solid var(--g);background:var(--ok-bg2);color:var(--ok-text);
+  display:flex;align-items:center;gap:6px;text-align:start;min-height:48px}
+.chipbtn .mini{width:30px;height:30px;border-radius:50%;overflow:hidden;flex:none;background:var(--ok-card);display:grid;place-items:center}
+.chipbtn .mini img,.chipbtn .mini svg{width:100%;height:100%;object-fit:cover}
+.chipbtn small{color:var(--soft);font-weight:700;display:block}
 .mini-dice{display:flex;justify-content:center;gap:10px}
-.btnrow{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
-.pitch .btn.small{font-size:clamp(.75rem,3vw,.95rem);padding:8px 12px}
-.tside{border:1.5px solid var(--line);border-radius:14px;padding:10px;display:flex;flex-direction:column;gap:8px;background:var(--night2)}
-.tside h4{margin:0;font:400 .85rem var(--display);color:var(--gold)}
-.cash{display:flex;align-items:center;gap:8px;font-weight:900;flex-wrap:wrap}
-.cash input{width:96px;font:800 1rem var(--body);padding:6px 8px;border-radius:10px;border:2px solid var(--line);background:var(--tile);color:var(--ink)}
-.cash small{color:var(--muted)}
+.tside{border:2.5px solid var(--ok-line);border-radius:16px;padding:10px;display:flex;flex-direction:column;gap:8px;background:var(--ok-bg2)}
+.tside h4{margin:0;font-size:.95rem;font-weight:800}
+.cash{display:flex;align-items:center;gap:8px;font-weight:800;flex-wrap:wrap}
+.cash svg{width:20px;height:20px}
+.cash input,.ft-in{font:inherit;font-weight:800;font-size:1rem;padding:8px;border-radius:12px;border:2.5px solid var(--rim);background:var(--ok-card);color:var(--ok-text);box-sizing:border-box}
+.cash input{width:100px}
+.cash small{color:var(--soft)}
 .titems{display:flex;flex-wrap:wrap;gap:6px}
-.titem{display:inline-flex;align-items:center;gap:5px;padding:4px 9px 4px 4px;border-radius:999px;border:2px solid var(--g);font-weight:800;font-size:.82rem;cursor:pointer}
-.titem input{width:18px;height:18px;accent-color:var(--neon);margin:0}
-.titem .mini{width:22px;height:22px;border-radius:50%;overflow:hidden;background:var(--tile2)}
-.titem:has(input:checked){background:color-mix(in srgb,var(--g) 32%,transparent)}
-.none{font-size:.8rem;color:var(--muted)}
-.ps .pardon{font-size:.75rem;font-weight:900;color:var(--gold)}
-.iconpick:disabled{opacity:.22;cursor:not-allowed;filter:grayscale(1)}
-.tile.goalie .band{background:repeating-linear-gradient(90deg,#22d3ee 0 4px,#0e7490 4px 8px);box-shadow:0 0 8px #22d3ee}
-.tile .glove{position:absolute;top:12%;right:1px;font-size:clamp(.45rem,1.8vw,.7rem)}
-.tile.redcard{background:linear-gradient(135deg,#5a0f1c,#2a0710)}
-.tile.sinbin{background:repeating-linear-gradient(90deg,#1b2440 0 6px,#0d1328 6px 9px)}
-.confetti{position:fixed;inset:0;pointer-events:none;z-index:25;overflow:hidden}
-.confetti i{position:absolute;top:-10px;width:8px;height:14px;animation:fall 1.6s linear forwards}
-@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+.titem{display:inline-flex;align-items:center;gap:5px;padding:4px 9px 4px 4px;border-radius:999px;border:2.5px solid var(--g);font-weight:800;font-size:.85rem;cursor:pointer;background:var(--ok-card);min-height:36px;box-sizing:border-box}
+.titem input{width:18px;height:18px;accent-color:var(--ft-mintD);margin:0}
+.titem .mini{width:24px;height:24px;border-radius:50%;overflow:hidden;background:var(--ok-bg2)}
+.titem .mini img,.titem .mini svg{width:100%;height:100%;object-fit:cover}
+.titem:has(input:checked){background:color-mix(in srgb,var(--g) 35%,var(--ok-card))}
+.icongrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(52px,1fr));gap:8px}
+.iconpick{width:52px;height:52px;border-radius:50%;border:2.5px solid var(--ok-line);background:var(--ok-bg2);font-size:1.5rem;line-height:1;display:grid;place-items:center;padding:0;justify-self:center}
+.iconpick img{width:100%;height:100%;border-radius:50%}
+.iconpick.legend{border-color:var(--ft-sparkD)}
+.iconpick[aria-pressed="true"]{border-color:var(--ft-ink);background:var(--c);box-shadow:0 3px 0 var(--ft-ink)}
+.iconpick:disabled{opacity:.25;cursor:not-allowed;filter:grayscale(1)}
+
+/* the champions card */
+.sheet.champ .sheet-head{text-align:center}
+.cup{display:flex;justify-content:center;align-items:flex-end;gap:6px}
+.cup img{height:110px;width:auto}
+.cup .winner{height:120px}
 /* trophy shop */
+.shop{padding:14px;display:flex;flex-direction:column;gap:12px;max-width:640px;margin:0 auto}
+.shop h2{margin:0;font-size:1.4rem;display:flex;align-items:center;gap:8px}
+.shop h2 svg{width:1.3em;height:1.3em}
 .shophead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
 .wallet{display:flex;gap:6px;flex-wrap:wrap}
-.wchip{font:800 .9rem var(--body);padding:7px 12px;border-radius:999px;border:2px solid var(--line);background:var(--night2);color:var(--ink);cursor:pointer;display:inline-flex;gap:6px;align-items:center}
-.wchip b{color:var(--gold);font-family:var(--display);font-weight:400}
-.wchip[aria-pressed="true"]{border-color:var(--gold);background:#2a2410;box-shadow:0 0 14px rgba(255,210,63,.3)}
-.shoptabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+.wchip{font-weight:800;font-size:.95rem;padding:7px 12px;border-radius:999px;border:2.5px solid var(--ok-line);background:var(--ok-bg2);display:inline-flex;gap:6px;align-items:center;min-height:44px}
+.wchip b{display:inline-flex;align-items:center;gap:3px}
+.wchip svg,.cost svg,.bigtrophy svg{width:1.15em;height:1.15em}
+.wchip[aria-pressed="true"]{border-color:var(--ft-ink);background:var(--ft-spark);color:var(--ft-ink)!important;box-shadow:0 3px 0 var(--ft-ink)}
+.shoptabs{display:flex;gap:6px;overflow-x:auto;padding:2px 2px 6px;scrollbar-width:none}
 .shoptabs::-webkit-scrollbar{display:none}
-.shoptabs .btn{flex:none;font-size:.85rem;padding:8px 12px}
-.shoptabs .btn[aria-pressed="true"]{background:var(--gold);color:#1d1606;border-color:#a46a00}
-.prizes{display:flex;flex-direction:column;gap:8px}
-.prize{border:2px solid var(--line);border-radius:14px;background:var(--night2);padding:10px;display:flex;gap:10px;align-items:center}
-.prize .pe{font-size:1.9rem;line-height:1;flex:none;width:44px;text-align:center}
+.shoptabs .btn{flex:none;font-size:.9rem;padding:4px 12px;min-height:44px}
+.shoptabs .btn[aria-pressed="true"]{background:var(--ft-sky)}
+.prizes{display:flex flex-direction:column;gap:8px;display:flex;flex-direction:column}
+.prize{border:2.5px solid var(--ok-line);border-radius:16px;background:var(--ok-bg2);padding:8px 10px;display:flex;gap:10px;align-items:center}
+.prize .pe{font-size:1.9rem;line-height:1;flex:none;width:44px;text-align:center;display:grid;place-items:center}
+.prize .pe svg{width:34px;height:34px}
 .prize .pt{flex:1;min-width:0}
-.prize .pt b{display:block;font:400 .92rem/1.15 var(--display);letter-spacing:.02em}
-.prize .pt small{color:var(--muted);font-weight:800;line-height:1.25;display:block}
-.prize .cost{font:400 1rem var(--display);color:var(--gold);white-space:nowrap}
-.prize .btn{padding:8px 12px;font-size:.8rem;flex:none}
-.prize.owned{border-color:var(--neon)}
-.prize.cant{opacity:.7}
-.bigtrophy{font:400 2.2rem var(--display);color:var(--gold);text-shadow:0 0 18px rgba(255,210,63,.4);white-space:nowrap}
-.voucher{border:2px dashed var(--gold);border-radius:12px;padding:10px 12px;background:#2a2410;display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}
-.voucher.used{opacity:.45;border-style:solid;border-color:var(--line);background:var(--night2)}
-.voucher .vn{font:400 1rem var(--display)} .voucher small{color:var(--muted);font-weight:800;display:block}
-.ticket{border:3px dashed var(--gold);border-radius:16px;padding:14px;text-align:center;background:repeating-linear-gradient(45deg,#2a2410 0 10px,#241f0e 10px 20px)}
-.ticket .te{font-size:3rem;line-height:1}
-.ticket h4{margin:6px 0 2px;font:400 1.3rem var(--display);color:var(--gold)}
-.ticket p{margin:0;font-weight:800}
+.prize .pt b{display:block;font-size:1rem;line-height:1.15}
+.prize .pt small{color:var(--soft);font-weight:700;line-height:1.25;display:block}
+.prize .cost{font-weight:800;white-space:nowrap;display:inline-flex;align-items:center;gap:3px}
+.prize .btn{padding:4px 12px;font-size:.88rem;flex:none;min-height:44px}
+.prize.owned{border-color:var(--ft-mintD)}
+.bigtrophy{font-size:2rem;font-weight:800;white-space:nowrap;display:inline-flex;align-items:center;gap:4px}
+.voucher{border:2.5px dashed var(--ft-sparkD);border-radius:14px;padding:10px 12px;background:var(--ft-sparkT);color:var(--ft-ink);display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}
+.voucher.used{opacity:.5;border-style:solid;border-color:var(--ok-line);background:var(--ok-bg2);color:var(--ok-text)}
+.voucher .vn{font-weight:800;font-size:1.02rem} .voucher small{font-weight:700;display:block;opacity:.8}
+.ticket{border:3px dashed var(--ft-sparkD);border-radius:18px;padding:12px;text-align:center;background:var(--ft-sparkT);color:var(--ft-ink)}
+.ticket .te{font-size:3rem;line-height:1;display:flex;justify-content:center;gap:4px}
+.ticket .te img{height:54px}
+.ticket h4{margin:6px 0 2px;font-size:1.3rem;font-weight:800}
+.ticket p{margin:0;font-weight:700}
 .grown{display:flex;flex-direction:column;gap:8px}
 .grow{display:grid;grid-template-columns:52px 1fr 70px auto;gap:6px;align-items:center}
-.grow input{font:800 .95rem var(--body);padding:8px;border-radius:10px;border:2px solid var(--line);background:var(--night2);color:var(--ink);min-width:0;width:100%}
-.ttl{font:400 .72rem var(--display);color:var(--gold);letter-spacing:.04em;white-space:nowrap}
-.emptybox{text-align:center;color:var(--muted);font-weight:800;padding:14px;border:2px dashed var(--line);border-radius:14px}
-.sect{font:400 .85rem var(--display);color:var(--gold);letter-spacing:.06em;margin-top:4px}
-@media (prefers-reduced-motion:reduce){.sheet,.tok.hop,.confetti i{animation:none}}
-/* Languages. The board ring always runs left to right (its squares are placed by grid column); menus, the pitch's
+.grow input{min-width:0;width:100%}
+.emptybox{text-align:center;color:var(--soft);font-weight:800;padding:14px;border:2.5px dashed var(--ok-line);border-radius:16px}
+.sect{font-weight:800;font-size:.9rem;margin-top:4px}
+.ok-rm .sheet,.ok-rm .tok.hop{animation:none}
+@media (prefers-reduced-motion:reduce){.sheet,.tok.hop{animation:none}}
+/* Languages: the board ring always runs left to right (its squares are placed by grid column); menus, the pitch's
    messages and the popups follow the language's direction. fitTiles() shrinks a square's label to fit, and lets a
    two-word label take two lines when it still does not. */
-.board{direction:ltr}
-.tile.champ .ic svg{height:clamp(14px,4.8vw,26px)}   /* leaves room for the label under the trophy */
-.turnpill span{white-space:normal;line-height:1.1;text-wrap:balance}   /* a long name and title wrap to a second line */
-.ps .top{flex-wrap:wrap}
-.ps .top b{white-space:normal;overflow-wrap:anywhere;text-overflow:clip}   /* a long name wraps instead of being cut */
-.ps .top .ttl{flex-basis:100%;white-space:normal;padding-inline-start:40px;margin-top:-4px}   /* the title goes under the name */
 .tile .nm.two{white-space:normal;line-height:1;text-overflow:clip;overflow-wrap:anywhere;word-break:keep-all}
-:lang(ar) *{letter-spacing:0!important} /* letter spacing pulls joined Arabic letters apart */
+html[lang="ar"] .ft *,html[lang="ar"] .ft-card *,html[lang="ar"] .ft-pop *{letter-spacing:0!important}
 :lang(ja) .msg,:lang(ja) .sheet-body p,:lang(ja) .rules li,:lang(ja) .howto,:lang(ja) .turnpill span,:lang(ja) .sheet-head h3,:lang(ja) .prize .pt small{word-break:keep-all;overflow-wrap:anywhere}
+
+/* ---------- polish after the first review ---------- */
+/* popup headers in the kit's display cut (Bricolage at its big optical size), like the title lockup */
+.sheet-head h3{font-size:1.6rem;font-weight:800;font-variation-settings:"opsz" 96;letter-spacing:-.015em;line-height:1.05}
+.sheet-head small{font-size:.82rem;letter-spacing:.06em;text-transform:uppercase;font-variation-settings:"opsz" 48}
+html[lang="ar"] .sheet-head small,:lang(ja) .sheet-head small{text-transform:none;letter-spacing:0}
+/* the champions card: the board steps aside so the whole stadium (and its confetti) is the party */
+body.ftwin:has(#scrim:not([hidden])) #game{visibility:hidden}
+body.ftwin:has(#scrim:not([hidden])) .scrim{background:transparent;backdrop-filter:none}
+.sheet.champ{max-width:420px;border-width:3.5px}
+.sheet.champ .sheet-head{padding:14px 16px 12px;background:radial-gradient(120% 140% at 50% 0%,var(--ft-sparkT),var(--ft-spark) 60%)}
+.sheet.champ .sheet-head h3{font-size:2.05rem;color:var(--ft-cream);-webkit-text-stroke:6px var(--ft-ink);paint-order:stroke fill;letter-spacing:.015em;rotate:-2deg;margin-top:4px;text-shadow:0 4px 0 var(--ft-ink)}
+.sheet.champ .sheet-head small{font-size:.9rem}
+.medal{position:relative;width:176px;height:176px;margin:4px auto 0;display:grid;place-items:center}
+.medal .rays{position:absolute;inset:-22px;border-radius:50%;background:repeating-conic-gradient(from 0deg,var(--ft-spark) 0 9deg,transparent 9deg 22.5deg);
+  -webkit-mask:radial-gradient(circle,#000 32%,transparent 70%);mask:radial-gradient(circle,#000 32%,transparent 70%);animation:ftspin 14s linear infinite}
+.medal .disc{position:relative;width:136px;height:136px;border-radius:50%;display:grid;place-items:center;border:3.5px solid var(--ft-ink);
+  background:radial-gradient(circle at 38% 32%,#fff6cf 0,var(--ft-spark) 52%,var(--ft-sparkD) 100%);
+  box-shadow:0 0 0 7px color-mix(in srgb,var(--ft-spark) 50%,transparent),0 0 44px 16px color-mix(in srgb,var(--ft-spark) 75%,transparent),0 5px 0 var(--ft-ink);animation:ftglow 1.8s ease-in-out infinite alternate}
+.medal .disc img{height:104px;width:auto;animation:pop .5s .15s cubic-bezier(.34,1.56,.64,1) both}
+.medal .wtok{position:absolute;bottom:0;inset-inline-start:0;width:62px;height:62px;font-size:2rem;border-width:3px;box-shadow:0 3px 0 var(--ft-ink);animation:pop .45s .35s cubic-bezier(.34,1.56,.64,1) both}
+.champline{text-align:center;font-weight:800;font-size:1.08rem}
+.ticket .te.five{gap:2px;font-size:0}
+.ticket .te.five img{height:54px;animation:ftcup .5s cubic-bezier(.34,1.56,.64,1) both;animation-delay:calc(.45s + var(--i) * .13s)}
+.ticket .te.five img:nth-child(odd){rotate:-6deg}.ticket .te.five img:nth-child(even){rotate:6deg}
+.sheet.champ .ticket h4{font-size:1.55rem;font-variation-settings:"opsz" 96}
+@keyframes ftspin{to{rotate:360deg}}
+@keyframes ftglow{to{box-shadow:0 0 0 10px color-mix(in srgb,var(--ft-spark) 40%,transparent),0 0 60px 24px color-mix(in srgb,var(--ft-spark) 85%,transparent),0 5px 0 var(--ft-ink)}}
+@keyframes ftcup{from{transform:translateY(16px) scale(.3);opacity:0}}
+.ok-rm .medal *,.ok-rm .ticket .te.five img{animation:none!important}
+@media (prefers-reduced-motion:reduce){.medal *,.ticket .te.five img{animation:none!important}}
+/* the setup card: clearer labels and a chunkier players switch */
+.lab{font-size:1.08rem;color:var(--ok-text);font-variation-settings:"opsz" 48;margin-top:4px}
+.counts{border-color:var(--rim);padding:5px;gap:6px}
+.counts .btn{min-height:50px;font-size:1.45rem;font-weight:800;font-variation-settings:"opsz" 72;background:var(--ok-card);border-radius:15px;box-shadow:inset 0 0 0 2px var(--ok-line)}
+.counts .btn[aria-pressed="true"]{font-size:1.6rem}
+/* each seat: the token (tap it for every token) with a pencil, and a row of quick picks */
+.pblock{display:flex;flex-direction:column;gap:5px;background:var(--ok-bg2);border:2.5px solid var(--ok-line);border-radius:20px;padding:4px}
+.pblock .namerow{background:none;border:0;padding:0}
+.tokbtn{position:relative}
+.tokbtn .pen{position:absolute;right:-5px;bottom:-5px;width:22px;height:22px;border-radius:50%;background:var(--ft-spark);border:2px solid var(--ft-ink);display:grid;place-items:center;color:var(--ft-ink)}
+.tokbtn .pen svg{width:13px;height:13px}
+.quick{display:flex;gap:5px;overflow-x:auto;padding:2px 2px 4px;scrollbar-width:none}
+.quick::-webkit-scrollbar{display:none}
+.quick button{flex:none;width:33px;height:33px;border-radius:50%;border:2px solid var(--ok-line);background:var(--ok-card);display:grid;place-items:center;font-size:1.15rem;line-height:1;padding:0}
+.quick button img{width:100%;height:100%;border-radius:50%}
+.quick button[aria-pressed="true"]{border:2.5px solid var(--ft-ink);background:var(--c);box-shadow:0 2px 0 var(--ft-ink)}
+.quick button:disabled{opacity:.25;filter:grayscale(1);cursor:not-allowed}
+/* the shop's count is a bubble, so the button keeps one line on a phone */
+#shopBadge{opacity:1}
+#shopBadge:not(:empty){display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:24px;padding:0 6px;border-radius:999px;background:var(--ft-spark);color:var(--ft-ink);border:2px solid var(--ft-ink);font-size:.85rem;box-sizing:border-box}
+/* the board: tokens stand over the picture, never over a square's name */
+.tile .toks{top:15%;bottom:auto}
+.tile.special .toks,.tile.corner .toks{top:4%}
 </style>
 
+<div class="ft" id="ft">
 <div class="wrap">
-  <div class="title"><h1>Footy Tycoon</h1><small data-i18n="tagline">Buy the stars · Win the league</small></div>
-
-  <section class="panel" id="setup">
-    <h2 data-i18n="era">Pick your era</h2>
-    <div class="modes" id="modes"></div>
-    <h2 data-i18n="who">Who's playing?</h2>
-    <div class="counts" role="group" aria-label="Number of players" data-i18n-aria="nPlayers">
-      <button class="btn" data-n="2" aria-pressed="true">2</button>
-      <button class="btn" data-n="3" aria-pressed="false">3</button>
-      <button class="btn" data-n="4" aria-pressed="false">4</button>
-    </div>
-    <div class="names" id="names"></div>
-    <button class="btn primary" id="start" data-i18n="start">Kick off!</button>
-    <button class="btn" id="resume" hidden data-i18n="resume">Continue saved game</button>
-    <button class="btn" id="openShop">🏆 <span data-i18n="shop">Trophy Shop</span> <span id="shopBadge"></span></button>
-    <ol class="rules" id="rules"></ol>
-  </section>
-
-  <section class="panel" id="shop" hidden>
-    <div class="shophead"><h2 style="font-size:1.3rem">🏆 <span data-i18n="shop">Trophy Shop</span></h2><button class="btn" id="shopBack"></button></div>
-    <p class="howto" style="margin:0" id="shopIntro"></p>
+  <section class="sk shop" id="shop" hidden>
+    <div class="shophead"><h2><span id="shopIc"></span><span data-i18n="shop">Trophy Shop</span></h2><button class="btn" id="shopBack"></button></div>
+    <p class="howto" style="padding:0" id="shopIntro"></p>
     <div class="wallet" id="wallet"></div>
     <div class="shoptabs" id="shopTabs" role="group" aria-label="Prize type" data-i18n-aria="prizeType">
       <button class="btn" data-st="boosts" aria-pressed="true" data-i18n="tab_boosts" data-emoji="⚡">⚡ Boosts</button><button class="btn" data-st="icons" aria-pressed="false" data-i18n="tab_icons" data-emoji="🦸">🦸 Icons</button><button class="btn" data-st="titles" aria-pressed="false" data-i18n="tab_titles" data-emoji="🏷️">🏷️ Titles</button><button class="btn" data-st="pitch" aria-pressed="false" data-i18n="tab_pitch" data-emoji="🌙">🌙 Pitches</button><button class="btn" data-st="real" aria-pressed="false" data-i18n="tab_real" data-emoji="🎁">🎁 Real prizes</button><button class="btn" data-st="vouchers" aria-pressed="false" data-i18n="tab_vouchers" data-emoji="🎟️">🎟️ Vouchers</button>
     </div>
     <div id="shopBody"></div>
-    <button class="btn" id="grownBtn" style="font-size:.85rem" data-i18n="grownBtn" data-emoji="👨‍👩‍👦">👨‍👩‍👦 Grown-ups: edit prizes & trophies</button>
+    <button class="btn" id="grownBtn" data-i18n="grownBtn" data-emoji="👨‍👩‍👦">👨‍👩‍👦 Grown-ups: edit prizes & trophies</button>
   </section>
 
   <section id="game" hidden>
-    <div class="wrap" style="max-width:none">
+    <div class="hud"><span id="pauseSlot"></span><div class="mid"><span class="pill modetag" id="modetag"></span></div><span id="muteSlot"></span></div>
+    <div class="layout">
       <div class="stadium"><div class="board" id="board"></div></div>
-      <div class="sheets" id="sheets"></div>
-      <p class="howto" data-i18n="tapSquare">Tap any square to see the player or what it does.</p>
-      <div class="foot"><span class="modetag" id="modetag"></span><button class="btn" id="quit" data-i18n="newGame">New game</button></div>
+      <div class="side">
+        <div class="sheets" id="sheets"></div>
+        <p class="howto sk" data-i18n="tapSquare">Tap any square to see the player or what it does.</p>
+        <div class="foot"><button class="btn" id="quit" data-i18n="newGame">New game</button></div>
+      </div>
     </div>
   </section>
+</div>
 </div>
 
 <div class="diceStage" id="diceStage" hidden aria-hidden="true">
   <div class="dw" id="dw1"><div class="dshadow"></div><div class="cube" id="cube1"></div></div>
   <div class="dw" id="dw2"><div class="dshadow"></div><div class="cube" id="cube2"></div></div>
 </div>
-<div class="confetti" id="confetti" aria-hidden="true"></div>
 
-<div class="scrim" id="scrim" hidden>
+<div class="scrim ft-pop" id="scrim" hidden>
   <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="mTitle">
     <div class="sheet-head" id="mHead"><small id="mKicker"></small><h3 id="mTitle"></h3></div>
     <div class="sheet-body" id="mBody"></div>
@@ -286,14 +383,46 @@ button{font-family:inherit}
   </div>
 </div>
 
+<!-- the setup card: moved into the kit's title screen at start -->
+<div class="ft-card" id="setup" hidden>
+  <div class="setup">
+    <div class="setupL">
+      <div class="lab" data-i18n="era">Pick your era</div>
+      <div class="modes" id="modes"></div>
+      <div class="lab" data-i18n="who">Who's playing?</div>
+      <div class="counts" role="group" aria-label="Number of players" data-i18n-aria="nPlayers">
+        <button class="btn" data-n="2" aria-pressed="true">2</button>
+        <button class="btn" data-n="3" aria-pressed="false">3</button>
+        <button class="btn" data-n="4" aria-pressed="false">4</button>
+      </div>
+    </div>
+    <div class="setupR">
+      <div class="names" id="names"></div>
+    </div>
+  </div>
+  <div id="ctaSlot"></div>
+  <div class="titlebtns">
+    <button class="btn go" id="resume" hidden data-i18n="resume">Continue saved game</button>
+    <button class="btn" id="openShop"><span id="shopIc2"></span><span data-i18n="shop">Trophy Shop</span> <span id="shopBadge"></span></button>
+    <button class="btn" id="rulesBtn"><span id="rulesIc"></span><span data-i18n="howPlay">How to play</span></button>
+  </div>
+</div>
+<template id="rulesTpl"><ol class="rules" id="rules"></ol></template>
+
+<script src="/vendor/oomba-kit/1.1.0/oomba-kit.js" integrity="sha384-GCejMN1YYamlsZNEJw6SRznGmZC2i6tppYwkLt8cv2gI3YTTsZq6l8eyUQuAM8qX" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.0/packs/dress.js" integrity="sha384-ZCFgY98YAWY7Tcy+GfJLalmnJukKdzbVpg6j4ZljXuJSYgYzkWSWMPihVW/u8CqH" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.0/packs/art-biomes-2.js" integrity="sha384-0ad0awdyk2fC5pFpqYc/7EABVSKTEe1ZKo2YB6cvjKZDIDA2mI1+YRUEQhOgXrHs" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.0/packs/art-props.js" integrity="sha384-/RtKQ/ov2WG1EoCt4pJ98rHY07jOZjZ+lia901K+1BfS49MydEROuw7UaInBPHle" crossorigin="anonymous"></script>
 <script>
 (function(){
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const rnd=n=>Math.floor(Math.random()*n);
-const reduced=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
+const reduced=()=>!!Oomba.settings.reduced;   // the kit's reduced motion (the device's setting or the kit's settings panel)
+// The world: the kit's stadium (art-biomes-2) behind everything, day or night with the site's theme.
+const STAGE=Oomba.stage({api:1,biome:'stadium',size:[960,540]});
 const KEY='footy-tycoon-v3';
-const TOKENS=['#ff4f5e','#3d9bff','#ffd23f','#b07cff'];
+const TOKENS=['coral','sky','spark','grape'].map(h=>Oomba.color(h));   // the seats' kit colours (a save keeps the colour it started with)
 const START_MONEY=1000, PASS_GO=200, WIN=3, SINBIN=9;
 
 /* ---------- languages ----------
@@ -306,6 +435,11 @@ const DIR=(window.BRB&&BRB.user&&BRB.user.dir)==='rtl'?'rtl':'ltr';
 const LOCALE=LANG==='ar'?'ar-u-nu-latn':LANG;   // Arabic with Latin digits, like the site
 const I18N=/*I18N:BEGIN*/{
 "en": {
+  "howPlay": "How to play",
+  "meIcon": "My character",
+  "soundOn": "Sound on",
+  "soundOff": "Sound off",
+  "pause": "Pause",
   "tagline": "Buy the stars · Win the league",
   "era": "Pick your era",
   "who": "Who's playing?",
@@ -708,6 +842,11 @@ const I18N=/*I18N:BEGIN*/{
   "got3": "{name} got {n} ticks first."
 },
 "pt": {
+  "howPlay": "Como jogar",
+  "meIcon": "Meu personagem",
+  "soundOn": "Ligar o som",
+  "soundOff": "Desligar o som",
+  "pause": "Pausar",
   "tagline": "Contrate os craques · Ganhe o campeonato",
   "era": "Escolha sua época",
   "who": "Quem vai jogar?",
@@ -1093,6 +1232,11 @@ const I18N=/*I18N:BEGIN*/{
   "noDeal": "{name} diz: “Nada feito! Me ofereça mais.”"
 },
 "fr": {
+  "howPlay": "Comment jouer",
+  "meIcon": "Mon personnage",
+  "soundOn": "Activer le son",
+  "soundOff": "Couper le son",
+  "pause": "Pause",
   "tagline": "Achète les stars · Gagne le championnat",
   "era": "Choisis ton époque",
   "who": "Qui joue ?",
@@ -1478,6 +1622,11 @@ const I18N=/*I18N:BEGIN*/{
   "noDeal": "{name} dit : « Pas question ! Offre-moi plus. »"
 },
 "es": {
+  "howPlay": "Cómo jugar",
+  "meIcon": "Mi personaje",
+  "soundOn": "Activar sonido",
+  "soundOff": "Quitar sonido",
+  "pause": "Pausa",
   "tagline": "Ficha a las estrellas · Gana la liga",
   "era": "Elige tu época",
   "who": "¿Quién juega?",
@@ -1863,6 +2012,11 @@ const I18N=/*I18N:BEGIN*/{
   "noDeal": "{name} dice: «¡Ni hablar! Ofréceme más»."
 },
 "de": {
+  "howPlay": "So wird gespielt",
+  "meIcon": "Meine Figur",
+  "soundOn": "Ton an",
+  "soundOff": "Ton aus",
+  "pause": "Pause",
   "tagline": "Hol dir die Stars · Gewinn die Liga",
   "era": "Wähl deine Zeit",
   "who": "Wer spielt mit?",
@@ -2248,6 +2402,11 @@ const I18N=/*I18N:BEGIN*/{
   "noDeal": "{name} sagt: „Kein Deal! Biete mir mehr.“"
 },
 "he": {
+  "howPlay": "איך משחקים",
+  "meIcon": "הדמות שלי",
+  "soundOn": "להפעיל צליל",
+  "soundOff": "להשתיק",
+  "pause": "השהיה",
   "tagline": "קונים כוכבים · זוכים בליגה",
   "era": "בחרו תקופה",
   "who": "מי משחק?",
@@ -2633,6 +2792,11 @@ const I18N=/*I18N:BEGIN*/{
   "noDeal": "{name} אומר: ״אין עסקה! תציעו לי יותר.״"
 },
 "ja": {
+  "howPlay": "あそびかた",
+  "meIcon": "じぶんの キャラクター",
+  "soundOn": "おとを オン",
+  "soundOff": "おとを オフ",
+  "pause": "いちじていし",
   "tagline": "スターを あつめて リーグで ゆうしょう",
   "era": "じだいを えらぼう",
   "who": "だれが あそぶ？",
@@ -3018,6 +3182,11 @@ const I18N=/*I18N:BEGIN*/{
   "noDeal": "{name}「だめだめ！ もっと ちょうだい」"
 },
 "ar": {
+  "howPlay": "طريقة اللعب",
+  "meIcon": "شخصيتي",
+  "soundOn": "تشغيل الصوت",
+  "soundOff": "كتم الصوت",
+  "pause": "إيقاف مؤقت",
   "tagline": "اشترِ النجوم · اربح الدوري",
   "era": "اختر الزمن",
   "who": "من يلعب؟",
@@ -3403,6 +3572,11 @@ const I18N=/*I18N:BEGIN*/{
   "noDeal": "يقول {name}: «لا صفقة! اعرض عليّ أكثر.»"
 },
 "ru": {
+  "howPlay": "Как играть",
+  "meIcon": "Мой персонаж",
+  "soundOn": "Включить звук",
+  "soundOff": "Выключить звук",
+  "pause": "Пауза",
   "tagline": "Покупай звёзд · Выиграй лигу",
   "era": "Выбери эпоху",
   "who": "Кто играет?",
@@ -3788,6 +3962,11 @@ const I18N=/*I18N:BEGIN*/{
   "noDeal": "{name} говорит: «Не пойдёт! Предложи больше»."
 },
 "it": {
+  "howPlay": "Come si gioca",
+  "meIcon": "Il mio personaggio",
+  "soundOn": "Attiva il suono",
+  "soundOff": "Disattiva il suono",
+  "pause": "Pausa",
   "tagline": "Compra i campioni · Vinci il campionato",
   "era": "Scegli la tua epoca",
   "who": "Chi gioca?",
@@ -4173,6 +4352,11 @@ const I18N=/*I18N:BEGIN*/{
   "noDeal": "{name} dice: «Niente da fare! Offrimi di più.»"
 },
 "zh-Hant": {
+  "howPlay": "怎麼玩",
+  "meIcon": "我的角色",
+  "soundOn": "開啟聲音",
+  "soundOff": "關閉聲音",
+  "pause": "暫停",
   "tagline": "簽下球星 · 贏得聯賽",
   "era": "選擇年代",
   "who": "誰要玩？",
@@ -4558,6 +4742,11 @@ const I18N=/*I18N:BEGIN*/{
   "noDeal": "{name} 說：「不換！再多給我一點。」"
 },
 "nl": {
+  "howPlay": "Zo speel je",
+  "meIcon": "Mijn personage",
+  "soundOn": "Geluid aan",
+  "soundOff": "Geluid uit",
+  "pause": "Pauze",
   "tagline": "Koop de sterren · Win de competitie",
   "era": "Kies je tijdperk",
   "who": "Wie doet er mee?",
@@ -4962,48 +5151,70 @@ function t(key,vars){
 }
 const tl=(key,i)=>{const a=tv(key);return Array.isArray(a)&&a[i]!=null?a[i]:(I18N.en[key]||[])[i];};   // item i of a list
 document.documentElement.lang=LANG;document.documentElement.dir=DIR;
-const BACK_ARROW=DIR==='rtl'?'➡':'⬅';   // "back" points the way the page reads
 const groupName=g=>tl('groups',g);
 /** The words on the page itself: data-i18n (text, after an optional data-emoji), data-i18n-aria, the rules list
     (trusted table text with <b>), the shop's intro and its Back button. */
+/** The rules, as list items (trusted table text with <b>). */
+const rulesHTML=()=>(tv('rules')||[]).map(x=>'<li>'+fill(x,{pass:money(PASS_GO),fine:money(50)})+'</li>').join('');
 function applyStaticText(){
   document.querySelectorAll('[data-i18n]').forEach(el=>{const e=el.dataset.emoji;el.textContent=(e?e+' ':'')+t(el.dataset.i18n);});
   document.querySelectorAll('[data-i18n-aria]').forEach(el=>el.setAttribute('aria-label',t(el.dataset.i18nAria)));
-  $('rules').innerHTML=(tv('rules')||[]).map(x=>'<li>'+fill(x,{pass:money(PASS_GO),fine:money(50)})+'</li>').join('');
   $('shopIntro').innerHTML=t('shopIntro',{tro:esc(t('trophiesN',{n:WIN_TROPHIES}))});
-  $('shopBack').textContent=BACK_ARROW+' '+t('back');
+  $('shopBack').innerHTML=Oomba.icon(DIR==='rtl'?'next':'back');$('shopBack').append(t('back'));
+  $('shopIc').innerHTML=$('shopIc2').innerHTML=Oomba.icon('trophy');$('rulesIc').innerHTML=Oomba.icon('book');
 }
 
-/* ---------- player art (cartoon, not likenesses) ---------- */
-const SK={l:'#f5d0b0',m:'#ddaa82',t:'#c08658',d:'#8e5a3a',dd:'#5f3a26'};
+/* ---------- art: the kit's ----------
+   Every footballer is a kit kid in his team's shirt (skin tone, hair style and colour from the roster; the kit snaps a
+   shirt colour to its nearest hue), drawn once as a portrait and kept as a picture. Championships, the ball and the
+   goal are kit props; symbols are kit icons. */
 const WHITE='#f3f5fa',NAVY='#1b2340';
-function avatar(a){
-  const sk=SK[a.skin],hc=a.hc||'#1a120c',kit=a.kit,nc=a.numc||'#fff';
-  let back='',front='';
-  const short=`<path d="M29 40 Q28 17 50 16 Q72 17 71 40 Q67 27 50 27 Q33 27 29 40Z" fill="${hc}"/>`;
-  switch(a.hair){
-    case 'afro':back=`<circle cx="50" cy="35" r="27" fill="${hc}"/>`;front=`<path d="M30 36 Q36 24 50 25 Q64 24 70 36 Q66 20 50 18 Q34 20 30 36Z" fill="${hc}"/>`;break;
-    case 'long':back=`<path d="M27 40 Q25 13 50 13 Q75 13 73 40 L76 66 L24 66Z" fill="${hc}"/>`;front=`<path d="M29 40 Q30 16 50 16 Q70 16 71 40 Q64 25 50 26 Q36 25 29 40Z" fill="${hc}"/>`;
-      if(a.band)front+=`<path d="M29 31 Q50 21 71 31 L71 36 Q50 26 29 36Z" fill="${a.band}"/>`;break;
-    case 'bun':front=short+`<circle cx="50" cy="13" r="7.5" fill="${hc}"/>`;break;
-    case 'curly':front=[[34,27],[42,21],[50,19],[58,21],[66,27],[38,33],[62,33],[46,26],[54,26]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="7" fill="${hc}"/>`).join('');break;
-    case 'bald':front=`<ellipse cx="42" cy="27" rx="6" ry="3" fill="#fff" opacity=".3"/>`;break;
-    case 'buzz':front=`<path d="M31 37 Q31 20 50 20 Q69 20 69 37 Q63 29 50 29 Q37 29 31 37Z" fill="${hc}" opacity=".9"/>`;break;
-    case 'quiff':front=`<path d="M29 39 Q27 15 53 11 Q73 13 71 37 Q65 25 50 27 Q37 27 29 39Z" fill="${hc}"/>`;break;
-    default:front=short;
-  }
-  const stripes=a.stripes?`<path d="M35 69 h7 v31 h-7z M55 69 h7 v31 h-7z M17 80 h6 v20 h-8z M77 80 h6 v20 h-6z" fill="#fff" opacity=".85"/>`:'';
-  const beard=a.beard?`<path d="M31 43 Q31 63 50 64 Q69 63 69 43 Q66 57 50 57 Q34 57 31 43Z" fill="${hc}"/>`:'';
-  return `<svg viewBox="0 0 100 100" aria-hidden="true">${back}
-    <path d="M10 100 Q12 70 50 66 Q88 70 90 100Z" fill="${kit}"/>${stripes}
-    <rect x="44" y="55" width="12" height="13" fill="${sk}"/>
-    <path d="M40 67 Q50 77 60 67" fill="none" stroke="rgba(0,0,0,.25)" stroke-width="3"/>
-    <circle cx="30" cy="42" r="4" fill="${sk}"/><circle cx="70" cy="42" r="4" fill="${sk}"/>
-    <circle cx="50" cy="40" r="20" fill="${sk}"/>${beard}${front}
-    <circle cx="43" cy="41" r="2.4" fill="#1a1a2a"/><circle cx="57" cy="41" r="2.4" fill="#1a1a2a"/>
-    <path d="M43 50 Q50 ${a.beard?55:56} 57 50" fill="none" stroke="#5a2a1a" stroke-width="2.5" stroke-linecap="round"/>
-    <text x="50" y="94" text-anchor="middle" font-family="Bungee,Impact,sans-serif" font-size="17" fill="${nc}">${a.num}</text></svg>`;
+const SKIN_I={l:1,m:3,t:4,d:5,dd:6};
+const HAIR_STYLE={short:'spiky',buzz:'buzz',quiff:'spiky',curly:'curls',afro:'curls',long:'long',bun:'puffs'};
+const rgb=h=>{const n=parseInt(String(h).replace('#','').replace(/^(.)(.)(.)$/,'$1$1$2$2$3$3'),16);return [n>>16&255,n>>8&255,n&255];};
+function hairName(hex){   // the roster's hair colour -> the kit's nearest hair colour
+  const c=rgb(hex||'#1a120c');let best='black',bd=1e9;
+  for(const k of ['black','cocoa','blonde','copper','stone']){const d=rgb(Oomba.tokens.hair[k]).reduce((a,v,i)=>a+(v-c[i])**2,0);if(d<bd){bd=d;best=k;}}
+  return best;
 }
+const ART=new Map();
+/** A picture (data URL) made once: key -> make() -> canvas. */
+function artURL(key,make){if(!ART.has(key)){let u='';try{u=make().toDataURL();}catch(e){}ART.set(key,u);}return ART.get(key);}
+const MOODS=['happy','cheer','determined','wink'];   // a little variety in the footballers' faces
+function charSpec(a){
+  const st=HAIR_STYLE[a.hair];
+  return Oomba.char(Object.assign({species:'kid',skin:SKIN_I[a.skin]!=null?SKIN_I[a.skin]:2,outfit:{top:'tee',color:a.kit},mood:MOODS[(a.num||0)%MOODS.length],seed:a.num||1},st?{hair:{style:st,color:hairName(a.hc)}}:{}));
+}
+const portraitURL=(key,spec)=>artURL(key,()=>Oomba.ui.portrait(spec,{size:120,mood:'happy'}));
+/** A kit character cropped to the head and shoulders (the board's squares are small), as a square picture. */
+function bustCanvas(spec,k){   // k: a wider frame (k x the body's width) that shows the shirt under the head
+  const full=Oomba.art.toCanvas(spec,260,spec.mood||'happy'),w=full.width,h=full.height,data=full.getContext('2d').getImageData(0,0,w,h).data;
+  let top=h,l=w,r=0;for(let y=0;y<h;y+=2)for(let x=0;x<w;x+=2)if(data[(y*w+x)*4+3]>30){if(y<top)top=y;if(x<l)l=x;if(x>r)r=x;}
+  if(top>=h)return full;
+  const side=Math.round(k?(r-l)*k:Math.min(r-l,(h-top)*0.62)*1.06),cx=(l+r)/2,c=document.createElement('canvas');c.width=c.height=128;
+  c.getContext('2d').drawImage(full,cx-side/2,top-side*0.02,side,side,0,0,128,128);return c;
+}
+/** A footballer's picture: his bust with his shirt number on the chest, in his team's number colour, so Kane (9),
+    Messi (10) and Haaland (9, blond) read apart even when two teams' shirts share a kit colour. */
+function kitBust(a){
+  const c=bustCanvas(charSpec(a),1.3);if(!a.num)return c;
+  const x=c.getContext('2d'),n=String(a.num),fs=n.length>1?27:31;
+  x.font=`800 ${fs}px "Bricolage Grotesque", system-ui, sans-serif`;x.textAlign='center';x.textBaseline='alphabetic';x.lineJoin='round';
+  x.lineWidth=5;x.strokeStyle=Oomba.color('ink');x.strokeText(n,64,116);
+  x.fillStyle=a.numc||'#ffffff';x.fillText(n,64,116);
+  return c;
+}
+function avatar(a){return `<img src="${artURL('av:'+[a.skin,a.hair,a.hc,a.kit,a.num,a.numc].join(),()=>kitBust(a))}" alt="" draggable="false">`;}
+const propImg=(name,cls)=>`<img class="${cls||'pr'}" src="${artURL('p:'+name,()=>Oomba.art.toCanvas(name,120))}" alt="" draggable="false">`;
+const ic=(name,cls)=>Oomba.icon(name).replace('<svg','<svg'+(cls?` class="${cls}"`:''));
+const RED_CARD='<span class="redc" aria-hidden="true"></span>';
+// The player's own character (Oomba.avatar(): the Me-page character, the mascot for a guest) as seat token 'me';
+// the robot seats' picture is the kit's Oomba in headphones.
+const ME='me';
+const meURL=()=>artURL('me',()=>bustCanvas(Oomba.avatar()));
+const botImg=()=>`<img src="${artURL('bot',()=>bustCanvas(Oomba.char({species:'oomba',wear:['headphones'],colors:{base:'stone'}})))}" alt="" draggable="false">`;
+/** A seat's token: an emoji, or the player's own character. */
+const tokHTML=e=>e===ME?`<img src="${meURL()}" alt="" draggable="false">`:esc(e||'');
 function trophy(kind){
   const T={
     wc:`<path d="M42 88 h16 l-2 -10 h-12z" fill="#1f7a3b"/><path d="M38 92 h24 v6 h-24z" fill="#b8860b"/><path d="M44 78 Q36 60 40 44 Q30 36 34 22 Q42 8 50 8 Q58 8 66 22 Q70 36 60 44 Q64 60 56 78Z" fill="#f2c230" stroke="#a87400" stroke-width="3"/><circle cx="50" cy="24" r="11" fill="#ffd95a" stroke="#a87400" stroke-width="2.5"/>`,
@@ -5011,7 +5222,8 @@ function trophy(kind){
     ucl:`<path d="M36 18 h28 q2 26 -8 38 v18 h-12 v-18 q-10 -12 -8 -38z" fill="#e6ebf5" stroke="#8a96ad" stroke-width="3"/><path d="M36 22 Q8 18 14 40 Q20 56 40 54 M64 22 Q92 18 86 40 Q80 56 60 54" fill="none" stroke="#e6ebf5" stroke-width="6"/><rect x="36" y="76" width="28" height="14" rx="2" fill="#0b1f5c"/><path d="M50 80 l2 4 4 .5 -3 2.6 1 4 -4 -2 -4 2 1 -4 -3 -2.6 4 -.5z" fill="#fff"/>`,
     copa:`<path d="M34 12 h32 q0 34 -12 44 v12 h-8 v-12 q-12 -10 -12 -44z" fill="#d9dde6" stroke="#8a96ad" stroke-width="3"/><path d="M40 68 h20 l4 10 h-28z" fill="#c9a227"/><rect x="32" y="78" width="36" height="12" rx="2" fill="#6b4a1a"/>`
   };
-  return `<svg viewBox="0 0 100 100" aria-hidden="true">${T[kind]}</svg>`;
+  if(kind==='wc')return propImg('trophy');
+  return `<svg viewBox="0 0 100 100" aria-hidden="true">${T[kind].replace(/stroke="#[0-9a-f]+"/g,'stroke="'+Oomba.color('ink')+'"')}</svg>`;
 }
 
 const GROUPS=[   // colour groups; their names are I18N.groups in this order
@@ -5093,10 +5305,10 @@ const CHAMPS=[
 ];
 const CHAMP_PRICE=200, CHAMP_RENT=[0,25,50,100,200];
 const CORNERS=[
-  {t:'go',name:'Kick Off',ic:'⚽'},
-  {t:'sinbin',name:'Sin Bin',ic:'🔒'},
-  {t:'var',name:'VAR',ic:'📺'},
-  {t:'redcard',name:'Red Card',ic:'🟥'}
+  {t:'go',name:'Kick Off',ic:()=>propImg('ball','')},
+  {t:'sinbin',name:'Sin Bin',ic:()=>ic('lock')},
+  {t:'var',name:'VAR',ic:()=>ic('eye')},
+  {t:'redcard',name:'Red Card',ic:()=>RED_CARD}
 ];
 let SPACES=[],PLAYER_IDX=[],CHAMP_IDX=[],GOALIE_IDX=[];
 const GOALIE_PRICE=150,GOALIE_FEE=20;
@@ -5136,12 +5348,11 @@ let S=null, animating=false, count=2, mode='normal';
 function drawModes(){
   $('modes').innerHTML=Object.entries(ROSTERS).map(([m,r])=>{
     const picks=m==='normal'?[15,14,11,4]:[14,15,13,9];
-    return `<button class="mode" data-m="${m}" aria-pressed="${m===mode}"><b>${m==='normal'?'⭐ '+esc(t('modeNormal')):'👑 '+esc(t('modeLegends'))}</b>
-      <div class="faces">${picks.map(i=>`<div>${avatar(r.players[i][2])}</div>`).join('')}</div><span>${esc(t(m==='normal'?'rosterNormal':'rosterLegends'))}</span></button>`;
+    return `<button class="mode" data-m="${m}" aria-pressed="${m===mode}"><b>${m==='normal'?ic('star')+esc(t('modeNormal')):ic('trophy')+esc(t('modeLegends'))}</b>
+      <div class="faces">${picks.map(i=>avatar(r.players[i][2])).join('')}</div><span>${esc(t(m==='normal'?'rosterNormal':'rosterLegends'))}</span></button>`;
   }).join('');
   $('modes').querySelectorAll('.mode').forEach(b=>b.addEventListener('click',()=>{mode=b.dataset.m;drawModes();}));
 }
-drawModes();
 /* ---------- TROPHY WALLET & SHOP ---------- */
 const WKEY='footy-wallet-v1',WIN_TROPHIES=5;
 // Boost, theme and title names are in I18N (b_<id>_n / b_<id>_d, th_<id>, titles[i]).
@@ -5156,7 +5367,7 @@ const LEGEND_ICONS=['🦸','🥷','🧙','🧛','🦄','🐺','🦍','🐙','�
 // The English titles are the ids kept in the wallet (older wallets saved exactly these); titleName() shows them in the player's language.
 const TITLES=['the Champ','Goal Machine','Top Boss','Golden Boot','the Legend','Captain Fantastic','King of Nutmegs','the Wall'];
 const titleName=x=>{const i=TITLES.indexOf(x);return i<0?(x||''):tl('titles',i);};
-const THEMES={classic:{em:'🌱',pitch:'#1f8f45',pitch2:'#1a7f3d',chalk:'#f4fff6',cost:0},
+const THEMES={classic:{em:'🌱',pitch:'#3fae5f',pitch2:'#37a055',chalk:'#fffdf2',cost:0},
  night:{em:'🌙',pitch:'#1e3a5f',pitch2:'#17304f',chalk:'#dbeafe',cost:3},
  snow:{em:'❄️',pitch:'#dbe4ee',pitch2:'#c3cfdc',chalk:'#1e3a5f',cost:3},
  lava:{em:'🌋',pitch:'#9a3412',pitch2:'#7c2d12',chalk:'#ffedd5',cost:3},
@@ -5175,29 +5386,31 @@ const wkey=n=>String(n||'').trim().toLowerCase();
 function getWallet(name,create){const k=wkey(name);if(!k)return null;if(!W.players[k]&&create)W.players[k]={name:String(name).trim(),trophies:0,wins:0,icons:[],titles:[],title:null,boosts:{},themes:['classic'],vouchers:[]};return W.players[k]||null;}
 function walletList(){return Object.values(W.players).sort((a,b)=>b.trophies-a.trophies||b.wins-a.wins);}
 function applyTheme(){const th=THEMES[W.theme]||THEMES.classic;const r=document.documentElement.style;r.setProperty('--pitch',th.pitch);r.setProperty('--pitch2',th.pitch2);r.setProperty('--chalk',th.chalk);}
-function shopBadge(){const tot=walletList().reduce((a,w)=>a+w.trophies,0);$('shopBadge').textContent=tot?t('shopBadge',{n:tot}):'';}
+function shopBadge(){   // the count as a bubble (the words stay in the button's label for screen readers)
+  const tot=walletList().reduce((a,w)=>a+w.trophies,0),b=$('shopBadge');b.textContent=tot?Oomba.num(tot):'';
+  b.setAttribute('aria-hidden','true');$('openShop').setAttribute('aria-label',t('shop')+(tot?' '+t('shopBadge',{n:tot}):''));$('openShop').title=tot?t('shopBadge',{n:tot}).replace(/^\s*·\s*/,''):'';}
 applyStaticText();loadWallet();applyTheme();shopBadge();
 let shopWho=null,shopTab='boosts';
-function openShop(who){if(who)shopWho=wkey(who);$('setup').hidden=true;$('game').hidden=true;$('shop').hidden=false;renderShop();window.scrollTo(0,0);}
+function openShop(who){if(who)shopWho=wkey(who);leaveTitle(()=>{$('game').hidden=true;$('shop').hidden=false;Oomba.scene='shop';renderShop();$('ft').scrollTop=0;});}
 $('openShop').addEventListener('click',()=>openShop());
-$('shopBack').addEventListener('click',()=>{$('shop').hidden=true;if(S&&!S.won){$('game').hidden=false;}else{$('setup').hidden=false;drawNames();}shopBadge();});
+$('shopBack').addEventListener('click',()=>{$('shop').hidden=true;if(S&&!S.won){$('game').hidden=false;Oomba.scene='play';}else{openTitle();drawNames();}shopBadge();});
 $('shopTabs').querySelectorAll('.btn').forEach(b=>b.addEventListener('click',()=>{shopTab=b.dataset.st;$('shopTabs').querySelectorAll('.btn').forEach(x=>x.setAttribute('aria-pressed',x===b));renderShop();}));
 function renderShop(){
   const list=walletList();if(shopWho&&!W.players[shopWho])shopWho=null;if(!shopWho&&list.length)shopWho=wkey(list[0].name);
-  $('wallet').innerHTML=list.length?list.map(w=>`<button class="wchip" data-w="${esc(wkey(w.name))}" aria-pressed="${wkey(w.name)===shopWho}">${esc(showName(w.name))} <b>🏆 ${fmtN(w.trophies)}</b></button>`).join(''):`<div class="emptybox" style="width:100%">${esc(t('noChamps',{tro:t('trophiesN',{n:WIN_TROPHIES})}))}</div>`;
+  $('wallet').innerHTML=list.length?list.map(w=>`<button class="wchip" data-w="${esc(wkey(w.name))}" aria-pressed="${wkey(w.name)===shopWho}">${esc(showName(w.name))} <b>${ic('trophy')} ${fmtN(w.trophies)}</b></button>`).join(''):`<div class="emptybox" style="width:100%">${esc(t('noChamps',{tro:t('trophiesN',{n:WIN_TROPHIES})}))}</div>`;
   $('wallet').querySelectorAll('[data-w]').forEach(b=>b.addEventListener('click',()=>{shopWho=b.dataset.w;renderShop();}));
   const w=shopWho?W.players[shopWho]:null,body=$('shopBody');
   if(!w){body.innerHTML='';return;}
-  const row=(em,name,desc,cost,btn,cls)=>`<div class="prize ${cls||''}"><div class="pe">${em}</div><div class="pt"><b>${esc(name)}</b><small>${esc(desc)}</small></div>${cost!=null?`<div class="cost">🏆 ${fmtN(cost)}</div>`:''}${btn||''}</div>`;
+  const row=(em,name,desc,cost,btn,cls)=>`<div class="prize ${cls||''}"><div class="pe">${em}</div><div class="pt"><b>${esc(name)}</b><small>${esc(desc)}</small></div>${cost!=null?`<div class="cost">${ic('trophy')} ${fmtN(cost)}</div>`:''}${btn||''}</div>`;
   const buyBtn=(id,cost,label)=>w.trophies>=cost?`<button class="btn primary" data-buy="${id}">${esc(label||t('buy'))}</button>`:`<button class="btn" disabled>${esc(t('moreNeeded',{n:cost-w.trophies}))}</button>`;
   const wn=esc(showName(w.name));
-  let h=`<div class="shophead" style="margin:4px 0 10px"><div><b style="font:400 1.1rem var(--display)">${wn}</b><br><small class="howto">${esc(t('winsN',{n:w.wins}))}${w.title?' · '+esc(titleName(w.title)):''}</small></div><div class="bigtrophy">🏆 ${fmtN(w.trophies)}</div></div>`;
-  if(shopTab==='boosts'){h+=`<p class="howto">${t('boostsIntro',{name:wn})}</p><div class="prizes">`+BOOSTS.map(b=>{const n=w.boosts[b.id]||0;return row(b.em,boostName(b)+(n?' '+t('readyN',{n}):''),boostDesc(b),b.cost,buyBtn(b.id,b.cost),n?'owned':'');}).join('')+'</div>';}
-  if(shopTab==='icons'){h+=`<p class="howto">${esc(t('iconsIntro'))}</p><div class="prizes">`+LEGEND_ICONS.map(e=>w.icons.includes(e)?row(e,t('unlocked'),t('iconYours'),null,'<span class="cost">✓</span>','owned'):row(e,t('legendIcon'),t('unlockIcon'),1,buyBtn('icon:'+e,1,t('unlock')))).join('')+'</div>';}
-  if(shopTab==='titles'){h+=`<p class="howto">${esc(t('titlesIntro'))}</p><div class="prizes">`+TITLES.map(x=>w.titles.includes(x)?row('🏷️',titleName(x),w.title===x?t('wearingNow'):t('ownTitle'),null,w.title===x?`<button class="btn" data-wear="">${esc(t('takeOff'))}</button>`:`<button class="btn primary" data-wear="${esc(x)}">${esc(t('wearIt'))}</button>`,'owned'):row('🏷️',titleName(x),t('unlockTitle'),1,buyBtn('title:'+x,1,t('unlock')))).join('')+'</div>';}
-  if(shopTab==='pitch'){h+=`<p class="howto">${esc(t('pitchIntro'))}</p><div class="prizes">`+Object.keys(THEMES).map(k=>{const th=THEMES[k],own=w.themes.includes(k),on=W.theme===k;return own?row(th.em,themeName(k),on?t('pitchOn'):t('ownPitch'),null,on?`<span class="cost">✓ ${esc(t('onBadge'))}</span>`:`<button class="btn primary" data-theme="${k}">${esc(t('useIt'))}</button>`,'owned'):row(th.em,themeName(k),t('unlockPitch'),th.cost,buyBtn('theme:'+k,th.cost,t('unlock')));}).join('')+'</div>';}
-  if(shopTab==='real'){h+=`<p class="howto">${esc(t('realIntro'))}</p><div class="prizes">`+(W.prizes.length?W.prizes.map(p=>row(p.em,prizeName(p),'',p.cost,buyBtn('real:'+p.id,p.cost,t('redeem')))).join(''):`<div class="emptybox">${esc(t('noPrizes'))}</div>`)+'</div>';}
-  if(shopTab==='vouchers'){const vs=w.vouchers.slice().reverse();h+=`<p class="howto">${esc(t('vouchersIntro',{name:showName(w.name)}))}</p><div class="prizes">`+(vs.length?vs.map(v=>`<div class="voucher ${v.used?'used':''}"><div><span class="vn">${v.em} ${esc(prizeName(v))}</span><small>${esc(voucherDate(v))}${v.used?' · '+esc(t('used')):''}</small></div>${v.used?'':`<button class="btn" data-used="${v.id}">${esc(t('markUsed'))} ✓</button>`}</div>`).join(''):`<div class="emptybox">${esc(t('noTickets'))}</div>`)+'</div>';}
+  let h=`<div class="shophead" style="margin:4px 0 10px"><div><b style="font-size:1.15rem">${wn}</b><br><small style="font-weight:700">${esc(t('winsN',{n:w.wins}))}${w.title?' · '+esc(titleName(w.title)):''}</small></div><div class="bigtrophy">${ic('trophy')} ${fmtN(w.trophies)}</div></div>`;
+  if(shopTab==='boosts'){h+=`<p class="howto" style="padding:0">${t('boostsIntro',{name:wn})}</p><div class="prizes">`+BOOSTS.map(b=>{const n=w.boosts[b.id]||0;return row(b.em,boostName(b)+(n?' '+t('readyN',{n}):''),boostDesc(b),b.cost,buyBtn(b.id,b.cost),n?'owned':'');}).join('')+'</div>';}
+  if(shopTab==='icons'){h+=`<p class="howto" style="padding:0">${esc(t('iconsIntro'))}</p><div class="prizes">`+LEGEND_ICONS.map(e=>w.icons.includes(e)?row(e,t('unlocked'),t('iconYours'),null,'<span class="cost">'+ic('check')+'</span>','owned'):row(e,t('legendIcon'),t('unlockIcon'),1,buyBtn('icon:'+e,1,t('unlock')))).join('')+'</div>';}
+  if(shopTab==='titles'){h+=`<p class="howto" style="padding:0">${esc(t('titlesIntro'))}</p><div class="prizes">`+TITLES.map(x=>w.titles.includes(x)?row('🏷️',titleName(x),w.title===x?t('wearingNow'):t('ownTitle'),null,w.title===x?`<button class="btn" data-wear="">${esc(t('takeOff'))}</button>`:`<button class="btn primary" data-wear="${esc(x)}">${esc(t('wearIt'))}</button>`,'owned'):row('🏷️',titleName(x),t('unlockTitle'),1,buyBtn('title:'+x,1,t('unlock')))).join('')+'</div>';}
+  if(shopTab==='pitch'){h+=`<p class="howto" style="padding:0">${esc(t('pitchIntro'))}</p><div class="prizes">`+Object.keys(THEMES).map(k=>{const th=THEMES[k],own=w.themes.includes(k),on=W.theme===k;return own?row(th.em,themeName(k),on?t('pitchOn'):t('ownPitch'),null,on?`<span class="cost">${ic('check')} ${esc(t('onBadge'))}</span>`:`<button class="btn primary" data-theme="${k}">${esc(t('useIt'))}</button>`,'owned'):row(th.em,themeName(k),t('unlockPitch'),th.cost,buyBtn('theme:'+k,th.cost,t('unlock')));}).join('')+'</div>';}
+  if(shopTab==='real'){h+=`<p class="howto" style="padding:0">${esc(t('realIntro'))}</p><div class="prizes">`+(W.prizes.length?W.prizes.map(p=>row(p.em,prizeName(p),'',p.cost,buyBtn('real:'+p.id,p.cost,t('redeem')))).join(''):`<div class="emptybox">${esc(t('noPrizes'))}</div>`)+'</div>';}
+  if(shopTab==='vouchers'){const vs=w.vouchers.slice().reverse();h+=`<p class="howto" style="padding:0">${esc(t('vouchersIntro',{name:showName(w.name)}))}</p><div class="prizes">`+(vs.length?vs.map(v=>`<div class="voucher ${v.used?'used':''}"><div><span class="vn">${v.em} ${esc(prizeName(v))}</span><small>${esc(voucherDate(v))}${v.used?' · '+esc(t('used')):''}</small></div>${v.used?'':`<button class="btn" data-used="${v.id}">${ic('check')}${esc(t('markUsed'))}</button>`}</div>`).join(''):`<div class="emptybox">${esc(t('noTickets'))}</div>`)+'</div>';}
   body.innerHTML=h;
   body.querySelectorAll('[data-buy]').forEach(b=>b.addEventListener('click',()=>buy(w,b.dataset.buy)));
   body.querySelectorAll('[data-wear]').forEach(b=>b.addEventListener('click',()=>{w.title=b.dataset.wear||null;saveWallet();renderShop();}));
@@ -5216,19 +5429,19 @@ function buy(w,what){
     w.trophies-=cost;saveWallet();confetti();renderShop();
     return modal({kicker:t('ticketKicker'),title:t('ticketTitle'),color:'#f59e0b',ink:'#1d1606',html:`<div class="ticket"><div class="te">${p.em}</div><h4>${esc(prizeName(p))}</h4><p>${esc(t('earnedBy',{name:showName(w.name),date:voucherDate(v)}))}</p></div><p>${t('ticketSaved',{tab:'🎟️ '+esc(t('tab_vouchers'))})}</p>`,buttons:[{label:t('yay'),primary:true}],nobot:true});}
   w.trophies-=cost;saveWallet();confetti();renderShop();shopBadge();
-  modal({kicker:t('shop'),title:t('bought'),color:'#16a34a',html:`<p class="big">🏆</p><p>${done}</p><p>${t('leftN',{name:esc(showName(w.name)),n:w.trophies})}</p>`,buttons:[{label:t('ok'),primary:true}],nobot:true});
+  modal({kicker:t('shop'),title:t('bought'),color:'#16a34a',html:`<p class="big">${propImg('trophy')}</p><p>${done}</p><p>${t('leftN',{name:esc(showName(w.name)),n:w.trophies})}</p>`,buttons:[{label:t('ok'),primary:true}],nobot:true});
 }
 $('grownBtn').addEventListener('click',()=>{
   const a=2+rnd(7),b=3+rnd(7);
-  modal({kicker:t('grownOnly'),title:t('quickCheck'),color:'#7c5cff',html:`<p>${t('whatIs',{q:'<bdi dir="ltr">'+a+' × '+b+'</bdi>'})}</p><input type="number" id="gate" inputmode="numeric" dir="ltr" style="font:800 1.3rem var(--body);padding:10px;border-radius:12px;border:2px solid var(--line);background:var(--night2);color:var(--ink);width:100%">`,
+  modal({kicker:t('grownOnly'),title:t('quickCheck'),color:'#7c5cff',html:`<p>${t('whatIs',{q:'<bdi dir="ltr">'+a+' × '+b+'</bdi>'})}</p><input type="number" id="gate" inputmode="numeric" dir="ltr" class="ft-in" style="font-size:1.3rem;width:100%">`,
     buttons:[{label:t('open'),primary:true,fn:()=>{if(+document.getElementById('gate').value===a*b)grownUps();else modal({kicker:t('grownOnly'),title:t('notQuite'),color:'#e11d48',html:`<p>${esc(t('wrongAnswer'))}</p>`,buttons:[{label:t('ok'),primary:true}],nobot:true});}},{label:t('cancel')}],nobot:true});
   setTimeout(()=>{const g=document.getElementById('gate');if(g)g.focus();},60);
 });
 function grownUps(){
   const list=walletList();
-  const prizes=W.prizes.map(p=>`<div class="grow" data-pid="${p.id}"><input class="pem" value="${esc(p.em)}" maxlength="3" aria-label="${esc(t('emojiAria'))}"><input class="pname" value="${esc(prizeName(p))}" maxlength="40" aria-label="${esc(t('prizeNameAria'))}"><input class="pcost" type="number" min="1" max="99" value="${p.cost}" aria-label="${esc(t('costAria'))}"><button class="btn" data-del="${p.id}" style="padding:8px 10px" aria-label="${esc(t('removeAria'))}">✕</button></div>`).join('');
-  const players=list.map(w=>`<div class="voucher" style="border-style:solid"><div><span class="vn">${esc(showName(w.name))}</span><small>🏆 ${fmtN(w.trophies)} · ${esc(t('winsN',{n:w.wins}))}</small></div><div style="display:flex;gap:6px" dir="ltr"><button class="btn" data-adj="${esc(wkey(w.name))}|-1" style="padding:8px 12px">−1</button><button class="btn" data-adj="${esc(wkey(w.name))}|1" style="padding:8px 12px">+1</button></div></div>`).join('');
-  modal({kicker:t('grownKicker'),title:t('grownTitle'),color:'#7c5cff',html:`<div class="grown"><div class="sect">${esc(t('realHead'))}</div>${prizes||`<div class="emptybox">${esc(t('noPrizesYet'))}</div>`}<button class="btn" id="addPrize">➕ ${esc(t('addPrize'))}</button><div class="sect">${esc(t('trophiesHead'))}</div>${players||`<div class="emptybox">${esc(t('nobody'))}</div>`}<div class="grow" style="grid-template-columns:1fr auto"><input id="newChamp" maxlength="14" placeholder="${esc(t('addByName'))}"><button class="btn" id="addChamp" style="padding:8px 12px">${esc(t('add'))}</button></div></div>`,
+  const prizes=W.prizes.map(p=>`<div class="grow" data-pid="${p.id}"><input class="pem ft-in" value="${esc(p.em)}" maxlength="3" aria-label="${esc(t('emojiAria'))}"><input class="pname ft-in" value="${esc(prizeName(p))}" maxlength="40" aria-label="${esc(t('prizeNameAria'))}"><input class="pcost ft-in" type="number" min="1" max="99" value="${p.cost}" aria-label="${esc(t('costAria'))}"><button class="btn" data-del="${p.id}" style="padding:4px 12px" aria-label="${esc(t('removeAria'))}">${ic('cross')}</button></div>`).join('');
+  const players=list.map(w=>`<div class="voucher" style="border-style:solid"><div><span class="vn">${esc(showName(w.name))}</span><small>${fmtN(w.trophies)} · ${esc(t('winsN',{n:w.wins}))}</small></div><div style="display:flex;gap:6px" dir="ltr"><button class="btn" data-adj="${esc(wkey(w.name))}|-1" style="padding:8px 12px">−1</button><button class="btn" data-adj="${esc(wkey(w.name))}|1" style="padding:8px 12px">+1</button></div></div>`).join('');
+  modal({kicker:t('grownKicker'),title:t('grownTitle'),color:'#7c5cff',html:`<div class="grown"><div class="sect">${esc(t('realHead'))}</div>${prizes||`<div class="emptybox">${esc(t('noPrizesYet'))}</div>`}<button class="btn" id="addPrize">${ic('plus')}${esc(t('addPrize'))}</button><div class="sect">${esc(t('trophiesHead'))}</div>${players||`<div class="emptybox">${esc(t('nobody'))}</div>`}<div class="grow" style="grid-template-columns:1fr auto"><input id="newChamp" class="ft-in" maxlength="14" placeholder="${esc(t('addByName'))}"><button class="btn" id="addChamp" style="padding:8px 12px">${esc(t('add'))}</button></div></div>`,
     buttons:[{label:t('save'),primary:true,fn:()=>{saveGrown();renderShop();shopBadge();}},{label:t('cancel')}],nobot:true});
   const body=document.getElementById('mBody');
   // A starter prize shown in the player's language keeps its saved English name unless a grown-up changed the words.
@@ -5259,45 +5472,58 @@ function applyBoostsToGame(){
 
 
 const savedNames=['','','',''],bots=[false,true,false,false];
-const ICONS=['⚽','🦁','🚀','🐉','🦈','👑','🔥','⭐','🐯','🦖','🍕','🏆','🦅','👽','🐼','🤖'];
-const icons=['⚽','🤖','🦁','🚀'];
+// 'me' is the player's own character (the kit's Oomba.avatar()); the rest are emoji tokens, as before.
+const ICONS=[ME,'⚽','🦁','🚀','🐉','🦈','👑','🔥','⭐','🐯','🦖','🍕','🏆','🦅','👽','🐼','🤖'];
+const icons=[ME,'🤖','🦁','🚀'];
 // The English bot names and "Player 1".."Player 4" are what a save holds for an unnamed seat; showName() turns them
 // into the player's language (botNames[i], playerN), so a saved game reads right in every language.
 const BOT_NAMES=['Kickbot','Goalbot 3000','RoboKeeper','Bot-Ball'];
 function showName(n){n=String(n==null?'':n);const b=BOT_NAMES.indexOf(n);if(b>=0)return tl('botNames',b);const m=/^Player ([1-9])$/.exec(n);return m?t('playerN',{n:+m[1]}):n;}
 const pName=p=>showName(p&&p.name);
+const iconAria=e=>e===ME?t('meIcon'):t('iconLabel',{e});
+/** The seats on the title card: token (tap to change it), name, Bot switch. */
 function drawNames(){
   const box=$('names');
   [...box.querySelectorAll('input')].forEach((x,i)=>savedNames[i]=x.value);
   for(let i=1;i<count;i++){if(icons.slice(0,i).includes(icons[i]))icons[i]=ICONS.find(e=>!icons.slice(0,count).includes(e));}
   box.innerHTML='';
   for(let i=0;i<count;i++){
-    const block=document.createElement('div');block.className='pblock';
-    const row=document.createElement('div');row.className='namerow';
-    row.innerHTML=`<span class="dot ic" style="background:${TOKENS[i]};--c:${TOKENS[i]}">${icons[i]}</span><input id="name${i}" maxlength="14" placeholder="${esc(bots[i]?tl('botNames',i):t('playerN',{n:i+1}))}" value="${esc(savedNames[i]||'')}" aria-label="${esc(t('nameFor',{n:i+1}))}"><button class="botbtn" id="bot${i}" aria-pressed="${bots[i]}">🤖 ${esc(t('bot'))}</button>`;
-    const ir=document.createElement('div');ir.className='iconrow';ir.setAttribute('role','group');ir.setAttribute('aria-label',t('iconFor',{n:i+1}));
-    const wl=(typeof W!=='undefined'&&W)?getWallet(savedNames[i],false):null;const myIcons=ICONS.concat(wl?wl.icons.filter(e=>!ICONS.includes(e)):[]);
-    ir.innerHTML=myIcons.map(e=>`<button class="iconpick" style="--c:${TOKENS[i]}${LEGEND_ICONS.includes(e)?';border-color:var(--gold)':''}" aria-pressed="${e===icons[i]}" aria-label="${esc(t('iconLabel',{e})+(LEGEND_ICONS.includes(e)?' '+t('legendary'):''))}">${e}</button>`).join('');
-    ir.querySelectorAll('.iconpick').forEach(btn=>btn.addEventListener('click',()=>{icons[i]=btn.textContent;syncIcons();}));
-    block.appendChild(row);block.appendChild(ir);box.appendChild(block);
+    const blk=document.createElement('div');blk.className='pblock';
+    blk.innerHTML=`<div class="namerow"><button class="tokbtn" style="--c:${TOKENS[i]}" aria-haspopup="dialog"></button><input id="name${i}" maxlength="14" placeholder="${esc(bots[i]?tl('botNames',i):t('playerN',{n:i+1}))}" value="${esc(savedNames[i]||'')}" aria-label="${esc(t('nameFor',{n:i+1}))}" autocomplete="off"><button class="botbtn" id="bot${i}" aria-pressed="${bots[i]}">${botImg()}${esc(t('bot'))}</button></div>
+      <div class="quick" role="group" aria-label="${esc(t('iconFor',{n:i+1}))}">${ICONS.map(e=>`<button data-e="${esc(e)}" style="--c:${TOKENS[i]}" aria-label="${esc(iconAria(e))}">${tokHTML(e)}</button>`).join('')}</div>`;
+    box.appendChild(blk);const row=blk;
+    blk.querySelectorAll('.quick button').forEach(q=>q.addEventListener('click',()=>{if(q.disabled)return;icons[i]=q.dataset.e;Oomba.sfx('pop',{caption:false});syncIcons();}));
+    row.querySelector('.tokbtn').addEventListener('click',()=>pickIcon(i));
     row.querySelector('input').addEventListener('change',()=>drawNames());
-    row.querySelector('.botbtn').addEventListener('click',e=>{bots[i]=!bots[i];e.currentTarget.setAttribute('aria-pressed',bots[i]);row.querySelector('input').placeholder=bots[i]?tl('botNames',i):t('playerN',{n:i+1});});
+    row.querySelector('.botbtn').addEventListener('click',e=>{bots[i]=!bots[i];e.currentTarget.setAttribute('aria-pressed',bots[i]);row.querySelector('input').placeholder=bots[i]?tl('botNames',i):t('playerN',{n:i+1});Oomba.sfx('select',{caption:false});});
   }
   syncIcons();
 }
+/** The token picker for seat i (a popup): the tokens, plus any legendary icons that name has unlocked in the shop. */
+function pickIcon(i){
+  [...$('names').querySelectorAll('input')].forEach((x,j)=>savedNames[j]=x.value);
+  const wl=(typeof W!=='undefined'&&W)?getWallet(savedNames[i],false):null,myIcons=ICONS.concat(wl?wl.icons.filter(e=>!ICONS.includes(e)):[]);
+  const taken=icons.slice(0,count).filter((_,j)=>j!==i);
+  modal({kicker:t('iconFor',{n:i+1}),title:(savedNames[i]||'').trim()||(bots[i]?tl('botNames',i):t('playerN',{n:i+1})),nobot:true,
+    html:`<div class="icongrid" role="group" aria-label="${esc(t('iconFor',{n:i+1}))}">`+myIcons.map(e=>`<button class="iconpick${LEGEND_ICONS.includes(e)?' legend':''}" data-e="${esc(e)}" style="--c:${TOKENS[i]}" aria-pressed="${e===icons[i]}"${taken.includes(e)?' disabled':''} aria-label="${esc(iconAria(e)+(LEGEND_ICONS.includes(e)?' '+t('legendary'):'')+(taken.includes(e)?' '+t('taken'):''))}">${tokHTML(e)}</button>`).join('')+'</div>',
+    buttons:[{label:t('ok'),primary:true}]});
+  $('mBody').querySelectorAll('.iconpick').forEach(b=>b.addEventListener('click',()=>{icons[i]=b.dataset.e;Oomba.sfx('pop',{caption:false});$('scrim').hidden=true;syncIcons();const tb=$('names').querySelectorAll('.tokbtn')[i];if(tb)tb.focus();}));
+  const on=$('mBody').querySelector('.iconpick[aria-pressed="true"]');if(on)setTimeout(()=>on.focus(),60);
+}
 function syncIcons(){
   document.querySelectorAll('#names .pblock').forEach((bl,i)=>{
+    const b=bl.querySelector('.tokbtn');b.innerHTML=tokHTML(icons[i])+`<span class="pen" aria-hidden="true">${Oomba.icon('pencil')}</span>`;b.setAttribute('aria-label',t('iconFor',{n:i+1})+': '+iconAria(icons[i]));
     const taken=icons.slice(0,count).filter((_,j)=>j!==i);
-    bl.querySelector('.dot').textContent=icons[i];
-    bl.querySelectorAll('.iconpick').forEach(b=>{const e=b.textContent;b.setAttribute('aria-pressed',e===icons[i]);b.disabled=taken.includes(e);b.setAttribute('aria-label',t('iconLabel',{e})+(taken.includes(e)?' '+t('taken'):''));});
+    bl.querySelectorAll('.quick button').forEach(q=>{const e=q.dataset.e;q.setAttribute('aria-pressed',e===icons[i]);q.disabled=taken.includes(e);});
   });
+  refreshTitleHero();
 }
 document.querySelectorAll('.counts .btn').forEach(b=>b.addEventListener('click',()=>{
   count=+b.dataset.n;
   document.querySelectorAll('.counts .btn').forEach(x=>x.setAttribute('aria-pressed',x===b));
+  Oomba.sfx('select',{caption:false});
   drawNames();
 }));
-drawNames();
 
 function newGame(){
   const players=[];
@@ -5311,19 +5537,53 @@ function newGame(){
 }
 function startGame(){
   buildSpaces(S.mode);
-  $('setup').hidden=true;$('game').hidden=false;
-  $('modetag').textContent=S.mode==='legends'?'👑 '+t('legendsMode'):'⭐ '+t('normalMode');
+  $('shop').hidden=true;$('game').hidden=false;Oomba.scene='play';$('ft').scrollTop=0;
+  $('modetag').innerHTML=(S.mode==='legends'?ic('trophy'):ic('star'))+esc(S.mode==='legends'?t('legendsMode'):t('normalMode'));
   buildBoard();
   let boosted=false;if(S.fresh){S.fresh=false;boosted=applyBoostsToGame();}
   render();save();if(!boosted)botTick();
 }
-$('start').addEventListener('click',newGame);
-$('resume').addEventListener('click',()=>{const s=load();if(s){S=s;startGame();}});
+$('resume').addEventListener('click',()=>{const s=load();if(s)leaveTitle(()=>{S=s;startGame();});});
+$('rulesBtn').addEventListener('click',()=>modal({kicker:t('howPlay'),title:'Footy Tycoon',html:'<ol class="rules">'+rulesHTML()+'</ol>',nobot:true}));
+$('openShop').addEventListener('click',()=>openShop());
 $('quit').addEventListener('click',()=>{
   modal({kicker:t('newGame'),title:t('startOverQ'),html:`<p>${esc(t('endsGame'))}</p>`,buttons:[
-    {label:t('yesStartOver'),primary:true,fn:()=>{try{localStorage.removeItem(KEY)}catch(e){} S=null;$('game').hidden=true;$('setup').hidden=false;$('resume').hidden=true;}},
+    {label:t('yesStartOver'),primary:true,fn:()=>{try{localStorage.removeItem(KEY)}catch(e){} S=null;$('game').hidden=true;$('resume').hidden=true;openTitle();}},
     {label:t('keepPlaying')}],nobot:true});
 });
+
+/* ---------- the title screen (the kit's), with the setup card in it ----------
+   Kick off! is the kit's own Play button (id "start"), moved into the card. Continue, the shop and a test's start()
+   leave the title through the same button with another action (leaveTitle). Quit (pause screen), "New game" and
+   "Play again" come back here. */
+let titleOpen=false,titleAction=null;const SETUP=$('setup');
+function openTitle(){
+  if(titleOpen)return;titleOpen=true;Oomba.scene='title';
+  $('game').hidden=true;$('shop').hidden=true;
+  $('resume').hidden=!load();shopBadge();
+  Oomba.ui.title({title:'Footy Tycoon',subtitle:t('tagline'),titleHue:'sky',hero:Oomba.avatar(),badge:Oomba.art.toCanvas('ball',64),
+    play:()=>{titleOpen=false;const a=titleAction;titleAction=null;SETUP.hidden=true;document.body.appendChild(SETUP);(a||newGame)();}});
+  const scr=[...Oomba.ui.root().querySelectorAll('.ok-title-screen')].pop();if(!scr)return;
+  const block=scr.querySelector('.ok-title-block'),play=block&&block.querySelector('.ok-hot');
+  const card=SETUP;card.hidden=false;
+  card.querySelectorAll(':scope>.ok-p').forEach(x=>x.remove());
+  const sub=block&&block.querySelector('.ok-p');if(sub)card.prepend(sub);
+  const cta=block&&block.querySelector('.ok-cta');
+  if(play){play.id='start';[...play.childNodes].forEach(n=>{if(n.nodeType===3)n.remove();});play.append(t('start'));}
+  const slot=card.querySelector('#ctaSlot');if(cta&&slot)slot.replaceWith(Object.assign(cta,{id:'ctaSlot'}));
+  if(block)block.append(card);
+  const corner=scr.querySelector('.ok-corner');if(corner)corner.prepend(muteButton());
+  updateMute();refreshTitleHero();drawModes();
+  if(play)play.focus({preventScroll:true});
+}
+/** Leave the title screen and do fn instead of starting a new game. */
+function leaveTitle(fn){const b=$('start');if(titleOpen&&b){titleAction=fn;b.click();}else fn();}
+/** The title's big character is seat one's token when that is the player's own character, else the kit's footballer. */
+function refreshTitleHero(){
+  const hero=document.querySelector('.ok-title-hero canvas');if(!hero)return;
+  const look=icons[0]===ME?'me':'kid';if(hero.dataset.look===look)return;
+  const nh=Oomba.ui.portrait(look==='me'?Oomba.avatar():charSpec(ROSTERS.normal.players[11][2]),{size:parseFloat(hero.style.height)||200,mood:'cheer'});nh.dataset.look=look;hero.replaceWith(nh);
+}
 /* The pitch message (S.msg) is saved with the game, so it is a message id with its values, never words:
    M('paid', { p: 0, p2: 1, m: 40 }), or a list of them. Values named p/p2 are seats and s/s2 board squares (shown
    by name), f/f2 a square's full name, sl a list of squares, m/m2 dollar amounts. Saves from before the game spoke
@@ -5351,7 +5611,7 @@ if(load()) $('resume').hidden=false;
 /* ---------- board ---------- */
 const PIPS={1:[4],2:[0,8],3:[0,4,8],4:[0,2,6,8],5:[0,2,4,6,8],6:[0,2,3,5,6,8]};
 const pips=n=>{let h='';for(let q=0;q<9;q++)h+=`<i class="${PIPS[n].includes(q)?'on':''}"></i>`;return h;};
-const PITCH_LINES=`<svg class="lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" fill="none" stroke="rgba(255,255,255,.55)" stroke-width=".6">
+const PITCH_LINES=`<svg class="lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" fill="none" stroke="rgba(255,253,242,.7)" stroke-width=".7">
   <rect x="4" y="4" width="92" height="92"/><line x1="4" y1="50" x2="96" y2="50"/><circle cx="50" cy="50" r="13"/><circle cx="50" cy="50" r=".9" fill="rgba(255,255,255,.7)"/>
   <rect x="28" y="4" width="44" height="14"/><rect x="40" y="4" width="20" height="5"/><rect x="28" y="82" width="44" height="14"/><rect x="40" y="91" width="20" height="5"/></svg>`;
 function buildBoard(){
@@ -5372,7 +5632,7 @@ function buildBoard(){
     }else{
       tile.classList.add('special',s.t);
       if(i%9===0) tile.classList.add('corner');
-      tile.innerHTML=`<div class="ic">${s.t==='chance'?'?':s.t==='shoot'?'🥅':s.ic}</div><div class="nm">${esc(s.short.toLocaleUpperCase(LANG))}</div>`;
+      tile.innerHTML=`<div class="ic">${s.t==='chance'?ic('question'):s.t==='shoot'?propImg('goalpost',''):s.ic()}</div><div class="nm">${esc(s.short.toLocaleUpperCase(LANG))}</div>`;
     }
     tile.addEventListener('click',()=>info(i));
     b.appendChild(tile);
@@ -5381,13 +5641,13 @@ function buildBoard(){
   p.innerHTML=`${PITCH_LINES}<div class="turnpill"><span class="tok" id="ptok"></span><span id="pname"></span></div>
     <div class="minidice"><div class="mdie" id="d1"></div><div class="mdie" id="d2"></div></div>
     <div class="msg" id="msg" aria-live="polite"></div>
-    <div class="btnrow"><button class="btn primary" id="roll"></button><button class="btn small" id="trade">🤝 ${esc(t('trade'))}</button></div>`;
+    <div class="btnrow"><button class="btn primary" id="roll"></button><button class="btn small" id="trade">${ic('swap')}${esc(t('trade'))}</button></div>`;
   p.dir=DIR;   // the pitch's messages and buttons read in the language's direction; the ring around it stays put
   b.appendChild(p);
   $('roll').addEventListener('click',roll);
   $('trade').addEventListener('click',startTrade);
   $('cube1').innerHTML=$('cube2').innerHTML=[1,2,3,4,5,6].map(n=>`<div class="face f${n}">${pips(n)}</div>`).join('');
-  fitTiles();
+  fitTiles();requestAnimationFrame(fitTiles);
 }
 /** Make every square's label fit its little square (footballer names included): shrink it (down to about 70%),
     then let a label with a space in it take two lines, shrinking again until it fits. */
@@ -5396,8 +5656,10 @@ function fitTiles(){
     el.style.fontSize='';el.classList.remove('two');
     if(!el.clientWidth)return;
     const base=parseFloat(getComputedStyle(el).fontSize)||8;let size=base;
-    const over=()=>el.scrollWidth>el.clientWidth+0.5;
-    while(over()&&size>base*0.7){size-=0.25;el.style.fontSize=size+'px';}
+    const rg=document.createRange();rg.selectNodeContents(el);
+    const over=()=>el.scrollWidth>el.clientWidth+0.5||rg.getBoundingClientRect().width>el.clientWidth-2;   // the text's own width (a sub-pixel overflow still shows an ellipsis)
+    const oneWord=!/\s/.test(el.textContent.trim());
+    while(over()&&size>base*(oneWord?0.5:0.7)){size-=0.25;el.style.fontSize=size+'px';}   // one long word (Bellingham) shrinks further: it cannot wrap
     if(!over())return;
     el.classList.add('two');size=base;el.style.fontSize=size+'px';
     const tooTall=()=>el.scrollHeight>size*2.2+3;
@@ -5405,6 +5667,7 @@ function fitTiles(){
   });
 }
 addEventListener('resize',()=>{if(S&&!$('game').hidden)fitTiles();});
+try{document.fonts.ready.then(()=>{if(S&&!$('game').hidden)fitTiles();});}catch(e){}
 
 function render(hopper){
   if(!S) return;
@@ -5416,29 +5679,29 @@ function render(hopper){
     const o=S.owner[i];
     if(o!==undefined){tile.classList.add('owned');tile.style.setProperty('--own',S.players[o].color);}
     else tile.classList.remove('owned');
-    if(S.injured[i]!==undefined) tile.insertAdjacentHTML('beforeend','<span class="hurt">🤕</span>');
+    if(S.injured[i]!==undefined) tile.insertAdjacentHTML('beforeend','<span class="hurt">'+ic('heart-off')+'</span>');
     const here=S.players.map((p,q)=>p.pos===i&&!p.out?q:-1).filter(q=>q>=0);
-    if(here.length) tile.insertAdjacentHTML('beforeend','<div class="toks">'+here.map(q=>`<span class="tok${q===hopper?' hop':''}" style="background:${S.players[q].color};--c:${S.players[q].color}">${S.players[q].icon||''}</span>`).join('')+'</div>');
+    if(here.length) tile.insertAdjacentHTML('beforeend','<div class="toks">'+here.map(q=>`<span class="tok${q===hopper?' hop':''}" style="background:${S.players[q].color};--c:${S.players[q].color}">${tokHTML(S.players[q].icon)}</span>`).join('')+'</div>');
     const label=(s.t==='player'||s.t==='champ'||s.t==='goalie')?(o!==undefined?t('sqAriaOwned',{name:s.name,price:money(s.price),owner:pName(S.players[o])}):t('sqAria',{name:s.name,price:money(s.price)})):s.name;
     tile.setAttribute('aria-label',label);
   });
-  $('ptok').textContent=cur.icon||'';$('ptok').style.background=cur.color;$('ptok').style.setProperty('--c',cur.color);
+  $('ptok').innerHTML=tokHTML(cur.icon);$('ptok').style.background=cur.color;$('ptok').style.setProperty('--c',cur.color);
   $('pname').textContent=(cur.bot?'🤖 ':'')+t('turnOf',{name:pName(cur)+(cur.title?' '+titleName(cur.title):'')});
   $('d1').innerHTML=pips(S.dice[0]);$('d2').innerHTML=pips(S.dice[1]);
   $('msg').textContent=msgText(S.msg);
   const busy=animating||S.won||!$('scrim').hidden||!!cur.bot;
   $('roll').disabled=busy;$('trade').disabled=busy;
-  $('roll').textContent=cur.inJail?'🔒 '+t('getOut'):t('roll');
+  $('roll').innerHTML=cur.inJail?ic('unlock')+esc(t('getOut')):esc(t('roll'));
   $('sheets').innerHTML=S.players.map((p,q)=>{
     const mine=owned(q),trophies=ownedChamps(q),gks=ownedGoalies(q);
-    const chips=mine.map(i=>`<span class="chip" style="--g:${GROUPS[SPACES[i].g].c}"><span class="mini">${avatar(SPACES[i].av)}</span>${esc(SPACES[i].short)}${S.injured[i]!==undefined?' 🤕':''}${isSusp(i)?' 🚫':''}</span>`)
-      .concat(trophies.map(i=>`<span class="chip" style="--g:#c9b6ff"><span class="mini">${trophy(SPACES[i].kind)}</span>${esc(SPACES[i].short)}</span>`))
-      .concat(gks.map(i=>`<span class="chip" style="--g:#22d3ee"><span class="mini">${avatar(SPACES[i].av)}</span>🧤 ${esc(SPACES[i].short)}</span>`));
-    return `<div class="ps ${q===S.turn?'active':''}" style="--c:${p.color}">
-      <div class="top"><span class="dot ic" style="background:${p.color};--c:${p.color}">${p.icon||''}</span><b>${p.bot?'🤖 ':''}${esc(pName(p))}</b>${p.title?`<span class="ttl">${esc(titleName(p.title))}</span>`:''}</div>
-      <div class="money" style="${p.money<0?'color:var(--red)':''}">${p.out?'💸 '+esc(t('bankrupt')):'<bdi>'+money(p.money)+'</bdi>'}</div>
-      <div class="checks" aria-label="${esc(t('checksAria',{n:p.checks,max:WIN}))}">${[0,1,2].map(n=>`<i class="${n<p.checks?'on':''}">${n<p.checks?'✓':''}</i>`).join('')}</div>
-      ${p.inJail?`<div class="note">🔒 ${esc(t('inSinBin'))}</div>`:''}${p.pardon?`<div class="pardon">🎫 ${esc(t('pardonN',{n:p.pardon}))}</div>`:''}
+    const chips=mine.map(i=>`<span class="chip" style="--g:${GROUPS[SPACES[i].g].c}"><span class="mini">${avatar(SPACES[i].av)}</span>${esc(SPACES[i].short)}${S.injured[i]!==undefined?ic('heart-off','st'):''}${isSusp(i)?ic('cross','st'):''}</span>`)
+      .concat(trophies.map(i=>`<span class="chip" style="--g:${Oomba.color('grape')}"><span class="mini">${trophy(SPACES[i].kind)}</span>${esc(SPACES[i].short)}</span>`))
+      .concat(gks.map(i=>`<span class="chip" style="--g:${Oomba.color('sky')}"><span class="mini">${avatar(SPACES[i].av)}</span>🧤 ${esc(SPACES[i].short)}</span>`));
+    return `<div class="ps sk ${q===S.turn?'active':''}" style="--c:${p.color}">
+      <div class="top"><span class="dot" style="background:${p.color}">${tokHTML(p.icon)}</span><b>${p.bot?'🤖 ':''}${esc(pName(p))}</b>${p.title?`<span class="ttl">${esc(titleName(p.title))}</span>`:''}</div>
+      <div class="money${p.money<0?' neg':''}">${p.out?'💸 '+esc(t('bankrupt')):'<bdi>'+money(p.money)+'</bdi>'}</div>
+      <div class="checks" aria-label="${esc(t('checksAria',{n:p.checks,max:WIN}))}">${[0,1,2].map(n=>`<i class="${n<p.checks?'on':''}">${n<p.checks?ic('check'):''}</i>`).join('')}</div>
+      ${p.inJail?`<div class="note">${ic('lock','si')}${esc(t('inSinBin'))}</div>`:''}${p.pardon?`<div class="pardon">🎫 ${esc(t('pardonN',{n:p.pardon}))}</div>`:''}
       <div class="owned-list">${chips.length?chips.join(''):`<span class="none">${esc(t('noPlayers'))}</span>`}</div>
     </div>`;
   }).join('');
@@ -5457,32 +5720,45 @@ const nm=q=>esc(pName(S.players[q]));   // a seat's name, ready for HTML
 const nextIdx=()=>{let j=S.turn;do{j=(j+1)%S.players.length;}while(S.players[j].out&&j!==S.turn);return j;};
 function card(i){
   const s=SPACES[i];
-  if(s.t==='goalie') return `<div class="card"><div class="avbig" style="--g:#22d3ee">${avatar(s.av)}</div><div class="who"><b>🧤 ${esc(s.name)}</b><span>${esc(t('goalkeeper'))} · ${s.av.flag} ${esc(nationName(s.av.nation))}</span></div></div>`;
-  if(s.t==='champ') return `<div class="card"><div class="avbig" style="--g:#c9b6ff">${trophy(s.kind)}</div><div class="who"><b>${esc(s.name)}</b><span>${esc(t('champTrophy'))}</span></div></div>`;
+  if(s.t==='goalie') return `<div class="card"><div class="avbig" style="--g:${Oomba.color('sky')}">${avatar(s.av)}</div><div class="who"><b>🧤 ${esc(s.name)}</b><span>${esc(t('goalkeeper'))} · ${s.av.flag} ${esc(nationName(s.av.nation))}</span></div></div>`;
+  if(s.t==='champ') return `<div class="card"><div class="avbig" style="--g:${Oomba.color('grape')}">${trophy(s.kind)}</div><div class="who"><b>${esc(s.name)}</b><span>${esc(t('champTrophy'))}</span></div></div>`;
   return `<div class="card"><div class="avbig" style="--g:${GROUPS[s.g].c}">${avatar(s.av)}</div><div class="who"><b>${esc(s.name)}</b><span>${s.av.flag} ${esc(nationName(s.av.nation))} · <bdi>#${s.av.num}</bdi></span></div></div>`;
 }
-function confetti(){
+/** A celebration: the kit's confetti (none with reduced motion) and a sound. */
+function confetti(snd){if(!reduced())Oomba.juice.confetti();sfx(snd||'spark');}
+/** The league win: waves of the kit's confetti across the whole stadium (the board steps aside while the champions
+    card is up, so the world behind it is the party). None with reduced motion. */
+function celebrate(){
   if(reduced())return;
-  const box=$('confetti'),cols=['#ffd23f','#39e58c','#ff4f5e','#3d9bff','#fff'];
-  for(let n=0;n<60;n++){const c=document.createElement('i');c.style.left=Math.random()*100+'vw';c.style.background=cols[n%5];
-    c.style.animationDelay=Math.random()*.6+'s';c.style.animationDuration=1.2+Math.random()+'s';box.appendChild(c);setTimeout(()=>c.remove(),2800);}
+  const waves=[[0,0,.95,150],[420,-.3,.45,100],[780,.3,.45,100],[1300,0,.9,130],[2000,-.25,.5,100],[2600,.25,.5,100],[3300,0,.9,120],[4200,-.3,.45,90],[4800,.3,.45,90],[5600,0,.9,110]];
+  waves.forEach(([ms,dx,w,n])=>setTimeout(()=>{
+    if(!S||!S.won)return;
+    try{const c=STAGE.camera,v=STAGE.view;STAGE.burst('confetti',c.x+v.vw*dx,c.y-v.vh*.5,{w:v.vw*w,n});}catch(e){Oomba.juice.confetti();}
+  },ms));
 }
+/** The kit's sounds (the SDK's names pass through); never a caption for the game's small beats. */
+function sfx(name,o){try{Oomba.sfx(name,Object.assign({caption:false},o));}catch(e){}}
 
 /* ---------- modal ---------- */
-function modal({kicker='',title,html='',color,ink,buttons=[{label:t('ok'),primary:true}],actor,nobot}){
+/** The popup's header colour: the game's group colours as they are, its own colours as the kit's hues. */
+const HUE_OF={'#7c5cff':'grape','#0891b2':'sky','#16a34a':'mint','#e11d48':'coral','#f59e0b':'peach','#f5b700':'spark','#2563eb':'sky','#0ea5e9':'sky','#ffd23f':'spark'};
+const kitHue=c=>c?(HUE_OF[c]?Oomba.color(HUE_OF[c]):c):Oomba.color('spark');
+function modal({kicker='',title,html='',color,ink,buttons=[{label:t('ok'),primary:true}],actor,nobot,champ}){
   $('mKicker').textContent=kicker;$('mTitle').textContent=title;
-  $('sheet').style.setProperty('--hc',color||'#ffd23f');
-  $('mHead').style.setProperty('--hi',ink||(color?'#fff':'#1d1606'));
+  $('sheet').style.setProperty('--hc',kitHue(color));$('sheet').classList.toggle('champ',!!champ);
+  document.body.classList.toggle('ftwin',!!champ);
   $('mBody').innerHTML=html;$('mBody').hidden=!html;
   const bx=$('mBtns');bx.innerHTML='';
   buttons.forEach(b=>{
     const e=document.createElement('button');
     if(b.chip){e.className='chipbtn';e.style.setProperty('--g',b.chip);e.innerHTML=b.html;}
     else{e.className='btn'+(b.primary?' primary':'');e.textContent=b.label;}
+    if(b.icon)e.insertAdjacentHTML('afterbegin',ic(b.icon));
     e.disabled=!!b.disabled;
-    e.addEventListener('click',()=>{$('scrim').hidden=true;render();if(b.fn)b.fn();});
+    e.addEventListener('click',()=>{$('scrim').hidden=true;document.body.classList.remove('ftwin');render();if(b.fn)b.fn();});
     bx.appendChild(e);
   });
+  if($('scrim').hidden)sfx('pop',{volume:0.6});
   $('scrim').hidden=false;render();
   setTimeout(()=>{const f=bx.querySelector('button:not(:disabled)');if(f)f.focus();},50);
   const who=actor!==undefined?actor:(S?S.turn:-1);
@@ -5490,7 +5766,8 @@ function modal({kicker='',title,html='',color,ink,buttons=[{label:t('ok'),primar
     const els=[...bx.querySelectorAll('button')];
     let idx=buttons.findIndex(b=>b.bot&&!b.disabled);if(idx<0)idx=buttons.findIndex(b=>!b.disabled);
     const el=els[idx];
-    setTimeout(()=>{if(el&&el.isConnected&&!$('scrim').hidden)el.click();},1500);
+    const tap=()=>{if(!(el&&el.isConnected&&!$('scrim').hidden))return;if(Oomba.ui.open)return setTimeout(tap,500);el.click();};   // a bot waits while the pause screen is open
+    setTimeout(tap,1500);
   }
 }
 /* bot starts its turn: waits for any open popup, then rolls */
@@ -5501,7 +5778,7 @@ function botTick(){
   S.msg=M('thinking',{p:S.turn});render();
   const go=()=>{
     if(!S||S.won||S.turnCount!==tc) return;
-    if(animating||!$('scrim').hidden) return setTimeout(go,700);
+    if(animating||!$('scrim').hidden||Oomba.ui.open||$('game').hidden) return setTimeout(go,700);
     roll();
   };
   setTimeout(go,1000);
@@ -5538,7 +5815,7 @@ function info(i){
 const FACE_ROT={1:[0,0],2:[0,-90],3:[-90,0],4:[90,0],5:[0,90],6:[0,-180]};
 function throwDice(d,done){
   if(reduced()){done();return;}
-  const st=$('diceStage');st.hidden=false;st.style.opacity=1;
+  const st=$('diceStage');st.hidden=false;st.style.opacity=1;sfx('whoosh');
   const vw=innerWidth,vh=innerHeight,fromLeft=Math.random()<.5?-1:1;
   const anims=[0,1].map(j=>{
     const [fx,fy]=FACE_ROT[d[j]];
@@ -5552,7 +5829,7 @@ function throwDice(d,done){
     $('dw'+(j+1)).animate(tr,opts);
     return $('cube'+(j+1)).animate(rot,opts).finished;
   });
-  Promise.all(anims).then(()=>setTimeout(()=>{
+  Promise.all(anims).then(()=>setTimeout(()=>{sfx('land',{volume:0.7});
     st.style.opacity=0;
     setTimeout(()=>{st.hidden=true;done();},300);
   },550));
@@ -5568,7 +5845,7 @@ function doRoll(){
   animating=true;render();
   const d=[1+rnd(6),1+rnd(6)];
   throwDice(d,()=>{
-    S.dice=d;S.msg=M(d[0]===d[1]?'rolledDbl':'rolled',{p:S.turn,n:d[0]+d[1]});
+    S.dice=d;S.msg=M(d[0]===d[1]?'rolledDbl':'rolled',{p:S.turn,n:d[0]+d[1]});if(d[0]===d[1])sfx('levelup');
     S.again=d[0]===d[1];
     if(d[0]===d[1]){const back=liftSusp(S.turn);if(back.length)S.msg=[S.msg,M('backFromSusp',{sl:back,n:back.length})];}
     render();
@@ -5581,7 +5858,8 @@ function move(steps,done){
   const step=()=>{
     if(left<=0){animating=false;render();done&&done();return;}
     p.pos=(p.pos+dir+N)%N;left--;
-    if(dir>0&&p.pos===0){p.money+=PASS_GO;S.msg=M('passedGo',{p:S.turn,m:PASS_GO});}
+    if(dir>0&&p.pos===0){p.money+=PASS_GO;S.msg=M('passedGo',{p:S.turn,m:PASS_GO});sfx('coin');}
+    sfx('step',{pitch:1+0.04*(Math.abs(steps)-left),volume:0.5});
     render(S.turn);setTimeout(step,180);
   };
   setTimeout(step,100);
@@ -5608,7 +5886,7 @@ function landPlayer(i){
       <div class="stat"><span>${esc(t('price'))}</span><span>${money(s.price)}</span></div>
       <div class="stat"><span>${esc(t('feeOthers'))}</span><span>${esc(t('feeOthersV',{m:money(s.rent),m2:money(s.rent*2),group:gn}))}</span></div>
       <p>${t('youHave',{m:money(p.money)})}${p.money<s.price?' '+esc(t('notEnoughSign')):''}</p>`,
-      buttons:[{label:t('signFor',{m:money(s.price)}),primary:true,bot:p.money-s.price>=60,disabled:p.money<s.price,fn:()=>{p.money-=s.price;S.owner[i]=q;S.msg=M('signed',{p:q,f:i});endTurn();}},
+      buttons:[{label:t('signFor',{m:money(s.price)}),primary:true,bot:p.money-s.price>=60,disabled:p.money<s.price,fn:()=>{p.money-=s.price;S.owner[i]=q;S.msg=M('signed',{p:q,f:i});sfx('coin');endTurn();}},
         {label:t('noThanks'),fn:()=>{S.msg=M('passedOn',{p:q,s:i});endTurn();}}]});
   }
   if(o===q){S.msg=M('ownVisit',{p:q,s:i});return endTurn();}
@@ -5641,7 +5919,7 @@ function landGoalie(i){
       <div class="stat"><span>${esc(t('price'))}</span><span>${money(GOALIE_PRICE)}</span></div>
       <p>${t('goalieUse')}</p>
       <p>${t('youHave',{m:money(p.money)})}${p.money<GOALIE_PRICE?' '+esc(t('notEnough')):''}</p>`,
-      buttons:[{label:t('signFor',{m:money(GOALIE_PRICE)}),primary:true,bot:p.money-GOALIE_PRICE>=80,disabled:p.money<GOALIE_PRICE,fn:()=>{p.money-=GOALIE_PRICE;S.owner[i]=q;S.msg=M('signedGoalie',{p:q,s:i});endTurn();}},
+      buttons:[{label:t('signFor',{m:money(GOALIE_PRICE)}),primary:true,bot:p.money-GOALIE_PRICE>=80,disabled:p.money<GOALIE_PRICE,fn:()=>{p.money-=GOALIE_PRICE;S.owner[i]=q;S.msg=M('signedGoalie',{p:q,s:i});sfx('coin');endTurn();}},
         {label:t('noThanks'),fn:()=>{S.msg=M('passedOn',{p:q,s:i});endTurn();}}]});
   }
   if(o===q){S.msg=M('visitGoalie',{p:q,s:i});return endTurn();}
@@ -5662,8 +5940,8 @@ function askBlock(i,q,defs,n){
 }
 function scoreGoal(i,q){
   const s=SPACES[i];
-  S.players[q].checks++;S.msg=M('scoredMsg',{s:i,p:q});confetti();
-  modal({kicker:t('shootsK',{s:s.short}),title:t('goal'),color:'#16a34a',html:card(i)+`<p class="big">⚽ ✓</p><p>${t('scoresFor',{name:esc(s.name),p:nm(q),n:S.players[q].checks})}</p>`,buttons:[{label:t('ok'),primary:true,fn:endTurn}]});
+  S.players[q].checks++;S.msg=M('scoredMsg',{s:i,p:q});confetti('correct');
+  modal({kicker:t('shootsK',{s:s.short}),title:t('goal'),color:'#16a34a',html:card(i)+`<p class="big">${propImg('ball')}${ic('check')}</p><p>${t('scoresFor',{name:esc(s.name),p:nm(q),n:S.players[q].checks})}</p>`,buttons:[{label:t('ok'),primary:true,fn:endTurn}]});
 }
 function shoot(){
   const q=S.turn;let i=PLAYER_IDX[rnd(PLAYER_IDX.length)];
@@ -5672,7 +5950,7 @@ function shoot(){
   let title,html,goal=false;
   if(o===q&&isSusp(i)){
     S.msg=M('suspendedMsg',{s:i});
-    return modal({kicker:t('shootsK',{s:s.short}),title:t('suspended'),color:'#e11d48',html:card(i)+`<p class="big">🚫</p><p>${t('suspendedBody',{name:esc(s.name)})}</p><p>${esc(t('suspendedFix',{m:money(SUSP_FEE)}))}</p>`,buttons:[{label:t('ok'),primary:true,fn:endTurn}]});
+    return modal({kicker:t('shootsK',{s:s.short}),title:t('suspended'),color:'#e11d48',html:card(i)+`<p class="big">${ic('cross')}</p><p>${t('suspendedBody',{name:esc(s.name)})}</p><p>${esc(t('suspendedFix',{m:money(SUSP_FEE)}))}</p>`,buttons:[{label:t('ok'),primary:true,fn:endTurn}]});
   }
   if(o===q&&S.injured[i]===undefined){
     const defs=S.players.map((_,j)=>j).filter(j=>j!==q&&!S.players[j].out&&ownedGoalies(j).length);
@@ -5680,10 +5958,10 @@ function shoot(){
     return scoreGoal(i,q);
   }
   if(o===q&&S.injured[i]!==undefined){title=t('ouch');html=`<p>${t('injuredBody',{name:esc(s.name)})}</p>`;S.msg=M('injuredMsg',{s:i});}
-  else if(o===q){goal=true;S.players[q].checks++;title=t('goal');html=`<p class="big">⚽ ✓</p><p>${t('scoresFor',{name:esc(s.name),p:nm(q),n:S.players[q].checks})}</p>`;S.msg=M('scoredMsg',{s:i,p:q});}
+  else if(o===q){goal=true;S.players[q].checks++;title=t('goal');html=`<p class="big">${propImg('ball')}${ic('check')}</p><p>${t('scoresFor',{name:esc(s.name),p:nm(q),n:S.players[q].checks})}</p>`;S.msg=M('scoredMsg',{s:i,p:q});}
   else if(o!==undefined){title=t('notYours');html=`<p class="big">🧤</p><p>${t('notYoursBody',{name:esc(s.name),o:nm(o)})}</p>`;S.msg=M('notYoursMsg',{s:i});}
   else{title=t('savedT');html=`<p class="big">🧤</p><p>${t('nobodyBody',{name:esc(s.name)})}</p>`;S.msg=M('nobodyMsg',{s:i});}
-  if(goal)confetti();
+  if(goal)confetti('correct');else sfx('wrong',{volume:0.6});
   modal({kicker:t('shootsK',{s:s.short}),title,color:goal?'#16a34a':g.c,ink:goal?'#fff':'#0b0f1c',html:card(i)+html,buttons:[{label:t('ok'),primary:true,fn:endTurn}]});
 }
 
@@ -5727,7 +6005,7 @@ function chance(){
   let extra='';
   if(c.fx){const r=c.fx(q);if(r)extra=`<p><b>${r}</b></p>`;}
   S.msg=M('drewChance',{p:q});
-  modal({kicker:t('sq_chance'),title:t('chanceCard'),color:'#f5b700',ink:'#1d1606',html:`<p class="big">?</p><p style="font-size:1.1rem;font-weight:900">${esc(c.t)}</p>${extra}<p>${t('youNowHave',{m:'<bdi>'+money(S.players[q].money)+'</bdi>'})}</p>`,
+  modal({kicker:t('sq_chance'),title:t('chanceCard'),color:'#f5b700',ink:'#1d1606',html:`<p class="big">${ic('question')}</p><p style="font-size:1.1rem;font-weight:900">${esc(c.t)}</p>${extra}<p>${t('youNowHave',{m:'<bdi>'+money(S.players[q].money)+'</bdi>'})}</p>`,
     buttons:[{label:t('ok'),primary:true,fn:()=>{if(c.then)c.then();else endTurn();}}]});
 }
 
@@ -5754,7 +6032,7 @@ function transfer(){
 
 function varCheck(){
   const q=S.turn;
-  modal({kicker:t('sq_var'),title:t('varChecking'),color:'#2563eb',html:`<p class="big">📺</p><p>${t('varBody')}</p>`,
+  modal({kicker:t('sq_var'),title:t('varChecking'),color:'#2563eb',html:`<p class="big">${ic('eye')}</p><p>${t('varBody')}</p>`,
     buttons:[{label:t('rollVar'),primary:true,fn:()=>{
       const a=1+rnd(6),b=1+rnd(6);
       animating=true;render();
@@ -5791,12 +6069,14 @@ function winCheck(){
   if(w<0&&left.length===1)w=left[0];
   if(w<0) return false;
   S.won=true;try{localStorage.removeItem(KEY)}catch(e){}
-  const wal=awardWin(S.players[w]);
-  render();confetti();setTimeout(confetti,700);
-  const back=()=>{S=null;$('game').hidden=true;$('setup').hidden=false;$('resume').hidden=true;drawNames();};
-  modal({kicker:t('champions'),title:t('winsLeague',{name:pName(S.players[w])}),color:'#16a34a',
-    html:`<div class="avbig" style="margin:0 auto;--g:#ffd23f">${trophy('wc')}</div><p style="text-align:center">${esc(S.players[w].checks>=WIN?t('got3',{name:pName(S.players[w]),n:WIN}):t('allBankrupt'))} ${esc(t('whatSeason'))}</p>${wal?`<div class="ticket"><div class="te">🏆🏆🏆🏆🏆</div><h4>${esc(t('plusTro',{tro:t('trophiesN',{n:WIN_TROPHIES})}))}</h4><p>${esc(t('nowHas',{name:showName(wal.name),n:wal.trophies}))}</p></div>`:''}`,
-    buttons:wal?[{label:'🏆 '+t('shop'),primary:true,fn:()=>{S=null;$('resume').hidden=true;openShop(wal.name);}},{label:t('playAgain'),fn:back},{label:t('lookBoard')}]:[{label:t('playAgain'),primary:true,fn:back},{label:t('lookBoard')}],nobot:true});
+  const wal=awardWin(S.players[w]),wp=S.players[w];
+  render();sfx('win');celebrate();setTimeout(()=>{if(S&&S.won)sfx('spark');},900);Oomba.scene='results';
+  const back=()=>{S=null;$('game').hidden=true;$('resume').hidden=true;openTitle();drawNames();};
+  const face=`<span class="dot wtok" style="background:${wp.color}">${tokHTML(wp.icon)}</span>`;
+  const five=Array.from({length:WIN_TROPHIES},(_,k)=>propImg('trophy','').replace('<img','<img style="--i:'+k+'"')).join('');
+  modal({kicker:t('champions'),title:t('winsLeague',{name:pName(wp)}),color:'#ffd23f',champ:true,
+    html:`<div class="medal"><span class="rays" aria-hidden="true"></span><span class="disc">${propImg('trophy','winner')}</span>${face}</div><p class="champline">${esc(wp.checks>=WIN?t('got3',{name:pName(wp),n:WIN}):t('allBankrupt'))} ${esc(t('whatSeason'))}</p>${wal?`<div class="ticket"><div class="te five">${five}</div><h4>${esc(t('plusTro',{tro:t('trophiesN',{n:WIN_TROPHIES})}))}</h4><p>${esc(t('nowHas',{name:showName(wal.name),n:wal.trophies}))}</p></div>`:''}`,
+    buttons:wal?[{label:t('shop'),icon:'trophy',primary:true,fn:()=>{S=null;$('resume').hidden=true;openShop(wal.name);}},{label:t('playAgain'),icon:'restart',fn:back},{label:t('lookBoard'),icon:'eye'}]:[{label:t('playAgain'),icon:'restart',primary:true,fn:back},{label:t('lookBoard'),icon:'eye'}],nobot:true});
   return true;
 }
 function nextTurn(){
@@ -5875,7 +6155,7 @@ function bankrupt(q,then){
   const p=S.players[q];p.out=true;p.money=0;p.inJail=false;
   assetsOf(q).forEach(i=>{delete S.owner[i];if(S.susp)delete S.susp[i];});
   S.msg=M('wentBankrupt',{p:q});render();save();
-  modal({actor:-1,kicker:'💸 '+t('bankruptK'),title:t('isOut',{name:pName(p)}),color:'#e11d48',html:`<p class="big">💸</p><p>${esc(t('outBody',{name:pName(p)}))}</p>`,
+  modal({actor:-1,kicker:'💸 '+t('bankruptK'),title:t('isOut',{name:pName(p)}),color:'#e11d48',html:`<p class="big">${ic('coin')}</p><p>${esc(t('outBody',{name:pName(p)}))}</p>`,
     buttons:[{label:t('ok'),primary:true,fn:()=>{
       if(S.turn===q){if(winCheck())return;return nextTurn();}
       then();}}]});
@@ -5884,8 +6164,8 @@ function bankrupt(q,then){
 /* ---------- Sin Bin (jail) ---------- */
 function sendToBin(){
   const q=S.turn,p=S.players[q];
-  p.pos=SINBIN;p.inJail=true;p.jailTries=0;S.again=false;S.msg=M('sentBin',{p:q});render(q);
-  modal({kicker:t('redCardK'),title:t('offToBin'),color:'#e11d48',html:`<p class="big">🟥</p><p>${esc(t('binBody1',{name:pName(p),m:money(PASS_GO)}))}</p><p>${esc(t('binBody2',{fine:money(50)}))}</p>`,
+  p.pos=SINBIN;p.inJail=true;p.jailTries=0;S.again=false;S.msg=M('sentBin',{p:q});render(q);sfx('hurt');
+  modal({kicker:t('redCardK'),title:t('offToBin'),color:'#e11d48',html:`<p class="big">${RED_CARD}</p><p>${esc(t('binBody1',{name:pName(p),m:money(PASS_GO)}))}</p><p>${esc(t('binBody2',{fine:money(50)}))}</p>`,
     buttons:[{label:t('ok'),primary:true,fn:endTurn}]});
 }
 function jailTurn(){
@@ -5906,7 +6186,7 @@ function jailTurn(){
         modal({kicker:t('sq_sinbin'),title:t('noDoublesT'),color:'#e11d48',html:`<div class="mini-dice" dir="ltr"><div class="mdie">${pips(d[0])}</div><div class="mdie">${pips(d[1])}</div></div><p>${esc(t('staysBody',{name:pName(p),n:3-p.jailTries}))}</p>`,buttons:[{label:t('ok'),primary:true,fn:endTurn}]});}
     });
   }});
-  modal({kicker:t('sq_sinbin'),title:t('inBinT',{name:pName(p)}),color:'#e11d48',html:`<p class="big">🔒</p><p>${esc(t('binHow',{m:money(50)}))}</p>`,buttons:btns});
+  modal({kicker:t('sq_sinbin'),title:t('inBinT',{name:pName(p)}),color:'#e11d48',html:`<p class="big">${ic('lock')}</p><p>${esc(t('binHow',{m:money(50)}))}</p>`,buttons:btns});
 }
 
 /* ---------- trading ---------- */
@@ -5925,10 +6205,10 @@ function buildTrade(o){
   const mine=[...owned(q),...ownedChamps(q),...ownedGoalies(q)],theirs=[...owned(o),...ownedChamps(o),...ownedGoalies(o)];
   modal({kicker:t('makeTrade'),title:pName(me)+' ⇄ '+pName(them),color:'#0ea5e9',html:`
     <div class="tside"><h4>${t('gives',{name:nm(q)})}</h4>
-      <label class="cash">💰 ${esc(t('cashLabel'))}<input type="number" id="tGive" min="0" max="${me.money}" step="10" value="0" inputmode="numeric" dir="ltr"><small>${esc(t('youHaveSmall',{m:money(me.money)}))}</small></label>
+      <label class="cash">${ic('coin')}${esc(t('cashLabel'))}<input type="number" id="tGive" min="0" max="${me.money}" step="10" value="0" inputmode="numeric" dir="ltr"><small>${esc(t('youHaveSmall',{m:money(me.money)}))}</small></label>
       <div class="titems">${mine.length?mine.map(i=>itemRow(i,'give')).join(''):`<span class="none">${esc(t('noItems'))}</span>`}</div></div>
     <div class="tside"><h4>${t('gives',{name:nm(o)})}</h4>
-      <label class="cash">💰 ${esc(t('cashLabel'))}<input type="number" id="tGet" min="0" max="${them.money}" step="10" value="0" inputmode="numeric" dir="ltr"><small>${esc(t('theyHave',{m:money(them.money)}))}</small></label>
+      <label class="cash">${ic('coin')}${esc(t('cashLabel'))}<input type="number" id="tGet" min="0" max="${them.money}" step="10" value="0" inputmode="numeric" dir="ltr"><small>${esc(t('theyHave',{m:money(them.money)}))}</small></label>
       <div class="titems">${theirs.length?theirs.map(i=>itemRow(i,'get')).join(''):`<span class="none">${esc(t('noItems'))}</span>`}</div></div>`,
     buttons:[{label:t('sendOffer'),primary:true,fn:()=>{
       const gv=[...document.querySelectorAll('#mBody input[data-side=give]:checked')].map(x=>+x.value);
@@ -5959,5 +6239,47 @@ function offer(o,deal){
       modal({kicker:t('trade'),title:t('declinedT'),color:'#e11d48',html:ob?`<p>🤖 ${esc(t('noDeal',{name:pName(S.players[o])}))}</p>`:`<p>📱 ${esc(t('passBack',{name:pName(S.players[q])}))}</p>`});
     }}]});
 }
+
+/* ---------- the kit around the game: world, HUD, pause, test hooks ---------- */
+/** The kit's sound on/off button (the HUD and the title's corner). */
+function muteButton(){
+  const b=Oomba.ui.button(t('soundOff'),{kind:'icon',icon:'sound',onPress:()=>{BRB.sfx.mute();updateMute();}});b.classList.add('mute');return b;
+}
+function updateMute(){document.querySelectorAll('.mute').forEach(b=>{b.innerHTML=Oomba.icon(BRB.sfx.muted?'mute':'sound');b.setAttribute('aria-label',t(BRB.sfx.muted?'soundOn':'soundOff'));});}
+/** The kit's pause screen: Resume, Restart (the same seats from kick off), Settings, Quit (back to the title; the game
+    stays saved, so Continue picks it up). A bot waits while it is open. */
+function pauseGame(){
+  if(!S||Oomba.ui.open||!$('scrim').hidden)return;
+  Oomba.scene='pause';
+  Oomba.ui.pause().then(r=>{
+    Oomba.scene=S?'play':'title';updateMute();
+    if(r==='restart'&&S&&!S.won){const old=S.players;S={mode:S.mode,players:old.map(p=>({name:p.name,bot:p.bot,icon:p.icon,color:p.color,pos:0,money:START_MONEY,checks:0})),owner:{},injured:{},turn:0,turnCount:0,dice:[1,1],deck:[],msg:M('kickoffMsg',{p:0}),won:false,fresh:false};startGame();}
+    else if(r==='quit'){save();S=null;$('game').hidden=true;openTitle();}
+    else if(S)botTick();
+  });
+}
+{
+  const pause=Oomba.ui.button(t('pause'),{kind:'icon',icon:'pause',onPress:pauseGame});pause.id='pauseBtn';$('pauseSlot').replaceWith(pause);
+  $('muteSlot').replaceWith(muteButton());
+}
+addEventListener('keydown',e=>{if((e.key==='p'||e.key==='P'||e.key==='Escape')&&S&&!$('game').hidden&&$('scrim').hidden&&!Oomba.ui.open&&!/INPUT|TEXTAREA/.test((e.target&&e.target.tagName)||'')){e.preventDefault();pauseGame();}});
+addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('scrim').hidden&&!S){$('scrim').hidden=true;}});   // a menu popup (no game running) closes with Escape
+
+// The kit's colours for the game's own CSS (light and dark; the kit swaps --ok-* itself)
+function kitVars(){
+  const r=$('ft').style,set=(k,v)=>{r.setProperty(k,v);document.documentElement.style.setProperty(k,v);};
+  set('--ft-ink',Oomba.color('ink'));set('--ft-cream',Oomba.color('cream'));
+  for(const h of ['mint','spark','coral','sky','grape','peach']){set('--ft-'+h,Oomba.color(h));set('--ft-'+h+'T',Oomba.color(h,'tint'));set('--ft-'+h+'D',Oomba.color(h,'shade'));}
+}
+// The world: the kit's stadium behind everything; the game's pieces live in the kit's DOM layer.
+for(const el of [$('ft'),$('scrim'),$('diceStage')])Oomba.ui.root().appendChild(el);
+kitVars();Oomba.theme.on('change',kitVars);
+Oomba.fonts.ready.then(()=>{if(S&&!$('game').hidden)fitTiles();});
+Oomba.test({
+  state:()=>({screen:Oomba.scene,players:S?S.players.map(p=>({name:p.name,pos:p.pos,money:p.money,checks:p.checks,bot:!!p.bot,out:!!p.out})):[],turn:S?S.turn:-1,won:S?!!S.won:false,popup:!$('scrim').hidden?$('mTitle').textContent:null}),
+  start:()=>leaveTitle(newGame),
+});
+applyStaticText();drawModes();drawNames();
+openTitle();
 })();
 </script>

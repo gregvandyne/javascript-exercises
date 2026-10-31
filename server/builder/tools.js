@@ -8,6 +8,7 @@
 import * as games from '../services/games.js';
 import { sanitizeGameHtml, MAX_GAME_BYTES } from '../services/sanitize.js';
 import { scanVersion } from '../services/scanner.js';
+import { respectChoices } from '../services/stylelint.js';
 import { cleanText } from '../services/textfilter.js';
 import { signToken } from '../auth.js';
 import * as snapshot from '../services/snapshot.js';
@@ -39,7 +40,9 @@ export function probeProblems(r, after = {}) {
   return out;
 }
 /** The style lint's notes for the model (kit games only; they never block a version). */
-export const styleTips = report => (report.lint || []).map(l => `${l.level === 'warn' ? 'Style' : 'Tip'} (${l.code}): ${l.message}`);
+// The creative-freedom guarantee (stylelint.js respectChoices): look notes the builder's own words asked for are dropped,
+// and the rest of the look notes are worded as suggestions. requests: the builder's messages for this game.
+export const styleTips = (report, requests = []) => respectChoices(report.lint || [], requests).map(l => (l.look ? `Look suggestion, skip it if the builder asked for this look (${l.code}): ${l.message}` : `${l.level === 'warn' ? 'Style' : 'Tip'} (${l.code}): ${l.message}`));
 
 /** Apply exact find/replace edits. Each find must occur exactly once (in the text as it is when that edit runs). */
 export function applyEdits(html, edits) {
@@ -59,7 +62,7 @@ export function applyEdits(html, edits) {
   return { ok: true, html: out };
 }
 
-/** ctx: { user, gameId, emit(name, data), state, locale, steps?, signal? } — state.scanFails counts failed scans this turn. */
+/** ctx: { user, gameId, emit(name, data), state, locale, steps?, signal?, requests? (the builder's own messages: the style check respects them) } — state.scanFails counts failed scans this turn. */
 export function toolbox(ctx) {
   const steps = ctx.steps || NO_STEPS;
   const game = () => games.getGame(ctx.gameId);
@@ -91,8 +94,8 @@ export function toolbox(ctx) {
       return { ok: false, forModel, event, version: v, report };
     }
     if (report.status === 'flag') forModel += ` Please also look at: ${modelIssues(report).join(' ')}`;
-    const tips = styleTips(report);
-    if (tips.length) forModel += ` The style check (the game still works; fix these so it looks and plays like a first-party Oomba game): ${tips.join(' ')}`;
+    const tips = styleTips(report, ctx.requests);
+    if (tips.length) forModel += ` The style check (the game still works; fix these so it looks and plays like a first-party Oomba game, but the builder's own choices always win: never undo a colour, character, creature, theme or plain look they asked for): ${tips.join(' ')}`;
     return { ok: true, forModel, event, version: v, report };
   }
 
@@ -166,7 +169,7 @@ export function toolbox(ctx) {
       if (!a.testHook) problems.push('window.__brbTest is missing (add state() and start(), see the Game Contract).');
       else if (a.state && /"game":false/.test(a.state)) problems.push('This Oomba Kit game never registered its test hooks: call Oomba.test({ state: () => ({...}), start: () => ... }) so the playtest can start a round and read the game state.');
       problems.push(...probeProblems(r, a));
-      const tips = styleTips(scanVersion(cur.html));
+      const tips = styleTips(scanVersion(cur.html), ctx.requests);
       steps.info({ pics: (r.title ? 1 : 0) + (r.play ? 1 : 0), probs: problems.length }, row);
       const size = orientation === 'landscape' ? '844x390 landscape' : '390x700 portrait';
       const text = [

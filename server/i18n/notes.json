@@ -900,5 +900,8 @@
   "familyGames.usageLine": "{yesterday} = Builder messages they sent yesterday, {month} = this month up to yesterday (today is never shown). Shown after familyGames.usage.",
   "family.signup.intro": "Grown-up sign-up page intro. Adult register.",
   "info.terms.accounts.li9": "Terms of use, grown-up accounts. Legal text: translate exactly; do not soften or add claims. Keep <b>…</b>.",
-  "info.privacy.grownups.p2": "Privacy notice, grown-up accounts. Legal text: translate exactly; do not soften or add claims."
+  "info.privacy.grownups.p2": "Privacy notice, grown-up accounts. Legal text: translate exactly; do not soften or add claims.",
+  "js.studio.themeUse": "Put into the kid's message to the Builder when they tap a theme chip in the Studio. {name} is the theme's name (studio.themes.names.*). Short, like the kid would say it.",
+  "me.character.bold": "The name of the kit's look for 12-14 year olds: keep \"Bold\" unless your language needs another word.",
+  "me.character.names.color.mint": "Colour names of the kit palette (spark yellow is not offered). Shown as screen-reader labels and tooltips of colour dots. The others (coral, sky, grape...) are the same kind of name."
 }

@@ -1,268 +1,245 @@
 <title>Beat Lanes</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap">
 <style>
-/* Beat Lanes: a neon concert stage. The canvas (#cv) fills the screen and draws the stage, the note
-   highway, the gems and every spark. HTML sits on top for the HUD and the menu screens.
-   Layout: portrait phones get the HUD across the top; wide, short screens (landscape phones) get it
-   in a column on the left so the highway keeps its full height. Every tap target is at least 44 px. */
-:root{
-  --bg:#07041a; --ink:#fff; --soft:#c9bdff; --panel:rgba(22,12,58,.94); --edge:#5c3fd6; --chip:#2a1a66;
-  --pink:#ff4fa3; --yellow:#ffd23f; --cyan:#3fe0ff; --lime:#7dff5a; --gold:#ffe36e;
-  --font:"Fredoka","Trebuchet MS",system-ui,sans-serif;
-}
-[hidden]{display:none!important}
-html,body{height:100%}
-body{margin:0;overflow:hidden;background:var(--bg);color:var(--ink);font-family:var(--font);
-  touch-action:none;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
-button{font-family:inherit;color:inherit;cursor:pointer;border:0}
-button:focus-visible,.card:focus-visible{outline:3px solid #fff;outline-offset:2px}
-#cv{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
+/* Beat Lanes on the Oomba Kit. Behind everything is a kit stage: each song plays in its own kit world at dusk or night
+   (a city, a castle, a candy land ...) with the band standing beside the far end of the lanes: the player's own avatar
+   and kit friends, lit by spotlights, cheering on combos. The game's canvas (#cv, transparent) draws the note highway,
+   the gems, sparks and words in the Oomba Ink style (kit colours, Ink outlines, the kit font). The kit's title, pause
+   and settings screens; the game's song list, levels, results and calibration are cards in the kit's look (kit
+   buttons, icons and colours: --ok-* day/night variables).
+   Layout: portrait phones get the HUD across the top; wide, short screens (landscape phones) get it in a column on the
+   start side so the highway keeps its full height. Every tap target is at least 48 px. */
+.bl{position:fixed;inset:0;--bl-ink:#141414;--soft:color-mix(in srgb,var(--ok-text) 68%,transparent);touch-action:none;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
+.bl [hidden]{display:none!important}
+.bl button{font-family:inherit;cursor:pointer}
+#cv{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
+.bl .ok-btn.ok-icon{flex:none}
+.bl .ok-btn.ok-icon svg{width:26px;height:26px}
+.bl .ok-btn{color:var(--bl-ink)}
 
 /* ---------- HUD ---------- */
-.hud{position:fixed;left:0;right:0;top:0;z-index:5;display:flex;align-items:center;gap:8px;
+.hud{position:absolute;left:0;right:0;top:0;z-index:5;display:flex;align-items:center;gap:8px;
   padding:max(8px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) 6px max(10px,env(safe-area-inset-left));pointer-events:none}
 .hud>*{pointer-events:auto}
-.ibtn{width:48px;height:48px;flex:none;border-radius:50%;background:rgba(30,18,80,.85);font-size:1.35rem;display:grid;place-items:center;padding:0;
-  box-shadow:0 3px 0 rgba(0,0,0,.5),inset 0 0 0 2px var(--edge)}
-.ibtn:active{transform:translateY(2px)}
-.hmid{flex:1;min-width:0;max-width:520px;margin:0 auto;display:flex;flex-direction:column;gap:5px;align-items:stretch}
-.scorebox{display:flex;align-items:baseline;justify-content:center;gap:8px;line-height:1}
-.scorebox b{font-size:1.7rem;font-variant-numeric:tabular-nums;letter-spacing:.02em;text-shadow:0 0 12px rgba(63,224,255,.6)}
-.mult{font-weight:700;font-size:1.05rem;color:#1b0b33;background:var(--gold);border-radius:999px;padding:2px 9px;min-width:2.6em;text-align:center}
-.mult.x1{background:rgba(255,255,255,.18);color:#fff}
-.mult.star{background:linear-gradient(90deg,#ffe36e,#ff9de2)}
-.meters{display:flex;gap:8px}
-.meter{flex:1;display:flex;align-items:center;gap:4px;min-width:0}
-.meter .mi{font-size:.85rem;line-height:1}
-.bar{flex:1;height:10px;border-radius:999px;background:rgba(255,255,255,.14);overflow:hidden;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
-.bar i{display:block;height:100%;width:100%;border-radius:999px;background:linear-gradient(90deg,#ff5f8a,#ffd23f 50%,#7dff5a);transform-origin:left center;transform:scaleX(.5)}
-.bar.groove i{background:linear-gradient(90deg,#8a6bff,#3fe0ff,#ffe36e);transform:scaleX(0)}
-.bar.full{box-shadow:0 0 10px rgba(255,227,110,.8),inset 0 0 0 1px rgba(255,255,255,.4)}
-.star-btn{position:fixed;z-index:6;left:50%;transform:translateX(-50%);top:calc(max(8px,env(safe-area-inset-top)) + 84px);
-  min-height:52px;padding:0 20px;border-radius:999px;font-weight:700;font-size:1.2rem;color:#2b1100;
-  background:linear-gradient(180deg,#fff3a6,#ffcf3f);box-shadow:0 5px 0 #b77d00,0 0 22px rgba(255,214,63,.7);white-space:nowrap;
-  animation:starbob 1.4s ease-in-out infinite}
+.hmid{flex:1;min-width:0;max-width:520px;margin:0 auto;display:flex;flex-direction:column;gap:6px;align-items:stretch;background:var(--ok-card);color:var(--ok-text);
+  border:2.5px solid var(--bl-ink);border-radius:20px;box-shadow:0 4px 0 var(--bl-ink);padding:5px 10px 7px}
+.scorebox{display:flex;align-items:center;justify-content:center;gap:8px;line-height:1}
+.scorebox b{font-size:1.65rem;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+.mult{font-weight:700;font-size:1.02rem;color:var(--bl-ink);background:var(--bl-spark);border:2px solid var(--bl-ink);border-radius:999px;padding:1px 9px;min-width:2.6em;text-align:center}
+.mult.x1{background:var(--ok-bg2);color:var(--ok-text);border-color:var(--ok-line)}
+.mult.star{background:var(--bl-spark);box-shadow:0 0 0 3px var(--bl-sparkTint)}
+.meters{display:flex;gap:10px}
+.meter{flex:1;display:flex;align-items:center;gap:5px;min-width:0}
+.meter svg{width:18px;height:18px;flex:none}
+.bar{flex:1;height:12px;border-radius:999px;background:var(--ok-bg2);overflow:hidden;border:2px solid var(--bl-ink)}
+.bar i{display:block;height:100%;width:100%;background:var(--bl-mint);transform-origin:left center;transform:scaleX(.5)}
+.bar.low i{background:var(--bl-coral)}
+.bar.groove i{background:var(--bl-sky);transform:scaleX(0)}
+.bar.full i{background:var(--bl-spark)}
+.bar.full{box-shadow:0 0 0 3px var(--bl-sparkTint)}
+.star-btn{position:absolute;z-index:6;left:50%;transform:translateX(-50%);top:calc(max(8px,env(safe-area-inset-top)) + 92px);white-space:nowrap;animation:starbob 1.4s ease-in-out infinite}
+.star-btn svg{width:30px;height:30px}
 @keyframes starbob{0%,100%{transform:translateX(-50%) scale(1)}50%{transform:translateX(-50%) scale(1.07)}}
-.star-btn:active{box-shadow:0 2px 0 #b77d00}
-/* Wide, short screens: HUD becomes a column on the left, the star button sits on the right. */
-body.wide .hud{right:auto;bottom:0;width:min(28vw,220px);flex-direction:column;align-items:stretch;justify-content:center;gap:12px;padding-bottom:max(8px,env(safe-area-inset-bottom))}
-body.wide .hud .ibtn{align-self:flex-start}
-body.wide .hmid{flex:none}
-body.wide .meters{flex-direction:column}
-body.wide .scorebox{flex-direction:column;align-items:center}
-body.wide .star-btn{left:auto;right:max(14px,env(safe-area-inset-right));top:50%;transform:translateY(-50%);animation:starbob2 1.4s ease-in-out infinite;white-space:normal;max-width:min(26vw,200px);line-height:1.1;padding:8px 14px}
+/* Wide, short screens: the HUD becomes a column on the start side, the star button sits on the end side. */
+.bl.wide .hud{right:auto;bottom:0;width:min(28vw,230px);flex-direction:column;align-items:stretch;justify-content:center;gap:12px;padding-bottom:max(8px,env(safe-area-inset-bottom))}
+[dir=rtl] .bl.wide .hud{left:auto;right:0}
+.bl.wide .hud .ok-icon{align-self:flex-start}
+.bl.wide .hmid{flex:none}
+.bl.wide .meters{flex-direction:column;gap:6px}
+.bl.wide .scorebox{flex-direction:column;align-items:center}
+.bl.wide .star-btn{left:auto;right:max(14px,env(safe-area-inset-right));top:50%;transform:translateY(-50%);animation:starbob2 1.4s ease-in-out infinite;white-space:normal;max-width:min(26vw,210px);line-height:1.1;padding:8px 14px}
+[dir=rtl] .bl.wide .star-btn{right:auto;left:max(14px,env(safe-area-inset-left))}
 @keyframes starbob2{0%,100%{transform:translateY(-50%) scale(1)}50%{transform:translateY(-50%) scale(1.07)}}
-body.wide #muteBtn{position:fixed;right:max(10px,env(safe-area-inset-right));top:max(8px,env(safe-area-inset-top))}
+.bl.wide #muteBtn{position:fixed;right:max(10px,env(safe-area-inset-right));top:max(8px,env(safe-area-inset-top))}
+[dir=rtl] .bl.wide #muteBtn{right:auto;left:max(10px,env(safe-area-inset-left))}
 
-/* ---------- screens ---------- */
-.screen{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;padding:max(10px,env(safe-area-inset-top)) 12px max(10px,env(safe-area-inset-bottom))}
-.screen.dim{background:rgba(6,3,20,.6)}
-.panel{position:relative;background:var(--panel);border-radius:26px;padding:14px 16px 16px;width:min(100%,460px);max-height:100%;overflow:auto;text-align:center;
-  box-shadow:0 8px 0 rgba(0,0,0,.45),inset 0 0 0 3px var(--edge),0 0 40px rgba(124,77,255,.35);display:flex;flex-direction:column;align-items:center;gap:10px}
-.panel h2{margin:0;font-size:clamp(1.5rem,7vw,2rem);line-height:1.1;color:var(--gold);text-shadow:0 3px 0 #8a5a00}
+/* ---------- screens (cards in the kit's look) ---------- */
+.screen{position:absolute;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;padding:max(10px,env(safe-area-inset-top)) 12px max(10px,env(safe-area-inset-bottom))}
+.screen.dim{background:var(--ok-scrim)}
+.panel{position:relative;background:var(--ok-card);color:var(--ok-text);border:3px solid var(--bl-ink);border-radius:28px;padding:14px 16px 16px;width:min(100%,460px);max-height:100%;overflow:auto;text-align:center;
+  box-shadow:0 6px 0 var(--bl-ink);display:flex;flex-direction:column;align-items:center;gap:10px;box-sizing:border-box}
+.panel h2,.sheet h2{margin:0;font-size:clamp(1.5rem,7vw,2rem);line-height:1.1;font-weight:700}
 .panel p{margin:0;font-size:1rem;line-height:1.3}
-.hint{font-size:.9rem;color:var(--soft)}
-.big-btn{border-radius:20px;background:linear-gradient(180deg,#ff7ac0,#ff3f97);color:#fff;font-weight:700;font-size:1.4rem;padding:10px 22px;min-height:58px;
-  box-shadow:0 6px 0 #a3125a,0 0 24px rgba(255,79,163,.45);text-shadow:0 2px 0 rgba(0,0,0,.25);line-height:1.15}
-.big-btn:active{transform:translateY(4px);box-shadow:0 2px 0 #a3125a}
-.big-btn.alt{background:var(--chip);box-shadow:0 6px 0 rgba(0,0,0,.45),inset 0 0 0 2px var(--edge);font-size:1.1rem;min-height:50px}
-.big-btn.alt:active{box-shadow:0 2px 0 rgba(0,0,0,.45),inset 0 0 0 2px var(--edge)}
-.big-btn[disabled]{opacity:.45;filter:grayscale(.6)}
+.hint{font-size:.92rem;color:var(--soft)}
 .btns{display:flex;gap:10px;width:100%;justify-content:center;flex-wrap:wrap}
-.btns .big-btn{flex:1;min-width:128px}
-.pill{min-height:46px;border-radius:999px;background:var(--chip);box-shadow:inset 0 0 0 2px var(--edge);padding:0 16px;font-weight:600;font-size:1rem}
-.chip{font-weight:700;background:var(--chip);border-radius:999px;padding:6px 12px;font-size:1rem;box-shadow:inset 0 0 0 2px var(--edge);white-space:nowrap}
-.chip.gold{background:var(--gold);color:#3a2a00;box-shadow:none}
-.toggle{min-height:48px;border-radius:16px;background:var(--chip);box-shadow:inset 0 0 0 2px var(--edge);padding:6px 14px;font-weight:600;font-size:1rem;line-height:1.15}
-.toggle[aria-pressed=true]{background:#3b2a8f;box-shadow:inset 0 0 0 3px var(--lime)}
-.back{font-size:1.6rem;font-weight:700}
-[dir=rtl] .back{transform:scaleX(-1)}
+.btns .ok-btn{flex:1 1 128px;min-width:0;padding:0 12px;white-space:nowrap}
+.chip{display:inline-flex;align-items:center;gap:5px;font-weight:700;background:var(--ok-card);color:var(--ok-text);border:2.5px solid var(--bl-ink);border-radius:999px;padding:3px 12px 3px 7px;font-size:1rem;white-space:nowrap;box-shadow:0 3px 0 var(--bl-ink)}
+.chip svg{width:22px;height:22px}
+.chip.gold{background:var(--bl-spark);color:var(--bl-ink)}
+.toggle{min-height:52px;border-radius:16px;background:var(--ok-bg2);color:var(--ok-text);border:2.5px solid var(--ok-line);padding:6px 14px;font-weight:700;font-size:1rem;line-height:1.15;display:inline-flex;align-items:center;gap:8px}
+.toggle svg{width:24px;height:24px;flex:none}
+.toggle[aria-pressed=true]{background:var(--bl-mintTint);color:var(--bl-ink);border-color:var(--bl-ink);box-shadow:inset 0 0 0 2px var(--bl-mint)}
 .bar-head{display:flex;align-items:center;gap:10px;width:100%}
-.bar-head h2{flex:1;min-width:0;font-size:clamp(1.3rem,6vw,1.8rem)}
+.bar-head h2{flex:1;min-width:0;font-size:clamp(1.3rem,6vw,1.8rem);text-align:start}
+[dir=rtl] .back svg{transform:scaleX(-1)}
+.kbonly{display:none}
+@media (hover:hover) and (pointer:fine){.kbonly{display:block}}
 
-/* title */
-#scrTitle{flex-direction:column;justify-content:space-between;padding-top:max(22px,env(safe-area-inset-top));padding-bottom:max(22px,env(safe-area-inset-bottom))}
-.logo{margin:0;font-size:clamp(3rem,15vw,5.2rem);line-height:.95;letter-spacing:.02em;text-align:center;font-weight:700}
-.logo span{display:block}
-.logo .a{color:#fff;text-shadow:0 0 6px #fff,0 0 18px var(--pink),0 0 36px var(--pink),0 5px 0 #a3125a}
-.logo .b{color:#fff;text-shadow:0 0 6px #fff,0 0 18px var(--cyan),0 0 36px var(--cyan),0 5px 0 #0b6e8a}
-.title-top{display:flex;flex-direction:column;align-items:center;gap:8px}
-.tag{margin:0;max-width:340px;text-align:center;font-size:1.1rem;font-weight:600;color:#fff;text-shadow:0 2px 6px #000,0 0 12px rgba(0,0,0,.8)}
-.title-bottom{display:flex;flex-direction:column;align-items:center;gap:12px;width:min(100%,360px)}
-.title-bottom .big-btn{width:100%;font-size:1.8rem;min-height:70px}
-.row{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap}
-.corner{position:fixed;top:max(10px,env(safe-area-inset-top));right:max(10px,env(safe-area-inset-right));z-index:21}
+/* title (the kit's): the game's stars, the keys and Settings go on a card under Play */
+.bl-tcard{display:flex;flex-direction:column;align-items:center;gap:12px;background:var(--ok-card);color:var(--ok-text);border:3px solid var(--bl-ink);border-radius:28px;box-shadow:0 6px 0 var(--bl-ink);padding:14px 16px 16px;max-width:min(400px,calc(100vw - 32px));box-sizing:border-box}
+.bl-tcard .ok-p{border:0!important;box-shadow:none!important;background:transparent!important;padding:0!important;margin:0;font-weight:600}
+.bl-tcard .row{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap}
+.bl-tcard .ok-big{min-width:220px}
+.bl-tcard .hint{margin:0;font-size:.85rem}
+.ok-title-screen .ok-h1 .ok-title-word:nth-child(3){--ok-t1:#7FD3FF;--ok-t2:#2B8FD0}
 
 /* song list */
-.sheet{width:min(100%,520px);height:100%;display:flex;flex-direction:column;gap:10px;background:var(--panel);border-radius:26px;padding:12px;
-  box-shadow:0 8px 0 rgba(0,0,0,.45),inset 0 0 0 3px var(--edge)}
-.sheet h2{margin:0;color:var(--gold);text-shadow:0 3px 0 #8a5a00;text-align:start}
+.sheet{width:min(100%,540px);height:100%;display:flex;flex-direction:column;gap:10px;background:var(--ok-card);color:var(--ok-text);border:3px solid var(--bl-ink);border-radius:28px;padding:12px;
+  box-shadow:0 6px 0 var(--bl-ink);box-sizing:border-box}
 .cards{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:9px;padding:2px 2px 8px;touch-action:pan-y;overscroll-behavior:contain}
-.card{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.06);border-radius:18px;padding:8px;min-height:76px;cursor:pointer;
-  box-shadow:inset 0 0 0 2px rgba(255,255,255,.08);text-align:start;position:relative;flex:none}
-.card[aria-pressed=true]{background:rgba(124,77,255,.28);box-shadow:inset 0 0 0 3px var(--cyan)}
-.card.locked{opacity:.62}
-.cover{width:60px;height:60px;flex:none;border-radius:14px;display:grid;place-items:center;font-size:1.9rem;box-shadow:inset 0 0 0 2px rgba(255,255,255,.25)}
-.cinfo{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.card{display:grid;grid-template-columns:62px minmax(0,1fr);grid-template-areas:"cover info" "cover row" "go go";column-gap:10px;row-gap:5px;align-items:center;background:var(--ok-bg2);border:2.5px solid var(--ok-line);border-radius:20px;padding:8px 10px;min-height:76px;cursor:pointer;text-align:start;position:relative;flex:none}
+.card[aria-pressed=true]{border-color:var(--bl-ink);box-shadow:0 4px 0 var(--bl-ink),inset 0 0 0 3px var(--bl-sky)}
+.card.locked{opacity:.66}
+.cover{grid-area:cover;align-self:start;width:62px;height:62px;flex:none;border-radius:16px;display:grid;place-items:center;border:2.5px solid var(--bl-ink);overflow:hidden}
+.cover .cic{color:var(--bl-grape);display:grid;place-items:center}
+.cover .cic svg{width:38px;height:38px}
+.cover canvas{width:52px;height:52px;object-fit:contain}
+.cover svg{width:30px;height:30px}
+.cinfo{grid-area:info;min-width:0;display:flex;flex-direction:column;gap:2px}
+.cinfo .nw{white-space:nowrap}
 .cinfo b{font-size:1.08rem;line-height:1.15}
 .cinfo .by{font-size:.84rem;color:var(--soft);line-height:1.2}
-.diffs{display:flex;gap:6px;flex-wrap:wrap}
-.dchip{font-size:.8rem;background:rgba(0,0,0,.3);border-radius:999px;padding:2px 7px;white-space:nowrap;direction:ltr}
-.dchip .st{color:var(--gold);letter-spacing:-1px}
+.diffs{grid-area:row;display:flex;gap:5px;flex-wrap:wrap;min-width:0}
+.dchip{display:inline-flex;align-items:center;gap:2px;font-size:.76rem;background:var(--ok-card);border:1.5px solid var(--ok-line);border-radius:999px;padding:1px 6px 1px 4px;white-space:nowrap;direction:ltr}
+.dchip .lv{width:15px;height:14px;flex:none}
+.st{color:var(--bl-sparkText);letter-spacing:-1px}
 .dchip .gr{font-weight:700;margin-inline-start:3px}
-.card .go{flex:none;min-width:64px;min-height:56px;border-radius:16px;background:linear-gradient(180deg,#ff7ac0,#ff3f97);font-weight:700;font-size:1.05rem;box-shadow:0 4px 0 #a3125a;padding:4px 10px}
-.card .lock{flex:none;font-size:.9rem;font-weight:700;color:var(--gold);text-align:center;max-width:92px;line-height:1.15}
+.card .go{grid-area:go;width:100%;min-height:52px;padding:0 14px;margin-top:3px}
+.card .lock{grid-area:row;font-size:.88rem;font-weight:700;line-height:1.15;display:flex;align-items:center;gap:5px}
+.card .lock svg{width:20px;height:20px;flex:none}
 
 /* difficulty */
 .levels{display:flex;flex-direction:column;gap:9px;width:100%}
-.lvl{display:grid;grid-template-columns:auto 1fr auto;grid-template-rows:auto auto;column-gap:10px;align-items:center;text-align:start;border-radius:18px;padding:9px 14px;min-height:64px;
-  background:var(--chip);box-shadow:0 5px 0 rgba(0,0,0,.45),inset 0 0 0 2px var(--edge)}
-.lvl:active{transform:translateY(3px)}
-.lvl .em{grid-row:1/3;font-size:1.9rem}
+.lvl{display:grid;grid-template-columns:auto 1fr auto;grid-template-rows:auto auto;column-gap:10px;align-items:center;text-align:start;border-radius:20px;padding:6px 14px;min-height:66px;
+  background:var(--lvl);color:var(--bl-ink);border:2.5px solid var(--bl-ink);box-shadow:0 5px 0 var(--bl-ink);font:inherit}
+.lvl:active{transform:translateY(3px);box-shadow:0 2px 0 var(--bl-ink)}
+.lvl .em{grid-row:1/3;width:52px;height:52px;display:grid;place-items:center}
+.lvl .em canvas{width:52px;height:52px;object-fit:contain}
 .lvl b{font-size:1.25rem}
-.lvl small{grid-column:2;font-size:.85rem;color:var(--soft);line-height:1.2}
-.lvl .lstars{grid-row:1/3;grid-column:3;font-size:1rem;color:var(--gold);white-space:nowrap;direction:ltr;text-align:end}
-.lvl .lstars em{display:block;font-style:normal;font-weight:700;color:#fff;font-size:1.1rem}
-.lvl.easy{background:linear-gradient(90deg,#1f5a3a,#2a1a66)} .lvl.normal{background:linear-gradient(90deg,#1d4a7a,#2a1a66)} .lvl.hard{background:linear-gradient(90deg,#7a1d4a,#2a1a66)}
-[dir=rtl] .lvl.easy{background:linear-gradient(270deg,#1f5a3a,#2a1a66)} [dir=rtl] .lvl.normal{background:linear-gradient(270deg,#1d4a7a,#2a1a66)} [dir=rtl] .lvl.hard{background:linear-gradient(270deg,#7a1d4a,#2a1a66)}
+.lvl small{grid-column:2;font-size:.86rem;line-height:1.2;font-weight:600;opacity:.85}
+.lvl .lstars{grid-row:1/3;grid-column:3;font-size:1rem;white-space:nowrap;direction:ltr;text-align:end;color:var(--bl-ink)}
+.lvl .lstars em{display:block;font-style:normal;font-weight:700;font-size:1.1rem}
+.lvl.easy{--lvl:var(--bl-mintTint)} .lvl.normal{--lvl:var(--bl-skyTint)} .lvl.hard{--lvl:var(--bl-coralTint)}
 .toggles{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
 
 /* results */
 .rsong{font-size:.95rem;color:var(--soft)}
-.gradewrap{display:flex;align-items:center;gap:14px}
-.grade{font-size:5rem;line-height:1;font-weight:700;color:#fff;width:1.3em;height:1.3em;border-radius:50%;display:grid;place-items:center;
-  background:radial-gradient(circle at 35% 30%,#ff9de2,#7c4dff 70%);box-shadow:0 0 30px rgba(255,79,163,.6),inset 0 0 0 4px rgba(255,255,255,.5);text-shadow:0 4px 0 rgba(0,0,0,.3)}
-.grade.none{font-size:3rem}
-.grade.S{background:radial-gradient(circle at 35% 30%,#fff6b0,#ffb800 70%);color:#5a3a00;text-shadow:0 3px 0 rgba(255,255,255,.5)}
-.rstars{font-size:1.8rem;color:var(--gold);letter-spacing:2px;direction:ltr}
+.gradewrap{display:flex;align-items:center;gap:14px;position:relative;isolation:isolate}
+/* a cleared song: a warm top to the card and spark rays turning behind the grade */
+.panel.win{background:linear-gradient(color-mix(in srgb,var(--bl-spark) 30%,var(--ok-card)),var(--ok-card) 48%)}
+.panel.win .gradewrap::before{content:"";position:absolute;z-index:-1;left:calc(.675*4.6rem);top:50%;width:13rem;height:13rem;margin:-6.5rem 0 0 -6.5rem;border-radius:50%;
+  background:repeating-conic-gradient(color-mix(in srgb,var(--bl-spark) 55%,transparent) 0 11deg,transparent 11deg 22deg);
+  -webkit-mask:radial-gradient(closest-side,#000 30%,transparent);mask:radial-gradient(closest-side,#000 30%,transparent);animation:rays 14s linear infinite}
+[dir=rtl] .panel.win .gradewrap::before{left:auto;right:calc(.675*4.6rem);margin:-6.5rem -6.5rem 0 0}
+@keyframes rays{to{transform:rotate(360deg)}}
+.grade{font-size:4.6rem;line-height:1;font-weight:700;color:var(--bl-ink);width:1.35em;height:1.35em;border-radius:50%;display:grid;place-items:center;flex:none;
+  background:var(--bl-skyTint);border:4px solid var(--bl-ink);box-shadow:0 5px 0 var(--bl-ink),inset 0 -8px 0 var(--bl-sky)}
+.grade.S{background:var(--bl-spark);box-shadow:0 5px 0 var(--bl-ink),inset 0 -8px 0 var(--bl-sparkShade)}
+.grade.A{background:var(--bl-mintTint);box-shadow:0 5px 0 var(--bl-ink),inset 0 -8px 0 var(--bl-mint)}
+.grade.none svg{width:.6em;height:.6em}
+.bl .ok-sparks{display:flex;gap:6px;direction:ltr}
+.bl .ok-sparks .ok-slot{width:clamp(38px,10vmin,52px);height:clamp(38px,10vmin,52px)}
+.ok-night .bl .ok-sparks .ok-on{--ok-fill:var(--bl-spark)}
 .badges{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
-.badge{font-weight:700;border-radius:999px;padding:4px 12px;background:linear-gradient(90deg,#3fe0ff,#7dff5a);color:#06261a}
-.badge.ap{background:linear-gradient(90deg,#ffe36e,#ff9de2);color:#3a1a00}
-.badge.nb{background:#ff4fa3;color:#fff}
-.score-big{font-size:2.4rem;font-weight:700;line-height:1;color:var(--gold);font-variant-numeric:tabular-nums}
-.score-big small{font-size:1rem;color:var(--soft);font-weight:600}
+.badge{font-weight:700;border-radius:999px;padding:3px 12px;background:var(--bl-mintTint);color:var(--bl-ink);border:2px solid var(--bl-ink)}
+.badge.ap{background:var(--bl-spark)}
+.badge.nb{background:var(--bl-coralTint)}
+.score-big{font-size:2.4rem;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
 .stats{display:flex;gap:10px;width:100%}
-.stats>div{flex:1;background:rgba(0,0,0,.25);border-radius:14px;padding:6px;display:flex;flex-direction:column;gap:2px}
+.stats>div{flex:1;background:var(--ok-bg2);border:2px solid var(--ok-line);border-radius:16px;padding:6px;display:flex;flex-direction:column;gap:2px}
 .stats span{font-size:.85rem;color:var(--soft)}
 .stats b{font-size:1.3rem}
 .counts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;width:100%}
-.counts>span{background:rgba(0,0,0,.25);border-radius:12px;padding:5px 2px;display:flex;flex-direction:column;align-items:center;gap:1px;min-width:0}
-.counts i{font-style:normal;font-size:.78rem;font-weight:600;max-width:100%;overflow-wrap:anywhere;line-height:1.1}
+.counts>span{background:var(--ok-bg2);border:2px solid var(--ok-line);border-top:5px solid var(--c);border-radius:14px;padding:5px 2px;display:flex;flex-direction:column;align-items:center;gap:1px;min-width:0}
+.counts i{font-style:normal;font-size:.78rem;font-weight:700;max-width:100%;overflow-wrap:anywhere;line-height:1.1}
 .counts b{font-size:1.15rem}
-.c-perfect i{color:var(--gold)} .c-great i{color:var(--cyan)} .c-good i{color:var(--lime)} .c-miss i{color:#ff8fa8}
-.unlock{font-weight:700;color:var(--lime)}
+.c-perfect{--c:var(--bl-spark)} .c-great{--c:var(--bl-sky)} .c-good{--c:var(--bl-mint)} .c-miss{--c:var(--bl-coral)}
+.unlock{font-weight:700;display:inline-flex;align-items:center;gap:6px}
+.unlock svg{width:22px;height:22px;flex:none}
 .pop-in{animation:popin .55s cubic-bezier(.2,1.6,.4,1) both}
 @keyframes popin{0%{transform:scale(.2) rotate(-12deg)}100%{transform:scale(1) rotate(0)}}
 
 /* settings + calibration */
-.group{width:100%;display:flex;flex-direction:column;align-items:center;gap:8px;background:rgba(0,0,0,.22);border-radius:18px;padding:10px}
+.group{width:100%;display:flex;flex-direction:column;align-items:center;gap:8px;background:var(--ok-bg2);border:2px solid var(--ok-line);border-radius:20px;padding:10px;box-sizing:border-box}
 .group .lbl{font-weight:700;font-size:1.05rem}
 .offrow{display:flex;align-items:center;gap:8px;width:100%}
-.offrow input{flex:1;min-width:0;height:44px;accent-color:var(--pink)}
-.ibtn.sm{width:46px;height:46px;font-size:1.5rem}
+.offrow input{flex:1;min-width:0;height:44px;accent-color:var(--bl-coral)}
 #offVal{font-size:1.4rem;font-variant-numeric:tabular-nums}
 .seg{display:flex;gap:6px;width:100%}
-.seg button{flex:1;min-height:48px;border-radius:14px;background:var(--chip);box-shadow:inset 0 0 0 2px var(--edge);font-weight:600;font-size:1rem;padding:4px}
-.seg button[aria-pressed=true]{background:#3b2a8f;box-shadow:inset 0 0 0 3px var(--lime)}
-.tap-pad{width:min(56vw,190px);height:min(56vw,190px);border-radius:50%;font-size:1.8rem;font-weight:700;color:#fff;flex:none;
-  background:radial-gradient(circle at 40% 35%,#ff9de2,#ff3f97 60%,#a3125a);box-shadow:0 8px 0 #6a0b3a,0 0 30px rgba(255,79,163,.6);touch-action:none}
-.tap-pad:active{box-shadow:0 4px 0 #6a0b3a,0 0 30px rgba(255,79,163,.6)}
+.seg button{flex:1;min-height:50px;border-radius:14px;background:var(--ok-card);color:var(--ok-text);border:2.5px solid var(--ok-line);font-weight:700;font-size:1rem;padding:4px}
+.seg button[aria-pressed=true]{background:var(--bl-mintTint);color:var(--bl-ink);border-color:var(--bl-ink)}
+.tap-pad{width:min(52vw,180px);height:min(52vw,180px);border-radius:50%;font-size:1.8rem;font-weight:700;color:var(--bl-ink);flex:none;touch-action:none;
+  background:var(--bl-coral);border:4px solid var(--bl-ink);box-shadow:0 8px 0 var(--bl-ink),inset 0 -12px 0 var(--bl-coralShade)}
+.tap-pad:active{box-shadow:0 3px 0 var(--bl-ink),inset 0 -12px 0 var(--bl-coralShade)}
 .dots{display:flex;gap:7px;direction:ltr}
-.dots i{width:16px;height:16px;border-radius:50%;background:rgba(255,255,255,.18)}
-.dots i.on{background:var(--lime);box-shadow:0 0 8px var(--lime)}
-.toast{position:fixed;left:50%;top:24%;z-index:30;transform:translate(-50%,-50%);background:#fff;color:#2a1366;font-weight:700;font-size:1.15rem;padding:8px 18px;border-radius:999px;
-  box-shadow:0 5px 0 rgba(0,0,0,.35);max-width:92vw;text-align:center;pointer-events:none;animation:toast 2s ease forwards}
-@keyframes toast{0%{transform:translate(-50%,-50%) scale(.5);opacity:0}12%{transform:translate(-50%,-50%) scale(1.06);opacity:1}20%{transform:translate(-50%,-50%) scale(1)}85%{opacity:1}100%{opacity:0}}
-.kbonly{display:none}
-@media (hover:hover) and (pointer:fine){.kbonly{display:block}}
-kbd{display:inline-block;min-width:1.4em;padding:0 .3em;border-radius:6px;background:var(--chip);box-shadow:inset 0 0 0 1px var(--edge);font-family:inherit;font-weight:700;color:#fff}
-@media (max-height:620px){.panel{gap:7px;padding:10px 14px}.big-btn{min-height:50px;font-size:1.2rem}.grade{font-size:3.4rem}.score-big{font-size:2rem}.logo{font-size:clamp(2.4rem,11vh,4rem)}.lvl{min-height:56px;padding:6px 12px}.tap-pad{width:150px;height:150px}}
-/* Short landscape: results go two columns and the title spreads out so nothing needs scrolling. */
+.dots i{width:16px;height:16px;border-radius:50%;background:var(--ok-bg2);border:2px solid var(--ok-line)}
+.dots i.on{background:var(--bl-mint);border-color:var(--bl-ink)}
+kbd{display:inline-block;min-width:1.4em;padding:0 .3em;border-radius:6px;background:var(--ok-bg2);border:1.5px solid var(--ok-line);font-family:inherit;font-weight:700}
+@media (max-height:620px){.panel{gap:7px;padding:10px 14px}.grade{font-size:3.2rem}.score-big{font-size:2rem}.lvl{min-height:56px;padding:4px 12px}.tap-pad{width:140px;height:140px}}
+/* Short landscape: results go two columns so nothing needs scrolling. */
 @media (orientation:landscape) and (max-height:500px){
   .panel.wideable{width:min(100%,760px);display:grid;grid-template-columns:1fr 1fr;align-items:center;column-gap:16px}
   .panel.wideable .colL,.panel.wideable .colR{display:flex;flex-direction:column;align-items:center;gap:7px;min-width:0}
   .panel.wideable>.bar-head{grid-column:1/-1}
   .panel.wideable>.group{align-self:stretch;justify-content:center}
-  #scrTitle{flex-direction:row;align-items:center;justify-content:space-around}
-  .title-bottom{width:min(44vw,340px)}
   .levels{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
   .lvl{grid-template-columns:1fr;grid-template-rows:auto;text-align:center;justify-items:center;row-gap:2px}
   .lvl .em,.lvl small,.lvl .lstars{grid-row:auto;grid-column:auto;text-align:center}
   .tap-pad{width:120px;height:120px}
 }
 .colL,.colR{display:contents}
-html[lang="ar"] *{letter-spacing:0!important}
-html[lang="ja"] .panel p,html[lang="ja"] .tag,html[lang="ja"] .panel h2,html[lang="ja"] button,html[lang="ja"] .lvl small,html[lang="ja"] .cinfo,html[lang="zh-Hant"] button{word-break:auto-phrase}
-html[lang="ja"] .counts i,html[lang="ru"] .counts i{white-space:nowrap;font-size:.68rem;letter-spacing:-.02em}
-@media (prefers-reduced-motion:reduce){.star-btn,body.wide .star-btn{animation:none}.pop-in{animation:none}.toast{animation:none}}
+.ok-ui[lang|=ja] .panel p,.ok-ui[lang|=ja] .panel h2,.ok-ui[lang|=ja] button,.ok-ui[lang|=ja] .lvl small,.ok-ui[lang|=ja] .cinfo,.ok-ui[lang|=zh] button{word-break:auto-phrase}
+.ok-ui[lang|=ja] .counts i,.ok-ui[lang|=ru] .counts i{white-space:nowrap;font-size:.68rem;letter-spacing:-.02em}
+.ok-rm .star-btn,.ok-rm .bl.wide .star-btn{animation:none}.ok-rm .pop-in{animation:none}.ok-rm .panel.win .gradewrap::before{animation:none}
+@media (prefers-reduced-motion:reduce){.star-btn,.bl.wide .star-btn{animation:none}.pop-in{animation:none}.panel.win .gradewrap::before{animation:none}}
+/* Tall phones: results sit at the top so the band can cheer under the card */
+@media (max-aspect-ratio:4/5){
+  #scrResults{align-items:flex-start;background:linear-gradient(var(--ok-scrim) 55%,transparent 80%)}
+  #scrResults .panel{gap:7px;padding:12px 14px 14px}
+  #scrResults .grade{font-size:3.6rem}
+  #scrResults .score-big{font-size:2.1rem}
+  #scrResults .stats b{font-size:1.15rem}
+  #scrResults .btns .ok-btn{min-height:50px}
+}
 </style>
 
+<div id="game" class="bl">
 <canvas id="cv" aria-label="Note lanes. Tap a lane when its note reaches the line." data-ta="laneAria"></canvas>
 
 <div class="hud" id="hud" hidden>
-  <button class="ibtn" id="pauseBtn" aria-label="Pause" data-ta="pause">⏸️</button>
+  <button class="ok-btn ok-icon" id="pauseBtn" data-icon="pause" aria-label="Pause" data-ta="pause"></button>
   <div class="hmid">
     <div class="scorebox"><b id="scoreEl" dir="ltr">0</b><span class="mult x1" id="multEl" dir="ltr">×1</span></div>
     <div class="meters">
-      <div class="meter" id="healthBox"><span class="mi" aria-hidden="true">❤️</span><div class="bar" role="meter" aria-label="Health" data-ta="healthAria"><i id="healthFill"></i></div></div>
-      <div class="meter"><span class="mi" aria-hidden="true">⭐</span><div class="bar groove" id="grooveBar" role="meter" aria-label="Groove" data-ta="groove"><i id="grooveFill"></i></div></div>
+      <div class="meter" id="healthBox"><span data-icon="heart" aria-hidden="true"></span><div class="bar" id="healthBar" role="meter" aria-label="Health" data-ta="healthAria"><i id="healthFill"></i></div></div>
+      <div class="meter"><span data-icon="spark" aria-hidden="true"></span><div class="bar groove" id="grooveBar" role="meter" aria-label="Groove" data-ta="groove"><i id="grooveFill"></i></div></div>
     </div>
   </div>
-  <button class="ibtn" id="muteBtn" aria-label="Turn sound off">🔊</button>
+  <button class="ok-btn ok-icon mute" id="muteBtn" aria-label="Turn sound off"></button>
 </div>
-<button class="star-btn" id="starBtn" hidden aria-label="Start Star Power" data-ta="starAria">⭐ <span data-t="starGo">Star Power!</span></button>
-
-<section class="screen" id="scrTitle">
-  <div class="title-top">
-    <h1 class="logo" dir="ltr"><span class="a">Beat</span><span class="b">Lanes</span></h1>
-    <p class="tag" data-t="tagline">Tap each lane when its note reaches the line!</p>
-  </div>
-  <div class="title-bottom">
-    <button class="big-btn" id="playBtn">▶ <span data-t="play">Play</span></button>
-    <div class="row">
-      <button class="pill" id="setBtn">⚙️ <span data-t="settings">Settings</span></button>
-      <span class="chip gold" id="titleStars" dir="ltr">★ 0</span>
-    </div>
-    <p class="hint kbonly" id="titleKeys"></p>
-  </div>
-  <button class="ibtn corner" id="muteBtn2" aria-label="Turn sound off">🔊</button>
-</section>
+<button class="ok-btn ok-hot ok-big star-btn" id="starBtn" hidden aria-label="Start Star Power" data-ta="starAria" data-icon="spark"><span data-t="starGo">Star Power!</span></button>
 
 <section class="screen" id="scrSongs" hidden>
   <div class="sheet">
-    <div class="bar-head"><button class="ibtn back" id="songsBack" aria-label="Back" data-ta="back">‹</button><h2 data-t="pickSong">Pick a song</h2><span class="chip gold" id="songsStars" dir="ltr">★ 0</span></div>
+    <div class="bar-head"><button class="ok-btn ok-icon back" id="songsBack" data-icon="back" aria-label="Back" data-ta="back"></button><h2 data-t="pickSong">Pick a song</h2><span class="chip gold" id="songsStars" dir="ltr"></span></div>
     <div class="cards" id="cards"></div>
   </div>
 </section>
 
 <section class="screen" id="scrDiff" hidden>
   <div class="panel">
-    <div class="bar-head"><button class="ibtn back" id="diffBack" aria-label="Back" data-ta="back">‹</button><h2 id="diffTitle"></h2></div>
+    <div class="bar-head"><button class="ok-btn ok-icon back" id="diffBack" data-icon="back" aria-label="Back" data-ta="back"></button><h2 id="diffTitle"></h2></div>
     <p class="hint" data-t="chooseLevel">Choose a level</p>
     <div class="levels">
-      <button class="lvl easy" data-diff="easy"><span class="em">🐣</span><b data-t="easy">Easy</b><small data-t="easyInfo"></small><span class="lstars"></span></button>
-      <button class="lvl normal" data-diff="normal"><span class="em">🎵</span><b data-t="normal">Normal</b><small data-t="normalInfo"></small><span class="lstars"></span></button>
-      <button class="lvl hard" data-diff="hard"><span class="em">🔥</span><b data-t="hard">Hard</b><small data-t="hardInfo"></small><span class="lstars"></span></button>
+      <button class="lvl easy" data-diff="easy"><span class="em" data-pic="duck"></span><b data-t="easy">Easy</b><small data-t="easyInfo"></small><span class="lstars"></span></button>
+      <button class="lvl normal" data-diff="normal"><span class="em" data-pic="bunny"></span><b data-t="normal">Normal</b><small data-t="normalInfo"></small><span class="lstars"></span></button>
+      <button class="lvl hard" data-diff="hard"><span class="em" data-pic="fox"></span><b data-t="hard">Hard</b><small data-t="hardInfo"></small><span class="lstars"></span></button>
     </div>
     <div class="toggles">
-      <button class="toggle" id="practiceTg" aria-pressed="false">🧸 <span data-t="practice">Practice</span></button>
-      <button class="toggle" id="slowTg" aria-pressed="false" hidden>🐢 <span data-t="slow">Slow</span></button>
+      <button class="toggle" id="practiceTg" aria-pressed="false" data-icon="heart"><span data-t="practice">Practice</span></button>
+      <button class="toggle" id="slowTg" aria-pressed="false" hidden data-icon="timer"><span data-t="slow">Slow</span></button>
     </div>
     <p class="hint" data-t="funNote"></p>
     <p class="hint kbonly" id="diffKeys"></p>
-  </div>
-</section>
-
-<section class="screen dim" id="scrPause" hidden>
-  <div class="panel">
-    <h2 data-t="paused">Paused</h2>
-    <p id="pauseSong" class="hint"></p>
-    <button class="big-btn" id="resumeBtn">▶ <span data-t="keepPlaying">Keep playing</span></button>
-    <div class="btns">
-      <button class="big-btn alt" id="restartBtn">🔄 <span data-t="startOver">Start over</span></button>
-      <button class="big-btn alt" id="pauseSongsBtn">🎵 <span data-t="songs">Songs</span></button>
-    </div>
-    <button class="pill" id="pauseMute">🔊</button>
   </div>
 </section>
 
@@ -271,7 +248,7 @@ html[lang="ja"] .counts i,html[lang="ru"] .counts i{white-space:nowrap;font-size
     <div class="colL">
       <p class="rsong" id="resSong"></p>
       <h2 id="resTitle"></h2>
-      <div class="gradewrap"><div class="grade" id="resGrade" role="img">S</div><div class="rstars" id="resStars" aria-hidden="true">★★★</div></div>
+      <div class="gradewrap"><div class="grade" id="resGrade" role="img">S</div><div class="ok-sparks" id="resStars" aria-hidden="true"></div></div>
       <div class="badges" id="resBadges"></div>
       <div class="score-big" id="resScore" dir="ltr">0</div>
     </div>
@@ -289,27 +266,27 @@ html[lang="ja"] .counts i,html[lang="ru"] .counts i{white-space:nowrap;font-size
       <p class="unlock" id="resUnlock" hidden></p>
       <p class="hint" id="resNote"></p>
       <div class="btns">
-        <button class="big-btn" id="retryBtn">🔄 <span data-t="retry">Retry</span></button>
-        <button class="big-btn alt" id="nextBtn">⏭️ <span data-t="next">Next song</span></button>
-        <button class="big-btn alt" id="resSongsBtn">🎵 <span data-t="songs">Songs</span></button>
+        <button class="ok-btn ok-hot" id="retryBtn" data-icon="restart"><span data-t="retry">Retry</span></button>
+        <button class="ok-btn ok-quiet" id="nextBtn" data-icon="next"><span data-t="next">Next song</span></button>
+        <button class="ok-btn ok-quiet" id="resSongsBtn" data-icon="music"><span data-t="songs">Songs</span></button>
       </div>
     </div>
   </div>
 </section>
 
-<section class="screen" id="scrSettings" hidden>
+<section class="screen dim" id="scrSettings" hidden>
   <div class="panel wideable">
-    <div class="bar-head"><button class="ibtn back" id="setBack" aria-label="Back" data-ta="back">‹</button><h2 data-t="settings">Settings</h2></div>
+    <div class="bar-head"><button class="ok-btn ok-icon back" id="setBack" data-icon="back" aria-label="Back" data-ta="back"></button><h2 data-t="settings">Settings</h2></div>
     <div class="group">
       <span class="lbl" data-t="offset">Timing offset</span>
       <div class="offrow" dir="ltr">
-        <button class="ibtn sm" id="offMinus" aria-label="Earlier" data-ta="earlier">−</button>
+        <button class="ok-btn ok-icon" id="offMinus" data-icon="minus" aria-label="Earlier" data-ta="earlier"></button>
         <input type="range" id="offRange" min="-200" max="200" step="5" value="0" aria-label="Timing offset" data-ta="offset">
-        <button class="ibtn sm" id="offPlus" aria-label="Later" data-ta="later">+</button>
+        <button class="ok-btn ok-icon" id="offPlus" data-icon="plus" aria-label="Later" data-ta="later"></button>
       </div>
       <b id="offVal" dir="ltr">0 ms</b>
       <p class="hint" data-t="offsetHelp"></p>
-      <button class="big-btn alt" id="calibBtn">🥁 <span data-t="calibrate">Tap to the beat</span></button>
+      <button class="ok-btn ok-quiet" id="calibBtn" data-icon="tap"><span data-t="calibrate">Tap to the beat</span></button>
     </div>
     <div class="group">
       <span class="lbl" data-t="noteSpeed">Note speed</span>
@@ -322,20 +299,26 @@ html[lang="ja"] .counts i,html[lang="ru"] .counts i{white-space:nowrap;font-size
   </div>
 </section>
 
-<section class="screen" id="scrCalib" hidden>
+<section class="screen dim" id="scrCalib" hidden>
   <div class="panel">
-    <div class="bar-head"><button class="ibtn back" id="calBack" aria-label="Back" data-ta="back">‹</button><h2 data-t="calibrate">Tap to the beat</h2></div>
+    <div class="bar-head"><button class="ok-btn ok-icon back" id="calBack" data-icon="back" aria-label="Back" data-ta="back"></button><h2 data-t="calibrate">Tap to the beat</h2></div>
     <p data-t="calibHelp"></p>
     <button class="tap-pad" id="calPad"><span data-t="calibTap">Tap!</span></button>
     <div class="dots" id="calDots"></div>
     <p class="hint" id="calMsg"></p>
     <div class="btns">
-      <button class="big-btn alt" id="calAgain">🔄 <span data-t="calibAgain">Try again</span></button>
-      <button class="big-btn" id="calDone">✔️ <span data-t="done">Done</span></button>
+      <button class="ok-btn ok-quiet" id="calAgain" data-icon="restart"><span data-t="calibAgain">Try again</span></button>
+      <button class="ok-btn ok-go" id="calDone" data-icon="check"><span data-t="done">Done</span></button>
     </div>
   </div>
 </section>
-
+</div>
+<script src="/vendor/oomba-kit/1.1.0/oomba-kit.js" integrity="sha384-GCejMN1YYamlsZNEJw6SRznGmZC2i6tppYwkLt8cv2gI3YTTsZq6l8eyUQuAM8qX" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.0/packs/art-animals.js" integrity="sha384-0kgnnCmovTaNwWnsPFryp1c8kgX7ji/jku0tdAsfRwfiaWP9usy3eBLuIdBsh8jE" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.0/packs/art-biomes.js" integrity="sha384-UVVUeKEbyMD1WPlwhrdiH/sB6bVZpbw7GKz2KoN4VJg/JMMI+hUkvx2Ts03akI3t" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.0/packs/art-biomes-2.js" integrity="sha384-0ad0awdyk2fC5pFpqYc/7EABVSKTEe1ZKo2YB6cvjKZDIDA2mI1+YRUEQhOgXrHs" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.0/packs/art-props.js" integrity="sha384-/RtKQ/ov2WG1EoCt4pJ98rHY07jOZjZ+lia901K+1BfS49MydEROuw7UaInBPHle" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.0/packs/dress.js" integrity="sha384-ZCFgY98YAWY7Tcy+GfJLalmnJukKdzbVpg6j4ZljXuJSYgYzkWSWMPihVW/u8CqH" crossorigin="anonymous"></script>
 <script>
 /* =====================================================================================
    BEAT LANES: a note-highway rhythm game. Notes slide down glowing lanes; tap each lane when its
@@ -348,8 +331,10 @@ html[lang="ja"] .counts i,html[lang="ru"] .counts i{white-space:nowrap;font-size
                      chart generator that turns one hand-written chart into Easy, Normal and Hard
      Rules core .... judging (Perfect/Great/Good/Miss), combo, health, Groove and Star Power, grades
      Audio ......... one AudioContext: synth voices, drums, a look-ahead scheduler, and the master clock
-     Render ........ the canvas: neon stage, perspective highway, gems, sparks, visualizer
-     Game / UI ..... screens, input (multi-touch + keys), saves, SDK calls
+     Render ........ a kit stage (the song's kit world, the band: the player's avatar and kit friends) behind one
+                     canvas: the perspective highway, gems, sparks and the visualizer in the Oomba Ink style
+     Game / UI ..... the kit's title and pause, the game's cards in the kit's look, input (multi-touch + keys),
+                     saves, SDK calls
      __brbTest ..... test hooks (documented at the bottom)
 
    Timing model: the AudioContext clock is the master clock. Music is scheduled a little ahead
@@ -1976,23 +1961,56 @@ function renderOffline(songId, from, dur, kinds, probeTimes) {
 }
 
 /* =====================================================================================
-   RENDER: one canvas. A painted backdrop (cached per song and size), live light beams and an
-   equalizer that follow the music, the perspective highway, gems, hold ribbons, pads, sparks,
-   judgement words, the combo counter and the 3-2-1 countdown.
-   No strobing: beat pulses are slow fades (at most one per beat, and every other beat above
-   150 BPM), so nothing flashes more than 3 times a second. Reduced motion: calm backdrop, no shake.
+   RENDER: a kit stage behind one transparent canvas.
+     The kit stage (Oomba.stage) is the world: each song has its own kit world (WORLDS) at dusk or night, and the band
+     stands beside the far end of the lanes: the player's own avatar (Oomba.avatar()) and kit friends, each under a
+     spotlight, bobbing to the beat and cheering on combos and Star Power; on wide screens a kit crowd fills the
+     bottom corners.
+     The canvas (#cv) draws the perspective highway, gems, hold ribbons, pads, sparks, judgement words, the combo
+     counter and the 3-2-1 countdown in the Oomba Ink style: kit colours, Ink outlines, the kit font, no shadow blur.
+   No strobing: beat pulses are slow fades (at most one per beat, and every other beat above 150 BPM), so nothing
+   flashes more than 3 times a second. Reduced motion (the kit's setting): calm beams, no shake, no bobbing.
    Hot path: no allocations (pools, cached gradients, cached strings).
    ===================================================================================== */
-const cv = document.getElementById('cv');
-const g = cv.getContext('2d', { alpha: false });
-let REDUCED = false; try { REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { /* ignore */ }
-const LANE_COLORS = ['#ff4fa3', '#ffd23f', '#3fe0ff', '#7dff5a'];
-const LANE_COLORS3 = ['#ff4fa3', '#ffd23f', '#3fe0ff'];
+const $ = id => document.getElementById(id);
+const PAL = Oomba.tokens.palette;
+const INK = (PAL.ink && PAL.ink[0]) || '#141414', CREAM = '#FFFDF2';
+const HEX = (hue, step) => (PAL[hue] ? PAL[hue][step] : INK);
+const SPARK = HEX('spark', 2), STARGEM = HEX('spark', 0), DEAD = HEX('stone', 1);
+// Lane colours: the game's classic order (pink-red, yellow, blue, green) in kit hues, so players who learned the lanes
+// keep them. Star Power gems are pale gold (spark tint) so they never look like the yellow lane.
+const LANE_HUES = ['coral', 'spark', 'sky', 'mint'], LANE_HUES3 = ['coral', 'spark', 'sky'];
+const LANE_COLORS = LANE_HUES.map(h => HEX(h, 2));
+const LANE_COLORS3 = LANE_HUES3.map(h => HEX(h, 2));
+const JUDGE_COLORS = ['', SPARK, HEX('sky', 1), HEX('mint', 1), HEX('coral', 1)];
+
+/** Each song's kit world: biome, time of day (0 noon .. 1 night), accent hue, the cover art and the band. */
+const WORLDS = {
+  twinkle: { biome: 'space', tod: 1, accent: 'grape', cover: 'planet', band: ['owl', 'bunny', 'penguin'] },
+  row: { biome: 'jungle', tod: 0.74, accent: 'mint', cover: 'boat', band: ['frog', 'duck', 'bear'] },
+  frere: { biome: 'meadow', tod: 0.68, accent: 'peach', cover: 'bear', coverMood: 'sleepy', band: ['mouse', 'bunny', 'dog'] },
+  robot: { biome: 'city', tod: 1, accent: 'sky', cover: 'oomba', coverMood: 'happy', band: ['oomba', 'cat', 'fox'] },
+  ode: { biome: 'castle', tod: 0.9, accent: 'mint', cover: 'icon:music', band: ['owl', 'dog', 'bear'] },
+  lofi: { biome: 'beach', tod: 0.72, accent: 'peach', cover: 'shell', band: ['cat', 'penguin', 'frog'] },
+  cancan: { biome: 'candy', tod: 0.76, accent: 'coral', cover: 'candycane', band: ['bunny', 'mouse', 'duck'] },
+  mountain: { biome: 'spooky', tod: 0.92, accent: 'grape', cover: 'ghost', band: ['bear', 'owl', 'cat'] },
+  tell: { biome: 'desert', tod: 0.62, accent: 'peach', cover: 'cactus', band: ['fox', 'dog', 'bee'] },
+};
+const CROWD = ['kid', 'frog', 'bee', 'penguin', 'duck', 'bunny'];
+const worldOf = song => WORLDS[song.id] || WORLDS.twinkle;
+
+const cv = $('cv');
+const g = cv.getContext('2d');
+let REDUCED = !!Oomba.settings.reduced;
+Oomba.settings.on('change', () => { REDUCED = !!Oomba.settings.reduced; });
 const DEPTH = 1.55, INVTOP = 1 / (1 + DEPTH);
-const V = { w: 360, h: 640, dpr: 1, cx: 180, hw: 150, hitY: 560, topY: 90, padH: 80, horizon: 120, wide: false, lanes: 4, laneW: 75 };
-const bgc = document.createElement('canvas');
-let bgKey = '', hwGrad = null, edgeGrad = null;
+/** What the stage is showing: 'play' (a song, full-width highway), 'results' or 'menu' (title, song list, settings). */
+function stageMode() { const s = G.screen; return s === 'play' || s === 'pause' ? 'play' : s === 'results' ? 'results' : 'menu'; }
+const V = { mode: 'menu', portrait: false, w: 360, h: 640, dpr: 1, cx: 180, hw: 150, hitY: 560, topY: 90, padH: 80, horizon: 120, wide: false, lanes: 4, laneW: 75, side: 0 };
+let hwGrad = null;
+const LANE_GRAD = {};
 const FONT = { big: '', mid: '', small: '', combo: '', label: '', count: '', key: '', judge: '' };
+let FONTSTACK = 'system-ui, sans-serif';
 
 /** Size everything to the window. */
 function layout() {
@@ -2000,30 +2018,37 @@ function layout() {
   V.w = w; V.h = h; V.dpr = dpr;
   cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
   V.wide = w / h > 1.3 && h < 620;
-  document.body.classList.toggle('wide', V.wide);
+  $('game').classList.toggle('wide', V.wide);
+  V.side = V.wide ? Math.min(w * 0.28, 220) : 0;      // the HUD column (start side) and the star button (end side)
   V.padH = Math.max(64, Math.min(104, h * 0.13));
   V.hitY = h - 6 - V.padH * 0.64;
   V.topY = V.wide ? 22 : Math.min(h * 0.19, 104);
-  const room = V.wide ? w - 2 * Math.min(w * 0.28, 220) - 20 : w - 20;
+  const room = V.wide ? w - 2 * V.side - 20 : w - 20;
   V.hw = Math.min(room, 560, (V.hitY - V.topY) * 0.98) / 2;
+  // Tall phones: outside a song the highway narrows so the band can stand beside it, big, under its spotlights
+  V.mode = stageMode(); V.portrait = w / h < 0.8;
+  if (V.portrait && V.mode !== 'play') V.hw *= 0.46;
   V.cx = w / 2;
   V.horizon = V.topY + 26;
   V.laneW = 2 * V.hw / V.lanes;
-  const fam = '"Fredoka","Trebuchet MS",system-ui,sans-serif';
+  const fam = FONTSTACK;
   FONT.big = '700 ' + Math.round(Math.min(64, V.hw * 0.42)) + 'px ' + fam;
   FONT.count = '700 ' + Math.round(Math.min(120, V.hw * 0.8)) + 'px ' + fam;
   FONT.combo = '700 ' + Math.round(Math.min(58, V.hw * 0.34)) + 'px ' + fam;
-  FONT.label = '600 ' + Math.round(Math.min(18, V.hw * 0.11)) + 'px ' + fam;
+  FONT.label = '700 ' + Math.round(Math.min(18, V.hw * 0.11)) + 'px ' + fam;
   FONT.mid = '700 ' + Math.round(Math.max(15, Math.min(24, V.laneW * 0.26))) + 'px ' + fam;
   FONT.judge = '700 ' + Math.round(Math.max(24, Math.min(40, V.hw * 0.2))) + 'px ' + fam;
-  FONT.small = '600 ' + Math.round(Math.max(12, Math.min(16, V.laneW * 0.18))) + 'px ' + fam;
+  FONT.small = '700 ' + Math.round(Math.max(12, Math.min(16, V.laneW * 0.18))) + 'px ' + fam;
   FONT.key = '700 ' + Math.round(Math.max(13, Math.min(20, V.laneW * 0.22))) + 'px ' + fam;
   g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  // the road: a deep night-blue stage floor, almost opaque so the world never shows through the lanes
   hwGrad = g.createLinearGradient(0, V.topY, 0, V.h);
-  hwGrad.addColorStop(0, 'rgba(14,8,40,0.55)'); hwGrad.addColorStop(0.6, 'rgba(22,12,60,0.82)'); hwGrad.addColorStop(1, 'rgba(34,18,84,0.92)');
-  edgeGrad = g.createLinearGradient(0, V.topY, 0, V.h);
-  edgeGrad.addColorStop(0, 'rgba(160,120,255,0.15)'); edgeGrad.addColorStop(1, 'rgba(160,120,255,0.95)');
-  bgKey = '';
+  hwGrad.addColorStop(0, 'rgba(16,14,38,0.96)'); hwGrad.addColorStop(0.4, 'rgba(22,18,52,1)'); hwGrad.addColorStop(1, 'rgba(30,24,66,1)');
+  // each lane lights up toward the player (a stage light in the lane's colour, no blur)
+  for (const col of [...new Set(LANE_COLORS.concat(LANE_COLORS3))]) {
+    const lg = g.createLinearGradient(0, V.topY, 0, V.h); lg.addColorStop(0, hexA(col, 0.05)); lg.addColorStop(0.7, hexA(col, 0.2)); lg.addColorStop(1, hexA(col, 0.34));
+    LANE_GRAD[col] = lg;
+  }
 }
 function setLanes(n) { V.lanes = n; V.laneW = 2 * V.hw / n; }
 
@@ -2043,52 +2068,53 @@ function laneAt(x, y) {
 /** Centre of a lane's pad (for tests and the bot). */
 function laneCenter(l) { return { x: V.cx - V.hw + (l + 0.5) * V.laneW, y: V.hitY + V.padH * 0.14 }; }
 
-/* ---------- sprites: gems and glows, one per lane colour ---------- */
+/* ---------- sprites: Ink gems (a sticker: colour, a shaded base, a cream gloss, an Ink outline) and glows ---------- */
 const SPR = { gem: {}, glow: {} };
 const GEM_W = 150, GEM_H = 66, GEM_PAD = 26;     // body size and glow margin inside the sprite
-function makeSprites() {
-  const all = LANE_COLORS.concat(['#ffe36e', '#9a8fb8', '#ffffff']);
-  all.forEach(col => {
-    const c = document.createElement('canvas'); c.width = GEM_W + GEM_PAD * 2; c.height = GEM_H + GEM_PAD * 2;
-    const x = c.getContext('2d'), L = GEM_PAD, T = GEM_PAD, W = GEM_W, H = GEM_H, cut = H * 0.42;
-    const path = () => { x.beginPath(); x.moveTo(L + cut, T); x.lineTo(L + W - cut, T); x.lineTo(L + W, T + H / 2); x.lineTo(L + W - cut, T + H); x.lineTo(L + cut, T + H); x.lineTo(L, T + H / 2); x.closePath(); };
-    x.shadowColor = col; x.shadowBlur = 22; x.fillStyle = col; path(); x.fill();
-    x.shadowBlur = 0;
-    const gr = x.createLinearGradient(0, T, 0, T + H);
-    gr.addColorStop(0, '#ffffff'); gr.addColorStop(0.28, col); gr.addColorStop(1, shade(col, -0.45));
-    x.fillStyle = gr; path(); x.fill();
-    x.lineWidth = 4; x.strokeStyle = 'rgba(255,255,255,0.85)'; path(); x.stroke();
-    x.fillStyle = 'rgba(255,255,255,0.55)'; x.beginPath(); x.moveTo(L + cut + 6, T + 8); x.lineTo(L + W - cut - 6, T + 8); x.lineTo(L + W - cut - 18, T + H * 0.36); x.lineTo(L + cut + 18, T + H * 0.36); x.closePath(); x.fill();
-    SPR.gem[col] = c;
-    const gl = document.createElement('canvas'); gl.width = gl.height = 128;
-    const y = gl.getContext('2d'), rg = y.createRadialGradient(64, 64, 4, 64, 64, 64);
-    rg.addColorStop(0, col); rg.addColorStop(0.35, hexA(col, 0.5)); rg.addColorStop(1, hexA(col, 0));
-    y.fillStyle = rg; y.fillRect(0, 0, 128, 128);
-    SPR.glow[col] = gl;
-  });
-}
 function shade(hex, k) {
-  const n = parseInt(hex.slice(1), 16); let r = n >> 16, gg = (n >> 8) & 255, b = n & 255;
+  const n = parseInt(hex.slice(1), 16), r = n >> 16, gg = (n >> 8) & 255, b = n & 255;
   const f = v => Math.max(0, Math.min(255, Math.round(k < 0 ? v * (1 + k) : v + (255 - v) * k)));
   return 'rgb(' + f(r) + ',' + f(gg) + ',' + f(b) + ')';
 }
 function hexA(hex, a) { const n = parseInt(hex.slice(1), 16); return 'rgba(' + (n >> 16) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + a + ')'; }
+function makeSprites() {
+  const all = [...new Set(LANE_COLORS.concat(LANE_COLORS3, [SPARK, STARGEM, DEAD, CREAM]))];
+  all.forEach(col => {
+    const c = document.createElement('canvas'); c.width = GEM_W + GEM_PAD * 2; c.height = GEM_H + GEM_PAD * 2;
+    const x = c.getContext('2d'), L = GEM_PAD, T = GEM_PAD, W = GEM_W, H = GEM_H, cut = H * 0.42;
+    const path = () => { x.beginPath(); x.moveTo(L + cut, T); x.lineTo(L + W - cut, T); x.lineTo(L + W, T + H / 2); x.lineTo(L + W - cut, T + H); x.lineTo(L + cut, T + H); x.lineTo(L, T + H / 2); x.closePath(); };
+    x.lineJoin = 'round';
+    x.fillStyle = col; path(); x.fill();
+    x.save(); path(); x.clip();
+    x.fillStyle = shade(col, -0.28); x.fillRect(L, T + H * 0.62, W, H);                       // the shaded base
+    x.fillStyle = 'rgba(255,253,242,0.7)';                                                    // the cream gloss
+    x.beginPath(); x.moveTo(L + cut + 8, T + 9); x.lineTo(L + W - cut - 8, T + 9); x.lineTo(L + W - cut - 20, T + H * 0.34); x.lineTo(L + cut + 20, T + H * 0.34); x.closePath(); x.fill();
+    x.restore();
+    x.lineWidth = 8; x.strokeStyle = INK; path(); x.stroke();                                 // the Ink outline
+    SPR.gem[col] = c;
+    const gl = document.createElement('canvas'); gl.width = gl.height = 128;
+    const y = gl.getContext('2d'), rg = y.createRadialGradient(64, 64, 4, 64, 64, 64);
+    rg.addColorStop(0, hexA(col, 0.9)); rg.addColorStop(0.35, hexA(col, 0.45)); rg.addColorStop(1, hexA(col, 0));
+    y.fillStyle = rg; y.fillRect(0, 0, 128, 128);
+    SPR.glow[col] = gl;
+  });
+}
 
 /* ---------- effects pools ---------- */
 const PMAX = 320;
-const P = { x: new Float32Array(PMAX), y: new Float32Array(PMAX), vx: new Float32Array(PMAX), vy: new Float32Array(PMAX), life: new Float32Array(PMAX), max: new Float32Array(PMAX), size: new Float32Array(PMAX), col: new Array(PMAX).fill('#fff'), n: 0, next: 0 };
+const P = { x: new Float32Array(PMAX), y: new Float32Array(PMAX), vx: new Float32Array(PMAX), vy: new Float32Array(PMAX), life: new Float32Array(PMAX), max: new Float32Array(PMAX), size: new Float32Array(PMAX), col: new Array(PMAX).fill(CREAM), n: 0, next: 0 };
 function spark(x, y, col, count, power) {
   if (REDUCED) count = Math.ceil(count / 2);
   for (let i = 0; i < count; i++) {
     const k = P.next; P.next = (P.next + 1) % PMAX;
-    const a = -Math.PI / 2 + (Math.random() - 0.5) * 2.4, sp = (120 + Math.random() * 260) * power;
-    P.x[k] = x + (Math.random() - 0.5) * 20; P.y[k] = y; P.vx[k] = Math.cos(a) * sp; P.vy[k] = Math.sin(a) * sp;
-    P.life[k] = P.max[k] = 0.35 + Math.random() * 0.35; P.size[k] = 2 + Math.random() * 3.5; P.col[k] = Math.random() < 0.3 ? '#ffffff' : col;
+    const a = -Math.PI / 2 + (Math.random() - 0.5) * 1.3, sp = (120 + Math.random() * 220) * power;
+    P.x[k] = x + (Math.random() - 0.5) * 14; P.y[k] = y; P.vx[k] = Math.cos(a) * sp; P.vy[k] = Math.sin(a) * sp;
+    P.life[k] = P.max[k] = 0.22 + Math.random() * 0.2; P.size[k] = 3 + Math.random() * 4; P.col[k] = Math.random() < 0.3 ? CREAM : col;
   }
 }
 const RMAX = 16;
-const RINGS = { x: new Float32Array(RMAX), y: new Float32Array(RMAX), life: new Float32Array(RMAX), w: new Float32Array(RMAX), col: new Array(RMAX).fill('#fff'), next: 0 };
-function ring(x, y, w, col) { const k = RINGS.next; RINGS.next = (k + 1) % RMAX; RINGS.x[k] = x; RINGS.y[k] = y; RINGS.w[k] = w; RINGS.life[k] = 0.32; RINGS.col[k] = col; }
+const RINGS = { x: new Float32Array(RMAX), y: new Float32Array(RMAX), life: new Float32Array(RMAX), w: new Float32Array(RMAX), col: new Array(RMAX).fill(CREAM), next: 0 };
+function ring(x, y, w, col) { const k = RINGS.next; RINGS.next = (k + 1) % RMAX; RINGS.x[k] = x; RINGS.y[k] = y; RINGS.w[k] = w; RINGS.life[k] = 0.26; RINGS.col[k] = col; }
 /** The latest judgement word (shown once, in the middle above the hit line): kind 1 perfect .. 4 miss, side -1 early / 1 late. */
 const JUDGE = { kind: 0, side: 0, age: 9 };
 function showJudge(kind, side) { JUDGE.kind = kind; JUDGE.side = side; JUDGE.age = 0; }
@@ -2098,219 +2124,169 @@ const padGlow = new Float32Array(4), laneDown = new Int8Array(4);
 const FX = { comboPop: 0, comboText: '', comboShown: -1, shake: 0, cheer: 0, starT: 0, eq: new Float32Array(24), beatPulse: 0 };
 let TX = null;     // translated words drawn on the canvas, filled once by applyLanguage()
 
-/* ---------- backdrop (cached) ---------- */
-function rng(seed) { let s = seed >>> 0; return () => { s = (s + 0x6D2B79F5) >>> 0; let t = s; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
-function paintBackdrop(look) {
-  const key = look.scene + V.w + 'x' + V.h + '@' + V.dpr;
-  if (key === bgKey) return;
-  bgKey = key;
-  bgc.width = cv.width; bgc.height = cv.height;
-  const c = bgc.getContext('2d'), W = V.w, H = V.h, hy = V.horizon, r = rng(look.scene.length * 977 + 13);
-  c.setTransform(V.dpr, 0, 0, V.dpr, 0, 0);
-  const sky = c.createLinearGradient(0, 0, 0, H);
-  sky.addColorStop(0, look.sky[0]); sky.addColorStop(Math.min(0.9, hy / H * 0.8), look.sky[1]); sky.addColorStop(Math.min(0.95, hy / H + 0.04), look.sky[2]); sky.addColorStop(1, '#05030f');
-  c.fillStyle = sky; c.fillRect(0, 0, W, H);
-  const dark = '#0a0618';
-  const stars = (n, maxY) => { c.fillStyle = '#ffffff'; for (let i = 0; i < n; i++) { c.globalAlpha = 0.3 + r() * 0.7; const s = r() < 0.15 ? 2 : 1; c.fillRect(r() * W, r() * maxY, s, s); } c.globalAlpha = 1; };
-  const hills = (y, amp, col, seed) => { c.fillStyle = col; c.beginPath(); c.moveTo(0, H); c.lineTo(0, y); for (let x = 0; x <= W + 20; x += 20) c.lineTo(x, y - amp * (0.5 + 0.5 * Math.sin(x * 0.012 + seed) * Math.sin(x * 0.005 + seed * 2))); c.lineTo(W, H); c.closePath(); c.fill(); };
-  const sun = (x, y, rad, col) => { const gr = c.createRadialGradient(x, y, rad * 0.2, x, y, rad * 2.4); gr.addColorStop(0, col); gr.addColorStop(0.4, hexA(col, 0.35)); gr.addColorStop(1, hexA(col, 0)); c.fillStyle = gr; c.fillRect(x - rad * 2.4, y - rad * 2.4, rad * 4.8, rad * 4.8); c.fillStyle = col; c.beginPath(); c.arc(x, y, rad, 0, Math.PI * 2); c.fill(); };
-  switch (look.scene) {
-    case 'stars':
-      stars(160, hy + 40);
-      c.fillStyle = '#fff6c8'; c.beginPath(); c.arc(W * 0.82, H * 0.12, 22, 0, Math.PI * 2); c.fill();
-      c.fillStyle = look.sky[0]; c.beginPath(); c.arc(W * 0.82 + 9, H * 0.12 - 5, 19, 0, Math.PI * 2); c.fill();
-      hills(hy + 30, 26, '#1a1040', 1); hills(hy + 44, 18, dark, 3);
-      break;
-    case 'river':
-      stars(50, hy);
-      hills(hy + 18, 34, '#0d3a4a', 2); hills(hy + 30, 20, '#082531', 5);
-      c.fillStyle = '#0b4a63'; c.fillRect(0, hy + 34, W, H);
-      c.strokeStyle = 'rgba(143,240,255,0.25)'; c.lineWidth = 2;
-      for (let i = 0; i < 26; i++) { const y = hy + 40 + r() * (H - hy); const x = r() * W; c.beginPath(); c.moveTo(x, y); c.lineTo(x + 20 + r() * 40, y); c.stroke(); }
-      break;
-    case 'sunrise':
-      sun(W * 0.3, hy + 22, Math.min(56, W * 0.12), '#ffd36b');
-      hills(hy + 28, 22, '#5a2050', 4);
-      c.fillStyle = dark; const tx = W * 0.82, tw = Math.min(46, W * 0.1);
-      c.fillRect(tx - tw / 2, hy - 70, tw, 120); c.beginPath(); c.moveTo(tx - tw * 0.7, hy - 70); c.lineTo(tx, hy - 118); c.lineTo(tx + tw * 0.7, hy - 70); c.fill();
-      c.fillStyle = '#ffd36b'; c.beginPath(); c.arc(tx, hy - 46, tw * 0.22, 0, Math.PI * 2); c.fill();
-      hills(hy + 44, 14, dark, 6);
-      break;
-    case 'city':
-      stars(70, hy - 40);
-      for (let x = -10; x < W + 10;) {
-        const bw = 26 + r() * 50, bh = 40 + r() * 120;
-        c.fillStyle = '#0d0828'; c.fillRect(x, hy + 30 - bh, bw, bh + 40);
-        c.fillStyle = r() < 0.5 ? look.accent : '#ff4fd8';
-        for (let wy = hy + 38 - bh; wy < hy + 24; wy += 10) for (let wx = x + 5; wx < x + bw - 6; wx += 9) if (r() < 0.35) { c.globalAlpha = 0.25 + r() * 0.5; c.fillRect(wx, wy, 4, 5); }
-        c.globalAlpha = 1; x += bw + 2;
-      }
-      c.fillStyle = '#05030f'; c.fillRect(0, hy + 30, W, H);
-      c.strokeStyle = hexA(look.accent, 0.35); c.lineWidth = 1;
-      for (let i = 0; i < 14; i++) { const y = hy + 30 + Math.pow(i / 14, 2) * (H - hy); c.beginPath(); c.moveTo(0, y); c.lineTo(W, y); c.stroke(); }
-      for (let i = -12; i <= 12; i++) { c.beginPath(); c.moveTo(W / 2 + i * 14, hy + 30); c.lineTo(W / 2 + i * 120, H); c.stroke(); }
-      break;
-    case 'castle':
-      stars(120, hy);
-      c.lineWidth = 18; c.lineCap = 'round';
-      [['rgba(120,255,190,0.18)', 0.18], ['rgba(110,200,255,0.14)', 0.28], ['rgba(200,140,255,0.12)', 0.36]].forEach((a, i) => {
-        c.strokeStyle = a[0]; c.beginPath();
-        for (let x = 0; x <= W; x += 16) { const y = H * a[1] + Math.sin(x * 0.012 + i * 2) * 24; if (x === 0) c.moveTo(x, y); else c.lineTo(x, y); }
-        c.stroke();
-      });
-      c.fillStyle = dark; const cx0 = W * 0.72, cw = Math.min(150, W * 0.36);
-      c.fillRect(cx0 - cw / 2, hy - 40, cw, 90);
-      for (let i = 0; i < 3; i++) { const x = cx0 - cw / 2 + i * cw / 2 - 12; c.fillRect(x, hy - 80 + (i === 1 ? -20 : 0), 24, 90); c.beginPath(); c.moveTo(x - 4, hy - 80 + (i === 1 ? -20 : 0)); c.lineTo(x + 12, hy - 110 + (i === 1 ? -20 : 0)); c.lineTo(x + 28, hy - 80 + (i === 1 ? -20 : 0)); c.fill(); }
-      c.fillStyle = look.accent; c.globalAlpha = 0.7; for (let i = 0; i < 6; i++) c.fillRect(cx0 - cw / 2 + 10 + r() * (cw - 20), hy - 30 + r() * 40, 4, 7); c.globalAlpha = 1;
-      hills(hy + 40, 14, '#06101c', 1);
-      break;
-    case 'lagoon':
-      sun(W * 0.5, hy + 24, Math.min(60, W * 0.14), '#ffb48a');
-      c.fillStyle = '#2a1640'; c.fillRect(0, hy + 30, W, H);
-      c.fillStyle = 'rgba(255,180,140,0.35)'; for (let i = 0; i < 9; i++) c.fillRect(W * 0.5 - 70 + r() * 40, hy + 36 + i * 9, 60 + r() * 50, 3);
-      [0.08, 0.92].forEach((px, j) => {
-        const bx = W * px, dir = j ? -1 : 1;
-        c.strokeStyle = dark; c.lineWidth = 9; c.beginPath(); c.moveTo(bx, H); c.quadraticCurveTo(bx + dir * 18, hy + 60, bx + dir * 40, hy - 40); c.stroke();
-        c.fillStyle = dark;
-        for (let k = 0; k < 6; k++) { const a = -Math.PI / 2 + (k - 2.5) * 0.55; c.beginPath(); c.ellipse(bx + dir * 40 + Math.cos(a) * 34, hy - 40 + Math.sin(a) * 18, 36, 8, a, 0, Math.PI * 2); c.fill(); }
-      });
-      break;
-    case 'circus':
-      c.fillStyle = '#3a0a26'; c.beginPath(); c.moveTo(W * 0.5 - Math.min(220, W * 0.55), hy + 40); c.lineTo(W * 0.5, hy - 90); c.lineTo(W * 0.5 + Math.min(220, W * 0.55), hy + 40); c.fill();
-      c.save(); c.clip();
-      for (let i = -8; i < 9; i++) { c.fillStyle = i % 2 ? 'rgba(255,90,110,0.55)' : 'rgba(255,224,102,0.35)'; c.beginPath(); c.moveTo(W * 0.5, hy - 90); c.lineTo(W * 0.5 + i * 34, hy + 40); c.lineTo(W * 0.5 + (i + 1) * 34, hy + 40); c.fill(); }
-      c.restore();
-      c.fillStyle = '#ffe066'; c.beginPath(); c.arc(W * 0.5, hy - 96, 6, 0, Math.PI * 2); c.fill();
-      for (let s = 0; s < 2; s++) {
-        const y0 = 30 + s * 40; c.strokeStyle = 'rgba(255,255,255,0.4)'; c.lineWidth = 1.5; c.beginPath(); c.moveTo(0, y0); c.quadraticCurveTo(W / 2, y0 + 40, W, y0); c.stroke();
-        for (let i = 0; i < 12; i++) { const t2 = (i + 0.5) / 12, x = t2 * W, y = y0 + 40 * 2 * t2 * (1 - t2); c.fillStyle = LANE_COLORS[i % 4]; c.beginPath(); c.moveTo(x - 7, y); c.lineTo(x + 7, y); c.lineTo(x, y + 14); c.fill(); }
-      }
-      c.fillStyle = dark; c.fillRect(0, hy + 40, W, H);
-      break;
-    case 'cave':
-      c.fillStyle = '#05020b';
-      for (let x = 0; x < W; x += 18 + r() * 22) { const len = 30 + r() * 90; c.beginPath(); c.moveTo(x, 0); c.lineTo(x + 14, 0); c.lineTo(x + 7, len); c.fill(); }
-      hills(hy + 30, 30, '#120822', 2);
-      [0.07, 0.93, 0.18, 0.82].forEach((px, i) => {
-        const bx = W * px, by = hy + 60 + i * 14, col = i % 2 ? '#c39bff' : '#5fe0ff';
-        c.fillStyle = hexA(col, 0.25); c.beginPath(); c.arc(bx, by, 40, 0, Math.PI * 2); c.fill();
-        c.fillStyle = col; c.globalAlpha = 0.7;
-        for (let k = 0; k < 3; k++) { const ox = (k - 1) * 12; c.beginPath(); c.moveTo(bx + ox - 7, by + 20); c.lineTo(bx + ox, by - 22 - k * 6); c.lineTo(bx + ox + 7, by + 20); c.fill(); }
-        c.globalAlpha = 1;
-      });
-      break;
-    case 'prairie':
-      sun(W * 0.66, hy + 14, Math.min(52, W * 0.12), '#ffb347');
-      c.fillStyle = '#5a1f2a';
-      [[0.12, 60, 120], [0.5, 40, 160], [0.86, 70, 110]].forEach(m => { const x = W * m[0]; c.beginPath(); c.moveTo(x - m[2] / 2 - 30, hy + 36); c.lineTo(x - m[2] / 2, hy + 36 - m[1]); c.lineTo(x + m[2] / 2, hy + 36 - m[1]); c.lineTo(x + m[2] / 2 + 30, hy + 36); c.fill(); });
-      c.fillStyle = '#2a0f18'; c.fillRect(0, hy + 36, W, H);
-      c.fillStyle = dark;
-      [0.1, 0.9].forEach(px => { const x = W * px, y = hy + 90; c.fillRect(x - 5, y - 60, 10, 70); c.fillRect(x - 22, y - 40, 8, 26); c.fillRect(x - 22, y - 20, 22, 7); c.fillRect(x + 14, y - 50, 8, 28); c.fillRect(x + 2, y - 28, 20, 7); });
-      break;
-    default:
-      stars(100, H);
-  }
+/* ---------- the kit world: the stage, the band and the crowd ---------- */
+const WORLD = Oomba.stage({ api: 1, biome: 'city', size: [960, 540] });
+const CAST = { song: null, band: [], crowd: [], lights: [], cheerUntil: 0, sad: false };
+/** The song's world (kit biome at its time of day) and its band: the player's avatar leads, three kit friends play. */
+function applyWorld(song, ms) {
+  if (CAST.song === song) return;
+  const first = !CAST.song; CAST.song = song;
+  const W = worldOf(song);
+  WORLD.setBiome(W.biome);
+  WORLD.setTimeOfDay(W.tod, first || REDUCED ? 0 : ms == null ? 900 : ms);
+  for (const e of CAST.band.slice(1)) e.remove(null);
+  if (!CAST.band.length) {
+    const me = WORLD.add(Oomba.avatar(), { x: 0, y: 0, size: 60 }); me.tag = 'me'; me.sp = 'me'; CAST.band.push(me);
+  } else CAST.band.length = 1;
+  W.band.forEach(sp => { const e = WORLD.add(Oomba.char({ species: sp, wear: ['headphones'] }), { x: 0, y: 0, size: 60 }); e.tag = 'band'; e.sp = sp; CAST.band.push(e); });
+  if (!CAST.crowd.length) CROWD.forEach((sp, i) => { const e = WORLD.add(Oomba.char({ species: sp, seed: i + 3 }), { x: 0, y: 0, size: 40 }); e.tag = 'crowd'; CAST.crowd.push(e); });
+  if (!CAST.lights.length) CAST.band.forEach((e, i) => CAST.lights.push(WORLD.light({ x: 0, y: 0, radius: 120, color: HEX(LANE_HUES[i % 4], 1), intensity: 0.9, night: true, flicker: false })));
+  WORLD.transition();
 }
+/** The site's light/dark switch never turns a song's evening into noon. */
+Oomba.theme.on('change', () => { if (CAST.song) WORLD.setTimeOfDay(worldOf(CAST.song).tod, 0); });
+/** Band and crowd spots in screen px for the current layout: [x, feetY, height, faceRight]. */
+const SLOTS = { band: [], crowd: [] };
+function castSlots() {
+  const W = V.w, H = V.h, band = SLOTS.band, crowd = SLOTS.crowd; band.length = 0; crowd.length = 0;
+  const gapAt = y => V.cx - V.hw * scaleAtY(y) - V.side - 8;
+  if (V.portrait) {
+    // tall phones: two pairs, one above the other, each as big as the room beside the highway allows
+    const pair = (fy, max) => {
+      const size = Math.min(gapAt(fy) * 0.86, max); if (size < 40) return;
+      const x = Math.max(size * 0.5 + 2, V.cx - V.hw * scaleAtY(fy) - size * 0.5 - 4);
+      band.push([x, fy, size, true], [W - x, fy, size, false]);
+    };
+    if (V.mode === 'play') { pair(V.topY + (V.hitY - V.topY) * 0.12, 96); pair(V.topY + (V.hitY - V.topY) * 0.42, 80); }
+    else { const lo = H - Math.max(40, H * 0.055), s1 = Math.min(130, H * 0.15); pair(lo, s1); pair(lo - s1 - 22, Math.min(112, H * 0.13)); }   // above the world's front rocks
+    return;
+  }
+  const fy = V.topY + (V.hitY - V.topY) * 0.3, edge = V.hw * scaleAtY(fy), gap = gapAt(fy);
+  const size = Math.min(gap * 0.8, H * 0.21, 170);
+  if (size >= 44) {
+    const xin = V.cx - edge - size * 0.5;
+    band.push([xin, fy, size, true], [W - xin, fy, size, false]);
+    if (gap > size * 1.95) { const xo = xin - size * 0.95, s2 = size * 0.88; band.push([xo, fy - size * 0.1, s2, true], [W - xo, fy - size * 0.1, s2, false]); }
+  }
+  const gb = V.cx - V.hw * scaleAtY(H) - V.side - 6, cs = Math.min(H * 0.17, 120), n = Math.min(3, Math.floor(gb / (cs * 0.8)));
+  if (cs >= 48) for (let i = 0; i < n; i++) { const x = V.side + 8 + cs * (0.45 + i * 0.8), y = H + cs * 0.12 - (i % 2) * cs * 0.1; crowd.push([x, y, cs, true], [W - x, y, cs, false]); }
+}
+/** Every kit step: put the cast on its spots (they bob to the beat; they cheer on combos and Star Power). */
+WORLD.update(() => {
+  const S = WORLD, vh = S.view.vh; if (!vh || !CAST.band.length) return;
+  const k = vh / V.h, now = performance.now(), cheer = now < CAST.cheerUntil || !!(ST.run && ST.run.starOn);
+  const place = (e, s, i, crowd) => {
+    if (!s) { e.visible = false; return; }
+    const jump = cheer && !REDUCED ? Math.abs(Math.sin(now / 260 + i)) * s[2] * 0.08 : 0, bob = REDUCED ? 0 : FX.beatPulse * s[2] * (crowd ? 0.05 : 0.03);
+    e.visible = true; e.size = s[2] * k; e.flip = !s[3];
+    e.x = S.viewX(s[0] / V.w); e.y = S.viewY((s[1] - bob - jump) / V.h);
+    const want = CAST.sad && !crowd ? 'sad' : cheer ? 'cheer' : 'idle';
+    if (e.clip !== want) e.state(want);
+  };
+  CAST.band.forEach((e, i) => {
+    place(e, SLOTS.band[i], i, false);
+    const L = CAST.lights[i]; if (!L) return;
+    const s = SLOTS.band[i]; L.on = !!s;
+    if (s) { L.x = e.x; L.y = e.y - s[2] * k * 0.5; L.radius = s[2] * k * 1.25; L.intensity = 0.75 + (cheer ? 0.35 : 0) + 0.2 * FX.beatPulse; }
+  });
+  CAST.crowd.forEach((e, i) => place(e, SLOTS.crowd[i], i, true));
+});
+function cheerCast(ms) { CAST.cheerUntil = performance.now() + ms; CAST.sad = false; }
 
-/* ---------- live backdrop: beams, equalizer, crowd ---------- */
-function drawStageFx(look, time, energy, star) {
-  const W = V.w, H = V.h;
-  // light beams (slow sweep)
+/* ---------- live stage: light beams and the equalizer above the far end of the lanes ---------- */
+function drawStageFx(time, energy, star) {
+  const W = V.w, H = V.h, acc = HEX(worldOf(CAST.song || SONGS[0]).accent, 1);
   g.globalCompositeOperation = 'lighter';
   for (let i = 0; i < 3; i++) {
     const bx = W * (0.15 + i * 0.35), ang = REDUCED ? (i - 1) * 0.25 : Math.sin(time * (0.35 + i * 0.07) + i * 2) * 0.42;
     const len = H * 1.1, spread = 0.13;
-    g.globalAlpha = (REDUCED ? 0.05 : 0.045 + 0.08 * energy) * (star ? 1.5 : 1);
-    g.fillStyle = i === 1 ? (star ? '#ffe36e' : look.accent) : (i ? '#ff4fd8' : '#7c4dff');
+    g.globalAlpha = (REDUCED ? 0.04 : 0.035 + 0.06 * energy) * (star ? 1.5 : 1);
+    g.fillStyle = i === 1 ? (star ? SPARK : acc) : LANE_COLORS[i ? 0 : 3];
     g.beginPath(); g.moveTo(bx, -10);
     g.lineTo(bx + Math.sin(ang - spread) * len, Math.cos(ang - spread) * len);
     g.lineTo(bx + Math.sin(ang + spread) * len, Math.cos(ang + spread) * len);
     g.closePath(); g.fill();
   }
   g.globalCompositeOperation = 'source-over';
-  // equalizer along the horizon, behind the highway
-  const n = FX.eq.length, bw = W / n, base = V.horizon + 26;
-  g.fillStyle = star ? '#ffe36e' : look.accent;
+  // the equalizer: rounded Ink-outlined bars rising behind the far end of the highway (a speaker wall)
+  const n = FX.eq.length, span = V.hw * INVTOP * 3.2, x0 = V.cx - span / 2, bw = span / n, base = V.topY + 2;
   for (let i = 0; i < n; i++) {
-    const bin = 2 + Math.floor(i * 1.6), raw = (freqData[bin] || 0) / 255;
+    const bin = 2 + Math.floor(Math.abs(i - (n - 1) / 2) * 1.6), raw = (freqData[bin] || 0) / 255;
     FX.eq[i] = Math.max(raw, FX.eq[i] * 0.9);
-    const hgt = 4 + FX.eq[i] * (REDUCED ? 30 : 64);
-    g.globalAlpha = 0.18 + 0.3 * FX.eq[i];
-    g.fillRect(i * bw + 2, base - hgt, bw - 4, hgt);
+    const hgt = 4 + FX.eq[i] * (REDUCED ? 22 : 46);
+    g.globalAlpha = 0.55 + 0.4 * FX.eq[i];
+    g.fillStyle = INK; g.fillRect(x0 + i * bw + 1, base - hgt - 2, bw - 2, hgt + 2);
+    g.fillStyle = star ? SPARK : acc; g.fillRect(x0 + i * bw + 2.5, base - hgt - 0.5, bw - 5, hgt);
   }
   g.globalAlpha = 1;
-}
-/** Crowd silhouettes in the bottom corners; they bob with the beat and jump when cheering. */
-function drawCrowd(time) {
-  const W = V.w, H = V.h, left = V.cx - V.hw * scaleAtY(H) - 8, right = V.cx + V.hw * scaleAtY(H) + 8;
-  if (left < 30) return;
-  const jump = FX.cheer > 0 ? Math.sin(Math.min(1, FX.cheer) * Math.PI) : 0;
-  g.fillStyle = '#05030c';
-  for (let side = 0; side < 2; side++) {
-    const x0 = side ? right : 0, x1 = side ? W : left;
-    for (let x = x0 + 14, i = 0; x < x1 - 10; x += 30, i++) {
-      const bob = (REDUCED ? 0 : FX.beatPulse * 2.5) + jump * (10 + (i % 3) * 5);
-      const y = H - 26 - (i % 2) * 8 - bob;
-      g.beginPath(); g.arc(x, y - 18, 9, 0, Math.PI * 2); g.fill();
-      g.fillRect(x - 13, y - 8, 26, 40);
-      if (jump > 0.2) { g.fillRect(x - 15, y - 34 - jump * 8, 5, 26); g.fillRect(x + 10, y - 34 - jump * 8, 5, 26); }
-    }
-  }
 }
 
 /* ---------- the highway ---------- */
 function drawHighway(st) {
   const n = V.lanes, sB = scaleAtY(V.h + 4), yB = V.h + 4, sT = INVTOP, cols = n === 3 ? LANE_COLORS3 : LANE_COLORS;
-  g.fillStyle = hwGrad;
-  g.beginPath(); g.moveTo(V.cx - V.hw * sT, V.topY); g.lineTo(V.cx + V.hw * sT, V.topY); g.lineTo(V.cx + V.hw * sB, yB); g.lineTo(V.cx - V.hw * sB, yB); g.closePath(); g.fill();
+  const road = () => { g.beginPath(); g.moveTo(V.cx - V.hw * sT, V.topY); g.lineTo(V.cx + V.hw * sT, V.topY); g.lineTo(V.cx + V.hw * sB, yB); g.lineTo(V.cx - V.hw * sB, yB); g.closePath(); };
+  g.fillStyle = hwGrad; road(); g.fill();
   // lane tint + beat pulse glow near the hit line
   for (let l = 0; l < n; l++) {
     const x0t = V.cx + (-V.hw + l * V.laneW) * sT, x1t = x0t + V.laneW * sT, x0b = V.cx + (-V.hw + l * V.laneW) * sB, x1b = x0b + V.laneW * sB;
-    g.globalAlpha = 0.05 + 0.1 * st.pulse + 0.25 * padGlow[l];
-    g.fillStyle = cols[l];
-    g.beginPath(); g.moveTo(x0t, V.topY); g.lineTo(x1t, V.topY); g.lineTo(x1b, yB); g.lineTo(x0b, yB); g.closePath(); g.fill();
+    const lane = () => { g.beginPath(); g.moveTo(x0t, V.topY); g.lineTo(x1t, V.topY); g.lineTo(x1b, yB); g.lineTo(x0b, yB); g.closePath(); };
+    g.globalAlpha = 0.85 + 0.15 * st.pulse; g.fillStyle = LANE_GRAD[cols[l]] || cols[l]; lane(); g.fill();
+    if (padGlow[l] > 0) { g.globalAlpha = 0.3 * padGlow[l]; g.fillStyle = cols[l]; lane(); g.fill(); }     // only the lane just hit flashes
   }
   g.globalAlpha = 1;
   // beat lines sliding toward you
   if (st.cs) {
     const tempo = st.cs.tempo, b0 = Math.ceil(tempo.beat(st.now)), b1 = tempo.beat(st.now + st.view);
+    g.fillStyle = CREAM;
     for (let b = b0; b <= b1 && b - b0 < 64; b++) {
       const p = (tempo.sec(b) - st.now) / st.view; if (p < 0 || p > 1) continue;
       const y = projY(p), s = projS(p), bar = b % st.cs.song.barBeats === 0;
-      g.globalAlpha = (bar ? 0.32 : 0.13) * (1 - p * 0.6);
-      g.fillStyle = '#ffffff'; g.fillRect(V.cx - V.hw * s, y - (bar ? 1.5 : 0.75), 2 * V.hw * s, bar ? 3 : 1.5);
+      g.globalAlpha = (bar ? 0.34 : 0.14) * (1 - p * 0.6);
+      g.fillRect(V.cx - V.hw * s, y - (bar ? 1.5 : 0.75), 2 * V.hw * s, bar ? 3 : 1.5);
     }
     g.globalAlpha = 1;
   }
-  // lane dividers and glowing edges
-  g.lineWidth = 1.5; g.strokeStyle = 'rgba(255,255,255,0.14)';
+  // lane dividers, then the road's edges: an Ink outline with a cream (or Star Power spark) rim
+  g.lineWidth = 1.5; g.strokeStyle = 'rgba(255,253,242,0.16)';
   g.beginPath();
   for (let l = 1; l < n; l++) { const off = -V.hw + l * V.laneW; g.moveTo(V.cx + off * sT, V.topY); g.lineTo(V.cx + off * sB, yB); }
   g.stroke();
-  g.lineWidth = 4; g.strokeStyle = st.star ? '#ffe36e' : edgeGrad;
-  g.beginPath(); g.moveTo(V.cx - V.hw * sT, V.topY); g.lineTo(V.cx - V.hw * sB, yB); g.moveTo(V.cx + V.hw * sT, V.topY); g.lineTo(V.cx + V.hw * sB, yB); g.stroke();
+  g.lineJoin = 'round';
+  const edges = () => { g.beginPath(); g.moveTo(V.cx - V.hw * sB, yB); g.lineTo(V.cx - V.hw * sT, V.topY); g.lineTo(V.cx + V.hw * sT, V.topY); g.lineTo(V.cx + V.hw * sB, yB); };
+  g.lineWidth = 7; g.strokeStyle = INK; edges(); g.stroke();
+  g.lineWidth = 3; g.strokeStyle = st.star ? SPARK : CREAM; g.globalAlpha = st.star ? 1 : 0.85; edges(); g.stroke(); g.globalAlpha = 1;
 }
 
 /** Pads at the bottom and the hit line. */
-function drawPads(showKeys, keyLabels) {
-  const n = V.lanes, cols = n === 3 ? LANE_COLORS3 : LANE_COLORS, top = V.hitY - V.padH * 0.36, h = V.padH, r = Math.min(16, V.laneW * 0.2);
+function drawPads() {
+  const n = V.lanes, cols = n === 3 ? LANE_COLORS3 : LANE_COLORS, top = V.hitY - V.padH * 0.36, h = V.padH, r = Math.min(18, V.laneW * 0.22);
   for (let l = 0; l < n; l++) {
-    const x = V.cx - V.hw + l * V.laneW + 4, w = V.laneW - 8, glow = padGlow[l];
-    g.globalAlpha = 0.16 + 0.42 * glow; g.fillStyle = cols[l];
+    const x = V.cx - V.hw + l * V.laneW + 5, w = V.laneW - 10, glow = padGlow[l];
+    g.globalAlpha = 0.46 + 0.5 * glow; g.fillStyle = cols[l];
     roundRect(x, top, w, h, r); g.fill();
-    g.globalAlpha = 0.55 + 0.45 * glow; g.lineWidth = 2.5; g.strokeStyle = cols[l];
-    roundRect(x, top, w, h, r); g.stroke();
-    if (showKeys && keyLabels) { g.globalAlpha = 0.75; g.fillStyle = '#ffffff'; g.font = FONT.key; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(keyLabels[l], x + w / 2, top + h * 0.7); }
+    if (glow > 0.05) { g.globalAlpha = 0.55 * glow; g.fillStyle = CREAM; roundRect(x + 6, top + 5, w - 12, h * 0.22, Math.max(2, r - 6)); g.fill(); }   // the pressed pad lights up
+    g.globalAlpha = 1; g.lineWidth = 3; g.strokeStyle = INK; roundRect(x, top, w, h, r); g.stroke();
+    g.globalAlpha = 0.85 + 0.15 * glow; g.lineWidth = 3; g.strokeStyle = cols[l]; roundRect(x + 3, top + 3, w - 6, h - 6, Math.max(2, r - 3)); g.stroke();
   }
   g.globalAlpha = 1;
-  // hit line with lane targets
-  g.fillStyle = '#ffffff'; g.globalAlpha = 0.9; g.fillRect(V.cx - V.hw, V.hitY - 1.5, 2 * V.hw, 3); g.globalAlpha = 1;
+  // hit line: a cream bar with an Ink outline, and the lane targets
+  g.fillStyle = INK; g.fillRect(V.cx - V.hw, V.hitY - 3.5, 2 * V.hw, 7);
+  g.fillStyle = CREAM; g.fillRect(V.cx - V.hw + 1, V.hitY - 1.5, 2 * V.hw - 2, 3);
   for (let l = 0; l < n; l++) {
     const cxl = V.cx - V.hw + (l + 0.5) * V.laneW, gw = V.laneW * 0.8, gh = gw * GEM_H / GEM_W;
-    g.globalAlpha = 0.5 + 0.5 * padGlow[l]; g.strokeStyle = cols[l]; g.lineWidth = 2;
-    gemPath(cxl, V.hitY, gw, gh); g.stroke();
+    g.globalAlpha = 1; g.strokeStyle = INK; g.lineWidth = 6; gemPath(cxl, V.hitY, gw, gh); g.stroke();
+    g.globalAlpha = 0.75 + 0.25 * padGlow[l]; g.strokeStyle = cols[l]; g.lineWidth = 3; gemPath(cxl, V.hitY, gw, gh); g.stroke();
   }
   g.globalAlpha = 1;
+}
+/** The keyboard letters on the pads, drawn last so sparks never hide them. */
+function drawKeys(keyLabels) {
+  const n = V.lanes, top = V.hitY - V.padH * 0.36, h = V.padH;
+  g.font = FONT.key; g.textAlign = 'center'; g.textBaseline = 'middle'; g.lineJoin = 'round';
+  for (let l = 0; l < n; l++) {
+    const x = V.cx - V.hw + (l + 0.5) * V.laneW, y = top + h * 0.72;
+    g.globalAlpha = 1; g.lineWidth = 5; g.strokeStyle = INK; g.strokeText(keyLabels[l], x, y); g.fillStyle = CREAM; g.fillText(keyLabels[l], x, y);
+  }
 }
 function roundRect(x, y, w, h, r) { g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath(); }
 function gemPath(cx0, cy0, w, h) { const cut = h * 0.42, L = cx0 - w / 2, T = cy0 - h / 2; g.beginPath(); g.moveTo(L + cut, T); g.lineTo(L + w - cut, T); g.lineTo(L + w, cy0); g.lineTo(L + w - cut, T + h); g.lineTo(L + cut, T + h); g.lineTo(L, cy0); g.closePath(); }
@@ -2333,13 +2309,14 @@ function drawNotes(st) {
     const a = Math.max(-0.2, p0), y0 = projY(a), y1 = projY(p1), s0 = projS(a), s1 = projS(p1);
     const lx = -V.hw + (nt.lane + 0.5) * V.laneW, hw0 = V.laneW * 0.22 * s0, hw1 = V.laneW * 0.22 * s1;
     const dead = nt.hold === 3 || nt.res === J.MISS;
-    g.globalAlpha = dead ? 0.22 : holding ? 0.85 : 0.55;
-    g.fillStyle = dead ? '#9a8fb8' : cols[nt.lane];
-    g.beginPath(); g.moveTo(V.cx + lx * s0 - hw0, y0); g.lineTo(V.cx + lx * s1 - hw1, y1); g.lineTo(V.cx + lx * s1 + hw1, y1); g.lineTo(V.cx + lx * s0 + hw0, y0); g.closePath(); g.fill();
-    if (!dead) { g.globalAlpha = holding ? 0.95 : 0.6; g.fillStyle = '#ffffff'; g.beginPath(); g.moveTo(V.cx + lx * s0 - hw0 * 0.25, y0); g.lineTo(V.cx + lx * s1 - hw1 * 0.25, y1); g.lineTo(V.cx + lx * s1 + hw1 * 0.25, y1); g.lineTo(V.cx + lx * s0 + hw0 * 0.25, y0); g.closePath(); g.fill(); }
+    const quad = (k0, k1) => { g.beginPath(); g.moveTo(V.cx + lx * s0 - hw0 * k0, y0); g.lineTo(V.cx + lx * s1 - hw1 * k1, y1); g.lineTo(V.cx + lx * s1 + hw1 * k1, y1); g.lineTo(V.cx + lx * s0 + hw0 * k0, y0); g.closePath(); };
+    g.globalAlpha = dead ? 0.3 : 1; g.fillStyle = INK; quad(1.25, 1.25); g.fill();
+    g.globalAlpha = dead ? 0.3 : holding ? 1 : 0.85;
+    g.fillStyle = dead ? DEAD : cols[nt.lane]; quad(1, 1); g.fill();
+    if (!dead) { g.globalAlpha = holding ? 0.95 : 0.6; g.fillStyle = CREAM; quad(0.25, 0.25); g.fill(); }
     // tail cap
-    g.globalAlpha = dead ? 0.25 : 0.9; g.fillStyle = dead ? '#9a8fb8' : cols[nt.lane];
-    g.beginPath(); g.arc(V.cx + lx * s1, y1, hw1 * 1.3, 0, Math.PI * 2); g.fill();
+    g.globalAlpha = dead ? 0.3 : 1; g.fillStyle = INK; g.beginPath(); g.arc(V.cx + lx * s1, y1, hw1 * 1.3 + 2, 0, Math.PI * 2); g.fill();
+    g.fillStyle = dead ? DEAD : cols[nt.lane]; g.beginPath(); g.arc(V.cx + lx * s1, y1, hw1 * 1.3, 0, Math.PI * 2); g.fill();
     if (holding && !REDUCED) { g.globalAlpha = 0.6; const gs = V.laneW * 1.1; g.drawImage(SPR.glow[cols[nt.lane]], V.cx + lx - gs / 2, V.hitY - gs / 2, gs, gs); }
   }
   g.globalAlpha = 1;
@@ -2353,54 +2330,55 @@ function drawNotes(st) {
     const miss = nt.res === J.MISS;
     if (nt.chord && !miss && i + 1 < last && notes[i + 1].t === nt.t && notes[i + 1].res === J.NONE) {
       const x2 = V.cx + (-V.hw + (notes[i + 1].lane + 0.5) * V.laneW) * s;
-      g.globalAlpha = 0.8; g.fillStyle = '#ffffff'; g.fillRect(Math.min(x, x2), y - 2.5 * s, Math.abs(x2 - x), 5 * s); g.globalAlpha = 1;
+      g.globalAlpha = 0.95; g.fillStyle = INK; g.fillRect(Math.min(x, x2), y - 4 * s, Math.abs(x2 - x), 8 * s);
+      g.fillStyle = CREAM; g.fillRect(Math.min(x, x2), y - 2 * s, Math.abs(x2 - x), 4 * s); g.globalAlpha = 1;
     }
     g.globalAlpha = miss ? Math.max(0, 0.45 + p) : (p > 0.85 ? (1.02 - p) / 0.17 : 1);
-    g.drawImage(SPR.gem[miss ? '#9a8fb8' : st.star ? '#ffe36e' : cols[nt.lane]], x - w * k / 2, y - h * ((GEM_H + GEM_PAD * 2) / GEM_H) / 2, w * k, h * (GEM_H + GEM_PAD * 2) / GEM_H);
+    g.drawImage(SPR.gem[miss ? DEAD : st.star ? STARGEM : cols[nt.lane]], x - w * k / 2, y - h * ((GEM_H + GEM_PAD * 2) / GEM_H) / 2, w * k, h * (GEM_H + GEM_PAD * 2) / GEM_H);
   }
   g.globalAlpha = 1;
 }
 
+/** Ink text: an Ink outline under the fill (the kit's sticker lettering). */
+function inkText(text, x, y, fill, width) { g.lineJoin = 'round'; g.lineWidth = width || 7; g.strokeStyle = INK; g.strokeText(text, x, y); g.fillStyle = fill; g.fillText(text, x, y); }
 /** Sparks, rings, judgement words, combo, countdown. */
 function drawEffects(st, dt) {
-  const n = V.lanes, cols = n === 3 ? LANE_COLORS3 : LANE_COLORS;
   // rings
   for (let k = 0; k < RMAX; k++) {
     if (RINGS.life[k] <= 0) continue;
-    RINGS.life[k] -= dt; const a = Math.max(0, RINGS.life[k] / 0.32), grow = 1 + (1 - a) * 0.9;
-    g.globalAlpha = a; g.strokeStyle = RINGS.col[k]; g.lineWidth = 3;
+    RINGS.life[k] -= dt; const a = Math.max(0, RINGS.life[k] / 0.26), grow = 1 + (1 - a) * 0.3;
+    g.globalAlpha = a; g.strokeStyle = RINGS.col[k]; g.lineWidth = 4;
     gemPath(RINGS.x[k], RINGS.y[k], RINGS.w[k] * grow, RINGS.w[k] * grow * GEM_H / GEM_W); g.stroke();
   }
-  // sparks
+  // sparks: little four-point twinkles (the kit's spark shape, simplified) in the lane's colour and cream
   g.globalCompositeOperation = 'lighter';
   for (let k = 0; k < PMAX; k++) {
     if (P.life[k] <= 0) continue;
     P.life[k] -= dt; P.vy[k] += 620 * dt; P.x[k] += P.vx[k] * dt; P.y[k] += P.vy[k] * dt;
     g.globalAlpha = Math.max(0, P.life[k] / P.max[k]); g.fillStyle = P.col[k];
-    const s = P.size[k]; g.fillRect(P.x[k] - s / 2, P.y[k] - s / 2, s, s);
+    const s = P.size[k], px = P.x[k], py = P.y[k];
+    g.fillRect(px - s / 2, py - s / 6, s, s / 3); g.fillRect(px - s / 6, py - s / 2, s / 3, s);
   }
   g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1;
   // the judgement word, centred above the hit line
   g.textAlign = 'center'; g.textBaseline = 'middle';
   JUDGE.age += dt;
   if (JUDGE.kind && JUDGE.age < 0.55) {
-    const age = JUDGE.age, kind = JUDGE.kind, y = projY(0.2) - Math.min(1, age * 5) * 8, pop = age < 0.09 ? 1.3 - age * 3.3 : 1;
+    const age = JUDGE.age, kind = JUDGE.kind, y = projY(0.2) - Math.min(1, age * 5) * 8, pop = age < 0.09 && !REDUCED ? 1.3 - age * 3.3 : 1;
     g.globalAlpha = age > 0.38 ? (0.55 - age) / 0.17 : 1;
     g.save(); g.translate(V.cx, y); g.scale(pop, pop);
-    g.font = FONT.judge; g.fillStyle = kind === 1 ? '#ffe36e' : kind === 2 ? '#3fe0ff' : kind === 3 ? '#7dff5a' : '#ff8fa8';
-    g.lineWidth = 6; g.strokeStyle = 'rgba(10,4,30,0.85)'; g.strokeText(TX.judge[kind], 0, 0); g.fillText(TX.judge[kind], 0, 0);
-    if (JUDGE.side) { g.font = FONT.small; g.fillStyle = '#ffffff'; const s2 = JUDGE.side === 2 ? TX.hold : JUDGE.side < 0 ? TX.early : TX.late; g.lineWidth = 4; g.strokeText(s2, 0, Math.round(V.hw * 0.17)); g.fillText(s2, 0, Math.round(V.hw * 0.17)); }
+    g.font = FONT.judge; inkText(TX.judge[kind], 0, 0, JUDGE_COLORS[kind], 8);
+    if (JUDGE.side) { g.font = FONT.small; const s2 = JUDGE.side === 2 ? TX.hold : JUDGE.side < 0 ? TX.early : TX.late; inkText(s2, 0, Math.round(V.hw * 0.17), CREAM, 5); }
     g.restore();
   }
   g.globalAlpha = 1;
   // milestone banner
   BANNER.age += dt;
   if (BANNER.age < 1.6) {
-    const a = BANNER.age, sc = a < 0.15 ? 0.6 + a * 2.6 : 1;
+    const a = BANNER.age, sc = a < 0.15 && !REDUCED ? 0.6 + a * 2.6 : 1;
     g.globalAlpha = a > 1.2 ? (1.6 - a) / 0.4 : 1;
     g.save(); g.translate(V.cx, projY(0.72)); g.scale(sc, sc);
-    g.font = FONT.mid; g.fillStyle = '#ffffff'; g.lineWidth = 6; g.strokeStyle = 'rgba(255,79,163,0.9)';
-    g.strokeText(BANNER.text, 0, 0); g.fillText(BANNER.text, 0, 0);
+    g.font = FONT.mid; inkText(BANNER.text, 0, 0, SPARK, 7);
     g.restore(); g.globalAlpha = 1;
   }
   // combo counter in the middle of the highway
@@ -2408,20 +2386,18 @@ function drawEffects(st, dt) {
   if (run && run.combo >= 4) {
     if (FX.comboShown !== run.combo) { FX.comboShown = run.combo; FX.comboText = fmtNum(run.combo); FX.comboPop = 1; }
     FX.comboPop = Math.max(0, FX.comboPop - dt * 6);
-    const y = projY(0.45), sc = 1 + FX.comboPop * 0.18;
+    const y = projY(0.45), sc = 1 + (REDUCED ? 0 : FX.comboPop * 0.18);
     g.save(); g.translate(V.cx, y); g.scale(sc, sc);
-    g.globalAlpha = 0.85; g.font = FONT.combo; g.fillStyle = st.star ? '#ffe36e' : '#ffffff';
-    g.lineWidth = 6; g.strokeStyle = 'rgba(10,4,30,0.7)'; g.strokeText(FX.comboText, 0, 0); g.fillText(FX.comboText, 0, 0);
-    g.font = FONT.label; g.fillStyle = '#c9bdff'; g.fillText(TX.combo, 0, Math.round(V.hw * 0.25));
+    g.globalAlpha = 0.92; g.font = FONT.combo; inkText(FX.comboText, 0, 0, st.star ? SPARK : CREAM, 8);
+    g.font = FONT.label; inkText(TX.combo, 0, Math.round(V.hw * 0.25), CREAM, 5);
     g.restore(); g.globalAlpha = 1;
   }
   // countdown "3, 2, 1, Go!" on the beat
   if (st.count) {
     const c = st.count;
-    g.save(); g.translate(V.cx, projY(0.55)); const sc = 1.3 - 0.3 * Math.min(1, c.age * 5); g.scale(sc, sc);
-    g.globalAlpha = c.age < 0.6 ? 1 : Math.max(0, 1 - (c.age - 0.6) * 2.5);
-    g.font = c.word ? FONT.big : FONT.count; g.lineWidth = 10; g.strokeStyle = '#7c4dff'; g.lineJoin = 'round';
-    g.strokeText(c.text, 0, 0); g.fillStyle = '#ffffff'; g.fillText(c.text, 0, 0);
+    g.save(); g.translate(V.cx, projY(0.55)); const sc = REDUCED ? 1 : 1.3 - 0.3 * Math.min(1, c.age * 5); g.scale(sc, sc);
+    g.globalAlpha = c.age < 0.45 ? 1 : Math.max(0, 1 - (c.age - 0.45) * 3);     // fully gone by 0.78 s
+    g.font = c.word ? FONT.big : FONT.count; inkText(c.text, 0, 0, c.word ? HEX('mint', 1) : CREAM, 12);
     g.restore(); g.globalAlpha = 1;
   }
 }
@@ -2429,7 +2405,6 @@ function drawEffects(st, dt) {
 /* =====================================================================================
    GAME: screens, input, the frame loop, saves and SDK calls.
    ===================================================================================== */
-const $ = id => document.getElementById(id);
 const COMPILED = {};
 function getCompiled(id) { return COMPILED[id] || (COMPILED[id] = compileSong(SONG_BY_ID[id] || SONGS[0])); }
 
@@ -2479,75 +2454,149 @@ function songTimeAt(perfMs) {
 /** Song time the picture should show: the calibration offset slides the notes so they cross the line when a tap is judged Perfect. */
 const visualTime = perfMs => songTimeAt(perfMs) - save.offset / 1000 * G.rate;
 
-/* ---------- screens ---------- */
-const SCREENS = { title: 'scrTitle', songs: 'scrSongs', diff: 'scrDiff', pause: 'scrPause', results: 'scrResults', settings: 'scrSettings', calib: 'scrCalib' };
+/* ---------- small kit helpers ---------- */
+const ICON = (name, o) => Oomba.icon(name, o);
+/** A kit picture (prop or species) as a canvas; species and props are baked once and copied (cards rebuild often). */
+const PICS = {};
+function pic(name, px) {
+  const key = name + '@' + px, dpr = Math.min(2, devicePixelRatio || 1);
+  let src = PICS[key];
+  if (!src) { try { src = PICS[key] = Oomba.art.species.includes(name) ? Oomba.art.toCanvas(name, Math.round(px * dpr), 'happy') : Oomba.art.toCanvas(name, Math.round(px * dpr)); } catch (e) { return document.createElement('span'); } }
+  const c = document.createElement('canvas'); c.width = src.width; c.height = src.height; c.getContext('2d').drawImage(src, 0, 0);
+  c.setAttribute('aria-hidden', 'true'); return c;
+}
+function fillIcons(root) { root.querySelectorAll('[data-icon]').forEach(el => { if (el.dataset.iconDone) return; el.dataset.iconDone = '1'; el.insertAdjacentHTML('afterbegin', ICON(el.dataset.icon)); }); }
+
+/* ---------- screens: the kit's title and pause; the game's song list, levels, results and settings (kit look) ---------- */
+const SCREENS = { songs: 'scrSongs', diff: 'scrDiff', results: 'scrResults', settings: 'scrSettings', calib: 'scrCalib' };
 function show(name) {
-  G.screen = name;
-  const old = document.querySelector('.toast'); if (old) old.remove();
+  G.screen = name; Oomba.scene = name;
   for (const k in SCREENS) $(SCREENS[k]).hidden = k !== name;
+  if (stageMode() !== V.mode) { layout(); castSlots(); }
   const playing = name === 'play' || name === 'pause';
   $('hud').hidden = !playing;
   if (!playing) $('starBtn').hidden = true;
-  if (name === 'title') refreshTitle();
+  if (name !== 'pause') closeKitPause();
+  if (name === 'title') openTitle(); else closeTitle();
+  if (name !== 'results') CAST.sad = false;
   if (name !== 'songs' && Player.preview) Player.stop(0.15);
   if (name !== 'calib') Calib.stop();
+  const f = SCREENS[name] && $(SCREENS[name]).querySelector('.back, .ok-hot, button');
+  if (f && !G.fast) Oomba.time.real.after(0, () => { if (G.screen === name) try { f.focus({ preventScroll: true }); } catch (e) { /* ignore */ } });
 }
-function toast(msg) {
-  const old = document.querySelector('.toast'); if (old) old.remove();
-  const d = document.createElement('div'); d.className = 'toast'; d.textContent = msg; if (RTL) d.dir = 'rtl';
-  document.body.appendChild(d); setTimeout(() => d.remove(), 2100);
+function toast(msg) { Oomba.ui.toast(msg, { ms: 2000 }); }
+let titleOpen = false, titleSkip = false;
+/** The kit's title screen (a sticker logo over the demo highway and the band) with the game's stars, keys and settings. */
+function openTitle() {
+  if (titleOpen) return; titleOpen = true;
+  Oomba.ui.title({ title: 'Beat Lanes', subtitle: t('tagline'), titleHue: 'coral', hero: false, play: () => { titleOpen = false; if (!titleSkip) openSongs(); } });
+  const scr = [...Oomba.ui.root().querySelectorAll('.ok-title-screen')].pop(); if (!scr) return;
+  const block = scr.querySelector('.ok-title-block'), play = block && block.querySelector('.ok-hot');
+  if (play) { play.id = 'playBtn'; play.addEventListener('click', () => Sound.unlock(), true); }
+  const card = document.createElement('div'); card.className = 'bl-tcard';
+  const sub = block && block.querySelector('.ok-p');
+  const row = document.createElement('div'); row.className = 'row';
+  const set = document.createElement('button'); set.className = 'ok-btn ok-quiet'; set.id = 'setBtn'; set.type = 'button';
+  set.innerHTML = ICON('timer'); set.append(t('settings'));
+  set.addEventListener('click', () => { Sound.unlock(); BRB.sfx.play('click'); G.prevScreen = 'title'; openSettings(); });
+  const chip = document.createElement('span'); chip.className = 'chip gold'; chip.id = 'titleStars'; chip.dir = 'ltr';
+  row.append(set, chip);
+  const keys = document.createElement('p'); keys.className = 'hint kbonly'; keys.id = 'titleKeys';
+  if (block) { if (sub) card.append(sub); if (play) card.append(play); card.append(row, keys); block.append(card); }
+  const corner = scr.querySelector('.ok-corner'); if (corner) { const m = muteButton(); m.id = 'muteBtn2'; corner.prepend(m); }
+  refreshTitle(); syncMuteIcons();
 }
+/** Leaves the kit's title screen without its Play action (a test or a hook jumping straight somewhere else). */
+function closeTitle() { if (!titleOpen) return; const b = $('playBtn'); if (b) { titleSkip = true; b.click(); titleSkip = false; } titleOpen = false; }
+let pauseOpen = false, pauseIgnore = false;
+function openKitPause() {
+  if (pauseOpen) return; pauseOpen = true;
+  Oomba.ui.pause().then(r => {
+    pauseOpen = false;
+    if (pauseIgnore) { pauseIgnore = false; return; }
+    syncMuteIcons();
+    if (r === 'restart') restartSong(); else if (r === 'quit') quitToSongs(); else setPaused(false);
+  });
+  // the song and level under the heading (the pause card is the kit's)
+  const card = [...Oomba.ui.root().querySelectorAll('.ok-pause .ok-card')].pop();
+  if (card) { const p = document.createElement('p'); p.className = 'ok-p hint'; p.id = 'pauseSong'; p.textContent = songTitle(SONG_BY_ID[G.song]) + ' · ' + t(G.diff); const h = card.querySelector('h2'); if (h) h.after(p); }
+}
+function closeKitPause() {
+  if (!pauseOpen) return;
+  const b = [...Oomba.ui.root().querySelectorAll('.ok-pause .ok-go')].pop(); pauseOpen = false;
+  if (b) { pauseIgnore = true; b.click(); }
+}
+function muteButton() { const b = document.createElement('button'); b.className = 'ok-btn ok-icon mute'; b.type = 'button'; b.addEventListener('click', () => { Sound.unlock(); BRB.sfx.play('click'); toggleMute(); }); return b; }
 function syncMuteIcons() {
   const m = !!BRB.sfx.muted;
-  ['muteBtn', 'muteBtn2'].forEach(id => { const b = $(id); b.textContent = m ? '🔇' : '🔊'; b.setAttribute('aria-label', m ? t('soundOn') : t('soundOff')); });
-  $('pauseMute').textContent = (m ? '🔇 ' : '🔊 ') + (m ? t('soundOn') : t('soundOff'));
+  document.querySelectorAll('.bl .mute, .ok-title-screen .mute').forEach(b => { b.innerHTML = ICON(m ? 'mute' : 'sound'); b.setAttribute('aria-label', m ? t('soundOn') : t('soundOff')); });
 }
 function toggleMute() { BRB.sfx.mute(); Sound.syncMute(); syncMuteIcons(); }
 function keysText(lanes) { return t('keysHint', { keys: lanes === 3 ? 'D F J / ← ↓ →' : 'D F J K / ← ↓ ↑ →' }); }
+function starsChip(el, n) { el.innerHTML = ICON('star'); el.append(fmtNum(n)); el.setAttribute('aria-label', t('starsN', { n })); }
 function refreshTitle() {
-  $('titleStars').textContent = '★ ' + fmtNum(totalStars());
-  $('titleStars').setAttribute('aria-label', t('starsN', { n: totalStars() }));
-  $('titleKeys').textContent = keysText(4);
+  const c = $('titleStars'); if (c) starsChip(c, totalStars());
+  const k = $('titleKeys'); if (k) k.textContent = keysText(4);
 }
 const songTitle = s => t(s.title);
 const fmtLen = sec => Math.floor(sec / 60) + ':' + String(Math.round(sec % 60)).padStart(2, '0');
 const starStr = n => '★'.repeat(n) + '☆'.repeat(3 - n);
+const DIFF_PIC = { easy: 'duck', normal: 'bunny', hard: 'fox' };
+/** A level badge for the song list: 1, 2 or 3 rising bars in the level's colour (easy mint, normal sky, hard coral). */
+const DIFF_N = { easy: 1, normal: 2, hard: 3 };
+function diffBars(d) {
+  const n = DIFF_N[d], col = 'var(--bl-' + (d === 'easy' ? 'mint' : d === 'normal' ? 'sky' : 'coral') + ')';
+  let svg = '<svg class="lv" viewBox="0 0 20 18" aria-hidden="true">';
+  for (let i = 0; i < 3; i++) { const h = 6 + i * 5; svg += '<rect x="' + (1.5 + i * 6.2) + '" y="' + (16.5 - h) + '" width="4.6" height="' + h + '" rx="1.6" fill="' + (i < n ? col : 'none') + '" stroke="currentColor" stroke-width="1.5"/>'; }
+  return svg + '</svg>';
+}
+/** A song's cover: a kit prop, a kit character with a mood, or a kit icon ('icon:music'). */
+function coverArt(W) {
+  if (W.cover.startsWith('icon:')) { const sp = document.createElement('span'); sp.className = 'cic'; sp.innerHTML = ICON(W.cover.slice(5)); return sp; }
+  if (W.coverMood) { const key = W.cover + ':' + W.coverMood; if (!PICS[key]) try { PICS[key] = Oomba.art.toCanvas(W.cover, Math.round(52 * Math.min(2, devicePixelRatio || 1)), W.coverMood); } catch (e) { return document.createElement('span'); }
+    const c = document.createElement('canvas'), src = PICS[key]; c.width = src.width; c.height = src.height; c.getContext('2d').drawImage(src, 0, 0); c.setAttribute('aria-hidden', 'true'); return c; }
+  return pic(W.cover, 52);
+}
 
 /* ---------- song list ---------- */
 function buildCards() {
   const box = $('cards'); box.textContent = '';
   const total = totalStars();
-  $('songsStars').textContent = '★ ' + fmtNum(total);
-  $('songsStars').setAttribute('aria-label', t('starsN', { n: total }));
+  starsChip($('songsStars'), total);
   SONGS.forEach(s => {
-    const cs = getCompiled(s.id), open = total >= s.need;
+    const cs = getCompiled(s.id), open = total >= s.need, W = worldOf(s);
     const card = document.createElement('div');
     card.className = 'card' + (open ? '' : ' locked'); card.dataset.id = s.id; card.tabIndex = 0;
     card.setAttribute('role', 'button'); card.setAttribute('aria-pressed', String(G.selected === s.id));
     const cover = document.createElement('div'); cover.className = 'cover';
-    cover.style.background = 'linear-gradient(135deg,' + s.look.cover[0] + ',' + s.look.cover[1] + ')';
-    cover.textContent = open ? s.icon : '🔒';
+    cover.style.background = HEX(W.accent, 0);
+    if (open) cover.append(coverArt(W)); else cover.innerHTML = ICON('lock');
     const info = document.createElement('div'); info.className = 'cinfo';
     const ttl = document.createElement('b'); ttl.textContent = songTitle(s);
     const by = document.createElement('span'); by.className = 'by';
     const bpm = Math.round(cs.startBpm) + (Math.round(cs.endBpm) !== Math.round(cs.startBpm) ? '–' + Math.round(cs.endBpm) : '');
-    by.textContent = t(s.by) + ' · ' + fmtLen(cs.length) + ' · ' + t('bpm', { n: bpm });
+    const by1 = document.createElement('span'), by2 = document.createElement('span'); by2.className = 'nw';
+    by1.textContent = t(s.by) + ' · '; by2.textContent = fmtLen(cs.length) + ' · ' + t('bpm', { n: bpm });
+    by.append(by1, by2);
     const diffs = document.createElement('span'); diffs.className = 'diffs';
-    ['🐣', '🎵', '🔥'].forEach((em, i) => {
-      const b = bestOf(s.id, DIFFS[i]), c = document.createElement('span'); c.className = 'dchip';
+    DIFFS.forEach(d => {
+      const b = bestOf(s.id, d), c = document.createElement('span'); c.className = 'dchip';
       const st = document.createElement('span'); st.className = 'st'; st.textContent = starStr(b ? CONFIG.stars[b.g] || 0 : 0);
-      c.append(em + ' ', st);
+      c.innerHTML = diffBars(d); c.append(st);
       if (b && b.g) { const gr = document.createElement('span'); gr.className = 'gr'; gr.textContent = b.g; c.append(gr); }
-      c.setAttribute('aria-label', t(DIFFS[i]) + (b && b.g ? ' ' + t('gradeAria', { g: b.g }) : ''));
+      c.setAttribute('aria-label', t(d) + (b && b.g ? ' ' + t('gradeAria', { g: b.g }) : ''));
       diffs.append(c);
     });
-    info.append(ttl, by, diffs);
+    info.append(ttl, by);
     card.append(cover, info);
-    if (!open) { const lk = document.createElement('span'); lk.className = 'lock'; lk.textContent = t('needStars', { n: s.need }); card.append(lk); }
-    else if (G.selected === s.id) { const go = document.createElement('button'); go.className = 'go'; go.textContent = '▶ ' + t('play'); go.addEventListener('click', e => { e.stopPropagation(); BRB.sfx.play('click'); openDiff(s.id); }); card.append(go); }
+    if (!open) { const lk = document.createElement('span'); lk.className = 'lock'; lk.innerHTML = ICON('lock'); lk.append(t('needStars', { n: s.need })); card.append(lk); }
+    else card.append(diffs);
+    if (open && G.selected === s.id) {
+      const go = document.createElement('button'); go.className = 'ok-btn ok-hot go'; go.type = 'button'; go.innerHTML = ICON('play'); go.append(t('play'));
+      go.addEventListener('click', e => { e.stopPropagation(); BRB.sfx.play('click'); openDiff(s.id); }); card.append(go);
+    }
     card.addEventListener('click', () => selectSong(s.id));
     card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); if (G.selected === s.id && open) openDiff(s.id); else selectSong(s.id); } });
-    if (RTL) card.dir = 'rtl';
     box.append(card);
   });
 }
@@ -2558,13 +2607,13 @@ function selectSong(id) {
   if (G.selected === id) { openDiff(id); return; }
   G.selected = id; G.song = id;
   buildCards();
-  const card = document.querySelector('.card[data-id="' + id + '"]'); if (card && card.scrollIntoView) card.scrollIntoView({ block: 'nearest' });
+  const card = document.querySelector('.card[data-id="' + id + '"]'); if (card) { if (card.scrollIntoView) card.scrollIntoView({ block: 'nearest' }); card.focus({ preventScroll: true }); }
   startPreview(id);
 }
 function startPreview(id) {
   const cs = getCompiled(id);
   if (Sound.unlock()) Player.start(cs, cs.previewStart, 1, { preview: true, endChart: cs.previewStart + CONFIG.previewSeconds });
-  ST.cs = cs; paintBackdrop(cs.song.look);
+  ST.cs = cs; applyWorld(cs.song);
 }
 function openSongs() {
   show('songs');
@@ -2598,9 +2647,9 @@ function startSong(id, diff, opts) {
   G.cs = getCompiled(s.id);
   G.run = newRun(G.cs.charts[G.diff], { diff: G.diff, practice: G.practice, rate: G.rate, offsetMs: save.offset });
   setLanes(G.diff === 'easy' ? 3 : 4);
-  paintBackdrop(s.look);
+  applyWorld(s);
   ST.cs = G.cs; ST.run = G.run; ST.first = 0; G.first = 0;
-  JUDGE.age = 9; BANNER.age = 9; padGlow.fill(0); laneDown.fill(0); FX.comboShown = -1; FX.cheer = 0;
+  JUDGE.age = 9; BANNER.age = 9; padGlow.fill(0); laneDown.fill(0); FX.comboShown = -1; FX.cheer = 0; CAST.cheerUntil = 0;
   G.paused = false; G.ended = false; G.results = null; G.lastCount = 99; G.lastMilestone = 0; G.judgeLog.length = 0;
   const view = viewSec(G.diff) * G.rate, countIn = CONFIG.countIn * 60 / G.cs.startBpm;
   G.startChart = -Math.max(countIn + 0.6, view + 0.5);
@@ -2625,9 +2674,8 @@ function setPaused(on) {
     Player.stop(0.04);
     laneDown.fill(0); pointers.clear();            // a hold that was going on finishes by itself after resuming
     for (const k in keysDown) keysDown[k] = 0;
-    $('pauseSong').textContent = songTitle(SONG_BY_ID[G.song]) + ' · ' + t(G.diff);
-    syncMuteIcons();
     show('pause');
+    openKitPause();
   } else if (!on && G.paused) {
     G.paused = false;
     const tempo = G.cs.tempo, from = Math.max(G.startChart, tempo.sec(tempo.beat(G.pausedAt) - CONFIG.resumeBeats));
@@ -2638,7 +2686,7 @@ function setPaused(on) {
   }
 }
 function restartSong() { startSong(G.song, G.diff, { practice: G.practice, rate: G.rate }); }
-function quitToSongs() { Player.stop(0.1); G.phase = 'idle'; G.run = null; ST.run = null; openSongs(); }
+function quitToSongs() { Player.stop(0.1); G.phase = 'idle'; G.paused = false; G.run = null; ST.run = null; openSongs(); }
 
 function finishSong() {
   if (G.ended) return;
@@ -2668,7 +2716,7 @@ function finishSong() {
   } catch (e) { /* ignore */ }
   G.results = Object.assign({ newBest, unlocked: unlockedNow.map(s => s.id) }, res);
   const delay = G.fast ? 0 : res.passed ? 700 : 1300;
-  if (res.passed) Sfx.win(); else Sfx.softEnd();
+  if (res.passed) { Sfx.win(); cheerCast(4000); } else { Sfx.softEnd(); CAST.sad = true; }
   clearTimeout(G.endTimer);
   G.endTimer = setTimeout(() => showResults(G.results, unlockedNow), delay);
 }
@@ -2678,9 +2726,18 @@ function showResults(res, unlockedNow) {
   $('resTitle').textContent = !res.passed ? t('tryAgain') : G.practice ? t('practiceDone') : t('clear');
   const gEl = $('resGrade');
   gEl.className = 'grade ' + (res.grade || 'none');
-  gEl.textContent = res.grade || '🎵';
+  if (res.grade) gEl.textContent = res.grade; else gEl.innerHTML = ICON('music');
   gEl.setAttribute('aria-label', res.grade ? t('gradeAria', { g: res.grade }) : t('tryAgain'));
-  $('resStars').textContent = res.passed ? starStr(res.stars) : '';
+  // stars as the kit's spark slots, lit one by one
+  const sp = $('resStars'); sp.innerHTML = ''; sp.hidden = !res.passed;
+  const slots = [0, 1, 2].map(() => { const e = document.createElement('span'); e.className = 'ok-slot'; e.innerHTML = ICON('spark'); sp.append(e); return e; });
+  // (plain timers: they run even while the kit's clock is idle behind a card, so the last frame always shows every star)
+  if (res.passed) slots.forEach((e, i) => {
+    if (i >= res.stars) return;
+    if (G.fast || REDUCED) { e.classList.add('ok-on'); return; }
+    setTimeout(() => { e.classList.add('ok-on'); try { Oomba.juice.pop(e); } catch (err) { /* ignore */ } }, 300 + i * 320);
+  });
+  $('resPanel').classList.toggle('win', !!res.passed);
   const badges = $('resBadges'); badges.textContent = '';
   const badge = (txt, cls) => { const b = document.createElement('span'); b.className = 'badge ' + (cls || ''); b.textContent = txt; badges.append(b); };
   if (res.allPerfect) badge(t('allPerfect'), 'ap'); else if (res.fullCombo) badge(t('fullCombo'));
@@ -2691,12 +2748,14 @@ function showResults(res, unlockedNow) {
   $('cP').textContent = fmtNum(res.counts.perfect); $('cG').textContent = fmtNum(res.counts.great); $('cD').textContent = fmtNum(res.counts.good); $('cM').textContent = fmtNum(res.counts.miss);
   const un = $('resUnlock');
   un.hidden = !unlockedNow.length;
-  if (unlockedNow.length) un.textContent = '🔓 ' + unlockedNow.map(x => t('unlocked', { title: songTitle(x) })).join(' ');
+  if (unlockedNow.length) { un.innerHTML = ICON('unlock'); un.append(unlockedNow.map(x => t('unlocked', { title: songTitle(x) })).join(' ')); }
   $('resNote').textContent = !res.passed ? t('tryAgainSub') : (G.diff === 'easy' || G.practice) ? t('funNote') : '';
   $('nextBtn').disabled = !nextSongId();
   show('results');
+  if (!res.passed) CAST.sad = true;
   if (!G.fast && !REDUCED) { gEl.classList.remove('pop-in'); void gEl.offsetWidth; gEl.classList.add('pop-in'); }
-  if (res.passed && (res.newBest || res.fullCombo || res.grade === 'S')) BRB.fx.confetti();
+  if (res.passed && (res.newBest || res.fullCombo || res.grade === 'S') && !REDUCED) Oomba.juice.confetti();
+  Oomba.ui.announce($('resTitle').textContent + ' ' + (res.grade ? t('gradeAria', { g: res.grade }) : ''));
 }
 function nextSongId() {
   const i = SONGS.findIndex(s => s.id === G.song);
@@ -2737,17 +2796,18 @@ function feedback(lane, r) {
   if (k < 4 && r.note.len > 0) JUDGE.side = 2;     // a hold started: say "Hold!" under the word
   if (k === 4) { missSfx(); return; }
   Sfx.hit(r.note.m, r.kind);
-  spark(x, V.hitY, cols[lane], k === 1 ? 16 : k === 2 ? 10 : 6, k === 1 ? 1.15 : 0.9);
-  ring(x, V.hitY, V.laneW * 0.8, k === 1 ? '#ffffff' : cols[lane]);
+  spark(x, V.hitY - V.padH * 0.1, cols[lane], k === 1 ? 9 : k === 2 ? 6 : 4, k === 1 ? 0.75 : 0.6);
+  ring(x, V.hitY, V.laneW * 0.8, cols[lane]);         // the lane's own colour: you can see which lane was hit
   milestone();
 }
 function missSfx() { const now = performance.now(); if (now - G.missSfxAt > 120) { G.missSfxAt = now; Sfx.miss(); } }
 function milestone() {
   const c = G.run.combo;
   if (c > 0 && c % CONFIG.cheerEvery === 0 && c !== G.lastMilestone) {
-    G.lastMilestone = c; FX.cheer = 1.6; Sfx.cheer(c >= 100);
-    BANNER.text = t('comboN', { n: c }) + ' 🎉'; BANNER.age = 0;
+    G.lastMilestone = c; FX.cheer = 1.6; Sfx.cheer(c >= 100); cheerCast(1600);
+    BANNER.text = t('comboN', { n: c }); BANNER.age = 0;
     for (let i = 0; i < 2; i++) spark(i ? V.w - 30 : 30, V.h - 30, LANE_COLORS[(c / 25 + i) % 4], 24, 1.5);
+    if (!REDUCED) Oomba.juice.pop($('scoreEl'));
   }
 }
 function useStar() {
@@ -2755,7 +2815,7 @@ function useStar() {
   if (activateStar(G.run, songTimeAt(performance.now()))) {
     Sfx.star(); FX.starT = 1; $('starBtn').hidden = true;
     if (!REDUCED) FX.shake = 0.25;
-    BANNER.text = '⭐ ' + t('starOn'); BANNER.age = 0;
+    BANNER.text = t('starOn'); BANNER.age = 0;
   }
 }
 cv.addEventListener('pointerdown', e => {
@@ -2779,6 +2839,7 @@ cv.addEventListener('contextmenu', e => e.preventDefault());
 const keysDown = {};
 addEventListener('keydown', e => {
   Sound.unlock();
+  if (Oomba.ui.open) return;   // the kit's own screens (title, pause, settings) own the keys while they are open
   const k = e.key.toLowerCase();
   if (G.screen === 'calib' && (k === ' ' || k === 'enter') && !e.repeat) { e.preventDefault(); Calib.tap(stampOf(e)); return; }
   if (k === 'm') { toggleMute(); return; }
@@ -2801,26 +2862,22 @@ addEventListener('keyup', e => {
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) { if (G.screen === 'play' && !G.ended) setPaused(true); if (Player.preview) Player.stop(0.05); }
 });
-addEventListener('resize', () => { layout(); });
+addEventListener('resize', () => { layout(); castSlots(); });
 
 /* ---------- buttons ---------- */
 function onTap(id, fn) { $(id).addEventListener('click', e => { Sound.unlock(); BRB.sfx.play('click'); fn(e); }); }
-onTap('playBtn', openSongs);
-onTap('setBtn', () => { G.prevScreen = 'title'; openSettings(); });
-onTap('muteBtn', toggleMute); onTap('muteBtn2', toggleMute); onTap('pauseMute', toggleMute);
+onTap('muteBtn', toggleMute);
 onTap('songsBack', () => show('title'));
 onTap('diffBack', openSongs);
 document.querySelectorAll('.lvl').forEach(b => b.addEventListener('click', () => { Sound.unlock(); BRB.sfx.play('click'); startSong(G.song, b.dataset.diff); }));
 onTap('practiceTg', () => { G.practice = !G.practice; if (!G.practice) G.slow = false; openDiff(G.song); });
 onTap('slowTg', () => { G.slow = !G.slow; openDiff(G.song); });
 onTap('pauseBtn', () => setPaused(true));
-onTap('resumeBtn', () => setPaused(false));
-onTap('restartBtn', restartSong);
-onTap('pauseSongsBtn', quitToSongs);
 onTap('retryBtn', restartSong);
 onTap('nextBtn', () => { const n = nextSongId(); if (n) { G.selected = n; openDiff(n); } });
 onTap('resSongsBtn', () => { G.selected = G.song; openSongs(); });
 $('starBtn').addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); useStar(); });
+$('starBtn').addEventListener('click', e => { if (e.detail === 0) useStar(); });   // keyboard / switch access
 
 /* ---------- settings + calibration ---------- */
 function openSettings() { show('settings'); syncSettings(); }
@@ -2876,7 +2933,7 @@ const Calib = {
   frame(perf) {
     if (!this.on || !this.clicks.length) { $('calPad').style.transform = ''; return; }
     const h = Clock.heard(perf); let k = 1;
-    for (const c of this.clicks) { const d = h - c; if (d >= 0 && d < 0.35) k = 1 + 0.08 * (1 - d / 0.35); }
+    if (!REDUCED) for (const c of this.clicks) { const d = h - c; if (d >= 0 && d < 0.35) k = 1 + 0.08 * (1 - d / 0.35); }
     $('calPad').style.transform = 'scale(' + k.toFixed(3) + ')';
     if (h > this.clicks[this.clicks.length - 1] + 0.5) { this.stop(); if (this.taps.length < CONFIG.calibrationTaps) $('calMsg').textContent = t('calibAgain'); }
   }
@@ -2891,7 +2948,7 @@ function updateHud(force) {
   const m = multOf(run.combo) * (run.starOn ? 2 : 1);
   if (m !== HUD.mult || run.starOn !== HUD.star || force) { HUD.mult = m; HUD.star = run.starOn; const el = $('multEl'); el.textContent = '×' + m; el.className = 'mult' + (m === 1 ? ' x1' : '') + (run.starOn ? ' star' : ''); }
   const h = Math.round(run.health * 100);
-  if (h !== HUD.health || force) { HUD.health = h; $('healthFill').style.transform = 'scaleX(' + (h / 100) + ')'; }
+  if (h !== HUD.health || force) { HUD.health = h; $('healthFill').style.transform = 'scaleX(' + (h / 100) + ')'; $('healthBar').classList.toggle('low', h < 30); }
   const gr = Math.round(run.groove);
   if (gr !== HUD.groove || force) { HUD.groove = gr; $('grooveFill').style.transform = 'scaleX(' + (gr / 100) + ')'; $('grooveBar').classList.toggle('full', gr >= 100); }
   const ready = run.groove >= 100 && !run.starOn && !G.ended && G.screen === 'play';
@@ -2927,15 +2984,16 @@ function frame(ts) {
     updateHud(false);
   } else {
     // title / menus: a quiet autoplayed demo of the selected (or first) song, no sound
-    if (!demo.cs || (ST.cs && demo.cs !== ST.cs && G.screen !== 'title')) { demo.cs = ST.cs || getCompiled('twinkle'); demo.run = newRun(demo.cs.charts.hard, { diff: 'hard', practice: true }); demo.t0 = perf; demo.first = 0; setLanes(4); paintBackdrop(demo.cs.song.look); }
+    if (!demo.cs || (ST.cs && demo.cs !== ST.cs && G.screen !== 'title')) { demo.cs = ST.cs || getCompiled(save.last); demo.run = newRun(demo.cs.charts.hard, { diff: 'hard', practice: true }); demo.t0 = perf; demo.first = 0; setLanes(4); }
     cs = demo.cs; view = 1.6;
     let tt = (perf - demo.t0) / 1000 + cs.previewStart - 1;
     if (tt > cs.endSec) { demo.t0 = perf; demo.run = newRun(cs.charts.hard, { diff: 'hard', practice: true }); demo.first = 0; tt = cs.previewStart - 1; }
     run = demo.run; demoPlay(run, tt); updateRun(run, tt); run.missQueue.length = 0; now = tt;
     if (V.lanes !== 4) setLanes(4);
   }
+  applyWorld(cs.song);
   // beat pulse (smooth decay, at most one per beat; every other beat when beats are faster than 0.4 s)
-  if (cs) {
+  {
     const b = cs.tempo.beat(now), spb = 60 / cs.tempo.bpmAtBeat(b), every = spb < 0.4 ? 2 : 1;
     const ph = (b / every) - Math.floor(b / every);
     FX.beatPulse = now < 0 && inSong ? 0 : Math.exp(-ph * every * spb * 7);
@@ -2943,25 +3001,23 @@ function frame(ts) {
   for (let l = 0; l < 4; l++) padGlow[l] = laneDown[l] ? Math.max(padGlow[l] - dt * 2, 0.55) : Math.max(0, padGlow[l] - dt * 5);
   if (FX.cheer > 0) FX.cheer -= dt;
   if (FX.shake > 0) FX.shake -= dt;
-  // draw
-  const look = (cs || getCompiled('twinkle')).song.look;
-  paintBackdrop(look);
+  // draw (the kit stage behind draws the world and the band by itself)
   g.setTransform(V.dpr, 0, 0, V.dpr, 0, 0);
-  g.drawImage(bgc, 0, 0, V.w, V.h);
+  g.clearRect(0, 0, V.w, V.h);
   const star = !!(run && run.starOn);
   let energy = 0; for (let i = 1; i < 6; i++) energy += freqData[i]; energy = energy / (5 * 255);
-  drawStageFx(look, perf / 1000, energy, star);
+  drawStageFx(perf / 1000, energy, star);
   if (FX.shake > 0 && !REDUCED) { const s = FX.shake * 14; g.translate((Math.random() - 0.5) * s, (Math.random() - 0.5) * s); }
   ST.cs = cs; ST.run = run; ST.now = now; ST.view = view; ST.star = star; ST.pulse = REDUCED ? FX.beatPulse * 0.4 : FX.beatPulse;
   ST.first = inSong ? G.first : demo.first;
   drawHighway(ST);
-  drawCrowd(perf / 1000);
-  drawPads(inSong && KEYS_HINT, V.lanes === 3 ? KEY_LABELS3 : KEY_LABELS4);
+  drawPads();
   drawNotes(ST);
   if (inSong) G.first = ST.first; else demo.first = ST.first;
-  ST.count = COUNT.age < 1 && inSong ? COUNT : null;
+  ST.count = COUNT.age < 0.78 && inSong && G.screen === 'play' ? COUNT : null;
   COUNT.age += dt;
   drawEffects(ST, dt);
+  if (inSong && KEYS_HINT) drawKeys(V.lanes === 3 ? KEY_LABELS3 : KEY_LABELS4);
 }
 const KEYS_HINT = (() => { try { return matchMedia('(hover:hover) and (pointer:fine)').matches; } catch (e) { return false; } })();
 const KEY_LABELS4 = ['D', 'F', 'J', 'K'], KEY_LABELS3 = ['D', 'F J', 'K'];
@@ -2994,7 +3050,7 @@ function demoPlay(run, tt) {
     const list = run.byLane[l]; let i = run.ptr[l];
     while (i < list.length && list[i].res !== J.NONE) i++;
     const n = list[i];
-    if (n && tt >= n.t) { const r = judgeTap(run, l, n.t); if (r.note) { const x = V.cx - V.hw + (l + 0.5) * V.laneW; spark(x, V.hitY, LANE_COLORS[l], 8, 0.8); padGlow[l] = 1; } }
+    if (n && tt >= n.t) { const r = judgeTap(run, l, n.t); if (r.note) { const x = V.cx - V.hw + (l + 0.5) * V.laneW; spark(x, V.hitY - V.padH * 0.1, LANE_COLORS[l], 5, 0.6); padGlow[l] = 1; } }
     const h = run.holding[l]; if (h && tt >= h.t + h.len) releaseLane(run, l, h.t + h.len);
   }
 }
@@ -3002,23 +3058,38 @@ function demoPlay(run, tt) {
 /* ---------- language: fill every fixed label once ---------- */
 function applyLanguage() {
   try { document.documentElement.lang = LANG; } catch (e) { /* ignore */ }
-  document.querySelectorAll('[data-t]').forEach(el => { el.textContent = t(el.dataset.t); });
-  document.querySelectorAll('[data-ta]').forEach(el => { el.setAttribute('aria-label', t(el.dataset.ta)); });
-  // Right-to-left languages: menus and text read right to left; the highway, pads and numbers stay left to right.
-  if (RTL) document.querySelectorAll('.panel, .sheet, .title-top, .title-bottom, .toggles').forEach(el => { el.dir = 'rtl'; });
+  document.querySelectorAll('.bl [data-t]').forEach(el => { el.textContent = t(el.dataset.t); });
+  document.querySelectorAll('.bl [data-ta]').forEach(el => { el.setAttribute('aria-label', t(el.dataset.ta)); });
   TX = { judge: ['', t('perfect'), t('great'), t('good'), t('miss')], early: t('early'), late: t('late'), hold: t('hold'), combo: t('combo'), go: t('go') };
 }
+/** The kit's colours as CSS variables for the game's own cards (hue steps: 0 tint, 1 light, 2 base, 3 shade). */
+function applyColors() {
+  const el = $('game');
+  for (const h of ['mint', 'sky', 'coral', 'spark', 'grape', 'peach']) { el.style.setProperty('--bl-' + h, HEX(h, 2)); el.style.setProperty('--bl-' + h + 'Tint', HEX(h, 0)); el.style.setProperty('--bl-' + h + 'Shade', HEX(h, 3)); }
+  el.style.setProperty('--bl-sparkText', Oomba.theme.mode === 'dark' ? HEX('spark', 1) : HEX('peach', 3));
+}
+Oomba.theme.on('change', applyColors);
+// The game joins the kit's DOM layer first, so the kit's captions, toasts and screens sit above it.
+Oomba.ui.root().prepend($('game'));
+applyColors();
 applyLanguage();
+fillIcons($('game'));
+document.querySelectorAll('.lvl .em[data-pic]').forEach(el => el.append(pic(el.dataset.pic, 52)));
 makeSprites();
 layout();
+castSlots();
+applyWorld(getCompiled(save.last).song, 0);
 syncMuteIcons();
 show('title');
 requestAnimationFrame(frame);
+Oomba.fonts.ready.then(() => { FONTSTACK = getComputedStyle(Oomba.ui.root()).getPropertyValue('--ok-font').trim() || FONTSTACK; layout(); });
 
 /* =====================================================================================
-   window.__brbTest: hooks for automated play tests (harmless in production).
+   window.__brbTest: hooks for automated play tests (harmless in production). Merged into the kit's hooks
+   (step, frameStats of the kit stage, setTheme, setLang ...); the game's own replace any of the same name.
      state()        -> { screen, song, difficulty, time, score, combo, maxCombo, health, groove,
-                         counts: {perfect, great, good, miss}, grade, over, practice, rate, starOn, paused, offset, lanes }
+                         counts: {perfect, great, good, miss}, grade, over, practice, rate, starOn, paused, offset, lanes,
+                         world: {biome, tod, cast} }
      songs()        -> [{ id, title, composer, bpm, bpmEnd, length, need, unlocked, notes: {easy, normal, hard},
                          charts: {easy|normal|hard: [{t, b, lane, len, chord}]} }]
      start({ song, difficulty, practice, rate }) -> state()   (rate 0.75 = practice at 75%)
@@ -3050,11 +3121,12 @@ function hookState() {
     counts: run ? Object.assign({}, run.counts) : { perfect: 0, great: 0, good: 0, miss: 0 },
     grade: res ? res.grade : '', over: !!G.ended, passed: res ? res.passed : null, fullCombo: res ? res.fullCombo : false, allPerfect: res ? res.allPerfect : false,
     practice: G.practice, rate: G.rate, starOn: !!(run && run.starOn), paused: G.paused, offset: save.offset, lanes: run ? run.lanes : 0,
-    notesTotal: run ? run.notes.length : 0, judged: run ? run.judged : 0, drops: run ? run.drops : 0, clock: G.manual ? 'manual' : G.clock
+    notesTotal: run ? run.notes.length : 0, judged: run ? run.judged : 0, drops: run ? run.drops : 0, clock: G.manual ? 'manual' : G.clock,
+    world: { biome: WORLD.biome, tod: +WORLD.timeOfDay.toFixed(2), cast: CAST.band.filter(e => e.visible).map(e => e.sp) }
   };
 }
 const OUT = { sp: null, onsets: [], quiet: 0 };
-window.__brbTest = {
+window.__brbTest = Object.assign(window.__brbTest || {}, {
   state: hookState,
   songs() {
     return SONGS.map(s => {
@@ -3147,5 +3219,5 @@ window.__brbTest = {
   ctxOfChart(c) { return Player.ctxOf(c); },
   calibClicks() { return { clicks: Calib.clicks.slice(), taps: Calib.taps.slice(), on: Calib.on, offset: save.offset }; },
   get config() { return CONFIG; }
-};
+});
 </script>

@@ -1,0 +1,116 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Oomba 3D</title>
+<style>
+html,body{margin:0;height:100%;overflow:hidden;touch-action:none}
+#view{position:fixed;inset:0;width:100%;height:100%;display:block;outline:none}
+</style></head>
+<body>
+<canvas id="view"></canvas>
+<!--KIT-->
+<!--PACKS-->
+<script>
+// "Oomba 3D" (/kit?scene=three&th=castle&style=bold&view=cast): the 3D bridge (bridge-3d pack) the way a 3D game uses
+// it. A theme becomes a 3D world, the hero is a low-poly toon rig of a kit character with Ink outlines, the friend is a
+// billboard of the same character's 2D art, sparks are the kit's reward spark in 3D, and the title, HUD, quiz card and
+// results are the kit's own DOM screens over the WebGL canvas. view=cast lines up rigs next to their 2D twins.
+'use strict';
+Oomba.time.start();
+window.__brbTest = { state: () => ({ ready: false }) };
+</script>
+<!--THREE-->
+<script type="module">
+import * as THREE from 'three';
+const q = new URLSearchParams(location.search), th = q.get('th') || 'meadow', view = q.get('view') || 'play', shot = q.get('shot') || '';
+const style = q.get('style') === 'bold' ? 'bold' : undefined;
+const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('view'), antialias: (devicePixelRatio || 1) < 1.5 });
+const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(55, 16 / 9, 0.1, 400);
+const B = Oomba.three(THREE, { renderer, scene, camera, theme: th, style });
+let tall = false;
+B.fit({ onResize(w, h) { tall = w / h < 0.8; camera.fov = tall ? 68 : 55; } });
+const W = B.world({ size: 26, seed: 11 }); 
+const bold = B.style === 'bold';
+const HERO = bold ? { species: 'kid', skin: 3, hair: { style: 'spiky', color: 'black' }, outfit: { top: 'hoodie', color: 'grape' } } : { species: 'fox' };
+const FRIEND = bold ? { species: 'kid', skin: 1, hair: { style: 'long', color: 'copper' }, outfit: { top: 'tee', color: 'mint' } } : { species: 'bunny' };
+const WORDS = { en: { sub: 'Find every spark, then answer the quiz!', q: '{a} × {b} = ?', hi: 'Hi! Ready for a question?' } };
+Oomba.strings(WORDS);
+const state = { ready: false, screen: 'title', got: 0, total: 0, fps: 0, asked: false };
+let hud = null;
+
+if (view === 'cast') {
+  // rigs (front) next to the same specs as billboards of their 2D art (behind): they should read as one cast
+  const cast = ['oomba', 'kid', 'fox', 'bunny', 'frog', 'bee'];
+  if (Oomba.pack('art-animals')) cast.push('cat', 'dog', 'owl', 'penguin');
+  const n = cast.length, gap = tall ? 1.15 : 1.45;
+  cast.forEach((sp, i) => {
+    const spec = sp === 'kid' ? { species: 'kid', skin: 3, hair: { style: 'puffs', color: 'black' }, outfit: { top: 'hoodie', color: 'grape' } } : { species: sp }, x = (i - (n - 1) / 2) * gap;
+    const r = B.rig(spec, { size: 1.5 }); r.position.set(x, W.heightAt(x, 2), 2); r.heading = 0.25 * Math.sin(i); if (i % 3 === 1) r.play('wave', 1e9); scene.add(r);
+    const s = B.sprite(spec, { size: 1.5 }); s.position.set(x, W.heightAt(x, -0.8), -0.8); scene.add(s);
+  });
+  camera.position.set(0, 2.8, tall ? 16 : 11); camera.lookAt(0, 1.1, 0);
+  state.ready = true; state.screen = 'cast';
+} else {
+  // the play scene: the hero walks (arrows / WASD / the stick) and collects sparks; the friend asks a question
+  const hero = B.rig(HERO, { size: 1.6 }); scene.add(hero);
+  const friend = B.sprite(FRIEND, { size: 1.6 }); friend.position.set(3.2, W.heightAt(3.2, -3.5), -3.5); friend.heading = Math.PI; scene.add(friend);
+  const sparks = [], spots = [[-4, -2], [-6, 3], [0, 5], [5, 3], [7, -2], [-2, -7], [3, -8], [-7, -6]];
+  for (const [x, z] of spots) { const s = B.spark({ size: 0.9 }); s.position.set(x, W.heightAt(x, z) + 1, z); scene.add(s); sparks.push(s); }
+  state.total = sparks.length;
+  const pos = new THREE.Vector3(0, W.heightAt(0, 2), 2), camAt = new THREE.Vector3(), look = new THREE.Vector3();
+  hero.position.copy(pos);
+  let demo = shot === 'play' || shot === 'ask', target = 0, vy = 0;
+  const step = dt => {
+    if (state.screen !== 'play' || Oomba.ui.open || Oomba.time.paused) { hero.speed = 0; return; }
+    const ax = Oomba.input.axis(); let mx = ax.x, mz = ax.y;
+    if (demo && !mx && !mz) { const t = sparks[target % sparks.length]; if (t) { mx = t.position.x - pos.x; mz = t.position.z - pos.z; const l = Math.hypot(mx, mz) || 1; mx /= l; mz /= l; } }
+    else if (mx || mz) demo = false;
+    const sp = Math.min(1, Math.hypot(mx, mz)), speed = 5.2;
+    if (sp > 0.05) { pos.x += mx * speed * dt; pos.z += mz * speed * dt; hero.heading = Math.atan2(mx, mz); }
+    if (Oomba.input.pressed('jump') && !hero.air) { vy = 7; hero.air = true; }
+    const g = W.heightAt(pos.x, pos.z); vy -= 20 * dt; pos.y += vy * dt;
+    if (pos.y <= g) { if (hero.air) hero.play('land'); pos.y = g; vy = 0; hero.air = false; }
+    const r = Math.hypot(pos.x, pos.z); if (r > 20) { pos.x *= 20 / r; pos.z *= 20 / r; }
+    hero.speed = sp; hero.position.copy(pos);
+    for (const s of sparks) if (s.visible && s.position.distanceTo(pos.clone().setY(pos.y + 1)) < 1.3) {
+      s.visible = false; state.got++; hud.score.add(10); hud.count.add(1); Oomba.sfx('spark'); hero.play('cheer'); target++;
+      if (state.got === state.total) finish();
+    }
+    if (demo) while (target < sparks.length && !sparks[target].visible) target++;
+    if (!state.asked && pos.distanceTo(friend.position) < 2.2) quiz();
+  };
+  async function quiz() {
+    state.asked = true; friend.play('wave', 1600); hero.speed = 0;
+    const a = 3 + Math.floor(Math.random() * 5), b = 2 + Math.floor(Math.random() * 7);
+    const ok = await Oomba.ui.ask({ q: Oomba.t('q', { a, b }), a: a * b, choices: 4 });
+    if (ok) { hud.score.add(50); friend.play('cheer'); }
+  }
+  async function finish() {
+    state.screen = 'win'; hud.timer.stop();
+    await Oomba.ui.win({ stars: 3, score: hud.score.value, best: hud.score.value, hero: Oomba.char(HERO) });
+    location.reload();
+  }
+  async function start() {
+    state.screen = 'play';
+    hud = Oomba.ui.hud(['score', 'count:spark', 'timer:90'], { total: state.total, onPause: r => { if (r === 'restart' || r === 'quit') location.reload(); } });
+    hud.timer.start(90, () => { state.screen = 'lose'; Oomba.ui.tryAgain({ score: hud.score.value, title: 'Time’s up!' }).then(() => location.reload()); });
+  }
+  window.__brbTest = Object.assign(window.__brbTest, { start: () => { if (state.screen === 'title') { document.querySelectorAll('.ok-title-screen .ok-big, .ok-big').forEach(b => b.click()); } } });
+  // the camera follows from behind and above, smoothly (no shake, no roll; reduced motion snaps a little faster)
+  const follow = dt => {
+    const back = tall ? 8 : 7.5, up = tall ? 3.8 : 3.4;
+    camAt.set(pos.x, pos.y + up, pos.z + back);
+    camera.position.lerp(camAt, state.screen === 'title' ? 1 : 1 - Math.exp(-dt * 4));
+    look.set(pos.x, pos.y + (tall ? 1.8 : 1.4), pos.z - (tall ? 4 : 3)); camera.lookAt(look);
+  };
+  camera.position.set(pos.x, pos.y + 3.4, pos.z + 7.5); follow(1);
+  B.run(dt => { step(dt); follow(dt); state.fps = state.fps ? state.fps * 0.95 + (1 / Math.max(dt, 1e-3)) * 0.05 : 1 / Math.max(dt, 1e-3); });
+  state.ready = true;
+  if (shot === 'play' || shot === 'ask') { Oomba.fonts.ready.then(start); if (shot === 'ask') { pos.set(1.6, W.heightAt(1.6, -2), -2); hero.position.copy(pos); hero.heading = Math.PI * 0.6; follow(1); Oomba.fonts.ready.then(() => Oomba.time.real.after(300, quiz)); } }
+  else Oomba.fonts.ready.then(() => Oomba.ui.title({ title: 'Oomba 3D', subtitle: Oomba.t('sub'), hero: Oomba.char(HERO) })).then(start);
+}
+if (view === 'cast') B.run();
+window.__brbTest.state = () => ({ ready: state.ready, game: true, scene: state.screen, view, theme: B.look.name, biome: B.look.biome, style: B.style, tier: B.tier, quality: B.quality, tod: B.tod,
+  calls: renderer.info.render.calls, triangles: renderer.info.render.triangles, pixelRatio: renderer.getPixelRatio(), got: state.got, total: state.total, fps: Math.round(state.fps), props: W.props.length, reduced: B.reduced });
+renderer.domElement.addEventListener('webglcontextlost', e => { e.preventDefault(); Oomba.time.pause('gl'); });
+renderer.domElement.addEventListener('webglcontextrestored', () => Oomba.time.resume('gl'));
+</script>
+</body></html>

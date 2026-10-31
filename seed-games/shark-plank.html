@@ -1,110 +1,207 @@
 <title>Shark Plank</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Fredoka:wght@600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&display=swap">
 <style>
-/* Layout: one column. Animated sea scene on top (kid on a pirate plank, shark circling), word blanks, big ABC keys, three icon buttons. Single bright ocean look. */
-:root{
-  --sea:#0b5d8f; --deep:#063a5c; --sky:#bfeaff; --card:#ffffff; --ink:#0d2a3d; --muted:#5b7a8c;
-  --sun:#ffd23f; --good:#22c55e; --bad:#ef4444; --coral:#ff7a59;
-  --display:"Fredoka","Trebuchet MS",system-ui,sans-serif;
-  --body:"Andika","Trebuchet MS",system-ui,sans-serif;
-  color-scheme:light;
-}
+/* Shark Plank on the Oomba Kit: a hangman game for early readers. The kit draws the beach world behind the game (day,
+   or night in the dark theme), the explorer (the player's own avatar), the title, HUD (hearts and words won), pause,
+   settings, icons, buttons, sounds and the type. This file lays out the game's own pieces: the word-size chips, the sea
+   scene (a canvas in the Oomba Ink style: Ink outlines, kit colours), the word slots, the ABC keys, the three tools,
+   the results card and the "secret word" card. Phones in portrait: one column. Wider screens (and landscape phones):
+   the sea on the left, the word and the keys on the right, so nothing needs scrolling.
+   Colours come from the kit (set as --sp-* variables at start). The letters (keys and word slots) use Andika, a
+   reading font with the a and g that children learn to write; everything else uses the kit's font. */
 [hidden]{display:none!important}
-body{background:linear-gradient(180deg,#8fd8ff,#e9f8ff 40%,#fff6df);color:var(--ink);font-family:var(--body);min-height:100vh;
-  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:10px}
-.app{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:10px}
-.top{display:flex;align-items:center;justify-content:space-between;gap:8px}
-h1{font:700 clamp(1.6rem,7vw,2.2rem)/1 var(--display);margin:0;color:var(--deep)}
-h1 span{color:var(--coral)}
-.stars{font:700 1.2rem var(--display);background:#fff;border-radius:999px;padding:4px 12px;box-shadow:0 3px 0 rgba(6,58,92,.15);white-space:nowrap}
-.levels{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
-.lvl{font:700 .95rem/1.1 var(--display);padding:6px 2px;border-radius:14px;border:3px solid #fff;background:rgba(255,255,255,.6);color:var(--deep);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px}
-.lvl b{font-size:1.5rem;line-height:1}
-.lvl span,.tool span{display:block;max-width:100%;white-space:nowrap;overflow:hidden}   /* long words shrink to fit (fitText) */
+html,body{height:100%}
+body{margin:0;overflow:hidden;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.sp{--letters:"Andika","Trebuchet MS",system-ui,sans-serif;--rim:var(--sp-ink);--soft:color-mix(in srgb,var(--ok-text) 62%,transparent)}
+.ok-night .sp{--rim:color-mix(in srgb,var(--sp-cream) 40%,transparent)}
+.sp button{cursor:pointer;-webkit-tap-highlight-color:transparent}
+.lvl,.tool{font-family:inherit}
+.sp svg{display:block}
+.sp .ok-btn{color:var(--sp-ink)}
+.scroller{position:fixed;inset:0;overflow-x:hidden;overflow-y:auto;-webkit-overflow-scrolling:touch;z-index:1}
+.scroller.offstage{visibility:hidden}
+.app{max-width:560px;margin:0 auto;box-sizing:border-box;display:flex;flex-direction:column;gap:10px;
+  padding:calc(62px + env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(14px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left))}
+.sr,.res.is-win h2{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;margin:0}
+
+/* ---------- the game's name (kept on screen while playing) ---------- */
+.brand{margin:0;justify-self:center;align-self:center;display:flex;align-items:baseline;justify-content:center;gap:.3em;font-weight:800;font-size:clamp(1.45rem,6.4vw,2rem);line-height:1;letter-spacing:.01em;
+  padding:7px 20px 8px;border-radius:999px;background:var(--ok-card);border:3px solid var(--rim);box-shadow:0 4px 0 var(--sp-ink);width:max-content;max-width:100%;box-sizing:border-box;margin-inline:auto}
+.brand span{color:var(--sp-skyDeep)}.brand b{color:var(--sp-coralShade)}
+.ok-night .brand span{color:var(--sp-sky)}.ok-night .brand b{color:var(--sp-coral)}
+
+/* ---------- word size chips ---------- */
+.levels{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.lvl{font-weight:800;font-size:.98rem;line-height:1.1;padding:5px 2px 4px;border-radius:18px;border:3px solid var(--rim);background:var(--ok-card);color:var(--ok-text);
+  box-shadow:0 4px 0 var(--sp-ink);display:flex;flex-direction:column;align-items:center;gap:3px;min-height:48px;transition:transform 80ms ease-out,box-shadow 80ms ease-out}
+.lvl:active{transform:translateY(3px);box-shadow:0 1px 0 var(--sp-ink)}
+.lvl[aria-pressed="true"]{background:var(--sp-sky);color:var(--sp-ink);border-color:var(--sp-ink)}
+.lvl .pips{display:flex;gap:3px;height:16px;align-items:center}
+.lvl .pips i{width:11px;height:11px;box-sizing:border-box;border-radius:3px;border:2px solid var(--sp-ink);background:var(--sp-spark)}
+.lvl .pips svg{width:20px;height:20px}
+.lvl span,.tool span{display:block;max-width:100%;white-space:nowrap;overflow:hidden}   /* long words shrink to fit (fitLabels) */
 .tool span{width:0;min-width:100%}   /* the label never widens the play column; it shrinks instead */
-.ttl{min-width:0;display:flex;flex-direction:column;gap:2px}
-.practise{margin:0;font:700 clamp(.8rem,3.6vw,.95rem)/1.2 var(--body);color:var(--deep)}
-.lvl[aria-pressed="true"]{background:var(--sea);color:#fff;border-color:var(--sun);box-shadow:0 0 0 3px rgba(255,210,63,.4)}
-.scene{position:relative;border-radius:22px;overflow:hidden;box-shadow:0 8px 0 rgba(6,58,92,.25),0 0 0 4px #fff;background:var(--sky)}
-canvas{display:block;width:100%;height:auto;aspect-ratio:5/3}
+
+/* ---------- the sea scene ---------- */
+.scene{position:relative;border-radius:26px;overflow:hidden;border:3px solid var(--sp-ink);box-shadow:0 7px 0 var(--sp-ink);aspect-ratio:5/3;background:var(--sp-skyTint)}
+.ok-night .scene{border-color:color-mix(in srgb,var(--sp-cream) 40%,var(--sp-ink));box-shadow:0 7px 0 var(--sp-ink)}
+.scene canvas{position:absolute;inset:0;display:block;width:100%;height:100%}
+
+/* ---------- the word ---------- */
 .word{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;padding:2px 0}
-.slot{width:clamp(34px,10.5vw,52px);height:clamp(44px,13vw,62px);border-radius:12px;background:#fff;border-bottom:5px solid var(--sea);
-  display:grid;place-items:center;font:700 clamp(1.7rem,8.5vw,2.6rem)/1 var(--body);color:var(--ink);box-shadow:0 3px 0 rgba(6,58,92,.12)}
-.slot.pop{animation:pop .4s ease-out;background:#e8ffe9;border-color:var(--good)}
-.slot.miss{color:var(--bad)}
-@keyframes pop{40%{transform:translateY(-10px) scale(1.15)}}
-.keys{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
-.key{aspect-ratio:1/1.1;border-radius:14px;border:0;background:#fff;color:var(--ink);cursor:pointer;font:700 clamp(1.4rem,6.6vw,2rem)/1 var(--body);
-  box-shadow:0 4px 0 #9cc7de;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0;gap:0;position:relative}
-.key small{font-size:.55em;color:var(--muted);font-weight:400;line-height:1}
-.key:active:not(:disabled){transform:translateY(3px);box-shadow:0 1px 0 #9cc7de}
-.key.good{background:var(--good);color:#fff;box-shadow:0 4px 0 #15803d}
-.key.good small{color:#dcfce7}
-.key.bad{background:#fde2e2;color:#f3a3a3;box-shadow:none}
-.key.bad::after{content:"✕";position:absolute;font-size:1.4em;color:rgba(239,68,68,.55)}
+.slot{width:clamp(34px,10.5vw,52px);height:clamp(44px,13vw,62px);box-sizing:border-box;border-radius:14px;background:var(--ok-card);border:3px solid var(--rim);box-shadow:0 4px 0 var(--sp-ink);
+  display:grid;place-items:center;font:700 clamp(1.7rem,8.5vw,2.6rem)/1 var(--letters);color:var(--ok-text)}
+.slot:empty{background:var(--ok-bg2);border-style:dashed;box-shadow:none}
+.slot.pop{background:var(--sp-mintTint);border-color:var(--sp-ink);color:var(--sp-ink);animation:sp-pop .4s ease-out}
+.slot.miss{background:var(--sp-coralTint);color:var(--sp-coralShade);border-style:solid}
+@keyframes sp-pop{40%{transform:translateY(-10px) scale(1.15)}}
+
+/* ---------- the play panel: the word, keys and tools sit on one calm card (the busy beach stays behind it) ---------- */
+#play{background:color-mix(in srgb,var(--ok-bg2) 92%,transparent);border:3px solid var(--rim);border-radius:26px;box-shadow:0 6px 0 var(--sp-ink);padding:10px 10px 12px;box-sizing:border-box;
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+
+/* ---------- ABC keys ---------- */
+.keys{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px 5px}
+.key{position:relative;aspect-ratio:1/1;border-radius:14px;border:2.5px solid var(--sp-ink);background:var(--sp-cream);color:var(--sp-ink);
+  font:700 clamp(1.4rem,6.6vw,2rem)/1 var(--letters);box-shadow:0 4px 0 var(--sp-ink);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0;gap:0;
+  transition:transform 80ms ease-out,box-shadow 80ms ease-out}
+.key small{font-size:.55em;color:var(--sp-stoneShade);font-weight:400;line-height:1}
+.key:active:not(:disabled){transform:translateY(3px);box-shadow:0 1px 0 var(--sp-ink)}
+.key.good{background:var(--sp-mint)}
+.key.good small{color:var(--sp-ink)}
+.key.bad{background:var(--sp-stoneTint);color:color-mix(in srgb,var(--sp-ink) 35%,var(--sp-stoneTint));border-color:color-mix(in srgb,var(--sp-ink) 35%,var(--sp-stoneTint));box-shadow:none}
+.key.bad small{color:inherit}
+.key .mk{position:absolute;top:-7px;inset-inline-end:-6px;width:20px;height:20px;border-radius:50%;border:2px solid var(--sp-ink);display:grid;place-items:center;background:var(--sp-cream);color:var(--sp-ink)}
+.key .mk svg{width:13px;height:13px;stroke-width:3.4}
+.key.bad .mk{background:var(--sp-coral);border-radius:5px;transform:rotate(45deg)}.key.bad .mk svg{transform:rotate(-45deg)}
 .key:disabled{cursor:default}
+.ok-night .key{border-color:var(--sp-ink)}
+.ok-night .key.bad{background:var(--ok-icon-card);color:var(--sp-stoneShade);border-color:var(--ok-line)}
+
+/* ---------- tools ---------- */
 .tools{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
-.tool{font:700 1rem/1.1 var(--display);border:0;border-radius:16px;padding:8px 4px;cursor:pointer;color:#fff;display:flex;flex-direction:column;align-items:center;gap:2px}
-.tool b{font-size:1.8rem;line-height:1}
-.tool.hear{background:#8b5cf6;box-shadow:0 4px 0 #5b21b6}
-.tool.hint{background:#f59e0b;box-shadow:0 4px 0 #b45309}
-.tool.next{background:var(--coral);box-shadow:0 4px 0 #c2410c}
-.tool:disabled{opacity:.4;cursor:default}
-.tool:active:not(:disabled){transform:translateY(3px);box-shadow:none}
-.key:focus-visible,.tool:focus-visible,.lvl:focus-visible,input:focus-visible,.btn:focus-visible{outline:4px solid var(--sun);outline-offset:2px}
-.secret{background:#fff;border-radius:20px;padding:14px;display:flex;flex-direction:column;gap:10px;box-shadow:0 6px 0 rgba(6,58,92,.15)}
-.secret p{margin:0;font-size:1.1rem}
-.secret input{font:700 1.6rem var(--body);padding:8px 12px;border-radius:12px;border:3px solid #9cc7de;color:var(--ink);text-transform:uppercase;letter-spacing:.08em;width:100%;min-width:0}
-.btn{font:700 1.25rem var(--display);padding:10px;border-radius:14px;border:0;background:var(--coral);color:#fff;box-shadow:0 4px 0 #c2410c;cursor:pointer}
-.err{color:var(--bad);min-height:1.2em}
-@media (prefers-reduced-motion:reduce){.slot.pop{animation:none}}
-/* Landscape phones: the sea on the left, the word and the letter keys on the right, so nothing needs scrolling. */
-@media (min-aspect-ratio:3/2) and (max-height:520px){
-  body{padding-block:6px}
-  body>.app{max-width:900px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);grid-template-areas:"top play" "levels play" "scene play";grid-template-rows:auto auto 1fr;column-gap:14px;row-gap:6px;align-items:start}
-  body>.app>.top{grid-area:top} body>.app>.levels{grid-area:levels} body>.app>.scene{grid-area:scene}
-  #play,#secret{grid-area:play;align-self:center;width:100%}
-  #play{gap:6px!important}
-  .lvl{padding:3px 2px;flex-direction:row;justify-content:center;gap:4px} .lvl b{font-size:1.2rem}
-  .slot{height:44px;width:clamp(30px,5vw,44px);font-size:1.7rem}
-  .key{aspect-ratio:auto;height:clamp(44px,11.5vh,54px);font-size:1.45rem}
-  .tool{flex-direction:row;justify-content:center;gap:6px;padding:4px;min-height:44px} .tool b{font-size:1.3rem;flex:none}
-  .tool span{width:auto;min-width:0;flex:0 1 auto}
-  .lvl{min-height:44px}
+.tool{font-weight:800;font-size:1rem;line-height:1.1;border:2.5px solid var(--sp-ink);border-radius:18px;padding:7px 4px;color:var(--sp-ink);display:flex;flex-direction:column;align-items:center;gap:3px;
+  box-shadow:0 4px 0 var(--press);transition:transform 80ms ease-out,box-shadow 80ms ease-out;min-height:48px}
+.tool svg{width:30px;height:30px;flex:none}
+.tool.hear{background:var(--sp-skyLight);--press:var(--sp-ink)}
+.tool.hint{background:var(--sp-grapeLight);--press:var(--sp-ink)}
+.tool.next{background:var(--sp-spark);--press:var(--sp-sparkShade)}
+.tool:disabled{opacity:.45;cursor:default}
+.tool:active:not(:disabled){transform:translateY(3px);box-shadow:0 1px 0 var(--press)}
+
+/* ---------- cards: results and the secret word ---------- */
+.card{background:var(--ok-card);color:var(--ok-text);border:3px solid var(--rim);border-radius:26px;box-shadow:0 7px 0 var(--sp-ink);padding:16px;
+  display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;animation:sp-in 320ms cubic-bezier(.34,1.56,.64,1)}
+@keyframes sp-in{0%{transform:scale(.7);opacity:0}70%{transform:scale(1.03);opacity:1}100%{transform:none}}
+.res .top{display:flex;align-items:center;justify-content:center;gap:14px;min-width:0}
+.res .pic{flex:none;display:grid;place-items:center;width:92px;height:92px;border-radius:22px;background:var(--ok-bg2);border:2.5px solid var(--rim);font-size:58px;line-height:1}
+.res .pic canvas{display:block;max-width:80px;max-height:80px;width:auto;height:auto}
+.res h2{margin:0;font-weight:800;font-size:clamp(1.3rem,5.4vw,1.8rem);line-height:1.15;text-wrap:balance}
+.res .tiles{gap:6px;flex-wrap:nowrap;min-width:0}
+.res .tiles .slot{width:clamp(32px,10vw,48px);height:clamp(38px,11.5vw,56px);font-size:clamp(1.4rem,7.4vw,2.3rem);border-radius:12px;box-shadow:0 3px 0 var(--sp-ink);flex:0 1 auto;min-width:0}
+.res .tiles.long{gap:4px}.res .tiles.long .slot{width:clamp(24px,7.4vw,36px);height:clamp(34px,10vw,46px);font-size:clamp(1.15rem,5.6vw,1.8rem);border-radius:10px;border-width:2.5px}
+.res .tiles .slot.got{background:var(--sp-mintTint);color:var(--sp-ink);border-color:var(--sp-ink)}
+.res .tiles .slot.miss{background:var(--sp-coralTint);color:var(--sp-coralShade);border-color:var(--sp-coralShade)}
+.res .top{flex-wrap:wrap}
+.res .msg{margin:0;font-weight:650;font-size:1.05rem;line-height:1.35;max-width:32ch;text-wrap:pretty}
+.res .ok-sparks .ok-slot{width:clamp(44px,12vw,58px);height:clamp(44px,12vw,58px)}
+.ok-night .res .ok-sparks .ok-on{--ok-fill:var(--sp-spark)}   /* the kit's night rule outweighs its own lit spark */
+.res .pic svg{width:56px;height:56px;color:var(--ok-text)}
+.res .won{display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:1.05rem;background:var(--ok-bg2);border:2px solid var(--rim);border-radius:999px;padding:3px 12px 3px 6px}
+.res .won svg{width:24px;height:24px}
+.res .row{display:flex;gap:10px;justify-content:center;width:100%}
+.res .row .ok-btn{flex:1 1 auto;min-width:0;max-width:280px;white-space:nowrap;padding:0 14px}
+.res .row .ok-big{flex-grow:1.6;font-size:1.25em}
+.res.lose .top .pic{background:var(--sp-coralTint)}
+.secret{align-items:stretch;text-align:start}
+.secret p{margin:0;font-size:1.1rem;line-height:1.35;font-weight:600}
+.secret input{font:700 1.6rem var(--letters);padding:8px 12px;border-radius:14px;border:3px solid var(--rim);background:var(--ok-bg2);color:var(--ok-text);text-transform:uppercase;letter-spacing:.08em;width:100%;min-width:0;box-sizing:border-box}
+.secret input:focus-visible{outline:3px solid var(--ok-focus);outline-offset:3px}
+.err{color:var(--sp-coralShade);min-height:1.2em;font-weight:700}
+.ok-night .err{color:var(--sp-coral)}
+.secret .ok-btn{width:100%}
+
+.ok-rm .slot.pop,.ok-rm .card{animation:none}
+
+/* Wider than tall (desktop, tablets, landscape phones): the name and the sea on the left (the sea as big as the
+   screen allows), the word sizes, word and keys on the right, so nothing needs scrolling. */
+@media (min-aspect-ratio:5/4){
+  .app{max-width:1320px;display:grid;grid-template-columns:minmax(0,1.62fr) minmax(0,1fr);grid-template-areas:"brand levels" "scene side";grid-template-rows:auto auto;
+    column-gap:22px;row-gap:12px;align-items:start;min-height:100%;align-content:center;padding-top:calc(70px + env(safe-area-inset-top))}
+  .brand{grid-area:brand} .levels{grid-area:levels;align-self:end}
+  .scene{grid-area:scene;width:min(100%,calc((100vh - 190px) * 5 / 3));justify-self:center}
+  #play,#secret,#result{grid-area:side;align-self:start;width:100%}
+  .keys{gap:7px 6px}
+  .key{aspect-ratio:auto;height:clamp(44px,8.2vh,60px);font-size:clamp(1.4rem,4.4vh,2rem)}
+  .slot{width:clamp(34px,4vw,52px);height:clamp(44px,8.4vh,62px);font-size:clamp(1.7rem,5.4vh,2.5rem)}
+  .lvl{flex-direction:row;justify-content:center;gap:6px;min-height:46px;padding:4px 4px}
+  .lvl .pips{gap:2px}.lvl .pips i{width:8px;height:11px;border-width:1.5px;border-radius:2px}
 }
+/* Short landscape screens (phones on their side). */
+@media (min-aspect-ratio:5/4) and (max-height:520px){
+  .app{padding-top:calc(64px + env(safe-area-inset-top));padding-bottom:6px;row-gap:6px;column-gap:14px;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr)}
+  .brand{font-size:1.15rem;padding:4px 14px 5px;border-width:2px;box-shadow:0 3px 0 var(--sp-ink)}
+  .lvl{padding:2px;gap:5px;font-size:.88rem;min-height:36px} .lvl .pips:not([data-icon]){display:none}   /* short screens: the label alone */
+  .scene{width:min(100%,calc((100vh - 122px - env(safe-area-inset-top)) * 5 / 3))}
+  #play{gap:5px!important;padding:5px 6px 7px;border-radius:18px} .key{flex-direction:row;align-items:baseline;gap:2px} .key small{font-size:.7em}   /* the small letter sits beside the big one */
+  .keys{gap:4px}
+  .key{height:clamp(28px,7.6vh,40px);font-size:1.1rem;line-height:.92;border-radius:10px}
+  .slot{height:32px;width:clamp(26px,4vw,36px);font-size:1.3rem;border-radius:9px;border-width:2.5px}
+  .tool{flex-direction:row;justify-content:center;gap:6px;padding:2px;min-height:36px} .tool svg{width:22px;height:22px}
+  .tool span{width:auto;min-width:0;flex:0 1 auto}
+  .res .pic{width:70px;height:70px;font-size:44px} .res .pic canvas{max-width:60px;max-height:60px}
+  .res .tiles .slot{height:40px;width:32px;font-size:1.5rem}
+}
+@media (max-width:600px){.ok-hud .ok-btn.ok-sound{display:inline-flex}}
+@media (max-width:360px){.keys{gap:5px}.tool svg{width:26px;height:26px}}
 </style>
 
-<div class="app">
-  <div class="top"><div class="ttl"><h1 dir="ltr">Shark <span>Plank</span></h1><p class="practise" id="practise" data-i18n="practise" hidden></p></div><div class="stars" id="stars" data-i18n-aria="wordsWon" aria-label="Words won">⭐ 0</div></div>
+<div class="sp scroller offstage" id="game">
+<div class="app" id="app">
+  <h2 class="brand" dir="ltr"><span>Shark</span> <b>Plank</b></h2>
   <div class="levels" role="group" data-i18n-aria="wordSize" aria-label="Word size">
-    <button class="lvl" data-l="easy" aria-pressed="true" data-i18n-aria="lvlEasyA"><b>🐣</b><span dir="ltr">3–4</span></button>
-    <button class="lvl" data-l="mid" aria-pressed="false" data-i18n-aria="lvlMidA"><b>🐥</b><span dir="ltr">5–6</span></button>
-    <button class="lvl" data-l="hard" aria-pressed="false" data-i18n-aria="lvlHardA"><b>🦅</b><span data-i18n="lvlHard">Big</span></button>
-    <button class="lvl" data-l="two" aria-pressed="false" data-i18n-aria="lvlTwoA"><b>👫</b><span data-i18n="lvlTwo">2 play</span></button>
+    <button class="lvl" data-l="easy" aria-pressed="true" data-i18n-aria="lvlEasyA"><span class="pips" aria-hidden="true"><i></i><i></i><i></i></span><span dir="ltr">3–4</span></button>
+    <button class="lvl" data-l="mid" aria-pressed="false" data-i18n-aria="lvlMidA"><span class="pips" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span dir="ltr">5–6</span></button>
+    <button class="lvl" data-l="hard" aria-pressed="false" data-i18n-aria="lvlHardA"><span class="pips" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span data-i18n="lvlHard">Big</span></button>
+    <button class="lvl" data-l="two" aria-pressed="false" data-i18n-aria="lvlTwoA"><span class="pips" aria-hidden="true" data-icon="user"></span><span data-i18n="lvlTwo">2 play</span></button>
   </div>
 
-  <div class="scene" dir="ltr"><canvas id="cv" width="1000" height="600" data-i18n-aria="scene" aria-label="A kid on a pirate plank with a shark in the water"></canvas></div>
+  <div class="scene" dir="ltr"><canvas id="cv" role="img" data-i18n-aria="scene" aria-label="A kid on a pirate plank with a shark in the water"></canvas></div>
 
-  <section id="play" class="app" style="gap:10px">
+  <section id="play" style="display:flex;flex-direction:column;gap:10px">
     <div class="word" id="word" aria-live="polite" dir="ltr"></div>
     <div class="keys" id="keys" dir="ltr"></div>
     <div class="tools">
-      <button class="tool hear" id="hear"><b>🔊</b><span data-i18n="hear">Hear it</span></button>
-      <button class="tool hint" id="hint"><b>💡</b><span data-i18n="hint">Help me</span></button>
-      <button class="tool next" id="next"><b id="nextArrow">➡️</b><span data-i18n="next">New word</span></button>
+      <button class="tool hear" id="hear" data-icon="speak"><span data-i18n="hear">Hear it</span></button>
+      <button class="tool hint" id="hint" data-icon="hint"><span data-i18n="hint">Help me</span></button>
+      <button class="tool next" id="next" data-icon="next"><span data-i18n="next">New word</span></button>
     </div>
   </section>
 
-  <section class="secret" id="secret" hidden>
+  <section class="card res" id="result" hidden aria-live="polite">
+    <div class="top"><div class="pic" id="resPic" aria-hidden="true"></div><div class="word tiles" id="resWord" dir="ltr"></div></div>
+    <h2 id="resH"></h2>
+    <div class="ok-sparks" id="resSparks" role="img"></div>
+    <div class="won" id="resWon"></div>
+    <div class="row" id="resBtns"></div>
+  </section>
+
+  <section class="card secret" id="secret" hidden>
     <p><b data-i18n="secretWho">Grown-up or Player 1:</b> <span data-i18n="secretMsg">type a secret word. Don't let the other player peek!</span></p>
     <input id="secretIn" type="password" autocomplete="off" maxlength="14" dir="ltr" placeholder="e.g. Goal" data-i18n-ph="secretPh" data-i18n-aria="secretLabel" aria-label="Secret word">
     <div class="err" id="err" role="alert"></div>
-    <button class="btn" id="startSecret" data-i18n="startSecret">Hide it and pass the phone 📱</button>
+    <button class="ok-btn ok-hot ok-big" id="startSecret" data-i18n="startSecret">Hide it and pass the phone 📱</button>
   </section>
 </div>
+</div>
 
+<script src="/vendor/oomba-kit/1.1.0/oomba-kit.js" integrity="sha384-GCejMN1YYamlsZNEJw6SRznGmZC2i6tppYwkLt8cv2gI3YTTsZq6l8eyUQuAM8qX" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.0/packs/art-animals.js" integrity="sha384-0kgnnCmovTaNwWnsPFryp1c8kgX7ji/jku0tdAsfRwfiaWP9usy3eBLuIdBsh8jE" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.0/packs/art-school.js" integrity="sha384-tjWzckG1fXZNGAIROedz8rciqX12aec8Bw77p9Pn81hGGnR/2i9HS7cM6023xw0P" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.0/packs/art-props.js" integrity="sha384-/RtKQ/ov2WG1EoCt4pJ98rHY07jOZjZ+lia901K+1BfS49MydEROuw7UaInBPHle" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.0/packs/dress.js" integrity="sha384-ZCFgY98YAWY7Tcy+GfJLalmnJukKdzbVpg6j4ZljXuJSYgYzkWSWMPihVW/u8CqH" crossorigin="anonymous"></script>
 <script>
 (function(){
 const $=id=>document.getElementById(id);
@@ -123,63 +220,63 @@ const I18N={
   scene:'A kid on a pirate plank with a shark in the water',hear:'Hear it',hint:'Help me',next:'New word',
   secretWho:'Grown-up or Player 1:',secretMsg:"type a secret word. Don't let the other player peek!",secretPh:'e.g. Goal',secretLabel:'Secret word',startSecret:'Hide it and pass the phone 📱',
   errShort:'Type a word with 2 or more letters.',errAZ:'Use the letters A to Z.',letter:'Letter {l}',blank:'blank',practise:'Practice English words! 🔤',
-  sNoHelp:'No more help this time!',sYes:'{l}! Yes!',sNo:'No {l}',sWin:'{w}! You did it! Great job!',sLose:'Oh no! The word was {w}.',chomp:'CHOMP!',burp:'BURP!',win:'YOU DID IT!'},
+  sNoHelp:'No more help this time!',sYes:'{l}! Yes!',sNo:'No {l}',sWin:'{w}! You did it! Great job!',sLose:'Oh no! The word was {w}.',chomp:'CHOMP!',burp:'BURP!',win:'YOU DID IT!',tag:'Guess the word. Stay on the plank!'},
  'en-GB':{practise:'Practise English words! 🔤'},
  pt:{wordsWon:'Palavras acertadas',wordSize:'Tamanho da palavra',lvlEasyA:'Palavras curtas: 3 ou 4 letras',lvlMidA:'Palavras médias: 5 ou 6 letras',lvlHard:'Longas',lvlHardA:'Palavras longas',lvlTwo:'Em dupla',lvlTwoA:'Dois jogadores: um esconde uma palavra e o outro adivinha',
   scene:'Uma criança na prancha de um navio pirata, com um tubarão na água',hear:'Ouvir',hint:'Me ajuda',next:'Nova palavra',
   secretWho:'Adulto ou Jogador 1:',secretMsg:'digite uma palavra secreta. Não deixe o outro jogador espiar!',secretPh:'ex.: cat',secretLabel:'Palavra secreta',startSecret:'Esconda e passe o celular 📱',
   errShort:'Digite uma palavra com 2 letras ou mais.',errAZ:'Use as letras de A a Z.',letter:'Letra {l}',blank:'vazio',practise:'Pratique palavras em inglês! 🔤',
-  sNoHelp:'Não tem mais ajuda desta vez!',sYes:'{l}! Isso!',sNo:'Não tem {l}',sWin:'{w}! Você conseguiu! Muito bem!',sLose:'Ah, não! A palavra era {w}.',chomp:'NHAC!',burp:'BURP!',win:'CONSEGUIU!'},
+  sNoHelp:'Não tem mais ajuda desta vez!',sYes:'{l}! Isso!',sNo:'Não tem {l}',sWin:'{w}! Você conseguiu! Muito bem!',sLose:'Ah, não! A palavra era {w}.',chomp:'NHAC!',burp:'BURP!',win:'CONSEGUIU!',tag:'Adivinhe a palavra. Fique na prancha!'},
  fr:{wordsWon:'Mots trouvés',wordSize:'Taille du mot',lvlEasyA:'Mots courts : 3 ou 4 lettres',lvlMidA:'Mots moyens : 5 ou 6 lettres',lvlHard:'Longs',lvlHardA:'Mots longs',lvlTwo:'À deux',lvlTwoA:'À deux : l’un cache un mot, l’autre devine',
   scene:'Un enfant sur la planche d’un bateau pirate, avec un requin dans l’eau',hear:'Écouter',hint:'Aide-moi',next:'Nouveau mot',
   secretWho:'Adulte ou Joueur 1 :',secretMsg:'écris un mot secret. L’autre joueur ne doit pas regarder !',secretPh:'ex. : cat',secretLabel:'Mot secret',startSecret:'Cache-le et passe le téléphone 📱',
   errShort:'Écris un mot d’au moins 2 lettres.',errAZ:'Utilise les lettres de A à Z.',letter:'Lettre {l}',blank:'vide',practise:'Entraîne-toi avec des mots anglais ! 🔤',
-  sNoHelp:'Plus d’aide cette fois !',sYes:'{l} ! Oui !',sNo:'Pas de {l}',sWin:'{w} ! Tu as réussi ! Bravo !',sLose:'Oh non ! Le mot était {w}.',chomp:'CROC !',burp:'BEURP !',win:'BRAVO !'},
+  sNoHelp:'Plus d’aide cette fois !',sYes:'{l} ! Oui !',sNo:'Pas de {l}',sWin:'{w} ! Tu as réussi ! Bravo !',sLose:'Oh non ! Le mot était {w}.',chomp:'CROC !',burp:'BEURP !',win:'BRAVO !',tag:'Devine le mot. Reste sur la planche !'},
  es:{wordsWon:'Palabras acertadas',wordSize:'Tamaño de palabra',lvlEasyA:'Palabras cortas: 3 o 4 letras',lvlMidA:'Palabras medianas: 5 o 6 letras',lvlHard:'Largas',lvlHardA:'Palabras largas',lvlTwo:'Para 2',lvlTwoA:'Dos jugadores: uno esconde una palabra y el otro adivina',
   scene:'Un niño en la tabla de un barco pirata, con un tiburón en el agua',hear:'Escuchar',hint:'Ayúdame',next:'Otra palabra',
   secretWho:'Adulto o Jugador 1:',secretMsg:'escribe una palabra secreta. ¡Que el otro jugador no mire!',secretPh:'p. ej.: cat',secretLabel:'Palabra secreta',startSecret:'Escóndela y pasa el teléfono 📱',
   errShort:'Escribe una palabra de 2 letras o más.',errAZ:'Usa las letras de la A a la Z.',letter:'Letra {l}',blank:'vacío',practise:'¡Practica palabras en inglés! 🔤',
-  sNoHelp:'¡Ya no hay más ayuda esta vez!',sYes:'¡{l}! ¡Sí!',sNo:'No hay {l}',sWin:'¡{w}! ¡Lo lograste! ¡Muy bien!',sLose:'¡Oh, no! La palabra era {w}.',chomp:'¡ÑAM!',burp:'¡BURP!',win:'¡LO LOGRASTE!'},
+  sNoHelp:'¡Ya no hay más ayuda esta vez!',sYes:'¡{l}! ¡Sí!',sNo:'No hay {l}',sWin:'¡{w}! ¡Lo lograste! ¡Muy bien!',sLose:'¡Oh, no! La palabra era {w}.',chomp:'¡ÑAM!',burp:'¡BURP!',win:'¡LO LOGRASTE!',tag:'¡Adivina la palabra y no te caigas de la tabla!'},
  de:{wordsWon:'Gelöste Wörter',wordSize:'Wortlänge',lvlEasyA:'Kurze Wörter: 3 oder 4 Buchstaben',lvlMidA:'Mittlere Wörter: 5 oder 6 Buchstaben',lvlHard:'Lang',lvlHardA:'Lange Wörter',lvlTwo:'Zu zweit',lvlTwoA:'Zu zweit: Einer versteckt ein Wort, der andere rät',
   scene:'Ein Kind auf der Planke eines Piratenschiffs, im Wasser ein Hai',hear:'Anhören',hint:'Hilf mir',next:'Neues Wort',
   secretWho:'Erwachsene oder Spieler 1:',secretMsg:'Tippe ein geheimes Wort. Der andere darf nicht gucken!',secretPh:'z. B. cat',secretLabel:'Geheimes Wort',startSecret:'Verstecken und Handy weitergeben 📱',
   errShort:'Tippe ein Wort mit mindestens 2 Buchstaben.',errAZ:'Nimm nur die Buchstaben A bis Z.',letter:'Buchstabe {l}',blank:'leer',practise:'Übe englische Wörter! 🔤',
-  sNoHelp:'Diesmal gibt es keine Hilfe mehr!',sYes:'{l}! Ja!',sNo:'Kein {l}',sWin:'{w}! Geschafft! Super gemacht!',sLose:'Oh nein! Das Wort war {w}.',chomp:'HAPS!',burp:'RÜLPS!',win:'GESCHAFFT!'},
+  sNoHelp:'Diesmal gibt es keine Hilfe mehr!',sYes:'{l}! Ja!',sNo:'Kein {l}',sWin:'{w}! Geschafft! Super gemacht!',sLose:'Oh nein! Das Wort war {w}.',chomp:'HAPS!',burp:'RÜLPS!',win:'GESCHAFFT!',tag:'Errate das Wort. Bleib auf der Planke!'},
  he:{wordsWon:'מילים שפתרתם',wordSize:'אורך המילה',lvlEasyA:'מילים קצרות: 3 או 4 אותיות',lvlMidA:'מילים בינוניות: 5 או 6 אותיות',lvlHard:'ארוכות',lvlHardA:'מילים ארוכות',lvlTwo:'בשניים',lvlTwoA:'שני שחקנים: אחד מסתיר מילה והשני מנחש',
   scene:'ילד על קרש של ספינת פיראטים, וכריש במים',hear:'הקשיבו',hint:'עזרו לי',next:'מילה חדשה',
   secretWho:'מבוגר או שחקן 1:',secretMsg:'הקלידו מילה סודית. אל תתנו לשחקן השני להציץ!',secretPh:'למשל: cat',secretLabel:'מילה סודית',startSecret:'הסתירו והעבירו את הטלפון 📱',
   errShort:'הקלידו מילה עם 2 אותיות או יותר.',errAZ:'השתמשו באותיות A עד Z.',letter:'האות {l}',blank:'ריק',practise:'מתרגלים מילים באנגלית! 🔤',
-  sNoHelp:'אין עוד עזרה הפעם!',sYes:'{l}! כן!',sNo:'אין {l}',sWin:'{w}! הצלחתם! כל הכבוד!',sLose:'אוי לא! המילה הייתה {w}.',chomp:'האם!',burp:'גרעפס!',win:'הצלחתם!'},
+  sNoHelp:'אין עוד עזרה הפעם!',sYes:'{l}! כן!',sNo:'אין {l}',sWin:'{w}! הצלחתם! כל הכבוד!',sLose:'אוי לא! המילה הייתה {w}.',chomp:'האם!',burp:'גרעפס!',win:'הצלחתם!',tag:'נחשו את המילה. הישארו על הקרש!'},
  ja:{wordsWon:'とけたことば',wordSize:'ことばのながさ',lvlEasyA:'みじかいことば：3〜4もじ',lvlMidA:'ふつうのことば：5〜6もじ',lvlHard:'ながい',lvlHardA:'ながいことば',lvlTwo:'ふたりで',lvlTwoA:'ふたりで：ひとりがことばをかくして、もうひとりがあてます',
   scene:'かいぞくせんの いたの上にいる子どもと、海にいるサメ',hear:'きく',hint:'ヒント',next:'つぎのことば',
   secretWho:'おとなか プレイヤー1：',secretMsg:'ひみつのことばを 入力してね。もうひとりは 見ちゃだめだよ！',secretPh:'れい：cat',secretLabel:'ひみつのことば',startSecret:'かくして、スマホをわたそう 📱',
   errShort:'2もじ いじょうの ことばを 入力してね。',errAZ:'A から Z の もじを つかってね。',letter:'もじ {l}',blank:'まだ わからない もじ',practise:'えいごの ことばを れんしゅうしよう！🔤',
-  sNoHelp:'こんかいは もう ヒントは ないよ！',sYes:'{l}！ あたり！',sNo:'{l} は ないよ',sWin:'{w}！ やったね！ すごいです！',sLose:'ああっ！ こたえは {w} でした。',chomp:'パクッ！',burp:'ゲップ！',win:'やったね！'},
+  sNoHelp:'こんかいは もう ヒントは ないよ！',sYes:'{l}！ あたり！',sNo:'{l} は ないよ',sWin:'{w}！ やったね！ すごいです！',sLose:'ああっ！ こたえは {w} でした。',chomp:'パクッ！',burp:'ゲップ！',win:'やったね！',tag:'ことばを あてて、いたから おちないでね！'},
  ar:{wordsWon:'الكلمات التي حللتها',wordSize:'طول الكلمة',lvlEasyA:'كلمات قصيرة: 3 أو 4 حروف',lvlMidA:'كلمات متوسطة: 5 أو 6 حروف',lvlHard:'طويلة',lvlHardA:'كلمات طويلة',lvlTwo:'لاعبان',lvlTwoA:'لاعبان: واحد يخفي كلمة والآخر يخمّنها',
   scene:'طفل على لوح سفينة قراصنة، وفي الماء سمكة قرش',hear:'استمع',hint:'ساعدني',next:'كلمة جديدة',
   secretWho:'شخص كبير أو اللاعب 1:',secretMsg:'اكتب كلمة سرية. لا تدع اللاعب الآخر ينظر!',secretPh:'مثلًا: cat',secretLabel:'الكلمة السرية',startSecret:'أخفِها ومرّر الهاتف 📱',
   errShort:'اكتب كلمة من حرفين أو أكثر.',errAZ:'استعمل الحروف من A إلى Z.',letter:'الحرف {l}',blank:'فارغ',practise:'تدرّب على كلمات إنجليزية! 🔤',
-  sNoHelp:'لا مساعدة أخرى هذه المرة!',sYes:'{l}! نعم!',sNo:'لا يوجد {l}',sWin:'{w}! لقد نجحت! أحسنت!',sLose:'أوه لا! الكلمة كانت {w}.',chomp:'هام!',burp:'بُررب!',win:'أحسنت!'},
+  sNoHelp:'لا مساعدة أخرى هذه المرة!',sYes:'{l}! نعم!',sNo:'لا يوجد {l}',sWin:'{w}! لقد نجحت! أحسنت!',sLose:'أوه لا! الكلمة كانت {w}.',chomp:'هام!',burp:'بُررب!',win:'أحسنت!',tag:'خمّن الكلمة. ابقَ على اللوح!'},
  ru:{wordsWon:'Отгаданные слова',wordSize:'Длина слова',lvlEasyA:'Короткие слова: 3 или 4 буквы',lvlMidA:'Средние слова: 5 или 6 букв',lvlHard:'Длинные',lvlHardA:'Длинные слова',lvlTwo:'Вдвоём',lvlTwoA:'Вдвоём: один прячет слово, другой угадывает',
   scene:'Ребёнок на доске пиратского корабля, а в воде акула',hear:'Слушать',hint:'Помоги',next:'Новое слово',
   secretWho:'Взрослый или Игрок 1:',secretMsg:'напиши секретное слово. Другой игрок не должен подглядывать!',secretPh:'например: cat',secretLabel:'Секретное слово',startSecret:'Спрятать и передать телефон 📱',
   errShort:'Напиши слово из 2 букв или длиннее.',errAZ:'Используй буквы от A до Z.',letter:'Буква {l}',blank:'пусто',practise:'Учим английские слова! 🔤',
-  sNoHelp:'Больше подсказок нет!',sYes:'{l}! Да!',sNo:'Нет буквы {l}',sWin:'{w}! Получилось! Молодец!',sLose:'Ой! Это было слово {w}.',chomp:'АМ!',burp:'БУРП!',win:'ПОЛУЧИЛОСЬ!'},
+  sNoHelp:'Больше подсказок нет!',sYes:'{l}! Да!',sNo:'Нет буквы {l}',sWin:'{w}! Получилось! Молодец!',sLose:'Ой! Это было слово {w}.',chomp:'АМ!',burp:'БУРП!',win:'ПОЛУЧИЛОСЬ!',tag:'Угадай слово. Не падай с доски!'},
  it:{wordsWon:'Parole indovinate',wordSize:'Lunghezza della parola',lvlEasyA:'Parole corte: 3 o 4 lettere',lvlMidA:'Parole medie: 5 o 6 lettere',lvlHard:'Lunghe',lvlHardA:'Parole lunghe',lvlTwo:'In due',lvlTwoA:'In due: uno nasconde una parola, l’altro indovina',
   scene:'Un bambino sull’asse di una nave pirata, con uno squalo nell’acqua',hear:'Ascolta',hint:'Aiutami',next:'Nuova parola',
   secretWho:'Adulto o Giocatore 1:',secretMsg:'scrivi una parola segreta. L’altro giocatore non deve sbirciare!',secretPh:'es.: cat',secretLabel:'Parola segreta',startSecret:'Nascondila e passa il telefono 📱',
   errShort:'Scrivi una parola di almeno 2 lettere.',errAZ:'Usa le lettere dalla A alla Z.',letter:'Lettera {l}',blank:'vuoto',practise:'Allenati con le parole inglesi! 🔤',
-  sNoHelp:'Niente più aiuti questa volta!',sYes:'{l}! Sì!',sNo:'Niente {l}',sWin:'{w}! Ce l’hai fatta! Grande!',sLose:'Oh no! La parola era {w}.',chomp:'GNAM!',burp:'BURP!',win:'CE L’HAI FATTA!'},
+  sNoHelp:'Niente più aiuti questa volta!',sYes:'{l}! Sì!',sNo:'Niente {l}',sWin:'{w}! Ce l’hai fatta! Grande!',sLose:'Oh no! La parola era {w}.',chomp:'GNAM!',burp:'BURP!',win:'CE L’HAI FATTA!',tag:'Indovina la parola. Resta sull’asse!'},
  'zh-Hant':{wordsWon:'猜中的單字',wordSize:'單字長度',lvlEasyA:'短單字：3 或 4 個字母',lvlMidA:'中單字：5 或 6 個字母',lvlHard:'長單字',lvlHardA:'長單字',lvlTwo:'雙人',lvlTwoA:'雙人：一個人藏單字，另一個人猜',
   scene:'海盜船木板上的小孩，水裡有一隻鯊魚',hear:'聽一聽',hint:'幫幫我',next:'換一個字',
   secretWho:'大人或玩家 1：',secretMsg:'輸入一個祕密單字，別讓另一位玩家偷看！',secretPh:'例如：cat',secretLabel:'祕密單字',startSecret:'藏好後把手機交出去 📱',
   errShort:'請輸入 2 個字母以上的單字。',errAZ:'請用 A 到 Z 的字母。',letter:'字母 {l}',blank:'空格',practise:'一起練習英文單字！🔤',
-  sNoHelp:'這次沒有提示了！',sYes:'{l}！答對了！',sNo:'沒有 {l}',sWin:'{w}！你成功了！好棒！',sLose:'哎呀！答案是 {w}。',chomp:'啊嗚！',burp:'嗝～！',win:'成功了！'},
+  sNoHelp:'這次沒有提示了！',sYes:'{l}！答對了！',sNo:'沒有 {l}',sWin:'{w}！你成功了！好棒！',sLose:'哎呀！答案是 {w}。',chomp:'啊嗚！',burp:'嗝～！',win:'成功了！',tag:'猜出單字，別掉下木板！'},
  nl:{wordsWon:'Geraden woorden',wordSize:'Woordlengte',lvlEasyA:'Korte woorden: 3 of 4 letters',lvlMidA:'Middelgrote woorden: 5 of 6 letters',lvlHard:'Lang',lvlHardA:'Lange woorden',lvlTwo:'Samen',lvlTwoA:'Met z’n tweeën: de een verstopt een woord, de ander raadt',
   scene:'Een kind op de plank van een piratenschip, met een haai in het water',hear:'Luister',hint:'Help me',next:'Nieuw woord',
   secretWho:'Volwassene of Speler 1:',secretMsg:'typ een geheim woord. De andere speler mag niet kijken!',secretPh:'bijv. cat',secretLabel:'Geheim woord',startSecret:'Verstop het en geef de telefoon door 📱',
   errShort:'Typ een woord van 2 letters of meer.',errAZ:'Gebruik de letters A tot en met Z.',letter:'Letter {l}',blank:'leeg',practise:'Oefen Engelse woorden! 🔤',
-  sNoHelp:'Deze keer geen hulp meer!',sYes:'{l}! Ja!',sNo:'Geen {l}',sWin:'{w}! Het is gelukt! Goed zo!',sLose:'Oh nee! Het woord was {w}.',chomp:'HAP!',burp:'BOER!',win:'GELUKT!'}
+  sNoHelp:'Deze keer geen hulp meer!',sYes:'{l}! Ja!',sNo:'Geen {l}',sWin:'{w}! Het is gelukt! Goed zo!',sLose:'Oh nee! Het woord was {w}.',chomp:'HAP!',burp:'BOER!',win:'GELUKT!',tag:'Raad het woord. Blijf op de plank!'}
 };
 const BASE=LANG.split('-')[0],IS_EN=BASE==='en';
 function t(key,vars){
@@ -189,18 +286,20 @@ function t(key,vars){
 }
 const NUM=new Intl.NumberFormat(BASE==='ar'?'ar-u-nu-latn':LANG);
 const fmtN=n=>NUM.format(n);
+
 function applyI18n(){
   try{document.documentElement.lang=LANG;document.documentElement.dir=DIR;}catch(e){}
   document.querySelectorAll('[data-i18n]').forEach(el=>{el.textContent=t(el.dataset.i18n);});
   document.querySelectorAll('[data-i18n-aria]').forEach(el=>el.setAttribute('aria-label',t(el.dataset.i18nAria)));
   document.querySelectorAll('[data-i18n-ph]').forEach(el=>el.setAttribute('placeholder',t(el.dataset.i18nPh)));
-  $('practise').hidden=IS_EN;            // "Practise English words!" only when the menus are in another language
-  if(DIR==='rtl')$('nextArrow').textContent='⬅️';   // "next" points the reading way
+  // kit icons in place of the old emoji: the speaker, the bulb, "next" (pointing the reading way), two players
+  document.querySelectorAll('[data-icon]').forEach(el=>{const name=el.dataset.icon==='next'&&DIR==='rtl'?'back':el.dataset.icon;
+    const n=el.dataset.icon==='user'?2:1;el.insertAdjacentHTML('afterbegin',Oomba.icon(name).repeat(n));});
   fitLabels();
 }
 /* German and Russian labels run long: shrink a label until it fits on one line (wrap only as a last resort). */
 function fitLabels(){
-  document.querySelectorAll('.lvl span,.tool span').forEach(el=>{
+  document.querySelectorAll('.lvl span:not(.pips),.tool span').forEach(el=>{
     el.style.fontSize='';el.style.whiteSpace='';if(!el.offsetParent)return;
     let fs=parseFloat(getComputedStyle(el).fontSize);
     while(el.scrollWidth>el.clientWidth+1&&fs>11){fs-=.5;el.style.fontSize=fs+'px';}
@@ -213,6 +312,27 @@ try{document.fonts&&document.fonts.ready&&document.fonts.ready.then(fitLabels);}
 const LIVES=6,ABC='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 let level='easy',word='',pic='',guessed=new Set(),miss=0,over=false,stars=0,used={};
 try{stars=+localStorage.getItem('shark-plank-stars')||0;}catch(e){}
+
+/* ---------- the kit: the beach behind everything, colours as CSS variables, the game's DOM in the kit's UI root ---------- */
+const C=(hue,step)=>Oomba.color(hue,step);
+const P=Oomba.tokens.palette,INK=C('ink'),CREAM=C('card'),D=Oomba.draw;
+const cssVars={ink:INK,cream:CREAM,mint:C('mint'),mintTint:C('mint','tint'),coral:C('coral'),coralTint:C('coral','tint'),coralShade:C('coral','shade'),
+  sky:C('sky','light'),skyDeep:C('sky','shade'),skyLight:C('sky','light'),skyTint:C('sky','tint'),grapeLight:C('grape','light'),spark:C('spark'),sparkShade:C('spark','shade'),
+  stoneTint:C('stone','tint'),stoneShade:C('stone','shade')};
+for(const k in cssVars)document.documentElement.style.setProperty('--sp-'+k,cssVars[k]);
+const STAGE=Oomba.stage({api:1,biome:'beach',size:[960,540]});
+Oomba.ui.root().appendChild($('game'));
+Oomba.input.map({pause:['Escape','pad:Start']});   // P is a letter here: only Esc and the pad's Start open the pause screen
+Oomba.scene='title';
+let REDUCED=!!Oomba.settings.reduced;
+Oomba.settings.on('change',()=>{REDUCED=!!Oomba.settings.reduced;});
+let NIGHT=Oomba.theme.mode==='dark';
+Oomba.theme.on('change',()=>{NIGHT=Oomba.theme.mode==='dark';});
+let FONTSTACK=getComputedStyle(Oomba.ui.root()).getPropertyValue('--ok-font')||'system-ui, sans-serif';
+Oomba.fonts.ready.then(()=>{FONTSTACK=getComputedStyle(Oomba.ui.root()).getPropertyValue('--ok-font')||FONTSTACK;});
+/** The kit's sounds (the speech already says each letter, so no captions for these). Every sound plays at its own
+ *  note: the voice test reads any pitch option in a speaking game as a speech pitch. */
+function sfx(name,o){try{Oomba.sfx(name,Object.assign({caption:false},o));}catch(e){/* ignore */}}
 
 /* ---------- speech ---------- */
 /* The game's words and letters are always spoken with an English (en-US) voice. Cheers and messages use the
@@ -290,40 +410,51 @@ function sayT(key,vars={},rate=RATE.talk){
 }
 
 /* ---------- UI ---------- */
-$('keys').innerHTML=ABC.split('').map(l=>`<button class="key" id="k${l}" aria-label="${t('letter',{l})}">${l}<small>${l.toLowerCase()}</small></button>`).join('');
+const CHECK=Oomba.icon('check'),CROSS=Oomba.icon('cross');
+const keyHTML=l=>`${l}<small>${l.toLowerCase()}</small>`;
+$('keys').innerHTML=ABC.split('').map(l=>`<button class="key" id="k${l}" aria-label="${t('letter',{l})}">${keyHTML(l)}</button>`).join('');
 ABC.split('').forEach(l=>$('k'+l).addEventListener('click',()=>guess(l)));
-addEventListener('keydown',e=>{if($('play').hidden||e.metaKey||e.ctrlKey||e.altKey)return;const l=e.key.toUpperCase();if(l.length===1&&ABC.includes(l))guess(l);});
+addEventListener('keydown',e=>{if(!playing||$('play').hidden||Oomba.ui.open||e.metaKey||e.ctrlKey||e.altKey)return;const l=e.key.toUpperCase();if(l.length===1&&ABC.includes(l))guess(l);});
+/** A key turns mint with a tick (a right letter) or dims with a cross (not in the word): colour is never the only clue. */
+function markKey(l,good){const k=$('k'+l);k.disabled=true;k.classList.add(good?'good':'bad');if(!k.querySelector('.mk'))k.insertAdjacentHTML('beforeend',`<span class="mk" aria-hidden="true">${good?CHECK:CROSS}</span>`);}
+/** One of the three panels under the sea: the keys ('play'), the secret word card ('secret') or the results card ('result'). */
+function showPanel(name){$('play').hidden=name!=='play';$('secret').hidden=name!=='secret';$('result').hidden=name!=='result';Oomba.scene=name;fitLabels();}
+let resultT=null;
+const cancelResult=()=>{if(resultT){resultT();resultT=null;}};
 document.querySelectorAll('.lvl').forEach(b=>b.addEventListener('click',()=>{
-  level=b.dataset.l;document.querySelectorAll('.lvl').forEach(x=>x.setAttribute('aria-pressed',x===b));
-  if(level==='two'){$('play').hidden=true;$('secret').hidden=false;$('secretIn').value='';$('err').textContent='';resetScene();word='';}
-  else{$('play').hidden=false;$('secret').hidden=true;newWord();}
+  level=b.dataset.l;document.querySelectorAll('.lvl').forEach(x=>x.setAttribute('aria-pressed',x===b));sfx('select');
+  if(level==='two'){cancelResult();showPanel('secret');$('secretIn').value='';$('err').textContent='';resetScene();word='';miss=0;over=false;syncHud();}
+  else newWord();
 }));
 $('startSecret').addEventListener('click',()=>{
-  const raw=$('secretIn').value.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase();   // é -> E
+  const raw=$('secretIn').value.normalize('NFD').replace(/[̀-ͯ]/g,'').toUpperCase();   // é -> E
   const w=raw.replace(/[^A-Z]/g,'');
-  if(/[^A-Z\P{L}]/u.test(raw)){$('err').textContent=t('errAZ');return;}   // letters the A-Z keys can't type
-  if(w.length<2){$('err').textContent=t('errShort');return;}
-  $('secret').hidden=true;$('play').hidden=false;newWord(w);
+  if(/[^A-Z\P{L}]/u.test(raw)){$('err').textContent=t('errAZ');sfx('wrong');return;}   // letters the A-Z keys can't type
+  if(w.length<2){$('err').textContent=t('errShort');sfx('wrong');return;}
+  newWord(w);
 });
-$('hear').addEventListener('click',()=>{if(word)say(word.toLowerCase(),RATE.word);});
+$('hear').addEventListener('click',hear);
+function hear(){if(word)say(word.toLowerCase(),RATE.word);}
 $('hint').addEventListener('click',()=>{
   if(over)return;const left=[...new Set(word.split(''))].filter(l=>!guessed.has(l));
   if(!left.length||miss>=LIVES-1){sayT('sNoHelp');return;}
   miss++;scene.step=miss;scene.walk=1;const l=left[Math.floor(Math.random()*left.length)];
-  guessed.add(l);$('k'+l).disabled=true;$('k'+l).classList.add('good');renderWord(l);say(l);checkWin();
+  guessed.add(l);markKey(l,true);renderWord(l);say(l);sfx('pop');syncHud();checkWin();
 });
-$('next').addEventListener('click',()=>{if(level==='two'){$('play').hidden=true;$('secret').hidden=false;$('secretIn').value='';resetScene();}else newWord();});
+$('next').addEventListener('click',next);
+function next(){cancelResult();if(level==='two'){showPanel('secret');$('secretIn').value='';resetScene();}else newWord();}
 
 function pickWord(){
   const list=W[level];used[level]=used[level]||[];if(used[level].length>=list.length)used[level]=[];
   const left=list.filter(w=>!used[level].includes(w[0]));const w=left[Math.floor(Math.random()*left.length)];used[level].push(w[0]);return w;
 }
 function newWord(custom){
+  cancelResult();
   if(custom){word=custom;pic='❓';}else{[word,pic]=pickWord();}
   guessed=new Set();miss=0;over=false;
-  ABC.split('').forEach(l=>{const k=$('k'+l);k.disabled=false;k.className='key';});
-  $('hint').disabled=false;resetScene();renderWord();
-  $('stars').textContent='⭐ '+fmtN(stars);
+  ABC.split('').forEach(l=>{const k=$('k'+l);k.disabled=false;k.className='key';k.innerHTML=keyHTML(l);});
+  $('hint').disabled=false;resetScene();renderWord();showPanel('play');syncHud();
+  if(playing)sfx('whoosh',{volume:.6});
 }
 function renderWord(popL){
   $('word').innerHTML=word.split('').map(ch=>{
@@ -333,162 +464,287 @@ function renderWord(popL){
 function guess(l){
   if(over||guessed.has(l)||scene.anim)return;
   guessed.add(l);const k=$('k'+l);k.disabled=true;
-  if(word.includes(l)){k.classList.add('good');renderWord(l);sayT('sYes',{l});scene.happy=1.2;checkWin();}
-  else{k.classList.add('bad');miss++;scene.step=miss;scene.walk=1;sayT('sNo',{l});
+  if(word.includes(l)){markKey(l,true);renderWord(l);sayT('sYes',{l});sfx('correct');scene.happy=1.2;checkWin();}
+  else{markKey(l,false);miss++;scene.step=miss;scene.walk=1;sayT('sNo',{l});sfx('wrong',{volume:.7});syncHud();
+    if(!REDUCED)Oomba.juice.shake(.35,k);
     if(miss>=LIVES){over=true;ABC.split('').forEach(x=>$('k'+x).disabled=true);$('hint').disabled=true;scene.anim='chomp';scene.at=0;}}
 }
 function checkWin(){
   if(word.split('').every(ch=>guessed.has(ch))){
     over=true;ABC.split('').forEach(x=>$('k'+x).disabled=true);$('hint').disabled=true;
-    stars++;try{localStorage.setItem('shark-plank-stars',stars);}catch(e){}$('stars').textContent='⭐ '+fmtN(stars);
+    stars++;try{localStorage.setItem('shark-plank-stars',stars);}catch(e){}syncHud();
     scene.anim='win';scene.at=0;setTimeout(()=>sayT('sWin',{w:word.toLowerCase()}),600);
+    sfx('win');resultT=Oomba.time.real.after(1500,()=>showResult(true));
   }
 }
 
-/* ---------- SCENE ---------- */
-const cv=$('cv'),c=cv.getContext('2d'),SW=1000,SH=600,SEA=380;
+/* ---------- results card: the word with its picture, sparks for few misses, and the next step ---------- */
+function showResult(won){
+  resultT=null;if(!over||!playing)return;
+  const r=$('result');r.classList.toggle('lose',!won);r.classList.toggle('is-win',won);   // a win: the scene's big banner is the heading
+  $('resWord').innerHTML=word.split('').map(ch=>`<span class="slot ${guessed.has(ch)?'got':'miss'}">${ch}</span>`).join('');   // letters the player missed are red
+  $('resWord').setAttribute('aria-label',word);$('resWord').classList.toggle('long',word.length>6);
+  const pc=$('resPic');pc.innerHTML='';const art=picCanvas(word,Math.round(80*Math.min(2,devicePixelRatio||1)));
+  if(art){const a=document.createElement('canvas');a.width=art.width;a.height=art.height;a.getContext('2d').drawImage(art,0,0);pc.appendChild(a);}else if(pic==='❓')pc.innerHTML=Oomba.icon('question');else pc.textContent=pic;
+  $('resH').textContent=won?t('win'):t('sLose',{w:word.toLowerCase()});
+  const sp=$('resSparks');sp.innerHTML='';sp.hidden=!won;sp.classList.remove('ok-lit');
+  if(won){
+    const n=miss<=1?3:miss<=3?2:1;sp.setAttribute('aria-label',Oomba.t('sparks',{n}));
+    const slots=[0,1,2].map(()=>{const s=document.createElement('span');s.className='ok-slot';s.innerHTML=Oomba.icon('spark');sp.appendChild(s);return s;});
+    slots.forEach((s,i)=>{if(i<n)Oomba.time.real.after(REDUCED?0:250+i*300,()=>{s.classList.add('ok-on');sfx('spark');if(i===n-1)sp.classList.add('ok-lit');});});
+  }
+  const wn=$('resWon');wn.innerHTML=Oomba.icon('star');wn.append(fmtN(stars));wn.setAttribute('role','img');wn.setAttribute('aria-label',t('wordsWon')+': '+fmtN(stars));
+  const row=$('resBtns');row.innerHTML='';
+  const h=Oomba.ui.button(t('hear'),{kind:'quiet',icon:'speak',onPress:hear}),nx=Oomba.ui.button(t('next'),{kind:'hot',big:true,icon:DIR==='rtl'?'back':'next',onPress:next});
+  h.id='resHear';nx.id='resNext';row.append(h,nx);
+  showPanel('result');
+  try{nx.focus({preventScroll:true});}catch(e){}
+}
+
+/* ---------- HUD (the kit's): hearts for the plank steps left, a star counter for the words won, pause ---------- */
+let hud=null,starPill=null,playing=false;
+function makeHud(){
+  hud=Oomba.ui.hud(['lives:'+LIVES,'count:star'],{onPause});
+  const pills=hud.root.querySelectorAll('.ok-hud-start .ok-pill');starPill=pills[pills.length-1];starPill.id='stars';starPill.setAttribute('role','img');
+  syncHud();
+}
+function syncHud(){
+  if(!hud)return;const left=Math.max(0,LIVES-miss);
+  if(hud.lives.value>left&&hud.lives.value-left<=2)while(hud.lives.value>left)hud.lives.lose();else if(hud.lives.value!==left)hud.lives.set(left);
+  hud.count.set(stars);starPill.setAttribute('aria-label',t('wordsWon')+': '+fmtN(stars));
+}
+function onPause(v){if(v==='restart')next();else if(v==='quit')showTitle();}
+
+/* ---------- title screen (the kit's): the explorer, the shark, Play ---------- */
+function showTitle(){
+  playing=false;cancelResult();Oomba.scene='title';if(hud){hud.root.remove();hud=null;}
+  $('game').classList.add('offstage');
+  Oomba.ui.title({title:'Shark Plank',subtitle:t('tag')+(IS_EN?'':' '+t('practise')),hero:HERO,titleHue:'sky',badge:titleBadge(),play:startPlay});
+}
+function startPlay(){
+  playing=true;$('game').classList.remove('offstage');makeHud();fitScene();
+  if(level==='two'){showPanel('secret');$('secretIn').value='';$('err').textContent='';resetScene();word='';miss=0;over=false;syncHud();}
+  else newWord();
+}
+
+/* ---------- picture clues: the kit's own art when it has the thing, else the emoji ---------- */
+const KIT_PIC={CAT:['cat'],DOG:['dog'],BUS:['bus'],CAR:['car'],BEE:['bee'],FOX:['fox'],BALL:['ball'],STAR:['shape','star'],FROG:['frog'],BEAR:['bear'],
+  GOAL:['goalpost'],TREE:['tree'],BOAT:['boat'],BOOK:['book'],APPLE:['apple'],MOUSE:['mouse'],CLOCK:['clock','3:00'],GRAPES:['grapes'],BANANA:['banana'],
+  ROCKET:['rocket'],RABBIT:['bunny'],PENCIL:['pencil'],PENGUIN:['penguin'],SNOWMAN:['snowman'],FOOTBALL:['ball']};
+const picCache=new Map();
+/** The art's canvas cut to what is drawn (the kit's animals stand small in a big square: the clue should fill its frame). */
+function trim(src){
+  const w=src.width,h=src.height;let d;try{d=src.getContext('2d').getImageData(0,0,w,h).data;}catch(e){return src;}
+  let x0=w,y0=h,x1=-1,y1=-1;
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++)if(d[(y*w+x)*4+3]>24){if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y;}
+  if(x1<0)return src;const pad=2;x0=Math.max(0,x0-pad);y0=Math.max(0,y0-pad);x1=Math.min(w-1,x1+pad);y1=Math.min(h-1,y1+pad);
+  const out=document.createElement('canvas');out.width=x1-x0+1;out.height=y1-y0+1;out.getContext('2d').drawImage(src,x0,y0,out.width,out.height,0,0,out.width,out.height);return out;
+}
+/** The kit art for the word (a canvas px tall, cut to its drawing), or null: then the emoji is the clue. */
+function picCanvas(w,px){
+  const k=KIT_PIC[w];if(!k)return null;const key=w+'|'+px;
+  if(picCache.has(key))return picCache.get(key);
+  let cv2=null;try{cv2=Oomba.art.toCanvas(k[0],px,k[1]||'');if(!cv2||!cv2.width||!cv2.height)cv2=null;else cv2=trim(cv2);}catch(e){cv2=null;}
+  picCache.set(key,cv2);return cv2;
+}
+
+/* ---------- SCENE (Oomba Ink: flat kit colours, an Ink line on every shape) ---------- */
+const cv=$('cv'),SW=1000,SH=600,SEA=380;let c=cv.getContext('2d');
+let FIT=null;
+function fitScene(){if(FIT)FIT.off();FIT=Oomba.fit(cv,{size:[SW,SH],fit:'letterbox',dprCap:2});}
+try{new ResizeObserver(()=>{if(playing)fitScene();}).observe(document.querySelector('.scene'));}catch(e){addEventListener('resize',()=>{if(playing)fitScene();});}
 const scene={step:0,shown:0,walk:0,happy:0,anim:null,at:0,kid:{x:0,y:0,gone:false},parts:[],shake:0};
 function resetScene(){Object.assign(scene,{step:0,shown:0,walk:0,happy:0,anim:null,at:0,parts:[],shake:0,splash1:0,splash2:0,burp:0,revealed:0,conf:0,drip:0});scene.kid.gone=false;}
-const PLANK_X0=200,PLANK_X1=600,PLANK_Y=300;
+const PLANK_X0=200,PLANK_X1=600,PLANK_Y=300,KID_H=168;
 const kidX=s=>PLANK_X0+50+s*((PLANK_X1-PLANK_X0-70)/LIVES);
-const clouds=[{x:120,y:70,s:1},{x:520,y:50,s:.8},{x:820,y:110,s:1.1}];
+const clouds=[{x:120,y:70,s:1},{x:520,y:50,s:.8},{x:820,y:120,s:1.1}];
+const twinkles=[[90,60],[300,40],[420,120],[650,70],[720,150],[980,40],[560,180],[180,170]];
+const hex2=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));
+const mix=(a,b,f)=>'#'+hex2(a).map((v,i)=>Math.round(v+(hex2(b)[i]-v)*f).toString(16).padStart(2,'0')).join('');
+const rgba=(h,a)=>'rgba('+hex2(h).join(',')+','+a+')';
+const SHARK=mix(P.stone[2],P.sky[3],.32),SHARK_D=mix(P.stone[3],P.sky[3],.3);
+const PAL={
+  day:{seaFar:P.sky[2],seaTop:P.sky[1],seaMid:P.sky[3],seaDeep:mix(P.sky[3],INK,.38),foam:rgba(CREAM,.75),island:P.mint[2],sand:P.peach[1],cloud:1,drop:rgba(P.sky[0],1)},
+  night:{seaFar:mix(P.sky[3],INK,.4),seaTop:mix(P.sky[2],INK,.5),seaMid:mix(P.sky[3],INK,.58),seaDeep:mix(P.sky[3],INK,.78),foam:rgba(CREAM,.35),island:mix(P.mint[3],INK,.35),sand:mix(P.peach[2],INK,.5),cloud:.35,drop:rgba(P.sky[1],1)},
+};
+let pal=PAL.day;
+/** Ink outline for the current path. */
+function ink(w){c.lineJoin='round';c.lineCap='round';c.lineWidth=w||4;c.strokeStyle=INK;c.stroke();}
 
-function wave(y,amp,len,speed,t,col,off=0){
-  c.fillStyle=col;c.beginPath();c.moveTo(0,SH);c.lineTo(0,y);
-  for(let x=0;x<=SW+20;x+=20)c.lineTo(x,y+Math.sin((x+off)/len+t*speed)*amp+Math.sin((x+off)/(len*.47)+t*speed*1.6)*amp*.35);
+function wave(y,amp,len,speed,t,col,off=0,line=0){
+  const yy=x=>y+Math.sin((x+off)/len+t*speed)*amp+Math.sin((x+off)/(len*.47)+t*speed*1.6)*amp*.35;
+  c.fillStyle=col;c.beginPath();c.moveTo(0,SH);c.lineTo(0,yy(0));
+  for(let x=0;x<=SW+20;x+=20)c.lineTo(x,yy(x));
   c.lineTo(SW,SH);c.closePath();c.fill();
+  if(line){c.beginPath();for(let x=-20;x<=SW+20;x+=20)x<0?c.moveTo(x,yy(x)):c.lineTo(x,yy(x));c.globalAlpha=line;ink(3);c.globalAlpha=1;}
 }
 function drawSky(t){
-  const g=c.createLinearGradient(0,0,0,SEA);g.addColorStop(0,'#5ec8ff');g.addColorStop(1,'#d6f3ff');c.fillStyle=g;c.fillRect(0,0,SW,SEA+40);
-  // sun
-  c.save();c.translate(860,90);c.rotate(t*.2);c.fillStyle='rgba(255,226,94,.35)';
-  for(let i=0;i<12;i++){c.rotate(Math.PI/6);c.beginPath();c.moveTo(0,-62);c.lineTo(12,-110);c.lineTo(-12,-110);c.closePath();c.fill();}
-  c.restore();
-  const sg=c.createRadialGradient(850,80,8,860,90,62);sg.addColorStop(0,'#fff6b0');sg.addColorStop(1,'#ffc928');c.fillStyle=sg;c.beginPath();c.arc(860,90,58,0,7);c.fill();
-  c.fillStyle='#7a4a00';c.beginPath();c.arc(842,82,5,0,7);c.arc(878,82,5,0,7);c.fill();c.strokeStyle='#7a4a00';c.lineWidth=4;c.beginPath();c.arc(860,96,16,.2,Math.PI-.2);c.stroke();
-  // clouds
-  for(const cl of clouds){const x=((cl.x+t*14*cl.s)%(SW+260))-130;c.fillStyle='rgba(255,255,255,.95)';c.beginPath();
-    [[0,0,34],[34,-14,40],[72,0,32],[36,10,36]].forEach(([dx,dy,r])=>{c.moveTo(x+dx*cl.s+r*cl.s,cl.y+dy*cl.s);c.arc(x+dx*cl.s,cl.y+dy*cl.s,r*cl.s,0,7);});c.fill();}
-  // far island
-  c.fillStyle='#4fb3a9';c.beginPath();c.ellipse(820,SEA+4,120,26,0,Math.PI,0);c.fill();
-  c.strokeStyle='#7a5230';c.lineWidth=7;c.beginPath();c.moveTo(830,SEA-20);c.quadraticCurveTo(838,SEA-70,826,SEA-100);c.stroke();
-  c.fillStyle='#2f9e44';[[-1],[1],[-.4],[.4]].forEach(([d])=>{c.beginPath();c.ellipse(826+d*26,SEA-102+Math.abs(d)*6,30,9,d*.6,0,7);c.fill();});
+  D.sky(c,SW,SEA+40,{mode:NIGHT?'dark':'light'});
+  if(NIGHT){
+    for(const [i,[x,y]] of twinkles.entries()){c.globalAlpha=.55+.45*Math.sin(t*2+i*1.7);D.spark(c,x,y,5+(i%3)*2,{fill:CREAM});}c.globalAlpha=1;
+    const g=c.createRadialGradient(860,90,20,860,90,150);g.addColorStop(0,rgba(CREAM,.35));g.addColorStop(1,rgba(CREAM,0));c.fillStyle=g;c.fillRect(700,0,300,260);
+    c.fillStyle=CREAM;c.beginPath();c.arc(860,90,54,0,7);c.fill();ink(5);
+    c.fillStyle=P.stone[0];[[842,76,11],[878,104,8],[872,70,6]].forEach(([x,y,r])=>{c.beginPath();c.arc(x,y,r,0,7);c.fill();});
+  }else{
+    c.save();c.translate(860,90);c.rotate(t*.2);c.fillStyle=rgba(P.spark[1],.55);
+    for(let i=0;i<12;i++){c.rotate(Math.PI/6);c.beginPath();c.moveTo(-10,-66);c.quadraticCurveTo(0,-118,10,-66);c.closePath();c.fill();}
+    c.restore();
+    c.fillStyle=P.spark[2];c.beginPath();c.arc(860,90,56,0,7);c.fill();ink(5);
+    c.fillStyle=P.spark[1];c.beginPath();c.ellipse(842,70,20,12,-.5,0,7);c.fill();
+    c.fillStyle=INK;c.beginPath();c.arc(843,86,5.5,0,7);c.arc(877,86,5.5,0,7);c.fill();
+    c.beginPath();c.arc(860,98,14,.25,Math.PI-.25);ink(4);
+    c.fillStyle=rgba(P.coral[1],.7);c.beginPath();c.arc(832,102,7,0,7);c.arc(888,102,7,0,7);c.fill();
+  }
+  // clouds (the kit's)
+  c.globalAlpha=pal.cloud;
+  for(const cl of clouds){const x=((cl.x+t*14*cl.s)%(SW+260))-130;D.sprite(c,'cloud',x,cl.y,{size:64*cl.s});}
+  c.globalAlpha=1;
+  // far island with a kit palm
+  c.fillStyle=pal.sand;c.beginPath();c.ellipse(820,SEA+6,124,30,0,Math.PI,0);c.fill();ink(4);
+  c.fillStyle=pal.island;c.beginPath();c.ellipse(820,SEA+8,92,20,0,Math.PI,0);c.fill();ink(3);
+  D.sprite(c,'tree',826,SEA-50,{size:120,state:'palm'});
 }
 function drawShip(t){
   const bob=Math.sin(t*1.4)*3;
   c.save();c.translate(0,bob);
+  // mast + sail + flag (behind the rail)
+  c.fillStyle=P.cocoa[3];c.beginPath();c.rect(60,20,14,PLANK_Y-30);c.fill();ink(4);
+  const fw=Math.sin(t*4);
+  c.fillStyle=CREAM;c.beginPath();c.moveTo(80,100);c.quadraticCurveTo(140+fw*8,160,84,230);c.closePath();c.fill();ink(4);
+  c.fillStyle=INK;c.beginPath();c.moveTo(74,30);c.quadraticCurveTo(110,30+fw*6,150,34);c.lineTo(150,90);c.quadraticCurveTo(110,94+fw*6,74,88);c.closePath();c.fill();ink(3);
+  D.spark(c,112,60+fw*2,15,{fill:CREAM});
   // hull
-  const hg=c.createLinearGradient(0,240,0,SEA+80);hg.addColorStop(0,'#a0612e');hg.addColorStop(1,'#5a3418');c.fillStyle=hg;
-  c.beginPath();c.moveTo(-20,PLANK_Y-10);c.lineTo(PLANK_X0+20,PLANK_Y-10);c.quadraticCurveTo(PLANK_X0+10,SEA+40,PLANK_X0-60,SEA+90);c.lineTo(-20,SEA+90);c.closePath();c.fill();
-  c.strokeStyle='rgba(0,0,0,.25)';c.lineWidth=3;for(let y=PLANK_Y+18;y<SEA+90;y+=26){c.beginPath();c.moveTo(-20,y);c.lineTo(PLANK_X0+10-(y-PLANK_Y)*.5,y);c.stroke();}
-  c.fillStyle='#ffd23f';c.beginPath();c.arc(70,PLANK_Y+40,14,0,7);c.fill();c.fillStyle='#7ec8ff';c.beginPath();c.arc(70,PLANK_Y+40,9,0,7);c.fill();
+  const hull=()=>{c.beginPath();c.moveTo(-20,PLANK_Y-10);c.lineTo(PLANK_X0+20,PLANK_Y-10);c.quadraticCurveTo(PLANK_X0+10,SEA+40,PLANK_X0-60,SEA+90);c.lineTo(-20,SEA+90);c.closePath();};
+  hull();c.fillStyle=P.cocoa[2];c.fill();
+  c.save();hull();c.clip();c.strokeStyle=P.cocoa[3];c.lineWidth=3;for(let y=PLANK_Y+18;y<SEA+90;y+=26){c.beginPath();c.moveTo(-20,y);c.lineTo(PLANK_X0+40,y);c.stroke();}
+  c.fillStyle=P.coral[2];c.fillRect(-20,PLANK_Y+4,PLANK_X0+60,10);c.restore();
+  hull();ink(5);
+  c.fillStyle=P.spark[2];c.beginPath();c.arc(70,PLANK_Y+44,15,0,7);c.fill();ink(3);c.fillStyle=NIGHT?P.spark[1]:P.sky[1];c.beginPath();c.arc(70,PLANK_Y+44,9,0,7);c.fill();ink(2.5);
   // rail
-  c.fillStyle='#6b3d1c';c.fillRect(-20,PLANK_Y-46,PLANK_X0+30,10);for(let x=0;x<PLANK_X0+10;x+=34)c.fillRect(x,PLANK_Y-46,7,38);
-  // mast + flag
-  c.fillStyle='#6b3d1c';c.fillRect(60,20,14,PLANK_Y-30);
-  const fw=Math.sin(t*4);c.fillStyle='#1b1b2b';c.beginPath();c.moveTo(74,30);c.quadraticCurveTo(110,30+fw*6,150,34);c.lineTo(150,90);c.quadraticCurveTo(110,94+fw*6,74,88);c.closePath();c.fill();
-  c.fillStyle='#ffd23f';starPath(112,60,16);c.fill();
-  c.fillStyle='#f4ead2';c.beginPath();c.moveTo(80,100);c.quadraticCurveTo(140+fw*8,160,84,230);c.closePath();c.fill();
+  c.fillStyle=P.cocoa[3];for(let x=0;x<PLANK_X0+10;x+=34){c.beginPath();c.rect(x,PLANK_Y-46,7,38);c.fill();ink(2.5);}
+  c.fillStyle=P.cocoa[2];c.beginPath();c.rect(-20,PLANK_Y-48,PLANK_X0+30,11);c.fill();ink(3);
   c.restore();
   return bob;
 }
-function starPath(x,y,r){c.beginPath();for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,rr=i%2?r*.45:r;c.lineTo(x+Math.cos(a)*rr,y+Math.sin(a)*rr);}c.closePath();}
 function drawPlank(t,kx,bob){
   const tipDip=Math.min(1,(kx-PLANK_X0)/(PLANK_X1-PLANK_X0))*14+Math.sin(t*6)*2*(scene.walk>0?1:0);
   c.save();c.translate(0,bob);
-  c.fillStyle='#c98a4b';c.strokeStyle='#6b3d1c';c.lineWidth=4;
-  c.beginPath();c.moveTo(PLANK_X0-10,PLANK_Y-12);c.quadraticCurveTo((PLANK_X0+PLANK_X1)/2,PLANK_Y-12+tipDip*.4,PLANK_X1,PLANK_Y-12+tipDip);
-  c.lineTo(PLANK_X1,PLANK_Y+6+tipDip);c.quadraticCurveTo((PLANK_X0+PLANK_X1)/2,PLANK_Y+6+tipDip*.4,PLANK_X0-10,PLANK_Y+6);c.closePath();c.fill();c.stroke();
-  c.strokeStyle='rgba(107,61,28,.35)';c.lineWidth=2;c.beginPath();c.moveTo(PLANK_X0+20,PLANK_Y-4);c.lineTo(PLANK_X1-30,PLANK_Y-4+tipDip*.8);c.stroke();
+  const top=PLANK_Y-12,th=26,mid=(PLANK_X0+PLANK_X1)/2;
+  const edge=()=>{c.beginPath();c.moveTo(PLANK_X0-10,top);c.quadraticCurveTo(mid,top+tipDip*.4,PLANK_X1,top+tipDip);
+    c.lineTo(PLANK_X1,top+th+tipDip);c.quadraticCurveTo(mid,top+th+tipDip*.4,PLANK_X0-10,top+th);c.closePath();};
+  edge();c.fillStyle=P.peach[2];c.fill();
+  c.save();edge();c.clip();   // the side of the board, a shade darker, and the grain
+  c.fillStyle=P.cocoa[2];c.beginPath();c.moveTo(PLANK_X0-10,top+th*.62);c.quadraticCurveTo(mid,top+th*.62+tipDip*.4,PLANK_X1,top+th*.62+tipDip);c.lineTo(PLANK_X1,top+th+tipDip+4);c.lineTo(PLANK_X0-10,top+th+4);c.closePath();c.fill();
+  c.strokeStyle=P.cocoa[2];c.lineWidth=2.5;[[.3,PLANK_X0+30,PLANK_X1-120],[.3,PLANK_X1-90,PLANK_X1-20]].forEach(([f,a,b])=>{c.beginPath();c.moveTo(a,top+th*f+tipDip*(a-PLANK_X0)/(PLANK_X1-PLANK_X0)*.8);c.lineTo(b,top+th*f+tipDip*(b-PLANK_X0)/(PLANK_X1-PLANK_X0)*.9);c.stroke();});
+  c.restore();
+  edge();ink(5);
+  c.fillStyle=INK;[PLANK_X0+18,PLANK_X0+44].forEach(x=>{c.beginPath();c.arc(x,top+th*.32,3.5,0,7);c.fill();});   // nails
   c.restore();return tipDip;
 }
+/* The explorer is the player's own avatar (the kit's Oomba.avatar(): the mascot for guests), drawn from the kit's
+   portrait art in a mood that follows the danger; the game moves, bounces, tilts and spins it. */
+/* Guests (no character of their own yet) get a kid explorer like the game always had, not the mascot. */
+const ME=Oomba.avatar(),HAS_OWN=!!(window.BRB&&BRB.user&&BRB.user.character);
+const HERO=ME&&ME.species==='oomba'&&!HAS_OWN?Oomba.char({species:'kid',skin:3,hair:{style:'curls',color:'cocoa'},outfit:{top:'tee',color:'coral'}}):ME;
+const kidCache=new Map();
+function kidSprite(mood){
+  const px=Math.max(48,Math.round(KID_H*(FIT?FIT.scale:1)*1.15)),key=mood+'|'+px;let s=kidCache.get(key);if(s)return s;
+  const full=Oomba.art.toCanvas(HERO,px,mood),w=full.width,h=full.height;let top=0,bot=h-1;
+  try{const d=full.getContext('2d').getImageData(0,0,w,h).data,row=y=>{for(let x=0;x<w;x+=2)if(d[(y*w+x)*4+3]>30)return true;return false;};
+    while(top<h-1&&!row(top))top++;while(bot>top&&!row(bot))bot--;}catch(e){/* keep the whole canvas */}
+  s={c:full,sy:top,sh:Math.max(1,bot-top+1)};kidCache.set(key,s);if(kidCache.size>16)kidCache.delete(kidCache.keys().next().value);return s;
+}
 function drawKid(x,y,t,o){
-  // o: {worry, happy, fly}
+  // o: {worry, happy, fly, walking, rot}
+  const mood=o.happy?'cheer':o.fly||o.worry>=5?'surprised':o.worry>=3?'thinking':'happy';   // cheerful until the plank gets short
+  const s=kidSprite(mood),h=KID_H,w=h*s.c.width/s.sh;
   c.save();c.translate(x,y);if(o.rot)c.rotate(o.rot);
-  const wob=o.worry>3?Math.sin(t*12)*.25:0,bounce=o.happy?Math.abs(Math.sin(t*10))*-18:0;c.translate(0,bounce);
-  c.lineCap='round';c.lineJoin='round';
-  // legs
-  const step=o.walking?Math.sin(t*14)*10:0;
-  c.strokeStyle='#2b2b3d';c.lineWidth=11;c.beginPath();c.moveTo(-8,-40);c.lineTo(-10+step,-6);c.moveTo(8,-40);c.lineTo(10-step,-6);c.stroke();
-  c.fillStyle='#ff4f5e';c.beginPath();c.ellipse(-11+step,-4,12,7,0,0,7);c.ellipse(11-step,-4,12,7,0,0,7);c.fill();
-  // shorts + shirt
-  c.fillStyle='#1d4ed8';c.beginPath();c.roundRect(-18,-56,36,22,6);c.fill();
-  c.fillStyle='#ff7a59';c.beginPath();c.roundRect(-20,-100,40,48,12);c.fill();
-  c.fillStyle='#fff';c.font='bold 22px Fredoka, sans-serif';c.textAlign='center';c.fillText('★',0,-68);
-  // arms (wobble when scared, up when happy)
-  c.strokeStyle='#f1c7a3';c.lineWidth=10;c.beginPath();
-  if(o.happy||o.fly){c.moveTo(-18,-92);c.lineTo(-34,-132);c.moveTo(18,-92);c.lineTo(34,-132);}
-  else{const a=wob;c.moveTo(-18,-92);c.lineTo(-44,-80+Math.sin(t*12)*12*(o.worry>3?1:0));c.moveTo(18,-92);c.lineTo(44,-80-Math.sin(t*12)*12*(o.worry>3?1:0));}
-  c.stroke();
-  // head
-  c.fillStyle='#f1c7a3';c.beginPath();c.arc(0,-128,26,0,7);c.fill();
-  c.fillStyle='#5a3418';c.beginPath();c.arc(0,-134,26,Math.PI*1.05,Math.PI*1.95);c.fill();c.beginPath();c.ellipse(-8,-152,16,8,-.3,0,7);c.fill();
-  // face
-  c.fillStyle='#1b1b2b';const eyeY=-128;
-  if(o.worry>=4&&!o.happy){c.beginPath();c.arc(-9,eyeY,5,0,7);c.arc(9,eyeY,5,0,7);c.fill();c.fillStyle='#fff';c.beginPath();c.arc(-8,eyeY-1,2,0,7);c.arc(10,eyeY-1,2,0,7);c.fill();
-    c.fillStyle='#7a1f1f';c.beginPath();c.ellipse(0,-112,6,7,0,0,7);c.fill();
-    c.fillStyle='rgba(120,200,255,.9)';c.beginPath();c.ellipse(22,-138+((t*40)%20),3,5,0,0,7);c.fill();}
-  else{c.beginPath();c.arc(-9,eyeY,3.5,0,7);c.arc(9,eyeY,3.5,0,7);c.fill();c.strokeStyle='#7a1f1f';c.lineWidth=3;c.beginPath();
-    if(o.worry>=2&&!o.happy)c.moveTo(-7,-112),c.lineTo(7,-112);else c.arc(0,-118,9,.2,Math.PI-.2);c.stroke();}
-  c.fillStyle='rgba(255,120,120,.35)';c.beginPath();c.arc(-16,-119,5,0,7);c.arc(16,-119,5,0,7);c.fill();
+  const bounce=o.happy?Math.abs(Math.sin(t*10))*-18:0,step=o.walking?Math.abs(Math.sin(t*14))*-7:0;c.translate(0,bounce+step);
+  if(o.worry>=5&&!o.happy&&!o.fly)c.rotate(Math.sin(t*12)*.05);
+  if(NIGHT){c.shadowColor=rgba(CREAM,.6);c.shadowBlur=10*(FIT?FIT.scale:1);}
+  c.drawImage(s.c,0,s.sy,s.c.width,s.sh,-w/2,-h,w,h);
+  c.shadowBlur=0;
+  if(o.worry>=5&&!o.happy){c.fillStyle=pal.drop;c.beginPath();c.ellipse(w*.36,-h*.82+((t*40)%20),4,6,0,0,7);c.fill();ink(2);}
   c.restore();
 }
-function drawBubble(x,y,emoji,t){
-  const by=y-230+Math.sin(t*2)*4;
-  c.fillStyle='#fff';c.strokeStyle='#0b5d8f';c.lineWidth=4;
-  c.beginPath();c.arc(x+18,y-170,7,0,7);c.fill();c.stroke();c.beginPath();c.arc(x+34,y-190,11,0,7);c.fill();c.stroke();
-  c.beginPath();c.ellipse(x+70,by,74,52,0,0,7);c.fill();c.stroke();
-  c.font='68px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillText(emoji,x+70,by+4);c.textBaseline='alphabetic';
+function drawBubble(x,y,word,emoji,t){
+  const by=y-236+Math.sin(t*2)*4;
+  c.fillStyle=CREAM;
+  c.beginPath();c.arc(x+20,y-176,7,0,7);c.fill();ink(3.5);c.beginPath();c.arc(x+36,y-196,11,0,7);c.fill();ink(3.5);
+  c.beginPath();c.ellipse(x+74,by,74,54,0,0,7);c.fill();ink(4.5);
+  const k=FIT?FIT.scale:1,art=picCanvas(word,Math.round(84*k));
+  if(art){const r=art.width/art.height,w=Math.min(110,84*r),hh=w/r;c.drawImage(art,x+74-w/2,by-hh/2+2,w,hh);}
+  else if(emoji==='❓')D.text(c,'?',x+74,by+2,{size:76,role:'magic',rim:true});   // a friend's secret word: a big kit question mark
+  else{c.font='68px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillStyle=INK;c.fillText(emoji,x+74,by+4);c.textBaseline='alphabetic';}
 }
 function drawShark(x,y,ang,mouth,s,t){
   c.save();c.translate(x,y);c.rotate(ang);c.scale(s,s);
   const tail=Math.sin(t*10)*.25;
   // tail
-  c.save();c.translate(-150,0);c.rotate(tail);c.fillStyle='#4b6b85';c.beginPath();c.moveTo(10,0);c.lineTo(-60,-60);c.quadraticCurveTo(-36,0,-56,50);c.closePath();c.fill();c.restore();
-  // body
-  const bg=c.createLinearGradient(0,-60,0,60);bg.addColorStop(0,'#6f90ab');bg.addColorStop(.55,'#56789a');bg.addColorStop(.56,'#f2f6f9');bg.addColorStop(1,'#dfe8ee');
-  c.fillStyle=bg;c.beginPath();c.moveTo(-160,0);c.quadraticCurveTo(-60,-70,80,-46);c.quadraticCurveTo(150,-34,170,-6);
-  // jaw
+  c.save();c.translate(-150,0);c.rotate(tail);c.fillStyle=SHARK_D;c.beginPath();c.moveTo(10,0);c.lineTo(-60,-60);c.quadraticCurveTo(-36,0,-56,50);c.closePath();c.fill();ink(5);c.restore();
+  // fins behind the body
+  c.fillStyle=SHARK_D;c.beginPath();c.moveTo(20,30);c.lineTo(-30,80);c.quadraticCurveTo(40,60,60,36);c.closePath();c.fill();ink(5);
+  // body: blue-grey back, cream belly, one Ink outline
   const m=mouth*42;
-  c.lineTo(110,4);c.lineTo(170,10+m);c.quadraticCurveTo(150,44+m*.6,60,48);c.quadraticCurveTo(-60,56,-160,0);c.closePath();c.fill();
-  c.strokeStyle='#2c4458';c.lineWidth=5;c.stroke();
+  const body=()=>{c.beginPath();c.moveTo(-160,0);c.quadraticCurveTo(-60,-70,80,-46);c.quadraticCurveTo(150,-34,170,-6);
+    c.lineTo(110,4);c.lineTo(170,10+m);c.quadraticCurveTo(150,44+m*.6,60,48);c.quadraticCurveTo(-60,56,-160,0);c.closePath();};
+  body();c.fillStyle=SHARK;c.fill();
+  c.save();body();c.clip();c.fillStyle=CREAM;c.beginPath();c.moveTo(-170,8);c.quadraticCurveTo(0,0,180,12);c.lineTo(180,120);c.lineTo(-170,120);c.closePath();c.fill();
+  c.fillStyle=rgba(CREAM,.35);c.beginPath();c.ellipse(-10,-36,70,10,-.08,0,7);c.fill();c.restore();
+  body();ink(6);
   // mouth inside + teeth
-  if(mouth>.05){c.fillStyle='#8b1e2d';c.beginPath();c.moveTo(108,2);c.lineTo(168,-4);c.lineTo(168,10+m);c.closePath();c.fill();
-    c.fillStyle='#fff';for(let i=0;i<4;i++){const tx=118+i*13;c.beginPath();c.moveTo(tx,-1);c.lineTo(tx+6,9);c.lineTo(tx+12,-2);c.fill();c.beginPath();c.moveTo(tx+2,6+m*(.5+i*.15));c.lineTo(tx+8,-4+m*(.5+i*.15));c.lineTo(tx+14,6+m*(.5+i*.15));c.fill();}}
-  else{c.strokeStyle='#2c4458';c.lineWidth=4;c.beginPath();c.moveTo(110,6);c.quadraticCurveTo(140,22,166,6);c.stroke();
-    c.fillStyle='#fff';[120,132,144,156].forEach(tx=>{c.beginPath();c.moveTo(tx,10);c.lineTo(tx+5,18);c.lineTo(tx+10,11);c.fill();});}
-  // fins
-  c.fillStyle='#56789a';c.strokeStyle='#2c4458';c.lineWidth=4;
-  c.beginPath();c.moveTo(-10,-50);c.lineTo(-40,-120);c.quadraticCurveTo(20,-80,40,-48);c.closePath();c.fill();c.stroke();
-  c.beginPath();c.moveTo(20,30);c.lineTo(-30,80);c.quadraticCurveTo(40,60,60,36);c.closePath();c.fill();c.stroke();
+  if(mouth>.05){c.fillStyle=P.coral[3];c.beginPath();c.moveTo(108,2);c.lineTo(168,-4);c.lineTo(168,10+m);c.closePath();c.fill();ink(3);
+    c.fillStyle=CREAM;for(let i=0;i<4;i++){const tx=118+i*13;c.beginPath();c.moveTo(tx,-1);c.lineTo(tx+6,9);c.lineTo(tx+12,-2);c.fill();c.beginPath();c.moveTo(tx+2,6+m*(.5+i*.15));c.lineTo(tx+8,-4+m*(.5+i*.15));c.lineTo(tx+14,6+m*(.5+i*.15));c.fill();}}
+  else{c.beginPath();c.moveTo(110,6);c.quadraticCurveTo(140,22,166,6);ink(4);
+    c.fillStyle=CREAM;[120,132,144,156].forEach(tx=>{c.beginPath();c.moveTo(tx,10);c.lineTo(tx+5,18);c.lineTo(tx+10,11);c.closePath();c.fill();ink(1.5);});}
+  // top fin
+  c.fillStyle=SHARK;c.beginPath();c.moveTo(-10,-50);c.lineTo(-40,-120);c.quadraticCurveTo(20,-80,40,-48);c.closePath();c.fill();ink(5);
   // gills
-  c.strokeStyle='rgba(44,68,88,.6)';c.lineWidth=3;[60,72,84].forEach(gx=>{c.beginPath();c.moveTo(gx,-18);c.quadraticCurveTo(gx-6,0,gx,16);c.stroke();});
-  // eye
-  c.fillStyle='#fff';c.beginPath();c.arc(118,-22,13,0,7);c.fill();c.fillStyle='#111';c.beginPath();c.arc(122,-22,7,0,7);c.fill();c.fillStyle='#fff';c.beginPath();c.arc(124,-25,2.5,0,7);c.fill();
-  c.strokeStyle='#2c4458';c.lineWidth=5;c.beginPath();c.moveTo(104,-40);c.lineTo(132,-34);c.stroke();
+  c.strokeStyle=rgba(INK,.55);c.lineWidth=3;c.lineCap='round';[60,72,84].forEach(gx=>{c.beginPath();c.moveTo(gx,-18);c.quadraticCurveTo(gx-6,0,gx,14);c.stroke();});
+  // eye (a kit ring eye: Cream, Ink pupil, glint) and brow
+  c.fillStyle=CREAM;c.beginPath();c.arc(118,-22,13,0,7);c.fill();ink(3);c.fillStyle=INK;c.beginPath();c.arc(122,-22,7,0,7);c.fill();c.fillStyle=CREAM;c.beginPath();c.arc(124,-25,2.5,0,7);c.fill();
+  c.beginPath();c.moveTo(104,-40);c.lineTo(132,-34);ink(5);
   c.restore();
 }
 function drawFin(x,t,dir){
   const y=SEA+8+Math.sin(t*3)*3;
-  c.fillStyle='rgba(255,255,255,.7)';c.beginPath();c.ellipse(x-dir*30,y+6,46,6,0,0,7);c.fill();
-  c.fillStyle='#56789a';c.strokeStyle='#2c4458';c.lineWidth=4;c.beginPath();c.moveTo(x-dir*28,y+4);c.lineTo(x+dir*6,y-58);c.quadraticCurveTo(x+dir*20,y-20,x+dir*30,y+4);c.closePath();c.fill();c.stroke();
+  c.fillStyle=pal.foam;c.beginPath();c.ellipse(x-dir*30,y+6,46,6,0,0,7);c.fill();
+  c.fillStyle=SHARK;c.beginPath();c.moveTo(x-dir*28,y+4);c.lineTo(x+dir*6,y-58);c.quadraticCurveTo(x+dir*20,y-20,x+dir*30,y+4);c.closePath();c.fill();ink(4);
 }
 function splash(x,y,n,big){for(let i=0;i<n;i++){const a=-Math.PI/2+(Math.random()-.5)*2.2,sp=(big?500:260)*(0.4+Math.random());scene.parts.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,r:4+Math.random()*(big?12:7),life:1+Math.random()*.6,t:0,k:'drop'});}}
-function confetti(){for(let i=0;i<90;i++)scene.parts.push({x:Math.random()*SW,y:-20-Math.random()*200,vx:(Math.random()-.5)*80,vy:120+Math.random()*160,r:6,life:3,t:0,k:'conf',col:['#ffd23f','#ff7a59','#22c55e','#8b5cf6','#3b9bff'][i%5],rot:Math.random()*6});}
-function words(txt,x,y,col,s){scene.parts.push({k:'txt',txt,x,y,col,s,life:1.4,t:0});}
+const CONF=[P.spark[2],P.coral[2],P.mint[2],P.grape[2],P.sky[2]];
+function confetti(){if(REDUCED)return;for(let i=0;i<90;i++)scene.parts.push({x:Math.random()*SW,y:-20-Math.random()*200,vx:(Math.random()-.5)*80,vy:120+Math.random()*160,r:6,life:3,t:0,k:'conf',col:CONF[i%5],rot:Math.random()*6});}
+function words(txt,x,y,role,s,life){scene.parts.push({k:'txt',txt,x,y,role,s,life:life||1.4,t:0});}
+/** A word that pops in and stays (YOU DID IT! over the sea, BURP! over the shark): t is the seconds since it appeared. */
+function sticker(txt,x,y,role,t,s){
+  const pop=REDUCED?1:t<.25?t/.25*1.15:t<.4?1.15-(t-.25)/.15*.15:1;let k=s*pop;
+  c.save();c.font='800 90px '+FONTSTACK;const tw=c.measureText(txt).width*s;const max=760;if(tw>max)k*=max/tw;const half=Math.min(tw,max)/2+20;
+  c.translate(Math.max(half,Math.min(SW-half,x)),y+(REDUCED?0:Math.sin(T*2.2)*4));c.scale(k,k);c.rotate(-.06+(REDUCED?0:Math.sin(T*1.7)*.02));
+  D.text(c,txt,0,0,{size:90,role,rim:true});c.restore();
+}
+/** The title's badge: the shark, grinning. */
+function titleBadge(){
+  const k=Math.min(2,devicePixelRatio||1),cw=Math.round(250*k),ch=Math.round(130*k),b=document.createElement('canvas');b.width=cw;b.height=ch;
+  const keep=c;c=b.getContext('2d');c.scale(k*.62,k*.62);pal=NIGHT?PAL.night:PAL.day;drawShark(212,112,-.12,.35,1,0.3);c=keep;
+  b.style.width='250px';b.style.height='130px';return b;
+}
 
 let last=performance.now(),T=0;
 function frame(now){
   requestAnimationFrame(frame);
-  const dt=Math.min(.05,(now-last)/1000);last=now;T+=dt;
+  let dt=Math.min(.05,(now-last)/1000);last=now;
+  if(!playing||!FIT)return;
+  if(Oomba.time.paused)dt=0;   // the pause screen (or a lost focus) holds the scene too
+  T+=dt;pal=NIGHT?PAL.night:PAL.day;
   scene.shown+= (scene.step-scene.shown)*Math.min(1,dt*3);
   scene.walk=Math.max(0,scene.walk-dt*1.4);scene.happy=Math.max(0,scene.happy-dt);
+  c.setTransform(FIT.scale,0,0,FIT.scale,FIT.offsetX,FIT.offsetY);
   c.save();
-  if(scene.shake>0){c.translate((Math.random()-.5)*scene.shake,(Math.random()-.5)*scene.shake);scene.shake=Math.max(0,scene.shake-dt*40);}
+  if(scene.shake>0){if(!REDUCED)c.translate((Math.random()-.5)*scene.shake,(Math.random()-.5)*scene.shake);scene.shake=Math.max(0,scene.shake-dt*40);}
   drawSky(T);
   // far sea
-  const sg=c.createLinearGradient(0,SEA,0,SH);sg.addColorStop(0,'#1aa0d8');sg.addColorStop(1,'#063a5c');c.fillStyle=sg;c.fillRect(0,SEA,SW,SH-SEA);
-  wave(SEA-4,6,60,1.4,T,'#3cc0ee',0);
+  const sg=c.createLinearGradient(0,SEA,0,SH);sg.addColorStop(0,pal.seaFar);sg.addColorStop(1,pal.seaDeep);c.fillStyle=sg;c.fillRect(-20,SEA,SW+40,SH-SEA+20);
+  wave(SEA-4,6,60,1.4,T,pal.seaTop,0,.9);
   // shark (fin circling or attack)
   let kx=kidX(scene.shown),ky=PLANK_Y-12;
   const bob=drawShip(T);
@@ -497,26 +753,33 @@ function frame(now){
   const worry=scene.step;
   if(scene.anim==='chomp'){
     scene.at+=dt;const a=scene.at;
-    // phases: 0-.7 fin rushes in, .7-1.5 leap & chomp, 1.5-2.4 splash down, 2.4-3.4 burp spit-back
-    if(a<.7){drawFin(lerp(900,kx+80,a/.7),T,-1);if(!scene.kid.gone)drawKid(kx,ky,T,{worry:6});}
-    else if(a<1.5){const k=(a-.7)/.8;const sx=lerp(kx+170,kx-10,k),sy=SEA+60-Math.sin(k*Math.PI)*330;
-      if(k<.05&&!scene.splash1){scene.splash1=1;splash(kx+150,SEA,40,true);scene.shake=10;}
-      const mouth=k<.45?k/.45:Math.max(0,1-(k-.45)/.12);
-      if(!scene.kid.gone&&k<.52){drawKid(kx,ky-(k>.35?(k-.35)*300:0),T,{worry:6,fly:k>.35});}
-      if(k>=.52&&!scene.kid.gone){scene.kid.gone=true;words(t('chomp'),Math.max(260,kx),150,'#ff4f5e',1.2);scene.shake=16;}
-      drawShark(sx,sy,-.9+k*1.7,mouth,1,T);}
-    else if(a<2.4){const k=(a-1.5)/.9;if(!scene.splash2){scene.splash2=1;splash(kx-40,SEA,70,true);scene.shake=20;}
-      if(k<.4)drawShark(kx-40,SEA+40+k*200,.9,0,1,T);}
-    else if(a<3.6){const k=(a-2.4)/1.2;
-      const sy=SEA+40-Math.sin(Math.min(1,k*1.6)*Math.PI/2)*90;drawShark(kx+40,sy,-.25,k>.45?Math.min(1,(k-.45)*5):0,1,T);
-      if(k>.5&&!scene.burp){scene.burp=1;words(t('burp'),kx+140,SEA-170,'#8b5cf6',1.2);}
-      if(k>.5){const f=Math.min(1,(k-.5)/.5);const fx=lerp(kx+200,kidX(0),f),fy=lerp(SEA-40,PLANK_Y-12,f)-Math.sin(f*Math.PI)*220;drawKid(fx,fy+bob,T,{worry:5,fly:1,rot:f*6.28});
-        if(f>=1&&!scene.drip)scene.drip=1;}}
-    else{drawFin(kx+200+Math.sin(T)*120,T,Math.cos(T)>0?1:-1);drawKid(kidX(0),PLANK_Y-12+bob,T,{worry:4});
-      if(!scene.revealed){scene.revealed=1;renderWord();sayT('sLose',{w:word.toLowerCase()});}
-      c.fillStyle='rgba(120,200,255,.8)';for(let i=0;i<3;i++){c.beginPath();c.ellipse(kidX(0)-20+i*20,PLANK_Y-140+((T*60+i*15)%60),3,6,0,0,7);c.fill();}}
+    // phases: 0-.6 the fin rushes in, .6-2.0 the leap (it hangs at the top for the CHOMP), 2.0-2.7 splash down,
+    // 2.7-3.9 the BURP and the spit-back, then the shark stays up, grinning, with the BURP over it
+    if(a<.6){drawFin(lerp(900,kx+80,a/.6),T,-1);if(!scene.kid.gone)drawKid(kx,ky,T,{worry:6});}
+    else if(a<2.0){const k=(a-.6)/1.4;
+      const up=k<.3?Math.sin(k/.3*Math.PI/2):k<.7?1+Math.sin((k-.3)*12)*.02:Math.cos((k-.7)/.3*Math.PI/2);
+      const sx=k<.3?lerp(kx+170,kx-50,k/.3):k<.7?kx-50-(k-.3)*40:lerp(kx-66,kx-110,(k-.7)/.3),sy=SEA+60-up*330;
+      if(!scene.splash1){scene.splash1=1;splash(kx+150,SEA,30,false);scene.shake=10;sfx('splash');}
+      const mouth=k<.28?k/.28:k<.4?Math.max(0,1-(k-.28)/.08):0;
+      if(!scene.kid.gone&&k<.36){drawKid(kx,ky-(k>.2?(k-.2)*700:0),T,{worry:6,fly:k>.2});}
+      if(k>=.36&&!scene.kid.gone){scene.kid.gone=true;words(t('chomp'),kx+130,262,'hazard',1,1.6);scene.shake=16;sfx('hurt');}
+      drawShark(sx,sy,k<.3?-.9+k/.3*.9:k<.7?Math.sin(T*3)*.05:(k-.7)/.3*.9,mouth,1.12,T);}
+    else if(a<2.7){const k=(a-2.0)/.7;if(!scene.splash2){scene.splash2=1;splash(kx-40,SEA,60,true);scene.shake=20;sfx('splash',{volume:.8});}
+      if(k<.5)drawShark(kx-30,SEA+20+k*240,.9,0,1.12,T);}
+    else{const k=Math.min(1,(a-2.7)/1.2);
+      const rise=Math.sin(Math.min(1,k*1.6)*Math.PI/2),settle=a>3.9?Math.min(1,(a-3.9)/.8):0;
+      const sy=SEA+40-rise*90+settle*28+Math.sin(T*2)*4*settle;
+      drawShark(kx+40,sy,-.25+settle*.1,k>.45?(a<3.9?Math.min(1,(k-.45)*5):Math.max(.18,1-settle)):0,1,T);
+      if(k>.5&&!scene.burp){scene.burp=a;sfx('pop');}
+      if(scene.burp)sticker(t('burp'),kx+170,SEA-190,'magic',a-scene.burp,.95);   // stays: the funny moment is still there on the results
+      if(a<3.9){if(k>.5){const f=Math.min(1,(k-.5)/.5);const fx=lerp(kx+200,kidX(0),f),fy=lerp(SEA-40,PLANK_Y-12,f)-Math.sin(f*Math.PI)*220;drawKid(fx,fy+bob,T,{worry:5,fly:1,rot:f*6.28});
+        if(f>=1&&!scene.drip){scene.drip=1;sfx('land');}}}
+      else{drawKid(kidX(0),PLANK_Y-12+bob,T,{worry:5});
+        if(!scene.revealed){scene.revealed=1;renderWord();sayT('sLose',{w:word.toLowerCase()});cancelResult();resultT=Oomba.time.real.after(1000,()=>showResult(false));}
+        c.fillStyle=pal.drop;for(let i=0;i<3;i++){c.beginPath();c.ellipse(kidX(0)-20+i*20,PLANK_Y-150+((T*60+i*15)%60),3,6,0,0,7);c.fill();ink(1.5);}
+        if(!REDUCED)for(let i=0;i<3;i++){const bt=(T*.8+i/3)%1;c.globalAlpha=1-bt;c.fillStyle=rgba(CREAM,.7);c.beginPath();c.arc(kx+200+Math.sin(bt*9+i)*8,sy-30-bt*90,5+i*2,0,7);c.fill();ink(2);c.globalAlpha=1;}}}   // burp bubbles
   } else if(scene.anim==='win'){
-    scene.at+=dt;if(!scene.conf){scene.conf=1;confetti();words(t('win'),SW/2,160,'#22c55e',1.1);}
+    scene.at+=dt;if(!scene.conf){scene.conf=1;confetti();}
     drawFin(kx+200+scene.at*260,T,1);
     drawKid(kx,ky,T,{happy:1});
   } else {
@@ -525,29 +788,36 @@ function frame(now){
     drawKid(kx,ky,T,{worry,happy:scene.happy>0,walking:scene.walk>0});
   }
   // near waves (cover shark bottoms)
-  wave(SEA+22,8,80,1.1,T,'rgba(11,93,143,.85)',200);
-  wave(SEA+60,10,110,.8,T,'rgba(6,58,92,.9)',500);
-  c.fillStyle='rgba(255,255,255,.5)';for(let i=0;i<14;i++){const x=(i*97+T*30)%SW,y=SEA+40+((i*53)%120);c.fillRect(x,y,18,3);}
+  wave(SEA+22,8,80,1.1,T,rgba(pal.seaMid,.9),200,.6);
+  wave(SEA+60,10,110,.8,T,rgba(pal.seaDeep,.94),500,.4);
+  c.fillStyle=pal.foam;for(let i=0;i<14;i++){const x=(i*97+T*30)%SW,y=SEA+44+((i*53)%120);c.beginPath();c.ellipse(x,y,10,2.2,0,0,7);c.fill();}
   // thought bubble (picture clue)
-  if(word&&scene.anim!=='chomp')drawBubble(kx,ky,pic,T);
+  if(word&&scene.anim!=='chomp')drawBubble(kx,ky,word,pic,T);
+  if(scene.anim==='win')sticker(t('win'),SW/2,SEA+118,'correct',scene.at,1.05);
   // particles
   scene.parts=scene.parts.filter(p=>(p.t+=dt)<p.life);
   for(const p of scene.parts){
-    if(p.k==='drop'){p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=900*dt;c.fillStyle=`rgba(220,245,255,${1-p.t/p.life})`;c.beginPath();c.arc(p.x,p.y,p.r,0,7);c.fill();}
-    else if(p.k==='conf'){p.x+=p.vx*dt;p.y+=p.vy*dt;p.rot+=dt*6;c.save();c.translate(p.x,p.y);c.rotate(p.rot);c.fillStyle=p.col;c.fillRect(-6,-9,12,18);c.restore();}
+    if(p.k==='drop'){p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=900*dt;c.globalAlpha=1-p.t/p.life;c.fillStyle=pal.drop;c.beginPath();c.arc(p.x,p.y,p.r,0,7);c.fill();if(p.r>8)ink(2);c.globalAlpha=1;}
+    else if(p.k==='conf'){p.x+=p.vx*dt;p.y+=p.vy*dt;p.rot+=dt*6;c.save();c.translate(p.x,p.y);c.rotate(p.rot);c.fillStyle=p.col;c.beginPath();c.rect(-6,-9,12,18);c.fill();ink(2);c.restore();}
     else if(p.k==='txt'){const k=p.t/p.life;let s=p.s*(k<.15?k/.15*1.2:1.2-k*.2);c.save();
-      c.font='bold 90px Fredoka, sans-serif';try{c.direction=DIR;}catch(e){}
+      c.font='800 90px '+FONTSTACK;
       const tw=c.measureText(p.txt).width*s;if(tw>900)s*=900/tw;const half=Math.min(tw,900)/2+20;   // long words (GESCHAFFT!) shrink to fit
-      c.translate(Math.max(half,Math.min(SW-half,p.x)),p.y-k*40);c.scale(s,s);c.rotate(-.08);c.textAlign='center';c.lineJoin='round';c.lineWidth=16;c.strokeStyle='#fff';c.globalAlpha=k>.75?(1-k)/.25:1;c.strokeText(p.txt,0,0);c.fillStyle=p.col;c.fillText(p.txt,0,0);c.restore();}
+      c.translate(Math.max(half,Math.min(SW-half,p.x)),p.y-k*40);c.scale(s,s);c.rotate(-.08);c.globalAlpha=k>.75?(1-k)/.25:1;
+      D.text(c,p.txt,0,0,{size:90,role:p.role,rim:true});c.restore();}
   }
-  // lives: little life-rings on the ship
-  for(let i=0;i<LIVES;i++){const x=24+i*30,y=24,used=i<scene.step;c.globalAlpha=used?.25:1;c.strokeStyle='#fff';c.lineWidth=9;c.beginPath();c.arc(x,y,10,0,7);c.stroke();
-    c.strokeStyle='#ff4f5e';c.lineWidth=9;c.setLineDash([7.8,7.8]);c.beginPath();c.arc(x,y,10,0,7);c.stroke();c.setLineDash([]);c.globalAlpha=1;}
   c.restore();
 }
 const lerp=(a,b,t)=>a+(b-a)*t;
+
+/* ---------- test hooks (the screenshot worker and the playtest call start() instead of tapping Play) ---------- */
+Oomba.test({
+  state:()=>({screen:!playing?'title':!$('result').hidden?'result':!$('secret').hidden?'secret':'play',level,word,guessed:[...guessed],misses:miss,lives:LIVES-miss,
+    over,won:!!word&&word.split('').every(ch=>guessed.has(ch)),stars,anim:scene.anim}),
+  start:()=>{const b=document.querySelector('.ok-title-screen .ok-big');if(b)b.click();else if(!playing)startPlay();},
+});
+
 applyI18n();
 requestAnimationFrame(frame);
-newWord();
+Oomba.fonts.ready.then(showTitle);
 })();
 </script>

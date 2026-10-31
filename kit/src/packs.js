@@ -12,7 +12,7 @@ import { WEAR } from './validate.js';
 import { PROP_GROUPS, PROP_VARIANTS, text } from './props.js';
 import { addBiome, defineGroundFor, BIOMES, RECIPES, DECOS } from './biomes.js';
 
-export const PACK_NAMES = ['art-animals', 'art-school', 'art-biomes', 'dress', 'style-bold'];
+export const PACK_NAMES = ['art-animals', 'art-school', 'art-biomes', 'art-biomes-2', 'art-props', 'dress', 'style-bold', 'bridge-3d'];
 
 /** kit.definePack({name, version}, define(K)): run a pack once; -> its info. */
 export function installPacks(kit) {
@@ -38,7 +38,7 @@ export function installPacks(kit) {
       art(n, def) { onAtlases(a => a.define(n, def)); },
       /** dress({recipes: {biome: {bands, fg, life}}, decos}): scene dressing (stage bands re-bake). */
       dress(o) { Object.assign(RECIPES, o.recipes); Object.assign(DECOS, o.decos); for (const s of kit.stages) s.bandKey = ''; },
-      biomes: BIOMES, kit, style: STYLE,
+      biomes: BIOMES, recipes: RECIPES, kit, style: STYLE,
       /** wear(name, {hat, body}): a wearable (hat(hx, top, rx) -> {p, draw}; body(ctx, k, {cx, top, mid, bot, w, A})). */
       wear(n, def) { WEAR_X[n] = def; if (!WEAR.includes(n)) WEAR.push(n); info.wear.push(n); },
     };

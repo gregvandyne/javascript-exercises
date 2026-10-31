@@ -8,7 +8,7 @@ import { guessHero, shownTitle } from '../../server/builder/layer.js';
 import { readConfig, configEdits } from '../../server/builder/mock.js';
 import { kitTag, kitPackTag, kitPacks } from '../../server/services/kit.js';
 import { fakeWin } from '../support/kit-fake.js';
-import { createKit } from '../../kit/src/index.js';
+import { createKit, VERSION } from '../../kit/src/index.js';
 import * as animals from '../../kit/packs/art-animals.js';
 import * as school from '../../kit/packs/art-school.js';
 import * as biomes from '../../kit/packs/art-biomes.js';
@@ -81,7 +81,7 @@ function runTemplate(key) {
   const doc = win.document, make = doc.createElement;
   doc.createElement = tag => { const e = make(tag); e.querySelector = () => make('span'); e.append = (...cs) => cs.forEach(c => e.appendChild(typeof c === 'string' ? make('#text') : c)); return e; };
   const O = createKit(win);
-  O.__pk({ name: 'art-animals', version: '1.0.0' }, animals.define); O.__pk({ name: 'art-school', version: '1.0.0' }, school.define); O.__pk({ name: 'art-biomes', version: '1.0.0' }, biomes.define); O.__pk({ name: 'dress', version: '1.0.0' }, dress.define);
+  O.__pk({ name: 'art-animals', version: VERSION }, animals.define); O.__pk({ name: 'art-school', version: VERSION }, school.define); O.__pk({ name: 'art-biomes', version: VERSION }, biomes.define); O.__pk({ name: 'dress', version: VERSION }, dress.define);
   win.Oomba = O; win.BRB = win.BRB || {};
   new Function('window', 'document', 'Oomba', 'BRB', 'innerWidth', 'innerHeight', 'addEventListener', scriptOf(loadTemplate(key)))(win, doc, O, win.BRB, 390, 700, () => {});
   const T = win.__brbTest;

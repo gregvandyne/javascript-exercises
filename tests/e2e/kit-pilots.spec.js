@@ -23,9 +23,9 @@ const tags = f => f.evaluate(() => [...document.querySelectorAll('script[src]')]
 test('Word Peek runs on the kit: pinned tags, Pip the kit owl, a round played with keys, the result card', async ({ page }) => {
   const { f, errors } = await open(page, 'word-peek');
   const t = await tags(f);
-  expect(t.map(x => x[0])).toEqual(['/vendor/oomba-kit/1.0.0/oomba-kit.js', '/vendor/oomba-kit/1.0.0/packs/art-animals.js', '/vendor/oomba-kit/1.0.0/packs/art-school.js', '/vendor/oomba-kit/1.0.0/packs/dress.js']);
+  expect(t.map(x => x[0])).toEqual(['/vendor/oomba-kit/1.1.0/oomba-kit.js', '/vendor/oomba-kit/1.1.0/packs/art-animals.js', '/vendor/oomba-kit/1.1.0/packs/art-school.js', '/vendor/oomba-kit/1.1.0/packs/dress.js']);
   for (const x of t) expect([x[1], x[2]]).toEqual([true, 'anonymous']);
-  expect(await f.evaluate(() => [Oomba.version, Oomba.packs.sort().join(','), !!document.querySelector('.ok-stage canvas'), typeof __brbTest.setTheme])).toEqual(['1.0.0', 'art-animals,art-school,dress', true, 'function']);
+  expect(await f.evaluate(() => [Oomba.version, Oomba.packs.sort().join(','), !!document.querySelector('.ok-stage canvas'), typeof __brbTest.setTheme])).toEqual(['1.1.0', 'art-animals,art-school,dress', true, 'function']);
   // first visit: the how-to card; close it with Escape, then a practice round from the home screen
   await expect(f.locator('#helpScreen')).toBeVisible();
   await page.keyboard.press('Escape');
@@ -50,7 +50,7 @@ test('Word Peek runs on the kit: pinned tags, Pip the kit owl, a round played wi
 test('Sum Racer runs on the kit: the kit title, a track, taps, the kit pause, the podium world and the results card', async ({ page }) => {
   const { f, errors } = await open(page, 'sum-racer');
   const t = await tags(f);
-  expect(t.map(x => x[0])).toEqual(['/vendor/oomba-kit/1.0.0/oomba-kit.js', '/vendor/oomba-kit/1.0.0/packs/art-animals.js', '/vendor/oomba-kit/1.0.0/packs/art-school.js', '/vendor/oomba-kit/1.0.0/packs/art-biomes.js', '/vendor/oomba-kit/1.0.0/packs/dress.js']);
+  expect(t.map(x => x[0])).toEqual(['/vendor/oomba-kit/1.1.0/oomba-kit.js', '/vendor/oomba-kit/1.1.0/packs/art-animals.js', '/vendor/oomba-kit/1.1.0/packs/art-school.js', '/vendor/oomba-kit/1.1.0/packs/art-biomes.js', '/vendor/oomba-kit/1.1.0/packs/dress.js']);
   for (const x of t) expect([x[1], x[2]]).toEqual([true, 'anonymous']);
   await expect(f.locator('.ok-title-screen #playBtn')).toBeVisible();
   await f.locator('#playBtn').click();

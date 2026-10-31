@@ -4,7 +4,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { fakeWin } from '../support/kit-fake.js';
-import { createKit } from '../../kit/src/index.js';
+import { createKit, VERSION } from '../../kit/src/index.js';
 import { grid, generate, LEGEND, TILE } from '../../kit/src/level.js';
 import * as animals from '../../kit/packs/art-animals.js';
 import * as school from '../../kit/packs/art-school.js';
@@ -188,7 +188,7 @@ test('walkers turn at walls and ledges; stompable enemies can be bounced on', ()
 test('art packs: Oomba.pack reports what a pack added; species, props and biomes become usable; wrong versions are refused', () => {
   const win = fakeWin(); const O = createKit(win), kit = O.debug.kit;
   assert.equal(O.pack('art-animals'), null); assert.ok(win.__warns.some(w => /not loaded/.test(w)));
-  O.__pk({ name: 'art-animals', version: '1.0.0' }, animals.define); O.__pk({ name: 'art-school', version: '1.0.0' }, school.define); O.__pk({ name: 'art-biomes', version: '1.0.0' }, biomes.define); O.__pk({ name: 'dress', version: '1.0.0' }, dress.define);
+  O.__pk({ name: 'art-animals', version: VERSION }, animals.define); O.__pk({ name: 'art-school', version: VERSION }, school.define); O.__pk({ name: 'art-biomes', version: VERSION }, biomes.define); O.__pk({ name: 'dress', version: VERSION }, dress.define);
   const a = O.pack('art-animals');
   assert.deepEqual(a.species, ['cat', 'dog', 'bear', 'mouse', 'owl', 'penguin', 'duck']);
   assert.ok(O.art.species.length >= 13, 'the cast reaches 13 species');
@@ -205,7 +205,7 @@ test('art packs: Oomba.pack reports what a pack added; species, props and biomes
 
 test('a game can use pack art in its legend (and w.spawn), and warns about kinds it does not know', () => {
   const p = play(['           ', ' P  N  a   ', '###########'], { biome: 'moon', legend: { N: { kind: 'npc', species: 'penguin', say: 'hi' }, a: 'abacus' } },
-    { before: O => { O.__pk({ name: 'art-animals', version: '1.0.0' }, animals.define); O.__pk({ name: 'art-school', version: '1.0.0' }, school.define); O.__pk({ name: 'art-biomes', version: '1.0.0' }, biomes.define); O.__pk({ name: 'dress', version: '1.0.0' }, dress.define); } });
+    { before: O => { O.__pk({ name: 'art-animals', version: VERSION }, animals.define); O.__pk({ name: 'art-school', version: VERSION }, school.define); O.__pk({ name: 'art-biomes', version: VERSION }, biomes.define); O.__pk({ name: 'dress', version: VERSION }, dress.define); } });
   assert.equal(p.w.find('npc').kind, 'penguin'); assert.ok(p.w.find('abacus'));
   const x = p.w.spawn('owl', { c: 3, r: 1 }); assert.equal(x.kind, 'owl');
   p.w.spawn('unicorn', { c: 3, r: 1 }); assert.ok(p.win.__warns.some(w => /unicorn/.test(w)));

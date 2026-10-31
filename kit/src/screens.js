@@ -48,7 +48,8 @@ export const SCREEN_CSS = `
 .ok-title-hero{position:fixed;bottom:max(3vh,14px);inset-inline-start:max(4vw,14px);z-index:-1;pointer-events:none;animation:ok-sticker 640ms 120ms cubic-bezier(.34,1.56,.64,1) both}
 .ok-title-hero canvas{animation:ok-bob 2.4s ease-in-out infinite}
 .ok-title-badge{margin:-.6em 0 -.2em;animation:ok-sticker 640ms 200ms cubic-bezier(.34,1.56,.64,1) both}.ok-title-badge>*{display:block;max-height:min(110px,13vh);width:auto}
-.ok-title-screen .ok-brand{position:fixed;top:calc(14px + env(safe-area-inset-top));inset-inline-start:14px}
+.ok-title-screen .ok-brand{position:fixed;top:calc(14px + env(safe-area-inset-top));left:14px}
+.ok-title-screen:where(:dir(rtl)) .ok-brand{left:auto;right:14px}
 .ok-title-screen .ok-big{min-height:clamp(76px,10.5vh,90px);min-width:240px;font-size:clamp(1.6rem,3.7vh,2.05rem);border-width:3.5px;box-shadow:0 6px 0 ${INK};margin-top:10px;animation:ok-pop 420ms 260ms both,ok-glow 1.2s 900ms ease-in-out infinite}
 @keyframes ok-glow{50%{box-shadow:0 6px 0 ${INK},0 0 0 9px rgba(255,210,63,.5)}}
 .ok-title-screen .ok-big:focus-visible{outline-offset:4px;animation:ok-pop 420ms 260ms both}   /* one ring: the focus ring, or the pulse, never both */

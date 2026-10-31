@@ -19,6 +19,7 @@ import { config } from '../config.js';
 import { audit } from '../db.js';
 import { listTemplates, templateHtml, templateInfo, TEMPLATE_KEYS } from '../builder/catalog.js';
 import { scanVersion } from '../services/scanner.js';
+import { THEMES, ALIAS as THEME_ALIAS } from '../../kit/packs/dress.js';
 import { SANDBOX } from '../services/frame.js'; // the SAME sandbox players get (never allow-same-origin)
 import { sanitizeGameHtml } from '../services/sanitize.js';
 import { providerName } from '../builder/agent.js';
@@ -79,6 +80,20 @@ function loadEditable(req, res, { api = true } = {}) {
  *  account with no grown-up linked or asked yet, and only while family pages are on for this visitor. Never a plan,
  *  price or /plans link: this is a kid's page. */
 export const grownUpLinkHint = (req, user) => !!req && familiesOn(req) && isChildAccount(user) && !liveRowOf(user.id);
+/** The kit theme the game uses now (theme: 'snow' or theme: { name: 'snow' } in its code; an alias counts), or ''. */
+export function themeOf(src) {
+  const m = /\btheme\s*:\s*(?:\{\s*name\s*:\s*)?(['"])([A-Za-z][A-Za-z _-]{1,24})\1/.exec(String(src || '').slice(0, 300000));
+  if (!m) return '';
+  const raw = m[2].toLowerCase().replace(/[^a-z]/g, ''), name = THEME_ALIAS[raw] || raw;
+  return THEMES[name] ? name : '';
+}
+/** The theme chips over the Builder's message box: tap one and "Use the snow theme." goes into the message. */
+function themePicker(t, current) {
+  return html`<div class="st-themes" role="group" aria-labelledby="st-themes-h">
+    <span class="st-themes-h" id="st-themes-h"><span aria-hidden="true">🎨</span> ${t('studio.themes.heading')}</span>
+    <div class="st-themes-row">${Object.keys(THEMES).map(id => html`<button type="button" class="st-theme${id === current ? ' is-current' : ''}" data-theme="${id}" data-name="${t(`studio.themes.names.${id}`)}" aria-pressed="false"><img src="/img/themes/${id}.webp" alt="" width="48" height="32" loading="lazy" decoding="async"><span>${t(`studio.themes.names.${id}`)}</span>${id === current ? html`<span class="st-theme-now">${t('studio.themes.current')}</span>` : ''}</button>`)}</div>
+  </div>`;
+}
 /** Everything the Studio client needs, as JSON. t: the reader's language (labels, share texts, preview language).
  *  req: the request, for what depends on the visitor (grownUpLink). */
 export function studioState(user, gameId, t = tEn, req = null) {
@@ -93,6 +108,7 @@ export function studioState(user, gameId, t = tEn, req = null) {
     game: { id: g.id, slug: g.slug, title: g.title, icon: g.icon, description: g.description, category: g.category, tags: g.tags, orientation: g.orientation, players_max: g.players_max, cover: g.cover, visibility: g.visibility, status: g.status, review_note: g.review_note, hidden_reason: g.hidden_reason },
     status: studioStatus(g, t),
     versions: versions.map(v => ({ id: v.id, number: v.number, notes: v.notes, safety: v.safety_status, review: v.review_status, at: v.created_at, live: v.id === g.published_version_id, pending: v.id === g.pending_version_id, current: v.id === g.current_version_id })),
+    theme: themeOf(cur && cur.html),
     current: cur ? { id: cur.id, number: cur.number, safety: cur.safety_status, issues: (report.issues || []).map(i => ({ level: i.level, code: i.code, message: i.message })) } : null,
     live: g.status === 'published' && g.published_version_id ? { number: num(g.published_version_id), visibility: g.visibility, id: g.published_version_id } : null,
     pending: g.pending_version_id ? { number: num(g.pending_version_id), id: g.pending_version_id, visibility: g.pending_visibility || 'public' } : null,
@@ -198,6 +214,7 @@ router.get('/studio/:id', requireBuilder, (req, res) => {
         <form class="st-compose" id="st-compose" autocomplete="off">
           <div class="st-limit" id="st-limit" role="status"${t.own('js.studio.limitCard.heading') ? '' : html` lang="en" dir="ltr"`} hidden></div>
           <div class="st-attach" id="st-attach" hidden></div>
+          ${themePicker(t, state.theme)}
           <div class="st-row">
             <button class="st-clip" type="button" id="st-clip" aria-label="${t('studio.chat.attach')}" title="${t('studio.chat.attach')}">📎</button>
             <input type="file" id="st-file" hidden multiple accept="image/png,image/jpeg,image/webp,image/gif,application/pdf,.txt,.md,.csv,.json,text/plain,text/markdown,text/csv,application/json">
