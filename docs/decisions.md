@@ -1804,7 +1804,7 @@ Owner request: "Provide co-host capabilities." Design: `.claude/work/cohost-out/
   game" on the saved results page (closed). Retention follows `live_runs`; a deleted account shows as "A former
   co-host".
 - **Owner questions (defaults apply):** Q1 family co-hosting needs a "second grown-up in a family" feature (own change,
-  own legal review); Q2 school admins who don't teach the class get controls only; Q3 open rooms get no co-hosts; Q4
+  own legal review); Q2 school admins who don't teach the class get controls only (changed on the owner's request: school admins get the full tier, like a teacher of the class); Q3 open rooms get no co-hosts; Q4
   the 2-minute grace.
 
 ## Game data packs (/vendor/data/)

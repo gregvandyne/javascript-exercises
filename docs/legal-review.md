@@ -383,8 +383,8 @@ Owner decisions for parent-made accounts (no lawyer needed):
       the log afterwards); a student who leaves the class is taken off the log; a school account merge moves it.
     - **Questions for counsel:** (1) Limited same-school staff see students' account names when the room already shows
       them to everyone: is that within "school officials with a legitimate educational interest" (FERPA), or should
-      limited co-hosts always get nicknames? (2) Should a school admin who doesn't teach the class get the full tier (we
-      chose controls only)? (3) Does the action log about students (removed, support changed) need a sentence in the
+      limited co-hosts always get nicknames? (2) The owner chose to give a school admin who doesn't teach the class the full tier
+      (student details, support, CSV): confirm that fits "legitimate educational interest". (3) Does the action log about students (removed, support changed) need a sentence in the
       school-facing privacy text? (4) A "second grown-up in a family" feature (needed before family co-hosting does
       anything) needs its own review.
     - **Question:** do the school terms already cover teachers' saved groups ((a)), or do they need a sentence?
