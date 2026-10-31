@@ -11,10 +11,15 @@ import { createKit } from '../../kit/src/index.js';
 import * as livePack from '../../kit/packs/live.js';
 
 /** A kit with the live pack, in a live frame whose transport records what is sent; perf() is a fake clock. */
+const PRESETS = [
+  { id: 'whales', color: '#0072B2', ink: '#FFFFFF', shape: 'circle', icon: 'w', name: 'Blue Whales' },
+  { id: 'tigers', color: '#E69F00', ink: '#121528', shape: 'triangle', icon: 't', name: 'Orange Tigers' },
+  { id: 'frogs', color: '#009E73', ink: '#121528', shape: 'square', icon: 'f', name: 'Green Frogs' },
+];
 function liveKit({ role = 'player', active = true, view = '3d', device = null } = {}) {
   const sent = [], subs = [];
   const brb = { user: { displayName: 'Ana', lang: 'en' }, ...(device ? { device } : {}),
-    live: active ? { v: 1, active: true, init: { v: 1, role, seat: 2, nameMode: 'nicknames', mode: 'game', nicks: ['Brave Otter', 'Sunny Panda', 'Speedy Fox'], view, me: { seat: 2, name: 1, avatar: { species: 'fox' }, team: 0 } },
+    live: active ? { v: 1, active: true, init: { v: 1, role, seat: 2, nameMode: 'nicknames', mode: 'game', nicks: ['Brave Otter', 'Sunny Panda', 'Speedy Fox'], view, me: { seat: 2, name: 1, avatar: { species: 'fox' }, team: 0 }, teamPresets: PRESETS },
       send: (t, m) => { sent.push({ t, ...m }); return true; }, on: fn => subs.push(fn) } : { v: 1, active: false } };
   const w = fakeWin({ brb, search: '' });
   let now = 1000, rafs = [];
@@ -186,6 +191,7 @@ test('the Builder: live rules only for live asks and live games, in the 13 langu
   const { kitPackTag } = await import('../../server/services/kit.js');
   assert.ok(LIVE_RULES.includes(kitPackTag('live'))); assert.ok(!SYSTEM_PROMPT.includes(kitPackTag('live')));
   assert.ok(LIVE_RULES.includes('Oomba.live.ready('));
+  assert.ok(LIVE_RULES.includes('Oomba.live.teamsOn') && LIVE_RULES.includes('drawShape') && LIVE_RULES.includes('{team: true}'), 'the team API is in the live rules');
   assert.equal(asksForLive('make it harder'), false);
   assert.equal(asksForLive('can we play it live in class?'), false, 'a loose "live" alone is not enough');
   for (const f of fs.readdirSync('server/i18n/locales').filter(x => x.endsWith('.json'))) {
@@ -197,4 +203,55 @@ test('the Builder: live rules only for live asks and live games, in the 13 langu
   assert.equal(wantsLive(st, 'now make it blue', null), true, 'remembered');
   assert.equal(wantsLive({}, 'make it blue', { html: '<script src="/vendor/oomba-kit/1.1.0/packs/live.js"></script>' }), true);
   assert.equal(wantsLive({}, 'make it blue', { html: '<p>2d</p>' }), false);
+});
+
+test('teams: off and safe solo; tms/ts/bn become the team API and events; team sends; drawShape; nothing about support', () => {
+  const solo = liveKit({ active: false });
+  assert.equal(solo.L.teamsOn, false); assert.deepEqual(solo.L.teams(), []); assert.equal(solo.L.myTeam, null); assert.equal(solo.L.teamOf(0), 0); assert.equal(solo.L.teamStyle(1), null);
+  const { L, sent, push } = liveKit();
+  const ev = []; for (const e of ['teams', 'bonus', 'reveal', 'end', 'event']) L.on(e, x => ev.push([e, x]));
+  push({ t: 'wel', role: 'player', seat: 2, phase: 'lobby', seq: 1, round: 0, at: 0, state: {}, players: [[1, 0, null, 1, 0, 1, 0, 0], [2, 1, null, 2, 0, 1, 0, 0], [3, 2, null, 1, 0, 1, 0, 0]],
+    teams: { on: true, n: 2, teams: [[1, 0, 2], [2, 1, 1]], m: [[1, 1], [2, 2], [3, 1]], scoring: 'avg', choose: false, locked: false } });
+  assert.equal(L.teamsOn, true);
+  assert.deepEqual(L.teams().map(t => [t.team, t.name, t.shape, t.size, t.members, t.mine]), [[1, 'Blue Whales', 'circle', 2, [1, 3], false], [2, 'Orange Tigers', 'triangle', 1, [2], true]]);
+  assert.equal(L.myTeam.team, 2); assert.equal(L.teamOf(3), 1); assert.deepEqual(L.teamStyle(1), { name: 'Blue Whales', color: '#0072B2', ink: '#FFFFFF', shape: 'circle', icon: 'w' });
+  assert.equal(ev[0][0], 'teams'); assert.equal(ev[0][1].why, 'setup');
+  // one tms moves everyone (a shuffle); presets swap
+  push({ t: 'tms', on: true, n: 2, teams: [[1, 2, 1], [2, 1, 2]], m: [[1, 2], [2, 2], [3, 1]], scoring: 'sum', choose: true, locked: false });
+  assert.equal(L.teamOf(1), 2); assert.equal(L.team(1).name, 'Green Frogs'); assert.equal(L.teamScoring, 'sum'); assert.equal(ev.at(-1)[1].why, 'move');
+  // scores arrive before the reveal, so the reveal carries them
+  push({ t: 'ts', s: [[1, 900, 1, 900, 900], [2, 500, 2, 1000, 500]] });
+  assert.equal(ev.at(-1)[1].why, 'scores'); assert.equal(L.team(1).rank, 1); assert.equal(L.team(2).sum, 1000);
+  push({ t: 'rv', i: 0, answer: 1, counts: [1, 2], top: [] });
+  assert.deepEqual(ev.at(-1)[1].teams.map(t => [t.team, t.score, t.rank]), [[1, 900, 1], [2, 500, 2]]);
+  push({ t: 'bn', k: 1, r: 0, p: 100 }); assert.deepEqual(ev.at(-1), ['bonus', { seat: null, team: 1, reason: 0, points: 100 }]);
+  push({ t: 'ev', f: 1, k: 'go', d: null, tm: 2 }); assert.deepEqual(ev.at(-1)[1], { from: 1, kind: 'go', data: null, team: 2 });
+  push({ t: 'ts', s: [[1, 950, 1, 950, 950], [2, 500, 2, 1000, 500]], fin: 1 }); assert.equal(ev.at(-1)[1].why, 'final');
+  push({ t: 'ph', phase: 'ended', seq: 9, top: [[1, 900]] }); assert.equal(ev.at(-1)[1].teams[0].score, 950);
+  // a player's team send is to:'team'; the vocabulary rule still holds
+  L.ready({ words: ['cheer'], teams: true });
+  assert.equal(sent.at(-1).cfg.teams, true);
+  assert.equal(L.send('cheer', 1, { team: true }), true); assert.deepEqual(sent.at(-1), { t: 'ev', k: 'cheer', d: 1, to: 'team' });
+  const h = liveKit({ role: 'host' }); h.L.send('go', 1, { team: 3 }); assert.deepEqual(h.sent.at(-1), { t: 'ev', k: 'go', d: 1, tm: 3 });
+  // teams off clears the API
+  push({ t: 'tms', on: false, n: 0, teams: [], m: [], scoring: 'avg', choose: false, locked: false });
+  assert.deepEqual(L.teams(), []); assert.equal(L.myTeam, null); assert.equal(L.teamOf(1), 0);
+  // drawShape draws every shape with paths (no font glyphs)
+  const calls = []; const ctx = new Proxy({}, { get: (t, k) => (k in t ? t[k] : (...a) => calls.push(k)), set: (t, k, v) => { t[k] = v; return true; } });
+  for (const sh of ['circle', 'triangle', 'square', 'heart', 'star', 'hexagon', 'diamond', 'moon']) L.drawShape(ctx, sh, 10, 10, 8, '#000', '#fff');
+  assert.ok(!calls.includes('fillText')); assert.equal(calls.filter(c => c === 'fill').length, 8);
+  // support is the page's alone: the pack has no word for it
+  assert.doesNotMatch(fs.readFileSync('kit/packs/live.js', 'utf8'), /\bassist\b|\bacc\b|extraTime|readAloud/);
+});
+
+test('every pin of the live pack equals the manifest (kit.js, the three seed games, the platform lobby)', async () => {
+  const man = JSON.parse(fs.readFileSync('public/vendor/oomba-kit/1.1.0/manifest.json', 'utf8'));
+  const want = man.files ? man.files['packs/live.js'] : man['packs/live.js'];
+  const sri = want || JSON.stringify(man).match(/"packs\/live\.js":\s*"([^"]+)"/)[1];
+  const { KIT_PACKS } = await import('../../server/services/kit.js');
+  assert.equal(KIT_PACKS['1.1.0'].live, sri);
+  for (const f of ['seed-games/quest-race.html', 'seed-games/question-battle.html', 'seed-games/hero-of-sunvale.html', 'server/live/lobby.html']) {
+    const m = fs.readFileSync(f, 'utf8').match(/packs\/live\.js" integrity="([^"]+)"/);
+    assert.ok(m, f); assert.equal(m[1], sri, f);
+  }
 });

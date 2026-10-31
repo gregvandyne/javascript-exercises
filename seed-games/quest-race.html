@@ -42,6 +42,13 @@
   .qr-host .qr-a { min-height: 64px; font-size: clamp(18px, 2.4vw, 30px); }
   .qr-stick { position: fixed; inset-block-end: 18px; inset-inline-start: 18px; width: 120px; height: 120px; border-radius: 50%; background: rgba(255,255,255,.35); border: 3px solid rgba(29,35,64,.25); pointer-events: auto; touch-action: none; }
   .qr-stick i { position: absolute; left: 35px; top: 35px; width: 50px; height: 50px; border-radius: 50%; background: rgba(29,35,64,.55); }
+  .qr-tbars { pointer-events: none; display: flex; flex-direction: column; gap: 4px; max-width: 520px; width: 100%; margin: 0 auto; }
+  .qr-tbar { position: relative; display: flex; align-items: center; gap: 8px; padding: 4px 10px; border-radius: 12px; background: rgba(255,255,255,.92); font-weight: 800; font-size: 15px; overflow: hidden; border: 2px solid #1d2340; isolation: isolate; }
+  .qr-tbar i { position: absolute; inset: 0 auto 0 0; width: var(--w, 0%); background: var(--team); opacity: .45; z-index: -1; }
+  [dir="rtl"] .qr-tbar i { inset: 0 0 0 auto; }
+  .qr-tbar canvas { width: 20px; height: 20px; flex: none; }
+  .qr-tbar .nm { flex: 1; overflow-wrap: anywhere; }
+  .qr-board li canvas { width: 18px; height: 18px; vertical-align: -3px; margin-inline-end: 4px; }
   .qr-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 </style>
@@ -50,12 +57,13 @@
 <canvas id="view" aria-hidden="true" hidden></canvas>
 <canvas id="flat" aria-hidden="true" hidden></canvas>
 <div class="qr-ui" id="ui">
-  <div class="qr-top"><span class="qr-pill" id="qnum"></span><span class="qr-pill" id="gems" aria-live="polite"></span></div>
+  <div class="qr-top"><span class="qr-pill" id="qnum"></span><span class="qr-pill" id="team"></span><span class="qr-pill" id="gems" aria-live="polite"></span></div>
+  <div class="qr-tbars qr-hide" id="tbars" aria-hidden="true"></div>
   <p class="qr-banner" id="banner" role="status" aria-live="polite"></p>
   <div id="bottom" style="margin-top:auto">
     <div class="qr-board qr-hide" id="board"><h2 id="board-h"></h2><ol id="board-list"></ol></div>
     <section class="qr-card qr-hide" id="card" aria-labelledby="qtext">
-      <p class="qr-q" id="qtext"></p>
+      <p class="qr-q" id="qtext" dir="auto"></p>
       <div class="qr-timer" aria-hidden="true"><i id="timer"></i></div>
       <div class="qr-pad" id="pad" role="group" aria-labelledby="qtext"></div>
       <div class="qr-bars qr-hide" id="bars" aria-hidden="true"></div>
@@ -68,7 +76,7 @@
 <script src="/vendor/oomba-kit/1.1.0/oomba-kit.js" integrity="sha384-GCejMN1YYamlsZNEJw6SRznGmZC2i6tppYwkLt8cv2gI3YTTsZq6l8eyUQuAM8qX" crossorigin="anonymous"></script>
 <script src="/vendor/oomba-kit/1.1.0/packs/dress.js" integrity="sha384-ZCFgY98YAWY7Tcy+GfJLalmnJukKdzbVpg6j4ZljXuJSYgYzkWSWMPihVW/u8CqH" crossorigin="anonymous"></script>
 <script src="/vendor/oomba-kit/1.1.0/packs/bridge-3d.js" integrity="sha384-XrVZh1TfGin1ajGCc72TzhAxeqUJQM3JI3kI1weHoMgUIV4urBdPtJbZxO7wPOli" crossorigin="anonymous"></script>
-<script src="/vendor/oomba-kit/1.1.0/packs/live.js" integrity="sha384-PoL1d2TQvVJAaM+LOoFIDiwk0wF23Ue5ASvgQgvkBEjRB/qhCQ+b0BJ93864hhig" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.0/packs/live.js" integrity="sha384-coSMEAXKgHblAGttFS4mvWXqRq7LEVGZP+rPPYCxp8BnVqWKHWjnu+kWuuB1vd2m" crossorigin="anonymous"></script>
 <script>
 /* QUEST RACE: an Oomba Live reference game (docs/kit-api.md "Live class games"). Questions on every device; a right
    answer is a gem and a dash along the race path across a 3D island to the finish flag; podium and confetti at the end.
@@ -79,19 +87,19 @@
   'use strict';
   var O = window.Oomba, L = O.live;
   O.strings({
-    en: { title: 'Quest Race', qnum: 'Question {n} of {total}', gems: 'Gems: {n}', locked: 'Answer locked in!', right: 'Right! +{points}', wrong: 'Not quite!', timeUp: "Time's up!", wait: 'Run around while everyone joins!', ready: 'Get ready!', go: 'Go!', finish: 'Finish!', podium: 'Winners', place: 'You came {rank} of {count}!', answers: '{n} answered', practice: 'Practice race: beat the ghosts!', ghost: 'Ghost {n}', top: 'Top racers', paused: 'Paused', skipped: 'Skipped', move: 'Move with the arrows or the stick' },
-    'en-GB': { title: 'Quest Race', qnum: 'Question {n} of {total}', gems: 'Gems: {n}', locked: 'Answer locked in!', right: 'Right! +{points}', wrong: 'Not quite!', timeUp: "Time's up!", wait: 'Run around while everyone joins!', ready: 'Get ready!', go: 'Go!', finish: 'Finish!', podium: 'Winners', place: 'You came {rank} of {count}!', answers: '{n} answered', practice: 'Practice race: beat the ghosts!', ghost: 'Ghost {n}', top: 'Top racers', paused: 'Paused', skipped: 'Skipped', move: 'Move with the arrows or the stick' },
-    es: { title: 'Carrera de misiones', qnum: 'Pregunta {n} de {total}', gems: 'Gemas: {n}', locked: '¡Respuesta enviada!', right: '¡Correcto! +{points}', wrong: '¡Casi!', timeUp: '¡Se acabó el tiempo!', wait: '¡Corre por ahí mientras llegan todos!', ready: '¡Prepárate!', go: '¡Ya!', finish: '¡Meta!', podium: 'Ganadores', place: '¡Quedaste en el puesto {rank} de {count}!', answers: '{n} respondieron', practice: 'Carrera de práctica: ¡gana a los fantasmas!', ghost: 'Fantasma {n}', top: 'Mejores corredores', paused: 'En pausa', skipped: 'Saltada', move: 'Muévete con las flechas o el mando' },
-    fr: { title: 'Course des quêtes', qnum: 'Question {n} sur {total}', gems: 'Gemmes : {n}', locked: 'Réponse envoyée !', right: 'Bravo ! +{points}', wrong: 'Presque !', timeUp: 'Temps écoulé !', wait: 'Cours partout pendant que les autres arrivent !', ready: 'Prépare-toi !', go: 'Partez !', finish: 'Arrivée !', podium: 'Gagnants', place: 'Tu es {rank} sur {count} !', answers: '{n} ont répondu', practice: 'Course d’entraînement : bats les fantômes !', ghost: 'Fantôme {n}', top: 'Meilleurs coureurs', paused: 'En pause', skipped: 'Passée', move: 'Bouge avec les flèches ou le joystick' },
-    de: { title: 'Quest-Rennen', qnum: 'Frage {n} von {total}', gems: 'Edelsteine: {n}', locked: 'Antwort abgegeben!', right: 'Richtig! +{points}', wrong: 'Knapp daneben!', timeUp: 'Zeit ist um!', wait: 'Lauf herum, bis alle da sind!', ready: 'Mach dich bereit!', go: 'Los!', finish: 'Ziel!', podium: 'Gewinner', place: 'Du bist Platz {rank} von {count}!', answers: '{n} haben geantwortet', practice: 'Übungsrennen: Schlag die Geister!', ghost: 'Geist {n}', top: 'Beste Läufer', paused: 'Pause', skipped: 'Übersprungen', move: 'Bewege dich mit den Pfeilen oder dem Stick' },
-    it: { title: 'Corsa delle missioni', qnum: 'Domanda {n} di {total}', gems: 'Gemme: {n}', locked: 'Risposta inviata!', right: 'Giusto! +{points}', wrong: 'Quasi!', timeUp: 'Tempo scaduto!', wait: 'Corri in giro mentre arrivano tutti!', ready: 'Preparati!', go: 'Via!', finish: 'Traguardo!', podium: 'Vincitori', place: 'Sei arrivato {rank} su {count}!', answers: '{n} hanno risposto', practice: 'Corsa di prova: batti i fantasmi!', ghost: 'Fantasma {n}', top: 'Migliori corridori', paused: 'In pausa', skipped: 'Saltata', move: 'Muoviti con le frecce o la levetta' },
-    pt: { title: 'Corrida das Missões', qnum: 'Pergunta {n} de {total}', gems: 'Gemas: {n}', locked: 'Resposta enviada!', right: 'Certo! +{points}', wrong: 'Quase!', timeUp: 'Acabou o tempo!', wait: 'Corra por aí enquanto todos chegam!', ready: 'Prepare-se!', go: 'Já!', finish: 'Chegada!', podium: 'Vencedores', place: 'Você ficou em {rank} de {count}!', answers: '{n} responderam', practice: 'Corrida de treino: vença os fantasmas!', ghost: 'Fantasma {n}', top: 'Melhores corredores', paused: 'Pausado', skipped: 'Pulada', move: 'Mova-se com as setas ou o controle' },
-    nl: { title: 'Questrace', qnum: 'Vraag {n} van {total}', gems: 'Edelstenen: {n}', locked: 'Antwoord verstuurd!', right: 'Goed! +{points}', wrong: 'Net niet!', timeUp: 'De tijd is om!', wait: 'Ren rond terwijl iedereen binnenkomt!', ready: 'Maak je klaar!', go: 'Start!', finish: 'Finish!', podium: 'Winnaars', place: 'Je werd {rank} van {count}!', answers: '{n} hebben geantwoord', practice: 'Oefenrace: versla de spoken!', ghost: 'Spook {n}', top: 'Beste renners', paused: 'Gepauzeerd', skipped: 'Overgeslagen', move: 'Beweeg met de pijltjes of de stick' },
-    ru: { title: 'Гонка заданий', qnum: 'Вопрос {n} из {total}', gems: 'Камни: {n}', locked: 'Ответ принят!', right: 'Верно! +{points}', wrong: 'Почти!', timeUp: 'Время вышло!', wait: 'Побегай, пока все собираются!', ready: 'Приготовься!', go: 'Вперёд!', finish: 'Финиш!', podium: 'Победители', place: 'Твоё место: {rank} из {count}!', answers: 'Ответили: {n}', practice: 'Тренировка: обгони призраков!', ghost: 'Призрак {n}', top: 'Лучшие бегуны', paused: 'Пауза', skipped: 'Пропущен', move: 'Двигайся стрелками или джойстиком' },
-    ja: { title: 'クエストレース', qnum: 'もんだい {n} / {total}', gems: 'ジェム: {n}', locked: 'こたえをおくったよ！', right: 'せいかい！ +{points}', wrong: 'おしい！', timeUp: 'じかんぎれ！', wait: 'みんながくるまで はしりまわろう！', ready: 'よーい！', go: 'スタート！', finish: 'ゴール！', podium: 'ゆうしょう', place: '{count}人中 {rank}位！', answers: '{n}人がこたえた', practice: 'れんしゅうレース: おばけにかとう！', ghost: 'おばけ {n}', top: 'トップランナー', paused: 'ポーズ', skipped: 'スキップ', move: 'やじるしかスティックでうごこう' },
-    'zh-Hant': { title: '任務競賽', qnum: '第 {n} 題，共 {total} 題', gems: '寶石：{n}', locked: '答案已送出！', right: '答對了！+{points}', wrong: '差一點！', timeUp: '時間到！', wait: '等大家加入時到處跑跑吧！', ready: '準備！', go: '出發！', finish: '終點！', podium: '優勝者', place: '你是第 {rank} 名，共 {count} 人！', answers: '{n} 人已作答', practice: '練習賽：打敗幽靈！', ghost: '幽靈 {n}', top: '領先選手', paused: '暫停', skipped: '已跳過', move: '用方向鍵或搖桿移動' },
-    he: { title: 'מרוץ המשימות', qnum: 'שאלה {n} מתוך {total}', gems: 'אבני חן: {n}', locked: 'התשובה נשלחה!', right: 'נכון! +{points}', wrong: 'כמעט!', timeUp: 'נגמר הזמן!', wait: 'רוצו מסביב בזמן שכולם מצטרפים!', ready: 'היכון!', go: 'צאו!', finish: 'סיום!', podium: 'המנצחים', place: 'הגעת למקום {rank} מתוך {count}!', answers: '{n} ענו', practice: 'מרוץ אימון: נצחו את הרוחות!', ghost: 'רוח {n}', top: 'הרצים המובילים', paused: 'מושהה', skipped: 'דולגה', move: 'זוזו עם החיצים או הג׳ויסטיק' },
-    ar: { title: 'سباق المهمات', qnum: 'السؤال {n} من {total}', gems: 'الجواهر: {n}', locked: 'تم إرسال إجابتك!', right: 'صحيح! +{points}', wrong: 'اقتربت!', timeUp: 'انتهى الوقت!', wait: 'تجوّل حتى ينضم الجميع!', ready: 'استعد!', go: 'انطلق!', finish: 'خط النهاية!', podium: 'الفائزون', place: 'جئت في المركز {rank} من {count}!', answers: 'أجاب {n}', practice: 'سباق تدريبي: تغلّب على الأشباح!', ghost: 'شبح {n}', top: 'أفضل المتسابقين', paused: 'متوقف مؤقتاً', skipped: 'تم تخطيه', move: 'تحرّك بالأسهم أو بعصا التحكم' },
+    en: { title: 'Quest Race', qnum: 'Question {n} of {total}', gems: 'Gems: {n}', locked: 'Answer locked in!', right: 'Right! +{points}', wrong: 'Not quite!', timeUp: "Time's up!", wait: 'Run around while everyone joins!', ready: 'Get ready!', go: 'Go!', finish: 'Finish!', podium: 'Winners', place: 'You came {rank} of {count}!', answers: '{n} answered', practice: 'Practice race: beat the ghosts!', ghost: 'Ghost {n}', top: 'Top racers', paused: 'Paused', skipped: 'Skipped', move: 'Move with the arrows or the stick', teams: 'Teams', teamRank: '{team}: place {rank}', teamPodium: 'Winning teams', perPlayer: 'per player', yourTeam: 'Your team: {team}' },
+    'en-GB': { title: 'Quest Race', qnum: 'Question {n} of {total}', gems: 'Gems: {n}', locked: 'Answer locked in!', right: 'Right! +{points}', wrong: 'Not quite!', timeUp: "Time's up!", wait: 'Run around while everyone joins!', ready: 'Get ready!', go: 'Go!', finish: 'Finish!', podium: 'Winners', place: 'You came {rank} of {count}!', answers: '{n} answered', practice: 'Practice race: beat the ghosts!', ghost: 'Ghost {n}', top: 'Top racers', paused: 'Paused', skipped: 'Skipped', move: 'Move with the arrows or the stick', teams: 'Teams', teamRank: '{team}: place {rank}', teamPodium: 'Winning teams', perPlayer: 'per player', yourTeam: 'Your team: {team}' },
+    es: { title: 'Carrera de misiones', qnum: 'Pregunta {n} de {total}', gems: 'Gemas: {n}', locked: '¡Respuesta enviada!', right: '¡Correcto! +{points}', wrong: '¡Casi!', timeUp: '¡Se acabó el tiempo!', wait: '¡Corre por ahí mientras llegan todos!', ready: '¡Prepárate!', go: '¡Ya!', finish: '¡Meta!', podium: 'Ganadores', place: '¡Quedaste en el puesto {rank} de {count}!', answers: '{n} respondieron', practice: 'Carrera de práctica: ¡gana a los fantasmas!', ghost: 'Fantasma {n}', top: 'Mejores corredores', paused: 'En pausa', skipped: 'Saltada', move: 'Muévete con las flechas o el mando', teams: 'Equipos', teamRank: '{team}: puesto {rank}', teamPodium: 'Equipos ganadores', perPlayer: 'por jugador', yourTeam: 'Tu equipo: {team}' },
+    fr: { title: 'Course des quêtes', qnum: 'Question {n} sur {total}', gems: 'Gemmes : {n}', locked: 'Réponse envoyée !', right: 'Bravo ! +{points}', wrong: 'Presque !', timeUp: 'Temps écoulé !', wait: 'Cours partout pendant que les autres arrivent !', ready: 'Prépare-toi !', go: 'Partez !', finish: 'Arrivée !', podium: 'Gagnants', place: 'Tu es {rank} sur {count} !', answers: '{n} ont répondu', practice: 'Course d’entraînement : bats les fantômes !', ghost: 'Fantôme {n}', top: 'Meilleurs coureurs', paused: 'En pause', skipped: 'Passée', move: 'Bouge avec les flèches ou le joystick', teams: 'Équipes', teamRank: '{team} : place {rank}', teamPodium: 'Équipes gagnantes', perPlayer: 'par joueur', yourTeam: 'Ton équipe : {team}' },
+    de: { title: 'Quest-Rennen', qnum: 'Frage {n} von {total}', gems: 'Edelsteine: {n}', locked: 'Antwort abgegeben!', right: 'Richtig! +{points}', wrong: 'Knapp daneben!', timeUp: 'Zeit ist um!', wait: 'Lauf herum, bis alle da sind!', ready: 'Mach dich bereit!', go: 'Los!', finish: 'Ziel!', podium: 'Gewinner', place: 'Du bist Platz {rank} von {count}!', answers: '{n} haben geantwortet', practice: 'Übungsrennen: Schlag die Geister!', ghost: 'Geist {n}', top: 'Beste Läufer', paused: 'Pause', skipped: 'Übersprungen', move: 'Bewege dich mit den Pfeilen oder dem Stick', teams: 'Teams', teamRank: '{team}: Platz {rank}', teamPodium: 'Siegerteams', perPlayer: 'pro Person', yourTeam: 'Dein Team: {team}' },
+    it: { title: 'Corsa delle missioni', qnum: 'Domanda {n} di {total}', gems: 'Gemme: {n}', locked: 'Risposta inviata!', right: 'Giusto! +{points}', wrong: 'Quasi!', timeUp: 'Tempo scaduto!', wait: 'Corri in giro mentre arrivano tutti!', ready: 'Preparati!', go: 'Via!', finish: 'Traguardo!', podium: 'Vincitori', place: 'Sei arrivato {rank} su {count}!', answers: '{n} hanno risposto', practice: 'Corsa di prova: batti i fantasmi!', ghost: 'Fantasma {n}', top: 'Migliori corridori', paused: 'In pausa', skipped: 'Saltata', move: 'Muoviti con le frecce o la levetta', teams: 'Squadre', teamRank: '{team}: posto {rank}', teamPodium: 'Squadre vincitrici', perPlayer: 'a testa', yourTeam: 'La tua squadra: {team}' },
+    pt: { title: 'Corrida das Missões', qnum: 'Pergunta {n} de {total}', gems: 'Gemas: {n}', locked: 'Resposta enviada!', right: 'Certo! +{points}', wrong: 'Quase!', timeUp: 'Acabou o tempo!', wait: 'Corra por aí enquanto todos chegam!', ready: 'Prepare-se!', go: 'Já!', finish: 'Chegada!', podium: 'Vencedores', place: 'Você ficou em {rank} de {count}!', answers: '{n} responderam', practice: 'Corrida de treino: vença os fantasmas!', ghost: 'Fantasma {n}', top: 'Melhores corredores', paused: 'Pausado', skipped: 'Pulada', move: 'Mova-se com as setas ou o controle', teams: 'Equipes', teamRank: '{team}: {rank}º lugar', teamPodium: 'Equipes vencedoras', perPlayer: 'por jogador', yourTeam: 'Sua equipe: {team}' },
+    nl: { title: 'Questrace', qnum: 'Vraag {n} van {total}', gems: 'Edelstenen: {n}', locked: 'Antwoord verstuurd!', right: 'Goed! +{points}', wrong: 'Net niet!', timeUp: 'De tijd is om!', wait: 'Ren rond terwijl iedereen binnenkomt!', ready: 'Maak je klaar!', go: 'Start!', finish: 'Finish!', podium: 'Winnaars', place: 'Je werd {rank} van {count}!', answers: '{n} hebben geantwoord', practice: 'Oefenrace: versla de spoken!', ghost: 'Spook {n}', top: 'Beste renners', paused: 'Gepauzeerd', skipped: 'Overgeslagen', move: 'Beweeg met de pijltjes of de stick', teams: 'Teams', teamRank: '{team}: plek {rank}', teamPodium: 'Winnende teams', perPlayer: 'per speler', yourTeam: 'Jouw team: {team}' },
+    ru: { title: 'Гонка заданий', qnum: 'Вопрос {n} из {total}', gems: 'Камни: {n}', locked: 'Ответ принят!', right: 'Верно! +{points}', wrong: 'Почти!', timeUp: 'Время вышло!', wait: 'Побегай, пока все собираются!', ready: 'Приготовься!', go: 'Вперёд!', finish: 'Финиш!', podium: 'Победители', place: 'Твоё место: {rank} из {count}!', answers: 'Ответили: {n}', practice: 'Тренировка: обгони призраков!', ghost: 'Призрак {n}', top: 'Лучшие бегуны', paused: 'Пауза', skipped: 'Пропущен', move: 'Двигайся стрелками или джойстиком', teams: 'Команды', teamRank: '{team}: место {rank}', teamPodium: 'Команды-победители', perPlayer: 'на игрока', yourTeam: 'Твоя команда: {team}' },
+    ja: { title: 'クエストレース', qnum: 'もんだい {n} / {total}', gems: 'ジェム: {n}', locked: 'こたえをおくったよ！', right: 'せいかい！ +{points}', wrong: 'おしい！', timeUp: 'じかんぎれ！', wait: 'みんながくるまで はしりまわろう！', ready: 'よーい！', go: 'スタート！', finish: 'ゴール！', podium: 'ゆうしょう', place: '{count}人中 {rank}位！', answers: '{n}人がこたえた', practice: 'れんしゅうレース: おばけにかとう！', ghost: 'おばけ {n}', top: 'トップランナー', paused: 'ポーズ', skipped: 'スキップ', move: 'やじるしかスティックでうごこう', teams: 'チーム', teamRank: '{team}：{rank}位', teamPodium: 'ゆうしょうチーム', perPlayer: '1人あたり', yourTeam: 'きみのチーム：{team}' },
+    'zh-Hant': { title: '任務競賽', qnum: '第 {n} 題，共 {total} 題', gems: '寶石：{n}', locked: '答案已送出！', right: '答對了！+{points}', wrong: '差一點！', timeUp: '時間到！', wait: '等大家加入時到處跑跑吧！', ready: '準備！', go: '出發！', finish: '終點！', podium: '優勝者', place: '你是第 {rank} 名，共 {count} 人！', answers: '{n} 人已作答', practice: '練習賽：打敗幽靈！', ghost: '幽靈 {n}', top: '領先選手', paused: '暫停', skipped: '已跳過', move: '用方向鍵或搖桿移動', teams: '隊伍', teamRank: '{team}：第 {rank} 名', teamPodium: '獲勝隊伍', perPlayer: '每人平均', yourTeam: '你的隊伍：{team}' },
+    he: { title: 'מרוץ המשימות', qnum: 'שאלה {n} מתוך {total}', gems: 'אבני חן: {n}', locked: 'התשובה נשלחה!', right: 'נכון! +{points}', wrong: 'כמעט!', timeUp: 'נגמר הזמן!', wait: 'רוצו מסביב בזמן שכולם מצטרפים!', ready: 'היכון!', go: 'צאו!', finish: 'סיום!', podium: 'המנצחים', place: 'הגעת למקום {rank} מתוך {count}!', answers: '{n} ענו', practice: 'מרוץ אימון: נצחו את הרוחות!', ghost: 'רוח {n}', top: 'הרצים המובילים', paused: 'מושהה', skipped: 'דולגה', move: 'זוזו עם החיצים או הג׳ויסטיק', teams: 'קבוצות', teamRank: '{team}: מקום {rank}', teamPodium: 'הקבוצות המנצחות', perPlayer: 'לשחקן', yourTeam: 'הקבוצה שלך: {team}' },
+    ar: { title: 'سباق المهمات', qnum: 'السؤال {n} من {total}', gems: 'الجواهر: {n}', locked: 'تم إرسال إجابتك!', right: 'صحيح! +{points}', wrong: 'اقتربت!', timeUp: 'انتهى الوقت!', wait: 'تجوّل حتى ينضم الجميع!', ready: 'استعد!', go: 'انطلق!', finish: 'خط النهاية!', podium: 'الفائزون', place: 'جئت في المركز {rank} من {count}!', answers: 'أجاب {n}', practice: 'سباق تدريبي: تغلّب على الأشباح!', ghost: 'شبح {n}', top: 'أفضل المتسابقين', paused: 'متوقف مؤقتاً', skipped: 'تم تخطيه', move: 'تحرّك بالأسهم أو بعصا التحكم', teams: 'الفرق', teamRank: '{team}: المركز {rank}', teamPodium: 'الفرق الفائزة', perPlayer: 'لكل لاعب', yourTeam: 'فريقك: {team}' },
   });
   var t = function (k, v) { return O.t(k, v); };
   var $ = function (id) { return document.getElementById(id); };
@@ -138,7 +146,7 @@
   var phase = L.phase, me = L.me, mySeat = me ? me.seat : -1;
   var roam = { x: START.x + 3, z: START.z - 3, h: Math.PI, sp: 0 };   // my own avatar in the lobby
   var keys = {}, stick = { x: 0, y: 0 };
-  var Q = null, myPick = -1, reveal = null, finished = false, podium = [], boardTop = [];
+  var Q = null, myPick = -1, reveal = null, finished = false, podium = [], boardTop = [], podiumTeams = [];
   function inRace() { return phase !== 'lobby'; }
 
   // ---- the answer pad and the host's card ----
@@ -196,12 +204,40 @@
     O.sfx(r.ok ? 'correct' : 'wrong');
     var mine = R.get(mySeat); if (mine && !r.ok) mine.stumble = 0.6;
   }
-  function showBoard(list, title) {
+  // a team's shape; onTeam: drawn on the team's own colour, so it takes the team's ink (text colour) instead
+  function shapeCanvas(tm, px, onTeam) {
+    var c = document.createElement('canvas'), k = Math.min(2, devicePixelRatio || 1); c.width = c.height = Math.round(px * k); c.setAttribute('aria-hidden', 'true');
+    var x = c.getContext('2d'); x.scale(k, k); L.drawShape(x, tm.shape, px / 2, px / 2, px * 0.42, onTeam ? tm.ink : tm.color, onTeam ? null : '#1d2340'); return c;
+  }
+  // teams first (team mode: shape, icon, name, score), then the racers
+  function showBoard(list, title, tms) {
     $('card').classList.add('qr-hide');
     var b = $('board'); b.classList.remove('qr-hide'); $('board-h').textContent = title;
     var ol = $('board-list'); ol.textContent = '';
+    (tms || []).filter(function (x) { return x.size > 0; }).sort(function (a, c) { return (a.rank || 99) - (c.rank || 99) || a.team - c.team; }).forEach(function (tm) {
+      var li = document.createElement('li'); li.className = 'qr-tli'; li.append(shapeCanvas(tm, 18), tm.icon + ' ' + tm.name + (tm.rank ? ' · ' + tm.score + (L.teamScoring === 'avg' ? ' ' + t('perPlayer') : '') : '')); ol.appendChild(li);
+    });
     list.slice(0, 5).forEach(function (p) { var li = document.createElement('li'); li.textContent = p.name + (p.score != null ? ' · ' + p.score : ''); ol.appendChild(li); });
   }
+  // the projector: one bar per team under the top (average progress of its runners); a player: my team on a pill
+  function teamBars() {
+    var el = $('tbars'), on = L.teamsOn && host && phase !== 'lobby' && phase !== 'ended';
+    el.classList.toggle('qr-hide', !on);
+    if (on) {
+      el.textContent = '';
+      L.teams().filter(function (x) { return x.size > 0; }).forEach(function (tm) {
+        var sum = 0, n = 0; tm.members.forEach(function (s2) { var r = R.get(s2); if (r) { sum += r.shown; n++; } });
+        var pct = n ? Math.round(sum / n / 10) : 0, d = document.createElement('div'); d.className = 'qr-tbar'; d.style.setProperty('--team', tm.color); d.style.setProperty('--w', pct + '%');
+        var nm = document.createElement('span'); nm.className = 'nm'; nm.textContent = tm.icon + ' ' + tm.name;
+        var v = document.createElement('span'); v.textContent = pct + '%';
+        var f = document.createElement('i'); d.append(f, shapeCanvas(tm, 20), nm, v); el.appendChild(d);
+      });
+    }
+    var mt = L.myTeam, pill = $('team'); pill.textContent = '';
+    if (mt && !host) { pill.style.background = mt.color; pill.style.color = mt.ink; pill.append(shapeCanvas(mt, 18, true), t('yourTeam', { team: mt.name })); }
+  }
+  var tbTimer = setInterval(function () { if (L.teamsOn) teamBars(); }, 500);
+  L.on('teams', teamBars);
   function banner(text) { $('banner').textContent = text || ''; }
   function say(text) { $('sr').textContent = ''; setTimeout(function () { $('sr').textContent = text; }, 30); }
   function setGems() { var r = R.get(mySeat); $('gems').textContent = host ? '' : t('gems', { n: r ? r.gems : 0 }); $('gems').classList.toggle('qr-hide', host || !inRace()); }
@@ -234,7 +270,16 @@
   L.on('end', function (e) {
     var order = L.race().sort(function (a, b) { return b.prog - a.prog; });
     podium = (order.length ? order : e.top).slice(0, 3).map(function (p) { return p.seat; });
-    showBoard(e.top.length ? e.top : order.map(function (p) { return { name: p.name, score: null }; }), t('podium'));
+    // team mode: the podium steps carry the top three teams (their colour and shape), each with its best runner on it
+    var tms = (e.teams || []).filter(function (x) { return x.size > 0 && x.rank > 0; }).sort(function (a, b) { return a.rank - b.rank || a.team - b.team; });
+    podiumTeams = [];
+    if (tms.length) {
+      podium = []; tms.slice(0, 3).forEach(function (tm) {
+        var best = order.filter(function (p) { return L.teamOf(p.seat) === tm.team; })[0];
+        podium.push(best ? best.seat : -99); podiumTeams.push({ team: tm.team, color: tm.color, ink: tm.ink, shape: tm.shape });
+      });
+    }
+    showBoard(e.top.length ? e.top : order.map(function (p) { return { name: p.name, score: null }; }), tms.length ? t('teamPodium') : t('podium'), e.teams);
     banner(t('finish'));
     if (!reduced) { try { BRB.fx.confetti(); } catch (er) { /* none */ } }
     O.sfx('win');
@@ -369,7 +414,7 @@
   // ---- start: the 3D module takes over when it can; otherwise (or after 8 s) the 2D view ----
   var QR = window.QR = {
     view: L.view, at: at, TRACK: TRACK, GATES: GATES, START: START, FINISH: FINISH, R: R, roam: roam, step: step, stepRoam: stepRoam,
-    get phase() { return phase; }, get mySeat() { return mySeat; }, get host() { return host; }, get podium() { return podium; }, get finished() { return finished; },
+    get phase() { return phase; }, get mySeat() { return mySeat; }, get host() { return host; }, get podium() { return podium; }, get podiumTeams() { return podiumTeams; }, get finished() { return finished; },
     started3d: false, drawCalls: 0,
     fallback: function () { if (QR.started3d || flat2) return; QR.view = '2d'; begin(); },
   };
@@ -378,7 +423,7 @@
     if (begun && QR.view === '3d') return;
     begun = true;
     if (QR.view === '2d') start2d();
-    L.ready({ presence: { bounds: 30, maxSpeed: 9 }, lobby: true, quiz: true, hostView: true, view: QR.view });
+    L.ready({ presence: { bounds: 30, maxSpeed: 9 }, lobby: true, quiz: true, hostView: true, teams: true, view: QR.view });
     if (!L.active && !practice.on) practiceStart();
     $('stick').classList.toggle('qr-hide', host || phase !== 'lobby' || !L.active);
     if (phase === 'lobby' && L.active && !host) banner(t('wait'));
@@ -391,7 +436,8 @@
       var mine = R.get(mySeat);
       return { view: QR.view, phase: phase, role: L.role, me: { seat: mySeat, progress: mine ? Math.round(mine.shown) : 0, target: mine ? mine.target : 0, gems: mine ? mine.gems : 0, x: roam.x, z: roam.z },
         others: L.players().filter(function (p) { return p.seat !== mySeat; }).map(function (p) { var pos = L.position(p.seat); var r = R.get(p.seat); return { seat: p.seat, x: pos ? pos.x : null, z: pos ? pos.z : null, progress: r ? Math.round(r.shown) : 0 }; }),
-        question: Q ? { i: Q.i, q: Q.q, choices: Q.choices.slice(), answered: myPick >= 0 || L.quiz.answered } : null, podium: podium.slice(), drawCalls: QR.drawCalls, started3d: QR.started3d };
+        question: Q ? { i: Q.i, q: Q.q, choices: Q.choices.slice(), answered: myPick >= 0 || L.quiz.answered } : null, podium: podium.slice(), drawCalls: QR.drawCalls, started3d: QR.started3d,
+        teams: L.teams().map(function (x) { return { team: x.team, name: x.name, rank: x.rank, size: x.size }; }), myTeam: L.myTeam ? L.myTeam.team : 0, teamBars: !$('tbars').classList.contains('qr-hide'), podiumTeams: podiumTeams.map(function (x) { return x.team; }) };
     },
     start: function () { return true; },
   });
@@ -446,13 +492,28 @@ if (QR && QR.view === '3d') {
   flag.position.set(F.x + F.dz * 3.4, 0, F.z - F.dx * 3.4); scene.add(flag); B.outline(flag, { important: true });
   const PODIUM = [[0, 1.4], [-1.7, 1.0], [1.7, 0.7]].map(([off, h], k) => {
     const m = new THREE.Mesh(new THREE.BoxGeometry(1.5, h, 1.5), B.toon(['spark', 'stone', 'peach'][k])); const px = F.x + F.dx * 4 - F.dz * off, pz = F.z + F.dz * 4 + F.dx * off;
-    m.position.set(px, h / 2, pz); scene.add(m); B.outline(m); return { x: px, z: pz, h };
+    m.position.set(px, h / 2, pz); scene.add(m); B.outline(m); return { x: px, z: pz, h, mesh: m };
   });
   // me
   const me = L.role === 'host' ? null : B.rig(L.me && L.me.avatar ? L.me.avatar : O.avatar(), { size: 1.6 });
   if (me) scene.add(me);
   const ghosts = new Map();
   const crowd = L.crowd(B, { auto: false, size: 1.6, self: () => me });   // self: my own emotes play on my runner
+  // team mode: a ring under my own runner; at the end the podium steps take the top teams' colours and shapes
+  const myRing = () => { if (me) crowd.teamRing(me, L.myTeam ? L.myTeam.team : 0); };
+  L.on('teams', myRing); myRing();
+  let banners = null;
+  const teamPodium = () => {
+    if (banners || !QR.podiumTeams.length) return;
+    banners = QR.podiumTeams.map((tm, k) => {
+      const P = PODIUM[k]; if (!P) return null;
+      P.mesh.material = B.toon(tm.color);
+      const c = document.createElement('canvas'); c.width = c.height = 128; const x = c.getContext('2d');
+      x.fillStyle = tm.color; x.fillRect(0, 0, 128, 128); x.lineWidth = 6; x.strokeStyle = '#ffffff'; x.strokeRect(3, 3, 122, 122); L.drawShape(x, tm.shape, 64, 64, 44, tm.ink, null);
+      const flagM = new THREE.Mesh(new THREE.PlaneGeometry(1.1, 1.1), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(c), side: THREE.DoubleSide }));
+      flagM.position.set(P.x, P.h + 2.6, P.z); flagM.userData.noInk = true; scene.add(flagM); return flagM;
+    });
+  };
   BRB.fx.fit3d(renderer, camera, { maxDpr: B.dprCap, onResize(w, h) { camera.fov = w / h < 0.8 ? 72 : 58; } });
   let yaw = 0, look = new THREE.Vector3(QR.START.x, 1, QR.START.z), t0 = 0;
   B.run(dt => {
@@ -472,6 +533,8 @@ if (QR && QR.view === '3d') {
       }
       if (ph === 'lobby') crowd.free(r.seat); else crowd.place(r.seat, r.x, 0, r.z, r.h, r.sp);
     });
+    if (ended) teamPodium();
+    if (banners) for (const b of banners) if (b) b.lookAt(camera.position);
     if (ended) QR.podium.forEach((seat, k) => { const P = PODIUM[k]; if (!P) return; if (seat === QR.mySeat && me) { me.position.set(P.x, P.h, P.z); me.heading = 0; me.speed = 0; if (Math.floor(t0 * 2) % 3 === 0) me.play('cheer', 600); } else crowd.place(seat, P.x, P.h, P.z, 0, 0); });
     crowd.update(dt);
     // the camera: behind me (a player), a slow cinematic over the race (the host's projector)

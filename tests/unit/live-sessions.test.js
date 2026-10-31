@@ -332,7 +332,9 @@ test('results: a class run saves scores for the class\'s students only, into the
   await a.next('bye');
   const run = q.get('SELECT * FROM live_runs WHERE id=?', s.id);
   assert.equal(run.class_id, cls.id); assert.equal(run.players, 2); assert.equal(run.guests, 0);
-  assert.deepEqual(JSON.parse(run.items), [{ q: 'Pick yes', right: 1, answered: 2, top_wrong: 'no' }]);
+  // Part 3: the question as asked (host-written text and choices, the answer, its time and the counts) for the review.
+  const [saved] = JSON.parse(run.items);
+  assert.deepEqual({ ...saved, choices: [...saved.choices].sort(), answer: saved.choices[saved.answer] }, { q: 'Pick yes', right: 1, answered: 2, top_wrong: 'no', choices: ['no', 'yes'], answer: 'yes', secs: 10, counts: [1, 1] });
   const scores = q.all('SELECT user_id, score, rank FROM live_run_scores WHERE run_id=? ORDER BY rank', s.id);
   assert.deepEqual(scores.map(r => r.user_id), [mia.id, leo.id]);
   const prog = q.get('SELECT score, label FROM step_progress WHERE class_lesson_id=? AND step_id=? AND user_id=?', cl.id, step.id, mia.id);
@@ -341,7 +343,7 @@ test('results: a class run saves scores for the class\'s students only, into the
   const page = await call(`/live/results/${s.id}`, { user: teacher });
   assert.equal(page.status, 200); assert.ok(page.text.includes(mia.display_name), 'names as shown in the session');
   const csv = await call(`/live/results/${s.id}.csv`, { user: teacher });
-  assert.equal(csv.status, 200); assert.match(csv.text, /^rank,student,score,correct,answered/);
+  assert.equal(csv.status, 200); assert.match(csv.text, /^rank,student,team,score,bonus,correct,answered,q1\r\n/);
   assert.equal((await call(`/live/results/${s.id}`, { user: teacher2 })).status, 404);
   for (const c of [h, a, b]) c.ws.close();
 });

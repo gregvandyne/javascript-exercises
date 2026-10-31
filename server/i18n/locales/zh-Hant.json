@@ -2638,7 +2638,8 @@
       "game": "玩遊戲",
       "build": "做遊戲",
       "text": "讀一讀、做一做",
-      "question": "回答問題"
+      "question": "回答問題",
+      "quiz": "回答測驗題目"
     },
     "library": {
       "title": "課程庫",
@@ -2803,6 +2804,14 @@
     },
     "editor": {
       "live": "已在 {classes} 開放。{count, plural, =0 {還沒有學生開始。} other {已有 # 位學生開始。}}修改會立即同步給學生。"
+    },
+    "quiz": {
+      "start": "開始",
+      "right": "答對了！",
+      "wrong": "差一點。正確答案已標出。",
+      "next": "下一題",
+      "of": "第 {n} 題，共 {total} 題",
+      "done": "完成！你答對了 {score}%。"
     }
   },
   "progress": {
@@ -4373,7 +4382,14 @@
       "restart": "Oomba Academy 正在重新啟動。一分鐘後請用同一個代碼再次加入。",
       "flood": "這台裝置送出的訊息太多了。",
       "takenDown": "這個遊戲已被下架。",
-      "reconnecting": "連線中斷。正在重新連線…"
+      "reconnecting": "連線中斷。正在重新連線…",
+      "read": "朗讀",
+      "readAgain": "再讀一次",
+      "team": "你的隊伍",
+      "pickTeam": "選擇你的隊伍",
+      "eyes": "請看老師",
+      "moved": "你換到了{team}",
+      "again": "老師可能會再開一場遊戲，請留在這個頁面！"
     },
     "emote": {
       "wave": "揮手",
@@ -4413,7 +4429,12 @@
       "answers": "{count, plural, other {# 個回答}}",
       "players": "玩家",
       "controls": "遊戲控制",
-      "reports": "有玩家在這個遊戲中檢舉了某些內容。請確認一切正常。"
+      "reports": "有玩家在這個遊戲中檢舉了某些內容。請確認一切正常。",
+      "eyes": "看這裡",
+      "teacherView": "老師畫面",
+      "soundOn": "聲音開",
+      "soundOff": "聲音關",
+      "seeResultsNow": "現在看結果"
     },
     "landing": {
       "title": "主持即時遊戲",
@@ -4625,7 +4646,29 @@
       "gone": "這些結果已無法查看。",
       "left": "已離開",
       "gradebook": "分數已加入班級成績冊。",
-      "playersCount": "{count, plural, other {# 位玩家}}"
+      "playersCount": "{count, plural, other {# 位玩家}}",
+      "team": "隊伍",
+      "sum": "總分",
+      "avg": "每人平均",
+      "rankedBy": "排名依據：{how}",
+      "teamPlayers": "人數",
+      "bonus": "加分",
+      "hardest": "最難的題目",
+      "review": "題目回顧",
+      "marks": "作答",
+      "markRight": "答對",
+      "markWrong": "答錯",
+      "markNone": "沒作答",
+      "needsHelp": "需要協助",
+      "details": "學生詳細資料",
+      "detailsHint": "打開前，請先確認全班看不到你的螢幕。",
+      "print": "列印",
+      "playMissed": "再玩一次答錯的題目",
+      "playAgain": "用同一批玩家再玩一次",
+      "stillHere": "{count, plural, other {還有 # 位玩家在這裡}}",
+      "playAgainTeams": "用這些隊伍再玩一次",
+      "newGame": "新遊戲",
+      "homework": "指派為作業"
     },
     "sets": {
       "title": "題組",
@@ -4661,7 +4704,12 @@
         "tooBig": "這個題組太大了。",
         "noQuestions": "這堂課沒有問題步驟。",
         "notFound": "找不到這個題組。"
-      }
+      },
+      "noMissed": "大家每題都答對了，沒有需要再玩的題目。",
+      "teamsOff": "這場遊戲沒有隊伍。",
+      "againGone": "玩家已經離開了，請開一場新遊戲。",
+      "homeworkOff": "用題組出作業的功能目前關閉。",
+      "noClass": "請選擇你的一個班級。"
     },
     "nick": {
       "0": "勇敢的水獺",
@@ -4829,6 +4877,188 @@
     },
     "panel": {
       "title": "直播遊戲"
+    },
+    "team": {
+      "preset": {
+        "0": "藍色鯨魚隊",
+        "1": "橘色老虎隊",
+        "2": "綠色青蛙隊",
+        "3": "粉紅紅鶴隊",
+        "4": "黃色蜜蜂隊",
+        "5": "天藍老鷹隊",
+        "6": "紅色狐狸隊",
+        "7": "夜空貓頭鷹隊"
+      },
+      "shape": {
+        "circle": "圓形",
+        "triangle": "三角形",
+        "square": "正方形",
+        "heart": "愛心",
+        "star": "星星",
+        "hexagon": "六邊形",
+        "diamond": "菱形",
+        "moon": "月亮"
+      },
+      "heading": "隊伍",
+      "off": "關",
+      "count": "隊伍數量",
+      "edit": "編輯隊伍",
+      "done": "完成",
+      "more": "更多隊伍選項",
+      "scoring": "隊伍分數",
+      "scoringAvg": "每人平均",
+      "scoringAvgHint": "隊伍人數不同時也公平。",
+      "scoringSum": "總分",
+      "unassigned": "還沒有隊伍",
+      "empty": "還沒有玩家",
+      "emptyWarn": "{team}沒有玩家。",
+      "uneven": "隊伍人數不平均（{sizes}）。要平均分配嗎？",
+      "balance": "平均分配",
+      "shuffle": "隨機打亂",
+      "choose": "玩家自己選隊伍",
+      "chooseHint": "只能在遊戲開始前選。",
+      "lock": "鎖定隊伍",
+      "unlock": "解除鎖定隊伍",
+      "locked": "隊伍已鎖定",
+      "useLast": "使用上次的隊伍",
+      "noLast": "這個班級還沒有儲存的隊伍。",
+      "forgetLast": "刪除儲存的隊伍",
+      "forgetConfirm": "要刪除這個班級儲存的隊伍嗎？",
+      "saved": "隊伍已儲存。",
+      "savedCount": "{count, plural, other {已為 # 位學生儲存隊伍。}}",
+      "notSaved": "還沒有儲存的隊伍。你和這個班級上一次即時遊戲的隊伍也會存在這裡。",
+      "moveHere": "移到這裡",
+      "selectHint": "把玩家拖到某一隊，或先選一位玩家，再選「移到這裡」。",
+      "moved": "{name} → {team}",
+      "you": "你在{team}",
+      "pick": "加入",
+      "full": "已滿",
+      "size": "{count, plural, other {# 位玩家}}",
+      "rank": "{count} 隊中第 {rank} 名",
+      "score": "分數",
+      "perPlayer": "每人",
+      "board": "隊伍分數",
+      "podium": "隊伍頒獎台",
+      "madeFor": "適合分隊玩",
+      "none": "沒有開啟隊伍。",
+      "editor": "即時遊戲的隊伍",
+      "editorHint": "上課前先把小組分好。在即時遊戲中按「使用上次的隊伍」，大家就會回到原本的小組。"
+    },
+    "settings": {
+      "title": "遊戲設定",
+      "open": "設定",
+      "more": "更多設定",
+      "secs": "每題時間",
+      "secsSet": "依照題組",
+      "secsN": "{count, plural, other {# 秒}}",
+      "count": "題目數量",
+      "countAll": "全部",
+      "shuffleQ": "打亂題目順序",
+      "shuffleA": "打亂答案順序",
+      "points": "計分",
+      "pointsSpeed": "答得越快分數越高",
+      "pointsAccuracy": "只算答對（每題 1,000 分）",
+      "board": "玩家裝置上的排行榜",
+      "boardAll": "顯示",
+      "boardTop5": "只顯示前 5 名",
+      "boardOff": "隱藏",
+      "late": "開始後也能加入",
+      "names": "螢幕上的名字",
+      "namesNames": "真實姓名",
+      "namesNicknames": "暱稱",
+      "namesHidden": "大螢幕上不顯示名字",
+      "namesHint": "你的老師畫面一定會顯示自己學生的名字。",
+      "sound": "大螢幕播放遊戲音效",
+      "emotes": "表情動作",
+      "remembered": "你的選擇會保留到下一次即時遊戲。",
+      "reset": "恢復標準設定",
+      "save": "儲存"
+    },
+    "say": {
+      "menu": "訊息",
+      "twoMinutes": "還剩 2 分鐘！",
+      "oneMinute": "還剩 1 分鐘！",
+      "lastQuestion": "最後一題！",
+      "lastRound": "最後一輪！",
+      "eyesOnMe": "請大家看這裡",
+      "greatTeamwork": "團隊合作真棒！",
+      "greatEffort": "大家都好努力！",
+      "beKind": "記得要友善喔",
+      "getReady": "準備好！",
+      "almostDone": "快完成了！"
+    },
+    "eyes": {
+      "on": "看這裡",
+      "off": "回到遊戲",
+      "cover": "請看老師",
+      "coverHint": "遊戲馬上回來。",
+      "banner": "看這裡：所有螢幕都暫停了。"
+    },
+    "bonus": {
+      "give": "給加分",
+      "toastSeat": "{reason}！+{points}",
+      "toastTeam": "{reason}！{team} +{points}",
+      "reason": {
+        "teamwork": "團隊合作",
+        "kindness": "友善",
+        "effort": "很努力",
+        "helping": "幫助別人",
+        "listening": "專心聆聽"
+      }
+    },
+    "time": {
+      "add": "+{s} 秒",
+      "revealNow": "現在公布",
+      "waiting": "等待大家…"
+    },
+    "dash": {
+      "title": "老師畫面",
+      "qrTitle": "在手機上開啟老師畫面",
+      "qrHint": "用手機掃描。你需要用自己的帳號登入。",
+      "notice": "請用全班看不到的螢幕（最好是你的手機）。",
+      "tabPlayers": "玩家",
+      "tabQuestion": "題目",
+      "tabTeams": "隊伍",
+      "tabMessages": "訊息",
+      "tabSettings": "設定",
+      "answered": "已作答",
+      "thinking": "思考中",
+      "offline": "離線",
+      "late": "較晚加入",
+      "needsHelp": "需要協助",
+      "showHelp": "顯示需要協助的人",
+      "hideHelp": "隱藏需要協助的人",
+      "why": {
+        "lowScore": "答對不到一半",
+        "wrongRun": "連續答錯兩題",
+        "missRun": "連續兩題沒作答"
+      },
+      "extraWaiting": "{count, plural, other {# 人還在作答（延長時間）}}",
+      "showAnswer": "顯示答案",
+      "hideAnswer": "隱藏答案",
+      "rename": "換新暱稱",
+      "move": "換到別隊",
+      "support": "調整",
+      "supportTime": "延長時間",
+      "time100": "一般時間",
+      "time150": "時間 × 1.5",
+      "time200": "時間 × 2",
+      "read": "朗讀題目",
+      "simple": "簡易畫面",
+      "remember": "為這個班級記住",
+      "supportPrivate": "只有這位學生和你看得到。",
+      "supportWaits": "公布答案會等這位學生作答。你隨時可以選「現在公布」。",
+      "saved": "已儲存。"
+    },
+    "support": {
+      "count": "{count, plural, other {# 位學生有儲存的調整。}}",
+      "clear": "清除調整",
+      "clearConfirm": "要刪除這個班級所有儲存的調整嗎？"
+    },
+    "homework": {
+      "hint": "學生按自己的步調作答，沒有計時。分數會記入成績簿。",
+      "due": "截止日期（選填）",
+      "assign": "指派給班級"
     }
   }
 }

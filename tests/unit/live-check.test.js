@@ -41,3 +41,15 @@ test('a stored version is checked once and cached; an unknown one is not ready',
   assert.equal(C.gameReady(g), true);
   assert.equal(C.liveCheck('nope').ready, false);
 });
+
+test('teams: ready({ teams: true }) is read; a team shown by colour alone is warned about (never blocks)', () => {
+  assert.equal(C.checkHtml(liveHtml()).teams, false);
+  const withTeams = liveHtml('').replace('live.ready({ lobby', 'live.ready({ teams: true, lobby');
+  assert.equal(C.checkHtml(withTeams).teams, true);
+  const colourOnly = liveHtml("const t = live.teamStyle(live.myTeam); ctx.fillStyle = t.color;");
+  const r = C.checkHtml(colourOnly);
+  assert.ok(r.issues.some(i => i.code === 'live_team_cue' && i.level === 'warn')); assert.equal(r.ready, true);
+  assert.ok(!codes(liveHtml("const t = live.teamStyle(live.myTeam); ctx.fillStyle = t.color; live.drawShape(ctx, t.shape, 0, 0, 9);")).includes('live_team_cue'));
+  assert.ok(!codes(liveHtml("for (const t of live.teams()) label(t.name, t.color);")).includes('live_team_cue'));
+  assert.ok(C.LIVE_NOTES.live_team_cue.includes('drawShape'));
+});

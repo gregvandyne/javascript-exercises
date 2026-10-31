@@ -12,6 +12,10 @@
   .lb-banner { position: fixed; inset-inline: 0; inset-block-start: max(10px, env(safe-area-inset-top)); margin: 0 auto; width: max-content; max-width: 92vw; background: #1d2340; color: #fff; border-radius: 18px; padding: 8px 18px; font-weight: 800; font-size: clamp(16px, 4vw, 26px); text-align: center; }
   .lb-banner:empty { display: none; }
   .lb-stick { position: fixed; inset-block-end: 18px; inset-inline-start: 18px; width: 120px; height: 120px; border-radius: 50%; background: rgba(255,255,255,.35); border: 3px solid rgba(29,35,64,.25); touch-action: none; }
+  .lb-teams { position: fixed; inset-inline: 0; inset-block-end: max(10px, env(safe-area-inset-bottom)); display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; padding-inline: 150px 10px; pointer-events: none; }
+  .lb-team { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 999px; font-weight: 800; border: 2px solid #1d2340; }
+  .lb-team canvas { width: 20px; height: 20px; }
+  @media (max-width: 500px) { .lb-teams { padding-inline: 10px; inset-block-end: auto; inset-block-start: 64px; } }
   .lb-stick i { position: absolute; left: 35px; top: 35px; width: 50px; height: 50px; border-radius: 50%; background: rgba(29,35,64,.55); }
 </style>
 </head>
@@ -20,10 +24,11 @@
 <canvas id="flat" aria-hidden="true" hidden></canvas>
 <p class="lb-banner" id="banner" role="status" aria-live="polite"></p>
 <div class="lb-stick" id="stick" aria-hidden="true" hidden><i></i></div>
+<div class="lb-teams" id="teams" hidden></div>
 <script src="/vendor/oomba-kit/1.1.0/oomba-kit.js" integrity="sha384-GCejMN1YYamlsZNEJw6SRznGmZC2i6tppYwkLt8cv2gI3YTTsZq6l8eyUQuAM8qX" crossorigin="anonymous"></script>
 <script src="/vendor/oomba-kit/1.1.0/packs/dress.js" integrity="sha384-ZCFgY98YAWY7Tcy+GfJLalmnJukKdzbVpg6j4ZljXuJSYgYzkWSWMPihVW/u8CqH" crossorigin="anonymous"></script>
 <script src="/vendor/oomba-kit/1.1.0/packs/bridge-3d.js" integrity="sha384-XrVZh1TfGin1ajGCc72TzhAxeqUJQM3JI3kI1weHoMgUIV4urBdPtJbZxO7wPOli" crossorigin="anonymous"></script>
-<script src="/vendor/oomba-kit/1.1.0/packs/live.js" integrity="sha384-PoL1d2TQvVJAaM+LOoFIDiwk0wF23Ue5ASvgQgvkBEjRB/qhCQ+b0BJ93864hhig" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.0/packs/live.js" integrity="sha384-coSMEAXKgHblAGttFS4mvWXqRq7LEVGZP+rPPYCxp8BnVqWKHWjnu+kWuuB1vd2m" crossorigin="anonymous"></script>
 <script>
 /* The Oomba Live platform lobby (server/live/lobby.html; docs/live-protocol.md): shown while players wait for the host,
    for games that don't draw a lobby of their own (games that declare lobby:true load at once instead). A small meadow
@@ -68,6 +73,17 @@
     var d = Math.hypot(me.x, me.z); if (d > R) { me.x *= R / d; me.z *= R / d; }
     L.move(me.x, 0, me.z, me.h, sp > 0.6 ? 'run' : sp > 0.05 ? 'walk' : 'idle');
   }
+  // team mode: a banner row of the teams (shape, icon, name, players); everyone's team ring comes from the pack
+  function teamRow() {
+    var el = $('teams'), tms = L.teamsOn ? L.teams() : [];
+    el.hidden = !tms.length; el.textContent = '';
+    tms.forEach(function (tm) {
+      var d = document.createElement('span'); d.className = 'lb-team'; d.style.background = tm.color; d.style.color = tm.ink;
+      var c = document.createElement('canvas'); c.width = c.height = 40; c.setAttribute('aria-hidden', 'true'); L.drawShape(c.getContext('2d'), tm.shape, 20, 20, 16, tm.ink, null);
+      d.append(c, tm.icon + ' ' + tm.name + ' · ' + tm.size); el.appendChild(d);
+    });
+  }
+  L.on('teams', teamRow); L.on('welcome', teamRow); L.on('join', teamRow); L.on('leave', teamRow);
   var LB = window.LB = { view: L.view, me: me, step: step, started3d: false, R: R };
   var begun = false;
   LB.begin = function () {
@@ -89,7 +105,7 @@
       };
       requestAnimationFrame(loop);
     }
-    L.ready({ presence: { bounds: 15, maxSpeed: 9 }, lobby: true, view: LB.view });
+    L.ready({ presence: { bounds: 15, maxSpeed: 9 }, lobby: true, teams: true, view: LB.view });
     L.on('start', function () {});
   };
   if (LB.view === '2d') LB.begin(); else setTimeout(function () { if (!LB.started3d) { LB.view = '2d'; LB.begin(); } }, 8000);
@@ -115,6 +131,8 @@ if (LB && LB.view === '3d') {
   const me = L.role === 'host' ? null : B.rig(L.me && L.me.avatar ? L.me.avatar : O.avatar(), { size: 1.6 });
   if (me) scene.add(me);
   const crowd = L.crowd(B, { auto: false, self: () => me });   // self: my own emotes play on my character
+  const myRing = () => { if (me) crowd.teamRing(me, L.myTeam ? L.myTeam.team : 0); };
+  L.on('teams', myRing); myRing();
   BRB.fx.fit3d(renderer, camera, { maxDpr: B.dprCap });
   let t = 0;
   B.run(dt => {

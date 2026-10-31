@@ -2640,7 +2640,8 @@
       "game": "Play a game",
       "build": "Build a game",
       "text": "Read or do",
-      "question": "Answer a question"
+      "question": "Answer a question",
+      "quiz": "Answer quiz questions"
     },
     "library": {
       "title": "Lesson library",
@@ -2805,6 +2806,14 @@
     },
     "editor": {
       "live": "Live in {classes}. {count, plural, =0 {No students have started yet.} one {# student has started.} other {# students have started.}} Changes show up for them right away."
+    },
+    "quiz": {
+      "start": "Start",
+      "right": "Right!",
+      "wrong": "Not quite. The right answer is marked.",
+      "next": "Next",
+      "of": "Question {n} of {total}",
+      "done": "Done! You got {score}% right."
     }
   },
   "progress": {
@@ -4375,7 +4384,14 @@
       "restart": "Oomba Academy is restarting. Join again with the same code in a minute.",
       "flood": "Too many messages from this device.",
       "takenDown": "This game was taken down.",
-      "reconnecting": "Connection lost. Reconnecting…"
+      "reconnecting": "Connection lost. Reconnecting…",
+      "read": "Read",
+      "readAgain": "Read again",
+      "team": "Your team",
+      "pickTeam": "Pick your team",
+      "eyes": "Eyes on your teacher",
+      "moved": "You moved to {team}",
+      "again": "Your teacher may start another game. Stay on this page!"
     },
     "emote": {
       "wave": "Wave",
@@ -4415,7 +4431,12 @@
       "answers": "{count, plural, one {# answer} other {# answers}}",
       "players": "Players",
       "controls": "Game controls",
-      "reports": "A player reported something in this game. Please check that everything is OK."
+      "reports": "A player reported something in this game. Please check that everything is OK.",
+      "eyes": "Eyes up",
+      "teacherView": "Teacher view",
+      "soundOn": "Sound on",
+      "soundOff": "Sound off",
+      "seeResultsNow": "See results now"
     },
     "landing": {
       "title": "Host a live game",
@@ -4627,7 +4648,29 @@
       "gone": "These results are not available any more.",
       "left": "left",
       "gradebook": "Scores were added to the class gradebook.",
-      "playersCount": "{count, plural, one {# player} other {# players}}"
+      "playersCount": "{count, plural, one {# player} other {# players}}",
+      "team": "Team",
+      "sum": "Total",
+      "avg": "Average per player",
+      "rankedBy": "Ranked by: {how}",
+      "teamPlayers": "Players",
+      "bonus": "Bonus",
+      "hardest": "Hardest questions",
+      "review": "Question review",
+      "marks": "Answers",
+      "markRight": "Right",
+      "markWrong": "Wrong",
+      "markNone": "No answer",
+      "needsHelp": "Needs help",
+      "details": "Student details",
+      "detailsHint": "Check that the class can't see your screen before you open this.",
+      "print": "Print",
+      "playMissed": "Play the missed questions again",
+      "playAgain": "Play again with the same players",
+      "stillHere": "{count, plural, one {# player still here} other {# players still here}}",
+      "playAgainTeams": "Play again with these teams",
+      "newGame": "New game",
+      "homework": "Assign as homework"
     },
     "sets": {
       "title": "Question sets",
@@ -4663,7 +4706,12 @@
         "tooBig": "This set is too big.",
         "noQuestions": "This lesson has no question steps.",
         "notFound": "We can't find that set."
-      }
+      },
+      "noMissed": "Everyone got every question right, so there is nothing to play again.",
+      "teamsOff": "This game had no teams.",
+      "againGone": "The players have left. Start a new game instead.",
+      "homeworkOff": "Homework from question sets is switched off.",
+      "noClass": "Pick one of your classes."
     },
     "nick": {
       "0": "Brave Otter",
@@ -4831,6 +4879,188 @@
     },
     "panel": {
       "title": "Live games"
+    },
+    "team": {
+      "preset": {
+        "0": "Blue Whales",
+        "1": "Orange Tigers",
+        "2": "Green Frogs",
+        "3": "Pink Flamingos",
+        "4": "Yellow Bees",
+        "5": "Sky Eagles",
+        "6": "Red Foxes",
+        "7": "Night Owls"
+      },
+      "shape": {
+        "circle": "Circle",
+        "triangle": "Triangle",
+        "square": "Square",
+        "heart": "Heart",
+        "star": "Star",
+        "hexagon": "Hexagon",
+        "diamond": "Diamond",
+        "moon": "Moon"
+      },
+      "heading": "Teams",
+      "off": "Off",
+      "count": "Number of teams",
+      "edit": "Edit teams",
+      "done": "Done",
+      "more": "More team options",
+      "scoring": "Team score",
+      "scoringAvg": "Average per player",
+      "scoringAvgHint": "Fair when teams have different sizes.",
+      "scoringSum": "Total points",
+      "unassigned": "No team yet",
+      "empty": "No players yet",
+      "emptyWarn": "{team} has no players.",
+      "uneven": "Teams are uneven ({sizes}). Balance them?",
+      "balance": "Balance",
+      "shuffle": "Shuffle",
+      "choose": "Players choose their team",
+      "chooseHint": "Only before the game starts.",
+      "lock": "Lock teams",
+      "unlock": "Unlock teams",
+      "locked": "Teams are locked",
+      "useLast": "Use last teams",
+      "noLast": "This class has no saved teams yet.",
+      "forgetLast": "Forget saved teams",
+      "forgetConfirm": "Forget this class's saved teams?",
+      "saved": "Teams saved.",
+      "savedCount": "{count, plural, one {Saved teams for # student.} other {Saved teams for # students.}}",
+      "notSaved": "No saved teams yet. The teams from your last live game with this class are saved here too.",
+      "moveHere": "Move here",
+      "selectHint": "Drag a player onto a team, or select a player and then choose “Move here”.",
+      "moved": "{name} → {team}",
+      "you": "You are in {team}",
+      "pick": "Join",
+      "full": "Full",
+      "size": "{count, plural, one {# player} other {# players}}",
+      "rank": "Place {rank} of {count}",
+      "score": "Score",
+      "perPlayer": "per player",
+      "board": "Team scores",
+      "podium": "Team podium",
+      "madeFor": "Made for teams",
+      "none": "Teams are off.",
+      "editor": "Teams for live games",
+      "editorHint": "Make your table groups before the lesson. In a live game, “Use last teams” puts everyone back in them."
+    },
+    "settings": {
+      "title": "Game settings",
+      "open": "Settings",
+      "more": "More settings",
+      "secs": "Time per question",
+      "secsSet": "As in the question set",
+      "secsN": "{count, plural, one {# second} other {# seconds}}",
+      "count": "Number of questions",
+      "countAll": "All",
+      "shuffleQ": "Shuffle the questions",
+      "shuffleA": "Shuffle the answers",
+      "points": "Points",
+      "pointsSpeed": "Faster answers score more",
+      "pointsAccuracy": "Right answers only (1,000 each)",
+      "board": "Leaderboard on players' devices",
+      "boardAll": "Show it",
+      "boardTop5": "Top 5 only",
+      "boardOff": "Hide it",
+      "late": "Players can join after the start",
+      "names": "Names on screens",
+      "namesNames": "Real names",
+      "namesNicknames": "Nicknames",
+      "namesHidden": "No names on the big screen",
+      "namesHint": "Your teacher view always shows your own students' names.",
+      "sound": "Game sounds on the big screen",
+      "emotes": "Emotes",
+      "remembered": "Your choices are remembered for your next live game.",
+      "reset": "Back to standard settings",
+      "save": "Save"
+    },
+    "say": {
+      "menu": "Message",
+      "twoMinutes": "2 minutes left!",
+      "oneMinute": "1 minute left!",
+      "lastQuestion": "Last question!",
+      "lastRound": "Last round!",
+      "eyesOnMe": "Eyes on me, please",
+      "greatTeamwork": "Great teamwork!",
+      "greatEffort": "Great effort, everyone!",
+      "beKind": "Remember to be kind",
+      "getReady": "Get ready!",
+      "almostDone": "Almost done!"
+    },
+    "eyes": {
+      "on": "Eyes up",
+      "off": "Back to the game",
+      "cover": "Eyes on your teacher",
+      "coverHint": "The game will be back in a moment.",
+      "banner": "Eyes up: every screen is paused."
+    },
+    "bonus": {
+      "give": "Give bonus points",
+      "toastSeat": "{reason}! +{points}",
+      "toastTeam": "{reason}! +{points} for {team}",
+      "reason": {
+        "teamwork": "Teamwork",
+        "kindness": "Kindness",
+        "effort": "Great effort",
+        "helping": "Helping others",
+        "listening": "Good listening"
+      }
+    },
+    "time": {
+      "add": "+{s} s",
+      "revealNow": "Reveal now",
+      "waiting": "Waiting for everyone…"
+    },
+    "dash": {
+      "title": "Teacher view",
+      "qrTitle": "Teacher view on your phone",
+      "qrHint": "Scan with your phone. You need to be signed in as you.",
+      "notice": "Use a screen the class can't see (your phone is best).",
+      "tabPlayers": "Players",
+      "tabQuestion": "Question",
+      "tabTeams": "Teams",
+      "tabMessages": "Messages",
+      "tabSettings": "Settings",
+      "answered": "Answered",
+      "thinking": "Thinking",
+      "offline": "Offline",
+      "late": "Joined late",
+      "needsHelp": "Needs help",
+      "showHelp": "Show who needs help",
+      "hideHelp": "Hide who needs help",
+      "why": {
+        "lowScore": "Under half right",
+        "wrongRun": "Two wrong in a row",
+        "missRun": "Missed two in a row"
+      },
+      "extraWaiting": "{count, plural, one {# still answering (extra time)} other {# still answering (extra time)}}",
+      "showAnswer": "Show the answer",
+      "hideAnswer": "Hide the answer",
+      "rename": "New nickname",
+      "move": "Move to team",
+      "support": "Support",
+      "supportTime": "Extra time",
+      "time100": "Normal time",
+      "time150": "Time × 1.5",
+      "time200": "Time × 2",
+      "read": "Read questions aloud",
+      "simple": "Simple view",
+      "remember": "Remember for this class",
+      "supportPrivate": "Only this student and you can see this.",
+      "supportWaits": "The reveal waits for this student. You can always choose Reveal now.",
+      "saved": "Saved."
+    },
+    "support": {
+      "count": "{count, plural, one {# student has saved support.} other {# students have saved support.}}",
+      "clear": "Clear support",
+      "clearConfirm": "Delete every saved support setting for this class?"
+    },
+    "homework": {
+      "hint": "Students answer the questions at their own pace, with no timer. Their score goes to the gradebook.",
+      "due": "Due date (optional)",
+      "assign": "Assign to the class"
     }
   }
 }

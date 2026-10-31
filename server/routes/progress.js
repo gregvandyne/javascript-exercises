@@ -16,15 +16,22 @@ import { classHeader, classBack, studentNotYou } from './schools.js';
 import { zoneNote } from './lessons.js';
 import { gameLiveReady } from './live.js';
 import { canHost as liveCanHost } from '../services/classlive-access.js';
-import { liveOn } from '../services/classlive-sessions.js';
-import { classRuns as liveRuns } from '../services/classlive-results.js';
+import { liveOn, teamsOn as liveTeamsOn } from '../services/classlive-sessions.js';
+import { classRuns as liveRuns, classSupport as liveSupport } from '../services/classlive-results.js';
+import { loadClassTeams, presetsFor } from '../services/classlive-teams.js';
+import { shapesSprite, teamText } from '../views/live.js';
+import { jsonData } from '../views/html.js';
+import fs from 'node:fs';
+import { fileURLToPath } from 'node:url';
+/** The class teams editor's script (Oomba Live part 3; the page shows the saved state without it). */
+const CLASS_TEAMS_JS = fs.existsSync(fileURLToPath(new URL('../../public/js/live-class-teams.js', import.meta.url)));
 const liveHostOk = u => liveOn() && liveCanHost(u);
 
 export const router = Router();
 const CSS = raw(`<link rel="stylesheet" href="/css/community.css?v=${VERSION}"><link rel="stylesheet" href="/css/schools.css?v=${VERSION}">`);
 const b = req => req.body || {};
 const nameOf = r => r.roster_name || r.display_name;
-const KIND_ICON = { game: '🎮', build: '🛠️', text: '📖', question: '✍️' };
+const KIND_ICON = { game: '🎮', build: '🛠️', text: '📖', question: '✍️', quiz: '🧩' };
 const err = (req, res, code, status = 400, field) => res.status(status).json({ error: req.t(`progress.errors.${code}`), ...(field ? { field } : {}) });
 const send = (req, res, r, extra = {}) => (r.ok ? res.json({ ok: true, ...extra }) : err(req, res, r.code, r.code === 'notFound' ? 404 : 400, r.code === 'answerEmpty' ? 'answer' : undefined));
 const no = (req, res) => (req.path.startsWith('/api/') ? res.status(404).json({ error: req.t('progress.errors.notFound') }) : notFound(req, res, req.t('progress.errors.notFound')));
@@ -120,10 +127,35 @@ router.get('/class/:id/progress', requireUser, (req, res) => {
     : !gb.students.length ? html`<section class="panel">${emptyState({ emoji: '👩‍🎓', title: t('progress.gradebook.noStudents'), text: t('progress.gradebook.noStudentsText') })}</section>`
     : html`<section class="panel">${table}<p class="small muted gb-key"><span>✅ ${t('progress.key.done')}</span><span><span class="pbar"><span style="width:60%"></span></span> ${t('progress.key.steps')}</span><span class="gb-late-key">⏰ ${t('progress.key.late')}</span><span>✍️ ${t('progress.key.toRead')}</span></p></section>`}`;
   // Oomba Live: the class's recent live games (results open from here; students' scores are in the saved run).
+  // Part 3: a team row for team runs, "Teams for live games" (the class teams editor: live-class-teams.js) and, with
+  // LIVE_SAVE_SUPPORT, how many students have saved support (counts only here) with Clear.
   const runs = liveOn() ? liveRuns(c.id, 8) : [];
-  const livePanel = runs.length ? html`<section class="panel" id="live-games" aria-labelledby="live-games-h"><h2 id="live-games-h">📡 ${t('live.panel.title')}</h2>
-    <ul class="plain">${runs.map(r => html`<li><a href="/live/results/${r.id}" dir="auto">${r.title || t('live.results.title')}</a> <span class="small muted">${f.day(r.ended_at)} · ${t('live.results.playersCount', { count: r.players })}</span></li>`)}</ul></section>` : '';
-  page(req, res, { title: `${t('progress.gradebook.title')} · ${c.name}`, active: 'classes', body: html`${body}${livePanel}`, head: CSS, ...classBack(req, c) });
+  const teamsHere = liveOn() && liveTeamsOn() && S.teaches(req.user, c.id);
+  const presets = teamsHere || runs.some(r => r.teams) ? presetsFor(t) : [];
+  const runTeams = r => { try { const x = r.teams ? JSON.parse(r.teams) : null; return x && Array.isArray(x.list) ? x.list : []; } catch { return []; } };
+  const saved = teamsHere ? loadClassTeams(c.id) : null;
+  // Saved student data stays visible and deletable after a flag is turned off (or the class is archived): support rows
+  // whatever LIVE_SAVE_SUPPORT says now, and saved teams when the teams editor is off.
+  const teacher = S.teaches(req.user, c.id);
+  const sup = teacher ? liveSupport(c.id) : [];
+  const savedOff = teacher && !teamsHere ? loadClassTeams(c.id) : null;
+  const livePanel = runs.length || teamsHere || sup.length || savedOff ? html`<section class="panel" id="live-games" aria-labelledby="live-games-h"><h2 id="live-games-h">📡 ${t('live.panel.title')}</h2>
+    ${runs.length ? html`<ul class="plain">${runs.map(r => html`<li><a href="/live/results/${r.id}" dir="auto">${r.title || t('live.results.title')}</a> <span class="small muted">${f.day(r.ended_at)} · ${t('live.results.playersCount', { count: r.players })}</span>${runTeams(r).length ? html` <span class="lv-run-teams" aria-label="${t('live.team.heading')}">${runTeams(r).sort((a, b) => (a.rank || 99) - (b.rank || 99)).map(x => presets[x.p] ? html`<span class="lv-team-chip lv-team-chip-sm" style="--team:${presets[x.p].color};--team-ink:${presets[x.p].ink}" title="${presets[x.p].name}"><span aria-hidden="true">${presets[x.p].icon}</span><span class="sr-only">${presets[x.p].name}</span></span>` : '')}</span>` : ''}</li>`)}</ul>` : ''}
+    ${teamsHere ? html`<section class="lv-class-teams" id="lv-class-teams" aria-labelledby="lv-class-teams-h" data-api="/api/live/classes/${c.id}/teams">
+      <h3 id="lv-class-teams-h">${t('live.team.editor')}</h3>
+      <p class="small muted">${t('live.team.editorHint')}</p>
+      <p class="small" id="lv-class-teams-state">${saved ? t('live.team.savedCount', { count: saved.plan.size }) : t('live.team.notSaved')}</p>
+      <button class="btn btn-sm" type="button" id="lv-class-teams-open">${t('live.team.edit')}</button>
+      <div class="lv-class-teams-board" id="lv-class-teams-board" hidden></div>
+      ${shapesSprite()}
+      ${jsonData('lv-class-teams-data', { classId: c.id, api: `/api/live/classes/${c.id}/teams`, presets, text: { ...teamText(t), save: t('live.settings.save'), cancel: t('live.play.cancel') } })}
+    </section>` : ''}
+    ${savedOff ? html`<section class="lv-class-teams" id="lv-class-teams-off"><h3>${t('live.team.heading')}</h3><p class="small">${t('live.team.savedCount', { count: savedOff.plan.size })}</p>
+      <form class="lv-inline" data-api="/api/live/classes/${c.id}/teams" data-method="DELETE" data-reload data-confirm="${t('live.team.forgetConfirm')}"><button class="btn btn-sm" type="submit">${t('live.team.forgetLast')}</button><p class="err form-err" aria-live="polite"></p></form></section>` : ''}
+    ${sup.length ? html`<section class="lv-class-support" id="lv-class-support"><h3>${t('live.dash.support')}</h3><p class="small">${t('live.support.count', { count: sup.length })}</p>
+      <form class="lv-inline" data-api="/api/live/classes/${c.id}/support" data-method="DELETE" data-reload data-confirm="${t('live.support.clearConfirm')}"><button class="btn btn-sm" type="submit">${t('live.support.clear')}</button><p class="err form-err" aria-live="polite"></p></form></section>` : ''}
+  </section>` : '';
+  page(req, res, { title: `${t('progress.gradebook.title')} · ${c.name}`, active: 'classes', body: html`${body}${livePanel}`, head: CSS, ...classBack(req, c), ...(teamsHere && CLASS_TEAMS_JS ? { scripts: ['/js/live-class-teams.js'] } : {}) });
 });
 
 /** CSV: one row per student, one column per lesson (steps done of total, '–' before it opens), then Overall (the same
@@ -230,6 +262,12 @@ router.get('/class/:cid/lessons/:clid', requireUser, (req, res) => {
         <form data-api="${api(s)}/hand-in" data-reload data-confirm="${t('progress.student.handInConfirm')}"><button class="btn" type="submit">📤 ${t('progress.student.handIn')}</button></form></div>
         <p class="small muted">${t('progress.student.handInHint')}</p>`;
     }
+    // A quiz step (homework from a live question set): one question at a time, big buttons with shapes, Read aloud,
+    // no timer; the server checks each answer once (public/js/live-quiz-step.js).
+    if (s.kind === 'quiz') return html`<section class="lv-qstep" data-api="/api/lessons/${cl.id}/steps/${s.id}/quiz" data-lang="${req.locale}" aria-live="polite">
+      ${isDone ? html`<p class="sc-score">🏆 ${t('lessons.quiz.done', { score: x.score ?? 0 })}</p>` : html`<button class="btn btn-primary btn-big lv-qstep-go" type="button">▶ ${t('lessons.quiz.start')}</button>`}
+      ${jsonData(`lv-qstep-${s.id}`, { right: t('lessons.quiz.right'), wrong: t('lessons.quiz.wrong'), next: t('lessons.quiz.next'), of: t('lessons.quiz.of'), done: t('lessons.quiz.done'), read: t('live.play.read') })}
+    </section>`;
     if (s.kind === 'question') return html`
       <form class="answerform" data-api="${api(s)}/answer" data-reload novalidate>
         <label class="sr-only" for="ans-${s.id}">${t('progress.student.yourAnswer')}</label>
@@ -262,7 +300,7 @@ router.get('/class/:cid/lessons/:clid', requireUser, (req, res) => {
     ${s.kind === 'build' ? html`<p class="sc-build" dir="auto">💬 “${s.body}”</p>` : s.kind === 'question' ? html`<div class="sc-body q-text">${paras(s.body)}</div>` : s.body ? html`<div class="sc-body">${paras(s.body)}</div>` : ''}
     ${student ? actions(s, x) : teacher ? preview(s) : s.kind === 'game' && !L.playableBy(s, c.school_id, c.id) ? html`<p class="notice warn">${t('lessons.view.notReady')}</p>` : ''}
   </li>`; })}</ol>`;
-  page(req, res, { title: l.title, active: 'classes', mid: true, body, head: CSS, back: `/class/${c.id}`, backLabel: c.name });
+  page(req, res, { title: l.title, active: 'classes', mid: true, body, head: CSS, back: `/class/${c.id}`, backLabel: c.name, ...(student && st.some(s => s.kind === 'quiz') ? { scripts: ['/js/live-quiz-step.js'] } : {}) });
 });
 /** A build step: the student's own Studio game for it (made the first time, reopened after), with the teacher's idea in the Builder box. */
 router.post('/api/progress/:clid/:sid/build', requireUser, rateLimit('studio-new', 30, 3600e3, 'studio.api.tooManyGames'), (req, res) => {

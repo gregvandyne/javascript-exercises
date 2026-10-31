@@ -39,25 +39,35 @@
   .qb-step { display: flex; flex-direction: column; align-items: center; gap: 4px; font-weight: 800; text-align: center; width: 30%; max-width: 160px; overflow-wrap: anywhere; }
   .qb-step canvas { width: 72px; height: 72px; }
   .qb-step i { display: block; width: 100%; border-radius: 12px 12px 0 0; background: #ffc83d; }
+  .qb-tlist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+  .qb-tlist li { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 14px; font-weight: 800; font-size: clamp(16px, 3vw, 26px); border: 2px solid #1d2340; }
+  .qb-tlist li .r { min-width: 1.4em; text-align: center; }
+  .qb-tlist li .nm { flex: 1; overflow-wrap: anywhere; }
+  .qb-tlist li canvas { width: 30px; height: 30px; flex: none; }
+  .qb-tpod { display: flex; justify-content: center; align-items: flex-end; gap: 10px; margin-bottom: 10px; }
+  .qb-tpod .qb-step i { border: 2px solid #1d2340; border-bottom: 0; display: grid; place-items: center; }
+  .qb-tpod canvas { width: 40px; height: 40px; }
+  .qb-team { display: inline-flex; align-items: center; gap: 6px; }
   .qb-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 </style>
 </head>
 <body>
 <canvas id="lobby" aria-hidden="true"></canvas>
 <div class="qb" id="ui">
-  <div class="qb-top"><span class="qb-pill" id="qnum" hidden></span><span class="qb-pill" id="score" hidden></span></div>
+  <div class="qb-top"><span class="qb-pill" id="qnum" hidden></span><span class="qb-pill qb-team" id="team" hidden></span><span class="qb-pill" id="score" hidden></span></div>
   <p class="qb-banner" id="banner" role="status" aria-live="polite"></p>
   <section class="qb-card" id="card" hidden aria-labelledby="qtext">
     <div class="qb-ring" aria-hidden="true"><svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15" fill="none" stroke="rgba(0,0,0,.12)" stroke-width="4"/><circle id="ring" cx="18" cy="18" r="15" fill="none" stroke="#2f6bff" stroke-width="4" stroke-dasharray="94.25" stroke-dashoffset="0" stroke-linecap="round"/></svg><b id="secs"></b></div>
-    <p class="qb-q" id="qtext"></p>
+    <p class="qb-q" id="qtext" dir="auto"></p>
     <div class="qb-pad" id="pad" role="group" aria-labelledby="qtext"></div>
     <p class="qb-note" id="note" aria-live="polite"></p>
   </section>
+  <section class="qb-board" id="tboard" hidden><h2 id="tboard-h"></h2><div class="qb-tpod" id="tpodium"></div><ol class="qb-tlist" id="tboard-list"></ol></section>
   <section class="qb-board" id="board" hidden><h2 id="board-h"></h2><div class="qb-podium" id="podium"></div><ol id="board-list"></ol></section>
 </div>
 <p class="qb-sr" id="sr" aria-live="assertive"></p>
 <script src="/vendor/oomba-kit/1.1.0/oomba-kit.js" integrity="sha384-GCejMN1YYamlsZNEJw6SRznGmZC2i6tppYwkLt8cv2gI3YTTsZq6l8eyUQuAM8qX" crossorigin="anonymous"></script>
-<script src="/vendor/oomba-kit/1.1.0/packs/live.js" integrity="sha384-PoL1d2TQvVJAaM+LOoFIDiwk0wF23Ue5ASvgQgvkBEjRB/qhCQ+b0BJ93864hhig" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.0/packs/live.js" integrity="sha384-coSMEAXKgHblAGttFS4mvWXqRq7LEVGZP+rPPYCxp8BnVqWKHWjnu+kWuuB1vd2m" crossorigin="anonymous"></script>
 <script>
 /* QUESTION BATTLE: an Oomba Live reference game (docs/kit-api.md "Live class games"). Classic quiz: the question and
    its answers on the projector (the host's view), answer buttons on every device, the answer counts and the top five
@@ -67,19 +77,19 @@
   'use strict';
   var O = window.Oomba, L = O.live;
   O.strings({
-    en: { title: 'Question Battle', qnum: 'Question {n} of {total}', locked: 'Answer locked in!', right: 'Right! +{points}', wrong: 'Not this time!', timeUp: "Time's up!", wait: 'Waiting for the host to start…', ready: 'Get ready!', go: 'Go!', top: 'Top five', podium: 'Winners', rank: 'You are number {rank}', score: '{n} points', practice: 'Practice round', paused: 'Paused', skipped: 'Skipped', answers: '{n} answered', done: 'Well played!' },
-    'en-GB': { title: 'Question Battle', qnum: 'Question {n} of {total}', locked: 'Answer locked in!', right: 'Right! +{points}', wrong: 'Not this time!', timeUp: "Time's up!", wait: 'Waiting for the host to start…', ready: 'Get ready!', go: 'Go!', top: 'Top five', podium: 'Winners', rank: 'You are number {rank}', score: '{n} points', practice: 'Practice round', paused: 'Paused', skipped: 'Skipped', answers: '{n} answered', done: 'Well played!' },
-    es: { title: 'Batalla de preguntas', qnum: 'Pregunta {n} de {total}', locked: '¡Respuesta enviada!', right: '¡Correcto! +{points}', wrong: '¡Esta vez no!', timeUp: '¡Se acabó el tiempo!', wait: 'Esperando a que empiece el anfitrión…', ready: '¡Prepárate!', go: '¡Ya!', top: 'Los cinco mejores', podium: 'Ganadores', rank: 'Vas en el puesto {rank}', score: '{n} puntos', practice: 'Ronda de práctica', paused: 'En pausa', skipped: 'Saltada', answers: '{n} respondieron', done: '¡Bien jugado!' },
-    fr: { title: 'Bataille de questions', qnum: 'Question {n} sur {total}', locked: 'Réponse envoyée !', right: 'Bravo ! +{points}', wrong: 'Pas cette fois !', timeUp: 'Temps écoulé !', wait: 'On attend que l’hôte lance la partie…', ready: 'Prépare-toi !', go: 'C’est parti !', top: 'Les cinq meilleurs', podium: 'Gagnants', rank: 'Tu es numéro {rank}', score: '{n} points', practice: 'Manche d’entraînement', paused: 'En pause', skipped: 'Passée', answers: '{n} ont répondu', done: 'Bien joué !' },
-    de: { title: 'Fragen-Duell', qnum: 'Frage {n} von {total}', locked: 'Antwort abgegeben!', right: 'Richtig! +{points}', wrong: 'Diesmal nicht!', timeUp: 'Zeit ist um!', wait: 'Warte, bis die Spielleitung startet…', ready: 'Mach dich bereit!', go: 'Los!', top: 'Die besten fünf', podium: 'Gewinner', rank: 'Du bist auf Platz {rank}', score: '{n} Punkte', practice: 'Übungsrunde', paused: 'Pause', skipped: 'Übersprungen', answers: '{n} haben geantwortet', done: 'Gut gespielt!' },
-    it: { title: 'Sfida a domande', qnum: 'Domanda {n} di {total}', locked: 'Risposta inviata!', right: 'Giusto! +{points}', wrong: 'Non stavolta!', timeUp: 'Tempo scaduto!', wait: 'Aspettiamo che chi conduce inizi…', ready: 'Preparati!', go: 'Via!', top: 'I primi cinque', podium: 'Vincitori', rank: 'Sei al posto numero {rank}', score: '{n} punti', practice: 'Round di prova', paused: 'In pausa', skipped: 'Saltata', answers: '{n} hanno risposto', done: 'Ben giocato!' },
-    pt: { title: 'Batalha de Perguntas', qnum: 'Pergunta {n} de {total}', locked: 'Resposta enviada!', right: 'Certo! +{points}', wrong: 'Não foi dessa vez!', timeUp: 'Acabou o tempo!', wait: 'Esperando o anfitrião começar…', ready: 'Prepare-se!', go: 'Já!', top: 'Os cinco melhores', podium: 'Vencedores', rank: 'Você está em {rank}º lugar', score: '{n} pontos', practice: 'Rodada de treino', paused: 'Pausado', skipped: 'Pulada', answers: '{n} responderam', done: 'Bem jogado!' },
-    nl: { title: 'Vragenbattle', qnum: 'Vraag {n} van {total}', locked: 'Antwoord verstuurd!', right: 'Goed! +{points}', wrong: 'Deze keer niet!', timeUp: 'De tijd is om!', wait: 'Wachten tot de host begint…', ready: 'Maak je klaar!', go: 'Start!', top: 'De top vijf', podium: 'Winnaars', rank: 'Je staat op plek {rank}', score: '{n} punten', practice: 'Oefenronde', paused: 'Gepauzeerd', skipped: 'Overgeslagen', answers: '{n} hebben geantwoord', done: 'Goed gespeeld!' },
-    ru: { title: 'Битва вопросов', qnum: 'Вопрос {n} из {total}', locked: 'Ответ принят!', right: 'Верно! +{points}', wrong: 'В этот раз нет!', timeUp: 'Время вышло!', wait: 'Ждём, когда ведущий начнёт…', ready: 'Приготовься!', go: 'Вперёд!', top: 'Лучшая пятёрка', podium: 'Победители', rank: 'Ты на {rank}-м месте', score: 'Очки: {n}', practice: 'Тренировочный раунд', paused: 'Пауза', skipped: 'Пропущен', answers: 'Ответили: {n}', done: 'Хорошая игра!' },
-    ja: { title: 'クイズバトル', qnum: 'もんだい {n} / {total}', locked: 'こたえをおくったよ！', right: 'せいかい！ +{points}', wrong: 'ざんねん！', timeUp: 'じかんぎれ！', wait: 'ホストがはじめるのをまってね…', ready: 'よーい！', go: 'スタート！', top: 'トップ5', podium: 'ゆうしょう', rank: 'いま {rank}位', score: '{n}ポイント', practice: 'れんしゅうラウンド', paused: 'ポーズ', skipped: 'スキップ', answers: '{n}人がこたえた', done: 'よくがんばったね！' },
-    'zh-Hant': { title: '問答大戰', qnum: '第 {n} 題，共 {total} 題', locked: '答案已送出！', right: '答對了！+{points}', wrong: '這次沒答對！', timeUp: '時間到！', wait: '等主持人開始…', ready: '準備！', go: '開始！', top: '前五名', podium: '優勝者', rank: '你是第 {rank} 名', score: '{n} 分', practice: '練習回合', paused: '暫停', skipped: '已跳過', answers: '{n} 人已作答', done: '玩得好！' },
-    he: { title: 'קרב שאלות', qnum: 'שאלה {n} מתוך {total}', locked: 'התשובה נשלחה!', right: 'נכון! +{points}', wrong: 'לא הפעם!', timeUp: 'נגמר הזמן!', wait: 'מחכים שהמארח יתחיל…', ready: 'היכון!', go: 'יוצאים!', top: 'החמישייה הראשונה', podium: 'המנצחים', rank: 'את/ה במקום {rank}', score: '{n} נקודות', practice: 'סבב אימון', paused: 'מושהה', skipped: 'דולגה', answers: '{n} ענו', done: 'כל הכבוד!' },
-    ar: { title: 'معركة الأسئلة', qnum: 'السؤال {n} من {total}', locked: 'تم إرسال إجابتك!', right: 'صحيح! +{points}', wrong: 'ليس هذه المرة!', timeUp: 'انتهى الوقت!', wait: 'بانتظار أن يبدأ المضيف…', ready: 'استعد!', go: 'انطلق!', top: 'أفضل خمسة', podium: 'الفائزون', rank: 'أنت في المركز {rank}', score: '{n} نقطة', practice: 'جولة تدريبية', paused: 'متوقف مؤقتاً', skipped: 'تم تخطيه', answers: 'أجاب {n}', done: 'أحسنت اللعب!' },
+    en: { title: 'Question Battle', qnum: 'Question {n} of {total}', locked: 'Answer locked in!', right: 'Right! +{points}', wrong: 'Not this time!', timeUp: "Time's up!", wait: 'Waiting for the host to start…', ready: 'Get ready!', go: 'Go!', top: 'Top five', podium: 'Winners', rank: 'You are number {rank}', score: '{n} points', practice: 'Practice round', paused: 'Paused', skipped: 'Skipped', answers: '{n} answered', done: 'Well played!', teams: 'Teams', teamRank: '{team}: place {rank}', teamPodium: 'Winning teams', perPlayer: 'per player', yourTeam: 'Your team: {team}' },
+    'en-GB': { title: 'Question Battle', qnum: 'Question {n} of {total}', locked: 'Answer locked in!', right: 'Right! +{points}', wrong: 'Not this time!', timeUp: "Time's up!", wait: 'Waiting for the host to start…', ready: 'Get ready!', go: 'Go!', top: 'Top five', podium: 'Winners', rank: 'You are number {rank}', score: '{n} points', practice: 'Practice round', paused: 'Paused', skipped: 'Skipped', answers: '{n} answered', done: 'Well played!', teams: 'Teams', teamRank: '{team}: place {rank}', teamPodium: 'Winning teams', perPlayer: 'per player', yourTeam: 'Your team: {team}' },
+    es: { title: 'Batalla de preguntas', qnum: 'Pregunta {n} de {total}', locked: '¡Respuesta enviada!', right: '¡Correcto! +{points}', wrong: '¡Esta vez no!', timeUp: '¡Se acabó el tiempo!', wait: 'Esperando a que empiece el anfitrión…', ready: '¡Prepárate!', go: '¡Ya!', top: 'Los cinco mejores', podium: 'Ganadores', rank: 'Vas en el puesto {rank}', score: '{n} puntos', practice: 'Ronda de práctica', paused: 'En pausa', skipped: 'Saltada', answers: '{n} respondieron', done: '¡Bien jugado!', teams: 'Equipos', teamRank: '{team}: puesto {rank}', teamPodium: 'Equipos ganadores', perPlayer: 'por jugador', yourTeam: 'Tu equipo: {team}' },
+    fr: { title: 'Bataille de questions', qnum: 'Question {n} sur {total}', locked: 'Réponse envoyée !', right: 'Bravo ! +{points}', wrong: 'Pas cette fois !', timeUp: 'Temps écoulé !', wait: 'On attend que l’hôte lance la partie…', ready: 'Prépare-toi !', go: 'C’est parti !', top: 'Les cinq meilleurs', podium: 'Gagnants', rank: 'Tu es numéro {rank}', score: '{n} points', practice: 'Manche d’entraînement', paused: 'En pause', skipped: 'Passée', answers: '{n} ont répondu', done: 'Bien joué !', teams: 'Équipes', teamRank: '{team} : place {rank}', teamPodium: 'Équipes gagnantes', perPlayer: 'par joueur', yourTeam: 'Ton équipe : {team}' },
+    de: { title: 'Fragen-Duell', qnum: 'Frage {n} von {total}', locked: 'Antwort abgegeben!', right: 'Richtig! +{points}', wrong: 'Diesmal nicht!', timeUp: 'Zeit ist um!', wait: 'Warte, bis die Spielleitung startet…', ready: 'Mach dich bereit!', go: 'Los!', top: 'Die besten fünf', podium: 'Gewinner', rank: 'Du bist auf Platz {rank}', score: '{n} Punkte', practice: 'Übungsrunde', paused: 'Pause', skipped: 'Übersprungen', answers: '{n} haben geantwortet', done: 'Gut gespielt!', teams: 'Teams', teamRank: '{team}: Platz {rank}', teamPodium: 'Siegerteams', perPlayer: 'pro Person', yourTeam: 'Dein Team: {team}' },
+    it: { title: 'Sfida a domande', qnum: 'Domanda {n} di {total}', locked: 'Risposta inviata!', right: 'Giusto! +{points}', wrong: 'Non stavolta!', timeUp: 'Tempo scaduto!', wait: 'Aspettiamo che chi conduce inizi…', ready: 'Preparati!', go: 'Via!', top: 'I primi cinque', podium: 'Vincitori', rank: 'Sei al posto numero {rank}', score: '{n} punti', practice: 'Round di prova', paused: 'In pausa', skipped: 'Saltata', answers: '{n} hanno risposto', done: 'Ben giocato!', teams: 'Squadre', teamRank: '{team}: posto {rank}', teamPodium: 'Squadre vincitrici', perPlayer: 'a testa', yourTeam: 'La tua squadra: {team}' },
+    pt: { title: 'Batalha de Perguntas', qnum: 'Pergunta {n} de {total}', locked: 'Resposta enviada!', right: 'Certo! +{points}', wrong: 'Não foi dessa vez!', timeUp: 'Acabou o tempo!', wait: 'Esperando o anfitrião começar…', ready: 'Prepare-se!', go: 'Já!', top: 'Os cinco melhores', podium: 'Vencedores', rank: 'Você está em {rank}º lugar', score: '{n} pontos', practice: 'Rodada de treino', paused: 'Pausado', skipped: 'Pulada', answers: '{n} responderam', done: 'Bem jogado!', teams: 'Equipes', teamRank: '{team}: {rank}º lugar', teamPodium: 'Equipes vencedoras', perPlayer: 'por jogador', yourTeam: 'Sua equipe: {team}' },
+    nl: { title: 'Vragenbattle', qnum: 'Vraag {n} van {total}', locked: 'Antwoord verstuurd!', right: 'Goed! +{points}', wrong: 'Deze keer niet!', timeUp: 'De tijd is om!', wait: 'Wachten tot de host begint…', ready: 'Maak je klaar!', go: 'Start!', top: 'De top vijf', podium: 'Winnaars', rank: 'Je staat op plek {rank}', score: '{n} punten', practice: 'Oefenronde', paused: 'Gepauzeerd', skipped: 'Overgeslagen', answers: '{n} hebben geantwoord', done: 'Goed gespeeld!', teams: 'Teams', teamRank: '{team}: plek {rank}', teamPodium: 'Winnende teams', perPlayer: 'per speler', yourTeam: 'Jouw team: {team}' },
+    ru: { title: 'Битва вопросов', qnum: 'Вопрос {n} из {total}', locked: 'Ответ принят!', right: 'Верно! +{points}', wrong: 'В этот раз нет!', timeUp: 'Время вышло!', wait: 'Ждём, когда ведущий начнёт…', ready: 'Приготовься!', go: 'Вперёд!', top: 'Лучшая пятёрка', podium: 'Победители', rank: 'Ты на {rank}-м месте', score: 'Очки: {n}', practice: 'Тренировочный раунд', paused: 'Пауза', skipped: 'Пропущен', answers: 'Ответили: {n}', done: 'Хорошая игра!', teams: 'Команды', teamRank: '{team}: место {rank}', teamPodium: 'Команды-победители', perPlayer: 'на игрока', yourTeam: 'Твоя команда: {team}' },
+    ja: { title: 'クイズバトル', qnum: 'もんだい {n} / {total}', locked: 'こたえをおくったよ！', right: 'せいかい！ +{points}', wrong: 'ざんねん！', timeUp: 'じかんぎれ！', wait: 'ホストがはじめるのをまってね…', ready: 'よーい！', go: 'スタート！', top: 'トップ5', podium: 'ゆうしょう', rank: 'いま {rank}位', score: '{n}ポイント', practice: 'れんしゅうラウンド', paused: 'ポーズ', skipped: 'スキップ', answers: '{n}人がこたえた', done: 'よくがんばったね！', teams: 'チーム', teamRank: '{team}：{rank}位', teamPodium: 'ゆうしょうチーム', perPlayer: '1人あたり', yourTeam: 'きみのチーム：{team}' },
+    'zh-Hant': { title: '問答大戰', qnum: '第 {n} 題，共 {total} 題', locked: '答案已送出！', right: '答對了！+{points}', wrong: '這次沒答對！', timeUp: '時間到！', wait: '等主持人開始…', ready: '準備！', go: '開始！', top: '前五名', podium: '優勝者', rank: '你是第 {rank} 名', score: '{n} 分', practice: '練習回合', paused: '暫停', skipped: '已跳過', answers: '{n} 人已作答', done: '玩得好！', teams: '隊伍', teamRank: '{team}：第 {rank} 名', teamPodium: '獲勝隊伍', perPlayer: '每人平均', yourTeam: '你的隊伍：{team}' },
+    he: { title: 'קרב שאלות', qnum: 'שאלה {n} מתוך {total}', locked: 'התשובה נשלחה!', right: 'נכון! +{points}', wrong: 'לא הפעם!', timeUp: 'נגמר הזמן!', wait: 'מחכים שהמארח יתחיל…', ready: 'היכון!', go: 'יוצאים!', top: 'החמישייה הראשונה', podium: 'המנצחים', rank: 'את/ה במקום {rank}', score: '{n} נקודות', practice: 'סבב אימון', paused: 'מושהה', skipped: 'דולגה', answers: '{n} ענו', done: 'כל הכבוד!', teams: 'קבוצות', teamRank: '{team}: מקום {rank}', teamPodium: 'הקבוצות המנצחות', perPlayer: 'לשחקן', yourTeam: 'הקבוצה שלך: {team}' },
+    ar: { title: 'معركة الأسئلة', qnum: 'السؤال {n} من {total}', locked: 'تم إرسال إجابتك!', right: 'صحيح! +{points}', wrong: 'ليس هذه المرة!', timeUp: 'انتهى الوقت!', wait: 'بانتظار أن يبدأ المضيف…', ready: 'استعد!', go: 'انطلق!', top: 'أفضل خمسة', podium: 'الفائزون', rank: 'أنت في المركز {rank}', score: '{n} نقطة', practice: 'جولة تدريبية', paused: 'متوقف مؤقتاً', skipped: 'تم تخطيه', answers: 'أجاب {n}', done: 'أحسنت اللعب!', teams: 'الفرق', teamRank: '{team}: المركز {rank}', teamPodium: 'الفرق الفائزة', perPlayer: 'لكل لاعب', yourTeam: 'فريقك: {team}' },
   });
   var t = function (k, v) { return O.t(k, v); };
   var $ = function (id) { return document.getElementById(id); };
@@ -105,15 +115,32 @@
     if (showLobby) {
       var grd = ctx.createLinearGradient(0, 0, 0, H); grd.addColorStop(0, '#bfe8ff'); grd.addColorStop(0.55, '#d8f3c4'); grd.addColorStop(1, '#9ad46c');
       ctx.fillStyle = grd; ctx.fillRect(0, 0, W, H);
-      var list = L.players(), n = list.length, cols = Math.max(1, Math.min(8, Math.ceil(Math.sqrt(n * W / Math.max(1, H))))), rows = Math.max(1, Math.ceil(n / cols));
-      var cw = W / cols, ch = (H * 0.62) / rows, r = Math.max(14, Math.min(44, Math.min(cw, ch) * 0.32)), sc = 1;
-      list.forEach(function (p, i) {
-        var cx = (i % cols + 0.5) * cw, cy = H * 0.3 + (Math.floor(i / cols) + 0.6) * ch;
-        var hop = O.settings && O.settings.reduced ? 0 : Math.abs(Math.sin(ts / 260 + p.seat * 1.3)) * r * 0.35;
-        flat.place(p.seat, cx / sc, (cy - hop) / sc, 0);
-        var e = emotes.get(p.seat); if (e && e.until > performance.now()) { ctx.font = Math.round(r) + 'px system-ui'; ctx.textAlign = 'center'; ctx.fillText(EMO[e.name] || '', cx, cy - hop - r * 1.9); }
+      var all = L.players(), sc = 1, tms = L.teamsOn ? L.teams() : [];
+      // Team mode: one band per team (a header with the team's shape, icon, name and size), its players inside.
+      var groups = tms.length ? tms.map(function (tm) { return { tm: tm, list: all.filter(function (p) { return p.team === tm.team; }) }; }) : [{ tm: null, list: all }];
+      var loose = tms.length ? all.filter(function (p) { return !p.team; }) : [];
+      if (loose.length) groups[groups.length - 1].list = groups[groups.length - 1].list.concat(loose);
+      var bc = groups.length === 1 ? 1 : W > 700 ? groups.length : Math.min(2, groups.length), br = Math.ceil(groups.length / bc);
+      var top0 = H * (tms.length ? 0.2 : 0.3), bw = W / bc, bh = (H - top0) / br, rtl = (O.dir || 'ltr') === 'rtl', rr = 44;
+      groups.forEach(function (g, gi) {
+        var col = gi % bc, row = Math.floor(gi / bc), x0 = (rtl ? bc - 1 - col : col) * bw, y0 = top0 + row * bh, head = g.tm ? 40 : 0;
+        if (g.tm) {
+          ctx.globalAlpha = 0.16; ctx.fillStyle = g.tm.color; ctx.fillRect(x0 + 4, y0, bw - 8, bh - 6); ctx.globalAlpha = 1;
+          ctx.fillStyle = g.tm.color; ctx.fillRect(x0 + 4, y0, bw - 8, head); ctx.strokeStyle = '#1d2340'; ctx.lineWidth = 2; ctx.strokeRect(x0 + 4, y0, bw - 8, bh - 6);
+          L.drawShape(ctx, g.tm.shape, rtl ? x0 + bw - 26 : x0 + 26, y0 + head / 2, 12, g.tm.ink, null);
+          ctx.fillStyle = g.tm.ink; ctx.font = '800 17px system-ui, sans-serif'; ctx.textBaseline = 'middle'; ctx.textAlign = rtl ? 'right' : 'left'; try { ctx.direction = rtl ? 'rtl' : 'ltr'; } catch (er) { /* old canvas */ }
+          ctx.fillText(g.tm.icon + ' ' + g.tm.name + ' · ' + g.list.length, rtl ? x0 + bw - 46 : x0 + 46, y0 + head / 2, bw - 60); ctx.textBaseline = 'alphabetic';
+        }
+        var n = g.list.length, cols = Math.max(1, Math.min(8, Math.ceil(Math.sqrt(Math.max(1, n) * bw / Math.max(1, bh - head))))), rows = Math.max(1, Math.ceil(n / cols));
+        var cw = bw / cols, ch = (bh - head) / rows, r = Math.max(12, Math.min(44, Math.min(cw, ch) * 0.3)); rr = Math.min(rr, r);
+        g.list.forEach(function (p, i) {
+          var cx = x0 + (i % cols + 0.5) * cw, cy = y0 + head + (Math.floor(i / cols) + 0.7) * ch;
+          var hop = O.settings && O.settings.reduced ? 0 : Math.abs(Math.sin(ts / 260 + p.seat * 1.3)) * r * 0.35;
+          flat.place(p.seat, cx / sc, (cy - hop) / sc, 0);
+          var e = emotes.get(p.seat); if (e && e.until > performance.now()) { ctx.font = Math.round(r) + 'px system-ui'; ctx.textAlign = 'center'; ctx.fillText(EMO[e.name] || '', cx, cy - hop - r * 1.9); }
+        });
       });
-      flat.draw(ctx, { scale: sc, r: r });
+      flat.draw(ctx, { scale: sc, r: rr });
     }
     requestAnimationFrame(drawLobby);
   }
@@ -121,7 +148,7 @@
 
   // ---- questions ----
   function showCard(q) {
-    Q = q; myPick = -1;
+    Q = q; myPick = -1; lastResult = null;
     $('board').hidden = true; $('card').hidden = false; $('qnum').hidden = false;
     $('qtext').textContent = q.q; $('qnum').textContent = t('qnum', { n: q.i + 1, total: q.n });
     $('note').textContent = host ? t('answers', { n: 0 }) : q.answered ? t('locked') : '';
@@ -158,18 +185,56 @@
       b.disabled = true; b.classList.toggle('right', k === rv.answer);
       if (host && rv.counts) { var n = document.createElement('span'); n.className = 'n'; n.textContent = rv.counts[k] || 0; b.appendChild(n); }
     });
-    if (host && rv.top && rv.top.length) setTimeout(function () { if (phase === 'between') board(rv.top, t('top'), false); }, 2500);
+    // the host's view: the answer bars, then the team board (team mode), then the top five (none when the leaderboard is off)
+    var tms = rv.teams || [], at = 2500;
+    if (host && tms.length) { setTimeout(function () { if (phase === 'between') teamBoard(tms, t('teams'), false); }, at); at += 2500; }
+    if (host && rv.top && rv.top.length) setTimeout(function () { if (phase === 'between') board(rv.top, t('top'), false); }, at);
   }
-  function showResult(r) {
+  var lastResult = null;
+  // team scores can land just after my result: the note follows them while the question is revealed
+  L.on('teams', function (e) { if (e.why === 'scores' && lastResult && phase === 'between') showResult(lastResult, true); });
+  function showResult(r, again) {
     if (host) return;
+    lastResult = r;
     if (r.none) { $('note').textContent = t('timeUp'); return; }
     myScore = r.score || myScore + (r.points || 0);
-    $('note').textContent = (r.ok ? t('right', { points: r.points }) : t('wrong')) + (r.rank ? ' · ' + t('rank', { rank: r.rank }) : '');
+    var mt = L.myTeam;
+    $('note').textContent = (r.ok ? t('right', { points: r.points }) : t('wrong')) + (r.rank ? ' · ' + t('rank', { rank: r.rank }) : '') + (mt && mt.rank ? ' · ' + t('teamRank', { team: mt.name, rank: mt.rank }) : '');
     $('score').hidden = false; $('score').textContent = t('score', { n: myScore });
-    say($('note').textContent); O.sfx(r.ok ? 'correct' : 'wrong');
+    if (!again) { say($('note').textContent); O.sfx(r.ok ? 'correct' : 'wrong'); }
+  }
+  // a team's shape; onTeam: drawn on the team's own colour, so it takes the team's ink (text colour) instead
+  function shapeCanvas(tm, px, onTeam) {
+    var c = document.createElement('canvas'), k = Math.min(2, devicePixelRatio || 1); c.width = c.height = Math.round(px * k); c.setAttribute('aria-hidden', 'true');
+    var x = c.getContext('2d'); x.scale(k, k); L.drawShape(x, tm.shape, px / 2, px / 2, px * 0.42, onTeam ? tm.ink : tm.color, onTeam ? null : '#1d2340'); return c;
+  }
+  /** The team board (host, between questions) or the team podium (the end): shape, icon, name, score; ranks only when
+   *  the leaderboard allows them (rank 0 = hidden or no players). */
+  function teamBoard(tms, title, podium) {
+    $('card').hidden = true; $('tboard').hidden = false; $('tboard-h').textContent = title;
+    if (!podium) $('board').hidden = true;
+    var ol = $('tboard-list'), pd = $('tpodium'); ol.textContent = ''; pd.textContent = '';
+    var ranked = tms.filter(function (x) { return x.size > 0; }).sort(function (a, b) { return (a.rank || 99) - (b.rank || 99) || a.team - b.team; });
+    var ranks = ranked.some(function (x) { return x.rank > 0; });
+    if (podium && ranks) [1, 0, 2].forEach(function (k) {
+      var tm = ranked[k]; if (!tm || !tm.rank) return;
+      var st = document.createElement('div'); st.className = 'qb-step';
+      st.appendChild(shapeCanvas(tm, 40));
+      var nm = document.createElement('span'); nm.textContent = tm.icon + ' ' + tm.name; st.appendChild(nm);
+      var bar = document.createElement('i'); bar.style.height = [90, 64, 44][k] + 'px'; bar.style.background = tm.color; bar.style.color = tm.ink; bar.textContent = tm.rank; st.appendChild(bar);
+      pd.appendChild(st);
+    });
+    ranked.forEach(function (tm) {
+      var li = document.createElement('li'); li.style.background = tm.color; li.style.color = tm.ink;
+      var r = document.createElement('span'); r.className = 'r'; r.textContent = ranks && tm.rank ? tm.rank : '';
+      var nm = document.createElement('span'); nm.className = 'nm'; nm.textContent = tm.icon + ' ' + tm.name + (tm.mine ? ' ★' : '');
+      var sc = document.createElement('span'); sc.textContent = ranks ? tm.score + (L.teamScoring === 'avg' ? ' ' + t('perPlayer') : '') : '';
+      li.append(r, shapeCanvas(tm, 30, true), nm, sc); ol.appendChild(li);
+    });
   }
   function board(top, title, podium) {
     $('card').hidden = true; var b = $('board'); b.hidden = false; $('board-h').textContent = title;
+    if (!podium) $('tboard').hidden = true;
     var ol = $('board-list'), pd = $('podium'); ol.textContent = ''; pd.textContent = '';
     if (podium) [1, 0, 2].forEach(function (k) {
       var p = top[k]; if (!p) return;
@@ -186,6 +251,7 @@
   L.on('phase', function (e) {
     phase = e.phase;
     if (phase === 'lobby') { banner(host ? '' : t('wait')); $('card').hidden = true; }
+    if (phase === 'playing' || phase === 'lobby') $('tboard').hidden = true;
     if (phase === 'loading') banner(t('ready'));
     if (phase === 'paused') banner(t('paused'));
     if (phase === 'playing') banner('');
@@ -198,7 +264,10 @@
   L.on('result', showResult);
   L.on('end', function (e) {
     clearInterval(ringTimer);
-    board(e.top, t('podium'), true); banner(t('done'));
+    // team mode: the team podium first, then the players' podium under it (none when the leaderboard is off)
+    if (e.teams && e.teams.length) teamBoard(e.teams, t('teamPodium'), true); else $('tboard').hidden = true;
+    if (e.top && e.top.length) board(e.top, t('podium'), true); else $('board').hidden = true;
+    banner(t('done'));
     if (!(O.settings && O.settings.reduced)) { try { BRB.fx.confetti(); } catch (er) { /* none */ } }
     O.sfx('win');
   });
@@ -220,13 +289,16 @@
     setTimeout(practiceNext, 1800);
   }
 
-  L.ready({ lobby: true, quiz: true, hostView: true });
+  // players see their team on the question card's top bar
+  function myTeamPill() { var mt = L.myTeam, el = $('team'); if (!el) return; el.hidden = !mt; if (mt) { el.textContent = ''; el.style.background = mt.color; el.style.color = mt.ink; el.append(shapeCanvas(mt, 20, true), ' ' + t('yourTeam', { team: mt.name })); } }
+  L.on('teams', myTeamPill); L.on('welcome', myTeamPill);
+  L.ready({ lobby: true, quiz: true, hostView: true, teams: true });
   if (!L.active) {
     for (var k = 0; k < 5; k++) { var a = practice.rnd.int(2, 9), b = practice.rnd.int(2, 9), ans = a * b, sh = practice.rnd.shuffle([ans, ans + a, ans - b, ans + 1]); practice.items.push({ q: a + ' × ' + b + ' = ?', choices: sh.map(String), answer: sh.indexOf(ans), secs: 15 }); }
     L.on('start', function () { banner(t('practice')); setTimeout(practiceNext, 1200); });
   } else if (phase === 'lobby' && !host) banner(t('wait'));
   O.test({
-    state: function () { return { role: L.role, phase: phase, question: Q ? { i: Q.i, q: Q.q, choices: Q.choices.slice(), answered: myPick >= 0 } : null, score: myScore, board: !$('board').hidden, players: L.players().length }; },
+    state: function () { return { role: L.role, phase: phase, question: Q ? { i: Q.i, q: Q.q, choices: Q.choices.slice(), answered: myPick >= 0 } : null, score: myScore, board: !$('board').hidden, teamBoard: !$('tboard').hidden, teams: L.teams().map(function (x) { return { team: x.team, name: x.name, rank: x.rank, score: x.score, size: x.size, mine: x.mine }; }), myTeam: L.myTeam ? L.myTeam.team : 0, note: $('note').textContent, players: L.players().length }; },
     start: function () { return true; },
   });
   window.__brbTest.answer = function (i) { choose(i); };

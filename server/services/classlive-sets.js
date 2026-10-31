@@ -100,3 +100,24 @@ export function fromLesson(u, lessonId) {
   const items = qs.map(s => ({ q: String(s.body).slice(0, LIMITS.q), choices: [], answer: 0, secs: 20 }));
   return tx(() => createSet(u, { title: l.title, items, lessonId: l.id }));
 }
+
+/**
+ * Assign a question set as homework (LIVE_HOMEWORK): a lesson "<set title>" in the host's library for the class's
+ * school, with one quiz step (a snapshot of the set's items), assigned to that class with its dates. School staff who
+ * teach the class only. -> { ok, lesson, classLesson } | { ok: false, code }
+ */
+export function homework(u, setId, classId, { opensAt = null, dueAt = null } = {}) {
+  const set = getSet(setId);
+  if (!set || !canUse(u, set)) return { ok: false, code: 'notFound' };
+  const c = S.getClass(String(classId || ''));
+  if (!c || c.archived_at || !S.teaches(u, c.id) || !S.isStaff(u)) return { ok: false, code: 'noClass' };
+  const items = itemsOf(set);
+  if (!items.length || items.some(it => !complete(it))) return { ok: false, code: 'setIncomplete' };
+  const made = L.createLesson(u, c.school_id, { title: set.title });
+  if (!made.ok) return made;
+  const step = L.addQuizStep(u, made.lesson.id, { title: set.title, setId: set.id, items });
+  if (!step.ok) return step;
+  const a = L.assign(u, c.id, made.lesson.id, { opensAt, dueAt });
+  if (!a.ok) return a;
+  return { ok: true, lesson: made.lesson, classLesson: a.classLesson, step: step.step };
+}

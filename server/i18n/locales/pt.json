@@ -2640,7 +2640,8 @@
       "game": "Jogar um jogo",
       "build": "Criar um jogo",
       "text": "Ler ou fazer",
-      "question": "Responder a uma pergunta"
+      "question": "Responder a uma pergunta",
+      "quiz": "Responder às perguntas do quiz"
     },
     "library": {
       "title": "Biblioteca de aulas",
@@ -2805,6 +2806,14 @@
     },
     "editor": {
       "live": "Ativa em {classes}. {count, plural, =0 {Nenhum aluno começou ainda.} one {# aluno já começou.} other {# alunos já começaram.}} As mudanças aparecem para eles na hora."
+    },
+    "quiz": {
+      "start": "Começar",
+      "right": "Certo!",
+      "wrong": "Quase. A resposta certa está marcada.",
+      "next": "Próxima",
+      "of": "Pergunta {n} de {total}",
+      "done": "Pronto! Você acertou {score}%."
     }
   },
   "progress": {
@@ -4375,7 +4384,14 @@
       "restart": "A Oomba Academy está reiniciando. Entre de novo com o mesmo código daqui a um minuto.",
       "flood": "Mensagens demais vindas deste aparelho.",
       "takenDown": "Este jogo foi retirado.",
-      "reconnecting": "Conexão perdida. Reconectando…"
+      "reconnecting": "Conexão perdida. Reconectando…",
+      "read": "Ler",
+      "readAgain": "Ler de novo",
+      "team": "Seu time",
+      "pickTeam": "Escolha seu time",
+      "eyes": "Olhe para o professor",
+      "moved": "Você foi para {team}",
+      "again": "Seu professor pode começar outro jogo. Fique nesta página!"
     },
     "emote": {
       "wave": "Acenar",
@@ -4415,7 +4431,12 @@
       "answers": "{count, plural, one {# resposta} other {# respostas}}",
       "players": "Jogadores",
       "controls": "Controles do jogo",
-      "reports": "Um jogador denunciou algo neste jogo. Confira se está tudo bem."
+      "reports": "Um jogador denunciou algo neste jogo. Confira se está tudo bem.",
+      "eyes": "Olhos aqui",
+      "teacherView": "Visão do professor",
+      "soundOn": "Som ligado",
+      "soundOff": "Som desligado",
+      "seeResultsNow": "Ver resultados agora"
     },
     "landing": {
       "title": "Conduzir um jogo ao vivo",
@@ -4627,7 +4648,29 @@
       "gone": "Estes resultados não estão mais disponíveis.",
       "left": "saiu",
       "gradebook": "Os pontos foram adicionados ao diário de notas da turma.",
-      "playersCount": "{count, plural, one {# jogador} other {# jogadores}}"
+      "playersCount": "{count, plural, one {# jogador} other {# jogadores}}",
+      "team": "Time",
+      "sum": "Total",
+      "avg": "Média por jogador",
+      "rankedBy": "Classificação por: {how}",
+      "teamPlayers": "Jogadores",
+      "bonus": "Extra",
+      "hardest": "Perguntas mais difíceis",
+      "review": "Revisão das perguntas",
+      "marks": "Respostas",
+      "markRight": "Certa",
+      "markWrong": "Errada",
+      "markNone": "Sem resposta",
+      "needsHelp": "Precisa de ajuda",
+      "details": "Detalhes dos alunos",
+      "detailsHint": "Confira se a turma não está vendo sua tela antes de abrir isto.",
+      "print": "Imprimir",
+      "playMissed": "Jogar de novo as perguntas erradas",
+      "playAgain": "Jogar de novo com os mesmos jogadores",
+      "stillHere": "{count, plural, one {# jogador ainda aqui} other {# jogadores ainda aqui}}",
+      "playAgainTeams": "Jogar de novo com estes times",
+      "newGame": "Novo jogo",
+      "homework": "Passar como lição de casa"
     },
     "sets": {
       "title": "Conjuntos de perguntas",
@@ -4663,7 +4706,12 @@
         "tooBig": "Este conjunto é grande demais.",
         "noQuestions": "Esta aula não tem etapas de pergunta.",
         "notFound": "Não encontramos esse conjunto."
-      }
+      },
+      "noMissed": "Todo mundo acertou todas, então não há nada para jogar de novo.",
+      "teamsOff": "Este jogo não tinha times.",
+      "againGone": "Os jogadores já saíram. Comece um novo jogo.",
+      "homeworkOff": "A lição de casa com conjuntos de perguntas está desligada.",
+      "noClass": "Escolha uma das suas turmas."
     },
     "nick": {
       "0": "Lontra Corajosa",
@@ -4831,6 +4879,188 @@
     },
     "panel": {
       "title": "Jogos ao vivo"
+    },
+    "team": {
+      "preset": {
+        "0": "Baleias Azuis",
+        "1": "Tigres Laranja",
+        "2": "Sapos Verdes",
+        "3": "Flamingos Rosa",
+        "4": "Abelhas Amarelas",
+        "5": "Águias Celestes",
+        "6": "Raposas Vermelhas",
+        "7": "Corujas da Noite"
+      },
+      "shape": {
+        "circle": "Círculo",
+        "triangle": "Triângulo",
+        "square": "Quadrado",
+        "heart": "Coração",
+        "star": "Estrela",
+        "hexagon": "Hexágono",
+        "diamond": "Losango",
+        "moon": "Lua"
+      },
+      "heading": "Times",
+      "off": "Não",
+      "count": "Número de times",
+      "edit": "Editar times",
+      "done": "Pronto",
+      "more": "Mais opções de time",
+      "scoring": "Pontuação do time",
+      "scoringAvg": "Média por jogador",
+      "scoringAvgHint": "Justo quando os times têm tamanhos diferentes.",
+      "scoringSum": "Total de pontos",
+      "unassigned": "Ainda sem time",
+      "empty": "Ainda sem jogadores",
+      "emptyWarn": "{team} não tem jogadores.",
+      "uneven": "Os times estão desiguais ({sizes}). Equilibrar?",
+      "balance": "Equilibrar",
+      "shuffle": "Embaralhar",
+      "choose": "Os jogadores escolhem o time",
+      "chooseHint": "Só antes de o jogo começar.",
+      "lock": "Travar times",
+      "unlock": "Destravar times",
+      "locked": "Os times estão travados",
+      "useLast": "Usar os últimos times",
+      "noLast": "Esta turma ainda não tem times salvos.",
+      "forgetLast": "Esquecer os times salvos",
+      "forgetConfirm": "Esquecer os times salvos desta turma?",
+      "saved": "Times salvos.",
+      "savedCount": "{count, plural, one {Times salvos para # aluno.} other {Times salvos para # alunos.}}",
+      "notSaved": "Ainda não há times salvos. Os times do seu último jogo ao vivo com esta turma também ficam salvos aqui.",
+      "moveHere": "Mover para cá",
+      "selectHint": "Arraste um jogador para um time, ou selecione um jogador e escolha “Mover para cá”.",
+      "moved": "{name} → {team}",
+      "you": "Você está em {team}",
+      "pick": "Entrar",
+      "full": "Cheio",
+      "size": "{count, plural, one {# jogador} other {# jogadores}}",
+      "rank": "{rank}º lugar de {count}",
+      "score": "Pontos",
+      "perPlayer": "por jogador",
+      "board": "Pontos dos times",
+      "podium": "Pódio dos times",
+      "madeFor": "Feito para times",
+      "none": "Os times estão desligados.",
+      "editor": "Times para jogos ao vivo",
+      "editorHint": "Monte os grupos antes da aula. Num jogo ao vivo, “Usar os últimos times” coloca todo mundo de volta neles."
+    },
+    "settings": {
+      "title": "Configurações do jogo",
+      "open": "Configurações",
+      "more": "Mais configurações",
+      "secs": "Tempo por pergunta",
+      "secsSet": "Como no conjunto de perguntas",
+      "secsN": "{count, plural, one {# segundo} other {# segundos}}",
+      "count": "Número de perguntas",
+      "countAll": "Todas",
+      "shuffleQ": "Embaralhar as perguntas",
+      "shuffleA": "Embaralhar as respostas",
+      "points": "Pontos",
+      "pointsSpeed": "Respostas rápidas valem mais",
+      "pointsAccuracy": "Só respostas certas (1.000 cada)",
+      "board": "Classificação nos aparelhos dos jogadores",
+      "boardAll": "Mostrar",
+      "boardTop5": "Só os 5 primeiros",
+      "boardOff": "Esconder",
+      "late": "Dá para entrar depois do início",
+      "names": "Nomes na tela",
+      "namesNames": "Nomes reais",
+      "namesNicknames": "Apelidos",
+      "namesHidden": "Sem nomes na tela grande",
+      "namesHint": "Sua visão de professor sempre mostra os nomes dos seus alunos.",
+      "sound": "Sons do jogo na tela grande",
+      "emotes": "Emotes",
+      "remembered": "Suas escolhas ficam salvas para o próximo jogo ao vivo.",
+      "reset": "Voltar às configurações padrão",
+      "save": "Salvar"
+    },
+    "say": {
+      "menu": "Mensagem",
+      "twoMinutes": "Faltam 2 minutos!",
+      "oneMinute": "Falta 1 minuto!",
+      "lastQuestion": "Última pergunta!",
+      "lastRound": "Última rodada!",
+      "eyesOnMe": "Olhos em mim, por favor",
+      "greatTeamwork": "Ótimo trabalho em equipe!",
+      "greatEffort": "Muito bem, pessoal!",
+      "beKind": "Lembrem de ser gentis",
+      "getReady": "Preparem-se!",
+      "almostDone": "Quase lá!"
+    },
+    "eyes": {
+      "on": "Olhos aqui",
+      "off": "Voltar ao jogo",
+      "cover": "Olhe para o professor",
+      "coverHint": "O jogo volta já, já.",
+      "banner": "Olhos aqui: todas as telas estão pausadas."
+    },
+    "bonus": {
+      "give": "Dar pontos extras",
+      "toastSeat": "{reason}! +{points}",
+      "toastTeam": "{reason}! +{points} para {team}",
+      "reason": {
+        "teamwork": "Trabalho em equipe",
+        "kindness": "Gentileza",
+        "effort": "Grande esforço",
+        "helping": "Ajudar os outros",
+        "listening": "Boa escuta"
+      }
+    },
+    "time": {
+      "add": "+{s} s",
+      "revealNow": "Revelar agora",
+      "waiting": "Esperando todo mundo…"
+    },
+    "dash": {
+      "title": "Visão do professor",
+      "qrTitle": "Visão do professor no seu celular",
+      "qrHint": "Escaneie com o celular. Você precisa estar conectado com a sua conta.",
+      "notice": "Use uma tela que a turma não veja (o seu celular é o melhor).",
+      "tabPlayers": "Jogadores",
+      "tabQuestion": "Pergunta",
+      "tabTeams": "Times",
+      "tabMessages": "Mensagens",
+      "tabSettings": "Configurações",
+      "answered": "Respondeu",
+      "thinking": "Pensando",
+      "offline": "Desconectado",
+      "late": "Chegou depois",
+      "needsHelp": "Precisa de ajuda",
+      "showHelp": "Mostrar quem precisa de ajuda",
+      "hideHelp": "Esconder quem precisa de ajuda",
+      "why": {
+        "lowScore": "Menos da metade certa",
+        "wrongRun": "Dois erros seguidos",
+        "missRun": "Duas sem resposta seguidas"
+      },
+      "extraWaiting": "{count, plural, one {# ainda respondendo (tempo extra)} other {# ainda respondendo (tempo extra)}}",
+      "showAnswer": "Mostrar a resposta",
+      "hideAnswer": "Esconder a resposta",
+      "rename": "Novo apelido",
+      "move": "Mudar de time",
+      "support": "Apoio",
+      "supportTime": "Tempo extra",
+      "time100": "Tempo normal",
+      "time150": "Tempo × 1,5",
+      "time200": "Tempo × 2",
+      "read": "Ler as perguntas em voz alta",
+      "simple": "Visão simples",
+      "remember": "Lembrar para esta turma",
+      "supportPrivate": "Só este aluno e você podem ver isto.",
+      "supportWaits": "A resposta espera por este aluno. Você sempre pode escolher Revelar agora.",
+      "saved": "Salvo."
+    },
+    "support": {
+      "count": "{count, plural, one {# aluno tem apoio salvo.} other {# alunos têm apoio salvo.}}",
+      "clear": "Apagar apoios",
+      "clearConfirm": "Apagar todos os apoios salvos desta turma?"
+    },
+    "homework": {
+      "hint": "Os alunos respondem no seu ritmo, sem cronômetro. A nota vai para o diário de classe.",
+      "due": "Data de entrega (opcional)",
+      "assign": "Passar para a turma"
     }
   }
 }

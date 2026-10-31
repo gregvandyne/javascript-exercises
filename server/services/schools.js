@@ -165,12 +165,24 @@ export function updateMember(by, schoolId, userId, { rosterName, grade, role } =
   audit(by.id, 'school.member_update', schoolId, { user: userId, role, grade });
   return ok();
 }
+/** Cleanup hooks for data kept per class student or per class outside this module (Oomba Live's saved teams and
+ *  support: classlive-results.js registers itself, so there is no import cycle). Each is called with { classId,
+ *  userId } when a student leaves a class (or the school), or { classId } when a class is deleted. */
+const classLeaveHooks = [];
+export const onClassLeave = fn => { if (!classLeaveHooks.includes(fn)) classLeaveHooks.push(fn); };
+const classLeft = x => { for (const fn of classLeaveHooks) fn(x); };
+/** Hooks for the same modules when a school account is merged into a student's own account ({ from, into }): their
+ *  per-student rows move with the class membership (or are deleted), never left on the switched-off account. */
+const mergeHooks = [];
+export const onAccountMerge = fn => { if (!mergeHooks.includes(fn)) mergeHooks.push(fn); };
+
 /** Remove from the school: marked 'left', and leaves every class of that school. School accounts are switched off. */
 export function removeMember(by, schoolId, userId) {
   const m = membership(schoolId, userId); if (!m) return fail('notFound');
   tx(() => {
     q.run("UPDATE school_members SET status='left', left_at=? WHERE school_id=? AND user_id=?", now(), schoolId, userId);
     q.run("UPDATE class_members SET status='left', left_at=? WHERE user_id=? AND status='active' AND class_id IN (SELECT id FROM classrooms WHERE school_id=?)", now(), userId, schoolId);
+    for (const c of q.all('SELECT id FROM classrooms WHERE school_id=?', schoolId)) classLeft({ classId: c.id, userId });
     // Their games stop being shared with this school's classes (the rule already hides them; coming back re-shares nothing).
     pruneGameClasses(userId, q.all('SELECT id FROM classrooms WHERE school_id=?', schoolId).map(r => r.id));
     const u = getUser(userId);
@@ -311,6 +323,7 @@ export function deleteClass(by, classId) {
     q.run('DELETE FROM class_members WHERE class_id=?', c.id); q.run('DELETE FROM join_requests WHERE class_id=?', c.id);
     q.run('DELETE FROM class_lessons WHERE class_id=?', c.id); q.run('DELETE FROM class_units WHERE class_id=?', c.id);
     q.run('DELETE FROM game_classes WHERE class_id=?', c.id);
+    classLeft({ classId: c.id });
     q.run('DELETE FROM classrooms WHERE id=?', c.id);
   });
   audit(by.id, 'class.delete', c.id, { name: c.name });
@@ -351,7 +364,7 @@ export function removeFromClass(by, classId, userId) {
   let r;
   tx(() => {
     r = q.run("UPDATE class_members SET status='left', left_at=? WHERE class_id=? AND user_id=? AND status='active'", now(), classId, userId);
-    if (r.changes) pruneGameClasses(userId, [classId]);
+    if (r.changes) { pruneGameClasses(userId, [classId]); classLeft({ classId, userId }); }
   });
   if (!r.changes) return fail('notFound');
   audit(by.id, 'class.member_remove', classId, { user: userId });
@@ -450,6 +463,7 @@ export function mergeSchoolAccount(by, schoolId, schoolAccountId, intoUserId) {
     // Lesson work moves too (if both accounts did the same step, the student's own account keeps theirs).
     q.run('UPDATE OR IGNORE step_progress SET user_id=? WHERE user_id=?', intoUserId, a.id);
     q.run('DELETE FROM step_progress WHERE user_id=?', a.id);
+    for (const fn of mergeHooks) fn({ from: a.id, into: intoUserId });
     for (const t of ['sessions', 'friends', 'join_requests', 'google_identities']) q.run(`DELETE FROM ${t} WHERE user_id=?`, a.id);
     q.run("UPDATE google_invites SET status='revoked', revoked_at=? WHERE user_id=? AND status='open'", now(), a.id);
     q.run('DELETE FROM friends WHERE friend_id=?', a.id);

@@ -64,6 +64,34 @@ export function answer(u, clId, stepId, text) {
   if (old && old.answer === a) return ok({ row: old });
   return ok({ row: upsert(clId, stepId, u.id, { answer: a, ...done(old), reviewed_at: null, reviewed_by: null }) });
 }
+/** A quiz step's questions for the student: text and choices, never the answers; and their marks so far. */
+export function quizFor(u, clId, stepId) {
+  const c = context(u, clId, stepId); if (!c.ok) return c;
+  if (c.step.kind !== L.QUIZ_KIND) return fail('notFound');
+  const items = quizItems(c.step);
+  const old = get(clId, stepId, u.id);
+  return ok({ items: items.map(it => ({ q: it.q, choices: it.choices })), marks: (old && old.marks) || '-'.repeat(items.length) });
+}
+const quizItems = step => { try { const x = JSON.parse(step.items || '[]'); return Array.isArray(x) ? x : []; } catch { return []; } };
+/** A quiz step answer: question i, choice c. Checked here, once per question. When every question has an answer the step
+ *  is done with score = % right (label 'quiz'), shown in the gradebook like a game step.
+ *  -> { ok, right, answer, next (the next unanswered question, or -1), score } */
+export function quizAnswer(u, clId, stepId, i, c) {
+  const x = context(u, clId, stepId); if (!x.ok) return x;
+  if (x.step.kind !== L.QUIZ_KIND) return fail('notFound');
+  const items = quizItems(x.step);
+  if (!Number.isInteger(i) || i < 0 || i >= items.length || !Number.isInteger(c) || c < 0 || c >= items[i].choices.length) return fail('badRequest');
+  const old = get(clId, stepId, u.id);
+  let marks = ((old && old.marks) || '').padEnd(items.length, '-').slice(0, items.length);
+  if (marks[i] !== '-') return fail('answered');
+  const right = c === items[i].answer;
+  marks = marks.slice(0, i) + (right ? '1' : '0') + marks.slice(i + 1);
+  const finished = !marks.includes('-');
+  const score = finished ? Math.round((100 * [...marks].filter(m => m === '1').length) / items.length) : null;
+  upsert(clId, stepId, u.id, finished ? { score, label: 'quiz', ...done(old) } : {});
+  q.run('UPDATE step_progress SET marks=? WHERE class_lesson_id=? AND step_id=? AND user_id=?', marks, clId, stepId, u.id);
+  return ok({ right, answer: items[i].answer, next: marks.indexOf('-'), score });
+}
 /** The student opened a game step's game from the lesson. */
 export function gameStarted(u, clId, stepId) {
   const c = context(u, clId, stepId); if (!c.ok) return c;

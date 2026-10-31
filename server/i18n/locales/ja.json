@@ -2638,7 +2638,8 @@
       "game": "ゲームであそぶ",
       "build": "ゲームをつくる",
       "text": "よむ・やってみる",
-      "question": "しつもんにこたえる"
+      "question": "しつもんにこたえる",
+      "quiz": "クイズにこたえる"
     },
     "library": {
       "title": "レッスンライブラリ",
@@ -2803,6 +2804,14 @@
     },
     "editor": {
       "live": "{classes}で公開中です。{count, plural, =0 {まだ誰も始めていません。} other {#人の生徒が始めています。}}変更はすぐに生徒に反映されます。"
+    },
+    "quiz": {
+      "start": "はじめる",
+      "right": "せいかい！",
+      "wrong": "ざんねん。せいかいにしるしがついているよ。",
+      "next": "つぎへ",
+      "of": "もんだい {n} / {total}",
+      "done": "おわり！{score}% せいかいだよ。"
     }
   },
   "progress": {
@@ -4373,7 +4382,14 @@
       "restart": "Oomba Academy が再起動しています。1分たったら同じコードでもう一度入ってね。",
       "flood": "この機器からのメッセージが多すぎます。",
       "takenDown": "このゲームはとりさげられました。",
-      "reconnecting": "接続がきれました。つなぎなおしています…"
+      "reconnecting": "接続がきれました。つなぎなおしています…",
+      "read": "読み上げ",
+      "readAgain": "もう一度読む",
+      "team": "きみのチーム",
+      "pickTeam": "チームを選ぼう",
+      "eyes": "先生のほうを見てね",
+      "moved": "{team}チームに移ったよ",
+      "again": "先生がもう一度ゲームを始めるかもしれません。このページのまま待っててね！"
     },
     "emote": {
       "wave": "手をふる",
@@ -4413,7 +4429,12 @@
       "answers": "{count, plural, other {#件の回答}}",
       "players": "プレイヤー",
       "controls": "ゲームの操作",
-      "reports": "このゲームで、プレイヤーから報告がありました。問題がないか確認してください。"
+      "reports": "このゲームで、プレイヤーから報告がありました。問題がないか確認してください。",
+      "eyes": "こっちを見て",
+      "teacherView": "先生用の画面",
+      "soundOn": "音あり",
+      "soundOff": "音なし",
+      "seeResultsNow": "今すぐ結果を見る"
     },
     "landing": {
       "title": "ライブゲームをひらく",
@@ -4625,7 +4646,29 @@
       "gone": "この結果はもう見られません。",
       "left": "ぬけた",
       "gradebook": "スコアはクラスの成績表に入りました。",
-      "playersCount": "{count, plural, other {#人}}"
+      "playersCount": "{count, plural, other {#人}}",
+      "team": "チーム",
+      "sum": "合計",
+      "avg": "1人あたりの平均",
+      "rankedBy": "順位の基準: {how}",
+      "teamPlayers": "人数",
+      "bonus": "ボーナス",
+      "hardest": "いちばん難しかった問題",
+      "review": "問題のふりかえり",
+      "marks": "回答",
+      "markRight": "正解",
+      "markWrong": "不正解",
+      "markNone": "未回答",
+      "needsHelp": "サポートが必要",
+      "details": "生徒ごとの詳細",
+      "detailsHint": "開く前に、クラスから画面が見えていないか確認してください。",
+      "print": "印刷",
+      "playMissed": "まちがえた問題をもう一度",
+      "playAgain": "同じメンバーでもう一度",
+      "stillHere": "{count, plural, other {#人がまだいます}}",
+      "playAgainTeams": "このチームでもう一度",
+      "newGame": "新しいゲーム",
+      "homework": "宿題にする"
     },
     "sets": {
       "title": "問題セット",
@@ -4661,7 +4704,12 @@
         "tooBig": "このセットは大きすぎます。",
         "noQuestions": "このレッスンには問題のステップがありません。",
         "notFound": "そのセットが見つかりません。"
-      }
+      },
+      "noMissed": "全員が全問正解したので、もう一度やる問題はありません。",
+      "teamsOff": "このゲームにはチームがありませんでした。",
+      "againGone": "プレイヤーはもういません。新しいゲームを始めてください。",
+      "homeworkOff": "問題セットからの宿題はオフになっています。",
+      "noClass": "担当のクラスを選んでください。"
     },
     "nick": {
       "0": "ゆうかんなカワウソ",
@@ -4829,6 +4877,188 @@
     },
     "panel": {
       "title": "ライブゲーム"
+    },
+    "team": {
+      "preset": {
+        "0": "あおいクジラ",
+        "1": "オレンジのトラ",
+        "2": "みどりのカエル",
+        "3": "ピンクのフラミンゴ",
+        "4": "きいろいハチ",
+        "5": "そらいろのワシ",
+        "6": "あかいキツネ",
+        "7": "よるのフクロウ"
+      },
+      "shape": {
+        "circle": "まる",
+        "triangle": "さんかく",
+        "square": "しかく",
+        "heart": "ハート",
+        "star": "ほし",
+        "hexagon": "ろっかくけい",
+        "diamond": "ひしがた",
+        "moon": "つき"
+      },
+      "heading": "チーム",
+      "off": "なし",
+      "count": "チームの数",
+      "edit": "チームを編集",
+      "done": "完了",
+      "more": "チームのその他の設定",
+      "scoring": "チームの得点",
+      "scoringAvg": "1人あたりの平均",
+      "scoringAvgHint": "人数がちがうチームでも公平です。",
+      "scoringSum": "合計点",
+      "unassigned": "まだチームなし",
+      "empty": "まだだれもいません",
+      "emptyWarn": "{team}にはプレイヤーがいません。",
+      "uneven": "チームの人数がかたよっています（{sizes}）。そろえますか？",
+      "balance": "人数をそろえる",
+      "shuffle": "シャッフル",
+      "choose": "プレイヤーがチームを選ぶ",
+      "chooseHint": "ゲームが始まる前だけです。",
+      "lock": "チームを固定",
+      "unlock": "チームの固定を解除",
+      "locked": "チームは固定されています",
+      "useLast": "前回のチームを使う",
+      "noLast": "このクラスにはまだ保存されたチームがありません。",
+      "forgetLast": "保存したチームを消す",
+      "forgetConfirm": "このクラスの保存したチームを消しますか？",
+      "saved": "チームを保存しました。",
+      "savedCount": "{count, plural, other {#人分のチームを保存しています。}}",
+      "notSaved": "保存したチームはまだありません。このクラスとの最後のライブゲームのチームもここに保存されます。",
+      "moveHere": "ここへ移動",
+      "selectHint": "プレイヤーをチームへドラッグするか、プレイヤーを選んでから「ここへ移動」を選んでください。",
+      "moved": "{name} → {team}",
+      "you": "きみは{team}チーム",
+      "pick": "入る",
+      "full": "満員",
+      "size": "{count, plural, other {#人}}",
+      "rank": "{count}チーム中{rank}位",
+      "score": "得点",
+      "perPlayer": "1人あたり",
+      "board": "チームの得点",
+      "podium": "チームの表彰台",
+      "madeFor": "チーム対応",
+      "none": "チームはオフです。",
+      "editor": "ライブゲームのチーム",
+      "editorHint": "授業の前に班を作っておけます。ライブゲームで「前回のチームを使う」を押すと、みんな元の班にもどります。"
+    },
+    "settings": {
+      "title": "ゲームの設定",
+      "open": "設定",
+      "more": "その他の設定",
+      "secs": "1問の時間",
+      "secsSet": "問題セットのとおり",
+      "secsN": "{count, plural, other {#秒}}",
+      "count": "問題の数",
+      "countAll": "すべて",
+      "shuffleQ": "問題の順番をシャッフル",
+      "shuffleA": "答えの順番をシャッフル",
+      "points": "得点",
+      "pointsSpeed": "はやく答えるほど高得点",
+      "pointsAccuracy": "正解だけ（1問1,000点）",
+      "board": "プレイヤーの画面のランキング",
+      "boardAll": "表示する",
+      "boardTop5": "上位5人だけ",
+      "boardOff": "表示しない",
+      "late": "始まった後も参加できる",
+      "names": "画面に出す名前",
+      "namesNames": "本名",
+      "namesNicknames": "ニックネーム",
+      "namesHidden": "大きな画面に名前を出さない",
+      "namesHint": "先生用の画面には、いつも生徒の名前が表示されます。",
+      "sound": "大きな画面でゲームの音を出す",
+      "emotes": "エモート",
+      "remembered": "選んだ設定は次のライブゲームでも使われます。",
+      "reset": "標準の設定にもどす",
+      "save": "保存"
+    },
+    "say": {
+      "menu": "メッセージ",
+      "twoMinutes": "あと2分！",
+      "oneMinute": "あと1分！",
+      "lastQuestion": "最後の問題！",
+      "lastRound": "最後のラウンド！",
+      "eyesOnMe": "先生のほうを見てね",
+      "greatTeamwork": "すばらしいチームワーク！",
+      "greatEffort": "みんな、よくがんばったね！",
+      "beKind": "やさしくしようね",
+      "getReady": "じゅんびして！",
+      "almostDone": "もうすぐおわり！"
+    },
+    "eyes": {
+      "on": "こっちを見て",
+      "off": "ゲームにもどる",
+      "cover": "先生のほうを見てね",
+      "coverHint": "ゲームはすぐにもどります。",
+      "banner": "こっちを見て：すべての画面が一時停止中です。"
+    },
+    "bonus": {
+      "give": "ボーナス点をあげる",
+      "toastSeat": "{reason}！ +{points}",
+      "toastTeam": "{reason}！ {team}に+{points}",
+      "reason": {
+        "teamwork": "チームワーク",
+        "kindness": "やさしさ",
+        "effort": "がんばり",
+        "helping": "人を助けた",
+        "listening": "よく聞いた"
+      }
+    },
+    "time": {
+      "add": "+{s}秒",
+      "revealNow": "答えを見せる",
+      "waiting": "みんなを待っています…"
+    },
+    "dash": {
+      "title": "先生用の画面",
+      "qrTitle": "スマホで先生用の画面",
+      "qrHint": "スマホで読みとってください。ご自分のアカウントでログインしている必要があります。",
+      "notice": "クラスから見えない画面を使ってください（スマホがおすすめです）。",
+      "tabPlayers": "プレイヤー",
+      "tabQuestion": "問題",
+      "tabTeams": "チーム",
+      "tabMessages": "メッセージ",
+      "tabSettings": "設定",
+      "answered": "回答ずみ",
+      "thinking": "考え中",
+      "offline": "オフライン",
+      "late": "途中から参加",
+      "needsHelp": "サポートが必要",
+      "showHelp": "サポートが必要な人を表示",
+      "hideHelp": "サポートが必要な人を隠す",
+      "why": {
+        "lowScore": "正解が半分未満",
+        "wrongRun": "2問続けてまちがい",
+        "missRun": "2問続けて未回答"
+      },
+      "extraWaiting": "{count, plural, other {#人がまだ回答中（時間延長）}}",
+      "showAnswer": "答えを表示",
+      "hideAnswer": "答えを隠す",
+      "rename": "新しいニックネーム",
+      "move": "チームを移動",
+      "support": "配慮",
+      "supportTime": "時間延長",
+      "time100": "ふつうの時間",
+      "time150": "時間 ×1.5",
+      "time200": "時間 ×2",
+      "read": "問題を読み上げる",
+      "simple": "シンプル表示",
+      "remember": "このクラスで覚えておく",
+      "supportPrivate": "これはこの生徒とあなたにしか見えません。",
+      "supportWaits": "この生徒が答えるまで正解の発表を待ちます。いつでも「答えを見せる」を選べます。",
+      "saved": "ほぞんしました。"
+    },
+    "support": {
+      "count": "{count, plural, other {#人の生徒に配慮が保存されています。}}",
+      "clear": "配慮を消す",
+      "clearConfirm": "このクラスで保存した配慮をすべて消しますか？"
+    },
+    "homework": {
+      "hint": "せいとはじぶんのペースで、じかんせいげんなしでこたえます。スコアはせいせきひょうにはいります。",
+      "due": "しめきり（なくてもよい）",
+      "assign": "クラスにだす"
     }
   }
 }

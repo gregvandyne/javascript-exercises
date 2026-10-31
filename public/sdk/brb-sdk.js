@@ -177,7 +177,13 @@
   var LIVE_OUT = {
     rdy: function (m) { return { view: m.view === '2d' ? '2d' : '3d', cfg: m.cfg && typeof m.cfg === 'object' ? JSON.parse(JSON.stringify(m.cfg)) : undefined }; },
     mv: function (m) { var p = m.p; return Array.isArray(p) && p.length === 5 && isInt(p[0], -100000, 100000) && isInt(p[1], -100000, 100000) && isInt(p[2], -100000, 100000) && isInt(p[3], 0, 255) && isInt(p[4], 0, 7) ? { p: p.slice() } : null; },
-    ev: function (m) { if (!LIVE_KIND.test(String(m.k)) || !liveData(m.d, 0)) return null; var o = { k: m.k, d: m.d }; if (m.to === 'host' || isInt(m.to, 1, 100000)) o.to = m.to; return JSON.stringify(o).length <= 600 ? o : null; },
+    ev: function (m) { if (!LIVE_KIND.test(String(m.k)) || !liveData(m.d, 0)) return null; var o = { k: m.k, d: m.d };
+      // to: 'host' (anyone), 'team' (a player: their own team and the host) or a seat (the host); tm: a team (the host).
+      // A target that is not allowed drops the event (never sent to everyone instead).
+      var host = LIVE.role === 'host';
+      if (m.to !== undefined && m.to !== null) { if (m.to === 'host' || (m.to === 'team' && !host) || (host && isInt(m.to, 1, 100000))) o.to = m.to; else return null; }
+      if (m.tm !== undefined && m.tm !== null) { if (host && isInt(m.tm, 1, 6) && o.to === undefined) o.tm = m.tm; else return null; }
+      return JSON.stringify(o).length <= 600 ? o : null; },
     sc: function (m) { return isInt(m.n, 0, 1e6) ? { n: m.n } : null; },
     it: function (m) { return isInt(m.i, 0, 199) ? { i: m.i, ok: !!m.ok } : null; },
     an: function (m) { return isInt(m.i, 0, 1000) && isInt(m.c, 0, 3) && isInt(m.e, 0, 600000) ? { i: m.i, c: m.c, e: m.e } : null; },
@@ -192,7 +198,9 @@
       if (!liveSubs.length) { if (liveQueue.length < 500) liveQueue.push(m); return; }
       for (var i = 0; i < liveSubs.length; i++) { try { liveSubs[i](m); } catch (err) { if (window.console) console.error(err); } }
     };
-    var liveInit = JSON.parse(JSON.stringify({ v: 1, role: LIVE.role === 'host' ? 'host' : 'player', seat: LIVE.seat | 0, frame: LIVE.frame, nameMode: LIVE.nameMode, mode: LIVE.mode, nicks: Array.isArray(LIVE.nicks) ? LIVE.nicks : [], view: LIVE.view === '2d' ? '2d' : '3d', me: LIVE.me || null }));
+    var liveInit = JSON.parse(JSON.stringify({ v: 1, role: LIVE.role === 'host' ? 'host' : 'player', seat: LIVE.seat | 0, frame: LIVE.frame, nameMode: LIVE.nameMode, mode: LIVE.mode, nicks: Array.isArray(LIVE.nicks) ? LIVE.nicks : [], view: LIVE.view === '2d' ? '2d' : '3d', me: LIVE.me || null,
+      // the 8 team presets (colour, ink, shape, icon, name in the frame's language): strings only
+      teamPresets: (Array.isArray(LIVE.teamPresets) ? LIVE.teamPresets : []).slice(0, 8).map(function (p) { var o = {}; ['id', 'color', 'ink', 'shape', 'icon', 'name', 'shapeName'].forEach(function (k) { o[k] = p && typeof p[k] === 'string' ? p[k].slice(0, 40) : ''; }); return o; }) }));
     liveApi = {
       v: 1, active: true, init: null,
       send: function (t, m) {

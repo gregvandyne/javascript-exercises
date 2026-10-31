@@ -1632,6 +1632,105 @@ docs/safety.md §12; legal: docs/legal-review.md item 41.
 - **The platform lobby** (`server/live/lobby.html`) is a small 3D meadow with a 2D fallback, for games that don't
   declare `lobby: true`.
 
+## Oomba Live, part 3: teams and teacher tools
+
+The owner asked: "Make sure the teacher can assign teams and think of any other things that the teacher may want to
+do." The design (reviewed by an engineer, a classroom teacher with 30 children and one projector, and a child-safety
+reviewer) is `.claude/work/teams-out/design-final.md`; what shipped and why:
+
+- **Teams are platform-owned, from 8 fixed presets.** Colour (Okabe-Ito colour-blind-safe set plus a dark indigo),
+  ink (text on the colour, ≥ 4.5:1, unit-tested; the dark ink became `#121528` because `#1D2340` was 4.49:1 on Green
+  Frogs and 3.97:1 on Red Foxes), a drawn shape and an animal icon, and a name translated whole (adjectives agree).
+  Colour is never the only cue. No typed team names, not even for teachers: the text filter can't catch an in-joke
+  about a classmate on a projector ("safest wins"). The single source is `classlive-teams.js` `PRESETS`; pages get it
+  in their JSON, frames in `INIT.live.teamPresets`. Teams work with every live game; the projector's team board does
+  not depend on the game.
+- **Assignment.** On balances everyone at once; Balance moves the fewest players (unassigned first, then the most
+  recently joined from the largest teams); Shuffle deals random equal teams; the host moves anyone any time (to no
+  team only in the lobby); players may choose **in the lobby only** (a cap of ceil(players / n) + 1, and not when
+  locked), so nobody hops to the winning team mid-game. Placement: a signed-in student's own team on a rejoin (it
+  beats "smallest", so a restarted tablet lands back with its table), then the plan (saved class teams or a rematch),
+  then the smallest team by present members (empty teams first, ties to the lower score). `tms` carries the whole
+  membership, so a shuffle of 30 is one message, not 30 `pu`.
+- **Banked scoring.** Each team keeps sum, average and bonus. Quiz modes take each seat's team when a question opens
+  (`teamAt`), so a move counts from the next question and a teacher can't move answers between teams. Average =
+  the team's points this question / participants (members at the open that answered or are connected at the reveal),
+  defined for a phone that drops mid-question; game modes divide a rise by connected members. **Average is the
+  default** (fair for uneven teams); results show both. Empty teams are unranked; teams that never had a member are
+  left out of the results. Team scores travel only in `ts`, sent before `rv`, with the leaderboard and before the end,
+  so a game's reveal event already has them.
+- **A class's teams are prepared ahead and reused.** The class page has "Teams for live games"; a class run with teams
+  saves its final teams; "Use last teams" in a class lobby loads them and tells the host if absences made them uneven.
+  The end of a run *merges*: students who played keep the team they ended on, students who did not keep their saved
+  team, so a small-group or "missed questions" run never wipes the class's teams. A run with a different team count
+  replaces the saved teams only if it had at least as many students; otherwise they are left alone. Saved runs keep
+  the whole setup (`n`, `presets`), so "Play again with these teams" rebuilds even teams nobody played on.
+- **Team totals follow the members' scores.** Game-reported scores may go down (a new game resets a game's points): a
+  drop takes back what that seat banked to its current team, and only points above what is still counted are banked
+  again, so nothing is counted twice. Before anyone has scored, in the lobby, teams have no rank (shown as –).
+- **An unlocked pack rebuilt in place keeps old games working.** The live pack is not in `kit/SHIPPED.json`, but Builder
+  games store `{{PACK_TAG:live}}` as a literal hash. Its older hashes go in `KIT_PACKS_RETIRED` (server/services/kit.js):
+  the scanner and the live-ready check accept them and `upgradePackPins()` rewrites them to the current hash whenever a
+  game is served (frame.js), so no stored game version needs a migration.
+- **Settings extend the existing `s.settings`** (`maxPlayers`, `locked`, `autoLock`): late join *is* `!autoLock`, so
+  lock, unlock and the cap keep one source of truth. Time per question, number of questions, shuffled questions and
+  answers, accuracy-only points (1,000 per right answer, no streak), the players' leaderboard (all / top 5 / off: off
+  also hides ranks and team ranks on devices), late join, names per view, projector sound, emotes. Saved at start as
+  the host's defaults (`live_prefs`); the landing is filled in from them. The practice question was cut (it breaks
+  question numbering in every game).
+- **Two host connections, not a Map.** `s.host.conn` stays the projector everywhere it was used; `s.dash` is one
+  dashboard connection (a newer one replaces it, 4409). The host is gone only when both are; the dashboard is never
+  waited for at loading. Dashboard-only messages go through `toDash`.
+- **The dashboard is phone-first** because many teachers mirror their laptop on the projector. Its QR (on the
+  projector) holds only the session id; the page needs the host's sign-in. It hides the answer and "needs help" until
+  tapped. Needs help: quiz: ≥ 3 answered and under half right, 2 wrong in a row, or 2 missed in a row while connected;
+  game modes: accuracy only (idle time is normal in games).
+- **Names per view.** Only name-carrying messages (`wel`, `pj`, `pu`, `ros`) are built per view, once per broadcast:
+  players, projector, dashboard. "Hidden" sends `''` to the projector (and its frame), nicknames to players, real names
+  to the dashboard in a class room.
+- **During play:** eyes up (pauses play; off resumes only a pause it made), 10 fixed messages, +10/+20/+30 s (points
+  still use the question's own time, so adding time never lowers points), Reveal now, bonus points (+100, positive
+  reasons; a player's bonus is private, a team's is public, never in the gradebook), a new nickname, mute emotes.
+- **Support is private and never reaches game code.** Builder games are user code: a game could broadcast "has extra
+  time" through its own events and reveal an IEP/504 plan. So the page applies read aloud and Simple view, the server
+  applies extra time, and nothing about support is relayed into frames. Extra time is quiz modes only (a seat gets its
+  own `q` with its own `secs`; the broadcast `q` carries nothing per seat; the reveal waits for the longest limit
+  among connected unanswered seats). Saving support per class is behind `LIVE_SAVE_SUPPORT` (legal-review item 42).
+- **The end.** The projector holds the podium 6 s, then goes to the results as before (the e2e waits still hold). The
+  results page is split: a class-safe part (team podium and table, hardest questions, question review with answer
+  bars; no student names) and "Student details", closed (marks, bonus, needs help, CSV). `live_runs.items` now keeps
+  the questions as asked (host-written text, choices, answer, time, counts), which also makes "play the missed
+  questions again" possible for saved runs.
+- **Play again with the same players.** `endSession` still forgets bans, accounts and nickname picks at once; a small
+  snapshot (`s.again`: seat, account, nickname, avatar, team; the bans) is kept while the players' sockets linger
+  (`hooks.lingerMs`, 2 minutes; 0 in unit tests), then wiped with the `bye`. The rematch re-runs every join check and
+  sends each player its own `again` token (never into a frame). After the linger, a saved class run can still start
+  "Play again with these teams" (the plan comes from `live_run_scores.team`).
+- **Homework from a set** is a new lesson step kind `quiz` (the existing `question` kind is free text): a snapshot of
+  the set's items, answers checked by the server once each, marks kept, score = % right in the gradebook. Behind
+  `LIVE_HOMEWORK` (off); the rest ships without it.
+- **Cut or deferred:** co-host (a new token role, access matrix and another adult seeing support data: designed, not
+  built), typed team names, team talk, reduced answer choices, machine translation, power-ups, random student picker,
+  auto-advance, Sheets export, showing free-text responses, support in frames.
+
+### Part 3, the pages and games (client)
+- **One teams board for three places.** The projector's Teams sheet, the dashboard's Teams tab and the class teams
+  editor share `live-teams-ui.js`: drag (pointer events, so whiteboards and touch work) and select-then-move (keyboard,
+  switch, tap) are both always there, and keyboard focus survives the server's `tms` redraw.
+- **Message templates go to pages as written.** Page scripts get the raw translated messages (ICU plurals intact) and
+  format them in the page's language (`fill()` in `live-common.js`), so "1 player / 2 players" is right in every locale.
+- **A player's bonus never reaches the class's screen.** The projector page shows team bonuses only and does not pass a
+  player's `bn` into its frame (a game there could show it). The dashboard shows both.
+- **The right answer on the dashboard** comes with `dq` (dashboard only) and stays behind "Show the answer".
+- **Team presets reach games through the SDK** (`BRB.live.init.teamPresets`, strings only), in the frame's language; the
+  pack keeps no copy. A game without presets shows no teams rather than unnamed ones.
+- **Games:** Question Battle (team bands in the lobby, a team board between questions on the projector, "Blue Whales:
+  place 2" on devices, a team podium), Quest Race (team rings and nameplate bands, team progress bars on the projector,
+  podium steps in the top teams' colours with each team's best runner), Hero of Sunvale (team meters on the projector,
+  "Your team finished a mission!"), and the platform lobby (a team banner row). Every team cue has a shape and a name.
+- **Homework (flag off):** "Assign as homework" is a small form on the results page (class, optional due date); the
+  student's quiz step is a platform page (one question at a time, Read aloud, no timer).
+
 ## Game data packs (/vendor/data/)
 
 A game file stays under 2 MB, but some official games carry a lot of words in many languages (Atlas Quest has about 1,200 culture questions, in 13 languages). Packing every language into the game file would mean every player downloads all of them. Instead, a game can keep reviewed data in `public/vendor/data/<game>/<version>/` (for example, one file per language) and load only the one it needs at run time: a script element with `integrity` and `crossorigin="anonymous"`, so the browser checks the exact bytes.

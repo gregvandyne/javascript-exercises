@@ -109,6 +109,9 @@ const movedPermanently = parseFlag(process.env.MOVED_PERMANENTLY, 'MOVED_PERMANE
 const builderWebSearch = parseFlag(process.env.BUILDER_WEB_SEARCH, 'BUILDER_WEB_SEARCH');
 const sttLive = parseFlag(process.env.STT_LIVE, 'STT_LIVE', true);
 const liveClassroom = parseFlag(process.env.LIVE_CLASSROOM, 'LIVE_CLASSROOM', true);
+const liveTeams = parseFlag(process.env.LIVE_TEAMS, 'LIVE_TEAMS', true);
+const liveSaveSupport = parseFlag(process.env.LIVE_SAVE_SUPPORT, 'LIVE_SAVE_SUPPORT');
+const liveHomework = parseFlag(process.env.LIVE_HOMEWORK, 'LIVE_HOMEWORK');
 /** Speech to text providers (server/services/stt.js). 'mock' answers fixed words, for tests only. */
 export const STT_PROVIDERS = ['openai', 'elevenlabs', 'mock'];
 const sttProvider = String(process.env.STT_PROVIDER || 'openai').trim().toLowerCase();
@@ -148,6 +151,7 @@ export const config = {
     oidcBase.error, oidcBase.url && (process.env.NODE_ENV || 'development') === 'production' && "GOOGLE_OIDC_BASE is for tests and can't be used in production",
     ...stripe.errors,
     publicUrl.error, movedTo.error, redirectHosts.error, requireSecret.error, maintenance.error, movedPermanently.error, parentMade.error, sttLive.error, liveClassroom.error,
+    liveTeams.error, liveSaveSupport.error, liveHomework.error,
     builderWebSearch.error,
     !STT_PROVIDERS.includes(sttProvider) && `STT_PROVIDER must be one of ${STT_PROVIDERS.filter(p => p !== 'mock').join(', ')}`,
     sttProvider === 'mock' && (process.env.NODE_ENV || 'development') === 'production' && "STT_PROVIDER=mock is for tests and can't be used in production",
@@ -192,6 +196,13 @@ export const config = {
   liveMaxSessions: Math.max(1, Math.floor(num(process.env.LIVE_MAX_SESSIONS, 60))),
   liveMaxSeats: Math.max(2, Math.floor(num(process.env.LIVE_MAX_SEATS, 2000))),
   liveHours: Math.min(3, Math.max(0.1, num(process.env.LIVE_HOURS, 3))),   // never more than 3 hours (docs/legal-review.md item 41)
+  // Oomba Live part 3 (docs/decisions.md "Oomba Live, part 3"): LIVE_TEAMS=0 hides team mode (the server ignores team
+  // messages). LIVE_SAVE_SUPPORT=1 lets class teachers save a student's support (extra time, read aloud, simple view)
+  // for their class: off until docs/legal-review.md item 42 is signed off (support in one session works either way).
+  // LIVE_HOMEWORK=1 lets teachers assign a question set as a self-paced lesson step (kind 'quiz').
+  liveTeams: liveTeams.on,
+  liveSaveSupport: liveSaveSupport.on,
+  liveHomework: liveHomework.on,
   sttMaxSeconds: Math.min(120, Math.max(5, num(process.env.STT_MAX_SECONDS, 60))),
   sttMaxBytes: Math.min(10_000_000, Math.max(100_000, num(process.env.STT_MAX_BYTES, 1_500_000))),
   sttPerMinute: Math.max(1, num(process.env.STT_PER_MINUTE, 8)),

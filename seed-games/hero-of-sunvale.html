@@ -261,7 +261,7 @@ body.cut .hud,body.cut .tbtns,body.cut .keyhint,body.cut .toasts,body.cut .badge
 <script src="/vendor/oomba-kit/1.1.0/packs/dress.js" integrity="sha384-ZCFgY98YAWY7Tcy+GfJLalmnJukKdzbVpg6j4ZljXuJSYgYzkWSWMPihVW/u8CqH" crossorigin="anonymous"></script>
 <script src="/vendor/oomba-kit/1.1.0/packs/art-biomes-2.js" integrity="sha384-0ad0awdyk2fC5pFpqYc/7EABVSKTEe1ZKo2YB6cvjKZDIDA2mI1+YRUEQhOgXrHs" crossorigin="anonymous"></script>
 <script src="/vendor/oomba-kit/1.1.0/packs/bridge-3d.js" integrity="sha384-XrVZh1TfGin1ajGCc72TzhAxeqUJQM3JI3kI1weHoMgUIV4urBdPtJbZxO7wPOli" crossorigin="anonymous"></script>
-<script src="/vendor/oomba-kit/1.1.0/packs/live.js" integrity="sha384-PoL1d2TQvVJAaM+LOoFIDiwk0wF23Ue5ASvgQgvkBEjRB/qhCQ+b0BJ93864hhig" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.0/packs/live.js" integrity="sha384-coSMEAXKgHblAGttFS4mvWXqRq7LEVGZP+rPPYCxp8BnVqWKHWjnu+kWuuB1vd2m" crossorigin="anonymous"></script>
 <script>
 /* KIT LOOK: the Oomba Kit's colours (by day and by night) and its font, as the CSS variables the sheet above uses, so
    the game's own HUD, cards and buttons match every other Oomba game. They follow the site's light / dark theme. */
@@ -554,7 +554,7 @@ const I18N = {
     'got.heart':'Heart Crystal! You have {n} hearts now!', 'equip.now':'Now wearing {item}! Defense {n}', 'equip.sword':'Now holding {item}! Power {n}',
     'potion.full':"Your bag can't hold more of those.", 'potion.none':'No potions left. Visit a potion shop!', 'potion.hpFull':'Your hearts are already full!',
     'potion.drank':'Glug glug!', 'potion.shieldOn':"Shield Potion: you're extra tough!", 'potion.zoomOn':'Zoom Potion: super speed!',
-    'potion.powerOn':'Power Potion: super strong!', 'potion.off':'{item} wore off.', 'waystone.on':'Waystone found! Adventure saved.', 'saved':'Saved!', 'live.progress':'Village progress: {done} of {total} missions ({players} players)', 'live.start':'Go! Explore Sunvale together.', 'live.end':'The live game is over. Well played, heroes!',
+    'potion.powerOn':'Power Potion: super strong!', 'potion.off':'{item} wore off.', 'waystone.on':'Waystone found! Adventure saved.', 'saved':'Saved!', 'live.progress':'Village progress: {done} of {total} missions ({players} players)', 'live.start':'Go! Explore Sunvale together.', 'live.end':'The live game is over. Well played, heroes!', 'live.teamQuest':'Your team finished a mission!', 'live.teams':'Team progress',
     'water.deep':'Brr! Too deep. Find the bridge!', 'shop.h':'Potion Shop', 'shop.buy':'Buy', 'shop.price':'{n} coins', 'shop.poor':'Not enough coins.', 'shop.bought':'Bought {item}!',
     'ko.h':'Whoops! You got knocked out!', 'ko.back':'Back to the waystone…', 'help.h':'Want a helping hand?',
     'help.text':'Get 2 Heart Potions, a Shield Potion and gentler foes for this battle.', 'help.yes':'Yes, please!', 'help.no':"No thanks, I've got this!",
@@ -885,6 +885,8 @@ const I18N = {
     "live.progress": "تقدّم القرية: {done} من {total} مهمة ({players} لاعبين)",
     "live.start": "انطلقوا! استكشفوا صنفيل معاً.",
     "live.end": "انتهت اللعبة المباشرة. أحسنتم أيها الأبطال!",
+    "live.teamQuest": "أنهى فريقك مهمة!",
+    "live.teams": "تقدّم الفرق",
     "water.deep": "برر! الماء عميق جدًا. ابحث عن الجسر!",
     "shop.h": "متجر الجرعات",
     "shop.buy": "اشترِ",
@@ -1357,6 +1359,8 @@ const I18N = {
     "live.progress": "Dorf-Fortschritt: {done} von {total} Missionen ({players} Spieler)",
     "live.start": "Los! Erkundet Sunvale zusammen.",
     "live.end": "Das Live-Spiel ist vorbei. Gut gemacht, Helden!",
+    "live.teamQuest": "Dein Team hat eine Mission geschafft!",
+    "live.teams": "Team-Fortschritt",
     "water.deep": "Brr! Zu tief. Such die Brücke!",
     "shop.h": "Trankladen",
     "shop.buy": "Kaufen",
@@ -1838,6 +1842,8 @@ const I18N = {
     "live.progress": "Progreso de la aldea: {done} de {total} misiones ({players} jugadores)",
     "live.start": "¡Ya! Explorad Sunvale juntos.",
     "live.end": "Se acabó el juego en vivo. ¡Bien jugado, héroes!",
+    "live.teamQuest": "¡Tu equipo terminó una misión!",
+    "live.teams": "Progreso de los equipos",
     "water.deep": "¡Brrr! Demasiado hondo. ¡Busca el puente!",
     "shop.h": "Tienda de pociones",
     "shop.buy": "Comprar",
@@ -2310,6 +2316,8 @@ const I18N = {
     "live.progress": "Progrès du village : {done} missions sur {total} ({players} joueurs)",
     "live.start": "C’est parti ! Explorez Sunvale ensemble.",
     "live.end": "La partie en direct est finie. Bravo, les héros !",
+    "live.teamQuest": "Ton équipe a fini une mission !",
+    "live.teams": "Progrès des équipes",
     "water.deep": "Brrr ! Trop profond. Trouve le pont !",
     "shop.h": "Boutique de potions",
     "shop.buy": "Acheter",
@@ -2782,6 +2790,8 @@ const I18N = {
     "live.progress": "התקדמות הכפר: {done} מתוך {total} משימות ({players} שחקנים)",
     "live.start": "יוצאים! גלו את סאנוויל ביחד.",
     "live.end": "המשחק החי הסתיים. כל הכבוד, גיבורים!",
+    "live.teamQuest": "הקבוצה שלך סיימה משימה!",
+    "live.teams": "התקדמות הקבוצות",
     "water.deep": "ברר! עמוק מדי. מצאו את הגשר!",
     "shop.h": "חנות שיקויים",
     "shop.buy": "לקנות",
@@ -3254,6 +3264,8 @@ const I18N = {
     "live.progress": "Progressi del villaggio: {done} missioni su {total} ({players} giocatori)",
     "live.start": "Via! Esplorate Sunvale insieme.",
     "live.end": "La partita dal vivo è finita. Ben fatto, eroi!",
+    "live.teamQuest": "La tua squadra ha finito una missione!",
+    "live.teams": "Progressi delle squadre",
     "water.deep": "Brrr! Troppo profondo. Trova il ponte!",
     "shop.h": "Negozio di pozioni",
     "shop.buy": "Compra",
@@ -3726,6 +3738,8 @@ const I18N = {
     "live.progress": "むらのしんちょく: {total}このうち {done}こ ({players}人)",
     "live.start": "スタート！ みんなでサンベールをたんけんしよう。",
     "live.end": "ライブゲームはおしまい。ゆうしゃたち、よくがんばったね！",
+    "live.teamQuest": "きみのチームがミッションをクリアしたよ！",
+    "live.teams": "チームのしんちょく",
     "water.deep": "ブルル! ふかすぎる。はしを さがそう!",
     "shop.h": "ポーションやさん",
     "shop.buy": "かう",
@@ -4198,6 +4212,8 @@ const I18N = {
     "live.progress": "Dorpsvoortgang: {done} van {total} missies ({players} spelers)",
     "live.start": "Start! Verken Sunvale samen.",
     "live.end": "Het live spel is voorbij. Goed gedaan, helden!",
+    "live.teamQuest": "Jouw team heeft een missie gehaald!",
+    "live.teams": "Teamvoortgang",
     "water.deep": "Brr! Te diep. Zoek de brug!",
     "shop.h": "Drankjeswinkel",
     "shop.buy": "Koop",
@@ -4670,6 +4686,8 @@ const I18N = {
     "live.progress": "Progresso da vila: {done} de {total} missões ({players} jogadores)",
     "live.start": "Já! Explorem Sunvale juntos.",
     "live.end": "O jogo ao vivo acabou. Mandaram bem, heróis!",
+    "live.teamQuest": "Sua equipe concluiu uma missão!",
+    "live.teams": "Progresso das equipes",
     "water.deep": "Brr! Fundo demais. Encontre a ponte!",
     "shop.h": "Loja de Poções",
     "shop.buy": "Comprar",
@@ -5142,6 +5160,8 @@ const I18N = {
     "live.progress": "Прогресс деревни: {done} из {total} заданий (игроков: {players})",
     "live.start": "Вперёд! Исследуйте Санвейл вместе.",
     "live.end": "Живая игра окончена. Отлично сыграно, герои!",
+    "live.teamQuest": "Твоя команда выполнила задание!",
+    "live.teams": "Прогресс команд",
     "water.deep": "Брр! Слишком глубоко. Найди мост!",
     "shop.h": "Лавка зелий",
     "shop.buy": "Купить",
@@ -5614,6 +5634,8 @@ const I18N = {
     "live.progress": "村莊進度：{done} / {total} 個任務（{players} 位玩家）",
     "live.start": "出發！一起探索 Sunvale。",
     "live.end": "直播遊戲結束了。英雄們，做得好！",
+    "live.teamQuest": "你的隊伍完成了一個任務！",
+    "live.teams": "隊伍進度",
     "water.deep": "好冷！水太深了。去找橋吧！",
     "shop.h": "藥水店",
     "shop.buy": "購買",
@@ -12937,7 +12959,7 @@ function installTestHooks() { window.__brbTest = Object.assign(TEST, TEST_EXT); 
 const LIVE = OK.live;
 if (LIVE && LIVE.active) {
   const liveHost = LIVE.role === 'host';
-  LIVE.ready({ presence: { bounds: 460, maxSpeed: 16 }, lobby: true, hostView: true, maxScorePerSec: 400, words: ['quest'] });
+  LIVE.ready({ presence: { bounds: 460, maxSpeed: 16 }, lobby: true, hostView: true, maxScorePerSec: 400, words: ['quest'], teams: true });
   /** A light blocky hero for another player: body, head and hair from their character baked to one mesh, with legs and
    *  arms on pivots so it walks and runs with the speed the crowd gives it (o.speed, o.air), and play(name, ms) for
    *  emotes (wave, cheer, land), like the kit's own rigs. */
@@ -12974,15 +12996,42 @@ if (LIVE && LIVE.active) {
   const crowd = LIVE.crowd(B, { auto: false, make: heroLite, size: 2.1,
     // the player's own emote plays on their own hero (its poses: victory waves, cheer cheers)
     self: { play: name => { if (S.screen !== 'play' || !canFight() || ATK.kind) return; hero.play(name === 'wave' ? 'victory' : 'cheer', 1.2); } } });
-  const shared = { done: 0, by: new Map() };
-  LIVE.on('event', e => { if (e.kind === 'quest' && e.data && typeof e.data.m === 'number') { const n = (shared.by.get(e.from) || 0) + 1; shared.by.set(e.from, n); shared.done++; liveMeter(); } });
-  // the projector: a "Village progress" meter
+  // Missions done, for the class and (team mode) per team: a mission counts for the team its player was on then.
+  const shared = { done: 0, by: new Map(), byTeam: new Map() };
+  const teamDone = k => { if (k) shared.byTeam.set(k, (shared.byTeam.get(k) || 0) + 1); };
+  LIVE.on('event', e => {
+    if (e.kind === 'quest' && e.data && typeof e.data.m === 'number') {
+      const n = (shared.by.get(e.from) || 0) + 1; shared.by.set(e.from, n); shared.done++;
+      const k = LIVE.teamOf(e.from); teamDone(k);
+      if (!liveHost && k && LIVE.myTeam && LIVE.myTeam.team === k) UI.toast(t('live.teamQuest'));
+      liveMeter();
+    }
+  });
+  // my own hero gets a ring in my team's colour
+  const myRing = () => { if (!liveHost && hero.rig) crowd.teamRing(hero.rig, LIVE.myTeam ? LIVE.myTeam.team : 0); };
+  LIVE.on('teams', () => { myRing(); liveMeter(); }); LIVE.on('welcome', myRing);
+  // the projector: a "Village progress" meter, and in team mode one meter per team (shape, name, missions done of
+  // members × missions), so the class sees every team, not colour alone
   let meter = null;
+  const shapeCv = (tm, px) => { const c = document.createElement('canvas'); c.width = c.height = px * 2; c.style.cssText = `width:${px}px;height:${px}px;flex:none`; c.setAttribute('aria-hidden', 'true'); LIVE.drawShape(c.getContext('2d'), tm.shape, px, px, px * 0.84, tm.color, '#1d2340'); return c; };
   function liveMeter() {
     if (!liveHost) return;
-    if (!meter) { meter = document.createElement('div'); meter.id = 'liveMeter'; meter.setAttribute('role', 'status'); meter.style.cssText = 'position:fixed;inset-inline-start:12px;top:12px;z-index:50;background:rgba(255,253,242,.95);color:#1d2340;border-radius:16px;padding:8px 14px;font:800 20px/1.3 system-ui,sans-serif;box-shadow:0 4px 0 rgba(0,0,0,.2)'; document.body.appendChild(meter); }
+    if (!meter) { meter = document.createElement('div'); meter.id = 'liveMeter'; meter.setAttribute('role', 'status'); meter.style.cssText = 'position:fixed;inset-inline-start:12px;bottom:12px;z-index:50;background:rgba(255,253,242,.95);color:#1d2340;border-radius:16px;padding:8px 14px;font:800 20px/1.3 system-ui,sans-serif;box-shadow:0 4px 0 rgba(0,0,0,.2);display:flex;flex-direction:column;gap:6px;max-width:min(420px,90vw)'; document.body.appendChild(meter); }
     const players = LIVE.players().length, total = Math.max(1, players * MISSIONS.length);
     meter.textContent = t('live.progress', { done: shared.done, total, players });
+    const tms = LIVE.teamsOn ? LIVE.teams().filter(x => x.size > 0) : [];
+    if (tms.length) {
+      const h = document.createElement('div'); h.textContent = t('live.teams'); h.style.cssText = 'font-size:16px'; meter.appendChild(h);
+      for (const tm of tms) {
+        const done = shared.byTeam.get(tm.team) || 0, of = Math.max(1, tm.size * MISSIONS.length), pct = Math.min(100, Math.round(100 * done / of));
+        const row = document.createElement('div'); row.className = 'liveTeam'; row.dataset.team = tm.team; row.style.cssText = 'display:flex;align-items:center;gap:8px;font-size:16px';
+        const nm = document.createElement('span'); nm.textContent = `${tm.icon} ${tm.name}`; nm.style.cssText = 'flex:1;min-width:0;overflow-wrap:anywhere';
+        const bar = document.createElement('span'); bar.style.cssText = 'position:relative;width:110px;height:14px;border-radius:7px;background:#e3e0d2;overflow:hidden;border:2px solid #1d2340;flex:none';
+        const fillEl = document.createElement('i'); fillEl.style.cssText = `position:absolute;inset-block:0;inset-inline-start:0;width:${pct}%;background:${tm.color}`; bar.appendChild(fillEl);
+        const n = document.createElement('span'); n.textContent = `${done}/${of}`; n.style.cssText = 'font-variant-numeric:tabular-nums';
+        row.append(shapeCv(tm, 18), nm, bar, n); meter.appendChild(row);
+      }
+    }
   }
   GAME.addSystem({
     id: 'live',
@@ -12994,7 +13043,7 @@ if (LIVE && LIVE.active) {
   });
   GAME.on('missionDone', id => {
     const i = MISSIONS.findIndex(m => m.id === id);
-    if (i >= 0) { LIVE.item(i, true); LIVE.send('quest', { m: i }); shared.done++; liveMeter(); }
+    if (i >= 0) { LIVE.item(i, true); LIVE.send('quest', { m: i }); shared.done++; teamDone(LIVE.myTeam ? LIVE.myTeam.team : 0); liveMeter(); }
     LIVE.score(G.points || 0);
   });
   let scoreT = 0;

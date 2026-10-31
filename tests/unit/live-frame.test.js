@@ -33,6 +33,10 @@ setTimeout(function () {
     R.deep = BRB.live.send('ev', { k: 'pick', d: { a: { b: { c: 1 } } } });
     R.good = BRB.live.send('ev', { k: 'pick', d: { item: 'red-gem', n: 3, ok: true } });
     R.score = BRB.live.send('sc', { n: 120 });
+    // team-only and misdirected targets (regression: 'to: team' and 'tm' used to be stripped, so team events went to all)
+    R.team = BRB.live.send('ev', { k: 'hint', d: 1, to: 'team' });
+    R.seatTo = BRB.live.send('ev', { k: 'hint', d: 2, to: 4 });
+    R.tm = BRB.live.send('ev', { k: 'hint', d: 3, tm: 2 });
     R.host = BRB.live.send('st', { d: { x: 1 } });
     BRB.live.on(function (m) { R.got = m; });
   }
@@ -81,7 +85,10 @@ test('a live frame hands its port over once, sends only well-formed messages, an
   assert.equal(R.prose, false); assert.equal(R.caps, false); assert.equal(R.deep, false);
   assert.equal(R.good, true); assert.equal(R.score, true);
   assert.equal(R.host, false, 'a player frame cannot write the shared state');
-  assert.deepEqual(P.msgs, [{ k: 'pick', d: { item: 'red-gem', n: 3, ok: true }, t: 'ev' }, { n: 120, t: 'sc' }]);
+  assert.equal(R.team, true, 'a player may send to their own team');
+  assert.equal(R.seatTo, false, 'a player cannot send to one seat (dropped, never broadcast)');
+  assert.equal(R.tm, false, 'a player cannot address another team');
+  assert.deepEqual(P.msgs, [{ k: 'pick', d: { item: 'red-gem', n: 3, ok: true }, t: 'ev' }, { n: 120, t: 'sc' }, { k: 'hint', d: 1, to: 'team', t: 'ev' }]);
   assert.deepEqual(R.got, { t: 'clk', s: 1000 }, 'the page answers over the port');
   // text entry is off: prompt() returns null, text boxes and editable elements are read-only, even ones made later
   assert.equal(R.prompt, null);
@@ -109,5 +116,21 @@ test('a live frame that navigates itself: the new page has no port and gets noth
   assert.equal(P.loads, 2, 'the frame loaded twice (the page tears it down: public/js/live-common.js)');
   assert.equal(P.ports, 1, 'only the real frame ever handed over a port');
   assert.equal(P.ready, 2, 'the navigated page could only post a portless brb:ready');
+  await ctx.close();
+});
+
+test('a host frame may send to one team or one seat; the targets reach the page intact', { skip, timeout: 60_000 }, async () => {
+  const HOSTGAME = `<title>H</title><body><script>window.__R = {}; setTimeout(function () { var R = window.__R;
+    R.tm = BRB.live.send('ev', { k: 'hint', d: 1, tm: 2 });
+    R.seat = BRB.live.send('ev', { k: 'hint', d: 2, to: 5 });
+    R.team = BRB.live.send('ev', { k: 'hint', d: 3, to: 'team' });
+    R.badTm = BRB.live.send('ev', { k: 'hint', d: 4, tm: 9 });
+    R.both = BRB.live.send('ev', { k: 'hint', d: 5, tm: 1, to: 3 });
+  }, 60);</script></body>`;
+  const { p, frame, ctx } = await run({ ...LIVE, role: 'host', seat: 0, me: null }, HOSTGAME);
+  const R = await frame.evaluate(() => window.__R);
+  const P = await p.evaluate(() => __P.msgs);
+  assert.deepEqual(R, { tm: true, seat: true, team: false, badTm: false, both: false });
+  assert.deepEqual(P, [{ k: 'hint', d: 1, tm: 2, t: 'ev' }, { k: 'hint', d: 2, to: 5, t: 'ev' }]);
   await ctx.close();
 });

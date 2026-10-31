@@ -6,6 +6,9 @@
 //   /live/host/:sid       the projector page; /live/play/:sid the player's page; /live/frame/:token the game frame
 //   /live/results/:id     results (from memory for 10 minutes, then what was saved), .csv for saved runs
 //   /live/sets            question sets; /api/live/sets... their API
+//   /live/host/:sid/dash  the teacher's dashboard (part 3): the signed-in host only, a phone the class can't see
+//   /api/live/prefs       the host's remembered game settings; /api/live/classes/:classId/teams|support the class's
+//                         saved teams (the class teams editor) and saved support (LIVE_SAVE_SUPPORT)
 // Everything answers 404 while LIVE_CLASSROOM=0 (the class-code /join keeps working).
 import { Router } from 'express';
 import { config } from '../config.js';
@@ -19,11 +22,16 @@ import { log } from '../services/log.js';
 import * as games from '../services/games.js';
 import * as S from '../services/schools.js';
 import * as L from '../services/lessons.js';
+import * as PROG from '../services/progress.js';
 import * as LS from '../services/classlive-sessions.js';
 import * as A from '../services/classlive-access.js';
 import * as R from '../services/classlive-results.js';
 import * as SETS from '../services/classlive-sets.js';
 import * as C from '../services/classlive-check.js';
+import * as T from '../services/classlive-teams.js';
+import * as ST from '../services/classlive-settings.js';
+import * as D from '../services/classlive-dash.js';
+import { SAY, BONUS_REASONS } from '../services/classlive-protocol.js';
 import { nicksFor } from '../services/classlive-names.js';
 import { STARTERS } from '../live/starters.js';
 import { familyOfOwner, familiesOn } from '../services/family.js';
@@ -122,7 +130,7 @@ router.post('/api/live/report', on, (req, res) => {
 const officialReady = () => games.listVisible(null, { official: true, limit: 100 }).filter(g => !Object.values(A.MODES).includes(g.slug));
 router.get('/live', on, requireAnyAccount, hostOnly, (req, res) => {
   const t = req.t, u = req.user;
-  const ready = list => list.filter(g => g.published_version_id && C.gameReady(g)).map(g => ({ id: g.id, icon: g.icon, title: g.title, quiz: C.liveCheck(g.published_version_id).quiz }));
+  const ready = list => list.filter(g => g.published_version_id && C.gameReady(g)).map(g => { const c = C.liveCheck(g.published_version_id); return { id: g.id, icon: g.icon, title: g.title, quiz: c.quiz, teams: !!c.teams }; });
   const mine = games.myGames(u.id, 200).filter(g => g.status === 'published' && !g.hidden_reason);
   const teaching = S.classesOf(u.id, 'teacher');
   const sharedSeen = new Set(mine.map(g => g.id));
@@ -145,7 +153,8 @@ router.get('/live', on, requireAnyAccount, hostOnly, (req, res) => {
   const family = isGrownup(u) && familiesOn(req) && !!familyOfOwner(u.id);
   noStore(res);
   page(req, res, { title: t('live.landing.title'), active: 'classes', head: '<link rel="stylesheet" href="/css/live.css">', scripts: ['/js/live-sets.js'],
-    body: V.landingBody(req, { modes, groups, sets: SETS.listFor(u), starters, classes: teaching, family, pre, recent: R.hostRuns(u.id, 8), maxPlayers: A.maxPlayersFor(u, 'open', null) === 30 ? 30 : config.liveMaxPlayers, origin: requestOrigin(req) }) });
+    body: V.landingBody(req, { modes, groups, sets: SETS.listFor(u), starters, classes: teaching, family, pre, recent: R.hostRuns(u.id, 8), maxPlayers: A.maxPlayersFor(u, 'open', null) === 30 ? 30 : config.liveMaxPlayers, origin: requestOrigin(req),
+      prefs: ST.loadPrefs(u.id), teamsOn: LS.teamsOn() }) });
 });
 
 /** The landing's form ({ pick: 'mode:<id>'|'game:<id>', set: 'starter:<id>'|'set:<id>', audience, classId, ... }) or
@@ -163,10 +172,76 @@ function sessionOpts(b, req) {
   if (b.setId) o.setId = String(b.setId);
   if (b.starter) o.starter = String(b.starter);
   if (Array.isArray(b.items)) o.items = b.items;
+  // Game settings: a JSON object, or the landing form's flat fields (classlive-settings checks every value).
+  const flat = Object.fromEntries(Object.keys(ST.KEYS).filter(k => b[k] !== undefined).map(k => [k, b[k]]));
+  o.settings = b.settings && typeof b.settings === 'object' && !Array.isArray(b.settings) ? b.settings : flat;
+  // The landing's late-join box doesn't know the audience: open rooms keep locking at start (the host can still allow
+  // late joiners in the room's settings).
+  if (o.audience === 'open' && o.settings === flat) delete o.settings.late;
+  // Teams: { n, scoring, presets } (JSON) or the form's teams (0 = off, 2-6) and scoring.
+  const tn = b.teams && typeof b.teams === 'object' ? +b.teams.n : +[].concat(b.teams ?? '').pop();
+  if (Number.isInteger(tn) && tn >= 2 && tn <= 6) {
+    const sc = b.teams && typeof b.teams === 'object' ? b.teams.scoring : [].concat(b.scoring ?? '').pop();
+    o.teams = { n: tn, scoring: sc === 'sum' ? 'sum' : 'avg', ...(b.teams && Array.isArray(b.teams.presets) ? { presets: b.teams.presets.map(Number) } : {}) };
+  }
   return o;
 }
+/** "Play the missed questions again" and "Play again with these teams" (a saved class run): the run's game, audience,
+ *  class, settings and teams; the questions (missed: accuracy under 100 %, lowest first, at most 20) or the team plan.
+ *  -> { ok, opts } | { ok: false, status, code } */
+function fromRunOpts(req, b) {
+  const u = req.user, id = String(b.fromRun || b.againRun || '');
+  const mem = LS.get(id);
+  const mine = mem && mem.host.userId === u.id && mem.summary ? mem : null;
+  const saved = mine ? null : R.persisted(u, id);
+  if (!mine && !saved) return { ok: false, status: 404, code: 'notFound' };
+  const run = mine ? { mode: mine.mode, game_id: mine.gameId, audience: mine.audience, class_id: mine.classId, set_id: mine.setId, title: mine.title } : saved.run;
+  const settings = mine ? mine.summary.settings : saved.settings;
+  // A saved run's setup: its n and presets (runs saved since they were kept); an older run lists only the teams that
+  // had a member, so those are renumbered 1..n in order and the plan follows (renumber: old k -> new k).
+  let teamCfg = null, renumber = null;
+  if (mine) teamCfg = T.setupOf(mine);
+  else if (saved.teams && Array.isArray(saved.teams.list)) {
+    const st = saved.teams, list = st.list.slice().sort((a, c) => a.k - c.k);
+    if (Number.isInteger(st.n) && Array.isArray(st.presets)) teamCfg = { n: st.n, presets: st.presets, scoring: st.scoring };
+    else { teamCfg = { n: list.length, presets: list.map(t => t.p), scoring: st.scoring }; renumber = new Map(list.map((t, i) => [t.k, i + 1])); }
+  }
+  const o = { mode: run.mode, gameId: run.mode === 'game' ? run.game_id : null, audience: run.audience, classId: run.class_id, lang: req.locale, replace: true, title: run.title,
+    ...(settings ? { settings } : {}), ...(teamCfg && teamCfg.n >= 2 ? { teams: teamCfg } : {}) };
+  if (run.audience === 'class' && !run.class_id) return { ok: false, status: 400, code: 'noClass' };
+  if (b.fromRun) {
+    const m = R.missedOf(mine ? mine.summary.items : saved.items);
+    if (!m.ok) return { ok: false, status: 400, code: m.code };
+    o.items = m.items;
+    o.settings = { ...(o.settings || {}), count: 0 };
+  } else {
+    // Play again with these teams: the run's questions again; the plan is who was on which team.
+    if (mine && mine.allItems) o.items = mine.allItems.map(it => ({ q: it.q, choices: it.choices, answer: it.answer, secs: it.own || it.secs }));
+    else if (run.set_id) o.setId = run.set_id;
+    else { const all = (mine ? mine.summary.items : saved.items).map(R.asItem).filter(Boolean); if (all.length) o.items = all; }
+    const plan = new Map();
+    if (mine) { for (const seat of [...mine.seats.values(), ...(mine.gone || [])]) if (seat.userId && seat.team) plan.set(seat.userId, seat.team); }
+    else for (const r of saved.scores) { const k = renumber ? renumber.get(r.team) : r.team; if (k) plan.set(r.user_id, k); }
+    if (!o.teams) return { ok: false, status: 400, code: 'teamsOff' };
+    o.plan = plan;
+  }
+  return { ok: true, opts: o };
+}
 router.post('/api/live/sessions', on, requireAnyAccount, hostOnly, rateLimit('lv-new', 30, 3600e3), (req, res) => {
-  const r = LS.createSession(req.user, sessionOpts(req.body || {}, req));
+  const b = req.body || {};
+  // Play again with the same players (while they linger after the end).
+  if (b.again) {
+    const r = LS.rematch(LS.get(String(b.again)), req.user, { shuffle: b.shuffle === true || b.shuffle === '1' });
+    if (!r.ok) return apiErr(req, res, r.code === 'againGone' ? 410 : 400, r.code === 'againGone' ? 'againGone' : r.code);
+    return res.json({ sid: r.session.id, redirect: `/live/host/${r.session.id}`, moved: r.moved });
+  }
+  let opts;
+  if (b.fromRun || b.againRun) {
+    const f = fromRunOpts(req, b);
+    if (!f.ok) return apiErr(req, res, f.status, f.code);
+    opts = f.opts;
+  } else opts = sessionOpts(b, req);
+  const r = LS.createSession(req.user, opts);
   if (!r.ok) {
     if (r.code === 'hasOpen') return apiErr(req, res, 409, 'hasOpen', { sid: r.sid, host: `/live/host/${r.sid}` });
     const status = { off: 404, notHost: 404, notFound: 404, busy: 503 }[r.code] || 400;
@@ -183,7 +258,86 @@ router.get('/live/host/:sid', on, requireAnyAccount, (req, res) => {
   s.host.lang = req.locale;
   noStore(res);
   page(req, res, { title: req.t('live.host.title'), bare: true, bodyClass: 'lv-body lv-projector', head: '<link rel="stylesheet" href="/css/live.css">',
-    body: V.hostBody(req, { s, origin: requestOrigin(req), token: LS.hostToken(s), nicks: nicksFor(req.locale), classSignIn: s.audience !== 'open' }), scripts: ['/js/live-host.js'] });
+    body: V.hostBody(req, { s, origin: requestOrigin(req), token: LS.hostToken(s), nicks: nicksFor(req.locale), classSignIn: s.audience !== 'open',
+      teamsOn: LS.teamsOn(), hasLast: LS.teamsOn() && s.audience === 'class' && !!T.loadClassTeams(s.classId) }), scripts: ['/js/live-host.js'] });
+});
+
+// ---------------------------------------------------------------- the teacher's dashboard (part 3)
+// The address holds only the session id (the projector shows it as a QR): the page needs the host's own sign-in, so a
+// student who scans it gets the sign-in page, and anyone else signed in a 404. The host token is in the page only for
+// that account, never in the address.
+router.get('/live/host/:sid/dash', on, requireAnyAccount, (req, res) => {
+  const s = LS.get(req.params.sid);
+  if (!s || s.host.userId !== req.user.id) return notFound(req, res);
+  if (s.phase === 'ended') return res.redirect(302, `/live/results/${s.id}`);
+  noStore(res);
+  page(req, res, { title: req.t('live.dash.title'), bare: true, bodyClass: 'lv-body lv-dashboard', head: '<link rel="stylesheet" href="/css/live.css">',
+    body: V.dashBody(req, { s, token: LS.hostToken(s), nicks: nicksFor(req.locale), presets: T.presetsFor(req.t), saveSupport: LS.supportSaveOn(s) }), scripts: ['/js/live-dash.js'] });
+});
+
+// ---------------------------------------------------------------- remembered settings (part 3)
+router.get('/api/live/prefs', on, requireAnyAccount, hostOnly, (req, res) => { noStore(res); res.json(ST.loadPrefs(req.user.id) || {}); });
+router.post('/api/live/prefs', on, requireAnyAccount, hostOnly, rateLimit('lv-prefs', 60, 3600e3), (req, res) => {
+  const b = req.body || {};
+  const t = b.teams && typeof b.teams === 'object' ? b.teams : {};
+  const p = ST.savePrefs(req.user.id, { settings: b.settings || {}, teams: { on: !!t.on, n: Number.isInteger(t.n) && t.n >= 2 && t.n <= 6 ? t.n : 2, scoring: t.scoring === 'sum' ? 'sum' : 'avg' } });
+  res.json(p);
+});
+router.delete('/api/live/prefs', on, requireAnyAccount, hostOnly, (req, res) => { ST.resetPrefs(req.user.id); res.json({ ok: true }); });
+
+// ---------------------------------------------------------------- a class's saved teams and support (class teachers)
+/** The class, when the user teaches it (else null: 404). Archived classes only for deleting saved student data
+ *  (archived: true), which must stay possible on demand. */
+const taughtClass = (req, { archived = false } = {}) => { const c = S.getClass(String(req.params.classId || '')); return c && (archived || !c.archived_at) && S.teaches(req.user, c.id) ? c : null; };
+const classStudents = classId => S.roster(classId).filter(r => r.role === 'student').map(r => ({ id: r.id, name: r.roster_name || r.display_name || r.username }));
+router.get('/api/live/classes/:classId/teams', on, requireAnyAccount, (req, res) => {
+  const c = taughtClass(req);
+  if (!c || !LS.teamsOn()) return res.status(404).json({ error: req.t('errors.api.notFound') });
+  noStore(res);
+  const saved = T.loadClassTeams(c.id);
+  res.json({ classId: c.id, students: classStudents(c.id), saved: saved ? { n: saved.cfg.n, presets: saved.cfg.presets, scoring: saved.cfg.scoring, plan: [...saved.plan], savedAt: saved.savedAt } : null });
+});
+router.put('/api/live/classes/:classId/teams', on, requireAnyAccount, rateLimit('lv-cteams', 120, 3600e3), (req, res) => {
+  const c = taughtClass(req);
+  if (!c || !LS.teamsOn()) return res.status(404).json({ error: req.t('errors.api.notFound') });
+  const b = req.body || {};
+  const n = +b.n;
+  if (!Number.isInteger(n) || n < 2 || n > 6 || !Array.isArray(b.plan) || b.plan.length > 1000) return res.status(400).json({ error: req.t('errors.api.badRequest') });
+  const plan = new Map();
+  for (const x of b.plan) if (Array.isArray(x) && typeof x[0] === 'string' && Number.isInteger(x[1]) && x[1] >= 1 && x[1] <= n) plan.set(x[0], x[1]);
+  T.saveClassPlan(c.id, { n, presets: Array.isArray(b.presets) ? b.presets.map(Number) : [], scoring: b.scoring }, plan, req.user.id);
+  res.json({ ok: true, toast: req.t('live.team.saved') });
+});
+// Deleting saved student data works whatever the feature flags (Oomba Live, teams, LIVE_SAVE_SUPPORT) and for archived
+// classes: data saved while a flag was on must stay deletable on demand after it is turned off (legal-review item 42).
+router.delete('/api/live/classes/:classId/teams', requireAnyAccount, (req, res) => {
+  const c = taughtClass(req, { archived: true });
+  if (!c) return res.status(404).json({ error: req.t('errors.api.notFound') });
+  T.forgetClassTeams(c.id);
+  res.json({ ok: true });
+});
+const supportOn = (req, res, next) => (config.liveSaveSupport ? next() : res.status(404).json({ error: req.t('errors.api.notFound') }));
+router.get('/api/live/classes/:classId/support', on, supportOn, requireAnyAccount, (req, res) => {
+  const c = taughtClass(req);
+  if (!c) return res.status(404).json({ error: req.t('errors.api.notFound') });
+  noStore(res);
+  res.json({ classId: c.id, support: R.classSupport(c.id).map(r => ({ userId: r.user_id, name: r.display_name || r.username, time: r.extra_time, read: !!r.read_aloud, simple: !!r.simple })) });
+});
+router.post('/api/live/classes/:classId/support', on, supportOn, requireAnyAccount, rateLimit('lv-sup', 300, 3600e3), (req, res) => {
+  const c = taughtClass(req);
+  if (!c) return res.status(404).json({ error: req.t('errors.api.notFound') });
+  const b = req.body || {};
+  const userId = String(b.userId || '');
+  const m = S.classMember(c.id, userId);
+  const time = +b.time;
+  if (!m || m.role !== 'student' || ![100, 150, 200].includes(time)) return res.status(400).json({ error: req.t('errors.api.badRequest') });
+  R.saveSupport(c.id, userId, { time, read: !!b.read, simple: !!b.simple }, req.user.id);
+  res.json({ ok: true });
+});
+router.delete('/api/live/classes/:classId/support', requireAnyAccount, (req, res) => {
+  const c = taughtClass(req, { archived: true });
+  if (!c) return res.status(404).json({ error: req.t('errors.api.notFound') });
+  res.json({ ok: true, cleared: R.clearClassSupport(c.id) });
 });
 
 // ---------------------------------------------------------------- the player's page
@@ -211,7 +365,8 @@ router.get('/live/frame/:token', on, (req, res) => {
   if (!host && !A.seatCanView(s, tok.u ? u : null)) return sendFrameText(res, 404, t('live.play.takenDown'));
   const lang = normalizeCode(tok.l) || req.locale;
   const nicks = nicksFor(lang);
-  const name = host ? '' : (s.nameMode === 'accounts' && seat.name ? seat.name : nicks[seat.nick]);
+  const own = host ? '' : LS.nameFor(s, seat, 'player');
+  const name = typeof own === 'number' ? nicks[own] : own;
   let gameHtml, cacheKey, title = s.title;
   if (tok.f === 'lobby') {
     if (!fs.existsSync(LOBBY_FILE)) return sendFrameText(res, 404, t('errors.api.notFound'));
@@ -233,6 +388,8 @@ router.get('/live/frame/:token', on, (req, res) => {
       v: 1, role: host ? 'host' : 'player', seat: host ? 0 : seat.no, frame: tok.f, nameMode: s.nameMode, mode: s.mode, nicks,
       view: req.query.view === '2d' ? '2d' : '3d',
       me: host ? null : { seat: seat.no, name, avatar: seat.avatar, team: seat.team },
+      // Team presets with their names in the frame's language (the pack keeps no copy). Never anyone's support.
+      teamPresets: T.presetsFor(tl),
     },
   };
   const gzip = /\bgzip\b/.test(String(req.headers['accept-encoding'] || ''));
@@ -240,28 +397,48 @@ router.get('/live/frame/:token', on, (req, res) => {
 });
 
 // ---------------------------------------------------------------- results
+// Split for a projector (T2): a class-safe part (team podium and table, hardest questions, question review; no student
+// names) and "Student details" (closed): marks, bonus, needs help and the CSV.
 router.get('/live/results/:id', on, requireAnyAccount, (req, res) => {
   const t = req.t, u = req.user;
   const id = String(req.params.id).replace(/\.csv$/, '');
   if (String(req.params.id).endsWith('.csv')) return resultsCsv(req, res, id);
   const s = LS.get(id);
   noStore(res);
+  const presets = T.presetsFor(t);
+  const common = { presets, homework: config.liveHomework && S.isStaff(u), sayTeams: LS.teamsOn(), classes: config.liveHomework ? S.classesOf(u.id, 'teacher') : [] };
   if (s && s.host.userId === u.id && s.summary) {
     const sum = s.summary;
-    return page(req, res, { title: t('live.results.title'), head: '<link rel="stylesheet" href="/css/live.css">', body: V.resultsBody(req, { title: sum.title, players: sum.players, items: sum.items, guests: sum.guests, nicks: nicksFor(req.locale), nameMode: sum.nameMode, csv: s.startedAt ? `/live/results/${id}.csv` : null, gradebook: !!(s.clId && s.stepId && s.audience === 'class') }) });
+    return page(req, res, { title: t('live.results.title'), head: '<link rel="stylesheet" href="/css/live.css">', scripts: ['/js/live-results.js'],
+      body: V.resultsBody(req, { ...common, id, title: sum.title, mode: sum.mode, players: sum.players, items: sum.items, teams: sum.teams, scoring: sum.scoring, guests: sum.guests, nicks: nicksFor(req.locale), nameMode: sum.nameMode,
+        csv: s.startedAt ? `/live/results/${id}.csv` : null, gradebook: !!(s.clId && s.stepId && s.audience === 'class'), still: LS.lingering(s), quiz: !!s.quiz, setId: s.setId,
+        againRun: s.audience === 'class' && sum.teams.length > 0 }) });
   }
   const p = R.persisted(u, id);
   if (!p) return notFound(req, res, t('live.results.gone'));
-  const players = p.scores.map(r => ({ rank: r.rank, name: r.display_name || r.username, score: r.score, correct: r.correct, answered: r.answered }));
-  page(req, res, { title: t('live.results.title'), head: '<link rel="stylesheet" href="/css/live.css">', body: V.resultsBody(req, { title: p.run.title, players, items: p.items, guests: p.run.guests, saved: true, csv: `/live/results/${id}.csv`, nameMode: 'accounts' }) });
+  const players = p.scores.map(r => ({ rank: r.rank, name: r.display_name || r.username, score: r.score, bonus: r.bonus, team: r.team, marks: r.marks, correct: r.correct, answered: r.answered, help: r.answered >= 3 && r.correct / r.answered < 0.5 ? 'lowScore' : '' }));
+  const teams = p.teams ? p.teams.list.map(x => ({ ...x, score: p.teams.scoring === 'sum' ? x.sum : x.avg })) : [];
+  page(req, res, { title: t('live.results.title'), head: '<link rel="stylesheet" href="/css/live.css">', scripts: ['/js/live-results.js'],
+    body: V.resultsBody(req, { ...common, id, title: p.run.title, mode: p.run.mode, players, items: p.items, teams, scoring: p.teams ? p.teams.scoring : null, guests: p.run.guests, saved: true, csv: `/live/results/${id}.csv`, nameMode: 'accounts',
+      quiz: p.run.scored_by === 'server' || p.items.some(it => R.asItem(it)), setId: p.run.set_id, againRun: !!(p.run.class_id && teams.length) }) });
 });
+/** CSV: saved class runs (the host and the class's teachers), and in-memory runs (the host, 10 minutes; nicknames). */
 function resultsCsv(req, res, id) {
-  const p = R.persisted(req.user, id);
-  if (!p) return notFound(req, res, req.t('live.results.gone'));
-  const cell = v => { const s = String(v ?? ''); return /^[=+\-@\t\r]/.test(s) ? `"'${s.replace(/"/g, '""')}"` : /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; };
-  const rows = [['rank', 'student', 'score', 'correct', 'answered'], ...p.scores.map(r => [r.rank, r.display_name || r.username, r.score, r.correct, r.answered])];
+  const tn = T.presetsFor(req.t);
+  const teamName = (k, list) => { const x = list.find(r => r.k === k); return x ? tn[x.p].name : ''; };
+  let body;
+  const s = LS.get(id);
+  if (s && s.host.userId === req.user.id && s.summary && s.startedAt) {
+    const sum = s.summary, nicks = nicksFor(req.locale);
+    body = R.csv({ players: sum.players.map(p => ({ ...p, name: typeof p.name === 'number' ? nicks[p.name] : p.name, team: teamName(p.team, sum.teams) })), items: sum.items });
+  } else {
+    const p = R.persisted(req.user, id);
+    if (!p) return notFound(req, res, req.t('live.results.gone'));
+    const list = p.teams ? p.teams.list : [];
+    body = R.csv({ players: p.scores.map(r => ({ rank: r.rank, name: r.display_name || r.username, team: teamName(r.team, list), score: r.score, bonus: r.bonus, correct: r.correct, answered: r.answered, marks: r.marks })), items: p.items });
+  }
   res.set({ 'Content-Type': 'text/csv; charset=utf-8', 'Content-Disposition': `attachment; filename="live-${id}.csv"`, 'Cache-Control': 'no-store' });
-  res.send(rows.map(r => r.map(cell).join(',')).join('\r\n') + '\r\n');
+  res.send(body);
 }
 
 // ---------------------------------------------------------------- question sets
@@ -297,6 +474,32 @@ router.post('/api/live/sets/:id/archive', on, requireAnyAccount, hostOnly, (req,
   const r = SETS.archiveSet(req.user, req.params.id);
   if (!r.ok) return setErr(req, res, r);
   res.json({ ok: true });
+});
+
+// ---------------------------------------------------------------- homework from a question set (LIVE_HOMEWORK, off)
+const homeworkOn = (req, res, next) => (config.liveHomework ? next() : apiErr(req, res, 404, 'homeworkOff'));
+router.post('/api/live/sets/:id/homework', on, homeworkOn, requireAnyAccount, hostOnly, rateLimit('lv-hw', 60, 3600e3), (req, res) => {
+  const b = req.body || {};
+  const r = SETS.homework(req.user, req.params.id, b.classId, { opensAt: b.opensAt || null, dueAt: b.dueAt || null });
+  if (!r.ok) {
+    if (r.code === 'noClass' || r.code === 'setIncomplete') return apiErr(req, res, 400, r.code);
+    if (r.code === 'notFound') return res.status(404).json({ error: req.t('errors.api.notFound') });
+    return res.status(400).json({ error: req.t('errors.api.badRequest'), code: r.code });
+  }
+  res.json({ ok: true, lessonId: r.lesson.id, classLessonId: r.classLesson.id, redirect: `/class/${r.classLesson.class_id}/progress` });
+});
+// The student's quiz step: its questions (never the answers) and one answer at a time, checked here.
+router.get('/api/lessons/:clId/steps/:stepId/quiz', on, homeworkOn, requireAnyAccount, (req, res) => {
+  const r = PROG.quizFor(req.user, req.params.clId, req.params.stepId);
+  if (!r.ok) return res.status(404).json({ error: req.t('errors.api.notFound') });
+  noStore(res);
+  res.json({ items: r.items, marks: r.marks });
+});
+router.post('/api/lessons/:clId/steps/:stepId/quiz', on, homeworkOn, requireAnyAccount, rateLimit('lv-quiz', 600, 3600e3), (req, res) => {
+  const b = req.body || {};
+  const r = PROG.quizAnswer(req.user, req.params.clId, req.params.stepId, +b.i, +b.c);
+  if (!r.ok) return res.status(r.code === 'notFound' ? 404 : 400).json({ error: req.t(r.code === 'notFound' ? 'errors.api.notFound' : 'errors.api.badRequest'), code: r.code });
+  res.json({ ok: r.right, answer: r.answer, next: r.next, score: r.score });
 });
 
 // ---------------------------------------------------------------- the host's open session (entry points ask first)

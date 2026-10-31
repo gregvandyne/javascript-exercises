@@ -22,7 +22,8 @@
 .lv-classhint { margin: 0; }
 
 /* the projector page: the stage big, a sidebar with the code, the controls and the roster */
-.lv-host { max-inline-size: none; display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 360px); grid-template-areas: 'bar bar' 'stage join' 'stage controls' 'stage roster' 'reports reports'; gap: 14px; align-items: start; min-block-size: 100dvh; }
+.lv-host { max-inline-size: none; display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 360px); grid-template-areas: 'bar bar' 'stage join' 'stage controls' 'stage teams' 'stage roster' 'reports reports'; gap: 14px; align-items: start; min-block-size: 100dvh; }
+.lv-host > .lv-teamsbox { grid-area: teams; }
 .lv-host > .lv-bar { grid-area: bar; }
 .lv-host > .lv-joinbox { grid-area: join; }
 .lv-host > .lv-hoststage { grid-area: stage; min-block-size: calc(100dvh - 90px); }
@@ -55,7 +56,7 @@
 .lv-av { display: block; }
 body.lv-offline .lv-stage { outline: 4px dashed var(--edge); }
 @media (max-width: 900px) {
-  .lv-host { grid-template-columns: 1fr; grid-template-areas: 'bar' 'join' 'stage' 'controls' 'roster' 'reports'; }
+  .lv-host { grid-template-columns: 1fr; grid-template-areas: 'bar' 'join' 'stage' 'controls' 'teams' 'roster' 'reports'; }
   .lv-host > .lv-hoststage { min-block-size: 56vh; }
   .lv-roster { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); max-block-size: none; }
 }
@@ -96,3 +97,224 @@ body.lv-offline .lv-stage { outline: 4px dashed var(--edge); }
 .lv-items { display: flex; flex-direction: column; gap: 6px; }
 .vh { position: absolute; inline-size: 1px; block-size: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 @media (max-width: 400px) { .lv { padding-inline: 10px; } .lv-code-input { font-size: 1.6rem; } .lv-panel { padding: 14px; } }
+
+/* ---------------------------------------------------------------- part 3: teams and teacher tools
+   A team is a preset: --team (its colour) and --team-ink (text on it, at least 4.5:1). Colour is never the only cue:
+   every chip, column, bar and band shows the shape (an SVG from #lv-shapes) and the name. A 1px outline in the text
+   colour keeps yellow readable on light and indigo on dark. */
+.lv-shape { inline-size: 1.15em; block-size: 1.15em; flex: none; fill: var(--team, currentColor); stroke: var(--text); stroke-width: 1.4px; vertical-align: -0.2em; }
+.lv-team-chip { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; background: var(--team); color: var(--team-ink); outline: 1px solid var(--text); font-weight: 800; line-height: 1.3; max-inline-size: 100%; }
+.lv-team-chip .lv-shape { fill: var(--team-ink); stroke: none; }
+.lv-team-chip .lv-team-extra { font-weight: 600; opacity: .9; }
+.lv-team-chip-sm { padding: 1px 6px; }
+.lv-run-teams { display: inline-flex; gap: 4px; flex-wrap: wrap; vertical-align: middle; }
+/* the projector sidebar: the Teams row and summary */
+.lv-teamsbox { display: flex; flex-direction: column; gap: 10px; background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 14px; }
+.lv-teamsbox .lv-h2 { text-align: start; font-size: 1.15rem; }
+.lv-teams-row { border: 0; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; }
+.lv-teams-row legend { font-weight: 800; margin-block-end: 6px; }
+.lv-teamsbox .lv-teams-row legend { position: absolute; inline-size: 1px; block-size: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+.lv-seg { display: flex; flex-wrap: wrap; gap: 6px; }
+.lv-seg-opt { display: inline-flex; align-items: center; gap: 4px; min-block-size: 44px; min-inline-size: 44px; padding-inline: 10px; border: 2px solid var(--line); border-radius: 12px; background: var(--card); font-weight: 800; cursor: pointer; justify-content: center; }
+.lv-seg-opt:has(input:checked) { border-color: var(--brand-leaf); background: var(--accent-soft); color: var(--accent-ink); }
+.lv-seg-opt:focus-within { outline: 3px solid var(--focus); outline-offset: 2px; }
+.lv-seg-opt input { position: absolute; opacity: 0; pointer-events: none; }
+.lv-seg-opt:has(input:disabled) { opacity: .55; cursor: default; }
+.lv-team-scoring { border: 0; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 2px; }
+.lv-teams-summary { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+/* the team board (projector during play, dashboard, player end box) */
+.lv-team-board, .lv-end-teams { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.lv-tbar { position: relative; display: grid; grid-template-columns: auto auto auto minmax(0, 1fr) auto; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 14px; background: var(--card); border: 1px solid var(--line); overflow: hidden; font-weight: 800; isolation: isolate; }
+.lv-tbar-fill { position: absolute; inset-block: 0; inset-inline-start: 0; inline-size: var(--w, 0%); background: var(--team); opacity: .28; z-index: -1; transition: inline-size .4s ease; }
+.lv-tbar::before { content: ''; position: absolute; inset-block: 0; inset-inline-start: 0; inline-size: 6px; background: var(--team); }
+.lv-tbar-rank { min-inline-size: 1.4em; text-align: center; font-size: 1.15rem; }
+.lv-tbar .lv-team-name { overflow-wrap: anywhere; }
+.lv-tbar-score { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.lv-tbar.is-empty { opacity: .6; }
+/* the Teams sheet: a dialog over the stage */
+.lv-teams-sheet { max-inline-size: min(1400px, calc(100vw - 24px)); inline-size: calc(100vw - 24px); max-block-size: calc(100dvh - 24px); padding: 18px; }
+.lv-teams-sheet[open] { display: flex; flex-direction: column; gap: 12px; }
+.lv-sheet-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.lv-sheet-tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-start; }
+.lv-teams-more { flex: 1 1 100%; }
+.lv-teams-more[open] { display: flex; flex-direction: column; gap: 10px; padding: 10px; border: 1px solid var(--line); border-radius: 14px; }
+.lv-teams-more > summary { list-style: none; display: inline-flex; inline-size: max-content; }
+.lv-teams-presets { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; }
+.lv-preset-pick label { display: inline-flex; align-items: center; gap: 6px; font-weight: 800; }
+.lv-team-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 12px; }
+.lv-team-cols[data-cols="5"], .lv-team-cols[data-cols="6"] { grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); }
+@media (min-width: 1100px) { .lv-team-cols[data-cols="5"], .lv-team-cols[data-cols="6"] { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.lv-team { display: flex; flex-direction: column; gap: 8px; padding: 10px; border-radius: 16px; border: 3px solid var(--team); background: var(--card); min-block-size: 120px; }
+.lv-team.is-drop { outline: 5px dashed var(--text); outline-offset: 3px; }
+.lv-team-head { display: flex; align-items: center; gap: 8px; margin: -10px -10px 0; padding: 8px 12px; border-radius: 12px 12px 0 0; background: var(--team); color: var(--team-ink); font-size: 1.1rem; }
+.lv-team-head .lv-shape { fill: var(--team-ink); stroke: none; inline-size: 1.4em; block-size: 1.4em; }
+.lv-team-head .lv-team-name { flex: 1 1 auto; min-inline-size: 0; overflow-wrap: anywhere; }
+.lv-team-size { font-size: .85rem; font-weight: 700; white-space: nowrap; }
+.lv-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.lv-chip { display: inline-flex; align-items: center; gap: 6px; min-block-size: 44px; padding: 4px 12px 4px 4px; padding-inline: 4px 12px; border-radius: 999px; border: 2px solid var(--line); background: var(--card-2); color: var(--text); font: inherit; font-weight: 800; cursor: grab; touch-action: none; max-inline-size: 100%; }
+.lv-chip:hover { border-color: var(--edge); }
+.lv-chip:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.lv-chip[aria-pressed="true"] { border-color: var(--text); border-style: dashed; border-width: 3px; background: var(--spark-soft); }
+.lv-chip.is-dragging { opacity: .4; }
+.lv-chip-ghost { position: fixed; z-index: 1000; pointer-events: none; box-shadow: var(--shadow-lg); transform: rotate(-3deg); }
+.lv-chip-avatar { inline-size: 32px; block-size: 32px; flex: none; }
+.lv-chip-name { overflow-wrap: anywhere; }
+.lv-move-here { align-self: stretch; border-style: dashed; }
+.lv-unassigned { display: flex; flex-direction: column; gap: 8px; padding: 10px; border: 2px dashed var(--line); border-radius: 16px; }
+.lv-h3 { margin: 0; font-size: 1rem; }
+.lv-player .lv-p-team { inline-size: 22px; block-size: 22px; }
+.lv-player[data-team] { border-inline-start: 6px solid var(--team); }
+/* banners and toasts on the projector and phones */
+.lv-say-banner, .lv-eyes-banner, .lv-toast { position: fixed; inset-inline: 0; margin-inline: auto; inline-size: max-content; max-inline-size: calc(100vw - 24px); z-index: 900; border-radius: 18px; padding: 10px 20px; font-weight: 800; text-align: center; box-shadow: var(--shadow-lg); }
+.lv-say-banner { inset-block-start: 12px; background: var(--current); color: var(--on-current); font-size: 1.3rem; }
+.lv-say-big { font-size: clamp(1.6rem, 4vw, 3rem); padding: 16px 32px; }
+.lv-eyes-banner { inset-block-start: 12px; background: var(--spark); color: var(--brand-ink); font-size: 1.4rem; }
+.lv-toast { inset-block-end: 18px; background: var(--card); color: var(--text); border: 2px solid var(--brand-leaf); }
+.lv-act.is-on { background: var(--spark); color: var(--brand-ink); border-color: var(--brand-ink); }
+.lv-say > summary { list-style: none; display: inline-flex; align-items: center; min-block-size: 48px; }
+.lv-say[open] .lv-say-list { margin-block-start: 8px; }
+.lv-say-list { display: flex; flex-wrap: wrap; gap: 6px; }
+.lv-time { display: inline-flex; gap: 6px; }
+.lv-podium-hold { position: fixed; inset-block-end: 20px; inset-inline-end: 20px; inline-size: auto; z-index: 950; }
+.lv-dialog .lv-qr { margin-inline: auto; }
+.lv-dialog .lv-settings-main { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; }
+.lv-settings-more { display: flex; flex-direction: column; gap: 6px; }
+.lv-settings-more[open] { padding-block: 6px; }
+.lv-check-row { display: block; }
+/* the player page: the team band, the picker, eyes up, read aloud */
+.lv-play > .lv-bar.lv-bar-team { background: var(--team); color: var(--team-ink); border-radius: 16px; padding: 6px 10px; outline: 1px solid var(--text); }
+.lv-play > .lv-bar.lv-bar-team .btn { background: var(--card); color: var(--text); }
+.lv-me-team { display: inline-flex; align-items: center; gap: 6px; font-weight: 800; padding: 2px 10px; border-radius: 999px; background: color-mix(in srgb, var(--team-ink) 14%, transparent); }
+.lv-me-team .lv-shape { fill: var(--team-ink); stroke: none; inline-size: 1.4em; block-size: 1.4em; }
+.lv-me-team-rank:not(:empty)::before { content: '·'; margin-inline-end: 6px; }
+.lv-team-pick-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr)); gap: 8px; }
+.lv-team-btn { display: flex; flex-direction: column; align-items: center; gap: 4px; min-block-size: 76px; padding: 10px; border-radius: 16px; background: var(--team); color: var(--team-ink); border: 2px solid var(--text); font-weight: 800; }
+.lv-team-btn .lv-shape { fill: var(--team-ink); stroke: none; inline-size: 28px; block-size: 28px; }
+.lv-team-btn[aria-pressed="true"] { outline: 4px solid var(--text); outline-offset: 3px; }
+.lv-team-btn:disabled:not([aria-pressed="true"]) { opacity: .5; }
+.lv-eyes { position: fixed; inset: 0; z-index: 980; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 24px; background: var(--bg); color: var(--text); text-align: center; }
+.lv-eyes-icon { font-size: clamp(5rem, 30vw, 10rem); margin: 0; line-height: 1; }
+.lv-eyes-text { font-size: clamp(1.8rem, 8vw, 3rem); font-weight: 800; margin: 0; }
+.lv-read { align-self: center; min-block-size: 48px; }
+.lv-end-team { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 14px; border-inline-start: 8px solid var(--team); background: var(--card-2); font-weight: 800; }
+.lv-end-team.is-mine { outline: 3px solid var(--text); }
+.lv-end-score { margin-inline-start: auto; font-variant-numeric: tabular-nums; }
+/* the teacher's dashboard (phone first; tabs side by side on a wide screen) */
+.lv-dash { gap: 12px; padding-block-start: 0; }
+.lv-dash-bar { position: sticky; inset-block-start: 0; z-index: 50; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding-block: 10px; background: var(--bg); border-block-end: 1px solid var(--line); }
+.lv-dash-code { font-weight: 800; font-variant-numeric: tabular-nums; }
+.lv-dash-bar .lv-phase { font-size: 1rem; flex: 1 1 auto; text-align: start; }
+.lv-dash-acts { display: flex; flex-wrap: wrap; gap: 6px; inline-size: 100%; }
+.lv-dash-acts .btn { min-block-size: 44px; }
+.lv-tabs { display: flex; gap: 4px; overflow-x: auto; border-block-end: 2px solid var(--line); scrollbar-width: thin; }
+.lv-tab { flex: none; min-block-size: 44px; padding-inline: 14px; border: 0; border-block-end: 4px solid transparent; background: none; color: var(--text); font: inherit; font-weight: 800; cursor: pointer; }
+.lv-tab[aria-selected="true"] { border-block-end-color: var(--brand-leaf); }
+.lv-tab:focus-visible { outline: 3px solid var(--focus); outline-offset: -3px; }
+.lv-tabpanel { display: flex; flex-direction: column; gap: 10px; }
+.lv-dash-players { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); gap: 8px; }
+.lv-dash-card { display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; grid-template-areas: 'av name menu' 'av team menu' 'st st st' 'help help help' 'sup sup sup'; gap: 2px 10px; align-items: center; padding: 8px 10px; border-radius: 14px; background: var(--card); border: 1px solid var(--line); }
+.lv-dash-card[data-team] { border-inline-start: 6px solid var(--team); }
+.lv-dash-card.is-off { opacity: .6; }
+.lv-dash-card .lv-p-avatar { grid-area: av; }
+.lv-dash-card .lv-p-name { grid-area: name; }
+.lv-dash-team { grid-area: team; }
+.lv-dash-status { grid-area: st; font-size: .9rem; font-weight: 700; }
+.lv-dash-status[data-status="answered"] { color: var(--ok); }
+.lv-dash-status[data-status="offline"] { color: var(--muted); }
+.lv-dash-help { grid-area: help; font-size: .9rem; font-weight: 800; color: var(--bad-ink); }
+.lv-dash-sup { grid-area: sup; font-size: .85rem; color: var(--muted); }
+.lv-dash-menu { grid-area: menu; min-inline-size: 44px; min-block-size: 44px; font-size: 1.3rem; }
+.lv-dash-q { font-size: 1.2rem; font-weight: 800; margin: 0; overflow-wrap: anywhere; }
+.lv-dash-bars { margin: 0; padding-inline-start: 1.6em; display: flex; flex-direction: column; gap: 6px; }
+.lv-dbar { position: relative; display: flex; gap: 8px; align-items: center; padding: 8px 10px; border-radius: 12px; background: var(--card); border: 1px solid var(--line); isolation: isolate; overflow: hidden; }
+.lv-dbar-fill { position: absolute; inset-block: 0; inset-inline-start: 0; inline-size: var(--w, 0%); background: var(--accent-soft); z-index: -1; transition: inline-size .3s; }
+.lv-dbar-label { flex: 1 1 auto; overflow-wrap: anywhere; }
+.lv-dbar-n { font-weight: 800; font-variant-numeric: tabular-nums; }
+.lv-dbar.is-right { border: 3px solid var(--ok); font-weight: 800; }
+.lv-dash-teambonus { display: flex; flex-wrap: wrap; gap: 6px; }
+.lv-dash-tb > summary { list-style: none; display: inline-flex; gap: 6px; align-items: center; min-block-size: 44px; }
+.lv-dash-tb[open] .lv-say-list { margin-block-start: 6px; }
+.lv-dash-editor .lv-team { min-block-size: 80px; }
+@media (min-width: 900px) {
+  .lv-dash { max-inline-size: 1400px; }
+  .lv-dash .lv-tabs { display: none; }
+  .lv-dash { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+  .lv-dash > .lv-dash-bar, .lv-dash > #lv-dash-notice, .lv-dash > #lv-tab-players { grid-column: 1 / -1; }
+  .lv-dash > .lv-tabpanel[hidden] { display: flex !important; }
+  .lv-dash > .lv-tabpanel { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 12px; }
+}
+/* the class teams editor (class progress page) */
+.lv-class-teams { display: flex; flex-direction: column; gap: 10px; }
+.lv-class-teams-board { display: flex; flex-direction: column; gap: 10px; }
+.lv-class-tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-end; }
+.lv-class-acts { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+/* the results page: team podium, review bars, marks, details; print */
+.lv-results-teams { display: flex; flex-direction: column; gap: 12px; }
+.lv-team-podium { list-style: none; margin: 0; padding: 0; display: flex; justify-content: center; align-items: flex-end; gap: 10px; flex-wrap: wrap; }
+.lv-step { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px; border-radius: 16px 16px 0 0; background: var(--card); border: 3px solid var(--team); border-block-end-width: 0; min-inline-size: min(30%, 200px); text-align: center; font-weight: 800; }
+.lv-step-1 { order: 2; min-block-size: 170px; }
+.lv-step-2 { order: 1; min-block-size: 130px; }
+.lv-step-3 { order: 3; min-block-size: 100px; }
+.lv-step-rank { font-size: 2rem; line-height: 1; }
+.lv-step-score { font-variant-numeric: tabular-nums; }
+@media (prefers-reduced-motion: no-preference) { .lv-step { animation: lv-rise .5s ease-out both; } .lv-step-2 { animation-delay: .15s; } .lv-step-1 { animation-delay: .3s; } }
+@keyframes lv-rise { from { transform: translateY(24px); opacity: 0; } to { transform: none; opacity: 1; } }
+.lv-hardest { margin: 0; padding-inline-start: 22px; display: flex; flex-direction: column; gap: 6px; }
+.lv-review { margin: 0; padding-inline-start: 22px; gap: 14px; }
+.lv-review-item { display: flex; flex-direction: column; gap: 6px; }
+.lv-review-q { margin: 0; font-weight: 800; overflow-wrap: anywhere; }
+.lv-bars { display: flex; flex-direction: column; gap: 4px; }
+.lv-bar { position: relative; display: flex; gap: 8px; align-items: center; padding: 6px 10px; border-radius: 10px; border: 1px solid var(--line); background: var(--card); isolation: isolate; overflow: hidden; }
+.lv-bar-fill { position: absolute; inset-block: 0; inset-inline-start: 0; inline-size: var(--w, 0%); background: var(--card-2); z-index: -1; }
+.lv-bar-right { border: 3px solid var(--ok); }
+.lv-bar-right .lv-bar-fill { background: var(--ok-bg); }
+.lv-bar-label { flex: 1 1 auto; overflow-wrap: anywhere; }
+.lv-bar-ok { color: var(--ok); font-weight: 800; white-space: nowrap; }
+.lv-bar-n { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.lv-results-acts { display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-start; }
+.lv-inline { display: inline-flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.lv-details > summary { font-weight: 800; font-size: 1.15rem; cursor: pointer; min-block-size: 44px; display: flex; align-items: center; }
+.lv-details[open] { display: flex; flex-direction: column; gap: 10px; }
+.lv-marks { white-space: nowrap; }
+.lv-mark { display: inline-block; inline-size: 1.4em; text-align: center; font-weight: 800; }
+.lv-mark-right { color: var(--ok); }
+.lv-mark-wrong { color: var(--bad-ink); }
+.lv-mark-none { color: var(--muted); }
+/* the wrap scrolls a wide table inside itself; position: relative so the cells' .sr-only text (absolute) is clipped by it too, not left to widen the page */
+.lv-table-wrap { position: relative; inline-size: 100%; max-inline-size: 100%; min-inline-size: 0; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.lv-results, .lv-results .lv-group, .lv-results .lv-details { min-inline-size: 0; max-inline-size: 100%; }
+.lv-table caption { caption-side: top; text-align: start; padding-block-end: 4px; }
+.lv-table .lv-rankby { font-weight: 800; }
+.lv-teams-badge { align-self: flex-start; }
+@media (max-width: 400px) { .lv-team-cols { grid-template-columns: 1fr; } .lv-chip { padding-inline-end: 8px; } .lv-say-big { font-size: 1.4rem; } }
+@media (prefers-reduced-motion: reduce) { .lv-tbar-fill, .lv-dbar-fill { transition: none; } .lv-chip-ghost { transform: none; } }
+@media print {
+  .lv-results { color: #000; background: #fff; }
+  .site-header, .site-footer, .tabbar, nav, .lv-results-acts, .lv-results .btn, .lv-results form { display: none !important; }
+  .lv-results .lv-group { break-inside: avoid-page; page-break-inside: avoid; }
+  .lv-results section + section, .lv-details { break-before: auto; }
+  .lv-results .lv-bar, .lv-results .lv-step, .lv-results .lv-team-chip { border-color: #000 !important; color: #000 !important; background: #fff !important; outline-color: #000; }
+  .lv-results .lv-bar-fill { background: #ddd !important; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  .lv-details:not([open]) { display: none; }
+  .lv-step { animation: none !important; }
+}
+
+/* a quiz step in a class lesson (homework from a question set): big shape-marked answers, no timer */
+.lv-qstep { display: flex; flex-direction: column; gap: 10px; }
+.lv-qstep-q { margin: 0; font-size: 1.3rem; font-weight: 800; overflow-wrap: anywhere; }
+.lv-qstep-pad { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 8px; }
+.lv-qstep-a { min-block-size: 56px; justify-content: flex-start; gap: 10px; font-size: 1.1rem; font-weight: 800; color: #fff; border: 0; }
+.lv-qc0 { background: #c0374a; } .lv-qc1 { background: #2456d6; } .lv-qc2 { background: #8a6200; } .lv-qc3 { background: #1d7a52; }
+.lv-qstep-a:disabled { opacity: .55; }
+.lv-qstep-a.is-right { opacity: 1; outline: 4px solid var(--text); outline-offset: 2px; }
+.lv-qstep-a.is-right::after { content: ' ✓'; }
+.lv-qstep-note { margin: 0; font-weight: 800; font-size: 1.2rem; }
+.lv-homework[open] > form { margin-block-start: 10px; max-inline-size: 420px; }
+.lv-table th, .lv-table td { text-align: start; }
+.lv-table td { font-variant-numeric: tabular-nums; }
+.lv-details > summary::before { content: '▸'; margin-inline-end: 8px; }
+[dir="rtl"] .lv-details > summary::before { content: '◂'; }
+.lv-details[open] > summary::before { content: '▾'; }
+.lv-team-btn[aria-pressed="true"], .lv-team-btn[aria-pressed="true"]:disabled { background: var(--team); color: var(--team-ink); opacity: 1; cursor: default; }
+.lv-play .lv-say-banner { inset-block-start: auto; inset-block-end: 96px; }
+.lv-chip-avatar:empty { display: none; }

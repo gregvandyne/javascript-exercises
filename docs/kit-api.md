@@ -233,6 +233,18 @@ reports results (`score(n)`, `item(i, ok)` or `quiz.answer(choice)`); and never 
 - 2D: `const flat = Oomba.live.flat({me, px})`: `flat.draw(ctx, {cx, cz, scale, ox, oy, r})` draws everyone's portrait and
   name at (x, z) top-down, with the emote each just sent; `flat.place(seat, x, z)`, `flat.free(seat)`,
   `flat.portrait(seat)` → a canvas, `flat.badge(ctx, seat, x, y)` (a player's emote, for figures you draw yourself).
+- Teams (the host may turn them on for any game; every call is safe without teams: `teamsOn` false, `teams()` `[]`,
+  `myTeam` null): `Oomba.live.teamsOn`, `.teams()` → `[{team, name, color, ink, shape, icon, score, sum, avg, rank,
+  size, members: [seat], mine}]` (`rank` 0 = no players yet, or ranks hidden), `.team(k)`, `.myTeam`, `.teamOf(seat)` → k
+  or 0, `.teamStyle(k)` → `{name, color, ink, shape, icon}`, `.teamScoring` (`'avg' | 'sum'`), `.drawShape(ctx, shape, x,
+  y, r, fill, stroke)`. Events: `teams` (`{teams, why: 'setup' | 'move' | 'scores' | 'final'}`), `bonus` (`{seat, team,
+  reason, points}`); `leaderboard`, `reveal` and `end` also carry `teams`. `players()` and `.me` carry `team`. Colour is
+  never the only cue: draw the team's shape (`drawShape`) or its name next to its colour; write text on a team colour in
+  its `ink`. `crowd()` and `flat()` already draw team rings, nameplate bands and shape badges (`crowd.teamRing(myRig, k)`
+  for your own figure). `send(kind, data, {team: true})` sends to the player's own team (the host: `{team: k}`). A
+  target a role may not use (a player naming a seat or a team number) drops the event: it is never sent to everyone.
+  `ready({ teams: true })` says the game draws its own team UI. The platform keeps team scores; games never add them up.
+  `Oomba.live.names === 'hidden'` on the projector: show avatars, teams and ranks there, never empty name boxes.
 - No typing in a live game: text boxes are read-only and `prompt()` returns null. Show names only from `players()`.
 - A 3D live game also needs a 2D path: add `<meta name="oomba-live" content="2d">`, keep the game's rules and a top-down
   view in a classic `<script>`, and put only the 3D view in the module; draw 2D when `Oomba.live.view === '2d'`.
@@ -255,7 +267,23 @@ L.on('start', () => { playing = true; });
 L.on('end', () => { playing = false; L.score(points); });
 B.run(dt => { moveHero(dt); L.move(hero.position.x, 0, hero.position.z, hero.heading, hero.speed > 0.5 ? 'run' : 'idle'); crowd.update(dt); });
 ```
+
+```js
+// Teams: a band per team with its shape and name (never colour alone), and my team's place.
+L.ready({ quiz: true, hostView: true, teams: true });
+L.on('teams', e => e.teams.forEach((tm, i) => {
+  ctx.fillStyle = tm.color; ctx.fillRect(0, i * 40, 300, 36);
+  L.drawShape(ctx, tm.shape, 20, i * 40 + 18, 12, tm.ink); ctx.fillStyle = tm.ink; ctx.fillText(`${tm.name} ${tm.score}`, 40, i * 40 + 24);
+}));
+L.on('result', () => { if (L.myTeam && L.myTeam.rank) say(L.myTeam.name + ': ' + L.myTeam.rank); });
+```
 <!-- /builder -->
+
+Teacher tools that games never see (docs/decisions.md "Oomba Live, part 3"): a student's support (extra time, read
+aloud, Simple view) stays on the player's page and the server; it is never passed into a game frame. Extra time applies
+to the platform's timed questions (quiz modes) only: a game that runs its own clock has no extra time, so give it an
+untimed or slower mode of its own. "Eyes up" pauses the game (`pause`/`resume`) and the teacher's fixed messages are
+shown by the page, not the game. On the projector, a player's bonus points never reach the game (a team's do: `bonus`).
 
 ## The two clocks (read this first)
 

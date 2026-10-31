@@ -13,6 +13,10 @@ import * as S from './schools.js';
 import * as games from './games.js';
 
 export const STEP_KINDS = ['game', 'build', 'text', 'question'];
+/** A question set as homework (LIVE_HOMEWORK; classlive-sets.homework): made only from a set, with a snapshot of its
+ *  items (lesson_steps.items), so later set edits never change work in progress. Its title, text and minutes can be
+ *  edited like any step; its questions can't. Answers are checked by the server (progress.quizAnswer). */
+export const QUIZ_KIND = 'quiz';
 const ok = (extra = {}) => ({ ok: true, ...extra });
 const fail = code => ({ ok: false, code });
 const clip = (s, n) => String(s == null ? '' : s).replace(/[ \t]+/g, ' ').trim().slice(0, n);
@@ -191,7 +195,7 @@ export function copyLesson(u, lessonId, { folderId } = {}) {
 // ---------------------------------------------------------------- steps
 function cleanStep(u, input, old = {}) {
   const kind = input.kind !== undefined ? input.kind : old.kind;
-  if (!STEP_KINDS.includes(kind)) return fail('stepKind');
+  if (!STEP_KINDS.includes(kind) && !(kind === QUIZ_KIND && old.kind === QUIZ_KIND)) return fail('stepKind');
   const v = {
     kind,
     title: input.title !== undefined ? clip(input.title, 100) : old.title || '',
@@ -217,6 +221,17 @@ export function addStep(u, lessonId, input) {
   const id = uid(10);
   q.run('INSERT INTO lesson_steps(id, lesson_id, position, kind, title, body, game_id, minutes, created_at) VALUES (?,?,?,?,?,?,?,?,?)',
     id, l.id, nextPos('lesson_steps', 'lesson_id=?', l.id), c.v.kind, c.v.title, c.v.body, c.v.game_id, c.v.minutes, now());
+  touch(l.id);
+  return ok({ step: getStep(id) });
+}
+/** A quiz step from a question set (the set's items as they are now). -> { ok, step } */
+export function addQuizStep(u, lessonId, { title = '', setId, items }) {
+  const l = getLesson(lessonId); if (!canEditLesson(u, l)) return fail('notFound');
+  if (!Array.isArray(items) || !items.length) return fail('stepKind');
+  const id = uid(10);
+  q.run('INSERT INTO lesson_steps(id, lesson_id, position, kind, title, body, game_id, minutes, created_at, set_id, items) VALUES (?,?,?,?,?,?,?,?,?,?,?)',
+    id, l.id, nextPos('lesson_steps', 'lesson_id=?', l.id), QUIZ_KIND, clip(title, 100), '', null, 0, now(), setId || null,
+    JSON.stringify(items.map(it => ({ q: it.q, choices: it.choices, answer: it.answer }))));
   touch(l.id);
   return ok({ step: getStep(id) });
 }

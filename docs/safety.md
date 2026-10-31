@@ -459,6 +459,36 @@ other); a report keeps the host, game and question texts, never who reported, an
 name); only a teacher's own class students get score rows and gradebook entries. Visits to `/join` and `/live` are not
 counted. Player pages use the bare layout: no menus, no prices, plans or sign-up prompts.
 
+**Teams and teacher tools (part 3; docs/decisions.md "Oomba Live, part 3").**
+- *No new free text.* Team names are 8 fixed presets (colour, shape, animal, a translated name); nobody types a team
+  name, not even a teacher (the text filter can't catch an in-joke about a classmate on a projector). Teacher messages
+  are 10 fixed, translated phrases and bonus reasons 5 fixed, positive ones, all sent as indexes. Players still type
+  nothing: picking a team is a button (lobby only), and a player's game event to its team (`ev to: 'team'`) passes
+  the same vocabulary check as any other.
+- *Eyes up* covers every player's screen (and pauses play); it is a classroom-management tool, not a message.
+- *The teacher's dashboard* (`/live/host/:sid/dash`) is phone-first because many classrooms mirror the teacher's
+  laptop. Its address holds only the session id (the projector shows it as a QR): the page needs the host's own
+  sign-in (anyone else gets the sign-in page or a 404) and sends `Cache-Control: no-store`; the host token is in the
+  page only for that account. It opens with a one-time "use a screen the class can't see" notice, and keeps the right
+  answer and "needs help" hidden until tapped. Its data (`dq`, `dp`, `sup`) goes to that connection only: never to a
+  player, the projector or a game frame.
+- *Projector privacy.* "Needs help", support, answer status and per-student marks never reach the projector. "Names:
+  hidden" keeps names off the projector (players still see nicknames; the dashboard keeps real names in a class room).
+  The results page opens with a class-safe part (team podium and table, hardest questions, question review, no student
+  names); "Student details" (marks, bonus, needs help, CSV) is closed until the teacher opens it, with a reminder.
+- *Bonus points* to one player are private (that device and the teacher); to a team, public. All reasons are positive;
+  bonus points never count in the gradebook.
+- *Support* (extra time, read aloud, simple view) is private: it reaches only that student's own page (a `me` message
+  the page never relays into the game frame, so game code, which another child may have written, never learns it) and the
+  dashboard. The broadcast question carries no per-seat time; a student with extra time gets their own. Saving it for
+  a class is behind `LIVE_SAVE_SUPPORT` (off; legal-review item 42).
+- *Play again* re-runs every join check (the room's rule, class membership, the old session's removals) for each player
+  still connected; the move token goes only to that player's page (never into a frame); the snapshot it uses is wiped
+  when the 2-minute linger ends.
+- *Stored:* a class's saved teams, saved support (flag), marks and bonus in class runs, the host's remembered settings:
+  all inside the school (or the host's own account) and deleted with the class membership, the class or the account.
+  Family and open rooms save nothing new.
+
 **Honest limits.** Grown-up accounts are self-declared, so "a host account" does not prove an adult; the limits above
 (open rooms: nicknames only, reviewed games only, 30 players, Report) are the protection. A determined game author
 could still draw shapes that spell words; open rooms therefore run reviewed games only.

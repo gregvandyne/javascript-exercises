@@ -45,7 +45,7 @@ export const route = {
 
 function connection(ws, req) {
   live.add(ws);
-  let s = null, seat = null, role = null, alive = true, pingAt = 0;
+  let s = null, seat = null, role = null, view = null, alive = true, pingAt = 0;
   const close = (code, why) => { if (why) hooks.log('info', 'live socket closed', { sid: s ? s.id : null, seat: seat ? seat.no : null, why }); try { ws.close(code); } catch { /* gone */ } };
   const helloTimer = setTimeout(() => { if (!s) close(4401, 'no hello'); }, hooks.helloMs);
   helloTimer.unref?.();
@@ -73,7 +73,7 @@ function connection(ws, req) {
     if (!s) return hello(raw);
     const m = P.parse(raw, role);
     if (!m) return;
-    const b = role === 'host' ? s.host.buckets : seat.buckets;
+    const b = role === 'host' ? (view === 'dash' ? s.dashBuckets : s.host.buckets) : seat.buckets;
     if (b && !b.take(m.t)) { if (b.dropped(m.t)) close(4429, 'flood'); return; }
     if (s.phase === 'ended') return;
     try { (role === 'host' ? fromHost : fromPlayer)(m); } catch (e) { hooks.log('error', 'live message failed', { sid: s.id, error: e.message }); }
@@ -98,8 +98,9 @@ function connection(ws, req) {
     if (tok.r === 'h') {
       if (!u || u.id !== sess.host.userId || tok.u !== u.id || tok.k !== sess.host.nonce) return close(4401, 'not host');
       clearTimeout(helloTimer);
-      s = sess; role = 'host';
-      LS.attachHost(s, ws);
+      // The projector (default) or the teacher's dashboard (hello view: 'dash'): the same host token and sign-in.
+      s = sess; role = 'host'; view = m.view === 'dash' ? 'dash' : 'projector';
+      LS.attachHost(s, ws, view);
       return;
     }
     if (sess.banned.has(tok.k) || (tok.u && sess.banned.has(tok.u))) { LS.sendTo(ws, { t: 'bye', why: 'removed' }); return close(4403, 'removed'); }
@@ -129,16 +130,22 @@ function connection(ws, req) {
       case 'it': return LS.item(s, seat, m.i, m.ok);
       case 'an': return LS.answer(s, seat, m, LS.hooks.now());
       case 'em': return LS.emote(s, seat, m.e);
+      case 'pt': return LS.pickTeam(s, seat, m.k);
       default: return undefined;
     }
   }
   function fromHost(m) {
+    if (m.t === 'pi') return common(m);
+    // The dashboard has no game frame: it controls the session (h, tm, cf) and nothing a frame would send.
+    if (view === 'dash' && !['h', 'tm', 'cf'].includes(m.t)) return undefined;
     if (common(m)) return;
     switch (m.t) {
       case 'rdy': return LS.hostReady(s, m.cfg);
-      case 'h': return LS.hostAction(s, m.a, { n: m.n, at: m.at });
+      case 'h': { const { t, a, ...rest } = m; return LS.hostAction(s, a, rest); }
       case 'st': return LS.setState(s, m.d);
       case 'ev': return LS.event(s, null, m);
+      case 'tm': return LS.teamAction(s, m);
+      case 'cf': return LS.setSettings(s, m.d);
       default: return undefined;
     }
   }

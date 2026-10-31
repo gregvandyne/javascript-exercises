@@ -1,6 +1,6 @@
 // The live-ready rules themselves (pure: no database), shared by classlive-check.js (hosting) and stylelint.js (the
 // Builder's notes). docs/kit-api.md "Live class games".
-import { KIT_PACKS, kitVersion } from './kit.js';
+import { KIT_PACKS, kitVersion, upgradePackPins } from './kit.js';
 import { isThreeGame } from './vendor.js';
 
 /** Tests replace packHash: the pinned hash of the live pack for a kit version (undefined until the pack ships). */
@@ -16,7 +16,7 @@ const newer = (v, min) => { const a = v.split('.').map(Number); for (let i = 0; 
 
 /** Does the game load the live pack with its pinned tag (kit 1.1.0 or newer)? */
 export function hasLivePack(html) {
-  const s = String(html || '');
+  const s = upgradePackPins(String(html || ''));   // a game saved with the live pack's older hash still counts
   const v = kitVersion(s);
   if (!v || !newer(v, MIN_KIT)) return false;
   for (const m of s.matchAll(SCRIPT_RE)) {
@@ -48,7 +48,8 @@ const ALIAS_RE = /\b([A-Za-z_$][\w$]{0,30})\s*=\s*(?:[A-Za-z_$][\w$]{0,30}\s*\.\
 /**
  * html -> { ready, issues: [{ level: 'fail'|'warn', code }], lobby, quiz, hostView, presence, threeD, twoD }.
  * fail codes: live_pack, live_ready_call, live_no_start, live_no_report, live_raw.
- * warn codes: live_presence_unused, live_no_2d, live_text, live_text_out, live_no_words.
+ * warn codes: live_presence_unused, live_no_2d, live_text, live_text_out, live_no_words, live_team_cue.
+ * teams: the game draws its own team UI (ready({ teams: true })).
  */
 export function checkHtml(html) {
   const s = String(html || '');
@@ -73,10 +74,12 @@ export function checkHtml(html) {
   if (has(s, /\.\s*(innerHTML|outerHTML)\s*[+]?=\s*[^;\n]{0,200}\b(d|data|ev|e\.d)\s*\./)) warn('live_text_out');
   const words = wordsOf(s);
   if (call('send', true) && !words.length) warn('live_no_words');
+  // Teams shown by colour alone: a team's colour is read (teamStyle, myTeam, teams()) but never its shape, icon or name.
+  if (has(s, /\b(teamStyle|myTeam|teams)\b/) && has(s, /\.color\b/) && !has(s, /\.(shape|icon|name)\b/) && !has(s, /\bdrawShape\b/)) warn('live_team_cue');
   return {
     ready: !issues.some(i => i.level === 'fail'), issues,
     lobby: has(s, /\blobby\s*:\s*true\b/), quiz: has(s, /\bquiz\s*:\s*true\b/), hostView: has(s, /\bhostView\s*:\s*true\b/),
-    presence, threeD, twoD, words,
+    presence, threeD, twoD, words, teams: has(s, /\bteams\s*:\s*true\b/),
   };
 }
 
@@ -93,4 +96,5 @@ export const LIVE_NOTES = {
   live_text: 'Has a text box or prompt(). In a live class game nothing can be typed (the platform turns text entry off): use buttons.',
   live_no_words: "Sends game events but declares no words: a player's events reach the others only as numbers, true/false and the game's own words. List every event kind and word the game sends in Oomba.live.ready({ words: ['kind', 'word', ...] }).",
   live_text_out: 'Writes data received from other players into the page with innerHTML. Show only your own words: build elements and set textContent from your own strings.',
+  live_team_cue: "Shows teams by colour alone: also draw the team's shape (Oomba.live.drawShape) or name, so every player can tell teams apart.",
 };
