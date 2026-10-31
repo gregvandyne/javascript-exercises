@@ -149,6 +149,14 @@ body.portrait.psmall .ci-panel .ci-ed,body.portrait.psmall .ci-panel .ci-pal,bod
 body.landscape .ci-walkact{bottom:calc(36px + env(safe-area-inset-bottom))}
 .ci-walkhint{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(12px + env(safe-area-inset-bottom));z-index:6;background:var(--ok-card);color:var(--ok-text);border:2px solid var(--ok-edge);border-radius:999px;padding:6px 14px;font-weight:700;font-size:.85em;white-space:nowrap;pointer-events:none}
 .ci-kbproxy{position:absolute;left:0;bottom:0;width:1px;height:1px;opacity:0;border:0;padding:0;margin:0;resize:none;font-size:16px;pointer-events:none}
+.ci-looks{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px}
+.ci-look{font:inherit;color:var(--ok-text);background:var(--ok-bg2);border:2px solid var(--ok-line);border-radius:16px;min-height:84px;padding:8px 4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-weight:700;font-size:.82em;cursor:pointer;text-transform:capitalize}
+.ci-look i{width:36px;height:36px;border-radius:50%;border:3px solid var(--ok-edge);display:block}
+.ci-look b{display:block;height:52px}
+.ci-look span{display:flex;align-items:center;gap:3px;text-transform:none}.ci-look span svg{width:14px;height:14px}
+.ci-look.on{border:3px solid var(--ok-edge);background:var(--ci-go-tint);color:var(--ci-ink)}
+.ci-look:disabled{opacity:.55;cursor:default}
+.ci-card h3 small{font-weight:600;opacity:.75}
 </style>
 <canvas id="view" tabindex="-1" aria-label="The 3D island"></canvas>
 <div class="labels" id="labels"></div>
@@ -160,7 +168,7 @@ body.landscape .ci-walkact{bottom:calc(36px + env(safe-area-inset-bottom))}
   <span data-btn="walk"></span><span data-btn="free"></span><span data-btn="book"></span><span data-btn="settings"></span>
 </div>
 <div id="ciWalk" hidden>
-  <div class="ci-bar" id="walkBar"><span data-btn="wHome"></span><span data-btn="wMap"></span><div class="ok-pill" id="wSparks"></div><div class="ci-spacer"></div><span data-btn="wBook"></span><span data-btn="wSet"></span></div>
+  <div class="ci-bar" id="walkBar"><span data-btn="wHome"></span><span data-btn="wMap"></span><div class="ok-pill" id="wSparks"></div><div class="ci-spacer"></div><span data-btn="wLook"></span><span data-btn="wSet"></span></div>
   <div class="ci-walkhint" id="walkHint">Arrows: walk · Space: jump · Enter: play or talk</div>
   <div class="ci-walkact" id="walkAct" hidden></div>
   <div class="ok-touch" id="walkTouch"><div class="ok-stick" id="walkStick"><div class="ok-knob"></div></div><div class="ok-tbtn ok-jump" id="walkJump" aria-label="Jump"></div></div>
@@ -180,7 +188,7 @@ body.landscape .ci-walkact{bottom:calc(36px + env(safe-area-inset-bottom))}
   <div class="ci-mission">
     <span id="pFace"></span>
     <div class="ci-goal" id="pGoal"></div>
-    <span data-btn="learn"></span>
+    <span data-btn="say"></span><span data-btn="learn"></span>
   </div>
   <div class="ci-tests" id="tests"></div>
   <div class="ci-ed" id="ed">
@@ -2207,6 +2215,7 @@ function loadSave() {
   try { d = HAS_BRB ? BRB.storage.get(KEY) : JSON.parse(localStorage.getItem(KEY) || 'null'); } catch { d = null; }
   if (!d || typeof d !== 'object') d = {};
   return { v: 1, done: d.done || {}, drafts: d.drafts || {}, free: d.free || null, seen: d.seen || {}, hints: d.hints || {},
+    found: Array.isArray(d.found) ? d.found.filter(n => Number.isInteger(n)) : [], look: d.look && typeof d.look === 'object' ? d.look : null,
     settings: Object.assign({}, DEF_SETTINGS, d.settings || {}) };
 }
 const SAVE = loadSave();
@@ -2584,12 +2593,13 @@ const pip = new THREE.Group(); scene.add(pip);
 const pipBody = new THREE.Group(); pip.add(pipBody);
 {
   const white = lam({ color: C('snow') }), accent = lam({ color: C('peach') }), dark = lam({ color: mix(C('ink'), C('sky', 'shade'), 0.4) });
+  pip.userData.white = white;
   const body = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.36, 0.42), white); body.position.y = 0.36; pipBody.add(body);
   const belt = new THREE.Mesh(new THREE.BoxGeometry(0.52, 0.08, 0.44), accent); belt.position.y = 0.3; pipBody.add(belt);
   const faceMat = lam({ map: pipFace[0] });
   const head = new THREE.Mesh(new THREE.BoxGeometry(0.58, 0.42, 0.46), [white, white, white, white, faceMat, white]); head.position.y = 0.76; pipBody.add(head);
   pip.userData.faceMat = faceMat;
-  const ant = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.22, 6), dark); ant.position.y = 1.07; pipBody.add(ant);
+  const ant = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.22, 6), dark); ant.position.y = 1.07; pipBody.add(ant); pip.userData.ant = ant;
   const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.07, 10, 8), lam({ color: C('spark'), emissive: new THREE.Color(C('spark')), emissiveIntensity: 0.8 })); bulb.position.y = 1.2; pipBody.add(bulb);
   pip.userData.bulb = bulb;
   const armG = new THREE.BoxGeometry(0.1, 0.28, 0.12);
@@ -3112,7 +3122,7 @@ function settingsCard() {
   cardBtn(m, '[data-reset]', 'Start over', { kind: 'quiet', icon: 'restart', onPress: () => {
     const c = openCard(`<h2 class="ok-h2">Start over?</h2><p>This clears all your stars, code and everything you built. It can't be undone.</p><div class="ci-acts"><i data-no></i><i data-yes></i></div>`);
     cardBtn(c, '[data-no]', 'Keep my island', { kind: 'go', onPress: settingsCard }).setAttribute('data-ok-focus', '');
-    cardBtn(c, '[data-yes]', 'Yes, start over', { kind: 'quiet', onPress: () => { SAVE.done = {}; SAVE.drafts = {}; SAVE.free = null; SAVE.seen = {}; SAVE.hints = {}; save(); rebuildStatic(); closeCard(); goTitle(); Oomba.ui.toast('Your island is fresh and foggy again.'); } });
+    cardBtn(c, '[data-yes]', 'Yes, start over', { kind: 'quiet', onPress: () => { SAVE.done = {}; SAVE.drafts = {}; SAVE.free = null; SAVE.seen = {}; SAVE.hints = {}; SAVE.found = []; SAVE.look = null; applyLook(); buildSparkles(); save(); rebuildStatic(); closeCard(); goTitle(); Oomba.ui.toast('Your island is fresh and foggy again.'); } });
   } });
   cardBtn(m, '[data-more]', 'Sound and more', { kind: 'quiet', icon: 'settings', onPress: () => Oomba.ui.settings() });
   cardBtn(m, '[data-x]', 'Done', { kind: 'go', icon: 'check', onPress: closeCard }).setAttribute('data-ok-focus', '');
@@ -3137,6 +3147,7 @@ async function startLevel(id, from) {
   $('#lSub').innerHTML = level.sandbox ? 'Build anything you like!' : `${esc(ch.place)} · ${best ? starsHtml(best.s) : 'New!'}`;
   $('#pFace').innerHTML = ''; $('#pFace').appendChild(portrait(ch.npc.spec, 44));
   $('#pGoal').innerHTML = `<b>Goal:</b> ${esc(level.goal)}`;
+  setBtn(BTN.learn, level.sandbox ? 'hint' : 'book', level.sandbox ? 'Ideas' : t('learn'));
   const code = level.sandbox ? ((SAVE.free && SAVE.free.code) || level.starter) : (SAVE.drafts[id] ?? (best && best.code) ?? level.starter);
   setCode(code, true); undoStack.length = 0; ta.setSelectionRange(ta.value.length, ta.value.length);
   setOut('');
@@ -3230,11 +3241,13 @@ function afterRun(res, vi, replay) {
 }
 async function success(res) {
   const id = cur.level.id, level = cur.level;
-  const prev = SAVE.done[id];
+  const prev = SAVE.done[id], opens = opensCount();
+  if (!prev) celebrate = id;
   SAVE.done[id] = { s: Math.max(res.stars, prev ? prev.s : 0), code: ta.value, diff: E.diffSim(level, res.results[0].sim) };
   delete SAVE.drafts[id];
   save();
   try { if (HAS_BRB) BRB.score.submit(totalStars(), 'stars'); } catch { /* fine */ }
+  noteUnlocks(opens);
   const w = pip.position; burst(w.x, w.y + 1, w.z, C('spark'), 24, 3, 3.5);
   pipBody.position.y = 0;
   const tips = [];
@@ -3247,7 +3260,7 @@ async function success(res) {
   const idx = LEVELS.indexOf(level), next = LEVELS[idx + 1];
   const chDone = LEVELS.filter(l => l.ch === level.ch).every(l => SAVE.done[l.id]);
   const showOutro = chDone && !SAVE.seen['out' + level.ch];
-  const v = await Oomba.ui.win({ stars: res.stars, score: res.stars * 100, best: prev ? prev.s * 100 : null, hero: PIP.spec, title: `${level.title}: done!`, next: !!next || showOutro });
+  const v = await Oomba.ui.win({ stars: res.stars, score: res.stars * 100, best: prev ? prev.s * 100 : null, hero: PIP.spec, title: `Done: ${level.title}`, next: !!next || showOutro });
   if (!cur || cur.level !== level) return;
   if (cur.keep) { cur.keep = false; return; }
   if (v === 'next') afterLevel(level, showOutro); else { resetWorld(0); setOut(''); }
@@ -3514,7 +3527,8 @@ mkBtn('map', t('map'), { kind: 'icon', icon: 'back', onPress: () => { if (cur &&
 mkBtn('walk', 'Walk round the village', { kind: 'icon', icon: 'move', onPress: () => goWalk() });
 mkBtn('wHome', t('home'), { kind: 'icon', icon: 'home', onPress: () => goTitle() });
 mkBtn('wMap', 'Level map', { kind: 'icon', icon: 'flag', onPress: () => goMap(selChapter) });
-mkBtn('wBook', t('book'), { kind: 'icon', icon: 'book', onPress: () => bookCard() });
+mkBtn('wLook', "Pip's wardrobe", { kind: 'icon', icon: 'user', onPress: () => lookCard() });
+mkBtn('say', 'Read it to me', { kind: 'icon', icon: 'speak', onPress: () => { if (!cur) return; const L = cur.level; Oomba.say(`${L.story} Goal: ${L.goal}`).catch(() => {}); } });
 mkBtn('wSet', 'Settings', { kind: 'icon', icon: 'settings', onPress: settingsCard });
 mkBtn('size', t('size'), { kind: 'icon', icon: 'fullscreen', onPress: () => {
   const b = document.body;
@@ -3535,7 +3549,7 @@ mkBtn('menu', t('menu'), { kind: 'icon', icon: 'menu', onPress: () => {
   cardBtn(m, '[data-set]', 'Settings', { kind: 'quiet', icon: 'settings', onPress: settingsCard });
   cardBtn(m, '[data-x]', 'Back to coding', { kind: 'go', icon: 'pencil', onPress: closeCard }).setAttribute('data-ok-focus', '');
 } });
-mkBtn('learn', t('learn'), { kind: 'quiet', icon: 'book', onPress: () => cur && learnCard(cur.level) });
+mkBtn('learn', t('learn'), { kind: 'quiet', icon: 'book', onPress: () => { if (!cur) return; if (cur.level.sandbox) ideasCard(); else learnCard(cur.level); } });
 mkBtn('run', t('run'), { kind: 'go', icon: 'play', onPress: runCode }).classList.add('ci-go');
 mkBtn('reset', t('reset'), { kind: 'icon', icon: 'restart', onPress: () => { if (anim.on) { anim.on = false; anim.done = null; setRunning(false); } resetWorld(shownVi, true); setOut(''); } });
 mkBtn('hint', t('hint'), { kind: 'icon', icon: 'hint', onPress: hint });
@@ -3559,6 +3573,114 @@ function applyTheme() {
 }
 Oomba.theme.on('change', applyTheme);
 
+/* ---------- Pip's wardrobe: stars unlock paint, village sparkles unlock things to wear (the kit's own wear) ---------- */
+const PAINTS = [['sky', 0], ['mint', 6], ['coral', 15], ['spark', 27], ['grape', 42], ['peach', 60], ['stone', 80], ['snow', 105]];
+const WEARS = [['none', 0], ['scarf', 3], ['glasses', 7], ['headphones', 12], ['backpack', 18], ['wizard-hat', 25], ['crown', 33]];
+const WEAR_NAMES = { none: 'Nothing', scarf: 'Scarf', glasses: 'Glasses', headphones: 'Headphones', backpack: 'Backpack', 'wizard-hat': 'Wizard hat', crown: 'Crown' };
+const look = () => Object.assign({ paint: 'sky', wear: 'none' }, SAVE.look || {});
+const opensCount = () => PAINTS.filter(p => totalStars() >= p[1]).length + WEARS.filter(w => found().size >= w[1]).length;
+const wearGroup = new THREE.Group(); pipBody.add(wearGroup);
+function applyLook() {
+  const L = look();
+  PIP.spec = { species: 'oomba', colors: { base: L.paint } }; if (L.wear !== 'none') PIP.spec.wear = [L.wear];
+  pip.userData.white.color.set(L.paint === 'snow' ? C('snow') : C(L.paint, 'light'));
+  wearGroup.clear(); pip.userData.ant.visible = pip.userData.bulb.visible = true;
+  const m = c => lam({ color: c }), add = (geo, col, x, y, z) => { const o = new THREE.Mesh(geo, m(col)); o.position.set(x, y, z); o.castShadow = true; wearGroup.add(o); return o; };
+  switch (L.wear) {
+    case 'scarf': add(new THREE.TorusGeometry(0.27, 0.06, 6, 16).rotateX(Math.PI / 2), C('coral'), 0, 0.56, 0); add(new THREE.BoxGeometry(0.1, 0.24, 0.05), C('coral'), 0.13, 0.44, 0.25); break;
+    case 'glasses': for (const x of [-0.13, 0.13]) add(new THREE.TorusGeometry(0.075, 0.02, 6, 14), C('ink'), x, 0.8, 0.245); add(new THREE.BoxGeometry(0.1, 0.02, 0.02), C('ink'), 0, 0.81, 0.245); break;
+    case 'headphones': add(new THREE.TorusGeometry(0.31, 0.03, 6, 16, Math.PI), C('ink'), 0, 0.78, 0); for (const x of [-0.31, 0.31]) add(new THREE.CylinderGeometry(0.1, 0.1, 0.09, 12).rotateZ(Math.PI / 2), C('grape'), x, 0.76, 0); break;
+    case 'backpack': add(new THREE.BoxGeometry(0.36, 0.34, 0.14), C('peach', 'shade'), 0, 0.4, -0.28); add(new THREE.BoxGeometry(0.38, 0.1, 0.16), C('cocoa'), 0, 0.53, -0.28); break;
+    case 'wizard-hat': add(new THREE.CylinderGeometry(0.37, 0.37, 0.03, 16), C('grape', 'shade'), 0, 0.99, 0); add(new THREE.ConeGeometry(0.27, 0.55, 14), C('grape'), 0, 1.27, 0); add(new THREE.OctahedronGeometry(0.06), C('spark'), 0, 1.57, 0); pip.userData.ant.visible = pip.userData.bulb.visible = false; break;
+    case 'crown': add(new THREE.CylinderGeometry(0.24, 0.24, 0.13, 12, 1, true), C('spark'), 0, 1.04, 0).material.side = THREE.DoubleSide; for (let i = 0; i < 5; i++) { const a = i / 5 * Math.PI * 2; add(new THREE.ConeGeometry(0.05, 0.12, 5), C('spark'), Math.cos(a) * 0.22, 1.16, Math.sin(a) * 0.22); } pip.userData.ant.visible = pip.userData.bulb.visible = false; break;
+  }
+}
+function lookCard() {
+  const L = look(), stars = totalStars(), sp = found().size;
+  const paints = PAINTS.map(([h, need]) => { const open = stars >= need; return `<button type="button" class="ci-look${L.paint === h ? ' on' : ''}" data-paint="${h}" ${open ? '' : 'disabled'} aria-pressed="${L.paint === h}"><i style="background:${C(h)}"></i><span>${open ? h : ICON('lock') + need + ' stars'}</span></button>`; }).join('');
+  const wears = WEARS.map(([w, need]) => { const open = sp >= need; return `<button type="button" class="ci-look${L.wear === w ? ' on' : ''}" data-wear="${w}" ${open ? '' : 'disabled'} aria-pressed="${L.wear === w}"><b data-pic="${w}"></b><span>${open ? WEAR_NAMES[w] : ICON('lock') + need + ' sparkles'}</span></button>`; }).join('');
+  const m = openCard(`<h2 class="ok-h2">Pip's wardrobe</h2><p>Stars from levels unlock paint. Sparkles hidden round the village unlock things to wear.</p>
+    <h3>${ICON('star')} Paint <small>(you have ${stars} stars)</small></h3><div class="ci-looks">${paints}</div>
+    <h3>${ICON('spark')} Wear <small>(you have ${sp} sparkles)</small></h3><div class="ci-looks">${wears}</div><div class="ci-acts"><i data-x></i></div>`);
+  m.querySelectorAll('[data-pic]').forEach(b => { const w = b.dataset.pic; b.appendChild(portrait(Object.assign({ species: 'oomba', colors: { base: L.paint } }, w === 'none' ? {} : { wear: [w] }), 52)); });
+  m.querySelectorAll('[data-paint]').forEach(b => b.addEventListener('click', () => { SAVE.look = Object.assign(look(), { paint: b.dataset.paint }); save(); applyLook(); sfx('click'); lookCard(); }));
+  m.querySelectorAll('[data-wear]').forEach(b => b.addEventListener('click', () => { SAVE.look = Object.assign(look(), { wear: b.dataset.wear }); save(); applyLook(); sfx('click'); lookCard(); }));
+  cardBtn(m, '[data-x]', 'Done', { kind: 'go', icon: 'check', onPress: closeCard }).setAttribute('data-ok-focus', '');
+}
+function noteUnlocks(before) { if (opensCount() > before) after(1600, () => Oomba.ui.toast('Something new for Pip! Open the wardrobe in the village.', { ms: 3200 })); }
+applyLook();
+
+/* ---------- Villagers: kit characters who stroll round the village and chat ---------- */
+const FOLKS = [
+  { name: 'Milo', spec: { species: 'kid', skin: 2, hair: { style: 'curls', color: 'black' }, outfit: { top: 'hoodie', color: 'sky' } } },
+  { name: 'Ava', spec: { species: 'kid', skin: 5, hair: { style: 'puffs', color: 'cocoa' }, outfit: { top: 'dress', color: 'coral' } } },
+  { name: 'Kai', spec: { species: 'kid', skin: 0, hair: { style: 'spiky', color: 'blonde' }, outfit: { top: 'tee', color: 'mint' } } },
+  { name: 'Zara', spec: { species: 'kid', skin: 6, hair: { style: 'braids', color: 'black' }, outfit: { top: 'overalls', color: 'grape' } } },
+  { name: 'Leo', spec: { species: 'kid', skin: 3, hair: { style: 'buzz', color: 'cocoa' }, outfit: { top: 'tee', color: 'spark' } } },
+  { name: 'Rin', spec: { species: 'kid', skin: 1, hair: { style: 'bob', color: 'copper' }, outfit: { top: 'hoodie', color: 'peach' } } },
+  { name: 'Sol', spec: { species: 'kid', skin: 4, hair: { style: 'long', color: 'black' }, outfit: { top: 'dress', color: 'sky' } } },
+  { name: 'Ben', spec: { species: 'kid', skin: 7, hair: { style: 'cap', color: 'stone' }, outfit: { top: 'overalls', color: 'mint' } } },
+  { name: 'Pebble', spec: { species: 'penguin' } }, { name: 'Nutmeg', spec: { species: 'bunny' } }, { name: 'Buzzy', spec: { species: 'bee' } },
+];
+const TIPS = [
+  'If something goes wrong, read the red line under your code. It tells you which line to fix!',
+  'The Code Book has every command Pip knows. It\'s in the menu!',
+  'Psst… with the keyboard off, tap a word in your code to pick it. Then tap a number to change it!',
+  'i++ is a short way to say "add 1 to i". Neat, right?',
+  'Some sparkles are hidden behind houses. Have you looked everywhere?',
+  'Sparkles unlock things for Pip to wear. I heard there\'s a crown!',
+  'Stars unlock new paint for Pip. Try for three stars on every level!',
+  'Stuck? Press the light bulb for a hint. Every coder gets stuck sometimes!',
+  'Loops are my favourite. Why build 10 blocks by hand when a loop can do it?',
+];
+const folks = new THREE.Group(); scene.add(folks);
+{
+  const regs = VILLAGE.regions.slice().sort((a, b) => a.ch - b.ch);
+  FOLKS.forEach((f, i) => {
+    const g = regs[i % regs.length], r = rng(400 + i);
+    let x = 0, z = 0; for (let k = 0; k < 80; k++) { x = g.x0 + 2 + r() * (g.x1 - g.x0 - 4); z = g.z0 + 2 + r() * (g.z1 - g.z0 - 4); const gr = groundAt(x, z); if (gr && gr.h === 1 && !hitsSolid(x, z, 0.5)) break; }
+    const tx = charTex(f.spec), a = tx.userData.aspect || 1;
+    const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: tx })); sp.center.set(0.5, 0); sp.scale.set(1.2 * a, 1.2, 1); sp.position.set(x, 1.02, z);
+    sp.userData = { f, g, r, tx: x, tz: z, wait: r() * 3, ph: r() * 6 };
+    folks.add(sp);
+  });
+}
+function stepFolks(dt, t) {
+  for (const sp of folks.children) {
+    const u = sp.userData;
+    if (mode === 'walk' && Math.hypot(sp.position.x - walk.x, sp.position.z - walk.z) < 1.8) continue;   // stops to say hi
+    if ((u.wait -= dt) > 0) continue;
+    const dx = u.tx - sp.position.x, dz = u.tz - sp.position.z, d = Math.hypot(dx, dz);
+    if (d < 0.2) { u.wait = 1.5 + u.r() * 3; const g = u.g; for (let k = 0; k < 12; k++) { const x = g.x0 + 2 + u.r() * (g.x1 - g.x0 - 4), z = g.z0 + 2 + u.r() * (g.z1 - g.z0 - 4); if (Math.hypot(x - sp.position.x, z - sp.position.z) < 9) { const gr = groundAt(x, z); if (gr && gr.h === 1 && !hitsSolid(x, z, 0.4)) { u.tx = x; u.tz = z; break; } } } continue; }
+    const nx = sp.position.x + dx / d * 1.3 * dt, nz = sp.position.z + dz / d * 1.3 * dt, gr = groundAt(nx, nz);
+    if (!gr || gr.h !== 1 || hitsSolid(nx, nz, 0.2)) { u.tx = sp.position.x; u.tz = sp.position.z; continue; }
+    sp.position.x = nx; sp.position.z = nz; sp.position.y = 1.02 + (REDUCED ? 0 : Math.abs(Math.sin(t * 8 + u.ph)) * 0.08);
+  }
+}
+async function chatWith(f, g) {
+  const done = PLOTS.filter(p => p.ch === g.ch && SAVE.done[p.id]);
+  const lines = TIPS.slice();
+  if (done.length) { const p = done[(Math.random() * done.length) | 0]; lines.push(`I saw what you built for "${p.level.title}". So cool!`, `Did you really build ${p.id} with code? Teach me!`); }
+  else if (g.ch) lines.push('Everything round here is so grey… Can your code fix it?');
+  await say({ name: f.name, spec: f.spec }, lines[(Math.random() * lines.length) | 0], [{ label: 'Bye!', kind: 'go', value: 0 }]);
+}
+
+/* ---------- Free Build ideas: programs to try and change ---------- */
+const IDEAS = [
+  { title: 'Rainbow tower', text: 'A loop goes through a list of colours and stacks one block of each.', code: 'const colors = ["red", "orange", "yellow", "green", "blue", "purple"];\nfor (const color of colors) {\n  pip.build(color);\n}\npip.say("A rainbow tower!");\n' },
+  { title: 'Sky staircase', text: 'Each step needs one more block than the last, so Pip can climb it.', code: 'pip.jumpTo(1, 3);\nfor (let step = 1; step <= 9; step++) {\n  pip.build("wood", step);\n  pip.forward();\n}\npip.say("Look how high I am!");\n' },
+  { title: 'Smiley face', text: 'Each string is a row of a picture. Pip jumps to every # and paints it.', code: 'const face = [\n  "..####..",\n  ".#....#.",\n  "#.#..#.#",\n  "#......#",\n  "#.#..#.#",\n  "#..##..#",\n  ".#....#.",\n  "..####..",\n];\nfor (let row = 0; row < face.length; row++) {\n  for (let col = 0; col < face[row].length; col++) {\n    if (face[row][col] === "#") {\n      pip.jumpTo(4 + col, 4 + row);\n      pip.paint("yellow");\n    }\n  }\n}\n' },
+  { title: 'Magic forest', text: 'Two loops make a grid, and Math.random() picks a different tree each time.', code: 'for (let x = 1; x < 15; x += 3) {\n  for (let z = 1; z < 15; z += 3) {\n    pip.jumpTo(x, z);\n    if (Math.random() < 0.5) {\n      pip.plant("tree");\n    } else {\n      pip.plant("pine");\n    }\n  }\n}\n' },
+  { title: 'Castle towers', text: 'One function, four towers: inputs say where each one goes.', code: 'function tower(x, z) {\n  pip.jumpTo(x, z);\n  pip.build("stone", 5);\n  pip.build("gold");\n}\ntower(2, 2);\ntower(12, 2);\ntower(2, 12);\ntower(12, 12);\npip.jumpTo(7, 7);\npip.say("My castle!");\n' },
+  { title: 'Rainbow carpet', text: '% picks the next colour from the list, so the stripes go round and round.', code: 'const colors = ["red", "orange", "yellow", "green", "blue", "purple"];\nfor (let z = 4; z < 12; z++) {\n  for (let x = 4; x < 12; x++) {\n    pip.jumpTo(x, z);\n    pip.paint(colors[(x + z) % colors.length]);\n  }\n}\n' },
+];
+function ideasCard() {
+  const m = openCard(`<h2 class="ok-h2">Free Build ideas</h2><p>Pick one to load it, run it, then change it and make it yours!</p>${IDEAS.map((i, n) => `<h3>${esc(i.title)}</h3><p>${esc(i.text)}</p><div class="ci-acts" style="justify-content:flex-start"><i data-idea="${n}"></i></div>`).join('')}<div class="ci-acts"><i data-x></i></div>`);
+  IDEAS.forEach((i, n) => cardBtn(m, `[data-idea="${n}"]`, `Use "${i.title}"`, { kind: 'quiet', icon: 'pencil', onPress: () => { closeCard(); pushHistory(); setCode(i.code); setOut('Idea loaded! Press Run, then change it. (Undo brings your old code back.)'); } }));
+  cardBtn(m, '[data-x]', 'Close', { kind: 'go', onPress: closeCard }).setAttribute('data-ok-focus', '');
+}
+let celebrate = null;
+
 /* ---------- Walking round the village: joystick or arrow keys, jump, signs to play levels, friends to talk to ---------- */
 const walk = { x: 0, z: 11, y: 1, vy: 0, ground: true, yaw: Math.PI, shownY: 1, keys: new Set(), sx: 0, sy: 0, jump: false, act: null, step: 0, placed: false };
 function signFor(id) { return VILLAGE.signs.find(s => s.id === id); }
@@ -3573,6 +3695,9 @@ function goWalk(at) {
   setCam({ tx: walk.x, ty: walk.y + 0.8, tz: walk.z, dist: 10, phi: 1.02, theta: 0 }, !at);
   renderWalkBar(); setAct(null);
   $('#walkTouch').hidden = !TOUCH; $('#walkHint').hidden = TOUCH;
+  // just finished a level? fireworks over its plot
+  const p = celebrate && PLOT[celebrate]; celebrate = null;
+  if (p) for (let k = 0; k < 6; k++) after(300 + k * 260, () => { if (mode !== 'walk') return; const x = p.ox + 1 + Math.random() * (p.W - 2), z = p.oz + 1 + Math.random() * (p.D - 2); burst(x, 5 + Math.random() * 2, z, C(['spark', 'coral', 'mint', 'sky', 'grape'][k % 5]), 26, 5, 3); sfx('star', true); });
 }
 function renderWalkBar() { const n = found().size; $('#wSparks').innerHTML = `${ICON('spark')}<span class="ok-num">${n} / ${VILLAGE.sparkles.length}</span>`; }
 let actBtn = null;
@@ -3581,7 +3706,7 @@ function setAct(a) {
   if ((walk.act ? walk.act.key : '') === key) return;
   walk.act = a ? Object.assign({ key }, a) : null;
   const box = $('#walkAct'); box.innerHTML = ''; box.hidden = !a; if (!a) return;
-  actBtn = Oomba.ui.button(a.label, { kind: a.kind === 'play' ? 'hot' : 'go', icon: a.kind === 'play' ? 'play' : a.kind === 'talk' ? 'speak' : 'lock', onPress: doAct });
+  actBtn = Oomba.ui.button(a.label, { kind: a.kind === 'play' ? 'hot' : 'go', icon: a.kind === 'play' ? 'play' : a.kind === 'talk' || a.kind === 'chat' ? 'speak' : 'lock', onPress: doAct });
   box.appendChild(actBtn);
 }
 function doAct() {
@@ -3589,6 +3714,7 @@ function doAct() {
   if (a.kind === 'play') { startLevel(a.id, 'walk'); return; }
   if (a.kind === 'locked') { Oomba.ui.toast(t('locked')); return; }
   if (a.kind === 'talk') talkTo(a.ch);
+  if (a.kind === 'chat') { const sp = folks.children.find(x => x.userData.f.name === a.id); if (sp) chatWith(sp.userData.f, sp.userData.g); }
 }
 async function talkTo(chId) {
   const ch = CHAPTERS.find(c => c.id === chId), lv = LEVELS.filter(l => l.ch === chId);
@@ -3648,7 +3774,7 @@ function stepWalk(dt) {
   // sparkles
   const f = found();
   for (const s of VILLAGE.sparkles) if (!f.has(s.i) && Math.hypot(s.x - walk.x, s.z - walk.z) < 0.9 && walk.y < 2.6) {
-    SAVE.found = [...f, s.i]; save(); buildSparkles(); renderWalkBar(); sfx('star', true); burst(s.x, 1.8, s.z, C('spark'), 18, 2.4, 2.6);
+    const opens = opensCount(); SAVE.found = [...f, s.i]; save(); noteUnlocks(opens); buildSparkles(); renderWalkBar(); sfx('star', true); burst(s.x, 1.8, s.z, C('spark'), 18, 2.4, 2.6);
     const n = SAVE.found.length, all = VILLAGE.sparkles.length;
     if (n === all) { Oomba.ui.toast('You found every sparkle on Code Isle!'); try { if (!REDUCED) Oomba.juice.confetti(); } catch { /* fine */ } } else Oomba.ui.toast(`Sparkle ${n} of ${all}!`);
     break;
@@ -3657,6 +3783,7 @@ function stepWalk(dt) {
   let best = null, bd = 2.3;
   for (const s of VILLAGE.signs) { const d = Math.hypot(s.x - walk.x, s.z - walk.z); if (d < bd) { bd = d; best = s; } }
   if (best) { const L = BYID[best.id]; setAct(unlocked(best.id) ? { kind: 'play', id: best.id, label: best.id === 'free' ? `Play ${t('free')}` : `Play ${best.id}: ${L.title}` } : { kind: 'locked', id: best.id, label: `${best.id} is locked` }); return; }
+  for (const sp of folks.children) { if (Math.hypot(sp.position.x - walk.x, sp.position.z - walk.z) < 1.7) { setAct({ kind: 'chat', id: sp.userData.f.name, label: `Say hi to ${sp.userData.f.name}` }); return; } }
   for (const sp of npcs.children) { const d = Math.hypot(sp.position.x - walk.x, sp.position.z - walk.z); if (d < 2.2) { const ch = CHAPTERS.find(c => c.id === sp.userData.ch); setAct({ kind: 'talk', ch: ch.id, label: `Talk to ${ch.npc.name}` }); return; } }
   setAct(null);
 }
@@ -3670,6 +3797,8 @@ function frame(now) {
   if (frameMs > 34 && sun.castShadow) { if (++slow > 120) { renderer.shadowMap.enabled = false; sun.castShadow = false; } } else slow = 0;
   if (mode === 'title' && !REDUCED) goal.theta += dt * 0.05;
   if (mode === 'walk') stepWalk(dt);
+  if (mode !== 'level') stepFolks(dt, now / 1000);
+  folks.visible = mode !== 'level';
   updateCam(dt);
   stepAnim(dt);
   const t2 = now / 1000;
@@ -3739,6 +3868,7 @@ Object.assign(window.__brbTest, {
   groundAt: (x, z) => groundAt(x, z),
   sparkleAt: i => VILLAGE.sparkles[i],
   signAt: id => signFor(id),
+  look: () => look(), lookCard: () => lookCard(), ideas: () => ideasCard(), folks: () => folks.children.map(s => ({ name: s.userData.f.name, x: s.position.x, z: s.position.z })),
 });
 
 /* ---------- Go ---------- */
