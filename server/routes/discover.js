@@ -12,6 +12,7 @@ import { HUBS } from '../learn.js';
 import { availableCodes } from '../i18n/index.js';
 import * as funnel from '../services/funnel.js';
 import { countable } from '../services/traffic.js';
+import { liveOn } from '../services/classlive-sessions.js';
 
 export const router = Router();
 
@@ -65,6 +66,7 @@ router.get('/', (req, res) => {
   const intro = !signedOut(u) ? html`<h1 class="sr-only"${fb('home.intro.heading')}>${t('home.intro.heading')}</h1>`
     : html`<section class="home-intro" aria-labelledby="home-h1"><h1 id="home-h1"${fb('home.intro.heading')}>${t('home.intro.heading')}</h1><p${fb('home.intro.text')}>${t('home.intro.text')}</p>
       ${homeDoors(req)}
+      ${liveOn() ? html`<p class="home-join"><a class="btn btn-primary btn-big" href="/join" id="home-join"><span aria-hidden="true">🎟️</span> ${t('live.entry.join')}</a> <span class="muted">${t('live.entry.joinText')}</span></p>` : ''}
       <ul class="chips home-subjects" aria-label="${t('teachers.subjects.h')}">${HUBS.map(h => html`<li><a class="chip" href="${lp(`/learn/${h.slug}`)}"><span aria-hidden="true">${h.emoji}</span><span${fb(`learn.hubs.${h.key}.name`)}>${t(`learn.hubs.${h.key}.name`)}</span></a></li>`)}</ul></section>`;
   const body = html`${intro}
   <div id="play" class="home-play">

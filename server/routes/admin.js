@@ -24,12 +24,13 @@ import * as stripe from '../services/stripe.js';
 import { audit, q } from '../db.js';
 import { config } from '../config.js';
 import * as webSearch from '../builder/search.js';
+import * as liveR from '../services/classlive-results.js';
 
 export const router = Router();
 router.use('/admin', requireAdmin);
 router.use('/api/admin', requireAdmin);
 
-const TABS = [['queue', '⏳', 'Review queue'], ['reports', '🚩', 'Reports'], ['chat', '💬', 'Chat reports'], ['links', '🧑‍🧒', 'Link reports'], ['schoolreq', '🏫', 'School requests'], ['users', '👤', 'Users'], ['searches', '🔎', 'Web searches'], ['audit', '📜', 'Audit log']];
+const TABS = [['queue', '⏳', 'Review queue'], ['reports', '🚩', 'Reports'], ['chat', '💬', 'Chat reports'], ['links', '🧑‍🧒', 'Link reports'], ['live', '📡', 'Live reports'], ['schoolreq', '🏫', 'School requests'], ['users', '👤', 'Users'], ['searches', '🔎', 'Web searches'], ['audit', '📜', 'Audit log']];
 const gameReason = k => (GAME_REASONS.find(r => r[0] === k) || [k, k])[1];
 const chatReason = k => (chat.REPORT_REASONS.find(r => r[0] === k) || [k, k])[1];
 const when = t => html`<time datetime="${new Date(t).toISOString()}" title="${new Date(t).toISOString().replace('T', ' ').slice(0, 16)} UTC">${timeAgo(t)}</time>`;
@@ -127,6 +128,21 @@ function linksTab() {
       ${r.owner_id && !r.owner_banned ? html`<button class="btn btn-danger" type="button" data-act="banlink" data-id="${r.id}" data-name="${r.owner_name}">⛔ Ban grown-up</button>` : ''}
     </div>
   </article>`)}</div>`;
+}
+/** Reports from Oomba Live players (fixed reasons only; never who sent them): the host, the game or question set, and
+ *  the questions in the set (classlive-results.js). The admin looks at the game (hide it from Reports if needed) or the
+ *  host account, then marks it done. */
+const LIVE_REASON = { scary: 'Something scary', mean: 'Something mean', personal: 'Asks for personal information', other: 'Something else' };
+function liveTab() {
+  const list = liveR.openReports(100);
+  if (!list.length) return emptyState({ emoji: '📡', title: 'No live reports', text: 'When a player in a live class game presses Report, it shows up here (the reason only, never who reported).' });
+  return html`<div class="stack">${list.map(r => { let items = []; try { items = JSON.parse(r.items || '[]'); } catch { items = []; }
+    return html`<article class="panel">
+    <p class="row small" style="gap:6px"><span class="chip-s bad">${LIVE_REASON[r.reason] || r.reason}</span> ${when(r.created_at)}</p>
+    <p class="small" style="margin:0">${r.game_slug ? html`Game: <a href="/g/${r.game_slug}">${r.game_title}</a>` : 'Built-in question mode'}${r.host_name ? html` · Host: <a href="/admin?tab=users&amp;username=${encodeURIComponent(r.host_name)}">@${r.host_name}</a>` : ' · Host: deleted'}</p>
+    ${items.length ? html`<details class="small"><summary>${items.length} question${items.length === 1 ? '' : 's'} in the set</summary><ol>${items.slice(0, 50).map(q => html`<li dir="auto">${typeof q === 'string' ? q : q.q}</li>`)}</ol></details>` : ''}
+    <div class="row"><button class="btn" type="button" data-act="resolvelive" data-id="${r.id}">👍 Done</button></div>
+  </article>`; })}</div>`;
 }
 const REQUEST_ROLE = { teacher: 'Teacher', leader: 'Principal / head', it: 'IT lead', district: 'District / group', other: 'Other' };
 /** "Set up my school" requests from /teachers (services/school-requests.js): open ones first, oldest on top, then the
@@ -252,8 +268,8 @@ function aiSpendPanel() {
 router.get('/admin', (req, res) => {
   const tab = TABS.some(t => t[0] === req.query.tab) ? req.query.tab : 'queue';
   const c = mod.counts();
-  const n = { queue: c.queue, reports: c.reports, chat: c.chat, links: family.openReportCount(), schoolreq: schoolRequests.openCount(), searches: webSearch.flaggedCount() };
-  const content = { queue: queueTab, reports: reportsTab, chat: chatTab, links: linksTab, schoolreq: schoolRequestsTab, users: usersTab, searches: searchesTab, audit: auditTab }[tab](req);
+  const n = { queue: c.queue, reports: c.reports, chat: c.chat, links: family.openReportCount(), live: liveR.openReports(500).length, schoolreq: schoolRequests.openCount(), searches: webSearch.flaggedCount() };
+  const content = { queue: queueTab, reports: reportsTab, chat: chatTab, links: linksTab, live: liveTab, schoolreq: schoolRequestsTab, users: usersTab, searches: searchesTab, audit: auditTab }[tab](req);
   const body = html`
   <div class="pagehead"><h1>🛡️ Admin</h1><div class="row"><a class="btn btn-primary" href="/admin/stats"><span aria-hidden="true">📊</span> Stats</a><a class="btn" href="/admin/schools"><span aria-hidden="true">🏫</span> Schools${n.schoolreq ? html`&nbsp;<span class="badge" aria-label="${n.schoolreq} school request${n.schoolreq === 1 ? '' : 's'} waiting">${n.schoolreq}</span>` : ''}</a><a class="btn" href="/admin/billing"><span aria-hidden="true">💳</span> Billing</a></div></div>
   ${aiSpendPanel()}
@@ -559,6 +575,7 @@ router.post('/api/admin/school-requests/:id/:what', (req, res) => {
   const ok = what === 'reopen' ? schoolRequests.reopen(req.user, id) : schoolRequests.close(req.user, id, what);
   return ok ? res.json({ ok: true }) : res.status(404).json({ error: 'That request is not waiting (or is gone).' });
 });
+router.post('/api/admin/live-reports/:id/resolve', (req, res) => (liveR.resolveReport(req.user, req.params.id) ? res.json({ ok: true }) : res.status(404).json({ error: 'Report not found.' })));
 router.post('/api/admin/link-reports/:id/resolve', (req, res) => (family.resolveReport(req.user, req.params.id) ? res.json({ ok: true }) : res.status(404).json({ error: 'Report not found.' })));
 router.post('/api/admin/link-reports/:id/ban', (req, res) => {
   const r = family.reportById(req.params.id); const fam = r && family.familyById(r.family_id);

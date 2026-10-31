@@ -1,0 +1,15 @@
+{
+  "slug": "quest-race",
+  "title": "Quest Race",
+  "icon": "🏝️",
+  "cover": "beach",
+  "category": "learning",
+  "tags": "live,quiz,race,3d,class,island,questions",
+  "description": "A live class race across a 3D island. Answer the questions on your device: every right answer is a gem and a dash towards the finish flag. Played alone, it is a practice race against three ghost runners.",
+  "orientation": "any",
+  "players_max": 60,
+  "age_rating": "everyone",
+  "featured": false,
+  "notes": "Oomba Live reference game (built-in mode 'quest-race'), on the Oomba Kit 1.1.0 with the dress, bridge-3d and live packs, and the pinned Three.js import map. Game logic and the 2D view are in a classic script (<meta name=\"oomba-live\" content=\"2d\">); the module adds the 3D view. Uses Oomba.live: ready({presence, lobby, quiz, hostView}), the question / reveal / result / race / end events, quiz.answer, move (lobby), crowd (3D) and flat (2D). Test hooks: window.__brbTest.state(), walk(x, y, ms), answer(i).",
+  "l10n": {}
+}

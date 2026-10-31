@@ -20,7 +20,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SRC = path.join(ROOT, 'kit/src');
 const PACKS_DIR = path.join(ROOT, 'kit/packs');
 /** Brotli caps in bytes: the core (spec: 95 KB) and each pack. */
-export const SIZE_CAPS = { core: 95 * 1024, 'art-animals': 12 * 1024, 'art-school': 12 * 1024, 'art-biomes': 8 * 1024, 'art-biomes-2': 10 * 1024, 'art-props': 10 * 1024, dress: 10 * 1024, 'style-bold': 10 * 1024, 'bridge-3d': 14 * 1024 };
+export const SIZE_CAPS = { core: 95 * 1024, 'art-animals': 12 * 1024, 'art-school': 12 * 1024, 'art-biomes': 8 * 1024, 'art-biomes-2': 10 * 1024, 'art-props': 10 * 1024, dress: 10 * 1024, 'style-bold': 10 * 1024, 'bridge-3d': 14 * 1024, live: 10 * 1024 };
 const IMPORT_RE = /^import\s*\{([^}]*)\}\s*from\s*'\.\/([\w-]+)\.js';\s*$/;
 
 export async function bundle() {

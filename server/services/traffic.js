@@ -12,7 +12,8 @@ import { ipOf } from './ratelimit.js';
 import * as funnel from './funnel.js';
 import { isBot } from '../seo.js';
 
-const SKIP = /^\/(api|frame|shots|covers|sdk|js|css|fonts|img|health|admin|favicon|robots|manifest)/;
+// Oomba Live (/live, /join) is never counted: guests' visits leave nothing behind (docs/safety.md §12).
+const SKIP = /^\/(api|frame|shots|covers|sdk|js|css|fonts|img|health|admin|favicon|robots|manifest|live|join)/;
 const BOTS = /bot|crawl|spider|slurp|preview|monitor|uptime|curl|wget|python|node-fetch|headless|lighthouse|render/i;
 const AREAS = [[/^\/$/, 'home'], [/^\/g\//, 'game'], [/^\/play\//, 'play'], [/^\/(build|studio)/, 'build'], [/^\/search/, 'search'],
   [/^\/favorites/, 'favorites'], [/^\/(friends|chat)/, 'friends'], [/^\/u\//, 'profile'], [/^\/me/, 'me'], [/^\/(signup|login)/, 'signup'],

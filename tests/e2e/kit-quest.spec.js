@@ -36,8 +36,8 @@ test('Oomba Quest: one Oomba.game call with three packs plays through talk, spri
   const k = await openQuest(browser), f = k.f;
   // the packs come from their own pinned tags (SRI + crossorigin), after the kit's
   const tags = await f.evaluate(() => [...document.querySelectorAll('script[src]')].map(s => [s.getAttribute('src'), !!s.integrity, s.crossOrigin]));
-  // The demo pages load every pack of the version (the 3D bridge too; it does nothing without three.js).
-  const PACKS = ['art-animals', 'art-biomes', 'art-biomes-2', 'art-props', 'art-school', 'bridge-3d', 'dress', 'style-bold'];
+  // The demo pages load every pack of the version (the 3D bridge too, which does nothing without three.js; the live pack, which does nothing outside a live session).
+  const PACKS = ['art-animals', 'art-biomes', 'art-biomes-2', 'art-props', 'art-school', 'bridge-3d', 'dress', 'live', 'style-bold'];
   expect(tags.map(t => t[0])).toEqual(['/vendor/oomba-kit/1.1.0/oomba-kit.js', ...PACKS.map(n => `/vendor/oomba-kit/1.1.0/packs/${n}.js`)]);
   for (const t of tags) expect([t[1], t[2]]).toEqual([true, 'anonymous']);
   expect(await f.evaluate(() => window.Oomba.packs.sort())).toEqual(PACKS);

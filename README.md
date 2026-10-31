@@ -89,6 +89,11 @@ On/off settings (`REQUIRE_SESSION_SECRET`, `MAINTENANCE_MODE`, `MOVED_PERMANENTL
 | `STT_PROVIDER` | `openai` | The speech-to-text service: `openai` or `elevenlabs` (`mock` is for tests and refused in production). |
 | `STT_MODEL` | – | Overrides the provider's default transcription model. |
 | `STT_LIVE` | `1` | Live mode: the words show in the chat box while the child speaks (a WebSocket relay to the provider's realtime API, `server/services/stt-live.js`). `0` turns only the live mode off; the mic then records and uploads as before. The host must pass WebSockets through (Azure App Service: turn *Web sockets* on). |
+| `LIVE_CLASSROOM` | `1` | Oomba Live, live class games with join codes (`server/services/classlive-*.js`, `/live`, `/join`, the socket `/api/live/ws`). `0` turns it off: live pages and the socket answer 404 and the entry buttons hide; the class-code `/join` keeps working. The host must pass WebSockets through. |
+| `LIVE_MAX_PLAYERS` | `60` | Players in one live session (2-100). Grown-ups' open rooms are capped at 30 whatever this says. |
+| `LIVE_MAX_SESSIONS` | `60` | Live sessions open at once, site-wide. |
+| `LIVE_MAX_SEATS` | `2000` | Players connected to live sessions at once, site-wide (memory and bandwidth). |
+| `LIVE_HOURS` | `3` | The longest a live session (and its join code) lasts, in hours (at most 3; larger values are capped). |
 | `STT_REALTIME_MODEL` | – | Overrides the live model (OpenAI: the transcription model, `STT_MODEL` or its default; ElevenLabs: `scribe_v2_realtime`). |
 | `STT_MAX_SECONDS` / `STT_MAX_BYTES` | `60` / `1500000` | The longest and largest clip accepted. |
 | `STT_PER_MINUTE` / `STT_DAILY_CLIPS` | `8` / `60` | Clips per builder per minute and per day. |

@@ -25,6 +25,7 @@ import * as seo from '../seo.js';
 import { HUBS, AGES, ageBySlug, PARENT_GUIDES, guideBySlug, PARENT_GAMES, PARENTS_FAQ, TWO_PLAYER, gameKey, CONTENT_UPDATED } from '../learn.js';
 import { launchGame, faqBlock, el, fb, lp, contactEmail, inClassLine } from './teachers.js';
 import { section, parentSections, googlePrivacy, contact, setupLink } from './info.js';
+import { liveOn } from '../services/classlive-sessions.js';
 import { familyOnSale } from './family.js';
 import { howArt, howSteps, howHead, HOW_SCRIPT } from '../views/how.js';
 
@@ -178,6 +179,7 @@ router.get('/parents', async (req, res) => {
     ${el(t, 'h2', 'parents.detail.h', {}, ' id="details-h"')}${el(t, 'p', 'parents.detail.p', { href: '/privacy' })}
     ${parentSections(req).map(s => section(req, `info.parents.${s}`, { id: s, level: 3, fold: true }))}
     ${madeOn(req) ? section(req, 'info.parents.made', { id: 'made', level: 3, fold: true }) : ''}
+    ${liveOn() ? section(req, 'info.parents.live', { id: 'live', level: 3, fold: true }) : ''}
     ${googlePrivacy(req, 3, { fold: true })}${contact(req, 3)}
   </section>
   ${faq.markup}

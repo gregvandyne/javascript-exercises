@@ -381,6 +381,31 @@ export const MIGRATIONS = [
   ['0036_character_spec', '', conn => {
     if (!conn.prepare('PRAGMA table_info(users)').all().some(c => c.name === 'character_spec')) conn.exec('ALTER TABLE users ADD COLUMN character_spec TEXT;');
   }],
+  // Oomba Live (docs/decisions.md "Oomba Live"; server/services/classlive-*.js). Sessions themselves live in memory only;
+  // these tables keep what outlives one:
+  // - live_sets: question sets teachers and grown-ups write (1-50 items, checked by classlive-sets.js);
+  // - live_runs: one row per ended session: counts and the host-written question texts, never a code, a nickname, a
+  //   guest identifier or a name. Runs with no class go after 90 days (classlive-results.js retention);
+  // - live_run_scores: only active students of the run's class, in a class run hosted by one of its teachers;
+  // - live_reports: players' reports with fixed reasons, never who reported. Resolved ones go after a year.
+  ['0037_live', `CREATE TABLE IF NOT EXISTS live_sets (id TEXT PRIMARY KEY, owner_id TEXT NOT NULL, school_id TEXT,
+      title TEXT NOT NULL, subject TEXT NOT NULL DEFAULT '', grade TEXT NOT NULL DEFAULT '', lang TEXT NOT NULL DEFAULT 'en',
+      items TEXT NOT NULL, lesson_id TEXT, shared INTEGER NOT NULL DEFAULT 0,
+      created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL, archived_at INTEGER);
+    CREATE INDEX IF NOT EXISTS live_sets_owner ON live_sets(owner_id, archived_at);
+    CREATE INDEX IF NOT EXISTS live_sets_school ON live_sets(school_id, shared);
+    CREATE TABLE IF NOT EXISTS live_runs (id TEXT PRIMARY KEY, host_id TEXT NOT NULL, class_id TEXT, class_lesson_id TEXT, step_id TEXT,
+      audience TEXT NOT NULL, mode TEXT NOT NULL, game_id TEXT, version_id TEXT, set_id TEXT, title TEXT NOT NULL DEFAULT '',
+      started_at INTEGER NOT NULL, ended_at INTEGER NOT NULL, players INTEGER NOT NULL DEFAULT 0, guests INTEGER NOT NULL DEFAULT 0,
+      items TEXT NOT NULL DEFAULT '[]', scored_by TEXT NOT NULL DEFAULT 'server');
+    CREATE INDEX IF NOT EXISTS live_runs_host ON live_runs(host_id, ended_at);
+    CREATE INDEX IF NOT EXISTS live_runs_class ON live_runs(class_id, ended_at);
+    CREATE TABLE IF NOT EXISTS live_run_scores (run_id TEXT NOT NULL, user_id TEXT NOT NULL, score INTEGER NOT NULL DEFAULT 0,
+      rank INTEGER NOT NULL DEFAULT 0, correct INTEGER NOT NULL DEFAULT 0, answered INTEGER NOT NULL DEFAULT 0, PRIMARY KEY (run_id, user_id));
+    CREATE INDEX IF NOT EXISTS live_run_scores_user ON live_run_scores(user_id);
+    CREATE TABLE IF NOT EXISTS live_reports (id TEXT PRIMARY KEY, host_id TEXT NOT NULL, game_id TEXT, version_id TEXT, set_id TEXT,
+      reason TEXT NOT NULL, items TEXT NOT NULL DEFAULT '', created_at INTEGER NOT NULL, resolved_at INTEGER, resolved_by TEXT);
+    CREATE INDEX IF NOT EXISTS live_reports_open ON live_reports(resolved_at, created_at);`],
 ];
 
 const CODE_LETTERS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';

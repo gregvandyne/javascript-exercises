@@ -1,0 +1,505 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="oomba-live" content="2d">
+<title>Quest Race</title>
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #bfe8ff; font-family: var(--ok-font, system-ui, sans-serif); color: #1d2340; }
+  #view, #flat { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
+  #flat[hidden], #view[hidden], .qr-hide { display: none !important; }
+  .qr-ui { position: fixed; inset: 0; pointer-events: none; display: flex; flex-direction: column; justify-content: flex-start; padding: max(8px, env(safe-area-inset-top)) 10px max(10px, env(safe-area-inset-bottom)); gap: 8px; }
+  .qr-top { display: flex; justify-content: space-between; gap: 8px; align-items: flex-start; flex-wrap: wrap; }
+  .qr-pill:empty { display: none; }
+  .qr-pill { pointer-events: none; background: rgba(255,255,255,.92); border-radius: 999px; padding: 6px 14px; font-weight: 800; font-size: 16px; box-shadow: 0 3px 0 rgba(29,35,64,.18); display: inline-flex; gap: 6px; align-items: center; }
+  .qr-banner { align-self: center; background: #1d2340; color: #fff; border-radius: 18px; padding: 10px 20px; font-weight: 800; font-size: clamp(18px, 4.5vw, 30px); text-align: center; max-width: 92vw; }
+  .qr-banner:empty { display: none; }
+  .qr-card { pointer-events: auto; background: rgba(255,255,255,.96); border-radius: 22px; padding: 12px; box-shadow: 0 6px 0 rgba(29,35,64,.2); max-width: 760px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
+  .qr-q { margin: 0; font-weight: 800; font-size: clamp(18px, 4.6vw, 28px); text-align: center; overflow-wrap: anywhere; }
+  .qr-timer { height: 8px; border-radius: 99px; background: #e3e8f4; overflow: hidden; }
+  .qr-timer i { display: block; height: 100%; width: 100%; background: #2f6bff; transform-origin: left center; }
+  [dir="rtl"] .qr-timer i { transform-origin: right center; }
+  .qr-pad { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .qr-a { min-height: 52px; border: 0; border-radius: 16px; color: #fff; font: 800 clamp(16px, 4.2vw, 24px)/1.15 inherit; font-family: inherit; padding: 8px 10px; display: flex; align-items: center; gap: 10px; text-align: start; cursor: pointer; box-shadow: 0 5px 0 rgba(0,0,0,.25); }
+  .qr-a .sh { font-size: 1.3em; flex: none; width: 1.4em; text-align: center; }
+  .qr-a .tx { flex: 1; overflow-wrap: anywhere; }
+  .qr-a:focus-visible { outline: 4px solid #ffc83d; outline-offset: 2px; }
+  .qr-a[disabled] { cursor: default; opacity: .55; }
+  .qr-a.pick { opacity: 1; outline: 4px solid #1d2340; outline-offset: 2px; }
+  .qr-a.right { opacity: 1; box-shadow: 0 0 0 5px #37c47a, 0 5px 0 rgba(0,0,0,.25); }
+  .qr-a.right .sh::after { content: ' ✓'; }
+  .c0 { background: #e9465c; } .c1 { background: #2f6bff; } .c2 { background: #d79a00; } .c3 { background: #27996a; }
+  .qr-note { margin: 0; text-align: center; font-weight: 800; font-size: 18px; min-height: 1.2em; }
+  .qr-bars { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; align-items: end; height: 90px; }
+  .qr-bar { border-radius: 10px 10px 4px 4px; min-height: 6px; color: #fff; font-weight: 800; text-align: center; padding-top: 2px; }
+  .qr-host .qr-board { max-width: 560px; }
+  .qr-board { pointer-events: none; background: rgba(255,255,255,.94); border-radius: 18px; padding: 10px 14px; margin: 0 auto; max-width: 420px; width: 100%; }
+  .qr-board h2 { margin: 0 0 6px; font-size: 20px; text-align: center; }
+  .qr-board ol { margin: 0; padding-inline-start: 24px; font-weight: 700; font-size: 17px; }
+  .qr-host .qr-q { font-size: clamp(24px, 4vw, 48px); }
+  .qr-host .qr-card { max-width: 1100px; }
+  .qr-host .qr-a { min-height: 64px; font-size: clamp(18px, 2.4vw, 30px); }
+  .qr-stick { position: fixed; inset-block-end: 18px; inset-inline-start: 18px; width: 120px; height: 120px; border-radius: 50%; background: rgba(255,255,255,.35); border: 3px solid rgba(29,35,64,.25); pointer-events: auto; touch-action: none; }
+  .qr-stick i { position: absolute; left: 35px; top: 35px; width: 50px; height: 50px; border-radius: 50%; background: rgba(29,35,64,.55); }
+  .qr-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+</head>
+<body>
+<canvas id="view" aria-hidden="true" hidden></canvas>
+<canvas id="flat" aria-hidden="true" hidden></canvas>
+<div class="qr-ui" id="ui">
+  <div class="qr-top"><span class="qr-pill" id="qnum"></span><span class="qr-pill" id="gems" aria-live="polite"></span></div>
+  <p class="qr-banner" id="banner" role="status" aria-live="polite"></p>
+  <div id="bottom" style="margin-top:auto">
+    <div class="qr-board qr-hide" id="board"><h2 id="board-h"></h2><ol id="board-list"></ol></div>
+    <section class="qr-card qr-hide" id="card" aria-labelledby="qtext">
+      <p class="qr-q" id="qtext"></p>
+      <div class="qr-timer" aria-hidden="true"><i id="timer"></i></div>
+      <div class="qr-pad" id="pad" role="group" aria-labelledby="qtext"></div>
+      <div class="qr-bars qr-hide" id="bars" aria-hidden="true"></div>
+      <p class="qr-note" id="note" aria-live="polite"></p>
+    </section>
+  </div>
+</div>
+<div class="qr-stick qr-hide" id="stick" aria-hidden="true"><i></i></div>
+<p class="qr-sr" id="sr" aria-live="assertive"></p>
+<script src="/vendor/oomba-kit/1.1.0/oomba-kit.js" integrity="sha384-GCejMN1YYamlsZNEJw6SRznGmZC2i6tppYwkLt8cv2gI3YTTsZq6l8eyUQuAM8qX" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.0/packs/dress.js" integrity="sha384-ZCFgY98YAWY7Tcy+GfJLalmnJukKdzbVpg6j4ZljXuJSYgYzkWSWMPihVW/u8CqH" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.0/packs/bridge-3d.js" integrity="sha384-XrVZh1TfGin1ajGCc72TzhAxeqUJQM3JI3kI1weHoMgUIV4urBdPtJbZxO7wPOli" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.0/packs/live.js" integrity="sha384-PoL1d2TQvVJAaM+LOoFIDiwk0wF23Ue5ASvgQgvkBEjRB/qhCQ+b0BJ93864hhig" crossorigin="anonymous"></script>
+<script>
+/* QUEST RACE: an Oomba Live reference game (docs/kit-api.md "Live class games"). Questions on every device; a right
+   answer is a gem and a dash along the race path across a 3D island to the finish flag; podium and confetti at the end.
+   This classic script holds the whole game (rules, the answer pad, the race model, the 2D view): devices that can't
+   draw 3D (no WebGL 2 or import maps) and Simple view play it top-down. The module script further down only adds the
+   3D view. Played alone (not in a live session) it is a practice race against three ghost runners. */
+(function () {
+  'use strict';
+  var O = window.Oomba, L = O.live;
+  O.strings({
+    en: { title: 'Quest Race', qnum: 'Question {n} of {total}', gems: 'Gems: {n}', locked: 'Answer locked in!', right: 'Right! +{points}', wrong: 'Not quite!', timeUp: "Time's up!", wait: 'Run around while everyone joins!', ready: 'Get ready!', go: 'Go!', finish: 'Finish!', podium: 'Winners', place: 'You came {rank} of {count}!', answers: '{n} answered', practice: 'Practice race: beat the ghosts!', ghost: 'Ghost {n}', top: 'Top racers', paused: 'Paused', skipped: 'Skipped', move: 'Move with the arrows or the stick' },
+    'en-GB': { title: 'Quest Race', qnum: 'Question {n} of {total}', gems: 'Gems: {n}', locked: 'Answer locked in!', right: 'Right! +{points}', wrong: 'Not quite!', timeUp: "Time's up!", wait: 'Run around while everyone joins!', ready: 'Get ready!', go: 'Go!', finish: 'Finish!', podium: 'Winners', place: 'You came {rank} of {count}!', answers: '{n} answered', practice: 'Practice race: beat the ghosts!', ghost: 'Ghost {n}', top: 'Top racers', paused: 'Paused', skipped: 'Skipped', move: 'Move with the arrows or the stick' },
+    es: { title: 'Carrera de misiones', qnum: 'Pregunta {n} de {total}', gems: 'Gemas: {n}', locked: '¡Respuesta enviada!', right: '¡Correcto! +{points}', wrong: '¡Casi!', timeUp: '¡Se acabó el tiempo!', wait: '¡Corre por ahí mientras llegan todos!', ready: '¡Prepárate!', go: '¡Ya!', finish: '¡Meta!', podium: 'Ganadores', place: '¡Quedaste en el puesto {rank} de {count}!', answers: '{n} respondieron', practice: 'Carrera de práctica: ¡gana a los fantasmas!', ghost: 'Fantasma {n}', top: 'Mejores corredores', paused: 'En pausa', skipped: 'Saltada', move: 'Muévete con las flechas o el mando' },
+    fr: { title: 'Course des quêtes', qnum: 'Question {n} sur {total}', gems: 'Gemmes : {n}', locked: 'Réponse envoyée !', right: 'Bravo ! +{points}', wrong: 'Presque !', timeUp: 'Temps écoulé !', wait: 'Cours partout pendant que les autres arrivent !', ready: 'Prépare-toi !', go: 'Partez !', finish: 'Arrivée !', podium: 'Gagnants', place: 'Tu es {rank} sur {count} !', answers: '{n} ont répondu', practice: 'Course d’entraînement : bats les fantômes !', ghost: 'Fantôme {n}', top: 'Meilleurs coureurs', paused: 'En pause', skipped: 'Passée', move: 'Bouge avec les flèches ou le joystick' },
+    de: { title: 'Quest-Rennen', qnum: 'Frage {n} von {total}', gems: 'Edelsteine: {n}', locked: 'Antwort abgegeben!', right: 'Richtig! +{points}', wrong: 'Knapp daneben!', timeUp: 'Zeit ist um!', wait: 'Lauf herum, bis alle da sind!', ready: 'Mach dich bereit!', go: 'Los!', finish: 'Ziel!', podium: 'Gewinner', place: 'Du bist Platz {rank} von {count}!', answers: '{n} haben geantwortet', practice: 'Übungsrennen: Schlag die Geister!', ghost: 'Geist {n}', top: 'Beste Läufer', paused: 'Pause', skipped: 'Übersprungen', move: 'Bewege dich mit den Pfeilen oder dem Stick' },
+    it: { title: 'Corsa delle missioni', qnum: 'Domanda {n} di {total}', gems: 'Gemme: {n}', locked: 'Risposta inviata!', right: 'Giusto! +{points}', wrong: 'Quasi!', timeUp: 'Tempo scaduto!', wait: 'Corri in giro mentre arrivano tutti!', ready: 'Preparati!', go: 'Via!', finish: 'Traguardo!', podium: 'Vincitori', place: 'Sei arrivato {rank} su {count}!', answers: '{n} hanno risposto', practice: 'Corsa di prova: batti i fantasmi!', ghost: 'Fantasma {n}', top: 'Migliori corridori', paused: 'In pausa', skipped: 'Saltata', move: 'Muoviti con le frecce o la levetta' },
+    pt: { title: 'Corrida das Missões', qnum: 'Pergunta {n} de {total}', gems: 'Gemas: {n}', locked: 'Resposta enviada!', right: 'Certo! +{points}', wrong: 'Quase!', timeUp: 'Acabou o tempo!', wait: 'Corra por aí enquanto todos chegam!', ready: 'Prepare-se!', go: 'Já!', finish: 'Chegada!', podium: 'Vencedores', place: 'Você ficou em {rank} de {count}!', answers: '{n} responderam', practice: 'Corrida de treino: vença os fantasmas!', ghost: 'Fantasma {n}', top: 'Melhores corredores', paused: 'Pausado', skipped: 'Pulada', move: 'Mova-se com as setas ou o controle' },
+    nl: { title: 'Questrace', qnum: 'Vraag {n} van {total}', gems: 'Edelstenen: {n}', locked: 'Antwoord verstuurd!', right: 'Goed! +{points}', wrong: 'Net niet!', timeUp: 'De tijd is om!', wait: 'Ren rond terwijl iedereen binnenkomt!', ready: 'Maak je klaar!', go: 'Start!', finish: 'Finish!', podium: 'Winnaars', place: 'Je werd {rank} van {count}!', answers: '{n} hebben geantwoord', practice: 'Oefenrace: versla de spoken!', ghost: 'Spook {n}', top: 'Beste renners', paused: 'Gepauzeerd', skipped: 'Overgeslagen', move: 'Beweeg met de pijltjes of de stick' },
+    ru: { title: 'Гонка заданий', qnum: 'Вопрос {n} из {total}', gems: 'Камни: {n}', locked: 'Ответ принят!', right: 'Верно! +{points}', wrong: 'Почти!', timeUp: 'Время вышло!', wait: 'Побегай, пока все собираются!', ready: 'Приготовься!', go: 'Вперёд!', finish: 'Финиш!', podium: 'Победители', place: 'Твоё место: {rank} из {count}!', answers: 'Ответили: {n}', practice: 'Тренировка: обгони призраков!', ghost: 'Призрак {n}', top: 'Лучшие бегуны', paused: 'Пауза', skipped: 'Пропущен', move: 'Двигайся стрелками или джойстиком' },
+    ja: { title: 'クエストレース', qnum: 'もんだい {n} / {total}', gems: 'ジェム: {n}', locked: 'こたえをおくったよ！', right: 'せいかい！ +{points}', wrong: 'おしい！', timeUp: 'じかんぎれ！', wait: 'みんながくるまで はしりまわろう！', ready: 'よーい！', go: 'スタート！', finish: 'ゴール！', podium: 'ゆうしょう', place: '{count}人中 {rank}位！', answers: '{n}人がこたえた', practice: 'れんしゅうレース: おばけにかとう！', ghost: 'おばけ {n}', top: 'トップランナー', paused: 'ポーズ', skipped: 'スキップ', move: 'やじるしかスティックでうごこう' },
+    'zh-Hant': { title: '任務競賽', qnum: '第 {n} 題，共 {total} 題', gems: '寶石：{n}', locked: '答案已送出！', right: '答對了！+{points}', wrong: '差一點！', timeUp: '時間到！', wait: '等大家加入時到處跑跑吧！', ready: '準備！', go: '出發！', finish: '終點！', podium: '優勝者', place: '你是第 {rank} 名，共 {count} 人！', answers: '{n} 人已作答', practice: '練習賽：打敗幽靈！', ghost: '幽靈 {n}', top: '領先選手', paused: '暫停', skipped: '已跳過', move: '用方向鍵或搖桿移動' },
+    he: { title: 'מרוץ המשימות', qnum: 'שאלה {n} מתוך {total}', gems: 'אבני חן: {n}', locked: 'התשובה נשלחה!', right: 'נכון! +{points}', wrong: 'כמעט!', timeUp: 'נגמר הזמן!', wait: 'רוצו מסביב בזמן שכולם מצטרפים!', ready: 'היכון!', go: 'צאו!', finish: 'סיום!', podium: 'המנצחים', place: 'הגעת למקום {rank} מתוך {count}!', answers: '{n} ענו', practice: 'מרוץ אימון: נצחו את הרוחות!', ghost: 'רוח {n}', top: 'הרצים המובילים', paused: 'מושהה', skipped: 'דולגה', move: 'זוזו עם החיצים או הג׳ויסטיק' },
+    ar: { title: 'سباق المهمات', qnum: 'السؤال {n} من {total}', gems: 'الجواهر: {n}', locked: 'تم إرسال إجابتك!', right: 'صحيح! +{points}', wrong: 'اقتربت!', timeUp: 'انتهى الوقت!', wait: 'تجوّل حتى ينضم الجميع!', ready: 'استعد!', go: 'انطلق!', finish: 'خط النهاية!', podium: 'الفائزون', place: 'جئت في المركز {rank} من {count}!', answers: 'أجاب {n}', practice: 'سباق تدريبي: تغلّب على الأشباح!', ghost: 'شبح {n}', top: 'أفضل المتسابقين', paused: 'متوقف مؤقتاً', skipped: 'تم تخطيه', move: 'تحرّك بالأسهم أو بعصا التحكم' },
+  });
+  var t = function (k, v) { return O.t(k, v); };
+  var $ = function (id) { return document.getElementById(id); };
+  document.documentElement.dir = O.dir || 'ltr'; document.documentElement.lang = O.lang || 'en';
+  document.title = t('title');
+  var reduced = !!(O.settings && O.settings.reduced);
+  var host = L.role === 'host';
+  if (host) document.body.classList.add('qr-host');
+
+  // ---- the race path: a Catmull-Rom curve through 12 points, measured so progress 0..1000 is even along it ----
+  var CTRL = [[-22, 20], [-10, 24], [3, 21], [13, 14], [18, 3], [13, -7], [2, -10], [-8, -5], [-17, -6], [-21, -15], [-11, -23], [4, -24]];
+  var TRACK = [], total = 0;
+  (function () {
+    var P = [CTRL[0]].concat(CTRL, [CTRL[CTRL.length - 1]]), last = null;
+    for (var i = 1; i < P.length - 2; i++) for (var s = 0; s < 20; s++) {
+      var u = s / 20, p0 = P[i - 1], p1 = P[i], p2 = P[i + 1], p3 = P[i + 2], u2 = u * u, u3 = u2 * u;
+      var x = 0.5 * (2 * p1[0] + (-p0[0] + p2[0]) * u + (2 * p0[0] - 5 * p1[0] + 4 * p2[0] - p3[0]) * u2 + (-p0[0] + 3 * p1[0] - 3 * p2[0] + p3[0]) * u3);
+      var z = 0.5 * (2 * p1[1] + (-p0[1] + p2[1]) * u + (2 * p0[1] - 5 * p1[1] + 4 * p2[1] - p3[1]) * u2 + (-p0[1] + 3 * p1[1] - 3 * p2[1] + p3[1]) * u3);
+      if (last) total += Math.hypot(x - last[0], z - last[1]);
+      TRACK.push({ x: x, z: z, s: total }); last = [x, z];
+    }
+    var e = CTRL[CTRL.length - 1]; total += Math.hypot(e[0] - last[0], e[1] - last[1]); TRACK.push({ x: e[0], z: e[1], s: total });
+  })();
+  function at(u) {
+    u = Math.max(0, Math.min(1, u)); var d = u * total, lo = 0, hi = TRACK.length - 1;
+    while (hi - lo > 1) { var mid = (lo + hi) >> 1; if (TRACK[mid].s < d) lo = mid; else hi = mid; }
+    var a = TRACK[lo], b = TRACK[hi], k = (d - a.s) / Math.max(1e-6, b.s - a.s), dx = b.x - a.x, dz = b.z - a.z, n = Math.hypot(dx, dz) || 1;
+    return { x: a.x + dx * k, z: a.z + dz * k, dx: dx / n, dz: dz / n };
+  }
+  var GATES = []; for (var g = 1; g <= 10; g++) GATES.push(g / 11);
+  var START = at(0), FINISH = at(1);
+
+  // ---- runners: everyone's place on the path (the server's race progress, eased) ----
+  var R = new Map();
+  function runner(seat) {
+    var r = R.get(seat);
+    if (!r) { r = { seat: seat, shown: 0, target: 0, gems: 0, lane: R.size, x: START.x, z: START.z, h: 0, sp: 0 }; R.set(seat, r); place(r); }
+    return r;
+  }
+  function place(r) {
+    var p = at(r.shown / 1000), lane = ((r.lane % 8) - 3.5) * 0.55;
+    r.x = p.x - p.dz * lane; r.z = p.z + p.dx * lane; r.h = Math.atan2(p.dx, p.dz);
+  }
+  var phase = L.phase, me = L.me, mySeat = me ? me.seat : -1;
+  var roam = { x: START.x + 3, z: START.z - 3, h: Math.PI, sp: 0 };   // my own avatar in the lobby
+  var keys = {}, stick = { x: 0, y: 0 };
+  var Q = null, myPick = -1, reveal = null, finished = false, podium = [], boardTop = [];
+  function inRace() { return phase !== 'lobby'; }
+
+  // ---- the answer pad and the host's card ----
+  var SHAPES = ['▲', '◆', '●', '■'];
+  function showCard(q) {
+    Q = q; myPick = -1; reveal = null;
+    $('board').classList.add('qr-hide');
+    $('card').classList.remove('qr-hide');
+    $('qtext').textContent = q.q;
+    $('qnum').textContent = t('qnum', { n: q.i + 1, total: q.n });
+    $('note').textContent = host ? t('answers', { n: 0 }) : '';
+    $('bars').classList.add('qr-hide');
+    var pad = $('pad'); pad.textContent = '';
+    q.choices.forEach(function (c, i) {
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'qr-a c' + i; b.dataset.choice = i;
+      var sh = document.createElement('span'); sh.className = 'sh'; sh.setAttribute('aria-hidden', 'true'); sh.textContent = SHAPES[i];
+      var tx = document.createElement('span'); tx.className = 'tx'; tx.textContent = c;
+      b.append(sh, tx);
+      b.setAttribute('aria-label', String.fromCharCode(65 + i) + ': ' + c);
+      if (host || q.answered) b.disabled = true;
+      b.addEventListener('click', function () { choose(i); });
+      pad.appendChild(b);
+    });
+    if (q.answered) { $('note').textContent = t('locked'); }
+    banner('');
+    say(q.q);
+    if (!host && !q.answered) { var first = pad.querySelector('button'); if (first) first.focus({ preventScroll: true }); }
+  }
+  function choose(i) {
+    if (host || !Q || myPick >= 0 || L.quiz.answered) return;
+    if (L.active) { if (!L.quiz.answer(i)) return; } else practiceAnswer(i);
+    myPick = i;
+    [].forEach.call($('pad').children, function (b, k) { b.disabled = true; b.classList.toggle('pick', k === i); });
+    $('note').textContent = t('locked');
+    O.sfx('select');
+  }
+  function showReveal(rv) {
+    reveal = rv;
+    if (rv.skipped) { $('note').textContent = t('skipped'); return; }
+    [].forEach.call($('pad').children, function (b, k) { b.disabled = true; b.classList.toggle('right', k === rv.answer); });
+    if (host) {
+      var bars = $('bars'); bars.textContent = ''; bars.classList.remove('qr-hide');
+      var most = Math.max.apply(null, [1].concat(rv.counts));
+      rv.counts.forEach(function (n, k) { var d = document.createElement('div'); d.className = 'qr-bar c' + k; d.style.height = Math.max(8, 84 * n / most) + 'px'; d.textContent = n; bars.appendChild(d); });
+      $('note').textContent = '';
+    }
+    if (rv.top && rv.top.length) { boardTop = rv.top; }
+    // the projector: after a moment the card makes way for the race (the camera follows the leaders), with the top five
+    if (host) setTimeout(function () { if (reveal === rv && phase === 'between') showBoard(boardTop, t('top')); }, 3000);
+  }
+  function showResult(r) {
+    if (host || r.none) { if (!host && r.none) { $('note').textContent = t('timeUp'); } return; }
+    $('note').textContent = r.ok ? t('right', { points: r.points }) : t('wrong');
+    say($('note').textContent);
+    O.sfx(r.ok ? 'correct' : 'wrong');
+    var mine = R.get(mySeat); if (mine && !r.ok) mine.stumble = 0.6;
+  }
+  function showBoard(list, title) {
+    $('card').classList.add('qr-hide');
+    var b = $('board'); b.classList.remove('qr-hide'); $('board-h').textContent = title;
+    var ol = $('board-list'); ol.textContent = '';
+    list.slice(0, 5).forEach(function (p) { var li = document.createElement('li'); li.textContent = p.name + (p.score != null ? ' · ' + p.score : ''); ol.appendChild(li); });
+  }
+  function banner(text) { $('banner').textContent = text || ''; }
+  function say(text) { $('sr').textContent = ''; setTimeout(function () { $('sr').textContent = text; }, 30); }
+  function setGems() { var r = R.get(mySeat); $('gems').textContent = host ? '' : t('gems', { n: r ? r.gems : 0 }); $('gems').classList.toggle('qr-hide', host || !inRace()); }
+
+  // ---- the session ----
+  function syncRace(list) {
+    list.forEach(function (p) { var r = runner(p.seat); r.target = Math.max(r.target, p.prog); if (p.gems > r.gems) { r.gems = p.gems; r.burst = 1; } });
+    setGems();
+    var mine = R.get(mySeat); if (mine && mine.target >= 1000 && !finished) { finished = true; banner(t('finish')); }
+  }
+  function resetToStart() { L.players().forEach(function (p) { runner(p.seat); }); setGems(); }
+  L.on('welcome', function () { me = L.me; mySeat = me ? me.seat : -1; L.players().forEach(function (p) { runner(p.seat); }); syncRace(L.race()); });
+  L.on('join', function (p) { runner(p.seat); });
+  L.on('leave', function (p) { R.delete(p.seat); });
+  L.on('phase', function (e) {
+    phase = e.phase;
+    $('stick').classList.toggle('qr-hide', host || phase !== 'lobby' || !L.active);
+    if (phase === 'lobby') banner(host ? '' : t('wait'));
+    else if (phase === 'loading' || phase === 'countdown') { resetToStart(); banner(t('ready')); }
+    else if (phase === 'paused') banner(t('paused'));
+    else if (phase === 'playing' || phase === 'between') banner(finished ? t('finish') : '');
+    setGems();
+  });
+  L.on('countdown', function (e) { countdownTo(e.at); });
+  L.on('question', function (q) { showCard(q); });
+  L.on('answers', function (a) { if (host) $('note').textContent = t('answers', { n: a.n }); });
+  L.on('reveal', showReveal);
+  L.on('result', showResult);
+  L.on('race', syncRace);
+  L.on('end', function (e) {
+    var order = L.race().sort(function (a, b) { return b.prog - a.prog; });
+    podium = (order.length ? order : e.top).slice(0, 3).map(function (p) { return p.seat; });
+    showBoard(e.top.length ? e.top : order.map(function (p) { return { name: p.name, score: null }; }), t('podium'));
+    banner(t('finish'));
+    if (!reduced) { try { BRB.fx.confetti(); } catch (er) { /* none */ } }
+    O.sfx('win');
+  });
+  var cdTimer = 0;
+  function countdownTo(atMs) {
+    clearInterval(cdTimer);
+    var tick = function () { var left = Math.ceil((atMs - L.now()) / 1000); banner(left > 0 ? String(left) : t('go')); if (left <= 0) { clearInterval(cdTimer); setTimeout(function () { if (phase === 'playing') banner(''); }, 700); } };
+    tick(); cdTimer = setInterval(tick, 200);
+  }
+
+  // ---- the timer bar ----
+  function timerTick() {
+    if (Q && phase === 'playing') {
+      var left = L.active ? L.quiz.left() : Math.max(0, practice.deadline - performance.now());
+      var f = Math.max(0, Math.min(1, left / (Q.secs * 1000)));
+      $('timer').style.transform = 'scaleX(' + f + ')';
+    }
+  }
+
+  // ---- moving in the lobby: arrows / WASD, or the on-screen stick ----
+  addEventListener('keydown', function (e) { keys[e.key] = true; });
+  addEventListener('keyup', function (e) { keys[e.key] = false; });
+  (function () {
+    var el = $('stick'), knob = el.firstElementChild, id = null;
+    var set = function (e) { var r = el.getBoundingClientRect(), x = (e.clientX - r.left - 60) / 50, y = (e.clientY - r.top - 60) / 50, n = Math.hypot(x, y); if (n > 1) { x /= n; y /= n; } stick.x = x; stick.y = y; knob.style.transform = 'translate(' + x * 35 + 'px,' + y * 35 + 'px)'; };
+    el.addEventListener('pointerdown', function (e) { id = e.pointerId; el.setPointerCapture(id); set(e); });
+    el.addEventListener('pointermove', function (e) { if (e.pointerId === id) set(e); });
+    var up = function () { id = null; stick.x = stick.y = 0; knob.style.transform = ''; };
+    el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up);
+  })();
+  var test = { x: 0, y: 0, until: 0 };
+  function axis() {
+    var x = stick.x, y = stick.y;
+    if (keys.ArrowLeft || keys.a) x -= 1; if (keys.ArrowRight || keys.d) x += 1; if (keys.ArrowUp || keys.w) y -= 1; if (keys.ArrowDown || keys.s) y += 1;
+    if (performance.now() < test.until) { x = test.x; y = test.y; }
+    var n = Math.hypot(x, y); if (n > 1) { x /= n; y /= n; } return { x: x, y: y };
+  }
+  var LOBBY_R = 9;
+  function stepRoam(dt, camYaw) {
+    // 2D (camYaw null): up the screen is -z. 3D: up is away from the camera, which looks along (sin yaw, cos yaw).
+    var a = axis(), cs = Math.cos(camYaw || 0), sn = Math.sin(camYaw || 0);
+    var vx = camYaw == null ? a.x : -a.x * cs - a.y * sn, vz = camYaw == null ? a.y : a.x * sn - a.y * cs, sp = Math.hypot(vx, vz);
+    roam.x += vx * 6 * dt; roam.z += vz * 6 * dt; roam.sp = sp;
+    if (sp > 0.05) roam.h = Math.atan2(vx, vz);
+    var dx = roam.x - START.x, dz = roam.z - START.z, d = Math.hypot(dx, dz);
+    if (d > LOBBY_R) { roam.x = START.x + dx / d * LOBBY_R; roam.z = START.z + dz / d * LOBBY_R; }
+    L.move(roam.x, 0, roam.z, roam.h, sp > 0.6 ? 'run' : sp > 0.05 ? 'walk' : 'idle');
+  }
+
+  // ---- one simulation step (the 3D module or the 2D loop calls it) ----
+  function step(dt) {
+    dt = Math.min(0.1, Math.max(0, dt));
+    R.forEach(function (r) {
+      if (r.shown < r.target) { r.shown = Math.min(r.target, r.shown + (reduced ? 400 : 160) * dt); r.sp = 1; } else r.sp = 0;
+      if (r.stumble) r.stumble = Math.max(0, r.stumble - dt);
+      if (r.burst) r.burst = Math.max(0, r.burst - dt);
+      place(r);
+    });
+    if (!L.active) practiceStep(dt);
+    timerTick();
+  }
+
+  // ---- practice (solo): five questions, three ghost runners ----
+  var practice = { on: false, i: -1, deadline: 0, items: [], ghosts: [] , rnd: O.rand(7) };
+  function practiceStart() {
+    practice.on = true; mySeat = 0;
+    var rnd = practice.rnd;
+    for (var i = 0; i < 5; i++) { var a = rnd.int(2, 12), b = rnd.int(2, 12), ans = a + b, ch = [ans, ans + 1, ans - 1, ans + 2], sh = rnd.shuffle(ch.slice()); practice.items.push({ q: a + ' + ' + b + ' = ?', choices: sh.map(String), answer: sh.indexOf(ans), secs: 15 }); }
+    runner(0);
+    for (var g = 1; g <= 3; g++) { var r = runner(-g); r.ghost = true; practice.ghosts.push(-g); }
+    banner(t('practice'));
+    setTimeout(practiceNext, 1500);
+  }
+  function practiceNext() {
+    practice.i++;
+    if (practice.i >= practice.items.length) {
+      var order = Array.from(R.values()).sort(function (a, b) { return b.target - a.target; });
+      podium = order.slice(0, 3).map(function (r) { return r.seat; });
+      showBoard(order.map(function (r) { return { name: r.seat < 0 ? t('ghost', { n: -r.seat }) : (BRB.user.displayName || ''), score: null }; }), t('podium'));
+      phase = 'ended'; banner(t('finish')); if (!reduced) { try { BRB.fx.confetti(); } catch (er) { /* none */ } }
+      return;
+    }
+    var it = practice.items[practice.i];
+    practice.deadline = performance.now() + it.secs * 1000; phase = 'playing';
+    showCard({ i: practice.i, n: practice.items.length, q: it.q, choices: it.choices, secs: it.secs, at: 0 });
+  }
+  function practiceAnswer(i) {
+    var it = practice.items[practice.i], ok = i === it.answer, n = practice.items.length;
+    showReveal({ answer: it.answer, counts: [] });
+    showResult({ ok: ok, points: ok ? 750 : 0 });
+    var me0 = runner(0); if (ok) { me0.target = Math.min(1000, me0.target + 1000 / n); me0.gems++; me0.burst = 1; }
+    practice.ghosts.forEach(function (s) { var r = runner(s); if (practice.rnd.chance(0.6)) r.target = Math.min(1000, r.target + 1000 / n * 0.9); });
+    setGems(); phase = 'between';
+    setTimeout(practiceNext, 1800);
+  }
+  function practiceStep() {
+    if (practice.on && phase === 'playing' && performance.now() > practice.deadline && myPick < 0) { myPick = 9; practiceAnswer(-1); }
+  }
+
+  // ---- the 2D view (Simple view, or a device without 3D): top-down island and race ----
+  var flat2 = null, flatRaf = 0;
+  function start2d() {
+    var cv = $('flat'); cv.hidden = false; $('view').hidden = true;
+    flat2 = L.flat({ me: true, px: 64 });
+    var ctx = cv.getContext('2d'), last = performance.now();
+    var loop = function (ts) {
+      var dt = (ts - last) / 1000; last = ts; step(dt);
+      if (phase === 'lobby' && !host && L.active) stepRoam(dt, null);
+      var W = cv.clientWidth, H = cv.clientHeight, dpr = Math.min(2, devicePixelRatio || 1);
+      if (cv.width !== Math.round(W * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      var sc = Math.min(W, H) / 62, ox = W / 2, oy = H / 2;
+      ctx.fillStyle = '#7fd0f0'; ctx.fillRect(0, 0, W, H);
+      ctx.fillStyle = '#f4dca0'; ctx.beginPath(); ctx.ellipse(ox, oy, 30 * sc, 30 * sc, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#9ad46c'; ctx.beginPath(); ctx.ellipse(ox, oy, 26 * sc, 26 * sc, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = '#e8c27a'; ctx.lineWidth = 2.2 * sc; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.beginPath();
+      TRACK.forEach(function (p, i) { if (i) ctx.lineTo(ox + p.x * sc, oy + p.z * sc); else ctx.moveTo(ox + p.x * sc, oy + p.z * sc); }); ctx.stroke();
+      ctx.font = '700 ' + Math.round(sc * 1.6) + 'px system-ui'; ctx.textAlign = 'center';
+      GATES.forEach(function (u) { var p = at(u); ctx.fillStyle = '#ffc83d'; ctx.beginPath(); ctx.arc(ox + p.x * sc, oy + p.z * sc, sc * 0.7, 0, Math.PI * 2); ctx.fill(); });
+      ctx.fillStyle = '#1d2340'; ctx.fillText('🏁', ox + FINISH.x * sc, oy + FINISH.z * sc);
+      // everyone: in the lobby where they roam (the platform's positions); in the race on the path
+      if (phase === 'lobby' && L.active) { if (!host) flat2.place(mySeat, roam.x, roam.z, roam.h); R.forEach(function (r) { if (r.seat !== mySeat) flat2.free(r.seat); }); }
+      else R.forEach(function (r) { if (r.seat >= 0 || !L.active) flat2.place(r.seat, r.x, r.z, r.h); });
+      flat2.draw(ctx, { scale: sc, ox: ox, oy: oy, r: Math.max(12, sc * 1.1) });
+      if (!L.active) R.forEach(function (r) { if (r.seat < 0) { ctx.fillStyle = 'rgba(255,255,255,.75)'; ctx.beginPath(); ctx.arc(ox + r.x * sc, oy + r.z * sc - sc, sc, 0, Math.PI * 2); ctx.fill(); } });
+      flatRaf = requestAnimationFrame(loop);
+    };
+    flatRaf = requestAnimationFrame(loop);
+  }
+
+  // ---- start: the 3D module takes over when it can; otherwise (or after 8 s) the 2D view ----
+  var QR = window.QR = {
+    view: L.view, at: at, TRACK: TRACK, GATES: GATES, START: START, FINISH: FINISH, R: R, roam: roam, step: step, stepRoam: stepRoam,
+    get phase() { return phase; }, get mySeat() { return mySeat; }, get host() { return host; }, get podium() { return podium; }, get finished() { return finished; },
+    started3d: false, drawCalls: 0,
+    fallback: function () { if (QR.started3d || flat2) return; QR.view = '2d'; begin(); },
+  };
+  var begun = false;
+  function begin() {
+    if (begun && QR.view === '3d') return;
+    begun = true;
+    if (QR.view === '2d') start2d();
+    L.ready({ presence: { bounds: 30, maxSpeed: 9 }, lobby: true, quiz: true, hostView: true, view: QR.view });
+    if (!L.active && !practice.on) practiceStart();
+    $('stick').classList.toggle('qr-hide', host || phase !== 'lobby' || !L.active);
+    if (phase === 'lobby' && L.active && !host) banner(t('wait'));
+    setGems();
+  }
+  QR.begin = begin;
+  if (QR.view === '2d') begin(); else setTimeout(function () { if (!QR.started3d) QR.fallback(); }, 8000);
+  O.test({
+    state: function () {
+      var mine = R.get(mySeat);
+      return { view: QR.view, phase: phase, role: L.role, me: { seat: mySeat, progress: mine ? Math.round(mine.shown) : 0, target: mine ? mine.target : 0, gems: mine ? mine.gems : 0, x: roam.x, z: roam.z },
+        others: L.players().filter(function (p) { return p.seat !== mySeat; }).map(function (p) { var pos = L.position(p.seat); var r = R.get(p.seat); return { seat: p.seat, x: pos ? pos.x : null, z: pos ? pos.z : null, progress: r ? Math.round(r.shown) : 0 }; }),
+        question: Q ? { i: Q.i, q: Q.q, choices: Q.choices.slice(), answered: myPick >= 0 || L.quiz.answered } : null, podium: podium.slice(), drawCalls: QR.drawCalls, started3d: QR.started3d };
+    },
+    start: function () { return true; },
+  });
+  // test hooks: walk in the lobby, answer
+  window.__brbTest.walk = function (x, y, ms) { test.x = x; test.y = y; test.until = performance.now() + (ms || 800); };
+  window.__brbTest.answer = function (i) { choose(i); };
+})();
+</script>
+<script type="importmap">
+{ "imports": { "three": "/vendor/three/0.185.1/three.module.min.js" },
+  "integrity": {
+    "/vendor/three/0.185.1/three.module.min.js": "sha384-QHQk1LzjJlJYNdthXjKCmffpDRZL3EqJ7LfqBzyKyvGgjAYM2ZVuYtFGg42NcAJ/",
+    "/vendor/three/0.185.1/three.core.min.js": "sha384-rx+KIp/9ptjArhnFAcpVoOc/ynktDsRtRJKIbC7YVKylEvFu8sgmzk9RmQ+CIV48" } }
+</script>
+<script type="module">
+// The 3D view of Quest Race: the island (the kit's beach theme), the race path as one flat ribbon, gem gates, the start
+// arch, the finish flag and podium, my runner as my own character, everyone else through Oomba.live.crowd (rigs near,
+// billboards further, one instanced shape far away, nameplates for the nearest eight).
+import * as THREE from 'three';
+const QR = window.QR, O = window.Oomba, L = O.live;
+if (QR && QR.view === '3d') {
+  const canvas = document.getElementById('view'); canvas.hidden = false;
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: devicePixelRatio < 1.5 });
+  const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(60, 16 / 9, 0.1, 400);
+  const B = O.three(THREE, { renderer, scene, camera, theme: 'beach' });
+  const W = B.world({ size: 40, flat: true, clear: 32, propCount: { low: 6, mid: 9, high: 12 }[B.tier] });
+  // the island: a grassy top on the beach (one mesh), the race path a sandy ribbon across it
+  const isle = new THREE.Mesh(new THREE.CircleGeometry(31, 48), B.toon('#8FCB6A', { rim: 0 })); isle.rotation.x = -Math.PI / 2; isle.position.y = 0.015; isle.userData.noInk = true; isle.receiveShadow = true; scene.add(isle);
+  // the path: one ribbon mesh
+  const pts = QR.TRACK, pos = [], idx = [];
+  pts.forEach((p, i) => {
+    const n = pts[Math.min(pts.length - 1, i + 1)], q = pts[Math.max(0, i - 1)], dx = n.x - q.x, dz = n.z - q.z, l = Math.hypot(dx, dz) || 1, w = 2.6;
+    pos.push(p.x - dz / l * w, 0.03, p.z + dx / l * w, p.x + dz / l * w, 0.03, p.z - dx / l * w);
+    if (i) { const a = i * 2; idx.push(a - 2, a - 1, a, a - 1, a + 1, a); }
+  });
+  const rg = new THREE.BufferGeometry(); rg.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); rg.setIndex(idx); rg.computeVertexNormals();
+  const ribbon = new THREE.Mesh(rg, B.toon('#F4DCA0', { rim: 0 })); ribbon.userData.noInk = true; ribbon.receiveShadow = true; scene.add(ribbon);
+  // gem gates: a glowing ring on the path and a spark (the gem) floating over it
+  const ringG = new THREE.RingGeometry(1.6, 2.1, 24), ringM = B.toon('spark', { step: 'light', glow: true, rim: 0 });
+  const gates = QR.GATES.map(u => {
+    const p = QR.at(u), g = new THREE.Group();
+    const ring = new THREE.Mesh(ringG, ringM); ring.rotation.x = -Math.PI / 2; ring.position.y = 0.05; ring.userData.noInk = true; g.add(ring);
+    const sp = B.spark({ size: 0.8 }); sp.position.y = 1.9; g.add(sp);
+    g.position.set(p.x, 0, p.z); scene.add(g); return g;
+  });
+  // the start arch and the finish flag with its podium
+  const arch = new THREE.Mesh(new THREE.TorusGeometry(3.2, 0.25, 6, 18, Math.PI), B.toon('coral')); const S0 = QR.at(0);
+  arch.position.set(S0.x, 0, S0.z); arch.rotation.y = Math.atan2(S0.dx, S0.dz) + Math.PI / 2; scene.add(arch); B.outline(arch, { important: true });
+  const F = QR.at(1), flag = new THREE.Group();
+  const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 4.5, 6), B.toon('stone')); pole.position.y = 2.25; flag.add(pole);
+  const cloth = new THREE.Mesh(new THREE.PlaneGeometry(1.8, 1.1), B.toon('coral', { side: THREE.DoubleSide })); cloth.position.set(0.9, 3.8, 0); flag.add(cloth);
+  flag.position.set(F.x + F.dz * 3.4, 0, F.z - F.dx * 3.4); scene.add(flag); B.outline(flag, { important: true });
+  const PODIUM = [[0, 1.4], [-1.7, 1.0], [1.7, 0.7]].map(([off, h], k) => {
+    const m = new THREE.Mesh(new THREE.BoxGeometry(1.5, h, 1.5), B.toon(['spark', 'stone', 'peach'][k])); const px = F.x + F.dx * 4 - F.dz * off, pz = F.z + F.dz * 4 + F.dx * off;
+    m.position.set(px, h / 2, pz); scene.add(m); B.outline(m); return { x: px, z: pz, h };
+  });
+  // me
+  const me = L.role === 'host' ? null : B.rig(L.me && L.me.avatar ? L.me.avatar : O.avatar(), { size: 1.6 });
+  if (me) scene.add(me);
+  const ghosts = new Map();
+  const crowd = L.crowd(B, { auto: false, size: 1.6, self: () => me });   // self: my own emotes play on my runner
+  BRB.fx.fit3d(renderer, camera, { maxDpr: B.dprCap, onResize(w, h) { camera.fov = w / h < 0.8 ? 72 : 58; } });
+  let yaw = 0, look = new THREE.Vector3(QR.START.x, 1, QR.START.z), t0 = 0;
+  B.run(dt => {
+    QR.step(dt); t0 += dt;
+    const ph = QR.phase, ended = ph === 'ended';
+    // my avatar: roaming in the lobby, on the path in the race, on the podium at the end
+    if (me) {
+      if (ph === 'lobby' && L.active) { QR.stepRoam(dt, yaw); me.position.set(QR.roam.x, 0, QR.roam.z); me.heading = QR.roam.h; me.speed = QR.roam.sp; }
+      else { const r = QR.R.get(QR.mySeat); if (r) { me.position.set(r.x, 0, r.z); me.heading = r.h; me.speed = r.sp; if (r.stumble) me.play('hurt', 500); if (r.burst > 0.95) me.play('cheer', 800); } }
+    }
+    // everyone else: their roaming positions in the lobby (the platform sends them); their runner in the race
+    QR.R.forEach(r => {
+      if (r.seat === QR.mySeat && L.role !== 'host') return;
+      if (r.seat < 0) {   // practice ghosts
+        let g = ghosts.get(r.seat); if (!g) { g = B.sprite({ species: 'oomba', colors: { base: 'snow' } }, { size: 1.4 }); g.traverse(o => { if (o.material) { o.material = o.material.clone(); o.material.transparent = true; o.material.opacity = 0.55; } }); scene.add(g); ghosts.set(r.seat, g); }
+        g.position.set(r.x, 0, r.z); g.heading = r.h; g.speed = r.sp; return;
+      }
+      if (ph === 'lobby') crowd.free(r.seat); else crowd.place(r.seat, r.x, 0, r.z, r.h, r.sp);
+    });
+    if (ended) QR.podium.forEach((seat, k) => { const P = PODIUM[k]; if (!P) return; if (seat === QR.mySeat && me) { me.position.set(P.x, P.h, P.z); me.heading = 0; me.speed = 0; if (Math.floor(t0 * 2) % 3 === 0) me.play('cheer', 600); } else crowd.place(seat, P.x, P.h, P.z, 0, 0); });
+    crowd.update(dt);
+    // the camera: behind me (a player), a slow cinematic over the race (the host's projector)
+    if (L.role === 'host' || !me) {
+      if (ph === 'lobby') { const a = (B.reduced ? 0 : t0 * 0.06) + 2.2; camera.position.set(QR.START.x + 3 + Math.sin(a) * 11, 6.5, QR.START.z - 3 + Math.cos(a) * 11); camera.lookAt(QR.START.x + 3, 0.8, QR.START.z - 3); }
+      else if (ended) { const P = PODIUM[0]; camera.position.set(P.x + 7, 5, P.z + 7); camera.lookAt(P.x, 1.5, P.z); }
+      else {
+        let lead = null; QR.R.forEach(r => { if (!lead || r.shown > lead.shown) lead = r; });
+        const tx = lead ? lead.x : QR.START.x, tz = lead ? lead.z : QR.START.z;
+        look.lerp(new THREE.Vector3(tx, 1, tz), Math.min(1, dt * 2));
+        const a = (B.reduced ? 0 : t0 * 0.08) + 0.8;
+        camera.position.set(look.x + Math.sin(a) * 18, 14, look.z + Math.cos(a) * 18); camera.lookAt(look);
+      }
+    } else {
+      const tgt = me.position, hd = ph === 'lobby' ? yaw : me.heading;
+      if (ph !== 'lobby') yaw += ((hd - yaw + Math.PI * 3) % (Math.PI * 2) - Math.PI) * Math.min(1, dt * 2);
+      look.lerp(new THREE.Vector3(tgt.x, tgt.y + 1, tgt.z), Math.min(1, dt * 5));
+      // during a question the card covers the lower half: look further down so I stay in the top half
+      const low = ph === 'playing' || ph === 'between' ? 2.6 : 0.4;
+      camera.position.set(look.x - Math.sin(yaw) * 7, look.y + 4.2 + low * 0.6, look.z - Math.cos(yaw) * 7);
+      camera.lookAt(look.x + Math.sin(yaw) * low, look.y + 0.4 - low * 0.9, look.z + Math.cos(yaw) * low);
+    }
+    QR.drawCalls = renderer.info.render.calls;
+    QR.crowdCalls = crowd.drawCalls;
+  });
+  QR.started3d = true; QR.B = B; QR.crowd = crowd;
+  QR.begin();
+}
+</script>
+</body>
+</html>

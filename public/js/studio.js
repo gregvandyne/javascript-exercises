@@ -145,7 +145,22 @@ function waitingText() {
   if (isGroup(S.live.visibility) || (S.grownup && S.live.visibility === 'friends')) return E('js.studio.live.waitingPublic');
   return E(S.live.visibility === 'friends' ? 'js.studio.live.waitingFriends' : 'js.studio.live.waitingYou');
 }
+// Oomba Live: "Make it a live class game" (a fixed Builder message), then "Live-ready" and, for hosts, "Host live".
+function renderLiveClass() {
+  let box = $('#st-liveclass');
+  const L = S.liveClass;
+  if (!L) { if (box) box.remove(); return; }
+  if (!box) { box = document.createElement('div'); box.id = 'st-liveclass'; box.className = 'st-liveclass'; box.setAttribute('aria-live', 'polite'); $('#st-safety').after(box); }
+  if (L.ready) {
+    box.innerHTML = `<span class="stchip good">📡 ${E('js.studio.live.ready')}</span> `
+      + (L.canHost ? (L.published ? `<a class="btn btn-sm btn-primary" href="${esc(L.host)}">📡 ${E('js.studio.live.host')}</a>` : `<span class="small muted">${E('js.studio.live.publishFirst')}</span>`)
+        : `<span class="small muted">${E('js.studio.live.teacher')}</span>`);
+  } else {
+    box.innerHTML = `${L.issue ? `<span class="small muted">${E('js.studio.live.notYet', { issue: L.issue })}</span> ` : ''}<button class="btn btn-sm" type="button" data-act="make-live">📡 ${E('js.studio.live.make')}</button>`;
+  }
+}
 function renderSafety() {
+  renderLiveClass();
   const box = $('#st-safety'); const c = S.current;
   if (!c) { box.innerHTML = ''; return; }
   const list = c.issues.length ? `<ul dir="ltr" lang="en">${c.issues.map(i => `<li>${esc(i.message)}</li>`).join('')}</ul>` : '';
@@ -1283,6 +1298,7 @@ document.addEventListener('click', e => {
   else if (a.dataset.act === 'see') { $('.st-preview').scrollIntoView({ behavior: 'smooth', block: 'start' }); }
   else if (a.dataset.act === 'update') updateLive();
   else if (a.dataset.act === 'limit-publish') $('#st-publish').click();
+  else if (a.dataset.act === 'make-live' && S.liveClass) send(S.liveClass.ask);
   else if (a.dataset.act === 'continue' && S.lastTurn) send(t('js.studio.continueMessage'), { continueOf: S.lastTurn.id });
   else if (a.dataset.act === 'putback' && S.lastTurn && S.lastTurn.putBack) { input.value = S.lastTurn.putBack; autosize(); input.focus(); }
   else if (a.dataset.act === 'fu-putback') { const b = a.closest('.msg.fu'); if (b) { input.value = b.dataset.text || ''; autosize(); input.focus(); } }

@@ -595,6 +595,25 @@ pay nothing. `Oomba.three(THREE, { renderer, scene, camera, theme })` → a brid
   (1.1.0 had not shipped yet) rebuilt 1.1.0's core (`Oomba.avatar()`, and `bridge-3d` in `Oomba.pack()`'s pack names)
   and re-locked it with all eight packs, `bridge-3d` included; the seven other packs kept their bytes.
 
+### 6.7 Live class games (kit 1.1.0, pack `live`)
+
+`Oomba.live` (`kit/packs/live.js`, about 6 KB br, cap 10 KB) is the API a game uses to be hosted live with Oomba Live
+(the reference is [kit-api.md](kit-api.md#live-class-games-kit-110-pack-live); the wire protocol is
+[live-protocol.md](live-protocol.md)). It is thin on purpose: the transport (a private `MessagePort` to the page, the
+data-shape checks, text entry off) is the SDK's, which is not pinned, and every limit is the server's, so a protocol fix
+never changes pinned pack bytes. The pack ignores messages and fields it does not know. What it adds over the
+transport: the roster with names in the player's language, phases as events, the server clock, quiz helpers, moves
+sent at most 10 a second, interpolation (120 ms behind, the short way round, a 5 m jump snaps), `crowd(B)` for the 3D
+bridge (rigs near, billboards further, one instanced shape far away: 4/6, 8/10 or 12/16 by device tier; nameplates for
+the 8 nearest within 18 m; at most one new rig a frame) and `flat()` for 2D. Solo play is unchanged.
+
+- **Versioning.** Added beside the locked 1.1.0 with `node scripts/build-kit.js --packs` (the core and the eight locked
+  packs are checked byte for byte; 1.0.0 is untouched); 1.1.0's `manifest.json` and `KIT_PACKS['1.1.0']` gain one
+  entry. It goes into `kit/SHIPPED.json` only with the owner's sign-off, in the change that ships it; until then a
+  rebuild may change its hash (the seed games that pin it are re-stamped with it).
+- **Reference games:** Quest Race and Question Battle (the built-in modes, `seed-games/`), the platform lobby
+  (`server/live/lobby.html`) and Hero of Sunvale's live mode.
+
 ## 7. Public API (namespace `Oomba`, alias `OK`)
 
 The API has three adoption levels:

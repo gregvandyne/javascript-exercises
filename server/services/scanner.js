@@ -5,6 +5,7 @@ import { MAX_GAME_BYTES } from './sanitize.js';
 import { checkThree } from './vendor.js';
 import { checkKit } from './kit.js';
 import { lintGame } from './stylelint.js';
+import { checkHtml as liveCheckHtml } from './classlive-lint.js';
 
 const ALLOWED_URL = /^https:\/\/(fonts\.googleapis\.com|fonts\.gstatic\.com|cdnjs\.cloudflare\.com)(\/|$)/i;
 
@@ -183,5 +184,7 @@ export function scanVersion(html) {
   const status = issues.some(i => i.level === 'fail') ? 'fail' : issues.some(i => i.level === 'flag') ? 'flag' : 'pass';
   // Style notes for kit games (never change the status): see stylelint.js.
   let lint = []; try { lint = lintGame(src); } catch { lint = []; }
-  return { status, issues, lint, bytes: Buffer.byteLength(src), scannedAt: Date.now() };
+  // Oomba Live: is this version live-ready (a teacher can host it live)? Only for games that load the live pack.
+  let live; try { live = /\/packs\/live\.js/.test(src) ? liveCheckHtml(src).ready : undefined; } catch { live = false; }
+  return { status, issues, lint, ...(live === undefined ? {} : { live }), bytes: Buffer.byteLength(src), scannedAt: Date.now() };
 }

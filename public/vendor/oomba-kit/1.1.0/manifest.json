@@ -10,6 +10,7 @@
     "packs/art-school.js": "sha384-tjWzckG1fXZNGAIROedz8rciqX12aec8Bw77p9Pn81hGGnR/2i9HS7cM6023xw0P",
     "packs/bridge-3d.js": "sha384-XrVZh1TfGin1ajGCc72TzhAxeqUJQM3JI3kI1weHoMgUIV4urBdPtJbZxO7wPOli",
     "packs/dress.js": "sha384-ZCFgY98YAWY7Tcy+GfJLalmnJukKdzbVpg6j4ZljXuJSYgYzkWSWMPihVW/u8CqH",
+    "packs/live.js": "sha384-PoL1d2TQvVJAaM+LOoFIDiwk0wF23Ue5ASvgQgvkBEjRB/qhCQ+b0BJ93864hhig",
     "packs/style-bold.js": "sha384-k+n1lKA8kY7eQBU96sQUOp6Hb9i7/wDs/mQ3rkJFKRpyeIpcGqF0XDCcCm28Mjp0",
     "fonts/bricolage-latin.woff2": "sha384-X/jaeJ4W5GX6njFPEfUBZdJHzn5fubPkE+9LDSLSmoJRUtrBMlRU1+5BAHszUiNB",
     "fonts/bricolage-latin-ext.woff2": "sha384-Ot7IlVGIs2pRGgA5YgE5tJccM1wkGm5cs2e1qkPHXBwCUMF/C0NVXdFYEsrbfv9x",
@@ -24,6 +25,7 @@
     "art-school",
     "bridge-3d",
     "dress",
+    "live",
     "style-bold"
   ]
 }

@@ -3,6 +3,7 @@
 // self-hosted libraries: the 3D library under /vendor/three/ and the Oomba Kit under /vendor/oomba-kit/).
 import fs from 'node:fs';
 import path from 'node:path';
+import zlib from 'node:zlib';
 import { fileURLToPath } from 'node:url';
 import { sanitizeGameHtml } from './sanitize.js';
 import { deviceNeeds, VENDOR_PATH, DATA_PATH } from './vendor.js';
@@ -55,16 +56,26 @@ const safeJson = o => JSON.stringify(o).replace(/</g, '\\u003c').replace(/\u2028
  *         deviceText?:{title,text,lostTitle,lostText,retry} }
  *  For a 3D game the SDK is told what the browser must support (init.device), with deviceText as its friendly
  *  messages (the "newer device" card and the "3D picture stopped / Try again" card). */
-export function frameDocument(gameHtml, init) {
+const cleanCache = new Map();
+/** The sanitised game HTML; cacheKey (a version id: versions never change) keeps it in memory (Oomba Live sends the same
+ *  game to 30-40 devices at once). */
+export function cleanGameHtml(gameHtml, cacheKey = null) {
+  if (cacheKey && cleanCache.has(cacheKey)) return cleanCache.get(cacheKey);
   const { html } = sanitizeGameHtml(gameHtml);
+  if (cacheKey) { if (cleanCache.size >= 32) cleanCache.delete(cleanCache.keys().next().value); cleanCache.set(cacheKey, html); }
+  return html;
+}
+export function frameDocument(gameHtml, init, { cacheKey = null } = {}) {
+  const html = cleanGameHtml(gameHtml, cacheKey);
   const { deviceText, ...rest } = init || {};
   const needs = deviceNeeds(html);
   const boot = needs ? { ...rest, device: { ...needs, ...(deviceText || {}) } } : rest;
   const lang = String((rest.user && rest.user.lang) || 'en').replace(/[^A-Za-z-]/g, '').slice(0, 12) || 'en';
   return `<!doctype html><html lang="${lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="referrer" content="no-referrer"><style>${RESET}</style><script>window.__BRB_INIT__=${safeJson(boot)};</script><script>${SDK}</script>\n${html}`;
 }
-/** origins: frameOrigins(req), so the CSP allows the site's /vendor/three/ files. */
-export function sendFrame(res, doc, origins = []) {
+/** origins: frameOrigins(req), so the CSP allows the site's /vendor/three/ files. gzip: send it compressed (the caller
+ *  checked Accept-Encoding; live frames go to a whole class at once). */
+export function sendFrame(res, doc, origins = [], { gzip = false } = {}) {
   res.set({
     'Content-Security-Policy': frameCsp(origins),
     'X-Content-Type-Options': 'nosniff',
@@ -74,6 +85,7 @@ export function sendFrame(res, doc, origins = []) {
     'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), serial=(), bluetooth=()',
   });
   res.removeHeader('X-Frame-Options');
+  if (gzip) { res.set({ 'Content-Encoding': 'gzip', Vary: 'Accept-Encoding' }); return res.type('html').send(zlib.gzipSync(doc, { level: 6 })); }
   res.type('html').send(doc);
 }
 /** A refusal inside the game frame (link expired, game gone, site moving): plain text that the site's own pages may

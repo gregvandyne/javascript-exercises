@@ -149,9 +149,88 @@
 
   var INIT = window.__BRB_INIT__ || {};
   var parentWin = window.parent;
-  function send(type, payload) {
-    try { var m = payload || {}; m.brb = 1; m.type = type; parentWin.postMessage(m, '*'); } catch (e) { /* ignore */ }
+  function send(type, payload, transfer) {
+    try { var m = payload || {}; m.brb = 1; m.type = type; if (transfer) parentWin.postMessage(m, '*', transfer); else parentWin.postMessage(m, '*'); } catch (e) { /* ignore */ }
   }
+
+  // ---- Oomba Live: the frame's private line to the live page, and no typing ------------------
+  // A live frame (INIT.live, from /live/frame/...) talks to the page over a MessagePort made here, before the game's
+  // code runs, and handed to the page with the first brb:ready. A page the frame navigates to never has that port, so
+  // no roster or game data can reach it (the page also tears the frame down on a second load). Everything sent is
+  // checked here against the wire protocol (docs/live-protocol.md) and checked again by the page and the server. Game
+  // event data can hold only numbers, booleans, null and identifier tokens, so a game can never become a chat; and in a
+  // live frame nothing can be typed: prompt() is gone, and text boxes and editable elements are read-only.
+  var LIVE = INIT.live && typeof INIT.live === 'object' ? INIT.live : null, livePort = null, liveChan = null;
+  var liveSubs = [], liveQueue = [];
+  var LIVE_TOKEN = /^[a-z0-9_-]{1,24}$/, LIVE_KIND = /^[a-z][a-z0-9_-]{0,23}$/;
+  function liveData(d, depth) {
+    if (d === null || typeof d === 'boolean') return true;
+    if (typeof d === 'number') return isFinite(d);
+    if (typeof d === 'string') return LIVE_TOKEN.test(d);
+    if (depth >= 2 || typeof d !== 'object') return false;
+    var keys = Object.keys(d);
+    if (Array.isArray(d)) return d.length <= 64 && d.every(function (x) { return liveData(x, depth + 1); });
+    return keys.length <= 32 && keys.every(function (k) { return LIVE_TOKEN.test(k) && liveData(d[k], depth + 1); });
+  }
+  var isInt = function (v, lo, hi) { return typeof v === 'number' && Math.floor(v) === v && v >= lo && v <= hi; };
+  // What a frame may say, and its exact shape (anything else is dropped with a warning in the console).
+  var LIVE_OUT = {
+    rdy: function (m) { return { view: m.view === '2d' ? '2d' : '3d', cfg: m.cfg && typeof m.cfg === 'object' ? JSON.parse(JSON.stringify(m.cfg)) : undefined }; },
+    mv: function (m) { var p = m.p; return Array.isArray(p) && p.length === 5 && isInt(p[0], -100000, 100000) && isInt(p[1], -100000, 100000) && isInt(p[2], -100000, 100000) && isInt(p[3], 0, 255) && isInt(p[4], 0, 7) ? { p: p.slice() } : null; },
+    ev: function (m) { if (!LIVE_KIND.test(String(m.k)) || !liveData(m.d, 0)) return null; var o = { k: m.k, d: m.d }; if (m.to === 'host' || isInt(m.to, 1, 100000)) o.to = m.to; return JSON.stringify(o).length <= 600 ? o : null; },
+    sc: function (m) { return isInt(m.n, 0, 1e6) ? { n: m.n } : null; },
+    it: function (m) { return isInt(m.i, 0, 199) ? { i: m.i, ok: !!m.ok } : null; },
+    an: function (m) { return isInt(m.i, 0, 1000) && isInt(m.c, 0, 3) && isInt(m.e, 0, 600000) ? { i: m.i, c: m.c, e: m.e } : null; },
+    em: function (m) { return isInt(m.e, 0, 5) ? { e: m.e } : null; },
+    st: function (m) { return LIVE.role === 'host' && m.d && typeof m.d === 'object' ? { d: JSON.parse(JSON.stringify(m.d)) } : null; }
+  };
+  var liveApi = null;
+  if (LIVE && typeof MessageChannel === 'function') {
+    liveChan = new MessageChannel(); livePort = liveChan.port1;
+    livePort.onmessage = function (e) {
+      var m = e.data; if (!m || typeof m !== 'object' || typeof m.t !== 'string') return;
+      if (!liveSubs.length) { if (liveQueue.length < 500) liveQueue.push(m); return; }
+      for (var i = 0; i < liveSubs.length; i++) { try { liveSubs[i](m); } catch (err) { if (window.console) console.error(err); } }
+    };
+    var liveInit = JSON.parse(JSON.stringify({ v: 1, role: LIVE.role === 'host' ? 'host' : 'player', seat: LIVE.seat | 0, frame: LIVE.frame, nameMode: LIVE.nameMode, mode: LIVE.mode, nicks: Array.isArray(LIVE.nicks) ? LIVE.nicks : [], view: LIVE.view === '2d' ? '2d' : '3d', me: LIVE.me || null }));
+    liveApi = {
+      v: 1, active: true, init: null,
+      send: function (t, m) {
+        var f = LIVE_OUT[t], o = f && m && typeof m === 'object' ? f(m) : null;
+        if (!o) { if (window.console) console.warn('[oomba live] not sent: ' + t + ' (see docs/kit-api.md, Live class games)'); return false; }
+        o.t = t; try { livePort.postMessage(o); return true; } catch (e) { return false; }
+      },
+      on: function (fn) {
+        if (typeof fn !== 'function') return;
+        liveSubs.push(fn);
+        if (liveQueue.length) { var q = liveQueue; liveQueue = []; q.forEach(function (m) { try { fn(m); } catch (err) { /* game's own */ } }); }
+      }
+    };
+    liveApi.init = deepFreezeEarly(liveInit);
+    // No typing in a live frame (the only text anyone enters in Oomba Live is the join code, on the site's own page).
+    try { Object.defineProperty(window, 'prompt', { value: function () { return null; }, writable: false, configurable: false }); } catch (e) { /* ignore */ }
+    var OPEN_TYPES = { button: 1, submit: 1, reset: 1, range: 1, checkbox: 1, radio: 1, color: 1, image: 1, file: 0, hidden: 1 };
+    var lockText = function (root) {
+      try {
+        var list = root.querySelectorAll ? root.querySelectorAll('input,textarea,[contenteditable]') : [];
+        var one = function (el) {
+          if (el.tagName === 'INPUT' && OPEN_TYPES[String(el.type || 'text').toLowerCase()] === 1) return;
+          if (el.tagName === 'INPUT' && String(el.type).toLowerCase() === 'file') el.disabled = true;
+          if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') { if (!el.readOnly) el.readOnly = true; }
+          if (el.hasAttribute && el.hasAttribute('contenteditable') && el.getAttribute('contenteditable') !== 'false') el.setAttribute('contenteditable', 'false');
+        };
+        if (root.tagName) one(root);
+        for (var i = 0; i < list.length; i++) one(list[i]);
+      } catch (e) { /* ignore */ }
+    };
+    var watchText = function () {
+      lockText(document.documentElement);
+      try { new MutationObserver(function (recs) { recs.forEach(function (r) { if (r.type === 'attributes') lockText(r.target); else for (var i = 0; i < r.addedNodes.length; i++) if (r.addedNodes[i].nodeType === 1) lockText(r.addedNodes[i]); }); })
+        .observe(document.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ['contenteditable', 'type', 'readonly'] }); } catch (e) { /* ignore */ }
+    };
+    if (document.documentElement) watchText(); else document.addEventListener('DOMContentLoaded', watchText);
+  }
+  function deepFreezeEarly(o) { if (o && typeof o === 'object') { Object.keys(o).forEach(function (k) { deepFreezeEarly(o[k]); }); Object.freeze(o); } return o; }
 
   // ---- Canvas contexts: remember which kind each canvas got -----------------------------
   // A canvas can only ever have one kind of context, so BRB.fx.fit() must never make a 2D one on a
@@ -213,8 +292,9 @@
     }
     if (document.body) show(); else document.addEventListener('DOMContentLoaded', show);
   }
+  var devMissing = [];
   if (DEV) {
-    var missing = [];
+    var missing = devMissing;
     if (DEV.importmap) {
       // Only say import maps are missing when the browser can tell us so. A browser with no
       // HTMLScriptElement.supports() is "unknown": let it try and the template's own 20 s fallback handle it.
@@ -227,7 +307,8 @@
       var gl = null; try { gl = document.createElement('canvas').getContext('webgl2'); var lose = gl && gl.getExtension('WEBGL_lose_context'); if (lose) lose.loseContext(); } catch (e) { gl = null; }
       if (!gl) missing.push('webgl2');
     }
-    if (missing.length) deviceMessage(missing.join(' '));
+    // A live class game with its own 2D path (<meta name="oomba-live" content="2d">) draws that instead of the card.
+    if (missing.length && DEV.fallback !== '2d') deviceMessage(missing.join(' '));
     // A lost 3D picture: if the game does not ask for it back (preventDefault), or it is not back soon, say so.
     window.addEventListener('webglcontextlost', function (e) {
       var cv = e.target;
@@ -614,6 +695,11 @@
     theme: INIT.theme === 'light' || INIT.theme === 'dark' ? INIT.theme : '',
     motion: INIT.motion === 'reduce' || INIT.motion === 'full' ? INIT.motion : '',
     preview: !!INIT.preview,
+    // 3D games: what this browser can do ({webgl2, importmap}); null for 2D games. Live class games read it to pick their
+    // 2D path (docs/kit-api.md "Live class games").
+    device: DEV ? Object.freeze({ webgl2: devMissing.indexOf('webgl2') < 0, importmap: devMissing.indexOf('importmap') < 0 }) : null,
+    // Oomba Live (live frames only): the transport the kit's live pack uses. Games use Oomba.live, never this.
+    live: liveApi ? Object.freeze(liveApi) : Object.freeze({ v: 1, active: false }),
     storage: {
       get: function (k) { var v = local.getItem(k); if (v === null) return null; try { return JSON.parse(v); } catch (e) { return v; } },
       set: function (k, v) { local.setItem(k, typeof v === 'string' ? v : JSON.stringify(v)); },
@@ -632,6 +718,11 @@
   };
   Object.freeze(BRB.storage); Object.freeze(BRB.score);
   try { Object.defineProperty(window, 'BRB', { value: BRB, writable: false, configurable: false }); } catch (e) { window.BRB = BRB; }
-  function ready() { send('brb:ready', { title: document.title || '' }); }
+  var readySent = false;
+  function ready() {
+    // A live frame hands its port to the page with the first brb:ready (and only then).
+    if (liveChan && !readySent) { readySent = true; send('brb:ready', { title: document.title || '', live: 1 }, [liveChan.port2]); return; }
+    readySent = true; send('brb:ready', { title: document.title || '' });
+  }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', ready); else setTimeout(ready, 0);
 })();

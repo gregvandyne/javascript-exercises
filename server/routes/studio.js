@@ -34,6 +34,9 @@ import { saveUpload, getUpload, deleteUpload, readUploadBytes, listUploads, LIMI
 import { tEn } from '../i18n/index.js';
 import { familiesOn, isChildAccount, liveRowOf } from '../services/family.js';
 import { sharingOptions, shareDefault, shareableClasses, gameClassIds, removedClassIds } from '../services/schools.js';
+import { canHost as liveCanHost } from '../services/classlive-access.js';
+import { liveOn } from '../services/classlive-sessions.js';
+import { gameReady as gameLiveReady, checkHtml as checkLiveHtml } from '../services/classlive-check.js';
 
 export const router = Router();
 
@@ -129,7 +132,15 @@ export function studioState(user, gameId, t = tEn, req = null) {
     // live: words show while the kid speaks (services/stt-live.js), unless STT_LIVE=0; the page records and uploads otherwise.
     mic: sttEnabled() && user.builder_enabled ? { maxMs: config.sttMaxSeconds * 1000, maxBytes: config.sttMaxBytes, live: liveEnabled(), ...(liveEnabled() ? { rate: RATE[config.sttProvider] } : {}) } : null,
     grownUpLink: grownUpLinkHint(req, user),
+    // Oomba Live: is the current version a live class game (and the published one hostable)? The Studio offers "Make it a
+    // live class game" (a fixed, translated Builder message) until it is; hosts get "Host live" once it is published.
+    liveClass: liveOn() && cur ? liveClassState(user, g, cur, t) : null,
   };
+}
+function liveClassState(user, g, cur, t) {
+  const chk = checkLiveHtml(cur.html), first = chk.issues.find(i => i.level === 'fail');
+  const loads = /\/packs\/live\.js/.test(cur.html);
+  return { ready: chk.ready, started: loads, issue: loads && first ? t(`live.check.${first.code}`) : '', published: gameLiveReady(g), canHost: liveCanHost(user), host: `/live?game=${g.id}`, ask: t('live.entry.studioAskText') };
 }
 
 // ---------------------------------------------------------------- pages

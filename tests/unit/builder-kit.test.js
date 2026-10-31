@@ -28,7 +28,7 @@ const auth = await import('../../server/auth.js');
 const games = await import('../../server/services/games.js');
 const { runTurn } = await import('../../server/builder/agent.js');
 const { toolbox, styleTips } = await import('../../server/builder/tools.js');
-const { SYSTEM_PROMPT, KIT_RULES, TOOLS } = await import('../../server/builder/prompt.js');
+const { SYSTEM_PROMPT, KIT_RULES, TOOLS, LIVE_RULES } = await import('../../server/builder/prompt.js');
 const { buildRules, fileText, OUT } = await import('../../scripts/build-kit-rules.js');
 const { kitTag, kitPackTag, kitPacks } = await import('../../server/services/kit.js');
 const { withLayer, layerScript, readTune, tuneEdits, hasKitLayer, LAYER_ID } = await import('../../server/builder/layer.js');
@@ -55,7 +55,9 @@ test('KIT_RULES: generated from docs/kit-api.md and the kit, up to date, and the
 test('KIT_RULES ends the cached system prompt, with the pinned kit and pack tags and every art name', () => {
   assert.ok(SYSTEM_PROMPT.endsWith(KIT_RULES));
   assert.ok(KIT_RULES.includes(kitTag()), 'the exact kit tag');
-  for (const p of kitPacks()) assert.ok(KIT_RULES.includes(kitPackTag(p)), `the exact ${p} tag`);
+  // every pack with art or looks is in the KIT RULES; the live pack's tag is in the LIVE RULES (sent only for live class games)
+  for (const p of kitPacks()) if (p !== 'live') assert.ok(KIT_RULES.includes(kitPackTag(p)), `the exact ${p} tag`);
+  assert.ok(!KIT_RULES.includes(kitPackTag('live')) && LIVE_RULES.includes(kitPackTag('live')), 'the live tag is in the LIVE RULES only');
   assert.doesNotMatch(KIT_RULES, /\{\{(KIT_TAG|PACK_TAG)/, 'no placeholders left');
   assert.doesNotMatch(SYSTEM_PROMPT, /\$\{/);
   const O = withPacks(createKit(fakeWin({ search: '' })));

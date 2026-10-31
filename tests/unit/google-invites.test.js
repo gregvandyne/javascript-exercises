@@ -297,7 +297,10 @@ test('review fixes: the class-code Google join respects "own accounts off" for p
 test('off: no Google panels or routes anywhere', async () => {
   const { c, s, adminCookie, teacherCookie } = school();
   config.googleClientId = '';
-  assert.equal((await get('/join')).status, 404);
+  // /join is Oomba Live's game-code page now (routes/live.js); with live games off too, nothing answers there.
+  assert.doesNotMatch(await (await get('/join')).text(), /gbtn|classhint/);
+  config.liveClassroom = false;
+  try { assert.equal((await get('/join')).status, 404); } finally { config.liveClassroom = true; }
   assert.equal((await get('/google-setup')).status, 404);
   assert.equal((await post(`/api/classes/${c.id}/google-invites`, { emails: 'a@dwes.test' }, teacherCookie)).status, 404);
   assert.doesNotMatch(await (await get(`/class/${c.id}?tab=students`, teacherCookie)).text(), /google-invites|Google:/);

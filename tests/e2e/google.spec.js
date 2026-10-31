@@ -85,7 +85,7 @@ test('with "join with Google" on, Bo joins from /join with the class code', asyn
 
   const bo = await (await browser.newContext()).newPage();
   await bo.goto('/login');
-  await bo.click('a[href="/join"]');
+  await bo.click('main a[href="/join"]:not(.joinnow)');   // the login page's own link (the top bar's "Join a game" is hidden here)
   await bo.fill('#jc', code.toLowerCase());
   await bo.click('button:has-text("Next")');
   await expect(bo.locator('.jc-chosen')).toContainText(code);

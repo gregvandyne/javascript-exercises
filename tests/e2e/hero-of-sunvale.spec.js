@@ -18,7 +18,7 @@ test('Hero of Sunvale runs on the kit: title, bridge, maker, a talk, pause and T
   const f = await gameFrame(page);
   // the kit and its packs, pinned, before three.js
   const tags = await f.evaluate(() => [...document.querySelectorAll('script[src]')].map(s => [s.getAttribute('src'), !!s.integrity, s.crossOrigin]));
-  expect(tags.map(x => x[0])).toEqual(['/vendor/oomba-kit/1.1.0/oomba-kit.js', '/vendor/oomba-kit/1.1.0/packs/dress.js', '/vendor/oomba-kit/1.1.0/packs/art-biomes-2.js', '/vendor/oomba-kit/1.1.0/packs/bridge-3d.js']);
+  expect(tags.map(x => x[0])).toEqual(['/vendor/oomba-kit/1.1.0/oomba-kit.js', '/vendor/oomba-kit/1.1.0/packs/dress.js', '/vendor/oomba-kit/1.1.0/packs/art-biomes-2.js', '/vendor/oomba-kit/1.1.0/packs/bridge-3d.js', '/vendor/oomba-kit/1.1.0/packs/live.js']);
   for (const x of tags) expect([x[1], x[2]]).toEqual([true, 'anonymous']);
   // the kit's title opens while the kingdom builds (the game's card with the loading bar under the lockup)
   await expect(f.locator('.ok-title-screen.hos-title #loadBox')).toBeVisible();

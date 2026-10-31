@@ -261,6 +261,7 @@ body.cut .hud,body.cut .tbtns,body.cut .keyhint,body.cut .toasts,body.cut .badge
 <script src="/vendor/oomba-kit/1.1.0/packs/dress.js" integrity="sha384-ZCFgY98YAWY7Tcy+GfJLalmnJukKdzbVpg6j4ZljXuJSYgYzkWSWMPihVW/u8CqH" crossorigin="anonymous"></script>
 <script src="/vendor/oomba-kit/1.1.0/packs/art-biomes-2.js" integrity="sha384-0ad0awdyk2fC5pFpqYc/7EABVSKTEe1ZKo2YB6cvjKZDIDA2mI1+YRUEQhOgXrHs" crossorigin="anonymous"></script>
 <script src="/vendor/oomba-kit/1.1.0/packs/bridge-3d.js" integrity="sha384-XrVZh1TfGin1ajGCc72TzhAxeqUJQM3JI3kI1weHoMgUIV4urBdPtJbZxO7wPOli" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.0/packs/live.js" integrity="sha384-PoL1d2TQvVJAaM+LOoFIDiwk0wF23Ue5ASvgQgvkBEjRB/qhCQ+b0BJ93864hhig" crossorigin="anonymous"></script>
 <script>
 /* KIT LOOK: the Oomba Kit's colours (by day and by night) and its font, as the CSS variables the sheet above uses, so
    the game's own HUD, cards and buttons match every other Oomba game. They follow the site's light / dark theme. */
@@ -553,7 +554,7 @@ const I18N = {
     'got.heart':'Heart Crystal! You have {n} hearts now!', 'equip.now':'Now wearing {item}! Defense {n}', 'equip.sword':'Now holding {item}! Power {n}',
     'potion.full':"Your bag can't hold more of those.", 'potion.none':'No potions left. Visit a potion shop!', 'potion.hpFull':'Your hearts are already full!',
     'potion.drank':'Glug glug!', 'potion.shieldOn':"Shield Potion: you're extra tough!", 'potion.zoomOn':'Zoom Potion: super speed!',
-    'potion.powerOn':'Power Potion: super strong!', 'potion.off':'{item} wore off.', 'waystone.on':'Waystone found! Adventure saved.', 'saved':'Saved!',
+    'potion.powerOn':'Power Potion: super strong!', 'potion.off':'{item} wore off.', 'waystone.on':'Waystone found! Adventure saved.', 'saved':'Saved!', 'live.progress':'Village progress: {done} of {total} missions ({players} players)', 'live.start':'Go! Explore Sunvale together.', 'live.end':'The live game is over. Well played, heroes!',
     'water.deep':'Brr! Too deep. Find the bridge!', 'shop.h':'Potion Shop', 'shop.buy':'Buy', 'shop.price':'{n} coins', 'shop.poor':'Not enough coins.', 'shop.bought':'Bought {item}!',
     'ko.h':'Whoops! You got knocked out!', 'ko.back':'Back to the waystone…', 'help.h':'Want a helping hand?',
     'help.text':'Get 2 Heart Potions, a Shield Potion and gentler foes for this battle.', 'help.yes':'Yes, please!', 'help.no':"No thanks, I've got this!",
@@ -881,6 +882,9 @@ const I18N = {
     "potion.off": "انتهى مفعول {item}.",
     "waystone.on": "وجدت حجر طريق! حُفظت المغامرة.",
     "saved": "تم الحفظ!",
+    "live.progress": "تقدّم القرية: {done} من {total} مهمة ({players} لاعبين)",
+    "live.start": "انطلقوا! استكشفوا صنفيل معاً.",
+    "live.end": "انتهت اللعبة المباشرة. أحسنتم أيها الأبطال!",
     "water.deep": "برر! الماء عميق جدًا. ابحث عن الجسر!",
     "shop.h": "متجر الجرعات",
     "shop.buy": "اشترِ",
@@ -1350,6 +1354,9 @@ const I18N = {
     "potion.off": "{item} wirkt nicht mehr.",
     "waystone.on": "Wegstein gefunden! Abenteuer gespeichert.",
     "saved": "Gespeichert!",
+    "live.progress": "Dorf-Fortschritt: {done} von {total} Missionen ({players} Spieler)",
+    "live.start": "Los! Erkundet Sunvale zusammen.",
+    "live.end": "Das Live-Spiel ist vorbei. Gut gemacht, Helden!",
     "water.deep": "Brr! Zu tief. Such die Brücke!",
     "shop.h": "Trankladen",
     "shop.buy": "Kaufen",
@@ -1828,6 +1835,9 @@ const I18N = {
     "potion.off": "{item} ya no hace efecto.",
     "waystone.on": "¡Piedra guía encontrada! Aventura guardada.",
     "saved": "¡Guardado!",
+    "live.progress": "Progreso de la aldea: {done} de {total} misiones ({players} jugadores)",
+    "live.start": "¡Ya! Explorad Sunvale juntos.",
+    "live.end": "Se acabó el juego en vivo. ¡Bien jugado, héroes!",
     "water.deep": "¡Brrr! Demasiado hondo. ¡Busca el puente!",
     "shop.h": "Tienda de pociones",
     "shop.buy": "Comprar",
@@ -2297,6 +2307,9 @@ const I18N = {
     "potion.off": "{item} ne fait plus effet.",
     "waystone.on": "Pierre de route trouvée ! Aventure sauvegardée.",
     "saved": "Sauvegardé !",
+    "live.progress": "Progrès du village : {done} missions sur {total} ({players} joueurs)",
+    "live.start": "C’est parti ! Explorez Sunvale ensemble.",
+    "live.end": "La partie en direct est finie. Bravo, les héros !",
     "water.deep": "Brrr ! Trop profond. Trouve le pont !",
     "shop.h": "Boutique de potions",
     "shop.buy": "Acheter",
@@ -2766,6 +2779,9 @@ const I18N = {
     "potion.off": "ההשפעה של {item} נגמרה.",
     "waystone.on": "מצאתם אבן דרך! ההרפתקה נשמרה.",
     "saved": "נשמר!",
+    "live.progress": "התקדמות הכפר: {done} מתוך {total} משימות ({players} שחקנים)",
+    "live.start": "יוצאים! גלו את סאנוויל ביחד.",
+    "live.end": "המשחק החי הסתיים. כל הכבוד, גיבורים!",
     "water.deep": "ברר! עמוק מדי. מצאו את הגשר!",
     "shop.h": "חנות שיקויים",
     "shop.buy": "לקנות",
@@ -3235,6 +3251,9 @@ const I18N = {
     "potion.off": "{item}: l'effetto è finito.",
     "waystone.on": "Pietra del viaggio trovata! Avventura salvata.",
     "saved": "Salvato!",
+    "live.progress": "Progressi del villaggio: {done} missioni su {total} ({players} giocatori)",
+    "live.start": "Via! Esplorate Sunvale insieme.",
+    "live.end": "La partita dal vivo è finita. Ben fatto, eroi!",
     "water.deep": "Brrr! Troppo profondo. Trova il ponte!",
     "shop.h": "Negozio di pozioni",
     "shop.buy": "Compra",
@@ -3704,6 +3723,9 @@ const I18N = {
     "potion.off": "{item}の こうかが きれた。",
     "waystone.on": "たびの石を 見つけた! ぼうけんを セーブしたよ。",
     "saved": "セーブした!",
+    "live.progress": "むらのしんちょく: {total}このうち {done}こ ({players}人)",
+    "live.start": "スタート！ みんなでサンベールをたんけんしよう。",
+    "live.end": "ライブゲームはおしまい。ゆうしゃたち、よくがんばったね！",
     "water.deep": "ブルル! ふかすぎる。はしを さがそう!",
     "shop.h": "ポーションやさん",
     "shop.buy": "かう",
@@ -4173,6 +4195,9 @@ const I18N = {
     "potion.off": "{item} is uitgewerkt.",
     "waystone.on": "Wegsteen gevonden! Avontuur opgeslagen.",
     "saved": "Opgeslagen!",
+    "live.progress": "Dorpsvoortgang: {done} van {total} missies ({players} spelers)",
+    "live.start": "Start! Verken Sunvale samen.",
+    "live.end": "Het live spel is voorbij. Goed gedaan, helden!",
     "water.deep": "Brr! Te diep. Zoek de brug!",
     "shop.h": "Drankjeswinkel",
     "shop.buy": "Koop",
@@ -4642,6 +4667,9 @@ const I18N = {
     "potion.off": "{item} acabou.",
     "waystone.on": "Pedra-guia encontrada! Aventura salva.",
     "saved": "Salvo!",
+    "live.progress": "Progresso da vila: {done} de {total} missões ({players} jogadores)",
+    "live.start": "Já! Explorem Sunvale juntos.",
+    "live.end": "O jogo ao vivo acabou. Mandaram bem, heróis!",
     "water.deep": "Brr! Fundo demais. Encontre a ponte!",
     "shop.h": "Loja de Poções",
     "shop.buy": "Comprar",
@@ -5111,6 +5139,9 @@ const I18N = {
     "potion.off": "{item}: действие закончилось.",
     "waystone.on": "Путевой камень найден! Приключение сохранено.",
     "saved": "Сохранено!",
+    "live.progress": "Прогресс деревни: {done} из {total} заданий (игроков: {players})",
+    "live.start": "Вперёд! Исследуйте Санвейл вместе.",
+    "live.end": "Живая игра окончена. Отлично сыграно, герои!",
     "water.deep": "Брр! Слишком глубоко. Найди мост!",
     "shop.h": "Лавка зелий",
     "shop.buy": "Купить",
@@ -5580,6 +5611,9 @@ const I18N = {
     "potion.off": "{item}的效果結束了。",
     "waystone.on": "找到路標石了！冒險已存檔。",
     "saved": "已存檔！",
+    "live.progress": "村莊進度：{done} / {total} 個任務（{players} 位玩家）",
+    "live.start": "出發！一起探索 Sunvale。",
+    "live.end": "直播遊戲結束了。英雄們，做得好！",
     "water.deep": "好冷！水太深了。去找橋吧！",
     "shop.h": "藥水店",
     "shop.buy": "購買",
@@ -12892,6 +12926,85 @@ const TEST = {
   heightAt(x, z) { return heightAt(x, z); },
 };
 function installTestHooks() { window.__brbTest = Object.assign(TEST, TEST_EXT); }
+
+/* ==== 16. OOMBA LIVE (kit pack live): Sunvale together in a live class session ====
+   Hosted live (docs/kit-api.md "Live class games"), every player still plays their own Sunvale (foes, loot and the
+   story stay on their own device), but they see each other everywhere: each player's hero position goes to the class
+   10 times a second, and everyone else shows as a light blocky hero (the kit character colours), with nameplates.
+   Finished missions are reported (Oomba.live.item, and the hero points as the score) and shared as a small game event,
+   so the projector shows the class's combined village progress over a slow camera tour of the players. Played alone,
+   none of this runs: every line below sits behind Oomba.live.active. */
+const LIVE = OK.live;
+if (LIVE && LIVE.active) {
+  const liveHost = LIVE.role === 'host';
+  LIVE.ready({ presence: { bounds: 460, maxSpeed: 16 }, lobby: true, hostView: true, maxScorePerSec: 400, words: ['quest'] });
+  /** A light blocky hero for another player: body, head and hair from their character baked to one mesh, with legs and
+   *  arms on pivots so it walks and runs with the speed the crowd gives it (o.speed, o.air), and play(name, ms) for
+   *  emotes (wave, cheer, land), like the kit's own rigs. */
+  const lites = new Set();
+  const heroLite = spec => {
+    const sp = spec || {}, c = sp.colors || {}, g = new THREE.Group(), inner = new THREE.Group(); g.add(inner);
+    const skin = sp.species === 'kid' && OK.tokens && OK.tokens.skin ? OK.tokens.skin[sp.skin || 0] : B.color(c.base || 'mint', 'light');
+    const shirt = sp.outfit && sp.outfit.color ? sp.outfit.color : c.base || 'mint', hair = sp.hair && OK.tokens && OK.tokens.hair ? OK.tokens.hair[sp.hair.color] || '#5a3a22' : B.color(c.accent || 'coral');
+    const box = (parent, w, h, d, col, x, y, z) => { const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), B.toon(col)); m.position.set(x, y, z); parent.add(m); return m; };
+    // a limb hangs from a pivot at its top (hip or shoulder), so rotating the pivot swings it
+    const limb = (w, h, d, col, x, y) => { const pv = new THREE.Group(); pv.userData.pivot = true; pv.position.set(x, y, 0); box(pv, w, h, d, col, 0, -h / 2, 0); inner.add(pv); return pv; };
+    const legL = limb(0.32, 0.7, 0.32, 'stone', -0.18, 0.7), legR = limb(0.32, 0.7, 0.32, 'stone', 0.18, 0.7);
+    box(inner, 0.8, 0.75, 0.45, shirt, 0, 1.08, 0); box(inner, 0.62, 0.6, 0.6, skin, 0, 1.75, 0); box(inner, 0.66, 0.2, 0.64, hair, 0, 2.08, -0.02);
+    const armL = limb(0.2, 0.62, 0.22, shirt, -0.52, 1.41), armR = limb(0.2, 0.62, 0.22, shirt, 0.52, 1.41);
+    B.bake(inner); B.outline(inner, { important: true });
+    const st = { ph: 0, act: null, until: 0, t0: 0 };
+    g.speed = 0; g.air = false;
+    g.play = (name, ms) => { st.act = name; st.t0 = performance.now(); st.until = st.t0 + (ms || 1200); };
+    g.userData.liteTick = dt => {
+      if (!g.visible) return;
+      const sp = Math.min(1, +g.speed || 0), t = performance.now(), act = t < st.until ? st.act : null, k = act ? (t - st.t0) / 1000 : 0;
+      st.ph += dt * (4 + sp * 8);
+      const sw = Math.sin(st.ph) * 0.9 * sp;
+      legL.rotation.x = g.air ? -0.5 : sw; legR.rotation.x = g.air ? 0.4 : -sw;
+      armL.rotation.set(-sw * 0.8, 0, 0); armR.rotation.set(sw * 0.8, 0, 0); inner.position.y = 0;
+      if (act === 'wave') { armR.rotation.set(0, 0, 2.6 + Math.sin(k * 14) * 0.35); }
+      else if (act === 'cheer') { armL.rotation.set(0, 0, -2.7); armR.rotation.set(0, 0, 2.7); inner.position.y = Math.abs(Math.sin(k * 9)) * 0.35; }
+      else if (act === 'land') { inner.position.y = Math.max(0, Math.sin(Math.min(1, k / 0.6) * Math.PI)) * 0.8; }
+      else if (sp > 0.05 && !g.air) inner.position.y = Math.abs(Math.sin(st.ph)) * 0.08 * sp;
+    };
+    lites.add(g);
+    return g;
+  };
+  const crowd = LIVE.crowd(B, { auto: false, make: heroLite, size: 2.1,
+    // the player's own emote plays on their own hero (its poses: victory waves, cheer cheers)
+    self: { play: name => { if (S.screen !== 'play' || !canFight() || ATK.kind) return; hero.play(name === 'wave' ? 'victory' : 'cheer', 1.2); } } });
+  const shared = { done: 0, by: new Map() };
+  LIVE.on('event', e => { if (e.kind === 'quest' && e.data && typeof e.data.m === 'number') { const n = (shared.by.get(e.from) || 0) + 1; shared.by.set(e.from, n); shared.done++; liveMeter(); } });
+  // the projector: a "Village progress" meter
+  let meter = null;
+  function liveMeter() {
+    if (!liveHost) return;
+    if (!meter) { meter = document.createElement('div'); meter.id = 'liveMeter'; meter.setAttribute('role', 'status'); meter.style.cssText = 'position:fixed;inset-inline-start:12px;top:12px;z-index:50;background:rgba(255,253,242,.95);color:#1d2340;border-radius:16px;padding:8px 14px;font:800 20px/1.3 system-ui,sans-serif;box-shadow:0 4px 0 rgba(0,0,0,.2)'; document.body.appendChild(meter); }
+    const players = LIVE.players().length, total = Math.max(1, players * MISSIONS.length);
+    meter.textContent = t('live.progress', { done: shared.done, total, players });
+  }
+  GAME.addSystem({
+    id: 'live',
+    // 10 times a second at most (Oomba.live.move throttles and skips repeats)
+    post() { if (liveHost || S.screen !== 'play') return; const sp = hyp(hero.vel.x, hero.vel.z); LIVE.move(hero.pos.x, hero.pos.y, hero.pos.z, hero.yaw, !hero.onGround ? 'jump' : sp > 7 ? 'run' : sp > 0.5 ? 'walk' : 'idle'); },
+    frame(dt) { crowd.update(dt); for (const o of lites) { if (!o.parent) { lites.delete(o); continue; } o.userData.liteTick(dt); } },
+    // the host's projector: a slow tour round the players (the host has no hero of their own)
+    lateFrame(dt) { if (liveHost) { hero.control = false; if (hero.rig) hero.rig.visible = false; crowd.spectate(camera, dt, { radius: 18, height: 12 }); } },
+  });
+  GAME.on('missionDone', id => {
+    const i = MISSIONS.findIndex(m => m.id === id);
+    if (i >= 0) { LIVE.item(i, true); LIVE.send('quest', { m: i }); shared.done++; liveMeter(); }
+    LIVE.score(G.points || 0);
+  });
+  let scoreT = 0;
+  GAME.addSystem({ id: 'liveScore', update(dt) { scoreT += dt; if (scoreT > 5) { scoreT = 0; if (!liveHost) LIVE.score(G.points || 0); } } });
+  // the host skips the title (onBuilt starts a remembered start(), after the title opens) and never moves a hero
+  if (liveHost) { window.__hosStartWanted = window.__hosStartWanted || {}; GAME.on('ready', liveMeter); }
+  LIVE.on('join', liveMeter); LIVE.on('leave', liveMeter);
+  LIVE.on('start', () => { if (!liveHost && S.screen === 'play') UI.toast(t('live.start')); });
+  LIVE.on('end', () => { UI.toast(t('live.end')); if (!liveHost) LIVE.score(G.points || 0); });
+}
 
 /* Boot */
 applyStaticText();

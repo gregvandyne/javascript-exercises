@@ -34,6 +34,7 @@ import { router as teacherRoutes } from './routes/teachers.js';
 import { router as parentRoutes } from './routes/parents.js';
 import { router as seoRoutes } from './routes/seo.js';
 import { router as kitRoutes } from './routes/kit.js';
+import { router as liveRoutes } from './routes/live.js';
 import { pathLocale, privateNoindex } from './seo.js';
 import { compressPublicPages, staticAssets, versionedCache } from './services/compress.js';
 import { canonicalRedirect, hostCheckRoute, HOST_CHECK_PATH } from './domain.js';
@@ -51,6 +52,10 @@ const warned = { xff: false };
 export const _proxyWarning = warned;
 // Bodies from browsers are never compressed: refusing Content-Encoding closes off decompression attacks.
 const NO_INFLATE = { inflate: false };
+
+/** The path as the request log writes it: paths that carry a secret lose it (a live join code, /join/1234567, or a
+ *  live frame token, /live/frame/<token>). */
+export const logPath = p => String(p).replace(/^\/join\/[^/]+/, '/join/:code').replace(/^\/live\/frame\/[^/]+/, '/live/frame/:token');
 
 export function createApp() {
   const app = express();
@@ -89,12 +94,12 @@ export function createApp() {
       // originalUrl, because a mounted handler (e.g. /vendor) that ends the response leaves req.path stripped.
       const p = req.originalUrl.split('?')[0];
       if (!config.logRequests || p.startsWith('/css/') || p.startsWith('/fonts/') || p.startsWith('/vendor/')) return;
-      log('info', 'request', { method: req.method, path: req.path, status: res.statusCode, ms: Number(process.hrtime.bigint() - t0) / 1e6, user: req.user ? req.user.id : null });
+      log('info', 'request', { method: req.method, path: logPath(req.path), status: res.statusCode, ms: Number(process.hrtime.bigint() - t0) / 1e6, user: req.user ? req.user.id : null });
     });
     // A connection that closes before the response is done (e.g. a phone dropping a long Builder stream).
     res.on('close', () => {
       if (res.writableFinished || !config.logRequests) return;
-      log('info', 'request closed early', { method: req.method, path: req.path, ms: Number(process.hrtime.bigint() - t0) / 1e6, user: req.user ? req.user.id : null });
+      log('info', 'request closed early', { method: req.method, path: logPath(req.path), ms: Number(process.hrtime.bigint() - t0) / 1e6, user: req.user ? req.user.id : null });
     });
     next();
   });
@@ -172,7 +177,8 @@ export function createApp() {
   // Grown-up accounts may only play games and look after their family: everything else is a 404 for them.
   app.use(grownupGuard);
 
-  for (const r of [authRoutes, familyRoutes, plansRoutes, schoolBillingRoutes, googleRoutes, discoverRoutes, parentRoutes, teacherRoutes, gameRoutes, studioRoutes, socialRoutes, chatRoutes, adminRoutes, schoolRoutes, progressRoutes, lessonRoutes, infoRoutes, kitRoutes]) app.use(r);
+  // Oomba Live before the Google routes: /join takes live codes and hands class codes on (routes/live.js).
+  for (const r of [authRoutes, familyRoutes, plansRoutes, schoolBillingRoutes, liveRoutes, googleRoutes, discoverRoutes, parentRoutes, teacherRoutes, gameRoutes, studioRoutes, socialRoutes, chatRoutes, adminRoutes, schoolRoutes, progressRoutes, lessonRoutes, infoRoutes, kitRoutes]) app.use(r);
 
   app.use('/api', (req, res) => res.status(404).json({ error: tReq(req)('errors.api.notFound') }));
   app.use((req, res) => notFound(req, res));

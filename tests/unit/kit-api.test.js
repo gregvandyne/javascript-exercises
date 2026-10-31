@@ -34,6 +34,8 @@ test('docs/kit-api.md (what a model reads) names exactly what exists', async () 
   const w = fakeWin(), O = createKit(w); w.Oomba = O;
   const bridge = await import('../../kit/packs/bridge-3d.js'); O.__pk({ name: 'bridge-3d', version: O.version }, bridge.define);
   assert.equal(typeof O.three, 'function');
+  const livePack = await import('../../kit/packs/live.js'); O.__pk({ name: 'live', version: O.version }, livePack.define);
+  assert.equal(typeof O.live, 'object');
   const named = new Set([...doc.matchAll(/\bOomba\.([a-zA-Z]+(?:\.[a-zA-Z]+)*)/g)].map(m => m[1]));
   const at = p => p.split('.').reduce((o, k) => (o == null ? undefined : o[k]), O);
   for (const p of named) assert.notEqual(at(p), undefined, `docs/kit-api.md names Oomba.${p}, which does not exist`);

@@ -1,0 +1,98 @@
+/* Oomba Live pages (server/views/live.js): /join, /live, /live/host, /live/play, results and sets. Prefix .lv-, loaded
+   only on live pages. Logical properties only (right to left works), both themes through the site's variables, 360px
+   phones, real buttons at least 48px tall where players tap. */
+.lv-body main { min-height: 100dvh; }
+.lv { display: flex; flex-direction: column; gap: 16px; padding-block: 16px; padding-inline: 16px; max-inline-size: 1200px; margin-inline: auto; }
+.lv-top, .lv-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.lv-title { font-weight: 800; flex: 1 1 auto; min-inline-size: 0; overflow-wrap: anywhere; }
+.lv-panel { display: flex; flex-direction: column; gap: 12px; max-inline-size: 480px; inline-size: 100%; margin-inline: auto; background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 20px; }
+.lv-panel[hidden], .lv [hidden] { display: none !important; }
+.lv-h1 { margin: 0; text-align: center; font-size: clamp(1.8rem, 6vw, 2.6rem); }
+.lv-h2 { margin: 0; text-align: center; font-size: 1.4rem; }
+.lv-intro { margin: 0; text-align: center; color: var(--text-2); }
+.lv-code-input { font-size: 2rem; letter-spacing: .15em; text-align: center; font-variant-numeric: tabular-nums; min-block-size: 64px; }
+.lv-err:empty { display: none; }
+.lv-nick { font-size: 1.9rem; font-weight: 800; text-align: center; margin: 0; overflow-wrap: anywhere; }
+.lv-portrait { inline-size: 160px; block-size: 160px; margin-inline: auto; display: grid; place-items: center; }
+.lv-av-big { inline-size: 160px; block-size: 160px; }
+.lv-check { display: flex; gap: 8px; align-items: center; min-block-size: 44px; }
+.lv .btn-big { min-block-size: 56px; font-size: 1.15rem; }
+.lv-logo { display: inline-flex; align-items: center; gap: 8px; color: inherit; text-decoration: none; }
+.lv-logo svg { inline-size: 36px; block-size: 36px; }
+.lv-classhint { margin: 0; }
+
+/* the projector page: the stage big, a sidebar with the code, the controls and the roster */
+.lv-host { max-inline-size: none; display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 360px); grid-template-areas: 'bar bar' 'stage join' 'stage controls' 'stage roster' 'reports reports'; gap: 14px; align-items: start; min-block-size: 100dvh; }
+.lv-host > .lv-bar { grid-area: bar; }
+.lv-host > .lv-joinbox { grid-area: join; }
+.lv-host > .lv-hoststage { grid-area: stage; min-block-size: calc(100dvh - 90px); }
+.lv-host > .lv-controls { grid-area: controls; }
+.lv-host > .lv-rosterbox { grid-area: roster; }
+.lv-host > #lv-reports { grid-area: reports; }
+.lv-joinbox { display: flex; flex-direction: column; gap: 10px; align-items: center; background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 14px; text-align: center; }
+.lv-codebox { display: flex; flex-direction: column; gap: 4px; align-items: center; }
+.lv-qr { inline-size: min(28vmin, 220px); background: #fff; padding: 8px; border-radius: 12px; }
+.lv-qr svg { inline-size: 100%; block-size: auto; display: block; }
+.lv-bigcode { font-size: clamp(2.2rem, 3.7vw, 4rem); white-space: nowrap; font-weight: 800; margin: 0; letter-spacing: .04em; font-variant-numeric: tabular-nums; line-height: 1; }
+.lv-joinbox.is-small .lv-qr { inline-size: 110px; }
+.lv-joinbox.is-small .lv-bigcode { font-size: 2.2rem; }
+.lv-joinbox.is-hidden .lv-bigcode, .lv-joinbox.is-hidden .lv-qr { visibility: hidden; }
+.lv-label, .lv-joinat, .lv-count { margin: 0; }
+.lv-count { font-weight: 800; font-size: 1.2rem; }
+.lv-stage { position: relative; inline-size: 100%; min-block-size: 50vh; border-radius: 16px; overflow: hidden; background: #bfe8ff; }
+.lv-stage iframe { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; border: 0; }
+.lv-controls, .lv-emotes { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.lv-controls .btn, .lv-emote { min-block-size: 48px; }
+.lv-act-start, .lv-act-next { background: var(--brand-mint); border-color: var(--brand-leaf); color: var(--brand-ink); font-weight: 800; }
+.lv-act-end { margin-inline-start: auto; }
+.lv-rosterbox { display: flex; flex-direction: column; gap: 8px; }
+.lv-roster { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr; gap: 6px; max-block-size: 46vh; overflow: auto; }
+.lv-player { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 12px; background: var(--card); border: 1px solid var(--line); }
+.lv-player.is-off { opacity: .5; }
+.lv-p-avatar { flex: none; inline-size: 40px; block-size: 40px; }
+.lv-p-name { font-weight: 800; flex: 1 1 auto; min-inline-size: 0; overflow-wrap: anywhere; }
+.lv-p-marks { font-size: .85rem; color: var(--muted); }
+.lv-av { display: block; }
+body.lv-offline .lv-stage { outline: 4px dashed var(--edge); }
+@media (max-width: 900px) {
+  .lv-host { grid-template-columns: 1fr; grid-template-areas: 'bar' 'join' 'stage' 'controls' 'roster' 'reports'; }
+  .lv-host > .lv-hoststage { min-block-size: 56vh; }
+  .lv-roster { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); max-block-size: none; }
+}
+
+/* the player's page: the game as big as the phone allows */
+.lv-play { gap: 10px; padding-block: 10px; min-block-size: 100dvh; }
+.lv-play .lv-stage { flex: 1 1 auto; min-block-size: 62vh; }
+.lv-me { display: inline-flex; align-items: center; gap: 6px; font-weight: 800; }
+.lv-me-avatar { inline-size: 40px; block-size: 40px; }
+.lv-phase { font-size: 1.2rem; font-weight: 700; text-align: center; margin: 0; min-block-size: 1.5em; }
+.lv-watch { inline-size: 100%; aspect-ratio: 1; max-inline-size: 600px; margin-inline: auto; border-radius: 16px; }
+.lv-end { text-align: center; }
+.lv-place { font-size: 1.6rem; font-weight: 800; margin: 0; }
+.lv-dialog { max-inline-size: 420px; inline-size: calc(100% - 32px); border-radius: 20px; border: 1px solid var(--line); background: var(--card); color: var(--text); }
+.lv-dialog h2 { margin: 0; }
+
+/* the landing page and the sets */
+.lv-picks { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; }
+.lv-pick { position: relative; display: flex; flex-direction: column; gap: 4px; padding: 12px; border-radius: 14px; border: 2px solid var(--line); background: var(--card); cursor: pointer; }
+.lv-pick:has(input:checked) { border-color: var(--brand-leaf); box-shadow: 0 0 0 2px var(--brand-mint); }
+.lv-pick input { position: absolute; opacity: 0; pointer-events: none; }
+.lv-pick:focus-within { outline: 3px solid var(--brand-leaf); outline-offset: 2px; }
+.lv-pick-icon { font-size: 2rem; }
+.lv-pick-t { font-weight: 800; }
+.lv-group { border: 0; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
+.lv-group legend { font-weight: 800; margin-block-end: 8px; font-size: 1.1rem; }
+.lv-radio { display: flex; gap: 8px; align-items: center; min-block-size: 44px; }
+.lv-recent { margin: 0; padding-inline-start: 20px; }
+.lv-qlist { margin: 0; padding-inline-start: 22px; display: flex; flex-direction: column; gap: 16px; }
+.lv-q { display: flex; flex-direction: column; gap: 8px; border-block-end: 1px solid var(--line); padding-block-end: 12px; }
+.lv-choices { display: flex; flex-direction: column; gap: 6px; }
+.lv-choice { display: flex; gap: 8px; align-items: center; }
+.lv-choice .input { flex: 1; }
+.lv-setlist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.lv-setlist li { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; padding: 10px; border: 1px solid var(--line); border-radius: 12px; background: var(--card); }
+.lv-set-title { font-weight: 800; }
+.lv-table { inline-size: 100%; }
+.lv-items { display: flex; flex-direction: column; gap: 6px; }
+.vh { position: absolute; inline-size: 1px; block-size: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (max-width: 400px) { .lv { padding-inline: 10px; } .lv-code-input { font-size: 1.6rem; } .lv-panel { padding: 14px; } }

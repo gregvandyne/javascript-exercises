@@ -27,6 +27,8 @@ import { TEMPLATES } from './templates/index.js';
 import { cleanText } from '../services/textfilter.js';
 import { isThreeGame } from '../services/vendor.js';
 import { NO_STEPS } from './steps.js';
+import { asksForLive } from './prompt.js';
+import { kitPackTag } from '../services/kit.js';
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 /** Milliseconds between streamed chunks of three words (BRB_MOCK_DELAY_MS, 12 by default). */
@@ -133,6 +135,7 @@ async function followUp(ctx, m, cur) {
   const tune = readTune(cur.html); const changes = {}; const said = [];
   if (/\b(fix|repair)\b/.test(t) && cur.safety_status === 'fail') return fixSafety(ctx, m, cur);
   if (UPGRADE.test(t)) return upgrade(ctx, m, cur);
+  if (asksForLive(text)) return makeLive(ctx, m, cur);
   const kit = kitLayerFor(cur.html);
   if (/\b(ready|polish|finished|all done|it'?s done|publish|perfect|looks good)\b/.test(t)) {
     await say(ctx, 'Polish time! ✨ Here is a checklist of things to try in your game. Press Publish when you are happy with it!');
@@ -264,6 +267,40 @@ async function upgrade(ctx, m, cur) {
   if (!r.ok) { await say(ctx, 'Hmm, that did not work. Try asking in a different way!'); return; }
   await say(ctx, `Press Play to try version ${r.version.number}. Your old game is still in Versions if you want it back.`);
   tools.exec('test_notes', { checklist: CHECK[kind] || CHECK.default });
+  tools.exec('ask_user', { question: 'What next?', options: nextChips(readTune(html)) });
+}
+
+// ---- "Make it a live class game" (Oomba Live): the live pack's tag after the kit's, and a small block that says the game
+// is ready, starts a round when the host starts, and reports the score (docs/kit-api.md "Live class games"). Kit games only.
+export const LIVE_BLOCK = `<script>
+/* Oomba Live: hosted live by a teacher or grown-up, the whole class plays at once and the host sees everyone's score. */
+(function () {
+  var live = Oomba.live, last = -1;
+  var report = function () { var s = window.__brbTest && window.__brbTest.state ? window.__brbTest.state().score : null; if (typeof s === 'number' && s !== last) { last = s; live.score(s); } };
+  live.ready({ maxScorePerSec: 200 });
+  live.on('start', function () { if (live.active && window.__brbTest && window.__brbTest.start) window.__brbTest.start(); });
+  live.on('end', report);
+  if (live.active) Oomba.time.real.every(1000, report);
+})();
+</script>`;
+export function withLive(html) {
+  const src = String(html);
+  if (/\/packs\/live\.js/.test(src)) return src;
+  const tags = [...src.matchAll(/<script\s+src="\/vendor\/oomba-kit\/[^"]+"[^>]*><\/script>/g)];
+  if (!tags.length) return null;
+  const last = tags[tags.length - 1], at = last.index + last[0].length;
+  const withTag = src.slice(0, at) + '\n' + kitPackTag('live') + src.slice(at);
+  return /<\/body>/i.test(withTag) ? withTag.replace(/<\/body>(?![\s\S]*<\/body>)/i, `${LIVE_BLOCK}\n</body>`) : `${withTag}\n${LIVE_BLOCK}\n`;
+}
+async function makeLive(ctx, m, cur) {
+  const { tools } = ctx;
+  const html = usesKit(cur.html) ? withLive(cur.html) : null;
+  if (!html) { await say(ctx, 'To play live with a class, a game needs the new Oomba look first. Say "upgrade it" and then ask again!'); return; }
+  if (html === cur.html) { await say(ctx, 'It is already a live class game! 📡 A teacher or grown-up can host it live.'); return; }
+  await say(ctx, 'Making it a live class game 📡: everyone plays together, and the host sees all the scores. ');
+  const r = tools.exec('write_game', { html, notes: 'Made it a live class game (Oomba Live)' });
+  if (!r.ok) { await say(ctx, 'Hmm, that did not work. Try asking again!'); return; }
+  await say(ctx, 'Done! A teacher or grown-up can now host it live once it is published.');
   tools.exec('ask_user', { question: 'What next?', options: nextChips(readTune(html)) });
 }
 

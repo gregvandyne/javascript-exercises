@@ -301,3 +301,33 @@ Owner decisions for parent-made accounts (no lawyer needed):
     - that passing the character to games made by other children is fine (the game sees only the choices, never who
       made them; a game cannot send anything out of its sandbox);
     - whether school accounts need anything extra (it is optional and off until the student designs one).
+41. **Live classroom: guest play without accounts (Oomba Live).** New, behind `LIVE_CLASSROOM` (on by default; `0`
+    turns it off). `LEGAL_UPDATED` is unchanged: the new /parents and /teachers sections (`info.parents.live.*`,
+    `teachers.live.*`) describe the feature and add no new collection from children with accounts. A teacher, a
+    grown-up account or the platform admin opens a live room (`/live`); players join at `/join` with a 7-digit code
+    from the host's screen (docs/decisions.md "Oomba Live", docs/safety.md §12).
+    - **What a guest gives: nothing.** No account, no name, no email, no age. They pick one of 144 made-up nicknames
+      ("Brave Otter") from a fixed list and get a random cartoon character. They cannot type anything anywhere (the
+      only typed input is the code). No cookie is set for them; the page keeps a short-lived seat token in the tab's
+      own `sessionStorage` (it dies when the tab closes or the session ends, at most 4 hours). Is the seat token
+      "support for the internal operations of the website" under COPPA (16 CFR 312.2), so no notice or consent is
+      needed for it?
+    - **What is kept.** Sessions live in the server's memory only and end within 3 hours. When one ends we save one
+      row of counts (players, guests) and the host's own question texts with per-question accuracy (`live_runs`),
+      never a code, a nickname, a token, a name or an IP address. Rows without a class are deleted after 90 days.
+      In a teacher's own class room, the class's signed-in students' scores are saved (`live_run_scores`) and go
+      into the class gradebook like any other class work (school records, FERPA as for the gradebook today).
+    - **Names.** Account names appear only in a class room run by a teacher of that class, where every player is a
+      signed-in student of that class. Everywhere else (open rooms, family rooms) everyone, signed in or not, is a
+      nickname. Hosts never get profile links, messages or any way to reach a player outside the session.
+    - **Self-declared grown-up hosts.** Grown-up accounts are not verified. Their open rooms are capped at 30
+      players, show nicknames only, can run only official and publicly reviewed games, save counts only, and every
+      player screen has Report (fixed reasons). Should open rooms also need an account older than, say, 24 hours, or
+      a confirmed email? (Owner question 4 in the design.)
+    - **Reports.** Kept for a year after they are resolved, with the host, the game and the set's question texts;
+      never who reported.
+    - **Logs.** Session ids, seat numbers, user ids and counts only; never names, nicknames, codes or addresses.
+      Visits to `/join` and `/live` are not counted in the site statistics.
+    Questions for counsel: the seat token point above; whether a class room's account names shown on the projector
+    need anything in the school-facing terms; whether open rooms hosted by unverified grown-ups are acceptable with
+    these limits; and whether the per-question accuracy rows (host-written text plus counts) need a mention on /privacy.

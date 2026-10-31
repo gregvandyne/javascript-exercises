@@ -15,6 +15,8 @@ import { publish } from '../services/publish.js';
 import { draftLesson } from '../services/lesson-ai.js';
 import * as P from '../services/progress.js';
 import { audit } from '../db.js';
+import { canHost as liveCanHost } from '../services/classlive-access.js';
+import { liveOn } from '../services/classlive-sessions.js';
 
 export const router = Router();
 const CSS = raw(`<link rel="stylesheet" href="/css/community.css?v=${VERSION}"><link rel="stylesheet" href="/css/schools.css?v=${VERSION}">`);
@@ -267,7 +269,8 @@ router.get('/teach/lessons/:id', requireUser, (req, res) => {
   const body = html`
   <div class="pagehead"><div><span class="small muted">${school.name}</span><h1 dir="auto">${l.title}</h1>
     <p class="muted">${[l.subject, gradeLabel(t, l.grade), t('lessons.stepsN', { count: st.length }), total ? t('lessons.minutesN', { count: total }) : '', l.shared ? `🏫 ${t('lessons.lesson.sharedStatus')}` : ''].filter(Boolean).join(' · ')}</p></div>
-    ${edit ? html`<div class="row edacts"><a class="btn btn-primary" href="#assign">📌 ${t('lessons.assign.button')}</a><button class="btn" type="submit" form="lc-${l.id}">📄 ${t('lessons.lesson.duplicate')}</button><button class="btn" type="submit" form="lsh-${l.id}">${l.shared ? t('lessons.lesson.unshare') : `🏫 ${t('lessons.lesson.share')}`}</button></div>`
+    ${edit ? html`<div class="row edacts"><a class="btn btn-primary" href="#assign">📌 ${t('lessons.assign.button')}</a><button class="btn" type="submit" form="lc-${l.id}">📄 ${t('lessons.lesson.duplicate')}</button><button class="btn" type="submit" form="lsh-${l.id}">${l.shared ? t('lessons.lesson.unshare') : `🏫 ${t('lessons.lesson.share')}`}</button>${liveOn() && liveCanHost(req.user) && st.some(s => s.kind === 'question') ? html`<button class="btn" type="submit" form="lv-q-${l.id}">📡 ${t('live.entry.fromLesson')}</button>` : ''}</div>
+      <form id="lv-q-${l.id}" hidden data-api="/api/live/sets/from-lesson/${l.id}"></form>`
       : html`<form data-api="/api/lessons/${l.id}/copy"><button class="btn btn-primary" type="submit">📄 ${t('lessons.shared.copy')}</button></form>`}</div>
   ${edit && req.query.copied ? html`<p class="notice good">📄 ${t('lessons.lesson.copiedNotice')}</p>` : ''}
   ${drafted ? html`<p class="notice ${drafted === 'ai' ? '' : 'warn'}">${drafted === 'ai' ? `✨ ${t('lessons.ai.done')}` : t('lessons.ai.template')}</p>` : ''}

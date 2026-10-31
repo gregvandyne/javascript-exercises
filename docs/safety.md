@@ -403,3 +403,62 @@ docs/legal-review.md). Billing data and its timers are on `/privacy`.
     can't sign in; Builder usage totals stay without their text; the old name is reserved for 90 days. Refused while
     the child is in a class (school records are the school's). Only made accounts get these tools; a code-linked
     child's grown-up still only sees the extra-message counts and can unlink.
+
+## 12. Live classroom (Oomba Live)
+
+Live class games (`server/services/classlive-*.js`, `server/routes/live.js`; protocol: docs/live-protocol.md;
+decisions: docs/decisions.md "Oomba Live"). Off with `LIVE_CLASSROOM=0`.
+
+**Who.** Only teachers and school admins, grown-up accounts and the platform admin can host; kids and guests never.
+A room has an audience, set when it opens: `class` (a teacher's own class: signed-in active students of that class
+only, no guests), `family` (the grown-up's linked children) or `open` (anyone with the code; no account needed).
+Open rooms run only official games, the built-in modes and public games that passed human review; every player must
+pass the same visibility rule as anywhere else (`games.canView`, a guest counts as signed out), checked again when a
+frame loads and every 30 seconds. Grown-ups' open rooms are capped at 30 players.
+
+**No free text from players, anywhere.** Players press buttons. The one typed input is the 7-digit code. Names are
+one of 144 fixed, kind nickname phrases (account names only in a teacher's own class room). Emotes are 6 fixed
+animations. Game events between players (`ev`) may carry only numbers, booleans, `null` and identifier tokens
+(`[a-z0-9_-]`, 24 at most), nested at most twice, 512 bytes at most; and a player's event kind and every token in it
+must be one of the game's own words, written in its code (`Oomba.live.ready({ words })`, read by the server when the
+session opens, each through the text filter). Underscore-joined messages (`add_me_on_snap`) are never relayed, so a
+game cannot become a chat (the kit checks it, the server checks it again). Question sets, and every string the host
+sends to players (shared state, host events), are written by adults and pass the rude-word and personal-information
+checks (contact words, handles and links included). In live frames the SDK also turns text entry off at run time: `prompt()` returns null, text boxes are
+read-only and contenteditable is off, also for elements added later (docs/sdk.md "Live messages").
+
+**Codes.** 7 digits, unique among open sessions, never reused within 24 hours, dead when the session ends (at most
+3 hours; `LIVE_HOURS` can only shorten it). Wrong guesses are limited per IPv4 address or IPv6 /64 (100 per 10
+minutes), and for IPv6 also per /48 (200) and /32 (600), so holding a whole prefix buys no more guesses; all tries too
+(600 per bucket, scaled the same way), and a
+site-wide meter puts everyone on strict limits (5 per 10 minutes) for 10 minutes when more than 2,000 wrong codes
+arrive in a minute. Locked or full rooms don't count as wrong guesses. Every answer takes at least 150 ms. The code
+is never in a query string or a log: the QR and links use `/join#1234567` (a fragment the browser never sends), and
+the request log writes `/join/:code` and `/live/frame/:token` for paths that carry one. A frame token only loads the
+game frame: the socket refuses it as a seat credential.
+
+**The socket.** One upgrade listener routes `/api/live/ws` (and the Studio's live mic) by path. Before the upgrade:
+draining 503, flag off 404, a foreign Origin 403, more than 1,200 sockets a minute from one address 429. After it: a
+signed seat or host token within 5 seconds (a signed-in seat's token works only with that account's own sign-in; a
+host token only with the host's), at most 20 reconnects a minute per seat, every message parsed by type, range and
+size (2 KB for players, 16 KB for the host), token buckets per type, and 5 seconds at 3x the limit closes it.
+
+**The frame.** Live games run in the same sandboxed frame as every game (opaque origin, no network, the same CSP).
+The frame never opens a socket: its SDK hands the page a private `MessagePort` with its first ready message, and all
+live traffic goes over it. A frame that navigates itself is torn down and loaded again with a fresh token, so a page
+it navigated to never gets the port, the roster or anything else. The page re-checks every message (type, role, size)
+before the server checks it again.
+
+**Host powers.** Start, pause, next, skip, lock (automatic at start in open rooms), remove (bans the seat and the
+account for that session) and end. The roster has avatars, names as shown in the session and Remove, never links,
+profiles or messages. Every player page has Report with fixed reasons (scary, mean, asks for personal information,
+other); a report keeps the host, game and question texts, never who reported, and the host is told.
+
+**Data.** Sessions live in memory. Guests: no cookie, no account, no database row; the seat token sits in the tab's
+`sessionStorage`. When a session ends one row of counts and question accuracy is saved (no code, nickname, token or
+name); only a teacher's own class students get score rows and gradebook entries. Visits to `/join` and `/live` are not
+counted. Player pages use the bare layout: no menus, no prices, plans or sign-up prompts.
+
+**Honest limits.** Grown-up accounts are self-declared, so "a host account" does not prove an adult; the limits above
+(open rooms: nicknames only, reviewed games only, 30 players, Report) are the protection. A determined game author
+could still draw shapes that spell words; open rooms therefore run reviewed games only.

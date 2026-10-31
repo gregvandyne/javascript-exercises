@@ -6,7 +6,7 @@ const ROUTES = {
   restore: id => `/api/admin/games/${id}/restore`, suspend: id => `/api/admin/games/${id}/suspend`, unsuspend: id => `/api/admin/games/${id}/unsuspend`,
   hide: id => `/api/admin/chat-reports/${id}/hide`, dismiss: id => `/api/admin/chat-reports/${id}/dismiss`, bansender: id => `/api/admin/chat-reports/${id}/ban`,
   ban: id => `/api/admin/users/${id}/ban`, unban: id => `/api/admin/users/${id}/unban`, unphoto: id => `/api/admin/users/${id}/photo/remove`,
-  resolvelink: id => `/api/admin/link-reports/${id}/resolve`, banlink: id => `/api/admin/link-reports/${id}/ban`,
+  resolvelink: id => `/api/admin/link-reports/${id}/resolve`, resolvelive: id => `/api/admin/live-reports/${id}/resolve`, banlink: id => `/api/admin/link-reports/${id}/ban`,
   unlinkfamily: (id, b) => `/api/admin/family/${id}/children/${encodeURIComponent(b.dataset.child)}/unlink`,
   tester: id => `/api/admin/users/${id}/billing-tester`,
   pausemade: id => `/api/admin/users/${id}/pause-made`,

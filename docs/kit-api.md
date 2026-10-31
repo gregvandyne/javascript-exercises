@@ -125,6 +125,7 @@ kit's tag** (`kitPackTag(name)` on the server; any other form fails the scanner)
   drifting leaves, snow, fish under the sea; fewer on slow devices, none with reduced motion). Also the props `car bus
   rocket boat plane` (vehicles) and `shell cactus snowman log`. `Oomba.game({dress: 'off'})` keeps the bands sparse.
 - `bridge-3d` (1.1.0): the 3D bridge for three.js games (`Oomba.three`, below). 2D games never load it.
+- `live` (1.1.0): `Oomba.live`, the API for live class games (Oomba Live, below). Only live-ready games load it.
 - `style-bold`: the Bold style for 12-14 (`Oomba.game({style: 'bold'})`, or `Oomba.style('bold')` before
   `Oomba.stage`): about 3 heads tall, narrowed eyes, no blush, 'determined' by default; wear `hood visor headset helmet
   cap-back` (head) and `jersey bomber techvest` (body); deep surfaces with neon accents, 8-10 px corners, clipped
@@ -179,6 +180,81 @@ B.run(dt => { /* move the hero: hero.position, hero.heading (radians), hero.spee
   reduced motion, 0.75 in Bold), `B.color(hue, step)`, `B.neon(name)`, `B.toScreen(obj)` → `{x, y}` CSS px for DOM.
 - Screens: the kit's own over the canvas: `Oomba.ui.title`, `Oomba.ui.howTo`, `Oomba.ui.hud`, `Oomba.ui.ask`,
   `Oomba.ui.win`, `Oomba.ui.tryAgain`, `Oomba.ui.pause`.
+<!-- /builder -->
+
+## Live class games (kit 1.1.0, pack `live`)
+
+Oomba Live lets a teacher or grown-up host any live-ready game for a whole class: players join at /join with a code,
+on their own devices. The platform does the room (codes, the lobby, seats, reconnects, the host's controls, a shared
+clock, timed questions, the leaderboard, results, the gradebook and safety); the game uses `Oomba.live` from the
+`live` pack. Played alone (not in a live session) every call is safe and the game plays as before. The frame never opens
+a socket: the SDK carries the messages to the page over a private port, and the server checks every one. The wire
+protocol is [live-protocol.md](live-protocol.md).
+
+<!-- builder:live -->
+**Live class games.** Load the kit tag, then the game's other packs, then `{{PACK_TAG:live}}`. A game is live-ready
+(a teacher can host it) when it: calls `Oomba.live.ready({...})` once; reacts to the session (`on('start')`, `on('end')`);
+reports results (`score(n)`, `item(i, ok)` or `quiz.answer(choice)`); and never touches `BRB.live`, `MessageChannel` or
+`postMessage`. Everything must also work alone (`Oomba.live.active` is false, the role is `'solo'`, `start` fires after
+`ready()`).
+
+- `Oomba.live.ready({presence, lobby, quiz, hostView, maxScorePerSec, view, words})`: once, when the game can play.
+  `presence: {bounds (metres from the centre), maxSpeed (m/s)}` for games where players walk around a shared world;
+  `lobby: true` when the game draws its own waiting room (otherwise the platform's lobby shows first); `quiz: true` when
+  the host's question set drives the game; `hostView: true` when the game draws a view for the projector;
+  `words: ['kind', 'word', ...]` (up to 64, written out in the code) lists every event kind and word the game's `send()`
+  uses: a player's events carry only these.
+- `Oomba.live.active`, `.role` (`'player' | 'host' | 'solo'`), `.phase` (`lobby loading countdown playing paused between
+  ended`), `.round`, `.view` (`'3d' | '2d'`: draw 2D when it says so), `.me` (`{seat, name, avatar, team, score}`),
+  `.players()` (each `{seat, name, avatar, team, score, connected, ready, late, me}`; names are already in the player's
+  language), `.player(seat)`, `.nameOf(seat)`, `.avatarOf(seat)`, `.now()` (the server's clock), `.since(at)`.
+- `Oomba.live.on(event, fn)` → off. Events: `welcome start round countdown loading pause resume between end` (`{top}`),
+  `phase join leave update`, `event` (`{from, kind, data}`), `state`, `question` (`{i, n, q, choices, secs, at,
+  answered}`), `answered`, `answers` (host: `{i, n}`), `reveal` (`{i, answer, counts, top}`), `result` (`{ok, points, rank,
+  score}`), `race`, `leaderboard`, `emote` (`{from, name, me}`; `me` is the player's own), `fix` (the server put you
+  back: `{x, y, z}`).
+- Reporting: `Oomba.live.score(n)` (the player's total, it can only rise as fast as `maxScorePerSec` per second of play), `Oomba.live.item(i,
+  ok)` (one result per item, for the teacher's per-question view), `Oomba.live.quiz.answer(choice)` (the open question;
+  the server times it), `Oomba.live.quiz.current`, `Oomba.live.quiz.answered`, `Oomba.live.quiz.left()` (ms).
+- Sharing: `Oomba.live.send(kind, data, {toHost})`: a small game event to everyone else (or the host); `kind` and every
+  word in `data` must be in `ready({ words })` (object keys too, unless 1-2 letters); `data` holds only numbers,
+  true/false, null and those words, in arrays or objects two deep at most: never text for people to read (there is no
+  chat). Anything else is dropped (send returns false). `Oomba.live.state` and
+  `Oomba.live.setState(patch)` (host only): shared state everyone reads. `Oomba.live.emote(name)` (`Oomba.live.emotes`).
+- Presence: `Oomba.live.move(x, y, z, heading, anim)` (metres, radians, an anim from `Oomba.live.anims`); call it every
+  frame, it sends at most 10 a second and only on a change. `Oomba.live.position(seat)` → the interpolated `{x, y, z, h}`.
+- 3D: `const crowd = Oomba.live.crowd(B, {make, size, auto, groundY, nameplates})`: every other player in your bridge
+  world, interpolated, with nameplates: kit rigs near, billboards further, one instanced shape far away (the counts fit
+  the device). `auto: false` and `crowd.update(dt)` in your own loop; `crowd.place(seat, x, y, z, heading, speed)` to put
+  a player where your game says (a race track), `crowd.free(seat)` to go back to their own moves;
+  `crowd.spectate(camera, dt)` (a slow camera tour round the players, for the host's view); `make(spec, seat)` builds your
+  own model for a player (give it `play(name, ms)` and read `.speed` to animate); `self: () => myRig` so the player's own
+  emotes play on their own figure.
+- 2D: `const flat = Oomba.live.flat({me, px})`: `flat.draw(ctx, {cx, cz, scale, ox, oy, r})` draws everyone's portrait and
+  name at (x, z) top-down, with the emote each just sent; `flat.place(seat, x, z)`, `flat.free(seat)`,
+  `flat.portrait(seat)` → a canvas, `flat.badge(ctx, seat, x, y)` (a player's emote, for figures you draw yourself).
+- No typing in a live game: text boxes are read-only and `prompt()` returns null. Show names only from `players()`.
+- A 3D live game also needs a 2D path: add `<meta name="oomba-live" content="2d">`, keep the game's rules and a top-down
+  view in a classic `<script>`, and put only the 3D view in the module; draw 2D when `Oomba.live.view === '2d'`.
+
+```js
+const L = Oomba.live;
+L.ready({ quiz: true, hostView: true });
+L.on('question', q => showQuestion(q.q, q.choices));            // big buttons; on a tap: L.quiz.answer(i)
+L.on('reveal', r => markRight(r.answer));
+L.on('result', r => say(r.ok ? 'right' : 'wrong'));
+L.on('end', e => showPodium(e.top));
+```
+
+```js
+const L = Oomba.live;
+L.ready({ presence: { bounds: 30, maxSpeed: 8 }, lobby: true, hostView: true, maxScorePerSec: 50, words: ['coin'] });
+L.on('event', e => { if (e.kind === 'coin') popCoin(e.from, e.data.n); });  // L.send('coin', { n: 3 })
+const crowd = L.crowd(B, { auto: false, self: () => heroRig });   // B = Oomba.three(THREE, {...})
+L.on('start', () => { playing = true; });
+L.on('end', () => { playing = false; L.score(points); });
+B.run(dt => { moveHero(dt); L.move(hero.position.x, 0, hero.position.z, hero.heading, hero.speed > 0.5 ? 'run' : 'idle'); crowd.update(dt); });
+```
 <!-- /builder -->
 
 ## The two clocks (read this first)

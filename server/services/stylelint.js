@@ -7,6 +7,7 @@
 // (Builder) and tests/safety/stylelint.test.js.
 import { ICON_NAMES } from '../../kit/src/icons.js';
 import { KIT_PACKS, KIT_LATEST } from './kit.js';
+import { checkHtml as liveCheckHtml, LIVE_NOTES } from './classlive-lint.js';
 import * as animals from '../../kit/packs/art-animals.js';
 import * as school from '../../kit/packs/art-school.js';
 import * as biomes from '../../kit/packs/art-biomes.js';
@@ -216,5 +217,8 @@ export function lintGame(html, o = {}) {
   const hasStrings = /\bstrings\s*[:(]|\bWORDS\b|\bSTRINGS\b/.test(code);
   const missing = hasStrings ? [...new Set(keys)].filter(k => !new RegExp(`(?:^|[\\s{,'"])${k}['"]?\\s*:`, 'm').test(code)) : [];
   if (missing.length) add('info', 'missing_key', `Uses string keys no strings table defines (${sample(missing)}): they show as the raw word. Add them to the strings for every language (an English fallback at least).`);
+  // 14. Oomba Live (a game that loads the live pack or uses Oomba.live): what keeps it from being live-ready, and the
+  //     run-time limits it should not rely on (docs/kit-api.md "Live class games"). Never blocking: hosting checks again.
+  if (/\/packs\/live\.js|\b(?:Oomba|OK)\s*\.\s*live\b/.test(src)) for (const i of liveCheckHtml(src).issues) add('warn', i.code, LIVE_NOTES[i.code] || i.code);
   return o.request ? respectChoices(out, o.request) : out;
 }

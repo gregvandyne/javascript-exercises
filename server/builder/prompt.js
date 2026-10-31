@@ -8,7 +8,7 @@
 import { localeInfo } from '../i18n/index.js';
 import { THREE_VERSION, threeImportMap, isThreeGame } from '../services/vendor.js';
 import { kitTag, kitPackTag } from '../services/kit.js';
-import { KIT_RULES_SOURCE, KIT_3D_RULES_SOURCE } from './kit-rules.js';
+import { KIT_RULES_SOURCE, KIT_3D_RULES_SOURCE, KIT_LIVE_RULES_SOURCE } from './kit-rules.js';
 import { TEMPLATE_KEYS } from './catalog.js';
 
 /** The kit rules with the pinned tags (the same bytes for everyone). */
@@ -274,6 +274,14 @@ export const THREE_D_RULES = `3D RULES (the builder asked for a 3D game, or this
   pack needs that pack's tag next to the others), style ('bold' for 12-14, with the style-bold pack's tag), sky ('day',
   'sunset' or 'night'), colors (grass, grassDark, sand, water, rock, star; '' = the theme's), stars (how many, up to 20),
   platforms (floating rocks, 0 to 10, each with a star on top), roundSeconds, speed, jump, gravity, trees, rocks, flowers, clouds.
+- Live or closed world: before you build a new 3D world (or turn a game into one), ask with ask_user whether other players
+  can join the world live, unless the builder already said so. This question counts toward the three, and you ask it even
+  when the first message says enough. Ask in the builder's language, for example "Should other players be able to join
+  your world live, or is it your own closed world?", with exactly two options: one that keeps the words "Oomba Live"
+  exactly as they are (for example "🌍 Live: others join with Oomba Live") and one for a closed world (for example
+  "🏝️ Closed: just my world"). Say in one short sentence that a teacher or grown-up hosts live games for a class or
+  family. Live: build the world, then make it live-ready with the LIVE RULES (players see each other walk around in it).
+  Closed: build it as a one-player world.
 - The island's look is the kit's 3D bridge (Oomba.three: toon shading, Ink outlines, the theme's sky and light). Keep it.
 - Keep CONFIG.title equal to the game's name (the title you set with set_game), so the in-game title card matches.
 - If they already have a game and ask to make it 3D, tell them it will become a new 3D island game and their old game stays
@@ -328,3 +336,28 @@ import * as THREE from 'three';
   buttons, BRB sound, score and storage, and window.__brbTest with state() and start().
 
 ${withTags(KIT_3D_RULES_SOURCE)}`;
+
+/** Does this message ask for a live class game (Oomba Live), in any of the site's languages? The Studio's "Make it a live
+ *  class game" button sends live.entry.studioAskText, which says "Oomba Live" in every language. */
+const LIVE_WORDS = /\boomba live\b|\blive[- ](?:class|classroom)\b|\b(?:class|classroom) live\b|live-ready|\bmultiplayer class\b/i;
+export const asksForLive = text => LIVE_WORDS.test(String(text || ''));
+/** Send the live rules this turn? Yes once the builder asked for a live class game (remembered), or when the game
+ *  already loads the live pack. */
+export function wantsLive(state, text, version) {
+  if (asksForLive(text)) state.wantsLive = true;
+  return !!state.wantsLive || !!(version && /\/packs\/live\.js/.test(version.html));
+}
+/** The live class game rules: a fixed block (same bytes for everyone, cached), sent only for live requests and live games. */
+export const LIVE_RULES = `LIVE RULES (the builder asked for a live class game, or this game is one). Every rule above still applies.
+
+A live class game is played by a whole class at once with Oomba Live: a teacher or grown-up hosts it on the big screen
+and everyone joins on their own device. Keep the game exactly as it is for playing alone, and add Oomba.live on top:
+- Load the live pack's tag right after the kit tag and the game's other packs: {{PACK_TAG:live}}.
+- Call Oomba.live.ready({...}) once, react to on('start') and on('end'), report results with score / item / quiz.answer.
+- A 2D game: start the round on 'start' (the host's Start), report the score as it changes, and the final one on 'end'.
+- A 3D game: presence (bounds, maxSpeed), Oomba.live.move every frame, Oomba.live.crowd(B) for everyone else, the 2D meta
+  tag and a top-down view for devices without 3D.
+- No text boxes and no names typed by players: names come only from Oomba.live.players().
+- Use edit_game; tell the builder in one short sentence that a teacher or grown-up can now host it live.
+
+${withTags(KIT_LIVE_RULES_SOURCE)}`;
