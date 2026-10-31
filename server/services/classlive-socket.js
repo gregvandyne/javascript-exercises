@@ -50,7 +50,15 @@ function connection(ws, req) {
   const helloTimer = setTimeout(() => { if (!s) close(4401, 'no hello'); }, hooks.helloMs);
   helloTimer.unref?.();
   // The round trip, for the quiz's timing (a device's own measure is trusted within one round trip).
-  ws.on('pong', () => { alive = true; if (seat && pingAt) seat.rtt = Math.min(2000, LS.hooks.now() - pingAt); });
+  // Only a pong that answers our own ping counts (pingAt is cleared by the first one), and the round trip used is the
+  // median of the last five, capped at 600 ms: unsolicited or delayed pongs can't buy a head start on quiz answers.
+  ws.on('pong', () => {
+    alive = true;
+    if (!seat || !pingAt) return;
+    const rtt = Math.min(600, Math.max(0, LS.hooks.now() - pingAt)); pingAt = 0;
+    const r = seat.rtts || (seat.rtts = []); r.push(rtt); if (r.length > 5) r.shift();
+    seat.rtt = [...r].sort((a, b) => a - b)[Math.floor(r.length / 2)];
+  });
   const ping = setInterval(() => {
     if (!alive) { try { ws.terminate(); } catch { /* gone */ } return; }
     alive = false; pingAt = LS.hooks.now(); try { ws.ping(); } catch { /* gone */ }
@@ -82,6 +90,8 @@ function connection(ws, req) {
     if (!m || m.t !== 'hello') return close(4401, 'no hello');
     if (m.v !== P.V) return close(4400, 'version');
     const tok = readToken(m.tok);
+    // A frame token (it has f: the page it loads) is not a seat or host credential: it only loads the game frame.
+    if (tok && tok.f !== undefined) return close(4401, 'frame token');
     const sess = tok && LS.get(tok.s);
     if (!sess || sess.phase === 'ended') { LS.sendTo(ws, { t: 'bye', why: 'ended' }); return close(4404, 'no session'); }
     const { u } = userFromRequest(req);

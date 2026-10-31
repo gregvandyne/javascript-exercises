@@ -903,5 +903,5 @@ ol.steps li{margin-bottom:var(--s2)}
 }
 /* Oomba Live: "Join a game" in the signed-out top bar (wide screens; phones have it on the home page) */
 .joinnow{display:none;flex:none;white-space:nowrap}
-@media (min-width:1100px){.joinnow{display:inline-flex}}
+@media (min-width:1500px){.joinnow{display:inline-flex}}
 .home-join{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:center;margin:12px 0 0}

@@ -60,9 +60,12 @@ export function save(s, sum = summary(s)) {
     JSON.stringify(sum.items.map(it => ({ ...(it.q ? { q: it.q } : { i: it.i }), right: it.right, answered: it.answered, ...(it.topWrong ? { top_wrong: it.topWrong } : {}) }))),
     sum.scoredBy);
     if (!classRun) return;
+    // Rank order: a student who somehow held two seats (rows are best first) keeps the better one.
+    const done = new Set();
     for (const p of sum.players) {
       const userId = sum.userOf.get(p.seat);
-      if (!userId) continue;
+      if (!userId || done.has(userId)) continue;
+      done.add(userId);
       const m = S.classMember(s.classId, userId);
       if (!m || m.role !== 'student') continue;
       q.run('INSERT OR REPLACE INTO live_run_scores(run_id, user_id, score, rank, correct, answered) VALUES (?,?,?,?,?,?)', id, userId, p.score, p.rank, p.correct, p.answered);

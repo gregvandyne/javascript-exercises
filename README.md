@@ -93,7 +93,7 @@ On/off settings (`REQUIRE_SESSION_SECRET`, `MAINTENANCE_MODE`, `MOVED_PERMANENTL
 | `LIVE_MAX_PLAYERS` | `60` | Players in one live session (2-100). Grown-ups' open rooms are capped at 30 whatever this says. |
 | `LIVE_MAX_SESSIONS` | `60` | Live sessions open at once, site-wide. |
 | `LIVE_MAX_SEATS` | `2000` | Players connected to live sessions at once, site-wide (memory and bandwidth). |
-| `LIVE_HOURS` | `3` | The longest a live session (and its join code) lasts, in hours. |
+| `LIVE_HOURS` | `3` | The longest a live session (and its join code) lasts, in hours (at most 3; larger values are capped). |
 | `STT_REALTIME_MODEL` | – | Overrides the live model (OpenAI: the transcription model, `STT_MODEL` or its default; ElevenLabs: `scribe_v2_realtime`). |
 | `STT_MAX_SECONDS` / `STT_MAX_BYTES` | `60` / `1500000` | The longest and largest clip accepted. |
 | `STT_PER_MINUTE` / `STT_DAILY_CLIPS` | `8` / `60` | Clips per builder per minute and per day. |

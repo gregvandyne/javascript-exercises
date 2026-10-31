@@ -192,6 +192,8 @@ export const roster = s => [...s.seats.values()].map(seat => tuple(s, seat));
  */
 export function join(s, user, { asGuest = false, useMine = false, lang = 'en' } = {}) {
   if (!open(s)) return { ok: false, code: 'ended' };
+  // A removed account stays removed, even when it asks to play as a guest (its own sign-in is still on the request).
+  if (user && !user.is_guest && s.banned.has(user.id)) return { ok: false, code: 'removed' };
   const u = user && !user.is_guest && !user.banned && !(asGuest && s.audience === 'open') ? user : null;
   const ok = A.joinCheck(s, u);
   if (!ok.ok) return ok;
@@ -201,6 +203,20 @@ export function join(s, user, { asGuest = false, useMine = false, lang = 'en' } 
     if (seat) { seat.lang = lang; return { ok: true, seat, token: seatToken(s, seat), again: true }; }
   }
   if (!A.seatCanView(s, u)) return { ok: false, code: 'takenDown' };
+  // A signed-in player whose seat was freed (offline more than 60 s) gets that seat back, score and all: one seat per
+  // account per session, so results and the gradebook never see them twice. Not when the room is locked or full.
+  const back = u && s.gone ? s.gone.findIndex(x => x.userId === u.id) : -1;
+  if (back >= 0 && !s.settings.locked && s.seats.size < s.settings.maxPlayers) {
+    const seat = s.gone.splice(back, 1)[0];
+    seat.nonce = crypto.randomBytes(12).toString('base64url'); seat.lang = lang; seat.conn = null; seat.leftAt = now(); seat.ready = false;
+    if (s.nicksUsed.has(seat.nick)) seat.nick = N.pickNick(s.nicksUsed);
+    s.nicksUsed.add(seat.nick);
+    s.seats.set(seat.no, seat); s.byUser.set(u.id, seat.no);
+    if (s.race && !s.race.has(seat.no)) s.race.set(seat.no, { prog: 0, gems: 0 });
+    s.lastActive = now();
+    broadcast(s, { t: 'pj', p: tuple(s, seat) });
+    return { ok: true, seat, token: seatToken(s, seat), again: true };
+  }
   if (s.settings.locked) return { ok: false, code: 'locked' };
   if (s.seats.size >= s.settings.maxPlayers || connectedSeats() >= config.liveMaxSeats) return { ok: false, code: 'full' };
   const t = now();
@@ -266,6 +282,7 @@ function freeSeat(s, seat, { keepSummary = true } = {}) {
   }
   broadcast(s, { t: 'pl', n: seat.no });
   checkBarrier(s);
+  if (open(s)) Q.maybeAllAnswered(s, io);
 }
 
 // ---------------------------------------------------------------- connections
@@ -335,6 +352,11 @@ function clearTimer(s, k) { if (s.timers[k]) { clearTimeout(s.timers[k]); s.time
 function setTimer(s, k, ms, fn) { clearTimer(s, k); s.timers[k] = setTimeout(() => { s.timers[k] = null; try { fn(); } catch (e) { hooks.log('error', 'live timer failed', { sid: s.id, error: e.message }); } }, ms); s.timers[k].unref?.(); }
 
 export function setPhase(s, phase, extra = {}) {
+  const was = s.phase;
+  // Game scores may rise only with playing time (score()): a new round starts every seat's allowance afresh, and
+  // leaving play (pause, between rounds) stops it.
+  if (phase === 'playing' && was === 'countdown') for (const seat of s.seats.values()) seat.lastScoreAt = now();
+  if (was === 'playing' && phase !== 'playing') s.playEndAt = now();
   s.phase = phase; s.seq++; s.lastActive = now();
   if (extra.at !== undefined) s.at = extra.at;
   broadcast(s, { t: 'ph', phase, round: s.round, seq: s.seq, at: s.at, ...extra });
@@ -388,6 +410,7 @@ export function hostAction(s, a, { n = null, at = null } = {}) {
     case 'resume': {
       if (s.phase !== 'paused') return false;
       const shift = now() - s.pausedAt; s.pausedAt = 0;
+      for (const seat of s.seats.values()) seat.lastScoreAt = Math.min(now(), seat.lastScoreAt + shift);
       s.phase = 'playing';
       if (s.quiz) return Q.resume(s, io, shift), true;
       s.at += shift;
@@ -467,10 +490,12 @@ export function event(s, from, m) {
 /** A score the game reported. It can only rise as fast as the game's maxScorePerSec allows. */
 export function score(s, seat, n) {
   if (s.quiz || !['playing', 'between', 'paused'].includes(s.phase)) return;
-  const t = now();
-  const room = s.cfg.maxScorePerSec * (Math.max(0, t - seat.lastScoreAt) / 1000 + 1);
+  // Only time spent playing counts: the lobby, loading, countdown, pauses and the gaps between rounds bank nothing
+  // (lastScoreAt is reset when play starts and shifted over a pause; after play stops, time is counted up to then).
+  const t = s.phase === 'playing' ? now() : Math.max(seat.lastScoreAt, Math.min(now(), s.playEndAt || 0));
+  const room = s.cfg.maxScorePerSec * (Math.max(0, t - seat.lastScoreAt) / 1000);
   seat.score = Math.max(0, Math.min(n, seat.score + room));
-  seat.lastScoreAt = t; seat.scoredBy = 'game'; s.scoresDirty = true;
+  seat.lastScoreAt = Math.max(seat.lastScoreAt, t); seat.scoredBy = 'game'; s.scoresDirty = true;
 }
 /** An item result the game reported (once per item). */
 export function item(s, seat, i, ok) {
@@ -555,10 +580,13 @@ export function tick() {
     if (!open(s)) continue;
     if (s.dirty.size && presenceOn(s) && (s.dirty.size <= 40 || tickNo % 2 === 0)) {
       const p = [];
-      for (const no of s.dirty) { const seat = s.seats.get(no); if (seat && seat.pos) p.push([no, ...seat.pos]); }
+      // Each row carries how old its position is (ms since it arrived), so devices interpolate on the time the player
+      // was really there, not on the tick that happened to send it.
+      const t = now();
+      for (const no of s.dirty) { const seat = s.seats.get(no); if (seat && seat.pos) p.push([no, ...seat.pos, Math.max(0, Math.min(1000, t - seat.lastMoveAt))]); }
       s.dirty.clear();
       if (p.length) {
-        const str = JSON.stringify({ t: 's', k: tickNo, ts: now(), p });
+        const str = JSON.stringify({ t: 's', k: tickNo, ts: t, p });
         for (const seat of s.seats.values()) if (seat.conn && (seat.conn.bufferedAmount || 0) < MAX_BUFFERED) sendTo(seat.conn, str);
         if (s.host.conn && (s.host.conn.bufferedAmount || 0) < MAX_BUFFERED) sendTo(s.host.conn, str);
       }

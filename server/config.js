@@ -191,7 +191,7 @@ export const config = {
   liveMaxPlayers: Math.min(100, Math.max(2, Math.floor(num(process.env.LIVE_MAX_PLAYERS, 60)))),
   liveMaxSessions: Math.max(1, Math.floor(num(process.env.LIVE_MAX_SESSIONS, 60))),
   liveMaxSeats: Math.max(2, Math.floor(num(process.env.LIVE_MAX_SEATS, 2000))),
-  liveHours: Math.min(12, Math.max(0.1, num(process.env.LIVE_HOURS, 3))),
+  liveHours: Math.min(3, Math.max(0.1, num(process.env.LIVE_HOURS, 3))),   // never more than 3 hours (docs/legal-review.md item 41)
   sttMaxSeconds: Math.min(120, Math.max(5, num(process.env.STT_MAX_SECONDS, 60))),
   sttMaxBytes: Math.min(10_000_000, Math.max(100_000, num(process.env.STT_MAX_BYTES, 1_500_000))),
   sttPerMinute: Math.max(1, num(process.env.STT_PER_MINUTE, 8)),

@@ -84,18 +84,20 @@ export function createApp() {
   }
 
   // Structured request log (one JSON line per request) + timing.
+  // Paths that carry a secret are logged without it: a live join code (/join/1234567) or a live frame token.
+  const logPath = p => p.replace(/^\/join\/[^/]+/, '/join/:code').replace(/^\/live\/frame\/[^/]+/, '/live/frame/:token');
   app.use((req, res, next) => {
     const t0 = process.hrtime.bigint();
     res.on('finish', () => {
       // originalUrl, because a mounted handler (e.g. /vendor) that ends the response leaves req.path stripped.
       const p = req.originalUrl.split('?')[0];
       if (!config.logRequests || p.startsWith('/css/') || p.startsWith('/fonts/') || p.startsWith('/vendor/')) return;
-      log('info', 'request', { method: req.method, path: req.path, status: res.statusCode, ms: Number(process.hrtime.bigint() - t0) / 1e6, user: req.user ? req.user.id : null });
+      log('info', 'request', { method: req.method, path: logPath(req.path), status: res.statusCode, ms: Number(process.hrtime.bigint() - t0) / 1e6, user: req.user ? req.user.id : null });
     });
     // A connection that closes before the response is done (e.g. a phone dropping a long Builder stream).
     res.on('close', () => {
       if (res.writableFinished || !config.logRequests) return;
-      log('info', 'request closed early', { method: req.method, path: req.path, ms: Number(process.hrtime.bigint() - t0) / 1e6, user: req.user ? req.user.id : null });
+      log('info', 'request closed early', { method: req.method, path: logPath(req.path), ms: Number(process.hrtime.bigint() - t0) / 1e6, user: req.user ? req.user.id : null });
     });
     next();
   });
