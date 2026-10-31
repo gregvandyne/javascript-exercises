@@ -6254,19 +6254,147 @@ function npcSpec(id) {
   const d = NPC_DEFS[id]; let sp = null;
   if (d) {
     const L = d.look, wear = [];
-    if (L.hat === 'crown' || id === 'marigold') wear.push('crown');
-    sp = { species: 'kid', skin: nearest(L.skin, KTOK.skin), hair: { style: NPC_HAIR[L.hair] || 'bob', color: hairOf(L.hairColor || '#3b2a1e') },
+    if (L.hat === 'crown' && !L.tiara) wear.push('crown');   // a princess's tiara is drawn small by the game (drawTiara): the kit crown is the queen's
+    // under a hood only a fringe shows (the kit's long hair drew a big frame round the face that the 3D head has not)
+    sp = { species: 'kid', skin: nearest(L.skin, KTOK.skin), hair: { style: L.hat === 'hood' ? 'buzz' : NPC_HAIR[L.hair] || 'bob', color: hairOf(L.hairColor || '#3b2a1e') },
       // a shawl over a dress reads as plain shoulders: the kit dress's dark straps looked like harness stripes on Granny Fern
       outfit: { top: L.dress && !L.shawl ? 'dress' : L.overalls ? 'overalls' : L.hat === 'hood' ? 'hoodie' : 'tee', color: hueOf(L.dress || L.overalls || L.tabard || L.shirt) }, wear, seed: Object.keys(NPC_DEFS).indexOf(id) + 3 };
     // the kit has no bun: a close silver cap ('buzz') with a bun drawn on top, like her 3D model (NPC_HAIR 'bun' -> 'buzz')
     if (L.hair === 'bun') SPEC_BUN.add(sp);
-  } else if (id === 'snarlwick') sp = { species: 'kid', skin: 0, hair: { style: 'spiky', color: 'black' }, outfit: { top: 'hoodie', color: 'grape' }, mood: 'determined', seed: 66 };
+    if (L.hair === 'bald') SPEC_BALD.set(sp, L.hairColor);
+    if (L.tiara) SPEC_TIARA.add(sp);
+  } else if (id === 'snarlwick') {
+    // like his 3D model: bald under a gold crown, pale lilac skin, yellow eyes, a huge purple moustache and a goatee
+    // (a spiky-haired kid in a hoodie read as a kid with glasses and a backpack)
+    sp = { species: 'kid', skin: 0, hair: { style: 'buzz', color: 'black' }, outfit: { top: 'tee', color: 'grape' }, wear: ['crown'], mood: 'determined', seed: 66 };
+    SPEC_BALD.set(sp, null); SPEC_EYES.set(sp, { white: '#fff6a0' }); SPEC_HAIRFACE.set(sp, { mustache: '#8a3fd1', big: true, goatee: '#8a3fd1' });
+  }
   if (sp && d && d.look.glasses) SPEC_RIMS.set(sp, d.look.glasses);
+  // the kit has no beards or moustaches: drawn on the portrait, like the 3D model's (a bare kid face didn't match)
+  if (sp && d && (d.look.beard || d.look.mustache)) SPEC_HAIRFACE.set(sp, { beard: d.look.beard, mustache: d.look.mustache });
+  // and the hats the kit has no art for: a helmet or rain hat (a dome over the hair) and a top hat
+  if (sp && d && (d.look.hat === 'helmet' || d.look.hat === 'rain' || d.look.hat === 'top' || d.look.hat === 'hood' || d.look.hat === 'straw')) SPEC_HAT.set(sp, { kind: d.look.hat, color: d.look.hat === 'helmet' ? '#c9d1dc' : d.look.hat === 'straw' ? '#e9c46a' : d.look.hatColor, band: d.look.ribbon || '#e5484d' });
   SPEC_CACHE[id] = sp; return sp;
 }
 /** Specs that wear glasses -> the rim colour. The kit's 'glasses' wear is a thick Ink ring round its already-ringed eyes
  *  (dark goggles on Granny Fern), so the game draws thin round rims on the portrait itself, like her 3D model's. */
-const SPEC_RIMS = new WeakMap(), SPEC_BUN = new WeakSet();
+const SPEC_RIMS = new WeakMap(), SPEC_TIARA = new WeakSet(), SPEC_BUN = new WeakSet(), SPEC_HAIRFACE = new WeakMap(), SPEC_HAT = new WeakMap(), SPEC_BALD = new WeakMap(), SPEC_EYES = new WeakMap();
+/** The kit kid's eyes are thick Ink rings (round goggles at badge size); the 3D people have plain dot eyes: a white,
+ *  a dark pupil and a glint. So the ring is painted out in skin and the 3D eye drawn in its place (open-eyed moods). */
+function drawDotEyes(c, o) {
+  const s = c.height / 202, g = c.getContext('2d');
+  let skin = o && o.skin;
+  if (!skin) { try { const d = g.getImageData(Math.round(80 * s), Math.round(88 * s), 1, 1).data; skin = `rgb(${d[0]},${d[1]},${d[2]})`; } catch (e) { return; } }
+  g.save(); g.scale(s, s);
+  for (const x of [67, 93]) {
+    const y = 96;
+    g.fillStyle = skin; g.beginPath(); g.arc(x, y, 11.6, 0, Math.PI * 2); g.fill();
+    g.fillStyle = (o && o.white) || '#ffffff'; g.beginPath(); g.ellipse(x, y, 6.6, 7.8, 0, 0, Math.PI * 2); g.fill();
+    g.strokeStyle = 'rgba(40,22,12,.55)'; g.lineWidth = 0.8; g.stroke();
+    g.fillStyle = '#140a05'; g.beginPath(); g.ellipse(x, y + 0.8, 3.9, 5.2, 0, 0, Math.PI * 2); g.fill();
+    g.fillStyle = '#ffffff'; g.beginPath(); g.arc(x + 1.5, y - 1.4, 1.4, 0, Math.PI * 2); g.fill();
+  }
+  g.restore();
+}
+/** A bald head on a kit kid portrait (the kit has no bald style: the 'buzz' cap is painted over in skin). */
+function drawBald(c) {
+  const s = c.height / 202, g = c.getContext('2d');
+  let skin; try { const d = g.getImageData(Math.round(80 * s), Math.round(88 * s), 1, 1).data; skin = `rgb(${d[0]},${d[1]},${d[2]})`; } catch (e) { return; }
+  // the kid head: centre (80, 92), radii 33 x 31 in the 160 x 202 box; the buzz cap reaches 1 past it
+  const hx = 80, hy = 92, rx = 33, ry = 31, top = hy - ry, cap = new Path2D();
+  cap.ellipse(hx, hy, rx + 1.4, ry + 1.4, 0, Math.PI + 0.3, Math.PI * 2 - 0.3);
+  cap.quadraticCurveTo(hx + rx * 0.5, top + 14, hx, top + 10); cap.quadraticCurveTo(hx - rx * 0.6, top + 16, hx - (rx + 1.4) * Math.cos(0.3), hy - (ry + 1.4) * Math.sin(0.3)); cap.closePath();
+  g.save(); g.scale(s, s);
+  g.fillStyle = skin; g.fill(cap);
+  // and the cap's lower edge line (the kit strokes it a little wider than the cap)
+  const low = new Path2D(); low.moveTo(hx + (rx + 1.4) * Math.cos(0.3), hy - (ry + 1.4) * Math.sin(0.3)); low.quadraticCurveTo(hx + rx * 0.5, top + 14, hx, top + 10); low.quadraticCurveTo(hx - rx * 0.6, top + 16, hx - (rx + 1.4) * Math.cos(0.3), hy - (ry + 1.4) * Math.sin(0.3));
+  g.strokeStyle = skin; g.lineWidth = 4; g.stroke(low);
+  const edge = new Path2D(); edge.ellipse(hx, hy, rx + 0.6, ry + 0.6, 0, Math.PI + 0.25, Math.PI * 2 - 0.25);
+  g.strokeStyle = '#141414'; g.lineWidth = 2.4; g.stroke(edge);
+  g.fillStyle = 'rgba(255,255,255,.45)'; g.beginPath(); g.ellipse(hx - 12, top + 9, 8, 3.6, -0.35, 0, Math.PI * 2); g.fill();
+  g.restore();
+}
+/** A hat on a kit kid portrait: found from the figure's top row like drawBun; the brim sits on the brow above the eyes. */
+function drawHat(c, o) {
+  const g = c.getContext('2d'), s = c.height / 202, cx = Math.round(c.width / 2);
+  let d; try { d = g.getImageData(cx, 0, 1, c.height).data; } catch (e) { return; }
+  let y0 = 0; while (y0 < c.height && d[y0 * 4 + 3] < 128) y0++;
+  if (y0 >= c.height) return;
+  const top = y0 / s, brow = 82, ink = '#141414';
+  g.save(); g.scale(s, s); g.lineJoin = 'round';
+  const shade = '#' + col(o.color).multiplyScalar(0.75).getHexString();
+  if (o.kind === 'straw') {
+    // a straw boater: a wide brim on the brow and a low crown with a band, like the 3D straw hats
+    const cr = new Path2D(); cr.roundRect(55, Math.max(4, brow - 32), 50, brow - 4 - Math.max(4, brow - 32), 6);
+    g.fillStyle = o.color; g.fill(cr); g.strokeStyle = ink; g.lineWidth = 2.4; g.stroke(cr);
+    g.fillStyle = o.band || '#e5484d'; g.fillRect(56, brow - 15, 48, 7);
+    const brim = new Path2D(); brim.ellipse(80, brow - 5, 54, 8, 0, 0, Math.PI * 2); g.fillStyle = o.color; g.fill(brim); g.stroke(brim);
+    g.fillStyle = 'rgba(255,255,255,.45)'; g.beginPath(); g.ellipse(64, brow - 24, 6, 3, -0.3, 0, Math.PI * 2); g.fill();
+  } else if (o.kind === 'hood') {
+    // a hood behind the head (the hair and face stay in front), its rim round the face
+    g.globalCompositeOperation = 'destination-over';
+    const h = new Path2D(); h.ellipse(80, (top + 112) / 2, 50, (112 - top) / 2 + 8, 0, 0, Math.PI * 2);
+    g.fillStyle = o.color; g.fill(h); g.strokeStyle = ink; g.lineWidth = 2.4 * 2; g.stroke(h);
+  } else if (o.kind === 'top') {
+    const crown = new Path2D(); crown.rect(58, Math.max(2, top - 30), 44, brow - 8 - Math.max(2, top - 30));
+    g.fillStyle = o.color; g.fill(crown); g.strokeStyle = ink; g.lineWidth = 2.4; g.stroke(crown);
+    g.fillStyle = '#ffc83d'; g.fillRect(59, brow - 18, 42, 7);
+    const brim = new Path2D(); brim.ellipse(80, brow - 6, 38, 5, 0, 0, Math.PI * 2); g.fillStyle = shade; g.fill(brim); g.stroke(brim);
+  } else {
+    // a dome from just above the hair down to the brow, with a rim band
+    const ry = Math.max(14, brow - top + 3), dome = new Path2D(); dome.ellipse(80, brow, 41, ry, 0, Math.PI, 0); dome.closePath();
+    g.fillStyle = o.color; g.fill(dome); g.strokeStyle = ink; g.lineWidth = 2.4; g.stroke(dome);
+    const rim = new Path2D(); rim.roundRect(o.kind === 'rain' ? 30 : 37, brow - 4, o.kind === 'rain' ? 100 : 86, 8, 4);
+    g.fillStyle = o.kind === 'helmet' ? '#9aa4b2' : shade; g.fill(rim); g.stroke(rim);
+    g.fillStyle = 'rgba(255,255,255,.55)'; g.beginPath(); g.ellipse(66, brow - ry * 0.6, 8, 4, -0.4, 0, Math.PI * 2); g.fill();
+    if (o.kind === 'helmet') { g.fillStyle = '#3e7bfa'; g.fillRect(77, brow - ry - 9, 6, 10); g.strokeRect(77, brow - ry - 9, 6, 10); }
+  }
+  g.restore();
+}
+/** A chin beard and/or a curled moustache on a kit kid portrait (same 160 x 202 layout as drawRims), with the kit's Ink edge. */
+function drawFaceHair(c, o) {
+  const s = c.height / 202, g = c.getContext('2d');
+  g.save(); g.scale(s, s); g.lineJoin = 'round'; g.lineCap = 'round';
+  if (o.beard) {
+    // a full chin beard under the smile, with sideburns up the jaw (a thin crescent read as a dark band at badge size)
+    const b = new Path2D(); b.moveTo(52, 98); b.quadraticCurveTo(52, 142, 80, 143); b.quadraticCurveTo(108, 142, 108, 98);
+    b.quadraticCurveTo(103, 112, 96, 117); b.quadraticCurveTo(89, 124, 80, 123); b.quadraticCurveTo(71, 124, 64, 117); b.quadraticCurveTo(57, 112, 52, 98); b.closePath();
+    g.fillStyle = o.beard; g.fill(b); g.strokeStyle = '#141414'; g.lineWidth = 2; g.stroke(b);
+  }
+  if (o.goatee) {
+    const gt = new Path2D(); gt.moveTo(73, 119); gt.quadraticCurveTo(80, 122, 87, 119); gt.lineTo(80, 136); gt.closePath();
+    g.fillStyle = o.goatee; g.fill(gt); g.strokeStyle = '#141414'; g.lineWidth = 1.6; g.stroke(gt);
+  }
+  if (o.mustache && o.big) {
+    // Lord Snarlwick's: two big swoops out past the cheeks, curling up at the ends
+    for (const k of [-1, 1]) {
+      const m = new Path2D(); m.moveTo(80, 104); m.quadraticCurveTo(80 + k * 14, 100, 80 + k * 26, 108); m.quadraticCurveTo(80 + k * 36, 112, 80 + k * 38, 100);
+      m.quadraticCurveTo(80 + k * 42, 116, 80 + k * 26, 116); m.quadraticCurveTo(80 + k * 10, 116, 80, 110); m.closePath();
+      g.fillStyle = o.mustache; g.fill(m); g.strokeStyle = '#141414'; g.lineWidth = 1.6; g.stroke(m);
+    }
+  } else if (o.mustache) {
+    for (const k of [-1, 1]) {
+      const m = new Path2D(); m.moveTo(80, 106); m.quadraticCurveTo(80 + k * 8, 103, 80 + k * 15, 108); m.quadraticCurveTo(80 + k * 19, 110, 80 + k * 20, 104);
+      m.quadraticCurveTo(80 + k * 21, 113, 80 + k * 13, 113); m.quadraticCurveTo(80 + k * 6, 113, 80, 109); m.closePath();
+      g.fillStyle = o.mustache; g.fill(m); g.strokeStyle = '#141414'; g.lineWidth = 1.4; g.stroke(m);
+    }
+  }
+  g.restore();
+}
+/** A small tiara on the hair (Princess Marigold): a gold band with three low points and a pink gem, like her 3D one. */
+function drawTiara(c) {
+  const g = c.getContext('2d'), s = c.height / 202, cx = Math.round(c.width / 2);
+  let d; try { d = g.getImageData(cx, 0, 1, c.height).data; } catch (e) { return; }
+  let y0 = 0; while (y0 < c.height && d[y0 * 4 + 3] < 128) y0++;
+  if (y0 >= c.height) return;
+  const base = Math.max(y0 / s + 13, 64);
+  g.save(); g.scale(s, s); g.lineJoin = 'round';
+  const p = new Path2D(); p.moveTo(63, base + 2); p.quadraticCurveTo(80, base - 5, 97, base + 2); p.lineTo(96, base - 4); p.lineTo(88, base - 3); p.lineTo(85, base - 9); p.lineTo(83, base - 5);
+  p.lineTo(80, base - 14); p.lineTo(77, base - 5); p.lineTo(75, base - 9); p.lineTo(72, base - 3); p.lineTo(64, base - 4); p.closePath();
+  g.fillStyle = '#ffc83d'; g.fill(p); g.strokeStyle = '#141414'; g.lineWidth = 1.8; g.stroke(p);
+  g.fillStyle = '#ff4d6d'; g.beginPath(); g.arc(80, base - 3, 2.4, 0, Math.PI * 2); g.fill();
+  g.restore();
+}
 /** A hair bun on top of a kit portrait's head, drawn behind the figure so only its top shows, in the hair's own colour. */
 function drawBun(c) {
   const g = c.getContext('2d'), s = c.height / 202, W = c.width, cx = Math.round(W / 2);
@@ -6284,11 +6412,7 @@ function drawRims(c, colour) {
   // kit kid portrait: drawn in a 160 x 202 box with the figure at (20, 42); eyes at (47, 54) and (73, 54), 20 across
   const s = c.height / 202, g = c.getContext('2d'), E = [[67, 96], [93, 96]], r = 12.6 * s;
   g.save(); g.lineCap = 'round';
-  // the kit's thick Ink eye ring inside a rim read as goggles: it becomes eye white with a thin brown edge (pupils stay)
-  for (const [x, y] of E) {
-    g.strokeStyle = '#fffdf2'; g.lineWidth = 3.6 * s; g.beginPath(); g.arc(x * s, y * s, 9 * s, 0, Math.PI * 2); g.stroke();
-    g.strokeStyle = '#5c3a26'; g.lineWidth = 0.9 * s; g.beginPath(); g.arc(x * s, y * s, 10.6 * s, 0, Math.PI * 2); g.stroke();
-  }
+  // (the kit's thick Ink eye ring is already painted out: drawDotEyes)
   g.strokeStyle = colour;
   for (const [x, y] of E) { g.lineWidth = 2.2 * s; g.beginPath(); g.arc(x * s, y * s, r, 0, Math.PI * 2); g.stroke(); }
   g.lineWidth = 1.8 * s; g.beginPath(); g.moveTo(67 * s + r, 95 * s); g.quadraticCurveTo(80 * s, 92 * s, 93 * s - r, 95 * s); g.stroke();
@@ -6297,16 +6421,36 @@ function drawRims(c, colour) {
 }
 /** A villager or a guard ('vil' + number) as a kit character. */
 function villagerSpec(i, guard) {
+  // the villager's own 3D look (skin, hair, shirt), so the badge matches who you are talking to
+  const v = typeof CROWD !== 'undefined' && CROWD.list[i];
+  if (v) {
+    // crowd hair styles (buildCrowd): 0 short with a fringe, 1 a bun and long hair, 2 bald; hat 1 a straw hat, 2 a helmet
+    const hex = c => '#' + c.getHexString(), hat = v.guard ? 2 : v.hat, bald = !v.guard && v.style === 2;
+    const sp = { species: 'kid', skin: nearest(hex(v.skin), KTOK.skin), hair: { style: !v.guard && v.style === 1 && !hat ? 'long' : 'buzz', color: hairOf(hex(v.hair)) },
+      outfit: { top: 'tee', color: hueOf(hex(v.shirt)) }, seed: 20 + i };
+    if (v.guard) { sp.mood = 'determined'; SPEC_HAT.set(sp, { kind: 'helmet', color: '#c9d1dc' }); }
+    else if (hat === 1) SPEC_HAT.set(sp, { kind: 'straw', color: hex(v.hatC), band: '#c8372d' });
+    if (!v.guard && v.style === 1 && !hat) SPEC_BUN.add(sp);
+    if (bald) SPEC_BALD.set(sp, hex(v.hair));
+    return sp;
+  }
   const HS = ['puffs', 'bob', 'curls', 'spiky', 'braids', 'buzz', 'long', 'cap'], HC = ['cocoa', 'black', 'blonde', 'copper'];
   if (guard) return { species: 'kid', skin: (i * 3) % 8, hair: { style: 'buzz', color: HC[i % 4] }, outfit: { top: 'tee', color: 'stone' }, mood: 'determined', seed: 40 + i };
   return { species: 'kid', skin: (i * 5) % 8, hair: { style: HS[i % 8], color: HC[(i * 3) % 4] }, outfit: { top: ['tee', 'hoodie', 'dress', 'overalls'][i % 4], color: KHUES[(i * 5) % 7] }, seed: 20 + i };
 }
-const PORTRAITS = new Map();
+const PORTRAITS = new Map(), OPEN_EYES = new Set(['happy', 'determined', 'sad', 'thinking', 'talk']);
 /** A kit portrait canvas (cached; a copy when the cached one is already on the page). */
 function portraitOf(spec, px, mood) {
   const key = JSON.stringify([spec, px, mood || '']);
   let c = PORTRAITS.get(key);
-  if (!c) { try { c = OK.ui.portrait(spec, { size: px, mood }); } catch (e) { return null; } if (SPEC_BUN.has(spec)) drawBun(c); if (SPEC_RIMS.has(spec)) drawRims(c, SPEC_RIMS.get(spec)); PORTRAITS.set(key, c); }
+  if (!c) {
+    try { c = OK.ui.portrait(spec, { size: px, mood }); } catch (e) { return null; }
+    // the game's own people (not the player's kit character): dot eyes like their 3D faces, while the eyes are open
+    if (spec !== MY_CHAR && OPEN_EYES.has(mood || spec.mood || 'happy')) drawDotEyes(c, SPEC_EYES.get(spec));
+    if (SPEC_BALD.has(spec)) drawBald(c, SPEC_BALD.get(spec));
+    if (SPEC_BUN.has(spec)) drawBun(c); if (SPEC_RIMS.has(spec)) drawRims(c, SPEC_RIMS.get(spec)); if (SPEC_HAIRFACE.has(spec)) drawFaceHair(c, SPEC_HAIRFACE.get(spec)); if (SPEC_HAT.has(spec)) drawHat(c, SPEC_HAT.get(spec)); if (SPEC_TIARA.has(spec)) drawTiara(c);
+    PORTRAITS.set(key, c);
+  }
   if (!c.isConnected) return c;
   const d = document.createElement('canvas'); d.width = c.width; d.height = c.height; d.className = c.className; d.style.cssText = c.style.cssText; d.setAttribute('aria-hidden', 'true');
   d.getContext('2d').drawImage(c, 0, 0); return d;
@@ -6326,7 +6470,11 @@ function headOf(spec, mood) {
     let y1 = H - 1; while (y1 > y0 && span(y1)[0] < 0) y1--;
     if (y1 - y0 < 8) return c;
     // the head (kit kids are about half head): a square over the top ~60% of the figure, centred on the head's middle row
-    const side = Math.max(16, Math.min(H, Math.round((y1 - y0 + 1) * 0.6))), [ma, mb] = span(Math.round(y0 + side * 0.45));
+    let side = Math.max(16, Math.min(H, Math.round((y1 - y0 + 1) * 0.6)));
+    // a beard or goatee hangs below the chin: the square reaches down past it (cut off at the badge's edge it read as a dark band)
+    const hf = SPEC_HAIRFACE.get(spec), chin = hf && (hf.beard || hf.goatee) ? 149 * H / 202 : 0;
+    if (chin) side = Math.min(H, Math.max(side, Math.round((chin - y0) / 0.86)));
+    const [ma, mb] = span(Math.round(y0 + side * 0.45));
     const cx = ma < 0 ? W / 2 : (ma + mb) / 2, top = Math.max(0, Math.round(y0 - side * 0.05));
     h = document.createElement('canvas'); h.width = h.height = side; h.className = 'ok-portrait hos-head'; h.setAttribute('aria-hidden', 'true');
     h.getContext('2d').drawImage(c, Math.round(cx - side / 2), top, side, side, 0, 0, side, side);
@@ -7938,22 +8086,52 @@ const HERO_SMILE = (() => {
 /** A thin, tapered smile drawn on a surface (like the hero's): surf(x, y) gives the surface's z there. a = half-width,
  *  yc = the corners' height, dip = how far the middle drops, w = the half-thickness in the middle. In head space. */
 function smileOn(surf, a, yc, dip, w) {
-  const N = 20, p = [], n = [], pt = t => [a * t, yc - dip * (1 - t * t)];
+  return strokeOn(surf, [-1, 1], t => [a * t, yc - dip * (1 - t * t)], t => w * (1 - 0.45 * t * t));
+}
+/** A flat stroke drawn on a surface: pt(t) -> [x, y] along the stroke for t in [t0, t1], wd(t) its half-width. The
+ *  shared builder for every face line (smiles, frowns, moustaches): thin flat colour that follows the skin, never a blob. */
+function strokeOn(surf, [t0, t1], pt, wd, N) {
+  N = N || 20; const p = [], n = [];
   let prev = null;
   for (let i = 0; i <= N; i++) {
-    const t = i / N * 2 - 1, [x, y] = pt(t), [x1, y1] = pt(Math.min(1, t + 0.01)), [x0, y0] = pt(Math.max(-1, t - 0.01));
+    const t = t0 + (t1 - t0) * i / N, [x, y] = pt(t), [x1, y1] = pt(Math.min(t1, t + 0.01)), [x0, y0] = pt(Math.max(t0, t - 0.01));
     let dx = x1 - x0, dy = y1 - y0; const l = Math.hypot(dx, dy) || 1; dx /= l; dy /= l;
-    const ww = w * (1 - 0.45 * t * t), L = [x - dy * ww, y + dx * ww], R = [x + dy * ww, y - dx * ww];
+    const ww = wd(t), L = [x - dy * ww, y + dx * ww], R = [x + dy * ww, y - dx * ww];
     const LL = [L[0], L[1], surf(L[0], L[1])], RR = [R[0], R[1], surf(R[0], R[1])];
     if (prev) { p.push(...prev[0], ...prev[1], ...LL, ...LL, ...prev[1], ...RR); for (let k = 0; k < 6; k++) n.push(0, 0, 1); }
     prev = [LL, RR];
   }
   const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(p, 3)); g.setAttribute('normal', new THREE.Float32BufferAttribute(n, 3)); return g;
 }
+/** The mouth colour that reads on a skin: dark brown on fair and tan skin, near-black on dark skin (brown vanished). */
+const mouthOn = skin => { const h = {}; col(skin).getHSL(h); return h.l < 0.4 ? '#1c0b05' : '#5a2a1a'; };
 const ellZ = (cx, cy, cz, rx, ry, rz, lift) => (x, y) => { const u = (x - cx) / rx, v = (y - cy) / ry; return cz + rz * Math.sqrt(Math.max(0, 1 - u * u - v * v)) + lift; };
-/** The people's smile: on the skin of their head (the 'sph:2' sphere at (0, 0.36, 0)), and on a beard's front for the bearded. */
+/** The people's smile: on the skin of their head (the 'sph:2' sphere at (0, 0.36, 0)); beards sit below it. */
 const NPC_SMILE = smileOn(ellZ(0, 0.36, 0, 0.36, 0.35, 0.35, 0.01), 0.07, 0.225, 0.045, 0.0095);
-const BEARD_SMILE = smileOn(ellZ(0, 0.13, 0.2, 0.3, 0.22, 0.2, 0.01), 0.06, 0.23, 0.035, 0.0095);
+const NPC_SMILE_BOLD = smileOn(ellZ(0, 0.36, 0, 0.36, 0.35, 0.35, 0.01), 0.072, 0.222, 0.045, 0.0135);
+const NPC_SMILE_LOW = smileOn(ellZ(0, 0.36, 0, 0.36, 0.35, 0.35, 0.01), 0.058, 0.2, 0.036, 0.0105);
+/** A flat oval drawn on a surface (a decal that hugs it, like strokeOn's lines): surf(x, y) gives the surface's z. */
+function discOn(surf, cx, cy, rx, ry, N) {
+  N = N || 20; const p = [], n = [], at = (x, y) => [x, y, surf(x, y)], c = at(cx, cy);
+  for (let i = 0; i < N; i++) {
+    const a0 = i / N * Math.PI * 2, a1 = (i + 1) / N * Math.PI * 2;
+    p.push(...c, ...at(cx + Math.cos(a0) * rx, cy + Math.sin(a0) * ry), ...at(cx + Math.cos(a1) * rx, cy + Math.sin(a1) * ry)); for (let k = 0; k < 3; k++) n.push(0, 0, 1);
+  }
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(p, 3)); g.setAttribute('normal', new THREE.Float32BufferAttribute(n, 3)); return g;
+}
+/** The people's eyes, as decals on the head sphere: a white with a margin all round a near-black pupil, and a glint.
+ *  (Little spheres sank into the curved head on their inner side, leaving a white crescent: squinty on dark skin.) */
+const NPC_EYE_GEO = [-1, 1].map(s => {
+  const head = lift => ellZ(0, 0.36, 0, 0.36, 0.35, 0.35, lift);
+  return [discOn(head(0.006), s * 0.12, 0.39, 0.074, 0.088), discOn(head(0.011), s * 0.12, 0.382, 0.041, 0.054), discOn(head(0.015), s * 0.12 + 0.017, 0.404, 0.014, 0.014, 10)];
+});
+/** One of the people's eyes (side s), as F.add / Kit parts: white, pupil, glint (the crowd's too). */
+const NPC_EYE_PARTS = (s1, s, pupil) => NPC_EYE_GEO[s < 0 ? 0 : 1].map((g, i) => [g, 0, 0, 0, 1, 1, 1, 0, 0, 0, i === 1 ? pupil || '#140a05' : '#ffffff']);
+/** A friendly moustache: two tapered strokes from under the nose that sweep out and curl up at the tips (a dark,
+ *  droopy blob read as a frown). [left, right]. In head space on the people's head sphere. */
+const NPC_STACHE = [-1, 1].map(s => strokeOn(ellZ(0, 0.36, 0, 0.36, 0.35, 0.35, 0.012), s < 0 ? [-1, 0] : [0, 1],
+  t => { const u = Math.abs(t); return [Math.sign(t || s) * (0.012 + 0.085 * u), 0.272 - 0.018 * Math.sin(Math.PI * u * 0.8) + 0.03 * u * u]; },
+  t => 0.021 * Math.pow(1 - Math.abs(t), 0.6) + 0.005, 16));
 /** Thin round glasses rims (a ring 1 across with a slim wire; scaled to the lens). */
 const RIM = new THREE.TorusGeometry(1, 0.17, 6, 28).toNonIndexed();
 /** A smooth sphere (its normals point straight out, unlike the faceted 'sph' prims) and the hair cap: the top of one,
@@ -9140,14 +9318,19 @@ function hpBar(slot, foe) {
 const RIGS = {}, RIG_LIST = [];
 const FM = new THREE.Matrix4(), FRM = new THREE.Matrix4(), FPM = new THREE.Matrix4(), FEM = new THREE.Matrix4(), FQ = new THREE.Quaternion(), FQ2 = new THREE.Quaternion();
 const FE = new THREE.Euler(), FV = new THREE.Vector3(), FS = new THREE.Vector3(), FC = new THREE.Color(), WHITE_C = new THREE.Color(1, 1, 1);
-const EYE_SPELL = col('#c060ff'), EYE_FREE = col('#2b1b0e');
+// the eyes are white with a dark pupil and a glint; the instance colour tints the white: purple while spellbound, plain white when freed
+const EYE_SPELL = col('#c060ff'), EYE_FREE = col('#ffffff');
+/** A rig. A def with `face` is a flat-colour, no-Ink face (mouth, nose, brows) that moves with part `follow`; `when`
+ *  'spell' or 'free' shows it only while spellbound or once freed (a frown, then a smile). Ink hulls round such small
+ *  parts merged them into dark smudges (a frown read as a droopy moustache). */
 function makeRig(name, defs, cap, eye) {
   const r = { name, cap, n: 0, parts: [], eye };
   for (const d of defs) {
-    const m = new THREE.InstancedMesh(d.geo, MAT.char, cap); m.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    const m = new THREE.InstancedMesh(d.geo, d.face ? MAT.face : MAT.char, cap); m.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
     m.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(cap * 3).fill(1), 3); m.instanceColor.setUsage(THREE.DynamicDrawUsage);
-    m.frustumCulled = false; m.castShadow = true; m.count = 0; m.visible = false; scene.add(m);
-    r.parts.push({ mesh: m, px: d.pivot[0], py: d.pivot[1], pz: d.pivot[2], tint: d.tint !== false });
+    m.frustumCulled = false; m.castShadow = !d.face; m.count = 0; m.visible = false; scene.add(m); if (d.face) m.userData.noInk = true;
+    const src = d.face ? defs[d.follow || 0] : d;
+    r.parts.push({ mesh: m, px: src.pivot[0], py: src.pivot[1], pz: src.pivot[2], tint: !d.face && d.tint !== false, follow: d.face ? d.follow || 0 : -1, when: d.when || '' });
   }
   r.pose = new Float32Array(defs.length * 7);
   RIGS[name] = r; RIG_LIST.push(r); return r;
@@ -9156,34 +9339,39 @@ const EYES = { mesh: null, n: 0 };
 function geoK(parts) { const k = new Kit(); for (const p of parts) k.add(p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7] || 0, p[8] || 0, p[9] || 0, p[10]); return k.geometry('lit'); }
 function buildFoeRigs() {
   const box = prim('box'), s0 = prim('sph:0'), s1 = prim('sph:1'), c6 = prim('cyl:6:1.000'), c8 = prim('cyl:8:1.000'), c12 = prim('cyl:12:1.000'), cone4 = prim('cone:4'), cone5 = prim('cone:5'), cone6 = prim('cone:6');
-  const frown = SMILE, PI2 = Math.PI / 2;
+  const PI2 = Math.PI / 2;
+  // faces (flat colour, no Ink; see makeRig): a thin frown while spellbound, a thin smile once freed, on each body's skin
+  const moods = (surf, f, sm, extra, follow) => [{ face: true, follow: follow || 0, when: 'spell', geo: geoK((extra || []).concat([[smileOn(surf, ...f), 0, 0, 0, 1, 1, 1, 0, 0, 0, '#2b1b0e']])) },
+    { face: true, follow: follow || 0, when: 'free', geo: geoK((extra || []).concat([[smileOn(surf, ...sm), 0, 0, 0, 1, 1, 1, 0, 0, 0, '#2b1b0e']])) }];
+  const blobSurf = ellZ(0, 0.42, 0, 0.6, 0.46, 0.6, 0.01), grumSurf = ellZ(0, 0.98, 0.02, 0.3, 0.27, 0.28, 0.01);
+  const puffSurf = (x, y) => { const r = 0.3 - 0.045 * (y - 0.02) / 0.84; return Math.sqrt(Math.max(0, r * r - x * x)) + 0.01; };
+  const grumFace = nose => moods(grumSurf, [0.07, 0.805, -0.02, 0.011], [0.085, 0.875, 0.045, 0.013], [[s0, 0, 0.93, 0.28, 0.065, 0.055, 0.06, 0, 0, 0, nose]]);
   // Blobble: a jelly dome with a leaf on top (one part; the whole body squashes and hops)
   makeRig('blobble', [{ pivot: [0, 0, 0], geo: geoK([[s1, 0, 0.42, 0, 0.6, 0.46, 0.6, 0, 0, 0, '#ffffff'], [s1, 0.18, 0.66, 0.3, 0.13, 0.08, 0.07, 0, 0, 0, '#ffffff'],
-    [c6, 0, 0.8, 0, 0.035, 0.2, 0.035, 0, 0, 0, '#7a5a2a'], [s1, 0.13, 0.99, 0, 0.17, 0.035, 0.08, 0, 0, -0.45, '#a6e870'], [frown, 0, 0.37, 0.52, 1.3, 1.3, 1.3, 0, 0, Math.PI, '#21321a']]) }],
+    [c6, 0, 0.8, 0, 0.035, 0.2, 0.035, 0, 0, 0, '#7a5a2a'], [s1, 0.13, 0.99, 0, 0.17, 0.035, 0.08, 0, 0, -0.45, '#a6e870']]) }].concat(moods(blobSurf, [0.09, 0.35, -0.035, 0.017], [0.1, 0.4, 0.055, 0.016])),
   16, { part: 0, x: 0, y: 0.58, z: 0.5, sx: 1.6, sy: 1.6 });
   // Grumblin: knee-high goblin with a saucepan helmet and a wooden club (body, club arm, other arm, legs)
   const grumBody = (skin, tunic, pot) => geoK([[s1, 0, 0.55, 0, 0.3, 0.3, 0.26, 0, 0, 0, tunic], [c12, 0, 0.4, 0, 0.29, 0.07, 0.25, 0, 0, 0, '#4a3020'],
     [s1, 0, 0.98, 0.02, 0.3, 0.27, 0.28, 0, 0, 0, skin], [cone4, 0.27, 1.0, 0, 0.07, 0.25, 0.05, 0, 0, -1.3, skin], [cone4, -0.27, 1.0, 0, 0.07, 0.25, 0.05, 0, 0, 1.3, skin],
-    [s0, 0, 0.93, 0.28, 0.07, 0.06, 0.07, 0, 0, 0, '#5f9a4a'], [frown, 0, 0.84, 0.27, 1.1, 1.1, 1.1, 0, 0, 0, '#2b1b0e'],
     [c12, 0, 1.12, 0, pot ? 0.33 : 0.29, pot ? 0.26 : 0.14, pot ? 0.33 : 0.29, 0, 0, 0, pot ? '#3d3d48' : '#aab3c0'], [c12, 0, 1.11, 0, pot ? 0.36 : 0.31, 0.035, pot ? 0.36 : 0.31, 0, 0, 0, pot ? '#55555f' : '#8a93a0'],
     pot ? [s0, 0, 1.4, 0, 0.07, 0.05, 0.07, 0, 0, 0, '#55555f'] : [box, 0, 1.17, -0.43, 0.06, 0.05, 0.3, 0, 0, 0, '#4a3020']]);
   const grumArm = (skin, club, big) => geoK([[c6, 0, -0.33, 0, 0.075, 0.33, 0.075, 0, 0, 0, skin], [s0, 0, -0.35, 0, 0.085, 0.085, 0.085, 0, 0, 0, skin]].concat(club ? [
     [prim('cyl:7:2.200'), 0, -0.35, 0, big ? 0.07 : 0.05, big ? 0.95 : 0.68, big ? 0.07 : 0.05, PI2, 0, 0, '#9a6a3f'], [s0, 0.06, -0.33, big ? 0.62 : 0.45, 0.05, 0.05, 0.05, 0, 0, 0, '#7a4e2c'], [s0, -0.05, -0.39, big ? 0.78 : 0.56, 0.05, 0.05, 0.05, 0, 0, 0, '#7a4e2c']] : []));
   const grumLegs = pants => geoK([[box, 0.12, -0.3, 0, 0.13, 0.3, 0.15, 0, 0, 0, pants], [box, -0.12, -0.3, 0, 0.13, 0.3, 0.15, 0, 0, 0, pants], [box, 0.12, -0.3, 0.04, 0.15, 0.08, 0.22, 0, 0, 0, '#3b2a1e'], [box, -0.12, -0.3, 0.04, 0.15, 0.08, 0.22, 0, 0, 0, '#3b2a1e']]);
-  makeRig('grumblin', [{ pivot: [0, 0, 0], geo: grumBody('#86c96a', '#8a5a34', false) }, { pivot: [0.3, 0.72, 0], geo: grumArm('#86c96a', true, false) }, { pivot: [-0.3, 0.72, 0], geo: grumArm('#86c96a', false) }, { pivot: [0, 0.3, 0], geo: grumLegs('#5b3a1e') }],
+  makeRig('grumblin', [{ pivot: [0, 0, 0], geo: grumBody('#86c96a', '#8a5a34', false) }, { pivot: [0.3, 0.72, 0], geo: grumArm('#86c96a', true, false) }, { pivot: [-0.3, 0.72, 0], geo: grumArm('#86c96a', false) }, { pivot: [0, 0.3, 0], geo: grumLegs('#5b3a1e') }].concat(grumFace('#5f9a4a')),
     18, { part: 0, x: 0, y: 1.0, z: 0.25, sx: 0.9, sy: 0.9 });
   // Chief Bonkbelly: a big grumblin with a cooking-pot helmet, a giant club and a barrel-lid shield
   const chiefArmL = geoK([[c6, 0, -0.33, 0, 0.075, 0.33, 0.075, 0, 0, 0, '#6aa85c'], [s0, 0, -0.35, 0, 0.085, 0.085, 0.085, 0, 0, 0, '#6aa85c'],
     [c12, -0.02, -0.3, 0.1, 0.34, 0.06, 0.34, PI2, 0, 0, '#a0703f'], [c12, -0.02, -0.3, 0.09, 0.37, 0.04, 0.37, PI2, 0, 0, '#8a93a0'], [box, -0.02, -0.33, 0.165, 0.5, 0.05, 0.02, 0, 0, 0, '#6e4422'], [box, -0.02, -0.12, 0.165, 0.5, 0.05, 0.02, 0, 0, 0, '#6e4422']]);
-  makeRig('chief', [{ pivot: [0, 0, 0], geo: grumBody('#6aa85c', '#9a5a4a', true) }, { pivot: [0.3, 0.72, 0], geo: grumArm('#6aa85c', true, true) }, { pivot: [-0.3, 0.72, 0], geo: chiefArmL }, { pivot: [0, 0.3, 0], geo: grumLegs('#4a3020') }],
+  makeRig('chief', [{ pivot: [0, 0, 0], geo: grumBody('#6aa85c', '#9a5a4a', true) }, { pivot: [0.3, 0.72, 0], geo: grumArm('#6aa85c', true, true) }, { pivot: [-0.3, 0.72, 0], geo: chiefArmL }, { pivot: [0, 0.3, 0], geo: grumLegs('#4a3020') }].concat(grumFace('#4f8a44')),
     2, { part: 0, x: 0, y: 1.0, z: 0.25, sx: 0.9, sy: 0.9 });
   // Puffcap: a grumpy mushroom (stem with feet and frowny face; a blue-violet cap with yellow spots)
   const capK = [[s1, 0, 0.06, 0, 0.62, 0.36, 0.62, 0, 0, 0, '#6b5bd6'], [prim('cyl:12:1.000'), 0, -0.06, 0, 0.5, 0.05, 0.5, 0, 0, 0, '#e9dcc0']];
   for (let i = 0; i < 6; i++) { const a = i / 6 * Math.PI * 2 + 0.3, e = 0.62; capK.push([s1, Math.cos(a) * 0.62 * Math.cos(e), 0.06 + 0.36 * Math.sin(e), Math.sin(a) * 0.62 * Math.cos(e), 0.1, 0.05, 0.1, 0, 0, 0, '#ffe14d']); }
   capK.push([s1, 0, 0.41, 0, 0.11, 0.04, 0.11, 0, 0, 0, '#ffe14d']);
-  makeRig('puffcap', [{ pivot: [0, 0, 0], geo: geoK([[prim('cyl:9:0.850'), 0, 0.02, 0, 0.3, 0.84, 0.3, 0, 0, 0, '#fff1d6'], [s1, 0.13, 0.05, 0.08, 0.12, 0.07, 0.16, 0, 0, 0, '#8a5a34'], [s1, -0.13, 0.05, 0.08, 0.12, 0.07, 0.16, 0, 0, 0, '#8a5a34'],
-    [box, 0.1, 0.55, 0.255, 0.12, 0.035, 0.03, 0, 0, 0.45, '#3b2a1e'], [box, -0.1, 0.55, 0.255, 0.12, 0.035, 0.03, 0, 0, -0.45, '#3b2a1e'], [frown, 0, 0.33, 0.28, 1.05, 1.05, 1.05, 0, 0, 0, '#3b2a1e']]) },
-  { pivot: [0, 0.86, 0], geo: geoK(capK) }], 14, { part: 0, x: 0, y: 0.47, z: 0.27, sx: 0.85, sy: 0.85 });
+  makeRig('puffcap', [{ pivot: [0, 0, 0], geo: geoK([[prim('cyl:9:0.850'), 0, 0.02, 0, 0.3, 0.84, 0.3, 0, 0, 0, '#fff1d6'], [s1, 0.13, 0.05, 0.08, 0.12, 0.07, 0.16, 0, 0, 0, '#8a5a34'], [s1, -0.13, 0.05, 0.08, 0.12, 0.07, 0.16, 0, 0, 0, '#8a5a34']]) },
+  { pivot: [0, 0.86, 0], geo: geoK(capK) }].concat(moods(puffSurf, [0.08, 0.33, -0.03, 0.014], [0.085, 0.365, 0.042, 0.013],
+    [[box, 0.1, 0.54, 0.27, 0.11, 0.028, 0.03, 0, 0, 0.4, '#3b2a1e'], [box, -0.1, 0.54, 0.27, 0.11, 0.028, 0.03, 0, 0, -0.4, '#3b2a1e']])), 14, { part: 0, x: 0, y: 0.47, z: 0.27, sx: 0.85, sy: 0.85 });
   // Bristleboar: chunky body with bristles (tinted: brown, or white on the snowy pass), head, snout + gloom tusks, legs
   const bk = [[s1, 0, 0.62, -0.05, 0.46, 0.4, 0.72, 0, 0, 0, '#ffffff'], [cone4, 0.21, 0.92, 0.5, 0.09, 0.2, 0.05, 0.3, 0, -0.3, '#f0f0f0'], [cone4, -0.21, 0.92, 0.5, 0.09, 0.2, 0.05, 0.3, 0, 0.3, '#f0f0f0'], [cone4, 0, 0.66, -0.74, 0.05, 0.22, 0.05, -2.0, 0, 0, '#dddddd']];
   for (let i = 0; i < 6; i++) bk.push([cone5, 0, 0.95 - Math.abs(i - 2.5) * 0.03, -0.45 + i * 0.17, 0.07, 0.24, 0.07, -0.2, 0, 0, '#5a5a5a']);
@@ -9201,9 +9389,11 @@ function buildFoeRigs() {
     [box, 0, -0.59, 0.06, 0.06, 1.0, 0.11, PI2, 0, 0, '#eef2f7'], [cone4, 0, -0.59, 1.04, 0.06, 0.16, 0.05, PI2, Math.PI / 4, 0, '#eef2f7'], [box, 0, -0.62, -0.18, 0.05, 0.05, 0.22, 0, 0, 0, '#5b3a1e']]) },
   { pivot: [-0.42, 1.36, 0], geo: geoK([[box, 0, -0.55, 0, 0.17, 0.55, 0.19, 0, 0, 0, '#c9d1dc'], [box, -0.04, -0.86, 0.17, 0.64, 0.74, 0.08, 0, 0, 0, '#9aa4b2'], [box, -0.04, -0.76, 0.215, 0.12, 0.5, 0.02, 0, 0, 0, '#7b4bb8'], [box, -0.04, -0.57, 0.215, 0.4, 0.1, 0.02, 0, 0, 0, '#7b4bb8']]) },
   { pivot: [0, 0.62, 0], geo: geoK([[box, 0.16, -0.62, 0, 0.2, 0.62, 0.24, 0, 0, 0, '#aeb7c4'], [box, -0.16, -0.62, 0, 0.2, 0.62, 0.24, 0, 0, 0, '#aeb7c4'], [box, 0.16, -0.62, 0.05, 0.24, 0.14, 0.34, 0, 0, 0, '#8a93a0'], [box, -0.16, -0.62, 0.05, 0.24, 0.14, 0.34, 0, 0, 0, '#8a93a0']]) }],
-  12, { part: 0, x: 0, y: 1.745, z: 0.235, sx: 1.55, sy: 0.42 });
+  12, { part: 0, x: 0, y: 1.69, z: 0.235, sx: 0.8, sy: 0.72 });
   // the shared eyes: two little spheres, unlit (purple while spellbound, dark and friendly when freed)
-  const ek = new Kit(); ek.add(s1, 0.1, 0, 0, 0.062, 0.07, 0.04, 0, 0, 0, '#ffffff', true); ek.add(s1, -0.1, 0, 0, 0.062, 0.07, 0.04, 0, 0, 0, '#ffffff', true);
+  // each eye is a white (tinted purple while spellbound), a dark pupil and a glint: plain glowing ovals had no look
+  const ek = new Kit();
+  for (const s of [-1, 1]) { ek.add(s1, s * 0.1, 0, 0, 0.062, 0.07, 0.04, 0, 0, 0, '#ffffff', true); ek.add(s1, s * 0.1, -0.006, 0.026, 0.034, 0.042, 0.02, 0, 0, 0, '#1a1024', true); ek.add(s1, s * 0.1 + 0.013, 0.016, 0.044, 0.011, 0.011, 0.008, 0, 0, 0, '#ffffff', true); }
   const em = new THREE.InstancedMesh(ek.geometry('glow'), MAT.glow, 64); em.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
   em.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(64 * 3).fill(1), 3); em.instanceColor.setUsage(THREE.DynamicDrawUsage);
   em.frustumCulled = false; em.count = 0; em.visible = false; scene.add(em); EYES.mesh = em;
@@ -9230,9 +9420,11 @@ function drawRig(f, now) {
   if (f.tilt) { FQ2.setFromAxisAngle(XAX2, f.tilt); FPM.makeRotationFromQuaternion(FQ2); FRM.multiply(FPM); }
   const tint = f.tint || WHITE_C;
   for (let i = 0; i < np; i++) {
-    const p = r.parts[i], o = i * 7;
+    const p = r.parts[i], o = (p.follow >= 0 ? p.follow : i) * 7;
     FE.set(P[o], P[o + 1], P[o + 2]); FQ2.setFromEuler(FE); FV.set(p.px + P[o + 3], p.py + P[o + 4], p.pz + P[o + 5]); FS.set(P[o + 6], P[o + 6], P[o + 6]);
-    FPM.compose(FV, FQ2, FS); FM.multiplyMatrices(FRM, FPM); FM.toArray(p.mesh.instanceMatrix.array, slot * 16);
+    FPM.compose(FV, FQ2, FS); FM.multiplyMatrices(FRM, FPM);
+    if (p.when && (p.when === 'free') !== !!f.freed) FM.makeScale(0, 0, 0);   // the other mood's face: hidden
+    FM.toArray(p.mesh.instanceMatrix.array, slot * 16);
     const c = p.tint ? tint : WHITE_C, ca = p.mesh.instanceColor.array; ca[slot * 3] = c.r; ca[slot * 3 + 1] = c.g; ca[slot * 3 + 2] = c.b;
     if (r.eye && r.eye.part === i && EYES.n < 64) {
       FV.set(r.eye.x, r.eye.y, r.eye.z); FQ2.identity(); FS.set(r.eye.sx, r.eye.sy, 1); FEM.compose(FV, FQ2, FS); FM.multiplyMatrices(FRM, FPM).multiply(FEM);
@@ -10739,30 +10931,45 @@ function personKits(o) {
   for (const s of [-1, 1]) H.add(s1, s * 0.345, 0.33, 0, 0.06, 0.08, 0.05, 0, 0, 0, skin);
   F.add(s1, 0, 0.31, 0.335, 0.045, 0.035, 0.035, 0, 0, 0, skinD);
   for (const s of [-1, 1]) F.add(s1, s * 0.19, 0.25, 0.285, 0.055, 0.032, 0.02, 0, s * 0.6, 0, '#ff9eb5');
-  for (const s of [-1, 1]) { F.add(s1, s * 0.12, 0.39, 0.3, 0.07, 0.085, 0.04, 0, 0, 0, '#ffffff'); F.add(s1, s * 0.12, 0.38, 0.33, 0.045, 0.06, 0.025, 0, 0, 0, o.eyes || '#2b1b0e'); F.add(s1, s * 0.12 + 0.018, 0.405, 0.35, 0.016, 0.016, 0.01, 0, 0, 0, '#ffffff'); }
-  if (!o.beard) F.add(NPC_SMILE, 0, 0, 0, 1, 1, 1, 0, 0, 0, '#5a2a1a');
+  // eyes: a white with a margin all round a smaller, near-black pupil (a big brown pupil left only a white crescent on
+  // dark skin, and the face looked squinty), and a glint
+  for (const s of [-1, 1]) for (const q of NPC_EYE_PARTS(s1, s, o.eyes)) F.add(...q);
+  // the smile: a little bolder on dark skin (a thin line vanished), lower and narrower under a moustache (they ran together)
+  const dark = mouthOn(skin) !== '#5a2a1a';
+  F.add(o.mustache ? NPC_SMILE_LOW : dark ? NPC_SMILE_BOLD : NPC_SMILE, 0, 0, 0, 1, 1, 1, 0, 0, 0, mouthOn(skin));
   if (o.glasses) {
     for (const s of [-1, 1]) { F.add(RIM, s * 0.12, 0.39, 0.358, 0.098, 0.098, 0.098, 0, 0, 0, o.glasses); F.add(box, s * 0.226, 0.4, 0.22, 0.014, 0.014, 0.26, 0, 0, 0, o.glasses); }
     F.add(box, 0, 0.395, 0.358, 0.05, 0.014, 0.014, 0, 0, 0, o.glasses);
   }
   const style = o.hair || 'short';
-  if (style === 'short' || style === 'braids' || style === 'bun' || style === 'long') { H.add(s2, 0, 0.44, -0.03, 0.38, 0.3, 0.39, 0, 0, 0, hc); H.add(box, 0, 0.54, 0.22, 0.6, 0.1, 0.18, -0.35, 0, 0, hc); }
+  // the hair cap sits a little back (z -0.065): further forward its front edge crossed the tops of the eyes
+  // (no fringe under a helmet, rain hat or hood: it poked through their fronts as a dark band)
+  const capped = o.hat === 'helmet' || o.hat === 'rain' || o.hat === 'hood';
+  if (style === 'short' || style === 'braids' || style === 'bun' || style === 'long') { if (capped) H.add(s2, 0, 0.4, -0.065, 0.37, 0.28, 0.39, 0, 0, 0, hc); else H.add(s2, 0, 0.44, -0.065, 0.38, 0.3, 0.4, 0, 0, 0, hc); if (!capped) H.add(s1, 0, 0.56, 0.2, 0.3, 0.07, 0.12, -0.35, 0, 0, hc); }
   if (style === 'bun') { H.add(s1, 0, 0.74, -0.12, 0.17, 0.15, 0.17, 0, 0, 0, hc); H.add(cyl, 0, 0.66, -0.1, 0.12, 0.06, 0.12, 0, 0, 0, hc); }
   if (style === 'braids') for (const s of [-1, 1]) { for (let i = 0; i < 4; i++) H.add(s1, s * 0.33, 0.28 - i * 0.12, -0.1, 0.08, 0.08, 0.08, 0, 0, 0, hc); H.add(s1, s * 0.33, -0.18, -0.1, 0.05, 0.05, 0.05, 0, 0, 0, o.ribbon || '#ff5c9e'); }
   if (style === 'long') H.add(box, 0, 0.0, -0.26, 0.66, 0.5, 0.14, 0, 0, 0, hc);
   if (style === 'curly') { for (let i = 0; i < 13; i++) { const a = i / 13 * Math.PI * 2, r = i % 2 ? 0.27 : 0.2, y = 0.57 + (i % 3) * 0.06; H.add(s1, Math.cos(a) * r, y, Math.sin(a) * r - 0.06, 0.13, 0.12, 0.13, 0, 0, 0, hc); } H.add(s1, 0, 0.68, -0.04, 0.2, 0.14, 0.2, 0, 0, 0, hc); for (const s of [-1, 1]) H.add(s1, s * 0.33, 0.38, -0.12, 0.1, 0.18, 0.12, 0, 0, 0, hc); }
   if (style === 'bald') for (const s of [-1, 1]) H.add(s1, s * 0.33, 0.38, -0.08, 0.08, 0.12, 0.14, 0, 0, 0, hc);
-  if (o.beard) { H.add(s1, 0, 0.13, 0.2, 0.3, 0.22, 0.2, 0, 0, 0, o.beard); for (const s of [-1, 1]) H.add(s1, s * 0.27, 0.24, 0.12, 0.09, 0.16, 0.12, 0, 0, 0, o.beard); }
-  if (o.mustache) for (const s of [-1, 1]) F.add(s1, s * 0.08, 0.265, 0.345, 0.1, 0.045, 0.05, 0, 0, s * 0.3, o.mustache);
-  // on a beard the smile sits on the beard's front, in a warm pink that reads on dark and fair beards alike
-  if (o.beard) F.add(BEARD_SMILE, 0, 0, 0, 1, 1, 1, 0, 0, 0, '#e8828a');
+  // a beard is a chin beard with sideburns along the jaw: it stays below the smile and outside the cheeks (a full beard
+  // up to the eyes, with the hair cap, framed the face like a dark mask). The moustache is two thin curled strokes.
+  if (o.beard) { H.add(s1, 0, 0.03, 0.19, 0.25, 0.13, 0.19, 0, 0, 0, o.beard); for (const s of [-1, 1]) H.add(s1, s * 0.29, 0.17, 0.07, 0.08, 0.17, 0.13, 0, 0, s * -0.25, o.beard); }
+  if (o.mustache) for (const g of NPC_STACHE) F.add(g, 0, 0, 0, 1, 1, 1, 0, 0, 0, o.mustache);
   const hat = o.hat, hcol = o.hatColor || '#5a2f8a';
   if (hat === 'straw') { H.add(cyl, 0, 0.62, 0, 0.64, 0.04, 0.64, 0, 0, 0, '#e9c46a'); H.add(cyl, 0, 0.64, 0, 0.32, 0.24, 0.32, 0, 0, 0, '#e9c46a'); H.add(cyl, 0, 0.66, 0, 0.33, 0.06, 0.33, 0, 0, 0, '#e5484d'); }
   if (hat === 'top') { H.add(cyl, 0, 0.64, 0, 0.46, 0.05, 0.46, 0, 0, 0, hcol); H.add(cyl, 0, 0.66, 0, 0.27, 0.56, 0.27, 0, 0, 0, hcol); H.add(cyl, 0, 0.7, 0, 0.28, 0.08, 0.28, 0, 0, 0, '#ffc83d'); }
-  if (hat === 'crown') { H.add(cyl, 0, 0.66, 0, 0.27, 0.13, 0.27, 0, 0, 0, '#ffc83d'); for (let i = 0; i < 5; i++) { const a = i / 5 * Math.PI * 2 + Math.PI / 2; H.add(cone4, Math.cos(a) * 0.24, 0.78, Math.sin(a) * 0.24, 0.06, 0.16, 0.06, 0, 0, 0, '#ffd84a'); H.add(s1, Math.cos(a) * 0.27, 0.72, Math.sin(a) * 0.27, 0.035, 0.035, 0.035, 0, 0, 0, ['#ff4d6d', '#4dc3ff', '#57d16a'][i % 3]); } }
-  if (hat === 'helmet') { H.add(s2, 0, 0.47, 0, 0.4, 0.3, 0.41, 0, 0, 0, '#c9d1dc'); H.add(cyl, 0, 0.42, 0, 0.42, 0.06, 0.42, 0, 0, 0, '#9aa4b2'); H.add(box, 0, 0.7, -0.05, 0.06, 0.24, 0.38, 0, 0, 0, '#3e7bfa'); }
-  if (hat === 'rain') { H.add(s2, 0, 0.47, -0.02, 0.4, 0.32, 0.41, 0, 0, 0, hcol); H.add(cyl, 0, 0.52, -0.08, 0.55, 0.04, 0.6, -0.12, 0, 0, hcol); }
-  if (hat === 'hood') { H.add(s2, 0, 0.42, -0.05, 0.42, 0.4, 0.42, 0, 0, 0, hcol); H.add(cone, 0, 0.5, -0.38, 0.14, 0.35, 0.14, -2.1, 0, 0, hcol); H.add(cyl, 0, 0.36, 0.05, 0.43, 0.06, 0.4, -0.3, 0, 0, '#2b5f2b'); }
+  if (hat === 'crown' && o.tiara) {
+    // a princess's tiara: a thin gold band in the hair and three small points at the front (a full five-point crown,
+    // even shrunk, sat on her like the queen's)
+    H.add(cyl, 0, 0.665, 0, 0.25, 0.06, 0.25, 0, 0, 0, '#ffc83d');
+    for (const [a, t] of [[-0.45, 0.65], [0, 1], [0.45, 0.65]]) H.add(cone4, Math.sin(a) * 0.225, 0.69 + 0.055 * t, Math.cos(a) * 0.225, 0.05, 0.11 * t, 0.05, 0, 0, 0, '#ffd84a');
+    H.add(s1, 0, 0.665, 0.25, 0.032, 0.032, 0.032, 0, 0, 0, '#ff4d6d');
+  } else if (hat === 'crown') { const k = o.tiara ? 0.7 : 1, r = 0.27 * (o.tiara ? 0.85 : 1); H.add(cyl, 0, 0.66 + (1 - k) * 0.06, 0, r, 0.13 * k, r, 0, 0, 0, '#ffc83d'); for (let i = 0; i < 5; i++) { const a = i / 5 * Math.PI * 2 + Math.PI / 2; H.add(cone4, Math.cos(a) * r * 0.89, 0.78 - (1 - k) * 0.05, Math.sin(a) * r * 0.89, 0.06 * k, 0.16 * k, 0.06 * k, 0, 0, 0, '#ffd84a'); H.add(s1, Math.cos(a) * r, 0.72 - (1 - k) * 0.02, Math.sin(a) * r, 0.035 * k, 0.035 * k, 0.035 * k, 0, 0, 0, ['#ff4d6d', '#4dc3ff', '#57d16a'][i % 3]); } }
+  // hats sit above the brow (their domes further back and up): lower, a helmet rim or a hood band crossed the eyes
+  if (hat === 'helmet') { H.add(s2, 0, 0.6, -0.06, 0.4, 0.26, 0.42, 0, 0, 0, '#c9d1dc'); H.add(cyl, 0, 0.535, -0.05, 0.42, 0.06, 0.43, 0, 0, 0, '#9aa4b2'); H.add(box, 0, 0.84, -0.08, 0.06, 0.2, 0.38, 0, 0, 0, '#3e7bfa'); }
+  if (hat === 'rain') { H.add(s2, 0, 0.6, -0.08, 0.41, 0.27, 0.43, 0, 0, 0, hcol); H.add(cyl, 0, 0.545, -0.1, 0.56, 0.05, 0.62, -0.1, 0, 0, hcol); }
+  // a hood is a shell behind the face (its opening frames the face; its band used to cross the eyes like a mask)
+  if (hat === 'hood') { H.add(s2, 0, 0.47, -0.1, 0.44, 0.39, 0.42, 0, 0, 0, hcol); for (let i = -1; i <= 1; i++) H.add(s1, i * 0.11, 0.545 - Math.abs(i) * 0.02, 0.255, 0.1, 0.055, 0.08, 0, 0, i * -0.35, hc); H.add(cone, 0, 0.55, -0.42, 0.14, 0.35, 0.14, -2.1, 0, 0, hcol); }
   if (o.clip) { for (let i = 0; i < 6; i++) { const a = i / 6 * Math.PI * 2; H.add(s1, 0.32 + Math.cos(a) * 0.07, 0.55 + Math.sin(a) * 0.07, 0.05, 0.05, 0.05, 0.03, 0, 0, 0, '#ffd23f'); } H.add(s1, 0.32, 0.55, 0.07, 0.045, 0.045, 0.03, 0, 0, 0, '#7a4a24'); }
   return K;
 }
@@ -10783,16 +10990,16 @@ function personModel(o) {
 /* Named people. at = [x, z]; face = a point to look at when idle. Where they stand can change with the story. */
 const NPC_DEFS = {
   granny: { at: [-14, 331], face: [0, 318], portrait: '👵', pitch: 1.35, look: { skin: '#f5c99b', hair: 'bun', hairColor: '#dcdce4', shirt: '#9b6bd1', dress: '#7b4bb8', glasses: '#a8801a', shawl: '#c3a3ff', h: 0.92 } },
-  bo: { at: [16.6, 312.6], face: [4, 318], portrait: '🔨', pitch: 0.7, look: { skin: '#e0ac69', hair: 'short', hairColor: '#3b2a1e', beard: '#3b2a1e', shirt: '#c8372d', pants: '#4a3020', apron: '#6e4422', belly: 1.25, h: 1.08, hammer: true } },
-  plum: { at: [4, 301], face: [0, 318], portrait: '🎩', pitch: 0.85, look: { skin: '#ffe0bd', hair: 'bald', hairColor: '#d9d9de', shirt: '#7b4bb8', pants: '#3d2a5c', belly: 1.38, hat: 'top', hatColor: '#4a2a73', mustache: '#d9d9de', buttons: '#ffc83d' } },
+  bo: { at: [16.6, 312.6], face: [4, 318], portrait: '🔨', pitch: 0.7, look: { skin: '#e0ac69', hair: 'short', hairColor: '#3b2a1e', beard: '#4a3324', shirt: '#c8372d', pants: '#4a3020', apron: '#6e4422', belly: 1.25, h: 1.08, hammer: true } },
+  plum: { at: [4, 301], face: [0, 318], portrait: '🎩', pitch: 0.85, look: { skin: '#ffe0bd', hair: 'bald', hairColor: '#d9d9de', shirt: '#7b4bb8', pants: '#3d2a5c', belly: 1.38, hat: 'top', hatColor: '#4a2a73', mustache: '#a3a3b0', buttons: '#ffc83d' } },
   tilly: { at: [149.5, 221], face: [130, 232], portrait: '🧑‍🌾', pitch: 1.15, look: { skin: '#c68642', hair: 'braids', hairColor: '#7a4a24', shirt: '#fff4e0', overalls: '#3e6fd8', pants: '#3e6fd8', hat: 'straw', ribbon: '#ff9f1c' } },
-  ivy: { at: [-100.5, 170.5], face: [-120, 140], portrait: '🌲', pitch: 1.2, look: { skin: '#f5c99b', hair: 'long', hairColor: '#d2582e', shirt: '#3f8f3c', pants: '#5b3a1e', hat: 'hood', hatColor: '#3f8f3c', cape: '#4caf50' } },
+  ivy: { at: [-100.5, 170.5], face: [-120, 140], portrait: '🌲', pitch: 1.2, look: { skin: '#f5c99b', hair: 'long', hairColor: '#d2582e', shirt: '#d9a25a', pants: '#5b3a1e', hat: 'hood', hatColor: '#24602a', cape: '#24602a' } },
   hazel: { at: [10.5, 141.5], face: [0, 150], portrait: '🪚', pitch: 1.05, walker: true, look: { skin: '#8d5524', hair: 'curly', hairColor: '#2b1b0e', shirt: '#ff9f1c', pants: '#3e6fd8', toolbelt: true, plank: true, walker: true } },
-  finn: { at: [175, -104], face: [190, -130], portrait: '🎣', pitch: 0.9, look: { skin: '#ffe0bd', hair: 'short', hairColor: '#f2cc5b', beard: '#f2cc5b', shirt: '#ffd23f', pants: '#2f5fa8', hat: 'rain', hatColor: '#ffd23f' } },
+  finn: { at: [175, -104], face: [190, -130], portrait: '🎣', pitch: 0.9, look: { skin: '#ffe0bd', hair: 'short', hairColor: '#c8742c', beard: '#c8742c', shirt: '#ffd23f', pants: '#2f5fa8', hat: 'rain', hatColor: '#ffd23f' } },
   maple: { at: [200, -160.5], face: [190, -150], portrait: '🛒', pitch: 1.25, look: { skin: '#e0ac69', hair: 'bun', hairColor: '#7a4a24', shirt: '#e5484d', dress: '#c8372d', apron: '#fafafa' } },
   oakley: { at: [-150, -126], face: [-150, -100], portrait: '💂', pitch: 0.8, look: { skin: '#c68642', hair: 'short', hairColor: '#2b1b0e', shirt: '#9aa4b2', tabard: '#3e6fd8', pants: '#9aa4b2', hat: 'helmet', mustache: '#2b1b0e', spear: true, h: 1.05 } },
   queen: { at: [-150, -219.2], face: [-150, -190], portrait: '👑', pitch: 1.2, look: { skin: '#f5c99b', hair: 'long', hairColor: '#f2cc5b', shirt: '#3e7bfa', dress: '#2f5fd0', hem: '#ffc83d', hat: 'crown', cape: '#c8372d', h: 1.04 } },
-  marigold: { at: [0, -378.6], face: [0, -355], portrait: '👸', pitch: 1.45, walker: true, look: { skin: '#ffe0bd', hair: 'braids', hairColor: '#f2cc5b', shirt: '#ffd23f', dress: '#ffc83d', hem: '#ff9f1c', clip: true, ribbon: '#ffd23f', h: 0.9, walker: true } },
+  marigold: { at: [0, -378.6], face: [0, -355], portrait: '👸', pitch: 1.45, walker: true, look: { skin: '#ffe0bd', hair: 'braids', hairColor: '#f2cc5b', shirt: '#ffd23f', dress: '#ffc83d', hem: '#ff9f1c', hat: 'crown', tiara: true, ribbon: '#ffd23f', h: 0.9, walker: true } },
 };
 const NPCS = {}, NPC_LIST = [];
 function buildPeople() {
@@ -10844,7 +11051,9 @@ function peopleFrame(dt, now) {
     } else if (n.state === 'crouch') { b.position.y = -0.18; if (m.legL) { m.legL.rotation.x = -0.6; m.legR.rotation.x = -0.6; } m.armL.rotation.set(-2.4, 0, 0.5); m.armR.rotation.set(-2.4, 0, -0.5); m.head.rotation.x = 0.35; }
     else if (n.state === 'hammer') { const k = cm ? 0.5 : (Math.sin(ts * 9) + 1) / 2; b.position.y = -0.25; m.armR.rotation.set(-1.2 - k * 1.4, 0, -0.1); m.head.rotation.x = 0.4; if (m.legL) { m.legL.rotation.x = -0.9; m.legR.rotation.x = 0.3; } }
     else if (n.state === 'cheer' || n.state === 'dance') { const k = cm ? 0 : Math.sin(ts * 7 + n.x); m.armL.rotation.set(-2.7 + k * 0.25, 0, 0.3); m.armR.rotation.set(-2.7 - k * 0.25, 0, -0.3); if (!cm && n.state === 'dance') { b.position.y = Math.abs(Math.sin(ts * 5 + n.z)) * 0.18; b.rotation.y = Math.sin(ts * 2.5 + n.x) * 0.4; } }
-    else if (n.state === 'cage' || n.state === 'bubble') { const k = cm ? 0 : Math.sin(ts * 3); m.armL.rotation.set(-2.6, 0, 0.4 + k * 0.2); m.armR.rotation.set(-2.6, 0, -0.4 - k * 0.2); m.head.rotation.x = -0.25; }
+    else if (n.state === 'cage') { const k = cm ? 0 : Math.sin(ts * 3); m.armL.rotation.set(-2.6, 0, 0.4 + k * 0.2); m.armR.rotation.set(-2.6, 0, -0.4 - k * 0.2); m.head.rotation.x = -0.25; }
+    // in a bubble: arms up and out, waving for help (cupped over the face they hid it), the head level so the face shows
+    else if (n.state === 'bubble') { const k = cm ? 0 : Math.sin(ts * 3); m.armL.rotation.set(-2.75, 0, -0.55 - k * 0.12); m.armR.rotation.set(-2.75, 0, 0.55 + k * 0.12); m.head.rotation.x = 0.1; }
     else if (n.state === 'pat') { m.armR.rotation.set(-1.9 + (cm ? 0 : Math.sin(ts * 6) * 0.2), 0, -0.1); }
     else if (n.state === 'hug') { m.armL.rotation.set(-1.4, 0, -0.6); m.armR.rotation.set(-1.4, 0, 0.6); }
     if (n.dizzy > 0) { m.head.rotation.z = Math.sin(ts * 8) * 0.2; b.rotation.z = Math.sin(ts * 5) * 0.06; }
@@ -10900,6 +11109,13 @@ const TAGNEAR = [], TAGNAME = {};
 /* Villagers: one rig instancer, per-instance colours (skin, shirt, pants, hair, hat). They wander near home, cheer when
    freed, dance at the festival, and share a tip when you talk to them. */
 const CROWD = { parts: [], list: [], cap: 18 };
+/** A crowd face (head space): eyes like the named people's, cheeks and a thin smile in `mouth`. */
+function crowdFace(mouth) {
+  const s1 = prim('sph:1'), f = [];
+  for (const s of [-1, 1]) f.push(...NPC_EYE_PARTS(s1, s), [s1, s * 0.19, 0.25, 0.285, 0.055, 0.032, 0.02, 0, s * 0.6, 0, '#ff9eb5']);
+  f.push([mouth === '#5a2a1a' ? NPC_SMILE : NPC_SMILE_BOLD, 0, 0, 0, 1, 1, 1, 0, 0, 0, mouth]);
+  return f;
+}
 function buildCrowd() {
   const box = prim('box'), s1 = prim('sph:1'), s2 = prim('sph:2'), cyl = prim('cyl:10:1.000'), W = '#ffffff', D = '#3b2a1e';
   const g = parts => geoFrom(parts).geometry('lit');
@@ -10908,12 +11124,16 @@ function buildCrowd() {
     { geo: g([[box, 0, 0.55, 0, 0.6, 0.65, 0.36, 0, 0, 0, W], [box, 0, 0.56, 0, 0.62, 0.09, 0.38, 0, 0, 0, '#4a3020'], [box, -0.36, 0.98, 0, 0.2, 0.2, 0.22, 0, 0, 0, W], [box, 0.36, 0.98, 0, 0.2, 0.2, 0.22, 0, 0, 0, W], [box, 0, 1.18, 0, 0.3, 0.12, 0.28, 0, 0, 0, '#f0d0b0']]), shadow: true },
     { geo: g([[box, 0, -0.48, 0, 0.17, 0.48, 0.18, 0, 0, 0, W], [s1, 0, -0.53, 0, 0.105, 0.105, 0.105, 0, 0, 0, W]]), cap2: true },
     { geo: g([[s2, 0, 0.36, 0, 0.36, 0.35, 0.35, 0, 0, 0, W], [s1, 0.345, 0.33, 0, 0.06, 0.08, 0.05, 0, 0, 0, W], [s1, -0.345, 0.33, 0, 0.06, 0.08, 0.05, 0, 0, 0, W]]), shadow: true },
-    { geo: g([[s2, 0, 0.44, -0.03, 0.38, 0.3, 0.39, 0, 0, 0, W], [box, 0, 0.54, 0.22, 0.6, 0.1, 0.18, -0.35, 0, 0, W]]) },
-    { geo: g([[s2, 0, 0.44, -0.03, 0.38, 0.3, 0.39, 0, 0, 0, W], [s1, 0, 0.74, -0.12, 0.17, 0.15, 0.17, 0, 0, 0, W], [box, 0, 0.0, -0.26, 0.62, 0.48, 0.12, 0, 0, 0, W]]) },
+    { geo: g([[s2, 0, 0.44, -0.065, 0.38, 0.3, 0.4, 0, 0, 0, W], [box, 0, 0.56, 0.2, 0.6, 0.1, 0.18, -0.35, 0, 0, W]]) },
+    { geo: g([[s2, 0, 0.44, -0.065, 0.38, 0.3, 0.4, 0, 0, 0, W], [s1, 0, 0.74, -0.12, 0.17, 0.15, 0.17, 0, 0, 0, W], [box, 0, 0.0, -0.26, 0.62, 0.48, 0.12, 0, 0, 0, W]]) },
     { geo: g([[cyl, 0, 0.62, 0, 0.64, 0.04, 0.64, 0, 0, 0, W], [cyl, 0, 0.64, 0, 0.32, 0.24, 0.32, 0, 0, 0, W], [cyl, 0, 0.66, 0, 0.33, 0.06, 0.33, 0, 0, 0, '#c8372d']]) },
-    // the face, on its own like the named people's: flat colour (not tinted by the skin) and no Ink, so eyes and smile stay crisp
-    { geo: g([[s1, -0.12, 0.38, 0.32, 0.05, 0.07, 0.03, 0, 0, 0, '#1d1410'], [s1, 0.12, 0.38, 0.32, 0.05, 0.07, 0.03, 0, 0, 0, '#1d1410'], [s1, -0.105, 0.405, 0.345, 0.014, 0.014, 0.01, 0, 0, 0, W], [s1, 0.135, 0.405, 0.345, 0.014, 0.014, 0.01, 0, 0, 0, W],
-      [NPC_SMILE, 0, 0, 0, 1, 1, 1, 0, 0, 0, '#3a1a10'], [s1, 0.19, 0.25, 0.285, 0.055, 0.032, 0.02, 0, 0.6, 0, '#ff9eb5'], [s1, -0.19, 0.25, 0.285, 0.055, 0.032, 0.02, 0, -0.6, 0, '#ff9eb5']]), face: true },
+    // the face, on its own like the named people's: flat colour (not tinted by the skin) and no Ink, so eyes and smile stay
+    // crisp. The same eyes as the named people (white, a dark pupil, a glint: plain dark ovals looked beady at phone size);
+    // two of them, the smile in the colour that reads on that skin (mouthOn: brown vanished on dark skin)
+    { geo: g(crowdFace('#5a2a1a')), face: true },
+    { geo: g(crowdFace('#1c0b05')), face: true },
+    // the guards' helmet: a steel dome above the brow with a rim and a blue plume (the silver-tinted hair cap read as grey hair)
+    { geo: g([[s2, 0, 0.6, -0.06, 0.4, 0.26, 0.42, 0, 0, 0, '#c9d1dc'], [cyl, 0, 0.535, -0.05, 0.42, 0.06, 0.43, 0, 0, 0, '#9aa4b2'], [box, 0, 0.84, -0.08, 0.06, 0.2, 0.38, 0, 0, 0, '#3e7bfa']]) },
   ];
   for (const d of defs) {
     const cap = CROWD.cap * (d.cap2 ? 2 : 1), m = new THREE.InstancedMesh(d.geo, d.face ? MAT.face : MAT.char, cap); if (d.face) m.userData.noInk = true; m.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
@@ -10925,7 +11145,7 @@ function buildCrowd() {
     const i = CROWD.list.length, rr = makeRng(CONFIG.seed + 500 + i * 13);
     const v = Object.assign({ i, x, z, y: heightAt(x, z), yaw: rr() * 6.283, homeX: x, homeZ: z, homeX0: x, homeZ0: z, r, set, tx: x, tz: z, wait: rr() * 3, walk: 0, speed: 0, state: 'idle', present: true, trapped: false, guard: false,
       skin: col(SK[(rr() * SK.length) | 0]), shirt: col(SH[(rr() * SH.length) | 0]), pants: col(PA[(rr() * PA.length) | 0]), hair: col(HA[(rr() * HA.length) | 0]), style: (rr() * 3) | 0, hat: rr() < 0.25 ? 1 : 0, hatC: col('#e9c46a'), tip: 1 + ((rr() * 6) | 0), it: null, h: 0.9 + rr() * 0.15, rng: rr }, o || {});
-    v.y = supportAt(v.x, v.z, v.y + 2);
+    v.y = supportAt(v.x, v.z, v.y + 2); v.darkSkin = mouthOn('#' + v.skin.getHexString()) !== '#5a2a1a';
     v.it = INTERACT.add({ id: 'vil:' + i, x: v.x, z: v.z, r: 2.2, label: 'btn.talk', icon: '💬', when: () => v.present && !v.trapped && !BOSS.active, use: () => talkVillager(v) });
     CROWD.list.push(v); return v;
   };
@@ -10936,6 +11156,8 @@ function buildCrowd() {
 /** Wander (simulation step): pick a spot near home, walk, wait. Trapped villagers float in their bubble. */
 function crowdStep(dt) {
   for (const v of CROWD.list) {
+    // someone trapped in a gloom bubble turns to face the hero coming to help (their back to you hid the face)
+    if (v.present && v.trapped && hyp(v.x - hero.pos.x, v.z - hero.pos.z) < 16) v.yaw += wrapA(Math.atan2(hero.pos.x - v.x, hero.pos.z - v.z) - v.yaw) * damp(dt, 3);
     if (!v.present || v.trapped || v.state === 'dance' || v.state === 'cheer2') { v.speed = 0; continue; }
     if (hyp(v.x - hero.pos.x, v.z - hero.pos.z) > 110) continue;
     const talking = UI.dialog.open && UI.dialog.npc === 'vil' + v.i;
@@ -10967,7 +11189,7 @@ function crowdFrame(dt, now) {
     let bi = 0; for (let i = 2; i < CROWD_PICK.length; i += 2) if (CROWD_PICK[i] < CROWD_PICK[bi]) bi = i;
     const v = CROWD_PICK[bi + 1]; CROWD_PICK.splice(bi, 2); drawn++;
     let y = v.y, bob = 0, yaw = v.yaw, aL = 0, aR = 0, aLz = 0.08, aRz = -0.08, hx = 0;
-    if (v.trapped) { y = v.y + 0.9 + (cm ? 0 : Math.sin(ts * 1.6 + v.i) * 0.12); yaw = v.yaw + (cm ? 0 : Math.sin(ts * 0.7 + v.i) * 0.6); aL = aR = -2.6; aLz = 0.4; aRz = -0.4; hx = -0.2; }
+    if (v.trapped) { y = v.y + 0.9 + (cm ? 0 : Math.sin(ts * 1.6 + v.i) * 0.12); yaw = v.yaw + (cm ? 0 : Math.sin(ts * 0.7 + v.i) * 0.25); /* a small sway: the face stays toward you */ aL = aR = -2.75; aLz = -0.55; aRz = 0.55; hx = 0.12; /* arms up and out ("help!"), not cupped over the face; the head level, looking at you */ }
     else if (v.state === 'dance' || v.state === 'cheer' || v.state === 'cheer2') { const k = cm ? 0 : Math.sin(ts * 7 + v.i); aL = -2.7 + k * 0.25; aR = -2.7 - k * 0.25; aLz = 0.3; aRz = -0.3; if (!cm) { bob = Math.abs(Math.sin(ts * 5 + v.i)) * 0.2; if (v.state === 'dance') yaw += Math.sin(ts * 2.5 + v.i) * 0.5; } }
     else if (v.speed > 0.2) { const sw = Math.sin(v.walk); aL = -sw * 0.5; aR = sw * 0.5; if (!cm) bob = Math.abs(sw) * 0.04; }
     else if (!cm) bob = Math.sin(ts * 2 + v.i) * 0.01;
@@ -10977,10 +11199,10 @@ function crowdFrame(dt, now) {
     crowdPart(P[0], CROWD_ROOT, 0, 0, 0, 0, 0, 0, v.pants);
     crowdPart(P[1], CROWD_ROOT, 0, 0, 0, 0, 0, 0, v.shirt);
     crowdPart(P[2], CROWD_ROOT, -0.39, 1.17, 0, aL, 0, aLz, v.skin); crowdPart(P[2], CROWD_ROOT, 0.39, 1.17, 0, aR, 0, aRz, v.skin);
-    crowdPart(P[3], CROWD_ROOT, 0, 1.22, 0, hx, 0, 0, v.skin); crowdPart(P[7], CROWD_ROOT, 0, 1.22, 0, hx, 0, 0, WHITE_C);
+    crowdPart(P[3], CROWD_ROOT, 0, 1.22, 0, hx, 0, 0, v.skin); crowdPart(P[v.darkSkin ? 8 : 7], CROWD_ROOT, 0, 1.22, 0, hx, 0, 0, WHITE_C);
     if (v.hat !== 2) { if (v.style === 0) crowdPart(P[4], CROWD_ROOT, 0, 1.22, 0, hx, 0, 0, v.hair); else if (v.style === 1) crowdPart(P[5], CROWD_ROOT, 0, 1.22, 0, hx, 0, 0, v.hair); }
     if (v.hat === 1) crowdPart(P[6], CROWD_ROOT, 0, 1.22, 0, hx, 0, 0, v.hatC);
-    if (v.hat === 2) crowdPart(P[4], CROWD_ROOT, 0, 1.25, 0, hx, 0, 0, v.hatC);
+    if (v.hat === 2) crowdPart(P[9], CROWD_ROOT, 0, 1.22, 0, hx, 0, 0, WHITE_C);
     if (!v.trapped) BLOBS.add(v.x, v.y, v.z, 0.45);
   }
   for (const p of P) { const m = p.mesh; m.count = p.n; m.visible = p.n > 0; if (p.n) { m.instanceMatrix.needsUpdate = true; m.instanceColor.needsUpdate = true; } }
@@ -10995,9 +11217,11 @@ function buildSheep() {
   for (const [x, y, z, r] of [[0, 0.62, 0, 0.42], [0.2, 0.68, 0.22, 0.27], [-0.2, 0.68, 0.22, 0.27], [0.2, 0.68, -0.22, 0.27], [-0.2, 0.68, -0.22, 0.27], [0, 0.88, 0.05, 0.3], [0, 0.6, -0.36, 0.25], [0, 0.6, 0.34, 0.25]]) bk.add(s1, x, y, z, r, r * 0.9, r, 0, 0, 0, W);
   for (const [x, z] of [[0.18, 0.22], [-0.18, 0.22], [0.18, -0.22], [-0.18, -0.22]]) bk.add(box, x, 0, z, 0.1, 0.4, 0.1, 0, 0, 0, '#3b3340');
   const hk = new Kit(); hk.add(s1, 0, 0, 0.1, 0.17, 0.2, 0.22, 0, 0, 0, '#3b3340'); hk.add(s1, 0, 0.13, 0.02, 0.17, 0.12, 0.16, 0, 0, 0, '#fff8ee');
-  for (const s of [-1, 1]) { hk.add(s1, s * 0.17, 0.06, 0.02, 0.1, 0.04, 0.06, 0, 0, s * 0.4, '#3b3340'); hk.add(s1, s * 0.08, 0.04, 0.26, 0.035, 0.04, 0.02, 0, 0, 0, '#ffffff'); hk.add(s1, s * 0.08, 0.04, 0.28, 0.02, 0.025, 0.01, 0, 0, 0, '#111111'); }
-  const mk = g => { const m = new THREE.InstancedMesh(g, MAT.char, 13); m.instanceMatrix.setUsage(THREE.DynamicDrawUsage); m.frustumCulled = false; m.castShadow = true; m.count = 0; scene.add(m); return m; };
-  SHEEP.body = mk(bk.geometry('lit')); SHEEP.head = mk(hk.geometry('lit'));
+  // the eyes are their own flat-colour mesh with no Ink (like the people's faces), with a glint
+  const fk = new Kit();
+  for (const s of [-1, 1]) { hk.add(s1, s * 0.17, 0.06, 0.02, 0.1, 0.04, 0.06, 0, 0, s * 0.4, '#3b3340'); fk.add(s1, s * 0.085, 0.045, 0.25, 0.055, 0.062, 0.03, 0, 0, 0, '#ffffff'); fk.add(s1, s * 0.085, 0.04, 0.275, 0.03, 0.038, 0.014, 0, 0, 0, '#111111'); fk.add(s1, s * 0.085 + 0.01, 0.056, 0.288, 0.01, 0.01, 0.006, 0, 0, 0, '#ffffff'); }
+  const mk = (g, face) => { const m = new THREE.InstancedMesh(g, face ? MAT.face : MAT.char, 13); m.instanceMatrix.setUsage(THREE.DynamicDrawUsage); m.frustumCulled = false; m.castShadow = !face; m.count = 0; if (face) m.userData.noInk = true; scene.add(m); return m; };
+  SHEEP.body = mk(bk.geometry('lit')); SHEEP.head = mk(hk.geometry('lit')); SHEEP.head.userData.noInk = true; SHEEP.face = mk(fk.geometry('lit'), true);
   SHEEP_LOST.forEach(([x, z], i) => SHEEP.list.push({ id: 'sheep' + (i + 1), quest: true, i, x, z, y: 0, yaw: i * 1.3, lostX: x, lostZ: z, state: 'lost', walk: 0, speed: 0, hop: 0, tx: x, tz: z, wait: 1, baaT: 0, catch: 0 }));
   for (const [x, z] of [[120, 280], [128, 285], [195, 290], [188, 296], [220, 230], [226, 236], [140, 190], [148, 185]]) SHEEP.list.push({ id: 'graze', quest: false, x, z, homeX: x, homeZ: z, y: 0, yaw: x, state: 'graze', walk: 0, speed: 0, hop: 0, tx: x, tz: z, wait: 2, baaT: 0 });
   for (const s of SHEEP.list) s.y = supportAt(s.x, s.z, heightAt(s.x, s.z) + 3);
@@ -11048,11 +11272,11 @@ function sheepFrame(now) {
     const bob = cm ? 0 : s.hop + (s.speed < 0.2 ? Math.sin(ts * 2 + s.x) * 0.01 : 0);
     PE.set(0, s.yaw, 0); PQ.setFromEuler(PE); PV.set(s.x, s.y + bob, s.z); PS.set(1, 1, 1); PM.compose(PV, PQ, PS); SHEEP.body.setMatrixAt(n, PM);
     const nod = s.speed < 0.2 && !cm ? Math.max(0, Math.sin(ts * 0.8 + s.x)) * 0.5 : 0;
-    PE.set(nod, 0, 0); PQ.setFromEuler(PE); PV.set(0, 0.82 - nod * 0.3, 0.48); PS.set(1, 1, 1); PM2.compose(PV, PQ, PS); PM2.premultiply(PM); SHEEP.head.setMatrixAt(n, PM2);
+    PE.set(nod, 0, 0); PQ.setFromEuler(PE); PV.set(0, 0.82 - nod * 0.3, 0.48); PS.set(1, 1, 1); PM2.compose(PV, PQ, PS); PM2.premultiply(PM); SHEEP.head.setMatrixAt(n, PM2); SHEEP.face.setMatrixAt(n, PM2);
     BLOBS.add(s.x, s.y, s.z, 0.55); n++;
   }
-  SHEEP.body.count = SHEEP.head.count = n; SHEEP.body.visible = SHEEP.head.visible = n > 0;
-  if (n) { SHEEP.body.instanceMatrix.needsUpdate = true; SHEEP.head.instanceMatrix.needsUpdate = true; }
+  SHEEP.body.count = SHEEP.head.count = SHEEP.face.count = n; SHEEP.body.visible = SHEEP.head.visible = SHEEP.face.visible = n > 0;
+  if (n) { SHEEP.body.instanceMatrix.needsUpdate = true; SHEEP.head.instanceMatrix.needsUpdate = true; SHEEP.face.instanceMatrix.needsUpdate = true; }
 }
 
 /* Talking: the quest decides what a person says; otherwise each has their own words and a hint for the current mission. */
@@ -11428,7 +11652,7 @@ function bridgeCutscene() {
 /* M7: gloom bubbles hold the people of Riverbend (three hits pop one). */
 const BUBBLES = [];
 function buildBubbles() {
-  const mat = new THREE.MeshLambertMaterial({ color: 0xc58cff, transparent: true, opacity: 0.55, depthWrite: false, emissive: 0x6a2fa0 });
+  const mat = new THREE.MeshLambertMaterial({ color: 0xd2a6ff, transparent: true, opacity: 0.24, depthWrite: false, emissive: 0x3a1860 });   // light enough to see the face inside, not tinted purple
   const mesh = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1, 2), mat, 6); mesh.frustumCulled = false; mesh.count = 0; mesh.renderOrder = 4; scene.add(mesh);
   POINTS.bubbles.forEach(([x, z], i) => {
     const y = supportAt(x, z, heightAt(x, z) + 2) + 1.55, b = { id: 'b' + (i + 1), i, x, z, y, hits: 0, wob: 0, mesh, finn: i === 5 };
@@ -11634,7 +11858,7 @@ GAME.addSystem({
     if (G.flags.bridgeFixed || past('m6', 3)) { G.flags.bridgeFixed = true; WORLD.setBridgeFixed(true); npcHome('hazel', 4, -36, faceTo(4, -36, 0, -60)); }
     else if (G.mission === 'm6' && G.step >= 1 && q.hz) npcPlace('hazel', q.hz[0], q.hz[1]);
     for (const b of BUBBLES) if (q.bubbles.indexOf(b.id) >= 0 || past('m7', 2)) { if (q.bubbles.indexOf(b.id) < 0) q.bubbles.push(b.id); freeBubble(b, false); }
-    const finnB = BUBBLES[5]; if (finnB && q.bubbles.indexOf(finnB.id) < 0) { NPCS.finn.state = 'bubble'; npcPlace('finn', finnB.x, finnB.z, 0, finnB.y - 1.25); }
+    const finnB = BUBBLES[5]; if (finnB && q.bubbles.indexOf(finnB.id) < 0) { NPCS.finn.state = 'bubble'; npcPlace('finn', finnB.x, finnB.z, faceTo(finnB.x, finnB.z, 190, -130), finnB.y - 1.25); }
     if (past('m8', 4) && g.keys.indexOf('key.sun') < 0 && !G.flags.gateOpen) g.keys.push('key.sun');
     if (G.flags.gateOpen) { WORLD.setGate(1); WORLD.setDrawbridge(1); }
     if (q.crystals.length >= 3 || G.flags.arenaOpen) { CRY.domeK = 0; WORLD.setArenaDoor(1); G.flags.arenaOpen = true; } else { CRY.domeK = 1; WORLD.setArenaDoor(0); }
@@ -11825,14 +12049,16 @@ function buildCinder() {
   mk('body', body, 0, 0, 0); const neck = mk('neck', body, 0, 3.3, 1.8); const head = mk('head', neck, 0, 1.75, 1.35); mk('jaw', head, 0, -0.05, 0.25);
   mk('wingL', body, -1.1, 3.6, 0.5); mk('wingR', body, 1.1, 3.6, 0.5); const t1 = mk('tail1', body, 0, 2.5, -2.0); mk('tail2', t1, 0, -0.32, -2.7);
   // glowing eyes and the three collar crystals (unlit), a throat glow for the fire breath
-  const ek = new Kit(); for (const s of [-1, 1]) ek.add(prim('sph:1'), s * 0.34, 0.5, 0.95, 0.14, 0.16, 0.07, 0, 0, 0, '#ffffff', true);
-  const eyes = new THREE.Mesh(ek.geometry('glow'), new THREE.MeshBasicMaterial({ color: 0xc060ff })); head.add(eyes);
+  // each eye: the glowing iris (the material's colour), a dark pupil and a glint, so Cinder has a look at phone size
+  const ek = new Kit(); for (const s of [-1, 1]) { ek.add(prim('sph:1'), s * 0.34, 0.5, 0.95, 0.14, 0.16, 0.07, 0, 0, 0, '#ffffff', true); ek.add(prim('sph:1'), s * 0.34, 0.48, 1.0, 0.065, 0.09, 0.03, 0, 0, 0, '#140a1e', true); ek.add(prim('sph:1'), s * 0.34 + 0.035, 0.54, 1.03, 0.025, 0.025, 0.012, 0, 0, 0, '#ffffff', true); }
+  const eyes = new THREE.Mesh(ek.geometry('glow'), new THREE.MeshBasicMaterial({ color: 0xc060ff, vertexColors: true })); head.add(eyes);
   const crystals = [];
   for (let i = 0; i < 3; i++) { const a = -Math.PI / 2 + (i - 1) * 0.62, m = new THREE.Mesh(new THREE.OctahedronGeometry(0.26, 0), new THREE.MeshBasicMaterial({ color: 0xc27bff })); m.position.set(Math.cos(a) * 0.86, 0.25 + Math.sin(a) * 0.86 * Math.cos(0.62) + 0.05, 0.18 - Math.sin(a) * 0.86 * Math.sin(0.62) + 0.22); m.scale.set(1, 1.5, 1); neck.add(m); crystals.push(m); }
   const throat = new THREE.Mesh(new THREE.IcosahedronGeometry(0.5, 1), new THREE.MeshBasicMaterial({ color: 0xffa040, transparent: true, opacity: 0.8 })); throat.position.set(0, 1.2, 1.0); throat.visible = false; neck.add(throat);
   root.scale.setScalar(0.85); root.visible = false; scene.add(root);
   return { root, body, parts, eyes, crystals, throat, k: -1 };
 }
+const SNARL_SMIRK = smileOn(ellZ(0, 0.4, 0, 0.34, 0.44, 0.34, 0.012), 0.075, 0.165, 0.028, 0.011);
 /** Lord Snarlwick: tall, jagged violet cape, curly horn-crown, monocle, an enormous purple mustache, a staff with the Gloom Gem. */
 function buildSnarlwick() {
   const box = prim('box'), s1 = prim('sph:1'), s2 = prim('sph:2'), cyl = prim('cyl:10:1.000'), cone = prim('cone:8'), cone4 = prim('cone:4'), tor = prim('torus:10:0.3');
@@ -11854,8 +12080,9 @@ function buildSnarlwick() {
   }
   // the eyes, brows, monocle and mouth: a flat-colour face mesh with no Ink (Ink round them merged them into a smudge);
   // the monocle is a thin gold rim. The big mustache keeps its Ink: it is meant to be his loudest feature.
-  face.add(RIM, 0.12, 0.5, 0.32, 0.1, 0.1, 0.1, 0, 0, 0, gold); face.add(box, 0.2, 0.3, 0.3, 0.012, 0.3, 0.012, 0, 0, 0, gold); face.add(SMILE, 0, 0.13, 0.3, 0.8, 0.8, 0.8, 0, 0, 0, '#3a1a50');
-  head.add(s1, 0, 0.06, 0.24, 0.07, 0.1, 0.06, 0, 0, 0, stache);
+  face.add(RIM, 0.12, 0.5, 0.32, 0.1, 0.1, 0.1, 0, 0, 0, gold); face.add(box, 0.2, 0.3, 0.3, 0.012, 0.3, 0.012, 0, 0, 0, gold); face.add(SNARL_SMIRK, 0, 0, 0, 1, 1, 1, 0, 0, 0, '#3a1a50');
+  // a thin sly smirk on the skin, and a pointed goatee under it (a round tuft hung there like a tongue)
+  head.add(cone4, 0, 0.11, 0.21, 0.06, 0.2, 0.045, Math.PI + 0.25, 0, 0, stache);
   crown.add(cyl, 0, 0.74, 0, 0.3, 0.12, 0.3, 0, 0, 0, gold);
   for (const s of [-1, 1]) for (let i = 0; i < 4; i++) crown.add(cone, s * (0.25 + i * 0.1), 0.86 + i * 0.12 - i * i * 0.03, -0.02 - i * 0.03, 0.07 - i * 0.012, 0.22, 0.07 - i * 0.012, 0, 0, s * (-0.4 - i * 0.45), '#d99a1c');
   for (let i = 0; i < 5; i++) { const a = i / 5 * Math.PI * 2; crown.add(s1, Math.cos(a) * 0.3, 0.8, Math.sin(a) * 0.3, 0.035, 0.035, 0.035, 0, 0, 0, '#b66cff'); }
@@ -12329,7 +12556,9 @@ function bossFrame(dt, now) {
     P.wingL.g.rotation.set(0, 0, fly ? -0.25 + fl * 0.65 : -0.95); P.wingR.g.rotation.set(0, 0, fly ? 0.25 - fl * 0.65 : 0.95);
     if (!fly) { P.wingL.g.rotation.y = -0.6; P.wingR.g.rotation.y = 0.6; } else { P.wingL.g.rotation.y = 0; P.wingR.g.rotation.y = 0; }
     const low = c.head;   // 0 up .. 1 head on the ground
-    P.neck.g.rotation.set(low * 0.95 + (c.mode === 'inhale' ? -0.3 : 0), 0, 0); P.head.g.rotation.set(low * 0.35, 0, c.mode === 'dizzy' && !cm ? Math.sin(ts * 3) * 0.25 : 0);
+    // the head tips back up as the neck bends down, so a lowered head (dizzy, sitting) still shows its face to the camera
+    // (nose-down, only the top of the head and horns showed)
+    P.neck.g.rotation.set(low * 0.95 + (c.mode === 'inhale' ? -0.3 : 0), 0, 0); P.head.g.rotation.set(low * -0.55, 0, c.mode === 'dizzy' && !cm ? Math.sin(ts * 3) * 0.25 : 0);
     const jaw = c.mode === 'breath' ? 0.5 : c.mode === 'pant' ? 0.25 + (cm ? 0 : Math.sin(ts * 8) * 0.08) : c.puff > 0 ? 0.4 : c.mode === 'happy' || c.mode === 'sit' ? 0.12 : 0;
     P.jaw.g.rotation.x += (jaw - P.jaw.g.rotation.x) * damp(dt, 12);
     c.puff = Math.max(0, c.puff - dt); c.tail = Math.max(0, c.tail - dt * 2);
