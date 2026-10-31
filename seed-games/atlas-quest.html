@@ -93,6 +93,21 @@ body{margin:0;touch-action:none}
 .aq-find{display:flex;gap:8px;align-items:flex-start;padding:8px 10px;margin:6px 0;border-radius:12px;background:var(--aq-go-tint);color:var(--aq-ink);font-size:15px;line-height:1.35}
 .aq-find b{display:block}.aq-find span{font-weight:500}
 .aq-find small{display:block;font-size:13px;font-weight:600;opacity:.75;margin-bottom:2px}
+/* the World tour tile leads the grid, full width */
+.aq-mode.m-tour{grid-column:1/-1;flex-direction:row;gap:12px;min-height:64px;background:var(--aq-go-tint);justify-content:flex-start;padding:10px 14px;text-align:start}
+.aq-mode.m-tour span{font-size:17px}.aq-mode.m-tour small{margin-inline-start:auto;font-size:13px}
+/* the game's settings card */
+.aq-set{text-align:start}
+.aq-set .ok-h2{text-align:center;margin-bottom:6px}
+.aq-setrow{display:flex;align-items:center;gap:12px;padding:12px 2px;border-bottom:2px dashed var(--ok-line)}
+.aq-setrow>div{flex:1;min-width:0}
+.aq-setrow b{display:block;font-size:17px}
+.aq-setrow small{display:block;font-size:14px;opacity:.8;font-weight:600;margin-top:2px}
+/* the kit's settings: round focus rings (an outline is square on older iPhones), and rows that wrap when too wide */
+.ok-ui .ok-switch:focus-visible{outline:none;box-shadow:0 0 0 3px var(--ok-focus)}
+.ok-ui .ok-switch{-webkit-appearance:none;appearance:none;overflow:hidden;-webkit-tap-highlight-color:transparent}
+.ok-ui .ok-modal .ok-srow{flex-wrap:wrap}
+.ok-ui .ok-modal .ok-seg{max-width:100%;flex-wrap:wrap}
 </style>
 <canvas id="view" tabindex="-1" aria-label="The globe"></canvas>
 <div class="aq-labels" id="labels"></div>
@@ -157,7 +172,7 @@ const DEG = Math.PI / 180;
 const LANG0 = String(Oomba.lang || 'en'), IS_EN0 = /^en/.test(LANG0);
 // Each language's words (the screens, every country, the culture questions) are a reviewed data pack on the site,
 // loaded with its checksum, so a player downloads only their own language. English is built in.
-const PACK_VER = '1.0.0-161b8a91', PACK_SRI = {"pt":"sha384-3VczJYKLqx7jHijYkCTAqWPNm9UKEaduSTS4xXdMAHINJPFaRWcBLfzOTm1GtJm4","fr":"sha384-OiqjDuHzfhOBjNeS4CNSomGYXVwadaCIIT+x9Q/5s1aRvVZmtTXYi6kJvNkBFa5p","es":"sha384-oLcv2ps3SFfPnn6s9FhJngMOjWPZSILY9ccodkzr6ePHD+p1aWkdxTBNSYWrjLJz","de":"sha384-kFom7Enltw6mlu5Rfx3i4h+ImWffkE/jbDeyJM0PQlCftthg8Qh/vYzxogNrtKfd","he":"sha384-n8vnP4tWjup9f2XUhm7evQEUjznZbL0d3WWn3wetfOrWyPwDnaGzhlQuwK1xwtHM","ja":"sha384-SCy7w7qerrmQFiZDpQtZCEbqfcsoN7FC/K91bwH0GJfcnPt5kHWPhK0LhKhTeGMB","ar":"sha384-oblU8o6n2UmwH58b7ezp/A0QyNCnNJacAOU344V1m9dKUz1SFOuZSSIDgX2MFWSV","ru":"sha384-tNF7pHPCNoJTncDSe8z9sbJ3S5MXF9thfHG0pYT76iQzTFU4mrlWXBOgjb4rX/8W","it":"sha384-pXzcaUnA2DZii45Q+aA6bcCk8+wxQA2idGSW8OwTdfoyozXAH2MnE5eFMXqr7Eay","zh-Hant":"sha384-5NfWjGs3vBrYJOvah0l8+nS0q/vLdYR4X0NLikFQxXBW24G8cR6DYthPEY++WxHJ","nl":"sha384-rn6+HKkpE2OassKqUlf4v9BPSVax2+Qqjb0VZWEcS0a3i5/WE7tfOCkglyb9e/IW"};
+const PACK_VER = '1.0.0-b244a5ca', PACK_SRI = {"pt":"sha384-Ksz/rw/mYsiw6N9XsWoI+x9vr/LezMBsUORfm6YuWyyXbhUduZO2qD0Lznbn9q+H","fr":"sha384-WcbKOTYFh4o20haEfqhb2suEXXvsAJYFkzK3daDAq0/+SUqlGI2xx/BN8q1Oq+23","es":"sha384-6uFOwKJ/SIl6+ZEta6PQpIx7JE26kYOOaAHZdrZYNybABCxMxgYQ2MIHl8ZZC6jO","de":"sha384-sdQrxcqc81bv9D76BhG42A19xzVmfOthRLYhlU93IhlUhjN+OO0HOwWik9tKHAHj","he":"sha384-MCnq6aQYat6bFfiYEVj3PBmHr4TmtXV+hkkfJX0gIrYFYxkj8FIFRhHqCj3vJv1p","ja":"sha384-NWILqArFPExMIPBUEMTjg62WmBaA2QiuZyHMeOd6bmPXYImVLdmSnpwFBjI/pRYs","ar":"sha384-mRQv6W9RaKMcgpWpDwr7mGQc4EofGjxUZVn7IYHftqrFZWYirYUNlAIPkNrsB092","ru":"sha384-Y9VL7xv7FUsjwn4mR1RockqpFKrMqE4tDVsYOZKmqXNwxzd498FiMN8LHBjH7UaN","it":"sha384-1qsbKaOzXZ4XHFgzT39j2CBkoGM2mngopCN5rkB3jOVuSxRhnfSd4a3cnqg4dI+V","zh-Hant":"sha384-vgaWhYYz+D6CzYvCbhI4BDldWLsf0zfral1fPiR8jlODrFOFZkdrF/f4uWn8YjYR","nl":"sha384-oqduqot8blmZMker2dvsq18CsfvoFFMinWp+8lYafEP/5mIPD2FNteWAK7pe20dC"};
 const PACK = await new Promise(res => {
   if (IS_EN0 || !PACK_SRI[LANG0]) return res(null);
   const s = document.createElement('script');
@@ -229,7 +244,7 @@ function loadSave() {
   return {
     m: d.m || {}, miss: d.miss || {}, best: Object.assign({ speed: 0 }, d.best || {}), daily: d.daily || {}, trail: d.trail || [],
     look: Object.assign({ paint: 'sky' }, d.look || {}), badges: d.badges || {}, intro: d.intro || 0, seen: d.seen || {},
-    settings: Object.assign({ region: 'all', diff: 'easy' }, d.settings || {}), modes: d.modes || {}, cult: d.cult || {},
+    settings: Object.assign({ region: 'all', diff: 'easy' }, d.settings || {}), modes: d.modes || {}, cult: d.cult || {}, tour: d.tour || {},
   };
 }
 let saveTimer = null;
@@ -400,7 +415,11 @@ for (const cc of TINY) {
 }
 /** During a game the map starts fresh: only the countries got right in this game are coloured (your whole collection
  *  shows on the home globe). null outside a game. */
-function gameMap() { return mode === 'quiz' && game ? game.got : null; }
+function gameMap() {
+  if (!(mode === 'quiz' && game)) return null;
+  // the tour map keeps every country captured on the tour; any other game starts from a clean map
+  return game.kind === 'tour' ? new Set([...Object.keys(SAVE.tour), ...game.got]) : game.got;
+}
 function updateDots() {
   const session = gameMap();
   for (const [cc, d] of Object.entries(dots)) {
@@ -454,7 +473,7 @@ const planeEdge = new THREE.MeshLambertMaterial({ color: C('snow'), side: THREE.
 const planeStripe = new THREE.MeshLambertMaterial({ color: C('spark'), side: THREE.DoubleSide, flatShading: true });
 const planeLine = new THREE.LineBasicMaterial({ color: C('ink') });
 {
-  const S = 0.066, P = (x, y, z) => [x * S, y * S, z * S];
+  const S = 0.048, P = (x, y, z) => [x * S, y * S, z * S];
   const tri = (pts, mat, out = true) => {
     const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pts.flat(), 3)); g.computeVertexNormals();
     planeBody.add(new THREE.Mesh(g, mat));
@@ -480,7 +499,7 @@ const planeLine = new THREE.LineBasicMaterial({ color: C('ink') });
   for (const m of planeBody.children) if (m.isMesh && m.material === planeStripe) m.position.y = 0.0006;
 }
 // A soft shadow on the map under the plane, and little puffs behind it in flight.
-const planeShadow = new THREE.Mesh(new THREE.CircleGeometry(0.03, 20), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.18, depthWrite: false }));
+const planeShadow = new THREE.Mesh(new THREE.CircleGeometry(0.022, 20), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.18, depthWrite: false }));
 scene.add(planeShadow);
 const puffs = [];
 {
@@ -494,7 +513,7 @@ function stepPlaneFx(dt, now) {
   if (plane.visible) { const g = P.clone().normalize(); planeShadow.position.copy(g.clone().multiplyScalar(1.002)); planeShadow.lookAt(g.clone().multiplyScalar(2)); const h = P.length() - 1; planeShadow.scale.setScalar(1 + h * 6); planeShadow.material.opacity = Math.max(0.05, 0.22 - h * 0.9); }
   if (flight.on && !reduced() && (puffT += dt) > 0.035) {
     puffT = 0; const m = puffs[puffI++ % puffs.length];
-    const back = new THREE.Vector3(0, 0, -0.045).applyQuaternion(plane.quaternion);
+    const back = new THREE.Vector3(0, 0, -0.034).applyQuaternion(plane.quaternion);
     m.position.copy(P).add(back); m.visible = true; m.userData.life = 1; m.material.color.set(PAL.night ? C('spark', 'light') : C('snow'));
   }
   for (const m of puffs) if (m.userData.life > 0) { m.userData.life -= dt * 1.4; const l = Math.max(0, m.userData.life); m.scale.setScalar(0.6 + (1 - l) * 1.6); m.material.opacity = l * 0.8; if (l <= 0) m.visible = false; }
@@ -769,6 +788,7 @@ const MODES = {
   caps: { name: 'Capital hop', icon: 'key', cls: 'm-cap', about: 'Capital cities', n: 10 },
   daily: { name: 'Daily expedition', icon: 'gem', cls: 'm-daily', about: 'A new route every day', n: 8 },
   speed: { name: 'Speed round', icon: 'timer', cls: 'm-speed', about: '60 seconds, go!', n: 999 },
+  tour: { name: 'World tour', icon: 'move', cls: 'm-tour', about: 'Visit every country, one continent at a time', n: 8 },
   culture: { name: 'Culture quest', icon: 'heart', cls: 'm-file', about: 'Food, festivals, music and more', n: 10 },
 };
 function todayKey(d = new Date()) { return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; }
@@ -786,6 +806,18 @@ function buildQuestions(kind, extra = {}) {
     if (kind === 'culture') { const q = cultureQ(c); if (q) out.push(q); }
   }
   return out;
+}
+/* World tour: the story mode. Fly to every country on Earth, one continent at a time, in legs of 8; each country you
+   find is captured for good and stays painted with its flag on the tour map. */
+const TOUR_REGIONS = ['eu', 'af', 'as', 'na', 'sa', 'oc'];
+const TOUR = TOUR_REGIONS.flatMap(r => COUNTRIES.filter(c => c.reg === r).sort((a, b) => (EASY.has(b.cc) - EASY.has(a.cc)) || b.area - a.area));
+const tourCount = () => COUNTRIES.filter(c => SAVE.tour[c.cc]).length;
+const tourRegion = () => TOUR_REGIONS.find(r => COUNTRIES.some(c => c.reg === r && !SAVE.tour[c.cc])) || null;
+function tourQuestions() {
+  const r = tourRegion(); if (!r) return [];
+  return TOUR.filter(c => c.reg === r && !SAVE.tour[c.cc]).slice(0, MODES.tour.n).map(c => {
+    const q = makeQ('find', c); q.tour = true; q.why = c.fact; q.whyIcon = 'info'; return q;
+  });
 }
 function dailyQuestions() {
   rng = seeded('atlas-' + todayKey());
@@ -809,7 +841,17 @@ function dailyQuestions() {
 function startMode(kind, extra = {}) {
   closeCard(); closeKitScreens(); clearMarks(); clearTags();
   sfx('pick', true);
-  game = { kind, got: new Set(), i: 0, qs: kind === 'daily' ? dailyQuestions() : kind === 'speed' ? [] : extra.qs || buildQuestions(kind), right: 0, res: [], streak: 0, best: 0, extra, t0: performance.now() };
+  if (kind === 'tour') {
+    const r = tourRegion();
+    if (!r) { goHome(); tourDone(); return; }
+    const all = COUNTRIES.filter(c => c.reg === r);
+    if (!extra.told && all.every(c => !SAVE.tour[c.cc])) {   // a new continent: Captain Skye sets off
+      mode = 'story'; showOnly('none'); flyCam(all.reduce((a, c) => a + c.lab[0], 0) / all.length, all.reduce((a, c) => a + c.lab[1], 0) / all.length, 2.7);
+      say(tr("Next stop: {region}! There are {n} countries to find here. Let's fly!", { region: tr(REG[r].name), n: all.length }), [{ label: tr("Let's fly!"), kind: 'hot', value: 0, icon: 'play' }]).then(() => startMode('tour', { told: true }));
+      return;
+    }
+  }
+  game = { kind, got: new Set(), i: 0, qs: kind === 'daily' ? dailyQuestions() : kind === 'tour' ? tourQuestions() : kind === 'speed' ? [] : extra.qs || buildQuestions(kind), right: 0, res: [], streak: 0, best: 0, extra, t0: performance.now() };
   if (kind === 'speed') { game.end = performance.now() + 60000; game.qs.push(speedQ()); }
   mode = 'quiz'; showOnly('quiz');
   $('#qTimer').hidden = kind !== 'speed';
@@ -845,7 +887,7 @@ function nextQuestion(first) {
   if (q.kind === 'find' || q.kind === 'capfind') acts.appendChild(Oomba.ui.button(tr('Show me'), { kind: 'quiet', icon: 'eye', onPress: () => giveUp() }));
   // Show the country on the globe when that doesn't give the answer away.
   if (q.show) { MARK[q.c.cc] = 'hot'; flyTo(q.c); }
-  else if ((q.kind === 'find' || q.kind === 'capfind') && SAVE.settings.diff === 'easy' && !q.daily) { const r = q.c; flyCam(r.lab[0] + (rng() - 0.5) * 18, r.lab[1] + (rng() - 0.5) * 30, 3.0, 900); }
+  else if ((q.kind === 'find' || q.kind === 'capfind') && (SAVE.settings.diff === 'easy' || q.tour) && !q.daily) { const r = q.c; flyCam(r.lab[0] + (rng() - 0.5) * 18, r.lab[1] + (rng() - 0.5) * 30, 3.0, 900); }
   else if (q.kind === 'find' || q.kind === 'capfind') flyCam(cam.lat, cam.lng, Math.max(cam.dist, 2.9), 600);
   drawMap();
   if (!first) requestAnimationFrame(placeCam);
@@ -902,6 +944,7 @@ function answer(ok, wrongCc) {
     const was = isLit(c.cc); if ((q.hints || 0) < 2) SAVE.m[c.cc] = Math.min(9, (SAVE.m[c.cc] || 0) + 1); litNow = !was && isLit(c.cc);
     if (SAVE.miss[c.cc]) SAVE.miss[c.cc]--;
     if (q.kind === 'culture') SAVE.cult[c.cc] = cultureFound(c.cc) | (1 << q.item.i);
+    if (q.tour) SAVE.tour[c.cc] = 1;
     sfx(litNow ? 'lit' : 'good', true);
     const fb = $('#qFeed'); fb.className = 'aq-feed good';
     fb.textContent = litNow ? tr('{name} lights up on your map!', { name: c.name }) : g.streak >= 3 ? tr('Right! {n} in a row!', { n: g.streak }) : tr('Right!');
@@ -915,7 +958,7 @@ function answer(ok, wrongCc) {
       : q.kind === 'cap' ? tr('Not quite: {city} is the capital of {name}.', { city: w.capital, name: w.name })
       : tr('Not quite: that was {name}.', { name: w.name });
   }
-  if (q.why) $('#qFeed').appendChild(el('div', 'aq-why', `${ICON(CATS[q.cat].icon)}<span>${esc(q.why)}</span>`));
+  if (q.why && (ok || !q.tour)) $('#qFeed').appendChild(el('div', 'aq-why', `${ICON(q.whyIcon || CATS[q.cat].icon)}<span>${esc(q.why)}</span>`));
   save(); hintRing.visible = false;
   for (const k in MARK) if (MARK[k] === 'reg' || MARK[k] === 'near') delete MARK[k];
   MARK[c.cc] = ok ? 'got' : 'hot'; drawMap();
@@ -978,10 +1021,23 @@ async function finish() {
   if (g.kind === 'daily') SAVE.daily[todayKey()] = Math.max(SAVE.daily[todayKey()] || 0, stars + 1);
   save();
   showOnly('none');
+  if (g.kind === 'tour') { await tourEnd(g, stars, right); return; }
   const title = g.kind === 'speed' ? tr('{n} in 60 seconds!', { n: right }) : g.kind === 'daily' ? tr('Expedition done: {a} of {b}', { a: right, b: n }) : tr('{a} of {b} right!', { a: right, b: n });
   const v = await Oomba.ui.win({ stars, score: g.kind === 'speed' ? right : right * 100, best: g.kind === 'speed' ? best : null, hero: SKYE.spec, title, next: g.kind !== 'daily' });
   if (game !== g) return;
   if (v === 'again') startMode(g.kind); else goHome();
+}
+async function tourEnd(g, stars, right) {
+  const r = g.qs[0] && g.qs[0].c.reg, regionDone = r && COUNTRIES.filter(c => c.reg === r).every(c => SAVE.tour[c.cc]);
+  const v = await Oomba.ui.win({ stars, score: right * 100, hero: SKYE.spec, title: tr('Tour: {n} of {all} countries', { n: tourCount(), all: COUNTRIES.length }), next: true });
+  if (game !== g) return;
+  if (!tourRegion()) { goHome(); await tourDone(); return; }
+  if (regionDone) { mode = 'story'; showOnly('none'); await say(tr('You found every country in {region}! On to the next continent.', { region: tr(REG[r].name) })); }
+  if (v === 'again' || v === 'next') startMode('tour'); else goHome();
+}
+async function tourDone() {
+  try { if (!reduced()) Oomba.juice.confetti(); } catch { /* fine */ }
+  await say(tr('You flew to every country in the world! What a pilot!'));
 }
 function quit() { hintRing.visible = false; game = null; clearMarks(); clearTags(); goHome(); }
 
@@ -1041,19 +1097,20 @@ function passportCard(tab = 'stamps') {
 
 /* ---------- Settings: the game's choices, then the kit's (sound, captions, text size, motion) ---------- */
 function settingsCard() {
-  const m = openCard(`<h2 class="ok-h2">${esc(tr('Atlas Quest settings'))}</h2>
-    <div class="ok-srow"><div>${esc(tr('Start over'))}<small>${esc(tr('Clears your lit countries, stamps and paint'))}</small></div><i data-reset></i></div>
-    <div class="aq-acts"><i data-more></i><i data-x></i></div>`);
-  cardBtn(m, '[data-reset]', tr('Start over'), { kind: 'quiet', icon: 'restart', onPress: () => {
+  const m = openCard(`<div class="aq-set"><h2 class="ok-h2">${esc(tr('Atlas Quest settings'))}</h2>
+    <div class="aq-setrow"><div><b>${esc(tr('Sound and more'))}</b></div><i data-more></i></div>
+    <div class="aq-setrow"><div><b>${esc(tr('Start over'))}</b><small>${esc(tr('Clears your lit countries, stamps and paint'))}</small></div><i data-reset></i></div>
+    <div class="aq-acts"><i data-x></i></div></div>`);
+  cardBtn(m, '[data-reset]', tr('Start over'), { kind: 'icon', icon: 'restart', onPress: () => {
     const c = openCard(`<h2 class="ok-h2">${esc(tr('Start over?'))}</h2><p>${esc(tr('Your map goes back to grey. This cannot be undone.'))}</p><div class="aq-acts"><i data-no></i><i data-yes></i></div>`);
     cardBtn(c, '[data-no]', tr('Keep my map'), { kind: 'go', onPress: settingsCard }).setAttribute('data-ok-focus', '');
     cardBtn(c, '[data-yes]', tr('Yes, start over'), { kind: 'quiet', onPress: () => {
-      Object.assign(SAVE, { m: {}, miss: {}, best: { speed: 0 }, daily: {}, trail: [], badges: {}, modes: {}, cult: {} }); SAVE.look.paint = 'sky'; save();
+      Object.assign(SAVE, { m: {}, miss: {}, best: { speed: 0 }, daily: {}, trail: [], badges: {}, modes: {}, cult: {}, tour: {} }); SAVE.look.paint = 'sky'; save();
       for (const k in pins) { pinGroup.remove(pins[k]); delete pins[k]; } trailGroup.clear(); plane.visible = false; planeAt = null; applyLook(); drawMap(); renderLit(); closeCard(); goHome();
       Oomba.ui.toast(tr('A fresh grey map. Off you go!'));
     } });
   } });
-  cardBtn(m, '[data-more]', tr('Sound and more'), { kind: 'quiet', icon: 'settings', onPress: () => Oomba.ui.settings() });
+  cardBtn(m, '[data-more]', tr('Sound and more'), { kind: 'icon', icon: 'sound', onPress: () => Oomba.ui.settings() });
   cardBtn(m, '[data-x]', tr('Done'), { kind: 'go', icon: 'check', onPress: closeCard }).setAttribute('data-ok-focus', '');
 }
 
@@ -1082,11 +1139,12 @@ function renderHome() {
     b.setAttribute('aria-pressed', String(SAVE.settings.diff === id)); dr.appendChild(b);
   }
   const g = $('#modeGrid'); g.innerHTML = '';
-  for (const k of ['find', 'flags', 'caps', 'culture', 'daily', 'speed']) {
+  for (const k of ['tour', 'find', 'flags', 'caps', 'culture', 'daily', 'speed']) {
     const md = MODES[k];
     let extra = esc(tr(md.about));
     if (k === 'daily') extra = SAVE.daily[todayKey()] ? esc(tr('Done today! Streak: {n}', { n: dailyStreak() })) : esc(tr(md.about));
     if (k === 'speed' && SAVE.best.speed) extra = esc(tr('Best: {n}', { n: SAVE.best.speed }));
+    if (k === 'tour' && tourCount()) extra = esc(tr('Tour: {n} of {all} countries', { n: tourCount(), all: COUNTRIES.length }));
     const b = el('button', 'aq-mode ' + md.cls, `${ICON(md.icon)}<span>${esc(tr(md.name))}</span><small>${extra}</small>`); b.type = 'button'; b.dataset.mode = k;
     b.addEventListener('click', () => startMode(k)); g.appendChild(b);
   }
@@ -1115,7 +1173,7 @@ async function onPlay() {
 /* ---------- Buttons ---------- */
 mkBtn('home', tr('Title screen'), { kind: 'icon', icon: 'home', onPress: () => goTitle() });
 mkBtn('passport', tr('Your passport'), { kind: 'icon', icon: 'book', onPress: () => passportCard() });
-mkBtn('settings', tr('Settings'), { kind: 'icon', icon: 'settings', onPress: settingsCard });
+mkBtn('settings', tr('Settings'), { kind: 'icon', icon: 'menu', onPress: settingsCard });
 mkBtn('quit', tr('Back'), { kind: 'icon', icon: 'back', onPress: quit });
 if (!IS_EN) for (const e of document.querySelectorAll('[aria-label]')) e.setAttribute('aria-label', tr(e.getAttribute('aria-label')));
 
@@ -1173,6 +1231,7 @@ Object.assign(window.__brbTest, {
   hint: () => { const b = document.querySelector('#qActs [data-k=hint]'); if (b && !b.disabled) b.click(); return $('#qFeed').textContent; },
   planeCam: () => { const ll = v2ll(plane.position); cam.tw = null; Object.assign(cam, { lat: ll[0] - 9, lng: ll[1] + 4, dist: 1.75 }); },
   culture: cc => { const c = BY[cc]; return (CULTURE[cc] || []).map(x => ({ cat: x.cat, q: x.q, a: x.a })); },
+  tour: n => { for (const c of TOUR.slice(0, n)) SAVE.tour[c.cc] = 1; renderHome(); return tourCount(); },
   next: () => { if (game) { game.i++; nextQuestion(); } },
   tapCountry: cc => { const c = BY[cc]; if (mode === 'home') fileCard(c); else if (game) guess(game.qs[game.i], { cc, ll: c.lab }); },
   file: cc => fileCard(BY[cc]),
