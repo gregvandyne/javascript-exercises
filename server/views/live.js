@@ -371,16 +371,17 @@ export function landingBody(req, { modes, groups, sets, starters, classes, famil
   const radio = (name, value, checked) => raw(`<input type="radio" name="${name}" value="${value}"${checked ? ' checked' : ''}>`);
   const card = (value, icon, title, text, checked, quiz = false, teams = false) => html`<label class="lv-pick"${quiz ? raw(' data-quiz="1"') : ''}>${radio('pick', value, checked)}<span class="lv-pick-icon" aria-hidden="true">${icon}</span><span class="lv-pick-t">${title}</span>${text ? html`<span class="small muted">${text}</span>` : ''}${teams && teamsOn ? html`<span class="badge lv-teams-badge">${t('live.team.madeFor')}</span>` : ''}</label>`;
   const anyPicked = !!pre.pick;
+  const firstGame = (groups.find(g => g.games.length) || { games: [{}] }).games[0].id;
   const audiences = [classes.length ? 'class' : null, family ? 'family' : null, 'open'].filter(Boolean);
   const audDefault = pre.audience && audiences.includes(pre.audience) ? pre.audience : audiences[0];
   return html`<div class="lv lv-landing" data-lv-page="landing">
   <h1>${t('live.landing.heading')}</h1>
   <p class="muted">${t('live.landing.intro', { url: `${origin.replace(/^https?:\/\//, '')}/join` })}</p>
   <form class="stack" id="lv-new" data-api="/api/live/sessions" novalidate>
-    <fieldset class="lv-group"><legend>${t('live.landing.modes')}</legend><div class="lv-picks">
+    ${modes.length ? html`<fieldset class="lv-group"><legend>${t('live.landing.modes')}</legend><div class="lv-picks">
       ${modes.map((m, i) => card(`mode:${m.id}`, m.icon, m.title, m.text, pre.pick ? pre.pick === `mode:${m.id}` : i === 0 && !anyPicked, true, true))}
-    </div></fieldset>
-    ${groups.map(g => html`<fieldset class="lv-group"><legend>${t(`live.landing.${g.key}`)}</legend>${g.games.length ? html`<div class="lv-picks">${g.games.map(x => card(`game:${x.id}`, x.icon, x.title, x.quiz ? t('live.landing.usesQuestions') : '', pre.pick === `game:${x.id}`, x.quiz, x.teams))}</div>` : html`<p class="small muted">${t('live.landing.none')}</p>`}</fieldset>`)}
+    </div></fieldset>` : ''}
+    ${groups.map(g => html`<fieldset class="lv-group"><legend>${t(`live.landing.${g.key}`)}</legend>${g.games.length ? html`<div class="lv-picks">${g.games.map(x => card(`game:${x.id}`, x.icon, x.title, x.quiz ? t('live.landing.usesQuestions') : '', anyPicked ? pre.pick === `game:${x.id}` : !modes.length && x.id === firstGame, x.quiz, x.teams))}</div>` : html`<p class="small muted">${t('live.landing.none')}</p>`}</fieldset>`)}
     <fieldset class="lv-group" id="lv-sets"><legend>${t('live.landing.questions')}</legend>
       <div class="field"><label for="lv-set">${t('live.landing.questionsLabel')}</label>
         <select id="lv-set" name="set">
