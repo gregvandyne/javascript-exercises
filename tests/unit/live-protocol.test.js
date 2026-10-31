@@ -61,3 +61,49 @@ test('token buckets: the rate, then dropped; a fake clock refills them', () => {
   let mv = 0; for (let i = 0; i < 100; i++) if (b.take('mv')) mv++;
   assert.equal(mv, 24);
 });
+
+test('part 3: team, settings and teacher-tool messages at and past every range; host types refused from players', () => {
+  const ok = (m, role = 'host') => P.parse(j(m), role);
+  assert.deepEqual(ok({ t: 'hello', v: 1, tok: 'x', view: 'dash' }), { t: 'hello', v: 1, tok: 'x', view: 'dash' });
+  assert.equal(ok({ t: 'hello', v: 1, tok: 'x', view: 'tv' }), null);
+  assert.deepEqual(ok({ t: 'tm', a: 'on', n: 6 }), { t: 'tm', a: 'on', n: 6 });
+  assert.deepEqual(ok({ t: 'tm', a: 'on' }), { t: 'tm', a: 'on' });
+  assert.equal(ok({ t: 'tm', a: 'on', n: 7 }), null); assert.equal(ok({ t: 'tm', a: 'count', n: 1 }), null);
+  assert.deepEqual(ok({ t: 'tm', a: 'preset', k: 6, p: 7 }), { t: 'tm', a: 'preset', k: 6, p: 7 });
+  assert.equal(ok({ t: 'tm', a: 'preset', k: 7, p: 0 }), null); assert.equal(ok({ t: 'tm', a: 'preset', k: 1, p: 8 }), null);
+  assert.deepEqual(ok({ t: 'tm', a: 'move', s: 1000, k: 0 }), { t: 'tm', a: 'move', s: 1000, k: 0 });
+  assert.equal(ok({ t: 'tm', a: 'move', s: 1001, k: 1 }), null);
+  assert.deepEqual(ok({ t: 'tm', a: 'scoring', v: 'sum' }), { t: 'tm', a: 'scoring', v: 'sum' });
+  assert.equal(ok({ t: 'tm', a: 'scoring', v: 'max' }), null); assert.equal(ok({ t: 'tm', a: 'choose', v: 'yes' }), null);
+  assert.equal(ok({ t: 'tm', a: 'rename', k: 1 }), null, 'no team names, ever');
+  assert.deepEqual(ok({ t: 'pt', k: 6 }, 'player'), { t: 'pt', k: 6 });
+  assert.equal(ok({ t: 'pt', k: 0 }, 'player'), null); assert.equal(ok({ t: 'pt', k: 7 }, 'player'), null);
+  assert.equal(ok({ t: 'pt', k: 'Blue Whales' }, 'player'), null);
+  assert.deepEqual(ok({ t: 'cf', d: { board: 'off', secs: 20, sound: false } }), { t: 'cf', d: { board: 'off', secs: 20, sound: false } });
+  for (const d of [{}, [], { board: 'Off now' }, { a: { b: 1 } }, { secs: 2000 }, Object.fromEntries(Array.from({ length: 13 }, (_, i) => [`k${String.fromCharCode(97 + i)}`, 1]))]) assert.equal(ok({ t: 'cf', d }), null, j(d));
+  assert.deepEqual(ok({ t: 'h', a: 'eyes', on: true }), { t: 'h', a: 'eyes', on: true });
+  assert.equal(ok({ t: 'h', a: 'eyes' }), null);
+  assert.deepEqual(ok({ t: 'h', a: 'say', m: 9 }), { t: 'h', a: 'say', m: 9 });
+  assert.equal(ok({ t: 'h', a: 'say', m: 10 }), null); assert.equal(ok({ t: 'h', a: 'say', m: 'Two minutes left' }), null);
+  assert.deepEqual(ok({ t: 'h', a: 'time', s: 30 }), { t: 'h', a: 'time', s: 30 });
+  assert.equal(ok({ t: 'h', a: 'time', s: 15 }), null);
+  assert.deepEqual(ok({ t: 'h', a: 'bonus', n: 3, r: 4 }), { t: 'h', a: 'bonus', n: 3, r: 4 });
+  assert.deepEqual(ok({ t: 'h', a: 'bonus', k: 6, r: 0 }), { t: 'h', a: 'bonus', k: 6, r: 0 });
+  assert.equal(ok({ t: 'h', a: 'bonus', n: 3, k: 1, r: 0 }), null, 'a seat or a team, not both');
+  assert.equal(ok({ t: 'h', a: 'bonus', n: 3, r: 5 }), null); assert.equal(ok({ t: 'h', a: 'bonus', r: 0 }), null);
+  assert.deepEqual(ok({ t: 'h', a: 'rename', n: 2 }), { t: 'h', a: 'rename', n: 2 });
+  assert.deepEqual(ok({ t: 'h', a: 'acc', n: 2, x: 200, ra: 1, sv: 0, save: 1 }), { t: 'h', a: 'acc', n: 2, x: 200, ra: 1, sv: 0, save: 1 });
+  assert.deepEqual(ok({ t: 'h', a: 'acc', n: 2, x: 100, ra: 0, sv: 0 }), { t: 'h', a: 'acc', n: 2, x: 100, ra: 0, sv: 0 });
+  assert.equal(ok({ t: 'h', a: 'acc', n: 2, x: 300, ra: 0, sv: 0 }), null); assert.equal(ok({ t: 'h', a: 'acc', n: 2, x: 150, ra: true, sv: 0 }), null);
+  // Events: a player to its own team; the host to one team.
+  assert.deepEqual(ok({ t: 'ev', k: 'go', d: 1, to: 'team' }, 'player'), { t: 'ev', k: 'go', d: 1, to: 'team' });
+  assert.deepEqual(ok({ t: 'ev', k: 'go', d: 1, tm: 3 }), { t: 'ev', k: 'go', d: 1, tm: 3 });
+  assert.equal(ok({ t: 'ev', k: 'go', d: 1, tm: 3 }, 'player'), null);
+  assert.equal(ok({ t: 'ev', k: 'go', d: 1, tm: 7 }), null);
+  assert.equal(ok({ t: 'ev', k: 'go', d: 1, tm: 1, to: 2 }), null);
+  assert.equal(ok({ t: 'ev', k: 'go', d: 1, to: 'team' }), null, 'the host sends to a team with tm');
+  // Host types from a player: refused.
+  for (const m of [{ t: 'tm', a: 'shuffle' }, { t: 'cf', d: { board: 'off' } }, { t: 'h', a: 'eyes', on: true }]) assert.equal(ok(m, 'player'), null, m.t);
+  assert.equal(P.RATES.tm, 10); assert.equal(P.RATES.cf, 5); assert.equal(P.RATES.pt, 1);
+  assert.equal(P.SAY.length, 10); assert.equal(P.BONUS_REASONS.length, 5);
+});

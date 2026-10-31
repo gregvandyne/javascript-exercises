@@ -331,3 +331,28 @@ Owner decisions for parent-made accounts (no lawyer needed):
     Questions for counsel: the seat token point above; whether a class room's account names shown on the projector
     need anything in the school-facing terms; whether open rooms hosted by unverified grown-ups are acceptable with
     these limits; and whether the per-question accuracy rows (host-written text plus counts) need a mention on /privacy.
+
+
+42. **Oomba Live teams and teacher tools (part 3).** New, inside the school only; no new collection from guests and
+    nothing new outside the session in open or family rooms (docs/decisions.md "Oomba Live, part 3", docs/safety.md
+    §12). `LEGAL_UPDATED` changes only if the teachers' privacy text changes (one sentence in `teachers.live.*`).
+    - **(a) A class's saved teams** (`live_class_teams`: class, student, team number; `live_class_team_cfg`: number of
+      teams, preset numbers, scoring, who saved it). Seen only by the class's teachers. Deleted when the student leaves
+      the class or the school, when the class is deleted, with the account, or on demand ("Forget saved teams").
+    - **(b) Per-student support** (`live_support`: extra time ×1.5/×2, read aloud, simple view). It may reveal that a
+      student has an IEP/504 plan: treated as education records (FERPA), seen only by the class's teachers, never shown
+      to other students (it reaches only that student's own device and the teacher's dashboard), never given to game
+      code, never on the projector, in the results or in the CSV. Deleted like (a), or with "Clear support". Behind
+      `LIVE_SAVE_SUPPORT` (off) until the owner signs off; support for one session (memory only) works without it.
+      **Question:** is "support" special-category data (GDPR Art 9, health) anywhere we serve, so an explicit school
+      instruction (DPA clause) is needed before turning it on?
+    - Deletion on demand never depends on a flag or the class being active: "Forget saved teams" and "Clear support"
+      (and their APIs) work with Oomba Live, teams or `LIVE_SAVE_SUPPORT` turned off and for archived classes, and the
+      progress page offers them whenever rows exist. Merging a school account into a student's own account moves (a),
+      (b) and their live scores with the class membership; nothing stays on the switched-off account.
+    - **(c) Per-question marks and bonus points** in `live_run_scores` (`marks`, `bonus`, `team`), class runs only,
+      kept with the class like the gradebook. Bonus points are never in the gradebook score.
+    - **(d) The host's own remembered game settings** (`live_prefs`), deleted with the account.
+    - **Play again** keeps, for at most 2 minutes after a game ends, which seat had which account, nickname, avatar and
+      team, and the session's removals, so the same players can be moved into a new game; then it is wiped.
+    - **Question:** do the school terms already cover teachers' saved groups ((a)), or do they need a sentence?

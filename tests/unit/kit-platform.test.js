@@ -119,6 +119,29 @@ test('scanner: a pack passes only as its exact pinned tag, after the kit tag of 
   assert.ok(codes(GAME(core, `const u = '/vendor/oomba-kit/${VERSION}/packs/art-animals.js';`)).includes('kit_tag'));
 });
 
+test('a saved game that pins an unlocked pack\'s older hash (the live pack before teams) passes the scanner, counts as live-ready and is served with the current hash', async () => {
+  const { hasLivePack } = await import('../../server/services/classlive-lint.js');
+  for (const [v, packs] of Object.entries(K.KIT_PACKS_RETIRED)) {
+    const shipped = JSON.parse(fs.readFileSync(path.join(ROOT, 'kit/SHIPPED.json'), 'utf8'));
+    for (const [name, olds] of Object.entries(packs)) {
+      assert.ok(!(shipped.packs[v] || {})[name], `${v}/${name} is locked in SHIPPED.json: its hash may never change, so it can have no retired hashes`);
+      for (const h of olds) {
+        assert.notEqual(h, K.KIT_PACKS[v][name]);
+        const old = K.kitPackTag(name, v).replace(K.KIT_PACKS[v][name], h);
+        const html = GAME(K.kitTag(v) + old);
+        assert.deepEqual(codes(html).filter(c => c.startsWith('kit')), [], 'the scanner accepts it');
+        const up = K.upgradePackPins(html);
+        assert.ok(up.includes(K.kitPackTag(name, v)) && !up.includes(h), 'rewritten to the current tag');
+        const doc = frameDocument(html, { user: {}, game: { id: 'g', title: 'g' }, save: {}, canSave: false });
+        assert.ok(doc.includes(K.KIT_PACKS[v][name]) && !doc.includes(h), 'the frame serves the current hash');
+        if (name === 'live') assert.equal(hasLivePack(html), true);
+      }
+    }
+  }
+  // any other wrong hash still fails
+  assert.ok(codes(GAME(K.kitTag() + K.kitPackTag('live').replace(/integrity="[^"]+"/, 'integrity="sha384-AAAA"'))).includes('kit_pin'));
+});
+
 test('two kits at once: new games get the latest; games pinned to an older shipped kit keep passing and loading', () => {
   const vs = Object.keys(K.KIT_VERSIONS).sort();
   assert.ok(vs.length >= 2 && vs.includes('1.0.0') && K.KIT_LATEST === VERSION && K.KIT_LATEST !== '1.0.0', vs.join(' '));

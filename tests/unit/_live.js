@@ -30,7 +30,7 @@ const { createApp } = await import('../../server/app.js');
 
 export const PACK_HASH = 'sha384-live-pack-test-hash';
 C.hooks.packHash = v => (v === '1.1.0' ? PACK_HASH : undefined);
-LS.hooks.countdownMs = 40; LS.hooks.loadingMs = 400;
+LS.hooks.countdownMs = 40; LS.hooks.loadingMs = 400; LS.hooks.lingerMs = 0;
 export const logs = [];
 const keep = (level, msg, fields) => logs.push({ level, msg, fields });
 LS.hooks.log = keep; LSock.hooks.log = keep; UP.hooks.log = keep;

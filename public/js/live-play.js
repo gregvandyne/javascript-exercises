@@ -2,8 +2,13 @@
 // (or, for a 3D game with no 2D path on a device that can't draw 3D, the Watch view: a map of everyone and the
 // leaderboard), phase banners and results announced in a polite live region, emotes, Simple view, Report (fixed reasons
 // only, never who sent it) and Leave. Nothing for sale and no way to type anything here.
+// Part 3: the player's team (the header band in the team colour, with its shape and name; the team's place when the
+// leaderboard allows ranks), picking a team in the lobby when the host allows it, "Eyes on your teacher" (a cover that
+// makes the game inert), the teacher's fixed messages, bonus toasts, Read aloud (for everyone, so it marks nobody out;
+// automatic for a seat whose support says so), and Play again (a private token moves this page to the new game).
+// The seat's own support (me / wel.me.acc) stays on this page: it is never passed into the game frame.
 import { api, toast, t } from '/js/app.js';
-import { connect, gameFrame, can3d, readJson, portraits, avatarCanvas, playerOf, nameOf, fill } from '/js/live-common.js';
+import { connect, gameFrame, can3d, readJson, portraits, avatarCanvas, playerOf, nameOf, fill, shapeSvg, paintTeam, teamsOf, scoresOf, speak, voiceFor, flash } from '/js/live-common.js';
 
 const D = readJson('lv-play-data');
 const $ = id => document.getElementById(id);
@@ -15,6 +20,8 @@ let simple = (() => { try { return sessionStorage.getItem('lv:simple') === '1'; 
 const says = text => { if (phaseEl) phaseEl.textContent = text || ''; };
 const players = new Map();
 let me = null, phase = 'lobby', seq = 0, cfg = {}, sock = null, frame = null, view = '3d', watching = false, wel = null, frameReq = new Map(), countdownTimer = null, mySeat = 0;
+let teams = teamsOf(null), scores = new Map(), myTeam = 0, opt = { board: 'all', emotes: true }, acc = { time: 100, read: false, simple: false }, question = null, tapped = false, lang = '', lingering = false;
+const TX = D.text || {}, presets = D.presets || [];
 const pics = portraits(D.kit);
 const nm = n => nameOf(D.nicks || [], n);
 
@@ -61,6 +68,17 @@ function onMessage(m) {
     case 'ph': onPhase(m); break;
     case 'you': if (m.of) place(m); else if (m.i != null) announceResult(m); break;
     case 'bye': return bye(m.why);
+    case 'tms': teams = teamsOf(m); for (const [seat, k] of teams.of) { const p = players.get(seat); if (p) p.team = k; } drawTeam(); break;
+    case 'ts': scoresOf(m.s, scores); drawTeam(); break;
+    case 'bn': bonusToast(m); if (m.n && m.n !== mySeat) return; break;
+    case 'eyes': setEyes(m.on); return;
+    case 'say': flash($('lv-say-banner'), (D.say || [])[m.m] || '', 6000); return;
+    case 'opt': opt = { ...opt, ...m }; applyOpt(); break;
+    case 'me': if (m.acc) setAcc(m.acc); return;
+    case 'again': return again(m);
+    case 'ros': players.clear(); for (const P of m.players || []) players.set(P[0], playerOf(P)); { const mine = players.get(mySeat); if (mine) $('lv-me-name').textContent = nm(mine.name); } break;
+    case 'q': question = { i: m.i, q: m.q, choices: m.choices || [] }; showRead(); if (acc.read && tapped) readQuestion(); break;
+    case 'rv': question = null; break;
     default: break;
   }
   if (watching) watchMsg(m);
@@ -72,6 +90,14 @@ function welcome(m) {
   players.clear(); for (const P of m.players || []) players.set(P[0], playerOf(P));
   me = m.me;
   $('lv-me-name').textContent = me ? nm(me.name) : '';
+  if (m.teams) teams = teamsOf(m.teams);
+  if (m.ts) scoresOf(m.ts, scores);
+  if (m.settings) { opt = { ...opt, ...m.settings }; applyOpt(); }
+  lang = m.lang || lang;
+  if (m.quiz && m.quiz.q) question = { i: m.quiz.q.i, q: m.quiz.q.q, choices: m.quiz.q.choices || [] };
+  setEyes(!!m.eyes);
+  if (me && me.acc) setAcc(me.acc, true);
+  drawTeam(); showRead();
   const box = $('lv-me-avatar');
   if (box && me) { let cv = box.querySelector('canvas'); if (!cv) { cv = avatarCanvas('lv-av', 40); box.append(cv); } pics.draw(cv, me.avatar, 40); }
   if (me && me.late) toast(D.late);
@@ -112,7 +138,8 @@ async function onPhase(m, first = false) {
     if (tok2) loadFrame('game', tok2);
   } else if (phase === 'loading' && frame && frame.ready && !first) sock.send('rdy', { view: frame.view });
   if (phase === 'ended') ended();
-  document.getElementById('lv-emotes').hidden = phase === 'ended' || phase === 'paused' || (phase === 'playing' && !(wel && wel.mode === 'game'));
+  if (phase !== 'playing') question = phase === 'paused' ? question : null;
+  applyOpt(); drawTeam(); showRead();
 }
 
 function announceResult(m) {
@@ -121,15 +148,19 @@ function announceResult(m) {
   says(m.ok ? t('js.live-play.right', { points: m.points }) : t('js.live-play.wrong'));
 }
 function place(m) {
-  const p = $('lv-place'); if (p) p.textContent = fill(D.place, { rank: m.rank, count: m.of });
-  says(fill(D.place, { rank: m.rank, count: m.of }));
+  // the leaderboard off: no place, just the end
+  const text = m.rank ? fill(D.place, { rank: m.rank, count: m.of }) : (D.phases || {}).ended || '';
+  const p = $('lv-place'); if (p) p.textContent = text;
+  says(text);
 }
 function ended() {
   if (endBox) endBox.hidden = false;
+  lingering = true; const w = $('lv-again-wait'); if (w) w.hidden = false;
+  drawEndTeams();
 }
 function bye(why) {
   if (why === 'removed') { try { sessionStorage.setItem(`lv:removed:${sid}`, '1'); sessionStorage.removeItem(`lv:${sid}`); } catch { /* ignore */ } }
-  if (why === 'ended') { ended(); return; }
+  if (why === 'ended') { ended(); lingering = false; const w = $('lv-again-wait'); if (w) w.hidden = true; return; }
   stop((D.msgs && D.msgs[why]) || D.msgs.gone);
   if (why === 'removed' && endBox) { endBox.hidden = false; $('lv-end-title').textContent = D.msgs.removed; $('lv-place').textContent = ''; $('lv-again').hidden = true; }
 }
@@ -217,4 +248,121 @@ function watchMsg(m) {
   if (m.t === 'lb') board = m.top || [];
   if (m.t === 'race') raceList = m.p || [];
   if (m.t === 'wel' && m.race) raceList = m.race;
+}
+
+// ---------------------------------------------------------------- part 3
+// ---- my team: the header band, the team's place, the picker (lobby, when the host allows it) ----
+const presetOf = k => { const tm = teams.list.find(x => x.k === k); return tm ? presets[tm.p] : null; };
+function drawTeam() {
+  const k = teams.on ? teams.of.get(mySeat) || 0 : 0, pr = k ? presetOf(k) : null, band = $('lv-me-team'), bar = document.querySelector('.lv-play > .lv-bar');
+  if (band) {
+    band.hidden = !pr;
+    if (pr) {
+      const use = band.querySelector('use'); if (use) use.setAttribute('href', `#lv-shape-${pr.shape}`);
+      band.querySelector('.lv-me-team-name').textContent = `${pr.icon} ${pr.name}`;
+      const sc = scores.get(k), ranked = teams.list.filter(x => (scores.get(x.k) || {}).rank > 0).length;
+      band.querySelector('.lv-me-team-rank').textContent = phase !== 'lobby' && opt.board !== 'off' && sc && sc.rank ? fill(TX.rank, { rank: sc.rank, count: ranked || teams.list.length }) : '';
+      band.setAttribute('aria-label', `${TX.team}: ${pr.name}`);
+    }
+  }
+  paintTeam(bar, pr, k); if (bar) bar.classList.toggle('lv-bar-team', !!pr);
+  if (k !== myTeam) {
+    const was = myTeam; myTeam = k;
+    if (pr) { const live = $('lv-team-live'); if (live) { live.textContent = ''; setTimeout(() => { live.textContent = fill(was ? TX.moved : TX.you, { team: pr.name }); }, 40); } }
+  }
+  drawPicker();
+  if (phase === 'ended') drawEndTeams();
+}
+function drawPicker() {
+  const box = $('lv-team-pick'), listEl = $('lv-team-pick-list'); if (!box) return;
+  const show = teams.on && teams.choose && phase === 'lobby';
+  box.hidden = !show; if (!show) return;
+  const total = players.size || 1, cap = Math.ceil(total / Math.max(1, teams.n)) + 1;
+  listEl.textContent = '';
+  for (const tm of teams.list) {
+    const pr = presets[tm.p]; if (!pr) continue;
+    const size = [...teams.of.values()].filter(v => v === tm.k).length, mine = teams.of.get(mySeat) === tm.k;
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'btn lv-team-btn'; b.dataset.k = tm.k; paintTeam(b, pr, tm.k);
+    const nmEl = document.createElement('span'); nmEl.className = 'lv-team-name'; nmEl.textContent = `${pr.icon} ${pr.name}`;
+    const sz = document.createElement('span'); sz.className = 'small lv-team-size';
+    const why = teams.locked ? TX.locked : !mine && size >= cap ? TX.full : '';
+    sz.textContent = `${fill(TX.size, { count: size })}${why ? ` · ${why}` : ''}`;
+    b.append(shapeSvg(pr.shape), nmEl, sz);
+    b.setAttribute('aria-pressed', String(mine));
+    b.disabled = !!why || mine;
+    listEl.append(b);
+  }
+}
+$('lv-team-pick-list') && $('lv-team-pick-list').addEventListener('click', e => { const b = e.target.closest('[data-k]'); if (b && !b.disabled && sock) sock.send('pt', { k: +b.dataset.k }); });
+function drawEndTeams() {
+  const ol = $('lv-end-teams'); if (!ol) return;
+  ol.hidden = !teams.on; if (!teams.on) return;
+  ol.textContent = '';
+  const rows = teams.list.map(tm => ({ ...tm, ...(scores.get(tm.k) || { score: 0, rank: 0 }) }));
+  const ranks = opt.board !== 'off';
+  rows.sort((a, b) => (ranks ? ((a.rank || 99) - (b.rank || 99)) : 0) || (a.k - b.k));
+  for (const r of rows) {
+    const pr = presets[r.p]; if (!pr) continue;
+    const li = document.createElement('li'); li.className = 'lv-end-team'; paintTeam(li, pr, r.k);
+    if (r.k === myTeam) li.classList.add('is-mine');
+    const nmEl = document.createElement('span'); nmEl.textContent = `${ranks && r.rank ? `${r.rank}. ` : ''}${pr.icon} ${pr.name}`;
+    li.append(shapeSvg(pr.shape), nmEl);
+    if (ranks) { const sc = document.createElement('span'); sc.className = 'lv-end-score'; sc.textContent = `${r.score}${teams.scoring === 'avg' ? ` ${TX.perPlayer}` : ''}`; li.append(sc); }
+    ol.append(li);
+  }
+}
+
+// ---- eyes up, messages, bonus ----
+function setEyes(on) {
+  const cover = $('lv-eyes'); if (!cover) return;
+  cover.hidden = !on;
+  for (const el of [stage, $('lv-emotes'), $('lv-team-pick'), $('lv-read'), watch]) if (el) { if (on) el.setAttribute('inert', ''); else el.removeAttribute('inert'); }
+  document.body.classList.toggle('lv-eyes-on', !!on);
+}
+function bonusToast(m) {
+  const reason = (D.bonus || [])[m.r] || '';
+  if (m.k) flash($('lv-bonus-toast'), fill(TX.toastTeam, { reason, points: m.p, team: (presetOf(m.k) || {}).name || '' }), 5000);
+  else if (m.n === mySeat) flash($('lv-bonus-toast'), fill(TX.toastSeat, { reason, points: m.p }), 5000);
+}
+function applyOpt() {
+  const em = document.getElementById('lv-emotes');
+  if (em) em.hidden = opt.emotes === false || phase === 'ended' || phase === 'paused' || (phase === 'playing' && !(wel && wel.mode === 'game'));
+}
+
+// ---- support (private to this page): Simple view and automatic read aloud ----
+async function setAcc(a, first = false) {
+  acc = { time: a.time || 100, read: !!a.read, simple: !!a.simple };
+  showRead();
+  if (acc.simple && !simple) {
+    simple = true; $('lv-simple').setAttribute('aria-pressed', 'true');
+    try { sessionStorage.setItem('lv:simple', '1'); } catch { /* ignore */ }
+    document.documentElement.classList.add('lv-reduced');
+    if (!first && frame && !watching) { view = '2d'; const kind = frame.kind, tok2 = await frameToken(kind); if (tok2) loadFrame(kind, tok2); }
+    else view = '2d';
+  }
+}
+// ---- read aloud: a button for every player in quiz modes (when this browser has a voice for the set's language) ----
+const readBtn = $('lv-read');
+function showRead() {
+  if (!readBtn) return;
+  const quiz = wel && wel.mode && wel.mode !== 'game';
+  const can = !!(window.speechSynthesis && voiceFor(lang || document.documentElement.lang));
+  readBtn.hidden = !(quiz && can && question && phase === 'playing');
+}
+function readQuestion() {
+  if (!question) return;
+  const L2 = i => String.fromCharCode(65 + i);
+  speak(`${question.q}. ${question.choices.map((c, i) => `${L2(i)}: ${c}`).join('. ')}`, lang || document.documentElement.lang);
+}
+readBtn && readBtn.addEventListener('click', () => { tapped = true; readQuestion(); readBtn.textContent = `🔊 ${TX.readAgain}`; });
+// browsers speak only after a gesture: the first tap anywhere unlocks the automatic reading
+addEventListener('pointerdown', () => { if (!tapped) { tapped = true; if (acc.read && question) readQuestion(); } }, { once: true });
+if (window.speechSynthesis) window.speechSynthesis.addEventListener && window.speechSynthesis.addEventListener('voiceschanged', showRead);
+
+// ---- play again: a private token for the new game ----
+function again(m) {
+  if (!m || !m.sid || !m.tok) return;
+  try { sessionStorage.setItem(`lv:${m.sid}`, m.tok); } catch { /* ignore */ }
+  if (sock) sock.close(); if (frame) frame.destroy();
+  location.href = `/live/play/${encodeURIComponent(m.sid)}`;
 }

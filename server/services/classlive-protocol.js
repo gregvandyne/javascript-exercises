@@ -9,16 +9,29 @@
 export const V = 1;
 export const EMOTES = ['wave', 'cheer', 'jump', 'dance', 'clap', 'heart'];
 export const ANIM = ['idle', 'walk', 'run', 'jump', 'cheer', 'hurt', 'wave', 'dance'];
-export const HOST_ACTIONS = ['start', 'pause', 'resume', 'next', 'skip', 'lock', 'unlock', 'kick', 'end'];
+export const HOST_ACTIONS = ['start', 'pause', 'resume', 'next', 'skip', 'lock', 'unlock', 'kick', 'end', 'eyes', 'say', 'time', 'bonus', 'rename', 'acc'];
+/** Fixed teacher messages (live.say.<id>): sent as an index, shown in each device's own language. Never free text. */
+export const SAY = ['twoMinutes', 'oneMinute', 'lastQuestion', 'lastRound', 'eyesOnMe', 'greatTeamwork', 'greatEffort', 'beKind', 'getReady', 'almostDone'];
+/** Bonus reasons (live.bonus.reason.<id>): all positive, always +100. */
+export const BONUS_REASONS = ['teamwork', 'kindness', 'effort', 'helping', 'listening'];
+/** Team actions (tm). */
+export const TEAM_ACTIONS = ['on', 'off', 'count', 'preset', 'scoring', 'choose', 'lock', 'unlock', 'balance', 'shuffle', 'move', 'last'];
+export const TEAM_MAX = 6, PRESET_COUNT = 8;
+/** Extra time a seat may have, in percent of each question's time. */
+export const EXTRA_TIME = [100, 150, 200];
+/** Seconds +time adds to the open question. */
+export const ADD_SECS = [10, 20, 30];
+/** Host connections: the projector (the room's screen) and the teacher's dashboard (a phone or laptop). */
+export const HOST_VIEWS = ['projector', 'dash'];
 export const VIEWS = ['3d', '2d', 'watch'];
 export const BYE = ['removed', 'ended', 'full', 'locked', 'replaced', 'expired', 'restart', 'flood', 'takenDown'];
 /** Largest message (bytes of JSON) a player may send; the host's page and frame may send more (shared state). */
 export const MAX = { player: 2 * 1024, host: 16 * 1024, ev: 512, state: 8 * 1024 };
 /** Messages per second per type (token buckets: this rate, a burst of twice it). Over: dropped silently. */
-export const RATES = { hello: 1, rdy: 2, mv: 12, ev: 10, sc: 2, it: 4, an: 2, em: 1, pi: 1, h: 5, st: 5, fr: 1 };
+export const RATES = { hello: 1, rdy: 2, mv: 12, ev: 10, sc: 2, it: 4, an: 2, em: 1, pi: 1, h: 5, st: 5, fr: 1, tm: 10, cf: 5, pt: 1 };
 /** Player-side types; the host may send the rest too (and h, st only it). */
-const PLAYER_TYPES = new Set(['hello', 'rdy', 'mv', 'ev', 'sc', 'it', 'an', 'em', 'pi', 'fr']);
-const HOST_TYPES = new Set(['hello', 'rdy', 'ev', 'pi', 'h', 'st', 'fr']);
+const PLAYER_TYPES = new Set(['hello', 'rdy', 'mv', 'ev', 'sc', 'it', 'an', 'em', 'pi', 'fr', 'pt']);
+const HOST_TYPES = new Set(['hello', 'rdy', 'ev', 'pi', 'h', 'st', 'fr', 'tm', 'cf']);
 /** Positions: at most 1 km from the centre either way (the session's own bounds clamp further). */
 const POS_MAX = 100000;
 export const KIND_RE = /^[a-z][a-z0-9_-]{0,23}$/;
@@ -83,7 +96,9 @@ export function parse(raw, role = 'player') {
   if (!(role === 'host' ? HOST_TYPES : PLAYER_TYPES).has(m.t)) return null;
   switch (m.t) {
     case 'hello':
-      return int(m.v, 1, 99) && typeof m.tok === 'string' && m.tok.length <= 2048 ? { t: 'hello', v: m.v, tok: m.tok } : null;
+      if (!int(m.v, 1, 99) || typeof m.tok !== 'string' || m.tok.length > 2048) return null;
+      if (m.view !== undefined && !HOST_VIEWS.includes(m.view)) return null;
+      return { t: 'hello', v: m.v, tok: m.tok, ...(m.view ? { view: m.view } : {}) };
     case 'rdy': {
       const view = m.view === undefined ? '3d' : m.view;
       if (!VIEWS.includes(view)) return null;
@@ -106,9 +121,13 @@ export function parse(raw, role = 'player') {
       if (size > MAX.ev) return null;
       const out = { t: 'ev', k: m.k, d };
       if (m.to !== undefined) {
-        if (role === 'player' && m.to === 'host') out.to = 'host';
+        if (role === 'player' && (m.to === 'host' || m.to === 'team')) out.to = m.to;
         else if (role === 'host' && int(m.to, 1, 1000)) out.to = m.to;
         else return null;
+      }
+      if (m.tm !== undefined) {
+        if (role !== 'host' || !int(m.tm, 1, TEAM_MAX) || out.to !== undefined) return null;
+        out.tm = m.tm;
       }
       return out;
     }
@@ -121,9 +140,45 @@ export function parse(raw, role = 'player') {
     case 'h': {
       if (!HOST_ACTIONS.includes(m.a)) return null;
       const out = { t: 'h', a: m.a };
-      if (m.a === 'kick') { if (!int(m.n, 1, 1000)) return null; out.n = m.n; }
+      if (m.a === 'kick' || m.a === 'rename') { if (!int(m.n, 1, 1000)) return null; out.n = m.n; }
       if (m.a === 'next' || m.a === 'skip') { if (!int(m.at, 0, 1e9)) return null; out.at = m.at; }
+      if (m.a === 'eyes') { if (typeof m.on !== 'boolean') return null; out.on = m.on; }
+      if (m.a === 'say') { if (!int(m.m, 0, SAY.length - 1)) return null; out.m = m.m; }
+      if (m.a === 'time') { if (!ADD_SECS.includes(m.s)) return null; out.s = m.s; }
+      if (m.a === 'bonus') {
+        if (!int(m.r, 0, BONUS_REASONS.length - 1)) return null;
+        if ((m.n === undefined) === (m.k === undefined)) return null;   // one seat or one team
+        if (m.n !== undefined) { if (!int(m.n, 1, 1000)) return null; out.n = m.n; } else { if (!int(m.k, 1, TEAM_MAX)) return null; out.k = m.k; }
+        out.r = m.r;
+      }
+      if (m.a === 'acc') {
+        if (!int(m.n, 1, 1000) || !EXTRA_TIME.includes(m.x) || !int(m.ra, 0, 1) || !int(m.sv, 0, 1)) return null;
+        if (m.save !== undefined && !int(m.save, 0, 1)) return null;
+        Object.assign(out, { n: m.n, x: m.x, ra: m.ra, sv: m.sv, ...(m.save ? { save: 1 } : {}) });
+      }
       return out;
+    }
+    case 'tm': {
+      if (!TEAM_ACTIONS.includes(m.a)) return null;
+      const out = { t: 'tm', a: m.a };
+      if (m.a === 'on') { if (m.n !== undefined) { if (!int(m.n, 2, TEAM_MAX)) return null; out.n = m.n; } }
+      if (m.a === 'count') { if (!int(m.n, 2, TEAM_MAX)) return null; out.n = m.n; }
+      if (m.a === 'preset') { if (!int(m.k, 1, TEAM_MAX) || !int(m.p, 0, PRESET_COUNT - 1)) return null; out.k = m.k; out.p = m.p; }
+      if (m.a === 'scoring') { if (m.v !== 'avg' && m.v !== 'sum') return null; out.v = m.v; }
+      if (m.a === 'choose') { if (typeof m.v !== 'boolean') return null; out.v = m.v; }
+      if (m.a === 'move') { if (!int(m.s, 1, 1000) || !int(m.k, 0, TEAM_MAX)) return null; out.s = m.s; out.k = m.k; }
+      return out;
+    }
+    case 'pt': return int(m.k, 1, TEAM_MAX) ? { t: 'pt', k: m.k } : null;
+    case 'cf': {
+      // The shape only (flat, at most 12 keys of booleans, small whole numbers and tokens); classlive-settings.clean
+      // checks every key and value.
+      const d = m.d;
+      if (!d || typeof d !== 'object' || Array.isArray(d)) return null;
+      const keys = Object.keys(d);
+      if (!keys.length || keys.length > 12 || !keys.every(k => /^[a-zA-Z]{1,12}$/.test(k))) return null;
+      if (!keys.every(k => typeof d[k] === 'boolean' || int(d[k], 0, 1000) || (typeof d[k] === 'string' && TOKEN_RE.test(d[k])))) return null;
+      return { t: 'cf', d: Object.fromEntries(keys.map(k => [k, d[k]])) };
     }
     case 'st': {
       if (!m.d || typeof m.d !== 'object' || Array.isArray(m.d) || !stateOk(m.d)) return null;
@@ -145,7 +200,7 @@ export function cleanCfg(c) {
     if (!num(bounds, 1, 1000) || !num(maxSpeed, 0.5, 100)) return null;
     out.presence = { bounds, maxSpeed };
   }
-  for (const k of ['lobby', 'quiz', 'hostView']) if (c[k] !== undefined) { if (typeof c[k] !== 'boolean') return null; out[k] = c[k]; }
+  for (const k of ['lobby', 'quiz', 'hostView', 'teams']) if (c[k] !== undefined) { if (typeof c[k] !== 'boolean') return null; out[k] = c[k]; }
   if (c.maxScorePerSec !== undefined) { if (!num(c.maxScorePerSec, 1, 1e5)) return null; out.maxScorePerSec = c.maxScorePerSec; }
   return out;
 }

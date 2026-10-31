@@ -18,7 +18,19 @@ if (form) {
     if (sets) sets.hidden = !quiz;
     const aud = (form.querySelector('input[name="audience"]:checked') || {}).value;
     if (cls) cls.closest('.field').hidden = aud !== 'class';
+    // part 3: quiz-only settings only for picks that use questions; how teams score only when teams are on;
+    // "names" (account names) only in a class room
+    for (const el of form.querySelectorAll('#lv-settings-landing .lv-quiz-only')) el.hidden = !quiz;
+    const teams = +((form.querySelector('input[name="teams"]:checked') || {}).value || 0);
+    const sc = form.querySelector('.lv-team-scoring'); if (sc) sc.hidden = !teams;
+    const names = form.querySelector('select[name="names"]');
+    if (names) { const o = names.querySelector('option[value="names"]'); if (o) { o.hidden = o.disabled = aud !== 'class'; if (aud !== 'class' && names.value === 'names') names.value = 'nicknames'; } }
   };
+  const reset = $('lv-prefs-reset');
+  if (reset) reset.addEventListener('click', async () => {
+    reset.disabled = true;
+    try { await api(reset.dataset.href, { method: 'DELETE' }); location.reload(); } catch (er) { toast(er.message, { bad: true }); reset.disabled = false; }
+  });
   form.addEventListener('change', sync); sync();
   // Our own submit (before app.js's): a second open game asks first.
   document.addEventListener('submit', async e => {

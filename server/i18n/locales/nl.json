@@ -2639,7 +2639,8 @@
       "game": "Speel een game",
       "build": "Bouw een game",
       "text": "Lees of doe",
-      "question": "Beantwoord een vraag"
+      "question": "Beantwoord een vraag",
+      "quiz": "Quizvragen beantwoorden"
     },
     "library": {
       "title": "Lessenbibliotheek",
@@ -2804,6 +2805,14 @@
     },
     "editor": {
       "live": "In gebruik in {classes}. {count, plural, =0 {Er is nog geen leerling begonnen.} one {# leerling is begonnen.} other {# leerlingen zijn begonnen.}} Leerlingen zien wijzigingen meteen."
+    },
+    "quiz": {
+      "start": "Beginnen",
+      "right": "Goed!",
+      "wrong": "Net niet. Het goede antwoord is gemarkeerd.",
+      "next": "Volgende",
+      "of": "Vraag {n} van {total}",
+      "done": "Klaar! Je had {score}% goed."
     }
   },
   "progress": {
@@ -4374,7 +4383,14 @@
       "restart": "Oomba Academy start opnieuw op. Doe over een minuut weer mee met dezelfde code.",
       "flood": "Te veel berichten van dit apparaat.",
       "takenDown": "Dit spel is weggehaald.",
-      "reconnecting": "Verbinding verbroken. Opnieuw verbinden…"
+      "reconnecting": "Verbinding verbroken. Opnieuw verbinden…",
+      "read": "Voorlezen",
+      "readAgain": "Nog eens voorlezen",
+      "team": "Jouw team",
+      "pickTeam": "Kies je team",
+      "eyes": "Kijk naar je leraar",
+      "moved": "Je zit nu bij {team}",
+      "again": "Misschien start je leraar nog een spel. Blijf op deze pagina!"
     },
     "emote": {
       "wave": "Zwaaien",
@@ -4414,7 +4430,12 @@
       "answers": "{count, plural, one {# antwoord} other {# antwoorden}}",
       "players": "Spelers",
       "controls": "Spelbediening",
-      "reports": "Een speler heeft iets gemeld in dit spel. Kijk even of alles in orde is."
+      "reports": "Een speler heeft iets gemeld in dit spel. Kijk even of alles in orde is.",
+      "eyes": "Ogen hier",
+      "teacherView": "Leraarweergave",
+      "soundOn": "Geluid aan",
+      "soundOff": "Geluid uit",
+      "seeResultsNow": "Nu de uitslag bekijken"
     },
     "landing": {
       "title": "Een livespel leiden",
@@ -4626,7 +4647,29 @@
       "gone": "Deze uitslag is niet meer beschikbaar.",
       "left": "vertrokken",
       "gradebook": "De scores staan nu in het cijferboek van de klas.",
-      "playersCount": "{count, plural, one {# speler} other {# spelers}}"
+      "playersCount": "{count, plural, one {# speler} other {# spelers}}",
+      "team": "Team",
+      "sum": "Totaal",
+      "avg": "Gemiddelde per speler",
+      "rankedBy": "Volgorde op basis van: {how}",
+      "teamPlayers": "Spelers",
+      "bonus": "Bonus",
+      "hardest": "Moeilijkste vragen",
+      "review": "Vragen terugkijken",
+      "marks": "Antwoorden",
+      "markRight": "Goed",
+      "markWrong": "Fout",
+      "markNone": "Geen antwoord",
+      "needsHelp": "Heeft hulp nodig",
+      "details": "Details per leerling",
+      "detailsHint": "Controleer dat de klas je scherm niet ziet voordat je dit opent.",
+      "print": "Afdrukken",
+      "playMissed": "De gemiste vragen nog eens spelen",
+      "playAgain": "Nog eens met dezelfde spelers",
+      "stillHere": "{count, plural, one {# speler is er nog} other {# spelers zijn er nog}}",
+      "playAgainTeams": "Nog eens met deze teams",
+      "newGame": "Nieuw spel",
+      "homework": "Als huiswerk geven"
     },
     "sets": {
       "title": "Vragensets",
@@ -4662,7 +4705,12 @@
         "tooBig": "Deze set is te groot.",
         "noQuestions": "Deze les heeft geen vraagstappen.",
         "notFound": "We vinden die set niet."
-      }
+      },
+      "noMissed": "Iedereen had alles goed, dus er is niets om nog eens te spelen.",
+      "teamsOff": "Dit spel had geen teams.",
+      "againGone": "De spelers zijn weg. Start liever een nieuw spel.",
+      "homeworkOff": "Huiswerk uit vragensets staat uit.",
+      "noClass": "Kies een van je klassen."
     },
     "nick": {
       "0": "Dappere Otter",
@@ -4830,6 +4878,188 @@
     },
     "panel": {
       "title": "Live spellen"
+    },
+    "team": {
+      "preset": {
+        "0": "Blauwe Walvissen",
+        "1": "Oranje Tijgers",
+        "2": "Groene Kikkers",
+        "3": "Roze Flamingo's",
+        "4": "Gele Bijen",
+        "5": "Hemelsblauwe Arenden",
+        "6": "Rode Vossen",
+        "7": "Nachtuilen"
+      },
+      "shape": {
+        "circle": "Cirkel",
+        "triangle": "Driehoek",
+        "square": "Vierkant",
+        "heart": "Hart",
+        "star": "Ster",
+        "hexagon": "Zeshoek",
+        "diamond": "Ruit",
+        "moon": "Maan"
+      },
+      "heading": "Teams",
+      "off": "Uit",
+      "count": "Aantal teams",
+      "edit": "Teams aanpassen",
+      "done": "Klaar",
+      "more": "Meer teamopties",
+      "scoring": "Teamscore",
+      "scoringAvg": "Gemiddelde per speler",
+      "scoringAvgHint": "Eerlijk als teams verschillend groot zijn.",
+      "scoringSum": "Totaal aantal punten",
+      "unassigned": "Nog geen team",
+      "empty": "Nog geen spelers",
+      "emptyWarn": "{team} heeft geen spelers.",
+      "uneven": "De teams zijn ongelijk ({sizes}). Gelijk maken?",
+      "balance": "Gelijk maken",
+      "shuffle": "Husselen",
+      "choose": "Spelers kiezen hun team",
+      "chooseHint": "Alleen voordat het spel begint.",
+      "lock": "Teams vastzetten",
+      "unlock": "Teams vrijgeven",
+      "locked": "De teams staan vast",
+      "useLast": "Laatste teams gebruiken",
+      "noLast": "Deze klas heeft nog geen bewaarde teams.",
+      "forgetLast": "Bewaarde teams vergeten",
+      "forgetConfirm": "De bewaarde teams van deze klas vergeten?",
+      "saved": "Teams bewaard.",
+      "savedCount": "{count, plural, one {Teams bewaard voor # leerling.} other {Teams bewaard voor # leerlingen.}}",
+      "notSaved": "Nog geen bewaarde teams. De teams van je laatste live spel met deze klas worden hier ook bewaard.",
+      "moveHere": "Hierheen",
+      "selectHint": "Sleep een speler naar een team, of kies een speler en daarna „Hierheen”.",
+      "moved": "{name} → {team}",
+      "you": "Je zit bij {team}",
+      "pick": "Meedoen",
+      "full": "Vol",
+      "size": "{count, plural, one {# speler} other {# spelers}}",
+      "rank": "Plaats {rank} van {count}",
+      "score": "Score",
+      "perPlayer": "per speler",
+      "board": "Teamscores",
+      "podium": "Teampodium",
+      "madeFor": "Gemaakt voor teams",
+      "none": "Teams staan uit.",
+      "editor": "Teams voor live spellen",
+      "editorHint": "Maak de tafelgroepen voor de les. In een live spel zet „Laatste teams gebruiken” iedereen weer in zijn groep."
+    },
+    "settings": {
+      "title": "Spelinstellingen",
+      "open": "Instellingen",
+      "more": "Meer instellingen",
+      "secs": "Tijd per vraag",
+      "secsSet": "Zoals in de vragenset",
+      "secsN": "{count, plural, one {# seconde} other {# seconden}}",
+      "count": "Aantal vragen",
+      "countAll": "Alle",
+      "shuffleQ": "Vragen husselen",
+      "shuffleA": "Antwoorden husselen",
+      "points": "Punten",
+      "pointsSpeed": "Snelle antwoorden leveren meer op",
+      "pointsAccuracy": "Alleen goede antwoorden (1.000 per stuk)",
+      "board": "Ranglijst op de apparaten",
+      "boardAll": "Tonen",
+      "boardTop5": "Alleen de top 5",
+      "boardOff": "Verbergen",
+      "late": "Meedoen na de start mag",
+      "names": "Namen op de schermen",
+      "namesNames": "Echte namen",
+      "namesNicknames": "Bijnamen",
+      "namesHidden": "Geen namen op het grote scherm",
+      "namesHint": "Jouw leraarweergave toont altijd de namen van je leerlingen.",
+      "sound": "Spelgeluiden op het grote scherm",
+      "emotes": "Emotes",
+      "remembered": "Je keuzes worden onthouden voor je volgende live spel.",
+      "reset": "Terug naar de standaardinstellingen",
+      "save": "Opslaan"
+    },
+    "say": {
+      "menu": "Bericht",
+      "twoMinutes": "Nog 2 minuten!",
+      "oneMinute": "Nog 1 minuut!",
+      "lastQuestion": "Laatste vraag!",
+      "lastRound": "Laatste ronde!",
+      "eyesOnMe": "Allemaal even kijken, graag",
+      "greatTeamwork": "Goed samengewerkt!",
+      "greatEffort": "Goed je best gedaan, allemaal!",
+      "beKind": "Denk eraan: wees aardig",
+      "getReady": "Maak je klaar!",
+      "almostDone": "Bijna klaar!"
+    },
+    "eyes": {
+      "on": "Ogen hier",
+      "off": "Terug naar het spel",
+      "cover": "Kijk naar je leraar",
+      "coverHint": "Het spel komt zo terug.",
+      "banner": "Ogen hier: alle schermen staan op pauze."
+    },
+    "bonus": {
+      "give": "Bonuspunten geven",
+      "toastSeat": "{reason}! +{points}",
+      "toastTeam": "{reason}! +{points} voor {team}",
+      "reason": {
+        "teamwork": "Samenwerken",
+        "kindness": "Vriendelijkheid",
+        "effort": "Goed je best gedaan",
+        "helping": "Anderen helpen",
+        "listening": "Goed luisteren"
+      }
+    },
+    "time": {
+      "add": "+{s} s",
+      "revealNow": "Nu onthullen",
+      "waiting": "We wachten op iedereen…"
+    },
+    "dash": {
+      "title": "Leraarweergave",
+      "qrTitle": "Leraarweergave op je telefoon",
+      "qrHint": "Scan met je telefoon. Je moet met je eigen account ingelogd zijn.",
+      "notice": "Gebruik een scherm dat de klas niet ziet (je telefoon is het beste).",
+      "tabPlayers": "Spelers",
+      "tabQuestion": "Vraag",
+      "tabTeams": "Teams",
+      "tabMessages": "Berichten",
+      "tabSettings": "Instellingen",
+      "answered": "Geantwoord",
+      "thinking": "Denkt na",
+      "offline": "Offline",
+      "late": "Later ingestapt",
+      "needsHelp": "Heeft hulp nodig",
+      "showHelp": "Toon wie hulp nodig heeft",
+      "hideHelp": "Verberg wie hulp nodig heeft",
+      "why": {
+        "lowScore": "Minder dan de helft goed",
+        "wrongRun": "Twee keer fout op rij",
+        "missRun": "Twee keer niet geantwoord"
+      },
+      "extraWaiting": "{count, plural, one {# antwoordt nog (extra tijd)} other {# antwoorden nog (extra tijd)}}",
+      "showAnswer": "Toon het antwoord",
+      "hideAnswer": "Verberg het antwoord",
+      "rename": "Nieuwe bijnaam",
+      "move": "Naar een team",
+      "support": "Ondersteuning",
+      "supportTime": "Extra tijd",
+      "time100": "Normale tijd",
+      "time150": "Tijd × 1,5",
+      "time200": "Tijd × 2",
+      "read": "Vragen voorlezen",
+      "simple": "Eenvoudige weergave",
+      "remember": "Onthouden voor deze klas",
+      "supportPrivate": "Alleen deze leerling en jij zien dit.",
+      "supportWaits": "Het antwoord wacht op deze leerling. Je kunt altijd Nu onthullen kiezen.",
+      "saved": "Opgeslagen."
+    },
+    "support": {
+      "count": "{count, plural, one {# leerling heeft bewaarde ondersteuning.} other {# leerlingen hebben bewaarde ondersteuning.}}",
+      "clear": "Ondersteuning wissen",
+      "clearConfirm": "Alle bewaarde ondersteuning van deze klas wissen?"
+    },
+    "homework": {
+      "hint": "Leerlingen antwoorden in hun eigen tempo, zonder timer. Hun score gaat naar het cijferoverzicht.",
+      "due": "Inleverdatum (optioneel)",
+      "assign": "Aan de klas geven"
     }
   }
 }

@@ -8,20 +8,26 @@
 // again with a fresh token, so a page the game navigated to never gets the port or any roster data. Every message from
 // the frame is checked again here (type, shape, size) before it goes to the server, which checks it a third time.
 
+import { format } from '/js/i18n-format.js';
+import { INTL } from '/js/i18n.js';
+
 export const SANDBOX = 'allow-scripts allow-pointer-lock allow-orientation-lock';
 const OUT_TYPES = new Set(['rdy', 'mv', 'ev', 'sc', 'it', 'an', 'em', 'st']);
 const HOST_OUT = new Set(['rdy', 'ev', 'st']), PLAYER_OUT = new Set(['rdy', 'mv', 'ev', 'sc', 'it', 'an', 'em']);
-// What the frame never sees: tokens, the join code, results links, report counts.
-const PRIVATE = new Set(['fr', 'res', 'rp', 'lk', 'bye']);
+// What the frame never sees: tokens, the join code, results links, report counts; and (part 3) a seat's own support
+// (me: game code, maybe another child's, must never learn it), the play-again token, the host's settings and teacher
+// messages (the page shows those itself), and the dashboard's data.
+const PRIVATE = new Set(['fr', 'res', 'rp', 'lk', 'bye', 'me', 'again', 'cf', 'tml', 'dq', 'dp', 'sup', 'eyes', 'say']);
 
-/** The socket. opts: { tok, onMessage(m), onState('open'|'closed'|'retry'|'gone'), onClock(offset) } -> { send(t, m), close(), offset() } */
-export function connect({ tok, onMessage, onState = () => {}, onClock = () => {} }) {
+/** The socket. opts: { tok, view?, onMessage(m), onState('open'|'closed'|'retry'|'gone'), onClock(offset) } -> { send(t, m), close(), offset() }
+ *  view: 'dash' for the teacher's dashboard (the same host token; the projector is the default). */
+export function connect({ tok, view = '', onMessage, onState = () => {}, onClock = () => {} }) {
   let ws = null, tries = 0, closed = false, timer = null, pings = [], off = 0, pingTimer = null, lastPing = 0;
   const url = `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/api/live/ws`;
   function open() {
     if (closed) return;
     try { ws = new WebSocket(url); } catch { return retry(); }
-    ws.onopen = () => { tries = 0; ws.send(JSON.stringify({ t: 'hello', v: 1, tok })); onState('open'); pings = []; ping(); };
+    ws.onopen = () => { tries = 0; ws.send(JSON.stringify({ t: 'hello', v: 1, tok, ...(view ? { view } : {}) })); onState('open'); pings = []; ping(); };
     ws.onmessage = e => {
       let m; try { m = JSON.parse(e.data); } catch { return; }
       if (!m || typeof m.t !== 'string') return;
@@ -143,7 +149,11 @@ export function gameFrame({ stage, role, getToken, onReady = () => {}, onOut = (
     send(m) {
       if (!m || PRIVATE.has(m.t)) return;
       let out = m;
-      if (m.t === 'wel') { const { frame, lobbyFrame, code, ...rest } = m; out = rest; }
+      if (m.t === 'wel') {
+        const { frame, lobbyFrame, code, dp, sup, dq, ...rest } = m;
+        out = rest;
+        if (rest.me && rest.me.acc) { const { acc, ...me } = rest.me; out = { ...rest, me }; }
+      }
       if (port) port.postMessage(out); else if (queue.length < 300) queue.push(out);
     },
     clock(serverNow) { this.send({ t: 'clk', s: serverNow }); },
@@ -199,5 +209,59 @@ export const readJson = id => { const el = document.getElementById(id); if (!el)
 /** A roster tuple -> an object. */
 export const playerOf = P => ({ seat: P[0], name: P[1], avatar: P[2] || null, team: P[3] || 0, score: P[4] || 0, connected: !!P[5], ready: !!P[6], late: !!P[7] });
 export const nameOf = (nicks, name) => (typeof name === 'number' ? nicks[name] || '' : String(name || ''));
-/** "{a} of {b}" style templates from the server (already translated). */
-export const fill = (s, vars) => String(s || '').replace(/\{(\w+)\}/g, (m, k) => (vars[k] !== undefined ? vars[k] : m));
+/** Templates from the server (already translated, ICU-lite: "{a} of {b}", plurals) filled in the page's language. */
+export const fill = (s, vars) => { try { return format(String(s || ''), vars || {}, INTL); } catch { return String(s || ''); } };
+
+// ---------------------------------------------------------------- part 3: teams, read aloud
+/** A team's shape as inline SVG (<use> of the page's #lv-shapes sprite): drawn, never a font glyph. */
+export function shapeSvg(shape, cls = 'lv-shape') {
+  const NS = 'http://www.w3.org/2000/svg', svg = document.createElementNS(NS, 'svg'), use = document.createElementNS(NS, 'use');
+  svg.setAttribute('class', cls); svg.setAttribute('aria-hidden', 'true'); svg.setAttribute('focusable', 'false'); svg.setAttribute('viewBox', '0 0 24 24');
+  use.setAttribute('href', `#lv-shape-${shape}`); svg.append(use); return svg;
+}
+/** Paint an element in a team's colours (--team, --team-ink) and mark it with data-team. */
+export function paintTeam(el, preset, k) {
+  if (!el) return el;
+  if (preset) { el.style.setProperty('--team', preset.color); el.style.setProperty('--team-ink', preset.ink); el.dataset.team = String(k || ''); }
+  else { el.style.removeProperty('--team'); el.style.removeProperty('--team-ink'); delete el.dataset.team; }
+  return el;
+}
+/** A team chip: shape, icon and name (the name is the text; the shape and icon are decoration). */
+export function teamChip(preset, k, extra = '') {
+  const s = document.createElement('span'); s.className = 'lv-team-chip'; paintTeam(s, preset, k);
+  if (!preset) return s;
+  const ic = document.createElement('span'); ic.setAttribute('aria-hidden', 'true'); ic.textContent = preset.icon;
+  const nm = document.createElement('span'); nm.className = 'lv-team-name'; nm.textContent = preset.name;
+  s.append(shapeSvg(preset.shape), ic, nm);
+  if (extra) { const x = document.createElement('span'); x.className = 'lv-team-extra'; x.textContent = extra; s.append(x); }
+  return s;
+}
+/** Team state from tms: { on, n, scoring, choose, locked, list: [{k, p, size}], of: Map(seat -> k) }. */
+export function teamsOf(m) {
+  const of = new Map(); for (const r of (m && m.m) || []) of.set(r[0], r[1]);
+  return { on: !!(m && m.on), n: (m && m.n) || 0, scoring: (m && m.scoring) || 'avg', choose: !!(m && m.choose), locked: !!(m && m.locked), list: ((m && m.teams) || []).map(r => ({ k: r[0], p: r[1], size: r[2] })), of };
+}
+/** Team scores from ts: Map(k -> {score, rank, sum, avg}). */
+export function scoresOf(rows, into = new Map()) { for (const r of rows || []) into.set(r[0], { score: r[1], rank: r[2], sum: r[3], avg: r[4] }); return into; }
+/** Ordinal-free rank text: "{rank} of {count}" templates come from the server. */
+/** Read text aloud in a language (speechSynthesis), if the browser has a voice for it. -> true when it spoke. */
+export function speak(text, lang) {
+  try {
+    const ss = window.speechSynthesis; if (!ss || !text) return false;
+    const u = new SpeechSynthesisUtterance(String(text)); if (lang) u.lang = lang;
+    const v = voiceFor(lang); if (v) u.voice = v;
+    ss.cancel(); ss.speak(u); return true;
+  } catch { return false; }
+}
+export function voiceFor(lang) {
+  try {
+    const vs = (window.speechSynthesis && window.speechSynthesis.getVoices()) || [];
+    const base = String(lang || '').toLowerCase().split('-')[0];
+    return vs.find(v => v.lang && v.lang.toLowerCase() === String(lang || '').toLowerCase()) || vs.find(v => v.lang && v.lang.toLowerCase().split(/[-_]/)[0] === base) || null;
+  } catch { return null; }
+}
+/** A toast in a fixed element for ms (role=status is on the element). */
+export function flash(el, text, ms = 4000) {
+  if (!el) return; el.textContent = text; el.hidden = false;
+  clearTimeout(el._lvT); el._lvT = setTimeout(() => { el.hidden = true; }, ms);
+}

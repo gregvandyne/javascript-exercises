@@ -406,6 +406,35 @@ export const MIGRATIONS = [
     CREATE TABLE IF NOT EXISTS live_reports (id TEXT PRIMARY KEY, host_id TEXT NOT NULL, game_id TEXT, version_id TEXT, set_id TEXT,
       reason TEXT NOT NULL, items TEXT NOT NULL DEFAULT '', created_at INTEGER NOT NULL, resolved_at INTEGER, resolved_by TEXT);
     CREATE INDEX IF NOT EXISTS live_reports_open ON live_reports(resolved_at, created_at);`],
+  // Oomba Live part 3: teams and teacher tools (docs/decisions.md "Oomba Live, part 3"; legal-review item 42).
+  // - live_runs.teams / settings: the run's team results (preset numbers and scores, never names) and its game settings;
+  // - live_run_scores.team / bonus / marks: a class student's team, bonus points (never in the gradebook score) and
+  //   per-question marks ('1' right, '0' wrong, '-' none);
+  // - live_class_teams + live_class_team_cfg: a class's saved teams (student -> team number) and their setup, kept with
+  //   the class and deleted with the membership, the class or the account;
+  // - live_prefs: a host's own remembered game settings.
+  ['0038_live_teams', `ALTER TABLE live_runs ADD COLUMN teams TEXT NOT NULL DEFAULT '';
+    ALTER TABLE live_runs ADD COLUMN settings TEXT NOT NULL DEFAULT '';
+    ALTER TABLE live_run_scores ADD COLUMN team INTEGER NOT NULL DEFAULT 0;
+    ALTER TABLE live_run_scores ADD COLUMN bonus INTEGER NOT NULL DEFAULT 0;
+    ALTER TABLE live_run_scores ADD COLUMN marks TEXT NOT NULL DEFAULT '';
+    CREATE TABLE IF NOT EXISTS live_class_teams (class_id TEXT NOT NULL, user_id TEXT NOT NULL, team INTEGER NOT NULL, PRIMARY KEY (class_id, user_id));
+    CREATE INDEX IF NOT EXISTS live_class_teams_user ON live_class_teams(user_id);
+    CREATE TABLE IF NOT EXISTS live_class_team_cfg (class_id TEXT PRIMARY KEY, n INTEGER NOT NULL, presets TEXT NOT NULL,
+      scoring TEXT NOT NULL DEFAULT 'avg', saved_by TEXT, saved_at INTEGER NOT NULL);
+    CREATE TABLE IF NOT EXISTS live_prefs (user_id TEXT PRIMARY KEY, prefs TEXT NOT NULL, updated_at INTEGER NOT NULL);`],
+  // Per-student support in a class's live games (extra time, read aloud, simple view). Written only while
+  // LIVE_SAVE_SUPPORT=1 (legal-review item 42); seen only by the class's teachers; deleted with the membership, the class
+  // or the account, or on demand ("Clear support").
+  ['0039_live_support', `CREATE TABLE IF NOT EXISTS live_support (class_id TEXT NOT NULL, user_id TEXT NOT NULL,
+      extra_time INTEGER NOT NULL DEFAULT 100, read_aloud INTEGER NOT NULL DEFAULT 0, simple INTEGER NOT NULL DEFAULT 0,
+      set_by TEXT, updated_at INTEGER NOT NULL, PRIMARY KEY (class_id, user_id));
+    CREATE INDEX IF NOT EXISTS live_support_user ON live_support(user_id);`],
+  // Homework from a question set (LIVE_HOMEWORK): a lesson step of kind 'quiz' keeps the set it came from and a snapshot
+  // of its items; step_progress.marks keeps the student's per-question marks.
+  ['0040_quiz_steps', `ALTER TABLE lesson_steps ADD COLUMN set_id TEXT;
+    ALTER TABLE lesson_steps ADD COLUMN items TEXT NOT NULL DEFAULT '';
+    ALTER TABLE step_progress ADD COLUMN marks TEXT NOT NULL DEFAULT '';`],
 ];
 
 const CODE_LETTERS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
