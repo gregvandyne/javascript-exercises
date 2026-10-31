@@ -189,7 +189,7 @@ test('order: segments assemble in commit order whatever order they complete in; 
   assert.equal(final, 'jump higher higher');
 });
 
-test('guards before the socket opens: signed out, another site, a guest, a grown-up, someone else\'s game, no key, STT_LIVE=0, maintenance, shutting down; the provider is never contacted', { timeout: 20000 }, async () => {
+test('guards before the socket opens: signed out, another site, a guest, someone else\'s game (a grown-up\'s own game opens), no key, STT_LIVE=0, maintenance, shutting down; the provider is never contacted', { timeout: 20000 }, async () => {
   reset(); on('openai');
   const expect = async (s, status) => { await s.closed; assert.equal(s.status, status); };
   await expect(listen(null, g.id), 401);
@@ -200,6 +200,12 @@ test('guards before the socket opens: signed out, another site, a guest, a grown
   auth.createUser({ username: 'LiveMum', password: 'a-long-password-1', accountType: 'grownup' });
   const mum = client(); assert.equal((await mum('/api/auth/login', { method: 'POST', body: { username: 'LiveMum', password: 'a-long-password-1' } })).status, 200);
   await expect(listen(mum, g.id), 404);
+  // A grown-up builds too: their own game's live mic opens (a kid's game stays shut to them, above).
+  const mine = (await mum('/api/studio/new', { method: 'POST', body: {} })).json;
+  assert.ok(mine && mine.id, 'a grown-up can start a game');
+  const ms = listen(mum, mine.id); await ms.next('ready'); ms.ws.send(JSON.stringify({ type: 'cancel' })); await ms.closed;
+  const refusals = logs.filter(l => l.msg === 'live mic refused').map(l => l.fields.why);
+  assert.ok(refusals.includes('origin') && refusals.includes('signed out') && refusals.includes('not editable'), 'refusals are logged with why');
   await expect(listen(owner, g2.id), 404);
   await expect(listen(owner, 'nosuchgame'), 404);
   config.sttApiKey = ''; await expect(listen(owner, g.id), 404); on('openai');
@@ -208,7 +214,7 @@ test('guards before the socket opens: signed out, another site, a guest, a grown
   lifecycle.draining = true; await expect(listen(owner, g.id), 503); lifecycle.draining = false;
   const bad = new WebSocket(`ws://127.0.0.1:${PORT}/api/elsewhere`, { headers: { origin: BASE, cookie: owner.cookie } });
   assert.equal(await new Promise(r => bad.on('unexpected-response', (req, res) => r(res.statusCode))), 404, 'other upgrades are refused');
-  assert.equal(fake.connections.length, 0, 'the provider was never contacted');
+  assert.equal(fake.connections.length, 1, 'the provider was contacted only for the grown-up\'s own game');
   assert.equal(usage('LiveOwner').clips, 0, 'nothing counted');
 });
 

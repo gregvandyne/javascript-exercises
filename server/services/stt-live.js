@@ -18,7 +18,7 @@ import crypto from 'node:crypto';
 import { STATUS_CODES } from 'node:http';
 import { WebSocketServer } from 'ws';
 import { config } from '../config.js';
-import { userFromRequest, isGrownup } from '../auth.js';
+import { userFromRequest } from '../auth.js';
 import { isOwnOrigin } from '../site.js';
 import * as games from './games.js';
 import { allow } from './ratelimit.js';
@@ -61,19 +61,19 @@ function refuse(socket, status) {
   setTimeout(() => socket.destroy(), 50).unref?.();
 }
 
-/** The checks before a socket is opened, the same as the HTTP routes (requireAccount, loadEditable). -> { status } | { user, game } */
+/** The checks before a socket is opened, the same as the HTTP routes (requireBuilder, loadEditable). -> { status } | { user, game } */
 export function gate(req, id) {
-  if (lifecycle.draining || config.maintenance || config.movedTo) return { status: 503 };
+  if (lifecycle.draining || config.maintenance || config.movedTo) return { status: 503, why: 'closed' };
   // A WebSocket has no CORS: without this, another site could open one with the kid's cookie.
   const origin = req.headers.origin;
-  if (!origin || origin === 'null' || !isOwnOrigin(req, origin)) return { status: 403 };
+  if (!origin || origin === 'null' || !isOwnOrigin(req, origin)) return { status: 403, why: 'origin' };
   const { u: user } = userFromRequest(req);
-  if (!user) return { status: 401 };
-  if (isGrownup(user)) return { status: 404 };
-  if (user.is_guest) return { status: 403 };
-  if (!liveEnabled()) return { status: 404 };
+  if (!user) return { status: 401, why: 'signed out' };
+  // Grown-ups build too (requireBuilder): any real account but a guest, the same as /transcribe.
+  if (user.is_guest) return { status: 403, why: 'guest' };
+  if (!liveEnabled()) return { status: 404, why: 'live off' };
   const game = games.getGame(id);
-  if (!game || !games.canEdit(user, game)) return { status: 404 };
+  if (!game || !games.canEdit(user, game)) return { status: 404, why: 'not editable' };
   return { user, game };
 }
 
@@ -87,7 +87,7 @@ export function attachLive(server) {
     if (!m) return refuse(socket, 404);
     let g;
     try { g = gate(req, m[1]); } catch { return refuse(socket, 500); }
-    if (g.status) return refuse(socket, g.status);
+    if (g.status) { hooks.log('info', 'live mic refused', { status: g.status, why: g.why || '' }); return refuse(socket, g.status); }
     wss.handleUpgrade(req, socket, head, ws => session(ws, req, g.user, g.game));
   });
   return wss;
