@@ -18,7 +18,6 @@ export const router = Router();
 // "Build your own game" lives in its own banner, separate from the featured-game hero.
 function buildBanner(req) {
   const t = req.t; const u = req.user;
-  if (isGrownup(u)) return '';   // no Builder for grown-up accounts (routes/family.js)
   const mine = u && !u.is_guest;
   return html`<section class="buildbanner" aria-labelledby="bb-h">
     <div class="bb-art" aria-hidden="true">🛠️</div>
@@ -84,7 +83,7 @@ router.get('/', (req, res) => {
   <div class="chips scroll" role="list" aria-label="${t('home.categories')}" style="margin-bottom:18px">
     ${games.CATEGORIES.map(([k, e]) => html`<a class="chip" role="listitem" href="/search?cat=${k}" rel="nofollow"><span aria-hidden="true">${e}</span>${categoryLabel(k, t)}</a>`)}
   </div>
-  ${rails.some(r => r) ? rails : emptyState({ emoji: '🎮', title: t('home.empty.title'), text: t('home.empty.text'), action: isGrownup(u) ? null : { href: '/build', label: t('home.empty.action') } })}
+  ${rails.some(r => r) ? rails : emptyState({ emoji: '🎮', title: t('home.empty.title'), text: t('home.empty.text'), action: { href: '/build', label: t('home.empty.action') } })}
   </div>`;
   page(req, res, { title: '', active: 'home', body, description: t.own('seo.home.description') ? t('seo.home.description') : t('layout.description'), seo: {
     index: true, path: '/', langs: seo.langsWithKey('home.intro.heading'), image: '/og/site.jpg', imageAlt: t('seo.home.imageAlt'),

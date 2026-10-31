@@ -15,10 +15,10 @@ function classesAsked(g) {
 
 const parse = s => { try { return JSON.parse(s || '{}'); } catch { return {}; } };
 
-/** Games waiting for a human: pending_version_id set. audience: what the review is for ('public' | 'school' | 'class',
+/** Games waiting for a human: pending_version_id set. audience: what the review is for ('public' | 'school' | 'class' | 'family',
  *  from pending_version_id's pending_visibility); classes: for 'class', the names of the classes it would reach. */
 export function reviewQueue() {
-  const rows = q.all(`SELECT g.*, u.username AS owner_name, u.display_name AS owner_display, u.avatar AS owner_avatar, u.photo_at AS owner_photo_at, u.color AS owner_color
+  const rows = q.all(`SELECT g.*, u.username AS owner_name, u.display_name AS owner_display, u.avatar AS owner_avatar, u.photo_at AS owner_photo_at, u.color AS owner_color, u.account_type AS owner_type
     FROM games g JOIN users u ON u.id=g.owner_id WHERE g.pending_version_id IS NOT NULL ORDER BY g.updated_at ASC LIMIT 100`);
   return rows.map(g => {
     const v = getVersion(g.pending_version_id) || {};
@@ -36,7 +36,7 @@ export function reject(admin, gameId, note = '') { return publish.reject(admin, 
 
 /** Games with open reports, plus anything hidden by reports or suspended. */
 export function reportedGames() {
-  const games = q.all(`SELECT g.id, g.slug, g.title, g.icon, g.cover, g.status, g.visibility, g.hidden_reason, g.owner_id, g.updated_at, u.username AS owner_name, u.display_name AS owner_display,
+  const games = q.all(`SELECT g.id, g.slug, g.title, g.icon, g.cover, g.status, g.visibility, g.hidden_reason, g.owner_id, g.updated_at, u.username AS owner_name, u.display_name AS owner_display, u.account_type AS owner_type,
       (SELECT COUNT(*) FROM reports r WHERE r.game_id=g.id AND r.status='open') AS open_reports,
       (SELECT MAX(created_at) FROM reports r WHERE r.game_id=g.id) AS last_report
     FROM games g JOIN users u ON u.id=g.owner_id

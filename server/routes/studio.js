@@ -9,9 +9,10 @@ import { coverArt, emptyState, visLabel, categoryLabel } from '../views/componen
 import * as games from '../services/games.js';
 import { publish, setVisibility } from '../services/publish.js';
 import { cleanText } from '../services/textfilter.js';
-import { requireAccount, getUser } from '../auth.js';
+import { requireBuilder, getUser, isGrownup } from '../auth.js';
 import { rateLimit, allow } from '../services/ratelimit.js';
-import { sttEnabled, transcribe, sniff, baseMime, MIMES, KINDS, SttError, clipSeconds, countedSeconds } from '../services/stt.js';
+import { sttEnabled, liveEnabled, transcribe, sniff, baseMime, MIMES, KINDS, SttError, clipSeconds, countedSeconds, RATE } from '../services/stt.js';
+import { consumeFallback } from '../services/stt-live.js';
 import * as sttUsage from '../services/stt-usage.js';
 import { log } from '../services/log.js';
 import { config } from '../config.js';
@@ -26,18 +27,19 @@ import { restingUntil } from '../builder/anthropic.js';
 import { isBusy, cancel as cancelBuild, life as builderLife, submit, publicTurn, lastTurn } from '../builder/runner.js';
 import * as live from '../builder/live.js';
 import * as turns from '../builder/turns.js';
-import { allowanceFor, counter } from '../builder/usage.js';
+import { allowanceFor, counter, familyOf } from '../builder/usage.js';
 import { loadChat } from '../builder/chat.js';
 import { previewUrl } from '../builder/tools.js';
 import { saveUpload, getUpload, deleteUpload, readUploadBytes, listUploads, LIMITS, UploadError } from '../builder/uploads.js';
 import { tEn } from '../i18n/index.js';
 import { familiesOn, isChildAccount, liveRowOf } from '../services/family.js';
-import { sharingOptions, shareableClasses, gameClassIds, removedClassIds } from '../services/schools.js';
+import { sharingOptions, shareDefault, shareableClasses, gameClassIds, removedClassIds } from '../services/schools.js';
 
 export const router = Router();
 
-/** What each sharing level means, in the reader's language. */
-export const shareText = (t = tEn) => ({ private: t('studio.shareText.private'), friends: t('studio.shareText.friends'), class: t('studio.shareText.class'), school: t('studio.shareText.school'), public: t('studio.shareText.public') });
+/** What each sharing level means, in the reader's language. grownup: the owner is a grown-up builder, whose 'friends'
+ *  are their grown-up connections. */
+export const shareText = (t = tEn, grownup = false) => ({ private: t('studio.shareText.private'), family: t('studio.shareText.family'), friends: t(grownup ? 'studio.shareText.connections' : 'studio.shareText.friends'), class: t('studio.shareText.class'), school: t('studio.shareText.school'), public: t('studio.shareText.public') });
 export const ICONS = ['🎮', '🦈', '🐉', '🦖', '🤖', '🦄', '🚀', '👽', '🐱', '🐶', '🦊', '🐧', '🐰', '🐸', '🐙', '🐝', '🐠', '🐵', '🦁', '🐼', '👻', '🏴‍☠️', '👸', '🧙', '🥷', '🦋', '🐢', '🦉', '🐻', '🍕', '🧁', '🍎', '⚽', '🏀', '🚗', '🚂', '⛄', '⭐', '🌈', '🌸', '🏆', '🎲', '🧩', '🔤', '❓', '🎵', '💎', '🏰'];
 
 /** One plain-words status for a builder's own game. code: hidden|suspended|in_review|rejected|draft|live */
@@ -47,7 +49,7 @@ export function studioStatus(g, t = tEn) {
   if (g.status === 'in_review') return { code: 'in_review', label: `⏳ ${t('status.inReview')}`, tone: 'warn', live: false };
   if (g.status === 'rejected') return { code: 'rejected', label: `✏️ ${t('status.needsChanges')}`, tone: 'warn', live: false };
   if (g.status !== 'published' || !g.published_version_id) return { code: 'draft', label: `📝 ${t('status.draft')}`, tone: '', live: false };
-  return { code: 'live', label: t('studio.status.live', { who: visLabel(g.visibility, t, g.visibility === 'class' ? games.liveClasses(g.id).length : 1) }), tone: 'good', live: true };
+  return { code: 'live', label: t('studio.status.live', { who: visLabel(g.visibility, t, g.visibility === 'class' ? games.liveClasses(g.id).length : 1, { grownup: isGrownup(getUser(g.owner_id)) }) }), tone: 'good', live: true };
 }
 
 /** The share dialog's class choices for a game's owner (see docs/decisions.md, "Share with my classes"):
@@ -101,6 +103,7 @@ export function studioState(user, gameId, t = tEn, req = null) {
   const num = id => { const v = versions.find(x => x.id === id); return v ? v.number : null; };
   let report = {}; try { report = cur ? JSON.parse(cur.safety_report || '{}') : {}; } catch { /* ignore */ }
   const chat = loadChat(g.id);
+  const owner = getUser(g.owner_id), grownup = isGrownup(owner);
   return {
     game: { id: g.id, slug: g.slug, title: g.title, icon: g.icon, description: g.description, category: g.category, tags: g.tags, orientation: g.orientation, players_max: g.players_max, cover: g.cover, visibility: g.visibility, status: g.status, review_note: g.review_note, hidden_reason: g.hidden_reason },
     status: studioStatus(g, t),
@@ -114,11 +117,17 @@ export function studioState(user, gameId, t = tEn, req = null) {
     ...counter(user), dailyTurns: allowanceFor(user).daily, provider: providerName(allowanceFor(user).pool), resting: restingUntil(allowanceFor(user).pool), busy: isBusy(g.id),
     // The running build as this viewer sees it (its message and what it said so far), and how the last one ended.
     turn: publicTurn(g.id, user), lastTurn: lastTurn(g.id, user),
-    shareText: shareText(t), shareUrl: `/g/${g.slug}`, shareOptions: sharingOptions(getUser(g.owner_id)), classShare: classShare(g, g.owner_id),
+    shareText: shareText(t, grownup), shareUrl: `/g/${g.slug}`, shareOptions: sharingOptions(owner, g), shareDefault: shareDefault(owner), classShare: classShare(g, g.owner_id),
+    // A grown-up builder's game: "My grown-up connections" for 'friends', a hint under each choice, and the name a public
+    // game is credited to (shown to the grown-up only; never their children's names).
+    // seePlans: the out-of-messages card links to /plans only while that page is open (family pages on) and this grown-up's
+    // own family plan doesn't already cover their Builder messages.
+    grownup: grownup ? { name: owner.display_name, seePlans: !!req && familiesOn(req) && isGrownup(user) && !familyOf(user.id) } : null,
     uploads: { limits: LIMITS, used: listUploads(g.id).length },
     // Speech to text (services/stt.js): only when the owner turned it on; the page hides the mic otherwise.
     // Not while the Builder is off for this account (a grown-up or teacher turned it off): no voice leaves the site then.
-    mic: sttEnabled() && user.builder_enabled ? { maxMs: config.sttMaxSeconds * 1000, maxBytes: config.sttMaxBytes } : null,
+    // live: words show while the kid speaks (services/stt-live.js), unless STT_LIVE=0; the page records and uploads otherwise.
+    mic: sttEnabled() && user.builder_enabled ? { maxMs: config.sttMaxSeconds * 1000, maxBytes: config.sttMaxBytes, live: liveEnabled(), ...(liveEnabled() ? { rate: RATE[config.sttProvider] } : {}) } : null,
     grownUpLink: grownUpLinkHint(req, user),
   };
 }
@@ -128,7 +137,7 @@ export function studioState(user, gameId, t = tEn, req = null) {
 const BUILD_TONE = { building: 'warn', ready: 'good', question: 'good', stopped: 'bad' };
 const buildChip = (st, t) => (st ? html`<span class="stchip ${BUILD_TONE[st]}">${t(`build.status.${st}`)}</span>` : '');
 
-router.get('/build', requireAccount, async (req, res) => {
+router.get('/build', requireBuilder, async (req, res) => {
   const t = req.t;
   const mine = games.myGames(req.user.id, 100);
   const news = turns.buildStatus(req.user.id);
@@ -171,7 +180,7 @@ router.get('/build', requireAccount, async (req, res) => {
   page(req, res, { title: t('nav.build'), active: 'build', body, head: raw('<link rel="stylesheet" href="/css/studio.css">'), scripts: ['/js/build.js'] });
 });
 
-router.get('/studio/:id', requireAccount, (req, res) => {
+router.get('/studio/:id', requireBuilder, (req, res) => {
   const t = req.t;
   const g = loadEditable(req, res, { api: false }); if (!g) return;
   if (req.user.id === g.owner_id) turns.markSeen(g.id);   // the owner sees how the last build ended: no more "Ready" news
@@ -214,7 +223,7 @@ router.get('/studio/:id', requireAccount, (req, res) => {
             ${state.mic ? html`<button class="st-mic" type="button" id="st-mic" aria-pressed="false" aria-describedby="st-mic-status" aria-label="${t('studio.mic.start')}" title="${t('studio.mic.start')}" hidden><span class="st-mic-ico" aria-hidden="true">🎤</span></button>` : ''}
             <button class="btn btn-primary st-send" type="submit" id="st-send">${t('chat.thread.send')}</button>
           </div>
-          ${state.mic ? html`<p class="st-mic-status" id="st-mic-status" role="status" aria-live="polite"></p>` : ''}
+          ${state.mic ? html`<p class="st-mic-status" id="st-mic-status" role="status" aria-live="polite"></p><p class="sr-only" id="st-mic-said" aria-live="polite" aria-atomic="true"></p>` : ''}
         </form>
       </section>
       <section class="st-preview" aria-label="${t('studio.preview.label')}">
@@ -237,7 +246,7 @@ router.get('/studio/:id', requireAccount, (req, res) => {
 });
 
 // ---------------------------------------------------------------- APIs
-router.post('/api/studio/new', requireAccount, rateLimit('studio-new', 30, 3600e3, 'studio.api.tooManyGames'), async (req, res) => {
+router.post('/api/studio/new', requireBuilder, rateLimit('studio-new', 30, 3600e3, 'studio.api.tooManyGames'), async (req, res) => {
   const t = req.t;
   const key = String((req.body || {}).template || '');
   if (key && !TEMPLATE_KEYS.includes(key)) return res.status(400).json({ error: t('studio.api.pickStarter') });
@@ -257,7 +266,7 @@ router.post('/api/studio/new', requireAccount, rateLimit('studio-new', 30, 3600e
   res.json({ ok: true, id: g.id, url: `/studio/${g.id}` });
 });
 
-router.get('/api/studio/:id', requireAccount, (req, res) => {
+router.get('/api/studio/:id', requireBuilder, (req, res) => {
   const g = loadEditable(req, res); if (!g) return;
   res.json(studioState(req.user, g.id, req.t, req));
 });
@@ -272,7 +281,7 @@ router.get('/api/studio/:id', requireAccount, (req, res) => {
 //   no detach (pages loaded before builds ran on their own, and scripts): text/event-stream with every event of the
 //     build, ending after 'done'. A game that is already building answers builder.errors.busy, as it always did.
 // The build never stops when the request does: a page closed while its POST is on the way still gets its message built.
-router.post('/api/studio/:id/chat', requireAccount, rateLimit('builder', 20, 60e3, 'studio.api.builderBreak'), async (req, res) => {
+router.post('/api/studio/:id/chat', requireBuilder, rateLimit('builder', 20, 60e3, 'studio.api.builderBreak'), async (req, res) => {
   const g = loadEditable(req, res); if (!g) return;
   const b = req.body || {};
   // Shutting down: nothing is stored, and the page keeps the message (runner.drain).
@@ -296,12 +305,12 @@ router.post('/api/studio/:id/chat', requireAccount, rateLimit('builder', 20, 60e
 
 // The live view of this game's builds for one Studio tab (builder/live.js): hello { now, turn }, the replay of the running
 // build, caughtup, then live events; it stays open between builds. A background request: it never keeps a sign-in awake.
-router.get('/api/studio/:id/live', requireAccount, rateLimit('studio-live', 40, 60e3), (req, res) => {
+router.get('/api/studio/:id/live', requireBuilder, rateLimit('studio-live', 40, 60e3), (req, res) => {
   const g = loadEditable(req, res); if (!g) return;
   live.open(req, res, g);
 });
 
-router.post('/api/studio/:id/meta', requireAccount, rateLimit('studio-meta', 60, 60e3), (req, res) => {
+router.post('/api/studio/:id/meta', requireBuilder, rateLimit('studio-meta', 60, 60e3), (req, res) => {
   const g = loadEditable(req, res); if (!g) return;
   const t = req.t;
   const b = req.body || {}; const f = {};
@@ -325,7 +334,7 @@ router.post('/api/studio/:id/meta', requireAccount, rateLimit('studio-meta', 60,
 });
 
 // Delete from "My games". Starter (seed) games stay: they belong to the site, not a builder.
-router.post('/api/studio/:id/delete', requireAccount, rateLimit('studio-delete', 20, 60e3), (req, res) => {
+router.post('/api/studio/:id/delete', requireBuilder, rateLimit('studio-delete', 20, 60e3), (req, res) => {
   const g = loadEditable(req, res); if (!g) return;
   if (g.source === 'seed') return res.status(400).json({ error: req.t('studio.api.cantDeleteStarter') });
   games.deleteGame(g.id);
@@ -336,7 +345,7 @@ router.post('/api/studio/:id/delete', requireAccount, rateLimit('studio-delete',
 
 // Restore and Save version wait while the Builder works, so its edits never land on a swapped version.
 const builderWorking = (req, res, g) => { if (!isBusy(g.id)) return false; res.status(409).json({ error: req.t('studio.api.builderWorking') }); return true; };
-router.post('/api/studio/:id/restore', requireAccount, rateLimit('studio-restore', 30, 60e3), (req, res) => {
+router.post('/api/studio/:id/restore', requireBuilder, rateLimit('studio-restore', 30, 60e3), (req, res) => {
   const g = loadEditable(req, res); if (!g) return;
   if (builderWorking(req, res, g)) return;
   const v = games.restoreVersion(g.id, String((req.body || {}).versionId || ''), req.user.id);
@@ -345,7 +354,7 @@ router.post('/api/studio/:id/restore', requireAccount, rateLimit('studio-restore
 });
 
 // "Save version": a named checkpoint (a copy of the current version with the builder's note). History is never rewritten.
-router.post('/api/studio/:id/save', requireAccount, rateLimit('studio-save', 30, 60e3), (req, res) => {
+router.post('/api/studio/:id/save', requireBuilder, rateLimit('studio-save', 30, 60e3), (req, res) => {
   const g = loadEditable(req, res); if (!g) return;
   if (builderWorking(req, res, g)) return;
   const cur = games.getVersion(g.current_version_id);
@@ -368,13 +377,13 @@ function shareRequest(req) {
 }
 const shareReply = (req, res, g, r) => res.status(r.ok ? 200 : 400).json({ ...r, game: undefined, error: r.ok ? undefined : r.message, state: studioState(req.user, g.id, req.t, req) });
 // Publish the version being edited. Body: { visibility, classIds? } (classIds: the chosen classes, for 'class').
-router.post('/api/studio/:id/publish', requireAccount, rateLimit('studio-publish', 20, 60e3), async (req, res) => {
+router.post('/api/studio/:id/publish', requireBuilder, rateLimit('studio-publish', 20, 60e3), async (req, res) => {
   const g = loadEditable(req, res); if (!g) return;
   const sr = shareRequest(req); if (sr.error) return res.status(400).json({ error: sr.error });
   shareReply(req, res, g, await publish(req.user, g.id, sr.vis, { t: req.t, classIds: sr.classIds }));
 });
 // Update an already-live game to the version being edited, at its current sharing level (a 'class' game keeps its classes).
-router.post('/api/studio/:id/update', requireAccount, rateLimit('studio-publish', 20, 60e3), async (req, res) => {
+router.post('/api/studio/:id/update', requireBuilder, rateLimit('studio-publish', 20, 60e3), async (req, res) => {
   const g = loadEditable(req, res); if (!g) return;
   const t = req.t;
   if (g.status !== 'published' || !g.published_version_id) return res.status(400).json({ error: t('studio.api.notLive') });
@@ -385,12 +394,14 @@ router.post('/api/studio/:id/update', requireAccount, rateLimit('studio-publish'
   let r = await publish(req.user, g.id, g.visibility, { t });
   if (r.ok && want) {
     const p = await publish(req.user, g.id, want, { t });
-    r = { ...p, ok: true, message: p.state === 'live' ? p.message : t(want !== 'public' ? 'studio.api.updatedNowWaiting' : g.visibility === 'friends' ? 'studio.api.updatedFriends' : 'studio.api.updatedYou') };
+    // A grown-up's family or connections game: "more people" (their family or connections already have the update).
+    const wide = want !== 'public' || g.visibility === 'family' || (g.visibility === 'friends' && isGrownup(getUser(g.owner_id)));
+    r = { ...p, ok: true, message: p.state === 'live' ? p.message : t(wide ? 'studio.api.updatedNowWaiting' : g.visibility === 'friends' ? 'studio.api.updatedFriends' : 'studio.api.updatedYou') };
   }
   shareReply(req, res, g, r);
 });
 // Change who can play a live game (keeps the live version). Body: { visibility, classIds? } as for publish.
-router.post('/api/studio/:id/visibility', requireAccount, rateLimit('studio-publish', 20, 60e3), async (req, res) => {
+router.post('/api/studio/:id/visibility', requireBuilder, rateLimit('studio-publish', 20, 60e3), async (req, res) => {
   const g = loadEditable(req, res); if (!g) return;
   const sr = shareRequest(req); if (sr.error) return res.status(400).json({ error: sr.error });
   shareReply(req, res, g, await setVisibility(req.user, g.id, sr.vis, req.t, sr.classIds));
@@ -411,18 +422,24 @@ const sttBody = (req, res, next) => express.raw({ type: () => true, limit: confi
   const big = err.status === 413;
   res.status(big ? 413 : 400).json({ error: big ? tooLong(req) : req.t('studio.mic.failed'), code: big ? 'too_big' : 'bad' });
 });
-router.post('/api/studio/:id/transcribe', requireAccount, (req, res, next) => {
+router.post('/api/studio/:id/transcribe', requireBuilder, (req, res, next) => {
   if (!sttEnabled()) return res.status(404).json({ error: req.t('errors.api.notFound'), code: 'off' });
   // The Builder is off for this account: the voice is never sent to the outside service.
   if (!req.user.builder_enabled) return res.status(403).json({ error: req.t('studio.api.buildingOff'), code: 'builder_off' });
-  if (!loadEditable(req, res)) return;   // the owner (or an admin) only, before the clip is read
+  const g = loadEditable(req, res); if (!g) return;   // the owner (or an admin) only, before the clip is read
   if (!MIMES.includes(baseMime(req.get('content-type')))) return res.status(415).json({ error: req.t('studio.mic.failed'), code: 'type' });
   const hdr = req.get('x-clip-ms'); const ms = Number(hdr);
   if (!hdr || !Number.isFinite(ms) || ms < 0) return res.status(400).json({ error: req.t('studio.mic.failed'), code: 'bad' });
   if (ms > config.sttMaxSeconds * 1000 + 2000) return res.status(413).json({ error: tooLong(req), code: 'too_long' });
+  // X-Live-Id: the clip of a live session that failed (services/stt-live.js), uploaded once instead. That session was
+  // already counted as a clip (and its minute's turn), so this upload isn't; its seconds are, as the audio really goes
+  // to the service again. A used, unknown or someone else's id is ignored: the upload counts like any other.
+  req.sttFromLive = !!req.get('x-live-id') && consumeFallback(req.get('x-live-id'), req.user.id, g.id);
   // Clips a minute (fixed window, in memory), then the day's caps (kept in the database), before the clip is read.
-  if (!allow(`stt:${req.user.id}`, config.sttPerMinute, 60e3)) return res.status(429).json({ error: req.t('studio.mic.tooFast'), code: 'fast' });
-  const why = sttUsage.blocked(req.user.id, allowanceFor(req.user).pool);
+  if (!req.sttFromLive && !allow(`stt:${req.user.id}`, config.sttPerMinute, 60e3)) return res.status(429).json({ error: req.t('studio.mic.tooFast'), code: 'fast' });
+  // A fallback skips the builder's own daily cap (its clip was counted when the session opened), never the site's.
+  const pool = allowanceFor(req.user).pool;
+  const why = req.sttFromLive ? sttUsage.siteBlocked(pool) : sttUsage.blocked(req.user.id, pool);
   if (why === 'daily') return res.status(429).json({ error: req.t('studio.mic.daily'), code: 'daily' });
   if (why) return res.status(503).json({ error: req.t('studio.mic.busy'), code: 'site' });
   next();
@@ -435,11 +452,12 @@ router.post('/api/studio/:id/transcribe', requireAccount, (req, res, next) => {
   if (real != null && real > config.sttMaxSeconds + 2) { bytes = null; return res.status(413).json({ error: tooLong(req), code: 'too_long' }); }
   // Counted at its real length, or (when that can't be read) at an estimate from its size that errs long.
   const seconds = countedSeconds(bytes, +req.get('x-clip-ms'));
-  sttUsage.record(req.user.id, seconds, config.sttProvider, allowanceFor(req.user).pool);
+  if (req.sttFromLive) sttUsage.addSeconds(req.user.id, seconds, config.sttProvider, allowanceFor(req.user).pool);
+  else sttUsage.record(req.user.id, seconds, config.sttProvider, allowanceFor(req.user).pool);
   try {
     const r = await transcribe({ bytes, locale: req.locale || 'en' });
     bytes = null;
-    log('info', 'speech to text', { bytes: size, seconds: Math.round(seconds), ms: r.ms, provider: r.provider });
+    log('info', 'speech to text', { bytes: size, seconds: Math.round(seconds), ms: r.ms, provider: r.provider, ...(req.sttFromLive ? { mode: 'fallback' } : {}) });
     if (!r.text) return res.json({ text: '', reason: 'nothing' });
     res.json({ text: r.text });
   } catch (e) {
@@ -451,7 +469,7 @@ router.post('/api/studio/:id/transcribe', requireAccount, (req, res, next) => {
 });
 
 // ---- Uploads (inspiration pictures and files). Raw body: the file bytes; ?name= the file name.
-router.post('/api/studio/:id/uploads', requireAccount, rateLimit('studio-upload', 30, 60e3, 'uploads.tooFast'),
+router.post('/api/studio/:id/uploads', requireBuilder, rateLimit('studio-upload', 30, 60e3, 'uploads.tooFast'),
   express.raw({ type: () => true, limit: '6mb', inflate: false }), async (req, res) => {
     const g = loadEditable(req, res); if (!g) return;
     try {
@@ -462,7 +480,7 @@ router.post('/api/studio/:id/uploads', requireAccount, rateLimit('studio-upload'
       throw e;
     }
   });
-router.get('/api/studio/:id/uploads/:uid', requireAccount, (req, res) => {
+router.get('/api/studio/:id/uploads/:uid', requireBuilder, (req, res) => {
   const g = loadEditable(req, res); if (!g) return;
   const u = getUpload(req.params.uid);
   if (!u || u.game_id !== g.id) return res.status(404).json({ error: req.t('errors.api.notFound') });
@@ -474,7 +492,7 @@ router.get('/api/studio/:id/uploads/:uid', requireAccount, (req, res) => {
   });
   res.send(bytes);
 });
-router.delete('/api/studio/:id/uploads/:uid', requireAccount, (req, res) => {
+router.delete('/api/studio/:id/uploads/:uid', requireBuilder, (req, res) => {
   const g = loadEditable(req, res); if (!g) return;
   const u = getUpload(req.params.uid);
   if (!u || u.game_id !== g.id) return res.status(404).json({ error: req.t('errors.api.notFound') });

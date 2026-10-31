@@ -167,6 +167,8 @@ Draft pages to review: terms.md, refunds.md, privacy-payments.md. Every `[LEGAL 
     whenever any of this text changes** after the flag is on, so each record points at the text the grown-up read. In
     the terms only §8's "no delete button yet" changes, and only while the flag is on (`info.terms.ending.madeLi1`
     above); §7.9 already says paying is not consent. The DPIA note is docs/dpia-parent-made.md.
+    **Owner sign-off:** owner approved, 2026-10-30, ahead of lawyer review. `PARENT_MADE_CHILDREN=1` is on in
+    production from that date; the lawyer review of the text above is still open.
 31. **Consent method (COPPA 312.5(b)).** The "no email" rule rules out email-plus. Email-plus and text-plus are only
     allowed when nothing is disclosed, and friend chat and public games count as disclosure. The choices are: (a) keep
     notice and acknowledgement only for now, (b) a third-party verified-consent provider or a COPPA Safe Harbor, or
@@ -247,6 +249,27 @@ Owner decisions for parent-made accounts (no lawyer needed):
       clips, seconds; never audio or words; 3 days, deleted with the account) so the caps survive a restart;
     - whether a school (FERPA, state student-privacy laws) needs to be told before its students can use it, or whether
       voice input should stay off for school accounts.
+
+    **Addendum: live words while the child speaks (2026-10-30, not yet reviewed).** The words now show in the chat box
+    while the child speaks (`server/services/stt-live.js`; `STT_LIVE=0` turns only this off). Same provider, same
+    purpose, still never stored, so the Privacy sentence `info.parents.ai.p2` is unchanged and **`LEGAL_UPDATED` was not
+    moved**. What changed in the data flow, please confirm:
+    - the audio now reaches the provider **while the child is speaking** (before: after they pressed stop), through
+      our server (a WebSocket relay; the key stays on the server). So speech the child then cancels with Esc has already
+      been sent. The cancel message "Recording stopped. Nothing was sent or kept." would no longer be true in live mode,
+      so live mode shows a new string, `js.studio.mic.cancelledLive` "Recording stopped. Nothing was kept." (13
+      locales). **This new wording needs sign-off**; the old string is still used when the mic records and uploads;
+    - zero data retention must also cover **OpenAI's Realtime API** for the key's project (not only the transcription
+      endpoint), and ElevenLabs must honour `enable_logging=false` on its **realtime** endpoint (the code requests it);
+    - when a live session fails, the page uploads the same recording once to the old endpoint, so the **same audio may
+      reach the provider twice** (both deleted at once, neither stored by us);
+    - **new small table `stt_live`** (review fixes, 2026-10-30): for each live session, a random session id, the child's
+      user id, the game id, a state and an expiry, so the one fallback upload is still recognised after a server
+      restart and not counted as a second clip. No audio, no words; rows go when used, when the session ends with its
+      words, or within about 3 minutes; deleted with the account. The Privacy text was **not** changed for it and
+      **`LEGAL_UPDATED` was not moved**: please confirm this usage metadata needs no mention (it is like `stt_usage`);
+    - the first second or so of audio is now held **in our server's memory** (never on disk) until the provider's
+      session is ready, then sent; and the words reach the provider phrase by phrase while the child speaks.
 39. **The Builder looking facts up on the web.** New live privacy sentence `info.parents.ai.p3`; behind
     `BUILDER_WEB_SEARCH` (render.yaml keeps it `0` until the owner turns it on). The AI may search the web for a fact
     (for example a real animal or a sport's rules) with Anthropic's web search tool. Children never see links, pages or

@@ -5,7 +5,7 @@ import { Router } from 'express';
 import { html, raw, jsonData } from '../views/html.js';
 import { page, notFound } from '../views/layout.js';
 import { avatar, cardGrid, emptyState } from '../views/components.js';
-import { requireAccount, getUserByName, getUser, isOfficialOldName, OFFICIAL, isGrownup } from '../auth.js';
+import { requireAccount, requireBuilder, getUserByName, getUser, isOfficialOldName, OFFICIAL, isGrownup } from '../auth.js';
 import { rateLimit } from '../services/ratelimit.js';
 import * as friends from '../services/friends.js';
 import * as chat from '../services/chat.js';
@@ -90,8 +90,9 @@ router.get('/friends', (req, res) => {
   page(req, res, { title: t('friends.title'), active: 'friends', body, head: COMMUNITY_CSS, scripts: ['/js/friends.js'] });
 });
 
-// ---- APIs (accounts only) ----
-router.get('/api/friends', requireAccount, (req, res) => {
+// ---- APIs (accounts only). Grown-ups use them too, for connections with other grown-ups (/family/connections): a
+// friendship never joins a grown-up and a kid (services/friends.js samePair). ----
+router.get('/api/friends', requireBuilder, (req, res) => {
   const mine = friends.list(req.user.id);
   const playing = playingFor(req.user, mine.map(f => f.id));
   res.set('Cache-Control', 'no-store').json({
@@ -101,20 +102,21 @@ router.get('/api/friends', requireAccount, (req, res) => {
     outgoing: friends.outgoing(req.user.id).map(f => ({ id: f.id, username: f.username, displayName: f.display_name })),
   });
 });
-router.post('/api/friends/add', requireAccount, rateLimit('friendcode', 15, 600e3, 'friends.api.tooManyTries'), (req, res) => {
+router.post('/api/friends/add', requireBuilder, rateLimit('friendcode', 15, 600e3, 'friends.api.tooManyTries'), (req, res) => {
   const r = friends.addByCode(req.user, (req.body || {}).code, req.t);
   if (!r.ok) return res.status(400).json({ error: r.error, field: 'code' });
-  res.json({ ok: true, state: r.state, message: r.message });
+  res.json({ ok: true, state: r.state, message: r.message, toast: r.message });
 });
 const act = (fn, okKey) => (req, res) => {
   const other = getUser(req.params.id);
   if (!other || !fn(req.user, other.id)) return res.status(404).json({ error: req.t('friends.api.gone') });
-  res.json({ ok: true, message: req.t(okKey, { name: other.display_name }) });
+  const message = req.t(okKey, { name: other.display_name });
+  res.json({ ok: true, message, toast: message });
 };
-router.post('/api/friends/:id/accept', requireAccount, rateLimit('friendact', 60, 60e3), act(friends.accept, 'friends.api.accepted'));
-router.post('/api/friends/:id/decline', requireAccount, rateLimit('friendact', 60, 60e3), act(friends.decline, 'friends.api.declined'));
-router.post('/api/friends/:id/cancel', requireAccount, rateLimit('friendact', 60, 60e3), act(friends.cancel, 'friends.api.canceled'));
-router.post('/api/friends/:id/remove', requireAccount, rateLimit('friendact', 60, 60e3), act(friends.unfriend, 'friends.api.removed'));
+router.post('/api/friends/:id/accept', requireBuilder, rateLimit('friendact', 60, 60e3), act(friends.accept, 'friends.api.accepted'));
+router.post('/api/friends/:id/decline', requireBuilder, rateLimit('friendact', 60, 60e3), act(friends.decline, 'friends.api.declined'));
+router.post('/api/friends/:id/cancel', requireBuilder, rateLimit('friendact', 60, 60e3), act(friends.cancel, 'friends.api.canceled'));
+router.post('/api/friends/:id/remove', requireBuilder, rateLimit('friendact', 60, 60e3), act(friends.unfriend, 'friends.api.removed'));
 
 // ---- Profiles ----
 const BADGES = [

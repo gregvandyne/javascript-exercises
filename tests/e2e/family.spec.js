@@ -4,9 +4,9 @@
 //   - a child gets a code on /me, a grown-up signs up from /parents (its Family accounts section; /grown-ups is a 301 to
 //     /parents#families) and types it, the child says yes;
 //   - a child reports a request, the admin sees it in the link reports queue;
-//   - grown-ups are fenced in (a "the Builder is for kids" page on /build, 404 on friends and chat); kids never see a link to the grown-up pages;
+//   - grown-ups are fenced in (404 on friends, chat and profiles; the Builder is theirs too: tests/e2e/grownup-builder.spec.js); kids never see a link to the grown-up pages;
 //   - the new pages at 360 px and 1280 px, light and dark, and right to left (he): nothing touches, no sideways scroll;
-//   - navigation weeks 3–4: the grown-up's Family · Games · Plans · Account bar (phone and desktop, fits), /family vs
+//   - navigation weeks 3–4: the grown-up's Family · Build · Games · Plans · Account bar (phone and desktop, fits), /family vs
 //     /family/account, and the old /family#password, #language and #signout links landing on the Account page.
 import { test, expect } from '@playwright/test';
 import fs from 'node:fs';
@@ -58,7 +58,7 @@ async function grownupSignup(page, name = uniq('Mum')) {
   await page.goto('/grown-ups/signup');
   await page.fill('#username', name); await page.fill('#password', 'a-long-password-1'); await page.fill('#confirm', 'a-long-password-1');
   await page.check('#adult');
-  await Promise.all([page.waitForURL(/\/family$/), page.click('button[type=submit]')]);
+  await Promise.all([page.waitForURL(/\/family\/add\?from=signup$/), page.click('button[type=submit]')]);
   return name;
 }
 async function getCode(page) {
@@ -105,9 +105,10 @@ test('a child gets a code, a grown-up signs up from /parents and links, the chil
   await mum.click('button[type=submit]');
   await expect(mum.locator('#password-err')).toContainText('12');
   const mumName = await grownupSignup(mum);
+  await mum.goto('/family');
   await expect(mum.locator('h1')).toContainText('Your family');
   await expect(mum.locator('.topnav')).toContainText('Family');
-  await expect(mum.locator('.topnav a[href="/build"]')).toHaveCount(0);
+  await expect(mum.locator('.topnav a[href="/build"]')).toHaveCount(1);
   await enterCode(mum, code);
   await expect(mum.locator('.famkid.pending')).toContainText('Waiting for your child to say yes');
   await expect(mum.locator('main')).not.toContainText(kid.username);
@@ -123,11 +124,10 @@ test('a child gets a code, a grown-up signs up from /parents and links, the chil
   await mum.goto('/family');
   await expect(mum.locator('.famkid')).toContainText(kid.username);
   await expect(mum.locator('.famkid')).toContainText('Family extra messages yesterday: 0');
-  // Fenced in: the Builder, friends and chat are not there for a grown-up; /me is the family page.
+  // Fenced in: friends, chat and profiles are not there for a grown-up; /me is the family page. The Builder is.
   for (const p of ['/friends', '/chat', `/u/${kid.username}`]) expect((await mum.goto(p)).status(), p).toBe(404);
-  // /build is not a dead end for a grown-up: a short page saying the Builder is for kids' accounts, with no Builder.
   expect((await mum.goto('/build')).status()).toBe(200);
-  await expect(mum.locator('#st-compose, form[data-api*="/api/studio"]')).toHaveCount(0);
+  await expect(mum.locator('#newgame')).toBeVisible();
   await mum.goto('/me'); await expect(mum).toHaveURL(/\/family$/);
   // The child unlinks.
   kidPage.once('dialog', d => d.accept());
@@ -287,11 +287,12 @@ test('the new pages: nothing touches, no sideways scroll (360 / 1280, light / da
   expect([...new Set(problems)]).toEqual([]);
 });
 
-test('the grown-up\'s menus: Family · Games · Plans · Account; settings on /family/account; old /family# links land there', async ({ browser }) => {
+test('the grown-up\'s menus: Family · Build · Games · Plans · Account; settings on /family/account; old /family# links land there', async ({ browser }) => {
   const mum = await person(browser, { viewport: { width: 360, height: 760 } });
   await grownupSignup(mum, uniq('Mum'));
+  await mum.goto('/family');
   const tabs = () => mum.locator('.tabbar .tab').evaluateAll(l => l.map(a => [a.getAttribute('href'), a.querySelector('.tab-t').textContent]));
-  expect(await tabs()).toEqual([['/family', 'Family'], ['/', 'Games'], ['/plans', 'Plans'], ['/family/account', 'Account']]);
+  expect(await tabs()).toEqual([['/family', 'Family'], ['/build', 'Build'], ['/', 'Games'], ['/plans', 'Plans'], ['/family/account', 'Account']]);
   await expect(mum.locator('.tabbar .tab[href="/family"]')).toHaveAttribute('aria-current', 'page');
   // /family is about the children and the plan; the settings are one tap away.
   await expect(mum.locator('#famcheck')).toBeVisible();
@@ -309,11 +310,11 @@ test('the grown-up\'s menus: Family · Games · Plans · Account; settings on /f
     await mum.waitForURL(new RegExp(`/family/account#${h}$`));
     await expect(mum.locator(`#${h}`)).toBeVisible();
   }
-  // Desktop: Family · Games · Plans, and the avatar button opens the Account page; it all fits (en, de, ru).
+  // Desktop: Family · Build · Games · Plans, and the avatar button opens the Account page; it all fits (en, de, ru).
   for (const lang of ['en', 'de', 'ru']) for (const width of [821, 1000, 1101, 1280, 1920]) {
     await mum.setViewportSize({ width, height: 760 });
     await mum.goto(`/family?lang=${lang}`); await mum.evaluate(() => document.fonts.ready);
-    expect(await mum.locator('.topnav .navlink').evaluateAll(l => l.map(a => a.getAttribute('href')))).toEqual(['/family', '/', '/plans']);
+    expect(await mum.locator('.topnav .navlink').evaluateAll(l => l.map(a => a.getAttribute('href')))).toEqual(['/family', '/build', '/', '/plans']);
     await expect(mum.locator('.topbar .me-btn')).toHaveAttribute('href', '/family/account');
     const r = await mum.evaluate(topbarFit);
     expect(r.tight || r.off || r.wide > 0 || r.cut || r.missing.length, `${lang} @${width}: ${JSON.stringify(r)}`).toBeFalsy();
@@ -363,6 +364,7 @@ test('the code panel: a safety line next to the code; a new code hides "Lost it?
 test('the /family checklist: how to link, ticks when the child says yes, "Free is fine" folds it to All set; kids never see it', async ({ browser }) => {
   const mum = await person(browser);
   await grownupSignup(mum, uniq('Mum'));
+  await mum.goto('/family');
   const check = mum.locator('#famcheck');
   await expect(check.locator('h2')).toHaveText('Getting started');
   const steps = check.locator('.famcheck-step');

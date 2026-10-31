@@ -142,6 +142,9 @@ export function startFamilyCheckout({ family, user, interval, base, plan = 'fami
     };
     // Which ways to pay is the "Family" payment method configuration's job (Link off), never payment_method_types.
     params.payment_method_configuration = config.stripePmcFamily;
+    // Live accounts can have Stripe Managed Payments on by default, which refuses a payment method configuration
+    // (400). We are the seller and pick the ways to pay ourselves, so it is off for every Checkout we make.
+    params.managed_payments = { enabled: false };
     // Stripe Tax only when the owner turned it on (and /admin/billing says whether it really collects anywhere).
     if (config.stripeTax) params.automatic_tax = { enabled: true };
     if (config.termsPublished) {

@@ -59,7 +59,7 @@ export const legalReader = u => !!u && !u.is_guest && (isGrownup(u) || isPlatfor
  * Plans is in every list exactly while paid-plan pages are on (familiesOn), kids' and students' too (owner, 27 Oct).
  * The first matching row wins:
  *   signed out or a guest   Home · Search · Build · Grown-ups · (Plans) · Sign in   (top: Home · Build · (Plans) · Parents · Teachers)
- *   grown-up                Family · Games · (Plans) · Account                     (top: Family · Games · (Plans))
+ *   grown-up                Family · Build · Games · (Plans) · Account             (top: Family · Build · Games · (Plans))
  *   school staff, admin     Classes · Games · School · (Plans) · Me                (top: the same without Me)
  *   school staff            Classes · Games · (Plans) · Me
  *   platform admin          Home · Search · Build · Friends · Schools · (Plans) · Me   (unchanged)
@@ -77,7 +77,7 @@ export function shellFor(u, req) {
       top: [home, build, ...plans, ['parents', '/parents', '👪'], ['teachers', '/teachers', '🍎']], meHref: '/login' };
   }
   if (isGrownup(u)) {
-    const top = [['family', '/family', '👪'], games, ...plans];
+    const top = [['family', '/family', '👪'], build, games, ...plans];
     return { role: 'grownup', tabs: [...top, ['account', '/family/account', '⚙️']], top, meHref: '/family/account' };
   }
   if (isSchoolStaff(u)) {
@@ -159,6 +159,8 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
   const badges = u ? { ...navBadges(u) } : { friends: 0 };
   // Staff have no Friends tab: friend requests and unread chat count on Me (/me links to /friends).
   if (staff) badges.me = (badges.me || 0) + (badges.friends || 0);
+  // Grown-ups have no Friends tab (and no chat): connection requests count on Family (/family links to them).
+  if (grownup) badges.family = badges.requests || 0;
   const badge = k => (badges[k] ? html`<span class="badge" aria-label="${t('layout.badgeNew', { count: badges[k] })}">${badges[k] > 9 ? '9+' : badges[k]}</span>` : '');
   const playKey = t.own('nav.playNow') ? 'nav.playNow' : 'home.hero.play';
   const playNow = out ? html`<a class="btn btn-hot playnow" href="${(req.pathLocale ? localeUrl('/', req.pathLocale) : '/') + '#play'}" data-count="/go/play"${t.own(playKey) ? '' : raw(' lang="en"')}><span aria-hidden="true">▶</span> <span class="playnow-t">${t(playKey)}</span></a>` : '';

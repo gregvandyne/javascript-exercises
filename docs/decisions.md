@@ -805,6 +805,54 @@ A review of the three batches together found these; each got the smallest correc
   questions they couldn't follow up on, which was misleading. A build already running stops at its next round and
   says so (`builder.budgetStop`).
 
+## Live speech to text (words while the kid speaks)
+- **The words show in the chat box while the kid speaks**, then settle into the final words on stop. — Owner request:
+  before, nothing showed until the recording was stopped. The page streams the mic over a WebSocket to our server
+  (`/api/studio/:id/listen`, `server/services/stt-live.js`), which relays it to the provider's realtime transcription
+  API (`stt.js` `openRealtime`: OpenAI realtime transcription sessions by default, ElevenLabs realtime if that adapter
+  is chosen). The key stays on the server and the CSP is unchanged (`connect-src 'self'` covers our own socket).
+  New dependency: `ws` (Node has no WebSocket server). Kill switch for the live mode only: `STT_LIVE=0` (the page then
+  records and uploads as before). OpenAI's live sessions use the configured transcription model (`STT_MODEL` or
+  its default, the same as uploads); ElevenLabs needs its realtime model (`scribe_v2_realtime`); `STT_REALTIME_MODEL`
+  overrides either.
+- **Not re-sending the whole clip every 1.5 s.** That costs the square of the clip length in provider seconds (a 60 s
+  clip sends about 20 minutes of audio), makes the quotas either dishonest or punishing, Safari's MediaRecorder slices
+  can't be read on their own, and it would still lag by 1.5 s plus a round trip.
+- **Every message to the page is the whole text so far, tidied and masked** (never a raw piece from the provider), and
+  the newest, still-growing word is held back until the next one starts (the last 2 characters in scripts without
+  spaces), so neither a rude word nor its first letters ever flash on screen. The words lag one word behind speech.
+  This is done for **each unfinished segment on its own**, in commit order (with turn detection one segment can still
+  be streaming while the next one is committed), and empty segments are skipped.
+- **Turn detection on for every OpenAI model.** The realtime API only transcribes audio once it is committed, so with
+  no turn detection nothing would show until stop. Server VAD commits at each short pause (500 ms), and in a long turn
+  without a pause the relay commits by itself (only while the VAD hears speech, never a stretch of silence: at a
+  quiet frame after 3 s, at the latest after 5 s), so words come
+  phrase by phrase while the kid talks. On stop: one commit, then a `session.update` turning detection off; its answer
+  comes after every commit's (the service answers in order), so a VAD commit that was already on its way can't be
+  taken for the stop's own and the last words are never cut off.
+- **First words are kept.** The page builds its audio graph as soon as the mic is on (at `S.mic.rate`) and holds the
+  frames until the socket is open; the relay holds them in memory until the provider is ready, then sends them in
+  order (counted as seconds only then). Before, the kid's first second of speech was dropped.
+- **Counting:** a live session is one clip (counted when it opens, in the same per-minute bucket as uploads); its
+  seconds are the audio bytes the relay received (the page can't fake them), counted once when it ends. If the live
+  link fails, the page uploads its in-memory clip to `/transcribe` once with `X-Live-Id`: not a second clip, but its
+  seconds count (the audio really went to the provider twice). The ids are in SQLite (`stt_live`: id, user, game,
+  state, expiry; never audio or words), so the upload after a restart (what `drainLive` asks for) is still recognised.
+  A fallback upload skips only the builder's own daily cap; the site's minutes and the AI spending caps still apply.
+  One app instance only, as for the rest of the site (an id made on another instance would not be known there).
+- **Fallback:** the page keeps recording with MediaRecorder too; a socket that can't open, a provider error, a lost
+  connection, a restart (`drainLive` on shutdown), a link too slow to keep up (never dropped frames, which would lose
+  words), an audio graph that sends no frames (an iPhone's suspended audio: the page checks after 2.5 s) or a stop
+  with no audio received by the relay uploads the clip instead (never an empty "final" that would throw it away). Refusals (too many, the day's cap, the
+  site busy, the Builder off, the mic on in another tab) don't fall back. Browsers without AudioWorklet use the old
+  path unchanged.
+- **Unverified provider details** (docs could not be fetched from this environment): the exact OpenAI `session.update`
+  nesting (and that a partial update turning turn detection off is answered with `session.updated`; if not, the stop
+  waits `finalWaitMs` and uses the words so far), whether the live model takes a prompt, and the ElevenLabs field names `audio_base_64` / `commit`. Covered
+  by a local fake in tests; **one smoke test with a real key is needed before relying on it** (a field rename falls
+  back to the upload path, it does not break the mic). Live models may cost a different amount per minute than
+  `STT_USD_PER_MINUTE`: **owner to decide** whether a separate live price is needed.
+
 ## Paid plans (billing decisions D0-D16)
 The owner approved every recommendation of the billing design (October 2026). The full design (allowance sources,
 Stripe integration, data model, tests and the owner's setup steps) is built in chunks: 0 settings and docs, 1 cost per
@@ -896,7 +944,8 @@ statement, never a check, audit `user.signup {grownup:true}`), never from a gues
 code, use the staff session rules (12 hours idle, 7 days at most) and land on `/family`. A fence before every route
 (`routes/family.js` `grownupGuard`) lists what a grown-up may open (game pages and play, search, info pages, signing in
 and out, their password and theme, the family pages); everything else, the Builder, Studio, friends, chat, profiles,
-classes, schools and admin included, is a 404, and `requireAccount` itself refuses them too. They are on no
+classes, schools and admin included, is a 404, and `requireAccount` itself refuses them too (since "Grown-ups can build"
+below, the Builder, the Studio and grown-up-only connections are open to them; chat, profiles and friends with kids are not). They are on no
 leaderboard (their scores aren't stored), in no builder search, have no profile and can't join a school. Linking: the
 child (an own kid account; never a guest, a school account or staff, whose code endpoints 404) gets a code like
 `K7Q-4MZ9` on /me (only an HMAC is stored; 24 hours, single use, one open per child, rate-limited; it was 1 hour, but a child who hits the
@@ -1332,6 +1381,25 @@ Shipped from the navigation proposal's Option 2. Not behind a new flag: Plans sh
   en/de/he/ar), `schools.spec.js` (School tab), `school-billing.spec.js` (Ask my admin), `family.spec.js` (the split and
   the old anchors).
 
+## "Add your kids" (the step after sign-up and after paying)
+The owner asked that parents can add their children during sign-up: make the child's account there, or link one the
+child already has. `/family/add` (routes/family.js) is that step.
+- **Where it shows:** a new grown-up lands on it after signing up, unless they picked a plan on /plans (then they pay
+  first) or came from a grown-up page (`?next=`). It also shows after a successful family Checkout: the wait panel
+  goes there, and `/family?checkout=…` or `?welcome=1` with the plan on redirects there. The old welcome panel on
+  /family is gone, and the step says "Your … plan is on. Thank you!". It is also the Children panel's ➕ button on
+  /family.
+- **Two choices side by side** (links, `?how=make|link`, no script needed): "Make my child's account" is offered only
+  while `F.madeOn` (PARENT_MADE_CHILDREN=1). It uses the same form, direct notice, "I've read this", guardian statement and
+  no-consent sentence as /family/children/new, and posts to the same API behind the same step-up and limits. With the
+  flag off, nothing about making an account shows and the code form is open straight away. "Link my child's existing
+  account" uses the same code form and API as /family/link. Each form sends `then=add`, which only changes where the
+  answer redirects (back to the step).
+- **After a child is added:** the step lists the children added so far, showing display names only, to this grown-up.
+  It offers "Add another child" while `maxChildrenFor` allows, and Done (→ /family). Before any child is added it offers
+  "I'll do this later" (→ /family), and nothing asks again. Paying and adding a child stay separate: the step shows no
+  prices or payment forms.
+
 ## Parent-made child accounts (weeks 3–4)
 Design: the navigation proposal's step 3, plus three safety reviews (all "go with conditions"). Part B is built
 (`services/family.js` "parent-made child accounts", `services/account-delete.js`, `views/family-made.js`, the routes at
@@ -1419,6 +1487,62 @@ the end of `routes/family.js`, migration `0030_parent_made`) and ships dark.
 - **Left out:** the "What your child made" activity panel (needs its own safety read); parent toggles for chat and
   photo; a verified consent method; retention timers; grown-up self-delete; hand-over; translations (English with
   `lang="en"` marking until done). Full design and test list: the Weeks 3–4 design notes.
+
+## Grown-ups can build
+
+The owner asked for grown-ups (parents) to be builders too, sharing each game with just their family, just their
+grown-up connections, or everyone. Every other fence around grown-up accounts stays.
+
+- **Sharing levels for a grown-up** (`services/schools.js` `sharingOptions`): `private` ("Only me"), `family` (new: the
+  grown-up and the children linked to the family they own), `friends` (shown to them as "My grown-up connections") and
+  `public`. Never `class` or `school`. A kid's options don't change and a kid can never pick `family` (`publish()`
+  refuses any level not offered). With family pages off (`familiesOn()` false) there is no new `family` choice, but a game already live or waiting at
+  `family` keeps that level (`sharingOptions(owner, game)`), so its updates still reach the children who can play it and
+  an admin approval of a waiting `family` review stays `family`.
+- **Default for a new grown-up game: `family`** (`shareDefault`), or `private` while family pages are off.
+- **Who sees a `family` game** (`services/games.js`, one rule for `canView` and `visibleWhere`): the owner, the admin and
+  the children with a confirmed, live link to the owner's family. Not a pending request, not after an unlink, not
+  another family's children, not the grown-up's connections. Play, embed, saves, scores, listings, search, similar,
+  favourites and the chat share list all follow it. No migration column: `games.visibility` is text.
+- **Moderation:** `family` is a group level like `class` and `school` (it reaches children who didn't opt in): a clean
+  scan or an existing approval goes live at once, a flagged version waits for a person. Approvals are stored by name, so
+  `WIDTH` became `{ family: 1, class: 2, school: 3, public: 4 }`. Connections (`friends`) go live at once, as kids'
+  friends games do (both sides are adults who chose it). `public` is exactly the kids' pipeline (scan, model review, the
+  admin queue). The admin queue shows a grown-up owner as plain text with a "Grown-up builder" tag (no `/u/` link).
+- **Connections are adults only.** They reuse the `friends` table and friend codes: grown-ups now get a code
+  (migration `0035_grownup_builder` backfills one for every grown-up and deletes any mixed adult-kid row).
+  `services/friends.js` refuses a mixed pair in both directions with the same "not found" as a wrong code (so neither
+  side learns the other exists) and `accept()` refuses a mixed pending row. Grown-ups manage them on
+  `/family/connections` (code, add by code, requests, list, Remove), with no chat, profile links or pictures. Chat still
+  refuses grown-ups on either side; `/friends`, `/chat` and `/u/` stay 404 for them.
+- **No profile, no contact:** `/u/<grown-up>` stays a 404. A grown-up's game page shows their display name and a
+  "Grown-up builder" tag with no link, for every viewer, and nothing about their children. Grown-ups stay out of builder
+  search and leaderboards. Like, Rate and stored scores stay off for grown-up viewers.
+- **A family game that widens never names the children.** Scores and likes the owner's linked children left while a game
+  was `family` stay stored, but `leaderboard(gameId, limit, viewer)` and `favorites()` leave the owner's own linked
+  children out for every viewer outside that family (not the owner, not one of those children, not an admin), at every
+  level. Leaving them out (instead of deleting) also covers later narrow-then-widen changes.
+- **Toasts and links:** sharing at `friends` tells a grown-up "Shared with your grown-up connections!"
+  (`publish.liveConnections`). The limit card's /plans link shows only while /plans is open (family pages on) and their
+  own family plan doesn't already cover them (`grownup.seePlans`). The share sheet opens a draft on `shareDefault` and a
+  game shared before (suspended, rejected) on its stored level.
+- **Access:** a new `requireBuilder` (any real account) guards the Studio routes and the friend-code APIs;
+  `requireAccount` (kids only) still guards chat and the /friends page. The fence (`routes/family.js`) has separate
+  lists for building (GET, POST and DELETE), so the grown-up page list is unchanged. The "Builder is for kids" page is
+  gone; `?next=/build` now lands on `/build`. Grown-ups' tabs: Family · Build · Games · (Plans) · Account (a Family
+  badge counts connection requests).
+- **Quota:** `builder/usage.js` `familyOf` covers the family's owner while its plan is entitled (Basic too), outside
+  `maxChildren`, from the same `family:<id>` extras. Without a plan a grown-up has the free daily messages like anyone.
+  No price outside /plans: a grown-up's limit card links to /plans with no amount.
+- **/family "Your games":** up to 5 of their games with status, Build, connections (with requests waiting) and their own
+  Builder use (yesterday and this month up to yesterday, never today). This private page is the only place a
+  grown-up's games and children appear together.
+- **Credit name (owner call):** a public grown-up game shows the display name, which for grown-ups starts as their
+  username (they may pick a real name at sign-up). Switching the credit to `@username` is a one-line change if wanted.
+- **Legal:** Terms (`info.terms.accounts.li9`) and Privacy (`info.privacy.grownups.p2`) now say grown-ups may build,
+  their games get the same review, connections are adults only and children's names and family links are never shown.
+- Tests: `tests/unit/grownup-builder.test.js` (and the updated family, nav, class-sharing tests); e2e
+  `tests/e2e/grownup-builder.spec.js`, `tests/e2e/grownup-connections.spec.js`.
 
 ## Oomba Kit: one visual foundation for every game (phase 1)
 - **Build our own kit instead of adopting an engine.** The kit is `window.Oomba`, a classic script pinned with SRI at `/vendor/oomba-kit/<ver>/`, the same way three.js is served. It has two stateless backends: Paper (Canvas 2D) and Glaze (WebGL2). — Every engine needs patches to run in the frame sandbox (no eval, workers, wasm, fetch or URL images). They cost 70–350 KB gz, none has the Canvas 2D fallback that low-end Chromebooks need, and their bitmap text breaks Arabic. A small, frozen API is also what the Builder writes most reliably. Three.js stays the 3D path. Full spec: `docs/kit.md`.

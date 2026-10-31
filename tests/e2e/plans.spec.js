@@ -80,7 +80,7 @@ async function buyFromPlans(browser, plan = 'family', interval = 'year') {
   await Promise.all([mum.waitForURL(/\/grown-ups\/signup$/), mum.locator('#soon a', { hasText: 'Make a grown-up account' }).click()]);
   const mumName = uniq('Mum');
   await mum.fill('#username', mumName); await mum.fill('#password', PW); await mum.fill('#confirm', PW); await mum.check('#adult');
-  await Promise.all([mum.waitForURL(/\/family$/), mum.click('button[type=submit]')]);
+  await Promise.all([mum.waitForURL(/\/family\/add\?from=signup$/), mum.click('button[type=submit]')]);
   // Test mode: on sale once the admin marks this account as a billing tester.
   await makeTester(browser, mumName);
   await mum.goto('/plans');
@@ -93,7 +93,10 @@ async function buyFromPlans(browser, plan = 'family', interval = 'year') {
   await expect(form).toContainText('You add your children after paying');
   await expect(form.locator(`button[value="${interval}"]`)).toHaveClass(/btn-primary/);
   await mum.fill('#pw-checkout', PW);
-  await Promise.all([mum.waitForURL(/\/family\?(checkout=cs_test_|welcome=1)/, { timeout: 30_000 }), form.locator(`button[value="${interval}"]`).click()]);
+  // Back from Checkout: the wait, then "Add your kids" once the plan is on.
+  await Promise.all([mum.waitForURL(/\/family\/add\?from=checkout$/, { timeout: 30_000 }), form.locator(`button[value="${interval}"]`).click()]);
+  await expect(mum.locator('main .notice.good')).toContainText(`Your ${plan === 'basic' ? 'Basic' : 'Family'} plan is on. Thank you!`);
+  await mum.goto('/family');
   await expect(mum.locator('#plan .planchip.paid')).toHaveText(plan === 'basic' ? 'Basic plan' : 'Family plan', { timeout: 30_000 });
   return { mum, mumName };
 }
@@ -117,14 +120,13 @@ async function addChild(browser, mum, { expectError = null } = {}) {
 }
 const subOf = async () => (await control('state')).subscriptions.filter(s => s.status === 'active').at(-1);
 
-test('signed out → Family yearly → sign-up keeps the plan → password → Checkout → "Now add your child" → linked child gets extras', async ({ browser }) => {
+test('signed out → Family yearly → sign-up keeps the plan → password → Checkout → "Add your kids" → linked child gets extras', async ({ browser }) => {
   const { mum } = await buyFromPlans(browser, 'family', 'year');
-  await expect(mum).toHaveURL(/\/family\?welcome=1|\/family\?checkout=/);
-  await mum.goto('/family?welcome=1');
-  const welcome = mum.locator('#welcome');
-  await expect(welcome).toContainText('Your Family plan is on. Thank you!');
-  await expect(welcome.locator('h2')).toHaveText('Now add your child');
-  await expect(welcome).toContainText('Your child signs in, opens Me');
+  await mum.goto('/family/add?from=checkout');
+  await expect(mum.locator('main .notice.good')).toContainText('Your Family plan is on. Thank you!');
+  await expect(mum.locator('main h1')).toHaveText('Add your kids');
+  await expect(mum.locator('main')).toContainText('Your child signs in, opens Me');
+  await mum.goto('/family');
   await expect(mum.locator('#plan')).toContainText('Yearly, renews on');
   await expect(mum.locator('#plan')).toContainText('3 of 3 extra messages left this month');
   await expect(mum.locator('#plan a', { hasText: 'Change plan' })).toHaveAttribute('href', '/plans');
@@ -132,7 +134,6 @@ test('signed out → Family yearly → sign-up keeps the plan → password → C
   await mum.goto('/family');
   await expect(mum.locator('.famkid')).toContainText(username);
   await expect(mum.locator('.famkid')).toContainText('Extra messages come from your family plan.');
-  await expect(mum.locator('#welcome')).toHaveCount(0);
   // The child: nothing about money; the Studio counter shows the extras as a number only.
   await kid.goto('/');
   await expect(kid.locator('.topnav a[href="/plans"]')).toHaveText(/Plans/);
@@ -214,7 +215,7 @@ test('the pages: nothing touches, no sideways scroll (360 / 1280, light / dark, 
     ['out', null, ['/plans', '/plans?interval=year', '/plans/schools', '/plans/schools?students=10', '/plans/schools/print?students=140', '/grown-ups', '/grown-ups/signup?plan=family&interval=year', '/grown-ups/login?plan=basic&interval=month']],
     ['kid', await kid.context().storageState(), ['/', '/plans?ask=basic']],
     ['grownup', await fresh.context().storageState(), ['/plans', '/family', '/family?plan=basic&interval=month']],
-    ['basic', await paid.mum.context().storageState(), ['/plans', '/family?welcome=1']],
+    ['basic', await paid.mum.context().storageState(), ['/plans', '/family/add?from=checkout']],
     ['teacher', await teacher.context().storageState(), ['/plans?ask=family']],
   ];
   const problems = [];
@@ -268,7 +269,7 @@ const ROLE_BARS = {
   student: { tabs: ['/', '/classes', '/build', '/friends', '/plans', '/me'], top: ['/', '/classes', '/build', '/friends', '/plans'] },
   teacher: { tabs: ['/teach', '/', '/plans', '/me'], top: ['/teach', '/', '/plans'] },
   'school admin': { tabs: ['/teach', '/', '/school', '/plans', '/me'], top: ['/teach', '/', '/school', '/plans'] },
-  'grown-up': { tabs: ['/family', '/', '/plans', '/family/account'], top: ['/family', '/', '/plans'] },
+  'grown-up': { tabs: ['/family', '/build', '/', '/plans', '/family/account'], top: ['/family', '/build', '/', '/plans'] },
   'platform admin': { tabs: ['/', '/search', '/build', '/friends', '/admin/schools', '/plans', '/me'], top: ['/', '/search', '/build', '/friends', '/admin/schools', '/plans'] },
 };
 let roleStates = null;
@@ -288,7 +289,7 @@ async function roles(browser) {
   const mum = await person(browser);
   await mum.goto('/grown-ups/signup');
   await mum.fill('#username', uniq('Mum')); await mum.fill('#password', PW); await mum.fill('#confirm', PW); await mum.check('#adult');
-  await Promise.all([mum.waitForURL(/\/family$/), mum.click('button[type=submit]')]);
+  await Promise.all([mum.waitForURL(/\/family\/add\?from=signup$/), mum.click('button[type=submit]')]);
   out['grown-up'] = await mum.context().storageState();
   roleStates = out;
   return out;

@@ -175,6 +175,7 @@ test('card Checkout: quantity = students, the seat price by lookup key, flexible
   assert.equal(p.allow_promotion_codes, 'true');
   assert.match(p.success_url, new RegExp(`/school/${x.s.slug}\\?tab=billing&checkout=\\{CHECKOUT_SESSION_ID\\}$`));
   assert.equal(p.payment_method_configuration, undefined, 'no STRIPE_PMC_SCHOOL: the account default');
+  assert.equal(String(p.managed_payments?.enabled), 'false', 'we are the seller, never Managed Payments');
   assert.equal(p.automatic_tax, undefined, 'no STRIPE_TAX: no automatic_tax');
   assert.equal(p.payment_method_types, undefined);
   // The Customer: ours, with the school's id only (no name or email from us at this point).

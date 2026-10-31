@@ -71,7 +71,7 @@ const teacher = S.createSchoolAccount(boss, oak.id, { rosterName: 'Ms Teach', ro
 const student = S.createSchoolAccount(teacher, oak.id, { rosterName: 'Stu Dent' }).user;
 
 // ---------------------------------------------------------------- grown-up accounts
-test('grown-up sign-up: 12+ characters, the parent-or-guardian box, no friend code, a family, audited; lands on /family', async () => {
+test('grown-up sign-up: 12+ characters, the parent-or-guardian box, a friend code (grown-up connections only), a family, audited; lands on "Add your kids"', async () => {
   const bad = async (body, field, status = 400) => { const r = await call(null, '/api/grown-ups/signup', { method: 'POST', body }); assert.equal(r.status, status, r.text); assert.equal(r.json.field, field); };
   const ok = { username: 'MumOfTwo', password: 'twelve-chars-ok', confirm: 'twelve-chars-ok', adult: '1' };
   const signups = () => (q.get("SELECT SUM(n) n FROM funnel_counts WHERE step='parent.signup'").n || 0);
@@ -81,9 +81,9 @@ test('grown-up sign-up: 12+ characters, the parent-or-guardian box, no friend co
   await bad({ ...ok, adult: undefined }, 'adult');
   await bad({ ...ok, username: 'x' }, 'username');
   const r = await call(null, '/api/grown-ups/signup', { method: 'POST', body: ok });
-  assert.equal(r.status, 200, r.text); assert.equal(r.json.redirect, '/family'); assert.ok(r.cookie);
+  assert.equal(r.status, 200, r.text); assert.equal(r.json.redirect, '/family/add?from=signup'); assert.ok(r.cookie);
   const u = auth.getUserByName('MumOfTwo');
-  assert.equal(u.account_type, 'grownup'); assert.equal(u.friend_code, null); assert.equal(u.role, 'player');
+  assert.equal(u.account_type, 'grownup'); assert.match(u.friend_code, /^[A-Z2-9]{6}$/, 'for connections with other grown-ups'); assert.equal(u.role, 'player');
   assert.equal(auth.accountKind(u), 'grownup'); assert.ok(auth.isGrownup(u));
   assert.ok(F.familyOfOwner(u.id));
   assert.deepEqual(JSON.parse(audits('user.signup', u.id)[0].details), { grownup: true });
@@ -95,7 +95,9 @@ test('grown-up sign-up: 12+ characters, the parent-or-guardian box, no friend co
   let li = await call(null, '/api/auth/login', { method: 'POST', body: { username: 'MumOfTwo', password: 'twelve-chars-ok' } });
   assert.equal(li.json.redirect, '/family');
   li = await call(null, '/api/auth/login', { method: 'POST', body: { username: 'MumOfTwo', password: 'twelve-chars-ok', next: '/build' } });
-  assert.equal(li.json.redirect, '/family');
+  assert.equal(li.json.redirect, '/build', 'grown-ups can build');
+  li = await call(null, '/api/auth/login', { method: 'POST', body: { username: 'MumOfTwo', password: 'twelve-chars-ok', next: '/chat' } });
+  assert.equal(li.json.redirect, '/family', 'never to a page they may not open');
   li = await call(null, '/api/auth/login', { method: 'POST', body: { username: 'MumOfTwo', password: 'twelve-chars-ok', next: '/family/link' } });
   assert.equal(li.json.redirect, '/family/link');
   // A child is never sent to a family page.
@@ -146,11 +148,11 @@ test('grown-up sessions follow the staff rules (12 hours idle, 7 days at most); 
 
 // ---------------------------------------------------------------- the access matrix
 // Route groups and what each kind of account gets. 'ok' = 200 (or a redirect to a page they may open).
+// The Builder, the Studio and the friend-code APIs are open to grown-ups now ("Grown-ups can build", below and in
+// tests/unit/grownup-builder.test.js); the kids' /friends page, chat and profiles are not.
 const GROUPS = {
-  builder: [['POST', '/api/studio/new']],   // GET /build is a short "the Builder is for kids' accounts" page (below)
-  studio: [['GET', '/studio/abc'], ['GET', '/api/studio/abc']],
   chat: [['GET', '/chat'], ['GET', '/api/chat'], ['POST', '/api/chat/someone']],
-  friends: [['GET', '/friends'], ['GET', '/api/friends'], ['POST', '/api/friends/add']],
+  friends: [['GET', '/friends']],
   profile: [['GET', '/u/FamBoss']],
   classes: [['GET', '/classes'], ['GET', '/teach'], ['POST', '/api/classes/join']],
   school: [['GET', `/school/${oak.slug}`]],
@@ -175,14 +177,16 @@ test('access matrix: a grown-up gets 404 on every kid route group, and can play 
     const r = await go(p); assert.equal(r.status, 200, `${p} -> ${r.status}`);
   }
   assert.equal((await go('/grown-ups')).location, '/parents#families', 'the old grown-ups page moves to the one parent page');
-  // /build explains instead of a 404, and builds nothing.
+  // The Builder and the Studio are open (a Studio for a game that isn't theirs is the Studio's own 404).
   const build = await go('/build');
-  assert.equal(build.status, 200); assert.match(build.text, /The Builder is for kids&#39; accounts/);
-  assert.doesNotMatch(build.text, /id="newgame"|data-template=/);
-  // Nav: Family, Games (and Plans), Account; no Build, Friends or Me tab (tests/unit/nav-roles.test.js has every role's).
+  assert.equal(build.status, 200); assert.match(build.text, /id="newgame"/); assert.match(build.text, /data-template=/);
+  assert.equal((await go('/api/studio/abc')).json.error, 'Game not found.', 'the Studio API answers, not the fence');
+  assert.equal((await go('/api/friends')).status, 200, 'grown-up connections');
+  // Nav: Family, Build, Games (and Plans), Account; no Friends or Me tab (tests/unit/nav-roles.test.js has every role's).
   const home = await go('/');
   assert.match(home.text, /class="tab" href="\/family"/); assert.match(home.text, /class="tab" href="\/family\/account"/);
-  assert.doesNotMatch(home.text, /class="navlink" href="\/build"/); assert.doesNotMatch(home.text, /class="tab" href="\/me"/);
+  assert.match(home.text, /class="navlink" href="\/build"/); assert.doesNotMatch(home.text, /class="tab" href="\/me"/);
+  assert.doesNotMatch(home.text, /class="tab" href="\/friends"/);
 });
 
 test('access matrix: family routes are 404 for kids, school students, teachers, guests and the admin; the child panel only for own kid accounts', async () => {
@@ -234,7 +238,8 @@ test('billing off: no family pages, no panel, no /parents link; grown-ups stay f
   }
   assert.equal((await as(k)('/family')).status, 404, 'off: still no /family for a kid');
   assert.equal((await call(li.cookie, '/api/auth/logout', { method: 'POST', body: {} })).status, 200, 'the grown-up can sign out');
-  const b = await as(g)('/build'); assert.equal(b.status, 200); assert.doesNotMatch(b.text, /id="newgame"|class="btn btn-primary" href="\/family"/, 'still no Builder for a grown-up, and no family button while families are off');
+  const b = await as(g)('/build'); assert.equal(b.status, 200); assert.match(b.text, /id="newgame"/, 'the Builder works for a grown-up while families are off too');
+  assert.deepEqual(S.sharingOptions(g), ['private', 'friends', 'public'], 'off: no family sharing');
   config.stripeApiKey = 'rk_test_fake';
   const on = (await call(null, '/parents')).text;
   assert.match(on, /<section class="panel" id="families"[\s\S]*href="\/grown-ups\/signup"[\s\S]*href="\/grown-ups\/login"/, 'on: /parents has the Family accounts section, with the sign-up and sign-in');
@@ -518,12 +523,12 @@ test('a code can\'t be published elsewhere either: names, game text, score label
   assert.ok(!scan('<p>Find the secret code to open the door. Level 2!</p>').includes('link_code'));
 });
 
-test('grown-up pages only show what a grown-up can use: no Studio button, profile links, Like or Rate', async () => {
+test('grown-up pages only show what a grown-up can use: the Builder, but no profile links, Like or Rate', async () => {
   const g = grownup(); const owner = kid();
   const gm = publicGame(owner);
   const go = as(g);
   const home = await go('/');
-  assert.doesNotMatch(home.text, /href="\/build"/, 'no Open my Studio button');
+  assert.match(home.text, /class="btn btn-hot" href="\/build"/, 'the Open my Studio banner (grown-ups can build)');
   assert.match(home.text, /href="\/family\/account#language"/, 'the footer language link goes to their own Account page');
   const gp = await go(`/g/${gm.slug}`);
   assert.equal(gp.status, 200);

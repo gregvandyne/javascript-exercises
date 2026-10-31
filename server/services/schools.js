@@ -16,8 +16,8 @@
 import crypto from 'node:crypto';
 import { q, uid, now, tx, audit } from '../db.js';
 import { config } from '../config.js';
-import { createUser, setPassword, getUser } from '../auth.js';
-import { unlinkAll } from './family.js';
+import { createUser, setPassword, getUser, isGrownup } from '../auth.js';
+import { unlinkAll, familiesOn } from './family.js';
 import * as funnel from './funnel.js';
 import { clear, loginLockKey } from './ratelimit.js';
 
@@ -517,8 +517,14 @@ export const inAnySchool = u => !!(u && q.get("SELECT 1 FROM school_members WHER
 /** Who a game can be shared with, for its owner (in games.VISIBILITIES order): private and friends always; 'class'
  *  for an active member (student or teacher) of at least one live class; 'school' for school members; 'public' unless
  *  the owner is a school account whose school keeps games inside the school. 'class' is narrower than both school
- *  settings ('school' and 'public'), so every school allows it; a future "private only" setting must turn it off too. */
-export function sharingOptions(owner) {
+ *  settings ('school' and 'public'), so every school allows it; a future "private only" setting must turn it off too.
+ *  A grown-up builder (they never join schools or classes): private, 'family' (their linked children; only while family
+ *  pages are on), 'friends' (shown to them as "My grown-up connections": other grown-ups only) and public. A kid can
+ *  never pick 'family'; publish() refuses any level not listed here. Pass the game when there is one: a grown-up's game
+ *  already live (or waiting) at 'family' keeps that level while family pages are off, so its updates still go out to
+ *  the children who can play it (canView still serves them) and an approval for it is not turned into something else. */
+export function sharingOptions(owner, game = null) {
+  if (isGrownup(owner)) return familiesOn() || (game && (game.visibility === 'family' || game.pending_visibility === 'family')) ? ['private', 'family', 'friends', 'public'] : ['private', 'friends', 'public'];
   const opts = ['private', 'friends'];
   if (owner && shareableClasses(owner.id).length) opts.push('class');
   if (inAnySchool(owner)) opts.push('school');
@@ -526,6 +532,9 @@ export function sharingOptions(owner) {
   if (!rules || rules.publishing === 'public') opts.push('public');
   return opts;
 }
+/** Where the share dialog starts for a game that isn't live yet: 'family' for a grown-up while family pages are on (their
+ *  own children, the safest wide-enough choice), else 'private'. */
+export const shareDefault = owner => (isGrownup(owner) && familiesOn() ? 'family' : 'private');
 
 // ---------------------------------------------------------------- "Share with my classes" (game_classes)
 // Who sees a 'class' game is decided by the rule in services/games.js (CLASS_SQL); these write the owner's list.

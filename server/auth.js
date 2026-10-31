@@ -1,7 +1,7 @@
 // Sessions, passwords, guests and the kid-safe username rules. Reused from the starter, renamed and tightened.
 import crypto from 'node:crypto';
 import bcrypt from 'bcryptjs';
-import { q, uid, now, setting, tx } from './db.js';
+import { q, uid, now, setting, tx, newFriendCode } from './db.js';
 import { config } from './config.js';
 import { cleanName, cleanText } from './services/textfilter.js';
 import { tEn, tReq } from './i18n/index.js';
@@ -48,19 +48,21 @@ export const AVATARS = ['🦊', '🐼', '🦦', '🐨', '🐯', '🐧', '🐬', 
 export const GROWNUP_AVATAR = '👤', GROWNUP_COLOR = '#64748b';
 export const COLORS = ['#2f6bff', '#ff5c5c', '#16a34a', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4', '#f97316'];
 const pick = a => a[Math.floor(Math.random() * a.length)];
-function friendCode() { for (;;) { const c = Array.from({ length: 6 }, () => 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'[crypto.randomInt(31)]).join(''); if (!q.get('SELECT 1 FROM users WHERE friend_code=?', c)) return c; } }
+export const friendCode = () => newFriendCode();
 
 /** accountType: 'kid' (every player, guest and school account) or 'grownup' (a parent's account: docs/decisions.md
- *  "Paid plans"). Grown-ups get no friend code: nobody can add them as a friend. */
+ *  "Paid plans"). Grown-ups get a friend code too, for connections with other grown-ups only (services/friends.js: a
+ *  kid's code never finds a grown-up, and a grown-up's never finds a kid). */
 export function createUser({ username, password, displayName, role = 'player', isGuest = false, avatar, color, accountType = 'kid' }) {
   const id = uid(10);
   const hash = password ? bcrypt.hashSync(password, BCRYPT_COST) : null;
   const grownup = accountType === 'grownup' && !isGuest;
   q.run('INSERT INTO users(id, username, display_name, password_hash, role, is_guest, avatar, color, friend_code, created_at, last_seen, account_type) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)',
-    id, username, displayName || username, hash, grownup ? 'player' : role, isGuest ? 1 : 0, avatar || (grownup ? GROWNUP_AVATAR : pick(AVATARS)), color || (grownup ? GROWNUP_COLOR : pick(COLORS)), grownup ? null : friendCode(), now(), now(), grownup ? 'grownup' : 'kid');
+    id, username, displayName || username, hash, grownup ? 'player' : role, isGuest ? 1 : 0, avatar || (grownup ? GROWNUP_AVATAR : pick(AVATARS)), color || (grownup ? GROWNUP_COLOR : pick(COLORS)), friendCode(), now(), now(), grownup ? 'grownup' : 'kid');
   return getUser(id);
 }
-/** A grown-up account (users.account_type): it can play games and look after a family, nothing else (server/routes/family.js). */
+/** A grown-up account (users.account_type): it can play games, look after a family, build games and connect with other
+ *  grown-ups, nothing else (server/routes/family.js). */
 export const isGrownup = u => !!u && !u.is_guest && u.account_type === 'grownup';
 export function createGuest() {
   for (let i = 0; i < 40; i++) {
@@ -219,15 +221,21 @@ function liveSession(id, t) {
 /** The user signed in with a session id, by the same rules as every request (sessionMiddleware), or null. Read-only:
  *  it never ends a session or counts as activity (builder/live.js re-checks open streams with it). */
 export function sessionUser(id) { return id ? liveSession(id, now()).u || null : null; }
+/** The sign-in a request's cookie names, by the same rules as every request. Read-only (no cookie, no activity):
+ *  sessionMiddleware uses it, and so does the live speech to text socket (services/stt-live.js), which has no response
+ *  to set cookies on. -> { id, s, u }: the session id (null without a valid cookie), its row, and the user if it counts. */
+export function userFromRequest(req, t = now()) {
+  const id = unpack(parseCookies(req)[COOKIE]);
+  return id ? { id, ...liveSession(id, t) } : { id: null, s: null, u: null };
+}
 let lastSweep = 0;
 export function sessionMiddleware(req, res, next) {
   const t = now();
   // Ended sessions are kept a day (as long as their cookie), then swept.
   if (t - lastSweep > 3600e3) { lastSweep = t; q.run('DELETE FROM sessions WHERE expires_at<?', t - COOKIE_GRACE * 1000); }
   req.user = null; req.sessionId = null; req.sessionEnded = false; req.sessionVia = null; req.madeCardOk = false;
-  const id = unpack(parseCookies(req)[COOKIE]);
+  const { id, s, u } = userFromRequest(req, t);
   if (id) {
-    const { s, u } = liveSession(id, t);
     if (u) {
       req.user = u; req.sessionId = id; req.sessionVia = s.via || null; req.madeCardOk = !!s.made_card_ok;
       if (t - s.last_active > ACTIVITY_EVERY && isActivity(req)) q.run('UPDATE sessions SET last_active=? WHERE id=?', t, id);
@@ -256,6 +264,13 @@ export function requireUser(req, res, next) {
  *  there (server/routes/family.js also turns them away from everything they don't need, before any route). */
 export function requireAccount(req, res, next) {
   if (isGrownup(req.user)) return isApi(req) ? res.status(404).json({ error: tReq(req)('errors.api.notFound') }) : res.status(404).send('Not found');
+  if (req.user && !req.user.is_guest) return next();
+  if (isApi(req)) return req.user ? res.status(403).json({ error: tReq(req)('errors.api.needAccount') }) : res.status(401).json(signedOutReply(req, 'errors.api.needAccount'));
+  res.redirect(req.sessionEnded ? signInAgain(req) : '/signup?next=' + encodeURIComponent(req.originalUrl));
+}
+/** A real account that may build: a kid's or a grown-up's (never a guest). The Builder, the Studio and the friend-code
+ *  APIs (a grown-up's are connections with other grown-ups); chat, profiles and the /friends page stay requireAccount. */
+export function requireBuilder(req, res, next) {
   if (req.user && !req.user.is_guest) return next();
   if (isApi(req)) return req.user ? res.status(403).json({ error: tReq(req)('errors.api.needAccount') }) : res.status(401).json(signedOutReply(req, 'errors.api.needAccount'));
   res.redirect(req.sessionEnded ? signInAgain(req) : '/signup?next=' + encodeURIComponent(req.originalUrl));

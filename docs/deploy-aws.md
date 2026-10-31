@@ -391,7 +391,8 @@ Works, with real catches. Choose it only if you don't want to look after a serve
        one network, so unlike the compose stack the worker can reach the internet; it still has no data or secrets.
   4. **Application Load Balancer**: HTTPS listener with an ACM certificate (and HTTP → HTTPS redirect), target group
      HTTP port 3000, health check path `/health`, deregistration delay 30 s. Idle timeout: keep 60 s (the app keeps
-     connections 65 s; the Builder stream sends a heartbeat every 15 s). The task's security group allows 3000 only
+     connections 65 s; the Builder stream sends a heartbeat every 15 s). The ALB passes WebSockets through as is (the
+     Studio mic's live words, `/api/studio/:id/listen`; a session lasts at most 75 s), and so do CloudFront and Caddy. The task's security group allows 3000 only
      from the ALB's security group.
   5. **Service** as above, with *ECS Exec* turned on (for a shell: `aws ecs execute-command ... --command sh`).
 - Monitoring: Container Insights, an alarm on the ALB's `HTTPCode_Target_5XX_Count` and `UnHealthyHostCount`, and the

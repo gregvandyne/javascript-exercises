@@ -201,6 +201,7 @@ test('the Checkout Session: hosted, subscription mode, prices by lookup key, fle
   assert.equal(p.success_url, `${base}/family?checkout={CHECKOUT_SESSION_ID}`);
   assert.equal(p.cancel_url, `${base}/family?plan=family&interval=month`);
   assert.equal(p.payment_method_configuration, 'pmc_fakefamily', 'the Family configuration (Link off), always');
+  assert.equal(String(p.managed_payments?.enabled), 'false', 'Managed Payments refuses a payment method configuration');
   for (const k of ['payment_method_types', 'automatic_tax', 'consent_collection', 'custom_text']) assert.equal(p[k], undefined, k);
   assert.ok(fake.requests.slice(before).filter(x => x.method === 'POST').every(x => x.idempotencyKey), 'every POST has an idempotency key');
   assert.deepEqual(fake.violations, []);

@@ -107,6 +107,7 @@ const billingPublic = parseFlag(process.env.BILLING_PUBLIC, 'BILLING_PUBLIC');
 const parentMade = parseFlag(process.env.PARENT_MADE_CHILDREN, 'PARENT_MADE_CHILDREN');
 const movedPermanently = parseFlag(process.env.MOVED_PERMANENTLY, 'MOVED_PERMANENTLY');
 const builderWebSearch = parseFlag(process.env.BUILDER_WEB_SEARCH, 'BUILDER_WEB_SEARCH');
+const sttLive = parseFlag(process.env.STT_LIVE, 'STT_LIVE', true);
 /** Speech to text providers (server/services/stt.js). 'mock' answers fixed words, for tests only. */
 export const STT_PROVIDERS = ['openai', 'elevenlabs', 'mock'];
 const sttProvider = String(process.env.STT_PROVIDER || 'openai').trim().toLowerCase();
@@ -145,7 +146,7 @@ export const config = {
     googleClientId && !GOOGLE_ID_RE.test(googleClientId) && 'GOOGLE_CLIENT_ID must look like 1234-abc.apps.googleusercontent.com',
     oidcBase.error, oidcBase.url && (process.env.NODE_ENV || 'development') === 'production' && "GOOGLE_OIDC_BASE is for tests and can't be used in production",
     ...stripe.errors,
-    publicUrl.error, movedTo.error, redirectHosts.error, requireSecret.error, maintenance.error, movedPermanently.error, parentMade.error,
+    publicUrl.error, movedTo.error, redirectHosts.error, requireSecret.error, maintenance.error, movedPermanently.error, parentMade.error, sttLive.error,
     builderWebSearch.error,
     !STT_PROVIDERS.includes(sttProvider) && `STT_PROVIDER must be one of ${STT_PROVIDERS.filter(p => p !== 'mock').join(', ')}`,
     sttProvider === 'mock' && (process.env.NODE_ENV || 'development') === 'production' && "STT_PROVIDER=mock is for tests and can't be used in production",
@@ -176,6 +177,11 @@ export const config = {
   sttProvider: STT_PROVIDERS.includes(sttProvider) ? sttProvider : '',
   sttApiKey: process.env.STT_API_KEY || '',
   sttModel: process.env.STT_MODEL || '',
+  // Live speech to text (server/services/stt-live.js): words show while the kid speaks, over a WebSocket relay to the
+  // provider's realtime API. On whenever speech to text is on; STT_LIVE=0 turns only the live mode off (the page then
+  // records and uploads as before). STT_REALTIME_MODEL overrides the live model (stt.js has the defaults).
+  sttLive: sttLive.on,
+  sttRealtimeModel: process.env.STT_REALTIME_MODEL || '',
   sttMaxSeconds: Math.min(120, Math.max(5, num(process.env.STT_MAX_SECONDS, 60))),
   sttMaxBytes: Math.min(10_000_000, Math.max(100_000, num(process.env.STT_MAX_BYTES, 1_500_000))),
   sttPerMinute: Math.max(1, num(process.env.STT_PER_MINUTE, 8)),

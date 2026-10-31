@@ -459,7 +459,9 @@
     "class": "{count, plural, one {Mijn klas} other {Mijn klassen}}",
     "onlyYouNow": "Nu alleen jij",
     "public": "Iedereen",
-    "school": "Mijn school"
+    "school": "Mijn school",
+    "family": "Mijn gezin",
+    "connections": "Mijn volwassen contacten"
   },
   "status": {
     "hidden": "Verborgen",
@@ -693,7 +695,7 @@
         "li7": "Een schoolaccount wordt gemaakt door de school. De school is ervoor verantwoordelijk dat ze het recht heeft om het te maken en dat ze ouders erover informeert (zie artikel 3).",
         "s3": "Ouderaccounts",
         "li8": "Je moet <b>18 jaar of ouder</b> zijn en de <b>ouder of wettelijk vertegenwoordiger</b> van elk kind aan wie je je koppelt. Bij het aanmelden bevestig je dit met een vinkje. We controleren het niet, dus wees eerlijk: als je je koppelt aan een kind dat niet van jou is, overtreed je deze voorwaarden; dan beëindigen we de koppeling en kunnen we je account sluiten.",
-        "li9": "Met een ouderaccount kun je games spelen. Je kunt er <b>geen</b> games mee bouwen, de Bouwer gebruiken, chatten, vrienden toevoegen, iets plaatsen of een openbaar profiel hebben.",
+        "li9": "Met een ouderaccount kun je games spelen en met de Bouwer games bouwen. Die games krijgen dezelfde veiligheidschecks als elke game. Je kunt er alleen contact mee maken met andere ouderaccounts. Je kunt er <b>niet</b> mee chatten, kinderen als vriend toevoegen, iets plaatsen of een openbaar profiel hebben, en de games ervan laten nooit zien welke kinderen aan het account gekoppeld zijn.",
         "li10": "Houd je wachtwoord geheim. Je bent verantwoordelijk voor wat er in je ouderaccount gebeurt, ook voor aankopen.",
         "li11": "Om te voorkomen dat een kind iets koopt op een gedeeld apparaat, vragen we opnieuw om je wachtwoord voordat je een abonnement neemt of wijzigt.",
         "s4": "Een volwassene aan een kind koppelen",
@@ -918,7 +920,7 @@
         "li6": "je abonnement: de klant- en abonnementsnummers van Stripe, het soort abonnement, maandelijks of jaarlijks, de status, plaatsen, datums en bedragen;",
         "li7": "een overzicht van belangrijke acties (bijvoorbeeld \"abonnement gestart\", \"kind gekoppeld\", \"terugbetaling\"). Daarin staan nooit kaartgegevens of e-mailadressen.",
         "p1": "<b>Waar we niet om vragen:</b> je e-mailadres, telefoonnummer, woonadres of leeftijd. (Stripe vraagt om een deel hiervan als je betaalt: zie Betalingen hieronder.)",
-        "p2": "Met een ouderaccount kun je niet bouwen, chatten, vrienden toevoegen of een openbaar profiel hebben, en het verschijnt niet in zoekresultaten."
+        "p2": "Met een ouderaccount kun je games bouwen. Die krijgen dezelfde veiligheidschecks als elke game, en een game die met iedereen gedeeld is, toont de weergavenaam van de volwassene en ‘Volwassen bouwer’. Een ouderaccount kan alleen contact maken met andere ouderaccounts; het kan niet chatten, geen kinderen als vriend toevoegen en geen openbaar profiel hebben, en het verschijnt niet in zoekresultaten. We laten nooit openbaar zien welke kinderen aan een volwassene gekoppeld zijn, of hun namen."
       },
       "linking": {
         "h": "Koppelen aan een kind",
@@ -1053,7 +1055,9 @@
       "friends": "Alleen je vrienden op Oomba Academy kunnen deze link openen.",
       "class": "Alleen de klassen waarmee deze game is gedeeld kunnen deze link openen.",
       "public": "Iedereen met de link kan deze game spelen.",
-      "school": "Iedereen op je school kan hem vinden en spelen."
+      "school": "Iedereen op je school kan hem vinden en spelen.",
+      "family": "Alleen de volwassene die deze game heeft gemaakt en diens gezin kunnen deze link openen.",
+      "connections": "Alleen de volwassene die deze game heeft gemaakt en diens volwassen contacten kunnen deze link openen."
     },
     "sharedWith": "Gedeeld met:",
     "sharedWithMore": "{count, plural, one {en # andere klas} other {en # andere klassen}}",
@@ -1077,7 +1081,8 @@
       "badScore": "Ongeldige score.",
       "pickReason": "Kies een reden."
     },
-    "makeLike": "Maak zelf zo'n game"
+    "makeLike": "Maak zelf zo'n game",
+    "grownupBuilder": "Volwassen bouwer"
   },
   "play": {
     "backTo": "Terug naar {title}",
@@ -1325,13 +1330,6 @@
       "ready": "✨ Klaar",
       "question": "💬 Heeft een vraag",
       "stopped": "⚠️ Gestopt"
-    },
-    "grownup": {
-      "title": "De Bouwer",
-      "heading": "De Bouwer is voor accounts van kinderen",
-      "text": "Kinderen maken hun eigen games met de Bouwer, ingelogd met hun eigen account. Met een ouderaccount kun je games spelen en een gezin beheren, maar niet bouwen.",
-      "how": "Zo werkt een game maken",
-      "safety": "Is de AI-Bouwer veilig?"
     }
   },
   "studio": {
@@ -1344,7 +1342,9 @@
       "friends": "Alleen jij en je vrienden op Oomba Academy kunnen hem spelen.",
       "class": "Alleen de klassen die je hebt gekozen kunnen hem spelen.",
       "public": "Iedereen op Oomba Academy kan hem vinden en spelen, na een snelle veiligheidscheck.",
-      "school": "Iedereen op je school kan hem vinden en spelen."
+      "school": "Iedereen op je school kan hem vinden en spelen.",
+      "family": "Jij en de kinderen die aan je gezin gekoppeld zijn, kunnen het spelen.",
+      "connections": "Alleen jij en je volwassen contacten kunnen het spelen."
     },
     "status": {
       "hidden": "Even verborgen",
@@ -1451,7 +1451,8 @@
       "tooFast": "Dat zijn veel opnames! Wacht een minuut en probeer het dan opnieuw.",
       "daily": "De opnames voor vandaag zijn op. Je kunt je bericht nog wel typen.",
       "failed": "Sorry, ik kon er geen woorden van maken. Probeer het nog eens of typ je bericht.",
-      "busy": "De spraakhulp heeft het nu druk. Probeer het zo nog eens."
+      "busy": "De spraakhulp heeft het nu druk. Probeer het zo nog eens.",
+      "oneAtATime": "De microfoon staat al aan in een ander tabblad. Zet hem daar eerst uit."
     },
     "themes": {
       "heading": "Kies een wereld",
@@ -1487,7 +1488,9 @@
     "waiting": "Je game wacht op een snelle veiligheidscheck. We delen hem zodra hij is goedgekeurd.",
     "school": "Online voor je school! Iedereen op je school kan hem vinden en spelen.",
     "class": "{count, plural, one {Online voor {name}! Iedereen in je klas kan hem vinden en spelen.} other {Online voor je klassen! Iedereen daarin kan hem vinden en spelen.}}",
-    "schoolOnly": "Je school houdt games binnen de school. Deel hem dus met je school."
+    "schoolOnly": "Je school houdt games binnen de school. Deel hem dus met je school.",
+    "liveFamily": "Live voor je gezin! Jij en de kinderen die aan je gezin gekoppeld zijn, kunnen het spelen.",
+    "liveConnections": "Gedeeld met je volwassen contacten! Alleen jij en zij kunnen het spelen."
   },
   "builder": {
     "kindRefusal": "Daar kan ik niet mee helpen. Laten we iets leuks bouwen! Wat voor game wil je graag?",
@@ -1750,7 +1753,9 @@
         "friends": "Vrienden",
         "class": "{count, plural, one {Mijn klas} other {Mijn klassen}}",
         "public": "Iedereen",
-        "school": "Mijn school"
+        "school": "Mijn school",
+        "family": "Mijn gezin",
+        "connections": "Mijn volwassen contacten"
       },
       "top": {
         "inReview": "Wordt bekeken",
@@ -1780,7 +1785,8 @@
         "publicCheck": "Games voor iedereen krijgen eerst een snelle veiligheidscheck, en spelers houden de oude versie tot hij is goedgekeurd.",
         "onlyYou": "alleen jij kunt hem zien",
         "pendingNew": "Versie {number} wacht op een snelle veiligheidscheck. We delen hem zodra hij is goedgekeurd.",
-        "reviewer": "De controleur zegt: “{note}” Vraag de Bouwer om het te veranderen en druk dan nog eens op Bijwerken of Publiceren."
+        "reviewer": "De controleur zegt: “{note}” Vraag de Bouwer om het te veranderen en druk dan nog eens op Bijwerken of Publiceren.",
+        "waitingFamily": "Wacht op een korte veiligheidscheck voordat je gezin kan spelen. Tot die tijd blijft het gedeeld zoals nu."
       },
       "safety": {
         "chipPass": "Veilig",
@@ -1892,7 +1898,12 @@
         "classRemoved": "Je leerkracht heeft hem uit deze klas gehaald.",
         "allRemoved": "{count, plural, one {Je leerkracht heeft deze game uit je klas gehaald.} other {Je leerkrachten hebben deze game uit je klassen gehaald.}}",
         "copied": "Link gekopieerd!",
-        "copyFailed": "Kopiëren lukte niet."
+        "copyFailed": "Kopiëren lukte niet.",
+        "hint": {
+          "family": "Alleen kinderen die ja zeiden tegen de koppeling met je gezin. Nooit andere kinderen.",
+          "connections": "Alleen andere volwassenen met wie je via een code verbonden bent. Nooit kinderen.",
+          "publicGrownup": "Iedereen, na een veiligheidscheck. Getoond als {name}, volwassen bouwer."
+        }
       },
       "update": {
         "title": "Werk je online game bij",
@@ -2150,13 +2161,20 @@
         "start": "Praten in plaats van typen",
         "stop": "Opname stoppen",
         "recording": "Opname {time} van {max}. Druk nog een keer op de microfoon om te stoppen, of op Esc om te annuleren.",
+        "listening": "Ik luister… {time} van {max}. Druk nog een keer op de microfoon om te stoppen, of op Esc om te annuleren.",
         "transcribing": "Ik schrijf op wat je zei…",
+        "finishing": "Ik schrijf de laatste woorden op…",
         "check": "Controleer de woorden en druk dan op Stuur.",
+        "heard": "Je zei: {text}",
         "nothing": "Ik hoorde geen woorden. Probeer het nog eens, iets dichter bij de microfoon.",
         "denied": "De microfoon is geblokkeerd. Vraag een volwassene om hem voor deze site toe te staan in de browserinstellingen.",
         "noMic": "Er is geen microfoon gevonden op dit apparaat.",
         "cancelled": "Opname gestopt. Er is niets verstuurd of bewaard.",
+        "cancelledLive": "Opname gestopt. Er is niets bewaard.",
         "failed": "Sorry, ik kon er geen woorden van maken. Probeer het nog eens of typ je bericht."
+      },
+      "limit": {
+        "seePlans": "Bekijk abonnementen voor meer berichten aan de Bouwer"
       },
       "themeUse": "Gebruik het thema {name}."
     },
@@ -3052,7 +3070,7 @@
     "signup": {
       "title": "Aanmelden voor ouders",
       "heading": "Maak een ouderaccount",
-      "intro": "Voor ouders en verzorgers. Met een ouderaccount kun je games spelen en een gezin beheren. Je kunt er geen games mee bouwen, chatten of vrienden toevoegen.",
+      "intro": "Voor ouders en verzorgers. Met een ouderaccount kun je games spelen, een gezin beheren, games bouwen en contact maken met andere volwassenen. Je kunt er niet mee chatten of kinderen als vriend toevoegen.",
       "nameLabel": "Accountnaam",
       "nameHint": "3 tot 16 letters of cijfers. Kinderen zien deze naam nooit.",
       "passwordHint": "Minstens {min} tekens.",
@@ -3183,8 +3201,6 @@
       },
       "legal": "Voor abonnementen gelden onze <a href=\"/terms\">Servicevoorwaarden</a> en ons <a href=\"/refunds\">Beleid voor terugbetaling en opzegging</a>.",
       "welcomePlan": "{plan} is actief. Bedankt!",
-      "welcomeHeading": "Voeg nu je kind toe",
-      "welcomeStep2Day": "Tik hieronder op Kind koppelen en typ de code. Die werkt één keer, 24 uur lang.",
       "basicNote": "Je basisabonnement geldt voor één kind: {name}. Je andere gekoppelde kinderen bouwen met de gratis dagelijkse berichten. Wil je dat het abonnement voor maximaal {max} kinderen geldt? Stap dan via Abonnement beheren over op het gezinsabonnement.",
       "coversBasic": "Voor 1 kind.",
       "coversFamily": "Voor maximaal {max} kinderen.",
@@ -3296,6 +3312,24 @@
         "confirmName": "Typ de naam van het account precies om te bevestigen.",
         "inSchool": "{name} zit in een klas. Schoolgegevens zijn van de school: vraag de leerkracht om {name} eerst uit de klas te halen, en verwijder het account daarna hier."
       }
+    },
+    "add": {
+      "title": "Je kinderen toevoegen",
+      "heading": "Je kinderen toevoegen",
+      "intro": "Maak een account voor je kind, of koppel het account dat je kind al heeft. Je kunt later meer kinderen toevoegen.",
+      "introLink": "Koppel het Oomba Academy-account van je kind aan het jouwe. Je kunt later meer kinderen toevoegen.",
+      "accountReady": "Je account voor volwassenen is klaar.",
+      "pick": "Hoe wil je je kind toevoegen?",
+      "another": "Nog een kind toevoegen",
+      "makeTitle": "Account voor mijn kind maken",
+      "makeSub": "Je kind heeft nog geen account.",
+      "linkTitle": "Account van mijn kind koppelen",
+      "linkSub": "Je kind heeft er al een en kan een code krijgen.",
+      "added": "Tot nu toe toegevoegd",
+      "done": "Klaar",
+      "later": "Dit doe ik later",
+      "laterNote": "Je kunt je kinderen altijd toevoegen via ‘Je gezin’.",
+      "cta": "Kind toevoegen"
     }
   },
   "plans": {
@@ -4200,5 +4234,32 @@
         "a4": "Allebei hebben ze hun plek. Een game maken vraagt van kinderen dat ze plannen, duidelijk uitleggen, testen en verbeteren, dus het is een actieve vorm van schermtijd."
       }
     }
+  },
+  "connections": {
+    "title": "Volwassen contacten",
+    "heading": "Mijn volwassen contacten",
+    "intro": "Maak contact met andere volwassenen die je kent, zoals een andere ouder, door codes uit te wisselen. Daarna kun je games met elkaar delen: kies ‘Mijn volwassen contacten’ als je een game deelt.",
+    "yourCode": "Jouw code",
+    "codeHelp": "Geef hem alleen aan een andere volwassene die je kent. Die typt hem in op de eigen contactenpagina.",
+    "addLabel": "De code van een andere volwassene",
+    "addBtn": "Verbinden",
+    "incoming": "Willen contact met je",
+    "outgoing": "Wacht op hun antwoord",
+    "list": "Je contacten",
+    "empty": "Nog geen contacten.",
+    "accept": "Accepteren",
+    "decline": "Weigeren",
+    "cancel": "Intrekken",
+    "remove": "Verwijderen",
+    "adultsOnly": "Contacten zijn alleen voor ouderaccounts. De code van een kind werkt hier niet, en kinderen kunnen jouw code niet gebruiken. Er is geen chat: met contacten deel je alleen games."
+  },
+  "familyGames": {
+    "heading": "Je games",
+    "empty": "Je hebt nog geen game gemaakt. De Bouwer werkt ook voor volwassenen.",
+    "build": "Een game bouwen",
+    "seeAll": "Al mijn games",
+    "connections": "{count, plural, =0 {Mijn contacten} one {Mijn contacten (# verzoek)} other {Mijn contacten (# verzoeken)}}",
+    "usage": "Jouw gebruik van de Bouwer:",
+    "usageLine": "berichten gisteren: {yesterday} · deze maand: {month}"
   }
 }

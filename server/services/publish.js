@@ -3,9 +3,11 @@
 // Rules:
 //  - current_version_id is what the Studio edits; published_version_id is what players get.
 //  - Every version must pass the static scan before it can go live at any level.
-//  - Private / Friends: static scan is enough; goes live at once.
-//  - Class / School (a group of children who didn't opt in): a clean ('pass') or already-approved version goes live at
-//    once; a flagged one waits for a human, like public. 'class' also needs the chosen classes (schools.validateClassPick).
+//  - Private / Friends: static scan is enough; goes live at once (a grown-up's friends are other grown-ups only).
+//  - Family / Class / School (a group of children who didn't opt in): a clean ('pass') or already-approved version goes
+//    live at once; a flagged one waits for a human, like public. 'family' is a grown-up builder's linked children;
+//    'class' also needs the chosen classes (schools.validateClassPick).
+//  - A grown-up's games go through exactly this pipeline too: nothing here depends on who the owner is.
 //  - Public: also needs a model review (services/review.js). If the model is unavailable the
 //    version waits in the admin review queue (pending_version_id).
 //  - games.pending_visibility records what a waiting review is for; approval applies exactly that audience.
@@ -18,7 +20,7 @@ import { reviewVersion } from './review.js';
 import { tEn } from '../i18n/index.js';
 import { queueShot } from './shots.js';
 import { sharingOptions, validateClassPick, setGameClasses, gameClassIds, shareableClasses, removedClassIds } from './schools.js';
-import { getUser } from '../auth.js';
+import { getUser, isGrownup } from '../auth.js';
 
 const CLASS_ERRORS = { pickClass: 'studio.api.pickClass', classGone: 'studio.api.classGone', classRemoved: 'studio.api.classRemoved' };
 
@@ -29,11 +31,11 @@ export function ensureScanned(version) {
   return getVersion(version.id);
 }
 
-// What an approval covers. A person approving a 'class' or 'school' request judged the game for THAT audience only (it
+// What an approval covers. A person approving a 'family', 'class' or 'school' request judged the game for THAT audience only (it
 // may name classmates, say), so the approval is stored with it and never stretches to a wider one. Model approvals only
 // come from public requests (flagged versions always go to a person), and admin approvals from before this was stored
 // always made games public, so both cover everything.
-const WIDTH = { class: 1, school: 2, public: 3 };
+const WIDTH = { family: 1, class: 2, school: 3, public: 4 };
 /** The class list waiting for a person (games.pending_classes), or null. */
 export function pendingClasses(game) {
   if (!game || !game.pending_classes) return null;
@@ -67,7 +69,7 @@ export async function publish(user, gameId, visibility, { versionId = null, t = 
   if (!VISIBILITIES.includes(visibility)) return { ok: false, state: 'blocked', message: t('studio.api.pickWho') };
   // School accounts follow their school's rules (e.g. games stay inside the school); 'class' needs a class to be in.
   const owner = getUser(game.owner_id);
-  if (!sharingOptions(owner).includes(visibility)) return { ok: false, state: 'blocked', message: t(visibility === 'public' ? 'publish.schoolOnly' : visibility === 'class' ? 'studio.api.classGone' : 'studio.api.pickWho') };
+  if (!sharingOptions(owner, game).includes(visibility)) return { ok: false, state: 'blocked', message: t(visibility === 'public' ? 'publish.schoolOnly' : visibility === 'class' ? 'studio.api.classGone' : 'studio.api.pickWho') };
   let pick = null;   // the new class list (null: keep the current one)
   // Re-sending a waiting class request (Studio "Update") keeps the class list that is waiting.
   if (visibility === 'class' && classIds === undefined && game.pending_visibility === 'class') classIds = pendingClasses(game) || undefined;
@@ -84,10 +86,11 @@ export async function publish(user, gameId, visibility, { versionId = null, t = 
   }
   const wasLive = game.status === 'published' && !!game.published_version_id;
 
-  // 'school' and 'class' are groups of children who didn't opt in (a class page lists the game for everyone in it), so
-  // a flagged (or not-yet-approved) version needs a human look first, the same as public. Private and friends stay
-  // instant (both sides chose them); a clean or already-approved school or class version is instant too.
-  const group = visibility === 'school' || visibility === 'class';
+  // 'family', 'school' and 'class' are groups of children who didn't opt in (a class page lists the game for everyone in
+  // it; a grown-up's game reaches their linked children's home pages), so a flagged (or not-yet-approved) version needs
+  // a human look first, the same as public. Private and friends stay instant (both sides chose them); a clean or
+  // already-approved family, school or class version is instant too.
+  const group = visibility === 'school' || visibility === 'class' || visibility === 'family';
   const scope = approvalScope(version);
   const covered = approvalCovers(scope, visibility, visibility === 'class' ? (pick || gameClassIds(game.id)) : []);
   const instant = visibility === 'private' || visibility === 'friends' || (group && (version.safety_status === 'pass' || covered));
@@ -99,10 +102,10 @@ export async function publish(user, gameId, visibility, { versionId = null, t = 
     });
     audit(user.id, wasLive ? 'game.update' : 'game.publish', game.id, { visibility, version: version.number, ...classesLine });
     queueShot(version.id);
-    return { ok: true, state: 'live', message: liveMessage(visibility, game.id, t), game: getGame(game.id) };
+    return { ok: true, state: 'live', message: liveMessage(visibility, game, t), game: getGame(game.id) };
   }
 
-  // Public (or a flagged 'school' or 'class' version): reuse an earlier approval of this exact version if it covers this
+  // Public (or a flagged 'family', 'school' or 'class' version): reuse an earlier approval of this exact version if it covers this
   // audience, otherwise review (a flagged version is never auto-approved: services/review.js sends it to the human queue).
   let approved = covered;
   if (!covered) {
@@ -128,7 +131,7 @@ export async function publish(user, gameId, visibility, { versionId = null, t = 
     });
     audit(user.id, wasLive ? 'game.update' : 'game.publish', game.id, { visibility, version: version.number, reviewed: 'model', ...classesLine });
     queueShot(version.id);
-    return { ok: true, state: 'live', message: visibility !== 'public' ? liveMessage(visibility, game.id, t) : wasLive ? t('publish.updateLive') : t('publish.public'), game: getGame(game.id) };
+    return { ok: true, state: 'live', message: visibility !== 'public' ? liveMessage(visibility, game, t) : wasLive ? t('publish.updateLive') : t('publish.public'), game: getGame(game.id) };
   }
   // Waiting for a human. If it was already live, it stays live (at its old visibility) on the old version.
   // pending_visibility says what the review is for. A new class list for a game already live at 'class' waits in
@@ -146,9 +149,12 @@ export async function publish(user, gameId, visibility, { versionId = null, t = 
   return { ok: true, state: 'in_review', message: wasLive ? t('publish.updateWaiting') : t('publish.waiting'), game: getGame(game.id) };
 }
 /** "Live for 5B!" / "Live for your classes!" / "Live for your school!" … after a level went live without a review. */
-function liveMessage(visibility, gameId, t) {
+function liveMessage(visibility, game, t) {
+  const gameId = game.id;
   if (visibility === 'private') return t('publish.private');
-  if (visibility === 'friends') return t('publish.friends');
+  // A grown-up's 'friends' are their grown-up connections (other grown-ups only), and their Studio says so.
+  if (visibility === 'friends') return t(isGrownup(getUser(game.owner_id)) ? 'publish.liveConnections' : 'publish.friends');
+  if (visibility === 'family') return t('publish.liveFamily');
   if (visibility === 'school') return t('publish.school');
   if (visibility === 'class') {
     // The classes it reaches now (none: every chosen class was left or taken off, so in effect only the owner can play it).
@@ -162,7 +168,7 @@ function liveMessage(visibility, gameId, t) {
  *  narrowed if the owner may no longer share that widely (e.g. their school now keeps games inside the school). */
 function approvedAudience(game) {
   const want = game.pending_visibility || 'public';
-  const opts = sharingOptions(getUser(game.owner_id));
+  const opts = sharingOptions(getUser(game.owner_id), game);
   if (opts.includes(want)) return want;
   if (want === 'public' && opts.includes('school')) return 'school';
   return 'private';

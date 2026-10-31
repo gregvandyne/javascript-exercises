@@ -139,6 +139,31 @@ test('THE rule: canView and visibleWhere agree for every viewer × game, before 
   assert.doesNotMatch(plan, /SCAN (gc|game_classes|m|class_members|sm|school_members|c|classrooms)\b/, plan);
 });
 
+test("THE rule for 'family' (a grown-up builder's game): canView and visibleWhere agree for every viewer, linked or not", () => {
+  const k = ++worlds;
+  const P = createUser({ username: `FamOwner${k}`, password: 'a-long-password-1', accountType: 'grownup' });
+  const P2 = createUser({ username: `FamOther${k}`, password: 'a-long-password-1', accountType: 'grownup' });
+  const fam = `fam${k}`, fam2 = `fam${k}b`, t = Date.now();
+  q.run('INSERT INTO families(id, owner_id, created_at) VALUES (?,?,?), (?,?,?)', fam, P.id, t, fam2, P2.id, t);
+  const child = createUser({ username: `FamKid${k}`, password: 'secret123' }), gone = createUser({ username: `FamGone${k}`, password: 'secret123' });
+  const asked = createUser({ username: `FamAsked${k}`, password: 'secret123' }), theirs = createUser({ username: `FamTheirs${k}`, password: 'secret123' });
+  const outsider = createUser({ username: `FamOut${k}`, password: 'secret123' }), guest = createGuest();
+  const link = (f, c, status, unlinked = null) => q.run('INSERT INTO family_children(family_id, child_id, status, requested_at, linked_at, unlinked_at) VALUES (?,?,?,?,?,?)', f, c.id, status, t, status === 'linked' ? t : null, unlinked);
+  link(fam, child, 'linked'); link(fam, gone, 'linked', t); link(fam, asked, 'pending'); link(fam2, theirs, 'linked');
+  const list = [mkGame(P, 'family', { title: 'family live' }), mkGame(P, 'family', { status: 'draft', title: 'family draft' }),
+    mkGame(P, 'family', { hidden: 'reports', title: 'family hidden' }), mkGame(P2, 'family', { title: 'other family' }), mkGame(P, 'friends', { title: 'connections' })];
+  const users = [null, guest, P, P2, child, gone, asked, theirs, outsider];
+  checkMatrix(users, list, 'family');
+  const sees = g => users.filter(u => u && games.canView(u, fresh(g))).map(u => u.id).sort();
+  assert.deepEqual(sees(list[0]), [P.id, child.id].sort(), 'the owner and their linked child, nobody else');
+  assert.deepEqual(sees(list[3]), [P2.id, theirs.id].sort());
+  assert.deepEqual(sees(list[4]), [P.id], 'a grown-up\'s connections game never reaches their child');
+  assert.equal(games.canView(boss, fresh(list[0])), true, 'the platform admin');
+  // The child is unlinked: gone at once.
+  q.run('UPDATE family_children SET unlinked_at=? WHERE family_id=? AND child_id=?', t, fam, child.id); checkMatrix(users, list, 'child unlinked');
+  assert.equal(games.canView(child, fresh(list[0])), false);
+});
+
 test('every listing respects it: rails, categories, profiles, playing now, favorites, search, builders, similar, friends', async () => {
   const w = world(); const { A, O, kidA, kidB, F } = w;
   const cleo = w.kid('Cleo Class', A);   // a builder whose only game is a class game
@@ -530,5 +555,6 @@ test('settings and copy: the school settings hint, the share texts and labels ex
   const { visLabel } = await import('../../server/views/components.js');
   const { tEn } = await import('../../server/i18n/index.js');
   assert.equal(visLabel('class', tEn, 1), '🎒 My class'); assert.equal(visLabel('class', tEn, 3), '🎒 My classes');
-  assert.deepEqual(games.VISIBILITIES, ['private', 'friends', 'class', 'school', 'public']);
+  assert.deepEqual(games.VISIBILITIES, ['private', 'family', 'friends', 'class', 'school', 'public']);
+  assert.equal(visLabel('family', tEn), '🏠 My family'); assert.equal(visLabel('friends', tEn, 1, { grownup: true }), '🤝 My grown-up connections');
 });

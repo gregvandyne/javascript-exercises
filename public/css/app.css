@@ -626,6 +626,17 @@ main>#grownups{margin-bottom:24px}
 .famkid{display:flex;align-items:center;gap:var(--s3);flex-wrap:wrap;padding:var(--s3);border-radius:var(--r-sm);background:var(--card-2)}
 .famkid-main{flex:1;min-width:180px}
 .famkid form{margin:0}
+/* The grown-up's own games on /family ("Your games") and the grown-up builder tag on a game page. */
+.famgames-list{list-style:none;margin:0 0 var(--s3);padding:0;display:flex;flex-direction:column;gap:var(--s2)}
+.famgame{display:flex;align-items:center;gap:var(--s3);padding:var(--s2);border-radius:var(--r-sm);background:var(--card-2)}
+.famgame-cover{flex:none;width:48px}
+.famgame-cover .coverart{width:48px;height:64px;border-radius:8px}
+.famgame-cover .coverart .art{font-size:1.6rem}
+.famgame-main{flex:1;min-width:0;overflow-wrap:anywhere}
+.famgames-use{margin:var(--s3) 0 0}
+.ownerchip-grownup{flex-wrap:wrap;row-gap:4px}
+.gu-tag{font-size:.82rem;font-weight:700;color:var(--muted);background:var(--card-2);border-radius:999px;padding:2px 10px;margin-inline-start:6px}
+.conn-add{max-width:420px}
 .checkline{display:flex;align-items:flex-start;gap:10px;font-weight:600}
 .checkline input{width:22px;height:22px;flex:none;margin-top:2px}
 ol.steps{padding-inline-start:1.4em;margin:0 0 var(--s4)}
@@ -677,6 +688,20 @@ ol.steps li{margin-bottom:var(--s2)}
 .made-notice h2{font-size:1.05rem;margin:0 0 var(--s2)}
 .made-notice ul,.madesees{padding-inline-start:1.2em;margin:0 0 var(--s2)}
 .made-notice li,.madesees li{margin-bottom:var(--s1)}
+/* "Add your kids" (/family/add, routes/family.js): wider than a sign-in box; the two ways to add a child side by side
+   (phones too: the tiles stack their emoji over the words); the chosen one in Spark. */
+.authbox.addkids{max-width:640px}
+.addkids h2{font-size:1.15rem;margin:var(--s4) 0 var(--s3)}
+.addkids-choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s3)}
+/* .door.addkids-choice: one class above .door (further down), so these win over its min-height, padding and centring. */
+.door.addkids-choice{flex-direction:column;align-items:flex-start;min-height:0;padding:var(--s3)}
+.addkids-choice[aria-current]{background:var(--spark);color:var(--on-accent);border-color:var(--spark-edge);box-shadow:0 4px 0 var(--spark-press)}
+.addkids-choice[aria-current]:hover{background:var(--spark-hover)}
+.addkids-choice[aria-current] .door-s{color:var(--on-accent)}
+.addkids-how{margin-top:var(--s4);padding-top:var(--s1);border-top:2px solid var(--line)}
+.addkids .famkids{margin-bottom:0}
+.addkids-leave{margin-top:var(--s4);align-items:center}
+@media (min-width:520px){.door.addkids-choice{flex-direction:row;align-items:center}}
 .made-noconsent{font-weight:700}
 .keptlist{padding-inline-start:1.2em;margin:0 0 var(--s3)}
 .keptlist li{margin-bottom:var(--s1)}
