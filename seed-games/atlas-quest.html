@@ -92,6 +92,7 @@ body{margin:0;touch-action:none}
 .aq-ch{margin:14px 0 6px;font-size:18px}.aq-ch small{font-size:14px;opacity:.75;margin-inline-start:6px}
 .aq-find{display:flex;gap:8px;align-items:flex-start;padding:8px 10px;margin:6px 0;border-radius:12px;background:var(--aq-go-tint);color:var(--aq-ink);font-size:15px;line-height:1.35}
 .aq-find b{display:block}.aq-find span{font-weight:500}
+.aq-find small{display:block;font-size:13px;font-weight:600;opacity:.75;margin-bottom:2px}
 </style>
 <canvas id="view" tabindex="-1" aria-label="The globe"></canvas>
 <div class="aq-labels" id="labels"></div>
@@ -975,7 +976,7 @@ function cultureHtml(c) {
   const list = CULTURE[c.cc]; if (!list) return '';
   const got = list.filter(x => cultureFound(c.cc) & (1 << x.i));
   return `<h3 class="aq-ch">${esc(tr('Culture finds'))} <small class="aq-num">${got.length} / ${list.length}</small></h3>` +
-    (got.length ? got.map(x => `<div class="aq-find">${ICON(CATS[x.cat].icon)}<div><b>${esc(tr(CATS[x.cat].name))}: ${esc(x.a)}</b><span>${esc(x.why)}</span></div></div>`).join('') : '') +
+    (got.length ? got.map(x => `<div class="aq-find">${ICON(CATS[x.cat].icon)}<div><small>${esc(tr(CATS[x.cat].name))} · ${esc(x.q)}</small><b>${esc(x.a)}</b><span>${esc(x.why)}</span></div></div>`).join('') : '') +
     (got.length < list.length ? `<p class="aq-hint">${esc(tr('Press Quiz me to discover more about {name}!', { name: c.name }))}</p>` : '');
 }
 function filesHelp() { Oomba.ui.toast(tr('Tap any country on the globe to open its file.'), { ms: 3000 }); }
