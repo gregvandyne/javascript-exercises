@@ -49,11 +49,12 @@ body.bannered .wtag{opacity:0}
 .boss-track{display:flex;gap:5px;margin-top:5px}
 .boss-track i{flex:1;height:16px;border-radius:8px;background:var(--grape);border:2px solid var(--ink);box-shadow:0 2px 0 var(--ink)}
 .boss-track i.done{background:var(--cream);opacity:.55}
-.banner{position:fixed;left:50%;top:26%;transform:translate(-50%,-50%);z-index:8;pointer-events:none;font:900 clamp(30px,7vw,54px)/1.1 var(--font);color:var(--spark);text-align:center;max-width:92vw;-webkit-text-stroke:7px var(--ink);paint-order:stroke fill;text-shadow:0 5px 0 var(--ink);opacity:0}
+.banner{position:fixed;left:50%;top:26%;transform:translate(-50%,-50%);z-index:8;pointer-events:none;font:900 clamp(30px,7vw,54px)/1.1 var(--font);color:var(--spark);text-align:center;width:max-content;max-width:92vw;box-sizing:border-box;background:rgba(20,20,20,.8);padding:8px 22px 12px;border-radius:24px;-webkit-text-stroke:7px var(--ink);paint-order:stroke fill;text-shadow:0 5px 0 var(--ink);opacity:0}
 .banner.show{animation:bannerIn 2.4s cubic-bezier(.34,1.56,.64,1) forwards}
 .banner.small{font-size:clamp(24px,5.5vw,40px);-webkit-text-stroke-width:6px}
 @keyframes bannerIn{0%{opacity:0;transform:translate(-50%,-50%) scale(.7) rotate(-4deg)}12%{opacity:1;transform:translate(-50%,-50%) scale(1.06) rotate(-2deg)}22%{transform:translate(-50%,-50%) scale(1) rotate(-2deg)}80%{opacity:1;transform:translate(-50%,-50%) rotate(-2deg)}100%{opacity:0;transform:translate(-50%,-50%) rotate(-2deg)}}
 .toasts{position:fixed;left:var(--sl);bottom:calc(var(--sb) + 150px);z-index:8;display:flex;flex-direction:column;gap:6px;align-items:flex-start;pointer-events:none;max-width:min(70vw,420px)}
+body.touch .toasts{max-width:min(420px,calc(100vw - var(--sl) - var(--sr) - 186px))}
 body:not(.touch) .toasts{bottom:calc(var(--sb) + 12px)}
 .toast{background:var(--card);color:var(--text);border:2px solid var(--edge);box-shadow:0 3px 0 var(--edge);font:800 16px/1.3 var(--font);padding:8px 14px;border-radius:16px;animation:toastIn 3.2s ease-out forwards}
 @keyframes toastIn{0%{opacity:0;transform:translateY(8px)}8%{opacity:1;transform:none}85%{opacity:1}100%{opacity:0}}
@@ -69,6 +70,7 @@ body.touch .keyhint{display:none!important}
 #stickKnob{position:absolute;left:50%;top:50%;width:60px;height:60px;margin:-30px 0 0 -30px;border-radius:50%;background:var(--mint);border:3px solid var(--ink);box-shadow:0 3px 0 var(--mint-d)}
 .tbtns{display:none}
 body.touch.playing .tbtns{display:block}
+body.touch.playing:has(#dialog:not([hidden])) .tbtns{display:none}
 .tbtn{position:fixed;z-index:6;border:3px solid var(--ink);border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;color:var(--ink);touch-action:none;padding:0 4px;overflow:hidden;font:900 13px/1.05 var(--font)}
 .tbtn span{font-size:26px;line-height:1;display:grid;place-items:center}
 .tbtn span svg{width:30px;height:30px}
@@ -114,6 +116,8 @@ h2{margin:4px 0 12px;font:800 26px/1.15 var(--font)}
 .big.alt:active{box-shadow:0 1px 0 var(--sky-d)}
 .big.soft{background:var(--cream);color:var(--ink);box-shadow:0 4px 0 var(--ink);font-size:18px;min-height:52px}
 .big.soft:active{box-shadow:0 1px 0 var(--ink)}
+/* the story and question text on a card: the card's own text colour (Ink by day, Cream at night; Ink on the night card was unreadable) */
+.sub.lead{font-size:19px;color:var(--text)}
 .hint{color:var(--soft);font:600 15px/1.4 var(--font);margin:14px 0 0}
 .loadbar{height:16px;border-radius:8px;background:var(--bg2);border:2px solid var(--edge);overflow:hidden;margin:6px 0 4px}
 .loadbar i{display:block;height:100%;width:0;background:var(--spark);border-radius:6px;transition:width .2s linear}
@@ -197,13 +201,15 @@ h2{margin:4px 0 12px;font:800 26px/1.15 var(--font)}
 .ctl-list{text-align:start;margin:0 0 16px;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px}
 .ctl-list li{font:600 16px/1.35 var(--font);background:var(--bg2);border-radius:14px;padding:8px 12px}
 /* Map */
-.mapwrap{position:relative;width:min(84vh,92vw,620px);aspect-ratio:1;margin:0 auto 12px;border-radius:20px;overflow:hidden;border:var(--bw) solid var(--edge)}
+.mapwrap{position:relative;width:min(100%,84vh,620px);box-sizing:border-box;aspect-ratio:1;margin:0 auto 12px;border-radius:20px;overflow:hidden;border:var(--bw) solid var(--edge)}
 .mapwrap canvas{width:100%;height:100%;display:block}
 .mapmarks{position:absolute;inset:0}
 .mk{position:absolute;transform:translate(-50%,-50%);pointer-events:none;font-size:20px;line-height:1}
-.mk-way{pointer-events:auto;width:44px;height:44px;border-radius:50%;border:3px solid var(--ink);background:var(--stone);color:var(--cream);font-size:20px;display:grid;place-items:center;padding:0;box-shadow:0 3px 0 var(--ink)}
-.mk-way.on{background:var(--spark);color:var(--ink)}
-.mk-label{font:800 13px/1.1 var(--font);color:var(--ink);background:var(--cream);border:2px solid var(--ink);border-radius:999px;padding:1px 6px;white-space:nowrap}
+/* waystones: small discs (a 44px tap area round them) under the place labels; locked ones a dark stone so the dot reads (AA) */
+.mk-way{pointer-events:auto;z-index:1;width:28px;height:28px;border-radius:50%;border:2px solid var(--ink);background:#57534a;color:#fffdf2;font-size:16px;display:grid;place-items:center;padding:0;box-shadow:0 2px 0 var(--ink)}
+.mk-way::before{content:'';position:absolute;inset:-8px;border-radius:50%}
+.mk-way.on{background:var(--spark);color:var(--ink);font-size:14px}
+.mk-label{z-index:2;font:800 13px/1.1 var(--font);color:var(--ink);background:var(--cream);border:2px solid var(--ink);border-radius:999px;padding:1px 6px;white-space:nowrap}
 #mapScreen .card{max-width:680px;padding:16px}
 @media (prefers-reduced-motion:reduce){.banner.show{animation:fadeOnly 2.4s linear forwards}.toast,.badge{animation:fadeOnly 3.2s linear forwards}}
 @keyframes fadeOnly{0%{opacity:0}10%{opacity:1}85%{opacity:1}100%{opacity:0}}
@@ -241,12 +247,14 @@ h2{margin:4px 0 12px;font:800 26px/1.15 var(--font)}
 .bagbody{display:flex;flex-direction:column;gap:12px;margin-bottom:14px}
 .bagrow>span{display:block;font:800 13px/1.2 var(--font);margin:0 0 6px;color:var(--soft);text-transform:uppercase;letter-spacing:.3px}
 .cards{display:flex;flex-wrap:wrap;gap:8px}
-.icard{display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:10px;row-gap:1px;align-items:center;min-height:64px;flex:1 1 160px;max-width:280px;padding:8px 12px 8px 8px;border-radius:18px;border:2px solid var(--ink);background:var(--cream);color:var(--ink);box-shadow:0 3px 0 var(--ink);text-align:start}
+.icard{display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;align-content:center;column-gap:10px;row-gap:1px;align-items:center;min-height:64px;flex:1 1 160px;max-width:280px;padding:8px 12px 8px 8px;border-radius:18px;border:2px solid var(--ink);background:var(--cream);color:var(--ink);box-shadow:0 3px 0 var(--ink);text-align:start}
 .icard[aria-pressed="true"]{background:var(--spark-t);box-shadow:0 0 0 3px var(--spark),0 3px 0 var(--ink)}
 .icard i{grid-row:1/3;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:24px;border:2px solid var(--ink)}
 .icard b{font:800 16px/1.15 var(--font)}
 .icard span{font:600 14px/1.25 var(--font);color:var(--stone-d)}
 .icard:disabled{cursor:default}
+/* shop cards carry "Name · N coins": one card per row so the title fits on a line and every card lines up */
+#shopBody .icard{flex-basis:100%;max-width:none}
 .icard:disabled i{filter:grayscale(.3)}
 .bagempty{margin:0;color:var(--soft);font:600 15px/1.3 var(--font)}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
@@ -394,7 +402,7 @@ body.cut .hud,body.cut .tbtns,body.cut .keyhint,body.cut .toasts,body.cut .badge
 <section class="screen" id="introScreen" role="dialog" hidden>
   <div class="card">
     <div class="emo" id="introEmo" aria-hidden="true">🌻</div>
-    <p class="sub" id="introText" style="font-size:19px;color:var(--ink)"></p>
+    <p class="sub lead" id="introText"></p>
     <div class="btns row"><button class="big soft" id="introSkip" type="button" data-i18n="skip"></button><button class="big" id="introNext" type="button" data-i18n="next"></button></div>
   </div>
 </section>
@@ -444,7 +452,7 @@ body.cut .hud,body.cut .tbtns,body.cut .keyhint,body.cut .toasts,body.cut .badge
 <section class="screen" id="confirmScreen" role="dialog" aria-labelledby="confirmText" hidden>
   <div class="card">
     <div class="emo" id="confirmEmo" aria-hidden="true">❓</div>
-    <p class="sub" id="confirmText" style="font-size:19px;color:var(--ink)"></p>
+    <p class="sub lead" id="confirmText"></p>
     <div class="btns row"><button class="big soft" id="confirmNo" type="button" data-i18n="no"></button><button class="big" id="confirmYes" type="button" data-i18n="yes"></button></div>
   </div>
 </section>
@@ -6174,6 +6182,8 @@ function inkWorld() {
   for (const o of list) {
     const scatter = SCATTER.list.some(k => k.mesh === o), detail = scatter || (!o.isInstancedMesh && o.material !== MAT.char);
     B.outline(o, scatter ? { width: 0.85 } : { important: true, width: o.material === MAT.char ? 1 : 0.9 });
+    // people, foes and crowds are many touching parts, like the hero: their hulls sit a little further back (see inkPushed)
+    if (o.material === MAT.char) o.traverse(c => { if (c.userData.okInk) c.material = inkPushed(c.material); });
     if (detail) inkLayer(o, INK_DETAIL);
   }
   heroInk();
@@ -6227,7 +6237,8 @@ function nearest(hex, list) {
   return bi;
 }
 const hueOf = hex => KHUES[nearest(hex, KHUES.map(h => OK.color(h)))];
-const hairOf = hex => { const keys = Object.keys(KHAIR); return keys[nearest(hex, keys.map(k => KHAIR[k]))]; };
+const hairOf = hex => { const c = col(hex), hsl = {}; c.getHSL(hsl); if (hsl.s < 0.2 && hsl.l > 0.55) return 'snow';   // grey and white hair: light silver (the kit's 'stone' is pushed dark brown-grey next to fair skin)
+  const keys = Object.keys(KHAIR); return keys[nearest(hex, keys.map(k => KHAIR[k]))]; };
 /** The hero (this game's blocky look) as a kit character for portraits; the player's own character when it is theirs. */
 function heroSpec(look) {
   look = look || G.look;
@@ -6235,7 +6246,7 @@ function heroSpec(look) {
   return { species: 'kid', skin: LOOK_KIT.skin[look.skin] !== undefined ? LOOK_KIT.skin[look.skin] : 1, hair: { style: LOOK_KIT.hair[look.hair] || 'buzz', color: LOOK_KIT.hairColor[look.hairColor] || 'cocoa' },
     outfit: { top: 'tee', color: LOOK_KIT.outfit[look.outfit] || 'sky' }, seed: 7 };
 }
-const NPC_HAIR = { bun: 'puffs', short: 'buzz', bald: 'buzz', braids: 'braids', long: 'long', curly: 'curls' };
+const NPC_HAIR = { bun: 'buzz', short: 'buzz', bald: 'buzz', braids: 'braids', long: 'long', curly: 'curls' };
 const SPEC_CACHE = {};
 /** A person of Sunvale as a kit character (from the same look as their 3D model). */
 function npcSpec(id) {
@@ -6244,11 +6255,45 @@ function npcSpec(id) {
   if (d) {
     const L = d.look, wear = [];
     if (L.hat === 'crown' || id === 'marigold') wear.push('crown');
-    if (L.glasses) wear.push('glasses');
     sp = { species: 'kid', skin: nearest(L.skin, KTOK.skin), hair: { style: NPC_HAIR[L.hair] || 'bob', color: hairOf(L.hairColor || '#3b2a1e') },
-      outfit: { top: L.dress ? 'dress' : L.overalls ? 'overalls' : L.hat === 'hood' ? 'hoodie' : 'tee', color: hueOf(L.dress || L.overalls || L.tabard || L.shirt) }, wear, seed: Object.keys(NPC_DEFS).indexOf(id) + 3 };
+      // a shawl over a dress reads as plain shoulders: the kit dress's dark straps looked like harness stripes on Granny Fern
+      outfit: { top: L.dress && !L.shawl ? 'dress' : L.overalls ? 'overalls' : L.hat === 'hood' ? 'hoodie' : 'tee', color: hueOf(L.dress || L.overalls || L.tabard || L.shirt) }, wear, seed: Object.keys(NPC_DEFS).indexOf(id) + 3 };
+    // the kit has no bun: a close silver cap ('buzz') with a bun drawn on top, like her 3D model (NPC_HAIR 'bun' -> 'buzz')
+    if (L.hair === 'bun') SPEC_BUN.add(sp);
   } else if (id === 'snarlwick') sp = { species: 'kid', skin: 0, hair: { style: 'spiky', color: 'black' }, outfit: { top: 'hoodie', color: 'grape' }, mood: 'determined', seed: 66 };
+  if (sp && d && d.look.glasses) SPEC_RIMS.set(sp, d.look.glasses);
   SPEC_CACHE[id] = sp; return sp;
+}
+/** Specs that wear glasses -> the rim colour. The kit's 'glasses' wear is a thick Ink ring round its already-ringed eyes
+ *  (dark goggles on Granny Fern), so the game draws thin round rims on the portrait itself, like her 3D model's. */
+const SPEC_RIMS = new WeakMap(), SPEC_BUN = new WeakSet();
+/** A hair bun on top of a kit portrait's head, drawn behind the figure so only its top shows, in the hair's own colour. */
+function drawBun(c) {
+  const g = c.getContext('2d'), s = c.height / 202, W = c.width, cx = Math.round(W / 2);
+  let d; try { d = g.getImageData(cx, 0, 1, c.height).data; } catch (e) { return; }
+  let y0 = 0; while (y0 < c.height && d[y0 * 4 + 3] < 128) y0++;
+  if (y0 >= c.height) return;
+  const k = Math.min(c.height - 1, Math.round(y0 + 7 * s)) * 4, hair = `rgb(${d[k]},${d[k + 1]},${d[k + 2]})`, r = 12 * s, cy = y0 + 2 * s;
+  g.save(); g.globalCompositeOperation = 'destination-over';
+  g.fillStyle = 'rgba(255,255,255,.55)'; g.beginPath(); g.ellipse(cx - 3.5 * s, cy - 5 * s, 4 * s, 2.6 * s, -0.5, 0, Math.PI * 2); g.fill();
+  g.fillStyle = hair; g.beginPath(); g.arc(cx, cy - 3 * s, r, 0, Math.PI * 2); g.fill();
+  g.fillStyle = '#141414'; g.beginPath(); g.arc(cx, cy - 3 * s, r + 2.2 * s, 0, Math.PI * 2); g.fill();   // the kit's Ink line
+  g.restore();
+}
+function drawRims(c, colour) {
+  // kit kid portrait: drawn in a 160 x 202 box with the figure at (20, 42); eyes at (47, 54) and (73, 54), 20 across
+  const s = c.height / 202, g = c.getContext('2d'), E = [[67, 96], [93, 96]], r = 12.6 * s;
+  g.save(); g.lineCap = 'round';
+  // the kit's thick Ink eye ring inside a rim read as goggles: it becomes eye white with a thin brown edge (pupils stay)
+  for (const [x, y] of E) {
+    g.strokeStyle = '#fffdf2'; g.lineWidth = 3.6 * s; g.beginPath(); g.arc(x * s, y * s, 9 * s, 0, Math.PI * 2); g.stroke();
+    g.strokeStyle = '#5c3a26'; g.lineWidth = 0.9 * s; g.beginPath(); g.arc(x * s, y * s, 10.6 * s, 0, Math.PI * 2); g.stroke();
+  }
+  g.strokeStyle = colour;
+  for (const [x, y] of E) { g.lineWidth = 2.2 * s; g.beginPath(); g.arc(x * s, y * s, r, 0, Math.PI * 2); g.stroke(); }
+  g.lineWidth = 1.8 * s; g.beginPath(); g.moveTo(67 * s + r, 95 * s); g.quadraticCurveTo(80 * s, 92 * s, 93 * s - r, 95 * s); g.stroke();
+  for (const k of [-1, 1]) { g.beginPath(); g.moveTo((80 + k * 13) * s + k * r, 95 * s); g.lineTo((80 + k * 30) * s, 93 * s); g.stroke(); }
+  g.restore();
 }
 /** A villager or a guard ('vil' + number) as a kit character. */
 function villagerSpec(i, guard) {
@@ -6261,7 +6306,7 @@ const PORTRAITS = new Map();
 function portraitOf(spec, px, mood) {
   const key = JSON.stringify([spec, px, mood || '']);
   let c = PORTRAITS.get(key);
-  if (!c) { try { c = OK.ui.portrait(spec, { size: px, mood }); } catch (e) { return null; } PORTRAITS.set(key, c); }
+  if (!c) { try { c = OK.ui.portrait(spec, { size: px, mood }); } catch (e) { return null; } if (SPEC_BUN.has(spec)) drawBun(c); if (SPEC_RIMS.has(spec)) drawRims(c, SPEC_RIMS.get(spec)); PORTRAITS.set(key, c); }
   if (!c.isConnected) return c;
   const d = document.createElement('canvas'); d.width = c.width; d.height = c.height; d.className = c.className; d.style.cssText = c.style.cssText; d.setAttribute('aria-hidden', 'true');
   d.getContext('2d').drawImage(c, 0, 0); return d;
@@ -7890,6 +7935,27 @@ const HERO_SMILE = (() => {
   }
   const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(p, 3)); g.setAttribute('normal', new THREE.Float32BufferAttribute(n, 3)); return g;
 })();
+/** A thin, tapered smile drawn on a surface (like the hero's): surf(x, y) gives the surface's z there. a = half-width,
+ *  yc = the corners' height, dip = how far the middle drops, w = the half-thickness in the middle. In head space. */
+function smileOn(surf, a, yc, dip, w) {
+  const N = 20, p = [], n = [], pt = t => [a * t, yc - dip * (1 - t * t)];
+  let prev = null;
+  for (let i = 0; i <= N; i++) {
+    const t = i / N * 2 - 1, [x, y] = pt(t), [x1, y1] = pt(Math.min(1, t + 0.01)), [x0, y0] = pt(Math.max(-1, t - 0.01));
+    let dx = x1 - x0, dy = y1 - y0; const l = Math.hypot(dx, dy) || 1; dx /= l; dy /= l;
+    const ww = w * (1 - 0.45 * t * t), L = [x - dy * ww, y + dx * ww], R = [x + dy * ww, y - dx * ww];
+    const LL = [L[0], L[1], surf(L[0], L[1])], RR = [R[0], R[1], surf(R[0], R[1])];
+    if (prev) { p.push(...prev[0], ...prev[1], ...LL, ...LL, ...prev[1], ...RR); for (let k = 0; k < 6; k++) n.push(0, 0, 1); }
+    prev = [LL, RR];
+  }
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(p, 3)); g.setAttribute('normal', new THREE.Float32BufferAttribute(n, 3)); return g;
+}
+const ellZ = (cx, cy, cz, rx, ry, rz, lift) => (x, y) => { const u = (x - cx) / rx, v = (y - cy) / ry; return cz + rz * Math.sqrt(Math.max(0, 1 - u * u - v * v)) + lift; };
+/** The people's smile: on the skin of their head (the 'sph:2' sphere at (0, 0.36, 0)), and on a beard's front for the bearded. */
+const NPC_SMILE = smileOn(ellZ(0, 0.36, 0, 0.36, 0.35, 0.35, 0.01), 0.07, 0.225, 0.045, 0.0095);
+const BEARD_SMILE = smileOn(ellZ(0, 0.13, 0.2, 0.3, 0.22, 0.2, 0.01), 0.06, 0.23, 0.035, 0.0095);
+/** Thin round glasses rims (a ring 1 across with a slim wire; scaled to the lens). */
+const RIM = new THREE.TorusGeometry(1, 0.17, 6, 28).toNonIndexed();
 /** A smooth sphere (its normals point straight out, unlike the faceted 'sph' prims) and the hair cap: the top of one,
  *  down to just past the equator, so it hugs the head. */
 const SSPH = new THREE.SphereGeometry(1, 32, 20).toNonIndexed();
@@ -8507,13 +8573,33 @@ function drawMapMarks() {
   const box = $('mapMarks'); box.textContent = '';
   const pct = v => ((v + 400) / 800 * 100).toFixed(2) + '%';
   const add = (cls, x, z, text) => { const el = document.createElement(cls === 'mk-way' || cls === 'mk-way on' ? 'button' : 'div'); el.className = 'mk ' + cls; el.style.left = pct(x); el.style.top = pct(z); el.textContent = text; box.appendChild(el); return el; };
+  // waystones that sit close together (the pass, the fortress and the arena) are fanned apart so none hides another
+  const WS = WAYSTONES.map(w => ({ w, x: w.x, z: w.z })), GAP = 74;   // world units: about 34px on a phone's map (a disc is 28px)
+  for (let it = 0; it < 40; it++) for (let i = 0; i < WS.length; i++) for (let j = i + 1; j < WS.length; j++) {
+    const a = WS[i], b = WS[j]; let dx = b.x - a.x, dz = b.z - a.z, d = Math.hypot(dx, dz);
+    if (d >= GAP) continue; if (d < 1e-3) { dx = 1; dz = 0; d = 1; }
+    const push = (GAP - d) / 2 + 0.01; dx /= d; dz /= d; a.x -= dx * push; a.z -= dz * push; b.x += dx * push; b.z += dz * push;
+  }
+  for (const m of WS) { m.x = Math.max(-380, Math.min(380, m.x)); m.z = Math.max(-380, Math.min(380, m.z)); }
+  const U = 800 / Math.max(240, Math.min(innerWidth * 0.92 - 40, innerHeight * 0.84, 620)), LB = [];   // world units per CSS px on the map
   for (const zz of ZONES) {
     if (!zz.r && !zz.rect) continue; if (zz.id === 'river') continue;
-    const seen = G.zonesSeen.indexOf(zz.id) >= 0, lx = zz.rect ? (zz.rect[0] + zz.rect[2]) / 2 : zz.x, lz = zz.rect ? (zz.rect[1] + zz.rect[3]) / 2 : zz.z;
-    add('mk-label', lx, lz + (zz.id === 'fortress' ? 24 : 0), seen ? t('zone.' + zz.id) : t('map.unknown'));
+    const seen = G.zonesSeen.indexOf(zz.id) >= 0, lx = zz.rect ? (zz.rect[0] + zz.rect[2]) / 2 : zz.x;
+    let lz = (zz.rect ? (zz.rect[1] + zz.rect[3]) / 2 : zz.z) + (zz.id === 'fortress' ? 24 : 0);
+    // a label on top of a waystone moves just below it, so both the name and the stone stay readable
+    for (let k = 0; k < 3; k++) { const hit = WS.find(m => Math.abs(m.x - lx) < 150 && Math.abs(m.z - lz) < 52); if (!hit) break; lz = Math.min(380, hit.z + 58); }
+    // and a label that would cover another label slides sideways (sizes from the text: the map is not laid out yet)
+    const text = seen ? t('zone.' + zz.id) : t('map.unknown'), w = (text.length * 8.4 + 18) * U, h = 22 * U;
+    let x = lx;
+    for (let k = 0; k < 4; k++) {
+      const o = LB.find(q => Math.abs(q.x - x) < (q.w + w) / 2 + 4 * U && Math.abs(q.z - lz) < h);
+      if (!o) break; const dir = x < o.x ? -1 : 1; x = o.x + dir * ((o.w + w) / 2 + 6 * U);
+    }
+    x = Math.max(-400 + w / 2, Math.min(400 - w / 2, x)); LB.push({ x, z: lz, w });
+    add('mk-label', x, lz, text);
   }
-  for (const w of WAYSTONES) {
-    const on = G.waystones.indexOf(w.id) >= 0, b = add(on ? 'mk-way on' : 'mk-way', w.x, w.z, on ? '☀️' : '·');
+  for (const { w, x, z } of WS) {
+    const on = G.waystones.indexOf(w.id) >= 0, b = add(on ? 'mk-way on' : 'mk-way', x, z, on ? '☀️' : '·');
     b.type = 'button'; const name = t('waystone.name', { zone: t('zone.' + w.zone) }); b.setAttribute('aria-label', name); b.disabled = !on;
     if (on) b.addEventListener('click', () => travelAsk(w));
   }
@@ -10616,8 +10702,8 @@ function personKits(o) {
   const skin = o.skin || '#f5c99b', shirt = o.shirt || '#3e7bfa', pants = o.pants || '#4a3020', shoe = o.shoe || '#3b2a1e', hc = o.hairColor || '#5a3a1e';
   const bw = o.belly || 1, tw = 0.6 * bw, td = 0.36 * bw, skinD = '#' + col(skin).multiplyScalar(0.85).getHexString();
   const legs = o.walker && !o.dress;
-  const K = { body: new Kit(), head: new Kit(), armL: new Kit(), armR: new Kit(), legL: legs ? new Kit() : null, legR: legs ? new Kit() : null, shoulder: tw / 2 + 0.09 };
-  const B = K.body, H = K.head;
+  const K = { body: new Kit(), head: new Kit(), face: new Kit(), armL: new Kit(), armR: new Kit(), legL: legs ? new Kit() : null, legR: legs ? new Kit() : null, shoulder: tw / 2 + 0.09 };
+  const B = K.body, H = K.head, F = K.face;
   // legs (hip pivots at (+-0.14, 0.55)) or a bell skirt
   if (o.dress) {
     const r = 0.5 * Math.max(1, bw * 0.92);
@@ -10646,12 +10732,19 @@ function personKits(o) {
     if (s > 0 && o.spear) { k.add(cyl, 0, -1.6, 0.06, 0.035, 2.6, 0.035, 0, 0, 0, '#7a4e2c'); k.add(cone4, 0, 1.0, 0.06, 0.08, 0.3, 0.03, 0, 0, 0, '#dfe6ee'); }
     if (s > 0 && o.hammer) { k.add(cyl, 0, -0.75, 0.05, 0.03, 0.5, 0.03, 0, 0, 0, '#7a4e2c'); k.add(box, 0, -0.32, 0.05, 0.1, 0.1, 0.24, 0, 0, 0, '#6b6b72'); }
   }
-  // head: neck pivot at (0, 1.22); face like the hero's
-  H.add(s2, 0, 0.36, 0, 0.36, 0.35, 0.35, 0, 0, 0, skin); H.add(s1, 0, 0.31, 0.335, 0.05, 0.04, 0.04, 0, 0, 0, skinD);
-  for (const s of [-1, 1]) { H.add(s1, s * 0.19, 0.25, 0.28, 0.06, 0.035, 0.02, 0, 0, 0, '#ff9eb5'); H.add(s1, s * 0.345, 0.33, 0, 0.06, 0.08, 0.05, 0, 0, 0, skin); }
-  for (const s of [-1, 1]) { H.add(s1, s * 0.12, 0.39, 0.3, 0.07, 0.085, 0.04, 0, 0, 0, '#ffffff'); H.add(s1, s * 0.12, 0.38, 0.33, 0.045, 0.06, 0.025, 0, 0, 0, o.eyes || '#2b1b0e'); H.add(s1, s * 0.12 + 0.018, 0.405, 0.35, 0.016, 0.016, 0.01, 0, 0, 0, '#ffffff'); }
-  H.add(SMILE, 0, 0.22, 0.33, 1, 1, 1, 0, 0, Math.PI, '#5a2a1a');
-  if (o.glasses) { for (const s of [-1, 1]) H.add(tor, s * 0.12, 0.39, 0.345, 0.085, 0.085, 0.085, 0, 0, 0, o.glasses); H.add(box, -0.04, 0.39, 0.35, 0.08, 0.02, 0.02, 0, 0, 0, o.glasses); }
+  // head: neck pivot at (0, 1.22). The face (eyes, nose, cheeks, smile, glasses, moustache) is its own mesh K.face, drawn
+  // in flat colour with no Ink, like the hero's: an Ink hull round such small parts merged them into a dark smudge (round
+  // dark goggles and a "moustache" on Granny Fern). The smile is a thin stroke on the skin; glasses are thin wire rims.
+  H.add(s2, 0, 0.36, 0, 0.36, 0.35, 0.35, 0, 0, 0, skin);
+  for (const s of [-1, 1]) H.add(s1, s * 0.345, 0.33, 0, 0.06, 0.08, 0.05, 0, 0, 0, skin);
+  F.add(s1, 0, 0.31, 0.335, 0.045, 0.035, 0.035, 0, 0, 0, skinD);
+  for (const s of [-1, 1]) F.add(s1, s * 0.19, 0.25, 0.285, 0.055, 0.032, 0.02, 0, s * 0.6, 0, '#ff9eb5');
+  for (const s of [-1, 1]) { F.add(s1, s * 0.12, 0.39, 0.3, 0.07, 0.085, 0.04, 0, 0, 0, '#ffffff'); F.add(s1, s * 0.12, 0.38, 0.33, 0.045, 0.06, 0.025, 0, 0, 0, o.eyes || '#2b1b0e'); F.add(s1, s * 0.12 + 0.018, 0.405, 0.35, 0.016, 0.016, 0.01, 0, 0, 0, '#ffffff'); }
+  if (!o.beard) F.add(NPC_SMILE, 0, 0, 0, 1, 1, 1, 0, 0, 0, '#5a2a1a');
+  if (o.glasses) {
+    for (const s of [-1, 1]) { F.add(RIM, s * 0.12, 0.39, 0.358, 0.098, 0.098, 0.098, 0, 0, 0, o.glasses); F.add(box, s * 0.226, 0.4, 0.22, 0.014, 0.014, 0.26, 0, 0, 0, o.glasses); }
+    F.add(box, 0, 0.395, 0.358, 0.05, 0.014, 0.014, 0, 0, 0, o.glasses);
+  }
   const style = o.hair || 'short';
   if (style === 'short' || style === 'braids' || style === 'bun' || style === 'long') { H.add(s2, 0, 0.44, -0.03, 0.38, 0.3, 0.39, 0, 0, 0, hc); H.add(box, 0, 0.54, 0.22, 0.6, 0.1, 0.18, -0.35, 0, 0, hc); }
   if (style === 'bun') { H.add(s1, 0, 0.74, -0.12, 0.17, 0.15, 0.17, 0, 0, 0, hc); H.add(cyl, 0, 0.66, -0.1, 0.12, 0.06, 0.12, 0, 0, 0, hc); }
@@ -10660,8 +10753,9 @@ function personKits(o) {
   if (style === 'curly') { for (let i = 0; i < 13; i++) { const a = i / 13 * Math.PI * 2, r = i % 2 ? 0.27 : 0.2, y = 0.57 + (i % 3) * 0.06; H.add(s1, Math.cos(a) * r, y, Math.sin(a) * r - 0.06, 0.13, 0.12, 0.13, 0, 0, 0, hc); } H.add(s1, 0, 0.68, -0.04, 0.2, 0.14, 0.2, 0, 0, 0, hc); for (const s of [-1, 1]) H.add(s1, s * 0.33, 0.38, -0.12, 0.1, 0.18, 0.12, 0, 0, 0, hc); }
   if (style === 'bald') for (const s of [-1, 1]) H.add(s1, s * 0.33, 0.38, -0.08, 0.08, 0.12, 0.14, 0, 0, 0, hc);
   if (o.beard) { H.add(s1, 0, 0.13, 0.2, 0.3, 0.22, 0.2, 0, 0, 0, o.beard); for (const s of [-1, 1]) H.add(s1, s * 0.27, 0.24, 0.12, 0.09, 0.16, 0.12, 0, 0, 0, o.beard); }
-  if (o.mustache) for (const s of [-1, 1]) H.add(s1, s * 0.08, 0.265, 0.345, 0.1, 0.045, 0.05, 0, 0, s * 0.3, o.mustache);
-  if (o.beard) H.add(SMILE, 0, 0.22, 0.345, 0.9, 0.9, 0.9, 0, 0, Math.PI, '#5a2a1a');
+  if (o.mustache) for (const s of [-1, 1]) F.add(s1, s * 0.08, 0.265, 0.345, 0.1, 0.045, 0.05, 0, 0, s * 0.3, o.mustache);
+  // on a beard the smile sits on the beard's front, in a warm pink that reads on dark and fair beards alike
+  if (o.beard) F.add(BEARD_SMILE, 0, 0, 0, 1, 1, 1, 0, 0, 0, '#e8828a');
   const hat = o.hat, hcol = o.hatColor || '#5a2f8a';
   if (hat === 'straw') { H.add(cyl, 0, 0.62, 0, 0.64, 0.04, 0.64, 0, 0, 0, '#e9c46a'); H.add(cyl, 0, 0.64, 0, 0.32, 0.24, 0.32, 0, 0, 0, '#e9c46a'); H.add(cyl, 0, 0.66, 0, 0.33, 0.06, 0.33, 0, 0, 0, '#e5484d'); }
   if (hat === 'top') { H.add(cyl, 0, 0.64, 0, 0.46, 0.05, 0.46, 0, 0, 0, hcol); H.add(cyl, 0, 0.66, 0, 0.27, 0.56, 0.27, 0, 0, 0, hcol); H.add(cyl, 0, 0.7, 0, 0.28, 0.08, 0.28, 0, 0, 0, '#ffc83d'); }
@@ -10678,6 +10772,7 @@ function personModel(o) {
   const mk = (k, shadow) => { const m = new THREE.Mesh(k.geometry('lit'), MAT.char); m.castShadow = !!shadow; return m; };
   const torso = mk(K.body, true); body.add(torso);
   const head = new THREE.Group(); head.position.set(0, 1.22, 0); head.add(mk(K.head, true)); body.add(head);
+  const face = new THREE.Mesh(K.face.geometry('lit'), MAT.face); face.userData.noInk = true; head.add(face);
   const armL = new THREE.Group(), armR = new THREE.Group(); armL.position.set(-K.shoulder, 1.17, 0); armR.position.set(K.shoulder, 1.17, 0); armL.add(mk(K.armL)); armR.add(mk(K.armR)); body.add(armL, armR);
   let legL = null, legR = null;
   if (K.legL) { legL = new THREE.Group(); legR = new THREE.Group(); legL.position.set(-0.14, 0.55, 0); legR.position.set(0.14, 0.55, 0); legL.add(mk(K.legL)); legR.add(mk(K.legR)); body.add(legL, legR); }
@@ -10687,7 +10782,7 @@ function personModel(o) {
 
 /* Named people. at = [x, z]; face = a point to look at when idle. Where they stand can change with the story. */
 const NPC_DEFS = {
-  granny: { at: [-14, 331], face: [0, 318], portrait: '👵', pitch: 1.35, look: { skin: '#f5c99b', hair: 'bun', hairColor: '#dcdce4', shirt: '#9b6bd1', dress: '#7b4bb8', glasses: '#c9a227', shawl: '#c3a3ff', h: 0.92 } },
+  granny: { at: [-14, 331], face: [0, 318], portrait: '👵', pitch: 1.35, look: { skin: '#f5c99b', hair: 'bun', hairColor: '#dcdce4', shirt: '#9b6bd1', dress: '#7b4bb8', glasses: '#a8801a', shawl: '#c3a3ff', h: 0.92 } },
   bo: { at: [16.6, 312.6], face: [4, 318], portrait: '🔨', pitch: 0.7, look: { skin: '#e0ac69', hair: 'short', hairColor: '#3b2a1e', beard: '#3b2a1e', shirt: '#c8372d', pants: '#4a3020', apron: '#6e4422', belly: 1.25, h: 1.08, hammer: true } },
   plum: { at: [4, 301], face: [0, 318], portrait: '🎩', pitch: 0.85, look: { skin: '#ffe0bd', hair: 'bald', hairColor: '#d9d9de', shirt: '#7b4bb8', pants: '#3d2a5c', belly: 1.38, hat: 'top', hatColor: '#4a2a73', mustache: '#d9d9de', buttons: '#ffc83d' } },
   tilly: { at: [149.5, 221], face: [130, 232], portrait: '🧑‍🌾', pitch: 1.15, look: { skin: '#c68642', hair: 'braids', hairColor: '#7a4a24', shirt: '#fff4e0', overalls: '#3e6fd8', pants: '#3e6fd8', hat: 'straw', ribbon: '#ff9f1c' } },
@@ -10812,14 +10907,16 @@ function buildCrowd() {
     { geo: g([[box, -0.14, 0.08, 0, 0.22, 0.49, 0.24, 0, 0, 0, W], [box, 0.14, 0.08, 0, 0.22, 0.49, 0.24, 0, 0, 0, W], [box, -0.14, 0, 0.04, 0.25, 0.14, 0.32, 0, 0, 0, D], [box, 0.14, 0, 0.04, 0.25, 0.14, 0.32, 0, 0, 0, D]]), shadow: true },
     { geo: g([[box, 0, 0.55, 0, 0.6, 0.65, 0.36, 0, 0, 0, W], [box, 0, 0.56, 0, 0.62, 0.09, 0.38, 0, 0, 0, '#4a3020'], [box, -0.36, 0.98, 0, 0.2, 0.2, 0.22, 0, 0, 0, W], [box, 0.36, 0.98, 0, 0.2, 0.2, 0.22, 0, 0, 0, W], [box, 0, 1.18, 0, 0.3, 0.12, 0.28, 0, 0, 0, '#f0d0b0']]), shadow: true },
     { geo: g([[box, 0, -0.48, 0, 0.17, 0.48, 0.18, 0, 0, 0, W], [s1, 0, -0.53, 0, 0.105, 0.105, 0.105, 0, 0, 0, W]]), cap2: true },
-    { geo: g([[s2, 0, 0.36, 0, 0.36, 0.35, 0.35, 0, 0, 0, W], [s1, -0.12, 0.38, 0.32, 0.05, 0.07, 0.03, 0, 0, 0, '#1d1410'], [s1, 0.12, 0.38, 0.32, 0.05, 0.07, 0.03, 0, 0, 0, '#1d1410'], [SMILE, 0, 0.22, 0.33, 1, 1, 1, 0, 0, Math.PI, '#3a1a10'],
-      [s1, 0.19, 0.25, 0.28, 0.06, 0.035, 0.02, 0, 0, 0, '#ffb8c8'], [s1, -0.19, 0.25, 0.28, 0.06, 0.035, 0.02, 0, 0, 0, '#ffb8c8'], [s1, 0.345, 0.33, 0, 0.06, 0.08, 0.05, 0, 0, 0, W], [s1, -0.345, 0.33, 0, 0.06, 0.08, 0.05, 0, 0, 0, W]]), shadow: true },
+    { geo: g([[s2, 0, 0.36, 0, 0.36, 0.35, 0.35, 0, 0, 0, W], [s1, 0.345, 0.33, 0, 0.06, 0.08, 0.05, 0, 0, 0, W], [s1, -0.345, 0.33, 0, 0.06, 0.08, 0.05, 0, 0, 0, W]]), shadow: true },
     { geo: g([[s2, 0, 0.44, -0.03, 0.38, 0.3, 0.39, 0, 0, 0, W], [box, 0, 0.54, 0.22, 0.6, 0.1, 0.18, -0.35, 0, 0, W]]) },
     { geo: g([[s2, 0, 0.44, -0.03, 0.38, 0.3, 0.39, 0, 0, 0, W], [s1, 0, 0.74, -0.12, 0.17, 0.15, 0.17, 0, 0, 0, W], [box, 0, 0.0, -0.26, 0.62, 0.48, 0.12, 0, 0, 0, W]]) },
     { geo: g([[cyl, 0, 0.62, 0, 0.64, 0.04, 0.64, 0, 0, 0, W], [cyl, 0, 0.64, 0, 0.32, 0.24, 0.32, 0, 0, 0, W], [cyl, 0, 0.66, 0, 0.33, 0.06, 0.33, 0, 0, 0, '#c8372d']]) },
+    // the face, on its own like the named people's: flat colour (not tinted by the skin) and no Ink, so eyes and smile stay crisp
+    { geo: g([[s1, -0.12, 0.38, 0.32, 0.05, 0.07, 0.03, 0, 0, 0, '#1d1410'], [s1, 0.12, 0.38, 0.32, 0.05, 0.07, 0.03, 0, 0, 0, '#1d1410'], [s1, -0.105, 0.405, 0.345, 0.014, 0.014, 0.01, 0, 0, 0, W], [s1, 0.135, 0.405, 0.345, 0.014, 0.014, 0.01, 0, 0, 0, W],
+      [NPC_SMILE, 0, 0, 0, 1, 1, 1, 0, 0, 0, '#3a1a10'], [s1, 0.19, 0.25, 0.285, 0.055, 0.032, 0.02, 0, 0.6, 0, '#ff9eb5'], [s1, -0.19, 0.25, 0.285, 0.055, 0.032, 0.02, 0, -0.6, 0, '#ff9eb5']]), face: true },
   ];
   for (const d of defs) {
-    const cap = CROWD.cap * (d.cap2 ? 2 : 1), m = new THREE.InstancedMesh(d.geo, MAT.char, cap); m.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    const cap = CROWD.cap * (d.cap2 ? 2 : 1), m = new THREE.InstancedMesh(d.geo, d.face ? MAT.face : MAT.char, cap); if (d.face) m.userData.noInk = true; m.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
     m.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(cap * 3).fill(1), 3); m.instanceColor.setUsage(THREE.DynamicDrawUsage);
     m.frustumCulled = false; m.castShadow = !!d.shadow; m.count = 0; m.visible = false; scene.add(m); CROWD.parts.push({ mesh: m, n: 0, cap });
   }
@@ -10880,7 +10977,7 @@ function crowdFrame(dt, now) {
     crowdPart(P[0], CROWD_ROOT, 0, 0, 0, 0, 0, 0, v.pants);
     crowdPart(P[1], CROWD_ROOT, 0, 0, 0, 0, 0, 0, v.shirt);
     crowdPart(P[2], CROWD_ROOT, -0.39, 1.17, 0, aL, 0, aLz, v.skin); crowdPart(P[2], CROWD_ROOT, 0.39, 1.17, 0, aR, 0, aRz, v.skin);
-    crowdPart(P[3], CROWD_ROOT, 0, 1.22, 0, hx, 0, 0, v.skin);
+    crowdPart(P[3], CROWD_ROOT, 0, 1.22, 0, hx, 0, 0, v.skin); crowdPart(P[7], CROWD_ROOT, 0, 1.22, 0, hx, 0, 0, WHITE_C);
     if (v.hat !== 2) { if (v.style === 0) crowdPart(P[4], CROWD_ROOT, 0, 1.22, 0, hx, 0, 0, v.hair); else if (v.style === 1) crowdPart(P[5], CROWD_ROOT, 0, 1.22, 0, hx, 0, 0, v.hair); }
     if (v.hat === 1) crowdPart(P[6], CROWD_ROOT, 0, 1.22, 0, hx, 0, 0, v.hatC);
     if (v.hat === 2) crowdPart(P[4], CROWD_ROOT, 0, 1.25, 0, hx, 0, 0, v.hatC);
@@ -11197,7 +11294,7 @@ function trackTarget(st) {
 /** "!" (start) and "?" (hand in) over the person the current step needs, and over Smith Bo when a gift is ready. */
 function questMarkers(out) {
   const st = questStep();
-  if (st && st.kind === 'talk') {
+  if (st && st.kind === 'talk' && !UI.dialog.open) {
     const n = NPCS[st.npc];
     if (n) out.push(n.x, n.y + (n.d.look.h || 1) * 2.3 + 0.55, n.z, G.step > 0 ? 1 : 0);
     else if (st.npc === 'chief' && CHIEF.f) out.push(CHIEF.f.x, CHIEF.f.y + 3.4, CHIEF.f.z, 1);
@@ -11740,7 +11837,7 @@ function buildCinder() {
 function buildSnarlwick() {
   const box = prim('box'), s1 = prim('sph:1'), s2 = prim('sph:2'), cyl = prim('cyl:10:1.000'), cone = prim('cone:8'), cone4 = prim('cone:4'), tor = prim('torus:10:0.3');
   const skin = '#e3d3f2', robe = '#3b2160', robe2 = '#5b2d8a', gold = '#ffc83d', stache = '#8a3fd1';
-  const body = new Kit(), head = new Kit(), armL = new Kit(), armR = new Kit(), crown = new Kit(), pj = new Kit(), cap = new Kit();
+  const body = new Kit(), head = new Kit(), face = new Kit(), armL = new Kit(), armR = new Kit(), crown = new Kit(), pj = new Kit(), cap = new Kit();
   body.add(cone, 0, 0, 0, 0.66, 1.7, 0.6, 0, 0, 0, robe); for (let i = 0; i < 10; i++) { const a = i / 10 * Math.PI * 2; body.add(cone4, Math.cos(a) * 0.6, 0.05, Math.sin(a) * 0.55, 0.12, 0.3, 0.06, Math.PI, -a, 0, '#2b174a'); }
   body.add(box, 0, 1.0, 0, 0.62, 0.85, 0.4, 0, 0, 0, robe2); body.add(box, 0, 1.0, 0, 0.64, 0.1, 0.42, 0, 0, 0, gold);
   for (let i = 0; i < 3; i++) body.add(s1, 0, 1.25 + i * 0.18, 0.21, 0.045, 0.045, 0.025, 0, 0, 0, gold);
@@ -11750,12 +11847,14 @@ function buildSnarlwick() {
   // head (neck pivot at 1.9): long face, pointy nose, angry brows, yellow eyes, the mustache, the monocle
   head.add(s2, 0, 0.4, 0, 0.34, 0.44, 0.34, 0, 0, 0, skin); head.add(cone, 0, 0.36, 0.3, 0.07, 0.3, 0.07, Math.PI / 2 - 0.2, 0, 0, '#d4bfe8');
   for (const s of [-1, 1]) {
-    head.add(s1, s * 0.12, 0.5, 0.27, 0.075, 0.06, 0.04, 0, 0, 0, '#fff6a0'); head.add(s1, s * 0.12, 0.5, 0.305, 0.035, 0.035, 0.02, 0, 0, 0, '#2b174a');
-    head.add(box, s * 0.13 - 0.1, 0.6, 0.27, 0.2, 0.05, 0.05, 0, 0, s * 0.45, '#5a2a8a');
+    face.add(s1, s * 0.12, 0.5, 0.27, 0.075, 0.06, 0.04, 0, 0, 0, '#fff6a0'); face.add(s1, s * 0.12, 0.5, 0.305, 0.035, 0.035, 0.02, 0, 0, 0, '#2b174a');
+    face.add(box, s * 0.13 - 0.1, 0.6, 0.27, 0.2, 0.05, 0.05, 0, 0, s * 0.45, '#5a2a8a');
     head.add(s2, s * 0.17, 0.25, 0.3, 0.2, 0.09, 0.11, 0, 0, s * 0.2, stache); head.add(s2, s * 0.38, 0.3, 0.27, 0.12, 0.07, 0.08, 0, 0, s * -0.6, stache); head.add(s1, s * 0.48, 0.38, 0.25, 0.07, 0.07, 0.07, 0, 0, 0, stache);
     head.add(s1, s * 0.33, 0.42, 0.0, 0.06, 0.12, 0.08, 0, 0, 0, skin);
   }
-  head.add(tor, 0.12, 0.5, 0.33, 0.1, 0.1, 0.1, 0, 0, 0, gold); head.add(box, 0.2, 0.2, 0.3, 0.015, 0.3, 0.015, 0, 0, 0, gold); head.add(SMILE, 0, 0.13, 0.3, 0.8, 0.8, 0.8, 0, 0, 0, '#3a1a50');
+  // the eyes, brows, monocle and mouth: a flat-colour face mesh with no Ink (Ink round them merged them into a smudge);
+  // the monocle is a thin gold rim. The big mustache keeps its Ink: it is meant to be his loudest feature.
+  face.add(RIM, 0.12, 0.5, 0.32, 0.1, 0.1, 0.1, 0, 0, 0, gold); face.add(box, 0.2, 0.3, 0.3, 0.012, 0.3, 0.012, 0, 0, 0, gold); face.add(SMILE, 0, 0.13, 0.3, 0.8, 0.8, 0.8, 0, 0, 0, '#3a1a50');
   head.add(s1, 0, 0.06, 0.24, 0.07, 0.1, 0.06, 0, 0, 0, stache);
   crown.add(cyl, 0, 0.74, 0, 0.3, 0.12, 0.3, 0, 0, 0, gold);
   for (const s of [-1, 1]) for (let i = 0; i < 4; i++) crown.add(cone, s * (0.25 + i * 0.1), 0.86 + i * 0.12 - i * i * 0.03, -0.02 - i * 0.03, 0.07 - i * 0.012, 0.22, 0.07 - i * 0.012, 0, 0, s * (-0.4 - i * 0.45), '#d99a1c');
@@ -11773,7 +11872,7 @@ function buildSnarlwick() {
   const mesh = (k, shadow) => { const m = new THREE.Mesh(k.geometry('lit'), MAT.char); m.castShadow = !!shadow; return m; };
   const root = new THREE.Group(), bodyG = new THREE.Group(); root.add(bodyG);
   const robeM = mesh(body, true), pjM = mesh(pj, true); pjM.visible = false; bodyG.add(robeM, pjM);
-  const headG = new THREE.Group(); headG.position.set(0, 1.9, 0); bodyG.add(headG); const crownM = mesh(crown), capM = mesh(cap); capM.visible = false; headG.add(mesh(head, true), crownM, capM);
+  const headG = new THREE.Group(); headG.position.set(0, 1.9, 0); bodyG.add(headG); const crownM = mesh(crown), capM = mesh(cap); capM.visible = false; const faceM = new THREE.Mesh(face.geometry('lit'), MAT.face); faceM.userData.noInk = true; headG.add(mesh(head, true), faceM, crownM, capM);
   const aL = new THREE.Group(), aR = new THREE.Group(); aL.position.set(-0.42, 1.78, 0); aR.position.set(0.42, 1.78, 0); aL.add(mesh(armL)); aR.add(mesh(armR)); bodyG.add(aL, aR);
   const gem = new THREE.Mesh(new THREE.OctahedronGeometry(0.2, 0), new THREE.MeshBasicMaterial({ color: 0xb66cff })); gem.position.set(0, 0.72, 0.12); gem.scale.set(1, 1.4, 1); aR.add(gem);
   root.scale.setScalar(1.12); root.visible = false; scene.add(root);
