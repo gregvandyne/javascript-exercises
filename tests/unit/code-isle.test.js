@@ -8,7 +8,7 @@ const html = fs.readFileSync('seed-games/code-isle.html', 'utf8');
 const classic = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m => m[1]);
 const ctx = vm.createContext({});
 for (const src of classic) vm.runInContext(src, ctx);
-const C = ctx.CodeIsle, { LEVELS, SANDBOX, CHAPTERS } = ctx.CodeIsleLevels;
+const C = ctx.CodeIsle, { LEVELS, CHALLENGES, SANDBOX, CHAPTERS } = ctx.CodeIsleLevels;
 const run = (level, code) => C.runLevel(level, code);
 const flat = { id: 't', map: ['~~~~~~~', '~Psssf~', '~~~~~~~'] };
 const logs = code => { const r = run(flat, code); assert.ok(!r.syntax, r.syntax && r.syntax.message); const s = r.results[0].sim; if (s.error) throw s.error; return [...s.logs]; };
@@ -32,6 +32,39 @@ test('no starter code already passes, and every level has its lesson and hints',
     assert.ok(CHAPTERS.some(c => c.id === l.ch), `${l.id}: chapter`);
   }
   assert.ok(run(SANDBOX, SANDBOX.starter).ok);
+});
+
+test('every chapter has one gold challenge, solved with three stars and not by its starter', () => {
+  assert.equal(CHALLENGES.length, CHAPTERS.length);
+  for (const ch of CHAPTERS) assert.equal(CHALLENGES.filter(c => c.ch === ch.id).length, 1, `chapter ${ch.id}`);
+  for (const l of CHALLENGES) {
+    assert.ok(l.bonus && l.learn && l.hints.length >= 2 && l.goal && l.story, `${l.id}: texts`);
+    const r = run(l, l.sol);
+    assert.ok(!r.syntax, `${l.id}: ${r.syntax && r.syntax.message}`);
+    r.results.forEach((x, i) => assert.ok(x.verdict.ok, `${l.id} world ${i + 1}: ${x.verdict.fails.join(' / ')}`));
+    assert.equal(r.stars, 3, `${l.id}: stars`);
+    assert.ok(!run(l, l.starter).ok, `${l.id}: the starter code should not finish the level`);
+  }
+});
+
+test('the level text is translated into the kit\'s languages, keeping code and {slots}', () => {
+  const I = ctx.CodeIsleI18n;
+  const langs = ['pt', 'fr', 'es', 'de', 'he', 'ja', 'ar', 'ru', 'it', 'zh-Hant', 'nl'];
+  const slots = s => (s.match(/\{\w+\}/g) || []).sort().join();
+  for (const lang of langs) {
+    const T = I[lang]; assert.ok(T, lang);
+    for (const l of [...LEVELS, ...CHALLENGES]) for (const s of [l.title, l.story, l.goal, l.learn.text, ...l.hints]) assert.ok(T[s], `${lang} is missing: ${s}`);
+    for (const ch of CHAPTERS) assert.ok(T[ch.intro] && T[ch.outro], `${lang}: chapter ${ch.id}`);
+    for (const [en, v] of Object.entries(T)) for (const x of typeof v === 'object' ? Object.values(v) : [v]) {
+      if (!en.startsWith('ci.')) assert.equal(slots(x), slots(en), `${lang}: slots in ${en}`);
+      for (const c of en.match(/\bpip\.[A-Za-z]+\([^)]*\)/g) || []) assert.ok(x.includes(c), `${lang}: keeps ${c} in ${en}`);
+    }
+  }
+  // Pip's messages go through the game's translator when there is one
+  ctx.CodeIsleT = (s, v) => 'T:' + s.replace(/\{(\w+)\}/g, (m, k) => v[k]);
+  const r = run(LEVELS[0], 'pip.forward();');
+  ctx.CodeIsleT = undefined;
+  assert.match(r.results[0].verdict.fails[0], /^T:Pip didn't finish on the flag/);
 });
 
 test('the interpreter speaks enough JavaScript', () => {

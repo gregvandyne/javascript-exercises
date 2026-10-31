@@ -157,6 +157,9 @@ body.landscape .ci-walkact{bottom:calc(36px + env(safe-area-inset-bottom))}
 .ci-look.on{border:3px solid var(--ok-edge);background:var(--ci-go-tint);color:var(--ci-ink)}
 .ci-look:disabled{opacity:.55;cursor:default}
 .ci-card h3 small{font-weight:600;opacity:.75}
+.ci-lvl.ci-gold{background:var(--ci-spark-tint);color:var(--ci-ink)}.ci-lvl.ci-gold.open{border:3px solid var(--ok-edge)}
+.ci-lvl .ci-why{font-size:.85em;opacity:.8}
+.ci-cmd code{direction:ltr;unicode-bidi:isolate}
 </style>
 <canvas id="view" tabindex="-1" aria-label="The 3D island"></canvas>
 <div class="labels" id="labels"></div>
@@ -191,7 +194,7 @@ body.landscape .ci-walkact{bottom:calc(36px + env(safe-area-inset-bottom))}
     <span data-btn="say"></span><span data-btn="learn"></span>
   </div>
   <div class="ci-tests" id="tests"></div>
-  <div class="ci-ed" id="ed">
+  <div class="ci-ed" id="ed" dir="ltr">
     <div class="ci-gut"><div id="gutIn"></div></div>
     <div class="ci-area">
       <div class="ci-layer" id="layer"><div class="errline" id="errline" hidden></div><div class="runline" id="runline" hidden></div><pre id="hl" class="ci-hl" aria-hidden="true"></pre></div>
@@ -202,7 +205,7 @@ body.landscape .ci-walkact{bottom:calc(36px + env(safe-area-inset-bottom))}
     <div class="ci-tabs" id="palTabs">
       <button type="button" data-tab="pip" class="on">Pip</button><button type="button" data-tab="code">Code</button><button type="button" data-tab="sym">Symbols</button>
     </div>
-    <div class="ci-chips" id="chips"></div>
+    <div class="ci-chips" id="chips" dir="ltr"></div>
     <div class="ci-editbar" id="editBar" aria-label="Edit your code"></div>
   </div>
   <div class="ci-out" id="out" aria-live="polite"></div>
@@ -221,6 +224,9 @@ body.landscape .ci-walkact{bottom:calc(36px + env(safe-area-inset-bottom))}
    our own lexer and parser and walked step by step, with limits on steps, calls and Pip actions. ===== */
 (function (root) {
 'use strict';
+// Player-facing messages go through M so the game can translate them ({name} slots get filled in).
+const fillIn = (t, v) => v ? t.replace(/\{(\w+)\}/g, (m, k) => (k in v ? v[k] : m)) : t;
+const M = (t, v) => (root.CodeIsleT ? root.CodeIsleT(t, v) : fillIn(t, v));
 
 class CodeError extends Error {
   constructor(msg, line, kind) { super(msg); this.line = line || 0; this.kind = kind || 'code'; }
@@ -1225,15 +1231,15 @@ class Sim {
   front() { const d = DV[this.pip.dir]; const x = this.pip.x + d[0], z = this.pip.z + d[1]; return { x, z, c: this.col(x, z) }; }
   here() { return this.col(this.pip.x, this.pip.z); }
   ev(o) { this.events.push(o); }
-  act(line) { if (++this.actions > MAX_ACTIONS) throw new CodeError(`Pip is tired! That's over ${MAX_ACTIONS} actions. Is a loop running forever?`, line, 'loop'); }
+  act(line) { if (++this.actions > MAX_ACTIONS) throw new CodeError(M('Pip is tired! That\'s over {n} actions. Is a loop running forever?', { n: MAX_ACTIONS }), line, 'loop'); }
   fail(msg, line, kind, at) { this.ev({ k: 'fail', msg, line, kind, x: at ? at.x : this.pip.x, z: at ? at.z : this.pip.z }); throw new CodeError(msg, line, 'pip'); }
   whyBlocked(f) {
     const c = f.c;
-    if (!c) return ['edge', 'Pip stopped at the edge of the island. There\'s nothing out there!'];
-    if (c.npc) return ['bump', 'Oops! A friend is standing there. Pip can\'t walk through them.'];
-    if (c.item && BLOCKERS.has(c.item)) return ['bump', `Bonk! A ${c.item} is in the way.`];
-    if (!c.blocks.length) return ['water', 'Splash! Pip can\'t swim. Build a block on the water first.'];
-    if (c.blocks.length - this.pip.y > 1) return ['high', `That's too high to climb! Pip can only step up 1 block at a time (this is ${c.blocks.length - this.pip.y} higher).`];
+    if (!c) return ['edge', M('Pip stopped at the edge of the island. There\'s nothing out there!')];
+    if (c.npc) return ['bump', M('Oops! A friend is standing there. Pip can\'t walk through them.')];
+    if (c.item && BLOCKERS.has(c.item)) return ['bump', M('Bonk! A {thing} is in the way.', { thing: M(c.item) })];
+    if (!c.blocks.length) return ['water', M('Splash! Pip can\'t swim. Build a block on the water first.')];
+    if (c.blocks.length - this.pip.y > 1) return ['high', M('That\'s too high to climb! Pip can only step up 1 block at a time (this is {n} higher).', { n: c.blocks.length - this.pip.y })];
     return null;
   }
   step(line) {
@@ -1254,7 +1260,7 @@ class Sim {
   build(type, line) {
     this.act(line);
     const f = this.front(); const c = f.c;
-    if (!c) this.fail('Pip can\'t build past the edge of the island.', line, 'edge', f);
+    if (!c) this.fail(M('Pip can\'t build past the edge of the island.'), line, 'edge', f);
     if (c.npc) this.fail('A friend is standing there! Pip can\'t build on top of them.', line, 'bump', f);
     if (c.item) this.fail(`There's a ${c.item} in the way, so Pip can't build there.${c.item === 'rock' ? ' Try pip.dig() first.' : ''}`, line, 'bump', f);
     if (c.flag) this.fail('Don\'t cover the flag! Pip needs to reach it.', line, 'bump', f);
@@ -1266,7 +1272,7 @@ class Sim {
   plant(kind, line) {
     this.act(line);
     const f = this.front(); const c = f.c;
-    if (!c) this.fail('Pip can\'t plant past the edge of the island.', line, 'edge', f);
+    if (!c) this.fail(M('Pip can\'t plant past the edge of the island.'), line, 'edge', f);
     if (!c.blocks.length) this.fail('Plants can\'t grow in water!', line, 'water', f);
     if (c.npc || c.item || c.flag || c.gem) this.fail(`There's ${c.npc ? 'a friend' : c.item ? 'a ' + c.item : c.flag ? 'the flag' : 'a gem'} there already, so Pip can't plant.`, line, 'bump', f);
     c.item = kind;
@@ -1277,7 +1283,7 @@ class Sim {
     const f = this.front(); const c = f.c;
     if (!c) this.fail('There\'s nothing to dig past the edge.', line, 'edge', f);
     if (c.npc) this.fail('That\'s a friend! No digging.', line, 'bump', f);
-    if (c.flag) this.fail('Pip can\'t dig up the flag!', line, 'bump', f);
+    if (c.flag) this.fail(M('Pip can\'t dig up the flag!'), line, 'bump', f);
     if (c.item) { const was = c.item; c.item = null; this.ev({ k: 'dig', x: f.x, z: f.z, item: was, y: c.blocks.length, line }); return; }
     if (c.blocks.length <= 1) this.fail(c.blocks.length ? 'The ground here is too hard to dig any deeper.' : 'You can\'t dig water!', line, 'bump', f);
     const t = c.blocks.pop();
@@ -1292,7 +1298,7 @@ class Sim {
   jumpTo(x, z, line) {
     this.act(line);
     const c = this.col(x, z);
-    if (!c || !c.blocks.length) this.fail(`Pip can't jump to (${x}, ${z}) — there's no ground there.`, line, 'edge', { x, z });
+    if (!c || !c.blocks.length) this.fail(M('Pip can\'t jump to ({x}, {z}): there\'s no ground there.', { x, z }), line, 'edge', { x, z });
     if (c.item && BLOCKERS.has(c.item) || c.npc) this.fail(`Something is already standing at (${x}, ${z}).`, line, 'bump', { x, z });
     const from = { x: this.pip.x, z: this.pip.z, y: this.pip.y };
     this.pip.x = x; this.pip.z = z; this.pip.y = c.blocks.length;
@@ -1412,8 +1418,8 @@ function runVariant(level, prog, vi, opts = {}) {
   try { interp.run(prog); }
   catch (e) {
     if (e instanceof CodeError) sim.error = e;
-    else if (e instanceof RangeError) sim.error = new CodeError('Too many functions inside functions! Does a function keep calling itself?', interp.line, 'loop');
-    else sim.error = new CodeError('Something went wrong on this line. Try writing it a different way.', interp.line);
+    else if (e instanceof RangeError) sim.error = new CodeError(M('Too many functions inside functions! Does a function keep calling itself?'), interp.line, 'loop');
+    else sim.error = new CodeError(M('Something went wrong on this line. Try writing it a different way.'), interp.line);
     if (!sim.events.length || sim.events[sim.events.length - 1].k !== 'fail') sim.ev({ k: 'error', msg: sim.error.message, line: sim.error.line });
   }
   return sim;
@@ -1430,17 +1436,17 @@ function checkSim(level, sim) {
     const c = sim.col(b.x, b.z); const have = c && c.blocks[b.y];
     if (!have) missingBuild.push(b); else if (b.t !== '*' && have !== b.t) wrongBuild.push(b);
   }
-  if (missingBuild.length) fails.push(`The blueprint isn't finished yet: ${missingBuild.length} ${missingBuild.length === 1 ? 'block is' : 'blocks are'} still missing.`);
-  if (wrongBuild.length) fails.push(`${wrongBuild.length} ${wrongBuild.length === 1 ? 'block is' : 'blocks are'} the wrong kind. That spot needs "${wrongBuild[0].t}".`);
+  if (missingBuild.length) fails.push(missingBuild.length === 1 ? M('The blueprint isn\'t finished yet: 1 block is still missing.') : M('The blueprint isn\'t finished yet: {n} blocks are still missing.', { n: missingBuild.length }));
+  if (wrongBuild.length) fails.push(wrongBuild.length === 1 ? M('1 block is the wrong kind. That spot needs "{t}".', { t: wrongBuild[0].t }) : M('{n} blocks are the wrong kind. That spot needs "{t}".', { n: wrongBuild.length, t: wrongBuild[0].t }));
   let paintBad = 0, paintEx = null;
   for (const p of g.paint) { const t = topOf(sim.col(p.x, p.z)); if (t !== p.t) { paintBad++; paintEx = paintEx || p; } }
-  if (paintBad) fails.push(`${paintBad} ${paintBad === 1 ? 'tile doesn\'t' : 'tiles don\'t'} match the pattern yet${paintEx.t === 'grass' ? ' (some tiles should stay grass)' : ''}.`);
+  if (paintBad) fails.push((paintBad === 1 ? M('1 tile doesn\'t match the pattern yet.') : M('{n} tiles don\'t match the pattern yet.', { n: paintBad })) + (paintEx.t === 'grass' ? ' ' + M('(Some tiles should stay grass.)') : ''));
   let plantBad = 0;
   for (const p of g.plant) { const c = sim.col(p.x, p.z); if (!c || c.item !== p.k) plantBad++; }
-  if (plantBad) fails.push(`${plantBad} ${plantBad === 1 ? 'plant is' : 'plants are'} still missing from the garden plan.`);
-  if (sim.gemTotal && sim.gems < sim.gemTotal) fails.push(`Pip still needs to collect ${sim.gemTotal - sim.gems} ${sim.gemTotal - sim.gems === 1 ? 'gem' : 'gems'}.`);
-  if (sim.flag && !level.flagOptional && !(sim.pip.x === sim.flag.x && sim.pip.z === sim.flag.z)) fails.push('Pip didn\'t finish on the flag.');
-  if (level.endAt && !(sim.pip.x === level.endAt[0] && sim.pip.z === level.endAt[1])) fails.push('Pip didn\'t finish on the gold star spot.');
+  if (plantBad) fails.push(plantBad === 1 ? M('1 plant is still missing from the garden plan.') : M('{n} plants are still missing from the garden plan.', { n: plantBad }));
+  if (sim.gemTotal && sim.gems < sim.gemTotal) fails.push(sim.gemTotal - sim.gems === 1 ? M('Pip still needs to collect 1 gem.') : M('Pip still needs to collect {n} gems.', { n: sim.gemTotal - sim.gems }));
+  if (sim.flag && !level.flagOptional && !(sim.pip.x === sim.flag.x && sim.pip.z === sim.flag.z)) fails.push(M('Pip didn\'t finish on the flag.'));
+  if (level.endAt && !(sim.pip.x === level.endAt[0] && sim.pip.z === level.endAt[1])) fails.push(M('Pip didn\'t finish on the gold star spot.'));
   if (level.check) { const m = level.check(sim, { topOf }); if (m) fails.push(m); }
   return { ok: !fails.length, fails };
 }
@@ -1463,7 +1469,7 @@ function runLevel(level, code, opts = {}) {
   let prog;
   try { prog = parse(code); } catch (e) {
     if (e instanceof CodeError) return { syntax: e, ok: false };
-    return { syntax: new CodeError('I couldn\'t read this code. Check for missing brackets or quotes.', 1, 'syntax'), ok: false };
+    return { syntax: new CodeError(M('I couldn\'t read this code. Check for missing brackets or quotes.'), 1, 'syntax'), ok: false };
   }
   const n = (level.maps || [level.map]).length;
   const results = [];
@@ -1530,7 +1536,7 @@ function highlight(src) {
   return out.join('');
 }
 
-root.CodeIsle = { CodeError, lex, parse, Interp, Sim, makePip, runLevel, runVariant, checkSim, diffSim, applyDiff, countLines, highlight, show,
+root.CodeIsle = { M, CodeError, lex, parse, Interp, Sim, makePip, runLevel, runVariant, checkSim, diffSim, applyDiff, countLines, highlight, show,
   BLOCKS, PLANTS, BLOCKERS, DIRS, DV, PIP_DOCS, LEGEND, MAX_H, suggest };
 })(typeof window !== 'undefined' ? window : globalThis);
 </script>
@@ -1543,6 +1549,7 @@ root.CodeIsle = { CodeError, lex, parse, Interp, Sim, makePip, runLevel, runVari
 const stack = (x, z, h, t, y0 = 1) => Array.from({ length: h }, (_, i) => [x, y0 + i, z, t]);
 const col = (x, z, types, y0 = 1) => types.map((t, i) => [x, y0 + i, z, t]);
 const grid = (x0, z0, rows, f) => { const out = []; rows.forEach((r, z) => [...r].forEach((ch, x) => { const t = f(ch, x, z); if (t) out.push([x0 + x, z0 + z, t]); })); return out; };
+const M = root.CodeIsle.M;
 const saidNumber = (sim, n) => sim.said.some(s => new RegExp(`(^|[^0-9])${n}([^0-9]|$)`).test(s));
 const NEXT_ROW = n => `// Goes back to the start of the next row (don't change this!)
 function nextRow() {
@@ -1653,7 +1660,7 @@ const LEVELS = [
   starter: '// 1. Say hello to Captain Coral.\n// 2. Build the dock: build "wood", step forward, again and again!\n',
   sol: 'pip.say("Hello, Captain!");\npip.build("wood");\npip.forward();\npip.build("wood");\npip.forward();\npip.build("wood");',
   par: 7,
-  check: sim => sim.said.some(s => /hello/i.test(s)) ? null : 'Pip didn\'t say "Hello" yet.',
+  check: sim => sim.said.some(s => /hello/i.test(s)) ? null : M('Pip didn\'t say "Hello" yet.'),
   map: ['~~~~~~~~~', '~ss~~~~~~', '~sp===~~~', '~sN~~~~~~', '~~~~~~~~~'] },
 
 /* ---------------- Chapter 2: Loops ---------------- */
@@ -1746,16 +1753,15 @@ const LEVELS = [
   build: [1, 2, 3, 4, 5].flatMap(k => stack(1 + k, 2, k, 'stone')),
   endAt: [6, 2],
   map: ['~~~~~~~~~', '~ggggggg~', '~Pgggggg~', '~gggggNg~', '~~~~~~~~~'] },
-{ id: '3-4', ch: 3, title: 'Riddle Towers',
-  story: 'Hoo! Solve my riddles with math. Tower 1 is 4 + 3 tall. Tower 2 is 10 − 6. Tower 3 is 2 × 5.',
-  goal: 'Build the 3 wood towers. Let the computer do the math!',
-  learn: { title: 'Math in code', text: 'Code can do math: + adds, - takes away, * multiplies (times), / divides. let t = 2 * 5; puts 10 in t. You can do math with variables too!', code: 'let a = 4 + 3;   // 7\nlet b = 10 - 6;  // 4\nlet c = 2 * 5;   // 10' },
-  hints: ['t1 is done for you. Make t2 with 10 - 6 and t3 with 2 * 5.', 'Each tower: turn left, build("wood", t…), turn right, forward(2).', 'Use the right variable for each tower.'],
-  starter: 'let t1 = 4 + 3;\n// let t2 = ...\n// let t3 = ...\n\npip.forward();\npip.turnLeft();\npip.build("wood", t1);\npip.turnRight();\npip.forward(2);\n',
-  sol: 'let t1 = 4 + 3;\nlet t2 = 10 - 6;\nlet t3 = 2 * 5;\npip.forward();\npip.turnLeft();\npip.build("wood", t1);\npip.turnRight();\npip.forward(2);\npip.turnLeft();\npip.build("wood", t2);\npip.turnRight();\npip.forward(2);\npip.turnLeft();\npip.build("wood", t3);',
-  par: 16, concept: ['-', '*'], conceptLabel: 'Used - and * in your code',
-  build: [...stack(2, 1, 7, 'wood'), ...stack(4, 1, 4, 'wood'), ...stack(6, 1, 10, 'wood')],
-  map: ['~~~~~~~~~', '~ggggggg~', '~Pgggggg~', '~ggNgggg~', '~~~~~~~~~'] },
+{ id: '3-4', ch: 3, title: 'Riddle Path',
+  story: 'Hoo! My path is a riddle. Walk 2 × 3 steps, turn right, walk 10 − 6 steps, turn right, then walk 9 − 4 steps. Let the computer work out the math!',
+  goal: 'Collect both gems and reach the flag. Work out each distance with * or -.',
+  learn: { title: 'Math in code', text: 'Code can do math: + adds, - takes away, * multiplies (times), / divides. let a = 2 * 3; puts 6 in a. Then pip.forward(a); walks 6 steps!', code: 'let a = 2 * 3;   // 6\nlet b = 10 - 6;  // 4\npip.forward(a);' },
+  hints: ['a is done for you. Make b with 10 - 6 and c with 9 - 4.', 'Walk a steps, turn right, walk b steps, turn right, walk c steps.', 'pip.forward(b); uses the number inside b.'],
+  starter: 'let a = 2 * 3;\n// let b = ...\n// let c = ...\n\npip.forward(a);\npip.turnRight();\n',
+  sol: 'let a = 2 * 3;\nlet b = 10 - 6;\nlet c = 9 - 4;\npip.forward(a);\npip.turnRight();\npip.forward(b);\npip.turnRight();\npip.forward(c);',
+  par: 8, concept: ['-', '*'], conceptLabel: 'Used - and * in your code',
+  map: ['~~~~~~~~~~', '~Pggggg*~~', '~~~~~~~g~~', '~~N~~~~g~~', '~~~~~~~g~~', '~~Fgggg*~~', '~~~~~~~~~~'] },
 { id: '3-5', ch: 3, title: 'Gold Counter',
   story: 'Build three gold towers: 2, then 3, then 4 tall. Then tell me how many gold blocks you used in total!',
   goal: 'Build the towers, add up the blocks in a total variable, and have Pip say the total.',
@@ -1765,7 +1771,7 @@ const LEVELS = [
   sol: 'let total = 0;\nfor (let h = 2; h <= 4; h++) {\n  pip.turnLeft();\n  pip.build("gold", h);\n  pip.turnRight();\n  pip.forward(2);\n  total = total + h;\n}\npip.say("I used " + total + " gold blocks!");',
   par: 9, concept: ['assign', 'string'], conceptLabel: 'Kept a total and said it',
   build: [...stack(1, 1, 2, 'gold'), ...stack(3, 1, 3, 'gold'), ...stack(5, 1, 4, 'gold')],
-  check: sim => saidNumber(sim, 9) ? null : 'Pip needs to say the total number of gold blocks (it should be 9).',
+  check: sim => saidNumber(sim, 9) ? null : M('Pip needs to say the total number of gold blocks (it should be 9).'),
   map: ['~~~~~~~~~', '~ggggggg~', '~Pgggggg~', '~gggggNg~', '~~~~~~~~~'] },
 
 /* ---------------- Chapter 4: Functions ---------------- */
@@ -1818,18 +1824,15 @@ const LEVELS = [
   par: 10, concept: ['params2'], conceptLabel: 'Used two inputs',
   build: [[1, 2, 'red'], [3, 4, 'orange'], [5, 6, 'yellow'], [7, 4, 'green'], [9, 2, 'blue']].flatMap(([x, h, c]) => stack(x, 1, h, c)),
   map: ['~~~~~~~~~~~~~', '~gggggggggg~~', '~Pgggggggggg~', '~ggggggNggg~~', '~~~~~~~~~~~~~'] },
-{ id: '4-6', ch: 4, title: 'Square Towers',
-  story: 'My fanciest towers are "square numbers": 1 × 1, 2 × 2 and 3 × 3 tall. Make a function that gives back the answer!',
-  goal: 'Write square(n) with return, and build towers 1, 4 and 9 blocks tall.',
-  learn: { title: 'return', text: 'return sends an answer back from a function. square(3) runs the function with n = 3, and return n * n; gives back 9. You can use that answer anywhere, like inside another command.', code: 'function square(n) {\n  return n * n;\n}\nlet big = square(3);  // 9' },
-  hints: ['Inside square, write: return n * n;', 'Then use it: tower(square(1), "purple");', 'Build towers with square(1), square(2) and square(3).'],
-  starter: 'function tower(h, color) {\n  pip.turnLeft();\n  pip.build(color, h);\n  pip.turnRight();\n  pip.forward(2);\n}\n\nfunction square(n) {\n  // give back n times n\n}\n\ntower(square(1), "purple");\n',
-  sol: 'function tower(h, color) {\n  pip.turnLeft();\n  pip.build(color, h);\n  pip.turnRight();\n  pip.forward(2);\n}\nfunction square(n) {\n  return n * n;\n}\ntower(square(1), "purple");\ntower(square(2), "purple");\ntower(square(3), "purple");',
-  par: 11, concept: ['return'], conceptLabel: 'Used return',
-  build: [[1, 1], [3, 4], [5, 9]].flatMap(([x, h]) => stack(x, 1, h, 'purple')),
-  map: ['~~~~~~~~~', '~ggggggg~', '~Pgggggg~', '~gggNggg~', '~~~~~~~~~'] },
-
-/* ---------------- Chapter 5: Conditionals ---------------- */
+{ id: '4-6', ch: 4, title: 'Bunny Hops',
+  story: 'My bunny friends hop in doubles: 2 steps, then 4, then 6! Make a function that gives back double a number, and use it to hop across the village.',
+  goal: 'Write double(n) with return, then collect the gems and reach the flag.',
+  learn: { title: 'return', text: 'return sends an answer back from a function. double(3) runs the function with n = 3, and return n * 2; gives back 6. You can use that answer anywhere, even inside another command: pip.forward(double(3));', code: 'function double(n) {\n  return n * 2;\n}\npip.forward(double(1));  // 2 steps' },
+  hints: ['Inside double, write: return n * 2;', 'Hop with pip.forward(double(1)), turn left, pip.forward(double(2)), turn right…', 'The last hop is pip.forward(double(3)).'],
+  starter: 'function double(n) {\n  // give back n times 2\n}\n\npip.forward(double(1));\n',
+  sol: 'function double(n) {\n  return n * 2;\n}\npip.forward(double(1));\npip.turnLeft();\npip.forward(double(2));\npip.turnRight();\npip.forward(double(3));',
+  par: 8, concept: ['return'], conceptLabel: 'Used return',
+  map: ['~~~~~~~~~~~', '~~~~~~~~~~~', '~~~~~~~~~~~', '~~~*gggggF~', '~~~g~~~~~~~', '~~~g~~~N~~~', '~~~g~~~~~~~', '~Pg*~~~~~~~', '~~~~~~~~~~~'] },
 { id: '5-1', ch: 5, title: 'Puddle Path',
   story: 'Puddles pop up all over my marsh! Your code will be tested in 3 different worlds, so Pip must LOOK before stepping.',
   goal: 'Reach the flag in all 3 test worlds.',
@@ -1875,7 +1878,7 @@ const LEVELS = [
   starter: 'for (let i = 0; i < 8; i++) {\n  // dig the bumps, fill the holes\n\n  pip.forward();\n}\n',
   sol: 'for (let i = 0; i < 8; i++) {\n  if (pip.heightAhead() > 1) {\n    pip.dig();\n  } else if (pip.heightAhead() < 1) {\n    pip.build("stone");\n  }\n  pip.forward();\n}',
   par: 6, concept: ['compare'], conceptLabel: 'Used > or <',
-  check: sim => { for (let x = 2; x <= 8; x++) if (sim.col(x, 2).blocks.length !== 1) return 'The road isn\'t flat yet: every square should be exactly 1 block high.'; return null; },
+  check: sim => { for (let x = 2; x <= 8; x++) if (sim.col(x, 2).blocks.length !== 1) return M('The road isn\'t flat yet: every square should be exactly 1 block high.'); return null; },
   maps: [
     ['~~~~~~~~~~~', '~ggggggggg~', '~PgR~gR~gF~', '~gNggggggg~', '~~~~~~~~~~~'],
     ['~~~~~~~~~~~', '~ggggggggg~', '~PR~gRR~gF~', '~gNggggggg~', '~~~~~~~~~~~'],
@@ -1888,7 +1891,7 @@ const LEVELS = [
   starter: 'let count = 0;\n\nfor (let i = 0; i < 8; i++) {\n  // if a gem is ahead, add 1 to count\n\n  pip.forward();\n}\n\n// say how many gems you found\n',
   sol: 'let count = 0;\nfor (let i = 0; i < 8; i++) {\n  if (pip.ahead() === "gem") {\n    count++;\n  }\n  pip.forward();\n}\npip.say(count);',
   par: 7, concept: ['if', 'assign'], conceptLabel: 'Counted with if',
-  check: sim => saidNumber(sim, sim.gemTotal) ? null : `Pip has to say how many gems were on the path (in this world it was ${sim.gemTotal}).`,
+  check: sim => saidNumber(sim, sim.gemTotal) ? null : M('Pip has to say how many gems were on the path (in this world it was {n}).', { n: sim.gemTotal }),
   maps: [
     ['~~~~~~~~~~~', '~ggggggggg~', '~Pg*gg*ggF~', '~gNggggggg~', '~~~~~~~~~~~'],
     ['~~~~~~~~~~~', '~ggggggggg~', '~P**g*g*gF~', '~gNggggggg~', '~~~~~~~~~~~'],
@@ -1995,7 +1998,7 @@ const LEVELS = [
   sol: 'let digs = 0;\nwhile (pip.heightAhead() > 1) {\n  pip.dig();\n  digs++;\n}\npip.say(digs);\nwhile (!pip.onFlag()) {\n  pip.forward();\n}',
   par: 8, concept: ['while', 'assign'], conceptLabel: 'Counted inside a while loop',
   legend: { P: { t: 'stone', h: 1, pip: 1 }, F: { t: 'stone', h: 1, flag: 1 } },
-  check: sim => { const want = [3, 5, 2][sim.vi]; return saidNumber(sim, want) ? null : `Pip needs to say how many digs it took (in this cave it was ${want}).`; },
+  check: sim => { const want = [3, 5, 2][sim.vi]; return saidNumber(sim, want) ? null : M('Pip needs to say how many digs it took (in this cave it was {n}).', { n: want }); },
   maps: [
     ['MMMMMMM', 'MNMMMMM', 'MP4rFMM', 'MMMMMMM'],
     ['MMMMMMM', 'MNMMMMM', 'MP6rFMM', 'MMMMMMM'],
@@ -2012,16 +2015,15 @@ const LEVELS = [
   par: 5, concept: ['array', ['forOf', 'index']], conceptLabel: 'Looped through an array',
   build: ['red', 'orange', 'yellow', 'green', 'blue', 'purple'].map((c, i) => [2 + i, 0, 2, c]),
   map: ['~~~~~~~~~~~', 'gN~~~~~~ggg', 'gP~~~~~~Fgg', 'gg~~~~~~ggg', '~~~~~~~~~~~'] },
-{ id: '8-2', ch: 8, title: 'Skyline',
-  story: 'My market needs a skyline! The tower heights are in an array. Use each number in order.',
-  goal: 'Build a blue tower for each number in heights.',
-  learn: { title: 'Index and length', text: 'Each item in an array has a position number called an index. The first is 0! heights[0] is the first item. heights.length is how many items there are.', code: 'const heights = [3, 5, 2];\nheights[0];      // 3\nheights.length;  // 3' },
-  hints: ['Loop with i from 0 while i < heights.length.', 'Build heights[i] blue blocks on Pip\'s left.', 'Then turn back and step forward.'],
-  starter: 'const heights = [3, 5, 2, 6, 4, 1];\n\nfor (let i = 0; i < heights.length; i++) {\n  pip.turnLeft();\n  // build heights[i] blue blocks\n  pip.turnRight();\n  pip.forward();\n}\n',
-  sol: 'const heights = [3, 5, 2, 6, 4, 1];\nfor (let i = 0; i < heights.length; i++) {\n  pip.turnLeft();\n  pip.build("blue", heights[i]);\n  pip.turnRight();\n  pip.forward();\n}',
-  par: 6, concept: ['index', 'length'], conceptLabel: 'Used [i] and .length',
-  build: [3, 5, 2, 6, 4, 1].flatMap((h, i) => stack(1 + i, 2, h, 'blue')),
-  map: ['~~~~~~~~~', '~~~~~~~~~', '~gggggg~~', '~Pgggggg~', '~ggNgggg~', '~~~~~~~~~'] },
+{ id: '8-2', ch: 8, title: 'Treasure Map',
+  story: 'Squawk! I found an old treasure map. It\'s a list of moves! Go through the list one move at a time and do what it says.',
+  goal: 'Follow the moves in the array to collect the gems and reach the flag.',
+  learn: { title: 'Index and length', text: 'Each item in an array has a position number called an index. The first is 0! moves[0] is the first move. moves.length is how many moves there are, so a loop with i < moves.length visits every one.', code: 'const moves = ["forward", "left"];\nmoves[0];       // "forward"\nmoves.length;   // 2' },
+  hints: ['Inside the loop, move is one item from the list.', 'if (move === "forward") step forward; else if (move === "left") turn left; else turn right.', 'The loop already goes through every item with moves[i].'],
+  starter: 'const moves = ["forward", "forward", "left", "forward", "forward", "right", "forward", "forward", "forward"];\n\nfor (let i = 0; i < moves.length; i++) {\n  const move = moves[i];\n  // "forward": step forward. "left": turn left. "right": turn right.\n\n}\n',
+  sol: 'const moves = ["forward", "forward", "left", "forward", "forward", "right", "forward", "forward", "forward"];\nfor (let i = 0; i < moves.length; i++) {\n  const move = moves[i];\n  if (move === "forward") {\n    pip.forward();\n  } else if (move === "left") {\n    pip.turnLeft();\n  } else {\n    pip.turnRight();\n  }\n}',
+  par: 10, concept: ['index', 'length'], conceptLabel: 'Used [i] and .length',
+  map: ['~~~~~~~~~', '~~~~~~~~~', '~~~~~~~~~', '~~~~~~~~~', '~~~*ggF~~', '~~~g~~N~~', '~Pg*~~~~~', '~~~~~~~~~'] },
 { id: '8-3', ch: 8, title: 'Copy Cat',
   story: 'Copy my top row of tiles onto the bottom row. Read each color into a list, then paint them back in order!',
   goal: 'Make the bottom row match the top row, in all 3 worlds.',
@@ -2031,7 +2033,7 @@ const LEVELS = [
   sol: 'const seen = [];\nfor (let i = 0; i < 5; i++) {\n  pip.forward();\n  seen.push(pip.here());\n}\npip.turnRight();\npip.forward(2);\npip.turnRight();\npip.forward(5);\npip.turnAround();\nfor (let i = 0; i < seen.length; i++) {\n  pip.forward();\n  pip.paint(seen[i]);\n}',
   par: 13, concept: ['push'], conceptLabel: 'Used push',
   legend: { A: { t: 'red', h: 1 }, B: { t: 'blue', h: 1 }, C: { t: 'yellow', h: 1 }, D: { t: 'green', h: 1 }, E: { t: 'purple', h: 1 } },
-  check: (sim, h) => { for (let x = 1; x <= 5; x++) if (h.topOf(sim.col(x, 3)) !== h.topOf(sim.col(x, 1))) return 'The bottom row doesn\'t match the top row yet.'; return null; },
+  check: (sim, h) => { for (let x = 1; x <= 5; x++) if (h.topOf(sim.col(x, 3)) !== h.topOf(sim.col(x, 1))) return M('The bottom row doesn\'t match the top row yet.'); return null; },
   maps: [
     ['~~~~~~~~', 'PABACDg~', 'ggggggg~', 'gggggggN', '~~~~~~~~'],
     ['~~~~~~~~', 'PCCBEAg~', 'ggggggg~', 'gggggggN', '~~~~~~~~'],
@@ -2068,16 +2070,18 @@ const LEVELS = [
   par: 14, concept: ['prop', ['forOf', 'index']], conceptLabel: 'Looped through objects',
   build: [['stone', 4], ['stone', 3], ['gold', 4], ['stone', 3], ['gold', 4], ['stone', 3], ['stone', 4]].flatMap(([b, h], i) => stack(1 + i, 2, h, b)),
   map: ['~~~~~~~~~~', '~~~~~~~~~~', '~ggggggg~~', '~Pgggggggg', '~ggggNgggg', '~~~~~~~~~~'] },
-{ id: '9-3', ch: 9, title: 'Growing Banners',
-  story: 'Each royal banner pole is one block taller than the last. Change the plan as you go!',
-  goal: 'Build 4 purple poles: 2, 3, 4 and 5 blocks tall.',
-  learn: { title: 'Changing properties', text: 'You can change a property, just like a variable: banner.height = banner.height + 1; or banner.height++. The object remembers the new value.', code: 'const banner = { block: "purple", height: 2 };\nbanner.height++;  // now 3' },
-  hints: ['Each time around the loop, build banner.block, banner.height.', 'Then make the height one bigger: banner.height++;', 'Move 2 steps between poles.'],
-  starter: 'const banner = { block: "purple", height: 2 };\n\nfor (let i = 0; i < 4; i++) {\n  pip.turnLeft();\n  pip.build(banner.block, banner.height);\n  pip.turnRight();\n  pip.forward(2);\n  // make the banner taller here\n}\n',
-  sol: 'const banner = { block: "purple", height: 2 };\nfor (let i = 0; i < 4; i++) {\n  pip.turnLeft();\n  pip.build(banner.block, banner.height);\n  pip.turnRight();\n  pip.forward(2);\n  banner.height++;\n}',
-  par: 7, concept: ['propAssign'], conceptLabel: 'Changed a property',
-  build: [2, 3, 4, 5].flatMap((h, i) => stack(1 + i * 2, 1, h, 'purple')),
-  map: ['~~~~~~~~~~~', '~ggggggggg~', '~Pggggggggg'.slice(0, 10) + '~', '~gggggNggg~', '~~~~~~~~~~~'] },
+{ id: '9-3', ch: 9, title: 'Treasure Bag',
+  story: 'Keep count of everything in one royal treasure bag! The bag is an object: it remembers how many gems you found and how many steps you took.',
+  goal: 'Walk to the flag, count gems and steps in the bag object, then say both numbers.',
+  learn: { title: 'Changing properties', text: 'You can change a property, just like a variable: bag.gems = bag.gems + 1; or bag.gems++. The object remembers the new value, so it can keep several counts at once.', code: 'const bag = { gems: 0, steps: 0 };\nbag.gems++;   // now 1\nbag.steps++;' },
+  hints: ['Before each step: if a gem is ahead, do bag.gems++.', 'After each step, do bag.steps++.', 'At the end: pip.say("I found " + bag.gems + " gems in " + bag.steps + " steps!");'],
+  starter: 'const bag = { gems: 0, steps: 0 };\n\nfor (let i = 0; i < 8; i++) {\n  // if a gem is ahead, add 1 to bag.gems\n  pip.forward();\n  // add 1 to bag.steps\n}\n\n// say how many gems and steps\n',
+  sol: 'const bag = { gems: 0, steps: 0 };\nfor (let i = 0; i < 8; i++) {\n  if (pip.ahead() === "gem") {\n    bag.gems++;\n  }\n  pip.forward();\n  bag.steps++;\n}\npip.say("I found " + bag.gems + " gems in " + bag.steps + " steps!");',
+  par: 9, concept: ['propAssign'], conceptLabel: 'Changed a property',
+  check: sim => saidNumber(sim, sim.gemTotal) && saidNumber(sim, 8) ? null : M('Pip has to say how many gems ({n} here) and how many steps (8).', { n: sim.gemTotal }),
+  maps: [
+    ['~~~~~~~~~~~', '~ggggggggg~', '~P*gg*g*gF~', '~gNggggggg~', '~~~~~~~~~~~'],
+    ['~~~~~~~~~~~', '~ggggggggg~', '~P**g*g**F~', '~gNggggggg~', '~~~~~~~~~~~']] },
 { id: '9-4', ch: 9, title: 'The Queen\'s Garden',
   story: 'My gardeners use a guide: dirt gets a flower, sand gets a palm, grass gets a tree. Look up what to plant!',
   goal: 'Plant the right thing on every patch, in all 3 gardens.',
@@ -2124,7 +2128,7 @@ const LEVELS = [
   sol: 'let gems = 0;\nwhile (!pip.onFlag()) {\n  pip.turnRight();\n  while (pip.isBlocked()) {\n    pip.turnLeft();\n  }\n  if (pip.ahead() === "gem") {\n    gems++;\n  }\n  pip.forward();\n}\npip.say(gems);',
   par: 11, concept: ['while', 'if', 'assign'], conceptLabel: 'Used while, if and a counter',
   legend: { P: { t: 'stone', h: 1, pip: 1 }, F: { t: 'stone', h: 1, flag: 1 }, '*': { t: 'stone', h: 1, gem: 1 } },
-  check: sim => saidNumber(sim, sim.gemTotal) ? null : `Pip has to say how many gems it found (in this maze it was ${sim.gemTotal}).`,
+  check: sim => saidNumber(sim, sim.gemTotal) ? null : M('Pip has to say how many gems it found (in this maze it was {n}).', { n: sim.gemTotal }),
   maps: [
     ['MMMMMMMMMMM', 'MPr*rMr*rFM', 'MMMMrMrMMMM', 'Mr*rrrrr*rM', 'MrMMMMMMMrM', 'Mrrr*rrrrrM', 'MMMMMMMMMMM'],
     ['MMMMMMMMMMM', 'MPMrrr*rrrM', 'MrMrMMMMMrM', 'M*rrMF*MMrM', 'MMMMMMrMr*M', 'Mrrrrr*rrrM', 'MMMMMMMMMMM'],
@@ -2158,7 +2162,121 @@ const CHIPS = {
 };
 const SYMBOLS = ['(', ')', '{', '}', ';', '"', '=', '===', '+', '-', '*', '<', '>', '!', '&&', '||', ',', '.', '[', ']', '%', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
 
-root.CodeIsleLevels = { CHAPTERS, LEVELS, SANDBOX, CHIPS, SYMBOLS };
+/* Gold challenges: one optional, extra-hard level per chapter. It opens when every level of its chapter is done. */
+const CHALLENGES = [
+{ id: 'c1', ch: 1, bonus: true, title: 'The Long Way Round',
+  story: 'Arr, a golden challenge! This path snakes round and round. Can you grab every gem using only 9 lines of code?',
+  goal: 'Collect all 4 gems and reach the flag in 9 lines or fewer.',
+  learn: { title: 'Plan before you code', text: 'Count the squares of each straight part first. Then each straight part is just one line: pip.forward(count);', code: 'pip.forward(8);\npip.turnRight();' },
+  hints: ['The first straight part is 8 steps long.', 'The turns go: right, right, left, left.', 'forward(8), right, forward(3), right, forward(7), left, forward(3), left, forward(7).'],
+  starter: '', sol: 'pip.forward(8);\npip.turnRight();\npip.forward(3);\npip.turnRight();\npip.forward(7);\npip.turnLeft();\npip.forward(3);\npip.turnLeft();\npip.forward(7);',
+  par: 9, concept: ['arg'], conceptLabel: 'Used number inputs',
+  map: ['~~~~~~~~~~~', '~Pggggggg*~', '~~~~~~~~~g~', '~~~~~~~~~g~', '~~*gggggg*~', '~~g~~~~N~~~', '~~g~~~~~~~~', '~~*ggggggF~', '~~~~~~~~~~~'] },
+{ id: 'c2', ch: 2, bonus: true, title: 'Pillar Parade',
+  story: 'Golden challenge! The parade needs stone pillars on BOTH sides of the road, 2 blocks tall, on every other square.',
+  goal: 'Build all 10 pillars from the blueprint and reach the flag.',
+  learn: { title: 'Big loop bodies', text: 'A loop can hold a whole routine: step, build left, build right, step. Work out one round, then repeat it.', code: 'for (let i = 0; i < 5; i++) {\n  pip.forward();\n  // build on both sides…\n  pip.forward();\n}' },
+  hints: ['Each round: step forward, build a pillar on the left and on the right, then step forward again.', 'turnLeft, build twice, turnAround, build twice, turnLeft.', 'There are 5 pairs of pillars, so loop 5 times.'],
+  starter: '', sol: 'for (let i = 0; i < 5; i++) {\n  pip.forward();\n  pip.turnLeft();\n  pip.build("stone");\n  pip.build("stone");\n  pip.turnAround();\n  pip.build("stone");\n  pip.build("stone");\n  pip.turnLeft();\n  pip.forward();\n}',
+  par: 10, concept: ['for'], conceptLabel: 'Used a for loop',
+  build: [2, 4, 6, 8, 10].flatMap(x => [...stack(x, 1, 2, 'stone'), ...stack(x, 3, 2, 'stone')]),
+  map: ['~~~~~~~~~~~~~', '~ggggggggggg~', '~PgggggggggF~', '~gggggggggggN', '~~~~~~~~~~~~~'] },
+{ id: 'c3', ch: 3, bonus: true, title: 'Up and Over',
+  story: 'Hoo-hoo! A golden challenge: build stairs UP the hill and back DOWN the other side. One variable must count up, then count down.',
+  goal: 'Build the stairs up and down, and finish on the gold star spot.',
+  learn: { title: 'Counting down', text: 'A variable can go down too: step = step - 1; (or step--). Going up the hill each step needs one more block; coming down, one less.', code: 'let step = 3;\nstep = step - 1;  // 2' },
+  hints: ['Going up: build step blocks, step forward, add 1 to step. Do it 4 times.', 'At the top, step is 5. Make it 3 for the first step down.', 'Going down: build step blocks, step forward, take 1 from step. 4 times.'],
+  starter: 'let step = 1;\n\n// up the hill\n\n// down the other side\n',
+  sol: 'let step = 1;\nfor (let i = 0; i < 4; i++) {\n  pip.build("stone", step);\n  pip.forward();\n  step = step + 1;\n}\nstep = step - 2;\nfor (let i = 0; i < 4; i++) {\n  pip.build("stone", step);\n  pip.forward();\n  step = step - 1;\n}',
+  par: 11, concept: ['assign'], conceptLabel: 'Changed a variable',
+  build: [[2, 1], [3, 2], [4, 3], [5, 4], [6, 3], [7, 2], [8, 1]].flatMap(([x, h]) => stack(x, 2, h, 'stone')),
+  endAt: [9, 2],
+  map: ['~~~~~~~~~~~~', '~gggggggggg~', '~Pggggggggg~', '~ggggNggggg~', '~~~~~~~~~~~~'] },
+{ id: 'c4', ch: 4, bonus: true, title: 'Royal Avenue',
+  story: 'A golden challenge from the mayor! The avenue needs tall pillars on both sides: red, blue, red, blue. One function, one input, four calls.',
+  goal: 'Write pair(color) and build all 8 pillars, then reach the flag.',
+  learn: { title: 'Functions with inputs', text: 'Give the function the colour as an input, so the same steps build red pillars or blue ones.', code: 'function pair(color) {\n  // build a pillar of color on each side\n}\npair("red");' },
+  hints: ['pair(color): forward, turn left, build color 3 high, turn around, build again, turn left, forward.', 'Use pip.build(color, 3);', 'pair("red"); pair("blue"); pair("red"); pair("blue");'],
+  starter: 'function pair(color) {\n\n}\n',
+  sol: 'function pair(color) {\n  pip.forward();\n  pip.turnLeft();\n  pip.build(color, 3);\n  pip.turnAround();\n  pip.build(color, 3);\n  pip.turnLeft();\n  pip.forward();\n}\npair("red");\npair("blue");\npair("red");\npair("blue");',
+  par: 12, concept: ['params', 'userCall2'], conceptLabel: 'Reused a function with an input',
+  build: [[2, 'red'], [4, 'blue'], [6, 'red'], [8, 'blue']].flatMap(([x, c]) => [...stack(x, 1, 3, c), ...stack(x, 3, 3, c)]),
+  map: ['~~~~~~~~~~~', '~ggggggggg~', '~PgggggggF~', '~gggggggggN', '~~~~~~~~~~~'] },
+{ id: 'c5', ch: 5, bonus: true, title: 'Swamp Sprint',
+  story: 'Ribbit! Golden challenge! Water, rocks AND bushes all over my swamp, different every time. One program must clear them all.',
+  goal: 'Reach the flag in all 3 worlds: build over water, dig rocks and bushes.',
+  learn: { title: 'Many choices', text: 'You can chain as many else if as you need. Pip checks them in order and does the first one that is true.', code: 'if (pip.ahead() === "water") {\n  pip.build("wood");\n} else if (pip.ahead() === "rock") {\n  pip.dig();\n} else if (pip.ahead() === "bush") {\n  pip.dig();\n}' },
+  hints: ['pip.dig() clears rocks and bushes.', 'Check water, then rock, then bush, then step forward.', 'The path is 10 steps long.'],
+  starter: '', sol: 'for (let i = 0; i < 10; i++) {\n  if (pip.ahead() === "water") {\n    pip.build("wood");\n  } else if (pip.ahead() === "rock") {\n    pip.dig();\n  } else if (pip.ahead() === "bush") {\n    pip.dig();\n  }\n  pip.forward();\n}',
+  par: 10, concept: ['elseIf'], conceptLabel: 'Used else if',
+  maps: [
+    ['~~~~~~~~~~~~~', '~ggggggggggg~', '~Po~bg~ob~gF~', '~gNggggggggg~', '~~~~~~~~~~~~~'],
+    ['~~~~~~~~~~~~~', '~ggggggggggg~', '~Pb~~oggb~oF~', '~gNggggggggg~', '~~~~~~~~~~~~~'],
+    ['~~~~~~~~~~~~~', '~ggggggggggg~', '~P~ob~bg~ogF~', '~gNggggggggg~', '~~~~~~~~~~~~~']] },
+{ id: 'c6', ch: 6, bonus: true, title: 'Rainbow Diamond',
+  story: 'A golden challenge, dearie: a diamond of colours! Yellow in the middle, then orange, then red. How far is each tile from the middle?',
+  goal: 'Paint the 7 × 7 diamond. Tiles outside it stay grass.',
+  learn: { title: 'Distance', text: 'Math.abs(n) makes a number positive. The distance from the middle is Math.abs(row - 3) + Math.abs(col - 3). Pick the colour from that distance.', code: 'const d = Math.abs(row - 3) + Math.abs(col - 3);\nif (d <= 1) {\n  pip.paint("yellow");\n}' },
+  hints: ['Work out d for each tile with Math.abs.', 'd 0 or 1: yellow. d 2: orange. d 3: red. More than 3: leave it.', 'Use if, else if, else if inside the two loops.'],
+  starter: '', sol: '',
+  par: 20, concept: ['nestedLoop', 'elseIf'], conceptLabel: 'Used else if in a nested loop',
+  paint: (() => { const out = []; for (let r = 0; r < 7; r++) for (let c = 0; c < 7; c++) { const d = Math.abs(r - 3) + Math.abs(c - 3); out.push([1 + c, 1 + r, d <= 1 ? 'yellow' : d === 2 ? 'orange' : d === 3 ? 'red' : 'grass']); } return out; })(),
+  map: ['~~~~~~~~~~', '~Pggggggg~', '~gggggggg~', '~gggggggg~', '~gggggggg~', '~gggggggg~', '~gggggggg~', '~gggggggg~', '~ggggggggN', '~~~~~~~~~~'] },
+{ id: 'c7', ch: 7, bonus: true, title: 'Flooded Maze',
+  story: 'Oi! Golden challenge! My mazes flooded. Use the right-hand rule, but when there\'s water in the way, build a bridge instead of turning.',
+  goal: 'Solve all 3 flooded mazes with the same code.',
+  learn: { title: 'Two conditions', text: '&& means "and": both parts must be true. while (pip.isBlocked() && pip.ahead() !== "water") keeps turning only when the way is blocked by something that is NOT water.', code: 'while (pip.isBlocked() && pip.ahead() !== "water") {\n  pip.turnLeft();\n}' },
+  hints: ['Start from your Cave Maze code.', 'Only turn left while blocked AND the thing ahead is not water.', 'Before stepping: if water is ahead, build a block.'],
+  starter: '', sol: 'while (!pip.onFlag()) {\n  pip.turnRight();\n  while (pip.isBlocked() && pip.ahead() !== "water") {\n    pip.turnLeft();\n  }\n  if (pip.ahead() === "water") {\n    pip.build("wood");\n  }\n  pip.forward();\n}',
+  par: 9, concept: ['while', '&&'], conceptLabel: 'Used while with &&',
+  legend: { P: { t: 'stone', h: 1, pip: 1 }, F: { t: 'stone', h: 1, flag: 1 } },
+  maps: [
+    ['MMMMMMMMM', 'MPr~MrrFM', 'MMMrMrMMM', 'Mrr~rr~rM', 'MrMMMMMrM', 'Mr~rMrrrM', 'MMMMMMMMM'],
+    ['MMMMMMMMM', 'MPMrr~rrM', 'M~MrMMMrM', 'MrrrMFMrM', 'MMMMMrM~M', 'Mrrr~rrrM', 'MMMMMMMMM'],
+    ['MMMMMMMMM', 'MPrr~rrrM', 'MMMMMMM~M', 'MFr~MrrrM', 'MMMrMrMMM', 'MMMrr~MMM', 'MMMMMMMMM']] },
+{ id: 'c8', ch: 8, bonus: true, title: 'Sort the Towers',
+  story: 'Squawk! Golden challenge! Measure my stone pillars, then build gold towers of the same heights, sorted from shortest on the left to tallest on the right.',
+  goal: 'Measure the pillars, then build the gold towers sorted, in all 3 worlds.',
+  learn: { title: 'Sorting', text: 'list.sort((a, b) => a - b) puts numbers smallest first. (b - a) puts the biggest first. pip.heightAhead() measures the pillar in front of Pip.', code: 'const h = [5, 2, 7];\nh.sort((a, b) => a - b);  // [2, 5, 7]' },
+  hints: ['Walk the path: turn left, push pip.heightAhead() into a list, turn right, step. 5 times.', 'Then sort the list. Pip builds the towers coming back, from right to left, so sort biggest first: (a, b) => b - a.', 'Turn around, then 5 times: step, turn left, build gold (height - 1), turn right.'],
+  starter: 'const h = [];\n\n', sol: 'const h = [];\nfor (let i = 0; i < 5; i++) {\n  pip.turnLeft();\n  h.push(pip.heightAhead());\n  pip.turnRight();\n  pip.forward();\n}\nh.sort((a, b) => b - a);\npip.turnAround();\nfor (let i = 0; i < 5; i++) {\n  pip.forward();\n  pip.turnLeft();\n  pip.build("gold", h[i] - 1);\n  pip.turnRight();\n}',
+  par: 15, concept: ['push', 'call:.sort'], conceptLabel: 'Used push and sort',
+  check: sim => { const want = [1, 2, 3, 4, 5].map(x => sim.col(x, 1).blocks.length).sort((a, b) => a - b); for (let x = 1; x <= 5; x++) if (sim.col(x, 3).blocks.length !== want[x - 1]) return M('The gold towers must match the pillars, sorted from shortest (left) to tallest (right).'); return null; },
+  maps: [
+    ['~~~~~~~~~', '~53624~~~', '~Pggggg~~', '~gggggN~~', '~~~~~~~~~'],
+    ['~~~~~~~~~', '~26473~~~', '~Pggggg~~', '~gggggN~~', '~~~~~~~~~'],
+    ['~~~~~~~~~', '~74352~~~', '~Pggggg~~', '~gggggN~~', '~~~~~~~~~']] },
+{ id: 'c9', ch: 9, bonus: true, title: 'Colour Census',
+  story: 'A golden challenge, royal builder. Count every red, blue and yellow tile on my road, then tell me the whole object.',
+  goal: 'Count the tile colours in the counts object and say it, in all 3 worlds.',
+  learn: { title: 'Counting by name', text: 'counts[pip.here()]++ looks up the property named after the tile\'s colour and adds 1 to it. pip.say(counts) says the whole object.', code: 'const counts = { red: 0, blue: 0 };\ncounts["red"]++;\npip.say(counts);  // { red: 1, blue: 0 }' },
+  hints: ['Walk 8 steps. After each step, pip.here() is the colour under Pip.', 'counts[pip.here()]++ adds 1 to that colour.', 'At the end, pip.say(counts);'],
+  starter: 'const counts = { red: 0, blue: 0, yellow: 0 };\n\n', sol: 'const counts = { red: 0, blue: 0, yellow: 0 };\nfor (let i = 0; i < 8; i++) {\n  pip.forward();\n  counts[pip.here()]++;\n}\npip.say(counts);',
+  par: 6, concept: ['index', 'propAssign'], conceptLabel: 'Counted with counts[...]++',
+  legend: { A: { t: 'red', h: 1 }, B: { t: 'blue', h: 1 }, C: { t: 'yellow', h: 1 } },
+  check: (sim, h) => { const n = { red: 0, blue: 0, yellow: 0 }; for (let x = 2; x <= 9; x++) n[h.topOf(sim.col(x, 2))]++; return sim.said.some(s => ['red', 'blue', 'yellow'].every(c => new RegExp(c + ': ' + n[c] + '\\b').test(s))) ? null : M('Pip has to say the counts object (here: red {r}, blue {b}, yellow {y}).', { r: n.red, b: n.blue, y: n.yellow }); },
+  maps: [
+    ['~~~~~~~~~~~', '~ggggggggg~', '~PABACCBACg', '~gNggggggg~', '~~~~~~~~~~~'],
+    ['~~~~~~~~~~~', '~ggggggggg~', '~PCCABBBACg', '~gNggggggg~', '~~~~~~~~~~~'],
+    ['~~~~~~~~~~~', '~ggggggggg~', '~PBAACACBBg', '~gNggggggg~', '~~~~~~~~~~~']] },
+{ id: 'c10', ch: 10, bonus: true, title: 'The Flooded Vault',
+  story: 'Bzzt! My very last trick: a flooded vault full of gems. Bridge the water, grab every gem, find the flag and tell me how many gems you got!',
+  goal: 'Solve all 3 vaults, collect every gem and say how many you found.',
+  learn: { title: 'Everything together', text: 'You know the right-hand rule, bridges over water, counters and if. Put them together, one idea at a time.', code: 'let gems = 0;\n// right-hand rule + bridges + counting' },
+  hints: ['Start from your Flooded Maze code.', 'Just before pip.forward(), if a gem is ahead, add 1 to gems.', 'After the loop, pip.say(gems);'],
+  starter: 'let gems = 0;\n\n', sol: 'let gems = 0;\nwhile (!pip.onFlag()) {\n  pip.turnRight();\n  while (pip.isBlocked() && pip.ahead() !== "water") {\n    pip.turnLeft();\n  }\n  if (pip.ahead() === "water") {\n    pip.build("wood");\n  }\n  if (pip.ahead() === "gem") {\n    gems++;\n  }\n  pip.forward();\n}\npip.say(gems);',
+  par: 14, concept: ['while', '&&', 'if'], conceptLabel: 'Used while, && and if',
+  legend: { P: { t: 'stone', h: 1, pip: 1 }, F: { t: 'stone', h: 1, flag: 1 }, '*': { t: 'stone', h: 1, gem: 1 } },
+  check: sim => saidNumber(sim, sim.gemTotal) ? null : M('Pip has to say how many gems it found (in this vault it was {n}).', { n: sim.gemTotal }),
+  maps: [
+    ['MMMMMMMMMMM', 'MPr*~Mr*rFM', 'MMMMrMrMMMM', 'Mr*r~rrr*rM', 'MrMMMMMMMrM', 'Mr~r*rr~rrM', 'MMMMMMMMMMM'],
+    ['MMMMMMMMMMM', 'MPMrrr*~rrM', 'MrMrMMMMMrM', 'M*r~MF*MMrM', 'MMMMMMrMr*M', 'Mrr~rr*rrrM', 'MMMMMMMMMMM'],
+    ['MMMMMMMMMMM', 'MPrr~*rrrrM', 'MMMMMMMMMrM', 'MFr*MMrr~*M', 'MMM~MMrMMMM', 'MMMr*rrMMMM', 'MMMMMMMMMMM']] },
+];
+CHALLENGES.find(c => c.id === 'c6').sol = NEXT_ROW(7) + 'for (let row = 0; row < 7; row++) {\n  for (let col = 0; col < 7; col++) {\n    const d = Math.abs(row - 3) + Math.abs(col - 3);\n    if (d <= 1) {\n      pip.paint("yellow");\n    } else if (d === 2) {\n      pip.paint("orange");\n    } else if (d === 3) {\n      pip.paint("red");\n    }\n    pip.forward();\n  }\n  nextRow();\n}';
+CHALLENGES.find(c => c.id === 'c6').starter = NEXT_ROW(7) + '\nfor (let row = 0; row < 7; row++) {\n  for (let col = 0; col < 7; col++) {\n    const d = Math.abs(row - 3) + Math.abs(col - 3);\n    // pick the colour from d\n\n    pip.forward();\n  }\n  nextRow();\n}\n';
+
+root.CodeIsleLevels = { CHAPTERS, LEVELS, CHALLENGES, SANDBOX, CHIPS, SYMBOLS };
 })(typeof window !== 'undefined' ? window : globalThis);
 </script>
 <script type="importmap">
@@ -2172,8 +2290,10 @@ import * as THREE from 'three';
 /* ===== Code Isle on the Oomba Kit: the 3D island and Pip are three.js; the title, dialogs, cards, buttons, icons,
    colours, font, sounds, results and settings are the kit's (Oomba.*), like Star Island and the other kit games. ===== */
 const E = window.CodeIsle, LV = window.CodeIsleLevels;
-const { CHAPTERS, LEVELS, SANDBOX, CHIPS, SYMBOLS } = LV;
-const BYID = Object.fromEntries([...LEVELS, SANDBOX].map(l => [l.id, l]));
+const { CHAPTERS, LEVELS, CHALLENGES, SANDBOX, CHIPS, SYMBOLS } = LV;
+const BYID = Object.fromEntries([...LEVELS, ...CHALLENGES, SANDBOX].map(l => [l.id, l]));
+const ALL_LEVELS = [...LEVELS, ...CHALLENGES];
+const challengeOf = chId => CHALLENGES.find(c => c.ch === chId);
 const HAS_BRB = typeof window.BRB === 'object' && !!window.BRB;
 const TOUCH = matchMedia('(pointer: coarse)').matches;
 const $ = s => document.querySelector(s);
@@ -2190,7 +2310,7 @@ const after = (ms, fn) => Oomba.time.real.after(ms, fn);   // menus and timers t
 // Pip is drawn in 3D; in the kit's cards Pip is the kit's own little robot-eyed Oomba with a spark antenna.
 const PIP = { name: 'Pip', hue: 'sky', spec: { species: 'oomba', colors: { base: 'sky' } } };
 const chapterOf = id => CHAPTERS.find(c => c.id === BYID[id].ch);
-const starsHtml = n => `<span class="ci-stars" role="img" aria-label="${n} of 3 stars">${[0, 1, 2].map(i => ICON(i < n ? 'star' : 'star-off')).join('')}</span>`;
+const starsHtml = n => `<span class="ci-stars" role="img" aria-label="${esc(tr('{n} of 3 stars', { n }))}">${[0, 1, 2].map(i => ICON(i < n ? 'star' : 'star-off')).join('')}</span>`;
 // The game's words (English; the kit's own buttons and screens are already in all 13 languages).
 Oomba.strings({ en: {
   'ci.tag': 'Write real JavaScript to help Pip the robot rebuild a whole island!', 'ci.free': 'Free Build', 'ci.book': 'Code Book', 'ci.home': 'Title screen',
@@ -2199,6 +2319,33 @@ Oomba.strings({ en: {
   'ci.locked': 'Finish the level before this one to unlock it!',
 } });
 const t = (k, v) => Oomba.t('ci.' + k, v);
+/* ---------- Other languages: the English text is the key, window.CodeIsleI18n holds the translations
+   (the kit's Oomba.strings looks them up, with its plural rules). Code stays English; only comments change. ---------- */
+Oomba.strings(window.CodeIsleI18n || {});
+const LANG = String(Oomba.lang || 'en'), IS_EN = /^en/.test(LANG);
+const fillIn = (s, v) => (v ? s.replace(/\{(\w+)\}/g, (m, k) => (k in v ? v[k] : m)) : s);
+function tr(s, v) {
+  if (s == null || s === '') return s;
+  const sv = v && Object.fromEntries(Object.entries(v).map(([k, x]) => [k, String(x)]));   // strings, so numbers keep 0-9 digits like the code
+  const r = Oomba.t(s, sv);
+  return r === s && sv ? fillIn(s, sv) : r;
+}
+window.CodeIsleT = tr;
+if (!IS_EN) {
+  for (const b of document.querySelectorAll('#palTabs button, #walkHint')) b.textContent = tr(b.textContent);
+  for (const e of document.querySelectorAll('[aria-label]')) e.setAttribute('aria-label', tr(e.getAttribute('aria-label')));
+}
+const lowEn = s => (IS_EN ? s.toLowerCase() : s);
+const trCode = code => (IS_EN || !code ? code : code.replace(/\/\/ ?(.+)$/gm, (m, c) => '// ' + tr(c.trim())));
+if (!IS_EN) {
+  for (const ch of CHAPTERS) { for (const k of ['name', 'place', 'skill', 'intro', 'outro', 'badge']) ch[k] = tr(ch[k]); ch.npc.name = tr(ch.npc.name); }
+  for (const L of [...LEVELS, ...CHALLENGES, SANDBOX]) {
+    for (const k of ['title', 'story', 'goal', 'conceptLabel']) if (L[k]) L[k] = tr(L[k]);
+    L.learn = Object.assign({}, L.learn, { title: tr(L.learn.title), text: tr(L.learn.text), code: trCode(L.learn.code) });
+    L.hints = L.hints.map(h => tr(h)); L.starter = trCode(L.starter); L.sol = trCode(L.sol);
+  }
+  for (const d of E.PIP_DOCS) d[2] = tr(d[2]);
+}
 // Sounds: the kit's voices (the SDK's names pass through to BRB.sfx).
 const SFX = { step: 'step', build: 'pop', plant: 'pop', dig: 'whoosh', gem: 'spark', fail: 'hurt', splash: 'splash', win: 'win', click: 'select', wrong: 'wrong', jump: 'whoosh', star: 'spark', correct: 'correct', levelup: 'levelup' };
 let lastSfx = 0;
@@ -2227,6 +2374,7 @@ function save() {
 const totalStars = () => Object.values(SAVE.done).reduce((a, d) => a + (d.s || 0), 0);
 function unlocked(id) {
   if (id === 'free' || SAVE.settings.unlockAll) return true;
+  const L = BYID[id]; if (L && L.bonus) return LEVELS.filter(l => l.ch === L.ch).every(l => SAVE.done[l.id]);   // a gold challenge opens when its chapter is done
   const i = LEVELS.findIndex(l => l.id === id);
   return i === 0 || !!SAVE.done[id] || !!SAVE.done[LEVELS[i - 1].id];
 }
@@ -2246,6 +2394,8 @@ const PLOTS = [];
       const px = cx + ((i % 3) - (cols - 1) / 2) * 17, pz = cz + (Math.floor(i / 3) - (rows - 1) / 2) * 14;
       PLOTS.push({ id: l.id, level: l, ch: ch.id, ox: Math.round(px - s.W / 2), oz: Math.round(pz - s.D / 2), W: s.W, D: s.D, cx, cz });
     });
+    const gc = challengeOf(ch.id);   // the gold challenge sits in its own row, in the middle
+    if (gc) { const s = new E.Sim(gc, 0), pz = cz + (rows - (rows - 1) / 2) * 14; PLOTS.push({ id: gc.id, level: gc, ch: ch.id, ox: Math.round(cx - s.W / 2), oz: Math.round(pz - s.D / 2), W: s.W, D: s.D, cx, cz }); }
   });
   PLOTS.push({ id: 'free', level: SANDBOX, ch: 0, ox: -8, oz: -8, W: 16, D: 16, cx: 0, cz: 0 });
 }
@@ -2946,7 +3096,7 @@ function buildPlotLabels() {
     const done = SAVE.done[p.id], open = unlocked(p.id);
     const b = el('button', 'ci-plabel' + (p.id === 'free' ? '' : !open ? ' lock' : !done ? ' open' : ''));
     b.type = 'button';
-    b.innerHTML = p.id === 'free' ? `${ICON('pencil')}${esc(t('free'))}` : `${!open ? ICON('lock') : ''}${p.id}${done ? ' ' + starsHtml(done.s) : ''}`;
+    b.innerHTML = p.id === 'free' ? `${ICON('pencil')}${esc(t('free'))}` : `${!open ? ICON('lock') : p.level.bonus ? ICON('trophy') : ''}${p.level.bonus ? esc(tr('Gold')) : p.id}${done ? ' ' + starsHtml(done.s) : ''}`;
     b.addEventListener('click', () => { if (p.id === 'free' || unlocked(p.id)) { sfx('click'); startLevel(p.id, mode === 'walk' ? 'walk' : 'map'); } else Oomba.ui.toast(t('locked')); });
     $('#labels').appendChild(b);
     plotLabels.push({ el: b, v: new THREE.Vector3(p.ox + p.W / 2, 3.2, p.oz + p.D / 2), p });
@@ -2983,10 +3133,10 @@ async function onPlay() {
     SAVE.seen.intro = 1; save();
     setCam({ tx: 0, ty: 0, tz: 0, dist: 180, phi: 0.9 });
     await story([
-      [PIP, 'Beep boop! Hello! I\'m Pip, a little builder robot. Where… where am I?'],
-      [CHAPTERS[0].npc, 'Ahoy! You\'re on Code Isle, or what\'s left of it. The Glitch turned our whole island grey and broken!'],
-      [PIP, 'I can build it back! But I only understand code. Will you write the code for me, friend?'],
-      [CHAPTERS[0].npc, 'Every bit of code you write builds a piece of the island back, and it stays built! Let\'s start on my beach.'],
+      [PIP, tr('Beep boop! Hello! I\'m Pip, a little builder robot. Where… where am I?')],
+      [CHAPTERS[0].npc, tr('Ahoy! You\'re on Code Isle, or what\'s left of it. The Glitch turned our whole island grey and broken!')],
+      [PIP, tr('I can build it back! But I only understand code. Will you write the code for me, friend?')],
+      [CHAPTERS[0].npc, tr('Every bit of code you write builds a piece of the island back, and it stays built! Let\'s start on my beach.')],
     ]);
     startLevel('1-1', 'walk'); return;
   }
@@ -3012,14 +3162,14 @@ function selectChapter(id) {
 function chapterUnlocked(ch) { const first = LEVELS.find(l => l.ch === ch.id); return unlocked(first.id); }
 const portrait = (spec, size, mood) => Oomba.ui.portrait(spec, { size, mood });
 function renderMap() {
-  $('#mStars').innerHTML = `${ICON('star')}<span class="ok-num">${totalStars()} / ${LEVELS.length * 3}</span>`;
+  $('#mStars').innerHTML = `${ICON('star')}<span class="ok-num">${totalStars()} / ${ALL_LEVELS.length * 3}</span>`;
   const row = $('#chapRow'); row.innerHTML = '';
   for (const ch of CHAPTERS) {
     const open = chapterUnlocked(ch), lv = LEVELS.filter(l => l.ch === ch.id), done = lv.every(l => SAVE.done[l.id]);
     const b = el('button', 'ci-chap' + (ch.id === selChapter ? ' on' : '') + (open ? '' : ' lock')); b.type = 'button';
     b.appendChild(portrait(ch.npc.spec, 46));
     if (done) b.appendChild(el('span', 'done', ICON('check')));
-    b.setAttribute('aria-label', `Chapter ${ch.id}: ${ch.name}`); b.setAttribute('aria-pressed', String(ch.id === selChapter));
+    b.setAttribute('aria-label', tr('Chapter {n}: {name}', { n: ch.id, name: ch.name })); b.setAttribute('aria-pressed', String(ch.id === selChapter));
     b.addEventListener('click', () => { sfx('click'); selectChapter(ch.id); });
     row.appendChild(b);
   }
@@ -3028,13 +3178,21 @@ function renderMap() {
   const got = lv.reduce((a, l) => a + ((SAVE.done[l.id] || {}).s || 0), 0);
   const info = $('#chapInfo'); info.innerHTML = '';
   info.appendChild(portrait(ch.npc.spec, 56, 'happy'));
-  info.appendChild(el('div', '', `<b>${ch.id}. ${esc(ch.name)}</b><small>${esc(ch.place)} · Learn: ${esc(ch.skill)} · ${got} / ${lv.length * 3} stars</small>`));
+  info.appendChild(el('div', '', `<b>${ch.id}. ${esc(ch.name)}</b><small>${esc(ch.place)} · ${esc(tr('Learn: {skill}', { skill: ch.skill }))} · ${esc(tr('{got} / {all} stars', { got, all: lv.length * 3 }))}</small>`));
   const g = $('#lvlGrid'); g.innerHTML = '';
   for (const l of lv) {
     const d = SAVE.done[l.id], open = unlocked(l.id);
     const b = el('button', 'ci-lvl' + (open ? (d ? '' : ' open') : ' lock'), `<span class="n">${open ? '' : ICON('lock')}${l.id}</span><span>${esc(l.title)}</span>${d ? starsHtml(d.s) : ''}`);
     b.type = 'button';
     b.addEventListener('click', () => { if (open) { sfx('click'); startLevel(l.id); } else Oomba.ui.toast(t('locked')); });
+    g.appendChild(b);
+  }
+  const gc = challengeOf(ch.id);
+  if (gc) {
+    const d = SAVE.done[gc.id], open = unlocked(gc.id);
+    const b = el('button', 'ci-lvl ci-gold' + (open ? (d ? '' : ' open') : ' lock'), `<span class="n">${ICON(open ? 'trophy' : 'lock')}${esc(tr('Gold'))}</span><span>${esc(gc.title)}</span>${d ? starsHtml(d.s) : open ? '' : `<span class="ci-why">${esc(tr('Finish the chapter'))}</span>`}`);
+    b.type = 'button';
+    b.addEventListener('click', () => { if (open) { sfx('click'); startLevel(gc.id); } else Oomba.ui.toast(tr('Finish every level in this chapter to open its gold challenge!')); });
     g.appendChild(b);
   }
   buildPlotLabels();
@@ -3063,7 +3221,7 @@ const exHtml = code => `<div class="ci-ex">${E.highlight(code)}</div>`;
 function learnCard(level) {
   const L = level.learn;
   const m = openCard(`<h2 class="ok-h2">${esc(L.title)}</h2><p>${esc(L.text)}</p>${exHtml(L.code)}<div class="ci-acts"><i data-x></i></div>`);
-  cardBtn(m, '[data-x]', 'Got it!', { kind: 'hot', icon: 'check', onPress: closeCard }).setAttribute('data-ok-focus', '');
+  cardBtn(m, '[data-x]', tr('Got it!'), { kind: 'hot', icon: 'check', onPress: closeCard }).setAttribute('data-ok-focus', '');
 }
 
 /* ---------- Code Book ---------- */
@@ -3076,19 +3234,19 @@ function bookCard(tab = 'lessons') {
       body += `<h3 data-ch="${ch.id}">${ch.id}. ${esc(ch.skill)}</h3>`;
       for (const l of ls) body += `<p><b>${esc(l.learn.title)}</b>: ${esc(l.learn.text)}</p>${exHtml(l.learn.code)}`;
     }
-    if (reached.length < LEVELS.length) body += `<p><i>Keep playing to fill your Code Book with more lessons!</i></p>`;
+    if (reached.length < LEVELS.length) body += `<p><i>${esc(tr('Keep playing to fill your Code Book with more lessons!'))}</i></p>`;
   } else if (tab === 'pip') {
     body = E.PIP_DOCS.map(d => `<div class="ci-cmd"><code>${esc(d[1])}</code><div>${esc(d[2])}</div></div>`).join('');
-    body += `<h3>Also handy</h3><div class="ci-cmd"><code>console.log(value)</code><div>Shows a value under your code. Great for checking what a variable holds!</div></div><div class="ci-cmd"><code>Math.floor(n), Math.random()</code><div>Round down a number, or get a random number between 0 and 1.</div></div>`;
+    body += `<h3>${esc(tr('Also handy'))}</h3><div class="ci-cmd"><code>console.log(value)</code><div>${esc(tr('Shows a value under your code. Great for checking what a variable holds!'))}</div></div><div class="ci-cmd"><code>Math.floor(n), Math.random()</code><div>${esc(tr('Round down a number, or get a random number between 0 and 1.'))}</div></div>`;
   } else {
-    body = `<p>Use these names with pip.build(…) and pip.paint(…):</p><div>` + E.BLOCKS.map(b => `<span class="ci-sw"><i style="background:${COLORS[b]}"></i>"${b}"</span>`).join('') + '</div>' +
-      `<h3>Plants</h3><p>Use these with pip.plant(…):</p><div>` + E.PLANTS.map(p => `<span class="ci-sw">"${p}"</span>`).join('') + '</div>' +
-      `<h3>What pip.ahead() can see</h3><p>"water", "edge", "rock", "gem", "flag", "friend", a plant's name, or the name of the top block (like "grass").</p>`;
+    body = `<p>${esc(tr('Use these names with pip.build(…) and pip.paint(…):'))}</p><div>` + E.BLOCKS.map(b => `<span class="ci-sw"><i style="background:${COLORS[b]}"></i>"${b}"</span>`).join('') + '</div>' +
+      `<h3>${esc(tr('Plants'))}</h3><p>${esc(tr('Use these with pip.plant(…):'))}</p><div>` + E.PLANTS.map(p => `<span class="ci-sw">"${p}"</span>`).join('') + '</div>' +
+      `<h3>${esc(tr('What pip.ahead() can see'))}</h3><p>${esc(tr('"water", "edge", "rock", "gem", "flag", "friend", a plant\'s name, or the name of the top block (like "grass").'))}</p>`;
   }
-  const m = openCard(`<h2 class="ok-h2">Code Book</h2><div class="ci-tabs2"><i data-t="lessons"></i><i data-t="pip"></i><i data-t="blocks"></i></div>${body}<div class="ci-acts"><i data-x></i></div>`);
-  for (const [k, label] of [['lessons', 'Lessons'], ['pip', "Pip's commands"], ['blocks', 'Blocks']]) cardBtn(m, `[data-t="${k}"]`, label, { kind: 'quiet', onPress: () => bookCard(k) }).setAttribute('aria-pressed', String(tab === k));
+  const m = openCard(`<h2 class="ok-h2">${esc(t('book'))}</h2><div class="ci-tabs2"><i data-t="lessons"></i><i data-t="pip"></i><i data-t="blocks"></i></div>${body}<div class="ci-acts"><i data-x></i></div>`);
+  for (const [k, label] of [['lessons', tr('Lessons')], ['pip', tr("Pip's commands")], ['blocks', tr('Blocks')]]) cardBtn(m, `[data-t="${k}"]`, label, { kind: 'quiet', onPress: () => bookCard(k) }).setAttribute('aria-pressed', String(tab === k));
   m.querySelectorAll('h3[data-ch]').forEach(h => { const ch = CHAPTERS.find(c => c.id === +h.dataset.ch); h.prepend(portrait(ch.npc.spec, 34)); });
-  cardBtn(m, '[data-x]', 'Close', { kind: 'go', onPress: closeCard }).setAttribute('data-ok-focus', '');
+  cardBtn(m, '[data-x]', tr('Close'), { kind: 'go', onPress: closeCard }).setAttribute('data-ok-focus', '');
 }
 
 /* ---------- Settings: the game's own choices, then the kit's settings (sound, captions, text size, motion) ---------- */
@@ -3099,18 +3257,18 @@ function applySettings() {
   LH = T[1];
   if (BTN.speed) BTN.speed.textContent = speed() + '×';
   const kb = SAVE.settings.keyboard; $('#code').setAttribute('inputmode', kb ? 'text' : 'none');
-  const k = $('#kbBtn'); if (k) { k.hidden = !TOUCH; k.lastChild.textContent = `Keyboard ${kb ? 'on' : 'off'}`; k.setAttribute('aria-pressed', String(!!kb)); }
+  const k = $('#kbBtn'); if (k) { k.hidden = !TOUCH; k.lastChild.textContent = kb ? tr('Keyboard on') : tr('Keyboard off'); k.setAttribute('aria-pressed', String(!!kb)); }
   if (cur) renderCode();
 }
 function settingsCard() {
   const s = SAVE.settings;
   const seg = (key, opts) => `<div class="ok-seg" role="group">${opts.map(([v, l]) => `<button type="button" data-k="${key}" data-v="${v}" aria-pressed="${String(s[key]) === String(v)}">${l}</button>`).join('')}</div>`;
-  const m = openCard(`<h2 class="ok-h2">Code Isle settings</h2>
-    <div class="ok-srow"><div>Pip's speed<small>How fast Pip runs your code</small></div>${seg('speed', [[1, '1×'], [2, '2×'], [4, '4×']])}</div>
-    <div class="ok-srow"><div>Code size<small>How big the letters in your code are</small></div>${seg('text', [['s', 'S'], ['m', 'M'], ['l', 'L']])}</div>
-    ${TOUCH ? `<div class="ok-srow"><div>Phone keyboard<small>Off: tap the chips to add code. On: type it yourself.</small></div>${seg('keyboard', [[false, 'Off'], [true, 'On']])}</div>` : ''}
-    <div class="ok-srow"><div>Unlock every level<small>For teachers, or if you already know some code</small></div>${seg('unlockAll', [[false, 'No'], [true, 'Yes']])}</div>
-    <div class="ok-srow"><div>Start over<small>Clears your stars, code and builds</small></div><i data-reset></i></div>
+  const m = openCard(`<h2 class="ok-h2">${esc(tr('Code Isle settings'))}</h2>
+    <div class="ok-srow"><div>${esc(tr("Pip's speed"))}<small>${esc(tr('How fast Pip runs your code'))}</small></div>${seg('speed', [[1, '1×'], [2, '2×'], [4, '4×']])}</div>
+    <div class="ok-srow"><div>${esc(tr('Code size'))}<small>${esc(tr('How big the letters in your code are'))}</small></div>${seg('text', [['s', 'S'], ['m', 'M'], ['l', 'L']])}</div>
+    ${TOUCH ? `<div class="ok-srow"><div>${esc(tr('Phone keyboard'))}<small>${esc(tr('Off: tap the chips to add code. On: type it yourself.'))}</small></div>${seg('keyboard', [[false, esc(tr('Off'))], [true, esc(tr('On'))]])}</div>` : ''}
+    <div class="ok-srow"><div>${esc(tr('Unlock every level'))}<small>${esc(tr('For teachers, or if you already know some code'))}</small></div>${seg('unlockAll', [[false, esc(tr('No'))], [true, esc(tr('Yes'))]])}</div>
+    <div class="ok-srow"><div>${esc(tr('Start over'))}<small>${esc(tr('Clears your stars, code and builds'))}</small></div><i data-reset></i></div>
     <div class="ci-acts"><i data-more></i><i data-x></i></div>`);
   m.querySelectorAll('[data-k]').forEach(b => b.addEventListener('click', () => {
     let v = b.dataset.v; if (v === 'true') v = true; else if (v === 'false') v = false; else if (/^\d+$/.test(v)) v = +v;
@@ -3119,13 +3277,13 @@ function settingsCard() {
     if (b.dataset.k === 'unlockAll') { rebuildStatic(); if (mode === 'map') renderMap(); }
     settingsCard();
   }));
-  cardBtn(m, '[data-reset]', 'Start over', { kind: 'quiet', icon: 'restart', onPress: () => {
-    const c = openCard(`<h2 class="ok-h2">Start over?</h2><p>This clears all your stars, code and everything you built. It can't be undone.</p><div class="ci-acts"><i data-no></i><i data-yes></i></div>`);
-    cardBtn(c, '[data-no]', 'Keep my island', { kind: 'go', onPress: settingsCard }).setAttribute('data-ok-focus', '');
-    cardBtn(c, '[data-yes]', 'Yes, start over', { kind: 'quiet', onPress: () => { SAVE.done = {}; SAVE.drafts = {}; SAVE.free = null; SAVE.seen = {}; SAVE.hints = {}; SAVE.found = []; SAVE.look = null; applyLook(); buildSparkles(); save(); rebuildStatic(); closeCard(); goTitle(); Oomba.ui.toast('Your island is fresh and foggy again.'); } });
+  cardBtn(m, '[data-reset]', tr('Start over'), { kind: 'quiet', icon: 'restart', onPress: () => {
+    const c = openCard(`<h2 class="ok-h2">${esc(tr('Start over?'))}</h2><p>${esc(tr("This clears all your stars, code and everything you built. It can't be undone."))}</p><div class="ci-acts"><i data-no></i><i data-yes></i></div>`);
+    cardBtn(c, '[data-no]', tr('Keep my island'), { kind: 'go', onPress: settingsCard }).setAttribute('data-ok-focus', '');
+    cardBtn(c, '[data-yes]', tr('Yes, start over'), { kind: 'quiet', onPress: () => { SAVE.done = {}; SAVE.drafts = {}; SAVE.free = null; SAVE.seen = {}; SAVE.hints = {}; SAVE.found = []; SAVE.look = null; applyLook(); buildSparkles(); save(); rebuildStatic(); closeCard(); goTitle(); Oomba.ui.toast(tr('Your island is fresh and foggy again.')); } });
   } });
-  cardBtn(m, '[data-more]', 'Sound and more', { kind: 'quiet', icon: 'settings', onPress: () => Oomba.ui.settings() });
-  cardBtn(m, '[data-x]', 'Done', { kind: 'go', icon: 'check', onPress: closeCard }).setAttribute('data-ok-focus', '');
+  cardBtn(m, '[data-more]', tr('Sound and more'), { kind: 'quiet', icon: 'settings', onPress: () => Oomba.ui.settings() });
+  cardBtn(m, '[data-x]', tr('Done'), { kind: 'go', icon: 'check', onPress: closeCard }).setAttribute('data-ok-focus', '');
 }
 
 /* ---------- The level ---------- */
@@ -3141,13 +3299,13 @@ async function startLevel(id, from) {
   rebuildStatic();
   showOnly('level');
   document.body.classList.remove('pbig', 'psmall');
-  const ch = level.sandbox ? { npc: PIP, place: 'Free Build' } : chapterOf(id);
-  $('#lTitle').textContent = level.sandbox ? t('free') : `${id} ${level.title}`;
+  const ch = level.sandbox ? { npc: PIP, place: t('free') } : chapterOf(id);
+  $('#lTitle').textContent = level.sandbox ? t('free') : level.bonus ? tr('Gold challenge: {title}', { title: level.title }) : `${id} ${level.title}`;
   const best = SAVE.done[id];
-  $('#lSub').innerHTML = level.sandbox ? 'Build anything you like!' : `${esc(ch.place)} · ${best ? starsHtml(best.s) : 'New!'}`;
+  $('#lSub').innerHTML = level.sandbox ? esc(tr('Build anything you like!')) : `${esc(ch.place)} · ${best ? starsHtml(best.s) : esc(tr('New!'))}`;
   $('#pFace').innerHTML = ''; $('#pFace').appendChild(portrait(ch.npc.spec, 44));
-  $('#pGoal').innerHTML = `<b>Goal:</b> ${esc(level.goal)}`;
-  setBtn(BTN.learn, level.sandbox ? 'hint' : 'book', level.sandbox ? 'Ideas' : t('learn'));
+  $('#pGoal').innerHTML = `<b>${esc(tr('Goal:'))}</b> ${esc(level.goal)}`;
+  setBtn(BTN.learn, level.sandbox ? 'hint' : 'book', level.sandbox ? tr('Ideas') : t('learn'));
   const code = level.sandbox ? ((SAVE.free && SAVE.free.code) || level.starter) : (SAVE.drafts[id] ?? (best && best.code) ?? level.starter);
   setCode(code, true); undoStack.length = 0; ta.setSelectionRange(ta.value.length, ta.value.length);
   setOut('');
@@ -3162,7 +3320,7 @@ async function startLevel(id, from) {
     const first = LEVELS.find(l => l.ch === level.ch);
     if (first.id === id && !SAVE.seen['ch' + level.ch]) { SAVE.seen['ch' + level.ch] = 1; save(); await say(ch.npc, ch.intro); if (!cur || cur.level !== level) return; }
     if (cur && cur.level === level) {
-      const r = await say(ch.npc, level.story, [{ label: `Learn: ${level.learn.title}`, kind: 'quiet', value: 1, icon: 'book' }, { label: t('letsCode'), kind: 'hot', value: 0, icon: 'play' }]);
+      const r = await say(ch.npc, level.story, [{ label: tr('Learn: {skill}', { skill: level.learn.title }), kind: 'quiet', value: 1, icon: 'book' }, { label: t('letsCode'), kind: 'hot', value: 0, icon: 'play' }]);
       if (r === 1 && cur && cur.level === level) learnCard(level);
     }
   } else if (!SAVE.seen.free) { SAVE.seen.free = 1; save(); await say(PIP, level.story); }
@@ -3183,8 +3341,8 @@ function renderTests(res) {
   box.hidden = false;
   for (let i = 0; i < n; i++) {
     const v = res && res.results[i] ? (res.results[i].verdict.ok ? 'ok' : 'no') : '';
-    const b = el('button', v + (i === shownVi ? ' on' : ''), `${v ? ICON(v === 'ok' ? 'check' : 'cross') : ICON('flag')}World ${i + 1}`); b.type = 'button';
-    b.setAttribute('aria-label', `World ${i + 1}${v === 'ok' ? ': works' : v === 'no' ? ': not yet' : ''}`);
+    const b = el('button', v + (i === shownVi ? ' on' : ''), `${v ? ICON(v === 'ok' ? 'check' : 'cross') : ICON('flag')}${esc(tr('World {n}', { n: i + 1 }))}`); b.type = 'button';
+    b.setAttribute('aria-label', tr('World {n}', { n: i + 1 }) + (v === 'ok' ? ': ' + tr('works') : v === 'no' ? ': ' + tr('not yet') : ''));
     b.addEventListener('click', () => {
       if (anim.on) return; sfx('click');
       if (res) { resetWorld(i); play(res.results[i].sim.events, () => afterRun(res, i, true)); } else resetWorld(i);
@@ -3200,7 +3358,7 @@ function setRunning(on) {
 }
 function runCode() {
   if (!cur) return;
-  if (anim.on) { anim.on = false; anim.done = null; setRunning(false); resetWorld(shownVi); setOut('Stopped.'); return; }
+  if (anim.on) { anim.on = false; anim.done = null; setRunning(false); resetWorld(shownVi); setOut(esc(tr('Stopped.'))); return; }
   const code = ta.value;
   runs++;
   const res = E.runLevel(cur.level, code);
@@ -3208,7 +3366,7 @@ function runCode() {
   if (res.syntax) {
     resetWorld(shownVi);
     showError(res.syntax);
-    bubble('Hmm… I can\'t read that code yet!', 2600, true);
+    bubble(tr('Hmm… I can\'t read that code yet!'), 2600, true);
     pulseHint();
     return;
   }
@@ -3224,16 +3382,16 @@ function afterRun(res, vi, replay) {
   if (cur.level.sandbox) {
     if (r.sim.error) { showError(r.sim.error); return; }
     SAVE.free = { code: ta.value, diff: E.diffSim(cur.level, r.sim) }; save();
-    setOut(`<div class="good">${ICON('check')}<span>Saved! Your build is now part of the island.</span></div>`);
+    setOut(`<div class="good">${ICON('check')}<span>${esc(tr('Saved! Your build is now part of the island.'))}</span></div>`);
     sfx('correct', true);
     return;
   }
   if (res.ok && !replay) { success(res); return; }
   const v = r.verdict, n = res.results.length;
-  if (v.ok) { setOut(`<div class="good">${ICON('check')}<span>World ${vi + 1} works!${res.ok ? '' : ' Now fix the other worlds.'}</span></div>`); return; }
-  if (r.sim.error) showError(r.sim.error, n > 1 ? `World ${vi + 1}: ` : '');
+  if (v.ok) { setOut(`<div class="good">${ICON('check')}<span>${esc(tr('World {n} works!', { n: vi + 1 }) + (res.ok ? '' : ' ' + tr('Now fix the other worlds.')))}</span></div>`); return; }
+  if (r.sim.error) showError(r.sim.error, n > 1 ? tr('World {n}', { n: vi + 1 }) + ': ' : '');
   else {
-    setOut(v.fails.map(f => `<div class="bad">${ICON('cross')}<span>${n > 1 ? `World ${vi + 1}: ` : ''}${esc(f)}</span></div>`).join(''));
+    setOut(v.fails.map(f => `<div class="bad">${ICON('cross')}<span>${n > 1 ? esc(tr('World {n}', { n: vi + 1 })) + ': ' : ''}${esc(f)}</span></div>`).join(''));
     bubble(v.fails[0], 3600, true);
     sfx('wrong', true);
   }
@@ -3251,16 +3409,16 @@ async function success(res) {
   const w = pip.position; burst(w.x, w.y + 1, w.z, C('spark'), 24, 3, 3.5);
   pipBody.position.y = 0;
   const tips = [];
-  if (!res.concept) tips.push(`For another star: ${(level.conceptLabel || '').toLowerCase()}.`);
-  if (!res.par) tips.push(`For another star: use ${level.par} lines of code or fewer (you used ${res.lines}).`);
-  setOut(`<div class="good">${ICON('check')}<span>You did it!</span></div>` + tips.map(x => `<div class="hint">${ICON('star')}<span>${esc(x)}</span></div>`).join(''));
-  bubble(['Yay! We did it!', 'Beep boop, hooray!', 'That code was awesome!', 'Look what we built!'][Math.floor(Math.random() * 4)], 2200);
+  if (!res.concept) tips.push(tr('For another star: {what}.', { what: lowEn(level.conceptLabel || '') }));
+  if (!res.par) tips.push(tr('For another star: use {par} lines of code or fewer (you used {n}).', { par: level.par, n: res.lines }));
+  setOut(`<div class="good">${ICON('check')}<span>${esc(tr('You did it!'))}</span></div>` + tips.map(x => `<div class="hint">${ICON('star')}<span>${esc(x)}</span></div>`).join(''));
+  bubble(tr(['Yay! We did it!', 'Beep boop, hooray!', 'That code was awesome!', 'Look what we built!'][Math.floor(Math.random() * 4)]), 2200);
   await new Promise(r => after(reduced() ? 300 : 1100, r));
   if (!cur || cur.level !== level) return;
-  const idx = LEVELS.indexOf(level), next = LEVELS[idx + 1];
+  const idx = LEVELS.indexOf(level), next = level.bonus ? null : LEVELS[idx + 1];
   const chDone = LEVELS.filter(l => l.ch === level.ch).every(l => SAVE.done[l.id]);
   const showOutro = chDone && !SAVE.seen['out' + level.ch];
-  const v = await Oomba.ui.win({ stars: res.stars, score: res.stars * 100, best: prev ? prev.s * 100 : null, hero: PIP.spec, title: `Done: ${level.title}`, next: !!next || showOutro });
+  const v = await Oomba.ui.win({ stars: res.stars, score: res.stars * 100, best: prev ? prev.s * 100 : null, hero: PIP.spec, title: tr('Done: {title}', { title: level.title }), next: !!next || showOutro });
   if (!cur || cur.level !== level) return;
   if (cur.keep) { cur.keep = false; return; }
   if (v === 'next') afterLevel(level, showOutro); else { resetWorld(0); setOut(''); }
@@ -3272,10 +3430,10 @@ async function afterLevel(level, showOutro) {
     goMap(level.ch);
     const c = chapterCenter(level.ch); setCam({ tx: c.x, tz: c.z, dist: 62, phi: 0.75 });
     await say(ch.npc, ch.outro);
-    await say(ch.npc, `You earned a badge: ${ch.badge}!`, [{ label: 'Hooray!', kind: 'hot', value: 0, icon: 'star' }]);
+    await say(ch.npc, tr('You earned a badge: {badge}! And a gold challenge just opened in this chapter, if you want something really tricky.', { badge: ch.badge }), [{ label: tr('Hooray!'), kind: 'hot', value: 0, icon: 'star' }]);
     if (level.ch === CHAPTERS.length) { await ending(); return; }
     const nextCh = CHAPTERS.find(c2 => c2.id === level.ch + 1);
-    if (nextCh) { selectChapter(nextCh.id); await say(PIP, `Next stop: ${nextCh.place}! Let's go learn about ${nextCh.skill.toLowerCase()}!`, [{ label: 'Let\'s go!', kind: 'hot', value: 0, icon: 'next' }]); startLevel(LEVELS.find(l => l.ch === nextCh.id).id); }
+    if (nextCh) { selectChapter(nextCh.id); await say(PIP, tr('Next stop: {place}! Let\'s go learn about {skill}!', { place: nextCh.place, skill: lowEn(nextCh.skill) }), [{ label: tr('Let\'s go!'), kind: 'hot', value: 0, icon: 'next' }]); startLevel(LEVELS.find(l => l.ch === nextCh.id).id); }
     return;
   }
   const idx = LEVELS.indexOf(level);
@@ -3285,10 +3443,10 @@ async function ending() {
   setCam({ tx: 0, ty: 0, tz: 0, dist: 210, phi: 0.9 });
   try { if (!reduced()) Oomba.juice.confetti(); if (HAS_BRB) BRB.gameOver({ won: true, score: totalStars() }); } catch { /* fine */ }
   await story([
-    [PIP, 'Beep… boop… LOOK! The whole island is bright and colorful again!'],
-    [CHAPTERS[0].npc, 'Every bridge, tower, garden and castle out there came from YOUR code. Now that\'s a real coder!'],
-    [CHAPTERS[9].npc, 'Bzzt… okay, okay. Building IS more fun than glitching. Can I help next time?'],
-    [PIP, `Thank you, friend! You earned ${totalStars()} stars. Keep coding: Free Build is always open, and you can replay any level for more stars!`],
+    [PIP, tr('Beep… boop… LOOK! The whole island is bright and colorful again!')],
+    [CHAPTERS[0].npc, tr('Every bridge, tower, garden and castle out there came from YOUR code. Now that\'s a real coder!')],
+    [CHAPTERS[9].npc, tr('Bzzt… okay, okay. Building IS more fun than glitching. Can I help next time?')],
+    [PIP, tr('Thank you, friend! You earned {n} stars. Keep coding: Free Build is always open, and you can replay any level for more stars!', { n: totalStars() })],
   ]);
   goMap(10);
 }
@@ -3297,7 +3455,7 @@ async function ending() {
 function setOut(html) { $('#out').innerHTML = html; }
 function logOut(text) { const d = el('div', 'log'); d.textContent = '> ' + text; $('#out').appendChild(d); $('#out').scrollTop = 1e6; }
 function showError(err, prefix = '') {
-  setOut(`<div class="bad">${ICON('cross')}${err.line ? `<span class="ln">Line ${err.line}</span>` : ''}<span>${esc(prefix + err.message)}</span></div>`);
+  setOut(`<div class="bad">${ICON('cross')}${err.line ? `<span class="ln">${esc(tr('Line {n}', { n: err.line }))}</span>` : ''}<span>${esc(prefix + err.message)}</span></div>`);
   if (err.line) { showErrLine(err.line); scrollToLine(err.line); }
   if (err.kind !== 'pip') sfx('wrong', true);
 }
@@ -3306,13 +3464,13 @@ function hint() {
   if (!cur) return;
   const H = cur.level.hints;
   if (hintI < H.length) {
-    setOut(`<div class="hint">${ICON('hint')}<span>Hint ${hintI + 1} of ${H.length}: ${esc(H[hintI])}</span></div>`);
+    setOut(`<div class="hint">${ICON('hint')}<span>${esc(tr('Hint {n} of {all}:', { n: hintI + 1, all: H.length }))} ${esc(H[hintI])}</span></div>`);
     hintI++;
     return;
   }
-  const m = openCard(`<h2 class="ok-h2">Still stuck?</h2><p>That's okay! Every coder gets stuck. Here is one way to solve it. Read it carefully: can you see how it works?</p>${exHtml(cur.level.sol)}<div class="ci-acts"><i data-x></i><i data-use></i></div>`);
-  cardBtn(m, '[data-x]', "I'll keep trying", { kind: 'go', onPress: closeCard }).setAttribute('data-ok-focus', '');
-  cardBtn(m, '[data-use]', 'Use this code', { kind: 'quiet', onPress: () => { closeCard(); pushHistory(); setCode(cur.level.sol); hintI = 0; } });
+  const m = openCard(`<h2 class="ok-h2">${esc(tr('Still stuck?'))}</h2><p>${esc(tr("That's okay! Every coder gets stuck. Here is one way to solve it. Read it carefully: can you see how it works?"))}</p>${exHtml(cur.level.sol)}<div class="ci-acts"><i data-x></i><i data-use></i></div>`);
+  cardBtn(m, '[data-x]', tr("I'll keep trying"), { kind: 'go', onPress: closeCard }).setAttribute('data-ok-focus', '');
+  cardBtn(m, '[data-use]', tr('Use this code'), { kind: 'quiet', onPress: () => { closeCard(); pushHistory(); setCode(cur.level.sol); hintI = 0; } });
 }
 
 /* ---------- The code editor ---------- */
@@ -3374,7 +3532,7 @@ function newline() {
   }
   insertText('\n' + indent + (open ? '  ' : ''));
 }
-function undo() { const h = undoStack.pop(); if (!h) { Oomba.ui.toast('Nothing to undo.'); return; } ta.value = h.v; ta.setSelectionRange(h.s, h.s); afterEdit(); }
+function undo() { const h = undoStack.pop(); if (!h) { Oomba.ui.toast(tr('Nothing to undo.')); return; } ta.value = h.v; ta.setSelectionRange(h.s, h.s); afterEdit(); }
 /* Chips: tap to add code without a keyboard. */
 function renderChips() {
   document.querySelectorAll('#palTabs [data-tab]').forEach(b => { b.classList.toggle('on', b.dataset.tab === palTab); b.setAttribute('aria-pressed', String(b.dataset.tab === palTab)); });
@@ -3445,7 +3603,7 @@ function setKeyboard(onKb) {
     ta.setAttribute('inputmode', 'none'); ta.blur(); proxy.blur();
   }
   applySettings();
-  Oomba.ui.toast(onKb ? 'Keyboard on: type your code.' : 'Keyboard off: tap a word to pick it, or use the code buttons.');
+  Oomba.ui.toast(onKb ? tr('Keyboard on: type your code.') : tr('Keyboard off: tap a word to pick it, or use the code buttons.'));
 }
 /** Tap mode (keyboard off): a tap on a word picks the whole word, so Delete removes it and a code button replaces it. */
 function wordAt(v, p) {
@@ -3490,16 +3648,16 @@ function deleteWord() {
     b.addEventListener('click', () => { if (anim.on) return; sfx('click'); fn(); });
     bar.appendChild(b); return b;
   };
-  const kb = add('Keyboard', 'pencil', () => setKeyboard(!SAVE.settings.keyboard), 'kb'); kb.id = 'kbBtn';
-  add('', 'left', () => moveCaret(-1)).setAttribute('aria-label', 'Cursor left');
-  add('', 'right', () => moveCaret(1)).setAttribute('aria-label', 'Cursor right');
-  add('Delete', 'back', backspace).setAttribute('aria-label', 'Delete one letter');
-  add('Delete word', 'cross', deleteWord);
-  add('Delete line', 'cross', deleteLine);
-  add('New line', 'down', () => { pushHistory(); newline(); });
-  add('Undo', 'restart', undo);
-  add('Move up', 'up', () => moveLine(-1));
-  add('Move down', 'down', () => moveLine(1));
+  const kb = add(tr('Keyboard'), 'pencil', () => setKeyboard(!SAVE.settings.keyboard), 'kb'); kb.id = 'kbBtn';
+  add('', 'left', () => moveCaret(-1)).setAttribute('aria-label', tr('Cursor left'));
+  add('', 'right', () => moveCaret(1)).setAttribute('aria-label', tr('Cursor right'));
+  add(tr('Delete'), 'back', backspace).setAttribute('aria-label', tr('Delete one letter'));
+  add(tr('Delete word'), 'cross', deleteWord);
+  add(tr('Delete line'), 'cross', deleteLine);
+  add(tr('New line'), 'down', () => { pushHistory(); newline(); });
+  add(tr('Undo'), 'restart', undo);
+  add(tr('Move up'), 'up', () => moveLine(-1));
+  add(tr('Move down'), 'down', () => moveLine(1));
 }
 // Tap a line number to select that whole line (then Delete line, or Move up / down).
 $('#gutIn').addEventListener('click', e => {
@@ -3522,17 +3680,17 @@ function scrollToLine(line) {
 mkBtn('home', t('home'), { kind: 'icon', icon: 'home', onPress: () => goTitle() });
 mkBtn('free', t('free'), { kind: 'icon', icon: 'pencil', onPress: () => startLevel('free') });
 mkBtn('book', t('book'), { kind: 'icon', icon: 'book', onPress: () => bookCard() });
-mkBtn('settings', 'Settings', { kind: 'icon', icon: 'settings', onPress: settingsCard });
+mkBtn('settings', tr('Settings'), { kind: 'icon', icon: 'settings', onPress: settingsCard });
 mkBtn('map', t('map'), { kind: 'icon', icon: 'back', onPress: () => { if (cur && cur.from === 'walk') goWalk(signFor(cur.level.id)); else goMap(cur && !cur.level.sandbox ? cur.level.ch : selChapter); } });
-mkBtn('walk', 'Walk round the village', { kind: 'icon', icon: 'move', onPress: () => goWalk() });
+mkBtn('walk', tr('Walk round the village'), { kind: 'icon', icon: 'move', onPress: () => goWalk() });
 mkBtn('wHome', t('home'), { kind: 'icon', icon: 'home', onPress: () => goTitle() });
-mkBtn('wMap', 'Level map', { kind: 'icon', icon: 'flag', onPress: () => goMap(selChapter) });
-mkBtn('wLook', "Pip's wardrobe", { kind: 'icon', icon: 'user', onPress: () => lookCard() });
-mkBtn('say', 'Read it to me', { kind: 'icon', icon: 'speak', onPress: () => { if (!cur) return; const L = cur.level; Oomba.say(`${L.story} Goal: ${L.goal}`).catch(() => {}); } });
-mkBtn('wSet', 'Settings', { kind: 'icon', icon: 'settings', onPress: settingsCard });
+mkBtn('wMap', tr('Level map'), { kind: 'icon', icon: 'flag', onPress: () => goMap(selChapter) });
+mkBtn('wLook', tr("Pip's wardrobe"), { kind: 'icon', icon: 'user', onPress: () => lookCard() });
+mkBtn('say', tr('Read it to me'), { kind: 'icon', icon: 'speak', onPress: () => { if (!cur) return; const L = cur.level; Oomba.say(`${L.story} ${tr('Goal:')} ${L.goal}`).catch(() => {}); } });
+mkBtn('wSet', tr('Settings'), { kind: 'icon', icon: 'settings', onPress: settingsCard });
 mkBtn('size', t('size'), { kind: 'icon', icon: 'fullscreen', onPress: () => {
   const b = document.body;
-  if (b.classList.contains('landscape')) { Oomba.ui.toast('Turn your device to make the code bigger or smaller.'); return; }
+  if (b.classList.contains('landscape')) { Oomba.ui.toast(tr('Turn your device to make the code bigger or smaller.')); return; }
   if (b.classList.contains('pbig')) { b.classList.remove('pbig'); b.classList.add('psmall'); }
   else if (b.classList.contains('psmall')) b.classList.remove('psmall');
   else b.classList.add('pbig');
@@ -3542,12 +3700,12 @@ mkBtn('menu', t('menu'), { kind: 'icon', icon: 'menu', onPress: () => {
   if (!cur) return;
   const sb = cur.level.sandbox;
   const m = openCard(`<h2 class="ok-h2">${esc(sb ? t('free') : cur.level.title)}</h2><div class="ci-col"><i data-learn></i><i data-book></i><i data-restart></i>${sb ? '<i data-clear></i>' : ''}<i data-set></i><i data-x></i></div>`);
-  cardBtn(m, '[data-learn]', "This level's lesson", { kind: 'quiet', icon: 'book', onPress: () => learnCard(cur.level) });
+  cardBtn(m, '[data-learn]', tr("This level's lesson"), { kind: 'quiet', icon: 'book', onPress: () => learnCard(cur.level) });
   cardBtn(m, '[data-book]', t('book'), { kind: 'quiet', icon: 'book', onPress: () => bookCard() });
-  cardBtn(m, '[data-restart]', 'Start this code over', { kind: 'quiet', icon: 'restart', onPress: () => { closeCard(); pushHistory(); setCode(cur.level.starter); resetWorld(shownVi); setOut('Back to the starting code. (Undo brings yours back.)'); } });
-  if (sb) cardBtn(m, '[data-clear]', 'Clear the meadow', { kind: 'quiet', icon: 'cross', onPress: () => { SAVE.free = { code: ta.value, diff: [] }; save(); closeCard(); resetWorld(0); setOut('The meadow is empty again.'); } });
-  cardBtn(m, '[data-set]', 'Settings', { kind: 'quiet', icon: 'settings', onPress: settingsCard });
-  cardBtn(m, '[data-x]', 'Back to coding', { kind: 'go', icon: 'pencil', onPress: closeCard }).setAttribute('data-ok-focus', '');
+  cardBtn(m, '[data-restart]', tr('Start this code over'), { kind: 'quiet', icon: 'restart', onPress: () => { closeCard(); pushHistory(); setCode(cur.level.starter); resetWorld(shownVi); setOut(esc(tr('Back to the starting code. (Undo brings yours back.)'))); } });
+  if (sb) cardBtn(m, '[data-clear]', tr('Clear the meadow'), { kind: 'quiet', icon: 'cross', onPress: () => { SAVE.free = { code: ta.value, diff: [] }; save(); closeCard(); resetWorld(0); setOut(esc(tr('The meadow is empty again.'))); } });
+  cardBtn(m, '[data-set]', tr('Settings'), { kind: 'quiet', icon: 'settings', onPress: settingsCard });
+  cardBtn(m, '[data-x]', tr('Back to coding'), { kind: 'go', icon: 'pencil', onPress: closeCard }).setAttribute('data-ok-focus', '');
 } });
 mkBtn('learn', t('learn'), { kind: 'quiet', icon: 'book', onPress: () => { if (!cur) return; if (cur.level.sandbox) ideasCard(); else learnCard(cur.level); } });
 mkBtn('run', t('run'), { kind: 'go', icon: 'play', onPress: runCode }).classList.add('ci-go');
@@ -3597,17 +3755,17 @@ function applyLook() {
 }
 function lookCard() {
   const L = look(), stars = totalStars(), sp = found().size;
-  const paints = PAINTS.map(([h, need]) => { const open = stars >= need; return `<button type="button" class="ci-look${L.paint === h ? ' on' : ''}" data-paint="${h}" ${open ? '' : 'disabled'} aria-pressed="${L.paint === h}"><i style="background:${C(h)}"></i><span>${open ? h : ICON('lock') + need + ' stars'}</span></button>`; }).join('');
-  const wears = WEARS.map(([w, need]) => { const open = sp >= need; return `<button type="button" class="ci-look${L.wear === w ? ' on' : ''}" data-wear="${w}" ${open ? '' : 'disabled'} aria-pressed="${L.wear === w}"><b data-pic="${w}"></b><span>${open ? WEAR_NAMES[w] : ICON('lock') + need + ' sparkles'}</span></button>`; }).join('');
-  const m = openCard(`<h2 class="ok-h2">Pip's wardrobe</h2><p>Stars from levels unlock paint. Sparkles hidden round the village unlock things to wear.</p>
-    <h3>${ICON('star')} Paint <small>(you have ${stars} stars)</small></h3><div class="ci-looks">${paints}</div>
-    <h3>${ICON('spark')} Wear <small>(you have ${sp} sparkles)</small></h3><div class="ci-looks">${wears}</div><div class="ci-acts"><i data-x></i></div>`);
+  const paints = PAINTS.map(([h, need]) => { const open = stars >= need; return `<button type="button" class="ci-look${L.paint === h ? ' on' : ''}" data-paint="${h}" ${open ? '' : 'disabled'} aria-pressed="${L.paint === h}"><i style="background:${C(h)}"></i><span>${open ? esc(tr(h)) : ICON('lock') + esc(tr('{n} stars', { n: need }))}</span></button>`; }).join('');
+  const wears = WEARS.map(([w, need]) => { const open = sp >= need; return `<button type="button" class="ci-look${L.wear === w ? ' on' : ''}" data-wear="${w}" ${open ? '' : 'disabled'} aria-pressed="${L.wear === w}"><b data-pic="${w}"></b><span>${open ? esc(tr(WEAR_NAMES[w])) : ICON('lock') + esc(tr('{n} sparkles', { n: need }))}</span></button>`; }).join('');
+  const m = openCard(`<h2 class="ok-h2">${esc(tr("Pip's wardrobe"))}</h2><p>${esc(tr('Stars from levels unlock paint. Sparkles hidden round the village unlock things to wear.'))}</p>
+    <h3>${ICON('star')} ${esc(tr('Paint'))} <small>${esc(tr('(you have {n} stars)', { n: stars }))}</small></h3><div class="ci-looks">${paints}</div>
+    <h3>${ICON('spark')} ${esc(tr('Wear'))} <small>${esc(tr('(you have {n} sparkles)', { n: sp }))}</small></h3><div class="ci-looks">${wears}</div><div class="ci-acts"><i data-x></i></div>`);
   m.querySelectorAll('[data-pic]').forEach(b => { const w = b.dataset.pic; b.appendChild(portrait(Object.assign({ species: 'oomba', colors: { base: L.paint } }, w === 'none' ? {} : { wear: [w] }), 52)); });
   m.querySelectorAll('[data-paint]').forEach(b => b.addEventListener('click', () => { SAVE.look = Object.assign(look(), { paint: b.dataset.paint }); save(); applyLook(); sfx('click'); lookCard(); }));
   m.querySelectorAll('[data-wear]').forEach(b => b.addEventListener('click', () => { SAVE.look = Object.assign(look(), { wear: b.dataset.wear }); save(); applyLook(); sfx('click'); lookCard(); }));
-  cardBtn(m, '[data-x]', 'Done', { kind: 'go', icon: 'check', onPress: closeCard }).setAttribute('data-ok-focus', '');
+  cardBtn(m, '[data-x]', tr('Done'), { kind: 'go', icon: 'check', onPress: closeCard }).setAttribute('data-ok-focus', '');
 }
-function noteUnlocks(before) { if (opensCount() > before) after(1600, () => Oomba.ui.toast('Something new for Pip! Open the wardrobe in the village.', { ms: 3200 })); }
+function noteUnlocks(before) { if (opensCount() > before) after(1600, () => Oomba.ui.toast(tr('Something new for Pip! Open the wardrobe in the village.'), { ms: 3200 })); }
 applyLook();
 
 /* ---------- Villagers: kit characters who stroll round the village and chat ---------- */
@@ -3659,10 +3817,10 @@ function stepFolks(dt, t) {
 }
 async function chatWith(f, g) {
   const done = PLOTS.filter(p => p.ch === g.ch && SAVE.done[p.id]);
-  const lines = TIPS.slice();
-  if (done.length) { const p = done[(Math.random() * done.length) | 0]; lines.push(`I saw what you built for "${p.level.title}". So cool!`, `Did you really build ${p.id} with code? Teach me!`); }
-  else if (g.ch) lines.push('Everything round here is so grey… Can your code fix it?');
-  await say({ name: f.name, spec: f.spec }, lines[(Math.random() * lines.length) | 0], [{ label: 'Bye!', kind: 'go', value: 0 }]);
+  const lines = TIPS.map(x => tr(x));
+  if (done.length) { const p = done[(Math.random() * done.length) | 0]; lines.push(tr('I saw what you built for "{title}". So cool!', { title: p.level.title }), tr('Did you really build {id} with code? Teach me!', { id: p.id })); }
+  else if (g.ch) lines.push(tr('Everything round here is so grey… Can your code fix it?'));
+  await say({ name: f.name, spec: f.spec }, lines[(Math.random() * lines.length) | 0], [{ label: tr('Bye!'), kind: 'go', value: 0 }]);
 }
 
 /* ---------- Free Build ideas: programs to try and change ---------- */
@@ -3675,9 +3833,9 @@ const IDEAS = [
   { title: 'Rainbow carpet', text: '% picks the next colour from the list, so the stripes go round and round.', code: 'const colors = ["red", "orange", "yellow", "green", "blue", "purple"];\nfor (let z = 4; z < 12; z++) {\n  for (let x = 4; x < 12; x++) {\n    pip.jumpTo(x, z);\n    pip.paint(colors[(x + z) % colors.length]);\n  }\n}\n' },
 ];
 function ideasCard() {
-  const m = openCard(`<h2 class="ok-h2">Free Build ideas</h2><p>Pick one to load it, run it, then change it and make it yours!</p>${IDEAS.map((i, n) => `<h3>${esc(i.title)}</h3><p>${esc(i.text)}</p><div class="ci-acts" style="justify-content:flex-start"><i data-idea="${n}"></i></div>`).join('')}<div class="ci-acts"><i data-x></i></div>`);
-  IDEAS.forEach((i, n) => cardBtn(m, `[data-idea="${n}"]`, `Use "${i.title}"`, { kind: 'quiet', icon: 'pencil', onPress: () => { closeCard(); pushHistory(); setCode(i.code); setOut('Idea loaded! Press Run, then change it. (Undo brings your old code back.)'); } }));
-  cardBtn(m, '[data-x]', 'Close', { kind: 'go', onPress: closeCard }).setAttribute('data-ok-focus', '');
+  const m = openCard(`<h2 class="ok-h2">${esc(tr('Free Build ideas'))}</h2><p>${esc(tr('Pick one to load it, run it, then change it and make it yours!'))}</p>${IDEAS.map((i, n) => `<h3>${esc(tr(i.title))}</h3><p>${esc(tr(i.text))}</p><div class="ci-acts" style="justify-content:flex-start"><i data-idea="${n}"></i></div>`).join('')}<div class="ci-acts"><i data-x></i></div>`);
+  IDEAS.forEach((i, n) => cardBtn(m, `[data-idea="${n}"]`, tr('Use "{title}"', { title: tr(i.title) }), { kind: 'quiet', icon: 'pencil', onPress: () => { closeCard(); pushHistory(); setCode(trCode(i.code)); setOut(esc(tr('Idea loaded! Press Run, then change it. (Undo brings your old code back.)'))); } }));
+  cardBtn(m, '[data-x]', tr('Close'), { kind: 'go', onPress: closeCard }).setAttribute('data-ok-focus', '');
 }
 let celebrate = null;
 
@@ -3719,9 +3877,9 @@ function doAct() {
 async function talkTo(chId) {
   const ch = CHAPTERS.find(c => c.id === chId), lv = LEVELS.filter(l => l.ch === chId);
   const next = lv.find(l => !SAVE.done[l.id] && unlocked(l.id)), got = lv.reduce((a, l) => a + ((SAVE.done[l.id] || {}).s || 0), 0);
-  const text = lv.every(l => SAVE.done[l.id]) ? `${ch.outro} You have ${got} of ${lv.length * 3} stars here.`
-    : next ? `${ch.intro} Next up is ${next.id}: ${next.title}. Walk to its sign, or play it from here!` : 'Finish the levels before mine and come back to see me!';
-  const r = await say(ch.npc, text, next ? [{ label: 'Bye!', kind: 'quiet', value: 0 }, { label: `Play ${next.id}`, kind: 'hot', value: 1, icon: 'play' }] : undefined);
+  const text = lv.every(l => SAVE.done[l.id]) ? `${ch.outro} ${tr('You have {got} of {all} stars here.', { got, all: lv.length * 3 })}`
+    : next ? `${ch.intro} ${tr('Next up is {id}: {title}. Walk to its sign, or play it from here!', { id: next.id, title: next.title })}` : tr('Finish the levels before mine and come back to see me!');
+  const r = await say(ch.npc, text, next ? [{ label: tr('Bye!'), kind: 'quiet', value: 0 }, { label: tr('Play {id}', { id: next.id }), kind: 'hot', value: 1, icon: 'play' }] : undefined);
   if (r === 1 && next) startLevel(next.id, 'walk');
 }
 addEventListener('keydown', e => {
@@ -3776,15 +3934,15 @@ function stepWalk(dt) {
   for (const s of VILLAGE.sparkles) if (!f.has(s.i) && Math.hypot(s.x - walk.x, s.z - walk.z) < 0.9 && walk.y < 2.6) {
     const opens = opensCount(); SAVE.found = [...f, s.i]; save(); noteUnlocks(opens); buildSparkles(); renderWalkBar(); sfx('star', true); burst(s.x, 1.8, s.z, C('spark'), 18, 2.4, 2.6);
     const n = SAVE.found.length, all = VILLAGE.sparkles.length;
-    if (n === all) { Oomba.ui.toast('You found every sparkle on Code Isle!'); try { if (!REDUCED) Oomba.juice.confetti(); } catch { /* fine */ } } else Oomba.ui.toast(`Sparkle ${n} of ${all}!`);
+    if (n === all) { Oomba.ui.toast(tr('You found every sparkle on Code Isle!')); try { if (!REDUCED) Oomba.juice.confetti(); } catch { /* fine */ } } else Oomba.ui.toast(tr('Sparkle {n} of {all}!', { n, all }));
     break;
   }
   // what is near: a level's sign, or a friend
   let best = null, bd = 2.3;
   for (const s of VILLAGE.signs) { const d = Math.hypot(s.x - walk.x, s.z - walk.z); if (d < bd) { bd = d; best = s; } }
-  if (best) { const L = BYID[best.id]; setAct(unlocked(best.id) ? { kind: 'play', id: best.id, label: best.id === 'free' ? `Play ${t('free')}` : `Play ${best.id}: ${L.title}` } : { kind: 'locked', id: best.id, label: `${best.id} is locked` }); return; }
-  for (const sp of folks.children) { if (Math.hypot(sp.position.x - walk.x, sp.position.z - walk.z) < 1.7) { setAct({ kind: 'chat', id: sp.userData.f.name, label: `Say hi to ${sp.userData.f.name}` }); return; } }
-  for (const sp of npcs.children) { const d = Math.hypot(sp.position.x - walk.x, sp.position.z - walk.z); if (d < 2.2) { const ch = CHAPTERS.find(c => c.id === sp.userData.ch); setAct({ kind: 'talk', ch: ch.id, label: `Talk to ${ch.npc.name}` }); return; } }
+  if (best) { const L = BYID[best.id]; setAct(unlocked(best.id) ? { kind: 'play', id: best.id, label: best.id === 'free' ? tr('Play {id}', { id: t('free') }) : L.bonus ? tr('Gold challenge: {title}', { title: L.title }) : tr('Play {id}', { id: best.id }) + `: ${L.title}` } : { kind: 'locked', id: best.id, label: L.bonus ? tr('Gold challenge: finish the chapter first') : tr('{id} is locked', { id: best.id }) }); return; }
+  for (const sp of folks.children) { if (Math.hypot(sp.position.x - walk.x, sp.position.z - walk.z) < 1.7) { setAct({ kind: 'chat', id: sp.userData.f.name, label: tr('Say hi to {name}', { name: sp.userData.f.name }) }); return; } }
+  for (const sp of npcs.children) { const d = Math.hypot(sp.position.x - walk.x, sp.position.z - walk.z); if (d < 2.2) { const ch = CHAPTERS.find(c => c.id === sp.userData.ch); setAct({ kind: 'talk', ch: ch.id, label: tr('Talk to {name}', { name: ch.npc.name }) }); return; } }
   setAct(null);
 }
 
