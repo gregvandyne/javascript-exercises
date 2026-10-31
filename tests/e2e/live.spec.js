@@ -148,17 +148,13 @@ test('Quest Race, open room: guests join with generated names, see each other mo
   for (const p of [a, b, c, host]) await p.context().close();
 });
 
-test('Question Battle from the landing page: questions on the projector, answers on devices, ended early by the host', async ({ browser }) => {
+test('Question Battle (not offered on the landing page for now): questions on the projector, answers on devices, ended early by the host', async ({ browser }) => {
   test.setTimeout(180_000);
   const host = await signedIn(browser, TEACHER);
   await host.goto('/live?mode=battle');
-  await expect(host.locator('input[name="pick"][value="mode:battle"]')).toBeChecked();
-  await expect(host.locator('#lv-sets')).toBeVisible();
-  await host.locator('input[name="audience"][value="open"]').check();
+  await expect(host.locator('input[name="pick"][value^="mode:"]')).toHaveCount(0);
   host.on('dialog', d => d.accept());
-  await host.click('#lv-new button[type=submit]');
-  await host.waitForURL(/\/live\/host\//);
-  const code = (await host.locator('#lv-code').textContent()).replace(/\s/g, '');
+  const code = await openRoom(host, { pick: 'mode:battle', items: ITEMS });
   const a = await player(browser, code), b = await player(browser, code);
   const [fa, fb] = [await liveFrame(a), await liveFrame(b)];
   await liveFrame(host);

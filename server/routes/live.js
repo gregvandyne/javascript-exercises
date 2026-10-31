@@ -144,10 +144,9 @@ router.get('/live', on, requireAnyAccount, hostOnly, (req, res) => {
   const shared = [];
   for (const c of teaching) for (const g of games.classGames(c.id, { limit: 100 })) if (!sharedSeen.has(g.id)) { sharedSeen.add(g.id); shared.push(g); }
   const groups = [{ key: 'official', games: ready(officialReady()) }, { key: 'mine', games: ready(mine) }, ...(teaching.length ? [{ key: 'shared', games: ready(shared) }] : [])];
-  const modes = [
-    { id: 'quest-race', icon: '🏝️', title: t('live.mode.questRace'), text: t('live.mode.questRaceText') },
-    { id: 'battle', icon: '⚡', title: t('live.mode.battle'), text: t('live.mode.battleText') },
-  ];
+  // Quest Race and Question Battle are not offered for now (scripts/seed.js RETIRED_GAMES); the modes stay in the
+  // server so they can come back by listing them here again.
+  const modes = [];
   const starters = STARTERS.map(id => ({ id, title: t(`live.starter.title.${id.replace('-', '')}`) }));
   const q = req.query;
   const pre = {
