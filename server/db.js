@@ -435,6 +435,16 @@ export const MIGRATIONS = [
   ['0040_quiz_steps', `ALTER TABLE lesson_steps ADD COLUMN set_id TEXT;
     ALTER TABLE lesson_steps ADD COLUMN items TEXT NOT NULL DEFAULT '';
     ALTER TABLE step_progress ADD COLUMN marks TEXT NOT NULL DEFAULT '';`],
+  // Who ran a live game with co-hosts: joins, leaves, removals, handoffs and key actions (docs/decisions.md "Oomba Live,
+  // part 4"; legal-review item 43). Only runs that had a co-host. actor_id: an adult (host or co-host); target_user: a
+  // class student, only in class runs (else NULL; never a guest, a nickname or a seat token); other_id: the other adult
+  // in a co-host event; detail: a small number or token, never text anyone typed. Follows live_runs.
+  ['0041_live_cohost', `CREATE TABLE IF NOT EXISTS live_run_log (run_id TEXT NOT NULL, i INTEGER NOT NULL, at INTEGER NOT NULL,
+      actor_id TEXT, action TEXT NOT NULL, target_user TEXT, other_id TEXT, detail TEXT NOT NULL DEFAULT '',
+      PRIMARY KEY (run_id, i));
+    CREATE INDEX IF NOT EXISTS live_run_log_actor ON live_run_log(actor_id);
+    CREATE INDEX IF NOT EXISTS live_run_log_target ON live_run_log(target_user);
+    CREATE INDEX IF NOT EXISTS live_run_log_other ON live_run_log(other_id);`],
 ];
 
 const CODE_LETTERS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';

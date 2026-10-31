@@ -6,8 +6,12 @@
 // Part 3: teams (the Teams row, the Teams sheet with drag and select-then-move, the team board during play), game
 // settings, Eyes up, fixed messages, +time, projector sound, the "Teacher view on your phone" QR, and the podium hold
 // at the end. This page is on the class's screen: it never shows "needs help", support, marks or a player's bonus.
+// Part 4: co-hosts. The host's "Co-hosts" dialog shows adults' names only behind a gate ("check the class can't see your
+// screen"), and closing it hides them again; no activity line ever shows here. A co-host may use this page when the
+// projector slot is free (else it says so and points to the Teacher view); the host's own projector takes it back.
 import { connect, gameFrame, readJson, portraits, avatarCanvas, playerOf, nameOf, fill, shapeSvg, teamChip, teamsOf, scoresOf, flash, paintTeam } from '/js/live-common.js';
 import { board as teamBoard, teamBars } from '/js/live-teams-ui.js';
+import { cohostPanel, actText, namesOf } from '/js/live-cohost.js';
 
 const D = readJson('lv-host-data');
 const $ = id => document.getElementById(id);
@@ -23,7 +27,10 @@ const SHOW = {
   lobby: ['start', 'lock', 'unlock', 'end'], loading: ['end'], countdown: ['end'],
   playing: ['pause', 'next', 'skip', 'end'], paused: ['resume', 'end'], between: ['next', 'end'], ended: [],
 };
-const ALWAYS = new Set(['eyes', 'settings', 'sound', 'dash']);
+const ALWAYS = new Set(['eyes', 'settings', 'sound', 'dash', 'cohosts']);
+const CTL = D.ctl || { role: 'host', tier: 'full' }, TC = D.cohost || null;
+let adults = new Map(), acts = [];
+const seenNames = new Map();
 
 sock = connect({
   tok: D.tok,
@@ -47,7 +54,13 @@ function onMessage(m) {
     case 'lk': setLocked(m.locked); return;
     case 'rp': { const r = $('lv-reports'); if (r) r.hidden = false; return; }
     case 'res': podiumHold(); return;
-    case 'bye': if (m.why !== 'ended') document.body.classList.add('lv-offline'); return;
+    case 'bye':
+      if (TC && (m.why === 'projectorBusy' || (m.why === 'replaced' && CTL.role === 'cohost'))) { busy(m.why === 'replaced' ? TC.projBack : TC.projBusy); return; }
+      if (TC && m.why === 'cohostOff') { off(); return; }
+      if (m.why !== 'ended') document.body.classList.add('lv-offline'); return;
+    case 'ch': namesOf(m, adults); if (panel) panel.setCh(m); drawRecent(); return;
+    case 'act': if (m.a === 'acc') return; acts.push(m); if (acts.length > 10) acts.shift(); drawRecent(); return;
+    case 'nak': return;   // adults' names: never on the class's screen
     case 'tms': teams = teamsOf(m); for (const [seat, k] of teams.of) { const p = players.get(seat); if (p) p.team = k; } for (const p of players.values()) if (!teams.of.has(p.seat)) p.team = 0; drawTeams(); for (const p of players.values()) drawPlayer(p); break;
     case 'tml': tmlNotice(m); return;
     case 'ts': scoresOf(m.s, scores); drawBoard(); break;
@@ -62,6 +75,10 @@ function onMessage(m) {
 }
 
 function welcome(m) {
+  // part 4: promoted to host, or handed back (the page is drawn per role)
+  if (m.ctl && m.ctl.role !== CTL.role) { location.reload(); return; }
+  if (m.ch) { namesOf(m.ch, adults); if (panel) panel.setCh(m.ch); }
+  if (m.acts) { acts = m.acts.filter(x => x.a !== 'acc'); drawRecent(); }
   wel = m; phase = m.phase; seq = m.seq; max = m.max || max;
   players.clear(); roster.textContent = '';
   for (const P of m.players || []) { const p = playerOf(P); players.set(p.seat, p); }
@@ -130,6 +147,7 @@ function drawPlayer(p) {
     roster.append(li);
   }
   const name = nm(p.name);
+  seenNames.set(p.seat, name);
   li.querySelector('.lv-p-name').textContent = name;
   // the team: a small shape and the team's colour on the edge (the name is in the board and the sheet)
   let sh = li.querySelector('.lv-p-team'); const pr = teams.on && p.team ? presetOf(p.team) : null;
@@ -152,7 +170,9 @@ function act(a, extra = {}) {
   if (a === 'settings') { const d = $('lv-settings'); fillSettings(); if (d && d.showModal) d.showModal(); return; }
   if (a === 'sound') { sock.send('cf', { d: { sound: settings.sound === false } }); return; }
   if (a === 'dash') { const d = $('lv-dash-qr'); if (d && d.showModal) d.showModal(); return; }
+  if (a === 'cohosts') { openCohosts(); return; }
   const msg = { a, ...extra };
+  if (a === 'end' && CTL.role !== 'host') msg.sure = 1;   // a co-host's end says it is sure
   if (a === 'next' || a === 'skip') msg.at = seq;
   sock.send('h', msg);
 }
@@ -323,4 +343,43 @@ function podiumHold() {
   hold.hidden = false;
   const b = $('lv-see-results'); if (b) { b.addEventListener('click', go); b.focus({ preventScroll: true }); }
   setTimeout(go, D.podiumHoldMs || 6000);
+}
+
+// ---- part 4: the Co-hosts dialog (behind its gate), and this page as a co-host's ----
+const cdlg = $('lv-cohosts'), panelRoot = cdlg && cdlg.querySelector('[data-lv-cohost-panel]');
+const panel = panelRoot && TC ? cohostPanel(panelRoot, { sid: D.sid, TX: TC }) : null;
+function openCohosts() {
+  if (!cdlg) return;
+  $('lv-cohosts-gate').hidden = false; $('lv-cohosts-body').hidden = true;
+  if (cdlg.showModal) cdlg.showModal();
+}
+if (cdlg) {
+  $('lv-cohosts-show').addEventListener('click', () => { $('lv-cohosts-gate').hidden = true; $('lv-cohosts-body').hidden = false; if (panel) panel.refresh(); drawRecent(); const f = cdlg.querySelector('#lv-cohosts-body select, #lv-cohosts-body button'); if (f) f.focus(); });
+  $('lv-cohosts-phone').addEventListener('click', () => { cdlg.close(); const d = $('lv-dash-qr'); if (d && d.showModal) d.showModal(); });
+  // closing hides the names again; focus goes back to the button that opened it
+  cdlg.addEventListener('close', () => { $('lv-cohosts-gate').hidden = false; $('lv-cohosts-body').hidden = true; const b = document.querySelector('[data-lv-act="cohosts"]'); if (b) b.focus(); });
+}
+const presetName = k => (presetOf(k) || {}).name || '';
+function drawRecent() {
+  if (!panel || !TC) return;
+  panel.setRecent(acts.slice(-5).reverse().map(m => actText(m, { names: adults, player: n => seenNames.get(n) || '', team: presetName, TX: TC })).filter(Boolean));
+}
+function busy(text) {
+  const box = $('lv-proj-busy'); if (!box) return;
+  $('lv-proj-busy-text').textContent = text; box.hidden = false;
+  standDown();
+}
+function off() {
+  const box = $('lv-cohost-off'); if (!box) return;
+  $('lv-cohost-off-text').textContent = TC.removed; box.hidden = false;
+  const busyBox = $('lv-proj-busy'); if (busyBox) busyBox.hidden = true;
+  standDown();
+}
+/** This page no longer runs the game here (another screen has it, or no longer a co-host): only the header and the
+ *  notice stay (no roster, teams row, controls or open dialog left to press). */
+function standDown() {
+  if (frame) frame.destroy(); frame = null;
+  for (const el of [$('lv-controls'), $('lv-stage'), $('lv-joinbox')]) if (el) el.hidden = true;
+  for (const d of document.querySelectorAll('.lv-host dialog[open]')) d.close();
+  const root = document.querySelector('.lv-host'); if (root) root.classList.add('lv-host-off');
 }

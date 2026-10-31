@@ -16,8 +16,9 @@ const OUT_TYPES = new Set(['rdy', 'mv', 'ev', 'sc', 'it', 'an', 'em', 'st']);
 const HOST_OUT = new Set(['rdy', 'ev', 'st']), PLAYER_OUT = new Set(['rdy', 'mv', 'ev', 'sc', 'it', 'an', 'em']);
 // What the frame never sees: tokens, the join code, results links, report counts; and (part 3) a seat's own support
 // (me: game code, maybe another child's, must never learn it), the play-again token, the host's settings and teacher
-// messages (the page shows those itself), and the dashboard's data.
-const PRIVATE = new Set(['fr', 'res', 'rp', 'lk', 'bye', 'me', 'again', 'cf', 'tml', 'dq', 'dp', 'sup', 'eyes', 'say']);
+// messages (the page shows those itself), and the dashboard's data; part 4: the adults running the game (ch), the
+// activity line (act) and refusals (nak): adults' names never reach a game frame.
+export const PRIVATE = new Set(['fr', 'res', 'rp', 'lk', 'bye', 'me', 'again', 'cf', 'tml', 'dq', 'dp', 'sup', 'eyes', 'say', 'ch', 'act', 'nak']);
 
 /** The socket. opts: { tok, view?, onMessage(m), onState('open'|'closed'|'retry'|'gone'), onClock(offset) } -> { send(t, m), close(), offset() }
  *  view: 'dash' for the teacher's dashboard (the same host token; the projector is the default). */
@@ -32,7 +33,7 @@ export function connect({ tok, view = '', onMessage, onState = () => {}, onClock
       let m; try { m = JSON.parse(e.data); } catch { return; }
       if (!m || typeof m.t !== 'string') return;
       if (m.t === 'po') return pong(m);
-      if (m.t === 'bye') { closed = ['removed', 'ended', 'replaced', 'expired', 'takenDown', 'flood', 'full', 'locked'].includes(m.why); }
+      if (m.t === 'bye') { closed = ['removed', 'ended', 'replaced', 'expired', 'takenDown', 'flood', 'full', 'locked', 'cohostOff', 'projectorBusy'].includes(m.why); }
       onMessage(m);
     };
     ws.onclose = ev => {
@@ -150,7 +151,7 @@ export function gameFrame({ stage, role, getToken, onReady = () => {}, onOut = (
       if (!m || PRIVATE.has(m.t)) return;
       let out = m;
       if (m.t === 'wel') {
-        const { frame, lobbyFrame, code, dp, sup, dq, ...rest } = m;
+        const { frame, lobbyFrame, code, dp, sup, dq, ctl, ch, acts, ...rest } = m;
         out = rest;
         if (rest.me && rest.me.acc) { const { acc, ...me } = rest.me; out = { ...rest, me }; }
       }

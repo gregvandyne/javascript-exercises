@@ -318,3 +318,53 @@ body.lv-offline .lv-stage { outline: 4px dashed var(--edge); }
 .lv-team-btn[aria-pressed="true"], .lv-team-btn[aria-pressed="true"]:disabled { background: var(--team); color: var(--team-ink); opacity: 1; cursor: default; }
 .lv-play .lv-say-banner { inset-block-start: auto; inset-block-end: 96px; }
 .lv-chip-avatar:empty { display: none; }
+
+/* part 4: co-hosts (the projector's gated dialog, the Teacher view's chip, activity line and tab, the invite page) */
+.lv-tabs.lv-tabs-more { -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 48px), transparent); mask-image: linear-gradient(to right, #000 calc(100% - 48px), transparent); }
+[dir="rtl"] .lv-tabs.lv-tabs-more { -webkit-mask-image: linear-gradient(to left, #000 calc(100% - 48px), transparent); mask-image: linear-gradient(to left, #000 calc(100% - 48px), transparent); }
+/* the chip is a button (it opens the Co-hosts tab): a pill with a link-coloured edge, grown to a 44 px target */
+button.lv-dash-role { color: var(--text); font: inherit; font-size: .85rem; font-weight: 700; cursor: pointer; min-block-size: 44px; padding: 6px 14px; flex: 0 1 auto; max-inline-size: 100%; overflow-wrap: break-word; text-align: start; border-color: var(--link); text-decoration: underline; text-underline-offset: 3px; }
+button.lv-dash-role:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.lv-dash-role { display: inline-flex; align-items: center; min-block-size: 28px; padding: 2px 10px; border-radius: 999px; background: var(--card); border: 1px solid var(--line); font-size: .85rem; font-weight: 700; overflow-wrap: anywhere; }
+.lv-dash-activity { inline-size: 100%; margin: 0; min-block-size: 1.4em; color: var(--muted); overflow-wrap: anywhere; }
+.lv-dash-activity:empty { display: none; }
+.lv-dash-limited { margin-block: 8px 0; }
+.lv-cohost-panel { gap: 10px; }
+.lv-cohost-list, .lv-cohost-recent { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.lv-cohost-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 12px; background: var(--card); }
+.lv-cohost-name { font-weight: 700; overflow-wrap: anywhere; }
+.lv-cohost-row[data-state="away"] .lv-cohost-name, .lv-cohost-row[data-state="invited"] .lv-cohost-name { opacity: .75; }
+.lv-cohost-acts { display: flex; flex-wrap: wrap; gap: 6px; margin-inline-start: auto; }
+.lv-cohost-acts .btn, .lv-cohost-pick .btn, #lv-cohost-leave { min-block-size: 44px; }
+.lv-cohost-pick { display: flex; flex-wrap: wrap; align-items: end; gap: 8px; }
+.lv-cohost-pick .field { flex: 1 1 200px; margin: 0; }
+.lv-cohost-pick select { inline-size: 100%; min-block-size: 44px; }
+.lv-cohost-link > summary { cursor: pointer; min-block-size: 44px; display: flex; align-items: center; }
+.lv-cohost-link .lv-qr { max-inline-size: 200px; }
+.lv-cohost-recent li { padding-block: 2px; overflow-wrap: anywhere; }
+.lv-cohosts #lv-cohosts-body { display: flex; flex-direction: column; gap: 10px; }
+.lv-cohosts[open] { max-inline-size: 520px; }
+.lv-cohost-me { margin: 0; font-weight: 700; }
+.lv-proj-busy, .lv-cohost-off { display: flex; flex-direction: column; gap: 10px; align-items: flex-start; margin: 16px; }
+.lv-proj-busy[hidden], .lv-cohost-off[hidden] { display: none; }
+.lv-cohost-page { max-inline-size: 520px; margin-inline: auto; padding: 16px; }
+.lv-cohost-page h1 { margin-block-end: 0; }
+.lv-cohost-invite-text { font-size: 1.15rem; font-weight: 700; overflow-wrap: anywhere; }
+.lv-cohost-answer { display: flex; flex-wrap: wrap; gap: 10px; }
+.lv-cohost-answer .btn { min-block-size: 48px; }
+.lv-run-log > summary { cursor: pointer; font-weight: 700; }
+.lv-run-log-list { margin-block: 8px 0; padding-inline-start: 1.4em; display: flex; flex-direction: column; gap: 4px; }
+@media (min-width: 900px) { .lv-dash > #lv-dash-limited, .lv-dash > #lv-cohost-off { grid-column: 1 / -1; } }
+.lv-cohost-gone .lv-tabpanel, .lv-cohost-gone .lv-dash-acts, .lv-cohost-gone .lv-tabs, .lv-cohost-gone .lv-dash-activity,
+.lv-cohost-gone .lv-dash-role, .lv-cohost-gone #lv-dash-limited, .lv-cohost-gone #lv-dash-notice { display: none !important; }
+.lv-dash .lv-cohost-off { margin: 8px 0 0; }
+/* the projector page that no longer runs the game here (busy elsewhere, or removed): the header and the notice only */
+.lv-host-off > :not(.lv-bar):not(#lv-proj-busy):not(#lv-cohost-off):not(dialog):not(script):not(template) { display: none !important; }
+/* "Link for your co-host": a disclosure that looks like one (the ▸ / ◂ / ▾ of .lv-details) */
+.lv-cohost-link > summary::before { content: '▸'; margin-inline-end: 8px; }
+[dir="rtl"] .lv-cohost-link > summary::before { content: '◂'; }
+.lv-cohost-link[open] > summary::before { content: '▾'; }
+.lv-cohost-link > summary { font-weight: 700; color: var(--link); text-decoration: underline; text-underline-offset: 3px; }
+.lv-cohost-link > summary::-webkit-details-marker { display: none; }
+/* the picked person's access level, under the picker (a long name never hides it) */
+.lv-cohost-pick-tier { margin: 4px 0 0; overflow-wrap: anywhere; }

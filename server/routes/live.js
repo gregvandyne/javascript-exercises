@@ -9,6 +9,8 @@
 //   /live/host/:sid/dash  the teacher's dashboard (part 3): the signed-in host only, a phone the class can't see
 //   /api/live/prefs       the host's remembered game settings; /api/live/classes/:classId/teams|support the class's
 //                         saved teams (the class teams editor) and saved support (LIVE_SAVE_SUPPORT)
+//   /api/live/cohost/:sid co-hosts (part 4): the host's panel, invite / cancel / remove / make host; the invitee's
+//                         answer; a co-host leaving. /live/cohost/:sid the invite page (LIVE_COHOST; 404 when off)
 // Everything answers 404 while LIVE_CLASSROOM=0 (the class-code /join keeps working).
 import { Router } from 'express';
 import { config } from '../config.js';
@@ -31,6 +33,7 @@ import * as C from '../services/classlive-check.js';
 import * as T from '../services/classlive-teams.js';
 import * as ST from '../services/classlive-settings.js';
 import * as D from '../services/classlive-dash.js';
+import * as CH from '../services/classlive-cohost.js';
 import { SAY, BONUS_REASONS } from '../services/classlive-protocol.js';
 import { nicksFor } from '../services/classlive-names.js';
 import { STARTERS } from '../live/starters.js';
@@ -49,6 +52,10 @@ const noStore = res => res.set('Cache-Control', 'no-store');
 const apiErr = (req, res, status, code, extra = {}) => res.status(status).json({ error: req.t(`live.api.${code}`), code, ...extra });
 const hostOnly = (req, res, next) => (A.canHost(req.user) ? next() : (req.originalUrl.startsWith('/api/') ? res.status(404).json({ error: req.t('errors.api.notFound') }) : res.redirect(302, '/join')));
 const CODE_RE = /^\d{7}$/;
+/** Part 4: this account's role in an open session ('host' | 'cohost' | null). */
+const ctlRole = (s, u) => (s && u && s.phase !== 'ended' ? LS.roleOf(s, u.id) : null);
+/** What a controller's pages need: { role, tier, cohosts: the co-host feature is on for this room }. */
+const ctlInfo = (s, u) => { const role = LS.roleOf(s, u.id); return { role, tier: role === 'host' ? s.host.tier : (s.cohosts.get(u.id) || {}).tier || 'limited', cohosts: LS.cohostOn() && s.audience !== 'open' && role === 'host' }; };
 const digits = v => String(v ?? '').replace(/[\s-]/g, '');
 
 // ---------------------------------------------------------------- /join (live codes; class codes go on)
@@ -153,7 +160,8 @@ router.get('/live', on, requireAnyAccount, hostOnly, (req, res) => {
   noStore(res);
   page(req, res, { title: t('live.landing.title'), active: 'classes', head: '<link rel="stylesheet" href="/css/live.css">', scripts: ['/js/live-sets.js'],
     body: V.landingBody(req, { modes, groups, sets: SETS.listFor(u), starters, classes: teaching, family, pre, recent: R.hostRuns(u.id, 8), maxPlayers: A.maxPlayersFor(u, 'open', null) === 30 ? 30 : config.liveMaxPlayers, origin: requestOrigin(req),
-      prefs: ST.loadPrefs(u.id), teamsOn: LS.teamsOn() }) });
+      prefs: ST.loadPrefs(u.id), teamsOn: LS.teamsOn(),
+      cohost: { invites: CH.invitesFor(u).map(x => ({ sid: x.s.id, title: x.s.title, from: x.from })), on: CH.cohostingFor(u).map(x => ({ sid: x.id, title: x.title })) } }) });
 });
 
 /** The landing's form ({ pick: 'mode:<id>'|'game:<id>', set: 'starter:<id>'|'set:<id>', audience, classId, ... }) or
@@ -252,26 +260,85 @@ router.post('/api/live/sessions', on, requireAnyAccount, hostOnly, rateLimit('lv
 // ---------------------------------------------------------------- the host's page
 router.get('/live/host/:sid', on, requireAnyAccount, (req, res) => {
   const s = LS.get(req.params.sid);
-  if (!s || s.host.userId !== req.user.id) return notFound(req, res);
-  if (s.phase === 'ended') return res.redirect(302, `/live/results/${s.id}`);
-  s.host.lang = req.locale;
+  if (s && s.phase === 'ended' && (s.host.userId === req.user.id || (s.endCtl && s.endCtl.has(req.user.id)))) return res.redirect(302, `/live/results/${s.id}`);
+  // The host, or a co-host (part 4: the projector slot is decided at hello).
+  const role = ctlRole(s, req.user);
+  if (!role) return notFound(req, res);
+  if (role === 'host') s.host.lang = req.locale; else s.cohosts.get(req.user.id).lang = req.locale;
   noStore(res);
   page(req, res, { title: req.t('live.host.title'), bare: true, bodyClass: 'lv-body lv-projector', head: '<link rel="stylesheet" href="/css/live.css">',
-    body: V.hostBody(req, { s, origin: requestOrigin(req), token: LS.hostToken(s), nicks: nicksFor(req.locale), classSignIn: s.audience !== 'open',
-      teamsOn: LS.teamsOn(), hasLast: LS.teamsOn() && s.audience === 'class' && !!T.loadClassTeams(s.classId) }), scripts: ['/js/live-host.js'] });
+    body: V.hostBody(req, { s, origin: requestOrigin(req), token: LS.ctlToken(s, req.user.id), nicks: nicksFor(req.locale), classSignIn: s.audience !== 'open',
+      teamsOn: LS.teamsOn(), hasLast: LS.teamsOn() && s.audience === 'class' && !!T.loadClassTeams(s.classId), ctl: ctlInfo(s, req.user) }), scripts: ['/js/live-host.js'] });
 });
 
 // ---------------------------------------------------------------- the teacher's dashboard (part 3)
 // The address holds only the session id (the projector shows it as a QR): the page needs the host's own sign-in, so a
 // student who scans it gets the sign-in page, and anyone else signed in a 404. The host token is in the page only for
 // that account, never in the address.
+// Part 4: a co-host's Teacher view is this page with their own token; a pending invitee who scans the projector's QR is
+// sent to their invite.
 router.get('/live/host/:sid/dash', on, requireAnyAccount, (req, res) => {
   const s = LS.get(req.params.sid);
-  if (!s || s.host.userId !== req.user.id) return notFound(req, res);
-  if (s.phase === 'ended') return res.redirect(302, `/live/results/${s.id}`);
+  if (s && s.phase === 'ended' && (s.host.userId === req.user.id || (s.endCtl && s.endCtl.has(req.user.id)))) return res.redirect(302, `/live/results/${s.id}`);
+  const role = ctlRole(s, req.user);
+  if (!role) {
+    if (s && s.phase !== 'ended' && LS.cohostOn() && s.invites.has(req.user.id)) return res.redirect(302, `/live/cohost/${s.id}`);
+    return notFound(req, res);
+  }
   noStore(res);
   page(req, res, { title: req.t('live.dash.title'), bare: true, bodyClass: 'lv-body lv-dashboard', head: '<link rel="stylesheet" href="/css/live.css">',
-    body: V.dashBody(req, { s, token: LS.hostToken(s), nicks: nicksFor(req.locale), presets: T.presetsFor(req.t), saveSupport: LS.supportSaveOn(s) }), scripts: ['/js/live-dash.js'] });
+    body: V.dashBody(req, { s, token: LS.ctlToken(s, req.user.id), nicks: nicksFor(req.locale), presets: T.presetsFor(req.t), saveSupport: LS.supportSaveOn(s), ctl: ctlInfo(s, req.user), origin: requestOrigin(req) }), scripts: ['/js/live-dash.js'] });
+});
+
+// ---------------------------------------------------------------- co-hosts (part 4)
+const cohostOn = (req, res, next) => (LS.cohostOn() ? next() : res.status(404).json({ error: req.t('errors.api.notFound') }));
+const notFoundJson = (req, res) => res.status(404).json({ error: req.t('errors.api.notFound') });
+const cohostErr = (req, res, status, code) => res.status(status).json({ error: req.t(`live.api.cohost.${code}`), code });
+/** The host's panel: who runs the game, who may be invited (names from lists the host already sees), the link. */
+router.get('/api/live/cohost/:sid', on, cohostOn, requireAnyAccount, (req, res) => {
+  const s = LS.get(req.params.sid);
+  if (!s || s.phase === 'ended' || s.host.userId !== req.user.id) return notFoundJson(req, res);
+  if (s.audience === 'open') return cohostErr(req, res, 400, 'cohostRoom');
+  noStore(res);
+  res.json(CH.view(s));
+});
+router.post('/api/live/cohost/:sid', on, cohostOn, requireAnyAccount, rateLimit('lv-cohost', 60, 3600e3), (req, res) => {
+  const s = LS.get(req.params.sid), b = req.body || {};
+  if (!s || s.phase === 'ended' || s.host.userId !== req.user.id) return notFoundJson(req, res);
+  const fn = { invite: CH.invite, cancel: CH.cancel, remove: CH.remove, host: CH.makeHost }[String(b.a || '')];
+  if (!fn) return res.status(400).json({ error: req.t('errors.api.badRequest') });
+  const r = fn(s, req.user, String(b.userId || ''));
+  if (!r.ok) return r.code === 'notFound' || r.code === 'off' ? notFoundJson(req, res) : cohostErr(req, res, 400, r.code);
+  noStore(res);
+  res.json({ ok: true, ...(b.a === 'host' ? {} : CH.view(s)), ...(b.a === 'invite' ? { toast: req.t('live.cohost.toastInvited') } : {}), ...(b.a === 'host' ? { redirect: `/live/host/${s.id}/dash` } : {}) });
+});
+const yes = v => v === true || v === 1 || v === '1' || v === 'yes';
+router.post('/api/live/cohost/:sid/answer', on, cohostOn, requireAnyAccount, rateLimit('lv-cohost-ans', 30, 3600e3), (req, res) => {
+  const s = LS.get(req.params.sid);
+  const want = yes((req.body || {}).yes);
+  const r = CH.answer(s, req.user, want);
+  if (!r.ok) return cohostErr(req, res, 410, 'gone');
+  noStore(res);
+  res.json({ ok: true, redirect: want ? `/live/host/${s.id}/dash` : '/live' });
+});
+router.post('/api/live/cohost/:sid/leave', on, cohostOn, requireAnyAccount, (req, res) => {
+  const s = LS.get(req.params.sid);
+  const r = CH.leave(s, req.user);
+  if (!r.ok) return notFoundJson(req, res);
+  res.json({ ok: true, redirect: '/live', toast: req.t('live.cohost.left') });
+});
+/** The invite page: only for the invited account (anyone else gets the same 404 as an unknown session); a co-host or
+ *  the host goes to their Teacher view. */
+router.get('/live/cohost/:sid', on, requireAnyAccount, (req, res) => {
+  const s = LS.get(req.params.sid);
+  if (!LS.cohostOn() || !s || s.phase === 'ended') return notFound(req, res);
+  if (ctlRole(s, req.user)) return res.redirect(302, `/live/host/${s.id}/dash`);
+  CH.prune(s);
+  const inv = s.invites.get(req.user.id);
+  if (!inv) return notFound(req, res);
+  noStore(res);
+  page(req, res, { title: req.t('live.cohost.inviteTitle'), bare: true, mid: true, bodyClass: 'lv-body', head: '<link rel="stylesheet" href="/css/live.css">',
+    body: V.cohostInviteBody(req, { s, from: s.names.get(inv.by) || '', tier: inv.tier }) });
 });
 
 // ---------------------------------------------------------------- remembered settings (part 3)
@@ -355,9 +422,11 @@ router.get('/live/frame/:token', on, (req, res) => {
   if (!tok || !tok.s || !['game', 'lobby'].includes(tok.f)) return sendFrameText(res, 403, t('play.frameExpired'));
   const s = LS.get(tok.s);
   if (!s || s.phase === 'ended') return sendFrameText(res, 404, t('live.play.gone'));
-  const host = tok.r === 'h';
+  // The host's frame, or (part 4) a co-host's who holds the projector slot: the token's account and nonce must be a
+  // current controller's.
+  const host = tok.r === 'h' || tok.r === 'c';
   const seat = host ? null : LS.seatFor(s, tok);
-  if (host ? tok.k !== s.host.nonce : !seat) return sendFrameText(res, 403, t('play.frameExpired'));
+  if (host ? !LS.ctlNonceOk(s, tok.u, tok.k) : !seat) return sendFrameText(res, 403, t('play.frameExpired'));
   // The frame is same-site, so the sign-in cookie comes along: a signed-in seat's frame is theirs only.
   const u = req.user && !req.user.is_guest ? req.user : null;
   if (tok.u && (!u || u.id !== tok.u)) return sendFrameText(res, 403, t('play.frameExpired'));
@@ -406,12 +475,14 @@ router.get('/live/results/:id', on, requireAnyAccount, (req, res) => {
   noStore(res);
   const presets = T.presetsFor(t);
   const common = { presets, homework: config.liveHomework && S.isStaff(u), sayTeams: LS.teamsOn(), classes: config.liveHomework ? S.classesOf(u.id, 'teacher') : [] };
-  if (s && s.host.userId === u.id && s.summary) {
-    const sum = s.summary;
+  const tier = memTier(s, u);
+  if (tier) {
+    const sum = s.summary, limited = tier !== 'full';
+    // part 4: a limited controller (not a teacher of the class) gets the class-safe part only (no student details, no CSV)
     return page(req, res, { title: t('live.results.title'), head: '<link rel="stylesheet" href="/css/live.css">', scripts: ['/js/live-results.js'],
-      body: V.resultsBody(req, { ...common, id, title: sum.title, mode: sum.mode, players: sum.players, items: sum.items, teams: sum.teams, scoring: sum.scoring, guests: sum.guests, nicks: nicksFor(req.locale), nameMode: sum.nameMode,
-        csv: s.startedAt ? `/live/results/${id}.csv` : null, gradebook: !!(s.clId && s.stepId && s.audience === 'class'), still: LS.lingering(s), quiz: !!s.quiz, setId: s.setId,
-        againRun: s.audience === 'class' && sum.teams.length > 0 }) });
+      body: V.resultsBody(req, { ...common, id, title: sum.title, mode: sum.mode, players: limited ? [] : sum.players, playerCount: sum.players.length, items: sum.items, teams: sum.teams, scoring: sum.scoring, guests: sum.guests, nicks: nicksFor(req.locale), nameMode: sum.nameMode,
+        csv: s.startedAt && !limited ? `/live/results/${id}.csv` : null, gradebook: !!(s.clId && s.stepId && s.audience === 'class'), still: LS.lingering(s), quiz: !!s.quiz, setId: s.setId,
+        againRun: s.audience === 'class' && sum.teams.length > 0, limited, hostActs: s.host.userId === u.id, runLog: tier === 'full' && s.cohostEver ? memLog(req, s) : [], logZone: zoneOfClass(s.classId) }) });
   }
   const p = R.persisted(u, id);
   if (!p) return notFound(req, res, t('live.results.gone'));
@@ -419,15 +490,46 @@ router.get('/live/results/:id', on, requireAnyAccount, (req, res) => {
   const teams = p.teams ? p.teams.list.map(x => ({ ...x, score: p.teams.scoring === 'sum' ? x.sum : x.avg })) : [];
   page(req, res, { title: t('live.results.title'), head: '<link rel="stylesheet" href="/css/live.css">', scripts: ['/js/live-results.js'],
     body: V.resultsBody(req, { ...common, id, title: p.run.title, mode: p.run.mode, players, items: p.items, teams, scoring: p.teams ? p.teams.scoring : null, guests: p.run.guests, saved: true, csv: `/live/results/${id}.csv`, nameMode: 'accounts',
-      quiz: p.run.scored_by === 'server' || p.items.some(it => R.asItem(it)), setId: p.run.set_id, againRun: !!(p.run.class_id && teams.length) }) });
+      quiz: p.run.scored_by === 'server' || p.items.some(it => R.asItem(it)), setId: p.run.set_id, againRun: !!(p.run.class_id && teams.length),
+      runLog: R.runLog(p.run).map(x => ({ at: x.at, text: logText(req, x, presets, p.teams ? p.teams.list : []) })), logZone: zoneOfClass(p.run.class_id) }) });
 });
+/** A class's school time zone (IANA) or null. */
+function zoneOfClass(classId) {
+  const c = classId && S.getClass(classId);
+  return c ? S.zoneOf(S.getSchool(c.school_id)) : null;
+}
+/** Part 4: the in-memory results for this account: the owner and everyone who controlled the game at its end, each
+ *  with their tier ('full' | 'limited'), or null. */
+function memTier(s, u) {
+  if (!s || !s.summary || !u) return null;
+  if (s.endCtl && s.endCtl.has(u.id)) {
+    // details only while they still teach the class (access can fall after the end too); the owner keeps theirs
+    const was = s.endCtl.get(u.id);
+    return was === 'full' && s.owner !== u.id && A.controlTier(s, u) !== 'full' ? 'limited' : was;
+  }
+  return s.owner === u.id || s.host.userId === u.id ? 'full' : null;
+}
+const ACT_OF = { eyes: x => (x.detail === '0' ? 'eyesOff' : 'eyesOn'), bonus: x => (/^k\d+$/.test(x.detail) ? 'bonusTeam' : 'bonus') };
+/** One line of "Who ran this game" (a saved run's log, or the session's in memory). */
+function logText(req, x, presets = [], teamList = []) {
+  const t = req.t, former = t('live.cohost.log.former');
+  const a = ACT_OF[x.action] ? ACT_OF[x.action](x) : x.action;
+  const k = /^k(\d+)$/.exec(x.detail || '');
+  const team = k ? ((presets[(teamList.find(r => r.k === +k[1]) || {}).p] || {}).name || t('live.cohost.log.team')) : '';
+  return t(`live.cohost.act.${V.ACT_KEYS.includes(a) ? a : 'settings'}`, { name: x.actor || former, other: x.other || former, player: x.target || t('live.cohost.log.player'), s: Number(x.detail) || 0, team });
+}
+/** The session's log while it is in memory (the host's results page right after the end). */
+function memLog(req, s) {
+  const nm = id => s.names.get(id) || '';
+  return s.log.map(e => ({ at: e.at, text: logText(req, { action: e.a, actor: nm(e.by), other: nm(e.other), target: '', detail: e.v !== undefined ? String(e.v) : e.k !== undefined ? `k${e.k}` : '' }, T.presetsFor(req.t), s.summary ? s.summary.teams : []) }));
+}
 /** CSV: saved class runs (the host and the class's teachers), and in-memory runs (the host, 10 minutes; nicknames). */
 function resultsCsv(req, res, id) {
   const tn = T.presetsFor(req.t);
   const teamName = (k, list) => { const x = list.find(r => r.k === k); return x ? tn[x.p].name : ''; };
   let body;
   const s = LS.get(id);
-  if (s && s.host.userId === req.user.id && s.summary && s.startedAt) {
+  if (s && memTier(s, req.user) === 'full' && s.startedAt) {
     const sum = s.summary, nicks = nicksFor(req.locale);
     body = R.csv({ players: sum.players.map(p => ({ ...p, name: typeof p.name === 'number' ? nicks[p.name] : p.name, team: teamName(p.team, sum.teams) })), items: sum.items });
   } else {
@@ -504,7 +606,12 @@ router.post('/api/lessons/:clId/steps/:stepId/quiz', on, homeworkOn, requireAnyA
 // ---------------------------------------------------------------- the host's open session (entry points ask first)
 router.get('/api/live/mine', on, requireAnyAccount, hostOnly, (req, res) => {
   const s = LS.hostSession(req.user.id);
-  res.json(s && s.phase !== 'ended' ? { sid: s.id, title: s.title, host: `/live/host/${s.id}` } : {});
+  // part 4: also the games this account co-hosts and its invites (only while co-hosts are on)
+  const cohosting = CH.cohostingFor(req.user).map(x => ({ sid: x.id, title: x.title, dash: `/live/host/${x.id}/dash` }));
+  const invites = CH.invitesFor(req.user).map(x => ({ sid: x.s.id, title: x.s.title, from: x.from, page: `/live/cohost/${x.s.id}` }));
+  const extra = { ...(cohosting.length ? { cohosting } : {}), ...(invites.length ? { invites } : {}) };
+  noStore(res);
+  res.json({ ...(s && s.phase !== 'ended' ? { sid: s.id, title: s.title, host: `/live/host/${s.id}` } : {}), ...extra });
 });
 
 /** Is this game live-ready (its published version)? For game pages and the Studio. */

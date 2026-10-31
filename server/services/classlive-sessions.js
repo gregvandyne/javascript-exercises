@@ -17,6 +17,13 @@
 // stays the projector), names per view (players, projector, dashboard), eyes up, fixed messages, +time, bonus points, a
 // new nickname, per-seat support (private: never in a broadcast, a frame or the results), and a short linger after the
 // end so the host can play again with the same players and teams.
+// Part 4 (docs/decisions.md "Oomba Live, part 4"): co-hosts. s.owner is the creator (never changes: the saved run, the
+// family check, saved teams, reports); s.host is the current host (changes on a handoff or "Make host"). Up to 3 other
+// adults (s.cohosts) control the session from their own Teacher view, with the host's game controls. Authority is looked
+// up per message from the user id (roleOf), never trusted from a page. Each controller has a tier: 'full' (a teacher of
+// the class: student details, like the host) or 'limited' (controls only: no progress, needs help, support or who
+// answered). One projector slot (s.host.conn, held by s.projBy). Activity (act) and the adults' list (ch) go to controller
+// connections only. Invites, removal and "Make host" are in classlive-cohost.js.
 import crypto from 'node:crypto';
 import { config } from '../config.js';
 import { signToken } from '../auth.js';
@@ -35,11 +42,15 @@ import * as T from './classlive-teams.js';
 import * as ST from './classlive-settings.js';
 import * as D from './classlive-dash.js';
 import { getUser } from '../auth.js';
+import { audit } from '../db.js';
 import * as L from './lessons.js';
 import * as S from './schools.js';
 import { cleanText, personalInfo } from './textfilter.js';
 
-export const hooks = { now: () => Date.now(), log, tickMs: 100, sweepMs: 30e3, loadingMs: 20e3, countdownMs: 3000, holdMs: 60e3, hostGoneMs: 10 * 60e3, idleLobbyMs: 30 * 60e3, keepEndedMs: 10 * 60e3, lingerMs: 120e3 };
+export const hooks = { now: () => Date.now(), log, tickMs: 100, sweepMs: 30e3, loadingMs: 20e3, countdownMs: 3000, holdMs: 60e3, hostGoneMs: 10 * 60e3, idleLobbyMs: 30 * 60e3, keepEndedMs: 10 * 60e3, lingerMs: 120e3,
+  // part 4: the host's grace before the longest-standing co-host takes over; another controller's toggle within
+  // conflictMs of the last change is refused (no flapping); invites last inviteMs
+  handoffMs: (config.liveHandoffSecs || 120) * 1000, conflictMs: 1000, inviteMs: 15 * 60e3 };
 export const PHASES = ['lobby', 'loading', 'countdown', 'playing', 'paused', 'between', 'ended'];
 /** Seat and frame token lives. */
 export const SEAT_TOKEN_SEC = 4 * 3600, FRAME_TOKEN_SEC = 15 * 60;
@@ -54,6 +65,7 @@ let tickTimer = null, sweepTimer = null, tickNo = 0;
 
 export const liveOn = () => !!config.liveClassroom;
 export const teamsOn = () => !!config.liveTeams;
+export const cohostOn = () => liveOn() && !!config.liveCohost;
 const now = () => hooks.now();
 const hash = code => crypto.createHash('sha256').update(String(code)).digest('base64url');
 const open = s => s && s.phase !== 'ended';
@@ -143,11 +155,31 @@ export function joinMiss(keys) {
 // ---------------------------------------------------------------- tokens
 export const seatToken = (s, seat) => signToken({ s: s.id, n: seat.no, k: seat.nonce, r: 'p', ...(seat.userId ? { u: seat.userId } : {}) }, SEAT_TOKEN_SEC);
 export const hostToken = s => signToken({ s: s.id, n: 0, k: s.host.nonce, r: 'h', u: s.host.userId }, SEAT_TOKEN_SEC);
-/** A frame token (GET /live/frame/:token). f: 'game' or 'lobby' (the platform lobby, for games that draw none). */
+/** A controller's token for this account: the host's, or a co-host's (r: 'c', their own nonce; a new one on every
+ *  accept, so a removed and re-invited co-host's old page can't come back). -> null when not a controller. */
+export function ctlToken(s, userId) {
+  if (s.host.userId === userId) return hostToken(s);
+  const c = s.cohosts && s.cohosts.get(userId);
+  return c ? signToken({ s: s.id, n: 0, k: c.nonce, r: 'c', u: userId }, SEAT_TOKEN_SEC) : null;
+}
+/** Who holds the projector slot: { userId, nonce, r } (the host when nobody does). */
+function holder(s) {
+  const c = s.projBy && s.projBy !== s.host.userId && s.cohosts.get(s.projBy);
+  return c ? { userId: c.userId, nonce: c.nonce, r: 'c', lang: c.lang } : { userId: s.host.userId, nonce: s.host.nonce, r: 'h', lang: s.host.lang };
+}
+/** A frame token (GET /live/frame/:token). f: 'game' or 'lobby' (the platform lobby, for games that draw none). The
+ *  host frame's token carries the projector slot's holder. */
 export function frameToken(s, seat, f = 'game') {
-  const host = !seat;
-  return signToken({ s: s.id, n: host ? 0 : seat.no, k: host ? s.host.nonce : seat.nonce, r: host ? 'h' : 'p', v: s.versionId, g: s.gameId, f,
-    l: (host ? s.host.lang : seat.lang) || 'en', ...(host ? { u: s.host.userId } : seat.userId ? { u: seat.userId } : {}) }, FRAME_TOKEN_SEC);
+  const host = !seat, h = host ? holder(s) : null;
+  return signToken({ s: s.id, n: host ? 0 : seat.no, k: host ? h.nonce : seat.nonce, r: host ? h.r : 'p', v: s.versionId, g: s.gameId, f,
+    l: (host ? h.lang : seat.lang) || 'en', ...(host ? { u: h.userId } : seat.userId ? { u: seat.userId } : {}) }, FRAME_TOKEN_SEC);
+}
+/** Is (userId, nonce) a current controller's credential (a host frame token, a socket hello)? */
+export function ctlNonceOk(s, userId, nonce) {
+  if (!s || !userId || !nonce) return false;
+  if (s.host.userId === userId && s.host.nonce === nonce) return true;
+  const c = cohostOn() && s.cohosts && s.cohosts.get(userId);
+  return !!c && c.nonce === nonce;
 }
 
 // ---------------------------------------------------------------- create
@@ -194,7 +226,11 @@ export function createSession(host, opts = {}) {
   const t = now();
   const s = {
     id: crypto.randomBytes(16).toString('base64url'), code: newCode(),
-    host: { userId: host.id, nonce: crypto.randomBytes(12).toString('base64url'), conn: null, lang: opts.lang || 'en', goneAt: t },
+    host: { userId: host.id, nonce: crypto.randomBytes(12).toString('base64url'), conn: null, lang: opts.lang || 'en', goneAt: t, tier: 'full' },
+    // part 4: the creator (never changes), co-hosts and invites, small per-session numbers for adults on the wire (never
+    // user ids), their names (to adults only), the activity line and the run's audit trail
+    owner: host.id, cohosts: new Map(), invites: new Map(), refs: new Map([[host.id, 0]]), refSeq: 0, names: new Map(),
+    acts: [], actSeq: 0, log: [], cohostEver: false, lastChange: {}, projBy: null, ctlGoneAt: t, endCtl: null,
     createdAt: t, endsAt: t + config.liveHours * 3600e3, startedAt: null, endedAt: null, why: null,
     audience, nameMode: A.nameMode(host, audience, classId), mode, quiz, official: !!h.official,
     gameId: game.id, versionId: h.versionId, setId, classId, clId, stepId,
@@ -210,6 +246,8 @@ export function createSession(host, opts = {}) {
     allItems: items, lang: opts.lang || 'en', teams: T.initial(), dash: null, eyes: false, eyesPaused: false, actAt: {}, again: null,
   };
   // The game settings extend the existing s.settings ({ maxPlayers, locked, autoLock }; late join = !autoLock).
+  s.host.tier = A.controlTier(s, host) || 'full';
+  s.names.set(host.id, A.adultName(s, host));
   s.settings = ST.initial({ maxPlayers: A.maxPlayersFor(host, audience, opts.maxPlayers), locked: false, autoLock: audience === 'open' }, audience, s.nameMode, opts.settings);
   // A team setup carried in (the landing's teams row, play again) and a plan (a rematch, a saved class run).
   if (teamsOn() && opts.teams && opts.teams.on !== false) T.fromSetup(s, opts.teams, opts.plan || null);
@@ -258,7 +296,14 @@ export function broadcastSeat(s, t, seat, { except = null } = {}) {
   const pl = str('player');
   for (const x of s.seats.values()) if (x.conn && x.no !== except) sendTo(x.conn, pl);
   if (s.host.conn) sendTo(s.host.conn, str('projector'));
-  if (s.dash) sendTo(s.dash, str('dash'));
+  toDashViews(s, str, pl);
+}
+/** Every dashboard its own view's string: a full-tier one the dashboard's names, a limited one the players'. */
+function toDashViews(s, str, pl) {
+  const ds = dashes(s);
+  if (!ds.length) return;
+  const full = ds.some(d => d.tier === 'full') ? str('dash') : null;
+  for (const d of ds) sendTo(d.conn, d.tier === 'full' ? full : pl);
 }
 /** ros: the whole roster again, per view (the names setting changed). */
 export function broadcastRoster(s) {
@@ -266,7 +311,7 @@ export function broadcastRoster(s) {
   const pl = str('player');
   for (const x of s.seats.values()) if (x.conn) sendTo(x.conn, pl);
   if (s.host.conn) sendTo(s.host.conn, str('projector'));
-  if (s.dash) sendTo(s.dash, str('dash'));
+  toDashViews(s, str, pl);
 }
 
 /**
@@ -343,13 +388,14 @@ function savedSupport(s, userId) {
   const r = R.supportRow(s.classId, userId);
   return r && (r.extra_time > 100 || r.read_aloud || r.simple) ? { time: P.EXTRA_TIME.includes(r.extra_time) ? r.extra_time : 100, read: !!r.read_aloud, simple: !!r.simple, saved: true } : null;
 }
-/** The host sets a seat's support: { time: 100|150|200, read, simple }, save: remember it for the class. -> bool */
-export function setSupport(s, seat, { time = 100, read = false, simple = false, save = false } = {}) {
+/** The host sets a seat's support: { time: 100|150|200, read, simple }, save: remember it for the class; by: who set
+ *  it (the host or a full-tier co-host). -> bool */
+export function setSupport(s, seat, { time = 100, read = false, simple = false, save = false } = {}, by = null) {
   if (!seat) return false;
   const acc = { time: P.EXTRA_TIME.includes(time) ? time : 100, read: !!read, simple: !!simple, saved: false };
   const any = acc.time > 100 || acc.read || acc.simple;
   if (save && supportSaveOn(s) && seat.userId && S.classMember(s.classId, seat.userId)?.role === 'student') {
-    acc.saved = R.saveSupport(s.classId, seat.userId, acc, s.host.userId);
+    acc.saved = R.saveSupport(s.classId, seat.userId, acc, by || s.host.userId);
   } else if (seat.acc && seat.acc.saved && supportSaveOn(s)) acc.saved = any;
   seat.acc = any ? acc : null;
   // Only the seat itself (PRIVATE: its page never relays it into the game frame) and the dashboard.
@@ -427,16 +473,26 @@ export function broadcast(s, msg, { except = null, host = true, players = true }
   if (host) toHosts(s, str);
 }
 export const toSeat = (s, no, msg) => { const seat = s.seats.get(no); return seat ? sendTo(seat.conn, msg) : false; };
-/** The projector and the dashboard. */
+/** The projector and every dashboard (the host's and the co-hosts'). */
 export function toHosts(s, msg) {
   const str = typeof msg === 'string' ? msg : JSON.stringify(msg);
-  const a = sendTo(s.host.conn, str), b = sendTo(s.dash, str);
-  return a || b;
+  let sent = sendTo(s.host.conn, str);
+  for (const d of dashes(s)) sent = sendTo(d.conn, str) || sent;
+  return sent;
 }
-/** The host's projector only. */
+/** The projector only. */
 export const toProjector = (s, msg) => sendTo(s.host.conn, msg);
-/** The teacher's dashboard only (dq, dp, sup): never a player, the projector or a frame. */
-export const toDash = (s, msg) => (msg && s.dash ? sendTo(s.dash, msg) : false);
+/** Teacher-only data (dq, dp, sup): full-tier dashboards only (the host's and co-hosts who teach the class), never a
+ *  player, the projector or a frame. A limited dashboard gets dq without who answered or the extra-time count. */
+export function toDash(s, msg) {
+  if (!msg) return false;
+  let sent = false, lim = null;
+  for (const d of dashes(s)) {
+    if (d.tier === 'full') sent = sendTo(d.conn, msg) || sent;
+    else if (msg.t === 'dq') sent = sendTo(d.conn, lim || (lim = D.limitedDq(msg))) || sent;
+  }
+  return sent;
+}
 /** Kept for callers from before the dashboard: every host connection. */
 export const toHost = toHosts;
 export const toPlayers = (s, msg) => broadcast(s, msg, { host: false });
@@ -447,10 +503,14 @@ export function teamScores(s, { fin = false } = {}) {
   toPlayers(s, T.tsMsg(s, { fin, ranks: s.settings.board !== 'off' }));
 }
 
-/** The welcome for a seat or a host connection (conn has just said hello). view: 'projector' | 'dash' for a host. */
-export function welcome(s, seat, view = 'projector') {
+/** The welcome for a seat or a controller connection (conn has just said hello). view: 'projector' | 'dash' for a
+ *  controller; who: { userId, role, tier } (the host when left out). A limited controller's dashboard gets the players'
+ *  names and no teacher-only data. */
+export function welcome(s, seat, view = 'projector', who = null) {
   const t = now();
-  const v = seat ? 'player' : view;
+  const w = seat ? null : who || { userId: s.host.userId, role: 'host', tier: s.host.tier };
+  const lim = !!w && view === 'dash' && w.tier !== 'full';
+  const v = seat || lim ? 'player' : view;
   const tms = T.tmsMsg(s); delete tms.t;
   const base = {
     t: 'wel', v: P.V, phase: s.phase, seq: s.seq, round: s.round, at: s.at, clock: t, players: roster(s, v), state: s.state,
@@ -462,8 +522,9 @@ export function welcome(s, seat, view = 'projector') {
   if (s.race) base.race = raceList(s);
   const lobbyFrame = s.lobbyByGame ? null : 1;
   if (!seat) {
-    const host = { ...base, role: 'host', view, seat: 0, code: s.code, settings: ST.view(s.settings) };
-    // The dashboard has no game frame; only it gets the teacher-only data.
+    const host = { ...base, role: 'host', view, seat: 0, code: s.code, settings: ST.view(s.settings), ...ctlPart(s, w, view) };
+    // The dashboard has no game frame; only it gets the teacher-only data (a full-tier one).
+    if (view === 'dash' && lim) return { ...host, ...(s.qz && s.qz.cur ? { dq: D.limitedDq(D.dqMsg(s)) } : {}) };
     if (view === 'dash') return { ...host, dp: D.dpMsg(s).p, sup: D.supMsg(s).p, ...(s.qz && s.qz.cur ? { dq: D.dqMsg(s) } : {}) };
     return { ...host, frame: frameToken(s, null, 'game'), ...(lobbyFrame ? { lobbyFrame: frameToken(s, null, 'lobby') } : {}) };
   }
@@ -489,34 +550,253 @@ export function detachSeat(s, seat, conn) {
   seat.conn = null; seat.leftAt = now(); seat.ready = false;
   if (open(s)) { broadcastSeat(s, 'pu', seat); toDash(s, D.dpMsg(s)); checkBarrier(s); Q.maybeAllAnswered(s, io); }
 }
-/** The projector connected (view 'projector'), or the teacher's dashboard (view 'dash': attachDash). */
-export function attachHost(s, conn, view = 'projector') {
-  if (view === 'dash') return attachDash(s, conn);
-  if (s.host.conn && s.host.conn !== conn) { sendTo(s.host.conn, { t: 'bye', why: 'replaced' }); closeConn(s.host.conn, 4409); }
-  s.host.conn = conn; s.host.goneAt = 0; s.host.buckets = P.buckets(hooks.now);
-  sendTo(conn, welcome(s, null, 'projector'));
+/**
+ * The projector connected (view 'projector'), or a controller's dashboard (view 'dash': attachDash). userId: the
+ * controller (the host when left out). The projector is one slot: the host always takes it (the old holder gets
+ * bye replaced); a co-host takes it only when it is empty (else bye projectorBusy, 4409). -> true when attached.
+ */
+export function attachHost(s, conn, view = 'projector', userId = null) {
+  const uid = userId || s.host.userId;
+  if (view === 'dash') return attachDash(s, conn, uid);
+  const prev = s.host.conn && s.host.conn !== conn ? s.projBy : null;
+  if (s.host.conn && s.host.conn !== conn) {
+    if (uid !== s.host.userId && s.projBy !== uid) { sendTo(conn, { t: 'bye', why: 'projectorBusy' }); closeConn(conn, 4409); return false; }
+    sendTo(s.host.conn, { t: 'bye', why: 'replaced' }); closeConn(s.host.conn, 4409);
+  }
+  s.host.conn = conn; s.projBy = uid; s.host.buckets = P.buckets(hooks.now);
+  sendTo(conn, welcome(s, null, 'projector', actorOf(s, uid)));
   if (s.waitingForHost) { s.waitingForHost = false; }
+  presence(s, uid);
+  if (prev && prev !== uid) presence(s, prev);
+  return true;
 }
+/** A controller connection closed (the projector or a dashboard). */
 export function detachHost(s, conn) {
+  if (s.host.conn === conn) { const by = s.projBy; s.host.conn = null; s.projBy = null; presence(s, by || s.host.userId); return; }
   if (s.dash === conn) return detachDash(s, conn);
-  if (s.host.conn !== conn) return;
-  s.host.conn = null;
-  if (!s.dash) s.host.goneAt = now();
+  for (const c of s.cohosts.values()) if (c.dash === conn) { c.dash = null; presence(s, c.userId); return; }
 }
-/** One dashboard per session (the same host account); a newer one replaces it (4409). It has no game frame, never
+/** One dashboard per controller; a newer one of the same person replaces it (4409). It has no game frame, never
  *  sends rdy and is not waited for at loading. */
-export function attachDash(s, conn) {
-  if (s.dash && s.dash !== conn) { sendTo(s.dash, { t: 'bye', why: 'replaced' }); closeConn(s.dash, 4409); }
-  s.dash = conn; s.host.goneAt = 0; s.dashBuckets = P.buckets(hooks.now);
-  sendTo(conn, welcome(s, null, 'dash'));
+export function attachDash(s, conn, userId = null) {
+  const uid = userId || s.host.userId;
+  const c = uid === s.host.userId ? null : s.cohosts.get(uid);
+  if (uid !== s.host.userId && !c) return false;
+  const old = c ? c.dash : s.dash;
+  if (old && old !== conn) { sendTo(old, { t: 'bye', why: 'replaced' }); closeConn(old, 4409); }
+  if (c) c.dash = conn; else { s.dash = conn; s.dashBuckets = P.buckets(hooks.now); }
+  sendTo(conn, welcome(s, null, 'dash', actorOf(s, uid)));
+  presence(s, uid);
+  return true;
 }
 export function detachDash(s, conn) {
   if (s.dash !== conn) return;
   s.dash = null;
-  if (!s.host.conn) s.host.goneAt = now();
+  presence(s, s.host.userId);
 }
-/** The host is gone when neither the projector nor the dashboard is connected. */
-export const hostGone = s => !s.host.conn && !s.dash;
+/** The host is gone when neither the projector (held by them) nor their dashboard is connected. */
+export const hostGone = s => !hostPresent(s);
+
+// ---------------------------------------------------------------- part 4: controllers (the host and co-hosts)
+/** 'host' | 'cohost' | null, looked up per message (a removal or a promotion takes effect at once). */
+export const roleOf = (s, userId) => (!s || !userId ? null : s.host.userId === userId ? 'host' : s.cohosts.has(userId) ? 'cohost' : null);
+const tierOf = (s, userId) => (s.host.userId === userId ? s.host.tier : (s.cohosts.get(userId) || {}).tier) || null;
+/** The actor for a controller message: { userId, role, tier, conn } or null (not a controller any more). */
+export function actorOf(s, userId, conn = null) {
+  const role = roleOf(s, userId);
+  return role ? { userId, role, tier: tierOf(s, userId), conn } : null;
+}
+/** A small per-session number for an adult (on the wire instead of a user id). */
+export const refOf = (s, userId) => { if (!userId) return -1; if (!s.refs.has(userId)) s.refs.set(userId, ++s.refSeq); return s.refs.get(userId); };
+/** Every controller dashboard: [{ conn, userId, tier }]. */
+export function dashes(s) {
+  const out = [];
+  if (s.dash) out.push({ conn: s.dash, userId: s.host.userId, tier: s.host.tier });
+  if (s.cohosts) for (const c of s.cohosts.values()) if (c.dash) out.push({ conn: c.dash, userId: c.userId, tier: c.tier });
+  return out;
+}
+/** Is this controller connected anywhere (their dashboard, or the projector slot)? */
+export function connected(s, userId) {
+  if (s.host.conn && s.projBy === userId) return true;
+  if (userId === s.host.userId) return !!s.dash;
+  const c = s.cohosts.get(userId);
+  return !!(c && c.dash);
+}
+export const hostPresent = s => connected(s, s.host.userId);
+/** Any controller connection open (the session runs on while one is). */
+export const anyController = s => !!(s.host.conn || dashes(s).length);
+/** Every controller connection (the projector page and every dashboard); fullOnly: full-tier dashboards only. */
+export function toCtl(s, msg, { fullOnly = false } = {}) {
+  const str = typeof msg === 'string' ? msg : JSON.stringify(msg);
+  if (!fullOnly) sendTo(s.host.conn, str);
+  for (const d of dashes(s)) if (!fullOnly || d.tier === 'full') sendTo(d.conn, str);
+}
+/** ch: the adults running the game. list: [[ref, name, state 'host'|'on'|'away'|'invited', tier]]. Adults' names go to
+ *  controller connections only (the projector page shows them only behind its gate). */
+export function chMsg(s) {
+  const st = id => (connected(s, id) ? 'on' : 'away');
+  const list = [[refOf(s, s.host.userId), s.names.get(s.host.userId) || '', st(s.host.userId), s.host.tier]];
+  for (const c of [...s.cohosts.values()].sort((a, b) => a.since - b.since)) list.push([refOf(s, c.userId), s.names.get(c.userId) || '', st(c.userId), c.tier]);
+  for (const [id, inv] of s.invites) list.push([refOf(s, id), s.names.get(id) || '', 'invited', inv.tier]);
+  // past: adults no longer listed (removed, left, an invite cancelled or declined) whose names the activity line still
+  // needs, also after a reload: [[ref, name]]
+  const listed = new Set(list.map(r => r[0]));
+  const past = [...s.refs].filter(([id, ref]) => !listed.has(ref) && s.names.has(id)).map(([id, ref]) => [ref, s.names.get(id)]);
+  return { t: 'ch', host: refOf(s, s.host.userId), list, max: A.COHOST_MAX, ...(past.length ? { past } : {}) };
+}
+/** wel.ctl, wel.ch, wel.acts for a controller (only while co-hosts are on). */
+function ctlPart(s, w, view = 'projector') {
+  if (!cohostOn() || !w) return {};
+  const { t, ...ch } = chMsg(s);
+  return { ctl: { me: refOf(s, w.userId), host: refOf(s, s.host.userId), role: w.role, tier: w.tier }, ch,
+    // support changes (acc): full-tier dashboards only, never the projector page (the class's screen)
+    acts: s.acts.filter(x => !x.fullOnly || (view === 'dash' && w.tier === 'full')).slice(-10).map(x => x.e) };
+}
+/** Tell every controller who is running the game (after any co-host, invite, presence or host change). */
+export const sendCh = s => { if (s.cohostEver && cohostOn()) toCtl(s, chMsg(s)); };
+/** Key actions and co-host events kept for the run (live_run_log, only runs that had a co-host); next and say are
+ *  routine and not kept. */
+const LOGGED = new Set(['start', 'pause', 'resume', 'skip', 'end', 'kick', 'lock', 'unlock', 'eyes', 'time', 'bonus', 'rename', 'acc', 'teams', 'settings',
+  'invited', 'cancelled', 'joined', 'declined', 'left', 'removed', 'host', 'away', 'back']);
+const LIFECYCLE = new Set(['invited', 'cancelled', 'joined', 'declined', 'left', 'removed', 'host', 'away', 'back']);
+export const LOG_MAX = 500;
+/**
+ * One applied action (or co-host event) for the activity line: act { i, by, a, n?, k?, v?, o? } to every controller
+ * connection (acc only to full-tier ones), and the run's log. Only once the session has (had) a co-host: a host on
+ * their own sees nothing new. other: the other adult's user id; tu: the seat's account (the log's target, class runs).
+ */
+export function recordAct(s, userId, a, { n, k, v, other, tu } = {}) {
+  if (!s.cohostEver || !cohostOn()) return null;
+  const e = { t: 'act', i: ++s.actSeq, by: refOf(s, userId), a, ...(n !== undefined ? { n } : {}), ...(k !== undefined ? { k } : {}), ...(v !== undefined ? { v } : {}), ...(other ? { o: refOf(s, other) } : {}) };
+  const fullOnly = a === 'acc';
+  s.acts.push({ e, fullOnly }); if (s.acts.length > 20) s.acts.shift();
+  toCtl(s, e, { fullOnly });
+  if (LOGGED.has(a)) {
+    s.log.push({ at: now(), by: userId, a, ...(n !== undefined ? { n } : {}), ...(k !== undefined ? { k } : {}), ...(v !== undefined ? { v } : {}), ...(other ? { other } : {}), ...(tu ? { tu } : {}) });
+    // at most LOG_MAX: the oldest action entries go first, the co-host events stay
+    if (s.log.length > LOG_MAX) { const i = s.log.findIndex(x => !LIFECYCLE.has(x.a)); s.log.splice(i >= 0 ? i : 0, 1); }
+  }
+  return e;
+}
+/** nak: one controller's action was refused, and why ('already', 'conflict', 'notAllowed'); by: who changed it last. */
+function nak(s, who, a, why, by = null) {
+  if (who && who.conn) sendTo(who.conn, { t: 'nak', a, why, ...(by ? { by: refOf(s, by) } : {}) });
+}
+/** A controller's presence changed: the host's grace and handoff, the "nobody here" clock, and the adults' list. */
+function presence(s, userId) {
+  if (!open(s) || !userId) return;
+  const on = connected(s, userId);
+  if (userId === s.host.userId) {
+    if (on) {
+      s.host.goneAt = 0; clearTimer(s, 'handoff');
+      if (s.host.away) { s.host.away = false; recordAct(s, userId, 'back'); }
+    } else if (!s.host.goneAt) {
+      s.host.goneAt = now();
+      if (s.cohosts.size && cohostOn()) { s.host.away = true; recordAct(s, userId, 'away'); setTimer(s, 'handoff', hooks.handoffMs, () => handoff(s)); }
+    }
+  } else {
+    const c = s.cohosts.get(userId);
+    if (c) c.goneAt = on ? 0 : c.goneAt || now();
+    // a co-host came while the host was already away: the grace counts from when the host left
+    if (on && c && s.host.goneAt && !s.timers.handoff && cohostOn()) setTimer(s, 'handoff', Math.max(0, hooks.handoffMs - (now() - s.host.goneAt)), () => handoff(s));
+  }
+  if (anyController(s)) s.ctlGoneAt = 0; else if (!s.ctlGoneAt) s.ctlGoneAt = now();
+  sendCh(s);
+}
+/** Send a controller's connections a fresh wel (their role or tier changed). */
+function rewelcome(s, userId) {
+  const who = actorOf(s, userId);
+  if (!who) return;
+  const c = s.cohosts.get(userId);
+  const dash = userId === s.host.userId ? s.dash : c && c.dash;
+  if (dash) sendTo(dash, welcome(s, null, 'dash', who));
+  if (s.host.conn && s.projBy === userId) sendTo(s.host.conn, welcome(s, null, 'projector', who));
+}
+/**
+ * Recompute a controller's tier from their access now (it can fall mid-game: taken off the class but still staff of the
+ * school is 'limited'; it can rise: added to the class). A changed tier is stored and the controller gets a fresh wel
+ * (a limited one loses dp, sup, who answered and support at once). Co-hosts no longer eligible -> null (the caller
+ * drops them); the host keeps the host role, at their live tier when they still have one. -> the tier now, or null.
+ */
+export function retier(s, userId) {
+  if (!s || !userId) return null;
+  const t = A.controlTier(s, getUser(userId));
+  if (s.host.userId === userId) {
+    if (t && t !== s.host.tier) { s.host.tier = t; rewelcome(s, userId); sendCh(s); }
+    return s.host.tier;
+  }
+  const c = s.cohosts.get(userId);
+  if (!c || !t) return null;
+  if (t !== c.tier) { c.tier = t; rewelcome(s, userId); sendCh(s); }
+  return t;
+}
+/** A co-host stops (removed, left, or no longer eligible): their connections get bye cohostOff and close (4403); the
+ *  projector slot frees if they held it. -> bool */
+export function dropCohost(s, userId) {
+  const c = s.cohosts.get(userId);
+  if (!c) return false;
+  s.cohosts.delete(userId);
+  const bye = JSON.stringify({ t: 'bye', why: 'cohostOff' });
+  if (c.dash) { sendTo(c.dash, bye); closeConn(c.dash, 4403); c.dash = null; }
+  if (s.host.conn && s.projBy === userId) { sendTo(s.host.conn, bye); closeConn(s.host.conn, 4403); s.host.conn = null; s.projBy = null; }
+  if (anyController(s)) s.ctlGoneAt = 0; else if (!s.ctlGoneAt) s.ctlGoneAt = now();
+  return true;
+}
+/**
+ * A co-host becomes the host (the handoff, or the host's "Make host"). The former host becomes a co-host keeping their
+ * old nonce (their open page reconnects as a co-host), if still eligible. The tier stays with each person; s.owner never
+ * changes. -> bool
+ */
+export function promote(s, userId, why = 'handoff') {
+  const c = s.cohosts.get(userId);
+  if (!c || !open(s)) return false;
+  const old = s.host, formerId = old.userId;
+  s.cohosts.delete(userId);
+  const formerTier = A.controlTier(s, getUser(formerId));
+  const formerDash = s.dash;
+  if (formerTier) s.cohosts.set(formerId, { userId: formerId, nonce: old.nonce, tier: formerTier, since: now(), dash: formerDash, goneAt: formerDash ? 0 : now(), lang: old.lang });
+  else if (formerDash) { sendTo(formerDash, { t: 'bye', why: 'cohostOff' }); closeConn(formerDash, 4403); }
+  // the new host's tier as their access is now (a tier frozen at accept may have fallen since)
+  s.host = { ...old, userId, nonce: c.nonce, tier: A.controlTier(s, getUser(userId)) || 'limited', lang: c.lang || old.lang, goneAt: 0, away: false };
+  s.dash = c.dash; s.dashBuckets = P.buckets(hooks.now);
+  if (!formerTier && s.host.conn && s.projBy === formerId) { sendTo(s.host.conn, { t: 'bye', why: 'cohostOff' }); closeConn(s.host.conn, 4403); s.host.conn = null; s.projBy = null; }
+  if (hostOpen.get(formerId) === s.id) hostOpen.delete(formerId);
+  hostOpen.set(userId, s.id);
+  clearTimer(s, 'handoff');
+  if (!hostPresent(s)) s.host.goneAt = now();
+  recordAct(s, userId, 'host', { other: formerId });
+  try { audit(userId, 'live.cohost.host', s.id, { other: formerId, why }); } catch { /* the audit is a record, not a gate */ }
+  hooks.log('info', 'live host handed over', { sid: s.id, why, to: refOf(s, userId) });
+  rewelcome(s, userId); rewelcome(s, formerId);
+  sendCh(s);
+  return true;
+}
+/** The host has been gone hooks.handoffMs: the longest-standing co-host who is connected, still eligible and not the
+ *  host of another open session becomes host. None: nothing changes (the session runs on while any controller is
+ *  connected). -> bool */
+export function handoff(s) {
+  if (!open(s) || hostPresent(s) || !cohostOn()) return false;
+  const cands = [...s.cohosts.values()].filter(c => connected(s, c.userId)).sort((a, b) => a.since - b.since);
+  for (const c of cands) {
+    if (!A.controlTier(s, getUser(c.userId))) continue;
+    const other = hostSession(c.userId);
+    if (other && other !== s && open(other)) continue;
+    return promote(s, c.userId, 'handoff');
+  }
+  return false;
+}
+/** A hello's controller credential: { ok: true } or { ok: false, why: 'notHost' | 'cohostOff' }. The signed-in
+ *  account must be the token's, and the nonce the host's or that account's co-host nonce. */
+export function controllerFor(s, tok, u) {
+  if (!s || !tok || !u || tok.u !== u.id) return { ok: false, why: 'notHost' };
+  if (s.host.userId === u.id && s.host.nonce === tok.k) { if (cohostOn() && s.cohostEver) retier(s, u.id); return { ok: true }; }
+  const c = cohostOn() && s.cohosts.get(u.id);
+  if (c && c.nonce === tok.k) {
+    if (!retier(s, u.id)) { dropCohost(s, u.id); sendCh(s); return { ok: false, why: 'cohostOff' }; }
+    return { ok: true };
+  }
+  return { ok: false, why: tok.r === 'c' && cohostOn() ? 'cohostOff' : 'notHost' };
+}
 
 // The way the quiz module talks to devices (no import cycle).
 const io = { broadcast, toSeat, toHost, toHosts, toDash, toPlayers, teamScores: s => teamScores(s), now, setPhase: (s, phase, extra) => setPhase(s, phase, extra), end: (s, why) => endSession(s.id, why), raceList: s => raceList(s) };
@@ -570,7 +850,103 @@ function pauseNow(s) {
  */
 /** Per-action limits on top of h's 5 a second (ms between two): messages, bonus points, eyes up. */
 export const ACTION_GAP = { say: 3000, bonus: 1000, eyes: 1000 };
-export function hostAction(s, a, { n = null, at = null, ...m } = {}) {
+/** Toggle families: "already done" and the conflict window (part 4) apply to these. */
+const FAMILY = { pause: 'pause', resume: 'pause', lock: 'lock', unlock: 'lock', eyes: 'eyes' };
+function alreadyDone(s, a, m) {
+  switch (a) {
+    case 'pause': return s.phase === 'paused';
+    case 'resume': return s.phase === 'playing';
+    case 'lock': return !!s.settings.locked;
+    case 'unlock': return !s.settings.locked && !s.settings.autoLock;
+    case 'eyes': return s.eyes === !!m.on;
+    default: return false;
+  }
+}
+/** A toggle family's state now (lastChange.to: what an adult's change left it at). */
+function famState(s, fam) {
+  if (fam === 'pause') return s.phase === 'paused' ? 'paused' : s.phase === 'playing' ? 'playing' : null;
+  if (fam === 'lock') return !!s.settings.locked;
+  if (fam === 'eyes') return !!s.eyes;
+  return null;
+}
+/** The toggle families an action would change now (the conflict window checks each). */
+function touches(s, a, m) {
+  const out = [FAMILY[a]];
+  if (a === 'resume' && s.eyes) out.push('eyes');
+  if (a === 'eyes' && ((m.on && s.phase === 'playing') || (!m.on && s.eyesPaused && s.phase === 'paused'))) out.push('pause');
+  return out;
+}
+/** The activity line's fields for an action. */
+function actFields(s, a, m) {
+  const f = {};
+  if (Number.isInteger(m.n)) {
+    f.n = m.n;
+    const seat = s.seats.get(m.n);
+    if (seat && seat.userId && s.audience === 'class') f.tu = seat.userId;
+  }
+  if (a === 'bonus' && Number.isInteger(m.k)) f.k = m.k;
+  if (a === 'eyes') f.v = m.on ? 1 : 0;
+  if (a === 'time') f.v = m.s;
+  return f;
+}
+/**
+ * A host action from a controller (the host page, a dashboard, or the host's frame). -> true when it did something.
+ * actor: { userId, role, tier, conn } (the host when left out). Every controller message runs to the end before the
+ * next (no await), so the order applied is the order of act.i. Refused: support (acc) unless the actor's tier is full;
+ * a co-host's end without sure: 1; a toggle already in that state (nak already); another controller's toggle within
+ * hooks.conflictMs of the last change (nak conflict). next/skip carry the seq they were pressed at: a stale one (a
+ * double tap, or two adults pressing at once) is ignored.
+ */
+export function hostAction(s, a, m = {}, actor = null) {
+  if (!open(s)) return false;
+  const who = actor || { userId: s.host.userId, role: 'host', tier: s.host.tier, conn: null };
+  // support: the actor's tier as it is now (not as it was when they accepted)
+  if (a === 'acc' && actor && cohostOn() && s.cohostEver) who.tier = retier(s, who.userId) || null;
+  if (a === 'acc' && who.tier !== 'full') { nak(s, who, a, 'notAllowed'); return false; }
+  if (a === 'end' && who.role !== 'host' && m.sure !== 1) return false;
+  const fam = FAMILY[a];
+  if (fam) {
+    const last = s.lastChange[fam];
+    // "already" names an adult only when their change is what the state is now (not a stale one: an automatic lock,
+    // or a pause that eyes up made after it)
+    if (alreadyDone(s, a, m)) { nak(s, who, a, 'already', last && last.to === famState(s, fam) ? last.by : null); return false; }
+    // every family this action would change: resume also lowers eyes up; eyes up (down) also pauses (resumes)
+    for (const f of touches(s, a, m)) {
+      const l = s.lastChange[f];
+      if (l && l.by !== who.userId && now() - l.at < hooks.conflictMs) { nak(s, who, a, 'conflict', l.by); return false; }
+    }
+  }
+  // +time: once per question per moment; a second adult pressing at once is told who already did
+  if (a === 'time' && s.qz && s.qz.cur) {
+    const l = s.lastTime;
+    if (l && l.i === s.qz.cur.i && l.by !== who.userId && now() - l.at < hooks.conflictMs) { nak(s, who, a, 'already', l.by); return false; }
+  }
+  // messages, bonus points: the session's gap (the class hears one at a time); another adult is told who just did
+  if (ACTION_GAP[a] && now() - (s.actAt[a] || -Infinity) < ACTION_GAP[a]) {
+    const by = s.actBy && s.actBy[a];
+    nak(s, who, a, by && by !== who.userId ? 'tooSoon' : 'wait', by && by !== who.userId ? by : null);
+    return false;
+  }
+  const f = actFields(s, a, m);
+  const before = { phase: s.phase, eyes: s.eyes };
+  // the end is recorded first: the run (and its log) is saved inside it
+  if (a === 'end') recordAct(s, who.userId, 'end');
+  const ok = doAction(s, a, m, who);
+  if (!ok) return false;
+  if (ACTION_GAP[a]) (s.actBy || (s.actBy = {}))[a] = who.userId;
+  if (a === 'time' && s.qz && s.qz.cur) s.lastTime = { i: s.qz.cur.i, by: who.userId, at: now() };
+  if (fam) {
+    const at = now();
+    s.lastChange[fam] = { by: who.userId, at, to: famState(s, fam) };
+    // a side effect on another family is that adult's change too (eyes up paused; resume lowered eyes)
+    if (fam !== 'pause' && before.phase !== s.phase && (s.phase === 'paused' || s.phase === 'playing')) s.lastChange.pause = { by: who.userId, at, to: famState(s, 'pause') };
+    if (fam !== 'eyes' && before.eyes !== s.eyes) s.lastChange.eyes = { by: who.userId, at, to: famState(s, 'eyes') };
+  }
+  if (a === 'eyes') recordAct(s, who.userId, 'eyes', f);
+  else if (a !== 'end') recordAct(s, who.userId, a, f);
+  return true;
+}
+function doAction(s, a, { n = null, at = null, ...m } = {}, who = null) {
   if (!open(s)) return false;
   s.lastActive = now();
   if (ACTION_GAP[a]) {
@@ -585,7 +961,8 @@ export function hostAction(s, a, { n = null, at = null, ...m } = {}) {
       // becomes their remembered defaults (the next /live landing is filled in with it).
       if (s.quiz) Q.applySettings(s);
       if (T.isOn(s)) { for (const seat of s.seats.values()) if (!seat.team) T.place(s, seat); broadcast(s, T.tmsMsg(s)); }
-      try { ST.savePrefs(s.host.userId, { settings: ST.view(s.settings), teams: T.isOn(s) ? { on: true, ...T.setupOf(s) } : { on: false } }); } catch (e) { hooks.log('warn', 'live prefs not saved', { sid: s.id, error: e.message }); }
+      // Only the host's own start saves remembered defaults, to their own profile (a co-host's start saves nothing).
+      if (!who || who.role === 'host') try { ST.savePrefs(s.host.userId, { settings: ST.view(s.settings), teams: T.isOn(s) ? { on: true, ...T.setupOf(s) } : { on: false } }); } catch (e) { hooks.log('warn', 'live prefs not saved', { sid: s.id, error: e.message }); }
       if (s.settings.autoLock) s.settings.locked = true;
       for (const seat of s.seats.values()) seat.ready = false;
       setPhase(s, 'loading', { at: now(), locked: s.settings.locked });
@@ -622,6 +999,7 @@ export function hostAction(s, a, { n = null, at = null, ...m } = {}) {
       return false;
     }
     case 'lock': case 'unlock': {
+      if (alreadyDone(s, a, m)) return false;
       s.settings.locked = a === 'lock';
       if (a === 'unlock') s.settings.autoLock = false;
       broadcast(s, { t: 'lk', locked: s.settings.locked }, { players: false });
@@ -641,7 +1019,7 @@ export function hostAction(s, a, { n = null, at = null, ...m } = {}) {
     }
     case 'bonus': return bonus(s, { n, k: m.k, r: m.r });
     case 'rename': return rename(s, s.seats.get(n));
-    case 'acc': return setSupport(s, s.seats.get(n), { time: m.x, read: !!m.ra, simple: !!m.sv, save: !!m.save });
+    case 'acc': return (!who || who.tier === 'full') && setSupport(s, s.seats.get(n), { time: m.x, read: !!m.ra, simple: !!m.sv, save: !!m.save }, who && who.userId);
     default: return false;
   }
 }
@@ -653,8 +1031,8 @@ export function eyes(s, on) {
   if (s.eyes === on) return false;
   s.eyes = on;
   broadcast(s, { t: 'eyes', on });
-  if (on && s.phase === 'playing') { hostAction(s, 'pause'); s.eyesPaused = true; }
-  else if (!on && s.eyesPaused && s.phase === 'paused') { s.eyesPaused = false; hostAction(s, 'resume'); }
+  if (on && s.phase === 'playing') { doAction(s, 'pause'); s.eyesPaused = true; }
+  else if (!on && s.eyesPaused && s.phase === 'paused') { s.eyesPaused = false; doAction(s, 'resume'); }
   if (!on) s.eyesPaused = false;
   return true;
 }
@@ -685,9 +1063,11 @@ export function rename(s, seat) {
   return true;
 }
 
-/** The host's game settings (cf). Lobby-only keys are refused after start. -> the keys that changed. */
-export function setSettings(s, d) {
+/** The host's game settings (cf). Lobby-only keys are refused after start; a limited controller can't switch on
+ *  account names. Never saves remembered defaults. -> the keys that changed. */
+export function setSettings(s, d, actor = null) {
   if (!open(s)) return [];
+  if (actor && actor.tier !== 'full' && d && d.names === 'names') { d = { ...d }; delete d.names; }
   const c = ST.clean(d, { lobby: s.phase === 'lobby', nameMode: s.nameMode });
   if (!s.quiz) for (const k of ST.QUIZ_ONLY) delete c[k];
   const { changed, lock } = ST.apply(s, c);
@@ -699,12 +1079,13 @@ export function setSettings(s, d) {
   if (changed.includes('sound')) toProjector(s, { t: 'snd', on: s.settings.sound });
   if (lock !== null) toHosts(s, { t: 'lk', locked: lock });
   if (changed.includes('board')) { s.scoresDirty = true; teamScores(s); }
+  recordAct(s, actor ? actor.userId : s.host.userId, 'settings');
   return changed;
 }
 
 /** A team action from the host (tm). Phases: setup (on, off, count, preset, scoring, choose, shuffle, last) in the
  *  lobby; balance in the lobby or between; move any time (to no team only in the lobby); lock any time. -> bool */
-export function teamAction(s, m) {
+export function teamAction(s, m, actor = null) {
   if (!open(s) || !teamsOn()) return false;
   const lobby = s.phase === 'lobby';
   const ts = s.teams;
@@ -735,6 +1116,7 @@ export function teamAction(s, m) {
   broadcast(s, T.tmsMsg(s));
   if (extra) toHosts(s, extra);
   if (!lobby) teamScores(s);
+  recordAct(s, actor ? actor.userId : s.host.userId, 'teams');
   return true;
 }
 /** A player picks a team (pt: lobby only, when the host lets players choose and teams are not locked). */
@@ -858,6 +1240,12 @@ export function endSession(sid, why = 'ended') {
   s.phase = 'ended'; s.endedAt = now(); s.why = why; s.seq++;
   byCode.delete(s.code); recentCodes.set(hash(s.code), now() + 24 * 3600e3);
   if (hostOpen.get(s.host.userId) === s.id) hostOpen.delete(s.host.userId);
+  // Who controlled it at the end (the in-memory results page: the class-safe part for all of them, details per tier).
+  // Tiers as each adult's access is now (never a tier frozen at accept); a co-host no longer eligible gets nothing.
+  // (no fresh wel here: the game is ending; the results page reads endCtl)
+  const liveTier = (id, was) => (s.cohostEver && cohostOn() ? A.controlTier(s, getUser(id)) : was);
+  s.endCtl = new Map([[s.host.userId, liveTier(s.host.userId, s.host.tier) || s.host.tier], ...[...s.cohosts.values()].map(c => [c.userId, liveTier(c.userId, c.tier)]).filter(([, t]) => t)]);
+  s.invites.clear();
   let summary = null;
   try { summary = R.summary(s); s.summary = summary; if (s.startedAt) R.save(s, summary); } catch (e) { hooks.log('error', 'live results not saved', { sid: s.id, error: e.message }); }
   if (s.startedAt && T.isOn(s)) { try { T.saveClassTeams(s); } catch (e) { hooks.log('error', 'live class teams not saved', { sid: s.id, error: e.message }); } }
@@ -874,9 +1262,9 @@ export function endSession(sid, why = 'ended') {
   }
   // Play again: the seats as they ended (account, nickname, avatar, team) and the bans, kept only while the players'
   // sockets linger (hooks.lingerMs, 2 minutes), then wiped. Removed seats were freed at removal: never in it.
-  const linger = why === 'ended' && !!s.startedAt && hooks.lingerMs > 0 && !hostGone(s) && [...s.seats.values()].some(x => x.conn);
+  const linger = why === 'ended' && !!s.startedAt && hooks.lingerMs > 0 && hostPresent(s) && [...s.seats.values()].some(x => x.conn);
   s.again = linger ? { seats: [...s.seats.values()].map(x => [x.no, x.userId, x.nick, x.avatar, x.team]), banned: new Set(s.banned) } : null;
-  if (s.host.conn || s.dash) toHosts(s, { t: 'res', id: s.id });
+  if (anyController(s)) toHosts(s, { t: 'res', id: s.id });
   // Forget everything a guest gave (nonces, nickname picks, bans) now; the summary keeps seat numbers and scores only.
   s.banned.clear(); s.byUser.clear(); s.nicksUsed.clear(); s.state = {}; if (s.accByUser) s.accByUser.clear();
   if (linger) {
@@ -955,7 +1343,7 @@ export function rematch(old, host, { shuffle = false } = {}) {
 export function drainLiveSessions() {
   let n = 0;
   for (const s of openSessions()) { endSession(s.id, 'restart'); n++; }
-  for (const s of sessions.values()) { if (s.lingerUntil) endLinger(s, 'restart'); if (s.host.conn) closeConn(s.host.conn, 4503); if (s.dash) closeConn(s.dash, 4503); }
+  for (const s of sessions.values()) { if (s.lingerUntil) endLinger(s, 'restart'); if (s.host.conn) closeConn(s.host.conn, 4503); for (const d of dashes(s)) closeConn(d.conn, 4503); }
   return n;
 }
 
@@ -986,7 +1374,7 @@ export function tick() {
       }
     }
     if (s.scoresDirty && tickNo % 20 === 0) leaderboard(s);
-    if (s.dpDirty && s.dash && tickNo % 10 === 0) { s.dpDirty = false; toDash(s, D.dpMsg(s)); }
+    if (s.dpDirty && tickNo % 10 === 0 && dashes(s).some(d => d.tier === 'full')) { s.dpDirty = false; toDash(s, D.dpMsg(s)); }
   }
 }
 /** The top ten to the hosts; players get the top ten, the top five or nothing (the host's leaderboard setting) and
@@ -1008,7 +1396,9 @@ export function sweep() {
   for (const s of [...sessions.values()]) {
     if (!open(s)) { if (s.lingerUntil && t >= s.lingerUntil) endLinger(s); continue; }
     if (t >= s.endsAt) { endSession(s.id, 'expired'); continue; }
-    if (hostGone(s) && s.host.goneAt && t - s.host.goneAt > hooks.hostGoneMs) { endSession(s.id, 'ended'); continue; }
+    // Ends hostGoneMs after the last controller left (with no co-hosts: the host, as before part 4).
+    if (!anyController(s) && s.ctlGoneAt && t - s.ctlGoneAt > hooks.hostGoneMs) { endSession(s.id, 'ended'); continue; }
+    if (s.cohosts.size || s.invites.size) cohostSweep(s, t);
     if (s.phase === 'lobby' && t - s.lastActive > hooks.idleLobbyMs) { endSession(s.id, 'expired'); continue; }
     if (s.official === false && s.gameId && s.phase !== 'lobby') {
       const g = games.getGame(s.gameId);
@@ -1016,6 +1406,17 @@ export function sweep() {
     }
     for (const seat of [...s.seats.values()]) if (!seat.conn && seat.leftAt && t - seat.leftAt > hooks.holdMs) freeSeat(s, seat);
   }
+}
+
+/** Part 4, every 30 s: invites past their time go; a co-host who is no longer eligible (left the school) stops; a host
+ *  away past the grace hands over (if the timer was missed). */
+function cohostSweep(s, t) {
+  let changed = false;
+  for (const [id, inv] of s.invites) if (inv.until <= t) { s.invites.delete(id); changed = true; }
+  for (const c of [...s.cohosts.values()]) if (!retier(s, c.userId)) { dropCohost(s, c.userId); recordAct(s, c.userId, 'left'); changed = true; }
+  retier(s, s.host.userId);
+  if (s.host.goneAt && s.cohosts.size && t - s.host.goneAt >= hooks.handoffMs && !hostPresent(s)) handoff(s);
+  if (changed) sendCh(s);
 }
 
 /** Tests: forget everything. */

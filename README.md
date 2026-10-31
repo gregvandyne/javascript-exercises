@@ -94,6 +94,8 @@ On/off settings (`REQUIRE_SESSION_SECRET`, `MAINTENANCE_MODE`, `MOVED_PERMANENTL
 | `LIVE_MAX_SESSIONS` | `60` | Live sessions open at once, site-wide. |
 | `LIVE_MAX_SEATS` | `2000` | Players connected to live sessions at once, site-wide (memory and bandwidth). |
 | `LIVE_TEAMS` | `1` | Oomba Live team mode (teams from 8 fixed presets, team scores, a class's saved teams). `0` hides it; the server ignores team messages. |
+| `LIVE_COHOST` | `1` | Oomba Live co-hosts: other staff of the class's school (or, later, another grown-up of the family) help run a live game from their own device. `0` hides it; the co-host APIs answer 404. |
+| `LIVE_HANDOFF_SECS` | `120` | How long (3-600 s) the host of a live game may be gone before the longest-standing co-host takes over. |
 | `LIVE_SAVE_SUPPORT` | `0` | Lets class teachers save a student's live-game support (extra time, read aloud, simple view) for their class. Off until docs/legal-review.md item 42 is signed off; support for one session works either way. |
 | `LIVE_HOMEWORK` | `0` | Lets teachers assign a question set as a self-paced lesson step (`quiz`, server-checked, in the gradebook). |
 | `LIVE_HOURS` | `3` | The longest a live session (and its join code) lasts, in hours (at most 3; larger values are capped). |
