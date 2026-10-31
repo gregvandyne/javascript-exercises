@@ -138,6 +138,13 @@ const RECIPES = {
     await f.evaluate(async () => { const t = window.__brbTest; await t.closeModal(); t.camera({ theta: 0.55, phi: 0.92, dist: 15 }); });
     await wait(2500);
   } },
+  'atlas-quest': { viewport: PORTRAIT, touch: true, async prep(f) {
+    await hook(f);
+    // Half the world lit up with flag pins, the dotted trail and the paper plane mid-flight.
+    for (let i = 0; i < 4; i++) { await f.evaluate(() => window.__brbTest.closeDialog()); await wait(500); }   // title, then Captain Skye's hello
+    await f.evaluate(() => window.__brbTest.cover());
+    await wait(2500);
+  } },
 };
 
 async function capture(browser, slug) {
