@@ -9,7 +9,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 const { config } = await import('../../server/config.js');
 config.anthropicKey = '';
-const { q } = await import('../../server/db.js');
+const { q, MIGRATIONS } = await import('../../server/db.js');
+const { default: Database } = await import('better-sqlite3');
 const { createUser, createGuest, startSession, getUser } = await import('../../server/auth.js');
 const C = await import('../../server/services/character.js');
 const games = await import('../../server/services/games.js');
@@ -99,4 +100,19 @@ test('the SDK hands games a frozen copy, and the Studio\'s theme chips know the 
   assert.equal(themeOf("theme: 'dark'"), '');
   assert.equal(themeOf("theme: 'jelly volcano'"), '');
   assert.equal(themeOf(''), '');
+});
+
+test('migration 0036 adds users.character_spec once, and is a no-op where a database already has it (it was 0035)', () => {
+  const m = MIGRATIONS.find(([n]) => n === '0036_character_spec');
+  assert.ok(m && typeof m[2] === 'function');
+  const cols = d => d.prepare('PRAGMA table_info(users)').all().filter(c => c.name === 'character_spec').length;
+  const before = MIGRATIONS.slice(0, MIGRATIONS.indexOf(m));
+  for (const withColumn of [false, true]) {
+    const d = new Database(':memory:');
+    for (const [, sql, after] of before) { d.exec(sql); if (after) after(d); }
+    if (withColumn) d.exec('ALTER TABLE users ADD COLUMN character_spec TEXT;');
+    d.exec(m[1]); m[2](d);
+    assert.equal(cols(d), 1, withColumn ? 'kept the existing column' : 'added the column');
+    d.close();
+  }
 });

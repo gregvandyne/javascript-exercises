@@ -293,7 +293,7 @@ Owner decisions for parent-made accounts (no lawyer needed):
     /parents and /privacy; `LEGAL_UPDATED` is 2026-10-30). On the Me page a child with their own account can design a
     drawn character (species, body shape, one of 8 skin tones, hair style and colour, eyes, top and colours, one
     accessory, and what it wears in the "Bold" look for older players). It is stored as a small list of those choices
-    (`users.character_spec`, migration 0035, never a picture, a photo, free text or a name), is given to the games the
+    (`users.character_spec`, migration 0036, never a picture, a photo, free text or a name), is given to the games the
     child plays (`BRB.user.character`, so the hero can be "them"), and is deleted with the account. Guests cannot save
     one (they play as the mascot). Please confirm:
     - that a skin-tone choice on a drawn character is not "personal information" under COPPA (it describes a cartoon

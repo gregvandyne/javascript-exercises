@@ -493,7 +493,7 @@ Oomba.char({
   one accessory, and a Bold variant for teens (a Bold hat `hood visor headset helmet cap-back`, a jacket `jersey bomber
   techvest`, Bold eyes). Real radio buttons in fieldsets, a sticky preview on phones, all 13 languages. The preview is
   drawn by kit 1.1.0 in a hidden same-origin frame (pinned with its hash), so the kit never touches the site's page.
-- **Stored** as a small JSON parts spec (`users.character_spec`, migration 0035; `server/services/character.js`
+- **Stored** as a small JSON parts spec (`users.character_spec`, migration 0036; `server/services/character.js`
   checks every value against the kit's own lists, at most 600 bytes), never a picture, a photo, free text or a name;
   cleared when the account is deleted. `POST /api/me/character {character}`, `DELETE /api/me/character`.
 - **Games** get it as `BRB.user.character` (null for guests and accounts without one), and the kit turns it into the

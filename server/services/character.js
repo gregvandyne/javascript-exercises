@@ -1,7 +1,7 @@
 // The player's own Oomba character (the "shared avatar"): designed once on the Me page, then the hero of any kit game
 // that asks for the player (Oomba.avatar() / Oomba.me() / hero: 'me', 2D and 3D). It is a small parts spec: only names
 // from the kit's own lists and small numbers, never a picture, a photo, free text or a name. Stored as JSON in
-// users.character_spec (migration 0035) and given to games as BRB.user.character. Guests have none: the kit draws them
+// users.character_spec (migration 0036) and given to games as BRB.user.character. Guests have none: the kit draws them
 // the mascot. Pure module apart from the two database calls at the bottom. See docs/kit.md §6.4.
 import { SPECIES, BODIES, HAIR_STYLES, TOPS, WEAR, MOODS } from '../../kit/src/validate.js';
 import { HAIR } from '../../kit/src/tokens.js';

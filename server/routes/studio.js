@@ -80,8 +80,6 @@ function loadEditable(req, res, { api = true } = {}) {
  *  account with no grown-up linked or asked yet, and only while family pages are on for this visitor. Never a plan,
  *  price or /plans link: this is a kid's page. */
 export const grownUpLinkHint = (req, user) => !!req && familiesOn(req) && isChildAccount(user) && !liveRowOf(user.id);
-/** Everything the Studio client needs, as JSON. t: the reader's language (labels, share texts, preview language).
- *  req: the request, for what depends on the visitor (grownUpLink). */
 /** The kit theme the game uses now (theme: 'snow' or theme: { name: 'snow' } in its code; an alias counts), or ''. */
 export function themeOf(src) {
   const m = /\btheme\s*:\s*(?:\{\s*name\s*:\s*)?(['"])([A-Za-z][A-Za-z _-]{1,24})\1/.exec(String(src || '').slice(0, 300000));
@@ -96,6 +94,8 @@ function themePicker(t, current) {
     <div class="st-themes-row">${Object.keys(THEMES).map(id => html`<button type="button" class="st-theme${id === current ? ' is-current' : ''}" data-theme="${id}" data-name="${t(`studio.themes.names.${id}`)}" aria-pressed="false"><img src="/img/themes/${id}.webp" alt="" width="48" height="32" loading="lazy" decoding="async"><span>${t(`studio.themes.names.${id}`)}</span>${id === current ? html`<span class="st-theme-now">${t('studio.themes.current')}</span>` : ''}</button>`)}</div>
   </div>`;
 }
+/** Everything the Studio client needs, as JSON. t: the reader's language (labels, share texts, preview language).
+ *  req: the request, for what depends on the visitor (grownUpLink). */
 export function studioState(user, gameId, t = tEn, req = null) {
   const g = games.getGame(gameId);
   const versions = games.listVersions(g.id);

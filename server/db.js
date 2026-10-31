@@ -376,8 +376,11 @@ export const MIGRATIONS = [
   }],
   // The player's own Oomba character (server/services/character.js): a small JSON parts spec from the kit's own lists
   // (species, body, skin tone 0-7, hair, eyes, outfit, colours, one accessory, Bold wear), never a picture or a name.
-  // NULL = not designed yet (games then get the kit's default look). Deleted with the account row.
-  ['0036_character_spec', `ALTER TABLE users ADD COLUMN character_spec TEXT;`],
+  // NULL = not designed yet (games then get the kit's default look). Deleted with the account row. Adds the column only
+  // when it is missing: a development database may already have it from before this migration was renamed (it was 0035).
+  ['0036_character_spec', '', conn => {
+    if (!conn.prepare('PRAGMA table_info(users)').all().some(c => c.name === 'character_spec')) conn.exec('ALTER TABLE users ADD COLUMN character_spec TEXT;');
+  }],
 ];
 
 const CODE_LETTERS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
