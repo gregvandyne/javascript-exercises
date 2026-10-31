@@ -1,0 +1,64 @@
+{
+  "slug": "atlas-quest",
+  "title": "Atlas Quest",
+  "icon": "🌍",
+  "cover": "sky",
+  "category": "learning",
+  "tags": "geography,world,map,globe,flags,countries,capitals,trivia,3d,learning,quiz,daily puzzle",
+  "description": "Fly a paper plane round a 3D globe and paint the world in flags! Find countries on the map, match flags, hop between capitals, and go on a culture quest through food, festivals, music, words and wildlife, with 6 questions for every country. Get a country right and it is painted with its flag; get it right 3 times and it lights up. Tap any country to open its file. 195 countries, a daily expedition and a 60-second speed round.",
+  "orientation": "any",
+  "players_max": 1,
+  "age_rating": "everyone",
+  "featured": true,
+  "notes": "Built on the Oomba Kit 1.0.0 (pinned kit tag plus the art-animals pack) over the built-in Three.js 0.185.1 (pinned import map with integrity), like Code Isle and Star Island: the kit's title, dialogs (the guide, Captain Skye, is a kit duck), results (Oomba.ui.win), toasts, settings, cards, buttons, icons, sounds, font, day/night theme and palette; Oomba.time.start() runs the kit clock. The globe: a sphere wrapped in a canvas map (equirectangular, 4096 wide) drawn from a simplified Natural Earth 50m map (public domain, via world-atlas; quantised to 0.1 degree, delta-coded) with every country outlined; tiny countries (Monaco, Vatican, Maldives...) get a tappable dot; taps are a raycast to latitude/longitude plus a point-in-polygon test. Drag to spin, pinch or wheel to zoom, arrow keys too. Countries: the 193 UN members plus the two observer states (window.AtlasData): flag (flag-icons, MIT; SVG, or a small WebP for the ones with detailed coats of arms), capital and its spot, people, languages, neighbours, coast, a 'famous for' phrase and a fun fact. Modes: Find it (tap the country; a miss says how far and which way; Explorer mode adds 'where is this capital?'), Flag match (flag to country and back), Capital hop, Daily expedition (8 clue stops, the same route for everyone each day, with a streak), Speed round (60 seconds of flags and capitals, best score kept), Culture quest (1,170 hand-written culture questions, six per country: food, celebrations, arts, words, nature and everyday life, each with a 'why' that teaches one more detail) and Country files (tap any country: its card, read aloud, its culture finds, and a quiz). Hints: find questions narrow down in three steps (the continent, a neighbour, a circle); four-answer questions lose two wrong answers. Easy (about 80 famous countries) or Explorer (all 195), and any one continent. Flag colouring: a country you get right is painted with its own flag on the globe (see-through while you learn it, full colour once 3 right answers light it up; tiny countries get a flag pin); mistakes come back more often. A paper plane flies to every right answer and leaves a dotted trail. Passport: stamps (every flag), continent bars and badges, best speed round, expedition streak, and 8 plane paints unlocked by lit countries. Every word is in the kit's 13 languages, including country names, capitals, facts and all the culture questions: English is built in, and each other language is a reviewed data pack under /vendor/data/atlas-quest/<version>/<lang>.js that the game loads with its sha384 (docs/decisions.md, 'Game data packs'), so a player downloads only their own language and the game file stays under 1 MB. Saves in BRB.storage key 'atlas-quest-v1'. Score: BRB.score.submit(lit countries, 'countries'); BRB.gameOver({ won: true }) when all 195 are lit. Test hooks: window.__brbTest (state, home, mode, answer, next, tapCountry, file, passport, lightAll, camera, pickAt, screenOf, closeModal, closeDialog, cover).",
+  "l10n": {
+    "en-GB": {
+      "description": "Fly a paper plane round a 3D globe and paint the world in flags! Find countries on the map, match flags, hop between capitals, and go on a culture quest through food, festivals, music, words and wildlife, with 6 questions for every country. Get a country right and it is painted with its flag; get it right 3 times and it lights up. Tap any country to open its file. 195 countries, a daily expedition and a 60-second speed round.",
+      "tags": "geography,world,map,globe,flags,countries,capitals,trivia,3d,learning,quiz,daily puzzle"
+    },
+    "pt": {
+      "description": "Pilote um avião de papel ao redor de um globo 3D e acenda o mundo! Encontre países no mapa, combine bandeiras, pule entre capitais, encare uma rodada relâmpago de 60 segundos e faça uma nova expedição todo dia. Acerte um país 3 vezes e ele se acende com a bandeira no topo. Toque em qualquer país para abrir a ficha dele: capital, população, idiomas e uma curiosidade. 195 países para colecionar no seu passaporte.",
+      "tags": "geografia,mundo,mapa,globo,bandeiras,países,capitais,curiosidades,3d,aprender,quiz,desafio do dia"
+    },
+    "fr": {
+      "description": "Pilote un avion en papier autour d’un globe en 3D et illumine le monde ! Trouve les pays sur la carte, associe les drapeaux, saute de capitale en capitale, relève le défi éclair de 60 secondes et pars chaque jour pour une nouvelle expédition. Réussis un pays 3 fois et il s’allume avec son drapeau planté dessus. Touche n’importe quel pays pour ouvrir sa fiche : capitale, habitants, langues et une info amusante. 195 pays à collectionner dans ton passeport.",
+      "tags": "géographie,monde,carte,globe,drapeaux,pays,capitales,quiz,3d,apprendre,défi du jour"
+    },
+    "es": {
+      "description": "¡Vuela un avión de papel alrededor de un globo 3D e ilumina el mundo! Encuentra países en el mapa, empareja banderas, salta entre capitales, compite en una ronda rápida de 60 segundos y emprende una nueva expedición cada día. Acierta un país 3 veces y se ilumina con su bandera encima. Toca cualquier país para abrir su ficha: capital, habitantes, idiomas y un dato curioso. 195 países para coleccionar en tu pasaporte.",
+      "tags": "geografía,mundo,mapa,globo,banderas,países,capitales,curiosidades,3d,aprender,quiz,reto del día"
+    },
+    "de": {
+      "description": "Flieg mit einem Papierflieger um einen 3D-Globus und bring die Welt zum Leuchten! Finde Länder auf der Karte, ordne Flaggen zu, hüpf von Hauptstadt zu Hauptstadt, schaff die 60-Sekunden-Blitzrunde und starte jeden Tag eine neue Expedition. Beantworte ein Land 3-mal richtig und es leuchtet auf, mit seiner Flagge obendrauf. Tippe auf ein Land, um seinen Steckbrief zu öffnen: Hauptstadt, Einwohner, Sprachen und ein lustiger Fakt. 195 Länder für deinen Reisepass.",
+      "tags": "Erdkunde,Welt,Karte,Globus,Flaggen,Länder,Hauptstädte,Quiz,3D,Lernen,Tagesrätsel"
+    },
+    "he": {
+      "description": "הטיסו מטוס נייר מסביב לגלובוס תלת־ממדי והדליקו את העולם! מצאו מדינות על המפה, התאימו דגלים, קפצו בין ערי בירה, התחרו בסיבוב מהיר של 60 שניות וצאו בכל יום למסע חדש. ענו נכון על מדינה 3 פעמים והיא נדלקת עם הדגל שלה. הקישו על כל מדינה כדי לפתוח את הכרטיס שלה: בירה, אוכלוסייה, שפות ועובדה מעניינת. 195 מדינות לאסוף בדרכון.",
+      "tags": "גאוגרפיה,עולם,מפה,גלובוס,דגלים,מדינות,ערי בירה,טריוויה,תלת ממד,לימוד,חידון"
+    },
+    "ja": {
+      "description": "紙ひこうきで3Dの地球をとびまわって、世界に色をつけよう！ 地図で国をさがしたり、国旗をあてたり、首都をめぐったり。60秒のスピードラウンドや、毎日かわる冒険もあるよ。1つの国に3回正解すると、その国が光って国旗が立ちます。どの国でもタップすると、首都・人口・言語・おもしろ豆知識がわかる「国のファイル」がひらきます。パスポートに195か国をあつめよう！",
+      "tags": "地理,世界,地図,地球儀,国旗,国,首都,クイズ,3d,べんきょう,毎日のパズル"
+    },
+    "ar": {
+      "description": "حلّق بطائرة ورقية حول كرة أرضية ثلاثية الأبعاد وأضِئ العالم! ابحث عن الدول على الخريطة، وطابق الأعلام، وتنقّل بين العواصم، وتسابق في جولة سريعة مدتها 60 ثانية، وانطلق كل يوم في رحلة استكشاف جديدة. أجب عن دولة إجابة صحيحة 3 مرات فتضيء ويرتفع علمها فوقها. المس أي دولة لتفتح ملفها: العاصمة والسكان واللغات ومعلومة طريفة. 195 دولة تجمعها في جواز سفرك.",
+      "tags": "جغرافيا,العالم,خريطة,كرة أرضية,أعلام,دول,عواصم,معلومات,ثلاثي الأبعاد,تعلّم,اختبار"
+    },
+    "ru": {
+      "description": "Лети на бумажном самолётике вокруг 3D-глобуса и зажги весь мир! Находи страны на карте, угадывай флаги, прыгай по столицам, проходи 60-секундный скоростной раунд и каждый день отправляйся в новую экспедицию. Ответь про страну правильно 3 раза — и она засветится, а на ней появится флаг. Нажми на любую страну, чтобы открыть её карточку: столица, население, языки и интересный факт. 195 стран для твоего паспорта.",
+      "tags": "география,мир,карта,глобус,флаги,страны,столицы,викторина,3d,учёба,задача дня"
+    },
+    "it": {
+      "description": "Pilota un aeroplanino di carta intorno a un globo 3D e accendi il mondo! Trova i paesi sulla mappa, abbina le bandiere, salta da una capitale all’altra, sfida il round veloce da 60 secondi e parti ogni giorno per una nuova spedizione. Indovina un paese 3 volte e si illumina con la sua bandiera sopra. Tocca un paese qualsiasi per aprire la sua scheda: capitale, abitanti, lingue e una curiosità. 195 paesi da collezionare nel tuo passaporto.",
+      "tags": "geografia,mondo,mappa,globo,bandiere,paesi,capitali,quiz,3d,imparare,sfida del giorno"
+    },
+    "zh-Hant": {
+      "description": "駕駛紙飛機環繞3D地球，點亮全世界！在地圖上找國家、配對國旗、在首都之間跳躍、挑戰60秒快速回合，每天還有新的探險路線。同一個國家答對3次，它就會亮起來，插上國旗。點任何國家都能打開它的檔案：首都、人口、語言和一則有趣的小知識。195個國家等你收集進護照！",
+      "tags": "地理,世界,地圖,地球儀,國旗,國家,首都,問答,3d,學習,每日挑戰"
+    },
+    "nl": {
+      "description": "Vlieg met een papieren vliegtuigje rond een 3D-wereldbol en laat de wereld oplichten! Zoek landen op de kaart, koppel vlaggen, spring van hoofdstad naar hoofdstad, doe de snelle ronde van 60 seconden en ga elke dag op een nieuwe expeditie. Heb je een land 3 keer goed, dan licht het op met zijn vlag erop. Tik op een land om het dossier te openen: hoofdstad, inwoners, talen en een leuk weetje. 195 landen om te verzamelen in je paspoort.",
+      "tags": "aardrijkskunde,wereld,kaart,wereldbol,vlaggen,landen,hoofdsteden,quiz,3d,leren,dagpuzzel"
+    }
+  }
+}

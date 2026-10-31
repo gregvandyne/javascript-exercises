@@ -6,7 +6,7 @@ import path from 'node:path';
 import zlib from 'node:zlib';
 import { fileURLToPath } from 'node:url';
 import { sanitizeGameHtml } from './sanitize.js';
-import { deviceNeeds, VENDOR_PATH } from './vendor.js';
+import { deviceNeeds, VENDOR_PATH, DATA_PATH } from './vendor.js';
 import { KIT_PATH } from './kit.js';
 import { config } from '../config.js';
 
@@ -24,8 +24,8 @@ export const SANDBOX = 'allow-scripts allow-pointer-lock allow-orientation-lock'
 const ORIGIN_URL_RE = /^https?:\/\/(\[[0-9a-f:.]+\]|[a-z0-9.-]+)(:\d{1,5})?$/i;
 export function frameCsp(origins = '') {
   const own = [...new Set([].concat(origins || []).filter(o => typeof o === 'string' && ORIGIN_URL_RE.test(o)).map(o => o.toLowerCase()))];
-  // Scripts: the 3D library and the Oomba Kit. Fonts: the kit's self-hosted font files (its script loads them).
-  const vendor = own.map(o => ` ${o}${VENDOR_PATH} ${o}${KIT_PATH}`).join('');
+  // Scripts: the 3D library, the Oomba Kit and the reviewed game data packs. Fonts: the kit's self-hosted font files.
+  const vendor = own.map(o => ` ${o}${VENDOR_PATH} ${o}${KIT_PATH} ${o}${DATA_PATH}`).join('');
   const fonts = own.map(o => ` ${o}${KIT_PATH}`).join('');
   return `sandbox ${SANDBOX}; default-src 'none'; script-src 'unsafe-inline' https://cdnjs.cloudflare.com${vendor}; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com data:${fonts}; img-src data: blob:; media-src data: blob:; connect-src 'none'; frame-ancestors 'self'; form-action 'none'; base-uri 'none'`;
 }

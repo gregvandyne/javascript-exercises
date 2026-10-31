@@ -19,16 +19,22 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { frameDocument, frameCsp, SANDBOX } from './frame.js';
-import { VENDOR_PATH, THREE_MODULE, THREE_CORE } from './vendor.js';
+import { VENDOR_PATH, DATA_PATH, THREE_MODULE, THREE_CORE } from './vendor.js';
 import { KIT_PATH } from './kit.js';
 import { config } from '../config.js';
 
 const HOST = 'http://game.invalid';
 const PUBLIC_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../public');
-/** A /vendor/three/<v>/<file> or /vendor/oomba-kit/<v>/[fonts/ | packs/]<file> request -> the file on disk, or null (plain
- *  names only, never outside those folders). */
+/** A /vendor/three/<v>/<file>, /vendor/oomba-kit/<v>/[fonts/ | packs/]<file> or /vendor/data/<game>/<v>/<file> request ->
+ *  the file on disk, or null (plain names only, never outside those folders). */
 function vendorFile(url) {
   const p = new URL(url).pathname;
+  const d = /^\/vendor\/data\/([a-z0-9][a-z0-9-]{0,40})\/([0-9][0-9a-z.-]{0,30})\/([a-z0-9][a-z0-9.-]{0,60})$/i.exec(p);
+  if (d) {
+    if ([d[1], d[2], d[3]].some(x => x.includes('..'))) return null;
+    const dir = path.join(PUBLIC_DIR, 'vendor', 'data'), f = path.join(dir, d[1], d[2], d[3]);
+    return f.startsWith(dir + path.sep) && fs.existsSync(f) && fs.statSync(f).isFile() ? f : null;
+  }
   const m = /^\/vendor\/(three|oomba-kit)\/([0-9][0-9a-z.-]{0,30})\/((?:fonts\/|packs\/)?[a-z0-9][a-z0-9.-]{0,60})$/i.exec(p);
   if (!m || m[2].includes('..') || m[3].includes('..') || (m[1] === 'three' && m[3].includes('/'))) return null;
   const dir = path.join(PUBLIC_DIR, 'vendor', m[1]);
@@ -214,7 +220,7 @@ async function capture(gameHtml, opts) {
       const u = route.request().url();
       if (u === `${HOST}/`) return route.fulfill({ status: 200, contentType: 'text/html; charset=utf-8', body: host });
       if (u === `${HOST}/frame`) return route.fulfill({ status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'content-security-policy': frameCsp(HOST) }, body: doc });
-      if (u.startsWith(`${HOST}${VENDOR_PATH}`) || u.startsWith(`${HOST}${KIT_PATH}`)) {
+      if (u.startsWith(`${HOST}${VENDOR_PATH}`) || u.startsWith(`${HOST}${KIT_PATH}`) || u.startsWith(`${HOST}${DATA_PATH}`)) {
         const f = vendorFile(u);
         if (!f) return route.fulfill({ status: 404, body: '' });
         return route.fulfill({ status: 200, headers: { 'content-type': VENDOR_TYPES[f.split('.').pop()] || 'text/plain; charset=utf-8', 'access-control-allow-origin': '*', 'cross-origin-resource-policy': 'cross-origin' }, body: fs.readFileSync(f) });
