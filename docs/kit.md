@@ -1,6 +1,7 @@
 # Oomba Kit (developer docs)
 
-> **Status: phase 1 (engine, art library, UI kit, demo) and phase 2's game layer and art packs are built. This file is
+> **Status: phase 1 (engine, art library, UI kit, demo) and phase 2's game layer and art packs are built; kit 1.1.0
+> (the current version, with themes: §6.5) is built next to the locked 1.0.0. This file is
 > the design; for what exists, with exact signatures, read [kit-api.md](kit-api.md)** (that page is what a model reads;
 > a unit test keeps it equal to the code). Sections marked **(not built)** describe plans.
 >
@@ -15,7 +16,8 @@
 >   brotli size against its cap (`SIZE_CAPS`: core 95 KB; art-animals 12, art-school 12, art-biomes 8). A version folder is immutable: the build refuses to overwrite it,
 >   `--replace` works only while the version is unshipped, and once a version is listed in `kit/SHIPPED.json`
 >   (version → sha384, plus its packs' hashes, added in the change that ships it; **1.0.0 is locked**, with its three packs, in the change that ships the first games on it) `--replace` is refused and a test fails if its hash or file
->   ever changes (saved games pin that hash). Sizes today (brotli): core about 91 KB (cap 95 KB, with the game layer;
+>   ever changes (saved games pin that hash). Sizes in 1.1.0 (brotli): core 94.9 KB (cap 95), art-animals 1.9, art-biomes 1.9, art-biomes-2 3.3, art-props 3.1,
+>   art-school 4.0, dress 8.1, style-bold 3.0 (packs cap 10-12 KB). Sizes in 1.0.0: core about 91 KB (cap 95 KB, with the game layer;
 >   the learning and food props moved to `art-school`), art-animals 1.8 KB, art-school 4.1 KB, art-biomes 1.5 KB.
 >   `tests/unit/kit-platform.test.js` enforces the caps.
 > - **Platform:** the frame CSP allows `<origin>/vendor/oomba-kit/` in `script-src` and `font-src` (next to cdnjs and
@@ -227,13 +229,20 @@ server/services/kit.js               KIT_PATH, KIT_VERSIONS={'1.0.0':'sha384-…
   ```
   `crossorigin="anonymous"` is required: the frame is opaque-origin, so without it SRI fails and errors show as "Script error.".
 - **Minifier:** **esbuild 0.28.2, a pinned build-only devDependency** (owner approved). Production installs skip devDependencies; there `build-kit.js` would fall back to its own stripper, but the built files are committed (like three.js), so production never builds. Budgets are measured as brotli.
+- **Two versions live (1.1.0).** `public/vendor/oomba-kit/1.0.0/` is locked (`kit/SHIPPED.json`) and saved games keep
+  loading it byte for byte; `1.1.0/` is built from today's `kit/src` and `kit/packs` and has seven packs (the five of
+  1.0.0 rebuilt, plus `art-biomes-2` and `art-props`) and is locked in `kit/SHIPPED.json` too (with its packs), so the
+  next kit change is a new version folder. `KIT_LATEST = '1.1.0'`: `kitTag()` / `kitPackTag(name)` default to
+  it, so templates, the Builder's rules, the `/kit` preview and the seed games use 1.1.0. The scanner accepts each
+  version's exact tags (a pack must match its kit tag's version; a 1.0.0 game asking for a 1.1.0-only pack is told which
+  kit has it), the style lint reads the game's own version, and the vendor route serves both folders.
 - **Immutable folders:**
   - The build refuses to overwrite an existing version folder (`--replace` only while unshipped).
   - `kit/SHIPPED.json` locks every shipped version's hash: the build refuses `--replace` for it and a unit test fails
     if `KIT_VERSIONS` or the file ever changes. Bug fixes ship as new patch folders.
   - `KIT_VERSIONS` only grows.
 - **API freeze:**
-  - `Oomba.version = '1.0.0'` and `Oomba.api = 1`.
+  - `Oomba.version = '1.1.0'` (1.0.0 for saved games) and `Oomba.api = 1`.
   - Games pass `api: 1` in `Oomba.game({api:1, ...})` / `Oomba.stage(..., {api:1})`.
   - Within major 1, changes are additive only. Deprecated calls keep working and warn once (`kit.deprecate(name, hint)`,
     built). An `api` other than 1 warns.
@@ -477,10 +486,114 @@ Oomba.char({
 
 ### 6.4 The player's avatar
 
-`Oomba.me()` returns a `kid` (or `oomba`) spec.
-- **Phase 1:** a deterministic hash of `BRB.user.avatar` or `displayName` picks the skin, hair and colours. A guest gets `oomba`.
-- **Phase 2:** a server-side parts spec.
-- A game uses it with `hero: 'me'`. Only parts specs are ever accepted, never uploads.
+`Oomba.avatar()` (kit 1.1.0; `Oomba.me()` is the same) returns the player's character spec.
+- **Built (foundation step 3): the shared avatar.** A kid designs their own character once, on the Me page
+  ("My Oomba character", `server/views/character.js` + `public/js/character.js`): kind (`kid oomba fox bunny frog bee`),
+  body shape, one of 8 skin tones, hair style and colour, eyes (mood), top and its colour, a colour and an extra colour,
+  one accessory, and a Bold variant for teens (a Bold hat `hood visor headset helmet cap-back`, a jacket `jersey bomber
+  techvest`, Bold eyes). Real radio buttons in fieldsets, a sticky preview on phones, all 13 languages. The preview is
+  drawn by kit 1.1.0 in a hidden same-origin frame (pinned with its hash), so the kit never touches the site's page.
+- **Stored** as a small JSON parts spec (`users.character_spec`, migration 0036; `server/services/character.js`
+  checks every value against the kit's own lists, at most 600 bytes), never a picture, a photo, free text or a name;
+  cleared when the account is deleted. `POST /api/me/character {character}`, `DELETE /api/me/character`.
+- **Games** get it as `BRB.user.character` (null for guests and accounts without one), and the kit turns it into the
+  hero: `hero: 'me'` (the `Oomba.game` default), `Oomba.avatar()`, Sum Racer's player 1, Star Island's `hero: 'me'`
+  (a `B.rig` of it), `B.rig(Oomba.avatar())` in any 3D game. In a Bold game its `bold.wear` is added and `bold.mood`
+  replaces its eyes (default 'determined').
+- **Defaults:** a guest gets the `oomba` mascot; an account with no character gets the old deterministic look (a hash
+  of `BRB.user.avatar` and `displayName` picks the skin, hair and colours). Kit 1.0.0 games keep that old look.
+
+### 6.5 Themes (kit 1.1.0)
+
+`Oomba.game({ theme: 'castle' })` picks a whole look: a biome (sky, bands, ground), the time of day, an accent hue, the
+biome's dressing recipe (ambient life, corner framing), a prop set and a music mood. The table is plain data in the
+`dress` pack (`THEMES`, `ALIAS` in `kit/packs/dress.js`, also read by the server: the Builder's rules list each theme's
+packs and props, the style lint checks names and packs).
+
+| Theme | World (pack) | Light | Accent | Life | Props |
+|---|---|---|---|---|---|
+| meadow | meadow (core) | noon | mint | birds, butterflies | tree flower bush mushroom rock log |
+| beach | beach (core) | noon | sky | gulls | sandcastle starfish shell boat |
+| jungle | jungle (art-biomes) | 0.1 | mint | parrots, butterflies; palms, fronds | totem tree bush flower log |
+| snow | snow (core) | noon | sky | snow | igloo snowman snowflake rock |
+| desert | desert (core) | golden 0.36 | peach | birds | pyramid pot cactus rock |
+| reef | reef (art-biomes) | under water | sky | fish, bubbles | clam pearl anchor starfish shell |
+| space | space (art-biomes-2) | starry | grape | comets, saucers | ufo satellite rocket planet asteroid |
+| candy | candy (core) | noon | coral | butterflies | sweet donut candycane cupcake gift |
+| haunted | spooky (art-biomes-2) | dusk 0.7 | grape | bats, little ghosts | pumpkin ghost cauldron sweet lantern |
+| castle | castle (art-biomes-2) | 0.22 | coral | birds, butterflies | tower banner shield torch chest flag |
+| cyber | cyber (style-bold; Bold style) | night | sky | — | drone sign block lantern |
+| stadium | stadium (art-biomes-2) | noon | sky | birds, confetti | ball goalpost trophy medal flag |
+| forest / autumn / city | core / art-biomes | 0.1-0.3 | | | |
+
+- **New art:** `art-biomes-2` (3.2 KB br): castle (a crenellated keep with cone-roofed towers and pennants in the
+  accent, striped tourney tents, cobbled ground), stadium (stands full of a cheering crowd under a roof, floodlight
+  masts that glow at night, plain pitch-side boards with no words or logos, a striped pitch with a chalk-line lip),
+  space (an alien teal planet: moon-base domes with lit windows, dishes, glowing crystals, a ringed world as the sun),
+  spooky (a friendly haunted hill: a crooked manor with warm windows, bare trees, smiling pumpkins that glow).
+  `art-props` (3.1 KB br): 25 props for the prop sets; the treasure ones (`sweet snowflake starfish pearl`) are
+  collectible like coins. The `dress` pack (8.0 KB br) gains the theme table and engine and five critters (bat, ghost,
+  comet, saucer, confetti, plus parrot), flown on the existing paths: a recipe's life entry `'bat:bird'` is the bat
+  sprite on the bird's path (the core reads `sprite:path`; plain names work as before).
+- **Light:** the theme's time of day applies in the light mode (a dark site is still night); `stage.toNight(false)`
+  goes back to the theme's light, not to noon.
+- **Recolour:** `theme: { name, accent, palette: { hills, ground, sky } }` with hue names. Each recoloured colour is
+  mixed toward the hue and then brought back to its old WCAG luminance (chroma drops only when the gamut needs it),
+  so every contrast in the scene (hero, pickups, Ink against the bands and ground) stays what the theme was drawn
+  with; `tests/unit/kit-themes.test.js` checks every theme × hue within 5%. Spark is never an accent (rewards only).
+  The recoloured world is a copy of the biome with the same recipe.
+- **Fallbacks:** a theme whose pack is missing warns with the pack to add and shows a core world (`alt`); without the
+  dress pack the core warns once. `'light' | 'dark' | 'auto'` in `theme` still mean the mode (kit 1.0 games); `mode` is
+  the new key for it. An explicit `biome` next to a theme replaces only the world.
+- **Core cost:** about 0.1 KB br (the hook call, the `theme` / `mode` split in validation, `Oomba.theme.look` and
+  `names`, `K.recipes` for packs, and the `sprite:path` life entries). Core 94.9 KB br (cap 95).
+- **Preview:** `/kit?scene=themes&th=castle` (`kit/demo/themes.html`: one small platformer with the theme's props).
+
+### 6.6 The 3D bridge (kit 1.1.0, pack `bridge-3d`)
+
+three.js games get the Oomba Ink look from one pack (`kit/packs/bridge-3d.js`, 10.4 KB br, cap 14 KB), so 2D games
+pay nothing. `Oomba.three(THREE, { renderer, scene, camera, theme })` → a bridge `B` (the API is in
+[kit-api.md](kit-api.md#the-3d-bridge-kit-110-pack-bridge-3d)). `THREE` is passed in; the pack never imports it.
+
+- **Materials.** `MeshToonMaterial` with a gradient map: 3 soft cel steps (Playful), 2 hard steps (Bold), and a rim
+  term in the fragment shader (Cream, 0.22; Bold: neon cyan, 0.5; none on the ground). One shader program for every
+  toon material (`customProgramCacheKey`), cached per colour. `B.inkify(root)` turns a game's Lambert / Phong /
+  Standard materials into them (faceted meshes get face normals, since toon has no `flatShading`).
+- **Ink.** An inverted hull (BackSide, Ink) pushed out along a smoothed normal in clip space, so the line is the same
+  number of pixels at any distance (about 5% of a character's on-screen height, as in 2D: `clamp(0.0055 h, 2.2, 5)` px,
+  thinner past `0.45 × size` and 0.82× in Bold). It works for instanced meshes (one more draw call for a whole forest).
+  Far hulls hide by distance (the LOD follows the quality level); on a low tier only `important` objects keep Ink.
+- **Worlds from themes.** The theme table from step 1 (`kit.useTheme`): the sky gradient at the theme's time of day
+  (the core's sky keys, tinted by the biome), fog in the horizon colour, a hemisphere light and a sun (warm by day,
+  blue at night), the land in the biome's near band with its ground colour as the plaza, three rings of faceted hills
+  in its band colours (peaks when the biome has them), the theme's props as billboards of their 2D art, clouds by day
+  and stars at night or in space. Bold: dusk or later, surfaces 16% deeper, a neon ridge line in the accent, and a
+  glowing neon grid on the tech worlds (cyber, station, skate, space).
+- **Characters.** `B.sprite(spec)` is the 2D art itself on a camera-facing card (the portrait canvas, feet at the
+  origin), with the kit's motion (breathe, waddle, hop, squash on land) and flipping by heading. `B.rig(spec)` builds
+  the same spec in 3D: species shapes (ears, tails, beaks, antenna and spark, bee stripes and wings, kid hair styles and
+  outfits), ring eyes (a white disc with an Ink pupil; the hull draws the ring), blush in Playful, Bold proportions
+  (`style.legs`, `style.head`) and narrowed eyes in Bold. Each moving part is baked into one vertex-coloured mesh
+  (`B.bake`), so a rig is about 17 draw calls with its Ink. Clips: idle, walk, run, jump, cheer, wave, hurt, land, and
+  a blink.
+- **Performance.** A device tier (cores, memory, max texture; `?okTier=` overrides): pixel ratio cap 1 / 1.25 / 1.5,
+  shadows off on low, 6 / 10 / 14 props. A governor steps quality down after 2 s under ~28 fps (pixel ratio, shadows,
+  outline distance, half the props) and back up after 6 s over 55 fps; `B.run` caps low-tier devices at 30 fps. A game
+  with its own ladder (Star Island) passes `governor: false`. The demo scene is about 40-50 draw calls.
+- **Motion.** Decorative motion (prop sway, sparks, breathing, hops) is scaled by `B.motion`: 0 with reduced motion,
+  0.75 in Bold. Walking legs still move (they say where the hero goes).
+- **Screens.** The kit's DOM screens work over the WebGL canvas as they are (`Oomba.time.start()` runs the clock): the
+  title with the hero's portrait, how-to, HUD, the quiz card (the ask dock), pause and results; Bold's UI comes from
+  the `style-bold` pack.
+- **Star Island** (the 3D template) uses it: `theme` and `style` in CONFIG, its colours `''` = the theme's
+  (`B.look.land`), the sky and light from `B.sky`, `B.inkify(scene)`, the hero baked with Ink, Ink on trees, rocks and
+  floating rocks, `B.update(dt)` in its loop; its own quality ladder stays (`governor: false`). About 46 draw calls.
+- **Preview:** `/kit?scene=three&th=castle&style=bold&view=cast` (`kit/demo/three.html`): a small spark hunt with a
+  quiz, or `view=cast` (rigs in front of their 2D twins).
+- **Versioning.** `bridge-3d` was first added beside the locked 1.1.0 with `node scripts/build-kit.js --packs` (it builds
+  only the packs the lock does not list, and checks the core and every locked pack byte for byte). Foundation step 3
+  (1.1.0 had not shipped yet) rebuilt 1.1.0's core (`Oomba.avatar()`, and `bridge-3d` in `Oomba.pack()`'s pack names)
+  and re-locked it with all eight packs, `bridge-3d` included; the seven other packs kept their bytes.
 
 ## 7. Public API (namespace `Oomba`, alias `OK`)
 
@@ -963,8 +1076,26 @@ Everything is also reachable by keyboard, touch and gamepad. In `ar` the HUD, me
      dinosaur species (Rex became a dog: the game's descriptions say so); the kit has no public way to close its
      title or pause screen from code (the pilots click the screen's own button).
 4. **Art breadth:** packs, each pinned with SRI. **Built:** the pack mechanism, `art-animals` (7 species, 13 in all), `art-school` (25 props: learning, food, classroom) and `art-biomes` (5 biomes, 11 in all). Next: more species toward 20+, props toward 120, icons toward 150, `art-space`. Andika for reading and Cyrillic; self-hosted Hebrew and Arabic display faces.
-5. **3D bridge:** `toTexture`, a gradient-map toon material, an inverted-hull outline and the shared palette LUT, so three.js games match.
+5. **3D bridge (built, kit 1.1.0, §6.6):** the `bridge-3d` pack: gradient-map toon materials with a rim, inverted-hull
+   Ink, themes as 3D worlds, kit characters as rigs or billboards, Bold in 3D, a perf governor; Star Island uses it.
 6. **Platform:** an avatar parts-spec schema on the profile; cross-game kit settings; the optional sticker book (needs a safety review).
+
+### 16.1 The creative-freedom guarantee (foundation step 3)
+
+The kit is the default look, never a rule over a kid's own idea. The style lint (`server/services/stylelint.js`) and the
+Builder respect a builder's explicit creative choices: their colours, their characters and made-up creatures, odd or
+mixed themes, a plain or minimal look, emoji or a font they asked for.
+- **Look notes are suggestions.** `raw_hex emoji_text emoji_dom font theme_name dress_missing three_bridge` are level
+  `info` with `look: true` (they never were blocking); the model reads them as "Look suggestion, skip it if the builder
+  asked for this look".
+- **Asked-for looks are dropped.** `lintGame(html, {request})` / `respectChoices(lint, requests)` take the builder's
+  own messages for the game (`agent.js` passes every message so far to the toolbox): colour words or codes drop
+  `raw_hex`, emoji drop the emoji notes, font words drop `font`, plain / simple / minimal / "my own style" drop
+  `dress_missing` and `three_bridge`, and a made-up theme name the builder used themselves drops `theme_name` (words in
+  the site's languages, not only English). Made-up creatures are never flagged (an unknown species is not a pack name).
+- **The rule is in KIT_RULES** (docs/kit-api.md, "The builder's own choices always win") and in the style-check
+  sentence after each version. Tests: `tests/safety/stylelint.test.js` (the lint) and
+  `tests/unit/builder-kit.test.js` (the rules and the toolbox's message).
 
 ## 17. Decisions for the owner
 

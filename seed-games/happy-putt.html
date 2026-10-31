@@ -1,89 +1,93 @@
 <title>Happy Putt</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@700;800;900&display=swap">
 <style>
-/* Happy Putt: an 18-hole cartoon mini golf course. Layout = top HUD, the hole on a canvas (scaled to fit),
-   a bottom bar with the power slider and the PUTT button. In landscape the HUD and bar move to a side column.
-   Overlays (title, hole card, pass the phone, scorecard, pause, results) are fixed panels on top. */
-:root{
-  --grass:#3f9b55; --grass2:#2d7a40; --ink:#1d2b1f; --cream:#fff8e7; --gold:#f2c14e; --gold2:#c98f12;
-  --red:#e63946; --sky:#bfe7ff; --card:#fffdf7; --muted:#6b7a6e; --blue:#2f6bff;
-  --display:"Fredoka","Trebuchet MS",system-ui,sans-serif; --body:"Nunito",system-ui,-apple-system,sans-serif;
-}
+/* Happy Putt on the Oomba Kit: an 18-hole cartoon mini golf course. Layout = HUD pills on top, the hole on a canvas
+   (scaled to fit, the kit's meadow world around it), a bottom card with the power slider and the PUTT button. In
+   landscape the HUD and bar move to side columns. The title and pause are the kit's screens; the hole card, pass the
+   phone, scorecard and results are kit-style cards. Colours are the kit's (CSS variables --hp-* set from Oomba.color at
+   start, and the kit's --ok-* day/night variables); the font is the kit's. */
+.hp{--rim:var(--hp-ink);--soft:color-mix(in srgb,var(--ok-text) 68%,transparent)}
+.ok-night .hp{--rim:color-mix(in srgb,var(--hp-cream) 40%,transparent)}
 [hidden]{display:none!important}
 html,body{height:100%}
-body{margin:0;overflow:hidden;font-family:var(--body);color:var(--ink);background:#1b4d2a;touch-action:manipulation;user-select:none;-webkit-user-select:none}
-button{font-family:inherit;color:inherit;cursor:pointer}
-button:focus-visible,input:focus-visible{outline:4px solid #fff;outline-offset:2px}
-.app{position:fixed;inset:0;display:flex;flex-direction:column;background:#1b4d2a}
-/* HUD */
-.hud{display:flex;align-items:center;gap:6px;padding:6px max(8px,env(safe-area-inset-right)) 4px max(8px,env(safe-area-inset-left));min-height:52px;background:linear-gradient(#1f5a31,#174526);color:#fff;box-shadow:0 2px 0 rgba(0,0,0,.25)}
-.hud .holebox{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.1}
-.hud .holebox b{font:600 .98rem/1.05 var(--display);display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;overflow-wrap:anywhere}
-.hud .holebox small{font-size:.68rem;font-weight:800;opacity:.85;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+body{margin:0;overflow:hidden;touch-action:manipulation;user-select:none;-webkit-user-select:none}
+.hp button{font-family:inherit;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.hp svg{display:block}
+.hp .ok-btn{color:var(--hp-ink)}
+.hp .ok-btn.ok-icon{width:48px;min-height:48px;flex:none}
+.hp .ok-btn.ok-icon svg{width:26px;height:26px}
+.app{position:fixed;inset:0;display:flex;flex-direction:column}
+/* HUD: kit pills over the world */
+.hud{display:flex;align-items:center;gap:6px;padding:max(8px,env(safe-area-inset-top)) max(8px,env(safe-area-inset-right)) 6px max(8px,env(safe-area-inset-left));min-height:52px}
+.pill{background:var(--ok-card);color:var(--ok-text);border:2.5px solid var(--rim);box-shadow:0 3px 0 var(--hp-ink);border-radius:18px}
+.hud .holebox{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.1;padding:5px 12px;min-height:40px;justify-content:center;box-sizing:border-box}
+.hud .holebox b{font-weight:800;font-size:1rem;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}  /* one line: fitHud() shrinks a long name before it would be cut */
+.hud .holebox small{font-size:.72rem;font-weight:700;color:var(--soft);line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .hud.solo .who{display:none}  /* one player: no need to say who is up, give the hole name the room */
-.hud .strokes{flex:none;background:#fff;color:var(--ink);border-radius:14px;padding:4px 10px;text-align:center;line-height:1.05;min-width:62px}
-.hud .strokes b{display:block;font:600 1.25rem/1 var(--display)}
-.hud .strokes .stick{font-size:.95rem;margin-right:3px;vertical-align:1px}  /* the hockey-stick putter next to the stroke count */
-.hud .strokes small{font-size:.62rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
-.hud .who{flex:0 1 auto;display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.14);border-radius:999px;padding:4px 9px 4px 5px;font-weight:900;font-size:.76rem;max-width:122px;min-width:0}
-.hud .who i{width:16px;height:16px;border-radius:50%;flex:none;background:var(--c,#fff);box-shadow:inset -2px -2px 0 rgba(0,0,0,.2)}
+.hud .strokes{flex:none;padding:4px 10px 5px;text-align:center;line-height:1.05;min-width:64px;box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;gap:3px;min-height:40px}
+.hud .strokes b{display:flex;align-items:center;justify-content:center;gap:5px;font-weight:800;font-size:1.2rem;line-height:1;font-variant-numeric:tabular-nums}
+.hud .strokes .stick{width:16px;height:16px;flex:none}  /* the putter flag next to the stroke count */
+.hud .strokes small{display:block;font-size:.56rem;font-weight:800;letter-spacing:.04em;line-height:1.1;text-transform:uppercase;color:var(--soft);white-space:nowrap}
+.hud .who{flex:0 1 auto;display:flex;align-items:center;gap:5px;border-radius:999px;padding:3px 10px 3px 4px;font-weight:800;font-size:.8rem;max-width:132px;min-width:0;min-height:34px;box-sizing:border-box}
+.hud .who i{width:18px;height:18px;border-radius:50%;flex:none;background:var(--c,var(--hp-cream));border:2px solid var(--hp-ink);box-sizing:border-box}
 .hud .who span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 /* 2-4 players: the hole name gets a touch smaller and may wrap onto two lines (whole words only) so a long player name has room */
 .hud:not(.solo){gap:5px;padding-left:max(6px,env(safe-area-inset-left));padding-right:max(6px,env(safe-area-inset-right))}
-.hud:not(.solo) .holebox b{font-size:.84rem;overflow-wrap:normal}
-.hud:not(.solo) .strokes{min-width:56px;padding:4px 7px}
+.hud:not(.solo) .holebox{padding:4px 9px}
+.hud:not(.solo) .holebox b{font-size:.92rem}
+.hud:not(.solo) .strokes{min-width:58px;padding:4px 7px 5px}
 .hud:not(.solo) .btns{gap:4px}
-.hud .who.tight{max-width:102px}
+.hud .who.tight{max-width:104px}
 .hud .btns{display:flex;gap:6px}
-.icon-btn{width:44px;height:44px;flex:none;border:0;border-radius:50%;background:#fff;color:var(--ink);font-size:1.2rem;box-shadow:0 3px 0 rgba(0,0,0,.25);display:grid;place-items:center;padding:0}
-.icon-btn:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(0,0,0,.25)}
-/* stage */
-.stage{flex:1;min-height:0;position:relative;display:grid;place-items:center;overflow:hidden;background:#10331b;background-image:repeating-linear-gradient(-30deg,rgba(255,255,255,.035) 0 22px,transparent 22px 44px)}
-canvas#c{display:block;touch-action:none;border-radius:6px;box-shadow:0 10px 30px rgba(0,0,0,.45)}
+@media (max-width:400px){.hud .ok-btn.ok-icon{width:44px;min-height:44px}.hud .ok-btn.ok-icon svg{width:23px;height:23px}}
+/* stage: the course canvas as a sticker (Ink edge, hard drop) with the kit's world around it */
+.stage{flex:1;min-height:0;position:relative;display:grid;place-items:center;overflow:hidden}
+canvas#c{display:block;touch-action:none;border-radius:14px;outline:3px solid var(--hp-ink);box-shadow:0 6px 0 var(--hp-ink)}
+.ok-night canvas#c{outline-color:color-mix(in srgb,var(--hp-cream) 45%,transparent);box-shadow:0 6px 0 #000}
 .toast{position:absolute;left:50%;top:14%;transform:translate(-50%,0) scale(.6);opacity:0;pointer-events:none;
-  font:700 clamp(1.5rem,7vw,2.6rem)/1 var(--display);color:#fff;text-shadow:0 3px 0 rgba(0,0,0,.35),0 0 18px rgba(0,0,0,.3);
-  padding:8px 18px;border-radius:20px;background:rgba(0,0,0,.35);max-width:92%;line-height:1.1;transition:transform .25s cubic-bezier(.2,1.4,.4,1),opacity .25s}
+  font-weight:800;font-size:clamp(1.5rem,7vw,2.6rem);line-height:1.1;color:var(--hp-ink);background:var(--hp-cream);border:3px solid var(--hp-ink);box-shadow:0 5px 0 var(--hp-ink);
+  padding:8px 18px;border-radius:22px;max-width:88%;text-align:center;transition:transform .25s cubic-bezier(.34,1.56,.64,1),opacity .25s}
 .toast.show{opacity:1;transform:translate(-50%,0) scale(1)}
-.toast.big{top:30%;font-size:clamp(2rem,10vw,3.6rem);background:linear-gradient(#ffe27a,var(--gold));color:#5a3500;text-shadow:0 2px 0 #fff}
-.toast.hint{top:44%;font-size:clamp(1rem,4.6vw,1.35rem);max-width:84%;padding:8px 14px;line-height:1.2}  /* mid-hole: off the ball and the cup */
-/* bottom bar */
-.bar{display:flex;align-items:center;gap:10px;padding:8px max(10px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left));background:linear-gradient(#174526,#10331b);color:#fff}
+.toast.big{top:30%;font-size:clamp(2rem,10vw,3.6rem);background:var(--hp-spark);rotate:-3deg}
+.toast.hint{top:44%;font-size:clamp(1rem,4.6vw,1.35rem);max-width:84%;padding:8px 14px;line-height:1.2;rotate:none}  /* mid-hole: off the ball and the cup */
+/* bottom bar: a kit card with the power slider and PUTT */
+.bar{display:flex;align-items:center;gap:12px;margin:6px max(8px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left));padding:8px 10px 8px 14px;border-radius:24px}
 .power{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
-.power label{font-size:.68rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase;opacity:.8;display:flex;justify-content:space-between}
+.power label{font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--soft);display:flex;justify-content:space-between}
+.power label #powerVal{color:var(--ok-text);font-variant-numeric:tabular-nums}
 .power input{width:100%;height:44px;margin:0;-webkit-appearance:none;appearance:none;background:transparent}
-.power input::-webkit-slider-runnable-track{height:14px;border-radius:7px;background:linear-gradient(90deg,#4ade80,#facc15 55%,#ef4444)}
-.power input::-webkit-slider-thumb{-webkit-appearance:none;width:30px;height:30px;border-radius:50%;background:#fff;border:3px solid #1d2b1f;margin-top:-8px;box-shadow:0 2px 0 rgba(0,0,0,.3)}
-.power input::-moz-range-track{height:14px;border-radius:7px;background:linear-gradient(90deg,#4ade80,#facc15 55%,#ef4444)}
-.power input::-moz-range-thumb{width:30px;height:30px;border-radius:50%;background:#fff;border:3px solid #1d2b1f}
-.putt{flex:none;border:0;border-radius:22px;background:linear-gradient(#ff7b7b,var(--red));color:#fff;font:600 1.4rem var(--display);letter-spacing:.04em;padding:0 22px;min-height:56px;min-width:118px;box-shadow:0 6px 0 #8f1c26}
-.putt:active:not(:disabled){transform:translateY(4px);box-shadow:0 2px 0 #8f1c26}
-.putt:disabled{opacity:.45;cursor:default}
-/* landscape: side column */
+.power input::-webkit-slider-runnable-track{height:16px;border-radius:8px;border:2.5px solid var(--hp-ink);background:linear-gradient(90deg,var(--hp-mint),var(--hp-spark) 55%,var(--hp-coral))}
+.power input::-webkit-slider-thumb{-webkit-appearance:none;width:32px;height:32px;border-radius:50%;background:var(--hp-cream);border:3px solid var(--hp-ink);margin-top:-10px;box-shadow:0 3px 0 var(--hp-ink)}
+.power input::-moz-range-track{height:12px;border-radius:8px;border:2.5px solid var(--hp-ink);background:linear-gradient(90deg,var(--hp-mint),var(--hp-spark) 55%,var(--hp-coral))}
+.power input::-moz-range-thumb{width:28px;height:28px;border-radius:50%;background:var(--hp-cream);border:3px solid var(--hp-ink)}
+.hp .putt{flex:none;min-height:60px;min-width:122px;font-size:1.4rem;font-weight:800;letter-spacing:.03em;padding:0 22px}
+.hp .putt:disabled{opacity:.5;cursor:default;transform:none;box-shadow:0 4px 0 var(--ok-press)}
+/* wide screens: the HUD and the bar keep a phone-like width over the course, the world fills the rest */
+.hud{width:100%;max-width:780px;align-self:center;box-sizing:border-box}
+.bar{width:calc(100% - 16px);max-width:760px;align-self:center;box-sizing:border-box}
+/* landscape: side columns */
 @media (orientation:landscape) and (max-height:520px){
   .app{flex-direction:row}
-  .hud{flex-direction:column;align-items:stretch;width:150px;min-height:0;padding:8px;gap:8px;order:0}
-  .hud .holebox b{white-space:normal;line-height:1.05}
+  .hud{flex-direction:column;align-items:stretch;align-self:stretch;width:150px;min-height:0;padding:8px;gap:8px;order:0}
+  .hud .holebox{flex:none}
+  .hud .holebox b{white-space:normal;line-height:1.05;text-overflow:clip}
+  .hp-title .ok-h1{font-size:2.4rem!important}
+  .hp-title .ok-title-block>.ok-p{display:none}
+  .hp-title .ok-title-screen,.hp-title.ok-title-screen{padding-top:8px}
   .hud .who{max-width:none}
   .hud .btns{justify-content:center}
   .stage{order:1}
-  .bar{order:2;flex-direction:column;width:150px;padding:10px;justify-content:center}
+  .bar{order:2;flex-direction:column;width:150px;padding:10px;justify-content:center;margin:8px;box-sizing:border-box;align-self:center}
   .power{width:100%}
-  .putt{width:100%;min-width:0}
-  #title{gap:3px;padding:4px 12px}
-  #title .panel{display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;width:min(100%,720px);align-items:start;padding:8px 16px}
-  #title .chip{min-height:44px}
-  #title .names.many{gap:4px}
+  .hp .putt{width:100%;min-width:0}
+  .hp-title .ok-title-block{padding-top:0}
+  .hp-setup{display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;width:min(100%,720px);align-items:start;padding:8px 16px}
+  .hp-setup .chip{min-height:44px}
+  .hp-setup .names.many{gap:4px}
   #playersBox p{margin-bottom:2px!important}
-  #title .tcol{display:flex;flex-direction:column;gap:6px;min-width:0}
-  #title .panel .corner{top:auto;bottom:8px}  /* landscape: the mute button sits in the bottom-right corner beside the keys hint, so the player column starts at the top */
-  #titleKeys{padding-right:50px;text-align:start}
+  .hp-setup .tcol{display:flex;flex-direction:column;gap:6px;min-width:0}
   #titleDesc{font-size:.85rem}
-  #titlePanel #titleDesc{padding-right:0}
-  #titleKeys{font-size:.68rem;line-height:1.35}  /* longer languages: the keys hint stays inside the card */  /* landscape: the mute button is in the bottom corner, so the text can use the full column */
-  .marquee b{font-size:2rem}
-  .marquee small{font-size:.6rem;margin-top:2px}
+  #titleKeys{font-size:.76rem;line-height:1.3}  /* longer languages: the keys hint stays inside the card */
   .ceremony{height:110px}
-  #results .resultbig{font-size:2rem}
   /* results: two columns side by side (scores left, scorecard + buttons right); each column scrolls on its own if it must */
   #results .panel{flex-direction:row;align-items:stretch;gap:16px;width:min(100%,760px);padding:14px 16px}
   #results .tcol{display:flex;flex-direction:column;gap:8px;flex:1 1 0;min-width:0;min-height:0;overflow:auto}
@@ -97,55 +101,58 @@ canvas#c{display:block;touch-action:none;border-radius:6px;box-shadow:0 10px 30p
   #intro .panel{width:min(100%,600px);gap:10px;padding:14px 16px}
   #intro .panel h2{font-size:1.35rem}
 }
-/* overlays */
-.screen{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;padding:12px;background:rgba(16,51,27,.55);backdrop-filter:blur(2px)}
-.panel{background:var(--card);border-radius:26px;padding:18px 16px;width:min(100%,420px);max-height:100%;overflow:auto;box-shadow:0 20px 50px rgba(0,0,0,.45);display:flex;flex-direction:column;gap:12px;text-align:center;position:relative}
+/* overlays: kit cards over the kit's scrim */
+.screen{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;padding:max(12px,env(safe-area-inset-top)) 12px max(12px,env(safe-area-inset-bottom));background:var(--ok-scrim);-webkit-backdrop-filter:saturate(.75) blur(2px);backdrop-filter:saturate(.75) blur(2px)}
+.panel{background:var(--ok-card);color:var(--ok-text);border:3px solid var(--hp-ink);border-radius:30px;box-shadow:0 8px 0 var(--hp-ink);padding:20px 16px 18px;width:min(100%,430px);max-height:100%;overflow:auto;box-sizing:border-box;
+  display:flex;flex-direction:column;gap:12px;text-align:center;position:relative;animation:hpPop 320ms cubic-bezier(.34,1.56,.64,1)}
+.ok-night .panel{border-color:color-mix(in srgb,var(--hp-cream) 20%,transparent);box-shadow:0 8px 0 #000}
+@keyframes hpPop{0%{transform:scale(.6);opacity:0}70%{transform:scale(1.04);opacity:1}100%{transform:scale(1)}}
 .panel>*,.tcol>*{flex:none}  /* a panel scrolls as a whole; nothing inside gets squashed (ball preview, scorecard) */
-.tcol{display:contents}       /* title / results columns: flat in portrait (ordered below), two columns in landscape */
-#titleDesc{order:1}#playersBox{order:2}#names{order:3}#playRow{order:4}#bestLine{order:5}#titleKeys{order:6}
+.tcol{display:contents}       /* setup / results columns: flat in portrait (ordered below), two columns in landscape */
+#titleDesc{order:1}#playersBox{order:2}#names{order:3}#bestLine{order:5}#titleKeys{order:6}
 #cardTitle{order:1}#cardLine{order:2}#cardTable{order:3}#cardLegend{order:4}#cardNext{order:5}
-.panel .corner{position:absolute;top:10px;right:10px;z-index:1}  /* mute toggle on the title card, so sound can be turned off before the first putt */
 /* results: the scorecard gives up height first so "Play again" always stays on screen; the table scrolls inside it */
 #results .scorecard{flex:0 1 auto;min-height:96px;max-height:none}
-.panel h1{font:700 clamp(2rem,10vw,3rem)/1 var(--display);margin:0;color:var(--grass2);letter-spacing:.01em}
-.panel h1 small{display:block;font:900 .72rem var(--body);letter-spacing:.25em;text-transform:uppercase;color:var(--gold2);margin-top:4px}
-.panel h2{font:600 1.5rem/1.1 var(--display);margin:0;color:var(--ink)}
-.panel p{margin:0;font-size:.95rem;line-height:1.4;color:#3b4a3e}
-.panel .gag{background:#eef7ee;border-radius:16px;padding:10px 12px;font-weight:800;color:#24502f}
-.panel .coach{display:flex;gap:10px;align-items:center;text-align:start;background:#fff3cf;border-radius:16px;padding:8px 10px}
-.panel .coach .face{width:44px;height:44px;border-radius:50%;background:#ffd9a0;display:grid;place-items:center;font-size:1.5rem;flex:none;border:3px solid #fff}
-.panel .coach b{display:block;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:#8a5b00}
-.btn{border:0;border-radius:18px;background:linear-gradient(#5ec46f,var(--grass));color:#fff;font:600 1.35rem var(--display);padding:12px 22px;min-height:56px;box-shadow:0 5px 0 var(--grass2);letter-spacing:.02em}
-.btn:active:not(:disabled){transform:translateY(3px);box-shadow:0 2px 0 var(--grass2)}
-.btn.gold{background:linear-gradient(#ffe27a,var(--gold));color:#5a3500;box-shadow:0 5px 0 var(--gold2)}
-.btn.gold:active{box-shadow:0 2px 0 var(--gold2)}
-.btn.soft{background:#e9efe9;color:var(--ink);box-shadow:0 5px 0 #c5d0c5;font-size:1.05rem;min-height:48px}
-.btn.soft:active{box-shadow:0 2px 0 #c5d0c5}
-.row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+#results .panel{gap:10px;padding-top:16px}
+#results .panel p{line-height:1.3}
+.panel h2{font-weight:800;font-size:1.6rem;line-height:1.1;margin:0;text-wrap:balance}
+.panel p{margin:0;font-size:.98rem;line-height:1.4;font-weight:600}
+.panel .gag{background:var(--ok-bg2);border:2px solid var(--ok-line);border-radius:18px;padding:10px 12px;font-weight:700;line-height:1.35}
+.panel .coach{display:flex;gap:10px;align-items:center;text-align:start;background:var(--hp-sparkTint);color:var(--hp-ink);border:2.5px solid var(--hp-ink);border-radius:18px;padding:6px 12px 6px 6px}
+.panel .coach .face{position:relative;width:62px;height:62px;border-radius:50%;background:var(--hp-cream);border:2.5px solid var(--hp-ink);flex:none;overflow:hidden;box-sizing:border-box}
+.face canvas,.ballpreview canvas{position:absolute;left:50%;top:6%;transform:translateX(-50%);height:150%;width:auto;max-width:none}
+.panel .coach .face canvas{top:-54%;height:215%}  /* Coach Mitts: ears to chin inside the circle */
+.panel .coach b{display:block;font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;opacity:.75}
+.panel .coach span{font-weight:700;line-height:1.3}
+.hp .btn{min-height:56px;font-size:1.25rem;font-weight:800}
+.row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
 .row .btn{flex:1;min-width:120px}
-.chips{display:flex;gap:6px;justify-content:center}
-.chip{flex:1;min-height:48px;border:3px solid #cfdacf;border-radius:14px;background:#fff;font:600 1.15rem var(--display);color:var(--ink)}
-.chip[aria-pressed="true"]{border-color:var(--grass);background:#e3f5e6;box-shadow:0 0 0 2px var(--grass) inset}
+.chips{display:flex;gap:8px;justify-content:center}
+.chip{flex:1;min-height:48px;border:2.5px solid var(--rim);border-radius:16px;background:var(--ok-card);color:var(--ok-text);font-weight:800;font-size:1.2rem;box-shadow:0 3px 0 var(--hp-ink)}
+.chip[aria-pressed="true"]{background:var(--hp-mint);color:var(--hp-ink);border-color:var(--hp-ink)}
 .names{display:flex;flex-direction:column;gap:6px}
 .names.many{display:grid;grid-template-columns:1fr 1fr}
-.names.many .namerow{gap:6px;padding:4px 6px}.names.many .namerow span{font-size:.9rem}  /* 3-4 players: a little more room for longer nicknames */  /* 3-4 players: two short columns so the title card still fits a phone */
-.namerow{display:flex;align-items:center;gap:8px;background:#f2f6f2;border-radius:14px;padding:4px 8px;min-width:0}
-.namerow i{width:22px;height:22px;border-radius:50%;flex:none;background:var(--c);border:3px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.12)}
-.namerow span{flex:1;text-align:start;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.namerow button{min-height:44px;border:0;border-radius:12px;background:#fff;font-weight:900;padding:0 12px;box-shadow:0 2px 0 rgba(0,0,0,.15)}
-.best{font-size:.85rem;font-weight:900;color:var(--gold2)}
-.holeno{display:inline-block;background:var(--grass2);color:#fff;border-radius:999px;padding:4px 14px;font:600 .95rem var(--display);letter-spacing:.06em}
-.ballpreview{width:70px;height:70px;border-radius:50%;margin:0 auto;background:radial-gradient(circle at 35% 30%,#fff,var(--c) 60%);box-shadow:0 8px 14px rgba(0,0,0,.25),inset -6px -6px 0 rgba(0,0,0,.12);display:grid;place-items:center;font-size:1.6rem}
+.names.many .namerow{gap:6px;padding:4px 6px}.names.many .namerow span{font-size:.9rem}  /* 3-4 players: two short columns so the setup card still fits a phone */
+.namerow{display:flex;align-items:center;gap:8px;background:var(--ok-bg2);border:2px solid var(--ok-line);border-radius:16px;padding:3px 6px;min-width:0}
+.namerow .face{position:relative;width:40px;height:40px;border-radius:50%;flex:none;background:var(--c);border:2.5px solid var(--hp-ink);overflow:hidden;box-sizing:border-box}
+.namerow span{flex:1;text-align:start;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.namerow button{min-height:44px;border:2px solid var(--hp-ink);border-radius:999px;background:var(--hp-cream);color:var(--hp-ink);font-weight:800;padding:0 12px;box-shadow:0 2px 0 var(--hp-ink)}
+.namerow button.swap{min-width:44px;padding:0;display:grid;place-items:center}  /* 3-4 players: icon-only "change name" button so the nickname keeps its room */
+.namerow button.swap svg{width:20px;height:20px}
+.best{font-size:.9rem;font-weight:800;color:var(--hp-gold)}
+.ok-night .best{color:var(--hp-spark)}
+.holeno{align-self:center;display:inline-block;background:var(--hp-spark);color:var(--hp-ink);border:2.5px solid var(--hp-ink);box-shadow:0 3px 0 var(--hp-ink);border-radius:999px;padding:4px 14px;font-weight:800;font-size:.98rem;letter-spacing:.04em;rotate:-2deg}
+.ballpreview{position:relative;width:104px;height:104px;border-radius:50%;margin:0 auto;background:var(--c);border:3px solid var(--hp-ink);box-shadow:0 5px 0 var(--hp-ink);overflow:hidden;box-sizing:border-box}
 /* Scorecard = a scrolling box of hole rows + a Total footer that keeps its own room below the box (so it never covers a hole row) */
-.scorecard{display:flex;flex-direction:column;max-height:50vh;border:2px solid #dde7dd;border-radius:14px;overflow:hidden;background:#fff}
+.scorecard{display:flex;flex-direction:column;max-height:50vh;border:2.5px solid var(--rim);border-radius:16px;overflow:hidden;background:var(--ok-card)}
 .scorecard .scroller{overflow:auto;min-height:0;flex:1 1 auto;scrollbar-gutter:stable}
-.scorecard .footwrap{flex:none;overflow:hidden;scrollbar-gutter:stable;border-top:2px solid #cfe6d3}
-.scorecard table{border-collapse:collapse;width:100%;table-layout:fixed;font-size:.8rem}
-.scorecard th,.scorecard td{padding:3px 4px;text-align:center;border-bottom:1px solid #eef3ee;white-space:nowrap;overflow:hidden}
-.scorecard th{background:#eef7ee;font-weight:900;position:sticky;top:0;z-index:1}
-.scorecard th i{display:inline-block;width:10px;height:10px;border-radius:50%;vertical-align:-1px;margin-right:3px;border:1px solid rgba(0,0,0,.25);background:var(--c)}
+.scorecard .footwrap{flex:none;overflow:hidden;scrollbar-gutter:stable;border-top:2.5px solid var(--rim)}
+.scorecard table{border-collapse:collapse;width:100%;table-layout:fixed;font-size:.82rem}
+.scorecard th,.scorecard td{padding:2px 4px;text-align:center;border-bottom:1px solid var(--ok-line);white-space:nowrap;overflow:hidden;font-variant-numeric:tabular-nums}
+.scorecard th{background:var(--ok-bg2);font-weight:800;position:sticky;top:0;z-index:1}
+.scorecard th i{display:inline-block;width:12px;height:12px;border-radius:50%;vertical-align:-1px;margin-inline-end:3px;border:2px solid var(--hp-ink);background:var(--c);box-sizing:border-box}
 .scorecard th span{display:inline-block;max-width:96px;overflow:hidden;text-overflow:ellipsis;vertical-align:bottom}
-.scorecard td small{display:block;font-size:.56rem;line-height:1.1;font-weight:900;letter-spacing:.02em;opacity:.8;text-transform:uppercase}  /* the word under the number: ACE, BIRDIE, PAR, BOGEY... */
+.scorecard td small{display:block;font-size:.56rem;line-height:1.1;font-weight:800;letter-spacing:.02em;opacity:.8;text-transform:uppercase}  /* the word under the number: ACE, BIRDIE, PAR, BOGEY... */
 /* 3-4 players: tighter cells; the name sits under its ball dot and may wrap onto two lines instead of being cut short */
 .scorecard.many table{font-size:.72rem}
 .scorecard.many th,.scorecard.many td{padding:3px 2px}
@@ -154,92 +161,102 @@ canvas#c{display:block;touch-action:none;border-radius:6px;box-shadow:0 10px 30p
 .scorecard.many th span{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;max-width:none;white-space:normal;overflow-wrap:anywhere;font-size:.58rem;letter-spacing:-.01em;text-overflow:clip}
 .scorecard.many td small{font-size:.5rem;letter-spacing:0}
 .scorecard.many tr:first-child th:nth-child(-n+2){font-size:.62rem;letter-spacing:-.02em;padding:3px 1px}  /* "Buraco", "Лунка"... fit the narrow Hole / Par columns */
-.legend{font-size:.7rem;color:var(--muted);font-weight:800;margin:0}
+.legend{font-size:.72rem;color:var(--ok-text);font-weight:700;margin:0;line-height:1.35}
 .legend span{white-space:nowrap}
-.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;vertical-align:-1px;margin:0 2px 0 6px}
-.namerow button.swap{min-width:44px;padding:0;font-size:1.1rem}  /* 3-4 players: icon-only "change name" button so the nickname keeps its room */
-.scorecard tr.now td{background:#fff6d6;box-shadow:inset 0 2px 0 var(--gold),inset 0 -2px 0 var(--gold)}  /* the hole just played: gold bars, and its score keeps its colour (rules below win) */
-.scorecard tr.total td{font-weight:900;background:#e3f5e6;line-height:1.1;border-bottom:0}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-1px;margin:0 3px 0 8px;border:1.5px solid var(--hp-ink)}
+.scorecard tr.now td{box-shadow:inset 0 2.5px 0 var(--hp-spark),inset 0 -2.5px 0 var(--hp-spark)}  /* the hole just played: spark bars, and its score keeps its colour (rules below win) */
+.scorecard tr.now td:not(.hio):not(.under):not(.over){background:color-mix(in srgb,var(--hp-sparkTint) 55%,transparent)}
+.scorecard tr.total td{font-weight:800;background:var(--ok-bg2);line-height:1.1;border-bottom:0}
 .scorecard tr.total td.tl{font-size:.66rem;white-space:normal;overflow-wrap:anywhere;line-height:1.05;padding:3px 1px}  /* 'Gesamt', 'المجموع'... wrap or shrink inside the narrow first column */
-.scorecard tr.total small{display:block;font-size:.66rem;color:var(--muted);text-transform:none;opacity:1;letter-spacing:0}
-.scorecard tr td.under{color:#1d7a3a;font-weight:900;background:#cdeed3}
-.scorecard tr td.over{color:#b8322e;font-weight:900;background:#fbe0de}
-.scorecard tr td.hio{background:#ffe27a;font-weight:900}
-.resultbig{font:700 clamp(2.4rem,12vw,3.6rem)/1 var(--display);color:var(--gold2);margin:0}
-.keys{font-size:.74rem;color:var(--muted);font-weight:800;line-height:1.5}
-/* Title show + gold jacket ceremony: a drawn scene fills the screen behind the card (opaque, so nothing greyed-out shows through) */
+.scorecard tr.total small{display:block;font-size:.66rem;color:var(--soft);text-transform:none;opacity:1;letter-spacing:0}
+.scorecard tr td.under{color:var(--hp-ink);font-weight:800;background:var(--hp-under)}
+.scorecard tr td.over{color:var(--hp-ink);font-weight:800;background:var(--hp-over)}
+.scorecard tr td.hio{color:var(--hp-ink);background:var(--hp-ace);font-weight:800}
+#results{background:#141a3a;-webkit-backdrop-filter:none;backdrop-filter:none}  /* the night stadium: opaque, so the course and HUD never peek out */
 .art{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none;z-index:0}
-#title,#results{backdrop-filter:none}
-#title{flex-direction:column;gap:10px;background:#8fcbff}
-#results{background:#141a3a}
-#title .panel,#results .panel,.marquee{position:relative;z-index:1}
-#title .panel{flex:0 1 auto;min-height:0;max-height:none;overflow:auto;padding-top:14px}
-.marquee{flex:none;margin:0;padding:4px 0 0;text-align:center;line-height:1;animation:marqueeSway 4.5s ease-in-out infinite alternate}
-.marquee b{display:block;font:700 clamp(2.7rem,14vw,4.2rem)/1 var(--display);letter-spacing:.015em;transform:rotate(-2.5deg);
-  color:#ffe27a;background:linear-gradient(#fff8d2 10%,#f6cf5a 50%,#d79a12 92%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
-  -webkit-text-stroke:1.5px #5a3500;filter:drop-shadow(0 4px 0 #5a3500) drop-shadow(0 10px 12px rgba(0,0,0,.4))}
-.marquee small{display:block;font:900 .78rem/1 var(--body);letter-spacing:.17em;text-transform:uppercase;color:#fff;margin-top:12px;text-shadow:0 2px 0 rgba(0,0,0,.45),0 0 10px rgba(0,0,0,.3)}
-@keyframes marqueeSway{from{transform:translateY(0) rotate(-1deg)}to{transform:translateY(-4px) rotate(1deg)}}
-#titleDesc{font-size:.9rem;padding-right:48px}  /* portrait: the 44px mute button sits in the top-right corner, so the first lines stop short of it */
-.ceremony{width:100%;height:140px;display:block;border-radius:16px;background:#1d2d5c}
-.chant{font:600 1.05rem/1.2 var(--display);color:#8e1c3a;margin:0}
-.chant small{display:inline-block;font:900 .62rem var(--body);letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-inline-end:6px;vertical-align:1px}
-/* short portrait phones (360x640): the ceremony picture, the gaps and the scorecard box give up height first so Play again stays on screen */
-@media (max-width:370px){#resultsRow .btn,#playRow .btn{padding:12px 8px;font-size:1.15rem}}
-@media (max-height:660px) and (orientation:portrait){#titleDesc{font-size:.8rem;line-height:1.3}#titleKeys{font-size:.66rem;line-height:1.3}#title .panel{gap:8px}}  /* short phones: long languages keep the title card on one screen */  /* 360 px phones: Play again / Menu stay on one line */
+.hp-title .art{position:fixed;z-index:-2}
+.resultbig{font-weight:800;font-size:clamp(2.4rem,12vw,3.4rem);line-height:1;margin:0;color:var(--ok-text);text-decoration:underline .14em var(--hp-spark);text-underline-offset:.12em;text-decoration-skip-ink:none;font-variant-numeric:tabular-nums}
+.keys{font-size:.9rem;color:var(--ok-text);font-weight:700;line-height:1.4}
+.ceremony{width:100%;height:150px;display:block;border-radius:18px;border:2.5px solid var(--hp-ink);box-sizing:border-box;background:var(--hp-night)}
+.chant{font-weight:800;font-size:1.08rem;line-height:1.2;margin:0}
+.chant small{display:inline-block;font-weight:800;font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;color:var(--soft);margin-inline-end:6px;vertical-align:1px}
+/* the results title: a kit sticker word */
+.hp-sticker{margin:0;font-weight:800;font-size:clamp(1.6rem,7vw,2.3rem);line-height:1.08;text-wrap:balance}
+/* the title screen: the kit's lockup and Play, then the game's setup card (players, nicknames, 18 or Quick 9) */
+.hp-title{overflow-y:auto}
+.hp-title .ok-title-block{max-height:none;padding-bottom:max(18px,env(safe-area-inset-bottom))}
+.hp-title .ok-title-badge>*{max-height:min(84px,10vh)}
+.hp-setup .ok-cta{order:4;display:flex;gap:10px;width:100%;margin:2px 0 4px}
+.hp-setup .ok-cta::before{inset:-10px -20px -14px}
+.hp-title .hp-setup .ok-cta .ok-big{flex:1 1 0;min-width:0;min-height:66px;margin-top:0;padding:0 12px;font-size:clamp(1.15rem,5vw,1.5rem);white-space:nowrap}
+.hp-title .hp-setup .ok-cta #play9{animation:ok-pop 420ms 320ms both}
+.hp-setup{background:var(--ok-card);color:var(--ok-text);border:3px solid var(--hp-ink);border-radius:26px;box-shadow:0 6px 0 var(--hp-ink);padding:12px 14px 14px;width:min(430px,calc(100vw - 32px));box-sizing:border-box;display:flex;flex-direction:column;gap:9px;text-align:center}
+.ok-night .hp-setup{border-color:color-mix(in srgb,var(--hp-cream) 20%,transparent);box-shadow:0 6px 0 #000}
+.hp-setup>*,.hp-setup .tcol>*{flex:none}
+.hp-setup p{margin:0;font-weight:600;line-height:1.35}
+#titleDesc{font-size:.92rem}
+#resultsRow .btn{white-space:nowrap;padding:0 14px;font-size:1.25rem;min-height:60px}
+@media (max-width:370px){#resultsRow .btn{padding:0 10px;font-size:1.1rem}}
+@media (max-height:900px) and (orientation:portrait){.hp-title .ok-title-badge{display:none}.hp-title .ok-h1{font-size:clamp(2.6rem,12vmin,5rem)}}
+@media (max-height:860px){.hp-title .ok-title-badge{display:none}}
+/* wide screens: the setup card in two columns (the pitch, best and Play on one side, the players on the other) */
+@media (orientation:landscape) and (min-width:760px){
+  .hp-setup{display:grid;grid-template-columns:1fr 1fr;gap:8px 18px;width:min(calc(100vw - 32px),760px);align-items:start;padding:14px 18px}
+  .hp-setup .tcol{display:flex;flex-direction:column;gap:9px;min-width:0}
+  .hp-title .ok-h1{font-size:clamp(3rem,13vmin,6rem)}
+}
+@media (max-height:740px) and (orientation:portrait){#titleDesc{font-size:.82rem;line-height:1.3}#titleKeys{font-size:.8rem;line-height:1.3}.hp-setup{gap:7px}}
 @media (max-height:720px) and (orientation:portrait){.ceremony{height:126px}#results .panel{gap:9px}}
 @media (max-height:680px) and (orientation:portrait){
   .ceremony{height:112px}
   #results .panel{gap:8px;padding:14px 14px}
-  #results .panel h2{font-size:1.3rem}
+  #results .hp-sticker{font-size:1.4rem}
   #results .resultbig{font-size:2rem}
   #results .panel p{font-size:.88rem;line-height:1.3}
   #results .scorecard{min-height:84px}
   #results .legend{font-size:.66rem}
 }
-@media (prefers-reduced-motion:reduce){.toast{transition:none}.marquee{animation:none}}
+@media (prefers-reduced-motion:reduce){.toast{transition:none}.panel{animation:none}}
+.ok-rm .toast{transition:none}.ok-rm .panel{animation:none}
 /* Right-to-left languages (he, ar): the menus, cards and HUD read right to left; the course itself, the power slider and the
-   numbers stay left to right. The mute button keeps its corner, so the title text keeps its padding on that side. */
-[dir=rtl] .stage,[dir=rtl] .power input,[dir=rtl] .marquee b{direction:ltr}
-[dir=rtl] #titleKeys{padding-right:0;padding-left:0}
+   numbers stay left to right. */
+[dir=rtl] .stage,[dir=rtl] .power input{direction:ltr}
+[dir=rtl] .hp-title .ok-corner{inset-inline-end:auto;right:calc(12px + env(safe-area-inset-right))}  /* the kit's oomba wordmark stays top-left (it is always left to right), so the sound and settings buttons go top-right */
 html[lang=ar] *{letter-spacing:0!important} /* letter spacing would pull the joined Arabic letters apart */
 </style>
 
+<div class="hp" id="game">
 <div class="app" id="app">
   <header class="hud solo" id="hud">
-    <div class="holebox"><b id="hudName">Happy Putt</b><small id="hudPar" data-i18n="tapStart"></small></div>
-    <div class="who" id="hudWho" style="--c:#fff"><i></i><span id="hudWhoName"></span></div>
-    <div class="strokes"><b><span class="stick" aria-hidden="true">🏒</span><span id="hudStrokes">0</span></b><small data-i18n="strokesHud"></small></div>
+    <div class="holebox pill"><b id="hudName">Happy Putt</b><small id="hudPar" data-i18n="tapStart"></small></div>
+    <div class="who pill" id="hudWho"><i></i><span id="hudWhoName"></span></div>
+    <div class="strokes pill"><b><span class="stick" aria-hidden="true" data-icon="flag"></span><span id="hudStrokes">0</span></b><small data-i18n="strokesHud"></small></div>
     <div class="btns">
-      <button class="icon-btn" id="pauseBtn" data-i18n-aria="aPause">⏸</button>
-      <button class="icon-btn" id="muteBtn">🔊</button>
+      <button class="ok-btn ok-icon" id="pauseBtn" data-i18n-aria="aPause" data-icon="pause"></button>
+      <button class="ok-btn ok-icon" id="muteBtn"></button>
     </div>
   </header>
   <div class="stage" id="stage">
     <canvas id="c" width="390" height="640" data-i18n-aria="holeAria"></canvas>
     <div class="toast" id="toast"></div>
   </div>
-  <div class="bar">
+  <div class="bar pill">
     <div class="power"><label><span data-i18n="power"></span><span id="powerVal" dir="ltr">50%</span></label>
       <input type="range" id="power" min="5" max="100" value="50" data-i18n-aria="powerAria" dir="ltr"></div>
-    <button class="putt" id="puttBtn" data-i18n="putt"></button>
+    <button class="ok-btn ok-hot putt" id="puttBtn" data-i18n="putt"></button>
   </div>
 </div>
 
-<!-- Title: a drawn country-club scene (canvas) behind a big marquee title and the start card -->
-<div class="screen" id="title">
-  <canvas class="art" id="titleArt" aria-hidden="true"></canvas>
-  <h1 class="marquee"><b>Happy Putt</b><small data-i18n="sub"></small></h1>
-  <div class="panel" id="titlePanel">
-    <button class="icon-btn corner" id="titleMute">🔊</button>
+<!-- Title: the kit's title screen (built in openTitle); this setup card goes under its Play buttons -->
+<template id="setupTpl">
+  <div class="hp-setup" id="titlePanel">
     <div class="tcol">
       <p id="titleDesc" data-i18n="desc"></p>
-      <div class="row" id="playRow"><button class="btn gold" id="play18" data-i18n="play18"></button><button class="btn" id="play9" data-i18n="quick9"></button></div>
       <div class="best" id="bestLine"></div>
     </div>
     <div class="tcol">
       <div id="playersBox">
-        <p style="font-weight:900;margin-bottom:6px" data-i18n="howMany"></p>
+        <p style="font-weight:800;margin-bottom:6px" data-i18n="howMany"></p>
         <div class="chips" id="chips">
           <button class="chip" data-n="1" aria-pressed="true">1</button><button class="chip" data-n="2">2</button><button class="chip" data-n="3">3</button><button class="chip" data-n="4">4</button>
         </div>
@@ -248,7 +265,7 @@ html[lang=ar] *{letter-spacing:0!important} /* letter spacing would pull the joi
       <p class="keys" id="titleKeys" data-i18n="keys"></p>
     </div>
   </div>
-</div>
+</template>
 
 <!-- Hole intro card -->
 <div class="screen" id="intro" hidden>
@@ -256,8 +273,8 @@ html[lang=ar] *{letter-spacing:0!important} /* letter spacing would pull the joi
     <span class="holeno" id="introNo"></span>
     <h2 id="introName"></h2>
     <div class="gag" id="introGag"></div>
-    <div class="coach"><div class="face">🧤</div><div><b data-i18n="coachSays"></b><span id="introTip"></span></div></div>
-    <button class="btn gold" id="teeOff" data-i18n="teeOff"></button>
+    <div class="coach"><div class="face" id="coachFace"></div><div><b data-i18n="coachSays"></b><span id="introTip"></span></div></div>
+    <button class="ok-btn ok-hot ok-big btn" id="teeOff" data-i18n="teeOff"></button>
   </div>
 </div>
 
@@ -265,9 +282,9 @@ html[lang=ar] *{letter-spacing:0!important} /* letter spacing would pull the joi
 <div class="screen" id="pass" hidden>
   <div class="panel">
     <h2 data-i18n="passTitle"></h2>
-    <div class="ballpreview" id="passBall" style="--c:#fff"></div>
+    <div class="ballpreview" id="passBall"></div>
     <p id="passLine"></p>
-    <button class="btn" id="passGo" data-i18n="imReady"></button>
+    <button class="ok-btn ok-go ok-big btn" id="passGo" data-i18n="imReady"></button>
   </div>
 </div>
 
@@ -278,27 +295,18 @@ html[lang=ar] *{letter-spacing:0!important} /* letter spacing would pull the joi
       <h2 id="cardTitle" data-i18n="scorecard"></h2>
       <p id="cardLine"></p>
       <p class="legend" id="cardLegend"></p>
-      <button class="btn gold" id="cardNext" data-i18n="nextHole"></button>
+      <button class="ok-btn ok-hot ok-big btn" id="cardNext" data-i18n="nextHole"></button>
     </div>
     <div class="tcol"><div class="scorecard" id="cardTable"></div></div>
   </div>
 </div>
 
-<!-- Pause -->
-<div class="screen" id="pauseScreen" hidden>
-  <div class="panel">
-    <h2 data-i18n="paused"></h2>
-    <button class="btn" id="resumeBtn" data-i18n="keepPlaying"></button>
-    <div class="row"><button class="btn soft" id="pauseMute">🔊</button><button class="btn soft" id="quitBtn" data-i18n="quitMenu"></button></div>
-  </div>
-</div>
-
-<!-- Results: the gold jacket ceremony (podium canvas inside the card, a night stadium with fireworks behind it) -->
+<!-- Results: the gold jacket ceremony (the kit's stadium at night behind the card, the podium picture inside it) -->
 <div class="screen" id="results" hidden>
   <canvas class="art" id="resultsArt" aria-hidden="true"></canvas>
   <div class="panel">
     <div class="tcol">
-      <h2 id="resultsTitle" data-i18n="roundOver"></h2>
+      <h2 class="hp-sticker" id="resultsTitle" data-i18n="roundOver"></h2>
       <canvas class="ceremony" id="ceremony" data-i18n-aria="cerAria"></canvas>
       <p class="resultbig" id="resultsBig"></p>
       <p id="resultsLine"></p>
@@ -308,11 +316,17 @@ html[lang=ar] *{letter-spacing:0!important} /* letter spacing would pull the joi
     <div class="tcol">
       <div class="scorecard" id="resultsTable"></div>
       <p class="legend" id="resultsLegend"></p>
-      <div class="row" id="resultsRow"><button class="btn gold" id="again" data-i18n="again"></button><button class="btn soft" id="toMenu" data-i18n="menu"></button></div>
+      <div class="row" id="resultsRow"><button class="ok-btn ok-hot btn" id="again" data-i18n="again"></button><button class="ok-btn ok-quiet btn" id="toMenu" data-i18n="menu"></button></div>
     </div>
   </div>
 </div>
+</div>
 
+<script src="/vendor/oomba-kit/1.1.0/oomba-kit.js" integrity="sha384-GCejMN1YYamlsZNEJw6SRznGmZC2i6tppYwkLt8cv2gI3YTTsZq6l8eyUQuAM8qX" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.0/packs/dress.js" integrity="sha384-ZCFgY98YAWY7Tcy+GfJLalmnJukKdzbVpg6j4ZljXuJSYgYzkWSWMPihVW/u8CqH" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.0/packs/art-animals.js" integrity="sha384-0kgnnCmovTaNwWnsPFryp1c8kgX7ji/jku0tdAsfRwfiaWP9usy3eBLuIdBsh8jE" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.0/packs/art-props.js" integrity="sha384-/RtKQ/ov2WG1EoCt4pJ98rHY07jOZjZ+lia901K+1BfS49MydEROuw7UaInBPHle" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.0/packs/art-biomes-2.js" integrity="sha384-0ad0awdyk2fC5pFpqYc/7EABVSKTEe1ZKo2YB6cvjKZDIDA2mI1+YRUEQhOgXrHs" crossorigin="anonymous"></script>
 <script>
 (function(){
 'use strict';
@@ -341,8 +355,19 @@ const CONFIG = {
   chargeSweep: 1.3,               // seconds for the Space charge meter to sweep 0 -> 100%
   trail: 14,                      // ball trail length
   maxParticles: 260,
-  colors: ['#ffd23f', '#ff6b6b', '#4cc9f0', '#b5e550'],   // ball colours for players 1..4
+  ballHues: ['spark', 'coral', 'sky', 'mint'],   // ball colours for players 1..4 (kit hues)
+  // the golfers: player 1 is the player's own character (their Me page avatar); pass-the-phone friends are kit kids in
+  // their ball's colour; Coach Mitts gives the tips on the hole cards
+  cast: [
+    'me',
+    { species: 'kid', skin: 2, hair: { style: 'curls', color: 'black' }, outfit: { top: 'tee', color: 'coral' } },
+    { species: 'kid', skin: 5, hair: { style: 'cap', color: 'cocoa' }, outfit: { top: 'hoodie', color: 'sky' } },
+    { species: 'kid', skin: 0, hair: { style: 'braids', color: 'copper' }, outfit: { top: 'overalls', color: 'mint' } },
+  ],
+  coach: { species: 'bear', wear: ['glasses'] },
+  theme: 'meadow',                // the kit world around the course (the results ceremony moves to the stadium at night)
 };
+CONFIG.colors = CONFIG.ballHues.map(h => Oomba.color(h));
 
 /* ================================================================================================
    LANGUAGES. Every word a player sees lives in I18N (13 site languages). The platform gives the language in BRB.user.lang and
@@ -1020,7 +1045,44 @@ const lerp = (a, b, k) => a + (b - a) * k;
 const hyp = Math.hypot;
 const TAU = Math.PI * 2;
 const RAD = Math.PI / 180;
-const reducedMotion = (() => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; } })();
+// the kit's reduced motion (device, site or the kit's own settings screen), kept current: every use reads it again
+let reducedMotion = !!Oomba.settings.reduced;
+Oomba.settings.on('change', () => { reducedMotion = !!Oomba.settings.reduced; });
+
+/* ---------------- the kit: colours, the world, fonts, characters ---------------- */
+const KC = (hue, step) => Oomba.color(hue, step);
+const cssVars = { ink: KC('ink'), cream: KC('card'), spark: KC('spark'), sparkTint: KC('spark', 'tint'), mint: KC('mint'), mintTint: KC('mint', 'tint'),
+  coral: KC('coral'), coralTint: KC('coral', 'tint'), sky: KC('sky'), night: KC('grape', 'shade'), gold: KC('spark', 'shade') };
+// the scorecard's colour key: as strong as the old card's (gold ace, green under par, pink over par)
+Object.assign(cssVars, { ace: 'color-mix(in srgb,' + cssVars.spark + ' 78%,' + cssVars.cream + ')', under: 'color-mix(in srgb,' + cssVars.mint + ' 55%,' + cssVars.cream + ')', over: 'color-mix(in srgb,' + cssVars.coral + ' 45%,' + cssVars.cream + ')' });
+for (const k in cssVars) document.documentElement.style.setProperty('--hp-' + k, cssVars[k]);
+// The kit's world: the meadow around the course (title and play) and the stadium at night behind the results.
+const WORLD = Oomba.stage({ api: 1, biome: CONFIG.theme, size: [960, 540] });
+Oomba.ui.root().appendChild($('game'));
+let FONTSTACK = getComputedStyle(Oomba.ui.root()).getPropertyValue('--ok-font').trim() || 'system-ui, sans-serif';
+// Kit art drawn into the course canvas: emoji the old course used map to kit sprites (the rest keep their emoji)
+const KIT_ART = { '🐧': 'penguin', '🦆': 'duck', '🐸': 'frog', '🐱': 'cat', '🐕': 'dog', '🏆': 'trophy', '📦': 'crate', '💎': 'gem', '🌴': 'tree' };
+const artCache = new Map();
+/** A kit sprite or character as a canvas, px tall in device pixels (cached; feet / base at the bottom). */
+function kitArt(name, px, mood) {
+  const key = (typeof name === 'string' ? name : JSON.stringify(name)) + '|' + px + '|' + (mood || '');
+  let c = artCache.get(key);
+  if (!c) {
+    try { c = Oomba.art.toCanvas(name, px, mood || ''); } catch (e) { c = null; }
+    if (artCache.size > 160) artCache.clear();
+    artCache.set(key, c);
+  }
+  return c;
+}
+/** The character spec of player i: player 1 is the player's own avatar (a guest gets the kit mascot), the others kit kids. */
+function castSpec(i, win) {
+  const c = CONFIG.cast[i % CONFIG.cast.length];
+  let spec = c === 'me' ? Object.assign({}, Oomba.avatar()) : Object.assign({}, c);
+  if (win) spec = Object.assign(spec, { outfit: { top: 'hoodie', color: 'spark' }, wear: (spec.wear || []).filter(w => w !== 'backpack').concat(spec.wear && spec.wear.includes('crown') ? [] : ['crown']) }); // the gold jacket and a champion's crown
+  try { return Oomba.char(spec); } catch (e) { return Oomba.char({ species: 'kid' }); }
+}
+/** A player's face for the DOM (name rows, pass the phone): their character's portrait. */
+function castFace(i, px) { const cv = Oomba.ui.portrait(castSpec(i), { size: px, mood: 'happy' }); cv.style.height = ''; cv.style.width = ''; return cv; }
 
 // Seeded PRNG (mulberry32). seed(n) in the test hooks re-seeds it; only crowds and particles use it.
 let rngState = 12345;
@@ -1096,13 +1158,23 @@ function circle(ctx, x, y, r, col) { ctx.fillStyle = col; ctx.beginPath(); ctx.a
 function ring(ctx, x, y, r, col, w) { ctx.strokeStyle = col; ctx.lineWidth = w; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.stroke(); }
 function poly(ctx, pts) { ctx.beginPath(); ctx.moveTo(pts[0][0], pts[0][1]); for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]); ctx.closePath(); }
 function txt(ctx, s, x, y, size, col, opts) {
-  opts = opts || {}; ctx.font = (opts.weight || '700') + ' ' + size + 'px ' + (opts.font || 'Fredoka, Trebuchet MS, sans-serif');
+  opts = opts || {}; ctx.font = (opts.weight || '700') + ' ' + size + 'px ' + (opts.font || FONTSTACK);
   ctx.textAlign = opts.align || 'center'; ctx.textBaseline = opts.base || 'middle'; ctx.direction = RTL ? 'rtl' : 'ltr';
   const mw = opts.max; // optional max width: longer words in other languages squeeze to fit their sign
   if (opts.stroke) { ctx.lineWidth = opts.strokeW || 4; ctx.strokeStyle = opts.stroke; ctx.lineJoin = 'round'; if (mw) ctx.strokeText(s, x, y, mw); else ctx.strokeText(s, x, y); }
   ctx.fillStyle = col; if (mw) ctx.fillText(s, x, y, mw); else ctx.fillText(s, x, y);
 }
-function emoji(ctx, ch, x, y, size) { ctx.font = size + 'px "Noto Color Emoji","Apple Color Emoji","Segoe UI Emoji",sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = '#000'; ctx.fillText(ch, x, y + size * 0.06); }
+// A picture centred at (x, y), size px tall: the kit's art when the kit has it (the course's animals, trophies, crates, gems,
+// palms), else the emoji the course always used (a unicorn, a turtle, popcorn...).
+function emoji(ctx, ch, x, y, size) {
+  const name = KIT_ART[ch];
+  if (name) {
+    const k = ctx.getTransform ? Math.hypot(ctx.getTransform().a, ctx.getTransform().b) : 1, px = Math.max(16, Math.round(size * 1.15 * k / 8) * 8), cv = kitArt(name, px);
+    if (cv && cv.width) { const h = size * 1.15, w = h * cv.width / cv.height; ctx.drawImage(cv, x - w / 2, y - h / 2, w, h); return; }
+  }
+  emojiGlyph(ctx, ch, x, y, size);
+}
+function emojiGlyph(ctx, ch, x, y, size) { ctx.font = size + 'px "Noto Color Emoji","Apple Color Emoji","Segoe UI Emoji",sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = '#000'; ctx.fillText(ch, x, y + size * 0.06); }
 function shadowBlob(ctx, x, y, rx, ry, a) { ctx.fillStyle = 'rgba(0,0,0,' + (a || 0.18) + ')'; ctx.beginPath(); ctx.ellipse(x, y, rx, ry, 0, 0, TAU); ctx.fill(); }
 // Mowed lane: fill a polygon with grass and diagonal/horizontal stripes, plus an inner shade.
 function mowedLane(ctx, pts, base, stripe, dir) {
@@ -1199,33 +1271,41 @@ function goldJacket(ctx, x, y, t, s, worn) {
   const tw = 0.5 + 0.5 * Math.sin(t * 5); circle(ctx, -9, -5, 1.5 + tw * 1.5, 'rgba(255,255,255,' + (0.4 + tw * 0.5) + ')');
   ctx.restore();
 }
-// A tiny cartoon golfer standing with feet at (x, y): legs, jersey in the ball colour, cap, round face. The champion wears the gold
-// jacket and holds the trophy up; everybody else claps. Used by the title scene and the ceremony.
-function golfer(c, x, y, col, t, win, idle) {
-  shadowBlob(c, x, y + 1, 12, 3, 0.25);
-  c.fillStyle = '#2b3a55'; c.fillRect(x - 7, y - 13, 5, 13); c.fillRect(x + 2, y - 13, 5, 13); c.fillStyle = '#1d2b1f'; c.fillRect(x - 8, y - 2, 7, 3); c.fillRect(x + 1, y - 2, 7, 3);
-  c.fillStyle = col; rrect(c, x - 10, y - 33, 20, 22, 6); c.fill();
-  if (win) goldJacket(c, x, y - 22, t, 0.95, true);
-  const w = idle ? 0 : Math.sin(t * 6) * 0.5;
-  c.strokeStyle = win ? '#e3b23c' : col; c.lineWidth = 4; c.lineCap = 'round'; c.beginPath();
-  if (win) { c.moveTo(x - 9, y - 29); c.lineTo(x - 17, y - 44 + w * 3); c.moveTo(x + 9, y - 29); c.lineTo(x + 17, y - 46 - w * 3); }
-  else { c.moveTo(x - 9, y - 29); c.lineTo(x - 15 + w * 5, y - 18); c.moveTo(x + 9, y - 29); c.lineTo(x + 15 - w * 5, y - 18); }
-  c.stroke(); c.lineCap = 'butt';
-  if (win) emoji(c, '🏆', x + 19, y - 54 - w * 3, 18);
-  circle(c, x, y - 41, 9, '#f1c27d'); circle(c, x - 3, y - 42, 1.4, '#111'); circle(c, x + 3, y - 42, 1.4, '#111');
-  c.strokeStyle = '#8d4a2b'; c.lineWidth = 1.5; c.beginPath(); c.arc(x, y - 40, 4, 0.3, Math.PI - 0.3); c.stroke();
-  c.fillStyle = col; c.beginPath(); c.arc(x, y - 43, 9.5, Math.PI, 0); c.fill(); c.fillRect(x - 11, y - 44, 15, 3);
+// A golfer standing with feet at (x, y): the player's kit character (player 1's own avatar). The champion wears the gold
+// jacket over it (the club's own jacket, drawn on the body whatever the species) and holds the trophy up beside the head;
+// everybody else claps along (a small hop).
+const inkBox = new WeakMap();
+/** The drawn part of a kit canvas (alpha > 0) as fractions of its size, measured once per canvas. */
+function artBox(cv) {
+  let b = inkBox.get(cv); if (b) return b;
+  b = { x0: 0.2, x1: 0.8, y0: 0.2, y1: 1 };
+  try {
+    const W = cv.width, H = cv.height, d = cv.getContext('2d').getImageData(0, 0, W, H).data; let x0 = W, x1 = 0, y0 = H, y1 = 0;
+    for (let y = 0; y < H; y += 2) for (let x = 0; x < W; x += 2) if (d[(y * W + x) * 4 + 3] > 40) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+    if (x1 > x0 && y1 > y0) b = { x0: x0 / W, x1: x1 / W, y0: y0 / H, y1: y1 / H };
+  } catch (e) { /* keep the guess */ }
+  inkBox.set(cv, b); return b;
 }
-// A happy clown face peeking out (title scene): white face, red nose, orange hair, hat, eyes that look where the time points.
-function clownFace(c, x, y, t, s) {
-  c.save(); c.translate(x, y); c.scale(s, s);
-  for (let i = -2; i <= 2; i++) circle(c, i * 11, -16 + Math.abs(i) * 3, 9, '#ff8c42');
-  circle(c, 0, 0, 24, '#fff'); c.fillStyle = '#2f6bff'; rrect(c, -16, -36, 32, 14, 4); c.fill(); c.fillStyle = '#ffd23f'; rrect(c, -20, -24, 40, 5, 2); c.fill();
-  const ex = Math.cos(t * 0.7) * 3, ey = Math.sin(t * 0.9) * 2;
-  for (const sx of [-9, 9]) { circle(c, sx, -6, 6, '#fff'); ring(c, sx, -6, 6, '#2f6bff', 1.5); circle(c, sx + ex, -6 + ey, 3, '#111'); }
-  circle(c, 0, 4, 6, '#ff3b3b'); circle(c, -2, 2, 2, 'rgba(255,255,255,.7)');
-  c.strokeStyle = '#ff3b3b'; c.lineWidth = 3.5; c.lineCap = 'round'; c.beginPath(); c.arc(0, 6, 13, 0.35, Math.PI - 0.35); c.stroke(); c.lineCap = 'butt';
-  c.restore();
+function golfer(c, x, y, pl, t, idle) {
+  shadowBlob(c, x, y + 1, 14, 3.5, 0.25);
+  const k = c.getTransform ? Math.hypot(c.getTransform().a, c.getTransform().b) : 1, H = pl.win ? 66 : 56;
+  const spec = castSpec(pl.idx, pl.win), cv = kitArt(spec, Math.max(48, Math.round(H * k * 1.5 / 8) * 8), pl.win ? 'cheer' : 'happy'); // drawn at 1.5x and scaled down: crisp on a 1x screen
+  const hop = idle ? 0 : Math.abs(Math.sin(t * (pl.win ? 5 : 4) + pl.idx)) * (pl.win ? 4 : 2.5);
+  if (!cv || !cv.width) return;
+  const w = H * cv.width / cv.height, bx = artBox(cv), top = y - H - hop;
+  c.drawImage(cv, x - w / 2, top, w, H);
+  if (!pl.win) return;
+  // the gold jacket on the body: the kid's torso, or the round middle of a bean-shaped mascot or an animal
+  // (a kid's torso runs from about 47% to 80% of the drawn height; on the bean mascot and the animals the face fills the
+  // middle, so the jacket sits on the belly below it and never covers the face)
+  const bodyW = (bx.x1 - bx.x0) * w, bodyH = (bx.y1 - bx.y0) * H, kid = spec.species === 'kid', jTop = kid ? 0.47 : 0.64, jH = kid ? 0.36 : 0.35;
+  const js = Math.min(bodyW * 0.62 / 28, bodyH * jH / 24), jy = top + bx.y0 * H + bodyH * jTop + 10 * js;
+  c.save(); c.translate(x, jy); c.scale(js, js); c.lineWidth = 2.2 / js; c.strokeStyle = KC('ink');
+  c.beginPath(); c.moveTo(-14, -10); c.lineTo(14, -10); c.lineTo(13, 3); c.lineTo(9, 3); c.lineTo(9, 14); c.lineTo(-9, 14); c.lineTo(-9, 3); c.lineTo(-13, 3); c.closePath(); c.stroke();
+  c.restore(); goldJacket(c, x, jy, t, js, true);
+  // the trophy held up beside the head
+  const tx = x + bodyW / 2 + 4, ty = top + bx.y0 * H + bodyH * 0.22 - (idle ? 0 : Math.sin(t * 5) * 1.5);
+  emoji(c, '🏆', tx, ty, 18);
 }
 function skyline(ctx, x0, x1, base, h, col, win) {
   for (let x = x0; x < x1;) { const w = 18 + ((x * 7) % 20), hh = h * (0.5 + ((x * 13) % 10) / 20); ctx.fillStyle = col; ctx.fillRect(x, base - hh, w, hh); ctx.fillStyle = win; for (let yy = base - hh + 6; yy < base - 6; yy += 10) for (let xx = x + 4; xx < x + w - 4; xx += 8) if ((xx * yy) % 7 < 4) ctx.fillRect(xx, yy, 4, 5); x += w + 4; }
@@ -2388,13 +2468,19 @@ function beginPlay() { ht = 0; trans = reducedMotion || game.fast ? 0 : 1; setSc
 function aimAtCup() { aim.deg = Math.atan2(-(hole.cup.y - ball.y), hole.cup.x - ball.x) / RAD; if (aim.deg < 0) aim.deg += 360; if (hole.teeAim !== undefined && ball.x === hole.tee.x && ball.y === hole.tee.y) aim.deg = hole.teeAim; }
 
 function setScreen(s) {
-  game.screen = s;
-  for (const id of ['title', 'intro', 'pass', 'card', 'pauseScreen', 'results']) $(id).hidden = true;
-  const map = { title: 'title', intro: 'intro', pass: 'pass', card: 'card', paused: 'pauseScreen', results: 'results' };
+  const was = game.screen;
+  game.screen = s; Oomba.scene = s;
+  for (const id of ['intro', 'pass', 'card', 'results']) $(id).hidden = true;
+  if (s !== 'title') closeTitle();
+  if (s !== 'paused' && kitPause.open) closeKitPause();
+  if (s === 'title') openTitle();
+  if (s === 'results') worldFor('results'); else if (was === 'results' || s === 'title') worldFor('course');
+  const map = { intro: 'intro', pass: 'pass', card: 'card', results: 'results' };
   if (map[s]) { const el = $(map[s]); el.hidden = false; const b = el.querySelector('.btn'); if (b) { try { b.focus({ preventScroll: true }); } catch (e) { /* ignore */ } } }
   else if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
   puttBtn.disabled = s !== 'play'; renderDirty = 2;
   try { $('app').toggleAttribute('inert', s !== 'play'); } catch (e) { /* ignore */ } // nothing behind an overlay takes focus
+  $('app').style.visibility = s === 'title' ? 'hidden' : ''; // the title shows the kit's world, not an empty course
   if (s === 'play' && !game.shotsTotal && !game.fast && !game.hinted) { game.hinted = true; toast(say('dragHint'), false, 3200, 'hint'); }
 }
 function curStrokes(n) { game.strokes += n; shot.stroke += n; updateHud(); }
@@ -2407,7 +2493,15 @@ function updateHud() {
   $('hudWhoName').textContent = playerName(game.current); $('hudWho').style.setProperty('--c', playerColor(game.current));
   // Extreme case (12-letter player name AND a long hole-name word): the badge gives up some room so the hole name is never cut.
   const who = $('hudWho'), nm = $('hudName'); who.classList.remove('tight');
-  if (game.players > 1 && nm.scrollWidth > nm.clientWidth + 1) who.classList.add('tight');
+  fitHud();
+  if (game.players > 1 && nm.scrollWidth > nm.clientWidth + 1) { who.classList.add('tight'); fitHud(); }
+}
+/** The hole name stays on one line in its pill: a long one ('Grandma's Driveway') steps its size down (to 70%) before it would be cut. */
+function fitHud() {
+  const nm = $('hudName'); nm.style.fontSize = '';
+  if (getComputedStyle(nm).whiteSpace !== 'nowrap' || !nm.clientWidth) return;
+  const base = parseFloat(getComputedStyle(nm).fontSize);
+  for (let k = 0.94; k >= 0.7 && nm.scrollWidth > nm.clientWidth + 1; k -= 0.06) nm.style.fontSize = (base * k).toFixed(1) + 'px';
 }
 function toast(text, big, ms, cls) {
   const el = $('toast'); el.textContent = text; el.classList.toggle('big', !!big); el.classList.toggle('hint', cls === 'hint'); el.classList.add('show');
@@ -2478,7 +2572,7 @@ function nextTurn() {
   if (game.current < game.players - 1) {
     game.current++; game.strokes = 0; setBallAt(hole.tee.x, hole.tee.y); ball.color = playerColor(game.current); ball.safe = { x: hole.tee.x, y: hole.tee.y }; aimAtCup(); updateHud();
     if (game.fast) { ht = 0; setScreen('play'); return; }
-    $('passLine').innerHTML = say('yourTurn').split('{name}').map(esc).join('<bdi><b>' + esc(playerName(game.current)) + '</b></bdi>'); $('passBall').style.setProperty('--c', playerColor(game.current)); $('passBall').textContent = ['⛳', '🏒', '🌟', '🎈'][game.current];
+    $('passLine').innerHTML = say('yourTurn').split('{name}').map(esc).join('<bdi><b>' + esc(playerName(game.current)) + '</b></bdi>'); $('passBall').style.setProperty('--c', playerColor(game.current)); $('passBall').replaceChildren(castFace(game.current, 104));
     setScreen('pass'); return;
   }
   // everyone has played this hole
@@ -2526,7 +2620,7 @@ function cardHtml(highlight) {
 // Fill a scorecard box: the table, the 3-4 player squeeze, and the colour legend next to it (what gold / green / red mean).
 function fillCard(tableId, legendId, highlight) {
   const box = $(tableId); box.innerHTML = cardHtml(highlight); box.querySelector('.scroller').scrollTop = 0; box.classList.toggle('many', game.players >= 3);
-  $(legendId).innerHTML = '<span><i style="background:#ffe27a"></i>' + esc(say('legAce')) + '</span> <span><i style="background:#cdeed3"></i>' + esc(say('legUnder')) + '</span> <span><i style="background:#fbe0de"></i>' + esc(say('legOver')) + '</span>';
+  $(legendId).innerHTML = '<span><i style="background:var(--hp-ace)"></i>' + esc(say('legAce')) + '</span> <span><i style="background:var(--hp-under)"></i>' + esc(say('legUnder')) + '</span> <span><i style="background:var(--hp-over)"></i>' + esc(say('legOver')) + '</span>';
 }
 function listNames(a) { return listNamesFmt(a.map(iso)); } // 'Ace, Birdie and Champ' in the player's language
 function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
@@ -2560,13 +2654,14 @@ function finishRound() {
   // The ceremony: everyone on the podium in finishing order; the champion(s) wear the gold jacket. Solo: the jacket is yours at par or better.
   const order = totals.map((t, i) => i).sort((a, b) => totals[a] - totals[b]);
   // rank = how many players beat you, so tied players share the same rank, label and block height (two co-champions both read '1st')
-  cer.players = order.map(p => ({ name: playerName(p), col: playerColor(p), total: totals[p], rank: totals.filter(t => t < totals[p]).length, win: multi ? winners.indexOf(p) >= 0 : d <= 0 }));
+  cer.players = order.map(p => ({ idx: p, name: playerName(p), col: playerColor(p), total: totals[p], rank: totals.filter(t => t < totals[p]).length, win: multi ? winners.indexOf(p) >= 0 : d <= 0 }));
   cer.t0 = performance.now() / 1000; cer.confetti.length = 0; cer.bursts.length = 0;
   const champ = multi && winners.length === 1 ? playerName(best) : (!multi && d <= 0 ? playerName(0) : '');
   $('chant').innerHTML = '<small>' + esc(say('chantLbl')) + '</small>' + esc(champ ? say('chantName', { n: iso(champ) }) : (multi ? say('chantJacket') : say('chantNice', { name: iso(playerName(0)) })));
   fillCard('resultsTable', 'resultsLegend', -1);
   setScreen('results'); $('resultsTable').querySelector('.scroller').scrollTop = 0; // reset once the table is visible (a scroll set while it was hidden does nothing)
-  sfx('win'); // the confetti falls behind the card and inside the ceremony picture, never over the words
+  sfx('win'); // the confetti falls inside the ceremony picture and in the stadium behind the card
+  if (!reducedMotion && !game.fast) for (const ms of [500, 1500, 2700]) Oomba.time.real.after(ms, () => { if (game.screen === 'results') { try { Oomba.juice.confetti(); } catch (e) { /* ignore */ } } });
   showBest();
 }
 // Title screen best line for the player count currently picked (18 holes and Quick 9, whichever have been played).
@@ -2623,7 +2718,7 @@ function drawAim(c) {
   const dx = Math.cos(aim.deg * RAD), dy = -Math.sin(aim.deg * RAD);
   const pw = aim.charging ? aim.chargeT : aim.power; const len = 30 + pw * 150;
   c.save(); c.setLineDash([6, 7]); c.lineDashOffset = -performance.now() / 40; c.strokeStyle = 'rgba(255,255,255,.9)'; c.lineWidth = 3; c.beginPath(); c.moveTo(ball.x + dx * 12, ball.y + dy * 12); c.lineTo(ball.x + dx * len, ball.y + dy * len); c.stroke(); c.setLineDash([]);
-  const col = pw < 0.4 ? '#4ade80' : pw < 0.7 ? '#facc15' : '#ef4444';
+  const col = pw < 0.4 ? KC('mint') : pw < 0.7 ? KC('spark') : KC('coral');
   c.translate(ball.x + dx * len, ball.y + dy * len); c.rotate(Math.atan2(dy, dx)); c.fillStyle = col; c.beginPath(); c.moveTo(10, 0); c.lineTo(-6, -8); c.lineTo(-6, 8); c.closePath(); c.fill(); c.restore();
   // power ring around the ball
   c.strokeStyle = 'rgba(0,0,0,.25)'; c.lineWidth = 5; c.beginPath(); c.arc(ball.x, ball.y, 16, 0, TAU); c.stroke();
@@ -2669,7 +2764,8 @@ function frame(nowMs) {
   if (game.screen === 'play') { const can = canPutt(); if (puttBtn.disabled === can) puttBtn.disabled = !can; } // greyed out while the ball rolls / the tower falls
   // Under a card, pass screen or pause the picture is still: skip the repaint (a blur over a repainting canvas is costly on cheap phones).
   if (game.screen === 'play' || renderDirty > 0 || trans > 0 || shake > 0 || particles.length) { render(now); if (renderDirty > 0) renderDirty--; }
-  if (game.screen === 'title') drawTitleArt(now); else if (game.screen === 'results') drawCeremony(now);
+  if (game.screen === 'results') drawCeremony(now);
+  else if (game.screen === 'title') drawTitleArt(now);
 }
 
 /* ================================================================================================
@@ -2718,48 +2814,114 @@ document.addEventListener('keyup', e => {
   if ((k === ' ' || k === 'ArrowUp') && aim.charging) { e.preventDefault(); aim.charging = false; showPower(); if (game.screen === 'play') putt(aim.deg, Math.max(0.05, aim.chargeT)); }
 });
 
-function pause() { if (game.screen !== 'play') return; game.prevScreen = 'play'; setScreen('paused'); aim.charging = false; aim.dragging = false; aim.keyDir = 0; sfx('click'); }
+// Pause: the kit's pause screen (resume, restart the round, settings, quit to the title, sound). P / Esc toggle it.
+const kitPause = { open: false, ignore: false };
+function pause() {
+  if (game.screen !== 'play') return; game.prevScreen = 'play'; setScreen('paused'); aim.charging = false; aim.dragging = false; aim.keyDir = 0; sfx('click');
+  kitPause.open = true;
+  Oomba.ui.pause().then(r => {
+    kitPause.open = false; updateMute();
+    if (kitPause.ignore) { kitPause.ignore = false; return; }
+    if (r === 'restart') { resume(); game.token++; game.pendingNext = false; shot.resolve = null; startRound({ players: game.players, holes: game.holesToPlay, names: game.names }); }
+    else if (r === 'quit') quitToMenu();
+    else resume();
+  });
+}
+/** Closes the kit's pause screen without acting on it (a resume from the HUD, the keyboard or a test). */
+function closeKitPause() { if (!kitPause.open) return; const b = Oomba.ui.root().querySelector('.ok-pause .ok-go'); if (b) { kitPause.ignore = true; b.click(); } }
 function resume() { if (game.screen !== 'paused') return; setScreen('play'); last = performance.now(); if (game.pendingNext) { game.pendingNext = false; nextTurn(); } }
+function quitToMenu() { game.token++; game.awaiting = false; game.turnOver = false; game.pendingNext = false; shot.resolve = null; setScreen('title'); showBest(); sfx('click'); }
 $('pauseBtn').addEventListener('click', () => { if (game.screen === 'play') pause(); else if (game.screen === 'paused') resume(); });
-$('resumeBtn').addEventListener('click', resume);
-$('quitBtn').addEventListener('click', () => { game.token++; game.awaiting = false; game.turnOver = false; game.pendingNext = false; shot.resolve = null; setScreen('title'); showBest(); sfx('click'); });
+// P / Esc while the kit's pause screen is open: back to the game (this listener runs before the kit's own keys)
+document.addEventListener('keydown', e => {
+  if (game.screen !== 'paused' || !(e.key === 'p' || e.key === 'P' || e.key === 'Escape')) return;
+  e.preventDefault(); e.stopImmediatePropagation(); resume();
+}, true);
 document.addEventListener('visibilitychange', () => { if (document.hidden) pause(); });
-function updateMute() { const m = BRB.sfx.muted; for (const id of ['muteBtn', 'titleMute']) { $(id).textContent = m ? '🔇' : '🔊'; $(id).setAttribute('aria-label', say(m ? 'soundOff' : 'soundOn')); } $('pauseMute').textContent = (m ? '🔇 ' : '🔊 ') + say(m ? 'soundOff' : 'soundOn'); }
+function updateMute() {
+  const m = BRB.sfx.muted;
+  for (const b of [$('muteBtn'), titleMute]) { if (!b) continue; b.innerHTML = Oomba.icon(m ? 'mute' : 'sound'); b.setAttribute('aria-label', say(m ? 'soundOff' : 'soundOn')); b.setAttribute('aria-pressed', String(!m)); }
+}
+const titleMute = Oomba.ui.button(say('soundOn'), { kind: 'icon', icon: 'sound', onPress: () => { BRB.sfx.mute(); updateMute(); } }); titleMute.id = 'titleMute';
 $('muteBtn').addEventListener('click', () => { BRB.sfx.mute(); updateMute(); sfx('click'); });
-$('titleMute').addEventListener('click', () => { BRB.sfx.mute(); updateMute(); sfx('click'); });
-$('pauseMute').addEventListener('click', () => { BRB.sfx.mute(); updateMute(); });
+// The setup card (players, nicknames, best) lives in a hidden holder between visits to the title screen.
+const setupHolder = document.createElement('div'); setupHolder.hidden = true; $('game').append(setupHolder);
+const setupEl = $('setupTpl').content.firstElementChild.cloneNode(true); setupHolder.append(setupEl);
 // Fixed page texts from I18N, plus the language and direction. RTL: menus, cards and the HUD read right-to-left;
 // the course canvas, the power slider and score numbers stay left-to-right (see the [dir=rtl] CSS rules).
 (function applyI18n() {
   const html = document.documentElement; html.lang = LANG; html.dir = RTL ? 'rtl' : 'ltr';
   document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = say(el.dataset.i18n); });
   document.querySelectorAll('[data-i18n-aria]').forEach(el => { el.setAttribute('aria-label', say(el.dataset.i18nAria)); });
+  document.querySelectorAll('[data-icon]').forEach(el => { el.insertAdjacentHTML('afterbegin', Oomba.icon(el.dataset.icon)); });
   $('hudWhoName').textContent = say('you');
+  $('coachFace').append(kitArt(CONFIG.coach, 128, 'happy') || '');
 })();
 updateMute();
 
-// Title screen: player count + nicknames (tap to change; no typing, no personal details)
-let titlePlayers = 1; const nickIdx = [0, 3, 6, 9];
+// Title screen: the kit's (the lockup over the meadow, the player's own golfer in the corner) dressed as the club gate, with
+// Play 18 and Quick 9, and the setup card: player count + nicknames (tap to change; no typing, no personal details).
+let titlePlayers = 1, titleOpen = false, titleHoles = 18, titleSkip = false; const nickIdx = [0, 3, 6, 9];
+const titleArt = document.createElement('canvas'); titleArt.className = 'art'; titleArt.setAttribute('aria-hidden', 'true'); // the club gate scene (drawTitleArt)
+function openTitle() {
+  if (titleOpen) return; titleOpen = true;
+  Oomba.ui.title({ title: 'Happy Putt', subtitle: say('sub'), hero: castSpec(0), play: () => {
+    titleOpen = false; parkSetup();
+    const holes = titleHoles; titleHoles = 18; if (titleSkip) return;
+    sfx('click'); game.players = titlePlayers; startRound({ players: titlePlayers, holes, names: game.names });
+  } });
+  const scr = [...Oomba.ui.root().querySelectorAll('.ok-title-screen')].pop(); if (!scr) return;
+  scr.classList.add('hp', 'hp-title');
+  const block = scr.querySelector('.ok-title-block'), play = block && block.querySelector('.ok-hot');
+  if (play) { play.id = 'play18'; play.lastChild.textContent = say('play18'); }
+  const q9 = Oomba.ui.button(say('quick9'), { kind: 'go', big: true, icon: 'timer', onPress: () => { titleHoles = 9; if (play) play.click(); } }); q9.id = 'play9';
+  if (play) play.after(q9);
+  if (block) { block.append(setupEl); const cta = block.querySelector('.ok-cta'); if (cta) setupEl.querySelector('#bestLine').after(cta); }
+  const corner = scr.querySelector('.ok-corner'); if (corner) corner.prepend(titleMute);
+  scr.prepend(titleArt); // the club gate, the clown, the rink and the jacket stand: behind the lockup, the card and the golfer
+  renderNames(); showBest(); updateMute();
+}
+/** Leaves the kit's title screen without starting a round (a test or a restart jumping straight into play). */
+function closeTitle() { if (!titleOpen) return; const b = $('play18'); if (b) { titleSkip = true; b.click(); titleSkip = false; } titleOpen = false; parkSetup(); }
+/** Back to the hidden holder (the kit removes its title screen); the title's Play buttons go with the screen. */
+function parkSetup() { const cta = setupEl.querySelector('.ok-cta'); if (cta) cta.remove(); setupHolder.append(setupEl); }
 function renderNames() {
-  const box = $('names'); let s = '';
+  const box = setupEl.querySelector('#names'); box.textContent = '';
   const many = titlePlayers >= 3; // two columns of names: the change button shrinks to an icon so the nickname keeps its room
-  for (let i = 0; i < titlePlayers; i++) { const nm = i === 0 ? defaultName(0) : CONFIG.nicknames[nickIdx[i] % CONFIG.nicknames.length]; s += '<div class="namerow" style="--c:' + playerColor(i) + '"><i></i><span>' + esc(nm) + '</span>' + (i > 0 ? (many ? '<button type="button" class="swap" data-i="' + i + '" aria-label="' + esc(say('changeName')) + '" title="' + esc(say('changeName')) + '">↻</button>' : '<button type="button" data-i="' + i + '">' + esc(say('change')) + '</button>') : '') + '</div>'; }
-  box.innerHTML = s; box.classList.toggle('many', titlePlayers >= 3);
-  box.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { const i = +b.dataset.i; nickIdx[i] = (nickIdx[i] + 1) % CONFIG.nicknames.length; sfx('click'); renderNames(); }));
+  for (let i = 0; i < titlePlayers; i++) {
+    const nm = i === 0 ? defaultName(0) : CONFIG.nicknames[nickIdx[i] % CONFIG.nicknames.length];
+    const row = document.createElement('div'); row.className = 'namerow'; row.style.setProperty('--c', playerColor(i));
+    const face = document.createElement('span'); face.className = 'face'; face.setAttribute('aria-hidden', 'true'); face.append(castFace(i, 48));
+    const name = document.createElement('span'); name.textContent = nm; row.append(face, name);
+    if (i > 0) {
+      const b = document.createElement('button'); b.type = 'button'; b.dataset.i = i;
+      if (many) { b.className = 'swap'; b.innerHTML = Oomba.icon('swap'); b.setAttribute('aria-label', say('changeName')); b.title = say('changeName'); } else b.textContent = say('change');
+      b.addEventListener('click', () => { nickIdx[i] = (nickIdx[i] + 1) % CONFIG.nicknames.length; sfx('click'); renderNames(); });
+      row.append(b);
+    }
+    box.append(row);
+  }
+  box.classList.toggle('many', many);
   game.names = []; for (let i = 0; i < titlePlayers; i++) game.names.push(i === 0 ? defaultName(0) : CONFIG.nicknames[nickIdx[i] % CONFIG.nicknames.length]);
 }
-$('chips').querySelectorAll('.chip').forEach(ch => ch.addEventListener('click', () => { titlePlayers = +ch.dataset.n; $('chips').querySelectorAll('.chip').forEach(c => c.setAttribute('aria-pressed', c === ch ? 'true' : 'false')); sfx('click'); renderNames(); game.players = titlePlayers; showBest(); }));
+setupEl.querySelectorAll('.chip').forEach(ch => ch.addEventListener('click', () => { titlePlayers = +ch.dataset.n; setupEl.querySelectorAll('.chip').forEach(c => c.setAttribute('aria-pressed', c === ch ? 'true' : 'false')); sfx('click'); renderNames(); game.players = titlePlayers; showBest(); }));
 renderNames(); game.players = 1; showBest();
-$('play18').addEventListener('click', () => { sfx('click'); game.players = titlePlayers; startRound({ players: titlePlayers, holes: 18, names: game.names }); });
-$('play9').addEventListener('click', () => { sfx('click'); game.players = titlePlayers; startRound({ players: titlePlayers, holes: 9, names: game.names }); });
 $('teeOff').addEventListener('click', () => { sfx('click'); beginPlay(); });
 $('passGo').addEventListener('click', () => { sfx('click'); ht = 0; setScreen('play'); });
 $('cardNext').addEventListener('click', () => { sfx('click'); loadHole(game.holeIdx + 1, true); });
 $('again').addEventListener('click', () => { sfx('click'); startRound({ players: game.players, holes: game.holesToPlay, names: game.names }); });
 $('toMenu').addEventListener('click', () => { sfx('click'); setScreen('title'); showBest(); });
 
-addEventListener('resize', resize);
+/** The kit's world behind the game: the meadow (title and play; a dark site is night) or the stadium at night (results). */
+function worldFor(where) {
+  if (where === 'results') { WORLD.setBiome('stadium'); WORLD.setTimeOfDay(1, reducedMotion || game.fast ? 0 : 900); }
+  else { WORLD.setBiome(CONFIG.theme); WORLD.setTimeOfDay(Oomba.theme.mode === 'dark' ? 1 : 0, 0); }
+}
+Oomba.fonts.ready.then(() => { FONTSTACK = getComputedStyle(Oomba.ui.root()).getPropertyValue('--ok-font').trim() || FONTSTACK; renderBg(); renderDirty = 2; });
+
+addEventListener('resize', () => { resize(); fitHud(); });
 resize(); setTimeout(resize, 50);
+setScreen('title');
 requestAnimationFrame(frame);
 
 /* ================================================================================================
@@ -2767,95 +2929,108 @@ requestAnimationFrame(frame);
    results card (opaque, so nothing greyed-out shows through), plus the podium picture inside the results card.
    Painted from the main loop only while those screens are showing; the still parts are cached per layout.
    ================================================================================================ */
-const titleArt = $('titleArt'), resultsArt = $('resultsArt'), cerCv = $('ceremony');
+const cerCv = $('ceremony');
 // Size a canvas to its CSS box (device pixels, capped at 2x) and return a context in CSS-pixel coordinates.
 function fitArt(cv) {
   const r = cv.getBoundingClientRect(), d = Math.min(2, devicePixelRatio || 1), w = Math.max(1, Math.round(r.width)), h = Math.max(1, Math.round(r.height));
   if (cv.width !== Math.round(w * d) || cv.height !== Math.round(h * d)) { cv.width = Math.round(w * d); cv.height = Math.round(h * d); }
   const c = cv.getContext('2d'); c.setTransform(d, 0, 0, d, 0, 0); return { c, w, h };
 }
-function sparkle(c, x, y, r, col) { c.fillStyle = col; c.beginPath(); c.moveTo(x, y - r); c.lineTo(x + r * 0.3, y - r * 0.3); c.lineTo(x + r, y); c.lineTo(x + r * 0.3, y + r * 0.3); c.lineTo(x, y + r); c.lineTo(x - r * 0.3, y + r * 0.3); c.lineTo(x - r, y); c.lineTo(x - r * 0.3, y - r * 0.3); c.closePath(); c.fill(); }
-function blimp(c, x, y, label) { c.fillStyle = '#e63946'; c.beginPath(); c.moveTo(x - 26, y); c.lineTo(x - 38, y - 9); c.lineTo(x - 38, y + 9); c.closePath(); c.fill(); c.fillStyle = '#f4d35e'; c.beginPath(); c.ellipse(x, y, 30, 10, 0, 0, TAU); c.fill(); c.fillStyle = 'rgba(255,255,255,.45)'; c.beginPath(); c.ellipse(x - 6, y - 4, 16, 3, 0, 0, TAU); c.fill(); c.fillStyle = '#3a3f4b'; rrect(c, x - 7, y + 8, 14, 6, 2); c.fill(); txt(c, label, x + 2, y + 1, 9, '#1d2b1f', { max: 46 }); }
-
-// --- Title: the country-club gate. On a phone the card hides the lawn, so the gate, flag and clouds live in the sky band above
-// the card, the clown peeks out from behind the card's top edge and the rink + jacket stand sit in the band below it.
-// On a wide screen (landscape, desktop) the scenery moves out to the sides of the card instead.
-const tArt = { cv: null, key: '', sparks: [] };
-function titleLayout(w, h, card) {
-  const side = card.left >= 56;
-  return { side, gy: side ? Math.round(h * 0.62) : Math.round(card.top + 12), lx: side ? 30 : 27, rx: side ? w - 30 : w - 27, ph: side ? 118 : clamp(Math.round(card.top) - 44, 56, 118) };
+// --- Title: the country-club gate around the kit's lockup, over the kit's meadow. Two stone pillars (the 18 flag on the
+// left one, a lamp on the right one) with bunting strung between them behind the lockup, a MEMBERS plaque, the laughing
+// clown peeking out from behind the setup card, and the hockey rink and the gold jacket on its stand in the lawn.
+// On a phone the gate stands in the sky band beside the lockup and the rink + jacket sit in the band under the card (the
+// player's own golfer stands bottom-left); on a wide screen the clown peeks from the card's side and the props go right.
+// A happy clown face peeking out: white face, red nose, orange hair, hat, eyes that wander. Ink outline like the kit's art.
+function clownFace(c, x, y, t, s) {
+  const ink = KC('ink');
+  c.save(); c.translate(x, y); c.scale(s, s); c.lineWidth = 3; c.strokeStyle = ink;
+  for (let i = -2; i <= 2; i++) { c.beginPath(); c.arc(i * 11, -16 + Math.abs(i) * 3, 9, 0, TAU); c.fillStyle = '#ff8c42'; c.fill(); c.stroke(); }
+  c.beginPath(); c.arc(0, 0, 24, 0, TAU); c.fillStyle = '#fff'; c.fill(); c.stroke();
+  c.fillStyle = '#2f6bff'; rrect(c, -16, -38, 32, 15, 4); c.fill(); c.stroke(); c.fillStyle = '#ffd23f'; rrect(c, -20, -25, 40, 6, 2); c.fill(); c.stroke();
+  const ex = reducedMotion ? 0 : Math.cos(t * 0.7) * 2.5, ey = reducedMotion ? 0 : Math.sin(t * 0.9) * 1.6;
+  for (const sx of [-9, 9]) { circle(c, sx, -6, 6, '#fff'); ring(c, sx, -6, 6, '#2f6bff', 1.8); circle(c, sx + ex, -6 + ey, 3, ink); }
+  c.beginPath(); c.arc(0, 4, 6, 0, TAU); c.fillStyle = '#ff3b3b'; c.fill(); c.lineWidth = 2; c.stroke(); circle(c, -2, 2, 2, 'rgba(255,255,255,.75)');
+  c.strokeStyle = '#ff3b3b'; c.lineWidth = 3.5; c.lineCap = 'round'; c.beginPath(); c.arc(0, 6, 13, 0.35, Math.PI - 0.35); c.stroke(); c.lineCap = 'butt';
+  c.restore();
 }
-function titleStatic(w, h, card) {
-  const L = titleLayout(w, h, card), d = Math.min(2, devicePixelRatio || 1);
-  const cv = tArt.cv || (tArt.cv = document.createElement('canvas')); cv.width = Math.ceil((w + 12) * d); cv.height = Math.ceil(h * d);
-  const c = cv.getContext('2d'); c.setTransform(d, 0, 0, d, 6 * d, 0); // 6 px spare on each side so the slow sway never shows an edge
-  const gy = L.gy;
-  const sky = c.createLinearGradient(0, 0, 0, gy); sky.addColorStop(0, '#4fa8ff'); sky.addColorStop(1, '#d9f1ff'); c.fillStyle = sky; c.fillRect(-6, 0, w + 12, gy);
-  glow(c, w - 52, 42, 64, '255,236,150', 0.7); circle(c, w - 52, 42, 20, '#ffd23f'); circle(c, w - 52, 42, 15, '#fff2a8');
-  c.fillStyle = '#9ad68a'; c.beginPath(); c.ellipse(w * 0.2, gy, w * 0.45, 26, 0, 0, TAU); c.fill(); c.fillStyle = '#86c878'; c.beginPath(); c.ellipse(w * 0.8, gy + 2, w * 0.5, 30, 0, 0, TAU); c.fill();
-  c.fillStyle = '#4caf50'; c.fillRect(-6, gy, w + 12, h - gy); c.fillStyle = 'rgba(255,255,255,.09)'; for (let x = -60; x < w + 40; x += 44) { c.beginPath(); c.moveTo(x, gy); c.lineTo(x + 22, gy); c.lineTo(x + 60, h); c.lineTo(x + 38, h); c.fill(); }
-  // the gate: two stone pillars; a lamp on the right one, the flag pole on the left one
-  const pillar = (x, lamp) => {
-    c.fillStyle = 'rgba(0,0,0,.15)'; c.fillRect(x - 9, gy - 2, 30, 6);
-    c.fillStyle = '#d8d0c4'; c.fillRect(x - 11, gy - L.ph, 22, L.ph); c.fillStyle = '#bfb5a6'; for (let y = gy - L.ph + 8; y < gy; y += 16) { c.fillRect(x - 11, y, 22, 2); c.fillRect(x - 11 + ((y / 16 | 0) % 2) * 11, y + 2, 2, 14); }
-    c.fillStyle = '#efe9df'; c.fillRect(x - 14, gy - L.ph - 6, 28, 8);
-    if (lamp) { c.fillStyle = '#5b5f6b'; c.fillRect(x - 5, gy - L.ph - 16, 10, 10); glow(c, x, gy - L.ph - 20, 28, '255,236,150', 0.55); circle(c, x, gy - L.ph - 20, 7, '#fff3c4'); }
-    else { c.fillStyle = '#f5f5f5'; c.fillRect(x - 1, gy - L.ph - 44, 3, 40); circle(c, x, gy - L.ph - 45, 3, '#ffd23f'); }
-  };
-  pillar(L.lx, false); pillar(L.rx, true);
-  cartoonTree(c, L.lx + 36, gy - 8, 1, '#2e8b57'); cartoonTree(c, L.rx - 36, gy - 4, 0.85, '#3a9a60');
-  // a small MEMBERS sign on the left pillar (the right one is where the clown peeks in on phones); bunting is drawn live
-  c.fillStyle = '#5a3500'; rrect(c, L.lx - 24, gy - L.ph * 0.55, 48, 16, 3); c.fill(); txt(c, say('s.members'), L.lx, gy - L.ph * 0.55 + 8, 8, '#ffe27a', { max: 44 });
-  // sparkle spots in the sky and on the lawn, kept off the card
-  tArt.sparks = []; seedRng(77); for (let i = 0; i < 60 && tArt.sparks.length < 18; i++) { const x = rr(8, w - 8), y = rr(8, h - 8); if (x > card.left - 8 && x < card.right + 8 && y > card.top - 8 && y < card.bottom + 8) continue; tArt.sparks.push([x, y, rr(0, 6)]); }
-  return cv;
+function gatePillar(c, x, top, gy, lamp, w) {
+  const ink = KC('ink');
+  c.fillStyle = 'rgba(0,0,0,.16)'; c.fillRect(x - w / 2 + 4, gy - 2, w + 4, 6);
+  c.fillStyle = '#e4dccf'; c.fillRect(x - w / 2, top, w, gy - top); c.fillStyle = '#c9bfae';
+  for (let y = top + 9, r = 0; y < gy - 2; y += 16, r++) { c.fillRect(x - w / 2, y, w, 2); c.fillRect(x - w / 2 + (r % 2 ? w * 0.46 : w * 0.2), y + 2, 2, Math.min(14, gy - y - 2)); }
+  c.lineWidth = 3; c.strokeStyle = ink; c.strokeRect(x - w / 2, top, w, gy - top);
+  c.fillStyle = '#f4efe6'; rrect(c, x - w / 2 - 4, top - 8, w + 8, 10, 3); c.fill(); c.stroke();
+  if (lamp) { c.fillStyle = '#5b5f6b'; c.fillRect(x - 5, top - 18, 10, 10); glow(c, x, top - 24, 28, '255,236,150', 0.55); c.beginPath(); c.arc(x, top - 24, 7, 0, TAU); c.fillStyle = '#fff3c4'; c.fill(); c.lineWidth = 2.5; c.stroke(); }
+  else { c.fillStyle = '#f5f5f5'; c.fillRect(x - 1.5, top - 48, 3, 40); c.lineWidth = 1.5; c.strokeRect(x - 1.5, top - 48, 3, 40); circle(c, x, top - 49, 3.5, '#ffd23f'); }
+}
+function hockeyRink(c, x, y, rw, rh, t) {
+  const ink = KC('ink');
+  c.fillStyle = 'rgba(0,0,0,.14)'; c.beginPath(); c.ellipse(x + 3, y + 5, rw, rh, 0, 0, TAU); c.fill();
+  c.fillStyle = '#eef6ff'; c.beginPath(); c.ellipse(x, y, rw, rh, 0, 0, TAU); c.fill(); c.lineWidth = 5; c.strokeStyle = '#d8dee9'; c.stroke(); c.lineWidth = 3; c.strokeStyle = ink; c.beginPath(); c.ellipse(x, y, rw + 2.5, rh + 2.5, 0, 0, TAU); c.stroke();
+  c.fillStyle = '#e63946'; c.fillRect(x - 2, y - rh + 4, 4, rh * 2 - 8); ring(c, x, y, Math.min(rw, rh) * 0.45, '#2f6bff', 2);
+  const pk = reducedMotion ? 0.3 : (t * 0.35) % 1, px = x - rw * 0.7 + rw * 1.4 * (pk < 0.5 ? pk * 2 : 2 - pk * 2); circle(c, px, y + 2, 3.2, ink);
+  emoji(c, '🐧', x + rw * 0.55, y - rh - 16 - (reducedMotion ? 0 : Math.abs(Math.sin(t * 3)) * 4), 44);
+}
+function jacketStand(c, x, y, t, s) {
+  const ink = KC('ink');
+  c.fillStyle = '#5a3500'; c.strokeStyle = ink; c.lineWidth = 2;
+  rrect(c, x - 16 * s, y + 24 * s, 32 * s, 6 * s, 2); c.fill(); c.stroke(); c.fillRect(x - 1.5 * s, y - 24 * s, 3 * s, 50 * s);
+  goldJacket(c, x, y - 4 * s, t, 1.5 * s);
+  txt(c, say('s.jacket'), x, y + 40 * s, Math.round(10 * s), KC('card'), { stroke: ink, strokeW: 3.5, max: 110, weight: '800' });
 }
 function drawTitleArt(now) {
-  const { c, w, h } = fitArt(titleArt); const card = $('titlePanel').getBoundingClientRect(); if (!card.width) return;
-  const key = w + 'x' + h + '|' + Math.round(card.top) + '|' + Math.round(card.bottom) + '|' + Math.round(card.left);
-  if (tArt.key !== key) { titleStatic(w, h, card); tArt.key = key; }
-  const L = titleLayout(w, h, card), sway = reducedMotion ? 0 : Math.sin(now * 0.45) * 3; // the scene breathes left-right; clouds drift at half that (parallax)
-  c.drawImage(tArt.cv, -6 + sway, 0, w + 12, h);
-  const gy = L.gy, lx = L.lx + sway, rx = L.rx + sway;
-  for (let i = 0; i < 3; i++) { const x = ((now * (5 + i * 3) + i * 170) % (w + 160)) - 80 + sway * 0.5, y = 24 + i * 28; cloudPuff(c, x, y, 0.75 + i * 0.15, 'rgba(255,255,255,.9)'); }
-  blimp(c, ((now * 12) % (w + 140)) - 70, 14, say('s.blimp'));
-  // waving flag on the left pillar's pole
-  const fy = gy - L.ph - 42, fw = Math.sin(now * 5) * 4; c.fillStyle = '#e63946'; c.beginPath(); c.moveTo(lx + 2, fy); c.quadraticCurveTo(lx + 18, fy + 2 + fw, lx + 34, fy + 7 + fw); c.lineTo(lx + 2, fy + 20); c.closePath(); c.fill(); txt(c, '18', lx + 14, fy + 10 + fw * 0.5, 9, '#fff');
-  // bunting from the flag pole to the lamp (behind the marquee title)
-  c.lineWidth = 1.5; c.strokeStyle = 'rgba(255,255,255,.7)'; c.beginPath(); c.moveTo(lx, fy + 24); c.quadraticCurveTo(w / 2, fy + 44, rx, gy - L.ph - 10); c.stroke();
-  for (let i = 1; i < 12; i++) { const k = i / 12, bx = lx + (rx - lx) * k, by = (1 - k) * (1 - k) * (fy + 24) + 2 * (1 - k) * k * (fy + 44) + k * k * (gy - L.ph - 10) + Math.sin(now * 2 + i) * 1.5; c.fillStyle = RAINBOW[i % 5]; c.beginPath(); c.moveTo(bx - 5, by); c.lineTo(bx + 5, by); c.lineTo(bx, by + 9); c.closePath(); c.fill(); }
-  // the clown peeks out from behind the card: up past its top-right corner on phones (clear of the subtitle), out of its left edge on wide screens
-  const peek = 0.5 + 0.5 * Math.sin(now * 0.55);
-  if (L.side) clownFace(c, card.left + 16 - peek * 46, h * 0.45, now, 1); else clownFace(c, w - 46 + sway, card.top + 36 - peek * 62, now, 1);
-  // hockey rink with a penguin, and the gold jacket on its stand: below the card on phones, down the sides on wide screens
+  if (!titleArt.isConnected) return;
+  const { c, w, h } = fitArt(titleArt), root = titleArt.parentNode;
+  const card = setupEl.getBoundingClientRect(), lock = (root.querySelector('.ok-h1') || setupEl).getBoundingClientRect(); if (!card.width) return;
+  c.clearRect(0, 0, w, h);
+  const side = card.left >= 120, gy = side ? Math.round(card.top + card.height * 0.55) : Math.round(card.top + 10);
+  const lx = side ? Math.max(30, card.left * 0.16) : 26, rx = side ? Math.min(w - 30, w - card.left * 0.16) : w - 26;
+  const top = clamp(Math.round(lock.top + lock.height * (side ? 0.5 : 0.62)), 70, gy - 40);
+  const pw = side ? 34 : 24; gatePillar(c, lx, top, gy, false, pw); gatePillar(c, rx, top, gy, true, pw);
+  // the 18 flag waving from the left pillar's pole
+  const fy = top - 46, fw = reducedMotion ? 0 : Math.sin(now * 5) * 4; c.fillStyle = '#e63946'; c.strokeStyle = KC('ink'); c.lineWidth = 2.5;
+  c.beginPath(); c.moveTo(lx + 2, fy); c.quadraticCurveTo(lx + 20, fy + 2 + fw, lx + 38, fy + 8 + fw); c.lineTo(lx + 2, fy + 22); c.closePath(); c.fill(); c.stroke(); txt(c, '18', lx + 15, fy + 11 + fw * 0.5, 10, '#fff', { weight: '800' });
+  // bunting from the flag pole to the lamp, behind the lockup
+  const by0 = top - 8, by1 = top - 14, sag = by0 + 26;
+  c.lineWidth = 1.5; c.strokeStyle = KC('ink'); c.beginPath(); c.moveTo(lx, by0); c.quadraticCurveTo((lx + rx) / 2, sag, rx, by1); c.stroke();
+  const flags = Math.max(8, Math.round((rx - lx) / 34));
+  for (let i = 1; i < flags; i++) { const k = i / flags, bx = lx + (rx - lx) * k, by = (1 - k) * (1 - k) * by0 + 2 * (1 - k) * k * sag + k * k * by1 + (reducedMotion ? 0 : Math.sin(now * 2 + i) * 1.5); c.fillStyle = RAINBOW[i % 5]; c.beginPath(); c.moveTo(bx - 6, by); c.lineTo(bx + 6, by); c.lineTo(bx, by + 11); c.closePath(); c.fill(); c.lineWidth = 1.5; c.stroke(); }
+  // the MEMBERS plaque on the left pillar
+  const my = top + Math.min(40, (gy - top) * 0.35), plx = Math.max(lx, 36); c.fillStyle = '#5a3500'; rrect(c, plx - 30, my, 60, 18, 4); c.fill(); c.lineWidth = 2; c.strokeStyle = KC('ink'); c.stroke(); txt(c, say('s.members'), plx, my + 9.5, 9, '#ffe27a', { max: 54, weight: '800' });
+  // the clown peeks out from behind the card: over its top edge (right side) on phones, out of its left edge on wide screens
+  const peek = reducedMotion ? 0.7 : 0.5 + 0.5 * Math.sin(now * 0.55);
+  const mx = x => RTL ? w - x : x; // right to left: the golfer stands bottom-right, so the clown and the props swap sides
+  if (side) clownFace(c, mx(card.left + 18 - peek * 46), card.top + card.height * 0.45, now, 1.05); else clownFace(c, mx(card.right - 54), card.top + 30 - peek * 54, now, 1);
+  // the rink and the jacket stand: in the lawn under the card (phone; the golfer stands bottom-left) or on the right (wide)
   const band = h - card.bottom;
-  if (L.side || band > 72) {
-    const rxx = L.side ? card.left / 2 : w * 0.27 + sway, ry = L.side ? h * 0.8 : card.bottom + band / 2 + 4, rw = L.side ? Math.min(26, card.left / 2 - 4) : Math.min(84, w * 0.2), rh = L.side ? 30 : Math.min(28, band / 2 - 8);
-    c.fillStyle = 'rgba(0,0,0,.12)'; c.beginPath(); c.ellipse(rxx + 3, ry + 4, rw, rh, 0, 0, TAU); c.fill();
-    c.fillStyle = '#eef6ff'; c.beginPath(); c.ellipse(rxx, ry, rw, rh, 0, 0, TAU); c.fill(); c.strokeStyle = '#d8dee9'; c.lineWidth = 4; c.stroke();
-    c.fillStyle = '#e63946'; c.fillRect(rxx - 2, ry - rh + 4, 4, rh * 2 - 8); ring(c, rxx, ry, Math.min(rw, rh) * 0.45, '#2f6bff', 2);
-    const pk = (now * 0.35) % 1, px = rxx - rw * 0.7 + rw * 1.4 * (pk < 0.5 ? pk * 2 : 2 - pk * 2); circle(c, px, ry + 2, 3, '#1d2b1f');
-    emoji(c, '🐧', rxx + rw * 0.5, ry - rh - 8 - Math.abs(Math.sin(now * 3)) * 4, 20);
-    const jx = L.side ? (card.right + w) / 2 : w * 0.74 + sway, jy = L.side ? h * 0.78 : card.bottom + band / 2 + 2;
-    c.fillStyle = '#5a3500'; c.fillRect(jx - 14, jy + 20, 28, 5); c.fillRect(jx - 1.5, jy - 26, 3, 48); goldJacket(c, jx, jy - 6, now, 1.4); txt(c, say('s.jacket'), jx, jy + 32, 8, '#fff', { stroke: 'rgba(0,0,0,.35)', strokeW: 2, max: 80 });
+  if (side) {
+    const sx = (card.right + w) / 2;
+    jacketStand(c, mx(Math.min(rx - 64, card.right + (w - card.right) * 0.42)), h * 0.62, now, 1.7);
+    hockeyRink(c, mx(Math.max(card.right + 70, sx - 50)), Math.min(h - 50, h * 0.86), 58, 22, now);
+  } else if (band > 96) {
+    const cy = card.bottom + band / 2 + 6;
+    hockeyRink(c, mx(w * 0.6), cy + 14, Math.min(64, w * 0.16), Math.min(24, band / 4), now);
+    jacketStand(c, mx(w - 48), cy - 8, now, Math.min(1.1, band / 150));
   }
-  for (const s of tArt.sparks) { const a = 0.3 + 0.35 * Math.sin(now * 1.6 + s[2]); sparkle(c, s[0], s[1], 3 + a * 3, 'rgba(255,255,255,' + a + ')'); }
 }
 
-// --- Results: a night stadium behind the card (stars, floodlights, a cheering crowd, fireworks, light confetti that
-// falls BEHIND the card) and the podium picture inside the card: the champion in the gold jacket with the trophy.
+// --- Results: a night stadium full of cheering fans behind the card (stars, floodlights, fireworks, confetti falling
+// behind the card), and the podium picture inside the card: everybody on the podium as their kit character, the
+// champion in the gold jacket holding the trophy.
+const resultsArt = $('resultsArt');
 const cer = { players: [], t0: 0, confetti: [], bursts: [], cbursts: [], lastBurst: 0, stat: null, key: '' };
 function addBurst(list, x, y, now, max) { list.push({ x, y, t: now, col: RAINBOW[(list.length + ((now * 7) | 0)) % 5] }); if (list.length > max) list.shift(); }
 function drawBursts(c, list, now, r1) { for (const b of list) { const k = (now - b.t) / 1.4; if (k > 1 || k < 0) continue; const r = 6 + r1 * (1 - Math.pow(1 - k, 2)); c.globalAlpha = 1 - k; for (let i = 0; i < 14; i++) { const a = i * TAU / 14; circle(c, b.x + Math.cos(a) * r, b.y + Math.sin(a) * r + k * k * 30, 2.2, b.col); } c.globalAlpha = 1; } }
-function stepConfetti(c, list, w, h, now, t, spawnFor, count, size) {
-  if (reducedMotion) return;
-  while (list.length < count && t < spawnFor) list.push({ x: rr(0, w), y: -rr(4, h), vy: rr(50, 110), ph: rr(0, 6), a: rr(0, 6), va: rr(-3, 3), col: RAINBOW[(list.length) % 5] });
-  for (let i = list.length - 1; i >= 0; i--) { const p = list[i]; p.y += p.vy * fdt; p.x += Math.sin(now * 2 + p.ph) * 30 * fdt; p.a += p.va * fdt; if (p.y > h + 10) { if (t < spawnFor) { p.y = -10; p.x = rr(0, w); } else list.splice(i, 1); continue; } c.save(); c.translate(p.x, p.y); c.rotate(p.a); c.globalAlpha = 0.85; c.fillStyle = p.col; c.fillRect(-size, -size / 2, size * 2, size); c.restore(); }
+function stepConfetti(c, list, w, h, now, t, spawnFor, count, size, y0) {
+  if (reducedMotion) return; y0 = y0 || 0;
+  while (list.length < count && t < spawnFor) list.push({ x: rr(0, w), y: y0 - rr(4, h), vy: rr(50, 110), ph: rr(0, 6), a: rr(0, 6), va: rr(-3, 3), col: RAINBOW[(list.length) % 5] });
+  for (let i = list.length - 1; i >= 0; i--) { const p = list[i]; p.y += p.vy * fdt; p.x += Math.sin(now * 2 + p.ph) * 30 * fdt; p.a += p.va * fdt; if (p.y > h + 10) { if (t < spawnFor) { p.y = y0 - 10; p.x = rr(0, w); } else list.splice(i, 1); continue; } if (p.y < y0) continue; c.save(); c.translate(p.x, p.y); c.rotate(p.a); c.globalAlpha = 0.85; c.fillStyle = p.col; c.fillRect(-size, -size / 2, size * 2, size); c.restore(); }
   c.globalAlpha = 1;
 }
 function drawCeremony(now) {
   const t = now - cer.t0;
-  // 1) behind the card
+  // 1) behind the card: the night stadium
   const A = fitArt(resultsArt), c = A.c, w = A.w, h = A.h, card = $('results').querySelector('.panel').getBoundingClientRect();
   const key = w + 'x' + h;
   if (cer.key !== key) {
@@ -2866,10 +3041,11 @@ function drawCeremony(now) {
     cer.key = key;
   }
   c.drawImage(cer.stat, 0, 0, w, h);
-  if (now - cer.lastBurst > (reducedMotion ? 2.6 : 0.9)) { cer.lastBurst = now; seedRng((now * 1000) | 0); addBurst(cer.bursts, rr(20, w - 20), rr(h * 0.06, h * 0.45), now, 5); addBurst(cer.cbursts, rr(30, 300), rr(14, 40), now, 3); }
+  if (now - cer.lastBurst > (reducedMotion ? 2.6 : 0.9)) { cer.lastBurst = now; seedRng((now * 1000) | 0); addBurst(cer.bursts, rr(20, w - 20), rr(h * 0.06, h * 0.45), now, 5); addBurst(cer.cbursts, rr(30, 300), rr(30, 60), now, 3); }
   drawBursts(c, cer.bursts, now, 60);
-  if (h - card.bottom > 26) crowdDraw(c, 6, card.bottom + 16, w - 6, h - 4, 16, now, true);
-  if (card.left > 30) { crowdDraw(c, 8, 70, card.left - 10, h - 6, 16, now, true); crowdDraw(c, card.right + 10, 70, w - 8, h - 6, 16, now, true); }
+  const wave = !reducedMotion;
+  if (h - card.bottom > 26) crowdDraw(c, 8, 6 + 16 * Math.ceil((card.bottom + 10) / 16), w - 6, h - 4, 16, now, wave);
+  if (card.left > 30) { crowdDraw(c, 8, 70, Math.round(card.left - 10), h - 6, 16, now, wave); crowdDraw(c, 8 + 16 * Math.ceil((card.right + 2) / 16), 70, w - 8, h - 6, 16, now, wave); } // on the left stand's 16 px grid, so the shirts mix the same way
   stepConfetti(c, cer.confetti, w, h, now, t, 7, 90, 4);
   // 2) the podium inside the card
   const B = fitArt(cerCv), p = B.c, pw = B.w, ph = B.h, s = ph / 156; // figures and blocks scale with the picture's height
@@ -2877,22 +3053,24 @@ function drawCeremony(now) {
   seedRng(5); for (let i = 0; i < 26; i++) { const x = rr(0, pw), y = rr(0, ph * 0.6), a = 0.4 + 0.4 * Math.sin(now * 1.5 + i); circle(p, x, y, 1.2, 'rgba(255,255,255,' + a + ')'); }
   glow(p, pw / 2 + Math.sin(now * 0.7) * pw * 0.35, ph * 0.5, 80, '255,248,225', 0.22); glow(p, pw / 2 - Math.sin(now * 0.9 + 1) * pw * 0.35, ph * 0.45, 80, '255,248,225', 0.22);
   drawBursts(p, cer.cbursts, now, 24);
-  // the scoreboard sign and the stand full of fans along the back
-  p.fillStyle = '#111'; rrect(p, pw / 2 - 72, 2, 144, 17, 4); p.fill(); const pulse = reducedMotion ? 1 : 1 + 0.03 * Math.sin(now * 3); p.save(); p.translate(pw / 2, 11); p.scale(pulse, pulse); txt(p, say('s.jacketStar'), 0, 0, 11, '#ffe27a', { max: 136 }); p.restore();
-  p.fillStyle = '#2b2d5e'; p.fillRect(0, 21, pw, 20 * s); crowdDraw(p, 8, 29, pw - 8, 21 + 20 * s, 13, now, true);
+  const bannerH = 19; // the scoreboard sign, drawn last so nothing covers it
+  p.fillStyle = '#2b2d5e'; p.fillRect(0, bannerH + 2, pw, 20 * s); crowdDraw(p, 8, bannerH + 10, pw - 8, bannerH + 2 + 20 * s, 13, now, wave);
+  stepConfetti(p, cer.confetti2 || (cer.confetti2 = []), pw, ph, now, t, 8, 46, 2.6, bannerH + 4);
   const fy = ph - 8; p.fillStyle = '#3a3f4b'; p.fillRect(0, fy, pw, 8); p.fillStyle = '#8e1c3a'; p.fillRect(0, fy - 4, pw, 5); p.fillStyle = '#e3b23c'; p.fillRect(0, fy - 5, pw, 1.5);
-  const ps = cer.players, n = ps.length, sp = Math.min(86, (pw - 16) / Math.max(n, 1));
+  const ps = cer.players, n = ps.length, sp = Math.min(96, (pw - 16) / Math.max(n, 1));
   const slots = n <= 1 ? [0] : n === 2 ? [1, 0] : n === 3 ? [1, 0, 2] : [1, 0, 2, 3]; // left to right: 2nd, 1st, 3rd, 4th
-  const x0 = pw / 2 - (slots.length - 1) * sp / 2, heights = [54, 42, 33, 25];
+  const x0 = pw / 2 - (slots.length - 1) * sp / 2, heights = [50, 40, 32, 25];
+  // figures fit between the stand and the podium tops: the tallest (a champion on the top block) never reaches the sign
+  const room = fy - heights[0] * s - (bannerH + 8), fs = Math.min(s, room / 70);
   slots.forEach((rank, i) => {
     const pl = ps[rank]; if (!pl) return; const x = x0 + i * sp, bh = heights[pl.rank] * s, bw = Math.min(sp - 8, 78); // pl.rank (ties share it), not the slot index
     p.fillStyle = 'rgba(0,0,0,.3)'; p.fillRect(x - bw / 2 + 4, fy - bh + 4, bw, bh); p.fillStyle = pl.win ? '#fff0b8' : '#f1ede6'; rrect(p, x - bw / 2, fy - bh, bw, bh, 4); p.fill(); p.fillStyle = pl.win ? '#e3b23c' : '#8e1c3a'; p.fillRect(x - bw / 2, fy - bh, bw, 3);
-    txt(p, pl.name, x, fy - bh + (bh > 30 * s ? 11 : 9), bh > 30 * s ? 9 : 8, '#1d2b1f', { font: 'Nunito, system-ui, sans-serif', weight: '900', max: bw - 4 });
-    if (n > 1 && bh > 20) txt(p, tv('ranks')[pl.rank] + ' · ' + nf(pl.total), x, fy - bh + (bh > 30 * s ? 22 : 18), 8, '#6b7a6e', { font: 'Nunito, system-ui, sans-serif', weight: '900', max: bw - 2 });
-    p.save(); p.translate(x, fy - bh - 1); p.scale(s, s); golfer(p, 0, 0, pl.col, now, pl.win, reducedMotion); p.restore();
+    txt(p, pl.name, x, fy - bh + (bh > 30 * s ? 11 : 9), bh > 30 * s ? 9 : 8, '#1d2b1f', { weight: '800', max: bw - 4 });
+    if (n > 1 && bh > 20) txt(p, tv('ranks')[pl.rank] + ' · ' + nf(pl.total), x, fy - bh + (bh > 30 * s ? 22 : 18), 8, '#6b7a6e', { weight: '800', max: bw - 2 });
+    p.save(); p.translate(x, fy - bh - 1); p.scale(fs, fs); golfer(p, 0, 0, pl, now, reducedMotion); p.restore();
   });
   if (n === 1 && !ps[0].win) { const jx = pw - 40; p.fillStyle = '#5a3500'; p.fillRect(jx - 12, fy - 10, 24, 4); p.fillRect(jx - 1.5, fy - 48, 3, 40); goldJacket(p, jx, fy - 30, now, 1.1); } // next time: it is right there on its stand
-  stepConfetti(p, cer.confetti2 || (cer.confetti2 = []), pw, ph, now, t, 8, 46, 2.6);
+  p.fillStyle = '#111'; rrect(p, pw / 2 - 72, 2, 144, bannerH - 2, 4); p.fill(); const pulse = reducedMotion ? 1 : 1 + 0.03 * Math.sin(now * 3); p.save(); p.translate(pw / 2, 2 + (bannerH - 2) / 2); p.scale(pulse, pulse); txt(p, say('s.jacketStar'), 0, 0, 11, '#ffe27a', { max: 136, weight: '800' }); p.restore();
 }
 
 /* ================================================================================================
@@ -2906,7 +3084,7 @@ function drawCeremony(now) {
    seed(n)                 -> seeds the PRNG (crowds/particles only; moving parts are purely clock-driven)
    holePlan()              -> the 18-hole data: { n, name, par, gag, testShot: { angle (deg, 0 = right, 90 = up), power, timing } }
    ================================================================================================ */
-window.__brbTest = {
+window.__brbTest = Object.assign(window.__brbTest || {}, {   // merged into the kit's hooks: these names win, the kit's (setTheme, setLang...) stay
   state: () => ({ screen: game.screen, hole: hole ? hole.n : 0, par: hole ? hole.par : 0, strokes: game.strokes, players: game.players, current: game.current,
     scores: game.scores.map(a => a.slice()), ball: { x: ball.x, y: ball.y, vx: ball.vx, vy: ball.vy, moving: ball.state !== 'idle' && ball.state !== 'holed' }, finished: game.finished, ballState: ball.state, ht }),
   start: (opts) => { opts = opts || {}; startRound({ players: opts.players || 1, names: opts.names, holes: opts.holes || 18 }); return window.__brbTest.state(); },
@@ -2924,6 +3102,6 @@ window.__brbTest = {
   seed: (n) => { seedRng(n); return true; },
   holePlan: () => HOLES.map(h => ({ n: h.n, name: h.name, par: h.par, gag: h.gag, tee: h.tee, cup: h.cup, testShot: Object.assign({ angleRad: h.testShot.angle * RAD }, h.testShot) })),
   config: CONFIG,
-};
+});
 })();
 </script>

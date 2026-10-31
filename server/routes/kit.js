@@ -8,30 +8,34 @@ import { config } from '../config.js';
 import { frameDocument, sendFrame, frameOrigins, SANDBOX } from '../services/frame.js';
 import { kitTag, kitPackTag, kitPacks } from '../services/kit.js';
 import { esc } from '../views/html.js';
+import { THEMES } from '../../kit/packs/dress.js';
+import { threeImportMap } from '../services/vendor.js';
+import { characterOf } from '../services/character.js';
 
 export const router = Router();
 const DEMO_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../kit/demo');
-const SCENES = ['meadow', 'quest', 'gallery', 'core'];
+const SCENES = ['meadow', 'quest', 'gallery', 'core', 'themes', 'three'];
 const TABS = ['chars', 'props', 'icons', 'biomes', 'screens'];
 const LANGS = ['en', 'ar', 'he', 'ja', 'ru', 'fr', 'es', 'de', 'it', 'pt', 'nl', 'zh-Hant', 'en-GB'];
 const allowed = req => config.kitPreview || (req.user && req.user.role === 'admin');
 const pick = (v, list, d) => (list.includes(v) ? v : d);
-/** A kit scene file with the pinned kit tag put in (and every art pack's, where the scene asks for them). */
-export function sceneHtml(name) { return fs.readFileSync(path.join(DEMO_DIR, `${name}.html`), 'utf8').replace('<!--KIT-->', kitTag()).replace('<!--PACKS-->', kitPacks().map(n => kitPackTag(n)).join('\n')); }
+/** A kit scene file with the pinned kit tag put in (and every art pack's, where the scene asks for them; the 3D scene
+ *  also gets the pinned three.js import map). */
+export function sceneHtml(name) { return fs.readFileSync(path.join(DEMO_DIR, `${name}.html`), 'utf8').replace('<!--KIT-->', kitTag()).replace('<!--PACKS-->', kitPacks().map(n => kitPackTag(n)).join('\n')).replace('<!--THREE-->', threeImportMap()); }
 
 router.get('/kit', (req, res) => {
   if (!allowed(req)) return res.status(404).send('Not found');
-  const q = { scene: pick(req.query.scene, SCENES, 'meadow'), backend: pick(req.query.backend, ['auto', 'paper', 'glaze'], 'auto'), tier: pick(req.query.tier, ['', 'low', 'mid', 'high'], ''), theme: pick(req.query.mode, ['light', 'dark'], 'light'), lang: pick(req.query.l, LANGS, 'en'), tab: pick(req.query.tab, TABS, '') };
+  const q = { scene: pick(req.query.scene, SCENES, 'meadow'), backend: pick(req.query.backend, ['auto', 'paper', 'glaze'], 'auto'), tier: pick(req.query.tier, ['', 'low', 'mid', 'high'], ''), theme: pick(req.query.mode, ['light', 'dark'], 'light'), lang: pick(req.query.l, LANGS, 'en'), tab: pick(req.query.tab, TABS, ''), th: /^[a-z]{2,16}$/.test(req.query.th || '') ? req.query.th : '', style: pick(req.query.style, ['', 'bold'], ''), view: pick(req.query.view, ['', 'cast'], ''), shot: pick(req.query.shot, ['', 'play', 'ask'], '') };
   const qs = o => '?' + new URLSearchParams(Object.entries({ ...q, ...o }).filter(([, v]) => v).map(([k, v]) => [{ theme: 'mode', lang: 'l' }[k] || k, v])).toString();
   // ?l= and ?mode= (not ?lang= / ?theme=: the site middleware treats those as the visitor's own choice and redirects).
-  const src = `/kit/frame/${q.scene}?okDebug=1&okBackend=${q.backend}${q.tier ? '&okTier=' + q.tier : ''}&mode=${q.theme}&l=${encodeURIComponent(q.lang)}${q.tab ? '&tab=' + q.tab : ''}`;
+  const src = `/kit/frame/${q.scene}?okDebug=1&okBackend=${q.backend}${q.tier ? '&okTier=' + q.tier : ''}&mode=${q.theme}&l=${encodeURIComponent(q.lang)}${q.tab ? '&tab=' + q.tab : ''}${q.th ? '&th=' + q.th : ''}${q.style ? '&style=' + q.style : ''}${q.view ? '&view=' + q.view : ''}${q.shot ? '&shot=' + q.shot : ''}`;
   const opt = (k, vals) => vals.map(v => `<a href="${esc(qs({ [k]: v }))}"${q[k] === v ? ' aria-current="true"' : ''}>${esc(v || 'auto')}</a>`).join(' ');
   res.set('Cache-Control', 'no-store').type('html').send(`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Oomba Kit preview</title>
 <style>body{margin:0;font-family:system-ui,sans-serif;background:#F4F1E6;color:#141414}header{padding:12px 16px;display:flex;flex-wrap:wrap;gap:8px 20px;align-items:center}
 h1{font-size:18px;margin:0}nav{display:flex;gap:6px;align-items:center;font-size:14px}nav b{font-weight:600}a{color:#14744A}a[aria-current]{font-weight:800;color:#141414;text-decoration:none;border-bottom:3px solid #66C792}
 iframe{display:block;width:100%;height:calc(100vh - 110px);min-height:420px;border:0;background:#141414}</style></head><body>
 <header><h1>Oomba Kit ${esc(kitTag().match(/\d+\.\d+\.\d+/)[0])}</h1>
-<nav><b>Scene</b> ${opt('scene', SCENES)}</nav><nav><b>Graphics</b> ${opt('backend', ['auto', 'paper', 'glaze'])}</nav><nav><b>Tier</b> ${opt('tier', ['', 'low', 'mid', 'high'])}</nav>
+<nav><b>Scene</b> ${opt('scene', SCENES)}</nav>${q.scene === 'themes' || q.scene === 'three' ? `<nav><b>World</b> ${opt('th', Object.keys(THEMES))}</nav>` : ''}${q.scene === 'three' ? `<nav><b>Style</b> ${opt('style', ['', 'bold'])}</nav><nav><b>View</b> ${opt('view', ['', 'cast'])}</nav>` : ''}<nav><b>Graphics</b> ${opt('backend', ['auto', 'paper', 'glaze'])}</nav><nav><b>Tier</b> ${opt('tier', ['', 'low', 'mid', 'high'])}</nav>
 <nav><b>Theme</b> ${opt('theme', ['light', 'dark'])}</nav><nav><b>Language</b> ${opt('lang', LANGS)}</nav></header>
 <iframe id="kitframe" title="Oomba Kit scene" sandbox="${SANDBOX}" allow="autoplay" referrerpolicy="no-referrer" src="${esc(src)}"></iframe></body></html>`);
 });
@@ -41,7 +45,7 @@ router.get('/kit/frame/:scene', (req, res) => {
   const lang = pick(req.query.l, LANGS, 'en');
   const theme = pick(req.query.mode, ['light', 'dark'], req.theme === 'dark' ? 'dark' : 'light');
   const init = {
-    user: { displayName: req.user ? req.user.display_name : 'Player', avatar: req.user ? req.user.avatar : '🙂', isGuest: !req.user, lang, dir: lang === 'ar' || lang === 'he' ? 'rtl' : 'ltr' },
+    user: { displayName: req.user ? req.user.display_name : 'Player', avatar: req.user ? req.user.avatar : '🙂', isGuest: !req.user, character: characterOf(req.user), lang, dir: lang === 'ar' || lang === 'he' ? 'rtl' : 'ltr' },
     game: { id: 'kit-' + req.params.scene, title: 'Oomba Kit' }, save: {}, canSave: false, preview: true, theme,
   };
   sendFrame(res, frameDocument(sceneHtml(req.params.scene), init), frameOrigins(req));

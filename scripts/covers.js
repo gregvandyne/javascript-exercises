@@ -25,7 +25,15 @@ const hook = f => f.waitForFunction(() => window.__brbTest && window.__brbTest.s
 
 // One recipe per game: viewport + how to reach a moment worth showing on a card.
 const RECIPES = {
-  'shark-plank': { viewport: PORTRAIT, async prep(f) { await wait(1500); for (const k of ['e', 'a', 't']) { await f.evaluate(l => { const b = [...document.querySelectorAll('button')].find(x => x.textContent.trim().toLowerCase().startsWith(l)); if (b) b.click(); }, k); await wait(350); } await wait(900); } },
+  'shark-plank': { viewport: { width: 600, height: 800 }, scale: 0.9, async prep(f) {   // a tall card shows the ship and the keyboard
+    await hook(f); await wait(900);
+    const go = await f.$('.ok-title-screen .ok-big'); if (go) { await go.click(); await wait(1400); }   // the kit's title -> play
+    // one right letter, one wrong one (the shark gets a little closer), so the card shows a word in progress
+    const s = await f.evaluate(() => window.__brbTest.state());
+    const wrong = [...'QXZJVKWY'].find(l => !(s.word || '').includes(l));
+    for (const l of [s.word && s.word[0], wrong]) if (l) { const k = await f.$('#k' + l); if (k) await k.click(); await wait(350); }
+    await f.evaluate(() => { scrollTo(0, 0); document.scrollingElement.scrollTop = 0; }); await wait(900);
+  } },
   'ring-rumble': { viewport: LANDSCAPE, async prep(f, page) {
     await wait(800); await f.click('#go1'); await wait(500);
     const cards = await f.$$('#grid .card'); if (cards[0]) await cards[0].click(); await wait(2200);
@@ -153,7 +161,7 @@ async function capture(browser, slug) {
     r.end(`<!doctype html><style>html,body{margin:0;height:100%;background:#000}iframe{width:100%;height:100%;border:0;display:block}</style><iframe sandbox="${SANDBOX}" src="/g"></iframe>`);
   });
   await new Promise(r => srv.listen(0, r));
-  const ctx = await browser.newContext({ viewport: recipe.viewport, deviceScaleFactor: 1.5, reducedMotion: 'no-preference', ...(recipe.touch ? { hasTouch: true } : {}) });
+  const ctx = await browser.newContext({ viewport: recipe.viewport, deviceScaleFactor: recipe.scale || 1.5, reducedMotion: 'no-preference', ...(recipe.touch ? { hasTouch: true } : {}) });
   const page = await ctx.newPage();
   await page.route(/fonts\.(googleapis|gstatic)\.com/, route => {
     try {

@@ -28,9 +28,12 @@ function fakeWin(o = {}) {
 }
 
 /** Every `Oomba.a.b(...)` the reference names must exist; every public name must be in the reference. */
-test('docs/kit-api.md (what a model reads) names exactly what exists', () => {
+test('docs/kit-api.md (what a model reads) names exactly what exists', async () => {
   const doc = fs.readFileSync(path.join(ROOT, 'docs/kit-api.md'), 'utf8');
-  const O = createKit(fakeWin());
+  // with the pack that adds a public name (bridge-3d: Oomba.three) loaded, as a 3D game has it
+  const w = fakeWin(), O = createKit(w); w.Oomba = O;
+  const bridge = await import('../../kit/packs/bridge-3d.js'); O.__pk({ name: 'bridge-3d', version: O.version }, bridge.define);
+  assert.equal(typeof O.three, 'function');
   const named = new Set([...doc.matchAll(/\bOomba\.([a-zA-Z]+(?:\.[a-zA-Z]+)*)/g)].map(m => m[1]));
   const at = p => p.split('.').reduce((o, k) => (o == null ? undefined : o[k]), O);
   for (const p of named) assert.notEqual(at(p), undefined, `docs/kit-api.md names Oomba.${p}, which does not exist`);

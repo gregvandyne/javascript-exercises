@@ -668,6 +668,7 @@ export function makeGame(kit, spec, makeStage) {
   if (sp.controls && !PRESETS[sp.controls]) kit.warn(`Oomba.game: unknown controls "${sp.controls}" (use ${CONTROLS.join(', ')})`);
   if (sp.strings) kit.i18n.strings(sp.strings);
   if (sp.theme === 'light' || sp.theme === 'dark') kit.theme.set(sp.theme);
+  if (sp.look) { if (kit.useTheme) kit.useTheme(sp); else kit.warn('Oomba.game({theme}): load the dress pack'); }
   if (sp.style) kit.setStyle(sp.style);
   const stage = makeStage({ api: 1, size: sp.size, fit: sp.fit, backend: sp.backend, biome: sp.biome, seed: sp.seed, dress: sp.dress });
   const g = new Game(kit, sp, stage);

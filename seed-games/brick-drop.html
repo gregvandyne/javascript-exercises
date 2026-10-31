@@ -1,75 +1,78 @@
 <title>Brick Drop</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap">
 <style>
-/* Brick Drop: the classic falling-blocks puzzle with candy bricks.
-   Layout (portrait): HUD row (pause / score chips / mute), then Hold | well | Next, then the touch pad.
+/* Brick Drop on the Oomba Kit: the classic falling-blocks puzzle with candy bricks.
+   The kit draws the candy world behind the game (day, or night in the dark theme), the title lockup, the player's own
+   character (their Me-page avatar, cheering on the title and the results card), the pause screen, the icons, buttons
+   and the type. This file lays out the game's own pieces in the kit's sticker look (Cream cards, Ink edges):
+   Layout (portrait): HUD row (pause / score chips / sound), then Hold | well | Next, then the touch pad.
    Short landscape: the well sits in the middle, HUD + Hold + the left-hand buttons on the left,
-   Next + the right-hand buttons on the right. Desktop (mouse): no touch pad, a keys hint instead.
-   The well is one canvas drawn by script; Hold and Next are two small canvases redrawn only when they change. */
-:root{
-  --bg1:#ffe6f3; --bg2:#ffc4e2; --bg3:#b7adff;
-  --ink:#3a1d4f; --accent:#ff4f9a; --accentDark:#c81d6b; --card:#fff; --soft:#fff0f7; --softEdge:#ffc2dd;
-  --well:#2b1d5e; --font:"Fredoka","Trebuchet MS",system-ui,sans-serif;
-  --cell:24px; --side:58px; --pad:8px; --gap:6px;
-}
+   Next + the right-hand buttons on the right. Desktop (mouse): no touch pad, a keys card instead.
+   The well is one canvas drawn by script; Hold and Next are two small canvases redrawn only when they change.
+   Colours come from the kit (set as --bd-* variables at start) and the brick colours from CONFIG; no fonts here. */
+.bd{position:absolute;inset:0;--cell:24px;--side:58px;--pad:8px;--gap:6px}
+.bd,.bd-tcard{--rim:var(--bd-ink);--soft:color-mix(in srgb,var(--ok-text) 66%,transparent)}
+.ok-night .bd,.ok-night .bd-tcard{--rim:color-mix(in srgb,var(--bd-cream) 38%,transparent)}
 [hidden]{display:none!important}
 html,body{height:100%}
-body{margin:0;overflow:hidden;font-family:var(--font);color:var(--ink);
-  background:
-    radial-gradient(circle at 12% 8%,rgba(255,255,255,.7),transparent 30%),
-    radial-gradient(circle at 90% 85%,rgba(255,255,255,.35),transparent 35%),
-    linear-gradient(160deg,var(--bg1),var(--bg2) 48%,var(--bg3));
-  touch-action:manipulation;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
-button{font-family:inherit;color:inherit;cursor:pointer}
-button:focus-visible{outline:4px solid #fff;outline-offset:2px}
-.panel button:focus-visible{outline-color:var(--ink)}
+body{margin:0;overflow:hidden;touch-action:manipulation;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.bd button{font-family:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.bd svg{display:block}
 
 /* ---------- Game layout ---------- */
-.app{position:relative;height:100%;display:grid;gap:var(--gap);justify-content:center;align-content:center;
-  padding:var(--pad) max(var(--pad),env(safe-area-inset-right)) max(var(--pad),env(safe-area-inset-bottom)) max(var(--pad),env(safe-area-inset-left));
+.app{position:relative;height:100%;box-sizing:border-box;display:grid;gap:var(--gap);justify-content:center;align-content:center;
+  padding:max(var(--pad),env(safe-area-inset-top)) max(var(--pad),env(safe-area-inset-right)) max(var(--pad),env(safe-area-inset-bottom)) max(var(--pad),env(safe-area-inset-left));
   grid-template-columns:var(--side) auto var(--side);
   grid-template-rows:auto auto auto;
   grid-template-areas:"hud hud hud" "hold well next" "pad pad pad"}
 .app.offstage{visibility:hidden}
 .hud{grid-area:hud;display:flex;align-items:center;gap:8px;min-width:0}
-.icon-btn{width:46px;height:46px;flex:none;border:0;border-radius:50%;background:#fff;font-size:1.3rem;box-shadow:0 4px 0 rgba(58,29,79,.2);display:grid;place-items:center;padding:0}
-.icon-btn:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(58,29,79,.2)}
+.hud .ok-btn.ok-icon{width:46px;min-height:46px;flex:none}
 .stats{flex:1;min-width:0;display:flex;gap:6px;justify-content:center}
-.stat{flex:1;min-width:0;max-width:120px;background:#fff;border-radius:14px;padding:3px 6px 4px;text-align:center;box-shadow:0 3px 0 rgba(58,29,79,.14);line-height:1.1}
-.stat .lab{display:block;font-size:.72rem;font-weight:600;opacity:.7;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;overflow:hidden}
-.stat b{display:block;font-size:1.15rem;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stat{flex:1;min-width:0;max-width:124px;box-sizing:border-box;background:var(--ok-card);color:var(--ok-text);border:2.5px solid var(--rim);border-radius:16px;
+  padding:2px 6px 4px;text-align:center;box-shadow:0 3px 0 var(--bd-ink);line-height:1.1}
+.stat .lab{display:block;font-size:.72rem;font-weight:700;color:var(--soft);text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;overflow:hidden}
+.stat b{display:block;font-size:1.2rem;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .side{display:flex;flex-direction:column;gap:8px;min-width:0}
 .holdSide{grid-area:hold}
 .nextSide{grid-area:next}
-.box{background:rgba(255,255,255,.88);border-radius:14px;padding:4px 4px 6px;box-shadow:0 3px 0 rgba(58,29,79,.14);display:flex;flex-direction:column;align-items:center;gap:2px;transition:opacity .2s}
-.box.used{opacity:.55}
-.boxLab{display:block;max-width:100%;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;opacity:.75;white-space:nowrap;overflow:hidden;text-align:center}
+.box{background:var(--ok-card);color:var(--ok-text);border:2.5px solid var(--rim);border-radius:16px;padding:4px 4px 6px;box-shadow:0 3px 0 var(--bd-ink);
+  display:flex;flex-direction:column;align-items:center;gap:2px;transition:opacity .2s}
+.box.used canvas{opacity:.5}
+.boxLab{display:block;max-width:100%;font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--soft);white-space:nowrap;overflow:hidden;text-align:center}
 .box canvas{display:block}
 .app.wide .keys{display:block}
-.keys{display:none;background:rgba(255,255,255,.75);border-radius:14px;padding:8px 10px;font-size:.85rem;line-height:1.55;box-shadow:0 3px 0 rgba(58,29,79,.1)}
-.keys b{display:inline-block;min-width:1.6em;padding:0 5px;margin-right:4px;border-radius:6px;background:#fff;box-shadow:0 2px 0 rgba(58,29,79,.18);text-align:center;font-size:.8rem}
-.wellWrap{grid-area:well;position:relative;align-self:start;justify-self:center;border-radius:12px;padding:4px;
-  background:linear-gradient(180deg,#fff,#ffd6ec);box-shadow:0 6px 0 rgba(58,29,79,.25),0 0 0 0 rgba(255,80,110,0);transition:box-shadow .5s}
-.wellWrap.danger{box-shadow:0 6px 0 rgba(58,29,79,.25),0 0 0 4px rgba(255,90,110,.55)}
-canvas#well{display:block;border-radius:8px;touch-action:none;background:var(--well)}
-.banner{position:absolute;left:4px;right:4px;top:34%;pointer-events:none;text-align:center;font-weight:700;color:#fff;line-height:1.1;white-space:nowrap;overflow:hidden;padding:4px 0;
-  font-size:calc(var(--cell)*1.25);text-shadow:0 3px 0 rgba(58,29,79,.55),0 0 16px rgba(255,79,154,.9);opacity:0}
-.banner.sub{top:56%;font-size:calc(var(--cell)*.8);text-shadow:0 2px 0 rgba(58,29,79,.6),0 0 12px rgba(80,170,255,.9)}
+.keys{display:none;background:var(--ok-card);color:var(--ok-text);border:2.5px solid var(--rim);border-radius:16px;padding:8px 10px;font-size:.88rem;font-weight:600;line-height:1.7;box-shadow:0 3px 0 var(--bd-ink)}
+.keys b{display:inline-block;min-width:1.6em;padding:0 5px;margin-right:4px;border-radius:7px;background:var(--ok-bg2);border:2px solid var(--rim);box-shadow:0 2px 0 var(--bd-ink);text-align:center;font-size:.8rem;line-height:1.35;font-weight:800}
+/* the well: a candy-pink frame (Ink edge, Cream rim) around a deep grape night */
+.wellWrap{grid-area:well;position:relative;align-self:start;justify-self:center;border-radius:16px;padding:5px;box-sizing:border-box;
+  background:linear-gradient(180deg,var(--bd-pinkLight),var(--bd-pink));border:3px solid var(--bd-ink);box-shadow:inset 0 0 0 2px var(--bd-cream),0 6px 0 var(--bd-ink);transition:box-shadow .5s}
+.wellWrap.danger{box-shadow:inset 0 0 0 2px var(--bd-cream),0 6px 0 var(--bd-ink),0 0 0 5px var(--bd-coral)}
+.wellWrap::after{content:"";position:absolute;inset:5px;border-radius:10px;border:2.5px solid var(--bd-ink);pointer-events:none}
+canvas#well{display:block;border-radius:10px;touch-action:none;background:var(--bd-well)}
+/* banners: kit sticker words (Cream face, Ink edge) */
+.banner{position:absolute;left:4px;right:4px;top:34%;pointer-events:none;text-align:center;font-weight:800;color:var(--bd-cream);line-height:1.15;white-space:nowrap;overflow:hidden;padding:8px 0;
+  font-size:calc(var(--cell)*1.25);-webkit-text-stroke:calc(var(--cell)*.2) var(--bd-ink);paint-order:stroke fill;text-shadow:0 calc(var(--cell)*.14) 0 var(--bd-ink);opacity:0}
+.banner.blast{color:var(--bd-spark)}
+.banner.sub{top:56%;font-size:calc(var(--cell)*.8);color:var(--bd-skyLight);-webkit-text-stroke:calc(var(--cell)*.14) var(--bd-ink)}
 .banner.show{animation:bannerPop 1.2s ease-out forwards}
-@keyframes bannerPop{0%{opacity:0;transform:scale(.4)}14%{opacity:1;transform:scale(1.18)}26%{transform:scale(.96)}36%{transform:scale(1)}78%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-14px)}}
+@keyframes bannerPop{0%{opacity:0;transform:scale(.4) rotate(-4deg)}14%{opacity:1;transform:scale(1.18) rotate(-2deg)}26%{transform:scale(.96) rotate(0)}36%{transform:scale(1)}78%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-14px)}}
+/* the touch pad: kit sticker buttons (Cream, Spark for Drop, Sky for Turn) */
 .pad{grid-area:pad;display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%;max-width:560px;justify-self:center}
-.padL,.padR{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:52px 56px;gap:8px}
-.pbtn{border:0;border-radius:16px;background:#fff;font-weight:700;font-size:1.05rem;min-width:0;padding:0 4px;box-shadow:0 5px 0 rgba(58,29,79,.22);
+.padL,.padR{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:52px 56px;gap:9px}
+.pbtn{border:3px solid var(--bd-ink);border-radius:18px;background:var(--bd-cream);color:var(--bd-ink);font-weight:800;font-size:1.08rem;min-width:0;padding:0 4px;box-shadow:0 5px 0 var(--bd-ink);
   display:flex;align-items:center;justify-content:center;gap:6px;touch-action:none;-webkit-tap-highlight-color:transparent}
-.pbtn svg{width:28px;height:28px;flex:none;pointer-events:none}
+.pbtn svg{width:28px;height:28px;flex:none;pointer-events:none;stroke-width:2.6}
 .pbtn span{pointer-events:none;display:block;min-width:0;white-space:nowrap;overflow:hidden}
 .pbtn.wide{grid-column:span 2}
-.pbtn.go{background:linear-gradient(180deg,#ff7cb6,var(--accent));color:#fff;box-shadow:0 5px 0 var(--accentDark)}
-.pbtn.turn{background:linear-gradient(180deg,#8fd0ff,#4aaeff);color:#fff;box-shadow:0 5px 0 #1f7fd8}
-.pbtn.down{transform:translateY(4px);box-shadow:0 1px 0 rgba(58,29,79,.22);filter:brightness(.95)}
-.pbtn.go.down{box-shadow:0 1px 0 var(--accentDark)}
-.pbtn.turn.down{box-shadow:0 1px 0 #1f7fd8}
+.pbtn.go{background:var(--bd-spark)}
+.pbtn.turn{background:var(--bd-sky)}
+.pbtn.down{transform:translateY(4px);box-shadow:0 1px 0 var(--bd-ink)}
 .pbtn.off{opacity:.45}
+/* tall phones: one side column (Hold over Next) on the right, so the well can be wider and use the height */
+.app.oneSide{grid-template-columns:auto var(--side);grid-template-rows:auto auto auto;grid-template-areas:"hud hud" "well hold" "pad pad"}
+.app.oneSide .nextSide{display:none}
+/* left-handed (the kit's setting): Drop, Hold and Turn on the left */
+.app.lefty .padL{order:2}.app.lefty .padR{order:1}
 
 /* Desktop with a mouse: keys instead of the touch pad. */
 @media (hover:hover) and (pointer:fine){
@@ -90,6 +93,7 @@ canvas#well{display:block;border-radius:8px;touch-action:none;background:var(--w
   .pad{display:contents}
   .padL{grid-area:padL;align-self:end}
   .padR{grid-area:padR;align-self:end}
+  .app.lefty .padL{grid-area:padR}.app.lefty .padR{grid-area:padL}
   .padL,.padR{grid-template-rows:50px 54px}
   .wellWrap{align-self:center}
 }
@@ -97,82 +101,114 @@ canvas#well{display:block;border-radius:8px;touch-action:none;background:var(--w
   .app{grid-template-areas:"hud well next" "hold well next" ". well next" ". well ."}
 }
 
-/* ---------- Screens (title / pause / results) ---------- */
-.screen{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;padding:12px;background:rgba(58,29,79,.4)}
-.screen.titleS{background:transparent}
-.panel{position:relative;background:var(--card);border-radius:28px;padding:14px 16px 16px;width:min(100%,440px);max-height:100%;overflow:auto;text-align:center;
-  box-shadow:0 10px 0 rgba(58,29,79,.2);display:flex;flex-direction:column;align-items:center;gap:9px}
-.panel h1{margin:0;font-size:clamp(2.1rem,10vw,2.8rem);line-height:1;color:var(--accent);letter-spacing:.01em;text-shadow:0 3px 0 #ffd0e6}
-.panel h2{margin:0;padding:0 46px;font-size:clamp(1.6rem,7.5vw,2.1rem);line-height:1.1;color:var(--accent)}
-.panel p{margin:0;font-size:1.05rem;line-height:1.3}
-.panel .hint{font-size:.9rem;opacity:.75}
-.logo{width:150px;height:76px;flex:none;display:block}
-.modes{display:flex;flex-direction:column;gap:8px;width:100%}
-.mode{display:flex;align-items:center;gap:10px;width:100%;min-height:56px;border:3px solid var(--softEdge);background:var(--soft);border-radius:18px;padding:6px 10px;text-align:start}
-.mode[aria-pressed="true"]{background:#ffe0ef;border-color:var(--accent);box-shadow:0 3px 0 var(--accentDark)}
-.mode .mi{font-size:1.6rem;flex:none;width:1.6em;text-align:center}
-.mode .mt{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.15}
-.mode .mt b{font-size:1.15rem}
-.mode .mt small{font-size:.85rem;opacity:.75}
-.mode .mb{flex:none;max-width:40%;font-weight:700;font-size:.85rem;line-height:1.15;text-align:center;background:#fff4cc;border-radius:999px;padding:4px 9px}
-.big-btn{border:0;border-radius:20px;background:var(--accent);color:#fff;font-weight:700;font-size:1.5rem;padding:12px 34px;min-height:60px;min-width:200px;box-shadow:0 6px 0 var(--accentDark)}
-.big-btn.alt{background:var(--soft);color:var(--ink);box-shadow:0 6px 0 var(--softEdge);font-size:1.15rem;min-height:52px;padding:10px 20px}
-.big-btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--accentDark)}
-.big-btn.alt:active{box-shadow:0 2px 0 var(--softEdge)}
-.btns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;width:100%}
-.btns .big-btn{flex:1;min-width:130px;font-size:1.2rem;line-height:1.15;padding:10px 12px;min-height:54px}
-.btns .big-btn.alt{font-size:1.05rem}
-.chips{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
-.chip{font-weight:700;background:#fff4cc;border-radius:999px;padding:6px 14px;font-size:1rem}
-.chip.good{background:#dcfce7}
-.chip.best{background:linear-gradient(90deg,#ffe066,#ffb3d9);animation:wob 1.4s ease-in-out 2}
-@keyframes wob{0%,100%{transform:rotate(0)}25%{transform:rotate(-3deg) scale(1.06)}75%{transform:rotate(3deg) scale(1.06)}}
-.statGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%}
-.statGrid div{background:var(--soft);border-radius:16px;padding:6px 8px}
-.statGrid span{display:block;font-size:.8rem;opacity:.7;text-transform:uppercase;letter-spacing:.04em;font-weight:600;overflow-wrap:anywhere}
-.statGrid b{font-size:1.35rem;font-variant-numeric:tabular-nums}
-.panel .mute.corner{position:absolute;top:10px;right:10px}
-.panel[dir="rtl"] .mute.corner{right:auto;left:10px}
-/* Arabic letters must stay joined: no letter spacing. Japanese: break lines between phrases. */
-html[lang="ar"] *{letter-spacing:0!important}
-html[lang="ja"] .panel p{word-break:auto-phrase}
+/* ---------- Title (the kit's title screen; the game's card: tagline, the three modes, Play) ---------- */
+.ok-ui .ok-title-screen .ok-title-block{max-height:none}
+.bd-tcard{display:flex;flex-direction:column;align-items:center;gap:10px;width:min(460px,calc(100vw - 32px));box-sizing:border-box;background:var(--ok-card);color:var(--ok-text);
+  border:3px solid var(--bd-ink);border-radius:26px;box-shadow:0 6px 0 var(--bd-ink);padding:12px 12px 14px}
+.ok-night .bd-tcard{border-color:color-mix(in srgb,var(--bd-cream) 34%,transparent);box-shadow:0 6px 0 black}
+.ok-ui .ok-title-screen .bd-tcard .ok-p{border:0;box-shadow:none;background:none;padding:0 6px;font-size:clamp(1rem,2.4vmin,1.2rem)}
+.ok-title-screen .bd-tcard .ok-big{margin-top:2px}
+.modes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;width:100%}
+.mode{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0;min-height:56px;box-sizing:border-box;border:2.5px solid var(--ok-line);background:var(--ok-bg2);color:var(--ok-text);
+  border-radius:18px;padding:8px 5px 7px;text-align:center;font:inherit;line-height:1.15}
+.mode[aria-pressed="true"]{background:var(--bd-pinkTint);color:var(--bd-ink);border-color:var(--bd-ink);box-shadow:0 4px 0 var(--bd-ink)}
+.mode .mi{flex:none;width:30px;height:30px;display:grid;place-items:center;border-radius:50%;background:var(--bd-cream);border:2px solid var(--bd-ink);color:var(--bd-ink)}
+.mode[aria-pressed="true"] .mi{background:var(--bd-pink)}
+.mode .mi svg{width:20px;height:20px}
+.mode .mt{min-width:0;max-width:100%;display:flex;flex-direction:column;line-height:1.15}
+.mode .mt b{font-size:1.06rem;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mode .mt small{font-size:.78rem;font-weight:600;opacity:.8;text-wrap:balance}
+.mode .mb{max-width:100%;font-weight:800;font-size:.78rem;line-height:1.15;background:var(--bd-sparkTint);color:var(--bd-ink);border:2px solid var(--bd-ink);border-radius:999px;padding:2px 8px;margin-top:3px;
+  text-wrap:balance;box-sizing:border-box}
+.hint{margin:0;font-size:.9rem;font-weight:600;color:var(--soft);display:flex;align-items:center;gap:6px;justify-content:center;text-align:center}
+.hint canvas{flex:none}
 .kbhint{display:none}
-@media (hover:hover) and (pointer:fine){.kbhint{display:block}}
+@media (hover:hover) and (pointer:fine){.kbhint{display:flex}}
+
+/* ---------- Pause (the kit's pause screen, with the game's note and Zen's Finish) ---------- */
+.ok-pause .bd-note{margin:-4px 0 0;font-weight:600;line-height:1.35;max-width:32ch;text-wrap:balance}
+.ok-pause .bd-phone{margin:0;font-size:.88rem;font-weight:600;line-height:1.35;opacity:.8;max-width:34ch;text-wrap:balance}
+
+/* a calmer world behind the pause and results cards: more blur, less colour */
+.ok-ui .ok-pause.ok-scrim,#resultsScreen.ok-scrim{-webkit-backdrop-filter:saturate(.4) blur(7px);backdrop-filter:saturate(.4) blur(7px)}
+
+/* ---------- Results (a kit card: the player's character, the numbers, Play again / Menu) ---------- */
+.bd .ok-card{width:min(440px,100%);padding:18px 16px 16px;gap:9px}
+.bd .ok-card .ok-portrait{margin:-4px 0 -6px}
+.bd .ok-card p{margin:0;font-size:1.05rem;font-weight:600;line-height:1.3;text-wrap:balance}
+.chips{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.chip{display:inline-flex;align-items:center;gap:6px;font-weight:800;background:var(--bd-sparkTint);color:var(--bd-ink);border:2px solid var(--bd-ink);border-radius:999px;padding:4px 12px;font-size:.98rem}
+.chip svg{width:1.15em;height:1.15em;flex:none}
+.chip.best{background:var(--bd-spark);transform:rotate(-3deg);animation:wob 1.4s ease-in-out 2}
+@keyframes wob{0%,100%{transform:rotate(-3deg)}25%{transform:rotate(-6deg) scale(1.06)}75%{transform:rotate(0) scale(1.06)}}
+.statGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%}
+.statGrid div{background:var(--ok-bg2);border:2px solid var(--ok-line);border-radius:16px;padding:5px 8px}
+.statGrid span{display:block;font-size:.78rem;font-weight:700;color:var(--soft);text-transform:uppercase;letter-spacing:.04em;overflow-wrap:anywhere}
+.statGrid b{font-size:1.4rem;font-weight:800;font-variant-numeric:tabular-nums}
+.btns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;width:100%;margin-top:2px}
+.btns .ok-btn{flex:1 1 auto}
+/* Arabic letters must stay joined: no letter spacing. Japanese: break lines between phrases. */
+html[lang="ar"] .bd *{letter-spacing:0!important}
+html[lang="ja"] .bd p{word-break:auto-phrase}
 @media (orientation:landscape) and (max-height:560px){
-  .mode .mb{max-width:100%}
-  .panel{width:min(100%,680px);padding:12px 16px 14px;gap:8px}
-  .logo{display:none}
-  .modes{flex-direction:row}
-  .mode{flex-direction:column;text-align:center;gap:2px;padding:6px}
-  .mode .mi{width:auto;font-size:1.3rem}
-  .mode .mt small{font-size:.8rem}
-  .panel h1{font-size:2.1rem}
+  .ok-ui .ok-title-screen{padding-top:8px}
+  .ok-ui .ok-title-screen .ok-h1{font-size:clamp(2rem,10vmin,2.6rem);margin:0}
+  .ok-ui .ok-title-screen .ok-title-word{display:inline-block}
+  .ok-ui .ok-title-screen .ok-title-block{gap:6px;padding-top:0}
+  .ok-ui .ok-title-badge{display:none}
+  .ok-ui .ok-title-screen .bd-tcard .ok-p{font-size:.95rem}
+  .bd-tcard{width:min(560px,calc(100vw - 32px));padding:8px 12px 10px;gap:6px}
+  .bd-tcard{width:min(640px,calc(100vw - 220px))}
+  .mode .mt small{font-size:.72rem;line-height:1.1}
+  .ok-pause .bd-phone{display:none}
+  .ok-title-screen .bd-tcard .ok-big{min-height:54px;margin-top:0}
+  .mode{min-height:0;padding:5px}
+  .mode .mi{width:24px;height:24px}.mode .mi svg{width:16px;height:16px}
+  .bd .ok-card{width:min(680px,100%);padding:12px 16px 14px;gap:6px}
+  .bd .ok-card .ok-portrait{display:none}
   .statGrid{grid-template-columns:repeat(4,1fr)}
 }
+/* phone title: the modes as three rows (icon, name and what it is, best) so nothing wraps into a tall tile; the lockup
+   clears the sound and settings buttons; no brand badge in the corner */
+@media (orientation:portrait) and (max-width:520px){
+  .ok-ui .ok-title-screen .ok-brand{display:none}
+  .ok-ui .ok-title-screen .ok-title-block{margin-top:30px}
+  .ok-ui .ok-title-screen .ok-title-badge canvas{width:150px;height:auto}
+  .modes{grid-template-columns:1fr;gap:6px}
+  .bd-tcard{padding:12px 10px 14px}
+  .mode{display:grid;grid-template-columns:30px minmax(0,1fr) auto;align-items:center;column-gap:8px;text-align:start;min-height:0;padding:6px 8px}
+  .mode .mt{align-items:flex-start}
+  .mode .mt small{text-wrap:wrap;font-size:.74rem}
+  .mode .mb{margin-top:0;white-space:nowrap}
+}
 @media (max-width:374px){
-  .mode .mt small{font-size:.8rem}
-  .mode{gap:7px;padding:5px 8px}
-  .btns .big-btn{min-width:110px;font-size:1.05rem}
+  .mode .mt small{font-size:.72rem}
+  .mode .mt b{font-size:.96rem}
   .stat .lab{font-size:.66rem}
-  .stat b{font-size:1.02rem}
+  .stat b{font-size:1.04rem}
 }
 @media (prefers-reduced-motion:reduce){
   .banner.show{animation:bannerFade 1.2s ease-out forwards}
   .chip.best{animation:none}
   .wellWrap{transition:none}
 }
+.ok-rm .banner.show{animation:bannerFade 1.2s ease-out forwards}
+.ok-rm .chip.best{animation:none}
 @keyframes bannerFade{0%{opacity:0}15%{opacity:1}75%{opacity:1}100%{opacity:0}}
+/* the banners run on the game's clock (tickFx scrubs them), so a slow frame never skips one */
+.bd .banner.show{animation-play-state:paused}
 </style>
 
+<div class="bd" id="game">
 <div class="app offstage" id="app">
   <div class="hud" id="hud">
-    <button class="icon-btn" id="pauseBtn" aria-label="Pause" data-ta="pause">⏸️</button>
+    <span id="pauseSlot"></span>
     <div class="stats" id="stats">
       <div class="stat"><span class="lab" id="lab1">Score</span><b id="val1">0</b></div>
       <div class="stat"><span class="lab" id="lab2">Level</span><b id="val2">1</b></div>
       <div class="stat"><span class="lab" id="lab3">Lines</span><b id="val3">0</b></div>
     </div>
-    <button class="icon-btn mute" aria-label="Turn sound off">🔊</button>
+    <span id="muteSlot"></span>
   </div>
   <div class="side holdSide" id="holdSide">
     <div class="box" id="holdBox"><span class="boxLab" data-t="hold">Hold</span><canvas id="holdCv" aria-label="Held brick" data-ta="heldAria"></canvas></div>
@@ -196,66 +232,34 @@ html[lang="ja"] .panel p{word-break:auto-phrase}
   </div>
   <div class="pad" id="pad">
     <div class="padL">
-      <button class="pbtn wide" data-act="soft" tabindex="-1" aria-label="Move down" data-ta="padDown"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19 4.5 10h5V4h5v6h5z" fill="#3a1d4f"/></svg></button>
-      <button class="pbtn" data-act="left" tabindex="-1" aria-label="Move left" data-ta="padLeft"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12l9-8v5h7v6h-7v5z" fill="#3a1d4f"/></svg></button>
-      <button class="pbtn" data-act="right" tabindex="-1" aria-label="Move right" data-ta="padRight"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12l-9 8v-5H4V9h7V4z" fill="#3a1d4f"/></svg></button>
+      <button class="pbtn wide" data-act="soft" data-icon="down" tabindex="-1" aria-label="Move down" data-ta="padDown"></button>
+      <button class="pbtn" data-act="left" data-icon="left" tabindex="-1" aria-label="Move left" data-ta="padLeft"></button>
+      <button class="pbtn" data-act="right" data-icon="right" tabindex="-1" aria-label="Move right" data-ta="padRight"></button>
     </div>
     <div class="padR">
-      <button class="pbtn" data-act="hold" tabindex="-1" aria-label="Hold brick" data-ta="padHold"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="4" fill="none" stroke="#3a1d4f" stroke-width="2.6"/><rect x="8" y="9" width="8" height="6" rx="1.5" fill="#3a1d4f"/></svg><span data-t="hold">Hold</span></button>
-      <button class="pbtn go" data-act="hard" tabindex="-1" aria-label="Drop brick" data-ta="padDrop"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15 5 7h14z" fill="#fff"/><rect x="4" y="17" width="16" height="3.2" rx="1.6" fill="#fff"/></svg><span data-t="drop">Drop</span></button>
-      <button class="pbtn wide turn" data-act="rotateCW" tabindex="-1" aria-label="Turn brick" data-ta="padTurn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4a8 8 0 1 0 7.7 10h-3.2A5 5 0 1 1 12 7v3.2L17 5.6 12 1z" fill="#fff"/></svg><span data-t="turn">Turn</span></button>
+      <button class="pbtn" data-act="hold" data-icon="swap" tabindex="-1" aria-label="Hold brick" data-ta="padHold"><span data-t="hold">Hold</span></button>
+      <button class="pbtn go" data-act="hard" data-icon="drop" tabindex="-1" aria-label="Drop brick" data-ta="padDrop"><span data-t="drop">Drop</span></button>
+      <button class="pbtn wide turn" data-act="rotateCW" data-icon="restart" tabindex="-1" aria-label="Turn brick" data-ta="padTurn"><span data-t="turn">Turn</span></button>
     </div>
   </div>
 </div>
 
-<section class="screen titleS" id="titleScreen">
-  <div class="panel">
-    <svg class="logo" viewBox="0 0 170 86" aria-hidden="true"><defs><linearGradient id="lgP" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffc1e0"/><stop offset=".5" stop-color="#ff6fb5"/><stop offset="1" stop-color="#d63c8c"/></linearGradient><linearGradient id="lgM" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a8f5de"/><stop offset=".5" stop-color="#36d6a8"/><stop offset="1" stop-color="#16a07c"/></linearGradient><linearGradient id="lgY" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff1a6"/><stop offset=".5" stop-color="#ffcc33"/><stop offset="1" stop-color="#df9d00"/></linearGradient><linearGradient id="lgB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b8e2ff"/><stop offset=".5" stop-color="#4aaeff"/><stop offset="1" stop-color="#1f7fd8"/></linearGradient><linearGradient id="lgG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#dccdff"/><stop offset=".5" stop-color="#a57cff"/><stop offset="1" stop-color="#7448e0"/></linearGradient><linearGradient id="lgO" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd3a8"/><stop offset=".5" stop-color="#ff9640"/><stop offset="1" stop-color="#e0660c"/></linearGradient><linearGradient id="lgR" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffb7be"/><stop offset=".5" stop-color="#ff5d6c"/><stop offset="1" stop-color="#cf2a3e"/></linearGradient><g id="lgFace"><circle cx="7" cy="9" r="2.4" fill="#fff"/><circle cx="13" cy="9" r="2.4" fill="#fff"/><circle cx="7.2" cy="9.8" r="1.3" fill="#3a1d4f"/><circle cx="13.2" cy="9.8" r="1.3" fill="#3a1d4f"/><path d="M8 13.2q2 1.8 4 0" stroke="#3a1d4f" stroke-width="1.2" fill="none" stroke-linecap="round"/></g><g id="lgSleep"><path d="M5.2 9.5q1.8 1.6 3.6 0M11.2 9.5q1.8 1.6 3.6 0" stroke="#3a1d4f" stroke-width="1.2" fill="none" stroke-linecap="round" opacity=".6"/><circle cx="4.6" cy="12.8" r="1.3" fill="#ff9ccb" opacity=".8"/><circle cx="15.4" cy="12.8" r="1.3" fill="#ff9ccb" opacity=".8"/></g><g id="lgShine"><ellipse cx="6.8" cy="4.8" rx="3.6" ry="1.6" fill="#fff" opacity=".6" transform="rotate(-20 6.8 4.8)"/></g></defs><g transform="translate(1 64)"><rect width="20" height="20" rx="5" fill="url(#lgM)"/><use href="#lgShine"/><use href="#lgSleep"/></g><g transform="translate(22 64)"><rect width="20" height="20" rx="5" fill="url(#lgM)"/><use href="#lgShine"/><use href="#lgSleep"/></g><g transform="translate(43 64)"><rect width="20" height="20" rx="5" fill="url(#lgP)"/><use href="#lgShine"/><use href="#lgSleep"/></g><g transform="translate(64 64)"><rect width="20" height="20" rx="5" fill="url(#lgB)"/><use href="#lgShine"/><use href="#lgSleep"/></g><g transform="translate(106 64)"><rect width="20" height="20" rx="5" fill="url(#lgG)"/><use href="#lgShine"/><use href="#lgSleep"/></g><g transform="translate(127 64)"><rect width="20" height="20" rx="5" fill="url(#lgO)"/><use href="#lgShine"/><use href="#lgSleep"/></g><g transform="translate(148 64)"><rect width="20" height="20" rx="5" fill="url(#lgO)"/><use href="#lgShine"/><use href="#lgSleep"/></g><g transform="translate(1 43)"><rect width="20" height="20" rx="5" fill="url(#lgP)"/><use href="#lgShine"/><use href="#lgSleep"/></g><g transform="translate(22 43)"><rect width="20" height="20" rx="5" fill="url(#lgP)"/><use href="#lgShine"/><use href="#lgSleep"/></g><g transform="translate(43 43)"><rect width="20" height="20" rx="5" fill="url(#lgM)"/><use href="#lgShine"/><use href="#lgSleep"/></g><g transform="translate(127 43)"><rect width="20" height="20" rx="5" fill="url(#lgR)"/><use href="#lgShine"/><use href="#lgSleep"/></g><g transform="translate(148 43)"><rect width="20" height="20" rx="5" fill="url(#lgO)"/><use href="#lgShine"/><use href="#lgSleep"/></g><g transform="translate(64 2)"><rect width="20" height="20" rx="5" fill="url(#lgY)"/><use href="#lgShine"/><use href="#lgFace"/></g><g transform="translate(85 2)"><rect width="20" height="20" rx="5" fill="url(#lgY)"/><use href="#lgShine"/><use href="#lgFace"/></g><g transform="translate(106 2)"><rect width="20" height="20" rx="5" fill="url(#lgY)"/><use href="#lgShine"/><use href="#lgFace"/></g><g transform="translate(85 23)"><rect width="20" height="20" rx="5" fill="url(#lgY)"/><use href="#lgShine"/><use href="#lgFace"/></g><path d="M60 4v10M57 9h0" stroke="#fff" stroke-width="2.4" stroke-linecap="round" opacity=".9"/><path d="M128 6v9M131 1v6" stroke="#fff" stroke-width="2.4" stroke-linecap="round" opacity=".9"/><path d="M150 22l2.2-5 2.2 5 5 2.2-5 2.2-2.2 5-2.2-5-5-2.2z" fill="#ffcc33"/><path d="M14 26l1.6-3.6 1.6 3.6 3.6 1.6-3.6 1.6-1.6 3.6-1.6-3.6-3.6-1.6z" fill="#ff6fb5"/></svg>
-    <h1 id="titleText">Brick Drop</h1>
-    <p data-t="tagline">Stack the falling bricks. Fill a row to pop it!</p>
-    <div class="modes" role="group" aria-label="Pick a game" data-ta="pickGame">
-      <button class="mode" data-mode="marathon" aria-pressed="true"><span class="mi">🏃</span><span class="mt"><b id="mName1">Marathon</b><small id="mSub1">Faster every 10 lines</small></span><span class="mb" id="bestM">Best 0</span></button>
-      <button class="mode" data-mode="sprint" aria-pressed="false"><span class="mi">⏱️</span><span class="mt"><b id="mName2">Sprint 40</b><small id="mSub2">Clear 40 lines fast</small></span><span class="mb" id="bestS">No time yet</span></button>
-      <button class="mode" data-mode="zen" aria-pressed="false"><span class="mi">🌸</span><span class="mt"><b id="mName3" data-t="zen">Zen</b><small id="mSub3" data-t="zenSub">Slow and calm. No game over</small></span><span class="mb" id="bestZ">Best 0 lines</span></button>
-    </div>
-    <button class="big-btn" id="playBtn">▶ <span data-t="play">Play</span></button>
-    <p class="hint" id="totalHint">🧱 Lines popped so far: 0</p>
-    <p class="hint kbhint" data-t="kbHint">Keys: ← → move, ↑ turn, Space drop, C hold, P pause.</p>
-    <button class="icon-btn mute corner" aria-label="Turn sound off">🔊</button>
-  </div>
-</section>
 
-<section class="screen" id="pauseScreen" hidden>
-  <div class="panel">
-    <h2 data-t="paused">Paused</h2>
-    <p id="pauseInfo" data-t="pauseInfo">Take a break. The bricks will wait.</p>
-    <div class="btns">
-      <button class="big-btn" id="resumeBtn">▶ <span data-t="keepPlaying">Keep playing</span></button>
-    </div>
-    <div class="btns">
-      <button class="big-btn alt" id="restartBtn">🔄 <span data-t="startOver">Start over</span></button>
-      <button class="big-btn alt" id="zenEndBtn" hidden>🏁 <span data-t="finish">Finish</span></button>
-      <button class="big-btn alt" id="menuBtn">🏠 <span data-t="menu">Menu</span></button>
-    </div>
-    <p class="hint" data-t="phoneHint">On a phone: tap the well to turn, swipe to move, swipe down fast to drop, swipe up to hold.</p>
-    <button class="icon-btn mute corner" aria-label="Turn sound off">🔊</button>
-  </div>
-</section>
-
-<section class="screen" id="resultsScreen" hidden>
-  <div class="panel">
-    <h2 id="resTitle" data-t="resGreat">Great stacking!</h2>
+<section class="ok-modal ok-scrim" id="resultsScreen" role="dialog" aria-modal="true" aria-labelledby="resTitle" hidden>
+  <div class="ok-card">
+    <div id="resHero"></div>
+    <h2 class="ok-h2" id="resTitle" data-t="resGreat">Great stacking!</h2>
     <p id="resSub" data-t="resTop">The bricks reached the top.</p>
     <div class="chips" id="resChips"></div>
     <div class="statGrid" id="resGrid"></div>
-    <div class="btns">
-      <button class="big-btn" id="againBtn">▶ <span data-t="playAgain">Play again</span></button>
-      <button class="big-btn alt" id="resMenuBtn">🏠 <span data-t="menu">Menu</span></button>
-    </div>
-    <button class="icon-btn mute corner" aria-label="Turn sound off">🔊</button>
+    <div class="btns" id="resBtns"></div>
   </div>
 </section>
+</div>
 
+<script src="/vendor/oomba-kit/1.1.0/oomba-kit.js" integrity="sha384-GCejMN1YYamlsZNEJw6SRznGmZC2i6tppYwkLt8cv2gI3YTTsZq6l8eyUQuAM8qX" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.0/packs/dress.js" integrity="sha384-ZCFgY98YAWY7Tcy+GfJLalmnJukKdzbVpg6j4ZljXuJSYgYzkWSWMPihVW/u8CqH" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.0/packs/art-props.js" integrity="sha384-/RtKQ/ov2WG1EoCt4pJ98rHY07jOZjZ+lia901K+1BfS49MydEROuw7UaInBPHle" crossorigin="anonymous"></script>
 <script>
 /* =====================================================================================
    CONFIG: change these to make the game your own!
@@ -289,19 +293,21 @@ const CONFIG = {
   flickSpeed: 1.0,          // px per ms: a downward swipe faster than this drops the brick
   flickMinPx: 36,
   tapMaxMs: 260, tapMaxPx: 12,
-  // Candy colours for the seven bricks (index = brick id). Friendly names are only used for screen readers.
+  // Candy colours for the seven bricks (index = brick id): the kit's palette (Stick keeps the game's own candy pink).
+  // Friendly names are only used for screen readers.
   bricks: [
     { name: 'none', base: '#000000', light: '#000000', dark: '#000000' },
-    { name: 'Stick', base: '#ff6fb5', light: '#ffc1e0', dark: '#d63c8c' },
-    { name: 'Cube',  base: '#36d6a8', light: '#a8f5de', dark: '#16a07c' },
-    { name: 'Tee',   base: '#ffcc33', light: '#fff1a6', dark: '#df9d00' },
-    { name: 'Snake', base: '#4aaeff', light: '#b8e2ff', dark: '#1f7fd8' },
-    { name: 'Zig',   base: '#a57cff', light: '#dccdff', dark: '#7448e0' },
-    { name: 'Hook',  base: '#ff9640', light: '#ffd3a8', dark: '#e0660c' },
-    { name: 'Boot',  base: '#ff5d6c', light: '#ffb7be', dark: '#cf2a3e' },
-    { name: 'Stone', base: '#9d97b8', light: '#d4d0e6', dark: '#6d6690' }
+    { name: 'Stick', base: '#FF6FB5', light: '#FFB8DC', dark: '#C93C86' },
+    { name: 'Cube',  base: '#66C792', light: '#9BDDB7', dark: '#1F9D63' },
+    { name: 'Tee',   base: '#FFD23F', light: '#FFE27A', dark: '#C99A00' },
+    { name: 'Snake', base: '#4FA8F0', light: '#93CBF6', dark: '#2F6FC8' },
+    { name: 'Zig',   base: '#9B6BE8', light: '#C6A9F3', dark: '#6C44C0' },
+    { name: 'Hook',  base: '#F5A26B', light: '#FFC89E', dark: '#C9713A' },
+    { name: 'Boot',  base: '#FF6B5B', light: '#FF9C8F', dark: '#C8402F' },
+    { name: 'Stone', base: '#8F8A7C', light: '#C6C2B5', dark: '#5E5A50' }
   ],
-  wellTop: '#30215f', wellBottom: '#1c1340'
+  wellTop: '#352670', wellBottom: '#1E1546',   // the well's deep grape night
+  biome: 'candy'            // the kit's world behind the game
 };
 /* ==== CONFIG END ==== */
 
@@ -338,7 +344,7 @@ const I18N = {
     resNewBest: "New best score!", resGreat: "Great stacking!", resTop: "The bricks reached the top.",
     resDidIt: "You did it!", resSprint: "{n} lines in {time}.", resClose: "So close!", resTopAgain: "The bricks reached the top. Try again?",
     resCalm: "Nice and calm!", resZen: { one: "You popped {n} line.", other: "You popped {n} lines." },
-    chipBestTime: "New best time!", chipMostLines: "Most lines yet!", chipNewBest: "New best!", chipBest: "Best: {v}",
+    chipBestTime: "New best time!", chipMostLines: "Most lines yet!", chipNewBest: "New best!", chipNewBestV: "New best: {v}!", chipBest: "Best: {v}",
     playAgain: "Play again",
     bBlast: "BRICK BLAST!", bB2b: "Back-to-back! ×{x}", bCombo: "Combo ×{n}", bDouble: "Double!", bTriple: "Triple!",
     bLevel: "Level {n}!", bGo: "Go!", bWhoosh: "Whoosh! More room!", bReady: "Ready?", bReadySprint: "Ready? {n} lines!", bReadyZen: "Relax and stack"
@@ -370,7 +376,7 @@ const I18N = {
     resNewBest: "Novo recorde!", resGreat: "Que pilha legal!", resTop: "Os tijolos chegaram ao topo.",
     resDidIt: "Você conseguiu!", resSprint: "{n} linhas em {time}.", resClose: "Quase!", resTopAgain: "Os tijolos chegaram ao topo. Jogar de novo?",
     resCalm: "Bem tranquilo!", resZen: { zero: "Você estourou {n} linhas.", one: "Você estourou {n} linha.", other: "Você estourou {n} linhas." },
-    chipBestTime: "Novo melhor tempo!", chipMostLines: "Mais linhas que nunca!", chipNewBest: "Novo recorde!", chipBest: "Recorde: {v}",
+    chipBestTime: "Novo melhor tempo!", chipMostLines: "Mais linhas que nunca!", chipNewBest: "Novo recorde!", chipNewBestV: "Novo recorde: {v}!", chipBest: "Recorde: {v}",
     playAgain: "Jogar de novo",
     bBlast: "TIJOLAÇO!", bB2b: "De novo! ×{x}", bCombo: "Combo ×{n}", bDouble: "Dupla!", bTriple: "Tripla!",
     bLevel: "Nível {n}!", bGo: "Já!", bWhoosh: "Vuuush! Mais espaço!", bReady: "Pronto?", bReadySprint: "Pronto? {n} linhas!", bReadyZen: "Relaxe e empilhe"
@@ -401,7 +407,7 @@ const I18N = {
     resNewBest: "Nouveau record !", resGreat: "Bel empilage !", resTop: "Les briques ont touché le haut.",
     resDidIt: "Tu as réussi !", resSprint: "{n} lignes en {time}.", resClose: "Presque !", resTopAgain: "Les briques ont touché le haut. On réessaie ?",
     resCalm: "Tout en douceur !", resZen: { one: "Tu as fait éclater {n} ligne.", other: "Tu as fait éclater {n} lignes." },
-    chipBestTime: "Meilleur temps !", chipMostLines: "Le plus de lignes !", chipNewBest: "Nouveau record !", chipBest: "Record : {v}",
+    chipBestTime: "Meilleur temps !", chipMostLines: "Le plus de lignes !", chipNewBest: "Nouveau record !", chipNewBestV: "Nouveau record : {v} !", chipBest: "Record : {v}",
     playAgain: "Rejouer",
     bBlast: "BRIQUE-BOUM !", bB2b: "Encore un ! ×{x}", bCombo: "Combo ×{n}", bDouble: "Double !", bTriple: "Triple !",
     bLevel: "Niveau {n} !", bGo: "C’est parti !", bWhoosh: "Hop ! De la place !", bReady: "Prêt ?", bReadySprint: "Prêt ? {n} lignes !", bReadyZen: "Empile tranquille"
@@ -432,7 +438,7 @@ const I18N = {
     resNewBest: "¡Nuevo récord!", resGreat: "¡Qué bien apilas!", resTop: "Los ladrillos llegaron arriba.",
     resDidIt: "¡Lo lograste!", resSprint: "{n} líneas en {time}.", resClose: "¡Casi!", resTopAgain: "Los ladrillos llegaron arriba. ¿Otra vez?",
     resCalm: "¡Qué tranquilidad!", resZen: { one: "Hiciste explotar {n} línea.", other: "Hiciste explotar {n} líneas." },
-    chipBestTime: "¡Nuevo mejor tiempo!", chipMostLines: "¡Más líneas que nunca!", chipNewBest: "¡Nuevo récord!", chipBest: "Récord: {v}",
+    chipBestTime: "¡Nuevo mejor tiempo!", chipMostLines: "¡Más líneas que nunca!", chipNewBest: "¡Nuevo récord!", chipNewBestV: "¡Nuevo récord: {v}!", chipBest: "Récord: {v}",
     playAgain: "Jugar otra vez",
     bBlast: "¡LADRILLAZO!", bB2b: "¡Otra vez! ×{x}", bCombo: "Combo ×{n}", bDouble: "¡Doble!", bTriple: "¡Triple!",
     bLevel: "¡Nivel {n}!", bGo: "¡Ya!", bWhoosh: "¡Fiu! ¡Más espacio!", bReady: "¿Listo?", bReadySprint: "¿Listo? ¡{n} líneas!", bReadyZen: "Relájate y apila"
@@ -463,7 +469,7 @@ const I18N = {
     resNewBest: "Neuer Rekord!", resGreat: "Toll gestapelt!", resTop: "Die Steine sind oben angekommen.",
     resDidIt: "Geschafft!", resSprint: "{n} Reihen in {time}.", resClose: "Fast geschafft!", resTopAgain: "Die Steine sind oben angekommen. Noch mal?",
     resCalm: "Schön entspannt!", resZen: { one: "Du hast {n} Reihe weggeploppt.", other: "Du hast {n} Reihen weggeploppt." },
-    chipBestTime: "Neue Bestzeit!", chipMostLines: "So viele Reihen wie nie!", chipNewBest: "Neuer Rekord!", chipBest: "Rekord: {v}",
+    chipBestTime: "Neue Bestzeit!", chipMostLines: "So viele Reihen wie nie!", chipNewBest: "Neuer Rekord!", chipNewBestV: "Neuer Rekord: {v}!", chipBest: "Rekord: {v}",
     playAgain: "Noch mal",
     bBlast: "STEIN-KNALL!", bB2b: "Gleich noch mal! ×{x}", bCombo: "Kombo ×{n}", bDouble: "Doppelt!", bTriple: "Dreifach!",
     bLevel: "Level {n}!", bGo: "Los!", bWhoosh: "Wusch! Mehr Platz!", bReady: "Bereit?", bReadySprint: "Bereit? {n} Reihen!", bReadyZen: "Ganz entspannt stapeln"
@@ -494,7 +500,7 @@ const I18N = {
     resNewBest: "שיא חדש!", resGreat: "ערימה מעולה!", resTop: "הלבנים הגיעו עד למעלה.",
     resDidIt: "הצלחתם!", resSprint: "{n} שורות ב־{time}.", resClose: "כמעט!", resTopAgain: "הלבנים הגיעו עד למעלה. עוד ניסיון?",
     resCalm: "רגוע ונעים!", resZen: { one: "פוצצתם שורה אחת.", other: "פוצצתם {n} שורות." },
-    chipBestTime: "זמן שיא חדש!", chipMostLines: "הכי הרבה שורות!", chipNewBest: "שיא חדש!", chipBest: "שיא: {v}",
+    chipBestTime: "זמן שיא חדש!", chipMostLines: "הכי הרבה שורות!", chipNewBest: "שיא חדש!", chipNewBestV: "שיא חדש: {v}!", chipBest: "שיא: {v}",
     playAgain: "לשחק שוב",
     bBlast: "בום לבנים!", bB2b: "שוב ברצף! ×{x}", bCombo: "קומבו ×{n}", bDouble: "כפול!", bTriple: "משולש!",
     bLevel: "שלב {n}!", bGo: "יאללה!", bWhoosh: "ווש! יש מקום!", bReady: "מוכנים?", bReadySprint: "מוכנים? {n} שורות!", bReadyZen: "נרגעים ובונים"
@@ -525,7 +531,7 @@ const I18N = {
     resNewBest: "ベストきろく！", resGreat: "じょうずにつめたね！", resTop: "ブロックがてっぺんまでとどいたよ。",
     resDidIt: "やったね！", resSprint: "{n}ラインを{time}でクリア！", resClose: "おしい！", resTopAgain: "ブロックがてっぺんまでとどいたよ。もう1回？",
     resCalm: "のんびりできたね！", resZen: "{n}ラインけしたよ。",
-    chipBestTime: "ベストタイム！", chipMostLines: "いちばんたくさんけした！", chipNewBest: "ベストこうしん！", chipBest: "ベスト：{v}",
+    chipBestTime: "ベストタイム！", chipMostLines: "いちばんたくさんけした！", chipNewBest: "ベストこうしん！", chipNewBestV: "ベストこうしん：{v}！", chipBest: "ベスト：{v}",
     playAgain: "もう1回",
     bBlast: "ドッカーン！", bB2b: "れんぞく！×{x}", bCombo: "コンボ×{n}", bDouble: "ダブル！", bTriple: "トリプル！",
     bLevel: "レベル{n}！", bGo: "スタート！", bWhoosh: "シュッ！ひろくなった！", bReady: "いくよ？", bReadySprint: "いくよ？{n}ライン！", bReadyZen: "のんびりつもう"
@@ -559,7 +565,7 @@ const I18N = {
     resDidIt: "لقد نجحت!", resSprint: { zero: "{n} صف في {time}.", one: "صف واحد في {time}.", two: "صفّان في {time}.", few: "{n} صفوف في {time}.", many: "{n} صفًا في {time}.", other: "{n} صف في {time}." },
     resClose: "اقتربت كثيرًا!", resTopAgain: "وصلت الطوبات إلى القمة. هل تحاول مرة أخرى؟",
     resCalm: "هادئ وجميل!", resZen: { zero: "لم تفرقع أي صف.", one: "فرقعت صفًا واحدًا.", two: "فرقعت صفّين.", few: "فرقعت {n} صفوف.", many: "فرقعت {n} صفًا.", other: "فرقعت {n} صف." },
-    chipBestTime: "أفضل وقت جديد!", chipMostLines: "أكثر صفوف حتى الآن!", chipNewBest: "رقم قياسي جديد!", chipBest: "الأفضل: {v}",
+    chipBestTime: "أفضل وقت جديد!", chipMostLines: "أكثر صفوف حتى الآن!", chipNewBest: "رقم قياسي جديد!", chipNewBestV: "رقم قياسي جديد: {v}!", chipBest: "الأفضل: {v}",
     playAgain: "العب مرة أخرى",
     bBlast: "انفجار الطوب!", bB2b: "مرة أخرى! ×{x}", bCombo: "سلسلة ×{n}", bDouble: "مزدوج!", bTriple: "ثلاثي!",
     bLevel: "المستوى {n}!", bGo: "انطلق!", bWhoosh: "ووش! مساحة أكبر!", bReady: "مستعد؟",
@@ -597,7 +603,7 @@ const I18N = {
     resClose: "Почти!", resTopAgain: "Кирпичики дошли до верха. Ещё раз?",
     resCalm: "Спокойно и мирно!",
     resZen: { one: "Собрана {n} линия.", few: "Собрано {n} линии.", many: "Собрано {n} линий.", other: "Собрано {n} линии." },
-    chipBestTime: "Лучшее время!", chipMostLines: "Больше всего линий!", chipNewBest: "Новый рекорд!", chipBest: "Рекорд: {v}",
+    chipBestTime: "Лучшее время!", chipMostLines: "Больше всего линий!", chipNewBest: "Новый рекорд!", chipNewBestV: "Новый рекорд: {v}!", chipBest: "Рекорд: {v}",
     playAgain: "Ещё раз",
     bBlast: "КИРПИЧ-БУМ!", bB2b: "Снова! ×{x}", bCombo: "Комбо ×{n}", bDouble: "Двойная!", bTriple: "Тройная!",
     bLevel: "Уровень {n}!", bGo: "Вперёд!", bWhoosh: "Вжух! Больше места!", bReady: "Приготовься!",
@@ -630,7 +636,7 @@ const I18N = {
     resNewBest: "Nuovo record!", resGreat: "Che bella pila!", resTop: "I mattoni sono arrivati in cima.",
     resDidIt: "Ce l’hai fatta!", resSprint: "{n} righe in {time}.", resClose: "C’eri quasi!", resTopAgain: "I mattoni sono arrivati in cima. Riprovi?",
     resCalm: "Tutto tranquillo!", resZen: { one: "Hai fatto scoppiare {n} riga.", other: "Hai fatto scoppiare {n} righe." },
-    chipBestTime: "Nuovo tempo record!", chipMostLines: "Mai così tante righe!", chipNewBest: "Nuovo record!", chipBest: "Record: {v}",
+    chipBestTime: "Nuovo tempo record!", chipMostLines: "Mai così tante righe!", chipNewBest: "Nuovo record!", chipNewBestV: "Nuovo record: {v}!", chipBest: "Record: {v}",
     playAgain: "Gioca ancora",
     bBlast: "MATTONATA!", bB2b: "Ancora! ×{x}", bCombo: "Combo ×{n}", bDouble: "Doppia!", bTriple: "Tripla!",
     bLevel: "Livello {n}!", bGo: "Via!", bWhoosh: "Fiuu! Più spazio!", bReady: "Pronto?", bReadySprint: "Pronto? {n} righe!", bReadyZen: "Rilassati e impila"
@@ -661,7 +667,7 @@ const I18N = {
     resNewBest: "新紀錄！", resGreat: "疊得真好！", resTop: "方塊疊到頂了。",
     resDidIt: "你做到了！", resSprint: "{time} 消掉 {n} 行。", resClose: "好可惜！", resTopAgain: "方塊疊到頂了。再試一次？",
     resCalm: "好悠閒！", resZen: "你消掉了 {n} 行。",
-    chipBestTime: "最快紀錄！", chipMostLines: "最多行數！", chipNewBest: "新紀錄！", chipBest: "最高：{v}",
+    chipBestTime: "最快紀錄！", chipMostLines: "最多行數！", chipNewBest: "新紀錄！", chipNewBestV: "新紀錄：{v}！", chipBest: "最高：{v}",
     playAgain: "再玩一次",
     bBlast: "方塊大爆炸！", bB2b: "連續！×{x}", bCombo: "連擊 ×{n}", bDouble: "雙行！", bTriple: "三行！",
     bLevel: "第 {n} 級！", bGo: "開始！", bWhoosh: "咻！空間變大了！", bReady: "準備好了嗎？", bReadySprint: "準備！{n} 行！", bReadyZen: "放輕鬆，慢慢疊"
@@ -692,7 +698,7 @@ const I18N = {
     resNewBest: "Nieuw record!", resGreat: "Mooi gestapeld!", resTop: "De stenen kwamen bovenaan.",
     resDidIt: "Het is gelukt!", resSprint: "{n} rijen in {time}.", resClose: "Bijna!", resTopAgain: "De stenen kwamen bovenaan. Nog een keer?",
     resCalm: "Lekker rustig!", resZen: { one: "Je hebt {n} rij weggeknald.", other: "Je hebt {n} rijen weggeknald." },
-    chipBestTime: "Nieuwe beste tijd!", chipMostLines: "Meeste rijen ooit!", chipNewBest: "Nieuw record!", chipBest: "Record: {v}",
+    chipBestTime: "Nieuwe beste tijd!", chipMostLines: "Meeste rijen ooit!", chipNewBest: "Nieuw record!", chipNewBestV: "Nieuw record: {v}!", chipBest: "Record: {v}",
     playAgain: "Nog een keer",
     bBlast: "STENENKNAL!", bB2b: "Nog een! ×{x}", bCombo: "Combo ×{n}", bDouble: "Dubbel!", bTriple: "Driedubbel!",
     bLevel: "Level {n}!", bGo: "Start!", bWhoosh: "Wiesj! Meer ruimte!", bReady: "Klaar?", bReadySprint: "Klaar? {n} rijen!", bReadyZen: "Rustig stapelen"
@@ -1053,25 +1059,66 @@ function createEngine(cfg) {
 /* ==== ENGINE END ==== */
 
 /* =====================================================================================
-   UI: screens, drawing, input, juice, saving.
+   UI: the kit's world and screens, drawing, input, juice, saving.
    ===================================================================================== */
 const $ = id => document.getElementById(id);
-let REDUCED = false; try { REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { /* ignore */ }
+let REDUCED = !!Oomba.settings.reduced;
 const TAU = Math.PI * 2;
-const INK = '#3a1d4f';
+const C = (hue, step) => Oomba.color(hue, step);
+const INK = C('ink'), CREAM = C('card');
 const E = createEngine(CONFIG);
 const W = E.W, HID = E.HID, VIS = E.VIS;
-document.title = CONFIG.title; $('titleText').textContent = CONFIG.title;
+document.title = CONFIG.title;
+
+/* ---------- The kit: the candy world behind everything, colours as CSS variables, the game's DOM in the kit's UI root ---------- */
+const PINK = CONFIG.bricks[1];
+const cssVars = { ink: INK, cream: CREAM, pink: PINK.base, pinkLight: PINK.light, spark: C('spark'), sparkTint: C('spark', 'tint'),
+  sky: C('sky'), skyLight: C('sky', 'light'), coral: C('coral'), well: CONFIG.wellBottom };
+for (const k in cssVars) document.documentElement.style.setProperty('--bd-' + k, cssVars[k]);
+document.documentElement.style.setProperty('--bd-pinkTint', 'color-mix(in srgb, var(--bd-pinkLight) 45%, var(--bd-cream))');
+const STAGE = Oomba.stage({ api: 1, biome: CONFIG.biome, size: [960, 540] });
+STAGE.camera.x = 0; STAGE.camera.y = -170;
+// No automatic dressing: its lone butterflies flutter round the well and read as a mistake. The game places its own
+// sweets instead: big ones near (right: the left is where the player's character stands), small ones on the far hills.
+STAGE.setDress('off');
+for (const [name, x, y, s, layer] of [['candycane', 440, 32, 130, 'near'], ['donut', 330, 32, 84, 'near'], ['sweet', -330, 30, 50, 'near'],
+  ['candycane', -470, -60, 92, 'mid'], ['candycane', -360, -80, 58, 'mid'],
+  ['candycane', 225, -85, 70, 'mid'], ['candycane', 395, -75, 52, 'mid']]) {
+  try { STAGE.add(name, { x, y, size: s, layer, flip: x > 0 }); } catch (e) { /* the art-props pack is missing: the world alone */ }
+}
+Oomba.ui.root().appendChild($('game'));
+Oomba.scene = 'title';
+/** The player's own character (their Me-page avatar; the Oomba mascot for guests): on the title and the results card. */
+const ME = Oomba.avatar();
+/** On a wide screen the player's character stands in the world beside the well and cheers the line clears. */
+let buddy = null, buddyBack = null;
+function placeBuddy() {
+  if (!buddy) { try { buddy = STAGE.add(ME, { x: 0, y: 0, size: 100, layer: 'front' }); } catch (e) { return; } }
+  const room = Math.min($('holdSide').getBoundingClientRect().left, wellWrap.getBoundingClientRect().left), show = S.screen !== 'title' && room >= 190 && !mqLand.matches;
+  buddy.visible = show; if (!show || !STAGE.toDesign) return;
+  const h = Math.min(innerHeight * 0.34, room * 0.9), x = room / 2;
+  const foot = STAGE.toWorld(STAGE.toDesign(x, innerHeight - Math.max(16, innerHeight * 0.06))), head = STAGE.toWorld(STAGE.toDesign(x, innerHeight - h));
+  buddy.x = foot.x; buddy.y = foot.y; buddy.size = Math.max(40, foot.y - head.y);
+}
+/** The character's reaction: 'cheer' (a clear), 'sad' (the bricks reached the top), 'idle'. */
+function buddySays(clip, ms) {
+  if (!buddy) return;
+  if (buddyBack) { buddyBack(); buddyBack = null; }
+  try { buddy.state(clip); } catch (e) { /* ignore */ }
+  if (ms) buddyBack = Oomba.time.real.after(ms, () => { buddyBack = null; try { buddy.state('idle'); } catch (e) { /* ignore */ } });
+}
+let FONT = getComputedStyle(Oomba.ui.root()).getPropertyValue('--ok-font') || 'system-ui, sans-serif';
+/** The kit's sounds (captions only for the moments the kit captions); the SDK's names (click, coin, hit, lose ...) pass through. */
+function sfx(name, o) { try { Oomba.sfx(name, Object.assign({ caption: false }, o)); } catch (e) { /* ignore */ } }
+
 /* ---------- Language: fill every fixed label once ---------- */
 function applyLanguage() {
   try { document.documentElement.lang = LANG; } catch (e) { /* ignore */ }
   document.querySelectorAll('[data-t]').forEach(el => { el.textContent = t(el.dataset.t); });
   document.querySelectorAll('[data-ta]').forEach(el => { el.setAttribute('aria-label', t(el.dataset.ta)); });
-  $('mName1').textContent = t('marathon'); $('mSub1').textContent = t('marathonSub', { n: CONFIG.linesPerLevel });
-  $('mName2').textContent = t('sprint', { n: CONFIG.sprintLines }); $('mSub2').textContent = t('sprintSub', { n: CONFIG.sprintLines });
-  // Right-to-left languages: text panels, the keys hint, HUD labels and banners read right to left; the well, the
+  // Right-to-left languages: text cards, the keys card, HUD labels and banners read right to left; the well, the
   // Hold/Next boxes, the touch pad and the digits keep their places.
-  if (RTL) document.querySelectorAll('.panel, .keys, .banner, #stats').forEach(el => { el.dir = 'rtl'; });
+  if (RTL) document.querySelectorAll('#resultsScreen .ok-card, .keys, .banner, #stats').forEach(el => { el.dir = 'rtl'; });
 }
 applyLanguage();
 
@@ -1107,37 +1154,46 @@ const G = { cell: 24, S: 24, dpr: 1, side: 58, mini: 10 };   // S = one square i
 let spritesBuilt = false;
 
 function roundRect(c, x, y, w, h, r) { c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r); c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath(); }
+const rgba = (hex, a) => { const n = parseInt(hex.slice(1), 16); return 'rgba(' + (n >> 16 & 255) + ',' + (n >> 8 & 255) + ',' + (n & 255) + ',' + a + ')'; };
+const GLOSS = rgba(CREAM, 0.7), GLOSS2 = rgba(CREAM, 0.85), BLUSH = rgba(PINK.light, 0.85), SLEEPY = rgba(INK, 0.6);
 
-/** One glossy candy brick. face: 0 none, 1 sleepy (settled), 2 awake (previews). */
+/** One candy brick in the kit's Ink style: an Ink edge, a candy face lit from the top, a darker lip at the bottom and a
+ *  glossy shine. face: 0 none, 1 sleepy (settled), 2 awake (previews). */
 function drawBrick(c, x, y, s, id, face) {
-  const col = CONFIG.bricks[id], ins = Math.max(0.5, s * 0.045), r = s * 0.22;
-  c.fillStyle = col.dark; c.beginPath(); roundRect(c, x + ins, y + ins, s - ins * 2, s - ins * 2, r); c.fill();
-  const g = c.createLinearGradient(x, y, x, y + s); g.addColorStop(0, col.light); g.addColorStop(0.45, col.base); g.addColorStop(1, col.base);
-  c.fillStyle = g; c.beginPath(); roundRect(c, x + ins, y + ins, s - ins * 2, s - ins * 2 - s * 0.09, r); c.fill();
+  const col = CONFIG.bricks[id], lw = Math.max(1, s * 0.07), ins = lw / 2 + Math.max(0.4, s * 0.025), r = s * 0.24;
+  const bx = x + ins, by = y + ins, bw = s - ins * 2;
+  c.fillStyle = col.dark; c.beginPath(); roundRect(c, bx, by, bw, bw, r); c.fill();
+  const g = c.createLinearGradient(x, y, x, y + s); g.addColorStop(0, col.light); g.addColorStop(0.5, col.base); g.addColorStop(1, col.base);
+  c.fillStyle = g; c.beginPath(); roundRect(c, bx, by, bw, bw - s * 0.12, r); c.fill();
   // glossy shine + a sprinkle
-  c.fillStyle = 'rgba(255,255,255,.6)'; c.beginPath(); c.ellipse(x + s * 0.34, y + s * 0.25, s * 0.18, s * 0.08, -0.35, 0, TAU); c.fill();
-  c.fillStyle = 'rgba(255,255,255,.75)'; c.beginPath(); c.arc(x + s * 0.72, y + s * 0.22, s * 0.04, 0, TAU); c.fill();
+  c.fillStyle = GLOSS; c.beginPath(); c.ellipse(x + s * 0.33, y + s * 0.25, s * 0.17, s * 0.075, -0.35, 0, TAU); c.fill();
+  c.fillStyle = GLOSS2; c.beginPath(); c.arc(x + s * 0.72, y + s * 0.22, s * 0.045, 0, TAU); c.fill();
+  c.strokeStyle = INK; c.lineWidth = lw; c.beginPath(); roundRect(c, bx, by, bw, bw, r); c.stroke();
   if (face === 1) {
-    c.strokeStyle = 'rgba(58,29,79,.55)'; c.lineWidth = Math.max(1, s * 0.055); c.lineCap = 'round';
-    c.beginPath(); c.arc(x + s * 0.34, y + s * 0.5, s * 0.08, 0.15 * Math.PI, 0.85 * Math.PI); c.stroke();
-    c.beginPath(); c.arc(x + s * 0.66, y + s * 0.5, s * 0.08, 0.15 * Math.PI, 0.85 * Math.PI); c.stroke();
-    c.fillStyle = 'rgba(255,150,200,.55)';
-    c.beginPath(); c.arc(x + s * 0.24, y + s * 0.66, s * 0.065, 0, TAU); c.arc(x + s * 0.76, y + s * 0.66, s * 0.065, 0, TAU); c.fill();
+    c.strokeStyle = SLEEPY; c.lineWidth = Math.max(1, s * 0.06); c.lineCap = 'round';
+    c.beginPath(); c.arc(x + s * 0.34, y + s * 0.46, s * 0.08, 0.15 * Math.PI, 0.85 * Math.PI); c.stroke();
+    c.beginPath(); c.arc(x + s * 0.66, y + s * 0.46, s * 0.08, 0.15 * Math.PI, 0.85 * Math.PI); c.stroke();
+    c.fillStyle = BLUSH;
+    c.beginPath(); c.arc(x + s * 0.23, y + s * 0.62, s * 0.065, 0, TAU); c.arc(x + s * 0.77, y + s * 0.62, s * 0.065, 0, TAU); c.fill();
   } else if (face === 2) drawFace(c, x, y, s, 0, false);
 }
-/** The awake face of the falling brick: eyes that look the way it moves, a little smile, a blink now and then. */
+/** The awake face of the falling brick (the kit's eyes: Ink ovals with a Cream catchlight) that looks the way it moves,
+ *  a little smile, a blink now and then. */
 function drawFace(c, x, y, s, look, blink) {
-  const ex1 = x + s * 0.34, ex2 = x + s * 0.66, ey = y + s * 0.47, er = s * 0.115;
+  const ex1 = x + s * 0.35, ex2 = x + s * 0.65, ey = y + s * 0.45, er = s * 0.085, px = look * s * 0.05;
+  c.strokeStyle = INK; c.fillStyle = INK; c.lineCap = 'round';
   if (blink) {
-    c.strokeStyle = INK; c.lineWidth = Math.max(1, s * 0.06); c.lineCap = 'round';
-    c.beginPath(); c.moveTo(ex1 - er, ey); c.lineTo(ex1 + er, ey); c.moveTo(ex2 - er, ey); c.lineTo(ex2 + er, ey); c.stroke();
+    c.lineWidth = Math.max(1, s * 0.06);
+    c.beginPath(); c.moveTo(ex1 - er + px, ey); c.lineTo(ex1 + er + px, ey); c.moveTo(ex2 - er + px, ey); c.lineTo(ex2 + er + px, ey); c.stroke();
   } else {
-    c.fillStyle = '#fff'; c.beginPath(); c.arc(ex1, ey, er, 0, TAU); c.moveTo(ex2 + er, ey); c.arc(ex2, ey, er, 0, TAU); c.fill();
-    const px = look * er * 0.45, pr = er * 0.58;
-    c.fillStyle = INK; c.beginPath(); c.arc(ex1 + px, ey + er * 0.12, pr, 0, TAU); c.moveTo(ex2 + px + pr, ey); c.arc(ex2 + px, ey + er * 0.12, pr, 0, TAU); c.fill();
+    c.beginPath(); c.ellipse(ex1 + px, ey, er, er * 1.3, 0, 0, TAU); c.moveTo(ex2 + px + er, ey); c.ellipse(ex2 + px, ey, er, er * 1.3, 0, 0, TAU); c.fill();
+    c.fillStyle = CREAM; const hr = er * 0.42;
+    c.beginPath(); c.arc(ex1 + px + er * 0.3, ey - er * 0.45, hr, 0, TAU); c.moveTo(ex2 + px + er * 0.3 + hr, ey - er * 0.45); c.arc(ex2 + px + er * 0.3, ey - er * 0.45, hr, 0, TAU); c.fill();
   }
-  c.strokeStyle = INK; c.lineWidth = Math.max(1, s * 0.055); c.lineCap = 'round';
-  c.beginPath(); c.arc(x + s * 0.5, y + s * 0.6, s * 0.11, 0.18 * Math.PI, 0.82 * Math.PI); c.stroke();
+  c.lineWidth = Math.max(1, s * 0.055);
+  c.beginPath(); c.arc(x + s * 0.5 + px, y + s * 0.6, s * 0.1, 0.18 * Math.PI, 0.82 * Math.PI); c.stroke();
+  c.fillStyle = BLUSH;
+  c.beginPath(); c.arc(x + s * 0.22, y + s * 0.62, s * 0.06, 0, TAU); c.arc(x + s * 0.78, y + s * 0.62, s * 0.06, 0, TAU); c.fill();
 }
 
 /** Sprite atlas, one column per brick id (1..8): row 0 plain, row 1 sleepy, row 2 ghost outline. */
@@ -1146,34 +1202,42 @@ function buildSprites() {
   for (let id = 1; id <= 8; id++) {
     drawBrick(actx, id * s, 0, s, id, 0);
     drawBrick(actx, id * s, s, s, id, 1);
-    const col = CONFIG.bricks[id], ins = s * 0.1, r = s * 0.2;
-    actx.fillStyle = col.base; actx.globalAlpha = 0.16; actx.beginPath(); roundRect(actx, id * s + ins, 2 * s + ins, s - ins * 2, s - ins * 2, r); actx.fill();
-    actx.globalAlpha = 0.85; actx.strokeStyle = col.light; actx.lineWidth = Math.max(1.5, s * 0.07); actx.setLineDash([s * 0.16, s * 0.1]);
+    const col = CONFIG.bricks[id], ins = s * 0.1, r = s * 0.22;
+    actx.fillStyle = col.base; actx.globalAlpha = 0.18; actx.beginPath(); roundRect(actx, id * s + ins, 2 * s + ins, s - ins * 2, s - ins * 2, r); actx.fill();
+    actx.globalAlpha = 0.9; actx.strokeStyle = col.light; actx.lineWidth = Math.max(1.5, s * 0.08); actx.setLineDash([s * 0.16, s * 0.1]);
     actx.beginPath(); roundRect(actx, id * s + ins, 2 * s + ins, s - ins * 2, s - ins * 2, r); actx.stroke(); actx.setLineDash([]); actx.globalAlpha = 1;
   }
-  // Empty well: deep night-candy gradient, soft column stripes and little dots at the corners.
+  // Empty well: deep grape night (the kit's answer-dock colour), soft column stripes and little dots at the corners.
   bgCv.width = stackCv.width = s * W; bgCv.height = stackCv.height = s * VIS;
   const g = bctx.createLinearGradient(0, 0, 0, bgCv.height); g.addColorStop(0, CONFIG.wellTop); g.addColorStop(1, CONFIG.wellBottom);
   bctx.fillStyle = g; bctx.fillRect(0, 0, bgCv.width, bgCv.height);
-  bctx.fillStyle = 'rgba(255,255,255,.025)'; for (let x = 0; x < W; x += 2) bctx.fillRect(x * s, 0, s, bgCv.height);
-  bctx.fillStyle = 'rgba(255,255,255,.13)';
+  bctx.fillStyle = rgba(CREAM, 0.03); for (let x = 0; x < W; x += 2) bctx.fillRect(x * s, 0, s, bgCv.height);
+  bctx.fillStyle = rgba(CREAM, 0.14);
   for (let y = 1; y < VIS; y++) for (let x = 1; x < W; x++) { bctx.beginPath(); bctx.arc(x * s, y * s, Math.max(1, s * 0.045), 0, TAU); bctx.fill(); }
   // Hard-drop streak sprites: one column per brick id, fading in from the top.
   trailCv.width = 9; trailCv.height = 64;
-  for (let id = 1; id <= 8; id++) { const tg = tctx.createLinearGradient(0, 0, 0, 64); tg.addColorStop(0, 'rgba(255,255,255,0)'); tg.addColorStop(1, CONFIG.bricks[id].light); tctx.fillStyle = tg; tctx.fillRect(id, 0, 1, 64); }
+  for (let id = 1; id <= 8; id++) { const tg = tctx.createLinearGradient(0, 0, 0, 64); tg.addColorStop(0, rgba(CREAM, 0)); tg.addColorStop(1, CONFIG.bricks[id].light); tctx.fillStyle = tg; tctx.fillRect(id, 0, 1, 64); }
   // Sweep glow band: bright in the middle, soft at the edges.
   bandCv.width = 64; bandCv.height = 8;
-  const bg = bdctx.createLinearGradient(0, 0, 64, 0); bg.addColorStop(0, 'rgba(255,255,255,0)'); bg.addColorStop(0.7, 'rgba(255,240,250,.95)'); bg.addColorStop(0.85, '#fff'); bg.addColorStop(1, 'rgba(255,255,255,0)');
+  const bg = bdctx.createLinearGradient(0, 0, 64, 0); bg.addColorStop(0, rgba(CREAM, 0)); bg.addColorStop(0.7, rgba(C('spark', 'tint'), 0.95)); bg.addColorStop(0.85, CREAM); bg.addColorStop(1, rgba(CREAM, 0));
   bdctx.clearRect(0, 0, 64, 8); bdctx.fillStyle = bg; bdctx.fillRect(0, 0, 64, 8);
   stackDirty = true; holdKey = -1; nextKey = -1;
+}
+/** A little picture made of bricks (rows of brick ids, '.' empty): the title's badge and the hint's brick. */
+function brickPicture(rows, px, awakeRows) {
+  const d = Math.min(2, window.devicePixelRatio || 1), s = Math.round(px * d), cv = document.createElement('canvas'), c = cv.getContext('2d');
+  cv.width = rows[0].length * s; cv.height = rows.length * s; cv.style.width = (cv.width / d) + 'px'; cv.style.height = (cv.height / d) + 'px';
+  rows.forEach((r, y) => [...r].forEach((ch, x) => { if (ch !== '.') drawBrick(c, x * s, y * s, s, +ch, y < (awakeRows || 0) ? 2 : 1); }));
+  cv.setAttribute('aria-hidden', 'true');
+  return cv;
 }
 
 /* ---------- Layout: pick the biggest square size that fits ---------- */
 const mqLand = matchMedia('(orientation: landscape) and (max-height: 560px)');
 const mqPad = matchMedia('(hover: hover) and (pointer: fine)');
 function layout() {
-  const vw = innerWidth, vh = innerHeight, PAD = 8, GAP = 6, BORDER = 4, land = mqLand.matches, desk = mqPad.matches;
-  let cell, side;
+  const vw = innerWidth, vh = innerHeight, PAD = 8, GAP = 6, BORDER = 8, land = mqLand.matches, desk = mqPad.matches;
+  let cell, side, oneSide = false;
   if (land) {
     const availH = vh - PAD * 2 - BORDER * 2;
     const minSide = Math.min(260, Math.max(150, Math.floor(vw * 0.27)));
@@ -1183,12 +1247,21 @@ function layout() {
   } else {
     app.style.setProperty('--side', '58px');
     const hudH = hud.offsetHeight || 50, padH = desk ? 0 : (pad.offsetHeight || 124);
-    const availH = vh - PAD * 2 - hudH - padH - GAP * (desk ? 1 : 2) - BORDER * 2;
+    const availH = vh - PAD * 2 - hudH - padH - GAP * (desk ? 1 : 2) - BORDER * 2 - 6;
     const minSide = vw < 380 ? 52 : vw < 600 ? 56 : 130;
     const availW = vw - PAD * 2 - GAP * 2 - minSide * 2 - BORDER * 2;
     cell = Math.floor(Math.min(availH / VIS, availW / W, 40));
     side = Math.floor(Math.min(190, (vw - PAD * 2 - GAP * 2 - cell * W - BORDER * 2) / 2));
+    // A tall phone is width-bound: Hold and Next stack in one column on the right and the well takes the room
+    oneSide = !desk && vw < 600 && Math.floor(Math.min(availH / VIS, (vw - PAD * 2 - GAP - minSide - BORDER * 2) / W, 40)) > cell;
+    if (oneSide) {
+      cell = Math.floor(Math.min(availH / VIS, (vw - PAD * 2 - GAP - minSide - BORDER * 2) / W, 40));
+      side = Math.floor(Math.min(110, vw - PAD * 2 - GAP - cell * W - BORDER * 2));
+    }
   }
+  app.classList.toggle('oneSide', oneSide);
+  const nextBox = $('nextBox'), nextHome = oneSide ? $('holdSide') : $('nextSide');
+  if (nextBox.parentNode !== nextHome) { if (oneSide) nextHome.insertBefore(nextBox, $('keysHint')); else nextHome.appendChild(nextBox); }
   cell = Math.max(10, cell);
   const dpr = Math.min(3, window.devicePixelRatio || 1), Sdev = Math.max(10, Math.round(cell * dpr));
   G.cell = Sdev / dpr; G.dpr = dpr; G.side = side;
@@ -1196,7 +1269,7 @@ function layout() {
   well.width = Sdev * W; well.height = Sdev * VIS;
   well.style.width = (Sdev * W / dpr) + 'px'; well.style.height = (Sdev * VIS / dpr) + 'px';
   // Hold / Next boxes
-  const inner = side - 8;
+  const inner = side - 10;
   G.mini = Math.max(6, Math.min(Math.floor(inner / 4.6), land ? Math.floor((vh - 200) / 8.5) : 26, Math.round(G.cell * 0.8)));
   const mw = Math.round(G.mini * 4.6), holdH = Math.round(G.mini * 2.8), nextH = Math.round(G.mini * (3 + 2.7 * (CONFIG.nextCount - 1) * 0.8) + G.mini * 0.4);
   sizeCanvas(holdCv, mw, holdH); sizeCanvas(nextCv, mw, nextH);
@@ -1205,6 +1278,7 @@ function layout() {
   if (G.S !== Sdev || !spritesBuilt) { G.S = Sdev; buildSprites(); spritesBuilt = true; }
   stackDirty = true; holdKey = -1; nextKey = -1;
   if (S.screen !== 'title') render(performance.now());
+  placeBuddy();
 }
 /** Long words (German, Russian...) shrink to fit the small labels. Runs on layout only. */
 function fitLabels() {
@@ -1217,23 +1291,24 @@ const MAXP = 360;
 const PX = new Float32Array(MAXP), PY = new Float32Array(MAXP), PVX = new Float32Array(MAXP), PVY = new Float32Array(MAXP);
 const PLIFE = new Float32Array(MAXP), PMAX = new Float32Array(MAXP), PSIZE = new Float32Array(MAXP), PCOL = new Uint8Array(MAXP), PKIND = new Uint8Array(MAXP);
 let pNext = 0;
-const PCOLORS = ['#ffffff', '#fff1a6', '#ffc1e0', '#a8f5de', '#b8e2ff', '#dccdff', '#ffd3a8', '#ffb7be', '#d4d0e6', '#ffe066'];
+const PCOLORS = [CREAM, C('spark', 'light'), PINK.light, C('mint', 'light'), C('sky', 'light'), C('grape', 'light'), C('peach', 'light'), C('coral', 'light'), C('stone', 'light'), C('spark')];
 /** kind 0 = round sparkle (falls a bit), 1 = star twinkle (floats). x, y, size in device px. */
 function spawnParticle(x, y, vx, vy, life, size, col, kind) {
   const i = pNext; pNext = (pNext + 1) % MAXP;
   PX[i] = x; PY[i] = y; PVX[i] = vx; PVY[i] = vy; PLIFE[i] = life; PMAX[i] = life; PSIZE[i] = size; PCOL[i] = col; PKIND[i] = kind;
 }
-// Floating score text: each pop-up is drawn once into its own little canvas, then only copied while it floats.
-const POPS = []; for (let i = 0; i < 8; i++) POPS.push({ text: '', x: 0, y: 0, t: 0, life: 0, size: 1, color: '#fff', cv: document.createElement('canvas'), w: 0, h: 0 });
+// Floating score text (the kit's sticker numbers: a colour face, an Ink edge): each pop-up is drawn once into its own
+// little canvas, then only copied while it floats.
+const POPS = []; for (let i = 0; i < 8; i++) POPS.push({ text: '', x: 0, y: 0, t: 0, life: 0, size: 1, color: CREAM, cv: document.createElement('canvas'), w: 0, h: 0 });
 function popup(text, x, y, size, color) {
   let best = POPS[0]; for (const p of POPS) { if (p.t >= p.life) { best = p; break; } if (p.t / p.life > best.t / best.life) best = p; }
   best.text = text; best.x = x; best.y = y; best.t = 0; best.life = 1100; best.size = size; best.color = color;
-  const fs = Math.round(size), lw = Math.max(2, size * 0.16), font = '700 ' + fs + 'px Fredoka, "Trebuchet MS", system-ui, sans-serif';
+  const fs = Math.round(size), lw = Math.max(3, size * 0.24), font = '800 ' + fs + 'px ' + FONT;
   const c = best.cv.getContext('2d'); c.font = font;
-  const w = Math.ceil(c.measureText(text).width + lw * 2 + 4), h = Math.ceil(fs * 1.4 + lw * 2);
+  const w = Math.ceil(c.measureText(text).width + lw * 2 + 4), h = Math.ceil(fs * 1.4 + lw * 2 + fs * 0.12);
   best.cv.width = w; best.cv.height = h; best.w = w; best.h = h;
   c.font = font; c.textAlign = 'center'; c.textBaseline = 'middle'; c.lineJoin = 'round';
-  c.lineWidth = lw; c.strokeStyle = 'rgba(58,29,79,.85)'; c.strokeText(text, w / 2, h / 2);
+  c.lineWidth = lw; c.strokeStyle = INK; c.strokeText(text, w / 2, h / 2 + fs * 0.1); c.strokeText(text, w / 2, h / 2);
   c.fillStyle = color; c.fillText(text, w / 2, h / 2);
 }
 const glow = { cells: new Int8Array(8), t: 999, id: 1 };              // a soft glow on a brick that just stuck
@@ -1242,6 +1317,7 @@ let bump = 0, bumpApplied = 0;                                          // well 
 let stackDirty = true, holdKey = -1, nextKey = -1, lastBoardVer = -1, ghostVer = -1, ghostRow = 0;
 let lookDir = 0, lookAt = 0, lastMoveSfx = 0, lastRotSfx = 0, dangerOn = false;
 let greyRows = 0, lastGrey = -1;
+const GLOW_FILL = rgba(CREAM, 1);
 
 /* ---------- Drawing ---------- */
 function renderStack() {
@@ -1260,6 +1336,7 @@ function renderStack() {
   if (danger !== dangerOn) { dangerOn = danger; wellWrap.classList.toggle('danger', danger); }
   stackDirty = false;
 }
+
 function render(now) {
   const s = G.S;
   if (E.boardVer !== lastBoardVer) { lastBoardVer = E.boardVer; stackDirty = true; }
@@ -1317,7 +1394,7 @@ function render(now) {
   }
   // Glow on the brick that just stuck
   if (glow.t < 200) {
-    ctx.globalAlpha = 0.5 * (1 - glow.t / 200); ctx.fillStyle = '#fff';
+    ctx.globalAlpha = 0.5 * (1 - glow.t / 200); ctx.fillStyle = GLOW_FILL;
     for (let i = 0; i < 8; i += 2) { const vy = glow.cells[i + 1] - HID; if (vy >= 0) { ctx.beginPath(); roundRect(ctx, glow.cells[i] * s + 1, vy * s + 1, s - 2, s - 2, s * 0.2); ctx.fill(); } }
     ctx.globalAlpha = 1;
   }
@@ -1394,18 +1471,33 @@ function updateHud() {
 }
 function resetHudCache() { hudScore = hudLines = hudLevel = hudTenth = -1; }
 
+
 /* ---------- Banners ---------- */
 // Each banner line shows one message at a time. A more important message (BRICK BLAST! > Level up > Ready/Go)
 // replaces a lesser one at once; an equal or lesser one waits its turn (so "Level 3!" follows "BRICK BLAST!").
 const bannerFree = { banner: 0, subBanner: 0 }, bannerPri = { banner: 0, subBanner: 0 };
+/** How far each banner is into its 1.2 s pop (game time, -1 = done): the CSS animation stays paused and tickFx moves it,
+ *  so the words keep pace with the sweep and the score pop-up even when frames are slow. */
+const bannerT = { banner: -1, subBanner: -1 }, BANNER_MS = 1200;
+function clearBanners() { for (const el in bannerT) { bannerT[el] = -1; $(el).classList.remove('show'); } }
+function tickBanners(dt) {
+  for (const el in bannerT) {
+    if (bannerT[el] < 0) continue;
+    bannerT[el] += dt; const done = bannerT[el] >= BANNER_MS;
+    $(el).style.animationDelay = -Math.min(bannerT[el], BANNER_MS - 1) + 'ms';
+    if (done) { bannerT[el] = -1; $(el).classList.remove('show'); }
+  }
+}
 function banner(el, text, pri = 1) {
   const now = performance.now();
   const at = pri > bannerPri[el] || now >= bannerFree[el] ? now : bannerFree[el];
   bannerFree[el] = at + (S.fast ? 0 : 750); bannerPri[el] = pri;
   const gid = S.gameId;
-  const show = () => { if (S.screen !== 'play' || gid !== S.gameId) return; const b = $(el); b.textContent = text; b.classList.remove('show'); fitText(b, 0.4); b.classList.add('show'); };
-  if (at - now < 20) show(); else setTimeout(show, at - now);
+  const show = () => { if (S.screen !== 'play' || gid !== S.gameId) return; const b = $(el); b.textContent = text; b.classList.remove('show'); b.classList.toggle('blast', pri === 3 && el === 'banner'); fitText(b, 0.4); bannerT[el] = 0; b.style.animationDelay = '0ms'; void b.offsetWidth; b.classList.add('show'); };
+  if (at - now < 20) show(); else Oomba.time.real.after(at - now, show);
 }
+/** A kit pop on a HUD number or box (skipped with reduced motion or in tests). */
+function popEl(el) { if (!REDUCED && !S.fast && el) { try { Oomba.juice.pop(el); } catch (e) { /* ignore */ } } }
 
 /* ---------- Juice: engine events ---------- */
 function cellCenterX(x) { return (x + 0.5) * G.S; }
@@ -1415,12 +1507,12 @@ E.onEvent = (name, a, b) => {
   switch (name) {
     case 'move':
       lookDir = a; lookAt = now;
-      if (now - lastMoveSfx > 90) { lastMoveSfx = now; BRB.sfx.play('click'); }
+      if (now - lastMoveSfx > 90) { lastMoveSfx = now; sfx('step', { volume: 0.7 }); }
       break;
     case 'rotate':
-      if (now - lastRotSfx > 70) { lastRotSfx = now; BRB.sfx.play('jump'); }
+      if (now - lastRotSfx > 70) { lastRotSfx = now; sfx('select', { pitch: 1.15, pitchVar: 0.05 }); }
       break;
-    case 'hold': BRB.sfx.play('coin'); break;
+    case 'hold': sfx('whoosh'); popEl($('holdBox')); break;
     case 'hard': {
       // streaks from where the brick was to where it landed (top square of each column)
       const sh = SHAPES[p.type * 4 + p.rot]; trail.n = 0; trail.id = p.type; trail.t = a > 0 ? 0 : 999;
@@ -1436,7 +1528,7 @@ E.onEvent = (name, a, b) => {
     case 'lock': {
       const sh = SHAPES[p.type * 4 + p.rot]; glow.t = 0; glow.id = p.type;
       for (let i = 0; i < 8; i += 2) { glow.cells[i] = p.x + sh[i]; glow.cells[i + 1] = p.y + sh[i + 1]; }
-      BRB.sfx.play(a ? 'hit' : 'click');
+      sfx(a ? 'land' : 'step');
       // a puff of dust under the brick
       const n = a ? 10 : 4;
       for (let i = 0; i < n; i++) {
@@ -1448,31 +1540,32 @@ E.onEvent = (name, a, b) => {
     case 'clear': {
       const n = a, big = n === 4;
       let mid = 0; for (let i = 0; i < E.clearCount; i++) mid += E.clearRows[i]; mid = mid / E.clearCount;
-      popup('+' + fmtNum(b), W * s / 2, cellCenterY(mid), s * (big ? 1.1 : 0.85), big ? '#ffe066' : '#fff');
+      popup('+' + fmtNum(b), W * s / 2, cellCenterY(mid), s * (big ? 1.15 : 0.9), big ? C('spark') : CREAM);
       if (big) {
-        banner('banner', t('bBlast'), 3); BRB.sfx.play('win');
-        if (!REDUCED) BRB.fx.shake(wellWrap, 7);
+        banner('banner', t('bBlast'), 3); sfx('win');
+        if (!REDUCED) { try { Oomba.juice.shake(0.55, wellWrap); } catch (e) { /* ignore */ } }
         if (E.last.b2b) banner('subBanner', t('bB2b', { x: fmtNum(CONFIG.points.b2bMultiplier) }), 3);
         else if (E.last.combo > 0) banner('subBanner', t('bCombo', { n: E.last.combo + 1 }));
       } else {
-        BRB.sfx.play('coin');
+        sfx('spark', { pitch: 1 + (n - 1) * 0.12 + Math.min(4, E.last.combo || 0) * 0.05 });
         if (E.last.combo > 0) banner('subBanner', t('bCombo', { n: E.last.combo + 1 }));
         else if (n >= 2) banner('subBanner', t(n === 2 ? 'bDouble' : 'bTriple'));
       }
       if (E.fast) burstRows(n);
+      popEl($('val1')); buddySays('cheer', big ? 1600 : 900);
       save.totalLines += n; persist();
       break;
     }
     case 'level':
-      banner('banner', t('bLevel', { n: a }), 2); setTimeout(() => BRB.sfx.play('powerup'), 250);
+      banner('banner', t('bLevel', { n: a }), 2); Oomba.time.real.after(S.fast ? 0 : 250, () => sfx('levelup'));
+      popEl($('val2'));
       break;
-    case 'go': banner('banner', t('bGo'), 0); BRB.sfx.play('click'); break;
-    case 'zenclear': banner('subBanner', t('bWhoosh')); BRB.sfx.play('powerup'); break;
-    case 'topout': BRB.sfx.play('lose'); endRound('over'); break;
-    case 'finish': BRB.sfx.play('win'); endRound('finish'); break;
+    case 'go': banner('banner', t('bGo'), 0); sfx('count', { pitch: 1.5 }); break;
+    case 'zenclear': banner('subBanner', t('bWhoosh')); sfx('whoosh'); break;
+    case 'topout': sfx('lose'); buddySays('sad'); endRound('over'); break;
+    case 'finish': sfx('win'); buddySays('cheer'); endRound('finish'); break;
   }
 };
-/** Sparkles for each cleared row when the sweep is skipped. */
 function burstRows(n) {
   const s = G.S;
   for (let i = 0; i < E.clearCount; i++) for (let x = 0; x < W; x++) {
@@ -1505,7 +1598,7 @@ function tickFx(dt) {
     if (PKIND[i] === 0) PVY[i] += 0.012 * s * k; else { PVX[i] *= 0.96; PVY[i] *= 0.96; }
   }
   for (let i = 0; i < POPS.length; i++) if (POPS[i].t < POPS[i].life) POPS[i].t += dt;
-  glow.t += dt; trail.t += dt;
+  glow.t += dt; trail.t += dt; tickBanners(dt);
   if (bump > 0) bump = Math.max(0, bump - dt / 140);
   const off = REDUCED ? 0 : Math.round(Math.sin(bump * Math.PI) * 4 * bump * 10) / 10;
   if (off !== bumpApplied) { bumpApplied = off; well.style.transform = off ? 'translateY(' + off + 'px)' : ''; }
@@ -1530,42 +1623,112 @@ function frame(now) {
   if (S.screen !== 'title') { render(now); renderSide(); updateHud(); }
 }
 
-/* ---------- Screens ---------- */
-const titleScreen = $('titleScreen'), pauseScreen = $('pauseScreen'), resultsScreen = $('resultsScreen');
+
+/* ---------- Screens: the kit's title and pause; the game's results card (in the kit's look) ---------- */
+const resultsScreen = $('resultsScreen');
+const iconBtn = (label, name, fn, id) => { const b = Oomba.ui.button(label, { kind: 'icon', icon: name, onPress: fn }); if (id) b.id = id; return b; };
+/** The title card's mode picker (three kit tiles: an icon, the name, what it is, the best so far). */
+const MODE_ICON = { marathon: 'trophy', sprint: 'timer', zen: 'heart' };
+function modePicker() {
+  const g = document.createElement('div'); g.className = 'modes'; g.setAttribute('role', 'group'); g.setAttribute('aria-label', t('pickGame'));
+  if (RTL) g.dir = 'rtl';
+  const names = { marathon: [t('marathon'), t('marathonSub', { n: CONFIG.linesPerLevel })], sprint: [t('sprint', { n: CONFIG.sprintLines }), t('sprintSub', { n: CONFIG.sprintLines })], zen: [t('zen'), t('zenSub')] };
+  for (const m of ['marathon', 'sprint', 'zen']) {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'mode'; b.dataset.mode = m;
+    b.innerHTML = '<span class="mi">' + Oomba.icon(MODE_ICON[m]) + '</span><span class="mt"><b></b><small></small></span><span class="mb" id="best' + m[0].toUpperCase() + '"></span>';
+    b.querySelector('b').textContent = names[m][0]; b.querySelector('small').textContent = names[m][1];
+    b.addEventListener('click', () => { S.mode = m; save.mode = S.mode; persist(); refreshTitle(); sfx('select'); });
+    b.addEventListener('dblclick', () => { S.mode = m; const p = $('playBtn'); if (p) p.click(); });
+    g.appendChild(b);
+  }
+  return g;
+}
+let titleOpen = false, titleSkip = false;
+/** The kit's title screen: the sticker lockup, a brick badge, the player's own character cheering in the corner, and
+ *  the game's card (tagline, the three modes, Play, lines popped so far). */
+function openTitle() {
+  if (titleOpen) return; titleOpen = true; Oomba.scene = 'title';
+  const badge = brickPicture(['...333..', '....3...', '112...76', '221.4566'], 24, 2);
+  Oomba.ui.title({ title: CONFIG.title, subtitle: t('tagline'), titleHue: 'coral', hero: ME, badge, play: () => { titleOpen = false; if (!titleSkip) startGame(); } });
+  const scr = [...Oomba.ui.root().querySelectorAll('.ok-title-screen')].pop(); if (!scr) return;
+  const block = scr.querySelector('.ok-title-block'), play = block && block.querySelector('.ok-hot');
+  if (play) play.id = 'playBtn';
+  const card = document.createElement('div'); card.className = 'bd-tcard bd';
+  card.style.position = 'static';
+  const sub = block && block.querySelector('.ok-p'); if (sub) card.append(sub);
+  card.append(modePicker());
+  const cta = block && block.querySelector('.ok-cta'); if (cta) card.append(cta);
+  const total = document.createElement('p'); total.className = 'hint'; total.append(brickPicture(['1'], 18)); const tt = document.createElement('span'); tt.id = 'totalHint'; total.append(tt); card.append(total);
+  const kb = document.createElement('p'); kb.className = 'hint kbhint'; kb.textContent = t('kbHint'); card.append(kb);
+  if (RTL) card.dir = 'rtl';
+  if (block) block.append(card);
+  const corner = scr.querySelector('.ok-corner'); if (corner) corner.prepend(muteButton());
+  refreshTitle(); syncMute();
+}
+/** Leaves the kit's title screen without its Play action (a test or a restart jumping straight into play). */
+function closeTitle() { if (!titleOpen) return; const b = $('playBtn'); if (b) { titleSkip = true; b.click(); titleSkip = false; } titleOpen = false; }
 function refreshTitle() {
   document.querySelectorAll('.mode').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.mode === S.mode)));
-  $('bestM').textContent = t('bestN', { n: save.bestMarathon || 0 });
-  $('bestS').textContent = save.bestSprintMs ? t('bestN', { n: fmtTime(save.bestSprintMs) }) : t('noTime');
-  $('bestZ').textContent = t('bestLines', { n: save.bestZenLines || 0 });
-  $('totalHint').textContent = '🧱 ' + t('totalHint', { n: save.totalLines || 0 });
+  const set = (id, s) => { const e = $(id); if (e) e.textContent = s; };
+  set('bestM', t('bestN', { n: save.bestMarathon || 0 }));
+  set('bestS', save.bestSprintMs ? t('bestN', { n: fmtTime(save.bestSprintMs) }) : t('noTime'));
+  set('bestZ', t('bestLines', { n: save.bestZenLines || 0 }));
+  set('totalHint', t('totalHint', { n: save.totalLines || 0 }));
 }
 function startGame(mode) {
+  closeTitle(); if (S.paused) closeKitPause();
   S.mode = mode || S.mode; save.mode = S.mode; persist();
-  S.screen = 'play'; S.paused = false; S.ending = null; S.endT = 0; S.result = null; S.gameId++;
+  S.screen = 'play'; Oomba.scene = 'play'; S.paused = false; S.ending = null; S.endT = 0; S.result = null; S.gameId++;
   greyRows = 0; lastGrey = -1; dangerOn = false; wellWrap.classList.remove('danger');
   for (let i = 0; i < MAXP; i++) PLIFE[i] = 0; for (const q of POPS) q.t = q.life;
-  E.fast = S.fast; bannerFree.banner = bannerFree.subBanner = 0; bannerPri.banner = bannerPri.subBanner = 0;
+  E.fast = S.fast; clearBanners(); bannerFree.banner = bannerFree.subBanner = 0; bannerPri.banner = bannerPri.subBanner = 0;
   const seed = S.seed != null ? S.seed : (Math.random() * 4294967295) >>> 0; S.seed = null;
   E.reset({ mode: S.mode, seed });
-  titleScreen.hidden = true; pauseScreen.hidden = true; resultsScreen.hidden = true; app.classList.remove('offstage');
+  resultsScreen.hidden = true; app.classList.remove('offstage'); buddySays('idle');
   resetHudCache(); holdKey = -1; nextKey = -1; stackDirty = true;
   layout();
   if (E.phase === 'ready') banner('banner', S.mode === 'sprint' ? t('bReadySprint', { n: CONFIG.sprintLines }) : S.mode === 'zen' ? t('bReadyZen') : t('bReady'), 0);
   $('pauseBtn').style.visibility = '';
 }
 function quitToTitle() {
+  if (S.paused) closeKitPause();
   S.screen = 'title'; S.paused = false; S.ending = null; E.releaseAll(); E.finish(); E.phase = 'idle';
-  pauseScreen.hidden = true; resultsScreen.hidden = true; titleScreen.hidden = false; app.classList.add('offstage');
-  refreshTitle(); focusBtn('playBtn');
+  resultsScreen.hidden = true; app.classList.add('offstage');
+  openTitle(); refreshTitle(); placeBuddy();
 }
+/** Pause: the kit's pause screen (resume, restart, settings, quit = back to the title, sound), with the game's note
+ *  (the Sprint clock is stopped, n lines to go), Zen's Finish button and the phone gestures. */
+let pauseIgnore = false, pauseFinish = false;
 function setPaused(on) {
   if (S.screen !== 'play' || S.ending) return;
-  S.paused = !!on; E.releaseAll(); releaseButtons();
-  pauseScreen.hidden = !S.paused;
-  $('zenEndBtn').hidden = E.mode !== 'zen';
-  $('pauseInfo').textContent = E.mode === 'sprint' ? t('pauseSprint', { n: Math.max(0, CONFIG.sprintLines - E.lines) }) : t('pauseInfo');
-  if (S.paused) { BRB.sfx.play('click'); focusBtn('resumeBtn'); }
+  if (on && !S.paused) {
+    S.paused = true; E.releaseAll(); releaseButtons();
+    Oomba.ui.pause().then(r => {
+      if (pauseIgnore) { pauseIgnore = false; return; }
+      S.paused = false; syncMute();
+      if (pauseFinish) { pauseFinish = false; finishZen(); return; }
+      if (r === 'restart') startGame(); else if (r === 'quit') quitToTitle();
+    });
+    const card = Oomba.ui.root().querySelector('.ok-pause .ok-card'); if (!card) return;
+    const h = card.querySelector('.ok-h2'), note = document.createElement('p'); note.className = 'bd-note'; note.id = 'pauseInfo';
+    note.textContent = E.mode === 'sprint' ? t('pauseSprint', { n: Math.max(0, CONFIG.sprintLines - E.lines) }) : t('pauseInfo');
+    if (h) h.after(note);
+    const col = card.querySelector('.ok-col'), resume = card.querySelector('.ok-go');
+    if (resume) resume.id = 'resumeBtn';
+    if (E.mode === 'zen' && col) {
+      const fin = Oomba.ui.button(t('finish'), { kind: 'quiet', icon: 'flag', onPress: () => { pauseFinish = true; if (resume) resume.click(); } });
+      fin.id = 'zenEndBtn'; if (resume) resume.after(fin); else col.prepend(fin);
+    }
+    const ph = document.createElement('p'); ph.className = 'bd-phone'; ph.textContent = t('phoneHint'); card.append(ph);
+    if (RTL) { note.dir = 'rtl'; ph.dir = 'rtl'; }
+  } else if (!on && S.paused) { S.paused = false; closeKitPause(); }
 }
+/** Closes the kit's pause screen from code (a test, P again, a restart) without acting on its result. */
+function closeKitPause() {
+  const b = Oomba.ui.root().querySelector('.ok-pause .ok-go'); S.paused = false; if (!b) return;
+  pauseIgnore = true; b.click();
+}
+function finishZen() { if (E.mode === 'zen' && S.screen === 'play' && !S.ending) { S.paused = false; E.finish(); endRound('zen'); } }
 /** The round ended: save bests, tell the platform, then (after a little show) the results screen. */
 function endRound(kind) {
   if (S.ending) return;
@@ -1573,6 +1736,7 @@ function endRound(kind) {
   $('pauseBtn').style.visibility = 'hidden';
   save.games++;
   const r = { mode: E.mode, kind, score: E.score, lines: E.lines, level: E.level, time: E.time, pieces: E.pieces, best: false, won: false };
+  const confetti = () => { if (!REDUCED) { try { Oomba.juice.confetti(); } catch (e) { /* ignore */ } } };
   if (E.mode === 'marathon') {
     r.best = E.score > (save.bestMarathon || 0) && E.score > 0; if (r.best) save.bestMarathon = E.score;
     BRB.score.submit(E.score, 'points');            // labelled submit first; gameOver() repeats the score without a label
@@ -1585,53 +1749,65 @@ function endRound(kind) {
       // Sprint times stay on this device (best time above): the one leaderboard is for Marathon points,
       // so a ~580 Sprint score never competes with (or replaces) a player's Marathon best.
       BRB.gameOver({ won: true });
-      if (!REDUCED) setTimeout(() => BRB.fx.confetti(), S.fast ? 0 : 200);
+      Oomba.time.real.after(S.fast ? 0 : 200, confetti);
     } else BRB.gameOver({ won: false });               // no time, so nothing for the leaderboard
   } else {
     r.won = true; r.best = E.lines > (save.bestZenLines || 0); if (r.best) save.bestZenLines = E.lines;
     BRB.gameOver({ won: true });                       // Zen has no leaderboard
   }
   persist(); S.result = r;
-  if (r.best && E.mode !== 'zen' && kind !== 'over') { /* confetti already */ }
-  else if (r.best && E.mode === 'marathon' && !REDUCED) setTimeout(() => BRB.fx.confetti({ count: 90 }), S.fast ? 0 : 900);
+  if (r.best && E.mode === 'marathon') Oomba.time.real.after(S.fast ? 0 : 900, confetti);
 }
 function showResults() {
   const r = S.result; if (!r) return;
-  S.screen = 'results';
+  S.screen = 'results'; Oomba.scene = 'results'; clearBanners();
   let title, sub;
   if (r.mode === 'marathon') { title = t(r.best ? 'resNewBest' : 'resGreat'); sub = t('resTop'); }
   else if (r.mode === 'sprint') { if (r.won) { title = t('resDidIt'); sub = t('resSprint', { n: CONFIG.sprintLines, time: fmtTime(r.time) }); } else { title = t('resClose'); sub = t('resTopAgain'); } }
   else { title = t('resCalm'); sub = t('resZen', { n: r.lines }); }
   $('resTitle').textContent = title; $('resSub').textContent = sub;
+  // the player's own character: cheering for a win or a best; a sad face for a top-out that soon cheers up again
+  const happy = r.won || r.best, pic = $('resHero'); pic.innerHTML = '';
+  if (happy) buddySays('cheer');
+  pic.appendChild(Oomba.ui.portrait(ME, { size: 118, mood: happy ? 'cheer' : 'sad' }));
+  if (!happy) { const gid = S.gameId; Oomba.time.real.after(S.fast ? 0 : 900, () => { if (S.screen === 'results' && gid === S.gameId) { pic.innerHTML = ''; pic.appendChild(Oomba.ui.portrait(ME, { size: 118, mood: 'happy' })); } }); }
   const chips = $('resChips'); chips.innerHTML = '';
-  const addChip = (t, cls) => { const c = document.createElement('div'); c.className = 'chip' + (cls ? ' ' + cls : ''); c.textContent = t; chips.appendChild(c); };
-  if (r.best) addChip('🏆 ' + t(r.mode === 'sprint' ? 'chipBestTime' : r.mode === 'zen' ? 'chipMostLines' : 'chipNewBest'), 'best');
-  else if (r.mode === 'marathon' && save.bestMarathon) addChip(t('chipBest', { v: fmtNum(save.bestMarathon) }));
-  else if (r.mode === 'sprint' && save.bestSprintMs) addChip(t('chipBest', { v: fmtTime(save.bestSprintMs) }));
+  const addChip = (text, cls, ic) => { const c = document.createElement('div'); c.className = 'chip' + (cls ? ' ' + cls : ''); if (ic) c.innerHTML = Oomba.icon(ic); c.appendChild(document.createTextNode(text)); chips.appendChild(c); };
+  // a new best says what it is ("New best: 834!"), so it never depends on the site's own toast
+  if (r.best) { addChip(r.mode === 'zen' ? t('chipMostLines') : t('chipNewBestV', { v: r.mode === 'sprint' ? fmtTime(r.time) : fmtNum(r.score) }), 'best', 'trophy'); sfx('levelup'); }
+  else if (r.mode === 'marathon' && save.bestMarathon) addChip(t('chipBest', { v: fmtNum(save.bestMarathon) }), '', 'star');
+  else if (r.mode === 'sprint' && save.bestSprintMs) addChip(t('chipBest', { v: fmtTime(save.bestSprintMs) }), '', 'star');
   const grid = $('resGrid'); grid.innerHTML = '';
   const add = (lab, val) => { const d = document.createElement('div'); const sp = document.createElement('span'); sp.textContent = lab; const b = document.createElement('b'); b.textContent = val; d.append(sp, b); grid.appendChild(d); };
   if (r.mode === 'marathon') { add(TX.score, fmtNum(r.score)); add(TX.lines, fmtNum(r.lines)); add(TX.level, fmtNum(r.level)); add(TX.time, fmtTime(r.time)); }
   else if (r.mode === 'sprint') { add(TX.time, fmtTime(r.time)); add(TX.lines, Math.min(r.lines, CONFIG.sprintLines) + '/' + CONFIG.sprintLines); add(TX.score, fmtNum(r.score)); add(TX.bricks, fmtNum(r.pieces)); }
   else { add(TX.score, fmtNum(r.score)); add(TX.lines, fmtNum(r.lines)); add(TX.time, fmtTime(r.time)); add(TX.bricks, fmtNum(r.pieces)); }
-  resultsScreen.hidden = false; pauseScreen.hidden = true;
+  resultsScreen.hidden = false;
+  Oomba.ui.announce(title + '. ' + sub);
   focusBtn('againBtn');
 }
 
-/* ---------- Buttons ---------- */
-document.querySelectorAll('.mode').forEach(b => b.addEventListener('click', () => { S.mode = b.dataset.mode; save.mode = S.mode; persist(); refreshTitle(); BRB.sfx.play('click'); }));
-document.querySelectorAll('.mode').forEach(b => b.addEventListener('dblclick', () => startGame(b.dataset.mode)));
-$('playBtn').addEventListener('click', () => { BRB.sfx.play('click'); startGame(); });
-$('pauseBtn').addEventListener('click', e => { setPaused(true); e.currentTarget.blur(); });
-$('resumeBtn').addEventListener('click', () => setPaused(false));
-$('restartBtn').addEventListener('click', () => { BRB.sfx.play('click'); startGame(); });
-$('menuBtn').addEventListener('click', () => { BRB.sfx.play('click'); quitToTitle(); });
-$('zenEndBtn').addEventListener('click', () => { S.paused = false; pauseScreen.hidden = true; E.finish(); endRound('zen'); });
-$('againBtn').addEventListener('click', () => { BRB.sfx.play('click'); startGame(); });
-$('resMenuBtn').addEventListener('click', () => { BRB.sfx.play('click'); quitToTitle(); });
-function syncMute() {
-  document.querySelectorAll('.mute').forEach(b => { b.textContent = BRB.sfx.muted ? '🔇' : '🔊'; b.setAttribute('aria-label', BRB.sfx.muted ? TX.soundOn : TX.soundOff); });
+/* ---------- Buttons (the kit's: Ink-edged stickers with its icons; a kit button plays its own select sound) ---------- */
+$('pauseSlot').replaceWith(iconBtn(t('pause'), 'pause', () => { setPaused(true); const b = $('pauseBtn'); if (b) b.blur(); }, 'pauseBtn'));
+function muteButton() { const b = iconBtn(TX.soundOff, 'sound', () => { BRB.sfx.mute(); syncMute(); }); b.classList.add('mute'); return b; }
+$('muteSlot').replaceWith(muteButton());
+{
+  const btns = $('resBtns');
+  const again = Oomba.ui.button(t('playAgain'), { kind: 'hot', big: true, icon: 'restart', onPress: () => startGame() }); again.id = 'againBtn';
+  const menu = Oomba.ui.button(t('menu'), { kind: 'quiet', icon: 'home', onPress: () => quitToTitle() }); menu.id = 'resMenuBtn';
+  btns.append(again, menu);
+  const m = muteButton(); m.style.cssText = 'position:absolute;top:10px;inset-inline-end:10px'; resultsScreen.querySelector('.ok-card').append(m);
 }
-document.querySelectorAll('.mute').forEach(b => b.addEventListener('click', e => { BRB.sfx.mute(); syncMute(); if (!BRB.sfx.muted) BRB.sfx.play('click'); e.currentTarget.blur(); }));
+function syncMute() {
+  document.querySelectorAll('.mute').forEach(b => { b.innerHTML = Oomba.icon(BRB.sfx.muted ? 'mute' : 'sound'); b.setAttribute('aria-label', BRB.sfx.muted ? TX.soundOn : TX.soundOff); });
+}
+// the touch pad's pictures: the kit's icons (Drop: a brick landing on the floor)
+const DROP_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15 5 7h14z" fill="currentColor" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><rect x="4" y="17.4" width="16" height="3" rx="1.5" fill="currentColor"/></svg>';
+document.querySelectorAll('.pbtn').forEach(b => { const n = b.dataset.icon; b.insertAdjacentHTML('afterbegin', n === 'drop' ? DROP_SVG : Oomba.icon(n)); });
+/** The kit's left-handed setting puts Drop, Hold and Turn on the left. */
+function applyHand() { app.classList.toggle('lefty', !!Oomba.settings.leftHanded); }
+Oomba.settings.on('change', () => { REDUCED = !!Oomba.settings.reduced; applyHand(); });
+applyHand();
 
 /* ---------- Touch pad (pointer events: press = act now; left/right/down repeat while held) ---------- */
 const HELD_ACTS = { left: 1, right: 1, soft: 1 };
@@ -1705,10 +1881,14 @@ well.addEventListener('contextmenu', e => e.preventDefault());
 const KEYS = { ArrowLeft: 'left', ArrowRight: 'right', ArrowDown: 'soft', ArrowUp: 'rotateCW', KeyX: 'rotateCW', KeyZ: 'rotateCCW',
   Space: 'hard', KeyC: 'hold', ShiftLeft: 'hold', ShiftRight: 'hold', KeyP: 'pause', Escape: 'pause',
   KeyA: 'left', KeyD: 'right', KeyS: 'soft', KeyW: 'rotateCW' };
+// P while the kit's pause screen is open closes it again (Esc already does: the kit's own key).
+addEventListener('keydown', e => {
+  if (e.code === 'KeyP' && S.paused && S.screen === 'play' && !e.repeat) { e.preventDefault(); e.stopPropagation(); setPaused(false); }
+}, true);
 document.addEventListener('keydown', e => {
   keyboardUser = true;
   const act = KEYS[e.code];
-  if (S.screen === 'title') { if (e.code === 'Enter' && document.activeElement === document.body) startGame(); return; }
+  if (S.screen === 'title' || Oomba.ui.open) return;    // the kit's title and pause screens handle their own keys
   if (S.screen === 'results') { if ((e.code === 'Enter' || e.code === 'Space') && document.activeElement === document.body) { e.preventDefault(); startGame(); } return; }
   if (!act) return;
   if (act === 'pause') { e.preventDefault(); if (!e.repeat) setPaused(!S.paused); return; }
@@ -1722,12 +1902,15 @@ addEventListener('blur', () => { E.releaseAll(); releaseButtons(); });
 document.addEventListener('visibilitychange', () => { if (document.hidden && S.screen === 'play' && !S.paused && !S.ending) setPaused(true); });
 addEventListener('resize', layout);
 if (mqLand.addEventListener) { mqLand.addEventListener('change', layout); mqPad.addEventListener('change', layout); }
+// the kit's font arrives a moment after the page: the pop-up numbers use it, and the labels are re-fitted
+Oomba.fonts.ready.then(() => { FONT = getComputedStyle(Oomba.ui.root()).getPropertyValue('--ok-font') || FONT; fitLabels(); });
 
 /* ---------- Boot ---------- */
-syncMute(); refreshTitle(); layout(); requestAnimationFrame(frame);
+syncMute(); layout(); openTitle(); requestAnimationFrame(frame);
 
 /* =====================================================================================
-   window.__brbTest: hooks for automated play tests (harmless in production).
+   window.__brbTest: hooks for automated play tests (harmless in production). Merged into the kit's hooks
+   (setTheme, setLang, setTier ...): the game's own names below win and behave as before.
      state()            -> { screen ('title'|'play'|'pause'|'results'), mode, phase, board (20x10 visible rows, top first,
                              0 empty or brick id 1..7, 8 = stone), piece {type ('I','O','T','S','Z','J','L' or null), x, y, rot}
                              (x/y = the piece box's top-left in visible coordinates, y may be negative), hold (letter|null),
@@ -1757,7 +1940,7 @@ function testState() {
     lastKick: E.last.kick, gravityMs: E.gravityMs(), pieces: E.pieces, quads: E.quads, result: S.result ? Object.assign({}, S.result) : null
   };
 }
-window.__brbTest = {
+window.__brbTest = Object.assign(window.__brbTest || {}, {
   state: testState,
   start(opts = {}) {
     if (opts.seed != null) S.seed = opts.seed >>> 0;
@@ -1780,7 +1963,7 @@ window.__brbTest = {
   seed(n) { S.seed = n >>> 0; E.seed(n); },
   pause(on = true) { setPaused(on); return testState(); },
   quit() { quitToTitle(); return testState(); },
-  finishZen() { if (E.mode === 'zen' && S.screen === 'play') { S.paused = false; pauseScreen.hidden = true; E.finish(); endRound('zen'); } return testState(); },
+  finishZen() { if (S.paused) closeKitPause(); finishZen(); return testState(); },
   layout() { return { cell: G.cell, side: G.side, mini: G.mini, dpr: G.dpr }; }
-};
+});
 </script>

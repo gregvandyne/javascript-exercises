@@ -17,6 +17,7 @@ import { config } from '../config.js';
 import { tEn, tFor, normalizeCode, localeInfo } from '../i18n/index.js';
 import { fileFor } from '../services/shots.js';
 import * as progress from '../services/progress.js';
+import { characterOf } from '../services/character.js';
 import fs from 'node:fs';
 
 export const router = Router();
@@ -236,7 +237,7 @@ router.get('/frame/:token', (req, res) => {
   if (!preview && !games.canView(u, g)) return sendFrameText(res, 404, t('errors.api.notFound'));
   const lang = normalizeCode(tok.l) || req.locale;
   const init = {
-    user: { ...(u ? { displayName: u.display_name, avatar: u.avatar, isGuest: !!u.is_guest } : { displayName: t('play.defaultPlayer'), avatar: '🙂', isGuest: true }), lang, dir: localeInfo(lang).dir },
+    user: { ...(u ? { displayName: u.display_name, avatar: u.avatar, isGuest: !!u.is_guest, character: characterOf(u) } : { displayName: t('play.defaultPlayer'), avatar: '🙂', isGuest: true }), lang, dir: localeInfo(lang).dir },
     game: { id: g.id, title: g.title },
     // The site theme for games that follow it (Oomba Kit games); 'system' is left out so the device decides.
     ...(req.theme === 'light' || req.theme === 'dark' ? { theme: req.theme } : {}),

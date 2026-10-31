@@ -7,14 +7,18 @@
 export const KIT_PATH = '/vendor/oomba-kit/';
 // version -> sha384 of oomba-kit.js (tests/unit/kit-platform.test.js checks these against the files on disk).
 export const KIT_VERSIONS = Object.freeze({
+  '1.1.0': 'sha384-GCejMN1YYamlsZNEJw6SRznGmZC2i6tppYwkLt8cv2gI3YTTsZq6l8eyUQuAM8qX',
   '1.0.0': 'sha384-z+NesXSa8n9F3R0/dcZ7o60eHwzQbYE94cEyPfLu6WlUZ2zOaEO2OAS6WsmM7oUU',
 });
 // version -> {pack name -> sha384 of packs/<name>.js}: the optional art packs (extra species, props, biomes). A game
 // loads a pack with exactly kitPackTag(name), after the kit's own tag; only games that use a pack download it.
 export const KIT_PACKS = Object.freeze({
+  '1.1.0': Object.freeze({ 'art-animals': 'sha384-0kgnnCmovTaNwWnsPFryp1c8kgX7ji/jku0tdAsfRwfiaWP9usy3eBLuIdBsh8jE', 'art-biomes': 'sha384-UVVUeKEbyMD1WPlwhrdiH/sB6bVZpbw7GKz2KoN4VJg/JMMI+hUkvx2Ts03akI3t', 'art-biomes-2': 'sha384-0ad0awdyk2fC5pFpqYc/7EABVSKTEe1ZKo2YB6cvjKZDIDA2mI1+YRUEQhOgXrHs', 'art-props': 'sha384-/RtKQ/ov2WG1EoCt4pJ98rHY07jOZjZ+lia901K+1BfS49MydEROuw7UaInBPHle', 'art-school': 'sha384-tjWzckG1fXZNGAIROedz8rciqX12aec8Bw77p9Pn81hGGnR/2i9HS7cM6023xw0P', 'bridge-3d': 'sha384-XrVZh1TfGin1ajGCc72TzhAxeqUJQM3JI3kI1weHoMgUIV4urBdPtJbZxO7wPOli', 'dress': 'sha384-ZCFgY98YAWY7Tcy+GfJLalmnJukKdzbVpg6j4ZljXuJSYgYzkWSWMPihVW/u8CqH', 'style-bold': 'sha384-k+n1lKA8kY7eQBU96sQUOp6Hb9i7/wDs/mQ3rkJFKRpyeIpcGqF0XDCcCm28Mjp0' }),
   '1.0.0': Object.freeze({ 'art-animals': 'sha384-fIOJsCe/mBmelLUnXEhcOGl0x7/dQvXe5xKjHrOD4KegZbvOrJ9DzTizBzU9RzOD', 'art-biomes': 'sha384-0X8OvdyaknEYsK5nXvhDnMNWl1lS8XuHH/SKuJrOF7CjDIwxYbp3yQeChbVl2zhH', 'art-school': 'sha384-yCC/QOZAd0OcPMGet+ySH+2pkji2SRciYBilMG/braih3toohKVqxJGR4YoQJrqM', 'dress': 'sha384-cLr8VKytVQYDunYCBWc3ZZuc3v1GsLxrYMkqdof5zRFlOs4VKIp5cxtTLrMpBDLe', 'style-bold': 'sha384-smhSYk+V6EuNb/TjWseiOlH187FTJModZe951GNvlqgfYC5e1txwq8ST3ql1sch+' }),
 });
-export const KIT_LATEST = '1.0.0';
+// The version new games get (kitTag() and kitPackTag() default to it: templates, the Builder's rules, the /kit preview).
+// Older versions stay servable for the saved games that pin them; their files never change (kit/SHIPPED.json).
+export const KIT_LATEST = '1.1.0';
 export const kitSrc = (v = KIT_LATEST) => `${KIT_PATH}${v}/oomba-kit.js`;
 export const kitPackSrc = (name, v = KIT_LATEST) => `${KIT_PATH}${v}/packs/${name}.js`;
 
@@ -71,7 +75,13 @@ export function checkKit(src) {
     const k = PACK_RE.exec(a.src);
     if (k) {
       const h = KIT_PACKS[k[1]] && KIT_PACKS[k[1]][k[2]];
-      if (!h) { add('kit_pin', `Loads an Oomba Kit pack we do not have (${k[2]} for ${k[1]}). Packs: ${kitPacks().join(', ')}. Use exactly: ${kitPacks().length ? kitPackTag(kitPacks()[0]) : kitTag()}`); return block; }
+      if (!h) {
+        // a pack that came with a newer kit (an old game asking for art-props): say which kit has it
+        const newer = KIT_VERSIONS[k[1]] && KIT_PACKS[KIT_LATEST][k[2]];
+        add('kit_pin', newer ? `The ${k[2]} pack came with Oomba Kit ${KIT_LATEST}; this game loads kit ${k[1]}. Move the game to ${kitTag()} (and its packs from ${KIT_LATEST}) to use it, or drop the pack.`
+          : `Loads an Oomba Kit pack we do not have (${k[2]} for ${k[1]}). Packs: ${kitPacks(KIT_VERSIONS[k[1]] ? k[1] : KIT_LATEST).join(', ')}. Use exactly: ${kitPacks().length ? kitPackTag(kitPacks()[0]) : kitTag()}`);
+        return block;
+      }
       const exact = kitPackTag(k[2], k[1]);
       if (a.integrity !== h) { add('kit_pin', `The Oomba Kit pack tag has the wrong integrity value. Use exactly: ${exact}`); return block; }
       if (a.crossorigin !== 'anonymous') { add('kit_pin', `The Oomba Kit pack tag needs crossorigin="anonymous". Use exactly: ${exact}`); return block; }

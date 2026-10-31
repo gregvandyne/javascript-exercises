@@ -1,0 +1,34 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Oomba Themes</title></head>
+<body>
+<!--KIT-->
+<!--PACKS-->
+<script>
+// "Oomba Themes": one small platformer per theme (/kit?scene=themes&th=castle), as a Builder game would write it:
+// Oomba.game({ theme }) and nothing else for the look. The theme's prop set (Oomba.theme.look.props) stands along the
+// level so the contact sheet shows the props with their world. ?acc= and ?hills= try a recolour.
+'use strict';
+const q = new URLSearchParams(location.search), th = q.get('th') || 'meadow';
+const theme = q.get('acc') || q.get('hills') ? { name: th, accent: q.get('acc') || undefined, palette: { hills: q.get('hills') || undefined, ground: q.get('ground') || undefined } } : th;
+const SIZE = { tower: 3.2, goalpost: 2.4, pyramid: 2.8, igloo: 2.4, sandcastle: 2.2, totem: 2.8, banner: 2.4, torch: 1.9, cauldron: 1.6, satellite: 1.8, ufo: 1.7, rocket: 2.2, planet: 1.8, bus: 2.4, car: 2, tree: 2.6, boat: 2, cactus: 2, snowman: 2 };
+Oomba.game({
+  api: 1, title: th[0].toUpperCase() + th.slice(1), subtitle: 'sub', theme, seed: 3, hero: 'me', countdown: 0,
+  strings: { en: { sub: 'Oomba.game({ theme: \'' + th + '\' })' } },
+  controls: 'platformer:kid-easy', hud: ['score', 'lives:3'],
+  level: Oomba.level.grid([
+    '                                        ',
+    '                                        ',
+    '                         $ $ $          ',
+    '                        =======         ',
+    '     P     $ $                     G    ',
+    '########################################',
+    '########################################',
+  ], { $: { kind: 'spark', size: 1 } }),
+  setup(w) {
+    const L = Oomba.theme.look, props = L ? L.props : [];
+    props.forEach((n, i) => w.spawn(n, { c: 8 + i * 5.5, r: 4, size: SIZE[n] || 1.3, place: 'floor', parts: [] }));
+  },
+  testState: () => ({ look: Oomba.theme.look && { name: Oomba.theme.look.name, biome: Oomba.theme.look.biome, accent: Oomba.theme.look.accent, props: Oomba.theme.look.props }, themes: Oomba.theme.names }),
+});
+</script>
+</body></html>

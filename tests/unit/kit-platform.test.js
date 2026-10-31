@@ -75,11 +75,12 @@ test('size gate: oomba-kit.js is at most 95 KB brotli, and each art pack is unde
 
 test('art packs: one pinned file per pack, SRI in KIT_PACKS and the manifest, up to date with kit/packs', async () => {
   const names = packNames();
-  assert.deepEqual(names, ['art-animals', 'art-biomes', 'art-school', 'dress', 'style-bold']);
+  assert.deepEqual(names, ['art-animals', 'art-biomes', 'art-biomes-2', 'art-props', 'art-school', 'bridge-3d', 'dress', 'style-bold']);
   assert.deepEqual(Object.keys(K.KIT_PACKS).sort(), Object.keys(K.KIT_VERSIONS).sort(), 'every version lists its packs');
   assert.ok(Object.isFrozen(K.KIT_PACKS) && Object.isFrozen(K.KIT_PACKS[VERSION]));
   const m = JSON.parse(fs.readFileSync(path.join(KIT_DIR, VERSION, 'manifest.json'), 'utf8'));
   assert.deepEqual(m.packs, names);
+  for (const v of Object.keys(K.KIT_PACKS)) assert.deepEqual(JSON.parse(fs.readFileSync(path.join(KIT_DIR, v, 'manifest.json'), 'utf8')).packs, Object.keys(K.KIT_PACKS[v]).sort(), `${v}: KIT_PACKS lists its own packs`);
   for (const n of names) {
     const file = fs.readFileSync(path.join(KIT_DIR, VERSION, 'packs', n + '.js'));
     assert.equal(K.KIT_PACKS[VERSION][n], sri(file), `${n}: the pinned hash is the file's`);
@@ -116,6 +117,25 @@ test('scanner: a pack passes only as its exact pinned tag, after the kit tag of 
   assert.ok(scanVersion(GAME(pack + core)).issues.find(i => i.code === 'kit_pin').message.includes(core), 'the message gives the order and the exact tags');
   assert.ok(codes(GAME(core, "Oomba.__pk({ name: 'x' }, () => {});")).includes('kit_debug'), 'the pack hook is flagged');
   assert.ok(codes(GAME(core, `const u = '/vendor/oomba-kit/${VERSION}/packs/art-animals.js';`)).includes('kit_tag'));
+});
+
+test('two kits at once: new games get the latest; games pinned to an older shipped kit keep passing and loading', () => {
+  const vs = Object.keys(K.KIT_VERSIONS).sort();
+  assert.ok(vs.length >= 2 && vs.includes('1.0.0') && K.KIT_LATEST === VERSION && K.KIT_LATEST !== '1.0.0', vs.join(' '));
+  assert.ok(K.kitTag().includes(`/oomba-kit/${K.KIT_LATEST}/`), 'kitTag() defaults to the latest');
+  assert.ok(K.kitPackTag('dress').includes(`/oomba-kit/${K.KIT_LATEST}/packs/`), 'kitPackTag() too');
+  for (const v of vs) {
+    // an old saved game: its own kit tag and its own version's packs pass, and kitVersion() reads the pin
+    const old = GAME(K.kitTag(v) + K.kitPacks(v).map(n => K.kitPackTag(n, v)).join(''));
+    assert.deepEqual(codes(old).filter(c => c.startsWith('kit') || c === 'external_script'), [], v);
+    assert.equal(K.kitVersion(old), v);
+    assert.equal(vendorFile(`http://game.invalid${K.kitSrc(v)}`), path.join(KIT_DIR, v, 'oomba-kit.js'), `${v} is served`);
+  }
+  // mixing versions fails: a 1.1.0 pack after the 1.0.0 kit, or a pack that only the newer kit has
+  assert.ok(codes(GAME(K.kitTag('1.0.0') + K.kitPackTag('dress'))).includes('kit_pin'), 'packs must match the kit tag');
+  const newer = scanVersion(GAME(K.kitTag('1.0.0') + `<script src="/vendor/oomba-kit/1.0.0/packs/art-props.js" integrity="${K.KIT_PACKS[K.KIT_LATEST]['art-props']}" crossorigin="anonymous"></script>`)).issues.find(i => i.code === 'kit_pin');
+  assert.ok(newer && newer.message.includes(`came with Oomba Kit ${K.KIT_LATEST}`) && newer.message.includes(K.kitTag()), newer && newer.message);
+  assert.deepEqual(Object.keys(K.KIT_PACKS['1.0.0']).sort(), ['art-animals', 'art-biomes', 'art-school', 'dress', 'style-bold'], '1.0.0 keeps exactly the packs it shipped with');
 });
 
 test('the frame CSP allows the kit in script-src and font-src (images stay data:/blob: only)', () => {

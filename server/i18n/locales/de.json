@@ -326,6 +326,118 @@
         "newPw": "Neues Passwort",
         "newPwConfirm": "Neues Passwort wiederholen"
       }
+    },
+    "character": {
+      "heading": "Meine Oomba-Figur",
+      "text": "Gestalte einmal deine eigene Figur. Spiele, in denen du selbst mitspielen kannst, machen sie zum Helden. Es ist eine Zeichnung, die du machst, nie ein Foto.",
+      "guestText": "Gäste spielen als Oomba. Mach ein Konto, um deine eigene Figur zu gestalten.",
+      "signup": "Konto machen",
+      "previewLabel": "Deine Figur",
+      "styleGroup": "Zeig den Look für",
+      "playful": "Verspielt",
+      "bold": "Bold",
+      "boldNote": "Bold ist der Look in Spielen für Ältere. Wähle, was du dort trägst.",
+      "kind": "Art",
+      "body": "Körperform",
+      "skin": "Hautfarbe",
+      "skinLabel": "Hautfarbe {n}",
+      "hair": "Haare",
+      "hairColor": "Haarfarbe",
+      "eyes": "Augen",
+      "top": "Oberteil",
+      "topColor": "Farbe vom Oberteil",
+      "color": "Farbe",
+      "accent": "Extrafarbe",
+      "accessory": "Extra",
+      "boldHat": "Auf dem Kopf",
+      "boldTop": "Jacke",
+      "boldEyes": "Augen in Bold",
+      "none": "Nichts",
+      "save": "Figur speichern",
+      "reset": "Neu anfangen",
+      "notSaved": "Noch nicht gespeichert",
+      "saved": "Deine Figur ist gespeichert! Spiele können sie jetzt nutzen.",
+      "invalid": "Diese Figur konnte nicht gespeichert werden. Versuch es noch mal.",
+      "guestOnly": "Mach ein Konto, um deine eigene Figur zu speichern.",
+      "names": {
+        "species": {
+          "kid": "Kind",
+          "oomba": "Oomba",
+          "fox": "Fuchs",
+          "bunny": "Hase",
+          "frog": "Frosch",
+          "bee": "Biene"
+        },
+        "body": {
+          "bean": "Bohne",
+          "ball": "Rund",
+          "pear": "Birne"
+        },
+        "hair": {
+          "puffs": "Puschel",
+          "bob": "Bob",
+          "curls": "Locken",
+          "spiky": "Stachelig",
+          "braids": "Zöpfe",
+          "buzz": "Kurz",
+          "long": "Lang",
+          "cap": "Kappe"
+        },
+        "hairColor": {
+          "cocoa": "Braun",
+          "black": "Schwarz",
+          "blonde": "Blond",
+          "copper": "Rot",
+          "stone": "Grau",
+          "grape": "Lila",
+          "sky": "Blau",
+          "mint": "Grün"
+        },
+        "eyes": {
+          "happy": "Fröhlich",
+          "surprised": "Überrascht",
+          "determined": "Entschlossen",
+          "thinking": "Nachdenklich",
+          "sleepy": "Müde",
+          "wink": "Zwinkern"
+        },
+        "top": {
+          "tee": "T-Shirt",
+          "hoodie": "Kapuzenpulli",
+          "dress": "Kleid",
+          "overalls": "Latzhose"
+        },
+        "color": {
+          "mint": "Minze",
+          "coral": "Koralle",
+          "sky": "Himmelblau",
+          "grape": "Traube",
+          "peach": "Pfirsich",
+          "cocoa": "Kakao",
+          "stone": "Stein",
+          "snow": "Schnee"
+        },
+        "wear": {
+          "scarf": "Schal",
+          "glasses": "Brille",
+          "crown": "Krone",
+          "wizard-hat": "Zauberhut",
+          "backpack": "Rucksack",
+          "headphones": "Kopfhörer"
+        },
+        "boldHat": {
+          "hood": "Kapuze",
+          "visor": "Visier",
+          "headset": "Headset",
+          "helmet": "Helm",
+          "cap-back": "Kappe"
+        },
+        "boldTop": {
+          "jersey": "Trikot",
+          "bomber": "Bomberjacke",
+          "techvest": "Tech-Weste"
+        }
+      }
     }
   },
   "cards": {
@@ -486,7 +598,8 @@
         "h": "Was wir speichern",
         "p1": "Bei eigenen Konten speichern wir einen ausgedachten Namen, ein Passwort (unkenntlich gemacht gespeichert) und das, was Ihr Kind hier tut: die Spiele, die es baut, seine Chats mit dem Baumeister und alle Bilder oder Dateien, die es hinzufügt, Spielstände, Punkte, Bewertungen, Favoriten, Freunde, Chatnachrichten, ein Profilfoto, falls es eines hochlädt, und Einstellungen wie Sprache und Aussehen. Beim Spielen als Gast speichern wir einen ausgedachten Namen, Spielstände, Punkte, Bewertungen und Favoriten.",
         "p2": "Ein Schulkonto ist ein Konto, bei dem sich Ihr Kind mit einer Anmeldekarte der Schule anmeldet. Es wird von der Schule angelegt und gehört ihr. Dabei speichern wir dasselbe und zusätzlich den echten Namen des Schülers, so wie die Schule ihn für die Klassenliste eingetragen hat (nur das Kollegium der Schule und unser Team sehen ihn), seine Klassen, seinen Fortschritt in den Lektionen, schriftliche Antworten und das Feedback seiner Lehrkraft. Tritt Ihr Kind mit seinem eigenen Konto und einem Klassencode einer Klasse bei, speichert die Schule für diese Klasse dasselbe, auch seinen echten Namen, falls die Lehrkraft ihn einträgt.",
-        "paid3": "Familienabos zeigen nie Aktivitäten aus der Klasse: Ein Erwachsener, der mit einem Schüler verbunden ist, sieht nur die zusätzlichen Familiennachrichten dieses Schülers."
+        "paid3": "Familienabos zeigen nie Aktivitäten aus der Klasse: Ein Erwachsener, der mit einem Schüler verbunden ist, sieht nur die zusätzlichen Familiennachrichten dieses Schülers.",
+        "p4": "<b>Die Oomba-Figur Ihres Kindes:</b> Eigene Konten können eine gezeichnete Figur gestalten, die Spiele als Helden verwenden (Körperform, Hautfarbe, Haare, Augen, Kleidung und Farben aus unseren Listen). Sie wird nur als diese Auswahl mit dem Konto gespeichert, nie als Foto oder Bild Ihres Kindes, und mit dem Konto gelöscht."
       },
       "never": {
         "h": "Was wir nie erfassen",
@@ -1340,6 +1453,27 @@
       "failed": "Tut mir leid, daraus konnte ich keine Wörter machen. Versuch es noch mal oder tippe deine Nachricht.",
       "busy": "Der Sprachhelfer ist gerade beschäftigt. Versuch es gleich noch mal.",
       "oneAtATime": "Das Mikrofon ist schon in einem anderen Tab an. Stopp es zuerst dort."
+    },
+    "themes": {
+      "heading": "Wähl eine Welt",
+      "current": "jetzt",
+      "names": {
+        "meadow": "Wiese",
+        "beach": "Strand",
+        "jungle": "Dschungel",
+        "snow": "Schnee",
+        "desert": "Wüste",
+        "reef": "Riff",
+        "space": "Weltall",
+        "candy": "Süßigkeiten",
+        "haunted": "Gruselig",
+        "castle": "Burg",
+        "cyber": "Cyber",
+        "stadium": "Stadion",
+        "forest": "Wald",
+        "autumn": "Herbst",
+        "city": "Stadt"
+      }
     }
   },
   "publish": {
@@ -2041,7 +2175,12 @@
       },
       "limit": {
         "seePlans": "Pläne für mehr Baumeister-Nachrichten ansehen"
-      }
+      },
+      "themeUse": "Nimm das Thema {name}."
+    },
+    "character": {
+      "unsaved": "Noch nicht gespeichert",
+      "saved": "Deine Figur ist gespeichert!"
     }
   },
   "favorites": {

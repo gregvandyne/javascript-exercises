@@ -464,21 +464,22 @@ export class Stage {
     const day = 1 - Math.min(1, this.skyOut.stars * 1.4), life = String(B.life || '').split(',');
     const put = (v, x, y, w, h, layer, a, rot) => { if (c >= C.length || a <= 0.02) return; const id = cachedSprite(A, C[c++], 'critter', v, Math.abs(h) * k * 1.6), i = L.push(id, x, y, w, h, layer, 0); L.alpha[i] = a; L.rot[i] = rot || 0; L.lit[i] = 0.5; };
     const fr = x => x - Math.floor(x);
-    for (const kind of life) {
+    for (const e of life) {
+      const [v, kind = v] = e.split(':');   // 'bat:bird': the bat sprite on the bird's path (themes add critters this way)
       if (kind === 'bird' || kind === 'gull') {
         for (let f = 0; f < (many < 1 ? 1 : 2); f++) {
           const P = 13 + f * 5, u = fr(t / P + f * 0.41), dir = f % 2 ? -1 : 1, x0 = dir > 0 ? -120 + u * (V.vw + 240) : V.vw + 120 - u * (V.vw + 240), y0 = (0.1 + f * 0.09) * V.vh + Math.sin(t * 0.6 + f) * 12;
-          for (let j = 0; j < 3; j++) { const s = (kind === 'gull' ? 34 : 24) * sK * (j ? 0.8 : 1), fl = 0.3 + 0.7 * Math.abs(Math.sin(t * 8 + j * 1.7 + f)); put(kind, x0 - dir * j * 30 * sK, y0 + (j === 0 ? 0 : j === 1 ? -14 : 14) * sK, s * 40 / 30 * dir, s * fl, Z.near, day); }
+          for (let j = 0; j < 3; j++) { const s = (kind === 'gull' ? 34 : 24) * sK * (j ? 0.8 : 1), fl = 0.3 + 0.7 * Math.abs(Math.sin(t * 8 + j * 1.7 + f)); put(v, x0 - dir * j * 30 * sK, y0 + (j === 0 ? 0 : j === 1 ? -14 : 14) * sK, s * 40 / 30 * dir, s * fl, Z.near, day); }
         }
       } else if (kind === 'butterfly') {
         for (let j = 0; j < 3 * many; j++) {
           const x = V.vw * (0.08 + 0.84 * fr(t * 0.025 + j * 0.37)) + Math.sin(t * 1.3 + j * 2) * 40, y = V.vh * (0.6 + 0.07 * Math.sin(t * 0.8 + j * 2.1)) + Math.sin(t * 3.1 + j) * 10, s = 30 * sK;
-          put(j % 2 ? 'fly2' : 'fly', x, y, s * 1.33 * (0.25 + 0.75 * Math.abs(Math.sin(t * 13 + j))), s, Z.near, day, Math.sin(t * 2 + j) * 0.2);
+          put(v === kind ? (j % 2 ? 'fly2' : 'fly') : v + j % 2, x, y, s * 1.33 * (0.25 + 0.75 * Math.abs(Math.sin(t * 13 + j))), s, Z.near, day, Math.sin(t * 2 + j) * 0.2);
         }
       } else if (kind === 'leaf') {
-        for (let j = 0; j < 5 * many; j++) { const s = 16 * sK, y = (fr(t * 0.045 + j * 0.21) * 1.15 - 0.08) * V.vh, x = fr(j * 0.29 + t * 0.01) * V.vw + Math.sin(t * 1.2 + j) * 36; put('leaf' + j % 3, x, y, s * 1.33, s, Z.near, 0.95, t * 1.3 + j); }
+        for (let j = 0; j < 5 * many; j++) { const s = 16 * sK, y = (fr(t * 0.045 + j * 0.21) * 1.15 - 0.08) * V.vh, x = fr(j * 0.29 + t * 0.01) * V.vw + Math.sin(t * 1.2 + j) * 36; put(v + j % 3, x, y, s * 1.33, s, Z.near, 0.95, t * 1.3 + j); }
       } else if (kind === 'fish') {
-        for (let j = 0; j < 4 * many; j++) { const dir = j % 2 ? -1 : 1, u = fr(t / (16 + j * 3) + j * 0.3), s = (20 + j * 4) * sK; put('fish', dir > 0 ? -60 + u * (V.vw + 120) : V.vw + 60 - u * (V.vw + 120), V.vh * (0.2 + j * 0.11) + Math.sin(t * 1.4 + j) * 8, -s * 1.33 * dir, s, Z.near, 1); }
+        for (let j = 0; j < 4 * many; j++) { const dir = j % 2 ? -1 : 1, u = fr(t / (16 + j * 3) + j * 0.3), s = (20 + j * 4) * sK; put(v, dir > 0 ? -60 + u * (V.vw + 120) : V.vw + 60 - u * (V.vw + 120), V.vh * (0.2 + j * 0.11) + Math.sin(t * 1.4 + j) * 8, -s * 1.33 * dir, s, Z.near, 1); }
       } else if (kind === 'snow') {
         const D = this.snowC || (this.snowC = { name: '', v: '', b: -1, id: -1 }), id = cachedSprite(A, D, 'dot', '', 10 * k);
         for (let j = 0; j < 30 * many; j++) { const r = (j * 0.618) % 1, s = (4 + r * 6) * sK, y = (fr(t * (0.03 + r * 0.03) + j * 0.137) * 1.1 - 0.05) * V.vh, x = fr(j * 0.377 + Math.sin(t * 0.4 + j) * 0.01) * V.vw; const i = L.push(id, x, y, s, s, r > 0.6 ? Z.fx : Z.near, 0); L.alpha[i] = 0.85; L.lit[i] = 0.3; }

@@ -8,6 +8,31 @@
 // - the vehicles (car bus rocket boat plane) and the shell, cactus, snowman and log, which moved here from the core.
 // Same "Oomba Ink" grammar as the core: Ink outline, Cream rim, flat cel shade.
 export const PACK = { name: 'dress' };
+// The themes (Oomba.game({ theme })): plain data, read by the pack below and by the server (the Builder's rules, the
+// style lint). A theme bundles a biome (some come from other packs: `packs`; without them it shows `alt`), the time of
+// day, an accent hue, a music mood and a prop set; the biome's dressing recipe brings its ambient life and framing.
+const TH = (biome, accent, music, props, o) => Object.assign({ biome, accent, music, props: props.split(' '), tod: 0, packs: [], alt: biome }, o);
+const AB = ['art-biomes'], AB2 = ['art-biomes-2'];
+export const THEMES = {
+  meadow: TH('meadow', 'mint', 'bright', 'tree flower bush mushroom rock log'),
+  beach: TH('beach', 'sky', 'sunny', 'sandcastle starfish shell boat'),
+  jungle: TH('jungle', 'mint', 'adventure', 'totem tree bush flower log', { packs: AB, alt: 'forest', tod: 0.1 }),
+  snow: TH('snow', 'sky', 'calm', 'igloo snowman snowflake rock'),
+  desert: TH('desert', 'peach', 'adventure', 'pyramid pot cactus rock', { tod: 0.36 }),
+  reef: TH('reef', 'sky', 'dreamy', 'clam pearl anchor starfish shell', { packs: AB, alt: 'beach' }),
+  space: TH('space', 'grape', 'cosmic', 'ufo satellite rocket planet asteroid', { packs: AB2, alt: 'snow' }),
+  candy: TH('candy', 'coral', 'bouncy', 'sweet donut candycane cupcake gift'),
+  haunted: TH('spooky', 'grape', 'spooky', 'pumpkin ghost cauldron sweet lantern', { packs: AB2, alt: 'forest', tod: 0.7 }),
+  castle: TH('castle', 'coral', 'heroic', 'tower banner shield torch chest flag', { packs: AB2, alt: 'meadow', tod: 0.22 }),
+  cyber: TH('cyber', 'sky', 'electro', 'drone sign block lantern', { packs: ['style-bold'], alt: 'meadow', tod: 1, style: 'bold' }),
+  stadium: TH('stadium', 'sky', 'pumped', 'ball goalpost trophy medal flag', { packs: AB2, alt: 'meadow' }),
+  forest: TH('forest', 'mint', 'calm', 'tree mushroom log rock'),
+  autumn: TH('autumn', 'peach', 'calm', 'tree leaf mushroom log', { packs: AB, alt: 'forest', tod: 0.3 }),
+  city: TH('city', 'sky', 'bright', 'car bus sign lantern', { packs: AB, alt: 'meadow', tod: 0.2 }),
+};
+export const ALIAS = { ocean: 'reef', oceanreef: 'reef', underwater: 'reef', sea: 'reef', spooky: 'haunted', halloween: 'haunted', ghosts: 'haunted', candyland: 'candy', sweets: 'candy',
+  sports: 'stadium', sport: 'stadium', football: 'stadium', soccer: 'stadium', cybercity: 'cyber', neon: 'cyber', winter: 'snow', moon: 'space', outerspace: 'space',
+  knights: 'castle', kingdom: 'castle', rainforest: 'jungle', island: 'beach', seaside: 'beach', sand: 'desert', woods: 'forest', fall: 'autumn', town: 'city' };
 export function define(K) {
   const P = K.P, m = K.mix, TAU = Math.PI * 2, I = K.ink, INK = K.INK, CREAM = K.CREAM, RC = {};
   const S = (ctx, k, p, fill, shade, o = {}) => I.sticker(ctx, k, p, Object.assign({ fill, shade, shadeOff: o.off || 4 }, o));
@@ -90,7 +115,7 @@ export function define(K) {
   // Foreground framing (drawn by the stage over the play plane in the bottom corners, darkened toward the biome's
   // shade): big fern leaves, palm fronds, agave spikes or snowy / candy mounds. Variant = the biome.
   K.art('fg', { w: 220, h: 200, ax: 0, ay: 1, draw(ctx, k) {
-    const B = K.biomes[k.v] || K.biomes.meadow, kind = (RC[k.v] || {}).fg || 'fern', near = B.bands[3], R = K.rand(kind.length * 7 + 3);
+    const B = K.biomes[k.v] || K.biomes.meadow, kind = (K.recipes[k.v] || RC[k.v] || {}).fg || 'fern', near = B.bands[3], R = K.rand(kind.length * 7 + 3);
     const dark = m(near[1], INK, 0.25), mid = m(near[0], near[1], 0.6), lw = Math.max(2.5, 0.05 * k.px * 0.3) / k.s;
     const stroke = p => { ctx.strokeStyle = INK; ctx.lineWidth = lw; ctx.lineJoin = 'round'; ctx.stroke(p); };
     if (kind === 'snowbush' || kind === 'lollyfg' || kind === 'rocksfg') {
@@ -115,7 +140,15 @@ export function define(K) {
   K.art('critter', { w: 40, h: 30, ax: 0.5, ay: 0.5, draw(ctx, k) {
     const v = k.v || 'bird', lw = Math.max(1.6, 0.06 * k.px) / k.s, p = new Path2D();
     ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+    if (v === 'parrot') { p.moveTo(3, 12); p.quadraticCurveTo(11, 3, 20, 15); p.quadraticCurveTo(29, 3, 37, 12); ctx.strokeStyle = INK; ctx.lineWidth = lw * 3.4; ctx.stroke(p); ctx.strokeStyle = P.coral[2]; ctx.lineWidth = lw * 1.6; ctx.stroke(p); const b = I.ellipse(20, 16, 4, 5); ctx.fillStyle = P.sky[2]; ctx.fill(b); ctx.lineWidth = lw; ctx.strokeStyle = INK; ctx.stroke(b); return; }
     if (v === 'bird' || v === 'gull') { p.moveTo(3, 12); p.quadraticCurveTo(11, 3, 20, 15); p.quadraticCurveTo(29, 3, 37, 12); ctx.strokeStyle = INK; ctx.lineWidth = lw * 2.2; ctx.stroke(p); if (v === 'gull') { ctx.strokeStyle = CREAM; ctx.lineWidth = lw * 0.9; ctx.stroke(p); } return; }
+    // theme critters ('bat:bird' flies a bat on the bird's path): bats, little sheet ghosts, comets, saucers, confetti
+    const fill = (q, c) => { ctx.fillStyle = c; ctx.fill(q); ctx.strokeStyle = INK; ctx.lineWidth = lw; ctx.stroke(q); }, eyes = (y, d = 3.4) => { ctx.fillStyle = INK; for (const x of [20 - d, 20 + d]) { ctx.beginPath(); ctx.arc(x, y, 1.6, 0, TAU); ctx.fill(); } };
+    if (v === 'bat') { p.moveTo(20, 11); p.quadraticCurveTo(11, 2, 2, 9); p.quadraticCurveTo(6, 12, 5, 17); p.quadraticCurveTo(9, 13, 12, 18); p.quadraticCurveTo(15, 13, 20, 19); p.quadraticCurveTo(25, 13, 28, 18); p.quadraticCurveTo(31, 13, 35, 17); p.quadraticCurveTo(34, 12, 38, 9); p.quadraticCurveTo(29, 2, 20, 11); fill(p, P.grape[3]); fill(I.ellipse(20, 14, 5, 6), P.grape[2]); return eyes(13, 2); }
+    if (/^ghost/.test(v)) { p.moveTo(9, 27); p.lineTo(9, 13); p.arc(20, 13, 11, Math.PI, 0); p.lineTo(31, 27); for (let i = 0; i < 3; i++) p.quadraticCurveTo(31 - (i + 0.5) * 22 / 3, 22, 31 - (i + 1) * 22 / 3, 27); fill(p, CREAM); eyes(14); if (v === 'ghost1') { ctx.beginPath(); ctx.arc(20, 19, 2, 0, TAU); ctx.fill(); } return; }
+    if (v === 'comet') { p.moveTo(26, 9); p.quadraticCurveTo(10, 11, 1, 15); p.quadraticCurveTo(10, 19, 26, 21); fill(p, P.sky[1]); return fill(I.ellipse(28, 15, 7, 7), CREAM); }
+    if (/^ufo/.test(v)) { fill(I.ellipse(20, 11, 7, 7), P.sky[0]); fill(I.ellipse(20, 17, 17, 6), v === 'ufo1' ? P.mint[2] : P.grape[2]); ctx.fillStyle = CREAM; for (const x of [11, 20, 29]) { ctx.beginPath(); ctx.arc(x, 17, 1.6, 0, TAU); ctx.fill(); } return; }
+    if (/^conf/.test(v)) return fill(K.ink.rrect(12, 9, 16, 11, 2), [P.coral[2], P.sky[2], P.mint[2]][+v.slice(-1) % 3]);
     let col = P.coral[1];
     if (v === 'fly' || v === 'fly2') { col = v === 'fly' ? P.spark[2] : P.grape[1]; p.ellipse(13, 12, 10, 8, -0.5, 0, TAU); p.ellipse(27, 12, 10, 8, 0.5, 0, TAU); p.ellipse(15, 22, 6, 5, 0.4, 0, TAU); p.ellipse(25, 22, 6, 5, -0.4, 0, TAU); }
     else if (v === 'fish') { col = P.spark[2]; p.ellipse(18, 15, 12, 8, 0, 0, TAU); p.moveTo(28, 15); p.lineTo(38, 7); p.lineTo(38, 23); p.closePath(); }
@@ -191,7 +224,7 @@ export function define(K) {
     snow: BI('snow', 'snowbush', ['cap', 'snowpine:50c', 'snowpine:120c,house:600,rocks:300', 'snowpine:220c,rocks:380,lamp:700,tuft:90']),
     desert: BI('bird', 'agave', ['', 'cactus:160c', 'cactus:150c,tent:600,rocks:200', 'cactus:220c,rocks:180,tuft:60']),
     candy: BI('butterfly', 'lollyfg', ['', 'lolly:70c', 'lolly:120c,flags:500,drops:60', 'lolly:200c,drops:40']),
-    jungle: BI('bird,butterfly', 'fern', ['canopy', 'tree:70c,canopy', 'tree:130c,bush:90,fern:70', 'tree:200c,fern:45,rocks:420,tuft:30']),
+    jungle: BI('parrot:bird,butterfly', 'frond', ['canopy', 'tree:70c,canopy', 'palm:90c,tree:130c,bush:90,fern:60', 'palm:170c,tree:200c,fern:38,rocks:420,tuft:30']),
     reef: BI('fish', 'rocksfg', null), moon: BI('', 'rocksfg', [null, null, 'crater', 'crater,rocks:300']),
     city: BI('bird', 'fern', [null, null, null, 'tree:220c,lamp:260,bush:120,fence:500']),
     autumn: BI('leaf,bird', 'fern', ['', 'canopy', 'tree:140c,house:600,bush:110', 'tree:220c,fence:450,leaves:60,tuft:40']),
@@ -246,4 +279,59 @@ export function define(K) {
     root.insertBefore(box, root.firstChild);
     return box;
   };
+
+  // ---- themes: Oomba.game({ theme: 'beach' }) picks a whole look at once (the core calls kit.useTheme(spec)) ----
+  // A theme bundles a biome, the time of day, an accent hue, the ambient life and framing (the biome's recipe), a prop
+  // set (look.props: the props that fit, for levels and spawns) and a music mood (look.music; look.bed is the kit's
+  // nearest bed for Oomba.music). Some biomes come from other packs (look.packs); without them the theme shows `alt`.
+  const HUES = ['mint', 'coral', 'sky', 'grape', 'peach', 'cocoa', 'stone', 'snow'], TITLE = { mint: 'mint', sky: 'sky', grape: 'sky', coral: 'coral' };
+  const hue = (h, what) => {
+    if (h == null) return null; h = String(h).toLowerCase();
+    if (h === 'spark') { kit.warn(`theme ${what} 'spark': spark yellow is kept for rewards, so the theme uses 'peach'`); return 'peach'; }
+    if (HUES.includes(h)) return h; kit.warn(`theme ${what} '${h}' is not a colour name (${HUES.join(' ')})`); return null;
+  };
+  // recolouring keeps each colour's luminance (WCAG), so every contrast in the scene stays what the theme was drawn with
+  const lum = h => { const n = parseInt(h.slice(1), 16), f = c => ((c /= 255) <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4)); return 0.2126 * f(n >> 16 & 255) + 0.7152 * f(n >> 8 & 255) + 0.0722 * f(n & 255); };
+  const recolour = (c, h) => {
+    if (!/^#[0-9a-f]{6}$/i.test(c)) return c;
+    const goal = lum(c), b = m(c, P[h][2], 0.7); let out = c;
+    for (const cs of [1, 0.7, 0.45, 0.25, 0]) {   // very light or dark colours lose some chroma to stay in gamut
+      let lo = -0.7, hi = 0.7;
+      for (let i = 0; i < 18; i++) { const d = (lo + hi) / 2; if (lum(K.adjust(b, d, cs)) < goal) lo = d; else hi = d; }
+      out = K.adjust(b, (lo + hi) / 2, cs); if (Math.abs(lum(out) - goal) <= goal * 0.015 + 0.002) break;
+    }
+    return out;
+  };
+  kit.recolour = recolour;
+  kit.theme.names = Object.keys(THEMES);
+  kit.useTheme = sp => {
+    const o = typeof sp.look === 'object' ? sp.look : { name: sp.look }, raw = String(o.name || '').toLowerCase().replace(/[^a-z]/g, '');
+    let name = ALIAS[raw] || raw;
+    if (!THEMES[name]) { const near = kit.theme.names.find(n => n.slice(0, 3) === name.slice(0, 3)) || 'meadow'; kit.warn(`unknown theme "${o.name}": using '${near}' (themes: ${kit.theme.names.join(' ')})`); name = near; }
+    const th = THEMES[name], miss = th.packs.filter(p => !kit.packs[p]);
+    if (miss.length) kit.warn(`theme '${name}' needs the ${miss.join(' and ')} pack: add its pinned tag right after the kit tag (until then it shows ${th.alt})`);
+    let biome = K.biomes[th.biome] && !miss.length ? th.biome : th.alt;
+    const acc = hue(o.accent, 'accent') || th.accent, pal = o.palette || {}, hills = hue(pal.hills, 'hills'), ground = hue(pal.ground, 'ground'), sky = hue(pal.sky, 'sky');
+    if (hills || ground || sky) {   // a recoloured copy of the biome (same art, same recipe)
+      const id = [biome, hills, ground, sky].join('~');
+      if (!K.biomes[id]) {
+        const B = K.biomes[biome], st = B.sky || ['#4FB4F7', '#BFE8FF', 0.5];
+        K.biome(id, Object.assign({}, B, {
+          sky: sky ? [recolour(st[0], sky), recolour(st[1], sky), Math.max(0.6, st[2])] : B.sky,
+          bands: B.bands.map(b => (hills ? [recolour(b[0], hills), recolour(b[1], hills), b[2], b[3]] : b)),
+          ground: B.ground.map((c, i) => (ground && i < 2 ? recolour(c, ground) : c)),
+        }));
+        K.dress({ recipes: { [id]: K.recipes[biome] } });
+      }
+      biome = id;
+    }
+    kit.theme.look = { name, biome, accent: acc, tod: th.tod, music: th.music, bed: /calm|dreamy|cosmic|spooky/.test(th.music) ? 'calm' : 'meadow', style: th.style || null, packs: ['dress'].concat(th.packs),
+      get props() { const d = kit.stage && kit.stage.atlas.defs; return d ? th.props.filter(n => d.get(n)) : th.props.slice(); } };
+    if (sp.biome == null) sp.biome = biome;
+    if (!sp.style && th.style) sp.style = th.style;
+    if (!sp.titleHue && TITLE[acc]) sp.titleHue = TITLE[acc];
+  };
+  // the theme's time of day (a dark site theme is still night); dawn after a night goes back to it, not to noon
+  const att = kit.attachStage;
+  kit.attachStage = s => { att(s); const L = kit.theme.look; if (L && L.tod) { if (!kit.theme.dark && s.tod < L.tod) s.tod = L.tod; s.toNight = (on, ms) => s.setTimeOfDay(on ? 1 : L.tod, ms); } };
 }

@@ -601,7 +601,7 @@ test('CL-7 a refused follow-up never reaches the model', async () => {
   const res = await sent;
   await until(() => !runner.isBusy(g.id));
   assert.ok(res.body.refused || res.status === 202, JSON.stringify(res.body));
-  assert.doesNotMatch(JSON.stringify(streamed().slice(before).map(x => x.body)), /castle/);
+  assert.doesNotMatch(JSON.stringify(streamed().slice(before).map(x => x.body.messages)), /castle/);
   script.length = 0;
 });
 
