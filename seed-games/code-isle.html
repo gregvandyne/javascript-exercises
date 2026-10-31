@@ -140,6 +140,15 @@ body.portrait.psmall .ci-panel .ci-ed,body.portrait.psmall .ci-panel .ci-pal,bod
 .ci-editbar button.kb{background:var(--ci-sky-tint)}
 .ci-editbar button.kb[aria-pressed=true]{background:var(--ci-go)}
 .ci-gut>div>div{cursor:pointer}
+/* walking round the village */
+#ciWalk .ci-bar{pointer-events:none}
+#ciWalk .ok-touch{z-index:6}
+#ciWalk .ok-touch[hidden]{display:none}
+.ci-walkact{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(178px + env(safe-area-inset-bottom));z-index:7;display:flex;justify-content:center;max-width:calc(100vw - 32px)}
+.ci-walkact .ok-btn{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:calc(100vw - 32px)}
+body.landscape .ci-walkact{bottom:calc(36px + env(safe-area-inset-bottom))}
+.ci-walkhint{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(12px + env(safe-area-inset-bottom));z-index:6;background:var(--ok-card);color:var(--ok-text);border:2px solid var(--ok-edge);border-radius:999px;padding:6px 14px;font-weight:700;font-size:.85em;white-space:nowrap;pointer-events:none}
+.ci-kbproxy{position:absolute;left:0;bottom:0;width:1px;height:1px;opacity:0;border:0;padding:0;margin:0;resize:none;font-size:16px;pointer-events:none}
 </style>
 <canvas id="view" tabindex="-1" aria-label="The 3D island"></canvas>
 <div class="labels" id="labels"></div>
@@ -148,7 +157,13 @@ body.portrait.psmall .ci-panel .ci-ed,body.portrait.psmall .ci-panel .ci-pal,bod
   <span data-btn="home"></span>
   <div class="ok-pill" id="mStars"></div>
   <div class="ci-spacer"></div>
-  <span data-btn="free"></span><span data-btn="book"></span><span data-btn="settings"></span>
+  <span data-btn="walk"></span><span data-btn="free"></span><span data-btn="book"></span><span data-btn="settings"></span>
+</div>
+<div id="ciWalk" hidden>
+  <div class="ci-bar" id="walkBar"><span data-btn="wHome"></span><span data-btn="wMap"></span><div class="ok-pill" id="wSparks"></div><div class="ci-spacer"></div><span data-btn="wBook"></span><span data-btn="wSet"></span></div>
+  <div class="ci-walkhint" id="walkHint">Arrows: walk · Space: jump · Enter: play or talk</div>
+  <div class="ci-walkact" id="walkAct" hidden></div>
+  <div class="ok-touch" id="walkTouch"><div class="ok-stick" id="walkStick"><div class="ok-knob"></div></div><div class="ok-tbtn ok-jump" id="walkJump" aria-label="Jump"></div></div>
 </div>
 <div class="ci-sheet ok-card" id="mapSheet" hidden>
   <div class="ci-chaps" id="chapRow"></div>
@@ -183,6 +198,7 @@ body.portrait.psmall .ci-panel .ci-ed,body.portrait.psmall .ci-panel .ci-pal,bod
     <div class="ci-editbar" id="editBar" aria-label="Edit your code"></div>
   </div>
   <div class="ci-out" id="out" aria-live="polite"></div>
+  <textarea id="kbProxy" class="ci-kbproxy" tabindex="-1" aria-hidden="true" autocapitalize="off" autocomplete="off" autocorrect="off" spellcheck="false"></textarea>
   <div class="ci-run">
     <span data-btn="run"></span><span data-btn="reset"></span><span data-btn="hint"></span><span data-btn="speed"></span><span data-btn="skip"></span>
   </div>
@@ -2390,15 +2406,6 @@ water.position.y = 0.8; water.receiveShadow = true; water.renderOrder = 1; scene
 const floorMat = lam({ color: mix(C('sky', 'shade'), C('ink'), 0.3) });
 const seaFloor = new THREE.Mesh(new THREE.PlaneGeometry(1200, 1200).rotateX(-Math.PI / 2), floorMat);
 seaFloor.position.y = -3; scene.add(seaFloor);
-{
-  const shoalMat = lam({ map: TEX.sand, color: C('spark', 'tint') });
-  const groups = {};
-  for (const p of PLOTS) { const k = p.ch; const g = groups[k] = groups[k] || { x0: 1e9, x1: -1e9, z0: 1e9, z1: -1e9 }; g.x0 = Math.min(g.x0, p.ox); g.x1 = Math.max(g.x1, p.ox + p.W); g.z0 = Math.min(g.z0, p.oz); g.z1 = Math.max(g.z1, p.oz + p.D); }
-  for (const k in groups) {
-    const g = groups[k]; const w = g.x1 - g.x0 + 8, d = g.z1 - g.z0 + 8;
-    const m = new THREE.Mesh(new THREE.BoxGeometry(w, 1, d), shoalMat); m.position.set((g.x0 + g.x1) / 2, -0.55, (g.z0 + g.z1) / 2); m.receiveShadow = true; scene.add(m);
-  }
-}
 const clouds = new THREE.Group(); scene.add(clouds);
 {
   const cm = new THREE.MeshBasicMaterial({ color: C('snow'), transparent: true, opacity: 0.8, fog: false }); const r = rng(77);
@@ -2408,6 +2415,110 @@ const clouds = new THREE.Group(); scene.add(clouds);
     const a = r() * Math.PI * 2, d = 40 + r() * 170; c.position.set(Math.cos(a) * d, 62 + r() * 14, Math.sin(a) * d); c.userData.v = 0.6 + r() * 0.8; clouds.add(c);
   }
 }
+
+/* ---------- The village: walkable land round every chapter's plots, bridges between the chapters, houses and trees ---------- */
+const VILLAGE = { regions: [], bridges: [], solids: [], signs: [], sparkles: [] };
+{
+  const M = 5, groups = {};
+  for (const p of PLOTS) {
+    const g = groups[p.ch] = groups[p.ch] || { ch: p.ch, x0: 1e9, x1: -1e9, z0: 1e9, z1: -1e9, plots: [] };
+    g.x0 = Math.min(g.x0, p.ox - M); g.x1 = Math.max(g.x1, p.ox + p.W + M); g.z0 = Math.min(g.z0, p.oz - M); g.z1 = Math.max(g.z1, p.oz + p.D + M); g.plots.push(p);
+  }
+  VILLAGE.regions = Object.values(groups);
+  const grass = TEX.grassTop.clone(), dirt = TEX.dirt.clone();
+  for (const tx of [grass, dirt]) { tx.wrapS = tx.wrapT = THREE.RepeatWrapping; tx.needsUpdate = true; }
+  const plateMat = [lam({ map: grass }), lam({ map: dirt })];
+  for (const g of VILLAGE.regions) {
+    const sh = new THREE.Shape(); sh.moveTo(g.x0, g.z0); sh.lineTo(g.x1, g.z0); sh.lineTo(g.x1, g.z1); sh.lineTo(g.x0, g.z1); sh.lineTo(g.x0, g.z0);
+    for (const p of g.plots) { const h = new THREE.Path(); h.moveTo(p.ox, p.oz); h.lineTo(p.ox, p.oz + p.D); h.lineTo(p.ox + p.W, p.oz + p.D); h.lineTo(p.ox + p.W, p.oz); h.lineTo(p.ox, p.oz); sh.holes.push(h); }
+    const geo = new THREE.ExtrudeGeometry(sh, { depth: 3, bevelEnabled: false }); geo.rotateX(Math.PI / 2); geo.translate(0, 1, 0);
+    const m = new THREE.Mesh(geo, plateMat); m.receiveShadow = true; scene.add(m);
+  }
+  // Bridges: each chapter to the next one round the ring, and each chapter to the middle (Free Build).
+  const byCh = Object.fromEntries(VILLAGE.regions.map(g => [g.ch, g]));
+  const ctr = g => ({ x: (g.x0 + g.x1) / 2, z: (g.z0 + g.z1) / 2 });
+  const leave = (g, c, dx, dz) => Math.min(dx > 0 ? (g.x1 - c.x) / dx : dx < 0 ? (g.x0 - c.x) / dx : 1e9, dz > 0 ? (g.z1 - c.z) / dz : dz < 0 ? (g.z0 - c.z) / dz : 1e9);
+  const plank = lam({ map: TEX.wood }), rail = lam({ color: C('cocoa', 'shade') });
+  const bridge = (a, b) => {
+    const ca = ctr(a), cb = ctr(b); let dx = cb.x - ca.x, dz = cb.z - ca.z; const L = Math.hypot(dx, dz); dx /= L; dz /= L;
+    const ta = leave(a, ca, dx, dz) - 1.5, tb = leave(b, cb, -dx, -dz) - 1.5;
+    const ax = ca.x + dx * ta, az = ca.z + dz * ta, bx = cb.x - dx * tb, bz = cb.z - dz * tb;
+    const len = Math.hypot(bx - ax, bz - az); if (len < 1) return;
+    const mx = (ax + bx) / 2, mz = (az + bz) / 2, ang = Math.atan2(dx, dz);
+    const deck = new THREE.Mesh(new THREE.BoxGeometry(3, 0.4, len), plank); deck.position.set(mx, 0.86, mz); deck.rotation.y = ang; deck.receiveShadow = deck.castShadow = true; scene.add(deck);
+    for (const s of [-1.45, 1.45]) { const r = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.12, len), rail); r.position.set(mx + Math.cos(ang) * s, 1.55, mz - Math.sin(ang) * s); r.rotation.y = ang; scene.add(r); }
+    for (let k = 0; k <= Math.floor(len / 4); k++) for (const s of [-1.45, 1.45]) {
+      const f = -len / 2 + k * len / Math.max(1, Math.floor(len / 4)), px = mx + dx * f + Math.cos(ang) * s, pz = mz + dz * f - Math.sin(ang) * s;
+      const post = new THREE.Mesh(new THREE.BoxGeometry(0.16, 1.9, 0.16), rail); post.position.set(px, 0.65, pz); scene.add(post);
+    }
+    VILLAGE.bridges.push({ mx, mz, ux: dx, uz: dz, half: len / 2 });
+  };
+  for (let c = 1; c <= CHAPTERS.length; c++) { bridge(byCh[c], byCh[c % CHAPTERS.length + 1]); bridge(byCh[0], byCh[c]); }
+}
+/** What Pip can stand on at (x, z): { h: the top's height, solid: a tree, rock or friend } or null (water, the sea). */
+function groundAt(x, z) {
+  for (const p of PLOTS) if (x >= p.ox && x < p.ox + p.W && z >= p.oz && z < p.oz + p.D) {
+    const s = p.sim, c = s && s.col(Math.floor(x - p.ox), Math.floor(z - p.oz));
+    if (!c || !c.blocks.length) return null;
+    return { h: c.blocks.length, solid: !!(c.npc || (c.item && E.BLOCKERS.has(c.item))) };
+  }
+  for (const g of VILLAGE.regions) if (x >= g.x0 && x <= g.x1 && z >= g.z0 && z <= g.z1) return { h: 1 };
+  for (const b of VILLAGE.bridges) { const dx = x - b.mx, dz = z - b.mz; if (Math.abs(dx * b.ux + dz * b.uz) <= b.half + 0.2 && Math.abs(dx * b.uz - dz * b.ux) <= 1.25) return { h: 1.06 }; }
+  return null;
+}
+const hitsSolid = (x, z, r = 0.32) => VILLAGE.solids.some(s => s.w ? (x > s.x - s.w / 2 - r && x < s.x + s.w / 2 + r && z > s.z - s.d / 2 - r && z < s.z + s.d / 2 + r) : Math.hypot(x - s.x, z - s.z) < s.r + r);
+// Houses, trees, lamps, flowers, rocks and the hidden sparkles, placed by a seeded dice so every visit looks the same.
+const villageItems = new InstLayer('vi', partSpec), villageHouses = new InstLayer('vh', k => VPART[k]);
+const VPART = {
+  wall: { geo: BOX, mat: lam({ map: makeTex(noisy(C('snow'), 0.08), 70) }) },
+  roof: { geo: new THREE.ConeGeometry(Math.SQRT1_2, 1, 4).rotateY(Math.PI / 4), mat: lam({ map: makeTex((g, r, s) => { noisy(C('snow', 'light'), 0.12)(g, r, s); g.fillStyle = C('stone', 'light'); for (let y = 2; y < s; y += 4) g.fillRect(0, y, s, 1); }, 71), flatShading: true }) },
+  door: { geo: BOX, mat: lam({ color: C('cocoa', 'shade') }) },
+  pane: { geo: BOX, mat: lam({ color: C('sky', 'light'), emissive: new THREE.Color(C('spark', 'light')), emissiveIntensity: 0.25 }) },
+  post: { geo: new THREE.CylinderGeometry(0.06, 0.08, 1, 6), mat: lam({ color: mix(C('ink'), C('stone', 'shade'), 0.4) }) },
+  lamp: { geo: BOX, mat: lam({ color: C('spark', 'light'), emissive: new THREE.Color(C('spark')), emissiveIntensity: 0.9 }), shadow: false },
+  board: { geo: BOX, mat: lam({ color: C('snow') }) },
+  spark: { geo: new THREE.OctahedronGeometry(0.32, 0), mat: lam({ color: C('spark'), emissive: new THREE.Color(C('spark')), emissiveIntensity: 0.7, flatShading: true }), shadow: false },
+};
+{
+  const W = { walls: [C('cream'), C('peach', 'tint'), C('sky', 'tint'), C('mint', 'tint'), C('spark', 'tint'), C('grape', 'tint')], roofs: [C('coral'), C('sky', 'shade'), C('grape'), C('peach', 'shade'), C('mint', 'shade')] };
+  const H = {}, I = {};
+  const add = (k, a) => (H[k] = H[k] || []).push(a);
+  const nearBridge = (x, z, m) => VILLAGE.bridges.some(b => { const dx = x - b.mx, dz = z - b.mz; return Math.abs(dx * b.ux + dz * b.uz) <= b.half + m && Math.abs(dx * b.uz - dz * b.ux) <= 1.5 + m; });
+  const inPlot = (x, z, m) => PLOTS.some(p => x > p.ox - m && x < p.ox + p.W + m && z > p.oz - m && z < p.oz + p.D + m + 1.5);
+  const free = (x, z, m) => !inPlot(x, z, m) && !nearBridge(x, z, m) && !hitsSolid(x, z, m) && !VILLAGE.sparkles.some(s => Math.hypot(s.x - x, s.z - z) < m + 1);
+  for (const g of VILLAGE.regions) {
+    const r = rng(g.ch * 977 + 31), pick = (m, edge = 1.2) => { for (let k = 0; k < 60; k++) { const x = g.x0 + edge + r() * (g.x1 - g.x0 - 2 * edge), z = g.z0 + edge + r() * (g.z1 - g.z0 - 2 * edge); if (free(x, z, m)) return { x, z }; } return null; };
+    // a sign in front of every level's plot (walk up to it to play)
+    for (const p of g.plots) { const s = { x: p.ox + p.W / 2, z: p.oz + p.D + 1.1, id: p.id }; VILLAGE.signs.push(s); VILLAGE.solids.push({ x: s.x, z: s.z, r: 0.2 }); }
+    for (let i = 0; i < (g.ch ? 5 : 3); i++) {
+      const at = pick(2.6, 2.4); if (!at) continue;
+      const w = 2.4 + r() * 0.8, d = 2.2 + r() * 0.8, h = 1.8 + r() * 0.6, rh = 1.1 + r() * 0.4, wall = W.walls[(r() * W.walls.length) | 0], roof = W.roofs[(r() * W.roofs.length) | 0];
+      const front = at.z < (g.z0 + g.z1) / 2 ? 1 : -1;   // the door looks toward the middle of the village
+      add('wall', [at.x, 1 + h / 2, at.z, w, h, d, 0, wall]); add('roof', [at.x, 1 + h + rh / 2, at.z, w + 0.5, rh, d + 0.5, 0, roof]);
+      add('door', [at.x, 1 + 0.55, at.z + front * (d / 2 + 0.02), 0.62, 1.1, 0.06]);
+      for (const sx of [-1, 1]) add('pane', [at.x + sx * (w / 2 + 0.02), 1 + h * 0.62, at.z, 0.06, 0.5, 0.6]);
+      add('pane', [at.x + w * 0.27, 1 + h * 0.62, at.z + front * (d / 2 + 0.02), 0.5, 0.45, 0.06]);
+      VILLAGE.solids.push({ x: at.x, z: at.z, w, d });
+    }
+    for (let i = 0; i < (g.ch ? 4 : 4); i++) { const at = pick(1.2); if (!at) continue; add('post', [at.x, 1.8, at.z, 1, 1.6, 1]); add('lamp', [at.x, 2.75, at.z, 0.34, 0.34, 0.34]); VILLAGE.solids.push({ x: at.x, z: at.z, r: 0.15 }); }
+    for (let i = 0; i < 9; i++) { const at = pick(1.2); if (!at) continue; const k = ['tree', 'pine', 'tree', 'bush', 'pine', 'rock'][i % 6]; itemParts(k, at.x, 1, at.z, I, i * 13 + g.ch); VILLAGE.solids.push({ x: at.x, z: at.z, r: k === 'bush' || k === 'rock' ? 0.35 : 0.25 }); }
+    for (let i = 0; i < 14; i++) { const at = pick(0.3); if (at) itemParts('flower', at.x, 1, at.z, I, i * 7 + g.ch); }
+    for (let i = 0; i < 3; i++) { const at = pick(1); if (at) VILLAGE.sparkles.push({ x: at.x, z: at.z, i: VILLAGE.sparkles.length }); }
+  }
+  villageHouses.fill(H); villageItems.fill(I);
+}
+const signLayer = new InstLayer('vs', k => VPART[k]), sparkLayer = new InstLayer('vk', k => VPART[k]);
+function buildSigns() {
+  const H = {}; const add = (k, a) => (H[k] = H[k] || []).push(a);
+  for (const s of VILLAGE.signs) {
+    const st = plotStyle(s.id), col = st === 'done' ? C('mint') : st === 'open' ? C('spark') : C('stone', 'light');
+    add('post', [s.x, 1.6, s.z, 1.4, 1.2, 1.4]); add('board', [s.x, 2.2, s.z, 1.1, 0.7, 0.12, 0, col]);
+  }
+  signLayer.fill(H);
+}
+const found = () => new Set(SAVE.found || []);
+function buildSparkles() { const f = found(); sparkLayer.fill({ spark: VILLAGE.sparkles.filter(s => !f.has(s.i)).map(s => [s.x, 1.75, s.z]) }); }
+buildSparkles();
 
 /* Glitch fog: purple cubes float over plots that are still grey. A gold beam marks the next level to play. */
 const fxMesh = new THREE.InstancedMesh(new THREE.BoxGeometry(0.4, 0.4, 0.4), new THREE.MeshBasicMaterial({ color: C('grape', 'light'), transparent: true, opacity: 0.75 }), 420);
@@ -2453,7 +2564,7 @@ function placeNpcs(skipId) {
     const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: tx }));
     const h = s.col(s.npc.x, s.npc.z).blocks.length, H = 1.35;
     sp.center.set(0.5, 0); sp.position.set(p.ox + s.npc.x + 0.5, h + 0.02, p.oz + s.npc.z + 0.5); sp.scale.set(H * a, H, 1);
-    sp.userData.y = sp.position.y; sp.userData.ph = Math.random() * 6; npcs.add(sp);
+    sp.userData.y = sp.position.y; sp.userData.ph = Math.random() * 6; sp.userData.ch = p.ch; npcs.add(sp);
   }
 }
 
@@ -2545,10 +2656,10 @@ function addPlot(p, sim, style, B, I, opts = {}) {
 let activeId = null;
 function rebuildStatic() {
   const B = {}, I = {};
-  for (const p of PLOTS) { if (p.id === activeId) continue; addPlot(p, plotSim(p), plotStyle(p.id), B, I); }
+  for (const p of PLOTS) { p.sim = plotSim(p); if (p.id === activeId) continue; addPlot(p, p.sim, plotStyle(p.id), B, I); }
   staticBlocks.fill(B); staticItems.fill(I);
   gemList.static = I.gem || [];
-  placeNpcs(activeId); buildFx(); placeBeacon();
+  placeNpcs(activeId); buildFx(); placeBeacon(); if (typeof buildSigns === 'function') buildSigns();
 }
 const gemList = { static: [], live: [] };
 const live = { sim: null, plot: null, pop: null, popT: 1 };
@@ -2633,7 +2744,7 @@ const endPtr = e => {
 };
 canvas.addEventListener('pointerup', endPtr); canvas.addEventListener('pointercancel', e => { ptrs.delete(e.pointerId); drag = null; });
 canvas.addEventListener('wheel', e => { e.preventDefault(); zoomBy(Math.exp(e.deltaY * 0.0012)); }, { passive: false });
-function zoomBy(f) { const [lo, hi] = mode === 'level' ? [6, 70] : [25, 300]; goal.dist = Math.max(lo, Math.min(hi, goal.dist * f)); rig.dist = goal.dist; }
+function zoomBy(f) { const [lo, hi] = mode === 'level' ? [6, 70] : mode === 'walk' ? [4, 30] : [25, 300]; goal.dist = Math.max(lo, Math.min(hi, goal.dist * f)); rig.dist = goal.dist; }
 function panBy(dx, dy) {
   const s = rig.dist * 0.0018; const c = Math.cos(rig.theta), sn = Math.sin(rig.theta);
   const mx = -dx * s * c - dy * s * sn, mz = dx * s * sn - dy * s * c;
@@ -2819,20 +2930,20 @@ function updateBubbles() {
 const plotLabels = [];
 function buildPlotLabels() {
   plotLabels.forEach(l => l.el.remove()); plotLabels.length = 0;
-  if (mode !== 'map') return;
+  if (mode !== 'map' && mode !== 'walk') return;
   for (const p of PLOTS) {
-    if (p.id !== 'free' && p.ch !== selChapter) continue;
+    if (mode === 'map' && p.id !== 'free' && p.ch !== selChapter) continue;
     const done = SAVE.done[p.id], open = unlocked(p.id);
     const b = el('button', 'ci-plabel' + (p.id === 'free' ? '' : !open ? ' lock' : !done ? ' open' : ''));
     b.type = 'button';
     b.innerHTML = p.id === 'free' ? `${ICON('pencil')}${esc(t('free'))}` : `${!open ? ICON('lock') : ''}${p.id}${done ? ' ' + starsHtml(done.s) : ''}`;
-    b.addEventListener('click', () => { if (p.id === 'free' || unlocked(p.id)) { sfx('click'); startLevel(p.id); } else Oomba.ui.toast(t('locked')); });
+    b.addEventListener('click', () => { if (p.id === 'free' || unlocked(p.id)) { sfx('click'); startLevel(p.id, mode === 'walk' ? 'walk' : 'map'); } else Oomba.ui.toast(t('locked')); });
     $('#labels').appendChild(b);
-    plotLabels.push({ el: b, v: new THREE.Vector3(p.ox + p.W / 2, 3.2, p.oz + p.D / 2) });
+    plotLabels.push({ el: b, v: new THREE.Vector3(p.ox + p.W / 2, 3.2, p.oz + p.D / 2), p });
   }
 }
 function updatePlotLabels() {
-  for (const l of plotLabels) { const s = project(l.v); l.el.style.display = s.vis ? '' : 'none'; l.el.style.transform = `translate(${s.x}px,${s.y}px) translate(-50%,-100%)`; }
+  for (const l of plotLabels) { const s = project(l.v); l.el.style.display = s.vis && (mode !== 'walk' || Math.hypot(l.v.x - walk.x, l.v.z - walk.z) < 16) ? '' : 'none'; l.el.style.transform = `translate(${s.x}px,${s.y}px) translate(-50%,-100%)`; }
 }
 
 /* ---------- Screens ---------- */
@@ -2840,6 +2951,7 @@ function showOnly(name) {
   mode = name; Oomba.scene = name;
   $('#ciMapBar').hidden = $('#mapSheet').hidden = name !== 'map';
   $('#panel').hidden = name !== 'level';
+  $('#ciWalk').hidden = name !== 'walk';
   bubbles.forEach(b => b.el.remove()); bubbles.length = 0;
   buildPlotLabels();
   requestAnimationFrame(applyViewOffset);
@@ -2866,9 +2978,9 @@ async function onPlay() {
       [PIP, 'I can build it back! But I only understand code. Will you write the code for me, friend?'],
       [CHAPTERS[0].npc, 'Every bit of code you write builds a piece of the island back, and it stays built! Let\'s start on my beach.'],
     ]);
-    startLevel('1-1'); return;
+    startLevel('1-1', 'walk'); return;
   }
-  goMap(nextOpen().ch);
+  goWalk();
 }
 function goMap(chId) {
   closeCard(); leaveLevel();
@@ -2971,7 +3083,8 @@ function bookCard(tab = 'lessons') {
 
 /* ---------- Settings: the game's own choices, then the kit's settings (sound, captions, text size, motion) ---------- */
 function applySettings() {
-  const T = { s: [13, 20], m: [15, 23], l: [18, 27] }[SAVE.settings.text] || [15, 23];
+  // phones zoom into a text box with letters under 16px, which makes taps land in the wrong place
+  const T = (TOUCH ? { s: [16, 25], m: [17, 27], l: [19, 30] } : { s: [13, 20], m: [15, 23], l: [18, 27] })[SAVE.settings.text] || (TOUCH ? [17, 27] : [15, 23]);
   document.documentElement.style.setProperty('--fs', T[0] + 'px'); document.documentElement.style.setProperty('--lh', T[1] + 'px');
   LH = T[1];
   if (BTN.speed) BTN.speed.textContent = speed() + '×';
@@ -2991,7 +3104,7 @@ function settingsCard() {
     <div class="ci-acts"><i data-more></i><i data-x></i></div>`);
   m.querySelectorAll('[data-k]').forEach(b => b.addEventListener('click', () => {
     let v = b.dataset.v; if (v === 'true') v = true; else if (v === 'false') v = false; else if (/^\d+$/.test(v)) v = +v;
-    if (b.dataset.k === 'keyboard') { setKeyboard(v, false); settingsCard(); return; }
+    if (b.dataset.k === 'keyboard') { setKeyboard(v); settingsCard(); return; }
     SAVE.settings[b.dataset.k] = v; save(); applySettings(); sfx('click');
     if (b.dataset.k === 'unlockAll') { rebuildStatic(); if (mode === 'map') renderMap(); }
     settingsCard();
@@ -3007,12 +3120,13 @@ function settingsCard() {
 
 /* ---------- The level ---------- */
 let LH = 23, runs = 0, hintI = 0, shownVi = 0, palTab = 'pip';
-async function startLevel(id) {
+async function startLevel(id, from) {
   const level = BYID[id]; if (!level) return;
+  const came = from || (cur && cur.from) || (mode === 'walk' ? 'walk' : 'map');
   closeCard(); closeKitScreens();
   if (anim.on) { anim.on = false; anim.done = null; }
   const p = PLOT[id];
-  activeId = id; cur = { level, plot: p, res: null };
+  activeId = id; cur = { level, plot: p, res: null, from: came };
   runs = 0; hintI = 0; shownVi = 0; palTab = 'pip';
   rebuildStatic();
   showOnly('level');
@@ -3304,18 +3418,56 @@ function moveLine(dir) {
   ta.setSelectionRange(p, p); afterEdit(); scrollToLine(j + 1);
 }
 function backspace() { pushHistory(); const s = ta.selectionStart, e2 = ta.selectionEnd; if (s !== e2) ta.setRangeText('', s, e2, 'end'); else if (s > 0) ta.setRangeText('', s - 1, s, 'end'); afterEdit(); }
-/** Turn the phone keyboard on or off right now. A focused text box keeps the keyboard it opened with, so it is
- *  blurred and made read-only for a moment (that is what makes the browser forget it), then focused again from this
- *  same tap, which is when phones allow the keyboard to open. */
-function setKeyboard(onKb, refocus = true) {
+/** Turn the phone keyboard on or off right now. Phones open the keyboard only when a text box is focused inside the
+ *  tap itself, and a box that is already focused keeps the keyboard it had. So, in this same tap: focus a hidden text
+ *  box first (that opens the keyboard), then move to the code (the keyboard stays open). Off: let go of both. */
+function setKeyboard(onKb) {
   SAVE.settings.keyboard = !!onKb; save();
-  const ro = ta.readOnly;
-  ta.readOnly = true; ta.blur();
-  ta.setAttribute('inputmode', onKb ? 'text' : 'none');
-  ta.readOnly = ro;
+  const proxy = $('#kbProxy');
+  if (onKb) {
+    proxy.focus();
+    ta.setAttribute('inputmode', 'text');
+    if (!anim.on) { ta.readOnly = false; ta.focus(); }
+  } else {
+    ta.setAttribute('inputmode', 'none'); ta.blur(); proxy.blur();
+  }
   applySettings();
-  if (onKb && refocus && !ro) ta.focus({ preventScroll: true });
-  Oomba.ui.toast(onKb ? 'Keyboard on: tap your code and type.' : 'Keyboard off: tap the code buttons to add code.');
+  Oomba.ui.toast(onKb ? 'Keyboard on: type your code.' : 'Keyboard off: tap a word to pick it, or use the code buttons.');
+}
+/** Tap mode (keyboard off): a tap on a word picks the whole word, so Delete removes it and a code button replaces it. */
+function wordAt(v, p) {
+  const isW = c => /[A-Za-z0-9_$.]/.test(c || '');
+  let a = p, b = p;
+  if (!isW(v[p]) && isW(v[p - 1])) { a = b = p - 1; }
+  if (!isW(v[a])) return null;
+  while (a > 0 && isW(v[a - 1])) a--; while (b < v.length && isW(v[b])) b++;
+  // pick one part of pip.forward: the part the tap is on
+  const seg = v.slice(a, b); let off = a;
+  for (const part of seg.split('.')) { if (p >= off && p <= off + part.length && part) return [off, off + part.length]; off += part.length + 1; }
+  return [a, b];
+}
+let tapDown = null;
+ta.addEventListener('pointerdown', e => { tapDown = e.pointerType === 'touch' ? { x: e.clientX, y: e.clientY } : null; });
+ta.addEventListener('pointerup', e => {
+  if (!tapDown || SAVE.settings.keyboard || ta.readOnly || Math.hypot(e.clientX - tapDown.x, e.clientY - tapDown.y) > 8) return;
+  requestAnimationFrame(() => {
+    if (ta.selectionStart !== ta.selectionEnd) return;
+    const w = wordAt(ta.value, ta.selectionStart); if (w) ta.setSelectionRange(w[0], w[1]);
+  });
+});
+function moveCaret(d) {
+  if (document.activeElement !== ta) ta.focus({ preventScroll: true });
+  const s = ta.selectionStart, e2 = ta.selectionEnd;
+  const p = s !== e2 ? (d < 0 ? s : e2) : Math.max(0, Math.min(ta.value.length, s + d));
+  ta.setSelectionRange(p, p); scrollToLine(ta.value.slice(0, p).split('\n').length);
+}
+function deleteWord() {
+  const v = ta.value, s = ta.selectionStart, e2 = ta.selectionEnd;
+  pushHistory();
+  if (s !== e2) { ta.setRangeText('', s, e2, 'end'); afterEdit(); return; }
+  let a = s; while (a > 0 && /[ \t]/.test(v[a - 1])) a--;
+  if (/[A-Za-z0-9_$]/.test(v[a - 1] || '')) { while (a > 0 && /[A-Za-z0-9_$]/.test(v[a - 1])) a--; } else if (a > 0) a--;
+  ta.setRangeText('', a, s, 'end'); afterEdit();
 }
 {
   const bar = $('#editBar');
@@ -3326,7 +3478,10 @@ function setKeyboard(onKb, refocus = true) {
     bar.appendChild(b); return b;
   };
   const kb = add('Keyboard', 'pencil', () => setKeyboard(!SAVE.settings.keyboard), 'kb'); kb.id = 'kbBtn';
+  add('', 'left', () => moveCaret(-1)).setAttribute('aria-label', 'Cursor left');
+  add('', 'right', () => moveCaret(1)).setAttribute('aria-label', 'Cursor right');
   add('Delete', 'back', backspace).setAttribute('aria-label', 'Delete one letter');
+  add('Delete word', 'cross', deleteWord);
   add('Delete line', 'cross', deleteLine);
   add('New line', 'down', () => { pushHistory(); newline(); });
   add('Undo', 'restart', undo);
@@ -3355,7 +3510,12 @@ mkBtn('home', t('home'), { kind: 'icon', icon: 'home', onPress: () => goTitle() 
 mkBtn('free', t('free'), { kind: 'icon', icon: 'pencil', onPress: () => startLevel('free') });
 mkBtn('book', t('book'), { kind: 'icon', icon: 'book', onPress: () => bookCard() });
 mkBtn('settings', 'Settings', { kind: 'icon', icon: 'settings', onPress: settingsCard });
-mkBtn('map', t('map'), { kind: 'icon', icon: 'back', onPress: () => goMap(cur && !cur.level.sandbox ? cur.level.ch : selChapter) });
+mkBtn('map', t('map'), { kind: 'icon', icon: 'back', onPress: () => { if (cur && cur.from === 'walk') goWalk(signFor(cur.level.id)); else goMap(cur && !cur.level.sandbox ? cur.level.ch : selChapter); } });
+mkBtn('walk', 'Walk round the village', { kind: 'icon', icon: 'move', onPress: () => goWalk() });
+mkBtn('wHome', t('home'), { kind: 'icon', icon: 'home', onPress: () => goTitle() });
+mkBtn('wMap', 'Level map', { kind: 'icon', icon: 'flag', onPress: () => goMap(selChapter) });
+mkBtn('wBook', t('book'), { kind: 'icon', icon: 'book', onPress: () => bookCard() });
+mkBtn('wSet', 'Settings', { kind: 'icon', icon: 'settings', onPress: settingsCard });
 mkBtn('size', t('size'), { kind: 'icon', icon: 'fullscreen', onPress: () => {
   const b = document.body;
   if (b.classList.contains('landscape')) { Oomba.ui.toast('Turn your device to make the code bigger or smaller.'); return; }
@@ -3399,6 +3559,108 @@ function applyTheme() {
 }
 Oomba.theme.on('change', applyTheme);
 
+/* ---------- Walking round the village: joystick or arrow keys, jump, signs to play levels, friends to talk to ---------- */
+const walk = { x: 0, z: 11, y: 1, vy: 0, ground: true, yaw: Math.PI, shownY: 1, keys: new Set(), sx: 0, sy: 0, jump: false, act: null, step: 0, placed: false };
+function signFor(id) { return VILLAGE.signs.find(s => s.id === id); }
+function goWalk(at) {
+  closeCard(); leaveLevel(); showOnly('walk');
+  const spot = at || (!walk.placed && signFor(nextOpen().id));
+  if (spot) { walk.x = spot.x; walk.z = spot.z + 1.6; walk.yaw = Math.PI; }
+  walk.placed = true;
+  const g = groundAt(walk.x, walk.z); walk.y = walk.shownY = g ? g.h : 1; walk.vy = 0; walk.ground = true; walk.act = null;
+  pip.visible = true; pip.position.set(walk.x, walk.y, walk.z); pip.rotation.y = walk.yaw;
+  pipBody.rotation.set(0, 0, 0); pip.userData.arms.forEach(a => { a.rotation.x = 0; });
+  setCam({ tx: walk.x, ty: walk.y + 0.8, tz: walk.z, dist: 10, phi: 1.02, theta: 0 }, !at);
+  renderWalkBar(); setAct(null);
+  $('#walkTouch').hidden = !TOUCH; $('#walkHint').hidden = TOUCH;
+}
+function renderWalkBar() { const n = found().size; $('#wSparks').innerHTML = `${ICON('spark')}<span class="ok-num">${n} / ${VILLAGE.sparkles.length}</span>`; }
+let actBtn = null;
+function setAct(a) {
+  const key = a ? a.kind + ':' + (a.id || a.ch) : '';
+  if ((walk.act ? walk.act.key : '') === key) return;
+  walk.act = a ? Object.assign({ key }, a) : null;
+  const box = $('#walkAct'); box.innerHTML = ''; box.hidden = !a; if (!a) return;
+  actBtn = Oomba.ui.button(a.label, { kind: a.kind === 'play' ? 'hot' : 'go', icon: a.kind === 'play' ? 'play' : a.kind === 'talk' ? 'speak' : 'lock', onPress: doAct });
+  box.appendChild(actBtn);
+}
+function doAct() {
+  const a = walk.act; if (!a) return;
+  if (a.kind === 'play') { startLevel(a.id, 'walk'); return; }
+  if (a.kind === 'locked') { Oomba.ui.toast(t('locked')); return; }
+  if (a.kind === 'talk') talkTo(a.ch);
+}
+async function talkTo(chId) {
+  const ch = CHAPTERS.find(c => c.id === chId), lv = LEVELS.filter(l => l.ch === chId);
+  const next = lv.find(l => !SAVE.done[l.id] && unlocked(l.id)), got = lv.reduce((a, l) => a + ((SAVE.done[l.id] || {}).s || 0), 0);
+  const text = lv.every(l => SAVE.done[l.id]) ? `${ch.outro} You have ${got} of ${lv.length * 3} stars here.`
+    : next ? `${ch.intro} Next up is ${next.id}: ${next.title}. Walk to its sign, or play it from here!` : 'Finish the levels before mine and come back to see me!';
+  const r = await say(ch.npc, text, next ? [{ label: 'Bye!', kind: 'quiet', value: 0 }, { label: `Play ${next.id}`, kind: 'hot', value: 1, icon: 'play' }] : undefined);
+  if (r === 1 && next) startLevel(next.id, 'walk');
+}
+addEventListener('keydown', e => {
+  if (mode !== 'walk' || /INPUT|TEXTAREA/.test(e.target.tagName) || Oomba.ui.open || !$('#scrim').hidden) return;
+  if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].includes(e.code)) e.preventDefault();
+  if (e.code === 'Space' && !e.repeat) walk.jump = true;
+  if ((e.code === 'Enter' || e.code === 'KeyE') && !e.repeat && !(e.target.closest && e.target.closest('button'))) doAct();
+  walk.keys.add(e.code);
+});
+addEventListener('keyup', e => walk.keys.delete(e.code));
+addEventListener('blur', () => walk.keys.clear());
+{
+  const pad = $('#walkStick'), knob = pad.firstElementChild; let id = -1, cx = 0, cy = 0;
+  const set = (x, y) => { const l = Math.hypot(x, y), k = l > 48 ? 48 / l : 1; x *= k; y *= k; knob.style.transform = `translate(${x}px,${y}px)`; walk.sx = x / 48; walk.sy = y / 48; };
+  pad.addEventListener('pointerdown', e => { id = e.pointerId; const r = pad.getBoundingClientRect(); cx = r.left + r.width / 2; cy = r.top + r.height / 2; try { pad.setPointerCapture(id); } catch { /* fine */ } set(e.clientX - cx, e.clientY - cy); pad.classList.add('on'); e.preventDefault(); });
+  pad.addEventListener('pointermove', e => { if (e.pointerId === id) set(e.clientX - cx, e.clientY - cy); });
+  const end = e => { if (e.pointerId !== id) return; id = -1; set(0, 0); pad.classList.remove('on'); };
+  pad.addEventListener('pointerup', end); pad.addEventListener('pointercancel', end);
+  const jb = $('#walkJump'); jb.innerHTML = ICON('jump');
+  jb.addEventListener('pointerdown', e => { walk.jump = true; jb.classList.add('on'); e.preventDefault(); });
+  const up = () => jb.classList.remove('on'); jb.addEventListener('pointerup', up); jb.addEventListener('pointercancel', up);
+}
+function stepWalk(dt) {
+  if (Oomba.ui.open || !$('#scrim').hidden) { walk.jump = false; return; }
+  const K = walk.keys;
+  let ix = (K.has('ArrowRight') || K.has('KeyD') ? 1 : 0) - (K.has('ArrowLeft') || K.has('KeyA') ? 1 : 0) + walk.sx;
+  let iz = (K.has('ArrowUp') || K.has('KeyW') ? 1 : 0) - (K.has('ArrowDown') || K.has('KeyS') ? 1 : 0) - walk.sy;
+  const l = Math.hypot(ix, iz); if (l > 1) { ix /= l; iz /= l; }
+  const fx = -Math.sin(rig.theta), fz = -Math.cos(rig.theta), rx = -fz, rz = fx;
+  const speed = 4.6, vx = (fx * iz + rx * ix) * speed, vz = (fz * iz + rz * ix) * speed, moving = Math.hypot(vx, vz) > 0.3;
+  const canGo = (x, z) => { const g = groundAt(x, z); if (!g || g.solid || hitsSolid(x, z)) return false; return g.h - walk.y <= (walk.ground ? 1.1 : 0.55); };
+  if (moving) {
+    const nx = walk.x + vx * dt, nz = walk.z + vz * dt;
+    if (canGo(nx, walk.z)) walk.x = nx;
+    if (canGo(walk.x, nz)) walk.z = nz;
+    const want = Math.atan2(vx, vz); let d = want - walk.yaw; d = Math.atan2(Math.sin(d), Math.cos(d)); walk.yaw += d * Math.min(1, dt * 12);
+    walk.step += dt * 11;
+  }
+  const g = groundAt(walk.x, walk.z), gh = g ? g.h : walk.y;
+  if (walk.jump && walk.ground) { walk.vy = 8.6; walk.ground = false; sfx('jump'); }
+  walk.jump = false;
+  if (!walk.ground || walk.y > gh + 0.01) { walk.vy -= 24 * dt; walk.y += walk.vy * dt; walk.ground = false; if (walk.y <= gh) { walk.y = gh; walk.vy = 0; walk.ground = true; } }
+  else if (gh > walk.y) walk.y = gh;
+  walk.shownY += (walk.y - walk.shownY) * Math.min(1, dt * (walk.ground ? 14 : 60));
+  pip.position.set(walk.x, walk.shownY, walk.z); pip.rotation.y = walk.yaw;
+  const sw = moving && walk.ground && !REDUCED ? Math.sin(walk.step) : 0;
+  pip.userData.arms[0].rotation.x = sw * 0.7; pip.userData.arms[1].rotation.x = -sw * 0.7; pipBody.rotation.x = moving ? 0.12 : 0;
+  // the camera follows Pip (drag to look round, pinch or scroll to zoom)
+  goal.tx = rig.tx = rig.tx + (walk.x - rig.tx) * Math.min(1, dt * 8); goal.tz = rig.tz = rig.tz + (walk.z - rig.tz) * Math.min(1, dt * 8); goal.ty = walk.shownY + 0.8;
+  // sparkles
+  const f = found();
+  for (const s of VILLAGE.sparkles) if (!f.has(s.i) && Math.hypot(s.x - walk.x, s.z - walk.z) < 0.9 && walk.y < 2.6) {
+    SAVE.found = [...f, s.i]; save(); buildSparkles(); renderWalkBar(); sfx('star', true); burst(s.x, 1.8, s.z, C('spark'), 18, 2.4, 2.6);
+    const n = SAVE.found.length, all = VILLAGE.sparkles.length;
+    if (n === all) { Oomba.ui.toast('You found every sparkle on Code Isle!'); try { if (!REDUCED) Oomba.juice.confetti(); } catch { /* fine */ } } else Oomba.ui.toast(`Sparkle ${n} of ${all}!`);
+    break;
+  }
+  // what is near: a level's sign, or a friend
+  let best = null, bd = 2.3;
+  for (const s of VILLAGE.signs) { const d = Math.hypot(s.x - walk.x, s.z - walk.z); if (d < bd) { bd = d; best = s; } }
+  if (best) { const L = BYID[best.id]; setAct(unlocked(best.id) ? { kind: 'play', id: best.id, label: best.id === 'free' ? `Play ${t('free')}` : `Play ${best.id}: ${L.title}` } : { kind: 'locked', id: best.id, label: `${best.id} is locked` }); return; }
+  for (const sp of npcs.children) { const d = Math.hypot(sp.position.x - walk.x, sp.position.z - walk.z); if (d < 2.2) { const ch = CHAPTERS.find(c => c.id === sp.userData.ch); setAct({ kind: 'talk', ch: ch.id, label: `Talk to ${ch.npc.name}` }); return; } }
+  setAct(null);
+}
+
 /* ---------- Main loop (three.js draws every frame; the kit's screens run on the kit's clock) ---------- */
 let last = performance.now(), blinkT = 3, frameMs = 16, slow = 0;
 function frame(now) {
@@ -3407,11 +3669,12 @@ function frame(now) {
   frameMs = frameMs * 0.95 + (dt * 1000) * 0.05;
   if (frameMs > 34 && sun.castShadow) { if (++slow > 120) { renderer.shadowMap.enabled = false; sun.castShadow = false; } } else slow = 0;
   if (mode === 'title' && !REDUCED) goal.theta += dt * 0.05;
+  if (mode === 'walk') stepWalk(dt);
   updateCam(dt);
   stepAnim(dt);
   const t2 = now / 1000;
   if (pip.visible) {
-    if (!anim.on) { pipBody.position.y = REDUCED ? 0 : Math.sin(t2 * 3) * 0.04 + 0.03; }
+    if (!anim.on) { pipBody.position.y = REDUCED ? 0 : (mode === 'walk' ? Math.abs(Math.sin(walk.step)) * 0.06 : Math.sin(t2 * 3) * 0.04 + 0.03); }
     blinkT -= dt; const fm = pip.userData.faceMat;
     if (blinkT < 0) { fm.map = pipFace[1]; if (blinkT < -0.14) { fm.map = pipFace[0]; blinkT = 2 + Math.random() * 3; } }
     pip.userData.bulb.material.emissiveIntensity = 0.6 + Math.sin(t2 * 4) * 0.3;
@@ -3426,16 +3689,17 @@ function frame(now) {
     clouds.children.forEach(c => { c.position.x += c.userData.v * dt; if (c.position.x > 240) c.position.x = -240; });
     waterTex.offset.set(t2 * 0.004, t2 * 0.006);
   }
+  { const m = sparkLayer.meshes.spark; if (m) { const f = found(); let i = 0; for (const s of VILLAGE.sparkles) { if (f.has(s.i)) continue; Q.setFromEuler(EU.set(0, t2 * 2.4 + s.i, 0)); m.setMatrixAt(i++, M4.compose(V.set(s.x, 1.75 + (REDUCED ? 0 : Math.sin(t2 * 3 + s.i) * 0.15), s.z), Q, S3.set(1, 1, 1))); } m.instanceMatrix.needsUpdate = true; } }
   if (ghostLayer.meshes.ghost) ghostLayer.meshes.ghost.material.opacity = 0.6 + Math.sin(t2 * 3) * 0.25;
   stepParticles(dt);
-  const near = mode === 'level';
-  clouds.visible = !near;
-  beacon.visible = !near && !beacon.userData.done;
+  const near = mode === 'level' || mode === 'walk';
+  clouds.visible = mode !== 'level';
+  beacon.visible = mode !== 'level' && !beacon.userData.done;
   if (beacon.visible) beacon.material.opacity = 0.3 + Math.sin(t2 * 2) * 0.1;
-  if (!near) stepFx(t2); fxMesh.visible = !near;
+  if (mode !== 'level') stepFx(t2); fxMesh.visible = mode !== 'level';
   if (near !== sun.castShadow && renderer.shadowMap.enabled) sun.castShadow = near;
   sun.target.position.set(rig.tx, 0, rig.tz); sun.position.set(rig.tx + 22, 40, rig.tz + 16);
-  scene.fog.near = near ? 70 : 260; scene.fog.far = near ? 260 : 820;
+  scene.fog.near = near ? 80 : 260; scene.fog.far = near ? 300 : 820;
   updateBubbles(); updatePlotLabels();
   renderer.render(scene, camera);
 }
@@ -3466,6 +3730,15 @@ Object.assign(window.__brbTest, {
     }
   },
   camera: o => setCam(o, true),
+  walk: () => { closeKitScreens(); goWalk(); },
+  walkState: () => ({ x: walk.x, z: walk.z, y: walk.y, act: walk.act && walk.act.label, sparkles: found().size }),
+  walkTo: (x, z) => { walk.x = x; walk.z = z; const g = groundAt(x, z); walk.y = walk.shownY = g ? g.h : walk.y; },
+  hold: (code, on) => { if (on) walk.keys.add(code); else walk.keys.delete(code); },
+  jump: () => { walk.jump = true; },
+  act: () => doAct(),
+  groundAt: (x, z) => groundAt(x, z),
+  sparkleAt: i => VILLAGE.sparkles[i],
+  signAt: id => signFor(id),
 });
 
 /* ---------- Go ---------- */
