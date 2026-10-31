@@ -358,13 +358,15 @@ function drawMap() {
   g.globalAlpha = 1;
   const sx = W / 360, sy = H / 180;
   const path = s => { g.beginPath(); for (const sh of s.shifts) for (const r of s.rings) { for (let i = 0; i < r.length; i += 2) { const x = (r[i] + sh + 180) * sx, y = (90 - r[i + 1]) * sy; if (i) g.lineTo(x, y); else g.moveTo(x, y); } g.closePath(); } };
+  const session = gameMap();
   for (const [k, s] of Object.entries(SHAPES)) {
     const c = BY[k], mk = MARK[k];
-    g.fillStyle = mk === 'hot' ? PAL.hot : mk === 'wrong' ? PAL.wrong : mk === 'pick' ? PAL.pick : mk === 'near' ? PAL.near : mk === 'reg' ? C(REG[c.reg].hue, PAL.night ? 'shade' : 'light') : !c ? PAL.other : isLit(k) ? C(REG[c.reg].hue, PAL.night ? 'base' : 'light') : SAVE.m[k] ? C(REG[c.reg].hue, PAL.night ? 'shade' : 'tint') : PAL.land;
+    const own = !session || session.has(k);   // in a game, only what you got right in this game shows
+    g.fillStyle = mk === 'hot' ? PAL.hot : mk === 'wrong' ? PAL.wrong : mk === 'pick' ? PAL.pick : mk === 'near' ? PAL.near : mk === 'reg' ? C(REG[c.reg].hue, PAL.night ? 'shade' : 'light') : !c ? PAL.other : !own ? PAL.land : session ? C(REG[c.reg].hue, PAL.night ? 'base' : 'light') : isLit(k) ? C(REG[c.reg].hue, PAL.night ? 'base' : 'light') : SAVE.m[k] ? C(REG[c.reg].hue, PAL.night ? 'shade' : 'tint') : PAL.land;
     path(s); g.fill('evenodd');
     // a country you've got right is painted with its flag: see-through while you're learning it, full once it's lit
-    const flagIn = c && FLAGS[k] && FLAGS[k].ok && (mk === 'got' || ((SAVE.m[k] || 0) > 0 && (!mk || mk === 'reg' || mk === 'pick')));
-    if (flagIn) { g.save(); g.clip('evenodd'); g.globalAlpha = mk === 'got' || isLit(k) ? 1 : 0.55; paintFlag(g, k, s, sx, sy); g.restore(); }
+    const flagIn = c && FLAGS[k] && FLAGS[k].ok && (mk === 'got' || (own && (session || (SAVE.m[k] || 0) > 0) && (!mk || mk === 'reg' || mk === 'pick')));
+    if (flagIn) { g.save(); g.clip('evenodd'); g.globalAlpha = mk === 'got' || session || isLit(k) ? 1 : 0.55; paintFlag(g, k, s, sx, sy); g.restore(); }
     const strong = mk && mk !== 'reg'; g.strokeStyle = strong ? PAL.hotEdge : PAL.edge; g.lineWidth = (strong ? 3 : 1.1) * W / 4096; g.stroke();
   }
   mapTex.needsUpdate = true;
@@ -396,10 +398,14 @@ for (const cc of TINY) {
   ring.position.copy(p.clone().multiplyScalar(1.0005)); ring.lookAt(p.clone().multiplyScalar(2));
   dotGroup.add(m); dotGroup.add(ring); dots[cc] = { m, ring, p };
 }
+/** During a game the map starts fresh: only the countries got right in this game are coloured (your whole collection
+ *  shows on the home globe). null outside a game. */
+function gameMap() { return mode === 'quiz' && game ? game.got : null; }
 function updateDots() {
+  const session = gameMap();
   for (const [cc, d] of Object.entries(dots)) {
     const c = BY[cc], mk = MARK[cc];
-    d.m.material.color.set(mk === 'hot' ? PAL.hot : mk === 'wrong' ? PAL.wrong : mk === 'pick' ? PAL.pick : mk === 'near' ? PAL.near : mk === 'reg' ? C(REG[c.reg].hue, 'light') : isLit(cc) ? C(REG[c.reg].hue) : SAVE.m[cc] ? C(REG[c.reg].hue, 'light') : PAL.land);
+    d.m.material.color.set(mk === 'hot' ? PAL.hot : mk === 'wrong' ? PAL.wrong : mk === 'pick' ? PAL.pick : mk === 'near' ? PAL.near : mk === 'reg' ? C(REG[c.reg].hue, 'light') : session ? (session.has(cc) ? C(REG[c.reg].hue) : PAL.land) : isLit(cc) ? C(REG[c.reg].hue) : SAVE.m[cc] ? C(REG[c.reg].hue, 'light') : PAL.land);
     d.ring.material.color.set(mk && mk !== 'reg' ? PAL.hotEdge : PAL.night ? C('snow', 'base') : C('stone'));
   }
 }
@@ -495,6 +501,7 @@ function stepPlaneFx(dt, now) {
   // a gentle wobble, and a barrel roll when a country lights up
   let roll = Math.sin(now / 520) * (flight.on ? 0.18 : 0.08), pitch = Math.sin(now / 700) * 0.04;
   if (flight.on && flight.roll) { const t = Math.min(1, flight.t), k = Math.min(1, Math.max(0, (t - 0.25) / 0.5)); roll += k * k * (3 - 2 * k) * Math.PI * 2; }
+  pitch -= plane.userData.climb || 0;
   if (reduced()) { roll = 0; pitch = 0; }
   planeBody.rotation.set(pitch, 0, roll);
 }
@@ -503,7 +510,7 @@ const trailGroup = new THREE.Group(); scene.add(trailGroup);
 const dotTex = (() => { const c = document.createElement('canvas'); c.width = c.height = 32; const g = c.getContext('2d'); g.fillStyle = C('snow'); g.beginPath(); g.arc(16, 16, 14, 0, Math.PI * 2); g.fill(); return new THREE.CanvasTexture(c); })();
 const trailMat = new THREE.PointsMaterial({ color: C('sky', 'shade'), size: 0.012, sizeAttenuation: true, map: dotTex, alphaTest: 0.5, transparent: true });
 const flight = { on: false, t: 0, dur: 1, from: null, to: null, h: 0.1, done: null, pts: [] };
-const ALT = 1.012;
+const ALT = 1.022;   // the plane's height above the map, so its keel stays clear of the ground
 function arcPoint(a, b, t, h) { const v = new THREE.Vector3().copy(a).lerp(b, t); const ang = a.angleTo(b); if (ang > 3.1) v.add(new THREE.Vector3(0, 0.001, 0)); return v.normalize().multiplyScalar(ALT + Math.sin(Math.PI * t) * h); }
 function addTrail(a, b, h) {
   const n = Math.max(8, Math.round(a.angleTo(b) * 60)), p = [];
@@ -528,8 +535,16 @@ function flyPlane(cc, opt = {}) {
   Object.assign(flight, { on: true, t: 0, dur: Math.min(2.2, 0.7 + ang * 0.6) + (opt.roll ? 0.4 : 0), from, to, h, done: opt.done || null, roll: !!opt.roll });
   if (opt.follow !== false) flyCam(at[0], at[1], Math.max(cam.dist, 2.1 + Math.min(1.2, ang * 0.5)), flight.dur * 1000);
 }
-function placePlane(pos, fwd, h) { plane.position.copy(pos).normalize().multiplyScalar(ALT + h); const up = plane.position.clone().normalize(); const m = new THREE.Matrix4().lookAt(new THREE.Vector3(), fwd.clone().negate(), up); plane.quaternion.setFromRotationMatrix(m); }
-function placeAlong(a, b, t, h) { const p = arcPoint(a, b, t, h), q = arcPoint(a, b, Math.min(1, t + 0.01), h); const fwd = t >= 0.99 ? p.clone().sub(arcPoint(a, b, 0.98, h)) : q.clone().sub(p); fwd.sub(p.clone().normalize().multiplyScalar(fwd.dot(p.clone().normalize()) * (a.angleTo(b) < 0.002 ? 1 : 0))); if (fwd.lengthSq() < 1e-12) { plane.position.copy(p); return; } placePlane(p, fwd.normalize(), Math.sin(Math.PI * t) * h); }
+// The plane flies level with the ground (its nose follows the surface, never into it); climbing and landing only tilt
+// it a little, and the tilt fades out as it touches down.
+function placePlane(pos, fwd, h, ease = 0) {
+  plane.position.copy(pos).normalize().multiplyScalar(ALT + h);
+  const up = plane.position.clone().normalize(), along = fwd.dot(up), tan = fwd.clone().sub(up.clone().multiplyScalar(along));
+  if (tan.lengthSq() < 1e-10) return;
+  plane.userData.climb = Math.max(-0.3, Math.min(0.3, Math.atan2(along, tan.length()))) * ease;
+  plane.quaternion.setFromRotationMatrix(new THREE.Matrix4().lookAt(new THREE.Vector3(), tan.normalize().negate(), up));
+}
+function placeAlong(a, b, t, h) { const p = arcPoint(a, b, t, h), q = arcPoint(a, b, Math.min(1, t + 0.01), h); const fwd = t >= 0.99 ? p.clone().sub(arcPoint(a, b, 0.98, h)) : q.clone().sub(p); fwd.sub(p.clone().normalize().multiplyScalar(fwd.dot(p.clone().normalize()) * (a.angleTo(b) < 0.002 ? 1 : 0))); if (fwd.lengthSq() < 1e-12) { plane.position.copy(p); return; } placePlane(p, fwd.normalize(), Math.sin(Math.PI * t) * h, Math.min(1, (1 - t) / 0.2, t / 0.1)); }
 function restoreTrail() {
   const t = SAVE.trail.filter(cc => BY[cc]); if (!t.length) return;
   for (let i = 1; i < t.length; i++) { const a = BY[t[i - 1]], b = BY[t[i]]; const pa = TINY.has(a.cc) ? a.cap : a.lab, pb = TINY.has(b.cc) ? b.cap : b.lab; const va = ll2v(pa[0], pa[1]).normalize(), vb = ll2v(pb[0], pb[1]).normalize(); if (va.angleTo(vb) > 0.002) addTrail(va, vb, Math.min(0.35, 0.04 + va.angleTo(vb) * 0.12)); }
@@ -548,9 +563,11 @@ function flyCam(lat, lng, dist = cam.dist, ms = 900) {
 function placeCam() {
   const p = ll2v(cam.lat, cam.lng, cam.dist); camera.position.copy(p); camera.up.set(0, 1, 0); camera.lookAt(0, 0, 0);
   // the sheet covers the bottom of the screen: nudge the globe up so the part in view is centred in the free space
-  const sheet = openSheet(); let off = 0;
-  if (sheet && !document.body.classList.contains('landscape')) off = Math.min(0.42, sheet.getBoundingClientRect().height / viewH * 0.5);
-  camera.setViewOffset(viewW, viewH, 0, viewH * off, viewW, viewH);
+  // A taller virtual view with the bottom window shown: the globe's centre moves up by half the sheet's height,
+  // into the middle of the free space (the window always stays inside the virtual view).
+  const sheet = openSheet(); let d = 0;
+  if (sheet && !document.body.classList.contains('landscape')) d = Math.min(viewH * 0.42, sheet.getBoundingClientRect().height / 2);
+  camera.setViewOffset(viewW, viewH + 2 * d, 0, 2 * d, viewW, viewH);
   head.position.copy(p).add(new THREE.Vector3(0.6, 1.2, 0.4)); head.target.position.set(0, 0, 0);
 }
 const openSheet = () => (!$('#quizSheet').hidden ? $('#quizSheet') : !$('#homeSheet').hidden ? $('#homeSheet') : null);
@@ -792,7 +809,7 @@ function dailyQuestions() {
 function startMode(kind, extra = {}) {
   closeCard(); closeKitScreens(); clearMarks(); clearTags();
   sfx('pick', true);
-  game = { kind, i: 0, qs: kind === 'daily' ? dailyQuestions() : kind === 'speed' ? [] : extra.qs || buildQuestions(kind), right: 0, res: [], streak: 0, best: 0, extra, t0: performance.now() };
+  game = { kind, got: new Set(), i: 0, qs: kind === 'daily' ? dailyQuestions() : kind === 'speed' ? [] : extra.qs || buildQuestions(kind), right: 0, res: [], streak: 0, best: 0, extra, t0: performance.now() };
   if (kind === 'speed') { game.end = performance.now() + 60000; game.qs.push(speedQ()); }
   mode = 'quiz'; showOnly('quiz');
   $('#qTimer').hidden = kind !== 'speed';
@@ -881,7 +898,7 @@ function answer(ok, wrongCc) {
   g.res[g.i] = ok;
   let litNow = false;
   if (ok) {
-    g.right++; g.streak++; g.best = Math.max(g.best, g.streak);
+    g.right++; g.streak++; g.best = Math.max(g.best, g.streak); g.got.add(c.cc);
     const was = isLit(c.cc); if ((q.hints || 0) < 2) SAVE.m[c.cc] = Math.min(9, (SAVE.m[c.cc] || 0) + 1); litNow = !was && isLit(c.cc);
     if (SAVE.miss[c.cc]) SAVE.miss[c.cc]--;
     if (q.kind === 'culture') SAVE.cult[c.cc] = cultureFound(c.cc) | (1 << q.item.i);
@@ -1042,6 +1059,8 @@ function settingsCard() {
 
 /* ---------- Screens ---------- */
 function showOnly(name) {
+  pinGroup.visible = name !== 'quiz';   // the collection's flag pins stay on the home globe
+  if (showOnly.last !== name) { showOnly.last = name; after(0, drawMap); }
   $('#aqBar').hidden = name === 'title';
   $('#homeSheet').hidden = name !== 'home';
   $('#quizSheet').hidden = name !== 'quiz';
