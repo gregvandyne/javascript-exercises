@@ -131,11 +131,15 @@ h2{margin:4px 0 12px;font:800 26px/1.15 var(--font)}
 #heroScreen{justify-content:flex-end;align-items:stretch;background:none;padding:0}
 .maker{display:flex;flex-direction:column;width:min(440px,52vw);height:100%;overflow:hidden;background:var(--card);color:var(--text);border-inline-start:1px solid var(--hair-line);box-shadow:0 0 32px var(--sheet-sh);padding:0;text-align:start}
 /* the sheet: a scrolling body (fades out at the bottom edge) over a footer that always shows Back and Let's go */
-.mkbody{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:max(18px,env(safe-area-inset-top)) 18px 18px}
+.mkbody{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:max(18px,env(safe-area-inset-top)) 18px 36px;
+  -webkit-mask-image:linear-gradient(to bottom,#000 calc(100% - 22px),transparent);mask-image:linear-gradient(to bottom,#000 calc(100% - 22px),transparent)}
+/* wide screens: the choices sit in the middle of the panel's height, not bunched at the top */
+@media (min-aspect-ratio:4/5){.mkbody{display:flex;flex-direction:column}.mkbody>:first-child{margin-top:auto}.mkbody>:last-child{margin-bottom:auto}}
 @media (max-aspect-ratio:4/5){#heroScreen{align-items:flex-end}
   .maker{width:100%;height:58%;height:min(60dvh,560px);border-radius:28px 28px 0 0;border:0;border-top:1px solid var(--hair-line);box-shadow:0 -10px 34px var(--sheet-sh)}
-  .mkbody{padding:16px 16px 16px}}
+  .mkbody{padding:16px 16px 34px}}
 /* title row: the heading and the dice ("Surprise me") side by side, so the dice is always in view */
+.maker:focus{outline:none}
 .mkhead{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 10px}
 .mkhead h2{flex:1 1 auto;min-width:0}
 .maker .chip.mkdice{min-height:40px;padding:0 13px;font-size:15px}
@@ -161,13 +165,16 @@ h2{margin:4px 0 12px;font:800 26px/1.15 var(--font)}
 .maker .chip,.maker .diff{border:1.5px solid var(--chip-edge);box-shadow:0 1px 2px var(--sheet-sh)}
 .maker .chip[aria-pressed="true"]{background:var(--mint);border-color:var(--mint-d);box-shadow:none}
 .maker .diff[aria-pressed="true"]{background:var(--mint-t);border:2px solid var(--mint-d);box-shadow:none}
-.maker .sw{border:3px solid var(--card);box-shadow:0 0 0 1.5px var(--chip-edge)}
-/* chosen: a Spark rim, an Ink ring that fits inside the row's gap (no growing into the next swatch) and a tick */
-.maker .sw[aria-pressed="true"]{border-color:var(--spark);box-shadow:0 0 0 2.5px var(--ink);transform:none}
+/* every colour row uses the same swatch size (nine to a row), so the rows line up and keep one rhythm */
+.maker .sw{flex:0 0 calc((100% - 48px) / 9);width:auto;max-width:46px;border:3px solid var(--card);box-shadow:0 0 0 1.5px var(--sw-edge)}
+/* chosen, the same in every row: a ring in the text colour that fits inside the row's gap (no growing) and a tick */
+.maker .sw[aria-pressed="true"]{border-color:var(--card);box-shadow:0 0 0 2.5px var(--text);transform:none}
+.maker .sw[aria-pressed="true"]::before{background:var(--card);border:1.5px solid var(--text)}
+.maker .sw[aria-pressed="true"]::after{background:var(--text)}
 @media (max-aspect-ratio:4/5){.mkbtns{padding-inline:16px}}
 .mkbtns .big{margin:0;min-height:54px}
 /* short phones: tighter rows so more of the sheet shows at once */
-@media (max-height:760px){.maker h2{font-size:22px}.maker h2.mkh2{margin:12px 0 6px}.mrow{margin:8px 0 3px}#skinRow,#hairColorRow,#outfitRow{padding-block:3px}.mkbtns .big,.mkbtns #makerBack{min-height:50px}.maker .chip{min-height:44px}.maker .diff{min-height:48px;padding-block:5px}}
+@media (max-height:760px){.mkbody{padding-top:12px}.maker .chip.mkdice{min-height:36px}.maker h2{font-size:22px}.maker h2.mkh2{margin:12px 0 6px}.mrow{margin:6px 0 2px}#skinRow,#hairColorRow,#outfitRow{padding-block:3px}.mkbtns .big,.mkbtns #makerBack{min-height:50px}.maker .chip{min-height:44px}.maker .diff{min-height:48px;padding-block:5px}}
 .mkbtns #makerGo{flex:2 1 0;min-width:0}
 .mkbtns #makerBack{flex:1 1 0;min-width:0;min-height:56px}
 .chip{display:inline-flex;align-items:center;gap:6px;min-height:48px;padding:0 15px;border-radius:999px;border:2px solid var(--ink);background:var(--cream);color:var(--ink);font:700 16px/1.1 var(--font);box-shadow:0 3px 0 var(--ink)}
@@ -296,7 +303,7 @@ body.cut .hud,body.cut .tbtns,body.cut .keyhint,body.cut .toasts,body.cut .badge
     set('card', kv('card')); set('text', kv('text')); set('edge', kv('edge')); set('bg2', kv('bg2')); set('focus', kv('focus'));
     set('scrim', kv('scrim')); set('scrim-e', night ? 'rgba(10,12,12,.2)' : 'rgba(20,20,20,.08)');
     set('hair-line', night ? 'rgba(255,255,255,.12)' : 'rgba(20,20,20,.1)'); set('sheet-sh', night ? 'rgba(0,0,0,.45)' : 'rgba(30,40,60,.16)');
-    set('chip-edge', night ? 'rgba(255,255,255,.22)' : 'rgba(20,20,20,.2)');
+    set('chip-edge', night ? 'rgba(255,255,255,.22)' : 'rgba(20,20,20,.2)'); set('sw-edge', night ? 'rgba(255,255,255,.42)' : 'rgba(20,20,20,.2)');
     for (const h of ['spark', 'mint', 'coral', 'sky', 'grape', 'peach', 'stone', 'cocoa']) {
       set(h, c(h, 'base')); set(h + '-t', c(h, 'tint')); set(h + '-l', c(h, 'light')); set(h + '-d', c(h, 'shade'));
     }
@@ -369,7 +376,7 @@ body.cut .hud,body.cut .tbtns,body.cut .keyhint,body.cut .toasts,body.cut .badge
 </section>
 
 <section class="screen" id="heroScreen" role="dialog" aria-labelledby="makerTitle" hidden>
-  <div class="maker">
+  <div class="maker" tabindex="-1">
     <div class="mkbody">
     <div class="mkhead"><h2 id="makerTitle" data-i18n="look.h"></h2><button class="chip mkdice" id="randomBtn" type="button"><span aria-hidden="true">🎲 </span><span data-i18n="look.random"></span></button></div>
     <div class="mrow" data-i18n="look.skin"></div><div class="swatches" id="skinRow"></div>
@@ -6126,6 +6133,8 @@ const MAT = {
   blob: new THREE.MeshBasicMaterial({ color: 0x1d2340, transparent: true, opacity: 0.28, depthWrite: false }),
   // the hero's eyes, nose, cheeks and smile: flat colour, no light, so they stay crisp (lit, the whites went mint at the rim)
   face: new THREE.MeshBasicMaterial({ vertexColors: true }),
+  // the hero's hair: no rim light (on the smooth cap the rim read as a smeared gloss across the top)
+  hair: inkMat(0, false),
 };
 /* Ink outlines: characters always keep theirs; buildings, rocks and trees ("detail" Ink, camera layer 1) drop it at
    the lowest picture quality. Grass, flowers, reeds and mushrooms never get any (too small to read). */
@@ -7810,27 +7819,31 @@ function buildLookGeometries(look) {
   // Drawn unlit (flat colour, like a sticker) and lifted just off the skin, so the features stay crisp at any size.
   out.face = geoFrom([[SSPH, 0, 0.285, 0.343, 0.035, 0.026, 0.02, 0, 0, 0, skinD],
     [SSPH, 0.2, 0.25, 0.283, 0.052, 0.03, 0.012, 0, 0.6, 0, '#ff9eb5'], [SSPH, -0.2, 0.25, 0.283, 0.052, 0.03, 0.012, 0, -0.6, 0, '#ff9eb5'],
-    [HERO_SMILE, 0, 0.215, 0.33, 1, 1, 1, -0.3, 0, Math.PI, '#5a2a1a']]).geometry('lit');
+    [HERO_SMILE, 0, 0, 0, 1, 1, 1, 0, 0, 0, '#5a2a1a']]).geometry('lit');
   const hair = geoFrom([]), style = LOOKS.hair[look.hair] || 'short';
   // Every style starts from a smooth cap that hugs the skull (tilted back: the hairline sits above the eyes, the back
   // covers the nape), then adds a fringe of soft locks, so it reads as hair rather than a box on a dome.
   const capOn = () => hair.add(HAIR_CAP, 0, 0.34, -0.005, 0.378, 0.372, 0.382, -0.3, 0, 0, hairC);
   const fringe = n => { for (let i = 0; i < n; i++) { const u = n > 1 ? i / (n - 1) - 0.5 : 0; hair.add(SSPH, u * 0.42, 0.51 - Math.abs(u) * 0.09, 0.29 - Math.abs(u) * 0.09, 0.115, 0.07, 0.07, -0.35, u * 1.1, -u * 0.5, hairC); } };
-  if (style === 'short' || style === 'ponytail') { capOn(); fringe(4); for (const s of [-1, 1]) hair.add(SSPH, s * 0.345, 0.39, 0.02, 0.05, 0.1, 0.07, 0, 0, s * 0.15, hairC); }
+  if (style === 'short' || style === 'ponytail') { capOn(); fringe(4); }
   if (style === 'ponytail') { hair.add(SSPH, 0, 0.4, -0.37, 0.07, 0.07, 0.07, 0, 0, 0, '#ff5c9e'); hair.add(SSPH, 0, 0.24, -0.43, 0.1, 0.2, 0.1, 0.35, 0, 0, hairC); }
   if (style === 'spiky') { capOn(); fringe(3); for (let i = 0; i < 8; i++) { const a = i / 8 * Math.PI * 2, r = i % 2 ? 0.2 : 0.12; hair.add(cone, Math.cos(a) * r, 0.6, Math.sin(a) * r - 0.06, 0.1, 0.24, 0.1, Math.sin(a) * 0.6, 0, -Math.cos(a) * 0.6, hairC); } }
   if (style === 'curly') { capOn(); fringe(4); for (let i = 0; i < 13; i++) { const a = i / 13 * Math.PI * 2, r = i % 2 ? 0.27 : 0.2, y = 0.57 + (i % 3) * 0.05; hair.add(SSPH, Math.cos(a) * r, y, Math.sin(a) * r - 0.06, 0.13, 0.12, 0.13, 0, 0, 0, hairC); } hair.add(SSPH, 0, 0.68, -0.04, 0.2, 0.13, 0.2, 0, 0, 0, hairC); for (const s of [-1, 1]) hair.add(SSPH, s * 0.33, 0.36, -0.12, 0.1, 0.18, 0.12, 0, 0, 0, hairC); }
   out.hair = hair.geometry('lit');
   out.torso = geoFrom([[box, 0, -0.35, 0, 0.6, 0.65, 0.36, 0, 0, 0, fit], [box, 0, -0.33, 0, 0.62, 0.1, 0.38, 0, 0, 0, '#5b3a1e'], [box, 0, -0.32, 0.19, 0.12, 0.08, 0.02, 0, 0, 0, '#ffc83d'],
-    [box, 0, 0.2, 0, 0.3, 0.12, 0.3, 0, 0, 0, skin]]).geometry('lit');
+  ]).geometry('lit');
   // a small Sunvale sun on the chest (it was a blank white patch); its own mesh, so no Ink ring round it
-  out.badge = geoFrom([[prim('cyl:12:1.000'), 0, 0.1, 0.17, 0.075, 0.025, 0.075, Math.PI / 2, 0, 0, '#ffc83d'], [prim('cyl:12:1.000'), 0, 0.1, 0.185, 0.04, 0.012, 0.04, Math.PI / 2, 0, 0, '#ff9f1c']]).geometry('lit');
-  out.arm = geoFrom([[box, 0, -0.32, 0, 0.18, 0.36, 0.19, 0, 0, 0, fit], [box, 0, -0.44, 0, 0.17, 0.14, 0.18, 0, 0, 0, skin], [SSPH, 0, -0.5, 0, 0.11, 0.11, 0.11, 0, 0, 0, skin]]).geometry('lit');
+  out.badge = geoFrom([[prim('cyl:32:1.000'), 0, 0.1, 0.17, 0.075, 0.025, 0.075, Math.PI / 2, 0, 0, '#ffc83d'], [prim('cyl:32:1.000'), 0, 0.1, 0.185, 0.04, 0.012, 0.04, Math.PI / 2, 0, 0, '#ff9f1c']]).geometry('lit');
+  // a short sleeve with a rounded shoulder (its top level with the shirt's), a slim forearm and a small round hand
+  out.arm = geoFrom([[box, 0, -0.25, 0, 0.18, 0.28, 0.2, 0, 0, 0, fit], [SSPH, 0, 0.02, 0, 0.09, 0.07, 0.1, 0, 0, 0, fit],
+    [prim('cyl:16:1.000'), 0, -0.55, 0, 0.066, 0.31, 0.066, 0, 0, 0, skin], [SSPH, 0, -0.58, 0.005, 0.085, 0.085, 0.085, 0, 0, 0, skin]]).geometry('lit');
   out.cape = geoFrom([[box, 0, -0.62, 0, 0.56, 0.64, 0.04, 0, 0, 0, dark]]).geometry('lit');
   const bootC = { base: '#3b2a1e', leather: '#8b5a2b', iron: '#c9d1dc', sun: '#ffc83d' };
   for (const tier of ['base', 'leather', 'iron', 'sun']) {
-    const parts = [[box, 0, -0.45, 0, 0.22, 0.47, 0.24, 0, 0, 0, dark], [box, 0, -0.55, 0.04, 0.228, 0.16, 0.32, 0, 0, 0, bootC[tier]]];
-    if (tier !== 'base') parts.push([box, 0, -0.5, 0.01, 0.26, tier === 'leather' ? 0.28 : 0.34, 0.27, 0, 0, 0, bootC[tier]]);
+    // the trouser leg ends inside the boot, and the boot is a little wider all round, so no trouser edge (or its Ink)
+    // shows beside it; the two legs nearly meet, so the gap between them is one clean Ink line
+    const parts = [[box, 0, -0.41, 0, 0.28, 0.43, 0.24, 0, 0, 0, dark], [box, 0, -0.55, 0.04, 0.296, 0.16, 0.32, 0, 0, 0, bootC[tier]]];
+    if (tier !== 'base') parts.push([box, 0, -0.5, 0.01, 0.3, tier === 'leather' ? 0.28 : 0.34, 0.27, 0, 0, 0, bootC[tier]]);
     if (tier === 'iron') parts.push([box, 0, -0.33, 0.12, 0.16, 0.1, 0.06, 0, 0, 0, '#9aa4b2']);
     if (tier === 'sun') parts.push([prim('cone:4'), 0, -0.36, 0.12, 0.06, 0.14, 0.03, 0, 0, 0, '#ff9f1c']);
     out['leg_' + tier] = geoFrom(parts).geometry('lit');
@@ -7838,7 +7851,23 @@ function buildLookGeometries(look) {
   return out;
 }
 const SMILE = (() => { const g = new THREE.TorusGeometry(0.075, 0.018, 4, 10, Math.PI).toNonIndexed(); g.computeVertexNormals(); return g; })();
-const HERO_SMILE = (() => { const g = new THREE.TorusGeometry(0.085, 0.022, 8, 24, Math.PI).toNonIndexed(); g.computeVertexNormals(); return g; })();
+/** The hero's smile: a thin, tapered stroke drawn on the skin itself (it follows the curve of the head, so it never
+ *  floats in front of the face and thickens into a "moustache" at large sizes). In head space. */
+const HERO_SMILE = (() => {
+  const N = 24, a = 0.068, yc = 0.222, dip = 0.045, p = [], n = [];
+  const onHead = (x, y) => { const u = x / 0.36, v = (y - 0.34) / 0.35; return [x, y, 0.35 * Math.sqrt(Math.max(0, 1 - u * u - v * v)) + 0.006]; };
+  const pt = t => { const x = a * t; return [x, yc - dip * (1 - t * t)]; };
+  let prev = null;
+  for (let i = 0; i <= N; i++) {
+    const t = i / N * 2 - 1, [x, y] = pt(t), [x1, y1] = pt(Math.min(1, t + 0.01)), [x0, y0] = pt(Math.max(-1, t - 0.01));
+    let dx = x1 - x0, dy = y1 - y0; const l = Math.hypot(dx, dy) || 1; dx /= l; dy /= l;
+    const w = 0.0085 * (1 - 0.45 * t * t);   // half-width: thickest in the middle, tapering to the corners
+    const L = onHead(x - dy * w, y + dx * w), R = onHead(x + dy * w, y - dx * w);
+    if (prev) { p.push(...prev[0], ...prev[1], ...L, ...L, ...prev[1], ...R); for (let k = 0; k < 6; k++) n.push(0, 0, 1); }
+    prev = [L, R];
+  }
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(p, 3)); g.setAttribute('normal', new THREE.Float32BufferAttribute(n, 3)); return g;
+})();
 /** A smooth sphere (its normals point straight out, unlike the faceted 'sph' prims) and the hair cap: the top of one,
  *  down to just past the equator, so it hugs the head. */
 const SSPH = new THREE.SphereGeometry(1, 32, 20).toNonIndexed();
@@ -7853,13 +7882,13 @@ function buildHeroModel() {
   const cape = new THREE.Group(); cape.position.set(0, 0.26, -0.2); torso.add(cape); const capeM = mk(); cape.add(capeM);
   const armL = new THREE.Group(), armR = new THREE.Group(); armL.position.set(-0.39, 0.22, 0); armR.position.set(0.39, 0.22, 0); torso.add(armL, armR);
   const armLM = mk(), armRM = mk(); armL.add(armLM); armR.add(armRM);
-  const hand = new THREE.Group(); hand.position.set(0, -0.5, 0.02); armR.add(hand);
+  const hand = new THREE.Group(); hand.position.set(0, -0.58, 0.02); armR.add(hand);
   const sword = mk(); const swordGlow = mk(null, MAT.glow); swordGlow.castShadow = false; hand.add(sword, swordGlow); hand.rotation.x = Math.PI / 2;
   const shield = mk(), shieldGlow = mk(null, MAT.glow); shieldGlow.castShadow = false; armL.add(shield, shieldGlow);
   const head = new THREE.Group(); head.position.set(0, 0.3, 0); torso.add(head);
-  const headM = mk(), hair = mk(), helmet = mk(), hat = mk(), faceM = mk(null, MAT.face); faceM.castShadow = false; faceM.userData.noInk = true; head.add(headM, faceM, hair, helmet, hat);
+  const headM = mk(), hair = mk(null, MAT.hair), helmet = mk(), hat = mk(), faceM = mk(null, MAT.face); faceM.castShadow = false; faceM.userData.noInk = true; head.add(headM, faceM, hair, helmet, hat);
   const eyes = new THREE.Group(); eyes.position.set(0, 0.36, 0.316); head.add(eyes);
-  const ek = new Kit(), s1 = prim('sph:1');
+  const ek = new Kit(), s1 = SSPH;
   for (const s of [-1, 1]) { ek.add(s1, s * 0.12, 0, 0, 0.075, 0.095, 0.04, 0, 0, 0, '#ffffff'); ek.add(s1, s * 0.12, -0.01, 0.03, 0.05, 0.065, 0.025, 0, 0, 0, '#2b1b0e'); ek.add(s1, s * 0.12 + 0.02, 0.02, 0.05, 0.018, 0.018, 0.01, 0, 0, 0, '#ffffff'); }
   const eyeM = mk(ek.geometry('lit'), MAT.face); eyeM.castShadow = false; eyeM.userData.noInk = true; eyes.add(eyeM);
   scene.add(root);
@@ -8231,9 +8260,10 @@ function updateCamera(dt, now) {
   }
   if (UI.isOpen('heroScreen')) {    // the hero maker: a close look at the hero, framed beside the panel
     // closer on wide screens (the narrower fov there left the hero small in a big empty field)
-    const d = viewW / viewH > 0.8 ? 2.7 : 4.4, h = viewW / viewH > 0.8 ? 1.25 : 1.55;
+    // tall screens: a little further back, aimed at the hero's middle, so head, boots and shadow all fit above the sheet
+    const wide = viewW / viewH > 0.8, d = wide ? 2.7 : 4.5, h = wide ? 1.25 : 1.45;
     V1.set(hero.pos.x + Math.sin(hero.yaw) * d, hero.pos.y + h, hero.pos.z + Math.cos(hero.yaw) * d);
-    camera.position.copy(V1); camera.lookAt(hero.pos.x, hero.pos.y + 0.95, hero.pos.z); CAM.cutNext = true; return;
+    camera.position.copy(V1); camera.lookAt(hero.pos.x, hero.pos.y + (wide ? 0.95 : 0.8), hero.pos.z); CAM.cutNext = true; return;
   }
   if (S.screen === 'play' && !UI.blocking()) {
     if (inp.held.camL) { CAM.yaw += C.keyTurn * (0.4 + (SET.camSpeed - 1) / 9 * 1.6) * dt; CAM.lastInput = now; }
@@ -8517,33 +8547,44 @@ function makerRefresh() {
 function makerFrame() {   // keep the hero in the part of the screen the panel does not cover
   const wide = viewW / viewH > 0.8;
   if (wide) { const panel = Math.min(440, viewW * 0.52); camera.setViewOffset(viewW, viewH, panel / 2, 0, viewW, viewH); }
-  else camera.setViewOffset(viewW, viewH, 0, viewH * 0.26, viewW, viewH);
+  // tall screens: the sheet covers the bottom; centre the hero (feet and shadow included) in the strip above it
+  else { const sheet = Math.min(viewH * 0.6, 560); camera.setViewOffset(viewW, viewH, 0, sheet / 2 - viewH * 0.03, viewW, viewH); }
 }
 /** The hero maker's stage: the device's full sharpness (the play-time quality level can be as low as 0.75x), a finer
  *  Ink line, and a clean set of its own (a sky dome, a soft meadow and a round blob shadow, on camera layer STAGE) so
  *  nothing of the village or its clouds competes with the hero; the sword is put away. */
 const STAGE_KEEP = { mask: 1, fogColor: 0 };
+/** The set's colours: a daytime sky, or (dark theme) a calmer dusk with a warm horizon, so the scene matches the sheet. */
+const STAGE_LOOK = {
+  day: { top: SKY_COLORS.top, mid: SKY_COLORS.mid, horizon: SKY_COLORS.horizon, near: col('#9bdc6e'), far: col('#7cc657'), shade: 'rgba(30,60,30,' },
+  night: { top: col('#2c447e'), mid: col('#6a80bb'), horizon: col('#efc8a2'), near: col('#7cb862'), far: col('#5e9a50'), shade: 'rgba(16,24,40,' },
+};
+const stageSets = {};
 let stageSet = null;
-function buildStage() {
-  const g = new THREE.Group(), c = new THREE.Color();
+const stageNight = () => document.documentElement.classList.contains('night');
+function buildStage(night) {
+  const g = new THREE.Group(), c = new THREE.Color(), SK = night ? STAGE_LOOK.night : STAGE_LOOK.day;
   const sky = new THREE.SphereGeometry(60, 32, 16), sp = sky.attributes.position, sc = new Float32Array(sp.count * 3);
   for (let i = 0; i < sp.count; i++) {
     const e = sp.getY(i) / 60;   // elevation, -1..1
-    if (e < 0.04) c.copy(SKY_COLORS.horizon); else if (e < 0.35) c.copy(SKY_COLORS.horizon).lerp(SKY_COLORS.mid, (e - 0.04) / 0.31); else c.copy(SKY_COLORS.mid).lerp(SKY_COLORS.top, Math.min(1, (e - 0.35) / 0.5));
+    if (e < 0.04) c.copy(SK.horizon); else if (e < 0.35) c.copy(SK.horizon).lerp(SK.mid, (e - 0.04) / 0.31); else c.copy(SK.mid).lerp(SK.top, Math.min(1, (e - 0.35) / 0.5));
     sc.set([c.r, c.g, c.b], i * 3);
   }
   sky.setAttribute('color', new THREE.BufferAttribute(sc, 3));
   const dome = new THREE.Mesh(sky, new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.BackSide, fog: false, depthWrite: false }));
-  dome.renderOrder = -1; g.add(dome);
+  dome.renderOrder = -2; g.add(dome);
   const ground = new THREE.CircleGeometry(55, 64).rotateX(-Math.PI / 2), gp = ground.attributes.position, gc = new Float32Array(gp.count * 3);
-  const near = col('#9bdc6e'), far = col('#7cc657');
+  const near = SK.near, far = SK.far;
   for (let i = 0; i < gp.count; i++) { c.copy(near).lerp(far, Math.min(1, hyp(gp.getX(i), gp.getZ(i)) / 9)); gc.set([c.r, c.g, c.b], i * 3); }
   ground.setAttribute('color', new THREE.BufferAttribute(gc, 3));
-  g.add(new THREE.Mesh(ground, new THREE.MeshBasicMaterial({ vertexColors: true })));
+  // drawn first and without depth, like a backdrop: the hero's Ink (drawn a little further back, see inkPushed) then
+  // still shows round the boots instead of sinking into the meadow just behind them
+  const meadow = new THREE.Mesh(ground, new THREE.MeshBasicMaterial({ vertexColors: true, depthWrite: false })); meadow.renderOrder = -1; g.add(meadow);
   // a soft round shadow (a radial fade), not a hard-edged polygon
   const cv = document.createElement('canvas'); cv.width = cv.height = 128; const x = cv.getContext('2d');
-  if (x && x.createRadialGradient) { const rg = x.createRadialGradient(64, 64, 0, 64, 64, 64); rg.addColorStop(0, 'rgba(30,60,30,.42)'); rg.addColorStop(0.55, 'rgba(30,60,30,.22)'); rg.addColorStop(1, 'rgba(30,60,30,0)'); x.fillStyle = rg; x.fillRect(0, 0, 128, 128); }
-  const blob = new THREE.Mesh(new THREE.CircleGeometry(0.75, 48).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ map: canvasTexture(cv), transparent: true, depthWrite: false }));
+  if (x && x.createRadialGradient) { const rg = x.createRadialGradient(64, 64, 0, 64, 64, 64); rg.addColorStop(0, SK.shade + '.34)'); rg.addColorStop(0.5, SK.shade + '.16)'); rg.addColorStop(1, SK.shade + '0)'); x.fillStyle = rg; x.fillRect(0, 0, 128, 128); }
+  // just a little wider than the hero's feet (it was a big dark smudge on the desktop close-up)
+  const blob = new THREE.Mesh(new THREE.CircleGeometry(0.55, 48).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ map: canvasTexture(cv), transparent: true, depthWrite: false }));
   blob.position.y = 0.012; blob.renderOrder = 1; g.add(blob);
   g.traverse(o => o.layers.set(STAGE)); g.visible = false; scene.add(g);
   return g;
@@ -8551,12 +8592,13 @@ function buildStage() {
 function makerStage(on) {
   if (!!hero.onStage === on) return; hero.onStage = on;
   if (on) {
-    if (!stageSet) stageSet = buildStage();
-    stageSet.position.copy(hero.pos); stageSet.visible = true;
+    const night = stageNight(); if (stageSet) stageSet.visible = false;
+    stageSet = stageSets[night ? 'night' : 'day'] || (stageSets[night ? 'night' : 'day'] = buildStage(night));
+    stageSet.position.copy(hero.pos); stageSet.visible = true; hero.stageNight = night;
     STAGE_KEEP.mask = camera.layers.mask; STAGE_KEEP.fogColor = scene.fog.color.getHex();
     camera.layers.set(STAGE); hemi.layers.enable(STAGE); sun.layers.enable(STAGE); sun.castShadow = false;
-    scene.fog.color.copy(SKY_COLORS.horizon); scene.fog.near = 14; scene.fog.far = 48;
-    fitter.maxDpr(Math.min(devicePixelRatio || 1, SOFTWARE_GL ? 2 : 3));
+    scene.fog.color.copy((night ? STAGE_LOOK.night : STAGE_LOOK.day).horizon); scene.fog.near = 14; scene.fog.far = 48;
+    fitter.maxDpr(Math.min(devicePixelRatio || 1, 3));
   } else {
     if (stageSet) stageSet.visible = false;
     camera.layers.mask = STAGE_KEEP.mask; scene.fog.color.setHex(STAGE_KEEP.fogColor);
@@ -8565,12 +8607,18 @@ function makerStage(on) {
   if (hero.rig) { hero.rig.hand.visible = !on; hero.rig.root.traverse(o => { if (on) o.layers.enable(STAGE); else o.layers.disable(STAGE); }); }
   heroInk();
 }
+/** Was the last input a touch or a click (not a key)? */
+let POINTER_LAST = false;
+addEventListener('pointerdown', () => { POINTER_LAST = true; }, true);
+addEventListener('keydown', () => { POINTER_LAST = false; }, true);
 function openHeroMaker() {
   MAKER.look = defaultLook(); MAKER.difficulty = 'normal';
   UI.close('titleScreen'); placeHero(0, 336, -Math.PI / 2); makerStage(true); makerRefresh(); UI.open('heroScreen'); makerFrame();
   { const b = document.querySelector('#heroScreen .mkbody'); if (b) b.scrollTop = 0; }
-  // start on the chosen skin, so the keyboard ring and the "chosen" tick mark the same swatch
-  { const s = $('skinRow').querySelector('[aria-pressed="true"]'); if (s) try { s.focus({ preventScroll: true }); } catch (e) { /* ignore */ } }
+  // keyboard: start on the chosen skin, so the keyboard ring and the "chosen" tick mark the same swatch. Opened by
+  // touch or mouse, focus goes to the panel itself, so no keyboard ring sits on the first swatch (it read as a
+  // heavier, bigger "chosen" mark than the other rows').
+  { const s = POINTER_LAST ? document.querySelector('#heroScreen .maker') : $('skinRow').querySelector('[aria-pressed="true"]'); if (s) try { s.focus({ preventScroll: true }); } catch (e) { /* ignore */ } }
 }
 $('randomBtn').addEventListener('click', () => {
   MAKER.look.skin = (Math.random() * LOOKS.skin.length) | 0; MAKER.look.hair = (Math.random() * LOOKS.hair.length) | 0; MAKER.look.hairColor = (Math.random() * LOOKS.hairColor.length) | 0; MAKER.look.outfit = (Math.random() * LOOKS.outfit.length) | 0;
@@ -12816,7 +12864,23 @@ function renderFrame(dt, now) {
   if (S.screen === 'play') updateHud(dt);
   UI.dialogFrame(dt); worldUiFrame(dt);
   B.update(dt);   // the kit bridge: Ink line width for this screen size, outline distances
-  renderer.render(scene, camera);
+  if (hero.onStage && MAKER_AA.need) makerRender(); else renderer.render(scene, camera);
+}
+/** The hero maker's close-up on a canvas without smooth edges (no multisampling: a page drawn by the processor):
+ *  the frame is drawn into a 4x multisampled picture first, then onto the screen, so the Ink lines are not stair-stepped. */
+const MAKER_AA = { need: !renderer.getContext().getContextAttributes().antialias, rt: null, scene: null, cam: null, failed: false };
+function makerRender() {
+  const A = MAKER_AA, w = renderer.domElement.width, h = renderer.domElement.height;
+  try {
+    if (!A.rt) {
+      A.rt = new THREE.WebGLRenderTarget(w, h, { samples: 4 }); A.rt.texture.colorSpace = THREE.SRGBColorSpace;
+      A.scene = new THREE.Scene(); A.cam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+      A.scene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.MeshBasicMaterial({ map: A.rt.texture, depthTest: false, depthWrite: false })));
+    }
+    if (A.rt.width !== w || A.rt.height !== h) A.rt.setSize(w, h);
+    renderer.setRenderTarget(A.rt); renderer.render(scene, camera); renderer.setRenderTarget(null);
+    renderer.render(A.scene, A.cam);
+  } catch (e) { A.need = false; renderer.setRenderTarget(null); renderer.render(scene, camera); }
 }
 const WHITE = new THREE.Color(1, 1, 1), DOME_GLOOM = new THREE.Color('#8f6cb8');
 function worldFrame(dt, now) {
@@ -12868,6 +12932,8 @@ function worldFrame(dt, now) {
   if (hero.onStage) {
     V1.subVectors(camera.position, hero.pos).setY(0).normalize();
     sun.target.position.copy(hero.pos); sun.position.set(hero.pos.x + V1.x * 14 - V1.z * 5, hero.pos.y + 14, hero.pos.z + V1.z * 14 + V1.x * 5);
+    if (hero.stageNight) { hemi.intensity *= 0.82; sun.intensity *= 0.85; }   // the dusk set: a little softer light
+    scene.fog.color.copy((hero.stageNight ? STAGE_LOOK.night : STAGE_LOOK.day).horizon); scene.background.copy(scene.fog.color);   // the set's own haze
   }
 }
 const Q2 = new THREE.Quaternion(), XAX = new THREE.Vector3(1, 0, 0);
